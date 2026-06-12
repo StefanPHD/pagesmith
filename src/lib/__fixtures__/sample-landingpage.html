@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FitBoost Pro – In 30 Tagen zur Bestform</title>
+    <style>
+      .btn { display: inline-block; padding: 14px 28px; border-radius: 8px; }
+      .btn-primary { background: #ff5a1f; color: #fff; }
+    </style>
+  </head>
+  <body>
+    <!-- NAV: viele Links, die KEINE CTAs sind (Link-Rauschen) -->
+    <header>
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#preise">Preise</a>
+        <a href="#faq">FAQ</a>
+        <a href="#kontakt">Kontakt</a>
+        <a href="/login">Login</a>
+      </nav>
+    </header>
+
+    <!-- HERO: echte CTAs (Button + Link-als-Button) -->
+    <section id="hero">
+      <h1>In 30 Tagen zur Bestform – ohne Hungern</h1>
+      <h2>Das Programm, das 12.000 Menschen schon transformiert hat.</h2>
+      <p>Wissenschaftlich fundiert. Alltagstauglich. Geld-zurueck-Garantie.</p>
+      <button type="button" class="btn btn-primary">Jetzt starten</button>
+      <a href="/checkout" role="button" class="btn">Programm sichern – 49 €</a>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+      <h2>Warum FitBoost Pro?</h2>
+      <ul>
+        <li>Individuelle Trainingsplaene</li>
+        <li>Ernaehrungs-Coaching per App</li>
+        <li>Community &amp; Live-Calls</li>
+      </ul>
+      <a href="#preise" class="btn btn-primary">Pakete ansehen</a>
+    </section>
+
+    <!-- LEAD-GEN: Formular mit Webhook-Ziel (Phase 2 spaeter) -->
+    <section id="lead">
+      <h2>Hol dir den kostenlosen Trainingsplan</h2>
+      <form action="https://hooks.example.com/lead" method="post">
+        <input type="text" name="name" placeholder="Dein Name" />
+        <input type="email" name="email" placeholder="Deine E-Mail" />
+        <input type="submit" value="Plan kostenlos sichern" />
+      </form>
+    </section>
+
+    <!-- ZWEITES FORMULAR: Newsletter -->
+    <section id="newsletter">
+      <h2>Bleib auf dem Laufenden</h2>
+      <form action="/newsletter">
+        <input type="email" name="email" placeholder="E-Mail" />
+        <input type="image" src="/assets/go.png" alt="Anmelden" />
+        <input type="button" value="Spaeter erinnern" />
+      </form>
+    </section>
+
+    <!-- PREISE -->
+    <section id="preise">
+      <h2>Einfache Preise</h2>
+      <div class="card">
+        <h3>Basis</h3>
+        <button>Basis waehlen</button>
+      </div>
+      <div class="card">
+        <h3>Pro</h3>
+        <a href="/checkout?plan=pro" role="button" class="btn btn-primary">Pro waehlen</a>
+      </div>
+    </section>
+
+    <!-- FOOTER: weitere Nav-Links (Rauschen) -->
+    <footer>
+      <a href="/impressum">Impressum</a>
+      <a href="/datenschutz">Datenschutz</a>
+      <a href="/agb">AGB</a>
+      <a href="https://instagram.com/fitboost">Instagram</a>
+      <a href="https://youtube.com/fitboost">YouTube</a>
+    </footer>
+  </body>
+</html>

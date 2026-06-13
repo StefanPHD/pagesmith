@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { detectElements, type ElementType } from "@/lib/detect";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { annotateAndDetect, type ElementType } from "@/lib/detect";
 import ActionPanel from "@/components/ActionPanel";
 
 // Parsing + iframe-Preview sind die teuren Verbraucher. Sie sollen erst nach
@@ -24,14 +24,24 @@ export default function CodeImporter() {
   // Linkes Panel manuell ein-/ausklappbar (Auto-Collapse beim Pasten kommt
   // bewusst erst in einem spaeteren Schritt).
   const [isInputCollapsed, setIsInputCollapsed] = useState(false);
+  // In der Preview angeklicktes Element (via postMessage-Bruecke). Nur die ID
+  // wird gehalten; das Element selbst wird abgeleitet, damit sich die Auswahl
+  // bei Code-Aenderung sauber neu aufloest.
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(
+    null
+  );
+
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedCode(code), DEBOUNCE_MS);
     return () => clearTimeout(id);
   }, [code]);
 
-  const elements = useMemo(
-    () => detectElements(debouncedCode),
+  // EINE Quelle der Wahrheit: einmal parsen -> annotiertes HTML (mit IDs +
+  // Listener-Script) fuers iframe UND die erkannten Elemente fuer die Liste.
+  const { html: previewHtml, elements } = useMemo(
+    () => annotateAndDetect(debouncedCode),
     [debouncedCode]
   );
 
@@ -43,6 +53,28 @@ export default function CodeImporter() {
     }),
     [elements]
   );
+
+  // Ausgewaehltes Element abgeleitet: faellt automatisch auf null zurueck, wenn
+  // die ID nach einer Code-Aenderung nicht mehr existiert.
+  const selectedElement = useMemo(
+    () => elements.find((e) => e.id === selectedElementId) ?? null,
+    [elements, selectedElementId]
+  );
+
+  // Klick-Bruecke aus dem sandboxed iframe. Registriert sich EINMAL ([] deps);
+  // iframeRef + setSelectedElementId sind stabil.
+  // Das iframe laeuft mit sandbox="allow-scripts" (ohne allow-same-origin) ->
+  // event.origin ist "null", daher bewusst KEINE Origin-Pruefung. Stattdessen
+  // pruefen wir die Quelle (contentWindow) und den Message-Typ.
+  useEffect(() => {
+    function onMessage(e: MessageEvent) {
+      if (e.source !== iframeRef.current?.contentWindow) return;
+      if (e.data?.type !== "ELEMENT_CLICKED") return;
+      setSelectedElementId(e.data.elementId ?? null);
+    }
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
 
   return (
     <div className="flex w-full flex-col gap-4 lg:flex-row">
@@ -138,9 +170,13 @@ export default function CodeImporter() {
         </div>
         <div className="flex flex-1 flex-col p-3">
           <iframe
+            ref={iframeRef}
             title="preview"
-            srcDoc={debouncedCode}
-            sandbox=""
+            srcDoc={previewHtml}
+            // allow-scripts aktiviert das injizierte Listener-Script. NIEMALS
+            // allow-same-origin dazu – die Kombination bricht den Fremdcode aus
+            // der Sandbox aus.
+            sandbox="allow-scripts"
             className="h-full min-h-[32rem] w-full flex-1 rounded-lg border border-gray-300 bg-white"
           />
         </div>
@@ -148,7 +184,7 @@ export default function CodeImporter() {
 
       {/* Zone 3 (rechts): Action-Panel. CodeImporter bleibt State-Besitzer und
           reicht das gewaehlte Element durch – in diesem Schritt immer null. */}
-      <ActionPanel selectedElement={null} />
+      <ActionPanel selectedElement={selectedElement} />
     </div>
   );
 }

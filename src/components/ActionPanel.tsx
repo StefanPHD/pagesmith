@@ -3,15 +3,14 @@
 import type { DetectedElement } from "@/lib/detect";
 
 type ActionPanelProps = {
-  // In diesem Schritt immer null. Sobald "Click & Connect" steht, reicht der
-  // CodeImporter hier das in der Preview gewaehlte Element durch.
+  // Das in der Preview angeklickte Element (via postMessage-Bruecke) oder null.
   selectedElement: DetectedElement | null;
 };
 
 /**
  * Rechte Zone des Workspace. Zeigt spaeter die Aktions-Kacheln (Stripe, PayPal,
- * Webhook ...) fuer das aktuell gewaehlte Element. Hier (Schritt 2.1) bewusst
- * nur ein Empty-State, keine Aktionslogik.
+ * Webhook ...) fuer das aktuell gewaehlte Element. Hier (Schritt 2.2) erst der
+ * Empty-State bzw. die reine Anzeige der Auswahl – noch keine Aktionslogik.
  */
 export default function ActionPanel({ selectedElement }: ActionPanelProps) {
   return (
@@ -24,7 +23,11 @@ export default function ActionPanel({ selectedElement }: ActionPanelProps) {
           <p className="text-center text-sm text-gray-400">
             Wähle ein Element in der Vorschau, um eine Aktion zu verknüpfen.
           </p>
-        ) : null}
+        ) : (
+          <p className="text-center text-sm text-gray-700">
+            {`Ausgewähltes Element: ${selectedElement.type} „${selectedElement.label}" (ID: ${selectedElement.id})`}
+          </p>
+        )}
       </div>
     </aside>
   );

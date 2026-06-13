@@ -45,7 +45,7 @@ export default function CodeImporter() {
   );
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-row">
+    <div className="flex w-full flex-col gap-4 lg:flex-row">
       {/* Zone 1 (links): Code-Eingabe, manuell einklappbar. shrink-0, damit bei
           Platzmangel die Preview schrumpft, nicht dieses Panel. */}
       <section
@@ -136,12 +136,12 @@ export default function CodeImporter() {
             Live-Preview (sandboxed)
           </h2>
         </div>
-        <div className="p-3">
+        <div className="flex flex-1 flex-col p-3">
           <iframe
             title="preview"
             srcDoc={debouncedCode}
             sandbox=""
-            className="h-[32rem] w-full rounded-lg border border-gray-300 bg-white"
+            className="h-full min-h-[32rem] w-full flex-1 rounded-lg border border-gray-300 bg-white"
           />
         </div>
       </section>

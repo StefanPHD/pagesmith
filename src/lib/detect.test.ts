@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { detectElements } from "./detect";
+import { annotateAndDetect, detectElements } from "./detect";
 
 // Aus dem Projekt-Root aufgeloest: import.meta.url ist im jsdom-Env keine
 // file://-URL, daher bewusst ueber den cwd der Test-Runs.
@@ -85,5 +85,41 @@ describe("detectElements – echte Landingpage (Fixture)", () => {
       .map((e) => e.label);
     expect(linkLabels).not.toContain("Programm sichern – 49 €");
     expect(linkLabels).not.toContain("Pro waehlen");
+  });
+});
+
+describe("annotateAndDetect – IDs & Annotation", () => {
+  it("vergibt eindeutige IDs el-0..el-n in Dokument-Reihenfolge", () => {
+    const { elements } = annotateAndDetect(fixture);
+    const ids = elements.map((e) => e.id);
+    expect(ids).toEqual(elements.map((_, i) => `el-${i}`));
+    expect(new Set(ids).size).toBe(ids.length); // alle eindeutig
+  });
+
+  it("ist deterministisch: zwei Aufrufe liefern identische IDs", () => {
+    const a = annotateAndDetect(fixture).elements.map((e) => e.id);
+    const b = annotateAndDetect(fixture).elements.map((e) => e.id);
+    expect(a).toEqual(b);
+  });
+
+  it("schreibt data-pagesmith-id passend zu den Element-IDs ins HTML", () => {
+    const { html, elements } = annotateAndDetect(
+      '<button>Kaufen</button><a href="/x">Mehr</a>'
+    );
+    for (const el of elements) {
+      expect(html).toContain(`${"data-pagesmith-id"}="${el.id}"`);
+    }
+  });
+
+  it("injiziert das Listener-Script ins HTML", () => {
+    const { html } = annotateAndDetect("<button>Kaufen</button>");
+    expect(html).toContain("ELEMENT_CLICKED");
+    expect(html).toContain("addEventListener");
+    expect(html).toContain("<script>");
+  });
+
+  it("liefert fuer leeren/whitespace Input leeres HTML + keine Elemente", () => {
+    expect(annotateAndDetect("")).toEqual({ html: "", elements: [] });
+    expect(annotateAndDetect("   \n\t ")).toEqual({ html: "", elements: [] });
   });
 });

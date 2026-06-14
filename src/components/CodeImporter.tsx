@@ -97,8 +97,9 @@ export default function CodeImporter() {
 
   // Sync + Post: einzige Brücke State -> iframe. Idempotentes Highlight im
   // iframe macht das wiederholte Senden nach einem ELEMENT_CLICKED flackerfrei.
-  // cameFromIframeRef steuert (einmal gelesen) BEIDE Scrolls konsistent: nach
-  // einem iframe-Klick wird weder im iframe noch in der Liste gescrollt.
+  // cameFromIframeRef gated NUR das iframe-Scrollen (sonst springt die Vorschau
+  // beim iframe-Klick) – das Listen-Scrollen feuert bewusst IMMER, damit ein
+  // weit unten liegender Eintrag auch bei Auswahl aus dem iframe sichtbar wird.
   useEffect(() => {
     selectedIdRef.current = selectedElementId;
     const fromIframe = cameFromIframeRef.current;
@@ -108,9 +109,9 @@ export default function CodeImporter() {
       { type: "SET_SELECTED_ID", elementId: selectedElementId, scroll },
       "*"
     );
-    if (scroll) {
-      activeItemRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
+    // Entkoppelt vom Gating: Listen-Eintrag immer in den sichtbaren Bereich
+    // holen (no-op, wenn schon sichtbar oder nichts ausgewaehlt).
+    activeItemRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [selectedElementId]);
 
   return (

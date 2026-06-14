@@ -110,8 +110,9 @@ export default function CodeImporter() {
       "*"
     );
     // Entkoppelt vom Gating: Listen-Eintrag immer in den sichtbaren Bereich
-    // holen (no-op, wenn schon sichtbar oder nichts ausgewaehlt).
-    activeItemRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    // holen. block:'center' -> aktiver Eintrag steht als fixer Orientierungs-
+    // punkt moeglichst mittig (no-op, wenn nichts ausgewaehlt).
+    activeItemRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [selectedElementId]);
 
   return (
@@ -166,9 +167,7 @@ export default function CodeImporter() {
             <h2 className="mb-2 text-sm font-medium text-gray-700">
               Erkannte Elemente ({elements.length})
             </h2>
-            {/* p-1: Platz, damit der ring-2 des aktiven Items im scrollenden
-                Container nicht abgeschnitten wird. */}
-            <div className="flex max-h-48 flex-col gap-2 overflow-y-auto p-1">
+            <div className="flex max-h-48 flex-col gap-2 overflow-y-auto">
               {elements.length === 0 && (
                 <p className="text-sm text-gray-400">
                   Noch nichts erkannt – paste Code oben rein.
@@ -185,7 +184,7 @@ export default function CodeImporter() {
                     ref={isSelected ? activeItemRef : null}
                     onClick={() => setSelectedElementId(el.id)}
                     className={`flex w-full cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-left text-sm focus:outline-none ${typeStyles[el.type]} ${
-                      isSelected ? "ring-2 ring-blue-500" : ""
+                      isSelected ? "ring-2 ring-inset ring-blue-500" : ""
                     }`}
                   >
                     <span className="rounded bg-white/60 px-1.5 py-0.5 font-mono text-xs">

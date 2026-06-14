@@ -118,6 +118,18 @@ describe("annotateAndDetect – IDs & Annotation", () => {
     expect(html).toContain("<script>");
   });
 
+  it("injiziert das Highlight-Style-Tag (.pagesmith-highlight via outline)", () => {
+    const { html } = annotateAndDetect("<button>Kaufen</button>");
+    expect(html).toContain(".pagesmith-highlight");
+    expect(html).toContain("outline");
+  });
+
+  it("injiziert den SET_SELECTED_ID-Handler und den IFRAME_READY-Handshake", () => {
+    const { html } = annotateAndDetect("<button>Kaufen</button>");
+    expect(html).toContain("SET_SELECTED_ID");
+    expect(html).toContain("IFRAME_READY");
+  });
+
   it("liefert fuer leeren/whitespace Input leeres HTML + keine Elemente", () => {
     expect(annotateAndDetect("")).toEqual({ html: "", elements: [] });
     expect(annotateAndDetect("   \n\t ")).toEqual({ html: "", elements: [] });

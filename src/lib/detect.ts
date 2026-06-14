@@ -23,6 +23,13 @@ const MAX_LABEL = 60;
 
 const PAGESMITH_ID_ATTR = "data-pagesmith-id";
 
+// Klasse + Style fuer das Auswahl-Highlight im Preview-iframe. Bewusst NUR
+// outline (kein border) -> kein Layout-Jump beim Markieren. Das <style>-Tag wird
+// als LETZTES Element im <head> injiziert, damit dieses !important-outline gegen
+// evtl. eigene !important-outline-Regeln des gepasteten Codes gewinnt.
+const HIGHLIGHT_CLASS = "pagesmith-highlight";
+const HIGHLIGHT_STYLE = `.${HIGHLIGHT_CLASS} { outline: 3px solid #3b82f6 !important; outline-offset: 2px !important; }`;
+
 // Buttons inkl. role="button" und allen klickbaren Input-Typen.
 // input[type=submit|button|image] decken die HTML-Button-Varianten ab.
 const BUTTON_SELECTOR =
@@ -60,6 +67,25 @@ const LISTENER_SCRIPT = `(function () {
     },
     true
   );
+  // Rueck-Bruecke (Liste -> iframe): Parent diktiert die Auswahl. Idempotent:
+  // erst die bisherige Markierung entfernen, dann ggf. neu setzen. elementId
+  // === null bedeutet: alles deselektieren. Gescrollt wird NUR, wenn der Parent
+  // scroll:true sendet (Auswahl aus der Liste) – nicht beim Klick im iframe.
+  window.addEventListener("message", function (e) {
+    var d = e.data;
+    if (!d || d.type !== "SET_SELECTED_ID") return;
+    var prev = document.querySelector(".${HIGHLIGHT_CLASS}");
+    if (prev) prev.classList.remove("${HIGHLIGHT_CLASS}");
+    if (d.elementId == null) return;
+    var el = document.querySelector('[${PAGESMITH_ID_ATTR}="' + d.elementId + '"]');
+    if (!el) return;
+    el.classList.add("${HIGHLIGHT_CLASS}");
+    if (d.scroll) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+  // READY-Handshake gegen Race Conditions: nach jedem srcDoc-Reload meldet sich
+  // das frische iframe EINMAL beim Parent, der dann die aktuelle Auswahl
+  // zuruecksendet. Kein Timing-Raten via setTimeout.
+  window.parent.postMessage({ type: "IFRAME_READY" }, "*");
 })();`;
 
 /**
@@ -141,6 +167,12 @@ export function annotateAndDetect(html: string): PreparedPreview {
       el.setAttribute(PAGESMITH_ID_ATTR, id);
       elements.push({ id, ...classified });
     });
+
+    // Highlight-Style als LETZTES Element in den <head> -> gewinnt die
+    // Spezifitaets-/Reihenfolge-Schlacht gegen evtl. outline-Regeln des Fremdcodes.
+    const style = doc.createElement("style");
+    style.textContent = HIGHLIGHT_STYLE;
+    doc.head.appendChild(style);
 
     // Listener-Script ans Ende des Body haengen (laeuft nach dem Aufbau des DOM).
     const script = doc.createElement("script");

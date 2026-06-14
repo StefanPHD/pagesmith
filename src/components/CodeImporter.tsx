@@ -109,10 +109,14 @@ export default function CodeImporter() {
       { type: "SET_SELECTED_ID", elementId: selectedElementId, scroll },
       "*"
     );
-    // Entkoppelt vom Gating: Listen-Eintrag immer in den sichtbaren Bereich
-    // holen. block:'center' -> aktiver Eintrag steht als fixer Orientierungs-
-    // punkt moeglichst mittig (no-op, wenn nichts ausgewaehlt).
-    activeItemRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Listen-Scroll feuert IMMER, nur der block-Wert haengt von der Herkunft ab
+    // (fromIframe oben gelesen, vor dem Reset): Auswahl aus dem iframe ->
+    // 'center' (aktiver Eintrag als Orientierungspunkt mittig); Auswahl aus der
+    // Liste selbst -> 'nearest' (gerade angeklicktes Item nicht wegzentrieren).
+    activeItemRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: fromIframe ? "center" : "nearest",
+    });
   }, [selectedElementId]);
 
   return (

@@ -32,6 +32,14 @@ export default function CodeImporter() {
   );
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  // Ref auf das aktuell ausgewaehlte Listen-Item -> Forward-Bridge-Scroll.
+  const activeItemRef = useRef<HTMLButtonElement>(null);
+  // Spiegelt selectedElementId fuer den []-deps Message-Listener (sonst stale
+  // closure beim IFRAME_READY-Antworten).
+  const selectedIdRef = useRef<string | null>(null);
+  // Markiert, ob die letzte Auswahl aus einem iframe-Klick stammt. Steuert (in
+  // beide Richtungen, eine Quelle), ob gescrollt wird: bei iframe-Klick NICHT.
+  const cameFromIframeRef = useRef(false);
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedCode(code), DEBOUNCE_MS);
@@ -69,12 +77,41 @@ export default function CodeImporter() {
   useEffect(() => {
     function onMessage(e: MessageEvent) {
       if (e.source !== iframeRef.current?.contentWindow) return;
-      if (e.data?.type !== "ELEMENT_CLICKED") return;
-      setSelectedElementId(e.data.elementId ?? null);
+      const d = e.data;
+      if (d?.type === "ELEMENT_CLICKED") {
+        // Vorwaerts-Bruecke (iframe -> Liste): Auswahl kam aus dem iframe.
+        cameFromIframeRef.current = true;
+        setSelectedElementId(d.elementId ?? null);
+      } else if (d?.type === "IFRAME_READY") {
+        // Re-Sync nach jedem srcDoc-Reload: aktuelle Auswahl zuruecksenden.
+        // selectedIdRef statt State -> kein stale closure trotz []-deps.
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: "SET_SELECTED_ID", elementId: selectedIdRef.current, scroll: false },
+          "*"
+        );
+      }
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
   }, []);
+
+  // Sync + Post: einzige Brücke State -> iframe. Idempotentes Highlight im
+  // iframe macht das wiederholte Senden nach einem ELEMENT_CLICKED flackerfrei.
+  // cameFromIframeRef steuert (einmal gelesen) BEIDE Scrolls konsistent: nach
+  // einem iframe-Klick wird weder im iframe noch in der Liste gescrollt.
+  useEffect(() => {
+    selectedIdRef.current = selectedElementId;
+    const fromIframe = cameFromIframeRef.current;
+    cameFromIframeRef.current = false;
+    const scroll = !fromIframe;
+    iframeRef.current?.contentWindow?.postMessage(
+      { type: "SET_SELECTED_ID", elementId: selectedElementId, scroll },
+      "*"
+    );
+    if (scroll) {
+      activeItemRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [selectedElementId]);
 
   return (
     <div className="flex w-full flex-col gap-4 lg:flex-row">
@@ -128,23 +165,35 @@ export default function CodeImporter() {
             <h2 className="mb-2 text-sm font-medium text-gray-700">
               Erkannte Elemente ({elements.length})
             </h2>
-            <div className="flex max-h-48 flex-col gap-2 overflow-y-auto">
+            {/* p-1: Platz, damit der ring-2 des aktiven Items im scrollenden
+                Container nicht abgeschnitten wird. */}
+            <div className="flex max-h-48 flex-col gap-2 overflow-y-auto p-1">
               {elements.length === 0 && (
                 <p className="text-sm text-gray-400">
                   Noch nichts erkannt – paste Code oben rein.
                 </p>
               )}
-              {elements.map((el, i) => (
-                <div
-                  key={i}
-                  className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${typeStyles[el.type]}`}
-                >
-                  <span className="rounded bg-white/60 px-1.5 py-0.5 font-mono text-xs">
-                    &lt;{el.tag}&gt;
-                  </span>
-                  <span className="truncate">{el.label}</span>
-                </div>
-              ))}
+              {elements.map((el, i) => {
+                const isSelected = el.id === selectedElementId;
+                return (
+                  // text-left + w-full neutralisieren das Button-Default (zentrierter
+                  // Text); bg/Font kommen unveraendert aus typeStyles wie in Phase 1.
+                  <button
+                    key={i}
+                    type="button"
+                    ref={isSelected ? activeItemRef : null}
+                    onClick={() => setSelectedElementId(el.id)}
+                    className={`flex w-full cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-left text-sm focus:outline-none ${typeStyles[el.type]} ${
+                      isSelected ? "ring-2 ring-blue-500" : ""
+                    }`}
+                  >
+                    <span className="rounded bg-white/60 px-1.5 py-0.5 font-mono text-xs">
+                      &lt;{el.tag}&gt;
+                    </span>
+                    <span className="truncate">{el.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

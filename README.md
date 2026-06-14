@@ -10,9 +10,11 @@ to wire it up or host it, things break.
 Pagesmith is a lean hosting & integration layer that turns that static code into
 a functional, revenue-ready page — without the WordPress bloat.
 
-> ⚠️ **Status: early — built in public.** Phase 1 (the HTML scanner & live
-> preview) is done and hardened. Everything below "Roadmap" is planned, not yet
-> built. Follow along as it grows.
+> ⚠️ **Status: early — built in public.** Phase 2 (the Click & Connect
+> workspace) is done: you can select elements in the preview and the selection
+> UI is in place. The actions themselves (Stripe, PayPal, webhooks, tracking,
+> hosting) don't fire yet — those are still planned. Everything below "Roadmap"
+> is not yet built. Follow along as it grows.
 
 ---
 
@@ -34,7 +36,7 @@ lightweight client-side A/B testing.
 
 ---
 
-## What works today (Phase 1)
+## What works today (Phases 1 & 2)
 
 - Paste raw HTML into the editor.
 - Sandboxed live preview (`<iframe sandbox>`).
@@ -43,6 +45,19 @@ lightweight client-side A/B testing.
   SSR-safe, defensive error handling, and per-element de-duplication
   (`<a role="button">` is counted once as a button, never double-counted as a
   link). Covered by unit tests against a real-world landing-page fixture.
+- Three-zone workspace: a collapsible code panel, the live preview in the
+  centre, and an action panel on the right.
+- Click an element directly in the sandboxed preview to select it — a
+  `postMessage` click bridge reports the click back to the app (inline
+  `onclick`/`onsubmit` from the pasted code are neutralised so they can't fire).
+- Bidirectional highlighting between the preview and the element list, kept in
+  sync from a single source of truth: selecting in either place outlines the
+  element in the preview and highlights its entry in the list, and scrolls it
+  into view.
+
+> The action panel currently only displays the selected element. **Assigning
+> and firing actions** (Stripe, PayPal, webhooks, tracking) and **hosting** are
+> not implemented yet — see the roadmap.
 
 ---
 
@@ -83,8 +98,9 @@ npm test
 
 - [x] **Phase 1 — Local-first foundation:** import, sandboxed preview, element
       detection. (done & hardened)
-- [ ] **Phase 2 — Click & Connect:** select an element in the live preview and
-      assign it an action via a workspace panel.
+- [x] **Phase 2 — Click & Connect:** select an element in the live preview via a
+      three-zone workspace with bidirectional preview/list highlighting.
+      (Selection UI done; assigning actions comes in later phases.)
 - [ ] **Phase 3 — Persistence & auth:** save projects and mappings (Supabase).
       Plus consent-gating and dynamic text replacement.
 - [ ] **Phase 4 — Code generation:** original HTML + mappings → "smart" output

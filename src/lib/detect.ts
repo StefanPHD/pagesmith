@@ -4,8 +4,9 @@
 export type ElementType = "button" | "form" | "link";
 
 export type DetectedElement = {
-  // Deterministische, eindeutige ID in Dokument-Reihenfolge ("el-0", "el-1" ...).
-  // Identisch mit dem data-pagesmith-id-Attribut im annotierten Preview-HTML.
+  // Dauerhafte, code-residente ID im Format "ps-" + 6 zufaellige Zeichen
+  // (z.B. "ps-a1b2c3"). Lebt als data-pagesmith-id-Attribut im Code und bleibt
+  // ueber Edits stabil (siehe stabilizeIds). NICHT positionsbasiert.
   id: string;
   type: ElementType;
   tag: string;
@@ -22,6 +23,30 @@ export type PreparedPreview = {
 const MAX_LABEL = 60;
 
 const PAGESMITH_ID_ATTR = "data-pagesmith-id";
+
+// ID-Format (endgueltige Owner-Entscheidung): IMMER selbst generiert,
+// "ps-" + 6 Zeichen aus [a-z0-9]. User-id="..."-Attribute werden NIE
+// wiederverwendet (nicht eindeutig, vom User aenderbar) – unsere ID ist isoliert.
+const PS_ID_RE = /^ps-[a-z0-9]{6}$/;
+const PS_ID_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
+const PS_ID_LEN = 6;
+
+// Nicht-kryptografisch (IDs sind keine Secrets); Eindeutigkeit im Dokument
+// stellt freshUniqueId per Re-Roll sicher.
+function generatePsId(): string {
+  let s = "ps-";
+  for (let i = 0; i < PS_ID_LEN; i++) {
+    s += PS_ID_CHARS[Math.floor(Math.random() * PS_ID_CHARS.length)];
+  }
+  return s;
+}
+
+// Wuerfelt so lange, bis die ID im aktuellen Dokument noch nicht vergeben ist.
+function freshUniqueId(used: Set<string>): string {
+  let id = generatePsId();
+  while (used.has(id)) id = generatePsId();
+  return id;
+}
 
 // Klasse + Style fuer das Auswahl-Highlight im Preview-iframe. Bewusst NUR
 // outline (kein border) -> kein Layout-Jump beim Markieren. Das <style>-Tag wird
@@ -136,10 +161,84 @@ function classify(el: Element): Omit<DetectedElement, "id"> | null {
 }
 
 /**
+ * ID-Stabilisierung (mutiert das DOM): stellt sicher, dass jedes verknuepfbare
+ * Element eine eindeutige, gueltige data-pagesmith-id traegt. Drei-Fall-Logik
+ * in Dokument-Reihenfolge:
+ * - Bekannt:    gueltige, noch nicht gesehene ps-ID -> unveraendert uebernehmen.
+ * - Neu:        keine/ungueltige ID -> frische ps-ID generieren und schreiben.
+ * - Dupliziert: gueltige, aber schon vergebene ID -> erstes Vorkommen behaelt
+ *               sie, dieses bekommt eine frische (faellt mit "Neu" zusammen).
+ * Bewusst OHNE Klassifikation/Injektion – reine ID-Phase, getrennt von Detection.
+ */
+function stabilizeDoc(doc: Document): void {
+  const used = new Set<string>();
+  doc.querySelectorAll(CANDIDATE_SELECTOR).forEach((el) => {
+    const current = el.getAttribute(PAGESMITH_ID_ATTR);
+    if (current && PS_ID_RE.test(current) && !used.has(current)) {
+      used.add(current); // Fall "Bekannt"
+      return;
+    }
+    const id = freshUniqueId(used); // Fall "Neu" / "Dupliziert"
+    el.setAttribute(PAGESMITH_ID_ATTR, id);
+    used.add(id);
+  });
+}
+
+/**
+ * Liest die verknuepfbaren Elemente aus einem bereits stabilisierten DOM. Die ID
+ * stammt aus dem data-pagesmith-id-Attribut (von stabilizeDoc garantiert).
+ * Mutiert NICHT – reine Detection, getrennt von der ID-Phase.
+ * Dedupliziert pro DOM-Element (role=button-Anchor zaehlt einmal als Button).
+ */
+function collectElements(doc: Document): DetectedElement[] {
+  const elements: DetectedElement[] = [];
+  doc.querySelectorAll(CANDIDATE_SELECTOR).forEach((el) => {
+    const classified = classify(el);
+    if (!classified) return;
+    const id = el.getAttribute(PAGESMITH_ID_ATTR);
+    if (!id) return; // defensiv – stabilizeDoc stellt die ID sicher
+    elements.push({ id, ...classified });
+  });
+  return elements;
+}
+
+/**
+ * Schreibt die stabilen data-pagesmith-id-Attribute dauerhaft in den Code ("Weg
+ * B") und gibt das so angereicherte QUELL-HTML zurueck – OHNE Highlight-Style
+ * oder Listener-Script (anders als annotateAndDetect). Idempotent: bereits
+ * gesetzte ps-IDs bleiben identisch, nur neue Elemente bekommen neue IDs; das
+ * Einfuegen/Entfernen ANDERER Elemente verschiebt eine bestehende ID nicht.
+ *
+ * Defensive Garantien (eine code-mutierende Funktion darf User-Code NIE
+ * vernichten):
+ * - Leerer/whitespace Input -> "".
+ * - Fehlender DOMParser (SSR) -> html UNVERAENDERT durch.
+ * - Unerwarteter Fehler -> html UNVERAENDERT durch.
+ */
+export function stabilizeIds(html: string): string {
+  if (!html || !html.trim()) return "";
+
+  // SSR-Schutz: ohne DOMParser koennen wir nicht stabilisieren – Code unberuehrt
+  // zurueckgeben, statt ihn zu verlieren.
+  if (typeof DOMParser === "undefined") return html;
+
+  try {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    stabilizeDoc(doc);
+    return `<!DOCTYPE html>${doc.documentElement.outerHTML}`;
+  } catch {
+    return html;
+  }
+}
+
+/**
  * Quelle der Wahrheit: parst rohes HTML (z.B. aus Claude/v0/Bolt) GENAU EINMAL
  * und liefert sowohl die erkannten Elemente als auch das fuer das Preview-iframe
  * vorbereitete HTML (jedes Element traegt data-pagesmith-id, Listener-Script
  * injiziert). Dadurch ist die ID in der Liste identisch mit der im iframe.
+ *
+ * Intern zwei getrennte Phasen auf EINEM Parse: erst stabilizeDoc (sichert die
+ * IDs), dann collectElements (liest + klassifiziert).
  *
  * Defensive Garantien (Phase-1-Haertung bleibt erhalten):
  * - Wirft NIE. Leerer/whitespace Input -> leere Liste + sicheres (leeres) HTML.
@@ -156,17 +255,10 @@ export function annotateAndDetect(html: string): PreparedPreview {
 
   try {
     const doc = new DOMParser().parseFromString(html, "text/html");
-    const elements: DetectedElement[] = [];
 
-    // Eine einzige Traversierung in Dokument-Reihenfolge: vergibt fortlaufende
-    // IDs und annotiert jedes erkannte Element direkt im DOM.
-    doc.querySelectorAll(CANDIDATE_SELECTOR).forEach((el) => {
-      const classified = classify(el);
-      if (!classified) return;
-      const id = `el-${elements.length}`;
-      el.setAttribute(PAGESMITH_ID_ATTR, id);
-      elements.push({ id, ...classified });
-    });
+    // Phase 1: IDs sicherstellen (mutiert). Phase 2: Elemente lesen (read-only).
+    stabilizeDoc(doc);
+    const elements = collectElements(doc);
 
     // Highlight-Style als LETZTES Element in den <head> -> gewinnt die
     // Spezifitaets-/Reihenfolge-Schlacht gegen evtl. outline-Regeln des Fremdcodes.

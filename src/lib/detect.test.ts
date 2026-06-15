@@ -1,7 +1,10 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { annotateAndDetect, detectElements } from "./detect";
+import { annotateAndDetect, detectElements, stabilizeIds } from "./detect";
+
+// Format der code-residenten ps-IDs: "ps-" + 6x [a-z0-9].
+const PS_ID_RE = /^ps-[a-z0-9]{6}$/;
 
 // Aus dem Projekt-Root aufgeloest: import.meta.url ist im jsdom-Env keine
 // file://-URL, daher bewusst ueber den cwd der Test-Runs.
@@ -89,17 +92,11 @@ describe("detectElements – echte Landingpage (Fixture)", () => {
 });
 
 describe("annotateAndDetect – IDs & Annotation", () => {
-  it("vergibt eindeutige IDs el-0..el-n in Dokument-Reihenfolge", () => {
+  it("vergibt eindeutige ps-IDs im gueltigen Format", () => {
     const { elements } = annotateAndDetect(fixture);
     const ids = elements.map((e) => e.id);
-    expect(ids).toEqual(elements.map((_, i) => `el-${i}`));
+    for (const id of ids) expect(id).toMatch(PS_ID_RE);
     expect(new Set(ids).size).toBe(ids.length); // alle eindeutig
-  });
-
-  it("ist deterministisch: zwei Aufrufe liefern identische IDs", () => {
-    const a = annotateAndDetect(fixture).elements.map((e) => e.id);
-    const b = annotateAndDetect(fixture).elements.map((e) => e.id);
-    expect(a).toEqual(b);
   });
 
   it("schreibt data-pagesmith-id passend zu den Element-IDs ins HTML", () => {
@@ -133,5 +130,83 @@ describe("annotateAndDetect – IDs & Annotation", () => {
   it("liefert fuer leeren/whitespace Input leeres HTML + keine Elemente", () => {
     expect(annotateAndDetect("")).toEqual({ html: "", elements: [] });
     expect(annotateAndDetect("   \n\t ")).toEqual({ html: "", elements: [] });
+  });
+});
+
+describe("stabilizeIds – code-residente, stabile ps-IDs (3.0)", () => {
+  // (a) Neu: verknuepfbares Element ohne ID bekommt eine frische ps-ID.
+  it("(a) vergibt einem neuen Element eine ps-ID", () => {
+    const { elements } = annotateAndDetect("<button>Kaufen</button>");
+    expect(elements).toHaveLength(1);
+    expect(elements[0].id).toMatch(PS_ID_RE);
+  });
+
+  // (b) Stabilitaet: derselbe (bereits stabilisierte) Code zweimal durch die
+  // Funktion -> IDs IDENTISCH. Nur neue Elemente bekommen neue IDs.
+  it("(b) haelt bestehende ps-IDs ueber wiederholte Laeufe identisch", () => {
+    const once = stabilizeIds(fixture);
+    const idsAfterOnce = detectElements(once).map((e) => e.id);
+    const twice = stabilizeIds(once);
+    const idsAfterTwice = detectElements(twice).map((e) => e.id);
+    expect(idsAfterTwice).toEqual(idsAfterOnce);
+  });
+
+  // (b') Einfuegen ANDERER Elemente verschiebt eine bestehende ID NICHT.
+  it("(b') laesst bestehende IDs unveraendert, wenn andere Elemente dazukommen", () => {
+    const stable = stabilizeIds("<button>Kaufen</button>");
+    const originalId = detectElements(stable)[0].id;
+
+    // Ein weiteres Element VOR dem bestehenden einfuegen und neu stabilisieren.
+    const grown = stabilizeIds(`<a href="/neu">Neu</a>${stable}`);
+    const ids = detectElements(grown).map((e) => e.id);
+
+    expect(ids).toContain(originalId); // bestehende ID bleibt erhalten
+    expect(ids).toHaveLength(2);
+    expect(new Set(ids).size).toBe(2); // neue ID ist eine andere
+  });
+
+  // (c) Bekannt: vorbestehende gueltige ps-ID wird uebernommen, nicht neu vergeben.
+  it("(c) uebernimmt eine vorbestehende gueltige ps-ID unveraendert", () => {
+    const { elements } = annotateAndDetect(
+      '<button data-pagesmith-id="ps-abc123">Kaufen</button>'
+    );
+    expect(elements).toHaveLength(1);
+    expect(elements[0].id).toBe("ps-abc123");
+  });
+
+  // (d) Dupliziert: gleiche ID mehrfach -> erstes Vorkommen behaelt, Rest frisch;
+  // danach ist jede ID eindeutig.
+  it("(d) loest duplizierte ps-IDs auf, sodass jede ID eindeutig ist", () => {
+    const { elements } = annotateAndDetect(
+      '<button data-pagesmith-id="ps-abc123">A</button>' +
+        '<button data-pagesmith-id="ps-abc123">B</button>'
+    );
+    expect(elements).toHaveLength(2);
+    expect(elements[0].id).toBe("ps-abc123"); // erstes Vorkommen behaelt
+    expect(elements[1].id).toMatch(PS_ID_RE);
+    expect(elements[1].id).not.toBe("ps-abc123"); // zweites neu + eindeutig
+  });
+
+  // (e) User-id="..." wird NIE wiederverwendet; bleibt im Code unberuehrt.
+  it("(e) ignoriert das user-id-Attribut und vergibt eine eigene ps-ID", () => {
+    const { html, elements } = annotateAndDetect('<button id="buy-now">X</button>');
+    expect(elements[0].id).toMatch(PS_ID_RE);
+    expect(elements[0].id).not.toBe("buy-now");
+    expect(html).toContain('id="buy-now"'); // user-Attribut unangetastet
+  });
+
+  // Ungueltiges/altes Format (z.B. Legacy "el-0") gilt als "Neu" -> neu vergeben.
+  it("behandelt ungueltige/alte IDs (el-N) wie 'Neu' und vergibt eine ps-ID", () => {
+    const { elements } = annotateAndDetect(
+      '<button data-pagesmith-id="el-0">Alt</button>'
+    );
+    expect(elements[0].id).toMatch(PS_ID_RE);
+    expect(elements[0].id).not.toBe("el-0");
+  });
+
+  // Defensive Garantie: eine code-mutierende Funktion darf User-Code nie loeschen.
+  it("liefert '' fuer leeren/whitespace Input", () => {
+    expect(stabilizeIds("")).toBe("");
+    expect(stabilizeIds("   \n\t ")).toBe("");
   });
 });

@@ -83,10 +83,11 @@ sichtbar als "verwaist" angezeigt (C). Der User darf seinen Code explizit auch
 extern bearbeiten — deshalb ist das C-Netz Pflicht, nicht optional.
 
 ### Sub-Phasen
-- 3.0 Stabile Element-IDs (rein lokal in detect.ts, KEIN Server) <- ZUERST
-- 3.1 Supabase-Setup + Auth (E-Mail/Passwort, Session)
-- 3.2 Datenmodell + ein Projekt speichern/laden (RLS von der ersten Zeile an)
-- 3.3 Projekt-Liste + verwaiste Mappings sichtbar machen (C-Netz im UI)
+- [x] 3.0 Stabile Element-IDs (rein lokal in detect.ts, KEIN Server) — fertig,
+      getestet: code-residente ps-IDs (ps-XXXXXX) ersetzen die el-N-ID.
+- [ ] 3.1 Supabase-Setup + Auth (E-Mail/Passwort, Session) <- NÄCHSTER SCHRITT
+- [ ] 3.2 Datenmodell + ein Projekt speichern/laden (RLS von der ersten Zeile an)
+- [ ] 3.3 Projekt-Liste + verwaiste Mappings sichtbar machen (C-Netz im UI)
 
 ### Schritt 3.0 — Stabile Element-IDs (Detail)
 Problem: el-N ist positionsbasiert und verschiebt sich bei jedem Code-Edit ->
@@ -110,6 +111,41 @@ bleiben unverändert — die Brücke darf nur voraussetzen, dass jede ID eindeut
 und im Attribut vorhanden ist, nicht ihr Format.
 NICHT in 3.0: der "verwaiste Mapping"-Fall (gespeicherte ID fehlt im Code) —
 der gehört zu 3.2/3.3, nicht hierher.
+
+### Schritt 3.1 — Supabase-Setup + Auth
+Ziel: Fundament für Persistenz. User kann sich registrieren, einloggen,
+ausloggen; die App kennt server-seitig den User. NOCH KEINE Projekt-Tabelle,
+NOCH KEIN Speichern — das ist 3.2. 3.1 bleibt bewusst klein.
+
+Owner-Entscheidungen (endgültig):
+- Auth-Session: server-seitig via Cookies mit dem offiziellen @supabase/ssr-Muster
+  (nicht client-only). Grund: 3.2 braucht server-seitige Identität für
+  Persistenz + ID-Write-back.
+- Login: E-Mail + Passwort.
+- Zugang: ALLES hinter Login (auch der Editor). Genau eine Schutzregel: nicht
+  eingeloggt -> Redirect auf /login.
+- E-Mail-Bestätigung: fürs MVP AUSGESCHALTET (sofort eingeloggt). Bewusste
+  MVP-Abkürzung.
+
+WICHTIG vor Launch (TODO, nicht vergessen): E-Mail-Bestätigung wieder
+einschalten, bevor Pagesmith öffentlich live geht.
+
+Sicherheits-Prinzipien (gelten ab jetzt für ganz Phase 3):
+- Secrets-Disziplin: nur NEXT_PUBLIC_SUPABASE_URL und NEXT_PUBLIC_SUPABASE_ANON_KEY
+  in .env.local (für den Browser bestimmt, durch RLS abgesichert). Der
+  service_role-Key kommt NIEMALS in Client-Code oder ins Repo. .env.local muss in
+  .gitignore stehen. Keine echten Keys in Commits.
+- RLS-Prinzip: Row Level Security wird mit jeder Tabelle ZUSAMMEN aktiviert, nie
+  "später". (Greift ab 3.2, wenn Tabellen entstehen — hier als Prinzip festhalten.)
+
+Architektur-Bausteine für 3.1 (Vorausblick, Detail folgt im Build-Schritt):
+getrennter Browser- und Server-Supabase-Client unter src/lib/supabase/,
+middleware.ts für Session-Refresh + Auth-Gate, eine Login/Signup-Seite,
+Logout-Aktion. Der bestehende Editor (Phase 1–3.0) wird NICHT verändert, nur
+hinter das Login-Gate verschoben.
+Bekannte Stolperfalle: das @supabase/ssr-Cookie-Handling in der Middleware ist
+fehleranfällig — strikt das offizielle, aktuelle Muster verwenden, nicht
+improvisieren.
 
 ## Advanced Features (nach Phase 3, Vorausblick)
 - DSGVO/Cookie-Consent-Gate: Checkbox im Action-Panel "Erst feuern nach Consent".
@@ -144,5 +180,6 @@ der gehört zu 3.2/3.3, nicht hierher.
 
 ## Immer beachten
 - Erst der nutzbare Kern, dann Infrastruktur.
-- Importierter User-Code läuft NUR im sandboxed iframe (sandbox=""), nie ungesandboxt.
+- Importierter User-Code läuft NUR im sandboxed iframe (sandbox="allow-scripts",
+  niemals allow-same-origin), nie ungesandboxt.
 - Vor neuer Phase: kurz bestätigen, dass die vorige demobar lief.

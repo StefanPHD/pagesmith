@@ -29,9 +29,11 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
 - [x] Phase 1 — Lokales Grundgerüst: Import, Sandbox-iframe-Preview, Erkennung
       von Buttons/Forms/Links. Alles in React-State, kein Server. Scanner steht
       in src/components/CodeImporter.tsx.
-- [ ] Phase 2 — Click & Connect (NÄCHSTER SCHRITT). Siehe Detail-Block unten.
-- [ ] Phase 3 — Persistenz & Auth (Supabase) + Advanced Features (Consent-Gate,
-      DTR). Projekte + Mappings speichern. Siehe Detail-Block unten.
+- [x] Phase 2 — Click & Connect: Drei-Zonen-Workspace, postMessage-Klick-Brücke,
+      bidirektionales Highlighting. Siehe Detail-Block unten.
+- [ ] Phase 3 — Persistenz & Auth (Supabase) (NÄCHSTER SCHRITT). Projekte +
+      Mappings speichern, stabile Element-IDs als Fundament. Siehe Detail-Block
+      unten. Advanced Features (Consent-Gate, DTR) folgen danach.
 - [ ] Phase 4 — Code-Generierung (Cheerio): Original-HTML + Mappings -> "smartes"
       Output-HTML mit injiziertem JS (Payment-Trigger, Webhook-POST, DTR-Logik).
 - [ ] Phase 5 — Server-Side Tracking (CAPI): Next.js API-Route als Tracking-Proxy
@@ -67,7 +69,49 @@ LEAD-GEN & AUTOMATION (E-Mail-Marketing):
   Wir bauen KEINE Direkt-Connectoren pro Anbieter — der Webhook ist die
   universelle, schlanke Brücke.
 
-## Phase 3 — Advanced Features (Vorausblick)
+## Phase 3 — Persistenz & Auth
+Erster Schritt mit Server/DB. Prioritäten (vom Owner festgelegt): 1. sauberes
+Datenmodell, 2. Sicherheit/RLS, 3. erst dann Sichtbares. Wird in Sub-Phasen
+gebaut, nicht in einem Rutsch. Login-Methode: E-Mail + Passwort (Supabase Auth).
+
+Kernentscheidung (gilt für ganz Phase 3): Gespeicherte Mappings hängen an einer
+STABILEN, code-residenten Element-ID, nicht an der positionsbasierten el-N-ID.
+Strategie "Weg B + C als Netz": die stabile ID wird dauerhaft in den HTML-Code
+geschrieben (B); wenn eine gespeicherte ID im Code nicht mehr auffindbar ist
+(z.B. extern gelöscht), wird das Mapping NICHT still repariert, sondern dem User
+sichtbar als "verwaist" angezeigt (C). Der User darf seinen Code explizit auch
+extern bearbeiten — deshalb ist das C-Netz Pflicht, nicht optional.
+
+### Sub-Phasen
+- 3.0 Stabile Element-IDs (rein lokal in detect.ts, KEIN Server) <- ZUERST
+- 3.1 Supabase-Setup + Auth (E-Mail/Passwort, Session)
+- 3.2 Datenmodell + ein Projekt speichern/laden (RLS von der ersten Zeile an)
+- 3.3 Projekt-Liste + verwaiste Mappings sichtbar machen (C-Netz im UI)
+
+### Schritt 3.0 — Stabile Element-IDs (Detail)
+Problem: el-N ist positionsbasiert und verschiebt sich bei jedem Code-Edit ->
+als Speicher-Schlüssel wertlos.
+Ziel: jedes verknüpfbare Element trägt eine dauerhafte data-pagesmith-id, die im
+Code lebt und sich beim Einfügen/Entfernen ANDERER Elemente nicht verschiebt.
+ID-Format (Owner-Entscheidung, endgültig): IMMER selbst generiert, "ps-" + 6
+zufällige Zeichen. NIEMALS die id="..."-Attribute des Users wiederverwenden
+(nicht eindeutig, vom User änderbar). Unsere ID ist isoliert und unberührbar.
+Drei-Fall-Logik beim Parsen:
+- Bekannt: gültige data-pagesmith-id vorhanden -> unverändert übernehmen.
+- Neu: verknüpfbar, aber keine/ungültige ID -> frische ps-XXXXXX generieren und
+  als Attribut schreiben.
+- Dupliziert: dieselbe ID mehrfach im Code -> erstes Vorkommen behalten, weitere
+  wie "Neu" behandeln (frische ID), damit jede ID eindeutig bleibt.
+Architektur-Hinweis: ID-Stabilisierung (verändert den Code) und Element-Detection
+gedanklich getrennt halten, damit detect.ts nicht zum Knäuel wird.
+Regressions-Grenzen: Phase-1-Härtung, Dedup, Dokument-Reihenfolge und die
+komplette Phase-2-Brücke (Klick/Highlight/Handshake, sandbox="allow-scripts")
+bleiben unverändert — die Brücke darf nur voraussetzen, dass jede ID eindeutig
+und im Attribut vorhanden ist, nicht ihr Format.
+NICHT in 3.0: der "verwaiste Mapping"-Fall (gespeicherte ID fehlt im Code) —
+der gehört zu 3.2/3.3, nicht hierher.
+
+## Advanced Features (nach Phase 3, Vorausblick)
 - DSGVO/Cookie-Consent-Gate: Checkbox im Action-Panel "Erst feuern nach Consent".
   Aktionen (v.a. Tracking-Events) werden erst nach erteiltem Consent ausgelöst.
   Kompatibel zu gängigen Cookie-Bannern (Cookiebot, Usercentrics).

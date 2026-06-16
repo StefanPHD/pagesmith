@@ -85,8 +85,12 @@ extern bearbeiten — deshalb ist das C-Netz Pflicht, nicht optional.
 ### Sub-Phasen
 - [x] 3.0 Stabile Element-IDs (rein lokal in detect.ts, KEIN Server) — fertig,
       getestet: code-residente ps-IDs (ps-XXXXXX) ersetzen die el-N-ID.
-- [ ] 3.1 Supabase-Setup + Auth (E-Mail/Passwort, Session) <- NÄCHSTER SCHRITT
+- [x] 3.1 Supabase-Setup + Auth — fertig, manuell verifiziert: @supabase/ssr,
+      server-seitige Session via Cookies, E-Mail/Passwort, Auth-Gate über
+      src/middleware.ts (sperrt alle Routen ausser /login; Session ueberlebt
+      Reload; Account-Wechsel sauber).
 - [ ] 3.2 Datenmodell + ein Projekt speichern/laden (RLS von der ersten Zeile an)
+      <- NÄCHSTER SCHRITT
 - [ ] 3.3 Projekt-Liste + verwaiste Mappings sichtbar machen (C-Netz im UI)
 
 ### Schritt 3.0 — Stabile Element-IDs (Detail)
@@ -146,6 +150,17 @@ hinter das Login-Gate verschoben.
 Bekannte Stolperfalle: das @supabase/ssr-Cookie-Handling in der Middleware ist
 fehleranfällig — strikt das offizielle, aktuelle Muster verwenden, nicht
 improvisieren.
+
+## Polish-Liste (gesammelt für einen späteren, separaten Aufräum-Durchgang)
+Bewusst aufgeschobene Aufräum-Arbeiten — NICHT im laufenden Feature-Schritt
+miterledigen, sondern gebündelt abarbeiten.
+- src/middleware.ts -> proxy.ts umbenennen: Next 16.2.9 zeigt eine
+  Deprecation-Warnung für die "middleware"-Konvention (proxy ist der Nachfolger).
+  Funktioniert weiter, daher unkritisch.
+- src/app/layout.tsx: veraltete "Create Next App"-Metadata (title/description)
+  durch echte Pagesmith-Metadata ersetzen.
+- VOR öffentlichem Launch: E-Mail-Bestätigung in Supabase wieder einschalten
+  (fürs MVP bewusst deaktiviert — siehe TODO in Schritt 3.1).
 
 ## Advanced Features (nach Phase 3, Vorausblick)
 - DSGVO/Cookie-Consent-Gate: Checkbox im Action-Panel "Erst feuern nach Consent".

@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# Beispiel-Datei MIT committen (enthaelt nur leere Variablennamen, keine Keys)
+!.env.local.example
 
 # vercel
 .vercel

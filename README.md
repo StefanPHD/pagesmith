@@ -10,11 +10,12 @@ to wire it up or host it, things break.
 Pagesmith is a lean hosting & integration layer that turns that static code into
 a functional, revenue-ready page — without the WordPress bloat.
 
-> ⚠️ **Status: early — built in public.** Phase 2 (the Click & Connect
-> workspace) is done: you can select elements in the preview and the selection
-> UI is in place. The actions themselves (Stripe, PayPal, webhooks, tracking,
-> hosting) don't fire yet — those are still planned. Everything below "Roadmap"
-> is not yet built. Follow along as it grows.
+> ⚠️ **Status: early — built in public.** Phase 3 (auth + project persistence)
+> is live: you can create an account, log in, and your pasted code is saved per
+> account and reloaded automatically. The Click & Connect workspace lets you
+> select elements in the preview. The actions themselves (Stripe, PayPal,
+> webhooks, tracking, hosting) don't fire yet — those are still planned. Follow
+> along as it grows.
 
 ---
 
@@ -36,8 +37,14 @@ lightweight client-side A/B testing.
 
 ---
 
-## What works today (Phases 1 & 2)
+## What works today (Phases 1–3)
 
+- User accounts: sign up and log in with email + password. The entire editor
+  sits behind a login.
+- Project persistence: your pasted code can be saved per account and is loaded
+  automatically when you open the editor. Each account only sees its own data.
+- Stable element IDs: linkable elements receive durable, code-resident IDs that
+  are written into the saved code.
 - Paste raw HTML into the editor.
 - Sandboxed live preview (`<iframe sandbox>`).
 - Detection of buttons, forms and links, with live counts.
@@ -66,15 +73,23 @@ lightweight client-side A/B testing.
 - [Next.js](https://nextjs.org/) (App Router) + TypeScript
 - Tailwind CSS
 - Native `DOMParser` for in-browser detection (zero dependencies)
+- [Supabase](https://supabase.com/) for auth and persistence (Postgres with
+  row-level security)
 - Vitest + jsdom for unit tests
-- *Planned:* Cheerio (server-side code transformation), Supabase (persistence &
-  auth), Vercel/Netlify API (hosting & custom domains)
+- *Planned:* Cheerio (server-side code transformation), Vercel/Netlify API
+  (hosting & custom domains)
 
 ---
 
 ## Getting started
 
-Requires **Node.js** (developed on v24).
+Requires **Node.js** (developed on v24) and a Supabase project. Put your project
+URL and anon key in `.env.local`:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+```
 
 ```bash
 # install dependencies
@@ -84,8 +99,8 @@ npm install
 npm run dev
 ```
 
-Then open [http://localhost:3000](http://localhost:3000) and paste some HTML
-into the editor.
+Then open [http://localhost:3000](http://localhost:3000). The editor is behind a
+login — create an account, then paste some HTML into the editor.
 
 ```bash
 # run the tests
@@ -101,8 +116,10 @@ npm test
 - [x] **Phase 2 — Click & Connect:** select an element in the live preview via a
       three-zone workspace with bidirectional preview/list highlighting.
       (Selection UI done; assigning actions comes in later phases.)
-- [ ] **Phase 3 — Persistence & auth:** save projects and mappings (Supabase).
-      Plus consent-gating and dynamic text replacement.
+- [x] **Phase 3 — Persistence & auth:** email/password auth behind a login gate,
+      stable element IDs, and per-account project save/auto-load with row-level
+      security (Supabase). (Still open within this phase: project list, surfacing
+      orphaned mappings, consent-gating, dynamic text replacement.)
 - [ ] **Phase 4 — Code generation:** original HTML + mappings → "smart" output
       HTML with injected logic (Cheerio).
 - [ ] **Phase 5 — Server-side tracking:** CAPI proxy for Meta/Google.

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { annotateAndDetect, type ElementType } from "@/lib/detect";
+import { annotateAndDetect, stabilizeIds, type ElementType } from "@/lib/detect";
+import { saveProject } from "@/app/projects/actions";
 import ActionPanel from "@/components/ActionPanel";
 
 // Parsing + iframe-Preview sind die teuren Verbraucher. Sie sollen erst nach
@@ -15,12 +16,27 @@ const typeStyles: Record<ElementType, string> = {
   link: "bg-amber-100 text-amber-800 border-amber-200",
 };
 
-export default function CodeImporter() {
+// Zustaende des Speichern-Buttons. saved faellt per Timeout zurueck auf idle.
+type SaveStatus = "idle" | "saving" | "saved" | "error";
+
+export default function CodeImporter({
+  initialCode = "",
+}: {
+  // Auto-Load aus 3.2: das gespeicherte (bereits stabilisierte) HTML des Users.
+  // Leer -> Editor startet leer wie bisher.
+  initialCode?: string;
+}) {
   // Eingabe-State: aendert sich bei JEDEM Tastendruck und haelt die Textarea
-  // sofort aktuell (Tippen darf nie auf Parsing/Preview warten).
-  const [code, setCode] = useState("");
-  // Debounced-State: speist Parsing + Preview erst nach DEBOUNCE_MS Ruhe.
-  const [debouncedCode, setDebouncedCode] = useState("");
+  // sofort aktuell (Tippen darf nie auf Parsing/Preview warten). Startet mit dem
+  // geladenen Projekt-Code.
+  const [code, setCode] = useState(initialCode);
+  // Debounced-State: speist Parsing + Preview erst nach DEBOUNCE_MS Ruhe. Wird
+  // ebenfalls mit initialCode vorbelegt, damit die geladene Preview ohne
+  // Debounce-Leerschritt sofort da ist.
+  const [debouncedCode, setDebouncedCode] = useState(initialCode);
+  // Status des Speichern-Buttons + letzte Fehlermeldung der Server-Action.
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
   // Linkes Panel manuell ein-/ausklappbar (Auto-Collapse beim Pasten kommt
   // bewusst erst in einem spaeteren Schritt).
   const [isInputCollapsed, setIsInputCollapsed] = useState(false);
@@ -119,6 +135,32 @@ export default function CodeImporter() {
     });
   }, [selectedElementId]);
 
+  // "Gespeichert"-Bestaetigung nach kurzer Zeit zuruecksetzen.
+  useEffect(() => {
+    if (saveStatus !== "saved") return;
+    const id = setTimeout(() => setSaveStatus("idle"), 2000);
+    return () => clearTimeout(id);
+  }, [saveStatus]);
+
+  // Speichern: CLIENT-seitig stabilisieren (nur IDs ins Attribut, OHNE
+  // Script/Style-Injektion) -> ans Server-Action geben -> bei Erfolg das
+  // stabilisierte HTML zurueck in die Textarea spiegeln, damit der User die in
+  // seinen Code geschriebenen ps-IDs SIEHT. stabilizeIds nutzt DOMParser und
+  // laeuft nur hier im Browser zuverlaessig (auf dem Server greift der SSR-Guard).
+  async function handleSave() {
+    setSaveStatus("saving");
+    setSaveError(null);
+    const stabilized = stabilizeIds(code);
+    const result = await saveProject(stabilized);
+    if (result.ok) {
+      setCode(stabilized);
+      setSaveStatus("saved");
+    } else {
+      setSaveError(result.error);
+      setSaveStatus("error");
+    }
+  }
+
   return (
     <div className="flex w-full flex-col gap-4 lg:flex-row">
       {/* Zone 1 (links): Code-Eingabe, manuell einklappbar. shrink-0, damit bei
@@ -216,10 +258,31 @@ export default function CodeImporter() {
           und schrumpft zuerst. Das iframe bleibt an stabiler Baumposition,
           damit Ein-/Ausklappen es nicht neu mountet (kein srcDoc-Reload). */}
       <section className="flex min-w-0 flex-1 flex-col rounded-lg border border-gray-300 bg-white">
-        <div className="border-b border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-between gap-3 border-b border-gray-200 px-4 py-3">
           <h2 className="text-sm font-medium text-gray-700">
             Live-Preview (sandboxed)
           </h2>
+          <div className="flex items-center gap-3">
+            {saveStatus === "error" && saveError && (
+              <span className="truncate text-xs text-red-600" title={saveError}>
+                {saveError}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saveStatus === "saving" || code.trim() === ""}
+              className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {saveStatus === "saving"
+                ? "Speichern…"
+                : saveStatus === "saved"
+                  ? "Gespeichert ✓"
+                  : saveStatus === "error"
+                    ? "Erneut versuchen"
+                    : "Speichern"}
+            </button>
+          </div>
         </div>
         <div className="flex flex-1 flex-col p-3">
           <iframe

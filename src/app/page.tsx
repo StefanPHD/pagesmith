@@ -1,5 +1,6 @@
 import CodeImporter from "@/components/CodeImporter";
 import { signOut } from "@/app/auth/actions";
+import { loadProject } from "@/app/projects/actions";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function Home() {
@@ -7,6 +8,9 @@ export default async function Home() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Auto-Load: das eine gespeicherte Projekt des Users (oder null -> leer).
+  const project = await loadProject();
 
   return (
     <main className="mx-auto w-full max-w-[1800px] px-4 py-8 lg:px-8">
@@ -31,7 +35,7 @@ export default async function Home() {
           </form>
         </div>
       </div>
-      <CodeImporter />
+      <CodeImporter initialCode={project?.html ?? ""} />
     </main>
   );
 }

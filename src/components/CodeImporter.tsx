@@ -30,10 +30,13 @@ export default function CodeImporter({
   // sofort aktuell (Tippen darf nie auf Parsing/Preview warten). Startet mit dem
   // geladenen Projekt-Code.
   const [code, setCode] = useState(initialCode);
-  // Debounced-State: speist Parsing + Preview erst nach DEBOUNCE_MS Ruhe. Wird
-  // ebenfalls mit initialCode vorbelegt, damit die geladene Preview ohne
-  // Debounce-Leerschritt sofort da ist.
-  const [debouncedCode, setDebouncedCode] = useState(initialCode);
+  // Debounced-State: speist Parsing + Preview erst nach DEBOUNCE_MS Ruhe. Startet
+  // bewusst LEER (nicht mit initialCode): annotateAndDetect nutzt DOMParser, der
+  // serverseitig fehlt (SSR-Guard -> leer) und clientseitig parst. Mit initialCode
+  // im ersten Render divergieren Server- und Client-Paint -> Hydration-Mismatch.
+  // Leer startend ist der erste Paint auf beiden Seiten identisch; der vorhandene
+  // Debounce-Effect zieht initialCode beim Mount clientseitig nach.
+  const [debouncedCode, setDebouncedCode] = useState("");
   // Status des Speichern-Buttons + letzte Fehlermeldung der Server-Action.
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [saveError, setSaveError] = useState<string | null>(null);

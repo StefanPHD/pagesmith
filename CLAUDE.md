@@ -89,9 +89,12 @@ extern bearbeiten — deshalb ist das C-Netz Pflicht, nicht optional.
       server-seitige Session via Cookies, E-Mail/Passwort, Auth-Gate über
       src/middleware.ts (sperrt alle Routen ausser /login; Session ueberlebt
       Reload; Account-Wechsel sauber).
-- [ ] 3.2 Datenmodell + ein Projekt speichern/laden (RLS von der ersten Zeile an)
-      <- NÄCHSTER SCHRITT
+- [x] 3.2 Datenmodell + ein Projekt speichern/laden (RLS von der ersten Zeile an)
+      — fertig, manuell verifiziert: projects-Tabelle mit RLS (Zwei-Account-Test
+      grün, User B sieht User A nicht), client-seitige Stabilisierung, Save/Load
+      via Server Actions, Auto-Load beim Öffnen, Weg-B ID-Write-back aktiv.
 - [ ] 3.3 Projekt-Liste + verwaiste Mappings sichtbar machen (C-Netz im UI)
+      <- NÄCHSTER SCHRITT
 
 ### Schritt 3.0 — Stabile Element-IDs (Detail)
 Problem: el-N ist positionsbasiert und verschiebt sich bei jedem Code-Edit ->
@@ -151,7 +154,12 @@ Bekannte Stolperfalle: das @supabase/ssr-Cookie-Handling in der Middleware ist
 fehleranfällig — strikt das offizielle, aktuelle Muster verwenden, nicht
 improvisieren.
 
-### Schritt 3.2 — Datenmodell + Projekt speichern/laden (NÄCHSTER SCHRITT)
+### Schritt 3.2 — Datenmodell + Projekt speichern/laden (ABGESCHLOSSEN)
+Status: fertig, manuell verifiziert. projects-Tabelle mit RLS (Zwei-Account-Test
+grün), client-seitige Stabilisierung vor dem Speichern, Save/Load via Server
+Actions (src/app/projects/actions.ts), Auto-Load beim Öffnen des Editors,
+Weg-B ID-Write-back aktiv (ps-IDs landen sichtbar im gespeicherten Code).
+
 Scope (Owner-Entscheidungen, endgültig): NUR Code-Persistenz. Ein Projekt pro
 User, manueller Speichern-Button, Auto-Load beim Öffnen des Editors. Schema wird
 JETZT schon mappings-fähig gebaut, Mappings aber noch NICHT befüllt (eigener
@@ -209,6 +217,9 @@ miterledigen, sondern gebündelt abarbeiten.
   durch echte Pagesmith-Metadata ersetzen.
 - VOR öffentlichem Launch: E-Mail-Bestätigung in Supabase wieder einschalten
   (fürs MVP bewusst deaktiviert — siehe TODO in Schritt 3.1).
+- Initial-Load-Preview erscheint ~300ms verzögert (bewusster Trade-off des
+  Hydration-Fixes; bei Bedarf Mount-Effect-Variante, die debouncedCode sofort
+  setzt).
 
 ## Advanced Features (nach Phase 3, Vorausblick)
 - DSGVO/Cookie-Consent-Gate: Checkbox im Action-Panel "Erst feuern nach Consent".

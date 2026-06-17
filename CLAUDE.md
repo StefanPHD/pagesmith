@@ -151,6 +151,54 @@ Bekannte Stolperfalle: das @supabase/ssr-Cookie-Handling in der Middleware ist
 fehleranfällig — strikt das offizielle, aktuelle Muster verwenden, nicht
 improvisieren.
 
+### Schritt 3.2 — Datenmodell + Projekt speichern/laden (NÄCHSTER SCHRITT)
+Scope (Owner-Entscheidungen, endgültig): NUR Code-Persistenz. Ein Projekt pro
+User, manueller Speichern-Button, Auto-Load beim Öffnen des Editors. Schema wird
+JETZT schon mappings-fähig gebaut, Mappings aber noch NICHT befüllt (eigener
+Schritt, sobald die Action-Zuweisungs-UI existiert — die gibt es noch nicht).
+
+Schema — Tabelle projects:
+- id uuid PK, user_id uuid not null FK auf auth.users(id) on delete cascade,
+  name text (Default "Mein Projekt"), html text (stabilisierter Code mit ps-IDs),
+  mappings jsonb not null default '[]' (jetzt designt, leer), created_at/
+  updated_at timestamptz.
+- Unique-Constraint auf user_id erzwingt "ein Projekt pro User" -> Speichern ist
+  ein Upsert (on conflict user_id do update). BEWUSSTE 3.2-Vereinfachung:
+  3.3 entfernt diese Constraint wieder (mehrere Projekte). Kein Versehen.
+
+RLS (kritisch, mit der Tabelle zusammen aktiviert):
+- Vier Policies, alle auf user_id = auth.uid(): SELECT USING; INSERT WITH CHECK;
+  UPDATE USING + WITH CHECK; DELETE USING.
+- WITH CHECK bei INSERT UND UPDATE ist Pflicht (Upsert trifft beide), sonst
+  könnte ein User eine fremde user_id reinschreiben.
+
+Architektur-Kernentscheidung (verhindert stillen Weg-B-Bruch):
+- Die ID-Stabilisierung läuft CLIENT-SEITIG. Grund: stabilizeIds nutzt DOMParser,
+  der nur im Browser existiert; auf dem Server greift der SSR-Guard und es würden
+  KEINE ps-IDs geschrieben. Der Client ruft stabilizeIds(rawCode) auf (IDs ins
+  Attribut, OHNE Preview-Script/Style-Injektion) und schickt das fertige
+  stabilisierte HTML an die Server Action, die es nur noch speichert. Server
+  parst nichts.
+
+Speichern/Laden-Fluss:
+- Speichern (Button): Client stabilisiert -> Server Action saveProject holt User
+  via getUser(), setzt user_id selbst (NIE aus Client-Daten), upsertet. Danach
+  spiegelt der Client das stabilisierte HTML zurück in die Textarea (Transparenz:
+  der User SIEHT, dass ps-IDs in seinen Code geschrieben werden). Das löst die
+  3.0-Sprung-Eigenheit.
+- Laden (automatisch): Editor-Seite (Server Component) lädt via loadProject die
+  eine Projektzeile und reicht initialCode an CodeImporter. Kein Projekt -> leer.
+
+Schema-Anwendung: SQL als committete Migrations-Datei im Repo
+(supabase/migrations/), vom Owner manuell im Supabase-SQL-Editor ausgeführt.
+service_role kommt weiterhin NIRGENDS vor; alles über anon-Key + RLS +
+Server-Session.
+
+Regressions-Grenzen: detect.ts/stabilizeIds werden genutzt, nicht geändert.
+Editor-Kern (Debounce, Preview, Brücke, Highlighting, ps-IDs) unverändert;
+CodeImporter bekommt nur initialCode-Prop + Speichern-Button. Auth aus 3.1
+unberührt. Tests grün.
+
 ## Polish-Liste (gesammelt für einen späteren, separaten Aufräum-Durchgang)
 Bewusst aufgeschobene Aufräum-Arbeiten — NICHT im laufenden Feature-Schritt
 miterledigen, sondern gebündelt abarbeiten.

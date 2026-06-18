@@ -3,15 +3,18 @@
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * Schmaler, serialisierbarer Rueckgabe-Typ fuer den Speichern-Pfad. Der Client
- * spiegelt bei { ok: true } das bereits stabilisierte HTML zurueck in die
- * Textarea; bei { ok: false } zeigt er error an.
+ * Speichern-Ergebnis. Bei { ok: true } liefert die Action die (ggf. NEU
+ * angelegte) projectId zurueck, damit der Client sie als aktives Projekt
+ * uebernimmt. Bei { ok: false } zeigt er error an.
  */
-export type SaveResult = { ok: true } | { ok: false; error: string };
+export type SaveResult = { ok: true; id: string } | { ok: false; error: string };
+
+/** Schmales ok/error-Ergebnis fuer Aktionen ohne Rueckgabewert (delete/rename). */
+export type ActionResult = { ok: true } | { ok: false; error: string };
 
 /**
- * Eine geladene Projektzeile. mappings ist in 3.2 designt, aber leer (befuellt
- * erst, sobald die Action-Zuweisungs-UI existiert) — Typ bleibt bewusst offen.
+ * Eine geladene Projektzeile. mappings ist designt, aber leer (befuellt erst,
+ * sobald die Action-Zuweisungs-UI existiert) — Typ bleibt bewusst offen.
  */
 export type ProjectRow = {
   id: string;
@@ -20,52 +23,151 @@ export type ProjectRow = {
   mappings: unknown[];
 };
 
+/** Listen-Eintrag fuer den Projekt-Switcher (ohne das schwere html-Feld). */
+export type ProjectListItem = {
+  id: string;
+  name: string;
+  updated_at: string;
+};
+
 /**
- * Speichert den (bereits CLIENT-SEITIG stabilisierten) Code als das eine Projekt
- * des Users. Parst/stabilisiert hier NICHTS: DOMParser existiert auf dem Server
- * nicht, stabilizeIds wuerde still nichts tun — deshalb stabilisiert der Client
- * und schickt fertiges HTML.
- *
- * Sicherheit: user_id wird IMMER aus der Server-Session gesetzt, NIE aus
- * Client-Argumenten. Zusammen mit den RLS-Policies (auth.uid() = user_id) kann
- * kein User in eine fremde Zeile schreiben.
+ * Alle Projekte des Users, zuletzt bearbeitetes zuerst. Defense in depth:
+ * zusaetzlich zur RLS explizit nach user_id gefiltert.
  */
-export async function saveProject(html: string): Promise<SaveResult> {
+export async function listProjects(): Promise<ProjectListItem[]> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Nicht eingeloggt." };
+  if (!user) return [];
 
-  // Upsert auf die user_id-Unique-Constraint (ein Projekt pro User, 3.2). name,
-  // mappings und Timestamps bleiben den DB-Defaults bzw. dem updated_at-Trigger
-  // ueberlassen.
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("projects")
-    .upsert({ user_id: user.id, html }, { onConflict: "user_id" });
+    .select("id,name,updated_at")
+    .eq("user_id", user.id)
+    .order("updated_at", { ascending: false });
 
-  if (error) return { ok: false, error: error.message };
-  return { ok: true };
+  if (error || !data) return [];
+  return data as ProjectListItem[];
 }
 
 /**
- * Laedt die eine Projektzeile des Users (oder null, wenn keine existiert / kein
- * User). RLS ist die eigentliche Absicherung; der user_id-Filter ist nur ein
- * sauberer Selektor.
+ * Laedt EIN Projekt: mit id die konkrete Zeile, ohne id das zuletzt bearbeitete
+ * (updated_at desc limit 1). null, wenn nichts existiert / kein User.
+ * user_id-Filter zusaetzlich zur RLS (defense in depth).
  */
-export async function loadProject(): Promise<ProjectRow | null> {
+export async function loadProject(id?: string): Promise<ProjectRow | null> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("projects")
     .select("id,name,html,mappings")
-    .eq("user_id", user.id)
-    .maybeSingle();
+    .eq("user_id", user.id);
 
+  if (id) {
+    query = query.eq("id", id);
+  } else {
+    query = query.order("updated_at", { ascending: false }).limit(1);
+  }
+
+  const { data, error } = await query.maybeSingle();
   if (error || !data) return null;
   return data as ProjectRow;
+}
+
+/**
+ * Speichert den (bereits CLIENT-SEITIG stabilisierten) Code. Parst/stabilisiert
+ * hier NICHTS: DOMParser existiert auf dem Server nicht.
+ *
+ * projectId gesetzt -> update GENAU dieser Zeile. projectId null -> insert eines
+ * neuen Projekts. user_id wird IMMER aus der Server-Session gesetzt, NIE aus
+ * Client-Argumenten; zusammen mit RLS und dem expliziten user_id-Filter
+ * (defense in depth) kann kein User in eine fremde Zeile schreiben.
+ *
+ * updated_at wird bei jedem Speichern verbindlich auf now() gesetzt — der
+ * BEFORE-UPDATE-Trigger erzwingt es ohnehin, hier zusaetzlich explizit, weil
+ * "zuletzt bearbeitet" (Listen-Sortierung + Fallback) daran haengt.
+ */
+export async function saveProject(
+  projectId: string | null,
+  html: string
+): Promise<SaveResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Nicht eingeloggt." };
+
+  if (projectId) {
+    const { data, error } = await supabase
+      .from("projects")
+      .update({ html, updated_at: new Date().toISOString() })
+      .eq("id", projectId)
+      .eq("user_id", user.id)
+      .select("id")
+      .maybeSingle();
+
+    if (error) return { ok: false, error: error.message };
+    if (!data) return { ok: false, error: "Projekt nicht gefunden." };
+    return { ok: true, id: data.id };
+  }
+
+  const { data, error } = await supabase
+    .from("projects")
+    .insert({ user_id: user.id, html, name: "Unbenanntes Projekt" })
+    .select("id")
+    .single();
+
+  if (error || !data)
+    return { ok: false, error: error?.message ?? "Anlegen fehlgeschlagen." };
+  return { ok: true, id: data.id };
+}
+
+/**
+ * Loescht GENAU eine Zeile des Users. user_id-Filter zusaetzlich zur RLS.
+ */
+export async function deleteProject(id: string): Promise<ActionResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Nicht eingeloggt." };
+
+  const { error } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+/**
+ * Benennt ein Projekt um. Leerer Name faellt auf den Default zurueck.
+ * user_id-Filter zusaetzlich zur RLS.
+ */
+export async function renameProject(
+  id: string,
+  name: string
+): Promise<ActionResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Nicht eingeloggt." };
+
+  const trimmed = name.trim() || "Unbenanntes Projekt";
+  const { error } = await supabase
+    .from("projects")
+    .update({ name: trimmed })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
 }

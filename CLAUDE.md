@@ -31,9 +31,9 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       in src/components/CodeImporter.tsx.
 - [x] Phase 2 — Click & Connect: Drei-Zonen-Workspace, postMessage-Klick-Brücke,
       bidirektionales Highlighting. Siehe Detail-Block unten.
-- [ ] Phase 3 — Persistenz & Auth (Supabase) (NÄCHSTER SCHRITT). Projekte +
-      Mappings speichern, stabile Element-IDs als Fundament. Siehe Detail-Block
-      unten. Advanced Features (Consent-Gate, DTR) folgen danach.
+- [x] Phase 3 — Persistenz & Auth (Supabase): stabile Element-IDs, E-Mail/Passwort-
+      Auth, Code-Persistenz, Multi-Projekt-Verwaltung. Fundament steht. Siehe
+      Detail-Block unten. Advanced Features (Consent-Gate, DTR) folgen danach.
 - [ ] Phase 4 — Code-Generierung (Cheerio): Original-HTML + Mappings -> "smartes"
       Output-HTML mit injiziertem JS (Payment-Trigger, Webhook-POST, DTR-Logik).
 - [ ] Phase 5 — Server-Side Tracking (CAPI): Next.js API-Route als Tracking-Proxy
@@ -93,9 +93,12 @@ extern bearbeiten — deshalb ist das C-Netz Pflicht, nicht optional.
       — fertig, manuell verifiziert: projects-Tabelle mit RLS (Zwei-Account-Test
       grün, User B sieht User A nicht), client-seitige Stabilisierung, Save/Load
       via Server Actions, Auto-Load beim Öffnen, Weg-B ID-Write-back aktiv.
-- [ ] 3.3 Multi-Projekt-Support (Erstellen, Laden, Wechseln, Löschen) — schließt
-      Phase 3 ab. C-Netz für verwaiste Mappings bewusst auf den Mapping-Schritt
-      verschoben. Siehe Detail-Block unten. <- NÄCHSTER SCHRITT
+- [x] 3.3 Multi-Projekt-Support (Erstellen, Laden, Wechseln, Löschen) — fertig:
+      UNIQUE(user_id) entfernt, id-basierte Server Actions (list/load/save/delete/
+      rename, user_id immer aus getUser + expliziter Filter), Projekt-Switcher mit
+      Dirty-Guard, Löschen mit Bestätigung + Fallback auf zuletzt bearbeitetes.
+      Schließt Phase 3 ab. C-Netz für verwaiste Mappings bewusst auf den
+      Mapping-Schritt verschoben. Siehe Detail-Block unten.
 
 ### Schritt 3.0 — Stabile Element-IDs (Detail)
 Problem: el-N ist positionsbasiert und verschiebt sich bei jedem Code-Edit ->
@@ -208,8 +211,10 @@ Editor-Kern (Debounce, Preview, Brücke, Highlighting, ps-IDs) unverändert;
 CodeImporter bekommt nur initialCode-Prop + Speichern-Button. Auth aus 3.1
 unberührt. Tests grün.
 
-### Schritt 3.3 — Multi-Projekt-Support (NÄCHSTER SCHRITT)
-Schließt Phase 3 ab.
+### Schritt 3.3 — Multi-Projekt-Support (ABGESCHLOSSEN)
+Status: fertig. Schließt Phase 3 ab — das Persistenz-Fundament (stabile IDs,
+Auth, Code-Persistenz, Multi-Projekt) steht. Inline-Rename + Dirty-Guard beim
+Wechseln/Neu-Anlegen (window.confirm) sind mit drin.
 
 Scope (Owner-Entscheidung): NUR Multi-Projekt-Verwaltung (Erstellen, Laden,
 Wechseln, Löschen). Das Weg-C-Netz für verwaiste Mappings ist BEWUSST verschoben
@@ -252,6 +257,16 @@ Regressions-Grenzen: Editor-Kern (Debounce, Preview, Brücke, Highlighting,
 ps-IDs, client-seitige Stabilisierung), Auth/Middleware aus 3.1, RLS-Policies aus
 3.2 bleiben unverändert. Tests grün.
 
+## Nächster großer Schritt — Mapping-/Action-Zuweisung
+Phase 3 hat das Fundament gelegt (stabile ps-IDs + Persistenz + Multi-Projekt).
+Der nächste Block ist die eigentliche "Click & Connect"-Wertschöpfung: dem
+ausgewählten Element echte Aktionen zuweisen (Stripe / PayPal / Universal-
+Webhook) und in mappings (jsonb, bereits im Schema) speichern. ERST hier
+entstehen Mappings — und damit greift das BISHER VERSCHOBENE Weg-C-Netz
+(gespeicherte ps-ID nicht mehr im Code -> Mapping sichtbar als "verwaist"
+anzeigen, nicht still reparieren). Die Action-Zuweisungs-UI im Action-Panel ist
+die Voraussetzung dafür.
+
 ## Polish-Liste (gesammelt für einen späteren, separaten Aufräum-Durchgang)
 Bewusst aufgeschobene Aufräum-Arbeiten — NICHT im laufenden Feature-Schritt
 miterledigen, sondern gebündelt abarbeiten.
@@ -265,6 +280,9 @@ miterledigen, sondern gebündelt abarbeiten.
 - Initial-Load-Preview erscheint ~300ms verzögert (bewusster Trade-off des
   Hydration-Fixes; bei Bedarf Mount-Effect-Variante, die debouncedCode sofort
   setzt).
+- Editor Element->Code-Zeile-Scroll: bewusst verworfen — bräuchte echten
+  Code-Editor (CodeMirror/Monaco), Nutzen für Marketer fraglich (arbeiten in der
+  Preview, nicht im Rohcode).
 
 ## Advanced Features (nach Phase 3, Vorausblick)
 - DSGVO/Cookie-Consent-Gate: Checkbox im Action-Panel "Erst feuern nach Consent".

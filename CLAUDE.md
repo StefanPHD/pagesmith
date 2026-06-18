@@ -93,8 +93,9 @@ extern bearbeiten — deshalb ist das C-Netz Pflicht, nicht optional.
       — fertig, manuell verifiziert: projects-Tabelle mit RLS (Zwei-Account-Test
       grün, User B sieht User A nicht), client-seitige Stabilisierung, Save/Load
       via Server Actions, Auto-Load beim Öffnen, Weg-B ID-Write-back aktiv.
-- [ ] 3.3 Projekt-Liste + verwaiste Mappings sichtbar machen (C-Netz im UI)
-      <- NÄCHSTER SCHRITT
+- [ ] 3.3 Multi-Projekt-Support (Erstellen, Laden, Wechseln, Löschen) — schließt
+      Phase 3 ab. C-Netz für verwaiste Mappings bewusst auf den Mapping-Schritt
+      verschoben. Siehe Detail-Block unten. <- NÄCHSTER SCHRITT
 
 ### Schritt 3.0 — Stabile Element-IDs (Detail)
 Problem: el-N ist positionsbasiert und verschiebt sich bei jedem Code-Edit ->
@@ -206,6 +207,50 @@ Regressions-Grenzen: detect.ts/stabilizeIds werden genutzt, nicht geändert.
 Editor-Kern (Debounce, Preview, Brücke, Highlighting, ps-IDs) unverändert;
 CodeImporter bekommt nur initialCode-Prop + Speichern-Button. Auth aus 3.1
 unberührt. Tests grün.
+
+### Schritt 3.3 — Multi-Projekt-Support (NÄCHSTER SCHRITT)
+Schließt Phase 3 ab.
+
+Scope (Owner-Entscheidung): NUR Multi-Projekt-Verwaltung (Erstellen, Laden,
+Wechseln, Löschen). Das Weg-C-Netz für verwaiste Mappings ist BEWUSST verschoben
+auf den späteren Mapping-Schritt (es gibt noch keine Mappings, auf die es wirken
+könnte).
+
+Datenbank-Migration (auf LIVE-Daten):
+- Entferne die UNIQUE(user_id)-Constraint aus projects (mehrere Projekte pro User).
+- drop constraint ist nicht-destruktiv/umkehrbar. Bewusstseins-Notiz: künftige
+  Migrationen, die DATEN anfassen, brauchen vorher ein Supabase-Backup/Snapshot.
+
+Speicher-Landmine (Kopplung): Das Entfernen der Constraint bricht den bisherigen
+Upsert (on conflict user_id). Server Actions werden im selben Schritt umgestellt
+auf Arbeit per spezifischer project_id:
+- saveProject(projectId | null, html): update der Zeile per id, ODER insert wenn
+  projectId null (neues Projekt). user_id IMMER aus der Server-Session (getUser),
+  nie aus Client-Daten.
+- loadProject lädt per id ODER das zuletzt bearbeitete (order by updated_at desc
+  limit 1).
+- Defense in depth: ALLE Queries (load/save/delete) filtern zusätzlich explizit
+  user_id = auth.uid(), nicht nur auf RLS verlassen.
+- updated_at wird bei JEDEM Speichern verbindlich auf now() gesetzt (nicht
+  optional — "zuletzt bearbeitet" hängt daran).
+
+UX-Einstieg (Owner-Entscheidung, kombiniert):
+- Nach Login direkt in den Editor; automatisch das zuletzt bearbeitete Projekt
+  laden. Leere Liste -> leeres "Unbenanntes Projekt" im State (noch keine DB-Zeile).
+- Projekt-Verwaltung im UI (Header oder ausklappbare Sidebar): Projekte sehen,
+  wechseln, neu erstellen, löschen.
+
+Edge-Cases (verbindlich):
+- Neues Projekt lebt zunächst nur im Editor-State; DB-Zeile entsteht ERST beim
+  ersten echten Speichern (keine "Unbenanntes Projekt"-Karteileichen).
+- Löschen ist destruktiv -> Bestätigungs-Popup vor Ausführung.
+- Löschen des AKTIVEN Projekts: Editor fällt auf das nächste (zuletzt bearbeitete)
+  Projekt zurück; war es das letzte -> leerer "Unbenanntes Projekt"-Zustand. Nie
+  ein kaputter State mit toter projectId.
+
+Regressions-Grenzen: Editor-Kern (Debounce, Preview, Brücke, Highlighting,
+ps-IDs, client-seitige Stabilisierung), Auth/Middleware aus 3.1, RLS-Policies aus
+3.2 bleiben unverändert. Tests grün.
 
 ## Polish-Liste (gesammelt für einen späteren, separaten Aufräum-Durchgang)
 Bewusst aufgeschobene Aufräum-Arbeiten — NICHT im laufenden Feature-Schritt

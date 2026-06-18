@@ -1,6 +1,6 @@
 import CodeImporter from "@/components/CodeImporter";
 import { signOut } from "@/app/auth/actions";
-import { loadProject } from "@/app/projects/actions";
+import { listProjects, loadProject } from "@/app/projects/actions";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function Home() {
@@ -9,8 +9,9 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Auto-Load: das eine gespeicherte Projekt des Users (oder null -> leer).
-  const project = await loadProject();
+  // Auto-Load (3.3): das zuletzt bearbeitete Projekt + die volle Liste fuer den
+  // Switcher. Kein Projekt -> null/leer, Editor startet im leeren Zustand.
+  const [project, projects] = await Promise.all([loadProject(), listProjects()]);
 
   return (
     <main className="mx-auto w-full max-w-[1800px] px-4 py-8 lg:px-8">
@@ -35,7 +36,11 @@ export default async function Home() {
           </form>
         </div>
       </div>
-      <CodeImporter initialCode={project?.html ?? ""} />
+      <CodeImporter
+        initialCode={project?.html ?? ""}
+        initialProjectId={project?.id ?? null}
+        initialProjects={projects}
+      />
     </main>
   );
 }

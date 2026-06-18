@@ -2,7 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { annotateAndDetect, stabilizeIds, type ElementType } from "@/lib/detect";
-import { saveProject } from "@/app/projects/actions";
+import {
+  deleteProject,
+  listProjects,
+  loadProject,
+  renameProject,
+  saveProject,
+  type ProjectListItem,
+} from "@/app/projects/actions";
 import ActionPanel from "@/components/ActionPanel";
 
 // Parsing + iframe-Preview sind die teuren Verbraucher. Sie sollen erst nach
@@ -21,15 +28,37 @@ type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 export default function CodeImporter({
   initialCode = "",
+  initialProjectId = null,
+  initialProjects = [],
 }: {
-  // Auto-Load aus 3.2: das gespeicherte (bereits stabilisierte) HTML des Users.
+  // Auto-Load: das zuletzt bearbeitete (bereits stabilisierte) HTML des Users.
   // Leer -> Editor startet leer wie bisher.
   initialCode?: string;
+  // Aktives Projekt beim ersten Laden (3.3). null -> leerer "Unbenanntes
+  // Projekt"-Zustand, der noch KEINE DB-Zeile hat.
+  initialProjectId?: string | null;
+  // Projektliste fuer den Switcher (server-seitig vorgeladen, danach clientseitig
+  // aktuell gehalten).
+  initialProjects?: ProjectListItem[];
 }) {
   // Eingabe-State: aendert sich bei JEDEM Tastendruck und haelt die Textarea
   // sofort aktuell (Tippen darf nie auf Parsing/Preview warten). Startet mit dem
   // geladenen Projekt-Code.
   const [code, setCode] = useState(initialCode);
+  // Aktives Projekt. null = neues, noch nicht gespeichertes Projekt (keine
+  // DB-Zeile bis zum ersten Speichern).
+  const [projectId, setProjectId] = useState<string | null>(initialProjectId);
+  // Projektliste fuer den Switcher (zuletzt bearbeitet zuerst).
+  const [projects, setProjects] = useState<ProjectListItem[]>(initialProjects);
+  // Zuletzt gespeicherter/geladener Code -> Dirty-Erkennung, schuetzt vor stillem
+  // Verlust beim Wechseln/Neu-Anlegen.
+  const [savedCode, setSavedCode] = useState(initialCode);
+  // Ausklappbares Projekt-Menue (Default zu: sein Inhalt rendert erst beim
+  // Oeffnen clientseitig -> keine Hydration-Mismatches bei relativen Zeitstempeln).
+  const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
+  // Inline-Umbenennung: id der gerade editierten Zeile + aktueller Eingabewert.
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
   // Debounced-State: speist Parsing + Preview erst nach DEBOUNCE_MS Ruhe. Startet
   // bewusst LEER (nicht mit initialCode): annotateAndDetect nutzt DOMParser, der
   // serverseitig fehlt (SSR-Guard -> leer) und clientseitig parst. Mit initialCode
@@ -145,18 +174,40 @@ export default function CodeImporter({
     return () => clearTimeout(id);
   }, [saveStatus]);
 
+  // Ungespeicherte Aenderungen seit dem letzten Speichern/Laden. Schuetzt das
+  // Wechseln/Neu-Anlegen vor stillem Verlust.
+  const dirty = code !== savedCode;
+  // Name des aktiven Projekts fuer die Toolbar. Neues (ungespeichertes) Projekt
+  // -> "Unbenanntes Projekt" (entspricht dem spaeteren DB-Default).
+  const activeName =
+    projects.find((p) => p.id === projectId)?.name ?? "Unbenanntes Projekt";
+
+  // Setzt den Editor auf den leeren "Unbenanntes Projekt"-Zustand zurueck (keine
+  // DB-Zeile, keine tote projectId).
+  function resetToEmpty() {
+    setProjectId(null);
+    setCode("");
+    setSavedCode("");
+    setSelectedElementId(null);
+  }
+
   // Speichern: CLIENT-seitig stabilisieren (nur IDs ins Attribut, OHNE
   // Script/Style-Injektion) -> ans Server-Action geben -> bei Erfolg das
   // stabilisierte HTML zurueck in die Textarea spiegeln, damit der User die in
   // seinen Code geschriebenen ps-IDs SIEHT. stabilizeIds nutzt DOMParser und
   // laeuft nur hier im Browser zuverlaessig (auf dem Server greift der SSR-Guard).
+  // saveProject bekommt die aktive projectId (null -> neue Zeile); die
+  // zurueckgegebene id wird zum aktiven Projekt.
   async function handleSave() {
     setSaveStatus("saving");
     setSaveError(null);
     const stabilized = stabilizeIds(code);
-    const result = await saveProject(stabilized);
+    const result = await saveProject(projectId, stabilized);
     if (result.ok) {
       setCode(stabilized);
+      setSavedCode(stabilized);
+      setProjectId(result.id);
+      setProjects(await listProjects());
       setSaveStatus("saved");
     } else {
       setSaveError(result.error);
@@ -164,8 +215,193 @@ export default function CodeImporter({
     }
   }
 
+  // Projekt wechseln: laedt dessen HTML in den Editor. Dirty-Guard verhindert
+  // stillen Verlust ungespeicherter Aenderungen.
+  async function handleSwitch(id: string) {
+    if (id === projectId) {
+      setIsProjectMenuOpen(false);
+      return;
+    }
+    if (dirty && !window.confirm("Ungespeicherte Aenderungen verwerfen und Projekt wechseln?"))
+      return;
+    const proj = await loadProject(id);
+    if (!proj) {
+      setSaveError("Projekt konnte nicht geladen werden.");
+      setSaveStatus("error");
+      return;
+    }
+    setProjectId(proj.id);
+    setCode(proj.html);
+    setSavedCode(proj.html);
+    setSelectedElementId(null);
+    setIsProjectMenuOpen(false);
+  }
+
+  // Neues Projekt: lebt zunaechst NUR im Editor-State, DB-Zeile entsteht erst
+  // beim ersten Speichern. Dirty-Guard wie beim Wechseln.
+  function handleNew() {
+    if (dirty && !window.confirm("Ungespeicherte Aenderungen verwerfen?")) return;
+    resetToEmpty();
+    setIsProjectMenuOpen(false);
+  }
+
+  // Loeschen: destruktiv -> Bestaetigung. War es das AKTIVE Projekt, faellt der
+  // Editor auf das zuletzt bearbeitete verbleibende zurueck; war es das letzte,
+  // auf den leeren Zustand. Nie eine tote projectId behalten.
+  async function handleDelete(id: string) {
+    const target = projects.find((p) => p.id === id);
+    if (!window.confirm(`Projekt "${target?.name ?? ""}" wirklich loeschen?`)) return;
+
+    const result = await deleteProject(id);
+    if (!result.ok) {
+      setSaveError(result.error);
+      setSaveStatus("error");
+      return;
+    }
+
+    const remaining = await listProjects();
+    setProjects(remaining);
+
+    if (id === projectId) {
+      // remaining ist nach updated_at desc sortiert -> [0] ist das zuletzt
+      // bearbeitete verbleibende Projekt.
+      const next = remaining[0] ? await loadProject(remaining[0].id) : null;
+      if (next) {
+        setProjectId(next.id);
+        setCode(next.html);
+        setSavedCode(next.html);
+        setSelectedElementId(null);
+      } else {
+        resetToEmpty();
+      }
+    }
+  }
+
+  // Inline-Umbenennung bestaetigen.
+  async function commitRename(id: string) {
+    const name = renameValue.trim();
+    setRenamingId(null);
+    if (!name) return;
+    const result = await renameProject(id, name);
+    if (!result.ok) {
+      setSaveError(result.error);
+      setSaveStatus("error");
+      return;
+    }
+    setProjects(await listProjects());
+  }
+
   return (
-    <div className="flex w-full flex-col gap-4 lg:flex-row">
+    <div className="flex w-full flex-col gap-4">
+      {/* Projekt-Toolbar (3.3): aktives Projekt + ausklappbarer Switcher.
+          Liegt UEBER den drei Zonen, damit der Editor-Kern unveraendert bleibt. */}
+      <div className="relative flex items-center gap-3 rounded-lg border border-gray-300 bg-white px-3 py-2">
+        <button
+          type="button"
+          onClick={() => setIsProjectMenuOpen((v) => !v)}
+          aria-expanded={isProjectMenuOpen}
+          className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          Projekte
+          <Chevron direction={isProjectMenuOpen ? "left" : "right"} />
+        </button>
+        <span className="min-w-0 truncate text-sm text-gray-600">
+          Aktiv:{" "}
+          <span className="font-medium text-gray-900">{activeName}</span>
+          {dirty && (
+            <span className="text-amber-600" title="Ungespeicherte Aenderungen">
+              {" "}
+              •
+            </span>
+          )}
+        </span>
+        <button
+          type="button"
+          onClick={handleNew}
+          className="ml-auto rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          + Neues Projekt
+        </button>
+
+        {/* Dropdown: rendert nur im offenen Zustand (clientseitig) -> keine
+            Hydration-Mismatches bei den relativen Zeitstempeln. */}
+        {isProjectMenuOpen && (
+          <div className="absolute left-0 top-full z-10 mt-1 max-h-96 w-80 overflow-y-auto rounded-lg border border-gray-300 bg-white py-1 shadow-lg">
+            {projects.length === 0 ? (
+              <p className="px-3 py-2 text-sm text-gray-400">
+                Noch keine gespeicherten Projekte.
+              </p>
+            ) : (
+              projects.map((p) => {
+                const isActive = p.id === projectId;
+                return (
+                  <div
+                    key={p.id}
+                    className={`flex items-center gap-2 px-2 py-1.5 ${
+                      isActive ? "bg-blue-50" : "hover:bg-gray-50"
+                    }`}
+                  >
+                    {renamingId === p.id ? (
+                      <input
+                        autoFocus
+                        value={renameValue}
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        onBlur={() => commitRename(p.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") commitRename(p.id);
+                          else if (e.key === "Escape") setRenamingId(null);
+                        }}
+                        className="min-w-0 flex-1 rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none"
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleSwitch(p.id)}
+                        className="flex min-w-0 flex-1 flex-col items-start text-left focus:outline-none"
+                      >
+                        <span
+                          className={`truncate text-sm ${
+                            isActive
+                              ? "font-medium text-blue-800"
+                              : "text-gray-800"
+                          }`}
+                        >
+                          {p.name}
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          {formatRelative(p.updated_at)}
+                        </span>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRenamingId(p.id);
+                        setRenameValue(p.name);
+                      }}
+                      aria-label="Umbenennen"
+                      className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus:outline-none"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(p.id)}
+                      aria-label="Loeschen"
+                      className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 focus:outline-none"
+                    >
+                      🗑
+                    </button>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Bestehende drei Zonen (Editor-Kern) — unveraendert. */}
+      <div className="flex w-full flex-col gap-4 lg:flex-row">
       {/* Zone 1 (links): Code-Eingabe, manuell einklappbar. shrink-0, damit bei
           Platzmangel die Preview schrumpft, nicht dieses Panel. */}
       <section
@@ -304,8 +540,22 @@ export default function CodeImporter({
       {/* Zone 3 (rechts): Action-Panel. CodeImporter bleibt State-Besitzer und
           reicht das gewaehlte Element durch – in diesem Schritt immer null. */}
       <ActionPanel selectedElement={selectedElement} />
+      </div>
     </div>
   );
+}
+
+// Relative Zeitangabe fuer die Projektliste. Wird nur im geoeffneten Menue
+// (clientseitig) gerendert, daher ist Date.now() hier unkritisch fuer Hydration.
+function formatRelative(iso: string): string {
+  const diffSec = Math.round((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diffSec < 60) return "gerade eben";
+  const min = Math.round(diffSec / 60);
+  if (min < 60) return `vor ${min} Min`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `vor ${hr} Std`;
+  const d = Math.round(hr / 24);
+  return `vor ${d} Tg`;
 }
 
 function Chevron({ direction }: { direction: "left" | "right" }) {

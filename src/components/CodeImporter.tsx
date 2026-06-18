@@ -438,7 +438,7 @@ export default function CodeImporter({
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="<button>Jetzt kaufen</button> ..."
-            className="h-96 w-full resize-none rounded-lg border border-gray-300 p-4 font-mono text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="h-96 w-full resize-none rounded-lg border border-gray-300 bg-gray-50 p-4 font-mono text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             spellCheck={false}
           />
           <div className="flex gap-3 text-sm text-gray-600">

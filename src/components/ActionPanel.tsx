@@ -258,7 +258,9 @@ function RedirectForm({
           disabled={!valid}
           className="flex-1 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Speichern
+          {/* "Übernehmen" (nur in den Draft), klar abgegrenzt vom grossen
+              "Speichern"-Button, der in die DB persistiert. */}
+          Übernehmen
         </button>
         <button
           type="button"

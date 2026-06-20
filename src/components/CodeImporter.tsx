@@ -10,7 +10,14 @@ import {
   saveProject,
   type ProjectListItem,
 } from "@/app/projects/actions";
-import { mappingsEqual, type Mapping } from "@/lib/mappings";
+import {
+  findMapping,
+  mappingsEqual,
+  removeMapping,
+  upsertMapping,
+  type Mapping,
+  type RedirectConfig,
+} from "@/lib/mappings";
 import ActionPanel from "@/components/ActionPanel";
 
 // Parsing + iframe-Preview sind die teuren Verbraucher. Sie sollen erst nach
@@ -126,6 +133,13 @@ export default function CodeImporter({
     [elements, selectedElementId]
   );
 
+  // Mapping des ausgewaehlten Elements (Schluessel elementId, ein Mapping pro
+  // Element) fuers Action-Panel.
+  const selectedMapping = useMemo(
+    () => (selectedElementId ? findMapping(mappings, selectedElementId) : null),
+    [mappings, selectedElementId]
+  );
+
   // Klick-Bruecke aus dem sandboxed iframe. Registriert sich EINMAL ([] deps);
   // iframeRef + setSelectedElementId sind stabil.
   // Das iframe laeuft mit sandbox="allow-scripts" (ohne allow-same-origin) ->
@@ -228,6 +242,37 @@ export default function CodeImporter({
       setSaveError(result.error);
       setSaveStatus("error");
     }
+  }
+
+  // Aktion zuweisen/aendern. ps-ID-ANKER: bevor das Mapping gespeichert wird,
+  // muss die ps-ID des Ziel-Elements DAUERHAFT im Code stehen, sonst verwaist es
+  // sofort. Wir stabilisieren den Code und spiegeln ihn in die Textarea zurueck
+  // (wie beim Speichern). Fuer ein fabrikneues Element (noch keine ps-ID im Code)
+  // erzeugt der separate Parse eine ANDERE Zufalls-ID als die Preview -> wir
+  // richten ueber den INDEX auf dem stabilisierten HTML aus (idempotent, gleiche
+  // Kandidaten-Reihenfolge wie die aktuelle elements-Liste, die selectedElementId
+  // besitzt), statt der Preview-ID blind zu vertrauen.
+  function handleAssignMapping(config: RedirectConfig) {
+    if (!selectedElementId) return;
+    const stabilized = stabilizeIds(code);
+    let canonicalId = selectedElementId;
+    if (stabilized !== code) {
+      const stableEls = annotateAndDetect(stabilized).elements;
+      const idx = elements.findIndex((e) => e.id === selectedElementId);
+      if (idx >= 0 && stableEls[idx]) canonicalId = stableEls[idx].id;
+      setCode(stabilized);
+      setSelectedElementId(canonicalId);
+    }
+    setMappings((prev) =>
+      upsertMapping(prev, { elementId: canonicalId, type: "redirect", config })
+    );
+  }
+
+  // Aktion entfernen. Der Code (samt ps-ID) bleibt unangetastet; nur das Mapping
+  // verschwindet.
+  function handleRemoveMapping() {
+    if (!selectedElementId) return;
+    setMappings((prev) => removeMapping(prev, selectedElementId));
   }
 
   // Projekt wechseln: laedt dessen HTML in den Editor. Dirty-Guard verhindert
@@ -557,8 +602,13 @@ export default function CodeImporter({
       </section>
 
       {/* Zone 3 (rechts): Action-Panel. CodeImporter bleibt State-Besitzer und
-          reicht das gewaehlte Element durch – in diesem Schritt immer null. */}
-      <ActionPanel selectedElement={selectedElement} />
+          reicht Element + dessen Mapping + die Zuweisungs-Callbacks durch. */}
+      <ActionPanel
+        selectedElement={selectedElement}
+        mapping={selectedMapping}
+        onSaveMapping={handleAssignMapping}
+        onRemoveMapping={handleRemoveMapping}
+      />
       </div>
     </div>
   );

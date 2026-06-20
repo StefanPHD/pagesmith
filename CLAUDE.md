@@ -280,6 +280,39 @@ entstehen Mappings — und damit greift das BISHER VERSCHOBENE Weg-C-Netz
 anzeigen, nicht still reparieren). Die Action-Zuweisungs-UI im Action-Panel ist
 die Voraussetzung dafür.
 
+### Mapping-Schritt 1 — Redirect-Aktion (Absicht erfassen)
+ERSTE Hälfte der Mappings: Aktion zuweisen + konfigurieren + speichern + im UI
+anzeigen. Das echte AUSFÜHREN (Button feuert wirklich) gehört NICHT hierher,
+sondern in den separaten Code-Gen-Schritt danach (Phase 4, Cheerio). Strikt
+trennen — dieser Schritt erfasst nur die ABSICHT, er verdrahtet noch nichts.
+
+Scope (Owner-Entscheidungen):
+- Erstes Primitiv: "Redirect bei Klick" (URL-Weiterleitung). Deckt bewusst Stripe
+  Payment Link, PayPal-Link und generische Links in EINEM Aktionstyp ab.
+- Weitere Aktionstypen (Webhook = POST, Tracking-Events) sind spätere Kacheln,
+  nicht jetzt.
+- Weg-C-Netz (verwaiste Mappings) BEWUSST abgetrennt: kommt als unmittelbar
+  nächster kleiner Schritt NACH der funktionierenden Speicher-/Ladestrecke.
+
+Datenmodell: Mapping = { elementId: ps-id, type: "redirect", config: { url,
+openInNewTab } }. Array in der bestehenden mappings-jsonb-Spalte (aus 3.2).
+KEINE Migration nötig.
+
+Persistenz: saveProject speichert Mappings zusammen mit html, loadProject lädt
+beide. RLS-/Projekt-Logik aus 3.2/3.3 unverändert.
+
+Verbindliche Edge-Cases / Landminen:
+- Dirty-Tracking umfasst ab jetzt CODE UND MAPPINGS. Sonst stiller Verlust beim
+  Projektwechsel, weil Mapping-Änderungen den Code nicht anfassen.
+- Beim Zuweisen eines Mappings wird stabilisiert und die ps-ID sofort in den Code
+  zurückgespiegelt (wie beim Speichern), damit der Anker dauerhaft ist und Tippen
+  das frische Mapping nicht verwaisen lässt.
+- Preview bleibt selektions-only: KEIN echter Redirect, sandbox="allow-scripts"
+  unverändert, NIE allow-same-origin.
+
+UI: ActionPanel (bisher nur Text) bekommt die Zuweisung. Verknüpfte Elemente
+bekommen ein Badge in der Erkannte-Elemente-Liste.
+
 ## Polish-Liste (gesammelt für einen späteren, separaten Aufräum-Durchgang)
 Bewusst aufgeschobene Aufräum-Arbeiten — NICHT im laufenden Feature-Schritt
 miterledigen, sondern gebündelt abarbeiten.
@@ -290,6 +323,8 @@ miterledigen, sondern gebündelt abarbeiten.
   durch echte Pagesmith-Metadata ersetzen.
 - VOR öffentlichem Launch: E-Mail-Bestätigung in Supabase wieder einschalten
   (fürs MVP bewusst deaktiviert — siehe TODO in Schritt 3.1).
+- VOR öffentlichem Launch: Leaked Password Protection aktivieren — ist Pro-gated
+  (Free Tier kann nicht). Beim Wechsel auf Supabase Pro (Phase 6) einschalten.
 - Initial-Load-Preview erscheint ~300ms verzögert (bewusster Trade-off des
   Hydration-Fixes; bei Bedarf Mount-Effect-Variante, die debouncedCode sofort
   setzt).

@@ -210,6 +210,20 @@ export default function CodeImporter({
   // gehen. mappingsEqual vergleicht mengenbasiert (Umsortieren != dirty).
   const dirty =
     code !== savedCode || !mappingsEqual(mappings, savedMappings);
+
+  // Generischer Browser-Warndialog vor F5/Tab-Schliessen, solange ungespeicherte
+  // Aenderungen offen sind. Speist sich aus DEMSELBEN dirty wie die In-App-Guards.
+  // preventDefault + returnValue ist das vom Browser geforderte Muster; den Text
+  // bestimmt der Browser selbst (eigener String wird ignoriert).
+  useEffect(() => {
+    if (!dirty) return;
+    function onBeforeUnload(e: BeforeUnloadEvent) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [dirty]);
   // Name des aktiven Projekts fuer die Toolbar. Neues (ungespeichertes) Projekt
   // -> "Unbenanntes Projekt" (entspricht dem spaeteren DB-Default).
   const activeName =
@@ -589,11 +603,25 @@ export default function CodeImporter({
                 {saveError}
               </span>
             )}
+            {/* Laute Dirty-Anzeige: dieselbe dirty-Quelle wie der kleine Punkt am
+                Projektnamen, hier aber gross neben dem Button. Nur im Ruhezustand
+                (idle) zeigen — waehrend Speichern/Erfolg sprechen die Button-Texte
+                selbst, danach faellt dirty automatisch zurueck. */}
+            {dirty && saveStatus !== "saving" && saveStatus !== "saved" && (
+              <span className="text-xs font-medium text-amber-600">
+                Ungespeicherte Änderungen
+              </span>
+            )}
             <button
               type="button"
               onClick={handleSave}
               disabled={saveStatus === "saving" || code.trim() === ""}
-              className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+              className={`rounded-md px-3 py-1.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 ${
+                // Dirty + ruhend -> auffaelliges Amber, sonst neutrales Blau.
+                dirty && saveStatus !== "saving" && saveStatus !== "saved"
+                  ? "bg-amber-500 hover:bg-amber-600 focus:ring-amber-500"
+                  : "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+              }`}
             >
               {saveStatus === "saving"
                 ? "Speichern…"
@@ -601,7 +629,9 @@ export default function CodeImporter({
                   ? "Gespeichert ✓"
                   : saveStatus === "error"
                     ? "Erneut versuchen"
-                    : "Speichern"}
+                    : dirty
+                      ? "Speichern •"
+                      : "Speichern"}
             </button>
           </div>
         </div>

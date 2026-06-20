@@ -296,7 +296,14 @@ Scope (Owner-Entscheidungen):
 
 Datenmodell: Mapping = { elementId: ps-id, type: "redirect", config: { url,
 openInNewTab } }. Array in der bestehenden mappings-jsonb-Spalte (aus 3.2).
-KEINE Migration nötig.
+KEINE Migration nötig. type ist Diskriminator (config je Typ gekapselt) -> weitere
+Aktionstypen kommen als eigene Union-Zweige dazu, ohne die Redirect-Form anzufassen.
+
+Schlüssel-Notiz (bewusst, NICHT jetzt umbauen): findMapping/upsertMapping
+schlüsseln vorerst NUR über elementId (ein Mapping pro Element). Für Redirect-only
+korrekt. Sobald ein Tracking-Typ "Redirect + Tracking auf EINEM Element" erlaubt,
+wird der Schlüssel auf (elementId, type) umgestellt. Als Code-Kommentar in
+src/lib/mappings.ts festgehalten.
 
 Persistenz: saveProject speichert Mappings zusammen mit html, loadProject lädt
 beide. RLS-/Projekt-Logik aus 3.2/3.3 unverändert.
@@ -306,7 +313,15 @@ Verbindliche Edge-Cases / Landminen:
   Projektwechsel, weil Mapping-Änderungen den Code nicht anfassen.
 - Beim Zuweisen eines Mappings wird stabilisiert und die ps-ID sofort in den Code
   zurückgespiegelt (wie beim Speichern), damit der Anker dauerhaft ist und Tippen
-  das frische Mapping nicht verwaisen lässt.
+  das frische Mapping nicht verwaisen lässt. Für ein fabrikneues Element (noch
+  keine ps-ID im Code) erzeugt der separate Parse eine ANDERE Zufalls-ID als die
+  Preview -> kanonische ID wird per INDEX auf dem stabilisierten HTML ausgerichtet
+  (idempotent, gleiche Kandidaten-Reihenfolge), statt der Preview-ID blind zu
+  vertrauen.
+- mappingsEqual vergleicht MENGENBASIERT (pro elementId), nie positionsabhängig:
+  Umsortieren ist NICHT dirty, URL-/Options-Änderung + Add/Remove sind dirty.
+- Speichern im URL-Formular ist gesperrt, solange die URL nicht http(s)-gültig ist
+  (kein Persistieren kaputter URLs).
 - Preview bleibt selektions-only: KEIN echter Redirect, sandbox="allow-scripts"
   unverändert, NIE allow-same-origin.
 

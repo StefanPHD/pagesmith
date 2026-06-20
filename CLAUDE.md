@@ -257,6 +257,19 @@ Regressions-Grenzen: Editor-Kern (Debounce, Preview, Brücke, Highlighting,
 ps-IDs, client-seitige Stabilisierung), Auth/Middleware aus 3.1, RLS-Policies aus
 3.2 bleiben unverändert. Tests grün.
 
+### DB-Sicherheits-Härtung (zwischen Phase 3 und Mappings, 0003)
+Kleine Sammel-Migration für vier Supabase-Security-Advisor-Warnungen, kein Feature.
+- `set_updated_at()` (unser Trigger aus 0001): fester `search_path = public`
+  gegen search-path-Hijacking.
+- `rls_auto_enable()` existiert in der DB (Event-Trigger, aktiviert RLS auf neuen
+  public-Tabellen — schützend), stammt aber NICHT aus unseren Migrationen
+  (Schema-Drift; from_extension = NULL, also keiner Extension zugehörig). In 0003
+  per `revoke execute ... from public/anon/authenticated` abgesichert (alle drei
+  nötig, da anon/authenticated eigene Grants haben; Event-Trigger läuft als Owner
+  und wird durch den Entzug NICHT gestoppt).
+- "Leaked Password Protection" ist eine Dashboard-Einstellung
+  (Authentication -> Settings), per Toggle zu aktivieren — KEIN SQL.
+
 ## Nächster großer Schritt — Mapping-/Action-Zuweisung
 Phase 3 hat das Fundament gelegt (stabile ps-IDs + Persistenz + Multi-Projekt).
 Der nächste Block ist die eigentliche "Click & Connect"-Wertschöpfung: dem

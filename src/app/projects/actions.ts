@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import type { Mapping } from "@/lib/mappings";
 
 /**
  * Speichern-Ergebnis. Bei { ok: true } liefert die Action die (ggf. NEU
@@ -13,14 +14,13 @@ export type SaveResult = { ok: true; id: string } | { ok: false; error: string }
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
 /**
- * Eine geladene Projektzeile. mappings ist designt, aber leer (befuellt erst,
- * sobald die Action-Zuweisungs-UI existiert) — Typ bleibt bewusst offen.
+ * Eine geladene Projektzeile. mappings haelt die Aktions-Zuweisungen (jsonb).
  */
 export type ProjectRow = {
   id: string;
   name: string;
   html: string;
-  mappings: unknown[];
+  mappings: Mapping[];
 };
 
 /** Listen-Eintrag fuer den Projekt-Switcher (ohne das schwere html-Feld). */
@@ -91,10 +91,14 @@ export async function loadProject(id?: string): Promise<ProjectRow | null> {
  * updated_at wird bei jedem Speichern verbindlich auf now() gesetzt — der
  * BEFORE-UPDATE-Trigger erzwingt es ohnehin, hier zusaetzlich explizit, weil
  * "zuletzt bearbeitet" (Listen-Sortierung + Fallback) daran haengt.
+ *
+ * mappings wird mit dem html zusammen gespeichert (jsonb). Mapping-Aenderungen
+ * fassen den Code nicht an -> ohne Mit-Speichern gingen sie still verloren.
  */
 export async function saveProject(
   projectId: string | null,
-  html: string
+  html: string,
+  mappings: Mapping[]
 ): Promise<SaveResult> {
   const supabase = await createClient();
   const {
@@ -105,7 +109,7 @@ export async function saveProject(
   if (projectId) {
     const { data, error } = await supabase
       .from("projects")
-      .update({ html, updated_at: new Date().toISOString() })
+      .update({ html, mappings, updated_at: new Date().toISOString() })
       .eq("id", projectId)
       .eq("user_id", user.id)
       .select("id")
@@ -118,7 +122,7 @@ export async function saveProject(
 
   const { data, error } = await supabase
     .from("projects")
-    .insert({ user_id: user.id, html, name: "Unbenanntes Projekt" })
+    .insert({ user_id: user.id, html, mappings, name: "Unbenanntes Projekt" })
     .select("id")
     .single();
 

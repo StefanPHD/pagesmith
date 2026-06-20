@@ -10,6 +10,7 @@ import {
   saveProject,
   type ProjectListItem,
 } from "@/app/projects/actions";
+import { mappingsEqual, type Mapping } from "@/lib/mappings";
 import ActionPanel from "@/components/ActionPanel";
 
 // Parsing + iframe-Preview sind die teuren Verbraucher. Sie sollen erst nach
@@ -30,6 +31,7 @@ export default function CodeImporter({
   initialCode = "",
   initialProjectId = null,
   initialProjects = [],
+  initialMappings = [],
 }: {
   // Auto-Load: das zuletzt bearbeitete (bereits stabilisierte) HTML des Users.
   // Leer -> Editor startet leer wie bisher.
@@ -40,6 +42,8 @@ export default function CodeImporter({
   // Projektliste fuer den Switcher (server-seitig vorgeladen, danach clientseitig
   // aktuell gehalten).
   initialProjects?: ProjectListItem[];
+  // Aktions-Zuweisungen des geladenen Projekts (zusammen mit initialCode geseedet).
+  initialMappings?: Mapping[];
 }) {
   // Eingabe-State: aendert sich bei JEDEM Tastendruck und haelt die Textarea
   // sofort aktuell (Tippen darf nie auf Parsing/Preview warten). Startet mit dem
@@ -53,6 +57,11 @@ export default function CodeImporter({
   // Zuletzt gespeicherter/geladener Code -> Dirty-Erkennung, schuetzt vor stillem
   // Verlust beim Wechseln/Neu-Anlegen.
   const [savedCode, setSavedCode] = useState(initialCode);
+  // Aktions-Zuweisungen (per stabiler ps-ID). Mapping-Aenderungen fassen den Code
+  // NICHT an -> sie brauchen eine EIGENE Dirty-Baseline, sonst stiller Verlust
+  // beim Projektwechsel.
+  const [mappings, setMappings] = useState<Mapping[]>(initialMappings);
+  const [savedMappings, setSavedMappings] = useState<Mapping[]>(initialMappings);
   // Ausklappbares Projekt-Menue (Default zu: sein Inhalt rendert erst beim
   // Oeffnen clientseitig -> keine Hydration-Mismatches bei relativen Zeitstempeln).
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
@@ -175,8 +184,11 @@ export default function CodeImporter({
   }, [saveStatus]);
 
   // Ungespeicherte Aenderungen seit dem letzten Speichern/Laden. Schuetzt das
-  // Wechseln/Neu-Anlegen vor stillem Verlust.
-  const dirty = code !== savedCode;
+  // Wechseln/Neu-Anlegen vor stillem Verlust. Umfasst CODE UND MAPPINGS:
+  // Mapping-Aenderungen veraendern den Code nicht, wuerden sonst still verloren
+  // gehen. mappingsEqual vergleicht mengenbasiert (Umsortieren != dirty).
+  const dirty =
+    code !== savedCode || !mappingsEqual(mappings, savedMappings);
   // Name des aktiven Projekts fuer die Toolbar. Neues (ungespeichertes) Projekt
   // -> "Unbenanntes Projekt" (entspricht dem spaeteren DB-Default).
   const activeName =
@@ -188,6 +200,8 @@ export default function CodeImporter({
     setProjectId(null);
     setCode("");
     setSavedCode("");
+    setMappings([]);
+    setSavedMappings([]);
     setSelectedElementId(null);
   }
 
@@ -202,10 +216,11 @@ export default function CodeImporter({
     setSaveStatus("saving");
     setSaveError(null);
     const stabilized = stabilizeIds(code);
-    const result = await saveProject(projectId, stabilized);
+    const result = await saveProject(projectId, stabilized, mappings);
     if (result.ok) {
       setCode(stabilized);
       setSavedCode(stabilized);
+      setSavedMappings(mappings);
       setProjectId(result.id);
       setProjects(await listProjects());
       setSaveStatus("saved");
@@ -233,6 +248,8 @@ export default function CodeImporter({
     setProjectId(proj.id);
     setCode(proj.html);
     setSavedCode(proj.html);
+    setMappings(proj.mappings);
+    setSavedMappings(proj.mappings);
     setSelectedElementId(null);
     setIsProjectMenuOpen(false);
   }
@@ -270,6 +287,8 @@ export default function CodeImporter({
         setProjectId(next.id);
         setCode(next.html);
         setSavedCode(next.html);
+        setMappings(next.mappings);
+        setSavedMappings(next.mappings);
         setSelectedElementId(null);
       } else {
         resetToEmpty();

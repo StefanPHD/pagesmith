@@ -40,6 +40,7 @@ export default async function Home() {
         initialCode={project?.html ?? ""}
         initialProjectId={project?.id ?? null}
         initialProjects={projects}
+        initialMappings={project?.mappings ?? []}
       />
     </main>
   );

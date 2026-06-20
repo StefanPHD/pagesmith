@@ -280,7 +280,22 @@ entstehen Mappings — und damit greift das BISHER VERSCHOBENE Weg-C-Netz
 anzeigen, nicht still reparieren). Die Action-Zuweisungs-UI im Action-Panel ist
 die Voraussetzung dafür.
 
-### Mapping-Schritt 1 — Redirect-Aktion (Absicht erfassen)
+### Mapping-Schritt 1 — Redirect-Aktion (Absicht erfassen) (ABGESCHLOSSEN)
+Status: fertig. Die erste Hälfte der Mappings steht — Absicht erfassen + im UI
+anzeigen + persistieren. Konkret umgesetzt:
+- Aktion zuweisen / konfigurieren / übernehmen im ActionPanel; Persistenz in die
+  DB ausschließlich über den großen "Speichern"-Button (saveProject).
+- Sichtbarer Dirty-Indikator: bei ungespeicherten Änderungen wird der große
+  Button orange + "Ungespeicherte Änderungen" / "Speichern •", nach erfolgreichem
+  Speichern zurück auf neutrales Blau (gespeist aus DEMSELBEN kombinierten dirty
+  wie der kleine Punkt am Projektnamen).
+- Die Kachel-Aktion heißt "Übernehmen" und wirkt NUR in den Draft (Code-State +
+  mappings-State + ps-ID-Anker), schreibt NIE in die DB — klar abgegrenzt vom
+  großen "Speichern"-Button. Löst die frühere "Speichern"-Doppeldeutigkeit auf.
+- Navigations-Guards (Projekt wechseln / neu / löschen) greifen gegen das
+  KOMBINIERTE dirty (code UND mappings); ein beforeunload-Guard warnt zusätzlich
+  vor F5/Tab-Schließen bei ungespeicherten Änderungen.
+
 ERSTE Hälfte der Mappings: Aktion zuweisen + konfigurieren + speichern + im UI
 anzeigen. Das echte AUSFÜHREN (Button feuert wirklich) gehört NICHT hierher,
 sondern in den separaten Code-Gen-Schritt danach (Phase 4, Cheerio). Strikt
@@ -328,9 +343,24 @@ Verbindliche Edge-Cases / Landminen:
 UI: ActionPanel (bisher nur Text) bekommt die Zuweisung. Verknüpfte Elemente
 bekommen ein Badge in der Erkannte-Elemente-Liste.
 
+Phase-Stand & nächster Schritt: Mappings erste Hälfte (Intent erfassen) steht.
+Als Nächstes folgt das BISHER VERSCHOBENE Weg-C-Netz (verwaiste Mappings sichtbar
+machen: gespeicherte ps-ID nicht mehr im Code -> Mapping als "verwaist" anzeigen,
+nicht still reparieren), danach die Code-Generierung (Phase 4, Cheerio).
+
 ## Polish-Liste (gesammelt für einen späteren, separaten Aufräum-Durchgang)
 Bewusst aufgeschobene Aufräum-Arbeiten — NICHT im laufenden Feature-Schritt
 miterledigen, sondern gebündelt abarbeiten.
+- INVARIANTE (Team-Gedächtnis): "Übernehmen" (handleAssignMapping) wirkt NUR in
+  den Draft und ruft NIE saveProject / schreibt NIE in die DB. Der einzige
+  DB-Write ist der große "Speichern"-Button. TODO: automatisierten Test anlegen,
+  der das festschreibt (assert, dass der Übernehmen-/handleAssignMapping-Pfad
+  saveProject NICHT aufruft). Dieser Test existiert noch NICHT.
+- DEBUGGING-MERKSATZ (aus dem "Autosave"-Fehlalarm dieser Phase): Bei Widerspruch
+  zwischen Code-Analyse und Live-Verhalten ZUERST den Dev-Server neu starten
+  (stale Cache/Build) und im Network-Tab den echten DB-Write prüfen, statt
+  wiederholt denselben Code zu lesen. Die Code-Analyse war korrekt — der
+  vermeintliche Autosave ließ sich im Code nicht finden, weil es keinen gab.
 - src/middleware.ts -> proxy.ts umbenennen: Next 16.2.9 zeigt eine
   Deprecation-Warnung für die "middleware"-Konvention (proxy ist der Nachfolger).
   Funktioniert weiter, daher unkritisch.

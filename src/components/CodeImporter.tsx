@@ -140,6 +140,13 @@ export default function CodeImporter({
     [mappings, selectedElementId]
   );
 
+  // ps-IDs mit zugewiesener Aktion -> O(1)-Lookup fuer die "verknuepft"-Badges in
+  // der Erkannte-Elemente-Liste (verdrahtete Elemente auf einen Blick).
+  const mappedIds = useMemo(
+    () => new Set(mappings.map((m) => m.elementId)),
+    [mappings]
+  );
+
   // Klick-Bruecke aus dem sandboxed iframe. Registriert sich EINMAL ([] deps);
   // iframeRef + setSelectedElementId sind stabil.
   // Das iframe laeuft mit sandbox="allow-scripts" (ohne allow-same-origin) ->
@@ -524,6 +531,7 @@ export default function CodeImporter({
               )}
               {elements.map((el, i) => {
                 const isSelected = el.id === selectedElementId;
+                const isMapped = mappedIds.has(el.id);
                 return (
                   // text-left + w-full neutralisieren das Button-Default (zentrierter
                   // Text); bg/Font kommen unveraendert aus typeStyles wie in Phase 1.
@@ -540,6 +548,16 @@ export default function CodeImporter({
                       &lt;{el.tag}&gt;
                     </span>
                     <span className="truncate">{el.label}</span>
+                    {/* Verdrahtetes Element: dezentes Badge, damit man verknuepfte
+                        Elemente auf einen Blick sieht. */}
+                    {isMapped && (
+                      <span
+                        className="ml-auto shrink-0 rounded-full bg-white/70 px-1.5 py-0.5 text-xs"
+                        title="Aktion verknüpft"
+                      >
+                        🔗
+                      </span>
+                    )}
                   </button>
                 );
               })}

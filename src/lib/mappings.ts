@@ -59,6 +59,24 @@ export function removeMapping(
   return mappings.filter((m) => m.elementId !== elementId);
 }
 
+// Weg-C-Netz: verwaiste Mappings finden. Ein Mapping ist verwaist, wenn seine
+// elementId NICHT in den aktuell im Code erkannten ps-IDs vorkommt (Element
+// geloescht, Seite neu generiert, komplett neue Version eingefuegt) -> es zeigt
+// ins Leere. Nimmt Set ODER Array (intern normalisiert).
+//
+// EHRLICH (bewusst): leere presentElementIds -> ALLE Mappings gelten als
+// verwaist. Die Entscheidung, WANN das aussagekraeftig ist (Flash-Guard beim
+// Laden: erst pruefen, nachdem der aktuelle Code echt geparst wurde), liegt in
+// der KOMPONENTE, nicht hier. Status wird ABGELEITET, nie gespeichert (kein
+// orphaned-Flag, keine Migration) — analog zu dirty.
+export function findOrphans(
+  mappings: Mapping[],
+  presentElementIds: Iterable<string>
+): Mapping[] {
+  const present = new Set(presentElementIds);
+  return mappings.filter((m) => !present.has(m.elementId));
+}
+
 // Reihenfolge-UNABHAENGIGER Mengen-Vergleich, pro elementId geschluesselt.
 // Umsortieren ist NICHT dirty; eine geaenderte URL/Option, Hinzufuegen oder
 // Entfernen IST dirty. Hier haengt der Schutz gegen stillen Verlust beim

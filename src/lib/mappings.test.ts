@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   findMapping,
+  findOrphans,
   isValidRedirectUrl,
   mappingsEqual,
   removeMapping,
@@ -65,6 +66,48 @@ describe("findMapping / upsertMapping / removeMapping (Schluessel elementId)", (
     const next = removeMapping(list, "ps-aaaaaa");
     expect(next).toHaveLength(1);
     expect(next[0].elementId).toBe("ps-bbbbbb");
+  });
+});
+
+describe("findOrphans – verwaiste Mappings (Weg-C)", () => {
+  it("id vorhanden -> nicht verwaist", () => {
+    const list = [redirect("ps-aaaaaa", "https://a.com")];
+    expect(findOrphans(list, ["ps-aaaaaa"])).toEqual([]);
+  });
+
+  it("id fehlt -> verwaist", () => {
+    const list = [redirect("ps-aaaaaa", "https://a.com")];
+    const orphans = findOrphans(list, ["ps-zzzzzz"]);
+    expect(orphans).toHaveLength(1);
+    expect(orphans[0].elementId).toBe("ps-aaaaaa");
+  });
+
+  it("gemischte Liste -> nur die fehlenden", () => {
+    const list = [
+      redirect("ps-aaaaaa", "https://a.com"),
+      redirect("ps-bbbbbb", "https://b.com"),
+      redirect("ps-cccccc", "https://c.com"),
+    ];
+    const orphans = findOrphans(list, ["ps-bbbbbb"]);
+    expect(orphans.map((m) => m.elementId)).toEqual(["ps-aaaaaa", "ps-cccccc"]);
+  });
+
+  it("leere Mappings -> keine Orphans", () => {
+    expect(findOrphans([], ["ps-aaaaaa"])).toEqual([]);
+  });
+
+  it("EHRLICH: leere presentElementIds -> alle verwaist (Guard liegt in der Komponente)", () => {
+    const list = [
+      redirect("ps-aaaaaa", "https://a.com"),
+      redirect("ps-bbbbbb", "https://b.com"),
+    ];
+    expect(findOrphans(list, [])).toHaveLength(2);
+  });
+
+  it("akzeptiert auch ein Set als presentElementIds", () => {
+    const list = [redirect("ps-aaaaaa", "https://a.com")];
+    expect(findOrphans(list, new Set(["ps-aaaaaa"]))).toEqual([]);
+    expect(findOrphans(list, new Set<string>())).toHaveLength(1);
   });
 });
 

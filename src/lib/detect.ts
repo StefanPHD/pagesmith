@@ -286,3 +286,38 @@ export function annotateAndDetect(html: string): PreparedPreview {
 export function detectElements(html: string): DetectedElement[] {
   return annotateAndDetect(html).elements;
 }
+
+export type AnchorResult = {
+  // (Ggf.) stabilisierter Code – identisch mit dem Input, falls schon stabil.
+  code: string;
+  // Die dauerhaft im Code stehende ps-ID des Ziel-Elements.
+  canonicalId: string;
+};
+
+/**
+ * ps-ID-ANKER fuer ein Mapping-Ziel: stellt sicher, dass die ps-ID des
+ * Ziel-Elements DAUERHAFT im Code steht, und gibt den (ggf. stabilisierten) Code
+ * + die kanonische ps-ID zurueck. Gemeinsame, reine Basis fuer Aktion-Zuweisen
+ * (handleAssignMapping) UND Re-Link (handleRelinkOrphan) — keine Duplikation,
+ * unit-testbar (kein React/State).
+ *
+ * Knackpunkt fuer ein fabrikneues Element (noch keine ps-ID im Code): der separate
+ * stabilizeIds-Parse erzeugt eine ANDERE Zufalls-ID als der Parse, aus dem die
+ * uebergebene elements-Liste stammt. Deshalb richten wir per INDEX auf der
+ * aktuellen elements-Liste aus (idempotent, gleiche Kandidaten-Reihenfolge),
+ * statt der uebergebenen ID blind zu vertrauen — sonst landet die Config am
+ * FALSCHEN Element.
+ */
+export function anchorMappingTarget(
+  code: string,
+  elements: DetectedElement[],
+  targetElementId: string
+): AnchorResult {
+  const stabilized = stabilizeIds(code);
+  if (stabilized === code) return { code, canonicalId: targetElementId };
+  const stableEls = annotateAndDetect(stabilized).elements;
+  const idx = elements.findIndex((e) => e.id === targetElementId);
+  const canonicalId =
+    idx >= 0 && stableEls[idx] ? stableEls[idx].id : targetElementId;
+  return { code: stabilized, canonicalId };
+}

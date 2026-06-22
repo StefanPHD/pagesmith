@@ -1,7 +1,12 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { annotateAndDetect, detectElements, stabilizeIds } from "./detect";
+import {
+  anchorMappingTarget,
+  annotateAndDetect,
+  detectElements,
+  stabilizeIds,
+} from "./detect";
 
 // Format der code-residenten ps-IDs: "ps-" + 6x [a-z0-9].
 const PS_ID_RE = /^ps-[a-z0-9]{6}$/;
@@ -208,5 +213,45 @@ describe("stabilizeIds – code-residente, stabile ps-IDs (3.0)", () => {
   it("liefert '' fuer leeren/whitespace Input", () => {
     expect(stabilizeIds("")).toBe("");
     expect(stabilizeIds("   \n\t ")).toBe("");
+  });
+});
+
+describe("anchorMappingTarget – geteilte ps-ID-Anker-Logik (Assign + Re-Link)", () => {
+  // DISKRIMINIEREND: der eigentliche Wert der Index-Ausrichtung ist, dass die
+  // Config am RICHTIGEN Element landet. Wir verknuepfen gezielt mit dem ZWEITEN
+  // Button und pruefen, dass die canonicalId zum ZWEITEN gehoert, nicht zum ersten.
+  // Ein Test, der nur "irgendeine ID kam zurueck" prueft, faenge diesen Bug nicht.
+  it("frische Elemente: richtet per INDEX aus -> canonicalId ist die des GEWAEHLTEN (zweiten) Elements", () => {
+    const code = "<button>Erste</button><button>Zweite</button>";
+    const elements = annotateAndDetect(code).elements;
+    expect(elements).toHaveLength(2);
+    const target = elements[1]; // bewusst der ZWEITE Button
+
+    const { code: nextCode, canonicalId } = anchorMappingTarget(
+      code,
+      elements,
+      target.id
+    );
+
+    // Fabrikneuer Code -> stabilisiert (ps-IDs eingeschrieben) -> veraendert.
+    expect(nextCode).not.toBe(code);
+    expect(canonicalId).toMatch(PS_ID_RE);
+
+    // KERN: canonicalId zeigt auf den ZWEITEN Button ("Zweite"), nicht den ersten.
+    const anchored = annotateAndDetect(nextCode).elements;
+    expect(anchored[0].label).toBe("Erste");
+    expect(anchored[1].label).toBe("Zweite");
+    expect(canonicalId).toBe(anchored[1].id);
+    expect(canonicalId).not.toBe(anchored[0].id);
+  });
+
+  it("bereits stabiler Code: Rueckgabe code unveraendert, canonicalId === targetElementId", () => {
+    const stable = stabilizeIds("<button>Erste</button><button>Zweite</button>");
+    const elements = annotateAndDetect(stable).elements;
+    const target = elements[1];
+
+    const result = anchorMappingTarget(stable, elements, target.id);
+    expect(result.code).toBe(stable);
+    expect(result.canonicalId).toBe(target.id);
   });
 });

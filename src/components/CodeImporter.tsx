@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { annotateAndDetect, stabilizeIds, type ElementType } from "@/lib/detect";
+import {
+  anchorMappingTarget,
+  annotateAndDetect,
+  stabilizeIds,
+  type ElementType,
+} from "@/lib/detect";
 import {
   deleteProject,
   listProjects,
@@ -289,23 +294,20 @@ export default function CodeImporter({
     }
   }
 
-  // Aktion zuweisen/aendern. ps-ID-ANKER: bevor das Mapping gespeichert wird,
-  // muss die ps-ID des Ziel-Elements DAUERHAFT im Code stehen, sonst verwaist es
-  // sofort. Wir stabilisieren den Code und spiegeln ihn in die Textarea zurueck
-  // (wie beim Speichern). Fuer ein fabrikneues Element (noch keine ps-ID im Code)
-  // erzeugt der separate Parse eine ANDERE Zufalls-ID als die Preview -> wir
-  // richten ueber den INDEX auf dem stabilisierten HTML aus (idempotent, gleiche
-  // Kandidaten-Reihenfolge wie die aktuelle elements-Liste, die selectedElementId
-  // besitzt), statt der Preview-ID blind zu vertrauen.
+  // Aktion zuweisen/aendern. ps-ID-ANKER (gemeinsame Logik in anchorMappingTarget):
+  // bevor das Mapping gespeichert wird, muss die ps-ID des Ziel-Elements DAUERHAFT
+  // im Code stehen, sonst verwaist es sofort. Bei Aenderung spiegeln wir den
+  // stabilisierten Code in die Textarea zurueck (wie beim Speichern) und ziehen die
+  // Auswahl auf die kanonische ID nach.
   function handleAssignMapping(config: RedirectConfig) {
     if (!selectedElementId) return;
-    const stabilized = stabilizeIds(code);
-    let canonicalId = selectedElementId;
-    if (stabilized !== code) {
-      const stableEls = annotateAndDetect(stabilized).elements;
-      const idx = elements.findIndex((e) => e.id === selectedElementId);
-      if (idx >= 0 && stableEls[idx]) canonicalId = stableEls[idx].id;
-      setCode(stabilized);
+    const { code: nextCode, canonicalId } = anchorMappingTarget(
+      code,
+      elements,
+      selectedElementId
+    );
+    if (nextCode !== code) {
+      setCode(nextCode);
       setSelectedElementId(canonicalId);
     }
     setMappings((prev) =>

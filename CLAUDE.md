@@ -348,9 +348,25 @@ Als Nächstes folgt das BISHER VERSCHOBENE Weg-C-Netz (verwaiste Mappings sichtb
 machen: gespeicherte ps-ID nicht mehr im Code -> Mapping als "verwaist" anzeigen,
 nicht still reparieren), danach die Code-Generierung (Phase 4, Cheerio).
 
-### Mapping-Schritt 2 — Weg-C-Netz (verwaiste Mappings), Scheibe 1
+### Mapping-Schritt 2 — Weg-C-Netz (verwaiste Mappings), Scheibe 1 (ABGESCHLOSSEN)
+Status: fertig, Pipeline grün (npm test inkl. findOrphans-Tests, tsc, lint, build).
+Verwaiste Mappings werden ABGELEITET erkannt (findOrphans in src/lib/mappings.ts,
+unit-getestet) und in einer eigenen, immer sichtbaren Sektion "Verwaiste
+Verknüpfungen (N)" (nur bei N>0, über den drei Zonen) mit gespeicherter Konfig
+(Typ + URL) + Löschen angezeigt. Konkret umgesetzt:
+- Flash-Guard via debouncedCode === code: Orphans werden erst berechnet, wenn die
+  Elementliste den AKTUELLEN Code widerspiegelt (kein Initial-Lade-Flackern,
+  hydration-safe, kein neues Flag — irrt sicher Richtung "nichts zeigen").
+- Verwaiste AUSWAHL degradiert graceful: zeigt selectedElementId auf keine aktuelle
+  ps-ID mehr, wird sie wie "nichts ausgewählt" behandelt (ActionPanel-Hinweistext,
+  kein stale Redirect-Formular, kein Throw) — war bereits durch die abgeleitete
+  selectedElement-Logik abgedeckt.
+- Orphans überleben Speichern/Laden (saveProject reicht das ganze mappings-Array,
+  nichts wird still fallengelassen). Löschen mutiert den State -> dirty -> der
+  große "Speichern"-Button persistiert (kein Auto-Save, kein Re-Link, kein Raten).
+
 Scope (Owner-Entscheidung): Scheibe 1 = ANZEIGEN + LÖSCHEN. Neu-Verknüpfen
-(Re-Link) ist BEWUSST auf einen unmittelbaren Folgeschritt vertagt.
+(Re-Link) ist BEWUSST auf einen unmittelbaren Folgeschritt vertagt (Scheibe 2).
 
 Was ein verwaistes Mapping ist:
 - Ein Mapping verweist über seine ps-ID auf ein Element. Ändert sich der Code so,
@@ -386,7 +402,8 @@ gespeicherte URL verloren geht).
 Zukunfts-Anschluss: Dasselbe Orphan-Muster wird später vom Funnel wiederverwendet
 (verwaister funnel_step, wenn eine Zielseite gelöscht wurde).
 
-Scheibe 1 schließt das Weg-C-Netz für die Anzeige+Löschen-Stufe ab; Re-Link folgt.
+Scheibe 1 schließt das Weg-C-Netz für die Anzeige+Löschen-Stufe ab; Re-Link
+(Scheibe 2) folgt — siehe Polish-/Folge-Liste.
 
 ## Zukunftsrichtung: Funnel-Architektur (bewusst vertagt, NICHT jetzt bauen)
 Festgehaltene Richtung, kein Auftrag. Dient als Bauplan-Anker, damit heutige
@@ -441,6 +458,10 @@ gelöscht" (verwaister funnel_step). Gleiche Idee, nur erweitert.
 ## Polish-Liste (gesammelt für einen späteren, separaten Aufräum-Durchgang)
 Bewusst aufgeschobene Aufräum-Arbeiten — NICHT im laufenden Feature-Schritt
 miterledigen, sondern gebündelt abarbeiten.
+- FOLGE-SCHRITT: Weg-C Scheibe 2 = Neu-Verknüpfen (Re-Link) eines verwaisten
+  Mappings auf ein aktuelles Element. AUSSCHLIESSLICH vom Menschen ausgelöst, NIE
+  automatisch geraten (gleiche Fehlerklasse wie früher die positionsbasierten IDs).
+  Baut auf der fertigen Scheibe-1-Anzeige (findOrphans + Sektion) auf.
 - INVARIANTE (Team-Gedächtnis): "Übernehmen" (handleAssignMapping) wirkt NUR in
   den Draft und ruft NIE saveProject / schreibt NIE in die DB. Der einzige
   DB-Write ist der große "Speichern"-Button. TODO: automatisierten Test anlegen,

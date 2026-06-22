@@ -464,9 +464,11 @@ miterledigen, sondern gebündelt abarbeiten.
   Baut auf der fertigen Scheibe-1-Anzeige (findOrphans + Sektion) auf.
 - INVARIANTE (Team-Gedächtnis): "Übernehmen" (handleAssignMapping) wirkt NUR in
   den Draft und ruft NIE saveProject / schreibt NIE in die DB. Der einzige
-  DB-Write ist der große "Speichern"-Button. TODO: automatisierten Test anlegen,
-  der das festschreibt (assert, dass der Übernehmen-/handleAssignMapping-Pfad
-  saveProject NICHT aufruft). Dieser Test existiert noch NICHT.
+  DB-Write ist der große "Speichern"-Button. ERLEDIGT: behavioraler Riegel-Test
+  in src/components/CodeImporter.test.tsx schreibt das fest (spioniert die echte
+  saveProject-Action; Assign-Pfad -> 0 Aufrufe, Pflicht-Gegenprobe Speichern-Pfad
+  -> 1 Aufruf). Dazu kam die Komponenten-Test-Basis (@testing-library/react als
+  devDep, vitest-Alias + .test.tsx + jsx via tsconfig).
 - DEBUGGING-MERKSATZ (aus dem "Autosave"-Fehlalarm dieser Phase): Bei Widerspruch
   zwischen Code-Analyse und Live-Verhalten ZUERST den Dev-Server neu starten
   (stale Cache/Build) und im Network-Tab den echten DB-Write prüfen, statt

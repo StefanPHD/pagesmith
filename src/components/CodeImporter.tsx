@@ -12,6 +12,7 @@ import {
 } from "@/app/projects/actions";
 import {
   findMapping,
+  findOrphans,
   mappingsEqual,
   removeMapping,
   upsertMapping,
@@ -145,6 +146,29 @@ export default function CodeImporter({
   const mappedIds = useMemo(
     () => new Set(mappings.map((m) => m.elementId)),
     [mappings]
+  );
+
+  // Weg-C-Netz: verwaiste Mappings (ps-ID nicht mehr im Code) SICHTBAR machen,
+  // statt sie still zu loeschen oder falsch neu zu verknuepfen.
+  //
+  // FLASH-GUARD (kritisch): elements wird aus debouncedCode abgeleitet, das beim
+  // Laden bewusst LEER startet und code um DEBOUNCE_MS nachlaeuft. Wuerden wir
+  // Orphans gegen diese noch-leere Liste berechnen, blinkte kurz "alles
+  // verwaist". Erst rechnen, wenn debouncedCode === code -> dann spiegelt
+  // elements GARANTIERT den AKTUELLEN Code wider (mindestens einmal echt
+  // geparst). Nutzt bestehenden State, kein neues Flag; irrt sicher Richtung
+  // "nichts zeigen". Auch hydration-sicher: im ersten Paint ist debouncedCode ""
+  // -> bei nicht-leerem code ungleich (Guard aus, identischer Server/Client-Paint).
+  const elementsReflectCurrentCode = debouncedCode === code;
+  const orphans = useMemo(
+    () =>
+      elementsReflectCurrentCode
+        ? findOrphans(
+            mappings,
+            elements.map((e) => e.id)
+          )
+        : [],
+    [elementsReflectCurrentCode, mappings, elements]
   );
 
   // Klick-Bruecke aus dem sandboxed iframe. Registriert sich EINMAL ([] deps);
@@ -294,6 +318,17 @@ export default function CodeImporter({
   function handleRemoveMapping() {
     if (!selectedElementId) return;
     setMappings((prev) => removeMapping(prev, selectedElementId));
+  }
+
+  // Verwaistes Mapping loeschen. Destruktiv (die gespeicherte URL geht verloren)
+  // -> Bestaetigung. Mutiert NUR den State (-> dirty); persistiert wird erst ueber
+  // den grossen "Speichern"-Button, kein Auto-Save. Reines Erkennen aendert die
+  // Mappings NICHT; Loeschen ist die einzige Mutation. Re-Link ist bewusst NICHT
+  // Teil dieser Scheibe (kein automatisches Reparieren/Neu-Verknuepfen).
+  function handleRemoveOrphan(elementId: string) {
+    if (!window.confirm("Verwaiste Verknüpfung löschen? Die gespeicherte URL geht verloren."))
+      return;
+    setMappings((prev) => removeMapping(prev, elementId));
   }
 
   // Projekt wechseln: laedt dessen HTML in den Editor. Dirty-Guard verhindert
@@ -484,6 +519,46 @@ export default function CodeImporter({
           </div>
         )}
       </div>
+
+      {/* Weg-C-Netz: verwaiste Verknuepfungen. Eigene, immer sichtbare Sektion
+          (nicht im einklappbaren linken Panel, da Orphans GLOBAL sind und kein
+          Element-Badge tragen koennen — das Element fehlt ja). Nur bei N>0. */}
+      {orphans.length > 0 && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
+          <h2 className="mb-2 text-sm font-medium text-amber-800">
+            ⚠ Verwaiste Verknüpfungen ({orphans.length})
+          </h2>
+          <p className="mb-3 text-xs text-amber-700">
+            Diese Aktionen verweisen auf Elemente, die im Code nicht mehr existieren.
+            Lösche sie oder stelle das Element wieder her.
+          </p>
+          <ul className="flex flex-col gap-2">
+            {orphans.map((m) => (
+              <li
+                key={m.elementId}
+                className="flex items-center gap-3 rounded-md border border-amber-200 bg-white px-3 py-2"
+              >
+                <span className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">
+                  🔗 Weiterleitung
+                </span>
+                <span className="min-w-0 flex-1 truncate text-sm text-gray-700" title={m.config.url}>
+                  {m.config.url}
+                </span>
+                <span className="shrink-0 font-mono text-xs text-gray-400">
+                  {m.elementId}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveOrphan(m.elementId)}
+                  className="shrink-0 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-1 focus:ring-red-400"
+                >
+                  Löschen
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Bestehende drei Zonen (Editor-Kern) — unveraendert. */}
       <div className="flex w-full flex-col gap-4 lg:flex-row">

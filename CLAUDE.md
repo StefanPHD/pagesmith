@@ -405,6 +405,45 @@ Zukunfts-Anschluss: Dasselbe Orphan-Muster wird später vom Funnel wiederverwend
 Scheibe 1 schließt das Weg-C-Netz für die Anzeige+Löschen-Stufe ab; Re-Link
 (Scheibe 2) folgt — siehe Polish-/Folge-Liste.
 
+### Weg-C-Netz Scheibe 2 — Re-Link (verwaiste Aktion neu verknüpfen)
+Scope (Owner-Entscheidung): Verwaiste Verknüpfung per Dropdown DIREKT auf der
+Orphan-Karte einem aktuellen Element neu zuweisen ("Verknüpfen mit …"). KEIN
+modaler Pick-Modus, KEIN Vorschau-Klick-Modus.
+
+Was Re-Link ist:
+- Nimmt die gespeicherte Konfiguration eines verwaisten Mappings und legt sie auf
+  ein vom USER gewähltes aktuelles Element; der alte Orphan-Eintrag wird entfernt.
+- Use-Case: Seite neu generiert -> Button hat neue ps-ID -> gespeicherte URL nicht
+  neu tippen müssen.
+
+Architektur (Wiederverwendung, kaum neue Logik):
+- Re-Link = (1) Config auf das gewählte Element upserten via DERSELBEN Anker-Logik
+  wie handleAssignMapping (stabilizeIds + Index-Ausrichtung für frische Elemente +
+  Rückspiegelung der ps-ID in den Code) + (2) alten Orphan via removeMapping
+  entfernen. Beide Bausteine existieren bereits und sind getestet.
+- Self-resolving: sobald die Config auf einem lebenden Element liegt, sieht
+  findOrphans dessen ps-ID -> nicht mehr verwaist -> Eintrag verschwindet aus der
+  gelben Sektion, Badge erscheint am neuen Element (Status ist abgeleitet).
+
+Weg-C-Grundsatz (unverändert gültig):
+- Der Mensch wählt das Ziel. NIE automatisch raten/zuordnen (keine
+  Textähnlichkeit, kein Auto-Andocken).
+
+UI:
+- Jede Orphan-Karte bekommt neben "Löschen" ein Dropdown "Verknüpfen mit …",
+  gefüllt mit den AKTUELL erkannten Elementen (Label = Tag + Textauszug).
+- Wenn 0 aktuelle Elemente existieren: Dropdown ausblenden/deaktivieren (nichts
+  zum Verknüpfen) -> nur Löschen möglich.
+
+Verbindliche Edge-Cases:
+- Überschreib-Schutz: Hat das gewählte Zielelement BEREITS ein Mapping -> vorher
+  bestätigen ("Element hat bereits eine Aktion — ersetzen?"). Nie still
+  überschreiben.
+- Re-Link mutiert mappings (+ ggf. code durch ps-ID-Rückspiegelung) -> dirty ->
+  großer Speichern-Button. KEIN Auto-Save.
+
+Scheibe 2 schließt das Weg-C-Netz ab (Anzeigen + Löschen + Re-Link).
+
 ## Zukunftsrichtung: Funnel-Architektur (bewusst vertagt, NICHT jetzt bauen)
 Festgehaltene Richtung, kein Auftrag. Dient als Bauplan-Anker, damit heutige
 Entscheidungen sie nicht versperren. Wird NICHT im laufenden Schritt angefasst.

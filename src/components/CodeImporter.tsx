@@ -333,6 +333,39 @@ export default function CodeImporter({
     setMappings((prev) => removeMapping(prev, elementId));
   }
 
+  // Re-Link (Weg-C Scheibe 2): die gespeicherte Config eines verwaisten Mappings
+  // einem vom USER gewaehlten aktuellen Element neu zuweisen. Komposition
+  // bestehender, getesteter Teile — KEINE Logik-Duplikation:
+  // (1) Config aus dem Orphan holen, (2) Ueberschreib-Schutz VOR dem Schreiben,
+  // (3) ps-ID-Anker via anchorMappingTarget (gleiche Mechanik wie Assign),
+  // (4) alten Orphan entfernen UND Config aufs Ziel upserten in EINER State-
+  //     Aktualisierung -> Orphan verschwindet, neues Mapping erscheint.
+  // Self-resolving: der abgeleitete findOrphans-Status loest den Eintrag selbst
+  // auf; das Badge erscheint am Ziel. NIE automatisch raten — nur die explizite
+  // Dropdown-Wahl verknuepft. Mutiert State (+ ggf. code) -> dirty, kein Auto-Save.
+  function handleRelinkOrphan(orphanElementId: string, targetElementId: string) {
+    const orphan = findMapping(mappings, orphanElementId);
+    if (!orphan) return;
+    if (
+      findMapping(mappings, targetElementId) &&
+      !window.confirm("Dieses Element hat bereits eine Aktion — ersetzen?")
+    )
+      return;
+    const { code: nextCode, canonicalId } = anchorMappingTarget(
+      code,
+      elements,
+      targetElementId
+    );
+    if (nextCode !== code) setCode(nextCode);
+    setMappings((prev) =>
+      upsertMapping(removeMapping(prev, orphanElementId), {
+        elementId: canonicalId,
+        type: orphan.type,
+        config: orphan.config,
+      })
+    );
+  }
+
   // Projekt wechseln: laedt dessen HTML in den Editor. Dirty-Guard verhindert
   // stillen Verlust ungespeicherter Aenderungen.
   async function handleSwitch(id: string) {
@@ -549,6 +582,28 @@ export default function CodeImporter({
                 <span className="shrink-0 font-mono text-xs text-gray-400">
                   {m.elementId}
                 </span>
+                {/* Re-Link: nur wenn es ueberhaupt aktuelle Elemente gibt; sonst
+                    bleibt nur Loeschen (nichts zum Verknuepfen). Controlled mit
+                    value="" -> setzt sich nach der Wahl optisch zurueck, auch wenn
+                    der Ueberschreib-Schutz abgebrochen wird. */}
+                {elements.length > 0 && (
+                  <select
+                    value=""
+                    onChange={(e) => {
+                      if (e.target.value)
+                        handleRelinkOrphan(m.elementId, e.target.value);
+                    }}
+                    aria-label="Verknüpfen mit Element"
+                    className="shrink-0 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="">Verknüpfen mit …</option>
+                    {elements.map((el) => (
+                      <option key={el.id} value={el.id}>
+                        {`<${el.tag}> ${el.label}`}
+                      </option>
+                    ))}
+                  </select>
+                )}
                 <button
                   type="button"
                   onClick={() => handleRemoveOrphan(m.elementId)}

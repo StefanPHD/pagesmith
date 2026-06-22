@@ -270,15 +270,26 @@ Kleine Sammel-Migration für vier Supabase-Security-Advisor-Warnungen, kein Feat
 - "Leaked Password Protection" ist eine Dashboard-Einstellung
   (Authentication -> Settings), per Toggle zu aktivieren — KEIN SQL.
 
-## Nächster großer Schritt — Mapping-/Action-Zuweisung
-Phase 3 hat das Fundament gelegt (stabile ps-IDs + Persistenz + Multi-Projekt).
-Der nächste Block ist die eigentliche "Click & Connect"-Wertschöpfung: dem
-ausgewählten Element echte Aktionen zuweisen (Stripe / PayPal / Universal-
-Webhook) und in mappings (jsonb, bereits im Schema) speichern. ERST hier
-entstehen Mappings — und damit greift das BISHER VERSCHOBENE Weg-C-Netz
-(gespeicherte ps-ID nicht mehr im Code -> Mapping sichtbar als "verwaist"
-anzeigen, nicht still reparieren). Die Action-Zuweisungs-UI im Action-Panel ist
-die Voraussetzung dafür.
+## Mapping-/Action-Zuweisung (ABGESCHLOSSEN)
+Phase 3 hat das Fundament gelegt (stabile ps-IDs + Persistenz + Multi-Projekt);
+darauf aufbauend ist die "Click & Connect"-Wertschöpfung jetzt VOLLSTÄNDIG: dem
+ausgewählten Element echte Aktionen zuweisen und in mappings (jsonb) speichern.
+Komplett umgesetzt und ruhend auf den stabilen ps-IDs aus Phase 3.0:
+- Aktion zuweisen / konfigurieren / "Übernehmen" wirkt nur in den Draft (Code- +
+  mappings-State + ps-ID-Anker); Persistenz ausschließlich über den großen,
+  bewussten "Speichern"-Button (saveProject) — kein Auto-Save (Riegel-Test).
+- Sichtbarer Dirty-Indikator (großer Button + kleiner Punkt am Projektnamen, aus
+  DEMSELBEN kombinierten dirty über code UND mappings); klare Benennung
+  ("Übernehmen" vs. "Speichern") löst die frühere Doppeldeutigkeit auf.
+- Navigations-Guards (wechseln / neu / löschen + beforeunload) gegen das
+  kombinierte dirty.
+- Vollständiges Weg-C-Sicherheitsnetz für verwaiste Mappings: anzeigen + löschen
+  + neu verknüpfen (Details in den Scheibe-1/2-Blöcken unten).
+
+Nächster großer Schritt: Code-Generierung (Phase 4, Cheerio) — die erfassten
+Mappings ins echte Output-HTML backen (Redirect/Payment-Trigger wirklich
+verdrahten), bisher erfassen wir nur die ABSICHT. Danach Hosting (Phase 6), das
+zugleich die Funnel-Vision freischaltet (siehe Zukunftsrichtung).
 
 ### Mapping-Schritt 1 — Redirect-Aktion (Absicht erfassen) (ABGESCHLOSSEN)
 Status: fertig. Die erste Hälfte der Mappings steht — Absicht erfassen + im UI
@@ -405,7 +416,24 @@ Zukunfts-Anschluss: Dasselbe Orphan-Muster wird später vom Funnel wiederverwend
 Scheibe 1 schließt das Weg-C-Netz für die Anzeige+Löschen-Stufe ab; Re-Link
 (Scheibe 2) folgt — siehe Polish-/Folge-Liste.
 
-### Weg-C-Netz Scheibe 2 — Re-Link (verwaiste Aktion neu verknüpfen)
+### Weg-C-Netz Scheibe 2 — Re-Link (verwaiste Aktion neu verknüpfen) (ERLEDIGT)
+Status: fertig, Pipeline grün (npm test inkl. neuer Anker-Tests, tsc, lint, build).
+Damit ist das GESAMTE Weg-C-Netz ABGESCHLOSSEN: anzeigen + löschen + neu
+verknüpfen. Konkret umgesetzt:
+- Re-Link per "Verknüpfen mit …"-Dropdown direkt auf der Orphan-Karte (kein
+  modaler Pick-Modus, kein Vorschau-Klick-Flow).
+- Geteilte reine anchorMappingTarget-Logik in detect.ts: dieselbe ps-ID-Anker-
+  Mechanik für Assign UND Re-Link (kein Duplikat) — jetzt isoliert unit-getestet
+  (diskriminierender Test: Anker auf das ZWEITE Element liefert dessen ID).
+- Überschreib-Schutz via window.confirm VOR dem Schreiben (Ziel hat schon eine
+  Aktion -> "ersetzen?"). Nie still überschreiben.
+- Dropdown verschwindet bei 0 aktuellen Elementen -> nur Löschen; die Waisen
+  bleiben als Netz erhalten (kein stilles Verwerfen).
+- Self-Resolving über den abgeleiteten findOrphans-Status: nach Re-Link ist die
+  ps-ID wieder im Code -> Eintrag verlässt die gelbe Sektion, Badge erscheint am
+  Ziel. Mutiert State (+ ggf. code) -> dirty -> großer Speichern-Button, kein
+  Auto-Save.
+
 Scope (Owner-Entscheidung): Verwaiste Verknüpfung per Dropdown DIREKT auf der
 Orphan-Karte einem aktuellen Element neu zuweisen ("Verknüpfen mit …"). KEIN
 modaler Pick-Modus, KEIN Vorschau-Klick-Modus.

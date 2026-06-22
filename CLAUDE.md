@@ -348,6 +348,56 @@ Als Nächstes folgt das BISHER VERSCHOBENE Weg-C-Netz (verwaiste Mappings sichtb
 machen: gespeicherte ps-ID nicht mehr im Code -> Mapping als "verwaist" anzeigen,
 nicht still reparieren), danach die Code-Generierung (Phase 4, Cheerio).
 
+## Zukunftsrichtung: Funnel-Architektur (bewusst vertagt, NICHT jetzt bauen)
+Festgehaltene Richtung, kein Auftrag. Dient als Bauplan-Anker, damit heutige
+Entscheidungen sie nicht versperren. Wird NICHT im laufenden Schritt angefasst.
+
+### Vision
+Ein Projekt kann perspektivisch ein mehrstufiger Funnel sein (z.B. Landingpage ->
+Checkout-Seite -> Dankeseite), alle Seiten im selben Branding, komplett in
+Pagesmith gebaut. Marketer denken in Funnels, nicht in Einzelseiten — die
+Plattform soll dieser Denkweise folgen.
+
+### Zwei UNTERSCHIEDLICHE Fähigkeiten (nicht vermischen)
+Diese zwei Achsen sind getrennte Baustellen und dürfen nicht in einen Topf:
+
+(1) Mehrseitige Projekte + interne Navigation ("Button -> nächster Funnelschritt").
+    Neuer Aktionstyp, z.B. { type: "funnel_step", config: { targetPageId } }.
+    Das bestehende erweiterbare Mapping-Modell (type-Diskriminator aus dem
+    Redirect-Schritt) deckt das bereits ab -> KEIN Modell-Umbau für die Aktion
+    nötig, nur ein neuer Union-Zweig.
+
+(2) Formular- / Schnittstellen-Anbindung (eigene Baustelle, NICHT mit Navigation
+    vermischen). Beispiele und ihre unterschiedliche Schwere:
+    - DOI-/Freebie-Formular an E-Mail-Anbieter posten -> Formular-Handling, nahe
+      am künftigen Webhook-Primitiv (POST bei Submit).
+    - Zahlungsanbieter Digistore24 / Copecart (Lieferung digitaler Produkte):
+      a) Einfacher Link zum externen Bestellformular -> HEUTE SCHON via
+         type:"redirect" abgedeckt.
+      b) Eingebettetes Bestellformular (InCart-Widgets / embedded Checkout) ->
+         Einbettung von Drittanbieter-Code/Skripten in die Seite. Eigene
+         Baustelle, später.
+      c) Zahlungsbestätigungs-Webhooks (Anbieter ruft UNS bei erfolgter Zahlung)
+         -> EINGEHENDES Server-zu-Server-Handling, braucht einen empfangenden
+         Endpunkt (nicht nur sendend bei Klick). Technisch anspruchsvollster Teil,
+         hängt eng an Hosting (Phase 6) -> ohne ausgelieferte Seite mit
+         Server-Komponente kein Webhook-Empfänger.
+
+### Strukturelle Konsequenz
+Heute gilt "Projekt = 1 Seite" (html + mappings direkt auf der Projektzeile).
+Funnel bräuchte "Projekt = N Seiten" (Seiten als eigene Einheit mit je
+html+mappings). Das ist derselbe begrenzte Umbau-Typ wie 3.3 (Multi-Projekt), nur
+eine Ebene tiefer -> Bauplan ist vorhanden, machbar, aber NICHT jetzt.
+
+### Timing-Begründung (Lean)
+Abstraktion erst bei 2 echten Fällen. Erst muss die Einzelseite end-to-end durch
+die gesamte Pipeline (bis Hosting, Phase 6) bewiesen sein, dann die Funnel-/
+Mehrseiten-Ebene obendrauf. Vorher = Vorbauen ins Blaue.
+
+### Fußnote fürs Weg-C-Netz
+Das Orphan-Konzept (verwaiste Mappings) bekommt später eine Variante "Ziel-Seite
+gelöscht" (verwaister funnel_step). Gleiche Idee, nur erweitert.
+
 ## Polish-Liste (gesammelt für einen späteren, separaten Aufräum-Durchgang)
 Bewusst aufgeschobene Aufräum-Arbeiten — NICHT im laufenden Feature-Schritt
 miterledigen, sondern gebündelt abarbeiten.

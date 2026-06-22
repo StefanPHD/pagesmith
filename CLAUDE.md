@@ -348,6 +348,46 @@ Als Nächstes folgt das BISHER VERSCHOBENE Weg-C-Netz (verwaiste Mappings sichtb
 machen: gespeicherte ps-ID nicht mehr im Code -> Mapping als "verwaist" anzeigen,
 nicht still reparieren), danach die Code-Generierung (Phase 4, Cheerio).
 
+### Mapping-Schritt 2 — Weg-C-Netz (verwaiste Mappings), Scheibe 1
+Scope (Owner-Entscheidung): Scheibe 1 = ANZEIGEN + LÖSCHEN. Neu-Verknüpfen
+(Re-Link) ist BEWUSST auf einen unmittelbaren Folgeschritt vertagt.
+
+Was ein verwaistes Mapping ist:
+- Ein Mapping verweist über seine ps-ID auf ein Element. Ändert sich der Code so,
+  dass diese ps-ID nicht mehr vorkommt (Seite neu generiert, Element gelöscht,
+  komplett neue Version eingefügt), zeigt das Mapping ins Leere -> verwaist.
+- Begründung Weg C: NICHT still löschen (Datenverlust), NICHT still neu-verknüpfen
+  (falsches Raten, gleiche Fehlerklasse wie früher die positionsbasierten IDs),
+  sondern SICHTBAR machen und den Menschen entscheiden lassen.
+
+Architektur-Prinzip:
+- Verwaisungs-Status wird ABGELEITET, nicht gespeichert (wie dirty). Kein
+  orphaned-Flag, keine DB-Migration. Reine Funktion aus (Mappings, aktuell
+  erkannte Element-ps-IDs).
+
+Verbindliche Landminen:
+- KEIN Initial-Lade-Flackern: Beim Laden ist die Elementliste ~300ms leer
+  (Debounce). Orphans dürfen NICHT gegen diese noch-nicht-geparste leere Liste
+  berechnet werden, sonst blinkt kurz "alles verwaist". Erst berechnen, nachdem
+  der aktuelle Code mindestens einmal echt geparst wurde.
+- NIEMALS automatisch reparieren. (Re-Link kommt später und ist dann
+  ausschließlich vom Menschen ausgelöst, kein Raten.)
+- Orphans überleben Speichern/Laden: ein verwaistes Mapping wird beim Speichern
+  NICHT heimlich fallengelassen, sondern wie jedes andere Mapping persistiert.
+  Nur explizites Löschen entfernt es.
+- Reines Erkennen ändert die Mappings nicht (nicht dirty). Erst Löschen mutiert
+  das Mappings-Array -> dirty -> Speichern nötig (konsistent zum Modell).
+
+UI: Verwaiste Mappings können KEIN Element-Badge tragen (Element fehlt ja). Eigene
+sichtbare Sektion "Verwaiste Verknüpfungen (N)", nur wenn N>0; je Eintrag die
+gespeicherte Konfiguration (URL/Typ) + Löschen (mit Bestätigung, da die
+gespeicherte URL verloren geht).
+
+Zukunfts-Anschluss: Dasselbe Orphan-Muster wird später vom Funnel wiederverwendet
+(verwaister funnel_step, wenn eine Zielseite gelöscht wurde).
+
+Scheibe 1 schließt das Weg-C-Netz für die Anzeige+Löschen-Stufe ab; Re-Link folgt.
+
 ## Zukunftsrichtung: Funnel-Architektur (bewusst vertagt, NICHT jetzt bauen)
 Festgehaltene Richtung, kein Auftrag. Dient als Bauplan-Anker, damit heutige
 Entscheidungen sie nicht versperren. Wird NICHT im laufenden Schritt angefasst.

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { generateFunctional } from "./generate";
 import type { Mapping } from "./mappings";
 
@@ -88,5 +88,143 @@ describe("generateFunctional – Verdrahtung", () => {
     expect(table).toHaveLength(1);
     expect(table[0].elementId).toBe("ps-bbbbbb");
     expect(out).toContain("addEventListener");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Verhaltens-Harness: das generierte Wiring im jsdom WIRKLICH ausfuehren (kein
+// hohles String-Matching). Wir bauen das Live-DOM aus dem Output, fuehren das
+// Wiring-Script per eval aus (es haengt seinen Click-Handler an document) und
+// behaupten dann ueber gestubbte Globals + event.defaultPrevented. Es ist UNSER
+// eigenes Wiring, im Test, mit gestubbten window.open/window.location.
+// ---------------------------------------------------------------------------
+
+let openSpy: ReturnType<typeof vi.fn>;
+let hrefValue: string;
+
+beforeEach(() => {
+  openSpy = vi.fn();
+  vi.stubGlobal("open", openSpy);
+  hrefValue = "";
+  // Capturing location-Stub: kein echtes Navigieren (jsdom wuerfe sonst
+  // "not implemented: navigation"); der Setter haelt nur den zugewiesenen Wert.
+  vi.stubGlobal("location", {
+    get href() {
+      return hrefValue;
+    },
+    set href(v: string) {
+      hrefValue = v;
+    },
+  });
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+// Das gerade gemountete Dokument. Das Wiring haengt seinen Click-Handler an
+// document; ein FRISCHES Dokument je Test (als globales document gestubbt)
+// verhindert, dass Listener vorheriger Tests am geteilten jsdom-document kleben
+// bleiben und mitfeuern.
+let mountedDoc: Document;
+
+// Baut ein frisches Live-DOM aus dem generierten Output und fuehrt das Wiring aus.
+function mountAndWire(output: string): void {
+  mountedDoc = new DOMParser().parseFromString(output, "text/html");
+  vi.stubGlobal("document", mountedDoc);
+  // Die beiden injizierten Scripts: Datenblock (id=pagesmith-mappings) + Wiring.
+  // Geparstes HTML fuehrt <script> NICHT aus -> wir evaluieren das Wiring bewusst;
+  // es referenziert das (gestubbte) globale document.
+  const wiring = Array.from(mountedDoc.querySelectorAll("script")).find(
+    (s) => s.id !== "pagesmith-mappings"
+  );
+  window.eval(wiring?.textContent ?? "");
+}
+
+// Klick auf das erste Element, das auf selector passt; gibt das Event zurueck
+// (defaultPrevented danach lesbar).
+function click(selector: string): MouseEvent {
+  const el = mountedDoc.querySelector(selector);
+  if (!el) throw new Error(`kein Element fuer ${selector}`);
+  const ev = new MouseEvent("click", { bubbles: true, cancelable: true });
+  el.dispatchEvent(ev);
+  return ev;
+}
+
+const MAPPED_BUTTON = `<!DOCTYPE html><html><body><button data-pagesmith-id="ps-aaaaaa">Kaufen</button></body></html>`;
+const UNMAPPED_LINK = (href: string) =>
+  `<!DOCTYPE html><html><body><a href="${href}">Link</a></body></html>`;
+
+describe("Wiring-Verhalten EXPORT (Produktionslogik)", () => {
+  it("openInNewTab -> window.open(url,'_blank'), nicht location.href", () => {
+    mountAndWire(
+      generateFunctional(
+        MAPPED_BUTTON,
+        [redirect("ps-aaaaaa", "https://buy.stripe.com/x", true)],
+        "export"
+      )
+    );
+    const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(ev.defaultPrevented).toBe(true);
+    expect(openSpy).toHaveBeenCalledWith("https://buy.stripe.com/x", "_blank");
+    expect(hrefValue).toBe("");
+  });
+
+  it("selber Tab -> location.href, window.open NICHT", () => {
+    mountAndWire(
+      generateFunctional(
+        MAPPED_BUTTON,
+        [redirect("ps-aaaaaa", "https://buy.stripe.com/x", false)],
+        "export"
+      )
+    );
+    const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(ev.defaultPrevented).toBe(true);
+    expect(hrefValue).toBe("https://buy.stripe.com/x");
+    expect(openSpy).not.toHaveBeenCalled();
+  });
+
+  it("GEGENPROBE: un-gemappter <a href='#x'> bleibt unangetastet (defaultPrevented false)", () => {
+    mountAndWire(generateFunctional(UNMAPPED_LINK("#preis"), [], "export"));
+    const ev = click("a[href]");
+    expect(ev.defaultPrevented).toBe(false);
+    expect(openSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("Wiring-Verhalten PREVIEW (Containment)", () => {
+  it("gemappter Klick -> window.open(url,'_blank'), location.href NICHT", () => {
+    mountAndWire(
+      generateFunctional(
+        MAPPED_BUTTON,
+        [redirect("ps-aaaaaa", "https://buy.stripe.com/x", false)],
+        "preview"
+      )
+    );
+    const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(ev.defaultPrevented).toBe(true);
+    expect(openSpy).toHaveBeenCalledWith("https://buy.stripe.com/x", "_blank");
+    // Beweis: die Vorschau framet NIE via location.href.
+    expect(hrefValue).toBe("");
+  });
+
+  it("openInNewTab=false feuert in PREVIEW trotzdem window.open('_blank')", () => {
+    mountAndWire(
+      generateFunctional(
+        MAPPED_BUTTON,
+        [redirect("ps-aaaaaa", "https://paypal.me/x", false)],
+        "preview"
+      )
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(openSpy).toHaveBeenCalledWith("https://paypal.me/x", "_blank");
+    expect(hrefValue).toBe("");
+  });
+
+  it("CONTAINMENT: un-gemappter <a href='/login'> -> defaultPrevented true UND window.open NICHT", () => {
+    mountAndWire(generateFunctional(UNMAPPED_LINK("/login"), [], "preview"));
+    const ev = click("a[href]");
+    expect(ev.defaultPrevented).toBe(true);
+    expect(openSpy).not.toHaveBeenCalled();
   });
 });

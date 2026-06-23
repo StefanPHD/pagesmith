@@ -819,17 +819,11 @@ export default function CodeImporter({
           </div>
         </div>
         <div className="flex flex-1 flex-col p-3">
-          {/* BEIDE iframes sind IMMER gemountet (stabile, eigene keys); der Modus
-              schaltet nur die Sichtbarkeit per echtem display:none (Tailwind
-              "hidden") um. Grund (Live-Test-Korrektur): der Browser friert die
-              Sandbox-Rechte beim Mount ein — eine spaetere Attribut-Aenderung am
-              SELBEN DOM-Knoten wird ignoriert. Bei conditional rendering wuerde
-              React denselben iframe-Knoten edit<->functional ummorphen -> die
-              "allow-popups"-Rechte des funktionalen iframes greifen nie. Zwei
-              dauerhaft getrennte Knoten loesen das: das funktionale iframe traegt
-              seine Popup-Rechte ab Mount-Zeitpunkt, das Edit-iframe mountet genau
-              einmal und remountet NIE (Bruecke/READY/Selektion/Highlighting
-              unangetastet). */}
+          {/* Das Edit-iframe ist IMMER gemountet (stabiler key, ref/Bruecke) und
+              wird nur per echtem display:none (Tailwind "hidden") versteckt, wenn
+              die funktionale Vorschau aktiv ist -> es mountet GENAU EINMAL und
+              remountet NIE (Bruecke/READY/Selektion/Highlighting unangetastet).
+              Display-Toggle laedt das iframe nicht neu, der Inhalt bleibt. */}
           <iframe
             key="ps-edit"
             ref={iframeRef}
@@ -843,24 +837,31 @@ export default function CodeImporter({
               previewMode === "edit" ? "" : "hidden"
             }`}
           />
-          {/* Funktionales iframe: OHNE Selektions-Bruecke (das generierte HTML
-              traegt nur das mode:"preview"-Wiring), KEIN iframeRef -> die
-              State->iframe-Effekte fassen es nicht an. allow-popups +
-              allow-popups-to-escape-sandbox: window.open oeffnet einen ECHTEN
-              Top-Level-Tab (sonst erbt der Tab die Sandbox -> echter Stripe/PayPal
-              bricht). allow-same-origin bleibt AUS (die Grenze, die zaehlt) —
-              escape-sandbox betrifft NUR die Popups, nicht den Zugriff aufs
-              Eltern-Origin. Im Edit-Modus ist srcDoc="" (functionalHtml ist dann
-              "", via useMemo) -> leeres Dokument, kein Hintergrund-window.open. */}
-          <iframe
-            key="ps-functional"
-            title="functional-preview"
-            srcDoc={functionalHtml}
-            sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
-            className={`h-full min-h-[32rem] w-full flex-1 rounded-lg border border-gray-300 bg-white ${
-              previewMode === "functional" ? "" : "hidden"
-            }`}
-          />
+          {/* Funktionales iframe: NUR im Vorschau-Modus gerendert -> es mountet
+              FRISCH mit bereits gefuelltem srcDoc und korrekten Popup-Rechten.
+              Zwei Gruende, warum frisch-mit-Inhalt statt dauerhaft-gemountet:
+              (1) der Browser friert die Sandbox-Rechte beim Mount ein -> nur ein
+              frischer Mount traegt "allow-popups …" ab Start, window.open oeffnet
+              dann einen ECHTEN Top-Level-Tab; (2) ein iframe, dessen srcDoc von ""
+              auf Inhalt wechselt WAEHREND es display:none ist, malt im Browser
+              nicht zuverlaessig neu -> leeres Feld. Frisch-mit-Inhalt umgeht beides.
+              KEIN iframeRef/Bruecke (das HTML traegt nur das mode:"preview"-Wiring).
+              allow-same-origin bleibt AUS (die Grenze, die zaehlt) — escape-sandbox
+              betrifft NUR die Popups, nicht den Zugriff aufs Eltern-Origin. Im
+              Edit-Modus ist das iframe gar nicht im DOM -> kein Hintergrund-Wiring,
+              keine laufenden User-Scripts, kein window.open. Der zweite, dauerhaft
+              gemountete Knoten (Edit) garantiert, dass das Edit-iframe davon
+              UNBERUEHRT bleibt und nie remountet. functionalHtml steht im selben
+              Render bereit (useMemo aus previewMode+debouncedCode+mappings). */}
+          {previewMode === "functional" && (
+            <iframe
+              key="ps-functional"
+              title="functional-preview"
+              srcDoc={functionalHtml}
+              sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+              className="h-full min-h-[32rem] w-full flex-1 rounded-lg border border-gray-300 bg-white"
+            />
+          )}
           {previewMode === "functional" && (
             <p className="mt-2 text-xs text-gray-400">
               Vorschau öffnet Weiterleitungen immer in neuem Tab; im Export gilt

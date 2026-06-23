@@ -147,7 +147,7 @@ export default function CodeImporter({
   const functionalHtml = useMemo(
     () =>
       previewMode === "functional"
-        ? generateFunctional(debouncedCode, mappings)
+        ? generateFunctional(debouncedCode, mappings, "preview")
         : "",
     [previewMode, debouncedCode, mappings]
   );
@@ -833,16 +833,25 @@ export default function CodeImporter({
             />
           ) : (
             // Funktionaler Modus: eigenes iframe, OHNE Selektions-Bruecke (das
-            // generierte HTML traegt nur das Wiring-Script). KEIN iframeRef ->
-            // die State->iframe-Effekte fassen es nicht an. allow-popups erlaubt
-            // window.open fuer openInNewTab; allow-same-origin bleibt AUS (die
-            // Grenze, die zaehlt). Der so geoeffnete Tab ist selbst sandboxed.
+            // generierte HTML traegt nur das mode:"preview"-Wiring). KEIN iframeRef
+            // -> die State->iframe-Effekte fassen es nicht an. allow-popups +
+            // allow-popups-to-escape-sandbox: window.open oeffnet einen ECHTEN
+            // Top-Level-Tab (sonst erbt der Tab die Sandbox -> echter Stripe/PayPal
+            // bricht; Live-Test-Korrektur). allow-same-origin bleibt AUS (die
+            // Grenze, die zaehlt) — escape-sandbox betrifft NUR die Popups, nicht
+            // den Zugriff aufs Eltern-Origin.
             <iframe
               title="functional-preview"
               srcDoc={functionalHtml}
-              sandbox="allow-scripts allow-popups"
+              sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
               className="h-full min-h-[32rem] w-full flex-1 rounded-lg border border-gray-300 bg-white"
             />
+          )}
+          {previewMode === "functional" && (
+            <p className="mt-2 text-xs text-gray-400">
+              Vorschau öffnet Weiterleitungen immer in neuem Tab; im Export gilt
+              deine Einstellung (selber/neuer Tab).
+            </p>
           )}
         </div>
       </section>

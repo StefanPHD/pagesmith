@@ -14,13 +14,31 @@ const PAGESMITH_ID_ATTR = "data-pagesmith-id";
 // getElementById genau hier aus.
 const MAPPINGS_SCRIPT_ID = "pagesmith-mappings";
 
+// Vorschau- vs. Export-Verhalten (Live-Test-Korrektur, siehe CLAUDE.md):
+// dieselbe Wiring-Engine, EINE mode-Verzweigung — kein Duplikat-Script.
+export type GenerateMode = "export" | "preview";
+
 // Wiring-Script: STATISCH und datengetrieben. Es enthaelt KEINE User-URLs (die
 // leben ausschliesslich im JSON-Datenblock, der zur Laufzeit geparst wird) ->
 // keine naive String-Konkatenation von URLs in JS, kein Injection-Vektor.
 // Capture-Phase + preventDefault neutralisiert zugleich inline onclick des
 // Fremdcodes, bevor wir selbst weiterleiten.
+//
+// mode wird als KONSTANTE ins Script gebacken (eines von zwei Literalen, die WIR
+// kontrollieren, via JSON.stringify -> kein Injection-Vektor). Der JSON-Datenblock
+// bleibt die reine Mapping-Tabelle, unabhaengig vom Modus.
+//
+// EXPORT (echte Produktionslogik): kein Mapping -> Default bleibt; Mapping ->
+//   openInNewTab ? window.open('_blank') : location.href.
+// PREVIEW (srcDoc-iframe erbt unsere Origin -> Containment noetig): gemappte
+//   Weiterleitung oeffnet IMMER escaped einen neuen Tab (openInNewTab ignoriert,
+//   NIE location.href, das wuerde das iframe selbst framen); JEDER andere
+//   Link-Klick wird stummgeschaltet, damit NIE auf unsere Origin navigiert wird.
+//
 // WICHTIG: Darf keinen literalen "</script>"-String enthalten (Serialisierung).
-const WIRING_SCRIPT = `(function () {
+function buildWiringScript(mode: GenerateMode): string {
+  return `(function () {
+  var MODE = ${JSON.stringify(mode)};
   var dataEl = document.getElementById("${MAPPINGS_SCRIPT_ID}");
   if (!dataEl) return;
   var table;
@@ -37,20 +55,33 @@ const WIRING_SCRIPT = `(function () {
       var t = e.target;
       if (!t || typeof t.closest !== "function") return;
       var el = t.closest("[${PAGESMITH_ID_ATTR}]");
-      if (!el) return;
-      var m = byId[el.getAttribute("${PAGESMITH_ID_ATTR}")];
-      if (!m) return;
-      if (m.type === "redirect") {
+      var m = el ? byId[el.getAttribute("${PAGESMITH_ID_ATTR}")] : null;
+      if (m && m.type === "redirect") {
         e.preventDefault();
         var url = m.config && m.config.url;
         if (!url) return;
-        if (m.config.openInNewTab) window.open(url, "_blank");
-        else window.location.href = url;
+        if (MODE === "preview") {
+          // Vorschau: IMMER neuer Tab (escaped). openInNewTab bewusst ignoriert —
+          // "selber Tab" laesst sich im iframe nicht ehrlich zeigen.
+          window.open(url, "_blank");
+        } else if (m.config.openInNewTab) {
+          window.open(url, "_blank");
+        } else {
+          window.location.href = url;
+        }
+        return;
+      }
+      // Kein Mapping. Nur in der Vorschau Containment: jeden anderen Link
+      // stummschalten -> nie Default-Navigation gegen die srcDoc-Basis (unsere
+      // Origin). Im Export bleibt das Default-Verhalten unangetastet.
+      if (MODE === "preview" && t.closest("a[href]")) {
+        e.preventDefault();
       }
     },
     true
   );
 })();`;
+}
 
 /**
  * Verdrahtet die Mappings in ein funktionales HTML. REINE Funktion: gleiche
@@ -69,12 +100,21 @@ const WIRING_SCRIPT = `(function () {
  * - Idempotent: erwartet sauberes gespeichertes HTML (ohne Preview-Injektionen)
  *   und fuegt nur einmal ein; der Aufrufer generiert IMMER aus dem Klartext-code.
  *
+ * mode (Default "export"): "export" = echte Produktionslogik (selber/neuer Tab
+ * laut Mapping, un-gemappte Links behalten Default). "preview" = Containment fuer
+ * das srcDoc-iframe (jede Weiterleitung in neuen Tab, jeder andere Link
+ * stummgeschaltet) — siehe buildWiringScript.
+ *
  * Defensive Garantien (wie detect.ts — User-Code nie vernichten):
  * - Leerer/whitespace Input -> "".
  * - Fehlender DOMParser (SSR) -> html UNVERAENDERT durch.
  * - Unerwarteter Fehler -> html UNVERAENDERT durch.
  */
-export function generateFunctional(html: string, mappings: Mapping[]): string {
+export function generateFunctional(
+  html: string,
+  mappings: Mapping[],
+  mode: GenerateMode = "export"
+): string {
   if (!html || !html.trim()) return "";
 
   // SSR-Schutz: DOMParser existiert nur im Browser.
@@ -102,7 +142,7 @@ export function generateFunctional(html: string, mappings: Mapping[]): string {
     dataScript.textContent = json;
 
     const wiringScript = doc.createElement("script");
-    wiringScript.textContent = WIRING_SCRIPT;
+    wiringScript.textContent = buildWiringScript(mode);
 
     // Vor </body> haengen; Fallback documentElement, falls kein body existiert.
     const target = doc.body ?? doc.documentElement;

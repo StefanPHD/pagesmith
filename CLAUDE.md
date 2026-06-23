@@ -472,6 +472,56 @@ Verbindliche Edge-Cases:
 
 Scheibe 2 schließt das Weg-C-Netz ab (Anzeigen + Löschen + Re-Link).
 
+## Code-Gen Scheibe 1 — Engine + funktionale Vorschau
+Wendepunkt: Bisher erfasst Pagesmith nur die ABSICHT (Mapping-Spezifikation), die
+Vorschau ist selektions-only. Code-Gen macht aus der Spezifikation echtes
+VERHALTEN — funktionales HTML, in dem die Buttons wirklich feuern. Das ist das
+Tor zu Phase 6 (Hosting): erst wenn die Einzelseite real feuert, lohnt das
+Ausliefern.
+
+Owner-Entscheidungen (endgültig):
+- Output-Mechanismus: EIN injiziertes Laufzeit-Script verdrahtet ALLE Elemente
+  einheitlich (erweiterbar auf Webhook/Tracking als spätere Handler). KEIN
+  statischer href-Sonderweg in dieser Scheibe — ein Mechanismus, nicht zwei.
+- Erste Scheibe liefert: funktionale VORSCHAU im Editor (Button feuert wirklich).
+  Export (Download/Copy) ist BEWUSST der unmittelbare Folgeschritt, NICHT jetzt.
+
+Architektur:
+- Engine = REINE, unit-testbare Funktion: generateFunctional(html, mappings) ->
+  funktionales HTML. Client-seitig (konsistent zur Detektion via DOMParser).
+  KEIN Cheerio in dieser Scheibe — Cheerio ist erst die Serving-Schicht in
+  Phase 6. Das ist die bewusste Neubewertung der alten "Cheerio für Phase 4"-Notiz
+  (Roadmap): die Transformation lebt vorerst client-seitig wie Detektion/
+  Stabilisierung, Cheerio kommt erst, wenn serverseitig ausgeliefert wird.
+- Engine injiziert vor </body>: (a) eine Mapping-Tabelle als
+  <script type="application/json"> und (b) ein kleines Wiring-Script, das pro
+  data-pagesmith-id einen Click-Handler hängt (redirect: location.href, bzw.
+  window.open bei openInNewTab).
+- Nur Mappings einbacken, deren Element im HTML VORHANDEN ist. Verwaiste Mappings
+  (Weg-C) werden im Output ignoriert -> Netz und Generator greifen nahtlos
+  (gleiche abgeleitete "ps-ID im Code vorhanden?"-Logik wie findOrphans).
+
+Funktionale Vorschau:
+- GETRENNTER Modus vom editierenden Preview. Toggle "Editieren" / "Vorschau".
+- Funktionaler Modus rendert das generierte HTML; Klick feuert echt.
+- WICHTIG: funktionaler Modus injiziert NICHT die Selektions-Brücke; editierender
+  Modus bleibt selektions-only. Beide koexistieren, vermischen sich nie.
+
+Verbindliche Landminen:
+- Sicherheit: BEIDE Sandbox-Modi bleiben sandbox="allow-scripts" OHNE
+  allow-same-origin (User-HTML darf nie an unsere Origin). Nicht aufweichen, auch
+  nicht "nur für die funktionale Vorschau".
+- URL-Kodierung: Mapping-Tabelle als JSON sicher einbetten (JSON.stringify) und
+  jedes "<" als Unicode-Escape maskieren (das Zeichen "<" -> die sechs Zeichen
+  Backslash-u-0-0-3-c), damit eine URL mit "</script>" nicht aus dem JSON-Block
+  ausbricht. NIE User-URLs naiv in einen JS-String konkatenieren.
+- Idempotenz: immer aus dem sauberen gespeicherten HTML generieren; kein doppeltes
+  Einbacken/Stapeln von Scripts (nicht auf bereits generiertem Output erneut
+  generieren).
+
+Scheibe 1 = Engine (rein, getestet) + funktionale Vorschau. Export (Download/Copy)
+folgt als unmittelbare Scheibe 2.
+
 ## Zukunftsrichtung: Funnel-Architektur (bewusst vertagt, NICHT jetzt bauen)
 Festgehaltene Richtung, kein Auftrag. Dient als Bauplan-Anker, damit heutige
 Entscheidungen sie nicht versperren. Wird NICHT im laufenden Schritt angefasst.

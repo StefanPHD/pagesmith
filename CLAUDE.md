@@ -506,11 +506,24 @@ Funktionale Vorschau:
 - Funktionaler Modus rendert das generierte HTML; Klick feuert echt.
 - WICHTIG: funktionaler Modus injiziert NICHT die Selektions-Brücke; editierender
   Modus bleibt selektions-only. Beide koexistieren, vermischen sich nie.
+- Umsetzung: zwei getrennte iframes, konditional gerendert (kein geteiltes srcDoc).
+  Das Edit-iframe behält iframeRef + Brücke unverändert; beim Zurückschalten
+  remountet es und der bestehende IFRAME_READY-Handshake re-synchronisiert die
+  Auswahl. Das funktionale iframe trägt KEINEN ref -> die State->iframe-Effekte
+  fassen es nicht an.
 
 Verbindliche Landminen:
-- Sicherheit: BEIDE Sandbox-Modi bleiben sandbox="allow-scripts" OHNE
-  allow-same-origin (User-HTML darf nie an unsere Origin). Nicht aufweichen, auch
-  nicht "nur für die funktionale Vorschau".
+- Sicherheit: allow-same-origin bleibt in BEIDEN Modi AUS (User-HTML darf nie an
+  unsere Origin — das ist die Grenze, die zählt). Edit-iframe: sandbox=
+  "allow-scripts" (unverändert). Funktionales iframe: sandbox="allow-scripts
+  allow-popups" — allow-popups ist das MINIMAL nötige Recht, damit openInNewTab
+  per window.open sichtbar einen Tab öffnet (sonst still verschluckt -> Fehlalarm
+  "kaputt"). KEIN allow-popups-to-escape-sandbox (mehr Rechte als nötig).
+- CAVEAT funktionale Vorschau: der per openInNewTab geöffnete Tab ist selbst
+  sandboxed (erbt die Sandbox) -> ein echter Stripe/PayPal-Checkout kann dort
+  imperfekt aussehen. Die Vorschau beweist "Verdrahtung feuert + Tab öffnet"; das
+  realistische Zielseiten-Bild kommt erst im EXPORTIERTEN HTML (Scheibe 2, nicht
+  sandboxed).
 - URL-Kodierung: Mapping-Tabelle als JSON sicher einbetten (JSON.stringify) und
   jedes "<" als Unicode-Escape maskieren (das Zeichen "<" -> die sechs Zeichen
   Backslash-u-0-0-3-c), damit eine URL mit "</script>" nicht aus dem JSON-Block

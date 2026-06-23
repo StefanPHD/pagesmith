@@ -24,6 +24,7 @@ import {
   type Mapping,
   type RedirectConfig,
 } from "@/lib/mappings";
+import { generateFunctional } from "@/lib/generate";
 import ActionPanel from "@/components/ActionPanel";
 
 // Parsing + iframe-Preview sind die teuren Verbraucher. Sie sollen erst nach
@@ -94,6 +95,11 @@ export default function CodeImporter({
   // Linkes Panel manuell ein-/ausklappbar (Auto-Collapse beim Pasten kommt
   // bewusst erst in einem spaeteren Schritt).
   const [isInputCollapsed, setIsInputCollapsed] = useState(false);
+  // Preview-Modus: "edit" = selektions-only Bruecke (Klick waehlt aus), wie
+  // bisher. "functional" = generateFunctional rendert das verdrahtete HTML, Klick
+  // FEUERT echt (Redirect). Strikt getrennt: der funktionale Modus injiziert NIE
+  // die Selektions-Bruecke, der Edit-Modus feuert NIE eine Aktion.
+  const [previewMode, setPreviewMode] = useState<"edit" | "functional">("edit");
   // In der Preview angeklicktes Element (via postMessage-Bruecke). Nur die ID
   // wird gehalten; das Element selbst wird abgeleitet, damit sich die Auswahl
   // bei Code-Aenderung sauber neu aufloest.
@@ -130,6 +136,20 @@ export default function CodeImporter({
       link: elements.filter((e) => e.type === "link").length,
     }),
     [elements]
+  );
+
+  // Funktionales HTML fuer den Vorschau-Modus. Nur im funktionalen Modus
+  // berechnet (sonst ""), damit das Tippen im Edit-Modus keinen zusaetzlichen
+  // DOMParser-Lauf zahlt. Quelle ist der saubere debouncedCode (die
+  // Preview-Injektionen leben nur in previewHtml, NIE im code) -> idempotent,
+  // kein doppeltes Einbacken. mappings ist nicht debounced -> eine neue Aktion
+  // wirkt sofort sichtbar.
+  const functionalHtml = useMemo(
+    () =>
+      previewMode === "functional"
+        ? generateFunctional(debouncedCode, mappings)
+        : "",
+    [previewMode, debouncedCode, mappings]
   );
 
   // Ausgewaehltes Element abgeleitet: faellt automatisch auf null zurueck, wenn
@@ -726,9 +746,40 @@ export default function CodeImporter({
           damit Ein-/Ausklappen es nicht neu mountet (kein srcDoc-Reload). */}
       <section className="flex min-w-0 flex-1 flex-col rounded-lg border border-gray-300 bg-white">
         <div className="flex items-center justify-between gap-3 border-b border-gray-200 px-4 py-3">
-          <h2 className="text-sm font-medium text-gray-700">
-            Live-Preview (sandboxed)
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-sm font-medium text-gray-700">
+              Live-Preview (sandboxed)
+            </h2>
+            {/* Modus-Umschalter: Editieren (selektions-only Bruecke) vs.
+                Vorschau (verdrahtetes HTML, Klick feuert echt). Segmentierter
+                Zwei-Knopf-Schalter. */}
+            <div className="flex rounded-md border border-gray-300 p-0.5 text-xs font-medium">
+              <button
+                type="button"
+                onClick={() => setPreviewMode("edit")}
+                aria-pressed={previewMode === "edit"}
+                className={`rounded px-2.5 py-1 focus:outline-none ${
+                  previewMode === "edit"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                Editieren
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewMode("functional")}
+                aria-pressed={previewMode === "functional"}
+                className={`rounded px-2.5 py-1 focus:outline-none ${
+                  previewMode === "functional"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                Vorschau
+              </button>
+            </div>
+          </div>
           <div className="flex items-center gap-3">
             {saveStatus === "error" && saveError && (
               <span className="truncate text-xs text-red-600" title={saveError}>
@@ -768,16 +819,31 @@ export default function CodeImporter({
           </div>
         </div>
         <div className="flex flex-1 flex-col p-3">
-          <iframe
-            ref={iframeRef}
-            title="preview"
-            srcDoc={previewHtml}
-            // allow-scripts aktiviert das injizierte Listener-Script. NIEMALS
-            // allow-same-origin dazu – die Kombination bricht den Fremdcode aus
-            // der Sandbox aus.
-            sandbox="allow-scripts"
-            className="h-full min-h-[32rem] w-full flex-1 rounded-lg border border-gray-300 bg-white"
-          />
+          {previewMode === "edit" ? (
+            <iframe
+              ref={iframeRef}
+              title="preview"
+              srcDoc={previewHtml}
+              // allow-scripts aktiviert das injizierte Listener-Script. NIEMALS
+              // allow-same-origin dazu – die Kombination bricht den Fremdcode aus
+              // der Sandbox aus. Beim Zurueckschalten remountet dieses iframe und
+              // der IFRAME_READY-Handshake re-synchronisiert die Auswahl.
+              sandbox="allow-scripts"
+              className="h-full min-h-[32rem] w-full flex-1 rounded-lg border border-gray-300 bg-white"
+            />
+          ) : (
+            // Funktionaler Modus: eigenes iframe, OHNE Selektions-Bruecke (das
+            // generierte HTML traegt nur das Wiring-Script). KEIN iframeRef ->
+            // die State->iframe-Effekte fassen es nicht an. allow-popups erlaubt
+            // window.open fuer openInNewTab; allow-same-origin bleibt AUS (die
+            // Grenze, die zaehlt). Der so geoeffnete Tab ist selbst sandboxed.
+            <iframe
+              title="functional-preview"
+              srcDoc={functionalHtml}
+              sandbox="allow-scripts allow-popups"
+              className="h-full min-h-[32rem] w-full flex-1 rounded-lg border border-gray-300 bg-white"
+            />
+          )}
         </div>
       </section>
 

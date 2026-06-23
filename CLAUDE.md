@@ -516,14 +516,9 @@ Verbindliche Landminen:
 - Sicherheit: allow-same-origin bleibt in BEIDEN Modi AUS (User-HTML darf nie an
   unsere Origin — das ist die Grenze, die zählt). Edit-iframe: sandbox=
   "allow-scripts" (unverändert). Funktionales iframe: sandbox="allow-scripts
-  allow-popups" — allow-popups ist das MINIMAL nötige Recht, damit openInNewTab
-  per window.open sichtbar einen Tab öffnet (sonst still verschluckt -> Fehlalarm
-  "kaputt"). KEIN allow-popups-to-escape-sandbox (mehr Rechte als nötig).
-- CAVEAT funktionale Vorschau: der per openInNewTab geöffnete Tab ist selbst
-  sandboxed (erbt die Sandbox) -> ein echter Stripe/PayPal-Checkout kann dort
-  imperfekt aussehen. Die Vorschau beweist "Verdrahtung feuert + Tab öffnet"; das
-  realistische Zielseiten-Bild kommt erst im EXPORTIERTEN HTML (Scheibe 2, nicht
-  sandboxed).
+  allow-popups allow-popups-to-escape-sandbox" (Live-Test-Korrektur, siehe
+  Unterabschnitt unten — die frühere "ohne escape-sandbox"-Empfehlung war zu
+  vorsichtig und wurde widerlegt).
 - URL-Kodierung: Mapping-Tabelle als JSON sicher einbetten (JSON.stringify) und
   jedes "<" als Unicode-Escape maskieren (das Zeichen "<" -> die sechs Zeichen
   Backslash-u-0-0-3-c), damit eine URL mit "</script>" nicht aus dem JSON-Block
@@ -531,6 +526,39 @@ Verbindliche Landminen:
 - Idempotenz: immer aus dem sauberen gespeicherten HTML generieren; kein doppeltes
   Einbacken/Stapeln von Scripts (nicht auf bereits generiertem Output erneut
   generieren).
+
+### Vorschau vs. Export — Verhalten getrennt (Live-Test-Korrektur)
+Live-Test deckte zwei Symptome mit EINER Wurzel auf: die funktionale Vorschau ist
+ein srcDoc-iframe, und srcDoc erbt die Basis-URL der Elternseite (unsere Origin
+localhost:3000).
+- Symptom 1 (gemappter "selber Tab"-Redirect): location.href navigiert das iframe
+  SELBST zur Ziel-URL; X-Frame-Options-Seiten (Google/Stripe) verweigern das
+  Framing -> "Verbindung abgelehnt". In der EXPORT-Seite (Top-Level) ist genau
+  dieses location.href korrekt — nur in der iframe-Vorschau nicht darstellbar.
+- Symptom 2 (NICHT gemappter Link, z.B. href="#preis"): Default-Navigation gegen
+  die srcDoc-Basis aufgelöst -> localhost:3000 -> unauth -> unsere Login-Maske
+  erscheint IM iframe. KEIN Origin-Bruch (allow-same-origin aus, keine Cookies
+  geleakt, Session intakt), aber ein Containment-Loch, das zu muss.
+
+Entscheidung — Vorschau-Verhalten vom Export-Verhalten TRENNEN:
+- generateFunctional bekommt mode: "export" | "preview" (Default "export").
+- EXPORT (unverändert, echte Produktionslogik): nur gemappte Elemente; openInNewTab
+  -> window.open, sonst location.href; un-gemappte Links behalten Default-Verhalten.
+- VORSCHAU: (a) jede gemappte Weiterleitung öffnet IMMER escaped einen neuen Tab
+  (window.open(url,'_blank')); openInNewTab wird in der Vorschau bewusst IGNORIERT,
+  weil "selber Tab" im iframe nicht ehrlich zeigbar ist. (b) JEDER andere
+  Link-Klick wird preventDefault-stummgeschaltet -> nie Navigation auf unsere Origin.
+- Sandbox funktionales iframe: allow-scripts allow-popups
+  allow-popups-to-escape-sandbox. Edit-iframe unverändert allow-scripts.
+  allow-same-origin bleibt in BEIDEN aus.
+
+Korrektur-Notiz (ehrlich): die vorige "Option 1 ohne escape-sandbox"-Empfehlung war
+zu vorsichtig; der Live-Test hat sie widerlegt — OHNE escape-sandbox erbt der
+geöffnete Tab die Sandbox, und ein echter Stripe/PayPal-Checkout bricht. Merksatz
+bestätigt: die laufende App schlägt die statische Analyse. escape-sandbox betrifft
+NUR die Popups (echte Top-Level-Tabs), nicht den Zugriff aufs Eltern-Origin -> hier
+harmlos (eigene HTML im eigenen Browser). Beim späteren Ausliefern fremder Seiten an
+Dritte neu bewerten (Phase 6).
 
 Scheibe 1 = Engine (rein, getestet) + funktionale Vorschau. Export (Download/Copy)
 folgt als unmittelbare Scheibe 2.

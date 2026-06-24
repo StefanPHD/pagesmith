@@ -25,6 +25,7 @@ import {
   type RedirectConfig,
 } from "@/lib/mappings";
 import { generateFunctional } from "@/lib/generate";
+import { exportFilename } from "@/lib/export";
 import ActionPanel from "@/components/ActionPanel";
 
 // Parsing + iframe-Preview sind die teuren Verbraucher. Sie sollen erst nach
@@ -40,6 +41,11 @@ const typeStyles: Record<ElementType, string> = {
 
 // Zustaende des Speichern-Buttons. saved faellt per Timeout zurueck auf idle.
 type SaveStatus = "idle" | "saving" | "saved" | "error";
+
+// Zustaende des Copy-Buttons. copied/error fallen per Timeout zurueck auf idle.
+// Ehrliches Feedback ist Pflicht: navigator.clipboard kann in unsicherem Kontext
+// oder ohne Permission fehlschlagen -> kein stilles Nichts.
+type CopyStatus = "idle" | "copied" | "error";
 
 export default function CodeImporter({
   initialCode = "",
@@ -92,6 +98,9 @@ export default function CodeImporter({
   // Status des Speichern-Buttons + letzte Fehlermeldung der Server-Action.
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
+  // Status des "In Zwischenablage kopieren"-Buttons (ehrliches Erfolg/Fehler-
+  // Feedback).
+  const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
   // Linkes Panel manuell ein-/ausklappbar (Auto-Collapse beim Pasten kommt
   // bewusst erst in einem spaeteren Schritt).
   const [isInputCollapsed, setIsInputCollapsed] = useState(false);
@@ -253,6 +262,13 @@ export default function CodeImporter({
     return () => clearTimeout(id);
   }, [saveStatus]);
 
+  // Copy-Feedback ("Kopiert ✓" / Fehler) nach kurzer Zeit zuruecksetzen.
+  useEffect(() => {
+    if (copyStatus === "idle") return;
+    const id = setTimeout(() => setCopyStatus("idle"), 2500);
+    return () => clearTimeout(id);
+  }, [copyStatus]);
+
   // Ungespeicherte Aenderungen seit dem letzten Speichern/Laden. Schuetzt das
   // Wechseln/Neu-Anlegen vor stillem Verlust. Umfasst CODE UND MAPPINGS:
   // Mapping-Aenderungen veraendern den Code nicht, wuerden sonst still verloren
@@ -311,6 +327,46 @@ export default function CodeImporter({
     } else {
       setSaveError(result.error);
       setSaveStatus("error");
+    }
+  }
+
+  // Export: erzeugt das funktionale Dokument FRISCH im Handler (nicht aus dem
+  // functionalHtml-Memo, das nur im Vorschau-Modus belegt ist) -> Export geht auch
+  // aus dem Edit-Modus. Quelle ist debouncedCode mit mode:"export": GENAU dieselben
+  // Eingaben wie die funktionale Vorschau (die generateFunctional(debouncedCode,
+  // mappings, "preview") baut), nur der mode kippt. debouncedCode (nicht das rohe
+  // code) ist kritisch: es traegt garantiert die ps-id-Anker, auf die die Mappings
+  // zeigen — roher code koennte im Tipp-Fenster davon abweichen und das Wiring ins
+  // Leere laufen lassen. Generiert wird aus dem sauberen Klartext (keine
+  // Preview-Injektionen), daher idempotent.
+  function buildExportDocument(): string {
+    return generateFunctional(debouncedCode, mappings, "export");
+  }
+
+  // Download als .html: Blob -> Object-URL -> temporaerer <a download> -> Klick ->
+  // URL wieder freigeben. Dateiname aus dem Projektnamen slugifiziert (Default-/
+  // Leer-Name -> "pagesmith-export.html").
+  function handleExportDownload() {
+    const blob = new Blob([buildExportDocument()], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = exportFilename(activeName);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // Kopieren in die Zwischenablage mit EHRLICHEM Feedback. clipboard.writeText kann
+  // in unsicherem Kontext / ohne Permission fehlschlagen -> try/catch, kein stilles
+  // Nichts.
+  async function handleExportCopy() {
+    try {
+      await navigator.clipboard.writeText(buildExportDocument());
+      setCopyStatus("copied");
+    } catch {
+      setCopyStatus("error");
     }
   }
 
@@ -470,7 +526,7 @@ export default function CodeImporter({
     <div className="flex w-full flex-col gap-4">
       {/* Projekt-Toolbar (3.3): aktives Projekt + ausklappbarer Switcher.
           Liegt UEBER den drei Zonen, damit der Editor-Kern unveraendert bleibt. */}
-      <div className="relative flex items-center gap-3 rounded-lg border border-gray-300 bg-white px-3 py-2">
+      <div className="relative flex flex-wrap items-center gap-3 rounded-lg border border-gray-300 bg-white px-3 py-2">
         <button
           type="button"
           onClick={() => setIsProjectMenuOpen((v) => !v)}
@@ -493,10 +549,51 @@ export default function CodeImporter({
         <button
           type="button"
           onClick={handleNew}
-          className="ml-auto rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           + Neues Projekt
         </button>
+
+        {/* Export-Gruppe (rechts). Erzeugt das funktionale Dokument aus genau der
+            Quelle, aus der die Vorschau baut (debouncedCode, mode:"export") ->
+            "was in der Vorschau klickt, tut die Datei". WYSIWYG, unabhaengig vom
+            Speichern. Beide Buttons sind bei leerem Code deaktiviert. */}
+        <div className="ml-auto flex flex-wrap items-center gap-2 border-l border-gray-200 pl-3">
+          {/* Orphan-Hinweis: nur bei >0, gespeist aus dem vorhandenen orphans-Array
+              (kein neuer Detektionsweg). Verwaiste Mappings werden vom Generator
+              ohnehin still rausgefiltert — hier nur transparent gemacht. */}
+          {orphans.length > 0 && (
+            <span className="text-xs text-amber-600">
+              {orphans.length} verwaiste Verknüpfung
+              {orphans.length === 1 ? "" : "en"} werden nicht exportiert
+            </span>
+          )}
+          {/* Copy-Feedback (ehrlich): copied/error sichtbar, kein stilles Nichts. */}
+          {copyStatus === "copied" && (
+            <span className="text-xs font-medium text-green-600">Kopiert ✓</span>
+          )}
+          {copyStatus === "error" && (
+            <span className="text-xs font-medium text-red-600">
+              Kopieren fehlgeschlagen
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handleExportCopy}
+            disabled={code.trim() === ""}
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            In Zwischenablage kopieren
+          </button>
+          <button
+            type="button"
+            onClick={handleExportDownload}
+            disabled={code.trim() === ""}
+            className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Projekt exportieren
+          </button>
+        </div>
 
         {/* Dropdown: rendert nur im offenen Zustand (clientseitig) -> keine
             Hydration-Mismatches bei den relativen Zeitstempeln. */}

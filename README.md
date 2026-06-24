@@ -85,12 +85,13 @@ lightweight client-side A/B testing.
 
 - [Next.js](https://nextjs.org/) (App Router) + TypeScript
 - Tailwind CSS
-- Native `DOMParser` for in-browser detection (zero dependencies)
+- Native `DOMParser` for in-browser detection and code transformation (zero
+  dependencies)
 - [Supabase](https://supabase.com/) for auth and persistence (Postgres with
   row-level security)
 - Vitest + jsdom for unit tests
-- *Planned:* Cheerio (server-side code transformation), Vercel/Netlify API
-  (hosting & custom domains)
+- *Planned:* Cheerio (server-side transformation in the hosting/serving layer),
+  Vercel/Netlify API (hosting & custom domains)
 
 ---
 

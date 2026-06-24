@@ -117,14 +117,21 @@ npm test
       three-zone workspace with bidirectional preview/list highlighting.
       (Selection UI done; assigning actions comes in later phases.)
 - [x] **Phase 3 — Persistence & auth:** email/password auth behind a login gate,
-      stable element IDs, and per-account project save/auto-load with row-level
-      security (Supabase). (Still open within this phase: project list, surfacing
-      orphaned mappings, consent-gating, dynamic text replacement.)
-- [ ] **Phase 4 — Code generation:** original HTML + mappings → "smart" output
-      HTML with injected logic (Cheerio).
-- [ ] **Phase 5 — Server-side tracking:** CAPI proxy for Meta/Google.
-- [ ] **Phase 6 — Hosting & go-live:** custom domains + automatic SSL.
-- [ ] **Phase 7 — A/B testing:** 50/50 traffic split across variants.
+      stable element IDs, and multi-project save/auto-load with row-level security
+      (Supabase).
+- [x] **Click & Connect actions:** assign, configure and save redirect actions
+      (Stripe / PayPal / generic links), plus surfacing and re-linking orphaned
+      mappings.
+- [x] **Phase 4 — Code generation + HTML export:** bake the mappings into
+      functional HTML (the buttons really fire) and export the page — download as
+      `.html` or copy to clipboard.
+- [ ] **Phase 4.5 — Editor polish:** zen mode — the code panel starts collapsed
+      after a successful import, keeping the focus on preview and dashboard.
+- [ ] **Phase 5 — In-place copywriting:** edit `<p>` and `<h1>`–`<h6>` text
+      directly in the dashboard for fast A/B tests on wording.
+- [ ] **Phase 6 — Server-side tracking:** CAPI proxy for Meta/Google.
+- [ ] **Phase 7 — Hosting & go-live:** custom domains + automatic SSL.
+- [ ] **Phase 8 — A/B testing:** 50/50 traffic split across variants.
 
 ---
 

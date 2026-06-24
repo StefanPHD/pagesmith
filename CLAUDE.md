@@ -21,9 +21,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
 - Next.js (App Router) + TypeScript + Turbopack. Lokal: Node v24.16.0.
 - Tailwind CSS
 - Erkennung im Browser: nativer DOMParser (keine Dependency)
-- Code-Transformation serverseitig: Cheerio (ab Phase 4)
+- Code-Transformation: clientseitig via DOMParser (wie Detection); Cheerio erst in
+  der Serving-Schicht beim Hosting (Phase 7), nicht früher
 - Persistenz & Auth: Supabase (Postgres, RLS) — ab Phase 3
-- Hosting/Deploy-Orchestrierung: Vercel/Netlify API — ab Phase 6
+- Hosting/Deploy-Orchestrierung: Vercel/Netlify API — ab Phase 7
 
 ## Roadmap & aktueller Stand
 - [x] Phase 1 — Lokales Grundgerüst: Import, Sandbox-iframe-Preview, Erkennung
@@ -34,13 +35,29 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
 - [x] Phase 3 — Persistenz & Auth (Supabase): stabile Element-IDs, E-Mail/Passwort-
       Auth, Code-Persistenz, Multi-Projekt-Verwaltung. Fundament steht. Siehe
       Detail-Block unten. Advanced Features (Consent-Gate, DTR) folgen danach.
-- [ ] Phase 4 — Code-Generierung (Cheerio): Original-HTML + Mappings -> "smartes"
-      Output-HTML mit injiziertem JS (Payment-Trigger, Webhook-POST, DTR-Logik).
-- [ ] Phase 5 — Server-Side Tracking (CAPI): Next.js API-Route als Tracking-Proxy
-      für Meta/Google.
-- [ ] Phase 6 — Hosting & Go-Live: Vercel/Netlify-API, Custom Domains, SSL.
-      ACHTUNG: härtester Brocken (Multi-Tenant Custom Domains + Auto-SSL).
-- [ ] Phase 7 — A/B-Testing: 50/50-Split über Edge-Logik.
+- [x] Mapping-/Action-Zuweisung + Weg-C-Netz: die "Click & Connect"-Wertschöpfung —
+      Aktionen zuweisen/konfigurieren/speichern (Redirect) und verwaiste Mappings
+      sichtbar machen/löschen/neu-verknüpfen. Siehe Detail-Blöcke unten.
+- [x] Phase 4 — Code-Generierung + HTML-Export: generateFunctional bäckt die
+      Mappings in funktionales HTML (reine Engine + funktionale Vorschau), Ausgabe
+      per Download/Copy. Client-seitig via DOMParser; Cheerio erst in der
+      Serving-Schicht (Phase 7), nicht hier. Siehe Detail-Blöcke unten.
+- [ ] Phase 4.5 — Editor-Politur (klein, als Nächstes): Zen-Modus — Code-Spalte
+      nach erfolgreichem Import standardmäßig EINGEKLAPPT (reiner lokaler
+      UI-View-State, KEIN Daten-/Mapping-Zustand, berührt dirty-Tracking nicht;
+      jederzeit wieder aufklappbar). Platz für weitere rein-lokale UX-Verfeinerungen.
+- [ ] Phase 5 — In-Place Copywriting (nächstes GROSSES Feature): zweiter Modus neben
+      Link-Mapping; liest <p> und <h1>..<h6> aus, Marketer überschreibt Texte direkt
+      (A/B am Wording). Neuer Mapping-Typ { elementId, type:"text", config:{content} }
+      auf bestehender Infrastruktur (anchorMappingTarget, Weg-C-Netz, JSON-Datenblock,
+      generateFunctional + zusätzlicher Handler). OFFENE Designfragen: siehe
+      Zukunfts-Vision-Block unten.
+- [ ] Phase 6 — Server-Side Tracking (CAPI): Next.js API-Route als Tracking-Proxy
+      für Meta/Google. (war Phase 5)
+- [ ] Phase 7 — Hosting & Go-Live: Vercel/Netlify-API, Custom Domains, SSL.
+      ACHTUNG: härtester Brocken (Multi-Tenant Custom Domains + Auto-SSL); schaltet
+      zugleich die Funnel-Vision frei. (war Phase 6)
+- [ ] Phase 8 — A/B-Testing: 50/50-Split über Edge-Logik. (war Phase 7)
 
 ## Phase 2 — Click & Connect (Core-Architektur & UX)
 Der zentrale Flow des Produkts. UX-Qualität hier entscheidet über Erfolg.
@@ -592,10 +609,11 @@ Owner-Entscheidungen (endgültig):
 - Vorschau-Garantie: Was in der Vorschau klickt, tut die exportierte Datei —
   gleiche Engine, gleiche Eingaben, nur mode kippt von "preview" auf "export".
 
-## Zukunfts-Vision UX & In-Place Editing (geplant, NICHT jetzt bauen)
-Roadmap-/Richtungs-Notiz, kein Auftrag. Dient als Bauplan-Anker, damit die
-Architektur diese Richtung mitdenkt — aber NICHTS wird hier vorgezogen. Beide
-Punkte unten werden im laufenden Schritt NICHT angefasst.
+## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
+Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,
+In-Place Copywriting als Phase 5. Der folgende Block bleibt die ausführliche
+Quelle (Architektur-Parallele + OFFENE Designfragen) — die Roadmap oben verweist
+hierher, statt zu duplizieren. Reihenfolge im Bau: erst Phase 4.5, dann Phase 5.
 
 ### 1) Zen-Modus (Code-Feld einklappen)
 - Nach erfolgreichem Import startet die linke Code-Spalte standardmäßig

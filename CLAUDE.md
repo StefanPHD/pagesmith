@@ -563,6 +563,35 @@ Dritte neu bewerten (Phase 6).
 Scheibe 1 = Engine (rein, getestet) + funktionale Vorschau. Export (Download/Copy)
 folgt als unmittelbare Scheibe 2.
 
+### HTML-Export (Scheibe — finaler Export der funktionalen Seite)
+Export ist die Auslieferung der echten Engine-Ausgabe als Datei. Kern:
+generateFunctional(code, mappings, "export") -> Datei. Engine + export-Modus sind
+bereits gebaut und getestet (Gegenproben: gemappt feuert, un-gemappt unberührt,
+openInNewTab respektiert). Dieses Slice liefert NUR noch die Ausgabe-Wege, keine
+neue Transformations-Logik.
+
+Owner-Entscheidungen (endgültig):
+- Ausgabeart: BEIDES — großer Button "Projekt exportieren" (Download .html) +
+  kleinerer "In Zwischenablage kopieren" daneben. Copy braucht EHRLICHES Feedback
+  ("Kopiert" / Fehlerfall-Hinweis), kein stilles Nichts (clipboard kann
+  fehlschlagen, z.B. fehlende Permission / unsicherer Kontext).
+- Zustand: WYSIWYG — immer der aktuelle LIVE-Editor-Stand, UNABHÄNGIG vom
+  Speichern. Kein Zwang, vorher zu speichern.
+- KRITISCH (gleiche Quelle): aus DERSELBEN stabilisierten Quelle generieren, aus
+  der auch die funktionale Vorschau baut (NICHT roher, unstabilisierter
+  Textarea-Inhalt). Nur so decken sich die ps-ids im Export zeichen-genau mit den
+  elementIds der Mappings — sonst liefe das Wiring ins Leere.
+- Orphans: still rausfiltern (die Engine tut das ohnehin — gleiche abgeleitete
+  "ps-id im Code vorhanden?"-Logik wie findOrphans), ABER ein unaufdringlicher
+  Hinweis neben dem Button, NUR wenn offene Orphans existieren (count>0), mit
+  Zahl. Gespeist aus der vorhandenen findOrphans-Logik, KEIN neuer Detektionsweg.
+- Dateiinhalt: das vollständige Dokument aus generateFunctional("export") 1:1
+  (DOCTYPE, head, User-HTML, vor </body> JSON-Datenblock + Wiring-Script). Kein
+  zusätzliches Verpacken. Dateiname aus dem Projektnamen slugifiziert (Fallback
+  "pagesmith-export.html").
+- Vorschau-Garantie: Was in der Vorschau klickt, tut die exportierte Datei —
+  gleiche Engine, gleiche Eingaben, nur mode kippt von "preview" auf "export".
+
 ## Zukunfts-Vision UX & In-Place Editing (geplant, NICHT jetzt bauen)
 Roadmap-/Richtungs-Notiz, kein Auftrag. Dient als Bauplan-Anker, damit die
 Architektur diese Richtung mitdenkt — aber NICHTS wird hier vorgezogen. Beide

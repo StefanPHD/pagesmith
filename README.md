@@ -10,12 +10,13 @@ to wire it up or host it, things break.
 Pagesmith is a lean hosting & integration layer that turns that static code into
 a functional, revenue-ready page — without the WordPress bloat.
 
-> ⚠️ **Status: early — built in public.** Phase 3 (auth + project persistence)
-> is live: you can create an account, log in, and your pasted code is saved per
+> ⚠️ **Status: early — built in public.** Auth + multi-project persistence are
+> live: you can create an account, log in, and your pasted code is saved per
 > account and reloaded automatically. The Click & Connect workspace lets you
-> select elements in the preview. The actions themselves (Stripe, PayPal,
-> webhooks, tracking, hosting) don't fire yet — those are still planned. Follow
-> along as it grows.
+> select elements in the preview and wire them to redirect actions (Stripe /
+> PayPal / generic links), preview the page firing for real, and export it as
+> functional HTML. Server-side tracking and one-click hosting don't exist yet —
+> those are still planned. Follow along as it grows.
 
 ---
 
@@ -37,12 +38,14 @@ lightweight client-side A/B testing.
 
 ---
 
-## What works today (Phases 1–3)
+## What works today (Phases 1–4)
 
 - User accounts: sign up and log in with email + password. The entire editor
   sits behind a login.
 - Project persistence: your pasted code can be saved per account and is loaded
   automatically when you open the editor. Each account only sees its own data.
+- Multi-project management: create, switch, rename and delete projects, with a
+  dirty-guard that protects unsaved changes when you switch away.
 - Stable element IDs: linkable elements receive durable, code-resident IDs that
   are written into the saved code.
 - Paste raw HTML into the editor.
@@ -61,10 +64,20 @@ lightweight client-side A/B testing.
   sync from a single source of truth: selecting in either place outlines the
   element in the preview and highlights its entry in the list, and scrolls it
   into view.
+- Assign actions: wire a selected element to a redirect action (Stripe / PayPal
+  checkout link or any generic link, opening in the same or a new tab). Wired
+  elements are badged in the element list.
+- Orphaned-mapping safety net: if a saved action's element disappears from the
+  code, the mapping is surfaced as "orphaned" rather than silently dropped — you
+  can delete it or re-link it to a current element.
+- Functional preview: a separate preview mode renders the wired HTML so the
+  buttons actually fire, kept strictly separate from the selection-only edit
+  preview.
+- HTML export: bake the mappings into functional HTML (the buttons really fire)
+  and export the page — download as `.html` or copy to clipboard.
 
-> The action panel currently only displays the selected element. **Assigning
-> and firing actions** (Stripe, PayPal, webhooks, tracking) and **hosting** are
-> not implemented yet — see the roadmap.
+> Dedicated payment tiles (Stripe / PayPal product IDs), webhook form-posting,
+> server-side tracking and **hosting** aren't implemented yet — see the roadmap.
 
 ---
 

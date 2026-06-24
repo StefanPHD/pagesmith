@@ -563,6 +563,45 @@ Dritte neu bewerten (Phase 6).
 Scheibe 1 = Engine (rein, getestet) + funktionale Vorschau. Export (Download/Copy)
 folgt als unmittelbare Scheibe 2.
 
+## Zukunfts-Vision UX & In-Place Editing (geplant, NICHT jetzt bauen)
+Roadmap-/Richtungs-Notiz, kein Auftrag. Dient als Bauplan-Anker, damit die
+Architektur diese Richtung mitdenkt — aber NICHTS wird hier vorgezogen. Beide
+Punkte unten werden im laufenden Schritt NICHT angefasst.
+
+### 1) Zen-Modus (Code-Feld einklappen)
+- Nach erfolgreichem Import startet die linke Code-Spalte standardmäßig
+  EINGEKLAPPT (kollabierbares Panel; der bereits vorhandene Collapse-Pfeil wird
+  genutzt). Der Marketer braucht Fokus auf Vorschau + Dashboard, nicht aufs
+  Code-Feld. Jederzeit wieder aufklappbar.
+- Architektur-Leitplanke: das ist REINER lokaler UI-View-State, KEIN Daten-/
+  Mapping-Zustand. Gehört NICHT in DB oder Mapping-Modell und berührt das
+  dirty-Tracking NICHT.
+
+### 2) In-Place Copywriting (Text-/Headline-Editor) — zweiter Modus neben Link-Mapping
+- Liest Fließtexte (<p>) und Überschriften (<h1>..<h6>) aus, listet sie im
+  Dashboard; der Marketer überschreibt Texte direkt (schnelle A/B-Tests am
+  Wording).
+- Architektur-Parallele (Stärke des bestehenden Designs explizit festgehalten):
+  ein Text-Override ist nur ein NEUER Mapping-Typ
+  { elementId, type: "text", config: { content } }. Nutzt dieselbe
+  ID-Verankerung (anchorMappingTarget), dasselbe Weg-C-Orphan-Netz (gelöschtes
+  Element -> verwaiste Verknüpfung, unverändert), denselben JSON-Datenblock und
+  dieselbe generateFunctional-Engine mit einem zusätzlichen Handler. Bestätigt:
+  das type-diskriminierte Mapping-Modell war die richtige Wahl.
+- BEWUSST OFFENE DESIGNFRAGEN (als offen dokumentiert, NICHT jetzt entscheiden —
+  Klärung erst im Bau-Slice):
+  a) Textdetektion ist nicht trivial: verschachtelte Kinder
+     (<p>...<strong>...</p>). Ein textContent-Überschreiben würde das Kind-Markup
+     zerstören. Zu klären: nur Elemente OHNE Kind-Elemente anbieten? Rich-Text?
+     Erstmal nur "reine" Textknoten?
+  b) Vorschau vs. Export getrennt (gleiche Lektion wie beim Redirect, eine Ebene
+     höher): Die Vorschau kann Text per JS injizieren (live). Der Export sollte
+     den Text vermutlich DIREKT in den DOM backen (das <h1> enthält im Export
+     schon den neuen Text) statt Laufzeit-JS -> besser für SEO, kein FOUC/
+     Flackern, funktioniert ohne JS. Beim Link ist Laufzeit-JS zwingend
+     (Klick = Laufzeit), bei Text nicht. Finale Entscheidung im Bau-Slice.
+- Lean-Timing: erst NACH dem HTML-Export-Feature angehen; nicht vorziehen.
+
 ## Zukunftsrichtung: Funnel-Architektur (bewusst vertagt, NICHT jetzt bauen)
 Festgehaltene Richtung, kein Auftrag. Dient als Bauplan-Anker, damit heutige
 Entscheidungen sie nicht versperren. Wird NICHT im laufenden Schritt angefasst.

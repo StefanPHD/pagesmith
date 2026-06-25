@@ -831,7 +831,7 @@ export default function CodeImporter({
             type="button"
             onClick={toggleInputCollapsed}
             aria-expanded={!isInputCollapsed}
-            className="flex w-full items-center justify-between gap-2 px-3 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="flex w-full items-center justify-between gap-2 rounded-t-lg px-3 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
           >
             <span className="truncate">
               {isInputCollapsed ? "Code anzeigen/editieren" : "Dein Code"}

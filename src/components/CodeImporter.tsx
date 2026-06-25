@@ -815,38 +815,31 @@ export default function CodeImporter({
 
       {/* Bestehende drei Zonen (Editor-Kern) — unveraendert. */}
       <div className="flex w-full flex-col gap-4 lg:flex-row">
-      {/* Zone 1 (links): Code-Eingabe, manuell einklappbar. shrink-0, damit bei
-          Platzmangel die Preview schrumpft, nicht dieses Panel. */}
-      <section
-        className={`flex shrink-0 flex-col self-start rounded-lg border border-gray-300 bg-white ${
-          isInputCollapsed ? "w-12" : "w-full lg:w-80"
-        }`}
-      >
-        {/* Header: Titel (nur expandiert) + Chevron-Toggle. */}
-        <div
-          className={`flex items-center border-b border-gray-200 px-2 py-3 ${
-            isInputCollapsed ? "justify-center" : "justify-between"
-          }`}
-        >
-          {!isInputCollapsed && (
-            <h2 className="truncate pl-2 text-sm font-medium text-gray-700">
-              Dein Code
-            </h2>
-          )}
+      {/* Zone 1 (links): Code-Eingabe (einklappbares Akkordeon) + Zaehler +
+          Elementliste. shrink-0, damit bei Platzmangel die Preview schrumpft,
+          nicht dieses Panel. Der Zen-Collapse versteckt NUR die Code-Eingabe
+          (Textarea + Upload) — Zaehler und Elementliste bleiben IMMER sichtbar,
+          denn die Liste ist das Arbeitswerkzeug, nur der Rohcode ist Ablenkung. */}
+      <section className="flex w-full shrink-0 flex-col self-start rounded-lg border border-gray-300 bg-white lg:w-80">
+        {/* (1) Code-Eingabe-Block. Voller Akkordeon-Trigger klappt NUR diesen
+            Block (Textarea + Upload); Zaehler und Elementliste darunter bleiben
+            immer sichtbar. Der Inhalt bleibt STETS gemountet (Textarea behaelt
+            State + Debounce), wird beim Einklappen nur per display:none
+            versteckt. */}
+        <div className="border-b border-gray-200">
           <button
             type="button"
             onClick={toggleInputCollapsed}
-            aria-label={isInputCollapsed ? "Eingabe ausklappen" : "Eingabe einklappen"}
             aria-expanded={!isInputCollapsed}
-            className="flex h-7 w-7 items-center justify-center rounded text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="flex w-full items-center justify-between gap-2 px-3 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
-            <Chevron direction={isInputCollapsed ? "right" : "left"} />
+            <span className="truncate">
+              {isInputCollapsed ? "Code anzeigen/editieren" : "Dein Code"}
+            </span>
+            <Chevron direction={isInputCollapsed ? "down" : "up"} />
           </button>
-        </div>
 
-        {/* Expandierter Inhalt: bleibt STETS gemountet (Textarea behaelt State
-            + Debounce), wird beim Einklappen nur per display:none versteckt. */}
-        <div className={isInputCollapsed ? "hidden" : "flex flex-col gap-3 p-3"}>
+          <div className={isInputCollapsed ? "hidden" : "flex flex-col gap-3 px-3 pb-3"}>
           <textarea
             value={code}
             onChange={(e) => setCode(e.target.value)}
@@ -911,25 +904,32 @@ export default function CodeImporter({
           {uploadError && (
             <p className="text-xs font-medium text-red-600">{uploadError}</p>
           )}
-
-          <div className="flex gap-3 text-sm text-gray-600">
-            <span>🔘 {counts.button} Buttons</span>
-            <span>📋 {counts.form} Forms</span>
-            <span>🔗 {counts.link} Links</span>
           </div>
+        </div>
 
-          {/* Erkannte Elemente (1:1 aus Phase 1, Logik/Styling unveraendert). */}
-          <div>
-            <h2 className="mb-2 text-sm font-medium text-gray-700">
-              Erkannte Elemente ({elements.length})
-            </h2>
-            <div className="flex max-h-48 flex-col gap-2 overflow-y-auto">
-              {elements.length === 0 && (
-                <p className="text-sm text-gray-400">
-                  Noch nichts erkannt – paste Code oben rein.
-                </p>
-              )}
-              {elements.map((el, i) => {
+        {/* (2) Zaehler (Buttons/Forms/Links) — immer sichtbar, unabhaengig vom
+            Code-Collapse. */}
+        <div className="flex gap-3 border-b border-gray-200 px-3 py-2.5 text-sm text-gray-600">
+          <span>🔘 {counts.button} Buttons</span>
+          <span>📋 {counts.form} Forms</span>
+          <span>🔗 {counts.link} Links</span>
+        </div>
+
+        {/* (3) Erkannte Elemente — IMMER sichtbar und scrollbar (das
+            Arbeitswerkzeug des Marketers; nur der Rohcode oben ist die
+            Ablenkung). Stabiler DOM-Knoten: der Collapse haengt ihn nie ab ->
+            Scroll-Position und Hoehe springen beim Auf-/Zuklappen nicht. */}
+        <div className="p-3">
+          <h2 className="mb-2 text-sm font-medium text-gray-700">
+            Erkannte Elemente ({elements.length})
+          </h2>
+          <div className="flex max-h-48 flex-col gap-2 overflow-y-auto">
+            {elements.length === 0 && (
+              <p className="text-sm text-gray-400">
+                Noch nichts erkannt – füge oben Code ein.
+              </p>
+            )}
+            {elements.map((el, i) => {
                 const isSelected = el.id === selectedElementId;
                 const isMapped = mappedIds.has(el.id);
                 return (
@@ -961,18 +961,8 @@ export default function CodeImporter({
                   </button>
                 );
               })}
-            </div>
           </div>
         </div>
-
-        {/* Eingeklappt: kompakte vertikale Zaehler-Badges. */}
-        {isInputCollapsed && (
-          <div className="flex flex-col items-center gap-2 py-3 text-xs text-gray-600">
-            <span title="Buttons">🔘{counts.button}</span>
-            <span title="Forms">📋{counts.form}</span>
-            <span title="Links">🔗{counts.link}</span>
-          </div>
-        )}
       </section>
 
       {/* Zone 2 (Mitte): Live-Preview. min-w-0 + flex-1 = nimmt die freie Breite
@@ -1131,7 +1121,17 @@ function formatRelative(iso: string): string {
   return `vor ${d} Tg`;
 }
 
-function Chevron({ direction }: { direction: "left" | "right" }) {
+function Chevron({
+  direction,
+}: {
+  direction: "left" | "right" | "up" | "down";
+}) {
+  const points = {
+    left: "10 3 5 8 10 13",
+    right: "6 3 11 8 6 13",
+    up: "3 10 8 5 13 10",
+    down: "3 6 8 11 13 6",
+  }[direction];
   return (
     <svg
       width="16"
@@ -1144,11 +1144,7 @@ function Chevron({ direction }: { direction: "left" | "right" }) {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      {direction === "left" ? (
-        <polyline points="10 3 5 8 10 13" />
-      ) : (
-        <polyline points="6 3 11 8 6 13" />
-      )}
+      <polyline points={points} />
     </svg>
   );
 }

@@ -42,10 +42,12 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Mappings in funktionales HTML (reine Engine + funktionale Vorschau), Ausgabe
       per Download/Copy. Client-seitig via DOMParser; Cheerio erst in der
       Serving-Schicht (Phase 7), nicht hier. Siehe Detail-Blöcke unten.
-- [ ] Phase 4.5 — Editor-Politur (klein, als Nächstes): Zen-Modus — Code-Spalte
-      nach erfolgreichem Import standardmäßig EINGEKLAPPT (reiner lokaler
-      UI-View-State, KEIN Daten-/Mapping-Zustand, berührt dirty-Tracking nicht;
-      jederzeit wieder aufklappbar). Platz für weitere rein-lokale UX-Verfeinerungen.
+- [ ] Phase 4.5 — Editor-Politur (klein, als Nächstes): zwei kleine, getrennte
+      Bausteine in einem Slice — (A) Datei-Upload/Drag-Drop als zweiter Import-Weg
+      neben Copy-Paste und (B) Zen-Modus (Code-Panel nach Import standardmäßig
+      EINGEKLAPPT). Beide reiner lokaler UI-View-State, KEIN Daten-/Mapping-Zustand,
+      berühren dirty-Tracking nicht; jederzeit wieder aufklappbar. Siehe Detail-Block
+      unten.
 - [ ] Phase 5 — In-Place Copywriting (nächstes GROSSES Feature): zweiter Modus neben
       Link-Mapping; liest <p> und <h1>..<h6> aus, Marketer überschreibt Texte direkt
       (A/B am Wording). Neuer Mapping-Typ { elementId, type:"text", config:{content} }
@@ -608,6 +610,35 @@ Owner-Entscheidungen (endgültig):
   "pagesmith-export.html").
 - Vorschau-Garantie: Was in der Vorschau klickt, tut die exportierte Datei —
   gleiche Engine, gleiche Eingaben, nur mode kippt von "preview" auf "export".
+
+## Phase 4.5 — Editor-Politur: Datei-Upload + Zen-Modus
+Zwei kleine, getrennte Bausteine in EINEM Slice, NACHEINANDER getestet (erst
+Upload, dann Zen-Collapse obendrauf). Beide sind reiner lokaler UI-View-State,
+KEIN Daten-/Mapping-Zustand — sie berühren dirty-Tracking, DB und Mapping-Modell
+NICHT. Leitplanke: nichts hiervon wird persistiert (reiner Session-/View-State);
+Engine, Wiring, Mapping-Lookup, Orphan-Netz, Export, Auth, RLS bleiben unberührt.
+
+### A) Datei-Upload / Drag-Drop (zweiter Import-Weg neben Copy-Paste)
+- Upload-Zone im Code-Panel ("HTML-Datei hochladen oder hierher ziehen") neben der
+  bestehenden Textarea. Beides: Klick-Upload UND Drag-Drop.
+- Datei wird CLIENTSEITIG via FileReader gelesen, Inhalt in die Textarea gekippt ->
+  ab da EXAKT derselbe Pfad wie Paste (Detektion, Stabilisierung, Sandbox-Preview).
+  KEIN Server-Upload, KEIN neuer Verarbeitungsweg.
+- Grenzen: nur .html / text/html, max ~2 MB. Alles andere (falscher Typ, zu groß)
+  -> freundliche, sichtbare Fehlermeldung, KEIN stilles Schlucken, kein
+  Browser-Hänger.
+
+### B) Zen-Modus (Auto-Collapse des Code-Panels)
+- Leeres/neues Projekt: Panel startet GEÖFFNET (Textarea + Upload-Zone sichtbar,
+  damit man überhaupt importieren kann).
+- Auto-Collapse-Trigger: GENAU EINMAL pro Import-EREIGNIS (onPaste ODER
+  erfolgreicher Upload). NICHT kontinuierlich bei jeder Erkennung/jedem
+  Tastendruck. Nach manuellem Aufklappen NIE wieder automatisch zuklappen (manuell
+  schlägt Auto dauerhaft). Begründung: sonst klappt das Panel dem Marketer beim
+  Tippen/Korrigieren weg.
+- Projekt-Öffnen mit vorhandenem Code: startet EINGEKLAPPT (kein Merken pro
+  Projekt, immer Default). Fokus sofort aufs Dashboard.
+- Jederzeit manuell auf-/zuklappbar (vorhandener Collapse-Pfeil).
 
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,

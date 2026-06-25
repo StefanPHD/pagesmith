@@ -102,9 +102,18 @@ export default function CodeImporter({
   // Status des "In Zwischenablage kopieren"-Buttons (ehrliches Erfolg/Fehler-
   // Feedback).
   const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
-  // Linkes Panel manuell ein-/ausklappbar (Auto-Collapse beim Pasten kommt
-  // bewusst erst in einem spaeteren Schritt).
-  const [isInputCollapsed, setIsInputCollapsed] = useState(false);
+  // Linkes Panel ein-/ausklappbar. Zen-Modus: ein Projekt MIT Code startet
+  // eingeklappt (Fokus aufs Dashboard), ein leeres Projekt offen (man muss erst
+  // importieren koennen). Deterministisch aus initialCode -> server- und
+  // client-identischer erster Paint, kein Hydration-Mismatch (Lektion aus 3.2).
+  const [isInputCollapsed, setIsInputCollapsed] = useState(
+    initialCode.trim() !== ""
+  );
+  // Zen-Modus "manuell schlaegt Auto": sobald der Nutzer das Panel selbst
+  // aufklappt, uebernimmt er die Kontrolle -> KEIN Auto-Collapse mehr in diesem
+  // Projekt-Kontext (bleibt true, auch wenn er danach wieder zuklappt). Wird NUR
+  // beim Projekt-Kontext-Wechsel via applyZenForLoadedCode zurueckgesetzt.
+  const [userExpandedManually, setUserExpandedManually] = useState(false);
   // Datei-Upload: letzter Validierungs-/Lesefehler (freundlich sichtbar, kein
   // stilles Schlucken) + Drag-Hover-Feedback fuer die Dropzone.
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -311,6 +320,35 @@ export default function CodeImporter({
     setMappings([]);
     setSavedMappings([]);
     setSelectedElementId(null);
+    // Leerer Kontext -> Panel offen (man muss importieren koennen), Flag frisch.
+    applyZenForLoadedCode("");
+  }
+
+  // Zen-Modus: an ein Import-EREIGNIS gehaengt (onPaste / erfolgreicher Upload),
+  // NICHT an den Detektions-State (sonst feuerte es bei jedem Tastendruck und
+  // klappte dem Nutzer das Panel beim Tippen weg). Genau einmal pro Ereignis.
+  // "Manuell schlaegt Auto": hat der Nutzer selbst aufgeklappt, kein Auto-Collapse.
+  function autoCollapseOnImport() {
+    if (!userExpandedManually) setIsInputCollapsed(true);
+  }
+
+  // Zen-Default beim Laden/Wechseln eines Projekt-Kontexts: Code vorhanden ->
+  // eingeklappt, leer -> offen. Setzt zugleich das "manuell"-Flag zurueck (neuer
+  // Kontext = frische Auto-Collapse-Erlaubnis). Kein Merken pro Projekt.
+  function applyZenForLoadedCode(html: string) {
+    setUserExpandedManually(false);
+    setIsInputCollapsed(html.trim() !== "");
+  }
+
+  // Manuelles Toggle: klappt der Nutzer AUF (next = nicht collapsed), uebernimmt
+  // er die Kontrolle -> Flag setzen, ab dann kein Auto-Collapse mehr. Zuklappen
+  // laesst das Flag unberuehrt (Kontrolle bleibt beim Nutzer).
+  function toggleInputCollapsed() {
+    setIsInputCollapsed((v) => {
+      const next = !v;
+      if (!next) setUserExpandedManually(true);
+      return next;
+    });
   }
 
   // Datei-Import (zweiter Weg neben Copy-Paste): validieren -> via FileReader
@@ -329,6 +367,8 @@ export default function CodeImporter({
     reader.onload = () => {
       const text = typeof reader.result === "string" ? reader.result : "";
       setCode(text);
+      // Erfolgreicher Upload = Import-Ereignis -> Zen-Auto-Collapse (einmalig).
+      autoCollapseOnImport();
     };
     reader.onerror = () => setUploadError("Datei konnte nicht gelesen werden.");
     reader.readAsText(file);
@@ -493,6 +533,8 @@ export default function CodeImporter({
     setSavedMappings(proj.mappings);
     setSelectedElementId(null);
     setIsProjectMenuOpen(false);
+    // Zen-Default fuer den neuen Kontext: mit Code eingeklappt, leer offen.
+    applyZenForLoadedCode(proj.html);
   }
 
   // Neues Projekt: lebt zunaechst NUR im Editor-State, DB-Zeile entsteht erst
@@ -531,6 +573,9 @@ export default function CodeImporter({
         setMappings(next.mappings);
         setSavedMappings(next.mappings);
         setSelectedElementId(null);
+        // Zen-Default fuer den nachgerueckten Kontext (resetToEmpty deckt den
+        // leeren Fall im else selbst ab).
+        applyZenForLoadedCode(next.html);
       } else {
         resetToEmpty();
       }
@@ -785,7 +830,7 @@ export default function CodeImporter({
           )}
           <button
             type="button"
-            onClick={() => setIsInputCollapsed((v) => !v)}
+            onClick={toggleInputCollapsed}
             aria-label={isInputCollapsed ? "Eingabe ausklappen" : "Eingabe einklappen"}
             aria-expanded={!isInputCollapsed}
             className="flex h-7 w-7 items-center justify-center rounded text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -800,6 +845,7 @@ export default function CodeImporter({
           <textarea
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            onPaste={autoCollapseOnImport}
             placeholder="<button>Jetzt kaufen</button> ..."
             className="h-96 w-full resize-none rounded-lg border border-gray-300 bg-gray-50 p-4 font-mono text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             spellCheck={false}

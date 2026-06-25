@@ -338,6 +338,9 @@ export default function CodeImporter({
   function applyZenForLoadedCode(html: string) {
     setUserExpandedManually(false);
     setIsInputCollapsed(html.trim() !== "");
+    // uploadError ist projekt-ungebundener View-State -> beim Kontext-Wechsel
+    // mit zuruecksetzen, sonst leuchtet ein Fehler aus Projekt A in B weiter.
+    setUploadError(null);
   }
 
   // Manuelles Toggle: klappt der Nutzer AUF (next = nicht collapsed), uebernimmt
@@ -357,12 +360,14 @@ export default function CodeImporter({
   // Preview haengen unveraendert an setCode/code). Validierung VOR dem Lesen,
   // damit ein falscher Typ / zu grosse Datei den Browser nicht haengen laesst.
   function importFile(file: File) {
+    // Am ANFANG jedes Import-Versuchs clearen (vor der Validierung), damit keine
+    // alte Meldung stehen bleibt, waehrend eine gueltige Datei schon laedt.
+    setUploadError(null);
     const v = validateUploadFile(file);
     if (!v.ok) {
       setUploadError(v.error);
       return;
     }
-    setUploadError(null);
     const reader = new FileReader();
     reader.onload = () => {
       const text = typeof reader.result === "string" ? reader.result : "";
@@ -845,8 +850,12 @@ export default function CodeImporter({
           <textarea
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            onPaste={autoCollapseOnImport}
-            placeholder="<button>Jetzt kaufen</button> ..."
+            onPaste={() => {
+              // Paste ist auch ein Import-Versuch -> alte Upload-Meldung clearen.
+              setUploadError(null);
+              autoCollapseOnImport();
+            }}
+            placeholder="Füge hier deinen HTML-Code ein – oder nutze den Datei-Upload unten."
             className="h-96 w-full resize-none rounded-lg border border-gray-300 bg-gray-50 p-4 font-mono text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             spellCheck={false}
           />

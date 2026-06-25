@@ -26,6 +26,7 @@ import {
 } from "@/lib/mappings";
 import { generateFunctional } from "@/lib/generate";
 import { exportFilename } from "@/lib/export";
+import { validateUploadFile } from "@/lib/upload";
 import ActionPanel from "@/components/ActionPanel";
 
 // Parsing + iframe-Preview sind die teuren Verbraucher. Sie sollen erst nach
@@ -104,6 +105,10 @@ export default function CodeImporter({
   // Linkes Panel manuell ein-/ausklappbar (Auto-Collapse beim Pasten kommt
   // bewusst erst in einem spaeteren Schritt).
   const [isInputCollapsed, setIsInputCollapsed] = useState(false);
+  // Datei-Upload: letzter Validierungs-/Lesefehler (freundlich sichtbar, kein
+  // stilles Schlucken) + Drag-Hover-Feedback fuer die Dropzone.
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   // Preview-Modus: "edit" = selektions-only Bruecke (Klick waehlt aus), wie
   // bisher. "functional" = generateFunctional rendert das verdrahtete HTML, Klick
   // FEUERT echt (Redirect). Strikt getrennt: der funktionale Modus injiziert NIE
@@ -117,6 +122,9 @@ export default function CodeImporter({
   );
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  // Verstecktes <input type="file"> -> per Klick aus der sichtbaren Dropzone
+  // ausgeloest.
+  const fileInputRef = useRef<HTMLInputElement>(null);
   // Ref auf das aktuell ausgewaehlte Listen-Item -> Forward-Bridge-Scroll.
   const activeItemRef = useRef<HTMLButtonElement>(null);
   // Spiegelt selectedElementId fuer den []-deps Message-Listener (sonst stale
@@ -303,6 +311,27 @@ export default function CodeImporter({
     setMappings([]);
     setSavedMappings([]);
     setSelectedElementId(null);
+  }
+
+  // Datei-Import (zweiter Weg neben Copy-Paste): validieren -> via FileReader
+  // lesen -> Inhalt EXAKT in denselben setCode-Pfad kippen wie Paste. KEIN
+  // Server-Upload, KEINE zweite Verarbeitungskette (Detektion/Stabilisierung/
+  // Preview haengen unveraendert an setCode/code). Validierung VOR dem Lesen,
+  // damit ein falscher Typ / zu grosse Datei den Browser nicht haengen laesst.
+  function importFile(file: File) {
+    const v = validateUploadFile(file);
+    if (!v.ok) {
+      setUploadError(v.error);
+      return;
+    }
+    setUploadError(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = typeof reader.result === "string" ? reader.result : "";
+      setCode(text);
+    };
+    reader.onerror = () => setUploadError("Datei konnte nicht gelesen werden.");
+    reader.readAsText(file);
   }
 
   // Speichern: CLIENT-seitig stabilisieren (nur IDs ins Attribut, OHNE
@@ -775,6 +804,59 @@ export default function CodeImporter({
             className="h-96 w-full resize-none rounded-lg border border-gray-300 bg-gray-50 p-4 font-mono text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             spellCheck={false}
           />
+
+          {/* Datei-Upload / Drag-Drop: zweiter Import-Weg neben Paste. Klick
+              loest das versteckte <input> aus; Drop nimmt nur die ERSTE Datei.
+              preventDefault auf dragOver/drop ist Pflicht, sonst oeffnet der
+              Browser die Datei selbst. Beide Wege muenden in importFile ->
+              setCode (gleicher Pfad wie Paste). */}
+          <div
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragLeave={(e) => {
+              e.preventDefault();
+              setIsDragging(false);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDragging(false);
+              const file = e.dataTransfer.files?.[0];
+              if (file) importFile(file);
+            }}
+            className={`flex flex-col items-center gap-1 rounded-lg border border-dashed px-3 py-4 text-center text-xs transition-colors ${
+              isDragging
+                ? "border-blue-500 bg-blue-50 text-blue-700"
+                : "border-gray-300 bg-gray-50 text-gray-500"
+            }`}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".html,text/html"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) importFile(file);
+                // Wert leeren -> dieselbe Datei kann erneut gewaehlt werden und
+                // loest wieder onChange aus.
+                e.target.value = "";
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="font-medium text-blue-600 hover:text-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              HTML-Datei hochladen
+            </button>
+            <span>oder hierher ziehen</span>
+          </div>
+          {uploadError && (
+            <p className="text-xs font-medium text-red-600">{uploadError}</p>
+          )}
+
           <div className="flex gap-3 text-sm text-gray-600">
             <span>🔘 {counts.button} Buttons</span>
             <span>📋 {counts.form} Forms</span>

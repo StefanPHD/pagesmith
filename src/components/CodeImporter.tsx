@@ -291,16 +291,31 @@ export default function CodeImporter({
   // "nichts zeigen". Auch hydration-sicher: im ersten Paint ist debouncedCode ""
   // -> bei nicht-leerem code ungleich (Guard aus, identischer Server/Client-Paint).
   const elementsReflectCurrentCode = debouncedCode === code;
-  const orphans = useMemo(
+  // Orphans NUR berechnen, wenn die Detektion den aktuellen Code widerspiegelt
+  // (sonst null = "noch nicht stabil"). Reiner Flash-Guard wie oben beschrieben.
+  const computedOrphans = useMemo(
     () =>
       elementsReflectCurrentCode
         ? findOrphans(
             mappings,
             elements.map((e) => e.id)
           )
-        : [],
+        : null,
     [elementsReflectCurrentCode, mappings, elements]
   );
+  // Letzte STABILE Menge in State halten. Waehrend der Re-Detektion nach
+  // "Uebernehmen" ist computedOrphans null -> dann die letzte stabile Menge
+  // weiterzeigen statt [] (die gelbe Box klappt nicht weg, die drei Spalten
+  // springen nicht). Sobald wieder stabil gewinnt computedOrphans SOFORT (kein Lag,
+  // kein veraltetes Einfrieren). Fortschreiben per setState WAEHREND DES RENDERS
+  // (Reacts dokumentiertes "store info from previous renders"-Muster, NICHT im
+  // Effekt): terminiert, weil computedOrphans eine stabile useMemo-Referenz ist
+  // (nach dem Setzen gilt computedOrphans === stableOrphans -> kein erneutes set).
+  const [stableOrphans, setStableOrphans] = useState<Mapping[]>([]);
+  if (computedOrphans !== null && computedOrphans !== stableOrphans) {
+    setStableOrphans(computedOrphans);
+  }
+  const orphans = computedOrphans ?? stableOrphans;
 
   // Klick-Bruecke aus dem sandboxed iframe. Registriert sich EINMAL ([] deps);
   // iframeRef + setSelectedElementId sind stabil.

@@ -28,7 +28,7 @@ import {
   type RedirectConfig,
   type TextConfig,
 } from "@/lib/mappings";
-import { generateFunctional } from "@/lib/generate";
+import { editPreviewHtml, generateFunctional } from "@/lib/generate";
 import { exportFilename } from "@/lib/export";
 import { validateUploadFile } from "@/lib/upload";
 import ActionPanel from "@/components/ActionPanel";
@@ -209,6 +209,16 @@ export default function CodeImporter({
         ? generateFunctional(debouncedCode, mappings, "preview")
         : "",
     [previewMode, debouncedCode, mappings]
+  );
+
+  // Edit-iframe-HTML: bei aktivem Text-Override zeigt AUCH der Editieren-Modus den
+  // Override-Text (Konsistenz mit Vorschau/Liste/Header). Geteilte, getestete
+  // Komposition in editPreviewHtml: Normalfall ohne Text-Mapping -> previewHtml
+  // unveraendert (Kurzschluss, kein Reload); sonst Text-Injektion HINTER die
+  // Bruecke gehaengt, ohne sie anzutasten. Reine Darstellung, kein Rueckfluss.
+  const editHtml = useMemo(
+    () => editPreviewHtml(previewHtml, mappings),
+    [previewHtml, mappings]
   );
 
   // Ausgewaehltes Element abgeleitet: faellt automatisch auf null zurueck, wenn
@@ -1160,7 +1170,7 @@ export default function CodeImporter({
             key="ps-edit"
             ref={iframeRef}
             title="preview"
-            srcDoc={previewHtml}
+            srcDoc={editHtml}
             // allow-scripts aktiviert das injizierte Listener-Script. NIEMALS
             // allow-same-origin dazu – die Kombination bricht den Fremdcode aus
             // der Sandbox aus.

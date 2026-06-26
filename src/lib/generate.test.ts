@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { generateFunctional } from "./generate";
+import { editPreviewHtml, generateFunctional } from "./generate";
+import { annotateAndDetect } from "./detect";
 import type { Mapping } from "./mappings";
 
 function redirect(
@@ -309,5 +310,87 @@ describe("Text-Override – Export bleibt unberuehrt (no-op in dieser Scheibe)",
     const table = readTable(out);
     expect(table).toHaveLength(1);
     expect(table[0].type).toBe("redirect");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// EDIT-Modus: Text-Overrides werden auch im Editieren-iframe angewandt, aber das
+// Click-Wiring bleibt vorschau-/export-exklusiv (Klicks gehoeren der Bruecke).
+// ---------------------------------------------------------------------------
+
+describe("Text-Override – Editieren wendet Text an, OHNE Click-Wiring", () => {
+  it("setzt textContent im edit-Modus", () => {
+    mountAndWire(
+      generateFunctional(TEXT_DOC, [text("ps-tttttt", "Neu im Edit")], "edit")
+    );
+    expect(textOf("ps-tttttt")).toBe("Neu im Edit");
+  });
+
+  it("backt redirects NICHT ein (text-only Tabelle, kein URL-Ballast)", () => {
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [redirect("ps-aaaaaa", "https://b.com")],
+      "edit"
+    );
+    // edit-Tabelle ist text-only -> der redirect ist NICHT eingebacken, die URL
+    // taucht nirgends im Output auf. (Dass KEIN Click-Handler feuert, beweist die
+    // verhaltensbasierte Gegenprobe unten — das Wiring-Script ist statisch und
+    // enthaelt den Handler-Quelltext immer, gegated nur zur Laufzeit per MODE.)
+    expect(readTable(out)).toHaveLength(0);
+    expect(out).not.toContain("b.com");
+  });
+
+  it("GEGENPROBE: redirect-Klick im edit-Modus loest NICHT aus", () => {
+    mountAndWire(
+      generateFunctional(
+        MAPPED_BUTTON,
+        [redirect("ps-aaaaaa", "https://b.com")],
+        "edit"
+      )
+    );
+    const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(ev.defaultPrevented).toBe(false);
+    expect(openSpy).not.toHaveBeenCalled();
+    expect(hrefValue).toBe("");
+  });
+
+  it("</script>-content ueberlebt den Round-Trip auch im edit-Modus (literaler Text)", () => {
+    const evil = `x </script><script>alert(1)</script> y`;
+    const out = generateFunctional(TEXT_DOC, [text("ps-tttttt", evil)], "edit");
+    expect(tc(readTable(out)[0]).content).toBe(evil);
+    expect(out).not.toContain("</script><script>alert(1)");
+    mountAndWire(out);
+    expect(textOf("ps-tttttt")).toBe(evil);
+  });
+});
+
+describe("editPreviewHtml – Komposition auf der Selektions-Bruecke", () => {
+  const BRIDGE_SOURCE = "<h1>Alt</h1>";
+
+  it("KURZSCHLUSS: ohne text-Mapping == previewHtml (byte-identisch)", () => {
+    const previewHtml = annotateAndDetect(BRIDGE_SOURCE).html;
+    // leere Mappings UND ein reines redirect-Mapping schliessen beide kurz.
+    expect(editPreviewHtml(previewHtml, [])).toBe(previewHtml);
+    expect(
+      editPreviewHtml(previewHtml, [redirect("ps-aaaaaa", "https://b.com")])
+    ).toBe(previewHtml);
+  });
+
+  it("mit text-Override: Bruecke ueberlebt den Re-Parse FUNKTIONAL + Override im Datenblock", () => {
+    const { html: previewHtml, elements } = annotateAndDetect(BRIDGE_SOURCE);
+    const id = elements[0].id;
+    // Sanity: previewHtml traegt die Bruecke + den Anker.
+    expect(previewHtml).toContain("ELEMENT_CLICKED");
+
+    const out = editPreviewHtml(previewHtml, [text(id, "Neu")]);
+    // Bruecken-Marker + Anker-Attribut bleiben nach dem Re-Parse erhalten.
+    expect(out).toContain("ELEMENT_CLICKED");
+    expect(out).toContain("IFRAME_READY");
+    expect(out).toContain("SET_SELECTED_ID");
+    expect(out).toContain(`data-pagesmith-id="${id}"`);
+    // Der Override liegt im (einzigen) Datenblock.
+    const table = readTable(out);
+    expect(table).toHaveLength(1);
+    expect(tc(table[0]).content).toBe("Neu");
   });
 });

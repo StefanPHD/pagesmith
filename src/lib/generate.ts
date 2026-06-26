@@ -14,9 +14,14 @@ const PAGESMITH_ID_ATTR = "data-pagesmith-id";
 // getElementById genau hier aus.
 const MAPPINGS_SCRIPT_ID = "pagesmith-mappings";
 
-// Vorschau- vs. Export-Verhalten (Live-Test-Korrektur, siehe CLAUDE.md):
-// dieselbe Wiring-Engine, EINE mode-Verzweigung — kein Duplikat-Script.
-export type GenerateMode = "export" | "preview";
+// Vorschau- vs. Export- vs. Editier-Verhalten: dieselbe Wiring-Engine, EINE
+// mode-Verzweigung — kein Duplikat-Script.
+// - export:  echte Produktionslogik (Redirect-Click-Wiring, kein Text — der
+//            direkte-DOM-Bake fuer Text kommt spaeter).
+// - preview: funktionale Vorschau (Redirect-Click-Wiring + Containment + Text).
+// - edit:    Editieren-iframe (NUR Text-Anzeige; KEIN Click-Wiring — Klicks
+//            gehoeren der Selektions-Bruecke, die separat injiziert wird).
+export type GenerateMode = "export" | "preview" | "edit";
 
 // Wiring-Script: STATISCH und datengetrieben. Es enthaelt KEINE User-URLs (die
 // leben ausschliesslich im JSON-Datenblock, der zur Laufzeit geparst wird) ->
@@ -35,12 +40,17 @@ export type GenerateMode = "export" | "preview";
 //   NIE location.href, das wuerde das iframe selbst framen); JEDER andere
 //   Link-Klick wird stummgeschaltet, damit NIE auf unsere Origin navigiert wird.
 //
-// TEXT-Override (Phase 5): wirkt NUR in der VORSCHAU und EINMALIG beim Laden
-// (textContent des Ziel-Elements per ps-id setzen), nicht klick-getrieben.
-// textContent ist eine sichere Senke (parst NIE HTML) -> der "</script>"-Inhalt
-// landet als literaler Text. Im EXPORT werden text-Mappings gar nicht erst in den
-// Datenblock gebacken (siehe generateFunctional) -> die direkte-DOM-Bake-Scheibe
-// kommt spaeter; hier kein toter content-Ballast in der Export-Datei.
+// TEXT-Override (Phase 5): wirkt in VORSCHAU UND EDITIEREN, EINMALIG beim Laden
+// (textContent des Ziel-Elements per ps-id setzen), nicht klick-getrieben — beide
+// iframes zeigen so konsistent den Override (wie Liste/Header). textContent ist
+// eine sichere Senke (parst NIE HTML) -> der "</script>"-Inhalt landet als
+// literaler Text. Im EXPORT werden text-Mappings gar nicht erst in den Datenblock
+// gebacken (siehe generateFunctional) -> die direkte-DOM-Bake-Scheibe kommt
+// spaeter; hier kein toter content-Ballast in der Export-Datei.
+//
+// CLICK-Wiring (Redirect + Containment): Vorschau + Export, NICHT Editieren. Im
+// Editieren-iframe gehoeren Klicks ALLEIN der separat injizierten Selektions-
+// Bruecke -> generateFunctional("edit") installiert KEINEN eigenen Click-Handler.
 //
 // WICHTIG: Darf keinen literalen "</script>"-String enthalten (Serialisierung).
 function buildWiringScript(mode: GenerateMode): string {
@@ -56,9 +66,9 @@ function buildWiringScript(mode: GenerateMode): string {
   }
   var byId = {};
   for (var i = 0; i < table.length; i++) byId[table[i].elementId] = table[i];
-  // Text-Override (nur Vorschau, einmalig beim Laden). Im Export ist kein
+  // Text-Override (Vorschau + Editieren, einmalig beim Laden). Im Export ist kein
   // text-Mapping im Datenblock -> diese Schleife findet nichts.
-  if (MODE === "preview") {
+  if (MODE !== "export") {
     for (var k = 0; k < table.length; k++) {
       var tm = table[k];
       if (tm && tm.type === "text") {
@@ -69,6 +79,9 @@ function buildWiringScript(mode: GenerateMode): string {
       }
     }
   }
+  // Editieren installiert KEIN Click-Wiring -> die Selektions-Bruecke bleibt die
+  // alleinige Klick-Instanz.
+  if (MODE === "edit") return;
   document.addEventListener(
     "click",
     function (e) {
@@ -110,9 +123,9 @@ function buildWiringScript(mode: GenerateMode): string {
  * - Nur Mappings einbacken, deren data-pagesmith-id im html VORHANDEN ist.
  *   Verwaiste Mappings (Weg-C) werden im Output ignoriert -> Netz und Generator
  *   greifen nahtlos.
- * - type "text" wird NUR in der Vorschau eingebacken. Im Export-Modus bleibt es
- *   draussen (kein toter content-Ballast): der direkte-DOM-Bake fuer Text kommt
- *   in der naechsten Scheibe; redirect ist davon unberuehrt.
+ * - Tabelle je Modus: "preview" beide Typen; "export" nur redirect (kein toter
+ *   text-Ballast — der direkte-DOM-Bake fuer Text kommt spaeter); "edit" nur text
+ *   (Redirects waeren im Editieren-iframe nutzlos -> kein URL-Ballast).
  * - Injiziert vor </body> (Fallback: documentElement, falls kein body):
  *   (a) <script type="application/json" id="pagesmith-mappings"> mit der Tabelle,
  *   (b) das statische Wiring-Script.
@@ -126,7 +139,9 @@ function buildWiringScript(mode: GenerateMode): string {
  * mode (Default "export"): "export" = echte Produktionslogik (selber/neuer Tab
  * laut Mapping, un-gemappte Links behalten Default). "preview" = Containment fuer
  * das srcDoc-iframe (jede Weiterleitung in neuen Tab, jeder andere Link
- * stummgeschaltet) — siehe buildWiringScript.
+ * stummgeschaltet) + Text. "edit" = NUR Text-Anzeige, KEIN Click-Wiring (haengt
+ * an die separat injizierte Selektions-Bruecke an, ohne sie anzutasten) — siehe
+ * buildWiringScript.
  *
  * Defensive Garantien (wie detect.ts — User-Code nie vernichten):
  * - Leerer/whitespace Input -> "".
@@ -153,12 +168,14 @@ export function generateFunctional(
       if (id) present.add(id);
     });
 
-    // Orphans raus: nur Mappings mit lebendem Anker einbacken. Im Export
-    // zusaetzlich text-Mappings raus (no-op in dieser Scheibe -> kein Ballast).
-    const table = mappings.filter(
-      (m) =>
-        present.has(m.elementId) && !(mode === "export" && m.type === "text")
-    );
+    // Orphans raus: nur Mappings mit lebendem Anker. Danach je Modus filtern:
+    // export -> nur redirect; edit -> nur text; preview -> beide.
+    const table = mappings.filter((m) => {
+      if (!present.has(m.elementId)) return false;
+      if (mode === "export") return m.type !== "text";
+      if (mode === "edit") return m.type === "text";
+      return true; // preview
+    });
 
     // Datenblock (JSON), sicher kodiert: jedes "<" als Unicode-Escape maskiert
     // verhindert den "</script>"-Ausbruch und schuetzt zugleich URLs mit "<".
@@ -180,4 +197,28 @@ export function generateFunctional(
   } catch {
     return html;
   }
+}
+
+/**
+ * HTML fuer das Editieren-iframe. Bei aktivem Text-Override zeigt auch der
+ * Editieren-Modus den Override-Text (Konsistenz mit Vorschau/Liste/Header).
+ *
+ * KOMPOSITION, kein Umbau: generateFunctional("edit") haengt NUR das
+ * Text-Injektions-Skript (+ Datenblock) HINTER die bereits in previewHtml
+ * enthaltene Selektions-Bruecke (appendChild) — es tastet die Bruecke nicht an und
+ * installiert KEIN Click-Wiring. Der DOMParser-Round-Trip erhaelt das Bruecken-
+ * <script> + die data-pagesmith-id-Anker verbatim (derselbe Round-Trip, dem schon
+ * der Export vertraut; funktionale Gleichheit ist per Test belegt).
+ *
+ * KURZSCHLUSS: ohne text-Mapping gibt es nichts anzuzeigen -> previewHtml
+ * UNVERAENDERT zurueck (byte-identisch). Das spart den Extra-Parse und haelt das
+ * Edit-iframe im Normalfall exakt wie bisher (kein Reload). Reine Darstellung:
+ * KEIN Rueckfluss in code/debouncedCode/Dirty.
+ */
+export function editPreviewHtml(
+  previewHtml: string,
+  mappings: Mapping[]
+): string {
+  if (!mappings.some((m) => m.type === "text")) return previewHtml;
+  return generateFunctional(previewHtml, mappings, "edit");
 }

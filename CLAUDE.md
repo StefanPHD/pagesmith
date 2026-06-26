@@ -747,6 +747,49 @@ Mapping-Modell, Orphan-Netz, Selektions-Brücke.
   "Alle" (oder die passende Kategorie) -> wieder sichtbar und weiterhin ausgewählt.
 - Reiner View-State, nichts persistiert, kein dirty-Effekt.
 
+### Scheibe 1b — Live-Patch-Versuch revertiert: Lektion (für die saubere Neu-Umsetzung)
+KONTEXT: Der Versuch, Text-Overrides ohne iframe-Reload "live" zu patchen, wurde
+KOMPLETT revertiert (6 Commits c1b66b5…dcbc440, zurück auf fdc3994). Aktueller,
+stabiler Stand: Text-"Übernehmen" löst einen EHRLICHEN Edit-iframe-Reload aus (Seite
+springt hoch, bleibt oben). Brücke, Selektion, Override-in-beiden-Modi (deklaratives
+srcDoc-Prop + generateFunctional("edit")-Einbacken), Filter, displayTextFor-Deriver:
+alle intakt.
+
+WARUM REVERTIERT: Der imperative srcdoc-Umbau (iframeRef.current.srcdoc =
+editPreviewHtml(...)) erzeugte ein KORRUPTES iframe-Dokument — das injizierte
+Brücken-Skript wurde abgeschnitten ("Uncaught SyntaxError: Unexpected end of input at
+about:srcdoc"), dazu hunderte 403/CORS auf /_next/static/chunks aus origin 'null'
+(Next-Referenzen ins srcdoc geraten). Folge: die Brücke lief NIE -> keine Selektion,
+kein Highlighting, un-gemappte Klicks navigierten zur Login-Maske. Der deklarative
+srcDoc-PROP hatte das nie: React setzt das Attribut sauber als GANZES; imperatives
+Zusammenstückeln in der Sandbox tut es nicht. (Stale Cache war ausgeschlossen — harter
+Neustart + .next gelöscht half nicht.)
+
+DIE LEKTION (das Wichtige): Die IDEE war richtig — den Reload AN DER WURZEL vermeiden,
+statt den Scroll-Sprung zu kaschieren —, nur der MECHANISMUS war falsch. Scroll-
+Restoration, instant-Nachsetzen, Lade-Overlay und Orphan-Freeze waren allesamt
+Pflaster auf einer Wunde, die der Reload selbst schlägt. Der saubere Weg für die
+Neu-Umsetzung (NICHT heute bauen):
+- Edit-iframe bleibt DEKLARATIV per srcDoc-Prop gerendert (nie wieder imperativ
+  anfassen). srcDoc hängt NUR vom CODE ab.
+- Eine Text-Override-Änderung fasst srcDoc NICHT an, sondern schickt dem laufenden
+  iframe eine postMessage über die bestehende Brücke (z.B. PS_SET_TEXT
+  { elementId, content }) -> ein Skript IM iframe setzt textContent per ps-id. Kein
+  Reload, kein Sprung, kein Overlay nötig. ADDITIVER message-Handler (wie
+  SET_SELECTED_ID/ELEMENT_CLICKED) — die risikoärmste Operation, die Brücke überlebt
+  das nachweislich.
+- Reload-Fall (Code-Änderung/Projektwechsel): das frisch erzeugte srcDoc bäckt die
+  Overrides weiterhin per generateFunctional("edit") ein (= Override-in-beiden-Modi,
+  bleibt). Bei Reload via eingebackenem HTML, zwischen Reloads via postMessage-Patch —
+  beide Wege, dasselbe Ergebnis, kein Divergieren.
+- WICHTIG: JEDE Stelle, die ein PRÄSENTES Text-Mapping erzeugt/ändert/entfernt, muss
+  PS_SET_TEXT posten (Übernehmen + Entfernen + Text-Orphan-Relink) — sonst divergiert
+  das stehende iframe von Liste/Header. Dieser "Relink-Fund" war die einzige
+  inhaltlich wertvolle Erkenntnis aus dem revertierten Versuch.
+- UNTERSCHIED zum gescheiterten Versuch: damals ZWEI riskante Änderungen gleichzeitig
+  (Mapping-Entkopplung UND imperatives srcdoc). Sauber ist NUR additiv eine
+  postMessage, srcDoc-Rendering komplett unangetastet.
+
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,
 In-Place Copywriting als Phase 5. Der folgende Block bleibt die ausführliche

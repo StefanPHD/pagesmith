@@ -1,7 +1,7 @@
 // Reine Erkennungs-Logik. Bewusst ohne React-Seiteneffekte ausserhalb des
 // Parsers, damit sie unit-testbar bleibt (siehe detect.test.ts).
 
-export type ElementType = "button" | "form" | "link";
+export type ElementType = "button" | "form" | "link" | "text";
 
 export type DetectedElement = {
   // Dauerhafte, code-residente ID im Format "ps-" + 6 zufaellige Zeichen
@@ -11,6 +11,9 @@ export type DetectedElement = {
   type: ElementType;
   tag: string;
   label: string;
+  // Nur fuer type "text": der VOLLE (untruncierte) Textinhalt, mit dem das
+  // Bearbeiten-Feld vorbefuellt wird. label bleibt fuer die Liste gekuerzt.
+  text?: string;
 };
 
 export type PreparedPreview = {
@@ -61,7 +64,18 @@ const BUTTON_SELECTOR =
   'button, [role="button"], input[type="submit"], input[type="button"], input[type="image"]';
 
 // EIN kombinierter Selektor -> eine einzige Traversierung in Dokument-Reihenfolge.
+// INTERAKTIV: Buttons, Forms, Links (Phase 1/2).
 const CANDIDATE_SELECTOR = `${BUTTON_SELECTOR}, form, a[href]`;
+
+// TEXT-Kandidaten (Phase 5, In-Place-Copywriting): Ueberschriften + Absaetze.
+const TEXT_SELECTOR = "h1, h2, h3, h4, h5, h6, p";
+
+// ALLE verknuepfbaren Elemente = interaktiv ODER Text. EINE Traversierung in
+// Dokument-Reihenfolge speist sowohl stabilizeDoc als auch collectElements ->
+// identische Reihenfolge, auf die sich der Index-Anker (anchorMappingTarget)
+// verlaesst. Welche Tags tatsaechlich Kandidaten sind, entscheidet classify
+// (z.B. ein <p> mit Kind-Elementen ist KEIN Textkandidat).
+const LINKABLE_SELECTOR = `${CANDIDATE_SELECTOR}, ${TEXT_SELECTOR}`;
 
 // Selbst-ausfuehrendes Listener-Script, das ins Preview-iframe injiziert wird.
 // Faengt Klicks auf annotierte Elemente in der CAPTURE-Phase ab und meldet die
@@ -114,9 +128,29 @@ const LISTENER_SCRIPT = `(function () {
 })();`;
 
 /**
- * Klassifiziert ein Kandidaten-Element mit Prioritaet button > form > link.
+ * Reiner Textkandidat? Nur Text + harmlose Inline-Umbrueche (<br>) sind erlaubt;
+ * sobald ein ECHTES Kind-Element (<strong>, <a>, <span> …) vorkommt, NICHT
+ * anbieten — ein textContent-Ueberschreiben wuerde dieses Kind-Markup zerstoeren
+ * (Rich-Text ist bewusst ein spaeteres Slice). el.children sind ausschliesslich
+ * Element-Kinder (Textknoten zaehlen nicht), daher prueft die Schleife genau die
+ * Markup-Kinder.
+ */
+function isPureText(el: Element): boolean {
+  for (const child of Array.from(el.children)) {
+    if (child.tagName !== "BR") return false;
+  }
+  return true;
+}
+
+/**
+ * Klassifiziert ein Kandidaten-Element mit Prioritaet button > form > link > text.
  * Ein <a href role="button"> wird so genau einmal als Button gefuehrt – gleiches
  * Dedup-Ergebnis wie zuvor, hier inhaerent durch die Single-Pass-Traversierung.
+ *
+ * Die REIHENFOLGE erzwingt die Kategorientrennung (Phase 5): ein bereits als
+ * Button/Form/Link erkanntes Element kehrt frueh zurueck und erreicht den
+ * Text-Zweig nie -> ein <a>Nur Text</a> bleibt Link, ein <h1 role="button"> bleibt
+ * Button. Text ist eine EIGENE Kategorie, kein Overlap.
  */
 function classify(el: Element): Omit<DetectedElement, "id"> | null {
   if (el.matches(BUTTON_SELECTOR)) {
@@ -157,6 +191,19 @@ function classify(el: Element): Omit<DetectedElement, "id"> | null {
     };
   }
 
+  // Textkandidat (Phase 5): <h1>..<h6>/<p> OHNE Kind-Elemente. Greift erst hier,
+  // nach den interaktiven Zweigen -> Kategorientrennung (siehe Doc-Kommentar).
+  if (el.matches(TEXT_SELECTOR) && isPureText(el)) {
+    const full = (el.textContent || "").trim();
+    return {
+      type: "text",
+      tag: el.tagName.toLowerCase(),
+      label: full.slice(0, MAX_LABEL) || "(leerer Text)",
+      // Voller Inhalt fuers Bearbeiten-Feld (label ist nur die gekuerzte Anzeige).
+      text: full,
+    };
+  }
+
   return null;
 }
 
@@ -172,7 +219,12 @@ function classify(el: Element): Omit<DetectedElement, "id"> | null {
  */
 function stabilizeDoc(doc: Document): void {
   const used = new Set<string>();
-  doc.querySelectorAll(CANDIDATE_SELECTOR).forEach((el) => {
+  doc.querySelectorAll(LINKABLE_SELECTOR).forEach((el) => {
+    // Nur ECHTE Kandidaten ankern. So bekommt ein <p> mit Kind-Elementen (kein
+    // Textkandidat) keine ps-ID -> kein unnoetiger Code-Ballast. Fuer interaktive
+    // Elemente unveraendert (sie sind immer klassifizierbar). Gleiche Guard +
+    // gleiche Traversierung wie collectElements -> identische Reihenfolge.
+    if (!classify(el)) return;
     const current = el.getAttribute(PAGESMITH_ID_ATTR);
     if (current && PS_ID_RE.test(current) && !used.has(current)) {
       used.add(current); // Fall "Bekannt"
@@ -192,7 +244,7 @@ function stabilizeDoc(doc: Document): void {
  */
 function collectElements(doc: Document): DetectedElement[] {
   const elements: DetectedElement[] = [];
-  doc.querySelectorAll(CANDIDATE_SELECTOR).forEach((el) => {
+  doc.querySelectorAll(LINKABLE_SELECTOR).forEach((el) => {
     const classified = classify(el);
     if (!classified) return;
     const id = el.getAttribute(PAGESMITH_ID_ATTR);

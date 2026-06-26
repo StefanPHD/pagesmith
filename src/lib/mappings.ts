@@ -7,14 +7,18 @@
 // Redirect-Form anzufassen.
 export type RedirectConfig = { url: string; openInNewTab: boolean };
 
-// Erster und vorerst einziger Aktionstyp: "Redirect bei Klick" (URL-Weiter-
-// leitung). Deckt Stripe Payment Link, PayPal-Link und generische Links ab.
-// type ist der Diskriminator -> kuenftig z.B. | { type: "webhook"; config: ... }.
-export type Mapping = {
-  elementId: string;
-  type: "redirect";
-  config: RedirectConfig;
-};
+// In-Place-Copywriting (Phase 5): ueberschreibt den reinen Textinhalt eines
+// Text-Elements (<h1>..<h6>/<p> ohne Kind-Elemente). config = der neue Text.
+export type TextConfig = { content: string };
+
+// type ist der Diskriminator. Erster Aktionstyp war "Redirect bei Klick"
+// (URL-Weiterleitung: Stripe Payment Link, PayPal-Link, generische Links); der
+// zweite ist "text" (In-Place-Override). Das Modell bewaehrt sich ein zweites Mal:
+// ein neuer Aktionstyp = ein neuer Union-Zweig, ohne die Redirect-Form anzufassen.
+// Kuenftig analog z.B. | { type: "webhook"; config: ... }.
+export type Mapping =
+  | { elementId: string; type: "redirect"; config: RedirectConfig }
+  | { elementId: string; type: "text"; config: TextConfig };
 
 // Akzeptiert nur http/https. Leere/kaputte URLs werden NICHT persistiert (das
 // Formular sperrt "Speichern", solange dies false ist).
@@ -77,23 +81,34 @@ export function findOrphans(
   return mappings.filter((m) => !present.has(m.elementId));
 }
 
+// Typ-diskriminierter Config-Vergleich. Die EINZIGE Stelle, die in die config
+// hineinschaut -> hier muss jeder Aktionstyp seinen eigenen Zweig haben (Redirect:
+// url + openInNewTab, Text: content). Verschiedene Typen sind nie gleich.
+function configEqual(a: Mapping, b: Mapping): boolean {
+  if (a.type !== b.type) return false;
+  if (a.type === "redirect" && b.type === "redirect") {
+    return (
+      a.config.url === b.config.url &&
+      a.config.openInNewTab === b.config.openInNewTab
+    );
+  }
+  if (a.type === "text" && b.type === "text") {
+    return a.config.content === b.config.content;
+  }
+  return false;
+}
+
 // Reihenfolge-UNABHAENGIGER Mengen-Vergleich, pro elementId geschluesselt.
-// Umsortieren ist NICHT dirty; eine geaenderte URL/Option, Hinzufuegen oder
-// Entfernen IST dirty. Hier haengt der Schutz gegen stillen Verlust beim
-// Projektwechsel dran -> darf nie positionsabhaengig sein.
+// Umsortieren ist NICHT dirty; eine geaenderte Config (URL/Option/Text),
+// Hinzufuegen oder Entfernen IST dirty. Hier haengt der Schutz gegen stillen
+// Verlust beim Projektwechsel dran -> darf nie positionsabhaengig sein.
 export function mappingsEqual(a: Mapping[], b: Mapping[]): boolean {
   if (a.length !== b.length) return false;
   const index = new Map(a.map((m) => [m.elementId, m]));
   for (const m of b) {
     const other = index.get(m.elementId);
     if (!other) return false;
-    if (
-      other.type !== m.type ||
-      other.config.url !== m.config.url ||
-      other.config.openInNewTab !== m.config.openInNewTab
-    ) {
-      return false;
-    }
+    if (!configEqual(other, m)) return false;
   }
   return true;
 }

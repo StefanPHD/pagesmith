@@ -96,6 +96,66 @@ describe("detectElements – echte Landingpage (Fixture)", () => {
   });
 });
 
+describe("detectElements – Textkandidaten (Phase 5, In-Place-Copywriting)", () => {
+  it("reines <h1> ist ein Textkandidat (Label + voller text)", () => {
+    const result = detectElements("<h1>Willkommen</h1>");
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({
+      type: "text",
+      tag: "h1",
+      label: "Willkommen",
+      text: "Willkommen",
+    });
+  });
+
+  it("erkennt <p> und <h1>..<h6> als Textkandidaten", () => {
+    const result = detectElements(
+      "<h1>A</h1><h2>B</h2><h3>C</h3><h4>D</h4><h5>E</h5><h6>F</h6><p>G</p>"
+    );
+    expect(result.filter((e) => e.type === "text")).toHaveLength(7);
+  });
+
+  it("<p> MIT Kind-Element (<strong>) ist KEIN Textkandidat", () => {
+    const result = detectElements("<p>Hallo <strong>Welt</strong></p>");
+    expect(result.filter((e) => e.type === "text")).toHaveLength(0);
+  });
+
+  it("<p> mit nur <br> bleibt Textkandidat (harmlose Inline-Umbrueche)", () => {
+    const result = detectElements("<p>Zeile eins<br>Zeile zwei</p>");
+    const text = result.filter((e) => e.type === "text");
+    expect(text).toHaveLength(1);
+    expect(text[0].tag).toBe("p");
+  });
+
+  it("KATEGORIENTRENNUNG: <a>Nur Text</a> bleibt Link, wird KEIN Textkandidat", () => {
+    const result = detectElements('<a href="/x">Nur Text</a>');
+    expect(result).toHaveLength(1);
+    expect(result[0].type).toBe("link");
+    expect(result.some((e) => e.type === "text")).toBe(false);
+  });
+
+  it("KATEGORIENTRENNUNG: <h1 role=button> bleibt Button, wird KEIN Textkandidat", () => {
+    const result = detectElements('<h1 role="button">Klick</h1>');
+    expect(result).toHaveLength(1);
+    expect(result[0].type).toBe("button");
+    expect(result.some((e) => e.type === "text")).toBe(false);
+  });
+
+  it("ein <p> mit Kindern bekommt KEINE ps-ID (kein Code-Ballast)", () => {
+    const { html } = annotateAndDetect("<p>x <strong>y</strong></p>");
+    // Das injizierte Listener-Script enthaelt den Attributnamen als Literal ->
+    // ueber das geparste DOM pruefen, nicht per String-Substring.
+    const p = new DOMParser().parseFromString(html, "text/html").querySelector("p");
+    expect(p?.hasAttribute("data-pagesmith-id")).toBe(false);
+  });
+
+  it("ein reiner Textkandidat bekommt eine gueltige ps-ID", () => {
+    const { elements } = annotateAndDetect("<h2>Titel</h2>");
+    expect(elements).toHaveLength(1);
+    expect(elements[0].id).toMatch(PS_ID_RE);
+  });
+});
+
 describe("annotateAndDetect – IDs & Annotation", () => {
   it("vergibt eindeutige ps-IDs im gueltigen Format", () => {
     const { elements } = annotateAndDetect(fixture);

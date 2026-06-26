@@ -131,91 +131,10 @@ const LISTENER_SCRIPT = `(function () {
     var node = document.querySelector('[${PAGESMITH_ID_ATTR}="' + d.elementId + '"]');
     if (node) node.textContent = d.content == null ? "" : String(d.content);
   });
-  // Scroll-Erhalt (reine Anzeige, ZUSAETZLICH zur Selektions-Bruecke): die
-  // Scroll-Position lebt IM sandboxed Dokument (kein allow-same-origin -> der
-  // Parent kann sie nicht von aussen lesen). Wir melden sie gedrosselt per
-  // postMessage. Leading-Edge mit Trailing-Read (~100ms): ein gesetzter Timer
-  // schluckt weitere Events, beim Feuern wird die AKTUELLE Position gelesen -> auch
-  // ein "Uebernehmen" mitten in der Bewegung hat eine frische Position gemeldet.
-  var psScrollTimer = null;
-  window.addEventListener(
-    "scroll",
-    function () {
-      if (psScrollTimer) return;
-      psScrollTimer = setTimeout(function () {
-        psScrollTimer = null;
-        window.parent.postMessage(
-          { type: "PS_SCROLL", y: window.scrollY || 0 },
-          "*"
-        );
-      }, 100);
-    },
-    { passive: true }
-  );
-  // Scroll-Restore (eigener Listener; SET_SELECTED_ID-Handler bleibt unangetastet):
-  // nach jedem Reload setzt der Parent die gemerkte Position. INSTANT (kein smooth)
-  // und LAYOUT-STABIL nachgesetzt, weil sich das Layout nach dem READY noch streckt
-  // (Bilder/Fonts laden nach -> einmaliges Restore kaeme zu frueh und zuckte).
-  // EHRLICHE GRENZE: bei hoehenlosem Lazy-Load OBERHALB der Position verschiebt sich
-  // der Inhalt physisch -> der letzte Pixel ist nicht garantiert (Ziel: ruhig statt
-  // nervoes, KEIN Eingriff ins fremde Layout).
-  var psTargetY = null; // null = noch nichts wiederherzustellen
-  var psRestoreTimers = [];
-  var psOnLoad = null;
-  function psJump() {
-    if (psTargetY == null) return;
-    var docEl = document.documentElement;
-    // scroll-behavior NUR fuer diesen Jump auf auto zwingen (ueberstimmt smooth-CSS
-    // der Seite) und im naechsten Frame, nach dem committeten Jump, zuruecksetzen.
-    // So ist jeder Nachfasser instant, ohne das native Scroll-Gefuehl der Vorschau
-    // zwischen/nach den Jumps zu verfaelschen (die Vorschau bleibt getreu).
-    var prev = docEl.style.scrollBehavior;
-    docEl.style.scrollBehavior = "auto";
-    window.scrollTo(0, psTargetY);
-    if (typeof requestAnimationFrame === "function") {
-      requestAnimationFrame(function () {
-        docEl.style.scrollBehavior = prev;
-      });
-    } else {
-      docEl.style.scrollBehavior = prev;
-    }
-  }
-  window.addEventListener("message", function (e) {
-    var d = e.data;
-    if (!d || d.type !== "PS_RESTORE_SCROLL") return;
-    psTargetY = d.y || 0;
-    // Alte Nachfasser verwerfen -> ein frisches Restore ersetzt sie (kein Stapeln).
-    for (var i = 0; i < psRestoreTimers.length; i++) {
-      clearTimeout(psRestoreTimers[i]);
-    }
-    psRestoreTimers = [];
-    // a) sofort.
-    psJump();
-    // c) rAF (1-2x) + kurze Sicherheits-Nachfasser (~150/400ms) fuer Fonts/Spaetlayout.
-    if (typeof requestAnimationFrame === "function") {
-      requestAnimationFrame(function () {
-        psJump();
-        requestAnimationFrame(psJump);
-      });
-    }
-    psRestoreTimers.push(setTimeout(psJump, 150));
-    psRestoreTimers.push(setTimeout(psJump, 400));
-    // b) bei window 'load' (Bilder fertig -> Layout final). Nur EIN Handler; er
-    // liest psTargetY, das jedes Restore aktualisiert. Danach meldet er dem Parent
-    // PS_SETTLED = "visuell zur Ruhe gekommen" (Bilder fertig + Scroll committet)
-    // -> der Parent blendet sein Lade-Overlay aus.
-    if (!psOnLoad) {
-      psOnLoad = function () {
-        psJump();
-        window.parent.postMessage({ type: "PS_SETTLED" }, "*");
-      };
-      window.addEventListener("load", psOnLoad);
-    }
-  });
   // READY-Handshake gegen Race Conditions: nach jedem srcDoc-Reload meldet sich
   // das frische iframe EINMAL beim Parent, der dann die aktuelle Auswahl
-  // (und die gemerkte Scroll-Position) zuruecksendet. Kein Timing-Raten via
-  // setTimeout. Die Listener oben sind hier bereits synchron registriert.
+  // zuruecksendet. Kein Timing-Raten via setTimeout. Die Listener oben sind hier
+  // bereits synchron registriert.
   window.parent.postMessage({ type: "IFRAME_READY" }, "*");
 })();`;
 

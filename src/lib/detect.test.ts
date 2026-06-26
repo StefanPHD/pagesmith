@@ -236,29 +236,6 @@ describe("annotateAndDetect – IDs & Annotation", () => {
     expect(html).toContain("textContent");
   });
 
-  it("injiziert den Scroll-Erhalt (PS_SCROLL melden + PS_RESTORE_SCROLL/scrollTo)", () => {
-    const { html } = annotateAndDetect("<button>Kaufen</button>");
-    // Meldet die Position gedrosselt und stellt sie nach einem Reload wieder her.
-    expect(html).toContain("PS_SCROLL");
-    expect(html).toContain("PS_RESTORE_SCROLL");
-    expect(html).toContain("scrollTo");
-  });
-
-  it("Restore ist instant + layout-stabil (scrollBehavior auto, rAF, load-Nachfasser)", () => {
-    const { html } = annotateAndDetect("<button>Kaufen</button>");
-    // Fix 1: smooth pro Jump ueberstimmt -> instant.
-    expect(html).toContain("scrollBehavior");
-    // Fix 2: rAF + window 'load'-Nachfasser gegen das Bild-Lade-Zucken.
-    expect(html).toContain("requestAnimationFrame");
-    expect(html).toContain('"load"');
-  });
-
-  it("meldet PS_SETTLED, wenn das iframe visuell zur Ruhe gekommen ist", () => {
-    const { html } = annotateAndDetect("<button>Kaufen</button>");
-    // Signal fuers Parent-Lade-Overlay: load (Bilder fertig) + committeter Jump.
-    expect(html).toContain("PS_SETTLED");
-  });
-
   it("liefert fuer leeren/whitespace Input leeres HTML + keine Elemente", () => {
     expect(annotateAndDetect("")).toEqual({ html: "", elements: [] });
     expect(annotateAndDetect("   \n\t ")).toEqual({ html: "", elements: [] });

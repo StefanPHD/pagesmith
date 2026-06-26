@@ -4,7 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   anchorMappingTarget,
   annotateAndDetect,
+  filterElements,
   stabilizeIds,
+  type ElementFilter,
   type ElementType,
 } from "@/lib/detect";
 import {
@@ -139,6 +141,11 @@ export default function CodeImporter({
   // FEUERT echt (Redirect). Strikt getrennt: der funktionale Modus injiziert NIE
   // die Selektions-Bruecke, der Edit-Modus feuert NIE eine Aktion.
   const [previewMode, setPreviewMode] = useState<"edit" | "functional">("edit");
+  // Kategorie-Filter der Elementliste (Scheibe 1b). REINER View-State: steuert nur,
+  // welche Elemente in der Liste gerendert werden. Beruehrt selectedElementId NICHT
+  // (ein weggefiltertes ausgewaehltes Element behaelt seine Auswahl + Bruecke +
+  // Highlighting; ActionPanel leitet aus elements ab, nicht aus der Filtermenge).
+  const [activeFilter, setActiveFilter] = useState<ElementFilter>("all");
   // In der Preview angeklicktes Element (via postMessage-Bruecke). Nur die ID
   // wird gehalten; das Element selbst wird abgeleitet, damit sich die Auswahl
   // bei Code-Aenderung sauber neu aufloest.
@@ -180,6 +187,15 @@ export default function CodeImporter({
     }),
     [elements]
   );
+
+  // Sichtbare (gefilterte) Teilmenge der Liste. NUR Anzeige: keine Auswahl-Logik
+  // haengt hieran (selectedElement leitet aus elements ab, nicht aus dieser Menge).
+  const visibleElements = useMemo(
+    () => filterElements(elements, activeFilter),
+    [elements, activeFilter]
+  );
+  // Pillen-Zaehler: interaktiv = button+link+form, Texte = text, alle = gesamt.
+  const interactiveCount = counts.button + counts.link + counts.form;
 
   // Funktionales HTML fuer den Vorschau-Modus. Nur im funktionalen Modus
   // berechnet (sonst ""), damit das Tippen im Edit-Modus keinen zusaetzlichen
@@ -980,20 +996,52 @@ export default function CodeImporter({
           <h2 className="mb-2 text-sm font-medium text-gray-700">
             Erkannte Elemente ({elements.length})
           </h2>
+
+          {/* Kategorie-Filter-PILLEN (Steuerung, klar klickbares Idiom — abgesetzt
+              von der ruhigen Zaehler-Textzeile oben). Filtert NUR die Liste, nie die
+              Auswahl oder die Orphan-Sektion. */}
+          <div className="mb-2 flex gap-1.5">
+            {(
+              [
+                { key: "all", label: "Alle", count: elements.length },
+                { key: "interactive", label: "Interaktiv", count: interactiveCount },
+                { key: "text", label: "Texte", count: counts.text },
+              ] as const
+            ).map((p) => (
+              <button
+                key={p.key}
+                type="button"
+                onClick={() => setActiveFilter(p.key)}
+                aria-pressed={activeFilter === p.key}
+                className={`rounded-full border px-2.5 py-1 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                  activeFilter === p.key
+                    ? "border-blue-600 bg-blue-600 text-white"
+                    : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                {p.label} ({p.count})
+              </button>
+            ))}
+          </div>
+
           <div className="flex max-h-48 flex-col gap-2 overflow-y-auto">
-            {elements.length === 0 && (
+            {elements.length === 0 ? (
               <p className="text-sm text-gray-400">
                 Noch nichts erkannt – füge oben Code ein.
               </p>
-            )}
-            {elements.map((el, i) => {
+            ) : visibleElements.length === 0 ? (
+              <p className="text-sm text-gray-400">
+                Keine Elemente in dieser Kategorie.
+              </p>
+            ) : null}
+            {visibleElements.map((el) => {
                 const isSelected = el.id === selectedElementId;
                 const mappedType = mappingTypeById.get(el.id);
                 return (
                   // text-left + w-full neutralisieren das Button-Default (zentrierter
                   // Text); bg/Font kommen unveraendert aus typeStyles wie in Phase 1.
                   <button
-                    key={i}
+                    key={el.id}
                     type="button"
                     ref={isSelected ? activeItemRef : null}
                     onClick={() => setSelectedElementId(el.id)}

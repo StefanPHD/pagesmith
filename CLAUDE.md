@@ -667,6 +667,58 @@ ENTFERNT: EIN Mechanismus, keine zwei konkurrierenden Pfeile.
   Tastatur-Navigation, kein "blauer Kasten" nach Maus-Klick -> Tastatur-
   Zugänglichkeit bleibt erhalten.
 
+## Phase 5 — In-Place Copywriting, Scheibe 1: Engine + funktionale Vorschau
+Zweiter Modus neben dem Link-Mapping: der Marketer überschreibt Texte (<h1>..<h6>,
+<p>) direkt für schnelle A/B-Tests am Wording. Kein Modell-Umbau — ein
+Text-Override ist nur ein NEUER Mapping-Typ
+{ elementId: ps-id, type: "text", config: { content: string } } auf der
+BESTEHENDEN Infrastruktur (anchorMappingTarget, Weg-C-Orphan-Netz, JSON-Datenblock,
+generateFunctional). Das type-diskriminierte Mapping-Modell bewährt sich damit ein
+ZWEITES Mal (nach dem Redirect-Zweig): neuer Aktionstyp = neuer Union-Zweig, keine
+Antastung der Redirect-Form.
+
+Owner-Entscheidungen (Scheibe 1, endgültig):
+- NUR reine Textelemente als Kandidaten anbieten: <h1>..<h6> und <p>, gefiltert auf
+  KEINE Kind-Elemente (nur reiner Text / harmlose Inline wie <br>). Verschachtelte
+  Elemente (<p>...<strong>...</a>...) werden in dieser Scheibe NICHT angeboten — ein
+  textContent-Überschreiben würde das Kind-Markup zerstören. Rich-Text /
+  verschachtelte Texte bleiben BEWUSST ein späteres Slice.
+- Kategorientrennung: ein bereits als Link/Button erkanntes Element ist KEIN
+  Text-Kandidat (auch wenn es nur Text enthält). Text ist eine EIGENE
+  Detektions-Kategorie, kein Überlapp mit den interaktiven Elementen.
+- Scheibe 1 liefert: Engine-Erweiterung + funktionale VORSCHAU (Text live editierbar,
+  Änderung sofort im Vorschau-iframe sichtbar). Der EXPORT folgt als eigene Scheibe.
+
+Export-Richtung (für die Folge-Scheibe dokumentiert, NICHT jetzt bauen):
+- Geänderter Text wird im EXPORT DIREKT in den DOM geschrieben (das <h1> enthält im
+  Output schon den neuen Text), NICHT per Laufzeit-JS injiziert -> gut für SEO, kein
+  FOUC/Flackern, funktioniert ohne JS. Das ist das "Vorschau-JS vs. Export-direkt-DOM"-
+  Muster eine Ebene über der Link-Lektion: beim Link ist Laufzeit-JS zwingend
+  (Klick = Laufzeit), beim Text nicht (der Inhalt steht von Anfang an fest).
+
+Architektur (Scheibe 1):
+- Detektion: neue Sammel-/Filter-Logik für reine Textelemente — eigene Kategorie,
+  typ-agnostische ps-id-Verankerung wie gehabt (dieselbe ID-Mechanik wie bei den
+  interaktiven Elementen, nur ein anderer Kandidaten-Filter).
+- generateFunctional: verzweigt PRO Mapping nach type — "redirect" -> Click-Wiring
+  wie bisher; "text" -> im VORSCHAU-Modus textContent des Elements per ps-id ersetzen.
+  EINE Engine mit type-Verzweigung, KEINE zweite parallele Engine.
+- UI: select Textelement -> Textfeld mit AKTUELLEM Inhalt vorbefüllt -> überschreiben
+  -> Übernehmen (Draft) -> großes Speichern (DB). Exakt das
+  "select/config/Übernehmen/Speichern"-Muster wie beim Link, nur config = Text statt
+  URL. Die "Übernehmen wirkt nur in den Draft, einziger DB-Write ist Speichern"-
+  Invariante gilt unverändert.
+- Orphan-Netz + Anker: müssen für type:"text" GENAUSO greifen wie für Links
+  (gelöschtes Textelement -> verwaiste Verknüpfung, anzeigen/löschen/re-link).
+  findOrphans/anchorMappingTarget arbeiten typ-agnostisch auf ps-ids -> sollte
+  automatisch tragen, beim Bau aber VERIFIZIEREN (nicht blind annehmen).
+
+Verbindliche Leitplanken: Link-Mapping, Detektion der interaktiven Elemente,
+Selektions-Brücke, Highlighting, Dirty-Tracking, Weg-C-Netz, der bestehende Export
+sowie Auth/RLS bleiben UNBERÜHRT. Sandbox unverändert (Edit-iframe allow-scripts;
+funktionales iframe allow-scripts + popups wie gehabt). allow-same-origin in beiden
+Modi weiterhin AUS.
+
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,
 In-Place Copywriting als Phase 5. Der folgende Block bleibt die ausführliche

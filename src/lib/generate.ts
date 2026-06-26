@@ -35,6 +35,13 @@ export type GenerateMode = "export" | "preview";
 //   NIE location.href, das wuerde das iframe selbst framen); JEDER andere
 //   Link-Klick wird stummgeschaltet, damit NIE auf unsere Origin navigiert wird.
 //
+// TEXT-Override (Phase 5): wirkt NUR in der VORSCHAU und EINMALIG beim Laden
+// (textContent des Ziel-Elements per ps-id setzen), nicht klick-getrieben.
+// textContent ist eine sichere Senke (parst NIE HTML) -> der "</script>"-Inhalt
+// landet als literaler Text. Im EXPORT werden text-Mappings gar nicht erst in den
+// Datenblock gebacken (siehe generateFunctional) -> die direkte-DOM-Bake-Scheibe
+// kommt spaeter; hier kein toter content-Ballast in der Export-Datei.
+//
 // WICHTIG: Darf keinen literalen "</script>"-String enthalten (Serialisierung).
 function buildWiringScript(mode: GenerateMode): string {
   return `(function () {
@@ -49,6 +56,19 @@ function buildWiringScript(mode: GenerateMode): string {
   }
   var byId = {};
   for (var i = 0; i < table.length; i++) byId[table[i].elementId] = table[i];
+  // Text-Override (nur Vorschau, einmalig beim Laden). Im Export ist kein
+  // text-Mapping im Datenblock -> diese Schleife findet nichts.
+  if (MODE === "preview") {
+    for (var k = 0; k < table.length; k++) {
+      var tm = table[k];
+      if (tm && tm.type === "text") {
+        var node = document.querySelector(
+          '[${PAGESMITH_ID_ATTR}="' + tm.elementId + '"]'
+        );
+        if (node) node.textContent = (tm.config && tm.config.content) || "";
+      }
+    }
+  }
   document.addEventListener(
     "click",
     function (e) {
@@ -90,6 +110,9 @@ function buildWiringScript(mode: GenerateMode): string {
  * - Nur Mappings einbacken, deren data-pagesmith-id im html VORHANDEN ist.
  *   Verwaiste Mappings (Weg-C) werden im Output ignoriert -> Netz und Generator
  *   greifen nahtlos.
+ * - type "text" wird NUR in der Vorschau eingebacken. Im Export-Modus bleibt es
+ *   draussen (kein toter content-Ballast): der direkte-DOM-Bake fuer Text kommt
+ *   in der naechsten Scheibe; redirect ist davon unberuehrt.
  * - Injiziert vor </body> (Fallback: documentElement, falls kein body):
  *   (a) <script type="application/json" id="pagesmith-mappings"> mit der Tabelle,
  *   (b) das statische Wiring-Script.
@@ -130,8 +153,12 @@ export function generateFunctional(
       if (id) present.add(id);
     });
 
-    // Orphans raus: nur Mappings mit lebendem Anker einbacken.
-    const table = mappings.filter((m) => present.has(m.elementId));
+    // Orphans raus: nur Mappings mit lebendem Anker einbacken. Im Export
+    // zusaetzlich text-Mappings raus (no-op in dieser Scheibe -> kein Ballast).
+    const table = mappings.filter(
+      (m) =>
+        present.has(m.elementId) && !(mode === "export" && m.type === "text")
+    );
 
     // Datenblock (JSON), sicher kodiert: jedes "<" als Unicode-Escape maskiert
     // verhindert den "</script>"-Ausbruch und schuetzt zugleich URLs mit "<".

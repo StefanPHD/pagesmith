@@ -80,3 +80,30 @@ describe("CodeImporter — INVARIANTE: Uebernehmen schreibt NIE in die DB", () =
     expect(saveProject).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("CodeImporter — Re-Link ist KATEGORIE-eingeschraenkt (Phase 5)", () => {
+  it("text-Orphan-Dropdown listet nur Text-Ziele, KEINE Button/Link-Ziele", async () => {
+    // ps-zzzzzz (text) ist nicht im Code -> verwaist. Aktuelle Elemente: ein
+    // Button UND eine Headline. Der text-Orphan darf nur die Headline anbieten.
+    render(
+      <CodeImporter
+        initialCode="<button>Klick mich</button><h1>Echte Headline</h1>"
+        initialMappings={[
+          { elementId: "ps-zzzzzz", type: "text", config: { content: "verwaist" } },
+        ]}
+      />
+    );
+
+    // Orphan-Sektion erscheint erst nach der Debounce (Flash-Guard: erst rechnen,
+    // wenn debouncedCode === code).
+    await screen.findByText(/Verwaiste Verknüpfungen/);
+    const select = await screen.findByLabelText("Verknüpfen mit Element");
+    const optionTexts = Array.from(select.querySelectorAll("option")).map(
+      (o) => o.textContent ?? ""
+    );
+
+    // Nur das Text-Ziel (<h1>) wird angeboten; der Button taucht NICHT auf.
+    expect(optionTexts.some((t) => t.includes("Echte Headline"))).toBe(true);
+    expect(optionTexts.some((t) => t.includes("Klick mich"))).toBe(false);
+  });
+});

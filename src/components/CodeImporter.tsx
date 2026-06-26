@@ -23,6 +23,7 @@ import {
   upsertMapping,
   type Mapping,
   type RedirectConfig,
+  type TextConfig,
 } from "@/lib/mappings";
 import { generateFunctional } from "@/lib/generate";
 import { exportFilename } from "@/lib/export";
@@ -38,7 +39,21 @@ const typeStyles: Record<ElementType, string> = {
   button: "bg-blue-100 text-blue-800 border-blue-200",
   form: "bg-green-100 text-green-800 border-green-200",
   link: "bg-amber-100 text-amber-800 border-amber-200",
+  text: "bg-purple-100 text-purple-800 border-purple-200",
 };
+
+// Welche Element-Kategorie darf ein verwaister Mapping-Typ neu ankern? Strikte
+// Kategorientrennung (Phase 5): ein text-Override nur auf einen Textkandidaten,
+// ein redirect nur auf ein interaktives Element (Button/Form/Link). Verhindert
+// einen "klickbaren Absatz" oder ein Text-Override auf einem Button durch die
+// Relink-Hintertuer. Weg-C unberuehrt — der Mensch waehlt, wir bieten nur
+// Sinnvolles an (kein stilles Raten).
+function isRelinkTarget(
+  orphanType: Mapping["type"],
+  elType: ElementType
+): boolean {
+  return orphanType === "text" ? elType === "text" : elType !== "text";
+}
 
 // Zustaende des Speichern-Buttons. saved faellt per Timeout zurueck auf idle.
 type SaveStatus = "idle" | "saving" | "saved" | "error";
@@ -160,6 +175,7 @@ export default function CodeImporter({
       button: elements.filter((e) => e.type === "button").length,
       form: elements.filter((e) => e.type === "form").length,
       link: elements.filter((e) => e.type === "link").length,
+      text: elements.filter((e) => e.type === "text").length,
     }),
     [elements]
   );
@@ -192,12 +208,13 @@ export default function CodeImporter({
     [mappings, selectedElementId]
   );
 
-  // ps-IDs mit zugewiesener Aktion -> O(1)-Lookup fuer die "verknuepft"-Badges in
-  // der Erkannte-Elemente-Liste (verdrahtete Elemente auf einen Blick).
-  const mappedIds = useMemo(
-    () => new Set(mappings.map((m) => m.elementId)),
-    [mappings]
-  );
+  // ps-ID -> Mapping-Typ fuer die "verknuepft"-Badges in der Erkannte-Elemente-
+  // Liste (verdrahtete Elemente auf einen Blick, Icon je Typ: 🔗 Redirect / ✎ Text).
+  const mappingTypeById = useMemo(() => {
+    const m = new Map<string, Mapping["type"]>();
+    for (const x of mappings) m.set(x.elementId, x.type);
+    return m;
+  }, [mappings]);
 
   // Weg-C-Netz: verwaiste Mappings (ps-ID nicht mehr im Code) SICHTBAR machen,
   // statt sie still zu loeschen oder falsch neu zu verknuepfen.
@@ -465,6 +482,25 @@ export default function CodeImporter({
     );
   }
 
+  // Text-Override zuweisen/aendern (Phase 5). Exakt derselbe ps-ID-Anker-Pfad wie
+  // handleAssignMapping (anchorMappingTarget), nur config = Text statt URL ->
+  // bestaetigt, dass der Anker typ-agnostisch traegt. Wirkt NUR in den Draft.
+  function handleAssignTextMapping(config: TextConfig) {
+    if (!selectedElementId) return;
+    const { code: nextCode, canonicalId } = anchorMappingTarget(
+      code,
+      elements,
+      selectedElementId
+    );
+    if (nextCode !== code) {
+      setCode(nextCode);
+      setSelectedElementId(canonicalId);
+    }
+    setMappings((prev) =>
+      upsertMapping(prev, { elementId: canonicalId, type: "text", config })
+    );
+  }
+
   // Aktion entfernen. Der Code (samt ps-ID) bleibt unangetastet; nur das Mapping
   // verschwindet.
   function handleRemoveMapping() {
@@ -478,7 +514,11 @@ export default function CodeImporter({
   // Mappings NICHT; Loeschen ist die einzige Mutation. Re-Link ist bewusst NICHT
   // Teil dieser Scheibe (kein automatisches Reparieren/Neu-Verknuepfen).
   function handleRemoveOrphan(elementId: string) {
-    if (!window.confirm("Verwaiste Verknüpfung löschen? Die gespeicherte URL geht verloren."))
+    if (
+      !window.confirm(
+        "Verwaiste Verknüpfung löschen? Die gespeicherte Konfiguration geht verloren."
+      )
+    )
       return;
     setMappings((prev) => removeMapping(prev, elementId));
   }
@@ -507,12 +547,14 @@ export default function CodeImporter({
       targetElementId
     );
     if (nextCode !== code) setCode(nextCode);
+    // Pro Zweig narrowen, damit type<->config korreliert bleibt (diskriminierte
+    // Union). Die gespeicherte Config wandert 1:1 auf das neue Element.
+    const relinked: Mapping =
+      orphan.type === "text"
+        ? { elementId: canonicalId, type: "text", config: orphan.config }
+        : { elementId: canonicalId, type: "redirect", config: orphan.config };
     setMappings((prev) =>
-      upsertMapping(removeMapping(prev, orphanElementId), {
-        elementId: canonicalId,
-        type: orphan.type,
-        config: orphan.config,
-      })
+      upsertMapping(removeMapping(prev, orphanElementId), relinked)
     );
   }
 
@@ -764,51 +806,64 @@ export default function CodeImporter({
             Lösche sie oder stelle das Element wieder her.
           </p>
           <ul className="flex flex-col gap-2">
-            {orphans.map((m) => (
-              <li
-                key={m.elementId}
-                className="flex items-center gap-3 rounded-md border border-amber-200 bg-white px-3 py-2"
-              >
-                <span className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">
-                  🔗 Weiterleitung
-                </span>
-                <span className="min-w-0 flex-1 truncate text-sm text-gray-700" title={m.config.url}>
-                  {m.config.url}
-                </span>
-                <span className="shrink-0 font-mono text-xs text-gray-400">
-                  {m.elementId}
-                </span>
-                {/* Re-Link: nur wenn es ueberhaupt aktuelle Elemente gibt; sonst
-                    bleibt nur Loeschen (nichts zum Verknuepfen). Controlled mit
-                    value="" -> setzt sich nach der Wahl optisch zurueck, auch wenn
-                    der Ueberschreib-Schutz abgebrochen wird. */}
-                {elements.length > 0 && (
-                  <select
-                    value=""
-                    onChange={(e) => {
-                      if (e.target.value)
-                        handleRelinkOrphan(m.elementId, e.target.value);
-                    }}
-                    aria-label="Verknüpfen mit Element"
-                    className="shrink-0 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  >
-                    <option value="">Verknüpfen mit …</option>
-                    {elements.map((el) => (
-                      <option key={el.id} value={el.id}>
-                        {`<${el.tag}> ${el.label}`}
-                      </option>
-                    ))}
-                  </select>
-                )}
-                <button
-                  type="button"
-                  onClick={() => handleRemoveOrphan(m.elementId)}
-                  className="shrink-0 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-1 focus:ring-red-400"
+            {orphans.map((m) => {
+              // Typ-aware Anzeige + KATEGORIE-eingeschraenkte Relink-Ziele: ein
+              // text-Orphan listet nur Textkandidaten, ein redirect-Orphan nur
+              // interaktive Elemente (Button/Form/Link).
+              const isText = m.type === "text";
+              const value = isText ? m.config.content : m.config.url;
+              const targets = elements.filter((el) =>
+                isRelinkTarget(m.type, el.type)
+              );
+              return (
+                <li
+                  key={m.elementId}
+                  className="flex items-center gap-3 rounded-md border border-amber-200 bg-white px-3 py-2"
                 >
-                  Löschen
-                </button>
-              </li>
-            ))}
+                  <span className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">
+                    {isText ? "✎ Text" : "🔗 Weiterleitung"}
+                  </span>
+                  <span
+                    className="min-w-0 flex-1 truncate text-sm text-gray-700"
+                    title={value}
+                  >
+                    {value || "(leerer Text)"}
+                  </span>
+                  <span className="shrink-0 font-mono text-xs text-gray-400">
+                    {m.elementId}
+                  </span>
+                  {/* Re-Link: nur wenn es ueberhaupt PASSENDE Ziele gibt; sonst
+                      bleibt nur Loeschen. Controlled mit value="" -> setzt sich
+                      nach der Wahl optisch zurueck, auch wenn der Ueberschreib-
+                      Schutz abgebrochen wird. */}
+                  {targets.length > 0 && (
+                    <select
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value)
+                          handleRelinkOrphan(m.elementId, e.target.value);
+                      }}
+                      aria-label="Verknüpfen mit Element"
+                      className="shrink-0 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="">Verknüpfen mit …</option>
+                      {targets.map((el) => (
+                        <option key={el.id} value={el.id}>
+                          {`<${el.tag}> ${el.label}`}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveOrphan(m.elementId)}
+                    className="shrink-0 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-1 focus:ring-red-400"
+                  >
+                    Löschen
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}
@@ -913,6 +968,7 @@ export default function CodeImporter({
           <span>🔘 {counts.button} Buttons</span>
           <span>📋 {counts.form} Forms</span>
           <span>🔗 {counts.link} Links</span>
+          <span>✎ {counts.text} Texte</span>
         </div>
 
         {/* (3) Erkannte Elemente — IMMER sichtbar und scrollbar (das
@@ -931,7 +987,7 @@ export default function CodeImporter({
             )}
             {elements.map((el, i) => {
                 const isSelected = el.id === selectedElementId;
-                const isMapped = mappedIds.has(el.id);
+                const mappedType = mappingTypeById.get(el.id);
                 return (
                   // text-left + w-full neutralisieren das Button-Default (zentrierter
                   // Text); bg/Font kommen unveraendert aus typeStyles wie in Phase 1.
@@ -948,14 +1004,15 @@ export default function CodeImporter({
                       &lt;{el.tag}&gt;
                     </span>
                     <span className="truncate">{el.label}</span>
-                    {/* Verdrahtetes Element: dezentes Badge, damit man verknuepfte
-                        Elemente auf einen Blick sieht. */}
-                    {isMapped && (
+                    {/* Verdrahtetes Element: dezentes Badge, Icon je Mapping-Typ
+                        (🔗 Redirect / ✎ Text), damit man verknuepfte Elemente auf
+                        einen Blick sieht. */}
+                    {mappedType && (
                       <span
                         className="ml-auto shrink-0 rounded-full bg-white/70 px-1.5 py-0.5 text-xs"
                         title="Aktion verknüpft"
                       >
-                        🔗
+                        {mappedType === "text" ? "✎" : "🔗"}
                       </span>
                     )}
                   </button>
@@ -1101,6 +1158,7 @@ export default function CodeImporter({
         selectedElement={selectedElement}
         mapping={selectedMapping}
         onSaveMapping={handleAssignMapping}
+        onSaveTextMapping={handleAssignTextMapping}
         onRemoveMapping={handleRemoveMapping}
       />
       </div>

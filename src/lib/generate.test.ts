@@ -10,6 +10,21 @@ function redirect(
   return { elementId, type: "redirect", config: { url, openInNewTab } };
 }
 
+function text(elementId: string, content: string): Mapping {
+  return { elementId, type: "text", config: { content } };
+}
+
+// Typ-narrowing Zugriff auf eine Redirect-config (Union verlangt das Narrowing).
+function rc(m: Mapping) {
+  if (m.type !== "redirect") throw new Error("kein redirect-Mapping");
+  return m.config;
+}
+
+function tc(m: Mapping) {
+  if (m.type !== "text") throw new Error("kein text-Mapping");
+  return m.config;
+}
+
 // Liest den injizierten JSON-Datenblock aus dem generierten HTML zurueck —
 // derselbe Weg, den das Wiring-Script zur Laufzeit nimmt (parse + JSON.parse).
 // Beweist zugleich, dass die Kodierung NICHT aus dem <script> ausbricht.
@@ -37,7 +52,7 @@ describe("generateFunctional – Verdrahtung", () => {
     const table = readTable(out);
     expect(table).toHaveLength(1);
     expect(table[0].elementId).toBe("ps-aaaaaa");
-    expect(table[0].config.url).toBe("https://buy.stripe.com/abc");
+    expect(rc(table[0]).url).toBe("https://buy.stripe.com/abc");
     // Statisches Wiring-Script ist vorhanden und haengt einen Click-Handler.
     expect(out).toContain("addEventListener");
     expect(out).toContain(`getElementById("pagesmith-mappings")`);
@@ -60,7 +75,7 @@ describe("generateFunctional – Verdrahtung", () => {
       redirect("ps-aaaaaa", "https://paypal.me/x", true),
     ]);
     const table = readTable(out);
-    expect(table[0].config.openInNewTab).toBe(true);
+    expect(rc(table[0]).openInNewTab).toBe(true);
     // Der window.open('_blank')-Zweig existiert im (statischen) Wiring-Script.
     expect(out).toContain(`window.open(url, "_blank")`);
     expect(out).toContain("window.location.href = url");
@@ -72,7 +87,7 @@ describe("generateFunctional – Verdrahtung", () => {
     // Round-trip: die URL kommt EXAKT zurueck -> kein Ausbruch, keine Korruption.
     const table = readTable(out);
     expect(table).toHaveLength(1);
-    expect(table[0].config.url).toBe(evil);
+    expect(rc(table[0]).url).toBe(evil);
     // Der injizierte Bruchstring darf NICHT roh im Output stehen (das "<" ist
     // als Unicode-Escape maskiert -> der Datenblock bleibt geschlossen).
     expect(out).not.toContain(`</script><script>alert(1)`);
@@ -226,5 +241,73 @@ describe("Wiring-Verhalten PREVIEW (Containment)", () => {
     const ev = click("a[href]");
     expect(ev.defaultPrevented).toBe(true);
     expect(openSpy).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Text-Override (Phase 5): in der VORSCHAU ersetzt das Wiring beim Laden den
+// textContent per ps-id; im EXPORT wird der Typ gar nicht erst eingebacken.
+// ---------------------------------------------------------------------------
+
+const TEXT_DOC = `<!DOCTYPE html><html><body><h1 data-pagesmith-id="ps-tttttt">Alt</h1></body></html>`;
+const textOf = (id: string) =>
+  mountedDoc.querySelector(`[data-pagesmith-id="${id}"]`)?.textContent;
+
+describe("Text-Override – Vorschau ersetzt textContent", () => {
+  it("setzt den textContent des Zielelements auf config.content", () => {
+    mountAndWire(
+      generateFunctional(TEXT_DOC, [text("ps-tttttt", "Neu & frisch")], "preview")
+    );
+    expect(textOf("ps-tttttt")).toBe("Neu & frisch");
+  });
+
+  it("verwaistes text-Mapping (ps-id fehlt) wird NICHT angewandt", () => {
+    mountAndWire(
+      generateFunctional(TEXT_DOC, [text("ps-zzzzzz", "Geist")], "preview")
+    );
+    // Das vorhandene Element bleibt unveraendert; der Geist taucht nirgends auf.
+    expect(textOf("ps-tttttt")).toBe("Alt");
+  });
+
+  it("content mit \" und </script> ueberlebt den Round-Trip und landet als LITERALER Text", () => {
+    const evil = `Hallo </script><script>alert(1)</script> Welt`;
+    const out = generateFunctional(TEXT_DOC, [text("ps-tttttt", evil)], "preview");
+    // Datenblock-Round-Trip heil.
+    const table = readTable(out);
+    expect(table).toHaveLength(1);
+    expect(tc(table[0]).content).toBe(evil);
+    // Der Bruchstring darf nicht roh im Output stehen ("<" maskiert).
+    expect(out).not.toContain("</script><script>alert(1)");
+    // Und beim Anwenden ist es reiner Text (textContent parst nie HTML).
+    mountAndWire(out);
+    expect(textOf("ps-tttttt")).toBe(evil);
+  });
+});
+
+describe("Text-Override – Export bleibt unberuehrt (no-op in dieser Scheibe)", () => {
+  it("backt text-Mappings NICHT in den Datenblock und veraendert den Text NICHT", () => {
+    const out = generateFunctional(
+      TEXT_DOC,
+      [text("ps-tttttt", "Neu")],
+      "export"
+    );
+    // Kein toter content-Ballast in der Export-Datei.
+    expect(readTable(out)).toHaveLength(0);
+    expect(out).not.toContain("Neu");
+    // Beim Ausfuehren bleibt der Originaltext stehen.
+    mountAndWire(out);
+    expect(textOf("ps-tttttt")).toBe("Alt");
+  });
+
+  it("redirect bleibt im Export erhalten, nur text faellt raus (gemischt)", () => {
+    const mixed = `<!DOCTYPE html><html><body><button data-pagesmith-id="ps-aaaaaa">B</button><h1 data-pagesmith-id="ps-tttttt">Alt</h1></body></html>`;
+    const out = generateFunctional(
+      mixed,
+      [redirect("ps-aaaaaa", "https://b.com"), text("ps-tttttt", "Neu")],
+      "export"
+    );
+    const table = readTable(out);
+    expect(table).toHaveLength(1);
+    expect(table[0].type).toBe("redirect");
   });
 });

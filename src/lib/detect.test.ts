@@ -238,6 +238,15 @@ describe("annotateAndDetect – IDs & Annotation", () => {
     expect(html).toContain("scrollTo");
   });
 
+  it("Restore ist instant + layout-stabil (scrollBehavior auto, rAF, load-Nachfasser)", () => {
+    const { html } = annotateAndDetect("<button>Kaufen</button>");
+    // Fix 1: smooth pro Jump ueberstimmt -> instant.
+    expect(html).toContain("scrollBehavior");
+    // Fix 2: rAF + window 'load'-Nachfasser gegen das Bild-Lade-Zucken.
+    expect(html).toContain("requestAnimationFrame");
+    expect(html).toContain('"load"');
+  });
+
   it("liefert fuer leeren/whitespace Input leeres HTML + keine Elemente", () => {
     expect(annotateAndDetect("")).toEqual({ html: "", elements: [] });
     expect(annotateAndDetect("   \n\t ")).toEqual({ html: "", elements: [] });

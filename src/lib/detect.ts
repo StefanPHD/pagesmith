@@ -142,12 +142,62 @@ const LISTENER_SCRIPT = `(function () {
     },
     { passive: true }
   );
-  // Eigener Listener (SET_SELECTED_ID-Handler bleibt unangetastet): nach einem
-  // Reload stellt der Parent die gemerkte Position wieder her.
+  // Scroll-Restore (eigener Listener; SET_SELECTED_ID-Handler bleibt unangetastet):
+  // nach jedem Reload setzt der Parent die gemerkte Position. INSTANT (kein smooth)
+  // und LAYOUT-STABIL nachgesetzt, weil sich das Layout nach dem READY noch streckt
+  // (Bilder/Fonts laden nach -> einmaliges Restore kaeme zu frueh und zuckte).
+  // EHRLICHE GRENZE: bei hoehenlosem Lazy-Load OBERHALB der Position verschiebt sich
+  // der Inhalt physisch -> der letzte Pixel ist nicht garantiert (Ziel: ruhig statt
+  // nervoes, KEIN Eingriff ins fremde Layout).
+  var psTargetY = null; // null = noch nichts wiederherzustellen
+  var psRestoreTimers = [];
+  var psOnLoad = null;
+  function psJump() {
+    if (psTargetY == null) return;
+    var docEl = document.documentElement;
+    // scroll-behavior NUR fuer diesen Jump auf auto zwingen (ueberstimmt smooth-CSS
+    // der Seite) und im naechsten Frame, nach dem committeten Jump, zuruecksetzen.
+    // So ist jeder Nachfasser instant, ohne das native Scroll-Gefuehl der Vorschau
+    // zwischen/nach den Jumps zu verfaelschen (die Vorschau bleibt getreu).
+    var prev = docEl.style.scrollBehavior;
+    docEl.style.scrollBehavior = "auto";
+    window.scrollTo(0, psTargetY);
+    if (typeof requestAnimationFrame === "function") {
+      requestAnimationFrame(function () {
+        docEl.style.scrollBehavior = prev;
+      });
+    } else {
+      docEl.style.scrollBehavior = prev;
+    }
+  }
   window.addEventListener("message", function (e) {
     var d = e.data;
     if (!d || d.type !== "PS_RESTORE_SCROLL") return;
-    window.scrollTo(0, d.y || 0);
+    psTargetY = d.y || 0;
+    // Alte Nachfasser verwerfen -> ein frisches Restore ersetzt sie (kein Stapeln).
+    for (var i = 0; i < psRestoreTimers.length; i++) {
+      clearTimeout(psRestoreTimers[i]);
+    }
+    psRestoreTimers = [];
+    // a) sofort.
+    psJump();
+    // c) rAF (1-2x) + kurze Sicherheits-Nachfasser (~150/400ms) fuer Fonts/Spaetlayout.
+    if (typeof requestAnimationFrame === "function") {
+      requestAnimationFrame(function () {
+        psJump();
+        requestAnimationFrame(psJump);
+      });
+    }
+    psRestoreTimers.push(setTimeout(psJump, 150));
+    psRestoreTimers.push(setTimeout(psJump, 400));
+    // b) bei window 'load' (Bilder fertig -> Layout final). Nur EIN Handler; er
+    // liest psTargetY, das jedes Restore aktualisiert.
+    if (!psOnLoad) {
+      psOnLoad = function () {
+        psJump();
+      };
+      window.addEventListener("load", psOnLoad);
+    }
   });
   // READY-Handshake gegen Race Conditions: nach jedem srcDoc-Reload meldet sich
   // das frische iframe EINMAL beim Parent, der dann die aktuelle Auswahl

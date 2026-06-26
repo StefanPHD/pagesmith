@@ -146,11 +146,6 @@ export default function CodeImporter({
   // (ein weggefiltertes ausgewaehltes Element behaelt seine Auswahl + Bruecke +
   // Highlighting; ActionPanel leitet aus elements ab, nicht aus der Filtermenge).
   const [activeFilter, setActiveFilter] = useState<ElementFilter>("all");
-  // Lade-Overlay ueber dem Edit-iframe: deckt das Bild-Lade-Zucken waehrend eines
-  // mapping-getriebenen Reloads (Text-Override Uebernehmen/Entfernen/Re-Link) ab.
-  // Reiner View-State. Einblenden: wenn editHtml sich aendert OHNE previewHtml
-  // (= Mapping-Aenderung, kein Tippen). Ausblenden: PS_SETTLED oder 500ms-Cap.
-  const [isEditReloading, setIsEditReloading] = useState(false);
   // In der Preview angeklicktes Element (via postMessage-Bruecke). Nur die ID
   // wird gehalten; das Element selbst wird abgeleitet, damit sich die Auswahl
   // bei Code-Aenderung sauber neu aufloest.
@@ -221,41 +216,23 @@ export default function CodeImporter({
     [previewMode, debouncedCode, mappings]
   );
 
-  // Edit-iframe-HTML: bei aktivem Text-Override zeigt AUCH der Editieren-Modus den
-  // Override-Text (Konsistenz mit Vorschau/Liste/Header). Geteilte, getestete
-  // Komposition in editPreviewHtml: Normalfall ohne Text-Mapping -> previewHtml
-  // unveraendert (Kurzschluss, kein Reload); sonst Text-Injektion HINTER die
-  // Bruecke gehaengt, ohne sie anzutasten. Reine Darstellung, kein Rueckfluss.
-  const editHtml = useMemo(
-    () => editPreviewHtml(previewHtml, mappings),
-    [previewHtml, mappings]
-  );
-
-  // Lade-Overlay-Trigger an EINEM gemeinsamen Punkt fuer ALLE mapping-getriebenen
-  // Edit-Reloads (Text-Override Uebernehmen/Entfernen/Re-Link). editHtml haengt an
-  // previewHtml (Tippen) UND an mappings. Diskriminator: aenderte sich editHtml,
-  // OHNE dass sich previewHtml aenderte, stammt der Reload aus einer Mapping-
-  // Aenderung -> Overlay. Tippen/Code-/Projektwechsel aendern previewHtml mit ->
-  // kein Overlay; Redirect-/Selektions-Aenderungen lassen editHtml unberuehrt ->
-  // kein Overlay. Initial sind die Refs == aktueller Wert -> kein Overlay beim Mount.
-  const prevEditHtmlRef = useRef(editHtml);
-  const prevPreviewHtmlRef = useRef(previewHtml);
+  // Edit-iframe-srcdoc IMPERATIV setzen — bewusst NICHT als reaktives srcDoc-Prop.
+  // Es wird NUR bei einem CODE-Wechsel (previewHtml) neu geschrieben, NICHT bei
+  // Mapping-Aenderungen. Damit loest ein Text-Override KEINEN Reload aus (er wird
+  // live per PS_SET_TEXT ins stehende Dokument gepatcht, siehe Handler unten).
+  // Bei einem echten Code-Reload werden die AKTUELLEN Overrides via editPreviewHtml
+  // ("edit"-Bake) eingebacken -> flackerfrei sichtbar, kein Desync zum Live-Patch.
+  // Lint-sauber: DOM-Seiteneffekt gehoert in einen Effekt (nicht in ein Memo); die
+  // Ref wird NUR im Effekt gelesen/geschrieben; vollstaendige Deps. Das
+  // previewHtml-Gate verhindert einen DOM-Write (und damit Reload-Loop) bei jedem
+  // Render bzw. bei reinen Mapping-Aenderungen.
+  const prevBakedPreviewRef = useRef<string | null>(null);
   useEffect(() => {
-    const editChanged = editHtml !== prevEditHtmlRef.current;
-    const previewChanged = previewHtml !== prevPreviewHtmlRef.current;
-    prevEditHtmlRef.current = editHtml;
-    prevPreviewHtmlRef.current = previewHtml;
-    if (editChanged && !previewChanged) setIsEditReloading(true);
-  }, [editHtml, previewHtml]);
-
-  // Sicherheits-Cap: spaetestens nach 500ms ausblenden, falls PS_SETTLED nie kommt
-  // (z.B. window 'load' feuert auf einer kaputten Seite nicht). PS_SETTLED blendet
-  // frueher aus (sobald Bilder fertig + Scroll committet).
-  useEffect(() => {
-    if (!isEditReloading) return;
-    const id = setTimeout(() => setIsEditReloading(false), 500);
-    return () => clearTimeout(id);
-  }, [isEditReloading]);
+    if (previewHtml === prevBakedPreviewRef.current) return;
+    prevBakedPreviewRef.current = previewHtml;
+    const frame = iframeRef.current;
+    if (frame) frame.srcdoc = editPreviewHtml(previewHtml, mappings);
+  }, [previewHtml, mappings]);
 
   // Ausgewaehltes Element abgeleitet: faellt automatisch auf null zurueck, wenn
   // die ID nach einer Code-Aenderung nicht mehr existiert.
@@ -334,10 +311,6 @@ export default function CodeImporter({
         // Edit-iframe meldet seine Scroll-Position (gedrosselt). Nur merken,
         // kein Re-Render — wird beim naechsten Reload zurueckgespielt.
         if (typeof d.y === "number") scrollYRef.current = d.y;
-      } else if (d?.type === "PS_SETTLED") {
-        // Edit-iframe ist visuell zur Ruhe gekommen (load + committeter Jump)
-        // -> Lade-Overlay ausblenden.
-        setIsEditReloading(false);
       } else if (d?.type === "IFRAME_READY") {
         // Re-Sync nach jedem srcDoc-Reload: aktuelle Auswahl zuruecksenden.
         // selectedIdRef statt State -> kein stale closure trotz []-deps.
@@ -577,6 +550,16 @@ export default function CodeImporter({
     );
   }
 
+  // Text live ins STEHENDE Edit-iframe patchen (kein Reload), via Selektions-
+  // Bruecke. Reine Anzeige; Mapping/Code/Dirty unberuehrt. Quelle: das eine
+  // gemountete Edit-iframe (iframeRef).
+  function pushTextToPreview(elementId: string, content: string) {
+    iframeRef.current?.contentWindow?.postMessage(
+      { type: "PS_SET_TEXT", elementId, content },
+      "*"
+    );
+  }
+
   // Text-Override zuweisen/aendern (Phase 5). Exakt derselbe ps-ID-Anker-Pfad wie
   // handleAssignMapping (anchorMappingTarget), nur config = Text statt URL ->
   // bestaetigt, dass der Anker typ-agnostisch traegt. Wirkt NUR in den Draft.
@@ -594,13 +577,20 @@ export default function CodeImporter({
     setMappings((prev) =>
       upsertMapping(prev, { elementId: canonicalId, type: "text", config })
     );
+    // Live patchen statt Reload -> kein Scroll-Sprung, kein Flackern.
+    pushTextToPreview(canonicalId, config.content);
   }
 
   // Aktion entfernen. Der Code (samt ps-ID) bleibt unangetastet; nur das Mapping
-  // verschwindet.
+  // verschwindet. War es ein TEXT-Override -> den Originaltext (element.text) live
+  // ins stehende iframe zuruecksetzen, sonst zeigt es weiter den Override.
   function handleRemoveMapping() {
     if (!selectedElementId) return;
+    const removed = findMapping(mappings, selectedElementId);
     setMappings((prev) => removeMapping(prev, selectedElementId));
+    if (removed?.type === "text") {
+      pushTextToPreview(selectedElementId, selectedElement?.text ?? "");
+    }
   }
 
   // Verwaistes Mapping loeschen. Destruktiv (die gespeicherte URL geht verloren)
@@ -651,6 +641,12 @@ export default function CodeImporter({
     setMappings((prev) =>
       upsertMapping(removeMapping(prev, orphanElementId), relinked)
     );
+    // Relink eines TEXT-Orphans erzeugt ein PRAESENTES Text-Mapping -> live ins
+    // stehende iframe patchen, sonst divergiert es von Liste/Header (editHtml
+    // reagiert bewusst nicht mehr auf mappings).
+    if (relinked.type === "text") {
+      pushTextToPreview(canonicalId, relinked.config.content);
+    }
   }
 
   // Projekt wechseln: laedt dessen HTML in den Editor. Dirty-Guard verhindert
@@ -1229,38 +1225,25 @@ export default function CodeImporter({
           </div>
         </div>
         <div className="flex flex-1 flex-col p-3">
-          {/* Edit-iframe-Wrapper: traegt das hidden-Toggle (statt des iframes
-              selbst) und ist relative fuers Lade-Overlay. Das iframe bleibt so
-              IMMER gemountet (stabiler key, ref/Bruecke) -> es mountet genau einmal
-              und remountet NIE (Bruecke/READY/Selektion/Highlighting unangetastet);
-              Display-Toggle des Wrappers laedt es nicht neu. */}
-          <div
-            className={`relative flex min-h-[32rem] flex-1 ${
+          {/* Das Edit-iframe ist IMMER gemountet (stabiler key, ref/Bruecke) und
+              wird nur per echtem display:none (Tailwind "hidden") versteckt, wenn
+              die funktionale Vorschau aktiv ist -> es mountet GENAU EINMAL und
+              remountet NIE (Bruecke/READY/Selektion/Highlighting unangetastet).
+              srcdoc wird IMPERATIV per Effekt gesetzt (nur bei Code-Wechsel, siehe
+              oben) -> KEIN reaktives srcDoc-Prop, damit ein Text-Override keinen
+              Reload ausloest (Live-Patch via PS_SET_TEXT). */}
+          <iframe
+            key="ps-edit"
+            ref={iframeRef}
+            title="preview"
+            // allow-scripts aktiviert das injizierte Listener-Script. NIEMALS
+            // allow-same-origin dazu – die Kombination bricht den Fremdcode aus
+            // der Sandbox aus.
+            sandbox="allow-scripts"
+            className={`h-full min-h-[32rem] w-full flex-1 rounded-lg border border-gray-300 bg-white ${
               previewMode === "edit" ? "" : "hidden"
             }`}
-          >
-            <iframe
-              key="ps-edit"
-              ref={iframeRef}
-              title="preview"
-              srcDoc={editHtml}
-              // allow-scripts aktiviert das injizierte Listener-Script. NIEMALS
-              // allow-same-origin dazu – die Kombination bricht den Fremdcode aus
-              // der Sandbox aus.
-              sandbox="allow-scripts"
-              className="h-full min-h-[32rem] w-full flex-1 rounded-lg border border-gray-300 bg-white"
-            />
-            {/* Lade-Overlay (nur Edit-iframe): dezenter Schleier waehrend eines
-                mapping-getriebenen Reloads -> deckt das Bild-Lade-Zucken ab.
-                pointer-events-none = rein visuell, blockiert keine Interaktion. */}
-            {isEditReloading && (
-              <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-white/55 backdrop-blur-[1px] transition-opacity duration-200">
-                <span className="rounded-md bg-white/90 px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm">
-                  Aktualisiere…
-                </span>
-              </div>
-            )}
-          </div>
+          />
           {/* Funktionales iframe: NUR im Vorschau-Modus gerendert -> es mountet
               FRISCH mit bereits gefuelltem srcDoc und korrekten Popup-Rechten.
               Zwei Gruende, warum frisch-mit-Inhalt statt dauerhaft-gemountet:

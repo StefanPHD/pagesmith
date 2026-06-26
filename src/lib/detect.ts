@@ -121,6 +121,16 @@ const LISTENER_SCRIPT = `(function () {
     el.classList.add("${HIGHLIGHT_CLASS}");
     if (d.scroll) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
+  // Text-Override LIVE patchen (Phase 5): der Parent setzt den Textinhalt eines
+  // Elements im STEHENDEN Dokument, ohne iframe-Reload. Eigener Listener -> der
+  // SET_SELECTED_ID-Handler bleibt unberuehrt. textContent ist eine sichere Senke
+  // (parst NIE HTML) -> "</script>"-Inhalt landet als literaler Text.
+  window.addEventListener("message", function (e) {
+    var d = e.data;
+    if (!d || d.type !== "PS_SET_TEXT") return;
+    var node = document.querySelector('[${PAGESMITH_ID_ATTR}="' + d.elementId + '"]');
+    if (node) node.textContent = d.content == null ? "" : String(d.content);
+  });
   // Scroll-Erhalt (reine Anzeige, ZUSAETZLICH zur Selektions-Bruecke): die
   // Scroll-Position lebt IM sandboxed Dokument (kein allow-same-origin -> der
   // Parent kann sie nicht von aussen lesen). Wir melden sie gedrosselt per

@@ -230,6 +230,12 @@ describe("annotateAndDetect – IDs & Annotation", () => {
     expect(html).toContain("IFRAME_READY");
   });
 
+  it("injiziert den PS_SET_TEXT-Handler (Live-Patch des Textinhalts)", () => {
+    const { html } = annotateAndDetect("<h1>Titel</h1>");
+    expect(html).toContain("PS_SET_TEXT");
+    expect(html).toContain("textContent");
+  });
+
   it("injiziert den Scroll-Erhalt (PS_SCROLL melden + PS_RESTORE_SCROLL/scrollTo)", () => {
     const { html } = annotateAndDetect("<button>Kaufen</button>");
     // Meldet die Position gedrosselt und stellt sie nach einem Reload wieder her.

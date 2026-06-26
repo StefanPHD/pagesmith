@@ -719,6 +719,34 @@ sowie Auth/RLS bleiben UNBERÜHRT. Sandbox unverändert (Edit-iframe allow-scrip
 funktionales iframe allow-scripts + popups wie gehabt). allow-same-origin in beiden
 Modi weiterhin AUS.
 
+### Scheibe 1b — UX-Politur: Override-Anzeige + Listen-Filter
+Zwei reine Anzeige-/View-State-Verfeinerungen auf Scheibe 1 obendrauf. KEIN
+Daten-/Engine-/Detektions-Eingriff, nichts wird persistiert, kein dirty-Effekt.
+Leitplanke: element.text (Detektions-Original) bleibt unangetastet, ebenso Engine,
+Mapping-Modell, Orphan-Netz, Selektions-Brücke.
+
+1) Override-Text-Anzeige (Konsistenz Vorschau ↔ Liste ↔ Header):
+- Liste "Erkannte Elemente" UND ActionPanel-Header zeigen für ein Textelement den
+  ÜBERSCHRIEBENEN Text, wann immer ein Text-Mapping existiert (Draft ODER
+  gespeichert) — sonst den Detektions-Originaltext. EIN konsistenter
+  Ableitungs-Pfad, KEIN Sonderfall "nur bei dirty".
+- Reine Anzeige-Ableitung: element.text bleibt der Fallback UND die Vorbefüllung,
+  falls das Mapping entfernt wird. Die 60-Zeichen-Truncation gilt für den
+  angezeigten Text gleichermaßen.
+- Effekt: Vorschau (Engine setzt textContent), Liste und Header ziehen an einem
+  Strang — derselbe Override ist überall sichtbar, sofort.
+
+2) Elementlisten-Filter (gegen "Scroll-Schwindel"):
+- Drei Pillen über der "Erkannte Elemente"-Liste: "Alle (X)" / "Interaktiv (Y)" /
+  "Texte (Z)". Interaktiv = Buttons + Links + Forms zusammen. Klick reduziert die
+  Liste sofort auf die Kategorie.
+- Filter wirkt NUR auf die Elementliste. Die "Verwaiste Verknüpfungen"-Sektion
+  bleibt UNBERÜHRT (Orphans sind kategorie-übergreifend wichtig).
+- Aktive Auswahl bleibt ERHALTEN, auch wenn das gewählte Element weggefiltert wird
+  (nur unsichtbar — Selektion/Brücke/Highlighting werden NICHT gelöst). Zurück auf
+  "Alle" (oder die passende Kategorie) -> wieder sichtbar und weiterhin ausgewählt.
+- Reiner View-State, nichts persistiert, kein dirty-Effekt.
+
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,
 In-Place Copywriting als Phase 5. Der folgende Block bleibt die ausführliche

@@ -191,10 +191,13 @@ const LISTENER_SCRIPT = `(function () {
     psRestoreTimers.push(setTimeout(psJump, 150));
     psRestoreTimers.push(setTimeout(psJump, 400));
     // b) bei window 'load' (Bilder fertig -> Layout final). Nur EIN Handler; er
-    // liest psTargetY, das jedes Restore aktualisiert.
+    // liest psTargetY, das jedes Restore aktualisiert. Danach meldet er dem Parent
+    // PS_SETTLED = "visuell zur Ruhe gekommen" (Bilder fertig + Scroll committet)
+    // -> der Parent blendet sein Lade-Overlay aus.
     if (!psOnLoad) {
       psOnLoad = function () {
         psJump();
+        window.parent.postMessage({ type: "PS_SETTLED" }, "*");
       };
       window.addEventListener("load", psOnLoad);
     }

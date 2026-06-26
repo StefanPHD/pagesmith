@@ -247,6 +247,12 @@ describe("annotateAndDetect – IDs & Annotation", () => {
     expect(html).toContain('"load"');
   });
 
+  it("meldet PS_SETTLED, wenn das iframe visuell zur Ruhe gekommen ist", () => {
+    const { html } = annotateAndDetect("<button>Kaufen</button>");
+    // Signal fuers Parent-Lade-Overlay: load (Bilder fertig) + committeter Jump.
+    expect(html).toContain("PS_SETTLED");
+  });
+
   it("liefert fuer leeren/whitespace Input leeres HTML + keine Elemente", () => {
     expect(annotateAndDetect("")).toEqual({ html: "", elements: [] });
     expect(annotateAndDetect("   \n\t ")).toEqual({ html: "", elements: [] });

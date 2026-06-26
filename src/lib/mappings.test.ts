@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  displayTextFor,
   findMapping,
   findOrphans,
   isValidRedirectUrl,
@@ -8,6 +9,7 @@ import {
   upsertMapping,
   type Mapping,
 } from "./mappings";
+import type { DetectedElement } from "./detect";
 
 function redirect(
   elementId: string,
@@ -185,6 +187,58 @@ describe("mappingsEqual – reihenfolge-unabhaengiger Mengenvergleich", () => {
     const a = [redirect("ps-aaaaaa", "https://a.com")];
     const b = [text("ps-aaaaaa", "Text")];
     expect(mappingsEqual(a, b)).toBe(false);
+  });
+});
+
+describe("displayTextFor – geteilter Anzeige-Deriver (Liste + Header)", () => {
+  const textEl = (id: string, text: string, label?: string): DetectedElement => ({
+    id,
+    type: "text",
+    tag: "h1",
+    label: label ?? text,
+    text,
+  });
+
+  it("kein Mapping -> Detektions-Text (element.text)", () => {
+    expect(displayTextFor(textEl("ps-aaaaaa", "Original"), [])).toBe("Original");
+  });
+
+  it("Text-Mapping vorhanden -> dessen config.content (Override gewinnt)", () => {
+    const el = textEl("ps-aaaaaa", "Original");
+    expect(displayTextFor(el, [text("ps-aaaaaa", "Überschrieben")])).toBe(
+      "Überschrieben"
+    );
+  });
+
+  it("ignoriert ein Mapping anderen Typs -> faellt auf element.text zurueck", () => {
+    const el = textEl("ps-aaaaaa", "Original");
+    // Ein redirect-Mapping auf derselben id darf den Anzeige-Text nicht aendern.
+    expect(displayTextFor(el, [redirect("ps-aaaaaa", "https://a.com")])).toBe(
+      "Original"
+    );
+  });
+
+  it("nicht-Text-Element ohne .text -> Label-Fallback", () => {
+    const button: DetectedElement = {
+      id: "ps-bbbbbb",
+      type: "button",
+      tag: "button",
+      label: "Jetzt kaufen",
+    };
+    expect(displayTextFor(button, [])).toBe("Jetzt kaufen");
+  });
+
+  it("leerer Inhalt -> Label-Fallback (z.B. \"(leerer Text)\")", () => {
+    const el = textEl("ps-aaaaaa", "", "(leerer Text)");
+    expect(displayTextFor(el, [])).toBe("(leerer Text)");
+    // auch ein Override auf leer faellt auf das Label zurueck.
+    expect(displayTextFor(el, [text("ps-aaaaaa", "")])).toBe("(leerer Text)");
+  });
+
+  it("truncatet den abgeleiteten Text auf 60 Zeichen", () => {
+    const long = "x".repeat(100);
+    const el = textEl("ps-aaaaaa", "kurz");
+    expect(displayTextFor(el, [text("ps-aaaaaa", long)])).toHaveLength(60);
   });
 });
 

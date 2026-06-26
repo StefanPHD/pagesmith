@@ -5,6 +5,7 @@ import {
   anchorMappingTarget,
   annotateAndDetect,
   detectElements,
+  filterElements,
   stabilizeIds,
 } from "./detect";
 
@@ -153,6 +154,43 @@ describe("detectElements – Textkandidaten (Phase 5, In-Place-Copywriting)", ()
     const { elements } = annotateAndDetect("<h2>Titel</h2>");
     expect(elements).toHaveLength(1);
     expect(elements[0].id).toMatch(PS_ID_RE);
+  });
+});
+
+describe("filterElements – Kategorie-Filter der Elementliste (Scheibe 1b)", () => {
+  // Gemischt: Button, Link, Form (interaktiv) + zwei Textkandidaten.
+  const mixed = detectElements(
+    '<button>B</button><a href="/x">L</a><form action="/f"></form>' +
+      "<h1>Titel</h1><p>Absatz</p>"
+  );
+
+  it("Vorbedingung: die gemischte Liste hat alle Kategorien", () => {
+    expect(mixed.filter((e) => e.type === "button")).toHaveLength(1);
+    expect(mixed.filter((e) => e.type === "link")).toHaveLength(1);
+    expect(mixed.filter((e) => e.type === "form")).toHaveLength(1);
+    expect(mixed.filter((e) => e.type === "text")).toHaveLength(2);
+  });
+
+  it("'all' liefert die unveraenderte Menge", () => {
+    expect(filterElements(mixed, "all")).toHaveLength(mixed.length);
+  });
+
+  it("'interactive' enthaelt NUR button/link/form, kein text", () => {
+    const interactive = filterElements(mixed, "interactive");
+    expect(interactive).toHaveLength(3);
+    expect(interactive.every((e) => e.type !== "text")).toBe(true);
+  });
+
+  it("'text' enthaelt NUR Textkandidaten", () => {
+    const texts = filterElements(mixed, "text");
+    expect(texts).toHaveLength(2);
+    expect(texts.every((e) => e.type === "text")).toBe(true);
+  });
+
+  it("mutiert die Eingabe nicht", () => {
+    const before = mixed.length;
+    filterElements(mixed, "text");
+    expect(mixed).toHaveLength(before);
   });
 });
 

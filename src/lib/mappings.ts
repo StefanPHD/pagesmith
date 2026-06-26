@@ -2,6 +2,8 @@
 // Element (per stabiler ps-ID) mit einer Aktion verknuepfen. Unit-testbar, siehe
 // mappings.test.ts.
 
+import { MAX_LABEL, type DetectedElement } from "./detect";
+
 // Konfiguration je Aktionstyp gekapselt, damit weitere Typen (Webhook = POST,
 // Tracking) spaeter als eigene Union-Zweige dazukommen, ohne die bestehende
 // Redirect-Form anzufassen.
@@ -111,4 +113,23 @@ export function mappingsEqual(a: Mapping[], b: Mapping[]): boolean {
     if (!configEqual(other, m)) return false;
   }
   return true;
+}
+
+// GETEILTER Anzeige-Deriver (Scheibe 1b): der Text, der fuer ein Element in der
+// Liste UND im ActionPanel-Header steht. EINE Quelle -> kein Drift zwischen den
+// Anzeigeorten. Existiert ein Text-Override (Draft ODER gespeichert, mappings ist
+// die laufende Wahrheit), zeigt er dessen content; sonst den Detektions-Text.
+//
+// Reine Anzeige-Ableitung: element.text (Detektions-Original) bleibt unangetastet
+// und dient als Fallback sowie zur Vorbefuellung des Edit-Felds, falls das Mapping
+// entfernt wird. Truncation auf MAX_LABEL (geteilt mit der Detektion) und der
+// label-Fallback erhalten das bisherige Verhalten (z.B. "(leerer Text)" bei
+// leerem Inhalt; fuer nicht-Text-Elemente ohne .text bleibt es das Label).
+export function displayTextFor(
+  element: DetectedElement,
+  mappings: Mapping[]
+): string {
+  const m = findMapping(mappings, element.id);
+  const full = m && m.type === "text" ? m.config.content : element.text;
+  return full?.slice(0, MAX_LABEL) || element.label;
 }

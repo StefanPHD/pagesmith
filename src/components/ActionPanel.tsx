@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { DetectedElement } from "@/lib/detect";
 import {
+  displayTextFor,
   isValidRedirectUrl,
   type Mapping,
   type RedirectConfig,
@@ -85,10 +86,15 @@ function ElementActions({
 }) {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4">
-      {/* Kontext: welches Element ist gerade gewaehlt. */}
+      {/* Kontext: welches Element ist gerade gewaehlt. Zeigt — wie die Liste —
+          ueber den GETEILTEN Deriver den ueberschriebenen Text, sobald ein
+          Text-Override existiert. mapping ist genau das des gewaehlten Elements
+          -> als 1-Element-Liste an dieselbe Funktion. */}
       <div className="rounded-md bg-gray-50 px-3 py-2 text-xs text-gray-600">
         <span className="font-mono">&lt;{element.tag}&gt;</span>{" "}
-        <span className="text-gray-800">{element.label}</span>
+        <span className="text-gray-800">
+          {displayTextFor(element, mapping ? [mapping] : [])}
+        </span>
       </div>
 
       {element.type === "text" ? (

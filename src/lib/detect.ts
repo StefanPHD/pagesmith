@@ -23,7 +23,7 @@ export type PreparedPreview = {
   elements: DetectedElement[];
 };
 
-const MAX_LABEL = 60;
+export const MAX_LABEL = 60;
 
 const PAGESMITH_ID_ATTR = "data-pagesmith-id";
 
@@ -337,6 +337,24 @@ export function annotateAndDetect(html: string): PreparedPreview {
  */
 export function detectElements(html: string): DetectedElement[] {
   return annotateAndDetect(html).elements;
+}
+
+// Kategorie-Filter fuer die Elementliste (Scheibe 1b). Reiner View-Helfer, keine
+// Detektion: er waehlt nur aus, WELCHE bereits erkannten Elemente angezeigt werden.
+export type ElementFilter = "all" | "interactive" | "text";
+
+/**
+ * Filtert die erkannten Elemente nach Kategorie. "interactive" = button/link/form
+ * (alles ausser Text), "text" = nur Textkandidaten, "all" = unveraendert. REIN:
+ * gibt eine neue Teilmenge zurueck, mutiert nichts, beruehrt keine Auswahl.
+ */
+export function filterElements(
+  elements: DetectedElement[],
+  filter: ElementFilter
+): DetectedElement[] {
+  if (filter === "all") return elements;
+  if (filter === "text") return elements.filter((e) => e.type === "text");
+  return elements.filter((e) => e.type !== "text"); // interactive
 }
 
 export type AnchorResult = {

@@ -21,6 +21,7 @@ import {
   mappingsEqual,
   removeMapping,
   upsertMapping,
+  displayTextFor,
   type Mapping,
   type RedirectConfig,
   type TextConfig,
@@ -1003,7 +1004,9 @@ export default function CodeImporter({
                     <span className="rounded bg-white/60 px-1.5 py-0.5 font-mono text-xs">
                       &lt;{el.tag}&gt;
                     </span>
-                    <span className="truncate">{el.label}</span>
+                    <span className="truncate">
+                      {displayTextFor(el, mappings)}
+                    </span>
                     {/* Verdrahtetes Element: dezentes Badge, Icon je Mapping-Typ
                         (🔗 Redirect / ✎ Text), damit man verknuepfte Elemente auf
                         einen Blick sieht. */}

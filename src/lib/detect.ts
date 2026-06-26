@@ -121,20 +121,9 @@ const LISTENER_SCRIPT = `(function () {
     el.classList.add("${HIGHLIGHT_CLASS}");
     if (d.scroll) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
-  // Text-Override LIVE patchen (Phase 5): der Parent setzt den Textinhalt eines
-  // Elements im STEHENDEN Dokument, ohne iframe-Reload. Eigener Listener -> der
-  // SET_SELECTED_ID-Handler bleibt unberuehrt. textContent ist eine sichere Senke
-  // (parst NIE HTML) -> "</script>"-Inhalt landet als literaler Text.
-  window.addEventListener("message", function (e) {
-    var d = e.data;
-    if (!d || d.type !== "PS_SET_TEXT") return;
-    var node = document.querySelector('[${PAGESMITH_ID_ATTR}="' + d.elementId + '"]');
-    if (node) node.textContent = d.content == null ? "" : String(d.content);
-  });
   // READY-Handshake gegen Race Conditions: nach jedem srcDoc-Reload meldet sich
   // das frische iframe EINMAL beim Parent, der dann die aktuelle Auswahl
-  // zuruecksendet. Kein Timing-Raten via setTimeout. Die Listener oben sind hier
-  // bereits synchron registriert.
+  // zuruecksendet. Kein Timing-Raten via setTimeout.
   window.parent.postMessage({ type: "IFRAME_READY" }, "*");
 })();`;
 

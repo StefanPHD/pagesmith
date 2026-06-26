@@ -211,23 +211,15 @@ export default function CodeImporter({
     [previewMode, debouncedCode, mappings]
   );
 
-  // Edit-iframe-srcdoc IMPERATIV setzen — bewusst NICHT als reaktives srcDoc-Prop.
-  // Es wird NUR bei einem CODE-Wechsel (previewHtml) neu geschrieben, NICHT bei
-  // Mapping-Aenderungen. Damit loest ein Text-Override KEINEN Reload aus (er wird
-  // live per PS_SET_TEXT ins stehende Dokument gepatcht, siehe Handler unten).
-  // Bei einem echten Code-Reload werden die AKTUELLEN Overrides via editPreviewHtml
-  // ("edit"-Bake) eingebacken -> flackerfrei sichtbar, kein Desync zum Live-Patch.
-  // Lint-sauber: DOM-Seiteneffekt gehoert in einen Effekt (nicht in ein Memo); die
-  // Ref wird NUR im Effekt gelesen/geschrieben; vollstaendige Deps. Das
-  // previewHtml-Gate verhindert einen DOM-Write (und damit Reload-Loop) bei jedem
-  // Render bzw. bei reinen Mapping-Aenderungen.
-  const prevBakedPreviewRef = useRef<string | null>(null);
-  useEffect(() => {
-    if (previewHtml === prevBakedPreviewRef.current) return;
-    prevBakedPreviewRef.current = previewHtml;
-    const frame = iframeRef.current;
-    if (frame) frame.srcdoc = editPreviewHtml(previewHtml, mappings);
-  }, [previewHtml, mappings]);
+  // Edit-iframe-HTML: bei aktivem Text-Override zeigt AUCH der Editieren-Modus den
+  // Override-Text (Konsistenz mit Vorschau/Liste/Header). Geteilte, getestete
+  // Komposition in editPreviewHtml: Normalfall ohne Text-Mapping -> previewHtml
+  // unveraendert (Kurzschluss, kein Reload); sonst Text-Injektion HINTER die
+  // Bruecke gehaengt, ohne sie anzutasten. Reine Darstellung, kein Rueckfluss.
+  const editHtml = useMemo(
+    () => editPreviewHtml(previewHtml, mappings),
+    [previewHtml, mappings]
+  );
 
   // Ausgewaehltes Element abgeleitet: faellt automatisch auf null zurueck, wenn
   // die ID nach einer Code-Aenderung nicht mehr existiert.
@@ -263,31 +255,16 @@ export default function CodeImporter({
   // "nichts zeigen". Auch hydration-sicher: im ersten Paint ist debouncedCode ""
   // -> bei nicht-leerem code ungleich (Guard aus, identischer Server/Client-Paint).
   const elementsReflectCurrentCode = debouncedCode === code;
-  // Orphans NUR berechnen, wenn die Detektion den aktuellen Code widerspiegelt
-  // (sonst null = "noch nicht stabil"). Reiner Flash-Guard wie oben beschrieben.
-  const computedOrphans = useMemo(
+  const orphans = useMemo(
     () =>
       elementsReflectCurrentCode
         ? findOrphans(
             mappings,
             elements.map((e) => e.id)
           )
-        : null,
+        : [],
     [elementsReflectCurrentCode, mappings, elements]
   );
-  // Letzte STABILE Menge in State halten. Waehrend der Re-Detektion nach
-  // "Uebernehmen" ist computedOrphans null -> dann die letzte stabile Menge
-  // weiterzeigen statt [] (die gelbe Box klappt nicht weg, die drei Spalten
-  // springen nicht). Sobald wieder stabil gewinnt computedOrphans SOFORT (kein Lag,
-  // kein veraltetes Einfrieren). Fortschreiben per setState WAEHREND DES RENDERS
-  // (Reacts dokumentiertes "store info from previous renders"-Muster, NICHT im
-  // Effekt): terminiert, weil computedOrphans eine stabile useMemo-Referenz ist
-  // (nach dem Setzen gilt computedOrphans === stableOrphans -> kein erneutes set).
-  const [stableOrphans, setStableOrphans] = useState<Mapping[]>([]);
-  if (computedOrphans !== null && computedOrphans !== stableOrphans) {
-    setStableOrphans(computedOrphans);
-  }
-  const orphans = computedOrphans ?? stableOrphans;
 
   // Klick-Bruecke aus dem sandboxed iframe. Registriert sich EINMAL ([] deps);
   // iframeRef + setSelectedElementId sind stabil.
@@ -532,16 +509,6 @@ export default function CodeImporter({
     );
   }
 
-  // Text live ins STEHENDE Edit-iframe patchen (kein Reload), via Selektions-
-  // Bruecke. Reine Anzeige; Mapping/Code/Dirty unberuehrt. Quelle: das eine
-  // gemountete Edit-iframe (iframeRef).
-  function pushTextToPreview(elementId: string, content: string) {
-    iframeRef.current?.contentWindow?.postMessage(
-      { type: "PS_SET_TEXT", elementId, content },
-      "*"
-    );
-  }
-
   // Text-Override zuweisen/aendern (Phase 5). Exakt derselbe ps-ID-Anker-Pfad wie
   // handleAssignMapping (anchorMappingTarget), nur config = Text statt URL ->
   // bestaetigt, dass der Anker typ-agnostisch traegt. Wirkt NUR in den Draft.
@@ -559,20 +526,13 @@ export default function CodeImporter({
     setMappings((prev) =>
       upsertMapping(prev, { elementId: canonicalId, type: "text", config })
     );
-    // Live patchen statt Reload -> kein Scroll-Sprung, kein Flackern.
-    pushTextToPreview(canonicalId, config.content);
   }
 
   // Aktion entfernen. Der Code (samt ps-ID) bleibt unangetastet; nur das Mapping
-  // verschwindet. War es ein TEXT-Override -> den Originaltext (element.text) live
-  // ins stehende iframe zuruecksetzen, sonst zeigt es weiter den Override.
+  // verschwindet.
   function handleRemoveMapping() {
     if (!selectedElementId) return;
-    const removed = findMapping(mappings, selectedElementId);
     setMappings((prev) => removeMapping(prev, selectedElementId));
-    if (removed?.type === "text") {
-      pushTextToPreview(selectedElementId, selectedElement?.text ?? "");
-    }
   }
 
   // Verwaistes Mapping loeschen. Destruktiv (die gespeicherte URL geht verloren)
@@ -623,12 +583,6 @@ export default function CodeImporter({
     setMappings((prev) =>
       upsertMapping(removeMapping(prev, orphanElementId), relinked)
     );
-    // Relink eines TEXT-Orphans erzeugt ein PRAESENTES Text-Mapping -> live ins
-    // stehende iframe patchen, sonst divergiert es von Liste/Header (editHtml
-    // reagiert bewusst nicht mehr auf mappings).
-    if (relinked.type === "text") {
-      pushTextToPreview(canonicalId, relinked.config.content);
-    }
   }
 
   // Projekt wechseln: laedt dessen HTML in den Editor. Dirty-Guard verhindert
@@ -1211,13 +1165,12 @@ export default function CodeImporter({
               wird nur per echtem display:none (Tailwind "hidden") versteckt, wenn
               die funktionale Vorschau aktiv ist -> es mountet GENAU EINMAL und
               remountet NIE (Bruecke/READY/Selektion/Highlighting unangetastet).
-              srcdoc wird IMPERATIV per Effekt gesetzt (nur bei Code-Wechsel, siehe
-              oben) -> KEIN reaktives srcDoc-Prop, damit ein Text-Override keinen
-              Reload ausloest (Live-Patch via PS_SET_TEXT). */}
+              Display-Toggle laedt das iframe nicht neu, der Inhalt bleibt. */}
           <iframe
             key="ps-edit"
             ref={iframeRef}
             title="preview"
+            srcDoc={editHtml}
             // allow-scripts aktiviert das injizierte Listener-Script. NIEMALS
             // allow-same-origin dazu – die Kombination bricht den Fremdcode aus
             // der Sandbox aus.

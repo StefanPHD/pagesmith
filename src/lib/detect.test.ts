@@ -230,12 +230,6 @@ describe("annotateAndDetect – IDs & Annotation", () => {
     expect(html).toContain("IFRAME_READY");
   });
 
-  it("injiziert den PS_SET_TEXT-Handler (Live-Patch des Textinhalts)", () => {
-    const { html } = annotateAndDetect("<h1>Titel</h1>");
-    expect(html).toContain("PS_SET_TEXT");
-    expect(html).toContain("textContent");
-  });
-
   it("liefert fuer leeren/whitespace Input leeres HTML + keine Elemente", () => {
     expect(annotateAndDetect("")).toEqual({ html: "", elements: [] });
     expect(annotateAndDetect("   \n\t ")).toEqual({ html: "", elements: [] });

@@ -121,9 +121,38 @@ const LISTENER_SCRIPT = `(function () {
     el.classList.add("${HIGHLIGHT_CLASS}");
     if (d.scroll) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
+  // Scroll-Erhalt (reine Anzeige, ZUSAETZLICH zur Selektions-Bruecke): die
+  // Scroll-Position lebt IM sandboxed Dokument (kein allow-same-origin -> der
+  // Parent kann sie nicht von aussen lesen). Wir melden sie gedrosselt per
+  // postMessage. Leading-Edge mit Trailing-Read (~100ms): ein gesetzter Timer
+  // schluckt weitere Events, beim Feuern wird die AKTUELLE Position gelesen -> auch
+  // ein "Uebernehmen" mitten in der Bewegung hat eine frische Position gemeldet.
+  var psScrollTimer = null;
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (psScrollTimer) return;
+      psScrollTimer = setTimeout(function () {
+        psScrollTimer = null;
+        window.parent.postMessage(
+          { type: "PS_SCROLL", y: window.scrollY || 0 },
+          "*"
+        );
+      }, 100);
+    },
+    { passive: true }
+  );
+  // Eigener Listener (SET_SELECTED_ID-Handler bleibt unangetastet): nach einem
+  // Reload stellt der Parent die gemerkte Position wieder her.
+  window.addEventListener("message", function (e) {
+    var d = e.data;
+    if (!d || d.type !== "PS_RESTORE_SCROLL") return;
+    window.scrollTo(0, d.y || 0);
+  });
   // READY-Handshake gegen Race Conditions: nach jedem srcDoc-Reload meldet sich
   // das frische iframe EINMAL beim Parent, der dann die aktuelle Auswahl
-  // zuruecksendet. Kein Timing-Raten via setTimeout.
+  // (und die gemerkte Scroll-Position) zuruecksendet. Kein Timing-Raten via
+  // setTimeout. Die Listener oben sind hier bereits synchron registriert.
   window.parent.postMessage({ type: "IFRAME_READY" }, "*");
 })();`;
 

@@ -165,6 +165,11 @@ export default function CodeImporter({
   // Markiert, ob die letzte Auswahl aus einem iframe-Klick stammt. Steuert (in
   // beide Richtungen, eine Quelle), ob gescrollt wird: bei iframe-Klick NICHT.
   const cameFromIframeRef = useRef(false);
+  // Letzte vom Edit-iframe gemeldete Scroll-Position (PS_SCROLL). Reine Anzeige,
+  // kein Re-Render. Wird beim IFRAME_READY-Handshake nach einem Reload
+  // zurueckgespielt, damit "Uebernehmen" eines Text-Overrides nicht zum Header
+  // springt. Pro Projekt-/Code-Kontext zurueckgesetzt (applyZenForLoadedCode).
+  const scrollYRef = useRef(0);
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedCode(code), DEBOUNCE_MS);
@@ -279,11 +284,21 @@ export default function CodeImporter({
         // Vorwaerts-Bruecke (iframe -> Liste): Auswahl kam aus dem iframe.
         cameFromIframeRef.current = true;
         setSelectedElementId(d.elementId ?? null);
+      } else if (d?.type === "PS_SCROLL") {
+        // Edit-iframe meldet seine Scroll-Position (gedrosselt). Nur merken,
+        // kein Re-Render — wird beim naechsten Reload zurueckgespielt.
+        if (typeof d.y === "number") scrollYRef.current = d.y;
       } else if (d?.type === "IFRAME_READY") {
         // Re-Sync nach jedem srcDoc-Reload: aktuelle Auswahl zuruecksenden.
         // selectedIdRef statt State -> kein stale closure trotz []-deps.
         iframeRef.current?.contentWindow?.postMessage(
           { type: "SET_SELECTED_ID", elementId: selectedIdRef.current, scroll: false },
+          "*"
+        );
+        // ... und die gemerkte Scroll-Position wiederherstellen (separater Typ,
+        // damit der SET_SELECTED_ID-Pfad unberuehrt bleibt).
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: "PS_RESTORE_SCROLL", y: scrollYRef.current },
           "*"
         );
       }
@@ -385,6 +400,9 @@ export default function CodeImporter({
     // uploadError ist projekt-ungebundener View-State -> beim Kontext-Wechsel
     // mit zuruecksetzen, sonst leuchtet ein Fehler aus Projekt A in B weiter.
     setUploadError(null);
+    // Gemerkte Edit-iframe-Scroll-Position gehoert zum alten Kontext -> auf 0
+    // (Seitenanfang), damit ein anderes Projekt sie nicht erbt.
+    scrollYRef.current = 0;
   }
 
   // Manuelles Toggle: klappt der Nutzer AUF (next = nicht collapsed), uebernimmt

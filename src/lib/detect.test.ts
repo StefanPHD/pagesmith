@@ -230,6 +230,14 @@ describe("annotateAndDetect – IDs & Annotation", () => {
     expect(html).toContain("IFRAME_READY");
   });
 
+  it("injiziert den Scroll-Erhalt (PS_SCROLL melden + PS_RESTORE_SCROLL/scrollTo)", () => {
+    const { html } = annotateAndDetect("<button>Kaufen</button>");
+    // Meldet die Position gedrosselt und stellt sie nach einem Reload wieder her.
+    expect(html).toContain("PS_SCROLL");
+    expect(html).toContain("PS_RESTORE_SCROLL");
+    expect(html).toContain("scrollTo");
+  });
+
   it("liefert fuer leeren/whitespace Input leeres HTML + keine Elemente", () => {
     expect(annotateAndDetect("")).toEqual({ html: "", elements: [] });
     expect(annotateAndDetect("   \n\t ")).toEqual({ html: "", elements: [] });

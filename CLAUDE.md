@@ -790,6 +790,51 @@ Neu-Umsetzung (NICHT heute bauen):
   (Mapping-Entkopplung UND imperatives srcdoc). Sauber ist NUR additiv eine
   postMessage, srcDoc-Rendering komplett unangetastet.
 
+### Scheibe 2 — Text-Export: direkt-in-DOM-Bake (vor dem Bau dokumentiert)
+Schließt das funktionale Loch aus Scheibe 1: ein type:"text"-Override landet im
+EXPORT als ECHTER DOM-Inhalt (das <h1> enthält im Export-Output schon den neuen
+Text), nicht per Laufzeit-JS injiziert.
+
+Owner-Entscheidungen (endgültig):
+- Mechanismus: direkt-in-DOM-Bake. In generateFunctional(html, mappings, "export")
+  wird pro präsentem Text-Mapping das Element per ps-id gefunden und
+  element.textContent = config.content auf dem geparsten DOM gesetzt, VOR der
+  Serialisierung. Grund: gut für SEO, kein FOUC/Flackern, funktioniert ohne JS.
+- Trennung Bake vs. Laufzeit: Text-Mappings kommen im export-Modus NICHT in den
+  JSON-Datenblock / das Wiring-Script. Nur Laufzeit-Typen (redirect, später
+  Webhook/Tracking) bleiben dort. Folge: eine Seite mit AUSSCHLIESSLICH
+  Text-Overrides exportiert als reines statisches HTML — KEIN injiziertes Script.
+- Orphan-Filter gilt typ-agnostisch auch für Text: nur präsente Elemente backen;
+  ein Text-Mapping ohne Element im Code bleibt verwaist (Weg-C), wird NICHT
+  gebacken und erscheint NICHT im Output (gleiche abgeleitete "ps-id im Code?"-
+  Logik wie findOrphans/Redirect).
+- Disjunkte Mengen: Text-Kandidaten != interaktive Kandidaten, ein Mapping pro
+  Element -> Bake-Pass (Text) und Wiring-Pass (Redirect) treffen NIE dasselbe
+  Element. Keine Kollision.
+- Senke ist textContent (NICHT innerHTML): ein Override mit <script>/Markup wird
+  inerter Text, nicht ausgeführtes HTML. Konsistent zur bestehenden Senken-Lektion.
+
+Architektur: EINE Engine, type-Verzweigung im export-Zweig — KEINE zweite parallele
+Engine. Gleiche stabilisierte Quelle wie die Vorschau (Idempotenz: einmal parsen,
+einmal serialisieren, kein Doppel-Bake). Preview-/Edit-Text-Verhalten und die
+Brücke bleiben UNBERÜHRT (nur der export-Zweig wird erweitert).
+
+Diskriminierende Tests (Pflicht, müssen gegenproben):
+- Text-Override erscheint im Export-HTML als echter Inhalt (Element-textContent ==
+  neuer Inhalt); Gegenprobe: der Originaltext ist für dieses Element NICHT mehr da.
+- Text-Override steht im Export NICHT im JSON-Datenblock/Wiring (Gegenprobe gegen
+  naives "in der Tabelle lassen").
+- Reine-Text-Seite (nur Text-Overrides, kein Redirect) -> KEIN Wiring-Script im
+  Output (ohne-JS-Eigenschaft).
+- Redirect-Export UNVERÄNDERT: JSON-Datenblock + Wiring mit URL weiter vorhanden
+  (Bestandstest bleibt grün).
+- Verwaistes Text-Mapping (Element fehlt) -> nicht gebacken, nicht im Output.
+- Preview-/Edit-Text-Verhalten unverändert (kein Regress der Live-Editierbarkeit).
+
+Leitplanken: NUR der export-Zweig von generateFunctional + dessen Tests werden
+angefasst. detect.ts/Brücke, CodeImporter, ActionPanel, der Redirect-Laufzeitpfad
+und Preview/Edit-Text bleiben unberührt.
+
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,
 In-Place Copywriting als Phase 5. Der folgende Block bleibt die ausführliche

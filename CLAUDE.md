@@ -48,7 +48,12 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Reiner lokaler UI-View-State, KEIN Daten-/Mapping-Zustand, berührt
       dirty-Tracking nicht. ABGESCHLOSSEN (live getestet, inkl. Politur). Siehe
       Detail-Block unten.
-- [ ] Phase 5 — In-Place Copywriting (nächstes GROSSES Feature): zweiter Modus neben
+- [x] Phase 5 — In-Place Copywriting: funktional KOMPLETT — Textdetektion +
+      Override in Preview, Edit UND Export (Scheibe 1 + 1b + 2, live getestet).
+      OFFEN nur noch die UX-Wurzel: Live-Patch (Reload-Sprung beim 'Übernehmen'
+      im Edit-Modus an der Wurzel eliminieren) — nächster Step. Fertiger Plan
+      liegt im Scheibe-1b-Live-Patch-Lektion-Block.
+      zweiter Modus neben
       Link-Mapping; liest <p> und <h1>..<h6> aus, Marketer überschreibt Texte direkt
       (A/B am Wording). Neuer Mapping-Typ { elementId, type:"text", config:{content} }
       auf bestehender Infrastruktur (anchorMappingTarget, Weg-C-Netz, JSON-Datenblock,
@@ -790,7 +795,20 @@ Neu-Umsetzung (NICHT heute bauen):
   (Mapping-Entkopplung UND imperatives srcdoc). Sauber ist NUR additiv eine
   postMessage, srcDoc-Rendering komplett unangetastet.
 
-### Scheibe 2 — Text-Export: direkt-in-DOM-Bake (vor dem Bau dokumentiert)
+### Scheibe 2 — Text-Export: direkt-in-DOM-Bake (ABGESCHLOSSEN, live getestet)
+Status: fertig, LIVE getestet, Commit 9dfd0bf. Pipeline grün (108 Tests inkl.
+Bake+Gegenprobe, gemischte Disjunktheit, reine-Text-ohne-Script [Marker-basiert:
+kein pagesmith-mappings, keine Wiring-Signatur], verwaistes Text-Mapping,
+</script>-Senke), tsc/lint/build grün. Browser-Verifikation: im Export-QUELLTEXT
+enthält das <h1> bereits den neuen Text (gebacken, kein FOUC/JS-Sprung); eine
+reine-Text-Seite exportiert OHNE Datenblock und OHNE Wiring-Script — Text trotzdem
+present, auch bei deaktiviertem JS; Redirect feuert weiter; verwaistes Text-Mapping
+wird nicht gebacken. Umgesetzt NUR im export-Zweig von generate.ts (Bake-Schleife
+auf demselben doc, textContent statt innerHTML, present.has-gefiltert; injectScripts-
+Gate mode !== "export" || table.length > 0). Preview-Containment + Edit-Injektion
+unberührt. Der alte "Export bleibt unberührt (no-op)"-Test (textOf == "Alt" kodierte
+das Loch) wurde durch den Bake-Test ersetzt — Assertion invertiert, nicht aufgeweicht.
+
 Schließt das funktionale Loch aus Scheibe 1: ein type:"text"-Override landet im
 EXPORT als ECHTER DOM-Inhalt (das <h1> enthält im Export-Output schon den neuen
 Text), nicht per Laufzeit-JS injiziert.
@@ -996,3 +1014,7 @@ miterledigen, sondern gebündelt abarbeiten.
 - Importierter User-Code läuft NUR im sandboxed iframe (sandbox="allow-scripts",
   niemals allow-same-origin), nie ungesandboxt.
 - Vor neuer Phase: kurz bestätigen, dass die vorige demobar lief.
+- Jede Bau-Freigabe an CC endet mit einer expliziten Live-Test-Anweisung (was
+  genau im Browser zu prüfen ist) — nicht nur Pipeline-grün. Die Pipeline beweist
+  die Logik; den Produktanspruch beweist nur der Live-Blick. Ein CLAUDE.md-
+  'erledigt'-Eintrag wird erst nach bestätigtem Live-Test geschrieben.

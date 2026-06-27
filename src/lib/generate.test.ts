@@ -285,31 +285,90 @@ describe("Text-Override – Vorschau ersetzt textContent", () => {
   });
 });
 
-describe("Text-Override – Export bleibt unberuehrt (no-op in dieser Scheibe)", () => {
-  it("backt text-Mappings NICHT in den Datenblock und veraendert den Text NICHT", () => {
-    const out = generateFunctional(
-      TEXT_DOC,
-      [text("ps-tttttt", "Neu")],
-      "export"
-    );
-    // Kein toter content-Ballast in der Export-Datei.
-    expect(readTable(out)).toHaveLength(0);
-    expect(out).not.toContain("Neu");
-    // Beim Ausfuehren bleibt der Originaltext stehen.
-    mountAndWire(out);
-    expect(textOf("ps-tttttt")).toBe("Alt");
+// ---------------------------------------------------------------------------
+// Text-Export (Phase 5, Scheibe 2): im EXPORT wird ein type:"text"-Override DIREKT
+// in den DOM gebacken (das <h1> traegt im Output schon den neuen Text), NICHT per
+// Laufzeit-JS. Bake-Pass (Text) und Wiring-Pass (Redirect) treffen disjunkte
+// Element-Mengen.
+// ---------------------------------------------------------------------------
+
+const MIXED_DOC = `<!DOCTYPE html><html><body><button data-pagesmith-id="ps-aaaaaa">B</button><h1 data-pagesmith-id="ps-tttttt">Alt</h1></body></html>`;
+
+describe("Text-Export – direkt-in-DOM-Bake", () => {
+  it("backt den Override als ECHTEN textContent in den DOM (Gegenprobe: Originaltext weg)", () => {
+    const out = generateFunctional(TEXT_DOC, [text("ps-tttttt", "Neu")], "export");
+    // Der gebackene Text steht im geparsten Output-DOM.
+    const doc = new DOMParser().parseFromString(out, "text/html");
+    expect(
+      doc.querySelector('[data-pagesmith-id="ps-tttttt"]')?.textContent
+    ).toBe("Neu");
+    // Gegenprobe: der Originaltext ist fuer dieses Element NICHT mehr da.
+    expect(out).not.toContain("Alt");
   });
 
-  it("redirect bleibt im Export erhalten, nur text faellt raus (gemischt)", () => {
-    const mixed = `<!DOCTYPE html><html><body><button data-pagesmith-id="ps-aaaaaa">B</button><h1 data-pagesmith-id="ps-tttttt">Alt</h1></body></html>`;
+  it("reine-Text-Seite -> KEIN Wiring-Script/Datenblock im Output (ohne-JS)", () => {
+    const out = generateFunctional(TEXT_DOC, [text("ps-tttttt", "Neu")], "export");
+    // Diskriminierend gegen UNSERE Marker (User-HTML duerfte eigene Scripts haben):
+    // kein Datenblock, keine Wiring-Signatur.
+    expect(out).not.toContain(`id="pagesmith-mappings"`);
+    expect(out).not.toContain("addEventListener");
+    // Aber der Text ist trotzdem gebacken.
+    const doc = new DOMParser().parseFromString(out, "text/html");
+    expect(
+      doc.querySelector('[data-pagesmith-id="ps-tttttt"]')?.textContent
+    ).toBe("Neu");
+  });
+
+  it("gemischt: Text NICHT im Datenblock, Redirect IST drin (bei vorhandener Tabelle)", () => {
     const out = generateFunctional(
-      mixed,
+      MIXED_DOC,
       [redirect("ps-aaaaaa", "https://b.com"), text("ps-tttttt", "Neu")],
       "export"
     );
     const table = readTable(out);
+    // Scharfer Diskriminator: Text raus, Redirect drin.
     expect(table).toHaveLength(1);
     expect(table[0].type).toBe("redirect");
+    expect(table[0].elementId).toBe("ps-aaaaaa");
+    expect(table.some((m) => m.elementId === "ps-tttttt")).toBe(false);
+  });
+
+  it("Disjunktheit: Text gebacken UND Redirect verdrahtet auf derselben Seite", () => {
+    const out = generateFunctional(
+      MIXED_DOC,
+      [redirect("ps-aaaaaa", "https://b.com"), text("ps-tttttt", "Neu")],
+      "export"
+    );
+    // Bake-Pass: h1 traegt den neuen Text.
+    const doc = new DOMParser().parseFromString(out, "text/html");
+    expect(
+      doc.querySelector('[data-pagesmith-id="ps-tttttt"]')?.textContent
+    ).toBe("Neu");
+    // Wiring-Pass: Redirect-URL + Handler vorhanden.
+    expect(out).toContain("b.com");
+    expect(out).toContain("addEventListener");
+  });
+
+  it("verwaistes text-Mapping (ps-id fehlt) -> nicht gebacken, nicht im Output", () => {
+    const out = generateFunctional(TEXT_DOC, [text("ps-zzzzzz", "Geist")], "export");
+    const doc = new DOMParser().parseFromString(out, "text/html");
+    // Vorhandenes Element unveraendert; der Geist taucht nirgends auf.
+    expect(
+      doc.querySelector('[data-pagesmith-id="ps-tttttt"]')?.textContent
+    ).toBe("Alt");
+    expect(out).not.toContain("Geist");
+  });
+
+  it("textContent-Senke: </script>/Markup im Override wird inerter Text, kein roher Bruch", () => {
+    const evil = `Hallo </script><script>alert(1)</script> Welt`;
+    const out = generateFunctional(TEXT_DOC, [text("ps-tttttt", evil)], "export");
+    // Kein roher Bruchstring im Output.
+    expect(out).not.toContain("</script><script>alert(1)");
+    // Als textContent geparst kommt der literale Text zurueck.
+    const doc = new DOMParser().parseFromString(out, "text/html");
+    expect(
+      doc.querySelector('[data-pagesmith-id="ps-tttttt"]')?.textContent
+    ).toBe(evil);
   });
 });
 

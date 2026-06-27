@@ -44,9 +44,9 @@ export type GenerateMode = "export" | "preview" | "edit";
 // (textContent des Ziel-Elements per ps-id setzen), nicht klick-getrieben — beide
 // iframes zeigen so konsistent den Override (wie Liste/Header). textContent ist
 // eine sichere Senke (parst NIE HTML) -> der "</script>"-Inhalt landet als
-// literaler Text. Im EXPORT werden text-Mappings gar nicht erst in den Datenblock
-// gebacken (siehe generateFunctional) -> die direkte-DOM-Bake-Scheibe kommt
-// spaeter; hier kein toter content-Ballast in der Export-Datei.
+// literaler Text. Im EXPORT laeuft das anders: text-Mappings kommen NICHT in den
+// Datenblock, sondern werden DIREKT in den DOM gebacken (Scheibe 2, siehe
+// generateFunctional) -> kein Laufzeit-JS noetig, gut fuer SEO, kein FOUC.
 //
 // CLICK-Wiring (Redirect + Containment): Vorschau + Export, NICHT Editieren. Im
 // Editieren-iframe gehoeren Klicks ALLEIN der separat injizierten Selektions-
@@ -123,9 +123,19 @@ function buildWiringScript(mode: GenerateMode): string {
  * - Nur Mappings einbacken, deren data-pagesmith-id im html VORHANDEN ist.
  *   Verwaiste Mappings (Weg-C) werden im Output ignoriert -> Netz und Generator
  *   greifen nahtlos.
- * - Tabelle je Modus: "preview" beide Typen; "export" nur redirect (kein toter
- *   text-Ballast — der direkte-DOM-Bake fuer Text kommt spaeter); "edit" nur text
- *   (Redirects waeren im Editieren-iframe nutzlos -> kein URL-Ballast).
+ * - Tabelle je Modus: "preview" beide Typen; "export" nur redirect (Text wird im
+ *   Export NICHT verdrahtet, sondern direkt in den DOM gebacken — siehe unten);
+ *   "edit" nur text (Redirects waeren im Editieren-iframe nutzlos -> kein URL-Ballast).
+ * - TEXT-Bake (nur "export"): pro praesentem type:"text"-Mapping wird das Element
+ *   per ps-id gefunden und sein textContent auf config.content gesetzt — VOR der
+ *   Serialisierung, auf DEMSELBEN geparsten DOM. Ergebnis: das <h1> enthaelt im
+ *   Output schon den neuen Text (kein Laufzeit-JS). Senke ist textContent (NICHT
+ *   innerHTML) -> Markup im Override wird inerter Text. In "preview"/"edit" bleibt
+ *   Text laufzeit-getrieben (Wiring-Schleife), hier NICHT gebacken.
+ * - Script-Injektion nur, wenn es etwas zu verdrahten gibt: in "export" werden
+ *   Datenblock + Wiring uebersprungen, sobald die (redirect-)Tabelle leer ist ->
+ *   eine reine-Text-Seite exportiert als reines statisches HTML, KEIN Script.
+ *   "preview" (Containment) und "edit" injizieren weiterhin immer.
  * - Injiziert vor </body> (Fallback: documentElement, falls kein body):
  *   (a) <script type="application/json" id="pagesmith-mappings"> mit der Tabelle,
  *   (b) das statische Wiring-Script.
@@ -168,6 +178,20 @@ export function generateFunctional(
       if (id) present.add(id);
     });
 
+    // TEXT-Bake (nur Export): praesente text-Overrides direkt in den DOM schreiben,
+    // VOR der Serialisierung, auf demselben doc. present.has = derselbe typ-agnostische
+    // Orphan-Filter; verwaiste text-Mappings werden weder gebacken noch verdrahtet.
+    // textContent (nicht innerHTML) -> Markup im Override bleibt inerter Text.
+    if (mode === "export") {
+      for (const m of mappings) {
+        if (m.type !== "text" || !present.has(m.elementId)) continue;
+        const el = doc.querySelector(
+          `[${PAGESMITH_ID_ATTR}="${m.elementId}"]`
+        );
+        if (el) el.textContent = m.config.content;
+      }
+    }
+
     // Orphans raus: nur Mappings mit lebendem Anker. Danach je Modus filtern:
     // export -> nur redirect; edit -> nur text; preview -> beide.
     const table = mappings.filter((m) => {
@@ -177,21 +201,27 @@ export function generateFunctional(
       return true; // preview
     });
 
-    // Datenblock (JSON), sicher kodiert: jedes "<" als Unicode-Escape maskiert
-    // verhindert den "</script>"-Ausbruch und schuetzt zugleich URLs mit "<".
-    const json = JSON.stringify(table).replace(/</g, "\\u003c");
-    const dataScript = doc.createElement("script");
-    dataScript.setAttribute("type", "application/json");
-    dataScript.setAttribute("id", MAPPINGS_SCRIPT_ID);
-    dataScript.textContent = json;
+    // Script-Injektion nur, wenn noetig: im Export ohne Laufzeit-Mappings (z.B.
+    // reine-Text-Seite) bleibt das Output reines statisches HTML — KEIN Datenblock,
+    // KEIN Wiring. preview (Containment) + edit injizieren weiterhin immer.
+    const injectScripts = mode !== "export" || table.length > 0;
+    if (injectScripts) {
+      // Datenblock (JSON), sicher kodiert: jedes "<" als Unicode-Escape maskiert
+      // verhindert den "</script>"-Ausbruch und schuetzt zugleich URLs mit "<".
+      const json = JSON.stringify(table).replace(/</g, "\\u003c");
+      const dataScript = doc.createElement("script");
+      dataScript.setAttribute("type", "application/json");
+      dataScript.setAttribute("id", MAPPINGS_SCRIPT_ID);
+      dataScript.textContent = json;
 
-    const wiringScript = doc.createElement("script");
-    wiringScript.textContent = buildWiringScript(mode);
+      const wiringScript = doc.createElement("script");
+      wiringScript.textContent = buildWiringScript(mode);
 
-    // Vor </body> haengen; Fallback documentElement, falls kein body existiert.
-    const target = doc.body ?? doc.documentElement;
-    target.appendChild(dataScript);
-    target.appendChild(wiringScript);
+      // Vor </body> haengen; Fallback documentElement, falls kein body existiert.
+      const target = doc.body ?? doc.documentElement;
+      target.appendChild(dataScript);
+      target.appendChild(wiringScript);
+    }
 
     return `<!DOCTYPE html>${doc.documentElement.outerHTML}`;
   } catch {

@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 
 // RIEGEL-TEST der in der Mapping-Phase erkaempften INVARIANTE:
 // "Uebernehmen" (handleAssignMapping) wirkt NUR in den Draft und ruft NIEMALS
@@ -105,5 +111,115 @@ describe("CodeImporter — Re-Link ist KATEGORIE-eingeschraenkt (Phase 5)", () =
     // Nur das Text-Ziel (<h1>) wird angeboten; der Button taucht NICHT auf.
     expect(optionTexts.some((t) => t.includes("Echte Headline"))).toBe(true);
     expect(optionTexts.some((t) => t.includes("Klick mich"))).toBe(false);
+  });
+});
+
+describe("CodeImporter — Scheibe 3: Text-Live-Patch (Edit-iframe)", () => {
+  // Bereits stabilisiertes (kanonisches) Dokument: stabilizeIds ist darauf
+  // idempotent -> anchorMappingTarget ist ein No-op -> "Übernehmen" aendert den
+  // Code NICHT -> kein srcDoc-Reload (Voraussetzung fuer den Stabilitaets-Test).
+  const CANON =
+    '<!DOCTYPE html><html><head></head><body><h1 data-pagesmith-id="ps-aaaaaa">Alt</h1></body></html>';
+
+  function editIframe() {
+    return screen.getByTitle("preview") as HTMLIFrameElement;
+  }
+  function srcdoc() {
+    return editIframe().getAttribute("srcdoc") ?? "";
+  }
+  // Nur die PS_SET_TEXT-Posts aus dem postMessage-Spy (die Selektions-Bruecke
+  // postet zusaetzlich SET_SELECTED_ID -> hier herausgefiltert).
+  function psSetText(spy: { mock: { calls: unknown[][] } }) {
+    return spy.mock.calls
+      .map((c) => c[0] as { type?: string; elementId?: string; content?: string })
+      .filter((m) => m?.type === "PS_SET_TEXT");
+  }
+
+  it("Text-Mapping-Aenderung bei unveraendertem Code erzeugt KEIN neues srcDoc; Code-Aenderung schon (Bake)", async () => {
+    render(<CodeImporter initialCode={CANON} />);
+    const item = await screen.findByText("Alt");
+    const before = srcdoc();
+    expect(before).toContain('data-pagesmith-id="ps-aaaaaa"');
+
+    // Element waehlen -> Text-Kachel -> bearbeiten -> neuen Text uebernehmen.
+    fireEvent.click(item);
+    fireEvent.click(await screen.findByText(/Text bearbeiten/));
+    fireEvent.change(screen.getByDisplayValue("Alt"), {
+      target: { value: "Neu" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Übernehmen" }));
+
+    // ENTKOPPLUNG: kein Reload -> srcDoc byte-identisch.
+    expect(srcdoc()).toBe(before);
+
+    // GEGENPROBE: Code aendern -> nach Debounce frisches srcDoc, das den Override
+    // "Neu" weiterhin einbaeckt (Reload-Pfad / Bake greift).
+    fireEvent.change(screen.getByPlaceholderText(/Füge hier deinen HTML-Code/), {
+      target: { value: CANON.replace("</body>", "<p>extra</p></body>") },
+    });
+    await waitFor(() => expect(srcdoc()).not.toBe(before));
+    expect(srcdoc()).toContain("Neu");
+  });
+
+  it("Übernehmen postet PS_SET_TEXT mit der neuen Konfiguration ans Edit-iframe", async () => {
+    render(<CodeImporter initialCode={CANON} />);
+    const item = await screen.findByText("Alt");
+    const spy = vi.spyOn(editIframe().contentWindow!, "postMessage");
+
+    fireEvent.click(item);
+    fireEvent.click(await screen.findByText(/Text bearbeiten/));
+    fireEvent.change(screen.getByDisplayValue("Alt"), {
+      target: { value: "Neu" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Übernehmen" }));
+
+    const calls = psSetText(spy);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ elementId: "ps-aaaaaa", content: "Neu" });
+  });
+
+  it("Entfernen eines Text-Overrides postet den ORIGINAL-Detektionstext", async () => {
+    render(
+      <CodeImporter
+        initialCode={CANON}
+        initialMappings={[
+          { elementId: "ps-aaaaaa", type: "text", config: { content: "Override" } },
+        ]}
+      />
+    );
+    // displayTextFor zeigt bei aktivem Override den Override-Text in der Liste.
+    const item = await screen.findByText("Override");
+    const spy = vi.spyOn(editIframe().contentWindow!, "postMessage");
+
+    fireEvent.click(item);
+    fireEvent.click(await screen.findByRole("button", { name: "Entfernen" }));
+
+    const calls = psSetText(spy);
+    expect(calls).toHaveLength(1);
+    // Original-Detektionstext des <h1> ist "Alt" (der Override lebte nur im Mapping).
+    expect(calls[0]).toMatchObject({ elementId: "ps-aaaaaa", content: "Alt" });
+  });
+
+  it("Re-Link eines Text-Orphans postet PS_SET_TEXT ans neue Zielelement", async () => {
+    const CANON_B =
+      '<!DOCTYPE html><html><head></head><body><h1 data-pagesmith-id="ps-bbbbbb">Headline</h1></body></html>';
+    render(
+      <CodeImporter
+        initialCode={CANON_B}
+        initialMappings={[
+          { elementId: "ps-zzzzzz", type: "text", config: { content: "verwaist" } },
+        ]}
+      />
+    );
+    await screen.findByText(/Verwaiste Verknüpfungen/);
+    const spy = vi.spyOn(editIframe().contentWindow!, "postMessage");
+
+    fireEvent.change(screen.getByLabelText("Verknüpfen mit Element"), {
+      target: { value: "ps-bbbbbb" },
+    });
+
+    const calls = psSetText(spy);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ elementId: "ps-bbbbbb", content: "verwaist" });
   });
 });

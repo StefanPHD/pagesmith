@@ -216,10 +216,17 @@ export default function CodeImporter({
   // Komposition in editPreviewHtml: Normalfall ohne Text-Mapping -> previewHtml
   // unveraendert (Kurzschluss, kein Reload); sonst Text-Injektion HINTER die
   // Bruecke gehaengt, ohne sie anzutasten. Reine Darstellung, kein Rueckfluss.
-  const editHtml = useMemo(
-    () => editPreviewHtml(previewHtml, mappings),
-    [previewHtml, mappings]
-  );
+  //
+  // WURZEL-ENTKOPPLUNG (Scheibe 3): srcDoc haengt BEWUSST NUR vom Code
+  // (previewHtml, aus debouncedCode — mappings fliessen NICHT in previewHtml ein)
+  // ab, NICHT von mappings. Sonst loeste jede Text-Mutation einen iframe-Reload
+  // (Scroll-Sprung) aus. Live-Text-Aenderungen fliessen stattdessen ueber
+  // PS_SET_TEXT an das laufende iframe. Bei Code-Aenderung recomputed der Memo und
+  // bäckt die DANN aktuellen Overrides per generateFunctional("edit") frisch ein
+  // (Override-ueberlebt-Reload). Die mappings-Auslassung ist die gezielte, hier
+  // begruendete exhaustive-deps-Ausnahme.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const editHtml = useMemo(() => editPreviewHtml(previewHtml, mappings), [previewHtml]);
 
   // Ausgewaehltes Element abgeleitet: faellt automatisch auf null zurueck, wenn
   // die ID nach einer Code-Aenderung nicht mehr existiert.
@@ -509,6 +516,22 @@ export default function CodeImporter({
     );
   }
 
+  // Text-Live-Patch (Scheibe 3): den Override-Text per postMessage an das LAUFENDE
+  // Edit-iframe schicken (kein srcDoc-Reload, kein Scroll-Sprung). Zielt
+  // ausschliesslich auf das Edit-iframe (iframeRef) — das Preview-iframe traegt
+  // bewusst keinen ref und bleibt unberuehrt. Wird NUR bei type:"text"-Mutationen
+  // eines PRAESENTEN Elements aufgerufen; abwesende Faelle (Orphan-Loeschen) sind
+  // inhaerent sicher (querySelector findet im iframe nichts -> no-op). Beim
+  // Erst-Anker eines noch nicht verankerten Elements aendert sich der Code -> ein
+  // Reload backt den Stand ohnehin frisch ein; der Post ist dann harmlos (Bake =
+  // Quelle der Wahrheit).
+  function postTextPatch(elementId: string, content: string) {
+    iframeRef.current?.contentWindow?.postMessage(
+      { type: "PS_SET_TEXT", elementId, content },
+      "*"
+    );
+  }
+
   // Text-Override zuweisen/aendern (Phase 5). Exakt derselbe ps-ID-Anker-Pfad wie
   // handleAssignMapping (anchorMappingTarget), nur config = Text statt URL ->
   // bestaetigt, dass der Anker typ-agnostisch traegt. Wirkt NUR in den Draft.
@@ -526,12 +549,21 @@ export default function CodeImporter({
     setMappings((prev) =>
       upsertMapping(prev, { elementId: canonicalId, type: "text", config })
     );
+    // Live-Patch ins stehende iframe (Scheibe 3): neuer Text sofort sichtbar.
+    postTextPatch(canonicalId, config.content);
   }
 
   // Aktion entfernen. Der Code (samt ps-ID) bleibt unangetastet; nur das Mapping
   // verschwindet.
   function handleRemoveMapping() {
     if (!selectedElementId) return;
+    // Scheibe 3: war es ein Text-Override, das iframe LIVE auf den ORIGINAL-
+    // Detektionstext zuruecksetzen (nicht den Override stehen lassen). Quelle ist
+    // selectedElement.text (untruncierter Originalinhalt). Nur fuer type:"text" —
+    // Redirect-Entfernen aendert nichts Sichtbares im Edit-iframe.
+    if (selectedMapping?.type === "text") {
+      postTextPatch(selectedElementId, selectedElement?.text ?? "");
+    }
     setMappings((prev) => removeMapping(prev, selectedElementId));
   }
 
@@ -583,6 +615,12 @@ export default function CodeImporter({
     setMappings((prev) =>
       upsertMapping(removeMapping(prev, orphanElementId), relinked)
     );
+    // Scheibe 3: ein re-verknuepftes Text-Mapping landet auf einem PRAESENTEN
+    // Zielelement -> dessen Text live patchen (sonst divergiert das stehende
+    // iframe von Liste/Header). Nur fuer type:"text".
+    if (orphan.type === "text") {
+      postTextPatch(canonicalId, orphan.config.content);
+    }
   }
 
   // Projekt wechseln: laedt dessen HTML in den Editor. Dirty-Guard verhindert

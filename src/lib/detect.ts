@@ -82,7 +82,11 @@ const LINKABLE_SELECTOR = `${CANDIDATE_SELECTOR}, ${TEXT_SELECTOR}`;
 // ID an das Eltern-Fenster. preventDefault + stopPropagation neutralisieren
 // zugleich inline onclick/onsubmit aus dem gepasteten Fremdcode.
 // WICHTIG: Darf keinen literalen "</script>"-String enthalten (Serialisierung).
-const LISTENER_SCRIPT = `(function () {
+//
+// Als benannter Export NUR fuer den Test-Seam (Brücken-Handler isoliert pruefen,
+// siehe detect.test.ts) freigegeben — das Laufzeitverhalten aendert sich dadurch
+// NICHT, nur die Sichtbarkeit.
+export const LISTENER_SCRIPT = `(function () {
   document.addEventListener(
     "click",
     function (e) {
@@ -120,6 +124,18 @@ const LISTENER_SCRIPT = `(function () {
     if (!el) return;
     el.classList.add("${HIGHLIGHT_CLASS}");
     if (d.scroll) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+  // Text-Live-Patch (Phase 5 Scheibe 3): additiver inbound-Handler, gleiche
+  // Konvention wie SET_SELECTED_ID (nur type-Check, keine Origin-Pruefung — das
+  // iframe laeuft sandbox="allow-scripts", event.origin ist "null"). Setzt den
+  // Override-Text per ps-id LIVE, ohne srcDoc-Reload. Unbekannte id -> still
+  // ignorieren (kein Throw). textContent ist eine inerte Senke (parst nie HTML).
+  window.addEventListener("message", function (e) {
+    var d = e.data;
+    if (!d || d.type !== "PS_SET_TEXT") return;
+    var el = document.querySelector('[${PAGESMITH_ID_ATTR}="' + d.elementId + '"]');
+    if (!el) return;
+    el.textContent = d.content == null ? "" : d.content;
   });
   // READY-Handshake gegen Race Conditions: nach jedem srcDoc-Reload meldet sich
   // das frische iframe EINMAL beim Parent, der dann die aktuelle Auswahl

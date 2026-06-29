@@ -7,6 +7,7 @@ import {
   detectElements,
   filterElements,
   stabilizeIds,
+  LISTENER_SCRIPT,
 } from "./detect";
 
 // Format der code-residenten ps-IDs: "ps-" + 6x [a-z0-9].
@@ -351,5 +352,48 @@ describe("anchorMappingTarget – geteilte ps-ID-Anker-Logik (Assign + Re-Link)"
     const result = anchorMappingTarget(stable, elements, target.id);
     expect(result.code).toBe(stable);
     expect(result.canonicalId).toBe(target.id);
+  });
+});
+
+describe("LISTENER_SCRIPT – PS_SET_TEXT Live-Patch-Handler (Scheibe 3)", () => {
+  // Fuehrt das Bruecken-Script ISOLIERT aus: window/document werden als Parameter
+  // GESHADOWED (new Function), statt den globalen jsdom-State anzufassen — so ist
+  // der inbound message-Handler greifbar und Tests kollidieren nicht. Reiner
+  // Test-Seam; das Laufzeitverhalten des Scripts ist davon unberuehrt.
+  function runBridge() {
+    const messageHandlers: Array<(e: { data: unknown }) => void> = [];
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const win = {
+      addEventListener: (type: string, fn: (e: { data: unknown }) => void) => {
+        if (type === "message") messageHandlers.push(fn);
+      },
+      parent: { postMessage: () => {} },
+    };
+    const doc = {
+      addEventListener: () => {},
+      querySelector: (sel: string) => container.querySelector(sel),
+    };
+    new Function("window", "document", LISTENER_SCRIPT)(win, doc);
+    const send = (data: unknown) => messageHandlers.forEach((h) => h({ data }));
+    return { container, send, cleanup: () => container.remove() };
+  }
+
+  it("setzt textContent per ps-id auf den Override-Text", () => {
+    const { container, send, cleanup } = runBridge();
+    container.innerHTML = '<h1 data-pagesmith-id="ps-aaaaaa">Alt</h1>';
+    send({ type: "PS_SET_TEXT", elementId: "ps-aaaaaa", content: "Neu" });
+    expect(container.querySelector("h1")?.textContent).toBe("Neu");
+    cleanup();
+  });
+
+  it("ignoriert eine unbekannte id ohne Throw (kein Element veraendert)", () => {
+    const { container, send, cleanup } = runBridge();
+    container.innerHTML = '<h1 data-pagesmith-id="ps-aaaaaa">Alt</h1>';
+    expect(() =>
+      send({ type: "PS_SET_TEXT", elementId: "ps-ffffff", content: "X" })
+    ).not.toThrow();
+    expect(container.querySelector("h1")?.textContent).toBe("Alt");
+    cleanup();
   });
 });

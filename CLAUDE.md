@@ -795,6 +795,64 @@ Neu-Umsetzung (NICHT heute bauen):
   (Mapping-Entkopplung UND imperatives srcdoc). Sauber ist NUR additiv eine
   postMessage, srcDoc-Rendering komplett unangetastet.
 
+### Scheibe 3 — Text-Live-Patch: Reload-Sprung an der Wurzel eliminieren (vor dem Bau dokumentiert)
+Setzt die saubere Neu-Umsetzung aus dem revertierten Versuch um (NICHT der alte
+imperative Weg). Ziel: „Übernehmen" eines Text-Overrides im Edit-Modus löst KEINEN
+iframe-Reload mehr aus -> kein Scroll-Sprung. Der Override wird live per postMessage
+gepatcht statt durch srcDoc-Neubau.
+
+Owner-Entscheidungen (endgültig):
+- SCOPE strikt nur Edit-iframe. Das funktionale Preview-iframe bleibt UNANGETASTET
+  (kein ref, kein PS_SET_TEXT) und reloadet wie bisher beim Rüberschalten — im
+  „Ergebnis ansehen"-Kontext akzeptabel; schützt die bewusste No-ref-Entscheidung.
+- Wurzel-Entkopplung: Edit-srcDoc hängt ab jetzt NUR vom Code ab (nicht mehr von
+  Text-Mappings). Es wird nur bei Code-Änderung neu erzeugt; beim Neu-Erzeugen
+  bäckt es die AKTUELLEN Overrides weiter per generateFunctional("edit") ein
+  (Override-überlebt-Reload bleibt). Die Dependency-Auslassung der Text-Mappings
+  ist BEWUSST und im Code kommentiert (live-Änderungen fließen über PS_SET_TEXT,
+  Code-Änderung backt den aktuellen Stand neu).
+- Live-Pfad: eine Text-Mutation fasst srcDoc NICHT an, sondern postet dem laufenden
+  Edit-iframe PS_SET_TEXT { elementId, content }; ein ADDITIVER Handler im
+  Brücken-Skript setzt textContent per data-pagesmith-id. Additiv wie
+  SET_SELECTED_ID/ELEMENT_CLICKED — srcDoc-Rendering bleibt komplett deklarativ,
+  NIE wieder imperatives iframeRef.current.srcdoc.
+- Relink-Fund (Vollständigkeit der Sende-Stellen, kritisch): JEDE Mutation eines
+  PRÄSENTEN Text-Mappings muss posten, sonst divergiert das stehende iframe von
+  Liste/Header. Drei Stellen: Übernehmen -> {id, neuer Text}; Entfernen -> {id,
+  ORIGINAL-Detektionstext} (Entfernen = live zurück auf das Original, nicht den
+  Override stehen lassen); Text-Orphan-Relink -> {neues Zielelement, Text}.
+- Nur Text: PS_SET_TEXT feuert ausschließlich bei type:"text"-Mutationen.
+  Redirect-Assign bleibt unberührt und reloadet weiter (nicht Teil dieser Scheibe).
+- Erster-Override-Reload akzeptiert: schreibt „Übernehmen" beim ersten Override
+  eines noch nicht verankerten Elements die ps-id in den Code, reloadet dieses
+  EINE Mal (Code ändert sich -> Bake greift). Kein Bug, wird NICHT bekämpft. Die
+  A/B-Iteration danach (am verankerten Element) ist durchgängig live.
+
+Zwei-Quellen-Invariante: Reload -> eingebackenes HTML; zwischen Reloads ->
+PS_SET_TEXT-Patch. Beide vom selben Mapping-Stand gespeist -> kein Divergieren.
+Edit-Modus behält die Lade-Zeit-Text-Wiring (injectScripts greift für non-export);
+PS_SET_TEXT kommt additiv obendrauf, ersetzt sie NICHT.
+
+Unterschied zum revertierten Fehlschlag: damals ZWEI riskante Änderungen gleichzeitig
+(Entkopplung UND imperatives srcdoc). Hier bleibt srcDoc deklarativ unangetastet;
+nur ein additiver Message-Handler + drei Posts kommen hinzu.
+
+Verbindliche Leitplanken: Selektions-Brücke (Klick/Highlight/Handshake), detect.ts-
+Brückenstruktur, Redirect-Pfad, Export (Scheibe 2), Preview-iframe, Auth/RLS bleiben
+UNBERÜHRT. Sandbox unverändert (Edit allow-scripts; allow-same-origin in beiden aus).
+Die Brücke wird NUR additiv um einen PS_SET_TEXT-Case erweitert, ihre bestehende
+Logik nicht umgebaut.
+
+Tests (diskriminierend, Pflicht-Minimum):
+- srcDoc-Stabilität: Text-Mapping-Änderung bei UNVERÄNDERTEM Code erzeugt KEIN neues
+  Edit-srcDoc (Gegenprobe: Code-Änderung erzeugt ein neues).
+- Reload-Fall: bei Code-Änderung enthält das frische Edit-srcDoc den aktuellen
+  Override (Bake greift weiter).
+- PS_SET_TEXT-Handler (Brücke, falls isoliert testbar): setzt textContent per ps-id,
+  ignoriert unbekannte id ohne Throw.
+- Falls die Post-Sites in einer testbaren Einheit liegen: Übernehmen/Entfernen/Relink
+  lösen je einen Post aus; Entfernen trägt den Original-Text.
+
 ### Scheibe 2 — Text-Export: direkt-in-DOM-Bake (ABGESCHLOSSEN, live getestet)
 Status: fertig, LIVE getestet, Commit 9dfd0bf. Pipeline grün (108 Tests inkl.
 Bake+Gegenprobe, gemischte Disjunktheit, reine-Text-ohne-Script [Marker-basiert:

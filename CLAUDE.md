@@ -958,7 +958,20 @@ Decomposition (Owner-bestätigt):
 - Scheibe 2 — CAPI-Proxy (Next.js API-Route, Secret-Handling, Server-Forward an Meta).
 - Scheibe 3 — Consent-Gate.
 
-### Scheibe 0 — (elementId, type)-Compound-Key-Migration (STRUKTURELL, kein Verhalten) (vor dem Bau dokumentiert)
+### Scheibe 0 — (elementId, type)-Compound-Key-Migration (ABGESCHLOSSEN, live verifiziert)
+Status: fertig, live verifiziert (No-Regression-Smoke: Redirects, Text-Live-Patch,
+Waisen-Netz, Dirty/Guards, Badges — alle unverändert). Commit
+"refactor(mappings): key on (elementId, type) for multi-action support". Pipeline grün
+(tsc/lint/build + diskriminierendes Zwei-Mapping-Fixture: upsert/find/remove/equal auf
+(elementId,type)). Reiner Code-Schlüssel-Wechsel, KEINE DB-Migration, kein Verhalten
+geändert. Der alte Test "upsert/remove per elementId, unabhängig vom Typ" (kodierte das
+type-agnostische Keying) wurde durch die Compound-Key-Fälle ersetzt — invertierte
+Assertion, nicht aufgeweicht. Same-(id,type)-Replace-Pfad (Redirect-URL neu setzen ->
+Länge bleibt 1, config aktualisiert) bleibt getestet grün abgedeckt.
+findMapping-Missbrauch im Relink-Überschreib-Schutz wurde auf
+some(m => m.elementId === target) umgestellt (heute verhaltensgleich; in Scheibe 1
+typ-aware zu machen).
+
 Ziel: den Identitäts-/Lookup-Schlüssel der Mappings von elementId auf
 (elementId, type) umstellen, mit NULL Verhaltensänderung für die heutigen
 Redirect-/Text-Features. Voraussetzung für Tracking (Redirect UND Tracking auf
@@ -1000,6 +1013,22 @@ elementId:
 Leitplanken: NUR mappings.ts + Aufrufer + Tests. KEINE DB-Migration. KEIN UI-Feature
 (Tile/zweiter Slot erst in Scheibe 1). Engine, Detektion/Brücke, Export,
 Orphan-Netz-Verhalten, Auth/RLS unverändert.
+
+### Scheibe 1 — Checkliste: vier latente "ein Mapping pro Element"-Stellen (aus Scheibe-0-Verifikation)
+Diese vier Stellen nehmen heute "1 Mapping/Element" an und kollabieren still bei zwei
+Mappings/id. In Scheibe 0 BEWUSST nicht angefasst (heute unerreichbar, disjunkte
+Kategorien). Scheibe 1 MUSS sie adressieren, sobald ein Element redirect+tracking trägt:
+1. generate.ts:67-68 — byId[elementId] = mapping kollabiert aufs letzte Mapping. KRITISCH:
+   das Wiring-Script braucht für redirect+tracking auf EINEM Element BEIDE Mappings ->
+   byId muss auf ein ARRAY pro id (alle Aktionen der id), der Click-Handler iteriert sie.
+   ACHTUNG Reihenfolge/Navigation: das Tracking-Event muss VOR der Weiterleitung feuern
+   bzw. navigationssicher gesendet werden (sendBeacon / fbq-Beacon), sonst killt die
+   Navigation den in-flight Request.
+2. Orphan-Render-Key key={m.elementId} (CodeImporter:885) -> key={`${m.elementId}-${m.type}`}
+   (sonst React-Key-Kollision bei zwei Orphans gleicher id).
+3. Badge-Map<id,type> -> muss mehrere Aktionen pro Element tragen (heute last-wins).
+4. Relink-Überschreib-Schutz some(m => m.elementId === target) -> typ-aware
+   (&& m.type === orphanType), sonst Fehlalarm-Warnung, obwohl zwei Typen koexistieren dürfen.
 
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,

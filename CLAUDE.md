@@ -48,17 +48,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Reiner lokaler UI-View-State, KEIN Daten-/Mapping-Zustand, berührt
       dirty-Tracking nicht. ABGESCHLOSSEN (live getestet, inkl. Politur). Siehe
       Detail-Block unten.
-- [x] Phase 5 — In-Place Copywriting: funktional KOMPLETT — Textdetektion +
-      Override in Preview, Edit UND Export (Scheibe 1 + 1b + 2, live getestet).
-      OFFEN nur noch die UX-Wurzel: Live-Patch (Reload-Sprung beim 'Übernehmen'
-      im Edit-Modus an der Wurzel eliminieren) — nächster Step. Fertiger Plan
-      liegt im Scheibe-1b-Live-Patch-Lektion-Block.
-      zweiter Modus neben
-      Link-Mapping; liest <p> und <h1>..<h6> aus, Marketer überschreibt Texte direkt
-      (A/B am Wording). Neuer Mapping-Typ { elementId, type:"text", config:{content} }
-      auf bestehender Infrastruktur (anchorMappingTarget, Weg-C-Netz, JSON-Datenblock,
-      generateFunctional + zusätzlicher Handler). OFFENE Designfragen: siehe
-      Zukunfts-Vision-Block unten.
+- [x] Phase 5 — In-Place Copywriting: ABGESCHLOSSEN (live). Textdetektion +
+      Override in Preview, Edit UND Export (Scheibe 1 + 1b + 2) sowie Text-Live-Patch
+      im Edit-Modus ohne Reload-Sprung (Scheibe 3). Type-diskriminiertes
+      Mapping-Modell ein zweites Mal bestätigt.
 - [ ] Phase 6 — Server-Side Tracking (CAPI): Next.js API-Route als Tracking-Proxy
       für Meta/Google. (war Phase 5)
 - [ ] Phase 7 — Hosting & Go-Live: Vercel/Netlify-API, Custom Domains, SSL.
@@ -795,7 +788,24 @@ Neu-Umsetzung (NICHT heute bauen):
   (Mapping-Entkopplung UND imperatives srcdoc). Sauber ist NUR additiv eine
   postMessage, srcDoc-Rendering komplett unangetastet.
 
-### Scheibe 3 — Text-Live-Patch: Reload-Sprung an der Wurzel eliminieren (vor dem Bau dokumentiert)
+### Scheibe 3 — Text-Live-Patch: Reload-Sprung an der Wurzel eliminiert (ABGESCHLOSSEN, live getestet)
+Status: fertig, LIVE getestet, Commit "feat(edit): live-patch text overrides via
+PS_SET_TEXT". Pipeline grün (tsc/lint/build + Tests: srcDoc-Stabilität, Reload-Bake,
+PS_SET_TEXT-Handler, Post-Sites). Browser-Verifikation aller drei Post-Stellen:
+Übernehmen patcht live ohne Sprung/Flackern, Scroll-Position bleibt; Entfernen stellt
+den Original-Detektionstext live wieder her; Text-Orphan-Relink legt die Waisen-Config
+live aufs gewählte Ziel (Waisenzahl fällt korrekt). Erster-Override- bzw. Relink-Reload
+(ps-id-Einbrennen in den Code) tritt EINMALIG auf und ist akzeptiert (Bake = Quelle der
+Wahrheit), kein Bug. Entkopplung bestätigt: srcDoc hängt nur am Code (useMemo-Dep
+[previewHtml], bewusste exhaustive-deps-Ausnahme); Live-Änderungen fließen additiv über
+PS_SET_TEXT an die unveränderte Brücke. Preview-iframe bewusst außer Scope (reloadet wie
+bisher).
+
+KLARSTELLUNG (Relink-Richtung, war ein Erwartungs-Stolperstein im Live-Test):
+"Verknüpfen mit …" stempelt die CONFIG DER WAISE auf das GEWÄHLTE Zielelement — nicht
+den Zieltext auf die Waise. Das Ziel zeigt danach den Waisen-Override. Korrektes,
+beabsichtigtes Verhalten.
+
 Setzt die saubere Neu-Umsetzung aus dem revertierten Versuch um (NICHT der alte
 imperative Weg). Ziel: „Übernehmen" eines Text-Overrides im Edit-Modus löst KEINEN
 iframe-Reload mehr aus -> kein Scroll-Sprung. Der Override wird live per postMessage

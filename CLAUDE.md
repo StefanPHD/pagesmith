@@ -954,9 +954,8 @@ wird hier erstmals echt -> bewusst entscheiden, nicht reflexhaft.
 
 Decomposition (Owner-bestätigt):
 - Scheibe 0 — (elementId, type)-Compound-Key-Migration (STRUKTURELL, kein Feature). JETZT.
-- Scheibe 1a — Mehr-Aktion STRUKTURELL: track-Union-Zweig (Minimal-Config) + Panel
-  mehr-aktionsfähig + Wiring-byId->Array + die vier latenten Stellen. Stub-Firing
-  (console.log), KEINE Meta-Semantik. Plattform-Entscheidung: Meta zuerst (Google später).
+- [x] Scheibe 1a — Mehr-Aktion strukturell: track-Union-Zweig + Panel mehr-aktionsfähig
+        + Wiring-byId->Array + vier latente Fixes. Stub-Firing, Meta zuerst. ABGESCHLOSSEN (live).
 - Scheibe 1b — Meta-Pixel-Semantik: projektweite Pixel-ID (neue Projekt-Einstellung),
   Standard-Event-Dropdown + value/currency, echtes fbq, navigationssicheres Senden
   (Beacon/sendBeacon), Pixel-Snippet im Export. event_id-Naht fürs spätere CAPI-Dedup (Scheibe 2).
@@ -1035,7 +1034,26 @@ Kategorien). Scheibe 1 MUSS sie adressieren, sobald ein Element redirect+trackin
 4. Relink-Überschreib-Schutz some(m => m.elementId === target) -> typ-aware
    (&& m.type === orphanType), sonst Fehlalarm-Warnung, obwohl zwei Typen koexistieren dürfen.
 
-### Scheibe 1a — Mehr-Aktion strukturell (vor dem Bau dokumentiert)
+### Scheibe 1a — Mehr-Aktion strukturell (ABGESCHLOSSEN, live verifiziert)
+Status: fertig, live verifiziert. Commit "feat(actions): multi-action per element
+(redirect + track stub), structural". Pipeline grün (tsc/lint/build + diskriminierende
+Tests: [redirect,track] beide im Wiring & Stub-vor-Navigation via invocationCallOrder,
+configEqual-track-Branch dirty-korrekt, Doppel-Orphan-Render ohne Key-Kollaps,
+Mehr-Aktion-Badge, typ-aware Relink-Überschreib-Schutz, Single-Redirect bit-identisch,
+Text-Pfad regress-frei). Browser-Verifikation: Mehr-Aktion-Element zeigt beide Badges
+(🔗+🎯); [pagesmith track]-Stub loggt garantiert VOR der Navigation; Track-only loggt
+ohne wegzunavigieren; Doppel-Waisen-Netz trennt die Karten isoliert; KEIN Dirty-Fehlalarm
+bei Reload (configEqual greift). Single-Redirect + Text-Live-Patch (Scheibe 3) unverändert.
+
+Alle vier latenten Checklisten-Stellen eingelöst (byId->Array mit Track-vor-Redirect;
+Orphan-Render-Key ${id}-${type}; Badge Map<id,Set<type>> deterministisch geordnet;
+Relink-Überschreib-Schutz typ-aware). Drei TS-erzwungene Folgefunde mitgenommen
+(configEqual-track-Zweig, Orphan-Karten-track-Anzeige, Relink-track-Konstruktion).
+
+1a-ZWISCHENSTAND (wird in 1b ersetzt): der Track-Stub (console.log "[pagesmith track]
+<event>") landet bewusst auch im EXPORT-Output — beweist die Wiring-Naht. 1b ersetzt
+ihn durch echtes fbq + Pixel-Snippet.
+
 Ziel: ein interaktives Element kann Redirect UND Track tragen, end-to-end (Panel,
 Wiring, Orphan-Netz, Badge, Dirty) — OHNE Meta-Semantik. Beweist die Mehr-Aktion,
 die der Compound-Key (Scheibe 0) ermöglicht.

@@ -52,8 +52,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Override in Preview, Edit UND Export (Scheibe 1 + 1b + 2) sowie Text-Live-Patch
       im Edit-Modus ohne Reload-Sprung (Scheibe 3). Type-diskriminiertes
       Mapping-Modell ein zweites Mal bestätigt.
-- [ ] Phase 6 — Server-Side Tracking (CAPI): Next.js API-Route als Tracking-Proxy
-      für Meta/Google. (war Phase 5)
+- [~] Phase 6 — Server-Side Tracking (CAPI): IN ARBEIT. Pfad = CAPI-Proxy auf
+      Pagesmith-Domain (First-Party-Upgrade später mit Phase 7). Start: Scheibe 0
+      (elementId,type)-Compound-Key-Migration. Details + Decomposition in der
+      Phase-6-Sektion.
 - [ ] Phase 7 — Hosting & Go-Live: Vercel/Netlify-API, Custom Domains, SSL.
       ACHTUNG: härtester Brocken (Multi-Tenant Custom Domains + Auto-SSL); schaltet
       zugleich die Funnel-Vision frei. (war Phase 6)
@@ -920,6 +922,84 @@ Diskriminierende Tests (Pflicht, müssen gegenproben):
 Leitplanken: NUR der export-Zweig von generateFunctional + dessen Tests werden
 angefasst. detect.ts/Brücke, CodeImporter, ActionPanel, der Redirect-Laufzeitpfad
 und Preview/Edit-Text bleiben unberührt.
+
+## Phase 6 — Server-Side Tracking (CAPI)
+Charakterwechsel: erster echter Server-Code (Next.js API-Route mit Logik), erstes
+echtes Secret (Meta-CAPI-Access-Token, NICHT NEXT_PUBLIC, nie in Browser/Export),
+erstmals Multi-Tenant-Secret-Storage (Token pro Marketer/Projekt in der DB, nicht .env).
+
+Pfad-Entscheidung (Owner, endgültig): CAPI-Proxy JETZT auf der Pagesmith-Domain
+bauen (NICHT Hosting zuerst). Begründung: ein Pagesmith-Domain-Proxy liefert den
+Kern-Wert ab Tag 1 — bessere Match-Quality, Event-Dedup (Browser-Pixel + CAPI mit
+gemeinsamer event_id, Metas empfohlenes Setup), Resilienz gegen verlorene
+Browser-Events (iOS-ITP, Pixel-JS-Ausfall).
+
+Hosting-Nuance (bewusst dokumentiert): VOLLE Adblocker-Resistenz braucht einen
+First-Party-Endpoint auf DERSELBEN Domain wie die Seite -> das liefert erst Phase 7
+(Hosting/Custom Domains). Bis dahin ist der Proxy third-party (pagesmith-Domain);
+der Server-Side-Wert ist schon jetzt da, die Adblocker-Resistenz reift mit Phase 7
+zur Endform. Trade-off: ein selbst-gehosteter Export hängt fürs Tracking zur
+Laufzeit an Pagesmiths Server ("telefoniert nach Hause") — mit Hosting natürlich,
+davor eine Kopplung.
+
+Consent-Gate ist KEIN optionales Advanced-Feature: im DACH-Raum ist
+Tracking-vor-Consent rechtlich scharf. Die erste echte Tracking-Scheibe muss
+mindestens consent-gate-FÄHIG feuern (Hook "erst nach Consent-Signal"); volle
+Cookiebot/Usercentrics-Integration ist eine spätere Scheibe.
+
+Secret-Storage (offene Bau-Entscheidung, beim Proxy-Slice klären): der CAPI-Token
+liegt pro Projekt server-seitig — server-only-Pfad (eigene Tabelle, nur über
+Server-Session lesbar, RLS) ODER Verschlüsselung at rest. Die service_role-Frage
+wird hier erstmals echt -> bewusst entscheiden, nicht reflexhaft.
+
+Decomposition (Owner-bestätigt):
+- Scheibe 0 — (elementId, type)-Compound-Key-Migration (STRUKTURELL, kein Feature). JETZT.
+- Scheibe 1 — Tracking-Tile + Tracking-Aktionstyp (neuer Union-Zweig).
+- Scheibe 2 — CAPI-Proxy (Next.js API-Route, Secret-Handling, Server-Forward an Meta).
+- Scheibe 3 — Consent-Gate.
+
+### Scheibe 0 — (elementId, type)-Compound-Key-Migration (STRUKTURELL, kein Verhalten) (vor dem Bau dokumentiert)
+Ziel: den Identitäts-/Lookup-Schlüssel der Mappings von elementId auf
+(elementId, type) umstellen, mit NULL Verhaltensänderung für die heutigen
+Redirect-/Text-Features. Voraussetzung für Tracking (Redirect UND Tracking auf
+EINEM Element). Setzt den seit dem Redirect-Schritt in mappings.ts notierten
+Kommentar um.
+
+Warum risikoarm: Redirect- und Text-Kandidaten sind DISJUNKT -> heute trägt KEIN
+Element zwei Mappings -> unter (elementId, type) KEINE Kollision in bestehenden
+Daten. Folge: KEINE DB-Migration, KEINE Datentransformation, Lade-Pfad unverändert
+— reiner Code-Schlüssel-Wechsel, sicherer noch als 3.3 (das Live-Daten anfasste).
+
+Betroffen (nur src/lib/mappings.ts + Aufrufer + Tests):
+- upsertMapping: matcht/ersetzt auf (elementId, type) statt nur elementId; sonst append.
+- findMapping(mappings, elementId, type): typisierter Single-Lookup. Plus Badge-Bedarf
+  "hat Element IRGENDEINE Aktion?" als some(m => m.elementId === id).
+- removeMapping(mappings, elementId, type): entfernt genau den (elementId, type)-Eintrag.
+- mappingsEqual: mengenbasiert pro (elementId, type) statt pro elementId. Dirty:
+  zweites Mapping (gleiche id, anderer Typ) = dirty; Umsortieren != dirty.
+- displayTextFor: findet das (id, "text")-Mapping (Logik unverändert, nur Schlüssel).
+- findOrphans: ps-id-Präsenz, typ-agnostisch -> beim Bau VERIFIZIEREN, dass es N
+  Mappings pro ps-id trägt (mehrere Orphans pro fehlender id), auch wenn das erst
+  mit Tracking auftritt.
+- generate.ts (Engine): flache Iteration + Typ-Verzweigung -> sollte UNBERÜHRT sein;
+  VERIFIZIEREN, dass keine Ein-Mapping-pro-Element-Annahme existiert.
+- CodeImporter.tsx: Aufrufer übergeben den intendierten type; selectedMapping-Ableitung
+  bleibt UI-seitig Ein-Aktion (kein zweiter Slot, kein Tile -> UI sieht IDENTISCH aus).
+
+Diskriminierende Tests (Pflicht — sonst hohl, weil heute kein Element zwei Mappings
+hat): SYNTHETISCHES Fixture mit zwei Mappings unterschiedlichen Typs auf EINEM
+elementId:
+- upsert(redirect auf id) verändert ein text-Mapping auf derselben id NICHT (umgekehrt ebenso).
+- findMapping(id,"redirect") != findMapping(id,"text").
+- remove(id,"redirect") lässt das text-Mapping auf id intakt.
+- mappingsEqual: {redirect+text auf id} != {nur redirect auf id}; Umsortieren == gleich.
+- Gegenprobe: ALLE bestehenden Redirect-/Text-Tests bleiben OHNE Änderung grün (eine
+  nötige Test-Änderung = Signal für ungewollte Verhaltensänderung -> melden, nicht
+  still anpassen).
+
+Leitplanken: NUR mappings.ts + Aufrufer + Tests. KEINE DB-Migration. KEIN UI-Feature
+(Tile/zweiter Slot erst in Scheibe 1). Engine, Detektion/Brücke, Export,
+Orphan-Netz-Verhalten, Auth/RLS unverändert.
 
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,

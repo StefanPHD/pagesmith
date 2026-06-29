@@ -954,7 +954,12 @@ wird hier erstmals echt -> bewusst entscheiden, nicht reflexhaft.
 
 Decomposition (Owner-bestätigt):
 - Scheibe 0 — (elementId, type)-Compound-Key-Migration (STRUKTURELL, kein Feature). JETZT.
-- Scheibe 1 — Tracking-Tile + Tracking-Aktionstyp (neuer Union-Zweig).
+- Scheibe 1a — Mehr-Aktion STRUKTURELL: track-Union-Zweig (Minimal-Config) + Panel
+  mehr-aktionsfähig + Wiring-byId->Array + die vier latenten Stellen. Stub-Firing
+  (console.log), KEINE Meta-Semantik. Plattform-Entscheidung: Meta zuerst (Google später).
+- Scheibe 1b — Meta-Pixel-Semantik: projektweite Pixel-ID (neue Projekt-Einstellung),
+  Standard-Event-Dropdown + value/currency, echtes fbq, navigationssicheres Senden
+  (Beacon/sendBeacon), Pixel-Snippet im Export. event_id-Naht fürs spätere CAPI-Dedup (Scheibe 2).
 - Scheibe 2 — CAPI-Proxy (Next.js API-Route, Secret-Handling, Server-Forward an Meta).
 - Scheibe 3 — Consent-Gate.
 
@@ -1029,6 +1034,49 @@ Kategorien). Scheibe 1 MUSS sie adressieren, sobald ein Element redirect+trackin
 3. Badge-Map<id,type> -> muss mehrere Aktionen pro Element tragen (heute last-wins).
 4. Relink-Überschreib-Schutz some(m => m.elementId === target) -> typ-aware
    (&& m.type === orphanType), sonst Fehlalarm-Warnung, obwohl zwei Typen koexistieren dürfen.
+
+### Scheibe 1a — Mehr-Aktion strukturell (vor dem Bau dokumentiert)
+Ziel: ein interaktives Element kann Redirect UND Track tragen, end-to-end (Panel,
+Wiring, Orphan-Netz, Badge, Dirty) — OHNE Meta-Semantik. Beweist die Mehr-Aktion,
+die der Compound-Key (Scheibe 0) ermöglicht.
+
+Schlüssel-Insight: Text- und interaktive Kandidaten sind DISJUNKT -> "Mehr-Aktion"
+heißt IMMER nur Redirect+Track auf einem INTERAKTIVEN Element. Text-Pfad
+(displayTextFor, PS_SET_TEXT-Live-Patch, Brücke) bleibt KOMPLETT unberührt.
+
+Owner-Entscheidungen (endgültig):
+- Meta zuerst (Google ist eine spätere parallele Branch).
+- 1a/1b-Split: 1a strukturell (Stub-Firing), 1b echte Meta-Semantik.
+- track-Config minimal: { type:"track", config:{ event:string } }. KEINE value/currency/
+  Pixel-ID in 1a (das ist 1b).
+- Firing in 1a = navigationssicherer Stub (console.log "[pagesmith track] <event>"),
+  KEIN fbq. Macht die Klick-Ordnung live sichtbar.
+- Klick-Ordnung ist STRUKTURELL: Track-Aktionen feuern VOR der Redirect-Navigation.
+  (Die Beacon-Überlebensfrage bei async-fbq ist bewusst 1b.)
+- Panel-Layout: interaktiver Zweig zeigt zwei gestapelte Sektionen
+  (Weiterleitung / Tracking), je unabhängig zuweisbar/entfernbar. Text-Zweig
+  unverändert Ein-Aktion.
+
+Vier latente Stellen (aus der Checkliste) werden HIER eingelöst:
+1. generate.ts byId -> Array pro id; Click-Handler iteriert; Track vor Redirect.
+   Single-Action-Redirect-Pfad MUSS bit-identisch bleiben.
+2. Orphan-Render-Key -> `${m.elementId}-${m.type}`.
+3. Badge trägt mehrere Aktionen pro Element (kein last-wins).
+4. Relink-Überschreib-Schutz typ-aware (&& m.type === orphanType).
+
+Diskriminierende Tests (Pflicht):
+- Element mit [redirect, track]: Wiring enthält BEIDE; bei Klick feuert der Track-Stub
+  VOR der Redirect-Navigation (Reihenfolge). Heute erst erreichbar -> echter Beweis.
+- Single-Action-Redirect unverändert (bestehende preview/export-Redirect-Tests grün
+  ohne inhaltliche Änderung).
+- Zwei Orphans gleicher id rendern ohne Key-Kollision.
+- Badge korrekt bei Mehr-Aktion-Element.
+- Relink eines redirect-Orphans auf ein Element mit track -> KEINE Fehlalarm-Warnung.
+- Text-Pfad unverändert (displayTextFor + PS_SET_TEXT-Live-Patch regress-frei).
+
+Leitplanken: KEINE Meta-Semantik (fbq/Pixel-ID/value/currency) in 1a. detect.ts/Brücke
+unberührt (track bindet an bereits erkannte interaktive Elemente). Text-Pfad, Auth/RLS,
+Sandbox unberührt. KEINE DB-Migration.
 
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,

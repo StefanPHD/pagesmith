@@ -223,3 +223,75 @@ describe("CodeImporter — Scheibe 3: Text-Live-Patch (Edit-iframe)", () => {
     expect(calls[0]).toMatchObject({ elementId: "ps-bbbbbb", content: "verwaist" });
   });
 });
+
+describe("CodeImporter — Scheibe 1a: Mehr-Aktion (redirect + track)", () => {
+  // Kanonisches (idempotent stabilisiertes) Button-Dokument -> anchorMappingTarget
+  // ist ein No-op (kein Reload bei Assign).
+  const CANON_BTN =
+    '<!DOCTYPE html><html><head></head><body><button data-pagesmith-id="ps-aaaaaa">Kaufen</button></body></html>';
+
+  it("Badge zeigt bei Mehr-Aktion beide Icons (redirect + track)", async () => {
+    render(
+      <CodeImporter
+        initialCode={CANON_BTN}
+        initialMappings={[
+          { elementId: "ps-aaaaaa", type: "redirect", config: { url: "https://a.com", openInNewTab: false } },
+          { elementId: "ps-aaaaaa", type: "track", config: { event: "Lead" } },
+        ]}
+      />
+    );
+    await screen.findByText("Kaufen");
+    expect(screen.getByTitle("Verknüpft: redirect")).toBeTruthy();
+    expect(screen.getByTitle("Verknüpft: track")).toBeTruthy();
+  });
+
+  it("interaktives Element: Track-Slot zuweisen erzeugt track-Mapping (Badge erscheint)", async () => {
+    render(<CodeImporter initialCode={CANON_BTN} />);
+    fireEvent.click(await screen.findByText("Kaufen"));
+    // Track-Kachel im interaktiven Panel (neben der Weiterleitung).
+    fireEvent.click(await screen.findByText(/Tracking-Event/));
+    fireEvent.change(screen.getByPlaceholderText("z.B. Lead"), {
+      target: { value: "Purchase" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Übernehmen" }));
+    expect(await screen.findByTitle("Verknüpft: track")).toBeTruthy();
+  });
+
+  it("zwei verwaiste Mappings gleicher id rendern BEIDE (kein Key-Kollaps)", async () => {
+    render(
+      <CodeImporter
+        initialCode={CANON_BTN}
+        initialMappings={[
+          { elementId: "ps-zzzzzz", type: "redirect", config: { url: "https://o.com", openInNewTab: false } },
+          { elementId: "ps-zzzzzz", type: "track", config: { event: "GhostLead" } },
+        ]}
+      />
+    );
+    await screen.findByText(/Verwaiste Verknüpfungen/);
+    // Beide Orphan-Karten sichtbar (eigene (id,type)-Keys -> kein Kollaps).
+    expect(screen.getByText("https://o.com")).toBeTruthy();
+    expect(screen.getByText("GhostLead")).toBeTruthy();
+  });
+
+  it("Re-Link redirect-Orphan auf Element-mit-track -> KEINE Fehlalarm-Warnung", async () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+    render(
+      <CodeImporter
+        initialCode={CANON_BTN}
+        initialMappings={[
+          // present element traegt NUR track ...
+          { elementId: "ps-aaaaaa", type: "track", config: { event: "Lead" } },
+          // ... der redirect-Orphan wird darauf relinkt -> anderer Slot, kein Konflikt.
+          { elementId: "ps-zzzzzz", type: "redirect", config: { url: "https://o.com", openInNewTab: false } },
+        ]}
+      />
+    );
+    await screen.findByText(/Verwaiste Verknüpfungen/);
+    fireEvent.change(screen.getByLabelText("Verknüpfen mit Element"), {
+      target: { value: "ps-aaaaaa" },
+    });
+    // typ-aware Schutz: Ziel hat kein redirect -> keine Ueberschreib-Warnung.
+    expect(confirmSpy).not.toHaveBeenCalled();
+    confirmSpy.mockRestore();
+  });
+});

@@ -27,6 +27,7 @@ import {
   type Mapping,
   type RedirectConfig,
   type TextConfig,
+  type TrackConfig,
 } from "@/lib/mappings";
 import { editPreviewHtml, generateFunctional } from "@/lib/generate";
 import { exportFilename } from "@/lib/export";
@@ -44,6 +45,18 @@ const typeStyles: Record<ElementType, string> = {
   link: "bg-amber-100 text-amber-800 border-amber-200",
   text: "bg-purple-100 text-purple-800 border-purple-200",
 };
+
+// Icon je Mapping-Typ fuer Badges (Liste) + Orphan-Karten. EINE Quelle.
+const ACTION_ICON: Record<Mapping["type"], string> = {
+  redirect: "🔗",
+  track: "🎯",
+  text: "✎",
+};
+
+// FESTE Anzeige-Reihenfolge der Badges pro Element (Scheibe 1a): deterministisch,
+// damit ein Mehr-Aktion-Element (redirect + track) stets gleich rendert (kein
+// Set-Iterations-Flackern, stabile Tests).
+const ACTION_BADGE_ORDER: Mapping["type"][] = ["redirect", "track", "text"];
 
 // Welche Element-Kategorie darf ein verwaister Mapping-Typ neu ankern? Strikte
 // Kategorientrennung (Phase 5): ein text-Override nur auf einen Textkandidaten,
@@ -235,27 +248,17 @@ export default function CodeImporter({
     [elements, selectedElementId]
   );
 
-  // Mapping des ausgewaehlten Elements fuers Action-Panel. Compound-Key
-  // (elementId, type): der Typ wird aus der Element-KATEGORIE abgeleitet
-  // (Textelement -> "text", interaktiv -> "redirect") — die UI bleibt EIN-Aktion
-  // (kein zweiter Slot). Heute verhaltensgleich (max. ein Mapping pro id).
-  const selectedMapping = useMemo(
-    () =>
-      selectedElement
-        ? findMapping(
-            mappings,
-            selectedElement.id,
-            selectedElement.type === "text" ? "text" : "redirect"
-          )
-        : null,
-    [mappings, selectedElement]
-  );
-
-  // ps-ID -> Mapping-Typ fuer die "verknuepft"-Badges in der Erkannte-Elemente-
-  // Liste (verdrahtete Elemente auf einen Blick, Icon je Typ: 🔗 Redirect / ✎ Text).
-  const mappingTypeById = useMemo(() => {
-    const m = new Map<string, Mapping["type"]>();
-    for (const x of mappings) m.set(x.elementId, x.type);
+  // ps-ID -> Set der Mapping-Typen fuer die "verknuepft"-Badges (Compound-Key,
+  // Scheibe 1a): ein interaktives Element kann mehrere Aktionen tragen
+  // (redirect + track) -> Set statt last-wins. Die Anzeige-Reihenfolge erzwingt
+  // ACTION_BADGE_ORDER (deterministisch, kein Set-Iterations-Flackern).
+  const mappingTypesById = useMemo(() => {
+    const m = new Map<string, Set<Mapping["type"]>>();
+    for (const x of mappings) {
+      const s = m.get(x.elementId) ?? new Set<Mapping["type"]>();
+      s.add(x.type);
+      m.set(x.elementId, s);
+    }
     return m;
   }, [mappings]);
 
@@ -562,20 +565,38 @@ export default function CodeImporter({
     postTextPatch(canonicalId, config.content);
   }
 
-  // Aktion entfernen. Der Code (samt ps-ID) bleibt unangetastet; nur das Mapping
-  // verschwindet.
-  function handleRemoveMapping() {
-    // Compound-Key: genau das angezeigte (selectedMapping) entfernen -> dessen
-    // type mitgeben. Kein selectedMapping -> nichts zu entfernen.
-    if (!selectedElementId || !selectedMapping) return;
+  // Tracking-Aktion zuweisen/aendern (Phase 6 Scheibe 1a, STRUKTURELL). Exakt
+  // derselbe ps-ID-Anker-Pfad wie handleAssignMapping (interaktives Element); nur
+  // config = { event }. KEIN PS_SET_TEXT (track ist kein Text). Wirkt NUR in den
+  // Draft; das Firing ist erst im generierten Wiring ein console.log-Stub.
+  function handleAssignTrack(config: TrackConfig) {
+    if (!selectedElementId) return;
+    const { code: nextCode, canonicalId } = anchorMappingTarget(
+      code,
+      elements,
+      selectedElementId
+    );
+    if (nextCode !== code) {
+      setCode(nextCode);
+      setSelectedElementId(canonicalId);
+    }
+    setMappings((prev) =>
+      upsertMapping(prev, { elementId: canonicalId, type: "track", config })
+    );
+  }
+
+  // Aktion eines Slots entfernen (Compound-Key, Scheibe 1a): type waehlt den Slot
+  // (redirect | track | text). Der Code (samt ps-ID) bleibt unangetastet; nur das
+  // (elementId, type)-Mapping verschwindet, andere Slots desselben Elements bleiben.
+  function handleRemoveMapping(type: Mapping["type"]) {
+    if (!selectedElementId) return;
     // Scheibe 3: war es ein Text-Override, das iframe LIVE auf den ORIGINAL-
     // Detektionstext zuruecksetzen (nicht den Override stehen lassen). Quelle ist
     // selectedElement.text (untruncierter Originalinhalt). Nur fuer type:"text" —
-    // Redirect-Entfernen aendert nichts Sichtbares im Edit-iframe.
-    if (selectedMapping.type === "text") {
+    // Redirect/Track-Entfernen aendert nichts Sichtbares im Edit-iframe.
+    if (type === "text") {
       postTextPatch(selectedElementId, selectedElement?.text ?? "");
     }
-    const type = selectedMapping.type;
     setMappings((prev) => removeMapping(prev, selectedElementId, type));
   }
 
@@ -611,13 +632,15 @@ export default function CodeImporter({
   ) {
     const orphan = findMapping(mappings, orphanElementId, orphanType);
     if (!orphan) return;
-    // "hat das Ziel IRGENDEINE Aktion?" -> some (NICHT findMapping, das einen
-    // konkreten Typ verlangt). Heute verhaltensgleich: die Kategorientrennung
-    // garantiert, dass ein Relink-Ziel hoechstens ein Mapping desselben Typs
-    // traegt (typ-aware Schutz erst noetig, wenn Scheibe 1 Mehr-Aktionen erlaubt).
+    // Ueberschreib-Schutz TYP-AWARE (Scheibe 1a): nur warnen, wenn das Ziel bereits
+    // ein Mapping DESSELBEN Typs traegt — genau das, was der folgende upsert ersetzen
+    // wuerde. Ein redirect-Orphan auf ein Element mit nur track ist KEINE
+    // Ueberschreibung (anderer Slot) -> kein Fehlalarm.
     if (
-      mappings.some((m) => m.elementId === targetElementId) &&
-      !window.confirm("Dieses Element hat bereits eine Aktion — ersetzen?")
+      mappings.some(
+        (m) => m.elementId === targetElementId && m.type === orphanType
+      ) &&
+      !window.confirm("Dieses Element hat bereits eine Aktion dieses Typs — ersetzen?")
     )
       return;
     const { code: nextCode, canonicalId } = anchorMappingTarget(
@@ -631,7 +654,9 @@ export default function CodeImporter({
     const relinked: Mapping =
       orphan.type === "text"
         ? { elementId: canonicalId, type: "text", config: orphan.config }
-        : { elementId: canonicalId, type: "redirect", config: orphan.config };
+        : orphan.type === "track"
+          ? { elementId: canonicalId, type: "track", config: orphan.config }
+          : { elementId: canonicalId, type: "redirect", config: orphan.config };
     setMappings((prev) =>
       upsertMapping(removeMapping(prev, orphanElementId, orphanType), relinked)
     );
@@ -893,26 +918,39 @@ export default function CodeImporter({
           <ul className="flex flex-col gap-2">
             {orphans.map((m) => {
               // Typ-aware Anzeige + KATEGORIE-eingeschraenkte Relink-Ziele: ein
-              // text-Orphan listet nur Textkandidaten, ein redirect-Orphan nur
-              // interaktive Elemente (Button/Form/Link).
-              const isText = m.type === "text";
-              const value = isText ? m.config.content : m.config.url;
+              // text-Orphan listet nur Textkandidaten, ein redirect-/track-Orphan
+              // nur interaktive Elemente (Button/Form/Link). Pro Typ die richtige
+              // Config lesen (track hat KEINE url -> sonst TS-Fehler).
+              const value =
+                m.type === "text"
+                  ? m.config.content
+                  : m.type === "track"
+                    ? m.config.event
+                    : m.config.url;
+              const badgeLabel =
+                m.type === "text"
+                  ? "✎ Text"
+                  : m.type === "track"
+                    ? "🎯 Tracking"
+                    : "🔗 Weiterleitung";
               const targets = elements.filter((el) =>
                 isRelinkTarget(m.type, el.type)
               );
               return (
+                // Key auf (elementId, type): eine id kann mehrere verwaiste Slots
+                // tragen (redirect + track) -> sonst React-Key-Kollision.
                 <li
-                  key={m.elementId}
+                  key={`${m.elementId}-${m.type}`}
                   className="flex items-center gap-3 rounded-md border border-amber-200 bg-white px-3 py-2"
                 >
                   <span className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">
-                    {isText ? "✎ Text" : "🔗 Weiterleitung"}
+                    {badgeLabel}
                   </span>
                   <span
                     className="min-w-0 flex-1 truncate text-sm text-gray-700"
                     title={value}
                   >
-                    {value || "(leerer Text)"}
+                    {value || "(leer)"}
                   </span>
                   <span className="shrink-0 font-mono text-xs text-gray-400">
                     {m.elementId}
@@ -1104,7 +1142,7 @@ export default function CodeImporter({
             ) : null}
             {visibleElements.map((el) => {
                 const isSelected = el.id === selectedElementId;
-                const mappedType = mappingTypeById.get(el.id);
+                const mappedTypes = mappingTypesById.get(el.id);
                 return (
                   // text-left + w-full neutralisieren das Button-Default (zentrierter
                   // Text); bg/Font kommen unveraendert aus typeStyles wie in Phase 1.
@@ -1123,15 +1161,23 @@ export default function CodeImporter({
                     <span className="truncate">
                       {displayTextFor(el, mappings)}
                     </span>
-                    {/* Verdrahtetes Element: dezentes Badge, Icon je Mapping-Typ
-                        (🔗 Redirect / ✎ Text), damit man verknuepfte Elemente auf
-                        einen Blick sieht. */}
-                    {mappedType && (
-                      <span
-                        className="ml-auto shrink-0 rounded-full bg-white/70 px-1.5 py-0.5 text-xs"
-                        title="Aktion verknüpft"
-                      >
-                        {mappedType === "text" ? "✎" : "🔗"}
+                    {/* Verdrahtetes Element: dezente Badges, EIN Icon je Aktionstyp
+                        (🔗 Redirect / 🎯 Track / ✎ Text). Mehr-Aktion-Element traegt
+                        mehrere; feste ACTION_BADGE_ORDER -> deterministische Reihen-
+                        folge (kein Set-Iterations-Flackern). title je Typ -> testbar. */}
+                    {mappedTypes && (
+                      <span className="ml-auto flex shrink-0 items-center gap-1">
+                        {ACTION_BADGE_ORDER.filter((t) => mappedTypes.has(t)).map(
+                          (t) => (
+                            <span
+                              key={t}
+                              className="rounded-full bg-white/70 px-1.5 py-0.5 text-xs"
+                              title={`Verknüpft: ${t}`}
+                            >
+                              {ACTION_ICON[t]}
+                            </span>
+                          )
+                        )}
                       </span>
                     )}
                   </button>
@@ -1275,10 +1321,11 @@ export default function CodeImporter({
           reicht Element + dessen Mapping + die Zuweisungs-Callbacks durch. */}
       <ActionPanel
         selectedElement={selectedElement}
-        mapping={selectedMapping}
-        onSaveMapping={handleAssignMapping}
-        onSaveTextMapping={handleAssignTextMapping}
-        onRemoveMapping={handleRemoveMapping}
+        mappings={mappings}
+        onSaveRedirect={handleAssignMapping}
+        onSaveTrack={handleAssignTrack}
+        onSaveText={handleAssignTextMapping}
+        onRemove={handleRemoveMapping}
       />
       </div>
     </div>

@@ -4,25 +4,29 @@ import { useState } from "react";
 import type { DetectedElement } from "@/lib/detect";
 import {
   displayTextFor,
+  findMapping,
   isValidRedirectUrl,
   type Mapping,
   type RedirectConfig,
   type TextConfig,
+  type TrackConfig,
 } from "@/lib/mappings";
 
 type ActionPanelProps = {
   // Das in der Preview angeklickte Element (via postMessage-Bruecke) oder null.
   selectedElement: DetectedElement | null;
-  // Bestehendes Mapping des gewaehlten Elements (oder null = noch keine Aktion).
-  mapping: Mapping | null;
-  // Redirect-Aktion zuweisen/aendern. Der Parent kuemmert sich um ps-ID-Anker
-  // + State.
-  onSaveMapping: (config: RedirectConfig) => void;
-  // Text-Override zuweisen/aendern (Phase 5). Eigener Callback, gleicher
-  // ps-ID-Anker-/Draft-/Speichern-Pfad wie Redirect.
-  onSaveTextMapping: (config: TextConfig) => void;
-  // Aktion entfernen.
-  onRemoveMapping: () => void;
+  // Die VOLLSTAENDIGE Mapping-Liste; ActionPanel leitet pro selektiertem Element
+  // die Slots (redirect / track / text) per (elementId, type) ab. Ein interaktives
+  // Element kann zwei Slots zugleich tragen (redirect + track).
+  mappings: Mapping[];
+  // Redirect-Aktion zuweisen/aendern. Der Parent kuemmert sich um ps-ID-Anker + State.
+  onSaveRedirect: (config: RedirectConfig) => void;
+  // Tracking-Aktion zuweisen/aendern (Phase 6 Scheibe 1a, STRUKTURELL).
+  onSaveTrack: (config: TrackConfig) => void;
+  // Text-Override zuweisen/aendern (Phase 5).
+  onSaveText: (config: TextConfig) => void;
+  // Aktion entfernen — type waehlt den Slot (redirect | track | text).
+  onRemove: (type: Mapping["type"]) => void;
 };
 
 /**
@@ -33,10 +37,11 @@ type ActionPanelProps = {
  */
 export default function ActionPanel({
   selectedElement,
-  mapping,
-  onSaveMapping,
-  onSaveTextMapping,
-  onRemoveMapping,
+  mappings,
+  onSaveRedirect,
+  onSaveTrack,
+  onSaveText,
+  onRemove,
 }: ActionPanelProps) {
   return (
     <aside className="flex w-80 shrink-0 flex-col rounded-lg border border-gray-300 bg-white">
@@ -55,10 +60,11 @@ export default function ActionPanel({
         <ElementActions
           key={selectedElement.id}
           element={selectedElement}
-          mapping={mapping}
-          onSaveRedirect={onSaveMapping}
-          onSaveText={onSaveTextMapping}
-          onRemove={onRemoveMapping}
+          mappings={mappings}
+          onSaveRedirect={onSaveRedirect}
+          onSaveTrack={onSaveTrack}
+          onSaveText={onSaveText}
+          onRemove={onRemove}
         />
       )}
     </aside>
@@ -67,40 +73,57 @@ export default function ActionPanel({
 
 /**
  * Dispatcher nach Element-Kategorie: Textelemente bekommen den Text-Override-Flow
- * (Phase 5), alle interaktiven Elemente den bestehenden Redirect-Flow. EINE
- * Auswahl, zwei kategoriespezifische Panels — gleiches select/config/Uebernehmen-
- * Muster, andere config (Text statt URL).
+ * (Phase 5, Ein-Aktion). Interaktive Elemente bekommen ZWEI gestapelte Sektionen —
+ * Weiterleitung (redirect) UND Tracking (track) —, je unabhaengig zuweisbar/
+ * entfernbar (Compound-Key, Scheibe 1a). Die Slots werden per (elementId, type) aus
+ * der vollen mappings-Liste abgeleitet.
  */
 function ElementActions({
   element,
-  mapping,
+  mappings,
   onSaveRedirect,
+  onSaveTrack,
   onSaveText,
   onRemove,
 }: {
   element: DetectedElement;
-  mapping: Mapping | null;
+  mappings: Mapping[];
   onSaveRedirect: (config: RedirectConfig) => void;
+  onSaveTrack: (config: TrackConfig) => void;
   onSaveText: (config: TextConfig) => void;
-  onRemove: () => void;
+  onRemove: (type: Mapping["type"]) => void;
 }) {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4">
       {/* Kontext: welches Element ist gerade gewaehlt. Zeigt — wie die Liste —
           ueber den GETEILTEN Deriver den ueberschriebenen Text, sobald ein
-          Text-Override existiert. mapping ist genau das des gewaehlten Elements
-          -> als 1-Element-Liste an dieselbe Funktion. */}
+          Text-Override existiert. */}
       <div className="rounded-md bg-gray-50 px-3 py-2 text-xs text-gray-600">
         <span className="font-mono">&lt;{element.tag}&gt;</span>{" "}
-        <span className="text-gray-800">
-          {displayTextFor(element, mapping ? [mapping] : [])}
-        </span>
+        <span className="text-gray-800">{displayTextFor(element, mappings)}</span>
       </div>
 
       {element.type === "text" ? (
-        <TextActions element={element} mapping={mapping} onSave={onSaveText} onRemove={onRemove} />
+        <TextActions
+          element={element}
+          mapping={findMapping(mappings, element.id, "text")}
+          onSave={onSaveText}
+          onRemove={() => onRemove("text")}
+        />
       ) : (
-        <RedirectActions mapping={mapping} onSave={onSaveRedirect} onRemove={onRemove} />
+        // Interaktiv = zwei unabhaengige Slots, gestapelt.
+        <div className="flex flex-col gap-4">
+          <RedirectActions
+            mapping={findMapping(mappings, element.id, "redirect")}
+            onSave={onSaveRedirect}
+            onRemove={() => onRemove("redirect")}
+          />
+          <TrackActions
+            mapping={findMapping(mappings, element.id, "track")}
+            onSave={onSaveTrack}
+            onRemove={() => onRemove("track")}
+          />
+        </div>
       )}
     </div>
   );
@@ -484,3 +507,178 @@ function RedirectForm({
     </div>
   );
 }
+
+/**
+ * Tracking-Aktions-Zustand (Phase 6 Scheibe 1a, STRUKTURELL). Spiegelt
+ * RedirectActions: Kachel -> Anzeige -> Formular. config minimal { event }.
+ * KEINE Meta-Semantik (kein Standard-Event-Dropdown, kein value/currency) — das
+ * ist 1b.
+ */
+function TrackActions({
+  mapping,
+  onSave,
+  onRemove,
+}: {
+  mapping: Mapping | null;
+  onSave: (config: TrackConfig) => void;
+  onRemove: () => void;
+}) {
+  const trackMapping = mapping?.type === "track" ? mapping : null;
+  const [isEditing, setIsEditing] = useState(false);
+  const [event, setEvent] = useState(trackMapping?.config.event ?? "");
+
+  const valid = event.trim() !== "";
+
+  function handleSubmit() {
+    if (!valid) return;
+    onSave({ event: event.trim() });
+    setIsEditing(false);
+  }
+
+  function handleCancel() {
+    setEvent(trackMapping?.config.event ?? "");
+    setIsEditing(false);
+  }
+
+  if (isEditing) {
+    return (
+      <TrackForm
+        event={event}
+        valid={valid}
+        onEventChange={setEvent}
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+      />
+    );
+  }
+  if (trackMapping) {
+    return (
+      <TrackView
+        config={trackMapping.config}
+        onEdit={() => setIsEditing(true)}
+        onRemove={onRemove}
+      />
+    );
+  }
+  return <TrackTile onPick={() => setIsEditing(true)} />;
+}
+
+/** Kachel: Tracking-Event starten. */
+function TrackTile({ onPick }: { onPick: () => void }) {
+  return (
+    <div>
+      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
+        Tracking
+      </p>
+      <div className="grid grid-cols-1 gap-2">
+        <button
+          type="button"
+          onClick={onPick}
+          className="flex flex-col items-start gap-1 rounded-lg border border-gray-300 px-3 py-3 text-left hover:border-emerald-400 hover:bg-emerald-50 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+        >
+          <span className="text-sm font-medium text-gray-800">
+            🎯 Tracking-Event
+          </span>
+          <span className="text-xs text-gray-500">
+            Feuert bei Klick ein Event (zusätzlich zur Weiterleitung).
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Anzeige eines bestehenden Tracking-Mappings. */
+function TrackView({
+  config,
+  onEdit,
+  onRemove,
+}: {
+  config: TrackConfig;
+  onEdit: () => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-3">
+        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-emerald-700">
+          🎯 Tracking-Event
+        </p>
+        <p className="break-all text-sm text-gray-800">
+          {config.event || "(kein Event)"}
+        </p>
+      </div>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={onEdit}
+          className="flex-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          Bearbeiten
+        </button>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-1 focus:ring-red-400"
+        >
+          Entfernen
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Event-Formular (Anlegen/Bearbeiten). Übernehmen gesperrt bei leerem Event. */
+function TrackForm({
+  event,
+  valid,
+  onEventChange,
+  onSubmit,
+  onCancel,
+}: {
+  event: string;
+  valid: boolean;
+  onEventChange: (v: string) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <label className="flex flex-col gap-1 text-sm">
+        <span className="font-medium text-gray-700">Event-Name</span>
+        <input
+          type="text"
+          autoFocus
+          value={event}
+          onChange={(e) => onEventChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && valid) onSubmit();
+          }}
+          placeholder="z.B. Lead"
+          className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+        />
+      </label>
+
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={!valid}
+          className="flex-1 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {/* "Übernehmen" wirkt NUR in den Draft, klar abgegrenzt vom grossen
+              "Speichern"-Button (DB). */}
+          Übernehmen
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          Abbrechen
+        </button>
+      </div>
+    </div>
+  );
+}
+

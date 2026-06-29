@@ -64,8 +64,13 @@ function buildWiringScript(mode: GenerateMode): string {
   } catch (e) {
     return;
   }
+  // Compound-Key (Scheibe 0): ein Element kann MEHRERE Aktionen tragen (z.B.
+  // redirect + track) -> byId haelt ein ARRAY pro id, nicht "letztes gewinnt".
   var byId = {};
-  for (var i = 0; i < table.length; i++) byId[table[i].elementId] = table[i];
+  for (var i = 0; i < table.length; i++) {
+    var id = table[i].elementId;
+    (byId[id] = byId[id] || []).push(table[i]);
+  }
   // Text-Override (Vorschau + Editieren, einmalig beim Laden). Im Export ist kein
   // text-Mapping im Datenblock -> diese Schleife findet nichts.
   if (MODE !== "export") {
@@ -88,25 +93,42 @@ function buildWiringScript(mode: GenerateMode): string {
       var t = e.target;
       if (!t || typeof t.closest !== "function") return;
       var el = t.closest("[${PAGESMITH_ID_ATTR}]");
-      var m = el ? byId[el.getAttribute("${PAGESMITH_ID_ATTR}")] : null;
-      if (m && m.type === "redirect") {
-        e.preventDefault();
-        var url = m.config && m.config.url;
-        if (!url) return;
-        if (MODE === "preview") {
-          // Vorschau: IMMER neuer Tab (escaped). openInNewTab bewusst ignoriert —
-          // "selber Tab" laesst sich im iframe nicht ehrlich zeigen.
-          window.open(url, "_blank");
-        } else if (m.config.openInNewTab) {
-          window.open(url, "_blank");
-        } else {
-          window.location.href = url;
+      var actions = el ? byId[el.getAttribute("${PAGESMITH_ID_ATTR}")] : null;
+      if (actions && actions.length) {
+        // Track-Aktionen feuern SOFORT in der Schleife; die (max. eine) Redirect-
+        // Aktion wird gemerkt und ERST NACH der Schleife ausgefuehrt -> der Track
+        // feuert garantiert VOR der Navigation, reihenfolge-unabhaengig (die
+        // Navigation killt sonst den in-flight Request). 1a: Stub = console.log;
+        // 1b ersetzt das durch echtes fbq + navigationssicheres Senden.
+        var redirect = null;
+        for (var j = 0; j < actions.length; j++) {
+          var a = actions[j];
+          if (a.type === "track") {
+            console.log("[pagesmith track] " + ((a.config && a.config.event) || ""));
+          } else if (a.type === "redirect") {
+            redirect = a;
+          }
         }
-        return;
+        if (redirect) {
+          e.preventDefault();
+          var url = redirect.config && redirect.config.url;
+          if (url) {
+            if (MODE === "preview") {
+              // Vorschau: IMMER neuer Tab (escaped). openInNewTab bewusst ignoriert
+              // — "selber Tab" laesst sich im iframe nicht ehrlich zeigen.
+              window.open(url, "_blank");
+            } else if (redirect.config.openInNewTab) {
+              window.open(url, "_blank");
+            } else {
+              window.location.href = url;
+            }
+          }
+          return;
+        }
       }
-      // Kein Mapping. Nur in der Vorschau Containment: jeden anderen Link
-      // stummschalten -> nie Default-Navigation gegen die srcDoc-Basis (unsere
-      // Origin). Im Export bleibt das Default-Verhalten unangetastet.
+      // Kein Redirect (kein Mapping ODER track-only). Nur in der Vorschau
+      // Containment: jeden anderen Link stummschalten -> nie Default-Navigation
+      // gegen die srcDoc-Basis (unsere Origin). Im Export bleibt der Default.
       if (MODE === "preview" && t.closest("a[href]")) {
         e.preventDefault();
       }
@@ -123,9 +145,11 @@ function buildWiringScript(mode: GenerateMode): string {
  * - Nur Mappings einbacken, deren data-pagesmith-id im html VORHANDEN ist.
  *   Verwaiste Mappings (Weg-C) werden im Output ignoriert -> Netz und Generator
  *   greifen nahtlos.
- * - Tabelle je Modus: "preview" beide Typen; "export" nur redirect (Text wird im
- *   Export NICHT verdrahtet, sondern direkt in den DOM gebacken — siehe unten);
- *   "edit" nur text (Redirects waeren im Editieren-iframe nutzlos -> kein URL-Ballast).
+ * - Tabelle je Modus: "preview" alle Laufzeit-Typen; "export" alle ausser text
+ *   (redirect + track; Text wird im Export NICHT verdrahtet, sondern direkt in den
+ *   DOM gebacken — siehe unten). 1a-Hinweis: der track-console.log-STUB landet damit
+ *   bewusst im Export-Output (beweist die Wiring-Naht); 1b ersetzt ihn durch echtes
+ *   fbq. "edit" nur text (Redirect/Track waeren im Editieren-iframe nutzlos).
  * - TEXT-Bake (nur "export"): pro praesentem type:"text"-Mapping wird das Element
  *   per ps-id gefunden und sein textContent auf config.content gesetzt — VOR der
  *   Serialisierung, auf DEMSELBEN geparsten DOM. Ergebnis: das <h1> enthaelt im
@@ -193,7 +217,8 @@ export function generateFunctional(
     }
 
     // Orphans raus: nur Mappings mit lebendem Anker. Danach je Modus filtern:
-    // export -> nur redirect; edit -> nur text; preview -> beide.
+    // export -> alle ausser text (redirect + track-Stub); edit -> nur text;
+    // preview -> alle Laufzeit-Typen.
     const table = mappings.filter((m) => {
       if (!present.has(m.elementId)) return false;
       if (mode === "export") return m.type !== "text";

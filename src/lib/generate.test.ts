@@ -15,6 +15,10 @@ function text(elementId: string, content: string): Mapping {
   return { elementId, type: "text", config: { content } };
 }
 
+function track(elementId: string, event: string): Mapping {
+  return { elementId, type: "track", config: { event } };
+}
+
 // Typ-narrowing Zugriff auf eine Redirect-config (Union verlangt das Narrowing).
 function rc(m: Mapping) {
   if (m.type !== "redirect") throw new Error("kein redirect-Mapping");
@@ -242,6 +246,66 @@ describe("Wiring-Verhalten PREVIEW (Containment)", () => {
     const ev = click("a[href]");
     expect(ev.defaultPrevented).toBe(true);
     expect(openSpy).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tracking (Phase 6 Scheibe 1a, STRUKTURELL): ein interaktives Element kann
+// redirect UND track tragen. Der Track-Stub (console.log) feuert VOR der
+// Redirect-Navigation. KEINE Meta-Semantik (kein fbq) — das ist 1b.
+// ---------------------------------------------------------------------------
+
+describe("Wiring-Verhalten TRACK (Mehr-Aktion, Scheibe 1a)", () => {
+  it("Element [redirect, track] (export): Tabelle enthaelt BEIDE; Stub feuert VOR der Navigation", () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    // Array-Reihenfolge redirect-zuerst -> beweist die Deferral (Track trotzdem
+    // vor der Navigation), reihenfolge-unabhaengig.
+    mountAndWire(
+      generateFunctional(
+        MAPPED_BUTTON,
+        [redirect("ps-aaaaaa", "https://x.com", true), track("ps-aaaaaa", "Lead")],
+        "export"
+      )
+    );
+    const table = readTable(
+      mountedDoc.documentElement.outerHTML
+    );
+    expect(table).toHaveLength(2);
+
+    const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(ev.defaultPrevented).toBe(true);
+    expect(logSpy).toHaveBeenCalledWith("[pagesmith track] Lead");
+    expect(openSpy).toHaveBeenCalledWith("https://x.com", "_blank");
+    // ORDNUNG: der Track-Stub-Log lief VOR window.open.
+    expect(logSpy.mock.invocationCallOrder[0]).toBeLessThan(
+      openSpy.mock.invocationCallOrder[0]
+    );
+    logSpy.mockRestore();
+  });
+
+  it("Element [track] only (export): Stub feuert, KEINE Navigation, defaultPrevented false", () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export")
+    );
+    const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(logSpy).toHaveBeenCalledWith("[pagesmith track] Lead");
+    expect(openSpy).not.toHaveBeenCalled();
+    expect(hrefValue).toBe("");
+    // Track-only blockt den Default NICHT (nur Redirect ruft preventDefault).
+    expect(ev.defaultPrevented).toBe(false);
+    logSpy.mockRestore();
+  });
+
+  it("verwaistes track-Mapping (ps-id fehlt) wird NICHT verdrahtet", () => {
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-zzzzzz", "Ghost")],
+      "export"
+    );
+    // present-Filter greift typ-agnostisch -> leere Tabelle -> kein Script.
+    expect(out).not.toContain("pagesmith-mappings");
+    expect(out).not.toContain("Ghost");
   });
 });
 

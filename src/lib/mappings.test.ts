@@ -23,6 +23,10 @@ function text(elementId: string, content: string): Mapping {
   return { elementId, type: "text", config: { content } };
 }
 
+function track(elementId: string, event: string): Mapping {
+  return { elementId, type: "track", config: { event } };
+}
+
 // Schmaler, typ-narrowing Zugriff auf eine Redirect-config (die Tests pruefen
 // redirect-Mappings; der Union-Typ verlangt das Narrowing).
 function rc(m: Mapping | null | undefined) {
@@ -196,6 +200,21 @@ describe("mappingsEqual – reihenfolge-unabhaengiger Mengenvergleich", () => {
     const b = [text("ps-aaaaaa", "Text")];
     expect(mappingsEqual(a, b)).toBe(false);
   });
+
+  // Phase 6 Scheibe 1a: der configEqual-track-Zweig muss greifen, sonst gilt jedes
+  // track-Mapping als dauernd dirty (Fehlalarm bei Save/Guards). DISKRIMINIEREND:
+  // gleiche id, NUR event verschieden.
+  it("geaenderter track-event IST dirty", () => {
+    const a = [track("ps-aaaaaa", "Lead")];
+    const b = [track("ps-aaaaaa", "Purchase")];
+    expect(mappingsEqual(a, b)).toBe(false);
+  });
+
+  it("gleicher track-event ist NICHT dirty (Fehlalarm-Schutz greift)", () => {
+    const a = [track("ps-aaaaaa", "Lead")];
+    const b = [track("ps-aaaaaa", "Lead")];
+    expect(mappingsEqual(a, b)).toBe(true);
+  });
 });
 
 describe("displayTextFor – geteilter Anzeige-Deriver (Liste + Header)", () => {
@@ -319,6 +338,26 @@ describe("Compound-Key (elementId, type) – zwei Aktionen auf EINEM Element", (
     const next = removeMapping(list, "ps-aaaaaa", "redirect");
     expect(next).toHaveLength(1);
     expect(next[0]).toMatchObject({ type: "text", elementId: "ps-aaaaaa" });
+  });
+
+  it("redirect + track koexistieren auf EINER id; remove(redirect) laesst track intakt", () => {
+    const list = [
+      redirect("ps-aaaaaa", "https://a.com"),
+      track("ps-aaaaaa", "Lead"),
+    ];
+    expect(findMapping(list, "ps-aaaaaa", "redirect")).not.toBeNull();
+    expect(findMapping(list, "ps-aaaaaa", "track")).not.toBeNull();
+    // upsert(track) ersetzt den track-Slot in-place (Laenge bleibt 2), append nur
+    // bei neuem (id,type).
+    const afterUpsert = upsertMapping(list, track("ps-aaaaaa", "Purchase"));
+    expect(afterUpsert).toHaveLength(2);
+    expect(findMapping(afterUpsert, "ps-aaaaaa", "track")).toMatchObject({
+      config: { event: "Purchase" },
+    });
+    // remove(redirect) trifft NUR den redirect-Slot.
+    const next = removeMapping(list, "ps-aaaaaa", "redirect");
+    expect(next).toHaveLength(1);
+    expect(next[0]).toMatchObject({ type: "track", elementId: "ps-aaaaaa" });
   });
 
   it("mappingsEqual: {redirect+text auf id} != {nur redirect}; Umsortieren == gleich", () => {

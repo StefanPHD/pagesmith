@@ -29,6 +29,12 @@ function rc(m: Mapping | null | undefined) {
   return m && m.type === "redirect" ? m.config : null;
 }
 
+// Gegenstueck fuer text-Mappings (Compound-Key-Tests greifen beide Typen ab).
+function tc(m: Mapping) {
+  if (m.type !== "text") throw new Error("kein text-Mapping");
+  return m.config;
+}
+
 describe("isValidRedirectUrl", () => {
   it("akzeptiert http und https", () => {
     expect(isValidRedirectUrl("http://example.com")).toBe(true);
@@ -47,11 +53,13 @@ describe("isValidRedirectUrl", () => {
   });
 });
 
-describe("findMapping / upsertMapping / removeMapping (Schluessel elementId)", () => {
+describe("findMapping / upsertMapping / removeMapping (Schluessel elementId, type)", () => {
   it("findet per elementId, null wenn nicht vorhanden", () => {
     const list = [redirect("ps-aaaaaa", "https://a.com")];
-    expect(rc(findMapping(list, "ps-aaaaaa"))?.url).toBe("https://a.com");
-    expect(findMapping(list, "ps-zzzzzz")).toBeNull();
+    expect(rc(findMapping(list, "ps-aaaaaa", "redirect"))?.url).toBe(
+      "https://a.com"
+    );
+    expect(findMapping(list, "ps-zzzzzz", "redirect")).toBeNull();
   });
 
   it("upsert haengt neues an", () => {
@@ -75,7 +83,7 @@ describe("findMapping / upsertMapping / removeMapping (Schluessel elementId)", (
       redirect("ps-aaaaaa", "https://a.com"),
       redirect("ps-bbbbbb", "https://b.com"),
     ];
-    const next = removeMapping(list, "ps-aaaaaa");
+    const next = removeMapping(list, "ps-aaaaaa", "redirect");
     expect(next).toHaveLength(1);
     expect(next[0].elementId).toBe("ps-bbbbbb");
   });
@@ -253,14 +261,78 @@ describe("Helfer sind typ-agnostisch (tragen type:text)", () => {
     expect(orphans).toHaveLength(1);
     expect(orphans[0]).toMatchObject({ elementId: "ps-aaaaaa", type: "text" });
   });
+});
 
-  it("upsert/remove arbeiten per elementId, unabhaengig vom Typ", () => {
-    const afterUpsert = upsertMapping(
+// Phase 6 Scheibe 0: der Lookup-/Identitaets-Schluessel ist (elementId, type).
+// SYNTHETISCHES Fixture — zwei Mappings unterschiedlichen Typs auf EINER id. Diesen
+// Zustand erzeugt heute keine UI (Redirect- und Text-Kandidaten sind disjunkt) ->
+// nur so diskriminiert der Test den Compound-Key gegen das alte elementId-Keying.
+// (Der fruehere "unabhaengig vom Typ"-Test kodierte genau das alte, hier bewusst
+// aufgehobene Verhalten und wurde ersetzt.)
+describe("Compound-Key (elementId, type) – zwei Aktionen auf EINEM Element", () => {
+  it("upsert(redirect) laesst ein text-Mapping derselben id unangetastet (und umgekehrt)", () => {
+    const start = [text("ps-aaaaaa", "Headline")];
+    const afterRedirect = upsertMapping(start, redirect("ps-aaaaaa", "https://a.com"));
+    // Append, KEIN Replace: beide Aktionen koexistieren auf derselben id.
+    expect(afterRedirect).toHaveLength(2);
+    expect(tc(afterRedirect[0]).content).toBe("Headline");
+    expect(rc(afterRedirect[1])?.url).toBe("https://a.com");
+
+    // Umgekehrte Richtung: ein text-Upsert laesst das redirect intakt.
+    const afterText = upsertMapping(
       [redirect("ps-aaaaaa", "https://a.com")],
-      text("ps-aaaaaa", "ueberschrieben")
+      text("ps-aaaaaa", "Neu")
     );
-    expect(afterUpsert).toHaveLength(1);
-    expect(afterUpsert[0]).toMatchObject({ type: "text" });
-    expect(removeMapping(afterUpsert, "ps-aaaaaa")).toEqual([]);
+    expect(afterText).toHaveLength(2);
+    expect(rc(afterText[0])?.url).toBe("https://a.com");
+    expect(tc(afterText[1]).content).toBe("Neu");
+  });
+
+  it("SAME-(id,type)-Replace bleibt: upsert(redirect mit neuer URL) ersetzt in-place, Laenge bleibt 1", () => {
+    const next = upsertMapping(
+      [redirect("ps-aaaaaa", "https://alt.com")],
+      redirect("ps-aaaaaa", "https://neu.com")
+    );
+    expect(next).toHaveLength(1);
+    expect(rc(next[0])?.url).toBe("https://neu.com");
+  });
+
+  it("findMapping unterscheidet nach Typ auf derselben id", () => {
+    const list = [
+      redirect("ps-aaaaaa", "https://a.com"),
+      text("ps-aaaaaa", "Headline"),
+    ];
+    const r = findMapping(list, "ps-aaaaaa", "redirect");
+    const t = findMapping(list, "ps-aaaaaa", "text");
+    expect(r).not.toBeNull();
+    expect(t).not.toBeNull();
+    expect(r).not.toBe(t);
+    expect(rc(r)?.url).toBe("https://a.com");
+    expect(tc(t!).content).toBe("Headline");
+  });
+
+  it("remove(id,'redirect') laesst das text-Mapping auf derselben id intakt", () => {
+    const list = [
+      redirect("ps-aaaaaa", "https://a.com"),
+      text("ps-aaaaaa", "Headline"),
+    ];
+    const next = removeMapping(list, "ps-aaaaaa", "redirect");
+    expect(next).toHaveLength(1);
+    expect(next[0]).toMatchObject({ type: "text", elementId: "ps-aaaaaa" });
+  });
+
+  it("mappingsEqual: {redirect+text auf id} != {nur redirect}; Umsortieren == gleich", () => {
+    const both = [
+      redirect("ps-aaaaaa", "https://a.com"),
+      text("ps-aaaaaa", "Headline"),
+    ];
+    const onlyRedirect = [redirect("ps-aaaaaa", "https://a.com")];
+    expect(mappingsEqual(both, onlyRedirect)).toBe(false);
+    // Dieselben zwei (id,type)-Eintraege, nur umsortiert -> mengengleich.
+    const reordered = [
+      text("ps-aaaaaa", "Headline"),
+      redirect("ps-aaaaaa", "https://a.com"),
+    ];
+    expect(mappingsEqual(both, reordered)).toBe(true);
   });
 });

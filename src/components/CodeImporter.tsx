@@ -235,11 +235,20 @@ export default function CodeImporter({
     [elements, selectedElementId]
   );
 
-  // Mapping des ausgewaehlten Elements (Schluessel elementId, ein Mapping pro
-  // Element) fuers Action-Panel.
+  // Mapping des ausgewaehlten Elements fuers Action-Panel. Compound-Key
+  // (elementId, type): der Typ wird aus der Element-KATEGORIE abgeleitet
+  // (Textelement -> "text", interaktiv -> "redirect") — die UI bleibt EIN-Aktion
+  // (kein zweiter Slot). Heute verhaltensgleich (max. ein Mapping pro id).
   const selectedMapping = useMemo(
-    () => (selectedElementId ? findMapping(mappings, selectedElementId) : null),
-    [mappings, selectedElementId]
+    () =>
+      selectedElement
+        ? findMapping(
+            mappings,
+            selectedElement.id,
+            selectedElement.type === "text" ? "text" : "redirect"
+          )
+        : null,
+    [mappings, selectedElement]
   );
 
   // ps-ID -> Mapping-Typ fuer die "verknuepft"-Badges in der Erkannte-Elemente-
@@ -556,15 +565,18 @@ export default function CodeImporter({
   // Aktion entfernen. Der Code (samt ps-ID) bleibt unangetastet; nur das Mapping
   // verschwindet.
   function handleRemoveMapping() {
-    if (!selectedElementId) return;
+    // Compound-Key: genau das angezeigte (selectedMapping) entfernen -> dessen
+    // type mitgeben. Kein selectedMapping -> nichts zu entfernen.
+    if (!selectedElementId || !selectedMapping) return;
     // Scheibe 3: war es ein Text-Override, das iframe LIVE auf den ORIGINAL-
     // Detektionstext zuruecksetzen (nicht den Override stehen lassen). Quelle ist
     // selectedElement.text (untruncierter Originalinhalt). Nur fuer type:"text" —
     // Redirect-Entfernen aendert nichts Sichtbares im Edit-iframe.
-    if (selectedMapping?.type === "text") {
+    if (selectedMapping.type === "text") {
       postTextPatch(selectedElementId, selectedElement?.text ?? "");
     }
-    setMappings((prev) => removeMapping(prev, selectedElementId));
+    const type = selectedMapping.type;
+    setMappings((prev) => removeMapping(prev, selectedElementId, type));
   }
 
   // Verwaistes Mapping loeschen. Destruktiv (die gespeicherte URL geht verloren)
@@ -572,14 +584,14 @@ export default function CodeImporter({
   // den grossen "Speichern"-Button, kein Auto-Save. Reines Erkennen aendert die
   // Mappings NICHT; Loeschen ist die einzige Mutation. Re-Link ist bewusst NICHT
   // Teil dieser Scheibe (kein automatisches Reparieren/Neu-Verknuepfen).
-  function handleRemoveOrphan(elementId: string) {
+  function handleRemoveOrphan(elementId: string, type: Mapping["type"]) {
     if (
       !window.confirm(
         "Verwaiste Verknüpfung löschen? Die gespeicherte Konfiguration geht verloren."
       )
     )
       return;
-    setMappings((prev) => removeMapping(prev, elementId));
+    setMappings((prev) => removeMapping(prev, elementId, type));
   }
 
   // Re-Link (Weg-C Scheibe 2): die gespeicherte Config eines verwaisten Mappings
@@ -592,11 +604,19 @@ export default function CodeImporter({
   // Self-resolving: der abgeleitete findOrphans-Status loest den Eintrag selbst
   // auf; das Badge erscheint am Ziel. NIE automatisch raten — nur die explizite
   // Dropdown-Wahl verknuepft. Mutiert State (+ ggf. code) -> dirty, kein Auto-Save.
-  function handleRelinkOrphan(orphanElementId: string, targetElementId: string) {
-    const orphan = findMapping(mappings, orphanElementId);
+  function handleRelinkOrphan(
+    orphanElementId: string,
+    orphanType: Mapping["type"],
+    targetElementId: string
+  ) {
+    const orphan = findMapping(mappings, orphanElementId, orphanType);
     if (!orphan) return;
+    // "hat das Ziel IRGENDEINE Aktion?" -> some (NICHT findMapping, das einen
+    // konkreten Typ verlangt). Heute verhaltensgleich: die Kategorientrennung
+    // garantiert, dass ein Relink-Ziel hoechstens ein Mapping desselben Typs
+    // traegt (typ-aware Schutz erst noetig, wenn Scheibe 1 Mehr-Aktionen erlaubt).
     if (
-      findMapping(mappings, targetElementId) &&
+      mappings.some((m) => m.elementId === targetElementId) &&
       !window.confirm("Dieses Element hat bereits eine Aktion — ersetzen?")
     )
       return;
@@ -613,7 +633,7 @@ export default function CodeImporter({
         ? { elementId: canonicalId, type: "text", config: orphan.config }
         : { elementId: canonicalId, type: "redirect", config: orphan.config };
     setMappings((prev) =>
-      upsertMapping(removeMapping(prev, orphanElementId), relinked)
+      upsertMapping(removeMapping(prev, orphanElementId, orphanType), relinked)
     );
     // Scheibe 3: ein re-verknuepftes Text-Mapping landet auf einem PRAESENTEN
     // Zielelement -> dessen Text live patchen (sonst divergiert das stehende
@@ -906,7 +926,7 @@ export default function CodeImporter({
                       value=""
                       onChange={(e) => {
                         if (e.target.value)
-                          handleRelinkOrphan(m.elementId, e.target.value);
+                          handleRelinkOrphan(m.elementId, m.type, e.target.value);
                       }}
                       aria-label="Verknüpfen mit Element"
                       className="shrink-0 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -921,7 +941,7 @@ export default function CodeImporter({
                   )}
                   <button
                     type="button"
-                    onClick={() => handleRemoveOrphan(m.elementId)}
+                    onClick={() => handleRemoveOrphan(m.elementId, m.type)}
                     className="shrink-0 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-1 focus:ring-red-400"
                   >
                     Löschen

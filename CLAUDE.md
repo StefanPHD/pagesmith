@@ -952,13 +952,29 @@ liegt pro Projekt server-seitig — server-only-Pfad (eigene Tabelle, nur über
 Server-Session lesbar, RLS) ODER Verschlüsselung at rest. Die service_role-Frage
 wird hier erstmals echt -> bewusst entscheiden, nicht reflexhaft.
 
+OMNICHANNEL-AUSBLICK (Owner-Direktive): Pagesmith wird Omnichannel-Tracking-Plattform.
+Nach Meta folgen Google, TikTok, Pinterest und ein "Custom Pixel Code" (rohes Snippet).
+Architektur-Konsequenz JETZT (Form, KEINE Maschinerie — "Abstraktion erst bei 2+ Fällen"):
+- settings ist plattform-GENESTET: settings.pixels.<platform>.<config>. Meta =
+  settings.pixels.meta.pixelId. Custom-Code-Plattform später = settings.pixels.custom.code
+  (andere Shape erlaubt). KEINE flachen metaPixelId-Keys, nie Migration pro Plattform.
+- Meta-Feuer-/Injektions-Logik als isolierte Einheit (Plattform #2 = parallele Einheit,
+  kein Umbau). KEINE generische Registry, solange nur Meta existiert.
+BEWUSST AUFGESCHOBEN (an Plattform #2, 2+ Fälle): Fan-out (ein Intent -> alle Pixel, mit
+Event-Taxonomie-Mapping) vs. Per-Plattform-Event. Deshalb bleibt TrackConfig plattform-
+AGNOSTISCHER Intent ohne platform-Feld -> am wenigsten festlegend, beides später additiv.
+BEGRIFFSTRENNUNG: "Custom Event" = Event mit freiem Namen (fbq trackCustom), 1b-Sache.
+"Custom Pixel Code" = ganze Plattform unter pixels.custom, spätere Scheibe. Nicht verwechseln.
+
 Decomposition (Owner-bestätigt):
 - Scheibe 0 — (elementId, type)-Compound-Key-Migration (STRUKTURELL, kein Feature). JETZT.
 - [x] Scheibe 1a — Mehr-Aktion strukturell: track-Union-Zweig + Panel mehr-aktionsfähig
         + Wiring-byId->Array + vier latente Fixes. Stub-Firing, Meta zuerst. ABGESCHLOSSEN (live).
-- Scheibe 1b — Meta-Pixel-Semantik: projektweite Pixel-ID (neue Projekt-Einstellung),
-  Standard-Event-Dropdown + value/currency, echtes fbq, navigationssicheres Senden
-  (Beacon/sendBeacon), Pixel-Snippet im Export. event_id-Naht fürs spätere CAPI-Dedup (Scheibe 2).
+- Scheibe 1b — Meta-Pixel-Semantik (ECHT): settings-jsonb-Blob (Migration 0004,
+  plattform-genestet) + projektweite Meta-Pixel-ID-UI + TrackConfig {event,value?,
+  currency?,isCustom?} + Standard-Event-Dropdown (+ Custom-Zweig) + value/currency
+  dynamisch + stub->fbq mit eventID + Consent-Hook (gated auch init) + Base-Pixel im
+  Export OHNE Auto-PageView.
 - Scheibe 2 — CAPI-Proxy (Next.js API-Route, Secret-Handling, Server-Forward an Meta).
 - Scheibe 3 — Consent-Gate.
 
@@ -1095,6 +1111,56 @@ Diskriminierende Tests (Pflicht):
 Leitplanken: KEINE Meta-Semantik (fbq/Pixel-ID/value/currency) in 1a. detect.ts/Brücke
 unberührt (track bindet an bereits erkannte interaktive Elemente). Text-Pfad, Auth/RLS,
 Sandbox unberührt. KEINE DB-Migration.
+
+### Scheibe 1b — Meta-Pixel-Semantik (vor dem Bau dokumentiert)
+Ersetzt den 1a-Stub durch echtes Meta-Pixel. Erste echte externe Integration, erste
+Schema-Migration seit 0003.
+
+Owner-Entscheidungen (endgültig):
+- Persistenz: settings jsonb auf projects (Migration 0004, default '{}'), plattform-
+  genestet settings.pixels.meta.pixelId. Pixel-ID ist NICHT secret (öffentlich) ->
+  plain gespeichert, kein Secret-Storage (das bleibt Scheibe 2 / CAPI-Token).
+- Event-Modell: Standard-Event-Dropdown (Purchase, Lead, InitiateCheckout, AddToCart,
+  ViewContent, CompleteRegistration, Contact, Subscribe, ...) + "Custom…"-Option ->
+  freies Textfeld -> fbq trackCustom. Optional value/currency, dynamisch nur bei
+  wert-tragenden Events eingeblendet. TrackConfig additiv: {event, isCustom?, value?, currency?}.
+  configEqual deckt ALLE Felder ab (sonst Dirty-Fehlalarm wie der 1a-configEqual-Fund).
+- Navigationssicheres Senden: fbq mit eventID feuern, dann NORMAL navigieren, dem
+  sendBeacon vertrauen. KEIN Navigations-Defer (Redirect-Latenz zu Stripe nicht
+  künstlich verschlechtern). CAPI (Scheibe 2) ist der finale Datenverlust-Backstop.
+- eventID: pro Fire client-seitig erzeugt (crypto.randomUUID + Fallback), an fbq als
+  {eventID} übergeben. Tut in 1b funktional nichts -> ist die Dedup-Naht für Scheibe 2
+  (Browser- und CAPI-Event teilen dieselbe eventID).
+- Consent-Hook psConsent(): EIN Chokepoint, gated init UND Events (fbq('init') setzt
+  _fbp-Cookie -> Cookie-vor-Consent ist selbst der DSGVO-Verstoß). 1b-Default permissiv
+  (feuert); Scheibe 3 verdrahtet echtes Consent + flippt Default. Doku-Caveat: 1b-Export
+  NICHT auf echten EU-Traffic vor Scheibe 3.
+- Base-Pixel: einmal pro Seite, geguarded durch gesetzte meta.pixelId (keine ID ->
+  kein Snippet, Track-Aktionen no-op mit console.warn). fbq('init', id) OHNE Default-
+  PageView (kein ungate-tes Load-Event; 1b bleibt strikt on-click). Page-Load-Events
+  sind eine spätere consent-saubere Scheibe.
+
+Build-Reihenfolge (Risiko zuerst): Migration 0004 + settings read/write (save/loadProject
++ projects/actions.ts) + minimale Pixel-ID-UI ZUERST verifizieren; dann Event-Modell +
+Wiring-Swap.
+
+Diskriminierende Tests (Pflicht):
+- settings-Roundtrip: Pixel-ID speichern -> laden -> persistiert; Projektwechsel isoliert
+  (kein Leak zwischen Projekten).
+- configEqual: zwei track gleicher id, nur value (oder currency, oder isCustom) verschieden
+  -> dirty. Gegenprobe gleich -> gleich.
+- Export mit meta.pixelId: Output enthält fbq('init', id) GENAU EINMAL, KEIN
+  'track','PageView' (Auto-PageView raus), Klick-Event als fbq('track',event,{...},{eventID}).
+- Custom-Event: fbq trackCustom mit freiem Namen.
+- value-Event (Purchase) vs nicht-value-Event (Lead): value/currency nur bei value-Event im Output.
+- Keine Pixel-ID -> kein fbq im Export, Track-Aktion no-op (console.warn).
+- Consent-Hook: psConsent()==false -> weder init noch Event im Laufzeit-Effekt.
+- Single-Redirect + Text-Pfad (Scheibe 3) unverändert.
+
+Leitplanken: NUR Meta (pixels.meta) — KEIN Google/TikTok/Custom-Code-Build, nur die
+Nest-Form. Kein platform-Feld in TrackConfig. detect.ts/Brücke + Text-Pfad unberührt.
+RLS: settings-Spalte auf bereits geschützter projects-Zeile -> bestehende Policies
+decken sie, KEINE neue Policy nötig (verifizieren).
 
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,

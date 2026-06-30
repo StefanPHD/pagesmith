@@ -53,9 +53,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       im Edit-Modus ohne Reload-Sprung (Scheibe 3). Type-diskriminiertes
       Mapping-Modell ein zweites Mal bestätigt.
 - [~] Phase 6 — Server-Side Tracking (CAPI): IN ARBEIT. Pfad = CAPI-Proxy auf
-      Pagesmith-Domain (First-Party-Upgrade später mit Phase 7). Start: Scheibe 0
-      (elementId,type)-Compound-Key-Migration. Details + Decomposition in der
-      Phase-6-Sektion.
+      Pagesmith-Domain (First-Party-Upgrade später mit Phase 7). Scheibe 0 + 1a + 1b
+      erledigt: clientseitiges Meta-Tracking ist echt & live (Pixel-ID-UI, Standard-/
+      Custom-Events, value/currency, fbq mit eventID, Consent-Hook, Export-Bake). Als
+      Nächstes Scheibe 2 (CAPI-Proxy). Details + Decomposition in der Phase-6-Sektion.
 - [ ] Phase 7 — Hosting & Go-Live: Vercel/Netlify-API, Custom Domains, SSL.
       ACHTUNG: härtester Brocken (Multi-Tenant Custom Domains + Auto-SSL); schaltet
       zugleich die Funnel-Vision frei. (war Phase 6)
@@ -970,11 +971,12 @@ Decomposition (Owner-bestätigt):
 - Scheibe 0 — (elementId, type)-Compound-Key-Migration (STRUKTURELL, kein Feature). JETZT.
 - [x] Scheibe 1a — Mehr-Aktion strukturell: track-Union-Zweig + Panel mehr-aktionsfähig
         + Wiring-byId->Array + vier latente Fixes. Stub-Firing, Meta zuerst. ABGESCHLOSSEN (live).
-- Scheibe 1b — Meta-Pixel-Semantik (ECHT): settings-jsonb-Blob (Migration 0004,
+- [x] Scheibe 1b — Meta-Pixel-Semantik: settings-jsonb-Blob (Migration 0004,
   plattform-genestet) + projektweite Meta-Pixel-ID-UI + TrackConfig {event,value?,
   currency?,isCustom?} + Standard-Event-Dropdown (+ Custom-Zweig) + value/currency
   dynamisch + stub->fbq mit eventID + Consent-Hook (gated auch init) + Base-Pixel im
-  Export OHNE Auto-PageView.
+  Export OHNE Auto-PageView. ABGESCHLOSSEN (live). Damit ist Scheibe 1 (Tracking-Tile +
+  echtes Meta-Pixel) KOMPLETT.
 - Scheibe 2 — CAPI-Proxy (Next.js API-Route, Secret-Handling, Server-Forward an Meta).
 - Scheibe 3 — Consent-Gate.
 
@@ -1112,7 +1114,32 @@ Leitplanken: KEINE Meta-Semantik (fbq/Pixel-ID/value/currency) in 1a. detect.ts/
 unberührt (track bindet an bereits erkannte interaktive Elemente). Text-Pfad, Auth/RLS,
 Sandbox unberührt. KEINE DB-Migration.
 
-### Scheibe 1b — Meta-Pixel-Semantik (vor dem Bau dokumentiert)
+### Scheibe 1b — Meta-Pixel-Semantik (ABGESCHLOSSEN, live verifiziert)
+Status: fertig, live verifiziert, produktionsreif. Commit "feat(tracking): real Meta
+pixel (settings blob, events, eventID, consent hook)". Pipeline grün (tsc/lint/build +
+Tests: settings-Roundtrip, configEqual value/currency/isCustom, Export-init-genau-einmal-
+ohne-PageView, trackCustom, value-vs-nicht-value-Event, keine-ID->kein-fbq, psConsent==false->
+nichts). Browser-Verifikation via Network-Tab (das verlässliche Instrument): fbevents.js +
+facebook.com/tr feuern mit korrekter Pixel-ID und eventID; Settings-Persistenz + Cross-
+Projekt-Isolation live bestätigt; CONSENT-GATE-BEWEIS 100%: bei window.pagesmithConsent=
+()=>false KEIN Request an connect.facebook.net (Script-Load selbst gegate-t, nicht nur init).
+
+Mess-Lektion (wichtig, dokumentiert): der scheinbare "PS_PIXEL_ID-Blocker" war eine
+Mess-Illusion, kein Code-Bug. Drei Confounds gleichzeitig: (1) view-source: führt kein JS
+aus -> totes Messfeld; (2) das Pixel feuert im sandboxed iframe (allow-scripts ohne
+allow-same-origin, opaque origin) -> der Meta Pixel Helper auf der Top-Seite kann
+strukturell nicht hineinsehen; (3) init ist lazy-on-click hinter psConsent, und die
+getesteten Elemente trugen Redirects (Wegnavigation vor Helper-Refresh). Die Variablen-
+Referenz var PS_PIXEL_ID + fbq("init",PS_PIXEL_ID) ist valides, verhaltensidentisches JS
+(var-gehoistet) -> Inlinen hätte nichts geändert. Grundwahrheit kam aus dem Network-Tab
+(Preserve log), nicht aus erneutem Code-Lesen. Verstärkt die Methode: Instrument schlägt
+Code-Re-Read; tote/abgeschirmte Messpunkte erkennen, bevor man "fixt".
+
+Konsequenz fürs Live-Testen von Tracking: NIE über view-source oder das Sandbox-Preview-
+iframe messen. Immer den exportierten File direkt öffnen + Network-Tab (Preserve log,
+Filter facebook); für den Pixel-Helper ein Track-only-Element OHNE Redirect (button, kein
+a[href]) verwenden.
+
 Ersetzt den 1a-Stub durch echtes Meta-Pixel. Erste echte externe Integration, erste
 Schema-Migration seit 0003.
 

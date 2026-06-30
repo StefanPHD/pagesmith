@@ -41,6 +41,7 @@ export default async function Home() {
         initialProjectId={project?.id ?? null}
         initialProjects={projects}
         initialMappings={project?.mappings ?? []}
+        initialSettings={project?.settings ?? {}}
       />
     </main>
   );

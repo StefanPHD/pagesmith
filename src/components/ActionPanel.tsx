@@ -11,6 +11,14 @@ import {
   type TextConfig,
   type TrackConfig,
 } from "@/lib/mappings";
+import { META_STANDARD_EVENTS, META_VALUE_EVENTS } from "@/lib/tracking/meta";
+
+// Sentinel im Event-Dropdown fuer "Custom…": schaltet auf ein freies Textfeld
+// (fbq trackCustom). Kollidiert nicht mit Meta-Standard-Event-Namen.
+const CUSTOM_EVENT = "__custom__";
+
+// Waehrungen fuers value/currency-Feld. Klein gehalten (DACH + international).
+const CURRENCIES = ["EUR", "USD", "GBP", "CHF"] as const;
 
 type ActionPanelProps = {
   // Das in der Preview angeklickte Element (via postMessage-Bruecke) oder null.
@@ -509,10 +517,10 @@ function RedirectForm({
 }
 
 /**
- * Tracking-Aktions-Zustand (Phase 6 Scheibe 1a, STRUKTURELL). Spiegelt
- * RedirectActions: Kachel -> Anzeige -> Formular. config minimal { event }.
- * KEINE Meta-Semantik (kein Standard-Event-Dropdown, kein value/currency) — das
- * ist 1b.
+ * Tracking-Aktions-Zustand (Phase 6 Scheibe 1b, ECHTE Meta-Semantik). Spiegelt
+ * RedirectActions: Kachel -> Anzeige -> Formular. Standard-Event-Dropdown +
+ * "Custom…"-Zweig (fbq trackCustom); value/currency dynamisch nur bei
+ * wert-tragenden Events (META_VALUE_EVENTS) ODER Custom-Events.
  */
 function TrackActions({
   mapping,
@@ -525,27 +533,79 @@ function TrackActions({
 }) {
   const trackMapping = mapping?.type === "track" ? mapping : null;
   const [isEditing, setIsEditing] = useState(false);
+  // Seed aus bestehendem Mapping (key=ps-ID -> nur beim Mount). isCustom traegt der
+  // Config-Flag; defensiv faellt ein nicht-Standard-Event ohne Flag auch auf custom.
+  const seededCustom =
+    trackMapping?.config.isCustom ??
+    (trackMapping
+      ? !META_STANDARD_EVENTS.includes(
+          trackMapping.config.event as (typeof META_STANDARD_EVENTS)[number]
+        )
+      : false);
+  const [isCustom, setIsCustom] = useState(seededCustom);
   const [event, setEvent] = useState(trackMapping?.config.event ?? "");
+  const [value, setValue] = useState(
+    trackMapping?.config.value != null ? String(trackMapping.config.value) : ""
+  );
+  const [currency, setCurrency] = useState(
+    trackMapping?.config.currency ?? "EUR"
+  );
 
   const valid = event.trim() !== "";
+  // value/currency nur bei wert-tragenden Standard-Events ODER Custom (freie Wahl).
+  const showValue = isCustom || META_VALUE_EVENTS.has(event);
+
+  function reseed() {
+    setIsCustom(seededCustom);
+    setEvent(trackMapping?.config.event ?? "");
+    setValue(
+      trackMapping?.config.value != null ? String(trackMapping.config.value) : ""
+    );
+    setCurrency(trackMapping?.config.currency ?? "EUR");
+  }
 
   function handleSubmit() {
     if (!valid) return;
-    onSave({ event: event.trim() });
+    const config: TrackConfig = { event: event.trim() };
+    if (isCustom) config.isCustom = true;
+    // value/currency nur mitschicken, wenn sichtbar UND eine gueltige Zahl steht.
+    if (showValue && value.trim() !== "") {
+      const num = Number(value);
+      if (!Number.isNaN(num)) {
+        config.value = num;
+        config.currency = currency;
+      }
+    }
+    onSave(config);
     setIsEditing(false);
   }
 
   function handleCancel() {
-    setEvent(trackMapping?.config.event ?? "");
+    reseed();
     setIsEditing(false);
   }
 
   if (isEditing) {
     return (
       <TrackForm
+        isCustom={isCustom}
         event={event}
+        value={value}
+        currency={currency}
+        showValue={showValue}
         valid={valid}
+        onSelectChange={(v) => {
+          if (v === CUSTOM_EVENT) {
+            setIsCustom(true);
+            setEvent("");
+          } else {
+            setIsCustom(false);
+            setEvent(v);
+          }
+        }}
         onEventChange={setEvent}
+        onValueChange={setValue}
+        onCurrencyChange={setCurrency}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
       />
@@ -602,11 +662,16 @@ function TrackView({
     <div className="flex flex-col gap-3">
       <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-3">
         <p className="mb-1 text-xs font-medium uppercase tracking-wide text-emerald-700">
-          🎯 Tracking-Event
+          🎯 Meta-Pixel-Event{config.isCustom ? " (Custom)" : ""}
         </p>
         <p className="break-all text-sm text-gray-800">
           {config.event || "(kein Event)"}
         </p>
+        {config.value != null && (
+          <p className="mt-1 text-xs text-gray-500">
+            Wert: {config.value} {config.currency ?? ""}
+          </p>
+        )}
       </div>
       <div className="flex gap-2">
         <button
@@ -628,36 +693,107 @@ function TrackView({
   );
 }
 
-/** Event-Formular (Anlegen/Bearbeiten). Übernehmen gesperrt bei leerem Event. */
+/**
+ * Event-Formular (Anlegen/Bearbeiten, Scheibe 1b). Standard-Event-Dropdown +
+ * "Custom…"-Zweig; value/currency dynamisch nur bei showValue. Übernehmen gesperrt
+ * bei leerem Event.
+ */
 function TrackForm({
+  isCustom,
   event,
+  value,
+  currency,
+  showValue,
   valid,
+  onSelectChange,
   onEventChange,
+  onValueChange,
+  onCurrencyChange,
   onSubmit,
   onCancel,
 }: {
+  isCustom: boolean;
   event: string;
+  value: string;
+  currency: string;
+  showValue: boolean;
   valid: boolean;
+  onSelectChange: (v: string) => void;
   onEventChange: (v: string) => void;
+  onValueChange: (v: string) => void;
+  onCurrencyChange: (v: string) => void;
   onSubmit: () => void;
   onCancel: () => void;
 }) {
   return (
     <div className="flex flex-col gap-3">
       <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium text-gray-700">Event-Name</span>
-        <input
-          type="text"
+        <span className="font-medium text-gray-700">Standard-Event</span>
+        <select
           autoFocus
-          value={event}
-          onChange={(e) => onEventChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && valid) onSubmit();
-          }}
-          placeholder="z.B. Lead"
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-        />
+          value={isCustom ? CUSTOM_EVENT : event}
+          onChange={(e) => onSelectChange(e.target.value)}
+          className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+        >
+          <option value="" disabled>
+            Event wählen …
+          </option>
+          {META_STANDARD_EVENTS.map((ev) => (
+            <option key={ev} value={ev}>
+              {ev}
+            </option>
+          ))}
+          <option value={CUSTOM_EVENT}>Custom …</option>
+        </select>
       </label>
+
+      {isCustom && (
+        <label className="flex flex-col gap-1 text-sm">
+          <span className="font-medium text-gray-700">Custom-Event-Name</span>
+          <input
+            type="text"
+            value={event}
+            onChange={(e) => onEventChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && valid) onSubmit();
+            }}
+            placeholder="z.B. ViewPricing"
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          />
+        </label>
+      )}
+
+      {showValue && (
+        <div className="flex gap-2">
+          <label className="flex flex-1 flex-col gap-1 text-sm">
+            <span className="font-medium text-gray-700">Wert (optional)</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              min="0"
+              step="0.01"
+              value={value}
+              onChange={(e) => onValueChange(e.target.value)}
+              placeholder="z.B. 49.90"
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="font-medium text-gray-700">Währung</span>
+            <select
+              value={currency}
+              onChange={(e) => onCurrencyChange(e.target.value)}
+              className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            >
+              {CURRENCIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
 
       <div className="flex gap-2">
         <button

@@ -250,58 +250,192 @@ describe("Wiring-Verhalten PREVIEW (Containment)", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Tracking (Phase 6 Scheibe 1a, STRUKTURELL): ein interaktives Element kann
-// redirect UND track tragen. Der Track-Stub (console.log) feuert VOR der
-// Redirect-Navigation. KEINE Meta-Semantik (kein fbq) — das ist 1b.
+// Tracking (Phase 6 Scheibe 1b, ECHTES Meta-Pixel): ein interaktives Element kann
+// redirect UND track tragen. Mit gesetzter Pixel-ID feuert der Track-Zweig echtes
+// fbq VOR der Redirect-Navigation. Der frühere 1a-console.log-Stub ist bewusst
+// ersetzt (invertierte Assertion, nicht aufgeweicht).
 // ---------------------------------------------------------------------------
 
-describe("Wiring-Verhalten TRACK (Mehr-Aktion, Scheibe 1a)", () => {
-  it("Element [redirect, track] (export): Tabelle enthaelt BEIDE; Stub feuert VOR der Navigation", () => {
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+const PIXEL = "123456789012345";
+// Stubbt window.fbq -> der fbevents-Bootstrap (if (f.fbq) return) ueberspringt den
+// echten Script-Load und unsere init/track-Calls landen im Spy. Gibt den Spy zurueck.
+function stubFbq() {
+  const fbq = vi.fn();
+  vi.stubGlobal("fbq", fbq);
+  return fbq;
+}
+const fbqCalls = (fbq: ReturnType<typeof vi.fn>, method: string) =>
+  fbq.mock.calls.filter((c) => c[0] === method);
+
+describe("Wiring-Verhalten TRACK (Meta-Pixel, Scheibe 1b)", () => {
+  it("Element [redirect, track] (export): Tabelle enthaelt BEIDE; fbq feuert VOR der Navigation", () => {
+    const fbq = stubFbq();
     // Array-Reihenfolge redirect-zuerst -> beweist die Deferral (Track trotzdem
     // vor der Navigation), reihenfolge-unabhaengig.
     mountAndWire(
       generateFunctional(
         MAPPED_BUTTON,
         [redirect("ps-aaaaaa", "https://x.com", true), track("ps-aaaaaa", "Lead")],
-        "export"
+        "export",
+        { metaPixelId: PIXEL }
       )
     );
-    const table = readTable(
-      mountedDoc.documentElement.outerHTML
-    );
+    const table = readTable(mountedDoc.documentElement.outerHTML);
     expect(table).toHaveLength(2);
 
     const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
     expect(ev.defaultPrevented).toBe(true);
-    expect(logSpy).toHaveBeenCalledWith("[pagesmith track] Lead");
+    expect(fbqCalls(fbq, "track")[0]).toEqual([
+      "track",
+      "Lead",
+      {},
+      expect.objectContaining({ eventID: expect.any(String) }),
+    ]);
     expect(openSpy).toHaveBeenCalledWith("https://x.com", "_blank");
-    // ORDNUNG: der Track-Stub-Log lief VOR window.open.
-    expect(logSpy.mock.invocationCallOrder[0]).toBeLessThan(
+    // ORDNUNG: das Event lief VOR window.open (navigationssicher).
+    expect(fbq.mock.invocationCallOrder[0]).toBeLessThan(
       openSpy.mock.invocationCallOrder[0]
     );
-    logSpy.mockRestore();
   });
 
-  it("Element [track] only (export): Stub feuert, KEINE Navigation, defaultPrevented false", () => {
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+  it("Element [track] only (export): fbq feuert, KEINE Navigation, defaultPrevented false", () => {
+    const fbq = stubFbq();
     mountAndWire(
-      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export")
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
     );
     const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
-    expect(logSpy).toHaveBeenCalledWith("[pagesmith track] Lead");
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
     expect(openSpy).not.toHaveBeenCalled();
     expect(hrefValue).toBe("");
     // Track-only blockt den Default NICHT (nur Redirect ruft preventDefault).
     expect(ev.defaultPrevented).toBe(false);
-    logSpy.mockRestore();
+  });
+
+  it("Base-Pixel: fbq('init', id) GENAU EINMAL (auch bei zwei Klicks), KEIN Auto-PageView", () => {
+    const fbq = stubFbq();
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { metaPixelId: PIXEL }
+    );
+    // Output-Eigenschaften: genau ein init-Snippet, KEIN PageView.
+    expect((out.match(/fbq\("init"/g) ?? []).length).toBe(1);
+    expect(out).toContain(PIXEL);
+    // Kein Auto-PageView-CALL (das Wort steht nur im Kommentar "OHNE Auto-PageView").
+    expect(out).not.toContain('"PageView"');
+
+    mountAndWire(out);
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    // Lazy init mit fbReady-Guard -> init nur EINMAL, Event je Klick.
+    expect(fbqCalls(fbq, "init")).toEqual([["init", PIXEL]]);
+    expect(fbqCalls(fbq, "track")).toHaveLength(2);
+  });
+
+  it("Custom-Event -> fbq('trackCustom', <freier Name>)", () => {
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        MAPPED_BUTTON,
+        [
+          {
+            elementId: "ps-aaaaaa",
+            type: "track",
+            config: { event: "ViewPricing", isCustom: true },
+          },
+        ],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(fbqCalls(fbq, "trackCustom")[0]).toEqual([
+      "trackCustom",
+      "ViewPricing",
+      {},
+      expect.objectContaining({ eventID: expect.any(String) }),
+    ]);
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
+  });
+
+  it("wert-tragendes Event (value/currency) -> params; nicht-wert-Event -> leere params", () => {
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        MAPPED_BUTTON,
+        [
+          {
+            elementId: "ps-aaaaaa",
+            type: "track",
+            config: { event: "Purchase", value: 49.9, currency: "EUR" },
+          },
+        ],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(fbqCalls(fbq, "track")[0][2]).toEqual({ value: 49.9, currency: "EUR" });
+
+    // Gegenprobe: Lead ohne value/currency -> leere params.
+    const fbq2 = stubFbq();
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(fbqCalls(fbq2, "track")[0][2]).toEqual({});
+  });
+
+  it("KEINE Pixel-ID -> kein fbq im Output; Track-Aktion ist no-op (console.warn)", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const fbq = stubFbq();
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export"
+      // KEIN metaPixelId
+    );
+    // Kein Meta-Snippet im Output: kein fbq-CALL (das blosse Wort "fbq" steht im
+    // Wiring-Kommentar; ein fbq("…") existiert nur mit gesetzter Pixel-ID).
+    expect(out).not.toContain("fbq(");
+    mountAndWire(out);
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(fbq).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+
+  it("CONSENT: window.pagesmithConsent()==false -> weder Script-Load noch init/Event", () => {
+    // BEWUSST KEIN fbq-Stub: bei (falschem) init wuerde der Bootstrap ein
+    // connect.facebook.net-<script> einfuegen -> dessen Abwesenheit beweist
+    // "kein Script-Load vor Consent" (Verschaerfung).
+    vi.stubGlobal("pagesmithConsent", () => false);
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(
+      mountedDoc.querySelectorAll('script[src*="connect.facebook.net"]').length
+    ).toBe(0);
+    // window.fbq blieb undefiniert (kein init).
+    expect(
+      (globalThis as unknown as { fbq?: unknown }).fbq
+    ).toBeUndefined();
   });
 
   it("verwaistes track-Mapping (ps-id fehlt) wird NICHT verdrahtet", () => {
     const out = generateFunctional(
       MAPPED_BUTTON,
       [track("ps-zzzzzz", "Ghost")],
-      "export"
+      "export",
+      { metaPixelId: PIXEL }
     );
     // present-Filter greift typ-agnostisch -> leere Tabelle -> kein Script.
     expect(out).not.toContain("pagesmith-mappings");

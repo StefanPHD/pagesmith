@@ -25,7 +25,9 @@ const { saveProject, listProjects, loadProject, deleteProject, renameProject } =
   vi.hoisted(() => ({
     saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
     listProjects: vi.fn(async () => []),
-    loadProject: vi.fn(async () => null),
+    // Rueckgabe bewusst Promise<unknown> -> einzelne Tests koennen via
+    // mockResolvedValueOnce eine volle ProjectRow (inkl. settings) liefern.
+    loadProject: vi.fn(async (): Promise<unknown> => null),
     deleteProject: vi.fn(async () => ({ ok: true as const })),
     renameProject: vi.fn(async () => ({ ok: true as const })),
   }));
@@ -250,7 +252,8 @@ describe("CodeImporter — Scheibe 1a: Mehr-Aktion (redirect + track)", () => {
     fireEvent.click(await screen.findByText("Kaufen"));
     // Track-Kachel im interaktiven Panel (neben der Weiterleitung).
     fireEvent.click(await screen.findByText(/Tracking-Event/));
-    fireEvent.change(screen.getByPlaceholderText("z.B. Lead"), {
+    // Scheibe 1b: Standard-Event-Dropdown statt freiem Textfeld.
+    fireEvent.change(await screen.findByRole("combobox"), {
       target: { value: "Purchase" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Übernehmen" }));
@@ -293,5 +296,57 @@ describe("CodeImporter — Scheibe 1a: Mehr-Aktion (redirect + track)", () => {
     // typ-aware Schutz: Ziel hat kein redirect -> keine Ueberschreib-Warnung.
     expect(confirmSpy).not.toHaveBeenCalled();
     confirmSpy.mockRestore();
+  });
+});
+
+describe("CodeImporter — Scheibe 1b: Settings (Meta-Pixel-ID) Persistenz + Isolation", () => {
+  function pixelInput() {
+    return screen.getByPlaceholderText(/123456789012345/) as HTMLInputElement;
+  }
+
+  it("Pixel-ID -> dirty -> grosser Speichern-Button reicht settings an saveProject", async () => {
+    render(<CodeImporter initialCode="<button>X</button>" />);
+    // Einstellungs-Panel oeffnen und Pixel-ID setzen.
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    fireEvent.change(pixelInput(), { target: { value: "999000111" } });
+
+    // Speichern (einziger DB-Write).
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+
+    expect(saveProject).toHaveBeenCalledTimes(1);
+    // 4. Argument = settings, plattform-genestet. (Cast: der Spy ist arg-los typisiert.)
+    const args = saveProject.mock.calls[0] as unknown[];
+    expect(args[3]).toEqual({ pixels: { meta: { pixelId: "999000111" } } });
+  });
+
+  it("Projektwechsel reseedet settings (kein Leak: Pixel-ID von A bleibt nicht in B)", async () => {
+    loadProject.mockResolvedValueOnce({
+      id: "p2",
+      name: "P2",
+      html: "<button>Y</button>",
+      mappings: [],
+      settings: { pixels: { meta: { pixelId: "222" } } },
+    });
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-02T00:00:00Z" },
+        ]}
+        initialSettings={{ pixels: { meta: { pixelId: "111" } } }}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    expect(pixelInput().value).toBe("111");
+
+    // Auf P2 wechseln.
+    fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
+    fireEvent.click(await screen.findByText("P2"));
+
+    // Reseeded auf P2s Pixel-ID, NICHT die von P1 (kein Leak).
+    await waitFor(() => expect(pixelInput().value).toBe("222"));
   });
 });

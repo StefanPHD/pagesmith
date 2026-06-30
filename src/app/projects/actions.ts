@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { Mapping } from "@/lib/mappings";
+import type { ProjectSettings } from "@/lib/settings";
 
 /**
  * Speichern-Ergebnis. Bei { ok: true } liefert die Action die (ggf. NEU
@@ -21,6 +22,9 @@ export type ProjectRow = {
   name: string;
   html: string;
   mappings: Mapping[];
+  // Projektweite Einstellungen (jsonb, Scheibe 1b). Genau wie mappings
+  // durchgereicht/persistiert. Default '{}' in der DB -> {} fuer Altzeilen.
+  settings: ProjectSettings;
 };
 
 /** Listen-Eintrag fuer den Projekt-Switcher (ohne das schwere html-Feld). */
@@ -65,7 +69,7 @@ export async function loadProject(id?: string): Promise<ProjectRow | null> {
 
   let query = supabase
     .from("projects")
-    .select("id,name,html,mappings")
+    .select("id,name,html,mappings,settings")
     .eq("user_id", user.id);
 
   if (id) {
@@ -92,13 +96,14 @@ export async function loadProject(id?: string): Promise<ProjectRow | null> {
  * BEFORE-UPDATE-Trigger erzwingt es ohnehin, hier zusaetzlich explizit, weil
  * "zuletzt bearbeitet" (Listen-Sortierung + Fallback) daran haengt.
  *
- * mappings wird mit dem html zusammen gespeichert (jsonb). Mapping-Aenderungen
+ * mappings + settings werden mit dem html zusammen gespeichert (jsonb). Beide
  * fassen den Code nicht an -> ohne Mit-Speichern gingen sie still verloren.
  */
 export async function saveProject(
   projectId: string | null,
   html: string,
-  mappings: Mapping[]
+  mappings: Mapping[],
+  settings: ProjectSettings
 ): Promise<SaveResult> {
   const supabase = await createClient();
   const {
@@ -109,7 +114,7 @@ export async function saveProject(
   if (projectId) {
     const { data, error } = await supabase
       .from("projects")
-      .update({ html, mappings, updated_at: new Date().toISOString() })
+      .update({ html, mappings, settings, updated_at: new Date().toISOString() })
       .eq("id", projectId)
       .eq("user_id", user.id)
       .select("id")
@@ -122,7 +127,13 @@ export async function saveProject(
 
   const { data, error } = await supabase
     .from("projects")
-    .insert({ user_id: user.id, html, mappings, name: "Unbenanntes Projekt" })
+    .insert({
+      user_id: user.id,
+      html,
+      mappings,
+      settings,
+      name: "Unbenanntes Projekt",
+    })
     .select("id")
     .single();
 

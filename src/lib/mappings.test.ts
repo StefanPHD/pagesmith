@@ -215,6 +215,48 @@ describe("mappingsEqual – reihenfolge-unabhaengiger Mengenvergleich", () => {
     const b = [track("ps-aaaaaa", "Lead")];
     expect(mappingsEqual(a, b)).toBe(true);
   });
+
+  // Phase 6 Scheibe 1b: configEqual deckt ALLE track-Felder ab. Sonst gilt eine reine
+  // value-/currency-/isCustom-Aenderung faelschlich als nicht-dirty -> stiller Verlust.
+  it("geaenderter track-value IST dirty (sonst Verlust)", () => {
+    const a: Mapping[] = [
+      { elementId: "ps-aaaaaa", type: "track", config: { event: "Purchase", value: 9.9, currency: "EUR" } },
+    ];
+    const b: Mapping[] = [
+      { elementId: "ps-aaaaaa", type: "track", config: { event: "Purchase", value: 19.9, currency: "EUR" } },
+    ];
+    expect(mappingsEqual(a, b)).toBe(false);
+  });
+
+  it("geaenderte track-currency IST dirty", () => {
+    const a: Mapping[] = [
+      { elementId: "ps-aaaaaa", type: "track", config: { event: "Purchase", value: 9.9, currency: "EUR" } },
+    ];
+    const b: Mapping[] = [
+      { elementId: "ps-aaaaaa", type: "track", config: { event: "Purchase", value: 9.9, currency: "USD" } },
+    ];
+    expect(mappingsEqual(a, b)).toBe(false);
+  });
+
+  it("geaendertes track-isCustom IST dirty (Standard <-> Custom bei gleichem Namen)", () => {
+    const a: Mapping[] = [
+      { elementId: "ps-aaaaaa", type: "track", config: { event: "Purchase" } },
+    ];
+    const b: Mapping[] = [
+      { elementId: "ps-aaaaaa", type: "track", config: { event: "Purchase", isCustom: true } },
+    ];
+    expect(mappingsEqual(a, b)).toBe(false);
+  });
+
+  it("gleiche value/currency/isCustom sind NICHT dirty (Gegenprobe)", () => {
+    const a: Mapping[] = [
+      { elementId: "ps-aaaaaa", type: "track", config: { event: "Purchase", value: 9.9, currency: "EUR" } },
+    ];
+    const b: Mapping[] = [
+      { elementId: "ps-aaaaaa", type: "track", config: { event: "Purchase", value: 9.9, currency: "EUR" } },
+    ];
+    expect(mappingsEqual(a, b)).toBe(true);
+  });
 });
 
 describe("displayTextFor – geteilter Anzeige-Deriver (Liste + Header)", () => {

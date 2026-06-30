@@ -7,6 +7,7 @@
 // wir nur die ABSICHT erfasst; hier feuert der Button wirklich.
 
 import type { Mapping } from "./mappings";
+import { buildMetaRuntime, metaTrackStatement } from "./tracking/meta";
 
 const PAGESMITH_ID_ATTR = "data-pagesmith-id";
 
@@ -52,10 +53,19 @@ export type GenerateMode = "export" | "preview" | "edit";
 // Editieren-iframe gehoeren Klicks ALLEIN der separat injizierten Selektions-
 // Bruecke -> generateFunctional("edit") installiert KEINEN eigenen Click-Handler.
 //
+// META (Scheibe 1b): ist eine Pixel-ID gesetzt, wird die isolierte Meta-Runtime
+// (buildMetaRuntime) in die IIFE gesplicet und der Track-Zweig feuert echtes fbq
+// (__psMetaFire) statt des 1a-console.log-Stubs. Ohne Pixel-ID kein Meta-Snippet
+// und der Track-Zweig ist ein console.warn-no-op (metaTrackStatement). Die gesamte
+// Meta-Logik lebt in tracking/meta.ts (Naht fuer Plattform #2).
+//
 // WICHTIG: Darf keinen literalen "</script>"-String enthalten (Serialisierung).
-function buildWiringScript(mode: GenerateMode): string {
+function buildWiringScript(mode: GenerateMode, metaPixelId: string): string {
+  const hasPixel = metaPixelId !== "";
+  const metaRuntime = hasPixel ? buildMetaRuntime(metaPixelId) : "";
+  const trackStmt = metaTrackStatement(hasPixel);
   return `(function () {
-  var MODE = ${JSON.stringify(mode)};
+  var MODE = ${JSON.stringify(mode)};${metaRuntime}
   var dataEl = document.getElementById("${MAPPINGS_SCRIPT_ID}");
   if (!dataEl) return;
   var table;
@@ -97,14 +107,14 @@ function buildWiringScript(mode: GenerateMode): string {
       if (actions && actions.length) {
         // Track-Aktionen feuern SOFORT in der Schleife; die (max. eine) Redirect-
         // Aktion wird gemerkt und ERST NACH der Schleife ausgefuehrt -> der Track
-        // feuert garantiert VOR der Navigation, reihenfolge-unabhaengig (die
-        // Navigation killt sonst den in-flight Request). 1a: Stub = console.log;
-        // 1b ersetzt das durch echtes fbq + navigationssicheres Senden.
+        // feuert garantiert VOR der Navigation, reihenfolge-unabhaengig. 1b: echtes
+        // fbq (navigationssicher via fbevents/sendBeacon) -> KEIN Navigations-Defer,
+        // die Navigation laeuft danach normal weiter (Redirect-Latenz unverschlechtert).
         var redirect = null;
         for (var j = 0; j < actions.length; j++) {
           var a = actions[j];
           if (a.type === "track") {
-            console.log("[pagesmith track] " + ((a.config && a.config.event) || ""));
+            ${trackStmt}
           } else if (a.type === "redirect") {
             redirect = a;
           }
@@ -147,9 +157,10 @@ function buildWiringScript(mode: GenerateMode): string {
  *   greifen nahtlos.
  * - Tabelle je Modus: "preview" alle Laufzeit-Typen; "export" alle ausser text
  *   (redirect + track; Text wird im Export NICHT verdrahtet, sondern direkt in den
- *   DOM gebacken — siehe unten). 1a-Hinweis: der track-console.log-STUB landet damit
- *   bewusst im Export-Output (beweist die Wiring-Naht); 1b ersetzt ihn durch echtes
- *   fbq. "edit" nur text (Redirect/Track waeren im Editieren-iframe nutzlos).
+ *   DOM gebacken — siehe unten). 1b-Hinweis: der track-Zweig feuert echtes fbq, wenn
+ *   options.metaPixelId gesetzt ist (Base-Pixel lazy + consent-gegated injiziert),
+ *   sonst console.warn-no-op. "edit" nur text (Redirect/Track waeren im Editieren-
+ *   iframe nutzlos; das Edit-iframe bleibt damit pixel-frei).
  * - TEXT-Bake (nur "export"): pro praesentem type:"text"-Mapping wird das Element
  *   per ps-id gefunden und sein textContent auf config.content gesetzt — VOR der
  *   Serialisierung, auf DEMSELBEN geparsten DOM. Ergebnis: das <h1> enthaelt im
@@ -185,7 +196,12 @@ function buildWiringScript(mode: GenerateMode): string {
 export function generateFunctional(
   html: string,
   mappings: Mapping[],
-  mode: GenerateMode = "export"
+  mode: GenerateMode = "export",
+  // options.metaPixelId (Scheibe 1b): projektweite Meta-Pixel-ID aus den
+  // Projekt-Einstellungen. Gesetzt -> Track-Zweig feuert echtes fbq + Base-Pixel
+  // wird (lazy, consent-gegated) injiziert. Leer/absent -> kein Meta-Snippet,
+  // Track-Aktion ist ein no-op. Der Aufrufer extrahiert sie via getMetaPixelId.
+  options?: { metaPixelId?: string }
 ): string {
   if (!html || !html.trim()) return "";
 
@@ -240,7 +256,7 @@ export function generateFunctional(
       dataScript.textContent = json;
 
       const wiringScript = doc.createElement("script");
-      wiringScript.textContent = buildWiringScript(mode);
+      wiringScript.textContent = buildWiringScript(mode, options?.metaPixelId ?? "");
 
       // Vor </body> haengen; Fallback documentElement, falls kein body existiert.
       const target = doc.body ?? doc.documentElement;

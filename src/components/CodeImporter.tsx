@@ -30,6 +30,12 @@ import {
   type TrackConfig,
 } from "@/lib/mappings";
 import { editPreviewHtml, generateFunctional } from "@/lib/generate";
+import {
+  getMetaPixelId,
+  setMetaPixelId,
+  settingsEqual,
+  type ProjectSettings,
+} from "@/lib/settings";
 import { exportFilename } from "@/lib/export";
 import { validateUploadFile } from "@/lib/upload";
 import ActionPanel from "@/components/ActionPanel";
@@ -84,6 +90,7 @@ export default function CodeImporter({
   initialProjectId = null,
   initialProjects = [],
   initialMappings = [],
+  initialSettings = {},
 }: {
   // Auto-Load: das zuletzt bearbeitete (bereits stabilisierte) HTML des Users.
   // Leer -> Editor startet leer wie bisher.
@@ -96,6 +103,9 @@ export default function CodeImporter({
   initialProjects?: ProjectListItem[];
   // Aktions-Zuweisungen des geladenen Projekts (zusammen mit initialCode geseedet).
   initialMappings?: Mapping[];
+  // Projektweite Einstellungen (Scheibe 1b), z.B. Meta-Pixel-ID. Parallel zu
+  // initialMappings geseedet; reine Projekt-Daten (kein View-State).
+  initialSettings?: ProjectSettings;
 }) {
   // Eingabe-State: aendert sich bei JEDEM Tastendruck und haelt die Textarea
   // sofort aktuell (Tippen darf nie auf Parsing/Preview warten). Startet mit dem
@@ -114,6 +124,15 @@ export default function CodeImporter({
   // beim Projektwechsel.
   const [mappings, setMappings] = useState<Mapping[]>(initialMappings);
   const [savedMappings, setSavedMappings] = useState<Mapping[]>(initialMappings);
+  // Projektweite Einstellungen (Scheibe 1b) + ihre Dirty-Baseline. Spiegeln
+  // mappings/savedMappings 1:1: reseedet an GENAU denselben Projekt-Load-Punkten,
+  // sonst leakt die Pixel-ID von Projekt A nach B. Settings fassen den Code NICHT
+  // an -> eigene Baseline noetig (wie mappings).
+  const [settings, setSettings] = useState<ProjectSettings>(initialSettings);
+  const [savedSettings, setSavedSettings] =
+    useState<ProjectSettings>(initialSettings);
+  // Ausklappbares Einstellungs-Panel (Tracking-Pixel). Reiner View-State.
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   // Ausklappbares Projekt-Menue (Default zu: sein Inhalt rendert erst beim
   // Oeffnen clientseitig -> keine Hydration-Mismatches bei relativen Zeitstempeln).
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
@@ -219,9 +238,11 @@ export default function CodeImporter({
   const functionalHtml = useMemo(
     () =>
       previewMode === "functional"
-        ? generateFunctional(debouncedCode, mappings, "preview")
+        ? generateFunctional(debouncedCode, mappings, "preview", {
+            metaPixelId: getMetaPixelId(settings),
+          })
         : "",
-    [previewMode, debouncedCode, mappings]
+    [previewMode, debouncedCode, mappings, settings]
   );
 
   // Edit-iframe-HTML: bei aktivem Text-Override zeigt AUCH der Editieren-Modus den
@@ -350,11 +371,13 @@ export default function CodeImporter({
   }, [copyStatus]);
 
   // Ungespeicherte Aenderungen seit dem letzten Speichern/Laden. Schuetzt das
-  // Wechseln/Neu-Anlegen vor stillem Verlust. Umfasst CODE UND MAPPINGS:
-  // Mapping-Aenderungen veraendern den Code nicht, wuerden sonst still verloren
-  // gehen. mappingsEqual vergleicht mengenbasiert (Umsortieren != dirty).
+  // Wechseln/Neu-Anlegen vor stillem Verlust. Umfasst CODE, MAPPINGS UND SETTINGS:
+  // weder Mapping- noch Settings-Aenderungen fassen den Code an, wuerden sonst
+  // still verloren gehen. mappingsEqual/settingsEqual vergleichen wertbasiert.
   const dirty =
-    code !== savedCode || !mappingsEqual(mappings, savedMappings);
+    code !== savedCode ||
+    !mappingsEqual(mappings, savedMappings) ||
+    !settingsEqual(settings, savedSettings);
 
   // Generischer Browser-Warndialog vor F5/Tab-Schliessen, solange ungespeicherte
   // Aenderungen offen sind. Speist sich aus DEMSELBEN dirty wie die In-App-Guards.
@@ -382,6 +405,9 @@ export default function CodeImporter({
     setSavedCode("");
     setMappings([]);
     setSavedMappings([]);
+    // Settings spiegeln mappings: leeres Projekt -> leere Settings + Baseline.
+    setSettings({});
+    setSavedSettings({});
     setSelectedElementId(null);
     // Leerer Kontext -> Panel offen (man muss importieren koennen), Flag frisch.
     applyZenForLoadedCode("");
@@ -453,11 +479,12 @@ export default function CodeImporter({
     setSaveStatus("saving");
     setSaveError(null);
     const stabilized = stabilizeIds(code);
-    const result = await saveProject(projectId, stabilized, mappings);
+    const result = await saveProject(projectId, stabilized, mappings, settings);
     if (result.ok) {
       setCode(stabilized);
       setSavedCode(stabilized);
       setSavedMappings(mappings);
+      setSavedSettings(settings);
       setProjectId(result.id);
       setProjects(await listProjects());
       setSaveStatus("saved");
@@ -477,7 +504,9 @@ export default function CodeImporter({
   // Leere laufen lassen. Generiert wird aus dem sauberen Klartext (keine
   // Preview-Injektionen), daher idempotent.
   function buildExportDocument(): string {
-    return generateFunctional(debouncedCode, mappings, "export");
+    return generateFunctional(debouncedCode, mappings, "export", {
+      metaPixelId: getMetaPixelId(settings),
+    });
   }
 
   // Download als .html: Blob -> Object-URL -> temporaerer <a download> -> Klick ->
@@ -688,6 +717,10 @@ export default function CodeImporter({
     setSavedCode(proj.html);
     setMappings(proj.mappings);
     setSavedMappings(proj.mappings);
+    // Settings am SELBEN Punkt wie savedMappings reseeden -> kein Leak zwischen
+    // Projekten (Pixel-ID von A darf nicht in B stehen bleiben).
+    setSettings(proj.settings);
+    setSavedSettings(proj.settings);
     setSelectedElementId(null);
     setIsProjectMenuOpen(false);
     // Zen-Default fuer den neuen Kontext: mit Code eingeklappt, leer offen.
@@ -729,6 +762,9 @@ export default function CodeImporter({
         setSavedCode(next.html);
         setMappings(next.mappings);
         setSavedMappings(next.mappings);
+        // Settings am SELBEN Punkt wie savedMappings reseeden (kein Leak).
+        setSettings(next.settings);
+        setSavedSettings(next.settings);
         setSelectedElementId(null);
         // Zen-Default fuer den nachgerueckten Kontext (resetToEmpty deckt den
         // leeren Fall im else selbst ab).
@@ -783,6 +819,15 @@ export default function CodeImporter({
           className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           + Neues Projekt
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsSettingsOpen((v) => !v)}
+          aria-expanded={isSettingsOpen}
+          className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          ⚙ Einstellungen
+          <Chevron direction={isSettingsOpen ? "up" : "down"} />
         </button>
 
         {/* Export-Gruppe (rechts). Erzeugt das funktionale Dokument aus genau der
@@ -902,6 +947,40 @@ export default function CodeImporter({
           </div>
         )}
       </div>
+
+      {/* Projekt-Einstellungen (Scheibe 1b): projektweite Tracking-Pixel. Als
+          beschriftete Plattform-LISTE aufgebaut -> weitere Plattformen (Google/
+          TikTok/…) passen spaeter als weitere Zeilen daneben, ohne Umbau. In 1b
+          genau EINE Zeile: Meta-Pixel-ID. Projektweit (nicht pro Element);
+          Aenderung -> dirty -> grosser Speichern-Button persistiert (kein Auto-Save).
+          Pixel-ID ist OEFFENTLICH -> Plain-Feld, kein Secret-Handling. */}
+      {isSettingsOpen && (
+        <div className="rounded-lg border border-gray-300 bg-white px-4 py-3">
+          <h2 className="mb-1 text-sm font-medium text-gray-700">
+            Tracking-Pixel
+          </h2>
+          <p className="mb-3 text-xs text-gray-500">
+            Projektweite Pixel-IDs. Gilt für alle Tracking-Events dieses Projekts.
+          </p>
+          <div className="flex flex-col gap-3">
+            <label className="flex flex-col gap-1 text-sm sm:flex-row sm:items-center sm:gap-3">
+              <span className="w-40 shrink-0 font-medium text-gray-700">
+                Meta-Pixel-ID
+              </span>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={getMetaPixelId(settings)}
+                onChange={(e) =>
+                  setSettings((prev) => setMetaPixelId(prev, e.target.value))
+                }
+                placeholder="z.B. 123456789012345"
+                className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </label>
+          </div>
+        </div>
+      )}
 
       {/* Weg-C-Netz: verwaiste Verknuepfungen. Eigene, immer sichtbare Sektion
           (nicht im einklappbaren linken Panel, da Orphans GLOBAL sind und kein

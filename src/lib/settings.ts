@@ -15,6 +15,19 @@ export type ProjectSettings = {
       pixelId?: string;
     };
   };
+  // CAPI-Server-Side-Infra (Scheibe 2a). BEWUSST plattform-AGNOSTISCH neben pixels
+  // (nicht darunter): es ist keine Pixel-Config, sondern der server-seitige
+  // Forward-Kanal.
+  //   trackingKey = OEFFENTLICHER Zufalls-Handle. Loest server-seitig -> project_id
+  //                 -> geheimen Token auf (Read-Pfad in Scheibe 2b). Darf im Client
+  //                 stehen / spaeter in den Export gebacken werden.
+  //   tokenSet    = NICHT-sensibler Indikator "CAPI-Token gesetzt?" fuer die
+  //                 write-only-UI ("••• gesetzt").
+  // Der ECHTE Token liegt NIE hier — nur server-only in der Tabelle project_tokens.
+  capi?: {
+    trackingKey?: string;
+    tokenSet?: boolean;
+  };
 };
 
 // Die getrimmte Meta-Pixel-ID oder "" (nicht gesetzt). EINE Quelle fuer "ist ein
@@ -38,9 +51,35 @@ export function setMetaPixelId(
   };
 }
 
-// Dirty-Vergleich. In 1b BEWUSST eng: nur die Meta-Pixel-ID existiert, also genuegt
-// ihr Vergleich. Weitere Plattform-Felder wachsen hier mit (je ein Vergleich), wenn
-// sie dazukommen — bis dahin waere ein tiefer JSON-Vergleich nur Schein-Allgemeinheit.
+// Der oeffentliche trackingKey (getrimmt) oder "" (nicht gesetzt).
+export function getTrackingKey(settings: ProjectSettings): string {
+  return settings.capi?.trackingKey?.trim() ?? "";
+}
+
+// Nicht-sensibler Indikator "CAPI-Token gesetzt?" fuer die write-only-UI.
+export function getCapiTokenSet(settings: ProjectSettings): boolean {
+  return settings.capi?.tokenSet === true;
+}
+
+// Immutabel + pixels-erhaltend: schreibt capi.{trackingKey,tokenSet}, ohne die
+// Pixel-Config (oder kuenftige Plattform-Zweige unter pixels) anzutasten. Wird von
+// der setCapiToken-Server-Action UND vom Client (Spiegelung nach Erfolg) genutzt.
+export function setCapiState(
+  settings: ProjectSettings,
+  capi: { trackingKey: string; tokenSet: boolean }
+): ProjectSettings {
+  return {
+    ...settings,
+    capi: { ...settings.capi, ...capi },
+  };
+}
+
+// Dirty-Vergleich. BEWUSST eng: nur die Meta-Pixel-ID existiert als user-editierbares
+// Feld im grossen Speichern-Flow. capi.* ist HIER ABSICHTLICH AUSGENOMMEN: es wird
+// nicht ueber den Dirty-/Big-Save-Weg gepflegt, sondern von seiner eigenen
+// Sofort-Persist-Action (setCapiToken) geschrieben und danach in settings UND
+// savedSettings gespiegelt -> ohne Ausschluss gaebe es einen false-dirty-Alarm.
+// Weitere user-editierbare Plattform-Felder wachsen hier mit (je ein Vergleich).
 export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
   return getMetaPixelId(a) === getMetaPixelId(b);
 }

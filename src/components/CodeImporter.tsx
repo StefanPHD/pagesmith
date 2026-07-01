@@ -15,6 +15,7 @@ import {
   loadProject,
   renameProject,
   saveProject,
+  setCapiToken,
   type ProjectListItem,
 } from "@/app/projects/actions";
 import {
@@ -31,7 +32,9 @@ import {
 } from "@/lib/mappings";
 import { editPreviewHtml, generateFunctional } from "@/lib/generate";
 import {
+  getCapiTokenSet,
   getMetaPixelId,
+  setCapiState,
   setMetaPixelId,
   settingsEqual,
   type ProjectSettings,
@@ -133,6 +136,14 @@ export default function CodeImporter({
     useState<ProjectSettings>(initialSettings);
   // Ausklappbares Einstellungs-Panel (Tracking-Pixel). Reiner View-State.
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  // Write-only-Eingabe fuer den GEHEIMEN CAPI-Token (Scheibe 2a). Startet IMMER
+  // leer und wird NIE aus settings gespeist -> der echte Token faehrt nie in den
+  // Client. Der "gesetzt?"-Indikator kommt aus settings.capi.tokenSet, nicht hier.
+  const [capiTokenInput, setCapiTokenInput] = useState("");
+  const [capiTokenStatus, setCapiTokenStatus] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
+  const [capiTokenError, setCapiTokenError] = useState<string | null>(null);
   // Ausklappbares Projekt-Menue (Default zu: sein Inhalt rendert erst beim
   // Oeffnen clientseitig -> keine Hydration-Mismatches bei relativen Zeitstempeln).
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
@@ -430,6 +441,12 @@ export default function CodeImporter({
     // uploadError ist projekt-ungebundener View-State -> beim Kontext-Wechsel
     // mit zuruecksetzen, sonst leuchtet ein Fehler aus Projekt A in B weiter.
     setUploadError(null);
+    // CAPI-Token-Eingabe/Status ebenso projekt-ungebunden: leeren, damit kein
+    // stehengebliebener Klartext / Fehler in den neuen Kontext leckt. Der
+    // "gesetzt?"-Indikator selbst reseedet ueber settings (getCapiTokenSet).
+    setCapiTokenInput("");
+    setCapiTokenStatus("idle");
+    setCapiTokenError(null);
   }
 
   // Manuelles Toggle: klappt der Nutzer AUF (next = nicht collapsed), uebernimmt
@@ -491,6 +508,36 @@ export default function CodeImporter({
     } else {
       setSaveError(result.error);
       setSaveStatus("error");
+    }
+  }
+
+  // CAPI-Token setzen (Scheibe 2a, write-only). Der GEHEIME Token geht nur in die
+  // Server-Action (project_tokens, RLS-SELECT-gesperrt) und kommt NIE zurueck. Bei
+  // Erfolg spiegeln wir NUR {trackingKey, tokenSet:true} in settings UND
+  // savedSettings (setCapiState laesst pixels/Pixel-ID unangetastet -> eine unsaved
+  // Pixel-ID-Edit bleibt erhalten; settingsEqual ignoriert capi -> kein false-dirty).
+  // Danach das Eingabefeld leeren (kein Roundtrip des Klartexts).
+  async function handleSetCapiToken() {
+    // Ohne persistierte Projektzeile gibt es keine project_id fuer den FK -> die UI
+    // deaktiviert den Button in diesem Fall; hier zusaetzlich als Riegel.
+    if (!projectId) return;
+    if (!capiTokenInput.trim()) return;
+
+    setCapiTokenStatus("saving");
+    setCapiTokenError(null);
+    const result = await setCapiToken(projectId, capiTokenInput);
+    if (result.ok) {
+      setSettings((prev) =>
+        setCapiState(prev, { trackingKey: result.trackingKey, tokenSet: true }),
+      );
+      setSavedSettings((prev) =>
+        setCapiState(prev, { trackingKey: result.trackingKey, tokenSet: true }),
+      );
+      setCapiTokenInput("");
+      setCapiTokenStatus("saved");
+    } else {
+      setCapiTokenError(result.error);
+      setCapiTokenStatus("error");
     }
   }
 
@@ -977,6 +1024,66 @@ export default function CodeImporter({
                 placeholder="z.B. 123456789012345"
                 className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
+            </label>
+
+            {/* Meta-CAPI-Token (Scheibe 2a): GEHEIM, write-only. Der echte Wert
+                geht nur in die Server-Action und kommt NIE zurueck -> das Feld
+                startet/bleibt leer, gespeist wird es NIE aus settings. Der
+                "gesetzt?"-Indikator kommt aus settings.capi.tokenSet. Ohne
+                gespeichertes Projekt (kein projectId) fehlt die project_id fuer
+                den FK -> deaktiviert + Hinweis. */}
+            <label className="flex flex-col gap-1 text-sm sm:flex-row sm:items-start sm:gap-3">
+              <span className="w-40 shrink-0 pt-2 font-medium text-gray-700">
+                Meta CAPI-Token
+                <span className="block text-xs font-normal text-gray-400">
+                  Server-Side, geheim
+                </span>
+              </span>
+              <div className="flex w-full max-w-xs flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="password"
+                    autoComplete="off"
+                    value={capiTokenInput}
+                    onChange={(e) => setCapiTokenInput(e.target.value)}
+                    disabled={!projectId}
+                    placeholder={
+                      getCapiTokenSet(settings)
+                        ? "••• gesetzt — neuen Token eingeben zum Ersetzen"
+                        : "CAPI-Token einfügen"
+                    }
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSetCapiToken}
+                    disabled={
+                      !projectId ||
+                      !capiTokenInput.trim() ||
+                      capiTokenStatus === "saving"
+                    }
+                    className="shrink-0 rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                  >
+                    {capiTokenStatus === "saving" ? "…" : "Setzen"}
+                  </button>
+                </div>
+                {!projectId && (
+                  <span className="text-xs text-gray-500">
+                    Projekt zuerst speichern, dann ist der Token setzbar.
+                  </span>
+                )}
+                {projectId && getCapiTokenSet(settings) && (
+                  <span className="text-xs text-green-600">••• gesetzt</span>
+                )}
+                {capiTokenStatus === "saved" && (
+                  <span className="text-xs text-green-600">
+                    Token gespeichert ✓
+                  </span>
+                )}
+                {capiTokenStatus === "error" && capiTokenError && (
+                  <span className="text-xs text-red-600">{capiTokenError}</span>
+                )}
+              </div>
             </label>
           </div>
         </div>

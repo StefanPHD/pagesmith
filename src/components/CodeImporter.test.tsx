@@ -21,16 +21,26 @@ import {
 // der echte Supabase-/next-headers-Servercode beim Import geladen wird.
 // vi.hoisted: die Spies muessen VOR der (ebenfalls gehoisteten) vi.mock-Factory
 // existieren.
-const { saveProject, listProjects, loadProject, deleteProject, renameProject } =
-  vi.hoisted(() => ({
-    saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
-    listProjects: vi.fn(async () => []),
-    // Rueckgabe bewusst Promise<unknown> -> einzelne Tests koennen via
-    // mockResolvedValueOnce eine volle ProjectRow (inkl. settings) liefern.
-    loadProject: vi.fn(async (): Promise<unknown> => null),
-    deleteProject: vi.fn(async () => ({ ok: true as const })),
-    renameProject: vi.fn(async () => ({ ok: true as const })),
-  }));
+const {
+  saveProject,
+  listProjects,
+  loadProject,
+  deleteProject,
+  renameProject,
+  setCapiToken,
+} = vi.hoisted(() => ({
+  saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
+  listProjects: vi.fn(async () => []),
+  // Rueckgabe bewusst Promise<unknown> -> einzelne Tests koennen via
+  // mockResolvedValueOnce eine volle ProjectRow (inkl. settings) liefern.
+  loadProject: vi.fn(async (): Promise<unknown> => null),
+  deleteProject: vi.fn(async () => ({ ok: true as const })),
+  renameProject: vi.fn(async () => ({ ok: true as const })),
+  setCapiToken: vi.fn(async () => ({
+    ok: true as const,
+    trackingKey: "tk-mock",
+  })),
+}));
 
 vi.mock("@/app/projects/actions", () => ({
   saveProject,
@@ -38,6 +48,7 @@ vi.mock("@/app/projects/actions", () => ({
   loadProject,
   deleteProject,
   renameProject,
+  setCapiToken,
 }));
 
 // Erst nach dem Mock importieren, damit der Mock greift.
@@ -348,5 +359,69 @@ describe("CodeImporter — Scheibe 1b: Settings (Meta-Pixel-ID) Persistenz + Iso
 
     // Reseeded auf P2s Pixel-ID, NICHT die von P1 (kein Leak).
     await waitFor(() => expect(pixelInput().value).toBe("222"));
+  });
+});
+
+describe("CodeImporter — Scheibe 2a: CAPI-Token write-only Indikator + Reseed", () => {
+  function openSettings() {
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+  }
+  function tokenInput() {
+    return screen.getByPlaceholderText(/CAPI-Token|gesetzt/) as HTMLInputElement;
+  }
+
+  it("tokenSet:true -> '••• gesetzt'-Indikator; Eingabefeld bleibt LEER (write-only)", async () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ capi: { trackingKey: "k1", tokenSet: true } }}
+      />
+    );
+    openSettings();
+    // Indikator sichtbar (der gruene Span, nicht der Placeholder).
+    expect(screen.getByText("••• gesetzt")).toBeTruthy();
+    // Der echte Token faehrt NIE in den Client -> das Passwortfeld ist leer.
+    expect(tokenInput().value).toBe("");
+    expect(tokenInput().type).toBe("password");
+  });
+
+  it("Projektwechsel reseedet den Indikator (kein Leak: 'gesetzt' von A bleibt nicht in B)", async () => {
+    // P2 hat KEINEN CAPI-Token (settings ohne capi).
+    loadProject.mockResolvedValueOnce({
+      id: "p2",
+      name: "P2",
+      html: "<button>Y</button>",
+      mappings: [],
+      settings: {},
+    });
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-02T00:00:00Z" },
+        ]}
+        initialSettings={{ capi: { trackingKey: "k1", tokenSet: true } }}
+      />
+    );
+    openSettings();
+    expect(screen.getByText("••• gesetzt")).toBeTruthy();
+
+    // Auf P2 wechseln -> Indikator verschwindet (P2 hat keinen Token).
+    fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
+    fireEvent.click(await screen.findByText("P2"));
+
+    await waitFor(() =>
+      expect(screen.queryByText("••• gesetzt")).toBeNull()
+    );
+  });
+
+  it("ohne gespeichertes Projekt (kein projectId) ist das Token-Feld deaktiviert", () => {
+    render(<CodeImporter initialCode="<button>X</button>" />);
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    expect(tokenInput().disabled).toBe(true);
+    expect(screen.getByText(/Projekt zuerst speichern/)).toBeTruthy();
   });
 });

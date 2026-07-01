@@ -977,9 +977,11 @@ Decomposition (Owner-bestätigt):
   dynamisch + stub->fbq mit eventID + Consent-Hook (gated auch init) + Base-Pixel im
   Export OHNE Auto-PageView. ABGESCHLOSSEN (live). Damit ist Scheibe 1 (Tracking-Tile +
   echtes Meta-Pixel) KOMPLETT.
-- Scheibe 2a — Secret-Plumbing: project_tokens-Tabelle (server-only, RLS SELECT-gesperrt),
-  write-only maskierte Token-UI (Owner-Session-Upsert), trackingKey (öffentlich, in settings),
-  capiTokenSet-Boolean (settings, für Indikator), service_role-Read-Helper. KEIN Forward.
+- [x] Scheibe 2a — Secret-Plumbing: project_tokens-Tabelle (server-only, RLS SELECT-gesperrt),
+  write-only maskierte Token-UI, trackingKey (öffentlich, in settings), capiTokenSet-Boolean
+  (settings, für Indikator), service_role-Read-Helper. Token-WRITE via service_role NACH
+  explizitem Ownership-Gate (write-only-Sperre lässt authenticated-Upsert am RETURNING-Read
+  scheitern). KEIN Forward. ABGESCHLOSSEN (live).
 - Scheibe 2b — CAPI-Forward: Proxy-API-Route + client sendBeacon (hinter psConsent) +
   Meta-CAPI-Forward mit geteilter eventID (Dedup). Match-Quality IP+UA+_fbp, PII-frei.
 - Scheibe 3 — Consent-Gate.
@@ -1193,7 +1195,49 @@ Nest-Form. Kein platform-Feld in TrackConfig. detect.ts/Brücke + Text-Pfad unbe
 RLS: settings-Spalte auf bereits geschützter projects-Zeile -> bestehende Policies
 decken sie, KEINE neue Policy nötig (verifizieren).
 
-### Scheibe 2a — Secret-Plumbing (vor dem Bau dokumentiert)
+### Scheibe 2a — Secret-Plumbing (ABGESCHLOSSEN, live verifiziert)
+Status: fertig, live verifiziert. Commits: "feat(capi): secret token storage
+(server-only, RLS, write-only UI)" + "fix(capi): write token via service_role after
+explicit ownership check (RLS write-only stands)". Pipeline grün (168 Tests inkl.
+IDOR-Spy-Regressionstest). Browser-/DB-Verifikation: Token nie im Client-Payload/Quelltext
+(0 Treffer); Row via service_role im Dashboard sichtbar; SELECT als authenticated -> 0
+Zeilen (write-only-Sperre real); Projektwechsel isoliert (kein Leak); FK-cascade-Delete
+löscht Token-Row atomar; UI-Sperre bei ungespeichertem Projekt greift.
+
+WICHTIGE ARCHITEKTUR-VERSCHIEBUNG (bewusster Trade-off, NICHT schludern):
+Der project_tokens-WRITE läuft über service_role (createAdminClient), NICHT über den
+authenticated-SSR-Client. Grund: die write-only-SELECT-Sperre (kein SELECT für
+authenticated) lässt den authenticated-Upsert am impliziten RETURNING/SELECT-Read
+scheitern ("new row violates RLS for project_tokens" — die Meldung zeigt auf die
+Tabelle, verletzt ist aber der Read-back). return=minimal löst das in dieser
+PostgREST-Konstellation NACHWEISLICH nicht (BUILD-MARKER-Test bewies: Header gesetzt,
+Fehler bleibt). service_role bypassed RLS -> sauber, ohne Header-Trick.
+
+FOLGE: Die Write-Autorisierung liegt jetzt AUSSCHLIESSLICH in der App-Schicht, nicht
+mehr in der DB-Policy (WITH CHECK ist umgangen, weil service_role sie bypassed). Das
+entfernt EINE Defense-in-Depth-Schicht. Die Ownership-Prüfung ist damit das HEILIGSTE
+Gate der Anwendung. Zwei Regeln, deren Bruch die Sicherheit LAUTLOS aushebelt:
+1. Die Ownership-Prüfung (select id from projects where id=projectId and user_id=user.id)
+   MUSS über den AUTHENTICATED-SSR-Client laufen (RLS-gebunden). Mit dem Admin-Client
+   geprüft wäre sie wertlos (bypassed RLS -> sieht jede Zeile).
+2. createAdminClient() darf im Nicht-Owner-Pfad NICHT erreichbar sein: Early-return VOR
+   jeder Admin-Zeile. Der RLS-Bypass ist physisch unerreichbar ohne bestandenes Gate.
+WÄCHTER: Der IDOR-Regressionstest (Spy: Admin-Upsert not.toHaveBeenCalled bei fremder
+project_id, nicht nur "wirft error") bewacht beide Regeln und darf NIE entfernt/
+aufgeweicht werden.
+
+DEBUG-LEKTION (Instrument schlägt Code-Re-Read, unter Druck bestätigt):
+Vier plausible Hypothesen zerbrachen nacheinander am Log (fehlende Session / falscher
+Client / Waisen-Row-Update / falsche user_id) — inkl. Claudes eigener Wetten. Gelöst
+hat NICHT die klügste Hypothese, sondern schrittweises Instrumentieren, bis der
+Widerspruch nur eine Erklärung zuließ: pro-Operation-STEP-Logs isolierten die
+verletzende Query (token-upsert, nicht settings/ownership), der auth.uid()-vs-user_id-
+Log widerlegte den user_id-Verdacht, der BUILD-MARKER trennte "Fix greift nicht" von
+"stale build". Regel verschärft: bei jeder plausiblen Bug-Hypothese ZUERST das billige
+Instrument (gezielter Log/Network-Tab/DB-Query), das die Hypothese diskriminiert, BEVOR
+gefixt wird. Tote/abgeschirmte Messpunkte (view-source, sandbox-iframe, stale build)
+als solche erkennen.
+
 Charakterwechsel-Vorbereitung: erster echter Secret-Storage. Der CAPI-Token (anders als
 die öffentliche Pixel-ID) ist geheim, lebt server-only, erreicht den Client NIE.
 
@@ -1360,6 +1404,12 @@ miterledigen, sondern gebündelt abarbeiten.
   (fürs MVP bewusst deaktiviert — siehe TODO in Schritt 3.1).
 - VOR öffentlichem Launch: Leaked Password Protection aktivieren — ist Pro-gated
   (Free Tier kann nicht). Beim Wechsel auf Supabase Pro (Phase 6) einschalten.
+- VOR öffentlichem Launch: Next.js loggt Server-Action-Argumente im Klartext (im
+  Scheibe-2a-Debug tauchte der CAPI-Token-Wert im Dev-Terminal auf). Prüfen, dass
+  echte CAPI-Tokens nicht in Server-Logs landen (Prod-Logging der Action-Argumente
+  unterdrücken).
+- project_tokens-Verschlüsselung at rest (aktuell Plaintext; tragende Kontrolle ist
+  Isolation + RLS-SELECT-Sperre). pgcrypto / KMS-Envelope als spätere Härtung.
 - Initial-Load-Preview erscheint ~300ms verzögert (bewusster Trade-off des
   Hydration-Fixes; bei Bedarf Mount-Effect-Variante, die debouncedCode sofort
   setzt).

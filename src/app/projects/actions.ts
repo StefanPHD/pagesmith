@@ -201,10 +201,23 @@ export async function setCapiToken(
   if (!owned) return { ok: false, error: "Projekt nicht gefunden." };
 
   // 2) Geheimen Token upserten (ein Row pro Projekt, on conflict project_id).
-  const { error: tokenError } = await supabase.from("project_tokens").upsert(
-    { project_id: projectId, user_id: user.id, meta_capi_token: trimmed },
-    { onConflict: "project_id" },
-  );
+  //
+  // WRITE-ONLY / RETURNING-VERBOT (bewiesene RLS-Ursache): project_tokens hat
+  // BEWUSST keine SELECT-Policy fuer authenticated (write-only ist die tragende
+  // Kontrolle). Der Server gibt bei einem POST per Default aber eine Representation
+  // zurueck (RETURNING) — und dieses Zurueck­lesen der frisch geschriebenen Zeile
+  // schlaegt an ebendieser SELECT-Sperre an (RLS-Verletzung), obwohl der INSERT
+  // selbst policy-konform ist (auth.uid() === user_id). Fix: explizit
+  // `return=minimal` -> kein RETURNING, kein Read-back. KEIN .select() anhaengen.
+  // resolution=merge-duplicates MUSS erhalten bleiben (sonst wird aus dem Upsert
+  // ein reiner Insert -> 409 bei bestehendem Token), darum kombiniert gesetzt
+  // (setHeader ersetzt den Prefer-Header komplett). Die Action braucht die
+  // geschriebene Zeile NICHT zurueck (Rueckgabe = trackingKey aus settings).
+  const row = { project_id: projectId, user_id: user.id, meta_capi_token: trimmed };
+  const { error: tokenError } = await supabase
+    .from("project_tokens")
+    .upsert(row, { onConflict: "project_id" })
+    .setHeader("Prefer", "resolution=merge-duplicates,return=minimal");
   if (tokenError) return { ok: false, error: tokenError.message };
 
   // 3) settings mergen: trackingKey lazy (nur beim ersten Token-Set), tokenSet=true,

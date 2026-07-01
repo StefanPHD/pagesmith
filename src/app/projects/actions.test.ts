@@ -25,6 +25,7 @@ function makeClient(opts: {
     upsert: null as { row: unknown; options: unknown } | null,
     updatePatch: null as unknown,
     fromTables: [] as string[],
+    setHeaders: [] as { table: string; name: string; value: string }[],
   };
 
   function builder(table: string) {
@@ -37,6 +38,10 @@ function makeClient(opts: {
     b.eq = vi.fn(() => b);
     b.order = vi.fn(() => b);
     b.limit = vi.fn(() => b);
+    b.setHeader = vi.fn((name: string, value: string) => {
+      rec.setHeaders.push({ table, name, value });
+      return b;
+    });
     b.maybeSingle = vi.fn(async () => results[`${table}.select`] ?? { data: null, error: null });
     b.upsert = vi.fn((row: unknown, options: unknown) => {
       rec.upsert = { row, options };
@@ -96,6 +101,36 @@ describe("setCapiToken (Scheibe 2a)", () => {
     const patch = rec.updatePatch as { settings: { capi: { tokenSet: boolean; trackingKey: string } } };
     expect(patch.settings.capi.tokenSet).toBe(true);
     expect(patch.settings.capi.trackingKey).toBeTruthy();
+  });
+
+  it("WRITE-ONLY: der Token-Write macht KEIN .select() auf project_tokens + setzt return=minimal (kein RETURNING-Read gegen die SELECT-Sperre)", async () => {
+    // Regressionsriegel gegen die bewiesene RLS-Ursache: project_tokens hat KEINE
+    // SELECT-Policy. Ein Read-back (per .select() oder Default-RETURNING) wuerde an
+    // der Sperre scheitern. Der Fix erzwingt return=minimal; dieser Test faellt,
+    // sobald jemand .select() anhaengt oder die minimal-Direktive entfernt.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": { data: { id: "proj-1", settings: {} }, error: null },
+        "project_tokens.upsert": { error: null },
+        "projects.update": { error: null },
+      },
+    });
+
+    const result = await setCapiToken("proj-1", "SECRET");
+    expect(result.ok).toBe(true);
+
+    // KEIN .select() auf project_tokens (das projects.select fuer die Ownership-
+    // Pruefung ist erlaubt; project_tokens darf NIE selektiert werden).
+    expect(rec.selectCols.some((s) => s.table === "project_tokens")).toBe(false);
+
+    // Prefer auf project_tokens enthaelt return=minimal UND resolution=merge-duplicates.
+    const pref = rec.setHeaders.find(
+      (h) => h.table === "project_tokens" && h.name === "Prefer",
+    );
+    expect(pref).toBeTruthy();
+    expect(pref!.value).toContain("return=minimal");
+    expect(pref!.value).toContain("resolution=merge-duplicates");
   });
 
   it("erhaelt einen bestehenden trackingKey (lazy nur beim ERSTEN Set)", async () => {

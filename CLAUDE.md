@@ -977,7 +977,11 @@ Decomposition (Owner-bestätigt):
   dynamisch + stub->fbq mit eventID + Consent-Hook (gated auch init) + Base-Pixel im
   Export OHNE Auto-PageView. ABGESCHLOSSEN (live). Damit ist Scheibe 1 (Tracking-Tile +
   echtes Meta-Pixel) KOMPLETT.
-- Scheibe 2 — CAPI-Proxy (Next.js API-Route, Secret-Handling, Server-Forward an Meta).
+- Scheibe 2a — Secret-Plumbing: project_tokens-Tabelle (server-only, RLS SELECT-gesperrt),
+  write-only maskierte Token-UI (Owner-Session-Upsert), trackingKey (öffentlich, in settings),
+  capiTokenSet-Boolean (settings, für Indikator), service_role-Read-Helper. KEIN Forward.
+- Scheibe 2b — CAPI-Forward: Proxy-API-Route + client sendBeacon (hinter psConsent) +
+  Meta-CAPI-Forward mit geteilter eventID (Dedup). Match-Quality IP+UA+_fbp, PII-frei.
 - Scheibe 3 — Consent-Gate.
 
 ### Scheibe 0 — (elementId, type)-Compound-Key-Migration (ABGESCHLOSSEN, live verifiziert)
@@ -1188,6 +1192,55 @@ Leitplanken: NUR Meta (pixels.meta) — KEIN Google/TikTok/Custom-Code-Build, nu
 Nest-Form. Kein platform-Feld in TrackConfig. detect.ts/Brücke + Text-Pfad unberührt.
 RLS: settings-Spalte auf bereits geschützter projects-Zeile -> bestehende Policies
 decken sie, KEINE neue Policy nötig (verifizieren).
+
+### Scheibe 2a — Secret-Plumbing (vor dem Bau dokumentiert)
+Charakterwechsel-Vorbereitung: erster echter Secret-Storage. Der CAPI-Token (anders als
+die öffentliche Pixel-ID) ist geheim, lebt server-only, erreicht den Client NIE.
+
+Owner-Entscheidungen (endgültig):
+- Privilegierter Read = service_role, STRENG server-only (process.env in der API-Route/
+  server-Modul). Bounded, legitime Ausnahme zur "nie service_role"-Regel (die war MVP-
+  Default gegen Client-Leak/Commit). KEIN pg_net/in-DB-HTTP.
+- Token at rest: separate Tabelle project_tokens, PLAINTEXT vorerst + klarer
+  Härtungs-Kommentar (spätere Verschlüsselung). Tragende Kontrolle = ISOLATION
+  (separate Tabelle + RLS SELECT-Sperre), nicht Verschlüsselung.
+
+Design (aus dem Architektur-Review):
+- project_tokens(project_id fk on delete cascade, user_id, meta_capi_token text,
+  created_at, updated_at). RLS AN.
+- RLS-Policies: KEIN SELECT für anon/authenticated (write-only, Token nie lesbar,
+  auch nicht vom Owner). INSERT + UPDATE mit WITH CHECK (auth.uid() = user_id) ->
+  Owner setzt nur eigene Zeile (Upsert, on conflict). service_role bypassed RLS ->
+  Event-Read-Pfad.
+- WRITE über Owner-Session (SSR-Client, Rolle authenticated, RLS greift). Nur der
+  spätere Event-READ (2b) über service_role. Zwei Clients, zwei Pfade.
+- trackingKey: öffentlicher Zufalls-Key pro Projekt, in settings (client-lesbar,
+  wird in den Export gebacken). NICHT in project_tokens. Auflösung
+  trackingKey -> project_id -> token (service_role).
+- capiTokenSet: nicht-sensibler Boolean in settings, zusammen mit dem Token geschrieben,
+  für den maskierten "••• gesetzt"-UI-Indikator. Token selbst nie im Client.
+- UI: write-only maskiertes Token-Feld in der bestehenden Einstellungen-Sektion
+  (unter Meta-Pixel-ID). loadProject reicht NIE den Token zurück.
+- service_role-Read-Helper (server-only Modul): getCapiTokenByTrackingKey(key) ->
+  token|null. In 2a implementiert + getestet (mock), Consumer erst in 2b.
+
+SECRETS-DISZIPLIN (kritisch, öffentlicher Push): SUPABASE_SERVICE_ROLE_KEY NUR in
+.env.local (vorher .gitignore verifizieren), NUR in server-only-Modulen importiert,
+NIE in Client-Komponente/Export. Extra git status vor dem Push.
+
+Diskriminierende Tests (Pflicht):
+- Token erreicht Client nie: loadProject/settings-Payload trägt NUR trackingKey +
+  capiTokenSet, KEINEN Token. project_tokens wird von Client-Code nie selektiert.
+- Write-Server-Action: Owner-Upsert schreibt Token in project_tokens + flippt
+  capiTokenSet in settings.
+- Read-Helper: gegebener trackingKey -> Token (service_role-Client gemockt).
+- Projektwechsel: capiTokenSet-Indikator reseeded pro Projekt (kein Leak, wie
+  settings/mappings).
+- (Live, kein Repo-Harness): RLS-SELECT-Sperre real + service_role-Read real.
+
+Leitplanken: KEIN Forward/Proxy-Route/Beacon/Meta-Call (das ist 2b). KEINE Änderung
+am 1b-Pixel-Firing. detect.ts/Brücke, Text-Pfad, Redirect-Pfad unberührt. Migration
+additiv (neue Tabelle), bestehende RLS/Policies unangetastet.
 
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,

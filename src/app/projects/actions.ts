@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { Mapping } from "@/lib/mappings";
 import {
   getTrackingKey,
@@ -160,16 +161,22 @@ export type SetCapiTokenResult =
  * Write-only: der Token wird in die RLS-SELECT-gesperrte Tabelle project_tokens
  * geschrieben und erreicht den Client NIE zurueck.
  *
- * Ablauf:
- * 1. OWNERSHIP-PRUEFUNG (IDOR-Schutz, kritisch): Die RLS-WITH-CHECK auf
- *    project_tokens prueft NUR user_id = auth.uid(), NICHT dass die project_id dem
- *    User gehoert. Ohne diese explizite Pruefung koennte ein eingeloggter User ein
- *    Token-Row auf eine FREMDE project_id mit EIGENER user_id schreiben (und via
- *    on-conflict eine bestehende fremde Zeile ueberschreiben). Darum: das Projekt
- *    muss dem User gehoeren, sonst Abbruch OHNE Upsert.
- * 2. Upsert des Tokens (SSR-Client, Rolle authenticated, RLS greift zusaetzlich).
- * 3. settings mergen: trackingKey LAZY erzeugen (nur falls noch keiner existiert) +
- *    tokenSet=true, pixels UNANGETASTET. Zurueck in projects.settings schreiben.
+ * Zwei-Client-Fluss (bewusst getrennt):
+ * 1. Session-Check ueber den authenticated-SSR-Client (createClient).
+ * 2. OWNERSHIP-GATE ZWINGEND ueber DENSELBEN authenticated-SSR-Client (RLS greift):
+ *    select id from projects where id=projectId and user_id=user.id. Die Pruefung
+ *    MUSS ueber den RLS-Client laufen — pruefte man ueber den Admin-Client, wuerde
+ *    die Pruefung selbst RLS bypassen und waere wertlos. Nicht gefunden -> Abbruch.
+ * 3. HARTE INVARIANTE: createAdminClient() (service_role, bypassed RLS) wird ERST
+ *    NACH bestandenem Gate aufgerufen. Im Nicht-Owner-Pfad wird der Admin-Client GAR
+ *    NICHT instanziiert (Early-return VOR jeder Admin-Zeile) -> der RLS-Bypass ist
+ *    ohne bestandenes Gate physisch unerreichbar.
+ * 4. Token-Upsert ueber den Admin-Client: service_role bypassed RLS -> kein
+ *    WITH-CHECK, kein RETURNING-Konflikt mit der write-only-SELECT-Sperre (die frueher
+ *    per authenticated-Client den Read-back scheitern liess). Die SELECT-Sperre selbst
+ *    BLEIBT unveraendert (keine neue Policy) — nur der WRITE laeuft privilegiert.
+ * 5. settings-Merge (trackingKey lazy + tokenSet) bleibt ueber den authenticated-SSR-
+ *    Client (RLS greift; kein Grund fuer service_role auf der geschuetzten Zeile).
  *
  * Der Client spiegelt {trackingKey, tokenSet:true} nach Erfolg in settings UND
  * savedSettings (setCapiState) -> kein false-dirty (settingsEqual ignoriert capi).
@@ -187,9 +194,8 @@ export async function setCapiToken(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Nicht eingeloggt." };
 
-  // 1) Ownership-Pruefung: Projekt muss dem User gehoeren. RLS allein deckt das
-  //    beim project_tokens-Write NICHT ab (siehe Doku oben). settings gleich
-  //    mitlesen, um trackingKey/pixels beim Merge zu erhalten.
+  // 1) Ownership-Gate ZWINGEND ueber den authenticated-SSR-Client (RLS greift).
+  //    settings gleich mitlesen, um trackingKey/pixels beim Merge zu erhalten.
   const { data: owned, error: ownError } = await supabase
     .from("projects")
     .select("id,settings")
@@ -200,28 +206,19 @@ export async function setCapiToken(
   if (ownError) return { ok: false, error: ownError.message };
   if (!owned) return { ok: false, error: "Projekt nicht gefunden." };
 
-  // 2) Geheimen Token upserten (ein Row pro Projekt, on conflict project_id).
-  //
-  // WRITE-ONLY / RETURNING-VERBOT (bewiesene RLS-Ursache): project_tokens hat
-  // BEWUSST keine SELECT-Policy fuer authenticated (write-only ist die tragende
-  // Kontrolle). Der Server gibt bei einem POST per Default aber eine Representation
-  // zurueck (RETURNING) — und dieses Zurueck­lesen der frisch geschriebenen Zeile
-  // schlaegt an ebendieser SELECT-Sperre an (RLS-Verletzung), obwohl der INSERT
-  // selbst policy-konform ist (auth.uid() === user_id). Fix: explizit
-  // `return=minimal` -> kein RETURNING, kein Read-back. KEIN .select() anhaengen.
-  // resolution=merge-duplicates MUSS erhalten bleiben (sonst wird aus dem Upsert
-  // ein reiner Insert -> 409 bei bestehendem Token), darum kombiniert gesetzt
-  // (setHeader ersetzt den Prefer-Header komplett). Die Action braucht die
-  // geschriebene Zeile NICHT zurueck (Rueckgabe = trackingKey aus settings).
+  // 2) HARTE INVARIANTE: Admin-Client (service_role, bypassed RLS) erst HIER, NACH
+  //    dem bestandenen Ownership-Gate, instanziieren. Oberhalb dieser Zeile steht im
+  //    Nicht-Owner-Pfad KEINE Admin-Zeile -> der RLS-Bypass ist ohne Gate unerreichbar.
+  const admin = createAdminClient();
   const row = { project_id: projectId, user_id: user.id, meta_capi_token: trimmed };
-  const { error: tokenError } = await supabase
+  const { error: tokenError } = await admin
     .from("project_tokens")
-    .upsert(row, { onConflict: "project_id" })
-    .setHeader("Prefer", "resolution=merge-duplicates,return=minimal");
+    .upsert(row, { onConflict: "project_id" });
   if (tokenError) return { ok: false, error: tokenError.message };
 
   // 3) settings mergen: trackingKey lazy (nur beim ersten Token-Set), tokenSet=true,
-  //    pixels unangetastet. updated_at explizit (wie in saveProject).
+  //    pixels unangetastet. updated_at explizit (wie in saveProject). Bleibt ueber den
+  //    authenticated-SSR-Client (RLS greift auf der geschuetzten projects-Zeile).
   const current = (owned.settings ?? {}) as ProjectSettings;
   const trackingKey = getTrackingKey(current) || crypto.randomUUID();
   const nextSettings = setCapiState(current, { trackingKey, tokenSet: true });

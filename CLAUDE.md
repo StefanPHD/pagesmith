@@ -982,8 +982,11 @@ Decomposition (Owner-bestätigt):
   (settings, für Indikator), service_role-Read-Helper. Token-WRITE via service_role NACH
   explizitem Ownership-Gate (write-only-Sperre lässt authenticated-Upsert am RETURNING-Read
   scheitern). KEIN Forward. ABGESCHLOSSEN (live).
-- Scheibe 2b — CAPI-Forward: Proxy-API-Route + client sendBeacon (hinter psConsent) +
-  Meta-CAPI-Forward mit geteilter eventID (Dedup). Match-Quality IP+UA+_fbp, PII-frei.
+- Scheibe 2b-i — CAPI-Route: anonyme cross-origin API-Route, trackingKey->Config-Resolver
+  (pixelId+token serverseitig), Meta-Graph-CAPI-Forward mit event_id. KEIN Client/Beacon/
+  Wiring. Verifiziert per curl -> Meta-Test-Events.
+- Scheibe 2b-ii — Client-Beacon: sendBeacon ins Export-Wiring (hinter psConsent, eine
+  eventID geteilt mit fbq) + Dedup-Beweis (Browser+Server).
 - Scheibe 3 — Consent-Gate.
 
 ### Scheibe 0 — (elementId, type)-Compound-Key-Migration (ABGESCHLOSSEN, live verifiziert)
@@ -1285,6 +1288,56 @@ Diskriminierende Tests (Pflicht):
 Leitplanken: KEIN Forward/Proxy-Route/Beacon/Meta-Call (das ist 2b). KEINE Änderung
 am 1b-Pixel-Firing. detect.ts/Brücke, Text-Pfad, Redirect-Pfad unberührt. Migration
 additiv (neue Tabelle), bestehende RLS/Policies unangetastet.
+
+### Scheibe 2b-i — CAPI-Route (vor dem Bau dokumentiert)
+Erste externe Integration der App: unser Server ruft aktiv Metas Graph-CAPI auf.
+NUR Route + Resolver — KEIN Client-Pfad, kein sendBeacon, kein Export-Wiring (das ist 2b-ii).
+
+Owner-Entscheidungen (endgültig):
+- Zuschnitt: 2b gesplittet, Route zuerst (isoliert die genuin neue "spricht-mit-Meta"-
+  Risikoklasse; verifizierbar per synthetischem curl -> Meta-Test-Events, ohne Browser).
+- pixelId serverseitig aufgelöst: 2a-Helper wächst zu getCapiConfigByTrackingKey ->
+  { pixelId, token } (pixelId aus settings.pixels.meta.pixelId, token aus project_tokens,
+  eine trackingKey-Auflösung). Client sendet die pixelId NIE.
+
+Sicherheits-Muster (2a-Disziplin in neuer Form): anonymer cross-origin Endpoint, der
+intern service_role nutzt. Autorisierung = trackingKey als CAPABILITY (kein Owner-Session
+beim anonymen Besucher). Der Resolver ist die einzige Brücke public-key -> secret-token
+und gibt den Token NIE in die Response. Route antwortet nur 204, nie Daten.
+
+Route-Design:
+- POST-Endpoint (z.B. src/app/api/capi/route.ts). Nimmt JSON/text-Blob:
+  { trackingKey, eventID, event, value?, currency?, eventSourceUrl, isCustom?, _fbp? }.
+- Resolver getCapiConfigByTrackingKey(key) -> {pixelId, token} | null (service_role,
+  server-only). Unbekannter Key / fehlender Token -> sauberes 204 (bzw. 400), KEIN 500,
+  KEIN Leak.
+- Serverseitig gesetzt (NIE vom Client): event_time (Unix-Sek, Meta-7-Tage-Fenster);
+  client_ip_address aus der PLATTFORM-VERTRAUTEN Quelle (Prod: Vercel-Header; Dev/::1
+  sauber behandeln, nicht blind erstes x-forwarded-for-Glied -> spoofbar);
+  client_user_agent aus dem Request-Header.
+- Forward: POST graph.facebook.com/v{VERSION}/{pixelId}/events?access_token={token}.
+  Payload: event_name=event (bzw. custom), event_time, event_id=eventID,
+  action_source="website", event_source_url, user_data{client_ip_address,
+  client_user_agent, fbp?}, custom_data{value?, currency?}. VERSION als env-Konstante.
+- test_event_code: NUR anhängen, wenn env-Variable gesetzt (dev-only). NIE hartcodiert
+  im Prod-Pfad.
+- Forward wird AWAIT-et + Fehler geloggt (CAPI-Ablehnungen sonst unsichtbar), Route
+  antwortet dem Client trotzdem schnell 204. KEIN Secret in Logs (weder Token noch
+  sensible Meta-Response-Felder).
+- CORS: text/plain-freundlich (kein Preflight nötig; 2b-ii nutzt sendBeacon).
+
+Diskriminierende Tests (Pflicht, Meta-fetch gemockt):
+- Happy-Path: gültiger trackingKey -> fetch an graph.facebook.com/.../{pixelId}/events
+  mit access_token, event_id==eventID, action_source=website, IP/UA server-gesetzt.
+- Resolver unbekannter Key -> KEIN Meta-fetch, sauberes 204/400, kein Throw/500.
+- Token/Response NIE in der HTTP-Response an den Client (nur Status).
+- event_time server-gesetzt (nicht aus Client-Payload übernommen, selbst wenn mitgeschickt).
+- test_event_code: env gesetzt -> im Payload; env leer -> NICHT im Payload.
+- (Live, kein Harness): curl -> echtes Event im Meta-Test-Events-Tab.
+
+Leitplanken: KEIN Client/sendBeacon/Export-Wiring (2b-ii). generate.ts-Pixel-Firing (1b),
+Text-Pfad, Redirect-Pfad, detect.ts/Brücke unberührt. service_role bleibt server-only.
+Keine SELECT-Policy-Änderung an project_tokens.
 
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,

@@ -982,9 +982,10 @@ Decomposition (Owner-bestätigt):
   (settings, für Indikator), service_role-Read-Helper. Token-WRITE via service_role NACH
   explizitem Ownership-Gate (write-only-Sperre lässt authenticated-Upsert am RETURNING-Read
   scheitern). KEIN Forward. ABGESCHLOSSEN (live).
-- Scheibe 2b-i — CAPI-Route: anonyme cross-origin API-Route, trackingKey->Config-Resolver
+- [x] Scheibe 2b-i — CAPI-Route: anonyme cross-origin API-Route, trackingKey->Config-Resolver
   (pixelId+token serverseitig), Meta-Graph-CAPI-Forward mit event_id. KEIN Client/Beacon/
-  Wiring. Verifiziert per curl -> Meta-Test-Events.
+  Wiring. ABGESCHLOSSEN (live, Server-Event bei Meta verarbeitet). Nächster Schritt: 2b-ii
+  (Client-Beacon + Dedup).
 - Scheibe 2b-ii — Client-Beacon: sendBeacon ins Export-Wiring (hinter psConsent, eine
   eventID geteilt mit fbq) + Dedup-Beweis (Browser+Server).
 - Scheibe 3 — Consent-Gate.
@@ -1289,7 +1290,39 @@ Leitplanken: KEIN Forward/Proxy-Route/Beacon/Meta-Call (das ist 2b). KEINE Ände
 am 1b-Pixel-Firing. detect.ts/Brücke, Text-Pfad, Redirect-Pfad unberührt. Migration
 additiv (neue Tabelle), bestehende RLS/Policies unangetastet.
 
-### Scheibe 2b-i — CAPI-Route (vor dem Bau dokumentiert)
+### Scheibe 2b-i — CAPI-Route (ABGESCHLOSSEN, live verifiziert)
+Status: fertig, live verifiziert. Commit "feat(capi): server-side CAPI forward route
+(trackingKey->config, Meta Graph)" (bf87545) + "fix(auth): allow anonymous access to
+/api/capi only (trackingKey is the guard)". Pipeline grün (188 Tests). LIVE-BEWEIS: ein
+synthetischer curl/Invoke-RestMethod -> Event "Kauf" (event_id test-evt-002) im Meta-
+Test-Events-Tab als "Server / Verarbeitet" sichtbar. Erste externe API-Integration der
+App funktioniert: unser Server spricht korrekt mit Metas Graph-CAPI (Auth, Payload,
+event_id, IP via Dev-Dummy, test_event_code). Route antwortet nur 204, nie Body/Token.
+
+DREI bewusst geloggte Punkte aus diesem Bogen:
+
+1. AUTH-GATE-REGEL (generische Prüfregel): Neue anonyme/öffentliche Route in einer
+   ansonsten auth-gegateten App? ZUERST prüfen, ob das Middleware-Auth-Gate (src/
+   middleware.ts, 3.1) sie durchlässt — sonst 302->/login statt Route. /api/capi wurde
+   in updateSession als bewusst öffentlicher Pfad behandelt (analog /login, isPublicRoute),
+   CHIRURGISCH nur /api/capi, nicht /api pauschal. Diskriminierender Test: anonym auf
+   /api/capi -> kein Redirect; anonym auf anderen geschützten Pfad -> weiter Redirect.
+   SICHERHEITSVERSCHIEBUNG: das Auth-Gate ist für /api/capi NICHT mehr der Wächter — der
+   Wächter ist der trackingKey als Capability (unbekannter Key -> 204, kein Forward,
+   kein Leak). Die Route trägt ihre Zugangskontrolle selbst.
+
+2. TEST-SETUP-LEKTION (wiederkehrend, für 2b-ii + jeden künftigen CAPI-Test):
+   trackingKey != Projekt-UUID. Der trackingKey liegt in settings.capi.trackingKey
+   (lazy beim ersten Token-Set erzeugt, 2a). Ein falscher Key im Test -> Resolver null
+   -> korrektes 204 OHNE Forward -> Server grün, Meta-Test-Tab leer. Das kostete einen
+   Debug-Bogen; Symptom "Server 204, Meta leer" = zuerst trackingKey gegen
+   'select settings->''capi''->>''trackingKey'' from projects where name=...' prüfen.
+
+3. DIAGNOSE-HYGIENE: temporäre [capi-diag]-Logs (inkl. voller Meta-Response-Body) waren
+   ein Instrument, nie committet, restlos entfernt (git grep 0 Treffer). Der reguläre
+   sanitized Error-Log bleibt (nur "[capi] Meta forward failed: HTTP <status>", nie
+   Token/access_token/Response-Body — 2a-Regel).
+
 Erste externe Integration der App: unser Server ruft aktiv Metas Graph-CAPI auf.
 NUR Route + Resolver — KEIN Client-Pfad, kein sendBeacon, kein Export-Wiring (das ist 2b-ii).
 

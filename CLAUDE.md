@@ -1339,6 +1339,16 @@ Leitplanken: KEIN Client/sendBeacon/Export-Wiring (2b-ii). generate.ts-Pixel-Fir
 Text-Pfad, Redirect-Pfad, detect.ts/Brücke unberührt. service_role bleibt server-only.
 Keine SELECT-Policy-Änderung an project_tokens.
 
+2b-ii-LEITPLANKE (in route.ts als Kommentar verankert, HIER fürs Gedächtnis): der
+Client-Beacon MUSS ein text/plain-Blob sein (sendBeacon, Blob type "text/plain"),
+NIEMALS application/json. application/json macht aus dem simplen Beacon einen
+preflight-pflichtigen Request; sendBeacon (fire-and-forget) kann keinen Preflight ->
+stiller Ausfall, den die CORS-Header (Access-Control-Allow-Origin: * etc. auf der
+204-Response) NICHT retten. Der text/plain-Body ist die tragende Kontrolle, die
+Header sind nur Gürtel-und-Hosenträger. Dev-Dummy-IP (123.123.123.123) wird NUR bei
+(loopback||leer) && gesetztem META_TEST_EVENT_CODE eingesetzt — eine echte Remote-IP
+wird nie ersetzt, in Prod (Test-Code unset) bleibt die IP bei fehlender Quelle omitted.
+
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,
 In-Place Copywriting als Phase 5. Der folgende Block bleibt die ausführliche

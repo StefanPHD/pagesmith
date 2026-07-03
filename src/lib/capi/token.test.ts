@@ -11,7 +11,7 @@ const { createAdminClient } = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
-import { getCapiTokenByTrackingKey } from "./token";
+import { getCapiConfigByTrackingKey } from "./token";
 
 /**
  * Baut einen minimalen, chainbaren Supabase-Client-Mock. Pro Tabelle ein
@@ -30,22 +30,33 @@ function mockAdmin(results: Record<string, { data: unknown; error: unknown }>) {
   return { from };
 }
 
+// Ein projects-Ergebnis mit gesetzter Meta-Pixel-ID (Standard-Happy-Case).
+function projectWithPixel(id: string, pixelId: string) {
+  return {
+    data: { id, settings: { pixels: { meta: { pixelId } } } },
+    error: null,
+  };
+}
+
 afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("getCapiTokenByTrackingKey (Scheibe 2a)", () => {
-  it("loest trackingKey -> project_id -> Token auf", async () => {
+describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
+  it("loest trackingKey -> {pixelId, token} auf (eine Aufloesung)", async () => {
     mockAdmin({
-      projects: { data: { id: "proj-1" }, error: null },
+      projects: projectWithPixel("proj-1", "PIXEL-123"),
       project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
     });
-    expect(await getCapiTokenByTrackingKey("tk-abc")).toBe("SECRET-TOKEN");
+    expect(await getCapiConfigByTrackingKey("tk-abc")).toEqual({
+      pixelId: "PIXEL-123",
+      token: "SECRET-TOKEN",
+    });
   });
 
   it("leerer Key -> null (ohne DB-Aufruf)", async () => {
     const { from } = mockAdmin({});
-    expect(await getCapiTokenByTrackingKey("   ")).toBeNull();
+    expect(await getCapiConfigByTrackingKey("   ")).toBeNull();
     // createAdminClient wird gar nicht erst aufgerufen -> kein DB-Zugriff.
     expect(from).not.toHaveBeenCalled();
     expect(createAdminClient).not.toHaveBeenCalled();
@@ -56,24 +67,40 @@ describe("getCapiTokenByTrackingKey (Scheibe 2a)", () => {
       projects: { data: null, error: null },
       project_tokens: { data: { meta_capi_token: "x" }, error: null },
     });
-    expect(await getCapiTokenByTrackingKey("tk-missing")).toBeNull();
+    expect(await getCapiConfigByTrackingKey("tk-missing")).toBeNull();
   });
 
-  it("ROBUSTHEIT: trackingKey existiert, aber project_tokens-Zeile fehlt -> null (kein Throw)", async () => {
-    // Projekt hat einen trackingKey in settings, aber der Token wurde nie gesetzt
-    // (oder Race). Muss sauber null liefern, nicht werfen.
+  it("ROBUSTHEIT: Projekt ohne Meta-Pixel-ID -> null (kein Forward-Ziel)", async () => {
     mockAdmin({
-      projects: { data: { id: "proj-1" }, error: null },
+      projects: { data: { id: "proj-1", settings: {} }, error: null },
+      project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
+    });
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toBeNull();
+  });
+
+  it("ROBUSTHEIT: trackingKey + Pixel gesetzt, aber project_tokens-Zeile fehlt -> null (kein Throw)", async () => {
+    // Projekt hat trackingKey + Pixel, aber der Token wurde nie gesetzt (oder Race).
+    // Muss sauber null liefern, nicht werfen.
+    mockAdmin({
+      projects: projectWithPixel("proj-1", "PIXEL-123"),
       project_tokens: { data: null, error: null },
     });
-    await expect(getCapiTokenByTrackingKey("tk-abc")).resolves.toBeNull();
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toBeNull();
+  });
+
+  it("ROBUSTHEIT: Token-Zeile vorhanden, aber Token null -> null", async () => {
+    mockAdmin({
+      projects: projectWithPixel("proj-1", "PIXEL-123"),
+      project_tokens: { data: { meta_capi_token: null }, error: null },
+    });
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toBeNull();
   });
 
   it("DB-Fehler beim Token-Read -> null (kein Throw)", async () => {
     mockAdmin({
-      projects: { data: { id: "proj-1" }, error: null },
+      projects: projectWithPixel("proj-1", "PIXEL-123"),
       project_tokens: { data: null, error: { message: "boom" } },
     });
-    await expect(getCapiTokenByTrackingKey("tk-abc")).resolves.toBeNull();
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toBeNull();
   });
 });

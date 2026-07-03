@@ -46,9 +46,17 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isLoginRoute = path === "/login";
+  // BEWUSSTE, CHIRURGISCHE Ausnahme: /api/capi ist der anonyme cross-origin
+  // CAPI-Forward-Endpoint (der ausgelieferte Export ruft ihn ohne Session auf).
+  // Das Auth-Gate ist hier NICHT mehr der Waechter — der Waechter ist der
+  // trackingKey als Capability (unbekannter Key -> 204, kein Forward, kein Leak;
+  // in 2b-i gebaut+getestet). NUR dieser eine Pfad wird geoeffnet, NICHT /api
+  // pauschal — kuenftige API-Routen bleiben hinter dem Gate.
+  const isCapiRoute = path.startsWith("/api/capi");
+  const isPublicRoute = isLoginRoute || isCapiRoute;
 
-  if (!user && !isLoginRoute) {
-    // Nicht eingeloggt: alles ausser /login -> /login
+  if (!user && !isPublicRoute) {
+    // Nicht eingeloggt: alles ausser oeffentlichen Pfaden -> /login
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

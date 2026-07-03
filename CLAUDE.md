@@ -1349,6 +1349,20 @@ Header sind nur Gürtel-und-Hosenträger. Dev-Dummy-IP (123.123.123.123) wird NU
 (loopback||leer) && gesetztem META_TEST_EVENT_CODE eingesetzt — eine echte Remote-IP
 wird nie ersetzt, in Prod (Test-Code unset) bleibt die IP bei fehlender Quelle omitted.
 
+BEWUSSTE SICHERHEITS-VERSCHIEBUNG (Auth-Gate-Ausnahme, analog zur 2a-service_role-
+Verschiebung): Der anonyme cross-origin Endpoint /api/capi wird beim Bau in
+src/lib/supabase/middleware.ts (updateSession) chirurgisch aus dem Auth-Gate
+ausgenommen — als bewusst öffentlicher Pfad im SELBEN Muster wie /login
+(isPublicRoute = isLoginRoute || path.startsWith("/api/capi")), NICHT über den
+Matcher-Regex (der steuert Auth-Reichweite + Session-Refresh, fragilste Stelle) und
+NICHT /api pauschal (künftige API-Routen bleiben hinter dem Gate). FOLGE: Für
+/api/capi ist das Auth-Gate NICHT mehr der Wächter — der Wächter ist der trackingKey
+als Capability (unbekannter Key -> 204, kein Forward, kein Leak; in 2b-i gebaut +
+getestet). Korrekt und notwendig, weil der ausgelieferte Export den Endpoint immer
+anonym aufruft; die Route trägt ihre Zugangskontrolle jetzt selbst. WÄCHTER:
+diskriminierende middleware.test.ts (anonym+/api/capi -> kein Redirect; anonym+andere
+API-Route -> weiter /login) hält fest, dass NUR dieser eine Pfad geöffnet ist.
+
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,
 In-Place Copywriting als Phase 5. Der folgende Block bleibt die ausführliche

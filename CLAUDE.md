@@ -1436,6 +1436,38 @@ hierher, statt zu duplizieren. Reihenfolge im Bau: erst Phase 4.5, dann Phase 5.
      (Klick = Laufzeit), bei Text nicht. Finale Entscheidung im Bau-Slice.
 - Lean-Timing: erst NACH dem HTML-Export-Feature angehen; nicht vorziehen.
 
+### Phase 9 — AI-Native: Pagesmith MCP-Server (Vision, NACH Go-Live)
+Ziel: Pagesmith als natives Tool in KI-Umgebungen der Marketer (Claude Desktop, Cursor,
+Windsurf) via eigenem MCP-Server (Model Context Protocol, JSON-RPC-Endpunkt z.B. /api/mcp).
+Marketer generiert im Profil einen Pagesmith-MCP-Key; seine KI kann dann Projekte anlegen,
+Tracking-Status abfragen, Meta-Tokens aktualisieren etc. Verwandelt Pagesmith von
+Web-App zu KI-Infrastruktur — potenzielles Alleinstellungsmerkmal.
+
+TIMING (Owner-Entscheidung, endgültig): Phase 9, NACH Phase 7 (Hosting/Go-Live). Grund:
+MCP ist ein Feature für eine Nutzerbasis, die es vor Go-Live noch nicht gibt; sein Wert
+entsteht, wenn reale Projekte existieren, die eine KI managen kann. Es JETZT zu bauen
+verstößt gegen "kleine beweisbare Slices / Abstraktion erst bei 2+ Fällen" und lenkt vom
+Wert-Schalter (Go-Live) ab.
+
+VOR DEM BAU ZU KLÄREN (Bedrohungsmodell — eigene Phase, KEIN Endpunkt-Anhängsel):
+MCP dreht das bisherige Sicherheitsmodell um. Bisher: Owner schreibt nur eingeloggt
+(Session+RLS); der einzige anonyme Pfad (/api/capi) ist bewusst write-only, capability-
+gated, ohne Datenrückgabe. MCP dagegen = LESEN UND SCHREIBEN mit voller Owner-Autorität,
+ausgelöst von einem langlebigen API-Key in der KI-Umgebung eines Dritten. Konsequenzen:
+- Der MCP-Key ist mächtiger als alles bisher Ausgegebene (kann alles, was der Owner kann,
+  inkl. Meta-Token-Update). Geleakter Key = Vollzugriff + fremde Ad-Account-Umleitung.
+  Blast-Radius größer als service_role, weil ABSICHTLICH nach außen gegeben.
+- Umgeht RLS-Session-Bindung -> Autorisierung MUSS komplett in die App-Schicht, PRO
+  MCP-Aufruf (Key -> User auflösen -> Ownership prüfen -> erst dann handeln). Die
+  "heiligstes Gate"-Situation aus 2a, aber für JEDE Methode. Eine vergessene Prüfung =
+  IDOR über die ganze Plattform.
+- Echter Scope (nicht "ein Endpunkt"): MCP-Protokoll korrekt (Tool-Discovery/Schemas/
+  Fehler-Semantik), Key-Gen/-Rotation/-Widerruf-UI + sicherer Storage, Rate-Limiting
+  (KI-Agent in Schleife), Audit-Logging (fremd-gesteuerte Schreibzugriffe), pro-Key-
+  Scoping (read-only vs. token-write). Eigene Phase auf Augenhöhe mit Phase 6.
+Merksatz: Die bestehende Server-Logik geht von einer Owner-Session aus; MCP hat keine.
+NICHT "direkt ansprechen" — eine neue Autorisierungsschicht DAVOR bauen.
+
 ## Zukunftsrichtung: Funnel-Architektur (bewusst vertagt, NICHT jetzt bauen)
 Festgehaltene Richtung, kein Auftrag. Dient als Bauplan-Anker, damit heutige
 Entscheidungen sie nicht versperren. Wird NICHT im laufenden Schritt angefasst.
@@ -1567,3 +1599,10 @@ miterledigen, sondern gebündelt abarbeiten.
   genau im Browser zu prüfen ist) — nicht nur Pipeline-grün. Die Pipeline beweist
   die Logik; den Produktanspruch beweist nur der Live-Blick. Ein CLAUDE.md-
   'erledigt'-Eintrag wird erst nach bestätigtem Live-Test geschrieben.
+- Session-unabhängige Mutationen (MCP-Vorbereitung, kostenlos ab jetzt): Jede neue
+  Server-Mutation als REINE Funktion (userId, params) bauen — Autorisierung
+  (Ownership-Prüfung) DAVOR, Geschäftslogik DAHINTER, sauber getrennt (wie setCapiToken
+  es bereits fast tut). So kann die spätere MCP-Schicht (Phase 9) dieselbe geprüfte Logik
+  wiederverwenden, mit MCP-Autorisierung als ANDEREM Eingang zur GLEICHEN Funktion. Kein
+  jetziger Bau, nur Baustil — verbessert den Code ohnehin (Testbarkeit, Trennung von
+  Auth und Logik).

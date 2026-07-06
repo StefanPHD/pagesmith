@@ -34,11 +34,13 @@ import { editPreviewHtml, generateFunctional } from "@/lib/generate";
 import {
   getCapiTokenSet,
   getMetaPixelId,
+  getTrackingKey,
   setCapiState,
   setMetaPixelId,
   settingsEqual,
   type ProjectSettings,
 } from "@/lib/settings";
+import { getCapiProxyUrl } from "@/lib/capi/proxy";
 import { exportFilename } from "@/lib/export";
 import { validateUploadFile } from "@/lib/upload";
 import ActionPanel from "@/components/ActionPanel";
@@ -251,6 +253,8 @@ export default function CodeImporter({
       previewMode === "functional"
         ? generateFunctional(debouncedCode, mappings, "preview", {
             metaPixelId: getMetaPixelId(settings),
+            trackingKey: getTrackingKey(settings),
+            capiProxyUrl: getCapiProxyUrl(),
           })
         : "",
     [previewMode, debouncedCode, mappings, settings]
@@ -553,6 +557,8 @@ export default function CodeImporter({
   function buildExportDocument(): string {
     return generateFunctional(debouncedCode, mappings, "export", {
       metaPixelId: getMetaPixelId(settings),
+      trackingKey: getTrackingKey(settings),
+      capiProxyUrl: getCapiProxyUrl(),
     });
   }
 

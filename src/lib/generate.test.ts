@@ -444,6 +444,182 @@ describe("Wiring-Verhalten TRACK (Meta-Pixel, Scheibe 1b)", () => {
 });
 
 // ---------------------------------------------------------------------------
+// CAPI-Dedup-Beacon (Phase 6 Scheibe 2b-ii): neben fbq feuert __psMetaFire ein
+// navigator.sendBeacon an /api/capi — hinter DEMSELBEN psConsent-Gate, mit der
+// GETEILTEN eid, als text/plain-Blob. Der eventID-Identitaets-Test ist der Kern
+// der Scheibe (er bewacht das Dedup): er fuehrt das Wiring WIRKLICH aus und
+// vergleicht die Beacon-Payload-eventID STRING-IDENTISCH mit der an fbq gereichten.
+// ---------------------------------------------------------------------------
+
+const PROXY = "https://app.pagesmith.io/api/capi";
+const TK = "tk-public-123";
+// sendBeacon-Stub: eigene own-Property auf dem jsdom-navigator (das eval'te Wiring
+// liest window.navigator = dasselbe Objekt). Gibt true zurueck (wie der echte Beacon).
+function stubBeacon() {
+  const spy = vi.fn(() => true);
+  (navigator as unknown as { sendBeacon: unknown }).sendBeacon = spy;
+  return spy;
+}
+afterEach(() => {
+  delete (navigator as unknown as { sendBeacon?: unknown }).sendBeacon;
+});
+
+describe("CAPI-Dedup-Beacon (Scheibe 2b-ii)", () => {
+  it("DEDUP-KERN: Beacon-Payload.eventID === die an fbq gereichte eventID (STRING-IDENTISCH)", async () => {
+    const fbq = stubFbq();
+    const beacon = stubBeacon();
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+
+    // Die eventID, die fbq bekam.
+    const fbqEventId = fbqCalls(fbq, "track")[0][3].eventID as string;
+    expect(typeof fbqEventId).toBe("string");
+    expect(fbqEventId.length).toBeGreaterThan(0);
+
+    // Genau EIN Beacon, an die absolute URL, als text/plain-Blob.
+    expect(beacon).toHaveBeenCalledTimes(1);
+    const [url, blob] = beacon.mock.calls[0] as unknown as [string, Blob];
+    expect(url).toBe(PROXY);
+    expect(blob.type).toBe("text/plain");
+
+    const payload = JSON.parse(await blob.text());
+    // DER Beweis: identische ID -> Meta faltet Browser- + Server-Event zu einem.
+    expect(payload.eventID).toBe(fbqEventId);
+    expect(payload.trackingKey).toBe(TK);
+    expect(payload.event).toBe("Lead");
+    expect(payload.isCustom).toBe(false);
+  });
+
+  it("STATISCH: genau EINE randomUUID-Quelle; fbq UND Beacon referenzieren dieselbe eid", () => {
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { metaPixelId: PIXEL, trackingKey: TK, capiProxyUrl: PROXY }
+    );
+    // Kein zweiter Generator im Beacon-Zweig: genau EIN randomUUID()-AUFRUF (der
+    // Ternary referenziert window.crypto.randomUUID zusaetzlich als Guard -> auf den
+    // Aufruf mit Klammer zaehlen, nicht auf den Bezeichner).
+    expect((out.match(/randomUUID\(/g) ?? []).length).toBe(1);
+    // Der Beacon-Payload traegt "eventID: eid," (Trailing-Komma-Variante, nur im
+    // Beacon) -> er referenziert dieselbe lokale eid wie fbq, kein zweiter Wert.
+    expect(out).toContain("eventID: eid,");
+  });
+
+  it("value/currency/isCustom + eventSourceUrl landen im Beacon-Payload", async () => {
+    stubFbq();
+    const beacon = stubBeacon();
+    mountAndWire(
+      generateFunctional(
+        MAPPED_BUTTON,
+        [
+          {
+            elementId: "ps-aaaaaa",
+            type: "track",
+            config: { event: "MeinKauf", isCustom: true, value: 49.9, currency: "EUR" },
+          },
+        ],
+        "export",
+        { metaPixelId: PIXEL, trackingKey: TK, capiProxyUrl: PROXY }
+      )
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    const [, blob] = beacon.mock.calls[0] as unknown as [string, Blob];
+    const payload = JSON.parse(await blob.text());
+    expect(payload.event).toBe("MeinKauf");
+    expect(payload.isCustom).toBe(true);
+    expect(payload.value).toBe(49.9);
+    expect(payload.currency).toBe("EUR");
+    // eventSourceUrl wird server-seitig NICHT ueberschrieben -> Client liefert es mit.
+    expect("eventSourceUrl" in payload).toBe(true);
+  });
+
+  it("FAIL-LOUD: trackingKey gesetzt, aber proxyUrl leer -> KEIN sendBeacon, console.warn", () => {
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { metaPixelId: PIXEL, trackingKey: TK, capiProxyUrl: "" }
+    );
+    expect(out).not.toContain("navigator.sendBeacon(");
+    // Der fail-loud-Hinweis nennt die fehlende env — kein relativer Fallback.
+    expect(out).toContain("NEXT_PUBLIC_APP_URL");
+    expect(out).not.toContain('"/api/capi"');
+    // Gegenprobe: proxyUrl gesetzt -> sendBeacon MIT absoluter URL, kein warn.
+    const ok = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { metaPixelId: PIXEL, trackingKey: TK, capiProxyUrl: PROXY }
+    );
+    expect(ok).toContain("navigator.sendBeacon(");
+    expect(ok).toContain(PROXY);
+    expect(ok).not.toContain("NEXT_PUBLIC_APP_URL");
+  });
+
+  it("kein trackingKey -> STILL: weder Beacon noch Warnung (wie 'keine Pixel-ID')", () => {
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { metaPixelId: PIXEL, trackingKey: "", capiProxyUrl: PROXY }
+    );
+    expect(out).not.toContain("navigator.sendBeacon(");
+    expect(out).not.toContain("NEXT_PUBLIC_APP_URL");
+  });
+
+  it("CONSENT: pagesmithConsent()==false -> WEDER fbq NOCH Beacon (selbes Gate)", () => {
+    const fbq = stubFbq();
+    const beacon = stubBeacon();
+    vi.stubGlobal("pagesmithConsent", () => false);
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(fbq).not.toHaveBeenCalled();
+    expect(beacon).not.toHaveBeenCalled();
+  });
+
+  it("Redirect+Track: Beacon feuert VOR der Navigation; Redirect unveraendert", () => {
+    stubFbq();
+    const beacon = stubBeacon();
+    mountAndWire(
+      generateFunctional(
+        MAPPED_BUTTON,
+        [redirect("ps-aaaaaa", "https://x.com", true), track("ps-aaaaaa", "Lead")],
+        "export",
+        { metaPixelId: PIXEL, trackingKey: TK, capiProxyUrl: PROXY }
+      )
+    );
+    const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(ev.defaultPrevented).toBe(true);
+    expect(beacon).toHaveBeenCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledWith("https://x.com", "_blank");
+    // sendBeacon (im Track-Zweig) lief VOR window.open (navigationssicher).
+    expect(beacon.mock.invocationCallOrder[0]).toBeLessThan(
+      openSpy.mock.invocationCallOrder[0]
+    );
+  });
+
+  it("EDIT bleibt beacon-frei: editPreviewHtml injiziert nie ein sendBeacon/fbq", () => {
+    const { html: previewHtml, elements } = annotateAndDetect("<h1>Alt</h1>");
+    const out = editPreviewHtml(previewHtml, [text(elements[0].id, "Neu")]);
+    expect(out).not.toContain("navigator.sendBeacon(");
+    expect(out).not.toContain("fbq(");
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Text-Override (Phase 5): in der VORSCHAU ersetzt das Wiring beim Laden den
 // textContent per ps-id; im EXPORT wird der Typ gar nicht erst eingebacken.
 // ---------------------------------------------------------------------------

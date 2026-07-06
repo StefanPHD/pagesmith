@@ -41,11 +41,25 @@ export const META_VALUE_EVENTS: ReadonlySet<string> = new Set([
 // KEIN Auto-PageView: fbq('init', …) wird OHNE folgendes fbq('track','PageView')
 // aufgerufen -> 1b ist strikt on-click. Page-Load-Events sind eine spaetere Scheibe.
 //
-// eventID pro Fire (crypto.randomUUID + Fallback) -> in 1b funktional ein No-op, aber
-// die Dedup-NAHT fuer Scheibe 2 (CAPI): Browser- und Server-Event teilen dieselbe ID.
+// eventID pro Fire (crypto.randomUUID + Fallback) -> in 1b die Dedup-NAHT, in 2b-ii
+// scharf geschaltet: Browser-Pixel (fbq) UND Server-CAPI (sendBeacon) teilen DIESELBE
+// eid -> Meta faltet beide zu EINEM Event. Die eid wird GENAU EINMAL erzeugt und an
+// beide Konsumenten gereicht (kein zweiter Generator -> kein Dedup-Bruch).
+//
+// CAPI-BEACON (Scheibe 2b-ii): navigator.sendBeacon an den Pagesmith-Proxy, INNERHALB
+// __psMetaFire hinter DEMSELBEN psConsent()-Gate wie fbq, mit der geteilten eid. Nur
+// gebaut, wenn ein trackingKey vorliegt (Vorbedingung wie die Pixel-ID beim Browser-
+// Event, mit dem der Beacon dedupliziert). Siehe buildCapiBeaconStatement.
 //
 // PIXEL_ID sicher eingebettet via JSON.stringify (kein Injection-Vektor).
-export function buildMetaRuntime(pixelId: string): string {
+export function buildMetaRuntime(
+  pixelId: string,
+  capiTrackingKey = "",
+  capiProxyUrl = ""
+): string {
+  // Der Beacon-Block wird ZUR BAU-ZEIT gegated (drei Faelle) und in __psMetaFire
+  // nach den fbq-Zeilen gesplicet -> teilt dort die lokale eid.
+  const beaconStmt = buildCapiBeaconStatement(capiTrackingKey, capiProxyUrl);
   return `
   var PS_PIXEL_ID = ${JSON.stringify(pixelId)};
   var __psFbReady = false;
@@ -97,8 +111,53 @@ export function buildMetaRuntime(pixelId: string): string {
     if (typeof cfg.value === "number") params.value = cfg.value;
     if (cfg.currency) params.currency = cfg.currency;
     if (cfg.isCustom) fbq("trackCustom", cfg.event, params, { eventID: eid });
-    else fbq("track", cfg.event, params, { eventID: eid });
+    else fbq("track", cfg.event, params, { eventID: eid });${beaconStmt}
   }`;
+}
+
+// Der CAPI-Beacon-Statement-Bau (Scheibe 2b-ii), analog zu metaTrackStatement: EINE
+// Build-Zeit-Verzweigung, kein Laufzeit-Zweig fuer den Konfig-Zustand. Drei Faelle:
+// - kein trackingKey -> "" (CAPI fuer dieses Projekt nicht konfiguriert; STILL, wie
+//   "keine Pixel-ID": kein Beacon, keine Warnung).
+// - trackingKey gesetzt, aber proxyUrl leer (NEXT_PUBLIC_APP_URL fehlt/leer) ->
+//   FAIL-LOUD console.warn, KEIN Beacon, KEIN relativer Fallback (der in Dev gruen
+//   waere und erst beim echten Marketer auf fremder Domain bricht).
+// - beide gesetzt -> sendBeacon neben fbq mit der GETEILTEN eid.
+//
+// Der Beacon-Body ist ein text/plain-Blob: application/json wuerde den simplen Beacon
+// preflight-pflichtig machen, den sendBeacon (fire-and-forget) nicht bedienen kann ->
+// stiller Ausfall. text/plain ist die tragende Kontrolle (deckt sich mit der
+// 2b-i-Route-Leitplanke). trackingKey/proxyUrl als JSON-Literale (kein Injektions-
+// Vektor). _fbp best-effort aus dem Cookie; fehlt es (lazy init im selben Klick) ->
+// weglassen, NICHT verzoegern (die eid traegt das Dedup, _fbp ist Match-Quality-Bonus).
+// try/catch: der Beacon darf den Klick nie werfen. sendBeacon ist navigationssicher
+// -> feuert im Track-vor-Redirect-Block VOR der Weiterleitung, ohne sie zu verzoegern.
+export function buildCapiBeaconStatement(
+  trackingKey: string,
+  proxyUrl: string
+): string {
+  if (!trackingKey) return "";
+  if (!proxyUrl) {
+    return `
+    console.warn("[pagesmith] CAPI-Beacon deaktiviert: NEXT_PUBLIC_APP_URL nicht gesetzt.");`;
+  }
+  return `
+    try {
+      if (navigator && navigator.sendBeacon) {
+        var __fbp = (document.cookie.match(/(?:^|; )_fbp=([^;]*)/) || [])[1] || "";
+        var __b = {
+          trackingKey: ${JSON.stringify(trackingKey)},
+          eventID: eid,
+          event: cfg.event,
+          eventSourceUrl: location.href,
+          isCustom: !!cfg.isCustom
+        };
+        if (typeof cfg.value === "number") __b.value = cfg.value;
+        if (cfg.currency) __b.currency = cfg.currency;
+        if (__fbp) __b._fbp = __fbp;
+        navigator.sendBeacon(${JSON.stringify(proxyUrl)}, new Blob([JSON.stringify(__b)], { type: "text/plain" }));
+      }
+    } catch (e) {}`;
 }
 
 // Die Anweisung im Track-Zweig des Wiring-Handlers, je nach Pixel-Konfiguration:

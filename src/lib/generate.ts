@@ -60,9 +60,20 @@ export type GenerateMode = "export" | "preview" | "edit";
 // Meta-Logik lebt in tracking/meta.ts (Naht fuer Plattform #2).
 //
 // WICHTIG: Darf keinen literalen "</script>"-String enthalten (Serialisierung).
-function buildWiringScript(mode: GenerateMode, metaPixelId: string): string {
+function buildWiringScript(
+  mode: GenerateMode,
+  metaPixelId: string,
+  capiTrackingKey: string,
+  capiProxyUrl: string
+): string {
   const hasPixel = metaPixelId !== "";
-  const metaRuntime = hasPixel ? buildMetaRuntime(metaPixelId) : "";
+  // Der CAPI-Beacon (2b-ii) lebt in der Meta-Runtime (__psMetaFire) -> nur gebaut,
+  // wenn ein Pixel gesetzt ist (dieselbe Vorbedingung wie das Browser-Event, mit dem
+  // er dedupliziert). trackingKey/proxyUrl entscheiden IN buildMetaRuntime ueber den
+  // konkreten Beacon-Zweig (still / fail-loud / feuern).
+  const metaRuntime = hasPixel
+    ? buildMetaRuntime(metaPixelId, capiTrackingKey, capiProxyUrl)
+    : "";
   const trackStmt = metaTrackStatement(hasPixel);
   return `(function () {
   var MODE = ${JSON.stringify(mode)};${metaRuntime}
@@ -201,7 +212,11 @@ export function generateFunctional(
   // Projekt-Einstellungen. Gesetzt -> Track-Zweig feuert echtes fbq + Base-Pixel
   // wird (lazy, consent-gegated) injiziert. Leer/absent -> kein Meta-Snippet,
   // Track-Aktion ist ein no-op. Der Aufrufer extrahiert sie via getMetaPixelId.
-  options?: { metaPixelId?: string }
+  // options.trackingKey + options.capiProxyUrl (Scheibe 2b-ii): oeffentlicher
+  // CAPI-trackingKey (aus settings) + absolute Proxy-URL (env-abgeleitet, vom
+  // Aufrufer gebildet — die REINE Engine liest NIE selbst env). Beide leer -> kein
+  // Beacon (trackingKey leer: still; proxyUrl leer bei gesetztem Key: fail-loud warn).
+  options?: { metaPixelId?: string; trackingKey?: string; capiProxyUrl?: string }
 ): string {
   if (!html || !html.trim()) return "";
 
@@ -256,7 +271,12 @@ export function generateFunctional(
       dataScript.textContent = json;
 
       const wiringScript = doc.createElement("script");
-      wiringScript.textContent = buildWiringScript(mode, options?.metaPixelId ?? "");
+      wiringScript.textContent = buildWiringScript(
+        mode,
+        options?.metaPixelId ?? "",
+        options?.trackingKey ?? "",
+        options?.capiProxyUrl ?? ""
+      );
 
       // Vor </body> haengen; Fallback documentElement, falls kein body existiert.
       const target = doc.body ?? doc.documentElement;

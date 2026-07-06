@@ -986,8 +986,10 @@ Decomposition (Owner-bestätigt):
   (pixelId+token serverseitig), Meta-Graph-CAPI-Forward mit event_id. KEIN Client/Beacon/
   Wiring. ABGESCHLOSSEN (live, Server-Event bei Meta verarbeitet). Nächster Schritt: 2b-ii
   (Client-Beacon + Dedup).
-- Scheibe 2b-ii — Client-Beacon: sendBeacon ins Export-Wiring (hinter psConsent, eine
-  eventID geteilt mit fbq) + Dedup-Beweis (Browser+Server).
+- Scheibe 2b-ii — Client-Beacon (Dedup): navigator.sendBeacon an /api/capi neben fbq,
+  hinter demselben psConsent, mit GETEILTER eventID, text/plain-Blob, absoluter
+  env-abgeleiteter proxyURL im Export. Schließt Phase 6 (Browser+Server -> ein
+  deduplizierter Event bei Meta).
 - Scheibe 3 — Consent-Gate.
 
 ### Scheibe 0 — (elementId, type)-Compound-Key-Migration (ABGESCHLOSSEN, live verifiziert)
@@ -1395,6 +1397,52 @@ getestet). Korrekt und notwendig, weil der ausgelieferte Export den Endpoint imm
 anonym aufruft; die Route trägt ihre Zugangskontrolle jetzt selbst. WÄCHTER:
 diskriminierende middleware.test.ts (anonym+/api/capi -> kein Redirect; anonym+andere
 API-Route -> weiter /login) hält fest, dass NUR dieser eine Pfad geöffnet ist.
+
+### Scheibe 2b-ii — Client-Beacon / Dedup (vor dem Bau dokumentiert)
+Das Finale von Phase 6, additiv-klein: im 1b-Meta-Wiring (__metaFire in meta.ts) neben
+fbq ein navigator.sendBeacon an /api/capi. Danach: pro Klick ein Browser-Event (Pixel)
++ ein Server-Event (CAPI), die Meta über die geteilte eventID zu EINEM faltet.
+
+Schlüssel-Insight (hält es klein): psConsent(), eventID-Erzeugung und Event-Daten
+existieren bereits in __metaFire. Der Beacon hängt sich an die VORHANDENE ID und die
+VORHANDENEN Werte an. Additiv: eine sendBeacon-Zeile im schon-consent-gegateten,
+schon-eventID-tragenden Pfad. Kein Umbau, kein zweiter Consent-Check, keine zweite ID.
+
+Vier kritische Invarianten:
+1. EINE eventID für beide: dieselbe Variable, die fbq(…, {eventID}) bekommt, geht in den
+   Beacon-Payload. NIEMALS ein zweites randomUUID. Zwei IDs = kein Dedup = Doppelzählung
+   (stiller Datenqualitäts-Bug, kein Crash).
+2. text/plain: Blob-type "text/plain", NIEMALS application/json (sonst Preflight ->
+   sendBeacon kann nicht warten -> stiller Ausfall).
+3. Beide hinter DEMSELBEN psConsent(): der Beacon im selben if(!psConsent())return-Block
+   wie fbq. Kein eigener Consent-Zweig (sonst Server-Event ohne/mit Consent divergent ->
+   DSGVO-Loch + Dedup-Bruch).
+4. proxyURL absolut + env-abgeleitet + FAIL-LOUD: neue env NEXT_PUBLIC_APP_URL (Dev
+   http://localhost:3000, Prod die Pagesmith-Domain). Beim Export wird die ABSOLUTE
+   /api/capi-URL in die Datei gebacken (die ausgelieferte Seite läuft auf fremder Domain
+   -> relativ zeigt ins Leere). Fehlt/leer die env -> KEIN Beacon + console.warn, KEIN
+   Fallback auf einen relativen/kaputten Pfad (der in Dev grün ist und erst beim echten
+   Marketer bricht).
+
+_fbp: Best-Effort aus document.cookie mitgeben (Match-Quality). Beim ersten Klick evtl.
+noch nicht gesetzt (lazy init im selben Klick) -> dann weglassen, NICHT verzögern. eventID
+trägt das Dedup, _fbp ist Bonus.
+
+Scope hart: Redirect-Pfad + Klick-Reihenfolge (Track vor Navigation, 1a) UNANGETASTET —
+der Beacon reiht sich in den bestehenden Track-vor-Redirect-Block ein (sendBeacon ist
+navigationssicher, überlebt die Weiterleitung — sein ganzer Vorteil). Edit-iframe bleibt
+pixel- UND beacon-frei (kein Wiring im Edit-Modus, nur Vorschau/Export). Meta-Route (2b-i),
+Text-Pfad, detect.ts/Brücke unberührt.
+
+Diskriminierende Tests (Pflicht):
+- Beacon feuert mit DERSELBEN eventID wie fbq (assert: sendBeacon-Payload.eventID ===
+  das an fbq übergebene eventID — nicht nur "beide vorhanden", sondern IDENTISCH).
+- Blob-type ist text/plain (nicht application/json).
+- psConsent()==false -> WEDER fbq NOCH sendBeacon (beide im selben Gate).
+- proxyURL: env gesetzt -> absoluter Export-URL im Wiring; env fehlt -> KEIN Beacon +
+  warn, kein relativer Fallback.
+- Redirect+Track: Beacon feuert, Redirect-Navigation unverändert, Reihenfolge intakt.
+- Edit-iframe: kein Beacon/kein Pixel im Edit-Wiring.
 
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,

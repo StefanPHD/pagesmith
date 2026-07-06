@@ -52,11 +52,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Override in Preview, Edit UND Export (Scheibe 1 + 1b + 2) sowie Text-Live-Patch
       im Edit-Modus ohne Reload-Sprung (Scheibe 3). Type-diskriminiertes
       Mapping-Modell ein zweites Mal bestätigt.
-- [~] Phase 6 — Server-Side Tracking (CAPI): IN ARBEIT. Pfad = CAPI-Proxy auf
-      Pagesmith-Domain (First-Party-Upgrade später mit Phase 7). Scheibe 0 + 1a + 1b
-      erledigt: clientseitiges Meta-Tracking ist echt & live (Pixel-ID-UI, Standard-/
-      Custom-Events, value/currency, fbq mit eventID, Consent-Hook, Export-Bake). Als
-      Nächstes Scheibe 2 (CAPI-Proxy). Details + Decomposition in der Phase-6-Sektion.
+- [x] Phase 6 — Server-Side Tracking (CAPI): KOMPLETT (Mechanik). Type-diskriminiertes
+      Mapping -> Mehr-Aktion -> echtes Meta-Pixel (consent-sauber) -> Secret-Storage
+      (service_role + heiligstes Gate) -> CAPI-Route -> Dedup-Beacon. Offener
+      End-to-End-Dedup-Sichtbarkeitstest auf verknüpfter Domain -> Phase 7.
 - [ ] Phase 7 — Hosting & Go-Live: Vercel/Netlify-API, Custom Domains, SSL.
       ACHTUNG: härtester Brocken (Multi-Tenant Custom Domains + Auto-SSL); schaltet
       zugleich die Funnel-Vision frei. (war Phase 6)
@@ -986,10 +985,10 @@ Decomposition (Owner-bestätigt):
   (pixelId+token serverseitig), Meta-Graph-CAPI-Forward mit event_id. KEIN Client/Beacon/
   Wiring. ABGESCHLOSSEN (live, Server-Event bei Meta verarbeitet). Nächster Schritt: 2b-ii
   (Client-Beacon + Dedup).
-- Scheibe 2b-ii — Client-Beacon (Dedup): navigator.sendBeacon an /api/capi neben fbq,
+- [x] Scheibe 2b-ii — Client-Beacon/Dedup: navigator.sendBeacon an /api/capi neben fbq,
   hinter demselben psConsent, mit GETEILTER eventID, text/plain-Blob, absoluter
-  env-abgeleiteter proxyURL im Export. Schließt Phase 6 (Browser+Server -> ein
-  deduplizierter Event bei Meta).
+  env-abgeleiteter proxyURL im Export. ABGESCHLOSSEN (Mechanik live; Dedup-Sichtbarkeit
+  -> Phase 7). Alle Scheiben (0,1a,1b,2a,2b-i,2b-ii) sind jetzt [x].
 - Scheibe 3 — Consent-Gate.
 
 ### Scheibe 0 — (elementId, type)-Compound-Key-Migration (ABGESCHLOSSEN, live verifiziert)
@@ -1398,7 +1397,39 @@ anonym aufruft; die Route trägt ihre Zugangskontrolle jetzt selbst. WÄCHTER:
 diskriminierende middleware.test.ts (anonym+/api/capi -> kein Redirect; anonym+andere
 API-Route -> weiter /login) hält fest, dass NUR dieser eine Pfad geöffnet ist.
 
-### Scheibe 2b-ii — Client-Beacon / Dedup (vor dem Bau dokumentiert)
+### Scheibe 2b-ii — Client-Beacon / Dedup (ABGESCHLOSSEN, Mechanik verifiziert)
+Status: fertig, Mechanik live verifiziert. Commit "feat(capi): dedup beacon alongside
+pixel (shared eventID, text/plain, absolute endpoint)". Pipeline grün. Live-Beweis
+(via npx serve -l 8080, echte http-Origin): Beacon feuert OHNE CORS-Block, Server
+antwortet 204, Route baut korrekten Meta-Payload (test_event_code TOP-LEVEL neben data,
+geteilte event_id, action_source website, IP/UA server-gesetzt), Meta EMPFÄNGT und
+VERARBEITET den Server-Event (sichtbar als "Kauf/Conversions API" in der Pixel-Übersicht).
+Browser-Pixel + CAPI-Beacon feuern parallel mit IDENTISCHER event_id.
+
+BEWUSSTE TEST-GRENZE (kein Bug, in Phase 7 aufzulösen): Die Echtzeit-Nebeneinander-
+Anzeige im Meta-"Events testen"-Tab (Browser+Server dedupliziert) war lokal NICHT
+herstellbar. Ursache strukturell: der Test-Tab ordnet Events über event_source_url +
+die pixel-verknüpfte Domain (thrty.store) zu; eine localhost:8080- (bzw. file://-)
+Origin ist keine verknüpfte, öffentlich erreichbare Domain -> Event wird verarbeitet
+(Übersicht), aber nicht in eine Test-Session geroutet. Der localhost-Test war immer nur
+eine Annäherung an Prod. Die Dedup-SICHTBARKEIT ist erst mit Phase 7 (Hosting, verknüpfte
+Domain) sauber verifizierbar -> dort als Abschlusstest von Phase 6 nachholen. Die
+Dedup-FUNKTION selbst ist belegt: identische event_id in beiden Events + Meta verarbeitet
+beide; Meta dedupliziert anhand der event_id, unabhängig von der Test-Tab-Anzeige.
+
+DEBUG-LEKTIONEN dieses Bogens (Instrument schlägt Vermutung, mehrfach bestätigt):
+- "Server 204, Meta-Test-Tab leer" ist eine WIEDERKEHRENDE Symptomklasse mit mehreren
+  Config-Ursachen (NICHT Route-Bug): falscher trackingKey (2b-i), stale/alter
+  test_event_code, test_event_code verschachtelt statt top-level, ODER file://-/
+  fremde-Origin event_source_url. Reihenfolge beim Debuggen: erst Config
+  (trackingKey/test_code/Origin) instrumentiert prüfen, DANN die Route.
+- file:// ist ein Test-Artefakt-Generator: null-Origin -> CORS-Block beim Beacon;
+  UND event_source_url=file:// -> Meta-Test-Tab-Routing scheitert. Lokal-Test IMMER
+  über echte http-Origin (npx serve -l 8080 auf anderem Port als Next -> echter
+  Cross-Origin-Test wie Prod), NIE per Doppelklick/file://.
+- Die eigene Pixel-Übersicht ("empfangen von: Conversions API") ist der Beweis, dass
+  der Server->Meta-Forward FUNKTIONIERT, unabhängig vom Test-Tab.
+
 Das Finale von Phase 6, additiv-klein: im 1b-Meta-Wiring (__metaFire in meta.ts) neben
 fbq ein navigator.sendBeacon an /api/capi. Danach: pro Klick ein Browser-Event (Pixel)
 + ein Server-Event (CAPI), die Meta über die geteilte eventID zu EINEM faltet.
@@ -1600,6 +1631,8 @@ miterledigen, sondern gebündelt abarbeiten.
   unterdrücken).
 - project_tokens-Verschlüsselung at rest (aktuell Plaintext; tragende Kontrolle ist
   Isolation + RLS-SELECT-Sperre). pgcrypto / KMS-Envelope als spätere Härtung.
+- Phase-6-Abschlusstest nachholen: Browser+Server-Dedup im Meta-Test-Events-Tab, sobald
+  eine Seite auf verknüpfter Domain (Phase 7) live ist.
 - Initial-Load-Preview erscheint ~300ms verzögert (bewusster Trade-off des
   Hydration-Fixes; bei Bedarf Mount-Effect-Variante, die debouncedCode sofort
   setzt).

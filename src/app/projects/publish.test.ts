@@ -1,0 +1,166 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+// Authenticated-SSR-Client mocken (kein echter next/headers-Servercode).
+const { createClient } = vi.hoisted(() => ({ createClient: vi.fn() }));
+vi.mock("@/lib/supabase/server", () => ({ createClient }));
+vi.mock("server-only", () => ({}));
+// Admin-Client existiert im Modul (setCapiToken), wird hier NICHT gebraucht — mocken,
+// damit der Import nicht den echten service_role-Pfad laedt. Spy beweist zugleich:
+// publishProject fasst service_role NIE an (Write laeuft ueber den authenticated-Client).
+const { createAdminClient } = vi.hoisted(() => ({ createAdminClient: vi.fn() }));
+vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
+
+import { publishProject } from "./actions";
+
+/**
+ * Chainbarer Client-Mock. Unterstuetzt select().maybeSingle() (Ownership),
+ * update() (thenable) UND insert() (thenable, mit konfigurierbarer Ergebnis-Queue
+ * fuer den Kollisions-Retry). Zeichnet auf, was geschrieben wird.
+ */
+function makeClient(opts: {
+  user: { id: string } | null;
+  ownRow?: { data: unknown; error: unknown };
+  updateResult?: { error: unknown };
+  insertResults?: { error: unknown }[]; // pro insert-Aufruf, der Reihe nach
+}) {
+  const rec = {
+    fromTables: [] as string[],
+    updatePatch: null as unknown,
+    inserts: [] as unknown[],
+  };
+  const insertQueue = [...(opts.insertResults ?? [])];
+
+  function builder(table: string) {
+    let awaited: { error: unknown } = { error: null };
+    const b: Record<string, unknown> = {};
+    b.select = vi.fn(() => b);
+    b.eq = vi.fn(() => b);
+    b.maybeSingle = vi.fn(async () =>
+      table === "projects"
+        ? opts.ownRow ?? { data: null, error: null }
+        : { data: null, error: null }
+    );
+    b.update = vi.fn((patch: unknown) => {
+      rec.updatePatch = patch;
+      awaited = opts.updateResult ?? { error: null };
+      return b;
+    });
+    b.insert = vi.fn((row: unknown) => {
+      rec.inserts.push(row);
+      awaited = insertQueue.shift() ?? { error: null };
+      return b;
+    });
+    b.then = (onF: (v: unknown) => unknown) => onF(awaited);
+    return b;
+  }
+
+  const client = {
+    auth: { getUser: vi.fn(async () => ({ data: { user: opts.user } })) },
+    from: vi.fn((table: string) => {
+      rec.fromTables.push(table);
+      return builder(table);
+    }),
+  };
+  createClient.mockResolvedValue(client);
+  return { client, rec };
+}
+
+const snapshot = { html: "<h1 data-pagesmith-id='ps-1'>x</h1>", mappings: [], settings: {} };
+
+beforeEach(() => {
+  process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "lvh.me:3000";
+});
+afterEach(() => vi.clearAllMocks());
+
+describe("publishProject (Scheibe 7a)", () => {
+  it("Happy-Path (neu): Label vergeben, published_content gesetzt, Live-URL zurück", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "Mein Shop", settings: {} }, error: null },
+    });
+
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", snapshot);
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+
+    // Genau EIN domains-insert (neues Label auf Basis des Namens).
+    expect(rec.inserts).toHaveLength(1);
+    expect(rec.inserts[0]).toMatchObject({ project_id: "proj-1" });
+    expect((rec.inserts[0] as { label: string }).label).toMatch(/^mein-shop-[a-z0-9]{6}$/);
+
+    // published_content trägt das CLIENT-generierte funktionale HTML.
+    const patch = rec.updatePatch as {
+      published_content: { html: string; publishedAt: string };
+      settings: { hosting: { label: string } };
+    };
+    expect(patch.published_content.html).toBe("<h1>LIVE</h1>");
+    expect(patch.published_content.publishedAt).toBeTruthy();
+    // Label in settings.hosting gespiegelt.
+    expect(patch.settings.hosting.label).toBe(res.label);
+
+    // URL absolut aus env-Basis + Label.
+    expect(res.url).toBe(`http://${res.label}.lvh.me:3000`);
+    // KEIN service_role beteiligt.
+    expect(createAdminClient).not.toHaveBeenCalled();
+  });
+
+  it("IDEMPOTENZ: bestehendes Label -> KEIN neuer insert, gleiche URL", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "Mein Shop",
+          settings: { hosting: { label: "mein-shop-abc123" } },
+        },
+        error: null,
+      },
+    });
+
+    const res = await publishProject("proj-1", "<h1>v2</h1>", snapshot);
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+
+    // Re-Publish erzeugt KEINE zweite domains-Row.
+    expect(rec.inserts).toHaveLength(0);
+    expect(res.label).toBe("mein-shop-abc123");
+    expect(res.url).toBe("http://mein-shop-abc123.lvh.me:3000");
+    const patch = rec.updatePatch as { published_content: { html: string } };
+    expect(patch.published_content.html).toBe("<h1>v2</h1>");
+  });
+
+  it("Label-Kollision -> Retry mit neuem Kandidaten (zweiter insert gelingt)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {} }, error: null },
+      insertResults: [{ error: { code: "23505" } }, { error: null }],
+    });
+
+    const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    expect(res.ok).toBe(true);
+    expect(rec.inserts).toHaveLength(2); // erster kollidiert, zweiter gelingt
+  });
+
+  it("IDOR: fremde project_id -> error, KEIN insert, KEIN update", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: null, error: null }, // Ownership-Query leer
+    });
+
+    const res = await publishProject("foreign", "<h1>x</h1>", snapshot);
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.error).toMatch(/nicht gefunden/i);
+    // Kern: nach fehlgeschlagenem Gate wird nichts geschrieben.
+    expect(rec.inserts).toHaveLength(0);
+    expect(rec.updatePatch).toBeNull();
+    expect(rec.fromTables).not.toContain("domains");
+  });
+
+  it("nicht eingeloggt -> error, kein DB-Write", async () => {
+    const { rec } = makeClient({ user: null });
+    const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    expect(res.ok).toBe(false);
+    expect(rec.updatePatch).toBeNull();
+    expect(rec.inserts).toHaveLength(0);
+  });
+});

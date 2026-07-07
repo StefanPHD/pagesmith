@@ -4,10 +4,17 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Mapping } from "@/lib/mappings";
 import {
+  getHostingLabel,
   getTrackingKey,
   setCapiState,
+  setHostingState,
   type ProjectSettings,
 } from "@/lib/settings";
+import {
+  buildLiveUrl,
+  randomLabelSuffix,
+  slugForLabel,
+} from "@/lib/hosting/host";
 
 /**
  * Speichern-Ergebnis. Bei { ok: true } liefert die Action die (ggf. NEU
@@ -231,6 +238,120 @@ export async function setCapiToken(
   if (settingsError) return { ok: false, error: settingsError.message };
 
   return { ok: true, trackingKey };
+}
+
+/** Ergebnis von publishProject. Bei Erfolg die absolute Live-URL + das Label. */
+export type PublishResult =
+  | { ok: true; url: string; label: string }
+  | { ok: false; error: string };
+
+// Der authenticated-SSR-Client (fuer die Typisierung des Helpers).
+type SsrClient = Awaited<ReturnType<typeof createClient>>;
+
+/**
+ * Vergibt EINEM Projekt ein neues, global eindeutiges domains-Label (slug + Random),
+ * mit Kollisions-Retry. INSERT laeuft ueber den authenticated-Client -> die RLS-
+ * WITH-CHECK-Policy (Projekt-Ownership) muss greifen. Unique-Violation (23505) ->
+ * neuer Versuch; anderer Fehler -> Abbruch (null). Gibt das vergebene Label oder null.
+ */
+async function assignDomainLabel(
+  supabase: SsrClient,
+  projectId: string,
+  name: string | null
+): Promise<string | null> {
+  const base = slugForLabel(name);
+  for (let i = 0; i < 6; i++) {
+    const label = `${base}-${randomLabelSuffix()}`;
+    const { error } = await supabase
+      .from("domains")
+      .insert({ label, project_id: projectId });
+    if (!error) return label;
+    // 23505 = unique_violation -> Label schon vergeben, neuer Kandidat. Jeder andere
+    // Fehler (z.B. RLS/Verbindung) ist echt -> abbrechen.
+    if (error.code !== "23505") return null;
+  }
+  return null;
+}
+
+/**
+ * Publiziert ein Projekt: macht seine funktionale Seite unter label.pgsm.site live.
+ *
+ * functionalHtml ist CLIENT-generiert (generateFunctional("export") — der Server hat
+ * kein DOM, siehe generate.ts SSR-Guard). Der Server SPEICHERT nur, wie saveProject.
+ *
+ * IDOR-Muster wie setCapiToken: Session-Check + Ownership-Gate ZWINGEND ueber den
+ * authenticated-SSR-Client (RLS greift). Beide Writes (projects.published_content und
+ * domains) laufen ueber DENSELBEN authenticated-Client — anders als setCapiToken KEIN
+ * service_role, weil domains owner-scoped lesbar ist (keine write-only-Sperre, kein
+ * RETURNING-Konflikt). Ein Nicht-Owner scheitert am Gate, bevor irgendetwas geschrieben
+ * wird.
+ *
+ * published_content = { html: functionalHtml, mappings, settings, publishedAt }.
+ * IDEMPOTENZ: ein bereits vergebenes Label (settings.hosting.label) wird
+ * WIEDERVERWENDET -> Re-Publish erzeugt KEINE zweite domains-Row und KEINEN neuen Label
+ * (die Live-URL bleibt stabil). Das Label wird in settings.hosting gespiegelt
+ * (oeffentlich, client-lesbar), damit der Client die URL ueber Sessions hinweg kennt.
+ */
+export async function publishProject(
+  projectId: string,
+  functionalHtml: string,
+  snapshot: { html: string; mappings: Mapping[]; settings: ProjectSettings }
+): Promise<PublishResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Nicht eingeloggt." };
+
+  // Ownership-Gate (authenticated-Client, RLS greift). name + settings mitlesen:
+  // name -> Label-Slug, settings -> bestehendes Label (Idempotenz) + Merge-Basis.
+  const { data: owned, error: ownError } = await supabase
+    .from("projects")
+    .select("id,name,settings")
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (ownError) return { ok: false, error: ownError.message };
+  if (!owned) return { ok: false, error: "Projekt nicht gefunden." };
+
+  const currentSettings = (owned.settings ?? {}) as ProjectSettings;
+  const publishedAt = new Date().toISOString();
+
+  // Bestehendes Label wiederverwenden (Idempotenz), sonst frisch vergeben.
+  let label = getHostingLabel(currentSettings);
+  if (!label) {
+    const assigned = await assignDomainLabel(
+      supabase,
+      projectId,
+      (owned.name as string | null) ?? null
+    );
+    if (!assigned)
+      return { ok: false, error: "Label-Vergabe fehlgeschlagen." };
+    label = assigned;
+  }
+
+  const published_content = {
+    html: functionalHtml,
+    mappings: snapshot.mappings,
+    settings: snapshot.settings,
+    publishedAt,
+  };
+  const nextSettings = setHostingState(currentSettings, { label, publishedAt });
+
+  const { error: updateError } = await supabase
+    .from("projects")
+    .update({ published_content, settings: nextSettings, updated_at: publishedAt })
+    .eq("id", projectId)
+    .eq("user_id", user.id);
+  if (updateError) return { ok: false, error: updateError.message };
+
+  // Live-URL aus der Basis-Domain (Dev lvh.me:3000, Prod pgsm.site) + Label. Fehlt die
+  // env, ist url "" -> der Client zeigt dann nur das Label.
+  const url = buildLiveUrl(
+    label,
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN?.trim() ?? ""
+  );
+  return { ok: true, url, label };
 }
 
 /**

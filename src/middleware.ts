@@ -1,7 +1,20 @@
-import { type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { isServingHost } from "@/lib/hosting/host";
 
 export async function middleware(request: NextRequest) {
+  // HOST-VERZWEIGUNG ZUERST (Phase 7 Scheibe 7a): eine gehostete Seite laeuft auf
+  // einer isolierten Origin (*.pgsm.site / lokal *.lvh.me). Solche Requests werden auf
+  // die interne Serve-Route rewritet und RETURNEN sofort — das Auth-Gate wird
+  // uebersprungen und es werden KEINE App-Session-Cookies angefasst (eTLD+1-Isolation).
+  // KEIN DB-Call hier: der Label-Lookup passiert erst in der Node-Serve-Route.
+  if (isServingHost(request.headers.get("host") ?? "")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/app-serve";
+    return NextResponse.rewrite(url);
+  }
+
+  // App-Host: bestehendes Auth-Gate UNVERAENDERT (Session-Refresh + Redirect-Logik).
   return updateSession(request);
 }
 

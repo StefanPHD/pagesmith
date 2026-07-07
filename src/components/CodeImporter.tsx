@@ -13,6 +13,7 @@ import {
   deleteProject,
   listProjects,
   loadProject,
+  publishProject,
   renameProject,
   saveProject,
   setCapiToken,
@@ -33,9 +34,11 @@ import {
 import { editPreviewHtml, generateFunctional } from "@/lib/generate";
 import {
   getCapiTokenSet,
+  getHostingLabel,
   getMetaPixelId,
   getTrackingKey,
   setCapiState,
+  setHostingState,
   setMetaPixelId,
   settingsEqual,
   type ProjectSettings,
@@ -146,6 +149,13 @@ export default function CodeImporter({
     "idle" | "saving" | "saved" | "error"
   >("idle");
   const [capiTokenError, setCapiTokenError] = useState<string | null>(null);
+  // Hosting/Publish (Phase 7 Scheibe 7a). publishUrl = zuletzt gemeldete Live-URL
+  // (auch aus settings.hosting rekonstruierbar, hier fuer sofortiges Feedback).
+  const [publishStatus, setPublishStatus] = useState<
+    "idle" | "publishing" | "published" | "error"
+  >("idle");
+  const [publishError, setPublishError] = useState<string | null>(null);
+  const [publishUrl, setPublishUrl] = useState<string | null>(null);
   // Ausklappbares Projekt-Menue (Default zu: sein Inhalt rendert erst beim
   // Oeffnen clientseitig -> keine Hydration-Mismatches bei relativen Zeitstempeln).
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
@@ -586,6 +596,37 @@ export default function CodeImporter({
       setCopyStatus("copied");
     } catch {
       setCopyStatus("error");
+    }
+  }
+
+  // Veroeffentlichen (Phase 7 Scheibe 7a): das funktionale Dokument wird CLIENT-seitig
+  // erzeugt (der Server hat kein DOM — generate.ts SSR-Guard), GENAU wie beim Export,
+  // und an publishProject gegeben, das es in published_content speichert und ein Label
+  // vergibt/wiederverwendet. Braucht ein persistiertes Projekt (projectId); die UI
+  // deaktiviert den Button sonst. Das Label wird in settings UND savedSettings
+  // gespiegelt (settingsEqual ignoriert hosting -> kein false-dirty), analog setCapiToken.
+  async function handlePublish() {
+    if (!projectId) return;
+    setPublishStatus("publishing");
+    setPublishError(null);
+    const result = await publishProject(projectId, buildExportDocument(), {
+      html: debouncedCode,
+      mappings,
+      settings,
+    });
+    if (result.ok) {
+      const publishedAt = new Date().toISOString();
+      setSettings((prev) =>
+        setHostingState(prev, { label: result.label, publishedAt })
+      );
+      setSavedSettings((prev) =>
+        setHostingState(prev, { label: result.label, publishedAt })
+      );
+      setPublishUrl(result.url || null);
+      setPublishStatus("published");
+    } else {
+      setPublishError(result.error);
+      setPublishStatus("error");
     }
   }
 
@@ -1091,6 +1132,58 @@ export default function CodeImporter({
                 )}
               </div>
             </label>
+          </div>
+
+          {/* Hosting / Veröffentlichen (Phase 7 Scheibe 7a): schaltet die funktionale
+              Seite unter label.pgsm.site live. Erzeugt das funktionale Dokument
+              CLIENT-seitig (wie Export, WYSIWYG) und speichert es via publishProject.
+              Braucht ein gespeichertes Projekt (projectId) -> sonst deaktiviert +
+              Hinweis (wie beim CAPI-Token). */}
+          <div className="mt-4 border-t border-gray-200 pt-4">
+            <h2 className="mb-1 text-sm font-medium text-gray-700">
+              Veröffentlichen
+            </h2>
+            <p className="mb-3 text-xs text-gray-500">
+              Schaltet die funktionale Seite unter einer eigenen Subdomain live.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={handlePublish}
+                disabled={
+                  !projectId ||
+                  code.trim() === "" ||
+                  publishStatus === "publishing"
+                }
+                className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+              >
+                {publishStatus === "publishing"
+                  ? "Veröffentliche…"
+                  : "Veröffentlichen"}
+              </button>
+              {publishStatus !== "error" &&
+                (publishUrl || getHostingLabel(settings)) && (
+                  <a
+                    href={publishUrl ?? undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all text-sm font-medium text-green-700 underline"
+                  >
+                    {publishUrl ?? getHostingLabel(settings)}
+                  </a>
+                )}
+            </div>
+            {!projectId && (
+              <p className="mt-2 text-xs text-gray-500">
+                Erst speichern, dann ist das Projekt veröffentlichbar.
+              </p>
+            )}
+            {publishStatus === "published" && (
+              <p className="mt-2 text-xs text-green-600">Veröffentlicht ✓</p>
+            )}
+            {publishStatus === "error" && publishError && (
+              <p className="mt-2 text-xs text-red-600">{publishError}</p>
+            )}
           </div>
         </div>
       )}

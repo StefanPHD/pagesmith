@@ -1,0 +1,47 @@
+// Serve-Route (Phase 7 Scheibe 7a): liefert eine PUBLIZIERTE Seite unter
+// label.pgsm.site aus. NUR intern erreichbar — die Middleware rewritet Serving-Hosts
+// (*.pgsm.site / *.lvh.me) hierher; ein direkter Zugriff ueber den App-Host wird vom
+// Label-Guard mit 404 abgewiesen (kein Bypass zu App-Daten).
+//
+// Node-Runtime: braucht den service_role-Admin-Client (im Resolver), der server-only
+// ist. Kein DOM noetig — das funktionale HTML wurde beim Publish CLIENT-seitig erzeugt
+// und liegt fertig in published_content; hier wird es nur ausgeliefert.
+import { getPublishedHtmlByLabel } from "@/lib/hosting/resolve";
+import { extractLabel } from "@/lib/hosting/host";
+
+export const runtime = "nodejs";
+// Immer frisch aus published_content (Scheibe 7a bewusst OHNE Cache; Cache +
+// Publish-Invalidierung kommen zusammen in einer spaeteren Scheibe).
+export const dynamic = "force-dynamic";
+
+// Security-Baseline. KEIN striktes CSP (bräche Pixel/Beacon der gehosteten Seite).
+// X-Frame-Options DENY: eine ausgelieferte Landingpage soll nicht framebar sein.
+const SECURITY_HEADERS: Record<string, string> = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+};
+
+function notFound(): Response {
+  return new Response("Not found", {
+    status: 404,
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
+}
+
+export async function GET(request: Request): Promise<Response> {
+  const host = request.headers.get("host") ?? "";
+  const label = extractLabel(host);
+
+  // GUARD: /app-serve ist NUR fuer Serving-Hosts. Direkter App-Host-Zugriff (oder ein
+  // ungueltiges/verschachteltes Label) -> 404, ohne DB-Lookup. Kein Bypass.
+  if (!label) return notFound();
+
+  const html = await getPublishedHtmlByLabel(label);
+  if (!html) return notFound(); // unbekanntes Label ODER nie publiziert
+
+  return new Response(html, {
+    status: 200,
+    headers: { "Content-Type": "text/html; charset=utf-8", ...SECURITY_HEADERS },
+  });
+}

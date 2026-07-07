@@ -28,6 +28,17 @@ export type ProjectSettings = {
     trackingKey?: string;
     tokenSet?: boolean;
   };
+  // Hosting-Zustand (Phase 7 Scheibe 7a). BEWUSST plattform-agnostisch neben pixels
+  // (wie capi): kein Pixel, sondern die Auslieferungs-Metadaten.
+  //   label       = OEFFENTLICHES Subdomain-Label (label.pgsm.site). Nicht geheim.
+  //                 Vom Publish vergeben (idempotent: einmal gesetzt, wiederverwendet)
+  //                 und hierher gespiegelt, damit der Client die Live-URL ueber
+  //                 Sessions hinweg kennt, OHNE domains selbst abzufragen.
+  //   publishedAt = Zeitstempel des letzten Publish (nur Anzeige).
+  hosting?: {
+    label?: string;
+    publishedAt?: string;
+  };
 };
 
 // Die getrimmte Meta-Pixel-ID oder "" (nicht gesetzt). EINE Quelle fuer "ist ein
@@ -74,11 +85,32 @@ export function setCapiState(
   };
 }
 
+// Das oeffentliche Hosting-Label (getrimmt) oder "" (noch nie publiziert). EINE
+// Quelle fuer "ist dieses Projekt schon publiziert / welches Label hat es?".
+export function getHostingLabel(settings: ProjectSettings): string {
+  return settings.hosting?.label?.trim() ?? "";
+}
+
+// Immutabel + pixels/capi-erhaltend: schreibt hosting.{label,publishedAt}, ohne die
+// anderen Zweige anzutasten. Wird von der publishProject-Server-Action UND vom Client
+// (Spiegelung nach Erfolg) genutzt.
+export function setHostingState(
+  settings: ProjectSettings,
+  hosting: { label: string; publishedAt: string }
+): ProjectSettings {
+  return {
+    ...settings,
+    hosting: { ...settings.hosting, ...hosting },
+  };
+}
+
 // Dirty-Vergleich. BEWUSST eng: nur die Meta-Pixel-ID existiert als user-editierbares
 // Feld im grossen Speichern-Flow. capi.* ist HIER ABSICHTLICH AUSGENOMMEN: es wird
 // nicht ueber den Dirty-/Big-Save-Weg gepflegt, sondern von seiner eigenen
 // Sofort-Persist-Action (setCapiToken) geschrieben und danach in settings UND
 // savedSettings gespiegelt -> ohne Ausschluss gaebe es einen false-dirty-Alarm.
+// hosting.* ist AUS DEMSELBEN Grund ausgenommen: von publishProject geschrieben +
+// in settings/savedSettings gespiegelt, kein Big-Save-Feld.
 // Weitere user-editierbare Plattform-Felder wachsen hier mit (je ein Vergleich).
 export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
   return getMetaPixelId(a) === getMetaPixelId(b);

@@ -27,6 +27,7 @@ const {
   loadProject,
   deleteProject,
   renameProject,
+  publishProject,
   setCapiToken,
 } = vi.hoisted(() => ({
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
@@ -36,6 +37,11 @@ const {
   loadProject: vi.fn(async (): Promise<unknown> => null),
   deleteProject: vi.fn(async () => ({ ok: true as const })),
   renameProject: vi.fn(async () => ({ ok: true as const })),
+  publishProject: vi.fn(async () => ({
+    ok: true as const,
+    url: "http://mock.lvh.me:3000",
+    label: "mock",
+  })),
   setCapiToken: vi.fn(async () => ({
     ok: true as const,
     trackingKey: "tk-mock",
@@ -48,6 +54,7 @@ vi.mock("@/app/projects/actions", () => ({
   loadProject,
   deleteProject,
   renameProject,
+  publishProject,
   setCapiToken,
 }));
 

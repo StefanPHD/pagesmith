@@ -44,6 +44,7 @@ import {
   type ProjectSettings,
 } from "@/lib/settings";
 import { getCapiProxyUrl } from "@/lib/capi/proxy";
+import { buildLiveUrl } from "@/lib/hosting/host";
 import { exportFilename } from "@/lib/export";
 import { validateUploadFile } from "@/lib/upload";
 import ActionPanel from "@/components/ActionPanel";
@@ -149,13 +150,15 @@ export default function CodeImporter({
     "idle" | "saving" | "saved" | "error"
   >("idle");
   const [capiTokenError, setCapiTokenError] = useState<string | null>(null);
-  // Hosting/Publish (Phase 7 Scheibe 7a). publishUrl = zuletzt gemeldete Live-URL
-  // (auch aus settings.hosting rekonstruierbar, hier fuer sofortiges Feedback).
+  // Hosting/Publish (Phase 7 Scheibe 7a). NUR der TRANSIENTE Aktions-Status lebt hier;
+  // der "veröffentlicht?"-Zustand + die Live-URL werden AUS settings.hosting ABGELEITET
+  // (hostingLabel/liveUrl unten), NICHT als eigener leakender State gehalten — exakt
+  // wie getCapiTokenSet aus settings. So reseedet ein Projektwechsel den Indikator
+  // automatisch mit settings, ohne separaten Reset-Pfad.
   const [publishStatus, setPublishStatus] = useState<
     "idle" | "publishing" | "published" | "error"
   >("idle");
   const [publishError, setPublishError] = useState<string | null>(null);
-  const [publishUrl, setPublishUrl] = useState<string | null>(null);
   // Ausklappbares Projekt-Menue (Default zu: sein Inhalt rendert erst beim
   // Oeffnen clientseitig -> keine Hydration-Mismatches bei relativen Zeitstempeln).
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
@@ -422,6 +425,18 @@ export default function CodeImporter({
   const activeName =
     projects.find((p) => p.id === projectId)?.name ?? "Unbenanntes Projekt";
 
+  // Publish-Anzeige ABGELEITET aus dem GELADENEN settings.hosting (nicht aus leakendem
+  // State): ein Projektwechsel reseedet settings am Chokepoint -> Label/URL spiegeln
+  // IMMER das aktuell geladene Projekt. WICHTIG (nicht nur kosmetisch): ein geleakter
+  // "veröffentlicht"-Zustand könnte den Marketer Ad-Budget auf eine URL schalten lassen,
+  // die zum FALSCHEN Projekt gehört -> der Indikator MUSS die Wahrheit des geladenen
+  // Projekts zeigen. liveUrl wird aus dem Label + NEXT_PUBLIC_HOSTING_DOMAIN
+  // rekonstruiert (leere env -> "" -> nur Label-Zustand ohne Link).
+  const hostingLabel = getHostingLabel(settings);
+  const liveUrl = hostingLabel
+    ? buildLiveUrl(hostingLabel, process.env.NEXT_PUBLIC_HOSTING_DOMAIN ?? "")
+    : "";
+
   // Setzt den Editor auf den leeren "Unbenanntes Projekt"-Zustand zurueck (keine
   // DB-Zeile, keine tote projectId).
   function resetToEmpty() {
@@ -461,6 +476,12 @@ export default function CodeImporter({
     setCapiTokenInput("");
     setCapiTokenStatus("idle");
     setCapiTokenError(null);
+    // Publish: NUR der transiente Aktions-Status wird hier geleert (ein "gerade
+    // veröffentlicht"/Fehler aus Projekt A darf nicht in B stehenbleiben). Der
+    // "veröffentlicht?"-Indikator + die Live-URL reseeden ueber settings.hosting
+    // (getHostingLabel), genau wie getCapiTokenSet -> kein separater Reset noetig.
+    setPublishStatus("idle");
+    setPublishError(null);
   }
 
   // Manuelles Toggle: klappt der Nutzer AUF (next = nicht collapsed), uebernimmt
@@ -615,6 +636,9 @@ export default function CodeImporter({
       settings,
     });
     if (result.ok) {
+      // Label in settings UND savedSettings spiegeln (settingsEqual ignoriert hosting
+      // -> kein false-dirty). Ab hier leitet liveUrl die URL aus settings.hosting ab —
+      // kein separater publishUrl-State noetig, der beim Wechsel leaken koennte.
       const publishedAt = new Date().toISOString();
       setSettings((prev) =>
         setHostingState(prev, { label: result.label, publishedAt })
@@ -622,7 +646,6 @@ export default function CodeImporter({
       setSavedSettings((prev) =>
         setHostingState(prev, { label: result.label, publishedAt })
       );
-      setPublishUrl(result.url || null);
       setPublishStatus("published");
     } else {
       setPublishError(result.error);
@@ -1159,27 +1182,39 @@ export default function CodeImporter({
               >
                 {publishStatus === "publishing"
                   ? "Veröffentliche…"
-                  : "Veröffentlichen"}
+                  : liveUrl || hostingLabel
+                    ? "Erneut veröffentlichen"
+                    : "Veröffentlichen"}
               </button>
-              {publishStatus !== "error" &&
-                (publishUrl || getHostingLabel(settings)) && (
-                  <a
-                    href={publishUrl ?? undefined}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="break-all text-sm font-medium text-green-700 underline"
-                  >
-                    {publishUrl ?? getHostingLabel(settings)}
-                  </a>
-                )}
+              {/* Link/Indikator ABGELEITET aus settings.hosting (liveUrl/hostingLabel)
+                  -> reseedet beim Projektwechsel automatisch, kein A->B-Leak. */}
+              {liveUrl && (
+                <a
+                  href={liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="break-all text-sm font-medium text-green-700 underline"
+                >
+                  {liveUrl}
+                </a>
+              )}
             </div>
             {!projectId && (
               <p className="mt-2 text-xs text-gray-500">
                 Erst speichern, dann ist das Projekt veröffentlichbar.
               </p>
             )}
-            {publishStatus === "published" && (
-              <p className="mt-2 text-xs text-green-600">Veröffentlicht ✓</p>
+            {hostingLabel ? (
+              <p className="mt-2 text-xs text-green-600">
+                ● veröffentlicht
+                {publishStatus === "published" && " ✓ aktualisiert"}
+              </p>
+            ) : (
+              projectId && (
+                <p className="mt-2 text-xs text-gray-500">
+                  Noch nicht veröffentlicht.
+                </p>
+              )
             )}
             {publishStatus === "error" && publishError && (
               <p className="mt-2 text-xs text-red-600">{publishError}</p>

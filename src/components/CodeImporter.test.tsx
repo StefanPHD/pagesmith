@@ -432,3 +432,125 @@ describe("CodeImporter — Scheibe 2a: CAPI-Token write-only Indikator + Reseed"
     expect(screen.getByText(/Projekt zuerst speichern/)).toBeTruthy();
   });
 });
+
+describe("CodeImporter — Scheibe 7a: Publish-Indikator aus settings.hosting (kein Leak)", () => {
+  function openSettings() {
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+  }
+  function switchTo(name: string) {
+    fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
+    return screen.findByText(name);
+  }
+
+  // NEXT_PUBLIC_HOSTING_DOMAIN ist normalerweise build-inlined; im vitest-Node-Prozess
+  // liest die abgeleitete liveUrl es zur Render-Zeit aus process.env.
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "lvh.me:3000";
+  });
+
+  it("A(publiziert) -> B(nie publiziert): Indikator + Link reseeden auf 'nicht veröffentlicht', KEIN A-Link", async () => {
+    loadProject.mockResolvedValueOnce({
+      id: "p2",
+      name: "P2",
+      html: "<button>Y</button>",
+      mappings: [],
+      settings: {}, // nie publiziert
+    });
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-02T00:00:00Z" },
+        ]}
+        initialSettings={{ hosting: { label: "shop-a" } }}
+      />
+    );
+    openSettings();
+    // A ist publiziert -> A-Link sichtbar.
+    expect(screen.getByText(/shop-a\.lvh\.me:3000/)).toBeTruthy();
+
+    fireEvent.click(await switchTo("P2"));
+
+    // B ist nie publiziert -> A-Link WEG, "Noch nicht veröffentlicht" sichtbar.
+    await waitFor(() =>
+      expect(screen.queryByText(/shop-a\.lvh\.me/)).toBeNull()
+    );
+    expect(screen.getByText(/Noch nicht veröffentlicht/)).toBeTruthy();
+  });
+
+  it("A(publiziert) -> B(publiziert, anderes Label): zeigt BS Link, nicht A's", async () => {
+    loadProject.mockResolvedValueOnce({
+      id: "p2",
+      name: "P2",
+      html: "<button>Y</button>",
+      mappings: [],
+      settings: { hosting: { label: "shop-b" } },
+    });
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-02T00:00:00Z" },
+        ]}
+        initialSettings={{ hosting: { label: "shop-a" } }}
+      />
+    );
+    openSettings();
+    expect(screen.getByText(/shop-a\.lvh\.me:3000/)).toBeTruthy();
+
+    fireEvent.click(await switchTo("P2"));
+
+    await waitFor(() =>
+      expect(screen.getByText(/shop-b\.lvh\.me:3000/)).toBeTruthy()
+    );
+    // A-Link darf NICHT mehr da sein.
+    expect(screen.queryByText(/shop-a\.lvh\.me/)).toBeNull();
+  });
+
+  it("A(publiziert) -> B(nie) -> zurück zu A: A zeigt wieder 'veröffentlicht' + A-Link", async () => {
+    loadProject
+      .mockResolvedValueOnce({
+        id: "p2",
+        name: "P2",
+        html: "<button>Y</button>",
+        mappings: [],
+        settings: {},
+      })
+      .mockResolvedValueOnce({
+        id: "p1",
+        name: "P1",
+        html: "<button>X</button>",
+        mappings: [],
+        settings: { hosting: { label: "shop-a" } },
+      });
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-02T00:00:00Z" },
+        ]}
+        initialSettings={{ hosting: { label: "shop-a" } }}
+      />
+    );
+    openSettings();
+    expect(screen.getByText(/shop-a\.lvh\.me:3000/)).toBeTruthy();
+
+    // A -> B (kein Link mehr).
+    fireEvent.click(await switchTo("P2"));
+    await waitFor(() =>
+      expect(screen.queryByText(/shop-a\.lvh\.me/)).toBeNull()
+    );
+
+    // B -> zurück zu A (Link wieder da, aus A's settings.hosting abgeleitet).
+    fireEvent.click(await switchTo("P1"));
+    await waitFor(() =>
+      expect(screen.getByText(/shop-a\.lvh\.me:3000/)).toBeTruthy()
+    );
+  });
+});

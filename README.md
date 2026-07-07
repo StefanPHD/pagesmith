@@ -2,82 +2,60 @@
 
 **Make your AI-generated landing page code actually do something.**
 
-Performance marketers use tools like Claude, v0 and Bolt to design beautiful
-landing pages in seconds. The problem: the exported code is *mute* — pure
-HTML/CSS/JS with no working forms, no checkout, no tracking. The moment you try
-to wire it up or host it, things break.
+Performance marketers use tools like Claude, v0 and Bolt to generate beautiful
+landing pages in seconds — but the exported code is *mute*. The buttons look
+great and do nothing, the forms submit nowhere, there's no tracking. Pagesmith
+turns that static HTML into a functional, revenue-ready page: import the code,
+wire buttons and forms to real actions, rewrite the copy in place, add
+server-side tracking, then export or host it — no CMS, no WordPress bloat. It's
+built for performance marketers in the DACH region and beyond who ship new pages
+constantly and need them working in minutes.
 
-Pagesmith is a lean hosting & integration layer that turns that static code into
-a functional, revenue-ready page — without the WordPress bloat.
-
-> ⚠️ **Status: early — built in public.** Auth + multi-project persistence are
-> live: you can create an account, log in, and your pasted code is saved per
-> account and reloaded automatically. The Click & Connect workspace lets you
-> select elements in the preview and wire them to redirect actions (Stripe /
-> PayPal / generic links), preview the page firing for real, and export it as
-> functional HTML. Server-side tracking and one-click hosting don't exist yet —
-> those are still planned. Follow along as it grows.
+> ⚠️ **Status: built in public, not finished.** The core editor, server-side
+> tracking and serving a published page on an isolated subdomain all work today.
+> Custom domains, automatic SSL and public/production operation do **not** exist
+> yet — see the roadmap. This is a solo passion project developed openly.
 
 ---
 
-## The idea
+## Features
 
-The intended workflow for a marketer:
+### Works today
 
-1. **Paste** raw HTML/CSS/JS (e.g. exported from Claude) into the app.
-2. **Detect** — the app scans the code and surfaces every `<button>`, `<form>`
-   and link.
-3. **Click & Connect** — click a detected element and assign it an action
-   (Stripe / PayPal checkout, send form data to a webhook, fire a Meta/Google
-   event).
-4. **Go live** — host the page on your own domain with one click.
+- **Import HTML** by pasting it or uploading / dragging in a `.html` file.
+- **Element detection** — the scanner surfaces every interactive element
+  (buttons, forms, links) and editable text element (`<p>`, `<h1>`–`<h6>`), with
+  live counts and a category filter.
+- **Click & Connect** — select an element (in the sandboxed preview or the list)
+  and wire it to a redirect action: a Stripe or PayPal checkout link, or any
+  generic link, opening in the same or a new tab.
+- **In-place copywriting** — override headline and paragraph text directly for
+  fast A/B tests on wording; the change shows live in the preview.
+- **Orphaned-mapping safety net** — if a wired element disappears from the code,
+  its action is surfaced as "orphaned" rather than silently dropped; you can
+  delete it or re-link it to a current element.
+- **Functional preview + HTML export** — a separate preview renders the wired
+  page so the buttons actually fire, and you can export the functional HTML
+  (download as `.html` or copy to clipboard).
+- **Accounts & projects** — email/password login, with your projects saved per
+  account and isolated from other users; create, switch, rename and delete
+  projects, with a guard that protects unsaved changes.
+- **Server-side tracking** — Meta Pixel plus the Conversions API, fired from the
+  server for resilience against ad blockers and lost browser events. Events are
+  consent-capable and deduplicated between the browser and server (shared event
+  ID), following Meta's recommended setup.
+- **Hosting** — publish a project and serve it as a real, functional page on its
+  own isolated subdomain.
 
-The differentiators we're building toward: ultra-fast load times (plain HTML, no
-CMS overhead), server-side tracking (CAPI) to survive ad blockers, and
-lightweight client-side A/B testing.
+### In progress / planned
 
----
-
-## What works today (Phases 1–4)
-
-- User accounts: sign up and log in with email + password. The entire editor
-  sits behind a login.
-- Project persistence: your pasted code can be saved per account and is loaded
-  automatically when you open the editor. Each account only sees its own data.
-- Multi-project management: create, switch, rename and delete projects, with a
-  dirty-guard that protects unsaved changes when you switch away.
-- Stable element IDs: linkable elements receive durable, code-resident IDs that
-  are written into the saved code.
-- Paste raw HTML into the editor.
-- Sandboxed live preview (`<iframe sandbox>`).
-- Detection of buttons, forms and links, with live counts.
-- Hardened scanner: debounced parsing (typing stays instant on large pages),
-  SSR-safe, defensive error handling, and per-element de-duplication
-  (`<a role="button">` is counted once as a button, never double-counted as a
-  link). Covered by unit tests against a real-world landing-page fixture.
-- Three-zone workspace: a collapsible code panel, the live preview in the
-  centre, and an action panel on the right.
-- Click an element directly in the sandboxed preview to select it — a
-  `postMessage` click bridge reports the click back to the app (inline
-  `onclick`/`onsubmit` from the pasted code are neutralised so they can't fire).
-- Bidirectional highlighting between the preview and the element list, kept in
-  sync from a single source of truth: selecting in either place outlines the
-  element in the preview and highlights its entry in the list, and scrolls it
-  into view.
-- Assign actions: wire a selected element to a redirect action (Stripe / PayPal
-  checkout link or any generic link, opening in the same or a new tab). Wired
-  elements are badged in the element list.
-- Orphaned-mapping safety net: if a saved action's element disappears from the
-  code, the mapping is surfaced as "orphaned" rather than silently dropped — you
-  can delete it or re-link it to a current element.
-- Functional preview: a separate preview mode renders the wired HTML so the
-  buttons actually fire, kept strictly separate from the selection-only edit
-  preview.
-- HTML export: bake the mappings into functional HTML (the buttons really fire)
-  and export the page — download as `.html` or copy to clipboard.
-
-> Dedicated payment tiles (Stripe / PayPal product IDs), webhook form-posting,
-> server-side tracking and **hosting** aren't implemented yet — see the roadmap.
+- First-party (same-origin) tracking on hosted pages, for full ad-blocker
+  resilience.
+- Custom domains with automatic SSL.
+- Client-side A/B testing (traffic split across variants).
+- Multi-page funnels (landing → checkout → thank-you, one project).
+- An AI-native MCP server so a marketer's AI tools can manage projects directly
+  (longer-term vision).
 
 ---
 
@@ -85,24 +63,53 @@ lightweight client-side A/B testing.
 
 - [Next.js](https://nextjs.org/) (App Router) + TypeScript
 - Tailwind CSS
-- Native `DOMParser` for in-browser detection and code transformation (zero
-  dependencies)
-- [Supabase](https://supabase.com/) for auth and persistence (Postgres with
-  row-level security)
-- Vitest + jsdom for unit tests
-- *Planned:* Cheerio (server-side transformation in the hosting/serving layer),
-  Vercel/Netlify API (hosting & custom domains)
+- Native `DOMParser` for in-browser element detection and code transformation
+  (zero dependencies)
+- [Supabase](https://supabase.com/) — Postgres and authentication
+- [Vitest](https://vitest.dev/) for unit and component tests
+- *Planned:* Cheerio for server-side transformation in the serving layer; a
+  hosting-provider API for custom domains
+
+---
+
+## Status & roadmap
+
+Server-side tracking is complete, and serving a published page on an isolated
+subdomain is live. Custom domains and first-party tracking on hosted pages are
+next.
+
+- [x] **Phase 1 — Local-first foundation:** import, sandboxed preview, element
+      detection.
+- [x] **Phase 2 — Click & Connect:** three-zone workspace with a preview click
+      bridge and bidirectional preview/list highlighting.
+- [x] **Phase 3 — Persistence & auth:** email/password login, stable element IDs,
+      multi-project save and auto-load.
+- [x] **Click & Connect actions:** assign, configure and save redirect actions,
+      plus surfacing and re-linking orphaned mappings.
+- [x] **Phase 4 — Code generation + HTML export:** bake the mappings into
+      functional HTML and export it (download or copy).
+- [x] **Phase 4.5 — Editor polish:** `.html` upload / drag-and-drop and a zen
+      mode that keeps the focus on the preview and element list.
+- [x] **Phase 5 — In-place copywriting:** edit paragraph and heading text
+      directly, live in the preview and in the export.
+- [x] **Phase 6 — Server-side tracking:** Meta Pixel + Conversions API,
+      consent-capable and deduplicated.
+- [~] **Phase 7 — Hosting & go-live:** serving published pages on an isolated
+      subdomain is live; custom domains, automatic SSL and same-origin
+      first-party tracking are in progress.
+- [ ] **Phase 8 — A/B testing:** traffic split across variants.
+- [ ] **Beyond:** multi-page funnels and an AI-native MCP server.
 
 ---
 
 ## Getting started
 
-Requires **Node.js** (developed on v24) and a Supabase project. Put your project
-URL and anon key in `.env.local`:
+Requires **Node.js** (developed on v24) and a [Supabase](https://supabase.com/)
+project. Copy the example environment file and fill in your Supabase values:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+cp .env.local.example .env.local
+# then edit .env.local
 ```
 
 ```bash
@@ -113,8 +120,8 @@ npm install
 npm run dev
 ```
 
-Then open [http://localhost:3000](http://localhost:3000). The editor is behind a
-login — create an account, then paste some HTML into the editor.
+Open [http://localhost:3000](http://localhost:3000). The editor sits behind a
+login — create an account, then paste or upload some HTML.
 
 ```bash
 # run the tests
@@ -123,34 +130,8 @@ npm test
 
 ---
 
-## Roadmap
-
-- [x] **Phase 1 — Local-first foundation:** import, sandboxed preview, element
-      detection. (done & hardened)
-- [x] **Phase 2 — Click & Connect:** select an element in the live preview via a
-      three-zone workspace with bidirectional preview/list highlighting.
-      (Selection UI done; assigning actions comes in later phases.)
-- [x] **Phase 3 — Persistence & auth:** email/password auth behind a login gate,
-      stable element IDs, and multi-project save/auto-load with row-level security
-      (Supabase).
-- [x] **Click & Connect actions:** assign, configure and save redirect actions
-      (Stripe / PayPal / generic links), plus surfacing and re-linking orphaned
-      mappings.
-- [x] **Phase 4 — Code generation + HTML export:** bake the mappings into
-      functional HTML (the buttons really fire) and export the page — download as
-      `.html` or copy to clipboard.
-- [ ] **Phase 4.5 — Editor polish:** zen mode — the code panel starts collapsed
-      after a successful import, keeping the focus on preview and dashboard.
-- [ ] **Phase 5 — In-place copywriting:** edit `<p>` and `<h1>`–`<h6>` text
-      directly in the dashboard for fast A/B tests on wording.
-- [ ] **Phase 6 — Server-side tracking:** CAPI proxy for Meta/Google.
-- [ ] **Phase 7 — Hosting & go-live:** custom domains + automatic SSL.
-- [ ] **Phase 8 — A/B testing:** 50/50 traffic split across variants.
-
----
-
 ## Built in public
 
-This is a solo passion project, developed openly. Issues, ideas and feedback are
-welcome. Follow the commit history to see how it's built — including the
-edge-cases and dead-ends.
+This is a solo passion project, developed openly. The commit history is the
+honest development record — including the edge-cases, corrections and dead-ends
+along the way. Issues, ideas and feedback are welcome.

@@ -56,8 +56,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Mapping -> Mehr-Aktion -> echtes Meta-Pixel (consent-sauber) -> Secret-Storage
       (service_role + heiligstes Gate) -> CAPI-Route -> Dedup-Beacon. Offener
       End-to-End-Dedup-Sichtbarkeitstest auf verknüpfter Domain -> Phase 7.
-- [~] Phase 7 — Hosting & Go-Live: IN ARBEIT. Start Scheibe 7a (Serving auf
-      *.pgsm.site: publiziertes Projekt als echte funktionale Seite erreichbar).
+- [~] Phase 7 — Hosting & Go-Live: IN ARBEIT.
+      [x] Scheibe 7a — Serving auf *.pgsm.site, Label-Lookup, isolierte Origin —
+          ABGESCHLOSSEN (live). Nächster Schritt: 7b (same-origin-CAPI-Rewrite via
+          Cheerio).
       Details in der Phase-7-Sektion unten. ACHTUNG: härtester Brocken (Multi-Tenant
       Custom Domains + Auto-SSL, spätere Scheiben); schaltet zugleich die Funnel-Vision
       frei. (war Phase 6)
@@ -1510,7 +1512,34 @@ Cookies/Auth-State; gehostete Seiten berühren keinen Plattform-Auth. Phishing/M
 Takedown (Seite schnell abschalten), Content-Moderation, Kosten-Deckelung unter Ad-Last,
 Serving-Rate-Limiting -> spätere Härtung.
 
-### Scheibe 7a — "Seite lebt" (vor dem Bau dokumentiert)
+### Scheibe 7a — "Seite lebt" (ABGESCHLOSSEN, live verifiziert)
+Status: fertig, live verifiziert. Commits: "feat(hosting): serve published projects on
+*.pgsm.site (label lookup, isolated origin)" + "fix(hosting): derive publish state from
+settings.hosting on project load". Pipeline grün. Live (via lvh.me, echter Host-Header):
+publizierte Seite lädt autark unter <label>.lvh.me:3000 OHNE Login-Redirect
+(Middleware-Host-Verzweigung vor updateSession greift); Redirect/Text-Wiring funktional;
+Draft != Live (Editor-Änderung ohne Re-Publish ändert Live-URL nicht); Idempotenz (2x
+publish = gleiche URL, eine domains-Row); Guards (unbekanntes Label -> 404, /app-serve
+am App-Host -> 404, App-Auth intakt); Security-Header (nosniff, X-Frame-Options DENY,
+Referrer-Policy) auf der Serve-Response.
+
+WICHTIGE ARCHITEKTUR-REALITÄT (Fund beim Bau): Die Engine ist CLIENT-ONLY
+(generateFunctional bricht serverseitig ab, DOMParser-Guard generate.ts:224; jsdom nur
+Test-Dep, Cheerio erst 7b). Serverseitiges Rendern ist NICHT möglich -> published_content
+speichert das beim Publish CLIENT-generierte funktionale HTML (via generateFunctional
+("export"), saveProject-Muster "Client generiert, Server speichert") + Snapshot
+{html,mappings,settings,publishedAt} fürs Re-Publish/7b. Serve-Route liefert VERBATIM aus
+(kein Server-DOM, generate.ts unangetastet). Merksatz: serverseitige HTML-Ausgabe geht
+nur über beim-Publish-generierten gespeicherten String, nicht über Laufzeit-Rendering.
+
+SICHERHEIT/ARCHITEKTUR-Notizen 7a: domains-RLS owner-scoped (Labels sind öffentliche
+URLs, keine totale SELECT-Sperre nötig) -> Publish-Write über authenticated-Client mit
+RLS (kein service_role beim Schreiben; die 2a-RETURNING-Falle tritt nicht auf, weil der
+Owner legitimes SELECT hat), service_role NUR beim anonymen Serving-Read (nur project_id/
+published_content, kein Draft/Token/Owner-Leak). Label strikt validiert ([a-z0-9-],
+Maxlänge) vor dem Lookup (Injection/Sub-Sub-Schutz). eTLD+1-Isolation: pgsm.site setzt
+keine App-Cookies.
+
 Ziel: ein gespeichertes+publiziertes Projekt ist unter einer *.pgsm.site-URL als echte
 funktionale Seite erreichbar (Wiring/Redirect feuern). KEINE Custom-Domains, KEIN
 Cache, KEIN same-origin-CAPI-Rewrite (das ist 7b), KEINE Publish-UI-Politur.
@@ -1804,3 +1833,12 @@ miterledigen, sondern gebündelt abarbeiten.
   wiederverwenden, mit MCP-Autorisierung als ANDEREM Eingang zur GLEICHEN Funktion. Kein
   jetziger Bau, nur Baustil — verbessert den Code ohnehin (Testbarkeit, Trennung von
   Auth und Logik).
+- ABLEITEN STATT LÖSCHEN (projekt-spezifischer View-State): Jeder View-State, der ein
+  Projekt-Attribut spiegelt (uploadError, capiTokenSet, Publish-Status/Live-URL, ...),
+  muss beim Projektladen am kanonischen Chokepoint aus dem GELADENEN Projekt ABGELEITET
+  werden — nicht nur bei Bedarf gelöscht. Dreimal aufgetreten (uploadError -> capiTokenSet
+  -> Publish-State). "Löschen" ist die schwächere Regel: sie zeigt einen "war schon mal
+  an"-Zustand (z.B. bereits publiziertes Projekt) fälschlich als aus. Ableiten aus der
+  Wahrheitsquelle (settings.hosting / settings.capi.tokenSet / ...) ist korrekt für beide
+  Fälle. Beim Publish-Leak zusätzlich sicherheitsrelevant: falscher "veröffentlicht"-
+  Zustand könnte Ad-Budget auf die falsche URL lenken.

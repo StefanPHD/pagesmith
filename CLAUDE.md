@@ -56,9 +56,11 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Mapping -> Mehr-Aktion -> echtes Meta-Pixel (consent-sauber) -> Secret-Storage
       (service_role + heiligstes Gate) -> CAPI-Route -> Dedup-Beacon. Offener
       End-to-End-Dedup-Sichtbarkeitstest auf verknüpfter Domain -> Phase 7.
-- [ ] Phase 7 — Hosting & Go-Live: Vercel/Netlify-API, Custom Domains, SSL.
-      ACHTUNG: härtester Brocken (Multi-Tenant Custom Domains + Auto-SSL); schaltet
-      zugleich die Funnel-Vision frei. (war Phase 6)
+- [~] Phase 7 — Hosting & Go-Live: IN ARBEIT. Start Scheibe 7a (Serving auf
+      *.pgsm.site: publiziertes Projekt als echte funktionale Seite erreichbar).
+      Details in der Phase-7-Sektion unten. ACHTUNG: härtester Brocken (Multi-Tenant
+      Custom Domains + Auto-SSL, spätere Scheiben); schaltet zugleich die Funnel-Vision
+      frei. (war Phase 6)
 - [ ] Phase 8 — A/B-Testing: 50/50-Split über Edge-Logik. (war Phase 7)
 
 ## Phase 2 — Click & Connect (Core-Architektur & UX)
@@ -1474,6 +1476,89 @@ Diskriminierende Tests (Pflicht):
   warn, kein relativer Fallback.
 - Redirect+Track: Beacon feuert, Redirect-Navigation unverändert, Reihenfolge intakt.
 - Edit-iframe: kein Beacon/kein Pixel im Edit-Wiring.
+
+## Phase 7 — Hosting & Go-Live
+Größter Charakterwechsel: Pagesmith wird HOST/Plattform, nicht mehr nur Werkzeug —
+serviert fremde Seiten unter fremden Domains. Wert-Schalter: macht das Produkt
+end-to-end nutzbar, schaltet Funnel-Vision + First-Party-Adblocker-Resistenz + die
+Phase-6-Dedup-Kirsche (verknüpfte Domain) frei.
+
+Owner-Entscheidungen (endgültig):
+- Zuschnitt: erst auf Pagesmith-eTLD+1-URL serven; Vercel-Custom-Domain-API als spätere
+  Schicht, sobald Serving bombenfest.
+- STRIKTE eTLD+1-ISOLATION (Sandbox-Prinzip auf die Serving-Schicht übertragen):
+  gehostete (fremde/KI-generierte) Seiten laufen auf SEPARATER Registrable Domain
+  (pgsm.site) — App bleibt pagesmith.app. Bösartiges User-HTML kann die App-Origin
+  strukturell nie erreichen (kein same-site zu Auth/Cookies).
+- SSL/Custom-Domains an Vercel Domains API delegieren (kein eigenes ACME) — später (7b+).
+- Serving: dynamisch (generateFunctional serve-Modus) + Edge-Cache SPÄTER; in 7a noch
+  OHNE Cache (immer frisch aus published_content). REGEL: sobald Caching dazukommt,
+  landet die Publish-Invalidierung (revalidateTag pro Projekt/Domain) IN DERSELBEN
+  Scheibe — nie Cache ohne Invalidierung (sonst stiller "mein Publish wirkt nicht"-Bug).
+- Draft/Publish ADDITIV: bestehende html/mappings BLEIBEN Draft/Arbeitszustand; NEU
+  published_content jsonb (Snapshot {html,mappings} beim Publish). KEINE Migration
+  bestehender Spalten in draft_content (vermeidet Live-Daten-Migration).
+- Cheerio: reserviert für serve-seitige HTML-Transformation (7b: Beacon-Endpoint auf
+  same-origin umschreiben). Trennung: Editor=DOMParser (Client), Serving=Cheerio (Server).
+
+BEWUSSTE GRENZEN (geloggt, nicht jetzt gelöst): Kunde-gegen-Kunde same-site auf
+*.pgsm.site (Wildcard teilt Registrable Domain) -> auf pgsm.site NIEMALS app-relevante
+Cookies/Auth-State; gehostete Seiten berühren keinen Plattform-Auth. Phishing/Malware-
+Takedown (Seite schnell abschalten), Content-Moderation, Kosten-Deckelung unter Ad-Last,
+Serving-Rate-Limiting -> spätere Härtung.
+
+### Scheibe 7a — "Seite lebt" (vor dem Bau dokumentiert)
+Ziel: ein gespeichertes+publiziertes Projekt ist unter einer *.pgsm.site-URL als echte
+funktionale Seite erreichbar (Wiring/Redirect feuern). KEINE Custom-Domains, KEIN
+Cache, KEIN same-origin-CAPI-Rewrite (das ist 7b), KEINE Publish-UI-Politur.
+
+Schlüssel-Insight (hält 7a klein): Die Engine existiert schon. generateFunctional
+produziert das funktionale HTML — 7a fügt einen serve-Modus (bzw. export-Wiederverwendung)
++ die Auslieferungs-Route hinzu. Kein neuer Generierungspfad, nur ein neuer AUSGANG.
+
+Architektur:
+- Migration 0006: (a) neue Tabelle domains(label text unique/pk, project_id fk projects
+  on delete cascade, created_at). RLS an: Owner verwaltet eigene (über Projekt-Ownership,
+  wie setCapiToken IDOR-geprüft), Serving-READ via service_role. Kein anon-Enumerieren.
+  (b) projects.published_content jsonb default null.
+- Middleware/proxy (bestehende Auth-Gate-Datei, KEIN middleware->proxy-Rename hier):
+  ZUERST auf Host verzweigen. pgsm.site-Host -> NextResponse.rewrite auf interne
+  Serve-Route (z.B. /app-serve) -> RETURN, Auth-Gate übersprungen, KEINE App-Cookies.
+  App-Host -> bestehende Auth-Logik unverändert. KEIN DB-Call in der Middleware.
+- Serve-Route (Node-Runtime): extrahiert das linkeste Host-Label -> domains-Lookup per
+  LABEL (service_role) -> project_id -> projects.published_content. Label-Match, damit
+  meinprojekt.pgsm.site (Prod) UND meinprojekt.lvh.me:3000 (lokal) identisch matchen
+  (kein Dev/Prod-Fork). published_content null -> 404. Dann generateFunctional(serve) ->
+  text/html.
+- SERVIERT NUR published_content, nie html/mappings (Draft). Live != Editor-Zustand.
+- Security-Header-Baseline auf der Serve-Response: nosniff, X-Frame-Options DENY,
+  Referrer-Policy strict-origin-when-cross-origin. KEIN striktes CSP (bräche Pixel/Beacon).
+- Minimaler Publish (Owner-Session-Server-Action, IDOR-geprüft wie setCapiToken):
+  Projekt-Ownership prüfen -> published_content = Snapshot({html,mappings}) -> domains-Row
+  sicherstellen (Auto-Label, Kollision retry) -> Live-URL zurückgeben. Publish-UI-Politur
+  später.
+- /app-serve ist NUR via interne Rewrite erreichbar/sinnvoll: darf kein Bypass zu
+  App-Daten sein (nur published_content by label). Direkt-Zugriff app-Host -> 404/neutral.
+
+Lokales Testen: lvh.me (*.lvh.me -> 127.0.0.1), echter Host-Header, kein hosts-Editing,
+kein Code-Fallback. Label-Lookup macht es fork-frei.
+
+Diskriminierende Tests (Pflicht):
+- Serve-Route: bekanntes Label -> published_content-HTML (funktional); unbekanntes Label
+  -> 404; Projekt ohne published_content -> 404.
+- Serviert NIE draft (html/mappings): Test mit abweichendem draft vs published ->
+  Output == published.
+- Middleware: pgsm.site-Host -> rewrite auf /app-serve, KEIN /login-Redirect; App-Host
+  anonym auf geschützten Pfad -> weiter /login (Auth-Gate intakt); App-Host setzt Cookies,
+  pgsm.site nicht.
+- Publish-Action: Ownership-Fail (fremde project_id) -> error, kein published_content/
+  domains-Write; Happy-Path -> Snapshot + domains-Row + URL.
+- Security-Header auf Serve-Response vorhanden.
+- domains-Lookup via service_role gibt nur project_id-Ebene, kein Owner-Leak.
+
+Leitplanken: eTLD+1-Isolation strukturell; kein Cache/kein CAPI-Rewrite/keine
+Custom-Domain in 7a; Editor/Text-Pfad/Redirect-Engine/2b-Route unberührt (nur neuer
+serve-Ausgang). service_role server-only.
 
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,

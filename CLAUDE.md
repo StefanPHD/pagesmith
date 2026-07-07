@@ -1496,8 +1496,11 @@ Owner-Entscheidungen (endgültig):
   landet die Publish-Invalidierung (revalidateTag pro Projekt/Domain) IN DERSELBEN
   Scheibe — nie Cache ohne Invalidierung (sonst stiller "mein Publish wirkt nicht"-Bug).
 - Draft/Publish ADDITIV: bestehende html/mappings BLEIBEN Draft/Arbeitszustand; NEU
-  published_content jsonb (Snapshot {html,mappings} beim Publish). KEINE Migration
-  bestehender Spalten in draft_content (vermeidet Live-Daten-Migration).
+  published_content jsonb beim Publish. KEINE Migration bestehender Spalten in
+  draft_content (vermeidet Live-Daten-Migration). WICHTIG (Bau-Realität, siehe 7a):
+  published_content speichert das beim Publish CLIENT-generierte funktionale HTML
+  (das fertig verdrahtete Dokument) PLUS einen {html,mappings,settings,publishedAt}-
+  Snapshot fürs Re-Publish/7b — NICHT nur einen Rohsnapshot, den der Server rendert.
 - Cheerio: reserviert für serve-seitige HTML-Transformation (7b: Beacon-Endpoint auf
   same-origin umschreiben). Trennung: Editor=DOMParser (Client), Serving=Cheerio (Server).
 
@@ -1512,33 +1515,62 @@ Ziel: ein gespeichertes+publiziertes Projekt ist unter einer *.pgsm.site-URL als
 funktionale Seite erreichbar (Wiring/Redirect feuern). KEINE Custom-Domains, KEIN
 Cache, KEIN same-origin-CAPI-Rewrite (das ist 7b), KEINE Publish-UI-Politur.
 
-Schlüssel-Insight (hält 7a klein): Die Engine existiert schon. generateFunctional
-produziert das funktionale HTML — 7a fügt einen serve-Modus (bzw. export-Wiederverwendung)
-+ die Auslieferungs-Route hinzu. Kein neuer Generierungspfad, nur ein neuer AUSGANG.
+Schlüssel-Insight (hält 7a klein) + KORREKTUR ggü. Original-Notiz: Die Engine ist
+CLIENT-ONLY (generate.ts:224 DOMParser-Guard: `if (typeof DOMParser === "undefined")
+return html`; jsdom ist devDependency, NICHT Runtime; kein Cheerio). Serverseitiges
+Rendern ist damit NICHT möglich — eine Serve-Route (Node, kein DOM) bekäme das rohe html
+UNVERÄNDERT zurück (kein Wiring). AUFLÖSUNG (saveProject-Muster: Client stabilisiert/
+generiert → Server speichert nur): das funktionale HTML wird beim PUBLISH CLIENT-seitig
+erzeugt (generateFunctional("export"), identisch zu handleExportDownload) und in
+published_content gespeichert; die Serve-Route liefert es VERBATIM aus. KEIN Server-DOM,
+KEINE neue Runtime-Dependency, generate.ts BLEIBT UNANGETASTET (Reuse des export-Modus,
+kein neuer serve-Modus). LEKTION: Engine ist client-only → serverseitige HTML-Ausgabe
+geht nur über beim-Publish-generierten + gespeicherten String, nicht über
+Laufzeit-Rendering (7b Cheerio-Rewrite operiert ebenfalls auf dem gespeicherten String).
 
-Architektur:
-- Migration 0006: (a) neue Tabelle domains(label text unique/pk, project_id fk projects
-  on delete cascade, created_at). RLS an: Owner verwaltet eigene (über Projekt-Ownership,
-  wie setCapiToken IDOR-geprüft), Serving-READ via service_role. Kein anon-Enumerieren.
+Architektur (umgesetzt):
+- Migration 0006: (a) neue Tabelle domains(label text PK = Lookup-Key, project_id fk
+  projects on delete cascade, created_at; Index auf project_id). RLS an, OWNER-SCOPED
+  (nicht total gesperrt wie project_tokens — Labels sind ÖFFENTLICHE URLs, kein Secret):
+  SELECT/INSERT/UPDATE für authenticated über Projekt-Ownership-Subquery
+  (exists projects p where p.id=project_id and p.user_id=auth.uid()). KEINE anon-Policy
+  -> kein Enumerieren; Serving-READ via service_role (bypassed RLS). BEWUSSTER Unterschied
+  zu 2a: weil der Owner ein legitimes SELECT hat, tritt die 2a-"RETURNING-Read-back scheitert
+  an der SELECT-Sperre"-Falle NICHT auf -> Publish-Write läuft über den authenticated-Client
+  (kein service_role beim Schreiben, nur beim Serving-Read) -> mehr DB-Defense.
   (b) projects.published_content jsonb default null.
-- Middleware/proxy (bestehende Auth-Gate-Datei, KEIN middleware->proxy-Rename hier):
-  ZUERST auf Host verzweigen. pgsm.site-Host -> NextResponse.rewrite auf interne
-  Serve-Route (z.B. /app-serve) -> RETURN, Auth-Gate übersprungen, KEINE App-Cookies.
-  App-Host -> bestehende Auth-Logik unverändert. KEIN DB-Call in der Middleware.
-- Serve-Route (Node-Runtime): extrahiert das linkeste Host-Label -> domains-Lookup per
-  LABEL (service_role) -> project_id -> projects.published_content. Label-Match, damit
-  meinprojekt.pgsm.site (Prod) UND meinprojekt.lvh.me:3000 (lokal) identisch matchen
-  (kein Dev/Prod-Fork). published_content null -> 404. Dann generateFunctional(serve) ->
-  text/html.
-- SERVIERT NUR published_content, nie html/mappings (Draft). Live != Editor-Zustand.
-- Security-Header-Baseline auf der Serve-Response: nosniff, X-Frame-Options DENY,
-  Referrer-Policy strict-origin-when-cross-origin. KEIN striktes CSP (bräche Pixel/Beacon).
-- Minimaler Publish (Owner-Session-Server-Action, IDOR-geprüft wie setCapiToken):
-  Projekt-Ownership prüfen -> published_content = Snapshot({html,mappings}) -> domains-Row
-  sicherstellen (Auto-Label, Kollision retry) -> Live-URL zurückgeben. Publish-UI-Politur
-  später.
-- /app-serve ist NUR via interne Rewrite erreichbar/sinnvoll: darf kein Bypass zu
-  App-Daten sein (nur published_content by label). Direkt-Zugriff app-Host -> 404/neutral.
+- src/lib/hosting/host.ts (rein, DB-frei, unit-getestet): extractLabel(host) +
+  isServingHost(host). Serving-Suffixe .pgsm.site (Prod) UND .lvh.me (lokal) -> LABEL-Match
+  fork-frei (meinprojekt.pgsm.site == meinprojekt.lvh.me:3000). STRIKTE Label-Validierung
+  ^[a-z0-9-]{1,63}$ VOR jedem Lookup: Punkt/Sonderzeichen/verschachtelte Sub-Subdomain
+  (foo.bar.pgsm.site) -> null -> 404, kein Lookup (Label-Injection-Schutz).
+- src/middleware.ts (Entry, KEIN middleware->proxy-Rename): ZUERST auf Host verzweigen.
+  isServingHost -> NextResponse.rewrite auf /app-serve -> RETURN (Auth-Gate übersprungen,
+  KEINE App-Cookies, KEIN DB-Call). App-Host -> updateSession() BYTE-IDENTISCH wie bisher.
+  Weil die Verzweigung im Entry (nicht in updateSession) liegt, bleiben die bestehenden
+  Auth-Tests (testen updateSession direkt, Host localhost) OHNE Änderung grün.
+- src/lib/hosting/resolve.ts (server-only, wie token.ts): getPublishedHtmlByLabel(label)
+  über service_role, ZWEI-Schritt: domains.label -> project_id -> projects.published_content
+  -> .html. Selektiert NUR project_id + published_content — NIE html/mappings/settings/token.
+- Serve-Route src/app/app-serve/route.ts (runtime "nodejs"): Host-Label extrahieren ->
+  Guard !isServingHost -> 404 (direkter App-Host-Zugriff auf /app-serve neutralisiert, kein
+  Bypass) -> getPublishedHtmlByLabel -> published_content.html als text/html. Unbekanntes
+  Label / published_content null -> 404. SERVIERT NUR published_content, nie Draft
+  (html/mappings werden gar nicht abgefragt). Live != Editor-Zustand.
+- Security-Header auf der Serve-Response: nosniff, X-Frame-Options DENY, Referrer-Policy
+  strict-origin-when-cross-origin. KEIN striktes CSP (bräche Pixel/Beacon).
+- publishProject(projectId, functionalHtml, snapshot) (Owner-Session-Server-Action,
+  IDOR-geprüft wie setCapiToken: Ownership-Gate über authenticated-Client): funktionalHtml
+  ist CLIENT-generiert (Server hat kein DOM). published_content = { html: functionalHtml,
+  mappings, settings, publishedAt }. domains-Row sicherstellen (Auto-Label = slug+Random,
+  Kollisions-Retry). IDEMPOTENZ: bestehendes Label (in settings.hosting.label) wird
+  wiederverwendet -> Re-Publish erzeugt KEINE zweite domains-Row und KEINEN neuen Label
+  (Live-URL bleibt stabil). Label in settings.hosting gespiegelt (öffentlich, client-lesbar,
+  wie trackingKey in settings.capi) -> Owner sieht die Live-URL ohne domains-SELECT.
+  Live-URL aus NEXT_PUBLIC_HOSTING_DOMAIN (Dev lvh.me:3000, Prod pgsm.site) + Label gebaut.
+- /app-serve ist NUR via interne Rewrite erreichbar/sinnvoll: kein Bypass zu App-Daten
+  (nur published_content by label; Guard + owner-freie Projektion). Direkt-Zugriff
+  App-Host -> 404/neutral.
 
 Lokales Testen: lvh.me (*.lvh.me -> 127.0.0.1), echter Host-Header, kein hosts-Editing,
 kein Code-Fallback. Label-Lookup macht es fork-frei.

@@ -58,12 +58,17 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       End-to-End-Dedup-Sichtbarkeitstest auf verknüpfter Domain -> Phase 7.
 - [~] Phase 7 — Hosting & Go-Live: IN ARBEIT.
       [x] Scheibe 7a — Serving auf *.pgsm.site, Label-Lookup, isolierte Origin —
-          ABGESCHLOSSEN (live). Nächster Schritt: 7b (same-origin-CAPI-Rewrite via
-          Cheerio).
+          ABGESCHLOSSEN (live). NÄCHSTER SCHRITT: 7b — First-Party-Ingest /api/e auf
+          gehosteten Seiten (same-origin = adblocker-resistent). KEIN Cheerio (Revision,
+          siehe 7b-Block unten).
       Details in der Phase-7-Sektion unten. ACHTUNG: härtester Brocken (Multi-Tenant
       Custom Domains + Auto-SSL, spätere Scheiben); schaltet zugleich die Funnel-Vision
       frei. (war Phase 6)
-- [ ] Phase 8 — A/B-Testing: 50/50-Split über Edge-Logik. (war Phase 7)
+- [ ] Phase 8 — Analytics & ROI-Ökosystem (Vision): First-Party-Server-Side-Analytics
+      (Traffic-Gesundheit, ROI/Attribution, Betreiber-Metriken) + Adblocker-Verlustrate
+      über geteilte-eventID-Vergleich ECHTER Events. Detail-Sektion unten. (war A/B-Testing)
+- [ ] Phase 9 — A/B-Testing: 50/50-Split über Edge-Logik. (war Phase 8)
+- [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
 ## Phase 2 — Click & Connect (Core-Architektur & UX)
 Der zentrale Flow des Produkts. UX-Qualität hier entscheidet über Erfolg.
@@ -1621,6 +1626,68 @@ Leitplanken: eTLD+1-Isolation strukturell; kein Cache/kein CAPI-Rewrite/keine
 Custom-Domain in 7a; Editor/Text-Pfad/Redirect-Engine/2b-Route unberührt (nur neuer
 serve-Ausgang). service_role server-only.
 
+### Scheibe 7b — First-Party-Ingest auf gehosteten Seiten (vor dem Bau dokumentiert)
+REVISION ggü. früherer Notiz: KEIN Cheerio (bleibt reserviert; keine Runtime-Dep ohne
+2+ Fälle). Grund: gehostetes HTML wird beim Publish CLIENT-generiert (7a-Realität), die
+Engine ist über capiProxyUrl bereits parametrisiert -> die gehostete Variante wird beim
+Publish mit RELATIVEM Ingest-Pfad (/api/e) generiert; Export-Download behält die absolute
+${NEXT_PUBLIC_APP_URL}-URL. Es gibt keine serverseitige Injektions-Stelle -> nichts für
+Cheerio zu tun.
+Kernarbeit 7b: (a) Middleware lässt die Ingest-Pfade auf Serving-Hosts DURCH (vor dem
+/app-serve-Rewrite; weiterhin ohne Auth, ohne App-Cookies); (b) neutrale Route /api/e mit
+GETEILTER Handler-Logik aus 2b-i, /api/capi bleibt funktionaler Alias (alte Exporte).
+Consent-Gate, text/plain, geteilte eventID: unverändert (nur der URL-Wert im Beacon
+ändert sich). Ergebnis: Tracking gehosteter Seiten läuft same-origin = adblocker-resistent
+(First-Party-Versprechen eingelöst).
+
+## Phase 8 — Analytics & ROI-Ökosystem (Vision, NACH Phase 7)
+Owner-Direktive: Pagesmith wird hybrides Server-Side-Marketing-/Analytics-Ökosystem.
+Client erfasst Interaktion -> First-Party-Hit an unsere Hosting-Infra -> Server
+verarbeitet (adblocker-resistent). Umfang je EIGENE Scheiben (nicht ein Block):
+
+1. Kunden-Tracking/Traffic-Gesundheit: PageViews, Uniques, Verweildauer, Scrolltiefe
+   (25/50/75/100), Klicks/Conversion-Rate, Form Start vs Submit, Video-Watchtime
+   (HTML5/YouTube/Vimeo), Bot-/Fraud-Quote (serverseitige Filterung), Core Web Vitals
+   + 404/500-Alarme auf Kundenseiten.
+2. ROI/Attribution/Finanz — SCHEMA-VORBEREITUNG jetzt, BAU erst bei realer Ad-Spend-API
+   (2+ Fälle, nicht vorab abstrahieren): Ad-Spend-Match (Meta/Google) -> ROAS, POAS
+   (Produktmargen), CPA/CPL, Multi-Touch (First-/Last-Click). KISS-Dashboard im Backend
+   + vollständiger Export als CSV UND Excel.
+3. Betreiber-Metriken: aggregierte Best-Performer-Layouts (anonymisiert, KI-Training),
+   Traffic-Zählung pro Projekt (datenbasiertes Rate-Limiting, SaaS-Tarifgrenzen,
+   In-App-Upgrade-Meldungen).
+
+VOR DEM BAU ZU KLÄREN (Bedrohungs-/Rechtsmodell):
+- "Hybrid" ehrlich: Scrolltiefe/Verweildauer/Video/Vitals sind CLIENT-erfasst (der
+  Server sieht kein Scrollen). ALLES Besucher-Tracking hängt hinter demselben
+  psConsent() wie das Pixel (DACH) — sonst reißen wir das 1b-Loch wieder auf.
+- ZWEI-EBENEN-DSGVO-TRENNUNG: Kunden-Ebene (im Auftrag des Marketers, consent-gated,
+  ggf. gehashte Kennungen für Uniques) vs. Betreiber-Ebene (STRIKT anonym: nur
+  Event-Typ, Projekt-ID, Zeitstempel — NIE IP/PII der Endbesucher). "Uniques
+  serverseitig ohne PII" ist ein zu lösender Widerspruch, keine Selbstverständlichkeit.
+- Datenvolumen unter Ad-Traffic: Aggregations-/Retention-Strategie ist Design-Frage der
+  ersten Scheibe, kein Nachtrag (eine Event-Tabelle wächst unter Ad-Spend schnell).
+
+ADBLOCKER-VERLUSTRATE — Ziel JA, Methodik BEWUSST festgelegt (nicht die naive Variante):
+- NICHT über einen synthetischen blockbaren Test-Hit messen. Gründe: (a) ein absichtlich
+  blockbarer Third-Party-Request an facebook/doubleclick erzeugt genau das
+  Consent-/DSGVO-Problem, dessen Vermeidung unser Verkaufsargument ist; (b) "Hit fehlt"
+  != "geblockt" (Timing/Abbruch/Navigation verzerren); (c) es misst ein Test-Pixel,
+  nicht echte Conversions.
+- STATTDESSEN: über den geteilte-eventID-Vergleich ECHTER Events. In der Hybrid-CAPI
+  sehen wir beide Ströme; zähle Events, die NUR server-seitig ankamen (Beacon da,
+  Browser-Pixel-Bestätigung fehlt) gegen die, die BEIDE Wege nahmen. Differenz =
+  "gerettete" Quote, gemessen an echten Conversions, ohne zusätzlichen blockbaren
+  Request, ohne neues Consent-Problem. Story: "X% deiner echten Conversions wären ohne
+  uns bei Meta nie angekommen."
+- Voraussetzung: der Server muss die Browser-Pixel-Bestätigung SEHEN (heute geht das
+  Pixel direkt an Meta). Das ist Phase-8-Persistenz-Logik, KEINE 7b-Sache. KEIN Cheerio.
+
+ARCHITEKTUR-NAHT (in 7b gelegt, Form statt Maschinerie): neutraler First-Party-
+Ingest-Endpoint /api/e als EIN Trichter für alle Events gehosteter Seiten. Heute nur
+Meta-CAPI-Forward; Phase-8-Persistenz (Dashboard, Betreiber-Metriken, Verlustraten-
+Vergleich) hängt sich später ADDITIV in denselben Trichter. Keine weitere Vorab-Abstraktion.
+
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,
 In-Place Copywriting als Phase 5. Der folgende Block bleibt die ausführliche
@@ -1661,14 +1728,14 @@ hierher, statt zu duplizieren. Reihenfolge im Bau: erst Phase 4.5, dann Phase 5.
      (Klick = Laufzeit), bei Text nicht. Finale Entscheidung im Bau-Slice.
 - Lean-Timing: erst NACH dem HTML-Export-Feature angehen; nicht vorziehen.
 
-### Phase 9 — AI-Native: Pagesmith MCP-Server (Vision, NACH Go-Live)
+### Phase 10 — AI-Native: Pagesmith MCP-Server (Vision, NACH Go-Live)
 Ziel: Pagesmith als natives Tool in KI-Umgebungen der Marketer (Claude Desktop, Cursor,
 Windsurf) via eigenem MCP-Server (Model Context Protocol, JSON-RPC-Endpunkt z.B. /api/mcp).
 Marketer generiert im Profil einen Pagesmith-MCP-Key; seine KI kann dann Projekte anlegen,
 Tracking-Status abfragen, Meta-Tokens aktualisieren etc. Verwandelt Pagesmith von
 Web-App zu KI-Infrastruktur — potenzielles Alleinstellungsmerkmal.
 
-TIMING (Owner-Entscheidung, endgültig): Phase 9, NACH Phase 7 (Hosting/Go-Live). Grund:
+TIMING (Owner-Entscheidung, endgültig): Phase 10, NACH Phase 7 (Hosting/Go-Live). Grund:
 MCP ist ein Feature für eine Nutzerbasis, die es vor Go-Live noch nicht gibt; sein Wert
 entsteht, wenn reale Projekte existieren, die eine KI managen kann. Es JETZT zu bauen
 verstößt gegen "kleine beweisbare Slices / Abstraktion erst bei 2+ Fällen" und lenkt vom
@@ -1829,7 +1896,7 @@ miterledigen, sondern gebündelt abarbeiten.
 - Session-unabhängige Mutationen (MCP-Vorbereitung, kostenlos ab jetzt): Jede neue
   Server-Mutation als REINE Funktion (userId, params) bauen — Autorisierung
   (Ownership-Prüfung) DAVOR, Geschäftslogik DAHINTER, sauber getrennt (wie setCapiToken
-  es bereits fast tut). So kann die spätere MCP-Schicht (Phase 9) dieselbe geprüfte Logik
+  es bereits fast tut). So kann die spätere MCP-Schicht (Phase 10) dieselbe geprüfte Logik
   wiederverwenden, mit MCP-Autorisierung als ANDEREM Eingang zur GLEICHEN Funktion. Kein
   jetziger Bau, nur Baustil — verbessert den Code ohnehin (Testbarkeit, Trennung von
   Auth und Logik).

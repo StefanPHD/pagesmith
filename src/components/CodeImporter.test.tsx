@@ -433,6 +433,78 @@ describe("CodeImporter — Scheibe 2a: CAPI-Token write-only Indikator + Reseed"
   });
 });
 
+describe("CodeImporter — Scheibe 7b: Publish bäckt RELATIVEN /api/e-Beacon, Export absoluten", () => {
+  // Button mit track-Mapping + Meta-Pixel + trackingKey -> das Wiring enthält den
+  // CAPI-Beacon. NUR der capiProxyUrl-Wert divergiert zwischen Publish und Export.
+  const CANON_BTN =
+    '<!DOCTYPE html><html><head></head><body><button data-pagesmith-id="ps-aaaaaa">Kaufen</button></body></html>';
+  const ORIGINAL_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_APP_URL = "https://app.pagesmith.io";
+  });
+  afterEach(() => {
+    if (ORIGINAL_APP_URL === undefined) delete process.env.NEXT_PUBLIC_APP_URL;
+    else process.env.NEXT_PUBLIC_APP_URL = ORIGINAL_APP_URL;
+  });
+
+  function renderWithTracking() {
+    return render(
+      <CodeImporter
+        initialCode={CANON_BTN}
+        initialProjectId="p1"
+        initialMappings={[
+          { elementId: "ps-aaaaaa", type: "track", config: { event: "Lead" } },
+        ]}
+        initialSettings={{
+          pixels: { meta: { pixelId: "999000111" } },
+          capi: { trackingKey: "tk-1", tokenSet: true },
+        }}
+      />
+    );
+  }
+
+  it("Publish: functionalHtml an publishProject trägt sendBeacon('/api/e') RELATIV, KEINE absolute URL", async () => {
+    renderWithTracking();
+    // Detection abwarten -> debouncedCode === code (die Publish-Quelle).
+    await screen.findByText("Kaufen");
+
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^(Veröffentlichen|Erneut veröffentlichen)$/ }));
+
+    await waitFor(() => expect(publishProject).toHaveBeenCalledTimes(1));
+    const functionalHtml = (publishProject.mock.calls[0] as unknown[])[1] as string;
+    expect(functionalHtml).toContain('navigator.sendBeacon("/api/e"');
+    // KEIN absoluter Export-Endpunkt in der gehosteten Variante (same-origin).
+    expect(functionalHtml).not.toContain("https://app.pagesmith.io");
+  });
+
+  it("Export (Copy): Dokument trägt die ABSOLUTE ${NEXT_PUBLIC_APP_URL}/api/e-URL (Gegenprobe)", async () => {
+    // clipboard.writeText erfasst das Export-Dokument als String.
+    const writeText = vi.fn(async () => {});
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    try {
+      renderWithTracking();
+      await screen.findByText("Kaufen");
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "In Zwischenablage kopieren" })
+      );
+
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+      const exportDoc = (writeText.mock.calls[0] as unknown[])[0] as string;
+      expect(exportDoc).toContain(
+        'navigator.sendBeacon("https://app.pagesmith.io/api/e"'
+      );
+    } finally {
+      delete (navigator as { clipboard?: unknown }).clipboard;
+    }
+  });
+});
+
 describe("CodeImporter — Scheibe 7a: Publish-Indikator aus settings.hosting (kein Leak)", () => {
   function openSettings() {
     fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));

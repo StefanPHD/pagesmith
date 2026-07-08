@@ -585,12 +585,21 @@ export default function CodeImporter({
   // zeigen — roher code koennte im Tipp-Fenster davon abweichen und das Wiring ins
   // Leere laufen lassen. Generiert wird aus dem sauberen Klartext (keine
   // Preview-Injektionen), daher idempotent.
-  function buildExportDocument(): string {
+  // Baut das funktionale Dokument; NUR der capiProxyUrl-Wert divergiert zwischen den
+  // beiden Auslieferwegen (Phase 7b), sonst identische Engine/Eingaben:
+  // - Export-Download (fremde Domain): absolute ${NEXT_PUBLIC_APP_URL}/api/e (fail-loud
+  //   bei fehlender env -> kein Beacon + warn).
+  // - Publish (gehostete Seite, same-origin): relativer /api/e-Pfad (braucht keine env).
+  function buildFunctionalDocument(capiProxyUrl: string): string {
     return generateFunctional(debouncedCode, mappings, "export", {
       metaPixelId: getMetaPixelId(settings),
       trackingKey: getTrackingKey(settings),
-      capiProxyUrl: getCapiProxyUrl(),
+      capiProxyUrl,
     });
+  }
+
+  function buildExportDocument(): string {
+    return buildFunctionalDocument(getCapiProxyUrl());
   }
 
   // Download als .html: Blob -> Object-URL -> temporaerer <a download> -> Klick ->
@@ -630,7 +639,10 @@ export default function CodeImporter({
     if (!projectId) return;
     setPublishStatus("publishing");
     setPublishError(null);
-    const result = await publishProject(projectId, buildExportDocument(), {
+    // Publish bäckt den RELATIVEN /api/e-Beacon ein (Phase 7b): die gehostete Seite
+    // läuft same-origin auf *.pgsm.site -> /api/e wird von der Middleware chirurgisch
+    // durchgelassen und trifft den Ingest-Handler. Kein absoluter Pfad/keine env nötig.
+    const result = await publishProject(projectId, buildFunctionalDocument("/api/e"), {
       html: debouncedCode,
       mappings,
       settings,

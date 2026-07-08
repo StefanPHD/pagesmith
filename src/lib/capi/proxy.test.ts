@@ -9,14 +9,14 @@ afterEach(() => {
 });
 
 describe("getCapiProxyUrl", () => {
-  it("bildet die ABSOLUTE /api/capi-URL aus NEXT_PUBLIC_APP_URL", () => {
+  it("bildet die ABSOLUTE /api/e-URL aus NEXT_PUBLIC_APP_URL (7b-Trichter)", () => {
     process.env.NEXT_PUBLIC_APP_URL = "https://app.pagesmith.io";
-    expect(getCapiProxyUrl()).toBe("https://app.pagesmith.io/api/capi");
+    expect(getCapiProxyUrl()).toBe("https://app.pagesmith.io/api/e");
   });
 
   it("normalisiert trailing slashes der Basis", () => {
     process.env.NEXT_PUBLIC_APP_URL = "http://localhost:3000/";
-    expect(getCapiProxyUrl()).toBe("http://localhost:3000/api/capi");
+    expect(getCapiProxyUrl()).toBe("http://localhost:3000/api/e");
   });
 
   it("FAIL-LOUD: fehlt die env -> '' (KEIN relativer Fallback)", () => {

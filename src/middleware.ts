@@ -9,6 +9,15 @@ export async function middleware(request: NextRequest) {
   // uebersprungen und es werden KEINE App-Session-Cookies angefasst (eTLD+1-Isolation).
   // KEIN DB-Call hier: der Label-Lookup passiert erst in der Node-Serve-Route.
   if (isServingHost(request.headers.get("host") ?? "")) {
+    // Phase 7b: First-Party-Ingest. Die gehostete Seite beacont same-origin an /api/e;
+    // alte absolute Exporte treffen /api/capi. Diese ZWEI Pfade werden CHIRURGISCH
+    // durchgelassen (kein /app-serve-Rewrite), damit sie den echten Route-Handler
+    // erreichen — weiterhin OHNE Auth-Gate/updateSession, OHNE App-Cookies. EXAKTER
+    // Match, NICHT startsWith("/api") -> jeder andere Pfad wird weiter geserved.
+    const path = request.nextUrl.pathname;
+    if (path === "/api/e" || path === "/api/capi") {
+      return NextResponse.next();
+    }
     const url = request.nextUrl.clone();
     url.pathname = "/app-serve";
     return NextResponse.rewrite(url);

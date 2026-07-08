@@ -44,10 +44,18 @@ describe("updateSession — Auth-Gate mit /api/capi-Ausnahme", () => {
   });
 
   it("anonym + ANDERE API-Route (/api/etwas-anderes) -> WEITERHIN Redirect auf /login", async () => {
-    // Beweist: nur /api/capi ist geoeffnet, NICHT /api pauschal.
+    // Beweist: nur /api/capi + /api/e sind geoeffnet, NICHT /api pauschal. WICHTIG:
+    // /api/etwas-anderes beginnt mit dem Praefix '/api/e' -> der EXAKTE Match fuer
+    // /api/e (statt startsWith) haelt diesen Pfad korrekt hinter dem Gate.
     mockUser(null);
     const res = await updateSession(requestFor("/api/etwas-anderes"));
     expect(redirectTarget(res)).toBe("/login");
+  });
+
+  it("anonym + /api/e (7b-Ingest-Trichter) -> KEIN Redirect (Route wird erreicht)", async () => {
+    mockUser(null);
+    const res = await updateSession(requestFor("/api/e"));
+    expect(redirectTarget(res)).toBeNull();
   });
 
   it("anonym + geschuetzte Seite (/) -> Redirect auf /login (Gate unveraendert)", async () => {

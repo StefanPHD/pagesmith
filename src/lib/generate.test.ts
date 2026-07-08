@@ -563,6 +563,27 @@ describe("CAPI-Dedup-Beacon (Scheibe 2b-ii)", () => {
     expect(ok).not.toContain("NEXT_PUBLIC_APP_URL");
   });
 
+  it("7b: RELATIVER /api/e-proxyUrl (Publish) -> sendBeacon('/api/e'), text/plain, KEIN warn", async () => {
+    // Die gehostete Publish-Variante bekommt den relativen Pfad (same-origin) -> er ist
+    // truthy, also KEIN fail-loud, und wird 1:1 als Beacon-Ziel eingebacken (keine env).
+    stubFbq();
+    const beacon = stubBeacon();
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { metaPixelId: PIXEL, trackingKey: TK, capiProxyUrl: "/api/e" }
+    );
+    expect(out).toContain("navigator.sendBeacon(");
+    expect(out).toContain('"/api/e"');
+    expect(out).not.toContain("NEXT_PUBLIC_APP_URL");
+    mountAndWire(out);
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    const [url, blob] = beacon.mock.calls[0] as unknown as [string, Blob];
+    expect(url).toBe("/api/e");
+    expect(blob.type).toBe("text/plain");
+  });
+
   it("kein trackingKey -> STILL: weder Beacon noch Warnung (wie 'keine Pixel-ID')", () => {
     const out = generateFunctional(
       MAPPED_BUTTON,

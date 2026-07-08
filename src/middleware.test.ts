@@ -47,3 +47,42 @@ describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
     expect(updateSession).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("middleware — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
+  it("Serving-Host + /api/e -> DURCHGELASSEN (kein /app-serve-Rewrite, kein Auth-Gate)", async () => {
+    const res = await middleware(
+      requestFor("http://meinprojekt.pgsm.site/api/e", "meinprojekt.pgsm.site")
+    );
+    // Passthrough (NextResponse.next) -> KEIN interner Rewrite-Header.
+    expect(res.headers.get("x-middleware-rewrite")).toBeNull();
+    expect(updateSession).not.toHaveBeenCalled();
+  });
+
+  it("Serving-Host + /api/capi (Alt-Export-Alias) -> ebenfalls durchgelassen (Paritaet)", async () => {
+    const res = await middleware(
+      requestFor("http://meinprojekt.pgsm.site/api/capi", "meinprojekt.pgsm.site")
+    );
+    expect(res.headers.get("x-middleware-rewrite")).toBeNull();
+    expect(updateSession).not.toHaveBeenCalled();
+  });
+
+  it("CHIRURGISCH: Serving-Host + ANDERE /api-Route -> weiter /app-serve-Rewrite", async () => {
+    const res = await middleware(
+      requestFor("http://meinprojekt.pgsm.site/api/anders", "meinprojekt.pgsm.site")
+    );
+    const rewrite = res.headers.get("x-middleware-rewrite");
+    expect(rewrite).not.toBeNull();
+    expect(new URL(rewrite as string).pathname).toBe("/app-serve");
+    expect(updateSession).not.toHaveBeenCalled();
+  });
+
+  it("CHIRURGISCH: /api/etwas beginnend mit 'e' (/api/evil) -> KEIN Passthrough, Rewrite", async () => {
+    // Praefix-Falle: exakter Match, nicht startsWith('/api/e').
+    const res = await middleware(
+      requestFor("http://meinprojekt.pgsm.site/api/evil", "meinprojekt.pgsm.site")
+    );
+    expect(new URL(res.headers.get("x-middleware-rewrite") as string).pathname).toBe(
+      "/app-serve"
+    );
+  });
+});

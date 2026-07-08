@@ -53,7 +53,12 @@ export async function updateSession(request: NextRequest) {
   // in 2b-i gebaut+getestet). NUR dieser eine Pfad wird geoeffnet, NICHT /api
   // pauschal — kuenftige API-Routen bleiben hinter dem Gate.
   const isCapiRoute = path.startsWith("/api/capi");
-  const isPublicRoute = isLoginRoute || isCapiRoute;
+  // Phase 7b: /api/e ist der neue neutrale Ingest-Trichter (gleiche anonyme Capability
+  // wie /api/capi). Auf dem App-Host wird er von alten/neuen absoluten Export-Beacons
+  // getroffen -> muss oeffentlich sein. EXAKTER Match, NICHT startsWith("/api/e") — sonst
+  // wuerde /api/etwas-anderes faelschlich oeffentlich (der Praefix "/api/e" matcht es).
+  const isIngestRoute = path === "/api/e";
+  const isPublicRoute = isLoginRoute || isCapiRoute || isIngestRoute;
 
   if (!user && !isPublicRoute) {
     // Nicht eingeloggt: alles ausser oeffentlichen Pfaden -> /login

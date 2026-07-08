@@ -58,9 +58,11 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       End-to-End-Dedup-Sichtbarkeitstest auf verknüpfter Domain -> Phase 7.
 - [~] Phase 7 — Hosting & Go-Live: IN ARBEIT.
       [x] Scheibe 7a — Serving auf *.pgsm.site, Label-Lookup, isolierte Origin —
-          ABGESCHLOSSEN (live). NÄCHSTER SCHRITT: 7b — First-Party-Ingest /api/e auf
-          gehosteten Seiten (same-origin = adblocker-resistent). KEIN Cheerio (Revision,
-          siehe 7b-Block unten).
+          ABGESCHLOSSEN (live).
+      [x] Scheibe 7b — First-Party-Ingest /api/e, chirurgischer Passthrough —
+          ABGESCHLOSSEN (live). /api/e ist der neutrale Trichter, in den sich Phase 8
+          additiv einhängt. KEIN Cheerio (Revision, siehe 7b-Block unten).
+      NÄCHSTER SCHRITT: Custom-Domains + Auto-SSL via Vercel Domains API.
       Details in der Phase-7-Sektion unten. ACHTUNG: härtester Brocken (Multi-Tenant
       Custom Domains + Auto-SSL, spätere Scheiben); schaltet zugleich die Funnel-Vision
       frei. (war Phase 6)
@@ -1626,7 +1628,29 @@ Leitplanken: eTLD+1-Isolation strukturell; kein Cache/kein CAPI-Rewrite/keine
 Custom-Domain in 7a; Editor/Text-Pfad/Redirect-Engine/2b-Route unberührt (nur neuer
 serve-Ausgang). service_role server-only.
 
-### Scheibe 7b — First-Party-Ingest auf gehosteten Seiten (vor dem Bau dokumentiert)
+### Scheibe 7b — First-Party-Ingest auf gehosteten Seiten (ABGESCHLOSSEN, live verifiziert)
+Status: fertig, live verifiziert (lvh.me). Commit "feat(hosting): first-party ingest
+/api/e on hosted pages (relative beacon, surgical api passthrough)". Pipeline grün.
+Live-Beweise:
+- First-Party same-origin: Beacon auf der gehosteten Subdomain geht relativ an /api/e
+  (kein absolutes Host im Browser) -> 204. Adblocker-Resistenz eingelöst.
+- Export-Divergenz: exportierte Datei nutzt weiter die ABSOLUTE ${NEXT_PUBLIC_APP_URL}/api/e
+  (Erreichbarkeit auf Fremd-Server). Publish=relativ, Export=absolut, nebeneinander bewiesen.
+- Alias-Parität: POST /api/capi schlägt im geteilten Handler auf (nicht von Middleware
+  blockiert), verhält sich identisch zu /api/e. Alte ausgelieferte Exporte tracken weiter.
+- Chirurgischer Passthrough (Security): POST /api/projects auf Serving-Host -> Rewrite auf
+  /app-serve -> 405, KEIN Leak interner App-APIs auf die Kunden-Domain. Nur /api/e + /api/capi
+  werden durchgelassen (exakter Match, nicht /api/* pauschal).
+- App-Host-Sanity: Dashboard + Auth auf localhost:3000 unberührt.
+
+Umsetzung: buildFunctionalDocument(capiProxyUrl) mit zwei Aufrufern (Export absolut /
+Publish "/api/e"); Middleware-===-Passthrough vor dem /app-serve-Rewrite (next(), kein
+updateSession/Cookies); geteilte Logik in lib/capi/ingest.ts, api/capi + api/e als
+Re-Export derselben Funktionsreferenz (Identität getestet), /api/capi PERMANENTER Alias
+für Alt-Exporte (nicht entfernen); isPublicRoute um exaktes /api/e erweitert (startsWith
+wäre falsch -> bräche /api/etwas-anderes -> /login). meta.ts/Consent/eventID/text-plain
+unberührt (nur URL-Wert).
+
 REVISION ggü. früherer Notiz: KEIN Cheerio (bleibt reserviert; keine Runtime-Dep ohne
 2+ Fälle). Grund: gehostetes HTML wird beim Publish CLIENT-generiert (7a-Realität), die
 Engine ist über capiProxyUrl bereits parametrisiert -> die gehostete Variante wird beim
@@ -1888,6 +1912,11 @@ miterledigen, sondern gebündelt abarbeiten.
 - Erst der nutzbare Kern, dann Infrastruktur.
 - Importierter User-Code läuft NUR im sandboxed iframe (sandbox="allow-scripts",
   niemals allow-same-origin), nie ungesandboxt.
+- PERMANENTER Alias /api/capi darf NIE entfernt werden (Phase 7b): bereits in freier
+  Wildbahn ausgelieferte Alt-Exporte tragen die absolute /api/capi-URL fest eingebacken
+  und beaconen weiter dorthin. Neue Exporte/gehostete Seiten nutzen /api/e (geteilter
+  Handler, lib/capi/ingest.ts). Entfernen der capi-Route bricht STILL das Tracking aller
+  schon ausgelieferten Kundenseiten (kein Fehler, nur verschwundene Conversions).
 - Vor neuer Phase: kurz bestätigen, dass die vorige demobar lief.
 - Jede Bau-Freigabe an CC endet mit einer expliziten Live-Test-Anweisung (was
   genau im Browser zu prüfen ist) — nicht nur Pipeline-grün. Die Pipeline beweist

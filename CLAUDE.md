@@ -62,10 +62,17 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       [x] Scheibe 7b — First-Party-Ingest /api/e, chirurgischer Passthrough —
           ABGESCHLOSSEN (live). /api/e ist der neutrale Trichter, in den sich Phase 8
           additiv einhängt. KEIN Cheerio (Revision, siehe 7b-Block unten).
-      NÄCHSTER SCHRITT: Custom-Domains + Auto-SSL via Vercel Domains API.
-      Details in der Phase-7-Sektion unten. ACHTUNG: härtester Brocken (Multi-Tenant
-      Custom Domains + Auto-SSL, spätere Scheiben); schaltet zugleich die Funnel-Vision
-      frei. (war Phase 6)
+      [~] Scheibe 7c — Custom-Domains + Auto-SSL via Vercel Domains API. Vier Sub-Scheiben:
+          [~] 7c-1 Serving-Kern (Middleware-Inversion "ist APP-Host?" + custom_host-
+              Modell + Custom-Host-Serving + /api/e-Passthrough am Serving-Zweig) —
+              NÄCHSTER SCHRITT / in Arbeit.
+          [ ] 7c-2 Vercel-Anbindung (Add-Domain-Mutation, server-only Vercel-Token,
+              DNS-Anweisungen, Per-User-Hard-Cap) — geplant.
+          [ ] 7c-3 Verify/Status-Polling (Verification vs Configuration) + UX — geplant.
+          [ ] 7c-4 Phase-6-Dedup-Sichtbarkeit auf echter verknüpfter Domain (Kirsche) —
+              geplant.
+      Details in der Phase-7c-Sektion unten. ACHTUNG: härtester Brocken (Multi-Tenant
+      Custom Domains + Auto-SSL); schaltet zugleich die Funnel-Vision frei. (war Phase 6)
 - [ ] Phase 8 — Analytics & ROI-Ökosystem (Vision): First-Party-Server-Side-Analytics
       (Traffic-Gesundheit, ROI/Attribution, Betreiber-Metriken) + Adblocker-Verlustrate
       über geteilte-eventID-Vergleich ECHTER Events. Detail-Sektion unten. (war A/B-Testing)
@@ -1663,6 +1670,90 @@ GETEILTER Handler-Logik aus 2b-i, /api/capi bleibt funktionaler Alias (alte Expo
 Consent-Gate, text/plain, geteilte eventID: unverändert (nur der URL-Wert im Beacon
 ändert sich). Ergebnis: Tracking gehosteter Seiten läuft same-origin = adblocker-resistent
 (First-Party-Versprechen eingelöst).
+
+## Phase 7c — Custom-Domains + Auto-SSL (Konzept & Entscheidungen)
+Der härteste Brocken von Phase 7: Pagesmith serviert gehostete Seiten nicht mehr nur
+unter *.pgsm.site, sondern unter der EIGENEN Domain des Marketers (Zielnutzer kauft
+wöchentlich neue Domains für Rapid Testing). Konzept + Entscheidungen unten; Bau in
+den vier 7c-Scheiben (siehe Roadmap). Jede Entscheidung MIT Begründung, damit heutige
+Schnittführung die späteren Scheiben nicht versperrt.
+
+- MODELL: Kunden-Domain per Vercel-API unserem Vercel-Projekt hinzufügen; Vercel macht
+  Cert-Provisioning + Edge-Routing, wir lösen den eingehenden Host serverseitig zum
+  Projekt auf. SSL an die Plattform delegiert (kein eigenes ACME) — gleiche
+  Delegations-Entscheidung wie in der Phase-7-Owner-Direktive, jetzt umgesetzt.
+- MIDDLEWARE-INVERSION (Kern-Entscheidung): Die Host-Verzweigung kippt von "ist
+  Serving-Host?" (7a: Suffix-Match auf pgsm.site/lvh.me) auf "ist APP-Host?" (Allowlist:
+  pagesmith.app, www, die *.vercel.app-Preview-Hosts, localhost/Dev). ALLES andere fällt
+  in den Serving-Zweig -> pgsm.site UND beliebige Custom-Domains teilen denselben Pfad,
+  ohne pro Domain eine Middleware-Regel. Begründung: eine offene Menge (Custom-Domains)
+  lässt sich nicht per Suffix-Allowlist führen; die geschlossene Menge (unsere App-Hosts)
+  schon. KEIN DB-Call im Edge (Middleware bleibt DB-frei wie in 7a); der Label-/Host-
+  Lookup bleibt in der Node-Serve-Route. Unbekannter Host -> 404, KEINE App-Cookies,
+  KEINE Auth. Konsequenz (Sicherheit): die App ist auf Nicht-App-Hosts strukturell
+  unerreichbar -> kein Host-Spoof-Auth-Bypass. Der chirurgische /api/e|/api/capi-
+  Passthrough (7b) hängt durch die Inversion am Serving-Zweig GENERELL -> First-Party-
+  Ingest ist auf Custom-Domains automatisch same-origin/adblocker-resistent (EINE
+  Änderung, nicht zwei getrennte).
+- ISOLATION: jede Custom-Domain ist ein eigener eTLD+1 -> automatisch isoliert von der
+  App UND von anderen Kunden (stärker als die geteilte *.pgsm.site-Wildcard, die
+  Registrable Domain teilt und deshalb die "auf pgsm.site NIE App-Cookies"-Grenze
+  brauchte). Regel "auf Nicht-App-Hosts NIE App-Cookies/Auth-State" gilt unverändert
+  und deckt Custom-Domains ohne Zusatzarbeit mit ab.
+- DATENMODELL additiv: die bestehende `domains`-Tabelle bekommt NULLBARE Spalten
+  (custom_host text, GLOBAL UNIQUE; ein Status-Feld; das von Vercel gelieferte
+  DNS-Recordset). pgsm.site-Zeilen lassen die neuen Spalten null. Lookup fallweise:
+  pgsm.site-Host -> per Label (7a-Pfad unverändert); Custom-Host -> per custom_host
+  EXAKT. KEINE Migration bestehender Zeilen (additive nullable Spalten, wie 7a
+  published_content) -> keine Live-Daten-Transformation.
+- EFFEKTIVER HOST (Sicherheit): sowohl der Serve-Lookup als auch der Middleware-Branch
+  lesen den Host aus x-forwarded-host (Prod, von Vercels Edge gesetzt), Fallback auf den
+  Host-Header (Dev ohne Proxy). Strikt validiert (Shape [a-z0-9-.], Länge) VOR jeder
+  Nutzung (Injection-/Lookup-Schutz, wie die 7a-Label-Validierung). EINE Quelle für
+  Branch UND Lookup -> kein Split-Brain (verschiedene Host-Quellen an Branch vs Lookup
+  wären ein Bypass). Helfer in lib/hosting/host.ts, unit-testbar (neben extractLabel/
+  isServingHost aus 7a). TRUST-BOUNDARY (explizit geloggt): x-forwarded-host wird NUR
+  vertraut, weil die Serverless-Funktion ausschließlich hinter Vercels Edge erreichbar
+  ist (Edge überschreibt einen client-gesetzten Header). Das wird per Instrument auf
+  einem Vercel-Preview BESTÄTIGT (Header loggen), NICHT aus dem Gedächtnis angenommen
+  (Instrument schlägt Vermutung — dieselbe Regel wie in 2a/2b).
+- VERCEL-API-TOKEN = neues server-only Secret: `import "server-only"`, NIE im
+  Client-Bundle, NIE committet, NIE in Migration/SQL-Editor. Gleiche Disziplin wie
+  SUPABASE_SERVICE_ROLE_KEY (2a): nur in .env.local (vorher .gitignore verifizieren),
+  nur in server-only-Modulen. Alle Vercel-Calls serverseitig.
+- ADD-DOMAIN als reine (userId, params)-Funktion: Ownership-Gate DAVOR (heiligstes-Gate-
+  Muster aus 2a; MCP-ready gemäß "Session-unabhängige Mutationen"-Constraint),
+  Geschäftslogik (Vercel-Call + DB-Write) DAHINTER, sauber getrennt.
+- VERCEL-ZWEI-ZUSTAND: Vercel meldet ZWEI unabhängige Zustände — Verification
+  (Domain-Besitznachweis, i.d.R. TXT-Record) vs Configuration (DNS zeigt tatsächlich
+  hierher / Cert steht). BEIDE gehören ins Statusmodell (eine Domain kann "verifiziert,
+  aber fehlkonfiguriert" sein). Provisioning ist ASYNCHRON -> pollen/re-checken (7c-3);
+  der Status wird aus Vercels Wahrheit ABGELEITET und DB-gecacht (Ableiten-statt-Löschen,
+  konsistent zum projekt-spezifischen View-State-Prinzip).
+- APEX + SUBDOMAIN beide unterstützen (Zielnutzer kauft ganze Domains, nicht nur
+  Subdomains): DNS-Anweisungen fallweise generiert (Apex -> A-Record auf Vercels IP;
+  Subdomain -> CNAME auf Vercels Target). Apex-CNAME-Flattening-Grenze mancher
+  Registrare beachten (nicht jeder Registrar kann CNAME auf Apex). Exakte DNS-Werte +
+  Vercel-API-Endpunkte gegen die AKTUELLE Vercel-Doku pinnen (NICHT aus dem Gedächtnis —
+  Config-Fakten/IP-Targets veralten; gleiche "Config-Fakten nicht aus dem Kopf"-Regel
+  wie beim DNS-Recordset).
+- PER-USER-HARD-CAP (7c-2): eine Obergrenze pro User schützt Vercels Rate-/Domain-
+  Limits. Prüfung in der Add-Domain-Mutation VOR dem Vercel-Call. Ehrlich geloggt:
+  App-Layer-Check ist race-anfällig um ±1 (zwei parallele Adds); falls "truly hard"
+  nötig, DB-Trigger/Constraint als spätere Option — für den MVP reicht der App-Check.
+- KOSTEN/LIMITS geloggt: wöchentlich gekaufte Domains akkumulieren im Vercel-Projekt;
+  Cleanup unbenutzter Domains + Rate-Limit-Handling sind spätere Härtung (nicht 7c-1).
+- LANDMINEN:
+  (a) App-Host-Allowlist-VOLLSTÄNDIGKEIT: die Preview-Hosts (*.vercel.app) NICHT
+      vergessen, sonst landen eigene Deployments im Serving-Zweig -> 404 auf die eigene
+      App. Absichern per Regressionstest.
+  (b) pgsm.site-Serving darf durch die Inversion NICHT brechen -> diskriminierender
+      Regressionstest (bekanntes Label serviert weiter, wie in 7a).
+  (c) custom_host GLOBAL UNIQUE + Cross-User-Hijack: ein User darf keine fremde/schon
+      belegte Domain beanspruchen. Kontrolle = Vercels Verification (real-world
+      Besitznachweis) + Ownership-Gate auf der Mutation + der UNIQUE-Constraint.
+  (d) x-forwarded-host-Trust-Boundary (siehe EFFEKTIVER HOST) per Preview-Instrument
+      bestätigen.
 
 ## Phase 8 — Analytics & ROI-Ökosystem (Vision, NACH Phase 7)
 Owner-Direktive: Pagesmith wird hybrides Server-Side-Marketing-/Analytics-Ökosystem.

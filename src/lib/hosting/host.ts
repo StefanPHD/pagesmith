@@ -46,6 +46,67 @@ export function isServingHost(host: string): boolean {
   return extractLabel(host) !== null;
 }
 
+// --- Phase 7c-1: Host-Inversion + effektiver Host -------------------------------
+//
+// INVERSION: die Serving-Schicht verzweigt nicht mehr "ist Serving-Host?" (Suffix),
+// sondern "ist APP-Host?" (geschlossene Allowlist). So teilen *.pgsm.site UND
+// beliebige Custom-Domains DENSELBEN Serving-Zweig, ohne pro Domain eine Regel.
+
+// Maximale DNS-Namenlaenge.
+const MAX_HOST_LEN = 253;
+
+// Strikte Hostname-Shape: punktgetrennte Labels aus [a-z0-9-], jedes Label beginnt
+// und endet alphanumerisch. Damit sind KEINE aufeinanderfolgenden Punkte ("..") und
+// kein fuehrender/abschliessender Punkt erlaubt; "/", Leerzeichen etc. fallen ohnehin
+// raus. Bindestrich steht am Ende der Zeichenklasse (keine Range-Ambiguitaet).
+const HOSTNAME_RE =
+  /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*$/;
+
+// Geschlossene Allowlist der APP-Hosts. LANDMINE: die *.vercel.app-Preview-Hosts
+// NICHT vergessen — fehlen sie, landen eigene Deployments im Serving-Zweig -> 404
+// auf die eigene App.
+const APP_HOSTS = new Set([
+  "pagesmith.app",
+  "www.pagesmith.app",
+  "localhost",
+  "127.0.0.1",
+]);
+
+/**
+ * Der effektive Host eines Requests — die EINZIGE Host-Quelle fuer die Branch-
+ * Entscheidung (Middleware/Edge) UND den Serve-Lookup (Route/Node). Eine Quelle ->
+ * kein Split-Brain zwischen Verzweigung und Lookup.
+ *
+ * Praezedenz an GENAU dieser Stelle: x-forwarded-host (in Prod von Vercels Edge
+ * gesetzt) vor host (Dev ohne Proxy). Die Trust-Boundary (verwirft Vercels Edge
+ * einen client-gefaelschten x-forwarded-host?) wird am Ende von 7c-1 (GATE) per
+ * Wegwerf-Instrument auf einem Vercel-Preview BESTAETIGT, nicht angenommen — dank
+ * dieser Isolation ist die Praezedenz einzeilig aenderbar, falls der Beweis eine
+ * Revision verlangt.
+ *
+ * Normalisiert (lowercase, Port ab) und strikt shape-validiert; ungueltig/leer/zu
+ * lang -> null (der Aufrufer antwortet dann 404 / behandelt es als Nicht-App-Host).
+ */
+export function resolveEffectiveHost(headers: Headers): string | null {
+  // x-forwarded-host kann bei mehreren Proxies eine Komma-Liste sein -> erstes Segment.
+  const raw = (
+    headers.get("x-forwarded-host") ??
+    headers.get("host") ??
+    ""
+  ).split(",")[0];
+  const host = stripPort(raw);
+  if (!host || host.length > MAX_HOST_LEN) return null;
+  return HOSTNAME_RE.test(host) ? host : null;
+}
+
+/**
+ * true, wenn der (bereits via resolveEffectiveHost normalisierte) Host die App
+ * adressiert. Alles andere faellt in den Serving-Zweig.
+ */
+export function isAppHost(host: string): boolean {
+  return APP_HOSTS.has(host) || host.endsWith(".vercel.app");
+}
+
 /**
  * Baut die absolute Live-URL aus Label + Basis-Domain (aus NEXT_PUBLIC_HOSTING_DOMAIN,
  * z.B. "lvh.me:3000" lokal, "pgsm.site" in Prod). Lokale Basen (lvh.me/localhost) ->

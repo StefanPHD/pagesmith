@@ -14,6 +14,22 @@ function requestFor(url: string, host: string): NextRequest {
   return new NextRequest(new URL(url), { headers: { host } });
 }
 
+// Variante mit gefaelschtem/gesetztem x-forwarded-host (Prod-Pfad hinter Vercels Edge).
+function requestForXfh(
+  url: string,
+  host: string,
+  xForwardedHost: string
+): NextRequest {
+  return new NextRequest(new URL(url), {
+    headers: { host, "x-forwarded-host": xForwardedHost },
+  });
+}
+
+function rewritePath(res: Response): string | null {
+  const rewrite = res.headers.get("x-middleware-rewrite");
+  return rewrite ? new URL(rewrite).pathname : null;
+}
+
 afterEach(() => vi.clearAllMocks());
 
 describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
@@ -42,9 +58,41 @@ describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
     expect(updateSession).toHaveBeenCalledTimes(1);
   });
 
-  it("bare Registrable Domain (pgsm.site ohne Subdomain) -> App-Host, Auth-Gate", async () => {
-    await middleware(requestFor("http://pgsm.site/", "pgsm.site"));
+  it("bare pgsm.site (nach Inversion Nicht-App) -> serving branch (rewrite), KEIN Auth-Gate", async () => {
+    // FLAG 2 (bewusst gekippt): unter der Inversion ist die App NUR die Allowlist
+    // (pagesmith.app). Bare pgsm.site faellt jetzt in den Serving-Zweig -> /app-serve
+    // (dort 404 mangels Label/custom_host), NICHT mehr ins Auth-Gate.
+    const res = await middleware(requestFor("http://pgsm.site/", "pgsm.site"));
+    expect(rewritePath(res)).toBe("/app-serve");
+    expect(updateSession).not.toHaveBeenCalled();
+  });
+
+  it("Custom-Host (test-custom.local) -> serving branch (rewrite), KEIN Auth-Gate", async () => {
+    const res = await middleware(
+      requestFor("http://test-custom.local/", "test-custom.local")
+    );
+    expect(rewritePath(res)).toBe("/app-serve");
+    expect(updateSession).not.toHaveBeenCalled();
+  });
+
+  it("Preview-Host (*.vercel.app) -> App-Host, updateSession (Allowlist-Vollstaendigkeit)", async () => {
+    await middleware(
+      requestFor(
+        "http://pagesmith-git-main.vercel.app/",
+        "pagesmith-git-main.vercel.app"
+      )
+    );
     expect(updateSession).toHaveBeenCalledTimes(1);
+  });
+
+  it("x-forwarded-host bestimmt die Verzweigung (EINE Host-Quelle, Praezedenz)", async () => {
+    // host allein waere localhost (App); der bevorzugte x-forwarded-host ist ein
+    // Custom-Host -> Serving-Zweig. Beweist: Branch nutzt resolveEffectiveHost.
+    const res = await middleware(
+      requestForXfh("http://localhost/", "localhost", "test-custom.local")
+    );
+    expect(rewritePath(res)).toBe("/app-serve");
+    expect(updateSession).not.toHaveBeenCalled();
   });
 });
 
@@ -81,8 +129,22 @@ describe("middleware — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
     const res = await middleware(
       requestFor("http://meinprojekt.pgsm.site/api/evil", "meinprojekt.pgsm.site")
     );
-    expect(new URL(res.headers.get("x-middleware-rewrite") as string).pathname).toBe(
-      "/app-serve"
+    expect(rewritePath(res)).toBe("/app-serve");
+  });
+
+  it("Custom-Host + /api/e -> DURCHGELASSEN (Passthrough faellt jetzt AUCH fuer Custom-Domains an)", async () => {
+    const res = await middleware(
+      requestFor("http://test-custom.local/api/e", "test-custom.local")
     );
+    expect(res.headers.get("x-middleware-rewrite")).toBeNull();
+    expect(updateSession).not.toHaveBeenCalled();
+  });
+
+  it("LEAK-GEGENPROBE: Custom-Host + ANDERE /api-Route -> KEIN Passthrough, Rewrite (kein App-API-Leak)", async () => {
+    const res = await middleware(
+      requestFor("http://test-custom.local/api/projects", "test-custom.local")
+    );
+    expect(rewritePath(res)).toBe("/app-serve");
+    expect(updateSession).not.toHaveBeenCalled();
   });
 });

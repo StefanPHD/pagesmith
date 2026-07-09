@@ -2,10 +2,17 @@ import { describe, expect, it } from "vitest";
 import {
   buildLiveUrl,
   extractLabel,
+  isAppHost,
   isServingHost,
   randomLabelSuffix,
+  resolveEffectiveHost,
   slugForLabel,
 } from "./host";
+
+// Kleiner Headers-Builder fuer resolveEffectiveHost-Tests.
+function headers(init: Record<string, string>): Headers {
+  return new Headers(init);
+}
 
 describe("extractLabel / isServingHost", () => {
   it("PARITÄT: pgsm.site (Prod) und lvh.me:3000 (lokal) liefern DASSELBE Label", () => {
@@ -43,6 +50,82 @@ describe("extractLabel / isServingHost", () => {
   it("gültiges Label -> isServingHost true", () => {
     expect(isServingHost("shop-2.pgsm.site")).toBe(true);
     expect(extractLabel("shop-2.pgsm.site")).toBe("shop-2");
+  });
+
+  // Praezisierung 1 (7c-1): der Dispatch (label ? byLabel : byCustomHost) ist NUR
+  // korrekt, weil extractLabel suffix-bewusst ist -> Custom-Host = falsy Label.
+  it("Custom-Host -> falsy Label (Dispatch-Voraussetzung), pgsm/lvh -> Label", () => {
+    expect(extractLabel("test-custom.local")).toBeNull();
+    expect(extractLabel("landing.kunde.de")).toBeNull();
+    expect(extractLabel("foo.pgsm.site")).toBe("foo");
+    expect(extractLabel("foo.lvh.me")).toBe("foo");
+  });
+});
+
+describe("resolveEffectiveHost (Phase 7c-1)", () => {
+  it("x-forwarded-host wird BEVORZUGT vor host", () => {
+    expect(
+      resolveEffectiveHost(
+        headers({ "x-forwarded-host": "test-custom.local", host: "localhost:3000" })
+      )
+    ).toBe("test-custom.local");
+  });
+
+  it("ohne x-forwarded-host -> host-Fallback", () => {
+    expect(resolveEffectiveHost(headers({ host: "meinprojekt.pgsm.site" }))).toBe(
+      "meinprojekt.pgsm.site"
+    );
+  });
+
+  it("strippt Port + lowercased", () => {
+    expect(resolveEffectiveHost(headers({ host: "XYZ.LVH.me:3000" }))).toBe(
+      "xyz.lvh.me"
+    );
+    expect(resolveEffectiveHost(headers({ host: "localhost:3000" }))).toBe(
+      "localhost"
+    );
+  });
+
+  it("x-forwarded-host als Komma-Liste -> erstes Segment (getrimmt)", () => {
+    expect(
+      resolveEffectiveHost(
+        headers({ "x-forwarded-host": "test-custom.local, evil-attacker.example" })
+      )
+    ).toBe("test-custom.local");
+  });
+
+  it("ungueltige Shape -> null ('/', '..', Leerzeichen, leer)", () => {
+    expect(resolveEffectiveHost(headers({ host: "foo/bar" }))).toBeNull();
+    expect(resolveEffectiveHost(headers({ host: "foo..bar" }))).toBeNull();
+    expect(resolveEffectiveHost(headers({ host: "foo bar" }))).toBeNull();
+    expect(resolveEffectiveHost(headers({ host: ".foo" }))).toBeNull();
+    expect(resolveEffectiveHost(headers({ host: "" }))).toBeNull();
+    expect(resolveEffectiveHost(headers({}))).toBeNull();
+  });
+
+  it("gueltiger Custom-Host bleibt erhalten", () => {
+    expect(resolveEffectiveHost(headers({ host: "test-custom.local" }))).toBe(
+      "test-custom.local"
+    );
+  });
+});
+
+describe("isAppHost (Phase 7c-1)", () => {
+  it("App-Hosts -> true (inkl. .vercel.app-Preview, Allowlist-Vollstaendigkeit)", () => {
+    expect(isAppHost("pagesmith.app")).toBe(true);
+    expect(isAppHost("www.pagesmith.app")).toBe(true);
+    expect(isAppHost("pagesmith-git-main.vercel.app")).toBe(true);
+    expect(isAppHost("localhost")).toBe(true);
+    expect(isAppHost("127.0.0.1")).toBe(true);
+  });
+
+  it("Nicht-App -> false (Serving-Zweig)", () => {
+    expect(isAppHost("meinprojekt.pgsm.site")).toBe(false);
+    expect(isAppHost("meinprojekt.lvh.me")).toBe(false);
+    expect(isAppHost("test-custom.local")).toBe(false);
+    expect(isAppHost("pgsm.site")).toBe(false); // bare -> nach Inversion Nicht-App
+    // Spoof-Schutz: fremde Domain, die nur mit "vercel.app" endet, aber nicht mit ".vercel.app".
+    expect(isAppHost("notvercel.app")).toBe(false);
   });
 });
 

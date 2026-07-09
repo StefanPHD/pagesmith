@@ -52,3 +52,42 @@ export async function getPublishedHtmlByLabel(
   const html = published?.html;
   return html && html.trim() ? html : null;
 }
+
+/**
+ * Wie getPublishedHtmlByLabel, aber fuer eine CUSTOM-DOMAIN (Phase 7c-1): loest den
+ * EXAKTEN Custom-Host server-seitig zum ausgelieferten HTML auf. Selber Zwei-Schritt
+ * (custom_host -> project_id -> published_content) und dieselbe Projektions-Disziplin
+ * (NUR project_id + published_content, NIE Draft/Token/Owner) — nur der Match-Schluessel
+ * ist custom_host statt label. Gibt null zurueck (KEIN Throw) bei leerem Host, keinem
+ * domains-Eintrag, fehlendem published_content oder Snapshot ohne html.
+ */
+export async function getPublishedHtmlByCustomHost(
+  customHost: string
+): Promise<string | null> {
+  const key = customHost.trim();
+  if (!key) return null;
+
+  const admin = createAdminClient();
+
+  // Schritt 1: custom_host -> project_id (nur diese eine Spalte).
+  const { data: domain, error: domainError } = await admin
+    .from("domains")
+    .select("project_id")
+    .eq("custom_host", key)
+    .maybeSingle();
+
+  if (domainError || !domain) return null;
+
+  // Schritt 2: project_id -> published_content (nur diese eine Spalte; kein Draft).
+  const { data: project, error: projectError } = await admin
+    .from("projects")
+    .select("published_content")
+    .eq("id", domain.project_id)
+    .maybeSingle();
+
+  if (projectError || !project) return null;
+
+  const published = project.published_content as PublishedContent;
+  const html = published?.html;
+  return html && html.trim() ? html : null;
+}

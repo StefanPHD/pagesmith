@@ -6,8 +6,11 @@
 // Node-Runtime: braucht den service_role-Admin-Client (im Resolver), der server-only
 // ist. Kein DOM noetig — das funktionale HTML wurde beim Publish CLIENT-seitig erzeugt
 // und liegt fertig in published_content; hier wird es nur ausgeliefert.
-import { getPublishedHtmlByLabel } from "@/lib/hosting/resolve";
-import { extractLabel } from "@/lib/hosting/host";
+import {
+  getPublishedHtmlByLabel,
+  getPublishedHtmlByCustomHost,
+} from "@/lib/hosting/resolve";
+import { extractLabel, resolveEffectiveHost } from "@/lib/hosting/host";
 
 export const runtime = "nodejs";
 // Immer frisch aus published_content (Scheibe 7a bewusst OHNE Cache; Cache +
@@ -30,15 +33,21 @@ function notFound(): Response {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const host = request.headers.get("host") ?? "";
+  // DIESELBE Host-Quelle wie die Middleware-Verzweigung (kein Split-Brain).
+  const host = resolveEffectiveHost(request.headers);
+
+  // GUARD: ungueltiger/leerer Host -> 404 ohne jeden Lookup. Kein Bypass.
+  if (!host) return notFound();
+
+  // DISPATCH: ein pgsm/lvh-Serving-Host traegt ein Label (extractLabel ist
+  // suffix-bewusst) -> Label-Lookup; jeder andere gueltige Host ist eine
+  // Custom-Domain -> exakter custom_host-Lookup. Sauberer Zweig-Split ohne
+  // Ueberlappung (extractLabel liefert fuer Nicht-pgsm/lvh-Hosts null).
   const label = extractLabel(host);
-
-  // GUARD: /app-serve ist NUR fuer Serving-Hosts. Direkter App-Host-Zugriff (oder ein
-  // ungueltiges/verschachteltes Label) -> 404, ohne DB-Lookup. Kein Bypass.
-  if (!label) return notFound();
-
-  const html = await getPublishedHtmlByLabel(label);
-  if (!html) return notFound(); // unbekanntes Label ODER nie publiziert
+  const html = label
+    ? await getPublishedHtmlByLabel(label)
+    : await getPublishedHtmlByCustomHost(host);
+  if (!html) return notFound(); // unbekannter Host/Label ODER nie publiziert
 
   return new Response(html, {
     status: 200,

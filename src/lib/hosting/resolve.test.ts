@@ -7,7 +7,10 @@ vi.mock("server-only", () => ({}));
 const { createAdminClient } = vi.hoisted(() => ({ createAdminClient: vi.fn() }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
-import { getPublishedHtmlByLabel } from "./resolve";
+import {
+  getPublishedHtmlByLabel,
+  getPublishedHtmlByCustomHost,
+} from "./resolve";
 
 // Chainbarer Mock. Zeichnet die abgefragten Spalten pro Tabelle auf, damit Tests
 // beweisen koennen: es werden NUR project_id + published_content selektiert.
@@ -93,5 +96,57 @@ describe("getPublishedHtmlByLabel (Scheibe 7a)", () => {
       projects: { data: null, error: null },
     });
     await expect(getPublishedHtmlByLabel("x")).resolves.toBeNull();
+  });
+});
+
+describe("getPublishedHtmlByCustomHost (Scheibe 7c-1)", () => {
+  it("bekannter custom_host -> published_content.html", async () => {
+    mockAdmin({
+      domains: { data: { project_id: "proj-1" }, error: null },
+      projects: {
+        data: { published_content: { html: "<p>custom</p>" } },
+        error: null,
+      },
+    });
+    expect(await getPublishedHtmlByCustomHost("landing.kunde.de")).toBe(
+      "<p>custom</p>"
+    );
+  });
+
+  it("selektiert NUR project_id + published_content (kein Draft/Owner-Leak)", async () => {
+    const { selectCols } = mockAdmin({
+      domains: { data: { project_id: "proj-1" }, error: null },
+      projects: { data: { published_content: { html: "x" } }, error: null },
+    });
+    await getPublishedHtmlByCustomHost("landing.kunde.de");
+    expect(selectCols).toEqual([
+      { table: "domains", cols: "project_id" },
+      { table: "projects", cols: "published_content" },
+    ]);
+    const joined = selectCols.map((s) => s.cols).join(",");
+    expect(joined).not.toMatch(/html,|mappings|settings|meta_capi_token/);
+  });
+
+  it("leerer Host -> null OHNE DB-Aufruf", async () => {
+    const { from } = mockAdmin({});
+    expect(await getPublishedHtmlByCustomHost("  ")).toBeNull();
+    expect(from).not.toHaveBeenCalled();
+    expect(createAdminClient).not.toHaveBeenCalled();
+  });
+
+  it("unbekannter custom_host (kein domains-Eintrag) -> null", async () => {
+    mockAdmin({
+      domains: { data: null, error: null },
+      projects: { data: { published_content: { html: "x" } }, error: null },
+    });
+    expect(await getPublishedHtmlByCustomHost("missing.kunde.de")).toBeNull();
+  });
+
+  it("DB-Fehler -> null (kein Throw)", async () => {
+    mockAdmin({
+      domains: { data: null, error: { message: "boom" } },
+      projects: { data: null, error: null },
+    });
+    await expect(getPublishedHtmlByCustomHost("x.de")).resolves.toBeNull();
   });
 });

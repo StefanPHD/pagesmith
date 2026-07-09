@@ -63,11 +63,16 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
           ABGESCHLOSSEN (live). /api/e ist der neutrale Trichter, in den sich Phase 8
           additiv einhängt. KEIN Cheerio (Revision, siehe 7b-Block unten).
       [~] Scheibe 7c — Custom-Domains + Auto-SSL via Vercel Domains API. Vier Sub-Scheiben:
-          [~] 7c-1 Serving-Kern (Middleware-Inversion "ist APP-Host?" + custom_host-
-              Modell + Custom-Host-Serving + /api/e-Passthrough am Serving-Zweig) —
-              NÄCHSTER SCHRITT / in Arbeit.
+          [x] 7c-1 Serving-Kern — LOKAL VOLLSTÄNDIG (Middleware-Inversion "ist
+              APP-Host?" + custom_host-Modell + Custom-Host-Serving + /api/e-
+              Passthrough am Serving-Zweig; byLabel + byCustomHost servieren
+              published_content, App unberührt, Port-Strip + sauberer 404
+              verifiziert). OFFEN: x-forwarded-host-Trust-Boundary in Prod noch
+              NICHT bewiesen (kein Vercel-Konto/Preview vorhanden) -> als hartes
+              GATE an den Anfang von 7c-2 verschoben.
           [ ] 7c-2 Vercel-Anbindung (Add-Domain-Mutation, server-only Vercel-Token,
-              DNS-Anweisungen, Per-User-Hard-Cap) — geplant.
+              DNS-Anweisungen, Per-User-Hard-Cap) — geplant. ERSTER SCHRITT: das
+              verschobene XFH-Trust-Boundary-GATE (siehe 7c-1).
           [ ] 7c-3 Verify/Status-Polling (Verification vs Configuration) + UX — geplant.
           [ ] 7c-4 Phase-6-Dedup-Sichtbarkeit auf echter verknüpfter Domain (Kirsche) —
               geplant.
@@ -1754,6 +1759,48 @@ Schnittführung die späteren Scheiben nicht versperrt.
       Besitznachweis) + Ownership-Gate auf der Mutation + der UNIQUE-Constraint.
   (d) x-forwarded-host-Trust-Boundary (siehe EFFEKTIVER HOST) per Preview-Instrument
       bestätigen.
+
+### Scheibe 7c-1 — Serving-Kern (LOKAL ABGESCHLOSSEN, Prod-GATE offen)
+Status: lokal vollständig, live getestet auf beiden Serving-Pfaden. Commits
+"feat(hosting): 7c-1 middleware-inversion + custom_host serving" + "chore(hosting):
+remove 7c-1 diagnostics and gate probe". Pipeline grün (269 Tests, tsc/lint/build).
+Die Serving-Kette (Branch -> Rewrite -> Serve-Route -> Resolver) ist end-to-end lokal
+grün für BEIDE Pfade (byLabel UND byCustomHost servieren published_content), die App
+auf localhost bleibt unberührt.
+- Umsetzung: additive Migration 0007 (domains.custom_host nullbar + partial-unique
+  WHERE custom_host IS NOT NULL, Cross-User-Hijack-Riegel) live. resolveEffectiveHost
+  (x-forwarded-host bevorzugt, host-Fallback, Port-Strip, strikte Shape-Validierung)
+  + isAppHost (geschlossene Allowlist inkl. .vercel.app) als reine Funktionen
+  unit-getestet. Middleware-Inversion DB-frei; host===null -> Serving-Zweig.
+  app-serve-Dispatch (label ? byLabel : byCustomHost) über DIESELBE Host-Quelle wie
+  die Middleware (kein Split-Brain). resolve.ts um getPublishedHtmlByCustomHost
+  (Spiegel, gleiche Nur-project_id+published_content-Projektion) ergänzt.
+- Diskriminierende Wächter grün: pgsm-Label serviert weiter (der Pfad, den die
+  Inversion anfasst); Custom-Host -> Serving-Zweig/kein Auth; Passthrough exakt
+  (/api/e|/api/capi, jetzt AUCH für Custom-Domains); App-API-Leak-Gegenprobe
+  (Custom-Host + andere /api-Route -> KEIN Passthrough); bare pgsm.site kippt bewusst
+  in den Serving-Zweig (Inversions-Folge, ein bestehender Test angepasst).
+- LEKTION (Instrument schlägt Vermutung, in EINEM Bogen DOPPELT bestätigt): Beide
+  404 der lokalen Sim waren TESTDATEN, kein Code-Bug. (a) lvh-Pfad: Tippfehler im
+  Label (ef8dh9 statt publiziert ef6dh9). (b) custom-Pfad: es existierte gar keine
+  domains-Zeile mit dem custom_host (Insert nie angekommen) -> der byCustomHost-Miss
+  war KORREKTES Verhalten. Der [SERVE]-dispatch-Log bewies den korrekten Resolver +
+  Port-Strip, BEVOR Code verdächtigt wurde. Sowohl CCs XFH-Verdacht als auch Claudes
+  "lvh-Pfad regrediert"-Prämisse wurden vom Instrument WIDERLEGT. Regel bestätigt:
+  billiges diskriminierendes Instrument (gezielter Log) vor jeder Code-Hypothese.
+- OFFENES GATE (hart, Vorbedingung für 7c-2): Die host-basierte Auth-Inversion ruht
+  auf der Annahme, dass Vercels Edge einen client-gefälschten x-forwarded-host
+  überschreibt. Lokal NICHT prüfbar — es gibt keinen Edge-Proxy davor; ein lokaler
+  curl mit gefälschtem Header zeigt den Fake erwartungsgemäß durchschlagen. Das
+  beweist NUR den Parser, NICHT die Boundary. Deshalb NICHT als bewiesen verbucht.
+  ERSTER SCHRITT in 7c-2 (sobald Vercel-Konto + erster Prod-/Preview-Deploy existiert):
+  das Wegwerf-Edge-Instrument /api/_hostprobe erneut setzen (ruft die ECHTE
+  resolveEffectiveHost/isAppHost, surfaced rawXForwardedHost/rawHost/effectiveHost/
+  isApp, keine Secrets) und die curl-Matrix gegen die ECHTE Preview-URL fahren: #1
+  normal, #2 gefälschter x-forwarded-host. GO nur, wenn die Edge den Fake verwirft
+  (effectiveHost == echter Host). NO-GO -> die resolveEffectiveHost-Präzedenz (an
+  EINER Stelle isoliert) revidieren, BEVOR die Vercel-Domains-API gebaut wird. Kein
+  Weiterbau auf ungeklärter Boundary. Instrument nach dem Urteil wieder entfernen.
 
 ## Phase 8 — Analytics & ROI-Ökosystem (Vision, NACH Phase 7)
 Owner-Direktive: Pagesmith wird hybrides Server-Side-Marketing-/Analytics-Ökosystem.

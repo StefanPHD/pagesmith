@@ -3,23 +3,6 @@ import { updateSession } from "@/lib/supabase/middleware";
 import { resolveEffectiveHost, isAppHost } from "@/lib/hosting/host";
 
 export async function middleware(request: NextRequest) {
-  // ============================================================================
-  // TEMP 7c-1-GATE — Wegwerf-Instrument. MUSS vor dem 7c-1-Abschluss-Commit RAUS
-  // (Cleanup-Commit; grep -r "_hostprobe" src == 0). NUR fuer den Vercel-Preview.
-  // Laeuft in der EDGE-Runtime — genau dort, wo die sicherheitskritische Branch-
-  // Entscheidung faellt — und surfaced die Sicht der ECHTEN resolveEffectiveHost,
-  // um die x-forwarded-host-Trust-Boundary zu beweisen. Liefert NIE Cookies/Secrets.
-  if (request.nextUrl.pathname === "/api/_hostprobe") {
-    const probe = resolveEffectiveHost(request.headers);
-    return NextResponse.json({
-      rawXForwardedHost: request.headers.get("x-forwarded-host"),
-      rawHost: request.headers.get("host"),
-      effectiveHost: probe,
-      isApp: probe ? isAppHost(probe) : null,
-    });
-  }
-  // ============================================================================
-
   // HOST-VERZWEIGUNG ZUERST — INVERSION (Phase 7c-1): nicht mehr "ist Serving-Host?",
   // sondern "ist APP-Host?" (geschlossene Allowlist). Dadurch teilen *.pgsm.site UND
   // beliebige Custom-Domains DENSELBEN Serving-Zweig, ohne pro Domain eine Regel.

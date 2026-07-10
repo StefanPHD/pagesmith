@@ -63,16 +63,16 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
           ABGESCHLOSSEN (live). /api/e ist der neutrale Trichter, in den sich Phase 8
           additiv einhängt. KEIN Cheerio (Revision, siehe 7b-Block unten).
       [~] Scheibe 7c — Custom-Domains + Auto-SSL via Vercel Domains API. Vier Sub-Scheiben:
-          [x] 7c-1 Serving-Kern — LOKAL VOLLSTÄNDIG (Middleware-Inversion "ist
+          [x] 7c-1 Serving-Kern — VOLLSTÄNDIG (Middleware-Inversion "ist
               APP-Host?" + custom_host-Modell + Custom-Host-Serving + /api/e-
               Passthrough am Serving-Zweig; byLabel + byCustomHost servieren
               published_content, App unberührt, Port-Strip + sauberer 404
-              verifiziert). OFFEN: x-forwarded-host-Trust-Boundary in Prod noch
-              NICHT bewiesen (kein Vercel-Konto/Preview vorhanden) -> als hartes
-              GATE an den Anfang von 7c-2 verschoben.
+              verifiziert). XFH-Trust-Boundary in Prod BEWIESEN (Vercel-Preview,
+              Gate GO): Vercels Edge überschreibt client-gefälschten
+              x-forwarded-host mit dem echten Host.
           [ ] 7c-2 Vercel-Anbindung (Add-Domain-Mutation, server-only Vercel-Token,
               DNS-Anweisungen, Per-User-Hard-Cap) — geplant. ERSTER SCHRITT: das
-              verschobene XFH-Trust-Boundary-GATE (siehe 7c-1).
+              Vercel-Domains-API-Konzept (XFH-Gate erledigt, siehe 7c-1).
           [ ] 7c-3 Verify/Status-Polling (Verification vs Configuration) + UX — geplant.
           [ ] 7c-4 Phase-6-Dedup-Sichtbarkeit auf echter verknüpfter Domain (Kirsche) —
               geplant.
@@ -1801,6 +1801,31 @@ auf localhost bleibt unberührt.
   (effectiveHost == echter Host). NO-GO -> die resolveEffectiveHost-Präzedenz (an
   EINER Stelle isoliert) revidieren, BEVOR die Vercel-Domains-API gebaut wird. Kein
   Weiterbau auf ungeklärter Boundary. Instrument nach dem Urteil wieder entfernen.
+
+### 7c-2-GATE — Ergebnis: XFH-Trust-Boundary in Prod BEWIESEN (GO)
+Status: das OFFENE GATE oben ist ERLEDIGT. Der Wegwerf-Probe /api/_hostprobe wurde auf
+einem Vercel-Preview (voller 7c-1-Code) gesetzt, die curl-Matrix gefahren, das Urteil
+gefällt, der Probe wieder entfernt (Commit "chore(hosting): remove 7c-2 gate host-probe";
+grep 7c-2-GATE/_hostprobe = 0, Pipeline grün, alle 269 Tests/7c-1-Tests weiter grün).
+- BEFUND: Vercels Edge ÜBERSCHREIBT einen client-gelieferten x-forwarded-host mit dem
+  echten Host. Die Vercel-Doku SCHWIEG dazu (nur x-forwarded-FOR ist explizit
+  spoofing-geschützt dokumentiert) -> GETESTET, nicht angenommen. Matrix-Ergebnis: #2
+  (gefälscht x-forwarded-host: evil-attacker.example) UND #3 (gefälscht: pagesmith.app)
+  wurden BEIDE zum echten Preview-Host überschrieben; effectiveHost war STETS der echte
+  Host. Auch der RFC-7239-`forwarded`-Header ist Vercel-kontrolliert. -> Konsequenz:
+  resolveEffectiveHost (Präzedenz x-forwarded-host ZUERST) ist in Prod sicher; die
+  host-basierte Auth-Inversion steht auf bewiesenem Grund, kein Host-Spoof-Auth-Bypass.
+- host-FALLBACK: reine Local-Dev-Bequemlichkeit (Dev ohne Edge-Proxy). In Prod moot —
+  Vercel setzt x-forwarded-host IMMER, ein Angreifer kann den Fallback nicht erzwingen
+  (er müsste x-forwarded-host WEGlassen, aber die Edge setzt ihn ohnehin).
+- LEKTION (Instrument schlägt Vermutung, erneut bestätigt): die Doku-STILLE zu
+  x-forwarded-host hätte die Trust-Boundary als ungeprüfte Annahme im Fundament
+  hinterlassen. Kein Menge Code-Lesen hätte das aufgelöst — nur der Probe auf echter
+  Vercel-Edge machte aus der Annahme eine Tatsache (dieselbe Regel wie 2a/2b/7c-1).
+- OPS-STAND (Team-Gedächtnis): 7b + 7c-1 (+ der Gate-Cleanup) liegen auf Branch
+  gate/7c-2-xfh; main ist DAHINTER (kennt weder 7b noch 7c-1). Ein ÜBERLEGTES Release
+  nach main steht damit als eigene Entscheidung an — es ist KEIN Nebeneffekt des Gates
+  und wurde bewusst nicht mit-gemerged. Vor 7c-2-Bau bzw. Prod-Nutzung klären.
 
 ## Phase 8 — Analytics & ROI-Ökosystem (Vision, NACH Phase 7)
 Owner-Direktive: Pagesmith wird hybrides Server-Side-Marketing-/Analytics-Ökosystem.

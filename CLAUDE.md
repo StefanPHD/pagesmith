@@ -1947,6 +1947,66 @@ ausgelöst von einem langlebigen API-Key in der KI-Umgebung eines Dritten. Konse
 Merksatz: Die bestehende Server-Logik geht von einer Owner-Session aus; MCP hat keine.
 NICHT "direkt ansprechen" — eine neue Autorisierungsschicht DAVOR bauen.
 
+### Optionale Module, Post-7c-2 (UNVERBINDLICH — Richtungsgeber, KEINE committete Roadmap)
+Die folgenden zwei Sektionen sind UNVERBINDLICHE "Optionale Module, Post-7c-2" —
+Richtungsgeber, KEINE committete Roadmap, KEIN Statuswechsel, KEINE Scope-Erweiterung
+von 7c-2. Sie ändern an der laufenden Arbeit (7c-2a) NICHTS. Jedes Modul wird bei echter
+Umsetzung eine eigene beweisbare Slice mit eigenem Konzept.
+
+NAHT-HYGIENE-PRINZIP (das EINZIGE, das die laufende Arbeit überhaupt berührt):
+Die einzige berechtigte "Vorbereitung" ist Naht-Hygiene, KEIN Code-Vorbau. 7c-2 koppelt
+Domain-/Routing-Logik NICHT an Tracking-/Lead-Logik. Die Andock-Punkte für alle Module
+unten EXISTIEREN BEREITS: der neutrale /api/e-Trichter (Multi-Tracking dockt additiv an)
+und die projekt-scoped Settings (Pixel/Token; Auto-Tracking dockt an). "Nahtloses
+Andocken" ist Ergebnis sauberer Nähte + additiver Disziplin, NICHT von spekulativem
+Vorbau. KEINE Webhook-Interfaces/Schema-Erweiterungen ohne realen Konsumenten + Spec
+(Prinzip "Abstraktion erst bei echtem Bedarf").
+
+## Zukunfts-Roadmap: Owned Traffic Mastery (Post-7c-2, OPTIONALE MODULE)
+Unverbindliche Erweiterungsrichtung; jedes Modul wird bei echter Umsetzung eine eigene
+beweisbare Slice mit eigenem Konzept. Reihenfolge/Umfang offen.
+
+### 1. Lead-Enrichment & Conversion (Next-Gen Formulare)
+- KI-gestützte Multi-Step-Quizze; Zero-Party-Data-Erfassung.
+- EHRLICHE EINORDNUNG (wichtig): Pagesmith speichert HEUTE KEINE Lead-PII (feuert nur
+  Tracking-Events). Dieses Modul = PII PERSISTIEREN -> löst unmittelbar das Security-
+  Manifest aus (30-Tage-Retention, AVV, RLS für Lead-Daten). Eigenes Daten-/Compliance-
+  Universum, kein Feature-Anbau. Größte neue Fläche, NICHT "bald".
+
+### 2. Conversational & Mobile Channels
+- Click-to-Chat-Kits (WhatsApp-Opt-in-Doku), generische Webhooks für SMS/RCS.
+- EINORDNUNG: Click-to-Chat ist billig (Link/Kit). Wallet-Pässe (Apple/Google) sind ein
+  GROSSER Brocken (Pass-Signing, Zertifikate, eigenes Renewal), unklarer ROID fürs
+  Kernprodukt -> separat gewichten, nicht gleichrangig.
+
+### 3. Server-Side Data Hub (DSGVO-safe)
+- Multi-Tracking-Hub: Meta CAPI + GA4 + TikTok Events API server-side (kein Client-Bloat).
+- Edge-Puffer für Lead-Daten bei CRM-Ausfall.
+- EINORDNUNG: STÄRKSTER, natürlichster Fit -> exakt die Verallgemeinerung, für die der
+  neutrale /api/e-Trichter gebaut wurde ("mehr Ziele am selben Event", kein Bruch).
+  Verortung Phase 8.
+
+### 4. Native CRO-Optimierung
+- Smart Sections (Content nach Traffic-Quelle); Native AI-A/B.
+- EINORDNUNG: AI-A/B ist bereits Phase 9. Smart Sections = Serve-Zeit-Variantenwahl ->
+  dockt später ADDITIV an die Serve-Route (liefert heute published_content verbatim;
+  Variantenwahl ist additiver Schritt). JETZT einzubauen wäre premature.
+
+## Architektur-Vision: "Smart-Tracking & Automation" (Leitprinzip, Post-7c-2)
+Leitprinzip "Smarte Veredelung": technische Konfiguration automatisieren, wo möglich;
+Hybrid aus Autopilot (Vorschläge) + Experten-Modus (manuelle Kontrolle); manuelles
+JS-Snippet-Copy-Paste minimieren.
+- GENAUIGKEITS-KORREKTUR (wichtig, sonst Doppel-Bau-Gefahr): Die "automatische Erkennung
+  der Element-Funktion" ist KEIN Zukunftsfeature — die Detection (detect.ts, "Erkannte
+  Elemente") existiert seit Phase 2. Ebenso speichert die Mapping-Tabelle Element->Event
+  BEREITS. NEU ist allein die Auto-VORSCHLAGS-/Hybrid-Schicht obendrauf (Autopilot vs.
+  Experten-Modus). "Mapping-Intelligenz speichern" braucht daher voraussichtlich KEINE
+  neue Struktur — höchstens irgendwann eine ADDITIVE Spalte "auto-vorgeschlagen vs.
+  bestätigt". App-Logik auf existierendem Storage, KEIN Schema-Vorbau.
+- ENTWICKLUNGS-LEITSATZ: jedes künftige Feature prüft, ob der Intent schon bekannt ist
+  (automatisierbar) oder manuell konfiguriert werden muss — OHNE dafür jetzt Struktur auf
+  Vorrat zu bauen.
+
 ## Zukunftsrichtung: Funnel-Architektur (bewusst vertagt, NICHT jetzt bauen)
 Festgehaltene Richtung, kein Auftrag. Dient als Bauplan-Anker, damit heutige
 Entscheidungen sie nicht versperren. Wird NICHT im laufenden Schritt angefasst.

@@ -345,12 +345,18 @@ export async function publishProject(
     .eq("user_id", user.id);
   if (updateError) return { ok: false, error: updateError.message };
 
-  // Live-URL aus der Basis-Domain (Dev lvh.me:3000, Prod pgsm.site) + Label. Fehlt die
+  // Live-URL aus der Basis-Domain (env NEXT_PUBLIC_HOSTING_DOMAIN) + Label. Fehlt die
   // env, ist url "" -> der Client zeigt dann nur das Label.
-  const url = buildLiveUrl(
-    label,
-    process.env.NEXT_PUBLIC_HOSTING_DOMAIN?.trim() ?? ""
-  );
+  const domain = process.env.NEXT_PUBLIC_HOSTING_DOMAIN?.trim() ?? "";
+  const url = buildLiveUrl(label, domain);
+  // FAIL-LOUD, NUR in Prod: leere Serving-Domain -> publizierte Seite ohne Live-URL
+  // (Ops-Fehlkonfig). In Dev/Test ist eine leere Domain waehrend Iteration normal ->
+  // kein Warn. Analog zum NEXT_PUBLIC_APP_URL-Warn-Muster (siehe lib/tracking/meta.ts).
+  if (process.env.NODE_ENV === "production" && !domain) {
+    console.warn(
+      "[pagesmith] NEXT_PUBLIC_HOSTING_DOMAIN ist leer in Production — publizierte Projekte erhalten keine Live-URL."
+    );
+  }
   return { ok: true, url, label };
 }
 

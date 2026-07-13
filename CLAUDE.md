@@ -71,8 +71,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
               Gate GO): Vercels Edge überschreibt client-gefälschten
               x-forwarded-host mit dem echten Host.
           [~] 7c-2 Custom-Domains via Vercel-Domains-API:
-              [~] 7c-2a pgsm.site-Wildcard-Infra (Nameserver-Delegation an Vercel; entsperrt
-                  Prod-Serving-Verifikation + Phase-6-Dedup-Kirsche) — NÄCHSTER SCHRITT.
+              [x] 7c-2a Serving-Domain publayer.net live: Nameserver-Delegation an Vercel,
+                  Wildcard-Cert aktiv, NEXT_PUBLIC_HOSTING_DOMAIN env-gekoppelt (buildLiveUrl +
+                  servingSuffixes, eine Quelle der Wahrheit), Prod-Serving-Zweig end-to-end
+                  LIVE VERIFIZIERT (https://<label>.publayer.net servt published_content).
               [ ] 7c-2b Custom-Domain-API-Mutation (server-only Vercel-Token, Add-Domain als
                   reine Fn mit Ownership-Gate + Per-User-Cap, dynamische DNS-Anweisungen,
                   Mutations-Audit-Log) — geplant. VORHER: Kill-Switch (Manifest Tier 0).
@@ -151,6 +153,33 @@ Entscheidungen und der XFH-Gate-Vollbeweis: docs/claude-history/phase-7-hosting.
   NEXT_PUBLIC_APP_URL + Doku). OFFENER PUNKT — nicht vergessen.
 - SHARED-REPUTATION wird mit 7c-2a live -> Kill-Switch (Manifest Tier 0) vor 7c-2b
   einplanen.
+- 7c-2a ABGESCHLOSSEN — publayer.net LIVE, Prod-Serving bewiesen:
+- SERVING-DOMAIN final: publayer.net (Apex + Wildcard), gekauft UND live. Getrennt von
+  der weiterhin offenen Brand-/App-Domain (Platzhalter pagesmith.app in isAppHost bleibt
+  vorerst bestehen -> offener Punkt für später).
+- BEWIESEN in Prod: der komplette Serving-Zweig (Middleware-Inversion -> Rewrite ->
+  Serve-Route -> servingSuffixes -> published_content) läuft über die echte HTTPS-Domain,
+  nicht nur lokal simuliert. Schließt die letzte aus 7c-1 offen gebliebene
+  Verifikationslücke (Serving war in Prod vorher nicht erreichbar, da keine echte
+  Serving-Domain existierte).
+- STOLPERSTEIN (Lektion, bleibt stehen): NEXT_PUBLIC_-Variablen sind BUILD-ZEIT-inlined.
+  Env in Vercel setzen OHNE Redeploy ändert das laufende Bundle NICHT -> nach jeder
+  Änderung an NEXT_PUBLIC_HOSTING_DOMAIN ist ein REDEPLOY PFLICHT.
+- CODE-FIX unterwegs entdeckt & behoben: SERVING_SUFFIXES war hardcoded
+  (.pgsm.site/.lvh.me), NICHT env-gekoppelt -> hätte auf publayer.net STILL 404 erzeugt
+  (extractLabel=null -> falscher Dispatch auf byCustomHost). Auf EINE Quelle vereinheitlicht
+  (servingSuffixes() aus NEXT_PUBLIC_HOSTING_DOMAIN), .lvh.me bleibt hart codierter
+  env-unabhängiger Dev-Fallback; Härtung gegen Tippfehler (führende Punkte/trailing
+  slash/Whitespace); Dispatch-Guard-Test gegen Rückfall.
+- NEBENFUND (separater offener Punkt, KEIN 7c-2a-Blocker): beim Live-Test feuerte der
+  CLIENT-seitige fbq-Pixel-Call für Purchase-Events NICHT (kein Netzwerk-Request im
+  Browser), während der SERVER-CAPI-Pfad einwandfrei läuft (Meta Events Manager zeigt
+  "Kauf"-Events, Quelle "Server", korrekt verarbeitet, mehrfach bestätigt). Dedup
+  (Browser+Server, gleiche eventID) daher NOCH NICHT bewiesen -> aktuell nichts zu
+  deduplizieren, da nur eine Quelle ankommt. Eigene kleine Untersuchung, nicht Teil von
+  7c-2a.
+- NÄCHSTER SCHRITT: Kill-Switch (Security-Manifest Tier 0) VOR 7c-2b — ab jetzt servieren
+  echte Domains öffentlich, das Shared-Reputation-Risiko ist REAL (nicht mehr theoretisch).
 
 ## Security Manifest & Launch Blocker (Tier-Übersicht)
 EINE Wahrheitsquelle für Launch-Blocker; sequenziert nach dem Moment, in dem das Risiko

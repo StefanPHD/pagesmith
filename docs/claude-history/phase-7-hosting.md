@@ -9,7 +9,7 @@ Owner-Entscheidungen (endgültig):
   Schicht, sobald Serving bombenfest.
 - STRIKTE eTLD+1-ISOLATION (Sandbox-Prinzip auf die Serving-Schicht übertragen):
   gehostete (fremde/KI-generierte) Seiten laufen auf SEPARATER Registrable Domain
-  (pgsm.site) — App bleibt pagesmith.app. Bösartiges User-HTML kann die App-Origin
+  (publayer.net) — App bleibt pagesmith.app. Bösartiges User-HTML kann die App-Origin
   strukturell nie erreichen (kein same-site zu Auth/Cookies).
 - SSL/Custom-Domains an Vercel Domains API delegieren (kein eigenes ACME) — später (7b+).
 - Serving: dynamisch (generateFunctional serve-Modus) + Edge-Cache SPÄTER; in 7a noch
@@ -26,7 +26,7 @@ Owner-Entscheidungen (endgültig):
   same-origin umschreiben). Trennung: Editor=DOMParser (Client), Serving=Cheerio (Server).
 
 BEWUSSTE GRENZEN (geloggt, nicht jetzt gelöst): Kunde-gegen-Kunde same-site auf
-*.pgsm.site (Wildcard teilt Registrable Domain) -> auf pgsm.site NIEMALS app-relevante
+*.publayer.net (Wildcard teilt Registrable Domain) -> auf publayer.net NIEMALS app-relevante
 Cookies/Auth-State; gehostete Seiten berühren keinen Plattform-Auth. Phishing/Malware-
 Takedown (Seite schnell abschalten), Content-Moderation, Kosten-Deckelung unter Ad-Last,
 Serving-Rate-Limiting -> spätere Härtung.
@@ -56,10 +56,10 @@ URLs, keine totale SELECT-Sperre nötig) -> Publish-Write über authenticated-Cl
 RLS (kein service_role beim Schreiben; die 2a-RETURNING-Falle tritt nicht auf, weil der
 Owner legitimes SELECT hat), service_role NUR beim anonymen Serving-Read (nur project_id/
 published_content, kein Draft/Token/Owner-Leak). Label strikt validiert ([a-z0-9-],
-Maxlänge) vor dem Lookup (Injection/Sub-Sub-Schutz). eTLD+1-Isolation: pgsm.site setzt
+Maxlänge) vor dem Lookup (Injection/Sub-Sub-Schutz). eTLD+1-Isolation: publayer.net setzt
 keine App-Cookies.
 
-Ziel: ein gespeichertes+publiziertes Projekt ist unter einer *.pgsm.site-URL als echte
+Ziel: ein gespeichertes+publiziertes Projekt ist unter einer *.publayer.net-URL als echte
 funktionale Seite erreichbar (Wiring/Redirect feuern). KEINE Custom-Domains, KEIN
 Cache, KEIN same-origin-CAPI-Rewrite (das ist 7b), KEINE Publish-UI-Politur.
 
@@ -88,10 +88,10 @@ Architektur (umgesetzt):
   (kein service_role beim Schreiben, nur beim Serving-Read) -> mehr DB-Defense.
   (b) projects.published_content jsonb default null.
 - src/lib/hosting/host.ts (rein, DB-frei, unit-getestet): extractLabel(host) +
-  isServingHost(host). Serving-Suffixe .pgsm.site (Prod) UND .lvh.me (lokal) -> LABEL-Match
-  fork-frei (meinprojekt.pgsm.site == meinprojekt.lvh.me:3000). STRIKTE Label-Validierung
+  isServingHost(host). Serving-Suffixe .publayer.net (Prod) UND .lvh.me (lokal) -> LABEL-Match
+  fork-frei (meinprojekt.publayer.net == meinprojekt.lvh.me:3000). STRIKTE Label-Validierung
   ^[a-z0-9-]{1,63}$ VOR jedem Lookup: Punkt/Sonderzeichen/verschachtelte Sub-Subdomain
-  (foo.bar.pgsm.site) -> null -> 404, kein Lookup (Label-Injection-Schutz).
+  (foo.bar.publayer.net) -> null -> 404, kein Lookup (Label-Injection-Schutz).
 - src/middleware.ts (Entry, KEIN middleware->proxy-Rename): ZUERST auf Host verzweigen.
   isServingHost -> NextResponse.rewrite auf /app-serve -> RETURN (Auth-Gate übersprungen,
   KEINE App-Cookies, KEIN DB-Call). App-Host -> updateSession() BYTE-IDENTISCH wie bisher.
@@ -115,7 +115,7 @@ Architektur (umgesetzt):
   wiederverwendet -> Re-Publish erzeugt KEINE zweite domains-Row und KEINEN neuen Label
   (Live-URL bleibt stabil). Label in settings.hosting gespiegelt (öffentlich, client-lesbar,
   wie trackingKey in settings.capi) -> Owner sieht die Live-URL ohne domains-SELECT.
-  Live-URL aus NEXT_PUBLIC_HOSTING_DOMAIN (Dev lvh.me:3000, Prod pgsm.site) + Label gebaut.
+  Live-URL aus NEXT_PUBLIC_HOSTING_DOMAIN (Dev lvh.me:3000, Prod publayer.net) + Label gebaut.
 - /app-serve ist NUR via interne Rewrite erreichbar/sinnvoll: kein Bypass zu App-Daten
   (nur published_content by label; Guard + owner-freie Projektion). Direkt-Zugriff
   App-Host -> 404/neutral.
@@ -128,9 +128,9 @@ Diskriminierende Tests (Pflicht):
   -> 404; Projekt ohne published_content -> 404.
 - Serviert NIE draft (html/mappings): Test mit abweichendem draft vs published ->
   Output == published.
-- Middleware: pgsm.site-Host -> rewrite auf /app-serve, KEIN /login-Redirect; App-Host
+- Middleware: publayer.net-Host -> rewrite auf /app-serve, KEIN /login-Redirect; App-Host
   anonym auf geschützten Pfad -> weiter /login (Auth-Gate intakt); App-Host setzt Cookies,
-  pgsm.site nicht.
+  publayer.net nicht.
 - Publish-Action: Ownership-Fail (fremde project_id) -> error, kein published_content/
   domains-Write; Happy-Path -> Snapshot + domains-Row + URL.
 - Security-Header auf Serve-Response vorhanden.
@@ -178,7 +178,7 @@ Consent-Gate, text/plain, geteilte eventID: unverändert (nur der URL-Wert im Be
 
 ## Phase 7c — Custom-Domains + Auto-SSL (Konzept & Entscheidungen)
 Der härteste Brocken von Phase 7: Pagesmith serviert gehostete Seiten nicht mehr nur
-unter *.pgsm.site, sondern unter der EIGENEN Domain des Marketers (Zielnutzer kauft
+unter *.publayer.net, sondern unter der EIGENEN Domain des Marketers (Zielnutzer kauft
 wöchentlich neue Domains für Rapid Testing). Konzept + Entscheidungen unten; Bau in
 den vier 7c-Scheiben (siehe Roadmap). Jede Entscheidung MIT Begründung, damit heutige
 Schnittführung die späteren Scheiben nicht versperrt.
@@ -188,9 +188,9 @@ Schnittführung die späteren Scheiben nicht versperrt.
   Projekt auf. SSL an die Plattform delegiert (kein eigenes ACME) — gleiche
   Delegations-Entscheidung wie in der Phase-7-Owner-Direktive, jetzt umgesetzt.
 - MIDDLEWARE-INVERSION (Kern-Entscheidung): Die Host-Verzweigung kippt von "ist
-  Serving-Host?" (7a: Suffix-Match auf pgsm.site/lvh.me) auf "ist APP-Host?" (Allowlist:
+  Serving-Host?" (7a: Suffix-Match auf publayer.net/lvh.me) auf "ist APP-Host?" (Allowlist:
   pagesmith.app, www, die *.vercel.app-Preview-Hosts, localhost/Dev). ALLES andere fällt
-  in den Serving-Zweig -> pgsm.site UND beliebige Custom-Domains teilen denselben Pfad,
+  in den Serving-Zweig -> publayer.net UND beliebige Custom-Domains teilen denselben Pfad,
   ohne pro Domain eine Middleware-Regel. Begründung: eine offene Menge (Custom-Domains)
   lässt sich nicht per Suffix-Allowlist führen; die geschlossene Menge (unsere App-Hosts)
   schon. KEIN DB-Call im Edge (Middleware bleibt DB-frei wie in 7a); der Label-/Host-
@@ -201,14 +201,14 @@ Schnittführung die späteren Scheiben nicht versperrt.
   Ingest ist auf Custom-Domains automatisch same-origin/adblocker-resistent (EINE
   Änderung, nicht zwei getrennte).
 - ISOLATION: jede Custom-Domain ist ein eigener eTLD+1 -> automatisch isoliert von der
-  App UND von anderen Kunden (stärker als die geteilte *.pgsm.site-Wildcard, die
-  Registrable Domain teilt und deshalb die "auf pgsm.site NIE App-Cookies"-Grenze
+  App UND von anderen Kunden (stärker als die geteilte *.publayer.net-Wildcard, die
+  Registrable Domain teilt und deshalb die "auf publayer.net NIE App-Cookies"-Grenze
   brauchte). Regel "auf Nicht-App-Hosts NIE App-Cookies/Auth-State" gilt unverändert
   und deckt Custom-Domains ohne Zusatzarbeit mit ab.
 - DATENMODELL additiv: die bestehende `domains`-Tabelle bekommt NULLBARE Spalten
   (custom_host text, GLOBAL UNIQUE; ein Status-Feld; das von Vercel gelieferte
-  DNS-Recordset). pgsm.site-Zeilen lassen die neuen Spalten null. Lookup fallweise:
-  pgsm.site-Host -> per Label (7a-Pfad unverändert); Custom-Host -> per custom_host
+  DNS-Recordset). publayer.net-Zeilen lassen die neuen Spalten null. Lookup fallweise:
+  publayer.net-Host -> per Label (7a-Pfad unverändert); Custom-Host -> per custom_host
   EXAKT. KEINE Migration bestehender Zeilen (additive nullable Spalten, wie 7a
   published_content) -> keine Live-Daten-Transformation.
 - EFFEKTIVER HOST (Sicherheit): sowohl der Serve-Lookup als auch der Middleware-Branch
@@ -252,7 +252,7 @@ Schnittführung die späteren Scheiben nicht versperrt.
   (a) App-Host-Allowlist-VOLLSTÄNDIGKEIT: die Preview-Hosts (*.vercel.app) NICHT
       vergessen, sonst landen eigene Deployments im Serving-Zweig -> 404 auf die eigene
       App. Absichern per Regressionstest.
-  (b) pgsm.site-Serving darf durch die Inversion NICHT brechen -> diskriminierender
+  (b) publayer.net-Serving darf durch die Inversion NICHT brechen -> diskriminierender
       Regressionstest (bekanntes Label serviert weiter, wie in 7a).
   (c) custom_host GLOBAL UNIQUE + Cross-User-Hijack: ein User darf keine fremde/schon
       belegte Domain beanspruchen. Kontrolle = Vercels Verification (real-world
@@ -275,10 +275,10 @@ auf localhost bleibt unberührt.
   app-serve-Dispatch (label ? byLabel : byCustomHost) über DIESELBE Host-Quelle wie
   die Middleware (kein Split-Brain). resolve.ts um getPublishedHtmlByCustomHost
   (Spiegel, gleiche Nur-project_id+published_content-Projektion) ergänzt.
-- Diskriminierende Wächter grün: pgsm-Label serviert weiter (der Pfad, den die
+- Diskriminierende Wächter grün: publayer-Label serviert weiter (der Pfad, den die
   Inversion anfasst); Custom-Host -> Serving-Zweig/kein Auth; Passthrough exakt
   (/api/e|/api/capi, jetzt AUCH für Custom-Domains); App-API-Leak-Gegenprobe
-  (Custom-Host + andere /api-Route -> KEIN Passthrough); bare pgsm.site kippt bewusst
+  (Custom-Host + andere /api-Route -> KEIN Passthrough); bare publayer.net kippt bewusst
   in den Serving-Zweig (Inversions-Folge, ein bestehender Test angepasst).
 - LEKTION (Instrument schlägt Vermutung, in EINEM Bogen DOPPELT bestätigt): Beide
   404 der lokalen Sim waren TESTDATEN, kein Code-Bug. (a) lvh-Pfad: Tippfehler im

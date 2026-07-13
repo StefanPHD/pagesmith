@@ -640,7 +640,7 @@ export default function CodeImporter({
     setPublishStatus("publishing");
     setPublishError(null);
     // Publish bäckt den RELATIVEN /api/e-Beacon ein (Phase 7b): die gehostete Seite
-    // läuft same-origin auf *.pgsm.site -> /api/e wird von der Middleware chirurgisch
+    // läuft same-origin auf *.publayer.net -> /api/e wird von der Middleware chirurgisch
     // durchgelassen und trifft den Ingest-Handler. Kein absoluter Pfad/keine env nötig.
     const result = await publishProject(projectId, buildFunctionalDocument("/api/e"), {
       html: debouncedCode,
@@ -1170,7 +1170,7 @@ export default function CodeImporter({
           </div>
 
           {/* Hosting / Veröffentlichen (Phase 7 Scheibe 7a): schaltet die funktionale
-              Seite unter label.pgsm.site live. Erzeugt das funktionale Dokument
+              Seite unter label.publayer.net live. Erzeugt das funktionale Dokument
               CLIENT-seitig (wie Export, WYSIWYG) und speichert es via publishProject.
               Braucht ein gespeichertes Projekt (projectId) -> sonst deaktiviert +
               Hinweis (wie beim CAPI-Token). */}

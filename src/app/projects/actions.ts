@@ -274,7 +274,7 @@ async function assignDomainLabel(
 }
 
 /**
- * Publiziert ein Projekt: macht seine funktionale Seite unter label.pgsm.site live.
+ * Publiziert ein Projekt: macht seine funktionale Seite unter label.publayer.net live.
  *
  * functionalHtml ist CLIENT-generiert (generateFunctional("export") — der Server hat
  * kein DOM, siehe generate.ts SSR-Guard). Der Server SPEICHERT nur, wie saveProject.

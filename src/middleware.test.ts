@@ -33,9 +33,9 @@ function rewritePath(res: Response): string | null {
 afterEach(() => vi.clearAllMocks());
 
 describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
-  it("Serving-Host (*.pgsm.site) -> rewrite auf /app-serve, KEIN Auth-Gate", async () => {
+  it("Serving-Host (*.publayer.net) -> rewrite auf /app-serve, KEIN Auth-Gate", async () => {
     const res = await middleware(
-      requestFor("http://meinprojekt.pgsm.site/", "meinprojekt.pgsm.site")
+      requestFor("http://meinprojekt.publayer.net/", "meinprojekt.publayer.net")
     );
     // NextResponse.rewrite setzt den internen Rewrite-Header auf /app-serve.
     const rewrite = res.headers.get("x-middleware-rewrite");
@@ -58,11 +58,11 @@ describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
     expect(updateSession).toHaveBeenCalledTimes(1);
   });
 
-  it("bare pgsm.site (nach Inversion Nicht-App) -> serving branch (rewrite), KEIN Auth-Gate", async () => {
+  it("bare publayer.net (nach Inversion Nicht-App) -> serving branch (rewrite), KEIN Auth-Gate", async () => {
     // FLAG 2 (bewusst gekippt): unter der Inversion ist die App NUR die Allowlist
-    // (pagesmith.app). Bare pgsm.site faellt jetzt in den Serving-Zweig -> /app-serve
+    // (pagesmith.app). Bare publayer.net faellt jetzt in den Serving-Zweig -> /app-serve
     // (dort 404 mangels Label/custom_host), NICHT mehr ins Auth-Gate.
-    const res = await middleware(requestFor("http://pgsm.site/", "pgsm.site"));
+    const res = await middleware(requestFor("http://publayer.net/", "publayer.net"));
     expect(rewritePath(res)).toBe("/app-serve");
     expect(updateSession).not.toHaveBeenCalled();
   });
@@ -99,7 +99,7 @@ describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
 describe("middleware — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
   it("Serving-Host + /api/e -> DURCHGELASSEN (kein /app-serve-Rewrite, kein Auth-Gate)", async () => {
     const res = await middleware(
-      requestFor("http://meinprojekt.pgsm.site/api/e", "meinprojekt.pgsm.site")
+      requestFor("http://meinprojekt.publayer.net/api/e", "meinprojekt.publayer.net")
     );
     // Passthrough (NextResponse.next) -> KEIN interner Rewrite-Header.
     expect(res.headers.get("x-middleware-rewrite")).toBeNull();
@@ -108,7 +108,7 @@ describe("middleware — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
 
   it("Serving-Host + /api/capi (Alt-Export-Alias) -> ebenfalls durchgelassen (Paritaet)", async () => {
     const res = await middleware(
-      requestFor("http://meinprojekt.pgsm.site/api/capi", "meinprojekt.pgsm.site")
+      requestFor("http://meinprojekt.publayer.net/api/capi", "meinprojekt.publayer.net")
     );
     expect(res.headers.get("x-middleware-rewrite")).toBeNull();
     expect(updateSession).not.toHaveBeenCalled();
@@ -116,7 +116,7 @@ describe("middleware — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
 
   it("CHIRURGISCH: Serving-Host + ANDERE /api-Route -> weiter /app-serve-Rewrite", async () => {
     const res = await middleware(
-      requestFor("http://meinprojekt.pgsm.site/api/anders", "meinprojekt.pgsm.site")
+      requestFor("http://meinprojekt.publayer.net/api/anders", "meinprojekt.publayer.net")
     );
     const rewrite = res.headers.get("x-middleware-rewrite");
     expect(rewrite).not.toBeNull();
@@ -127,7 +127,7 @@ describe("middleware — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
   it("CHIRURGISCH: /api/etwas beginnend mit 'e' (/api/evil) -> KEIN Passthrough, Rewrite", async () => {
     // Praefix-Falle: exakter Match, nicht startsWith('/api/e').
     const res = await middleware(
-      requestFor("http://meinprojekt.pgsm.site/api/evil", "meinprojekt.pgsm.site")
+      requestFor("http://meinprojekt.publayer.net/api/evil", "meinprojekt.publayer.net")
     );
     expect(rewritePath(res)).toBe("/app-serve");
   });

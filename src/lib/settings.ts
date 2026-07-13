@@ -30,7 +30,7 @@ export type ProjectSettings = {
   };
   // Hosting-Zustand (Phase 7 Scheibe 7a). BEWUSST plattform-agnostisch neben pixels
   // (wie capi): kein Pixel, sondern die Auslieferungs-Metadaten.
-  //   label       = OEFFENTLICHES Subdomain-Label (label.pgsm.site). Nicht geheim.
+  //   label       = OEFFENTLICHES Subdomain-Label (label.publayer.net). Nicht geheim.
   //                 Vom Publish vergeben (idempotent: einmal gesetzt, wiederverwendet)
   //                 und hierher gespiegelt, damit der Client die Live-URL ueber
   //                 Sessions hinweg kennt, OHNE domains selbst abzufragen.

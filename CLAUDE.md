@@ -70,12 +70,14 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
               verifiziert). XFH-Trust-Boundary in Prod BEWIESEN (Vercel-Preview,
               Gate GO): Vercels Edge überschreibt client-gefälschten
               x-forwarded-host mit dem echten Host.
-          [ ] 7c-2 Vercel-Anbindung (Add-Domain-Mutation, server-only Vercel-Token,
-              DNS-Anweisungen, Per-User-Hard-Cap) — geplant. ERSTER SCHRITT: das
-              Vercel-Domains-API-Konzept (XFH-Gate erledigt, siehe 7c-1).
-          [ ] 7c-3 Verify/Status-Polling (Verification vs Configuration) + UX — geplant.
-          [ ] 7c-4 Phase-6-Dedup-Sichtbarkeit auf echter verknüpfter Domain (Kirsche) —
-              geplant.
+          [~] 7c-2 Custom-Domains via Vercel-Domains-API:
+              [~] 7c-2a pgsm.site-Wildcard-Infra (Nameserver-Delegation an Vercel; entsperrt
+                  Prod-Serving-Verifikation + Phase-6-Dedup-Kirsche) — NÄCHSTER SCHRITT.
+              [ ] 7c-2b Custom-Domain-API-Mutation (server-only Vercel-Token, Add-Domain als
+                  reine Fn mit Ownership-Gate + Per-User-Cap, dynamische DNS-Anweisungen,
+                  Mutations-Audit-Log) — geplant. VORHER: Kill-Switch (Manifest Tier 0).
+              [ ] 7c-2c Verify/Status-Polling (verified/misconfigured) + UX — geplant.
+              [ ] 7c-4 Phase-6-Dedup-Sichtbarkeit auf echter Domain (Kirsche) — geplant.
       Details in der Phase-7c-Sektion unten. ACHTUNG: härtester Brocken (Multi-Tenant
       Custom Domains + Auto-SSL); schaltet zugleich die Funnel-Vision frei. (war Phase 6)
 - [ ] Phase 8 — Analytics & ROI-Ökosystem (Vision): First-Party-Server-Side-Analytics
@@ -109,6 +111,31 @@ Entscheidungen und der XFH-Gate-Vollbeweis: docs/claude-history/phase-7-hosting.
   gate/7c-2-xfh; main ist DAHINTER (kennt weder 7b noch 7c-1). Ein überlegtes Release
   nach main steht als eigene Entscheidung an (KEIN Gate-Nebeneffekt, bewusst nicht
   mit-gemerged) — vor 7c-2-Bau bzw. Prod-Nutzung klären.
+
+### 7c-2 — Entscheidungen (Vercel-Domains-API)
+- ZWEI GETRENNTE FLOWS (nicht verwechseln): (a) *.pgsm.site = UNSERE
+  Wildcard-Serving-Domain -> MUSS per Nameserver-Delegation an Vercel (das
+  Wildcard-Cert braucht DNS-Kontrolle bei Vercel); (b) Kunden-Custom-Domains =
+  Apex (A-Record) / Subdomain (CNAME, PROJEKTSPEZIFISCHER Wert) bzw.
+  TXT-Besitznachweis, falls die Domain schon auf einem anderen Vercel-Account liegt.
+- PLAN: Hobby fürs MVP. Hobby deckelt bei 50 Custom-Domains PRO PROJEKT, geteilt über
+  ALLE Kunden -> der Per-User-Cap hat DOPPELrolle (Abuse-Schutz + Schutz der geteilten
+  Decke); MVP-Richtwert 3/User. Pro-Upgrade VOR echter Skalierung.
+- DNS-WERTE dynamisch aus Vercels Antwort/Config PRO DOMAIN lesen, NIE hardcoden
+  (CNAME-Ziel ist projektspezifisch; auch die Wildcard-Nameserver EXAKT aus dem
+  Vercel-Dashboard nehmen, nicht generische ns1/ns2 annehmen).
+- TOKEN-EHRLICHKEIT: Vercel-Tokens sind team-scoped, KEIN per-Endpoint-Scope auf unserem
+  Tier. "Maximal scoped" = dedizierter Team-Token, server-only wie service_role, PLUS
+  eigenes Mutations-Audit-Log als tragende Kontrolle (Defense-in-Depth-Ehrlichkeit).
+- VERIFICATION vs CONFIGURATION bestätigt: die API liefert `verified` (Besitz) +
+  `misconfigured` (DNS/Cert) getrennt -> das Zwei-Zustand-Statusmodell war richtig.
+- 7c-2a KONKRET (nächster Schritt): pgsm.site-Nameserver auf die von Vercel angezeigten
+  umstellen; pgsm.site (Apex) + *.pgsm.site (Wildcard) im Projekt anlegen. Reversibel;
+  pgsm.site hat aktuell keine Records -> saubere Delegation. Live-URL-Bau muss
+  env-abhängig sein (Dev <label>.lvh.me:3000 / Prod <label>.pgsm.site). pagesmith.app
+  bleibt UNBERÜHRT.
+- SHARED-REPUTATION wird mit 7c-2a live -> Kill-Switch (Manifest Tier 0) vor 7c-2b
+  einplanen.
 
 ## Security Manifest & Launch Blocker (Tier-Übersicht)
 EINE Wahrheitsquelle für Launch-Blocker; sequenziert nach dem Moment, in dem das Risiko

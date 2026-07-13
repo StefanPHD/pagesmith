@@ -4,7 +4,7 @@ import { resolveEffectiveHost, isAppHost } from "@/lib/hosting/host";
 
 export async function middleware(request: NextRequest) {
   // HOST-VERZWEIGUNG ZUERST — INVERSION (Phase 7c-1): nicht mehr "ist Serving-Host?",
-  // sondern "ist APP-Host?" (geschlossene Allowlist). Dadurch teilen *.pgsm.site UND
+  // sondern "ist APP-Host?" (geschlossene Allowlist). Dadurch teilen *.publayer.net UND
   // beliebige Custom-Domains DENSELBEN Serving-Zweig, ohne pro Domain eine Regel.
   // resolveEffectiveHost ist die EINE Host-Quelle fuer diese Verzweigung UND den
   // Lookup in der Node-Serve-Route (kein Split-Brain). KEIN DB-Call hier.

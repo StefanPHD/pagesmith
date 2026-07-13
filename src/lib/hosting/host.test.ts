@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   buildLiveUrl,
   extractLabel,
@@ -14,51 +14,112 @@ function headers(init: Record<string, string>): Headers {
   return new Headers(init);
 }
 
-describe("extractLabel / isServingHost", () => {
-  it("PARITÄT: pgsm.site (Prod) und lvh.me:3000 (lokal) liefern DASSELBE Label", () => {
-    expect(extractLabel("meinprojekt.pgsm.site")).toBe("meinprojekt");
+// Der Serving-Suffix wird call-time aus NEXT_PUBLIC_HOSTING_DOMAIN abgeleitet. Die
+// Mechanik-Suite haengt bewusst an einer NEUTRALEN Domain (beispiel.net), NICHT an der
+// realen Marke -> die Mechanik-Tests bleiben brand-unabhaengig. Original-env sichern.
+const ORIGINAL_HOSTING_DOMAIN = process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+function restoreHostingDomain(): void {
+  if (ORIGINAL_HOSTING_DOMAIN === undefined) {
+    delete process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+  } else {
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = ORIGINAL_HOSTING_DOMAIN;
+  }
+}
+
+describe("extractLabel / isServingHost (env=beispiel.net)", () => {
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "beispiel.net";
+  });
+  afterEach(restoreHostingDomain);
+
+  it("PARITÄT: Serving-Domain (Prod) und lvh.me:3000 (lokal) liefern DASSELBE Label", () => {
+    expect(extractLabel("meinprojekt.beispiel.net")).toBe("meinprojekt");
     expect(extractLabel("meinprojekt.lvh.me:3000")).toBe("meinprojekt");
     // Fork-frei: kein Dev/Prod-Sonderpfad.
-    expect(extractLabel("meinprojekt.pgsm.site")).toBe(
+    expect(extractLabel("meinprojekt.beispiel.net")).toBe(
       extractLabel("meinprojekt.lvh.me:3000")
     );
   });
 
   it("strippt Port und lowercased", () => {
-    expect(extractLabel("Foo.PGSM.site:443")).toBe("foo");
+    expect(extractLabel("Foo.BEISPIEL.net:443")).toBe("foo");
   });
 
   it("verschachtelte Sub-Subdomain -> null (Label-Injection-Schutz)", () => {
-    expect(extractLabel("foo.bar.pgsm.site")).toBeNull();
-    expect(isServingHost("foo.bar.pgsm.site")).toBe(false);
+    expect(extractLabel("foo.bar.beispiel.net")).toBeNull();
+    expect(isServingHost("foo.bar.beispiel.net")).toBe(false);
   });
 
   it("App-Hosts / bare Registrable Domain -> null (kein Serving)", () => {
     expect(extractLabel("localhost")).toBeNull();
     expect(extractLabel("localhost:3000")).toBeNull();
-    expect(extractLabel("pgsm.site")).toBeNull(); // ohne Subdomain
+    expect(extractLabel("beispiel.net")).toBeNull(); // ohne Subdomain
     expect(extractLabel("pagesmith.app")).toBeNull();
     expect(extractLabel("app.pagesmith.app")).toBeNull(); // anderes Suffix
   });
 
   it("unzulässige Label-Zeichen -> null (Regex greift vor dem Lookup)", () => {
-    expect(extractLabel("bö_se.pgsm.site")).toBeNull();
-    expect(extractLabel("a b.pgsm.site")).toBeNull();
-    expect(extractLabel(".pgsm.site")).toBeNull(); // leeres Label
+    expect(extractLabel("bö_se.beispiel.net")).toBeNull();
+    expect(extractLabel("a b.beispiel.net")).toBeNull();
+    expect(extractLabel(".beispiel.net")).toBeNull(); // leeres Label
   });
 
   it("gültiges Label -> isServingHost true", () => {
-    expect(isServingHost("shop-2.pgsm.site")).toBe(true);
-    expect(extractLabel("shop-2.pgsm.site")).toBe("shop-2");
+    expect(isServingHost("shop-2.beispiel.net")).toBe(true);
+    expect(extractLabel("shop-2.beispiel.net")).toBe("shop-2");
   });
 
   // Praezisierung 1 (7c-1): der Dispatch (label ? byLabel : byCustomHost) ist NUR
   // korrekt, weil extractLabel suffix-bewusst ist -> Custom-Host = falsy Label.
-  it("Custom-Host -> falsy Label (Dispatch-Voraussetzung), pgsm/lvh -> Label", () => {
+  it("Custom-Host -> falsy Label (Dispatch-Voraussetzung), Serving/lvh -> Label", () => {
     expect(extractLabel("test-custom.local")).toBeNull();
     expect(extractLabel("landing.kunde.de")).toBeNull();
-    expect(extractLabel("foo.pgsm.site")).toBe("foo");
+    expect(extractLabel("foo.beispiel.net")).toBe("foo");
     expect(extractLabel("foo.lvh.me")).toBe("foo");
+  });
+});
+
+describe("servingSuffixes-Ableitung (aus NEXT_PUBLIC_HOSTING_DOMAIN) + Härtung", () => {
+  afterEach(restoreHostingDomain);
+
+  it("env gesetzt -> Prod-Suffix .<domain> matcht", () => {
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "beispiel.net";
+    expect(extractLabel("x.beispiel.net")).toBe("x");
+  });
+
+  it("env UNGESETZT -> nur .lvh.me matcht; Prod-Suffix NICHT abgeleitet", () => {
+    delete process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+    expect(extractLabel("x.lvh.me")).toBe("x"); // hartes Fallback bleibt
+    expect(extractLabel("x.beispiel.net")).toBeNull(); // kein Prod-Suffix -> Custom-Host
+  });
+
+  it("env LEER/Whitespace -> nur .lvh.me (KEIN leerer '.'-Suffix)", () => {
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "   ";
+    expect(extractLabel("x.lvh.me")).toBe("x");
+    expect(extractLabel("x.beispiel.net")).toBeNull();
+  });
+
+  it(".lvh.me bleibt IMMER dabei, auch wenn env eine andere Domain setzt", () => {
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "beispiel.net";
+    expect(extractLabel("x.lvh.me")).toBe("x");
+    expect(extractLabel("x.beispiel.net")).toBe("x");
+  });
+
+  // HÄRTUNG: die von Hand eingetippte env darf fuehrende Punkte / trailing slash /
+  // Whitespace / Port / Grossschreibung tragen -> alle ergeben DENSELBEN Suffix
+  // .beispiel.net (sonst 404en ALLE Wildcard-Seiten STILL).
+  it("Härtung: '.beispiel.net' / 'beispiel.net/' / ' beispiel.net ' / 'BEISPIEL.NET' / ':port' -> selber Suffix", () => {
+    for (const dirty of [
+      ".beispiel.net",
+      "beispiel.net/",
+      " beispiel.net ",
+      "BEISPIEL.NET",
+      "beispiel.net:443",
+      "..beispiel.net//",
+    ]) {
+      process.env.NEXT_PUBLIC_HOSTING_DOMAIN = dirty;
+      expect(extractLabel("x.beispiel.net")).toBe("x");
+    }
   });
 });
 
@@ -72,8 +133,8 @@ describe("resolveEffectiveHost (Phase 7c-1)", () => {
   });
 
   it("ohne x-forwarded-host -> host-Fallback", () => {
-    expect(resolveEffectiveHost(headers({ host: "meinprojekt.pgsm.site" }))).toBe(
-      "meinprojekt.pgsm.site"
+    expect(resolveEffectiveHost(headers({ host: "meinprojekt.beispiel.net" }))).toBe(
+      "meinprojekt.beispiel.net"
     );
   });
 
@@ -120,19 +181,19 @@ describe("isAppHost (Phase 7c-1)", () => {
   });
 
   it("Nicht-App -> false (Serving-Zweig)", () => {
-    expect(isAppHost("meinprojekt.pgsm.site")).toBe(false);
+    expect(isAppHost("meinprojekt.beispiel.net")).toBe(false);
     expect(isAppHost("meinprojekt.lvh.me")).toBe(false);
     expect(isAppHost("test-custom.local")).toBe(false);
-    expect(isAppHost("pgsm.site")).toBe(false); // bare -> nach Inversion Nicht-App
+    expect(isAppHost("beispiel.net")).toBe(false); // bare -> nach Inversion Nicht-App
     // Spoof-Schutz: fremde Domain, die nur mit "vercel.app" endet, aber nicht mit ".vercel.app".
     expect(isAppHost("notvercel.app")).toBe(false);
   });
 });
 
 describe("buildLiveUrl", () => {
-  it("lokal (lvh.me) -> http, Prod (pgsm.site) -> https", () => {
+  it("lokal (lvh.me) -> http, Prod-Domain -> https", () => {
     expect(buildLiveUrl("foo", "lvh.me:3000")).toBe("http://foo.lvh.me:3000");
-    expect(buildLiveUrl("foo", "pgsm.site")).toBe("https://foo.pgsm.site");
+    expect(buildLiveUrl("foo", "beispiel.net")).toBe("https://foo.beispiel.net");
   });
 
   it("leere Basis -> leere URL", () => {

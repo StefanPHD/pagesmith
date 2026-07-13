@@ -3,16 +3,12 @@
 // dependency-frei und unit-testbar bleiben.
 //
 // eTLD+1-ISOLATION: gehostete (fremde) Seiten laufen auf einer SEPARATEN Registrable
-// Domain (pgsm.site) — die App bleibt auf pagesmith.app. .lvh.me ist der lokale
-// Zwilling (*.lvh.me -> 127.0.0.1), damit der Label-Lookup lokal wie in Prod
-// funktioniert (kein Dev/Prod-Fork im Code).
-
-// Suffixe, unter denen ein einzelnes Label eine gehostete Seite adressiert. Fuehrender
-// Punkt ist Absicht: "pgsm.site" (ohne Subdomain) matcht NICHT -> bleibt App/Marketing.
-const SERVING_SUFFIXES = [".pgsm.site", ".lvh.me"];
+// Domain (publayer.net) — die App bleibt auf ihrer eigenen App-Domain (isAppHost-
+// Allowlist). .lvh.me ist der lokale Zwilling (*.lvh.me -> 127.0.0.1), damit der
+// Label-Lookup lokal wie in Prod funktioniert (kein Dev/Prod-Fork im Code).
 
 // Ein Label ist genau EIN DNS-Label: nur [a-z0-9-], 1..63 Zeichen. Punkte sind
-// VERBOTEN -> verschachtelte Sub-Subdomains (foo.bar.pgsm.site) und
+// VERBOTEN -> verschachtelte Sub-Subdomains (foo.bar.publayer.net) und
 // Label-Injection werden abgewiesen, BEVOR das Label in einen DB-Lookup geht.
 const LABEL_RE = /^[a-z0-9-]{1,63}$/;
 
@@ -21,18 +17,50 @@ function stripPort(host: string): string {
   return host.split(":")[0].trim().toLowerCase();
 }
 
+// HART CODIERTES, von der env UNABHAENGIGES lokales Fallback: *.lvh.me (-> 127.0.0.1)
+// serviert lokal AUCH dann, wenn NEXT_PUBLIC_HOSTING_DOMAIN fehlt/leer ist -> Dev-
+// Serving bricht nie komplett.
+const FALLBACK_SUFFIX = ".lvh.me";
+
+/**
+ * Die Suffixe, unter denen ein einzelnes Label eine gehostete Seite adressiert —
+ * EINE Quelle der Wahrheit: der Prod-Suffix wird aus NEXT_PUBLIC_HOSTING_DOMAIN
+ * abgeleitet (DIESELBE Variable wie buildLiveUrl), das lokale ".lvh.me" bleibt IMMER
+ * als hartes Fallback dabei. Call-time gelesen (nicht Modul-Load), damit ein
+ * Redeploy / ein Test-Setup die aktuelle env sieht.
+ *
+ * HAERTUNG gegen die von Hand ins Vercel-Dashboard eingetippte Domain: trim, fuehrende
+ * Punkte und trailing slashes strippen, DANN stripPort (Port ab + lowercase). Ohne das
+ * ergaeben ".publayer.net" / "publayer.net/" / " publayer.net " einen Suffix, der NIE
+ * matcht -> ALLE Wildcard-Seiten 404en STILL (dieselbe Konfig-Fehlerklasse, die schon
+ * zweimal Zeit gekostet hat).
+ */
+function servingSuffixes(): string[] {
+  const cleaned = (process.env.NEXT_PUBLIC_HOSTING_DOMAIN ?? "")
+    .trim()
+    .replace(/^\.+/, "")
+    .replace(/\/+$/, "");
+  const suffixes = [FALLBACK_SUFFIX];
+  if (cleaned) {
+    const suffix = "." + stripPort(cleaned);
+    if (suffix !== FALLBACK_SUFFIX) suffixes.push(suffix);
+  }
+  return suffixes;
+}
+
 /**
  * Das linkeste (einzige) Label einer Serving-Host, oder null wenn es KEINE gueltige
- * Serving-Host ist. Beispiele:
- * - "meinprojekt.pgsm.site"        -> "meinprojekt"
- * - "meinprojekt.lvh.me:3000"      -> "meinprojekt"   (fork-frei zu Prod)
- * - "foo.bar.pgsm.site"            -> null            (nested -> abgewiesen)
- * - "pgsm.site" / "localhost"      -> null            (App-Host)
- * - "böse.pgsm.site" / "a_b..."    -> null            (Label-Regex)
+ * Serving-Host ist (Prod-Suffix aus NEXT_PUBLIC_HOSTING_DOMAIN, z.B. publayer.net).
+ * Beispiele (env=publayer.net):
+ * - "meinprojekt.publayer.net"     -> "meinprojekt"
+ * - "meinprojekt.lvh.me:3000"      -> "meinprojekt"   (fork-frei, env-unabhaengig)
+ * - "foo.bar.publayer.net"         -> null            (nested -> abgewiesen)
+ * - "publayer.net" / "localhost"   -> null            (kein Subdomain-Label / App-Host)
+ * - "böse.publayer.net" / "a_b..." -> null            (Label-Regex)
  */
 export function extractLabel(host: string): string | null {
   const h = stripPort(host);
-  for (const suffix of SERVING_SUFFIXES) {
+  for (const suffix of servingSuffixes()) {
     if (h.endsWith(suffix)) {
       const label = h.slice(0, -suffix.length);
       return LABEL_RE.test(label) ? label : null;
@@ -49,7 +77,7 @@ export function isServingHost(host: string): boolean {
 // --- Phase 7c-1: Host-Inversion + effektiver Host -------------------------------
 //
 // INVERSION: die Serving-Schicht verzweigt nicht mehr "ist Serving-Host?" (Suffix),
-// sondern "ist APP-Host?" (geschlossene Allowlist). So teilen *.pgsm.site UND
+// sondern "ist APP-Host?" (geschlossene Allowlist). So teilen *.publayer.net UND
 // beliebige Custom-Domains DENSELBEN Serving-Zweig, ohne pro Domain eine Regel.
 
 // Maximale DNS-Namenlaenge.
@@ -109,7 +137,7 @@ export function isAppHost(host: string): boolean {
 
 /**
  * Baut die absolute Live-URL aus Label + Basis-Domain (aus NEXT_PUBLIC_HOSTING_DOMAIN,
- * z.B. "lvh.me:3000" lokal, "pgsm.site" in Prod). Lokale Basen (lvh.me/localhost) ->
+ * z.B. "lvh.me:3000" lokal, "publayer.net" in Prod). Lokale Basen (lvh.me/localhost) ->
  * http, sonst https. Leere Basis -> "" (Aufrufer zeigt dann nur das Label).
  */
 export function buildLiveUrl(label: string, domain: string): string {

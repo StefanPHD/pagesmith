@@ -1,6 +1,6 @@
 // Serve-Route (Phase 7 Scheibe 7a): liefert eine PUBLIZIERTE Seite unter
-// label.pgsm.site aus. NUR intern erreichbar — die Middleware rewritet Serving-Hosts
-// (*.pgsm.site / *.lvh.me) hierher; ein direkter Zugriff ueber den App-Host wird vom
+// label.publayer.net aus. NUR intern erreichbar — die Middleware rewritet Serving-Hosts
+// (*.publayer.net / *.lvh.me) hierher; ein direkter Zugriff ueber den App-Host wird vom
 // Label-Guard mit 404 abgewiesen (kein Bypass zu App-Daten).
 //
 // Node-Runtime: braucht den service_role-Admin-Client (im Resolver), der server-only

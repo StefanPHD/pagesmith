@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Die Resolver mocken -> die Route wird isoliert getestet (kein echter DB-/service_role-
 // Pfad). `server-only` (transitiv ueber den Resolver-Import) neutralisieren. WICHTIG
@@ -26,12 +26,25 @@ function reqXfh(xForwardedHost: string, host: string): Request {
   });
 }
 
-afterEach(() => vi.clearAllMocks());
+// extractLabel leitet den Serving-Suffix call-time aus NEXT_PUBLIC_HOSTING_DOMAIN ab.
+// Diese Suite spiegelt die PROD-Realitaet -> reale Serving-Domain publayer.net.
+const ORIGINAL_HOSTING_DOMAIN = process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+beforeEach(() => {
+  process.env.NEXT_PUBLIC_HOSTING_DOMAIN = "publayer.net";
+});
+afterEach(() => {
+  vi.clearAllMocks();
+  if (ORIGINAL_HOSTING_DOMAIN === undefined) {
+    delete process.env.NEXT_PUBLIC_HOSTING_DOMAIN;
+  } else {
+    process.env.NEXT_PUBLIC_HOSTING_DOMAIN = ORIGINAL_HOSTING_DOMAIN;
+  }
+});
 
 describe("GET /app-serve (Serve-Route, Scheibe 7a)", () => {
   it("bekanntes Label -> published HTML + Security-Header", async () => {
     getPublishedHtmlByLabel.mockResolvedValue("<h1>live</h1>");
-    const res = await GET(req("meinprojekt.pgsm.site"));
+    const res = await GET(req("meinprojekt.publayer.net"));
 
     expect(res.status).toBe(200);
     expect(await res.text()).toBe("<h1>live</h1>");
@@ -45,7 +58,7 @@ describe("GET /app-serve (Serve-Route, Scheibe 7a)", () => {
     expect(getPublishedHtmlByLabel).toHaveBeenCalledWith("meinprojekt");
   });
 
-  it("lvh.me (lokal) matcht identisch (fork-frei)", async () => {
+  it("lvh.me (lokal) matcht identisch (fork-frei, env-unabhaengiges Fallback)", async () => {
     getPublishedHtmlByLabel.mockResolvedValue("<h1>local</h1>");
     const res = await GET(req("meinprojekt.lvh.me:3000"));
     expect(res.status).toBe(200);
@@ -56,39 +69,44 @@ describe("GET /app-serve (Serve-Route, Scheibe 7a)", () => {
     // Resolver liefert per Konstruktion nur published_content.html; die Route fügt
     // nichts hinzu und zieht keinen Draft heran.
     getPublishedHtmlByLabel.mockResolvedValue("<p>PUBLISHED</p>");
-    const res = await GET(req("p.pgsm.site"));
+    const res = await GET(req("p.publayer.net"));
     expect(await res.text()).toBe("<p>PUBLISHED</p>");
   });
 
   it("unbekanntes Label / nie publiziert (Resolver null) -> 404", async () => {
     getPublishedHtmlByLabel.mockResolvedValue(null);
-    const res = await GET(req("missing.pgsm.site"));
+    const res = await GET(req("missing.publayer.net"));
     expect(res.status).toBe(404);
   });
 
-  it("GUARD: Nicht-Serving-Host (App-Host) auf /app-serve -> 404 OHNE Lookup", async () => {
+  it("GUARD: App-Host (localhost) auf /app-serve -> 404, KEIN Label-Lookup", async () => {
     const res = await GET(req("localhost:3000"));
     expect(res.status).toBe(404);
-    // Kein Bypass: der Resolver wird gar nicht erst aufgerufen.
+    // Kein Label -> byLabel wird nicht aufgerufen (Bypass-Schutz).
     expect(getPublishedHtmlByLabel).not.toHaveBeenCalled();
   });
 
-  it("GUARD: verschachteltes Label (foo.bar.pgsm.site) -> 404, KEIN Label-Lookup", async () => {
+  it("GUARD: verschachteltes Label (foo.bar.publayer.net) -> 404, KEIN Label-Lookup", async () => {
     getPublishedHtmlByCustomHost.mockResolvedValue(null);
-    const res = await GET(req("foo.bar.pgsm.site"));
+    const res = await GET(req("foo.bar.publayer.net"));
     expect(res.status).toBe(404);
     expect(getPublishedHtmlByLabel).not.toHaveBeenCalled();
   });
 });
 
-describe("GET /app-serve — Custom-Domain-Dispatch (Scheibe 7c-1)", () => {
-  it("WÄCHTER: pgsm-Label-Host -> Label-Lookup, custom_host-Resolver NICHT aufgerufen", async () => {
+describe("GET /app-serve — Custom-Domain-Dispatch (Scheibe 7c-1 / 7c-2a)", () => {
+  // PFLICHT-GUARD gegen den 7c-2a-Bug: der Fehler war NICHT "extractLabel wirft",
+  // sondern "extractLabel liefert null und der Dispatch faellt STILL auf byCustomHost"
+  // (Prod-Wildcard-Seiten 404en lautlos). Laeuft mit der ECHTEN extractLabel + realer
+  // Serving-Domain publayer.net; die Gegenprobe (byCustomHost NICHT aufgerufen) ist der
+  // eigentliche Riegel — ein reiner extractLabel-Unit-Test faengt einen Rueckfall nicht.
+  it("Prod-Serving-Host (x.publayer.net) -> byLabel aufgerufen, byCustomHost NICHT", async () => {
     getPublishedHtmlByLabel.mockResolvedValue("<h1>live</h1>");
-    const res = await GET(req("meinprojekt.pgsm.site"));
+    const res = await GET(req("meinprojekt.publayer.net"));
     expect(res.status).toBe(200);
     expect(await res.text()).toBe("<h1>live</h1>");
     expect(getPublishedHtmlByLabel).toHaveBeenCalledWith("meinprojekt");
-    // Dispatch-Trennung: der Custom-Pfad wird fuer einen pgsm-Host NIE angefasst.
+    // Dispatch-Trennung: der Custom-Pfad wird fuer einen Serving-Host NIE angefasst.
     expect(getPublishedHtmlByCustomHost).not.toHaveBeenCalled();
   });
 

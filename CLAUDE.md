@@ -134,6 +134,21 @@ Entscheidungen und der XFH-Gate-Vollbeweis: docs/claude-history/phase-7-hosting.
   pgsm.site hat aktuell keine Records -> saubere Delegation. Live-URL-Bau muss
   env-abhängig sein (Dev <label>.lvh.me:3000 / Prod <label>.pgsm.site). pagesmith.app
   bleibt UNBERÜHRT.
+- SERVING-DOMAIN FINAL (gekauft): publayer.net (Apex + Wildcard *.publayer.net).
+  ERSETZT den bisherigen Arbeitsnamen "pgsm.site" in diesem Block/der Roadmap — überall,
+  wo oben pgsm.site steht, gilt jetzt publayer.net. Bewusst GETRENNT von der Brand-/App-
+  Domain -> Shared-Reputation-Blast-Radius eingedämmt (Security-Manifest): wird eine
+  Kundenseite geflaggt, bleibt die App-/Marken-Domain unberührt.
+- Wildcard *.publayer.net erzwingt NAMESERVER-DELEGATION an Vercel (das Wildcard-Cert
+  braucht DNS-Kontrolle bei Vercel). Die Nameserver EXAKT aus dem Vercel-Dashboard
+  nehmen, nie generisch (ns1/ns2) annehmen.
+- FALLSTRICK (build-zeit-inlined): NEXT_PUBLIC_HOSTING_DOMAIN wird zur BUILD-ZEIT ins
+  Client-Bundle inlined -> die env in Vercel zu setzen reicht NICHT, es braucht einen
+  REDEPLOY. Sonst trägt das Bundle still den alten Wert (Live-Link fehlt, OHNE
+  Fehlermeldung).
+- BRAND-/APP-DOMAIN weiterhin OFFEN -> isAppHost trägt pagesmith.app als PLATZHALTER.
+  Beim Brand-Domain-Kauf in EINEM überlegten Schritt umstellen (isAppHost-Allowlist +
+  NEXT_PUBLIC_APP_URL + Doku). OFFENER PUNKT — nicht vergessen.
 - SHARED-REPUTATION wird mit 7c-2a live -> Kill-Switch (Manifest Tier 0) vor 7c-2b
   einplanen.
 

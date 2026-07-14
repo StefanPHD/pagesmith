@@ -79,7 +79,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
                   reine Fn mit Ownership-Gate + Per-User-Cap, dynamische DNS-Anweisungen,
                   Mutations-Audit-Log) — geplant. VORHER: Kill-Switch (Manifest Tier 0).
               [ ] 7c-2c Verify/Status-Polling (verified/misconfigured) + UX — geplant.
-              [ ] 7c-4 Phase-6-Dedup-Sichtbarkeit auf echter Domain (Kirsche) — geplant.
+              [x] 7c-4 Phase-6-Dedup-Sichtbarkeit auf echter Domain (Kirsche) — BEWIESEN
+                  auf publayer.net: Browser-Event UND Server-Event mit IDENTISCHER eventID,
+                  beide "Verarbeitet", ~3 Sekunden auseinander. Auf lvh.me strukturell nie
+                  möglich (nie eine echt verknüpfte Domain) — jetzt live bestätigt.
       Details in der Phase-7c-Sektion unten. ACHTUNG: härtester Brocken (Multi-Tenant
       Custom Domains + Auto-SSL); schaltet zugleich die Funnel-Vision frei. (war Phase 6)
 - [ ] Phase 8 — Analytics & ROI-Ökosystem (Vision): First-Party-Server-Side-Analytics
@@ -186,12 +189,16 @@ Entscheidungen und der XFH-Gate-Vollbeweis: docs/claude-history/phase-7-hosting.
   Pixel-Konto enthielt publayer.net nicht -> Meta verwarf das Browser-Event lautlos. KEIN
   Code-Fix nötig — die Ursache lag vollständig im Meta-Business-Konto. CAPI (server-seitig,
   per Access-Token authentifiziert) unterliegt dieser Traffic-Permission NICHT, deshalb
-  liefen die Server-Events durchgehend korrekt.
+  liefen die Server-Events durchgehend korrekt. NACH Eintragen von publayer.net in die
+  Allow-List: Client-Pixel feuert (tr/-Request, Status 200), Dedup funktioniert (siehe 7c-4).
 - SUPPORT-/TROUBLESHOOTING-HINWEIS (Zukunft): Kunden mit einer aktiven Meta-Traffic-
   Permissions-Allow-List MÜSSEN ihre Pagesmith-Serving-Domain (publayer.net bzw. ihre
   Custom-Domain) dort eintragen, sonst bleiben Browser-Events lautlos aus, während CAPI
   weiterläuft — exakt dieses Symptom (Server-Events OK, Browser-Pixel stumm, Konsole meldet
   "traffic permission settings") ist ein KONTO-Setup-Punkt, KEIN Pagesmith-Bug.
+- 7c-2a UND 7c-4 VOLLSTÄNDIG ABGESCHLOSSEN und live verifiziert auf publayer.net: alle fünf
+  Bausteine bewiesen auf echter Domain — Serving, /api/e-Passthrough, Client-Pixel,
+  Server-CAPI und Dedup (identische eventID, beide "Verarbeitet").
 - NÄCHSTER SCHRITT: Kill-Switch (Security-Manifest Tier 0) VOR 7c-2b — ab jetzt servieren
   echte Domains öffentlich, das Shared-Reputation-Risiko ist REAL (nicht mehr theoretisch).
 

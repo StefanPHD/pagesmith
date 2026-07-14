@@ -379,6 +379,11 @@ docs/claude-history/security-manifest-full.md.
   und beaconen weiter dorthin. Neue Exporte/gehostete Seiten nutzen /api/e (geteilter
   Handler, lib/capi/ingest.ts). Entfernen der capi-Route bricht STILL das Tracking aller
   schon ausgelieferten Kundenseiten (kein Fehler, nur verschwundene Conversions).
+- KLICK-WIRING vs. Maustasten (Lektion, Phase-4-Bugfix): 'click' deckt NUR die linke
+  Maustaste ab. Mittelklick feuert 'auxclick' (eigenes, separates Event), Rechtsklick
+  ebenso -> bei JEDEM neuen Click-Wiring-Feature explizit prüfen, ob Mittelklick/Touch-
+  Äquivalente mitbehandelt werden müssen (und bei auxclick event.button===1 gegen Rechtsklick-
+  Ghost-Conversions guarden). Details: docs/claude-history/phase-4-mapping-codegen-export.md.
 - Vor neuer Phase: kurz bestätigen, dass die vorige demobar lief.
 - Jede Bau-Freigabe an CC endet mit einer expliziten Live-Test-Anweisung (was
   genau im Browser zu prüfen ist) — nicht nur Pipeline-grün. Die Pipeline beweist

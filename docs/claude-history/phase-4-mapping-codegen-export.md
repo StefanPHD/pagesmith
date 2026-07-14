@@ -320,3 +320,57 @@ Owner-Entscheidungen (endgültig):
 - Vorschau-Garantie: Was in der Vorschau klickt, tut die exportierte Datei —
   gleiche Engine, gleiche Eingaben, nur mode kippt von "preview" auf "export".
 
+### Bugfix-Nachtrag — href-Bake für <a>-Redirects + auxclick-Tracking (live verifiziert)
+
+BEFUND (Nutzer-Test, real): Ein per Click&Connect umgemapptes <a> (Impressum-Link auf
+eine neue Ziel-URL) navigierte beim Klick zwar korrekt, aber Rechtsklick -> "Adresse
+des Links kopieren" lieferte weiter die aus der Fremdseite GEERBTE Original-URL. Ursache:
+Der Export verdrahtete nur einen Klick-Handler (preventDefault + JS-Navigation), das
+href-ATTRIBUT des Anchors blieb unangetastet. Nicht-JS-Konsumenten des Attributs
+(Link-Kopieren, Hover-Statuszeile, Crawler/SEO, Mittelklick "in neuem Tab öffnen") sahen
+so die falsche URL. Kein bewusster Trade-off — schlicht nie bedacht (der Redirect war rein
+laufzeit-verdrahtet, während Text-Overrides längst direkt in den DOM gebacken wurden).
+
+FIX — zweiteilig (generate.ts, EXPORT-only, rein additiv):
+- href-BAKE: Im "export"-Zweig wird pro präsentem redirect-Mapping auf einem <a> das
+  href-Attribut direkt auf config.url gesetzt — analog zum bestehenden Text-Bake, VOR der
+  Serialisierung, gleicher present-Orphan-Filter. NUR <a> (tagName-Guard); <button> hat kein
+  href und bleibt unberührt. Bei openInNewTab:true zusätzlich target="_blank" + rel GEMERGET
+  (importiertes rel wie nofollow bleibt, noopener/noreferrer kommen dazu — Reverse-Tabnabbing-
+  Schutz; bei openInNewTab:false wird target/rel NICHT angefasst). ADDITIV: JSON-Datenblock
+  und Klick-Handler bleiben unverändert (der Handler neutralisiert weiter inline onclick des
+  Fremdcodes + feuert Track; Linksklick navigiert per location.href auf DIESELBE URL -> kein
+  Konflikt, keine Doppel-Navigation). URL ist persist-zeit-validiert (isValidRedirectUrl: nur
+  http/https) -> kein javascript:-Vektor; setAttribute-Senke wird bei Serialisierung escaped.
+- auxclick-TRACKING: Der 'click'-Handler feuert NUR bei linker Maustaste. Mittelklick
+  ("im neuen Tab öffnen") erzeugt 'auxclick', NICHT 'click' -> das Track-Event fiel dort
+  bisher aus. Neuer, EXPORT-only 'auxclick'-Listener feuert AUSSCHLIESSLICH den Track-Beacon
+  (kein preventDefault, kein window.open, keine location-Zuweisung — nach dem href-Bake
+  navigiert der Mittelklick nativ korrekt). RECHTSKLICK-SCHUTZ (tragend): 'auxclick' feuert
+  in manchen Browsern auch bei der RECHTEN Taste (Kontextmenü) -> das Guard
+  `if (e.button !== 1) return;` als ERSTE Zeile lässt NUR die mittlere Taste durch; ein
+  Rechtsklick-Kontextmenü löst NIE ein Event aus (sonst Ghost-Conversion, schädlicher als die
+  Ursprungslücke). KEIN Doppel-Feuern strukturell garantiert: 'click' (nur links) und
+  'auxclick' (mitte/rechts) sind pro physischem Klick DISJUNKT -> ein Beacon pro Klick, ohne
+  Runtime-Dedup-Flag.
+
+WARUM export-only: Der href-Bake läuft ohnehin nur im Export; der auxclick-Listener wird
+bewusst NUR im Export registriert. Die Vorschau feuert bereits bei Linksklick echtes fbq
+(akzeptierte Marketer-eigene-Vorschau-Verschmutzung) — einen zweiten Feuerpfad (Mittelklick)
+dort hinzuzufügen würde diese Verschmutzung ausweiten, und in der Vorschau ist kein href
+gebacken. Beide Teile export-only zu halten macht den Fix kohärent.
+
+TESTS (9 neu, diskriminierend): Kern-Beweis (gebackenes href = konfigurierte URL, NICHT
+Original-URL), target/rel + rel-Merge, openInNewTab:false lässt target/rel weg, track-only
+fasst href nicht an; Mittelklick(button 1) -> Beacon ohne Navigation, Rechtsklick(button 2)
+-> 0 Beacons (Ghost-Conversion-Gegenprobe), kein Doppel-Feuern, Preview-auxclick -> 0 Beacons
+(Scoping-Beweis). Bestehende Gegenprobe (un-gemappter Link unangetastet) bleibt grün.
+
+LIVE-VERIFIKATION (Browser, bestätigt): (1) Rechtsklick -> "Adresse des Links kopieren"
+liefert jetzt die konfigurierte Ziel-URL statt der geerbten Original-URL. (2) Hover zeigt die
+neue Ziel-URL in der Statuszeile. (3) Mittelklick öffnet die richtige URL in neuem Tab UND das
+Track-Event erscheint im Meta Events Manager. (4) GEGENPROBE Rechtsklick (nur Kontextmenü) ->
+KEIN Event im Events Manager (Ghost-Conversion-Schutz greift). (5) Regulärer Linksklick ->
+Navigation + Event wie bisher, genau ein Event (kein Doppelzählen ggü. Mittelklick).
+Commit auf origin/main.
+

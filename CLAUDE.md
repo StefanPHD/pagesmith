@@ -260,9 +260,54 @@ Voll (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item):
 docs/claude-history/security-manifest-full.md.
 
 ### Tier 0 — Harte Launch-Blocker (katastrophal beim ersten bösen Nutzer / irreversibel)
-- KILL-SWITCH (höchste Prio): blocked-Flag auf domains-Zeile, das die Serve-Route VOR dem
-  Ausliefern prüft (451/410). BINDET-AN: Serving existiert (7a/7c-1) -> ab sofort baubar,
-  vor erstem Fremd-Traffic.
+- KILL-SWITCH (höchste Prio): GEBAUT, LIVE VERIFIZIERT. Projektbasierte Sperre
+  (projects.blocked_at; domains.blocked_at additiv vorbereitet + im Serve-Check schon
+  mitgeprüft, operativ noch nicht gesetzt), FAIL-CLOSED, 451 + statische Erklärseite im
+  Serve-Pfad, Ingest-Stop in /api/e (früher Verwurf VOR Token-Lookup, spart die
+  Token-Query). Migration 0008, Serve-Resolver auf ServeResult-Union (ok/blocked/notfound).
+  LIVE-SMOKE VOLLSTÄNDIG BESTANDEN (4/4): (1) 451-Anzeige bei Sperre, kein Content;
+  (2) Isolation — paralleles ungesperrtes Projekt blieb durchgehend 200; (3) Ingest-Stop
+  ECHT bewiesen: identischer Request/Format gegen gesperrtes vs. entsperrtes Projekt ergab
+  in BEIDEN Fällen HTTP 204 (bewusst gleich, kein Leak), aber nur im entsperrten Fall
+  erschien das Event im Meta Events Manager (eventID-Abgleich bestätigt), im gesperrten
+  Fall NICHTS; (4) Reversibilität nach Entsperren bestätigt. BINDET-AN: Serving existiert
+  (7a/7c-1) -> erledigt, vor erstem Fremd-Traffic.
+- KILL-SWITCH — LEKTION (Manifest, nicht nur Chat): identischer HTTP-Status bei /api/e ist
+  HIER bewusstes Sicherheitsdesign (Sperre von "unbekannter Key" nicht unterscheidbar),
+  KEIN Testfehler. Verifikation dieses Pfades MUSS über die NACHGELAGERTE Wirkung laufen
+  (Meta Events Manager: kommt etwas an oder nicht), NICHT über den Statuscode allein — ein
+  curl-Status-Vergleich beweist hier nichts. (Zusatz: ein 400 an /api/e beweist ebenfalls
+  nichts über die Sperre — die Pflichtfeld-Validierung {trackingKey,eventID,event} greift
+  VOR dem blocked_at-Check; falsche Feldnamen ergeben immer 400, sperr-unabhängig.)
+- KILL-SWITCH — SQL-RUNBOOK (im Ernstfall auffindbar; bewusst hier in der Root-Doku statt
+  in separater Datei, da CLAUDE.md jede Session geladen wird). Sperren:
+  ```sql
+  -- per project_id
+  update public.projects set blocked_at = now(), blocked_reason = 'abuse report: <ref>'
+  where id = '<PROJECT_UUID>' and blocked_at is null;
+  -- per Label (publayer.net-Subdomain)
+  update public.projects set blocked_at = now(), blocked_reason = 'abuse report: <ref>'
+  where id = (select project_id from public.domains where label = '<LABEL>') and blocked_at is null;
+  -- per Custom-Host
+  update public.projects set blocked_at = now(), blocked_reason = 'abuse report: <ref>'
+  where id = (select project_id from public.domains where custom_host = '<HOST>') and blocked_at is null;
+  ```
+  Entsperren:
+  ```sql
+  update public.projects set blocked_at = null, blocked_reason = null where id = '<PROJECT_UUID>';
+  ```
+  Alle gesperrten Projekte auflisten:
+  ```sql
+  select p.id, p.name, p.blocked_at, p.blocked_reason,
+         array_agg(d.label)       filter (where d.label is not null)       as labels,
+         array_agg(d.custom_host) filter (where d.custom_host is not null) as custom_hosts
+  from public.projects p left join public.domains d on d.project_id = p.id
+  where p.blocked_at is not null group by p.id order by p.blocked_at desc;
+  ```
+- KILL-SWITCH — OFFENER PUNKT (unverändert aktuell): ABUSE-KONTAKTADRESSE
+  (NEXT_PUBLIC_ABUSE_CONTACT) bleibt bewusst LEER, bis publayer.net MX-Records hat -> die
+  Kontaktzeile der 451-Seite entfällt bis dahin (getrimmt). Beim Live-Gang befüllen (bindet
+  an den ABUSE-KANAL-Blocker unten).
 - LOGGING-LEAK: struktureller Fix — Token gar nicht erst als Server-Action-Argument
   loggen (nicht nur maskieren). BINDET-AN: seit 2a; vor Prod-Logging mit echten Tokens.
 - E-MAIL-BESTÄTIGUNG wieder aktiv: Double-Opt-in in Supabase Auth (Dashboard-Toggle).

@@ -178,6 +178,20 @@ Entscheidungen und der XFH-Gate-Vollbeweis: docs/claude-history/phase-7-hosting.
   (Browser+Server, gleiche eventID) daher NOCH NICHT bewiesen -> aktuell nichts zu
   deduplizieren, da nur eine Quelle ankommt. Eigene kleine Untersuchung, nicht Teil von
   7c-2a.
+- NEBENFUND AUFGELÖST: Der Client-Pixel feuerte nicht, weil META SELBST das Event ablehnte
+  (Browser-Konsole: "is unavailable on this website due to it's traffic permission
+  settings"), NICHT wegen Adblocker oder Code-Bug. fbevents.js lud sauber (Status 200) und
+  der generierte fbq('track','Purchase',…)-Call war korrekt verdrahtet (Selector-Match,
+  value als Zahl, MODE=export). Ursache: Metas "Traffic Permissions"-Allow-List auf dem
+  Pixel-Konto enthielt publayer.net nicht -> Meta verwarf das Browser-Event lautlos. KEIN
+  Code-Fix nötig — die Ursache lag vollständig im Meta-Business-Konto. CAPI (server-seitig,
+  per Access-Token authentifiziert) unterliegt dieser Traffic-Permission NICHT, deshalb
+  liefen die Server-Events durchgehend korrekt.
+- SUPPORT-/TROUBLESHOOTING-HINWEIS (Zukunft): Kunden mit einer aktiven Meta-Traffic-
+  Permissions-Allow-List MÜSSEN ihre Pagesmith-Serving-Domain (publayer.net bzw. ihre
+  Custom-Domain) dort eintragen, sonst bleiben Browser-Events lautlos aus, während CAPI
+  weiterläuft — exakt dieses Symptom (Server-Events OK, Browser-Pixel stumm, Konsole meldet
+  "traffic permission settings") ist ein KONTO-Setup-Punkt, KEIN Pagesmith-Bug.
 - NÄCHSTER SCHRITT: Kill-Switch (Security-Manifest Tier 0) VOR 7c-2b — ab jetzt servieren
   echte Domains öffentlich, das Shared-Reputation-Risiko ist REAL (nicht mehr theoretisch).
 

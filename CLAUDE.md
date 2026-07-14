@@ -202,6 +202,57 @@ Entscheidungen und der XFH-Gate-Vollbeweis: docs/claude-history/phase-7-hosting.
 - NÄCHSTER SCHRITT: Kill-Switch (Security-Manifest Tier 0) VOR 7c-2b — ab jetzt servieren
   echte Domains öffentlich, das Shared-Reputation-Risiko ist REAL (nicht mehr theoretisch).
 
+## Code-Qualität, Performance & SaaS-Skalierung
+Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,
+Policy und jeder externe Call wird daran gemessen. B sind Skalierungs-Leitplanken für
+Features, die es HEUTE NICHT GIBT; sie sind NICHT bindend und der Code wird NICHT auf
+sie hin vorgebaut (kein Ballast, kein spekulativer Infrastruktur-Aufbau). Jede B-Regel
+trägt eine explizite TRIGGER-Bedingung — erst wenn die eintritt, wird die Regel scharf
+und wandert (dann als geprüfte Entscheidung) nach A. So bleibt das Manifest ehrlich:
+keine Statusänderung für etwas, das noch nicht existiert.
+
+### A) Heute verbindlich (prüfbar, gilt ab sofort)
+- DATENZUGRIFF: Ausschließlich über den Supabase-JS-Client (PostgREST/HTTP). Keine
+  direkte PostgreSQL-Verbindung, kein ORM (Prisma/Drizzle etc.) ohne explizite
+  Rücksprache — der Stack läuft heute bewusst rein über den HTTP-Layer.
+- KEIN SELECT *: nur die für die Business-Logik nötigen Spalten abrufen (bereits
+  gelebte Disziplin, siehe resolve.ts-Resolver-Muster — hier bestätigt, nicht neu).
+- KEIN N+1: keine Schleifen mit Einzel-Query pro Element; Joins/gebündelte Queries
+  nutzen.
+- PROAKTIVE INDIZES: bei jeder neuen Tabelle/Spalte, die in WHERE/ORDER BY/Matching
+  verwendet wird, direkt einen passenden Index vorschlagen (Präzedenzfall: partial
+  unique index auf domains.custom_host).
+- RLS-PRÄZISION (korrigierte Regel, NICHT "O(1) Policies" — das ist keine sinnvolle
+  Metrik): auth.uid() in Policies IMMER als (select auth.uid()) wrappen, damit Postgres
+  es einmal statt pro Zeile auswertet. Keine tiefen Joins/Subqueries in Policies.
+  security definer NUR mit expliziter Einzelfall-Begründung vorschlagen (umgeht RLS,
+  ist bei Fehlgebrauch selbst ein Sicherheitsloch) — NIEMALS als Standardempfehlung.
+- DEFENSIVE TIMEOUTS: JEDER externe API-Call (Meta CAPI heute, Vercel-Domains-API in
+  7c-2b) braucht ein striktes Timeout, damit ein hängender Drittanbieter die
+  Serverless-Funktion nicht blockiert.
+- /API/E-SCHLANKHEIT (der reale Hotspot, NICHT CSV/Bulk): /api/e wird von JEDEM
+  Besucher JEDER Kundenseite getroffen — jeder zusätzliche synchrone Call dort
+  multipliziert sich mit dem Traffic ALLER Kunden zusammen. PRÄZISE Regel (bewusst
+  KEIN pauschales "Drittanbieter nie synchron", das würde die Dedup-Garantie
+  gefährden): die Beacon-Antwort an den Client darf NICHT auf den Meta-Call warten,
+  aber der CAPI-Call selbst muss zuverlässig zugestellt werden.
+- RATE-LIMITING: siehe Security Manifest Tier 1 (Per-Tenant-Limiting /api/e+/api/capi)
+  — hier nur Cross-Link, keine Duplikation.
+- AUDIT-LOGS: siehe Security Manifest (Vercel-Domain-Mutations-Log) — hier nur
+  Cross-Link, keine Duplikation.
+
+### B) Skalierungs-Leitplanken für SPÄTER (NICHT bindend, kein Code heute danach ausrichten)
+- BULK-/CSV-STREAMING (Presigned Uploads, zeilenweise Verarbeitung, keine Volllast in
+  RAM): Pagesmith hat heute KEINEN Bulk-Import/Export-Pfad. TRIGGER: sobald das
+  Lead-Enrichment-Modul (Zukunfts-Roadmap) real umgesetzt wird.
+- QUEUE-TOOLS / ASYNC-INFRASTRUKTUR (Inngest, Upstash, Database-Webhooks, Edge
+  Functions für Hintergrundarbeit): heute existiert EIN async-Kandidat (CAPI), der
+  bewusst so gebaut ist, wie er ist. TRIGGER: sobald ein ZWEITER unabhängiger
+  Async-Anwendungsfall entsteht — keine Infrastruktur auf Verdacht bauen.
+- REALTIME/WEBSOCKET-DISZIPLIN (RLS-gefilterte Subscriptions, aggregierte statt
+  Event-per-Row-Pushes): Pagesmith hat heute KEIN Live-Dashboard-Feature. TRIGGER:
+  sobald ein Realtime-/Live-Dashboard-Feature geplant wird.
+
 ## Security Manifest & Launch Blocker (Tier-Übersicht)
 EINE Wahrheitsquelle für Launch-Blocker; sequenziert nach dem Moment, in dem das Risiko
 real BEISST (nicht alles ist P0). Kompakt: pro Item Tragende Kontrolle + BINDET-AN.

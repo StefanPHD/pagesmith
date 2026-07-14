@@ -17,8 +17,8 @@ const MAPPINGS_SCRIPT_ID = "pagesmith-mappings";
 
 // Vorschau- vs. Export- vs. Editier-Verhalten: dieselbe Wiring-Engine, EINE
 // mode-Verzweigung — kein Duplikat-Script.
-// - export:  echte Produktionslogik (Redirect-Click-Wiring, kein Text — der
-//            direkte-DOM-Bake fuer Text kommt spaeter).
+// - export:  echte Produktionslogik (Redirect-Click-Wiring + href-Bake fuer <a> +
+//            auxclick-Track bei Mittelklick; Text wird direkt in den DOM gebacken).
 // - preview: funktionale Vorschau (Redirect-Click-Wiring + Containment + Text).
 // - edit:    Editieren-iframe (NUR Text-Anzeige; KEIN Click-Wiring — Klicks
 //            gehoeren der Selektions-Bruecke, die separat injiziert wird).
@@ -156,6 +156,37 @@ function buildWiringScript(
     },
     true
   );
+  // AUXCLICK-TRACKING (nur Export): der 'click'-Handler oben feuert NICHT bei
+  // Mittelklick (in allen Browsern feuert 'click' ausschliesslich fuer die primaere
+  // Taste; mittlere/rechte erzeugen 'auxclick'). Ohne diesen Listener bliebe ein
+  // Track-Event bei "im neuen Tab oeffnen" (Mittelklick) aus. Nach dem href-Bake
+  // navigiert der Mittelklick nativ korrekt -> dieser Handler feuert AUSSCHLIESSLICH
+  // den Track-Beacon und fasst die Navigation NICHT an (kein preventDefault, kein
+  // window.open, keine location-Zuweisung). RECHTSKLICK-SCHUTZ: 'auxclick' feuert in
+  // manchen Browsern auch fuer die rechte Taste (Kontextmenue) -> das button-Guard
+  // als ERSTE Zeile laesst NUR die mittlere Taste (button === 1) durch, sonst waere
+  // ein Rechtsklick eine Ghost-Conversion. KEIN Doppel-Feuern: 'click' (nur links)
+  // und 'auxclick' (mitte/rechts) sind pro physischem Klick disjunkt.
+  if (MODE === "export") {
+    document.addEventListener(
+      "auxclick",
+      function (e) {
+        if (e.button !== 1) return;
+        var t = e.target;
+        if (!t || typeof t.closest !== "function") return;
+        var el = t.closest("[${PAGESMITH_ID_ATTR}]");
+        var actions = el ? byId[el.getAttribute("${PAGESMITH_ID_ATTR}")] : null;
+        if (!actions || !actions.length) return;
+        for (var j = 0; j < actions.length; j++) {
+          var a = actions[j];
+          if (a.type === "track") {
+            ${trackStmt}
+          }
+        }
+      },
+      true
+    );
+  }
 })();`;
 }
 
@@ -178,6 +209,14 @@ function buildWiringScript(
  *   Output schon den neuen Text (kein Laufzeit-JS). Senke ist textContent (NICHT
  *   innerHTML) -> Markup im Override wird inerter Text. In "preview"/"edit" bleibt
  *   Text laufzeit-getrieben (Wiring-Schleife), hier NICHT gebacken.
+ * - HREF-Bake (nur "export", nur <a>): pro praesentem type:"redirect"-Mapping auf
+ *   einem <a> wird das href-Attribut auf config.url gesetzt (target/rel nur bei
+ *   openInNewTab, rel gemerget) — VOR der Serialisierung, damit Link-Kopieren,
+ *   Hover, Crawler und Mittelklick nativ die konfigurierte URL sehen. ADDITIV: das
+ *   redirect-Mapping bleibt in der Tabelle und im Klick-Handler. <button> wird
+ *   uebersprungen (kein href). Ergaenzt durch einen auxclick-Listener (nur Export),
+ *   der bei Mittelklick (button === 1, NIE Rechtsklick) den Track-Beacon feuert,
+ *   ohne die Navigation anzufassen — siehe buildWiringScript.
  * - Script-Injektion nur, wenn es etwas zu verdrahten gibt: in "export" werden
  *   Datenblock + Wiring uebersprungen, sobald die (redirect-)Tabelle leer ist ->
  *   eine reine-Text-Seite exportiert als reines statisches HTML, KEIN Script.
@@ -244,6 +283,40 @@ export function generateFunctional(
           `[${PAGESMITH_ID_ATTR}="${m.elementId}"]`
         );
         if (el) el.textContent = m.config.content;
+      }
+
+      // REDIRECT-BAKE (nur Export, nur <a>): das href-Attribut auf die Ziel-URL
+      // setzen, damit Link-Kopieren, Hover-Statuszeile, Crawler UND Mittelklick
+      // nativ korrekt zur konfigurierten URL fuehren (bisher trug das <a> weiter
+      // die aus der Fremdseite geerbte Original-URL). ADDITIV: die JSON-Tabelle
+      // und der Klick-Handler bleiben unveraendert — der Handler neutralisiert
+      // weiter inline onclick des Fremdcodes und feuert Track. Bei Linksklick
+      // navigiert der Handler per location.href auf DIESELBE URL -> kein Konflikt.
+      // <button> hat kein href -> uebersprungen (tagName-Guard). URL ist
+      // persist-zeit-validiert (isValidRedirectUrl: nur http/https) -> kein
+      // javascript:-Vektor; setAttribute ist eine Attribut-Senke (bei der
+      // Serialisierung escaped). Orphan-Filter identisch zum Text-Bake (present).
+      for (const m of mappings) {
+        if (m.type !== "redirect" || !present.has(m.elementId)) continue;
+        const el = doc.querySelector(
+          `[${PAGESMITH_ID_ATTR}="${m.elementId}"]`
+        );
+        if (!el || el.tagName !== "A") continue;
+        el.setAttribute("href", m.config.url);
+        // target/rel NUR bei openInNewTab. rel wird GEMERGET, nicht ueberschrieben:
+        // ein importiertes rel (z.B. nofollow) bleibt erhalten, noopener +
+        // noreferrer kommen dazu (Reverse-Tabnabbing-Schutz). Bei openInNewTab:false
+        // bleibt target/rel unangetastet — der Linksklick-Handler erzwingt ohnehin
+        // same-tab, und Mittelklick oeffnet nativ immer einen neuen Tab.
+        if (m.config.openInNewTab) {
+          el.setAttribute("target", "_blank");
+          const rel = new Set(
+            (el.getAttribute("rel") || "").split(/\s+/).filter(Boolean)
+          );
+          rel.add("noopener");
+          rel.add("noreferrer");
+          el.setAttribute("rel", Array.from(rel).join(" "));
+        }
       }
     }
 

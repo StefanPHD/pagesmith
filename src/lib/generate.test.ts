@@ -171,9 +171,35 @@ function click(selector: string): MouseEvent {
   return ev;
 }
 
+// Auxclick (Mittel-/Rechtsklick) auf das erste passende Element; button waehlbar
+// (1 = Mitte, 2 = rechts). Gibt das Event zurueck (defaultPrevented lesbar).
+function aux(selector: string, button: number): MouseEvent {
+  const el = mountedDoc.querySelector(selector);
+  if (!el) throw new Error(`kein Element fuer ${selector}`);
+  const ev = new MouseEvent("auxclick", {
+    bubbles: true,
+    cancelable: true,
+    button,
+  });
+  el.dispatchEvent(ev);
+  return ev;
+}
+
 const MAPPED_BUTTON = `<!DOCTYPE html><html><body><button data-pagesmith-id="ps-aaaaaa">Kaufen</button></body></html>`;
+// Gemappter Link mit GEERBTER Original-href aus der Fremdseite -> beweist den
+// href-Bake diskriminierend (der Bake muss diese URL ersetzen).
+const MAPPED_LINK = `<!DOCTYPE html><html><body><a data-pagesmith-id="ps-aaaaaa" href="https://original.example/impressum">Impressum</a></body></html>`;
+const MAPPED_LINK_REL = `<!DOCTYPE html><html><body><a data-pagesmith-id="ps-aaaaaa" rel="nofollow" href="https://original.example/impressum">Impressum</a></body></html>`;
 const UNMAPPED_LINK = (href: string) =>
   `<!DOCTYPE html><html><body><a href="${href}">Link</a></body></html>`;
+
+// Liest das <a> aus dem generierten Output (nach dem href-Bake).
+function anchorOf(output: string): HTMLAnchorElement {
+  const doc = new DOMParser().parseFromString(output, "text/html");
+  const a = doc.querySelector("a[data-pagesmith-id]");
+  if (!a) throw new Error("kein gemapptes <a> im Output");
+  return a as HTMLAnchorElement;
+}
 
 describe("Wiring-Verhalten EXPORT (Produktionslogik)", () => {
   it("openInNewTab -> window.open(url,'_blank'), nicht location.href", () => {
@@ -209,6 +235,141 @@ describe("Wiring-Verhalten EXPORT (Produktionslogik)", () => {
     const ev = click("a[href]");
     expect(ev.defaultPrevented).toBe(false);
     expect(openSpy).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// href-Bake (Export): ein gemapptes <a> traegt im Output die KONFIGURIERTE Ziel-URL
+// im href-Attribut, NICHT mehr die aus der Fremdseite geerbte Original-URL. Statisch
+// geprüft am serialisierten Attribut (kein Wiring-Ausführen nötig).
+// ---------------------------------------------------------------------------
+describe("href-Bake EXPORT (<a>-Redirects)", () => {
+  it("KERN-BEWEIS: href = konfigurierte Ziel-URL, NICHT die Original-URL", () => {
+    const out = generateFunctional(
+      MAPPED_LINK,
+      [redirect("ps-aaaaaa", "https://www.thr-ty.com")],
+      "export"
+    );
+    const a = anchorOf(out);
+    expect(a.getAttribute("href")).toBe("https://www.thr-ty.com");
+    expect(a.getAttribute("href")).not.toBe("https://original.example/impressum");
+  });
+
+  it("openInNewTab:true -> target=_blank UND rel enthaelt noopener + noreferrer", () => {
+    const out = generateFunctional(
+      MAPPED_LINK,
+      [redirect("ps-aaaaaa", "https://www.thr-ty.com", true)],
+      "export"
+    );
+    const a = anchorOf(out);
+    expect(a.getAttribute("target")).toBe("_blank");
+    const rel = (a.getAttribute("rel") || "").split(/\s+/);
+    expect(rel).toContain("noopener");
+    expect(rel).toContain("noreferrer");
+  });
+
+  it("rel-MERGE: importiertes rel=nofollow bleibt erhalten, noopener/noreferrer kommen dazu", () => {
+    const out = generateFunctional(
+      MAPPED_LINK_REL,
+      [redirect("ps-aaaaaa", "https://www.thr-ty.com", true)],
+      "export"
+    );
+    const rel = (anchorOf(out).getAttribute("rel") || "").split(/\s+/);
+    expect(rel).toContain("nofollow");
+    expect(rel).toContain("noopener");
+    expect(rel).toContain("noreferrer");
+  });
+
+  it("openInNewTab:false -> target/rel NICHT gesetzt (nur href gebacken)", () => {
+    const out = generateFunctional(
+      MAPPED_LINK,
+      [redirect("ps-aaaaaa", "https://www.thr-ty.com", false)],
+      "export"
+    );
+    const a = anchorOf(out);
+    expect(a.getAttribute("href")).toBe("https://www.thr-ty.com");
+    expect(a.hasAttribute("target")).toBe(false);
+    expect(a.hasAttribute("rel")).toBe(false);
+  });
+
+  it("Track-only auf <a>: href bleibt die Original-URL (Teil 1 fasst track-only nicht an)", () => {
+    const out = generateFunctional(
+      MAPPED_LINK,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { metaPixelId: PIXEL }
+    );
+    expect(anchorOf(out).getAttribute("href")).toBe(
+      "https://original.example/impressum"
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// auxclick-Tracking (Export): Mittelklick (button 1) feuert den Track-Beacon, ohne
+// die Navigation anzufassen. Rechtsklick (button 2) feuert NICHTS (Ghost-Conversion-
+// Schutz). Der Listener existiert NUR im Export (Preview -> 0 Calls).
+// ---------------------------------------------------------------------------
+describe("auxclick-Tracking (Mittelklick)", () => {
+  it("Mittelklick (button 1) -> fbq feuert, KEINE Navigation, kein preventDefault", () => {
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        MAPPED_LINK,
+        [redirect("ps-aaaaaa", "https://x.com", true), track("ps-aaaaaa", "Lead")],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    const ev = aux('[data-pagesmith-id="ps-aaaaaa"]', 1);
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+    expect(ev.defaultPrevented).toBe(false);
+    expect(openSpy).not.toHaveBeenCalled();
+    expect(hrefValue).toBe("");
+  });
+
+  it("GEGENPROBE Rechtsklick (button 2) -> fbq feuert NICHT (kein Ghost-Conversion)", () => {
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        MAPPED_LINK,
+        [track("ps-aaaaaa", "Lead")],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    aux('[data-pagesmith-id="ps-aaaaaa"]', 2);
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
+  });
+
+  it("KEIN Doppel-Feuern: Linksklick genau 1 fbq, Mittelklick genau 1 fbq (disjunkt)", () => {
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        MAPPED_LINK,
+        [redirect("ps-aaaaaa", "https://x.com", true), track("ps-aaaaaa", "Lead")],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(fbqCalls(fbq, "track")).toHaveLength(1);
+    aux('[data-pagesmith-id="ps-aaaaaa"]', 1);
+    expect(fbqCalls(fbq, "track")).toHaveLength(2);
+  });
+
+  it("SCOPING: auxclick in PREVIEW feuert NICHT (Listener ist export-only)", () => {
+    const fbq = stubFbq();
+    mountAndWire(
+      generateFunctional(
+        MAPPED_LINK,
+        [track("ps-aaaaaa", "Lead")],
+        "preview",
+        { metaPixelId: PIXEL }
+      )
+    );
+    aux('[data-pagesmith-id="ps-aaaaaa"]', 1);
+    expect(fbqCalls(fbq, "track")).toHaveLength(0);
   });
 });
 

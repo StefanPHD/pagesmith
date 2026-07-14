@@ -40,15 +40,22 @@ export async function getCapiConfigByTrackingKey(
 
   const admin = createAdminClient();
 
-  // Schritt 1: trackingKey -> project_id + settings (EINE Aufloesung).
-  // JSON-Pfad-Filter auf settings.capi.trackingKey.
+  // Schritt 1: trackingKey -> project_id + settings + blocked_at (EINE Aufloesung).
+  // JSON-Pfad-Filter auf settings.capi.trackingKey. blocked_at reitet in DERSELBEN
+  // Projektion mit -> Kill-Switch-Ingest-Stop ohne zusaetzlichen Roundtrip.
   const { data: project, error: projectError } = await admin
     .from("projects")
-    .select("id, settings")
+    .select("id, settings, blocked_at")
     .eq("settings->capi->>trackingKey", key)
     .maybeSingle();
 
   if (projectError || !project) return null;
+
+  // KILL-SWITCH (Tier 0): gesperrtes Projekt -> Events verwerfen. Frueh, VOR Pixel-/
+  // Token-Aufloesung (spart die Token-Query). null muendet im bestehenden 204-No-op-Pfad
+  // von handleIngest -> fuer den anonymen Aufrufer nicht von "kein Config" unterscheidbar
+  // (kein Zustandsleck). Halbe Sperre = keine Sperre: der Ingest muss dicht sein.
+  if (project.blocked_at) return null;
 
   // pixelId aus derselben Zeile — kein zweiter Lookup. Reuse der Settings-Ableitung.
   const pixelId = getMetaPixelId((project.settings ?? {}) as ProjectSettings);

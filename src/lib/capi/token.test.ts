@@ -103,4 +103,31 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toBeNull();
   });
+
+  it("KILL-SWITCH: gesperrtes Projekt (blocked_at) -> null (Event verworfen), Token-Query NICHT ausgefuehrt", async () => {
+    const { from } = mockAdmin({
+      projects: {
+        data: { id: "proj-1", settings: { pixels: { meta: { pixelId: "PIXEL-123" } } }, blocked_at: "2026-07-14T00:00:00Z" },
+        error: null,
+      },
+      project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
+    });
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toBeNull();
+    // Frueh-Verwerfen VOR der Token-Aufloesung: project_tokens wird nie abgefragt.
+    expect(from).not.toHaveBeenCalledWith("project_tokens");
+  });
+
+  it("KILL-SWITCH Gegenprobe: ungesperrtes Projekt (blocked_at null) -> CapiConfig wie bisher", async () => {
+    mockAdmin({
+      projects: {
+        data: { id: "proj-1", settings: { pixels: { meta: { pixelId: "PIXEL-123" } } }, blocked_at: null },
+        error: null,
+      },
+      project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
+    });
+    expect(await getCapiConfigByTrackingKey("tk-abc")).toEqual({
+      pixelId: "PIXEL-123",
+      token: "SECRET-TOKEN",
+    });
+  });
 });

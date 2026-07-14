@@ -9,8 +9,10 @@
 import {
   getPublishedHtmlByLabel,
   getPublishedHtmlByCustomHost,
+  type ServeResult,
 } from "@/lib/hosting/resolve";
 import { extractLabel, resolveEffectiveHost } from "@/lib/hosting/host";
+import { renderBlockedPage } from "@/lib/hosting/blocked-page";
 
 export const runtime = "nodejs";
 // Immer frisch aus published_content (Scheibe 7a bewusst OHNE Cache; Cache +
@@ -32,6 +34,18 @@ function notFound(): Response {
   });
 }
 
+// Kill-Switch (Tier 0): ein gesperrtes Projekt -> 451 + minimale statische Erklaerseite,
+// NIE published_content. Security-Header wie auf allen Pfaden. Die Kontaktzeile ist
+// conditional: NEXT_PUBLIC_ABUSE_CONTACT wird getrimmt; leer/ungesetzt/nur-Whitespace
+// -> keine Zeile (renderBlockedPage entscheidet). Server-seitig zur Request-Zeit gelesen.
+function blocked(): Response {
+  const contact = process.env.NEXT_PUBLIC_ABUSE_CONTACT?.trim();
+  return new Response(renderBlockedPage(contact || undefined), {
+    status: 451,
+    headers: { "Content-Type": "text/html; charset=utf-8", ...SECURITY_HEADERS },
+  });
+}
+
 export async function GET(request: Request): Promise<Response> {
   // DIESELBE Host-Quelle wie die Middleware-Verzweigung (kein Split-Brain).
   const host = resolveEffectiveHost(request.headers);
@@ -44,12 +58,16 @@ export async function GET(request: Request): Promise<Response> {
   // Custom-Domain -> exakter custom_host-Lookup. Sauberer Zweig-Split ohne
   // Ueberlappung (extractLabel liefert fuer Nicht-pgsm/lvh-Hosts null).
   const label = extractLabel(host);
-  const html = label
+  const result: ServeResult = label
     ? await getPublishedHtmlByLabel(label)
     : await getPublishedHtmlByCustomHost(host);
-  if (!html) return notFound(); // unbekannter Host/Label ODER nie publiziert
 
-  return new Response(html, {
+  // Kill-Switch VOR der Auslieferung: gesperrt -> 451; notfound (inkl. fail-closed bei
+  // unklarem Zustand) -> 404; nur "ok" liefert published_content aus.
+  if (result.kind === "blocked") return blocked();
+  if (result.kind === "notfound") return notFound();
+
+  return new Response(result.html, {
     status: 200,
     headers: { "Content-Type": "text/html; charset=utf-8", ...SECURITY_HEADERS },
   });

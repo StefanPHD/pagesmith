@@ -178,7 +178,7 @@ hierher, statt zu duplizieren. Reihenfolge im Bau: erst Phase 4.5, dann Phase 5.
   Hinweis: Heading-Erkennung kann den bestehenden Scanner früh erweitern.
 
 ### Optionale Module, Post-7c-2 (UNVERBINDLICH — Richtungsgeber, KEINE committete Roadmap)
-Die folgenden zwei Sektionen sind UNVERBINDLICHE "Optionale Module, Post-7c-2" —
+Die folgenden Sektionen sind UNVERBINDLICHE "Optionale Module, Post-7c-2" —
 Richtungsgeber, KEINE committete Roadmap, KEIN Statuswechsel, KEINE Scope-Erweiterung
 von 7c-2. Sie ändern an der laufenden Arbeit (7c-2a) NICHTS. Jedes Modul wird bei echter
 Umsetzung eine eigene beweisbare Slice mit eigenem Konzept.

@@ -237,3 +237,76 @@ JS-Snippet-Copy-Paste minimieren.
   (automatisierbar) oder manuell konfiguriert werden muss — OHNE dafür jetzt Struktur auf
   Vorrat zu bauen.
 
+## Tracking-Testmodus für Kunden (Optionale Module, Post-7c-2 — kleines, eigenständiges Modul)
+- IDEE: Dashboard-Schalter "Tracking-Testmodus". Marketer trägt seinen Meta
+  test_event_code ein; Events tauchen im Events-Manager-Testtab auf, ohne die echten
+  Kampagnendaten zu verfälschen.
+- TECHNISCHE KORREKTUR (recherchiert, nicht angenommen): test_event_code ist
+  AUSSCHLIESSLICH ein CAPI-/Server-Request-Feld. Es gibt KEIN entsprechendes
+  fbq()-Client-Parameter in Metas API. Der Client-Pixel braucht KEINE Änderung —
+  Metas "Ereignisse testen"-Tool erfasst Browser-Events ohnehin passiv, sobald der
+  Test-Tab offen ist (in dieser Session selbst beobachtet: Browser-Event erschien
+  dort ohne jeden eingeschleusten Code). SCOPE DAMIT KLEINER als ursprünglich gedacht:
+  nur die interne CAPI-Route muss test_event_code optional in den Meta-Request-Body
+  aufnehmen, wenn im Projekt gesetzt.
+- ECHTES RISIKO, nicht nur Fußnote: Der Sinn von test_event_code ist typischerweise,
+  dass so markierte Events aus der ECHTEN Kampagnen-Optimierung ausgeschlossen werden.
+  Vergisst ein Marketer, den Testmodus zu deaktivieren, verschwinden seine echten
+  Käufe lautlos aus Metas Optimierungssignal, während das Werbebudget weiterläuft.
+  DESIGN-ANFORDERUNG bei Umsetzung: kein stiller Dauer-Toggle — Auto-Ablauf nach
+  X Stunden und/oder unübersehbarer Dashboard-Banner "Testmodus aktiv seit...".
+- (Vor Umsetzung: Metas eigene Doku zur Ausschluss-Regel von test_event_code aus der
+  Optimierung nochmal verifizieren, nicht nur aus dieser Einschätzung übernehmen.)
+
+## Zweigleisige Architektur: Import-Layer + Nativer Generierungs-Layer (JSON-First) (Optionale Module, Post-7c-2)
+- STRATEGISCHE EINORDNUNG (wichtig, festhalten): Dies ist KEINE Erweiterung des
+  bestehenden Import-Flows, sondern eine BEWUSST GETRENNTE zweite Produktspur.
+  Grund: beliebiges/fremdes importiertes HTML nachträglich verlustfrei in
+  semantische Sektionen (Hero/Features/Pricing) zu zerlegen, ist ein offenes,
+  heuristisches Problem ohne verlässliche Lösung (anders als die begrenzte
+  Element-Erkennung in detect.ts). Die Zweigleisigkeit UMGEHT dieses Problem,
+  statt es zu lösen.
+- SPUR A (bestehend, UNVERÄNDERT): Import beliebiger KI-generierter/fremder HTML-
+  Seiten, Click & Connect-Wiring wie heute. published_content bleibt wie es ist.
+  Bleibt agnostisch gegenüber der Quelle (v0, Bolt, Lovable, ChatGPT, manuell).
+- SPUR B (neu, eigene Rubrik in der App): Seiten werden NATIV per Prompt über
+  Claude Code/MCP generiert. Da die Ausgabeform von Pagesmith selbst diktiert wird,
+  kann das LLM von Geburt an strukturiertes JSON (Array einzelner Sektionen)
+  ausgeben — KEINE Rückwärts-Extraktion nötig. Nur auf Spur-B-Seiten: volle
+  Bearbeitung (Sektions-Reordering/Drag&Drop trivial über Array-Position,
+  scoped Prompt-to-Edit pro Sektion, Branding-DNA-Konsistenz, Sektions-Level-
+  A/B-Testing).
+- DATENMODELL-PRINZIP (additiv, wie bisher immer in diesem Projekt): Spur A und
+  Spur B unterscheiden sich über einen Diskriminator (z.B. project_type oder eine
+  eigene nullable Spalte wie sections_json), KEINE Migration bestehender Spur-A-
+  Zeilen. Exakt das gleiche additive Muster wie custom_host neben dem Label-Modell
+  in 7c-1 — hier nur erwähnen, nicht implementieren.
+- SYNERGIE MIT SMART-TRACKING-VISION: Spur B ist der natürlichere Ort für
+  automatische Tracking-Vorschläge (Vision B, bereits dokumentiert) als Spur A:
+  bei nativer Generierung WEISS das System bereits zur Erzeugungszeit, dass ein
+  Button der Hero-CTA ist — keine nachträgliche Heuristik/Ratewerk wie bei
+  importiertem Fremd-HTML nötig.
+- SYNERGIE MIT PHASE 10 (MCP): Spur B gibt der MCP-Vision (scoped Tokens, Audit-
+  Logging aller KI-induzierten Mutationen) einen konkreten Flaggschiff-Anwendungs-
+  fall statt nur abstrakter Prinzipien.
+- EIGENSTÄNDIGE, KLEINERE MODULE, die KEINE der beiden Spuren-Architektur brauchen
+  (bei Umsetzung ZUERST prüfen, ob der kleine Schnitt reicht, bevor die große
+  Architektur angefasst wird):
+  (a) Seiten-Level-A/B-Testing (zwei komplette HTML-Varianten, 50/50-Split per
+      Middleware) funktioniert bereits mit zwei published_content-Blobs, BRAUCHT
+      keine JSON-Sektions-Architektur.
+  (b) Scoped Prompt-Editing auf bestehenden importierten Seiten (Spur A) wäre
+      OHNE volle Sektions-Segmentierung denkbar: Element in der Vorschau
+      auswählen (Detection-Infrastruktur existiert bereits), nur dessen
+      umgebender HTML-Kontext geht ans LLM statt der ganzen Seite.
+- OFFENER PUNKT FÜR SPÄTER (bei tatsächlicher Umsetzung, nicht jetzt): sobald
+  Pagesmith selbst per Prompt generiert statt nur zu hosten, wird Content-
+  Moderation eines böswilligen Generierungs-Prompts relevant (analog zum
+  Content-Moderations-Problem jedes generativen KI-Tools) — als künftiger
+  Security-Manifest-Punkt vormerken, nicht heute bauen.
+- POSITIONIERUNG (festhalten, nicht jetzt umsetzen): Wird Spur B real gebaut, wird
+  die Root-Identitätszeile "Eine schlanke Hosting- & Integrations-Plattform" nicht
+  mehr die volle Wahrheit sein (Pagesmith wäre dann zusätzlich ein generativer
+  Builder). Die Umschreibung ist DANN ein bewusster eigener Doku-Schritt bei
+  Umsetzungsbeginn, KEINE Änderung heute.
+

@@ -234,21 +234,29 @@ Entscheidungen und der XFH-Gate-Vollbeweis: docs/claude-history/phase-7-hosting.
   ".."), NICHT der Wahrheits-Anker für Domain-Gültigkeit — die eigentliche Autorität bleibt
   Vercels eigene 400-Antwort. IDN/Umlaut-Domains sind eine bekannte, bewusst nicht behandelte
   Lücke (nicht jetzt lösen, nur vermerkt).
-- FEHLER-MAPPING (Vercels API liefert bereits unterscheidbare Codes, nicht raten):
-  400 = Domain existiert bereits AUF DIESEM Projekt -> HEILUNGSPFAD (siehe unten).
-  403 = kein Zugriff auf die Domain -> Fehler an Nutzer.
-  409 = Domain gehört bereits einem ANDEREN Vercel-Projekt/Account -> ECHTER Konflikt, deckt
-  sich mit dem bereits dokumentierten Cross-User-Hijack-Risiko; dem Marketer klar zeigen
-  ("diese Domain ist schon anderswo verknüpft"), NICHT heilen.
-- IDEMPOTENZ & HEILUNG (eng begrenzt, KEINE allgemeine Sync-Engine): Wenn Vercel 400 meldet,
-  weil die Domain bereits auf UNSEREM Projekt existiert (z.B. nach einer fehlgeschlagenen
+- FEHLER-MAPPING — EMPIRISCH KORRIGIERT (ursprünglicher Plan sagte "400 = existiert bereits
+  auf diesem Projekt -> Heilung"; das war eine unverifizierte Doku-Lesart, durch echten
+  Doppel-Add-Call widerlegt): Der Owner-Retry (Domain existiert bereits auf UNSEREM Projekt)
+  liefert real HTTP 409 mit error.code "domain_already_in_use", NICHT 400. Diskriminator:
+  409 + error.code === "domain_already_in_use" + die im Body mitgelieferte projectId ===
+  unsere VERCEL_PROJECT_ID -> HEILEN. Jedes andere 409 (fremdes Konto) -> Konflikt zeigen,
+  NICHT heilen. Der dokumentierte 400 bleibt als generischer "Domain ungültig"-Fehler, ist
+  aber NICHT mehr der Heilungsauslöser. 403 = kein Zugriff auf die Domain -> Fehler an Nutzer.
+- VERIFIED:TRUE EMPIRISCH BESTÄTIGT WERTLOS: Live reproduziert — eine nie besessene, DNS-lose
+  Domain lieferte beim Add sofort verified:true, keine Challenge. Bestätigt den
+  Community-Befund aus der Konzeptphase als eigenes Beobachtungsergebnis, nicht nur zitierte
+  Fremdquelle. Persistenz bleibt entsprechend: immer status:'pending'.
+- IDEMPOTENZ & HEILUNG (eng begrenzt, KEINE allgemeine Sync-Engine): Wenn Vercel den oben
+  korrigierten 409 (error.code "domain_already_in_use" + eigene projectId) meldet, weil die
+  Domain bereits auf UNSEREM Projekt existiert (z.B. nach einer fehlgeschlagenen
   DB-Transaktion beim vorigen Versuch), holt derselbe Mutations-Aufruf den aktuellen
   Vercel-Zustand nach und schreibt/heilt die eigene DB-Zeile damit -> ein erneuter
   Add-Versuch des rechtmäßigen Owners wird NICHT blockiert. Das ist ein einziger, eng
   begrenzter Zweig INNERHALB der Mutation, kein Hintergrund-Job/Cron. Das tatsächliche
-  Vercel-Verhalten (400 bei Owner-Retry auf eigene Domain) wird beim Bau EMPIRISCH bestätigt
-  (echter Add-Call zweimal gegen dieselbe Domain, reale Antwort protokollieren), bevor die
-  Verzweigung fest verdrahtet wird — Doku ist Ausgangspunkt, Instrument ist Beweis.
+  Vercel-Verhalten ist inzwischen EMPIRISCH BESTÄTIGT (echter Doppel-Add gegen dieselbe
+  Domain: Add #1 -> 200, Add #2 -> 409 "domain_already_in_use" mit eigener projectId im
+  Body) — die Verzweigung wird auf diesen realen Diskriminator verdrahtet, nicht auf die
+  ursprünglich vermutete 400-Lesart. Doku war Ausgangspunkt, Instrument war Beweis.
   RENNBEDINGUNG: zwei parallele Add-Versuche desselben Users werden vom bestehenden
   Partial-Unique-Index auf domains.custom_host (aus 7c-1) auf DB-Ebene gefangen; der Code
   behandelt diese Constraint-Verletzung als "parallel bereits geschrieben, aktuellen Stand

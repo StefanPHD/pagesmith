@@ -87,7 +87,9 @@ const MAX_HOST_LEN = 253;
 // und endet alphanumerisch. Damit sind KEINE aufeinanderfolgenden Punkte ("..") und
 // kein fuehrender/abschliessender Punkt erlaubt; "/", Leerzeichen etc. fallen ohnehin
 // raus. Bindestrich steht am Ende der Zeichenklasse (keine Range-Ambiguitaet).
-const HOSTNAME_RE =
+// Exportiert -> die Custom-Domain-Normalisierung (lib/domains/normalize) nutzt DIESELBE
+// Shape-Autoritaet, statt eine zweite Hostname-Regex zu duplizieren.
+export const HOSTNAME_RE =
   /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*$/;
 
 // Geschlossene Allowlist der APP-Hosts. LANDMINE: die *.vercel.app-Preview-Hosts

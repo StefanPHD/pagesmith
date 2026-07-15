@@ -75,9 +75,12 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
                   Wildcard-Cert aktiv, NEXT_PUBLIC_HOSTING_DOMAIN env-gekoppelt (buildLiveUrl +
                   servingSuffixes, eine Quelle der Wahrheit), Prod-Serving-Zweig end-to-end
                   LIVE VERIFIZIERT (https://<label>.publayer.net servt published_content).
-              [ ] 7c-2b Custom-Domain-API-Mutation (server-only Vercel-Token, Add-Domain als
-                  reine Fn mit Ownership-Gate + Per-User-Cap, dynamische DNS-Anweisungen,
-                  Mutations-Audit-Log) — geplant. VORHER: Kill-Switch (Manifest Tier 0).
+              [x] 7c-2b Add-Domain-Mutation — ABGESCHLOSSEN (live verifiziert). Reine
+                  (userId, params)-Fn mit Ownership-Gate + Normalisierung + lokaler Kollision
+                  + Rate-Limit + Per-User-Cap + Vercel-Call (8s-Timeout) + 409-Heilung +
+                  unveränderlichem Audit-Log. Migration 0009. KEINE DNS-Anweisungen/kein
+                  Status-Polling (bewusst 7c-2c). Live-Beweis: success -> already_registered_self
+                  -> healed, je genau 1 Audit-Eintrag, Cleanup rückstandsfrei.
               [ ] 7c-2c Verify/Status-Polling (verified/misconfigured) + UX — geplant.
               [x] 7c-4 Phase-6-Dedup-Sichtbarkeit auf echter Domain (Kirsche) — BEWIESEN
                   auf publayer.net: Browser-Event UND Server-Event mit IDENTISCHER eventID,
@@ -284,6 +287,36 @@ Entscheidungen und der XFH-Gate-Vollbeweis: docs/claude-history/phase-7-hosting.
   8. Persistenz (custom_host + roher verification-Block aus Vercels Antwort, Status erstmal
      "pending" — NICHT aus dem unzuverlässigen verified-Flag abgeleitet) + Audit-Log-Eintrag
      (Actor + Zeit + Domain).
+- 7c-2b ABGESCHLOSSEN — Add-Domain-Mutation gebaut UND live gegen echtes Vercel + echtes
+  Supabase (publayer.net-Projekt) verifiziert. Pipeline grün (326 Tests, tsc, eslint,
+  next build). Dateien: Migration 0009 (domains.{verification_status(+CHECK),verification,
+  vercel_synced_at} + audit_logs, RLS OHNE jede Policy -> append-only, nur service_role);
+  src/lib/domains/{normalize,audit,register}.ts; src/lib/vercel/client.ts;
+  src/app/projects/domain-actions.ts (dünne "use server"-Session-Schicht); HOSTNAME_RE aus
+  hosting/host.ts wiederverwendet.
+- STRUKTUR (wie beschlossen): die reine (userId, params)-Mutation lebt in
+  src/lib/domains/register.ts MIT `import "server-only"` und OHNE "use server" — sonst wäre
+  der userId-Parameter eine client-wählbare Server-Action (Bypass). Die "use server"-Schicht
+  (domain-actions) reicht nur die Session-userId herein; MCP (Phase 10) hängt sich mit
+  EIGENER Autorisierung an denselben Eingang. Ownership-Gate = expliziter
+  user_id-Vergleich via Admin-Client (session-unabhängig), KEIN privilegierter Write davor.
+- LIVE-BEWEIS (drei Pfade, echte Infrastruktur): (1) neue Domain -> success, DB-Zeile
+  verification_status='pending' (NICHT aus verified:true abgeleitet), verification=null
+  (Vercel gab keine Challenge — deckt sich mit dem "verified:true wertlos"-Befund);
+  (2) gleiche Domain erneut -> lokale Idempotenz already_registered_self (KEIN Vercel-Call,
+  healed:false); (3) "lost transaction" simuliert (DB-Zeile gelöscht, Vercel behält Domain)
+  -> 409 domain_already_in_use + eigene projectId -> HEILUNG healed:true, DB-Zeile
+  nachgeholt. Audit-Verlauf exakt success -> already_registered_self -> healed, JE genau ein
+  Eintrag pro Aufruf. Cleanup rückstandsfrei (Vercel 404, DB leer, Wegwerf-Route + temporäre
+  Middleware-Test-Ausnahme rückgängig).
+- OFFENE PUNKTE (bewusst, kein Blocker): vercel_synced_at wird beim Insert NOCH NICHT
+  gesetzt (bleibt null) -> das schreibt der Config-Poll in 7c-2c. Der echte
+  Verify/Configuration-Status (misconfigured) + die DNS-Anweisungs-UX bleiben 7c-2c
+  (Scope gehalten). Der VERCEL_API_TOKEN ist projekt-gebunden (Least-Privilege, empirisch
+  bestätigt: teamId für Lese-/Schreib-Calls nicht nötig -> wird nicht gesendet).
+- NÄCHSTER SCHRITT: 7c-2c (Config-Status-Polling verified/misconfigured + DNS-Anweisungs-UX,
+  setzt vercel_synced_at). Security-Manifest Tier 1: VERCEL-TOKEN-Scope + Domain-Mutations-
+  Audit-Log ist mit dieser Scheibe erfüllt (Audit-Log gebaut, Token projekt-scoped).
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

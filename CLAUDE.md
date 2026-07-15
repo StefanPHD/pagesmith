@@ -318,6 +318,76 @@ Entscheidungen und der XFH-Gate-Vollbeweis: docs/claude-history/phase-7-hosting.
   setzt vercel_synced_at). Security-Manifest Tier 1: VERCEL-TOKEN-Scope + Domain-Mutations-
   Audit-Log ist mit dieser Scheibe erfüllt (Audit-Log gebaut, Token projekt-scoped).
 
+### 7c-2c — DNS-Anweisungs-UX: Konzept & Entscheidungen
+- ZIELGRUPPEN-CHARAKTER (prägt jede Entscheidung dieser Scheibe): Erste Scheibe im gesamten
+  Projekt, deren primärer Nutzer NICHT der Betreiber, sondern der technisch unbedarfte
+  Marketer ist — er muss bei seinem Registrar (IONOS, GoDaddy, Namecheap…) ohne Hilfe die
+  richtigen DNS-Zeilen eintragen. Erfolg misst sich daran, ob das OHNE Support-Rückfrage
+  gelingt, nicht nur daran, dass der Code funktioniert.
+- SCOPE DIESER SCHEIBE: DNS-Records anzeigen (dynamisch aus Vercel, nie hardcoded) +
+  Status-Check/Refresh + verständliche, abgeleitete Fehlerzustände. AUSSERHALB des Scopes:
+  die POST-.../verify-TXT-Challenge für den Fall "Domain liegt auf fremdem Vercel-Account"
+  (Randfall, eigene Scheibe falls je gebraucht); jegliche automatische Serving-Umschaltung
+  (bereits durch 7c-1-Middleware-Inversion + 7c-2a-Custom-Host-Lookup abgedeckt — sobald
+  misconfigured:false, ist die Domain ohne weiteren Code live-fähig).
+- DATENQUELLE — GET .../domains/{domain}/config (empirisch aus aktueller Vercel-Doku,
+  Response-Shape bestätigt): liefert configuredBy (CNAME|A|http|dns-01|null), misconfigured
+  (bool), recommendedCNAME (Array {rank,value:string}, rank=1 bevorzugt), recommendedIPv4
+  (Array {rank,value:string[]} — value ist SELBST ein Array, bei rank=1 können MEHRERE IPs
+  zurückkommen, ALLE müssen als A-Records angezeigt werden, nicht nur die erste). NICHTS wird
+  hardcoded — die DNS-Werte sind projektspezifisch und dynamisch (Community-Beleg: z.B.
+  xyz.vercel-dns-016.com statt eines generischen Werts). Exakte Endpunkt-/Feldnamen beim Bau
+  nochmal gegen die dann aktuelle Vercel-Doku pinnen (Config-Fakten veralten).
+- APEX VS. SUBDOMAIN — VOLLAUTOMATISCH, KEIN MANUELLER SCHALTER: Die UI erkennt anhand der
+  gespeicherten Domain selbst (Label-Struktur, kein "." vor der Registrable-Domain = Apex),
+  ob sie den A-Record-Block (recommendedIPv4) oder den CNAME-Block (recommendedCNAME)
+  prominent zeigt. Der Nutzer wählt nicht selbst, welche Anleitung für ihn gilt — das wäre
+  eine unnötige Fehlerquelle.
+- FEINAUFLÖSUNG DER ZUSTÄNDE (aus configuredBy+misconfigured ABGELEITET, da Vercels API kein
+  explizites "Konflikt"-Feld liefert — die Granularität entsteht aus der Kombination, nicht
+  aus einem direkt gelieferten Wert):
+  1. configuredBy:null + misconfigured:true -> "Wir sehen noch gar nichts" (Nutzer hat
+     vermutlich noch nichts eingetragen, ODER Propagation läuft noch) -> "warte auf dich /
+     warte aufs Internet"-Botschaft.
+  2. configuredBy:"CNAME" ODER "A" + misconfigured:true -> "Wir sehen etwas, aber es ist
+     falsch" (ein Record existiert, passt aber nicht zu unserem Projekt, z.B. veralteter
+     Eintrag) -> Nutzer muss AKTIV etwas löschen/korrigieren, nicht nur warten. Das ist der
+     Fall, der sonst zum stillen Support-Albtraum wird (Nutzer wartet ewig auf einen Zustand,
+     der von allein nie grün wird).
+  3. configuredBy:"http" -> eigener, benennbarer Zustand: Domain läuft vermutlich über einen
+     Proxy/CDN (z.B. Cloudflare) davor -> spezifisch benennen statt generisch "falsch
+     konfiguriert".
+  Grund für diese Aufschlüsselung: Support-Prävention. Ein pauschales "warte" bei Fall 2
+  lässt den Nutzer auf etwas warten, das nie von selbst eintritt.
+- POLLING-STRATEGIE (zwei Ebenen, Client UND Server — Client-Schutz ist UX, Server-Schutz
+  ist die eigentliche Absicherung, gleiche Lehre wie bei 7c-2b):
+  - CLIENT: manueller "Status prüfen"-Button + sparsames Auto-Intervall (60s), gestoppt via
+    Page Visibility API sobald der Tab inaktiv ist. Button nach Klick für 10s gesperrt
+    (visueller Cooldown) gegen ungeduldiges Wiederholt-Klicken.
+  - SERVER (die tragende Kontrolle, NICHT nur die Client-Geste): der bestehende
+    vercel_synced_at-Zeitstempel (aus 7c-2b, bisher ungenutzt) wird zur Bremse: ist die
+    letzte Prüfung jünger als 15-20s, liefert der Endpunkt den zwischengespeicherten DB-Stand
+    statt erneut gegen Vercel zu fragen — UNABHÄNGIG davon, welcher Tab/Client/Skript fragt.
+    Schützt gegen (a) direkten Skript-Missbrauch, der den Client-Cooldown umgeht, UND (b) das
+    harmlose, aber reale Mehrfach-Tab-Problem (mehrere offene Tabs derselben Domain-Seite =
+    Vielfaches an Poll-Traffic ohne böse Absicht). Keine neue Infrastruktur — nutzt eine
+    bereits existierende, bisher ungenutzte Spalte.
+- COPY-BUTTONS: jeder kopierte Wert wird vor dem Schreiben ins Clipboard strikt getrimmt
+  (keine führenden/folgenden Leerzeichen) — ein kopiertes Leerzeichen vor einem CNAME-Wert
+  ist eine reale, schwer auffindbare Fehlerquelle für einen Nicht-Techniker.
+- REGISTRAR-TERMINOLOGIE-TABELLE: einfache Übersetzungshilfe für die gängigsten Anbieter
+  (z.B. "Name" bei GoDaddy = "Host" bei IONOS = "@" für Apex bei anderen) — registrar-
+  AGNOSTISCH bleiben (keine providerspezifischen Screenshots/Flows pflegen), aber die
+  häufigste Verwirrungsquelle (unterschiedliche Feldnamen für dasselbe Konzept) direkt
+  adressieren.
+- BEKANNTE, BEWUSST NICHT BEHANDELTE GRENZE (CAA-Randfall): Falls ein Registrar bereits
+  andere CAA-Records trägt, braucht Let's Encrypt einen zusätzlichen expliziten CAA-Eintrag
+  für "letsencrypt.org" — sonst schlägt die Zertifikatsausstellung fehl, OHNE dass
+  getDomainConfig das zwingend als klar benannte Ursache zeigt (bräuchte eine separate
+  DNS-Abfrage außerhalb von Vercels Config-Endpunkt). Als SUPPORT-HINWEIS dokumentieren
+  ("sieht alles richtig aus, klappt aber trotzdem nicht -> CAA-Records prüfen"), NICHT extra
+  dafür bauen — seltener Randfall, eigene Abfrage-Infrastruktur nicht gerechtfertigt.
+
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,
 Policy und jeder externe Call wird daran gemessen. B sind Skalierungs-Leitplanken für

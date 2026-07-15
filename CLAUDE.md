@@ -202,6 +202,81 @@ Entscheidungen und der XFH-Gate-Vollbeweis: docs/claude-history/phase-7-hosting.
 - NÄCHSTER SCHRITT: Kill-Switch (Security-Manifest Tier 0) VOR 7c-2b — ab jetzt servieren
   echte Domains öffentlich, das Shared-Reputation-Risiko ist REAL (nicht mehr theoretisch).
 
+### 7c-2b — Add-Domain-Mutation: Konzept & Entscheidungen
+- SCOPE DIESER SCHEIBE: NUR die Add-Domain-Mutation selbst (Vercel-Call + Persistenz +
+  Ownership-Gate + Per-User-Cap + Rate-Limit + Audit-Log). Verify/Status-Polling + die
+  dazugehörige UX (DNS-Anweisungen anzeigen, verified/misconfigured-Status) bleibt bewusst
+  7c-2c — gleiche Schnittführung wie ursprünglich geplant, nicht aufgeweicht. Grund: eine
+  Scheibe bleibt demobar und prüfbar, wenn sie EINE Verantwortung trägt; Mutation und
+  Status-Polling sind zwei getrennte Zustandsmaschinen und werden nicht vermischt.
+- SELBST-KORREKTUR (Ehrlichkeit vor Bequemlichkeit): Die frühere Aussage "Vercel-Tokens
+  sind team-scoped, kein per-Endpoint-Scope" (oben im 7c-2-Entscheidungsblock unter
+  TOKEN-EHRLICHKEIT) war eine UNVERIFIZIERTE Annahme aus der ersten 7c-2-Konzeptphase — bei
+  Nachprüfung zeigt Vercels aktuelle CLI-Doku, dass projekt-gebundene Tokens inzwischen
+  existieren (vercel tokens create kann einen Token erzeugen, der nur auf EIN Projekt wirkt,
+  reduziert Blast-Radius bei Leak). ENTSCHEIDUNG: projekt-gebundener Token wird verwendet
+  (Least-Privilege, Security-Manifest-konform). Exakte CLI-Syntax beim Bau gegen die AKTUELLE
+  Vercel-Doku prüfen, NICHT aus dieser Doku-Zeile übernehmen (Config-Fakten veralten).
+- ZWEI-ZUSTAND-MODELL EMPIRISCH BESTÄTIGT (nicht nur theoretisch): Ein Vercel-Community-
+  Bericht zeigt, dass die POST-Antwort beim Domain-Hinzufügen `verified: true` liefern kann,
+  OBWOHL die DNS-Konfiguration noch nicht steht. Das `verified`-Feld aus der Add-Response ist
+  damit NICHT vertrauenswürdig für den echten Status — nur der separate GET-Config-Check
+  (misconfigured-Feld, Teil von 7c-2c) ist die verlässliche Quelle. Rechtfertigt rückwirkend
+  das von Anfang an geplante Zwei-Zustand-Modell (Verification vs. Configuration).
+- DOMAIN-NORMALISIERUNG (vor JEDEM weiteren Schritt: Ownership-Gate, Cap, Vercel-Call):
+  Trim, lowercase, Protokoll (http://, https://) und trailing slash strippen. HARTE GRENZEN
+  (Normalisieren ≠ Umdeuten): KEIN automatisches Strippen von "www." — www.kunde.de und
+  kunde.de sind zwei verschiedene DNS-Einträge mit unterschiedlichen Anweisungen (CNAME vs.
+  A-Record), die Nutzer-Eingabe muss unverändert durchgereicht werden. Führende
+  "*."-Wildcard-Präfixe werden HART ABGELEHNT (das ist ein legitimer Use-Case für UNSERE
+  Serving-Domain, kein Use-Case für eine einzelne Kunden-Landingpage). Lokale Regex ist nur
+  ein billiger Vorfilter gegen offensichtlichen Unsinn/Injection (Leerzeichen, Sonderzeichen,
+  ".."), NICHT der Wahrheits-Anker für Domain-Gültigkeit — die eigentliche Autorität bleibt
+  Vercels eigene 400-Antwort. IDN/Umlaut-Domains sind eine bekannte, bewusst nicht behandelte
+  Lücke (nicht jetzt lösen, nur vermerkt).
+- FEHLER-MAPPING (Vercels API liefert bereits unterscheidbare Codes, nicht raten):
+  400 = Domain existiert bereits AUF DIESEM Projekt -> HEILUNGSPFAD (siehe unten).
+  403 = kein Zugriff auf die Domain -> Fehler an Nutzer.
+  409 = Domain gehört bereits einem ANDEREN Vercel-Projekt/Account -> ECHTER Konflikt, deckt
+  sich mit dem bereits dokumentierten Cross-User-Hijack-Risiko; dem Marketer klar zeigen
+  ("diese Domain ist schon anderswo verknüpft"), NICHT heilen.
+- IDEMPOTENZ & HEILUNG (eng begrenzt, KEINE allgemeine Sync-Engine): Wenn Vercel 400 meldet,
+  weil die Domain bereits auf UNSEREM Projekt existiert (z.B. nach einer fehlgeschlagenen
+  DB-Transaktion beim vorigen Versuch), holt derselbe Mutations-Aufruf den aktuellen
+  Vercel-Zustand nach und schreibt/heilt die eigene DB-Zeile damit -> ein erneuter
+  Add-Versuch des rechtmäßigen Owners wird NICHT blockiert. Das ist ein einziger, eng
+  begrenzter Zweig INNERHALB der Mutation, kein Hintergrund-Job/Cron. Das tatsächliche
+  Vercel-Verhalten (400 bei Owner-Retry auf eigene Domain) wird beim Bau EMPIRISCH bestätigt
+  (echter Add-Call zweimal gegen dieselbe Domain, reale Antwort protokollieren), bevor die
+  Verzweigung fest verdrahtet wird — Doku ist Ausgangspunkt, Instrument ist Beweis.
+  RENNBEDINGUNG: zwei parallele Add-Versuche desselben Users werden vom bestehenden
+  Partial-Unique-Index auf domains.custom_host (aus 7c-1) auf DB-Ebene gefangen; der Code
+  behandelt diese Constraint-Verletzung als "parallel bereits geschrieben, aktuellen Stand
+  neu lesen", NICHT als harten Absturz.
+- RATE-LIMITING (erstes Rate-Limiting im gesamten Projekt, ehrlich als Netto-neue Arbeit
+  behandelt — im Security-Manifest bisher nur für /api/e|/api/capi als "geplant" vermerkt,
+  hier zuerst für die Domain-Mutation gebaut): KEINE zweite Zähl-Infrastruktur — nutzt das
+  ohnehin verpflichtende Audit-Log (Actor + Zeitpunkt jeder Mutation) direkt als Datenquelle
+  ("zähle Einträge dieses Users der letzten Stunde"). Kein Redis/Queue auf Verdacht
+  (Skalierungs-Manifest-Prinzip). Zählt ALLE Versuche (auch abgelehnte: ungültige Domain,
+  Cap erreicht, 409-Konflikt), nicht nur erfolgreiche — jeder Versuch kostet
+  Aufmerksamkeit/API-Kontingent. Richtwert: max. 5 Registrierungsversuche/Stunde/User.
+- VOLLSTÄNDIGE MUTATIONS-REIHENFOLGE (billig -> teuer sortiert):
+  1. Ownership-Gate (gehört project_id dem userId?)
+  2. Normalisierung + Formvalidierung (inkl. Wildcard-Ablehnung)
+  3. Lokaler DB-Kollisionscheck (fremder Owner -> Fehler; eigener Owner bereits vorhanden ->
+     Heilungspfad)
+  4. Rate-Limit-Check (Audit-Log-Query)
+  5. Per-User-Hard-Cap-Check (schützt Vercels/Hobby-Kontingent, wie in der 7c-2-
+     Grundentscheidung verankert)
+  6. Vercel-API-Call MIT striktem Timeout (Skalierungs-Manifest: jeder externe Call braucht
+     ein Timeout)
+  7. Fehler-Mapping (400-eigenes-Projekt -> heilen; 409 -> Konflikt zeigen; sonst ->
+     generischer Fehler)
+  8. Persistenz (custom_host + roher verification-Block aus Vercels Antwort, Status erstmal
+     "pending" — NICHT aus dem unzuverlässigen verified-Flag abgeleitet) + Audit-Log-Eintrag
+     (Actor + Zeit + Domain).
+
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,
 Policy und jeder externe Call wird daran gemessen. B sind Skalierungs-Leitplanken für

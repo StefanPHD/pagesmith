@@ -12,9 +12,11 @@ built for performance marketers in the DACH region and beyond who ship new pages
 constantly and need them working in minutes.
 
 > ⚠️ **Status: built in public, not finished.** The core editor, server-side
-> tracking and serving a published page on an isolated subdomain all work today.
-> Custom domains, automatic SSL and public/production operation do **not** exist
-> yet — see the roadmap. This is a solo passion project developed openly.
+> tracking (client + server, deduplicated) and serving a published page — on an
+> isolated subdomain or on your own custom domain with automatic SSL — all work
+> today. Broader public/production launch hardening (abuse tooling, wider rate
+> limiting, compliance groundwork) is still in progress — see the roadmap. This is
+> a solo passion project developed openly.
 
 ---
 
@@ -44,14 +46,14 @@ constantly and need them working in minutes.
   server for resilience against ad blockers and lost browser events. Events are
   consent-capable and deduplicated between the browser and server (shared event
   ID), following Meta's recommended setup.
-- **Hosting** — publish a project and serve it as a real, functional page on its
-  own isolated subdomain.
+- **Hosting** — publish a project and serve it as a real, functional page,
+  either on its own isolated subdomain or your own custom domain with
+  automatic SSL and guided DNS setup.
+- First-party (same-origin) tracking on hosted pages, for full ad-blocker
+  resilience — deduplicated between browser and server events.
 
 ### In progress / planned
 
-- First-party (same-origin) tracking on hosted pages, for full ad-blocker
-  resilience.
-- Custom domains with automatic SSL.
 - Client-side A/B testing (traffic split across variants).
 - Multi-page funnels (landing → checkout → thank-you, one project).
 - An AI-native MCP server so a marketer's AI tools can manage projects directly
@@ -74,9 +76,8 @@ constantly and need them working in minutes.
 
 ## Status & roadmap
 
-Server-side tracking is complete, and serving a published page on an isolated
-subdomain is live. Custom domains and first-party tracking on hosted pages are
-next.
+Server-side tracking, first-party ingestion and custom domain hosting (with
+automatic SSL) are complete. A/B testing is next.
 
 - [x] **Phase 1 — Local-first foundation:** import, sandboxed preview, element
       detection.
@@ -94,9 +95,9 @@ next.
       directly, live in the preview and in the export.
 - [x] **Phase 6 — Server-side tracking:** Meta Pixel + Conversions API,
       consent-capable and deduplicated.
-- [~] **Phase 7 — Hosting & go-live:** serving published pages on an isolated
-      subdomain is live; custom domains, automatic SSL and same-origin
-      first-party tracking are in progress.
+- [x] **Phase 7 — Hosting & go-live:** serving published pages on an isolated
+      subdomain, custom domains with automatic SSL, guided DNS status UX and
+      same-origin first-party tracking are all live.
 - [ ] **Phase 8 — A/B testing:** traffic split across variants.
 - [ ] **Beyond:** multi-page funnels and an AI-native MCP server.
 

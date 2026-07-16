@@ -9,6 +9,10 @@ import {
   checkDomainStatus,
   type CheckDomainStatusResult,
 } from "@/lib/domains/status";
+import {
+  removeCustomDomain,
+  type RemoveDomainResult,
+} from "@/lib/domains/remove";
 
 // Duenne "use server"-Schicht: uebersetzt die Session in eine verifizierte userId und
 // reicht sie an die reine (userId, params)-Mutation weiter. KEINE Geschaeftslogik hier —
@@ -80,6 +84,25 @@ export async function checkDomainStatusAction(
     return { ok: false, reason: "not_owner", error: "Nicht eingeloggt." };
   }
   return checkDomainStatus(user.id, domainLabel);
+}
+
+/**
+ * Server-Action: entfernt EINE Custom-Domain des Users (Vercel-DELETE zuerst, DB-Zeile
+ * erst nach Erfolg). domainLabel (der domains-PK) kommt vom Client; die userId
+ * AUSSCHLIESSLICH aus der Session. Ownership-Gate + Rate-Limit + 404-Heilung liegen in
+ * removeCustomDomain (session-frei, MCP-wiederverwendbar).
+ */
+export async function removeCustomDomainAction(
+  domainLabel: string,
+): Promise<RemoveDomainResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { ok: false, reason: "not_owner", error: "Nicht eingeloggt." };
+  }
+  return removeCustomDomain(user.id, { domainLabel });
 }
 
 /**

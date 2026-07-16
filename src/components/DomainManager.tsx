@@ -5,6 +5,7 @@ import {
   addCustomDomain,
   checkDomainStatusAction,
   listProjectDomains,
+  removeCustomDomainAction,
   type CustomDomainListItem,
 } from "@/app/projects/domain-actions";
 import type { DomainStatus } from "@/lib/domains/status";
@@ -133,7 +134,12 @@ export default function DomainManager({ projectId }: { projectId: string | null 
       {domains.length > 0 && (
         <ul className="mt-4 flex flex-col gap-3">
           {domains.map((d) => (
-            <DomainRow key={d.label} domain={d} pollTick={pollTick} />
+            <DomainRow
+              key={d.label}
+              domain={d}
+              pollTick={pollTick}
+              onChanged={loadList}
+            />
           ))}
         </ul>
       )}
@@ -148,14 +154,34 @@ export default function DomainManager({ projectId }: { projectId: string | null 
 function DomainRow({
   domain,
   pollTick,
+  onChanged,
 }: {
   domain: CustomDomainListItem;
   pollTick: number;
+  onChanged: () => void | Promise<void>;
 }) {
   const [status, setStatus] = useState<DomainStatus | null>(null);
   const [checking, setChecking] = useState(false);
   const [cooldownLeft, setCooldownLeft] = useState(0);
   const cooldownTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Zweistufige Inline-Bestaetigung (destruktiv, kein window.confirm).
+  const [confirming, setConfirming] = useState(false);
+  const [removing, setRemoving] = useState(false);
+  const [removeError, setRemoveError] = useState<string | null>(null);
+
+  async function handleRemove() {
+    setRemoving(true);
+    setRemoveError(null);
+    const res = await removeCustomDomainAction(domain.label);
+    if (res.ok) {
+      // Zeile verschwindet ueber den Parent-Reload -> kein lokaler setState danach noetig.
+      await onChanged();
+    } else {
+      setRemoving(false);
+      setConfirming(false);
+      setRemoveError(res.error);
+    }
+  }
 
   // Initial + bei jedem Auto-Poll-Tick aktualisieren (die Server-Cache-Bremse verhindert
   // dabei ueberzaehlige Vercel-Calls, unabhaengig vom Tab/Client). setState AUSSCHLIESSLICH
@@ -224,8 +250,44 @@ function DomainRow({
                 ? `Status prüfen (${Math.ceil(cooldownLeft / 1000)}s)`
                 : "Status prüfen"}
           </button>
+          {!confirming && (
+            <button
+              type="button"
+              onClick={() => setConfirming(true)}
+              disabled={removing}
+              className="rounded-md border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Entfernen
+            </button>
+          )}
         </span>
       </div>
+
+      {/* Zweistufige Bestaetigung — destruktive Aktion. */}
+      {confirming && (
+        <div className="mt-2 flex flex-wrap items-center gap-2 rounded-md bg-red-50 px-3 py-2">
+          <span className="text-xs text-red-700">
+            Domain wirklich entfernen? Sie wird bei Vercel gelöscht.
+          </span>
+          <button
+            type="button"
+            onClick={handleRemove}
+            disabled={removing}
+            className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+          >
+            {removing ? "Entferne…" : "Ja, entfernen"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirming(false)}
+            disabled={removing}
+            className="rounded-md border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Abbrechen
+          </button>
+        </div>
+      )}
+      {removeError && <p className="mt-2 text-xs text-red-600">{removeError}</p>}
 
       {status && (
         <>

@@ -127,8 +127,9 @@ export async function registerCustomDomain(
       return result;
     }
 
-    // 4) RATE-LIMIT (Audit-Log-Query; zaehlt ALLE Versuche der letzten Stunde).
-    const attempts = await countRecentAttempts(admin, userId);
+    // 4) RATE-LIMIT (Audit-Log-Query; zaehlt ALLE Add-Versuche der letzten Stunde —
+    //    action-spezifisch, damit Remove-Versuche das Add-Budget nicht aufzehren).
+    const attempts = await countRecentAttempts(admin, userId, "domain_add_attempt");
     if (attempts >= RATE_LIMIT_PER_HOUR) {
       result = {
         ok: false,

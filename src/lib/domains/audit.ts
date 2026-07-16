@@ -36,9 +36,14 @@ export async function writeAuditLog(
 }
 
 /**
- * Zaehlt die Audit-Eintraege dieses Users innerhalb des Fensters (Default 1 Stunde) —
- * die Zaehlgrundlage des Rate-Limits. Zaehlt ALLE Versuche (auch abgelehnte), weil jeder
- * Versuch Aufmerksamkeit/API-Kontingent kostet.
+ * Zaehlt die Audit-Eintraege dieses Users FUER EINE bestimmte action innerhalb des
+ * Fensters (Default 1 Stunde) — die Zaehlgrundlage der PRO-ACTION-Rate-Limits. Zaehlt
+ * ALLE Versuche dieser action (auch abgelehnte), weil jeder Versuch Aufmerksamkeit/API-
+ * Kontingent kostet.
+ *
+ * ACTION-SPEZIFISCH (nicht mehr global): so zehrt z.B. 'domain_remove' NICHT am
+ * 'domain_add_attempt'-Budget und umgekehrt — jede externe-Call-Klasse hat ihr eigenes
+ * Limit, ohne dass die eine die andere aushungert.
  *
  * WIRFT bei DB-Fehler (fail-closed fuer DIESEN Request): lieber einen sauberen Fehler +
  * Audit-Eintrag als eine still umgangene Abuse-Schranke. Der User kann erneut versuchen;
@@ -47,6 +52,7 @@ export async function writeAuditLog(
 export async function countRecentAttempts(
   admin: SupabaseClient,
   userId: string,
+  action: string,
   windowMs = 60 * 60 * 1000,
 ): Promise<number> {
   const since = new Date(Date.now() - windowMs).toISOString();
@@ -54,6 +60,7 @@ export async function countRecentAttempts(
     .from("audit_logs")
     .select("id", { count: "exact", head: true })
     .eq("user_id", userId)
+    .eq("action", action)
     .gte("created_at", since);
   if (error) throw new Error(`audit count failed: ${error.message}`);
   return count ?? 0;

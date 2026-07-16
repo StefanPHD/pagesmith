@@ -2,17 +2,22 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 // Server-Actions durch Spies ersetzen (verhindert das Laden des echten server-only-Codes).
-const { addCustomDomain, checkDomainStatusAction, listProjectDomains } = vi.hoisted(
-  () => ({
-    addCustomDomain: vi.fn(),
-    checkDomainStatusAction: vi.fn(),
-    listProjectDomains: vi.fn(),
-  }),
-);
+const {
+  addCustomDomain,
+  checkDomainStatusAction,
+  listProjectDomains,
+  removeCustomDomainAction,
+} = vi.hoisted(() => ({
+  addCustomDomain: vi.fn(),
+  checkDomainStatusAction: vi.fn(),
+  listProjectDomains: vi.fn(),
+  removeCustomDomainAction: vi.fn(),
+}));
 vi.mock("@/app/projects/domain-actions", () => ({
   addCustomDomain,
   checkDomainStatusAction,
   listProjectDomains,
+  removeCustomDomainAction,
 }));
 
 import DomainManager from "@/components/DomainManager";
@@ -143,5 +148,66 @@ describe("DomainManager (7c-2c)", () => {
     ).toBeTruthy();
     // Kein Domain-Status-Call, weil keine Zeile gerendert wurde.
     expect(checkDomainStatusAction).not.toHaveBeenCalled();
+  });
+
+  function oneDomain() {
+    return {
+      ok: true,
+      domains: [
+        { label: "kunde-de-abc", host: "kunde.de", verificationStatus: "pending", syncedAt: null },
+      ],
+    };
+  }
+
+  it("Entfernen: Bestätigen ruft removeCustomDomainAction(domain.label) + Reload (listProjectDomains erneut)", async () => {
+    listProjectDomains.mockResolvedValue(oneDomain());
+    checkDomainStatusAction.mockResolvedValue(statusStub({}));
+    removeCustomDomainAction.mockResolvedValue({ ok: true, healed: false });
+
+    render(<DomainManager projectId="proj-1" />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Entfernen" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Ja, entfernen" }));
+
+    await waitFor(() =>
+      expect(removeCustomDomainAction).toHaveBeenCalledWith("kunde-de-abc"),
+    );
+    // Reload: listProjectDomains erneut (Mount + nach Entfernen).
+    await waitFor(() =>
+      expect(listProjectDomains.mock.calls.length).toBeGreaterThanOrEqual(2),
+    );
+  });
+
+  it("Entfernen: Abbrechen -> kein removeCustomDomainAction-Call", async () => {
+    listProjectDomains.mockResolvedValue(oneDomain());
+    checkDomainStatusAction.mockResolvedValue(statusStub({}));
+
+    render(<DomainManager projectId="proj-1" />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Entfernen" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Abbrechen" }));
+
+    expect(removeCustomDomainAction).not.toHaveBeenCalled();
+  });
+
+  it("Entfernen fehlgeschlagen -> Fehlermeldung sichtbar, Zeile bleibt", async () => {
+    listProjectDomains.mockResolvedValue(oneDomain());
+    checkDomainStatusAction.mockResolvedValue(statusStub({}));
+    removeCustomDomainAction.mockResolvedValue({
+      ok: false,
+      reason: "vercel_error",
+      error: "Domain konnte nicht entfernt werden.",
+    });
+
+    render(<DomainManager projectId="proj-1" />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Entfernen" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Ja, entfernen" }));
+
+    expect(
+      await screen.findByText(/Domain konnte nicht entfernt werden/),
+    ).toBeTruthy();
+    // Zeile bleibt sichtbar.
+    expect(screen.getByText("kunde.de")).toBeTruthy();
   });
 });

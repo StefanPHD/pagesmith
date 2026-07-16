@@ -69,6 +69,7 @@ vi.mock("@/app/projects/domain-actions", () => ({
     error: "x",
   })),
   listProjectDomains: vi.fn(async () => ({ ok: true, domains: [] })),
+  removeCustomDomainAction: vi.fn(async () => ({ ok: true, healed: false })),
 }));
 
 // Erst nach dem Mock importieren, damit der Mock greift.

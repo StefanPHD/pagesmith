@@ -165,3 +165,55 @@ export async function getDomainConfig(
   if (res.ok) return { kind: "ok", config: (body as VercelDomainConfig) ?? {} };
   return { kind: "error", status: res.status };
 }
+
+/**
+ * Diskriminiertes Ergebnis des DELETE-Calls. `not_found` (404) heisst: die Domain ist
+ * NICHT (mehr) auf dem Projekt -> der gewuenschte Endzustand ist bereits erreicht; der
+ * Aufrufer behandelt das als Erfolg-aequivalent (heilt die DB-Zeile). Jeder ANDERE
+ * Nicht-2xx (400/401/403/409/5xx/Timeout) -> Abbruch, DB-Zeile bleibt.
+ */
+export type VercelRemoveResult =
+  | { kind: "ok" }
+  | { kind: "not_found" }
+  | { kind: "timeout" }
+  | { kind: "error"; status: number };
+
+/**
+ * Entfernt EINE Domain vom konfigurierten Vercel-Projekt (DELETE /v9/projects/{id}/
+ * domains/{domain}, verifiziert gegen die aktuelle Vercel-Doku). Reine (domainName) ->
+ * Result-Fn mit eigenem 8s-Timeout (Skalierungs-Manifest: jeder externe Call). Kein
+ * teamId (wie add/config: der projekt-gebundene Token loest das Team selbst auf).
+ */
+export async function removeDomainFromVercel(
+  domainName: string,
+): Promise<VercelRemoveResult> {
+  const token = process.env.VERCEL_API_TOKEN;
+  const projectId = process.env.VERCEL_PROJECT_ID;
+  if (!token || !projectId) return { kind: "error", status: 0 };
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+  let res: Response;
+  try {
+    res = await fetch(
+      `${VERCEL_API}/v9/projects/${encodeURIComponent(projectId)}/domains/${encodeURIComponent(domainName)}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
+      },
+    );
+  } catch {
+    return controller.signal.aborted
+      ? { kind: "timeout" }
+      : { kind: "error", status: 0 };
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (res.ok) return { kind: "ok" };
+  // 404 = Domain nicht (mehr) auf dem Projekt -> Ziel erreicht (heilen).
+  if (res.status === 404) return { kind: "not_found" };
+  return { kind: "error", status: res.status };
+}

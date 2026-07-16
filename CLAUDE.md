@@ -56,38 +56,16 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Mapping -> Mehr-Aktion -> echtes Meta-Pixel (consent-sauber) -> Secret-Storage
       (service_role + heiligstes Gate) -> CAPI-Route -> Dedup-Beacon. Offener
       End-to-End-Dedup-Sichtbarkeitstest auf verknüpfter Domain -> Phase 7.
-- [~] Phase 7 — Hosting & Go-Live: IN ARBEIT.
-      [x] Scheibe 7a — Serving auf *.pgsm.site, Label-Lookup, isolierte Origin —
-          ABGESCHLOSSEN (live).
-      [x] Scheibe 7b — First-Party-Ingest /api/e, chirurgischer Passthrough —
-          ABGESCHLOSSEN (live). /api/e ist der neutrale Trichter, in den sich Phase 8
-          additiv einhängt. KEIN Cheerio (Revision, siehe 7b-Block unten).
-      [~] Scheibe 7c — Custom-Domains + Auto-SSL via Vercel Domains API. Vier Sub-Scheiben:
-          [x] 7c-1 Serving-Kern — VOLLSTÄNDIG (Middleware-Inversion "ist
-              APP-Host?" + custom_host-Modell + Custom-Host-Serving + /api/e-
-              Passthrough am Serving-Zweig; byLabel + byCustomHost servieren
-              published_content, App unberührt, Port-Strip + sauberer 404
-              verifiziert). XFH-Trust-Boundary in Prod BEWIESEN (Vercel-Preview,
-              Gate GO): Vercels Edge überschreibt client-gefälschten
-              x-forwarded-host mit dem echten Host.
-          [~] 7c-2 Custom-Domains via Vercel-Domains-API:
-              [x] 7c-2a Serving-Domain publayer.net live: Nameserver-Delegation an Vercel,
-                  Wildcard-Cert aktiv, NEXT_PUBLIC_HOSTING_DOMAIN env-gekoppelt (buildLiveUrl +
-                  servingSuffixes, eine Quelle der Wahrheit), Prod-Serving-Zweig end-to-end
-                  LIVE VERIFIZIERT (https://<label>.publayer.net servt published_content).
-              [x] 7c-2b Add-Domain-Mutation — ABGESCHLOSSEN (live verifiziert). Reine
-                  (userId, params)-Fn mit Ownership-Gate + Normalisierung + lokaler Kollision
-                  + Rate-Limit + Per-User-Cap + Vercel-Call (8s-Timeout) + 409-Heilung +
-                  unveränderlichem Audit-Log. Migration 0009. KEINE DNS-Anweisungen/kein
-                  Status-Polling (bewusst 7c-2c). Live-Beweis: success -> already_registered_self
-                  -> healed, je genau 1 Audit-Eintrag, Cleanup rückstandsfrei.
-              [ ] 7c-2c Verify/Status-Polling (verified/misconfigured) + UX — geplant.
-              [x] 7c-4 Phase-6-Dedup-Sichtbarkeit auf echter Domain (Kirsche) — BEWIESEN
-                  auf publayer.net: Browser-Event UND Server-Event mit IDENTISCHER eventID,
-                  beide "Verarbeitet", ~3 Sekunden auseinander. Auf lvh.me strukturell nie
-                  möglich (nie eine echt verknüpfte Domain) — jetzt live bestätigt.
-      Details in der Phase-7c-Sektion unten. ACHTUNG: härtester Brocken (Multi-Tenant
-      Custom Domains + Auto-SSL); schaltet zugleich die Funnel-Vision frei. (war Phase 6)
+- [x] Phase 7 — Hosting & Go-Live: ABGESCHLOSSEN.
+      Alle Scheiben (7a Serving, 7b First-Party-Ingest, 7c-1 Middleware-Inversion +
+      Custom-Domain-Serving, 7c-2a Wildcard-Infra (publayer.net), 7c-2b Add-Domain-
+      Mutation, 7c-2c DNS-Anweisungs-UX + Domain entfernen) LIVE VERIFIZIERT — zuletzt
+      bestätigt durch einen echten Produktions-Smoke: test.thrty.store wurde über
+      die deployte Produktions-URL (pagesmith-delta.vercel.app, NICHT localhost)
+      hinzugefügt und ist dort als "Live" bestätigt — beweist, dass
+      VERCEL_API_TOKEN/VERCEL_PROJECT_ID auch in Vercels eigener Serverless-Runtime
+      funktionieren, nicht nur lokal. Details in der Phase-7c-Sektion unten +
+      docs/claude-history/phase-7-hosting.md. (war Phase 6)
 - [ ] Phase 8 — Analytics & ROI-Ökosystem (Vision): First-Party-Server-Side-Analytics
       (Traffic-Gesundheit, ROI/Attribution, Betreiber-Metriken) + Adblocker-Verlustrate
       über geteilte-eventID-Vergleich ECHTER Events. Detail-Sektion unten. (war A/B-Testing)
@@ -388,6 +366,25 @@ Entscheidungen und der XFH-Gate-Vollbeweis: docs/claude-history/phase-7-hosting.
   ("sieht alles richtig aus, klappt aber trotzdem nicht -> CAA-Records prüfen"), NICHT extra
   dafür bauen — seltener Randfall, eigene Abfrage-Infrastruktur nicht gerechtfertigt.
 
+### 7c-2 — Familie abgeschlossen (2a/2b/2c/Entfernen)
+Die Custom-Domain-Familie ist Ende-zu-Ende in Produktion bewiesen: Add (7c-2b),
+DNS-Anzeige + Status-Polling (7c-2c) und Entfernen. Zwei Lektionen aus dem Bauprozess,
+festgehalten damit sie nicht nur im Chat-Verlauf stecken:
+- LEKTION "Domain-Identität nie über ein angenommenes Feld annehmen": ein Bug entstand,
+  weil Code eine Spalte "id" auf domains selektierte, obwohl der echte Primärschlüssel
+  "label" ist (0006). PostgREST lehnte mit 42703 ab, der Code destrukturierte aber nur
+  {data} statt {data, error} -> der Fehler wurde verschluckt, die UI zeigte still eine
+  leere Liste statt eines Fehlers. REGEL: bei JEDER neuen Query den echten PK der
+  Zieltabelle nachsehen, nie aus dem Feldnamen "id" annehmen; PostgREST-Queries IMMER
+  {data, error} destrukturieren, nie nur {data}.
+- LEKTION "Ein identischer Statuscode kann bewusst uninformativ sein" (aus 7c-2b, hier
+  bestätigt wiederverwendet): Verifikation von Vercel-Mutationen (Add/Remove) muss über
+  die NACHGELAGERTE Wirkung erfolgen (Vercel-Dashboard/echter Config-Abruf), nicht über
+  den HTTP-Status allein, wo die API bewusst keine Rückschlüsse zulassen will (z.B. 204
+  bei Kill-Switch, verified:true trotz fehlender DNS bei Vercel-Add).
+- Custom-Domain-Registrierung (Add/DNS-Anzeige/Status/Entfernen) ist damit als Feature
+  vollständig, Ende-zu-Ende, in Produktion bewiesen.
+
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,
 Policy und jeder externe Call wird daran gemessen. B sind Skalierungs-Leitplanken für
@@ -570,6 +567,12 @@ docs/claude-history/security-manifest-full.md.
   ebenso -> bei JEDEM neuen Click-Wiring-Feature explizit prüfen, ob Mittelklick/Touch-
   Äquivalente mitbehandelt werden müssen (und bei auxclick event.button===1 gegen Rechtsklick-
   Ghost-Conversions guarden). Details: docs/claude-history/phase-4-mapping-codegen-export.md.
+- "USE SERVER"-DATEIEN (Lektion, Phase-7c-2c-Bug): Next.js erlaubt in Dateien mit
+  "use server" AUSSCHLIESSLICH async-Function-Exporte — kein Typ, kein Interface, keine
+  Konstante darf ungeschützt mitexportiert werden. Jeder Typ-Import/-Export in einer
+  solchen Datei MUSS import type/export type sein, sonst versucht der Server-Actions-
+  Compiler, einen zur Laufzeit gelöschten Typnamen als Wert aufzulösen -> ReferenceError
+  "X is not defined" beim Serverstart. Bei JEDER neuen Server-Action-Datei explizit prüfen.
 - Vor neuer Phase: kurz bestätigen, dass die vorige demobar lief.
 - Jede Bau-Freigabe an CC endet mit einer expliziten Live-Test-Anweisung (was
   genau im Browser zu prüfen ist) — nicht nur Pipeline-grün. Die Pipeline beweist

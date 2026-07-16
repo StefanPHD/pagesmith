@@ -11,7 +11,7 @@ vi.mock("server-only", () => ({}));
 
 // service_role-Admin-Client mocken. adminUpsert ist der SPY, auf dem die
 // sicherheitskritischen Assertions laufen (im IDOR-Fall NIE aufgerufen).
-const { createAdminClient, adminUpsert } = vi.hoisted(() => {
+const { createAdminClient, adminUpsert, adminDelete } = vi.hoisted(() => {
   // Signatur ueber den Generic -> calls[0][0]/[1] sind typisiert, ohne ungenutzte
   // Parameter in der Implementierung (die vi.fn ohnehin nur zum Aufzeichnen braucht).
   const adminUpsert = vi.fn<
@@ -19,14 +19,22 @@ const { createAdminClient, adminUpsert } = vi.hoisted(() => {
       then: (onF: (v: unknown) => unknown) => unknown;
     }
   >(() => ({ then: (onF) => onF({ error: null }) }));
+  // DELETE-Kette (removeCapiToken): .delete().eq(...) -> thenable { error: null }.
+  const adminDelete = vi.fn(() => {
+    const chain: Record<string, unknown> = {
+      eq: () => chain,
+      then: (onF: (v: unknown) => unknown) => onF({ error: null }),
+    };
+    return chain;
+  });
   const createAdminClient = vi.fn(() => ({
-    from: vi.fn(() => ({ upsert: adminUpsert })),
+    from: vi.fn(() => ({ upsert: adminUpsert, delete: adminDelete })),
   }));
-  return { createAdminClient, adminUpsert };
+  return { createAdminClient, adminUpsert, adminDelete };
 });
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
-import { setCapiToken, loadProject } from "./actions";
+import { setCapiToken, removeCapiToken, loadProject } from "./actions";
 
 /**
  * Minimaler, chainbarer SSR-Client-Mock. Pro (table.op) ein Ergebnis:
@@ -223,6 +231,76 @@ describe("setCapiToken (Scheibe 2a)", () => {
     const result = await setCapiToken("proj-1", "SECRET");
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBe("boom");
+  });
+});
+
+describe("removeCapiToken (CAPI-Token entfernen)", () => {
+  const setRow = {
+    data: { id: "proj-1", settings: { capi: { trackingKey: "keep-me", tokenSet: true } } },
+    error: null,
+  };
+
+  it("Happy-Path: DELETE project_tokens (admin) + settings.tokenSet:false, ok", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": setRow, "projects.update": { error: null } },
+    });
+
+    const result = await removeCapiToken("proj-1");
+    expect(result.ok).toBe(true);
+    // DELETE lief GENAU einmal ueber den service_role-Admin-Client.
+    expect(createAdminClient).toHaveBeenCalledTimes(1);
+    expect(adminDelete).toHaveBeenCalledTimes(1);
+    // settings-Update ueber den SSR-Client: tokenSet flippt auf false.
+    const patch = rec.updatePatch as { settings: { capi: { tokenSet: boolean } } };
+    expect(patch.settings.capi.tokenSet).toBe(false);
+  });
+
+  it("IDOR (heiligstes Gate): fremdes Projekt -> KEIN Admin-Client, kein DELETE, Fehler 'nicht gefunden'", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: null, error: null } },
+    });
+
+    const result = await removeCapiToken("foreign-proj");
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/nicht gefunden/i);
+    expect(adminDelete).not.toHaveBeenCalled();
+    expect(createAdminClient).not.toHaveBeenCalled();
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("DELETE laeuft ueber den Admin-Client (service_role), nicht ueber den SSR-Client", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": setRow, "projects.update": { error: null } },
+    });
+
+    await removeCapiToken("proj-1");
+    // Der SSR-Client fasst project_tokens NIE an -> Loeschen kann nur ueber admin laufen.
+    expect(rec.fromTables).not.toContain("project_tokens");
+    expect(adminDelete).toHaveBeenCalledTimes(1);
+  });
+
+  it("trackingKey bleibt erhalten, nur tokenSet flippt auf false (Gegenprobe)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": setRow, "projects.update": { error: null } },
+    });
+
+    const result = await removeCapiToken("proj-1");
+    expect(result.ok).toBe(true);
+    const patch = rec.updatePatch as { settings: { capi: { trackingKey: string; tokenSet: boolean } } };
+    expect(patch.settings.capi.trackingKey).toBe("keep-me"); // NICHT geloescht
+    expect(patch.settings.capi.tokenSet).toBe(false);
+  });
+
+  it("nicht eingeloggt -> error, kein Admin-Client, kein DELETE", async () => {
+    makeClient({ user: null });
+    const result = await removeCapiToken("proj-1");
+    expect(result.ok).toBe(false);
+    expect(createAdminClient).not.toHaveBeenCalled();
+    expect(adminDelete).not.toHaveBeenCalled();
   });
 });
 

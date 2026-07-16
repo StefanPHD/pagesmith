@@ -29,6 +29,7 @@ const {
   renameProject,
   publishProject,
   setCapiToken,
+  removeCapiToken,
 } = vi.hoisted(() => ({
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
   listProjects: vi.fn(async () => []),
@@ -46,6 +47,7 @@ const {
     ok: true as const,
     trackingKey: "tk-mock",
   })),
+  removeCapiToken: vi.fn(async () => ({ ok: true as const })),
 }));
 
 vi.mock("@/app/projects/actions", () => ({
@@ -56,6 +58,7 @@ vi.mock("@/app/projects/actions", () => ({
   renameProject,
   publishProject,
   setCapiToken,
+  removeCapiToken,
 }));
 
 // DomainManager (in der Publish-Sektion gemountet) zieht ueber @/app/projects/domain-
@@ -388,7 +391,11 @@ describe("CodeImporter — Scheibe 2a: CAPI-Token write-only Indikator + Reseed"
     fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
   }
   function tokenInput() {
-    return screen.getByPlaceholderText(/CAPI-Token|gesetzt/) as HTMLInputElement;
+    // Platzhalter ist jetzt neutral (Teil B): "CAPI-Token einfügen" (nicht gesetzt) /
+    // "Neuen Token eingeben zum Ersetzen" (gesetzt) — beide Zustaende matchen.
+    return screen.getByPlaceholderText(
+      /CAPI-Token|Neuen Token eingeben/,
+    ) as HTMLInputElement;
   }
 
   it("tokenSet:true -> '••• gesetzt'-Indikator; Eingabefeld bleibt LEER (write-only)", async () => {
@@ -638,5 +645,54 @@ describe("CodeImporter — Scheibe 7a: Publish-Indikator aus settings.hosting (k
     await waitFor(() =>
       expect(screen.getByText(/shop-a\.lvh\.me:3000/)).toBeTruthy()
     );
+  });
+});
+
+describe("CAPI-Token entfernen + Platzhalter-Klarheit", () => {
+  const withToken = { capi: { trackingKey: "k1", tokenSet: true } };
+
+  function openSettings() {
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+  }
+
+  it("CAPI-Token entfernen: 'Entfernen' sichtbar wenn tokenSet true", () => {
+    render(<CodeImporter initialProjectId="proj-1" initialSettings={withToken} />);
+    openSettings();
+    expect(screen.getByRole("button", { name: "Entfernen" })).toBeTruthy();
+  });
+
+  it("CAPI-Token entfernen: 'Entfernen' NICHT im DOM wenn kein Token gesetzt", () => {
+    render(<CodeImporter initialProjectId="proj-1" initialSettings={{}} />);
+    openSettings();
+    expect(screen.queryByRole("button", { name: "Entfernen" })).toBeNull();
+  });
+
+  it("CAPI-Token entfernen: Bestätigen ruft removeCapiToken(projectId) + spiegelt tokenSet:false ('••• gesetzt' verschwindet)", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialSettings={withToken} />);
+    openSettings();
+    expect(screen.getByText("••• gesetzt")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Entfernen" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ja, entfernen" }));
+
+    await waitFor(() => expect(removeCapiToken).toHaveBeenCalledWith("proj-1"));
+    await waitFor(() => expect(screen.queryByText("••• gesetzt")).toBeNull());
+  });
+
+  it("CAPI-Token entfernen: Abbrechen -> kein removeCapiToken-Call", () => {
+    render(<CodeImporter initialProjectId="proj-1" initialSettings={withToken} />);
+    openSettings();
+    fireEvent.click(screen.getByRole("button", { name: "Entfernen" }));
+    fireEvent.click(screen.getByRole("button", { name: "Abbrechen" }));
+    expect(removeCapiToken).not.toHaveBeenCalled();
+  });
+
+  it("Platzhalter bei gesetztem Token ist neutral ('Neuen Token eingeben zum Ersetzen'), nicht die '•••'-Variante", () => {
+    render(<CodeImporter initialProjectId="proj-1" initialSettings={withToken} />);
+    openSettings();
+    expect(
+      screen.getByPlaceholderText("Neuen Token eingeben zum Ersetzen"),
+    ).toBeTruthy();
+    expect(screen.queryByPlaceholderText(/gesetzt/)).toBeNull();
   });
 });

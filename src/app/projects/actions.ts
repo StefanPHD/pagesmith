@@ -240,6 +240,73 @@ export async function setCapiToken(
   return { ok: true, trackingKey };
 }
 
+export type RemoveCapiTokenResult = { ok: true } | { ok: false; error: string };
+
+/**
+ * Entfernt den GEHEIMEN Meta-CAPI-Token eines Projekts (Gegenstueck zu setCapiToken).
+ * Loescht die project_tokens-Zeile und flippt settings.capi.tokenSet auf false.
+ *
+ * ABLEITEN STATT LOESCHEN: der trackingKey (oeffentlicher Handle, in Exporte eingebacken)
+ * BLEIBT erhalten — nur der Aktivierungszustand (tokenSet) wird umgelegt. Das Tracking ist
+ * ohnehin aus, sobald die Token-Zeile weg ist (der 2b-Read-Pfad findet keinen Token ->
+ * kein Forward); ein spaeteres Re-Add wird damit nahtlos (setCapiToken verwendet den
+ * bestehenden Key wieder).
+ *
+ * Gleiches heiligstes-Gate-Muster wie setCapiToken:
+ * 1. Session-Check (authenticated-SSR-Client).
+ * 2. OWNERSHIP-GATE ZWINGEND ueber DENSELBEN SSR-Client (RLS greift). Nicht gefunden ->
+ *    Abbruch VOR jeder Admin-Zeile (IDOR-safe, Admin-Client gar nicht instanziiert).
+ * 3. DELETE ueber den Admin-Client (service_role): project_tokens hat KEINE DELETE-Policy
+ *    fuer authenticated -> das Loeschen laeuft ausschliesslich privilegiert. Idempotent
+ *    (0 Zeilen = ok).
+ * 4. settings-Merge (tokenSet:false, trackingKey erhalten) ueber den SSR-Client.
+ */
+export async function removeCapiToken(
+  projectId: string,
+): Promise<RemoveCapiTokenResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Nicht eingeloggt." };
+
+  // 1) Ownership-Gate ZWINGEND ueber den authenticated-SSR-Client (RLS greift).
+  //    settings mitlesen fuer den tokenSet-Merge.
+  const { data: owned, error: ownError } = await supabase
+    .from("projects")
+    .select("id,settings")
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (ownError) return { ok: false, error: ownError.message };
+  if (!owned) return { ok: false, error: "Projekt nicht gefunden." };
+
+  // 2) HARTE INVARIANTE: Admin-Client (service_role) erst HIER, NACH dem Gate. Oberhalb
+  //    steht im Nicht-Owner-Pfad KEINE Admin-Zeile -> RLS-Bypass ohne Gate unerreichbar.
+  const admin = createAdminClient();
+  const { error: delError } = await admin
+    .from("project_tokens")
+    .delete()
+    .eq("project_id", projectId);
+  if (delError) return { ok: false, error: delError.message };
+
+  // 3) settings mergen: tokenSet=false, trackingKey ERHALTEN, pixels unangetastet.
+  //    Ueber den SSR-Client (RLS greift auf der geschuetzten projects-Zeile).
+  const current = (owned.settings ?? {}) as ProjectSettings;
+  const nextSettings = setCapiState(current, {
+    trackingKey: getTrackingKey(current),
+    tokenSet: false,
+  });
+  const { error: settingsError } = await supabase
+    .from("projects")
+    .update({ settings: nextSettings, updated_at: new Date().toISOString() })
+    .eq("id", projectId)
+    .eq("user_id", user.id);
+  if (settingsError) return { ok: false, error: settingsError.message };
+
+  return { ok: true };
+}
+
 /** Ergebnis von publishProject. Bei Erfolg die absolute Live-URL + das Label. */
 export type PublishResult =
   | { ok: true; url: string; label: string }

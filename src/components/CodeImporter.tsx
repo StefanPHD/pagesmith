@@ -14,6 +14,7 @@ import {
   listProjects,
   loadProject,
   publishProject,
+  removeCapiToken,
   renameProject,
   saveProject,
   setCapiToken,
@@ -151,6 +152,10 @@ export default function CodeImporter({
     "idle" | "saving" | "saved" | "error"
   >("idle");
   const [capiTokenError, setCapiTokenError] = useState<string | null>(null);
+  // Token-Entfernen: zweistufige Inline-Bestaetigung (destruktiv -> deaktiviert Tracking).
+  // Reiner View-State, projekt-ungebunden -> beim Projektwechsel mit zuruecksetzen.
+  const [capiRemoveConfirming, setCapiRemoveConfirming] = useState(false);
+  const [capiRemoving, setCapiRemoving] = useState(false);
   // Hosting/Publish (Phase 7 Scheibe 7a). NUR der TRANSIENTE Aktions-Status lebt hier;
   // der "veröffentlicht?"-Zustand + die Live-URL werden AUS settings.hosting ABGELEITET
   // (hostingLabel/liveUrl unten), NICHT als eigener leakender State gehalten — exakt
@@ -477,6 +482,8 @@ export default function CodeImporter({
     setCapiTokenInput("");
     setCapiTokenStatus("idle");
     setCapiTokenError(null);
+    setCapiRemoveConfirming(false);
+    setCapiRemoving(false);
     // Publish: NUR der transiente Aktions-Status wird hier geleert (ein "gerade
     // veröffentlicht"/Fehler aus Projekt A darf nicht in B stehenbleiben). Der
     // "veröffentlicht?"-Indikator + die Live-URL reseeden ueber settings.hosting
@@ -572,6 +579,31 @@ export default function CodeImporter({
       setCapiTokenInput("");
       setCapiTokenStatus("saved");
     } else {
+      setCapiTokenError(result.error);
+      setCapiTokenStatus("error");
+    }
+  }
+
+  async function handleRemoveCapiToken() {
+    if (!projectId || capiRemoving) return;
+    setCapiRemoving(true);
+    setCapiTokenError(null);
+    const result = await removeCapiToken(projectId);
+    if (result.ok) {
+      // tokenSet:false in settings UND savedSettings spiegeln (trackingKey erhalten,
+      // wie serverseitig) -> "••• gesetzt" verschwindet, kein false-dirty.
+      setSettings((prev) =>
+        setCapiState(prev, { trackingKey: getTrackingKey(prev), tokenSet: false }),
+      );
+      setSavedSettings((prev) =>
+        setCapiState(prev, { trackingKey: getTrackingKey(prev), tokenSet: false }),
+      );
+      setCapiRemoveConfirming(false);
+      setCapiRemoving(false);
+      setCapiTokenStatus("idle");
+    } else {
+      setCapiRemoving(false);
+      setCapiRemoveConfirming(false);
       setCapiTokenError(result.error);
       setCapiTokenStatus("error");
     }
@@ -1132,7 +1164,7 @@ export default function CodeImporter({
                     disabled={!projectId}
                     placeholder={
                       getCapiTokenSet(settings)
-                        ? "••• gesetzt — neuen Token eingeben zum Ersetzen"
+                        ? "Neuen Token eingeben zum Ersetzen"
                         : "CAPI-Token einfügen"
                     }
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100"
@@ -1149,7 +1181,44 @@ export default function CodeImporter({
                   >
                     {capiTokenStatus === "saving" ? "…" : "Setzen"}
                   </button>
+                  {/* "Entfernen" nur wenn bereits ein Token gesetzt ist. */}
+                  {projectId &&
+                    getCapiTokenSet(settings) &&
+                    !capiRemoveConfirming && (
+                      <button
+                        type="button"
+                        onClick={() => setCapiRemoveConfirming(true)}
+                        disabled={capiRemoving}
+                        className="shrink-0 rounded-md border border-red-200 px-2 py-2 text-xs text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Entfernen
+                      </button>
+                    )}
                 </div>
+                {/* Zweistufige Bestaetigung — deaktiviert das Tracking (destruktiv). */}
+                {capiRemoveConfirming && (
+                  <div className="flex flex-wrap items-center gap-2 rounded-md bg-red-50 px-3 py-2">
+                    <span className="text-xs text-red-700">
+                      Tracking für dieses Projekt deaktivieren? Der Token wird gelöscht.
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleRemoveCapiToken}
+                      disabled={capiRemoving}
+                      className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                    >
+                      {capiRemoving ? "Entferne…" : "Ja, entfernen"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCapiRemoveConfirming(false)}
+                      disabled={capiRemoving}
+                      className="rounded-md border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Abbrechen
+                    </button>
+                  </div>
+                )}
                 {!projectId && (
                   <span className="text-xs text-gray-500">
                     Projekt zuerst speichern, dann ist der Token setzbar.

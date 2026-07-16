@@ -58,6 +58,19 @@ vi.mock("@/app/projects/actions", () => ({
   setCapiToken,
 }));
 
+// DomainManager (in der Publish-Sektion gemountet) zieht ueber @/app/projects/domain-
+// actions server-only-Code (status/register) — hier mocken, sonst laedt der echte
+// Server-Code beim Import. Leere Liste -> die Domain-UI rendert nur das Add-Formular.
+vi.mock("@/app/projects/domain-actions", () => ({
+  addCustomDomain: vi.fn(async () => ({ ok: true, status: "pending", healed: false })),
+  checkDomainStatusAction: vi.fn(async () => ({
+    ok: false,
+    reason: "not_found",
+    error: "x",
+  })),
+  listProjectDomains: vi.fn(async () => ({ ok: true, domains: [] })),
+}));
+
 // Erst nach dem Mock importieren, damit der Mock greift.
 import CodeImporter from "@/components/CodeImporter";
 

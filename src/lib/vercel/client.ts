@@ -1,8 +1,9 @@
 import "server-only";
+import type { VercelDomainConfig } from "@/lib/domains/config";
 
 // Server-only Vercel-Domains-API-Client. NUR HTTP + Fehler-Uebersetzung — KEINE
-// Geschaeftslogik, KEIN DB. Der Aufrufer (lib/domains/register) sichert Autorisierung,
-// Cap, Rate-Limit und Persistenz.
+// Geschaeftslogik, KEIN DB. Der Aufrufer (lib/domains/register, lib/domains/status)
+// sichert Autorisierung, Cap, Rate-Limit und Persistenz.
 //
 // SECRETS-DISZIPLIN (wie admin.ts): `import "server-only"` erzwingt einen Build-Fehler
 // bei versehentlichem Client-Import. VERCEL_API_TOKEN + VERCEL_PROJECT_ID sind
@@ -112,5 +113,55 @@ export async function addDomainToVercel(
   }
   if (res.status === 400) return { kind: "invalid_domain" };
   if (res.status === 403) return { kind: "no_access" };
+  return { kind: "error", status: res.status };
+}
+
+/**
+ * Diskriminiertes Ergebnis des Config-Lesecalls. Der Aufrufer (status.ts) verzweigt
+ * ueber `kind`; bei !ok behaelt er den letzten DB-Stand (kein Clobbern guter Daten).
+ */
+export type VercelConfigResult =
+  | { kind: "ok"; config: VercelDomainConfig }
+  | { kind: "timeout" }
+  | { kind: "error"; status: number };
+
+/**
+ * Liest die DNS-/Zertifikats-Konfiguration EINER Domain (GET /v6/domains/{domain}/config,
+ * verifiziert gegen die aktuelle Vercel-Doku + echten GET). Reine (domainName) ->
+ * Result-Fn mit eigenem 8s-Timeout (Skalierungs-Manifest: jeder externe Call).
+ *
+ * KEIN projectIdOrName/teamId: empirisch bestaetigt (echter GET gegen publayer.net, 200),
+ * dass der projekt-gebundene Token die bereits assoziierte Domain ohne Zusatzparameter
+ * aufloest. projectIdOrName ist laut Doku nur noetig, wenn die Domain NOCH KEINEM Projekt
+ * zugeordnet ist — unsere sind es (per addDomainToVercel).
+ */
+export async function getDomainConfig(
+  domainName: string,
+): Promise<VercelConfigResult> {
+  const token = process.env.VERCEL_API_TOKEN;
+  if (!token) return { kind: "error", status: 0 };
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+  let res: Response;
+  try {
+    res = await fetch(
+      `${VERCEL_API}/v6/domains/${encodeURIComponent(domainName)}/config`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
+      },
+    );
+  } catch {
+    return controller.signal.aborted
+      ? { kind: "timeout" }
+      : { kind: "error", status: 0 };
+  } finally {
+    clearTimeout(timer);
+  }
+
+  const body: unknown = await res.json().catch(() => null);
+  if (res.ok) return { kind: "ok", config: (body as VercelDomainConfig) ?? {} };
   return { kind: "error", status: res.status };
 }

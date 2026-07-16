@@ -48,6 +48,7 @@ import { buildLiveUrl } from "@/lib/hosting/host";
 import { exportFilename } from "@/lib/export";
 import { validateUploadFile } from "@/lib/upload";
 import ActionPanel from "@/components/ActionPanel";
+import DomainManager from "@/components/DomainManager";
 
 // Parsing + iframe-Preview sind die teuren Verbraucher. Sie sollen erst nach
 // einer kurzen Tipp-Pause aktualisieren, damit grosse Landingpages die Eingabe
@@ -1232,6 +1233,11 @@ export default function CodeImporter({
               <p className="mt-2 text-xs text-red-600">{publishError}</p>
             )}
           </div>
+
+          {/* Eigene Domain verbinden (Phase 7 Scheibe 7c-2c): Add-Domain-Formular +
+              dynamische DNS-Anweisungen + Status-Refresh. Eigene Komponente statt
+              CodeImporter weiter aufzublaehen; projectId gated wie das Publish/CAPI-UI. */}
+          <DomainManager projectId={projectId} />
         </div>
       )}
 

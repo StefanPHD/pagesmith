@@ -207,12 +207,15 @@ export async function registerCustomDomain(
     const domainBody: VercelDomainBody | null =
       vercel.kind === "ok" ? vercel.body : vercel.domain;
     const verification = domainBody?.verification ?? null;
+    // Vercels autoritativer apexName -> spaetere Apex-Erkennung (7c-2c) ohne PSL.
+    const apexName = domainBody?.apexName ?? null;
 
-    // 8) PERSISTENZ (custom_host + roher verification-Block + Status "pending").
+    // 8) PERSISTENZ (custom_host + roher verification-Block + apexName + Status "pending").
     const persist = await persistDomainRow(admin, {
       projectId: params.projectId,
       host,
       verification,
+      apexName,
     });
     if (persist === "race") {
       // 23505 auf custom_host -> paralleler Add hat bereits geschrieben -> idempotent.
@@ -271,7 +274,12 @@ function rejectionMessage(reason: AddDomainReason): string {
  */
 async function persistDomainRow(
   admin: ReturnType<typeof createAdminClient>,
-  input: { projectId: string; host: string; verification: unknown },
+  input: {
+    projectId: string;
+    host: string;
+    verification: unknown;
+    apexName: string | null;
+  },
 ): Promise<null | "race" | string> {
   const base = slugForLabel(input.host);
   for (let i = 0; i < 6; i++) {
@@ -282,6 +290,7 @@ async function persistDomainRow(
       custom_host: input.host,
       verification_status: "pending",
       verification: input.verification,
+      apex_name: input.apexName,
     });
     if (!error) return null;
     if (error.code === "23505") {

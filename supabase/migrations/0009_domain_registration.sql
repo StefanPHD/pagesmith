@@ -62,3 +62,20 @@ alter table public.audit_logs enable row level security;
 -- (bypassed RLS) im server-only Mutations-/Rate-Limit-Code. Append-only ist damit die
 -- tragende, DB-erzwungene Eigenschaft — ein Audit-Log, das sein Subjekt aendern kann,
 -- waere wertlos.
+--
+-- LINTER-HINWEIS — ERWARTET, BITTE IGNORIEREN: Supabases Security Advisor meldet fuer
+-- public.audit_logs "RLS Enabled No Policy". Das ist KEIN Befund, sondern exakt der
+-- oben beschriebene Entwurf: die FEHLENDE Policy IST der Append-Only-Mechanismus. Der
+-- Linter kennt die Absicht nicht und wertet "RLS an, keine Policy" pauschal als
+-- vermutlich vergessene Konfiguration.
+--
+-- NICHT "beheben", indem eine Policy ergaenzt wird. JEDE Policy fuer anon/authenticated
+-- — auch eine scheinbar harmlose SELECT-Policy "nur eigene Zeilen" — oeffnet dieser
+-- Tabelle eine Tuer, die sie bewusst nicht hat, und bricht die Unveraenderlichkeits-
+-- Garantie bzw. macht das Rate-Limit (Manifest, 7c-2b) fuer den Actor einsehbar.
+-- service_role braucht KEINE Policy (bypassed RLS) — es gibt also keinen legitimen
+-- Konsumenten, dem eine Policy fehlen wuerde.
+--
+-- Falls je echte Lesbarkeit fuer Betreiber/Support noetig wird: NICHT ueber eine Policy
+-- auf dieser Tabelle, sondern ueber einen server-only Pfad mit service_role (gleiches
+-- Muster wie der Mutations-Code) — die Tabelle selbst bleibt policy-frei.

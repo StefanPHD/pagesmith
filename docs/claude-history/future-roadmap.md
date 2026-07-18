@@ -128,6 +128,10 @@ Mehrseiten-Ebene obendrauf. Vorher = Vorbauen ins Blaue.
 Das Orphan-Konzept (verwaiste Mappings) bekommt später eine Variante "Ziel-Seite
 gelöscht" (verwaister funnel_step). Gleiche Idee, nur erweitert.
 
+Siehe auch: "Strategischer Ausblick: Projekttyp Business-Website" weiter unten —
+verfeinert die Weg-A/Weg-B-Frage für Mehrseiten-Projekte. Der Funnel-Typ behält
+BEIDE Wege, wie hier ursprünglich gedacht.
+
 ## Zukunfts-Vision UX & In-Place Editing (jetzt terminiert: Phase 4.5 + Phase 5)
 Diese Vision ist inzwischen in der Roadmap terminiert: Zen-Modus als Phase 4.5,
 In-Place Copywriting als Phase 5. Der folgende Block bleibt die ausführliche
@@ -309,4 +313,86 @@ JS-Snippet-Copy-Paste minimieren.
   mehr die volle Wahrheit sein (Pagesmith wäre dann zusätzlich ein generativer
   Builder). Die Umschreibung ist DANN ein bewusster eigener Doku-Schritt bei
   Umsetzungsbeginn, KEINE Änderung heute.
+
+Siehe auch: "Strategischer Ausblick: Projekttyp Business-Website" weiter unten —
+wendet Spur A/Spur B auf zwei Projekttypen an und begründet, warum Business-Website
+exklusiv Spur B nutzt.
+
+## Strategischer Ausblick: Projekttyp "Business-Website" — Multi-Page-Fundament
+(bewusst vertagt, NICHT jetzt bauen)
+
+KEINE dritte, unabhängige Vision — verzahnt und präzisiert zwei bereits dokumentierte:
+"Funnel-Architektur" ("Projekt = N Seiten") und "Zweigleisige Architektur" (Spur A
+Import vs. Spur B Nativ/JSON-First). Beide Konzepte bleiben gültig; diese Sektion
+löst die Frage, WIE sie zusammen für einen zweiten Projekttyp greifen.
+
+KERNENTSCHEIDUNG: EIN gemeinsames Multi-Page-Projekt-Fundament (neue additive
+pages-Tabelle neben projects, parent/child über project_id). Die Unterscheidung
+Conversion-Funnel vs. Business-Website ist REINE Navigations-Choreografie/ein
+project_type-Flag im Frontend — KEIN separates Backend-Modell, KEINE zweite
+Architektur.
+
+DIE WEG-A/WEG-B-MATRIX (asymmetrisch nach Projekttyp, NICHT symmetrisch):
+
+- Projekttyp "Conversion-Funnel" — BEIDE Wege erlaubt:
+  - Weg A (Import): unabhängig voneinander importierte Seiten (Optin/Sales/
+    Checkout), verkettet über das bestehende Mapping-Modell (funnel_step-
+    Aktionstyp, bereits in "Funnel-Architektur" vorgedacht, KEIN Modellumbau
+    nötig). Visuelle Kohärenz zwischen Schritten wird hier NICHT versprochen
+    und NICHT erzwungen — das ist beim Funnel kein Mangel, sondern normale
+    Praxis: Optin/Sales/Checkout stammen in der Realität oft bewusst aus
+    unterschiedlichen Quellen/Templates.
+  - Weg B (Nativ/JSON-First via MCP): volle JSON-Sections-Maschinerie,
+    Branding-DNA, perspektivisch Drag&Drop.
+- Projekttyp "Business-Website" — NUR Weg B erlaubt:
+  - Mehrseiten-Import (Weg A) ist für diesen Projekttyp BEWUSST GESPERRT.
+  - Begründung (hart, nicht verhandelbar): geteiltes Site-Chrome (globales
+    Menü/Footer) + einheitliches Branding über Unterseiten hinweg ist bei
+    unabhängig importiertem HTML strukturell NICHT garantierbar (keine
+    gemeinsame Design-Quelle zwischen z.B. separat importierter Startseite
+    und "Über uns"-Seite). Bei Weg B ist es garantierbar, weil Pagesmith die
+    Ausgabe selbst kontrolliert (Branding-DNA). Deshalb: die Kombination, die
+    das Problem erzeugt, wird ENTFERNT statt nachträglich zu flicken.
+
+NEUE TECHNISCHE BEDARFE (ehrlich benannt, NICHT jetzt gebaut):
+- pages-Tabelle additiv neben projects (parent/child via project_id) — gleiche
+  additive Disziplin wie bisher im Projekt (siehe custom_host, dns_config etc.).
+- PFADBASIERTES ROUTING MUSS VOR JEDER UMSETZUNG VERIFIZIERT WERDEN, nicht
+  angenommen: das heutige app-serve ist host-basiert (Domain/Subdomain ->
+  Projekt); OB und WIE es den angefragten PFAD innerhalb einer Domain liest,
+  ist unbekannt und beim Bau-Kickoff zuerst am echten Code zu prüfen, nicht aus
+  dem Gedächtnis zu behaupten.
+- Geteiltes Site-Chrome (Header/Footer/Menü) ist ein NEUES Konzept, KEINE
+  Erweiterung des bestehenden funnel_step-Mappings: eine punktuelle Klick-
+  Aktion ist etwas anderes als ein persistentes, auf JEDER Seite sichtbares
+  Menü.
+- SEO-Metadaten pro Unterseite (Title/Description/OG-Tags) existieren nirgends
+  im heutigen Ein-Seiten-Modell — neuer Scope.
+- Sitemap-Generierung (durch Mehrseiten+SEO-Fokus impliziert) — neue Route, die
+  alle Live-Seiten eines Projekts aufzählt.
+- Neuer Diskriminator project_type (funnel|business_website) auf projects,
+  additiv.
+
+WAS NICHT NEU GEBAUT WERDEN MUSS (bereits kompatibel, keine Änderung nötig):
+- Domain->Projekt-Routing (Kill-Switch, RLS, Ownership-Gates) bleibt komplett
+  unverändert, unabhängig von der Seitenzahl eines Projekts.
+- Additive Migrationsdisziplin passt direkt, kein neues Muster nötig.
+- Type-diskriminiertes Mapping-Modell verträgt funnel_step ohne Umbau
+  (Funnel-Fall, bereits in "Funnel-Architektur" festgehalten).
+- Vercel-Domains-API braucht KEINE Erweiterung — mehrere Seiten unter EINER
+  Domain sind reines Pfad-Routing, keine zusätzliche Domain-Registrierung
+  nötig.
+
+OFFENE, BEWUSST NICHT JETZT ENTSCHIEDENE PUNKTE:
+- Ob pages einen eigenen content_source-Flag braucht (import|native) oder ob
+  das rein über project_type impliziert wird (bei Funnel könnten theoretisch
+  einzelne Seiten unterschiedliche Quellen haben).
+- Exaktes Sitemap-Generierungs-Design.
+- Site-Chrome-Modell: eigene Tabelle vs. zur Serve-Zeit aus Geschwister-Seiten
+  berechnet.
+
+TIMING: strikt NACH Phase 8 (Analytics/ROI) und NACH der ersten echten Umsetzung
+der Zweigleisigen Architektur (Spur B muss für andere Zwecke ohnehin existieren,
+bevor Business-Website darauf aufbauen kann). Kein Vorziehen — "Abstraktion erst
+bei echtem Bedarf".
 

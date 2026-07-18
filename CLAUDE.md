@@ -617,6 +617,27 @@ docs/claude-history/security-manifest-full.md.
 - Erst der nutzbare Kern, dann Infrastruktur.
 - Importierter User-Code läuft NUR im sandboxed iframe (sandbox="allow-scripts",
   niemals allow-same-origin), nie ungesandboxt.
+- HISTORIE-CHECK VOR EINGRIFF IN KERN-DATEIEN (Regressions-Schutz, gilt bei JEDEM Plan): CLAUDE.md ist
+  bewusst gekürzt; das WARUM abgeschlossener Phasen liegt in docs/claude-history/*. Wenn ein Plan eine
+  BESTEHENDE Kern-/geteilte Datei modifiziert oder erweitert (z.B. ingest.ts, resolve.ts, host.ts,
+  app-serve/route.ts, generate.ts, domain-actions.ts, die Middleware/Proxy-Schicht), gilt VOR dem
+  Bauen:
+  (1) CODE-FIRST, HISTORY-FOR-WHY: Wahrheitsanker ist immer der AKTUELLE echte Code der berührten
+      Datei (History kann veralten) — zuerst den echten Code lesen. Die passende History-Datei wird
+      NUR zusätzlich gelesen, um das WARUM zu klären (die Invariante, die der Code allein nicht
+      verrät). GEZIELT die thematisch passende Datei, NICHT die ganze Historie (das würde das Kürzen
+      der CLAUDE.md ad absurdum führen).
+  (2) INVARIANTE NENNEN, NICHT ZUSAMMENFASSEN: Der Plan benennt die konkrete geschützte Regel
+      explizit (z.B. "/api/capi-Alias bleibt bestehen, Persist hängt nur daneben"), statt die Doku
+      allgemein zu referieren — nur so ist der Check sichtbar und prüfbar.
+  (3) ADDITIV-VS-INVASIV-DEKLARATION: Der Plan erklärt PRO berührter Kern-Datei ausdrücklich, ob der
+      Eingriff rein additiv ist oder bestehende Pfade angreift. Bei invasivem Eingriff: Begründung,
+      warum das etablierte, getestete Verhalten erhalten bleibt.
+  (4) SCOPE DER REGEL: greift NUR bei Eingriff in bestehende Kern-/geteilte Dateien, nicht bei jeder
+      trivialen neuen Datei. Erste Verteidigungslinie bleibt diese "Immer beachten"-Sektion (immer
+      geladen); die History ist die zweite, tiefere Linie fürs WARUM.
+  Verweis auf die Archiv-Landkarte: die Zuordnung Thema -> History-Datei steht unter
+  "## Detail-Archiv".
 - PERMANENTER Alias /api/capi darf NIE entfernt werden (Phase 7b): bereits in freier
   Wildbahn ausgelieferte Alt-Exporte tragen die absolute /api/capi-URL fest eingebacken
   und beaconen weiter dorthin. Neue Exporte/gehostete Seiten nutzen /api/e (geteilter

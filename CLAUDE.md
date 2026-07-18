@@ -68,7 +68,7 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       docs/claude-history/phase-7-hosting.md. (war Phase 6)
 - [ ] Phase 8 — Analytics & ROI-Ökosystem (Vision): First-Party-Server-Side-Analytics
       (Traffic-Gesundheit, ROI/Attribution, Betreiber-Metriken) + Adblocker-Verlustrate
-      über geteilte-eventID-Vergleich ECHTER Events. Detail-Sektion unten. (war A/B-Testing)
+      über geteilte-eventID-Vergleich ECHTER Events. Detail-Sektion unten. (war A/B-Testing) — Scheibe 1 (Persistenz-Fundament) im Konzept festgezurrt, s. Aktiver-Stand-Sektion.
 - [ ] Phase 9 — A/B-Testing: 50/50-Split über Edge-Logik. (war Phase 8)
 - [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
@@ -384,6 +384,66 @@ festgehalten damit sie nicht nur im Chat-Verlauf stecken:
   bei Kill-Switch, verified:true trotz fehlender DNS bei Vercel-Add).
 - Custom-Domain-Registrierung (Add/DNS-Anzeige/Status/Entfernen) ist damit als Feature
   vollständig, Ende-zu-Ende, in Produktion bewiesen.
+
+## Aktiver Stand — Phase 8 Scheibe 1 (Analytics-Persistenz-Fundament, Konzept festgezurrt, Bau als Nächstes)
+Erste Scheibe von Phase 8. Konzept final ausdiskutiert; Bau als Nächstes. Vollvision: docs/claude-history/future-roadmap.md.
+
+- SCOPE (EINE Verantwortung): Events, die OHNEHIN durch /api/e fließen (gemappte Conversions), werden
+  consent-gegatet in eine neue additive `events`-Tabelle persistiert. Heute ist /api/e ein reiner
+  Forwarder (Event -> CAPI, nichts gespeichert) -> diese Scheibe legt den Schreib-/Persistenz-Pfad,
+  auf dem alles Weitere (Uniques, Verlustrate, Dashboard) additiv aufsetzt.
+- BEWUSST NICHT in Scheibe 1 (je eigene spätere Scheiben): PageView (neuer Event-Typ + Hotspot-
+  Volumensprung -> Scheibe 2); Read/Dashboard; Adblocker-Verlustrate (braucht ein ZWEITES Client-Signal,
+  die Browser-Pixel-Bestätigung an /api/e — heute geht das Pixel direkt an Meta); ROI/Attribution
+  (nur Schema-Prep bis echte Ad-Spend-API); client-erfasste Metriken (Scrolltiefe/Vitals/Video).
+- LEAN / PII-FREI (Entscheidung): KEIN IP/UA in Scheibe 1 -> die 30-Tage-Retention-Pflicht (CLAUDE.md
+  Tier 2, bindet ab Phase 8 sobald Rohdaten liegen) wird NICHT ausgelöst. Bot-Filter/Uniques kommen
+  additiv in der Scheibe, die IP/UA wirklich braucht, und bringen ihre Retention-Pflicht DORT mit.
+- TABELLE `events` (additiv, neue Migration — nächste freie Nummer aus supabase/migrations/ nehmen,
+  vermutlich 0011, VERIFIZIEREN):
+  - project_id  uuid, FK auf projects ON DELETE CASCADE. INDEX jetzt (proaktiv, A-Regel: der Per-Projekt-
+    Read nutzt WHERE project_id).
+  - event_type  text (CAPI-Event-Name, z.B. Purchase/Lead).
+  - event_id    text (die geteilte eventID). KEIN Unique-Constraint: Browser + Server teilen später
+    dieselbe eventID = genau der Verlustraten-Join; zudem kann sendBeacon-Retry schon in Scheibe 1
+    doppeln. Dedup ist Query-Zeit-Sache einer späteren Zähl-Scheibe, kein DB-Constraint. KEIN Index
+    jetzt (in Scheibe 1 nirgends gematcht; Index folgt mit der Verlustraten-Join-Scheibe).
+  - source      text NOT NULL, KEIN column-DEFAULT. Der Ingest-Pfad schreibt EXPLIZIT 'server_capi'.
+    Begründung: additiv-für-immer-Tabelle braucht den Diskriminator ab Zeile 1 (spätere Client-
+    Bestätigung schreibt 'client_browser') — nachträglich hinzufügen hieße Alt-Zeilen backfillen
+    (verbotene Daten-Transformation) oder NULL-als-server deuten (stille Semantik-Schuld). NOT-NULL-
+    OHNE-DEFAULT ZWINGT jeden künftigen Schreibpfad, die Herkunft bewusst zu setzen (kein stiller
+    Fallback auf 'server_capi'). ACHSEN-HYGIENE: source = Beobachtungs-ORT (server vs. browser),
+    NICHT Werbe-Netzwerk-ZIEL. Ein späteres Multi-Tracking-Ziel (Meta/GA4/TikTok) bekommt eine EIGENE
+    additive Spalte; source NIE zum Ziel-Sammelfeld umdeuten, sonst bricht der browser-vs-server-Join.
+  - consent     boolean. Belt-and-suspenders: gegatet wird an der QUELLE (kein Beacon ohne psConsent()),
+    das Flag ist die auditierbare Bestätigung, NICHT das Gate.
+  - created_at  timestamptz DEFAULT now() (Server-Timestamp). Zeitraum-Index (BRIN) erst mit der
+    Dashboard-Scheibe (Zeitraum-Queries), nicht jetzt.
+- RLS: aktiviert, KEINE Policy in Scheibe 1 -> Writes laufen nur über service_role (Ingest-Pfad,
+  session-los, umgeht RLS). WICHTIG im Migrations-Kommentar dokumentieren: das ist TRANSIENT — die
+  owner-SELECT-Policy folgt in der Dashboard-Read-Scheibe. NICHT dauerhaft policy-los wie audit_logs
+  (dort echtes Append-Only). Linter-"RLS Enabled No Policy" ist HIER ein vorübergehender erwarteter
+  Hinweis, kein Dauerzustand.
+- WRITE-POSTURE (Vercel-Serverless-sicher — korrigiert eine frühere "await mit Timeout"-Formulierung):
+  einfaches Weglassen von await KILLT den Task auf Vercel nach dem 204 (Function wird eingefroren) ->
+  der Insert liefe unzuverlässig. Der Persist reiht sich in DENSELBEN waitUntil-/after()-Mechanismus
+  ein, mit dem der CAPI-Forward heute schon "204 nicht blockieren, aber zuverlässig zustellen" löst.
+  BEIM BAU: das tatsächlich verwendete Primitiv aus dem echten ingest.ts ABLESEN, nicht raten
+  (Instrument schlägt Vermutung). Beide Hintergrund-Tasks als Promise.allSettled([capiForward, persist])
+  in EIN waitUntil (ein Fehler räumt den anderen nicht ab). Dediziertes Error-Logging INNERHALB jedes
+  Tasks (sonst geht der Fehler stumm in allSettled unter). Interner strikter Timeout auf den Insert
+  bleibt PFLICHT (schützt Vercel-Execution-Time/Kosten — Tier-0-Circuit-Breaker-Gedanke); Insert-Fehler
+  wird geschluckt/geloggt, fliegt NIE in den Response-Pfad.
+- KILL-SWITCH-KONSISTENZ: gesperrtes Projekt -> früher Verwurf VOR dem Persist (fail-closed, kein
+  Persist gesperrter Projekte), konsistent mit dem bestehenden Ingest-Stop.
+- DEPLOY-REIHENFOLGE (beim späteren Bau): Migration im Supabase-Editor VOR dem Code-Deploy
+  (fail-closed-Regel). Am echten ingest.ts vor dem Bau verifizieren: (a) welches waitUntil/after-Primitiv
+  läuft dort schon, (b) wie CAPI heute zugestellt wird — der Persist hängt sich DANEBEN.
+- DEMOBAR / LIVE-TEST (definiert die "erledigt"-Schwelle): gemappte Conversion auf einer Live-
+  publayer.net-Seite feuern -> innerhalb des Timeouts landet EINE consent-gegatete Zeile mit
+  source='server_capi' und der eventID -> per SQL verifiziert (nachgelagerte Wirkung, wie beim
+  Kill-Switch), NICHT über den HTTP-Status.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

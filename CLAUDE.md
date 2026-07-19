@@ -614,6 +614,18 @@ docs/claude-history/security-manifest-full.md.
 - Marketer-Mindset: Geschwindigkeit und "1 Klick" über Konfig-Tiefe.
 
 ## Immer beachten
+- CODE-REVIEWER-SUBAGENT: .claude/agents/code-reviewer.md — rein lesend/prüfend
+  (Read/Grep/Glob + scoped Bash für tsc/lint/test/build, KEIN Schreiben/Committen),
+  proaktiv nach Änderungen an Server-Actions, Supabase-Migrationen, Domain-/Hosting-
+  Code (src/lib/hosting, src/lib/domains, src/lib/vercel) oder Tracking-Code
+  (src/lib/capi) einsetzbar. Trägt unsere real aufgetretenen Fehlerklassen als feste
+  Checkliste (Ownership-Gates, "use server"-Typ-Exporte, {data,error}-Destrukturierung,
+  echte PKs statt angenommenem "id", DNS-Werte nie hardcoden, isAppHost-Änderungen,
+  Klick-Wiring/auxclick, Status-vs-Wirkung-Tests). SYNCHRONISIERT SICH SELBST: liest
+  bei jedem Review zuerst diese "Immer beachten"-Sektion und flaggt eigenständig
+  ([SUGGESTION] Synchronisations-Hinweis), falls eine neue Lektion hier fehlt, die
+  noch nicht in seiner Checkliste steht — KEIN manuelles Nachziehen bei jeder neuen
+  Zeile hier nötig, außer bei einer echten gemeldeten Lücke.
 - Erst der nutzbare Kern, dann Infrastruktur.
 - Importierter User-Code läuft NUR im sandboxed iframe (sandbox="allow-scripts",
   niemals allow-same-origin), nie ungesandboxt.

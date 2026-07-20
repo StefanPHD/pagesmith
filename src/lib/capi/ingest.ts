@@ -1,5 +1,7 @@
+import { after } from "next/server";
 import { getCapiConfigByTrackingKey } from "@/lib/capi/token";
 import { META_GRAPH_VERSION, META_TEST_EVENT_CODE } from "@/lib/capi/config";
+import { persistEvent } from "@/lib/analytics/persist";
 
 /**
  * GETEILTE Ingest-Handler-Logik (Phase 7 Scheibe 7b).
@@ -117,10 +119,38 @@ export async function handleIngest(request: Request): Promise<Response> {
   // Pflichtfelder fehlen -> malformer Client-Request -> 400.
   if (!trackingKey || !eventID || !event) return status(400);
 
-  // --- trackingKey -> {pixelId, token} (service_role). Unbekannt/tokenlos -> 204,
-  //     KEIN Meta-fetch, kein Leak (Key-Gueltigkeit nicht beobachtbar). ---
-  const config = await getCapiConfigByTrackingKey(trackingKey);
-  if (!config) return status(204);
+  // --- trackingKey -> { projectId, capiConfig } (service_role). Unbekannt/gesperrt/
+  //     tokenlos -> 204, KEIN Meta-fetch, kein Leak (Key-Gueltigkeit nicht beobachtbar).
+  //     KILL-SWITCH: ein gesperrtes Projekt liefert hier null -> weder Forward noch
+  //     Persist (fail-closed, ohne eigenen Zweig — der Schutz sitzt im Resolver). ---
+  const resolution = await getCapiConfigByTrackingKey(trackingKey);
+  if (!resolution?.capiConfig) return status(204);
+  const config = resolution.capiConfig;
+
+  // --- ANALYTICS-PERSIST (Phase 8 Scheibe 1) — COUPLE-MINIMAL, additiv ---
+  // Haengt BEWUSST INNERHALB des capiConfig-Zweigs: Meta-lose Projekte senden heute gar
+  // keinen Beacon (__psMetaFire ist build-zeit-gegatet ueber metaTrackStatement), eine
+  // Entkopplung waere hier dormant und nicht live-verifizierbar. Die Meta-unabhaengige
+  // Erfassung kommt additiv mit Scheibe 2 (PageView) — DANN braucht es auch den
+  // expliziten blocked-Zweig, weil dieser automatische Kill-Switch-Schutz entfaellt.
+  //
+  // after() laeuft NACH der Response -> die 204-Antwortzeit bleibt unveraendert, und der
+  // Callback kann strukturell nichts mehr in den Response-Pfad werfen. persistEvent
+  // schluckt seine Fehler ohnehin selbst; der try/catch hier ist die zweite Schicht,
+  // falls die Registrierung/der Aufruf selbst wirft.
+  after(async () => {
+    try {
+      await persistEvent({
+        projectId: resolution.projectId,
+        eventType: event,
+        eventId: eventID,
+      });
+    } catch (err) {
+      console.error(
+        `[analytics] persist task error: ${err instanceof Error ? err.name : "unknown"}`,
+      );
+    }
+  });
 
   // --- Server-gesetzte Felder (NIE aus Client-Payload) ---
   const eventTime = Math.floor(Date.now() / 1000);

@@ -43,14 +43,16 @@ afterEach(() => {
 });
 
 describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
-  it("loest trackingKey -> {pixelId, token} auf (eine Aufloesung)", async () => {
+  it("loest trackingKey -> { projectId, capiConfig } auf (eine Aufloesung)", async () => {
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
       project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
     });
+    // Phase 8 Scheibe 1: die projectId reitet in DERSELBEN Aufloesung mit (sie wurde
+    // vorher intern schon aufgeloest und verworfen) -> KEINE zweite Query.
     expect(await getCapiConfigByTrackingKey("tk-abc")).toEqual({
-      pixelId: "PIXEL-123",
-      token: "SECRET-TOKEN",
+      projectId: "proj-1",
+      capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
     });
   });
 
@@ -70,38 +72,53 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     expect(await getCapiConfigByTrackingKey("tk-missing")).toBeNull();
   });
 
-  it("ROBUSTHEIT: Projekt ohne Meta-Pixel-ID -> null (kein Forward-Ziel)", async () => {
+  // ROBUSTHEIT-Block: alle vier Faelle bedeuten "kein Forward-Ziel" -> capiConfig null.
+  // Fuer den CAPI-Zweig ist das gleichbedeutend mit dem frueheren null (kein fetch, 204);
+  // die projectId wird trotzdem geliefert, weil das Projekt existiert und OFFEN ist.
+  it("ROBUSTHEIT: Projekt ohne Meta-Pixel-ID -> capiConfig null (kein Forward-Ziel)", async () => {
     mockAdmin({
       projects: { data: { id: "proj-1", settings: {} }, error: null },
       project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
     });
-    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toBeNull();
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      capiConfig: null,
+    });
   });
 
-  it("ROBUSTHEIT: trackingKey + Pixel gesetzt, aber project_tokens-Zeile fehlt -> null (kein Throw)", async () => {
+  it("ROBUSTHEIT: trackingKey + Pixel gesetzt, aber project_tokens-Zeile fehlt -> capiConfig null (kein Throw)", async () => {
     // Projekt hat trackingKey + Pixel, aber der Token wurde nie gesetzt (oder Race).
-    // Muss sauber null liefern, nicht werfen.
+    // Muss sauber aufloesen, nicht werfen.
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
       project_tokens: { data: null, error: null },
     });
-    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toBeNull();
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      capiConfig: null,
+    });
   });
 
-  it("ROBUSTHEIT: Token-Zeile vorhanden, aber Token null -> null", async () => {
+  it("ROBUSTHEIT: Token-Zeile vorhanden, aber Token null -> capiConfig null", async () => {
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
       project_tokens: { data: { meta_capi_token: null }, error: null },
     });
-    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toBeNull();
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      capiConfig: null,
+    });
   });
 
-  it("DB-Fehler beim Token-Read -> null (kein Throw)", async () => {
+  it("DB-Fehler beim Token-Read -> capiConfig null (kein Throw)", async () => {
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
       project_tokens: { data: null, error: { message: "boom" } },
     });
-    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toBeNull();
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      capiConfig: null,
+    });
   });
 
   it("KILL-SWITCH: gesperrtes Projekt (blocked_at) -> null (Event verworfen), Token-Query NICHT ausgefuehrt", async () => {
@@ -126,8 +143,30 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
     });
     expect(await getCapiConfigByTrackingKey("tk-abc")).toEqual({
-      pixelId: "PIXEL-123",
-      token: "SECRET-TOKEN",
+      projectId: "proj-1",
+      capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
     });
+  });
+
+  // GEGENPROBE zur Scheibe-1-Kopplung: ein GESPERRTES Projekt liefert die GANZE
+  // Aufloesung null — NICHT etwa { projectId, capiConfig: null }. Genau daran haengt
+  // der automatische Kill-Switch-Schutz des Persists (kein capiConfig -> kein Persist).
+  // Waere hier je eine projectId sichtbar, koennte ein spaeterer Persist-Zweig sie
+  // benutzen und der Kill-Switch liefe still fail-open.
+  it("KILL-SWITCH: gesperrtes Projekt liefert NULL, nicht nur capiConfig null", async () => {
+    mockAdmin({
+      projects: {
+        data: {
+          id: "proj-1",
+          settings: { pixels: { meta: { pixelId: "PIXEL-123" } } },
+          blocked_at: "2026-07-14T00:00:00Z",
+        },
+        error: null,
+      },
+      project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
+    });
+    const result = await getCapiConfigByTrackingKey("tk-abc");
+    expect(result).toBeNull();
+    expect(result).not.toMatchObject({ projectId: expect.anything() });
   });
 });

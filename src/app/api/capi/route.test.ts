@@ -10,6 +10,13 @@ const { getCapiConfigByTrackingKey } = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/capi/token", () => ({ getCapiConfigByTrackingKey }));
 
+// Phase 8 Scheibe 1: der Handler registriert den Analytics-Persist via after().
+// Ausserhalb eines echten Next-Request-Kontexts wuerde after() werfen -> hier
+// neutralisiert. Die Persist-VERDRAHTUNG wird diskriminierend in
+// src/lib/capi/ingest.persist.test.ts geprueft, nicht hier.
+vi.mock("next/server", () => ({ after: vi.fn() }));
+vi.mock("@/lib/analytics/persist", () => ({ persistEvent: vi.fn() }));
+
 // Config als mutierbare Getter mocken -> META_TEST_EVENT_CODE pro Test toggeln
 // (env-an vs env-aus), ohne echte process.env-Manipulation.
 const configState = vi.hoisted(() => ({ version: "v21.0", testCode: "" }));
@@ -55,9 +62,11 @@ const VALID_BODY = {
 
 beforeEach(() => {
   configState.testCode = "";
+  // Neue Resolver-Form (Phase 8 Scheibe 1): die projectId reitet mit, die CAPI-Config
+  // liegt eine Ebene tiefer. Treu gemockt — der Handler liest weiterhin capiConfig.
   getCapiConfigByTrackingKey.mockResolvedValue({
-    pixelId: "PIXEL-123",
-    token: "SECRET-TOKEN",
+    projectId: "proj-1",
+    capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
   });
   global.fetch = vi.fn(async () => new Response(null, { status: 200 }));
 });

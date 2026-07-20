@@ -2,6 +2,27 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getMetaPixelId, type ProjectSettings } from "@/lib/settings";
 
+/**
+ * Aufloesung EINES trackingKeys (Phase 8 Scheibe 1, ADDITIV erweitert).
+ *
+ * Frueher gab dieser Resolver nur die CapiConfig zurueck und verwarf die project.id,
+ * obwohl sie im selben Lookup ohnehin schon aufgeloest wird. Der Analytics-Persist
+ * braucht die project_id als FK -> sie wird jetzt MITGELIEFERT statt weggeworfen.
+ * KEINE zweite Query (die /api/e-Schlankheits-Regel bleibt gewahrt).
+ *
+ * capiConfig ist null, wenn das Projekt existiert und NICHT gesperrt ist, aber keine
+ * Meta-Pixel-ID / keinen CAPI-Token traegt -> der Aufrufer forwarded dann nicht (exakt
+ * das bisherige Verhalten, nur feiner aufgeloest).
+ *
+ * KEIN blocked-Feld: ein gesperrtes Projekt liefert weiterhin null fuer die GANZE
+ * Aufloesung (Kill-Switch fail-closed, Zweig unten). Der explizite blocked-Zweig gehoert
+ * zur spaeteren Meta-Entkopplung (Scheibe 2) und wird MIT IHR gebaut.
+ */
+export type TrackingKeyResolution = {
+  projectId: string;
+  capiConfig: CapiConfig | null;
+};
+
 /** Serverseitig aufgeloeste CAPI-Konfiguration fuer EIN Projekt. */
 export type CapiConfig = {
   // OEFFENTLICHE Meta-Pixel-ID (aus settings.pixels.meta.pixelId). Kein Secret,
@@ -27,14 +48,17 @@ export type CapiConfig = {
  *
  * Gibt null zurueck (KEIN Throw — jeder dieser Zustaende ist regulaer), wenn:
  * - der Key leer ist,
- * - kein Projekt diesen trackingKey traegt,
- * - das Projekt KEINE Meta-Pixel-ID gesetzt hat (ohne Pixel-Ziel kein Forward), ODER
- * - das Projekt (noch) KEINE Token-Zeile hat (trackingKey gesetzt, Token nie
- *   gesetzt / Race).
+ * - kein Projekt diesen trackingKey traegt, ODER
+ * - das Projekt GESPERRT ist (Kill-Switch, fail-closed).
+ *
+ * Gibt { projectId, capiConfig: null } zurueck, wenn das Projekt existiert und offen
+ * ist, aber KEINE Meta-Pixel-ID (ohne Pixel-Ziel kein Forward) bzw. (noch) KEINE
+ * Token-Zeile hat (trackingKey gesetzt, Token nie gesetzt / Race). Fuer den CAPI-Zweig
+ * ist das gleichbedeutend mit dem frueheren null -> kein Forward, 204.
  */
 export async function getCapiConfigByTrackingKey(
   trackingKey: string,
-): Promise<CapiConfig | null> {
+): Promise<TrackingKeyResolution | null> {
   const key = trackingKey.trim();
   if (!key) return null;
 
@@ -57,21 +81,25 @@ export async function getCapiConfigByTrackingKey(
   // (kein Zustandsleck). Halbe Sperre = keine Sperre: der Ingest muss dicht sein.
   if (project.blocked_at) return null;
 
+  // Ab hier steht fest: Projekt existiert und ist NICHT gesperrt -> die projectId wird
+  // in JEDEM weiteren Rueckgabepfad mitgeliefert (auch ohne CAPI-Config).
+  const projectId = project.id as string;
+
   // pixelId aus derselben Zeile — kein zweiter Lookup. Reuse der Settings-Ableitung.
   const pixelId = getMetaPixelId((project.settings ?? {}) as ProjectSettings);
-  if (!pixelId) return null;
+  if (!pixelId) return { projectId, capiConfig: null };
 
-  // Schritt 2: project_id -> Token. Fehlende Zeile (Token nie gesetzt) -> null.
+  // Schritt 2: project_id -> Token. Fehlende Zeile (Token nie gesetzt) -> kein Forward.
   const { data: row, error: tokenError } = await admin
     .from("project_tokens")
     .select("meta_capi_token")
-    .eq("project_id", project.id)
+    .eq("project_id", projectId)
     .maybeSingle();
 
-  if (tokenError || !row) return null;
+  if (tokenError || !row) return { projectId, capiConfig: null };
 
   const token = row.meta_capi_token ?? null;
-  if (!token) return null;
+  if (!token) return { projectId, capiConfig: null };
 
-  return { pixelId, token };
+  return { projectId, capiConfig: { pixelId, token } };
 }

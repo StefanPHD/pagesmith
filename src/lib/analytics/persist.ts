@@ -1,0 +1,87 @@
+import "server-only";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+/**
+ * Analytics-Persistenz (Phase 8 Scheibe 1).
+ *
+ * Schreibt EINE Zeile pro server-beobachtetem Event in public.events. Laeuft
+ * ausschliesslich als Hintergrund-Task (after(), s. lib/capi/ingest.ts) NACH der
+ * 204-Response — die Beacon-Antwortzeit darf sich durch Analytics nicht verschlechtern.
+ *
+ * SERVICE_ROLE: events traegt RLS OHNE Policy (Migration 0011) -> der session-lose
+ * Ingest-Pfad ist der einzige Schreiber. Das ist TRANSIENT; die owner-SELECT-Policy
+ * folgt in der Dashboard-Read-Scheibe.
+ *
+ * WIRFT NIE. Ein Analytics-Fehler darf weder die Response (die ist zu diesem Zeitpunkt
+ * ohnehin raus) noch den CAPI-Forward beeintraechtigen — Fehler werden sanitized
+ * geloggt und geschluckt.
+ */
+
+// event_type ist UNGEFILTERTER Client-Input aus dem Beacon-Blob. Fuer den Meta-Forward
+// unkritisch (Meta validiert selbst), als DB-Wert aber beliebiger Client-String ->
+// harte Laengenkappe gegen DB-Bloat/Missbrauch. BEWUSST KEINE Whitelist erlaubter Namen:
+// das braeche Custom-Events (freier event_name ist bei der Graph-CAPI legitim).
+const EVENT_TYPE_MAX_LENGTH = 64;
+
+// Strikter Timeout auf den Insert (A-Regel "defensive Timeouts" + Tier-0-Circuit-
+// Breaker-Gedanke): ein haengender Insert darf die Serverless-Function nicht bis zum
+// Plattform-Limit offenhalten und Execution-Time/Kosten verbrennen.
+const INSERT_TIMEOUT_MS = 3_000;
+
+/**
+ * Fehlertyp-Name fuer das Log — NIE die Message (die kann Client-Input tragen).
+ *
+ * Bewusst NICHT nur `err instanceof Error`: ein abgebrochener Insert wirft eine
+ * DOMException("AbortError"), und die ist je nach Runtime/Testumgebung KEINE
+ * Error-Instanz -> mit dem naiven Check wuerde ausgerechnet der Timeout-Fall als
+ * "unknown" geloggt und waere in Produktion nicht diagnostizierbar.
+ */
+function errorName(err: unknown): string {
+  if (typeof err === "object" && err !== null && "name" in err) {
+    return String((err as { name: unknown }).name);
+  }
+  return "unknown";
+}
+
+export type PersistEventParams = {
+  projectId: string;
+  eventType: string;
+  eventId: string;
+};
+
+export async function persistEvent({
+  projectId,
+  eventType,
+  eventId,
+}: PersistEventParams): Promise<void> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), INSERT_TIMEOUT_MS);
+
+  try {
+    const admin = createAdminClient();
+
+    // source = Beobachtungs-ORT ('server'), NICHT Werbe-Netzwerk-ZIEL. Explizit
+    // gesetzt: die Spalte ist NOT NULL OHNE column-DEFAULT, damit jeder kuenftige
+    // Schreibpfad die Herkunft bewusst setzen MUSS (kein stiller Fallback).
+    // id + created_at kommen per DB-Default. KEIN IP/UA (lean/PII-frei).
+    const { error } = await admin
+      .from("events")
+      .insert({
+        project_id: projectId,
+        event_type: eventType.slice(0, EVENT_TYPE_MAX_LENGTH),
+        event_id: eventId,
+        source: "server",
+      })
+      .abortSignal(controller.signal);
+
+    if (error) {
+      // NUR der PostgREST-Code — nie die Payload/Message (koennte Client-Input tragen).
+      console.error(`[analytics] events insert failed: ${error.code ?? "unknown"}`);
+    }
+  } catch (err) {
+    // Abort (Timeout) landet ebenfalls hier. Nur der Fehlertyp, nie Details.
+    console.error(`[analytics] events insert error: ${errorName(err)}`);
+  } finally {
+    clearTimeout(timeout);
+  }
+}

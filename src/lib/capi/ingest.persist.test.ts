@@ -136,3 +136,85 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
     expect(persistEvent).not.toHaveBeenCalled();
   });
 });
+
+describe("Meta-Ablehnung: sanitized Diagnose-Logging", () => {
+  function rejectingFetch(status: number, body: unknown) {
+    return vi.fn(
+      async () =>
+        new Response(JSON.stringify(body), {
+          status,
+          headers: { "Content-Type": "application/json" },
+        }),
+    );
+  }
+
+  it("400 mit Meta-Error-Envelope -> code/subcode/type/fbtrace/msg im Log, weiter 204 + Persist", async () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    global.fetch = rejectingFetch(400, {
+      error: {
+        message: "Invalid parameter",
+        code: 190,
+        error_subcode: 463,
+        type: "OAuthException",
+        fbtrace_id: "AbCdEf123",
+      },
+    }) as unknown as typeof fetch;
+
+    const res = await handleIngest(makeRequest(VALID_BODY));
+    const logged = spy.mock.calls.map((c: unknown[]) => String(c[0])).join("\n");
+
+    // Der Ablehnungsgrund ist da — nicht mehr nur der nackte Status.
+    expect(logged).toContain("[capi] Meta forward failed: HTTP 400");
+    expect(logged).toContain("code=190");
+    expect(logged).toContain("subcode=463");
+    expect(logged).toContain("type=OAuthException");
+    expect(logged).toContain("fbtrace=AbCdEf123");
+    expect(logged).toContain("msg=Invalid parameter");
+
+    // SECRETS: nie URL/Token/Payload im Log.
+    expect(logged).not.toContain("SECRET-TOKEN");
+    expect(logged).not.toContain("access_token");
+    expect(logged).not.toContain("graph.facebook.com");
+
+    // Invarianten unveraendert: leere 204 + Persist laeuft trotzdem.
+    expect(res.status).toBe(204);
+    expect(await res.text()).toBe("");
+    await runScheduled();
+    expect(persistEvent).toHaveBeenCalledTimes(1);
+
+    spy.mockRestore();
+  });
+
+  it("Ablehnung OHNE JSON-Body -> Rohtext-Fallback, kein Throw, weiter 204", async () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    global.fetch = vi.fn(
+      async () => new Response("<html>Bad Gateway</html>", { status: 502 }),
+    ) as unknown as typeof fetch;
+
+    const res = await handleIngest(makeRequest(VALID_BODY));
+    const logged = spy.mock.calls.map((c: unknown[]) => String(c[0])).join("\n");
+
+    expect(logged).toContain("non-JSON body=");
+    expect(res.status).toBe(204);
+    expect(await res.text()).toBe("");
+
+    spy.mockRestore();
+  });
+
+  it("ueberlange Meta-message wird gekappt (kein Log-Bloat)", async () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    global.fetch = rejectingFetch(400, {
+      error: { code: 100, message: "X".repeat(5_000) },
+    }) as unknown as typeof fetch;
+
+    await handleIngest(makeRequest(VALID_BODY));
+    const rejected = spy.mock.calls
+      .map((c: unknown[]) => String(c[0]))
+      .find((l) => l.includes("Meta forward rejected"))!;
+
+    expect(rejected).toContain("msg=" + "X".repeat(200));
+    expect(rejected).not.toContain("X".repeat(201));
+
+    spy.mockRestore();
+  });
+});

@@ -106,6 +106,64 @@ function resolveClientIp(request: Request): string | undefined {
   return undefined;
 }
 
+// Metas Fehler-Envelope (Graph API). Nur die Felder, die wir fuer die Diagnose lesen.
+type MetaErrorBody = {
+  error?: {
+    message?: unknown;
+    code?: unknown;
+    error_subcode?: unknown;
+    type?: unknown;
+    fbtrace_id?: unknown;
+  };
+};
+
+// Metas message ist Beschreibungstext (kein Secret), aber unbegrenzt lang -> kappen.
+const META_ERROR_MSG_MAX = 200;
+
+function asLogValue(v: unknown): string {
+  if (v === undefined || v === null || v === "") return "-";
+  return String(v).slice(0, META_ERROR_MSG_MAX);
+}
+
+/**
+ * Uebersetzt eine ABGELEHNTE Meta-Antwort in EINE sanitized Logzeile.
+ *
+ * SECRETS-DISZIPLIN (2a-Lektion, nicht verhandelbar): geloggt werden AUSSCHLIESSLICH
+ * Metas eigene strukturierte Fehlerfelder. NIE die Forward-URL (sie traegt den
+ * access_token im Query-String), NIE der Token, NIE unsere Payload/user_data (die traegt
+ * IP/UA/ggf. PII). Es fliesst hier NICHTS aus dem Request hinein — nur Metas Antwort.
+ *
+ * WIRFT NIE: JSON-Parse und Text-Fallback sind je eigenstaendig abgesichert. Eine
+ * unlesbare Antwort ist selbst ein Diagnose-Ergebnis, kein Grund fuer einen Fehlerpfad.
+ */
+async function describeMetaError(res: Response): Promise<string> {
+  let body: unknown = null;
+  try {
+    body = await res.clone().json();
+  } catch {
+    // Kein JSON (HTML-Fehlerseite, leerer Body, Gateway-Antwort) -> Rohtext, gekappt.
+    try {
+      const text = (await res.text()).trim();
+      return `[capi] Meta forward rejected: non-JSON body=${
+        text ? text.slice(0, META_ERROR_MSG_MAX) : "-"
+      }`;
+    } catch {
+      return "[capi] Meta forward rejected: body unreadable";
+    }
+  }
+
+  const err = (body as MetaErrorBody | null)?.error;
+  if (!err) return "[capi] Meta forward rejected: no error envelope";
+
+  return (
+    `[capi] Meta forward rejected: code=${asLogValue(err.code)}` +
+    ` subcode=${asLogValue(err.error_subcode)}` +
+    ` type=${asLogValue(err.type)}` +
+    ` fbtrace=${asLogValue(err.fbtrace_id)}` +
+    ` msg=${asLogValue(err.message)}`
+  );
+}
+
 export async function handleIngestOptions(): Promise<Response> {
   // Body-loser Preflight-Handler der Vollstaendigkeit halber. KEINE Logik baut darauf.
   return status(204);
@@ -218,6 +276,11 @@ export async function handleIngest(request: Request): Promise<Response> {
     if (!res.ok) {
       // KEIN Token/access_token/sensibler Response-Body ins Log — nur Status.
       console.error(`[capi] Meta forward failed: HTTP ${res.status}`);
+      // ADDITIV: Metas STRUKTURIERTEN Ablehnungsgrund nachziehen. Ohne ihn ist ein
+      // HTTP 400 nicht diagnostizierbar (Pixel-/Token-Problem? Payload-Feld? Permission?)
+      // -> wir raten sonst. Der Body-Read liegt INNERHALB des fire-and-log-try: wirft er,
+      // faengt ihn der bestehende catch, der Client bekommt weiterhin 204.
+      console.error(await describeMetaError(res));
     }
   } catch (err) {
     // Nur eine generische Meldung — nie die URL (traegt den Token) / den Token.

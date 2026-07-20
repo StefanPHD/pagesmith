@@ -398,6 +398,13 @@ docs/claude-history/future-roadmap.md. Die Detail-Entscheidungen unten bleiben a
     Unit-Test zeigen (der Test vergleicht nur gegen eine handgeschriebene Kopie derselben Namen).
   - CAPI BYTE-IDENTISCH: dieselbe eventID erscheint im Meta Events Manager UND in der DB-Zeile ->
     der Forward läuft unverändert weiter, der Persist hängt nur daneben.
+    KORREKTUR (2026-07-20): Dieser Haken belegte Browser-eventID <-> DB-eventID (die matchen
+    strukturell IMMER, weil beide aus derselben Client-eventID stammen) — NICHT den echten
+    Server->Meta-Durchgang. Letzterer war zu diesem Zeitpunkt faktisch gebrochen (Token/ID-
+    Mismatch, s. "Immer beachten") und wurde erst am 2026-07-20 erstmals live als
+    dedupliziertes "Empfangen von: Server"-Event bei Meta bewiesen. LEHRE: "Forward läuft"
+    wird über ein SERVER-Event im Events Manager verifiziert, nicht über eventID-Gleichheit
+    Browser<->DB.
   - KILL-SWITCH GEGENPROBE: gesperrtes Projekt (blocked_at) -> KEINE Zeile. Fail-closed greift
     automatisch über den Resolver (null -> kein capiConfig -> kein Persist), ohne eigenen Zweig.
 - MIGRATION 0011 gelaufen und in der DB verifiziert: PK, FK ON DELETE CASCADE, CHECK
@@ -783,6 +790,19 @@ docs/claude-history/security-manifest-full.md.
   und beaconen weiter dorthin. Neue Exporte/gehostete Seiten nutzen /api/e (geteilter
   Handler, lib/capi/ingest.ts). Entfernen der capi-Route bricht STILL das Tracking aller
   schon ausgelieferten Kundenseiten (kein Fehler, nur verschwundene Conversions).
+- CAPI-TOKEN UND PIXEL-/DATASET-ID SIND EIN PAAR (real aufgetreten, 2026-07-20): Ein
+  CAPI-Zugriffstoken ist an eine bestimmte Meta-Dataset/Pixel-ID gebunden. Wird die ID
+  gewechselt, MUSS ein zur neuen ID passendes Token neu generiert und gesetzt werden — das
+  alte Token wird gegen die neue ID nicht mehr korrekt signiert. Symptom eines Mismatch:
+  der Server-Forward scheitert mit code=190 / OAuthException / "Bad signature", WÄHREND die
+  Browser-Pixel-Events unbeeinträchtigt weiterlaufen (der Browser-Pixel braucht kein Token).
+  Das ist ein STILLER Fehlzustand: nichts schlägt sichtbar Alarm, weil Browser-Events
+  durchkommen. VERIFIKATION daher IMMER über "Empfangen von: Server" im Events Manager
+  (idealerweise als dedupliziertes Server-Event unter geteilter eventID), NIE über die bloße
+  Anwesenheit von Browser-Events. Das describeMetaError-Ops-Logging im ingest.ts-Forward-
+  Fehlerpfad macht solche Ablehnungen sofort lesbar (code/subcode/type/fbtrace/msg,
+  sanitized). Hinweis: Das Token liegt in der DB (setCapiToken-Flow), nicht in einer
+  Env-Var -> Token-Wechsel wirkt sofort, ohne Redeploy.
 - KLICK-WIRING vs. Maustasten (Lektion, Phase-4-Bugfix): 'click' deckt NUR die linke
   Maustaste ab. Mittelklick feuert 'auxclick' (eigenes, separates Event), Rechtsklick
   ebenso -> bei JEDEM neuen Click-Wiring-Feature explizit prüfen, ob Mittelklick/Touch-

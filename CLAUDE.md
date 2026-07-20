@@ -68,7 +68,7 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       docs/claude-history/phase-7-hosting.md. (war Phase 6)
 - [ ] Phase 8 — Analytics & ROI-Ökosystem (Vision): First-Party-Server-Side-Analytics
       (Traffic-Gesundheit, ROI/Attribution, Betreiber-Metriken) + Adblocker-Verlustrate
-      über geteilte-eventID-Vergleich ECHTER Events. Detail-Sektion unten. (war A/B-Testing) — Scheibe 1 (Persistenz-Fundament) im Konzept festgezurrt, s. Aktiver-Stand-Sektion.
+      über geteilte-eventID-Vergleich ECHTER Events. Detail-Sektion unten. (war A/B-Testing) — Scheibe 1 (Persistenz-Fundament) LIVE in Produktion bewiesen (events via after() neben CAPI-Forward, source='server', eventID-Match Events Manager/DB, Kill-Switch-Gegenprobe), s. Aktiver-Stand-Sektion.
 - [ ] Phase 9 — A/B-Testing: 50/50-Split über Edge-Logik. (war Phase 8)
 - [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
@@ -385,8 +385,33 @@ festgehalten damit sie nicht nur im Chat-Verlauf stecken:
 - Custom-Domain-Registrierung (Add/DNS-Anzeige/Status/Entfernen) ist damit als Feature
   vollständig, Ende-zu-Ende, in Produktion bewiesen.
 
-## Aktiver Stand — Phase 8 Scheibe 1 (Analytics-Persistenz-Fundament, Konzept festgezurrt, Bau als Nächstes)
-Erste Scheibe von Phase 8. Konzept final ausdiskutiert; Bau als Nächstes. Vollvision: docs/claude-history/future-roadmap.md.
+## Aktiver Stand — Phase 8 Scheibe 1 (Analytics-Persistenz-Fundament, ABGESCHLOSSEN)
+Erste Scheibe von Phase 8. ABGESCHLOSSEN — live in Produktion bewiesen (2026-07-20). Vollvision:
+docs/claude-history/future-roadmap.md. Die Detail-Entscheidungen unten bleiben als REFERENZ stehen
+(sie tragen das WARUM für Scheibe 2+), sind aber keine offene Planung mehr.
+
+- VERIFIZIERT (live, nachgelagerte Wirkung — nicht über HTTP-Status):
+  - HAPPY PATH: gemappte Conversion auf einer echten publayer.net-Seite -> GENAU EINE Zeile in
+    public.events mit source='server'. Beweist zugleich, dass after() in Vercels echter
+    Serverless-Runtime NACH der Response noch ausgeführt wird (die Function wird nicht vorher
+    eingefroren) und dass die Insert-Spaltennamen wirklich zur Tabelle passen — beides kann kein
+    Unit-Test zeigen (der Test vergleicht nur gegen eine handgeschriebene Kopie derselben Namen).
+  - CAPI BYTE-IDENTISCH: dieselbe eventID erscheint im Meta Events Manager UND in der DB-Zeile ->
+    der Forward läuft unverändert weiter, der Persist hängt nur daneben.
+  - KILL-SWITCH GEGENPROBE: gesperrtes Projekt (blocked_at) -> KEINE Zeile. Fail-closed greift
+    automatisch über den Resolver (null -> kein capiConfig -> kein Persist), ohne eigenen Zweig.
+- MIGRATION 0011 gelaufen und in der DB verifiziert: PK, FK ON DELETE CASCADE, CHECK
+  events_event_type_max_len (<= 64), alle Spalten NOT NULL, Defaults korrekt.
+- OFFEN MITGENOMMEN (NICHT verlieren, je eigene Scheibe):
+  (a) CAPI-HÄRTUNGS-SCHEIBE — der Meta-fetch in ingest.ts hat weiterhin KEIN Timeout (Verstoß gegen
+      die A-Regel "defensive Timeouts", vorbestehend, nicht durch Scheibe 1 verursacht); dazu die
+      errorName()-Konsistenz im ingest.ts-Catch (dort noch `err instanceof Error`, während
+      analytics/persist.ts den robusteren Helper nutzt — DOMException/AbortError liefe sonst als
+      "unknown" ins Log). SINNVOLLERWEISE VOR Scheibe 2 (PageView bringt den Volumensprung).
+  (b) META-ENTKOPPLUNG -> Scheibe 2 (PageView): erst dort entsteht Meta-unabhängiger Client-Traffic.
+      Mit ihr werden der EXPLIZITE Kill-Switch-Zweig und das blocked-Feld im Resolver PFLICHT — der
+      heutige automatische Schutz hängt daran, dass der Persist im capiConfig-Zweig sitzt; wer
+      entkoppelt, ohne den expliziten Zweig zu bauen, macht den Kill-Switch still fail-open.
 
 - SCOPE (EINE Verantwortung): Events, die OHNEHIN durch /api/e fließen (gemappte Conversions), werden
   in eine neue additive `events`-Tabelle persistiert (das Consent-Gate bleibt unverändert

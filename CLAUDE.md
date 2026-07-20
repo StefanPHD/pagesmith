@@ -389,7 +389,8 @@ festgehalten damit sie nicht nur im Chat-Verlauf stecken:
 Erste Scheibe von Phase 8. Konzept final ausdiskutiert; Bau als Nächstes. Vollvision: docs/claude-history/future-roadmap.md.
 
 - SCOPE (EINE Verantwortung): Events, die OHNEHIN durch /api/e fließen (gemappte Conversions), werden
-  consent-gegatet in eine neue additive `events`-Tabelle persistiert. Heute ist /api/e ein reiner
+  in eine neue additive `events`-Tabelle persistiert (das Consent-Gate bleibt unverändert
+  client-seitig in __psMetaFire, s.u.). Heute ist /api/e ein reiner
   Forwarder (Event -> CAPI, nichts gespeichert) -> diese Scheibe legt den Schreib-/Persistenz-Pfad,
   auf dem alles Weitere (Uniques, Verlustrate, Dashboard) additiv aufsetzt.
 - BEWUSST NICHT in Scheibe 1 (je eigene spätere Scheiben): PageView (neuer Event-Typ + Hotspot-
@@ -408,41 +409,82 @@ Erste Scheibe von Phase 8. Konzept final ausdiskutiert; Bau als Nächstes. Vollv
     dieselbe eventID = genau der Verlustraten-Join; zudem kann sendBeacon-Retry schon in Scheibe 1
     doppeln. Dedup ist Query-Zeit-Sache einer späteren Zähl-Scheibe, kein DB-Constraint. KEIN Index
     jetzt (in Scheibe 1 nirgends gematcht; Index folgt mit der Verlustraten-Join-Scheibe).
-  - source      text NOT NULL, KEIN column-DEFAULT. Der Ingest-Pfad schreibt EXPLIZIT 'server_capi'.
+  - source      text NOT NULL, KEIN column-DEFAULT. Der Ingest-Pfad schreibt EXPLIZIT 'server'.
     Begründung: additiv-für-immer-Tabelle braucht den Diskriminator ab Zeile 1 (spätere Client-
-    Bestätigung schreibt 'client_browser') — nachträglich hinzufügen hieße Alt-Zeilen backfillen
+    Bestätigung schreibt 'browser') — nachträglich hinzufügen hieße Alt-Zeilen backfillen
     (verbotene Daten-Transformation) oder NULL-als-server deuten (stille Semantik-Schuld). NOT-NULL-
     OHNE-DEFAULT ZWINGT jeden künftigen Schreibpfad, die Herkunft bewusst zu setzen (kein stiller
-    Fallback auf 'server_capi'). ACHSEN-HYGIENE: source = Beobachtungs-ORT (server vs. browser),
+    Fallback auf 'server'). ACHSEN-HYGIENE: source = Beobachtungs-ORT (server vs. browser),
     NICHT Werbe-Netzwerk-ZIEL. Ein späteres Multi-Tracking-Ziel (Meta/GA4/TikTok) bekommt eine EIGENE
     additive Spalte; source NIE zum Ziel-Sammelfeld umdeuten, sonst bricht der browser-vs-server-Join.
-  - consent     boolean. Belt-and-suspenders: gegatet wird an der QUELLE (kein Beacon ohne psConsent()),
-    das Flag ist die auditierbare Bestätigung, NICHT das Gate.
+    TOKEN-KORREKTUR (Konsequenz der Meta-Entkopplung, s.u.): der Wert heißt 'server', OHNE jedes
+    Ziel-Suffix — wir persistieren server-beobachtete Zeilen AUCH ohne CAPI-Forward, ein
+    '_capi'-Suffix wäre ein Netzwerk-ZIEL im Beobachtungs-ORT-Feld und bräche genau die
+    Achsen-Hygiene-Regel eine Zeile weiter oben. Da Werte NIE nachträglich transformiert werden,
+    ist der Token permanent -> er muss ab Zeile 1 stimmen.
   - created_at  timestamptz DEFAULT now() (Server-Timestamp). Zeitraum-Index (BRIN) erst mit der
     Dashboard-Scheibe (Zeitraum-Queries), nicht jetzt.
+  - KEIN IP/UA (Lean/PII-frei, s.o.) — gilt ausdrücklich AUCH für Projekte OHNE Meta-Setup, die
+    durch die Entkopplung (s.u.) neu mit persistiert werden.
+- CONSENT-SPALTE BEWUSST GESTRICHEN (Korrektur der ursprünglichen Fassung): psConsent() ist heute
+  permissiv-default (true, wenn window.pagesmithConsent fehlt) und das Beacon-Blob trägt gar kein
+  consent-Feld -> die Spalte wäre in JEDER Zeile konstant true = null Information (tote Spalte,
+  reiner Vorbau). Anders als source (Join-Diskriminator, MUSS ab Zeile 1 stehen) ist consent ein
+  reines Audit-Attribut und später OHNE Backfill-Problem additiv nachrüstbar, sobald ein echter
+  Consent-Modus existiert. Das tragende Gate bleibt unverändert client-seitig in __psMetaFire
+  (kein Beacon ohne psConsent()) — gestrichen wird die Spalte, NICHT das Gate.
 - RLS: aktiviert, KEINE Policy in Scheibe 1 -> Writes laufen nur über service_role (Ingest-Pfad,
   session-los, umgeht RLS). WICHTIG im Migrations-Kommentar dokumentieren: das ist TRANSIENT — die
   owner-SELECT-Policy folgt in der Dashboard-Read-Scheibe. NICHT dauerhaft policy-los wie audit_logs
   (dort echtes Append-Only). Linter-"RLS Enabled No Policy" ist HIER ein vorübergehender erwarteter
   Hinweis, kein Dauerzustand.
-- WRITE-POSTURE (Vercel-Serverless-sicher — korrigiert eine frühere "await mit Timeout"-Formulierung):
-  einfaches Weglassen von await KILLT den Task auf Vercel nach dem 204 (Function wird eingefroren) ->
-  der Insert liefe unzuverlässig. Der Persist reiht sich in DENSELBEN waitUntil-/after()-Mechanismus
-  ein, mit dem der CAPI-Forward heute schon "204 nicht blockieren, aber zuverlässig zustellen" löst.
-  BEIM BAU: das tatsächlich verwendete Primitiv aus dem echten ingest.ts ABLESEN, nicht raten
-  (Instrument schlägt Vermutung). Beide Hintergrund-Tasks als Promise.allSettled([capiForward, persist])
-  in EIN waitUntil (ein Fehler räumt den anderen nicht ab). Dediziertes Error-Logging INNERHALB jedes
-  Tasks (sonst geht der Fehler stumm in allSettled unter). Interner strikter Timeout auf den Insert
-  bleibt PFLICHT (schützt Vercel-Execution-Time/Kosten — Tier-0-Circuit-Breaker-Gedanke); Insert-Fehler
-  wird geschluckt/geloggt, fliegt NIE in den Response-Pfad.
-- KILL-SWITCH-KONSISTENZ: gesperrtes Projekt -> früher Verwurf VOR dem Persist (fail-closed, kein
-  Persist gesperrter Projekte), konsistent mit dem bestehenden Ingest-Stop.
+- WRITE-POSTURE — CODE-BEFUND (verifiziert am echten Code im Stufe-1-Plan, ERSETZT die frühere
+  Annahme): Es gibt HEUTE KEIN waitUntil/after im Ingest-Pfad. Der Meta-CAPI-Forward wird BLOCKIEREND
+  awaited (ingest.ts, Forward-Block; grep über src/ = NULL Treffer für waitUntil/after;
+  phase-6-capi.md dokumentiert den await als bewusste Phase-6-Entscheidung). Die frühere Formulierung
+  "der Persist hängt sich in DENSELBEN bestehenden Hintergrund-Mechanismus" war damit schlicht FALSCH
+  und ist verworfen — es gibt keinen solchen Mechanismus, an den man sich hängen könnte.
+- WRITE-POSTURE — GEWÄHLTES MODELL "B" (Persist allein im Hintergrund, CAPI unangetastet):
+  Der CAPI-await bleibt BYTE-IDENTISCH bestehen -> die 204-Antwortzeit ändert sich nicht (Invariante
+  "Beacon-204 nicht verschlechtern" gehalten, und der Forward behält seine bewiesene Zuverlässigkeit).
+  NUR der Persist läuft als Hintergrund-Task NACH der Response, über das RUNTIME-KORREKTE Primitiv
+  (Node-Runtime: after() aus next/server; Edge: waitUntil). WELCHES davon gilt, wird beim Bau an der
+  ECHTEN /api/e-Runtime ABGELESEN, nicht geraten (Instrument schlägt Vermutung). Ausdrücklich NICHT:
+  den bestehenden CAPI-Forward in ein neues Zustell-Modell zwingen.
+- WRITE-POSTURE — ISOLATION: Der Persist-Callback trägt einen EIGENEN try/catch (Fehler geloggt,
+  fliegt NIE in den Response-Pfad) UND einen internen strikten Insert-Timeout (AbortController).
+  So kann ein hängender oder fehlschlagender Insert weder die Response noch den CAPI-Forward
+  berühren noch die Function bis zum Plattform-Limit offenhalten (Tier-0-Circuit-Breaker-Gedanke,
+  schützt Vercel-Execution-Time/Kosten).
+- BESTANDSBEFUND, NICHT TEIL DIESER SCHEIBE: der heutige Meta-fetch hat KEIN Timeout (ein hängendes
+  Meta blockiert die Function bis zum Plattform-Limit) — verstößt gegen die A-Regel "DEFENSIVE
+  TIMEOUTS". Bewusst VERSCHOBEN in eine eigene spätere CAPI-Härtungs-Scheibe (Hintergrund-Zustellung
+  des Forwards + Timeout), sinnvollerweise VOR Scheibe 2 (PageView-Volumensprung). Begründung der
+  Trennung: "Zustell-Umbau am bewiesenen CAPI-Pfad" wird NICHT mit "neue Tabelle" in einer Scheibe
+  vermischt.
+- META-ENTKOPPLUNG (Architektur-Entscheidung): Analytics-Persistenz ist NICHT an eine vorhandene
+  Meta-Config gekoppelt. Phase 8 ist ein EIGENSTÄNDIGES Feature — First-Party-Analytics/Betreiber-
+  Metriken zählen ALLEN Traffic, auch bei Kunden ganz ohne Meta-Setup. Der Stufe-1-Befund zeigte die
+  Falle: getCapiConfigByTrackingKey liefert heute bei fehlender Pixel-ID ODER fehlendem Token
+  schlicht null -> ein naiv dahintergehängter Persist wäre still an "Meta vollständig konfiguriert"
+  gekoppelt gewesen.
+- RESOLVER (token.ts, ADDITIVER Eingriff in eine zweite Kern-Datei): getCapiConfigByTrackingKey wird
+  additiv erweitert und liefert künftig { projectId, blocked, capiConfig | null } statt nur
+  { pixelId, token }. Die project.id wird dort HEUTE SCHON intern aufgelöst und danach verworfen —
+  die Erweiterung kostet also KEINE zweite Query im Hotspot (/api/e-Schlankheits-Regel gewahrt).
+  Der CAPI-Zweig liest weiter capiConfig und verhält sich BYTE-IDENTISCH, wenn eine Config vorhanden
+  ist; fehlt sie, bleibt es beim bestehenden 204-No-op ohne Forward.
+- KILL-SWITCH — JETZT EXPLIZITER ZWEIG (fail-closed): Persist NUR wenn projectId vorhanden UND
+  blocked === false. Damit ist die Sperre eine SICHTBARE, testbare Verzweigung und nicht länger ein
+  bloßer null-Nebeneffekt des Config-Lookups — genau die Kopplung, die beim Entkoppeln sonst
+  unbemerkt weggefallen wäre. Bestandsverhalten CAPI (gesperrt -> kein Forward, 204) unverändert.
 - DEPLOY-REIHENFOLGE (beim späteren Bau): Migration im Supabase-Editor VOR dem Code-Deploy
-  (fail-closed-Regel). Am echten ingest.ts vor dem Bau verifizieren: (a) welches waitUntil/after-Primitiv
-  läuft dort schon, (b) wie CAPI heute zugestellt wird — der Persist hängt sich DANEBEN.
+  (fail-closed-Regel). Am echten Code vor dem Bau verifizieren: (a) welche RUNTIME /api/e fährt
+  (Node -> after() aus next/server, Edge -> waitUntil) — es läuft dort NOCH KEIN Hintergrund-Primitiv,
+  das Modell-B einführt es für den Persist; (b) dass der CAPI-await unverändert bleibt.
 - DEMOBAR / LIVE-TEST (definiert die "erledigt"-Schwelle): gemappte Conversion auf einer Live-
-  publayer.net-Seite feuern -> innerhalb des Timeouts landet EINE consent-gegatete Zeile mit
-  source='server_capi' und der eventID -> per SQL verifiziert (nachgelagerte Wirkung, wie beim
+  publayer.net-Seite feuern -> innerhalb des Timeouts landet EINE Zeile mit
+  source='server' und der eventID -> per SQL verifiziert (nachgelagerte Wirkung, wie beim
   Kill-Switch), NICHT über den HTTP-Status.
 
 ## Code-Qualität, Performance & SaaS-Skalierung

@@ -101,6 +101,7 @@ kaputtgeht.
   Schutz verschwindet lautlos, weil er heute ein Nebeneffekt der Kopplung ist und keine
   eigene Verzweigung. AUSGANGSPUNKT für Scheibe 2 ist damit: Persist im capiConfig-Zweig,
   source='server', KEIN blocked-Feld im Resolver.
+  -> IN UMSETZUNG als Scheibe 2a, s. "Aktiver Stand — Phase 8 Scheibe 2a".
 
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur
@@ -118,6 +119,60 @@ Ist-Zustand — Herleitung und Entscheidungen: docs/claude-history/phase-8-analy
 - AUFGESCHOBEN (konditionale Optimierung, kein Footgun): CAPI-Forward auf Hintergrund-
   Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
   ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
+
+## Aktiver Stand — Phase 8 Scheibe 2a (Handler-Umbau für PageView, Konzept festgezurrt, Bau als Nächstes)
+Erste Hälfte von Scheibe 2 (PageView). 2a = der sicherheitskritische Handler-Umbau, ISOLIERT
+und gegen UNVERÄNDERTE Conversions verifizierbar. Der Client-PageView-Emitter + Session-Dedup
+kommen erst in 2b. Volle Vision: docs/claude-history/future-roadmap.md.
+
+- ZWECK: Löst den Scheibe-2-Vorgriff aus "## Offene Punkte" ein. Heute (Couple-minimal) hängt
+  der Persist IM if(capiConfig)-Zweig -> der Kill-Switch greift AUTOMATISCH (gesperrt ->
+  Resolver liefert null -> kein Persist). Sobald PageView (2b) AUSSERHALB dieses Zweigs
+  persistiert, verschwindet dieser automatische Schutz. 2a baut den EXPLIZITEN Ersatz, BEVOR
+  2b-Traffic von ihm abhängt.
+- SCOPE (EINE Verantwortung): reiner Handler-Umbau in ingest.ts + Resolver-Erweiterung in
+  token.ts. KEINE Migration, KEIN Client-Code, KEIN session_key (alles 2b).
+- RESOLVER (token.ts, ADDITIV): getCapiConfigByTrackingKey liefert wieder
+  { projectId, blocked, capiConfig }. Das blocked-Feld wurde in Couple-minimal bewusst
+  weggelassen; blocked_at wird im Lookup ohnehin schon selektiert -> KEINE zweite Query.
+- HANDLER-KONTROLLFLUSS (ingest.ts) nach 2a, in dieser Reihenfolge:
+  1. resolve(trackingKey) -> { projectId, blocked, capiConfig }
+  2. if (!projectId) return 204 — unbekannter Key, wie heute (Key-Gültigkeit unbeobachtbar).
+  3. if (blocked) return 204 — EXPLIZITER Kill-Switch als eigener SICHTBARER Zweig, VOR
+     Persist UND Forward. Nicht länger ein Nebeneffekt der Config-Kopplung; fail-closed.
+  4. STRUKTUR-GUARD: fehlende/kaputte Pflichtfelder ({trackingKey,eventID,event}) ->
+     verwerfen (204), VOR jedem DB-Zugriff. Bewusst MINIMAL: nur STRUKTURELLE Gültigkeit,
+     KEIN Bot-Anspruch (ein Bot-Filter braucht IP/UA -> eigene Scheibe mit eigener
+     Retention-Pflicht). Die session_key-Prüfung folgt in 2b (existiert hier noch nicht).
+  5. ENTKOPPELTER PERSIST: after(persist(projectId, event_type, event_id, source='server'))
+     — unabhängig von capiConfig. In 2a fließen faktisch weiter NUR Conversions durch (der
+     PageView-Emitter existiert erst in 2b); die Entkopplung ist hier die vorbereitete, in 2b
+     scharf werdende Struktur. Sie ist aber gegen Conversions LIVE prüfbar: der Persist
+     passiert jetzt auch dann, wenn er vorher im capiConfig-Zweig hing — mit identischem
+     Ergebnis für Meta-Projekte.
+  6. FORWARD NUR FÜR CONVERSIONS: if (capiConfig && isForwardable(event_type)) -> forward(...)
+     BYTE-IDENTISCH inkl. 3s-Timeout. isForwardable ist NEU und schließt PageView (2b) vom
+     Forward aus (ein PageView gehört in unsere Analytics, nicht als Conversion zu Meta).
+  7. return 204 — immer leer, 204-Containment unverändert.
+- GESCHÜTZTE INVARIANTEN:
+  (i) CAPI-FORWARD BYTE-IDENTISCH für bestehende Conversions: isForwardable MUSS für ALLE
+      heutigen Conversion-Event-Namen weiterhin true liefern. Ein zu breiter Ausschluss bricht
+      STILL das gerade erst reparierte CAPI-Tracking (s. Token/ID-Lektion in "Immer beachten")
+      — kein Fehler, nur verschwundene Conversions. -> diskriminierender Test MIT Gegenprobe.
+  (ii) 204-CONTAINMENT unverändert: jeder Pfad endet in einer leeren 204; auch das
+      Fehler-Gerüst wirft nie nach außen.
+  (iii) /api/capi-Alias + Parity unberührt (beide Routen re-exportieren denselben Handler).
+  (iv) Kill-Switch bleibt fail-closed — jetzt als EXPLIZITER Zweig statt als Nebeneffekt.
+- DEMOBAR / LIVE-TEST (2a, gegen UNVERÄNDERTE Conversions): (a) Meta-Projekt: eine Conversion
+  erscheint weiter im Events Manager als SERVER-Event UND erzeugt weiter eine
+  source='server'-Zeile -> Forward und entkoppelter Persist beide intakt; (b) gesperrtes
+  Projekt (blocked_at gesetzt): KEINE Zeile, KEIN Forward -> der explizite Kill-Switch greift.
+  PageView selbst ist in 2a NOCH NICHT testbar (es gibt keinen Emitter) — das ist gewollt und
+  der Grund für den 2a/2b-Schnitt.
+- OFFEN -> 2b: build-zeit-UNgegateter PageView-Emitter; in-memory ephemere Session-ID (KEIN
+  sessionStorage — Artefakt-Storage-Regel); Migration 0012 (additive NULLABLE Spalte
+  session_key, client-untrusted, längenbegrenzt); Verschärfung des Struktur-Guards um
+  session_key; PageView-Persist-Live-Test.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

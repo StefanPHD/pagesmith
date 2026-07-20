@@ -283,6 +283,32 @@ kaputtgeht.
   Domains PRO PROJEKT — geteilt über ALLE Kunden, also eine Multi-Tenant-Decke, nicht ein
   Per-Kunde-Limit. Der Per-User-Cap (Richtwert 3/User) schützt sie doppelt (Abuse + geteilte
   Decke). Pro-Upgrade VOR echter Skalierung einplanen.
+- SCHEIBE 2 (PageView) — KILL-SWITCH WIRD DORT PFLICHT-ARBEIT (Trigger: Meta-Entkopplung):
+  Die Meta-Entkopplung, der EXPLIZITE Kill-Switch-Zweig (projectId && !blocked) und das
+  blocked-Feld im Resolver werden in Scheibe 2 PFLICHT. Grund: heute (Couple-minimal) hängt
+  der Persist IM if(capiConfig)-Zweig, wodurch der Kill-Switch AUTOMATISCH greift (gesperrt
+  -> Resolver liefert null -> kein capiConfig -> kein Persist). Wer in Scheibe 2 entkoppelt,
+  OHNE den expliziten blocked-Zweig zu bauen, macht den Kill-Switch STILL fail-open — der
+  Schutz verschwindet lautlos, weil er heute ein Nebeneffekt der Kopplung ist und keine
+  eigene Verzweigung. AUSGANGSPUNKT für Scheibe 2 ist damit: Persist im capiConfig-Zweig,
+  source='server', KEIN blocked-Feld im Resolver.
+
+## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
+Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur
+Ist-Zustand — Herleitung und Entscheidungen: docs/claude-history/phase-8-analytics.md.
+
+- LETZTE MIGRATION: 0011. Tabelle public.events existiert und ist in der DB verifiziert:
+  id uuid PK (default gen_random_uuid), project_id uuid FK -> projects ON DELETE CASCADE
+  (+ Index events_project_id_idx), event_type text, event_id text (KEIN unique, KEIN Index),
+  source text NOT NULL (KEIN Default), created_at timestamptz default now();
+  CHECK events_event_type_max_len (length(event_type) <= 64); alle Spalten NOT NULL.
+- RLS auf events: aktiviert, KEINE Policy — das ist TRANSIENT (nur service_role schreibt,
+  über den Ingest-Pfad). Die owner-SELECT-Policy folgt in der Dashboard-Read-Scheibe. NICHT
+  dauerhaft policy-los wie audit_logs (dort echtes Append-Only). Der Supabase-Linter-Hinweis
+  "RLS Enabled No Policy" ist hier erwartet und vorübergehend.
+- AUFGESCHOBEN (konditionale Optimierung, kein Footgun): CAPI-Forward auf Hintergrund-
+  Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
+  ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,
@@ -426,7 +452,9 @@ docs/claude-history/security-manifest-full.md.
 - BACKUPS + Restore-Drill: Backup-Tier bestätigen + EINEN echten Restore-Drill fahren.
   BINDET-AN: laufend; erster Drill vor echten Kundendaten.
 - DATA-RETENTION: Rohdaten (IP/UA) nach max. 30 Tagen löschen/anonymisieren; heute nur
-  sicherstellen, dass Server-Logs keine IPs horten. BINDET-AN: Phase 8.
+  sicherstellen, dass Server-Logs keine IPs horten. BINDET-AN: Phase 8. — Präzisierung:
+  Phase 8 Scheibe 1 löst die 30-Tage-Pflicht NICHT aus (es wird KEIN IP/UA persistiert); sie
+  bindet erst an die Scheibe, die IP/UA einführt (Bot-Filter/Uniques). Heute NICHT fällig.
 - MCP-SICHERHEIT: scoped Tokens (nie globale Master-Rechte) + lückenloses Audit-Logging
   aller KI-induzierten Mutationen. BINDET-AN: Phase 10.
 
@@ -494,6 +522,21 @@ docs/claude-history/security-manifest-full.md.
   und beaconen weiter dorthin. Neue Exporte/gehostete Seiten nutzen /api/e (geteilter
   Handler, lib/capi/ingest.ts). Entfernen der capi-Route bricht STILL das Tracking aller
   schon ausgelieferten Kundenseiten (kein Fehler, nur verschwundene Conversions).
+- INGEST-204-CONTAINMENT (Sicherheitsregel, nicht bloß Defensive): /api/e bzw. handleIngest
+  antwortet dem Client IMMER mit einer LEEREN 204 — nie ein Body, nie ein 500 — in JEDEM
+  Pfad, auch bei Timeout/Abort/Body-Read-Fehler. GRUND (ohne ihn wird die Regel als
+  "unnötig defensiv" wegoptimiert): ein 500 oder ein Body würde den Gültigkeitszustand des
+  trackingKeys LEAKEN; 204-für-alles macht die Key-Existenz für einen anonymen Aufrufer
+  unbeobachtbar (Enumeration-Schutz). Jede neue Fehlerbehandlung im Forward-/Ingest-Pfad
+  MUSS innerhalb dieses Containments bleiben — auch das Fehler-Gerüst selbst (Timeout-
+  Scaffolding, Body-Reads) darf nie nach außen werfen.
+- TRACKING-source = BEOBACHTUNGS-ORT, NIE ZIEL: der source-Wert in events beschreibt, WO ein
+  Event beobachtet wurde (server vs. browser), NICHT an welches Werbe-Netzwerk es ging.
+  'server' heißt server-beobachtet — egal ob der Forward zu Meta/CAPI oder später zu
+  GA4/TikTok läuft. Ein späteres Tracking-ZIEL bekommt eine EIGENE additive Spalte; source
+  NIE zum Ziel-Sammelfeld umdeuten, sonst bricht der browser-vs-server-Verlustraten-Join.
+  Die Werte sind PERMANENT (sie werden nie nachträglich transformiert) -> sie müssen ab
+  Zeile 1 stimmen.
 - CAPI-TOKEN UND PIXEL-/DATASET-ID SIND EIN PAAR (real aufgetreten, 2026-07-20): Ein
   CAPI-Zugriffstoken ist an eine bestimmte Meta-Dataset/Pixel-ID gebunden. Wird die ID
   gewechselt, MUSS ein zur neuen ID passendes Token neu generiert und gesetzt werden — das

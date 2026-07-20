@@ -57,6 +57,10 @@ keine Selbstkorrektur.
 5. **Domain/Hosting-Schicht** — dynamische DNS-Werte, App-Host-Allowlist, Doku-Treue.
 6. **Tests** — diskriminierende Gegenproben, kein Über-Mocking, Live-Test-Ehrlichkeit.
 7. **Commits** — Conventional-Commit-Format, Secret-Scan, Migration-Reihenfolge.
+8. **Historie-Check & Eingriffstiefe** — WARUM aus `docs/claude-history/`, Invarianten
+   explizit benannt, additiv-vs-invasiv deklariert.
+9. **Ableiten statt Hardcoden/Löschen** — Werte aus ihrer Wahrheitsquelle herleiten,
+   nie festverdrahten und nie nur zurücksetzen.
 
 ## SPEZIFISCHE CHECKLISTE
 
@@ -181,6 +185,41 @@ keine Selbstkorrektur.
 - `git status`/`git diff` vor jedem Push auf versehentliche Secrets/`.env`-Inhalte prüfen.
 - Taucht eine Migration im Diff auf: auf die **Migration-vor-Code-Deploy**-Reihenfolge
   hinweisen (fail-closed-Regel — Migration im Supabase-Editor VOR dem Code-Deploy).
+
+### 8. Historie-Check vor Eingriff in Kern-Dateien
+
+- Greift NUR bei Änderungen an BESTEHENDEN Kern-/geteilten Dateien (`ingest.ts`, `token.ts`,
+  `resolve.ts`, `host.ts`, `app-serve/route.ts`, `generate.ts`, `domain-actions.ts`,
+  Middleware/Proxy-Schicht) — nicht bei jeder trivialen neuen Datei.
+- **Code-first, History-for-why**: Wahrheitsanker ist der AKTUELLE echte Code der berührten
+  Datei (History kann veralten). Die passende `docs/claude-history/`-Datei wird NUR
+  ZUSÄTZLICH herangezogen, um die Invariante zu klären, die der Code allein nicht verrät —
+  gezielt die thematisch passende, nie die ganze Historie.
+- **Invariante benennen, nicht referieren**: der Plan/Diff muss die konkrete geschützte
+  Regel ausdrücklich nennen (z.B. "der `/api/capi`-Alias bleibt, der Persist hängt nur
+  daneben"), statt allgemein auf die Doku zu verweisen. Nur so ist der Check prüfbar.
+- **Additiv-vs-invasiv-Deklaration** pro berührter Kern-Datei: rein additiv oder greift es
+  bestehende Pfade an? Bei invasivem Eingriff muss begründet sein, warum das etablierte,
+  getestete Verhalten erhalten bleibt.
+- Fehlt das bei einem invasiven Eingriff: [IMPORTANT]. Fehlt es bei einem additiven:
+  [SUGGESTION].
+
+### 9. Ableiten statt Hardcoden/Löschen
+
+- **Nie hardcoden, was ableitbar ist**: Serving-Suffixe aus `NEXT_PUBLIC_HOSTING_DOMAIN`,
+  DNS-Werte aus der Vercel-Config-Antwort, Endpunkt-/Feldnamen aus der aktuellen
+  Anbieter-Doku. Ein festverdrahteter Wert, der eine Quelle hat, ist ein Flag — er bricht
+  still bei Umgebungswechsel (der hardcodierte `SERVING_SUFFIXES`-Fall erzeugte auf der
+  neuen Serving-Domain lautlose 404er). Vertieft in §5.
+- **Ableiten statt löschen (View-State)**: jeder View-State, der ein Projekt-Attribut
+  spiegelt (`uploadError`, `capiTokenSet`, Publish-Status/Live-URL, …), MUSS beim
+  Projektladen am kanonischen Chokepoint aus dem GELADENEN Projekt abgeleitet werden — nicht
+  nur bei Bedarf zurückgesetzt. Dreimal aufgetreten. "Löschen" ist die schwächere Regel: sie
+  zeigt einen "war schon mal an"-Zustand (z.B. bereits publiziertes Projekt) fälschlich als
+  aus. Beim Publish-Status ist das sicherheitsrelevant — ein falscher "veröffentlicht"-
+  Zustand kann Ad-Budget auf die falsche URL lenken. Neuer projekt-spiegelnder State ohne
+  Ableitung aus der Wahrheitsquelle (`settings.hosting`, `settings.capi.tokenSet`, …):
+  [IMPORTANT].
 
 ## Review-Prozess
 

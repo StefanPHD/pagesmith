@@ -402,6 +402,9 @@ Erste Scheibe von Phase 8. Konzept final ausdiskutiert; Bau als Nächstes. Vollv
   additiv in der Scheibe, die IP/UA wirklich braucht, und bringen ihre Retention-Pflicht DORT mit.
 - TABELLE `events` (additiv, neue Migration — nächste freie Nummer aus supabase/migrations/ nehmen,
   vermutlich 0011, VERIFIZIEREN):
+  - id          uuid primary key default gen_random_uuid(). Surrogat-PK, analog audit_logs (0009).
+    event_id ist BEWUSST NICHT der PK (nicht unique — s.u.); eine Tabelle ohne PK wäre zudem nicht
+    zeilenweise referenzierbar (eigene Lektion: Identität nie über ein angenommenes Feld).
   - project_id  uuid, FK auf projects ON DELETE CASCADE. INDEX jetzt (proaktiv, A-Regel: der Per-Projekt-
     Read nutzt WHERE project_id).
   - event_type  text (CAPI-Event-Name, z.B. Purchase/Lead).
@@ -417,15 +420,22 @@ Erste Scheibe von Phase 8. Konzept final ausdiskutiert; Bau als Nächstes. Vollv
     Fallback auf 'server'). ACHSEN-HYGIENE: source = Beobachtungs-ORT (server vs. browser),
     NICHT Werbe-Netzwerk-ZIEL. Ein späteres Multi-Tracking-Ziel (Meta/GA4/TikTok) bekommt eine EIGENE
     additive Spalte; source NIE zum Ziel-Sammelfeld umdeuten, sonst bricht der browser-vs-server-Join.
-    TOKEN-KORREKTUR (Konsequenz der Meta-Entkopplung, s.u.): der Wert heißt 'server', OHNE jedes
-    Ziel-Suffix — wir persistieren server-beobachtete Zeilen AUCH ohne CAPI-Forward, ein
-    '_capi'-Suffix wäre ein Netzwerk-ZIEL im Beobachtungs-ORT-Feld und bräche genau die
-    Achsen-Hygiene-Regel eine Zeile weiter oben. Da Werte NIE nachträglich transformiert werden,
-    ist der Token permanent -> er muss ab Zeile 1 stimmen.
+    TOKEN-KORREKTUR: der Wert heißt 'server', OHNE jedes Ziel-Suffix. Ein '_capi'-Suffix wäre ein
+    Netzwerk-ZIEL im Beobachtungs-ORT-Feld und bräche genau die Achsen-Hygiene-Regel eine Zeile
+    weiter oben — der Gegenwert ist 'browser' (derselbe Event, anderer Beobachtungsort), NICHT ein
+    anderes Zielnetzwerk. Dass Scheibe 1 faktisch nur neben einem CAPI-Forward schreibt (s.
+    KOPPLUNG unten), ändert daran nichts: der Ort bleibt der Server. Da Werte NIE nachträglich
+    transformiert werden, ist der Token permanent -> er muss ab Zeile 1 stimmen.
   - created_at  timestamptz DEFAULT now() (Server-Timestamp). Zeitraum-Index (BRIN) erst mit der
     Dashboard-Scheibe (Zeitraum-Queries), nicht jetzt.
-  - KEIN IP/UA (Lean/PII-frei, s.o.) — gilt ausdrücklich AUCH für Projekte OHNE Meta-Setup, die
-    durch die Entkopplung (s.u.) neu mit persistiert werden.
+  - KEIN IP/UA (Lean/PII-frei, s.o.) — gilt unverändert auch für jede spätere Schreib-Quelle, die
+    additiv dazukommt.
+- INPUT-HÄRTUNG (event_type): event_type ist UNGEFILTERTER Client-Input aus dem Beacon-Blob (der
+  Ingest trimmt ihn heute nur). Für den Meta-Forward ist das unkritisch (Meta validiert selbst), als
+  DB-Wert landet damit aber beliebiger Client-String in unserer Tabelle. Deshalb beim Insert HART auf
+  max. 64 Zeichen TRUNCATEN, bevor der Wert in die DB geht -> Schutz vor DB-Bloat/Missbrauch.
+  AUSDRÜCKLICH KEINE Whitelist erlaubter Event-Namen: das bräche Custom-Events (freier event_name ist
+  bei der Graph-CAPI ein legitimer Fall, s. isCustom im Ingest).
 - CONSENT-SPALTE BEWUSST GESTRICHEN (Korrektur der ursprünglichen Fassung): psConsent() ist heute
   permissiv-default (true, wenn window.pagesmithConsent fehlt) und das Beacon-Blob trägt gar kein
   consent-Feld -> die Spalte wäre in JEDER Zeile konstant true = null Information (tote Spalte,
@@ -462,22 +472,34 @@ Erste Scheibe von Phase 8. Konzept final ausdiskutiert; Bau als Nächstes. Vollv
   des Forwards + Timeout), sinnvollerweise VOR Scheibe 2 (PageView-Volumensprung). Begründung der
   Trennung: "Zustell-Umbau am bewiesenen CAPI-Pfad" wird NICHT mit "neue Tabelle" in einer Scheibe
   vermischt.
-- META-ENTKOPPLUNG (Architektur-Entscheidung): Analytics-Persistenz ist NICHT an eine vorhandene
-  Meta-Config gekoppelt. Phase 8 ist ein EIGENSTÄNDIGES Feature — First-Party-Analytics/Betreiber-
-  Metriken zählen ALLEN Traffic, auch bei Kunden ganz ohne Meta-Setup. Der Stufe-1-Befund zeigte die
-  Falle: getCapiConfigByTrackingKey liefert heute bei fehlender Pixel-ID ODER fehlendem Token
-  schlicht null -> ein naiv dahintergehängter Persist wäre still an "Meta vollständig konfiguriert"
-  gekoppelt gewesen.
-- RESOLVER (token.ts, ADDITIVER Eingriff in eine zweite Kern-Datei): getCapiConfigByTrackingKey wird
-  additiv erweitert und liefert künftig { projectId, blocked, capiConfig | null } statt nur
-  { pixelId, token }. Die project.id wird dort HEUTE SCHON intern aufgelöst und danach verworfen —
-  die Erweiterung kostet also KEINE zweite Query im Hotspot (/api/e-Schlankheits-Regel gewahrt).
-  Der CAPI-Zweig liest weiter capiConfig und verhält sich BYTE-IDENTISCH, wenn eine Config vorhanden
-  ist; fehlt sie, bleibt es beim bestehenden 204-No-op ohne Forward.
-- KILL-SWITCH — JETZT EXPLIZITER ZWEIG (fail-closed): Persist NUR wenn projectId vorhanden UND
-  blocked === false. Damit ist die Sperre eine SICHTBARE, testbare Verzweigung und nicht länger ein
-  bloßer null-Nebeneffekt des Config-Lookups — genau die Kopplung, die beim Entkoppeln sonst
-  unbemerkt weggefallen wäre. Bestandsverhalten CAPI (gesperrt -> kein Forward, 204) unverändert.
+- KOPPLUNG (Scheibe 1 = COUPLE-MINIMAL, bewusste Entscheidung — ersetzt die zwischenzeitlich
+  geplante Meta-Entkopplung): Der Persist hängt via after() INNERHALB des bestehenden
+  `if (capiConfig)`-Zweigs. Grund (Stufe-1-Befund am echten Code): Meta-lose Projekte senden HEUTE
+  gar keinen Beacon — __psMetaFire ist BUILD-ZEIT-gegatet über metaTrackStatement(hasPixel), ohne
+  Pixel-ID entsteht nur ein console.warn, kein Fire (zusätzlich liefert buildCapiBeaconStatement ohne
+  trackingKey ""). An /api/e kommt also ausschließlich Traffic von Meta-konfigurierten Projekten an.
+  Eine Entkopplung wäre in Scheibe 1 folglich WIRKUNGSLOS/dormant und mangels Client-Traffic NICHT
+  live-verifizierbar. Deshalb koppeln (kleiner, additiv, live-beweisbar) statt eine riskante
+  Umstrukturierung des Ingest-Kontrollflusses ohne Live-Beweis zu verbauen.
+- RESOLVER (token.ts, ADDITIVER Eingriff in eine zweite Kern-Datei, kompakte Fassung):
+  getCapiConfigByTrackingKey liefert künftig { projectId, capiConfig } statt nur { pixelId, token }
+  (capiConfig weiterhin { pixelId, token } | null). Die project.id wird im Lookup HEUTE SCHON
+  aufgelöst und danach verworfen -> KEINE zweite Query im Hotspot (/api/e-Schlankheits-Regel
+  gewahrt). KEIN blocked-Feld in Scheibe 1 (gehört zur Entkopplung, s.u.). Der CAPI-Zweig liest
+  weiter capiConfig und verhält sich BYTE-IDENTISCH, wenn eine Config vorhanden ist.
+- KILL-SWITCH (Scheibe 1 = AUTOMATISCH, nicht explizit): Weil der Persist im `if (capiConfig)`-Zweig
+  hängt, greift der bestehende Schutz von selbst — ein gesperrtes Projekt liefert im Lookup null
+  (blocked_at-Check in token.ts:58, VOR der Pixel-/Token-Auflösung) -> kein capiConfig -> kein
+  Persist. Fail-closed wie heute, ohne neue Verzweigung. Der EXPLIZITE Kill-Switch-Zweig (projectId
+  vorhanden UND nicht gesperrt) samt blocked-Feld gehört zur Entkopplung und wandert MIT IHR nach
+  Scheibe 2 — er wird dort PFLICHT, weil dann der automatische Schutz durch die Config-Kopplung
+  entfällt.
+- LATENZ DES ANSPRUCHS (ehrlich benannt): Der Anspruch "First-Party-Analytics erfasst allen Traffic,
+  auch bei Kunden ohne Meta-Setup" bleibt gültig, ist in Scheibe 1 aber PLANMÄSSIG LATENT — faktisch
+  persistieren wir hier nur Meta-Traffic, weil nur der überhaupt einen Beacon erzeugt. Aktiv wird der
+  Anspruch erst mit der Meta-unabhängigen Client-Infrastruktur in Scheibe 2 (PageView), und zwar rein
+  ADDITIV: bis dahin existieren keine Meta-losen Zeilen, es gibt also nichts, dessen Verhalten sich
+  ändern könnte.
 - DEPLOY-REIHENFOLGE (beim späteren Bau): Migration im Supabase-Editor VOR dem Code-Deploy
   (fail-closed-Regel). Am echten Code vor dem Bau verifizieren: (a) welche RUNTIME /api/e fährt
   (Node -> after() aus next/server, Edge -> waitUntil) — es läuft dort NOCH KEIN Hintergrund-Primitiv,

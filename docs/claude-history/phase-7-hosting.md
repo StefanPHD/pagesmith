@@ -326,6 +326,10 @@ grep 7c-2-GATE/_hostprobe = 0, Pipeline grün, alle 269 Tests/7c-1-Tests weiter 
   gate/7c-2-xfh; main ist DAHINTER (kennt weder 7b noch 7c-1). Ein ÜBERLEGTES Release
   nach main steht damit als eigene Entscheidung an — es ist KEIN Nebeneffekt des Gates
   und wurde bewusst nicht mit-gemerged. Vor 7c-2-Bau bzw. Prod-Nutzung klären.
+  [HISTORISCHER STAND — Zeitpunkt 7c-2-Gate. INZWISCHEN ÜBERHOLT: das Release ist längst
+  erfolgt, alles liegt auf main und in Produktion (die komplette 7c-2-Familie ist live
+  bewiesen, s. Abschnitt unten). Der Absatz beschreibt die Branch-Lage VON DAMALS, nicht
+  den heutigen Stand. Vermerk 2026-07-20.]
 
 
 ### Scheibe 7c-2 — Custom-Domains Ende-zu-Ende (ABGESCHLOSSEN, live verifiziert)

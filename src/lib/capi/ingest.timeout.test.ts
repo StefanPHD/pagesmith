@@ -72,6 +72,7 @@ beforeEach(() => {
   scheduled.length = 0;
   getCapiConfigByTrackingKey.mockResolvedValue({
     projectId: "proj-1",
+    blocked: false,
     capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
   });
   persistEvent.mockResolvedValue(undefined);

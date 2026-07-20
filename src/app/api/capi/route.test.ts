@@ -66,6 +66,7 @@ beforeEach(() => {
   // liegt eine Ebene tiefer. Treu gemockt — der Handler liest weiterhin capiConfig.
   getCapiConfigByTrackingKey.mockResolvedValue({
     projectId: "proj-1",
+    blocked: false,
     capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
   });
   global.fetch = vi.fn(async () => new Response(null, { status: 200 }));

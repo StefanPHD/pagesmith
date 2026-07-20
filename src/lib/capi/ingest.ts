@@ -2,6 +2,7 @@ import { after } from "next/server";
 import { getCapiConfigByTrackingKey } from "@/lib/capi/token";
 import { META_GRAPH_VERSION, META_TEST_EVENT_CODE } from "@/lib/capi/config";
 import { persistEvent } from "@/lib/analytics/persist";
+import { isForwardable } from "@/lib/analytics/events";
 import { errorName } from "@/lib/errors";
 
 /**
@@ -185,20 +186,24 @@ export async function handleIngest(request: Request): Promise<Response> {
   // Pflichtfelder fehlen -> malformer Client-Request -> 400.
   if (!trackingKey || !eventID || !event) return status(400);
 
-  // --- trackingKey -> { projectId, capiConfig } (service_role). Unbekannt/gesperrt/
-  //     tokenlos -> 204, KEIN Meta-fetch, kein Leak (Key-Gueltigkeit nicht beobachtbar).
-  //     KILL-SWITCH: ein gesperrtes Projekt liefert hier null -> weder Forward noch
-  //     Persist (fail-closed, ohne eigenen Zweig — der Schutz sitzt im Resolver). ---
+  // --- trackingKey -> { projectId, blocked, capiConfig } (service_role). Unbekannter
+  //     Key -> 204, KEIN Meta-fetch, kein Leak (Key-Gueltigkeit nicht beobachtbar). ---
   const resolution = await getCapiConfigByTrackingKey(trackingKey);
-  if (!resolution?.capiConfig) return status(204);
-  const config = resolution.capiConfig;
+  if (!resolution) return status(204);
 
-  // --- ANALYTICS-PERSIST (Phase 8 Scheibe 1) — COUPLE-MINIMAL, additiv ---
-  // Haengt BEWUSST INNERHALB des capiConfig-Zweigs: Meta-lose Projekte senden heute gar
-  // keinen Beacon (__psMetaFire ist build-zeit-gegatet ueber metaTrackStatement), eine
-  // Entkopplung waere hier dormant und nicht live-verifizierbar. Die Meta-unabhaengige
-  // Erfassung kommt additiv mit Scheibe 2 (PageView) — DANN braucht es auch den
-  // expliziten blocked-Zweig, weil dieser automatische Kill-Switch-Schutz entfaellt.
+  // --- KILL-SWITCH (Tier 0) — EXPLIZITER Zweig, seit Scheibe 2a ---
+  // Frueher war der Schutz ein NEBENEFFEKT: der Resolver lieferte null, der Persist hing
+  // im capiConfig-Zweig, also verwarf derselbe Guard beides. Mit der Entkopplung (Persist
+  // laeuft jetzt auch OHNE CapiConfig) waere dieser Automatismus lautlos verschwunden ->
+  // hier steht er als eigene, sichtbare, testbare Verzweigung. VOR Persist UND Forward.
+  // Fail-closed; nach aussen identische leere 204 (kein Zustandsleck).
+  if (resolution.blocked) return status(204);
+
+  // --- ANALYTICS-PERSIST (Phase 8 Scheibe 1, in 2a ENTKOPPELT) ---
+  // Laeuft jetzt fuer JEDES nicht-gesperrte Projekt — unabhaengig davon, ob eine
+  // CapiConfig existiert. In 2a fliessen faktisch weiter nur Conversions durch (der
+  // PageView-Emitter kommt erst in 2b); die Entkopplung ist die vorbereitete Struktur,
+  // fuer Meta-Projekte bleibt das Ergebnis identisch (Forward UND Persist).
   //
   // after() laeuft NACH der Response -> die 204-Antwortzeit bleibt unveraendert, und der
   // Callback kann strukturell nichts mehr in den Response-Pfad werfen. persistEvent
@@ -216,77 +221,86 @@ export async function handleIngest(request: Request): Promise<Response> {
     }
   });
 
-  // --- Server-gesetzte Felder (NIE aus Client-Payload) ---
-  const eventTime = Math.floor(Date.now() / 1000);
-  const clientIp = resolveClientIp(request);
-  const userAgent = asString(request.headers.get("user-agent"));
+  // --- FORWARD NUR FUER CONVERSIONS (Scheibe 2a) ---
+  // Der gesamte Meta-Pfad (Payload-Bau + Forward) liegt jetzt INNERHALB dieser einen
+  // Bedingung — UMSCHLOSSEN, nicht editiert. Zwei Gruende, warum auch der Payload-Bau
+  // mit hineinwandert und nicht nur der fetch: (1) fuer ein PageView waere er reine
+  // Verschwendung, und PageView ist ab 2b der VOLUMEN-Event im Hotspot (/api/e-
+  // Schlankheits-Regel); (2) er referenziert config, das hier erst geprueft vorliegt.
+  const config = resolution.capiConfig;
+  if (config && isForwardable(event)) {
+    // --- Server-gesetzte Felder (NIE aus Client-Payload) ---
+    const eventTime = Math.floor(Date.now() / 1000);
+    const clientIp = resolveClientIp(request);
+    const userAgent = asString(request.headers.get("user-agent"));
 
-  // --- Meta-Payload zusammensetzen (undefined-Felder weglassen) ---
-  const userData: Record<string, unknown> = {};
-  if (clientIp) userData.client_ip_address = clientIp;
-  if (userAgent) userData.client_user_agent = userAgent;
-  const fbp = asString(body._fbp);
-  if (fbp) userData.fbp = fbp;
+    // --- Meta-Payload zusammensetzen (undefined-Felder weglassen) ---
+    const userData: Record<string, unknown> = {};
+    if (clientIp) userData.client_ip_address = clientIp;
+    if (userAgent) userData.client_user_agent = userAgent;
+    const fbp = asString(body._fbp);
+    if (fbp) userData.fbp = fbp;
 
-  const customData: Record<string, unknown> = {};
-  if (typeof body.value === "number") customData.value = body.value;
-  const currency = asString(body.currency);
-  if (currency) customData.currency = currency;
+    const customData: Record<string, unknown> = {};
+    if (typeof body.value === "number") customData.value = body.value;
+    const currency = asString(body.currency);
+    if (currency) customData.currency = currency;
 
-  const serverEvent: Record<string, unknown> = {
-    // isCustom aendert die Graph-CAPI-Call-Shape NICHT: ein "Custom Event" ist dort
-    // schlicht ein freier event_name (kein trackCustom-Split wie im Browser-Pixel).
-    // isCustom wird fuer Symmetrie mit der Pixel-Seite mitgefuehrt, nicht verzweigt.
-    event_name: event,
-    event_time: eventTime,
-    event_id: eventID,
-    action_source: "website",
-    user_data: userData,
-  };
-  const eventSourceUrl = asString(body.eventSourceUrl);
-  if (eventSourceUrl) serverEvent.event_source_url = eventSourceUrl;
-  if (Object.keys(customData).length > 0) serverEvent.custom_data = customData;
+    const serverEvent: Record<string, unknown> = {
+      // isCustom aendert die Graph-CAPI-Call-Shape NICHT: ein "Custom Event" ist dort
+      // schlicht ein freier event_name (kein trackCustom-Split wie im Browser-Pixel).
+      // isCustom wird fuer Symmetrie mit der Pixel-Seite mitgefuehrt, nicht verzweigt.
+      event_name: event,
+      event_time: eventTime,
+      event_id: eventID,
+      action_source: "website",
+      user_data: userData,
+    };
+    const eventSourceUrl = asString(body.eventSourceUrl);
+    if (eventSourceUrl) serverEvent.event_source_url = eventSourceUrl;
+    if (Object.keys(customData).length > 0) serverEvent.custom_data = customData;
 
-  const payload: Record<string, unknown> = { data: [serverEvent] };
-  // test_event_code NUR wenn env gesetzt (dev-only). NIE hartcodiert / in Prod.
-  if (META_TEST_EVENT_CODE) payload.test_event_code = META_TEST_EVENT_CODE;
+    const payload: Record<string, unknown> = { data: [serverEvent] };
+    // test_event_code NUR wenn env gesetzt (dev-only). NIE hartcodiert / in Prod.
+    if (META_TEST_EVENT_CODE) payload.test_event_code = META_TEST_EVENT_CODE;
 
-  // --- Forward AWAIT-en; Fehler sanitized loggen; Client kriegt IMMER 204. ---
-  //
-  // 204-CONTAINMENT: die KOMPLETTE Timeout-Scaffolding (AbortController + setTimeout)
-  // liegt INNERHALB des fire-and-log-try. Das Muster ist aus lib/vercel/client.ts
-  // gespiegelt, aber die UMSCHLIESSUNG ist bewusst ANDERS: dort steht das Geruest VOR
-  // dem try und der catch RETURNIERT ein Ergebnis (der Vercel-Client darf einen
-  // Setup-Fehler propagieren) — der Ingest darf das NIE. Hier muendet jeder Pfad, auch
-  // ein Stolpern des Geruests selbst, im catch und damit in der garantierten leeren 204.
-  // `timer` steht als REINE Deklaration aussen (kann nicht werfen), damit finally ihn
-  // sieht. Ein Abort landet als DOMException im catch und wird dank errorName() als
-  // "AbortError" statt "unknown" geloggt.
-  const url = `https://graph.facebook.com/${META_GRAPH_VERSION}/${config.pixelId}/events?access_token=${config.token}`;
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  try {
-    const controller = new AbortController();
-    timer = setTimeout(() => controller.abort(), META_FORWARD_TIMEOUT_MS);
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
-    if (!res.ok) {
-      // KEIN Token/access_token/sensibler Response-Body ins Log — nur Status.
-      console.error(`[capi] Meta forward failed: HTTP ${res.status}`);
-      // ADDITIV: Metas STRUKTURIERTEN Ablehnungsgrund nachziehen. Ohne ihn ist ein
-      // HTTP 400 nicht diagnostizierbar (Pixel-/Token-Problem? Payload-Feld? Permission?)
-      // -> wir raten sonst. Der Body-Read liegt INNERHALB des fire-and-log-try: wirft er,
-      // faengt ihn der bestehende catch, der Client bekommt weiterhin 204.
-      console.error(await describeMetaError(res));
+    // --- Forward AWAIT-en; Fehler sanitized loggen; Client kriegt IMMER 204. ---
+    //
+    // 204-CONTAINMENT: die KOMPLETTE Timeout-Scaffolding (AbortController + setTimeout)
+    // liegt INNERHALB des fire-and-log-try. Das Muster ist aus lib/vercel/client.ts
+    // gespiegelt, aber die UMSCHLIESSUNG ist bewusst ANDERS: dort steht das Geruest VOR
+    // dem try und der catch RETURNIERT ein Ergebnis (der Vercel-Client darf einen
+    // Setup-Fehler propagieren) — der Ingest darf das NIE. Hier muendet jeder Pfad, auch
+    // ein Stolpern des Geruests selbst, im catch und damit in der garantierten leeren 204.
+    // `timer` steht als REINE Deklaration aussen (kann nicht werfen), damit finally ihn
+    // sieht. Ein Abort landet als DOMException im catch und wird dank errorName() als
+    // "AbortError" statt "unknown" geloggt.
+    const url = `https://graph.facebook.com/${META_GRAPH_VERSION}/${config.pixelId}/events?access_token=${config.token}`;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const controller = new AbortController();
+      timer = setTimeout(() => controller.abort(), META_FORWARD_TIMEOUT_MS);
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      if (!res.ok) {
+        // KEIN Token/access_token/sensibler Response-Body ins Log — nur Status.
+        console.error(`[capi] Meta forward failed: HTTP ${res.status}`);
+        // ADDITIV: Metas STRUKTURIERTEN Ablehnungsgrund nachziehen. Ohne ihn ist ein
+        // HTTP 400 nicht diagnostizierbar (Pixel-/Token-Problem? Payload-Feld? Permission?)
+        // -> wir raten sonst. Der Body-Read liegt INNERHALB des fire-and-log-try: wirft er,
+        // faengt ihn der bestehende catch, der Client bekommt weiterhin 204.
+        console.error(await describeMetaError(res));
+      }
+    } catch (err) {
+      // Nur eine generische Meldung — nie die URL (traegt den Token) / den Token.
+      console.error(`[capi] Meta forward error: ${errorName(err)}`);
+    } finally {
+      clearTimeout(timer);
     }
-  } catch (err) {
-    // Nur eine generische Meldung — nie die URL (traegt den Token) / den Token.
-    console.error(`[capi] Meta forward error: ${errorName(err)}`);
-  } finally {
-    clearTimeout(timer);
   }
 
   return status(204);

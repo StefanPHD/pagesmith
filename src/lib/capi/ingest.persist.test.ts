@@ -54,6 +54,7 @@ beforeEach(() => {
   scheduled.length = 0;
   getCapiConfigByTrackingKey.mockResolvedValue({
     projectId: "proj-1",
+    blocked: false,
     capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
   });
   persistEvent.mockResolvedValue(undefined);
@@ -83,9 +84,7 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
     });
   });
 
-  it("(b) GEGENPROBE Kill-Switch: gesperrtes Projekt -> Resolver null -> KEIN Persist, KEIN Forward", async () => {
-    // Ein gesperrtes Projekt liefert im Resolver null (blocked_at-Check VOR der
-    // Config-Aufloesung) — fail-closed OHNE eigenen Zweig im Handler.
+  it("(b) unbekannter trackingKey (Resolver null) -> KEIN Persist, KEIN Forward", async () => {
     getCapiConfigByTrackingKey.mockResolvedValue(null);
 
     const res = await handleIngest(makeRequest(VALID_BODY));
@@ -98,11 +97,14 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
     expect(after).not.toHaveBeenCalled();
   });
 
-  it("(c) COUPLE-MINIMAL-GRENZE: kein Meta-Setup (capiConfig null, offen) -> WEDER Forward NOCH Persist", async () => {
-    // Diese Zeile faerbt rot, sobald jemand den Persist aus dem if(capiConfig)-Zweig
-    // herauszieht (also entkoppelt, ohne die Scheibe-2-Client-Infrastruktur zu haben).
+  // (c) DER KILL-SWITCH ALS EXPLIZITER ZWEIG (Scheibe 2a) — die Wirkung, deren Meldung
+  // token.test.ts absichert. Faerbt rot, sobald jemand den blocked-Zweig entfernt oder
+  // hinter den Persist schiebt: dann liefe ein gesperrtes Projekt still fail-open und
+  // wuerde weiter Analytics-Zeilen erzeugen.
+  it("(c) GEGENPROBE Kill-Switch: blocked=true -> KEIN Persist, KEIN Forward, nichts eingeplant", async () => {
     getCapiConfigByTrackingKey.mockResolvedValue({
-      projectId: "proj-ohne-meta",
+      projectId: "proj-gesperrt",
+      blocked: true,
       capiConfig: null,
     });
 
@@ -110,8 +112,41 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
     await runScheduled();
 
     expect(res.status).toBe(204);
-    expect(global.fetch).not.toHaveBeenCalled();
+    expect(await res.text()).toBe("");
     expect(persistEvent).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
+    expect(after).not.toHaveBeenCalled();
+  });
+
+  // INVERTIERT in Scheibe 2a (bewusst, NICHT "bis gruen angepasst"):
+  //
+  // VORHER hiess dieser Test "capiConfig null -> WEDER Forward NOCH Persist" und war der
+  // Zaun um die Couple-minimal-Kopplung: er wurde rot, sobald jemand den Persist aus dem
+  // if(capiConfig)-Zweig zog, OHNE die Scheibe-2-Infrastruktur zu haben. Genau diese
+  // Infrastruktur ist jetzt gebaut (expliziter blocked-Zweig, s. Test (c)), also hat der
+  // Zaun seinen Zweck erfuellt und wird zur GEGENPROBE der Entkopplung umgedreht.
+  //
+  // Der Schutz ist NICHT verschwunden, er ist umgezogen: was hier frueher der
+  // Kill-Switch mitbewirkte, prueft jetzt Test (c) direkt und sichtbar.
+  it("(e) ENTKOPPELUNG: kein Meta-Setup (capiConfig null, NICHT gesperrt) -> Persist JA, Forward NEIN", async () => {
+    getCapiConfigByTrackingKey.mockResolvedValue({
+      projectId: "proj-ohne-meta",
+      blocked: false,
+      capiConfig: null,
+    });
+
+    const res = await handleIngest(makeRequest(VALID_BODY));
+    await runScheduled();
+
+    expect(res.status).toBe(204);
+    // Kein Forward-Ziel -> kein fetch. Aber die Analytics-Zeile entsteht trotzdem.
+    expect(global.fetch).not.toHaveBeenCalled();
+    expect(persistEvent).toHaveBeenCalledTimes(1);
+    expect(persistEvent).toHaveBeenCalledWith({
+      projectId: "proj-ohne-meta",
+      eventType: "Purchase",
+      eventId: "evt-123",
+    });
   });
 
   it("(d) ISOLATION: fehlschlagender Persist aendert WEDER die 204 NOCH den CAPI-Forward", async () => {

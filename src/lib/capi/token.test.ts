@@ -52,6 +52,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     // vorher intern schon aufgeloest und verworfen) -> KEINE zweite Query.
     expect(await getCapiConfigByTrackingKey("tk-abc")).toEqual({
       projectId: "proj-1",
+      blocked: false,
       capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
     });
   });
@@ -82,6 +83,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
+      blocked: false,
       capiConfig: null,
     });
   });
@@ -95,6 +97,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
+      blocked: false,
       capiConfig: null,
     });
   });
@@ -106,6 +109,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
+      blocked: false,
       capiConfig: null,
     });
   });
@@ -117,11 +121,15 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
+      blocked: false,
       capiConfig: null,
     });
   });
 
-  it("KILL-SWITCH: gesperrtes Projekt (blocked_at) -> null (Event verworfen), Token-Query NICHT ausgefuehrt", async () => {
+  // Diese Zusicherung bleibt UNVERAENDERT und ist der teuerste Teil des Kill-Switches:
+  // bei gesperrtem Projekt wird die Token-Query gar nicht erst gestellt. Der frueche
+  // Return bleibt also frueh — nur SEIN RUECKGABEWERT aendert sich (s. naechster Test).
+  it("KILL-SWITCH: gesperrtes Projekt -> Token-Query NICHT ausgefuehrt (frueher Return bleibt frueh)", async () => {
     const { from } = mockAdmin({
       projects: {
         data: { id: "proj-1", settings: { pixels: { meta: { pixelId: "PIXEL-123" } } }, blocked_at: "2026-07-14T00:00:00Z" },
@@ -129,7 +137,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       },
       project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
     });
-    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toBeNull();
+    await getCapiConfigByTrackingKey("tk-abc");
     // Frueh-Verwerfen VOR der Token-Aufloesung: project_tokens wird nie abgefragt.
     expect(from).not.toHaveBeenCalledWith("project_tokens");
   });
@@ -144,16 +152,24 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     });
     expect(await getCapiConfigByTrackingKey("tk-abc")).toEqual({
       projectId: "proj-1",
+      blocked: false,
       capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
     });
   });
 
-  // GEGENPROBE zur Scheibe-1-Kopplung: ein GESPERRTES Projekt liefert die GANZE
-  // Aufloesung null — NICHT etwa { projectId, capiConfig: null }. Genau daran haengt
-  // der automatische Kill-Switch-Schutz des Persists (kein capiConfig -> kein Persist).
-  // Waere hier je eine projectId sichtbar, koennte ein spaeterer Persist-Zweig sie
-  // benutzen und der Kill-Switch liefe still fail-open.
-  it("KILL-SWITCH: gesperrtes Projekt liefert NULL, nicht nur capiConfig null", async () => {
+  // INVERTIERT in Scheibe 2a (bewusst, NICHT "bis gruen angepasst"):
+  //
+  // VORHER forderte dieser Test "gesperrt -> die GANZE Aufloesung ist null". Das war in
+  // Couple-minimal richtig, weil der Persist im capiConfig-Zweig hing: null traf beides
+  // (Forward UND Persist) mit EINEM Guard. Der Schutz war ein NEBENEFFEKT.
+  //
+  // Mit der Entkopplung persistiert der Handler auch OHNE CapiConfig. Ein null wuerde
+  // "gesperrt" von "unbekannter Key" ununterscheidbar machen und den Kill-Switch damit an
+  // einen Zufall binden. Deshalb wandert der Schutz an eine SICHTBARERE Stelle: der
+  // Resolver MELDET blocked:true, der Handler verzweigt EXPLIZIT darauf (ingest.ts) und
+  // verwirft vor Persist und Forward. Dieser Test sichert jetzt die Meldung ab; die
+  // Wirkung sichert ingest.persist.test.ts (c).
+  it("KILL-SWITCH: gesperrtes Projekt MELDET blocked:true (statt die Aufloesung zu verschlucken)", async () => {
     mockAdmin({
       projects: {
         data: {
@@ -165,8 +181,11 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       },
       project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
     });
-    const result = await getCapiConfigByTrackingKey("tk-abc");
-    expect(result).toBeNull();
-    expect(result).not.toMatchObject({ projectId: expect.anything() });
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: true,
+      // KEINE Config bei gesperrt — der Token wird gar nicht erst gelesen.
+      capiConfig: null,
+    });
   });
 });

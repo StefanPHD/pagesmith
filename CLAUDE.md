@@ -580,6 +580,22 @@ ist.
   umverdrahtet, isoliert grün verifizierbar), dann feat (3s-Timeout auf den Meta-Forward + ingest.ts
   nutzt das Util). "Ein Commit erzählt eine Sache".
 
+## Offene Punkte (aktive TODOs mit Trigger — nicht in ein Abschluss-Archiv)
+Kurz gehaltene Sammelstelle für Dinge, die HEUTE noch nicht beißen, aber zu einem
+benennbaren Zeitpunkt zwingend erledigt sein müssen. Kein Backlog-Ersatz (aufgeschobene
+Aufräumarbeiten: docs/claude-history/backlog-polish.md) — hier steht nur, was sonst STILL
+kaputtgeht.
+
+- isAppHost-PLATZHALTER (Trigger: Brand-Domain-Kauf): isAppHost trägt pagesmith.app als
+  PLATZHALTER. Sobald eine echte Brand-Domain feststeht, MUSS sie in EINEM überlegten Schritt
+  in die isAppHost-Allowlist (+ NEXT_PUBLIC_APP_URL + Doku) — sonst landet die eigene App auf
+  ihrer eigenen Domain im SERVING-Zweig und 404t. In Prod heute harmlos (nur *.vercel.app ist
+  relevant), aber vor dem Brand-Domain-Livegang nicht vergessen.
+- HOBBY-50-DOMAIN-DECKE (Trigger: echte Skalierung): Vercel Hobby deckelt bei 50 Custom-
+  Domains PRO PROJEKT — geteilt über ALLE Kunden, also eine Multi-Tenant-Decke, nicht ein
+  Per-Kunde-Limit. Der Per-User-Cap (Richtwert 3/User) schützt sie doppelt (Abuse + geteilte
+  Decke). Pro-Upgrade VOR echter Skalierung einplanen.
+
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,
 Policy und jeder externe Call wird daran gemessen. B sind Skalierungs-Leitplanken für
@@ -814,6 +830,24 @@ docs/claude-history/security-manifest-full.md.
   solchen Datei MUSS import type/export type sein, sonst versucht der Server-Actions-
   Compiler, einen zur Laufzeit gelöschten Typnamen als Wert aufzulösen -> ReferenceError
   "X is not defined" beim Serverstart. Bei JEDER neuen Server-Action-Datei explizit prüfen.
+- POSTGREST-QUERIES + ECHTE PRIMÄRSCHLÜSSEL (Lektion, 7c-2-Bug): JEDE Supabase/PostgREST-
+  Query IMMER { data, error } destrukturieren, NIE nur { data } — sonst wird ein Fehler
+  still verschluckt und die UI zeigt eine leere Liste statt einer Fehlermeldung. Und: vor
+  der Nutzung eines Feldnamens den ECHTEN Primärschlüssel der Zieltabelle in der Migration
+  nachsehen, nie aus dem Feldnamen "id" annehmen — der PK der domains-Tabelle ist label,
+  NICHT id. Beides zusammen erzeugte den Bug: eine nicht-existente Spalte -> PostgREST-42703
+  -> verschluckt -> still leere Liste.
+- NEXT_PUBLIC_-REDEPLOY-PFLICHT (Ops-Regel, real aufgetreten): NEXT_PUBLIC_-Env-Vars werden
+  zur BUILD-ZEIT ins Client-Bundle inlined -> die Variable in Vercel zu ändern reicht NICHT,
+  nach JEDER Änderung ist ein REDEPLOY PFLICHT. Sonst trägt das laufende Bundle still den
+  alten Wert, OHNE Fehlermeldung. Server-only Env-Vars vor der ersten Prod-Nutzung im
+  Vercel-Dashboard setzen (sie sind nicht build-zeit-gebunden, fehlen aber sonst zur Laufzeit).
+- HOST-QUELLE FÜR APP-vs-SERVING-BRANCHING (Sicherheit): x-forwarded-host ist die Quelle,
+  empirisch auf einem echten Vercel-Preview als vertrauenswürdig BEWIESEN (Vercels Edge
+  überschreibt einen client-gefälschten x-forwarded-host mit dem echten Host — die Doku
+  schwieg dazu, also getestet statt angenommen). Daraus folgt die allgemeine Regel: NIEMALS
+  einen client-kontrollierten Host ungeprüft für Auth- oder Host-Branching nutzen.
+  Vollbeweis: docs/claude-history/phase-7-hosting.md.
 - Vor neuer Phase: kurz bestätigen, dass die vorige demobar lief.
 - Jede Bau-Freigabe an CC endet mit einer expliziten Live-Test-Anweisung (was
   genau im Browser zu prüfen ist) — nicht nur Pipeline-grün. Die Pipeline beweist
@@ -826,6 +860,13 @@ docs/claude-history/security-manifest-full.md.
   wiederverwenden, mit MCP-Autorisierung als ANDEREM Eingang zur GLEICHEN Funktion. Kein
   jetziger Bau, nur Baustil — verbessert den Code ohnehin (Testbarkeit, Trennung von
   Auth und Logik).
+- ABLEITEN STATT HARDCODEN (Werte mit einer Quelle): Was aus Env/Config/API-Antwort
+  ableitbar ist, wird NIE hardcodiert — hardcodierte Werte brechen STILL bei
+  Umgebungswechsel. Real aufgetreten: der hardcodierte Serving-Suffix erzeugte auf der neuen
+  Serving-Domain lautlose 404er (extractLabel=null -> falscher Dispatch). Beispiele:
+  Serving-Suffixe aus NEXT_PUBLIC_HOSTING_DOMAIN ableiten, DNS-Werte (CNAME/A) aus der
+  Vercel-Config-Antwort pro Domain lesen (sie sind projektspezifisch), Endpunkt-/Feldnamen
+  gegen die AKTUELLE Anbieter-Doku prüfen statt aus dem Gedächtnis zu setzen.
 - ABLEITEN STATT LÖSCHEN (projekt-spezifischer View-State): Jeder View-State, der ein
   Projekt-Attribut spiegelt (uploadError, capiTokenSet, Publish-Status/Live-URL, ...),
   muss beim Projektladen am kanonischen Chokepoint aus dem GELADENEN Projekt ABGELEITET

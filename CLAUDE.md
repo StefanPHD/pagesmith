@@ -101,7 +101,8 @@ kaputtgeht.
   Schutz verschwindet lautlos, weil er heute ein Nebeneffekt der Kopplung ist und keine
   eigene Verzweigung. AUSGANGSPUNKT für Scheibe 2 ist damit: Persist im capiConfig-Zweig,
   source='server', KEIN blocked-Feld im Resolver.
-  -> IN UMSETZUNG als Scheibe 2a, s. "Aktiver Stand — Phase 8 Scheibe 2a".
+  -> 2a ABGESCHLOSSEN (expliziter Kill-Switch live bewiesen); die Entkopplung wird mit dem
+  PageView-Emitter in 2b scharf. S. "Aktiver Stand — Phase 8 Scheibe 2a".
 
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur
@@ -120,10 +121,11 @@ Ist-Zustand — Herleitung und Entscheidungen: docs/claude-history/phase-8-analy
   Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
   ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
 
-## Aktiver Stand — Phase 8 Scheibe 2a (Handler-Umbau für PageView, Konzept festgezurrt, Bau als Nächstes)
-Erste Hälfte von Scheibe 2 (PageView). 2a = der sicherheitskritische Handler-Umbau, ISOLIERT
-und gegen UNVERÄNDERTE Conversions verifizierbar. Der Client-PageView-Emitter + Session-Dedup
-kommen erst in 2b. Volle Vision: docs/claude-history/future-roadmap.md.
+## Aktiver Stand — Phase 8 Scheibe 2a (Handler-Umbau für PageView, ABGESCHLOSSEN)
+Erste Hälfte von Scheibe 2 (PageView). ABGESCHLOSSEN — live bewiesen (2026-07-20). 2a war der
+sicherheitskritische Handler-Umbau, ISOLIERT und gegen UNVERÄNDERTE Conversions verifiziert.
+Der Client-PageView-Emitter + Session-Dedup kommen in 2b (s. OFFEN -> 2b am Ende). Volle
+Vision: docs/claude-history/future-roadmap.md.
 
 - ZWECK: Löst den Scheibe-2-Vorgriff aus "## Offene Punkte" ein. Heute (Couple-minimal) hängt
   der Persist IM if(capiConfig)-Zweig -> der Kill-Switch greift AUTOMATISCH (gesperrt ->
@@ -203,6 +205,21 @@ kommen erst in 2b. Volle Vision: docs/claude-history/future-roadmap.md.
   Projekt (blocked_at gesetzt): KEINE Zeile, KEIN Forward -> der explizite Kill-Switch greift.
   PageView selbst ist in 2a NOCH NICHT testbar (es gibt keinen Emitter) — das ist gewollt und
   der Grund für den 2a/2b-Schnitt.
+- VERIFIZIERT (live, 2026-07-20): Die "erledigt"-Schwelle war hier bewusst ein NICHT-EREIGNIS
+  — für Conversions durfte sich NICHTS ändern. Genau das wurde geprüft:
+  - CONVERSIONS UNVERÄNDERT (Events Manager, geteilte eventID): ein Kauf erschien weiter als
+    Browser- UND dedupliziertes Server-Event -> isForwardable lässt Bestands-Conversion-Namen
+    durch, der Forward ist byte-identisch. Zusätzlich entstand weiter eine
+    source='server'-Zeile -> der entkoppelte Persist ist intakt.
+  - KILL-SWITCH BEIDSEITIG SCHARF (gesperrtes Projekt): Server-Forward gestoppt (kein
+    Server-Event mehr im Events Manager) UND kein Persist (keine neue events-Zeile per SQL) —
+    und zwar bei WEITERLAUFENDEM Browser-Pixel-Event: der Browser-Pixel ist client-seitig und
+    vom Kill-Switch bewusst unberührt. Das ist exakt die Stelle, an der ein fail-open säße,
+    wenn der Persist beim Entkoppeln OHNE expliziten blocked-Zweig herausgezogen worden wäre.
+  - RUHE: /api/e durchweg 204, keine AbortError-/rejected-Zeilen im Normalbetrieb.
+  - HINWEIS für spätere Verifikationen: events.created_at ist UTC, Events-Manager- und
+    Vercel-Zeiten sind lokal -> beim Abgleich den Versatz mitrechnen (hier 2h). Ein
+    scheinbar "fehlendes" Event ist oft nur ein Zeitzonen-Artefakt.
 - OFFEN -> 2b: build-zeit-UNgegateter PageView-Emitter; in-memory ephemere Session-ID (KEIN
   sessionStorage — Artefakt-Storage-Regel); Migration 0012 (additive NULLABLE Spalte
   session_key, client-untrusted, längenbegrenzt); Verschärfung des Struktur-Guards um

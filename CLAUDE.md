@@ -140,10 +140,16 @@ kommen erst in 2b. Volle Vision: docs/claude-history/future-roadmap.md.
   2. if (!projectId) return 204 — unbekannter Key, wie heute (Key-Gültigkeit unbeobachtbar).
   3. if (blocked) return 204 — EXPLIZITER Kill-Switch als eigener SICHTBARER Zweig, VOR
      Persist UND Forward. Nicht länger ein Nebeneffekt der Config-Kopplung; fail-closed.
-  4. STRUKTUR-GUARD: fehlende/kaputte Pflichtfelder ({trackingKey,eventID,event}) ->
-     verwerfen (204), VOR jedem DB-Zugriff. Bewusst MINIMAL: nur STRUKTURELLE Gültigkeit,
-     KEIN Bot-Anspruch (ein Bot-Filter braucht IP/UA -> eigene Scheibe mit eigener
-     Retention-Pflicht). Die session_key-Prüfung folgt in 2b (existiert hier noch nicht).
+  4. STRUKTUR-GUARD — BEREITS ERFÜLLT, KEIN eigener Bauschritt in 2a (Korrektur am Code
+     verifiziert): der Pflichtfeld-Check {trackingKey,eventID,event} sitzt in ingest.ts
+     SCHON VOR der Resolution und antwortet mit 400, ohne jeden DB-Zugriff — also FRÜHER
+     und STRENGER als hier ursprünglich geplant (204 nach dem Kill-Switch). Er bleibt
+     unverändert. Das 400 ist KEIN Widerspruch zum 204-Containment: ein strukturell
+     kaputter Beacon ist ein CLIENT-Fehler, während das Containment vor einem Zustands-LEAK
+     bei GÜLTIGER Struktur, aber ungültigem/gesperrtem Key schützt — zwei verschiedene
+     Achsen. Bewusst MINIMAL: nur STRUKTURELLE Gültigkeit, KEIN Bot-Anspruch (ein Bot-Filter
+     bräuchte IP/UA -> eigene Scheibe mit eigener Retention-Pflicht). Die
+     session_key-Verschärfung folgt in 2b.
   5. ENTKOPPELTER PERSIST: after(persist(projectId, event_type, event_id, source='server'))
      — unabhängig von capiConfig. In 2a fließen faktisch weiter NUR Conversions durch (der
      PageView-Emitter existiert erst in 2b); die Entkopplung ist hier die vorbereitete, in 2b
@@ -153,6 +159,22 @@ kommen erst in 2b. Volle Vision: docs/claude-history/future-roadmap.md.
   6. FORWARD NUR FÜR CONVERSIONS: if (capiConfig && isForwardable(event_type)) -> forward(...)
      BYTE-IDENTISCH inkl. 3s-Timeout. isForwardable ist NEU und schließt PageView (2b) vom
      Forward aus (ein PageView gehört in unsere Analytics, nicht als Conversion zu Meta).
+     RESERVIERTER TOKEN (am Code belegt, NICHT "PageView"): isForwardable schließt AUSSCHLIESSLICH
+     den namespaced Token '__ps_pageview' aus, den NUR unser eigener 2b-Emitter erzeugt.
+     BEGRÜNDUNG: TrackConfig.event ist ein FREIER Nutzer-String (src/lib/mappings.ts), und über
+     trackCustom ist JEDER Name erlaubt — die Menge der Conversion-Namen ist UNBESCHRÄNKT.
+     Daraus folgt zweierlei: (a) eine Positiv-Allowlist ist ausgeschlossen, sie schnitte
+     Custom-Events STILL vom Forward ab (Invariante i); (b) auch ein naiver Negativ-Ausschluss
+     event !== "PageView" ist unsicher — ein Marketer kann "PageView" heute schon als legitimes
+     Custom-Event angelegt haben, dessen Forward dann lautlos stirbe. Der reservierte Token ist
+     praktisch nicht versehentlich eintippbar und löst beides.
+     ENTSCHEIDUNG GEGEN eine separate Wire-Achse (eigenes Forward-Flag im Beacon-Blob): kein
+     Vorbau. Der Ausschluss betrifft in 2a exakt EINEN Wert aus unserem eigenen Emitter. Eine
+     eigene Achse entsteht erst, falls je MEHRERE analytics-only-Event-Typen existieren — dann
+     additiv und mit realem Konsumenten, genau wie source es vorgemacht hat.
+     FOLGE-VERMERK (Anzeige-Detail, KEIN Bug): event_type in events trägt damit '__ps_pageview'.
+     Das spätere Dashboard braucht ein Anzeige-Mapping ('__ps_pageview' -> "PageView"); das
+     gehört in die Dashboard-Scheibe, nicht hierher.
   7. return 204 — immer leer, 204-Containment unverändert.
 - GESCHÜTZTE INVARIANTEN:
   (i) CAPI-FORWARD BYTE-IDENTISCH für bestehende Conversions: isForwardable MUSS für ALLE
@@ -163,6 +185,18 @@ kommen erst in 2b. Volle Vision: docs/claude-history/future-roadmap.md.
       Fehler-Gerüst wirft nie nach außen.
   (iii) /api/capi-Alias + Parity unberührt (beide Routen re-exportieren denselben Handler).
   (iv) Kill-Switch bleibt fail-closed — jetzt als EXPLIZITER Zweig statt als Nebeneffekt.
+- TEST-INVERSIONS-AUFLAGE (zwei Bestandstests ändern sich BEWUSST): Beide waren Schutzzäune um
+  die ALTE Kopplung und werden INVERTIERT, NICHT gelöscht:
+  - token.test.ts "gesperrtes Projekt liefert NULL, nicht nur capiConfig null" -> künftig
+    "gesperrt -> { projectId, blocked:true, capiConfig:null }". Der FRÜHE Return bleibt: die
+    project_tokens-Query läuft bei gesperrtem Projekt weiterhin NICHT (bestehender Test dazu
+    bleibt unverändert grün), nur der Rückgabewert ändert sich.
+  - ingest.persist.test.ts (c) "capiConfig null -> WEDER Forward NOCH Persist" -> künftig
+    "capiConfig null UND nicht blocked -> Persist JA, Forward NEIN" (beweist die Entkopplung).
+  AUFLAGE: Jeder der beiden Umschriebe wird beim Bau EINZELN begründet — nämlich damit, dass
+  der Schutz an eine SICHTBARERE Stelle wandert (expliziter blocked-Zweig im Handler). Ohne
+  diese Begründung wäre es Testanpassung-bis-grün statt dokumentierter Architekturwechsel, und
+  genau das ist bei einem Kill-Switch die gefährlichste Form von Regression.
 - DEMOBAR / LIVE-TEST (2a, gegen UNVERÄNDERTE Conversions): (a) Meta-Projekt: eine Conversion
   erscheint weiter im Events Manager als SERVER-Event UND erzeugt weiter eine
   source='server'-Zeile -> Forward und entkoppelter Persist beide intakt; (b) gesperrtes

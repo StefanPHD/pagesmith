@@ -408,6 +408,7 @@ docs/claude-history/future-roadmap.md. Die Detail-Entscheidungen unten bleiben a
       errorName()-Konsistenz im ingest.ts-Catch (dort noch `err instanceof Error`, während
       analytics/persist.ts den robusteren Helper nutzt — DOMException/AbortError liefe sonst als
       "unknown" ins Log). SINNVOLLERWEISE VOR Scheibe 2 (PageView bringt den Volumensprung).
+      -> JETZT IN UMSETZUNG, s. Sektion "Aktiver Stand — CAPI-Härtung".
   (b) META-ENTKOPPLUNG -> Scheibe 2 (PageView): erst dort entsteht Meta-unabhängiger Client-Traffic.
       Mit ihr werden der EXPLIZITE Kill-Switch-Zweig und das blocked-Feld im Resolver PFLICHT — der
       heutige automatische Schutz hängt daran, dass der Persist im capiConfig-Zweig sitzt; wer
@@ -533,6 +534,44 @@ docs/claude-history/future-roadmap.md. Die Detail-Entscheidungen unten bleiben a
   publayer.net-Seite feuern -> innerhalb des Timeouts landet EINE Zeile mit
   source='server' und der eventID -> per SQL verifiziert (nachgelagerte Wirkung, wie beim
   Kill-Switch), NICHT über den HTTP-Status.
+
+## Aktiver Stand — CAPI-Härtung (Timeout + errorName, Konzept festgezurrt, Bau als Nächstes)
+Kleine Härtungs-Scheibe VOR Phase 8 Scheibe 2. Löst den offenen Folgepunkt (a) aus Scheibe 1.
+Bewusst eng: NUR Timeout + errorName. NICHT enthalten: der Zustell-Umbau "CAPI-Forward auf
+Hintergrund" (204 löst sich von Metas Latenz) — aufgeschoben, bis Beacon-Latenz ein echtes Problem
+ist.
+
+- SCOPE: (1) AbortController-Timeout auf den Meta-fetch in ingest.ts, Dauer 3000ms — kappt echte
+  Hänger (heute blockiert ein hängendes Meta bis zum Plattform-Limit, Verstoß gegen die A-Regel
+  "defensive Timeouts"), bricht aber legitime Latenzspitzen (1-2s) nicht ab. (2) errorName-Fix im
+  ingest.ts-Catch (heute `err instanceof Error` -> ein AbortError/DOMException liefe als "unknown"
+  ins Log; genau der Fehlerfall, den das neue Timeout überhaupt erst erzeugt).
+- ERRORNAME ALS SHARED-UTIL (gegen Drift): den robusten errorName-Helper aus
+  src/lib/analytics/persist.ts in ein gemeinsames Util extrahieren; persist.ts darauf umverdrahten
+  (verhaltensgleich, die Bestandstests decken das); ingest.ts importiert dasselbe Util statt der
+  schwachen instanceof-Prüfung. EINE Wahrheitsquelle. Der Util-PFAD wird gegen die bestehende
+  Verzeichnis-Konvention GEPRÜFT (util vs. utils vs. woanders), NICHT geraten.
+- INVARIANTEN (nicht brechen):
+  (i) Das Timeout darf den Analytics-Persist NICHT verhindern. after(persist) wird registriert,
+      BEVOR der getimeoutete Forward awaited wird -> ein Abort-Throw kann die Persist-Registrierung
+      nie überspringen. Auch bei Meta-Abbruch landet die source='server'-Zeile (Analytics beobachtet
+      das Event unabhängig davon, ob Meta es empfängt).
+  (ii) 204-CONTAINMENT (die schärfere Invariante): Der Forward bleibt fire-and-log — ein Abbruch
+      inkl. Timeout wird sanitized geloggt, der Client bekommt IMMER eine leere 204, nie einen Body
+      oder 500. WICHTIG: das AbortController-MUSTER wird aus src/lib/vercel/client.ts gespiegelt
+      (Mechanik, try/finally-Clear), aber die UMSCHLIESSUNG wird an den Ingest-Vertrag ANGEPASST,
+      NICHT wörtlich übernommen. Der Vercel-Client DARF einen Setup-Fehler propagieren; der Ingest
+      darf das NIE. Die gesamte Timeout-Scaffolding muss so sitzen, dass KEIN neuer Fehlerpfad (auch
+      nicht das Timeout-Gerüst selbst) das fire-and-log-Containment verlässt und die garantierte 204
+      in eine 500 kippt.
+  (iii) /api/capi-Alias + Parity unangetastet — beide Routen re-exportieren denselben handleIngest,
+      die Härtung wirkt auf beide; der Parity-Test bleibt grün.
+- DISKRIMINIERENDER TEST: hängender fetch (gemockt) -> Forward bricht bei 3s ab, wird mit einem
+  ECHTEN Fehlernamen geloggt (nicht "unknown"), der Persist läuft TROTZDEM, der Client bekommt
+  TROTZDEM 204. Wird an jeder der vier Achsen bei Regression rot.
+- COMMIT-TRENNUNG (empfohlen, zwei Commits): erst refactor (errorName-Util extrahieren, persist.ts
+  umverdrahtet, isoliert grün verifizierbar), dann feat (3s-Timeout auf den Meta-Forward + ingest.ts
+  nutzt das Util). "Ein Commit erzählt eine Sache".
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

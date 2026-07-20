@@ -1,5 +1,6 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { errorName } from "@/lib/errors";
 
 /**
  * Analytics-Persistenz (Phase 8 Scheibe 1).
@@ -27,21 +28,6 @@ const EVENT_TYPE_MAX_LENGTH = 64;
 // Breaker-Gedanke): ein haengender Insert darf die Serverless-Function nicht bis zum
 // Plattform-Limit offenhalten und Execution-Time/Kosten verbrennen.
 const INSERT_TIMEOUT_MS = 3_000;
-
-/**
- * Fehlertyp-Name fuer das Log — NIE die Message (die kann Client-Input tragen).
- *
- * Bewusst NICHT nur `err instanceof Error`: ein abgebrochener Insert wirft eine
- * DOMException("AbortError"), und die ist je nach Runtime/Testumgebung KEINE
- * Error-Instanz -> mit dem naiven Check wuerde ausgerechnet der Timeout-Fall als
- * "unknown" geloggt und waere in Produktion nicht diagnostizierbar.
- */
-function errorName(err: unknown): string {
-  if (typeof err === "object" && err !== null && "name" in err) {
-    return String((err as { name: unknown }).name);
-  }
-  return "unknown";
-}
 
 export type PersistEventParams = {
   projectId: string;

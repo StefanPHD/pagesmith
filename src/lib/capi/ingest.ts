@@ -2,6 +2,7 @@ import { after } from "next/server";
 import { getCapiConfigByTrackingKey } from "@/lib/capi/token";
 import { META_GRAPH_VERSION, META_TEST_EVENT_CODE } from "@/lib/capi/config";
 import { persistEvent } from "@/lib/analytics/persist";
+import { errorName } from "@/lib/errors";
 
 /**
  * GETEILTE Ingest-Handler-Logik (Phase 7 Scheibe 7b).
@@ -54,6 +55,13 @@ const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
+
+// Striktes Timeout auf den Meta-Forward (A-Regel "defensive Timeouts"). Ohne das
+// blockiert ein haengendes Meta die Serverless-Funktion bis ans Plattform-Limit — und
+// zwar im HOTSPOT, der von JEDEM Besucher JEDER Kundenseite getroffen wird. Bewusst
+// kuerzer als die 8s des Vercel-Clients (interaktive Owner-Mutation): 3s kappt echte
+// Haenger, bricht aber legitime Latenzspitzen (1-2s) nicht ab.
+const META_FORWARD_TIMEOUT_MS = 3_000;
 
 // Body-lose Status-Antwort mit CORS-Headern. NIE ein Body — der Token/die Config
 // duerfen die Response nie erreichen.
@@ -146,9 +154,7 @@ export async function handleIngest(request: Request): Promise<Response> {
         eventId: eventID,
       });
     } catch (err) {
-      console.error(
-        `[analytics] persist task error: ${err instanceof Error ? err.name : "unknown"}`,
-      );
+      console.error(`[analytics] persist task error: ${errorName(err)}`);
     }
   });
 
@@ -188,12 +194,26 @@ export async function handleIngest(request: Request): Promise<Response> {
   if (META_TEST_EVENT_CODE) payload.test_event_code = META_TEST_EVENT_CODE;
 
   // --- Forward AWAIT-en; Fehler sanitized loggen; Client kriegt IMMER 204. ---
+  //
+  // 204-CONTAINMENT: die KOMPLETTE Timeout-Scaffolding (AbortController + setTimeout)
+  // liegt INNERHALB des fire-and-log-try. Das Muster ist aus lib/vercel/client.ts
+  // gespiegelt, aber die UMSCHLIESSUNG ist bewusst ANDERS: dort steht das Geruest VOR
+  // dem try und der catch RETURNIERT ein Ergebnis (der Vercel-Client darf einen
+  // Setup-Fehler propagieren) — der Ingest darf das NIE. Hier muendet jeder Pfad, auch
+  // ein Stolpern des Geruests selbst, im catch und damit in der garantierten leeren 204.
+  // `timer` steht als REINE Deklaration aussen (kann nicht werfen), damit finally ihn
+  // sieht. Ein Abort landet als DOMException im catch und wird dank errorName() als
+  // "AbortError" statt "unknown" geloggt.
   const url = `https://graph.facebook.com/${META_GRAPH_VERSION}/${config.pixelId}/events?access_token=${config.token}`;
+  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
+    const controller = new AbortController();
+    timer = setTimeout(() => controller.abort(), META_FORWARD_TIMEOUT_MS);
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      signal: controller.signal,
     });
     if (!res.ok) {
       // KEIN Token/access_token/sensibler Response-Body ins Log — nur Status.
@@ -201,9 +221,9 @@ export async function handleIngest(request: Request): Promise<Response> {
     }
   } catch (err) {
     // Nur eine generische Meldung — nie die URL (traegt den Token) / den Token.
-    console.error(
-      `[capi] Meta forward error: ${err instanceof Error ? err.name : "unknown"}`,
-    );
+    console.error(`[capi] Meta forward error: ${errorName(err)}`);
+  } finally {
+    clearTimeout(timer);
   }
 
   return status(204);

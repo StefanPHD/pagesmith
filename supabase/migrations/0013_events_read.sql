@@ -33,10 +33,16 @@ create policy "events_select_own" on public.events
 --     filtert die Aggregation von innen). stable (nur lesend). GROUP BY nutzt den
 --     project_id-Index. project_id-Filter im Body = expliziter Scope (WELCHES Projekt);
 --     die Ownership (WESSEN Events) kommt aus der aktiven RLS-Policy.
+--
+--     set search_path = public fixiert die Aufloesung unqualifizierter Namen (der Body nutzt
+--     ohnehin public.* voll qualifiziert); behebt den "Function Search Path Mutable"-
+--     Advisor-Hinweis. In der DB bereits per ALTER gesetzt — diese Datei bildet damit den
+--     Live-Stand ab (idempotent, kein erneutes Einspielen noetig).
 create or replace function public.get_event_counts(p_project_id uuid)
   returns table (event_type text, count bigint)
   language sql
   stable
+  set search_path = public
 as $$
   select e.event_type, count(*)::bigint as count
   from public.events e

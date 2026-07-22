@@ -675,6 +675,10 @@ docs/claude-history/security-manifest-full.md.
   nachsehen, nie aus dem Feldnamen "id" annehmen — der PK der domains-Tabelle ist label,
   NICHT id. Beides zusammen erzeugte den Bug: eine nicht-existente Spalte -> PostgREST-42703
   -> verschluckt -> still leere Liste.
+- DB-FUNKTIONEN + SEARCH_PATH (Advisor-Regel): Neue DB-Funktionen bekommen
+  `set search_path = public` (fixiert die Namensauflösung; Supabase-Advisor "Function Search
+  Path Mutable" flaggt sie sonst). Body zusätzlich voll qualifizieren (public.tabelle). Gilt
+  für SECURITY INVOKER wie DEFINER.
 - NEXT_PUBLIC_-REDEPLOY-PFLICHT (Ops-Regel, real aufgetreten): NEXT_PUBLIC_-Env-Vars werden
   zur BUILD-ZEIT ins Client-Bundle inlined -> die Variable in Vercel zu ändern reicht NICHT,
   nach JEDER Änderung ist ein REDEPLOY PFLICHT. Sonst trägt das laufende Bundle still den

@@ -118,7 +118,8 @@ Ist-Zustand — Herleitung und Entscheidungen: docs/claude-history/phase-8-analy
 - RLS auf events: aktiviert, KEINE Policy — das ist TRANSIENT (nur service_role schreibt,
   über den Ingest-Pfad). Die owner-SELECT-Policy folgt in der Dashboard-Read-Scheibe. NICHT
   dauerhaft policy-los wie audit_logs (dort echtes Append-Only). Der Supabase-Linter-Hinweis
-  "RLS Enabled No Policy" ist hier erwartet und vorübergehend.
+  "RLS Enabled No Policy" ist hier erwartet und vorübergehend. -> wird in Scheibe 3 (Read-Pfad)
+  mit der owner-SELECT-Policy aufgelöst.
 - AUFGESCHOBEN (konditionale Optimierung, kein Footgun): CAPI-Forward auf Hintergrund-
   Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
   ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
@@ -355,6 +356,47 @@ Meta-unabhängigem Traffic ausgeübt (wofür er gebaut wurde). Damit ist Scheibe
 - Nach 2b-1: Scheibe 2 komplett. Danach Kandidaten (eigene Scheiben): CAPI-Einbettung server-
   vereinheitlichen; Read-/Dashboard-Scheibe; Uniques; Aggregation/Retention/Rate-Limiting (Trigger:
   Ad-Traffic/Launch, s. Offene Punkte).
+
+## Aktiver Stand — Phase 8 Scheibe 3 (Read-Pfad-Fundament, Konzept festgezurrt, Bau als Nächstes)
+Erste Lese-Scheibe. Phase 8 baute bisher nur den Schreibpfad (events landen) — Scheibe 3 macht die
+Daten dem Owner sichtbar. Bewusst MINIMAL: Counts, keine Charts. Das Herz ist die RLS-Policy (erste
+Policy auf events überhaupt) — ein Fehler leakt Cross-Tenant-Analytics.
+
+- SCOPE (MINIMAL): (a) owner-SELECT-RLS-Policy auf events; (b) server-seitige Read-Query, die pro
+  Projekt Counts je event_type liefert; (c) schlichte Statistik-Sektion im bestehenden Projekt-UI.
+  KEINE Charts, KEINE Zeiträume, KEINE Adblocker-Rate, KEINE Uniques (je eigene spätere Kacheln).
+- RLS-POLICY (das Herz):
+  - NUR FOR SELECT für den Owner. INSERT/UPDATE/DELETE bleiben ausschließlich service_role (Ingest
+    unberührt). Der Owner liest, schreibt nie.
+  - EXISTS statt IN: EXISTS (select 1 from projects p where p.id = events.project_id and <OWNERSHIP>).
+    Korrelierter Semi-Join gegen den project_id-Index (Scheibe 1), kurzschließend.
+  - (select auth.uid()) GEKAPSELT (sonst pro Zeile ausgewertet).
+  - OWNERSHIP-ACHSE wird NICHT angenommen (STUFE-1-GATE, s.u.): der <OWNERSHIP>-Ausdruck spiegelt EXAKT
+    die bestehende projects-Owner-RLS-Policy. Divergenz zwischen „wer darf das Projekt" und „wer darf
+    die Events" WÄRE das Leak.
+  - Löst die „events RLS an, KEINE Policy (transient)"-Notiz aus Scheibe 1/DB-Stand auf.
+- READ-QUERY: server-seitig über den authenticated-SSR-Client (Defense-in-Depth: explizit auf Owner-
+  Projekte gefiltert UND RLS als zweite Linie). Supabase-JS-Client (PostgREST), {data,error}
+  destrukturiert, KEIN SELECT *, project_id-Index. Liefert {event_type, count} gruppiert.
+- UI: Statistik-Sektion im bestehenden Projekt-UI, zieht Counts beim Laden. Frontend fügt sich in das
+  bestehende Datenlade-Muster des Projekt-UI ein (Server Component / client-fetch — am Code ablesen,
+  kein neues Muster erfinden).
+- STUFE-1-GATES (VOR jeder Policy-/Query-Formulierung am echten Code zu klären):
+  (1) OWNERSHIP-ACHSE: Wie prüft die bestehende projects-RLS-Policy Ownership (user_id? owner_id?
+      Membership-Tabelle?)? Die events-Policy MUSS denselben Ausdruck spiegeln.
+  (2) SSR-CLIENT-IDENTITÄT: Läuft der authenticated-SSR-Client (wie in publishProject/setCapiToken)
+      als der eingeloggte NUTZER (JWT -> RLS greift aktiv) ODER als service_role/admin (umgeht RLS,
+      manueller user_id-Filter)? Entscheidet, ob die RLS-Policy im Normalpfad AKTIV oder nur LATENT
+      ist. Beides verteidigbar — aber wir müssen wissen, welches, damit „Defense-in-Depth" stimmt.
+- INVARIANTEN: (i) Schreibpfad unberührt (service_role-INSERT, kein Owner-Write); (ii) kein SELECT *,
+  project_id-Index genutzt; (iii) RLS-Policy präzise ((select auth.uid()) gekapselt, Ownership gespiegelt).
+- DEMOBAR / LIVE-TEST (Kern = die VERWEIGERUNG, nicht nur die Erlaubnis):
+  (a) Owner sieht die Counts SEINER Projekte (PageViews + Conversions) im UI.
+  (b) CROSS-TENANT-GEGENPROBE (der eigentliche Beweis): Owner A darf die Events von Owner B NICHT
+      sehen — zwei Projekte zweier Owner, jeder sieht nur seine Zahlen. Das ist der Test, der bei zu
+      weiter Policy rot wird.
+- Nach Scheibe 3: Phase 8 ist als rundes Feature (Schreiben + Lesen) funktionsfähig. Danach Kacheln
+  auf diesem Fundament (Adblocker-Rate, Uniques, Charts/Zeiträume) + Launch-Härtung — eigene Scheiben.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

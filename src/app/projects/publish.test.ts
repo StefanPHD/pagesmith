@@ -129,6 +129,50 @@ describe("publishProject (Scheibe 7a)", () => {
     expect(patch.published_content.html).toBe("<h1>v2</h1>");
   });
 
+  it("Scheibe 2b-0 DURABILITY: publishProject setzt tracking_key in der Spalte (Update-Patch, truthy)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "Mein Shop", settings: {} }, error: null },
+    });
+
+    const res = await publishProject("proj-1", "<h1>LIVE</h1>", snapshot);
+    expect(res.ok).toBe(true);
+
+    const patch = rec.updatePatch as {
+      tracking_key?: string;
+      settings: { hosting: { label: string }; capi?: unknown };
+    };
+    // Die server-autoritative Spalte wird gesetzt (vorher NULL).
+    expect(patch.tracking_key).toBeTruthy();
+    // Der Key liegt NICHT in settings (Autoritaet ist die Spalte; settings unberuehrt
+    // vom capi-Key hier) -> der naechste saveProject kann ihn nicht ueberschreiben.
+    expect((patch.settings as { capi?: { trackingKey?: string } }).capi?.trackingKey).toBeUndefined();
+    // Andockung bricht den Publish nicht: Label weiterhin korrekt gespiegelt.
+    expect(patch.settings.hosting.label).toBe(res.ok ? res.label : "");
+  });
+
+  it("Scheibe 2b-0 IDEMPOTENZ: bestehender tracking_key bleibt 1:1 (nicht neu gewuerfelt)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "Mein Shop",
+          settings: { hosting: { label: "mein-shop-abc123" } },
+          tracking_key: "keep-me",
+        },
+        error: null,
+      },
+    });
+
+    const res = await publishProject("proj-1", "<h1>v2</h1>", snapshot);
+    expect(res.ok).toBe(true);
+
+    const patch = rec.updatePatch as { tracking_key?: string };
+    // ensureTrackingKey('keep-me') short-circuited -> Spaltenwert unveraendert.
+    expect(patch.tracking_key).toBe("keep-me");
+  });
+
   it("Label-Kollision -> Retry mit neuem Kandidaten (zweiter insert gelingt)", async () => {
     const { rec } = makeClient({
       user: { id: "user-1" },

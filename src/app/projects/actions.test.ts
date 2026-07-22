@@ -34,7 +34,7 @@ const { createAdminClient, adminUpsert, adminDelete } = vi.hoisted(() => {
 });
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
-import { setCapiToken, removeCapiToken, loadProject } from "./actions";
+import { setCapiToken, removeCapiToken, loadProject, saveProject } from "./actions";
 
 /**
  * Minimaler, chainbarer SSR-Client-Mock. Pro (table.op) ein Ergebnis:
@@ -117,9 +117,15 @@ describe("setCapiToken (Scheibe 2a)", () => {
     expect(adminUpsert.mock.calls[0][1]).toEqual({ onConflict: "project_id" });
 
     // settings-Update laeuft ueber den authenticated-SSR-Client (nicht Admin).
-    const patch = rec.updatePatch as { settings: { capi: { tokenSet: boolean; trackingKey: string } } };
+    const patch = rec.updatePatch as {
+      settings: { capi: { tokenSet: boolean; trackingKey: string } };
+      tracking_key: string;
+    };
     expect(patch.settings.capi.tokenSet).toBe(true);
     expect(patch.settings.capi.trackingKey).toBeTruthy();
+    // DUAL-WRITE (Scheibe 2b-0): die server-autoritative Spalte tracking_key traegt
+    // GENAU denselben Wert wie settings.capi.trackingKey (byte-gleiche Client-Einbettung).
+    expect(patch.tracking_key).toBe(patch.settings.capi.trackingKey);
   });
 
   it("WRITE-ONLY: der SSR-Client fasst project_tokens NIE an (kein Read/Write ueber authenticated -> SELECT-Sperre bleibt tragend)", async () => {
@@ -142,11 +148,20 @@ describe("setCapiToken (Scheibe 2a)", () => {
   });
 
   it("erhaelt einen bestehenden trackingKey (lazy nur beim ERSTEN Set)", async () => {
+    // ARCHITEKTURWECHSEL Scheibe 2b-0 (bewusst, NICHT bis-gruen-angepasst): die
+    // Autoritaet der Identitaet ist jetzt die SPALTE tracking_key (post-Backfill),
+    // nicht mehr settings.capi.trackingKey. ensureTrackingKey liest den Spaltenwert ->
+    // die Fixture legt den bestehenden Key deshalb in tracking_key. Der Dual-Write
+    // spiegelt ihn 1:1 nach settings zurueck (Client-Einbettung).
     const { rec } = makeClient({
       user: { id: "user-1" },
       results: {
         "projects.select": {
-          data: { id: "proj-1", settings: { capi: { trackingKey: "existing-key", tokenSet: true } } },
+          data: {
+            id: "proj-1",
+            settings: { capi: { trackingKey: "existing-key", tokenSet: true } },
+            tracking_key: "existing-key",
+          },
           error: null,
         },
         "projects.update": { error: null },
@@ -156,7 +171,12 @@ describe("setCapiToken (Scheibe 2a)", () => {
     const result = await setCapiToken("proj-1", "NEW-SECRET");
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.trackingKey).toBe("existing-key");
-    const patch = rec.updatePatch as { settings: { capi: { trackingKey: string } } };
+    const patch = rec.updatePatch as {
+      settings: { capi: { trackingKey: string } };
+      tracking_key: string;
+    };
+    // Bestehender Key NICHT neu gewuerfelt — in BEIDEN: Spalte (Autoritaet) + settings.
+    expect(patch.tracking_key).toBe("existing-key");
     expect(patch.settings.capi.trackingKey).toBe("existing-key");
   });
 
@@ -332,5 +352,49 @@ describe("loadProject — Payload traegt NIE den Token", () => {
     expect(rec.selectCols).toEqual([
       { table: "projects", cols: "id,name,html,mappings,settings" },
     ]);
+  });
+});
+
+describe("saveProject — Durability-Kontrast (Scheibe 2b-0)", () => {
+  it("DURABILITY: Update-Patch traegt html/mappings/settings/updated_at, aber NICHT tracking_key (die Spalte ueberlebt jeden Save)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: { id: "proj-1" }, error: null } },
+    });
+
+    const res = await saveProject("proj-1", "<h1>x</h1>", [], {});
+    expect(res.ok).toBe(true);
+
+    const patch = rec.updatePatch as Record<string, unknown>;
+    expect(patch).toHaveProperty("html");
+    expect(patch).toHaveProperty("mappings");
+    expect(patch).toHaveProperty("settings");
+    expect(patch).toHaveProperty("updated_at");
+    // Der STRUKTURELLE Grund, warum die server-autoritative Spalte den Save ueberlebt:
+    // sie steht nicht im Payload -> ein UPDATE laesst nicht-gelistete Spalten unberuehrt.
+    expect(patch).not.toHaveProperty("tracking_key");
+  });
+
+  it("KONTRAST settings-vs-Spalte: key-loses Client-settings ENTFERNT ein server-in-settings-Feld (rot-Beweis), tracking_key (Spalte) bleibt unberuehrt (gruen-Beweis)", async () => {
+    // saveProject ist ZUSTANDSLOS gegenueber der DB-Zeile — KEIN Read-Merge. Es schreibt
+    // das Client-settings GANZHEITLICH; ein server-eigenes settings-Feld (hier
+    // capi.trackingKey), das der key-lose Client nicht mitsendet, verschwindet damit.
+    // GENAU das war der Live-Bug der settings-Variante — und genau deshalb Spalte.
+    const clientSettings = {}; // key-los: der Client kennt den server-generierten Key nie
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: { id: "proj-1" }, error: null } },
+    });
+
+    const res = await saveProject("proj-1", "<h1>x</h1>", [], clientSettings);
+    expect(res.ok).toBe(true);
+
+    const patch = rec.updatePatch as {
+      settings: { capi?: { trackingKey?: string } };
+    } & Record<string, unknown>;
+    // ROT-Beweis "warum nicht settings": das server-Feld ist im geschriebenen settings weg.
+    expect(patch.settings.capi?.trackingKey).toBeUndefined();
+    // GRUEN-Beweis "warum Spalte": tracking_key ist im Save-Pfad strukturell unerreichbar.
+    expect(patch).not.toHaveProperty("tracking_key");
   });
 });

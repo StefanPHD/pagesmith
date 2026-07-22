@@ -71,12 +71,15 @@ export async function getCapiConfigByTrackingKey(
   const admin = createAdminClient();
 
   // Schritt 1: trackingKey -> project_id + settings + blocked_at (EINE Aufloesung).
-  // JSON-Pfad-Filter auf settings.capi.trackingKey. blocked_at reitet in DERSELBEN
-  // Projektion mit -> Kill-Switch-Ingest-Stop ohne zusaetzlichen Roundtrip.
+  // Filter auf die server-autoritative Spalte projects.tracking_key (Scheibe 2b-0;
+  // vorher der JSON-Pfad settings->capi->>trackingKey). Ergebnis fuer Bestand
+  // identisch (Migration 0012 backfillt die Spalte 1:1 aus settings). settings reitet
+  // weiter in DERSELBEN Projektion mit (fuer getMetaPixelId), ebenso blocked_at
+  // (Kill-Switch-Ingest-Stop ohne zusaetzlichen Roundtrip).
   const { data: project, error: projectError } = await admin
     .from("projects")
     .select("id, settings, blocked_at")
-    .eq("settings->capi->>trackingKey", key)
+    .eq("tracking_key", key)
     .maybeSingle();
 
   if (projectError || !project) return null;

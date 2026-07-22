@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Mapping } from "@/lib/mappings";
 import {
+  ensureTrackingKey,
   getHostingLabel,
   getTrackingKey,
   setCapiState,
@@ -202,10 +203,11 @@ export async function setCapiToken(
   if (!user) return { ok: false, error: "Nicht eingeloggt." };
 
   // 1) Ownership-Gate ZWINGEND ueber den authenticated-SSR-Client (RLS greift).
-  //    settings gleich mitlesen, um trackingKey/pixels beim Merge zu erhalten.
+  //    settings (fuer pixels/Client-Einbettung) UND tracking_key (server-autoritative
+  //    Identitaets-Spalte, Scheibe 2b-0) gleich mitlesen.
   const { data: owned, error: ownError } = await supabase
     .from("projects")
-    .select("id,settings")
+    .select("id,settings,tracking_key")
     .eq("id", projectId)
     .eq("user_id", user.id)
     .maybeSingle();
@@ -223,16 +225,24 @@ export async function setCapiToken(
     .upsert(row, { onConflict: "project_id" });
   if (tokenError) return { ok: false, error: tokenError.message };
 
-  // 3) settings mergen: trackingKey lazy (nur beim ersten Token-Set), tokenSet=true,
-  //    pixels unangetastet. updated_at explizit (wie in saveProject). Bleibt ueber den
+  // 3) Identitaet ableiten + DUAL-WRITE. trackingKey aus der SPALTE (Autoritaet,
+  //    Scheibe 2b-0), idempotent (bestehender Wert 1:1). Geschrieben wird er in BEIDE:
+  //    - tracking_key (Spalte) = Aufloesungs-Autoritaet (der Resolver liest nur sie);
+  //    - settings.capi.trackingKey (via setCapiState, UNVERAENDERT) = heutige Client-
+  //      Einbettung, byte-gleicher Wert -> CAPI-Client-Pfad bleibt identisch.
+  //    tokenSet=true, pixels unangetastet. updated_at explizit. Ueber den
   //    authenticated-SSR-Client (RLS greift auf der geschuetzten projects-Zeile).
   const current = (owned.settings ?? {}) as ProjectSettings;
-  const trackingKey = getTrackingKey(current) || crypto.randomUUID();
+  const trackingKey = ensureTrackingKey(owned.tracking_key as string | null);
   const nextSettings = setCapiState(current, { trackingKey, tokenSet: true });
 
   const { error: settingsError } = await supabase
     .from("projects")
-    .update({ settings: nextSettings, updated_at: new Date().toISOString() })
+    .update({
+      settings: nextSettings,
+      tracking_key: trackingKey,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", projectId)
     .eq("user_id", user.id);
   if (settingsError) return { ok: false, error: settingsError.message };
@@ -370,11 +380,12 @@ export async function publishProject(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Nicht eingeloggt." };
 
-  // Ownership-Gate (authenticated-Client, RLS greift). name + settings mitlesen:
-  // name -> Label-Slug, settings -> bestehendes Label (Idempotenz) + Merge-Basis.
+  // Ownership-Gate (authenticated-Client, RLS greift). name + settings + tracking_key
+  // mitlesen: name -> Label-Slug, settings -> bestehendes Label (Idempotenz) +
+  // Merge-Basis, tracking_key -> server-autoritative Identitaet lazy sicherstellen (2b-0).
   const { data: owned, error: ownError } = await supabase
     .from("projects")
-    .select("id,name,settings")
+    .select("id,name,settings,tracking_key")
     .eq("id", projectId)
     .eq("user_id", user.id)
     .maybeSingle();
@@ -404,10 +415,20 @@ export async function publishProject(
     publishedAt,
   };
   const nextSettings = setHostingState(currentSettings, { label, publishedAt });
+  // Scheibe 2b-0: server-autoritative Tracking-Identitaet lazy sicherstellen. Aus der
+  // SPALTE abgeleitet (idempotent: bestehender Wert 1:1), in die SPALTE geschrieben —
+  // NICHT in settings (dort ist es client-besessen und wuerde vom naechsten saveProject
+  // ganzheitlich ueberschrieben; die Spalte liegt ausserhalb dieses Blobs und ueberlebt).
+  const trackingKey = ensureTrackingKey(owned.tracking_key as string | null);
 
   const { error: updateError } = await supabase
     .from("projects")
-    .update({ published_content, settings: nextSettings, updated_at: publishedAt })
+    .update({
+      published_content,
+      settings: nextSettings,
+      tracking_key: trackingKey,
+      updated_at: publishedAt,
+    })
     .eq("id", projectId)
     .eq("user_id", user.id);
   if (updateError) return { ok: false, error: updateError.message };

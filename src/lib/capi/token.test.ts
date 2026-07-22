@@ -43,6 +43,37 @@ afterEach(() => {
 });
 
 describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
+  it("Scheibe 2b-0: filtert auf die Spalte tracking_key (nicht mehr den settings-JSON-Pfad)", async () => {
+    const eqSpy = vi.fn();
+    const from = vi.fn((table: string) => {
+      const builder: Record<string, unknown> = {};
+      builder.select = vi.fn(() => builder);
+      builder.eq = vi.fn((col: string, val: unknown) => {
+        eqSpy(col, val);
+        return builder;
+      });
+      builder.maybeSingle = vi.fn(async () =>
+        table === "projects"
+          ? {
+              data: {
+                id: "proj-1",
+                settings: { pixels: { meta: { pixelId: "PIXEL-123" } } },
+                blocked_at: null,
+              },
+              error: null,
+            }
+          : { data: { meta_capi_token: "SECRET-TOKEN" }, error: null }
+      );
+      return builder;
+    });
+    createAdminClient.mockReturnValue({ from });
+
+    await getCapiConfigByTrackingKey("tk-abc");
+    // Die Aufloesungs-Achse ist die server-autoritative Spalte, nicht settings->capi->>trackingKey.
+    expect(eqSpy).toHaveBeenCalledWith("tracking_key", "tk-abc");
+    expect(eqSpy).not.toHaveBeenCalledWith("settings->capi->>trackingKey", "tk-abc");
+  });
+
   it("loest trackingKey -> { projectId, capiConfig } auf (eine Aufloesung)", async () => {
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),

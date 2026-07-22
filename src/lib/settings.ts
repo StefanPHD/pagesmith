@@ -67,6 +67,16 @@ export function getTrackingKey(settings: ProjectSettings): string {
   return settings.capi?.trackingKey?.trim() ?? "";
 }
 
+// Idempotente Ableitung der server-autoritativen Tracking-Identitaet (Phase 8 Scheibe
+// 2b-0): existierender Spaltenwert wird 1:1 BEHALTEN, nur bei Abwesenheit frisch
+// erzeugt ('||' short-circuited -> kein randomUUID bei vorhandenem Key). Bewusst
+// settings-AGNOSTISCH: nimmt den ROHEN Spaltenwert (projects.tracking_key), nicht
+// ProjectSettings — die Spalte ist die Autoritaet, settings nur noch die Client-
+// Einbettung. Geteilt von setCapiToken UND publishProject (eine Implementierung).
+export function ensureTrackingKey(existing: string | null | undefined): string {
+  return existing?.trim() || crypto.randomUUID();
+}
+
 // Nicht-sensibler Indikator "CAPI-Token gesetzt?" fuer die write-only-UI.
 export function getCapiTokenSet(settings: ProjectSettings): boolean {
   return settings.capi?.tokenSet === true;

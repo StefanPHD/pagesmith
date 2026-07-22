@@ -16,6 +16,7 @@ import {
   randomLabelSuffix,
   slugForLabel,
 } from "@/lib/hosting/host";
+import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 
 /**
  * Speichern-Ergebnis. Bei { ok: true } liefert die Action die (ggf. NEU
@@ -408,18 +409,26 @@ export async function publishProject(
     label = assigned;
   }
 
+  // Scheibe 2b-0: server-autoritative Tracking-Identitaet lazy sicherstellen. Aus der
+  // SPALTE abgeleitet (idempotent: bestehender Wert 1:1), in die SPALTE geschrieben —
+  // NICHT in settings (dort ist es client-besessen und wuerde vom naechsten saveProject
+  // ganzheitlich ueberschrieben; die Spalte liegt ausserhalb dieses Blobs und ueberlebt).
+  // Wird HIER (vor published_content) abgeleitet, weil die 2b-1-Injektion den Key braucht
+  // — reiner Reorder, identischer Wert/identische Spalten-Schreibung wie zuvor.
+  const trackingKey = ensureTrackingKey(owned.tracking_key as string | null);
+
+  // Scheibe 2b-1: den PageView-Emitter server-injizieren. Der Key kommt aus der SPALTE
+  // (server-autoritativ), nicht aus settings -> funktioniert auch fuer Meta-lose Projekte
+  // und loest den frueheren Ordering-Bug (Injektion NACH der Key-Sicherung, im HTML, das
+  // gleich gespeichert wird). functionalHtml ist pro Publish frisch vom Client -> kein
+  // Doppel-Inject. Der Emitter kommt DANEBEN — die CAPI-Wiring bleibt byte-gleich.
   const published_content = {
-    html: functionalHtml,
+    html: injectPageViewEmitter(functionalHtml, trackingKey),
     mappings: snapshot.mappings,
     settings: snapshot.settings,
     publishedAt,
   };
   const nextSettings = setHostingState(currentSettings, { label, publishedAt });
-  // Scheibe 2b-0: server-autoritative Tracking-Identitaet lazy sicherstellen. Aus der
-  // SPALTE abgeleitet (idempotent: bestehender Wert 1:1), in die SPALTE geschrieben —
-  // NICHT in settings (dort ist es client-besessen und wuerde vom naechsten saveProject
-  // ganzheitlich ueberschrieben; die Spalte liegt ausserhalb dieses Blobs und ueberlebt).
-  const trackingKey = ensureTrackingKey(owned.tracking_key as string | null);
 
   const { error: updateError } = await supabase
     .from("projects")

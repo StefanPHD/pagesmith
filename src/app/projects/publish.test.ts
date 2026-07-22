@@ -88,12 +88,15 @@ describe("publishProject (Scheibe 7a)", () => {
     expect(rec.inserts[0]).toMatchObject({ project_id: "proj-1" });
     expect((rec.inserts[0] as { label: string }).label).toMatch(/^mein-shop-[a-z0-9]{6}$/);
 
-    // published_content trägt das CLIENT-generierte funktionale HTML.
+    // published_content trägt das CLIENT-generierte funktionale HTML. Seit Scheibe 2b-1
+    // wird zusätzlich der PageView-Emitter server-injiziert -> toContain statt toBe (der
+    // Client-Inhalt bleibt erhalten, der Emitter kommt DANEBEN).
     const patch = rec.updatePatch as {
       published_content: { html: string; publishedAt: string };
       settings: { hosting: { label: string } };
     };
-    expect(patch.published_content.html).toBe("<h1>LIVE</h1>");
+    expect(patch.published_content.html).toContain("<h1>LIVE</h1>");
+    expect(patch.published_content.html).toContain('id="__ps_pve"');
     expect(patch.published_content.publishedAt).toBeTruthy();
     // Label in settings.hosting gespiegelt.
     expect(patch.settings.hosting.label).toBe(res.label);
@@ -125,8 +128,9 @@ describe("publishProject (Scheibe 7a)", () => {
     expect(rec.inserts).toHaveLength(0);
     expect(res.label).toBe("mein-shop-abc123");
     expect(res.url).toBe("http://mein-shop-abc123.lvh.me:3000");
+    // Seit 2b-1 traegt published_content zusaetzlich den injizierten Emitter -> toContain.
     const patch = rec.updatePatch as { published_content: { html: string } };
-    expect(patch.published_content.html).toBe("<h1>v2</h1>");
+    expect(patch.published_content.html).toContain("<h1>v2</h1>");
   });
 
   it("Scheibe 2b-0 DURABILITY: publishProject setzt tracking_key in der Spalte (Update-Patch, truthy)", async () => {
@@ -171,6 +175,36 @@ describe("publishProject (Scheibe 7a)", () => {
     const patch = rec.updatePatch as { tracking_key?: string };
     // ensureTrackingKey('keep-me') short-circuited -> Spaltenwert unveraendert.
     expect(patch.tracking_key).toBe("keep-me");
+  });
+
+  it("Scheibe 2b-1 End-to-End: der PageView-Emitter wird ins published_content injiziert und traegt den SPALTEN-Key", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "Mein Shop",
+          settings: { hosting: { label: "mein-shop-abc123" } },
+          tracking_key: "keep-me",
+        },
+        error: null,
+      },
+    });
+
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>LIVE</body></html>",
+      snapshot
+    );
+    expect(res.ok).toBe(true);
+
+    const patch = rec.updatePatch as { published_content: { html: string } };
+    // Der Emitter ist im gespeicherten HTML …
+    expect(patch.published_content.html).toContain('id="__ps_pve"');
+    // … und traegt den SPALTEN-Key (nicht settings) — die 2b-0->2b-1-Naht.
+    expect(patch.published_content.html).toContain(JSON.stringify("keep-me"));
+    // Der Client-HTML-Inhalt bleibt erhalten (Injektion, kein Ersatz).
+    expect(patch.published_content.html).toContain("LIVE");
   });
 
   it("Label-Kollision -> Retry mit neuem Kandidaten (zweiter insert gelingt)", async () => {

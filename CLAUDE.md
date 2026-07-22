@@ -228,8 +228,9 @@ Vision: docs/claude-history/future-roadmap.md.
   NULLABLE Spalte session_key, client-untrusted, längenbegrenzt); Verschärfung des
   Struktur-Guards um session_key; PageView-Persist-Live-Test).
 
-## Aktiver Stand — Phase 8 Scheibe 2b-0 (trackingKey pro Projekt in server-autoritativer Spalte, Meta-entkoppelt, Konzept festgezurrt, Bau als Nächstes)
-Vor-Scheibe zu 2b-1 (PageView-Emitter). Grund (Stufe-1-Befund): der Emitter braucht einen einbettbaren
+## Aktiver Stand — Phase 8 Scheibe 2b-0 (trackingKey pro Projekt in server-autoritativer Spalte, Meta-entkoppelt, ABGESCHLOSSEN — live bewiesen (2026-07-22))
+Vor-Scheibe zu 2b-1 (PageView-Emitter). ABGESCHLOSSEN — deployt (8d92f2a), Migration 0012 gelaufen
+(Backfill: 5 CAPI-Projekte), live bewiesen. Grund (Stufe-1-Befund): der Emitter braucht einen einbettbaren
 trackingKey, aber der ist heute DOPPELT Meta-gegatet — er entsteht nur in setCapiToken (actions.ts:230)
 und wird nur bei hasPixel ins HTML gebacken (generate.ts:69,74). Ein Meta-loses Projekt hätte nichts zu
 senden. 2b-0 entkoppelt die IDENTITÄT von Meta — und macht sie server-autoritativ PERSISTENT.
@@ -268,6 +269,20 @@ senden. 2b-0 entkoppelt die IDENTITÄT von Meta — und macht sie server-autorit
   gesetzt; DANACH einen saveProject auslösen -> Spalte BLEIBT gesetzt (vorher: NULL nach Save). (b)
   CAPI-Projekt: Conversion löst weiter auf + erscheint als Server-Event im Events Manager; tracking_key
   == settings-Wert.
+- VERIFIZIERT (live, 2026-07-22):
+  - DURABILITY (der Bug, GEMESSEN): dasselbe Projekt — tracking_key VOR Publish NULL, NACH Publish eine
+    UUID; nach anschließender Projekt-Änderung + saveProject bleibt tracking_key UNVERÄNDERT gesetzt. Die
+    settings-Variante wäre hier auf NULL gekippt (server-Key im client-besessenen Blob) — die eigene
+    Spalte überlebt den ganzheitlichen settings-Replace von saveProject.
+  - BACKFILL GEGRIFFEN: count(*) where tracking_key is not null == 5 (= Zahl der CAPI-Projekte);
+    Meta-lose Projekte bleiben NULL; settings blieb unangetastet.
+  - CAPI-NICHTBRUCH: Projekt mit echtem Meta-Token — Pixel-Load + Purchase-Requests (200) + /e-Beacon
+    (204) laufen weiter (DevTools-Network verifiziert); der Resolver findet über die Spalte, backfillter
+    Wert == settings-Wert. Reparierter CAPI-Pfad grün.
+  - METHODEN-VERMERK: Der Durability-Beweis ist GEMESSEN (publish -> save -> Spalte bleibt), NICHT aus
+    dem Code abgeleitet — das schließt die Ehrlichkeitslücke, dass die verworfene settings-Variante nie
+    live brach (sie war strukturell widerlegt, aber die neue Variante ist jetzt am realen publish->save
+    positiv bewiesen).
 - OFFEN -> 2b-1: server-autoritative Einbettung (der Server injiziert tracking_key aus der Spalte beim
   Publish; die client-seitige settings-Einbettung wird abgelöst) + build-zeit-ungegateter
   PageView-Emitter + stabile per-Load-eventID (in-memory) + sende '__ps_pageview'.

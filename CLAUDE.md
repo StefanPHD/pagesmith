@@ -71,8 +71,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       über geteilte-eventID-Vergleich ECHTER Events. (war A/B-Testing) — Scheibe 1
       (Persistenz-Fundament) LIVE in Produktion bewiesen (events via after() neben
       CAPI-Forward, source='server'), ebenso die nachgelagerte CAPI-Härtung (3s-Timeout +
-      errorName-Util). Ist-Stand: "## Aktueller DB-/Analytics-Stand"; volle Herleitung:
-      docs/claude-history/phase-8-analytics.md. NÄCHSTES: Scheibe 2 (PageView).
+      errorName-Util). Scheibe 2 (PageView-Tracking) KOMPLETT & live bewiesen (2b-0 server-
+      autoritative trackingKey-Spalte + 2b-1 server-injizierter PageView-Emitter). Ist-Stand:
+      "## Aktueller DB-/Analytics-Stand"; volle Herleitung: docs/claude-history/phase-8-analytics.md.
+      Phase 8 bleibt OFFEN (ausstehend: Read-/Dashboard-Scheibe, Uniques, Aggregation/Retention).
 - [ ] Phase 9 — A/B-Testing: 50/50-Split über Edge-Logik. (war Phase 8)
 - [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
@@ -288,10 +290,11 @@ senden. 2b-0 entkoppelt die IDENTITÄT von Meta — und macht sie server-autorit
   PageView-Emitter + stabile per-Load-eventID (in-memory) + sende '__ps_pageview'. -> IN UMSETZUNG als
   Scheibe 2b-1, s. "Aktiver Stand — Phase 8 Scheibe 2b-1".
 
-## Aktiver Stand — Phase 8 Scheibe 2b-1 (PageView-Emitter server-injiziert, Konzept festgezurrt, Bau als Nächstes)
-Finale von Scheibe 2. 2b-0 machte die trackingKey-Identität server-autoritativ + save-fest (Auflösungs-
-Seite); 2b-1 bettet sie ein und setzt den Emitter drauf -> PageView wird ERSTMALS sichtbar, und der
-explizite Kill-Switch aus 2a wird erstmals von Meta-unabhängigem Traffic ausgeübt (wofür er gebaut wurde).
+## Aktiver Stand — Phase 8 Scheibe 2b-1 (PageView-Emitter server-injiziert, ABGESCHLOSSEN — live bewiesen (2026-07-22). Scheibe 2 komplett.)
+Finale von Scheibe 2 — ABGESCHLOSSEN, deployt (7f551e3), live bewiesen. 2b-0 machte die trackingKey-
+Identität server-autoritativ + save-fest (Auflösungs-Seite); 2b-1 bettet sie ein und setzt den Emitter
+drauf -> PageView wird ERSTMALS sichtbar, und der explizite Kill-Switch aus 2a wird erstmals von
+Meta-unabhängigem Traffic ausgeübt (wofür er gebaut wurde). Damit ist Scheibe 2 (PageView-Tracking) komplett.
 
 - UMFANG (Entscheidung: MINIMAL): NUR der PageView-Emitter wird server-injiziert. Die CAPI-Beacon-
   Einbettung BLEIBT client-seitig aus settings (funktioniert, reparierter Pfad; für CAPI-Projekte ist
@@ -336,6 +339,19 @@ explizite Kill-Switch aus 2a wird erstmals von Meta-unabhängigem Traffic ausge�
       Zeile (erstes Mal, dass der explizite 2a-Kill-Switch von Meta-unabhängigem Traffic ausgeübt wird).
   (d) PageView erscheint NICHT im Meta Events Manager (analytics-only, isForwardable).
   (e) CAPI-Projekt: Conversions laufen weiter (CAPI-Einbettung unberührt) UND seine PageViews landen.
+- VERIFIZIERT (live, 2026-07-22):
+  - HAPPY PATH (Meta-los, GEMESSEN): Projekt ohne CAPI neu veröffentlicht -> nach Load eine events-Zeile
+    event_type='__ps_pageview', source='server'; Reload -> zweite Zeile mit ANDERER event_id (per-Load-
+    eventID greift). Beweist die volle Meta-unabhängige Kette: Emitter -> first-party /api/e -> 2a-Handler
+    -> Persist.
+  - KRON-TEST Kill-Switch (GEMESSEN): gesperrtes Projekt (Serve-Route liefert "Seite deaktiviert") ->
+    nach Load KEINE neue PageView-Zeile. ERSTES Mal, dass der explizite 2a-Kill-Switch von Meta-
+    unabhängigem Traffic ausgeübt wird -> hält. Bestätigt 2a's Sicherheitsarbeit unter echtem Traffic.
+  - FIRST-PARTY (DevTools): /e-Ping Status 204 auf der Serving-Domain, Initiator der injizierte Emitter.
+  - CAPI DANEBEN, NICHT STATT (GEMESSEN): Projekt mit Pixel/Token -> events trägt BEIDES als
+    source='server': __ps_pageview UND Lead-Conversion. CAPI-Einbettung unberührt (Conversion läuft),
+    PageViews landen zusätzlich.
+  - PageView erscheint NICHT im Meta Events Manager (analytics-only, isForwardable).
 - Nach 2b-1: Scheibe 2 komplett. Danach Kandidaten (eigene Scheiben): CAPI-Einbettung server-
   vereinheitlichen; Read-/Dashboard-Scheibe; Uniques; Aggregation/Retention/Rate-Limiting (Trigger:
   Ad-Traffic/Launch, s. Offene Punkte).

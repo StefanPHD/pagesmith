@@ -285,7 +285,60 @@ senden. 2b-0 entkoppelt die IDENTITÄT von Meta — und macht sie server-autorit
     positiv bewiesen).
 - OFFEN -> 2b-1: server-autoritative Einbettung (der Server injiziert tracking_key aus der Spalte beim
   Publish; die client-seitige settings-Einbettung wird abgelöst) + build-zeit-ungegateter
-  PageView-Emitter + stabile per-Load-eventID (in-memory) + sende '__ps_pageview'.
+  PageView-Emitter + stabile per-Load-eventID (in-memory) + sende '__ps_pageview'. -> IN UMSETZUNG als
+  Scheibe 2b-1, s. "Aktiver Stand — Phase 8 Scheibe 2b-1".
+
+## Aktiver Stand — Phase 8 Scheibe 2b-1 (PageView-Emitter server-injiziert, Konzept festgezurrt, Bau als Nächstes)
+Finale von Scheibe 2. 2b-0 machte die trackingKey-Identität server-autoritativ + save-fest (Auflösungs-
+Seite); 2b-1 bettet sie ein und setzt den Emitter drauf -> PageView wird ERSTMALS sichtbar, und der
+explizite Kill-Switch aus 2a wird erstmals von Meta-unabhängigem Traffic ausgeübt (wofür er gebaut wurde).
+
+- UMFANG (Entscheidung: MINIMAL): NUR der PageView-Emitter wird server-injiziert. Die CAPI-Beacon-
+  Einbettung BLEIBT client-seitig aus settings (funktioniert, reparierter Pfad; für CAPI-Projekte ist
+  settings==Spalte via 2b-0-Dual-Write, kein Divergenz-Risiko). CAPI-Einbettung server-seitig zu
+  vereinheitlichen ist eine spätere eigene Scheibe.
+- HERZ — SERVER-INJEKTION beim Publish: publishProject stellt tracking_key sicher (2b-0) und injiziert
+  DANACH, bevor published_content gespeichert wird, ein <script id="__ps_pve"> mit dem Emitter ins HTML.
+  Der trackingKey kommt aus der SPALTE (server-autoritativ), nicht aus settings. Das löst zugleich den
+  früher von CC geflaggten Ordering-Bug (Client generierte HTML, bevor der Server den Key vergab) — die
+  Injektion passiert NACH der Key-Sicherung, im HTML, das gleich gespeichert wird. Und es funktioniert
+  für Meta-lose Projekte (Client hätte den Key in settings gar nicht).
+- INJEKTION = REINE STRING-OP, KEIN PARSING (kein Cheerio — CLAUDE.md-Regel): letztes </body>
+  (case-insensitiv) per String-Suche, Script davor einfügen; fehlt </body>, ans HTML-Ende anhängen.
+- IDEMPOTENZ AUS DEM DATENFLUSS, NICHT AUS BEREINIGUNG: published_content.html entsteht bei JEDEM Publish
+  FRISCH aus dem Client-functionalHtml (der den Emitter nie enthält — er ist server-only). Also kein
+  __ps_pve im Eingangs-HTML -> nichts zu bereinigen, kein Doppel-Inject. Das id="__ps_pve" ist nur
+  Diagnose-Marker, KEIN Bereinigungs-Anker. (STUFE-1-VERIFIKATION: am Code bestätigen, dass
+  published_content.html pro Publish frisch aus dem Client-HTML gebaut wird und NICHT das vorige
+  published_content fortschreibt — sonst käme die Doppel-Inject-Falle und wir lösen anders.)
+- EMITTER (Client-JS, ins HTML gebacken):
+  - window.__ps_pv HÄLT die eventID (ID = Guard): ist sie gesetzt, wurde schon gefeuert -> ein Beacon
+    pro Load; echter Reload = frische ID = separat gezählt; Doppel-Include zählt einmal.
+  - Die eventID wird EINMAL oben erzeugt, BEVOR sendBeacon/fetch entschieden wird (fetch-Fallback trägt
+    dieselbe ID).
+  - Zustellung: navigator.sendBeacon('/api/e', body); Fallback fetch('/api/e', {method:'POST',
+    keepalive:true, body}) — keepalive PFLICHT (sonst Abbruch beim Verlassen der Seite).
+  - RELATIVER Pfad /api/e (first-party auf der Serving-Domain, adblocker-resistent — 7b). STUFE-1-
+    VERIFIKATION: bestätigen, dass der Conversion-Beacon denselben relativen /api/e nutzt (nicht absolut).
+  - event = '__ps_pageview' AUS der geteilten events.ts-Konstante (kein handgetipptes Literal -> kein
+    Drift zu isForwardable). Bare: {trackingKey, eventID, event}. KEIN Pfad/Referrer (Pagesmith ist
+    Ein-Seiten-Tool -> Pfad redundant; Referrer/UTM = Scope-2, aufgeschoben). source='server' setzt der
+    Handler.
+- NICHT ANGEFASST: ingest.ts (2a persistiert '__ps_pageview' schon + schließt es vom Forward aus), die
+  CAPI-Client-Einbettung, KEINE Migration. Editor-Preview unberührt (Injektion nur in published_content).
+- INVARIANTEN: (i) CAPI-Pfad byte-gleich grün (nicht angefasst); (ii) kein Server-HTML-Parsing (String-
+  Op); (iii) published_content bleibt gültiges HTML (Injektion bricht die Struktur nicht).
+- DEMOBAR / LIVE-TEST (2b-1 — hier wird PageView ERSTMALS sichtbar):
+  (a) META-LOSES Projekt neu veröffentlichen, Seite laden -> events-Zeile event='__ps_pageview',
+      source='server' entsteht (der Meta-unabhängige Chain-Beweis, den 2a's Handler ermöglichte).
+  (b) Reload -> zweite Zeile mit ANDERER eventID (Reload = separater View).
+  (c) KRON-TEST Kill-Switch: gesperrtes Projekt (blocked_at) veröffentlichen/laden -> KEINE PageView-
+      Zeile (erstes Mal, dass der explizite 2a-Kill-Switch von Meta-unabhängigem Traffic ausgeübt wird).
+  (d) PageView erscheint NICHT im Meta Events Manager (analytics-only, isForwardable).
+  (e) CAPI-Projekt: Conversions laufen weiter (CAPI-Einbettung unberührt) UND seine PageViews landen.
+- Nach 2b-1: Scheibe 2 komplett. Danach Kandidaten (eigene Scheiben): CAPI-Einbettung server-
+  vereinheitlichen; Read-/Dashboard-Scheibe; Uniques; Aggregation/Retention/Rate-Limiting (Trigger:
+  Ad-Traffic/Launch, s. Offene Punkte).
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

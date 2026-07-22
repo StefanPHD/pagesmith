@@ -220,49 +220,57 @@ Vision: docs/claude-history/future-roadmap.md.
   - HINWEIS für spätere Verifikationen: events.created_at ist UTC, Events-Manager- und
     Vercel-Zeiten sind lokal -> beim Abgleich den Versatz mitrechnen (hier 2h). Ein
     scheinbar "fehlendes" Event ist oft nur ein Zeitzonen-Artefakt.
-- OFFEN -> 2b: 2b ist neu geschnitten in 2b-0 (trackingKey-Identität pro Projekt,
-  Meta-entkoppelt — Vor-Scheibe; s. "## Aktiver Stand — Phase 8 Scheibe 2b-0") + 2b-1
-  (hasPixel-unabhängige Einbettung + build-zeit-UNgegateter PageView-Emitter; in-memory
+- OFFEN -> 2b: 2b ist neu geschnitten in 2b-0 (trackingKey-Identität pro Projekt in
+  server-autoritativer Spalte, Meta-entkoppelt — Vor-Scheibe; s. "## Aktiver Stand — Phase 8
+  Scheibe 2b-0") + 2b-1 (server-autoritative Einbettung aus projects.tracking_key +
+  build-zeit-UNgegateter PageView-Emitter; in-memory
   ephemere Session-ID (KEIN sessionStorage — Artefakt-Storage-Regel); Migration 0012 (additive
   NULLABLE Spalte session_key, client-untrusted, längenbegrenzt); Verschärfung des
   Struktur-Guards um session_key; PageView-Persist-Live-Test).
 
-## Aktiver Stand — Phase 8 Scheibe 2b-0 (trackingKey pro Projekt, Meta-entkoppelt, Konzept festgezurrt, Bau als Nächstes)
+## Aktiver Stand — Phase 8 Scheibe 2b-0 (trackingKey pro Projekt in server-autoritativer Spalte, Meta-entkoppelt, Konzept festgezurrt, Bau als Nächstes)
 Vor-Scheibe zu 2b-1 (PageView-Emitter). Grund (Stufe-1-Befund): der Emitter braucht einen einbettbaren
 trackingKey, aber der ist heute DOPPELT Meta-gegatet — er entsteht nur in setCapiToken (actions.ts:230)
 und wird nur bei hasPixel ins HTML gebacken (generate.ts:69,74). Ein Meta-loses Projekt hätte nichts zu
-senden. 2b-0 entkoppelt die IDENTITÄT von Meta — symmetrisch zu 2a (2a = Server-/Persist-Seite,
-2b-0 = Client-Identität).
+senden. 2b-0 entkoppelt die IDENTITÄT von Meta — und macht sie server-autoritativ PERSISTENT.
 
-- SCOPE (EINE Verantwortung): garantiert, dass jedes VERÖFFENTLICHTE Projekt einen trackingKey in
-  settings.capi.trackingKey hat. NUR DB, KEIN HTML (Einbettung + Emitter sind 2b-1). KEINE Migration.
-- ERZEUGUNG: geteilter idempotenter Helper ensureTrackingKey(settings) = getTrackingKey(settings) ||
-  crypto.randomUUID() — extrahiert aus dem bestehenden Muster in setCapiToken (actions.ts:230).
-  Aufgerufen im Publish-Flow; setCapiToken nutzt DENSELBEN Helper (eine Implementierung, keine Drift).
-  REIN LAZY BEI PUBLISH (NICHT bei Projekt-Anlage — der Publish-Fallback deckt alle Projekte ab;
-  unveröffentlichte Projekte brauchen keinen Key).
-- BESTAND (eiserne "nie transformieren"-Regel): ein bereits vorhandener trackingKey wird 1:1 BEHALTEN,
-  NIE neu gewürfelt ('||' erzeugt nur bei Abwesenheit). Schützt die gerade reparierten CAPI-trackingKeys.
-  KEIN Massen-Backfill/keine Migration — fehlende Keys entstehen lazy beim nächsten Publish.
-- SPEICHERORT: settings.capi.trackingKey (UNVERÄNDERT) — Single-Source; Resolver
-  getCapiConfigByTrackingKey (token.ts:76, settings->capi->>trackingKey) bleibt BYTE-IDENTISCH. Doku-
-  Kommentar am Code: der Key ist die Meta-UNABHÄNGIGE Tracking-Identität; der capi-Block kann ohne
-  Pixel/Token existieren (nur trackingKey).
-- PFLICHT-CHECK (Stufe 1, GATE für den Speicherort): Verzweigt IRGENDEIN Code auf die bloße EXISTENZ von
-  settings.capi (statt spezifisch auf Pixel/Token)? Wenn ja, würde die Lazy-Erzeugung ein Meta-loses
-  Projekt STILL auf "Meta konfiguriert" kippen -> solche Checks VOR dem Bau pixel-spezifisch machen.
-  hasPixel (generate.ts:69) ist pixel-spezifisch = sicher; andere Stellen sind zu prüfen.
-- INVARIANTEN: (i) vorhandene trackingKeys NIE verändert; (ii) Resolver byte-identisch; (iii)
-  setCapiToken-Verhalten unverändert (nutzt nur denselben Helper); (iv) KEIN Generierungs-/HTML-Output
-  ändert sich in 2b-0.
-- DEMOBAR / LIVE-TEST (2b-0, per SQL, kein HTML): (a) Meta-loses Projekt veröffentlichen ->
-  settings.capi.trackingKey ist danach in der DB gesetzt (vorher nicht). (b) Projekt mit bestehendem
-  CAPI-trackingKey veröffentlichen -> Key UNVERÄNDERT (SQL-Vergleich vorher/nachher).
-- OFFEN -> 2b-1: hasPixel-unabhängiger Einbettungszweig (trackingKey ins HTML auch ohne Pixel;
-  Meta-Runtime bleibt pixel-gegatet), build-zeit-ungegateter PageView-Emitter, stabile per-Load-eventID
-  (in-memory, KEIN session_key/keine Migration), sende '__ps_pageview' (Konstante aus events.ts) an
-  /api/e, PageView-Persist-Live-Test (Meta-loses Projekt schreibt Zeile; gesperrt schreibt keine;
-  erscheint NICHT im Events Manager).
+- ZWECK: unverändert (2b-1-Emitter braucht einen einbettbaren, Meta-unabhängigen trackingKey) — PLUS:
+  die Identität muss server-autoritativ PERSISTENT sein, nicht nur einmal geschrieben.
+- WARUM SPALTE STATT settings (LEKTION, nicht verlieren): Die erste 2b-0-Variante legte den Key in
+  settings.capi.trackingKey. LIVE WIDERLEGT: projects.settings ist CLIENT-autoritativ — saveProject
+  überschreibt es wortlos (actions.ts:131). publishProject schreibt settings zwar korrekt, gibt den Key
+  aber NICHT zurück (actions.ts:435) -> der Client spiegelt ihn nicht (CodeImporter.tsx:688-693) -> der
+  nächste saveProject kippt projects.settings->capi->>trackingKey zurück auf NULL. Ursache: eine
+  server-eigene Identität in einem client-besessenen Blob. Deshalb: eigene server-autoritative Spalte.
+- SCOPE (2b-0 = AUFLÖSUNGS-Seite): Migration 0012 — Spalte projects.tracking_key (nullable) + EINMALIGER
+  BACKFILL aus settings.capi.trackingKey; Resolver token.ts liest künftig die Spalte. NUR die Auflösung;
+  die server-autoritative EINBETTUNG ist 2b-1.
+- BACKFILL: additiv, kopiert bestehende Keys 1:1 in die neue Spalte, settings BLEIBT unberührt (nicht
+  transformiert). UPDATE ... SET tracking_key = settings->'capi'->>'trackingKey' WHERE tracking_key IS
+  NULL AND settings->'capi'->>'trackingKey' IS NOT NULL. Der Resolver liest danach NUR die Spalte (kein
+  Dual-Read).
+- ERZEUGUNG: ensureTrackingKey (idempotent, ||) schreibt in die SPALTE. publishProject stellt die Spalte
+  lazy sicher (rein bei Publish). setCapiToken schreibt BEIDES: die Spalte (Auflösungs-Autorität) UND
+  weiter settings.capi.trackingKey (heutige Client-Einbettung, UNVERÄNDERT).
+- UNIQUE: partial-unique auf tracking_key (WHERE tracking_key IS NOT NULL) erwägen — erzwingt "löst zu
+  genau EINEM Projekt auf". Stufe 1 prüft, dass KEIN Bestand-Duplikat existiert (sonst schlägt die
+  Migration laut fehl = gewünscht).
+- CAPI-INVARIANTE (schärfste, nicht brechen): backfillter Spaltenwert == settings-Wert -> die
+  CAPI-Auflösung über die Spalte liefert IDENTISCH; der setCapiToken-settings-Schreibpfad bleibt
+  unverändert -> die CAPI-Client-Einbettung ist byte-gleich. Der reparierte CAPI-Pfad bleibt grün
+  (Conversion löst auf + forwardet).
+- WEITERE INVARIANTEN: (i) bestehende Keys NIE neu gewürfelt/verändert; (ii) settings.capi.trackingKey
+  bleibt für die heutige Client-Einbettung (bis 2b-1 sie server-seitig ablöst); (iii) generate.ts/
+  meta.ts/HTML-Output unverändert in 2b-0.
+- RESOLVER-ÄNDERUNG (bewusst, NICHT byte-identisch): token.ts .eq("settings->capi->>trackingKey", key)
+  -> .eq("tracking_key", key). Ergebnis für Bestand identisch (Backfill).
+- DEMOBAR / LIVE-TEST (2b-0): (a) BUG-BEWEIS: Meta-loses Projekt publishen -> tracking_key-Spalte
+  gesetzt; DANACH einen saveProject auslösen -> Spalte BLEIBT gesetzt (vorher: NULL nach Save). (b)
+  CAPI-Projekt: Conversion löst weiter auf + erscheint als Server-Event im Events Manager; tracking_key
+  == settings-Wert.
+- OFFEN -> 2b-1: server-autoritative Einbettung (der Server injiziert tracking_key aus der Spalte beim
+  Publish; die client-seitige settings-Einbettung wird abgelöst) + build-zeit-ungegateter
+  PageView-Emitter + stabile per-Load-eventID (in-memory) + sende '__ps_pageview'.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

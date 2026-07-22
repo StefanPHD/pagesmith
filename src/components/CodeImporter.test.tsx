@@ -30,6 +30,7 @@ const {
   publishProject,
   setCapiToken,
   removeCapiToken,
+  getEventCounts,
 } = vi.hoisted(() => ({
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
   listProjects: vi.fn(async () => []),
@@ -48,6 +49,7 @@ const {
     trackingKey: "tk-mock",
   })),
   removeCapiToken: vi.fn(async () => ({ ok: true as const })),
+  getEventCounts: vi.fn(async () => []),
 }));
 
 vi.mock("@/app/projects/actions", () => ({
@@ -59,6 +61,7 @@ vi.mock("@/app/projects/actions", () => ({
   publishProject,
   setCapiToken,
   removeCapiToken,
+  getEventCounts,
 }));
 
 // DomainManager (in der Publish-Sektion gemountet) zieht ueber @/app/projects/domain-

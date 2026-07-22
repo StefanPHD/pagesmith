@@ -34,7 +34,13 @@ const { createAdminClient, adminUpsert, adminDelete } = vi.hoisted(() => {
 });
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
-import { setCapiToken, removeCapiToken, loadProject, saveProject } from "./actions";
+import {
+  setCapiToken,
+  removeCapiToken,
+  loadProject,
+  saveProject,
+  getEventCounts,
+} from "./actions";
 
 /**
  * Minimaler, chainbarer SSR-Client-Mock. Pro (table.op) ein Ergebnis:
@@ -396,5 +402,52 @@ describe("saveProject — Durability-Kontrast (Scheibe 2b-0)", () => {
     expect(patch.settings.capi?.trackingKey).toBeUndefined();
     // GRUEN-Beweis "warum Spalte": tracking_key ist im Save-Pfad strukturell unerreichbar.
     expect(patch).not.toHaveProperty("tracking_key");
+  });
+});
+
+describe("getEventCounts — Query-Form (Scheibe 3)", () => {
+  // EHRLICH: dieser Test beweist die QUERY-FORM (rpc-Name/Args, {data,error}-Handling,
+  // User-Guard), NICHT die RLS-Verweigerung — der Mock liefert, was er will. Die
+  // Cross-Tenant-Verweigerung ist ein DB-Feature (RLS) und wird per SQL-Simulation
+  // (set request.jwt.claims auf Owner B) + Live-Zwei-Konten-Test bewiesen.
+  function makeRpcClient(opts: {
+    user: { id: string } | null;
+    rpcResult?: { data?: unknown; error: unknown };
+  }) {
+    const rpc = vi.fn(async () => opts.rpcResult ?? { data: [], error: null });
+    createClient.mockResolvedValue({
+      auth: { getUser: vi.fn(async () => ({ data: { user: opts.user } })) },
+      rpc,
+    } as unknown as Awaited<ReturnType<typeof createClient>>);
+    return { rpc };
+  }
+
+  it("ruft rpc('get_event_counts', {p_project_id}) und liefert die Counts", async () => {
+    const counts = [
+      { event_type: "__ps_pageview", count: 5 },
+      { event_type: "Purchase", count: 2 },
+    ];
+    const { rpc } = makeRpcClient({
+      user: { id: "user-1" },
+      rpcResult: { data: counts, error: null },
+    });
+
+    const res = await getEventCounts("proj-1");
+    expect(rpc).toHaveBeenCalledWith("get_event_counts", { p_project_id: "proj-1" });
+    expect(res).toEqual(counts);
+  });
+
+  it("nicht eingeloggt -> [] (kein rpc-Aufruf)", async () => {
+    const { rpc } = makeRpcClient({ user: null });
+    expect(await getEventCounts("proj-1")).toEqual([]);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it("rpc-Fehler -> [] (kein Throw)", async () => {
+    makeRpcClient({
+      user: { id: "user-1" },
+      rpcResult: { data: null, error: { message: "boom" } },
+    });
+    expect(await getEventCounts("proj-1")).toEqual([]);
   });
 });

@@ -501,3 +501,31 @@ export async function renameProject(
   if (error) return { ok: false, error: error.message };
   return { ok: true };
 }
+
+/** Ein Count-Eintrag der Analytics-Read-Scheibe: wie oft ein event_type auftrat. */
+export type EventCount = { event_type: string; count: number };
+
+/**
+ * Analytics-Read (Phase 8 Scheibe 3): gruppierte Counts je event_type fuer EIN Projekt.
+ *
+ * Ueber den User-JWT-Client (createClient, wie loadProject) -> RLS ist AKTIV: die
+ * get_event_counts-Funktion laeuft SECURITY INVOKER, die events_select_own-Policy filtert
+ * die Aggregation von innen. Defense in depth: der p_project_id-Scope waehlt das Projekt
+ * (WELCHES), die RLS-Policy erzwingt die Ownership (WESSEN Events, via projects.user_id).
+ * Ein fremdes Projekt liefert damit leer, nicht fremde Zahlen.
+ *
+ * Read-only, kein Schreibpfad. {data,error} destrukturiert; jeder Fehlerzustand -> [].
+ */
+export async function getEventCounts(projectId: string): Promise<EventCount[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase.rpc("get_event_counts", {
+    p_project_id: projectId,
+  });
+  if (error || !data) return [];
+  return data as EventCount[];
+}

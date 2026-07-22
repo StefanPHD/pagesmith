@@ -11,6 +11,7 @@ import {
 } from "@/lib/detect";
 import {
   deleteProject,
+  getEventCounts,
   listProjects,
   loadProject,
   publishProject,
@@ -18,6 +19,7 @@ import {
   renameProject,
   saveProject,
   setCapiToken,
+  type EventCount,
   type ProjectListItem,
 } from "@/app/projects/actions";
 import {
@@ -69,6 +71,14 @@ const ACTION_ICON: Record<Mapping["type"], string> = {
   track: "🎯",
   text: "✎",
 };
+
+// Anzeige-Label je event_type fuer die Analytics-Sektion (Scheibe 3). Der reservierte
+// PageView-Token wird lesbar; jeder Conversion-Name (Purchase/Lead/Custom…) steht als
+// Klartext. Der '__ps_pageview'-Wert MUSS mit PAGEVIEW_EVENT (lib/analytics/events.ts)
+// uebereinstimmen — bewusst als reines ANZEIGE-Mapping hier, nicht als zweite Quelle.
+function eventTypeLabel(eventType: string): string {
+  return eventType === "__ps_pageview" ? "PageViews" : eventType;
+}
 
 // FESTE Anzeige-Reihenfolge der Badges pro Element (Scheibe 1a): deterministisch,
 // damit ein Mehr-Aktion-Element (redirect + track) stets gleich rendert (kein
@@ -165,6 +175,10 @@ export default function CodeImporter({
     "idle" | "publishing" | "published" | "error"
   >("idle");
   const [publishError, setPublishError] = useState<string | null>(null);
+  // Analytics-Counts (Phase 8 Scheibe 3): gruppierte event_type-Counts des aktiven
+  // Projekts. Projekt-abgeleitet -> reseedet ueber einen projectId-gekoppelten Effect
+  // (leer bei keinem/neuem Projekt), NICHT als leakender State gehalten.
+  const [eventCounts, setEventCounts] = useState<EventCount[]>([]);
   // Ausklappbares Projekt-Menue (Default zu: sein Inhalt rendert erst beim
   // Oeffnen clientseitig -> keine Hydration-Mismatches bei relativen Zeitstempeln).
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
@@ -396,6 +410,24 @@ export default function CodeImporter({
     const id = setTimeout(() => setSaveStatus("idle"), 2000);
     return () => clearTimeout(id);
   }, [saveStatus]);
+
+  // Analytics-Counts laden, sobald ein gespeichertes Projekt aktiv ist (Scheibe 3).
+  // Projekt-abgeleitet: bei Projektwechsel neu geladen, bei keinem Projekt geleert.
+  // EINZIGES setState liegt im async .then()-Callback (kein synchrones setState im
+  // Effekt-Body) -> kein Kaskaden-Render. cancelled-Guard gegen ein spaet zurueck-
+  // kommendes Ergebnis eines alten projectId. Kein Projekt -> Promise auf [] (leert).
+  useEffect(() => {
+    let cancelled = false;
+    const load = projectId
+      ? getEventCounts(projectId)
+      : Promise.resolve<EventCount[]>([]);
+    load.then((counts) => {
+      if (!cancelled) setEventCounts(counts);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
 
   // Copy-Feedback ("Kopiert ✓" / Fehler) nach kurzer Zeit zuruecksetzen.
   useEffect(() => {
@@ -1302,6 +1334,37 @@ export default function CodeImporter({
               <p className="mt-2 text-xs text-red-600">{publishError}</p>
             )}
           </div>
+
+          {/* Statistik (Phase 8 Scheibe 3): server-seitige Analytics-Counts des aktiven
+              Projekts (PageViews + Conversions), server-beobachtet (source='server'),
+              adblocker-resistent. Nur bei gespeichertem Projekt; leer -> Hinweis. */}
+          {projectId && (
+            <div className="mt-4 border-t border-gray-200 pt-4">
+              <h2 className="mb-1 text-sm font-medium text-gray-700">Statistik</h2>
+              <p className="mb-3 text-xs text-gray-500">
+                Server-seitig erfasste Events dieses Projekts.
+              </p>
+              {eventCounts.length === 0 ? (
+                <p className="text-xs text-gray-500">Noch keine Events.</p>
+              ) : (
+                <ul className="flex flex-col gap-1">
+                  {eventCounts.map((c) => (
+                    <li
+                      key={c.event_type}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="text-gray-700">
+                        {eventTypeLabel(c.event_type)}
+                      </span>
+                      <span className="font-semibold tabular-nums text-gray-900">
+                        {c.count}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
 
           {/* Eigene Domain verbinden (Phase 7 Scheibe 7c-2c): Add-Domain-Formular +
               dynamische DNS-Anweisungen + Status-Refresh. Eigene Komponente statt

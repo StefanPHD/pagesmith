@@ -72,9 +72,13 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       (Persistenz-Fundament) LIVE in Produktion bewiesen (events via after() neben
       CAPI-Forward, source='server'), ebenso die nachgelagerte CAPI-Härtung (3s-Timeout +
       errorName-Util). Scheibe 2 (PageView-Tracking) KOMPLETT & live bewiesen (2b-0 server-
-      autoritative trackingKey-Spalte + 2b-1 server-injizierter PageView-Emitter). Ist-Stand:
+      autoritative trackingKey-Spalte + 2b-1 server-injizierter PageView-Emitter). Scheibe 3
+      (Read-Pfad-Fundament) KOMPLETT & live bewiesen (owner-SELECT-RLS + get_event_counts +
+      Statistik-Sektion; tenant-isolierte Anzeige gegengeprobt). Das FUNDAMENT steht: Erfassen ->
+      tenant-isolierte Anzeige ist als rundes Feature funktionsfähig. Ist-Stand:
       "## Aktueller DB-/Analytics-Stand"; volle Herleitung: docs/claude-history/phase-8-analytics.md.
-      Phase 8 bleibt OFFEN (ausstehend: Read-/Dashboard-Scheibe, Uniques, Aggregation/Retention).
+      Phase 8 bleibt OFFEN für Erweiterungen (eigene Scheiben): Adblocker-Verlustrate, Uniques,
+      Charts/Zeiträume, CAPI-Einbettung server-vereinheitlichen + Launch-Härtung.
 - [ ] Phase 9 — A/B-Testing: 50/50-Split über Edge-Logik. (war Phase 8)
 - [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
@@ -357,10 +361,12 @@ Meta-unabhängigem Traffic ausgeübt (wofür er gebaut wurde). Damit ist Scheibe
   vereinheitlichen; Read-/Dashboard-Scheibe; Uniques; Aggregation/Retention/Rate-Limiting (Trigger:
   Ad-Traffic/Launch, s. Offene Punkte).
 
-## Aktiver Stand — Phase 8 Scheibe 3 (Read-Pfad-Fundament, Konzept festgezurrt, Bau als Nächstes)
-Erste Lese-Scheibe. Phase 8 baute bisher nur den Schreibpfad (events landen) — Scheibe 3 macht die
-Daten dem Owner sichtbar. Bewusst MINIMAL: Counts, keine Charts. Das Herz ist die RLS-Policy (erste
-Policy auf events überhaupt) — ein Fehler leakt Cross-Tenant-Analytics.
+## Aktiver Stand — Phase 8 Scheibe 3 (Read-Pfad-Fundament, ABGESCHLOSSEN — live bewiesen (2026-07-22). Phase 8 (Schreiben + Lesen) als Feature funktionsfähig.)
+Erste Lese-Scheibe — ABGESCHLOSSEN, deployt (beb672b), Migration 0013 gelaufen, live bewiesen. Phase 8
+baute bisher nur den Schreibpfad (events landen) — Scheibe 3 macht die Daten dem Owner sichtbar. Bewusst
+MINIMAL: Counts, keine Charts. Das Herz war die RLS-Policy (erste Policy auf events überhaupt) — ein
+Fehler hätte Cross-Tenant-Analytics geleakt; die tenant-isolierte Anzeige ist gegengeprobt. Damit ist
+Phase 8 als rundes Feature (Erfassen -> tenant-isolierte Anzeige) funktionsfähig.
 
 - SCOPE (MINIMAL): (a) owner-SELECT-RLS-Policy auf events; (b) server-seitige Read-Query, die pro
   Projekt Counts je event_type liefert; (c) schlichte Statistik-Sektion im bestehenden Projekt-UI.
@@ -395,6 +401,19 @@ Policy auf events überhaupt) — ein Fehler leakt Cross-Tenant-Analytics.
   (b) CROSS-TENANT-GEGENPROBE (der eigentliche Beweis): Owner A darf die Events von Owner B NICHT
       sehen — zwei Projekte zweier Owner, jeder sieht nur seine Zahlen. Das ist der Test, der bei zu
       weiter Policy rot wird.
+- VERIFIZIERT (live, 2026-07-22):
+  - OWNER-ERLAUBNIS (UI == DB, GEMESSEN): Projekt mit Events -> Statistik-Sektion zeigt "PageViews: 1,
+    Lead: 1"; die direkte SQL-Kontrolle (count(*) group by event_type) liefert identisch. Das
+    Anzeige-Mapping __ps_pageview -> "PageViews" greift.
+  - CROSS-TENANT-VERWEIGERUNG, ZWEIFACH GEMESSEN: (a) SQL-Editor mit fremdem JWT (sub = Nicht-Owner) ->
+    get_event_counts(fremdes Projekt) = 0 rows; (b) LIVE-ZWEI-KONTEN: ein zweiter Nutzer (echtes Konto)
+    sieht in seinem Projekt "Noch keine Events", nie die Zahlen des ersten Kontos. Die Policy wirkt
+    unter echtem Browser-JWT, nicht nur im SQL-Editor.
+  - POLICY PRÄZISE (formuliert UND wirksam): der cat des Migrations-SQL bestätigte FOR SELECT, EXISTS,
+    p.user_id = (select auth.uid()) gespiegelt, SECURITY INVOKER (kein DEFINER). Migration 0013 gelaufen.
+  - METHODEN-VERMERK: "formuliert" (cat des SQL) und "wirksam" (0-rows-Gegenprobe + Live-Zwei-Konten)
+    sind GETRENNT bewiesen — bei einer Tenant-Isolations-Policy ist beides Pflicht; ein cat allein
+    beweist nur den Wortlaut, nicht die Wirkung.
 - Nach Scheibe 3: Phase 8 ist als rundes Feature (Schreiben + Lesen) funktionsfähig. Danach Kacheln
   auf diesem Fundament (Adblocker-Rate, Uniques, Charts/Zeiträume) + Launch-Härtung — eigene Scheiben.
 

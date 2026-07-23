@@ -559,6 +559,29 @@ im bestehenden Statistik-Bereich, keine Charts, keine Zeiträume.
 - BESTANDSDATEN-SKEW (selbstheilend): nur Events zählen, die JÜNGER sind als die ERSTE Bestätigung
   DIESES Projekts (kein hardcodiertes Datum). Solange keine existiert: neutraler UI-Status
   ("Warte auf erste Bestätigung"), KEINE 0%/100%-Zahl.
+- STICHTAG VERANKERT (Stufe-1-Delta, gegen das gebaut wurde): min(created_at) NUR über browser-Zeilen
+  MIT server-Gegenstück (exists-Anker in der CTE), nicht über alle. GRUND: /api/e ist ein ANONYMER
+  Endpunkt, der trackingKey steht öffentlich im ausgelieferten HTML. Ohne Anker setzte EIN
+  geschmiedeter Confirm als früheste browser-Zeile den Stichtag, kippte ein Neutral-Status-Projekt in
+  den Zahlen-Modus und ließe Bestandsdaten ohne jede Bestätigung ins Fenster -> hohe FALSCHE
+  Verlustrate. Die selbstheilende Regel wäre anonym aushebelbar gewesen. Mit dem Anker sind Verwaiste
+  ÜBERALL inert: Zähler, Nenner, Stichtag, Neutral-Status. Derselbe Präfix-Filter gilt auch IN der
+  CTE (ein Marketer darf ein Custom-Event "__ps_pageview" nennen; dessen Bestätigung darf den
+  Stichtag nicht verfrühen).
+- EHRLICHE GRENZE: der Anker erschwert das Fälschen, er verhindert es nicht. Wer ZWEI Beacons mit
+  derselben frei erfundenen eventID schickt (einer ohne, einer mit Bestätigungs-Marker), erzeugt eine
+  VERANKERTE Bestätigung und kann Stichtag und Rate bewegen. Die Wurzel ist der anonyme Ingest selbst,
+  nicht die Aggregation -> Per-Tenant-Rate-Limiting (Security-Manifest Tier 1), NICHT Scope von B.
+- GRENZFALL total=0 BEI GESETZTEM STICHTAG (real erreichbar, nicht nur defensiv): der Confirm wird
+  gepuffert, solange fbevents lädt; ist Metas Forward schneller als der Pixel-Load, schreibt die
+  server-Zeile VOR ihrer eigenen Bestätigung. Bei genau EINER Conversion fällt sie damit aus dem
+  Fenster -> Stichtag gesetzt, total=0. Das UI zeigt dann den Neutral-Status und dividiert NICHT
+  (kein NaN). Zeigt zugleich, dass die Reihenfolge in BEIDE Richtungen läuft — daher die strikt
+  mengenbasierte Aggregation.
+- INDEX-ENTSCHEIDUNG: events_project_event_idx (project_id, event_id) additiv in 0015. Löst die
+  WÖRTLICHE Scheibe-1-Vertagung ein ("Index folgt mit der Verlustraten-Join-Scheibe") — ohne ihn
+  liefe die korrelierte exists-Suche pro Server-Zeile erneut über alle Zeilen des Projekts.
+  events_project_id_idx bleibt unangetastet (trägt den äußeren Scan und die Policy).
 - ANZEIGE (Entscheidung): Prozent PLUS Absolutwerte. WORTWAHL-REGEL (nicht verhandelbar): "N von M
   Conversions wurden NUR server-seitig erfasst" — NICHT "gerettet". "Gerettet" behauptet, Meta habe
   die Events EMPFANGEN; das steht NICHT in unseren Daten. events protokolliert, was der SERVER

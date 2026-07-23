@@ -443,6 +443,16 @@ Scheibe 1 reservierten, nie genutzten source='browser'-Token ein.
   ist, ist der Status 'pending'. "Im Zweifel nicht bestätigen" würde die Verlustrate NACH OBEN
   verfälschen (Über-Meldung). Plan muss die Auflösung benennen (z.B. Zustand pending|ok|blocked +
   Nachreichen der Bestätigung sobald aufgelöst) und die gewählte Ungenauigkeit ehrlich beziffern.
+  BEFUND (Stufe 1, am echten Code): __psMetaInit lädt fbevents LAZY beim ersten consented Fire
+  (bewusste DSGVO-Entscheidung aus Phase 6, wird NICHT angefasst). Die ERSTE Conversion einer Seite
+  läuft daher fast immer im Zustand 'pending'. "Im Zweifel nicht bestätigen" ist damit NICHT der
+  Randfall, sondern der NORMALFALL -> die Rate zeigte dauerhaft ~100% Verlust. Die Queue mit
+  Nachreichen (pending->ok flush, pending->blocked verwerfen) ist PFLICHT, nicht Kür — sie ist der
+  Kern der Scheibe.
+  VERBLEIBENDE UNGENAUIGKEIT (ehrlich, alle nach OBEN verfälschend): (1) Redirect-Rennen — bei
+  Conversion mit Redirect kann der gepufferte Confirm im Teardown verloren gehen (Größenordnung nur
+  live messbar, gehört als Messpunkt in den Live-Test); (2) track-only ohne Redirect: genau;
+  (3) zweite und folgende Conversions: exakt (Zustand aufgelöst).
 - ZUSTELLUNG: navigator.sendBeacon bzw. fetch(keepalive:true) — PFLICHT. Conversions gehen oft mit
   Form-Submit/Redirect einher; ohne keepalive bricht der Browser den Request beim Seitenwechsel ab
   und die Bestätigung geht verloren -> falsch als "Verlust" gezählt.
@@ -455,15 +465,43 @@ Scheibe 1 reservierten, nie genutzten source='browser'-Token ein.
   wie die echte Conversion; würde er geforwardet, entstünde ein DUPLIKAT bei Meta. Der Confirm-Pfad
   persistiert und returnt, ohne je in den Forward-Block zu laufen. Liegt direkt auf dem gerade
   reparierten CAPI-Pfad -> mit Gegenprobe testen.
-- SCHEMA: KEINE Migration. Zwei Zeilen mit derselben event_id (eine source='server', eine
+- SCHEMA: KEIN Schema-Change. Zwei Zeilen mit derselben event_id (eine source='server', eine
   source='browser') sind exakt das erwartete Muster — events.event_id hat BEWUSST keinen
   Unique-Constraint (Scheibe 1: "Dedup ist Query-Zeit-Sache einer späteren Zähl-Scheibe"). Das ist
   diese Scheibe; die Schema-Entscheidung von damals zahlt sich hier aus.
+- MIGRATION 0014 (Spec-Korrektur aus Stufe 1 — die ursprüngliche Fassung sagte "KEINE Migration";
+  die Wechselwirkung war bei Abfassung nicht bekannt): get_event_counts (0013) gruppiert
+  source-UNABHÄNGIG. Sobald ein Confirm landet, zeigt die live gegangene Scheibe-3-Statistik für EINE
+  Conversion "Lead: 2" — eine sichtbare Regression bestehender UI. Fix: create or replace function
+  public.get_event_counts mit zusätzlichem "and e.source = 'server'" im where. Semantisch ohnehin
+  richtig: die Sektion trägt das Label "Server-seitig erfasste Events" — der Filter passt exakt zur
+  Beschriftung; ein Confirm ist ein Mess-Artefakt, kein zweites Event.
+  ACHTUNG (sonst stille Regression): create or replace ersetzt die KOMPLETTE Definition inkl. aller
+  SET-Klauseln. Die 0014 MUSS "set search_path = public" MITSCHREIBEN (gestern gehärtet, sonst kommt
+  der Advisor-Befund "Function Search Path Mutable" zurück), ebenso "stable", KEIN security definer,
+  gleicher Rückgabetyp. Kein Schema-Change, keine Policy-Änderung, kein Backfill.
+  DEPLOY-REIHENFOLGE: 0014 im SQL-Editor VOR dem Scheibe-A-Code-Deploy (vor Confirms ist der Filter
+  ein No-op -> gefahrlos; danach verhindert er die Doppelzählung ab der ersten Confirm-Zeile).
 - VOLUMEN: Conversions senden künftig zwei Beacons statt einem. Conversions sind niedrigvolumig (nicht
   der PageView-Hotspot) -> akzeptabel, vermerkt.
+- BLINDE FLECKEN (Stufe-1-Befunde, Scheibe B muss sie tragen):
+  - FREMD-PIXEL (meta.ts:81 `if (f.fbq) return;`): Trägt das importierte Kunden-HTML bereits ein
+    eigenes Meta-Snippet, bricht unser Bootstrap ab -> kein eigenes script-Element -> unsere Handler
+    hängen nirgends -> Zustand bleibt ewig 'pending'. Scheibe A: Zustand 'foreign' setzen, Confirms
+    unterdrücken, console.warn (diagnostizierbar statt still falsch). "Blind bestätigen" ist VERWORFEN
+    — auch das Fremd-Snippet legt synchron einen Stub an, `if (f.fbq)` greift mit UND ohne Blocker;
+    blind bestätigen würde einen echten Blocker verstecken. ENTWARNUNG: die selbstheilende Regel
+    (Rate erst ab der ERSTEN Bestätigung dieses Projekts) fängt den schädlichen Ausgang bereits ab —
+    ein Fremd-Pixel-Projekt bekommt nie eine erste Bestätigung, das UI bleibt auf "Warte auf erste
+    Bestätigung" und zeigt NIE 100% Verlust. Uninformativ, aber niemals irreführend.
+  - SURROGAT-BLOCKER: manche Blocker liefern statt fbevents.js ein Noop-Skript -> onload feuert,
+    Confirm geht raus, Pixel ist real tot -> UNTER-Meldung. Am DOM nicht erkennbar. Folge fürs
+    Scheibe-B-Labeling: die Zahl kann in BEIDE Richtungen irren, nicht nur nach oben.
+  - EXPORT-DOWNLOAD: dort ist der Beacon-Kanal absolut (fremde Domain) und selbst blockbar ->
+    Messung schwächer. Bestandszustand des CAPI-Beacons, kein neuer Bruch. Nur vermerkt.
 - INVARIANTEN: (i) Confirm wird NIE geforwardet; (ii) source bleibt server-gesetzt (kein client-freier
   Wert); (iii) CAPI-Forward für echte Conversions byte-gleich; (iv) Kill-Switch/204-Containment
-  unverändert; (v) keine Migration.
+  unverändert; (v) nur Migration 0014 (Funktions-Replace, kein Schema-Change).
 - DEMOBAR / LIVE-TEST (nur live führbar — ein Unit-Test kann das strukturell NICHT zeigen, dieselbe
   Lektion wie bei RLS): dieselbe Conversion zweimal auslösen:
   (a) ADBLOCKER AUS -> ZWEI events-Zeilen mit derselben event_id: source='server' UND source='browser'.

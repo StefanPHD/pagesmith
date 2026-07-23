@@ -31,6 +31,7 @@ const {
   setCapiToken,
   removeCapiToken,
   getEventCounts,
+  getAdblockLoss,
 } = vi.hoisted(() => ({
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
   listProjects: vi.fn(async () => []),
@@ -50,6 +51,10 @@ const {
   })),
   removeCapiToken: vi.fn(async () => ({ ok: true as const })),
   getEventCounts: vi.fn(async () => []),
+  // Scheibe B: Default ist der Neutral-Status (null) -> bestehende Tests sehen die
+  // Verlust-Kachel nur als "Warte auf erste Bestaetigung", keine Zahl. Rueckgabe bewusst
+  // Promise<unknown>, damit einzelne Tests via mockResolvedValueOnce Rohzahlen liefern.
+  getAdblockLoss: vi.fn(async (): Promise<unknown> => null),
 }));
 
 vi.mock("@/app/projects/actions", () => ({
@@ -62,6 +67,7 @@ vi.mock("@/app/projects/actions", () => ({
   setCapiToken,
   removeCapiToken,
   getEventCounts,
+  getAdblockLoss,
 }));
 
 // DomainManager (in der Publish-Sektion gemountet) zieht ueber @/app/projects/domain-
@@ -697,5 +703,73 @@ describe("CAPI-Token entfernen + Platzhalter-Klarheit", () => {
       screen.getByPlaceholderText("Neuen Token eingeben zum Ersetzen"),
     ).toBeTruthy();
     expect(screen.queryByPlaceholderText(/gesetzt/)).toBeNull();
+  });
+});
+
+// Test 7 (Phase 8 Scheibe B): der WORTLAUT der Verlust-Kachel ist eine Produktzusage, kein
+// Styling — deshalb festgenagelt. "gerettet" ist verboten: events beweist SERVER-BEOBACHTUNG,
+// nicht Meta-EMPFANG (der 'Bad signature'-Bug liess Forwards still scheitern, waehrend die
+// Zeilen sauber weiterliefen). Eine Kachel, die dann "gerettet" sagt, luegt den Kunden an.
+describe("Adblocker-Verlust-Kachel: Wortlaut + Neutral-Status (Scheibe B)", () => {
+  function openSettings() {
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+  }
+
+  it("mit Rohzahlen: 'mindestens X %' + 'N von M ... NUR server-seitig erfasst', NIE 'gerettet'", async () => {
+    // 8 von 19 unbestaetigt -> 42%.
+    getAdblockLoss.mockResolvedValueOnce({
+      total_server_conversions: 19,
+      confirmed_conversions: 11,
+      first_confirm_at: "2026-07-23T10:00:00.000Z",
+    });
+
+    render(<CodeImporter initialProjectId="proj-1" initialSettings={{}} />);
+    openSettings();
+
+    await waitFor(() =>
+      expect(screen.getByText(/mindestens\s*42\s*%/)).toBeTruthy(),
+    );
+    expect(
+      screen.getByText(/8 von 19 Conversions wurden\s+NUR server-seitig erfasst/),
+    ).toBeTruthy();
+
+    // Das verbotene Wort — nirgends im gerenderten Dokument.
+    expect(document.body.textContent).not.toMatch(/gerettet/i);
+  });
+
+  it("ohne Bestätigung (first_confirm_at null): Neutral-Status statt 0%/100%", async () => {
+    getAdblockLoss.mockResolvedValueOnce({
+      total_server_conversions: 0,
+      confirmed_conversions: 0,
+      first_confirm_at: null,
+    });
+
+    render(<CodeImporter initialProjectId="proj-1" initialSettings={{}} />);
+    openSettings();
+
+    await waitFor(() =>
+      expect(screen.getByText("Warte auf erste Bestätigung.")).toBeTruthy(),
+    );
+    expect(document.body.textContent).not.toMatch(/mindestens/);
+    expect(document.body.textContent).not.toMatch(/%/);
+  });
+
+  // Grenzfall aus der Zustandstabelle: Stichtag gesetzt, Fenster aber leer (die einzige
+  // Bestaetigung hat ihre server-Zeile VOR dem Stichtag). Ohne diesen Zweig teilte das UI
+  // durch 0 -> NaN%.
+  it("Stichtag gesetzt, aber total = 0: Neutral-Status statt NaN%", async () => {
+    getAdblockLoss.mockResolvedValueOnce({
+      total_server_conversions: 0,
+      confirmed_conversions: 0,
+      first_confirm_at: "2026-07-23T10:00:00.000Z",
+    });
+
+    render(<CodeImporter initialProjectId="proj-1" initialSettings={{}} />);
+    openSettings();
+
+    await waitFor(() =>
+      expect(screen.getByText("Warte auf erste Bestätigung.")).toBeTruthy(),
+    );
+    expect(document.body.textContent).not.toMatch(/NaN/);
   });
 });

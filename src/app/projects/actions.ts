@@ -529,3 +529,47 @@ export async function getEventCounts(projectId: string): Promise<EventCount[]> {
   if (error || !data) return [];
   return data as EventCount[];
 }
+
+/**
+ * Rohzahlen der Adblocker-Verlustrate (Phase 8 Scheibe B). Prozent + "N von M"-Text
+ * formatiert das UI -> die Zahl bleibt gegen SQL nachrechenbar.
+ *
+ * first_confirm_at === null ist der NEUTRAL-Status ("Warte auf erste Bestaetigung") und
+ * damit von einer echten 0 unterscheidbar — das UI muss nicht raten.
+ */
+export type AdblockLoss = {
+  total_server_conversions: number;
+  confirmed_conversions: number;
+  first_confirm_at: string | null;
+};
+
+/**
+ * Analytics-Read (Phase 8 Scheibe B): Verlustraten-Rohzahlen fuer EIN Projekt.
+ *
+ * Baustil 1:1 wie getEventCounts: User-JWT-Client (createClient) -> RLS ist AKTIV, die
+ * get_adblock_loss-Funktion laeuft SECURITY INVOKER, die events_select_own-Policy filtert
+ * die Aggregation von innen. Der p_project_id-Scope waehlt das Projekt (WELCHES), die
+ * RLS-Policy erzwingt die Ownership (WESSEN Events).
+ *
+ * Read-only. {data,error} destrukturiert; jeder Fehlerzustand -> null. null ist hier der
+ * richtige Leer-Wert (nicht [] wie bei den Counts): das UI zeigt dann den Neutral-Status,
+ * nie eine erfundene 0%-Zahl.
+ *
+ * Die RPC liefert per RETURNS TABLE genau EINE Zeile (Aggregat ohne group by) -> erstes
+ * Element. Fehlt sie wider Erwarten, ist null der sichere Ausgang.
+ */
+export async function getAdblockLoss(
+  projectId: string
+): Promise<AdblockLoss | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase.rpc("get_adblock_loss", {
+    p_project_id: projectId,
+  });
+  if (error || !data) return null;
+  return (data as AdblockLoss[])[0] ?? null;
+}

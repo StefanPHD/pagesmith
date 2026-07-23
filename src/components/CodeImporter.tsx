@@ -11,6 +11,7 @@ import {
 } from "@/lib/detect";
 import {
   deleteProject,
+  getAdblockLoss,
   getEventCounts,
   listProjects,
   loadProject,
@@ -19,6 +20,7 @@ import {
   renameProject,
   saveProject,
   setCapiToken,
+  type AdblockLoss,
   type EventCount,
   type ProjectListItem,
 } from "@/app/projects/actions";
@@ -179,6 +181,9 @@ export default function CodeImporter({
   // Projekts. Projekt-abgeleitet -> reseedet ueber einen projectId-gekoppelten Effect
   // (leer bei keinem/neuem Projekt), NICHT als leakender State gehalten.
   const [eventCounts, setEventCounts] = useState<EventCount[]>([]);
+  // Adblocker-Verlustrate (Phase 8 Scheibe B). null = noch keine Aussage moeglich
+  // (Neutral-Status), NICHT "0% Verlust". Projekt-abgeleitet wie eventCounts.
+  const [adblockLoss, setAdblockLoss] = useState<AdblockLoss | null>(null);
   // Ausklappbares Projekt-Menue (Default zu: sein Inhalt rendert erst beim
   // Oeffnen clientseitig -> keine Hydration-Mismatches bei relativen Zeitstempeln).
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
@@ -423,6 +428,24 @@ export default function CodeImporter({
       : Promise.resolve<EventCount[]>([]);
     load.then((counts) => {
       if (!cancelled) setEventCounts(counts);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
+
+  // Adblocker-Verlustrate laden (Scheibe B) — identischer Schnitt wie die Counts oben,
+  // bewusst als ZWEITER Effect statt gebuendelt: die beiden Kennzahlen kommen aus zwei
+  // getrennten RPCs, und die Counts-Kachel soll weiterlaufen, falls die Raten-Query zickt.
+  // Leer-Wert ist null (Neutral-Status), nicht [] — eine erfundene 0%-Zahl waere schlimmer
+  // als "noch keine Aussage".
+  useEffect(() => {
+    let cancelled = false;
+    const load = projectId
+      ? getAdblockLoss(projectId)
+      : Promise.resolve<AdblockLoss | null>(null);
+    load.then((loss) => {
+      if (!cancelled) setAdblockLoss(loss);
     });
     return () => {
       cancelled = true;
@@ -1363,6 +1386,55 @@ export default function CodeImporter({
                   ))}
                 </ul>
               )}
+
+              {/* Adblocker-Verlustrate (Phase 8 Scheibe B): die Marquee-Zahl, additiv unter
+                  den Counts.
+
+                  WORTWAHL (nicht verhandelbar): "NUR server-seitig erfasst" — NIEMALS
+                  "gerettet". "Gerettet" behauptet, Meta habe die Events EMPFANGEN; das
+                  steht NICHT in unseren Daten. events protokolliert, was der SERVER
+                  BEOBACHTET hat, nicht ob der Forward ankam — der CAPI-'Bad signature'-Bug
+                  hat live gezeigt, dass Forwards STILL scheitern, waehrend die Zeilen
+                  sauber weiterlaufen. Eine Kachel, die in genau diesem Zustand "gerettet"
+                  sagt, luegt den Kunden an.
+
+                  "mindestens": die Zahl kann in BEIDE Richtungen irren — nach oben durch
+                  das Redirect-Rennen und JS-Fehler/schnellen Bounce, nach unten durch
+                  Surrogat-Blocker (Noop-Skript -> onload feuert, Pixel ist tot).
+
+                  NEUTRAL-STATUS statt Zahl, wenn kein Stichtag existiert ODER das Fenster
+                  leer ist (total === 0) -> keine Division, keine erfundene 0%/100%-Zahl. */}
+              <div className="mt-4 border-t border-gray-100 pt-3">
+                <h3 className="mb-1 text-sm font-medium text-gray-700">
+                  Adblocker-Verlust
+                </h3>
+                {!adblockLoss ||
+                adblockLoss.first_confirm_at === null ||
+                adblockLoss.total_server_conversions === 0 ? (
+                  <p className="text-xs text-gray-500">
+                    Warte auf erste Bestätigung.
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-sm font-semibold tabular-nums text-gray-900">
+                      mindestens{" "}
+                      {Math.round(
+                        ((adblockLoss.total_server_conversions -
+                          adblockLoss.confirmed_conversions) /
+                          adblockLoss.total_server_conversions) *
+                          100
+                      )}
+                      %
+                    </p>
+                    <p className="mt-0.5 text-xs text-gray-500">
+                      {adblockLoss.total_server_conversions -
+                        adblockLoss.confirmed_conversions}{" "}
+                      von {adblockLoss.total_server_conversions} Conversions wurden
+                      NUR server-seitig erfasst.
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
           )}
 

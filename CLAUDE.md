@@ -417,6 +417,73 @@ Phase 8 als rundes Feature (Erfassen -> tenant-isolierte Anzeige) funktionsfähi
 - Nach Scheibe 3: Phase 8 ist als rundes Feature (Schreiben + Lesen) funktionsfähig. Danach Kacheln
   auf diesem Fundament (Adblocker-Rate, Uniques, Charts/Zeiträume) + Launch-Härtung — eigene Scheiben.
 
+## Aktiver Stand — Phase 8 Scheibe A (Adblocker-Bestätigungs-Signal, Konzept festgezurrt, Bau als Nächstes)
+Erste Hälfte der Adblocker-Verlustrate — DER Marquee-Metrik (beweist das Produktversprechen in einer
+Zahl). Scheibe A liefert nur das SIGNAL; Rate + UI-Kachel sind Scheibe B. Löst endlich den in
+Scheibe 1 reservierten, nie genutzten source='browser'-Token ein.
+
+- MESSPRINZIP: Der Server sieht jede Conversion IMMER (first-party /api/e, adblock-resistent). Metas
+  Browser-Pixel feuert nur, wenn fbevents.js NICHT geblockt wurde. Der Client bestätigt über DENSELBEN
+  adblock-resistenten Kanal, ob der Pixel wirklich lief. Keine Bestätigung = dieses Event hätte Meta
+  nie erreicht. Der Messkanal ist damit selbst immun — das ist der Grund, warum die Messung überhaupt
+  geht.
+- LEKTION / FALLE (window.fbq ist WERTLOS als Check): Metas Standard-Snippet legt SYNCHRON einen STUB
+  an (fbq mit queue, loaded=true, version), BEVOR fbevents.js nachgeladen wird. Blockt der Adblocker
+  das Script, bleibt der Stub stehen -> `if (window.fbq)` ist IMMER wahr -> die Verlustrate wäre
+  permanent 0% -> eine Kachel, die schön aussieht und NICHTS misst ("grün aber falsch"). Ebenso
+  wertlos: Meta-interne Properties (können sich ändern).
+- ERKENNUNG (DOM-Ebene, versionsfest): load/error-Event des SCRIPT-ELEMENTS von fbevents.js. Das ist
+  Browser-Standard, unabhängig von Metas Interna. STUFE-1-GATE: am echten buildMetaRuntime/generate.ts
+  verifizieren, ob wir die Script-Erzeugung kontrolliert genug injizieren, um Handler anzuhängen
+  (Metas Standard-Snippet erzeugt das Element selbst via createElement/insertBefore -> anhängbar).
+  Falls das ohne Umbau der Meta-Runtime NICHT geht -> STOPP und vorlegen (Umbau des CAPI-nahen
+  Meta-Runtime ist invasiv auf dem gerade reparierten Pfad).
+- RENNEN LOAD-vs-CONVERSION (Genauigkeits-Frage, Stufe 1 MUSS sie lösen): Der Ladestatus ist eine
+  PRO-SEITE-Tatsache, die Bestätigung aber PRO CONVERSION. Klickt jemand, BEVOR load/error aufgelöst
+  ist, ist der Status 'pending'. "Im Zweifel nicht bestätigen" würde die Verlustrate NACH OBEN
+  verfälschen (Über-Meldung). Plan muss die Auflösung benennen (z.B. Zustand pending|ok|blocked +
+  Nachreichen der Bestätigung sobald aufgelöst) und die gewählte Ungenauigkeit ehrlich beziffern.
+- ZUSTELLUNG: navigator.sendBeacon bzw. fetch(keepalive:true) — PFLICHT. Conversions gehen oft mit
+  Form-Submit/Redirect einher; ohne keepalive bricht der Browser den Request beim Seitenwechsel ab
+  und die Bestätigung geht verloren -> falsch als "Verlust" gezählt.
+- SERVER-MAPPING (source bleibt server-gesetzt, NIE client-frei): Der Client sendet einen ENG
+  BEGRENZTEN Marker (analog zum reservierten '__ps_pageview'-Token), NICHT einen freien source-String
+  — sonst könnte er die Analytics beliebig färben. Der SERVER mappt den Marker auf source='browser'.
+  Achsen-Hygiene: der Client meldet eine Beobachtung, die Interpretation macht der Server. Die
+  Bestätigung trägt DIESELBE eventID wie die Conversion und denselben event_type.
+- SCHÄRFSTE INVARIANTE — BESTÄTIGUNGEN NIEMALS AN META FORWARDEN: Ein Confirm trägt dieselbe eventID
+  wie die echte Conversion; würde er geforwardet, entstünde ein DUPLIKAT bei Meta. Der Confirm-Pfad
+  persistiert und returnt, ohne je in den Forward-Block zu laufen. Liegt direkt auf dem gerade
+  reparierten CAPI-Pfad -> mit Gegenprobe testen.
+- SCHEMA: KEINE Migration. Zwei Zeilen mit derselben event_id (eine source='server', eine
+  source='browser') sind exakt das erwartete Muster — events.event_id hat BEWUSST keinen
+  Unique-Constraint (Scheibe 1: "Dedup ist Query-Zeit-Sache einer späteren Zähl-Scheibe"). Das ist
+  diese Scheibe; die Schema-Entscheidung von damals zahlt sich hier aus.
+- VOLUMEN: Conversions senden künftig zwei Beacons statt einem. Conversions sind niedrigvolumig (nicht
+  der PageView-Hotspot) -> akzeptabel, vermerkt.
+- INVARIANTEN: (i) Confirm wird NIE geforwardet; (ii) source bleibt server-gesetzt (kein client-freier
+  Wert); (iii) CAPI-Forward für echte Conversions byte-gleich; (iv) Kill-Switch/204-Containment
+  unverändert; (v) keine Migration.
+- DEMOBAR / LIVE-TEST (nur live führbar — ein Unit-Test kann das strukturell NICHT zeigen, dieselbe
+  Lektion wie bei RLS): dieselbe Conversion zweimal auslösen:
+  (a) ADBLOCKER AUS -> ZWEI events-Zeilen mit derselben event_id: source='server' UND source='browser'.
+  (b) ADBLOCKER AN -> nur EINE Zeile (source='server'), keine Bestätigung.
+  (c) GEGENPROBE Nie-Forwarden: im Events Manager erscheint die Conversion weiterhin GENAU EINMAL als
+      Server-Event (kein Duplikat durch den Confirm).
+- OFFEN -> SCHEIBE B (Rate + Kachel): RPC-Aggregation, VERANKERT AUF DEN SERVER-ZEILEN (Nenner =
+  Server-Events, dazu per event_id prüfen ob eine Browser-Zeile existiert; NICHT andersherum — ein
+  verwaister Confirm würde die Rate sonst verfälschen). CONVERSION-FILTER PFLICHT: analytics-only
+  Events müssen raus, sonst dominieren PageViews die Rate (~95%+ Falsch-Verlust). PRÄFIX-basiert statt
+  namentlich: left(event_type,5) <> '__ps_' (deckt künftige __ps_-Tokens automatisch ab; NICHT
+  unescapt "not like '__ps_%'" — '_' ist LIKE-Wildcard). BESTANDSDATEN-SKEW: selbstheilend — nur
+  Events zählen, die JÜNGER sind als die erste Bestätigung DIESES Projekts (kein hardcodiertes Datum);
+  solange keine existiert, zeigt das UI einen neutralen Status ("Warte auf erste Bestätigung"), keine
+  0%/100%-Zahl. LABELING: die Zahl ist ein MINDESTWERT ("mindestens X% wären verloren gegangen") — JS-
+  Fehler/schneller Bounce zählen auch als Verlust; ein Dashboard darf nicht mehr behaupten als es misst.
+  NEBENEIGENSCHAFT (gewollt): blockt ein aggressiver Blocker auch unseren /api/e, entsteht WEDER
+  Server-Zeile NOCH Confirm -> das Event fällt aus Zähler UND Nenner, verfälscht die Rate also nicht.
+  Die Rate gilt "über die Events, die wir überhaupt gesehen haben".
+
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,
 Policy und jeder externe Call wird daran gemessen. B sind Skalierungs-Leitplanken für

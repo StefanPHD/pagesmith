@@ -44,4 +44,29 @@ miterledigen, sondern gebündelt abarbeiten.
 - Editor Element->Code-Zeile-Scroll: bewusst verworfen — bräuchte echten
   Code-Editor (CodeMirror/Monaco), Nutzen für Marketer fraglich (arbeiten in der
   Preview, nicht im Rohcode).
+- ELEMENTLISTE: VERSCHACHTELTE ELEMENTE ERSCHEINEN ALS DOPPEL-EINTRAG.
+  BEFUND (real beobachtet): Trägt importiertes Kunden-HTML ein <a href="...">, das
+  ein <button> umschliesst, zeigt die Elementliste ZWEI Einträge mit IDENTISCHEM
+  Label (z.B. zweimal "Klick mich (Mit Redirect)") — einmal als <a>, einmal als
+  <button>. Farblich unterschieden, aber für Kunden verwirrend, weil es wie ein
+  Duplikat aussieht.
+  KEIN ERKENNUNGSFEHLER: Beide Elemente SIND real und getrennt adressierbar (das
+  <a> trägt die Navigation, der <button> ist ein eigener interaktiver
+  Anknüpfungspunkt). Die Liste zeigt korrekt zwei Objekte — sie zeigt nur nicht,
+  dass eines IM anderen liegt. Das Problem ist die DARSTELLUNG der Verschachtelung,
+  nicht die Erkennung.
+  FIX-RICHTUNG (falls angegangen): Verschachtelung SICHTBAR machen (Einrückung,
+  Hinweis "innerhalb von <a>", o.ä.) — NICHT deduplizieren.
+  WARNUNG (der eigentliche Grund für diese Notiz): Genau das Konstrukt "<a>
+  umschliesst <button>" ist das, was der href-Bake- + auxclick-Fix behandelt
+  (Phase-4-Lektion, live verifiziert; s. CLAUDE.md "Immer beachten": 'click' deckt
+  NUR die linke Maustaste ab, Mittelklick feuert auxclick). Wer die Liste
+  "aufräumt", indem er das innere oder äussere Element wegdedupliziert, kann den
+  getesteten Mittelklick-/Navigations-Pfad STILL brechen. -> Vor jedem Eingriff in
+  die Detection-/Generate-Schicht gilt der HISTORIE-CHECK: erst der echte Code,
+  dann gezielt die passende docs/claude-history/-Datei fürs WARUM (hier
+  phase-4-mapping-codegen-export.md), und die geschützte Invariante EXPLIZIT
+  benennen.
+  EINORDNUNG: Polish, NICHT "Offene Punkte" — es geht nichts still kaputt, es ist
+  eine Verständlichkeits-Frage. Kein Trigger, keine Dringlichkeit.
 

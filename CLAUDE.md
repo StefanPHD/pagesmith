@@ -417,10 +417,11 @@ Phase 8 als rundes Feature (Erfassen -> tenant-isolierte Anzeige) funktionsfähi
 - Nach Scheibe 3: Phase 8 ist als rundes Feature (Schreiben + Lesen) funktionsfähig. Danach Kacheln
   auf diesem Fundament (Adblocker-Rate, Uniques, Charts/Zeiträume) + Launch-Härtung — eigene Scheiben.
 
-## Aktiver Stand — Phase 8 Scheibe A (Adblocker-Bestätigungs-Signal, Konzept festgezurrt, Bau als Nächstes)
+## Aktiver Stand — Phase 8 Scheibe A (Adblocker-Bestätigungs-Signal, ABGESCHLOSSEN — live bewiesen (2026-07-23))
 Erste Hälfte der Adblocker-Verlustrate — DER Marquee-Metrik (beweist das Produktversprechen in einer
-Zahl). Scheibe A liefert nur das SIGNAL; Rate + UI-Kachel sind Scheibe B. Löst endlich den in
-Scheibe 1 reservierten, nie genutzten source='browser'-Token ein.
+Zahl). ABGESCHLOSSEN, deployt (0280217), Migration 0014 gelaufen, live bewiesen. Scheibe A liefert nur
+das SIGNAL; Rate + UI-Kachel sind Scheibe B. Löst endlich den in Scheibe 1 reservierten, nie genutzten
+source='browser'-Token ein.
 
 - MESSPRINZIP: Der Server sieht jede Conversion IMMER (first-party /api/e, adblock-resistent). Metas
   Browser-Pixel feuert nur, wenn fbevents.js NICHT geblockt wurde. Der Client bestätigt über DENSELBEN
@@ -508,9 +509,35 @@ Scheibe 1 reservierten, nie genutzten source='browser'-Token ein.
   (b) ADBLOCKER AN -> nur EINE Zeile (source='server'), keine Bestätigung.
   (c) GEGENPROBE Nie-Forwarden: im Events Manager erscheint die Conversion weiterhin GENAU EINMAL als
       Server-Event (kein Duplikat durch den Confirm).
+- VERIFIZIERT (live, 2026-07-23):
+  - HAPPY PATH (GEMESSEN): Conversion mit Adblocker AUS -> ZWEI events-Zeilen mit IDENTISCHER event_id
+    (Lead: source='server' + source='browser'). Die Join-Achse für Scheibe B ist intakt.
+  - KERNBEWEIS — ERKENNUNG UNTER ECHTEM BLOCKER (GEMESSEN): DevTools zeigt fbevents.js mit Status
+    "(blocked:other)", 0.0 kB -> in der DB entsteht NUR die source='server'-Zeile, keine Bestätigung.
+    Damit ist bewiesen, was strukturell KEIN Unit-Test zeigen konnte: das onerror des Script-Elements
+    feuert unter einem realen Adblocker. Das war die eigentliche Erkennungsleistung der Scheibe.
+  - NIE-FORWARDEN (GEMESSEN, Gegenprobe): Events Manager zeigt für die eventID GENAU EIN Server-Event
+    (neben dem normalen Browser-Pixel-Event derselben ID). Kein Duplikat -> der frühe return im
+    Confirm-Zweig hält unter echtem Traffic.
+  - REIHENFOLGE-BEFUND (WICHTIG FÜR SCHEIBE B, GEMESSEN): die browser-Zeile traf ~25 ms VOR der
+    server-Zeile ein (.375764 vs .400161; bei Meta 11:29:27 vs 11:29:29). Die Reihenfolge-Unabhängigkeit
+    ist damit KEIN theoretischer Vorbehalt, sondern der REALFALL — der Confirm überholt den
+    Server-Persist regelmäßig. Scheibe B MUSS rein mengenbasiert über die gemeinsame event_id
+    aggregieren; eine "server zuerst"-Annahme würde an genau diesen Zeilen brechen.
+  - MIGRATION 0014 (verifiziert via pg_get_functiondef): "and e.source = 'server'" im where UND
+    "SET search_path TO 'public'" UND "STABLE" UND KEIN security definer — alle Klauseln haben den
+    create-or-replace überlebt. Die Doppelzählung in der Scheibe-3-Statistik ist damit abgefangen.
+  - EHRLICHE NOTIZ ZU TEST D (Redirect-Rennen): der Confirm kam in der Beobachtung auch bei
+    Redirect-Conversions an. Das ist EINE Beobachtung, KEINE Quote. Das Rennen ist probabilistisch
+    (Script-Load-Latenz vs. Navigations-Teardown) und trifft nur die enge Konstellation "erste Conversion
+    einer Seite (Zustand pending) + sofortiger Redirect". "Hat nicht zugeschlagen" ist nicht "existiert
+    nicht" -> die MINDESTWERT-Klausel für das Scheibe-B-Labeling bleibt bestehen.
 - OFFEN -> SCHEIBE B (Rate + Kachel): RPC-Aggregation, VERANKERT AUF DEN SERVER-ZEILEN (Nenner =
   Server-Events, dazu per event_id prüfen ob eine Browser-Zeile existiert; NICHT andersherum — ein
-  verwaister Confirm würde die Rate sonst verfälschen). CONVERSION-FILTER PFLICHT: analytics-only
+  verwaister Confirm würde die Rate sonst verfälschen). REIHENFOLGE-VORGABE (aus dem Live-Befund oben,
+  HART): rein MENGENBASIERT über die gemeinsame event_id aggregieren, KEINE Annahme über die
+  Eintreff-Reihenfolge — live gemessen: die browser-Zeile kann VOR der server-Zeile eintreffen.
+  CONVERSION-FILTER PFLICHT: analytics-only
   Events müssen raus, sonst dominieren PageViews die Rate (~95%+ Falsch-Verlust). PRÄFIX-basiert statt
   namentlich: left(event_type,5) <> '__ps_' (deckt künftige __ps_-Tokens automatisch ab; NICHT
   unescapt "not like '__ps_%'" — '_' ist LIKE-Wildcard). BESTANDSDATEN-SKEW: selbstheilend — nur

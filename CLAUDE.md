@@ -74,11 +74,13 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       errorName-Util). Scheibe 2 (PageView-Tracking) KOMPLETT & live bewiesen (2b-0 server-
       autoritative trackingKey-Spalte + 2b-1 server-injizierter PageView-Emitter). Scheibe 3
       (Read-Pfad-Fundament) KOMPLETT & live bewiesen (owner-SELECT-RLS + get_event_counts +
-      Statistik-Sektion; tenant-isolierte Anzeige gegengeprobt). Das FUNDAMENT steht: Erfassen ->
-      tenant-isolierte Anzeige ist als rundes Feature funktionsfähig. Ist-Stand:
+      Statistik-Sektion; tenant-isolierte Anzeige gegengeprobt). Scheibe A (Bestätigungs-Signal) +
+      Scheibe B (Verlustraten-RPC get_adblock_loss + Kachel, Migration 0015) KOMPLETT & live
+      bewiesen (2026-07-23) — die Marquee-Metrik steht. Phase 8 als Feature rund: Erfassen ->
+      tenant-isolierte Anzeige -> Adblocker-Verlustrate. Ist-Stand:
       "## Aktueller DB-/Analytics-Stand"; volle Herleitung: docs/claude-history/phase-8-analytics.md.
-      Phase 8 bleibt OFFEN für Erweiterungen (eigene Scheiben): Adblocker-Verlustrate, Uniques,
-      Charts/Zeiträume, CAPI-Einbettung server-vereinheitlichen + Launch-Härtung.
+      Phase 8 bleibt OFFEN für Erweiterungen (eigene Scheiben): Uniques, Charts/Zeiträume,
+      CAPI-Einbettung server-vereinheitlichen + Launch-Härtung.
 - [ ] Phase 9 — A/B-Testing: 50/50-Split über Edge-Logik. (war Phase 8)
 - [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
@@ -534,10 +536,11 @@ source='browser'-Token ein.
     nicht" -> die MINDESTWERT-Klausel für das Scheibe-B-Labeling bleibt bestehen.
 - OFFEN -> SCHEIBE B: Rate + Kachel, s. "Aktiver Stand — Phase 8 Scheibe B".
 
-## Aktiver Stand — Phase 8 Scheibe B (Adblocker-Verlustrate: RPC + Kachel, Konzept festgezurrt, Bau als Nächstes)
-Zweite Hälfte der Marquee-Metrik. Scheibe A liefert das Signal (source='browser'-Bestätigung, live
-bewiesen); B macht daraus die Zahl, die das Produktversprechen beweist. Bewusst MINIMAL: eine Kennzahl
-im bestehenden Statistik-Bereich, keine Charts, keine Zeiträume.
+## Aktiver Stand — Phase 8 Scheibe B (Adblocker-Verlustrate: RPC + Kachel, ABGESCHLOSSEN — live bewiesen (2026-07-23). Phase 8 komplett: Erfassen -> Anzeigen -> Marquee-Metrik.)
+Zweite Hälfte der Marquee-Metrik. ABGESCHLOSSEN, deployt, Migration 0015 gelaufen (Funktion + Index
+events_project_event_idx), live bewiesen. Scheibe A liefert das Signal (source='browser'-Bestätigung,
+live bewiesen); B macht daraus die Zahl, die das Produktversprechen beweist. Bewusst MINIMAL: eine
+Kennzahl im bestehenden Statistik-Bereich, keine Charts, keine Zeiträume.
 
 - AGGREGATION (EIGENE RPC, Entscheidung): eine NEUE Funktion (z.B. get_adblock_loss(p_project_id)),
   get_event_counts bleibt UNBERÜHRT. Grund: andere Filter (Präfix-Ausschluss, Stichtag) und andere
@@ -608,6 +611,32 @@ im bestehenden Statistik-Bereich, keine Charts, keine Zeiträume.
   (b) GEGENPROBE gegen direktes SQL (dieselbe Rate von Hand nachgerechnet); (c) Projekt ohne
   Bestätigung -> neutraler Status, keine Zahl; (d) PageViews beeinflussen die Rate NICHT
   (Präfix-Filter greift).
+- VERIFIZIERT (live, 2026-07-23):
+  - KACHEL == DEPLOYTE RPC (GEMESSEN, §7.1a): select * from get_adblock_loss lieferte als Owner
+    (total 3, confirmed 3, first_confirm_at 2026-07-23 09:29:29.496304+00) — identisch zur
+    UI-Kachel ("mindestens 0 % — 0 von 3 Conversions wurden NUR server-seitig erfasst").
+  - GROUND-TRUTH AUF STRUKTURELL ANDEREM WEG (GEMESSEN, §7.1b): unabhängige Kontroll-Query mit
+    LEFT JOIN + GROUP BY statt korreliertem EXISTS (bewusst ZWEITER Rechenweg — ein Abschreiben des
+    Funktionskörpers wäre eine Tautologie gewesen) lieferte identisch total 3 / confirmed 3 /
+    verloren 0 / pct 0 / gleicher Stichtag. Arithmetik unabhängig bestätigt.
+  - STICHTAG-KREUZPROBE ZU SCHEIBE A: first_confirm_at 09:29:29 UTC IST die live gemessene
+    Scheibe-A-Bestätigung (11:29:29 lokal, 2h-Versatz) — die selbstheilende Stichtags-Regel hängt am
+    echten Scheibe-A-Signal, nicht an einem Artefakt.
+  - CROSS-TENANT ZWEIFACH GEMESSEN: (a) SQL-Editor mit ECHTEM Zweitkonto-JWT (sub = 4b1d1257-...) ->
+    get_adblock_loss(fremdes Projekt) = (0, 0, NULL) — genau EINE Zeile, nicht "0 rows"
+    (Aggregat-Semantik; die RLS leert die Eingabemenge). (b) LIVE-ZWEI-KONTEN im Browser: das
+    Zweitkonto sieht nur eigene Projekte / Neutral-Status, nie die Zahlen des Hauptkontos.
+    METHODEN-VERMERK: ein erster Lauf nutzte versehentlich eine Tippfehler-UUID (nicht existenter
+    User) — Ergebnis ebenfalls (0,0,NULL) und als "beliebiger Nicht-Owner"-Beweis gültig, aber der
+    Vermerk hier protokolliert den wiederholten Lauf mit dem ECHTEN Konto.
+  - PRÄFIX-FILTER LIVE (GEMESSEN): mehrfaches Laden der veröffentlichten Seite (neue
+    __ps_pageview-Zeilen) -> Kachel und Kontroll-Query unverändert (3/3/0). PageViews beeinflussen
+    die Rate nicht.
+  - NEUTRAL-STATUS (GEMESSEN): Projekt ohne Bestätigung zeigt "Warte auf erste Bestätigung.", keine
+    Prozentzahl; RPC liefert (0, 0, NULL).
+  - VERLUST-ZÄHLUNG UNTER ECHTEM BLOCKER (GEMESSEN, der Marquee-Beweis): eine Conversion mit aktivem
+    Adblocker -> total 3->4, confirmed konstant 3, verloren 0->1, pct 25. Die Kennzahl misst den
+    Blocker-Fall korrekt als Verlust — das Produktversprechen ist erstmals als Zahl live belegt.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

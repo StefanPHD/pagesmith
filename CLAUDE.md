@@ -532,22 +532,59 @@ source='browser'-Token ein.
     (Script-Load-Latenz vs. Navigations-Teardown) und trifft nur die enge Konstellation "erste Conversion
     einer Seite (Zustand pending) + sofortiger Redirect". "Hat nicht zugeschlagen" ist nicht "existiert
     nicht" -> die MINDESTWERT-Klausel für das Scheibe-B-Labeling bleibt bestehen.
-- OFFEN -> SCHEIBE B (Rate + Kachel): RPC-Aggregation, VERANKERT AUF DEN SERVER-ZEILEN (Nenner =
-  Server-Events, dazu per event_id prüfen ob eine Browser-Zeile existiert; NICHT andersherum — ein
-  verwaister Confirm würde die Rate sonst verfälschen). REIHENFOLGE-VORGABE (aus dem Live-Befund oben,
-  HART): rein MENGENBASIERT über die gemeinsame event_id aggregieren, KEINE Annahme über die
-  Eintreff-Reihenfolge — live gemessen: die browser-Zeile kann VOR der server-Zeile eintreffen.
-  CONVERSION-FILTER PFLICHT: analytics-only
-  Events müssen raus, sonst dominieren PageViews die Rate (~95%+ Falsch-Verlust). PRÄFIX-basiert statt
-  namentlich: left(event_type,5) <> '__ps_' (deckt künftige __ps_-Tokens automatisch ab; NICHT
-  unescapt "not like '__ps_%'" — '_' ist LIKE-Wildcard). BESTANDSDATEN-SKEW: selbstheilend — nur
-  Events zählen, die JÜNGER sind als die erste Bestätigung DIESES Projekts (kein hardcodiertes Datum);
-  solange keine existiert, zeigt das UI einen neutralen Status ("Warte auf erste Bestätigung"), keine
-  0%/100%-Zahl. LABELING: die Zahl ist ein MINDESTWERT ("mindestens X% wären verloren gegangen") — JS-
-  Fehler/schneller Bounce zählen auch als Verlust; ein Dashboard darf nicht mehr behaupten als es misst.
-  NEBENEIGENSCHAFT (gewollt): blockt ein aggressiver Blocker auch unseren /api/e, entsteht WEDER
-  Server-Zeile NOCH Confirm -> das Event fällt aus Zähler UND Nenner, verfälscht die Rate also nicht.
-  Die Rate gilt "über die Events, die wir überhaupt gesehen haben".
+- OFFEN -> SCHEIBE B: Rate + Kachel, s. "Aktiver Stand — Phase 8 Scheibe B".
+
+## Aktiver Stand — Phase 8 Scheibe B (Adblocker-Verlustrate: RPC + Kachel, Konzept festgezurrt, Bau als Nächstes)
+Zweite Hälfte der Marquee-Metrik. Scheibe A liefert das Signal (source='browser'-Bestätigung, live
+bewiesen); B macht daraus die Zahl, die das Produktversprechen beweist. Bewusst MINIMAL: eine Kennzahl
+im bestehenden Statistik-Bereich, keine Charts, keine Zeiträume.
+
+- AGGREGATION (EIGENE RPC, Entscheidung): eine NEUE Funktion (z.B. get_adblock_loss(p_project_id)),
+  get_event_counts bleibt UNBERÜHRT. Grund: andere Filter (Präfix-Ausschluss, Stichtag) und andere
+  Rückgabeform; eine Verheiratung macht beide unschärfer. Zudem ist get_event_counts gerade erst live
+  bewiesen — ohne Zwang nicht anfassen. Getrennt heißt auch: die Counts-Kachel läuft weiter, selbst
+  wenn die Raten-Query zickt. Pflichtklauseln wie 0013/0014: language sql, stable,
+  set search_path = public, KEIN security definer (RLS des Aufrufers filtert von innen).
+- NENNER AUF DEN SERVER-ZEILEN: Nenner = server-beobachtete Conversions; dazu per event_id prüfen, ob
+  eine browser-Zeile existiert. NICHT andersherum — ein verwaister Confirm würde die Rate verfälschen.
+- REIHENFOLGE: rein MENGENBASIERT über die gemeinsame event_id, KEINE Annahme über die
+  Eintreff-Reihenfolge. MECHANIK (erklärt, nicht nur beobachtet): der Conversion-Beacon hängt im
+  Handler hinter dem AWAITED Meta-Forward (bis 3s Timeout), der Persist läuft erst im after() danach;
+  der Confirm nimmt den frühen return — kein Forward, kein Warten, after() schreibt sofort. Bei
+  CAPI-Projekten landet 'browser' daher SYSTEMATISCH vor 'server', der Abstand ist Metas Latenz (live
+  gemessen: 25 ms / 470 ms / 850 ms). Eine server-first-Logik würde also regelmäßig danebengreifen.
+- CONVERSION-FILTER PFLICHT: analytics-only Events müssen raus, sonst dominieren PageViews die Rate
+  (~95%+ Falsch-Verlust). PRÄFIX-basiert statt namentlich: left(event_type,5) <> '__ps_' (deckt
+  künftige __ps_-Tokens automatisch ab; NICHT unescapt "not like '__ps_%'" — '_' ist LIKE-Wildcard).
+- BESTANDSDATEN-SKEW (selbstheilend): nur Events zählen, die JÜNGER sind als die ERSTE Bestätigung
+  DIESES Projekts (kein hardcodiertes Datum). Solange keine existiert: neutraler UI-Status
+  ("Warte auf erste Bestätigung"), KEINE 0%/100%-Zahl.
+- ANZEIGE (Entscheidung): Prozent PLUS Absolutwerte. WORTWAHL-REGEL (nicht verhandelbar): "N von M
+  Conversions wurden NUR server-seitig erfasst" — NICHT "gerettet". "Gerettet" behauptet, Meta habe
+  die Events EMPFANGEN; das steht NICHT in unseren Daten. events protokolliert, was der SERVER
+  BEOBACHTET hat, nicht ob der Forward ankam — der CAPI-'Bad signature'-Bug hat live gezeigt, dass
+  Forwards still scheitern können, während die Zeilen sauber weiterlaufen. Ein Dashboard, das
+  "gerettet" sagt, während CAPI kaputt ist, lügt den Kunden an.
+- MINDESTWERT-LABELING: die Prozentzahl als "mindestens X%" ausweisen. Sie kann in BEIDE Richtungen
+  irren: nach OBEN durch das Redirect-Rennen (unbestätigte Conversion wird als Verlust gezählt) sowie
+  durch JS-Fehler/schnellen Bounce (zählen ebenfalls als Verlust), nach UNTEN durch Surrogat-Blocker
+  (Noop-Skript -> onload feuert -> Confirm geht raus, Pixel ist tot). Leitsatz: ein Dashboard darf
+  nicht mehr behaupten, als es misst.
+- BLINDE FLECKEN (aus Scheibe A, gelten weiter): Fremd-Pixel-Projekte bekommen nie eine erste
+  Bestätigung -> UI bleibt dauerhaft auf "Warte auf erste Bestätigung" (uninformativ, aber NIE
+  irreführend — die selbstheilende Regel fängt das ab). Export-Download-Seiten messen schwächer
+  (absoluter, selbst blockbarer Kanal). NEBENEIGENSCHAFT (gewollt): blockt ein aggressiver Blocker
+  auch unseren /api/e, entsteht WEDER Server-Zeile NOCH Confirm -> das Event fällt aus Zähler UND
+  Nenner und verfälscht die Rate nicht. Die Rate gilt "über die Events, die wir überhaupt gesehen
+  haben".
+- UI: die Kennzahl in die BESTEHENDE Statistik-Sektion (CodeImporter), gleiches Lade-Muster wie
+  getEventCounts. Kein neues Layout.
+- INVARIANTEN: (i) get_event_counts unberührt; (ii) Schreibpfad unberührt; (iii) RLS greift auch für
+  die neue RPC (SECURITY INVOKER); (iv) kein SELECT *, project_id-Index nutzen.
+- DEMOBAR / LIVE-TEST: (a) Projekt mit bestätigten Conversions -> Kachel zeigt Prozent + "N von M";
+  (b) GEGENPROBE gegen direktes SQL (dieselbe Rate von Hand nachgerechnet); (c) Projekt ohne
+  Bestätigung -> neutraler Status, keine Zahl; (d) PageViews beeinflussen die Rate NICHT
+  (Präfix-Filter greift).
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

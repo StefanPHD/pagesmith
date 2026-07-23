@@ -114,6 +114,7 @@ describe("Meta-Forward-Timeout (CAPI-Härtung)", () => {
       projectId: "proj-1",
       eventType: "Purchase",
       eventId: "evt-123",
+      source: "server",
     });
 
     // --- Achse 4: Client bekommt TROTZDEM eine leere 204 (204-Containment)

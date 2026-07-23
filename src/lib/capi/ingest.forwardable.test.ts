@@ -96,6 +96,7 @@ describe("Forward-Gate im Handler (Scheibe 2a)", () => {
       projectId: "proj-1",
       eventType: PAGEVIEW_EVENT,
       eventId: "evt-123",
+      source: "server",
     });
     // … aber NICHT als Conversion zu Meta.
     expect(global.fetch).not.toHaveBeenCalled();

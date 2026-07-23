@@ -26,7 +26,10 @@ const PARAMS = {
   projectId: "proj-1",
   eventType: "Purchase",
   eventId: "evt-123",
-};
+  // source ist seit Scheibe A ein PFLICHT-Argument (kein Default): events.source ist
+  // NOT NULL ohne column-DEFAULT -> jeder Schreibpfad setzt die Herkunft bewusst.
+  source: "server",
+} as const;
 
 beforeEach(() => {
   abortSignal.mockResolvedValue({ data: null, error: null });
@@ -48,6 +51,20 @@ describe("persistEvent (Phase 8 Scheibe 1)", () => {
       event_type: "Purchase",
       event_id: "evt-123",
       source: "server",
+    });
+  });
+
+  // Scheibe A: der zweite Beobachtungs-Ort. Diskriminierend gegen einen stillen
+  // 'server'-Fallback — faellt der Wert je zurueck, bricht der browser-vs-server-Join
+  // der Verlustrate lautlos (die Rate zeigte dann permanent 0%).
+  it("source='browser' landet als 'browser' im Insert (kein stiller server-Fallback)", async () => {
+    await persistEvent({ ...PARAMS, source: "browser" });
+
+    expect(insert).toHaveBeenCalledWith({
+      project_id: "proj-1",
+      event_type: "Purchase",
+      event_id: "evt-123",
+      source: "browser",
     });
   });
 

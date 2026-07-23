@@ -2,7 +2,11 @@ import { after } from "next/server";
 import { getCapiConfigByTrackingKey } from "@/lib/capi/token";
 import { META_GRAPH_VERSION, META_TEST_EVENT_CODE } from "@/lib/capi/config";
 import { persistEvent } from "@/lib/analytics/persist";
-import { isForwardable } from "@/lib/analytics/events";
+import {
+  BROWSER_CONFIRM_MARKER,
+  isForwardable,
+  type ObservationSource,
+} from "@/lib/analytics/events";
 import { errorName } from "@/lib/errors";
 
 /**
@@ -46,6 +50,9 @@ type CapiRequestBody = {
   eventSourceUrl?: unknown;
   isCustom?: unknown;
   _fbp?: unknown;
+  // Scheibe A: der Bestaetigungs-Marker. Eigenes Feld, damit `event` weiter den ECHTEN
+  // Conversion-Namen traegt (die Bestaetigung bestaetigt GENAU dieses Event).
+  obs?: unknown;
 };
 
 // CORS: Guertel-und-Hosentraeger. Der reine text/plain-Beacon (2b-ii) ist ein
@@ -165,6 +172,34 @@ async function describeMetaError(res: Response): Promise<string> {
   );
 }
 
+/**
+ * Plant den Analytics-Persist als Hintergrund-Task ein (Scheibe 1, in Scheibe A aus dem
+ * Handler extrahiert — UNVERAENDERTE Semantik, jetzt von zwei Aufrufern geteilt).
+ *
+ * after() laeuft NACH der Response -> die 204-Antwortzeit bleibt unveraendert, und der
+ * Callback kann strukturell nichts mehr in den Response-Pfad werfen. persistEvent schluckt
+ * seine Fehler ohnehin selbst; der try/catch hier ist die zweite Schicht, falls die
+ * Registrierung/der Aufruf selbst wirft.
+ *
+ * source ist ein PFLICHT-Argument (kein Default): der Beobachtungs-Ort wird an jeder
+ * Aufrufstelle bewusst gesetzt — er stammt aus der SERVER-Interpretation des obs-Markers,
+ * nie aus einem Client-Wert.
+ */
+function schedulePersist(
+  projectId: string,
+  eventType: string,
+  eventId: string,
+  source: ObservationSource
+): void {
+  after(async () => {
+    try {
+      await persistEvent({ projectId, eventType, eventId, source });
+    } catch (err) {
+      console.error(`[analytics] persist task error: ${errorName(err)}`);
+    }
+  });
+}
+
 export async function handleIngestOptions(): Promise<Response> {
   // Body-loser Preflight-Handler der Vollstaendigkeit halber. KEINE Logik baut darauf.
   return status(204);
@@ -186,6 +221,14 @@ export async function handleIngest(request: Request): Promise<Response> {
   // Pflichtfelder fehlen -> malformer Client-Request -> 400.
   if (!trackingKey || !eventID || !event) return status(400);
 
+  // BROWSER-BESTAETIGUNG (Scheibe A): CLIENT-UNTRUSTED. Der Client sendet nur diesen eng
+  // begrenzten Marker in einem eigenen Feld, NIE den source-Wert selbst — sonst koennte
+  // ein anonymer Aufrufer die Analytics beliebig einfaerben. Der exakte
+  // Gleichheitsvergleich gegen die Konstante ist strenger als jede Laengen-/Formatpruefung:
+  // "browser", "__PS_BROWSER", "__ps_browserX", Zahlen und Objekte fallen alle durch und
+  // landen im Normalpfad (source='server').
+  const isBrowserConfirm = asString(body.obs) === BROWSER_CONFIRM_MARKER;
+
   // --- trackingKey -> { projectId, blocked, capiConfig } (service_role). Unbekannter
   //     Key -> 204, KEIN Meta-fetch, kein Leak (Key-Gueltigkeit nicht beobachtbar). ---
   const resolution = await getCapiConfigByTrackingKey(trackingKey);
@@ -200,26 +243,32 @@ export async function handleIngest(request: Request): Promise<Response> {
   if (resolution.blocked) return status(204);
 
   // --- ANALYTICS-PERSIST (Phase 8 Scheibe 1, in 2a ENTKOPPELT) ---
-  // Laeuft jetzt fuer JEDES nicht-gesperrte Projekt — unabhaengig davon, ob eine
-  // CapiConfig existiert. In 2a fliessen faktisch weiter nur Conversions durch (der
-  // PageView-Emitter kommt erst in 2b); die Entkopplung ist die vorbereitete Struktur,
-  // fuer Meta-Projekte bleibt das Ergebnis identisch (Forward UND Persist).
+  // Laeuft fuer JEDES nicht-gesperrte Projekt — unabhaengig davon, ob eine CapiConfig
+  // existiert. Das Geruest steckt seit Scheibe A in schedulePersist (oben), damit der
+  // Confirm-Zweig dieselbe after()/try/catch-Semantik nutzt statt eines Copy-Paste.
   //
-  // after() laeuft NACH der Response -> die 204-Antwortzeit bleibt unveraendert, und der
-  // Callback kann strukturell nichts mehr in den Response-Pfad werfen. persistEvent
-  // schluckt seine Fehler ohnehin selbst; der try/catch hier ist die zweite Schicht,
-  // falls die Registrierung/der Aufruf selbst wirft.
-  after(async () => {
-    try {
-      await persistEvent({
-        projectId: resolution.projectId,
-        eventType: event,
-        eventId: eventID,
-      });
-    } catch (err) {
-      console.error(`[analytics] persist task error: ${errorName(err)}`);
-    }
-  });
+  // BROWSER-BESTAETIGUNG (Scheibe A) — EIGENER ZWEIG MIT FRUEHEM RETURN, VOR dem
+  // Standard-Persist und damit strukturell vor dem Forward-Block.
+  //
+  // WARUM ein eigener Zweig und NICHT ein "&& !isBrowserConfirm" im Forward-Guard: die
+  // Bestaetigung traegt DIESELBE eventID wie die echte Conversion — ein Forward erzeugte
+  // ein DUPLIKAT bei Meta. Ein Term in einer zusammengesetzten Bedingung kann bei einem
+  // Refactor lautlos wegfallen; mit dem frueh return ist der Forward-Code vom
+  // Confirm-Pfad aus schlicht NICHT ERREICHBAR. Dieselbe Lektion wie beim Kill-Switch in
+  // 2a: der Schutz gehoert in eine sichtbare, einzeln rot faerbbare Verzweigung.
+  //
+  // isForwardable bleibt bewusst unangetastet: der Confirm traegt den ECHTEN
+  // Conversion-Namen (der forwardbar sein MUSS) — der Ausschluss ist eine PFAD-, keine
+  // NAMENS-Eigenschaft.
+  //
+  // Der Zweig liegt HINTER dem Kill-Switch (oben): ein gesperrtes Projekt erzeugt auch
+  // keine Bestaetigungs-Zeilen.
+  if (isBrowserConfirm) {
+    schedulePersist(resolution.projectId, event, eventID, "browser");
+    return status(204);
+  }
+
+  schedulePersist(resolution.projectId, event, eventID, "server");
 
   // --- FORWARD NUR FUER CONVERSIONS (Scheibe 2a) ---
   // Der gesamte Meta-Pfad (Payload-Bau + Forward) liegt jetzt INNERHALB dieser einen

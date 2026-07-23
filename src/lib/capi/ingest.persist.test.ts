@@ -81,6 +81,8 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
       projectId: "proj-1",
       eventType: "Purchase",
       eventId: "evt-123",
+      // Scheibe A: source ist Pflicht-Argument; der Normalpfad bleibt 'server'.
+      source: "server",
     });
   });
 
@@ -146,6 +148,7 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
       projectId: "proj-ohne-meta",
       eventType: "Purchase",
       eventId: "evt-123",
+      source: "server",
     });
   });
 

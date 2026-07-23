@@ -1,6 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { errorName } from "@/lib/errors";
+import type { ObservationSource } from "@/lib/analytics/events";
 
 /**
  * Analytics-Persistenz (Phase 8 Scheibe 1).
@@ -33,12 +34,19 @@ export type PersistEventParams = {
   projectId: string;
   eventType: string;
   eventId: string;
+  /**
+   * BEOBACHTUNGS-ORT, PFLICHT — bewusst OHNE Default (Scheibe A). events.source ist
+   * NOT NULL ohne column-DEFAULT, damit jeder Schreibpfad die Herkunft BEWUSST setzt; ein
+   * TS-Default waere genau der stille Fallback, den diese DB-Entscheidung ausschliesst.
+   */
+  source: ObservationSource;
 };
 
 export async function persistEvent({
   projectId,
   eventType,
   eventId,
+  source,
 }: PersistEventParams): Promise<void> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), INSERT_TIMEOUT_MS);
@@ -46,9 +54,9 @@ export async function persistEvent({
   try {
     const admin = createAdminClient();
 
-    // source = Beobachtungs-ORT ('server'), NICHT Werbe-Netzwerk-ZIEL. Explizit
-    // gesetzt: die Spalte ist NOT NULL OHNE column-DEFAULT, damit jeder kuenftige
-    // Schreibpfad die Herkunft bewusst setzen MUSS (kein stiller Fallback).
+    // source = Beobachtungs-ORT ('server' | 'browser'), NICHT Werbe-Netzwerk-ZIEL. Kommt
+    // vom Aufrufer, der ihn setzen MUSS (s. PersistEventParams) — der Wert stammt NIE aus
+    // dem Client-Blob, sondern aus der Server-Interpretation des obs-Markers.
     // id + created_at kommen per DB-Default. KEIN IP/UA (lean/PII-frei).
     const { error } = await admin
       .from("events")
@@ -56,7 +64,7 @@ export async function persistEvent({
         project_id: projectId,
         event_type: eventType.slice(0, EVENT_TYPE_MAX_LENGTH),
         event_id: eventId,
-        source: "server",
+        source,
       })
       .abortSignal(controller.signal);
 

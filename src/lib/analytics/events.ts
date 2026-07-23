@@ -35,3 +35,30 @@ export const PAGEVIEW_EVENT = "__ps_pageview";
 export function isForwardable(eventType: string): boolean {
   return eventType !== PAGEVIEW_EVENT;
 }
+
+/**
+ * BEOBACHTUNGS-ORT einer events-Zeile (Phase 8 Scheibe A).
+ *
+ * ACHSEN-HYGIENE: beschreibt, WO ein Event beobachtet wurde, NIE an welches Werbe-Netzwerk
+ * es ging. Ein spaeteres Tracking-ZIEL bekommt eine eigene additive Spalte.
+ *
+ * Name bewusst NICHT `EventSource` — das kollidiert mit dem gleichnamigen DOM-Global-Typ.
+ */
+export type ObservationSource = "server" | "browser";
+
+/**
+ * RESERVIERTER Marker der Browser-Pixel-BESTAETIGUNG (Scheibe A).
+ *
+ * Der Client meldet damit eine BEOBACHTUNG ("fbevents.js hat wirklich geladen"), NIE den
+ * source-Wert selbst — sonst koennte ein beliebiger Aufrufer die Analytics einfaerben. Der
+ * SERVER mappt diesen Marker auf source='browser'; jeder andere Wert faellt in den
+ * Normalpfad (source='server').
+ *
+ * Der Marker reist in einem EIGENEN Body-Feld (`obs`), NICHT im event-Feld: die Bestaetigung
+ * traegt bewusst denselben event_type wie die Conversion, die sie bestaetigt (der Join der
+ * Verlustrate laeuft ueber event_id + event_type).
+ *
+ * Namespaced wie PAGEVIEW_EVENT und per exaktem Gleichheitsvergleich geprueft — strenger
+ * als jede Laengen-/Formatpruefung.
+ */
+export const BROWSER_CONFIRM_MARKER = "__ps_browser";

@@ -115,17 +115,43 @@ kaputtgeht.
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur
 Ist-Zustand — Herleitung und Entscheidungen: docs/claude-history/phase-8-analytics.md.
+PROVENIENZ: GEMESSEN am 2026-07-24 (pg_proc / pg_policies / pg_indexes / information_schema /
+pg_constraint) sind Existenz, Sicherheits-/Volatilitätsklauseln, Policies, Spalten, Constraints
+und Index-NAMEN. AUS DEN DATEIEN stammen die Index-Spaltenlisten und die Migrationsnummern.
+"Letzte Migration" ist NICHT direkt messbar (Migrationen laufen manuell im SQL-Editor, es gibt
+keine gepflegte schema_migrations-Tabelle) — messbar sind nur die WIRKUNGEN.
 
-- LETZTE MIGRATION: 0011. Tabelle public.events existiert und ist in der DB verifiziert:
-  id uuid PK (default gen_random_uuid), project_id uuid FK -> projects ON DELETE CASCADE
-  (+ Index events_project_id_idx), event_type text, event_id text (KEIN unique, KEIN Index),
-  source text NOT NULL (KEIN Default), created_at timestamptz default now();
-  CHECK events_event_type_max_len (length(event_type) <= 64); alle Spalten NOT NULL.
-- RLS auf events: aktiviert, KEINE Policy — das ist TRANSIENT (nur service_role schreibt,
-  über den Ingest-Pfad). Die owner-SELECT-Policy folgt in der Dashboard-Read-Scheibe. NICHT
-  dauerhaft policy-los wie audit_logs (dort echtes Append-Only). Der Supabase-Linter-Hinweis
-  "RLS Enabled No Policy" ist hier erwartet und vorübergehend. -> wird in Scheibe 3 (Read-Pfad)
-  mit der owner-SELECT-Policy aufgelöst.
+- MIGRATIONSSTAND: Migrationsdateien bis 0015 (supabase/migrations/), ihre WIRKUNGEN in der DB
+  verifiziert. Die Nummer stammt aus den Dateien, nicht aus einer Migrations-Tabelle.
+- TABELLE public.events (in der DB verifiziert): id uuid PK DEFAULT gen_random_uuid();
+  project_id uuid FK -> projects(id) ON DELETE CASCADE; event_type text; event_id text;
+  source text (KEIN Default); created_at timestamptz DEFAULT now(). ALLE Spalten NOT NULL.
+  CONSTRAINTS: events_pkey PK(id), events_project_id_fkey, CHECK events_event_type_max_len
+  (length(event_type) <= 64). event_id trägt BEWUSST KEINEN Unique-Constraint (die geteilte
+  browser/server-eventID IST der Verlustraten-Join).
+- POLICIES auf events: RLS aktiv. events_select_own (FOR SELECT) — EXISTS auf projects mit
+  p.user_id = (select auth.uid()) GEKAPSELT (gleiche Ownership-ACHSE wie projects_select_own,
+  nicht byte-identisch: andere Syntax, EXISTS + Kapselung vs. direkter Vergleich). BEWUSST KEINE
+  INSERT/UPDATE/DELETE-Policy -> Writes laufen ausschließlich über service_role (Ingest-Pfad);
+  der Owner liest, schreibt nie. (Löst die frühere "RLS an, KEINE Policy — transient"-Notiz auf:
+  seit Migration 0013 existiert die owner-SELECT-Policy.)
+- RPCs (beide language sql, STABLE, set search_path = public, SECURITY INVOKER — die RLS des
+  Aufrufers filtert von innen): get_event_counts(p_project_id) -> TABLE(event_type, count),
+  gefiltert auf source='server' (0014); get_adblock_loss(p_project_id) ->
+  TABLE(total_server_conversions, confirmed_conversions, first_confirm_at) (0015).
+- INDIZES auf events: events_pkey; events_project_id_idx (project_id — trägt den äußeren Scan
+  UND die Policy); events_project_event_idx (project_id, event_id — 0015, trägt den korrelierten
+  Verlustraten-Join).
+- projects.tracking_key text NULLABLE (2b-0, server-autoritative Identität) + partial-unique
+  projects_tracking_key_key (WHERE tracking_key IS NOT NULL). projects.settings bleibt
+  client-autoritativ (wird von saveProject ganzheitlich ersetzt).
+- BEKANNTE ABWEICHUNG (Befund, reiner Performance-Punkt, KEIN Leak): projects/domains/
+  project_tokens-Policies tragen blankes auth.uid() (Auswertung pro Zeile); nur events_select_own
+  ist als (select auth.uid()) gekapselt. Ein Fix wäre eine Migration -> aufgeschoben, s.
+  docs/claude-history/backlog-polish.md.
+- rls_auto_enable: Event-Trigger-Funktion in public (SECURITY DEFINER, aktiviert RLS auf neuen
+  public-Tabellen), EXECUTE-Grants per 0003 entzogen — existiert nur in der laufenden DB, aus
+  KEINER Migration reproduzierbar (-> "## Offene Punkte").
 - AUFGESCHOBEN (konditionale Optimierung, kein Footgun): CAPI-Forward auf Hintergrund-
   Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
   ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.

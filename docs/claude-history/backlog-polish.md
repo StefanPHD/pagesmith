@@ -69,4 +69,12 @@ miterledigen, sondern gebündelt abarbeiten.
   benennen.
   EINORDNUNG: Polish, NICHT "Offene Punkte" — es geht nichts still kaputt, es ist
   eine Verständlichkeits-Frage. Kein Trigger, keine Dringlichkeit.
+- RLS-KAPSELUNG: BLANKES auth.uid() IN BESTANDS-POLICIES (Performance, KEIN Leak).
+  Gemessen 2026-07-24: nur events_select_own kapselt (select auth.uid()); die
+  projects-/domains-/project_tokens-Policies tragen blankes auth.uid() und werten es
+  damit pro Zeile statt einmal aus. Reiner Performance-Punkt — die Ownership-Logik ist
+  korrekt, es leakt nichts. Fix wäre eine Migration (create or replace policy je Tabelle
+  mit (select auth.uid())) -> eigene kleine Scheibe, NICHT im laufenden Schritt.
+  -> Löst zugleich den Vorwärtsverweis aus dem Root-A1-Block
+  ("## Aktueller DB-/Analytics-Stand") ein.
 

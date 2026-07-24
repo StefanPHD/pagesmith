@@ -103,12 +103,26 @@ kaputtgeht.
   Per-Kunde-Limit. Der Per-User-Cap (Richtwert 3/User) schützt sie doppelt (Abuse + geteilte
   Decke). Pro-Upgrade VOR echter Skalierung einplanen.
 - rls_auto_enable-CREATE FEHLT IN DEN MIGRATIONEN (Trigger: DB-Neuaufbau / Staging /
-  Restore-Drill aus Tier 2): Der Event-Trigger rls_auto_enable (aktiviert automatisch RLS auf
-  neuen public-Tabellen, SECURITY DEFINER) existiert NUR in der laufenden DB — Zweck +
-  Grant-Entzug sind in 0003 dokumentiert, aber ein CREATE steht in KEINER Migration. Bei einem
-  Rebuild rein aus den Migrationsdateien fehlt die Funktion -> neue Tabellen bekämen dort NICHT
-  mehr automatisch RLS (stiller Verlust einer Schutzschicht). Beim Rebuild mitziehen ODER RLS
-  pro Tabelle bewusst manuell setzen.
+  Restore-Drill aus Tier 2): Die Event-Trigger-FUNKTION rls_auto_enable (aktiviert automatisch RLS
+  auf neuen public-Tabellen, SECURITY DEFINER), gebunden über den Event-Trigger ensure_rls
+  (ddl_command_end), existiert NUR in der laufenden DB — Zweck + Grant-Entzug sind in 0003
+  dokumentiert, aber ein CREATE steht in KEINER Migration. Bei einem Rebuild rein aus den
+  Migrationsdateien fehlt sie -> neue Tabellen bekämen dort NICHT mehr automatisch RLS (stiller
+  Verlust einer Schutzschicht). DDL verbatim archiviert unter supabase/manual/rls_auto_enable.sql
+  (beim Rebuild manuell mitziehen). evtowner = postgres (gemessen 2026-07-24) -> eine Migration 0016
+  ist ein realistischer Kandidat, aber KEINE Nebenbei-Zeile: (a) create event trigger kennt KEIN
+  "if not exists" -> Katalog-Guard nötig (DO-Block gegen pg_event_trigger); (b) "create or replace
+  function" auf einer SICHERHEITSFUNKTION ersetzt die Definition VOLLSTÄNDIG (0014-Lektion) — jeder
+  Transkriptionsfehler degradiert still den RLS-Schutz, daher nach dem Lauf Byte-Abgleich gegen
+  pg_get_functiondef PFLICHT; (c) die Migration muss gegen die BESTEHENDE DB ein No-op sein.
+- KEINE DB-BACKUPS IM FREE PLAN (Trigger: bevor die DB unersetzliche Daten trägt — de facto JETZT):
+  Supabase Free enthält weder Scheduled Backups noch PITR. Für die laufende DB (Projekte,
+  CAPI-Tokens, published_content, die Event-Historie mit den Phase-8-Live-Beweisen) existiert damit
+  KEIN Wiederherstellungsweg; ein Rebuild aus den Migrationen wäre zudem unvollständig (s.
+  ensure_rls oben). Zwischenlösung: manueller pg_dump, lokal verschlüsselt abgelegt (Ops-Weg, kein
+  Verstoß gegen die "nur Supabase-JS-Client"-Regel, die für ANWENDUNGScode gilt). Dauerlösung: Pro
+  (7 Tage Scheduled Backups). KOPPLUNG: mit dem Pro-Wechsel wird der Kosten-Circuit-Breaker fällig —
+  Free deckelt strukturell, Pro rechnet Überverbrauch ab. Beides in EINEM Arbeitsschritt.
 
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur
@@ -147,9 +161,16 @@ keine gepflegte schema_migrations-Tabelle) — messbar sind nur die WIRKUNGEN.
   project_tokens-Policies tragen blankes auth.uid() (Auswertung pro Zeile); nur events_select_own
   ist als (select auth.uid()) gekapselt. Ein Fix wäre eine Migration -> aufgeschoben, s.
   docs/claude-history/backlog-polish.md.
-- rls_auto_enable: Event-Trigger-Funktion in public (SECURITY DEFINER, aktiviert RLS auf neuen
-  public-Tabellen), EXECUTE-Grants per 0003 entzogen — existiert nur in der laufenden DB, aus
-  KEINER Migration reproduzierbar (-> "## Offene Punkte").
+- rls_auto_enable: Event-Trigger-FUNKTION in public (SECURITY DEFINER, aktiviert RLS auf neuen
+  public-Tabellen), gebunden über den Event-Trigger ensure_rls (ddl_command_end). EXECUTE-Grants
+  per 0003 entzogen — existiert nur in der laufenden DB, aus KEINER Migration reproduzierbar; DDL
+  verbatim archiviert unter supabase/manual/rls_auto_enable.sql (-> "## Offene Punkte").
+- ROLLEN-GRANTS (gemessen 2026-07-24, Supabase-Default): anon, authenticated UND service_role
+  haben volle DML-Rechte (SELECT/INSERT/UPDATE/DELETE/TRUNCATE/REFERENCES/TRIGGER) auf ALLE fünf
+  public-Tabellen, inkl. project_tokens. Die Tenant-Isolation und das write-only-Gate auf
+  project_tokens tragen damit AUSSCHLIESSLICH über RLS, NICHT über Grants (s. "## Immer beachten").
+- BACKUPS: Supabase Free Plan hat KEINE Projekt-Backups (kein Scheduled Backup, kein PITR) —
+  gemessen 2026-07-24. Kein Wiederherstellungsweg für die laufende DB (s. "## Offene Punkte").
 - AUFGESCHOBEN (konditionale Optimierung, kein Footgun): CAPI-Forward auf Hintergrund-
   Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
   ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
@@ -182,8 +203,10 @@ keine Statusänderung für etwas, das noch nicht existiert.
   Leak); korrelierter Semi-Join via EXISTS statt IN (kurzschließend, nutzt den Index).
   security definer NUR mit expliziter Einzelfall-Begründung vorschlagen (umgeht RLS,
   ist bei Fehlgebrauch selbst ein Sicherheitsloch) — NIEMALS als Standardempfehlung. BELEGTE
-  AUSNAHME: der Event-Trigger rls_auto_enable (Migration 0003) IST SECURITY DEFINER — korrekt,
-  weil Event-Trigger als Owner laufen; die DEFINER-Warnung des Advisors ist dort erwartet.
+  AUSNAHME: die Event-Trigger-FUNKTION rls_auto_enable (gebunden über den Event-Trigger ensure_rls;
+  existiert in der DB, NICHT aus einer Migration — 0003 entzog nur die Grants; DDL archiviert unter
+  supabase/manual/rls_auto_enable.sql) IST SECURITY DEFINER — korrekt, weil Event-Trigger als Owner
+  laufen; die DEFINER-Warnung des Advisors ist dort erwartet.
 - LIKE-WILDCARD-FALLE bei Präfix-Filtern: '_' ist ein LIKE-Wildcard -> "not like '__ps_%'"
   matcht mehr als gedacht. Präfix-Ausschlüsse über left(spalte,5) <> '__ps_' formulieren
   (deckt künftige __ps_-Tokens automatisch, ohne Escaping-Falle).
@@ -268,12 +291,13 @@ docs/claude-history/security-manifest-full.md.
   (NEXT_PUBLIC_ABUSE_CONTACT) bleibt bewusst LEER, bis publayer.net MX-Records hat -> die
   Kontaktzeile der 451-Seite entfällt bis dahin (getrimmt). Beim Live-Gang befüllen (bindet
   an den ABUSE-KANAL-Blocker unten).
-- LOGGING-LEAK: struktureller Fix — Token gar nicht erst als Server-Action-Argument
-  loggen (nicht nur maskieren). BINDET-AN: seit 2a; vor Prod-Logging mit echten Tokens.
 - E-MAIL-BESTÄTIGUNG wieder aktiv: Double-Opt-in in Supabase Auth (Dashboard-Toggle).
   BINDET-AN: öffentlicher Launch.
 - KOSTEN-CIRCUIT-BREAKER: harter Spend-Cap + Alarm auf Vercel & Supabase (Plattform-
-  Budget, nicht App-Logik). BINDET-AN: bevor eine Domain öffentlich Traffic zieht.
+  Budget, nicht App-Logik). BINDET-AN: PRO-UPGRADE (Vercel oder Supabase) — auf Free/Hobby deckeln
+  die Plattform-Limits strukturell (kein Überverbrauch, kein abrechenbarer Eskalationsweg); erst
+  mit Pro kippt das und Überverbrauch wird kostenwirksam. Kopplung: der Pro-Wechsel fällt mit dem
+  Backup-Bedarf zusammen (s. "## Offene Punkte").
 - ABUSE-KANAL + security.txt: /.well-known/security.txt (RFC 9116) auf beiden Origins +
   überwachtes Abuse-Postfach. BINDET-AN: Go-Live der Hosting-Schicht.
 - SUBPROZESSOR-DPAs + Kunden-DPA: Vercel/Supabase-DPAs signiert + signierbarer Kunden-DPA
@@ -300,9 +324,22 @@ docs/claude-history/security-manifest-full.md.
   Domain-Mutation mit Actor + Zeit protokollieren. BINDET-AN: 7c-2.
 
 ### Tier 2 — Laufende Hygiene / verankerte Prinzipien (KEIN Gate)
-- DEPENDABOT: jetzt anschalten (gratis; optional Snyk). BINDET-AN: laufend.
+- LOGGING-LEAK (herabgestuft von Tier 0, gemessen 2026-07-24): In PRODUKTION wird das
+  setCapiToken-Server-Action-Argument NICHT geloggt — Differenztest in Vercel-Prod-Logs mit
+  Positivkontrolle (POST-Zeilen zum Aufrufzeitpunkt vorhanden, Aufruf lief durch), die Token-Sonde
+  taucht in KEINER Zeile auf; Log-Drains sind Pro-gated und keine konfiguriert -> Logs verlassen
+  Vercel nicht. Die 2a-Beobachtung war das Dev-Terminal (next dev). KEINE Token-Rotation nötig. Der
+  strukturelle Fix (Token nicht als Action-Argument) bleibt Defense-in-Depth. Restrisiken:
+  Fehlerpfad ungetestet, lokales Dev-Terminal. BINDET-AN: laufend (Defense-in-Depth), nicht mehr
+  Launch-Gate. WIEDERVORLAGE: Der Befund gilt für den HEUTIGEN Code — setCapiToken ist die EINZIGE
+  Server Action mit Secret-Parameter (erhoben 2026-07-24). Bei JEDER neuen Server Action mit
+  Secret-Parameter neu bewerten.
+- DEPENDABOT: ERLEDIGT (2026-07-24: Alerts, Security Updates, Dependency Graph aktiv, 1 Regel).
 - BACKUPS + Restore-Drill: Backup-Tier bestätigen + EINEN echten Restore-Drill fahren.
-  BINDET-AN: laufend; erster Drill vor echten Kundendaten.
+  BINDET-AN: laufend; erster Drill vor echten Kundendaten. EHRLICHE EINORDNUNG (gemessen 2026-07-24):
+  Free hat GAR KEINE Backups (kein Scheduled, kein PITR) -> der erste Drill fällt mit dem Pro-Wechsel
+  bzw. dem manuellen pg_dump zusammen und würde zugleich die ensure_rls-Rebuild-Lücke praktisch
+  nachweisen (s. "## Offene Punkte").
 - DATA-RETENTION: Rohdaten (IP/UA) nach max. 30 Tagen löschen/anonymisieren; heute nur
   sicherstellen, dass Server-Logs keine IPs horten. BINDET-AN: Phase 8. — Präzisierung:
   Phase 8 Scheibe 1 löst die 30-Tage-Pflicht NICHT aus (es wird KEIN IP/UA persistiert); sie
@@ -396,6 +433,14 @@ docs/claude-history/security-manifest-full.md.
   und beaconen weiter dorthin. Neue Exporte/gehostete Seiten nutzen /api/e (geteilter
   Handler, lib/capi/ingest.ts). Entfernen der capi-Route bricht STILL das Tracking aller
   schon ausgelieferten Kundenseiten (kein Fehler, nur verschwundene Conversions).
+- GRANTS SCHÜTZEN NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT (gemessen 2026-07-24): anon,
+  authenticated UND service_role haben per Supabase-Default volle DML-Rechte auf ALLE public-
+  Tabellen, auch auf project_tokens. Das "heiligste Gate" (CAPI-Token write-only, auch für den
+  Owner) hält ALLEIN dadurch, dass project_tokens RLS aktiv hat und KEINE SELECT-Policy trägt. Eine
+  neue Tabelle ohne "enable row level security" ist damit SOFORT für anon offen — und der anon-Key
+  steckt im Client-Bundle jeder Seite. Das Sicherheitsnetz dagegen ist der Event-Trigger ensure_rls,
+  der beim Rebuild aus den Migrationen NICHT entsteht (s. "## Offene Punkte"). Bei JEDER neuen
+  Tabelle: RLS explizit aktivieren und Policies bewusst setzen, NIE auf den Trigger verlassen.
 - INGEST-204-CONTAINMENT (Sicherheitsregel, nicht bloß Defensive): /api/e bzw. handleIngest
   antwortet dem Client IMMER mit einer LEEREN 204 — nie ein Body, nie ein 500 — in JEDEM
   Pfad, auch bei Timeout/Abort/Body-Read-Fehler. GRUND (ohne ihn wird die Regel als

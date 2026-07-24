@@ -18,18 +18,6 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   (kein neuer Pfad, nur ein Flag + ein Guard). Kein Grund, das zu vertagen.
   BINDET-AN: Serving existiert (7a/7c-1) -> baubar ab sofort, Blocker vor erstem
   echten Fremd-Traffic.
-- LOGGING-LEAK schließen:
-  RISIKO: Next.js loggt Server-Action-Argumente im Klartext; der CAPI-Token tauchte
-  in 2a nachweislich im Dev-Terminal auf -> Secret in Prod-Logs = Leak an jeden mit
-  Log-Zugriff, irreversibel sobald exportiert/indexiert.
-  TRAGENDE KONTROLLE: STRUKTURELLER Fix — minimieren, wo der Token überhaupt
-  hinreist (alternativer Ingestion-Pfad statt Server-Action-Argument), nicht nur
-  Maskierung (Maskierung ist umgehbar/vergesslich).
-  EHRLICHE EINORDNUNG: Verifikation MUSS instrument-basiert sein (Logs nach einem
-  echten Token-Set-Flow auf einem Preview greppen) — nicht aus dem Code "sieht sauber
-  aus" schließen (Instrument schlägt Code-Re-Read, 2a-Lektion).
-  BINDET-AN: existiert seit 2a; Blocker vor Prod-Logging mit echten Tokens.
-  (Ersetzt den gleichlautenden Polish-Listen-Eintrag.)
 - E-MAIL-BESTÄTIGUNG wieder aktiv:
   RISIKO: fürs MVP deaktiviert (sofort eingeloggt) -> offene Registrierung =
   Spam-Accounts, Ressourcen-/Kosten-Missbrauch, Wegwerf-Identitäten.
@@ -45,7 +33,10 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   EHRLICHE EINORDNUNG: das ist der grobe Pre-Launch-FLOOR; das feingranulare
   Per-Tenant-Rate-Limiting (Tier 1) ist die präzise Ebene darüber. Beides nötig,
   aber der Cap fängt die Katastrophe ab, bevor Rate-Limits kalibriert sind.
-  BINDET-AN: bevor irgendeine Domain öffentlich Traffic zieht.
+  BINDET-AN: PRO-UPGRADE (Vercel oder Supabase). Begründung: auf Free/Hobby deckeln die
+  Plattform-Limits strukturell — es gibt keinen abrechenbaren Eskalationsweg, der Schaden ist
+  ein harter Stopp, keine Rechnung; erst mit Pro kippt genau das und Überverbrauch wird
+  kostenwirksam. Kopplung: der Pro-Wechsel fällt mit dem Backup-Bedarf zusammen (Tier 2).
 - ABUSE-KANAL + security.txt auf pgsm.site UND Haupt-App:
   RISIKO: kein Melde-Weg für Security-Forscher/Abuse-Meldungen -> Schwachstellen/
   Missbrauch werden gar nicht oder öffentlich gemeldet; eine Hosting-Plattform ohne
@@ -130,19 +121,45 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   BINDET-AN: 7c-2 (Vercel-Domains-API).
 
 ### Tier 2 — Laufende Hygiene / verankerte Prinzipien (KEIN Gate)
-- DEPENDABOT:
+- LOGGING-LEAK (herabgestuft von Tier 0, gemessen 2026-07-24):
+  RISIKO: Next.js loggt Server-Action-Argumente im Klartext; der CAPI-Token tauchte
+  in 2a nachweislich im Dev-Terminal auf -> Secret in Prod-Logs = Leak an jeden mit
+  Log-Zugriff, irreversibel sobald exportiert/indexiert.
+  TRAGENDE KONTROLLE: STRUKTURELLER Fix — minimieren, wo der Token überhaupt
+  hinreist (alternativer Ingestion-Pfad statt Server-Action-Argument), nicht nur
+  Maskierung. Bleibt Defense-in-Depth.
+  EHRLICHE EINORDNUNG (GEMESSEN 2026-07-24, Differenztest in Vercel-Prod-Logs): Auf dem
+  erfolgreichen setCapiToken-Pfad wird das Server-Action-Argument in PRODUKTION NICHT
+  geloggt. Positivkontrolle bestanden (POST-Zeilen zum Aufrufzeitpunkt vorhanden, Aufruf
+  lief durch), die Token-Sonde taucht in KEINER Zeile auf (Messages-Spalte leer). Log-Drains
+  sind Pro-gated und keine konfiguriert -> Logs verlassen Vercel nicht. Die 2a-Beobachtung war
+  das Dev-Terminal (next dev), nicht Prod. KEINE Token-Rotation nötig. Restrisiken: der
+  FEHLERpfad ist ungetestet, und das lokale Dev-Terminal loggt weiter -> der strukturelle Fix
+  bleibt sinnvoll als Defense-in-Depth, ist aber kein harter Launch-Blocker mehr. WIEDERVORLAGE:
+  der Befund gilt fuer den HEUTIGEN Code — setCapiToken ist die EINZIGE Server Action mit
+  Secret-Parameter (erhoben 2026-07-24). Bei JEDER neuen Server Action mit Secret-Parameter neu
+  bewerten.
+  BINDET-AN: laufend (Defense-in-Depth). Nicht mehr Launch-Gate (gemessen 2026-07-24, in
+  Produktion nicht materialisiert). (Ersetzt den gleichlautenden Polish-Listen-Eintrag.)
+- DEPENDABOT — ERLEDIGT (2026-07-24):
   RISIKO: bekannte CVEs in Dependencies bleiben unbemerkt.
-  TRAGENDE KONTROLLE: Dependabot (gratis) JETZT anschalten; optional Snyk.
-  EHRLICHE EINORDNUNG: Dauerhygiene, kein Launch-Gate.
-  BINDET-AN: laufend.
+  TRAGENDE KONTROLLE: Dependabot aktiviert — Alerts, Security Updates, Dependency Graph, 1 Regel.
+  EHRLICHE EINORDNUNG: Dauerhygiene, kein Launch-Gate; erledigt am 2026-07-24.
+  BINDET-AN: laufend (aktiv).
 - BACKUPS + Restore-Drill:
   RISIKO: Datenverlust ohne getesteten Wiederherstellungsweg (ein ungetestetes Backup
   ist kein Backup).
   TRAGENDE KONTROLLE: Supabase-Backup-Tier bestätigen + EINEN echten Restore-Drill
   fahren (kompletten Core-Tabellen-Drop durchspielen), danach reguläre Drills.
-  EHRLICHE EINORDNUNG: der erste Drill gehört vor ernsthafte Kundendaten; die
-  Wiederholung ist laufende Hygiene.
-  BINDET-AN: laufend; erster Drill vor echten Kundendaten.
+  EHRLICHE EINORDNUNG (ergänzt 2026-07-24): der erste Drill gehört vor ernsthafte Kundendaten;
+  die Wiederholung ist laufende Hygiene. GEMESSEN 2026-07-24: der Supabase FREE Plan hat GAR
+  KEINE Backups (kein Scheduled Backup, kein PITR) -> es existiert aktuell KEIN Artefakt, aus dem
+  wiederhergestellt werden könnte — obwohl die laufende DB unersetzliche Daten trägt (Projekte,
+  CAPI-Tokens, published_content, die Event-Historie mit den Phase-8-Live-Beweisen).
+  Der erste Drill fällt damit mit dem Pro-Wechsel (7 Tage Scheduled Backups) bzw. dem manuellen
+  pg_dump zusammen und würde zugleich die ensure_rls-Rebuild-Lücke praktisch nachweisen (s.
+  CLAUDE.md "## Offene Punkte").
+  BINDET-AN: laufend; erster Drill vor echten Kundendaten (bzw. mit dem Pro-Wechsel/pg_dump).
 - DATA-RETENTION:
   RISIKO: Analytics-Rohdaten (IP/UA) horten sich unbegrenzt an -> DSGVO-Speicher-
   begrenzung verletzt.

@@ -21,8 +21,9 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
 - Next.js (App Router) + TypeScript + Turbopack. Lokal: Node v24.16.0.
 - Tailwind CSS
 - Erkennung im Browser: nativer DOMParser (keine Dependency)
-- Code-Transformation: clientseitig via DOMParser (wie Detection); Cheerio erst in
-  der Serving-Schicht beim Hosting (Phase 7), nicht früher
+- Code-Transformation: clientseitig via DOMParser (wie Detection). Server-seitige
+  HTML-Injektion (Serving-Schicht, Phase 7/8) ist eine REINE STRING-OP, KEIN Parser —
+  Cheerio wurde nie eingeführt (keine Dependency). S. "## Immer beachten".
 - Persistenz & Auth: Supabase (Postgres, RLS) — ab Phase 3
 - Hosting/Deploy-Orchestrierung: Vercel/Netlify API — ab Phase 7
 
@@ -40,8 +41,9 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       sichtbar machen/löschen/neu-verknüpfen. Siehe Detail-Blöcke unten.
 - [x] Phase 4 — Code-Generierung + HTML-Export: generateFunctional bäckt die
       Mappings in funktionales HTML (reine Engine + funktionale Vorschau), Ausgabe
-      per Download/Copy. Client-seitig via DOMParser; Cheerio erst in der
-      Serving-Schicht (Phase 7), nicht hier. Siehe Detail-Blöcke unten.
+      per Download/Copy. Client-seitig via DOMParser (kein Cheerio — es wurde auch in
+      der späteren Serving-Schicht nie eingeführt, die Injektion dort ist eine reine
+      String-Op). Siehe Detail-Blöcke unten.
 - [x] Phase 4.5 — Editor-Politur: (A) Datei-Upload/Drag-Drop als zweiter
       Import-Weg neben Copy-Paste und (B) Zen-Modus — der Collapse versteckt NUR
       die Code-EINGABE (Textarea + Upload), die Elementliste bleibt IMMER sichtbar.
@@ -100,17 +102,13 @@ kaputtgeht.
   Domains PRO PROJEKT — geteilt über ALLE Kunden, also eine Multi-Tenant-Decke, nicht ein
   Per-Kunde-Limit. Der Per-User-Cap (Richtwert 3/User) schützt sie doppelt (Abuse + geteilte
   Decke). Pro-Upgrade VOR echter Skalierung einplanen.
-- SCHEIBE 2 (PageView) — KILL-SWITCH WIRD DORT PFLICHT-ARBEIT (Trigger: Meta-Entkopplung):
-  Die Meta-Entkopplung, der EXPLIZITE Kill-Switch-Zweig (projectId && !blocked) und das
-  blocked-Feld im Resolver werden in Scheibe 2 PFLICHT. Grund: heute (Couple-minimal) hängt
-  der Persist IM if(capiConfig)-Zweig, wodurch der Kill-Switch AUTOMATISCH greift (gesperrt
-  -> Resolver liefert null -> kein capiConfig -> kein Persist). Wer in Scheibe 2 entkoppelt,
-  OHNE den expliziten blocked-Zweig zu bauen, macht den Kill-Switch STILL fail-open — der
-  Schutz verschwindet lautlos, weil er heute ein Nebeneffekt der Kopplung ist und keine
-  eigene Verzweigung. AUSGANGSPUNKT für Scheibe 2 ist damit: Persist im capiConfig-Zweig,
-  source='server', KEIN blocked-Feld im Resolver.
-  -> 2a ABGESCHLOSSEN (expliziter Kill-Switch live bewiesen); die Entkopplung wird mit dem
-  PageView-Emitter in 2b scharf. S. "Aktiver Stand — Phase 8 Scheibe 2a".
+- rls_auto_enable-CREATE FEHLT IN DEN MIGRATIONEN (Trigger: DB-Neuaufbau / Staging /
+  Restore-Drill aus Tier 2): Der Event-Trigger rls_auto_enable (aktiviert automatisch RLS auf
+  neuen public-Tabellen, SECURITY DEFINER) existiert NUR in der laufenden DB — Zweck +
+  Grant-Entzug sind in 0003 dokumentiert, aber ein CREATE steht in KEINER Migration. Bei einem
+  Rebuild rein aus den Migrationsdateien fehlt die Funktion -> neue Tabellen bekämen dort NICHT
+  mehr automatisch RLS (stiller Verlust einer Schutzschicht). Beim Rebuild mitziehen ODER RLS
+  pro Tabelle bewusst manuell setzen.
 
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur
@@ -687,8 +685,16 @@ keine Statusänderung für etwas, das noch nicht existiert.
 - RLS-PRÄZISION (korrigierte Regel, NICHT "O(1) Policies" — das ist keine sinnvolle
   Metrik): auth.uid() in Policies IMMER als (select auth.uid()) wrappen, damit Postgres
   es einmal statt pro Zeile auswertet. Keine tiefen Joins/Subqueries in Policies.
+  Eine neue Policy spiegelt die Ownership-ACHSE der bestehenden Tabellen-Policy (nie neu
+  erfinden — Divergenz zwischen "wer darf das Projekt" und "wer darf die Events" WÄRE das
+  Leak); korrelierter Semi-Join via EXISTS statt IN (kurzschließend, nutzt den Index).
   security definer NUR mit expliziter Einzelfall-Begründung vorschlagen (umgeht RLS,
-  ist bei Fehlgebrauch selbst ein Sicherheitsloch) — NIEMALS als Standardempfehlung.
+  ist bei Fehlgebrauch selbst ein Sicherheitsloch) — NIEMALS als Standardempfehlung. BELEGTE
+  AUSNAHME: der Event-Trigger rls_auto_enable (Migration 0003) IST SECURITY DEFINER — korrekt,
+  weil Event-Trigger als Owner laufen; die DEFINER-Warnung des Advisors ist dort erwartet.
+- LIKE-WILDCARD-FALLE bei Präfix-Filtern: '_' ist ein LIKE-Wildcard -> "not like '__ps_%'"
+  matcht mehr als gedacht. Präfix-Ausschlüsse über left(spalte,5) <> '__ps_' formulieren
+  (deckt künftige __ps_-Tokens automatisch, ohne Escaping-Falle).
 - DEFENSIVE TIMEOUTS: JEDER externe API-Call (Meta CAPI heute, Vercel-Domains-API in
   7c-2b) braucht ein striktes Timeout, damit ein hängender Drittanbieter die
   Serverless-Funktion nicht blockiert.
@@ -809,6 +815,10 @@ docs/claude-history/security-manifest-full.md.
   sicherstellen, dass Server-Logs keine IPs horten. BINDET-AN: Phase 8. — Präzisierung:
   Phase 8 Scheibe 1 löst die 30-Tage-Pflicht NICHT aus (es wird KEIN IP/UA persistiert); sie
   bindet erst an die Scheibe, die IP/UA einführt (Bot-Filter/Uniques). Heute NICHT fällig.
+  WECHSELWIRKUNG fürs spätere events-Pruning: löscht ein Retention-/Aggregations-Pruning die
+  ERSTE verankerte source='browser'-Bestätigung eines Projekts, springt der selbstheilende
+  Stichtag der Adblocker-Verlustrate nach vorn -> die angezeigte Rate ändert sich RÜCKWIRKEND
+  und STILL. Pruning muss die Verlustraten-Verankerung berücksichtigen.
 - MCP-SICHERHEIT: scoped Tokens (nie globale Master-Rechte) + lückenloses Audit-Logging
   aller KI-induzierten Mutationen. BINDET-AN: Phase 10.
 
@@ -901,14 +911,70 @@ docs/claude-history/security-manifest-full.md.
   trackingKeys LEAKEN; 204-für-alles macht die Key-Existenz für einen anonymen Aufrufer
   unbeobachtbar (Enumeration-Schutz). Jede neue Fehlerbehandlung im Forward-/Ingest-Pfad
   MUSS innerhalb dieses Containments bleiben — auch das Fehler-Gerüst selbst (Timeout-
-  Scaffolding, Body-Reads) darf nie nach außen werfen.
+  Scaffolding, Body-Reads) darf nie nach außen werfen. AUSNAHME AUF ANDERER ACHSE (kein
+  Widerspruch zum "IMMER 204"): ein strukturell kaputter Beacon (fehlende Pflichtfelder
+  {trackingKey,eventID,event}) wird bewusst mit 400 VOR jedem DB-Zugriff abgewiesen — das
+  ist ein CLIENT-Fehler, kein Zustands-Leak. Das 204-Containment schützt vor dem
+  Key-Existenz-Leak bei GÜLTIGER Struktur; der 400-Guard ist die andere Achse. Herleitung:
+  docs/claude-history/phase-8-analytics.md.
 - TRACKING-source = BEOBACHTUNGS-ORT, NIE ZIEL: der source-Wert in events beschreibt, WO ein
   Event beobachtet wurde (server vs. browser), NICHT an welches Werbe-Netzwerk es ging.
   'server' heißt server-beobachtet — egal ob der Forward zu Meta/CAPI oder später zu
   GA4/TikTok läuft. Ein späteres Tracking-ZIEL bekommt eine EIGENE additive Spalte; source
   NIE zum Ziel-Sammelfeld umdeuten, sonst bricht der browser-vs-server-Verlustraten-Join.
   Die Werte sind PERMANENT (sie werden nie nachträglich transformiert) -> sie müssen ab
-  Zeile 1 stimmen.
+  Zeile 1 stimmen. MARKER-HYGIENE (Phase 8): der Client sendet NIE einen freien
+  source-String, sondern nur einen ENG BEGRENZTEN Marker; den source-Wert (server/browser)
+  setzt der SERVER — sonst könnte der Client die Analytics beliebig färben.
+- KILL-SWITCH ALS EXPLIZITER, FAIL-CLOSED ZWEIG, nicht als Kopplungs-Nebeneffekt (Phase 8):
+  Im Ingest wird ein gesperrtes Projekt (blocked) in einem EIGENEN sichtbaren Zweig VOR
+  Persist UND Forward mit leerer 204 abgewiesen. Früher griff der Schutz nur als Nebeneffekt
+  davon, dass der Persist im if(capiConfig)-Zweig hing — wer diese Kopplung löst
+  (Meta-unabhängiger Traffic ab PageView), OHNE den expliziten blocked-Zweig, macht den
+  Kill-Switch STILL fail-open. Bei jedem Umbau des Ingest-Kontrollflusses den expliziten Zweig
+  erhalten. Herleitung: docs/claude-history/phase-8-analytics.md.
+- isForwardable = NEGATIV-AUSSCHLUSS EINES RESERVIERTEN TOKENS, NIE Allowlist (Phase 8):
+  TrackConfig.event ist ein FREIER Nutzer-String (jeder Custom-Event-Name via trackCustom ist
+  erlaubt) -> eine Positiv-Allowlist der Forward-fähigen Events schnitte Custom-Conversions
+  STILL vom CAPI-Forward ab. isForwardable schließt darum AUSSCHLIESSLICH den namespaced Token
+  '__ps_pageview' aus (analytics-only, gehört nicht zu Meta), den nur unser eigener Emitter
+  erzeugt. Ein zu breiter Ausschluss bricht STILL bestehende Conversions. Herleitung:
+  docs/claude-history/phase-8-analytics.md.
+- BESTÄTIGUNGEN/CONFIRMS NIE AN META FORWARDEN (Phase 8, auf dem CAPI-Pfad): Das
+  Adblock-Bestätigungs-Beacon (source='browser') trägt DIESELBE eventID wie die echte
+  Conversion — würde es geforwardet, entstünde ein Duplikat bei Meta. Der Confirm-Pfad
+  persistiert und returnt über einen FRÜHEN return, ohne je in den Forward-Block zu laufen
+  (eigener Ausgang, kein Term in einem Guard). Bei Änderungen am Ingest-Forward mit Gegenprobe
+  testen. Herleitung: docs/claude-history/phase-8-analytics.md.
+- BEACON-keepalive PFLICHT (Conversion-/PageView-nahe Beacons): navigator.sendBeacon bzw.
+  fetch({keepalive:true}) — solche Beacons gehen oft mit Form-Submit/Redirect/Seitenwechsel
+  einher; ohne keepalive bricht der Browser den Request im Teardown ab und das Event bzw. die
+  Bestätigung geht STILL verloren (fälschlich als Verlust gezählt). Detail:
+  docs/claude-history/phase-8-analytics.md.
+- DRITTANBIETER-SCRIPT-LADEPRÜFUNG am load/error-Event des SCRIPT-ELEMENTS, NIE am globalen
+  Stub (Phase 8): Tracking-Snippets (Meta/GA4/TikTok) legen SYNCHRON ein globales Objekt +
+  Queue + "loaded"-Flag an, BEVOR das echte Script nachlädt. Blockt ein Adblocker das Script,
+  bleibt der Stub stehen -> `if (window.<lib>)` ist IMMER wahr -> eine Ladeprüfung darüber
+  misst NICHTS ("grün aber falsch"). Verlässlich ist nur load/error am injizierten
+  Script-Element. Volle Herleitung (fbevents, Fremd-Pixel, Surrogat-Blocker):
+  docs/claude-history/phase-8-analytics.md.
+- WORTWAHL DASHBOARD "NUR server-seitig erfasst", NIEMALS "gerettet" (Phase 8,
+  Produkt-Ehrlichkeit): events protokolliert, was der SERVER BEOBACHTET hat — NICHT ob der
+  CAPI-Forward bei Meta ankam (der 'Bad signature'-Bug hat gezeigt, dass Forwards still
+  scheitern, während die Zeilen sauber weiterlaufen). "Gerettet" behauptet Empfang und lügt,
+  wenn CAPI kaputt ist. Analytics-Zahlen als "mindestens X%" ausweisen (sie können in BEIDE
+  Richtungen irren). Herleitung: docs/claude-history/phase-8-analytics.md.
+- SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN BLOB (Phase 8, live widerlegt):
+  projects.settings ist CLIENT-autoritativ — saveProject ersetzt es GANZHEITLICH. Eine
+  server-vergebene Identität (z.B. der trackingKey), dort abgelegt, wird beim nächsten
+  saveProject wortlos auf NULL zurückgekippt. Server-autoritative Werte gehören in eine EIGENE
+  Spalte (projects.tracking_key), nicht in einen client-replaced Blob. Herleitung:
+  docs/claude-history/phase-8-analytics.md.
+- KEIN SERVER-SEITIGES HTML-PARSING — server-seitige HTML-Injektion/Transformation ist eine
+  REINE STRING-OP (Phase 7/8): Der Server injiziert z.B. den PageView-Emitter beim Publish per
+  String-Suche (letztes </body>, case-insensitiv), NICHT über einen Parser. Cheerio ist
+  bewusst NIE eingeführt worden (keine Dependency); die Client-Transformation läuft über
+  DOMParser (Detection/Generate). Herleitung: docs/claude-history/phase-8-analytics.md.
 - CAPI-TOKEN UND PIXEL-/DATASET-ID SIND EIN PAAR (real aufgetreten, 2026-07-20): Ein
   CAPI-Zugriffstoken ist an eine bestimmte Meta-Dataset/Pixel-ID gebunden. Wird die ID
   gewechselt, MUSS ein zur neuen ID passendes Token neu generiert und gesetzt werden — das
@@ -944,6 +1010,11 @@ docs/claude-history/security-manifest-full.md.
   `set search_path = public` (fixiert die Namensauflösung; Supabase-Advisor "Function Search
   Path Mutable" flaggt sie sonst). Body zusätzlich voll qualifizieren (public.tabelle). Gilt
   für SECURITY INVOKER wie DEFINER.
+- MIGRATION IMMER VOR CODE-DEPLOY (fail-closed): Eine Migration läuft IMMER im SQL-Editor VOR
+  dem zugehörigen Code-Deploy — sonst liest der neue Code eine Spalte/Funktion, die es noch
+  nicht gibt (bei CAPI hätte das die laufende trackingKey-Auflösung gebrochen). Umgekehrt ist
+  eine Migration OHNE den zugehörigen Code in der Regel ein No-op und damit gefahrlos. Detail:
+  docs/claude-history/phase-8-analytics.md.
 - NEXT_PUBLIC_-REDEPLOY-PFLICHT (Ops-Regel, real aufgetreten): NEXT_PUBLIC_-Env-Vars werden
   zur BUILD-ZEIT ins Client-Bundle inlined -> die Variable in Vercel zu ändern reicht NICHT,
   nach JEDER Änderung ist ein REDEPLOY PFLICHT. Sonst trägt das laufende Bundle still den

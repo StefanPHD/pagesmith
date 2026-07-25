@@ -77,4 +77,30 @@ miterledigen, sondern gebündelt abarbeiten.
   mit (select auth.uid())) -> eigene kleine Scheibe, NICHT im laufenden Schritt.
   -> Löst zugleich den Vorwärtsverweis aus dem Root-A1-Block
   ("## Aktueller DB-/Analytics-Stand") ein.
+- RENAME-GUARD FEHLT (Enter+Blur am selben Input, CodeImporter.tsx:1114-1118):
+  commitRename hängt an onBlur UND an onKeyDown/Enter, ohne In-Flight-Flag und
+  ohne "bereits committed"-Check. Dass Enter KEINEN Doppel-Write auslöst, ist
+  INZIDENTELL: setRenamingId(null) steht synchron VOR dem ersten await, das
+  Input unmountet, ein entferntes Element bekommt kein focusout. Wandert diese
+  Zeile je hinter das await (oder tritt ein früher Return davor), ist der
+  Doppel-Write sofort da — und bliebe unbemerkt, weil er idempotent ist
+  (gleicher Name, gleicher Endzustand). Gleiche Klasse wie die
+  Timeout-Scaffolding-Position in ingest.ts: Korrektheit hängt an einer
+  Zeilenreihenfolge.
+  -> Billigster Fix: Kommentar-Anker an :998, der die Reihenfolge als
+  beabsichtigt markiert (Muster wie in ingest.ts). Sauberer: In-Flight-Guard.
+  -> Einzige Enter+Blur-Paarung im gesamten src/ (verifiziert 2026-07-24);
+  teure Mutationen (CAPI-Token, Domain-Add/Remove, Publish) sind an KEINEN
+  Blur gebunden. Kein Handlungsdruck.
+  -> Keine Testabdeckung: CodeImporter.test.tsx mockt renameProject nur, es
+  gibt keinen Interaktionstest für Enter oder Blur.
+- RENAME MACHT ZWEI ROUND-TRIPS (CodeImporter.tsx:1000 + :1006): nach
+  renameProject folgt ein vollständiges listProjects(), um einen einzelnen
+  Namen zu aktualisieren. Der neue Name ist nach dem ersten Call bereits
+  bekannt. Das ist die einzige Stelle, an der beim Umbenennen echte Wartezeit
+  entsteht (gemessener Kontext: die vermutete "Latenz" war KEIN Server-/
+  DB-Problem — s. Aufklärung 2026-07-24, Save-Pfad in beiden Wegen bitgleich).
+  -> Fix-Richtung: renameProject die aktualisierte Zeile zurückgeben lassen und
+  projects lokal patchen, statt die Liste neu zu laden. KEIN Optimistic UI —
+  der Wert kommt weiterhin aus der bestätigten Server-Antwort.
 

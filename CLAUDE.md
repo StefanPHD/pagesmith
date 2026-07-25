@@ -123,6 +123,18 @@ kaputtgeht.
   Verstoß gegen die "nur Supabase-JS-Client"-Regel, die für ANWENDUNGScode gilt). Dauerlösung: Pro
   (7 Tage Scheduled Backups). KOPPLUNG: mit dem Pro-Wechsel wird der Kosten-Circuit-Breaker fällig —
   Free deckelt strukturell, Pro rechnet Überverbrauch ab. Beides in EINEM Arbeitsschritt.
+- DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE (Trigger: die erste Scheibe, die
+  personenbezogene Merkmale erfasst — Click-IDs, IP/UA, gehashte Kontaktdaten,
+  Fingerprint-artige Merkmale; spätestens VOR dem ersten echten Ad-Traffic): Heute
+  trägt events KEINE Personen-Identität, deshalb braucht es keinen Löschpfad und keine
+  Auskunftsfähigkeit. Die Performance-CRM-Vision (docs/claude-history/future-roadmap.md)
+  würde genau das ändern. Die Grenze — WAS erfasst wird, auf welcher Rechtsgrundlage,
+  wie lange, mit welchem Löschpfad — MUSS entschieden sein, BEVOR die erste solche
+  Scheibe gebaut wird. Grund: einmal unter falscher Grundlage erhobene Daten lassen
+  sich nicht rückwirkend heilen, und die DSGVO-Sauberkeit IST das Verkaufsargument.
+  Bindet die bestehende 30-Tage-Retentionspflicht (Manifest Tier 2) und die
+  Zwei-Ebenen-Trennung Kunden- vs. Betreiber-Ebene aus der future-roadmap mit ein.
+  Browser-Fingerprinting ist bereits ENTSCHIEDEN: wird nicht gebaut.
 
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur

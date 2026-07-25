@@ -396,3 +396,79 @@ der Zweigleisigen Architektur (Spur B muss für andere Zwecke ohnehin existieren
 bevor Business-Website darauf aufbauen kann). Kein Vorziehen — "Abstraktion erst
 bei echtem Bedarf".
 
+## Strategischer Nordstern: Performance-CRM & CAPI-Attribution-Engine
+(Owner-Vision 2026-07-24. NICHT gebaut, KEIN Auftrag, KEIN Vorbau. Zweck: heutige
+Entscheidungen sollen diese Richtung nicht VERSPERREN — mehr nicht. Es wird NICHTS
+auf diese Vision hin abstrahiert; es gilt weiterhin "Abstraktion erst bei 2+ echten
+Fällen".)
+
+ZIELGRUPPE (geschärft): Performance Marketer, Media Buyer, Performance-Agenturen.
+
+DER KEIL (warum ausgerechnet Pagesmith): Bei Pagesmith sind Landingpage und Tracking
+DASSELBE System. Attribution wird nicht nachträglich rekonstruiert, sie ist zur
+Erzeugungszeit bekannt. Konkurrenzprodukte (Hyros, Triple Whale, Northbeam) sitzen als
+Bolt-on auf Seiten, die sie nicht kontrollieren. Daraus folgt die Sortierung unten:
+KERN = nutzt das Besitzen der Seite aus. COMMODITY = dupliziert nur ein bestehendes
+Fremdsystem -> ans Ende oder auslagern.
+
+### KERN-BAUSTEINE (nutzen das Fundament, das schon steht)
+- CLICK-ID-ERFASSUNG (gclid, fbclid, ttclid, msclkid) beim ersten PageView.
+  ZEITKRITISCH, aber nicht dringend: die IDs existieren NUR im Moment des Landings in
+  der URL — nicht erfasst = unwiederbringlich. Heute nahe null Kosten (kein realer
+  Ad-Traffic); die Frist ist "vor dem ersten echten Ad-Traffic", nicht "sofort".
+  BLOCKIERT durch die Datenklassen-Grenze (s.u.).
+- MICRO-CONVERSIONS / Funnel-Sprünge als Events (Quiz gestartet, MQL, Offer Made).
+  LÄUFT HEUTE SCHON: TrackConfig.event ist ein freier Nutzer-String, und isForwardable
+  schliesst nur den reservierten Token aus — genau deshalb wurde damals gegen eine
+  Allowlist entschieden. Kein Codeumbau nötig, nur UI/Value-Felder.
+- SERVER-SIDE FAN-OUT an mehrere Netzwerke (Meta, Google, TikTok, LinkedIn, Pinterest).
+  VORGEDACHT: 'source' ist der Beobachtungs-ORT, das ZIEL bekommt laut geltender Regel
+  eine EIGENE additive Spalte. Der Persist ist vom Forward-Ausgang entkoppelt (after()),
+  d.h. ein scheiterndes Netzwerk kostet keine Zeile. Additive Erweiterung, kein Umbau.
+- ATTRIBUTION BIS AUF CREATIVE-/HOOK-/AdSet-EBENE (UTM + Click-ID-Deep-Dive).
+- A/B- bzw. Varianten-Dimension: kommt mit Phase 9b als eigene additive events-Spalte
+  und ist die erste Instanz des Musters "neue Dimension = eigene Spalte".
+
+### SPÄTER / EIGENE PHASEN (Reihenfolge = Abhängigkeit, nicht Wunsch)
+- FINANZ-/UNIT-ECONOMICS-LAYER (eROAS, Deckungsbeitrag, pLTV, Churn): braucht Daten,
+  die Pagesmith NICHT hat — Ad-Spend-APIs (Google Ads API mit Developer-Token-Freigabe),
+  Produktkosten aus dem Shopsystem, Bestellwerte via Payment-Webhooks (in der
+  Funnel-Vision bereits als technisch anspruchsvollster Teil markiert). Eigene
+  Phasen-Familie. Es gilt die bestehende Regel: SCHEMA-Vorbereitung ja, BAU erst bei
+  realer Ad-Spend-API.
+- DYNAMIC AUDIENCE ENGINE / Ad-Sync (Custom Audiences, Customer Match, Exclusions):
+  Schreib-Integration in Werbeplattformen. Setzt den Identitäts-Layer voraus (s.
+  Datenklassen-Grenze) — vorher nicht baubar.
+- LEAD-SCORING + "Bad Lead"-Signal ans Netzwerk: Profiling. Braucht eine Rechtsgrundlage
+  auf KUNDENEBENE, die Pagesmith nicht selbst herstellen, sondern nur ermöglichen kann
+  (Consent-Erfassung + Nachweis beim Kunden).
+- MARKETING AUTOMATION: ENTSCHIEDEN (Owner, 2026-07-24) — Pagesmith wird NICHT E-Mail-/
+  WhatsApp-/SMS-Versender. Stattdessen WEBHOOKS auf Performance-Events; der Kunde behält seinen
+  bestehenden ESP. Begründung: Zustellbarkeit, Opt-in-Nachweise, WhatsApp-Business-
+  Freigabe und Carrier-Regeln sind ein eigenes, ops-schweres Geschäft — für einen
+  Solo-Betrieb der teuerste Baustein bei geringstem Differenzierungswert (Commodity).
+
+### GESTRICHEN (nicht "später", sondern NICHT)
+- BROWSER-FINGERPRINTING: widerspricht dem KERNVERSPRECHEN. Fingerprinting ist unter
+  TTDSG §25 zustimmungspflichtiger Zugriff auf Endgeräte-Informationen, und anders als
+  beim funktionalen Varianten-Cookie gibt es KEIN "unbedingt erforderlich"-Argument.
+  Pagesmith verkauft DSGVO-saubere First-Party-Erfassung an den DACH-Markt; ein
+  Fingerprinting-Modul zerstört diese Positionierung und macht die KUNDEN angreifbar —
+  und Pagesmith als deren Auftragsverarbeiter mit. Wird NICHT gebaut.
+
+### ARCHITEKTUR-GARANTIEN (kosten heute NICHTS, wären später teuer)
+- /api/e BLEIBT SCHREIBEND UND ANTWORTLOS. "Bi-direktionale CAPI" heisst NICHT, das
+  204-Containment aufzuweichen: eine leere 204 in jedem Pfad ist Enumeration-Schutz,
+  kein Stilmittel. Rückkanäle (Offline-Conversion-Sync, Audience-Push) brauchen einen
+  EIGENEN, authentifizierten Endpunkt mit eigener Autorisierungsschicht DAVOR — exakt
+  die Lehre aus der MCP-Vorüberlegung ("nicht direkt ansprechen, eine neue
+  Autorisierungsschicht davor bauen").
+- JEDE NEUE DIMENSION = EIGENE additive, nullable Spalte auf events. NIEMALS 'source'
+  oder 'event_type' überladen. events bleibt append-only, eine Zeile je Beobachtung.
+- IDENTITÄTS-LAYER, FALLS ER KOMMT: gehashte Kontaktdaten sind PSEUDONYMISIERT, nicht
+  anonymisiert — also weiterhin personenbezogen. Ab diesem Moment braucht es einen
+  LÖSCHPFAD JE BETROFFENER PERSON, Auskunfts-/Exportfähigkeit, und Encryption-at-Rest
+  wird von Defense-in-Depth zur TRAGENDEN Kontrolle (Manifest sagt heute korrekt: ein
+  In-DB-Key ist Theater, echtes Envelope braucht KMS). Heute existiert kein Löschpfad,
+  weil events keine Personen-Identität trägt — das ist ein Zustand, kein Versäumnis.
+

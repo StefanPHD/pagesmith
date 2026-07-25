@@ -472,3 +472,116 @@ Fremdsystem -> ans Ende oder auslagern.
   In-DB-Key ist Theater, echtes Envelope braucht KMS). Heute existiert kein Löschpfad,
   weil events keine Personen-Identität trägt — das ist ein Zustand, kein Versäumnis.
 
+## Strategischer Nordstern: GEO (Generative Engine Optimization)
+(Owner-Vision 2026-07-24. NICHT gebaut, KEIN Auftrag, KEIN Vorbau. Wie beim
+Performance-CRM-Nordstern gilt: heutige Entscheidungen sollen die Richtung nicht
+VERSPERREN — es wird NICHTS darauf hin abstrahiert.)
+
+POSITIONIERUNG (bewusst NICHT "SEO"): Wer eine Performance-Ad sieht, kauft oft nicht
+sofort, sondern fragt ein KI-Modell ("Ist Anbieter X seriös? Lohnt sich das?"). Ziel ist
+KI-EMPFEHLUNGSMARKETING und CONVERSION-ABSICHERUNG, nicht organische Auffindbarkeit für
+Nischen-Keywords. Der Keil ist derselbe wie beim Performance-CRM: Pagesmith BESITZT die
+Seite und muss ihre Bedeutung nicht nachträglich rekonstruieren.
+
+### EHRLICHE GRENZEN (vor jeder Marketing-Aussage lesen — Lektion aus dem "gerettet"-Verbot)
+- llms.txt ist eine VORGESCHLAGENE Konvention (Answer.AI, Ende 2024), kein etablierter
+  Standard: es ist nicht belegt, dass grosse Anbieter sie konsumieren. Die Datei zu
+  erzeugen ist billig und schadet nicht — aber "die KI liest unsere Zusammenfassung" ist
+  eine HOFFNUNG, keine Messung. Vor dem Verkaufen: Stand der Konvention neu prüfen.
+- ZIELGRUPPEN-SPANNUNG (wichtig): Rapid-Testing-Landingpages von Media Buyern sind
+  kurzlebig, oft noindex, reiner Paid Traffic. Was nie in einen Index kommt, kann keine
+  KI zitieren. Für "ist Anbieter X seriös" gewichten Modelle zudem DRITT-Quellen
+  (Bewertungsportale, Foren, Presse) höher als die Verkaufsseite des Anbieters selbst.
+  GEO greift damit bei EVERGREEN-Angeboten, Brand- und Business-Seiten — NICHT beim
+  Drei-Wochen-Testfunnel. Natürlicher Partner: der Projekttyp "Business-Website"
+  (s. eigener Abschnitt in dieser Datei).
+- MESSBAR ist NUR, dass ein KI-Crawler die Seite geholt hat — NICHT, ob ein Modell sie
+  gelesen, behalten oder empfohlen hat. Jede Kachel muss diesen Unterschied benennen
+  (gleiche Disziplin wie "N von M Conversions wurden NUR server-seitig erfasst").
+
+### SÄULE 1 — MASCHINENLESBARKEIT (zerfällt in zwei ungleiche Hälften)
+- (1a) llms.txt / llms-full.txt — BAUBAR AUF SPUR A, mit EINER Auflage: die Erzeugung
+  passiert CLIENT-SEITIG BEIM PUBLISH, nicht am Edge. GRUND: eine Zusammenfassung
+  braucht Textextraktion = HTML-Parsing, und "KEIN server-seitiges HTML-Parsing" ist
+  eine geltende Regel ("## Immer beachten"). Der Client hat den DOMParser bereits und
+  macht bereits Textdetektion (Phase 5). Ablage als ZUSÄTZLICHER KEY in
+  published_content (server-geschrieben, ein atomarer Publish-Write — dasselbe Muster
+  wie Variante B in 9a); die Serve-Route liefert einen FERTIGEN STRING aus, ohne zu
+  parsen, ohne Zusatzlatenz. FALLE (wie bei 9a): schreibt publishProject
+  published_content ganzheitlich, überschreibt ein Publish die anderen Keys STILL —
+  Erhalt aller Keys ist Invariante.
+- (1b) Schema.org/JSON-LD AUTOMATISCH + semantisches HTML5 — NUR SPUR B, auf Spur A
+  NICHT lösbar. GRÜNDE: (i) Pagesmith hat KEINE eigenen UI-Komponenten, es importiert
+  fremdes Div-Suppen-HTML (v0/Bolt/Lovable). Zu erkennen, dass ein Div-Cluster eine FAQ
+  oder eine Preistabelle IST, wäre Heuristik oder ein LLM-Call — beides fehleranfällig,
+  und FALSCHES Schema.org ist schlechter als keines (Suchmaschinen sanktionieren es).
+  (ii) Importiertes HTML in semantisches HTML5 UMZUSCHREIBEN würde die
+  data-pagesmith-id-Anker zerstören, an denen sämtliche Mappings hängen -> der komplette
+  Click&Connect-Pfad bräche STILL. Auf Spur B ist beides GESCHENKT: der Generator weiss
+  zur Erzeugungszeit, was ein Block ist, und emittiert Schema.org + semantische Tags
+  direkt mit — exakt dieselbe Logik, mit der Smart-Tracking-Vorschläge bereits auf Spur B
+  verortet wurden. GEO ist damit ein weiteres tragendes Argument FÜR Spur B.
+- (1c) ZWISCHENSCHRITT, falls früher Bedarf besteht: die JSON-LD-INJEKTION selbst ist
+  eine reine String-Op vor </body> (identisch zum PageView-Emitter) — machbar auf Spur A
+  mit MANUELL im UI gepflegtem Schema statt automatisch erkanntem. Klein und ehrlich.
+  TRIGGER (Owner-Entscheidung 2026-07-24): wird erst gebaut, wenn ein Kunde ihn explizit
+  fordert — bis dahin dokumentierte Option, kein Vorbau.
+
+### SÄULE 2 — QUOTABILITY / IN-EDITOR-ASSISTENZ (niedrigste Priorität)
+- PRODUKT-SPANNUNG, ehrlich: "Werbe-Phrasen vermeiden, Faktengehalt hoch" ist das
+  GEGENTEIL von gutem Direct-Response-Copywriting. Ein Score, der geübtes Copywriting
+  abwertet, wird entweder ignoriert oder befolgt — und senkt dann die Conversion. Das
+  wäre ein Feature, das dem Kern des Produkts schadet.
+- ENTSCHIEDEN (Owner, 2026-07-24): ein Score, der den VERKAUFSTEXT bewertet, wird NICHT
+  gebaut — die harte Direct-Response-Qualität der Nutzer wird nicht einem KI-Score
+  untergeordnet. Stattdessen: einen ZUSÄTZLICHEN, klar getrennten Block anbieten
+  ("AI Answer Block" / "Key Facts": nüchterne, zitierfähige Fakten für Maschinen,
+  unterhalb der Verkaufssektion). Zwei Leser, zwei Texte, kein
+  Kompromiss. Ein LLM-gestützter Score kostet zudem pro Aufruf Geld — eigene Kosten- und
+  Missbrauchsbetrachtung.
+
+### SÄULE 3 — KI-CRAWLER-ERFASSUNG (baubar, mit vier harten Auflagen)
+- (3a) BOTS FÜHREN KEIN JS AUS: GPTBot & Co. holen HTML und gehen — der PageView-Emitter
+  feuert NIE. Heute entsteht KEINE Zeile. Bot-Erfassung braucht daher einen NEUEN
+  Schreibpfad in der SERVE-ROUTE (dem meistgetroffenen Code der Plattform). Der MUSS
+  entkoppelt laufen (after()-Muster wie der Ingest-Persist), sonst zahlt jeder Aufruf
+  jedes Kunden dafür — /API/E-SCHLANKHEIT sinngemäss auf den Serve-Pfad angewandt.
+- (3b) UA IST CLIENT-KONTROLLIERT und trivial fälschbar -> die Zahl ist eine UNTERGRENZE,
+  kein Beweis. Echte Verifikation (Reverse-DNS, veröffentlichte IP-Bereiche) wäre ein
+  Lookup auf dem heissen Pfad -> verworfen. Also: UA-basiert messen und wie die
+  Verlustrate ehrlich labeln.
+- (3c) PHASE-8-ZAHLEN DÜRFEN NICHT VERSCHMUTZEN: get_event_counts gruppiert nach
+  event_type über source='server' — ein Bot-Besuch als gewöhnliche Zeile erschiene in der
+  Statistik-Sektion und verfälschte die PageView-Zahl. Optionen: reservierter
+  __ps_-Token (etabliertes Muster, von der Verlustrate bereits ausgeschlossen; die
+  Counts-Kachel bräuchte dann ein Anzeige-Mapping) ODER eigene Tabelle. Entscheidung
+  gehört in die Scheibe, hier NICHT vorentschieden.
+- (3d) NUR DEN NORMALISIERTEN BOT-NAMEN SPEICHERN, niemals rohe UA oder IP. Sonst zieht
+  die 30-Tage-Retentionspflicht (Manifest Tier 2) für Daten herein, die gar keine
+  natürliche Person betreffen. Ein Bot ist keine betroffene Person — das bleibt nur so,
+  wenn nichts Personenbezogenes mitgeschrieben wird.
+
+### PRODUKT-PHILOSOPHIE (Owner-Entscheidung, übernommen)
+- INFRASTRUKTUR = DEFAULT ON, passiv: Crawler-Erfassung, llms.txt, (auf Spur B)
+  semantisches Markup laufen im Hintergrund, ohne Seite oder Skripte des Nutzers zu
+  verändern.
+- CONTENT & SKRIPTE = FULL CONTROL: generierte llms.txt/JSON-LD sind im UI
+  überschreibbar und abschaltbar. GEO-Features dürfen NIEMALS benutzerdefiniertes
+  JavaScript (GTM, Custom Tracking, Pixel) blockieren, verändern oder umordnen — der
+  Fremd-Pixel-Fall aus Phase 8 hat gezeigt, wie schnell fremder Code mit eigenem
+  kollidiert.
+
+### VOR JEDER GEO-SCHEIBE ZU MESSEN (nicht annehmen)
+- Was passiert heute auf den Serving-Domains bei /robots.txt? (In den Vercel-Logs war ein
+  GET /robots.txt mit 307 zu sehen — ungeklärt.) Für GEO ist die robots.txt
+  mitentscheidend: viele Seiten sperren KI-Crawler pauschal aus. Die Crawler-Erlaubnis
+  gehört perspektivisch PRO PROJEKT steuerbar.
+- RESERVIERTE PFADE: /llms.txt (und ggf. /robots.txt) belegen einen Pfad auf der
+  KUNDEN-Domain. Das ist heute unkritisch (ein Projekt = eine Seite = ein Host), kollidiert
+  aber potenziell mit dem pfadbasierten Routing des Projekttyps "Business-Website" —
+  dort steht bereits die Auflage, das Pfad-Routing VOR jeder Umsetzung am echten Code zu
+  verifizieren. Beide Abschnitte zusammen lesen.
+- KILL-SWITCH GILT AUCH FÜR MASCHINEN: ein gesperrtes Projekt darf weder llms.txt noch
+  Inhalte an Crawler ausliefern. Der bestehende blocked-Check in der Serve-Route deckt
+  das ab — bei jedem neuen Ausgabepfad explizit mitprüfen.
+

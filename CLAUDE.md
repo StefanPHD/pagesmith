@@ -83,7 +83,12 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       "## Aktueller DB-/Analytics-Stand"; volle Herleitung: docs/claude-history/phase-8-analytics.md.
       Phase 8 bleibt OFFEN für Erweiterungen (eigene Scheiben): Uniques, Charts/Zeiträume,
       CAPI-Einbettung server-vereinheitlichen + Launch-Härtung.
-- [ ] Phase 9 — A/B-Testing: 50/50-Split über Edge-Logik. (war Phase 8)
+- [ ] Phase 9 — A/B-Testing: zwei Varianten je Projekt, 50/50-Split über die
+      Serving-Schicht. Geschnitten in 9a (Varianten-Authoring: html_b/mappings_b
+      + zweiter published-Key, KEIN Split), 9b (Split + First-Party-Session-
+      Cookie + variant-Spalte auf events) und 9c (Auswertung je Variante auf dem
+      Phase-8-Read-Fundament). Grundsatzentscheidungen + 9a-Spec: "## Aktiver
+      Stand — Phase 9".
 - [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
 
@@ -186,6 +191,100 @@ keine gepflegte schema_migrations-Tabelle) — messbar sind nur die WIRKUNGEN.
 - AUFGESCHOBEN (konditionale Optimierung, kein Footgun): CAPI-Forward auf Hintergrund-
   Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
   ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
+
+## Aktiver Stand — Phase 9 (A/B-Testing): Grundsatzentscheidungen + Scheibe 9a (Varianten-Authoring, KONZEPT — Bau als Nächstes)
+Zwei Varianten je Projekt, hälftiger Split, stabile Zuordnung pro Besuch. Bewusst MINIMAL:
+keine Gewichtung, keine Signifikanzrechnung, keine Multi-Varianten. Die future-roadmap hält
+fest, dass der Seiten-Level-Split mit zwei published-Blobs funktioniert und die
+JSON-Sektions-Architektur (Spur B) NICHT braucht — das ist der Schnitt.
+
+### Grundsatzentscheidungen (heute entschieden, Bau in 9b/9c)
+- STICKINESS = FIRST-PARTY SESSION-COOKIE auf der Serving-Domain, Wert ausschliesslich
+  'a' oder 'b' — KEINE ID, kein Zeitstempel, kein Profil. AUSGESCHLOSSEN: localStorage/
+  sessionStorage (fallen rechtlich unter dieselbe TTDSG-§25-Logik UND sind client-seitig,
+  also ZU SPÄT für einen Server-Split — das HTML ist längst raus); IP/UA-Hash (zöge die
+  30-Tage-Retentionspflicht herein, s. Manifest Tier 2, und wäre bei mobilen IPs instabil).
+  EHRLICHE EINORDNUNG (KEINE Rechtsberatung): die Einstufung als "unbedingt erforderlich"
+  (TTDSG §25(2) Nr. 2) ist für ein reines Varianten-Cookie vertretbar — der Nutzer hat DIESE
+  Seite angefordert, das Cookie liefert sie nur konsistent —, aber NICHT risikofrei:
+  Aufsichtsbehörden können A/B-Tests als Betreiber-Optimierung werten, dann wäre Einwilligung
+  nötig, was das Feature bricht (der Split muss VOR dem ersten Rendern fallen). Vor dem
+  öffentlichen Launch anwaltlich klären. PRODUKTPFLICHT: Pagesmith stellt dem Kunden einen
+  fertigen Doku-Schnipsel (Cookie-Name, Zweck, Lebensdauer) für dessen Datenschutzerklärung
+  bereit.
+- SPLIT-ARBEITSTEILUNG: die Middleware weist DB-LOS zu (Cookie lesen oder würfeln) und reicht
+  den Bucket per Header weiter; die Serve-Route, die die Projektdaten OHNEHIN lädt, entscheidet,
+  ob der Bucket überhaupt zählt, und setzt das Cookie in der Antwort. BEGRÜNDUNG: die Middleware
+  kennt das Projekt heute nicht (sie macht nur Host-Inversion); eine eigene Abfrage dort läge auf
+  dem heissesten Pfad der Plattform — für ein Feature, das die meisten Projekte nicht nutzen.
+  Gleiche Logik wie /API/E-SCHLANKHEIT.
+- PFLICHT-GATE 9b (CACHING, sonst "grün aber wirkungslos"): am echten Code/Deployment
+  verifizieren, ob auf dem Serve-Pfad CDN- oder Route-Caching greift. Ein gecachter Split
+  liefert ALLEN dieselbe Variante — der Test sieht aus, als liefe er, und misst nichts. Bei
+  AKTIVEM Test: Cache-Control: private, no-store. NUR bei aktivem Test — Projekte ohne Test
+  behalten ihr heutiges Caching, sonst zahlen alle für ein Feature, das die wenigsten nutzen.
+- VARIANTE IN DER ANALYTIK = EIGENE additive, NULLABLE Spalte auf events. NIEMALS in source
+  (source = Beobachtungs-ORT, s. "## Immer beachten"). Der SERVER liest die Variante aus dem
+  mitgesendeten First-Party-Cookie (der Beacon geht auf dieselbe Domain) -> kein client-freies
+  Feld, gleiche Achsen-Hygiene wie bei source. Export-Download auf fremder Domain: kein Cookie
+  -> variant bleibt NULL (bekannter, bereits dokumentierter schwächerer Fall). Die Spalte gilt
+  AUCH für __ps_pageview-Zeilen -> 9c bekommt Nenner (Besucher je Variante) und Zähler
+  (Conversions je Variante) aus derselben Tabelle. ORDERING: die Spalte kommt MIT dem Split
+  (9b), NICHT danach — sonst entstehen während der ersten Testphase Events ohne Zuordnung
+  (vermeidbarer Bestandsdaten-Skew, Lektion aus Scheibe B).
+
+### Scheibe 9a — Varianten-Authoring (KEIN Split)
+- ZWECK: ein Projekt kann eine zweite Variante tragen, bearbeiten und veröffentlichen. Die
+  Live-URL liefert weiterhin AUSSCHLIESSLICH A. Ohne zweiten Inhalt gibt es nichts zu splitten.
+- AUTHORING-ENTSCHEIDUNG (bewusstes Duplikat statt verfrühter Abstraktion): zweites Slot-Paar
+  ADDITIV auf der Projektzeile — html_b, mappings_b, beide NULLABLE. BEGRÜNDUNG: echte Varianten
+  brauchen zwei (html, mappings)-Paare, weil Mappings an den data-pagesmith-id-Element-IDs des
+  JEWEILIGEN HTML hängen. Die saubere Lösung wäre die pages-Tabelle ("Projekt = N Seiten"), die
+  laut future-roadmap strikt NACH Spur B kommt. Bei EXAKT ZWEI Fällen ist ein benanntes Duplikat
+  billiger und ehrlicher als eine Abstraktion auf Verdacht (gleiches Muster wie der permanente
+  /api/capi-Alias: benannte Ausnahme statt Umbau). BEI EINEM DRITTEN FALL wird dieses Modell
+  durch die pages-Tabelle ERSETZT, nicht erweitert.
+- VERWORFEN: (a) Variante B ohne Click&Connect (fertiges HTML einfügen) — bricht das
+  Kernversprechen, B wäre "tot"; (b) A einfrieren und den Editor-Zustand als B nehmen —
+  mentales Modell unklar ("welche bearbeite ich gerade?").
+- PUBLISHED-SEITE (Empfehlung, Stufe-1-Gate): published_content ist SERVER-geschrieben (NICHT
+  client-autoritativ wie settings) -> Variante B als zusätzlicher KEY im bestehenden jsonb statt
+  als neue Spalte. Additiv, kein Migrationsbedarf auf der Publish-Seite, EIN atomarer
+  Publish-Write.
+  FALLE (dieselbe Klasse wie der trackingKey-in-settings-Bug): ersetzt publishProject
+  published_content GANZHEITLICH, löscht ein Publish von A die veröffentlichte Variante B
+  STILL — kein Fehler, die Live-Seite läuft weiter, nur B ist weg. Stufe 1 MUSS am echten Code
+  belegen, WIE published_content geschrieben wird, und den Erhalt beider Keys als Invariante
+  ausweisen.
+- AKTIVIERUNG (Prinzip jetzt, Bau erst 9b): "Test läuft" wird NICHT aus der blossen Existenz
+  von html_b abgeleitet — sonst wäre "Test stoppen" nur durch LÖSCHEN von B möglich
+  (Datenverlust als Bedienschritt). 9b bekommt ein explizites, additives Flag. In 9a wird
+  NICHTS aktiviert.
+- SERVE-PFAD UNBERÜHRT: die Serve-Route liest weiterhin den A-Key. Ohne aktiven Test liefert
+  ein Projekt IMMER A — fail-safe by default, auch wenn B existiert.
+- EDITOR: ein A/B-Umschalter; der Editor arbeitet immer auf GENAU EINER Variante. ABLEITEN
+  STATT LÖSCHEN gilt doppelt: (i) der Umschalter ist projekt-abgeleiteter View-State und wird
+  beim Projektladen am kanonischen Chokepoint aus dem GELADENEN Projekt abgeleitet, nicht nur
+  zurückgesetzt; (ii) beim Umschalten müssen ALLE aus html/mappings abgeleiteten Zustände
+  (erkannte Elemente, Mapping-Anzeige, Orphan-/Weg-C-Netz, dirty-Tracking) auf die aktive
+  Variante NEU abgeleitet werden. Ein stehengebliebener A-Zustand über B-HTML zeigt Mappings
+  auf Element-IDs, die es dort nicht gibt.
+- INVARIANTEN: (i) Projekte OHNE B verhalten sich byte-gleich wie heute (Serve, Publish,
+  Export, Tracking, Statistik); (ii) ein Publish von A zerstört B nicht und umgekehrt;
+  (iii) trackingKey und PageView-Emitter-Injektion gelten pro PROJEKT, nicht pro Variante —
+  beide Varianten tragen denselben Key; (iv) KEIN Split, KEINE Cookie-Logik, KEINE
+  events-Änderung in 9a.
+- STUFE-1-GATES (am echten Code zu klären, VOR dem Plan): (1) wie schreibt publishProject
+  published_content — ganzheitlich oder feldweise? (2) welche Stellen im CodeImporter leiten
+  Zustand aus html/mappings ab — vollständige Liste, damit der Umschalter keine vergisst;
+  (3) was exportiert "Projekt exportieren" bei zwei Varianten? ENTSCHEIDUNG: die im Editor
+  AKTIVE Variante, im UI explizit benannt.
+- DEMOBAR / LIVE-TEST: (a) Projekt mit Variante B anlegen, B eigenes HTML + eigenes Mapping
+  geben, publishen -> published_content trägt BEIDE Keys (SQL-Gegenprobe); (b) die Live-URL
+  zeigt weiterhin A; (c) Umschalten A<->B im Editor zeigt jeweils die richtigen Elemente und
+  Mappings, kein Orphan-Rauschen; (d) REGRESSIONSPROBE: ein Projekt OHNE B verhält sich
+  unverändert (publishen, serven, Conversion tracken).
+- OFFEN -> 9b: Split + Cookie + variant-Spalte auf events. -> 9c: Auswertung je Variante.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

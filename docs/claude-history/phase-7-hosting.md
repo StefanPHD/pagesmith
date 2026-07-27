@@ -635,3 +635,43 @@ festgehalten damit sie nicht nur im Chat-Verlauf stecken:
   bei Kill-Switch, verified:true trotz fehlender DNS bei Vercel-Add).
 - Custom-Domain-Registrierung (Add/DNS-Anzeige/Status/Entfernen) ist damit als Feature
   vollständig, Ende-zu-Ende, in Produktion bewiesen.
+
+### NACHTRAG 2026-07-27 — Divergenz Live-URL vs. UI (live gefunden, behoben)
+BEFUND: Ein Projekt trug settings.hosting.label und vollständiges
+published_content, aber in public.domains existierte keine Zeile dazu. Die
+Serve-Route warf zu Recht notFound() — die Live-URL war dauerhaft 404, während
+das UI "veröffentlicht ✓" samt klickbarer Adresse zeigte.
+URSACHE (abgeschlossen): Der Code kann den Zustand in KEINER Richtung erzeugen.
+Am Code ausgeschlossen: Löschpfad (Serving-Row-Guard in remove.ts seit dem
+ersten Commit 0ddfc9e, getrennte Zeilen für Label und Custom-Host, KEINE
+DELETE-Policy für authenticated), Nicht-Anlegen (assignDomainLabel prüft den
+Insert-Fehler; jeder Fehlerausgang -> null; der Aufrufer bricht VOR jedem
+Schreibzugriff ab), CASCADE (das Projekt lebte), removeCustomDomain (kein
+audit_logs-Eintrag, und der Pfad protokolliert jeden Ausgang). Verbleibend: ein
+direkter Eingriff über SQL-Editor/Tabellenansicht — nicht belegbar, nicht
+ausschliessbar. Tragweite gemessen: Einzelfall (eines von neun Projekten mit
+Label).
+DER STRUKTURELLE FEHLER, unabhängig von der Ursache: zwei ungekoppelte
+Wahrheiten. Dazu KEINE Selbstheilung — getHostingLabel lieferte weiter einen
+Wert, der Vergabe-Zweig wurde nie betreten; ein Re-Publish schrieb nur
+published_content und blieb 404 (live gemessen).
+NEBENBEFUND am Schema: Die Begründung des partial-unique-Index in 0007 bezieht
+sich auf die NULL-Semantik von UNIQUE — sie ist KEINE Entscheidung dafür, dass
+ein Projekt mehrere Label-Zeilen haben darf. Der Zustand ist DB-seitig erlaubt
+(gemessen: heute nirgends real), deshalb wählt der Fix deterministisch: die
+Zeile aus settings gewinnt, sonst die älteste. Ein partial unique index auf
+(project_id) WHERE custom_host IS NULL wurde erwogen und bewusst zurückgestellt.
+VERIFIZIERT (live, 2026-07-27):
+- HEILUNG (GEMESSEN, der Kernfall): das betroffene Projekt re-publishen ->
+  Erfolg mit dem Zusatz "Adresse war nicht mehr erreichbar und wurde
+  wiederhergestellt"; die domains-Zeile existiert wieder mit DEMSELBEN Label,
+  custom_host NULL; die Live-URL liefert wieder Inhalt statt 404.
+- REGRESSION (GEMESSEN): ein gesundes Projekt re-publishen -> identische URL,
+  KEIN Wiederherstellungs-Zusatz, keine zusätzliche Zeile. Das Flag
+  unterscheidet korrekt.
+- CUSTOM-DOMAIN UNBERÜHRT (GEMESSEN): die Custom-Host-Zeile desselben Projekts
+  blieb "Live — DNS korrekt, TLS-Zertifikat aktiv".
+- MESSFALLE (real aufgetreten, deshalb hier vermerkt): eine Divergenz-Prüfung
+  ohne "and custom_host is null" im JOIN meldete ein Projekt mit Custom-Domain
+  fälschlich als DIVERGENZ_C. Der Browser widerlegte es sofort — die Subdomain
+  lieferte. Bei jeder künftigen Prüfung den Filter setzen.

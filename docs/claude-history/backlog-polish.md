@@ -116,3 +116,21 @@ miterledigen, sondern gebündelt abarbeiten.
   nachziehen lassen, statt einen 300-ms-Guard zu bauen (ein Guard wäre Überbau
   und ein zweiter Mechanismus neben dem bestehenden Flash-Guard).
 
+- "LEER" UND "NICHT LADBAR" SIND IM UI NICHT UNTERSCHEIDBAR (Statistik- und
+  Verlust-Kachel): getEventCounts liefert bei jedem Fehler [] und getAdblockLoss
+  null — die Kacheln zeigen dann "Noch keine Events" bzw. "Warte auf erste
+  Bestätigung", also eine AUSSAGE, die sie nicht belegen können. BESTANDS-
+  VERHALTEN, NICHT durch safeAction eingeführt (der .catch macht den Wurf nur
+  gleich zum bereits vorhandenen Fehlerverhalten der Actions).
+  -> Fix bräuchte einen DRITTEN UI-Zustand ("nicht ladbar") und damit eine
+  Rückgabeform, die ihn transportiert -> gehört zu 9c, nicht in eine eigene
+  Runde.
+- FEHLERTEXT-ZUORDNUNG NUR AUF ZWEI PFADEN ABGESICHERT (safeAction, 2026-07-27):
+  Tests nageln fest, dass der Speicherpfad SAVE_THROW_MESSAGE nutzt und der
+  Publish-Pfad sie NICHT trägt. Die übrigen Nicht-Speicherpfade (Löschen,
+  Umbenennen, Token, Varianten, Domains) haben keine Wortlaut-Assertion —
+  würde dort versehentlich die "deine Änderungen sind noch da"-Entwarnung
+  gesetzt, bliebe es unbemerkt. Heute folgenlos (alle nutzen den neutralen
+  Text).
+  -> Bei Bedarf EIN parametrisierter Test über alle Nicht-Speicherpfade statt
+  einzelner Assertions.

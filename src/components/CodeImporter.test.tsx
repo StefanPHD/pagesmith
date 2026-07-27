@@ -1361,6 +1361,34 @@ describe("CodeImporter — Scheibe 9b-1p: lokaler Fehler-Kanal + B-Publish-Hinwe
     expect(document.querySelector("span.truncate.text-red-600")).toBeNull();
   });
 
+  it("SLOT: Hinweis UND Riegel-Fehler zeigen den Satz GENAU EINMAL, nicht doppelt", async () => {
+    // Beide Quellen tragen im Fall "B nicht veroeffentlicht" DENSELBEN Satz
+    // (VARIANT_B_NOT_PUBLISHED_MESSAGE). Ohne den gemeinsamen Slot stuenden Hinweis
+    // (amber) und Fehler (rot) untereinander und wiederholten sich wortgleich.
+    const MSG =
+      "Variante B ist noch nicht veröffentlicht — erst veröffentlichen, dann den Test starten.";
+    getVariantBPublished.mockResolvedValue(false);
+    setAbTestActive.mockResolvedValueOnce({ ok: false as const, error: MSG } as never);
+    renderWithB();
+    openSettings();
+    // Ausgangslage: der Hinweis steht (genau einmal).
+    await waitFor(() =>
+      expect(variantSection().textContent).toContain("noch nicht veröffentlicht"),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Test starten" }));
+    // Nach dem Riegel: der Fehler ist da …
+    await waitFor(() => {
+      const el = variantSection().querySelector("p.text-red-600");
+      if (!el) throw new Error("kein Fehler");
+    });
+    // … und der Satz steht GENAU EINMAL im Dokument.
+    const occurrences = (document.body.textContent ?? "").split(MSG).length - 1;
+    expect(occurrences).toBe(1);
+    // Gegenprobe zur Prioritaet: der amber-Hinweis ist verdraengt, nicht danebengesetzt.
+    expect(variantSection().querySelector("p.text-amber-700")).toBeNull();
+  });
+
   it("TEST 2 (Invariante ii): ein SPEICHERN-Fehler bleibt im zentralen Kanal", async () => {
     saveProject.mockResolvedValueOnce({
       ok: false as const,

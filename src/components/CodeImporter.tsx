@@ -1884,25 +1884,32 @@ export default function CodeImporter({
                   „Test stoppen“ löscht nichts, es schaltet nur den Split ab.
                   Variante B muss veröffentlicht sein, damit der Test starten kann.
                 </span>
-                {/* BERATENDER HINWEIS (9b-1p), NICHT sperrend: erklaert VORHER, was
-                    der Server-Riegel sonst erst nach dem Klick sagt — derselbe Satz
-                    aus der geteilten Konstante. Nur bei EINDEUTIGEM false; bei null
-                    (nicht ermittelbar) und bei true steht hier nichts. Der Button
-                    bleibt in JEDEM Fall klickbar: Autoritaet ist der Server-Riegel,
-                    ein fehlgeschlagener Ladevorgang darf keine Aktion sperren, die
-                    funktionieren wuerde. */}
-                {variantBPublished === false && (
+                {/* EIN ANZEIGESLOT, ZWEI QUELLEN — PRIORITAET: FEHLER VOR HINWEIS.
+                    Sie schliessen sich gegenseitig aus, weil sie dieselbe Frage
+                    beantworten ("warum geht der Test gerade nicht?"): der HINWEIS
+                    sagt es vorab, der FEHLER nach dem Klick. Beide gleichzeitig hiess
+                    im Fall "B nicht veroeffentlicht" DENSELBEN Satz zweimal
+                    untereinander (beide aus VARIANT_B_NOT_PUBLISHED_MESSAGE).
+                    STRUKTURELL geloest, NICHT per Textvergleich: ein Vergleich der
+                    Inhalte wuerde nur DIESES Satzpaar entdecken und bei jedem
+                    kuenftigen Fehlertext, der dieselbe Ursache anders formuliert,
+                    wieder doppeln. Ein Slot kann per Konstruktion nur eines zeigen.
+                    Prioritaet FEHLER, weil er die juengere und konkretere Auskunft
+                    ist: er bezieht sich auf den Klick, den der Nutzer GERADE getan
+                    hat, und kann Ursachen nennen, die der Hinweis nicht kennt.
+                    HINWEIS-Regeln unveraendert: nur bei EINDEUTIGEM false; bei null
+                    (nicht ermittelbar) und bei true steht hier nichts, und der Button
+                    bleibt in JEDEM Fall klickbar (Autoritaet ist der Server-Riegel).
+                    Die zweite Render-Stelle neben "+ Variante B" bleibt, wie sie ist:
+                    dort gibt es keinen Hinweis, also auch keine Doppelung. */}
+                {variantStatus === "error" && variantError ? (
+                  <p className="w-full text-xs text-red-600">{variantError}</p>
+                ) : variantBPublished === false ? (
                   <p className="w-full text-xs text-amber-700">
                     {VARIANT_B_NOT_PUBLISHED_MESSAGE}
                   </p>
-                )}
+                ) : null}
               </div>
-              {/* LOKALER Fehler-Kanal der Varianten-Sektion — direkt beim geklickten
-                  Button und OHNE truncate (der zentrale saveError-Kanal in der
-                  Preview-Kopfzeile schnitt lange Meldungen ab). */}
-              {variantStatus === "error" && variantError && (
-                <p className="mb-3 text-xs text-red-600">{variantError}</p>
-              )}
               <p className="mb-3 text-xs text-gray-500">
                 Entfernt den <strong>Inhalt</strong> von Variante B (HTML +
                 Verknüpfungen) und nimmt sie aus der Veröffentlichung. Variante A

@@ -134,3 +134,12 @@ miterledigen, sondern gebündelt abarbeiten.
   Text).
   -> Bei Bedarf EIN parametrisierter Test über alle Nicht-Speicherpfade statt
   einzelner Assertions.
+- SCHMALER VIEWPORT VERDECKT FEHLERMELDUNGEN (live beobachtet 2026-07-27): Bei
+  geöffneter DevTools-Konsole bricht die Kopfzeile der Live-Preview-Zone um; der
+  Speichern-Button rutscht aus dem sichtbaren Bereich und die Fehlermeldung
+  daneben läuft unter das Aktion-Panel. Reines Responsive-Verhalten, KEIN Bug.
+  -> Relevanz trotzdem: der zentrale Fehlerkanal sitzt genau dort und trägt
+  zusätzlich "truncate". Ein Fehler kann damit unsichtbar oder abgeschnitten
+  sein — real passiert (ein fehlgeschlagenes Publish wirkte "sauber
+  durchgelaufen"). Das UI wird ohnehin neu gestaltet; beim Redesign gehört der
+  Kanal an eine Stelle, die nicht wegbrechen kann.

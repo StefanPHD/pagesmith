@@ -545,6 +545,21 @@ docs/claude-history/security-manifest-full.md.
   ([SUGGESTION] Synchronisations-Hinweis), falls eine neue Lektion hier fehlt, die
   noch nicht in seiner Checkliste steht — KEIN manuelles Nachziehen bei jeder neuen
   Zeile hier nötig, außer bei einer echten gemeldeten Lücke.
+- TESTDATEN UND TEST-SEQUENZ MÜSSEN DEN PRODUKTIVEN PFAD TREFFEN (Phase 9, zwei live
+  gefundene Fehlschläge): (1) DATENLAGE: der 9a-Umschalt-Test gab A und B bewusst
+  UNTERSCHIEDLICHES HTML, um die Ableitungskette maximal sichtbar zu machen — und sparte
+  damit ausgerechnet den Normalfall aus, den das Produkt selbst erzeugt (createVariantB
+  kopiert byte-genau; eine reine Text-Änderung lässt den Code unangetastet). Der Bug lebte
+  exakt dort. (2) SEQUENZ (die schärfere Ebene): der erste Fix-Versuch bekam einen Test, der
+  die divergenten Zustände als PROPS beim Mount seedete — die Divergenz existierte damit
+  schon beim ersten Umschalten, und der Test lief durch den funktionierenden Pfad. Der echte
+  Ablauf erzeugt sie erst DANACH (umschalten -> editieren -> speichern -> zurückschalten).
+  Der Fix wäre grün gewesen und hätte den Bug INTERMITTENT gemacht — die unangenehmste
+  Bug-Klasse. REGEL: Bei jedem Test gegen einen Zustandswechsel zuerst fragen, welche
+  Datenlage der produktive Pfad erzeugt UND durch welche SCHRITTFOLGE sie entsteht — maximal
+  unterscheidbare Fixtures und vorgeseedete Endzustände sind bequem und verfehlen die reale
+  Konstellation systematisch. Herleitung: die 9a-Sektion ("## Aktiver Stand — Phase 9",
+  NACHTRAG-Block).
 - DIFF-VORLAGE = GEZIELTE VERIFIKATION, NICHT VOLLTEXT-PFLICHT (Review-Kalibrierung, 2026-07-23):
   Nach jedem Bau wird die Vorlage für das Review dreistufig geliefert — Grundsatz: nichts wird
   stillschweigend durchgewunken, aber nicht alles muss im Wortlaut fließen (Volltext-Diffs fressen

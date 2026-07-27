@@ -103,4 +103,16 @@ miterledigen, sondern gebündelt abarbeiten.
   -> Fix-Richtung: renameProject die aktualisierte Zeile zurückgeben lassen und
   projects lokal patchen, statt die Liste neu zu laden. KEIN Optimistic UI —
   der Wert kommt weiterhin aus der bestätigten Server-Antwort.
+- EDIT-CANVAS BLITZT BEIM VARIANTENWECHSEL (nur bei UNTERSCHIEDLICHEM HTML,
+  live beobachtet 2026-07-27): Beim Umschalten rechnet der edit-srcDoc-Memo
+  SOFORT neu (neuer Marker, neue Overrides), während debouncedCode DEBOUNCE_MS
+  nachhinkt -> für ~300 ms steht ein hybrides Dokument im iframe (altes HTML +
+  neue Overrides), danach zieht der Code nach. Sichtbar als kurzes Aufblitzen
+  der vorigen Variante. Beim Kopie-Normalfall (identisches HTML) tritt es NICHT
+  auf. Kein Fehler, kein Datenweg betroffen (Export/Publish/Vorschau bauen aus
+  debouncedCode) — rein kosmetisch, im Memo-Kommentar als benanntes transientes
+  Fenster dokumentiert.
+  -> Fix-Richtung, falls es je stört: den Umschalt-Pfad debouncedCode SYNCHRON
+  nachziehen lassen, statt einen 300-ms-Guard zu bauen (ein Guard wäre Überbau
+  und ein zweiter Mechanismus neben dem bestehenden Flash-Guard).
 

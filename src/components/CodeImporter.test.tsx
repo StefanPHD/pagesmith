@@ -110,6 +110,10 @@ vi.mock("@/app/projects/domain-actions", () => ({
 
 // Erst nach dem Mock importieren, damit der Mock greift.
 import CodeImporter from "@/components/CodeImporter";
+import {
+  ACTION_THROW_MESSAGE,
+  SAVE_THROW_MESSAGE,
+} from "@/lib/safe-action";
 
 beforeEach(() => {
   // jsdom kennt scrollIntoView nicht; der Auswahl-Effekt ruft es auf.
@@ -1508,5 +1512,195 @@ describe("CodeImporter — Scheibe 9b-1p: lokaler Fehler-Kanal + B-Publish-Hinwe
     fireEvent.click(screen.getByRole("button", { name: "Variante B entfernen" }));
     fireEvent.click(screen.getByRole("button", { name: "Ja, entfernen" }));
     await waitFor(() => expect(getVariantBPublished).toHaveBeenCalledTimes(2));
+  });
+});
+
+describe("CodeImporter — safeAction: geworfene Server-Action-Fehler", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Original</h1>`;
+  const BOOM = () => Promise.reject(new Error("net::ERR_INTERNET_DISCONNECTED"));
+
+  it("TEST 1: saveProject WIRFT -> Meldung, Button wieder klickbar, dirty bleibt", async () => {
+    // Der live gemessene Fall: ohne Wrapper verlaesst die Exception den Handler,
+    // setSaveStatus bleibt auf "saving" und der Button ist dauerhaft ausgegraut.
+    saveProject.mockImplementationOnce(BOOM as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Original");
+    fireEvent.change(screen.getByPlaceholderText(/Füge hier deinen HTML-Code/), {
+      target: { value: HTML + "<p>neu</p>" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+
+    await waitFor(() =>
+      expect(document.body.textContent).toContain("konnte nicht abgeschlossen"),
+    );
+    // ZUORDNUNG DER ZWEI TEXTE (verbindlich, nicht kosmetisch): der Speicherpfad
+    // MUSS SAVE_THROW_MESSAGE nutzen. Die Entwarnung ist nur HIER belegbar —
+    // savedCode/savedMappings werden ausschliesslich im Erfolgszweig gesetzt, der
+    // Draft bleibt also wirklich stehen. Ohne diese Assertion bliebe ein Wechsel
+    // auf den neutralen Text unbemerkt, und der Nutzer verlöre die Information,
+    // die ihn vom Reload abhält.
+    expect(document.body.textContent).toContain(SAVE_THROW_MESSAGE);
+    expect(document.body.textContent).toContain("deine Änderungen sind noch da");
+    const btn = screen.getByRole("button", { name: /Erneut versuchen|Speichern/ });
+    expect((btn as HTMLButtonElement).disabled).toBe(false);
+    // dirty haelt: savedCode wurde nicht gesetzt.
+    expect(document.body.textContent).toContain("Ungespeicherte Änderungen");
+  });
+
+  it("TEST 2 (Invariante iii): sofortiger zweiter Versuch gelingt, ohne Reload", async () => {
+    saveProject.mockImplementationOnce(BOOM as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Original");
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await waitFor(() =>
+      expect(document.body.textContent).toContain("konnte nicht abgeschlossen"),
+    );
+
+    // Zweiter Klick — der Mock liefert jetzt wieder Erfolg.
+    fireEvent.click(screen.getByRole("button", { name: /Erneut versuchen|Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+    expect(saveProject).toHaveBeenCalledTimes(2);
+  });
+
+  it("TEST 3 (Invariante iv): Speichern ERFOLG + listProjects WIRFT -> Erfolg bleibt, KEIN Fehler", async () => {
+    listProjects.mockImplementationOnce(BOOM as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Original");
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+
+    await screen.findByRole("button", { name: /Gespeichert/ });
+    expect(document.body.textContent).not.toContain("konnte nicht abgeschlossen");
+  });
+
+  it("TEST 4: publishProject WIRFT -> Publish-Kanal, Button frei", async () => {
+    publishProject.mockImplementationOnce(BOOM as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Original");
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Veröffentlichen$/ }));
+
+    await waitFor(() =>
+      expect(document.body.textContent).toContain("konnte nicht abgeschlossen"),
+    );
+    // GEGENRICHTUNG der Zuordnung: ein Nicht-Speicherpfad darf die Entwarnung NIE
+    // tragen. Beim Publish gibt es keine "Aenderungen, die noch da sind" — der
+    // Zusatz waere eine falsche Beruhigung, und die ist schlimmer als ein
+    // neutraler Text.
+    expect(document.body.textContent).toContain(ACTION_THROW_MESSAGE);
+    expect(document.body.textContent).not.toContain(SAVE_THROW_MESSAGE);
+    expect(document.body.textContent).not.toContain("deine Änderungen sind noch da");
+    const btn = screen.getByRole("button", { name: /^Veröffentlichen$/ });
+    expect((btn as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it("TEST 5 (Invariante vi): setCapiToken WIRFT -> Meldung, und der TOKEN taucht in KEINER Ausgabe auf", async () => {
+    const SECRET = "EAAG-super-geheimes-token-xyz";
+    const spies = (["log", "warn", "error", "info", "debug"] as const).map((m) =>
+      vi.spyOn(console, m).mockImplementation(() => {}),
+    );
+    try {
+      // Der Fehler TRAEGT das Secret — so, wie ein Server-/Framework-Fehler die
+      // Payload echoen koennte. Genau das ist das Risiko: nicht dass der Wrapper
+      // das Argument bekaeme (er sieht nur einen Thunk), sondern dass er ein
+      // Error-Objekt weiterreicht, das es schon enthaelt. Ein Test mit einem
+      // harmlosen Fehler waere hohl (per Mutationsprobe belegt).
+      setCapiToken.mockImplementationOnce(
+        (() =>
+          Promise.reject(
+            new Error(`upstream rejected payload token=${SECRET}`),
+          )) as never,
+      );
+      render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+      fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+      fireEvent.change(screen.getByPlaceholderText(/CAPI-Token einfügen/), {
+        target: { value: SECRET },
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Setzen" }));
+
+      await waitFor(() =>
+        expect(document.body.textContent).toContain("konnte nicht abgeschlossen"),
+      );
+      // KERN: keine Konsolen-Ausgabe traegt das Secret.
+      for (const sp of spies) {
+        for (const call of sp.mock.calls) {
+          // String() statt JSON.stringify: letzteres verschluckt Funktionen und
+          // serialisiert Error zu {} — es haette den Leak nicht gesehen.
+          expect(call.map((a) => String(a)).join(" ")).not.toContain(SECRET);
+        }
+      }
+      // Und es steht auch nicht in der Fehlermeldung.
+      expect(document.body.textContent).not.toContain(SECRET);
+    } finally {
+      spies.forEach((sp) => sp.mockRestore());
+    }
+  });
+
+  it("TEST 6: Varianten-Actions WERFEN -> lokaler Varianten-Kanal, Busy frei", async () => {
+    setAbTestActive.mockImplementationOnce(BOOM as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Test starten" }));
+
+    const section = (
+      screen.getByRole("heading", { name: "Variante B" }).parentElement as HTMLElement
+    );
+    await waitFor(() =>
+      expect(section.querySelector("p.text-red-600")?.textContent).toContain(
+        "konnte nicht abgeschlossen",
+      ),
+    );
+    expect(
+      (screen.getByRole("button", { name: "Test starten" }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(false);
+  });
+
+  it("TEST 7: Lese-Effekt WIRFT -> Leer-Wert, kein hängender Zustand", async () => {
+    getEventCounts.mockImplementationOnce(BOOM as never);
+    getAdblockLoss.mockImplementationOnce(BOOM as never);
+    getVariantBPublished.mockImplementationOnce(BOOM as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+
+    await waitFor(() =>
+      expect(document.body.textContent).toContain("Noch keine Events."),
+    );
+    expect(document.body.textContent).toContain("Warte auf erste Bestätigung.");
+    // getVariantBPublished -> null: es wird NICHTS behauptet (kein Hinweis).
+    expect(document.body.textContent).not.toContain("noch nicht veröffentlicht");
+  });
+
+  it("AUFLAGE 3: Löschen ERFOLG + listProjects WIRFT -> Liste ohne das gelöschte Projekt, NICHT leer", async () => {
+    const PROJECTS = [
+      { id: "proj-1", name: "Alpha", updated_at: "2026-07-27T10:00:00.000Z" },
+      { id: "proj-2", name: "Beta", updated_at: "2026-07-27T09:00:00.000Z" },
+    ];
+    listProjects.mockImplementationOnce(BOOM as never);
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialProjects={PROJECTS}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /^Projekte/ }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Loeschen" })[0]);
+
+    await waitFor(() => expect(deleteProject).toHaveBeenCalledWith("proj-1"));
+    // Die uebrigen Projekte stehen weiterhin, das geloeschte ist weg.
+    await waitFor(() => expect(screen.queryByText("Alpha")).toBeNull());
+    // "Beta" steht MEHRFACH: in der Liste UND als "Aktiv: Beta" — genau der Beleg,
+    // dass remaining[0] der richtige Nachbar ist statt undefined (mit [] als
+    // Fallback waere der Editor faelschlich auf den Leerzustand gefallen).
+    expect(screen.getAllByText("Beta").length).toBeGreaterThan(0);
+    expect(document.body.textContent).not.toContain("Noch keine gespeicherten Projekte");
   });
 });

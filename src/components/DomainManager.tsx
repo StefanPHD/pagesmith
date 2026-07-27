@@ -11,6 +11,7 @@ import {
 import type { DomainStatus } from "@/lib/domains/status";
 import type { FineState } from "@/lib/domains/config";
 import { REGISTRAR_TERMS } from "@/lib/domains/registrar-terms";
+import { actionThrew, safeAction } from "@/lib/safe-action";
 
 // Minimale Custom-Domain-UI (7c-2c): verdrahtet die bereits getesteten Server-Funktionen
 // (addCustomDomain, checkDomainStatusAction, listProjectDomains) — bewusst KEINE Politur
@@ -35,7 +36,10 @@ export default function DomainManager({ projectId }: { projectId: string | null 
   // Reload nach dem Hinzufuegen (Event-Handler-Kontext). setState erst nach await.
   const loadList = useCallback(async () => {
     if (!projectId) return;
-    const res = await listProjectDomains(projectId);
+    const res = await safeAction(
+      () => listProjectDomains(projectId),
+      actionThrew()
+    );
     if (res.ok) {
       setDomains(res.domains);
       setLoadError(null);
@@ -50,7 +54,10 @@ export default function DomainManager({ projectId }: { projectId: string | null 
     if (!projectId) return;
     let cancelled = false;
     void (async () => {
-      const res = await listProjectDomains(projectId);
+      const res = await safeAction(
+      () => listProjectDomains(projectId),
+      actionThrew()
+    );
       if (cancelled) return;
       if (res.ok) {
         setDomains(res.domains);
@@ -79,7 +86,10 @@ export default function DomainManager({ projectId }: { projectId: string | null 
     if (!projectId || !input.trim() || adding) return;
     setAdding(true);
     setAddError(null);
-    const res = await addCustomDomain(projectId, input);
+    const res = await safeAction(
+      () => addCustomDomain(projectId, input),
+      { ...actionThrew(), reason: "internal_error" as const }
+    );
     setAdding(false);
     if (res.ok) {
       setInput("");
@@ -172,7 +182,10 @@ function DomainRow({
   async function handleRemove() {
     setRemoving(true);
     setRemoveError(null);
-    const res = await removeCustomDomainAction(domain.label);
+    const res = await safeAction(
+      () => removeCustomDomainAction(domain.label),
+      { ...actionThrew(), reason: "internal_error" as const }
+    );
     if (res.ok) {
       // Zeile verschwindet ueber den Parent-Reload -> kein lokaler setState danach noetig.
       await onChanged();
@@ -190,7 +203,10 @@ function DomainRow({
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const res = await checkDomainStatusAction(domain.label);
+      const res = await safeAction(
+        () => checkDomainStatusAction(domain.label),
+        { ...actionThrew(), reason: "internal_error" as const }
+      );
       if (!cancelled && res.ok) setStatus(res.status);
     })();
     return () => {
@@ -208,7 +224,12 @@ function DomainRow({
   function handleManualCheck() {
     if (checking || cooldownLeft > 0) return;
     setChecking(true);
-    void checkDomainStatusAction(domain.label).then((res) => {
+    // WRAPPER statt .then(): der setChecking(false)-Reset stand IM then-Callback —
+    // bei einer Rejection laeuft der nicht, und "Pruefe…" haengt dauerhaft.
+    void safeAction(
+      () => checkDomainStatusAction(domain.label),
+      { ...actionThrew(), reason: "internal_error" as const }
+    ).then((res) => {
       setChecking(false);
       if (res.ok) setStatus(res.status);
     });

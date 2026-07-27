@@ -56,6 +56,11 @@ import {
 import { getCapiProxyUrl } from "@/lib/capi/proxy";
 import { buildLiveUrl } from "@/lib/hosting/host";
 import { VARIANT_B_NOT_PUBLISHED_MESSAGE } from "@/lib/hosting/variant";
+import {
+  SAVE_THROW_MESSAGE,
+  actionThrew,
+  safeAction,
+} from "@/lib/safe-action";
 import { exportFilename } from "@/lib/export";
 import { validateUploadFile } from "@/lib/upload";
 import ActionPanel from "@/components/ActionPanel";
@@ -539,7 +544,7 @@ export default function CodeImporter({
   useEffect(() => {
     let cancelled = false;
     const load = projectId
-      ? getEventCounts(projectId)
+      ? getEventCounts(projectId).catch(() => [])
       : Promise.resolve<EventCount[]>([]);
     load.then((counts) => {
       if (!cancelled) setEventCounts(counts);
@@ -557,7 +562,7 @@ export default function CodeImporter({
   useEffect(() => {
     let cancelled = false;
     const load = projectId
-      ? getAdblockLoss(projectId)
+      ? getAdblockLoss(projectId).catch(() => null)
       : Promise.resolve<AdblockLoss | null>(null);
     load.then((loss) => {
       if (!cancelled) setAdblockLoss(loss);
@@ -585,7 +590,7 @@ export default function CodeImporter({
   useEffect(() => {
     let cancelled = false;
     const load = projectId
-      ? getVariantBPublished(projectId)
+      ? getVariantBPublished(projectId).catch(() => null)
       : Promise.resolve<boolean | null>(null);
     load.then((v) => {
       if (!cancelled) setVariantBPublished(v);
@@ -791,7 +796,10 @@ export default function CodeImporter({
     setVariantBusy(true);
     setVariantError(null);
     setVariantStatus("idle");
-    const result = await createVariantB(projectId);
+    const result = await safeAction(
+      () => createVariantB(projectId),
+      actionThrew()
+    );
     if (result.ok) {
       setStashHtml(result.html);
       setStashMappings(result.mappings);
@@ -834,7 +842,10 @@ export default function CodeImporter({
       mappings: stashMappings ?? [],
     };
 
-    const result = await removeVariantB(projectId);
+    const result = await safeAction(
+      () => removeVariantB(projectId),
+      actionThrew()
+    );
     if (result.ok) {
       // Erst die Wurzeln auf A zurueckholen (aus der oben festgehaltenen Kopie),
       // dann den Stash leeren. Beide Schritte lesen KEINEN State mehr.
@@ -928,9 +939,15 @@ export default function CodeImporter({
         setSaveStatus("error");
         return;
       }
-      result = await saveVariantB(projectId, stabilized, mappings, settings);
+      result = await safeAction(
+        () => saveVariantB(projectId, stabilized, mappings, settings),
+        actionThrew(SAVE_THROW_MESSAGE)
+      );
     } else {
-      result = await saveProject(projectId, stabilized, mappings, settings);
+      result = await safeAction(
+        () => saveProject(projectId, stabilized, mappings, settings),
+        actionThrew(SAVE_THROW_MESSAGE)
+      );
     }
     if (result.ok) {
       setCode(stabilized);
@@ -938,8 +955,25 @@ export default function CodeImporter({
       setSavedMappings(mappings);
       setSavedSettings(settings);
       setProjectId(result.id);
-      setProjects(await listProjects());
+      // ERFOLG ZUERST QUITTIEREN, DANN erst der Folge-Refresh (Invariante iv):
+      // stand setSaveStatus("saved") hinter listProjects(), liess ein Wurf DORT den
+      // Button haengen, OBWOHL gespeichert wurde. Die Projektliste ist ein
+      // Nebeneffekt (Sortierung nach updated_at) — eine veraltete Liste ist
+      // kosmetisch, ein faelschlicher Speicherfehler waere ein Datenverlust-Alarm.
       setSaveStatus("saved");
+      // Fallback = der aktuelle State: "lass die Liste, wie sie ist". KEIN [], das
+      // saehe aus, als waeren alle Projekte weg.
+      //
+      // BEKANNTE, AKZEPTIERTE DEGRADATION (kein Versehen): beim ERSTEN Speichern
+      // eines neuen Projekts kommt die id frisch aus dem Insert-Pfad — der Fallback
+      // `projects` kennt diese Zeile noch nicht. Wirft listProjects ausgerechnet
+      // dann, steht der Editor korrekt auf dem neuen Projekt (projectId gesetzt,
+      // gespeichert ist gespeichert), aber der Switcher listet es erst nach einem
+      // Reload. BEWUSST NICHT "repariert": einen Listeneintrag hier selbst zu bauen
+      // hiesse ERFINDEN statt ableiten — wir kennen id und Name, aber nicht die
+      // uebrige Zeilenform (updated_at kommt vom Server). Eine kosmetisch veraltete
+      // Liste ist der ehrlichere Zustand als eine mit einem halb erfundenen Eintrag.
+      setProjects(await safeAction(() => listProjects(), projects));
     } else {
       setSaveError(result.error);
       setSaveStatus("error");
@@ -960,7 +994,10 @@ export default function CodeImporter({
 
     setCapiTokenStatus("saving");
     setCapiTokenError(null);
-    const result = await setCapiToken(projectId, capiTokenInput);
+    const result = await safeAction(
+      () => setCapiToken(projectId, capiTokenInput),
+      actionThrew()
+    );
     if (result.ok) {
       setSettings((prev) =>
         setCapiState(prev, { trackingKey: result.trackingKey, tokenSet: true }),
@@ -980,7 +1017,10 @@ export default function CodeImporter({
     if (!projectId || capiRemoving) return;
     setCapiRemoving(true);
     setCapiTokenError(null);
-    const result = await removeCapiToken(projectId);
+    const result = await safeAction(
+      () => removeCapiToken(projectId),
+      actionThrew()
+    );
     if (result.ok) {
       // tokenSet:false in settings UND savedSettings spiegeln (trackingKey erhalten,
       // wie serverseitig) -> "••• gesetzt" verschwindet, kein false-dirty.
@@ -1098,20 +1138,24 @@ export default function CodeImporter({
     const pairA = activeVariant === "a" ? activePair : inactivePair;
     const pairB = activeVariant === "b" ? activePair : inactivePair;
 
-    const result = await publishProject(
-      projectId,
-      buildDocumentFor(pairA.html, pairA.mappings, "/api/e"),
-      { html: pairA.html, mappings: pairA.mappings, settings },
-      hasVariantB
-        ? {
-            functionalHtml: buildDocumentFor(
-              pairB.html,
-              pairB.mappings,
-              "/api/e"
-            ),
-            mappings: pairB.mappings,
-          }
-        : undefined
+    const result = await safeAction(
+      () =>
+        publishProject(
+          projectId,
+          buildDocumentFor(pairA.html, pairA.mappings, "/api/e"),
+          { html: pairA.html, mappings: pairA.mappings, settings },
+          hasVariantB
+            ? {
+                functionalHtml: buildDocumentFor(
+                  pairB.html,
+                  pairB.mappings,
+                  "/api/e"
+                ),
+                mappings: pairB.mappings,
+              }
+            : undefined
+        ),
+      actionThrew()
     );
     if (result.ok) {
       // Label in settings UND savedSettings spiegeln (settingsEqual ignoriert hosting
@@ -1145,7 +1189,10 @@ export default function CodeImporter({
     setVariantBusy(true);
     setVariantError(null);
     setVariantStatus("idle");
-    const result = await setAbTestActiveAction(projectId, !abTestActive);
+    const result = await safeAction(
+      () => setAbTestActiveAction(projectId, !abTestActive),
+      actionThrew()
+    );
     if (result.ok) {
       setAbTestActive(result.abTestActive);
     } else {
@@ -1325,7 +1372,7 @@ export default function CodeImporter({
     }
     if (dirty && !window.confirm("Ungespeicherte Aenderungen verwerfen und Projekt wechseln?"))
       return;
-    const proj = await loadProject(id);
+    const proj = await safeAction(() => loadProject(id), null);
     if (!proj) {
       setSaveError("Projekt konnte nicht geladen werden.");
       setSaveStatus("error");
@@ -1363,20 +1410,31 @@ export default function CodeImporter({
     const target = projects.find((p) => p.id === id);
     if (!window.confirm(`Projekt "${target?.name ?? ""}" wirklich loeschen?`)) return;
 
-    const result = await deleteProject(id);
+    const result = await safeAction(() => deleteProject(id), actionThrew());
     if (!result.ok) {
       setSaveError(result.error);
       setSaveStatus("error");
       return;
     }
 
-    const remaining = await listProjects();
+    // AUFLAGE 3 — Fallback = aktuelle Liste OHNE das gerade geloeschte Projekt.
+    // KEIN erfundener Zustand: der Primaervorgang war ERFOLGREICH, das Projekt ist
+    // wirklich weg; die lokale Liste um genau diesen Eintrag zu kuerzen, ist aus
+    // einer BEKANNTEN Tatsache abgeleitet. Ein [] saehe aus, als waeren ALLE
+    // Projekte weg, und remaining[0] unten waere undefined -> der Editor fiele
+    // faelschlich auf den Leerzustand statt auf den richtigen Nachbarn.
+    const remaining = await safeAction(
+      () => listProjects(),
+      projects.filter((p) => p.id !== id)
+    );
     setProjects(remaining);
 
     if (id === projectId) {
       // remaining ist nach updated_at desc sortiert -> [0] ist das zuletzt
       // bearbeitete verbleibende Projekt.
-      const next = remaining[0] ? await loadProject(remaining[0].id) : null;
+      const next = remaining[0]
+        ? await safeAction(() => loadProject(remaining[0].id), null)
+        : null;
       if (next) {
         setProjectId(next.id);
         setCode(next.html);
@@ -1403,13 +1461,15 @@ export default function CodeImporter({
     const name = renameValue.trim();
     setRenamingId(null);
     if (!name) return;
-    const result = await renameProject(id, name);
+    const result = await safeAction(() => renameProject(id, name), actionThrew());
     if (!result.ok) {
       setSaveError(result.error);
       setSaveStatus("error");
       return;
     }
-    setProjects(await listProjects());
+    // Fallback = der aktuelle State (Invariante iv): der Primaervorgang ist
+    // geglueckt, ein Wurf im Folge-Refresh darf ihn nicht in einen Fehler kippen.
+    setProjects(await safeAction(() => listProjects(), projects));
   }
 
   return (

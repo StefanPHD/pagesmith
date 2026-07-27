@@ -84,11 +84,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Phase 8 bleibt OFFEN für Erweiterungen (eigene Scheiben): Uniques, Charts/Zeiträume,
       CAPI-Einbettung server-vereinheitlichen + Launch-Härtung.
 - [ ] Phase 9 — A/B-Testing: zwei Varianten je Projekt, 50/50-Split über die
-      Serving-Schicht. Geschnitten in 9a (Varianten-Authoring: html_b/mappings_b
-      + zweiter published-Key, KEIN Split), 9b (Split + First-Party-Session-
-      Cookie + variant-Spalte auf events) und 9c (Auswertung je Variante auf dem
-      Phase-8-Read-Fundament). Grundsatzentscheidungen + 9a-Spec: "## Aktiver
-      Stand — Phase 9".
+      Serving-Schicht. Geschnitten in 9a (Varianten-Authoring — ABGESCHLOSSEN &
+      live bewiesen 2026-07-27, Migration 0016), 9b (Split + First-Party-Session-
+      Cookie + variant-Spalte auf events — OFFEN) und 9c (Auswertung je Variante
+      — OFFEN). Grundsatzentscheidungen + 9a-Spec: "## Aktiver Stand — Phase 9".
 - [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
 

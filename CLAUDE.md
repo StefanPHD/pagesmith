@@ -211,17 +211,36 @@ JSON-Sektions-Architektur (Spur B) NICHT braucht — das ist der Schnitt.
   öffentlichen Launch anwaltlich klären. PRODUKTPFLICHT: Pagesmith stellt dem Kunden einen
   fertigen Doku-Schnipsel (Cookie-Name, Zweck, Lebensdauer) für dessen Datenschutzerklärung
   bereit.
-- SPLIT-ARBEITSTEILUNG: die Middleware weist DB-LOS zu (Cookie lesen oder würfeln) und reicht
-  den Bucket per Header weiter; die Serve-Route, die die Projektdaten OHNEHIN lädt, entscheidet,
-  ob der Bucket überhaupt zählt, und setzt das Cookie in der Antwort. BEGRÜNDUNG: die Middleware
-  kennt das Projekt heute nicht (sie macht nur Host-Inversion); eine eigene Abfrage dort läge auf
-  dem heissesten Pfad der Plattform — für ein Feature, das die meisten Projekte nicht nutzen.
-  Gleiche Logik wie /API/E-SCHLANKHEIT.
-- PFLICHT-GATE 9b (CACHING, sonst "grün aber wirkungslos"): am echten Code/Deployment
-  verifizieren, ob auf dem Serve-Pfad CDN- oder Route-Caching greift. Ein gecachter Split
-  liefert ALLEN dieselbe Variante — der Test sieht aus, als liefe er, und misst nichts. Bei
-  AKTIVEM Test: Cache-Control: private, no-store. NUR bei aktivem Test — Projekte ohne Test
-  behalten ihr heutiges Caching, sonst zahlen alle für ein Feature, das die wenigsten nutzen.
+- SPLIT LIEGT KOMPLETT IN DER SERVE-ROUTE (KORRIGIERT 2026-07-27, die frühere
+  Fassung sah eine Middleware-Zuweisung per Header vor — sie ist am Code und an
+  einer Messung widerlegt): Die Serve-Route hat ALLES, was der Split braucht: das
+  Cookie steht im Request (sie liest bereits request.headers), das Projekt lädt
+  sie ohnehin, und das Response-Objekt gehört ihr (new Response mit eigenem
+  Header-Objekt) -> Set-Cookie und Cache-Control sind dort ohne Umbau setzbar.
+  Der Split ist bei uns KEIN Routing-Problem: beide Varianten kommen aus DEMSELBEN
+  published_content DERSELBEN Route. Die Middleware bleibt UNBERÜHRT.
+  DER EINZIGE GRUND, der für die Middleware gesprochen hätte, war die Frage, ob
+  die Route bei CDN-Cache-Hits übersprungen wird — GEMESSEN und ausgeschlossen
+  (s. nächstes Bullet). Ein Würfelwurf in der Middleware liefe zudem für JEDES
+  Projekt, auch für die grosse Mehrheit ohne Test.
+- CACHING-GATE: BESTANDEN (GEMESSEN 2026-07-27, curl gegen eine veröffentlichte
+  Seite, drei Aufrufe inkl. einem nach 60s Pause): Cache-Control: public,
+  max-age=0, must-revalidate · Age: 0 · X-Vercel-Cache: MISS bei ALLEN Aufrufen ·
+  x-vercel-id ändert sich jedes Mal. Die Serve-Route läuft bei JEDEM
+  Besucher-Request, das CDN fängt nichts ab. Am Code passt das zusammen:
+  app-serve/route.ts trägt export const dynamic = "force-dynamic" und setzt heute
+  KEINEN eigenen Cache-Control-Header.
+  TROTZDEM SETZT 9b BEI AKTIVEM TEST "Cache-Control: private, no-store" — und der
+  Grund ist NICHT primär das Vercel-CDN, sondern das Cookie: die heutige Antwort
+  ist als "public" ausgewiesen, und eine als public markierte Antwort MIT
+  Set-Cookie ist die klassische Konstellation, in der ein geteilter Zwischen-Cache
+  Antwort samt Cookie speichert und mehreren Besuchern DENSELBEN Bucket gibt.
+  must-revalidate verhindert das praktisch; "private, no-store" macht es
+  strukturell unmöglich. NUR bei aktivem Test — Projekte ohne Test behalten ihre
+  heutigen Header unverändert (Invariante: kein Verhaltenswechsel für Bestand).
+  OFFENER MESSPUNKT für den 9b-1-Live-Test: dieselbe Header-Trias
+  (x-vercel-cache / age / cache-control) einmal MIT gesetztem Cookie prüfen — es
+  gibt heute keine Serving-Antwort mit Set-Cookie, also keinen Präzedenzfall.
 - VARIANTE IN DER ANALYTIK = EIGENE additive, NULLABLE Spalte auf events. NIEMALS in source
   (source = Beobachtungs-ORT, s. "## Immer beachten"). Der SERVER liest die Variante aus dem
   mitgesendeten First-Party-Cookie (der Beacon geht auf dieselbe Domain) -> kein client-freies
@@ -332,6 +351,90 @@ JSON-Sektions-Architektur (Spur B) NICHT braucht — das ist der Schnitt.
   Text ändern + übernehmen erzeugt KEINEN Reload-Sprung. Der Marker taucht im Export NICHT
   auf.
 - OFFEN -> 9b: Split + Cookie + variant-Spalte auf events. -> 9c: Auswertung je Variante.
+
+### Scheibe 9b-1 — Split + Cookie + Aktivierung (KONZEPT — Bau als Nächstes)
+Erste Hälfte von 9b: die Live-URL liefert erstmals BEIDE Varianten. Die
+Varianten-Dimension in events (Schreibpfad) ist ausdrücklich 9b-2. Grund für den
+Schnitt: 9b berührt ZWEI Kern-Pfade (Serve und Ingest) — beide in einer Scheibe
+anzufassen ist mehr Risiko als nötig.
+
+- MIGRATION 0017 (BEIDE Spalten auf einmal, damit es keinen zweiten
+  Migrationsschritt gibt — die events-Spalte wird aber erst in 9b-2 beschrieben):
+  - projects.ab_test_active boolean NOT NULL DEFAULT false. EIGENE SPALTE, NICHT
+    in settings: settings ist CLIENT-autoritativ und wird von saveProject
+    GANZHEITLICH ersetzt (2b-0-Lektion) — ein server-relevanter Schalter dort
+    stürbe beim nächsten Client-Save.
+  - CHECK projects_ab_test_needs_variant_b:
+    check (not ab_test_active or html_b is not null)
+    "Der Test kann nur aktiv sein, wenn B existiert." STRUKTURELL statt per
+    Konvention: vergisst removeVariantB das Flag, schlägt die DB LAUT fehl statt
+    still einen Test laufen zu lassen, dessen Variante es nicht mehr gibt.
+    Gleiche Denkfigur wie projects_variant_b_pair.
+  - events.variant text NULLABLE + CHECK (variant is null or variant in ('a','b')).
+    Additiv, KEIN Backfill, KEIN Index (nirgends gematcht; 9c aggregiert über
+    project_id). Wird in 9b-1 NICHT geschrieben — die Spalte kommt mit, damit 9b-2
+    keine zweite Migration braucht.
+- BUCKET-ZUWEISUNG: Cookie vorhanden und gültig -> dieser Bucket. Sonst
+  Münzwurf (hälftig), Ergebnis per Set-Cookie festhalten. KEINE Identität, kein
+  Hash, kein Zeitstempel — nur 'a' oder 'b'.
+- COOKIE-ATTRIBUTE (die Host-Frage ist die kritische):
+  - HOST-ONLY: das Domain-Attribut wird NICHT gesetzt. Mit Domain=.publayer.net
+    gälte das Cookie für ALLE Kundenprojekte auf der Wildcard — ein Besucher, der
+    bei Projekt X in Bucket B landet, bekäme bei Projekt Y ebenfalls B. Das wäre
+    stille Cross-Tenant-Kopplung der Messung, und wegen der Wildcard-Subdomains
+    der Normalfall, nicht der Sonderfall. Host-only heisst: ein Projekt, ein Host,
+    saubere Isolation.
+  - HttpOnly: der Client braucht den Wert nie — das Cookie fährt beim /api/e-Beacon
+    automatisch mit (first-party, gleicher Host). Kein Grund, es JS zugänglich zu
+    machen.
+  - Secure, SameSite=Lax (die Ad-Klick-Navigation ist top-level -> Lax reicht),
+    Path=/, KEIN Max-Age (Session-Cookie, s. Grundsatzentscheidung).
+  - Name namespaced nach bestehendem Muster (__ps_*).
+- FALLE — "AKTIV" HEISST NICHT "VERÖFFENTLICHT" (am Datenmodell hergeleitet): Der
+  CHECK garantiert, dass B als ENTWURF existiert (html_b), NICHT dass B
+  VERÖFFENTLICHT ist. Wer B anlegt und den Test aktiviert, OHNE neu zu publishen,
+  hat ab_test_active = true, aber KEINEN variantB-Key in published_content — die
+  Serve-Route würfelte Besucher in einen Bucket, der ins Leere greift. ZWEI
+  Massnahmen, bewusst beide:
+  (1) Die Aktivierungs-Action verweigert mit klarer Meldung, wenn published_content
+      keinen variantB-Key trägt ("Variante B ist noch nicht veröffentlicht — erst
+      veröffentlichen, dann den Test starten").
+  (2) Die Serve-Route fällt trotzdem auf A zurück, wenn der Bucket B ist und kein
+      variantB-Key existiert. Defense-in-Depth: die Route trifft nie eine Annahme
+      über den Publish-Zustand.
+- KILL-SWITCH HAT VORRANG: ein gesperrtes Projekt liefert 451 — kein Split, kein
+  Cookie, keine Variantenwahl. Der blocked-Check bleibt VOR jeder Varianten-Logik.
+- DEAKTIVIEREN: das Flag ist die AUTORITÄT, nicht das Cookie. Ist der Test aus,
+  liefert die Route IMMER A — auch wenn im Browser noch ein Cookie aus einem
+  früheren Test liegt. Fail-safe by default, gleiche Logik wie in 9a.
+- UI: ein Schalter in der bestehenden Varianten-Sektion (Test starten / Test
+  stoppen), sichtbar nur wenn B existiert. Der Zustand wird aus dem GELADENEN
+  Projekt ABGELEITET (ab_test_active), nicht lokal gehalten — "ABLEITEN STATT
+  LÖSCHEN". Klartext dazu: "Test stoppen" löscht NICHTS (das ist "Variante B
+  entfernen"), es schaltet nur den Split ab.
+- INVARIANTEN: (i) Projekte OHNE aktiven Test verhalten sich byte-gleich wie heute
+  (gleiche Antwort, gleiche Header, kein Cookie); (ii) der Kill-Switch bleibt
+  vorrangig und unverändert; (iii) Middleware, Ingest, events, CAPI-Pfad und
+  Publish-Pfad werden NICHT angefasst; (iv) das Cookie ist host-only und trägt
+  ausschliesslich 'a' oder 'b'; (v) ohne veröffentlichte Variante B liefert die
+  Route A.
+- DEMOBAR / LIVE-TEST: (a) REGRESSION zuerst — Projekt ohne Test: Antwort und
+  Header unverändert, KEIN Set-Cookie; (b) Test starten, Seite in einem frischen
+  Inkognito-Fenster laden -> Variante notieren, Cookie im DevTools prüfen
+  (host-only, HttpOnly, Secure, Session); (c) Reload -> DIESELBE Variante
+  (Stickiness); (d) zweites Inkognito-Fenster -> über mehrere Fenster hinweg
+  tauchen BEIDE Varianten auf; (e) Header-Probe mit gesetztem Cookie
+  (x-vercel-cache / age / cache-control — der offene Messpunkt aus den
+  Grundsatzentscheidungen); (f) Test stoppen -> alle Aufrufe liefern wieder A,
+  auch mit altem Cookie im Browser; (g) Kill-Switch-Gegenprobe: gesperrtes Projekt
+  -> 451, kein Cookie.
+- OFFEN -> 9b-2: variant in Ingest und Persist. VORAB ZU ENTSCHEIDEN (Gate für
+  9b-2): Soll der Ingest die Variante nur schreiben, wenn der Test AKTIV ist?
+  Ein altes Cookie nach Testende würde sonst Events einer Variante zuschreiben,
+  die gar nicht ausgeliefert wurde. Naheliegender Weg: den Resolver additiv um
+  ab_test_active erweitern (gleicher Präzedenzfall wie das blocked-Feld in 2a —
+  eine Spalte mehr im selben Select, KEINE zweite Query). Am Code zu prüfen, nicht
+  vorab zu setzen.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

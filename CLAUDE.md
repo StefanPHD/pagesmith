@@ -1122,3 +1122,7 @@ KEIN @-Import. Bei Arbeit an einem Thema die passende Datei gezielt lesen:
   Phase 10 (MCP), Funnel-Architektur, Owned-Traffic-Module, Smart-Tracking, Advanced
   Features.
 - docs/claude-history/backlog-polish.md — aufgeschobene Aufräumarbeiten (Polish-Liste).
+- supabase/checks/ — versionierte, NUR LESENDE Messproben für Live-Tests und Gegenproben.
+  KEIN Migrationsverzeichnis, wird nie automatisch angewandt. VOR jeder handgetippten
+  Prüf-Query dort nachsehen (dort steht auch, welche Fallen eine Probe hat — z.B. der
+  custom_host-Filter bei der Domain-Divergenz). Details: README im Ordner.

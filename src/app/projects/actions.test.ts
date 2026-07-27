@@ -42,8 +42,13 @@ import {
   saveVariantB,
   createVariantB,
   removeVariantB,
+  setAbTestActive,
   getEventCounts,
 } from "./actions";
+import {
+  deliverableVariantB,
+  type PublishedLike,
+} from "@/lib/hosting/variant";
 
 /**
  * Minimaler, chainbarer SSR-Client-Mock. Pro (table.op) ein Ergebnis:
@@ -371,7 +376,11 @@ describe("loadProject — Payload traegt NIE den Token", () => {
     expect(rec.selectCols).toEqual([
       {
         table: "projects",
-        cols: "id,name,html,mappings,settings,html_b,mappings_b",
+        // Scheibe 9b-1: ab_test_active kommt dazu — der UI-Schalter leitet seinen
+        // Zustand aus dieser Spalte ab (ABLEITEN STATT LOESCHEN). Schaerfe
+        // unveraendert; WEITERHIN AUSSERHALB: published_content und jede
+        // project_tokens-Spalte (s. die beiden Assertionen darueber/darunter).
+        cols: "id,name,html,mappings,settings,html_b,mappings_b,ab_test_active",
       },
     ]);
     expect(rec.selectCols[0].cols).not.toContain("published_content");
@@ -618,8 +627,15 @@ describe("removeVariantB (Scheibe 9a)", () => {
 
     const patch = rec.updatePatch as Record<string, unknown>;
     expect(patch).not.toHaveProperty("published_content");
+    // KEY-SET GEWACHSEN, SCHUTZZWECK UNVERAENDERT (Scheibe 9b-1): ab_test_active
+    // MUSS im selben Payload stehen, sonst verletzt das Entfernen von B bei
+    // laufendem Test den CHECK projects_ab_test_needs_variant_b und der Nutzer
+    // saehe einen rohen 23514-Fehler. Die Assertion bleibt EXAKT (sortierter
+    // Key-Vergleich, kein toContain): WEITERHIN AUSSERHALB bleiben html, mappings,
+    // settings, tracking_key — und published_content bleibt in diesem Fall
+    // (nie veroeffentlicht) GANZ draussen, was die Zeile darueber prueft.
     expect(Object.keys(patch).sort()).toEqual(
-      ["html_b", "mappings_b", "updated_at"].sort()
+      ["html_b", "mappings_b", "ab_test_active", "updated_at"].sort()
     );
   });
 
@@ -648,6 +664,167 @@ describe("removeVariantB (Scheibe 9a)", () => {
       results: { "projects.select": { data: null, error: null } },
     });
     const res = await removeVariantB("foreign");
+    expect(res.ok).toBe(false);
+    expect(rec.updatePatch).toBeNull();
+  });
+});
+
+describe("setAbTestActive (Scheibe 9b-1)", () => {
+  const PUBLISHED_WITH_B = {
+    html: "<h1>A live</h1>",
+    mappings: [],
+    settings: {},
+    publishedAt: "t",
+    variantB: { html: "<h1>B live</h1>", mappings: [] },
+  };
+
+  it("aktiviert und gibt den GESCHRIEBENEN Zustand zurueck (Client leitet daraus ab)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": {
+          data: { id: "proj-1", html_b: "<h1>B</h1>", published_content: PUBLISHED_WITH_B },
+          error: null,
+        },
+      },
+    });
+
+    const res = await setAbTestActive("proj-1", true);
+    expect(res).toEqual({ ok: true, abTestActive: true });
+
+    const patch = rec.updatePatch as Record<string, unknown>;
+    expect(Object.keys(patch).sort()).toEqual(["ab_test_active", "updated_at"].sort());
+    expect(patch.ab_test_active).toBe(true);
+    // Nichts anderes wird beruehrt — kein Draft, kein published_content.
+    expect(patch).not.toHaveProperty("html_b");
+    expect(patch).not.toHaveProperty("published_content");
+    // KEIN SELECT *: nur die drei gebrauchten Spalten.
+    expect(rec.selectCols[0]).toEqual({
+      table: "projects",
+      cols: "id,html_b,published_content",
+    });
+  });
+
+  it("VERWEIGERT, wenn Variante B nicht VEROEFFENTLICHT ist — und schreibt NICHTS", async () => {
+    // Der CHECK garantiert nur, dass B als ENTWURF existiert. Ohne variantB-Key in
+    // published_content wuerfelte die Route Besucher in einen Bucket, der ins Leere
+    // greift.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": {
+          data: {
+            id: "proj-1",
+            html_b: "<h1>B</h1>",
+            published_content: { html: "<h1>A live</h1>", mappings: [], settings: {}, publishedAt: "t" },
+          },
+          error: null,
+        },
+      },
+    });
+
+    const res = await setAbTestActive("proj-1", true);
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.error).toMatch(/noch nicht veröffentlicht/i);
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("VERWEIGERT bei LEEREM veroeffentlichtem B — der Zustand zwischen Existenz und Auslieferbarkeit", async () => {
+    // Der Befund, der dieses geteilte Praedikat erzwungen hat: html_b = "" ist
+    // erlaubt (der CHECK verlangt nur "is not null"), publiziert einen variantB-Key
+    // mit leerem html — eine reine EXISTENZ-Pruefung liesse die Aktivierung DURCH,
+    // und die Route degradierte still auf A. Das UI saegte "Test laeuft", alle
+    // Besucher saehen A, niemand merkt es.
+    for (const bad of ["", "   "]) {
+      const { rec } = makeClient({
+        user: { id: "user-1" },
+        results: {
+          "projects.select": {
+            data: {
+              id: "proj-1",
+              html_b: bad,
+              published_content: { html: "<h1>A</h1>", variantB: { html: bad } },
+            },
+            error: null,
+          },
+        },
+      });
+      const res = await setAbTestActive("proj-1", true);
+      expect(res.ok).toBe(false);
+      // Handlungsleitend: der Text nennt, WAS zu tun ist.
+      if (!res.ok) expect(res.error).toMatch(/keinen Inhalt/i);
+      expect(rec.updatePatch).toBeNull();
+    }
+  });
+
+  it("KONSISTENZ: Aktivierungs-Urteil == geteiltes Auslieferbarkeits-Praedikat", async () => {
+    // Beide Seiten (Aktivierung hier, Auslieferung im Resolver) muessen zum SELBEN
+    // Urteil kommen. Der Resolver-Gegenpart dieser Tabelle steht in resolve.test.ts
+    // und vergleicht gegen DASSELBE deliverableVariantB -> laeuft eine Seite je
+    // wieder aus, wird ihr eigener Test rot.
+    const fixtures: PublishedLike[] = [
+      null,
+      { html: "<h1>A</h1>" },
+      { html: "<h1>A</h1>", variantB: null },
+      { html: "<h1>A</h1>", variantB: {} },
+      { html: "<h1>A</h1>", variantB: { html: "" } },
+      { html: "<h1>A</h1>", variantB: { html: "   " } },
+      { html: "<h1>A</h1>", variantB: { html: "<h1>B</h1>" } },
+    ];
+
+    for (const pc of fixtures) {
+      makeClient({
+        user: { id: "user-1" },
+        results: {
+          "projects.select": {
+            data: { id: "proj-1", html_b: "<h1>B</h1>", published_content: pc },
+            error: null,
+          },
+        },
+      });
+      const res = await setAbTestActive("proj-1", true);
+      expect(res.ok).toBe(deliverableVariantB(pc) !== null);
+    }
+  });
+
+  it("VERWEIGERT ohne Variante B ueberhaupt (nie publiziert) — schreibt NICHTS", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": {
+          data: { id: "proj-1", html_b: null, published_content: null },
+          error: null,
+        },
+      },
+    });
+    const res = await setAbTestActive("proj-1", true);
+    expect(res.ok).toBe(false);
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("DEAKTIVIEREN ist bedingungslos: geht auch ohne veroeffentlichte B durch", async () => {
+    // Stoppen fuehrt IMMER in den fail-safen Zustand (Route liefert A) und darf an
+    // keiner Vorbedingung scheitern.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": {
+          data: { id: "proj-1", html_b: "<h1>B</h1>", published_content: null },
+          error: null,
+        },
+      },
+    });
+    const res = await setAbTestActive("proj-1", false);
+    expect(res).toEqual({ ok: true, abTestActive: false });
+    expect((rec.updatePatch as Record<string, unknown>).ab_test_active).toBe(false);
+  });
+
+  it("IDOR: fremde project_id -> Fehler, KEIN update", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: null, error: null } },
+    });
+    const res = await setAbTestActive("foreign", true);
     expect(res.ok).toBe(false);
     expect(rec.updatePatch).toBeNull();
   });

@@ -1,10 +1,19 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  deliverableVariantB,
+  nonEmptyHtml,
+  type PublishedLike,
+} from "@/lib/hosting/variant";
 
 // Form des in published_content abgelegten Snapshots. Fuer die Serve-Route zaehlt NUR
 // html (das beim Publish CLIENT-generierte funktionale Dokument); mappings/settings/
 // publishedAt reisen fuer Re-Publish/7b mit, werden hier NICHT gebraucht.
-type PublishedContent = { html?: string } | null;
+// Die Form des Blobs UND die beiden Pruefungen leben in der REINEN variant.ts —
+// dieselbe Nicht-Leer-Regel fuer A und B (Auflage 1) und dasselbe
+// Auslieferbarkeits-Praedikat, das auch die Aktivierungs-Action nutzt. Ein Import
+// aus server-only-Code in eine reine Datei ist zulaessig; umgekehrt nicht.
+type PublishedContent = PublishedLike;
 
 /**
  * Serve-Resultat (Kill-Switch, Tier 0). DISKRIMINIERT, damit die Route BLOCKED (451)
@@ -18,7 +27,19 @@ type PublishedContent = { html?: string } | null;
  * Phishing-Seite ist Reputationsschaden fuer ALLE auf der geteilten Wildcard.
  */
 export type ServeResult =
-  | { kind: "ok"; html: string }
+  | {
+      kind: "ok";
+      html: string;
+      // A/B-SPLIT (9b-1). BEIDE Felder erscheinen NUR GEMEINSAM und NUR, wenn der
+      // Split TATSAECHLICH ausgeliefert werden kann (Flag aktiv UND B nicht-leer
+      // vorhanden). Fehlen sie, ist das Ergebnis SHAPE-GLEICH zum Stand vor 9b-1 —
+      // dadurch ist Invariante (i) strukturell: "kein Test" und "Test aber ohne
+      // brauchbare Variante B" (B5-Degradation) sind fuer die Route nicht
+      // unterscheidbar und erzeugen dieselbe Antwort. Der literale true-Typ macht
+      // sichtbar, dass es kein "abTestActive: false" gibt.
+      abTestActive?: true;
+      variantBHtml?: string;
+    }
   | { kind: "blocked" }
   | { kind: "notfound" };
 
@@ -59,9 +80,13 @@ async function resolvePublished(
   if (domain.blocked_at) return BLOCKED;
 
   // Schritt 2: project_id -> published_content + blocked_at (Projekt-Ebene; kein Draft).
+  // ab_test_active reitet in DERSELBEN Projektion mit — eine Spalte mehr, KEIN
+  // zusaetzlicher Roundtrip (gleiche Disziplin wie blocked_at seit 7a). Das
+  // veroeffentlichte B-HTML braucht KEINE Query-Aenderung: published_content wird
+  // ohnehin GANZHEITLICH selektiert, der variantB-Key (9a) reist seit jeher mit.
   const { data: project, error: projectError } = await admin
     .from("projects")
-    .select("published_content, blocked_at")
+    .select("published_content, blocked_at, ab_test_active")
     .eq("id", domain.project_id)
     .maybeSingle();
 
@@ -69,8 +94,20 @@ async function resolvePublished(
   if (project.blocked_at) return BLOCKED;
 
   const published = project.published_content as PublishedContent;
-  const html = published?.html;
-  return html && html.trim() ? { kind: "ok", html } : NOT_FOUND;
+  const html = nonEmptyHtml(published?.html);
+  if (!html) return NOT_FOUND;
+
+  // Split NUR, wenn er auch WIRKLICH auslieferbar ist: Flag aktiv UND eine
+  // nicht-leere Variante B veroeffentlicht. Beides zusammen — sonst faellt das
+  // Ergebnis auf die Alt-Form zurueck und die Route liefert A, ohne Cookie und
+  // ohne geaenderten Cache-Header (B5-Degradation, fail-safe by default).
+  // Der Kill-Switch ist hier bereits passiert (beide blocked-Zweige oben) -> die
+  // Varianten-Logik ist strukturell unerreichbar fuer ein gesperrtes Projekt.
+  const variantBHtml = deliverableVariantB(published);
+  if (project.ab_test_active === true && variantBHtml) {
+    return { kind: "ok", html, abTestActive: true, variantBHtml };
+  }
+  return { kind: "ok", html };
 }
 
 /**

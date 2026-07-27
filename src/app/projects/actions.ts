@@ -17,6 +17,10 @@ import {
   slugForLabel,
 } from "@/lib/hosting/host";
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
+import {
+  deliverableVariantB,
+  type PublishedLike,
+} from "@/lib/hosting/variant";
 
 /**
  * Speichern-Ergebnis. Bei { ok: true } liefert die Action die (ggf. NEU
@@ -44,6 +48,10 @@ export type ProjectRow = {
   // den Gleichlauf, "html_b IS NOT NULL" ist die EINZIGE Existenz-Wahrheitsquelle.
   html_b: string | null;
   mappings_b: Mapping[] | null;
+  // A/B-Test aktiv? (Phase 9 Scheibe 9b-1). SERVER-autoritativ, eigene Spalte —
+  // NICHT in settings (das ist client-besessen und wuerde den Schalter beim
+  // naechsten saveProject wortlos zuruecksetzen).
+  ab_test_active: boolean;
 };
 
 /** Listen-Eintrag fuer den Projekt-Switcher (ohne das schwere html-Feld). */
@@ -88,7 +96,7 @@ export async function loadProject(id?: string): Promise<ProjectRow | null> {
 
   let query = supabase
     .from("projects")
-    .select("id,name,html,mappings,settings,html_b,mappings_b")
+    .select("id,name,html,mappings,settings,html_b,mappings_b,ab_test_active")
     .eq("user_id", user.id);
 
   if (id) {
@@ -329,9 +337,17 @@ export async function removeVariantB(
   if (!owned) return { ok: false, error: "Projekt nicht gefunden." };
 
   // Payload-Basis: die beiden Slots im Gleichlauf auf NULL (DB-CHECK).
+  //
+  // ab_test_active: false MUSS im SELBEN Payload stehen (Scheibe 9b-1): der CHECK
+  // projects_ab_test_needs_variant_b verbietet "Test aktiv ohne html_b". Liefe ein
+  // Test und wuerde B entfernt, wiese Postgres das Update mit 23514 zurueck und der
+  // Nutzer saehe beim harmlosen "Variante B entfernen" einen rohen Constraint-Fehler.
+  // EIN atomarer Update erfuellt den CHECK. Der CHECK bleibt trotzdem — er ist das
+  // Netz fuer einen KUENFTIGEN vierten Schreiber, nicht fuer diesen.
   const patch: Record<string, unknown> = {
     html_b: null,
     mappings_b: null,
+    ab_test_active: false,
     updated_at: new Date().toISOString(),
   };
 
@@ -353,6 +369,90 @@ export async function removeVariantB(
   if (updateError) return { ok: false, error: updateError.message };
 
   return { ok: true };
+}
+
+/**
+ * Ergebnis von setAbTestActive. Bei Erfolg liefert die Action den TATSAECHLICH
+ * geschriebenen Zustand zurueck, damit der Client seinen Schalter aus der
+ * SERVER-Antwort ableitet statt ihn lokal anzunehmen — dasselbe Muster wie
+ * createVariantB in 9a ("ABLEITEN STATT LOESCHEN", angewandt auf den Schalter).
+ */
+export type SetAbTestResult =
+  | { ok: true; abTestActive: boolean }
+  | { ok: false; error: string };
+
+/**
+ * Startet/stoppt den A/B-Test eines Projekts (Phase 9 Scheibe 9b-1).
+ *
+ * FALLE — "AKTIV" HEISST NICHT "VEROEFFENTLICHT": der DB-CHECK garantiert, dass B
+ * als ENTWURF existiert (html_b), NICHT dass B VEROEFFENTLICHT ist. Wer B anlegt
+ * und den Test aktiviert, OHNE neu zu publishen, haette ab_test_active = true, aber
+ * KEINEN variantB-Key in published_content — die Serve-Route wuerfelte Besucher in
+ * einen Bucket, der ins Leere greift. Darum verweigert die Aktivierung hier mit
+ * klarem Text. ZWEITE, unabhaengige Massnahme (Defense-in-Depth): die Serve-Route
+ * faellt in genau diesem Fall ohnehin auf A zurueck — sie trifft NIE eine Annahme
+ * ueber den Publish-Zustand.
+ *
+ * DEAKTIVIEREN ist bedingungslos: es fuehrt IMMER in den fail-safen Zustand
+ * (Route liefert A) und darf darum an keiner Vorbedingung scheitern.
+ *
+ * Ownership-Gate wie ueberall: user_id-Filter zusaetzlich zur RLS (defense in
+ * depth), Baustil wie setCapiToken. KEIN service_role — die projects-Zeile ist
+ * owner-lesbar und owner-schreibbar.
+ */
+export async function setAbTestActive(
+  projectId: string,
+  active: boolean
+): Promise<SetAbTestResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Nicht eingeloggt." };
+
+  const { data: owned, error: ownError } = await supabase
+    .from("projects")
+    .select("id,html_b,published_content")
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (ownError) return { ok: false, error: ownError.message };
+  if (!owned) return { ok: false, error: "Projekt nicht gefunden." };
+
+  if (active) {
+    if (owned.html_b === null || owned.html_b === undefined)
+      return { ok: false, error: "Variante B existiert nicht." };
+
+    // DASSELBE AUSLIEFERBARKEITS-PRAEDIKAT WIE DER SERVE-PFAD (deliverableVariantB).
+    // Pruefte die Aktivierung nur die EXISTENZ des variantB-Keys, waehrend die
+    // Auslieferung auf NICHT-LEER prueft, passte genau ein Zustand dazwischen:
+    // html_b = "" ist erlaubt (der DB-CHECK verlangt nur "is not null"), publiziert
+    // einen variantB-Key mit leerem html, die Aktivierung ginge DURCH — und die
+    // Route degradierte still auf A. Das UI saegte "Test laeuft", die Live-URL
+    // liefert ALLEN Besuchern A, und niemand merkt es.
+    const published = owned.published_content as PublishedLike;
+    if (!deliverableVariantB(published)) {
+      // Das URTEIL faellt allein das geteilte Praedikat; die Unterscheidung hier
+      // waehlt NUR den Text, damit der Nutzer die richtige Handlung sieht.
+      const hasKey =
+        !!published && typeof published === "object" && "variantB" in published;
+      return {
+        ok: false,
+        error: hasKey
+          ? "Variante B hat keinen Inhalt — erst Inhalt für Variante B speichern und veröffentlichen."
+          : "Variante B ist noch nicht veröffentlicht — erst veröffentlichen, dann den Test starten.",
+      };
+    }
+  }
+
+  const { error: updateError } = await supabase
+    .from("projects")
+    .update({ ab_test_active: active, updated_at: new Date().toISOString() })
+    .eq("id", projectId)
+    .eq("user_id", user.id);
+  if (updateError) return { ok: false, error: updateError.message };
+
+  return { ok: true, abTestActive: active };
 }
 
 /**

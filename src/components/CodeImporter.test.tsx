@@ -35,6 +35,7 @@ const {
   saveVariantB,
   createVariantB,
   removeVariantB,
+  setAbTestActive,
 } = vi.hoisted(() => ({
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
   // Scheibe 9a: die Varianten-Actions. saveVariantB ist der Spy, auf dem der
@@ -46,6 +47,8 @@ const {
     mappings: [],
   })),
   removeVariantB: vi.fn(async () => ({ ok: true as const })),
+  // Scheibe 9b-1: Default spiegelt "eingeschaltet" — einzelne Tests ueberschreiben.
+  setAbTestActive: vi.fn(async () => ({ ok: true as const, abTestActive: true })),
   listProjects: vi.fn(async () => []),
   // Rueckgabe bewusst Promise<unknown> -> einzelne Tests koennen via
   // mockResolvedValueOnce eine volle ProjectRow (inkl. settings) liefern.
@@ -83,6 +86,7 @@ vi.mock("@/app/projects/actions", () => ({
   saveVariantB,
   createVariantB,
   removeVariantB,
+  setAbTestActive,
 }));
 
 // DomainManager (in der Publish-Sektion gemountet) zieht ueber @/app/projects/domain-
@@ -1222,5 +1226,65 @@ describe("CodeImporter — Scheibe 9a: A/B-Varianten (Wurzeltausch)", () => {
     // Variante A ist unberuehrt (der Editor steht weiter auf A's Inhalt).
     expect(screen.getByText("Kaufen A")).toBeTruthy();
     expect(screen.getByRole("button", { name: "+ Variante B" })).toBeTruthy();
+  });
+});
+
+describe("CodeImporter — Scheibe 9b-1: A/B-Test-Schalter", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Original</h1>`;
+
+  function renderWith(abActive: boolean) {
+    return render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+        initialAbTestActive={abActive}
+      />,
+    );
+  }
+
+  it("ohne Variante B gibt es KEINEN Test-Schalter", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    expect(screen.queryByRole("button", { name: /Test starten|Test stoppen/ })).toBeNull();
+  });
+
+  it("Zustand wird aus dem Projekt ABGELEITET (initialAbTestActive)", async () => {
+    renderWith(true);
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    expect(screen.getByRole("button", { name: "Test stoppen" })).toBeTruthy();
+    expect(document.body.textContent).toContain("Test läuft");
+  });
+
+  it("RIEGEL: der Schalter uebernimmt die SERVER-Antwort, nicht die lokale Annahme", async () => {
+    // Der Server antwortet bewusst mit dem GEGENTEIL dessen, was ein lokaler Toggle
+    // ergaebe: lokal aus -> Klick -> lokale Annahme waere "an", der Server sagt
+    // aber "aus". Der Schalter MUSS dem Server folgen.
+    setAbTestActive.mockResolvedValueOnce({ ok: true as const, abTestActive: false });
+    renderWith(false);
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Test starten" }));
+
+    await waitFor(() => expect(setAbTestActive).toHaveBeenCalledWith("proj-1", true));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Test starten" })).toBeTruthy(),
+    );
+    expect(screen.queryByRole("button", { name: "Test stoppen" })).toBeNull();
+  });
+
+  it("Verweigerung (B nicht veroeffentlicht) -> Fehlertext, Schalter bleibt aus", async () => {
+    setAbTestActive.mockResolvedValueOnce({
+      ok: false as const,
+      error: "Variante B ist noch nicht veröffentlicht — erst veröffentlichen, dann den Test starten.",
+    } as never);
+    renderWith(false);
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Test starten" }));
+
+    await waitFor(() =>
+      expect(document.body.textContent).toMatch(/noch nicht veröffentlicht/),
+    );
+    expect(screen.getByRole("button", { name: "Test starten" })).toBeTruthy();
   });
 });

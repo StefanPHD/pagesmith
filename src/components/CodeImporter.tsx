@@ -22,6 +22,7 @@ import {
   renameProject,
   saveProject,
   saveVariantB,
+  setAbTestActive as setAbTestActiveAction,
   setCapiToken,
   type AdblockLoss,
   type EventCount,
@@ -119,6 +120,7 @@ export default function CodeImporter({
   initialSettings = {},
   initialVariantBHtml = null,
   initialVariantBMappings = null,
+  initialAbTestActive = false,
 }: {
   // Auto-Load: das zuletzt bearbeitete (bereits stabilisierte) HTML des Users.
   // Leer -> Editor startet leer wie bisher.
@@ -138,6 +140,9 @@ export default function CodeImporter({
   // projects.mappings_b. BEIDE null = dieses Projekt hat KEINE Variante B.
   initialVariantBHtml?: string | null;
   initialVariantBMappings?: Mapping[] | null;
+  // Laeuft der A/B-Test? (Phase 9 Scheibe 9b-1). Aus projects.ab_test_active —
+  // SERVER-autoritativ, projekt-abgeleitet wie die beiden Felder darueber.
+  initialAbTestActive?: boolean;
 }) {
   // Eingabe-State: aendert sich bei JEDEM Tastendruck und haelt die Textarea
   // sofort aktuell (Tippen darf nie auf Parsing/Preview warten). Startet mit dem
@@ -186,6 +191,11 @@ export default function CodeImporter({
   const [stashMappings, setStashMappings] = useState<Mapping[] | null>(
     initialVariantBMappings
   );
+  // Laeuft der A/B-Test? (9b-1) Projekt-ABGELEITET wie der Stash: wird am
+  // kanonischen Lade-Chokepoint (seedVariantState) aus dem GELADENEN Projekt
+  // gesetzt und nach dem Umschalten aus der SERVER-Antwort uebernommen, nie lokal
+  // angenommen.
+  const [abTestActive, setAbTestActive] = useState(initialAbTestActive);
   // Variante-B-Aktionen: transienter Status (destruktives Entfernen zweistufig,
   // exakt wie beim CAPI-Token). Projekt-ungebunden -> beim Kontextwechsel leeren.
   const [variantBusy, setVariantBusy] = useState(false);
@@ -604,7 +614,7 @@ export default function CodeImporter({
     setSavedSettings({});
     setSelectedElementId(null);
     // Leeres Projekt hat per Definition keine Variante B -> Stash leer, Variante A.
-    seedVariantState(null, null);
+    seedVariantState(null, null, false);
     // Leerer Kontext -> Panel offen (man muss importieren koennen), Flag frisch.
     applyZenForLoadedCode("");
   }
@@ -654,10 +664,18 @@ export default function CodeImporter({
   // speisen — ein bloss geleerter Stash zeigte ein Projekt MIT Variante B faelsch-
   // licherweise als "hat keine Variante B" ("ABLEITEN STATT LOESCHEN").
   // Der Editor startet in jedem neuen Projekt-Kontext auf Variante A.
-  function seedVariantState(htmlB: string | null, mappingsB: Mapping[] | null) {
+  function seedVariantState(
+    htmlB: string | null,
+    mappingsB: Mapping[] | null,
+    abActive: boolean
+  ) {
     setActiveVariant("a");
     setStashHtml(htmlB);
     setStashMappings(mappingsB);
+    // Der Test-Schalter spiegelt eine Projekt-Spalte -> hier ableiten, nicht nur
+    // zuruecksetzen. Sonst zeigte ein Projektwechsel den Testzustand von A weiter,
+    // waehrend B laengst geladen ist.
+    setAbTestActive(abActive);
   }
 
   // Variante umschalten: TAUSCHT die Wurzeln code/mappings gegen den Stash.
@@ -777,6 +795,11 @@ export default function CodeImporter({
       }
       setStashHtml(null);
       setStashMappings(null);
+      // Der Server hat ab_test_active im SELBEN Update auf false gesetzt (CHECK-
+      // Bedingung) -> der Client spiegelt genau das. Ohne B ist der Schalter zwar
+      // ohnehin unsichtbar, aber ein stehengebliebenes true waere ein falscher
+      // Zustand, der beim naechsten Anlegen von B wieder auftauchte.
+      setAbTestActive(false);
       setVariantBRemoveConfirming(false);
     } else {
       setSaveError(result.error);
@@ -1049,6 +1072,25 @@ export default function CodeImporter({
     }
   }
 
+  // A/B-Test starten/stoppen (9b-1). Der neue Zustand wird NICHT lokal angenommen,
+  // sondern aus der SERVER-Antwort uebernommen (result.abTestActive) — dasselbe
+  // Muster wie createVariantB: der Server ist die Wahrheitsquelle, der Client
+  // spiegelt. Bei Verweigerung (B nicht veroeffentlicht) bleibt der Schalter, wo er
+  // war, und der Grund erscheint im bestehenden Fehlerkanal.
+  async function handleToggleAbTest() {
+    if (!projectId || !hasVariantB || variantBusy) return;
+    setVariantBusy(true);
+    setSaveError(null);
+    const result = await setAbTestActiveAction(projectId, !abTestActive);
+    if (result.ok) {
+      setAbTestActive(result.abTestActive);
+    } else {
+      setSaveError(result.error);
+      setSaveStatus("error");
+    }
+    setVariantBusy(false);
+  }
+
   // Aktion zuweisen/aendern. ps-ID-ANKER (gemeinsame Logik in anchorMappingTarget):
   // bevor das Mapping gespeichert wird, muss die ps-ID des Ziel-Elements DAUERHAFT
   // im Code stehen, sonst verwaist es sofort. Bei Aenderung spiegeln wir den
@@ -1235,7 +1277,7 @@ export default function CodeImporter({
     setSettings(proj.settings);
     setSavedSettings(proj.settings);
     // Varianten-Zustand am SELBEN Punkt aus dem GELADENEN Projekt ableiten.
-    seedVariantState(proj.html_b, proj.mappings_b);
+    seedVariantState(proj.html_b, proj.mappings_b, proj.ab_test_active);
     setSelectedElementId(null);
     setIsProjectMenuOpen(false);
     // Zen-Default fuer den neuen Kontext: mit Code eingeklappt, leer offen.
@@ -1281,7 +1323,7 @@ export default function CodeImporter({
         setSettings(next.settings);
         setSavedSettings(next.settings);
         // Varianten-Zustand aus dem nachgerueckten Projekt ableiten.
-        seedVariantState(next.html_b, next.mappings_b);
+        seedVariantState(next.html_b, next.mappings_b, next.ab_test_active);
         setSelectedElementId(null);
         // Zen-Default fuer den nachgerueckten Kontext (resetToEmpty deckt den
         // leeren Fall im else selbst ab).
@@ -1735,6 +1777,42 @@ export default function CodeImporter({
               <h2 className="mb-1 text-sm font-medium text-gray-700">
                 Variante B
               </h2>
+              {/* A/B-Test-Schalter (Phase 9 Scheibe 9b-1). Zustand ABGELEITET aus
+                  ab_test_active (Projekt-Spalte), nicht lokal gehalten. Klartext
+                  zur Abgrenzung: "Test stoppen" löscht NICHTS — das ist
+                  "Variante B entfernen" darunter. */}
+              <div className="mb-4 flex flex-wrap items-center gap-3 rounded-md border border-gray-200 px-3 py-2">
+                <button
+                  type="button"
+                  onClick={handleToggleAbTest}
+                  disabled={variantBusy}
+                  className={`rounded-md px-3 py-1.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-gray-300 ${
+                    abTestActive
+                      ? "bg-amber-600 hover:bg-amber-700"
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
+                >
+                  {variantBusy
+                    ? "…"
+                    : abTestActive
+                      ? "Test stoppen"
+                      : "Test starten"}
+                </button>
+                {abTestActive ? (
+                  <span className="text-xs font-medium text-green-700">
+                    ● Test läuft — Besucher sehen zur Hälfte Variante A, zur Hälfte
+                    Variante B.
+                  </span>
+                ) : (
+                  <span className="text-xs text-gray-500">
+                    Test aus — die Live-URL liefert ausschließlich Variante A.
+                  </span>
+                )}
+                <span className="w-full text-xs text-gray-400">
+                  „Test stoppen“ löscht nichts, es schaltet nur den Split ab.
+                  Variante B muss veröffentlicht sein, damit der Test starten kann.
+                </span>
+              </div>
               <p className="mb-3 text-xs text-gray-500">
                 Entfernt den <strong>Inhalt</strong> von Variante B (HTML +
                 Verknüpfungen) und nimmt sie aus der Veröffentlichung. Variante A

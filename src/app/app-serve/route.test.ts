@@ -15,9 +15,14 @@ vi.mock("@/lib/hosting/resolve", () => ({
 }));
 
 import { GET } from "./route";
+import { VARIANT_COOKIE_NAME as CK } from "@/lib/hosting/variant";
 
 function req(host: string): Request {
   return new Request("http://internal/app-serve", { headers: { host } });
+}
+
+function reqCookie(host: string, cookie: string): Request {
+  return new Request("http://internal/app-serve", { headers: { host, cookie } });
 }
 
 function reqXfh(xForwardedHost: string, host: string): Request {
@@ -201,5 +206,100 @@ describe("GET /app-serve — Custom-Domain-Dispatch (Scheibe 7c-1 / 7c-2a)", () 
     const res = await GET(reqXfh("landing.kunde.de", "localhost"));
     expect(res.status).toBe(200);
     expect(getPublishedHtmlByCustomHost).toHaveBeenCalledWith("landing.kunde.de");
+  });
+});
+
+describe("GET /app-serve — A/B-Split (Scheibe 9b-1)", () => {
+  const OK_A = { kind: "ok", html: "<h1>VARIANTE A</h1>" } as const;
+  const OK_SPLIT = {
+    kind: "ok",
+    html: "<h1>VARIANTE A</h1>",
+    abTestActive: true,
+    variantBHtml: "<h1>VARIANTE B</h1>",
+  } as const;
+
+  // Referenz-Erhebung fuer Invariante (i): so sieht die Antwort OHNE Test aus.
+  async function snapshot(res: Response) {
+    return {
+      status: res.status,
+      body: await res.text(),
+      headers: [...res.headers.entries()].sort(),
+    };
+  }
+
+  it("Test INAKTIV -> Antwort wie heute, KEIN Set-Cookie, KEIN Cache-Control", async () => {
+    getPublishedHtmlByLabel.mockResolvedValue(OK_A);
+    const res = await GET(req("p.publayer.net"));
+    expect(res.status).toBe(200);
+    expect(await res.text()).toBe("<h1>VARIANTE A</h1>");
+    expect(res.headers.get("set-cookie")).toBeNull();
+    // Kein eigener Cache-Header -> Vercel/Next bestimmen ihn wie bisher.
+    expect(res.headers.get("cache-control")).toBeNull();
+  });
+
+  it("Test aktiv, KEIN Cookie -> Set-Cookie mit den zugesagten Attributen", async () => {
+    getPublishedHtmlByLabel.mockResolvedValue(OK_SPLIT);
+    const res = await GET(req("p.publayer.net"));
+    const cookie = res.headers.get("set-cookie") ?? "";
+    expect(cookie.startsWith(`${CK}=`)).toBe(true);
+    expect(cookie).toMatch(/=(a|b);/);
+    expect(cookie).toContain("Path=/");
+    expect(cookie).toContain("HttpOnly");
+    expect(cookie).toContain("Secure");
+    expect(cookie).toContain("SameSite=Lax");
+    // Der Riegel gegen Cross-Tenant-Kopplung ueber die Wildcard.
+    expect(cookie).not.toMatch(/Domain=/i);
+    expect(cookie).not.toMatch(/Max-Age|Expires/i);
+    // Bei tatsaechlichem Split wird der Cache-Header gesetzt.
+    expect(res.headers.get("cache-control")).toBe("private, no-store");
+  });
+
+  it("Test aktiv, Cookie 'b' -> B's HTML, KEIN erneutes Set-Cookie", async () => {
+    getPublishedHtmlByLabel.mockResolvedValue(OK_SPLIT);
+    const res = await GET(reqCookie("p.publayer.net", `${CK}=b`));
+    expect(await res.text()).toBe("<h1>VARIANTE B</h1>");
+    expect(res.headers.get("set-cookie")).toBeNull();
+    expect(res.headers.get("cache-control")).toBe("private, no-store");
+  });
+
+  it("Test aktiv, Cookie 'a' -> A's HTML (Gegenprobe)", async () => {
+    getPublishedHtmlByLabel.mockResolvedValue(OK_SPLIT);
+    const res = await GET(reqCookie("p.publayer.net", `foo=1; ${CK}=a; bar=2`));
+    expect(await res.text()).toBe("<h1>VARIANTE A</h1>");
+    expect(res.headers.get("set-cookie")).toBeNull();
+  });
+
+  it("Test aktiv, UNGUELTIGES Cookie -> frischer Muenzwurf + frisches Cookie", async () => {
+    getPublishedHtmlByLabel.mockResolvedValue(OK_SPLIT);
+    for (const raw of [`${CK}=x`, `${CK}=`, `${CK}=a; ${CK}=b`, "foo=1"]) {
+      getPublishedHtmlByLabel.mockResolvedValue(OK_SPLIT);
+      const res = await GET(reqCookie("p.publayer.net", raw));
+      expect((res.headers.get("set-cookie") ?? "").startsWith(`${CK}=`)).toBe(true);
+      // Kein Muellwert im Body: es ist genau eine der beiden echten Varianten.
+      expect(["<h1>VARIANTE A</h1>", "<h1>VARIANTE B</h1>"]).toContain(
+        await res.text()
+      );
+    }
+  });
+
+  it("B5: Resolver liefert die Alt-Form (kein Split auslieferbar) -> DEEP-EQUAL zum Nicht-Test-Fall", async () => {
+    // Der Resolver faltet "Flag aus", "kein variantB-Key" UND "leeres B-HTML"
+    // (Auflage 1) in dieselbe Alt-Form. Die Route kann sie darum gar nicht
+    // unterscheiden — genau das ist die Zusage.
+    getPublishedHtmlByLabel.mockResolvedValue(OK_A);
+    const reference = await snapshot(await GET(req("p.publayer.net")));
+    getPublishedHtmlByLabel.mockResolvedValue({ ...OK_A });
+    const degraded = await snapshot(await GET(req("p.publayer.net")));
+    expect(degraded).toEqual(reference);
+    expect(degraded.headers.map(([k]) => k)).not.toContain("set-cookie");
+    expect(degraded.headers.map(([k]) => k)).not.toContain("cache-control");
+  });
+
+  it("KILL-SWITCH hat Vorrang: gesperrt + Cookie -> 451, KEIN Set-Cookie", async () => {
+    getPublishedHtmlByLabel.mockResolvedValue({ kind: "blocked" });
+    const res = await GET(reqCookie("gesperrt.publayer.net", `${CK}=b`));
+    expect(res.status).toBe(451);
+    expect(res.headers.get("set-cookie")).toBeNull();
+    expect(await res.text()).not.toMatch(/VARIANTE/);
   });
 });

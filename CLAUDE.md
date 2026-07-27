@@ -210,6 +210,55 @@ kaputtgeht.
   NACH DEM FIX: die Regel gehört als Dauerregel nach "## Immer beachten" — jeder
   client-seitige Action-Aufruf über den Wrapper, sonst hängt der nächste neue
   Handler genauso.
+- LIVE-URL UND UI KÖNNEN AUSEINANDERLAUFEN — PROJEKT 404t DAUERHAFT (live
+  gefunden 2026-07-27, Ursache forensisch geklärt; Trigger: SOFORT, vor 9b-2):
+  BEFUND: Projekt "Scheibe 7b Test" trägt settings.hosting.label
+  "scheibe-7b-test-ef6dh9" und ein vollständiges published_content — aber in
+  public.domains existiert KEINE Zeile mehr dazu. Die Serve-Route wirft zu Recht
+  notFound(); die Live-URL ist dauerhaft 404, während das UI "veröffentlicht ✓"
+  samt klickbarer URL zeigt.
+  ZWEI UNGEKOPPELTE WAHRHEITEN (das ist der strukturelle Fehler, unabhängig von
+  der Ursache): settings.hosting.label ist CLIENT-besessen (saveProject ersetzt
+  settings GANZHEITLICH) und steuert das UI; die domains-Zeile ist
+  server-autoritativ und steuert die AUSLIEFERUNG (resolve.ts liest sie als
+  einzige Quelle). Sie werden beim ersten Publish gemeinsam geschrieben, aber
+  NICHT atomar (zwei Roundtrips) und danach nie wieder gegeneinander geprüft.
+  DIVERGENZ IN BEIDE RICHTUNGEN: (a) settings bleibt, domains-Zeile weg -> der
+  beobachtete Fall; (b) domains-Zeile bleibt, settings.hosting weg (ein Client
+  mit veraltetem settings-State überschreibt es) -> der nächste Publish vergibt
+  ein ZWEITES Label, die alte Zeile bleibt als Waise und servt weiter alten
+  Inhalt.
+  KEINE SELBSTHEILUNG (live gemessen): getHostingLabel liefert weiter einen
+  Wert, deshalb betritt publishProject den assignDomainLabel-Zweig nie. Ein
+  Re-Publish nach der 404-Entdeckung HAT geschrieben (updated_at 17:24 lokal) —
+  die Zeile existiert trotzdem nicht. Das Projekt kann sich nicht erholen.
+  URSACHE (abgeschlossen, nicht weiter zu verfolgen): Der Code kann den Zustand
+  in KEINER Richtung erzeugen. Ausgeschlossen und je am Code belegt: Löschpfad
+  (Guard remove.ts seit dem ersten Commit 0ddfc9e, getrennte Zeilen, KEINE
+  DELETE-Policy für authenticated), Nicht-Anlegen (assignDomainLabel prüft den
+  Insert-Fehler, jeder Fehlerausgang -> null, der Aufrufer bricht VOR jedem
+  Schreibzugriff ab), CASCADE (Projekt lebt), removeCustomDomain (kein
+  audit_logs-Eintrag; der Pfad protokolliert im finally, also jeden Ausgang).
+  Verbleibend: ein direkter Eingriff über SQL-Editor/Tabellenansicht — nicht
+  belegbar, nicht ausschliessbar, forensisch erledigt.
+  TRAGWEITE (gemessen): EINZELFALL. Von neun Projekten mit settings.hosting.label
+  hat genau eines keine passende domains-Zeile.
+  WARUM TROTZDEM SOFORT: für die Zielgruppe ist "UI sagt live, URL ist 404" der
+  teuerste Zustand des Produkts — Ad-Budget läuft auf eine tote Seite, und
+  nichts im Produkt meldet es.
+  FIX-RICHTUNG (nicht entschieden, eigene Stufe 1): domains als ALLEINIGE
+  Wahrheit. publishProject verifiziert die Zeile, statt settings blind zu
+  glauben, und legt sie bei Bedarf neu an (das Label steht in settings, ist also
+  ABLEITBAR, nicht erfunden) -> die Divergenz wird selbstkorrigierend. HEIKEL,
+  in Stufe 1 zu klären: (a) ein fremdes Projekt könnte das Label inzwischen
+  halten -> Kollisionsbehandlung, KEIN Label-Diebstahl; (b) der Publish-Status
+  im UI müsste perspektivisch aus der Zeile abgeleitet werden statt aus settings
+  (Muster: getVariantBPublished aus 9b-1p); (c) assignDomainLabel schreibt heute
+  KEINEN audit_logs-Eintrag — Label-Vergabe ist unprotokolliert, während
+  Custom-Domain-Mutationen es sind (Tier-1-Item "Domain-Mutations-Audit-Log" ist
+  damit nur teilweise erfüllt).
+  DIE BETROFFENE ZEILE BLEIBT UNREPARIERT — sie ist der Live-Test für die
+  Selbstheilung nach dem Fix.
 
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur

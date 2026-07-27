@@ -447,26 +447,64 @@ anzufassen ist mehr Risiko als nötig.
     fährt beim /api/e-Beacon im Request-Header MIT (DevTools -> Network -> /api/e). Der
     Ingest kann die Variante damit server-seitig aus dem Cookie lesen; 9b-2 braucht dafür
     keinen Ersatzweg.
-- OFFEN — UI-POLITUR (live gefunden 2026-07-27, KEIN Datenfehler, eigene kleine Runde vor
-  oder nach 9b-2):
-  (1) RIEGEL-MELDUNG FALSCH PLATZIERT: die Verweigerung ("Variante B ist noch nicht
-      veröffentlicht …") erscheint unten am Live-Preview statt direkt beim geklickten
-      Button in der Varianten-Sektion. Vermutlich läuft sie über den zentralen
-      saveError-Kanal; für einen sektionsgebundenen Riegel ist das der falsche Ort.
-  (2) FEHLENDE INFORMATION "IST DIESE VARIANTE VERÖFFENTLICHT?" (präzisierte Diagnose —
-      es ist KEIN Button-State-Bug): einen variantenbezogenen Publish-Status gibt es gar
-      nicht. Der Status kommt aus settings.hosting und ist PROJEKTWEIT; "Erneut
-      veröffentlicht" ist projektbezogen wahr, und ein Klick veröffentlicht seit 9a BEIDE
-      Varianten. Die Lücke ist, dass das UI "veröffentlicht ✓" zeigt, während B es nicht
-      ist — genau die Bedingung, die der Riegel drei Klicks später prüft. Der Nutzer
-      erfährt erst durch den Fehler, was vorher hätte sichtbar sein müssen.
-      GATE für die Fix-Scheibe (am Code zu klären, NICHT vorab entschieden): loadProject
-      selektiert published_content BEWUSST NICHT (die Bestandsassertion hält das als
-      "weiterhin ausserhalb" fest). Der Client hat die Information heute also gar nicht.
-      Den grossen Blob in den Ladepfad zu holen ist der falsche Weg — es braucht ein
-      SCHMALES abgeleitetes Signal (JSON-Pfad-Selektion im bestehenden Select? eigene
-      kleine Action nach dem getEventCounts-Muster? Rückgabe aus publishProject?). Am
-      Code erheben.
+- SCHEIBE 9b-1p — UI-POLITUR (Spec, live gefundene Punkte 2026-07-27, Bau als
+  Nächstes; KEIN Datenfehler, beides reine UI):
+  (1) FEHLER-KANAL DER VARIANTEN-SEKTION IST DER FALSCHE (am Code erhoben):
+      handleToggleAbTest, handleCreateVariantB und handleRemoveVariantB schreiben
+      in den ZENTRALEN saveError/saveStatus-Kanal, der an genau EINER Stelle
+      gerendert wird — in der Kopfzeile der Live-Preview-Zone, neben dem
+      Speichern-Button, mit "truncate". Der Schalter steht aber im
+      Einstellungs-Panel: die Meldung erscheint weit entfernt vom geklickten
+      Button UND wird dort abgeschnitten (nur per title-Tooltip lesbar).
+      ENTSCHEIDUNG: eigener lokaler State für die Varianten-Sektion nach dem
+      ETABLIERTEN Muster (<state>Error + <state>Status wie capiTokenError /
+      publishError; 6 von 8 Sektionen machen es bereits so — die beiden
+      Ausreisser sind genau diese 9a/9b-1-Handler). Gerendert direkt in der
+      Varianten-Sektion, OHNE truncate.
+      saveError bleibt UNANGETASTET: es hat neun Schreiber, darunter Speichern,
+      Projektwechsel, Löschen und Umbenennen — ein Umhängen wäre invasiv, ein
+      eigener State ist additiv.
+  (2) FEHLENDE INFORMATION "IST VARIANTE B VERÖFFENTLICHT?" (KEIN
+      Button-State-Bug — am Code bestätigt): der Publish-Indikator speist sich
+      aus settings.hosting.label und ist PROJEKTWEIT; er ist inhaltlich korrekt
+      und beantwortet nur eine andere Frage als der Riegel. Es fehlt eine
+      Information, kein Zustand.
+      DATENWEG — ENTSCHIEDEN: eine eigene kleine Read-Action nach dem
+      getEventCounts-Muster (Session-Check -> Query -> {data,error} -> sicherer
+      Leer-Wert). Sie liest published_content SERVERSEITIG und gibt nur ein
+      Boolean zurück; das Urteil fällt DORT das geteilte Prädikat
+      deliverableVariantB (variant.ts) — dasselbe wie im Serve-Pfad und in
+      setAbTestActive, KEIN drittes Urteil.
+      VERWORFEN, mit Grund: (a) JSON-Pfad-Selektion im loadProject-Select — es
+      gibt im ganzen Projekt keinen PostgREST-Präzedenzfall dafür, und ein
+      published_content->variantB->>html zöge das KOMPLETTE B-HTML in den
+      Ladepfad (schlimmer als der Blob-Verzicht, den die Randbedingung schützt);
+      zudem wanderte das Auslieferbarkeits-Urteil in den Client. (c) Rückgabe
+      aus publishProject als ALLEINIGE Quelle — bricht bei Reload und
+      Projektwechsel ("ABLEITEN STATT LÖSCHEN"). (d) abgeleitete Spalte beim
+      Publish — zweiter Wahrheitsträger neben published_content, müsste
+      publishProject anfassen (bislang durch beide 9er-Scheiben byte-identisch)
+      und wäre per CHECK über einen jsonb-Pfad kaum absicherbar; nach dem
+      9b-1-Befund (zwei divergierende Urteile) die falsche Richtung.
+      ABLEITUNG: Effect auf [projectId] mit cancelled-Guard wie eventCounts /
+      adblockLoss, plus Refetch nach erfolgreichem Publish und nach
+      removeVariantB. Kein lokal angenommener Wert.
+      ORT: in der VARIANTEN-SEKTION beim Test-Schalter — dort greift der Riegel,
+      dort gehört die Information hin. Die projektweite Publish-Statuszeile
+      bleibt UNVERÄNDERT (sie ist korrekt).
+      BERATEND, NICHT SPERREND: der Hinweis erklärt vorab, was der Riegel sonst
+      erst nach dem Klick sagt — der Button wird NICHT deaktiviert. Autorität
+      bleibt der SERVER-Riegel in setAbTestActive. Grund: ein fehlgeschlagener
+      oder noch laufender Ladevorgang darf keine Aktion sperren, die
+      funktionieren würde; ist der Wert nicht ermittelbar (null), wird KEIN
+      Hinweis gezeigt und nichts behauptet.
+  INVARIANTE für beide Punkte: für Projekte OHNE Variante B ändert sich am UI
+  NICHTS (hasVariantB ist das etablierte Gate).
+  NICHT IN DIESER RUNDE (erhoben, gehört zu 9c): die Statistik-Sektion
+  (get_event_counts) und die Adblocker-Kachel (get_adblock_loss) aggregieren
+  PROJEKTWEIT. Sobald 9b-2 events.variant füllt, wären Zahlen je Variante
+  möglich; die Gesamtzahl wäre dann uninformativ, aber nicht falsch. Das ist
+  9c-Gebiet und wird HIER nicht angefasst.
 - OFFEN -> 9b-2: variant in Ingest und Persist. VORAB ZU ENTSCHEIDEN (Gate für
   9b-2): Soll der Ingest die Variante nur schreiben, wenn der Test AKTIV ist?
   Ein altes Cookie nach Testende würde sonst Events einer Variante zuschreiben,

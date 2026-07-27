@@ -352,7 +352,7 @@ JSON-Sektions-Architektur (Spur B) NICHT braucht — das ist der Schnitt.
   auf.
 - OFFEN -> 9b: Split + Cookie + variant-Spalte auf events. -> 9c: Auswertung je Variante.
 
-### Scheibe 9b-1 — Split + Cookie + Aktivierung (KONZEPT — Bau als Nächstes)
+### Scheibe 9b-1 — Split + Cookie + Aktivierung (ABGESCHLOSSEN — live bewiesen (2026-07-27), Migration 0017 gelaufen)
 Erste Hälfte von 9b: die Live-URL liefert erstmals BEIDE Varianten. Die
 Varianten-Dimension in events (Schreibpfad) ist ausdrücklich 9b-2. Grund für den
 Schnitt: 9b berührt ZWEI Kern-Pfade (Serve und Ingest) — beide in einer Scheibe
@@ -428,6 +428,45 @@ anzufassen ist mehr Risiko als nötig.
   Grundsatzentscheidungen); (f) Test stoppen -> alle Aufrufe liefern wieder A,
   auch mit altem Cookie im Browser; (g) Kill-Switch-Gegenprobe: gesperrtes Projekt
   -> 451, kein Cookie.
+- VERIFIZIERT (live, 2026-07-27):
+  - REGRESSION / INVARIANTE (i) (GEMESSEN, zuerst geprüft): Live-Seite ohne aktiven Test
+    liefert die Bestands-Header (public, max-age=0, must-revalidate) und KEIN Set-Cookie.
+  - RIEGEL (GEMESSEN): Aktivierung bei nicht veröffentlichter Variante B wird verweigert,
+    es wird nichts geschrieben.
+  - COOKIE-ATTRIBUTE (GEMESSEN, DevTools): __Host-ps_v ist host-only, HttpOnly, Secure,
+    SameSite=Lax, Session — kein Domain, kein Max-Age.
+  - CACHE-HEADER BEI AKTIVEM SPLIT (GEMESSEN): mit Cookie liefert die Antwort exakt
+    "Cache-Control: private, no-store". Der offene Messpunkt aus den
+    Grundsatzentscheidungen ist damit positiv beschieden.
+  - STICKINESS (GEMESSEN): derselbe Besucher bleibt stabil auf seiner Variante.
+  - FLAG SCHLÄGT COOKIE (GEMESSEN, Invariante iii): bei inaktivem Test liefert die Route
+    ausnahmslos A — auch mit vorhandenem b-Cookie im Browser.
+  - KILL-SWITCH (GEMESSEN, Invariante ii): gesperrtes Projekt mit aktivem Test -> 451,
+    KEIN Set-Cookie; nach Entsperren wieder 200.
+  - VORBEDINGUNG FÜR 9b-2 (GEMESSEN, nicht angenommen): das HttpOnly-Cookie __Host-ps_v
+    fährt beim /api/e-Beacon im Request-Header MIT (DevTools -> Network -> /api/e). Der
+    Ingest kann die Variante damit server-seitig aus dem Cookie lesen; 9b-2 braucht dafür
+    keinen Ersatzweg.
+- OFFEN — UI-POLITUR (live gefunden 2026-07-27, KEIN Datenfehler, eigene kleine Runde vor
+  oder nach 9b-2):
+  (1) RIEGEL-MELDUNG FALSCH PLATZIERT: die Verweigerung ("Variante B ist noch nicht
+      veröffentlicht …") erscheint unten am Live-Preview statt direkt beim geklickten
+      Button in der Varianten-Sektion. Vermutlich läuft sie über den zentralen
+      saveError-Kanal; für einen sektionsgebundenen Riegel ist das der falsche Ort.
+  (2) FEHLENDE INFORMATION "IST DIESE VARIANTE VERÖFFENTLICHT?" (präzisierte Diagnose —
+      es ist KEIN Button-State-Bug): einen variantenbezogenen Publish-Status gibt es gar
+      nicht. Der Status kommt aus settings.hosting und ist PROJEKTWEIT; "Erneut
+      veröffentlicht" ist projektbezogen wahr, und ein Klick veröffentlicht seit 9a BEIDE
+      Varianten. Die Lücke ist, dass das UI "veröffentlicht ✓" zeigt, während B es nicht
+      ist — genau die Bedingung, die der Riegel drei Klicks später prüft. Der Nutzer
+      erfährt erst durch den Fehler, was vorher hätte sichtbar sein müssen.
+      GATE für die Fix-Scheibe (am Code zu klären, NICHT vorab entschieden): loadProject
+      selektiert published_content BEWUSST NICHT (die Bestandsassertion hält das als
+      "weiterhin ausserhalb" fest). Der Client hat die Information heute also gar nicht.
+      Den grossen Blob in den Ladepfad zu holen ist der falsche Weg — es braucht ein
+      SCHMALES abgeleitetes Signal (JSON-Pfad-Selektion im bestehenden Select? eigene
+      kleine Action nach dem getEventCounts-Muster? Rückgabe aus publishProject?). Am
+      Code erheben.
 - OFFEN -> 9b-2: variant in Ingest und Persist. VORAB ZU ENTSCHEIDEN (Gate für
   9b-2): Soll der Ingest die Variante nur schreiben, wenn der Test AKTIV ist?
   Ein altes Cookie nach Testende würde sonst Events einer Variante zuschreiben,

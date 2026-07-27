@@ -1041,6 +1041,21 @@ docs/claude-history/security-manifest-full.md.
   nicht gibt (bei CAPI hätte das die laufende trackingKey-Auflösung gebrochen). Umgekehrt ist
   eine Migration OHNE den zugehörigen Code in der Regel ein No-op und damit gefahrlos. Detail:
   docs/claude-history/phase-8-analytics.md.
+  PROTOKOLL-PFLICHT (ab 0018): JEDE künftige Migration schreibt als LETZTE Anweisung ihren
+  eigenen Eintrag:
+  ```sql
+  insert into public.schema_migrations (version, filename, applied_at)
+  values ('00XX', '00XX_name.sql', now()) on conflict (version) do nothing;
+  ```
+  AM ENDE, damit der Eintrag nur bei erfolgreichem Durchlauf entsteht — bricht die Migration
+  vorher ab, gibt es keine Zeile, die einen nie vollzogenen Lauf behauptet. Zweck: "welche
+  Migration ist gelaufen?" war bisher NICHT direkt messbar (nur die WIRKUNGEN waren es —
+  Spalte da? Constraint da?), damit hing die Reihenfolge-Regel allein an Disziplin.
+  ACHTUNG — PROTOKOLL, KEIN STEUERUNGSMECHANISMUS: Es gibt KEINEN Migrations-Runner, der aus
+  schema_migrations liest, und es soll keinen geben. Wer die Tabelle als "hat schon
+  gelaufen"-Gate missversteht, baut eine Automatik, die wir bewusst nicht haben — die
+  Migrationen laufen weiterhin manuell im SQL-Editor, die Idempotenz-Guards in den Dateien
+  selbst (if not exists, Katalog-Guard) bleiben die Absicherung gegen Doppelläufe.
 - NEXT_PUBLIC_-REDEPLOY-PFLICHT (Ops-Regel, real aufgetreten): NEXT_PUBLIC_-Env-Vars werden
   zur BUILD-ZEIT ins Client-Bundle inlined -> die Variable in Vercel zu ändern reicht NICHT,
   nach JEDER Änderung ist ein REDEPLOY PFLICHT. Sonst trägt das laufende Bundle still den

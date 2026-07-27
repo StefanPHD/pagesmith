@@ -242,3 +242,169 @@ describe("publishProject (Scheibe 7a)", () => {
     expect(rec.inserts).toHaveLength(0);
   });
 });
+
+describe("publishProject — Variante B (Phase 9 Scheibe 9a)", () => {
+  const variantB = {
+    functionalHtml: "<html><body>VARIANTE B</body></html>",
+    mappings: [
+      { elementId: "ps-b", type: "track" as const, config: { event: "Lead" } },
+    ],
+  };
+
+  it("Projekt MIT B: published_content traegt BEIDE Varianten (ein Publish, ein atomarer Write)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "Mein Shop",
+          settings: { hosting: { label: "mein-shop-abc123" } },
+          tracking_key: "keep-me",
+          html_b: "<h1>B draft</h1>",
+        },
+        error: null,
+      },
+    });
+
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      snapshot,
+      variantB
+    );
+    expect(res.ok).toBe(true);
+
+    const patch = rec.updatePatch as {
+      published_content: {
+        html: string;
+        variantB: { html: string; mappings: unknown[] };
+      };
+    };
+    // A unveraendert am gewohnten Platz — der Serve-Pfad liest weiterhin nur .html.
+    expect(patch.published_content.html).toContain("VARIANTE A");
+    // B als ADDITIVER Geschwister-Key.
+    expect(patch.published_content.variantB.html).toContain("VARIANTE B");
+    expect(patch.published_content.variantB.mappings).toEqual(variantB.mappings);
+    // GEGENPROBE: die beiden Varianten sind nicht dieselbe (kein Copy-Paste-Fehler,
+    // bei dem B mit A's Dokument befuellt wird).
+    expect(patch.published_content.variantB.html).not.toContain("VARIANTE A");
+    expect(patch.published_content.html).not.toContain("VARIANTE B");
+  });
+
+  it("Invariante (iv): der PageView-Emitter steckt in BEIDEN Varianten und traegt DENSELBEN Spalten-Key", async () => {
+    // Ohne diesen Test bliebe eine Injektion nur auf dem A-Zweig unbemerkt: der
+    // Publish-Test oben waere gruen, aber B's PageViews verschwaenden still, sobald
+    // 9b splittet (kein Fehler, nur fehlende Zahlen).
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "Mein Shop",
+          settings: { hosting: { label: "mein-shop-abc123" } },
+          tracking_key: "keep-me",
+          html_b: "<h1>B draft</h1>",
+        },
+        error: null,
+      },
+    });
+
+    await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      snapshot,
+      variantB
+    );
+
+    const patch = rec.updatePatch as {
+      published_content: { html: string; variantB: { html: string } };
+    };
+    expect(patch.published_content.html).toContain('id="__ps_pve"');
+    expect(patch.published_content.variantB.html).toContain('id="__ps_pve"');
+    // Invariante (v): der trackingKey gilt pro PROJEKT, nicht pro Variante.
+    expect(patch.published_content.html).toContain(JSON.stringify("keep-me"));
+    expect(patch.published_content.variantB.html).toContain(
+      JSON.stringify("keep-me")
+    );
+  });
+
+  it("Invariante (i): Projekt OHNE B -> published_content traegt EXAKT die vier bisherigen Keys (kein Schema-Drift)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "Mein Shop",
+          settings: { hosting: { label: "mein-shop-abc123" } },
+          tracking_key: "keep-me",
+          html_b: null,
+        },
+        error: null,
+      },
+    });
+
+    const res = await publishProject("proj-1", "<h1>nur A</h1>", snapshot);
+    expect(res.ok).toBe(true);
+
+    const patch = rec.updatePatch as { published_content: Record<string, unknown> };
+    // Sortierter Key-Vergleich (reihenfolge-unabhaengig, aber EXAKT): ein
+    // mitgeschriebenes variantB: undefined/null waere Schema-Drift fuer jedes
+    // Bestandsprojekt.
+    expect(Object.keys(patch.published_content).sort()).toEqual(
+      ["html", "mappings", "publishedAt", "settings"].sort()
+    );
+    expect(patch.published_content).not.toHaveProperty("variantB");
+  });
+
+  it("SERVER IST AUTORITAET: Client schickt ein B-Artefakt, obwohl die Spalte leer ist -> ignoriert, kein variantB-Key", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "Mein Shop",
+          settings: { hosting: { label: "mein-shop-abc123" } },
+          html_b: null,
+        },
+        error: null,
+      },
+    });
+
+    const res = await publishProject("proj-1", "<h1>nur A</h1>", snapshot, variantB);
+    expect(res.ok).toBe(true);
+    const patch = rec.updatePatch as { published_content: Record<string, unknown> };
+    // Per Publish laesst sich keine Variante erfinden, die es in der Zeile nicht gibt.
+    expect(patch.published_content).not.toHaveProperty("variantB");
+  });
+
+  it("FAIL-CLOSED: Spalte sagt 'B existiert', der Aufruf bringt kein B-Artefakt -> Fehler, NICHTS geschrieben", async () => {
+    // Realistischer Ausloeser: ein veralteter Browser-Tab mit gecachtem JS nach
+    // einem Deploy. Wuerde hier einfach ohne B publiziert, verschwaende die
+    // veroeffentlichte Variante B STILL — die Live-Seite liefe weiter, nur B waere
+    // weg. Genau die Falle, die published_content als GANZHEITLICH ersetzter Blob
+    // aufstellt.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "Mein Shop",
+          settings: { hosting: { label: "mein-shop-abc123" } },
+          html_b: "<h1>B draft</h1>",
+        },
+        error: null,
+      },
+    });
+
+    const res = await publishProject("proj-1", "<h1>nur A</h1>", snapshot);
+    expect(res.ok).toBe(false);
+    // HANDLUNGSLEITEND, nicht generisch: der Text nennt Ursache UND naechsten Schritt.
+    if (!res.ok) {
+      expect(res.error).toMatch(/veralteten Stand/i);
+      expect(res.error).toMatch(/neu laden/i);
+    }
+    // Fail-closed: kein Write, kein neues Label.
+    expect(rec.updatePatch).toBeNull();
+    expect(rec.inserts).toHaveLength(0);
+  });
+});

@@ -32,8 +32,20 @@ const {
   removeCapiToken,
   getEventCounts,
   getAdblockLoss,
+  saveVariantB,
+  createVariantB,
+  removeVariantB,
 } = vi.hoisted(() => ({
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
+  // Scheibe 9a: die Varianten-Actions. saveVariantB ist der Spy, auf dem der
+  // Dispatch-Riegel laeuft (Save auf B darf NIE saveProject treffen).
+  saveVariantB: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
+  createVariantB: vi.fn(async () => ({
+    ok: true as const,
+    html: "",
+    mappings: [],
+  })),
+  removeVariantB: vi.fn(async () => ({ ok: true as const })),
   listProjects: vi.fn(async () => []),
   // Rueckgabe bewusst Promise<unknown> -> einzelne Tests koennen via
   // mockResolvedValueOnce eine volle ProjectRow (inkl. settings) liefern.
@@ -68,6 +80,9 @@ vi.mock("@/app/projects/actions", () => ({
   removeCapiToken,
   getEventCounts,
   getAdblockLoss,
+  saveVariantB,
+  createVariantB,
+  removeVariantB,
 }));
 
 // DomainManager (in der Publish-Sektion gemountet) zieht ueber @/app/projects/domain-
@@ -771,5 +786,249 @@ describe("Adblocker-Verlust-Kachel: Wortlaut + Neutral-Status (Scheibe B)", () =
       expect(screen.getByText("Warte auf erste Bestätigung.")).toBeTruthy(),
     );
     expect(document.body.textContent).not.toMatch(/NaN/);
+  });
+});
+
+describe("CodeImporter — Scheibe 9a: A/B-Varianten (Wurzeltausch)", () => {
+  // A und B tragen BEWUSST verschiedene ps-IDs und verschiedene Mappings. Nur so
+  // faellt auf, wenn nach dem Umschalten noch der Zustand der anderen Variante steht:
+  // B's Mappings ueber A's Elementen (oder umgekehrt) waeren verwaist -> die
+  // Orphan-Sektion wuerde erscheinen.
+  const HTML_A = `<button data-pagesmith-id="ps-aaaaaa">Kaufen A</button>`;
+  const HTML_B = `<button data-pagesmith-id="ps-bbbbbb">Kaufen B</button>`;
+  const MAP_A = [
+    {
+      elementId: "ps-aaaaaa",
+      type: "redirect" as const,
+      config: { url: "https://a.test", openInNewTab: false },
+    },
+  ];
+  const MAP_B = [
+    {
+      elementId: "ps-bbbbbb",
+      type: "track" as const,
+      config: { event: "Lead" },
+    },
+  ];
+
+  function renderWithB() {
+    return render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML_A}
+        initialMappings={MAP_A}
+        initialVariantBHtml={HTML_B}
+        initialVariantBMappings={MAP_B}
+      />,
+    );
+  }
+
+  it("ohne Variante B: KEIN Umschalter, Export-Beschriftung unveraendert (Invariante i)", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML_A} />);
+    // Bestandsprojekte sehen exakt die bisherige Toolbar.
+    expect(screen.queryByRole("group", { name: "Variante" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Projekt exportieren" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "In Zwischenablage kopieren" })).toBeTruthy();
+    // Stattdessen der Anlegen-Button.
+    expect(screen.getByRole("button", { name: "+ Variante B" })).toBeTruthy();
+  });
+
+  it("Umschalten A->B: waehrend des Debounce-Fensters KEIN Orphan-Rauschen, danach B's Elemente + B's Badge", async () => {
+    // ZWEISTUFIG mit Absicht. Ein Test, der nur den Endzustand prueft, waere trivial
+    // gruen und liesse die eigentliche Behauptung UNBEWIESEN: unmittelbar nach dem
+    // Umschalten ist code bereits B, debouncedCode aber noch A (~300ms). In diesem
+    // Fenster stuenden B's Mappings ueber A's Elementen -> alles verwaist. Der
+    // Flash-Guard elementsReflectCurrentCode (debouncedCode === code) haelt genau
+    // dieses Fenster zu.
+    renderWithB();
+
+    // Ausgangslage: A ist vollstaendig durchgeparst (debouncedCode === code).
+    await screen.findByText("Kaufen A");
+    expect(screen.queryByText(/Verwaiste Verknüpfungen/)).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Variante B" }));
+
+    // (a) IM FENSTER, synchron nach dem Klick: der Guard greift, keine Orphan-Sektion.
+    expect(screen.queryByText(/Verwaiste Verknüpfungen/)).toBeNull();
+
+    // (b) NACH dem Debounce: die Liste zeigt B, nicht mehr A — und weiterhin keine
+    // verwaisten Verknuepfungen (B's Mapping haengt an B's Element).
+    await screen.findByText("Kaufen B");
+    expect(screen.queryByText("Kaufen A")).toBeNull();
+    expect(screen.queryByText(/Verwaiste Verknüpfungen/)).toBeNull();
+    // B traegt ein track-Mapping -> das Ziel-Badge ist da, A's redirect-Badge nicht.
+    await waitFor(() =>
+      expect(screen.getByTitle("Verknüpft: track")).toBeTruthy(),
+    );
+    expect(screen.queryByTitle("Verknüpft: redirect")).toBeNull();
+  });
+
+  it("Umschalten zurueck B->A stellt A's Elemente + A's Badge wieder her (kein Rest von B)", async () => {
+    renderWithB();
+    await screen.findByText("Kaufen A");
+
+    fireEvent.click(screen.getByRole("button", { name: "Variante B" }));
+    await screen.findByText("Kaufen B");
+    fireEvent.click(screen.getByRole("button", { name: "Variante A" }));
+
+    await screen.findByText("Kaufen A");
+    expect(screen.queryByText("Kaufen B")).toBeNull();
+    expect(screen.queryByText(/Verwaiste Verknüpfungen/)).toBeNull();
+    await waitFor(() =>
+      expect(screen.getByTitle("Verknüpft: redirect")).toBeTruthy(),
+    );
+    expect(screen.queryByTitle("Verknüpft: track")).toBeNull();
+  });
+
+  it("RIEGEL (Invariante ii): Speichern bei aktiver Variante B ruft saveVariantB — saveProject NIE", async () => {
+    // Der Fehler, den dieser Test abfaengt, ist der stille Totalverlust von
+    // Variante A: ein Save auf B, der in die A-Spalten schreibt, meldet nichts.
+    renderWithB();
+    await screen.findByText("Kaufen A");
+
+    fireEvent.click(screen.getByRole("button", { name: "Variante B" }));
+    await screen.findByText("Kaufen B");
+
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+
+    expect(saveVariantB).toHaveBeenCalledTimes(1);
+    expect(saveProject).not.toHaveBeenCalled();
+    // Die B-Action bekommt B's Inhalt, nicht A's.
+    const bArgs = saveVariantB.mock.calls[0] as unknown[];
+    expect(bArgs[0]).toBe("proj-1");
+    expect(bArgs[1] as string).toContain("ps-bbbbbb");
+    expect(bArgs[2]).toEqual(MAP_B);
+  });
+
+  it("GEGENPROBE: Speichern bei aktiver Variante A ruft saveProject — saveVariantB NIE", async () => {
+    renderWithB();
+    await screen.findByText("Kaufen A");
+
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+
+    expect(saveProject).toHaveBeenCalledTimes(1);
+    expect(saveVariantB).not.toHaveBeenCalled();
+    expect((saveProject.mock.calls[0] as unknown[])[1] as string).toContain(
+      "ps-aaaaaa",
+    );
+  });
+
+  it("Publish mit B: beide Varianten gehen mit — A aus dem Live-Draft, B aus dem gespeicherten Stand", async () => {
+    renderWithB();
+    await screen.findByText("Kaufen A");
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Veröffentlichen$/ }));
+
+    await waitFor(() => expect(publishProject).toHaveBeenCalledTimes(1));
+    const call = publishProject.mock.calls[0] as unknown[];
+    // 2. Argument = Variante A (aktiv, Live-Draft), 4. Argument = Variante B.
+    const docA = call[1] as string;
+    expect(docA).toContain("ps-aaaaaa");
+    expect(docA).not.toContain("ps-bbbbbb");
+    const argB = call[3] as { functionalHtml: string; mappings: unknown };
+    expect(argB).toBeTruthy();
+    expect(argB.functionalHtml).toContain("ps-bbbbbb");
+    expect(argB.mappings).toEqual(MAP_B);
+  });
+
+  it("Publish OHNE B: das 4. Argument bleibt undefined (Invariante i — Aufruf wie bisher)", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML_A} />);
+    await screen.findByText("Kaufen A");
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Veröffentlichen$/ }));
+
+    await waitFor(() => expect(publishProject).toHaveBeenCalledTimes(1));
+    expect((publishProject.mock.calls[0] as unknown[])[3]).toBeUndefined();
+  });
+
+  it("Variante B anlegen: uebernimmt die SERVER-Antwort in den Stash (nicht die lokale Annahme)", async () => {
+    // ABLEITEN STATT ANNEHMEN: der Server liefert zurueck, was er wirklich
+    // geschrieben hat. Hier antwortet er bewusst mit einem ANDEREN Inhalt als dem
+    // lokalen A-Stand — der Client muss dessen Werte uebernehmen.
+    createVariantB.mockResolvedValueOnce({
+      ok: true as const,
+      html: `<button data-pagesmith-id="ps-cccccc">Vom Server</button>`,
+      mappings: [],
+    });
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML_A} />);
+    await screen.findByText("Kaufen A");
+
+    fireEvent.click(screen.getByRole("button", { name: "+ Variante B" }));
+    await screen.findByRole("group", { name: "Variante" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Variante B" }));
+    expect(await screen.findByText("Vom Server")).toBeTruthy();
+  });
+
+  it("Publish-Hinweis benennt die AKTIVE Variante (nicht statisch 'A')", async () => {
+    // Ein UI, das ueber den eigenen Zustand eine unwahre Aussage macht, ist
+    // dieselbe Klasse wie das verbotene "gerettet". Bei aktiver Variante B muss B
+    // als "aktueller Editor-Stand" ausgewiesen sein.
+    renderWithB();
+    await screen.findByText("Kaufen A");
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    expect(document.body.textContent).toContain(
+      "Variante A im aktuellen Editor-Stand",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Variante B" }));
+    await screen.findByText("Kaufen B");
+    expect(document.body.textContent).toContain(
+      "Variante B im aktuellen Editor-Stand",
+    );
+    expect(document.body.textContent).not.toContain(
+      "Variante A im aktuellen Editor-Stand",
+    );
+  });
+
+  it("RIEGEL: Variante B entfernen, WÄHREND B aktiv ist -> Editor faellt auf A zurueck (nicht auf leer)", async () => {
+    // Der stille Totalverlust, den dieser Test verriegelt: bliebe activeVariant nach
+    // dem Entfernen auf 'b' waehrend der Stash leer wird, zeigte der Editor ein
+    // leeres "A" mit dirty=false — und der naechste Speichern-Klick ueberschriebe
+    // Variante A mit Leerstring. Ohne Fehler, ohne Warnung.
+    renderWithB();
+    await screen.findByText("Kaufen A");
+
+    fireEvent.click(screen.getByRole("button", { name: "Variante B" }));
+    await screen.findByText("Kaufen B");
+
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Variante B entfernen" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ja, entfernen" }));
+
+    // (i) Der Editor zeigt A's Inhalt — NICHT leer, NICHT weiter B.
+    expect(await screen.findByText("Kaufen A")).toBeTruthy();
+    expect(screen.queryByText("Kaufen B")).toBeNull();
+    // (ii) activeVariant ist 'a': kein Umschalter mehr, der Anlegen-Button ist zurueck.
+    expect(screen.queryByRole("group", { name: "Variante" })).toBeNull();
+    expect(screen.getByRole("button", { name: "+ Variante B" })).toBeTruthy();
+
+    // (iii) Der anschliessende Speichern-Klick geht in den A-Slot, mit A's Inhalt.
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+    expect(saveVariantB).not.toHaveBeenCalled();
+    expect(saveProject).toHaveBeenCalledTimes(1);
+    const savedHtml = (saveProject.mock.calls[0] as unknown[])[1] as string;
+    expect(savedHtml).toContain("ps-aaaaaa");
+    expect(savedHtml).not.toBe("");
+  });
+
+  it("Variante B entfernen: ruft removeVariantB, Umschalter verschwindet, A bleibt stehen", async () => {
+    renderWithB();
+    await screen.findByText("Kaufen A");
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Variante B entfernen" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ja, entfernen" }));
+
+    await waitFor(() =>
+      expect(screen.queryByRole("group", { name: "Variante" })).toBeNull(),
+    );
+    expect(removeVariantB).toHaveBeenCalledWith("proj-1");
+    // Variante A ist unberuehrt (der Editor steht weiter auf A's Inhalt).
+    expect(screen.getByText("Kaufen A")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "+ Variante B" })).toBeTruthy();
   });
 });

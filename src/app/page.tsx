@@ -42,6 +42,8 @@ export default async function Home() {
         initialProjects={projects}
         initialMappings={project?.mappings ?? []}
         initialSettings={project?.settings ?? {}}
+        initialVariantBHtml={project?.html_b ?? null}
+        initialVariantBMappings={project?.mappings_b ?? null}
       />
     </main>
   );

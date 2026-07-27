@@ -39,6 +39,11 @@ export type ProjectRow = {
   // Projektweite Einstellungen (jsonb, Scheibe 1b). Genau wie mappings
   // durchgereicht/persistiert. Default '{}' in der DB -> {} fuer Altzeilen.
   settings: ProjectSettings;
+  // Variante B (Phase 9 Scheibe 9a). BEIDE null = dieses Projekt hat KEINE
+  // Variante B; der DB-CHECK projects_variant_b_pair (Migration 0016) garantiert
+  // den Gleichlauf, "html_b IS NOT NULL" ist die EINZIGE Existenz-Wahrheitsquelle.
+  html_b: string | null;
+  mappings_b: Mapping[] | null;
 };
 
 /** Listen-Eintrag fuer den Projekt-Switcher (ohne das schwere html-Feld). */
@@ -83,7 +88,7 @@ export async function loadProject(id?: string): Promise<ProjectRow | null> {
 
   let query = supabase
     .from("projects")
-    .select("id,name,html,mappings,settings")
+    .select("id,name,html,mappings,settings,html_b,mappings_b")
     .eq("user_id", user.id);
 
   if (id) {
@@ -154,6 +159,200 @@ export async function saveProject(
   if (error || !data)
     return { ok: false, error: error?.message ?? "Anlegen fehlgeschlagen." };
   return { ok: true, id: data.id };
+}
+
+/**
+ * Speichert Variante B (Phase 9 Scheibe 9a). GETRENNTE Action statt eines
+ * variant-Parameters an saveProject — und das ist der ganze Punkt:
+ *
+ * INVARIANTE (ii) STRUKTURELL, NICHT LAUFZEITABHAENGIG: die Spaltenmenge ist hier
+ * ein LITERAL ({ html_b, mappings_b, settings, updated_at }), genau wie in
+ * saveProject ({ html, mappings, settings, updated_at }). Dadurch existiert in der
+ * A-schreibenden Funktion KEIN Pfad, der html_b erreicht, und in der
+ * B-schreibenden KEINER, der html erreicht. Mit einem variant-Parameter entschiede
+ * dagegen ein LAUFZEITWERT ueber die Zielspalte — und genau dieser Wert waere der
+ * Vektor fuer den stillen Totalverlust von Variante A (ein Save auf B, der A
+ * ueberschreibt, meldet keinen Fehler und ist im UI nicht zu sehen).
+ *
+ * SETTINGS BEWUSST IM PAYLOAD (zwei Schreiber auf denselben Blob, am Code geprueft):
+ * projects.settings ist CLIENT-autoritativ und wird GANZHEITLICH ersetzt (2b-0-
+ * Lektion). Mit dieser Action gibt es einen ZWEITEN solchen Schreiber. Das ist
+ * KEIN Versehen: das Einstellungs-Panel (Meta-Pixel-ID) ist variant-UNABHAENGIG
+ * sichtbar und editierbar, seine Aenderung geht in dasselbe dirty-Flag und wird
+ * ausschliesslich ueber den EINEN grossen Speichern-Button persistiert. Fehlte
+ * settings hier, ginge eine Pixel-ID-Aenderung, die der Nutzer bei aktiver Variante
+ * B vornimmt, beim Speichern STILL verloren (der Client setzt savedSettings danach
+ * gleich settings -> dirty faellt weg, der Wert ist weg). Beide Schreiber schreiben
+ * DENSELBEN Client-Blob mit demselben Inhalt; server-autoritative Werte
+ * (tracking_key, published_content) stehen wie in saveProject NICHT im Payload und
+ * ueberleben damit beide.
+ *
+ * Ownership: user_id-Filter zusaetzlich zur RLS (defense in depth), identisch zu
+ * saveProject. projectId ist PFLICHT — Variante B existiert nur auf einer bereits
+ * persistierten Zeile (kein Insert-Zweig).
+ */
+export async function saveVariantB(
+  projectId: string,
+  html: string,
+  mappings: Mapping[],
+  settings: ProjectSettings
+): Promise<SaveResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Nicht eingeloggt." };
+
+  const { data, error } = await supabase
+    .from("projects")
+    .update({
+      html_b: html,
+      mappings_b: mappings,
+      settings,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { ok: false, error: error.message };
+  if (!data) return { ok: false, error: "Projekt nicht gefunden." };
+  return { ok: true, id: data.id };
+}
+
+/**
+ * Ergebnis von createVariantB. Bei Erfolg liefert die Action die TATSAECHLICH
+ * geschriebenen Werte zurueck, damit der Client seinen abgeleiteten Zustand aus der
+ * SERVER-Antwort uebernimmt statt ihn lokal anzunehmen ("ist ja die Kopie von A") —
+ * ABLEITEN STATT LOESCHEN, angewandt auf den Varianten-Stash.
+ */
+export type CreateVariantBResult =
+  | { ok: true; html: string; mappings: Mapping[] }
+  | { ok: false; error: string };
+
+/**
+ * Legt Variante B als KOPIE der gespeicherten Variante A an (Phase 9 Scheibe 9a).
+ *
+ * SERVER-SEITIGE KOPIE, kein Client-Payload: die Action bekommt NUR die projectId.
+ * Der Client kann damit strukturell keinen fremden/veralteten HTML-Stand in den
+ * B-Slot schreiben. Die data-pagesmith-id-Anker sind in der Kopie identisch -> die
+ * mitkopierten Mappings bleiben gueltig (kein Orphan-Rauschen in B).
+ *
+ * IDEMPOTENZ / KEIN KLOBBERN: existiert bereits ein B (html_b IS NOT NULL), bricht
+ * die Action ab, statt es zu ueberschreiben. Ein versehentlicher Doppelklick darf
+ * eine bearbeitete Variante B nicht auf den A-Stand zuruecksetzen.
+ *
+ * Zwei Roundtrips (select -> update), weil PostgREST kein "set html_b = html"
+ * (Spalte-auf-Spalte) kennt. Kein heisser Pfad (eine bewusste Nutzeraktion pro
+ * Projekt), kein Rennen von Belang (derselbe Nutzer, dieselbe Zeile).
+ *
+ * Ownership-Gate wie ueberall: user_id-Filter zusaetzlich zur RLS.
+ */
+export async function createVariantB(
+  projectId: string
+): Promise<CreateVariantBResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Nicht eingeloggt." };
+
+  const { data: owned, error: ownError } = await supabase
+    .from("projects")
+    .select("id,html,mappings,html_b")
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (ownError) return { ok: false, error: ownError.message };
+  if (!owned) return { ok: false, error: "Projekt nicht gefunden." };
+  if (owned.html_b !== null && owned.html_b !== undefined)
+    return { ok: false, error: "Variante B existiert bereits." };
+
+  const html = (owned.html as string | null) ?? "";
+  const mappings = (owned.mappings as Mapping[] | null) ?? [];
+
+  const { error: updateError } = await supabase
+    .from("projects")
+    .update({
+      html_b: html,
+      mappings_b: mappings,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", projectId)
+    .eq("user_id", user.id);
+  if (updateError) return { ok: false, error: updateError.message };
+
+  return { ok: true, html, mappings };
+}
+
+/**
+ * Entfernt Variante B (Phase 9 Scheibe 9a). Gegenstueck zu createVariantB.
+ *
+ * Setzt html_b + mappings_b auf NULL (Gleichlauf, DB-CHECK) UND entfernt den
+ * variantB-Key aus published_content — sonst bliebe eine veraltete Variante B
+ * VEROEFFENTLICHT liegen und ginge in 9b beim Split wieder live.
+ *
+ * BENANNTE AUSNAHME — READ-MODIFY-WRITE auf published_content: fuer den
+ * Publish-Pfad ist Read-Modify-Write auf dieser Spalte ausdruecklich VERWORFEN
+ * (der grosse jsonb-Blob gehoert nicht in den Ownership-select des heissen
+ * Publish-Pfades, und dort besteht ein echtes Rennen). HIER ist es vertretbar und
+ * bewusst gewaehlt: (a) PostgREST kennt den jsonb-"-"-Operator nicht, ein
+ * feldweises Loeschen ist ueber den JS-Client nicht formulierbar; (b) das ist eine
+ * seltene, explizit bestaetigte Nutzeraktion, kein Pfad, den Besucher-Traffic
+ * trifft. Kein Selbstwiderspruch, sondern eine begruendete Einzelfall-Ausnahme.
+ *
+ * published_content BLEIBT NULL, wenn es NULL war: ein nie veroeffentlichtes
+ * Projekt darf durch das Entfernen von B keinen ERFUNDENEN Zustand bekommen. Ein
+ * geschriebenes {} waere nicht neutral — resolve.ts liest published?.html, und der
+ * Publish-Indikator leitet aus dieser Spalte ab. Deshalb steht die Spalte in diesem
+ * Fall GAR NICHT im update-Payload (die inverse Form von "ABLEITEN STATT LOESCHEN").
+ *
+ * A wird NIE beruehrt: html/mappings/settings/tracking_key stehen nicht im Payload.
+ */
+export async function removeVariantB(
+  projectId: string
+): Promise<ActionResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Nicht eingeloggt." };
+
+  const { data: owned, error: ownError } = await supabase
+    .from("projects")
+    .select("id,published_content")
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (ownError) return { ok: false, error: ownError.message };
+  if (!owned) return { ok: false, error: "Projekt nicht gefunden." };
+
+  // Payload-Basis: die beiden Slots im Gleichlauf auf NULL (DB-CHECK).
+  const patch: Record<string, unknown> = {
+    html_b: null,
+    mappings_b: null,
+    updated_at: new Date().toISOString(),
+  };
+
+  // published_content NUR anfassen, wenn dort wirklich ein variantB-Key liegt.
+  // NULL (nie veroeffentlicht) und ein Publish OHNE B lassen die Spalte unberuehrt
+  // -> kein erfundener Zustand, kein ueberfluessiger Blob-Write.
+  const published = owned.published_content as Record<string, unknown> | null;
+  if (published && typeof published === "object" && "variantB" in published) {
+    const { variantB: _dropped, ...rest } = published;
+    void _dropped;
+    patch.published_content = rest;
+  }
+
+  const { error: updateError } = await supabase
+    .from("projects")
+    .update(patch)
+    .eq("id", projectId)
+    .eq("user_id", user.id);
+  if (updateError) return { ok: false, error: updateError.message };
+
+  return { ok: true };
 }
 
 /**
@@ -364,7 +563,9 @@ async function assignDomainLabel(
  * RETURNING-Konflikt). Ein Nicht-Owner scheitert am Gate, bevor irgendetwas geschrieben
  * wird.
  *
- * published_content = { html: functionalHtml, mappings, settings, publishedAt }.
+ * published_content = { html: functionalHtml, mappings, settings, publishedAt }
+ * — plus, NUR wenn das Projekt eine Variante B traegt, den additiven Geschwister-Key
+ * variantB: { html, mappings } (Scheibe 9a).
  * IDEMPOTENZ: ein bereits vergebenes Label (settings.hosting.label) wird
  * WIEDERVERWENDET -> Re-Publish erzeugt KEINE zweite domains-Row und KEINEN neuen Label
  * (die Live-URL bleibt stabil). Das Label wird in settings.hosting gespiegelt
@@ -373,7 +574,14 @@ async function assignDomainLabel(
 export async function publishProject(
   projectId: string,
   functionalHtml: string,
-  snapshot: { html: string; mappings: Mapping[]; settings: ProjectSettings }
+  snapshot: { html: string; mappings: Mapping[]; settings: ProjectSettings },
+  // Variante B (Phase 9 Scheibe 9a), OPTIONAL. Fehlt der Parameter, ist der
+  // gesamte Pfad byte-gleich zu vorher (published_content traegt exakt die vier
+  // bisherigen Keys) -> Invariante (i): Projekte OHNE B verhalten sich wie heute.
+  // functionalHtml ist auch hier CLIENT-generiert (generateFunctional ist eine
+  // reine Funktion und laesst sich auf die INAKTIVE Variante anwenden, ohne dass
+  // der Editor umschaltet).
+  variantB?: { functionalHtml: string; mappings: Mapping[] }
 ): Promise<PublishResult> {
   const supabase = await createClient();
   const {
@@ -386,12 +594,31 @@ export async function publishProject(
   // Merge-Basis, tracking_key -> server-autoritative Identitaet lazy sicherstellen (2b-0).
   const { data: owned, error: ownError } = await supabase
     .from("projects")
-    .select("id,name,settings,tracking_key")
+    .select("id,name,settings,tracking_key,html_b")
     .eq("id", projectId)
     .eq("user_id", user.id)
     .maybeSingle();
   if (ownError) return { ok: false, error: ownError.message };
   if (!owned) return { ok: false, error: "Projekt nicht gefunden." };
+
+  // Der SERVER ist Autoritaet darueber, OB eine Variante B existiert (Spalte), nicht
+  // der Client. Ein Client, der ein B-Artefakt mitschickt, obwohl die Spalte leer
+  // ist, wird ignoriert (kein Weg, per Publish eine Variante zu erfinden).
+  const hasVariantB = owned.html_b !== null && owned.html_b !== undefined;
+
+  // FAIL-CLOSED: die Spalte sagt "B existiert", der Aufruf bringt aber kein
+  // B-Artefakt mit -> es wird NICHTS geschrieben. Wuerden wir hier einfach ohne B
+  // publizieren, verschwaende die veroeffentlichte Variante B STILL (die Live-Seite
+  // liefe weiter, nur B waere weg) — genau die Falle, die published_content als
+  // GANZHEITLICH ersetzter Blob aufstellt. Der realistische Ausloeser ist ein
+  // veralteter Browser-Tab mit gecachtem JS nach einem Deploy, darum nennt der Text
+  // die Handlung.
+  if (hasVariantB && !variantB)
+    return {
+      ok: false,
+      error:
+        "Variante B konnte nicht mitveröffentlicht werden — dieser Tab läuft auf einem veralteten Stand. Bitte die Seite neu laden und erneut veröffentlichen. Es wurde nichts geändert.",
+    };
 
   const currentSettings = (owned.settings ?? {}) as ProjectSettings;
   const publishedAt = new Date().toISOString();
@@ -422,12 +649,38 @@ export async function publishProject(
   // und loest den frueheren Ordering-Bug (Injektion NACH der Key-Sicherung, im HTML, das
   // gleich gespeichert wird). functionalHtml ist pro Publish frisch vom Client -> kein
   // Doppel-Inject. Der Emitter kommt DANEBEN — die CAPI-Wiring bleibt byte-gleich.
-  const published_content = {
+  const base = {
     html: injectPageViewEmitter(functionalHtml, trackingKey),
     mappings: snapshot.mappings,
     settings: snapshot.settings,
     publishedAt,
   };
+
+  // Scheibe 9a: Variante B als ADDITIVER Geschwister-Key im BESTEHENDEN jsonb —
+  // nicht als neue Spalte und NICHT als Umbau auf { a: …, b: … }. Der Serve-Pfad
+  // liest weiterhin published_content.html (resolve.ts) und sieht den neuen Key
+  // gar nicht -> ohne aktiven Test liefert ein Projekt IMMER A (fail-safe by
+  // default, Invariante vi). Ohne B bleibt es bei EXAKT den vier Keys von base
+  // (Invariante i: kein Schema-Drift fuer Bestandsprojekte).
+  //
+  // Invariante (iii) faellt hier strukturell an: es gibt kein "nur A publishen" —
+  // EIN Publish schreibt beide Varianten in EINEM atomaren Write, also kann ein
+  // Publish von A die veroeffentlichte B nicht zerstoeren (und umgekehrt).
+  //
+  // Invariante (iv): der Emitter wird in BEIDE Varianten injiziert, mit DEMSELBEN
+  // trackingKey aus der Spalte (Invariante v: der Key gilt pro PROJEKT, nicht pro
+  // Variante). Fehlte er in B, verschwaenden B's PageViews still, sobald 9b
+  // splittet. Gleiche reine String-Op wie bei A, KEIN Parsing (Invariante viii).
+  const published_content =
+    hasVariantB && variantB
+      ? {
+          ...base,
+          variantB: {
+            html: injectPageViewEmitter(variantB.functionalHtml, trackingKey),
+            mappings: variantB.mappings,
+          },
+        }
+      : base;
   const nextSettings = setHostingState(currentSettings, { label, publishedAt });
 
   const { error: updateError } = await supabase

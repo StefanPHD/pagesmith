@@ -10,6 +10,7 @@ import {
   type ElementType,
 } from "@/lib/detect";
 import {
+  createVariantB,
   deleteProject,
   getAdblockLoss,
   getEventCounts,
@@ -17,8 +18,10 @@ import {
   loadProject,
   publishProject,
   removeCapiToken,
+  removeVariantB,
   renameProject,
   saveProject,
+  saveVariantB,
   setCapiToken,
   type AdblockLoss,
   type EventCount,
@@ -114,6 +117,8 @@ export default function CodeImporter({
   initialProjects = [],
   initialMappings = [],
   initialSettings = {},
+  initialVariantBHtml = null,
+  initialVariantBMappings = null,
 }: {
   // Auto-Load: das zuletzt bearbeitete (bereits stabilisierte) HTML des Users.
   // Leer -> Editor startet leer wie bisher.
@@ -129,6 +134,10 @@ export default function CodeImporter({
   // Projektweite Einstellungen (Scheibe 1b), z.B. Meta-Pixel-ID. Parallel zu
   // initialMappings geseedet; reine Projekt-Daten (kein View-State).
   initialSettings?: ProjectSettings;
+  // Variante B des geladenen Projekts (Phase 9 Scheibe 9a), aus projects.html_b /
+  // projects.mappings_b. BEIDE null = dieses Projekt hat KEINE Variante B.
+  initialVariantBHtml?: string | null;
+  initialVariantBMappings?: Mapping[] | null;
 }) {
   // Eingabe-State: aendert sich bei JEDEM Tastendruck und haelt die Textarea
   // sofort aktuell (Tippen darf nie auf Parsing/Preview warten). Startet mit dem
@@ -154,6 +163,34 @@ export default function CodeImporter({
   const [settings, setSettings] = useState<ProjectSettings>(initialSettings);
   const [savedSettings, setSavedSettings] =
     useState<ProjectSettings>(initialSettings);
+  // A/B-VARIANTEN (Phase 9 Scheibe 9a) — WURZELTAUSCH-MODELL.
+  //
+  // Der Editor arbeitet IMMER auf genau EINER Variante, und zwar ueber die
+  // bestehenden Wurzeln code/mappings. Der Umschalter TAUSCHT diese Wurzeln; alles
+  // Abgeleitete (erkannte Elemente, Badges, Orphan-/Weg-C-Netz, Preview, Edit-
+  // iframe, Export-Dokument, dirty) haengt unveraendert an ihnen und leitet sich
+  // damit AUTOMATISCH und VOLLSTAENDIG neu ab. Es gibt bewusst KEINE parallelen
+  // codeA/codeB-States: die muessten an jeder der ~20 Ableitungsstellen richtig
+  // ausgewaehlt werden, und eine vergessene Stelle zeigte A-Zustand ueber B-HTML.
+  //
+  // stashHtml/stashMappings halten den GESPEICHERTEN Stand der INAKTIVEN Variante.
+  // Sie sind projekt-abgeleiteter View-State (Spiegel von html_b/mappings_b) und
+  // werden darum am kanonischen Projekt-Lade-Punkt ABGELEITET, nicht nur geleert
+  // ("ABLEITEN STATT LOESCHEN").
+  //
+  // INVARIANTE des Stash: er ist genau dann null, wenn Variante A aktiv ist UND das
+  // Projekt keine Variante B hat. Ist B aktiv, haelt er A (immer ein String, ggf.
+  // "") -> "B existiert" ist unten aus beidem ableitbar, ohne zweites Flag.
+  const [activeVariant, setActiveVariant] = useState<"a" | "b">("a");
+  const [stashHtml, setStashHtml] = useState<string | null>(initialVariantBHtml);
+  const [stashMappings, setStashMappings] = useState<Mapping[] | null>(
+    initialVariantBMappings
+  );
+  // Variante-B-Aktionen: transienter Status (destruktives Entfernen zweistufig,
+  // exakt wie beim CAPI-Token). Projekt-ungebunden -> beim Kontextwechsel leeren.
+  const [variantBusy, setVariantBusy] = useState(false);
+  const [variantBRemoveConfirming, setVariantBRemoveConfirming] =
+    useState(false);
   // Ausklappbares Einstellungs-Panel (Tracking-Pixel). Reiner View-State.
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   // Write-only-Eingabe fuer den GEHEIMEN CAPI-Token (Scheibe 2a). Startet IMMER
@@ -481,6 +518,13 @@ export default function CodeImporter({
     window.addEventListener("beforeunload", onBeforeUnload);
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
   }, [dirty]);
+  // "Traegt dieses Projekt eine Variante B?" — ABGELEITET aus der Stash-Invariante,
+  // kein zweites Flag, das divergieren koennte: ist B aktiv, existiert B per
+  // Definition; ist A aktiv, haelt der Stash genau dann etwas, wenn B existiert.
+  const hasVariantB = activeVariant === "b" || stashHtml !== null;
+  // Anzeige-Label der aktiven Variante (Toolbar, Export-Button, Publish-Hinweis).
+  const activeVariantLabel = activeVariant === "b" ? "B" : "A";
+
   // Name des aktiven Projekts fuer die Toolbar. Neues (ungespeichertes) Projekt
   // -> "Unbenanntes Projekt" (entspricht dem spaeteren DB-Default).
   const activeName =
@@ -510,6 +554,8 @@ export default function CodeImporter({
     setSettings({});
     setSavedSettings({});
     setSelectedElementId(null);
+    // Leeres Projekt hat per Definition keine Variante B -> Stash leer, Variante A.
+    seedVariantState(null, null);
     // Leerer Kontext -> Panel offen (man muss importieren koennen), Flag frisch.
     applyZenForLoadedCode("");
   }
@@ -545,6 +591,150 @@ export default function CodeImporter({
     // (getHostingLabel), genau wie getCapiTokenSet -> kein separater Reset noetig.
     setPublishStatus("idle");
     setPublishError(null);
+    // Varianten-Aktionsstatus ist ebenfalls projekt-ungebundener View-State.
+    // NICHT hier zurueckgesetzt werden activeVariant/Stash: die sind projekt-
+    // ABGELEITET und werden am Lade-Chokepoint aus dem geladenen Projekt gesetzt
+    // (seedVariantState), nicht bloss geleert.
+    setVariantBusy(false);
+    setVariantBRemoveConfirming(false);
+  }
+
+  // Varianten-Zustand aus dem GELADENEN Projekt ableiten (kanonischer Chokepoint,
+  // gerufen an GENAU denselben Stellen wie setSavedMappings/setSavedSettings).
+  // Ein Projektwechsel muss den Stash aus html_b/mappings_b des NEUEN Projekts
+  // speisen — ein bloss geleerter Stash zeigte ein Projekt MIT Variante B faelsch-
+  // licherweise als "hat keine Variante B" ("ABLEITEN STATT LOESCHEN").
+  // Der Editor startet in jedem neuen Projekt-Kontext auf Variante A.
+  function seedVariantState(htmlB: string | null, mappingsB: Mapping[] | null) {
+    setActiveVariant("a");
+    setStashHtml(htmlB);
+    setStashMappings(mappingsB);
+  }
+
+  // Variante umschalten: TAUSCHT die Wurzeln code/mappings gegen den Stash.
+  //
+  // DIRTY-GUARD: exakt dasselbe Muster wie handleSwitch/handleNew (window.confirm
+  // auf demselben dirty, aus dem sich auch der beforeunload-Listener speist) — kein
+  // neu erfundener Mechanismus. Bei Bestaetigung wird der Draft VERWORFEN: in den
+  // Stash wandert der GESPEICHERTE Stand (savedCode/savedMappings), nicht der
+  // Draft. Damit gilt durchgehend: die inaktive Variante ist IMMER im gespeicherten
+  // Zustand — es gibt nie zwei konkurrierende Dirty-Drafts, fuer die der EINE
+  // Speichern-Button mehrdeutig waere.
+  //
+  // selectedElementId ist gelatchter (nicht abgeleiteter) State und wird geleert:
+  // eine Element-ID aus A hat in B eine andere Bedeutung, auch wenn B als Kopie
+  // dieselben Anker traegt.
+  function switchVariant(next: "a" | "b") {
+    if (next === activeVariant || variantBusy) return;
+    // SYMMETRISCHER GUARD, bewusst NICHT "next === 'b' && stashHtml === null":
+    // Umschalten heisst Wurzeltausch GEGEN den Stash — in BEIDE Richtungen. Ist der
+    // Stash leer, gibt es nichts einzutauschen, und der Tausch wuerde code UND
+    // savedCode auf "" setzen (ein leerer Editor mit dirty=false, dessen naechster
+    // Save die Variante mit Leerstring ueberschreibt). Ein auf "nach B" verengter
+    // Guard liesse genau den Rueckweg offen, falls der Zustand je inkonsistent
+    // wuerde. Diese Fassung ist gegen JEDE Inkonsistenz dicht, ohne von der
+    // Korrektheit anderer Stellen abzuhaengen.
+    if (stashHtml === null) return;
+    if (
+      dirty &&
+      !window.confirm(
+        `Ungespeicherte Änderungen an Variante ${activeVariantLabel} verwerfen und zu Variante ${next.toUpperCase()} wechseln?`
+      )
+    )
+      return;
+
+    const incomingHtml = stashHtml ?? "";
+    const incomingMappings = stashMappings ?? [];
+    // Die VERLASSENE Variante wandert mit ihrem GESPEICHERTEN Stand in den Stash.
+    setStashHtml(savedCode);
+    setStashMappings(savedMappings);
+    // Wurzeltausch: ab hier leiten sich Elemente, Badges, Orphans, Preview,
+    // Edit-iframe, Export-Dokument und dirty automatisch aus der neuen Variante ab.
+    setCode(incomingHtml);
+    setSavedCode(incomingHtml);
+    setMappings(incomingMappings);
+    setSavedMappings(incomingMappings);
+    setSelectedElementId(null);
+    setActiveVariant(next);
+    applyZenForLoadedCode(incomingHtml);
+  }
+
+  // Variante B anlegen: SERVER-seitige Kopie der GESPEICHERTEN Variante A. Der
+  // Client schickt kein HTML mit und nimmt den Inhalt danach auch NICHT lokal an
+  // ("ist ja die Kopie von A"), sondern uebernimmt die vom Server ZURUECKGEGEBENEN
+  // Werte in den Stash — abgeleitet aus der Wahrheitsquelle, nicht geraten.
+  //
+  // Gegated auf ein gespeichertes UND sauberes Projekt: kopiert wird der
+  // gespeicherte A-Stand, deshalb darf es keinen abweichenden Draft geben, sonst
+  // luege "B ist eine Kopie von A" gegenueber dem, was der Nutzer gerade sieht.
+  async function handleCreateVariantB() {
+    if (!projectId || dirty || hasVariantB || variantBusy) return;
+    setVariantBusy(true);
+    setSaveError(null);
+    const result = await createVariantB(projectId);
+    if (result.ok) {
+      setStashHtml(result.html);
+      setStashMappings(result.mappings);
+    } else {
+      setSaveError(result.error);
+      setSaveStatus("error");
+    }
+    setVariantBusy(false);
+  }
+
+  // Variante B entfernen (destruktiv -> zweistufige Bestaetigung im UI, Muster wie
+  // beim CAPI-Token). Loescht INHALT; das ist NICHT "Test stoppen" (das kommt in 9b
+  // als eigenes Flag). Variante A bleibt unberuehrt.
+  //
+  // War B gerade aktiv, holt der Client anschliessend A aus dem Stash zurueck in die
+  // Wurzeln — der Editor darf nicht auf einer geloeschten Variante stehenbleiben.
+  async function handleRemoveVariantB() {
+    if (!projectId || !hasVariantB || variantBusy) return;
+    setVariantBusy(true);
+    setSaveError(null);
+
+    // A-RUECKHOLUNG VOR JEDEM setState UND VOR DEM await festgehalten. Die
+    // Korrektheit haengt damit an einer CLOSURE-BINDUNG, nicht an der
+    // Zeilenreihenfolge der setState-Aufrufe weiter unten — ein spaeteres
+    // Umsortieren (z.B. "Stash zuerst leeren") kann sie nicht mehr still
+    // zerbrechen (Lektion aus dem Rename-Guard: Korrektheit, die an einer
+    // Reihenfolge haengt, zerbricht beim naechsten Refactor lautlos).
+    //
+    // WAS HIER SCHIEFGEHEN KANN, wenn man es weglaesst: bliebe activeVariant nach
+    // dem Entfernen auf 'b', waehrend der Stash auf null faellt, dann waere
+    // (a) hasVariantB ueber den Term activeVariant === "b" faelschlich true,
+    // (b) ein Speichern-Klick riefe saveVariantB und legte B NEU an, und
+    // (c) ein spaeterer Wechsel nach A setzte code UND savedCode auf "" ->
+    // ein leeres "A" mit dirty=false, dessen naechster Save Variante A mit
+    // Leerstring ueberschreibt. Ohne Fehler, ohne Warnung.
+    const wasEditingB = activeVariant === "b";
+    const restoreA = {
+      html: stashHtml ?? "",
+      mappings: stashMappings ?? [],
+    };
+
+    const result = await removeVariantB(projectId);
+    if (result.ok) {
+      // Erst die Wurzeln auf A zurueckholen (aus der oben festgehaltenen Kopie),
+      // dann den Stash leeren. Beide Schritte lesen KEINEN State mehr.
+      if (wasEditingB) {
+        setCode(restoreA.html);
+        setSavedCode(restoreA.html);
+        setMappings(restoreA.mappings);
+        setSavedMappings(restoreA.mappings);
+        setSelectedElementId(null);
+        setActiveVariant("a");
+        applyZenForLoadedCode(restoreA.html);
+      }
+      setStashHtml(null);
+      setStashMappings(null);
+      setVariantBRemoveConfirming(false);
+    } else {
+      setSaveError(result.error);
+      setSaveStatus("error");
+      setVariantBRemoveConfirming(false);
+    }
+    setVariantBusy(false);
   }
 
   // Manuelles Toggle: klappt der Nutzer AUF (next = nicht collapsed), uebernimmt
@@ -594,7 +784,23 @@ export default function CodeImporter({
     setSaveStatus("saving");
     setSaveError(null);
     const stabilized = stabilizeIds(code);
-    const result = await saveProject(projectId, stabilized, mappings, settings);
+    // EINZIGE Varianten-Verzweigung des Speicherpfades (Scheibe 9a). Bewusst
+    // sichtbar und ohne Fallback: KEIN "wenn projectId fehlt, dann eben
+    // saveProject" — das wuerde bei aktiver Variante B in die A-Spalten schreiben
+    // und Variante A still vernichten. Die beiden Actions tragen jeweils eine
+    // FESTE Spaltenmenge, damit hier nur der Aufruf falsch sein koennte, nie das
+    // Ziel innerhalb einer Action.
+    let result: Awaited<ReturnType<typeof saveProject>>;
+    if (activeVariant === "b") {
+      if (!projectId) {
+        setSaveError("Variante B braucht ein gespeichertes Projekt.");
+        setSaveStatus("error");
+        return;
+      }
+      result = await saveVariantB(projectId, stabilized, mappings, settings);
+    } else {
+      result = await saveProject(projectId, stabilized, mappings, settings);
+    }
     if (result.ok) {
       setCode(stabilized);
       setSavedCode(stabilized);
@@ -678,12 +884,26 @@ export default function CodeImporter({
   // - Export-Download (fremde Domain): absolute ${NEXT_PUBLIC_APP_URL}/api/e (fail-loud
   //   bei fehlender env -> kein Beacon + warn).
   // - Publish (gehostete Seite, same-origin): relativer /api/e-Pfad (braucht keine env).
-  function buildFunctionalDocument(capiProxyUrl: string): string {
-    return generateFunctional(debouncedCode, mappings, "export", {
+  // Scheibe 9a: derselbe Aufruf, nur mit EXPLIZITEN (html, mappings) statt der fest
+  // verdrahteten Editor-Wurzeln. Rein mechanische Herausloesung — die
+  // generateFunctional-Engine ist eine REINE Funktion (kein Editor-/Modul-State),
+  // also laesst sich das Dokument der INAKTIVEN Variante erzeugen, OHNE dass der
+  // Editor auf sie umschaltet. Die options sind projektweit (Pixel/trackingKey/
+  // Proxy) und darum fuer beide Varianten identisch.
+  function buildDocumentFor(
+    html: string,
+    docMappings: Mapping[],
+    capiProxyUrl: string
+  ): string {
+    return generateFunctional(html, docMappings, "export", {
       metaPixelId: getMetaPixelId(settings),
       trackingKey: getTrackingKey(settings),
       capiProxyUrl,
     });
+  }
+
+  function buildFunctionalDocument(capiProxyUrl: string): string {
+    return buildDocumentFor(debouncedCode, mappings, capiProxyUrl);
   }
 
   function buildExportDocument(): string {
@@ -730,11 +950,38 @@ export default function CodeImporter({
     // Publish bäckt den RELATIVEN /api/e-Beacon ein (Phase 7b): die gehostete Seite
     // läuft same-origin auf *.publayer.net -> /api/e wird von der Middleware chirurgisch
     // durchgelassen und trifft den Ingest-Handler. Kein absoluter Pfad/keine env nötig.
-    const result = await publishProject(projectId, buildFunctionalDocument("/api/e"), {
-      html: debouncedCode,
-      mappings,
-      settings,
-    });
+    // Scheibe 9a: EIN Publish schreibt BEIDE Varianten (falls B existiert) in EINEM
+    // atomaren Write -> es gibt kein "nur A publishen", das B veraltet zuruecklassen
+    // koennte. Quelle je Variante:
+    // - die AKTIVE Variante aus dem Live-Draft (debouncedCode/mappings) — heutiges
+    //   WYSIWYG-Verhalten, unveraendert;
+    // - die INAKTIVE aus ihrem GESPEICHERTEN Stand (Stash). Das ist keine
+    //   Inkonsistenz, sondern folgt aus dem Umschalt-Guard: die inaktive Variante
+    //   ist per Konstruktion immer im gespeicherten Zustand.
+    // Ohne Variante B ist pairA exakt der bisherige Aufruf (byte-gleiche Eingaben).
+    const activePair = { html: debouncedCode, mappings };
+    const inactivePair = {
+      html: stashHtml ?? "",
+      mappings: stashMappings ?? [],
+    };
+    const pairA = activeVariant === "a" ? activePair : inactivePair;
+    const pairB = activeVariant === "b" ? activePair : inactivePair;
+
+    const result = await publishProject(
+      projectId,
+      buildDocumentFor(pairA.html, pairA.mappings, "/api/e"),
+      { html: pairA.html, mappings: pairA.mappings, settings },
+      hasVariantB
+        ? {
+            functionalHtml: buildDocumentFor(
+              pairB.html,
+              pairB.mappings,
+              "/api/e"
+            ),
+            mappings: pairB.mappings,
+          }
+        : undefined
+    );
     if (result.ok) {
       // Label in settings UND savedSettings spiegeln (settingsEqual ignoriert hosting
       // -> kein false-dirty). Ab hier leitet liveUrl die URL aus settings.hosting ab —
@@ -938,6 +1185,8 @@ export default function CodeImporter({
     // Projekten (Pixel-ID von A darf nicht in B stehen bleiben).
     setSettings(proj.settings);
     setSavedSettings(proj.settings);
+    // Varianten-Zustand am SELBEN Punkt aus dem GELADENEN Projekt ableiten.
+    seedVariantState(proj.html_b, proj.mappings_b);
     setSelectedElementId(null);
     setIsProjectMenuOpen(false);
     // Zen-Default fuer den neuen Kontext: mit Code eingeklappt, leer offen.
@@ -982,6 +1231,8 @@ export default function CodeImporter({
         // Settings am SELBEN Punkt wie savedMappings reseeden (kein Leak).
         setSettings(next.settings);
         setSavedSettings(next.settings);
+        // Varianten-Zustand aus dem nachgerueckten Projekt ableiten.
+        seedVariantState(next.html_b, next.mappings_b);
         setSelectedElementId(null);
         // Zen-Default fuer den nachgerueckten Kontext (resetToEmpty deckt den
         // leeren Fall im else selbst ab).
@@ -1037,6 +1288,52 @@ export default function CodeImporter({
         >
           + Neues Projekt
         </button>
+
+        {/* A/B-Varianten (Phase 9 Scheibe 9a). Der Editor arbeitet IMMER auf genau
+            EINER Variante — welche das ist, muss zu jedem Zeitpunkt sichtbar sein.
+            Ohne Variante B steht hier nur der Anlegen-Button; die Toolbar eines
+            Bestandsprojekts sieht damit aus wie bisher (Invariante i).
+            KEIN Split: die Live-URL liefert weiterhin ausschliesslich Variante A. */}
+        {hasVariantB ? (
+          <div
+            className="flex items-center gap-1 rounded-md border border-gray-300 p-0.5"
+            role="group"
+            aria-label="Variante"
+          >
+            {(["a", "b"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => switchVariant(v)}
+                aria-pressed={activeVariant === v}
+                className={`rounded px-3 py-1 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                  activeVariant === v
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                Variante {v.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={handleCreateVariantB}
+            disabled={!projectId || dirty || variantBusy}
+            title={
+              !projectId
+                ? "Projekt zuerst speichern"
+                : dirty
+                  ? "Erst speichern — Variante B wird als Kopie des gespeicherten Stands angelegt"
+                  : "Variante B als Kopie von Variante A anlegen"
+            }
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {variantBusy ? "…" : "+ Variante B"}
+          </button>
+        )}
+
         <button
           type="button"
           onClick={() => setIsSettingsOpen((v) => !v)}
@@ -1076,7 +1373,9 @@ export default function CodeImporter({
             disabled={code.trim() === ""}
             className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            In Zwischenablage kopieren
+            {hasVariantB
+              ? `Variante ${activeVariantLabel} kopieren`
+              : "In Zwischenablage kopieren"}
           </button>
           <button
             type="button"
@@ -1084,7 +1383,14 @@ export default function CodeImporter({
             disabled={code.trim() === ""}
             className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Projekt exportieren
+            {/* Exportiert die im Editor AKTIVE Variante — mit B im Spiel wird sie
+                explizit benannt. Ohne B bleibt die Beschriftung unveraendert
+                (Invariante i: kein UI-Drift fuer Bestandsprojekte). Der Export
+                folgt dem Wurzeltausch automatisch, es gibt keinen zweiten
+                Lesepfad. */}
+            {hasVariantB
+              ? `Variante ${activeVariantLabel} exportieren`
+              : "Projekt exportieren"}
           </button>
         </div>
 
@@ -1306,6 +1612,19 @@ export default function CodeImporter({
             <p className="mb-3 text-xs text-gray-500">
               Schaltet die funktionale Seite unter einer eigenen Subdomain live.
             </p>
+            {/* Ehrlich benannt, weil es beim Publish mit zwei Varianten genau eine
+                Asymmetrie gibt: die bearbeitete Variante geht im aktuellen
+                Editor-Stand live, die andere in ihrem gespeicherten (sie existiert
+                im Editor gar nicht anders). Und: die Live-URL zeigt weiterhin
+                ausschliesslich Variante A — der Split kommt erst in 9b. */}
+            {hasVariantB && (
+              <p className="mb-3 text-xs text-gray-500">
+                Veröffentlicht <strong>beide Varianten</strong>: Variante{" "}
+                {activeVariantLabel} im aktuellen Editor-Stand, die andere in ihrem
+                zuletzt gespeicherten Stand. Die Live-URL zeigt weiterhin nur
+                Variante A.
+              </p>
+            )}
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
@@ -1357,6 +1676,56 @@ export default function CodeImporter({
               <p className="mt-2 text-xs text-red-600">{publishError}</p>
             )}
           </div>
+
+          {/* Variante B verwalten (Phase 9 Scheibe 9a). Destruktiv -> zweistufige
+              Inline-Bestaetigung, exakt wie "CAPI-Token entfernen". Bewusst hier im
+              Einstellungs-Panel und NICHT neben dem Umschalter in der Toolbar: ein
+              Loeschen gehoert nicht in Klick-Naehe eines reinen Ansichtswechsels. */}
+          {hasVariantB && (
+            <div className="mt-4 border-t border-gray-200 pt-4">
+              <h2 className="mb-1 text-sm font-medium text-gray-700">
+                Variante B
+              </h2>
+              <p className="mb-3 text-xs text-gray-500">
+                Entfernt den <strong>Inhalt</strong> von Variante B (HTML +
+                Verknüpfungen) und nimmt sie aus der Veröffentlichung. Variante A
+                bleibt unberührt.
+              </p>
+              {!variantBRemoveConfirming ? (
+                <button
+                  type="button"
+                  onClick={() => setVariantBRemoveConfirming(true)}
+                  disabled={variantBusy}
+                  className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Variante B entfernen
+                </button>
+              ) : (
+                <div className="flex flex-wrap items-center gap-2 rounded-md bg-red-50 px-3 py-2">
+                  <span className="text-xs text-red-700">
+                    Variante B endgültig entfernen? Ihr HTML und ihre
+                    Verknüpfungen gehen verloren.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRemoveVariantB}
+                    disabled={variantBusy}
+                    className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                  >
+                    {variantBusy ? "Entferne…" : "Ja, entfernen"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setVariantBRemoveConfirming(false)}
+                    disabled={variantBusy}
+                    className="rounded-md border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Abbrechen
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Statistik (Phase 8 Scheibe 3): server-seitige Analytics-Counts des aktiven
               Projekts (PageViews + Conversions), server-beobachtet (source='server'),

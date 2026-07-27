@@ -39,6 +39,9 @@ import {
   removeCapiToken,
   loadProject,
   saveProject,
+  saveVariantB,
+  createVariantB,
+  removeVariantB,
   getEventCounts,
 } from "./actions";
 
@@ -355,9 +358,23 @@ describe("loadProject — Payload traegt NIE den Token", () => {
 
     // project_tokens wird nie abgefragt; die Projektion enthaelt keinen Token.
     expect(rec.fromTables).not.toContain("project_tokens");
+    // SPALTENLISTE GEWACHSEN, SCHAERFE UNVERAENDERT (Scheibe 9a) — NICHT "bis gruen
+    // angepasst": Der Test schuetzt laut Namen "kein Token in der Projektion", und
+    // genau das pruefen die beiden Zeilen darueber (fromTables / JSON.stringify) —
+    // sie sind unveraendert. Die exakte Spaltenliste ist eine ZUSAETZLICHE Schaerfe
+    // ("exakte Projektion, kein SELECT *"), die durch die additive Erweiterung von
+    // loadProject um html_b/mappings_b (Varianten-Authoring) legitim mitwaechst.
+    // Entscheidend bleibt, was WEITERHIN AUSSERHALB der Projektion steht:
+    // project_tokens und published_content. Die Assertion wurde bewusst NICHT auf
+    // ein weiches not.toContain("token") aufgeweicht — das haette den
+    // SELECT-*-Schutz dauerhaft verloren.
     expect(rec.selectCols).toEqual([
-      { table: "projects", cols: "id,name,html,mappings,settings" },
+      {
+        table: "projects",
+        cols: "id,name,html,mappings,settings,html_b,mappings_b",
+      },
     ]);
+    expect(rec.selectCols[0].cols).not.toContain("published_content");
   });
 });
 
@@ -402,6 +419,237 @@ describe("saveProject — Durability-Kontrast (Scheibe 2b-0)", () => {
     expect(patch.settings.capi?.trackingKey).toBeUndefined();
     // GRUEN-Beweis "warum Spalte": tracking_key ist im Save-Pfad strukturell unerreichbar.
     expect(patch).not.toHaveProperty("tracking_key");
+  });
+});
+
+describe("Varianten-Slots (Phase 9 Scheibe 9a) — Invariante (ii): der Slot ist strukturell, nicht laufzeitabhaengig", () => {
+  // Diese beiden Tests sind das Herz der Scheibe. Der Fehler, den sie abfangen, ist
+  // der STILLE Totalverlust: ein Save, der in die falschen Spalten schreibt, meldet
+  // keinen Fehler und ist im UI nicht zu sehen — die andere Variante ist einfach weg.
+  //
+  // Sie pruefen die Spaltenmenge EXAKT (sortierte Key-Listen, nicht toMatchObject):
+  // toMatchObject wuerde eine zusaetzlich mitgeschriebene Fremd-Spalte durchwinken.
+
+  it("saveVariantB schreibt AUSSCHLIESSLICH die B-Spalten — html/mappings kommen im Patch NICHT vor", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: { id: "proj-1" }, error: null } },
+    });
+
+    const res = await saveVariantB(
+      "proj-1",
+      "<h1 data-pagesmith-id='ps-b'>B</h1>",
+      [{ elementId: "ps-b", type: "track", config: { event: "Lead" } }],
+      { pixels: { meta: { pixelId: "123" } } }
+    );
+    expect(res).toEqual({ ok: true, id: "proj-1" });
+
+    const patch = rec.updatePatch as Record<string, unknown>;
+    expect(Object.keys(patch).sort()).toEqual(
+      ["html_b", "mappings_b", "settings", "updated_at"].sort()
+    );
+    // KERN: die A-Spalten sind in dieser Funktion strukturell unerreichbar.
+    expect(patch).not.toHaveProperty("html");
+    expect(patch).not.toHaveProperty("mappings");
+    expect(patch.html_b).toBe("<h1 data-pagesmith-id='ps-b'>B</h1>");
+    // Auflage 6: settings ist BEWUSST im Payload (das Einstellungs-Panel ist
+    // variant-unabhaengig editierbar und haengt am selben Speichern-Button).
+    expect(patch.settings).toEqual({ pixels: { meta: { pixelId: "123" } } });
+    // Server-autoritative Spalten bleiben wie in saveProject unerreichbar.
+    expect(patch).not.toHaveProperty("tracking_key");
+    expect(patch).not.toHaveProperty("published_content");
+  });
+
+  it("GEGENRICHTUNG: saveProject schreibt AUSSCHLIESSLICH die A-Spalten — html_b/mappings_b kommen im Patch NICHT vor", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: { id: "proj-1" }, error: null } },
+    });
+
+    await saveProject("proj-1", "<h1>A</h1>", [], {});
+
+    const patch = rec.updatePatch as Record<string, unknown>;
+    expect(Object.keys(patch).sort()).toEqual(
+      ["html", "mappings", "settings", "updated_at"].sort()
+    );
+    expect(patch).not.toHaveProperty("html_b");
+    expect(patch).not.toHaveProperty("mappings_b");
+  });
+
+  it("saveVariantB: fremde/unbekannte project_id -> Fehler (Ownership-Filter greift, kein stiller Erfolg)", async () => {
+    makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: null, error: null } },
+    });
+    const res = await saveVariantB("foreign", "<h1>x</h1>", [], {});
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.error).toMatch(/nicht gefunden/i);
+  });
+});
+
+describe("createVariantB (Scheibe 9a)", () => {
+  it("kopiert den GESPEICHERTEN A-Stand in die B-Spalten und gibt die geschriebenen Werte zurueck", async () => {
+    const mappings = [
+      { elementId: "ps-1", type: "redirect" as const, config: { url: "https://x.test", openInNewTab: false } },
+    ];
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": {
+          data: { id: "proj-1", html: "<h1>A</h1>", mappings, html_b: null },
+          error: null,
+        },
+      },
+    });
+
+    const res = await createVariantB("proj-1");
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    // Der Client leitet seinen Stash aus DIESER Antwort ab (nicht aus einer lokalen
+    // Annahme) -> die Werte muessen das sein, was wirklich geschrieben wurde.
+    expect(res.html).toBe("<h1>A</h1>");
+    expect(res.mappings).toEqual(mappings);
+
+    const patch = rec.updatePatch as Record<string, unknown>;
+    expect(Object.keys(patch).sort()).toEqual(
+      ["html_b", "mappings_b", "updated_at"].sort()
+    );
+    // A wird beim Anlegen von B NIE beruehrt.
+    expect(patch).not.toHaveProperty("html");
+    expect(patch).not.toHaveProperty("mappings");
+    // Gleichlauf (DB-CHECK projects_variant_b_pair): beide Spalten gesetzt.
+    expect(patch.html_b).toBe("<h1>A</h1>");
+    expect(patch.mappings_b).toEqual(mappings);
+    // KEIN SELECT *: nur die vier gebrauchten Spalten.
+    expect(rec.selectCols[0]).toEqual({
+      table: "projects",
+      cols: "id,html,mappings,html_b",
+    });
+  });
+
+  it("KEIN KLOBBERN: existiert B bereits, wird NICHT ueberschrieben (kein update)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": {
+          data: { id: "proj-1", html: "<h1>A</h1>", mappings: [], html_b: "<h1>B bearbeitet</h1>" },
+          error: null,
+        },
+      },
+    });
+
+    const res = await createVariantB("proj-1");
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.error).toMatch(/existiert bereits/i);
+    // Der Doppelklick darf eine bearbeitete Variante B nicht auf A zuruecksetzen.
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("IDOR: fremde project_id -> Fehler, KEIN update", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: null, error: null } },
+    });
+    const res = await createVariantB("foreign");
+    expect(res.ok).toBe(false);
+    expect(rec.updatePatch).toBeNull();
+  });
+});
+
+describe("removeVariantB (Scheibe 9a)", () => {
+  it("setzt beide B-Spalten auf NULL und entfernt den variantB-Key aus published_content — A bleibt drin", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": {
+          data: {
+            id: "proj-1",
+            published_content: {
+              html: "<h1>A live</h1>",
+              mappings: [],
+              settings: {},
+              publishedAt: "2026-07-27T00:00:00.000Z",
+              variantB: { html: "<h1>B live</h1>", mappings: [] },
+            },
+          },
+          error: null,
+        },
+      },
+    });
+
+    const res = await removeVariantB("proj-1");
+    expect(res).toEqual({ ok: true });
+
+    const patch = rec.updatePatch as Record<string, unknown>;
+    expect(patch.html_b).toBeNull();
+    expect(patch.mappings_b).toBeNull();
+    // Die veroeffentlichte B ist weg — sonst ginge sie in 9b beim Split wieder live.
+    const pc = patch.published_content as Record<string, unknown>;
+    expect(pc).not.toHaveProperty("variantB");
+    // … und A ist unveraendert erhalten (kein Kollateralschaden am Live-Inhalt).
+    expect(pc.html).toBe("<h1>A live</h1>");
+    expect(Object.keys(pc).sort()).toEqual(
+      ["html", "mappings", "publishedAt", "settings"].sort()
+    );
+    // A auf der Draft-Ebene ebenfalls unberuehrt.
+    expect(patch).not.toHaveProperty("html");
+    expect(patch).not.toHaveProperty("mappings");
+    expect(patch).not.toHaveProperty("settings");
+  });
+
+  it("NIE VEROEFFENTLICHT: published_content bleibt NULL — der Key steht GAR NICHT im Patch", async () => {
+    // Der Bug-in-waiting: ein "select -> spread -> update" haette hier {} in eine
+    // Spalte geschrieben, die vorher NULL war. {} ist KEIN neutraler Zustand —
+    // resolve.ts liest published?.html und der Publish-Indikator leitet aus dieser
+    // Spalte ab. Ein erfundener Zustand ist die inverse Form von
+    // "ABLEITEN STATT LOESCHEN".
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": {
+          data: { id: "proj-1", published_content: null },
+          error: null,
+        },
+      },
+    });
+
+    const res = await removeVariantB("proj-1");
+    expect(res).toEqual({ ok: true });
+
+    const patch = rec.updatePatch as Record<string, unknown>;
+    expect(patch).not.toHaveProperty("published_content");
+    expect(Object.keys(patch).sort()).toEqual(
+      ["html_b", "mappings_b", "updated_at"].sort()
+    );
+  });
+
+  it("VEROEFFENTLICHT OHNE B: published_content wird nicht angefasst (kein ueberfluessiger Blob-Write)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": {
+          data: {
+            id: "proj-1",
+            published_content: { html: "<h1>A live</h1>", mappings: [], settings: {}, publishedAt: "t" },
+          },
+          error: null,
+        },
+      },
+    });
+
+    await removeVariantB("proj-1");
+    const patch = rec.updatePatch as Record<string, unknown>;
+    expect(patch).not.toHaveProperty("published_content");
+  });
+
+  it("IDOR: fremde project_id -> Fehler, KEIN update", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: null, error: null } },
+    });
+    const res = await removeVariantB("foreign");
+    expect(res.ok).toBe(false);
+    expect(rec.updatePatch).toBeNull();
   });
 });
 

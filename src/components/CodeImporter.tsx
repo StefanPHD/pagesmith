@@ -248,6 +248,10 @@ export default function CodeImporter({
     "idle" | "publishing" | "published" | "error"
   >("idle");
   const [publishError, setPublishError] = useState<string | null>(null);
+  // Wurde beim letzten Publish eine FEHLENDE Label-Zeile wiederhergestellt (die
+  // Live-URL war bis dahin tot)? Transienter Aktions-Status wie publishStatus —
+  // beim Projektwechsel geleert, NICHT projekt-abgeleitet.
+  const [publishRestored, setPublishRestored] = useState(false);
   // Analytics-Counts (Phase 8 Scheibe 3): gruppierte event_type-Counts des aktiven
   // Projekts. Projekt-abgeleitet -> reseedet ueber einen projectId-gekoppelten Effect
   // (leer bei keinem/neuem Projekt), NICHT als leakender State gehalten.
@@ -702,6 +706,7 @@ export default function CodeImporter({
     // (getHostingLabel), genau wie getCapiTokenSet -> kein separater Reset noetig.
     setPublishStatus("idle");
     setPublishError(null);
+    setPublishRestored(false);
     // Varianten-Aktionsstatus ist ebenfalls projekt-ungebundener View-State.
     // NICHT hier zurueckgesetzt werden activeVariant/Stash: die sind projekt-
     // ABGELEITET und werden am Lade-Chokepoint aus dem geladenen Projekt gesetzt
@@ -1169,6 +1174,9 @@ export default function CodeImporter({
         setHostingState(prev, { label: result.label, publishedAt })
       );
       setPublishStatus("published");
+      // Heilungs-Hinweis: nur gesetzt, wenn der Server die Zeile wirklich
+      // wiederhergestellt hat (Feld fehlt im Normalfall -> false).
+      setPublishRestored(result.restored === true);
       // REFETCH-PUNKT 2: ein Publish veroeffentlicht seit 9a BEIDE Varianten -> der
       // Wert kann false->true kippen. Der publishProject-Rumpf bleibt unangetastet;
       // das Signal setzt allein dieser Client-Handler.
@@ -1887,6 +1895,16 @@ export default function CodeImporter({
               <p className="mt-2 text-xs text-green-600">
                 ● veröffentlicht
                 {publishStatus === "published" && " ✓ aktualisiert"}
+                {/* Ein Publish, der eine tote Adresse wiederbelebt hat, darf nicht
+                    aussehen wie jeder andere — der Nutzer soll wissen, dass etwas
+                    repariert wurde. Zusatz in der BESTEHENDEN Statuszeile, kein
+                    neues UI-Konzept. */}
+                {publishStatus === "published" && publishRestored && (
+                  <span className="font-medium">
+                    {" "}
+                    — Adresse war nicht mehr erreichbar und wurde wiederhergestellt.
+                  </span>
+                )}
               </p>
             ) : (
               projectId && (

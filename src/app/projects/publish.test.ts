@@ -22,6 +22,10 @@ function makeClient(opts: {
   ownRow?: { data: unknown; error: unknown };
   updateResult?: { error: unknown };
   insertResults?: { error: unknown }[]; // pro insert-Aufruf, der Reihe nach
+  // Scheibe "domains-Wahrheit": das Ergebnis der Label-Zeilen-Abfrage
+  // (select label,created_at from domains where project_id=… and custom_host is null).
+  // Default: leer + kein Fehler -> Verhalten wie "Projekt hat noch keine Zeile".
+  labelRows?: { data: unknown; error: unknown };
 }) {
   const rec = {
     fromTables: [] as string[],
@@ -31,10 +35,19 @@ function makeClient(opts: {
   const insertQueue = [...(opts.insertResults ?? [])];
 
   function builder(table: string) {
-    let awaited: { error: unknown } = { error: null };
+    let awaited: { data?: unknown; error: unknown } = { error: null };
     const b: Record<string, unknown> = {};
-    b.select = vi.fn(() => b);
+    b.select = vi.fn(() => {
+      // Der domains-SELECT wird OHNE maybeSingle awaited (er liefert eine Liste) ->
+      // das Ergebnis muss am thenable haengen, nicht an maybeSingle.
+      if (table === "domains") {
+        awaited = opts.labelRows ?? { data: [], error: null };
+      }
+      return b;
+    });
     b.eq = vi.fn(() => b);
+    b.is = vi.fn(() => b);
+    b.order = vi.fn(() => b);
     b.maybeSingle = vi.fn(async () =>
       table === "projects"
         ? opts.ownRow ?? { data: null, error: null }
@@ -108,6 +121,14 @@ describe("publishProject (Scheibe 7a)", () => {
   });
 
   it("IDEMPOTENZ: bestehendes Label -> KEIN neuer insert, gleiche URL", async () => {
+    // FIXTURE NACHGEZOGEN, ASSERTIONS UNVERAENDERT: frueher trug diese Fixture NUR
+    // settings.hosting.label und KEINE domains-Zeile — sie kodierte damit genau die
+    // falsche Annahme, die der Divergenz-Bug ausnutzte ("settings-Label allein heisst
+    // veroeffentlicht"). Seit die domains-Zeile die alleinige Wahrheit ist, IST dieser
+    // Zustand die Divergenz und wird korrekt GEHEILT (Insert) — was den Test
+    // fehlschlagen liess. Ein Projekt, das wirklich "bestehendes Label" hat, hat auch
+    // die Zeile; genau das bildet die Fixture jetzt ab. Der Test prueft damit endlich,
+    // was sein Name sagt.
     const { rec } = makeClient({
       user: { id: "user-1" },
       ownRow: {
@@ -116,6 +137,10 @@ describe("publishProject (Scheibe 7a)", () => {
           name: "Mein Shop",
           settings: { hosting: { label: "mein-shop-abc123" } },
         },
+        error: null,
+      },
+      labelRows: {
+        data: [{ label: "mein-shop-abc123", created_at: "2026-07-01T00:00:00Z" }],
         error: null,
       },
     });
@@ -406,5 +431,185 @@ describe("publishProject — Variante B (Phase 9 Scheibe 9a)", () => {
     // Fail-closed: kein Write, kein neues Label.
     expect(rec.updatePatch).toBeNull();
     expect(rec.inserts).toHaveLength(0);
+  });
+});
+
+describe("publishProject — domains-Zeile ist die alleinige Wahrheit", () => {
+  const ROW = (label: string, created: string) => ({ label, created_at: created });
+
+  it("TEST 1 NORMALFALL: Zeile vorhanden -> dieselbe URL, KEIN Insert", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "P",
+          settings: { hosting: { label: "p-abc123" } },
+        },
+        error: null,
+      },
+      labelRows: { data: [ROW("p-abc123", "2026-07-01T00:00:00Z")], error: null },
+    });
+    const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.label).toBe("p-abc123");
+    expect(rec.inserts).toHaveLength(0);
+    // Ohne Divergenz ist die Antwort byte-gleich zu vorher (Invariante i).
+    expect(res).not.toHaveProperty("restored");
+  });
+
+  it("TEST 2 HEILUNG: settings-Label da, Zeile FEHLT -> Insert mit DEMSELBEN Label", async () => {
+    // Der Kernfall. Vorher lief publishProject hier durch, OHNE die Zeile anzulegen —
+    // die Live-URL blieb dauerhaft 404 (live gemessen).
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "P",
+          settings: { hosting: { label: "scheibe-7b-test-ef6dh9" } },
+        },
+        error: null,
+      },
+      labelRows: { data: [], error: null },
+    });
+    const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    // DASSELBE Label — die URL bleibt stabil (Invariante iii).
+    expect(res.label).toBe("scheibe-7b-test-ef6dh9");
+    expect(rec.inserts).toEqual([
+      { label: "scheibe-7b-test-ef6dh9", project_id: "proj-1" },
+    ]);
+    // Der Heilungsfall ist am Ergebnis erkennbar.
+    expect(res.restored).toBe(true);
+    // Und published_content wurde geschrieben.
+    const patch = rec.updatePatch as { published_content: unknown };
+    expect(patch.published_content).toBeTruthy();
+  });
+
+  it("TEST 3 KEIN DIEBSTAHL: Label gehoert fremdem Projekt (23505) -> fail-closed", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "P",
+          settings: { hosting: { label: "fremd-abc123" } },
+        },
+        error: null,
+      },
+      labelRows: { data: [], error: null },
+      insertResults: [{ error: { code: "23505" } }],
+    });
+    const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    expect(res.ok).toBe(false);
+    if (!res.ok) {
+      // Der Text nennt die ADRESSE und die FOLGE — und verspricht keinen
+      // Support-Kanal, den es nicht gibt.
+      expect(res.error).toContain("fremd-abc123");
+      expect(res.error).toMatch(/anderweitig vergeben/i);
+      expect(res.error).toMatch(/NICHTS veröffentlicht/i);
+      expect(res.error).not.toMatch(/melde dich|kontaktiere|support/i);
+    }
+    // NICHTS geschrieben: kein published_content, keine Uebernahme der Fremdzeile.
+    expect(rec.updatePatch).toBeNull();
+  });
+
+  it("TEST 4 UMGEKEHRTE DIVERGENZ: Zeile da, settings LEER -> Zeile gewinnt, KEIN zweites Label", async () => {
+    // Ohne den Fix vergab dieser Zustand ein ZWEITES Label; die alte Zeile wurde zur
+    // Waise und servte weiter alten Inhalt.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {} }, error: null },
+      labelRows: { data: [ROW("alt-abc123", "2026-07-01T00:00:00Z")], error: null },
+    });
+    const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.label).toBe("alt-abc123");
+    expect(rec.inserts).toHaveLength(0);
+    // settings wird mit DIESEM Label geschrieben (Spiegel, nicht Quelle).
+    const patch = rec.updatePatch as { settings: { hosting: { label: string } } };
+    expect(patch.settings.hosting.label).toBe("alt-abc123");
+  });
+
+  it("TEST 5 ERSTER PUBLISH: weder Zeile noch settings -> frisches Label", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "Mein Shop", settings: {} }, error: null },
+      labelRows: { data: [], error: null },
+    });
+    const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.label).toMatch(/^mein-shop-[a-z0-9]{6}$/);
+    expect(rec.inserts).toHaveLength(1);
+    expect(res).not.toHaveProperty("restored");
+  });
+
+  it("TEST 6 FAIL-CLOSED: Label-Ermittlung liefert DB-Fehler -> KEIN Publish", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: { id: "proj-1", name: "P", settings: { hosting: { label: "p-abc" } } },
+        error: null,
+      },
+      labelRows: { data: null, error: { message: "boom" } },
+    });
+    const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.error).toMatch(/nicht geprüft werden/i);
+    // Lieber kein Publish als eines, das die Divergenz fortschreibt.
+    expect(rec.updatePatch).toBeNull();
+    expect(rec.inserts).toHaveLength(0);
+  });
+
+  it("TEST 7a MEHRERE ZEILEN: die aus settings gewinnt (URL-Kontinuitaet)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: { id: "proj-1", name: "P", settings: { hosting: { label: "neu-222222" } } },
+        error: null,
+      },
+      // AELTESTE zuerst (order created_at asc) — die settings-Zeile ist die juengere.
+      labelRows: {
+        data: [ROW("alt-111111", "2026-07-01T00:00:00Z"), ROW("neu-222222", "2026-07-20T00:00:00Z")],
+        error: null,
+      },
+    });
+    const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    expect(res.ok).toBe(true);
+    if (res.ok) expect(res.label).toBe("neu-222222");
+    expect(rec.inserts).toHaveLength(0);
+  });
+
+  it("TEST 7b MEHRERE ZEILEN OHNE settings-Label: die AELTESTE gewinnt, nicht die erste beliebige", async () => {
+    // Deterministik-Riegel: die DB erlaubt mehrere Label-Zeilen (0007 deckt nur
+    // custom_host ab). Ohne Ordnung entschiede der Zufall ueber die Live-URL.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {} }, error: null },
+      labelRows: {
+        data: [ROW("aelteste-111111", "2026-07-01T00:00:00Z"), ROW("juengere-222222", "2026-07-20T00:00:00Z")],
+        error: null,
+      },
+    });
+    const res = await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    expect(res.ok).toBe(true);
+    if (res.ok) expect(res.label).toBe("aelteste-111111");
+    expect(rec.inserts).toHaveLength(0);
+  });
+
+  it("PROJEKTION: die Label-Abfrage liest NUR label/created_at und filtert auf custom_host IS NULL", async () => {
+    const { client } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {} }, error: null },
+      labelRows: { data: [ROW("p-abc123", "2026-07-01T00:00:00Z")], error: null },
+    });
+    await publishProject("proj-1", "<h1>x</h1>", snapshot);
+    // domains wurde befragt (eigener Roundtrip, bewusst kein Join auf projects).
+    expect(client.from).toHaveBeenCalledWith("domains");
   });
 });

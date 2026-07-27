@@ -626,7 +626,17 @@ export async function removeCapiToken(
 
 /** Ergebnis von publishProject. Bei Erfolg die absolute Live-URL + das Label. */
 export type PublishResult =
-  | { ok: true; url: string; label: string }
+  | {
+      ok: true;
+      url: string;
+      label: string;
+      // Die Label-Zeile fehlte und wurde MIT DEM ALTEN Label wiederhergestellt (die
+      // Live-URL war bis eben tot). Optional und nur im Heilungsfall gesetzt ->
+      // Projekte ohne Divergenz bekommen die byte-gleiche Antwort wie bisher
+      // (Invariante i). Der Client zeigt es als Zusatz in der bestehenden
+      // Statuszeile; fehlt das Feld, aendert sich am UI nichts.
+      restored?: true;
+    }
   | { ok: false; error: string };
 
 // Der authenticated-SSR-Client (fuer die Typisierung des Helpers).
@@ -655,6 +665,32 @@ async function assignDomainLabel(
     if (error.code !== "23505") return null;
   }
   return null;
+}
+
+/**
+ * Legt die Label-Zeile mit einem VORGEGEBENEN Label an (Wiederherstellung nach einer
+ * Divergenz). Gegenstueck zu assignDomainLabel, das ein FRISCHES Label wuerfelt.
+ *
+ * Rueckgabe: null = angelegt; "taken" = das Label gehoert bereits jemandem
+ * (23505 auf dem PK); "error" = alles andere.
+ *
+ * KEIN LABEL-DIEBSTAHL (Invariante ii) — und zwar STRUKTURELL, nicht per Guard: label
+ * ist der PRIMAERSCHLUESSEL der Tabelle (Migration 0006). Ein Insert auf ein fremdes
+ * Label scheitert mit 23505, unabhaengig von jeder Policy. Zusaetzlich laesst die
+ * WITH-CHECK-Policy domains_insert_own nur Zeilen auf EIGENE Projekte zu. Es gibt
+ * hier bewusst KEIN update/upsert — nur ein Insert kann fehlschlagen, ein Upsert
+ * wuerde die fremde Zeile uebernehmen.
+ */
+async function insertDomainLabel(
+  supabase: SsrClient,
+  projectId: string,
+  label: string
+): Promise<null | "taken" | "error"> {
+  const { error } = await supabase
+    .from("domains")
+    .insert({ label, project_id: projectId });
+  if (!error) return null;
+  return error.code === "23505" ? "taken" : "error";
 }
 
 /**
@@ -730,9 +766,91 @@ export async function publishProject(
   const currentSettings = (owned.settings ?? {}) as ProjectSettings;
   const publishedAt = new Date().toISOString();
 
-  // Bestehendes Label wiederverwenden (Idempotenz), sonst frisch vergeben.
-  let label = getHostingLabel(currentSettings);
-  if (!label) {
+  // ===== LABEL: DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT =====================
+  //
+  // FRUEHER las dieser Block das Label aus settings.hosting.label und glaubte ihm
+  // blind. settings ist aber CLIENT-besessen (saveProject ersetzt es GANZHEITLICH),
+  // waehrend die AUSLIEFERUNG allein an der domains-Zeile haengt (resolve.ts matcht
+  // sie). Zwei ungekoppelte Wahrheiten -> Divergenz in BEIDE Richtungen:
+  //   (a) settings bleibt, Zeile weg  -> Live-URL 404t, UI sagt "veroeffentlicht",
+  //       und ein Re-Publish HEILT NICHT, weil getHostingLabel weiter einen Wert
+  //       liefert und der Vergabe-Zweig nie betreten wird (live gemessen).
+  //   (b) Zeile bleibt, settings weg  -> der naechste Publish vergibt ein ZWEITES
+  //       Label; die alte Zeile wird zur Waise und servt weiter alten Inhalt.
+  // Beide verschwinden, sobald die Zeile die Quelle ist: settings.hosting ist ab
+  // hier ein reiner SPIEGEL (2b-0-Denkfigur, nur ohne neue Spalte — die
+  // server-autoritative Wahrheit existiert bereits, sie wurde nur nicht gelesen).
+  //
+  // EIGENER ROUNDTRIP, bewusst: der Ownership-Select liest projects, hier geht es um
+  // domains — ein Join wuerde die bewusst schmale Projektion aufweichen. Anders
+  // bewertet als auf dem SERVE-Pfad ("KEIN zweiter DB-Zugriff"): den trifft JEDER
+  // Besucher JEDER Kundenseite, Publish ist eine bewusste Nutzeraktion, wenige Male
+  // pro Projekt.
+  //
+  // ALLE Label-Zeilen lesen, NICHT maybeSingle: die DB erlaubt MEHRERE davon pro
+  // Projekt. Der partial-unique-Index domains_custom_host_key (0007) deckt nur
+  // custom_host ab, und seine Begruendung dort bezieht sich auf die NULL-Semantik
+  // von UNIQUE — sie ist KEINE Entscheidung fuer mehrere Label-Zeilen. Ein
+  // maybeSingle wuerde in diesem Zustand zufaellig eine Zeile ziehen (oder mit
+  // PGRST116 scheitern) und damit ueber die ausgelieferte URL wuerfeln.
+  // order by created_at asc -> rows[0] ist deterministisch die AELTESTE.
+  const { data: labelRows, error: labelErr } = await supabase
+    .from("domains")
+    .select("label, created_at")
+    .eq("project_id", projectId)
+    .is("custom_host", null)
+    .order("created_at", { ascending: true });
+
+  // FAIL-CLOSED: bei unklarem Zustand lieber KEIN Publish als eines, das die
+  // Divergenz fortschreibt.
+  if (labelErr)
+    return {
+      ok: false,
+      error:
+        "Der Veröffentlichungsstatus konnte nicht geprüft werden — bitte erneut versuchen. Es wurde nichts geändert.",
+    };
+
+  const settingsLabel = getHostingLabel(currentSettings);
+  const rows = (labelRows ?? []) as { label: string; created_at: string }[];
+
+  let label: string;
+  let restored = false;
+
+  if (rows.length > 0) {
+    // NORMALFALL + Heilung von Richtung (b). Bei mehreren Zeilen deterministisch:
+    // die aus settings gewinnt (URL-KONTINUITAET — laufende Ads zeigen weiter
+    // richtig); gibt es die nicht, die AELTESTE. Nie "die erste zurueckgelieferte".
+    // ABWEICHENDES settings-LABEL (die dritte Divergenzform): findet sich zu
+    // settingsLabel KEINE Zeile, gewinnt rows[0] — und die im UI angezeigte
+    // Adresse aendert sich damit. Das ist KEIN Verstoss gegen die
+    // URL-Stabilitaet, sondern ihre Durchsetzung: die settings-Adresse hat nie
+    // ausgeliefert (keine Zeile), die gewaehlte tut es. Die ANGEZEIGTE Adresse
+    // wird auf die TATSAECHLICH servende korrigiert. Heute nicht real
+    // (gemessen 2026-07-27: kein Projekt mit mehreren Label-Zeilen, keine
+    // Label-Abweichung), deshalb bewusst ohne eigenen UI-Hinweis.
+    const match = rows.find((r) => r.label === settingsLabel);
+    label = (match ?? rows[0]).label;
+  } else if (settingsLabel) {
+    // HEILUNG von Richtung (a): die Zeile fehlt, das Label steht aber in settings.
+    // Es wird MIT DEM ALTEN Label wiederhergestellt — ABGELEITET, nicht erfunden,
+    // und die Live-URL bleibt stabil (Invariante iii).
+    const ins = await insertDomainLabel(supabase, projectId, settingsLabel);
+    if (ins === "taken")
+      // KEIN Diebstahl (Invariante ii): das Label gehoert inzwischen jemand
+      // anderem. Fail-closed statt still ein NEUES Label zu vergeben — eine
+      // lautlos geaenderte Live-URL waere der teurere Fehler (laufende Ads zeigten
+      // weiter auf die tote Adresse, und der Nutzer erfuehre es nie). Kein
+      // Support-Kanal wird versprochen, es gibt heute keinen.
+      return {
+        ok: false,
+        error: `Die bisherige Adresse "${settingsLabel}" ist inzwischen anderweitig vergeben. Es wurde NICHTS veröffentlicht — die Seite bleibt unter dieser Adresse offline, bis eine neue Adresse vergeben wird.`,
+      };
+    if (ins === "error")
+      return { ok: false, error: "Label-Vergabe fehlgeschlagen." };
+    label = settingsLabel;
+    restored = true;
+  } else {
+    // ERSTER PUBLISH: weder Zeile noch settings -> frisches Label wie bisher.
     const assigned = await assignDomainLabel(
       supabase,
       projectId,
@@ -814,7 +932,9 @@ export async function publishProject(
       "[pagesmith] NEXT_PUBLIC_HOSTING_DOMAIN ist leer in Production — publizierte Projekte erhalten keine Live-URL."
     );
   }
-  return { ok: true, url, label };
+  // restored NUR im Heilungsfall mitgeben (kein "restored: false"): ohne Divergenz
+  // ist die Antwort damit byte-gleich zu vorher (Invariante i).
+  return restored ? { ok: true, url, label, restored } : { ok: true, url, label };
 }
 
 /**

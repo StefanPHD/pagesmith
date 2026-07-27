@@ -192,7 +192,7 @@ keine gepflegte schema_migrations-Tabelle) — messbar sind nur die WIRKUNGEN.
   Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
   ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
 
-## Aktiver Stand — Phase 9 (A/B-Testing): Grundsatzentscheidungen + Scheibe 9a (Varianten-Authoring, KONZEPT — Bau als Nächstes)
+## Aktiver Stand — Phase 9 (A/B-Testing): Grundsatzentscheidungen + Scheibe 9a (Varianten-Authoring, ABGESCHLOSSEN — live bewiesen (2026-07-27))
 Zwei Varianten je Projekt, hälftiger Split, stabile Zuordnung pro Besuch. Bewusst MINIMAL:
 keine Gewichtung, keine Signifikanzrechnung, keine Multi-Varianten. Die future-roadmap hält
 fest, dass der Seiten-Level-Split mit zwei published-Blobs funktioniert und die
@@ -233,7 +233,7 @@ JSON-Sektions-Architektur (Spur B) NICHT braucht — das ist der Schnitt.
   (9b), NICHT danach — sonst entstehen während der ersten Testphase Events ohne Zuordnung
   (vermeidbarer Bestandsdaten-Skew, Lektion aus Scheibe B).
 
-### Scheibe 9a — Varianten-Authoring (KEIN Split)
+### Scheibe 9a — Varianten-Authoring (KEIN Split) — ABGESCHLOSSEN, deployt, Migration 0016 gelaufen (html_b/mappings_b + CHECK projects_variant_b_pair), live bewiesen.
 - ZWECK: ein Projekt kann eine zweite Variante tragen, bearbeiten und veröffentlichen. Die
   Live-URL liefert weiterhin AUSSCHLIESSLICH A. Ohne zweiten Inhalt gibt es nichts zu splitten.
 - AUTHORING-ENTSCHEIDUNG (bewusstes Duplikat statt verfrühter Abstraktion): zweites Slot-Paar
@@ -284,6 +284,54 @@ JSON-Sektions-Architektur (Spur B) NICHT braucht — das ist der Schnitt.
   zeigt weiterhin A; (c) Umschalten A<->B im Editor zeigt jeweils die richtigen Elemente und
   Mappings, kein Orphan-Rauschen; (d) REGRESSIONSPROBE: ein Projekt OHNE B verhält sich
   unverändert (publishen, serven, Conversion tracken).
+- VERIFIZIERT (live, 2026-07-27):
+  - REGRESSION / INVARIANTE (i) (GEMESSEN, zuerst geprüft): Bestandsprojekt OHNE B ->
+    speichern, publishen, Live-URL, Conversion — alles unverändert; Toolbar ohne
+    Umschalter. SQL-Key-Set von published_content exakt {html,mappings,publishedAt,settings}
+    -> kein Schema-Drift.
+  - PUBLISH MIT B (GEMESSEN): alle sechs Prüffelder true — hat_b, hat_b_mappings, pc_hat_a,
+    pc_hat_b, emitter_a, emitter_b. Damit belegt: variantB liegt als ADDITIVER
+    Geschwister-Key im jsonb (Invariante iii), der PageView-Emitter steckt in BEIDEN
+    Varianten (Invariante iv — sonst verschwänden B's PageViews still, sobald 9b splittet),
+    und die Live-URL zeigt trotzdem A (Invariante vi, fail-safe by default).
+  - EXPORT (GEMESSEN): Button schaltet dynamisch auf "Variante B exportieren" und liefert
+    B's Inhalt — der Wurzeltausch schlägt bis in den Export durch, weil dieser aus
+    debouncedCode baut.
+  - ENTFERNEN + RIEGEL (GEMESSEN): B entfernen bei AKTIVER Variante B -> der Editor fällt
+    sofort auf A zurück (nicht auf leer). SQL: hat_b=false, hat_b_mappings=false (Gleichlauf,
+    CHECK), pc_hat_a=true, pc_hat_b=false, emitter_a=true, emitter_b=NULL. A unangetastet.
+  - KEINE KONTAMINATION (GEMESSEN, SQL): beide Varianten tragen ihren Text-Override im
+    richtigen Slot — mappings trägt A's Wortlaut, mappings_b B's, beide am SELBEN
+    Element-Anker. Invariante (ii) unter echtem Traffic bestätigt.
+  - DIRTY-GUARD (GEMESSEN, nebenbei): eine unbestätigte A-Änderung wurde beim Umschalten
+    korrekt verworfen — der B4-Guard hält live.
+- NACHTRAG — LIVE GEFUNDENER BUG UND FIX (2026-07-27, stale Edit-Canvas):
+  SYMPTOM: nach einem Variantenwechsel zeigte das Live-Preview im Modus "Editieren" weiter
+  die ZULETZT BEARBEITETE Variante (in beide Richtungen); Vorschau, Export, Publish und
+  Serve waren korrekt.
+  URSACHE (zwei Schichten): (1) srcDoc ist ein STRING — React schreibt das Attribut nur bei
+  WERT-Änderung; (2) createVariantB kopiert byte-genau und eine reine Text-Änderung lässt
+  den Code unangetastet -> A und B tragen denselben HTML-String. Zusätzlich gibt
+  editPreviewHtml bei fehlendem Text-Override previewHtml BYTE-IDENTISCH zurück
+  (Kurzschluss) — das Ergebnis hängt dann gar nicht am mappings-Inhalt. Folge: kein Reload,
+  und im Canvas überlebte der per PS_SET_TEXT imperativ gepatchte DOM.
+  FIX (zwei Teile, die NUR ZUSAMMEN wirken): activeVariant als Memo-Dep (der Memo LÄUFT) +
+  ein Varianten-Marker als String-Anhängung am Ende des edit-srcDoc (es kommt ein ANDERER
+  String heraus). Der Marker sitzt im edit-Wrapper und NICHT in generateFunctional, sonst
+  geriete er in Export- und Publish-Artefakte; ein Artefakt-Test nagelt das fest (mit
+  Positiv-Gegenprobe, sonst prüfte er die Abwesenheit eines nie erzeugten Strings).
+  mappings bleibt bewusst KEINE Dep — das ist die Phase-5-Wurzel-Entkopplung (kein
+  Reload-Sprung beim Tippen).
+  ZWISCHENSTAND, DER NICHT GEREICHT HÄTTE (wichtig für später): der erste Fix hatte NUR die
+  Dep. Er hätte den Bug INTERMITTENT gemacht — behoben, wenn die Varianten beim Umschalten
+  schon divergierten (nach Seiten-Reload), weiter kaputt, wenn die Divergenz erst DANACH
+  durch Editieren entstand. Gefunden durch einen Reproduktionstest, der die SEQUENZ statt
+  nur die Datenlage abbildet.
+  VERIFIZIERT (live, 2026-07-27): Umschalten zeigt in BEIDEN Richtungen sofort die richtige
+  Variante, ohne Umweg über die Vorschau; auch am frisch kopierten Projekt ohne jeden
+  Text-Override (der Startzustand, der den Bug auslöste). Die Phase-5-Eigenschaft hält:
+  Text ändern + übernehmen erzeugt KEINEN Reload-Sprung. Der Marker taucht im Export NICHT
+  auf.
 - OFFEN -> 9b: Split + Cookie + variant-Spalte auf events. -> 9c: Auswertung je Variante.
 
 ## Code-Qualität, Performance & SaaS-Skalierung

@@ -831,18 +831,32 @@ docs/claude-history/security-manifest-full.md.
   Projekte mit Custom-Domain fälschlich als divergent (real passiert). Die
   Label-Zeile ist die mit custom_host IS NULL.
   Volle Herleitung: docs/claude-history/phase-7-hosting.md.
-- CODE-REVIEWER-SUBAGENT: .claude/agents/code-reviewer.md — rein lesend/prüfend
-  (Read/Grep/Glob + scoped Bash für tsc/lint/test/build, KEIN Schreiben/Committen),
-  proaktiv nach Änderungen an Server-Actions, Supabase-Migrationen, Domain-/Hosting-
-  Code (src/lib/hosting, src/lib/domains, src/lib/vercel) oder Tracking-Code
-  (src/lib/capi) einsetzbar. Trägt unsere real aufgetretenen Fehlerklassen als feste
-  Checkliste (Ownership-Gates, "use server"-Typ-Exporte, {data,error}-Destrukturierung,
-  echte PKs statt angenommenem "id", DNS-Werte nie hardcoden, isAppHost-Änderungen,
-  Klick-Wiring/auxclick, Status-vs-Wirkung-Tests). SYNCHRONISIERT SICH SELBST: liest
-  bei jedem Review zuerst diese "Immer beachten"-Sektion und flaggt eigenständig
-  ([SUGGESTION] Synchronisations-Hinweis), falls eine neue Lektion hier fehlt, die
-  noch nicht in seiner Checkliste steht — KEIN manuelles Nachziehen bei jeder neuen
-  Zeile hier nötig, außer bei einer echten gemeldeten Lücke.
+- APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI (gehoben aus der abgeschafften
+  Reviewer-Checkliste): project_tokens UND audit_logs tragen bewusst KEINE
+  SELECT/UPDATE/DELETE-Policy — Zugriff ausschliesslich ueber service_role. Eine neue
+  Policy auf einer dieser Tabellen ist KEINE Kleinigkeit, sondern bricht eine tragende
+  Garantie: bei project_tokens das write-only-Gate auf den CAPI-Token (s. "GRANTS
+  SCHUETZEN NICHTS"), bei audit_logs die Unveraenderlichkeit UND das Rate-Limit, das
+  seine Zaehlgrundlage aus genau diesem Log zieht (lib/domains/audit.ts). Wer dort eine
+  Policy ergaenzt, macht das Audit faelschbar und das Limit umgehbar.
+- AUDIT-LOG-DISZIPLIN: GENAU EIN Eintrag pro Mutations-AUFRUF, auch bei frueher
+  Ablehnung — geschrieben aus einem finally, damit kein Ausgang ihn verliert (Muster:
+  register.ts / remove.ts). Nie Doppel-Feuern (verfaelscht das Rate-Limit), nie
+  Verschlucken (der Vorgang wird unsichtbar). writeAuditLog wirft bewusst nicht weiter:
+  ein Log-Fehler darf den eigentlichen Mutations-Ausgang nicht kippen.
+- TEST-DISZIPLIN: DISKRIMINIEREND STATT BREIT GEMOCKT (gehoben aus der abgeschafften
+  Reviewer-Checkliste): Jeder Test muss bei einer echten Regression WIRKLICH rot werden —
+  im Zweifel per Mutationsprobe belegen, nicht annehmen. ZU BREITES MOCKEN ist die
+  haeufigste Ursache hohler Tests: wer die Funktion wegmockt, die den Bug traegt, prueft
+  nur noch den Mock (real aufgetreten: im Dispatch-Test MUSS die echte extractLabel
+  laufen, sonst faengt er den 7c-2a-Rueckfall nicht). Verwandt und schaerfer:
+  "TESTDATEN UND TEST-SEQUENZ MUESSEN DEN PRODUKTIVEN PFAD TREFFEN" unten.
+- COMMIT-KONVENTIONEN: Conventional-Commit-Format type(scope): message (feat, fix, docs,
+  chore, refactor). docs(claude)-Commits bleiben GETRENNT von feat/fix-Commits — der
+  Verlauf wird gelesen, und eine Doku-Aenderung im Feature-Commit ist spaeter nicht mehr
+  auffindbar. Vor JEDEM Push git status/git diff auf versehentliche Secrets/.env-Inhalte
+  pruefen. Taucht eine Migration im Diff auf, gilt zusaetzlich die
+  Migration-VOR-Code-Deploy-Reihenfolge (eigene Regel unten).
 - TESTDATEN UND TEST-SEQUENZ MÜSSEN DEN PRODUKTIVEN PFAD TREFFEN (Phase 9, zwei live
   gefundene Fehlschläge): (1) DATENLAGE: der 9a-Umschalt-Test gab A und B bewusst
   UNTERSCHIEDLICHES HTML, um die Ableitungskette maximal sichtbar zu machen — und sparte
@@ -1008,6 +1022,9 @@ docs/claude-history/security-manifest-full.md.
   solchen Datei MUSS import type/export type sein, sonst versucht der Server-Actions-
   Compiler, einen zur Laufzeit gelöschten Typnamen als Wert aufzulösen -> ReferenceError
   "X is not defined" beim Serverstart. Bei JEDER neuen Server-Action-Datei explizit prüfen.
+  Ebenso verboten: "export * from" in einer "use server"-Datei — der Stern kann einen Typ
+  unbemerkt als Wert mitexportieren und erzeugt denselben Fehler, nur ohne sichtbare
+  Fundstelle.
 - POSTGREST-QUERIES + ECHTE PRIMÄRSCHLÜSSEL (Lektion, 7c-2-Bug): JEDE Supabase/PostgREST-
   Query IMMER { data, error } destrukturieren, NIE nur { data } — sonst wird ein Fehler
   still verschluckt und die UI zeigt eine leere Liste statt einer Fehlermeldung. Und: vor

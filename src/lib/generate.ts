@@ -375,14 +375,45 @@ export function generateFunctional(
  * der Export vertraut; funktionale Gleichheit ist per Test belegt).
  *
  * KURZSCHLUSS: ohne text-Mapping gibt es nichts anzuzeigen -> previewHtml
- * UNVERAENDERT zurueck (byte-identisch). Das spart den Extra-Parse und haelt das
+ * unveraendert (plus Marker, s.u.) zurueck. Das spart den Extra-Parse und haelt das
  * Edit-iframe im Normalfall exakt wie bisher (kein Reload). Reine Darstellung:
  * KEIN Rueckfluss in code/debouncedCode/Dirty.
+ *
+ * VARIANTEN-MARKER (Phase 9 Scheibe 9a, Live-Bug): eine reine String-Anhaengung
+ * AM ENDE des Dokuments, die die AKTIVE Variante traegt. Warum sie noetig ist:
+ * srcDoc ist ein STRING, und React schreibt das Attribut nur bei WERT-Aenderung.
+ * Zwei Varianten aus createVariantB tragen aber denselben HTML-String, und dieser
+ * Kurzschluss hier gibt previewHtml BYTE-IDENTISCH zurueck, solange KEINE Variante
+ * einen Text-Override hat — das Ergebnis ist dann vom mappings-INHALT vollstaendig
+ * unabhaengig. Ohne Marker liefert der Memo beim Umschalten denselben String, React
+ * schreibt nicht, das iframe laedt nicht neu, und der per PS_SET_TEXT imperativ
+ * gepatchte DOM der zuletzt bearbeiteten Variante bleibt im Canvas stehen.
+ *
+ * DESHALB TRAEGT AUCH DER KURZSCHLUSS-PFAD DEN MARKER: er ist nicht der Randfall,
+ * sondern der STARTZUSTAND jedes frisch kopierten Projekts. Ein Marker nur im
+ * generateFunctional-Zweig repariert genau den gemeldeten Fall NICHT.
+ *
+ * AM ENDE, nicht davor: Inhalt VOR dem Doctype loest Quirks-Mode aus und aenderte
+ * das Rendering. Reine String-Op, KEIN Parsing (Projektregel).
+ *
+ * HIER und NICHT in generateFunctional: generateFunctional bedient "edit",
+ * "preview" UND "export" — ein Marker dort landete in EXPORTIERTEM und
+ * VEROEFFENTLICHTEM HTML. editPreviewHtml ist der edit-spezifische Wrapper und
+ * damit die einzige Stelle, an der der Marker strukturell nicht in ein Artefakt
+ * gelangen kann.
  */
+export function editVariantMarker(variant: string): string {
+  return `<!--__ps_variant:${variant}-->`;
+}
+
 export function editPreviewHtml(
   previewHtml: string,
-  mappings: Mapping[]
+  mappings: Mapping[],
+  variant: string
 ): string {
-  if (!mappings.some((m) => m.type === "text")) return previewHtml;
-  return generateFunctional(previewHtml, mappings, "edit");
+  // Der Marker haengt an BEIDEN Rueckgabepfaden — der Kurzschluss unten ist
+  // ausdruecklich KEINE Ausnahme, sondern der wichtigste Fall (s. Doc-Block).
+  const marker = editVariantMarker(variant);
+  if (!mappings.some((m) => m.type === "text")) return previewHtml + marker;
+  return generateFunctional(previewHtml, mappings, "edit") + marker;
 }

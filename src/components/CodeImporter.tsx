@@ -349,8 +349,57 @@ export default function CodeImporter({
   // bäckt die DANN aktuellen Overrides per generateFunctional("edit") frisch ein
   // (Override-ueberlebt-Reload). Die mappings-Auslassung ist die gezielte, hier
   // begruendete exhaustive-deps-Ausnahme.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const editHtml = useMemo(() => editPreviewHtml(previewHtml, mappings), [previewHtml]);
+  //
+  // ZWEI TEILE, DIE NUR ZUSAMMEN WIRKEN (Phase 9 Scheibe 9a, Live-Bug) — wer einen
+  // davon entfernt, stellt den Bug wieder her, OHNE dass etwas rot wird ausser dem
+  // Reproduktions-Test:
+  //   (1) activeVariant als DEP sorgt dafuer, dass der Memo beim Umschalten LAEUFT;
+  //   (2) der Varianten-MARKER in editPreviewHtml sorgt dafuer, dass dabei ein
+  //       ANDERER STRING herauskommt.
+  // Beides ist noetig, weil srcDoc ein STRING ist: React schreibt das Attribut nur
+  // bei WERT-Aenderung, und editPreviewHtml gibt bei fehlendem Text-Override
+  // previewHtml BYTE-IDENTISCH zurueck (Kurzschluss) — der Rueckgabewert haengt dann
+  // gar nicht am mappings-Inhalt. Ein laufender Memo allein aendert also nichts.
+  // Der Marker sitzt im edit-Wrapper und NICHT in generateFunctional, weil der
+  // sonst in Export- und Publish-Artefakte geriete (generateFunctional bedient auch
+  // "preview" und "export").
+  //
+  // activeVariant IST EINE ECHTE DEP, KEIN VERSEHEN (Phase 9 Scheibe 9a, Live-Bug):
+  // Die Phase-5-Doku zaehlt als Reload-Faelle "Code-Aenderung / Projektwechsel" auf.
+  // Der VARIANTENWECHSEL ist ein dritter Fall derselben Klasse — und der einzige, in
+  // dem sich der Code NICHT aendert: createVariantB kopiert A byte-genau, und eine
+  // reine Text-Aenderung laesst den Code unangetastet (anchorMappingTarget ist auf
+  // einem bereits verankerten Element ein No-op). A und B tragen dann denselben
+  // HTML-STRING -> Object.is(debouncedCode_alt, debouncedCode_neu) ist true -> weder
+  // der annotateAndDetect-Memo noch dieser hier feuern -> srcDoc bleibt derselbe
+  // String -> KEIN Reload -> im Canvas steht weiter der per PS_SET_TEXT imperativ
+  // gepatchte DOM der ZULETZT BEARBEITETEN Variante, waehrend Liste/Badges/State
+  // schon die neue zeigen. Genau das war der Live-Bug. activeVariant ist der einzige
+  // Wert, der sich beim Umschalten GARANTIERT aendert.
+  //
+  // mappings BLEIBT DRAUSSEN — das ist der Kern der Phase-5-Invariante und nicht
+  // verhandelbar: "Wurzel-Entkopplung: Edit-srcDoc haengt ab jetzt NUR vom Code ab
+  // (nicht mehr von Text-Mappings)" (docs/claude-history/phase-5-copywriting.md).
+  // Mit mappings als Dep kaeme der Reload-Sprung beim Tippen/Uebernehmen zurueck,
+  // den Scheibe 3 an der Wurzel beseitigt hat. Waechter dafuer ist der Bestandstest
+  // "Text-Mapping-Aenderung bei unveraendertem Code erzeugt KEIN neues srcDoc".
+  //
+  // BENANNTES TRANSIENTES FENSTER (bewusste Eigenschaft, KEIN zusaetzlicher
+  // Mechanismus): beim Umschalten rechnet dieser Memo SOFORT neu — mit dem neuen
+  // mappings, aber dem noch alten previewHtml (debouncedCode hinkt DEBOUNCE_MS
+  // nach). Tragen die Varianten UNTERSCHIEDLICHES HTML, steht fuer ~300ms ein
+  // hybrides srcDoc im iframe (altes HTML + neue Overrides); danach zieht
+  // debouncedCode nach und der Zustand ist korrekt. Das ist unkritisch: der Hybrid
+  // ist reine ANZEIGE (Export/Publish/Vorschau bauen aus debouncedCode, nie aus dem
+  // iframe), die Orphan-Anzeige ist im selben Fenster durch
+  // elementsReflectCurrentCode (debouncedCode === code -> false) gedeckt, und ein
+  // Guard fuer 300ms waere Ueberbau. Im Normalfall (Kopie, identisches HTML) gibt es
+  // das Fenster gar nicht — dort ist das neu berechnete srcDoc sofort das richtige.
+  const editHtml = useMemo(
+    () => editPreviewHtml(previewHtml, mappings, activeVariant),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [previewHtml, activeVariant]
+  );
 
   // Ausgewaehltes Element abgeleitet: faellt automatisch auf null zurueck, wenn
   // die ID nach einer Code-Aenderung nicht mehr existiert.

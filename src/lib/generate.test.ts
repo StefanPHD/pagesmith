@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { editPreviewHtml, generateFunctional } from "./generate";
+import { editPreviewHtml, editVariantMarker, generateFunctional } from "./generate";
 import { annotateAndDetect } from "./detect";
 import type { Mapping } from "./mappings";
 
@@ -795,7 +795,7 @@ describe("CAPI-Dedup-Beacon (Scheibe 2b-ii)", () => {
 
   it("EDIT bleibt beacon-frei: editPreviewHtml injiziert nie ein sendBeacon/fbq", () => {
     const { html: previewHtml, elements } = annotateAndDetect("<h1>Alt</h1>");
-    const out = editPreviewHtml(previewHtml, [text(elements[0].id, "Neu")]);
+    const out = editPreviewHtml(previewHtml, [text(elements[0].id, "Neu")], "a");
     expect(out).not.toContain("navigator.sendBeacon(");
     expect(out).not.toContain("fbq(");
   });
@@ -982,13 +982,32 @@ describe("Text-Override – Editieren wendet Text an, OHNE Click-Wiring", () => 
 describe("editPreviewHtml – Komposition auf der Selektions-Bruecke", () => {
   const BRIDGE_SOURCE = "<h1>Alt</h1>";
 
-  it("KURZSCHLUSS: ohne text-Mapping == previewHtml (byte-identisch)", () => {
+  it("KURZSCHLUSS: ohne text-Mapping == previewHtml + Varianten-Marker (byte-identisch)", () => {
     const previewHtml = annotateAndDetect(BRIDGE_SOURCE).html;
+    // SCHAERFE UNVERAENDERT, ERWARTUNG NACHGEZOGEN (Phase 9 Scheibe 9a): der
+    // Kurzschluss ueberspringt weiterhin den Re-Parse und laesst previewHtml
+    // unangetastet — er haengt nur den Varianten-Marker an. Die Assertion bleibt
+    // BYTE-EXAKT (toBe auf den zusammengesetzten String), sie wurde NICHT auf ein
+    // weiches toContain aufgeweicht. Dass der Marker AUCH hier haengt, ist der Kern
+    // des Fixes: ohne ihn liefert der Kurzschluss fuer BEIDE Varianten denselben
+    // String, das Edit-iframe laedt beim Umschalten nicht neu und zeigt weiter den
+    // per PS_SET_TEXT gepatchten DOM der anderen Variante.
     // leere Mappings UND ein reines redirect-Mapping schliessen beide kurz.
-    expect(editPreviewHtml(previewHtml, [])).toBe(previewHtml);
+    expect(editPreviewHtml(previewHtml, [], "a")).toBe(
+      previewHtml + editVariantMarker("a")
+    );
     expect(
-      editPreviewHtml(previewHtml, [redirect("ps-aaaaaa", "https://b.com")])
-    ).toBe(previewHtml);
+      editPreviewHtml(previewHtml, [redirect("ps-aaaaaa", "https://b.com")], "b")
+    ).toBe(previewHtml + editVariantMarker("b"));
+  });
+
+  it("MARKER unterscheidet die Varianten (der eigentliche Reload-Ausloeser)", () => {
+    const previewHtml = annotateAndDetect(BRIDGE_SOURCE).html;
+    // Identische Eingaben, nur die Variante unterscheidet sich -> die Strings
+    // MUESSEN divergieren, sonst schreibt React das srcDoc-Attribut nicht.
+    expect(editPreviewHtml(previewHtml, [], "a")).not.toBe(
+      editPreviewHtml(previewHtml, [], "b")
+    );
   });
 
   it("mit text-Override: Bruecke ueberlebt den Re-Parse FUNKTIONAL + Override im Datenblock", () => {
@@ -997,7 +1016,7 @@ describe("editPreviewHtml – Komposition auf der Selektions-Bruecke", () => {
     // Sanity: previewHtml traegt die Bruecke + den Anker.
     expect(previewHtml).toContain("ELEMENT_CLICKED");
 
-    const out = editPreviewHtml(previewHtml, [text(id, "Neu")]);
+    const out = editPreviewHtml(previewHtml, [text(id, "Neu")], "a");
     // Bruecken-Marker + Anker-Attribut bleiben nach dem Re-Parse erhalten.
     expect(out).toContain("ELEMENT_CLICKED");
     expect(out).toContain("IFRAME_READY");

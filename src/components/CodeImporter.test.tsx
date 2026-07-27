@@ -823,6 +823,198 @@ describe("CodeImporter — Scheibe 9a: A/B-Varianten (Wurzeltausch)", () => {
     );
   }
 
+  // NORMALFALL-DATENLAGE (der Live-Bug): createVariantB kopiert A byte-genau, und
+  // eine reine Text-Aenderung laesst den Code unangetastet -> beide Varianten tragen
+  // DENSELBEN HTML-String und unterscheiden sich NUR in den Text-Overrides. Genau
+  // diese Konstellation hat der Umschalt-Test oben (HTML_A !== HTML_B) ausgespart:
+  // dort aendert sich previewHtml, der srcDoc-Memo feuert ohnehin, und der kaputte
+  // Anker faellt nicht auf. Ergaenzt, nicht ersetzt — der andere Fall prueft die
+  // Ableitungskette, dieser den ANKER.
+  const HTML_COPY = `<h1 data-pagesmith-id="ps-aaaaaa">Original</h1>`;
+  const TEXT_A = [
+    {
+      elementId: "ps-aaaaaa",
+      type: "text" as const,
+      config: { content: "Headline A" },
+    },
+  ];
+  const TEXT_B = [
+    {
+      elementId: "ps-aaaaaa",
+      type: "text" as const,
+      config: { content: "Headline B" },
+    },
+  ];
+
+  it("ARTEFAKT-RIEGEL: der Varianten-Marker landet NIE im Export- oder Publish-Dokument", async () => {
+    // Der Marker ist ein reines Edit-Canvas-Hilfsmittel. Saesse er in
+    // generateFunctional statt im edit-Wrapper editPreviewHtml, geriete er in JEDES
+    // exportierte und veroeffentlichte Dokument — bei einem Tool, dessen Ausgabe der
+    // Kunde auf seiner eigenen Domain ausliefert, ist das kein Schoenheitsfehler.
+    const writeText = vi.fn(async () => {});
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML_COPY}
+        initialMappings={TEXT_A}
+        initialVariantBHtml={HTML_COPY}
+        initialVariantBMappings={TEXT_B}
+      />,
+    );
+    await screen.findByText("Headline A");
+
+    // Gegenprobe zuerst: im EDIT-srcDoc MUSS der Marker stehen (sonst prueft der
+    // Test unten nur, dass ein nie erzeugter String fehlt).
+    const editDoc =
+      (screen.getByTitle("preview") as HTMLIFrameElement).getAttribute("srcdoc") ?? "";
+    expect(editDoc).toContain("__ps_variant");
+
+    // Export (Copy) — das Dokument, das der Kunde herunterlaedt.
+    fireEvent.click(screen.getByRole("button", { name: /kopieren/i }));
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+    const exportDoc = (writeText.mock.calls[0] as unknown[])[0] as string;
+    expect(exportDoc).not.toContain("__ps_variant");
+
+    // Publish — beide Varianten-Artefakte.
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Veröffentlichen$/ }));
+    await waitFor(() => expect(publishProject).toHaveBeenCalledTimes(1));
+    const call = publishProject.mock.calls[0] as unknown[];
+    expect(call[1] as string).not.toContain("__ps_variant");
+    expect((call[3] as { functionalHtml: string }).functionalHtml).not.toContain(
+      "__ps_variant",
+    );
+  });
+
+  it("REPRODUKTION (Live-Sequenz): identische Mappings beim Umschalten, Divergenz entsteht ERST danach per UI", async () => {
+    // Der Unterschied zum ANKER-Test unten ist die SEQUENZ, nicht die Datenlage:
+    // dort sind A und B schon beim Mount verschieden (Props), hier entstehen sie so,
+    // wie das Produkt sie erzeugt — createVariantB kopiert byte-genau, BEIDE
+    // Varianten starten mit IDENTISCHEN (hier: leeren) Mappings, und der Override
+    // wird erst nach dem Umschalten per UI gesetzt.
+    //
+    // srcDoc ist ein STRING: React schreibt das Attribut nur bei WERT-Aenderung.
+    // Ein Memo, der LAEUFT, aber denselben String liefert, loest KEINEN Reload aus.
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML_COPY}
+        initialMappings={[]}
+        initialVariantBHtml={HTML_COPY}
+        initialVariantBMappings={[]}
+      />,
+    );
+    const doc = () =>
+      (screen.getByTitle("preview") as HTMLIFrameElement).getAttribute("srcdoc") ??
+      "";
+    await screen.findByText("Original");
+
+    // Auf B umschalten (Mappings noch identisch -> gleicher String, kein Reload).
+    fireEvent.click(screen.getByRole("button", { name: "Variante B" }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Variante B" }).getAttribute("aria-pressed"),
+      ).toBe("true"),
+    );
+
+    // B's Text per UI setzen — genau wie der Owner. mappings ist KEIN Memo-Dep,
+    // also bleibt srcDoc stehen; sichtbar wird der Text nur via PS_SET_TEXT.
+    fireEvent.click(await screen.findByText("Original"));
+    fireEvent.click(await screen.findByText(/Text bearbeiten/));
+    fireEvent.change(screen.getByDisplayValue("Original"), {
+      target: { value: "Headline B" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Übernehmen" }));
+
+    // Speichern — Schritt 5 der gemeldeten Sequenz. Ohne ihn blockt der
+    // Dirty-Guard den Rueckwechsel (window.confirm liefert in jsdom falsy), und
+    // der Test wuerde am falschen Punkt scheitern.
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+    const duringB = doc();
+
+    // Zurueck auf A. DAMIT DAS CANVAS A ZEIGT, MUSS DAS DOKUMENT NEU AUSGELIEFERT
+    // WERDEN — nur ein WERT-Wechsel des srcDoc-Attributs loest den Reload aus, der
+    // den imperativen PS_SET_TEXT-Patch verwirft. Bleibt der String gleich, ueberlebt
+    // B's gepatchter DOM.
+    fireEvent.click(screen.getByRole("button", { name: "Variante A" }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Variante A" }).getAttribute("aria-pressed"),
+      ).toBe("true"),
+    );
+    expect(doc()).not.toBe(duringB);
+  });
+
+  it("ANKER: identisches HTML, nur Overrides verschieden -> srcDoc des Edit-iframes folgt dem Variantenwechsel", async () => {
+    // Ohne activeVariant in den Memo-Deps ist debouncedCode nach dem Umschalten
+    // Object.is-gleich -> weder annotateAndDetect noch der editHtml-Memo feuern ->
+    // srcDoc bleibt Zeichen fuer Zeichen stehen und im Canvas ueberlebt der per
+    // PS_SET_TEXT gepatchte DOM der zuletzt bearbeiteten Variante.
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML_COPY}
+        initialMappings={TEXT_A}
+        initialVariantBHtml={HTML_COPY}
+        initialVariantBMappings={TEXT_B}
+      />,
+    );
+    const frame = () => screen.getByTitle("preview") as HTMLIFrameElement;
+    const doc = () => frame().getAttribute("srcdoc") ?? "";
+
+    // Ausgangslage: A's Override ist eingebacken.
+    await waitFor(() => expect(doc()).toContain("Headline A"));
+    expect(doc()).not.toContain("Headline B");
+
+    fireEvent.click(screen.getByRole("button", { name: "Variante B" }));
+    await waitFor(() => expect(doc()).toContain("Headline B"));
+    expect(doc()).not.toContain("Headline A");
+
+    // Und zurueck (der Bug trat in BEIDE Richtungen auf).
+    fireEvent.click(screen.getByRole("button", { name: "Variante A" }));
+    await waitFor(() => expect(doc()).toContain("Headline A"));
+    expect(doc()).not.toContain("Headline B");
+  });
+
+  it("GEGENPROBE zum Anker: eine Text-Mutation bei unveraendertem Code laesst srcDoc IN RUHE (Phase-5-Invariante)", async () => {
+    // Der Fix darf den Reload-Sprung beim Tippen/Uebernehmen NICHT wieder
+    // einfuehren: mappings ist weiterhin KEINE Dep. Bewusst hier neben dem
+    // Anker-Test, damit beide Kraefte an einer Stelle sichtbar sind (der
+    // Bestandstest in Scheibe-3 bleibt der eigentliche Waechter).
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML_COPY}
+        initialMappings={TEXT_A}
+        initialVariantBHtml={HTML_COPY}
+        initialVariantBMappings={TEXT_B}
+      />,
+    );
+    const frame = () => screen.getByTitle("preview") as HTMLIFrameElement;
+    const doc = () => frame().getAttribute("srcdoc") ?? "";
+    await waitFor(() => expect(doc()).toContain("Headline A"));
+    const before = doc();
+
+    fireEvent.click(await screen.findByText("Headline A"));
+    // Variante A traegt bereits einen Override -> ActionPanel zeigt die
+    // Override-Ansicht mit "Bearbeiten" (nicht die "Text bearbeiten"-Kachel).
+    fireEvent.click(await screen.findByRole("button", { name: "Bearbeiten" }));
+    fireEvent.change(screen.getByDisplayValue("Headline A"), {
+      target: { value: "Headline A v2" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Übernehmen" }));
+
+    // srcDoc UNVERAENDERT -> kein Reload, kein Scroll-Sprung. Der neue Text geht
+    // ueber PS_SET_TEXT ans laufende iframe.
+    expect(doc()).toBe(before);
+  });
+
   it("ohne Variante B: KEIN Umschalter, Export-Beschriftung unveraendert (Invariante i)", async () => {
     render(<CodeImporter initialProjectId="proj-1" initialCode={HTML_A} />);
     // Bestandsprojekte sehen exakt die bisherige Toolbar.

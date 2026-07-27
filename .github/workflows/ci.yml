@@ -1,0 +1,92 @@
+# PIPELINE-GATES ALS UNABHAENGIGER ZEUGE
+#
+# WAS DIESE ACTION IST: eine zweite, unabhaengige Ausfuehrung derselben vier Gates, die
+# lokal vor jedem Commit laufen — auf FRISCHEM Checkout, ohne lokalen Cache, ohne
+# .env.local und ohne eine womoeglich nicht zurueckgenommene Mutationsprobe. Bisher war
+# "579 Tests gruen" eine SELBSTAUSKUNFT aus einer Umgebung, die niemand sonst sieht.
+# Ab hier steht neben jeder Behauptung ein Beleg, den man nachlesen kann.
+#
+# WAS SIE NICHT IST:
+# - KEIN Merge-Gate. Keine Branch-Protection, keine required checks. Ein rotes Kreuz
+#   blockiert nichts — es ist ein sichtbarer Hinweis, kein Riegel.
+# - KEIN Ersatz fuer den Live-Test. GRUENE PIPELINE != FUNKTIONIERT. Die Pipeline beweist
+#   die Logik; den Produktanspruch beweist nur der Live-Blick im Browser (Projektregel:
+#   jede Bau-Freigabe endet mit einer expliziten Live-Test-Anweisung). Mehrfach real
+#   erlebt: alle Gates gruen, und trotzdem war das Feature im Browser kaputt (stale
+#   Edit-Canvas, haengende Buttons bei Netzwerkfehlern, 404 trotz "veroeffentlicht").
+# - KEIN Deploy. Vercel deployt selbst; hier wird nichts ausgeliefert.
+#
+# KEINE SECRETS, UND ZWAR NICHT NUR AUS VORSICHT: die vier Gates brauchen NACHWEISLICH
+# keine einzige Umgebungsvariable. Gemessen am 2026-07-27 durch einen kompletten Lauf mit
+# temporaer entfernter .env.local — tsc, lint, vitest (579/579) und next build liefen
+# unveraendert durch. Grund: alle DB-Zugriffe sind in den Tests gemockt, und die einzige
+# Seite, die Supabase serverseitig anfasst, ist dynamisch (im Build-Output als "f /"
+# markiert) und wird deshalb NICHT vorgerendert. Es gibt hier also weder echte noch
+# Dummy-Werte. Sollte ein kuenftiger Test eine echte Verbindung brauchen, ist das ein
+# BEFUND ueber diesen Test — kein Grund, hier ein Secret einzutragen.
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  gates:
+    name: Pipeline-Gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node-Major auf die lokale Entwicklungsumgebung gepinnt (dort laeuft v24.16.0).
+      # package.json traegt KEIN engines-Feld und es gibt keine .nvmrc — die Version ist
+      # damit AUSSCHLIESSLICH hier festgelegt. Waehlt die CI eine andere Major, testet
+      # sie eine andere Laufzeit als die, in der entwickelt wird, und ist als Zeuge
+      # wertlos. (Next 16 verlangt >= 20.9.0; 24 ist die lokal genutzte Major.)
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      # npm ci (nicht npm install): installiert exakt den Lockfile-Stand und schlaegt
+      # fehl, wenn package.json und package-lock.json auseinanderlaufen. Genau das will
+      # ein Zeuge — reproduzierbar statt "was gerade aufloest".
+      - name: Abhaengigkeiten installieren
+        run: npm ci
+
+      # ALLE VIER GATES LAUFEN AUCH DANN, wenn ein vorheriges rot ist. Grund: bei einem
+      # Fehlschlag will man ALLE vier Ergebnisse sehen, nicht nur das erste. Ein
+      # tsc-Fehler sagt nichts darueber, ob auch Tests gebrochen sind — und zweimal
+      # pushen, um das zweite Ergebnis zu sehen, kostet mehr als der Lauf. Der Job faellt
+      # trotzdem rot aus, sobald ein Schritt fehlschlaegt.
+      #
+      # !cancelled() statt always(): always() liefe AUCH bei einem manuellen Abbruch
+      # weiter — dann rattern vier Gates durch, obwohl jemand bewusst gestoppt hat.
+      # "!cancelled()" heisst genau das Gemeinte: laufe trotz Fehler, aber nicht trotz
+      # Abbruch.
+      #
+      # DIE BEFEHLE SIND BEWUSST IDENTISCH ZU DEN LOKAL GEFAHRENEN — ein Zeuge, der
+      # etwas anderes ausfuehrt, bezeugt etwas anderes. Deshalb direkte Aufrufe
+      # (npx tsc --noEmit / npx vitest run) statt npm-Scripts, wo lokal direkt
+      # aufgerufen wird: package.json traegt zwar "test": "vitest run", aber der
+      # Umweg ueber ein Script koennte spaeter still divergieren (jemand ergaenzt dort
+      # ein Flag), und dann bezeugt die CI eine andere Ausfuehrung als die geprueft
+      # wurde. Bei lint gibt es keinen Unterschied: "npm run lint" IST der lokal
+      # genutzte Befehl (Script "lint": "eslint").
+      - name: Gate 1 — TypeScript (tsc --noEmit)
+        if: '!cancelled()'
+        run: npx tsc --noEmit
+
+      - name: Gate 2 — Lint (eslint)
+        if: '!cancelled()'
+        run: npm run lint
+
+      - name: Gate 3 — Tests (vitest run)
+        if: '!cancelled()'
+        run: npx vitest run
+
+      - name: Gate 4 — Build (next build)
+        if: '!cancelled()'
+        run: npm run build

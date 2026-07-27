@@ -158,6 +158,58 @@ kaputtgeht.
   fail-closed — das deckt beide Varianten und hängt nicht am Client-Button.
   publishProject ist durch beide 9er-Scheiben byte-identisch geblieben; der
   Eingriff verdient eine eigene Runde.
+- CLIENT-ACTIONS OHNE FEHLERBEHANDLUNG -> HÄNGENDE BUTTONS, KEINE RÜCKMELDUNG
+  (live gefunden 2026-07-27, am Code vollständig erhoben; Trigger: SOFORT, vor
+  der Leere-Variante-Scheibe): KEIN EINZIGER Server-Action-Aufruf im gesamten
+  Client-Code steht in einem try/catch (die zwei vorhandenen umschliessen
+  clipboard.writeText). result.ok unterscheidet nur {ok:true} von {ok:false} —
+  beides sind RÜCKGABEWERTE. Ein Netzwerk- oder Serverfehler liefert keinen
+  Rückgabewert, sondern eine EXCEPTION: sie verlässt den Handler, jede Zeile ab
+  der if-Prüfung entfällt, und der Busy-State wird nie zurückgesetzt.
+  GEMESSEN (Produktion, DevTools offline, Speichern): Network zeigt
+  net::ERR_INTERNET_DISCONNECTED, im UI erscheint KEINE Meldung, der Button
+  bleibt dauerhaft auf "Speichern…" und ausgegraut.
+  ENTLASTUNG (am Code belegt): savedCode/savedMappings werden AUSSCHLIESSLICH im
+  Erfolgszweig gesetzt, vor dem await fällt kein dirty-relevanter Wert -> der
+  Dirty-Zustand bleibt korrekt und der beforeunload-Guard greift. Der Schaden
+  ist "keine Rückmeldung + blockierter Button", NICHT "stiller Verlust des
+  Dirty-Zustands". Die Arbeit geht erst verloren, wenn der Nutzer die generische
+  Browser-Warnung wegklickt — sie sagt "Änderungen gehen verloren", nicht "dein
+  Speichern ist fehlgeschlagen".
+  SCHWERSTER PUNKT: der Button blockiert den ZWEITEN VERSUCH (disabled hängt am
+  nie zurückgesetzten Status). Wer den Fehler bemerkt, hat keinen Weg ausser
+  Reload — und der Reload ist der Schritt, der die Arbeit vernichtet.
+  GEGENRICHTUNG (Zusatzbefund): listProjects() steht in handleSave VOR
+  setSaveStatus("saved") (ebenso in handleDelete und commitRename). Wirft der
+  Refresh, hängt der Button, OBWOHL gespeichert wurde. Ein Fix, der nur den Wurf
+  abfängt, machte daraus "Fehler anzeigen trotz Erfolg" — schlimmer als vorher.
+  UMFANG: über 20 Fundstellen in CodeImporter.tsx und DomainManager.tsx, drei
+  Stufen (Datenverlust-nah: saveProject/saveVariantB; irreführender Zustand:
+  publishProject, setCapiToken, removeCapiToken, setAbTestActive,
+  createVariantB, removeVariantB, loadProject, deleteProject, renameProject,
+  addCustomDomain, removeCustomDomain, checkDomainStatus; Lese-Effekte:
+  getEventCounts, getAdblockLoss, getVariantBPublished, listProjectDomains).
+  ES GIBT KEIN BESTEHENDES MUSTER — das hier gesetzte wird das erste sein.
+  ENTSCHIEDENE FIX-RICHTUNG (eigene Scheibe, eigenes Stufe 1):
+  (1) EIN geteilter Wrapper (z.B. safeAction(run, onThrow)) normalisiert den
+      Wurf in DENSELBEN Wert, den die Action bei einem Fehler ohnehin liefert
+      ({ok:false,error} bei Mutationen, []/null bei Lesern). Alle bestehenden
+      if(result.ok)-Zweige und die dort schon vorhandenen Busy-Resets
+      funktionieren damit UNVERÄNDERT — minimaler Diff, EIN Mechanismus statt
+      zwanzig Gelegenheiten zum Vergessen. KEIN try/catch an jeder Stelle.
+  (2) Sekundär-Aufrufe (listProjects nach Erfolg) dürfen den PRIMÄR-Erfolg nicht
+      umkehren: Erfolgsstatus VOR dem Refresh setzen.
+  (3) Lese-Effekte bekommen .catch() auf ihren Leer-Wert (kein unhandled
+      rejection; bei getVariantBPublished ist null bereits das bewusst richtige
+      Verhalten).
+  SICHERHEITS-AUFLAGE: der Wrapper liegt auch um setCapiToken — dessen Argument
+  ist ein TOKEN. Logging dort AUSSCHLIESSLICH über errorName(err) aus
+  src/lib/errors.ts (existiert, ist bewusst NICHT server-only, also
+  client-importierbar). NIEMALS die Argumente, NIEMALS das Error-Objekt selbst
+  (Tier-0-Logging-Lektion).
+  NACH DEM FIX: die Regel gehört als Dauerregel nach "## Immer beachten" — jeder
+  client-seitige Action-Aufruf über den Wrapper, sonst hängt der nächste neue
+  Handler genauso.
 
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur

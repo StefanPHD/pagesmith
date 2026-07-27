@@ -518,8 +518,7 @@ anzufassen ist mehr Risiko als nötig.
     fährt beim /api/e-Beacon im Request-Header MIT (DevTools -> Network -> /api/e). Der
     Ingest kann die Variante damit server-seitig aus dem Cookie lesen; 9b-2 braucht dafür
     keinen Ersatzweg.
-- SCHEIBE 9b-1p — UI-POLITUR (Spec, live gefundene Punkte 2026-07-27, Bau als
-  Nächstes; KEIN Datenfehler, beides reine UI):
+- SCHEIBE 9b-1p — UI-POLITUR (ABGESCHLOSSEN — live bewiesen 2026-07-27):
   (1) FEHLER-KANAL DER VARIANTEN-SEKTION IST DER FALSCHE (am Code erhoben):
       handleToggleAbTest, handleCreateVariantB und handleRemoveVariantB schreiben
       in den ZENTRALEN saveError/saveStatus-Kanal, der an genau EINER Stelle
@@ -576,6 +575,28 @@ anzufassen ist mehr Risiko als nötig.
   PROJEKTWEIT. Sobald 9b-2 events.variant füllt, wären Zahlen je Variante
   möglich; die Gesamtzahl wäre dann uninformativ, aber nicht falsch. Das ist
   9c-Gebiet und wird HIER nicht angefasst.
+  VERIFIZIERT (live, 2026-07-27):
+  - REGRESSION (GEMESSEN, zuerst geprüft): Projekt ohne Variante B zeigt keine
+    neuen Elemente; der zentrale saveError-Kanal ist unberührt.
+  - RIEGEL-MELDUNG AM RICHTIGEN ORT (GEMESSEN): die Verweigerung erscheint jetzt
+    in der Varianten-Sektion direkt beim geklickten Button und ungekürzt — nicht
+    mehr abgeschnitten in der Preview-Kopfzeile.
+  - HINWEIS + REFETCH (GEMESSEN): bei nicht veröffentlichter Variante B steht
+    der Hinweis vorab in der Sektion; nach dem Publish verschwindet er OHNE
+    Reload (Refetch-Punkt 2), nach "Variante B entfernen" und erneutem Anlegen
+    ist er wieder da (Refetch-Punkt 1 + unbedingte Abfrage).
+  - KEIN LEAK (GEMESSEN): ein Projektwechsel mit stehendem Varianten-Fehler
+    zeigt ihn im neuen Projekt nicht mehr.
+  - NACHTRAG (live gefunden, im selben Zug behoben): Hinweis und Riegel-Fehler
+    waren gleichzeitig sichtbar und zeigten denselben Satz doppelt. Gelöst mit
+    EINEM Anzeigeslot und Priorität Fehler vor Hinweis — strukturell, nicht per
+    Textvergleich.
+  - NICHT LIVE AUSLÖSBAR (bewusst vermerkt): der "Variante B existiert
+    bereits"-Fall ist im Browser praktisch nicht provozierbar, weil der
+    Anlege-Button nach dem ersten Klick zum Umschalter wird. Der Fall existiert
+    trotzdem (zwei offene Tabs desselben Projekts) — der Server-Guard fängt ihn,
+    der Unit-Wächter deckt die Anzeige ab. Nachweis bleibt der Test, nicht der
+    Live-Blick.
 - OFFEN -> 9b-2: variant in Ingest und Persist. VORAB ZU ENTSCHEIDEN (Gate für
   9b-2): Soll der Ingest die Variante nur schreiben, wenn der Test AKTIV ist?
   Ein altes Cookie nach Testende würde sonst Events einer Variante zuschreiben,

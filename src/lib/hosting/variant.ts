@@ -48,6 +48,24 @@ export function deliverableVariantB(published: PublishedLike): string | null {
   return nonEmptyHtml(published?.variantB?.html);
 }
 
+/**
+ * DER SATZ ZUM NEGATIV-ERGEBNIS von deliverableVariantB — EINE Quelle fuer den
+ * SERVER-RIEGEL (setAbTestActive verweigert die Aktivierung) UND den
+ * CLIENT-HINWEIS (die Varianten-Sektion warnt VORHER). Beide sagen damit
+ * denselben Satz; ohne geteilte Konstante drifteten sie auseinander und der
+ * Nutzer bekaeme fuer dieselbe Ursache zwei verschiedene Erklaerungen.
+ *
+ * WARUM HIER UND NICHT AM RIEGEL (das ist kein Stilfrage): actions.ts traegt
+ * "use server" und darf AUSSCHLIESSLICH async-Funktionen als Werte exportieren —
+ * eine exportierte Konstante dort loest beim Serverstart einen ReferenceError aus
+ * (real aufgetretener 7c-2c-Bug, s. "## Immer beachten"). variant.ts ist die
+ * REINE Datei (KEINE Imports, kein server-only), die schon das Praedikat haelt:
+ * Praedikat und sein menschenlesbares Negativ-Ergebnis liegen am selben Ort und
+ * sind von Server UND Client importierbar.
+ */
+export const VARIANT_B_NOT_PUBLISHED_MESSAGE =
+  "Variante B ist noch nicht veröffentlicht — erst veröffentlichen, dann den Test starten.";
+
 // Cookie-Name MIT __Host--PRAEFIX. Der Praefix ist kein Schmuck, sondern der Grund,
 // warum die Cross-Tenant-Kopplung UNMOEGLICH statt nur ungetestet ist:
 //

@@ -19,6 +19,7 @@ import {
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 import {
   deliverableVariantB,
+  VARIANT_B_NOT_PUBLISHED_MESSAGE,
   type PublishedLike,
 } from "@/lib/hosting/variant";
 
@@ -438,9 +439,15 @@ export async function setAbTestActive(
         !!published && typeof published === "object" && "variantB" in published;
       return {
         ok: false,
+        // Der "nicht veroeffentlicht"-Satz kommt aus der GETEILTEN Konstante — der
+        // Client-Hinweis in der Varianten-Sektion zeigt denselben Text vorab an.
+        // Der "kein Inhalt"-Satz bleibt LOKAL: er beschreibt einen Zustand, den der
+        // Client heute gar nicht unterscheiden kann (er kennt nur das Boolean der
+        // Read-Action, nicht den Grund) -> es gibt keinen zweiten Verwender, und
+        // eine Konstante ohne zweiten Verwender waere Vorrat ohne Nutzen.
         error: hasKey
           ? "Variante B hat keinen Inhalt — erst Inhalt für Variante B speichern und veröffentlichen."
-          : "Variante B ist noch nicht veröffentlicht — erst veröffentlichen, dann den Test starten.",
+          : VARIANT_B_NOT_PUBLISHED_MESSAGE,
       };
     }
   }
@@ -853,6 +860,66 @@ export async function renameProject(
 
   if (error) return { ok: false, error: error.message };
   return { ok: true };
+}
+
+/**
+ * Ist die VERÖFFENTLICHTE Variante B auslieferbar? (Phase 9 Scheibe 9b-1p)
+ *
+ * true  = published_content traegt eine nicht-leere Variante B,
+ * false = nicht,
+ * null  = NICHT ERMITTELBAR (kein User, kein Projekt, DB-Fehler).
+ *
+ * null ist NICHT dasselbe wie false: bei null zeigt das UI KEINEN Hinweis und
+ * behauptet nichts — genau wie getAdblockLoss lieber den Neutral-Status liefert
+ * als eine erfundene Zahl.
+ *
+ * WARUM EINE EIGENE ACTION statt eines Feldes in loadProject: published_content ist
+ * der GROSSE Blob (das komplette funktionale HTML beider Varianten) und bleibt
+ * bewusst AUSSERHALB des Ladepfades. Hier wird er SERVERSEITIG gelesen und nur ein
+ * Boolean zurueckgegeben.
+ *
+ * DAS URTEIL FAELLT deliverableVariantB — DASSELBE Praedikat wie im Serve-Pfad
+ * (resolve.ts) und im Riegel (setAbTestActive). Kein drittes Urteil, keine
+ * Client-Heuristik.
+ *
+ * Read-only, Baustil wie getEventCounts: Session-Check, {data,error}
+ * destrukturiert, jeder Fehlerzustand -> null. user_id-Filter zusaetzlich zur RLS.
+ *
+ * BEWUSSTER TAUSCH — BITTE NICHT "OPTIMIEREN": diese Abfrage zieht den KOMPLETTEN
+ * published_content-Blob (das funktionale HTML BEIDER Varianten) aus der DB in den
+ * Serverprozess, nur um ein Boolean zurueckzugeben. Das sieht nach Verschwendung
+ * aus und ist trotzdem die richtige Wahl:
+ *   Eine SQL-RPC koennte in Postgres pruefen und nur das Boolean ueber die Leitung
+ *   schicken — muesste dafuer aber die Nicht-Leer-Regel in SQL NACHBAUEN. Das waere
+ *   ein DRITTES Urteil ueber "ist B auslieferbar", neben resolve.ts und
+ *   setAbTestActive: exakt der Fehler, den Scheibe 9b-1 mit dem geteilten Praedikat
+ *   gerade beseitigt hat (die Aktivierung prueft heute dasselbe wie die
+ *   Auslieferung). Der Blob-Transfer ist der PREIS dafuer, dass
+ *   deliverableVariantB die EINZIGE Instanz bleibt.
+ * Der Transfer ist server-intern (DB -> Serverprozess), erreicht den Client NIE,
+ * und faellt einmal pro Projektladen an — nicht pro Besucher. Wird er je zum
+ * echten Problem, ist die Loesung NICHT eine zweite Regel in SQL, sondern eine
+ * Postgres-Funktion, die deliverableVariantB 1:1 abbildet UND per Test gegen
+ * dieselbe Fixture-Tabelle gemessen wird.
+ */
+export async function getVariantBPublished(
+  projectId: string
+): Promise<boolean | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("projects")
+    .select("published_content")
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return deliverableVariantB(data.published_content as PublishedLike) !== null;
 }
 
 /** Ein Count-Eintrag der Analytics-Read-Scheibe: wie oft ein event_type auftrat. */

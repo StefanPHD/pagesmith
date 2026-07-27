@@ -36,6 +36,7 @@ const {
   createVariantB,
   removeVariantB,
   setAbTestActive,
+  getVariantBPublished,
 } = vi.hoisted(() => ({
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
   // Scheibe 9a: die Varianten-Actions. saveVariantB ist der Spy, auf dem der
@@ -49,6 +50,9 @@ const {
   removeVariantB: vi.fn(async () => ({ ok: true as const })),
   // Scheibe 9b-1: Default spiegelt "eingeschaltet" — einzelne Tests ueberschreiben.
   setAbTestActive: vi.fn(async () => ({ ok: true as const, abTestActive: true })),
+  // Scheibe 9b-1p: Default ist der NEUTRAL-Status (null = nicht ermittelbar) ->
+  // Bestandstests sehen keinen Hinweis. Rueckgabe bewusst Promise<boolean | null>.
+  getVariantBPublished: vi.fn(async (): Promise<boolean | null> => null),
   listProjects: vi.fn(async () => []),
   // Rueckgabe bewusst Promise<unknown> -> einzelne Tests koennen via
   // mockResolvedValueOnce eine volle ProjectRow (inkl. settings) liefern.
@@ -87,6 +91,7 @@ vi.mock("@/app/projects/actions", () => ({
   createVariantB,
   removeVariantB,
   setAbTestActive,
+  getVariantBPublished,
 }));
 
 // DomainManager (in der Publish-Sektion gemountet) zieht ueber @/app/projects/domain-
@@ -1286,5 +1291,194 @@ describe("CodeImporter — Scheibe 9b-1: A/B-Test-Schalter", () => {
       expect(document.body.textContent).toMatch(/noch nicht veröffentlicht/),
     );
     expect(screen.getByRole("button", { name: "Test starten" })).toBeTruthy();
+  });
+});
+
+describe("CodeImporter — Scheibe 9b-1p: lokaler Fehler-Kanal + B-Publish-Hinweis", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Original</h1>`;
+
+  function renderWithB(abActive = false) {
+    return render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+        initialAbTestActive={abActive}
+      />,
+    );
+  }
+  const openSettings = () =>
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+
+  // Der Riegel-Fehler muss in der VARIANTEN-SEKTION stehen, nicht in der
+  // Preview-Kopfzeile. Anker: die Sektion enthaelt die Ueberschrift "Variante B".
+  function variantSection(): HTMLElement {
+    const h = screen.getByRole("heading", { name: "Variante B" });
+    return h.parentElement as HTMLElement;
+  }
+
+  it("TEST 1: Riegel-Fehler steht in der Varianten-Sektion und ist NICHT gekuerzt", async () => {
+    const LONG =
+      "Variante B ist noch nicht veröffentlicht — erst veröffentlichen, dann den Test starten.";
+    setAbTestActive.mockResolvedValueOnce({ ok: false as const, error: LONG } as never);
+    renderWithB();
+    openSettings();
+    fireEvent.click(screen.getByRole("button", { name: "Test starten" }));
+
+    const el = await waitFor(() => {
+      const m = variantSection().querySelector("p.text-red-600");
+      if (!m) throw new Error("kein Fehler in der Varianten-Sektion");
+      return m as HTMLElement;
+    });
+    // Vollstaendiger Wortlaut, kein truncate.
+    expect(el.textContent).toBe(LONG);
+    expect(el.className).not.toContain("truncate");
+  });
+
+  it("WAECHTER zweite Render-Stelle: createVariantB-Fehler ist OHNE Variante B sichtbar", async () => {
+    // Die Varianten-Sektion haengt an hasVariantB — und genau das ist false, waehrend
+    // das ANLEGEN von B laeuft. Ohne die zweite Render-Stelle neben dem
+    // "+ Variante B"-Button waere ein Fehlschlag nach der 9b-1p-Umstellung
+    // UNSICHTBAR (vorher erschien er im zentralen Kanal). Dieser Test ist ihr
+    // einziger Waechter.
+    createVariantB.mockResolvedValueOnce({
+      ok: false as const,
+      error: "Variante B existiert bereits.",
+    } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Original");
+    expect(screen.queryByRole("group", { name: "Variante" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "+ Variante B" }));
+
+    // Sichtbar …
+    await waitFor(() =>
+      expect(document.body.textContent).toContain("Variante B existiert bereits."),
+    );
+    // … und NICHT im zentralen Kanal (der rendert als span.truncate.text-red-600
+    // in der Preview-Kopfzeile).
+    expect(document.querySelector("span.truncate.text-red-600")).toBeNull();
+  });
+
+  it("TEST 2 (Invariante ii): ein SPEICHERN-Fehler bleibt im zentralen Kanal", async () => {
+    saveProject.mockResolvedValueOnce({
+      ok: false as const,
+      error: "Speichern kaputt",
+    } as never);
+    renderWithB();
+    await screen.findByText("Original");
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+
+    // Der zentrale Kanal rendert als <span class="truncate …"> in der Preview-Kopfzeile.
+    const central = await waitFor(() => {
+      const m = document.querySelector("span.truncate.text-red-600");
+      if (!m) throw new Error("kein zentraler Fehler");
+      return m as HTMLElement;
+    });
+    expect(central.textContent).toBe("Speichern kaputt");
+    // … und NICHT in der Varianten-Sektion.
+    openSettings();
+    expect(variantSection().querySelector("p.text-red-600")).toBeNull();
+  });
+
+  it("AUFLAGE B — LEAK: ein Varianten-Fehler ist nach dem Projektwechsel WEG", async () => {
+    setAbTestActive.mockResolvedValueOnce({
+      ok: false as const,
+      error: "Riegel A",
+    } as never);
+    loadProject.mockResolvedValueOnce({
+      id: "proj-2",
+      name: "B",
+      html: HTML,
+      mappings: [],
+      settings: {},
+      html_b: HTML,
+      mappings_b: [],
+      ab_test_active: false,
+    });
+    renderWithB();
+    openSettings();
+    fireEvent.click(screen.getByRole("button", { name: "Test starten" }));
+    await waitFor(() =>
+      expect(variantSection().textContent).toContain("Riegel A"),
+    );
+
+    // Projektwechsel -> applyZenForLoadedCode raeumt den lokalen Kanal.
+    fireEvent.click(screen.getByRole("button", { name: /^Projekte/ }));
+    // Der Switcher listet aus initialProjects; hier direkt ueber handleSwitch-Pfad:
+    // ein zweites Projekt existiert im Mock nicht -> stattdessen "+ Neues Projekt",
+    // das denselben Chokepoint (resetToEmpty -> applyZenForLoadedCode) durchlaeuft.
+    fireEvent.click(screen.getByRole("button", { name: "+ Neues Projekt" }));
+    expect(document.body.textContent).not.toContain("Riegel A");
+  });
+
+  it("TEST 5: Hinweis NUR bei eindeutigem false — nicht bei null, nicht bei true", async () => {
+    getVariantBPublished.mockResolvedValue(false);
+    const { unmount } = renderWithB();
+    openSettings();
+    await waitFor(() =>
+      expect(variantSection().textContent).toContain("noch nicht veröffentlicht"),
+    );
+    unmount();
+
+    for (const v of [null, true]) {
+      getVariantBPublished.mockResolvedValue(v as boolean | null);
+      const r = render(
+        <CodeImporter
+          initialProjectId="proj-1"
+          initialCode={HTML}
+          initialVariantBHtml={HTML}
+          initialVariantBMappings={[]}
+        />,
+      );
+      openSettings();
+      await waitFor(() => expect(getVariantBPublished).toHaveBeenCalled());
+      expect(variantSection().textContent).not.toContain("noch nicht veröffentlicht");
+      r.unmount();
+    }
+  });
+
+  it("TEST 6 (Invariante iv): der Button bleibt bei false UND bei null klickbar", async () => {
+    for (const v of [false, null]) {
+      getVariantBPublished.mockResolvedValue(v as boolean | null);
+      const r = renderWithB();
+      openSettings();
+      await waitFor(() => expect(getVariantBPublished).toHaveBeenCalled());
+      const btn = screen.getByRole("button", { name: "Test starten" });
+      expect((btn as HTMLButtonElement).disabled).toBe(false);
+      r.unmount();
+    }
+  });
+
+  it("TEST 7a: nach erfolgreichem Publish wird der Wert NEU geholt (nicht angenommen)", async () => {
+    getVariantBPublished.mockResolvedValueOnce(false);
+    renderWithB();
+    openSettings();
+    await waitFor(() =>
+      expect(variantSection().textContent).toContain("noch nicht veröffentlicht"),
+    );
+
+    // Der Mock liefert beim Refetch einen ABWEICHENDEN Wert -> das UI muss DIESEN zeigen.
+    getVariantBPublished.mockResolvedValue(true);
+    fireEvent.click(screen.getByRole("button", { name: /^Veröffentlichen$/ }));
+    await waitFor(() =>
+      expect(variantSection().textContent).not.toContain("noch nicht veröffentlicht"),
+    );
+  });
+
+  it("TEST 7b: nach removeVariantB wird der Wert NEU geholt (sonst stale TRUE)", async () => {
+    // Warum dieser zweite Punkt: nach dem Entfernen waere der Wert stale true. Legt
+    // der Nutzer B gleich neu an, waere hasVariantB true und der Wert faelschlich
+    // true -> der Hinweis FEHLTE, obwohl B nicht veroeffentlicht ist.
+    getVariantBPublished.mockResolvedValue(true);
+    renderWithB();
+    openSettings();
+    await waitFor(() => expect(getVariantBPublished).toHaveBeenCalledTimes(1));
+
+    getVariantBPublished.mockResolvedValue(false);
+    fireEvent.click(screen.getByRole("button", { name: "Variante B entfernen" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ja, entfernen" }));
+    await waitFor(() => expect(getVariantBPublished).toHaveBeenCalledTimes(2));
   });
 });

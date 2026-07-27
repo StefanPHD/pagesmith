@@ -43,6 +43,7 @@ import {
   createVariantB,
   removeVariantB,
   setAbTestActive,
+  getVariantBPublished,
   getEventCounts,
 } from "./actions";
 import {
@@ -827,6 +828,72 @@ describe("setAbTestActive (Scheibe 9b-1)", () => {
     const res = await setAbTestActive("foreign", true);
     expect(res.ok).toBe(false);
     expect(rec.updatePatch).toBeNull();
+  });
+});
+
+describe("getVariantBPublished (Scheibe 9b-1p)", () => {
+  it("true/false je nach auslieferbarer Variante B — und NUR published_content im Select", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": {
+          data: {
+            published_content: { html: "<h1>A</h1>", variantB: { html: "<h1>B</h1>" } },
+          },
+          error: null,
+        },
+      },
+    });
+    expect(await getVariantBPublished("proj-1")).toBe(true);
+    // Der grosse Blob wird SERVERSEITIG gelesen; der Client bekommt nur ein Boolean.
+    // Schmale Projektion: KEIN html/mappings/settings im Ladepfad dieser Action.
+    expect(rec.selectCols[0]).toEqual({
+      table: "projects",
+      cols: "published_content",
+    });
+  });
+
+  it("KONSISTENZ: das Urteil ist deliverableVariantB — kein drittes Urteil", async () => {
+    // DIESELBE Fixture-Tabelle wie die beiden 9b-1-Konsistenztests (setAbTestActive
+    // und der Resolver). Drei Verwender, EIN Praedikat.
+    const fixtures: PublishedLike[] = [
+      null,
+      { html: "<h1>A</h1>" },
+      { html: "<h1>A</h1>", variantB: null },
+      { html: "<h1>A</h1>", variantB: {} },
+      { html: "<h1>A</h1>", variantB: { html: "" } },
+      { html: "<h1>A</h1>", variantB: { html: "   " } },
+      { html: "<h1>A</h1>", variantB: { html: "<h1>B</h1>" } },
+    ];
+    for (const pc of fixtures) {
+      makeClient({
+        user: { id: "user-1" },
+        results: {
+          "projects.select": { data: { published_content: pc }, error: null },
+        },
+      });
+      expect(await getVariantBPublished("proj-1")).toBe(
+        deliverableVariantB(pc) !== null
+      );
+    }
+  });
+
+  it("NICHT ERMITTELBAR -> null (nicht false): kein User, fremdes Projekt, DB-Fehler", async () => {
+    // null ist NICHT dasselbe wie false — bei null behauptet das UI nichts.
+    makeClient({ user: null });
+    expect(await getVariantBPublished("proj-1")).toBeNull();
+
+    makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: null, error: null } },
+    });
+    expect(await getVariantBPublished("foreign")).toBeNull();
+
+    makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": { data: null, error: { message: "boom" } } },
+    });
+    expect(await getVariantBPublished("proj-1")).toBeNull();
   });
 });
 

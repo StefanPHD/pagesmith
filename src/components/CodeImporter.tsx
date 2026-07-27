@@ -12,6 +12,7 @@ import {
 import {
   createVariantB,
   deleteProject,
+  getVariantBPublished,
   getAdblockLoss,
   getEventCounts,
   listProjects,
@@ -54,6 +55,7 @@ import {
 } from "@/lib/settings";
 import { getCapiProxyUrl } from "@/lib/capi/proxy";
 import { buildLiveUrl } from "@/lib/hosting/host";
+import { VARIANT_B_NOT_PUBLISHED_MESSAGE } from "@/lib/hosting/variant";
 import { exportFilename } from "@/lib/export";
 import { validateUploadFile } from "@/lib/upload";
 import ActionPanel from "@/components/ActionPanel";
@@ -199,6 +201,23 @@ export default function CodeImporter({
   // Variante-B-Aktionen: transienter Status (destruktives Entfernen zweistufig,
   // exakt wie beim CAPI-Token). Projekt-ungebunden -> beim Kontextwechsel leeren.
   const [variantBusy, setVariantBusy] = useState(false);
+  // LOKALER Fehler-Kanal der Varianten-Sektion (Scheibe 9b-1p), Muster
+  // <state>Error + <state>Status wie capiTokenError/publishError. Vorher schrieben
+  // die drei Varianten-Handler in den ZENTRALEN saveError, der nur EINMAL gerendert
+  // wird — in der Preview-Kopfzeile, mit "truncate": die Meldung erschien weit weg
+  // vom geklickten Button und abgeschnitten. saveError bleibt fuer seine uebrigen
+  // Schreiber (Speichern, Projektwechsel, Loeschen, Umbenennen) UNVERAENDERT.
+  const [variantStatus, setVariantStatus] = useState<"idle" | "error">("idle");
+  const [variantError, setVariantError] = useState<string | null>(null);
+  // Ist die VEROEFFENTLICHTE Variante B auslieferbar? (9b-1p) null = nicht
+  // ermittelbar -> es wird NICHTS behauptet. Projekt-abgeleitet ueber den Effect
+  // unten, nie lokal angenommen.
+  const [variantBPublished, setVariantBPublished] = useState<boolean | null>(null);
+  // Refetch-Signal fuer genau die beiden Ereignisse, die den Wert aendern koennen
+  // (Publish, removeVariantB). Muster: pollTick im DomainManager. Wird NUR in diesen
+  // beiden Handlern hochgezaehlt — nirgends beim Projektwechsel, sonst liefe der
+  // Effect dort doppelt (projectId aendert sich bereits).
+  const [variantBPublishTick, setVariantBPublishTick] = useState(0);
   const [variantBRemoveConfirming, setVariantBRemoveConfirming] =
     useState(false);
   // Ausklappbares Einstellungs-Panel (Tracking-Pixel). Reiner View-State.
@@ -548,6 +567,34 @@ export default function CodeImporter({
     };
   }, [projectId]);
 
+  // "Ist Variante B veroeffentlicht?" laden (Scheibe 9b-1p) — identischer Schnitt wie
+  // die beiden Analytics-Effects darueber (cancelled-Guard, setState nur im then).
+  // Leer-Wert ist null (nicht ermittelbar), NICHT false: false waere eine Behauptung.
+  // Deps: projectId (Projektwechsel/-laden/-loeschen/neues Projekt) + der Tick aus
+  // Publish/removeVariantB. createVariantB und saveVariantB stehen bewusst NICHT
+  // drin: sie schreiben nur die Draft-Spalten, nicht published_content.
+  //
+  // UNBEDINGT, AUCH OHNE VARIANTE B — BITTE NICHT AUF hasVariantB GATEN: das saehe
+  // nach einer billigen Ersparnis aus und braeche den Hinweis genau dort, wo er
+  // gebraucht wird. createVariantB loest bewusst KEINEN Tick aus (es schreibt nur
+  // html_b/mappings_b, nicht published_content). Waere die Abfrage gegated, stuende
+  // der Wert im Moment des Anlegens auf null (nie geladen) statt auf false — und
+  // bei null zeigt das UI absichtlich NICHTS. Der Nutzer legte B an, saehe keinen
+  // Hinweis und liefe in den Riegel. Weil hier UNBEDINGT geladen wird, liegt das
+  // korrekte false bereits bereit, sobald hasVariantB kippt.
+  useEffect(() => {
+    let cancelled = false;
+    const load = projectId
+      ? getVariantBPublished(projectId)
+      : Promise.resolve<boolean | null>(null);
+    load.then((v) => {
+      if (!cancelled) setVariantBPublished(v);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId, variantBPublishTick]);
+
   // Copy-Feedback ("Kopiert ✓" / Fehler) nach kurzer Zeit zuruecksetzen.
   useEffect(() => {
     if (copyStatus === "idle") return;
@@ -656,6 +703,11 @@ export default function CodeImporter({
     // (seedVariantState), nicht bloss geleert.
     setVariantBusy(false);
     setVariantBRemoveConfirming(false);
+    // Der lokale Varianten-Fehler ist projekt-ungebundener View-State — ohne Reset
+    // leuchtete eine Meldung aus Projekt A in Projekt B weiter (dieselbe Klasse wie
+    // uploadError/capiTokenError darueber).
+    setVariantStatus("idle");
+    setVariantError(null);
   }
 
   // Varianten-Zustand aus dem GELADENEN Projekt ableiten (kanonischer Chokepoint,
@@ -737,14 +789,15 @@ export default function CodeImporter({
   async function handleCreateVariantB() {
     if (!projectId || dirty || hasVariantB || variantBusy) return;
     setVariantBusy(true);
-    setSaveError(null);
+    setVariantError(null);
+    setVariantStatus("idle");
     const result = await createVariantB(projectId);
     if (result.ok) {
       setStashHtml(result.html);
       setStashMappings(result.mappings);
     } else {
-      setSaveError(result.error);
-      setSaveStatus("error");
+      setVariantError(result.error);
+      setVariantStatus("error");
     }
     setVariantBusy(false);
   }
@@ -758,7 +811,8 @@ export default function CodeImporter({
   async function handleRemoveVariantB() {
     if (!projectId || !hasVariantB || variantBusy) return;
     setVariantBusy(true);
-    setSaveError(null);
+    setVariantError(null);
+    setVariantStatus("idle");
 
     // A-RUECKHOLUNG VOR JEDEM setState UND VOR DEM await festgehalten. Die
     // Korrektheit haengt damit an einer CLOSURE-BINDUNG, nicht an der
@@ -800,10 +854,15 @@ export default function CodeImporter({
       // ohnehin unsichtbar, aber ein stehengebliebenes true waere ein falscher
       // Zustand, der beim naechsten Anlegen von B wieder auftauchte.
       setAbTestActive(false);
+      // REFETCH-PUNKT 1: der variantB-Key ist aus published_content entfernt -> der
+      // Wert kippt true->false. Ohne Refetch bliebe er stale TRUE; legt der Nutzer B
+      // gleich neu an, waere hasVariantB true und der Wert faelschlich true -> der
+      // Hinweis FEHLTE, obwohl B nicht veroeffentlicht ist.
+      setVariantBPublishTick((t) => t + 1);
       setVariantBRemoveConfirming(false);
     } else {
-      setSaveError(result.error);
-      setSaveStatus("error");
+      setVariantError(result.error);
+      setVariantStatus("error");
       setVariantBRemoveConfirming(false);
     }
     setVariantBusy(false);
@@ -1066,6 +1125,10 @@ export default function CodeImporter({
         setHostingState(prev, { label: result.label, publishedAt })
       );
       setPublishStatus("published");
+      // REFETCH-PUNKT 2: ein Publish veroeffentlicht seit 9a BEIDE Varianten -> der
+      // Wert kann false->true kippen. Der publishProject-Rumpf bleibt unangetastet;
+      // das Signal setzt allein dieser Client-Handler.
+      setVariantBPublishTick((t) => t + 1);
     } else {
       setPublishError(result.error);
       setPublishStatus("error");
@@ -1080,13 +1143,14 @@ export default function CodeImporter({
   async function handleToggleAbTest() {
     if (!projectId || !hasVariantB || variantBusy) return;
     setVariantBusy(true);
-    setSaveError(null);
+    setVariantError(null);
+    setVariantStatus("idle");
     const result = await setAbTestActiveAction(projectId, !abTestActive);
     if (result.ok) {
       setAbTestActive(result.abTestActive);
     } else {
-      setSaveError(result.error);
-      setSaveStatus("error");
+      setVariantError(result.error);
+      setVariantStatus("error");
     }
     setVariantBusy(false);
   }
@@ -1423,6 +1487,14 @@ export default function CodeImporter({
           >
             {variantBusy ? "…" : "+ Variante B"}
           </button>
+        )}
+        {/* ZWEITER Anzeigeort DESSELBEN lokalen Kanals: scheitert das ANLEGEN von
+            Variante B, ist die Varianten-Sektion im Einstellungs-Panel noch gar
+            nicht sichtbar (sie haengt an hasVariantB, und genau das ist dann false)
+            -> ohne diese Stelle waere der Fehler unsichtbar. Ein State, zwei Orte,
+            jeweils neben dem Button, den der Nutzer geklickt hat. */}
+        {!hasVariantB && variantStatus === "error" && variantError && (
+          <span className="text-xs text-red-600">{variantError}</span>
         )}
 
         <button
@@ -1812,7 +1884,25 @@ export default function CodeImporter({
                   „Test stoppen“ löscht nichts, es schaltet nur den Split ab.
                   Variante B muss veröffentlicht sein, damit der Test starten kann.
                 </span>
+                {/* BERATENDER HINWEIS (9b-1p), NICHT sperrend: erklaert VORHER, was
+                    der Server-Riegel sonst erst nach dem Klick sagt — derselbe Satz
+                    aus der geteilten Konstante. Nur bei EINDEUTIGEM false; bei null
+                    (nicht ermittelbar) und bei true steht hier nichts. Der Button
+                    bleibt in JEDEM Fall klickbar: Autoritaet ist der Server-Riegel,
+                    ein fehlgeschlagener Ladevorgang darf keine Aktion sperren, die
+                    funktionieren wuerde. */}
+                {variantBPublished === false && (
+                  <p className="w-full text-xs text-amber-700">
+                    {VARIANT_B_NOT_PUBLISHED_MESSAGE}
+                  </p>
+                )}
               </div>
+              {/* LOKALER Fehler-Kanal der Varianten-Sektion — direkt beim geklickten
+                  Button und OHNE truncate (der zentrale saveError-Kanal in der
+                  Preview-Kopfzeile schnitt lange Meldungen ab). */}
+              {variantStatus === "error" && variantError && (
+                <p className="mb-3 text-xs text-red-600">{variantError}</p>
+              )}
               <p className="mb-3 text-xs text-gray-500">
                 Entfernt den <strong>Inhalt</strong> von Variante B (HTML +
                 Verknüpfungen) und nimmt sie aus der Veröffentlichung. Variante A

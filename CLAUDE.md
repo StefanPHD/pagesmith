@@ -139,6 +139,25 @@ kaputtgeht.
   Bindet die bestehende 30-Tage-Retentionspflicht (Manifest Tier 2) und die
   Zwei-Ebenen-Trennung Kunden- vs. Betreiber-Ebene aus der future-roadmap mit ein.
   Browser-Fingerprinting ist bereits ENTSCHIEDEN: wird nicht gebaut.
+- LEERE VARIANTE IST VERÖFFENTLICHBAR -> LEERE LIVE-SEITE (gefunden 2026-07-27
+  bei der 9b-1p-Aufklärung; Trigger: SOFORT, eigene Scheibe vor 9b-2): Die
+  Nicht-Leer-Prüfung aus 9b-1 (nonEmptyHtml / deliverableVariantB) greift zu
+  SPÄT, weil der Server NACH der Prüfung Inhalt hinzufügt:
+  injectPageViewEmitter("", key) liefert einen NICHT-LEEREN String (das
+  Emitter-Script; bei fehlendem </body> hängt es ans Ende an). Kette: Variante
+  leeren -> speichern -> publishen -> published_content(.variantB).html ist
+  emitter-only -> nonEmptyHtml sagt "auslieferbar" -> der Besucher bekommt eine
+  VISUELL LEERE Seite, ohne Fehler, ohne 404.
+  ZWEITES, SCHLIMMERES LOCH (seit 9a): der Publish-Button prüft
+  code.trim() === "" — das ist die AKTIVE Variante. Ist B aktiv und gefüllt, A
+  aber leer, ist der Button frei und pairA kommt aus dem Stash -> ALLE Besucher
+  bekommen die leere Seite, nicht nur Bucket B. Vor 9a war code immer A, deshalb
+  trug der Guard damals.
+  FIX-RICHTUNG (nicht entschieden, eigene Stufe 1): das EINGEHENDE
+  functionalHtml server-seitig VOR der Emitter-Injektion auf nicht-leer prüfen,
+  fail-closed — das deckt beide Varianten und hängt nicht am Client-Button.
+  publishProject ist durch beide 9er-Scheiben byte-identisch geblieben; der
+  Eingriff verdient eine eigene Runde.
 
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur

@@ -66,6 +66,86 @@ export function deliverableVariantB(published: PublishedLike): string | null {
 export const VARIANT_B_NOT_PUBLISHED_MESSAGE =
   "Variante B ist noch nicht veröffentlicht — erst veröffentlichen, dann den Test starten.";
 
+/**
+ * DER LEER-RIEGEL FUER DEN PUBLISH-PFAD (Scheibe Leere-Variante-Riegel).
+ * Liefert die Variante, die LEER waere und deshalb nicht publiziert werden darf
+ * ("a" | "b"), oder null, wenn alles Auslieferbare Inhalt traegt.
+ *
+ * DAS PROBLEM, DAS ES LOEST: publishProject injiziert NACH der Pruefung den
+ * PageView-Emitter. injectPageViewEmitter("", key) liefert einen NICHT-LEEREN
+ * String (~716 Zeichen reines Script) -> published_content.html ist emitter-only,
+ * nonEmptyHtml haelt es fuer auslieferbar, und der Besucher bekommt eine VISUELL
+ * LEERE Seite, ohne Fehler, ohne 404. Der Riegel muss deshalb VOR der Injektion
+ * greifen, auf dem EINGEHENDEN functionalHtml.
+ *
+ * variantB === null heisst AUSDRUECKLICH "wird nicht publiziert, also nicht
+ * pruefen" — es ist KEIN "unbekannt". Das ist die Umsetzung von Auflage (4):
+ * geschrieben wird B nur bei hasVariantB && variantB, und der Riegel SPIEGELT
+ * genau diese Bedingung. Wuerde er B unabhaengig davon pruefen, lehnte er einen
+ * LEGITIMEN Publish ab — ein Client, der nach dem Entfernen der Variante noch ein
+ * variantB im Zustand haelt (alter Tab), waere blockiert, obwohl sein B gar nicht
+ * geschrieben wuerde. Deshalb ein EXPLIZITES null statt eines optionalen
+ * Parameters: undefined truege den Doppelsinn "nicht mitgegeben" vs. "gibt es
+ * nicht".
+ *
+ * "a" HAT VORRANG, wenn beide leer sind — deterministisch und per Test fixiert.
+ * A ist die Variante, die JEDER Besucher bekommt (ohne aktiven Test liefert die
+ * Route immer A), also ist sie der zuerst zu nennende Fehler.
+ *
+ * FAIL-CLOSED (Invariante vi): geprueft wird ausschliesslich ueber nonEmptyHtml —
+ * alles, was dort nicht als nicht-leer durchgeht (Nicht-String, "", Whitespace),
+ * gilt als leer. KEIN handgeschriebenes Duplikat der Regel: dieselbe Funktion
+ * entscheidet an allen vier Stellen (Serve A, Serve B, Aktivierungs-Riegel,
+ * Publish) — Invariante (v), kein drittes Urteil.
+ *
+ * EHRLICHE GRENZE (bewusst dokumentiert, damit sie nicht spaeter als Luecke
+ * "entdeckt" wird): Das ist STRING-Leere, NICHT visuelle Leere. "<div></div>",
+ * ein reiner Kommentar, Inhalt mit display:none oder Inhalt, der erst durch JS
+ * entstuende, kommen hier DURCH. Das lueckenlos zu entscheiden verlangte Parsing
+ * (per Dauerregel ausgeschlossen) plus Rendering. Was der Riegel leistet, ist
+ * praezise dies: er schliesst den Fall, in dem der SERVER SELBST aus einem leeren
+ * Eingang eine nicht-leere Ausgabe macht.
+ */
+export function emptyPublishVariant(
+  htmlA: unknown,
+  variantB: { html: unknown } | null
+): "a" | "b" | null {
+  if (!nonEmptyHtml(htmlA)) return "a";
+  if (variantB && !nonEmptyHtml(variantB.html)) return "b";
+  return null;
+}
+
+/**
+ * DIE DREI SAETZE ZUM LEER-RIEGEL — EINE Quelle fuer den SERVER-Riegel
+ * (publishProject verweigert) UND den CLIENT-Hinweis (der Publish-Button sperrt
+ * und erklaert warum). Gleiche Denkfigur wie VARIANT_B_NOT_PUBLISHED_MESSAGE:
+ * ohne geteilte Konstante drifteten beide Seiten auseinander und der Nutzer
+ * bekaeme fuer dieselbe Ursache zwei verschiedene Erklaerungen.
+ *
+ * DIE AUSWAHL TRIFFT DER AUFRUFER, nicht das Praedikat: ohne Variante B der
+ * neutrale Satz (das Wort "Variante" waere dort Fachjargon fuer einen Zustand,
+ * den der Nutzer gar nicht kennt), mit B der varianten-spezifische.
+ *
+ * DER B-SATZ NENNT DEN AUSWEG (Auflage 6) und das ist kein Wortschmuck: Ein
+ * Projekt mit leerem html_b ist nach diesem Riegel KOMPLETT unveroeffentlichbar,
+ * auch Variante A. Das ist richtig fail-closed — aber ohne den Hinweis "oder
+ * entferne sie" saehe der Owner nur eine Sperre ohne Weg zurueck und der Fall
+ * landete im Support.
+ *
+ * Sie liegen HIER und nicht in actions.ts, weil diese Datei "use server" traegt
+ * und dort AUSSCHLIESSLICH async-Funktionen als Werte exportiert werden duerfen —
+ * eine exportierte Konstante loest beim Serverstart einen ReferenceError aus
+ * (real aufgetretener 7c-2c-Bug). Invariante (vii).
+ */
+export const EMPTY_PUBLISH_MESSAGE =
+  "Die Seite ist leer — es gibt nichts zu veröffentlichen.";
+
+export const EMPTY_VARIANT_A_MESSAGE =
+  "Variante A ist leer und würde als leere Seite live gehen. Fülle Variante A, bevor du veröffentlichst.";
+
+export const EMPTY_VARIANT_B_MESSAGE =
+  "Variante B ist leer und würde als leere Seite live gehen. Fülle Variante B — oder entferne sie, dann kannst du wieder veröffentlichen.";
+
 // Cookie-Name MIT __Host--PRAEFIX. Der Praefix ist kein Schmuck, sondern der Grund,
 // warum die Cross-Tenant-Kopplung UNMOEGLICH statt nur ungetestet ist:
 //

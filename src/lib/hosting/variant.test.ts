@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   VARIANT_COOKIE_NAME,
   chooseVariant,
+  emptyPublishVariant,
   parseVariantCookie,
   serializeVariantCookie,
 } from "./variant";
@@ -103,5 +104,56 @@ describe("serializeVariantCookie (Scheibe 9b-1) — Invariante (iv)", () => {
     expect(c).not.toMatch(/Domain=/i);
     // SESSION-Cookie: keine Lebensdauer, kein Zeitstempel.
     expect(c).not.toMatch(/Max-Age|Expires/i);
+  });
+});
+
+describe("emptyPublishVariant (Scheibe Leere-Variante-Riegel)", () => {
+  it("T6 die Praedikat-Tabelle", () => {
+    const HTML = "<h1>x</h1>";
+
+    // Alles gefuellt -> nichts zu beanstanden.
+    expect(emptyPublishVariant(HTML, null)).toBe(null);
+    expect(emptyPublishVariant(HTML, { html: HTML })).toBe(null);
+
+    // A leer.
+    expect(emptyPublishVariant("", null)).toBe("a");
+    expect(emptyPublishVariant("   \n\t ", null)).toBe("a");
+    expect(emptyPublishVariant("", { html: HTML })).toBe("a");
+
+    // B leer.
+    expect(emptyPublishVariant(HTML, { html: "" })).toBe("b");
+    expect(emptyPublishVariant(HTML, { html: "  " })).toBe("b");
+
+    // BEIDE leer -> "a" gewinnt, deterministisch. A ist die Variante, die JEDER
+    // Besucher bekommt (ohne aktiven Test liefert die Route immer A), also ist sie
+    // der zuerst zu nennende Fehler.
+    expect(emptyPublishVariant("", { html: "" })).toBe("a");
+
+    // FAIL-CLOSED (Invariante vi): alles, was nonEmptyHtml nicht als nicht-leer
+    // erkennt, gilt als leer — Nicht-Strings inklusive.
+    expect(emptyPublishVariant(null, null)).toBe("a");
+    expect(emptyPublishVariant(undefined, null)).toBe("a");
+    expect(emptyPublishVariant(123, null)).toBe("a");
+    expect(emptyPublishVariant(HTML, { html: null })).toBe("b");
+    expect(emptyPublishVariant(HTML, { html: undefined })).toBe("b");
+  });
+
+  it("AUFLAGE 4: variantB === null heisst 'wird nicht publiziert, nicht pruefen' — kein undefined-Doppelsinn", () => {
+    // Der Unterschied, der einen legitimen Publish rettet: derselbe leere B-Inhalt
+    // ist EINMAL ein Fehler (B wird geschrieben) und EINMAL irrelevant (B wird
+    // nicht geschrieben). Ein Client mit veraltetem Zustand nach dem Entfernen der
+    // Variante faellt in den zweiten Fall.
+    expect(emptyPublishVariant("<h1>a</h1>", { html: "" })).toBe("b");
+    expect(emptyPublishVariant("<h1>a</h1>", null)).toBe(null);
+  });
+
+  it("EHRLICHE GRENZE (B5): visuell leeres, aber string-nicht-leeres HTML kommt DURCH", () => {
+    // Das ist KEIN Fehler des Riegels, sondern seine dokumentierte Grenze. Der Test
+    // steht hier, damit die Luecke benannt bleibt statt spaeter als Bug "entdeckt"
+    // zu werden: lueckenlos waere sie nur mit Parsing (per Dauerregel
+    // ausgeschlossen) plus Rendering zu schliessen.
+    expect(emptyPublishVariant("<div></div>", null)).toBe(null);
+    expect(emptyPublishVariant("<!-- nur ein kommentar -->", null)).toBe(null);
+    expect(emptyPublishVariant('<div style="display:none">x</div>', null)).toBe(null);
   });
 });

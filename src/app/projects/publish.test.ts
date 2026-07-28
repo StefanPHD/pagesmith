@@ -613,3 +613,140 @@ describe("publishProject — domains-Zeile ist die alleinige Wahrheit", () => {
     expect(client.from).toHaveBeenCalledWith("domains");
   });
 });
+
+// =============================================================================
+// LEER-RIEGEL (Scheibe Leere-Variante-Riegel)
+//
+// Der Befund: publishProject injiziert NACH jeder Pruefung den PageView-Emitter.
+// injectPageViewEmitter("", key) liefert den reinen Emitter (~716 Zeichen) -> das
+// Ergebnis ist NICHT leer, nonEmptyHtml haelt es fuer auslieferbar, und der
+// Besucher bekommt eine visuell leere Seite. Der Riegel greift deshalb VOR der
+// Injektion, auf dem EINGEHENDEN functionalHtml beider Varianten.
+//
+// WARUM DIE INSERT-ASSERTIONEN HIER DIE EIGENTLICHE ARBEIT MACHEN: "res.ok ===
+// false" allein waere auch von einem Riegel erfuellt, der ZU SPAET sitzt — der
+// Label-Block darueber SCHREIBT bereits. rec.inserts misst die PLATZIERUNG
+// (Auflage 1); ohne diese Assertion ist der Test als Waechter wertlos.
+// =============================================================================
+describe("publishProject — Leer-Riegel", () => {
+  const B = (html: string) => ({ functionalHtml: html, mappings: [] });
+
+  it("T1 A leer, kein B -> Ablehnung, KEIN update UND KEIN domains-insert (Platzierung vor dem Label-Block)", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      // Bewusst OHNE settings.hosting und OHNE labelRows: das ist der ERSTE
+      // Publish, also genau der Fall, in dem der Label-Block ein FRISCHES Label
+      // vergeben wuerde. Ein Riegel hinter dem Block hinterliesse hier eine
+      // Live-Adresse, die nie Inhalt bekommt.
+      ownRow: { data: { id: "proj-1", name: "P", settings: {} }, error: null },
+    });
+
+    const res = await publishProject("proj-1", "", snapshot);
+    expect(res.ok).toBe(false);
+    if (res.ok) return;
+    expect(res.error).toContain("Die Seite ist leer");
+
+    // Invariante (i): ein abgelehnter Publish schreibt GAR NICHTS.
+    expect(rec.updatePatch).toBeNull();
+    // AUFLAGE 1 — die Assertion, die die Platzierung misst.
+    expect(rec.inserts).toHaveLength(0);
+    // Und die domains-Tabelle wurde gar nicht erst angefasst.
+    expect(rec.fromTables).not.toContain("domains");
+  });
+
+  it("T2 A gefuellt, B leer -> Ablehnung, Meldung nennt Variante B UND den Ausweg", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: { id: "proj-1", name: "P", settings: {}, html_b: "<h1>b</h1>" },
+        error: null,
+      },
+    });
+
+    const res = await publishProject("proj-1", "<h1>A</h1>", snapshot, B(""));
+    expect(res.ok).toBe(false);
+    if (res.ok) return;
+    expect(res.error).toContain("Variante B ist leer");
+    // AUFLAGE 6: ohne den Ausweg waere das Projekt komplett unveroeffentlichbar
+    // ohne erkennbaren Weg zurueck.
+    expect(res.error).toContain("entferne sie");
+    expect(rec.updatePatch).toBeNull();
+    expect(rec.inserts).toHaveLength(0);
+  });
+
+  it("T3 DER SCHLIMMERE FALL: A leer, B gefuellt -> Ablehnung, Meldung nennt Variante A", async () => {
+    // Real erreichbar, wenn der Editor auf B steht und der A-Stash leer ist: der
+    // alte Button-Guard las code (= B, gefuellt) und war frei, waehrend pairA aus
+    // dem Stash kam. Ohne aktiven Test liefert die Route immer A -> ALLE Besucher
+    // bekaemen die leere Seite, nicht nur Bucket B.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: { id: "proj-1", name: "P", settings: {}, html_b: "<h1>b</h1>" },
+        error: null,
+      },
+    });
+
+    const res = await publishProject("proj-1", "   \n\t  ", snapshot, B("<h1>B</h1>"));
+    expect(res.ok).toBe(false);
+    if (res.ok) return;
+    expect(res.error).toContain("Variante A ist leer");
+    expect(rec.updatePatch).toBeNull();
+    expect(rec.inserts).toHaveLength(0);
+  });
+
+  it("T4 REGRESSION + POSITIV-GEGENPROBE: A gefuellt, kein B -> Publish gelingt, exakt vier Keys, Emitter drin", async () => {
+    // OHNE diesen Test waeren T1-T3/T5 auch von einem Riegel erfuellt, der JEDEN
+    // Publish ablehnt. Er belegt, dass die negativen Tests aus dem RICHTIGEN Grund
+    // gruen sind.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {} }, error: null },
+    });
+
+    const res = await publishProject("proj-1", "<h1>ECHTER INHALT</h1>", snapshot);
+    expect(res.ok).toBe(true);
+
+    const patch = rec.updatePatch as { published_content: Record<string, unknown> };
+    // Invariante (ii): kein Schema-Drift fuer Projekte ohne B.
+    expect(Object.keys(patch.published_content).sort()).toEqual([
+      "html",
+      "mappings",
+      "publishedAt",
+      "settings",
+    ]);
+    const html = patch.published_content.html as string;
+    expect(html).toContain("<h1>ECHTER INHALT</h1>");
+    expect(html).toContain('id="__ps_pve"');
+  });
+
+  it("T5 WHITESPACE-ONLY zaehlt als leer (die Regel ist nonEmptyHtml, kein handgeschriebenes === \"\")", async () => {
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {} }, error: null },
+    });
+
+    const res = await publishProject("proj-1", "   \n\t  ", snapshot);
+    expect(res.ok).toBe(false);
+    expect(rec.updatePatch).toBeNull();
+    expect(rec.inserts).toHaveLength(0);
+  });
+
+  it("T10 AUFLAGE 4: hasVariantB false + Client schickt LEERES variantB -> Publish GELINGT (der Riegel spiegelt die Write-Bedingung)", async () => {
+    // Der reale Ausloeser: ein Tab, der nach dem Entfernen der Variante noch ein
+    // variantB im Zustand haelt. Es wird nicht geschrieben (html_b ist null), also
+    // darf es auch nicht geprueft werden — sonst blockiert der Riegel einen
+    // voellig legitimen Publish.
+    const { rec } = makeClient({
+      user: { id: "user-1" },
+      ownRow: { data: { id: "proj-1", name: "P", settings: {}, html_b: null }, error: null },
+    });
+
+    const res = await publishProject("proj-1", "<h1>A</h1>", snapshot, B(""));
+    expect(res.ok).toBe(true);
+
+    const patch = rec.updatePatch as { published_content: Record<string, unknown> };
+    // Das ignorierte B taucht auch nicht als Key auf (Server ist Autoritaet).
+    expect(patch.published_content).not.toHaveProperty("variantB");
+  });
+});

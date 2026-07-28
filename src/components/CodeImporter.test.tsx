@@ -1493,6 +1493,13 @@ describe("CodeImporter — Scheibe 9b-1p: lokaler Fehler-Kanal + B-Publish-Hinwe
 
     // Der Mock liefert beim Refetch einen ABWEICHENDEN Wert -> das UI muss DIESEN zeigen.
     getVariantBPublished.mockResolvedValue(true);
+    // Detection abwarten, BEVOR geklickt wird: seit dem Leer-Riegel haengt der
+    // Publish-Button am geteilten publishPairs-Memo und damit an debouncedCode,
+    // das bewusst leer startet (Hydration-Paritaet). Vor dem ersten Debounce-Lauf
+    // ist der Button also gesperrt — deklarierte Verhaltensaenderung (Auflage 5),
+    // kein Fehler. Der Test wartet jetzt auf denselben Zustand, den ein echter
+    // Nutzer ohnehin vorfindet.
+    await screen.findByText("Original");
     fireEvent.click(screen.getByRole("button", { name: /^Veröffentlichen$/ }));
     await waitFor(() =>
       expect(variantSection().textContent).not.toContain("noch nicht veröffentlicht"),
@@ -1702,5 +1709,129 @@ describe("CodeImporter — safeAction: geworfene Server-Action-Fehler", () => {
     // Fallback waere der Editor faelschlich auf den Leerzustand gefallen).
     expect(screen.getAllByText("Beta").length).toBeGreaterThan(0);
     expect(document.body.textContent).not.toContain("Noch keine gespeicherten Projekte");
+  });
+});
+
+// =============================================================================
+// LEER-RIEGEL — CLIENT-SEITE (Scheibe Leere-Variante-Riegel)
+//
+// ZUR ERREICHBARKEIT, ehrlich vermerkt: Ein LEERES html/html_b laesst sich ueber
+// die heutige UI nicht ERZEUGEN — der Speichern-Button ist bei leerer aktiver
+// Variante gesperrt. Die DB erlaubt den Zustand trotzdem (weder html noch html_b
+// tragen eine Nicht-Leer-Bedingung; der CHECK verlangt nur "is not null"), und
+// genau so kommt er in den Client: ueber den LADEPFAD.
+//
+// Deshalb wird hier NICHT interner State geseedet, sondern eine reale DB-Zeile
+// modelliert (die Props sind exakt das, was loadProject zurueckgibt) — und der
+// interessante Zustand entsteht danach durch einen ECHTEN UI-Klick, nicht durch
+// ein weiteres Prop. Das ist der Unterschied, den die 9a-Lektion meint.
+// =============================================================================
+describe("CodeImporter — Leer-Riegel (Client-Guard + ein Anzeigeslot)", () => {
+  const HTML = '<!DOCTYPE html><html><head></head><body><h1 data-pagesmith-id="ps-aaaaaa">Titel</h1></body></html>';
+  const publishBtn = () =>
+    screen.getByRole("button", { name: /^(Veröffentlichen|Erneut veröffentlichen)$/ });
+  const openSettings = () =>
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+
+  it("T8 DER SCHLIMMERE FALL ueber die reale Sequenz: A leer, dann per Klick auf B — Button GESPERRT, Hinweis nennt Variante A", async () => {
+    // Ladepfad: die Zeile traegt ein leeres html und eine gefuellte Variante B.
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode=""
+        initialMappings={[]}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+      />,
+    );
+
+    // SCHRITT 1 (noch auf A): schon hier greift der Guard — A ist leer.
+    openSettings();
+    await waitFor(() => expect((publishBtn() as HTMLButtonElement).disabled).toBe(true));
+    expect(screen.getByText(/Variante A ist leer/)).toBeTruthy();
+
+    // SCHRITT 2 — DER ECHTE KLICK, der den frueheren Guard aushebelte: auf B
+    // umschalten. Ab hier ist code (= B) GEFUELLT, waehrend pairA aus dem leeren
+    // Stash kommt. Der alte Guard (code.trim() === "") waere jetzt FREI und ALLE
+    // Besucher bekaemen die leere Seite — ohne aktiven Test liefert die Route
+    // immer A.
+    fireEvent.click(screen.getByRole("button", { name: "Variante B" }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Variante B" }).getAttribute("aria-pressed"),
+      ).toBe("true"),
+    );
+    await screen.findByText("Titel"); // B ist wirklich gefuellt und erkannt
+
+    // KEIN erneutes openSettings(): der Button ist ein TOGGLE, ein zweiter Klick
+    // schloesse das Panel wieder. Es ist seit Schritt 1 offen.
+    // DER KERN DES TESTS: gefuellter Editor, trotzdem gesperrt — und der Hinweis
+    // erklaert warum, sonst waere der graue Button unerklaerlich (Auflage 3).
+    await waitFor(() => expect((publishBtn() as HTMLButtonElement).disabled).toBe(true));
+    expect(screen.getByText(/Variante A ist leer/)).toBeTruthy();
+    expect(publishProject).not.toHaveBeenCalled();
+  });
+
+  it("T8b LEERE VARIANTE B (Ladepfad html_b = ''): Button gesperrt, Hinweis nennt B UND den Ausweg", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialMappings={[]}
+        initialVariantBHtml=""
+        initialVariantBMappings={[]}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+
+    await waitFor(() => expect((publishBtn() as HTMLButtonElement).disabled).toBe(true));
+    // AUFLAGE 6: ohne den Ausweg waere dieses Projekt komplett unveroeffentlichbar
+    // ohne erkennbaren Weg zurueck.
+    expect(screen.getByText(/Variante B ist leer/)).toBeTruthy();
+    expect(screen.getByText(/entferne sie/)).toBeTruthy();
+  });
+
+  it("T9 REGRESSION: Projekt OHNE B verhaelt sich unveraendert (gefuellt -> frei, kein Hinweis)", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} initialMappings={[]} />);
+    await screen.findByText("Titel");
+    openSettings();
+
+    await waitFor(() => expect((publishBtn() as HTMLButtonElement).disabled).toBe(false));
+    // Kein neuer Text fuer Bestandsprojekte (Invariante ii auf UI-Ebene).
+    expect(screen.queryByText(/ist leer und würde/)).toBeNull();
+    expect(screen.queryByText(/Die Seite ist leer/)).toBeNull();
+  });
+
+  it("T9b OHNE B und LEER: der neutrale Satz, KEIN Varianten-Jargon", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode="" initialMappings={[]} />);
+    openSettings();
+
+    await waitFor(() => expect((publishBtn() as HTMLButtonElement).disabled).toBe(true));
+    expect(screen.getByText(/Die Seite ist leer/)).toBeTruthy();
+    // "Variante A" waere hier Fachjargon fuer einen Zustand, den der Nutzer nicht kennt.
+    expect(screen.queryByText(/Variante A/)).toBeNull();
+  });
+
+  it("EIN ANZEIGESLOT, PRIORITAET FEHLER VOR HINWEIS (9b-1p-NACHTRAG, nicht wiederholen)", async () => {
+    // Der Befund von damals: Hinweis und Riegel-Fehler waren GLEICHZEITIG sichtbar
+    // und zeigten denselben Satz doppelt. Hier wird der Server-Fehler erzwungen,
+    // waehrend der lokale Hinweis-Zustand ebenfalls anliegen koennte.
+    // `as never` wie beim bestehenden BOOM-Muster: der Spy ist auf den
+    // Erfolgs-Zweig hin typisiert, der Fehlerfall ist hier der Prueffall.
+    publishProject.mockResolvedValueOnce({
+      ok: false,
+      error: "Serverseitig abgelehnt.",
+    } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} initialMappings={[]} />);
+    await screen.findByText("Titel");
+    openSettings();
+
+    fireEvent.click(publishBtn());
+    const fehler = await screen.findByText("Serverseitig abgelehnt.");
+    expect(fehler).toBeTruthy();
+    // Genau EIN Slot: der Hinweis-Kanal schweigt, solange ein Fehler steht.
+    expect(screen.queryByText(/Erst speichern/)).toBeNull();
+    expect(screen.queryByText(/ist leer/)).toBeNull();
   });
 });

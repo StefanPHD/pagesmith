@@ -55,7 +55,13 @@ import {
 } from "@/lib/settings";
 import { getCapiProxyUrl } from "@/lib/capi/proxy";
 import { buildLiveUrl } from "@/lib/hosting/host";
-import { VARIANT_B_NOT_PUBLISHED_MESSAGE } from "@/lib/hosting/variant";
+import {
+  emptyPublishVariant,
+  EMPTY_PUBLISH_MESSAGE,
+  EMPTY_VARIANT_A_MESSAGE,
+  EMPTY_VARIANT_B_MESSAGE,
+  VARIANT_B_NOT_PUBLISHED_MESSAGE,
+} from "@/lib/hosting/variant";
 import {
   SAVE_THROW_MESSAGE,
   actionThrew,
@@ -640,6 +646,80 @@ export default function CodeImporter({
   // Anzeige-Label der aktiven Variante (Toolbar, Export-Button, Publish-Hinweis).
   const activeVariantLabel = activeVariant === "b" ? "B" : "A";
 
+  // DIE PAAR-ABLEITUNG, EINMAL — geteilt zwischen Publish-HANDLER und Publish-BUTTON.
+  // Sie lag frueher INNERHALB von handlePublish; der Leer-Guard braucht dieselben
+  // Werte, und eine zweite Ableitung nur fuer die disabled-Bedingung waeren ZWEI
+  // Stellen, die "welche Variante traegt was" beantworten — exakt die Konstellation,
+  // aus der der 9b-1-Befund kam (zwei Urteile ueber denselben Sachverhalt, die
+  // auseinanderlaufen, ohne dass es jemand merkt).
+  //
+  // Quelle je Variante, inhaltlich unveraendert zu 9a: die AKTIVE aus dem Live-Draft
+  // (debouncedCode/mappings), die INAKTIVE aus ihrem GESPEICHERTEN Stand (Stash).
+  // Das ist keine Inkonsistenz, sondern folgt aus dem Umschalt-Guard: die inaktive
+  // Variante ist per Konstruktion immer im gespeicherten Zustand.
+  //
+  // DEKLARIERTE VERHALTENSAENDERUNG (nicht stillschweigend eingefuehrt): der Memo
+  // haengt an debouncedCode, der Publish-BUTTON damit auch — bisher las er das
+  // ungedebouncte code. Er wird also um die Debounce-Spanne spaeter frei (nach dem
+  // ersten Zeichen) bzw. spaeter gesperrt (nach dem Leeren). Beide Richtungen sind
+  // sicher, weil die Autoritaet der SERVER-Riegel ist und nicht der Button.
+  const publishPairs = useMemo(() => {
+    const activePair = { html: debouncedCode, mappings };
+    const inactivePair = {
+      html: stashHtml ?? "",
+      mappings: stashMappings ?? [],
+    };
+    return {
+      pairA: activeVariant === "a" ? activePair : inactivePair,
+      pairB: activeVariant === "b" ? activePair : inactivePair,
+    };
+  }, [activeVariant, debouncedCode, mappings, stashHtml, stashMappings]);
+
+  // DER CLIENT-GUARD — DASSELBE Praedikat wie der Server-Riegel, aus der reinen
+  // Datei. Er prueft das ROH-HTML, der Server das daraus gebaute functionalHtml;
+  // das ist trotzdem EIN Urteil und nicht zwei, weil generateFunctional bei leerem
+  // oder whitespace-only Input "" zurueckgibt (erste Anweisung im Rumpf, vor
+  // SSR-Guard, DOMParser und Meta-Injektion — greift also auch bei konfiguriertem
+  // Pixel). Diese Aequivalenz ist FRAGIL und deshalb per Test festgenagelt, nicht
+  // behauptet.
+  //
+  // Das null bei fehlender Variante B spiegelt die Write-Bedingung: ohne B wird B
+  // nicht publiziert, also auch nicht geprueft.
+  const emptyPublishTarget = emptyPublishVariant(
+    publishPairs.pairA.html,
+    hasVariantB ? { html: publishPairs.pairB.html } : null
+  );
+  // Textauswahl wie auf dem Server: ohne B der neutrale Satz, mit B der
+  // varianten-spezifische. DIESELBEN Konstanten — der Nutzer soll fuer dieselbe
+  // Ursache nicht zwei verschiedene Erklaerungen bekommen, je nachdem ob der Button
+  // ihn bremst oder der Server ihn ablehnt.
+  const emptyPublishMessage = !emptyPublishTarget
+    ? null
+    : !hasVariantB
+      ? EMPTY_PUBLISH_MESSAGE
+      : emptyPublishTarget === "a"
+        ? EMPTY_VARIANT_A_MESSAGE
+        : EMPTY_VARIANT_B_MESSAGE;
+
+  // EIN ANZEIGESLOT fuer die Publish-Sektion, Rangfolge STRUKTURELL statt per
+  // Textvergleich: ein aufgetretener Server-Fehler schlaegt jeden vorbeugenden
+  // Hinweis, und das fehlende Projekt schlaegt den Leer-Hinweis (ohne
+  // gespeichertes Projekt ist "die Seite ist leer" die zweitwichtigste Nachricht).
+  // Der 9b-1p-NACHTRAG kam daher, dass Hinweis und Riegel-Fehler NEBENEINANDER
+  // standen und denselben Satz doppelt zeigten — mit einem Slot ist das strukturell
+  // ausgeschlossen.
+  const publishNotice: { tone: "error" | "hint"; text: string } | null =
+    publishStatus === "error" && publishError
+      ? { tone: "error", text: publishError }
+      : !projectId
+        ? {
+            tone: "hint",
+            text: "Erst speichern, dann ist das Projekt veröffentlichbar.",
+          }
+        : emptyPublishMessage
+          ? { tone: "hint", text: emptyPublishMessage }
+          : null;
+
   // Name des aktiven Projekts fuer die Toolbar. Neues (ungespeichertes) Projekt
   // -> "Unbenanntes Projekt" (entspricht dem spaeteren DB-Default).
   const activeName =
@@ -1128,20 +1208,11 @@ export default function CodeImporter({
     // durchgelassen und trifft den Ingest-Handler. Kein absoluter Pfad/keine env nötig.
     // Scheibe 9a: EIN Publish schreibt BEIDE Varianten (falls B existiert) in EINEM
     // atomaren Write -> es gibt kein "nur A publishen", das B veraltet zuruecklassen
-    // koennte. Quelle je Variante:
-    // - die AKTIVE Variante aus dem Live-Draft (debouncedCode/mappings) — heutiges
-    //   WYSIWYG-Verhalten, unveraendert;
-    // - die INAKTIVE aus ihrem GESPEICHERTEN Stand (Stash). Das ist keine
-    //   Inkonsistenz, sondern folgt aus dem Umschalt-Guard: die inaktive Variante
-    //   ist per Konstruktion immer im gespeicherten Zustand.
-    // Ohne Variante B ist pairA exakt der bisherige Aufruf (byte-gleiche Eingaben).
-    const activePair = { html: debouncedCode, mappings };
-    const inactivePair = {
-      html: stashHtml ?? "",
-      mappings: stashMappings ?? [],
-    };
-    const pairA = activeVariant === "a" ? activePair : inactivePair;
-    const pairB = activeVariant === "b" ? activePair : inactivePair;
+    // koennte. Die Paar-Ableitung selbst liegt seit dem Leer-Riegel WEITER OBEN im
+    // geteilten Memo publishPairs — der Publish-Button braucht dieselben Werte, und
+    // zwei Ableitungen derselben Frage waren genau der 9b-1-Befund. Inhaltlich
+    // unveraendert: aktive Variante aus dem Live-Draft, inaktive aus dem Stash.
+    const { pairA, pairB } = publishPairs;
 
     const result = await safeAction(
       () =>
@@ -1860,9 +1931,21 @@ export default function CodeImporter({
               <button
                 type="button"
                 onClick={handlePublish}
+                // SPERRT, beraet nicht — anders als der 9b-1p-Hinweis, dessen Wert
+                // aus einem ASYNCHRONEN Server-Read kam (ein haengender Ladevorgang
+                // darf keine funktionierende Aktion sperren). Hier ist der Wert
+                // lokaler State, synchron, immer bekannt: es gibt keinen
+                // "unbekannt"-Zustand, also darf der Button sperren. Autoritaet
+                // bleibt trotzdem der SERVER-Riegel — der Button ist Komfort, der
+                // Riegel ist die Garantie.
+                //
+                // emptyPublishTarget ERSETZT das fruehere code.trim() === "": jenes
+                // las nur die AKTIVE Variante und liess damit genau den schlimmsten
+                // Fall durch (B aktiv und gefuellt, A leer -> ALLE Besucher bekommen
+                // die leere Seite, weil die Route ohne aktiven Test immer A liefert).
                 disabled={
                   !projectId ||
-                  code.trim() === "" ||
+                  emptyPublishTarget !== null ||
                   publishStatus === "publishing"
                 }
                 className="rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300"
@@ -1886,9 +1969,25 @@ export default function CodeImporter({
                 </a>
               )}
             </div>
-            {!projectId && (
-              <p className="mt-2 text-xs text-gray-500">
-                Erst speichern, dann ist das Projekt veröffentlichbar.
+            {/* EIN ANZEIGESLOT, PRIORITAET FEHLER VOR HINWEIS — strukturell ueber
+                eine Rangfolge, NICHT per Textvergleich. Der 9b-1p-NACHTRAG kam
+                genau daher: Hinweis und Riegel-Fehler waren gleichzeitig sichtbar
+                und zeigten denselben Satz doppelt. Mit einem Slot ist das
+                unmoeglich statt nur unwahrscheinlich.
+                Rangfolge: (1) ein tatsaechlich aufgetretener Server-Fehler, (2) das
+                fehlende Projekt (fundamentaler Blocker als leerer Inhalt), (3) der
+                Leer-Hinweis. Die projektweite Status-Zeile darunter bleibt
+                UNVERAENDERT — sie beantwortet eine andere Frage (ist veroeffentlicht?)
+                und war nie Teil des Befunds. */}
+            {publishNotice && (
+              <p
+                className={`mt-2 text-xs ${
+                  publishNotice.tone === "error"
+                    ? "text-red-600"
+                    : "text-gray-500"
+                }`}
+              >
+                {publishNotice.text}
               </p>
             )}
             {hostingLabel ? (
@@ -1912,9 +2011,6 @@ export default function CodeImporter({
                   Noch nicht veröffentlicht.
                 </p>
               )
-            )}
-            {publishStatus === "error" && publishError && (
-              <p className="mt-2 text-xs text-red-600">{publishError}</p>
             )}
           </div>
 

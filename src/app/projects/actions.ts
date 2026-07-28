@@ -19,6 +19,10 @@ import {
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 import {
   deliverableVariantB,
+  emptyPublishVariant,
+  EMPTY_PUBLISH_MESSAGE,
+  EMPTY_VARIANT_A_MESSAGE,
+  EMPTY_VARIANT_B_MESSAGE,
   VARIANT_B_NOT_PUBLISHED_MESSAGE,
   type PublishedLike,
 } from "@/lib/hosting/variant";
@@ -763,6 +767,50 @@ export async function publishProject(
         "Variante B konnte nicht mitveröffentlicht werden — dieser Tab läuft auf einem veralteten Stand. Bitte die Seite neu laden und erneut veröffentlichen. Es wurde nichts geändert.",
     };
 
+  // ===== LEER-RIEGEL: NICHTS LEERES GEHT LIVE ====================================
+  //
+  // WARUM HIER UND NICHT WEITER UNTEN — das ist die eigentliche Auflage, nicht der
+  // Riegel selbst: Der Label-Block direkt darunter SCHREIBT bereits
+  // (insertDomainLabel/assignDomainLabel legen eine domains-Zeile an). Laege der
+  // Riegel danach, hinterliesse ein ABGELEHNTER Publish eine frische Label-Zeile —
+  // eine Live-URL, die nie Inhalt bekommt, und laut "DIE domains-ZEILE IST DIE
+  // ALLEINIGE WAHRHEIT" waere das Projekt damit fuer jede Divergenz-Pruefung
+  // "live". Hier oben schreibt die Ablehnung GAR NICHTS (Invariante i).
+  //
+  // WARUM AUF DEM EINGEHENDEN functionalHtml: weil der Server gleich SELBST Inhalt
+  // hinzufuegt. injectPageViewEmitter("", key) liefert den reinen Emitter (~716
+  // Zeichen) -> eine Pruefung NACH der Injektion saehe immer "nicht leer" und der
+  // Besucher bekaeme eine visuell leere Seite. Geprueft wird exakt der String, der
+  // publiziert wird; dazwischen liegt nichts als die Injektion.
+  //
+  // hasVariantB && variantB IST DIESELBE BEDINGUNG wie beim Bau von
+  // published_content weiter unten — bewusst als geteiltes const, nicht zweimal
+  // getippt (Auflage 4). Der Riegel darf B NUR pruefen, wenn B auch geschrieben
+  // wird: sonst blockierte ein Client, der nach dem Entfernen der Variante noch ein
+  // variantB im Zustand haelt (alter Tab), einen voellig legitimen Publish.
+  //
+  // Das Urteil faellt emptyPublishVariant aus der REINEN Datei — dieselbe
+  // nonEmptyHtml-Regel wie im Serve-Pfad und im Aktivierungs-Riegel (Invariante v),
+  // reine String-Op ohne Parser (Invariante iv).
+  const publishesVariantB = hasVariantB && variantB;
+  const emptyVariant = emptyPublishVariant(
+    functionalHtml,
+    publishesVariantB ? { html: variantB.functionalHtml } : null
+  );
+  if (emptyVariant)
+    return {
+      ok: false,
+      // Ohne Variante B der neutrale Satz — "Variante A" waere dort Fachjargon fuer
+      // einen Zustand, den der Nutzer gar nicht kennt. Mit B der spezifische Satz,
+      // und der B-Satz nennt den AUSWEG (fuellen ODER entfernen): ein Projekt mit
+      // leerem html_b ist sonst komplett unveroeffentlichbar, auch Variante A.
+      error: !publishesVariantB
+        ? EMPTY_PUBLISH_MESSAGE
+        : emptyVariant === "a"
+          ? EMPTY_VARIANT_A_MESSAGE
+          : EMPTY_VARIANT_B_MESSAGE,
+    };
+
   const currentSettings = (owned.settings ?? {}) as ProjectSettings;
   const publishedAt = new Date().toISOString();
 
@@ -896,16 +944,20 @@ export async function publishProject(
   // trackingKey aus der Spalte (Invariante v: der Key gilt pro PROJEKT, nicht pro
   // Variante). Fehlte er in B, verschwaenden B's PageViews still, sobald 9b
   // splittet. Gleiche reine String-Op wie bei A, KEIN Parsing (Invariante viii).
-  const published_content =
-    hasVariantB && variantB
-      ? {
-          ...base,
-          variantB: {
-            html: injectPageViewEmitter(variantB.functionalHtml, trackingKey),
-            mappings: variantB.mappings,
-          },
-        }
-      : base;
+  //
+  // publishesVariantB IST DASSELBE const, das der Leer-Riegel oben benutzt — nicht
+  // die zweimal getippte gleiche Bedingung. Damit ist "der Riegel prueft genau das,
+  // was geschrieben wird" STRUKTURELL wahr statt per Kommentar behauptet: wer die
+  // Write-Bedingung aendert, aendert die Pruef-Bedingung zwangslaeufig mit.
+  const published_content = publishesVariantB
+    ? {
+        ...base,
+        variantB: {
+          html: injectPageViewEmitter(variantB.functionalHtml, trackingKey),
+          mappings: variantB.mappings,
+        },
+      }
+    : base;
   const nextSettings = setHostingState(currentSettings, { label, publishedAt });
 
   const { error: updateError } = await supabase

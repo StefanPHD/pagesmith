@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editPreviewHtml, editVariantMarker, generateFunctional } from "./generate";
+import { nonEmptyHtml } from "./hosting/variant";
 import { annotateAndDetect } from "./detect";
 import type { Mapping } from "./mappings";
 
@@ -1026,5 +1027,78 @@ describe("editPreviewHtml – Komposition auf der Selektions-Bruecke", () => {
     const table = readTable(out);
     expect(table).toHaveLength(1);
     expect(tc(table[0]).content).toBe("Neu");
+  });
+});
+
+// =============================================================================
+// T7 — DIE AEQUIVALENZ (Scheibe Leere-Variante-Riegel, Auflage 2)
+//
+// WOZU DIESER TEST DA IST: Der Leer-Riegel prueft auf dem SERVER das
+// functionalHtml, der Client-Guard prueft das ROH-HTML. Das ist nur dann EIN
+// Urteil und nicht zwei, wenn gilt:
+//
+//   leerer Roh-Input  <=>  leeres funktionales Dokument
+//
+// Die Aequivalenz haengt an EINER Zeile: `if (!html || !html.trim()) return "";`
+// steht als ERSTE Anweisung im Rumpf von generateFunctional — vor dem SSR-Guard,
+// vor dem DOMParser und vor der Meta-Injektion. Wandert sie unter die
+// Meta-Injektion, liefert ein leeres Projekt MIT Pixel plötzlich ein nicht-leeres
+// Dokument, die Aequivalenz bricht STILL, und die Begruendung fuer Invariante (v)
+// faellt mit ihr.
+//
+// Deshalb wird sie hier FESTGENAGELT statt in der Doku behauptet. Der Pixel-Fall
+// ist der eigentliche Punkt: OHNE ihn liefe der Test auch dann gruen, wenn die
+// Meta-Runtime vor der Leer-Pruefung eingebaut wuerde.
+// =============================================================================
+describe("T7 Aequivalenz: leerer Roh-Input <=> leeres funktionales Dokument", () => {
+  // Bewusst KEIN Import von nonEmptyHtml-Duplikat: dieselbe Funktion, die der
+  // Riegel benutzt.
+  const PIXEL = "123456789012345";
+
+  const FIXTURES: { raw: string; leer: boolean; warum: string }[] = [
+    { raw: "", leer: true, warum: "leerer String" },
+    { raw: "   ", leer: true, warum: "nur Leerzeichen" },
+    { raw: "\n\t\r ", leer: true, warum: "nur Whitespace" },
+    // Die NICHT-leere Seite der Tabelle dokumentiert zugleich die ehrliche Grenze
+    // (B5): visuell leer, aber string-nicht-leer -> kommt DURCH, in BEIDEN Welten.
+    { raw: "<div></div>", leer: false, warum: "visuell leer, aber nicht string-leer" },
+    { raw: "<!-- nur ein kommentar -->", leer: false, warum: "reiner Kommentar" },
+    { raw: "<html><body>Hallo</body></html>", leer: false, warum: "echter Inhalt" },
+  ];
+
+  for (const { raw, leer, warum } of FIXTURES) {
+    it(`${JSON.stringify(raw).slice(0, 24)} (${warum}) — MIT konfiguriertem Pixel`, () => {
+      const doc = generateFunctional(raw, [], "export", {
+        metaPixelId: PIXEL,
+        trackingKey: "tk-1",
+        capiProxyUrl: "/api/e",
+      });
+      expect(nonEmptyHtml(doc) === null).toBe(leer);
+      expect(nonEmptyHtml(raw) === null).toBe(leer);
+      // Die eigentliche Aussage, als Gleichung statt als zwei Einzelwerte.
+      expect(nonEmptyHtml(doc) === null).toBe(nonEmptyHtml(raw) === null);
+    });
+
+    it(`${JSON.stringify(raw).slice(0, 24)} (${warum}) — OHNE Pixel`, () => {
+      const doc = generateFunctional(raw, [], "export");
+      expect(nonEmptyHtml(doc) === null).toBe(nonEmptyHtml(raw) === null);
+    });
+  }
+
+  it("POSITIV-GEGENPROBE: mit Pixel wird bei ECHTEM Inhalt sehr wohl Meta-Runtime gebacken", () => {
+    // Ohne diese Probe koennte die Tabelle oben auch von einem generateFunctional
+    // erfuellt werden, das die Pixel-Option schlicht ignoriert — dann pruefte T7
+    // die Abwesenheit eines nie erzeugten Effekts.
+    // Der Anker MUSS im HTML existieren: generateFunctional filtert Orphans raus
+    // und injiziert im Export-Modus gar kein Script, wenn die Tabelle leer bleibt.
+    // (Erste Fassung dieses Tests hatte genau diesen Fehler und wurde vom
+    // fehlschlagenden Lauf gefangen — die Gegenprobe hat sich sofort bezahlt.)
+    const doc = generateFunctional(
+      '<html><body><button data-pagesmith-id="ps-1">x</button></body></html>',
+      [track("ps-1", "Purchase")],
+      "export",
+      { metaPixelId: PIXEL, trackingKey: "tk-1", capiProxyUrl: "/api/e" }
+    );
+    expect(doc).toContain(PIXEL);
   });
 });

@@ -171,50 +171,94 @@ kaputtgeht.
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur
 Ist-Zustand — Herleitung und Entscheidungen: docs/claude-history/phase-8-analytics.md.
-PROVENIENZ: GEMESSEN am 2026-07-24 (pg_proc / pg_policies / pg_indexes / information_schema /
-pg_constraint) sind Existenz, Sicherheits-/Volatilitätsklauseln, Policies, Spalten, Constraints
-und Index-NAMEN. AUS DEN DATEIEN stammen die Index-Spaltenlisten und die Migrationsnummern.
-"Letzte Migration" ist NICHT direkt messbar (Migrationen laufen manuell im SQL-Editor, es gibt
-keine gepflegte schema_migrations-Tabelle) — messbar sind nur die WIRKUNGEN.
+PROVENIENZ: GEMESSEN am 2026-07-28 im SQL-Editor (schema_migrations, information_schema.columns,
+pg_constraint, pg_class+pg_policy, pg_policies, role_table_grants, pg_indexes, pg_proc,
+pg_event_trigger). Die Probe ist versioniert unter supabase/checks/db-stand.sql — vor jedem
+Neuschreiben dieser Sektion dort fahren, nicht frisch tippen. AUCH die Index-DEFINITIONEN sind
+diesmal gemessen (indexdef), nicht aus den Migrationsdateien übernommen.
+FALLE bei jeder Wiederholung: schema_migrations existiert DREIMAL (public / auth / realtime).
+Jede Katalog-Abfrage MUSS das Schema filtern — sonst liefert sie drei Zeilen mit
+unterschiedlichen RLS-Werten und sieht wie ein Befund aus.
 
-- MIGRATIONSSTAND: Migrationsdateien bis 0015 (supabase/migrations/), ihre WIRKUNGEN in der DB
-  verifiziert. Die Nummer stammt aus den Dateien, nicht aus einer Migrations-Tabelle.
-- TABELLE public.events (in der DB verifiziert): id uuid PK DEFAULT gen_random_uuid();
-  project_id uuid FK -> projects(id) ON DELETE CASCADE; event_type text; event_id text;
-  source text (KEIN Default); created_at timestamptz DEFAULT now(). ALLE Spalten NOT NULL.
-  CONSTRAINTS: events_pkey PK(id), events_project_id_fkey, CHECK events_event_type_max_len
-  (length(event_type) <= 64). event_id trägt BEWUSST KEINEN Unique-Constraint (die geteilte
-  browser/server-eventID IST der Verlustraten-Join).
-- POLICIES auf events: RLS aktiv. events_select_own (FOR SELECT) — EXISTS auf projects mit
-  p.user_id = (select auth.uid()) GEKAPSELT (gleiche Ownership-ACHSE wie projects_select_own,
-  nicht byte-identisch: andere Syntax, EXISTS + Kapselung vs. direkter Vergleich). BEWUSST KEINE
-  INSERT/UPDATE/DELETE-Policy -> Writes laufen ausschließlich über service_role (Ingest-Pfad);
-  der Owner liest, schreibt nie. (Löst die frühere "RLS an, KEINE Policy — transient"-Notiz auf:
-  seit Migration 0013 existiert die owner-SELECT-Policy.)
-- RPCs (beide language sql, STABLE, set search_path = public, SECURITY INVOKER — die RLS des
-  Aufrufers filtert von innen): get_event_counts(p_project_id) -> TABLE(event_type, count),
-  gefiltert auf source='server' (0014); get_adblock_loss(p_project_id) ->
-  TABLE(total_server_conversions, confirmed_conversions, first_confirm_at) (0015).
-- INDIZES auf events: events_pkey; events_project_id_idx (project_id — trägt den äußeren Scan
-  UND die Policy); events_project_event_idx (project_id, event_id — 0015, trägt den korrelierten
-  Verlustraten-Join).
-- projects.tracking_key text NULLABLE (2b-0, server-autoritative Identität) + partial-unique
-  projects_tracking_key_key (WHERE tracking_key IS NOT NULL). projects.settings bleibt
-  client-autoritativ (wird von saveProject ganzheitlich ersetzt).
-- BEKANNTE ABWEICHUNG (Befund, reiner Performance-Punkt, KEIN Leak): projects/domains/
-  project_tokens-Policies tragen blankes auth.uid() (Auswertung pro Zeile); nur events_select_own
-  ist als (select auth.uid()) gekapselt. Ein Fix wäre eine Migration -> aufgeschoben, s.
+- MIGRATIONSSTAND: 0001-0018. Seit 0018 existiert public.schema_migrations als PROTOKOLL
+  (version PK / filename / applied_at; RLS aktiv, KEINE Policy). Gemessen: 18 Zeilen, applied_at
+  NUR bei 0018 (2026-07-27 18:09:01 UTC).
+  EHRLICHE EINORDNUNG: Die Zeilen 0001-0017 sind ein BACKFILL aus 0018, KEIN Vollzugsnachweis —
+  ihr applied_at ist bewusst NULL, weil der Ausführungszeitpunkt nicht bekannt ist. Dass sie
+  gelaufen sind, belegen ihre WIRKUNGEN (Spalten/Constraints unten), nicht die Tabelle. Ab 0018
+  ist der Eintrag ein echtes Protokoll. PROTOKOLL, KEIN STEUERUNGSMECHANISMUS: es gibt keinen
+  Migrations-Runner und soll keinen geben (s. "## Immer beachten").
+- TABELLEN in public: SECHS — projects, domains, project_tokens, events, audit_logs,
+  schema_migrations. Bei ALLEN ist RLS aktiv. (Die frühere Zahl "fünf" ist seit 0018 überholt.)
+- POLICIES: ZEHN. projects 4 (select/insert/update/delete); domains 3 (select/insert/update —
+  KEINE DELETE); project_tokens 2 (insert/update — KEINE SELECT, das write-only-Gate auf den
+  CAPI-Token); events 1 (events_select_own, SELECT); audit_logs 0; schema_migrations 0.
+  Bei events ist das Fehlen der INSERT/UPDATE/DELETE-Policy eine ENTSCHEIDUNG, keine Lücke:
+  Writes laufen ausschließlich über service_role (Ingest-Pfad, persistEvent). Der Owner LIEST
+  seine Events, er schreibt sie nie. Wer hier eine Write-Policy ergänzt, öffnet den
+  Analytics-Schreibpfad für den Client — dieselbe Denkfigur wie bei project_tokens und
+  audit_logs (s. "## Immer beachten", "APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI"), nur für eine
+  Tabelle, die jene Regel heute NICHT nennt.
+- auth.uid()-KAPSELUNG (bekannte Abweichung, reiner Performance-Punkt, KEIN Leak): NUR
+  events_select_own trägt (select auth.uid()) gekapselt. projects/domains/project_tokens tragen
+  blankes auth.uid() (Auswertung pro Zeile). Ein Fix wäre eine Migration -> aufgeschoben, s.
   docs/claude-history/backlog-polish.md.
-- rls_auto_enable: Event-Trigger-FUNKTION in public (SECURITY DEFINER, aktiviert RLS auf neuen
-  public-Tabellen), gebunden über den Event-Trigger ensure_rls (ddl_command_end). EXECUTE-Grants
-  per 0003 entzogen — existiert nur in der laufenden DB, aus KEINER Migration reproduzierbar; DDL
-  verbatim archiviert unter supabase/manual/rls_auto_enable.sql (-> "## Offene Punkte").
-- ROLLEN-GRANTS (gemessen 2026-07-24, Supabase-Default): anon, authenticated UND service_role
-  haben volle DML-Rechte (SELECT/INSERT/UPDATE/DELETE/TRUNCATE/REFERENCES/TRIGGER) auf ALLE fünf
-  public-Tabellen, inkl. project_tokens. Die Tenant-Isolation und das write-only-Gate auf
-  project_tokens tragen damit AUSSCHLIESSLICH über RLS, NICHT über Grants (s. "## Immer beachten").
-- BACKUPS: Supabase Free Plan hat KEINE Projekt-Backups (kein Scheduled Backup, kein PITR) —
-  gemessen 2026-07-24. Kein Wiederherstellungsweg für die laufende DB (s. "## Offene Punkte").
+  events_select_own spiegelt die Ownership-ACHSE von projects_select_own 1:1 — EXISTS-Semi-Join
+  statt direktem Vergleich, also andere SYNTAX bei gleicher ACHSE. Beide Unterschiede (Kapselung
+  und EXISTS) sind bekannt und unbedenklich; eine Divergenz in der ACHSE selbst WÄRE das Leak.
+- ROLLEN-GRANTS: anon, authenticated UND service_role haben volle DML-Rechte auf ALLE SECHS
+  public-Tabellen, inkl. project_tokens und schema_migrations. Die Tenant-Isolation und das
+  write-only-Gate tragen damit AUSSCHLIESSLICH über RLS (s. "## Immer beachten", "GRANTS
+  SCHÜTZEN NICHTS").
+- TABELLE public.events: id uuid PK (gen_random_uuid()); project_id uuid FK -> projects
+  ON DELETE CASCADE; event_type text; event_id text; source text (KEIN Default); created_at
+  timestamptz (now()) — diese SECHS NOT NULL. DAZU: variant text NULLABLE (0017).
+  ACHTUNG: Die frühere Formulierung "ALLE Spalten NOT NULL" gilt seit 0017 NICHT mehr. Wer die
+  Aufzählung als vollständig liest, plant gegen ein Schema, das es nicht gibt.
+  CONSTRAINTS: events_event_type_max_len (length(event_type) <= 64); events_variant_valid
+  (variant IS NULL OR variant IN ('a','b')). event_id trägt BEWUSST KEINEN Unique-Constraint
+  (die geteilte browser/server-eventID IST der Verlustraten-Join).
+- TABELLE public.projects (server-logik-relevante Spalten): tracking_key text NULLABLE (2b-0,
+  server-autoritativ); html_b text NULLABLE + mappings_b jsonb NULLABLE (0016); ab_test_active
+  boolean NOT NULL DEFAULT false (0017); published_content jsonb NULLABLE; blocked_at +
+  blocked_reason NULLABLE (0008); settings jsonb NOT NULL DEFAULT '{}' (CLIENT-autoritativ, wird
+  von saveProject ganzheitlich ersetzt).
+  CONSTRAINTS: projects_variant_b_pair ((html_b IS NULL) = (mappings_b IS NULL));
+  projects_ab_test_needs_variant_b (NOT ab_test_active OR html_b IS NOT NULL).
+- PRIMÄRSCHLÜSSEL, DIE NICHT "id" HEISSEN (Footgun, real aufgetreten): domains -> label;
+  project_tokens -> project_id; schema_migrations -> version. Vor der Nutzung eines Feldnamens
+  die Migration nachsehen.
+- INDIZES (gemessen per indexdef):
+  events: events_pkey (id); events_project_id_idx (project_id — trägt den äußeren Scan UND die
+    Policy); events_project_event_idx (project_id, event_id — 0015, trägt den korrelierten
+    Verlustraten-Join). KEIN Index auf variant (0017 legte bewusst keinen an; 9c aggregiert über
+    project_id).
+  projects: projects_pkey (id); projects_tracking_key_key UNIQUE (tracking_key) WHERE
+    tracking_key IS NOT NULL; projects_blocked_idx (blocked_at) WHERE blocked_at IS NOT NULL —
+    trägt den Kill-Switch-Lookup.
+  domains: domains_pkey (label); domains_custom_host_key UNIQUE (custom_host) WHERE custom_host
+    IS NOT NULL; domains_project_id_idx (project_id).
+  (projects_blocked_idx und domains_project_id_idx waren bisher in KEINER Doku-Zeile erfasst.)
+- FUNKTIONEN in public: VIER.
+  get_event_counts(p_project_id) -> TABLE(event_type, count), gefiltert auf source='server'
+    (0014) — SECURITY INVOKER, stable, search_path=public.
+  get_adblock_loss(p_project_id) -> TABLE(total_server_conversions, confirmed_conversions,
+    first_confirm_at) (0015) — INVOKER, stable, search_path=public.
+  BEIDE RPCs: SECURITY INVOKER — die RLS des Aufrufers filtert von INNEN. Das ist eine
+    Entscheidung, kein Zufall: als DEFINER würden die RPCs die RLS umgehen und Zahlen über
+    ALLE Tenants liefern.
+  set_updated_at() — Trigger-Funktion, INVOKER, volatile, search_path=public.
+  rls_auto_enable() — Event-Trigger-Funktion, SECURITY DEFINER, volatile,
+    search_path=pg_catalog. NICHT public — das ist korrekt und beabsichtigt, s.
+    "## Immer beachten", "DB-FUNKTIONEN + SEARCH_PATH".
+- EVENT-TRIGGER: SIEBEN. ensure_rls (ddl_command_end -> rls_auto_enable, evtowner postgres,
+  aktiviert) plus SECHS Supabase-Plattform-Trigger (issue_graphql_placeholder,
+  issue_pg_cron_access, issue_pg_graphql_access, issue_pg_net_access, pgrst_ddl_watch,
+  pgrst_drop_watch; evtowner supabase_admin). ensure_rls existiert NUR in der laufenden DB, aus
+  KEINER Migration reproduzierbar -> "## Offene Punkte".
+- BACKUPS: Supabase Free hat KEINE Projekt-Backups (kein Scheduled, kein PITR; gemessen
+  2026-07-24). Der vorhandene manuelle pg_dump deckt nur den Stand VOR 0018 ab -> s.
+  "## Security Manifest & Launch Blocker", BACKUPS.
 - AUFGESCHOBEN (konditionale Optimierung, kein Footgun): CAPI-Forward auf Hintergrund-
   Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
   ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
@@ -1085,10 +1129,22 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   nachsehen, nie aus dem Feldnamen "id" annehmen — der PK der domains-Tabelle ist label,
   NICHT id. Beides zusammen erzeugte den Bug: eine nicht-existente Spalte -> PostgREST-42703
   -> verschluckt -> still leere Liste.
-- DB-FUNKTIONEN + SEARCH_PATH (Advisor-Regel): Neue DB-Funktionen bekommen
-  `set search_path = public` (fixiert die Namensauflösung; Supabase-Advisor "Function Search
-  Path Mutable" flaggt sie sonst). Body zusätzlich voll qualifizieren (public.tabelle). Gilt
-  für SECURITY INVOKER wie DEFINER.
+- DB-FUNKTIONEN + SEARCH_PATH (Advisor-Regel, präzisiert nach Messung 2026-07-28): Jede neue
+  DB-Funktion bekommt eine FIXIERTE search_path-Klausel (sonst flaggt der Supabase-Advisor
+  "Function Search Path Mutable"). WELCHER Wert, hängt vom SICHERHEITSMODUS ab:
+  - SECURITY INVOKER (Normalfall): `set search_path = public`. Body zusätzlich voll
+    qualifizieren (public.tabelle).
+  - SECURITY DEFINER: `set search_path = pg_catalog` — der MINIMALE Pfad, NICHT public. Grund:
+    eine DEFINER-Funktion läuft mit Owner-Rechten; löst sie unqualifizierte Namen über public
+    auf, kann ein dort angelegtes Objekt die Auflösung kapern. Alles ausserhalb von pg_catalog
+    im Body voll qualifizieren.
+  GEMESSENER IST-ZUSTAND, der NICHT "korrigiert" werden darf (2026-07-28): rls_auto_enable —
+  die EINZIGE SECURITY-DEFINER-Funktion im System — trägt search_path=pg_catalog. Das ist
+  korrekt. Die frühere Fassung dieser Regel sagte pauschal "gilt für SECURITY INVOKER wie
+  DEFINER" und hätte beim Rebuild aus supabase/manual/rls_auto_enable.sql zu einer "Korrektur"
+  auf public eingeladen — das hätte die einzige Sicherheitsfunktion des Systems STILL
+  geschwächt, mit der Doku als Rückendeckung. Bei jedem Rebuild bleibt der Byte-Abgleich gegen
+  pg_get_functiondef Pflicht (s. "## Offene Punkte").
 - MIGRATION IMMER VOR CODE-DEPLOY (fail-closed): Eine Migration läuft IMMER im SQL-Editor VOR
   dem zugehörigen Code-Deploy — sonst liest der neue Code eine Spalte/Funktion, die es noch
   nicht gibt (bei CAPI hätte das die laufende trackingKey-Auflösung gebrochen). Umgekehrt ist

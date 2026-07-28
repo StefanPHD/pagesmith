@@ -58,3 +58,4 @@ Probe fährt, zieht das Datum nach.
 | `variant-b-konsistenz.sql` | Liegen die Text-Overrides von A und B im richtigen Slot? |
 | `ab-test-flag.sql` | Läuft ein A/B-Test, ohne dass es etwas Auslieferbares gibt? |
 | `adblock-loss-gegenprobe.sql` | Rechnet `get_adblock_loss` richtig (unabhängiger zweiter Weg)? |
+| `db-stand.sql` | Wie sieht das `public`-Schema wirklich aus (Migrationen, Spalten, RLS, Indizes, Funktionen)? |

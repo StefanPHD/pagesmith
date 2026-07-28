@@ -158,58 +158,6 @@ kaputtgeht.
   fail-closed — das deckt beide Varianten und hängt nicht am Client-Button.
   publishProject ist durch beide 9er-Scheiben byte-identisch geblieben; der
   Eingriff verdient eine eigene Runde.
-- CLIENT-ACTIONS OHNE FEHLERBEHANDLUNG -> HÄNGENDE BUTTONS, KEINE RÜCKMELDUNG
-  (live gefunden 2026-07-27, am Code vollständig erhoben; Trigger: SOFORT, vor
-  der Leere-Variante-Scheibe): KEIN EINZIGER Server-Action-Aufruf im gesamten
-  Client-Code steht in einem try/catch (die zwei vorhandenen umschliessen
-  clipboard.writeText). result.ok unterscheidet nur {ok:true} von {ok:false} —
-  beides sind RÜCKGABEWERTE. Ein Netzwerk- oder Serverfehler liefert keinen
-  Rückgabewert, sondern eine EXCEPTION: sie verlässt den Handler, jede Zeile ab
-  der if-Prüfung entfällt, und der Busy-State wird nie zurückgesetzt.
-  GEMESSEN (Produktion, DevTools offline, Speichern): Network zeigt
-  net::ERR_INTERNET_DISCONNECTED, im UI erscheint KEINE Meldung, der Button
-  bleibt dauerhaft auf "Speichern…" und ausgegraut.
-  ENTLASTUNG (am Code belegt): savedCode/savedMappings werden AUSSCHLIESSLICH im
-  Erfolgszweig gesetzt, vor dem await fällt kein dirty-relevanter Wert -> der
-  Dirty-Zustand bleibt korrekt und der beforeunload-Guard greift. Der Schaden
-  ist "keine Rückmeldung + blockierter Button", NICHT "stiller Verlust des
-  Dirty-Zustands". Die Arbeit geht erst verloren, wenn der Nutzer die generische
-  Browser-Warnung wegklickt — sie sagt "Änderungen gehen verloren", nicht "dein
-  Speichern ist fehlgeschlagen".
-  SCHWERSTER PUNKT: der Button blockiert den ZWEITEN VERSUCH (disabled hängt am
-  nie zurückgesetzten Status). Wer den Fehler bemerkt, hat keinen Weg ausser
-  Reload — und der Reload ist der Schritt, der die Arbeit vernichtet.
-  GEGENRICHTUNG (Zusatzbefund): listProjects() steht in handleSave VOR
-  setSaveStatus("saved") (ebenso in handleDelete und commitRename). Wirft der
-  Refresh, hängt der Button, OBWOHL gespeichert wurde. Ein Fix, der nur den Wurf
-  abfängt, machte daraus "Fehler anzeigen trotz Erfolg" — schlimmer als vorher.
-  UMFANG: über 20 Fundstellen in CodeImporter.tsx und DomainManager.tsx, drei
-  Stufen (Datenverlust-nah: saveProject/saveVariantB; irreführender Zustand:
-  publishProject, setCapiToken, removeCapiToken, setAbTestActive,
-  createVariantB, removeVariantB, loadProject, deleteProject, renameProject,
-  addCustomDomain, removeCustomDomain, checkDomainStatus; Lese-Effekte:
-  getEventCounts, getAdblockLoss, getVariantBPublished, listProjectDomains).
-  ES GIBT KEIN BESTEHENDES MUSTER — das hier gesetzte wird das erste sein.
-  ENTSCHIEDENE FIX-RICHTUNG (eigene Scheibe, eigenes Stufe 1):
-  (1) EIN geteilter Wrapper (z.B. safeAction(run, onThrow)) normalisiert den
-      Wurf in DENSELBEN Wert, den die Action bei einem Fehler ohnehin liefert
-      ({ok:false,error} bei Mutationen, []/null bei Lesern). Alle bestehenden
-      if(result.ok)-Zweige und die dort schon vorhandenen Busy-Resets
-      funktionieren damit UNVERÄNDERT — minimaler Diff, EIN Mechanismus statt
-      zwanzig Gelegenheiten zum Vergessen. KEIN try/catch an jeder Stelle.
-  (2) Sekundär-Aufrufe (listProjects nach Erfolg) dürfen den PRIMÄR-Erfolg nicht
-      umkehren: Erfolgsstatus VOR dem Refresh setzen.
-  (3) Lese-Effekte bekommen .catch() auf ihren Leer-Wert (kein unhandled
-      rejection; bei getVariantBPublished ist null bereits das bewusst richtige
-      Verhalten).
-  SICHERHEITS-AUFLAGE: der Wrapper liegt auch um setCapiToken — dessen Argument
-  ist ein TOKEN. Logging dort AUSSCHLIESSLICH über errorName(err) aus
-  src/lib/errors.ts (existiert, ist bewusst NICHT server-only, also
-  client-importierbar). NIEMALS die Argumente, NIEMALS das Error-Objekt selbst
-  (Tier-0-Logging-Lektion).
-  NACH DEM FIX: die Regel gehört als Dauerregel nach "## Immer beachten" — jeder
-  client-seitige Action-Aufruf über den Wrapper, sonst hängt der nächste neue
-  Handler genauso.
 - LABEL-VERGABE IST UNPROTOKOLLIERT (Trigger: vor öffentlichem Traffic bzw. mit
   dem Abuse-/Audit-Ausbau): assignDomainLabel und die Wiederherstellung
   schreiben KEINEN audit_logs-Eintrag, Custom-Domain-Mutationen dagegen schon
@@ -614,6 +562,49 @@ anzufassen ist mehr Risiko als nötig.
   eine Spalte mehr im selben Select, KEINE zweite Query). Am Code zu prüfen, nicht
   vorab zu setzen.
 
+### Fix-Scheibe safeAction — Client-Fehlerbehandlung (ABGESCHLOSSEN — live bewiesen 2026-07-27, Commit bd05e34)
+WARUM DIESER ABSCHNITT HIER STEHT (sonst wirkt er später deplatziert): Die Scheibe ist
+KEINE A/B-Arbeit. Sie steht hier, weil es keine History-Datei zur Client-Fehlerbehandlung
+gibt und eine neue für eine einzelne Scheibe Wildwuchs wäre; bei der nach 9c fälligen
+Phase-9-Auslagerung reist der Abschnitt mit, und die thematische Entscheidung fällt dann
+EINMAL statt zweimal.
+- WAS GEBAUT WURDE: src/lib/safe-action.ts (reine Datei, bewusst OHNE server-only, damit
+  client-importierbar). Exporte: safeAction, actionThrew, ACTION_THROW_MESSAGE,
+  SAVE_THROW_MESSAGE. Die Dauerregel steht in "## Immer beachten"
+  ("CLIENT-SEITIGE SERVER-ACTION-AUFRUFE").
+- GEMESSENER BESTAND (2026-07-28, am Code erhoben): 24 Server-Action-Aufrufe aus
+  Client-Code, 0 unbehandelt. Drei Muster:
+  (1) Handler mit Busy-/Fehlerzustand -> safeAction: 15x CodeImporter.tsx, dazu
+      DomainManager.tsx loadList (via handleAdd/onChanged) und handleManualCheck.
+  (2) Lade-Effekt MIT Fehlerkanal -> safeAction: DomainManager.tsx Projektwechsel-Load
+      (zeigt "Laden fehlgeschlagen", bewusst getrennt vom Leerzustand).
+  (3) Lade-Effekt OHNE Fehlerkanal: CodeImporter.tsx 3x via .catch() auf den Leer-Wert,
+      DomainManager.tsx Auto-Poll via safeAction. BEIDE Formen sind nach der Dauerregel
+      zulässig — hier hängt kein UI-Zustand am Aufruf.
+  Muster (2) ist der Grund, warum die Regel nicht an "Handler vs. Effekt" hängt.
+  login/page.tsx ruft KEINE Server-Action, sondern direkt den Browser-Supabase-Client —
+  liegt außerhalb des Musters.
+- TESTS: 13 (7 Unit in safe-action.test.ts, 6 Integration in CodeImporter.test.tsx).
+  HERVORZUHEBEN, weil es eine TAUTOLOGIE VERMEIDET: Der Secret-Test lässt den Fehler den
+  Token im Klartext TRAGEN und prüft alle fünf console-Methoden per String(a), NICHT per
+  JSON.stringify — letzteres liefert auf einem Error-Objekt "{}", und der Test wäre hohl
+  durchgelaufen.
+- VERIFIZIERT (live, 2026-07-27): Offline-Test in Produktion (DevTools offline, Speichern)
+  — die Meldung erscheint, der Button ist wieder klickbar, der zweite Versuch gelingt OHNE
+  Reload. Das ist der Kernbeweis: der blockierte Zweitversuch war der schwerste Teil des
+  Befunds.
+- WAS DER NACHWEIS NICHT ZEIGT (ausdrücklich): DomainManager.test.tsx enthält KEINEN
+  Wurf-Test — die 6 gewrappten Aufrufe dort sind nur durch den Unit-Test von safeAction
+  selbst gedeckt, nicht durch einen Integrationstest an ihrem eigenen UI-Fehlerkanal. Ein
+  Live-Test der Domain-Pfade unter Wurf ist nicht protokolliert.
+- HINWEIS ZUR NUMMERIERUNG: Code und Tests tragen Vermerke der Form "AUFLAGE n" /
+  "Invariante n". Diese Nummern stammen aus dem Stufe-1-Plan der Bau-Session und sind im
+  Repo NICHT auflösbar (am 2026-07-28 repo-weit gesucht, kein Dokument gefunden); ihre
+  Zählung deckt sich NICHT mit den Auflagen (1)/(2)/(3) des zurückgezogenen Offenen Punkts.
+  Die Nebenbedingungen (i)-(iii) der Dauerregel in "## Immer beachten" sind die inhaltlich
+  gültige Fassung — sie ERSETZEN die Code-Nummerierung nicht und sind nicht deckungsgleich
+  mit ihr.
+
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,
 Policy und jeder externe Call wird daran gemessen. B sind Skalierungs-Leitplanken für
@@ -872,6 +863,51 @@ docs/claude-history/security-manifest-full.md.
   unterscheidbare Fixtures und vorgeseedete Endzustände sind bequem und verfehlen die reale
   Konstellation systematisch. Herleitung: die 9a-Sektion ("## Aktiver Stand — Phase 9",
   NACHTRAG-Block).
+- CLIENT-SEITIGE SERVER-ACTION-AUFRUFE: KEIN WURF BLEIBT UNBEHANDELT — safeAction IST
+  PFLICHT, WO UI-ZUSTAND DARAN HÄNGT (Fix-Scheibe 2026-07-27, Bestand gemessen 2026-07-28).
+  GRUND (ohne ihn wird die Regel als überflüssig wegoptimiert): result.ok unterscheidet nur
+  {ok:true} von {ok:false} — beides sind RÜCKGABEWERTE. Ein Netzwerk- oder Serverfehler
+  liefert eine EXCEPTION: sie verlässt den Handler, jede Zeile ab der if-Prüfung entfällt,
+  der Busy-State wird nie zurückgesetzt. Ergebnis: keine Meldung UND der Button blockiert
+  den ZWEITEN Versuch. Der einzige Ausweg wäre ein Reload — und genau der vernichtet die
+  Arbeit.
+  UNTERGRENZE (gilt ausnahmslos): Kein client-seitiger Server-Action-Aufruf lässt einen Wurf
+  unbehandelt. Nie.
+  PFLICHT-FALL: Hängt am Aufruf ein UI-ZUSTAND — ein Busy-/Lade-Flag, das freigegeben werden
+  muss, oder ein Fehlerkanal, der gefüllt werden muss —, läuft er über safeAction(run,
+  onThrow) aus src/lib/safe-action.ts. Ein handgeschriebenes .catch() genügt dort NICHT: ihm
+  fehlt der unstable_rethrow-Riegel, und eine Action mit Weiterleitung würde still
+  verschluckt. Den Ersatzwert stellt der AUFRUFER, weil die Domain-Actions zusätzlich ein
+  reason-Feld verlangen; TypeScript prüft ihn gegen den echten Rückgabetyp — ein vergessener
+  Ersatzwert bricht den BUILD statt die Laufzeit.
+  ERLAUBTER MINIMALFALL: Hängt KEIN UI-Zustand daran und ist der Leer-Wert bereits das
+  richtige Verhalten (reine Lade-Effekte wie getEventCounts, getAdblockLoss,
+  getVariantBPublished), genügt .catch() auf den Leer-Wert ([] bzw. null). safeAction ist
+  dort EBENFALLS ZULÄSSIG — stärkeres Werkzeug als nötig, kein Verstoß. Die Erlaubnis gilt
+  NUR in diese Richtung.
+  DIE ACHSE IST NICHT "LESEN VS. SCHREIBEN" UND NICHT "HANDLER VS. EFFEKT" (beides am
+  Bestand widerlegt, deshalb ausdrücklich benannt): Der LESER listProjectDomains läuft über
+  den Wrapper, weil ein Fehlerkanal daran hängt — in DomainManager.tsx sowohl aus dem
+  Handler-Kontext (loadList nach Hinzufügen/Entfernen) als auch aus einem LADE-EFFEKT beim
+  Projektwechsel, der bewusst "Laden fehlgeschlagen" anzeigt, weil "leer" und "kaputt" nicht
+  gleich aussehen dürfen. Nicht wer den Aufruf auslöst entscheidet, sondern ob ein Zustand
+  zurückzusetzen oder eine Meldung zu zeigen ist.
+  DREI NEBENBEDINGUNGEN, ohne die der Wrapper Schaden anrichtet:
+  (i)   PRIMÄRERFOLG WIRD IMMER ZUERST QUITTIERT, dann der Folge-Refresh. Wirft listProjects
+        nach einem erfolgreichen Save, darf das den Erfolg nicht in einen Fehler umkehren —
+        "Fehler trotz Erfolg" ist schlimmer als vorher.
+  (ii)  KONTROLLFLUSS-WÜRFE WERDEN DURCHGELASSEN (unstable_rethrow aus next/navigation).
+        redirect()/notFound() sind Signale, kein Fehler.
+  (iii) DER WRAPPER LOGGT NICHTS. Er ist generisch und weiß nie, was im Closure liegt — am
+        CAPI-Pfad ist es der Klartext-Token. Das reale Risiko ist nicht das Argument (er
+        sieht nur einen Thunk), sondern ein weitergereichtes Error-OBJEKT, das den Token
+        bereits trägt. Logging am Aufrufer AUSSCHLIESSLICH über errorName(err) aus
+        src/lib/errors.ts.
+  MELDUNGSTEXTE behaupten WEDER URSACHE NOCH ERGEBNIS: "keine Verbindung" wäre eine Ursache,
+  die wir nicht kennen; "wurde nicht ausgeführt" ein Ergebnis, das wir nicht kennen (bricht
+  die Verbindung auf dem RÜCKWEG, ist der Write passiert). Die Entwarnung "deine Änderungen
+  sind noch da" gilt NUR auf Speicherpfaden — beim Löschen wäre sie eine falsche Beruhigung.
+  Herleitung + Live-Nachweis: "## Aktiver Stand — Phase 9", Abschnitt "Fix-Scheibe safeAction".
 - DIFF-VORLAGE = GEZIELTE VERIFIKATION, NICHT VOLLTEXT-PFLICHT (Review-Kalibrierung, 2026-07-23):
   Nach jedem Bau wird die Vorlage für das Review dreistufig geliefert — Grundsatz: nichts wird
   stillschweigend durchgewunken, aber nicht alles muss im Wortlaut fließen (Volltext-Diffs fressen

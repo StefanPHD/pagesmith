@@ -143,3 +143,37 @@ miterledigen, sondern gebündelt abarbeiten.
   sein — real passiert (ein fehlgeschlagenes Publish wirkte "sauber
   durchgelaufen"). Das UI wird ohnehin neu gestaltet; beim Redesign gehört der
   Kanal an eine Stelle, die nicht wegbrechen kann.
+- AUFLAGE-/INVARIANTEN-NUMMERIERUNG IN CODE-KOMMENTAREN NICHT AUFLÖSBAR:
+  Code und Tests tragen Vermerke der Form "AUFLAGE n" / "Invariante n" —
+  safe-action.ts, safe-action.test.ts, CodeImporter.tsx und .test.tsx,
+  resolve.ts und .test.ts. Diese Nummern stammen aus den Stufe-1-Plänen der
+  jeweiligen Bau-Session und existieren im Repo nicht; die Zählungen decken
+  sich nicht einmal untereinander (die "AUFLAGE 1" in safe-action.test.ts
+  meint etwas anderes als die in resolve.test.ts). Am 2026-07-28 repo-weit
+  gesucht, kein Dokument gefunden.
+  -> KEIN Bug: die Kommentare beschreiben ihre Sache auch ohne die Nummer,
+  nur der Rückverweis läuft ins Leere. Ein Fix wäre ein Kommentar-Rename,
+  also ein Code-Commit — gehört nicht in eine Doku-Runde.
+- KEIN WURF-TEST IM DOMAINMANAGER (safeAction, erhoben 2026-07-28):
+  DomainManager.test.tsx enthält keinen einzigen Test, der eine Server-Action
+  WERFEN lässt. Die sechs dort über safeAction laufenden Aufrufe sind allein
+  durch den Unit-Test von safeAction gedeckt, nicht durch einen
+  Integrationstest an ihrem eigenen UI-Fehlerkanal (addError, removeError,
+  loadError, das checking-Flag). Ein Live-Test der Domain-Pfade unter Wurf ist
+  ebenfalls nicht protokolliert.
+  -> Verwandt mit "FEHLERTEXT-ZUORDNUNG NUR AUF ZWEI PFADEN ABGESICHERT"
+  oben, aber NICHT dasselbe: dort fehlt die Wortlaut-Assertion auf Pfaden,
+  die getestet werden — hier fehlt der Test überhaupt. Wer den einen baut,
+  löst den anderen nicht mit; ein gemeinsamer Durchgang ist trotzdem
+  sinnvoll.
+- DRIFT-MÖGLICHKEIT BEI LADE-EFFEKTEN OHNE UI-ZUSTAND: Die Dauerregel zu
+  client-seitigen Action-Aufrufen ist bewusst eine UNTERGRENZE — sie lässt
+  offen, ob ein Lade-Effekt OHNE UI-Zustand .catch() oder safeAction nimmt.
+  Beides ist zulässig, safeAction ist dort nur das stärkere Werkzeug als
+  nötig. Folge im Bestand: CodeImporter nutzt .catch() (3x), DomainManager
+  nimmt beim Auto-Poll safeAction. Kein Fehler und keine Regelverletzung —
+  aber funktional gleichartige Aufrufe sehen je nach Datei verschieden aus,
+  und das kann mit jeder neuen Scheibe wachsen.
+  -> Falls es je stört: die Vereinheitlichung ist ein Code-Commit, KEINE
+  Regeländerung. Die Untergrenze bleibt richtig, sonst wären drei korrekt
+  gebaute Lade-Effekte plötzlich Verstöße.

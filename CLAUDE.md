@@ -999,7 +999,10 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Der Reviewer benennt im GO ausdrücklich, was er NICHT im Wortlaut gelesen hat. Der Hebel liegt im
   PLAN-Review (Stufe 1 wird immer vollständig gelesen — der Scheibe-B-Stichtags-Fehler stand im
   Plan, nicht im Diff); das Diff-Review verifiziert danach nur noch Gebautes == Freigegebenes.
-  Lange Vorlagen als Text direkt in die Antwort, gestückelt — nie als Datei-Anhang (kommt leer an).
+  Lange Vorlagen als Text direkt in die Antwort, als EIN Block — NICHT stückeln: wer stückelt,
+  entscheidet selbst über die Schnittkanten, und ein verlorener Teil fällt niemandem auf. Der
+  Bericht beginnt mit einer UMFANGS-ANSAGE ("deckt Aufträge X-Y ab"), damit ein fehlender
+  Abschnitt beim LESEN auffällt statt beim Nachzählen. Nie als Datei-Anhang (kommt leer an).
 - Erst der nutzbare Kern, dann Infrastruktur.
 - Importierter User-Code läuft NUR im sandboxed iframe (sandbox="allow-scripts",
   niemals allow-same-origin), nie ungesandboxt.
@@ -1178,6 +1181,26 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   gelaufen"-Gate missversteht, baut eine Automatik, die wir bewusst nicht haben — die
   Migrationen laufen weiterhin manuell im SQL-Editor, die Idempotenz-Guards in den Dateien
   selbst (if not exists, Katalog-Guard) bleiben die Absicherung gegen Doppelläufe.
+- BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN, NICHT AM KALENDER (dieselbe Naht wie
+  "Migration vor Deploy", nur am anderen Ende): Nach JEDER ausgeführten Migration ein
+  frischer pg_dump. Ein Datums-Rhythmus ginge am Risiko vorbei — gefährlich wird ein Dump
+  nicht durch Alter, sondern dadurch, dass das Schema seither weitergezogen ist; ein Restore
+  liefert dann eine DB, die der deployte Code nicht bedienen kann. Seit 0018 trägt jeder Dump
+  schema_migrations IN SICH: der abgedeckte Stand steht damit im Backup selbst, statt in einer
+  Notiz daneben, die verlorengeht. Begründung und Ist-Stand (inkl. des heute veralteten
+  Artefakts): "## Security Manifest & Launch Blocker", BACKUPS — hier nur die Regel.
+- ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH UMGESCHRIEBEN (Entscheidung der
+  Doku-Aufräumrunde 2026-07-28): Eine Migrationsdatei dokumentiert, was TATSÄCHLICH in der DB
+  gelaufen ist. Sie im Nachhinein zu ändern — auch nur einen Kommentar — entkoppelt die Datei
+  von dem, was die DB trägt, und macht sie als Rekonstruktionsquelle wertlos. BELEGTER ANLASS:
+  Die Kopfkommentare von 0006/0007 nennen die alte Serving-Domain pgsm.site. Sie BLEIBEN,
+  obwohl der Name überall sonst auf publayer.net korrigiert wurde — sie sind Zeitdokument,
+  haben KEINE funktionale Wirkung (reiner Kommentar), und niemand leitet aus einem
+  Migrations-Kopfkommentar eine operative Aufgabe ab. Korrekturen gehören in eine NEUE
+  Migration oder in aktive Handlungsdokumente, NIE in eine gelaufene Datei. VERWANDT: die
+  Phasen-Historien in docs/claude-history/ bleiben aus demselben Grund stehen; das
+  Security-Manifest ist die benannte AUSNAHME, weil es ein aktives Dokument ist (dort wird
+  umgestuft, nicht annotiert — s. den Kopf der Vollfassung).
 - NEXT_PUBLIC_-REDEPLOY-PFLICHT (Ops-Regel, real aufgetreten): NEXT_PUBLIC_-Env-Vars werden
   zur BUILD-ZEIT ins Client-Bundle inlined -> die Variable in Vercel zu ändern reicht NICHT,
   nach JEDER Änderung ist ein REDEPLOY PFLICHT. Sonst trägt das laufende Bundle still den

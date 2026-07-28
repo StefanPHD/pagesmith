@@ -1,23 +1,58 @@
 ## SECURITY MANIFEST & LAUNCH BLOCKERS
-Dies ist die EINE Wahrheitsquelle für Launch-Blocker. Die verstreuten Härtungs-
-Einträge in der Polish-Liste werden hierher REFERENZIERT, nicht mehr dupliziert.
-Prinzip explizit: NICHT alles ist P0. Sequenziert nach dem Moment, in dem das
-Risiko real BEISST — sonst ist nichts ein Blocker (eine Liste, auf der alles
+Diese Datei trägt die vollständige BEGRÜNDUNG je Item. Die Root — CLAUDE.md,
+"## Security Manifest & Launch Blocker" — trägt die Tier-Übersicht und zusätzlich die
+OPERATIVEN ARTEFAKTE für den Ernstfall (SQL-Runbook, Verifikations-Lektionen, offene
+Betriebs-Punkte); die liegen dort, weil CLAUDE.md jede Session geladen ist und diese Datei
+nicht.
+DER STATUS JE ITEM STEHT IN BEIDEN FASSUNGEN UND MUSS DECKUNGSGLEICH SEIN — er ist NICHT
+das Unterscheidungsmerkmal. Wer ein Item hier umstuft, stuft es in der Root mit um und
+umgekehrt: beide Fassungen werden IMMER im selben Commit geändert, und genau das ist der
+Mechanismus, der die Deckungsgleichheit sichert.
+NICHT ALS ALLEINIGE WAHRHEITSQUELLE LESEN: die frühere Selbstbeschreibung ("die EINE
+Wahrheitsquelle für Launch-Blocker") war beim KILL-SWITCH nachweislich falsch — er stand
+hier als offener Blocker, während er längst gebaut und live verifiziert war. Genau deshalb
+ist der Status hier zu pflegen UND gegen die Root zu prüfen, nicht der Root zu überlassen.
+ABLAGEORT SAGT NICHTS ÜBER DEN STATUS: Diese Datei liegt in docs/claude-history/, ist aber
+ein AKTIVES Dokument. Items werden hier UMGESTUFT, nicht annotiert — anders als die
+Phasen-Historien im selben Ordner, die als Zeitdokument stehenbleiben. Die History-Regel
+also NICHT mechanisch nach Pfad anwenden.
+Die verstreuten Härtungs-Einträge in der Polish-Liste werden hierher REFERENZIERT, nicht
+mehr dupliziert. Prinzip explizit: NICHT alles ist P0. Sequenziert nach dem Moment, in dem
+das Risiko real BEISST — sonst ist nichts ein Blocker (eine Liste, auf der alles
 "kritisch" ist, priorisiert nichts). Jedes Item trägt vier Felder: RISIKO (was
 schiefgeht) / TRAGENDE KONTROLLE (was es abfängt) / EHRLICHE EINORDNUNG (Grenze,
 Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
 
 ### Tier 0 — Harte Launch-Blocker (katastrophal beim ersten bösen Nutzer / irreversibel)
-- KILL-SWITCH (HÖCHSTE Priorität der Liste): Admin-CLI/Interface, das eine
-  project_id/Domain SOFORT im Serving-Zweig sperrt.
+- KILL-SWITCH — ERLEDIGT (gebaut 2026-07-14, live verifiziert): HÖCHSTE Priorität der
+  Liste. Sperrt ein Projekt SOFORT im Serving-Zweig. Das Datum belegt den BAU (Commit auf
+  Migration 0008); wann der Live-Smoke lief, ist nicht erhoben — er ist bestanden (4/4,
+  Details in der Root), aber ohne belegtes Datum.
   RISIKO: eine gehostete Phishing-/Malware-Seite bleibt live, während man manuell
   in der DB gräbt — Minuten zählen (Shared-Reputation, Tier 1).
-  TRAGENDE KONTROLLE: blocked-Flag auf der domains-Zeile, das die (in 7c-1 gebaute)
-  Serve-Route VOR dem Ausliefern prüft -> 451/410 statt Content.
-  EHRLICHE EINORDNUNG: billig, hakt direkt in die bestehende Serving-Architektur
-  (kein neuer Pfad, nur ein Flag + ein Guard). Kein Grund, das zu vertagen.
-  BINDET-AN: Serving existiert (7a/7c-1) -> baubar ab sofort, Blocker vor erstem
-  echten Fremd-Traffic.
+  TRAGENDE KONTROLLE (Ist-Zustand): Die Sperre ist PROJEKTBASIERT — projects.blocked_at,
+  gesetzt per SQL-Runbook (Migration 0008). Die Serve-Route prüft VOR dem Ausliefern und
+  antwortet mit 451 plus statischer Erklärseite; der Ingest (/api/e) verwirft früh, VOR dem
+  Token-Lookup. Fail-closed: jeder unklare Zustand fällt auf notfound, published_content
+  verlässt den Server nur bei eindeutigem "ok".
+  Die Spalte domains.blocked_at existiert ebenfalls (0008) und wird im Serve-Pfad
+  MITGEPRÜFT — als eigener früher Ausgang VOR der Projekt-Query, damit die Domain-Ebene
+  später ohne Umbau scharf ist. Sie wird heute von KEINEM Code-Pfad geschrieben; operativ
+  ist sie nicht in Gebrauch. (Am Code erhoben 2026-07-28: src/lib/hosting/resolve.ts, die
+  beiden Zweige "if (domain.blocked_at) return BLOCKED" und "if (project.blocked_at) return
+  BLOCKED"; Spalten in supabase/migrations/0008_kill_switch.sql.)
+  EHRLICHE EINORDNUNG: billig gewesen, weil es direkt in die bestehende Serving-Architektur
+  hakte (kein neuer Pfad, nur ein Flag + ein Guard) — die Einschätzung hat sich bestätigt.
+  Die OPERATIVEN Artefakte liegen bewusst NICHT hier, sondern in der Root (CLAUDE.md,
+  "## Security Manifest & Launch Blocker"): das SQL-Runbook zum Sperren/Entsperren/
+  Auflisten, die Verifikations-Lektion zum Ingest-Pfad ("KILL-SWITCH — LEKTION") und der
+  offene Betriebs-Punkt zur noch leeren NEXT_PUBLIC_ABUSE_CONTACT. Hier nur Cross-Link,
+  keine Duplikation — zwei Kopien derselben Lektion laufen auseinander. Grund für die
+  Aufteilung: CLAUDE.md ist im Ernstfall ohnehin geladen, diese Datei nicht. WER DEN
+  KILL-SWITCH VERIFIZIERT, LIEST DIE LEKTION DORT ZUERST: der naheliegende Weg über den
+  HTTP-Statuscode beweist nichts.
+  BINDET-AN: erledigt vor erstem echten Fremd-Traffic. Serving existierte (7a/7c-1), die
+  Sperre kam mit 0008.
 - E-MAIL-BESTÄTIGUNG wieder aktiv:
   RISIKO: fürs MVP deaktiviert (sofort eingeloggt) -> offene Registrierung =
   Spam-Accounts, Ressourcen-/Kosten-Missbrauch, Wegwerf-Identitäten.
@@ -37,7 +72,7 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   Plattform-Limits strukturell — es gibt keinen abrechenbaren Eskalationsweg, der Schaden ist
   ein harter Stopp, keine Rechnung; erst mit Pro kippt genau das und Überverbrauch wird
   kostenwirksam. Kopplung: der Pro-Wechsel fällt mit dem Backup-Bedarf zusammen (Tier 2).
-- ABUSE-KANAL + security.txt auf pgsm.site UND Haupt-App:
+- ABUSE-KANAL + security.txt auf publayer.net UND Haupt-App:
   RISIKO: kein Melde-Weg für Security-Forscher/Abuse-Meldungen -> Schwachstellen/
   Missbrauch werden gar nicht oder öffentlich gemeldet; eine Hosting-Plattform ohne
   Meldeweg zu betreiben ist blank fahrlässig.
@@ -76,17 +111,17 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   dann nur die Lücke ergänzen.
   BINDET-AN: sobald es echte Accounts mit echten Assets (Tokens/Domains) gibt.
 - SAFE-BROWSING korrekt eingesetzt:
-  RISIKO: gehostete Seiten leiten auf Malware-/Phishing-Ziele; pgsm.site wird von
+  RISIKO: gehostete Seiten leiten auf Malware-/Phishing-Ziele; publayer.net wird von
   Google Safe Browsing geflaggt.
   TRAGENDE KONTROLLE: Redirect-ZIEL-URLs aus den Mappings gegen Safe Browsing prüfen
-  + überwachen, ob pgsm.site selbst geflaggt wird.
+  + überwachen, ob publayer.net selbst geflaggt wird.
   EHRLICHE EINORDNUNG: KEIN HTML-Content-Scan — das ist ein Kategoriefehler. Die
   Safe-Browsing-API prüft URLs, nicht rohes HTML. Wer HTML durch sie jagt, misst
   nichts.
   BINDET-AN: Fremd-Content live (Hosting).
-- SHARED-REPUTATION pgsm.site:
-  RISIKO: die *.pgsm.site-Wildcard teilt die Registrable Domain -> EINE geflaggte
-  Kundenseite kann ALLE pgsm.site-Seiten mit einem Browser-Interstitial treffen
+- SHARED-REPUTATION publayer.net:
+  RISIKO: die *.publayer.net-Wildcard teilt die Registrable Domain -> EINE geflaggte
+  Kundenseite kann ALLE publayer.net-Seiten mit einem Browser-Interstitial treffen
   (Kollektivhaftung).
   TRAGENDE KONTROLLE: Kill-Switch (Tier 0) zur schnellen Isolierung + riskante/neue
   Nutzer bevorzugt auf Custom-Domains schieben (eigener eTLD+1 -> Blast-Radius auf
@@ -118,7 +153,16 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   Actor + Zeit protokollieren.
   EHRLICHE EINORDNUNG: Real-time-Anomalie-Alarme sind ein Scale-Thema, nicht MVP —
   das nachvollziehbare Audit-Log reicht für den Start.
-  BINDET-AN: 7c-2 (Vercel-Domains-API).
+  TEILERFÜLLT (Stand 2026-07-28): 7c-2 ist abgeschlossen, und die CUSTOM-DOMAIN-Mutationen
+  schreiben ihr Audit-Log (lib/domains/register.ts und remove.ts, je aus dem finally). Die
+  LABEL-Vergabe dagegen nicht: assignDomainLabel und die Label-Wiederherstellung schreiben
+  KEINEN Eintrag — ausgerechnet die Vorgänge, deren Historie man bei einer Divergenz
+  bräuchte. Der Grund ist bekannt und nicht nebenbei zu beheben: writeAuditLog verlangt
+  einen service_role-Client, den publishProject bewusst NICHT instanziiert. Kein neuer
+  offener Punkt — der Eintrag existiert bereits in der Root, CLAUDE.md "## Offene Punkte",
+  "LABEL-VERGABE IST UNPROTOKOLLIERT".
+  BINDET-AN: 7c-2 (Vercel-Domains-API) — abgeschlossen; der Rest bindet an den
+  Abuse-/Audit-Ausbau bzw. an öffentlichen Traffic.
 
 ### Tier 2 — Laufende Hygiene / verankerte Prinzipien (KEIN Gate)
 - LOGGING-LEAK (herabgestuft von Tier 0, gemessen 2026-07-24):
@@ -146,27 +190,68 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   TRAGENDE KONTROLLE: Dependabot aktiviert — Alerts, Security Updates, Dependency Graph, 1 Regel.
   EHRLICHE EINORDNUNG: Dauerhygiene, kein Launch-Gate; erledigt am 2026-07-24.
   BINDET-AN: laufend (aktiv).
-- BACKUPS + Restore-Drill:
+- BACKUPS + Restore-Drill (OFFEN — kein Drill gefahren; die vollzogene Zwischenlösung ist
+  veraltet, s. EHRLICHE EINORDNUNG):
   RISIKO: Datenverlust ohne getesteten Wiederherstellungsweg (ein ungetestetes Backup
   ist kein Backup).
   TRAGENDE KONTROLLE: Supabase-Backup-Tier bestätigen + EINEN echten Restore-Drill
   fahren (kompletten Core-Tabellen-Drop durchspielen), danach reguläre Drills.
   EHRLICHE EINORDNUNG (ergänzt 2026-07-24): der erste Drill gehört vor ernsthafte Kundendaten;
   die Wiederholung ist laufende Hygiene. GEMESSEN 2026-07-24: der Supabase FREE Plan hat GAR
-  KEINE Backups (kein Scheduled Backup, kein PITR) -> es existiert aktuell KEIN Artefakt, aus dem
-  wiederhergestellt werden könnte — obwohl die laufende DB unersetzliche Daten trägt (Projekte,
-  CAPI-Tokens, published_content, die Event-Historie mit den Phase-8-Live-Beweisen).
-  Der erste Drill fällt damit mit dem Pro-Wechsel (7 Tage Scheduled Backups) bzw. dem manuellen
+  KEINE Backups (kein Scheduled Backup, kein PITR) — obwohl die laufende DB unersetzliche Daten
+  trägt (Projekte, CAPI-Tokens, published_content, die Event-Historie mit den
+  Phase-8-Live-Beweisen).
+  Der erste Drill fällt damit mit dem Pro-Wechsel (7 Tage Scheduled Backups) bzw. einem frischen
   pg_dump zusammen und würde zugleich die ensure_rls-Rebuild-Lücke praktisch nachweisen (s.
   CLAUDE.md "## Offene Punkte").
+  ZWISCHENLÖSUNG VOLLZOGEN, ABER VERALTET (Status bleibt OFFEN): Ein manueller pg_dump WURDE
+  gezogen — Umfang public-Schema + auth.users, AES256 verschlüsselt, extern abgelegt (nicht im
+  Repo) und per "pg_restore --list" verifiziert; das Listing zeigte 5 Tabellen plus Funktionen
+  inklusive rls_auto_enable.
+  DASS IM REPO KEIN BELEG LIEGT, IST KORREKT UND KEIN MANGEL: ein DB-Dump gehört nicht ins Git,
+  auch verschlüsselt nicht. Wer hier nach einem Artefakt sucht, findet zu Recht keines und darf
+  daraus NICHT "nicht erledigt" schließen. PROVENIENZ dieser Angabe: aus der Chat-Zusammenfassung
+  der Hygiene-Runde, NICHT am Repo verifizierbar.
+  DER EVENT-TRIGGER FEHLTE ERWARTUNGSGEMÄSS, ebenfalls kein Mangel: ensure_rls hängt am CLUSTER,
+  nicht am Schema, und kann in einem Schema-Dump gar nicht enthalten sein. Genau deshalb liegt
+  sein DDL separat unter supabase/manual/rls_auto_enable.sql und muss bei JEDEM Restore MANUELL
+  mitgezogen werden (Hintergrund: Offener Punkt "rls_auto_enable-CREATE FEHLT IN DEN MIGRATIONEN"
+  in der Root).
+  DER EIGENTLICHE BEFUND — DER DUMP IST HEUTE NICHT MEHR WIEDERHERSTELLUNGSTAUGLICH: Er entstand
+  VOR Phase 9. Die Migrationen 0016 (html_b/mappings_b), 0017 (ab_test_active, events.variant)
+  und 0018 (schema_migrations) kamen alle DANACH. Ein Restore aus diesem Dump stellte ein Schema
+  her, das der DEPLOYTE Code nicht bedienen kann -> PostgREST 42703, derselbe Fehlermodus wie
+  eine vergessene Migration, nur im Notfall statt beim Deploy. Die Zwischenlösung war EINMALIG,
+  nicht laufend.
+  ABGEDECKTER STAND ALS MIGRATIONSSTAND, NICHT ALS DATUM (ein Backup ohne dokumentierten Stand
+  ist ein Backup, dessen Wert man nicht kennt): Stand VOR 0018 — unabhängig belegt, weil das
+  pg_restore-Listing 5 Tabellen zeigte und public heute 6 trägt (schema_migrations kam mit 0018;
+  gemessen 2026-07-28). Dass er zusätzlich vor 0016 liegt, stammt aus der Chat-Zusammenfassung
+  und ist KEINE Messung. Ein exaktes Datum ist nicht erhebbar: die Hygiene-Runde lag im Zeitraum
+  24.-27.07.2026, und der Dump trägt keinen eigenen Zeitstempel.
+  WIEDERVORLAGE-GRUNDSATZ: Ein frischer Dump hängt NICHT an einem Kalender, sondern an
+  MIGRATIONEN — nach JEDER ausgeführten Migration ein frischer Dump. Dieselbe Kopplung wie
+  "Migration vor Deploy", nur am anderen Ende. Seit 0018 trägt jeder Dump schema_migrations IN
+  SICH: der abgedeckte Stand ist damit im Backup selbst dokumentiert statt in einer Notiz
+  daneben, die verlorengeht.
   BINDET-AN: laufend; erster Drill vor echten Kundendaten (bzw. mit dem Pro-Wechsel/pg_dump).
 - DATA-RETENTION:
   RISIKO: Analytics-Rohdaten (IP/UA) horten sich unbegrenzt an -> DSGVO-Speicher-
   begrenzung verletzt.
   TRAGENDE KONTROLLE: Rohdaten (IP/UA) nach max. 30 Tagen löschen/anonymisieren.
-  EHRLICHE EINORDNUNG: die Persistenz-Ebene entsteht erst in Phase 8 -> HEUTE nur
-  sicherstellen, dass Server-Logs keine IPs horten.
-  BINDET-AN: Phase 8 (Ingestion-Persistenz).
+  EHRLICHE EINORDNUNG (Ist-Zustand): Die Persistenz-Ebene EXISTIERT — Phase 8 ist gebaut
+  (events). Die 30-Tage-Pflicht ist dadurch aber NICHT ausgelöst: events trägt KEIN IP/UA
+  und keine Personen-Identität. Sie bindet erst an die Scheibe, die IP/UA einführt
+  (Bot-Filter/Uniques). Heute daher nur sicherstellen, dass Server-Logs keine IPs horten.
+  WECHSELWIRKUNG fürs spätere events-Pruning (der Grund, warum Retention hier kein reines
+  Löschthema ist): Löscht ein Retention-/Aggregations-Pruning die ERSTE verankerte
+  source='browser'-Bestätigung eines Projekts, springt der selbstheilende Stichtag der
+  Adblocker-Verlustrate nach vorn — die angezeigte Rate ändert sich RÜCKWIRKEND und STILL,
+  ohne Fehler und ohne Hinweis. Ein Pruning muss die Verlustraten-Verankerung
+  berücksichtigen.
+  BINDET-AN: nicht mehr "Phase 8" (die ist gebaut), sondern die erste Scheibe, die IP/UA
+  oder personenbezogene Merkmale persistiert. Siehe auch die Datenklassen-Grenze in der
+  Root, CLAUDE.md "## Offene Punkte".
 - MCP-SICHERHEIT:
   RISIKO: langlebiger MCP-Key mit voller Owner-Autorität in der KI-Umgebung eines
   Dritten -> geleakter Key = Vollzugriff inkl. Token-Write.

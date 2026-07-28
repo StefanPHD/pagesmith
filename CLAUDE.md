@@ -667,10 +667,20 @@ keine Statusänderung für etwas, das noch nicht existiert.
   sobald ein Realtime-/Live-Dashboard-Feature geplant wird.
 
 ## Security Manifest & Launch Blocker (Tier-Übersicht)
-EINE Wahrheitsquelle für Launch-Blocker; sequenziert nach dem Moment, in dem das Risiko
-real BEISST (nicht alles ist P0). Kompakt: pro Item Tragende Kontrolle + BINDET-AN.
-Voll (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item):
-docs/claude-history/security-manifest-full.md.
+Launch-Blocker, sequenziert nach dem Moment, in dem das Risiko real BEISST (nicht alles ist
+P0). Diese Datei trägt die Tier-Übersicht: pro Item Tragende Kontrolle + BINDET-AN.
+VOLLFASSUNG (die vier Begründungsfelder je Item — RISIKO / TRAGENDE KONTROLLE / EHRLICHE
+EINORDNUNG / BINDET-AN): docs/claude-history/security-manifest-full.md.
+DER STATUS JE ITEM STEHT IN BEIDEN FASSUNGEN UND MUSS DECKUNGSGLEICH SEIN. Er ist NICHT
+das Unterscheidungsmerkmal — die Regel "beide Fassungen IMMER im selben Commit ändern" ist
+genau der Mechanismus, der die Deckungsgleichheit sichert, keine Formsache. Sie ist einmal
+verletzt worden: der KILL-SWITCH stand in der Vollfassung als offener Blocker, während er
+längst gebaut und live verifiziert war.
+WAS DIE FASSUNGEN UNTERSCHEIDET — die Aufteilung ist NICHT "kompakt vs. voll": DIESE Datei
+trägt zusätzlich die OPERATIVEN ARTEFAKTE für den Ernstfall (das SQL-Runbook zum Sperren/
+Entsperren/Auflisten, die Verifikations-Lektionen, die offenen Betriebs-Punkte), weil
+CLAUDE.md jede Session geladen ist und im Ernstfall ohne Suchen auffindbar sein muss. Die
+VOLLFASSUNG trägt die vier Begründungsfelder je Item.
 
 ### Tier 0 — Harte Launch-Blocker (katastrophal beim ersten bösen Nutzer / irreversibel)
 - KILL-SWITCH (höchste Prio): GEBAUT, LIVE VERIFIZIERT. Projektbasierte Sperre
@@ -740,9 +750,9 @@ docs/claude-history/security-manifest-full.md.
   echtem Ad-Traffic auf gehostete Seiten.
 - LOGIN-BRUTE-FORCE: Rate-Limit auf IP + E-Mail (zuerst Supabase-Built-in prüfen).
   BINDET-AN: sobald Accounts echte Assets (Tokens/Domains) haben.
-- SAFE-BROWSING: Redirect-ZIEL-URLs gegen Safe Browsing prüfen + pgsm.site-Flag
+- SAFE-BROWSING: Redirect-ZIEL-URLs gegen Safe Browsing prüfen + publayer.net-Flag
   überwachen (KEIN HTML-Content-Scan, Kategoriefehler). BINDET-AN: Fremd-Content live.
-- SHARED-REPUTATION pgsm.site: Kill-Switch zur Isolierung + riskante Nutzer auf
+- SHARED-REPUTATION publayer.net: Kill-Switch zur Isolierung + riskante Nutzer auf
   Custom-Domains (eigener eTLD+1) schieben. BINDET-AN: Multi-Tenant-Serving live;
   mildernd über 7c.
 - LEAKED-PASSWORD-PROTECTION: Supabase-HaveIBeenPwned-Abgleich (Pro-gated). BINDET-AN:
@@ -765,11 +775,18 @@ docs/claude-history/security-manifest-full.md.
   Server Action mit Secret-Parameter (erhoben 2026-07-24). Bei JEDER neuen Server Action mit
   Secret-Parameter neu bewerten.
 - DEPENDABOT: ERLEDIGT (2026-07-24: Alerts, Security Updates, Dependency Graph aktiv, 1 Regel).
-- BACKUPS + Restore-Drill: Backup-Tier bestätigen + EINEN echten Restore-Drill fahren.
+- BACKUPS + Restore-Drill (OFFEN): Backup-Tier bestätigen + EINEN echten Restore-Drill fahren.
   BINDET-AN: laufend; erster Drill vor echten Kundendaten. EHRLICHE EINORDNUNG (gemessen 2026-07-24):
   Free hat GAR KEINE Backups (kein Scheduled, kein PITR) -> der erste Drill fällt mit dem Pro-Wechsel
-  bzw. dem manuellen pg_dump zusammen und würde zugleich die ensure_rls-Rebuild-Lücke praktisch
+  bzw. einem frischen pg_dump zusammen und würde zugleich die ensure_rls-Rebuild-Lücke praktisch
   nachweisen (s. "## Offene Punkte").
+  ZWISCHENLÖSUNG VOLLZOGEN, ARTEFAKT VERALTET -> Status bleibt OFFEN: Ein manueller pg_dump wurde
+  gezogen, deckt aber nur den Stand VOR 0018 ab (0016/0017/0018 kamen danach) -> ein Restore
+  daraus ergäbe ein Schema, das der deployte Code nicht bedienen kann. Die Zwischenlösung war
+  EINMALIG, nicht laufend. IM REPO LIEGT BEWUSST KEIN BELEG — ein DB-Dump gehört nicht ins Git,
+  auch verschlüsselt nicht; wer hier nichts findet, darf NICHT "nicht erledigt" schließen.
+  Vollzugs-Details, Provenienz, der erwartungsgemäß fehlende Event-Trigger und der
+  Wiedervorlage-Grundsatz (frischer Dump nach JEDER Migration): Vollfassung.
 - DATA-RETENTION: Rohdaten (IP/UA) nach max. 30 Tagen löschen/anonymisieren; heute nur
   sicherstellen, dass Server-Logs keine IPs horten. BINDET-AN: Phase 8. — Präzisierung:
   Phase 8 Scheibe 1 löst die 30-Tage-Pflicht NICHT aus (es wird KEIN IP/UA persistiert); sie

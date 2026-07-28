@@ -151,39 +151,6 @@ kaputtgeht.
   Bindet die bestehende 30-Tage-Retentionspflicht (Manifest Tier 2) und die
   Zwei-Ebenen-Trennung Kunden- vs. Betreiber-Ebene aus der future-roadmap mit ein.
   Browser-Fingerprinting ist bereits ENTSCHIEDEN: wird nicht gebaut.
-- LEERE VARIANTE IST VERÖFFENTLICHBAR -> LEERE LIVE-SEITE (gefunden 2026-07-27
-  bei der 9b-1p-Aufklärung, AUSLÖSEPFAD KORRIGIERT 2026-07-28 nach Messung am
-  Code; Trigger: SOFORT — dies ist die NÄCHSTE Bau-Scheibe
-  und der einzige Eintrag dieser Liste mit dieser Dringlichkeit; sie kommt vor 9b-2): Die
-  Nicht-Leer-Prüfung aus 9b-1 (nonEmptyHtml / deliverableVariantB) greift zu
-  SPÄT, weil der Server NACH der Prüfung Inhalt hinzufügt:
-  injectPageViewEmitter("", key) liefert einen NICHT-LEEREN String (das
-  Emitter-Script; bei fehlendem </body> hängt es ans Ende an). Ergebnis:
-  published_content(.variantB).html ist emitter-only -> nonEmptyHtml sagt
-  "auslieferbar" -> der Besucher bekommt eine VISUELL LEERE Seite, ohne Fehler,
-  ohne 404.
-  AUSLÖSEPFAD — KORRIGIERT (die frühere Kette "Variante leeren -> SPEICHERN ->
-  publishen" ist am Code WIDERLEGT: der Speichern-Button ist bei leerer AKTIVER
-  Variante gesperrt (code.trim() === ""), der Schritt ist so nicht durchführbar).
-  Der Publish-Pfad braucht die DB-Zeile für den Inhalt GAR NICHT: handlePublish
-  ruft WEDER saveProject NOCH saveVariantB, publiziert wird aus dem
-  CLIENT-Zustand (debouncedCode für die aktive, stashHtml für die inaktive
-  Variante). Steht der Editor auf B und ist der A-Stash leer, geht A LEER live,
-  während der Button an code (= B, gefüllt) hängt und frei ist.
-  ZWEITER, UNABHÄNGIGER EINGANG: html_b = "" ist auf DB-Ebene ERLAUBT (der CHECK
-  verlangt nur "is not null" — so dokumentiert in variant.ts). Ein solches
-  html_b landet beim Projektladen im Stash, macht hasVariantB true und wird beim
-  nächsten Publish als leeres B mitgeschrieben.
-  ZWEITES, SCHLIMMERES LOCH (seit 9a): der Publish-Button prüft
-  code.trim() === "" — das ist die AKTIVE Variante. Ist B aktiv und gefüllt, A
-  aber leer, ist der Button frei und pairA kommt aus dem Stash -> ALLE Besucher
-  bekommen die leere Seite, nicht nur Bucket B. Vor 9a war code immer A, deshalb
-  trug der Guard damals.
-  SPEC ENTSCHIEDEN am 2026-07-28, NOCH NICHT GEBAUT — Richtung, Auflagen,
-  Invarianten und die ehrliche Grenze stehen in "## Aktiver Stand — Phase 9",
-  Abschnitt "Scheibe Leere-Variante-Riegel". Der Eintrag bleibt hier OFFEN bis
-  zum bestätigten Live-Test; publishProject ist durch beide 9er-Scheiben
-  byte-identisch geblieben, der Eingriff bleibt eine eigene Runde.
 - LABEL-VERGABE IST UNPROTOKOLLIERT (Trigger: vor öffentlichem Traffic bzw. mit
   dem Abuse-/Audit-Ausbau): assignDomainLabel und die Wiederherstellung
   schreiben KEINEN audit_logs-Eintrag, Custom-Domain-Mutationen dagegen schon
@@ -675,15 +642,16 @@ EINMAL statt zweimal.
   gültige Fassung — sie ERSETZEN die Code-Nummerierung nicht und sind nicht deckungsgleich
   mit ihr.
 
-### Scheibe Leere-Variante-Riegel — Publish verweigert leeren Inhalt (SPEC ENTSCHIEDEN, NICHT GEBAUT — Stand 2026-07-28)
+### Scheibe Leere-Variante-Riegel — Publish verweigert leeren Inhalt (ABGESCHLOSSEN — live bewiesen 2026-07-28, Commit 5d1ce25)
 WARUM DIESER ABSCHNITT HIER STEHT: Die Scheibe ist KEINE A/B-Arbeit — sie repariert einen
 Publish-Befund. Sie steht hier, weil sie an publishProject UND am Varianten-Modell hängt
 (beide Varianten werden in EINEM Write publiziert) und bei der nach 9c fälligen
 Phase-9-Auslagerung mitreist. Gleiche Erwägung wie beim safeAction-Abschnitt darüber: die
 thematische Entscheidung fällt dann EINMAL statt zweimal.
-STATUS-DISZIPLIN: "SPEC ENTSCHIEDEN, NICHT GEBAUT" ist wörtlich gemeint. Kein
-"ABGESCHLOSSEN", solange der Live-Test aussteht — der zugehörige Offene Punkt bleibt bis
-dahin stehen.
+STATUS: gebaut, live bewiesen, Offener Punkt zurückgezogen. B1-B7 unten sind die
+HERLEITUNG (Stand der Entscheidung vor dem Bau) und bleiben inhaltlich stehen; was der Bau
+und der Live-Test daran präzisiert haben, steht im VERIFIZIERT-Block am Ende — nicht in
+B1-B7 eingearbeitet, damit Entscheidungsgrundlage und Messergebnis unterscheidbar bleiben.
 
 - B1 — BEFUND UND ENTSCHIEDENE RICHTUNG
   BEFUND: Der SERVER macht aus einem leeren Eingang eine NICHT-leere Ausgabe —
@@ -801,6 +769,66 @@ dahin stehen.
   Policy, keine Funktion. Damit greifen WEDER die Protokoll-Pflicht ab 0018 NOCH die
   Backup-Wiedervorlage — beide hängen an einer AUSGEFÜHRTEN Migration, nicht an einem
   Deploy. Die nächste freie Nummer bleibt 0019.
+- VERIFIZIERT (live, 2026-07-28), Commit 5d1ce25; Tests 579 -> 606 in unverändert 38 Dateien:
+  - REGRESSION ZUERST (GEMESSEN): Projekt OHNE Variante B publisht unverändert. Projekt
+    mit BEIDEN Varianten gefüllt publisht ebenfalls, und die Live-URL zeigt weiterhin A.
+  - CLIENT-GUARD, ALLE DREI MELDUNGSTEXTE LIVE GESEHEN, jeder im richtigen Fall (GEMESSEN):
+    ohne Variante B der neutrale Satz; bei leerer Variante A der A-Text; bei leerer
+    Variante B der B-Text INKLUSIVE Ausweg ("oder entferne sie"). Der Button ist in allen
+    drei Fällen gesperrt.
+    DAS BELEGT MEHR ALS DIE TEXTE: ein Guard, der nur die AKTIVE Variante kennt (das alte
+    code.trim()), könnte den A-Text bei aktiver Variante B gar nicht erzeugen. Die drei
+    Texte im richtigen Fall sind damit der Live-Nachweis, dass das Prädikat über
+    pairA/pairB läuft und nicht über code.
+  - A/B-KETTE (GEMESSEN): Test gestartet, PC liefert B, mobiles Safari liefert A,
+    Stickiness hält je Gerät. Der Fix hebelt den 9b-1-Riegel nicht von hinten aus.
+  - KILL-SWITCH (GEMESSEN): gesperrtes Projekt weiterhin 451.
+  - BESTANDSPROBE NACH DEM DEPLOY (GEMESSEN): unverändert nur die zwei bekannten
+    Falschpositive (924 / 1019 Zeichen, beide mit echtem Nutzerinhalt), KEINE neue Zeile.
+  - MOUNT-FENSTER (GEMESSEN): der Debounce-Effekt aus Auflage (5) ist im Browser nicht
+    sichtbar — bei einem gefüllten Projekt erscheint beim Öffnen des Panels kein
+    Leer-Hinweis.
+  - NICHT LIVE AUSLÖSBAR — DER SERVER-RIEGEL (ausdrücklich vermerkt, damit es niemand
+    später als Lücke "entdeckt"):
+    Der Server-Riegel wurde live NICHT ausgeführt. Der Client-Guard sperrt den Button,
+    bevor ein Request entstehen kann. Ein Versuch, ihn per DevTools zu umgehen
+    (disabled-Attribut entfernt, dann geklickt), erzeugte KEINEN Request — kein
+    Netzwerkeintrag, keine Textänderung, keine Console-Meldung.
+    URSACHE UNGEKLÄRT, ABER NICHT IN DER APP (am Code erhoben 2026-07-28): handlePublish
+    trägt KEINEN Leer-Guard (einziger früher Return ist if (!projectId) return, aus
+    Phase 7a), der Button trägt onClick direkt, type="button", es gibt keinen
+    Capture-Handler, kein inert/fieldset, kein pointer-events-none, keine Eltern-Handler
+    und keine periodische Re-Render-Quelle. Am Code kann der Klick den Handler nur
+    erreichen. Die verbleibenden Kandidaten liegen in der MESSMETHODE (React stellt
+    disabled beim Re-Render wieder her; ein Klick auf einen disabled-Button erzeugt gar
+    kein Event) — VERMUTUNG, NICHT GEMESSEN, und ausdrücklich als solche vermerkt.
+    FOLGE FÜR DIE MESSUNG: Die Domains-Query nach der "Ablehnung" liefert null Zeilen, ist
+    aber KEINE Positivkontrolle — es kam kein Request an, die Null ist trivial wahr.
+    WOFÜR DER SERVER-RIEGEL DANN DA IST: für den Fall, den der Browser nach dem Deploy
+    nicht mehr herstellen kann — ein Tab, der VOR dem Deploy geöffnet wurde, trägt das alte
+    Bundle mit dem alten code.trim()-Guard, lässt den Klick durch und trifft auf den neuen
+    Server. Dazu jeder Weg an der UI vorbei.
+    BELEGT IST ER DURCH TEST UND MUTATION, nicht durch den Live-Blick: sechs neue
+    Unit-Tests in publish.test.ts — vier auf dem Ablehnungspfad (T1/T2/T3/T5) und zwei als
+    Positiv-Gegenprobe (T4 Regression, T10 Write-Bedingung), ohne die die vier eine
+    Tautologie wären —, und die Platzierung vor dem Label-Block durch eine scharfe
+    Mutationsprobe — mit hinter den Label-Block verschobenem Riegel erschien die Label-Zeile
+    p-9lwm0k, also genau der reale Schaden. Nachweis bleibt der Test, nicht der Live-Blick —
+    gleiches Muster wie der 9b-1p-Fall "Variante B existiert bereits".
+  - PRÄZISIERUNG ZU B2 (aus dem Bau, gemessen): Der PIXEL ist NICHT der eigentliche Hebel
+    der Äquivalenz. Bei leerem HTML gibt es keine data-pagesmith-id-Anker, die
+    Mapping-Tabelle bleibt leer, und im Export-Modus injiziert generateFunctional ohnehin
+    keine Scripts. Was ohne den frühen Leer-Ausstieg herauskäme, ist das leere
+    Dokument-SKELETT (<!DOCTYPE html><html><head></head><body></body></html>) — nicht-leer
+    genug, um die Äquivalenz zu brechen. Die Pixel-Fixtures sind Gürtel und Hosenträger;
+    der Hebel ist der frühe Ausstieg. Die Mutationsprobe hat das gezeigt: erst als der
+    Ausstieg GANZ entfernt wurde, wurden alle sechs Leer-Fixtures rot (eine erste, zu
+    schwache Mutation ließ die Prüfung kurzschließen und blieb grün).
+  - AUFLÖSUNG DER T8-OFFENHEIT (aus dem Bau): Der Zustand "A leer, B aktiv" ist über die UI
+    NICHT erzeugbar (der Speichern-Button sperrt bei leerer aktiver Variante), über den
+    LADEPFAD aber sehr wohl — weder html noch html_b tragen eine Nicht-Leer-Bedingung. T8
+    modelliert deshalb eine reale DB-Zeile und erzeugt den Zustand durch einen ECHTEN
+    UI-Klick, nicht durch geseedeten internen State.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

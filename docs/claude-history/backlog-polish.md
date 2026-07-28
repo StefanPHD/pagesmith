@@ -177,3 +177,41 @@ miterledigen, sondern gebündelt abarbeiten.
   -> Falls es je stört: die Vereinheitlichung ist ein Code-Commit, KEINE
   Regeländerung. Die Untergrenze bleibt richtig, sonst wären drei korrekt
   gebaute Lade-Effekte plötzlich Verstöße.
+- SERVER-FEHLER UND CLIENT-HINWEIS KÖNNEN DENSELBEN WORTLAUT TRAGEN
+  (Leere-Variante-Riegel, beobachtet 2026-07-28): Bei einem Projekt OHNE
+  Variante B zeigen BEIDE Ränge des Publish-Anzeigeslots denselben Satz
+  ("Die Seite ist leer — es gibt nichts zu veröffentlichen.") — er stammt aus
+  derselben geteilten Konstante, das ist so gewollt. Sie unterscheiden sich
+  nur in der FARBE: grau = vorbeugender Client-Hinweis, rot = tatsächliche
+  Server-Antwort. Am UI ist damit nicht erkennbar, ob der Server überhaupt
+  geantwortet hat.
+  -> KEIN Bug, aber eine schwache Rückmeldung — und der konkrete Grund, warum
+  der Live-Test an genau dieser Stelle schwer zu lesen war (s. "## Aktiver
+  Stand — Phase 9", VERIFIZIERT-Block, "NICHT LIVE AUSLÖSBAR"). Wer das
+  angeht: die Unterscheidung muss aus dem TEXT kommen, nicht aus der Farbe
+  allein (Farbe ist zudem kein zugängliches Alleinmerkmal).
+- DIE TEXTAUSWAHL IST DUPLIZIERT (Leere-Variante-Riegel, erhoben 2026-07-28):
+  Das PRÄDIKAT ist geteilt (emptyPublishVariant in variant.ts, eine Instanz),
+  die ABBILDUNG darauf aber nicht: von ("a"/"b"/null + publiziert dieses
+  Projekt überhaupt eine Variante B?) auf einen der drei Meldungstexte —
+  DIESE Abbildung existiert ZWEIMAL: einmal im Server-Riegel (actions.ts,
+  publishProject) und einmal in
+  der Client-Ableitung (CodeImporter.tsx, emptyPublishMessage). Beide Male
+  dieselbe Ternär-Kette über dieselben Konstanten.
+  -> Heute KEIN Fehlerrisiko: Tests prüfen die Texte auf beiden Seiten, und der
+  Live-Test hat alle drei im richtigen Fall gesehen. Es ist trotzdem eine
+  zweite Stelle für dieselbe Frage — genau die Konstellation, aus der der
+  9b-1-Befund kam. Fix wäre eine reine Funktion in variant.ts, die beide
+  aufrufen: Code-Commit, keine Doku-Sache.
+- PUBLISH-BUTTON HÄNGT AN debouncedCode (Leere-Variante-Riegel, deklarierte
+  Verhaltensänderung 2026-07-28): Folge der geteilten Paar-Ableitung
+  (publishPairs) — Handler und Button lesen jetzt zwingend dieselbe Quelle,
+  und die ist debouncedCode. Das startet bewusst als "" (Hydration-Parität,
+  server- und client-identischer erster Paint), der Button ist damit nach
+  JEDEM Mount für die Debounce-Spanne gesperrt, nicht nur während des Tippens.
+  -> Live NICHT sichtbar (GEMESSEN 2026-07-28: bei gefülltem Projekt erscheint
+  beim Öffnen des Panels kein Leer-Hinweis) — der Nutzer muss erst das
+  Einstellungs-Panel öffnen, das dauert länger als der Debounce. Ein
+  BESTEHENDER Test (9b-1p "TEST 7a") brauchte deshalb ein await findByText vor
+  dem Klick; die Assertion selbst blieb unverändert. Beide Richtungen sind
+  sicher, weil die Autorität der Server-Riegel ist und nicht der Button.

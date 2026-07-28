@@ -152,25 +152,38 @@ kaputtgeht.
   Zwei-Ebenen-Trennung Kunden- vs. Betreiber-Ebene aus der future-roadmap mit ein.
   Browser-Fingerprinting ist bereits ENTSCHIEDEN: wird nicht gebaut.
 - LEERE VARIANTE IST VERÖFFENTLICHBAR -> LEERE LIVE-SEITE (gefunden 2026-07-27
-  bei der 9b-1p-Aufklärung; Trigger: SOFORT — dies ist die NÄCHSTE Bau-Scheibe
+  bei der 9b-1p-Aufklärung, AUSLÖSEPFAD KORRIGIERT 2026-07-28 nach Messung am
+  Code; Trigger: SOFORT — dies ist die NÄCHSTE Bau-Scheibe
   und der einzige Eintrag dieser Liste mit dieser Dringlichkeit; sie kommt vor 9b-2): Die
   Nicht-Leer-Prüfung aus 9b-1 (nonEmptyHtml / deliverableVariantB) greift zu
   SPÄT, weil der Server NACH der Prüfung Inhalt hinzufügt:
   injectPageViewEmitter("", key) liefert einen NICHT-LEEREN String (das
-  Emitter-Script; bei fehlendem </body> hängt es ans Ende an). Kette: Variante
-  leeren -> speichern -> publishen -> published_content(.variantB).html ist
-  emitter-only -> nonEmptyHtml sagt "auslieferbar" -> der Besucher bekommt eine
-  VISUELL LEERE Seite, ohne Fehler, ohne 404.
+  Emitter-Script; bei fehlendem </body> hängt es ans Ende an). Ergebnis:
+  published_content(.variantB).html ist emitter-only -> nonEmptyHtml sagt
+  "auslieferbar" -> der Besucher bekommt eine VISUELL LEERE Seite, ohne Fehler,
+  ohne 404.
+  AUSLÖSEPFAD — KORRIGIERT (die frühere Kette "Variante leeren -> SPEICHERN ->
+  publishen" ist am Code WIDERLEGT: der Speichern-Button ist bei leerer AKTIVER
+  Variante gesperrt (code.trim() === ""), der Schritt ist so nicht durchführbar).
+  Der Publish-Pfad braucht die DB-Zeile für den Inhalt GAR NICHT: handlePublish
+  ruft WEDER saveProject NOCH saveVariantB, publiziert wird aus dem
+  CLIENT-Zustand (debouncedCode für die aktive, stashHtml für die inaktive
+  Variante). Steht der Editor auf B und ist der A-Stash leer, geht A LEER live,
+  während der Button an code (= B, gefüllt) hängt und frei ist.
+  ZWEITER, UNABHÄNGIGER EINGANG: html_b = "" ist auf DB-Ebene ERLAUBT (der CHECK
+  verlangt nur "is not null" — so dokumentiert in variant.ts). Ein solches
+  html_b landet beim Projektladen im Stash, macht hasVariantB true und wird beim
+  nächsten Publish als leeres B mitgeschrieben.
   ZWEITES, SCHLIMMERES LOCH (seit 9a): der Publish-Button prüft
   code.trim() === "" — das ist die AKTIVE Variante. Ist B aktiv und gefüllt, A
   aber leer, ist der Button frei und pairA kommt aus dem Stash -> ALLE Besucher
   bekommen die leere Seite, nicht nur Bucket B. Vor 9a war code immer A, deshalb
   trug der Guard damals.
-  FIX-RICHTUNG (nicht entschieden, eigene Stufe 1): das EINGEHENDE
-  functionalHtml server-seitig VOR der Emitter-Injektion auf nicht-leer prüfen,
-  fail-closed — das deckt beide Varianten und hängt nicht am Client-Button.
-  publishProject ist durch beide 9er-Scheiben byte-identisch geblieben; der
-  Eingriff verdient eine eigene Runde.
+  SPEC ENTSCHIEDEN am 2026-07-28, NOCH NICHT GEBAUT — Richtung, Auflagen,
+  Invarianten und die ehrliche Grenze stehen in "## Aktiver Stand — Phase 9",
+  Abschnitt "Scheibe Leere-Variante-Riegel". Der Eintrag bleibt hier OFFEN bis
+  zum bestätigten Live-Test; publishProject ist durch beide 9er-Scheiben
+  byte-identisch geblieben, der Eingriff bleibt eine eigene Runde.
 - LABEL-VERGABE IST UNPROTOKOLLIERT (Trigger: vor öffentlichem Traffic bzw. mit
   dem Abuse-/Audit-Ausbau): assignDomainLabel und die Wiederherstellung
   schreiben KEINEN audit_logs-Eintrag, Custom-Domain-Mutationen dagegen schon
@@ -661,6 +674,133 @@ EINMAL statt zweimal.
   Die Nebenbedingungen (i)-(iii) der Dauerregel in "## Immer beachten" sind die inhaltlich
   gültige Fassung — sie ERSETZEN die Code-Nummerierung nicht und sind nicht deckungsgleich
   mit ihr.
+
+### Scheibe Leere-Variante-Riegel — Publish verweigert leeren Inhalt (SPEC ENTSCHIEDEN, NICHT GEBAUT — Stand 2026-07-28)
+WARUM DIESER ABSCHNITT HIER STEHT: Die Scheibe ist KEINE A/B-Arbeit — sie repariert einen
+Publish-Befund. Sie steht hier, weil sie an publishProject UND am Varianten-Modell hängt
+(beide Varianten werden in EINEM Write publiziert) und bei der nach 9c fälligen
+Phase-9-Auslagerung mitreist. Gleiche Erwägung wie beim safeAction-Abschnitt darüber: die
+thematische Entscheidung fällt dann EINMAL statt zweimal.
+STATUS-DISZIPLIN: "SPEC ENTSCHIEDEN, NICHT GEBAUT" ist wörtlich gemeint. Kein
+"ABGESCHLOSSEN", solange der Live-Test aussteht — der zugehörige Offene Punkt bleibt bis
+dahin stehen.
+
+- B1 — BEFUND UND ENTSCHIEDENE RICHTUNG
+  BEFUND: Der SERVER macht aus einem leeren Eingang eine NICHT-leere Ausgabe —
+  injectPageViewEmitter liefert bei leerem Input den reinen Emitter (~716 Zeichen: 680
+  GEMESSEN am Template mit leerem Key-Literal, +38 für den JSON-kodierten
+  UUID-trackingKey; die 716 sind gerechnet, nicht gemessen). Die Nicht-Leer-Prüfung
+  greift dadurch ins Leere: sie sieht nur noch das Ergebnis der Injektion.
+  ENTSCHIEDEN: Riegel auf dem EINGEHENDEN functionalHtml BEIDER Varianten, VOR der
+  Emitter-Injektion. Fail-closed. Er prüft damit exakt den String, der publiziert wird —
+  zwischen Prüfung und Write liegt nichts als die Injektion selbst.
+  VERWORFEN, je mit Grund (damit niemand sie als "einfacher" wiederentdeckt):
+  (a) PRÜFUNG GEGEN DIE PROJEKTZEILE (owned.html / owned.html_b): GEMESSEN widerlegt —
+      Publish läuft UNABHÄNGIG von Save (handlePublish ruft weder saveProject noch
+      saveVariantB), die Zeile ist zum Publish-Zeitpunkt nicht verlässlich. Der Riegel
+      entschiede in BEIDE Richtungen falsch: leerer Draft mit gefüllter Zeile würde
+      DURCHGELASSEN, gefüllter Draft mit leerer Zeile FÄLSCHLICH BLOCKIERT. Zusätzlich
+      unbrauchbar, weil html_b = "" erlaubt ist — die Zeile darf selbst leer sein.
+  (b) PRÜFUNG AUF DEM ROH-HTML (snapshot.html + neues Feld für B): prüft NICHT den String,
+      der geschrieben wird. Zwischen Roh-HTML und functionalHtml sitzt generateFunctional
+      auf dem CLIENT — und genau diese Naht (Client baut, Server speichert blind) ist die,
+      an der der Befund entstand. Dazu eine Signaturänderung und damit ein
+      Deploy-Skew-Fall (alter Tab schickt das neue Feld nicht -> fail-closed-Ablehnung
+      eines gesunden Publishes), den die entschiedene Richtung gar nicht erst erzeugt.
+  (c) BEIDES PRÜFEN: löst zusätzlich ein Problem, das niemand gemeldet hat. Die
+      Absicherung, um die es dabei ginge, leistet der Äquivalenz-Test (B2/Auflage 2)
+      billiger und schärfer — ein Test wird BEIM BAUEN rot, eine Laufzeitprüfung erst
+      BEIM NUTZER.
+  (d) NUR DEN CLIENT-BUTTON REPARIEREN: ließe den Server fail-open; jeder Weg an der UI
+      vorbei (alter Tab, Direktaufruf der Action) publizierte weiter leer. Autorität ist
+      der SERVER-Riegel.
+- B2 — TRAGENDE PRÄMISSE (GEMESSEN, nicht angenommen)
+  generateFunctional gibt bei leerem ODER whitespace-only Roh-HTML "" zurück. Die Prüfung
+  steht als ERSTE Anweisung im Rumpf — VOR dem SSR-Guard, VOR dem DOMParser, VOR der
+  Meta-Injektion. Sie greift damit AUCH bei konfigurierter Pixel-ID: ein leeres Projekt mit
+  Pixel erzeugt KEIN nicht-leeres Dokument.
+  DARAUS FOLGT DIE ÄQUIVALENZ: leerer Roh-Input GENAU DANN, wenn leeres funktionales
+  Dokument. Sie ist der Grund, warum CLIENT-Guard (prüft Roh-HTML) und SERVER-Riegel (prüft
+  functionalHtml) EIN Urteil sind und nicht zwei — trotz unterschiedlicher Eingaben.
+  SIE IST FRAGIL: Verschiebt jemand diese eine Zeile unter die Meta-Injektion, bricht die
+  Äquivalenz STILL, und die Begründung für Invariante (v) fällt mit ihr. Deshalb wird sie
+  per Test FESTGENAGELT, nicht behauptet.
+- B3 — SECHS AUFLAGEN (alle sechs sind Teil der Entscheidung, keine Empfehlungen)
+  (1) PLATZIERUNG: Der Riegel sitzt NACH dem Ownership-Gate und NACH dem
+      hasVariantB-Guard, aber VOR dem Label-Block. Grund, der über Stil hinausgeht: der
+      Label-Block SCHREIBT bereits (insertDomainLabel / assignDomainLabel). Läge der
+      Riegel danach, hinterließe ein ABGELEHNTER Publish eine frische domains-Zeile — eine
+      Live-URL, die nie Inhalt bekommt. EIN TEST MISST DAS, NICHT DER KOMMENTAR (Assertion:
+      nach einer Ablehnung existiert keine Label-Zeile).
+  (2) DER ÄQUIVALENZ-TEST IST PFLICHT, nicht optional — s. B2. Er muss rot werden, wenn die
+      Leer-Prüfung in generateFunctional unter die Meta-Injektion wandert.
+  (3) DER CLIENT-GUARD SPERRT, ER BERÄT NICHT. KEIN Widerspruch zu 9b-1p: dort war der
+      Hinweis BERATEND, weil sein Wert aus einem ASYNCHRONEN Server-Read kam und ein
+      hängender Ladevorgang keine funktionierende Aktion sperren darf. HIER ist der Wert
+      lokaler State, synchron, immer bekannt — es gibt keinen "unbekannt"-Zustand.
+      Autorität bleibt trotzdem der SERVER: der Button ist Komfort, der Riegel ist die
+      Garantie. Dazu ein Hinweistext, der benennt, WELCHE Variante leer ist — ohne ihn ist
+      ein grauer Button bei gefülltem Editor (Fall: A leer, B aktiv) unerklärlich.
+  (4) DER RIEGEL SPIEGELT DIE WRITE-BEDINGUNG. Geschrieben wird B NUR bei
+      hasVariantB && variantB. Prüft der Riegel B unabhängig davon, lehnt er einen
+      LEGITIMEN Publish ab: ein Client, der noch ein variantB im Zustand hält, während die
+      Spalte bereits null ist (gerade entfernte Variante, alter Tab), würde blockiert,
+      obwohl sein B gar nicht geschrieben würde. Beide Stellen nutzen DIESELBE Bedingung —
+      am besten dasselbe const. EIGENER TEST: hasVariantB false + Client schickt leeres
+      variantB -> Publish GELINGT.
+  (5) DIE PAAR-ABLEITUNG WIRD GETEILT, NICHT DUPLIZIERT. pairA/pairB werden heute INNERHALB
+      von handlePublish abgeleitet; der Button braucht dieselben Werte. Eine zweite
+      Ableitung für die disabled-Bedingung wären ZWEI Stellen, die "welche Variante trägt
+      was" beantworten — exakt die Konstellation, aus der der 9b-1-Befund kam. Hochziehen
+      in einen geteilten Memo, handlePublish nutzt denselben.
+      ZU DEKLARIEREN (Verhaltensänderung, nicht stillschweigend einführen): der Memo hängt
+      an debouncedCode, der Button damit auch — heute liest er das ungedebouncte code.
+      Beide Richtungen sind sicher (Button wird spät frei oder spät gesperrt, der Server
+      bleibt Autorität), aber es IST eine Änderung und wird benannt.
+  (6) DER MELDUNGSTEXT NENNT DEN AUSWEG. Ein Projekt mit leerem html_b ist nach dem Fix
+      KOMPLETT unveröffentlichbar — auch A. Das ist richtig fail-closed, aber der Owner
+      muss wissen wohin: B FÜLLEN ODER B ENTFERNEN. Ein Text, der nur "Variante B ist leer"
+      sagt, produziert einen Support-Fall.
+- B4 — GESCHÜTZTE INVARIANTEN
+  (i)   EIN Publish schreibt BEIDE Varianten in EINEM atomaren Write; ein ABGELEHNTER
+        Publish schreibt GAR NICHTS.
+  (ii)  Für Projekte OHNE B bleibt das published_content-Key-Set byte-gleich (kein
+        Schema-Drift).
+  (iii) Der Label-Block bleibt unangetastet — s. Auflage (1).
+  (iv)  KEIN server-seitiges HTML-Parsing, KEINE neue Dependency: die Prüfung ist typeof +
+        trim.
+  (v)   EIN geteiltes Prädikat aus der REINEN Datei, KEIN drittes Urteil. Dieselbe Regel
+        gilt für ALLE VIER Stellen: Serve A, Serve B, Aktivierungs-Riegel, Publish.
+  (vi)  FAIL-CLOSED: Lässt sich nicht sicher feststellen, dass Inhalt existiert, wird
+        abgelehnt — nicht durchgelassen.
+  (vii) Prädikat UND Meldungstexte gehören in die REINE Datei, nicht in die
+        "use server"-Datei (7c-2c-ReferenceError).
+- B5 — EHRLICHE GRENZE (steht hier, damit sie nicht später als Lücke "entdeckt" wird)
+  Der Guard stellt STRING-Leere fest, NICHT visuelle Leere. Nicht abgedeckt und auch nach
+  dem Fix durchgelassen: "<div></div>", ein reiner Kommentar, Inhalt mit display:none,
+  Inhalt der erst durch JS entstünde. Das lückenlos zu entscheiden verlangte PARSING (per
+  Dauerregel ausgeschlossen) PLUS RENDERING (eine Headless-Browser-Abhängigkeit auf dem
+  Publish-Pfad) — beides ist die falsche Antwort auf diesen Befund.
+  WAS DER GUARD LEISTET, PRÄZISE: er schließt den Fall, in dem der SERVER SELBST aus einem
+  leeren Eingang eine nicht-leere Ausgabe macht. Das ist der gemeldete Befund — NICHT MEHR.
+- B6 — BESTANDSDATEN: GEMESSEN 2026-07-28, KEINE FUNDE
+  Zwei NUR LESENDE Blöcke im SQL-Editor gefahren, VOR dem Bau — danach wäre nicht mehr
+  unterscheidbar, ob eine Zeile alt oder neu ist.
+  - Bereits veröffentlichte, praktisch leere Seiten: KEINE. Zwei Treffer der bewusst
+    großzügigen Längenschwelle (924 und 1019 Zeichen) sind FALSCHPOSITIVE — bei ~716
+    Zeichen Emitter bleiben ~208 bzw. ~303 Zeichen echter Nutzerinhalt, und die Auszüge
+    zeigen Titel, Überschrift und Button. Kleine Testseiten, keine leeren.
+  - Projekte mit html_b = "" (die der neue Riegel KOMPLETT aussperren würde): KEINE.
+  FOLGE: Die Scheibe ist reine VORWÄRTSSICHERUNG. Kein Aufräumteil, kein Reparaturweg,
+  kein neuer Offener Punkt. Falls je eine kaputte Zeile auftaucht: der operative Notweg
+  existiert OHNE neuen Code — published_content für das Projekt auf null setzen, dann
+  liefert der Serve-Pfad 404 statt einer leeren Seite (für einen Besucher der ehrlichere
+  Zustand). OPS-EINGRIFF, KEIN FEATURE.
+- B7 — KEINE MIGRATION
+  Reine Anwendungslogik plus Tests: kein Schema, keine Spalte, kein Constraint, keine
+  Policy, keine Funktion. Damit greifen WEDER die Protokoll-Pflicht ab 0018 NOCH die
+  Backup-Wiedervorlage — beide hängen an einer AUSGEFÜHRTEN Migration, nicht an einem
+  Deploy. Die nächste freie Nummer bleibt 0019.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

@@ -85,9 +85,15 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       CAPI-Einbettung server-vereinheitlichen + Launch-Härtung.
 - [ ] Phase 9 — A/B-Testing: zwei Varianten je Projekt, 50/50-Split über die
       Serving-Schicht. Geschnitten in 9a (Varianten-Authoring — ABGESCHLOSSEN &
-      live bewiesen 2026-07-27, Migration 0016), 9b (Split + First-Party-Session-
-      Cookie + variant-Spalte auf events — OFFEN) und 9c (Auswertung je Variante
-      — OFFEN). Grundsatzentscheidungen + 9a-Spec: "## Aktiver Stand — Phase 9".
+      live bewiesen 2026-07-27, Migration 0016), 9b (dreigeteilt) und 9c
+      (Auswertung je Variante — OFFEN). 9b im Detail: 9b-1 (Split in der
+      Serve-Route + __Host-ps_v-Cookie + Aktivierungs-Flag — ABGESCHLOSSEN &
+      live bewiesen 2026-07-27, Migration 0017); 9b-1p (UI-Politur: lokaler
+      Fehlerkanal + Hinweis auf unveröffentlichte Variante B — ABGESCHLOSSEN &
+      live bewiesen 2026-07-27); 9b-2 (variant in Ingest und Persist SCHREIBEN
+      — OFFEN). ANLEGEN UND BEFÜLLEN NICHT VERSCHMELZEN: events.variant wurde
+      mit 0017 ANGELEGT (erledigt); das BEFÜLLEN ist 9b-2 und steht aus.
+      Grundsatzentscheidungen + Scheiben-Detail: "## Aktiver Stand — Phase 9".
 - [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
 
@@ -113,8 +119,11 @@ kaputtgeht.
   dokumentiert, aber ein CREATE steht in KEINER Migration. Bei einem Rebuild rein aus den
   Migrationsdateien fehlt sie -> neue Tabellen bekämen dort NICHT mehr automatisch RLS (stiller
   Verlust einer Schutzschicht). DDL verbatim archiviert unter supabase/manual/rls_auto_enable.sql
-  (beim Rebuild manuell mitziehen). evtowner = postgres (gemessen 2026-07-24) -> eine Migration 0016
-  ist ein realistischer Kandidat, aber KEINE Nebenbei-Zeile: (a) create event trigger kennt KEIN
+  (beim Rebuild manuell mitziehen). evtowner = postgres (gemessen 2026-07-24) -> eine Migration
+  unter der NÄCHSTEN FREIEN Nummer (Stand 2026-07-28: 0019; ableiten aus supabase/migrations/,
+  NIE hardcoden — eine feste Nummer hier veraltet mit der nächsten Migration und überschriebe
+  dann eine bestehende Datei) ist ein realistischer Kandidat, aber KEINE Nebenbei-Zeile:
+  (a) create event trigger kennt KEIN
   "if not exists" -> Katalog-Guard nötig (DO-Block gegen pg_event_trigger); (b) "create or replace
   function" auf einer SICHERHEITSFUNKTION ersetzt die Definition VOLLSTÄNDIG (0014-Lektion) — jeder
   Transkriptionsfehler degradiert still den RLS-Schutz, daher nach dem Lauf Byte-Abgleich gegen
@@ -124,7 +133,10 @@ kaputtgeht.
   CAPI-Tokens, published_content, die Event-Historie mit den Phase-8-Live-Beweisen) existiert damit
   KEIN Wiederherstellungsweg; ein Rebuild aus den Migrationen wäre zudem unvollständig (s.
   ensure_rls oben). Zwischenlösung: manueller pg_dump, lokal verschlüsselt abgelegt (Ops-Weg, kein
-  Verstoß gegen die "nur Supabase-JS-Client"-Regel, die für ANWENDUNGScode gilt). Dauerlösung: Pro
+  Verstoß gegen die "nur Supabase-JS-Client"-Regel, die für ANWENDUNGScode gilt) — EINMALIG
+  vollzogen, Artefakt VERALTET (deckt nur den Stand VOR 0018 ab) -> ein Restore daraus ergäbe ein
+  Schema, das der deployte Code nicht bedienen kann. Der Punkt bleibt damit OFFEN. Details und
+  Provenienz: "## Security Manifest & Launch Blocker", BACKUPS. Dauerlösung: Pro
   (7 Tage Scheduled Backups). KOPPLUNG: mit dem Pro-Wechsel wird der Kosten-Circuit-Breaker fällig —
   Free deckelt strukturell, Pro rechnet Überverbrauch ab. Beides in EINEM Arbeitsschritt.
 - DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE (Trigger: die erste Scheibe, die
@@ -140,7 +152,8 @@ kaputtgeht.
   Zwei-Ebenen-Trennung Kunden- vs. Betreiber-Ebene aus der future-roadmap mit ein.
   Browser-Fingerprinting ist bereits ENTSCHIEDEN: wird nicht gebaut.
 - LEERE VARIANTE IST VERÖFFENTLICHBAR -> LEERE LIVE-SEITE (gefunden 2026-07-27
-  bei der 9b-1p-Aufklärung; Trigger: SOFORT, eigene Scheibe vor 9b-2): Die
+  bei der 9b-1p-Aufklärung; Trigger: SOFORT — dies ist die NÄCHSTE Bau-Scheibe
+  und der einzige Eintrag dieser Liste mit dieser Dringlichkeit; sie kommt vor 9b-2): Die
   Nicht-Leer-Prüfung aus 9b-1 (nonEmptyHtml / deliverableVariantB) greift zu
   SPÄT, weil der Server NACH der Prüfung Inhalt hinzufügt:
   injectPageViewEmitter("", key) liefert einen NICHT-LEEREN String (das
@@ -263,7 +276,7 @@ unterschiedlichen RLS-Werten und sieht wie ein Befund aus.
   Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
   ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
 
-## Aktiver Stand — Phase 9 (A/B-Testing): Grundsatzentscheidungen + Scheibe 9a (Varianten-Authoring, ABGESCHLOSSEN — live bewiesen (2026-07-27))
+## Aktiver Stand — Phase 9 (A/B-Testing)
 Zwei Varianten je Projekt, hälftiger Split, stabile Zuordnung pro Besuch. Bewusst MINIMAL:
 keine Gewichtung, keine Signifikanzrechnung, keine Multi-Varianten. Die future-roadmap hält
 fest, dass der Seiten-Level-Split mit zwei published-Blobs funktioniert und die

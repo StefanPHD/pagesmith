@@ -148,6 +148,7 @@ export default function CodeImporter({
   initialVariantBHtml = null,
   initialVariantBMappings = null,
   initialAbTestActive = false,
+  initialAbTestStartedAt = null,
 }: {
   // Auto-Load: das zuletzt bearbeitete (bereits stabilisierte) HTML des Users.
   // Leer -> Editor startet leer wie bisher.
@@ -170,6 +171,10 @@ export default function CodeImporter({
   // Laeuft der A/B-Test? (Phase 9 Scheibe 9b-1). Aus projects.ab_test_active —
   // SERVER-autoritativ, projekt-abgeleitet wie die beiden Felder darueber.
   initialAbTestActive?: boolean;
+  // Beginn des laufenden/letzten Testlaufs (Phase 9 Scheibe 9c-2). Aus
+  // projects.ab_test_started_at — SERVER-autoritativ, projekt-abgeleitet wie das
+  // Flag darueber. NULL = keine Abgrenzung (nie ein Test ODER Lauf vor 9c-2).
+  initialAbTestStartedAt?: string | null;
 }) {
   // Eingabe-State: aendert sich bei JEDEM Tastendruck und haelt die Textarea
   // sofort aktuell (Tippen darf nie auf Parsing/Preview warten). Startet mit dem
@@ -223,6 +228,12 @@ export default function CodeImporter({
   // gesetzt und nach dem Umschalten aus der SERVER-Antwort uebernommen, nie lokal
   // angenommen.
   const [abTestActive, setAbTestActive] = useState(initialAbTestActive);
+  // Lauf-Beginn (9c-2). Speist Sichtbarkeit UND Zeitraum-Beschriftung der
+  // Auswertungs-Sektion. Der FILTER haengt NICHT daran — den liest die RPC
+  // DB-seitig selbst (K10); dieser Wert ist reine Anzeige.
+  const [abTestStartedAt, setAbTestStartedAt] = useState<string | null>(
+    initialAbTestStartedAt
+  );
   // Variante-B-Aktionen: transienter Status (destruktives Entfernen zweistufig,
   // exakt wie beim CAPI-Token). Projekt-ungebunden -> beim Kontextwechsel leeren.
   const [variantBusy, setVariantBusy] = useState(false);
@@ -246,6 +257,21 @@ export default function CodeImporter({
   const [variantBRemoveConfirming, setVariantBRemoveConfirming] =
     useState(false);
   // Ausklappbares Einstellungs-Panel (Tracking-Pixel). Reiner View-State.
+  //
+  // ACHTUNG, BEVOR JEMAND DEN DEFAULT AUF true SETZT ODER EINE SEKTION HERAUSHEBT
+  // (Scheibe 9c-2): "geschlossen im ersten Render" ist nicht nur Optik. Die
+  // Varianten-Auswertung in diesem Panel formatiert den Lauf-Beginn mit
+  // toLocaleString("de-DE"). Diese Komponente traegt zwar "use client", wird im
+  // App Router aber AUCH server-gerendert — laege die Sektion im ersten Render im
+  // Baum, formatierten Server und Client dasselbe Datum in VERSCHIEDENEN Zeitzonen
+  // und es gaebe einen Hydration-Mismatch samt Konsolenfehler. Heute kann das nicht
+  // passieren, WEIL das Panel hier zu startet und nur per Klick (also client-seitig)
+  // aufgeht.
+  //
+  // Das ist ein NEBENEFFEKT, keine Vorkehrung — deshalb steht es hier und nicht nur
+  // an der Beschriftung: wer diesen Default umstellt, liest den Kommentar drueben
+  // nicht. Wird das Panel je per Default geoeffnet, muss die Formatierung vorher
+  // hydration-sicher werden (Mount-Flag oder fester timeZone-Parameter).
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   // Write-only-Eingabe fuer den GEHEIMEN CAPI-Token (Scheibe 2a). Startet IMMER
   // leer und wird NIE aus settings gespeist -> der echte Token faehrt nie in den
@@ -286,6 +312,19 @@ export default function CodeImporter({
   const [variantCounts, setVariantCounts] = useState<VariantCountsResult | null>(
     null
   );
+  // Refetch-Signal fuer die Zaehlwerte (Scheibe 9c-2). Muster: variantBPublishTick
+  // darueber, urspruenglich pollTick im DomainManager — kein zweiter Mechanismus.
+  //
+  // WARUM ER NOETIG IST: Der Lade-Effect haengt an [projectId], und beim Starten des
+  // Tests aendert sich projectId NICHT. Die Beschriftung springt aber sofort auf den
+  // neuen Zeitstempel (er kommt aus der Action-Antwort). Ohne Tick stuende also
+  // "Zeitraum: seit Teststart am …" ueber den Zahlen des GESAMTEN Bestands — eine
+  // Beschriftung, die ein ENGERES Fenster behauptet, als die Zahlen abdecken. Genau
+  // die Richtung, die sonst strukturell ausgeschlossen ist (die DB ist die Quelle).
+  //
+  // AUCH BEIM STOPP: dort aendert sich das Fenster zwar nicht, aber EIN einheitlicher
+  // Punkt ist billiger als eine Fallunterscheidung, die jemand spaeter falsch pflegt.
+  const [variantCountsTick, setVariantCountsTick] = useState(0);
   // Ausklappbares Projekt-Menue (Default zu: sein Inhalt rendert erst beim
   // Oeffnen clientseitig -> keine Hydration-Mismatches bei relativen Zeitstempeln).
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
@@ -628,7 +667,10 @@ export default function CodeImporter({
     return () => {
       cancelled = true;
     };
-  }, [projectId]);
+    // Deps: projectId (Projektwechsel/-laden/-loeschen) + der Tick aus dem
+    // Test-Schalter (9c-2). Der Tick wird NUR dort hochgezaehlt, nirgends beim
+    // Projektwechsel — sonst liefe der Effect doppelt.
+  }, [projectId, variantCountsTick]);
 
   // "Ist Variante B veroeffentlicht?" laden (Scheibe 9b-1p) — identischer Schnitt wie
   // die beiden Analytics-Effects darueber (cancelled-Guard, setState nur im then).
@@ -701,13 +743,17 @@ export default function CodeImporter({
   // ein Test lief, KEINE UI-Aenderung (Invariante J3) — ohne dass dafuer ein eigener
   // Zustand gehalten werden muesste.
   //
-  // BEKANNTER UEBERGANG NACH 9c-2 (hier bewusst NICHT vorgebaut, damit er dort nicht als
-  // Bug auftaucht): Sobald 9c-2 einen Lauf-Beginn einfuehrt, KIPPT diese Ableitung. Wer
-  // einen Test NEU startet, hat im neuen Fenster null zugeordnete Zeilen — die Sektion
-  // verschwaende genau in dem Moment, in dem er auf sie schaut. Ab dann muss die
-  // Sichtbarkeit am Zeitstempel haengen und die leere Sektion "noch keine Daten" sagen.
-  // Fuer 9c-1, das kein Fenster kennt, ist die Daten-Ableitung die richtige und die
-  // ehrlichere: sie behauptet nichts ueber einen Zeitraum.
+  // DER UEBERGANG IST MIT 9c-2 EINGETRETEN — und die Ableitung wurde ERWEITERT, nicht
+  // ersetzt. Beide Terme werden gebraucht, und zwar fuer verschiedene Projekte:
+  //
+  //  FALL A — Lauf MIT Zeitstempel (laufend ODER gestoppt; der Wert bleibt, K2): sichtbar
+  //    AUCH bei null Zeilen. Ohne diesen Term verschwaende die Sektion unmittelbar nach
+  //    einem Neustart — genau in dem Moment, in dem der Owner auf sie schaut.
+  //  FALL B — ALT-LAUF ohne Zeitstempel, aber mit Varianten-Daten (Test lief VOR 9c-2,
+  //    kein Backfill): sichtbar ueber hasVariantData, exakt wie in 9c-1. Haenge die
+  //    Sichtbarkeit ALLEIN an den Zeitstempel, und diese Projekte verlieren ihre
+  //    Auswertung — eine Regression gegen live bewiesenes Verhalten.
+  //  FALL C — nie ein Test: beide Terme falsch -> unsichtbar (J3 unveraendert).
   const variantRows = variantCounts?.ok ? variantCounts.rows : [];
   const hasVariantData = variantRows.some(
     (r) => r.count_a > 0 || r.count_b > 0
@@ -716,8 +762,19 @@ export default function CodeImporter({
   // wir gerade NICHT, ob es Daten gaebe. Er wird deshalb an hasVariantB gehaengt: dort ist
   // eine Auswertung plausibel, und ein Projekt ohne Variante B bleibt frei von einer
   // Fehlermeldung zu einer Sektion, die es nie zu sehen bekaeme (J3).
+  //
+  // BENANNTES, NICHT REPARIERTES VERHALTEN (9c-2): Wird Variante B nach einem Lauf
+  // ENTFERNT, erzwingt der DB-CHECK ab_test_active = false — der ZEITSTEMPEL bleibt
+  // jedoch stehen. Die Sektion bleibt damit sichtbar und zeigt weiter die Zahlen des
+  // vergangenen Laufs, obwohl es keine Variante B mehr gibt (hasVariantB ist hier NUR am
+  // Fehlerzweig beteiligt). Das ist RICHTIG so: die Messung hat stattgefunden, die Zeilen
+  // sind echt, und sie zu verstecken hiesse, ein Ergebnis zu unterschlagen, weil sein
+  // Gegenstand geloescht wurde. Ueberraschend genug, um hier zu stehen.
   const variantCountsFailed = variantCounts?.ok === false;
-  const showVariantCounts = hasVariantData || (variantCountsFailed && hasVariantB);
+  const showVariantCounts =
+    hasVariantData ||
+    abTestStartedAt !== null ||
+    (variantCountsFailed && hasVariantB);
 
   // DIE PAAR-ABLEITUNG, EINMAL — geteilt zwischen Publish-HANDLER und Publish-BUTTON.
   // Sie lag frueher INNERHALB von handlePublish; der Leer-Guard braucht dieselben
@@ -823,7 +880,7 @@ export default function CodeImporter({
     setSavedSettings({});
     setSelectedElementId(null);
     // Leeres Projekt hat per Definition keine Variante B -> Stash leer, Variante A.
-    seedVariantState(null, null, false);
+    seedVariantState(null, null, false, null);
     // Leerer Kontext -> Panel offen (man muss importieren koennen), Flag frisch.
     applyZenForLoadedCode("");
   }
@@ -882,7 +939,8 @@ export default function CodeImporter({
   function seedVariantState(
     htmlB: string | null,
     mappingsB: Mapping[] | null,
-    abActive: boolean
+    abActive: boolean,
+    abStartedAt: string | null
   ) {
     setActiveVariant("a");
     setStashHtml(htmlB);
@@ -891,6 +949,10 @@ export default function CodeImporter({
     // zuruecksetzen. Sonst zeigte ein Projektwechsel den Testzustand von A weiter,
     // waehrend B laengst geladen ist.
     setAbTestActive(abActive);
+    // Auch der Lauf-Beginn spiegelt eine Projekt-Spalte -> ABLEITEN, nicht nur
+    // zuruecksetzen (9c-2). Ein bloss geleerter Wert zeigte ein Projekt MIT
+    // gelaufenem Test faelschlich als "nie abgegrenzt".
+    setAbTestStartedAt(abStartedAt);
   }
 
   // Variante umschalten: TAUSCHT die Wurzeln code/mappings gegen den Stash.
@@ -1347,6 +1409,15 @@ export default function CodeImporter({
     );
     if (result.ok) {
       setAbTestActive(result.abTestActive);
+      // NUR uebernehmen, wenn die Action einen NEUEN Wert geschrieben hat (Start).
+      // Beim STOPP fehlt das Feld — der bekannte Zeitstempel bleibt stehen, genau
+      // wie in der DB (K2). Ein "?? null" hier waere der Bug: es loeschte im UI,
+      // was der Server behalten hat.
+      if (result.abTestStartedAt) setAbTestStartedAt(result.abTestStartedAt);
+      // REFETCH-PUNKT (9c-2): das Fenster hat sich geaendert (Start) oder der Lauf ist
+      // beendet (Stopp) -> die Zahlen neu holen. Ohne ihn stuende die neue
+      // Beschriftung ueber alten Zahlen.
+      setVariantCountsTick((t) => t + 1);
     } else {
       setVariantError(result.error);
       setVariantStatus("error");
@@ -1540,7 +1611,12 @@ export default function CodeImporter({
     setSettings(proj.settings);
     setSavedSettings(proj.settings);
     // Varianten-Zustand am SELBEN Punkt aus dem GELADENEN Projekt ableiten.
-    seedVariantState(proj.html_b, proj.mappings_b, proj.ab_test_active);
+    seedVariantState(
+      proj.html_b,
+      proj.mappings_b,
+      proj.ab_test_active,
+      proj.ab_test_started_at
+    );
     setSelectedElementId(null);
     setIsProjectMenuOpen(false);
     // Zen-Default fuer den neuen Kontext: mit Code eingeklappt, leer offen.
@@ -1597,7 +1673,12 @@ export default function CodeImporter({
         setSettings(next.settings);
         setSavedSettings(next.settings);
         // Varianten-Zustand aus dem nachgerueckten Projekt ableiten.
-        seedVariantState(next.html_b, next.mappings_b, next.ab_test_active);
+        seedVariantState(
+          next.html_b,
+          next.mappings_b,
+          next.ab_test_active,
+          next.ab_test_started_at
+        );
         setSelectedElementId(null);
         // Zen-Default fuer den nachgerueckten Kontext (resetToEmpty deckt den
         // leeren Fall im else selbst ab).
@@ -2131,6 +2212,26 @@ export default function CodeImporter({
                   „Test stoppen“ löscht nichts, es schaltet nur den Split ab.
                   Variante B muss veröffentlicht sein, damit der Test starten kann.
                 </span>
+                {/* NEUSTART-HINWEIS (Scheibe 9c-2). BEWUSST NICHT im EIN-Slot darunter:
+                    der Slot beantwortet "warum geht der Test gerade nicht?" (Riegel-Fehler
+                    vs. Hinweis auf unveroeffentlichte Variante B). Dieser Text beantwortet
+                    eine ANDERE Frage — "was passiert, wenn ich jetzt starte?". Im Slot
+                    wuerde er den Riegel-Fehler verdraengen oder von ihm verdraengt.
+
+                    Gezeigt nur, wenn ein Klick tatsaechlich ueberschriebe: es gibt einen
+                    protokollierten Lauf UND der Test ist gerade aus.
+
+                    WORTWAHL (K6): er sagt, dass die ANZEIGE neu beginnt. Er behauptet
+                    KEINEN Datenverlust — es wird nichts geloescht, die Zeilen bleiben
+                    vollstaendig in events. Ein Hinweis, der Verlust behauptet, erzeugt
+                    Angst vor einer harmlosen Aktion. */}
+                {abTestStartedAt && !abTestActive && (
+                  <span className="w-full text-xs text-amber-700">
+                    Ein erneuter Start beginnt die Auswertung neu: ab dann zeigt
+                    „Auswertung je Variante“ nur noch Ereignisse des neuen Laufs.
+                    Gelöscht wird dabei nichts.
+                  </span>
+                )}
                 {/* EIN ANZEIGESLOT, ZWEI QUELLEN — PRIORITAET: FEHLER VOR HINWEIS.
                     Sie schliessen sich gegenseitig aus, weil sie dieselbe Frage
                     beantworten ("warum geht der Test gerade nicht?"): der HINWEIS
@@ -2303,9 +2404,51 @@ export default function CodeImporter({
               <h2 className="mb-1 text-sm font-medium text-gray-700">
                 Auswertung je Variante
               </h2>
-              <p className="mb-3 text-xs text-gray-500">
+              <p className="mb-1 text-xs text-gray-500">
                 Server-seitig erfasste Events, aufgeteilt nach ausgelieferter
                 Variante.
+              </p>
+              {/* ZEITRAUM-BESCHRIFTUNG (Scheibe 9c-2). Zwei Faelle, und der NULL-Fall ist
+                  der heiklere: er darf WEDER einen Zeitraum behaupten ("seit Beginn",
+                  "gesamter Zeitraum" sind ausgeschlossen) NOCH die Existenz genau EINES
+                  Laufs — ein Projekt kann seinen Test vor 9c-2 mehrfach gefahren haben,
+                  und dann mischen die Zahlen mehrere Laeufe. Genau das ist das Problem,
+                  das die Abgrenzung loest; der Text muss es benennen statt es zu
+                  ueberdecken.
+
+                  EHRLICHE GRENZE DER GESETZTEN VARIANTE: die Beschriftung stammt aus dem
+                  GELADENEN Projekt, der Filter liest DB-seitig zum Abfragezeitpunkt.
+                  Startet jemand den Test in einem zweiten Tab, kann die Beschriftung
+                  AELTER sein als das Fenster der Zahlen — nie umgekehrt, weil die DB die
+                  Quelle ist. Wirkung: ein zu WEIT gefasster Zeitraum bei korrekten
+                  Zahlen. Ein Reload heilt es.
+
+                  LOKALE DATUMSFORMATIERUNG IST HIER NUR DESHALB KOLLISIONSFREI, weil
+                  diese Sektion im SERVER-Render gar nicht im Baum liegt: sie steckt im
+                  Einstellungs-Panel, und das ist beim ersten Render geschlossen (s. den
+                  Kommentar am isSettingsOpen-Gate). Waere sie im Server-HTML, formatierten
+                  Server und Client dasselbe Datum in VERSCHIEDENEN Zeitzonen — ein
+                  Hydration-Mismatch mit Konsolenfehler.
+                  DAS IST EINE ENTSCHIEDENE NICHT-MASSNAHME, kein Uebersehen: Mount-Flag,
+                  suppressHydrationWarning und ein fest gesetzter timeZone-Parameter wurden
+                  geprueft und VERWORFEN. Der erste baut Mechanik gegen ein Problem, das es
+                  nicht gibt; der zweite unterdrueckt die Meldung statt der Abweichung; der
+                  dritte naehme dem Nutzer seine lokale Zeit. Stattdessen ist die
+                  Abhaengigkeit benannt — hier und an der Stelle, die sie tatsaechlich
+                  brechen wuerde. */}
+              <p className="mb-3 text-xs text-gray-500">
+                {abTestStartedAt ? (
+                  <>
+                    Zeitraum: seit Teststart am{" "}
+                    {new Date(abTestStartedAt).toLocaleString("de-DE")}.
+                  </>
+                ) : (
+                  <>
+                    Ohne Zeitabgrenzung — für dieses Projekt ist kein Teststart
+                    protokolliert. Die Zahlen können Ereignisse aus mehreren
+                    Läufen enthalten.
+                  </>
+                )}
               </p>
 
               {variantCountsFailed ? (
@@ -2317,6 +2460,16 @@ export default function CodeImporter({
                 <p className="text-xs text-amber-700">
                   Die Auswertung konnte nicht geladen werden — bitte Seite neu
                   laden.
+                </p>
+              ) : variantRows.length === 0 ? (
+                /* LEER, ABER GELADEN (Scheibe 9c-2). Der Normalfall unmittelbar nach
+                   einem Start: das Fenster ist offen, es ist nur noch nichts drin.
+                   STRUKTURELL vom Fehlerfall getrennt, nicht per Textvergleich — der
+                   Fehlerzweig darueber greift auf {ok:false}, dieser hier auf
+                   {ok:true, rows:[]}. Zwei Zustaende, zwei Aussagen; der Backlog-Punkt
+                   "leer vs. nicht ladbar" bleibt fuer diese Sektion eingeloest. */
+                <p className="text-xs text-gray-500">
+                  Noch keine Daten in diesem Testlauf.
                 </p>
               ) : (
                 <>

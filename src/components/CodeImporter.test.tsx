@@ -2003,3 +2003,238 @@ describe("Auswertung je Variante (Scheibe 9c-1)", () => {
     expect(screen.queryByText("Conversions je Seitenaufruf")).toBeNull();
   });
 });
+
+/**
+ * Lauf-Abgrenzung (Phase 9 Scheibe 9c-2) — Sichtbarkeit, Beschriftung, Leer-Text,
+ * Neustart-Hinweis. Geprueft wird, was die Sektion dem Nutzer ZUSAGT.
+ */
+describe("Lauf-Abgrenzung (Scheibe 9c-2)", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>`;
+  const START = "2026-07-29T10:00:00.000Z";
+  const openSettings = () =>
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+  const ROWS = [
+    { event_type: "__ps_pageview", count_a: 4, count_b: 5, count_none: 0 },
+    { event_type: "Purchase", count_a: 1, count_b: 2, count_none: 0 },
+  ];
+
+  // K4 FALL A — der Fall, der 9c-1 kippen wuerde: Lauf gestartet, noch KEINE Zeile.
+  // Ohne den Zeitstempel-Term verschwaende die Sektion genau in dem Moment, in dem der
+  // Owner nach dem Start auf sie schaut.
+  it("K4-A: Zeitstempel gesetzt, NULL Zeilen -> Sektion sichtbar mit Leer-Text", async () => {
+    getVariantCounts.mockResolvedValueOnce({ ok: true, rows: [] } as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+        initialAbTestStartedAt={START}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+
+    await screen.findByText("Auswertung je Variante");
+    expect(document.body.textContent).toContain("Noch keine Daten in diesem Testlauf.");
+    // P4: "leer" ist NICHT "nicht ladbar" — der Fehlertext darf hier nicht stehen.
+    expect(document.body.textContent).not.toContain("konnte nicht geladen werden");
+  });
+
+  // K4 FALL B — der LEGACY-Fall: Lauf vor 9c-2, kein Zeitstempel, aber Daten.
+  // MUTATIONSPROBE M4: den hasVariantData-Term streichen -> dieser Test wird rot.
+  // Das ist die Regression gegen das live bewiesene 9c-1-Verhalten.
+  it("K4-B: Alt-Lauf ohne Zeitstempel, aber mit Daten -> Sektion sichtbar", async () => {
+    getVariantCounts.mockResolvedValueOnce({ ok: true, rows: ROWS } as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialAbTestStartedAt={null}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+
+    await screen.findByText("Auswertung je Variante");
+    expect(document.body.textContent).toContain("A 1 von 4");
+  });
+
+  // K4 FALL C — nie ein Test: unveraendert unsichtbar (J3 aus 9c-1).
+  it("K4-C: kein Zeitstempel, keine Daten -> KEINE Sektion", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openSettings();
+
+    await waitFor(() => expect(document.body.textContent).toContain("Statistik"));
+    expect(screen.queryByText("Auswertung je Variante")).toBeNull();
+  });
+
+  // NACHSCHAERFUNG 4 — benanntes, nicht repariertes Verhalten: Variante B entfernt, der
+  // Zeitstempel bleibt -> die Sektion zeigt weiter die Zahlen des vergangenen Laufs.
+  // Richtig so: die Messung hat stattgefunden, die Zeilen sind echt.
+  it("Variante B entfernt, Zeitstempel bleibt -> Sektion weiterhin sichtbar", async () => {
+    getVariantCounts.mockResolvedValueOnce({ ok: true, rows: ROWS } as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={null}
+        initialVariantBMappings={null}
+        initialAbTestStartedAt={START}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+
+    await screen.findByText("Auswertung je Variante");
+    // Kein Varianten-Umschalter, kein Test-Schalter — und trotzdem die Auswertung.
+    expect(screen.queryByRole("button", { name: /Test starten|Test stoppen/ })).toBeNull();
+  });
+
+  // P3 — der NULL-Text: keine Zeitraum-Behauptung UND keine Behauptung ueber genau
+  // EINEN Lauf. Ein Projekt kann vor 9c-2 mehrfach getestet haben.
+  it("P3: ohne Zeitstempel behauptet die Beschriftung weder Zeitraum noch EINEN Lauf", async () => {
+    getVariantCounts.mockResolvedValueOnce({ ok: true, rows: ROWS } as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialAbTestStartedAt={null}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+
+    await screen.findByText("Auswertung je Variante");
+    const text = document.body.textContent ?? "";
+    expect(text).toContain("Ohne Zeitabgrenzung");
+    expect(text).toContain("mehreren Läufen");
+    expect(text).not.toMatch(/seit Beginn|gesamter Zeitraum|seit Teststart/i);
+  });
+
+  it("Beschriftung MIT Zeitstempel nennt den Teststart", async () => {
+    getVariantCounts.mockResolvedValueOnce({ ok: true, rows: ROWS } as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialAbTestStartedAt={START}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+
+    await screen.findByText("Auswertung je Variante");
+    const text = document.body.textContent ?? "";
+    expect(text).toContain("Zeitraum: seit Teststart am");
+    expect(text).not.toContain("Ohne Zeitabgrenzung");
+  });
+
+  // K6 — der Neustart-Hinweis: sagt, dass die ANZEIGE neu beginnt, und behauptet
+  // KEINEN Datenverlust. Sichtbar nur, wenn ein Klick tatsaechlich ueberschriebe.
+  it("K6: Neustart-Hinweis erscheint bei gestopptem Lauf und behauptet keinen Verlust", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+        initialAbTestActive={false}
+        initialAbTestStartedAt={START}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+
+    const hinweis = await screen.findByText(/Ein erneuter Start beginnt die Auswertung neu/);
+    // Die Zusage steht ausdruecklich da …
+    expect(hinweis.textContent).toContain("Gelöscht wird dabei nichts");
+    // … und es steht KEINE Verlust-Behauptung daneben. Die Wortliste zielt bewusst auf
+    // BEHAUPTUNGEN, nicht auf das Wort "gelöscht" selbst: das kommt in der VERNEINUNG
+    // legitim vor ("Gelöscht wird dabei nichts"), und ein naives Verbot des Wortes
+    // schluege genau bei der richtigen Formulierung an.
+    expect(hinweis.textContent).not.toMatch(/verloren|unwiderruflich|endgültig/i);
+  });
+
+  // REFETCH NACH DEM TOGGLE (9c-2). Der Lade-Effect haengt an [projectId], und die
+  // aendert sich beim Starten NICHT — ohne Tick stuende die neue Beschriftung ueber den
+  // ALTEN Zahlen. Geprueft wird die Wirkung (zweiter Aufruf), nicht der Mechanismus.
+  // PFLICHT-MUTATION M7: den Refetch-Punkt aus dem Handler entfernen -> rot.
+  it("M7: erfolgreicher Toggle holt die Zaehlwerte NEU", async () => {
+    setAbTestActive.mockResolvedValueOnce({
+      ok: true,
+      abTestActive: true,
+      abTestStartedAt: START,
+    } as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+        initialAbTestActive={false}
+        initialAbTestStartedAt={null}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+
+    await waitFor(() => expect(getVariantCounts).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole("button", { name: "Test starten" }));
+
+    // Zweiter Aufruf mit derselben projectId — der Effect ist ueber den Tick gelaufen.
+    await waitFor(() => expect(getVariantCounts).toHaveBeenCalledTimes(2));
+    expect(getVariantCounts).toHaveBeenLastCalledWith("proj-1");
+  });
+
+  // K2 auf der CLIENT-Seite: der Stopp liefert KEIN Feld -> der bekannte Zeitstempel
+  // bleibt stehen. MUTATIONSKANDIDAT (kein Pflichtlauf): im Handler
+  // "setAbTestStartedAt(result.abTestStartedAt ?? null)" schreiben -> die Beschriftung
+  // kippte auf "Ohne Zeitabgrenzung", obwohl die DB den Wert behalten hat.
+  it("STOPP wischt den client-seitigen Zeitstempel NICHT weg", async () => {
+    setAbTestActive.mockResolvedValueOnce({
+      ok: true,
+      abTestActive: false,
+    } as never);
+    getVariantCounts.mockResolvedValue({ ok: true, rows: ROWS } as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+        initialAbTestActive={true}
+        initialAbTestStartedAt={START}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+    await screen.findByText(/Zeitraum: seit Teststart am/);
+
+    fireEvent.click(screen.getByRole("button", { name: "Test stoppen" }));
+
+    await screen.findByRole("button", { name: "Test starten" });
+    // Die Beschriftung steht unveraendert — und der NULL-Text taucht NICHT auf.
+    expect(document.body.textContent).toContain("Zeitraum: seit Teststart am");
+    expect(document.body.textContent).not.toContain("Ohne Zeitabgrenzung");
+  });
+
+  it("K6-Gegenprobe: ohne protokollierten Lauf steht KEIN Neustart-Hinweis", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+        initialAbTestActive={false}
+        initialAbTestStartedAt={null}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+
+    await screen.findByRole("button", { name: "Test starten" });
+    expect(screen.queryByText(/Ein erneuter Start beginnt/)).toBeNull();
+  });
+});

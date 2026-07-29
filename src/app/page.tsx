@@ -45,6 +45,7 @@ export default async function Home() {
         initialVariantBHtml={project?.html_b ?? null}
         initialVariantBMappings={project?.mappings_b ?? null}
         initialAbTestActive={project?.ab_test_active ?? false}
+        initialAbTestStartedAt={project?.ab_test_started_at ?? null}
       />
     </main>
   );

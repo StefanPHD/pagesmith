@@ -57,6 +57,18 @@ export type ProjectRow = {
   // NICHT in settings (das ist client-besessen und wuerde den Schalter beim
   // naechsten saveProject wortlos zuruecksetzen).
   ab_test_active: boolean;
+  // Beginn des laufenden/letzten A/B-Testlaufs (Phase 9 Scheibe 9c-2). NULL heisst
+  // "keine Abgrenzung" — entweder lief nie ein Test, oder der Lauf liegt VOR 9c-2
+  // (kein Backfill). Der Wert wird beim START gesetzt und beim STOPP NICHT
+  // veraendert: sonst verschwaenden die Zahlen genau in dem Moment, in dem der
+  // Owner sie liest.
+  //
+  // WOFUER DIE UI IHN BRAUCHT (der Filter braucht ihn NICHT — den liest die RPC
+  // DB-seitig selbst): Sichtbarkeit der Auswertungs-Sektion und ihre
+  // Zeitraum-Beschriftung. Eine "returns table"-Funktion kann ihn nicht liefern,
+  // weil sie bei leerer Ergebnismenge NULL ZEILEN zurueckgibt — und genau dann
+  // (Test gerade gestartet) wird er gebraucht.
+  ab_test_started_at: string | null;
 };
 
 /** Listen-Eintrag fuer den Projekt-Switcher (ohne das schwere html-Feld). */
@@ -101,7 +113,9 @@ export async function loadProject(id?: string): Promise<ProjectRow | null> {
 
   let query = supabase
     .from("projects")
-    .select("id,name,html,mappings,settings,html_b,mappings_b,ab_test_active")
+    .select(
+      "id,name,html,mappings,settings,html_b,mappings_b,ab_test_active,ab_test_started_at"
+    )
     .eq("user_id", user.id);
 
   if (id) {
@@ -383,7 +397,21 @@ export async function removeVariantB(
  * createVariantB in 9a ("ABLEITEN STATT LOESCHEN", angewandt auf den Schalter).
  */
 export type SetAbTestResult =
-  | { ok: true; abTestActive: boolean }
+  | {
+      ok: true;
+      abTestActive: boolean;
+      /**
+       * Der NEU GESETZTE Lauf-Beginn (Scheibe 9c-2) — NUR beim Starten vorhanden.
+       *
+       * OPTIONAL UND NICHT NULLABLE, und das ist der ganze Punkt: "undefined"
+       * heisst "in diesem Aufruf NICHT geschrieben", nicht "es gibt keinen Wert".
+       * Ein nullable Feld truege beide Bedeutungen in EINEM Wert — und der Client
+       * wuerde beim STOPPEN seinen bekannten Zeitstempel ueberschreiben, obwohl
+       * die DB ihn behalten hat (K2). Der Stopp-Zweig liefert das Feld deshalb gar
+       * nicht, und der Client uebernimmt nur, was da ist.
+       */
+      abTestStartedAt?: string;
+    }
   | { ok: false; error: string };
 
 /**
@@ -456,14 +484,34 @@ export async function setAbTestActive(
     }
   }
 
+  // LAUF-BEGINN (Scheibe 9c-2): NUR beim START schreiben. Beim STOPP bleibt die
+  // Spalte unangetastet (K2) — der gestoppte Lauf soll seine Zahlen behalten, sonst
+  // verschwaende die Auswertung genau in dem Moment, in dem man sie ansieht. Ein
+  // erneuter Start UEBERSCHREIBT: das ist der Zweck der Spalte (sauberer Lauf), und
+  // geloescht wird dabei nichts — die events-Zeilen bleiben vollstaendig.
+  //
+  // ZWEI UHREN (bewusst, s. Migration 0020): dieser Zeitstempel entsteht auf dem
+  // APP-Server, events.created_at per DB-now(). Der Versatz verschwindet in der
+  // Netzwerkrunde plus der menschlichen Handlung, die zwischen Aktivierung und
+  // erstem PageView liegen. Kein DB-seitiges now() hier — die Kopplung waere
+  // teurer als das Risiko.
+  const patch: Record<string, unknown> = {
+    ab_test_active: active,
+    updated_at: new Date().toISOString(),
+  };
+  const startedAt = active ? new Date().toISOString() : undefined;
+  if (startedAt) patch.ab_test_started_at = startedAt;
+
   const { error: updateError } = await supabase
     .from("projects")
-    .update({ ab_test_active: active, updated_at: new Date().toISOString() })
+    .update(patch)
     .eq("id", projectId)
     .eq("user_id", user.id);
   if (updateError) return { ok: false, error: updateError.message };
 
-  return { ok: true, abTestActive: active };
+  // startedAt wird nur im Start-Zweig mitgegeben -> beim Stoppen fehlt das Feld, und
+  // der Client behaelt seinen bekannten Wert (s. SetAbTestResult).
+  return { ok: true, abTestActive: active, ...(startedAt ? { abTestStartedAt: startedAt } : {}) };
 }
 
 /**

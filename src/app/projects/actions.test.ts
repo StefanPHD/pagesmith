@@ -370,7 +370,9 @@ describe("loadProject — Payload traegt NIE den Token", () => {
     // genau das pruefen die beiden Zeilen darueber (fromTables / JSON.stringify) —
     // sie sind unveraendert. Die exakte Spaltenliste ist eine ZUSAETZLICHE Schaerfe
     // ("exakte Projektion, kein SELECT *"), die durch die additive Erweiterung von
-    // loadProject um html_b/mappings_b (Varianten-Authoring) legitim mitwaechst.
+    // loadProject um html_b/mappings_b (Varianten-Authoring) legitim mitwaechst —
+    // und in 9c-2 um ab_test_started_at (Lauf-Abgrenzung: Sichtbarkeit und
+    // Zeitraum-Beschriftung der Auswertung, beide reine ANZEIGE).
     // Entscheidend bleibt, was WEITERHIN AUSSERHALB der Projektion steht:
     // project_tokens und published_content. Die Assertion wurde bewusst NICHT auf
     // ein weiches not.toContain("token") aufgeweicht — das haette den
@@ -382,7 +384,7 @@ describe("loadProject — Payload traegt NIE den Token", () => {
         // Zustand aus dieser Spalte ab (ABLEITEN STATT LOESCHEN). Schaerfe
         // unveraendert; WEITERHIN AUSSERHALB: published_content und jede
         // project_tokens-Spalte (s. die beiden Assertionen darueber/darunter).
-        cols: "id,name,html,mappings,settings,html_b,mappings_b,ab_test_active",
+        cols: "id,name,html,mappings,settings,html_b,mappings_b,ab_test_active,ab_test_started_at",
       },
     ]);
     expect(rec.selectCols[0].cols).not.toContain("published_content");
@@ -692,11 +694,28 @@ describe("setAbTestActive (Scheibe 9b-1)", () => {
     });
 
     const res = await setAbTestActive("proj-1", true);
-    expect(res).toEqual({ ok: true, abTestActive: true });
+    // ANGEPASST IN 9c-2: der START schreibt zusaetzlich den Lauf-Beginn und gibt ihn
+    // zurueck (der Client leitet daraus Sichtbarkeit und Beschriftung ab, ohne Reload).
+    // EXAKT geblieben — toMatchObject waere eine Lockerung: es liesse ZUSAETZLICHE Felder
+    // durch, und genau die soll diese Assertion fangen. Der dynamische Zeitstempel ist
+    // kein Grund dafuer; expect.any(String) traegt ihn ohne Exaktheitsverlust.
+    expect(res).toEqual({
+      ok: true,
+      abTestActive: true,
+      abTestStartedAt: expect.any(String),
+    });
 
     const patch = rec.updatePatch as Record<string, unknown>;
-    expect(Object.keys(patch).sort()).toEqual(["ab_test_active", "updated_at"].sort());
+    // Die Schluesselmenge bleibt eine SCHLUESSELMENGEN-Assertion: sie ist der Waechter,
+    // der ein versehentlich mitgeschriebenes Feld faengt — jetzt mit dem dritten Key.
+    expect(Object.keys(patch).sort()).toEqual(
+      ["ab_test_active", "ab_test_started_at", "updated_at"].sort()
+    );
     expect(patch.ab_test_active).toBe(true);
+    expect(typeof patch.ab_test_started_at).toBe("string");
+    expect((res as { abTestStartedAt?: string }).abTestStartedAt).toBe(
+      patch.ab_test_started_at
+    );
     // Nichts anderes wird beruehrt — kein Draft, kein published_content.
     expect(patch).not.toHaveProperty("html_b");
     expect(patch).not.toHaveProperty("published_content");
@@ -817,8 +836,21 @@ describe("setAbTestActive (Scheibe 9b-1)", () => {
       },
     });
     const res = await setAbTestActive("proj-1", false);
+    // EXAKT: kein drittes Feld. Das FEHLENDE Rueckgabefeld ist die halbe Zusage —
+    // undefined heisst "nicht geschrieben", und der Client behaelt damit seinen
+    // bekannten Wert. Ein null hier waere der Bug: es loeschte im UI, was der Server
+    // behalten hat.
     expect(res).toEqual({ ok: true, abTestActive: false });
-    expect((rec.updatePatch as Record<string, unknown>).ab_test_active).toBe(false);
+    const patch = rec.updatePatch as Record<string, unknown>;
+    expect(patch.ab_test_active).toBe(false);
+    // K2 — DIE ANDERE HAELFTE, und die Kernzusage von 9c-2: der Stopp fasst den
+    // Lauf-Beginn NICHT an. Sonst verschwaenden die Zahlen genau in dem Moment, in dem
+    // der Owner sie liest. Als SCHLUESSELMENGE formuliert, nicht als not.toContain:
+    // so faengt sie zusaetzlich jedes andere versehentlich mitgeschriebene Feld.
+    // MUTATIONSPROBE M2: das Feld auch im Stopp-Zweig schreiben -> dieser Test wird rot.
+    expect(Object.keys(patch).sort()).toEqual(
+      ["ab_test_active", "updated_at"].sort()
+    );
   });
 
   it("IDOR: fremde project_id -> Fehler, KEIN update", async () => {

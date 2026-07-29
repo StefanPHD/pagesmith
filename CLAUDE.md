@@ -89,10 +89,13 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Haken an dieser Zeile und liessen die Phase unfertig aussehen, obwohl sie es nicht ist.
       Wird eine davon gebaut, bekommt sie eine EIGENE Scheibe mit eigenem Nachweis; sie
       öffnet diese Checkbox nicht wieder.
-- [ ] Phase 9 — A/B-Testing: zwei Varianten je Projekt, 50/50-Split über die
-      Serving-Schicht. Geschnitten in 9a (Varianten-Authoring — ABGESCHLOSSEN &
+- [x] Phase 9 — A/B-Testing: zwei Varianten je Projekt, 50/50-Split über die
+      Serving-Schicht. ABGESCHLOSSEN & live bewiesen (2026-07-27 bis 2026-07-29)
+      in SECHS Scheiben: 9a, 9b-1, 9b-1p, 9b-2, 9c-1, 9c-2 — Migrationen 0016,
+      0017, 0019, 0020 (9b-1p und 9b-2 kamen ohne Migration aus).
+      Geschnitten in 9a (Varianten-Authoring — ABGESCHLOSSEN &
       live bewiesen 2026-07-27, Migration 0016), 9b (dreigeteilt) und 9c
-      (Auswertung je Variante — OFFEN). 9b im Detail: 9b-1 (Split in der
+      (zweigeteilt). 9b im Detail: 9b-1 (Split in der
       Serve-Route + __Host-ps_v-Cookie + Aktivierungs-Flag — ABGESCHLOSSEN &
       live bewiesen 2026-07-27, Migration 0017); 9b-1p (UI-Politur: lokaler
       Fehlerkanal + Hinweis auf unveröffentlichte Variante B — ABGESCHLOSSEN &
@@ -103,9 +106,14 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       9b ist damit KOMPLETT. 9c ist seinerseits GETEILT: 9c-1 (Auswertung je
       Variante, RPC get_variant_counts + eigene UI-Sektion — ABGESCHLOSSEN &
       live bewiesen 2026-07-29, Commit 8844798, Migration 0019) und 9c-2
-      (Lauf-Abgrenzung: Zeitstempel beim Teststart + Zeitfilter — OFFEN, eigene
-      Migration). Die Phase bleibt OFFEN, weil 9c-2 aussteht.
+      (Lauf-Abgrenzung: Zeitstempel beim Teststart + Zeitfilter — ABGESCHLOSSEN
+      & live bewiesen 2026-07-29, Commit da94afd, Migration 0020). Damit ist
+      auch 9c vollständig und die PHASE ABGESCHLOSSEN.
       Grundsatzentscheidungen + Scheiben-Detail: "## Aktiver Stand — Phase 9".
+      FÄLLIG, NICHT ERLEDIGT: die Auslagerung dieses Blocks nach
+      docs/claude-history/phase-9-ab-testing.md in ZWEI Runden (erst HEBUNG
+      dauerhafter Regeln nach "## Immer beachten", dann MECHANISCHE
+      Verschiebung) — Details am Ende der 9c-Sektion.
 - [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
 
@@ -179,9 +187,20 @@ stammen NICHT aus der Probe, und sie sind unterschiedlich stark:
   applied_at, im Live-Test bestätigt). Die Tabelle IST hier das Instrument.
 - FUNKTIONSZAHL: GERECHNET (4 + 1). pg_proc wurde NICHT befragt; dass sonst nichts
   dazugekommen ist, ist eine Ableitung, keine Messung.
-Der nächste Probenlauf ERSETZT beide. FÄLLIG wird er, sobald 9c-2 seine Migration gelegt
-hat — dann ist der Block an mehreren Stellen veraltet und EIN Lauf deckt alles ab. Kein
-eigener Offener Punkt: die Fälligkeit hängt an der nächsten Migration, nicht am Kalender.
+Der nächste Probenlauf ERSETZT beide. ER IST SEIT 2026-07-29 FÄLLIG: mit Migration 0020
+(Scheibe 9c-2) ist der Block weiter veraltet — BEISPIELE, ausdrücklich KEINE vollständige
+Liste: der Migrationsstand (0020 fehlt), die Spaltenliste von projects (ab_test_started_at
+fehlt) und die HERKUNFTSANGABE von get_variant_counts (dort steht "0019, Scheibe 9c-1";
+live läuft die Definition aus 0020, die den Zeitfilter trägt). NICHT betroffen ist die
+FUNKTIONSZAHL: 0020 ERSETZT die Funktion und legt keine neue an, der Wert aus dem
+9c-1-Nachtrag gilt weiter.
+WER SICH AUF DIESE AUFZÄHLUNG VERLÄSST, LIEST SIE FALSCH: der Probenlauf ersetzt den Block
+VOLLSTÄNDIG, nicht die genannten Stellen. Eine Liste, die erschöpfend wirkt, es aber nicht
+ist, erzeugt genau die falsche Sicherheit, gegen die dieser Hinweis gebaut ist.
+EIN Lauf deckt alles ab; er ist eine EIGENE Runde und wurde hier bewusst NICHT
+vorweggenommen, weil ein geratener Ist-Zustand schlimmer wäre als ein als veraltet
+markierter. Kein eigener Offener Punkt: die Fälligkeit hängt an der Migration, nicht am
+Kalender.
 
 - MIGRATIONSSTAND: 0001-0019. NACHGETRAGEN (nicht Teil der Probe vom 2026-07-28): 0019
   (get_variant_counts, Scheibe 9c-1) wurde am 2026-07-29 ausgeführt; die Protokollzeile mit
@@ -442,7 +461,8 @@ JSON-Sektions-Architektur (Spur B) NICHT braucht — das ist der Schnitt.
   Text ändern + übernehmen erzeugt KEINEN Reload-Sprung. Der Marker taucht im Export NICHT
   auf.
 - STAND: 9b ist KOMPLETT — 9b-1 (Split + Cookie), 9b-1p (UI-Politur) und 9b-2 (variant in
-  Ingest und Persist), alle live bewiesen. -> 9c: Auswertung je Variante, weiterhin OFFEN.
+  Ingest und Persist), alle live bewiesen. -> 9c (Auswertung je Variante) ist mit 9c-1 und
+  9c-2 seit 2026-07-29 EBENFALLS komplett; damit ist die Phase abgeschlossen.
 
 ### Scheibe 9b-1 — Split + Cookie + Aktivierung (ABGESCHLOSSEN — live bewiesen (2026-07-27), Migration 0017 gelaufen)
 Erste Hälfte von 9b: die Live-URL liefert erstmals BEIDE Varianten. Die
@@ -800,13 +820,13 @@ unterscheidbar.
         NULL, kein Würfeln).
     (b) KEINE Aussage über die VERTEILUNG unter echtem Traffic — das ist 9c-Gebiet.
 
-### Scheibe 9c — Auswertung je Variante — GETEILT: 9c-1 ABGESCHLOSSEN (live bewiesen 2026-07-29, Commit 8844798, Migration 0019), 9c-2 OFFEN
+### Scheibe 9c — Auswertung je Variante — VOLLSTÄNDIG: 9c-1 (live bewiesen 2026-07-29, Commit 8844798, Migration 0019) + 9c-2 (live bewiesen 2026-07-29, Commit da94afd, Migration 0020). MIT 9c IST PHASE 9 ABGESCHLOSSEN.
 Die letzte Scheibe der Phase: aus den seit 9b-2 zugeordneten Zeilen wird eine Aussage.
 DER SCHNITT (in der Stufe 1 vorgeschlagen, vor dem Bau entschieden):
 - 9c-1 — AUSWERTUNG je Variante, OHNE Lauf-Abgrenzung. Migration 0019 legt AUSSCHLIESSLICH
   eine neue Lese-RPC an, dazu Read-Action und eigene UI-Sektion. ABGESCHLOSSEN.
 - 9c-2 — LAUF-ABGRENZUNG (Zeitstempel beim Teststart, Zeitfilter in der Auswertung).
-  OFFEN, eigene Runde, eigene Migration.
+  ABGESCHLOSSEN, Migration 0020.
 WARUM DIESE LINIE UND NICHT "DATENWEG GEGEN DARSTELLUNG" (die naheliegendere): eine erste
 Scheibe aus Migration + Action + RPC wäre NICHT DEMOBAR gewesen — man hätte sie nur im
 SQL-Editor gesehen, und eine Scheibe ohne demobare Wirkung ist kein guter Schnitt. Die
@@ -1070,6 +1090,118 @@ Dateipfad in der Vorgabe und war falsch; der Bau hat ihn korrigiert.)
         nur eine Herleitung.
     (c) KEINE Aussage über die Verteilung unter echtem Traffic.
     (d) Die zweite Ablesung ist eine reine UI-Ablesung OHNE eigene SQL-Gegenprobe.
+- AUS DEM BAU (9c-2; getrennt vom Messblock, weil es Bau-Ergebnisse sind, keine
+  Live-Messwerte):
+  ZWEI MUTATIONEN WURDEN NICHT ROT — aus VERSCHIEDENEN Gründen, und die Unterscheidung
+  ist der eigentliche Ertrag dieser Scheibe:
+  (a) SCHLECHTES MODELL DES FEHLERS: Die Mutation, die den is-null-Zweig aus der
+      TS-PORTIERUNG entfernte, blieb grün. Grund: JS kennt keine dreiwertige Logik —
+      ("…" < null) ist false, die Zeile BLEIBT; SQL wirft sie bei einem Vergleich gegen
+      NULL HERAUS. Die Portierung kann den Fehlermodus gar nicht erzeugen.
+      VERALLGEMEINERT — und das ist der Satz, der über diese Scheibe hinausreicht: WO
+      EINE ENTSCHEIDUNG AN DREIWERTIGER LOGIK HÄNGT, IST EINE TS-PORTIERUNG BLIND. Dann
+      tragen ein Datei-Wächter am SQL plus der Live-Test den Beweis, nicht der Unit-Test.
+      (HEBUNGS-KANDIDAT für "## Immer beachten", s. den Auslagerungs-Vermerk unten.)
+  (b) HOHLER WÄCHTER: Die Mutation, die die Spaltenreferenz aus dem Funktionskörper
+      entfernte, blieb ebenfalls grün — der Wächter-Ausschnitt lief bis DATEIENDE und
+      traf den DATEINAMEN in der Protokollzeile statt der Spaltenreferenz im Körper.
+      Behoben wurde die WURZEL, nicht die Assertion: ein gemeinsamer, am schliessenden
+      $$; begrenzter Körper-Ausschnitt mit EIGENER Positivkontrolle (er darf die
+      Protokollzeile nicht enthalten, den Körper schon). Dabei zeigte sich, dass die
+      9c-1-Wächter denselben zu weiten Ausschnitt hatten — sie hängen jetzt am selben
+      Helfer.
+  DER REFETCH FEHLTE ZUNÄCHST. Die Beschriftung sprang beim Start sofort (der Zeitstempel
+  kommt aus der Action-Antwort), die Zahlen nicht (der Lade-Effekt hängt an [projectId],
+  und die ändert sich beim Starten nicht). Ergebnis wäre ein ENGERES Fenster über WEITEREN
+  Zahlen gewesen.
+  KORREKTUR DER STUFE-1-ANALYSE, ausdrücklich: dort stand, diese Richtung sei STRUKTURELL
+  ausgeschlossen (die DB sei die Quelle, die Beschriftung könne nur älter sein). Das galt
+  VOR der Entscheidung, den Zeitstempel aus der Action zurückzugeben. Sie ist jetzt durch
+  einen REFETCH-PUNKT geschlossen — das ist eine SCHWÄCHERE Zusage als "strukturell
+  unmöglich", und sie muss als solche stehen.
+  HYDRATION, BENANNT STATT GEBAUT: die lokale Datumsformatierung der Zeitraum-Beschriftung
+  ist nur deshalb kollisionsfrei, weil das Einstellungs-Panel im ersten Render geschlossen
+  ist — die Sektion liegt im Server-HTML gar nicht im Baum. Das ist ein NEBENEFFEKT, kein
+  Schutz. Kommentiert an BEIDEN Stellen (Beschriftung und Panel-Gate), weil wer den
+  Panel-Default umstellt, den Kommentar drüben nicht liest. Mount-Flag,
+  suppressHydrationWarning und eine fest gesetzte Zeitzone wurden geprüft und verworfen.
+  BENANNTES, NICHT REPARIERTES VERHALTEN: wird Variante B nach einem Lauf ENTFERNT, bleibt
+  der Zeitstempel stehen und die Auswertung sichtbar. Richtig so — die Messung hat
+  stattgefunden, die Zeilen sind echt. Als Test abgedeckt, KEIN Live-Schritt (am
+  Testprojekt destruktiv).
+- VERIFIZIERT — 9c-2 (live, 2026-07-29), Commit da94afd, Migration 0020 gelaufen
+  (schema_migrations auf 0020 bestätigt, Deployment "Ready"); Tests 647 -> 671 in 40
+  Dateien, Pipeline vierfach grün:
+  - REGRESSION ZUERST (GEMESSEN, Schritte 1-3): Alt-Projekt mit ab_test_started_at NULL ->
+    die Varianten-Sektion bleibt SICHTBAR (K4-B, der Legacy-Fall), ihre Zahlen treffen
+    EXAKT die UNGEFILTERTEN Aggregate (K3 — der Filter degradiert, statt alles zu
+    verschlucken), und die Beschriftung lautet "Ohne Zeitabgrenzung". Die Bestandskacheln
+    stimmen 1:1 mit den rohen Gruppen-Queries (K7).
+  - ZEITFILTER — DER KERNNACHWEIS (GEMESSEN, Schritt 6): dieselbe Aggregation zweimal.
+    MIT Zeitfilter 2 PageViews und 2 Purchases (der frische Lauf). OHNE Zeitfilter 9
+    PageViews, 4 Purchases und 71 NULL-Events (39 PageViews / 32 Purchases). DIE DIFFERENZ
+    ist der Beweis, nicht die Anzeige: läge alles im Fenster, wäre ein entfernter Filter
+    nicht unterscheidbar.
+  - DAS ALTZEILEN-RAUSCHEN IST WEG (GEMESSEN, Schritt 7): variant IS NULL AND created_at
+    >= started_at = 0 -> die Zeile "Ohne Varianten-Zuordnung" wird im UI NICHT gerendert
+    (J13). Genau die 71 aus 9c-1, die dort als unbrauchbares Signal ausgewiesen waren,
+    fallen aus dem Lauf heraus — der in 9c-1 nur hergeleitete Nutzen des Delimiters ist
+    damit GEMESSEN.
+  - REFETCH OHNE RELOAD (GEMESSEN, Schritte 5/8/9): START -> die Anzeige springt SOFORT auf
+    "Noch keine Daten in diesem Testlauf." mit "Zeitraum: seit Teststart am …". STOPP ->
+    ab_test_started_at in der DB unverändert, die Sektion bleibt sichtbar, und die
+    Beschriftung BEHÄLT den Zeitstempel (K2; ein "?? null" im Handler hätte ihn hier
+    gewischt). NEUSTART -> neuer Zeitstempel > alter.
+  - EIN NEUSTART LÖSCHT NICHTS (GEMESSEN, Schritt 9): die Zahl der Zeilen mit Variante
+    blieb ÜBER den Neustart hinweg unverändert (21 zum Zeitpunkt dieser Messung). Tragend
+    ist der VORHER-NACHHER-Vergleich, nicht der Absolutwert.
+  - UHREN (GEMESSEN, Schritt 4): extract(epoch from (now() - ab_test_started_at)) =
+    +36,33 Sekunden, KEIN negativer Versatz.
+    WAS DAS ZEIGT UND WAS NICHT: gemessen wird die SUMME aus Uhrenversatz und Bedienzeit,
+    nicht der Versatz allein. Ein positiver Wert in Sekundenhöhe belegt nur, dass keine
+    GROBE Abweichung vorliegt; negativ wäre das rote Signal gewesen (App-Uhr vor der
+    DB-Uhr -> die ersten Ereignisse eines Laufs fielen aus dem Fenster).
+  - MANDANTEN (GEMESSEN, Schritt 10): fremder JWT (authenticated) -> 0 Zeilen;
+    Positivkontrolle -> Zeilen.
+    EHRLICHE EINORDNUNG, die dazugehört: die Positivkontrolle lief als SUPERUSER und
+    belegt damit nur, dass die Funktion überhaupt Zeilen liefert. Dass der
+    AUTHENTIFIZIERTE OWNER sie sieht, belegt das Dashboard selbst (Schritte 1-3, 5, 6) —
+    es liest über die Session des Nutzers. Beide Hälften liegen vor, aber auf ZWEI
+    verschiedenen Wegen; als EIN Beweis darf das nicht gelesen werden.
+  - KILL-SWITCH-RANDPROBE (GEMESSEN, Schritt 11): gesperrtes Projekt -> Live-URL 451, das
+    Dashboard inklusive Varianten-Auswertung bleibt lesbar (reiner Lesepfad).
+  - NACHTRAG-QUERY (GEMESSEN zu einem SPÄTEREN Zeitpunkt als Schritt 9 — deshalb NICHT mit
+    den Zahlen oben verrechenbar): server __ps_pageview 12, server Purchase 6, browser
+    Purchase 6.
+    WAS SIE ZEIGT: die BROWSER-Bestätigungszeilen tragen tatsächlich eine Variante — die
+    9b-2-Entscheidung ("geschrieben wird auf BEIDEN Zeilen") ist damit unabhängig
+    nachgemessen. Und die Struktur stimmt: __ps_pageview erscheint NUR server-seitig,
+    Purchase server UND browser; PageViews bekommen kein Bestätigungs-Beacon.
+    WAS SIE NICHT ZEIGT: eine Rekonstruktion der 21 aus Schritt 9. Zahlen VERSCHIEDENER
+    Zeitpunkte rückwärts zu verrechnen wäre unzulässig und wird hier NICHT versucht — die
+    21 hatte genau eine Aufgabe (belegen, dass ein Neustart nichts löscht), und dafür
+    zählt der Vorher-Nachher-Vergleich.
+  - WAS DER NACHWEIS NICHT ZEIGT (ausdrücklich):
+    (a) Die Rate bleibt "je Seitenaufruf", NICHT je Besucher — der Confounder aus dem
+        Entscheidungs-Record ist unberührt und ungemessen.
+    (b) KEINE Aussage über die Verteilung unter echtem Traffic.
+    (c) Der Uhren-Vergleich misst Versatz PLUS Bedienzeit, nicht den Versatz allein.
+    (d) Der Fall "zweiter Tab" (Beschriftung älter als das Fenster) bleibt möglich und ist
+        gutartig: ein Reload heilt ihn.
+- FÄLLIG GEWORDEN, NICHT IN DIESER RUNDE ERLEDIGT:
+  (1) AUSLAGERUNG DES PHASE-9-BLOCKS nach docs/claude-history/phase-9-ab-testing.md. Sie
+      läuft in ZWEI GETRENNTEN Runden, und die Reihenfolge ist UMGEKEHRT zur früheren
+      Beschreibung: ZUERST die HEBUNG dauerhaft gültiger Regeln nach "## Immer beachten"
+      (Ermessenssache, Stefan entscheidet je Kandidat), DANACH die rein MECHANISCHE
+      Verschiebung des Rests — ohne Verdichten, ohne Umformulieren. Grund für die
+      Reihenfolge: was gehoben werden soll, muss noch am Ort seiner Herleitung stehen,
+      wenn darüber entschieden wird. HEBUNGS-KANDIDAT, benannt: der Satz zur dreiwertigen
+      Logik aus dem "AUS DEM BAU"-Block oben.
+  (2) PROBENLAUF supabase/checks/db-stand.sql. "## Aktueller DB-/Analytics-Stand" trägt
+      seit 9c-1 zwei markierte Nachträge UND ist durch 0020 an weiteren Stellen veraltet
+      (Migrationsstand, Funktionszahl, Spaltenliste projects). EIN Lauf deckt alles ab; er
+      ist eine EIGENE Runde. Hier werden bewusst KEINE neuen Werte hineingeschrieben — ein
+      geratener Ist-Zustand wäre schlimmer als ein als veraltet markierter.
 
 ### Fix-Scheibe safeAction — Client-Fehlerbehandlung (ABGESCHLOSSEN — live bewiesen 2026-07-27, Commit bd05e34)
 WARUM DIESER ABSCHNITT HIER STEHT (sonst wirkt er später deplatziert): Die Scheibe ist

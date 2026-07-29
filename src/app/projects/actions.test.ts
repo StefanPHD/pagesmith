@@ -45,6 +45,7 @@ import {
   setAbTestActive,
   getVariantBPublished,
   getEventCounts,
+  getVariantCounts,
 } from "./actions";
 import {
   deliverableVariantB,
@@ -941,5 +942,68 @@ describe("getEventCounts — Query-Form (Scheibe 3)", () => {
       rpcResult: { data: null, error: { message: "boom" } },
     });
     expect(await getEventCounts("proj-1")).toEqual([]);
+  });
+});
+
+describe("getVariantCounts — Query-Form (Scheibe 9c-1)", () => {
+  // Gleiche ehrliche Grenze wie oben: bewiesen wird die QUERY-FORM, NICHT die RLS. Die
+  // Mandanten-Verweigerung ist ein DB-Feature und gehoert in den SQL-/Live-Test.
+  function makeRpcClient(opts: {
+    user: { id: string } | null;
+    rpcResult?: { data?: unknown; error: unknown };
+  }) {
+    const rpc = vi.fn(async () => opts.rpcResult ?? { data: [], error: null });
+    createClient.mockResolvedValue({
+      auth: { getUser: vi.fn(async () => ({ data: { user: opts.user } })) },
+      rpc,
+    } as unknown as Awaited<ReturnType<typeof createClient>>);
+    return { rpc };
+  }
+
+  it("ruft rpc('get_variant_counts', {p_project_id}) und liefert die Zeilen", async () => {
+    const rows = [
+      { event_type: "__ps_pageview", count_a: 40, count_b: 38, count_none: 3 },
+      { event_type: "Purchase", count_a: 2, count_b: 5, count_none: 0 },
+    ];
+    const { rpc } = makeRpcClient({
+      user: { id: "user-1" },
+      rpcResult: { data: rows, error: null },
+    });
+
+    const res = await getVariantCounts("proj-1");
+    expect(rpc).toHaveBeenCalledWith("get_variant_counts", {
+      p_project_id: "proj-1",
+    });
+    expect(res).toEqual({ ok: true, rows });
+  });
+
+  // DER UNTERSCHIED ZUM BESTANDSMUSTER, diskriminierend geprueft: ein Fehler mündet NICHT
+  // in einen Leer-Wert. Faellt jemand auf {ok:true, rows:[]} zurueck, wird dieser Test rot —
+  // und genau dann saehe "nicht ladbar" im UI wieder aus wie "keine Daten".
+  it("rpc-Fehler -> {ok:false}, NICHT ein leeres Ergebnis", async () => {
+    makeRpcClient({
+      user: { id: "user-1" },
+      rpcResult: { data: null, error: { message: "boom" } },
+    });
+    const res = await getVariantCounts("proj-1");
+    expect(res).toEqual({ ok: false });
+    expect(res.ok).toBe(false);
+  });
+
+  it("nicht eingeloggt -> {ok:false} (kein rpc-Aufruf)", async () => {
+    const { rpc } = makeRpcClient({ user: null });
+    expect(await getVariantCounts("proj-1")).toEqual({ ok: false });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  // LEER IST EIN ERFOLG: ein Projekt ohne zugeordnete Zeilen liefert {ok:true, rows:[]} —
+  // unterscheidbar vom Fehlerfall darueber. Ohne diese Gegenprobe koennte die Action
+  // pauschal {ok:false} liefern und der Fehlertest bliebe trotzdem gruen.
+  it("leeres Ergebnis -> {ok:true, rows:[]} (Gegenprobe zum Fehlerfall)", async () => {
+    makeRpcClient({
+      user: { id: "user-1" },
+      rpcResult: { data: [], error: null },
+    });
+    expect(await getVariantCounts("proj-1")).toEqual({ ok: true, rows: [] });
   });
 });

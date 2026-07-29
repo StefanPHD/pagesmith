@@ -37,6 +37,7 @@ const {
   removeVariantB,
   setAbTestActive,
   getVariantBPublished,
+  getVariantCounts,
 } = vi.hoisted(() => ({
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
   // Scheibe 9a: die Varianten-Actions. saveVariantB ist der Spy, auf dem der
@@ -74,6 +75,10 @@ const {
   // Verlust-Kachel nur als "Warte auf erste Bestaetigung", keine Zahl. Rueckgabe bewusst
   // Promise<unknown>, damit einzelne Tests via mockResolvedValueOnce Rohzahlen liefern.
   getAdblockLoss: vi.fn(async (): Promise<unknown> => null),
+  // Scheibe 9c-1: Default ist ein ERFOLG mit leeren Zeilen -> die Varianten-Sektion
+  // erscheint in den Bestandstests NICHT (keine zugeordneten Zeilen). Ein Default von
+  // {ok:false} haette in jedem Bestandstest eine Fehlermeldung eingeblendet.
+  getVariantCounts: vi.fn(async (): Promise<unknown> => ({ ok: true, rows: [] })),
 }));
 
 vi.mock("@/app/projects/actions", () => ({
@@ -92,6 +97,7 @@ vi.mock("@/app/projects/actions", () => ({
   removeVariantB,
   setAbTestActive,
   getVariantBPublished,
+  getVariantCounts,
 }));
 
 // DomainManager (in der Publish-Sektion gemountet) zieht ueber @/app/projects/domain-
@@ -1833,5 +1839,167 @@ describe("CodeImporter — Leer-Riegel (Client-Guard + ein Anzeigeslot)", () => 
     // Genau EIN Slot: der Hinweis-Kanal schweigt, solange ein Fehler steht.
     expect(screen.queryByText(/Erst speichern/)).toBeNull();
     expect(screen.queryByText(/ist leer/)).toBeNull();
+  });
+});
+
+/**
+ * Auswertung je Variante (Phase 9 Scheibe 9c-1) — die neue Sektion im Einstellungs-Panel.
+ *
+ * Geprueft wird das, was die Sektion dem Nutzer ZUSAGT: sie erscheint nur, wenn es etwas
+ * auszuwerten gibt (J3), sie unterscheidet "leer" von "nicht ladbar" (J10), sie weist
+ * Zeilen ohne Zuordnung nur bei einer Zahl != 0 aus (J13), und sie behauptet keine
+ * Besucher-Rate (J11).
+ */
+describe("Auswertung je Variante (Scheibe 9c-1)", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>`;
+  const openSettings = () =>
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+
+  const ROWS = [
+    { event_type: "__ps_pageview", count_a: 40, count_b: 38, count_none: 0 },
+    { event_type: "Purchase", count_a: 2, count_b: 5, count_none: 0 },
+  ];
+
+  it("J3: keine zugeordneten Zeilen -> die Sektion erscheint gar nicht", async () => {
+    // Default-Mock: {ok:true, rows:[]}. Ein Projekt, fuer das nie ein Test lief, sieht
+    // KEINE UI-Aenderung — kein leerer Kasten, keine Ueberschrift.
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openSettings();
+
+    await waitFor(() =>
+      expect(document.body.textContent).toContain("Statistik"),
+    );
+    expect(screen.queryByText("Auswertung je Variante")).toBeNull();
+  });
+
+  it("zeigt Zeilen je Variante und die Conversions je Seitenaufruf", async () => {
+    getVariantCounts.mockResolvedValueOnce({ ok: true, rows: ROWS } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openSettings();
+
+    await screen.findByText("Auswertung je Variante");
+    // PageViews werden ueber die geteilte Konstante gelabelt, nicht als Rohtoken gezeigt.
+    expect(document.body.textContent).toContain("PageViews");
+    expect(document.body.textContent).not.toContain("__ps_pageview");
+    // ABSOLUTWERTE PRIMAER: die Bezugsgroesse steht in der Zeile.
+    expect(document.body.textContent).toContain("Conversions je Seitenaufruf");
+    expect(document.body.textContent).toContain("A 2 von 40");
+    expect(document.body.textContent).toContain("B 5 von 38");
+  });
+
+  // J11, diskriminierend: die Wortwahl ist eine Zusage an den Nutzer, keine Kosmetik.
+  // Es gibt keine Besucher-Identitaet — "je Besucher" waere eine Zahl, die es nicht gibt.
+  it("J11: nennt NIE eine Rate je Besucher und kuert keinen Sieger", async () => {
+    getVariantCounts.mockResolvedValueOnce({ ok: true, rows: ROWS } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openSettings();
+
+    await screen.findByText("Auswertung je Variante");
+    const text = document.body.textContent ?? "";
+    expect(text).not.toMatch(/je Besucher/i);
+    expect(text).not.toMatch(/Gewinner|Sieger|schlaegt|besser/i);
+  });
+
+  // J13 mit Gegenprobe: ohne die zweite Haelfte bewiese der erste Fall nur, dass der Text
+  // irgendwo fehlt.
+  it("J13: 'ohne Zuordnung' erscheint NUR, wenn die Zahl nicht null ist", async () => {
+    getVariantCounts.mockResolvedValueOnce({ ok: true, rows: ROWS } as never);
+    const view = render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openSettings();
+    await screen.findByText("Auswertung je Variante");
+    expect(screen.queryByText(/Ohne Varianten-Zuordnung/)).toBeNull();
+    view.unmount();
+
+    getVariantCounts.mockResolvedValueOnce({
+      ok: true,
+      rows: [{ ...ROWS[0], count_none: 7 }, ROWS[1]],
+    } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openSettings();
+    await screen.findByText("Auswertung je Variante");
+    expect(document.body.textContent).toContain("Ohne Varianten-Zuordnung: 7");
+  });
+
+  // NENNER NULL — der Zustand unmittelbar nach dem Teststart: die noch nicht
+  // ausgelieferte Variante hat 0 Aufrufe. Eine Rate waere hier 1/0 bzw. 0/0, also
+  // Infinity oder NaN. J11 konsequent zu Ende gedacht: die ABSOLUTWERTE sind primaer und
+  // bleiben stehen, die abgeleitete Rate entfaellt, wenn ihre Grundlage fehlt — es wird
+  // nichts gerundet, geschaetzt oder als Platzhalter erfunden.
+  // ROT DURCH: den `pageviews.count_a > 0`-Guard entfernen (Mutationskandidat) -> im Text
+  // stuende "Infinity" bzw. "NaN".
+  it("Nenner 0 -> Absolutwerte bleiben, KEINE Rate, kein NaN/Infinity", async () => {
+    getVariantCounts.mockResolvedValueOnce({
+      ok: true,
+      rows: [
+        { event_type: "__ps_pageview", count_a: 0, count_b: 12, count_none: 0 },
+        { event_type: "Purchase", count_a: 1, count_b: 3, count_none: 0 },
+      ],
+    } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openSettings();
+
+    await screen.findByText("Auswertung je Variante");
+    const text = document.body.textContent ?? "";
+    // Der Absolutwert steht da — samt seiner Bezugsgroesse 0, die genau das aussagt.
+    expect(text).toContain("A 1 von 0");
+    // Die Rate der A-Seite entfaellt; die der B-Seite steht, weil ihr Nenner traegt.
+    expect(text).toContain("B 3 von 12 (25.0 %)");
+    expect(text).not.toMatch(/NaN|Infinity/);
+  });
+
+  // FEHLENDE PAGEVIEW-ZEILE: ohne Nenner gibt es keine "Conversions je Seitenaufruf" —
+  // die Tabelle mit den Absolutwerten bleibt trotzdem stehen. Real erreichbar, wenn der
+  // PageView-Emitter blockiert wurde, eine Conversion aber durchkam.
+  // ROT DURCH: den `!pageviews`-Guard entfernen (Mutationskandidat) -> die Sektion
+  // rendert "von undefined" oder wirft beim Zugriff auf count_a.
+  it("keine PageView-Zeile -> keine Raten-Sektion, Absolutwerte bleiben", async () => {
+    getVariantCounts.mockResolvedValueOnce({
+      ok: true,
+      rows: [{ event_type: "Purchase", count_a: 1, count_b: 3, count_none: 0 }],
+    } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openSettings();
+
+    await screen.findByText("Auswertung je Variante");
+    expect(screen.queryByText("Conversions je Seitenaufruf")).toBeNull();
+    const text = document.body.textContent ?? "";
+    expect(text).toContain("Purchase");
+    expect(text).not.toContain("undefined");
+    expect(text).not.toMatch(/NaN|Infinity/);
+  });
+
+  // J10 — DER KERN DIESER SCHEIBE fuer die neue Sektion: ein Wurf muss als "nicht ladbar"
+  // sichtbar werden, NICHT als "keine Daten". Der Test setzt zusaetzlich eine Variante B
+  // voraus, weil der Fehlerfall an hasVariantB haengt (ein Projekt ohne Variante bekommt
+  // keine Fehlermeldung zu einer Sektion, die es nie saehe).
+  it("J10: Lese-Effekt WIRFT -> 'nicht geladen', NICHT stillschweigend leer", async () => {
+    getVariantCounts.mockImplementationOnce(
+      (() => Promise.reject(new Error("net::ERR_INTERNET_DISCONNECTED"))) as never,
+    );
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+
+    await waitFor(() =>
+      expect(document.body.textContent).toContain(
+        "Die Auswertung konnte nicht geladen werden",
+      ),
+    );
+    // Die Sektion behauptet in diesem Zustand NICHTS ueber Zahlen.
+    expect(screen.queryByText("Conversions je Seitenaufruf")).toBeNull();
   });
 });

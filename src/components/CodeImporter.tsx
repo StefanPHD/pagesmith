@@ -15,6 +15,7 @@ import {
   getVariantBPublished,
   getAdblockLoss,
   getEventCounts,
+  getVariantCounts,
   listProjects,
   loadProject,
   publishProject,
@@ -28,7 +29,12 @@ import {
   type AdblockLoss,
   type EventCount,
   type ProjectListItem,
+  type VariantCountsResult,
 } from "@/app/projects/actions";
+// Der reservierte PageView-Token als KONSTANTE, nicht als Literal (Scheibe 9c-1). Die
+// Datei traegt bewusst KEIN "server-only" (dort ausdruecklich kommentiert), ist also
+// client-importierbar — genau dafuer wurde sie seinerzeit aus tracking/meta.ts geloest.
+import { PAGEVIEW_EVENT } from "@/lib/analytics/events";
 import {
   findMapping,
   findOrphans,
@@ -93,10 +99,18 @@ const ACTION_ICON: Record<Mapping["type"], string> = {
 
 // Anzeige-Label je event_type fuer die Analytics-Sektion (Scheibe 3). Der reservierte
 // PageView-Token wird lesbar; jeder Conversion-Name (Purchase/Lead/Custom…) steht als
-// Klartext. Der '__ps_pageview'-Wert MUSS mit PAGEVIEW_EVENT (lib/analytics/events.ts)
-// uebereinstimmen — bewusst als reines ANZEIGE-Mapping hier, nicht als zweite Quelle.
+// Klartext.
+//
+// MITGENOMMEN IN 9c-1 (deklariert, nicht stillschweigend): hier stand '__ps_pageview' als
+// handgetipptes LITERAL mit dem Kommentar, es MUESSE mit PAGEVIEW_EVENT uebereinstimmen —
+// eine Uebereinstimmung per Zusage statt per Konstruktion. Da 9c-1 mit der Nenner/Zaehler-
+// Trennung eine ZWEITE Stelle in dieser Datei anlegt, die denselben Token kennt, waere das
+// Literal ab jetzt die dritte Fundstelle desselben Wertes gewesen. Die Konstante ist
+// client-importierbar (events.ts traegt bewusst kein server-only), also gibt es keinen
+// Grund fuer ein Duplikat. Verhalten unveraendert; durch die bestehenden Render-Tests
+// gedeckt.
 function eventTypeLabel(eventType: string): string {
-  return eventType === "__ps_pageview" ? "PageViews" : eventType;
+  return eventType === PAGEVIEW_EVENT ? "PageViews" : eventType;
 }
 
 // FESTE Anzeige-Reihenfolge der Badges pro Element (Scheibe 1a): deterministisch,
@@ -265,6 +279,13 @@ export default function CodeImporter({
   // Adblocker-Verlustrate (Phase 8 Scheibe B). null = noch keine Aussage moeglich
   // (Neutral-Status), NICHT "0% Verlust". Projekt-abgeleitet wie eventCounts.
   const [adblockLoss, setAdblockLoss] = useState<AdblockLoss | null>(null);
+  // Auswertung je Variante (Phase 9 Scheibe 9c-1). DREI Zustaende, bewusst nicht zwei:
+  // null = noch nicht geladen, {ok:false} = NICHT LADBAR, {ok:true} = geladen (ggf. mit
+  // leeren rows). Genau diese Unterscheidung fehlt den beiden Kacheln darueber, deren
+  // Fehlerzustand in einem Leer-Wert verschwindet — hier wird sie eingeloest.
+  const [variantCounts, setVariantCounts] = useState<VariantCountsResult | null>(
+    null
+  );
   // Ausklappbares Projekt-Menue (Default zu: sein Inhalt rendert erst beim
   // Oeffnen clientseitig -> keine Hydration-Mismatches bei relativen Zeitstempeln).
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
@@ -582,6 +603,33 @@ export default function CodeImporter({
     };
   }, [projectId]);
 
+  // Auswertung je Variante laden (Scheibe 9c-1) — gleicher Schnitt wie die beiden Effects
+  // darueber (cancelled-Guard, setState nur im then), mit EINEM bewussten Unterschied:
+  //
+  // safeAction STATT .catch() AUF DEN LEER-WERT. Die Achse ist nicht "Handler vs. Effekt",
+  // sondern ob ein UI-Zustand am Aufruf haengt (s. "## Immer beachten"): hier haengt ein
+  // FEHLERKANAL daran. Ein Wurf muss als "nicht ladbar" sichtbar werden, nicht als "keine
+  // Daten" — der Ersatzwert ist deshalb {ok:false} und NICHT {ok:true, rows:[]}.
+  //
+  // Die beiden Effects DARUEBER behalten ihr .catch()-Verhalten bewusst unveraendert: das
+  // ist live bewiesener Bestand, und ein Umbau ohne Anlass waere genau die Regression, die
+  // diese Scheibe nicht riskieren soll. Der Backlog-Punkt bleibt fuer sie offen.
+  useEffect(() => {
+    let cancelled = false;
+    const load = projectId
+      ? safeAction<VariantCountsResult>(
+          () => getVariantCounts(projectId),
+          { ok: false }
+        )
+      : Promise.resolve<VariantCountsResult | null>(null);
+    load.then((result) => {
+      if (!cancelled) setVariantCounts(result);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
+
   // "Ist Variante B veroeffentlicht?" laden (Scheibe 9b-1p) — identischer Schnitt wie
   // die beiden Analytics-Effects darueber (cancelled-Guard, setState nur im then).
   // Leer-Wert ist null (nicht ermittelbar), NICHT false: false waere eine Behauptung.
@@ -645,6 +693,31 @@ export default function CodeImporter({
   const hasVariantB = activeVariant === "b" || stashHtml !== null;
   // Anzeige-Label der aktiven Variante (Toolbar, Export-Button, Publish-Hinweis).
   const activeVariantLabel = activeVariant === "b" ? "B" : "A";
+
+  // --- SICHTBARKEIT DER VARIANTEN-AUSWERTUNG (Scheibe 9c-1) ---
+  //
+  // AUS DEN DATEN ABGELEITET: gibt es keine Zeile mit Varianten-Zuordnung, gibt es nichts
+  // auszuwerten -> die Sektion erscheint gar nicht. Damit sieht ein Projekt, fuer das nie
+  // ein Test lief, KEINE UI-Aenderung (Invariante J3) — ohne dass dafuer ein eigener
+  // Zustand gehalten werden muesste.
+  //
+  // BEKANNTER UEBERGANG NACH 9c-2 (hier bewusst NICHT vorgebaut, damit er dort nicht als
+  // Bug auftaucht): Sobald 9c-2 einen Lauf-Beginn einfuehrt, KIPPT diese Ableitung. Wer
+  // einen Test NEU startet, hat im neuen Fenster null zugeordnete Zeilen — die Sektion
+  // verschwaende genau in dem Moment, in dem er auf sie schaut. Ab dann muss die
+  // Sichtbarkeit am Zeitstempel haengen und die leere Sektion "noch keine Daten" sagen.
+  // Fuer 9c-1, das kein Fenster kennt, ist die Daten-Ableitung die richtige und die
+  // ehrlichere: sie behauptet nichts ueber einen Zeitraum.
+  const variantRows = variantCounts?.ok ? variantCounts.rows : [];
+  const hasVariantData = variantRows.some(
+    (r) => r.count_a > 0 || r.count_b > 0
+  );
+  // Der FEHLERFALL kann nicht datengetrieben entschieden werden — bei {ok:false} wissen
+  // wir gerade NICHT, ob es Daten gaebe. Er wird deshalb an hasVariantB gehaengt: dort ist
+  // eine Auswertung plausibel, und ein Projekt ohne Variante B bleibt frei von einer
+  // Fehlermeldung zu einer Sektion, die es nie zu sehen bekaeme (J3).
+  const variantCountsFailed = variantCounts?.ok === false;
+  const showVariantCounts = hasVariantData || (variantCountsFailed && hasVariantB);
 
   // DIE PAAR-ABLEITUNG, EINMAL — geteilt zwischen Publish-HANDLER und Publish-BUTTON.
   // Sie lag frueher INNERHALB von handlePublish; der Leer-Guard braucht dieselben
@@ -2202,6 +2275,137 @@ export default function CodeImporter({
                   </>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Auswertung je Variante (Phase 9 Scheibe 9c-1). EIGENE Sektion, additiv neben
+              der projektweiten Statistik — bewusst NICHT in sie hinein:
+
+              Stuende eine projektweite Gesamtzahl neben den Varianten-Zahlen, fragte der
+              Nutzer zu Recht, warum das nicht aufgeht. Es sind ZWEI Fragen (projektweit vs.
+              varianten-zugeordnet), und getrennte Sektionen sagen das; geteilte Spalten
+              laden zum Addieren ein und produzieren einen Support-Fall aus einer korrekten
+              Anzeige.
+
+              WORTWAHL (nicht verhandelbar, gleiche Disziplin wie "nur server-seitig
+              erfasst"): "Conversions je Seitenaufruf" — NIEMALS "Conversion-Rate je
+              Besucher". Es gibt keine Besucher-Identitaet: ein Besucher, der dreimal laedt,
+              zaehlt dreimal. Die Bezugsgroesse steht im Namen, sonst liest der Nutzer eine
+              Zahl, die es nicht gibt.
+
+              ABSOLUTWERTE PRIMAER, Rate sekundaer, KEINE Sieger-Auszeichnung, keine
+              Ampelfarben, keine Schwelle: die Zielgruppe trifft mit diesen Zahlen
+              Budget-Entscheidungen, und eine Darstellung, die einen Sieger suggeriert,
+              erzeugt Vertrauen, das sie nicht deckt. "12 von 340" ENTHAELT die
+              Bezugsgroesse, "3,5 %" nicht. */}
+          {projectId && showVariantCounts && (
+            <div className="mt-4 border-t border-gray-200 pt-4">
+              <h2 className="mb-1 text-sm font-medium text-gray-700">
+                Auswertung je Variante
+              </h2>
+              <p className="mb-3 text-xs text-gray-500">
+                Server-seitig erfasste Events, aufgeteilt nach ausgelieferter
+                Variante.
+              </p>
+
+              {variantCountsFailed ? (
+                /* "LEER" UND "NICHT LADBAR" SEHEN NICHT GLEICH AUS (Backlog-Punkt, hier
+                   fuer DIESE Sektion eingeloest). Eine Sektion, die bei einem Ladefehler
+                   "keine Daten" sagt, behauptet etwas, das sie nicht belegen kann. Der
+                   Text nennt weder Ursache noch Ergebnis — dieselbe Wortwahl-Disziplin
+                   wie ACTION_THROW_MESSAGE. */
+                <p className="text-xs text-amber-700">
+                  Die Auswertung konnte nicht geladen werden — bitte Seite neu
+                  laden.
+                </p>
+              ) : (
+                <>
+                  {/* Der NENNER (Seitenaufrufe je Variante) und die ZAEHLER (Conversions)
+                      stehen in DERSELBEN Tabelle und stammen aus DEMSELBEN RPC-Ergebnis —
+                      getrennt wird hier, beim Aufrufer, anhand des reservierten Tokens.
+                      Eine zweite Abfrage waere ein zweiter Roundtrip fuer Daten, die
+                      dieselbe Gruppierung ohnehin liefert, und koennte gegen den Zaehler
+                      desynchronisieren. */}
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-xs text-gray-500">
+                        <th className="pb-1 text-left font-medium">Event</th>
+                        <th className="pb-1 text-right font-medium">
+                          Variante A
+                        </th>
+                        <th className="pb-1 text-right font-medium">
+                          Variante B
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {variantRows.map((r) => (
+                        <tr key={r.event_type}>
+                          <td className="py-0.5 text-gray-700">
+                            {eventTypeLabel(r.event_type)}
+                          </td>
+                          <td className="py-0.5 text-right font-semibold tabular-nums text-gray-900">
+                            {r.count_a}
+                          </td>
+                          <td className="py-0.5 text-right font-semibold tabular-nums text-gray-900">
+                            {r.count_b}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {/* CONVERSIONS JE SEITENAUFRUF — Absolutwerte zuerst, Rate in Klammern.
+                      Nur fuer Event-Arten, die KEINE PageViews sind, und nur wenn im
+                      Nenner ueberhaupt Aufrufe stehen (keine Division durch 0, keine
+                      erfundene Zahl). */}
+                  {(() => {
+                    const pageviews = variantRows.find(
+                      (r) => r.event_type === PAGEVIEW_EVENT
+                    );
+                    const conversions = variantRows.filter(
+                      (r) => r.event_type !== PAGEVIEW_EVENT
+                    );
+                    if (!pageviews || conversions.length === 0) return null;
+                    return (
+                      <div className="mt-3 border-t border-gray-100 pt-2">
+                        <h3 className="mb-1 text-xs font-medium text-gray-700">
+                          Conversions je Seitenaufruf
+                        </h3>
+                        <ul className="flex flex-col gap-0.5">
+                          {conversions.map((c) => (
+                            <li key={c.event_type} className="text-xs text-gray-600">
+                              {c.event_type}: A {c.count_a} von{" "}
+                              {pageviews.count_a}
+                              {pageviews.count_a > 0 &&
+                                ` (${((c.count_a / pageviews.count_a) * 100).toFixed(1)} %)`}
+                              {" · "}B {c.count_b} von {pageviews.count_b}
+                              {pageviews.count_b > 0 &&
+                                ` (${((c.count_b / pageviews.count_b) * 100).toFixed(1)} %)`}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })()}
+
+                  {/* ZEILEN OHNE ZUORDNUNG — NUR wenn ihre Zahl nicht null ist (J13). Sie
+                      sind das einzige Signal ueber Messverluste, das der Owner hat
+                      (cookie-verweigernder Browser, Export-Download auf fremder Domain,
+                      Seite vor der Aktivierung ausgeliefert). Sie wegzulassen hiesse, den
+                      Nenner stillschweigend zu beschoenigen.
+                      OHNE Lauf-Abgrenzung (9c-2) zaehlen hier AUCH alle Zeilen mit, die vor
+                      dem ersten Test entstanden sind — der Text sagt deshalb "ohne
+                      Zuordnung" und nicht "Messverlust". */}
+                  {variantRows.some((r) => r.count_none > 0) && (
+                    <p className="mt-3 text-xs text-gray-500">
+                      Ohne Varianten-Zuordnung:{" "}
+                      {variantRows.reduce((sum, r) => sum + r.count_none, 0)}{" "}
+                      Events.
+                    </p>
+                  )}
+                </>
+              )}
             </div>
           )}
 

@@ -1165,3 +1165,67 @@ export async function getAdblockLoss(
   if (error || !data) return null;
   return (data as AdblockLoss[])[0] ?? null;
 }
+
+/**
+ * Eine Zeile der Varianten-Auswertung (Phase 9 Scheibe 9c-1): wie oft ein event_type in
+ * Variante A, in Variante B und OHNE Zuordnung auftrat.
+ *
+ * FESTE SPALTEN statt einer Zeile je (event_type, variant): eine Gruppierung liefert nur
+ * Kombinationen, die es gibt — erscheint eine Event-Art nur in A, FEHLTE die B-Zeile ganz,
+ * und "fehlt" ist nicht "0". Die filter-Aggregate der RPC machen die Luecke strukturell
+ * unmoeglich (s. Migration 0019).
+ */
+export type VariantCount = {
+  event_type: string;
+  count_a: number;
+  count_b: number;
+  count_none: number;
+};
+
+/**
+ * Ergebnis der Varianten-Auswertung — DISKRIMINIERT "leer" von "nicht ladbar".
+ *
+ * DAS IST DER UNTERSCHIED ZUM BESTANDSMUSTER, und er ist der eigentliche Zweck dieser
+ * Form: getEventCounts bildet JEDEN Fehlerzustand auf [] ab, getAdblockLoss auf null. Die
+ * zugehoerigen Kacheln sagen dann "Noch keine Events" bzw. "Warte auf erste Bestaetigung"
+ * — eine AUSSAGE, die sie nicht belegen koennen (Backlog-Punkt "LEER UND NICHT LADBAR SIND
+ * IM UI NICHT UNTERSCHEIDBAR"). Ein leeres Array traegt diese Unterscheidung nicht, ein
+ * Union-Typ schon: {ok:false} kann das UI nicht versehentlich als "keine Daten" rendern,
+ * weil es die Zeilen gar nicht erst herausgibt.
+ *
+ * Die BESTEHENDEN Kacheln bleiben bewusst unveraendert — ein live bewiesener Pfad wird
+ * nicht ohne Anlass umgebaut. Der Backlog-Punkt bleibt fuer sie offen.
+ */
+export type VariantCountsResult =
+  | { ok: true; rows: VariantCount[] }
+  | { ok: false };
+
+/**
+ * Analytics-Read (Phase 9 Scheibe 9c-1): Counts je event_type UND Variante fuer EIN Projekt.
+ *
+ * Baustil wie getEventCounts/getAdblockLoss: User-JWT-Client (createClient) -> RLS ist
+ * AKTIV, die get_variant_counts-Funktion laeuft SECURITY INVOKER, die
+ * events_select_own-Policy filtert die Aggregation von innen. Der p_project_id-Scope waehlt
+ * das Projekt (WELCHES), die RLS-Policy erzwingt die Ownership (WESSEN Events) — ein
+ * fremdes Projekt liefert leer, nie fremde Zahlen.
+ *
+ * Read-only, kein Schreibpfad. {data,error} destrukturiert. ABWEICHEND vom Bestandsmuster
+ * muendet der Fehlerzustand NICHT in einen Leer-Wert, sondern in {ok:false} (s.
+ * VariantCountsResult). Eine fehlende Session ist ebenfalls {ok:false}: ohne Session ist
+ * die Frage nicht beantwortbar, und "keine Daten" waere die falsche Auskunft.
+ */
+export async function getVariantCounts(
+  projectId: string
+): Promise<VariantCountsResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false };
+
+  const { data, error } = await supabase.rpc("get_variant_counts", {
+    p_project_id: projectId,
+  });
+  if (error || !data) return { ok: false };
+  return { ok: true, rows: data as VariantCount[] };
+}

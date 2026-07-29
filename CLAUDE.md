@@ -591,13 +591,102 @@ anzufassen ist mehr Risiko als nötig.
     trotzdem (zwei offene Tabs desselben Projekts) — der Server-Guard fängt ihn,
     der Unit-Wächter deckt die Anzeige ab. Nachweis bleibt der Test, nicht der
     Live-Blick.
-- OFFEN -> 9b-2: variant in Ingest und Persist. VORAB ZU ENTSCHEIDEN (Gate für
-  9b-2): Soll der Ingest die Variante nur schreiben, wenn der Test AKTIV ist?
-  Ein altes Cookie nach Testende würde sonst Events einer Variante zuschreiben,
-  die gar nicht ausgeliefert wurde. Naheliegender Weg: den Resolver additiv um
-  ab_test_active erweitern (gleicher Präzedenzfall wie das blocked-Feld in 2a —
-  eine Spalte mehr im selben Select, KEINE zweite Query). Am Code zu prüfen, nicht
-  vorab zu setzen.
+- OFFEN -> 9b-2: variant in Ingest und Persist. Die Scheibe ist ENTSCHIEDEN, aber
+  NICHT gebaut; das frühere Gate ist keine offene Frage mehr. Fassung, Begründungen
+  und die am Code zu prüfenden Kandidaten stehen GENAU EINMAL in "### Scheibe 9b-2"
+  direkt unten — dort wird gepflegt, hier steht nur der Status.
+
+### Scheibe 9b-2 — variant in Ingest und Persist (ENTSCHIEDEN, Bau ausstehend)
+Zweite Hälfte von 9b: die Varianten-Dimension wird GESCHRIEBEN. Seit 9b-1 liefert die
+Live-URL beide Varianten aus, aber jede Event-Zeile trägt weiterhin variant NULL — 9c
+hätte nichts zu aggregieren. Die Entscheidungen unten sind VOR dem Bau getroffen; der Bau
+folgt in einer eigenen Runde (Stufe 1 = nur Plan). KEIN VERIFIZIERT-Block — der kommt mit
+dem Abschluss-Vermerk nach dem Live-Test.
+
+- GATE — ENTSCHIEDEN: geschrieben wird variant NUR bei aktivem Test (ab_test_active).
+  ZWEI Begründungen, beide tragend (keine ist Beiwerk):
+  (a) variant ist DIESELBE WERTKLASSE WIE source: die Werte sind PERMANENT und werden nie
+      nachträglich transformiert -> sie müssen ab Zeile 1 stimmen. Eine Zeile mit
+      variant='b' bei inaktivem Test BEHAUPTET eine Auslieferung, die 9b-1 live widerlegt
+      hat ("FLAG SCHLÄGT COOKIE": bei inaktivem Test liefert die Route ausnahmslos A).
+      Nicht nachträglich heilbar.
+  (b) NULL GRENZT DEN TESTZEITRAUM AB. Ohne Gate wäre "variant is not null" bedeutungslos:
+      Zeilen von VOR und NACH dem Test wären von Zeilen WÄHRENDDESSEN nicht
+      unterscheidbar.
+- VERWORFEN, je mit Grund:
+  (a) ROH SCHREIBEN, IN 9c FILTERN: scheitert an Gate-Begründung (a). Korrektheit gehört
+      an die SCHREIBZEIT — ein Filter in der Auswertung repariert keine Zeile, die eine
+      Auslieferung behauptet.
+  (b) SERVE SPIEGELN, BEI INAKTIVEM TEST 'a' SCHREIBEN: färbte JEDES Projekt, auch die
+      grosse Mehrheit ohne jeden Test — 'a' hiesse dort "der einzige Inhalt, den es gibt"
+      statt "Bucket A eines laufenden Tests", also zwei Bedeutungen in EINER Spalte.
+      Zusätzlich liefen nach Testende neue A-Zeilen in den NENNER des bereits
+      abgeschlossenen Tests.
+- BEKANNTER PREIS DES GATES (steht hier, damit er in 9c nicht als Bug gemeldet wird): Wird
+  der Test gestoppt, WÄHREND eine Sitzung läuft, ist der PageView bereits mit 'b'
+  protokolliert, die danach eintreffende Conversion aber NULL -> die Conversion-Rate wird
+  UNTERSCHÄTZT. Der Fehler ist EINSEITIG und auf die zum Stopp-Zeitpunkt LAUFENDEN
+  Sitzungen BEGRENZT. Ohne Gate wäre die Fehlzuordnung UNBEGRENZT — jeder wiederkehrende
+  Besucher mit Session-Cookie trüge sie weiter.
+- INVARIANTE — DER INGEST WEIST NIE ZU, ER LIEST NUR: Der Münzwurf bleibt AUSSCHLIESSLICH
+  in der Serve-Route (Grundsatzentscheidung "SPLIT LIEGT KOMPLETT IN DER SERVE-ROUTE").
+  Fall "Test aktiv, aber KEIN Cookie im Request" (die Seite wurde vor der Aktivierung
+  ausgeliefert) -> NULL, KEIN Würfeln im Ingest. Sonst gäbe es eine ZWEITE
+  Zuweisungs-Autorität, und zwei Autoritäten können divergieren.
+- DER COOKIE-WERT IST CLIENT-KONTROLLIERTE EINGABE: HttpOnly schützt vor JS IM BROWSER,
+  NICHT vor einem gefälschten Cookie-Header. Ungeprüft durchgereicht bricht der Wert am
+  CHECK events_variant_valid — und weil persistEvent in after() läuft, ist das KEIN Fehler
+  nach aussen, sondern eine STILL verlorene Event-Zeile. Validierung VOR dem Persist ist
+  damit Pflicht, nicht Defensive. Sie läuft über das GETEILTE Prädikat aus der reinen Datei
+  src/lib/hosting/variant.ts — dieselbe Datei, die schon Serve-Pfad und Aktivierungs-Riegel
+  bedient (s. 9b-1p, deliverableVariantB). KEIN zweiter Cookie-Parser und KEINE zweite
+  Wertliste im Ingest — "kein drittes Urteil". AM CODE ZU PRÜFEN (hier NICHT gesetzt): ob
+  9b-1 dort bereits ein passendes Prädikat für den COOKIE-WERT hinterlassen hat oder ob es
+  additiv entsteht.
+- GESCHRIEBEN WIRD AUF BEIDEN ZEILEN — der SERVER-Zeile UND der BROWSER-Bestätigungszeile
+  (source='browser'). BEGRÜNDUNG: variant ist eine Eigenschaft der BEOBACHTUNG, genau wie
+  source — sie hält fest, was das Cookie IM MOMENT DIESER BEOBACHTUNG sagte; sie ist KEINE
+  Aussage über die eventID. Die Bestätigungszeile wegzulassen verbaut eine Verlustrate JE
+  VARIANTE.
+- persistEvent BEKOMMT variant ALS PFLICHTPARAMETER vom Typ 'a'|'b'|null, KEIN Default.
+  Dieselbe Denkfigur wie bei source: jede Aufrufstelle MUSS entscheiden, und NULL ist dann
+  eine getroffene Entscheidung statt einer Auslassung.
+- REIHENFOLGE UNVERÄNDERT: 400-Guard vor jedem DB-Zugriff, danach der EXPLIZITE
+  blocked-Zweig, ERST DANN die Varianten-Logik. Ein gesperrtes Projekt persistiert nicht —
+  dort gibt es keine Varianten-Frage. Massgeblich bleiben die Regeln unter "## Immer
+  beachten": INGEST-204-CONTAINMENT und KILL-SWITCH ALS EXPLIZITER, FAIL-CLOSED ZWEIG.
+- RESOLVER — KANDIDAT, KEIN BEFUND: naheliegend ist eine ADDITIVE Erweiterung um
+  ab_test_active im SELBEN Select (Präzedenzfall: das blocked-Feld aus Scheibe 2a). Der
+  IST-ZUSTAND des Resolvers ist in DIESER Runde NICHT erhoben worden; die Stufe 1 des Baus
+  prüft ihn am Code, bevor sie ihn festschreibt.
+  NEBENBEI, bewusst NICHT behoben: der Name getCapiConfigByTrackingKey driftet mit jedem
+  solchen Feld weiter von seinem Inhalt weg. KEIN Umbenennen auf dem heissesten Pfad.
+- KEINE MIGRATION in 9b-2: events.variant samt CHECK kam bereits mit 0017 ("ANLEGEN UND
+  BEFÜLLEN NICHT VERSCHMELZEN"). 9b-2 ist reine Anwendungslogik.
+- BEKANNTE SCHWÄCHERE FÄLLE (vollständig, damit keiner später als Bug auftaucht):
+  (a) EXPORT-DOWNLOAD AUF FREMDER DOMAIN: kein Cookie -> NULL. Bereits in den
+      Grundsatzentscheidungen oben festgehalten, hier nur als Bestandteil der Liste.
+  (b) COOKIE-VERWEIGERNDER BROWSER: sieht B, meldet NULL und würfelt beim nächsten Request
+      neu. BEWUSST NICHT REPARIERT — die Variante ins ausgelieferte HTML zu backen wäre ein
+      CLIENT-GESENDETES Analytik-Feld und bräche die Marker-Hygiene (s. "## Immer
+      beachten", TRACKING-source).
+  (c) NULL IST NACH 9b-2 MEHRDEUTIG: kein Test / kein Cookie / ungültiges Cookie / fremde
+      Domain. Für 9c genügt die Lesart "gehört zu keiner Testbeobachtung"; eine
+      MESSQUALITÄTS-Kennzahl je Variante bräuchte mehr, als die Spalte trägt.
+- KEIN BACKFILL für die seit 9b-1 (2026-07-27) entstandenen Zeilen mit variant NULL. Sie
+  sind ehrlich unzuordenbar — ein Backfill wäre geraten, und geratene Werte in einer
+  permanenten Spalte sind genau das, was Gate-Begründung (a) verhindert.
+- VORGABE FÜR 9c — LAUF-ABGRENZUNG (jetzt entschieden, GEBAUT WIRD SIE IN 9c):
+  BEFUND: Auch MIT Gate grenzt NULL nur EINEN Testzeitraum ab. Stoppt der Kunde den Test,
+  ändert Variante B und startet erneut, sind die Zeilen BEIDER LÄUFE ununterscheidbar — 9c
+  aggregierte über zwei verschiedene B-Inhalte, und der Kunde hat keinen Weg zu einem
+  sauberen Neustart (Events sind aus dem UI nicht löschbar).
+  ENTSCHEIDUNG: Die Semantik gilt ab jetzt, gebaut wird sie in 9c — 9b-2 bleibt
+  migrationsfrei und EINZWECKIG (der Ingest ist der Pfad JEDES Besuchers; derselbe Grund,
+  aus dem 9b überhaupt in 9b-1/9b-2 geschnitten wurde).
+  KANDIDAT (ausdrücklich KANDIDAT, hier NICHT gesetzt): nullable ab_test_started_at auf
+  projects, gesetzt von setAbTestActive; 9c filtert created_at >= started_at; NULL
+  degradiert sauber auf das heutige Verhalten. 9c prüft das am Code.
 
 ### Fix-Scheibe safeAction — Client-Fehlerbehandlung (ABGESCHLOSSEN — live bewiesen 2026-07-27, Commit bd05e34)
 WARUM DIESER ABSCHNITT HIER STEHT (sonst wirkt er später deplatziert): Die Scheibe ist

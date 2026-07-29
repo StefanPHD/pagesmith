@@ -100,8 +100,11 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       — ABGESCHLOSSEN & live bewiesen 2026-07-29, Commit 24a1c58, KEINE
       Migration). ANLEGEN UND BEFÜLLEN NICHT VERSCHMELZEN: events.variant wurde
       mit 0017 ANGELEGT und mit 9b-2 BEFÜLLT — zwei Scheiben, bewusst getrennt.
-      9b ist damit KOMPLETT; die Phase bleibt OFFEN, weil 9c (Auswertung je
-      Variante) aussteht.
+      9b ist damit KOMPLETT. 9c ist seinerseits GETEILT: 9c-1 (Auswertung je
+      Variante, RPC get_variant_counts + eigene UI-Sektion — ABGESCHLOSSEN &
+      live bewiesen 2026-07-29, Commit 8844798, Migration 0019) und 9c-2
+      (Lauf-Abgrenzung: Zeitstempel beim Teststart + Zeitfilter — OFFEN, eigene
+      Migration). Die Phase bleibt OFFEN, weil 9c-2 aussteht.
       Grundsatzentscheidungen + Scheiben-Detail: "## Aktiver Stand — Phase 9".
 - [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
@@ -170,8 +173,21 @@ diesmal gemessen (indexdef), nicht aus den Migrationsdateien übernommen.
 FALLE bei jeder Wiederholung: schema_migrations existiert DREIMAL (public / auth / realtime).
 Jede Katalog-Abfrage MUSS das Schema filtern — sonst liefert sie drei Zeilen mit
 unterschiedlichen RLS-Werten und sieht wie ein Befund aus.
+ZWEI ZEILEN TRAGEN EINEN NACHTRAG VOM 2026-07-29 (Scheibe 9c-1, Migration 0019) — sie
+stammen NICHT aus der Probe, und sie sind unterschiedlich stark:
+- MIGRATIONSSTAND: ABGELESEN aus public.schema_migrations (Protokollzeile 0019 mit
+  applied_at, im Live-Test bestätigt). Die Tabelle IST hier das Instrument.
+- FUNKTIONSZAHL: GERECHNET (4 + 1). pg_proc wurde NICHT befragt; dass sonst nichts
+  dazugekommen ist, ist eine Ableitung, keine Messung.
+Der nächste Probenlauf ERSETZT beide. FÄLLIG wird er, sobald 9c-2 seine Migration gelegt
+hat — dann ist der Block an mehreren Stellen veraltet und EIN Lauf deckt alles ab. Kein
+eigener Offener Punkt: die Fälligkeit hängt an der nächsten Migration, nicht am Kalender.
 
-- MIGRATIONSSTAND: 0001-0018. Seit 0018 existiert public.schema_migrations als PROTOKOLL
+- MIGRATIONSSTAND: 0001-0019. NACHGETRAGEN (nicht Teil der Probe vom 2026-07-28): 0019
+  (get_variant_counts, Scheibe 9c-1) wurde am 2026-07-29 ausgeführt; die Protokollzeile mit
+  applied_at ist bestätigt. Alles Übrige dieser Sektion stammt unverändert aus der Probe vom
+  2026-07-28 — wer den Gesamtstand neu erhebt, fährt supabase/checks/db-stand.sql.
+  Seit 0018 existiert public.schema_migrations als PROTOKOLL
   (version PK / filename / applied_at; RLS aktiv, KEINE Policy). Gemessen: 18 Zeilen, applied_at
   NUR bei 0018 (2026-07-27 18:09:01 UTC).
   EHRLICHE EINORDNUNG: Die Zeilen 0001-0017 sind ein BACKFILL aus 0018, KEIN Vollzugsnachweis —
@@ -230,12 +246,17 @@ unterschiedlichen RLS-Werten und sieht wie ein Befund aus.
   domains: domains_pkey (label); domains_custom_host_key UNIQUE (custom_host) WHERE custom_host
     IS NOT NULL; domains_project_id_idx (project_id).
   (projects_blocked_idx und domains_project_id_idx waren bisher in KEINER Doku-Zeile erfasst.)
-- FUNKTIONEN in public: VIER.
+- FUNKTIONEN in public: FÜNF (VIER zum Zeitpunkt der Probe vom 2026-07-28, plus die mit 0019
+  am 2026-07-29 hinzugekommene — NACHGETRAGEN, nicht neu gemessen).
   get_event_counts(p_project_id) -> TABLE(event_type, count), gefiltert auf source='server'
     (0014) — SECURITY INVOKER, stable, search_path=public.
   get_adblock_loss(p_project_id) -> TABLE(total_server_conversions, confirmed_conversions,
     first_confirm_at) (0015) — INVOKER, stable, search_path=public.
-  BEIDE RPCs: SECURITY INVOKER — die RLS des Aufrufers filtert von INNEN. Das ist eine
+  get_variant_counts(p_project_id) -> TABLE(event_type, count_a, count_b, count_none),
+    gefiltert auf source='server' (0019, Scheibe 9c-1) — INVOKER, stable,
+    search_path=public. Der source-Filter ist WÖRTLICH aus get_event_counts übernommen;
+    Divergenz zeigte zwei unvereinbare Zahlen im selben Dashboard.
+  ALLE DREI RPCs: SECURITY INVOKER — die RLS des Aufrufers filtert von INNEN. Das ist eine
     Entscheidung, kein Zufall: als DEFINER würden die RPCs die RLS umgehen und Zahlen über
     ALLE Tenants liefern.
   set_updated_at() — Trigger-Funktion, INVOKER, volatile, search_path=public.
@@ -779,11 +800,27 @@ unterscheidbar.
         NULL, kein Würfeln).
     (b) KEINE Aussage über die VERTEILUNG unter echtem Traffic — das ist 9c-Gebiet.
 
-### Scheibe 9c — Auswertung je Variante (ENTSCHIEDEN, Bau ausstehend)
+### Scheibe 9c — Auswertung je Variante — GETEILT: 9c-1 ABGESCHLOSSEN (live bewiesen 2026-07-29, Commit 8844798, Migration 0019), 9c-2 OFFEN
 Die letzte Scheibe der Phase: aus den seit 9b-2 zugeordneten Zeilen wird eine Aussage.
-Die Entscheidungen unten sind VOR dem Bau getroffen; der Bau folgt in einer eigenen Runde
-(Stufe 1 = nur Plan) und bringt — anders als 9b-2 — eine MIGRATION mit. KEIN
-VERIFIZIERT-Block; der kommt mit dem Abschluss-Vermerk nach dem Live-Test.
+DER SCHNITT (in der Stufe 1 vorgeschlagen, vor dem Bau entschieden):
+- 9c-1 — AUSWERTUNG je Variante, OHNE Lauf-Abgrenzung. Migration 0019 legt AUSSCHLIESSLICH
+  eine neue Lese-RPC an, dazu Read-Action und eigene UI-Sektion. ABGESCHLOSSEN.
+- 9c-2 — LAUF-ABGRENZUNG (Zeitstempel beim Teststart, Zeitfilter in der Auswertung).
+  OFFEN, eigene Runde, eigene Migration.
+WARUM DIESE LINIE UND NICHT "DATENWEG GEGEN DARSTELLUNG" (die naheliegendere): eine erste
+Scheibe aus Migration + Action + RPC wäre NICHT DEMOBAR gewesen — man hätte sie nur im
+SQL-Editor gesehen, und eine Scheibe ohne demobare Wirkung ist kein guter Schnitt. Die
+gewählte Linie trennt stattdessen nach RISIKO-ASYMMETRIE: 9c-1 fasst KEINE bestehende
+Tabelle an (ein Fehlschlag ist ein Code-Revert, die RPC bliebe ungenutzt liegen), 9c-2
+fasst die Projektzeile UND den Owner-Schreibpfad der Aktivierung an. Diese beiden Risiken
+zu bündeln wäre dieselbe Bündelung, aus der 9b in 9b-1/9b-2 geschnitten wurde.
+MÖGLICH WURDE DIE TRENNUNG DURCH J8: "Zeitstempel NULL -> alle Zeilen mit Variante" war von
+Anfang an das dokumentierte Zielverhalten, nicht eine Übergangskrücke. 9c-1 liefert genau
+das, 9c-2 verschärft es — kein Wegwerf-Code.
+STATUS: Die Bullets unten sind die HERLEITUNG (Stand der Entscheidung VOR dem Bau) und
+bleiben inhaltlich stehen, einschliesslich der OFFENEN PRÜFUNGEN — was der Bau daran
+erhoben hat, steht im "AUS DEM BAU"-Block, was der Live-Test gemessen hat, im
+VERIFIZIERT-Block. Gleiche Trennung wie bei 9b-2.
 DIESE RUNDE HAT NICHTS AM CODE ERHOBEN. Alles, was am Code zu klären ist, steht unten
 gesammelt als OFFENE PRÜFUNG — kein Dateipfad, keine Funktionssignatur, keine
 Migrationsnummer wird hier als Tatsache behauptet. (Anlass: in 9b-2 stand ein geratener
@@ -932,6 +969,107 @@ Dateipfad in der Vorgabe und war falsch; der Bau hat ihn korrigiert.)
   (5) Die tatsächlich nächste freie Migrationsnummer ist am Verzeichnis ABZULEITEN, NIE
       hartzukodieren. Eine hier notierte Nummer veraltete mit der nächsten Migration und
       überschriebe dann eine bestehende Datei.
+- AUS DEM BAU (9c-1; getrennt vom Messblock, weil es Bau-Ergebnisse sind, keine
+  Live-Messwerte):
+  DIE OFFENEN PRÜFUNGEN, beantwortet: (1) die PageView-Zeile wird von der bestehenden
+  Statistik-Sektion ANGEZEIGT, nicht gefiltert (Anzeige-Mapping auf "PageViews") -> 9c-1
+  macht den Nenner NICHT erstmals sichtbar, es TEILT ihn auf. (2) Der Bruch-Beleg für
+  "neue RPC statt Erweiterung" trägt doppelt: SEMANTISCH (am Code erhoben) bräche eine
+  Varianten-Spalte die bestehende Liste — sie erzwänge mehrere Zeilen je event_type, und die
+  Liste schlüsselt je event_type; MECHANISCH kann "create or replace function" den
+  Rückgabetyp nicht ändern (DOKUMENTIERTE POSTGRES-REGEL, NICHT an diesem Repo gemessen —
+  die Markierung zählt, weil die 9c-2-Skizze auf derselben Regel aufbaut: dort ist "replace"
+  zulässig, weil der Rückgabetyp gleich bleibt). (3) Der Zeitstempel
+  ist additiv in die Aktivierungs-Action schreibbar (ein Feld mehr im bestehenden Patch),
+  kein CHECK und kein Trigger hängt daran — das ist 9c-2-Material. (4) Die Statistik-Sektion
+  hatte KEINEN Fehlerkanal. (5) Die Nummer wurde am Verzeichnis abgeleitet: 0019.
+  DIE SQL-PORTIERUNG LIEGT IM TESTFILE, abweichend vom Präzedenzfall (die
+  Verlustraten-Portierung ist ein Modul unter lib/analytics). BEGRÜNDUNG: ein Modul in
+  einem PRODUKTIVverzeichnis, das nur ein Test importiert, liest sich für jeden späteren
+  Leser wie Produktivcode. Bewusste Abweichung — festgehalten, damit der Nächste nicht zwei
+  Muster ohne Entscheidung vorfindet.
+  DIE MIGRATIONS-WÄCHTER PRÜFEN ÜBERWIEGEND ABWESENHEIT (kein security definer, kein
+  Tabellen-DDL, kein Index) und haben deshalb eine EIGENE POSITIVKONTROLLE bekommen: eine
+  eingefügte definer-Klausel und eine entfernte search_path-Zeile machen sie nachweislich
+  rot. Ohne sie sähen ein Nicht-Treffer und ein kaputter Wächter identisch aus — und das
+  trifft ausgerechnet die Klausel, an der die Mandanten-Trennung hängt.
+  DER WÄCHTER SCHLÄGT AUCH BEI EINEM NACHGESTELLTEN KOMMENTAR AN, der das Wort enthält
+  (die Kommentar-Entfernung verwirft nur Zeilen, die MIT "--" beginnen). Bewusst so
+  belassen: bei einer Sicherheitsklausel ist ein Fehlalarm billig, ein stiller Durchlass
+  nicht.
+  LEKTION AUS EINER MUTATION, DIE NICHT ROT WURDE: die Sparse-Fall-Mutation war im ersten
+  Anlauf ZU SCHWACH (sie behielt die Drei-Spalten-Form) — sie liess vier ANDERE Tests rot
+  werden, aber genau den gemeinten nicht. Das hätte als bestandene Probe durchgehen können.
+  Nachgeschärft, bis sie den Fehlermodus wirklich erzeugt. VERALLGEMEINERT: eine Mutation,
+  die nicht rot wird, kann ein SCHLECHTES MODELL DES FEHLERS sein statt eines hohlen Tests.
+  Beides muss unterschieden werden, und beides erfordert Anhalten.
+- VERIFIZIERT (live, 2026-07-29), Commit 8844798, Migration 0019 gelaufen (Protokollzeile in
+  schema_migrations mit applied_at bestätigt, Deployment "Ready"); Tests 625 -> 647 in 40
+  Dateien, Pipeline vierfach grün:
+  - REGRESSION ZUERST (GEMESSEN, Schritt 1): Projekt OHNE Varianten -> Statistik-Liste und
+    Adblocker-Kachel unverändert, KEINE neue Sektion. Die SQL-Gegenprobe (rohe Gruppierung,
+    struktureller Gegenweg zur RPC) stimmt exakt mit der Anzeige überein.
+  - ZAHLEN JE VARIANTE (SQL-GEMESSEN mit filter-Aggregaten, Schritte 2-5): PageViews A=2,
+    B=6, ohne=39 (gesamt 47); Purchase A=1, B=2, ohne=32 (gesamt 35). Das UI zeigte dazu
+    PageViews A=2/B=6, Purchase A=1/B=2, "Purchase: A 1 von 2 (50.0 %) · B 2 von 6
+    (33.3 %)" und "Ohne Varianten-Zuordnung: 71 Events".
+  - DIVERGENZ-RIEGEL (GEMESSEN, Schritt 4 — der Kernnachweis der Scheibe): 2+6+39 = 47 und
+    1+2+32 = 35; beide Summen treffen die Bestandskacheln EXAKT. Aggregat gegen Gruppierung,
+    also keine Tautologie.
+  - DER RIEGEL ÜBERLEBT EINE DATENÄNDERUNG (ZWEITE ABLESUNG, SPÄTER, NUR AUS DEM UI —
+    KEINE eigene SQL-Gegenprobe, deshalb ausdrücklich so gekennzeichnet): Bestandskachel
+    PageViews 48, Purchase 35; Sektion PageViews A=2/B=7, Purchase A=1/B=2, "A 1 von 2
+    (50.0 %) · B 2 von 7 (28.6 %)", ohne Zuordnung weiterhin 71. Zwischen beiden Ablesungen
+    ist TRAFFIC gelaufen (B von 6 auf 7, gesamt von 47 auf 48), und der Riegel geht trotzdem
+    auf: 2+7+39 = 48 — diese Summe ist GERECHNET aus den UI-Zahlen, nicht gemessen. Ein
+    Riegel, der eine Datenänderung überlebt, ist stärker als einer auf einem Standbild.
+  - DARSTELLUNG (GEMESSEN): "Ohne Varianten-Zuordnung: 71 Events" ist die SUMME über alle
+    Event-Arten (39+32), nicht je Event-Art aufgeschlüsselt. Der Ratenblock zeigt NUR
+    Purchase, nicht PageViews -> die Trennung Nenner/Zähler über die geteilte Konstante
+    greift live.
+  - FEHLERKANAL, ISOLIERT (GEMESSEN, Schritt 6 mit korrigierter Instrumentierung, s. unten):
+    Funktion per "alter function" umbenannt, Seite neu geladen -> in der Sektion steht "Die
+    Auswertung konnte nicht geladen werden — bitte Seite neu laden.", am RICHTIGEN Ort und
+    nicht in der Preview-Kopfzeile. Die beiden Bestandskacheln lieferten im selben Moment
+    unverändert Zahlen -> der Ausfall war ISOLIERT. Zurückbenannt, neu geladen -> Zahlen
+    wieder da (Positivkontrolle; ohne sie bewiese die Meldung nur, dass irgendetwas kaputt
+    war).
+  - MANDANTEN-GEGENPROBE, BEIDE HÄLFTEN (GEMESSEN, Schritt 7): fremder JWT -> 0 Zeilen;
+    unmittelbar danach eigener JWT -> Zahlen. Die Tenant-Isolation unter SECURITY INVOKER
+    ist damit BEWIESEN, nicht behauptet — und die zweite Hälfte ist der Grund, warum die
+    Null etwas bedeutet.
+  - KILL-SWITCH-RANDPROBE (GEMESSEN, Schritt 8): gesperrtes Projekt -> Live-URL weiterhin
+    451 mit Erklärseite; die Auswertung im Editor bleibt lesbar. 9c-1 ist ein reiner
+    Lesepfad und ändert am Kill-Switch nichts.
+  - INSTRUMENTIERUNGS-BEFUND — DER LIVE-SCHRITT WAR FALSCH, NICHT DER CODE:
+    Der ursprüngliche Schritt 6 ("DevTools offline, dann Projektwechsel") KONNTE den neuen
+    Fehlerkanal gar nicht auslösen. Am Code erhoben: offline scheitert ZUERST der
+    Projekt-Load, der Wechsel-Handler kehrt früh zurück, projectId bleibt stehen — und der
+    Lade-Effekt der neuen Sektion hängt allein an dieser Dependency. Sichtbar wurde deshalb
+    der ZENTRALE saveError-Kanal in der Preview-Kopfzeile, nicht die Sektion.
+    KEIN CODEFEHLER: der Kanal wirkt, wenn der Projekt-Load GELINGT und nur die
+    Auswertungs-Abfrage scheitert; zusätzlich belegt ihn die Mutation M4 im Test (Ersatzwert
+    auf einen Leer-Wert geändert -> der Fehlerkanal-Test wurde rot). Ersetzt durch:
+    Funktion umbenennen, Seite neu laden, zurückbenennen.
+    VERALLGEMEINERUNG, die hier stehen muss: EIN GROBES INSTRUMENT NIMMT OFT DIE
+    VORBEDINGUNG DESSEN MIT, WAS ES PRÜFEN SOLL. Das ist in Phase 9 zum ZWEITEN Mal
+    aufgetreten — zuvor las sich das erwartete 204 am Ingest wie ein fehlendes 451 am
+    Serve-Pfad. Bei JEDEM Live-Schritt ist zu fragen, welche Voraussetzung das gewählte
+    Instrument mitreisst.
+  - BACKLOG-STAND (kein Messwert, aber hier festzuhalten): "leer vs. nicht ladbar" ist für
+    die NEUE Sektion EINGELÖST und für die BESTANDSKACHELN weiterhin OFFEN. Deren
+    .catch()-auf-Leer-Wert-Verhalten wurde bewusst nicht angefasst — ein live bewiesener
+    Pfad wird nicht ohne Anlass umgebaut. Der Backlog-Eintrag bleibt für sie stehen.
+  - WAS DER NACHWEIS NICHT ZEIGT (ausdrücklich):
+    (a) Die Rate ist "je Seitenaufruf", NICHT je Besucher. Der Confounder aus der Herleitung
+        oben bleibt unberührt und ungemessen.
+    (b) "Ohne Zuordnung: 71" wird HEUTE von ALTZEILEN aus der Zeit vor 9b-2 dominiert (kein
+        Backfill, bewusst). Als MESSVERLUST-Signal ist die Zahl damit derzeit UNBRAUCHBAR.
+        Erst der Zeitfilter aus 9c-2 schneidet die Altzeilen weg und macht sie zu einem
+        echten Signal. Das ist eine GEMESSENE Bestätigung des Nutzens von 9c-2 — nicht mehr
+        nur eine Herleitung.
+    (c) KEINE Aussage über die Verteilung unter echtem Traffic.
+    (d) Die zweite Ablesung ist eine reine UI-Ablesung OHNE eigene SQL-Gegenprobe.
 
 ### Fix-Scheibe safeAction — Client-Fehlerbehandlung (ABGESCHLOSSEN — live bewiesen 2026-07-27, Commit bd05e34)
 WARUM DIESER ABSCHNITT HIER STEHT (sonst wirkt er später deplatziert): Die Scheibe ist

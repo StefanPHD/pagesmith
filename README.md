@@ -51,10 +51,25 @@ constantly and need them working in minutes.
   automatic SSL and guided DNS setup.
 - First-party (same-origin) tracking on hosted pages, for full ad-blocker
   resilience — deduplicated between browser and server events.
+- **Server-side analytics** — every event a hosted page produces (page views and
+  conversions) is recorded server-side and shown per project, isolated per
+  account.
+- **Ad-blocker loss rate** — the share of conversions that only the server saw,
+  measured by comparing *real* events that carry the same event ID, not
+  estimated.
+- **Kill switch** — an operator-side block that takes a project off the air
+  immediately and stops its event ingestion.
+- **A/B variants** — a project can carry a second variant with its own content
+  and its own wired actions, published alongside the first.
+- **A/B traffic split** — visitors are split evenly across both variants in the
+  serving layer and stay on their variant for the visit; each recorded event
+  carries the variant it belongs to.
 
 ### In progress / planned
 
-- Client-side A/B testing (traffic split across variants).
+- A/B testing: the split and the per-variant data collection are live; the
+  **per-variant evaluation** (conversion rate of A vs. B in the dashboard) is
+  still to come.
 - Multi-page funnels (landing → checkout → thank-you, one project).
 - An AI-native MCP server so a marketer's AI tools can manage projects directly
   (longer-term vision).
@@ -69,15 +84,18 @@ constantly and need them working in minutes.
   (zero dependencies)
 - [Supabase](https://supabase.com/) — Postgres and authentication
 - [Vitest](https://vitest.dev/) for unit and component tests
-- *Planned:* Cheerio for server-side transformation in the serving layer; a
-  hosting-provider API for custom domains
+- The Vercel API for custom domains in the serving layer (live)
+- No server-side HTML parser: server-side injection is a deliberate plain-string
+  operation, so the serving path stays dependency-free
 
 ---
 
 ## Status & roadmap
 
-Server-side tracking, first-party ingestion and custom domain hosting (with
-automatic SSL) are complete. A/B testing is next.
+Server-side tracking, first-party ingestion, custom domain hosting (with
+automatic SSL) and server-side analytics are complete. A/B testing is partly
+there: the traffic split runs and every event carries its variant — the
+per-variant evaluation is what's left.
 
 - [x] **Phase 1 — Local-first foundation:** import, sandboxed preview, element
       detection.
@@ -98,7 +116,12 @@ automatic SSL) are complete. A/B testing is next.
 - [x] **Phase 7 — Hosting & go-live:** serving published pages on an isolated
       subdomain, custom domains with automatic SSL, guided DNS status UX and
       same-origin first-party tracking are all live.
-- [ ] **Phase 8 — A/B testing:** traffic split across variants.
+- [x] **Phase 8 — Analytics:** server-side event recording per project, a
+      per-account statistics view, and the ad-blocker loss rate measured from
+      real events sharing an event ID.
+- [ ] **Phase 9 — A/B testing:** authoring a second variant and the even traffic
+      split are live, and every recorded event carries its variant; the
+      per-variant evaluation is still open.
 - [ ] **Beyond:** multi-page funnels and an AI-native MCP server.
 
 ---

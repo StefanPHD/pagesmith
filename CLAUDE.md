@@ -24,8 +24,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
 - Code-Transformation: clientseitig via DOMParser (wie Detection). Server-seitige
   HTML-Injektion (Serving-Schicht, Phase 7/8) ist eine REINE STRING-OP, KEIN Parser —
   Cheerio wurde nie eingeführt (keine Dependency). S. "## Immer beachten".
-- Persistenz & Auth: Supabase (Postgres, RLS) — ab Phase 3
-- Hosting/Deploy-Orchestrierung: Vercel/Netlify API — ab Phase 7
+- Persistenz & Auth: Supabase (Postgres, RLS) — ab Phase 3, seit 2026-07-29 auf PRO
+- Hosting/Deploy-Orchestrierung: Vercel-API (Domains) — seit Phase 7 live. Vercel-Plan:
+  HOBBY. Netlify stand hier als Alternative und wurde NIE eingesetzt — entfernt, damit
+  niemand einen zweiten Provider vermutet, den es nicht gibt.
 
 ## Roadmap & aktueller Stand
 - [x] Phase 1 — Lokales Grundgerüst: Import, Sandbox-iframe-Preview, Erkennung
@@ -68,7 +70,7 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       VERCEL_API_TOKEN/VERCEL_PROJECT_ID auch in Vercels eigener Serverless-Runtime
       funktionieren, nicht nur lokal. Vollständiges Detail (inkl. 7c-2-Familie):
       docs/claude-history/phase-7-hosting.md. (war Phase 6)
-- [ ] Phase 8 — Analytics & ROI-Ökosystem (Vision): First-Party-Server-Side-Analytics
+- [x] Phase 8 — Analytics & ROI-Ökosystem (Vision): First-Party-Server-Side-Analytics
       (Traffic-Gesundheit, ROI/Attribution, Betreiber-Metriken) + Adblocker-Verlustrate
       über geteilte-eventID-Vergleich ECHTER Events. (war A/B-Testing) — Scheibe 1
       (Persistenz-Fundament) LIVE in Produktion bewiesen (events via after() neben
@@ -81,8 +83,12 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       bewiesen (2026-07-23) — die Marquee-Metrik steht. Phase 8 als Feature rund: Erfassen ->
       tenant-isolierte Anzeige -> Adblocker-Verlustrate. Ist-Stand:
       "## Aktueller DB-/Analytics-Stand"; volle Herleitung: docs/claude-history/phase-8-analytics.md.
-      Phase 8 bleibt OFFEN für Erweiterungen (eigene Scheiben): Uniques, Charts/Zeiträume,
-      CAPI-Einbettung server-vereinheitlichen + Launch-Härtung.
+      ABGEHAKT 2026-07-29: der ZUGESAGTE Umfang ist fertig und live bewiesen. Die vier
+      Weiterentwicklungen (Uniques, Charts/Zeiträume, CAPI-Einbettung server-vereinheitlichen,
+      Launch-Härtung) sind IDEEN OHNE TERMIN und OHNE Zusage — sie hingen bisher als offener
+      Haken an dieser Zeile und liessen die Phase unfertig aussehen, obwohl sie es nicht ist.
+      Wird eine davon gebaut, bekommt sie eine EIGENE Scheibe mit eigenem Nachweis; sie
+      öffnet diese Checkbox nicht wieder.
 - [ ] Phase 9 — A/B-Testing: zwei Varianten je Projekt, 50/50-Split über die
       Serving-Schicht. Geschnitten in 9a (Varianten-Authoring — ABGESCHLOSSEN &
       live bewiesen 2026-07-27, Migration 0016), 9b (dreigeteilt) und 9c
@@ -131,17 +137,6 @@ kaputtgeht.
   function" auf einer SICHERHEITSFUNKTION ersetzt die Definition VOLLSTÄNDIG (0014-Lektion) — jeder
   Transkriptionsfehler degradiert still den RLS-Schutz, daher nach dem Lauf Byte-Abgleich gegen
   pg_get_functiondef PFLICHT; (c) die Migration muss gegen die BESTEHENDE DB ein No-op sein.
-- KEINE DB-BACKUPS IM FREE PLAN (Trigger: bevor die DB unersetzliche Daten trägt — de facto JETZT):
-  Supabase Free enthält weder Scheduled Backups noch PITR. Für die laufende DB (Projekte,
-  CAPI-Tokens, published_content, die Event-Historie mit den Phase-8-Live-Beweisen) existiert damit
-  KEIN Wiederherstellungsweg; ein Rebuild aus den Migrationen wäre zudem unvollständig (s.
-  ensure_rls oben). Zwischenlösung: manueller pg_dump, lokal verschlüsselt abgelegt (Ops-Weg, kein
-  Verstoß gegen die "nur Supabase-JS-Client"-Regel, die für ANWENDUNGScode gilt) — EINMALIG
-  vollzogen, Artefakt VERALTET (deckt nur den Stand VOR 0018 ab) -> ein Restore daraus ergäbe ein
-  Schema, das der deployte Code nicht bedienen kann. Der Punkt bleibt damit OFFEN. Details und
-  Provenienz: "## Security Manifest & Launch Blocker", BACKUPS. Dauerlösung: Pro
-  (7 Tage Scheduled Backups). KOPPLUNG: mit dem Pro-Wechsel wird der Kosten-Circuit-Breaker fällig —
-  Free deckelt strukturell, Pro rechnet Überverbrauch ab. Beides in EINEM Arbeitsschritt.
 - DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE (Trigger: die erste Scheibe, die
   personenbezogene Merkmale erfasst — Click-IDs, IP/UA, gehashte Kontaktdaten,
   Fingerprint-artige Merkmale; spätestens VOR dem ersten echten Ad-Traffic): Heute
@@ -252,9 +247,16 @@ unterschiedlichen RLS-Werten und sieht wie ein Befund aus.
   issue_pg_cron_access, issue_pg_graphql_access, issue_pg_net_access, pgrst_ddl_watch,
   pgrst_drop_watch; evtowner supabase_admin). ensure_rls existiert NUR in der laufenden DB, aus
   KEINER Migration reproduzierbar -> "## Offene Punkte".
-- BACKUPS: Supabase Free hat KEINE Projekt-Backups (kein Scheduled, kein PITR; gemessen
-  2026-07-24). Der vorhandene manuelle pg_dump deckt nur den Stand VOR 0018 ab -> s.
-  "## Security Manifest & Launch Blocker", BACKUPS.
+- BACKUPS: Supabase liegt seit 2026-07-29 auf PRO -> TÄGLICHE Backups mit 7 Tagen
+  Retention. Die frühere Aussage "Free hat KEINE Backups" ist damit überholt.
+  WAS NICHT GELÖST IST — zwei Dinge, die ein "Backups vorhanden" sonst verdeckt:
+  (1) PITR ist NICHT gebucht -> im Ernstfall bis zu 24 h Datenverlust (alles seit dem
+      letzten täglichen Snapshot). Das ist eine bewusste Entscheidung, kein Versehen.
+  (2) Ein Rebuild REIN AUS DEN MIGRATIONEN bliebe unvollständig (ensure_rls /
+      rls_auto_enable, s. "## Offene Punkte") — das Upgrade ändert daran NICHTS, weil der
+      Event-Trigger am Cluster hängt und in keinem Schema-Dump steckt.
+  Der Restore-DRILL ist weiterhin nicht gefahren -> s. "## Security Manifest & Launch
+  Blocker", BACKUPS.
 - AUFGESCHOBEN (konditionale Optimierung, kein Footgun): CAPI-Forward auf Hintergrund-
   Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
   ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
@@ -1142,11 +1144,13 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   an den ABUSE-KANAL-Blocker unten).
 - E-MAIL-BESTÄTIGUNG wieder aktiv: Double-Opt-in in Supabase Auth (Dashboard-Toggle).
   BINDET-AN: öffentlicher Launch.
-- KOSTEN-CIRCUIT-BREAKER: harter Spend-Cap + Alarm auf Vercel & Supabase (Plattform-
-  Budget, nicht App-Logik). BINDET-AN: PRO-UPGRADE (Vercel oder Supabase) — auf Free/Hobby deckeln
-  die Plattform-Limits strukturell (kein Überverbrauch, kein abrechenbarer Eskalationsweg); erst
-  mit Pro kippt das und Überverbrauch wird kostenwirksam. Kopplung: der Pro-Wechsel fällt mit dem
-  Backup-Bedarf zusammen (s. "## Offene Punkte").
+- KOSTEN-CIRCUIT-BREAKER: SUPABASE ERLEDIGT (2026-07-29, mit dem Pro-Wechsel: Spend Cap $25
+  HART, Alarm bei 80 %). VERCEL bleibt HOBBY und deckelt damit weiterhin STRUKTURELL — kein
+  Überverbrauch, kein abrechenbarer Eskalationsweg, der Schaden wäre ein harter Stopp statt
+  einer Rechnung. KEIN pauschales "erledigt" über beide Plattformen: der Trigger ist genau
+  dort eingetreten, wo der Plan gewechselt hat. WIEDERVORLAGE: sobald Vercel auf Pro geht,
+  wird der Cap dort SOFORT fällig — dann kippt die strukturelle Deckelung, die ihn heute
+  ersetzt.
 - ABUSE-KANAL + security.txt: /.well-known/security.txt (RFC 9116) auf beiden Origins +
   überwachtes Abuse-Postfach. BINDET-AN: Go-Live der Hosting-Schicht.
 - SUBPROZESSOR-DPAs + Kunden-DPA: Vercel/Supabase-DPAs signiert + signierbarer Kunden-DPA
@@ -1164,8 +1168,9 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
 - SHARED-REPUTATION publayer.net: Kill-Switch zur Isolierung + riskante Nutzer auf
   Custom-Domains (eigener eTLD+1) schieben. BINDET-AN: Multi-Tenant-Serving live;
   mildernd über 7c.
-- LEAKED-PASSWORD-PROTECTION: Supabase-HaveIBeenPwned-Abgleich (Pro-gated). BINDET-AN:
-  öffentlicher Launch / Pro-Tier.
+- LEAKED-PASSWORD-PROTECTION: ERLEDIGT (2026-07-29, mit dem Pro-Wechsel aktiviert —
+  Supabase-HaveIBeenPwned-Abgleich läuft). War Pro-gated; der Trigger "Pro-Tier" ist
+  eingetreten und wurde im selben Zug abgearbeitet.
 - ENCRYPTION-AT-REST CAPI-Token: tragend bleibt Isolation + RLS-SELECT-Sperre +
   service_role-only (Token physisch write-only); Verschlüsselung nur Defense-in-Depth
   (In-DB-Key = Theater, echtes Envelope braucht KMS). BINDET-AN: Härtung nach Launch.
@@ -1184,18 +1189,23 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Server Action mit Secret-Parameter (erhoben 2026-07-24). Bei JEDER neuen Server Action mit
   Secret-Parameter neu bewerten.
 - DEPENDABOT: ERLEDIGT (2026-07-24: Alerts, Security Updates, Dependency Graph aktiv, 1 Regel).
-- BACKUPS + Restore-Drill (OFFEN): Backup-Tier bestätigen + EINEN echten Restore-Drill fahren.
-  BINDET-AN: laufend; erster Drill vor echten Kundendaten. EHRLICHE EINORDNUNG (gemessen 2026-07-24):
-  Free hat GAR KEINE Backups (kein Scheduled, kein PITR) -> der erste Drill fällt mit dem Pro-Wechsel
-  bzw. einem frischen pg_dump zusammen und würde zugleich die ensure_rls-Rebuild-Lücke praktisch
-  nachweisen (s. "## Offene Punkte").
-  ZWISCHENLÖSUNG VOLLZOGEN, ARTEFAKT VERALTET -> Status bleibt OFFEN: Ein manueller pg_dump wurde
-  gezogen, deckt aber nur den Stand VOR 0018 ab (0016/0017/0018 kamen danach) -> ein Restore
-  daraus ergäbe ein Schema, das der deployte Code nicht bedienen kann. Die Zwischenlösung war
-  EINMALIG, nicht laufend. IM REPO LIEGT BEWUSST KEIN BELEG — ein DB-Dump gehört nicht ins Git,
-  auch verschlüsselt nicht; wer hier nichts findet, darf NICHT "nicht erledigt" schließen.
-  Vollzugs-Details, Provenienz, der erwartungsgemäß fehlende Event-Trigger und der
-  Wiedervorlage-Grundsatz (frischer Dump nach JEDER Migration): Vollfassung.
+- BACKUPS + Restore-Drill (TEILWEISE ERLEDIGT — Backup-Tier steht, DRILL WEITERHIN OFFEN):
+  BACKUP-TIER BESTÄTIGT (2026-07-29): Supabase auf PRO -> TÄGLICHE Backups, 7 Tage Retention.
+  Die frühere Einordnung "Free hat GAR KEINE Backups" ist überholt und wurde ersetzt, nicht
+  nur ergänzt.
+  DREI DINGE BLEIBEN OFFEN — sie sind der Grund, warum der Punkt nicht abgehakt wird:
+  (1) DER DRILL IST NICHT GEFAHREN. Ein ungetestetes Backup ist kein Backup; ein Backup-Tier
+      zu BUCHEN und einen Restore zu KÖNNEN sind zwei verschiedene Aussagen.
+  (2) PITR IST NICHT GEBUCHT -> im Ernstfall bis zu 24 h Datenverlust (alles seit dem letzten
+      täglichen Snapshot). Bewusste Entscheidung; sie muss aber SICHTBAR bleiben, sonst liest
+      sich "tägliche Backups" wie Lückenlosigkeit.
+  (3) DIE ensure_rls-REBUILD-LÜCKE BESTEHT UNVERÄNDERT: der Event-Trigger hängt am CLUSTER und
+      steckt in keinem Schema-Dump — das Upgrade ändert daran nichts (s. "## Offene Punkte").
+  BINDET-AN: laufend; erster Drill vor echten Kundendaten.
+  ÜBERHOLT, HISTORISCH: der manuelle pg_dump war die ZWISCHENLÖSUNG für den Free-Zustand
+  (Stand VOR 0018, damit nicht wiederherstellungstauglich). Er ist mit dem Pro-Wechsel kein
+  tragender Bestandteil mehr — Details, Provenienz und der Wiedervorlage-Grundsatz stehen in
+  der Vollfassung.
 - DATA-RETENTION: Rohdaten (IP/UA) nach max. 30 Tagen löschen/anonymisieren; heute nur
   sicherstellen, dass Server-Logs keine IPs horten. BINDET-AN: Phase 8. — Präzisierung:
   Phase 8 Scheibe 1 löst die 30-Tage-Pflicht NICHT aus (es wird KEIN IP/UA persistiert); sie
@@ -1534,13 +1544,29 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Migrationen laufen weiterhin manuell im SQL-Editor, die Idempotenz-Guards in den Dateien
   selbst (if not exists, Katalog-Guard) bleiben die Absicherung gegen Doppelläufe.
 - BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN, NICHT AM KALENDER (dieselbe Naht wie
-  "Migration vor Deploy", nur am anderen Ende): Nach JEDER ausgeführten Migration ein
-  frischer pg_dump. Ein Datums-Rhythmus ginge am Risiko vorbei — gefährlich wird ein Dump
-  nicht durch Alter, sondern dadurch, dass das Schema seither weitergezogen ist; ein Restore
-  liefert dann eine DB, die der deployte Code nicht bedienen kann. Seit 0018 trägt jeder Dump
-  schema_migrations IN SICH: der abgedeckte Stand steht damit im Backup selbst, statt in einer
-  Notiz daneben, die verlorengeht. Begründung und Ist-Stand (inkl. des heute veralteten
-  Artefakts): "## Security Manifest & Launch Blocker", BACKUPS — hier nur die Regel.
+  "Migration vor Deploy", nur am anderen Ende) — NEU GEFASST 2026-07-29 nach dem
+  Pro-Wechsel, NICHT gestrichen:
+  WAS ENTFÄLLT: die Pflicht zum manuellen pg_dump nach jeder Migration. Supabase Pro zieht
+  TÄGLICH automatisch (7 Tage Retention); ein Handlauf daneben wäre Arbeit ohne Zugewinn.
+  WAS BLEIBT — und das war immer der eigentliche Kern der Regel: die WIRKRICHTUNG. Ein
+  Backup wird nicht durch ALTER gefährlich, sondern dadurch, dass das SCHEMA seither
+  weitergezogen ist; ein Restore liefert dann eine DB, die der deployte Code nicht bedienen
+  kann. Automatische Backups nehmen diese Gefahr NICHT weg, sie verschieben sie nur: das
+  jüngste Backup ist jetzt höchstens 24 h alt, kann aber trotzdem VOR einer Migration liegen,
+  die seither gelaufen ist.
+  DARAUS DIE HEUTIGE FASSUNG: Nach JEDER ausgeführten Migration gilt das automatische Backup
+  als NICHT mehr code-kompatibel, bis der nächste tägliche Snapshot durch ist. In diesem
+  Fenster ist ein Restore nur mit anschliessendem manuellen Nachziehen der Migration
+  brauchbar. Wer in diesem Fenster eine riskante Operation fährt, zieht vorher EINEN
+  manuellen Dump — nicht als Routine, sondern als Absicherung genau dieser Lücke.
+  KEIN VERSTOSS GEGEN DIE DATENZUGRIFFS-REGEL: ein pg_dump ist ein OPS-Weg. Die Regel "nur
+  über den Supabase-JS-Client" gilt für ANWENDUNGScode; wer sie auf Betriebswerkzeuge
+  ausdehnt, verbietet sich das einzige Mittel, das dieses Fenster überhaupt absichert.
+  Seit 0018 trägt jeder Dump schema_migrations IN SICH: der abgedeckte Stand steht im Backup
+  selbst statt in einer Notiz daneben, die verlorengeht. Das gilt für automatische Backups
+  genauso und ist der Grund, warum die Lücke überhaupt erkennbar ist.
+  Ist-Stand (Tier, PITR-Loch, Drill): "## Security Manifest & Launch Blocker", BACKUPS —
+  hier nur die Regel.
 - ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH UMGESCHRIEBEN (Entscheidung der
   Doku-Aufräumrunde 2026-07-28): Eine Migrationsdatei dokumentiert, was TATSÄCHLICH in der DB
   gelaufen ist. Sie im Nachhinein zu ändern — auch nur einen Kommentar — entkoppelt die Datei

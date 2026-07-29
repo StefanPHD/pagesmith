@@ -60,7 +60,7 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   EHRLICHE EINORDNUNG: reiner Dashboard-Toggle, kein Code; bewusste MVP-Abkürzung
   (3.1), die vor Öffentlichkeit zurückgenommen werden MUSS.
   BINDET-AN: öffentlicher Launch. (Ersetzt den Polish-Listen-Eintrag.)
-- KOSTEN-CIRCUIT-BREAKER:
+- KOSTEN-CIRCUIT-BREAKER (SUPABASE ERLEDIGT 2026-07-29 / VERCEL strukturell gedeckelt):
   RISIKO: Runaway-Loop/Abuse (KI-Agent in Schleife, Ad-getriebener Traffic-Spike)
   erzeugt eine katastrophale Vercel-/Supabase-Rechnung — Financial-DoS.
   TRAGENDE KONTROLLE: harter Spend-Cap + Alarm auf beiden Plattformen (Plattform-
@@ -68,10 +68,17 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   EHRLICHE EINORDNUNG: das ist der grobe Pre-Launch-FLOOR; das feingranulare
   Per-Tenant-Rate-Limiting (Tier 1) ist die präzise Ebene darüber. Beides nötig,
   aber der Cap fängt die Katastrophe ab, bevor Rate-Limits kalibriert sind.
-  BINDET-AN: PRO-UPGRADE (Vercel oder Supabase). Begründung: auf Free/Hobby deckeln die
-  Plattform-Limits strukturell — es gibt keinen abrechenbaren Eskalationsweg, der Schaden ist
-  ein harter Stopp, keine Rechnung; erst mit Pro kippt genau das und Überverbrauch wird
-  kostenwirksam. Kopplung: der Pro-Wechsel fällt mit dem Backup-Bedarf zusammen (Tier 2).
+  STAND 2026-07-29 — GETRENNT NACH PLATTFORM, weil der Trigger nur auf EINER eingetreten ist:
+  SUPABASE: Pro gebucht -> der abrechenbare Eskalationsweg existiert jetzt -> Spend Cap $25
+  HART gesetzt, Alarm bei 80 %. Damit ist die tragende Kontrolle dort vollzogen.
+  VERCEL: bleibt HOBBY. Die strukturelle Deckelung gilt unverändert — kein Überverbrauch,
+  kein abrechenbarer Eskalationsweg, der Schaden wäre ein harter Stopp statt einer Rechnung.
+  Ein Cap ist dort heute nicht setzbar und wäre auch wirkungslos.
+  KEIN pauschales "erledigt" über beide Plattformen: die Begründung des Items war immer
+  plan-abhängig, und genau diese Abhängigkeit macht die Trennung nötig.
+  BINDET-AN: für Vercel weiterhin PRO-UPGRADE — geht Vercel je auf Pro, wird der Cap dort
+  SOFORT fällig, weil dann die strukturelle Deckelung entfällt, die ihn heute ersetzt.
+  Kopplung zum Backup-Bedarf (Tier 2) ist mit dem Supabase-Wechsel eingelöst.
 - ABUSE-KANAL + security.txt auf publayer.net UND Haupt-App:
   RISIKO: kein Melde-Weg für Security-Forscher/Abuse-Meldungen -> Schwachstellen/
   Missbrauch werden gar nicht oder öffentlich gemeldet; eine Hosting-Plattform ohne
@@ -130,12 +137,15 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   konkretes Produkt-Argument für die 7c-Custom-Domain-Arbeit (Durchstich, nicht nur
   Feature).
   BINDET-AN: Multi-Tenant-Serving live; mildernd über 7c.
-- LEAKED-PASSWORD-PROTECTION:
+- LEAKED-PASSWORD-PROTECTION (ERLEDIGT 2026-07-29):
   RISIKO: Nutzer wählen bekannt-kompromittierte Passwörter.
-  TRAGENDE KONTROLLE: Supabase-HaveIBeenPwned-Abgleich (Auth-Setting).
-  EHRLICHE EINORDNUNG: Supabase-Pro-gated (Free Tier kann nicht) -> beim Pro-Wechsel
-  aktivieren.
-  BINDET-AN: öffentlicher Launch / Pro-Tier. (Ersetzt den Polish-Listen-Eintrag.)
+  TRAGENDE KONTROLLE: Supabase-HaveIBeenPwned-Abgleich (Auth-Setting) — AKTIV seit dem
+  Pro-Wechsel 2026-07-29.
+  EHRLICHE EINORDNUNG: war Supabase-Pro-gated (Free Tier kann es nicht); der Trigger
+  "Pro-Tier" ist eingetreten und wurde im selben Zug abgearbeitet. Reiner Dashboard-Toggle,
+  kein Code — die Kontrolle wirkt ab sofort auf jede Registrierung und Passwortänderung,
+  BESTEHENDE Passwörter prüft sie NICHT rückwirkend.
+  BINDET-AN: erledigt; keine offene Bindung mehr. (Ersetzt den Polish-Listen-Eintrag.)
 - ENCRYPTION-AT-REST CAPI-Token:
   RISIKO: DB-Dump/Backup-Leak legt die project_tokens im Klartext offen.
   TRAGENDE KONTROLLE: bleibt PRIMÄR Isolation + RLS-SELECT-Sperre + service_role-only
@@ -190,21 +200,34 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   TRAGENDE KONTROLLE: Dependabot aktiviert — Alerts, Security Updates, Dependency Graph, 1 Regel.
   EHRLICHE EINORDNUNG: Dauerhygiene, kein Launch-Gate; erledigt am 2026-07-24.
   BINDET-AN: laufend (aktiv).
-- BACKUPS + Restore-Drill (OFFEN — kein Drill gefahren; die vollzogene Zwischenlösung ist
-  veraltet, s. EHRLICHE EINORDNUNG):
+- BACKUPS + Restore-Drill (TEILWEISE ERLEDIGT 2026-07-29 — Backup-Tier steht; DRILL, PITR und
+  die Rebuild-Lücke bleiben OFFEN):
   RISIKO: Datenverlust ohne getesteten Wiederherstellungsweg (ein ungetestetes Backup
   ist kein Backup).
   TRAGENDE KONTROLLE: Supabase-Backup-Tier bestätigen + EINEN echten Restore-Drill
   fahren (kompletten Core-Tabellen-Drop durchspielen), danach reguläre Drills.
-  EHRLICHE EINORDNUNG (ergänzt 2026-07-24): der erste Drill gehört vor ernsthafte Kundendaten;
-  die Wiederholung ist laufende Hygiene. GEMESSEN 2026-07-24: der Supabase FREE Plan hat GAR
-  KEINE Backups (kein Scheduled Backup, kein PITR) — obwohl die laufende DB unersetzliche Daten
-  trägt (Projekte, CAPI-Tokens, published_content, die Event-Historie mit den
-  Phase-8-Live-Beweisen).
-  Der erste Drill fällt damit mit dem Pro-Wechsel (7 Tage Scheduled Backups) bzw. einem frischen
-  pg_dump zusammen und würde zugleich die ensure_rls-Rebuild-Lücke praktisch nachweisen (s.
-  CLAUDE.md "## Offene Punkte").
-  ZWISCHENLÖSUNG VOLLZOGEN, ABER VERALTET (Status bleibt OFFEN): Ein manueller pg_dump WURDE
+  STAND 2026-07-29 — DAS BACKUP-TIER IST BESTÄTIGT: Supabase auf PRO -> TÄGLICHE Backups mit
+  7 Tagen Retention. Die Messung vom 2026-07-24 ("FREE hat GAR KEINE Backups, kein Scheduled,
+  kein PITR") ist damit ÜBERHOLT — sie bleibt hier nur als Herkunft der Entscheidung stehen,
+  nicht als Ist-Zustand.
+  WAS AUF DEM SPIEL STEHT (die Aufzählung gehört zum Item, nicht zum Plan-Zustand): die
+  laufende DB trägt unersetzliche Daten — Projekte, CAPI-Tokens, published_content und die
+  Event-Historie mit den Phase-8-Live-Beweisen. Genau deshalb ist der ungefahrene Drill kein
+  Formalismus.
+  DREI DINGE SIND DAMIT AUSDRÜCKLICH NICHT ERLEDIGT — sie sind der Grund, warum die
+  TRAGENDE KONTROLLE nur zur Hälfte vollzogen ist:
+  (1) DER DRILL IST NICHT GEFAHREN. Ein Tier zu BUCHEN und einen Restore zu KÖNNEN sind zwei
+      verschiedene Aussagen; die Regel "ein ungetestetes Backup ist kein Backup" gilt
+      unverändert und wird durch ein Upgrade nicht eingelöst.
+  (2) PITR IST NICHT GEBUCHT -> im Ernstfall bis zu 24 h Datenverlust (alles seit dem letzten
+      täglichen Snapshot). Bewusste Entscheidung, kein Versehen — aber sie MUSS sichtbar
+      bleiben: ein Text, der nur "Backups vorhanden" sagt, wäre eine stille Abschwächung
+      dieses Items.
+  (3) DIE ensure_rls-REBUILD-LÜCKE BESTEHT UNVERÄNDERT. Der Event-Trigger hängt am CLUSTER,
+      nicht am Schema, und kann in keinem Schema-Dump enthalten sein; automatische Backups
+      ändern daran NICHTS. Der Drill würde diese Lücke weiterhin praktisch nachweisen
+      (s. CLAUDE.md "## Offene Punkte").
+  ZWISCHENLÖSUNG — HISTORISCH, MIT DEM PRO-WECHSEL NICHT MEHR TRAGEND: Ein manueller pg_dump WURDE
   gezogen — Umfang public-Schema + auth.users, AES256 verschlüsselt, extern abgelegt (nicht im
   Repo) und per "pg_restore --list" verifiziert; das Listing zeigte 5 Tabellen plus Funktionen
   inklusive rls_auto_enable.
@@ -229,12 +252,18 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   gemessen 2026-07-28). Dass er zusätzlich vor 0016 liegt, stammt aus der Chat-Zusammenfassung
   und ist KEINE Messung. Ein exaktes Datum ist nicht erhebbar: die Hygiene-Runde lag im Zeitraum
   24.-27.07.2026, und der Dump trägt keinen eigenen Zeitstempel.
-  WIEDERVORLAGE-GRUNDSATZ: Ein frischer Dump hängt NICHT an einem Kalender, sondern an
-  MIGRATIONEN — nach JEDER ausgeführten Migration ein frischer Dump. Dieselbe Kopplung wie
-  "Migration vor Deploy", nur am anderen Ende. Seit 0018 trägt jeder Dump schema_migrations IN
-  SICH: der abgedeckte Stand ist damit im Backup selbst dokumentiert statt in einer Notiz
-  daneben, die verlorengeht.
-  BINDET-AN: laufend; erster Drill vor echten Kundendaten (bzw. mit dem Pro-Wechsel/pg_dump).
+  WIEDERVORLAGE-GRUNDSATZ (NEU GEFASST 2026-07-29, nicht gestrichen): Die Pflicht zum
+  MANUELLEN Dump nach jeder Migration entfällt — Pro zieht täglich automatisch. Die
+  WIRKRICHTUNG der Regel bleibt und war immer ihr Kern: gefährlich wird ein Backup nicht durch
+  ALTER, sondern durch ein SCHEMA, das seither weitergezogen ist. Automatische Backups nehmen
+  das nicht weg, sie verschieben es nur — das jüngste Backup ist jetzt höchstens 24 h alt und
+  kann trotzdem VOR einer seither gelaufenen Migration liegen. Daraus die heutige Fassung: nach
+  jeder ausgeführten Migration gilt das automatische Backup als nicht mehr code-kompatibel, bis
+  der nächste Snapshot durch ist; wer in diesem Fenster riskant operiert, zieht vorher EINEN
+  manuellen Dump. Seit 0018 trägt jeder Dump schema_migrations IN SICH: der abgedeckte Stand
+  ist im Backup selbst dokumentiert statt in einer Notiz daneben, die verlorengeht — genau
+  deshalb ist diese Lücke überhaupt erkennbar. Regeltext: CLAUDE.md "## Immer beachten".
+  BINDET-AN: laufend; erster Drill vor echten Kundendaten.
 - DATA-RETENTION:
   RISIKO: Analytics-Rohdaten (IP/UA) horten sich unbegrenzt an -> DSGVO-Speicher-
   begrenzung verletzt.

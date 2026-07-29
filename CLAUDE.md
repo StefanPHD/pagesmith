@@ -91,8 +91,11 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       live bewiesen 2026-07-27, Migration 0017); 9b-1p (UI-Politur: lokaler
       Fehlerkanal + Hinweis auf unveröffentlichte Variante B — ABGESCHLOSSEN &
       live bewiesen 2026-07-27); 9b-2 (variant in Ingest und Persist SCHREIBEN
-      — OFFEN). ANLEGEN UND BEFÜLLEN NICHT VERSCHMELZEN: events.variant wurde
-      mit 0017 ANGELEGT (erledigt); das BEFÜLLEN ist 9b-2 und steht aus.
+      — ABGESCHLOSSEN & live bewiesen 2026-07-29, Commit 24a1c58, KEINE
+      Migration). ANLEGEN UND BEFÜLLEN NICHT VERSCHMELZEN: events.variant wurde
+      mit 0017 ANGELEGT und mit 9b-2 BEFÜLLT — zwei Scheiben, bewusst getrennt.
+      9b ist damit KOMPLETT; die Phase bleibt OFFEN, weil 9c (Auswertung je
+      Variante) aussteht.
       Grundsatzentscheidungen + Scheiben-Detail: "## Aktiver Stand — Phase 9".
 - [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
 
@@ -415,7 +418,8 @@ JSON-Sektions-Architektur (Spur B) NICHT braucht — das ist der Schnitt.
   Text-Override (der Startzustand, der den Bug auslöste). Die Phase-5-Eigenschaft hält:
   Text ändern + übernehmen erzeugt KEINEN Reload-Sprung. Der Marker taucht im Export NICHT
   auf.
-- OFFEN -> 9b: Split + Cookie + variant-Spalte auf events. -> 9c: Auswertung je Variante.
+- STAND: 9b ist KOMPLETT — 9b-1 (Split + Cookie), 9b-1p (UI-Politur) und 9b-2 (variant in
+  Ingest und Persist), alle live bewiesen. -> 9c: Auswertung je Variante, weiterhin OFFEN.
 
 ### Scheibe 9b-1 — Split + Cookie + Aktivierung (ABGESCHLOSSEN — live bewiesen (2026-07-27), Migration 0017 gelaufen)
 Erste Hälfte von 9b: die Live-URL liefert erstmals BEIDE Varianten. Die
@@ -591,17 +595,20 @@ anzufassen ist mehr Risiko als nötig.
     trotzdem (zwei offene Tabs desselben Projekts) — der Server-Guard fängt ihn,
     der Unit-Wächter deckt die Anzeige ab. Nachweis bleibt der Test, nicht der
     Live-Blick.
-- OFFEN -> 9b-2: variant in Ingest und Persist. Die Scheibe ist ENTSCHIEDEN, aber
-  NICHT gebaut; das frühere Gate ist keine offene Frage mehr. Fassung, Begründungen
-  und die am Code zu prüfenden Kandidaten stehen GENAU EINMAL in "### Scheibe 9b-2"
-  direkt unten — dort wird gepflegt, hier steht nur der Status.
+- 9b-2 (variant in Ingest und Persist): ABGESCHLOSSEN, live bewiesen 2026-07-29.
+  Herleitung, Entscheidungen und Messergebnis stehen GENAU EINMAL in
+  "### Scheibe 9b-2" direkt unten — dort wird gepflegt, hier steht nur der Status.
 
-### Scheibe 9b-2 — variant in Ingest und Persist (ENTSCHIEDEN, Bau ausstehend)
-Zweite Hälfte von 9b: die Varianten-Dimension wird GESCHRIEBEN. Seit 9b-1 liefert die
-Live-URL beide Varianten aus, aber jede Event-Zeile trägt weiterhin variant NULL — 9c
-hätte nichts zu aggregieren. Die Entscheidungen unten sind VOR dem Bau getroffen; der Bau
-folgt in einer eigenen Runde (Stufe 1 = nur Plan). KEIN VERIFIZIERT-Block — der kommt mit
-dem Abschluss-Vermerk nach dem Live-Test.
+### Scheibe 9b-2 — variant in Ingest und Persist (ABGESCHLOSSEN — live bewiesen 2026-07-29, Commit 24a1c58, KEINE Migration)
+Zweite Hälfte von 9b: die Varianten-Dimension wird GESCHRIEBEN. Seit 9b-1 lieferte die
+Live-URL beide Varianten aus, aber jede Event-Zeile trug weiterhin variant NULL — 9c hätte
+nichts zu aggregieren gehabt.
+STATUS: gebaut, live bewiesen. Die Bullets unten sind die HERLEITUNG (Stand der
+Entscheidung VOR dem Bau) und bleiben inhaltlich stehen — einschliesslich der als KANDIDAT
+markierten Punkte, die die Bau-Stufe am Code erhoben hat; was Bau und Live-Test daran
+präzisiert haben, steht im VERIFIZIERT-Block am Ende. Gleiche Trennung wie bei der
+Leere-Variante-Riegel-Scheibe: Entscheidungsgrundlage und Messergebnis bleiben
+unterscheidbar.
 
 - GATE — ENTSCHIEDEN: geschrieben wird variant NUR bei aktivem Test (ab_test_active).
   ZWEI Begründungen, beide tragend (keine ist Beiwerk):
@@ -687,6 +694,88 @@ dem Abschluss-Vermerk nach dem Live-Test.
   KANDIDAT (ausdrücklich KANDIDAT, hier NICHT gesetzt): nullable ab_test_started_at auf
   projects, gesetzt von setAbTestActive; 9c filtert created_at >= started_at; NULL
   degradiert sauber auf das heutige Verhalten. 9c prüft das am Code.
+- AUS DEM BAU (am Code erhoben, was in der Entscheidungsrunde KANDIDAT war):
+  Der RESOLVER-Kandidat trägt — aber er liegt in src/lib/capi/token.ts, NICHT in config.ts
+  (dort stehen nur zwei Meta-Konstanten). Der blocked-Präzedenzfall ist real: ab_test_active
+  reitet jetzt in DERSELBEN Projektion mit ("id, settings, blocked_at, ab_test_active"),
+  KEINE zweite Query. Der Name getCapiConfigByTrackingKey driftet damit weiter von seinem
+  Inhalt weg — bewusst NICHT umbenannt auf dem heissesten Pfad.
+  Das COOKIE-PRÄDIKAT musste NICHT gebaut werden: parseVariantCookie existierte bereits aus
+  9b-1 und bildet einen beliebigen rohen Cookie-Header auf 'a'|'b'|null ab (Müllwert,
+  Mehrfachvorkommen, fehlend -> null). variant.ts wurde deshalb NICHT angefasst — die
+  stärkste Form von "kein drittes Urteil": es wurde nichts additiv gebaut, sondern das
+  bestehende Prädikat mitbenutzt.
+  NEUER TEST-WÄCHTER (nicht geplant, im Bau entstanden): eine Assertion auf die
+  Select-Zeichenkette. Der Builder-Mock gibt sich mit JEDER Select-Liste zufrieden — ein
+  Tippfehler im Spaltennamen wäre von keinem Test gedeckt gewesen und in Produktion NICHT
+  harmlos: PostgREST-Fehler -> Resolver returnt null -> Persist UND CAPI-Forward stehen für
+  ALLE Projekte still, ohne dass irgendwo etwas rot wird.
+- VERIFIZIERT (live, 2026-07-29), Commit 24a1c58; Tests 606 -> 625 in 39 Dateien, Pipeline
+  vierfach grün (tsc, lint, vitest, build):
+  - REGRESSION ZUERST (GEMESSEN, Schritt 1 — SEPARAT gefahren): ein Projekt OHNE aktiven
+    A/B-Test wurde als bestanden quittiert; es verhält sich unverändert.
+    EHRLICHE GRENZE DIESER QUITTUNG: die Rückmeldung weist die Schritte 1-8 GESAMMELT als
+    bestanden aus. EINZELNE Detailwerte für Schritt 1 (Zeilenzahl, Meta-Bestätigung) sind
+    nicht ausgewiesen und werden hier deshalb auch nicht behauptet. Belegt ist: separat
+    gefahren, Projekt ohne aktiven Test, bestanden.
+  - KEIN AKTIVER TEST -> NULL (GEMESSEN, Schritte 5 und 6): nach dem Stoppen des Tests
+    schreibt ein neuer Besucher variant NULL (5); ein Fenster, das noch das alte b-Cookie
+    hält, ebenfalls NULL (6).
+    "FLAG SCHLÄGT COOKIE" GILT DAMIT AUCH AUF DEM SCHREIBPFAD — und das ist die eigentliche
+    9b-2-Aussage: in 9b-1 war der Satz nur für den SERVE-Pfad bewiesen (die Route liefert
+    bei inaktivem Test ausnahmslos A). Dass auch der INGEST bei inaktivem Test nichts
+    zuschreibt, war vorher offen; genau daran hängt die Bedeutung von NULL als Abgrenzung
+    des Testzeitraums.
+    ABGRENZUNG (AUFGELÖST, aber erhaltenswert): Schritte 5/6 messen ein Projekt, dessen Test
+    GESTOPPT wurde — nicht ein Projekt, das nie einen Test hatte. Derselbe Codepfad
+    (abTestActive false), aber NICHT dasselbe Szenario. BEIDE sind inzwischen gemessen: das
+    "nie aktiv"-Szenario durch die Regression (Schritt 1, oben), das "gestoppt"-Szenario
+    hier. Die Unterscheidung bleibt stehen, weil sie bei der nächsten Änderung an diesem
+    Gate wieder gebraucht wird.
+  - AKTIVER TEST, BEIDE ZEILEN (GEMESSEN, Schritte 2-4; die Quittung fasst 1-8): bei aktivem
+    Test schreiben __ps_pageview UND Conversion die Variante (a bzw. b) — auf der
+    SERVER-Zeile UND auf der BROWSER-Bestätigungszeile. Damit hat 9c Nenner (Besucher je
+    Variante) und Zähler (Conversions je Variante) aus derselben Tabelle, und eine
+    Verlustrate JE VARIANTE ist überhaupt erst berechenbar.
+    META (GEMESSEN, im selben Block): Events BEIDER Varianten kommen im Events Manager an,
+    das Dedup über die geteilte eventID greift. Der Forward hat den Umbau der
+    schedulePersist-Signatur also überlebt — eine vorhandene events-Zeile hätte das NICHT
+    belegt (Phase-8-Lektion 'Bad signature': die Zeilen liefen sauber weiter, während bei
+    Meta nichts ankam).
+  - COOKIE-ATTRIBUTE (DevTools, Schritt 2): __Host-ps_v, Wert 'a', host-only, HttpOnly,
+    Secure, SameSite=Lax, Session. KEIN neuer Befund — die Wiederholung der 9b-1-Messung;
+    sie steht hier, weil derselbe Cookie jetzt eine zweite Aufgabe trägt (Serve liest ihn
+    UND Ingest liest ihn).
+  - GEFÄLSCHTER COOKIE-HEADER (GEMESSEN, Schritt 7) — der wichtigste Nachweis der Runde,
+    weil HttpOnly vor JS im Browser schützt, NICHT vor einem gesetzten Cookie-Header:
+    fake-1 (Cookie __Host-ps_v=zzz) -> GENAU EINE Zeile, variant NULL. Beide Hälften zählen:
+    der Müllwert wird verworfen UND die Zeile geht nicht verloren (ungeprüft durchgereicht
+    bräche sie am CHECK events_variant_valid — in after(), also lautlos).
+    fake-2 (Cookie b) -> variant 'b'. Ohne diese Gegenprobe bewiese die NULL-Zeile nur, dass
+    Cookies generell ignoriert werden.
+    fake-5 (gar kein Cookie-Header) -> variant NULL, kein Würfeln.
+  - ALIAS-PARITÄT (GEMESSEN, Schritt 8): fake-3 gegen /api/capi mit Cookie b -> variant 'b',
+    identisch zu /api/e. Der permanente Alt-Export-Alias trägt die Varianten-Dimension mit.
+  - KILL-SWITCH, ZWEI ACHSEN (GEMESSEN, Schritt 9 — getrennt festgehalten, weil sie
+    getrennt gehören):
+    INGEST: gesperrtes Projekt -> HTTP 204 UND 0 Zeilen für fake-4. Die 204 ist BEABSICHTIGT
+    (204-Containment / Enumeration-Schutz), kein Mangel. POSITIVKONTROLLE steht: derselbe
+    trackingKey hat kurz zuvor bei fake-1/2/5 Zeilen geschrieben — "keine Treffer" und
+    "falsch gesucht" sind damit unterscheidbar.
+    SERVE: die gesperrte Seite liefert die statische Erklärseite ("Seite deaktiviert — Diese
+    Seite wurde aufgrund von Richtlinienverstößen deaktiviert").
+  - REVERSIBILITÄT (GEMESSEN): nach dem Entsperren, 2026-07-29 08:27:25 UTC, wurden
+    Server- UND Browser-Event mit Variante 'b' geschrieben. Die Kette läuft inklusive
+    Varianten-Dimension wieder an.
+  - AUFRÄUMEN: delete auf fake-1..fake-5 ausgeführt (fake-4 hatte nie eine Zeile). Die
+    9b-2-Zeilen der Live-Session sind eigene Testdaten, keine Kundendaten.
+  - WAS DER NACHWEIS NICHT ZEIGT (ausdrücklich, damit es niemand später als Lücke
+    "entdeckt"):
+    (a) Der Fall "Test AKTIV, Seite wurde VOR der Aktivierung ausgeliefert" (Cookie fehlt,
+        obwohl der Test läuft) ist live nicht isolierbar — er verlangt eine Sitzung über den
+        Aktivierungszeitpunkt hinweg. Abgedeckt ist er nur als Unit (V4: kein Cookie ->
+        NULL, kein Würfeln).
+    (b) KEINE Aussage über die VERTEILUNG unter echtem Traffic — das ist 9c-Gebiet.
 
 ### Fix-Scheibe safeAction — Client-Fehlerbehandlung (ABGESCHLOSSEN — live bewiesen 2026-07-27, Commit bd05e34)
 WARUM DIESER ABSCHNITT HIER STEHT (sonst wirkt er später deplatziert): Die Scheibe ist
@@ -1016,6 +1105,12 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   curl-Status-Vergleich beweist hier nichts. (Zusatz: ein 400 an /api/e beweist ebenfalls
   nichts über die Sperre — die Pflichtfeld-Validierung {trackingKey,eventID,event} greift
   VOR dem blocked_at-Check; falsche Feldnamen ergeben immer 400, sperr-unabhängig.)
+  ZWEI ACHSEN, ZWEI PRÜFUNGEN (ergänzt 2026-07-29): SERVE antwortet 451 mit Erklärseite,
+  INGEST antwortet leer mit 204 — beides ist korrekt und beides ist DERSELBE Kill-Switch.
+  In Live-Test-Anleitungen gehören sie als ZWEI getrennte Prüfungen aufgeführt, sonst liest
+  sich das erwartete 204 wie ein fehlendes 451. Anlass: die zusammengezogene Formulierung
+  hat jetzt in ZWEI Phasen den Verdacht eines Bugs erzeugt, obwohl das Verhalten korrekt
+  ist. Der Sachverhalt selbst steht oben — neu ist nur die Auflage an die Anleitung.
 - KILL-SWITCH — SQL-RUNBOOK (im Ernstfall auffindbar; bewusst hier in der Root-Doku statt
   in separater Datei, da CLAUDE.md jede Session geladen wird). Sperren:
   ```sql

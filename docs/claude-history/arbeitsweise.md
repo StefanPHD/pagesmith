@@ -276,8 +276,14 @@ Arbeitsweise, keine Repo-Regel.
 - **Ein Nicht-Treffer ist kein Beweis ohne Positivkontrolle.** „Keine Treffer"
   und „falsch gesucht" sehen identisch aus.
 - **Mutationstest, wo möglich:** eine Zeile absichtlich kaputtmachen und prüfen,
-  dass der Test rot wird. **Wird eine Mutation nicht rot: STOPP** — dann prüft
-  der Test nichts.
+  dass der Test rot wird. **Wird eine Mutation nicht rot: STOPP.** Zwei Ursachen
+  sind möglich und dürfen nicht verwechselt werden: der Test prüft nichts — oder
+  die **Mutation ist ein schlechtes Modell des Fehlers** und erzeugt ihn gar
+  nicht. Warnzeichen für den zweiten Fall: es werden andere Tests rot als der
+  gemeinte. Erst die Unterscheidung entscheidet, ob Test oder Mutation
+  nachgeschärft wird. Wer sie überspringt, verstärkt im Zweifel den Test, bis er
+  zur bereits gebauten Lösung passt — und bucht eine Tautologie als bestandene
+  Probe.
 - **Kontroll-Queries gehen einen strukturell ANDEREN Weg** als das Geprüfte
   (EXISTS ↔ LEFT JOIN + GROUP BY). Den Funktionskörper abzuschreiben ist eine
   Tautologie.
@@ -286,6 +292,17 @@ Arbeitsweise, keine Repo-Regel.
   entwertet die ganze Nachweis-Mechanik.
 - **Ehrlich sagen, was ein Test NICHT zeigt** (RLS im Mock, Adblocker im
   Unit-Test) und den Beweis explizit an den Live-Test verweisen.
+- **Ein Live-Schritt beweist nur, was sein Instrument zeigen kann.** Vor jedem
+  Schritt zwei Fragen: Welche **Voraussetzung reißt das gewählte Instrument
+  mit** — und misst der Schritt genau **eine** Achse? Ein zu grobes Mittel
+  (Offline, Sperre, Netzabbruch) schaltet oft die Bedingung mit ab, unter der
+  die geprüfte Stelle überhaupt läuft; dann meldet ein anderer Kanal, und der
+  Schritt gilt als bestanden, ohne etwas gezeigt zu haben. Bündelt ein Schritt
+  umgekehrt zwei Achsen, ist nicht erkennbar, welche gehalten hat. Beide
+  Fehlrichtungen sind real aufgetreten: **falscher Alarm** (das erwartete 204 am
+  Ingest gelesen als fehlendes 451 am Serve-Pfad) und **falsche Entwarnung**
+  (ein Offline-Test, der den geprüften Fehlerkanal gar nicht erreichte). Die
+  zweite ist die gefährliche — sie sieht wie ein Erfolg aus.
 - **Grüne Pipeline ≠ funktioniert.** Der Live-Blick entscheidet.
 
 **Die teuerste Einzelregel:** Schreib nie eine Tatsachenbehauptung in einen

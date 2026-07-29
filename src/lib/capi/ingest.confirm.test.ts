@@ -57,6 +57,7 @@ beforeEach(() => {
   getCapiConfigByTrackingKey.mockResolvedValue({
     projectId: "proj-1",
     blocked: false,
+    abTestActive: false,
     capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
   });
   persistEvent.mockResolvedValue(undefined);
@@ -86,6 +87,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
       eventType: "Purchase",
       eventId: "evt-123",
       source: "browser",
+      variant: null,
     });
     // KEIN Forward -> kein Duplikat bei Meta unter der geteilten eventID.
     expect(global.fetch).not.toHaveBeenCalled();
@@ -103,6 +105,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
       eventType: "Purchase",
       eventId: "evt-123",
       source: "server",
+      variant: null,
     });
     expect(global.fetch).toHaveBeenCalledTimes(1);
   });
@@ -133,6 +136,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
           eventType: "Purchase",
           eventId: "evt-123",
           source: "server",
+          variant: null,
         });
         expect(global.fetch).toHaveBeenCalledTimes(1);
       });
@@ -145,6 +149,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
     getCapiConfigByTrackingKey.mockResolvedValue({
       projectId: "proj-gesperrt",
       blocked: true,
+      abTestActive: false,
       capiConfig: null,
     });
 
@@ -174,6 +179,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
     getCapiConfigByTrackingKey.mockResolvedValue({
       projectId: "proj-ohne-meta",
       blocked: false,
+      abTestActive: false,
       capiConfig: null,
     });
 
@@ -186,6 +192,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
       eventType: "Purchase",
       eventId: "evt-123",
       source: "browser",
+      variant: null,
     });
     expect(global.fetch).not.toHaveBeenCalled();
   });

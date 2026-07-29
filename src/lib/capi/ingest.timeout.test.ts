@@ -73,6 +73,7 @@ beforeEach(() => {
   getCapiConfigByTrackingKey.mockResolvedValue({
     projectId: "proj-1",
     blocked: false,
+    abTestActive: false,
     capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
   });
   persistEvent.mockResolvedValue(undefined);
@@ -115,6 +116,7 @@ describe("Meta-Forward-Timeout (CAPI-Härtung)", () => {
       eventType: "Purchase",
       eventId: "evt-123",
       source: "server",
+      variant: null,
     });
 
     // --- Achse 4: Client bekommt TROTZDEM eine leere 204 (204-Containment)

@@ -53,6 +53,7 @@ beforeEach(() => {
   getCapiConfigByTrackingKey.mockResolvedValue({
     projectId: "proj-1",
     blocked: false,
+    abTestActive: false,
     capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
   });
   persistEvent.mockResolvedValue(undefined);
@@ -97,6 +98,7 @@ describe("Forward-Gate im Handler (Scheibe 2a)", () => {
       eventType: PAGEVIEW_EVENT,
       eventId: "evt-123",
       source: "server",
+      variant: null,
     });
     // … aber NICHT als Conversion zu Meta.
     expect(global.fetch).not.toHaveBeenCalled();
@@ -126,6 +128,7 @@ describe("Forward-Gate im Handler (Scheibe 2a)", () => {
     getCapiConfigByTrackingKey.mockResolvedValue({
       projectId: "proj-1",
       blocked: true,
+      abTestActive: false,
       capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
     });
 

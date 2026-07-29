@@ -7,6 +7,10 @@ import {
   isForwardable,
   type ObservationSource,
 } from "@/lib/analytics/events";
+// NUR der LESER (Scheibe 9b-2). chooseVariant (der Muenzwurf) wird hier BEWUSST NICHT
+// importiert: der Ingest weist NIE zu, er liest nur — die Zuweisung liegt komplett in der
+// Serve-Route. Zwei Zuweisungs-Autoritaeten koennten divergieren.
+import { parseVariantCookie, type Variant } from "@/lib/hosting/variant";
 import { errorName } from "@/lib/errors";
 
 /**
@@ -183,17 +187,21 @@ async function describeMetaError(res: Response): Promise<string> {
  *
  * source ist ein PFLICHT-Argument (kein Default): der Beobachtungs-Ort wird an jeder
  * Aufrufstelle bewusst gesetzt — er stammt aus der SERVER-Interpretation des obs-Markers,
- * nie aus einem Client-Wert.
+ * nie aus einem Client-Wert. variant (9b-2) folgt derselben Regel.
+ *
+ * variant reist als WERT im Closure — es wird hier NICHTS mehr aus dem Request gelesen
+ * (s. Invariante I14 an der Leseanweisung im Handler).
  */
 function schedulePersist(
   projectId: string,
   eventType: string,
   eventId: string,
-  source: ObservationSource
+  source: ObservationSource,
+  variant: Variant | null
 ): void {
   after(async () => {
     try {
-      await persistEvent({ projectId, eventType, eventId, source });
+      await persistEvent({ projectId, eventType, eventId, source, variant });
     } catch (err) {
       console.error(`[analytics] persist task error: ${errorName(err)}`);
     }
@@ -242,6 +250,26 @@ export async function handleIngest(request: Request): Promise<Response> {
   // Fail-closed; nach aussen identische leere 204 (kein Zustandsleck).
   if (resolution.blocked) return status(204);
 
+  // --- A/B-VARIANTE DER BEOBACHTUNG (Phase 9 Scheibe 9b-2) ---
+  // GATE: nur bei AKTIVEM Test. Ist der Test aus, wird der Cookie-Header nicht einmal
+  // gelesen — fuer die grosse Mehrheit der Projekte kostet 9b-2 damit einen Boolean-Test
+  // auf dem meistgetroffenen Pfad der Plattform. Inhaltlich: ein altes Cookie nach
+  // Testende schriebe sonst eine Variante fest, die gar nicht ausgeliefert wurde (die
+  // Route liefert bei inaktivem Test ausnahmslos A), und NULL verloere seine Bedeutung
+  // als Abgrenzung des Testzeitraums. Die Werte sind permanent — sie muessen ab Zeile 1
+  // stimmen.
+  //
+  // LESEN, NICHT ZUWEISEN: kein Muenzwurf, kein Default 'a'. Test aktiv ohne (oder mit
+  // ungueltigem) Cookie -> null. Das Urteil ueber den Cookie-WERT faellt genau einmal, im
+  // geteilten parseVariantCookie — kein zweiter Parser, keine zweite Wertliste hier.
+  //
+  // I14 — SYNCHRON IM REQUEST-KONTEXT: Der Header wird HIER gelesen, nie in after(); dort
+  // ist der Request bereits abgeschlossen, und ein dorthin verschobenes Lesen waere ein
+  // Fehler, der erst unter Last auffaellt. Der fertige WERT reist im Closure.
+  const variant = resolution.abTestActive
+    ? parseVariantCookie(request.headers.get("cookie"))
+    : null;
+
   // --- ANALYTICS-PERSIST (Phase 8 Scheibe 1, in 2a ENTKOPPELT) ---
   // Laeuft fuer JEDES nicht-gesperrte Projekt — unabhaengig davon, ob eine CapiConfig
   // existiert. Das Geruest steckt seit Scheibe A in schedulePersist (oben), damit der
@@ -263,12 +291,17 @@ export async function handleIngest(request: Request): Promise<Response> {
   //
   // Der Zweig liegt HINTER dem Kill-Switch (oben): ein gesperrtes Projekt erzeugt auch
   // keine Bestaetigungs-Zeilen.
+  //
+  // Die Bestaetigungszeile traegt DIESELBE Variante wie die Serverzeile (9b-2): variant
+  // ist eine Eigenschaft der BEOBACHTUNG (wie source) und haelt fest, was das Cookie in
+  // diesem Moment sagte — sie ist keine Aussage ueber die eventID. Ohne sie waere eine
+  // Verlustrate JE VARIANTE nicht berechenbar.
   if (isBrowserConfirm) {
-    schedulePersist(resolution.projectId, event, eventID, "browser");
+    schedulePersist(resolution.projectId, event, eventID, "browser", variant);
     return status(204);
   }
 
-  schedulePersist(resolution.projectId, event, eventID, "server");
+  schedulePersist(resolution.projectId, event, eventID, "server", variant);
 
   // --- FORWARD NUR FUER CONVERSIONS (Scheibe 2a) ---
   // Der gesamte Meta-Pfad (Payload-Bau + Forward) liegt jetzt INNERHALB dieser einen

@@ -55,6 +55,7 @@ beforeEach(() => {
   getCapiConfigByTrackingKey.mockResolvedValue({
     projectId: "proj-1",
     blocked: false,
+    abTestActive: false,
     capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
   });
   persistEvent.mockResolvedValue(undefined);
@@ -83,6 +84,9 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
       eventId: "evt-123",
       // Scheibe A: source ist Pflicht-Argument; der Normalpfad bleibt 'server'.
       source: "server",
+      // Scheibe 9b-2: variant ist ebenfalls Pflicht. Ohne aktiven Test -> null, also
+      // exakt das, was diese Zeile vor 9b-2 trug (Invariante "Bestand unveraendert").
+      variant: null,
     });
   });
 
@@ -107,6 +111,7 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
     getCapiConfigByTrackingKey.mockResolvedValue({
       projectId: "proj-gesperrt",
       blocked: true,
+      abTestActive: false,
       capiConfig: null,
     });
 
@@ -134,6 +139,7 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
     getCapiConfigByTrackingKey.mockResolvedValue({
       projectId: "proj-ohne-meta",
       blocked: false,
+      abTestActive: false,
       capiConfig: null,
     });
 
@@ -149,6 +155,7 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
       eventType: "Purchase",
       eventId: "evt-123",
       source: "server",
+      variant: null,
     });
   });
 

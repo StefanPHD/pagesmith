@@ -19,11 +19,24 @@ import { getMetaPixelId, type ProjectSettings } from "@/lib/settings";
  * CapiConfig -> der Schutz darf kein Nebeneffekt der Config-Kopplung mehr sein, sondern
  * braucht einen EXPLIZITEN Zweig im Handler. blocked_at wird in derselben Projektion
  * ohnehin schon gelesen -> KEINE zweite Query.
+ *
+ * abTestActive (Scheibe 9b-2): dasselbe Muster ein zweites Mal — EINE Spalte mehr in
+ * DERSELBEN Projektion, KEINE zweite Query (die /api/e-Schlankheits-Regel gilt auf dem
+ * meistgetroffenen Pfad der Plattform). Der Ingest schreibt events.variant NUR bei
+ * aktivem Test; ohne dieses Feld muesste er dafuer nachfragen.
  */
 export type TrackingKeyResolution = {
   projectId: string;
   /** true = Projekt gesperrt (Kill-Switch). Der Aufrufer MUSS darauf explizit verzweigen. */
   blocked: boolean;
+  /**
+   * true = A/B-Test laeuft (projects.ab_test_active, Migration 0017). GATE fuer die
+   * Varianten-Dimension in events: ist der Test AUS, wird variant NIE geschrieben —
+   * sonst behauptete eine Zeile eine Auslieferung, die es nicht gab (die Route liefert
+   * bei inaktivem Test ausnahmslos A), und NULL verloere seine Bedeutung als
+   * Testzeitraum-Abgrenzung. Die Werte sind permanent und werden nie transformiert.
+   */
+  abTestActive: boolean;
   capiConfig: CapiConfig | null;
 };
 
@@ -54,10 +67,12 @@ export type CapiConfig = {
  * - der Key leer ist, ODER
  * - kein Projekt diesen trackingKey traegt.
  *
- * Gibt { projectId, blocked: true, capiConfig: null } zurueck, wenn das Projekt GESPERRT
- * ist (Kill-Switch) — der Aufrufer MUSS darauf explizit verzweigen und verwerfen.
+ * Gibt blocked: true zurueck, wenn das Projekt GESPERRT ist (Kill-Switch) — der Aufrufer
+ * MUSS darauf explizit verzweigen und verwerfen. abTestActive wird auch dort befuellt
+ * (totale Funktion ohne Sonderfall); der Handler liest es in diesem Fall nie, weil er
+ * vorher zurueckkehrt.
  *
- * Gibt { projectId, blocked: false, capiConfig: null } zurueck, wenn das Projekt existiert
+ * Gibt capiConfig: null zurueck, wenn das Projekt existiert
  * und offen ist, aber KEINE Meta-Pixel-ID (ohne Pixel-Ziel kein Forward) bzw. (noch) KEINE
  * Token-Zeile hat (trackingKey gesetzt, Token nie gesetzt / Race) -> kein Forward, aber
  * Analytics-Persist ist erlaubt.
@@ -75,16 +90,21 @@ export async function getCapiConfigByTrackingKey(
   // vorher der JSON-Pfad settings->capi->>trackingKey). Ergebnis fuer Bestand
   // identisch (Migration 0012 backfillt die Spalte 1:1 aus settings). settings reitet
   // weiter in DERSELBEN Projektion mit (fuer getMetaPixelId), ebenso blocked_at
-  // (Kill-Switch-Ingest-Stop ohne zusaetzlichen Roundtrip).
+  // (Kill-Switch-Ingest-Stop ohne zusaetzlichen Roundtrip) und seit 9b-2 ab_test_active
+  // (Varianten-Gate ohne zusaetzlichen Roundtrip — dieselbe Denkfigur).
   const { data: project, error: projectError } = await admin
     .from("projects")
-    .select("id, settings, blocked_at")
+    .select("id, settings, blocked_at, ab_test_active")
     .eq("tracking_key", key)
     .maybeSingle();
 
   if (projectError || !project) return null;
 
   const projectId = project.id as string;
+  // Boolean() statt Cast: die Spalte ist NOT NULL DEFAULT false (0017), aber der
+  // JS-Client liefert unknown-artige Werte — der Resolver soll hier nie ein undefined
+  // durchreichen, das im Handler wie "false" wirkt, ohne es zu sein.
+  const abTestActive = Boolean(project.ab_test_active);
 
   // KILL-SWITCH (Tier 0): gesperrtes Projekt -> FRUEHER Return, VOR der Pixel-/Token-
   // Aufloesung (die project_tokens-Query laeuft bei gesperrt weiterhin NICHT). Neu in
@@ -92,11 +112,12 @@ export async function getCapiConfigByTrackingKey(
   // EXPLIZIT und verwirft, bevor irgendetwas persistiert oder geforwarded wird. Fuer den
   // anonymen Aufrufer bleibt das Ergebnis identisch (204, kein Zustandsleck); der
   // Unterschied ist nur intern sichtbar. Halbe Sperre = keine Sperre.
-  if (project.blocked_at) return { projectId, blocked: true, capiConfig: null };
+  if (project.blocked_at)
+    return { projectId, blocked: true, abTestActive, capiConfig: null };
 
   // pixelId aus derselben Zeile — kein zweiter Lookup. Reuse der Settings-Ableitung.
   const pixelId = getMetaPixelId((project.settings ?? {}) as ProjectSettings);
-  if (!pixelId) return { projectId, blocked: false, capiConfig: null };
+  if (!pixelId) return { projectId, blocked: false, abTestActive, capiConfig: null };
 
   // Schritt 2: project_id -> Token. Fehlende Zeile (Token nie gesetzt) -> kein Forward.
   const { data: row, error: tokenError } = await admin
@@ -105,10 +126,11 @@ export async function getCapiConfigByTrackingKey(
     .eq("project_id", projectId)
     .maybeSingle();
 
-  if (tokenError || !row) return { projectId, blocked: false, capiConfig: null };
+  if (tokenError || !row)
+    return { projectId, blocked: false, abTestActive, capiConfig: null };
 
   const token = row.meta_capi_token ?? null;
-  if (!token) return { projectId, blocked: false, capiConfig: null };
+  if (!token) return { projectId, blocked: false, abTestActive, capiConfig: null };
 
-  return { projectId, blocked: false, capiConfig: { pixelId, token } };
+  return { projectId, blocked: false, abTestActive, capiConfig: { pixelId, token } };
 }

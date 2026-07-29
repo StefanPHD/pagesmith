@@ -74,6 +74,60 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     expect(eqSpy).not.toHaveBeenCalledWith("settings->capi->>trackingKey", "tk-abc");
   });
 
+  // Scheibe 9b-2 — DER TIPPFEHLER-WAECHTER. Der Builder-Mock oben gibt sich mit JEDER
+  // Select-Liste zufrieden; ein falsch geschriebener Spaltenname waere damit von keinem
+  // Test gedeckt. In Produktion waere er NICHT harmlos: PostgREST antwortet mit einem
+  // Fehler, der Resolver returnt null (projectError-Pfad) — und dann steht der Persist UND
+  // der CAPI-Forward fuer ALLE Projekte still, ohne dass irgendwo etwas rot wird. Genau
+  // die stille Klasse, die hier sonst per Test festgenagelt wird.
+  //
+  // Der Test sichert zugleich Invariante I10: EINE Projektion, KEINE zweite Query.
+  it("Scheibe 9b-2: EINE Projektion traegt id, settings, blocked_at UND ab_test_active", async () => {
+    const selectSpy = vi.fn();
+    const from = vi.fn(() => {
+      const builder: Record<string, unknown> = {};
+      builder.select = vi.fn((cols: string) => {
+        selectSpy(cols);
+        return builder;
+      });
+      builder.eq = vi.fn(() => builder);
+      builder.maybeSingle = vi.fn(async () => ({ data: null, error: null }));
+      return builder;
+    });
+    createAdminClient.mockReturnValue({ from });
+
+    await getCapiConfigByTrackingKey("tk-abc");
+
+    expect(selectSpy).toHaveBeenCalledWith("id, settings, blocked_at, ab_test_active");
+    // Die projects-Projektion ist die EINZIGE Query auf diesem Pfad (Projekt nicht
+    // gefunden -> frueher Return): kein zweiter Roundtrip fuer das Varianten-Gate.
+    expect(from).toHaveBeenCalledTimes(1);
+  });
+
+  // POSITIV-GEGENPROBE zu den vielen abTestActive:false oben — ohne sie bewiesen die
+  // nur, dass irgendwo ein konstantes false steht. Hier traegt die Zeile true, und der
+  // Resolver muss es MELDEN: der Handler haengt sein Varianten-Gate daran.
+  it("Scheibe 9b-2: ab_test_active=true wird als abTestActive:true gemeldet", async () => {
+    mockAdmin({
+      projects: {
+        data: {
+          id: "proj-1",
+          settings: { pixels: { meta: { pixelId: "PIXEL-123" } } },
+          blocked_at: null,
+          ab_test_active: true,
+        },
+        error: null,
+      },
+      project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
+    });
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: true,
+      capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
+    });
+  });
+
   it("loest trackingKey -> { projectId, capiConfig } auf (eine Aufloesung)", async () => {
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
@@ -84,6 +138,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     expect(await getCapiConfigByTrackingKey("tk-abc")).toEqual({
       projectId: "proj-1",
       blocked: false,
+      abTestActive: false,
       capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
     });
   });
@@ -115,6 +170,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
       blocked: false,
+      abTestActive: false,
       capiConfig: null,
     });
   });
@@ -129,6 +185,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
       blocked: false,
+      abTestActive: false,
       capiConfig: null,
     });
   });
@@ -141,6 +198,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
       blocked: false,
+      abTestActive: false,
       capiConfig: null,
     });
   });
@@ -153,6 +211,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
       blocked: false,
+      abTestActive: false,
       capiConfig: null,
     });
   });
@@ -184,6 +243,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     expect(await getCapiConfigByTrackingKey("tk-abc")).toEqual({
       projectId: "proj-1",
       blocked: false,
+      abTestActive: false,
       capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
     });
   });
@@ -215,6 +275,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
       blocked: true,
+      abTestActive: false,
       // KEINE Config bei gesperrt — der Token wird gar nicht erst gelesen.
       capiConfig: null,
     });

@@ -29,6 +29,9 @@ const PARAMS = {
   // source ist seit Scheibe A ein PFLICHT-Argument (kein Default): events.source ist
   // NOT NULL ohne column-DEFAULT -> jeder Schreibpfad setzt die Herkunft bewusst.
   source: "server",
+  // variant ist seit 9b-2 ebenfalls PFLICHT (kein Default). null ist der Normalfall:
+  // Projekte ohne aktiven A/B-Test schreiben genau das, was sie vor 9b-2 schrieben.
+  variant: null,
 } as const;
 
 beforeEach(() => {
@@ -51,6 +54,7 @@ describe("persistEvent (Phase 8 Scheibe 1)", () => {
       event_type: "Purchase",
       event_id: "evt-123",
       source: "server",
+      variant: null,
     });
   });
 
@@ -65,7 +69,35 @@ describe("persistEvent (Phase 8 Scheibe 1)", () => {
       event_type: "Purchase",
       event_id: "evt-123",
       source: "browser",
+      variant: null,
     });
+  });
+
+  // Scheibe 9b-2: die Varianten-Dimension erreicht die Spalte. Diskriminierend gegen ein
+  // stilles Verschlucken (Feld nie ins Insert-Objekt uebernommen) — dann liefe 9c auf
+  // einer durchgehend leeren Spalte und zeigte "kein Test lief", ohne einen Fehler.
+  it("variant='b' landet als Spaltenwert im Insert (Scheibe 9b-2)", async () => {
+    await persistEvent({ ...PARAMS, variant: "b" });
+
+    expect(insert).toHaveBeenCalledWith({
+      project_id: "proj-1",
+      event_type: "Purchase",
+      event_id: "evt-123",
+      source: "server",
+      variant: "b",
+    });
+  });
+
+  // Das GEGENSTUECK: null wird als EXPLIZITER Key geschrieben, nicht weggelassen. Fuer
+  // Postgres ist beides gleich — hier ist es der Unterschied zwischen einer getroffenen
+  // Entscheidung und einer Auslassung, und genau den soll das Pflicht-Feld sichtbar
+  // halten. Faerbt rot, sobald jemand das Feld konditional ins Insert-Objekt haengt.
+  it("variant=null wird als expliziter Key geschrieben, nicht weggelassen", async () => {
+    await persistEvent(PARAMS);
+
+    const row = insert.mock.calls[0][0] as Record<string, unknown>;
+    expect(Object.keys(row)).toContain("variant");
+    expect(row.variant).toBeNull();
   });
 
   it("(e) event_type laenger als 64 Zeichen wird HART getruncated", async () => {

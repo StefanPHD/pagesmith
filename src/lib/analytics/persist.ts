@@ -2,6 +2,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { errorName } from "@/lib/errors";
 import type { ObservationSource } from "@/lib/analytics/events";
+import type { Variant } from "@/lib/hosting/variant";
 
 /**
  * Analytics-Persistenz (Phase 8 Scheibe 1).
@@ -40,6 +41,19 @@ export type PersistEventParams = {
    * TS-Default waere genau der stille Fallback, den diese DB-Entscheidung ausschliesst.
    */
   source: ObservationSource;
+  /**
+   * A/B-VARIANTE DER BEOBACHTUNG, PFLICHT — dieselbe Denkfigur wie source, aus demselben
+   * Grund (Scheibe 9b-2). null ist ein GUELTIGER Wert und heisst "gehoert zu keiner
+   * Testbeobachtung" (kein aktiver Test / kein Cookie / ungueltiges Cookie / fremde
+   * Domain). Als PFLICHT-Feld ohne Default muss jede Aufrufstelle sich aeussern — ein
+   * optionales Feld truege den Doppelsinn "nicht mitgegeben" vs. "gibt es nicht", und
+   * genau der macht spaeter aus einer Auslassung eine stille Falschzuordnung.
+   *
+   * Der Wert stammt AUSSCHLIESSLICH aus dem First-Party-Cookie, das der SERVER selbst
+   * gesetzt hat (Serve-Route), nie aus dem Client-Blob — gleiche Marker-Hygiene wie bei
+   * source.
+   */
+  variant: Variant | null;
 };
 
 export async function persistEvent({
@@ -47,6 +61,7 @@ export async function persistEvent({
   eventType,
   eventId,
   source,
+  variant,
 }: PersistEventParams): Promise<void> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), INSERT_TIMEOUT_MS);
@@ -58,6 +73,12 @@ export async function persistEvent({
     // vom Aufrufer, der ihn setzen MUSS (s. PersistEventParams) — der Wert stammt NIE aus
     // dem Client-Blob, sondern aus der Server-Interpretation des obs-Markers.
     // id + created_at kommen per DB-Default. KEIN IP/UA (lean/PII-frei).
+    //
+    // variant wird IMMER als expliziter Key geschrieben, auch als null (9b-2). Fuer
+    // Postgres ist das identisch mit Weglassen — fuer den LESER des Codes und fuer den
+    // Test ist es der Unterschied zwischen einer getroffenen Entscheidung und einer
+    // Auslassung. Der DB-CHECK events_variant_valid (0017) laesst nur null|'a'|'b' zu;
+    // der Wert ist hier bereits durch das geteilte Praedikat gegangen.
     const { error } = await admin
       .from("events")
       .insert({
@@ -65,6 +86,7 @@ export async function persistEvent({
         event_type: eventType.slice(0, EVENT_TYPE_MAX_LENGTH),
         event_id: eventId,
         source,
+        variant,
       })
       .abortSignal(controller.signal);
 

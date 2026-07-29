@@ -779,6 +779,160 @@ unterscheidbar.
         NULL, kein Würfeln).
     (b) KEINE Aussage über die VERTEILUNG unter echtem Traffic — das ist 9c-Gebiet.
 
+### Scheibe 9c — Auswertung je Variante (ENTSCHIEDEN, Bau ausstehend)
+Die letzte Scheibe der Phase: aus den seit 9b-2 zugeordneten Zeilen wird eine Aussage.
+Die Entscheidungen unten sind VOR dem Bau getroffen; der Bau folgt in einer eigenen Runde
+(Stufe 1 = nur Plan) und bringt — anders als 9b-2 — eine MIGRATION mit. KEIN
+VERIFIZIERT-Block; der kommt mit dem Abschluss-Vermerk nach dem Live-Test.
+DIESE RUNDE HAT NICHTS AM CODE ERHOBEN. Alles, was am Code zu klären ist, steht unten
+gesammelt als OFFENE PRÜFUNG — kein Dateipfad, keine Funktionssignatur, keine
+Migrationsnummer wird hier als Tatsache behauptet. (Anlass: in 9b-2 stand ein geratener
+Dateipfad in der Vorgabe und war falsch; der Bau hat ihn korrigiert.)
+
+- ZWECK: Conversions je Variante, gegen Seitenaufrufe je Variante. Zähler und Nenner
+  kommen seit 9b-2 aus DERSELBEN Tabelle — das war der Grund, die Varianten-Dimension
+  auch auf die PageView-Zeilen zu schreiben, und dieser Grund wird hier eingelöst.
+- DER NENNER SIND SEITENAUFRUFE, NICHT BESUCHER — ENTSCHIEDEN. Es gibt keine
+  Besucher-Identität, und zwar an drei Stellen bewusst nicht: Fingerprinting ist
+  entschieden nicht gebaut, ein IP/UA-Hash zöge die 30-Tage-Retentionspflicht herein
+  (Manifest Tier 2), und das __Host-ps_v-Cookie trägt ausschliesslich 'a'/'b' — keine ID,
+  kein Zeitstempel (Grundsatzentscheidung oben).
+  RIEGEL, ausdrücklich benannt, weil er wie eine Kleinigkeit aussieht: eine "anonyme
+  Zufalls-ID" im Cookie wäre ein fingerprint-artiges Merkmal und löste die
+  DATENKLASSEN-GRENZE aus (s. "## Offene Punkte"). Sie ist damit KEINE 9c-Option, sondern
+  eine eigene Scheibe, die eine vorherige Entscheidung braucht.
+  EHRLICHER PREIS, zweistufig — die zweite Stufe ist die unangenehmere:
+  (a) NIVEAUFEHLER: ein Besucher, der dreimal lädt, zählt dreimal. Der Nenner ist zu gross,
+      die Rate zu klein.
+  (b) CONFOUNDER — der Befund, nicht die Vermutung: weil der Nenner Seitenaufrufe zählt
+      und es keine Besucher-Identität gibt, geht JEDER Unterschied im Reload-Verhalten
+      zwischen den Varianten ungefiltert in die Rate ein. Dass dieser Kanal offensteht,
+      folgt zwingend aus diesen beiden Tatsachen. Ungemessen ist allein, OB und WODURCH er
+      sich im konkreten Test auswirkt. BEISPIEL für einen solchen Mechanismus (illustrativ,
+      nicht behauptet): würde eine verwirrende Variante öfter neu geladen, stiege ihr
+      Nenner und ihre Rate sänke, ohne dass die Conversion-Wahrscheinlichkeit gesunken
+      wäre.
+      (a) verschiebt beide Seiten gleichmässig und kürzt sich im Vergleich weitgehend
+      heraus; (b) tut das NICHT. Ohne Besucher-Identität ist das nicht auflösbar — es wird
+      benannt, nicht wegdefiniert.
+  WORTWAHL, verbindlich: "Conversions je Seitenaufruf", NIE "Conversion-Rate je Besucher".
+  Dieselbe Disziplin wie "nur server-seitig erfasst" statt "gerettet" — die Bezugsgrösse
+  steht im Namen, sonst liest der Nutzer eine Zahl, die es nicht gibt.
+- FORM DER ZAHL — ENTSCHIEDEN: eine TABELLE JE EVENT-TYP, die Varianten nebeneinander.
+  GRUND: TrackConfig.event ist ein FREIER Nutzer-String; ein Projekt KANN damit mehrere
+  Conversion-Arten führen. Die Form ist die natürliche Fortsetzung der bestehenden
+  (event_type, count)-Gestalt und fällt bei genau EINER Conversion-Art auf einen einzigen
+  Eintrag zusammen — sie kostet also nichts, wo sie nicht gebraucht wird.
+  VERWORFEN: (a) EINE Sammelkennzahl über alle Conversions — summierte Purchase und Lead
+  sind keine Grösse, sondern eine Zahl, die auf nichts antwortet; (b) der Nutzer wählt ein
+  PRIMÄR-EVENT — braucht eine Einstellung, einen Speicherort und UI für einen Bedarf, den
+  heute niemand gemeldet hat. Bleibt möglich, sobald er auftritt.
+- NEUE RPC STATT ERWEITERUNG — ENTSCHIEDEN: die bestehende Zähl-RPC bekommt KEINE
+  Varianten-Spalte. Ihre Rückgabeform zu ändern bräche ihren Aufrufer auf einem LIVE
+  gelesenen Pfad; der Präzedenzfall zeigt den anderen Weg — die Verlustraten-RPC kam
+  ebenfalls ADDITIV daneben statt als Erweiterung.
+  DIVERGENZ-RIEGEL (der Preis dieser Entscheidung, deshalb hier und nicht im Plan): es
+  entstehen ZWEI Funktionen mit überlappender Frage an DIESELBE Tabelle. Identische
+  Filtersemantik ist Pflicht — dieselbe Einschränkung auf den Beobachtungs-Ort 'server';
+  driftet sie, zeigen zwei Sektionen desselben Dashboards unvereinbare Zahlen, und keiner
+  von beiden ist anzusehen, wer recht hat. ABGESICHERT WIRD DAS PER TEST: die Summe über
+  alle Varianten OHNE Zeitfilter muss die projektweite Zahl DERSELBEN Event-Art treffen.
+  Aggregat gegen Gruppierung ist strukturell ein anderer Weg zum selben Wert, also keine
+  Tautologie.
+  SECURITY INVOKER, stable, search_path gesetzt — als DEFINER lieferte die RPC Zahlen über
+  ALLE Tenants, weil sie die RLS des Aufrufers umginge. Nicht verhandelbar; im
+  Migrations-Volltext ist das die Klausel, auf die zuerst geschaut wird.
+- LAUF-DELIMITER — DIE MIGRATION, DIE 9b-2 SICH GESPART HAT. Die Herleitung ("warum
+  überhaupt") steht in der 9b-2-Sektion unter "VORGABE FÜR 9c" und wird hier NICHT
+  wiederholt; hier steht nur, was dort noch nicht entschieden war:
+  GESETZT WIRD BEIM START des Tests. Beim STOPP bleibt die Spalte UNVERÄNDERT — sonst
+  verschwänden die Zahlen genau in dem Moment, in dem der Nutzer sie liest (er stoppt, um
+  das Ergebnis anzusehen).
+  KEIN CHECK "aktiv impliziert Zeitstempel gesetzt", obwohl das die etablierte Denkfigur
+  der Phase wäre (projects_variant_b_pair, projects_ab_test_needs_variant_b): er zwänge
+  einen BACKFILL für die bereits aktive Zeile, und ein gerateter Zeitwert in einer
+  permanenten Spalte ist genau das, was 9b-2 beim Backfill abgelehnt hat. NULL degradiert
+  stattdessen sauber auf "alle Zeilen mit Variante" — so war es dort bereits festgelegt.
+  BENANNTES FENSTER, nicht repariert: zwischen Migration und Deploy (Migration zuerst,
+  fail-closed) kann eine Aktivierung mit ALTEM Code laufen -> der Zeitstempel bliebe NULL,
+  der Lauf wäre nicht abgegrenzt. Dauer: Minuten, und heute betrifft es ausschliesslich
+  eigene Projekte. Das ist der Preis der Reihenfolge-Regel, nicht ein Fehler in ihr.
+- NEUSTART — ENTSCHIEDEN: ein erneuter Start ÜBERSCHREIBT den Zeitstempel; die Zahlen des
+  vorigen Laufs sind danach nicht mehr ausgewiesen. Das IST der Zweck (ein sauberer Lauf),
+  aus Nutzersicht aber ein Verlust — deshalb steht ein HINWEIS VOR dem Klick, nicht danach.
+  GRENZE, die der Hinweis NICHT überschreiten darf: es wird NICHTS gelöscht, die Zeilen
+  bleiben vollständig in events. Ein Hinweis, der Datenverlust behauptet, wäre falsch und
+  erzeugt Angst vor einer harmlosen Aktion; er sagt, dass die ANZEIGE neu beginnt.
+  VERWORFEN: (a) nie überschreiben — dann ist ein sauberer zweiter Test unmöglich und der
+  ganze Zweck der Spalte verfehlt; (b) eine Lauf-HISTORIE mit mehreren Läufen — Abstraktion
+  auf Verdacht, dieselbe Erwägung wie beim bewussten Varianten-Duplikat in 9a. Tritt ein
+  dritter Bedarf auf, wird das Modell ERSETZT, nicht erweitert.
+- WAS 9c AUSDRÜCKLICH NICHT BAUT, je mit Grund:
+  (a) KEINE SIGNIFIKANZRECHNUNG — steht so in den Grundsatzentscheidungen oben.
+      ABER: zwischen "rechnet keine Signifikanz" und "stellt zwei Zahlen so dar, als wäre
+      eine besser" liegt der eigentliche Produktschaden. Die Zielgruppe trifft mit diesen
+      Zahlen BUDGET-Entscheidungen; eine Darstellung, die einen Sieger suggeriert, ist
+      schlimmer als gar keine Auswertung, weil sie Vertrauen erzeugt, das sie nicht deckt.
+      DARAUS: ABSOLUTWERTE PRIMÄR, Rate sekundär. "12 von 340" ist ehrlich; eine Prozentzahl
+      ALLEIN verdeckt die BEZUGSGRÖSSE — bei kleinen Zahlen wie bei grossen, das Problem
+      wächst sich mit Traffic nicht aus. KEINE
+      Sieger-Auszeichnung, KEINE Ampelfarben, KEINE Formulierung, die eine Variante vorne
+      sieht.
+      AUCH VERWORFEN: eine SCHWELLE ("unter N Aufrufen keine Rate anzeigen"). Sie wäre ein
+      verstecktes statistisches Urteil mit willkürlicher Konstante — und die Konstante wäre
+      nicht begründbar, ohne genau die Rechnung anzustellen, die wir nicht anstellen.
+      Absolutwerte leisten dasselbe ehrlicher und kostenlos: "1 von 3" ENTHÄLT die
+      Bezugsgrösse, "33 %" nicht.
+  (b) KEINE VERLUSTRATE JE VARIANTE, obwohl 9b-2 die Bestätigungszeilen bewusst
+      mitbeschrieben hat und sie damit möglich WÄRE. GRUND: sie verzerrt den A/B-Vergleich
+      NICHT — der läuft auf server-beobachteten Zeilen, und die sind adblocker-unabhängig;
+      genau das ist das Produktversprechen. Die Möglichkeit bleibt bestehen (die Daten sind
+      da), die Scheibe braucht sie nicht.
+  (c) KEINE UNIQUES — s. den Nenner-Punkt oben und die Datenklassen-Grenze.
+  (d) KEIN INDEX auf der Varianten-Spalte. Niedrige Kardinalität (zwei Werte plus NULL),
+      und der Projektfilter trägt über den bestehenden Index — die Ausgangslage steht im
+      Ist-Stand-Block. Falls es je langsam wird: MESSEN, dann entscheiden. Ein Index auf
+      Verdacht ist Schreiblast auf dem Ingest-Pfad ohne belegten Nutzen.
+- DARSTELLUNG:
+  EIGENE SEKTION mit ausgewiesenem ZEITRAUM ("seit Teststart am ..."). Die bestehenden
+  projektweiten Kacheln bleiben UNBERÜHRT — dass sie projektweit aggregieren, ist im
+  9b-1p-Block bereits festgehalten.
+  GRUND FÜR DIE TRENNUNG, konkret: stünde eine projektweite Gesamtzahl neben den
+  Varianten-Zahlen, fragte der Nutzer zu Recht, warum das nicht aufgeht — es sind ZWEI
+  Fragen über ZWEI Zeiträume. Getrennte Sektionen sagen das; geteilte Spalten laden zum
+  Addieren ein und produzieren einen Support-Fall aus einer korrekten Anzeige.
+  SICHTBAR, sobald der Zeitstempel gesetzt ist — NICHT nur solange der Test AKTIV ist,
+  sonst verschwänden die Ergebnisse beim Stoppen. Der Zustand wird aus dem GELADENEN
+  Projekt ABGELEITET, nicht lokal gehalten ("ABLEITEN STATT LÖSCHEN").
+  ZEILEN OHNE ZUORDNUNG innerhalb des Fensters (cookie-verweigernder Browser,
+  Export-Download auf fremder Domain, Seite vor der Aktivierung ausgeliefert — die Fälle
+  sind in der 9b-2-Sektion aufgezählt) werden EIGENS ausgewiesen — unaufdringlich und NUR
+  dann, wenn ihre Zahl nicht null ist. Der Record legt das LAYOUT nicht fest (ob der
+  Ausweis neben den Varianten oder darunter steht, entscheidet die Gestaltung). Er ist das
+  EINZIGE Signal über Messverluste, das der Nutzer überhaupt hat; ihn wegzulassen hiesse,
+  den Nenner stillschweigend zu beschönigen.
+  "LEER" UND "NICHT LADBAR" DÜRFEN NICHT GLEICH AUSSEHEN. Der Backlog-Punkt dazu verweist
+  ausdrücklich auf diese Scheibe (docs/claude-history/backlog-polish.md) — er wird HIER
+  eingelöst, nicht ein weiteres Mal verschoben. Damit hängt ein Fehlerkanal am Aufruf ->
+  safeAction ist Pflicht, gleiche Achse wie beim Ladeeffekt im DomainManager (s. "## Immer
+  beachten", CLIENT-SEITIGE SERVER-ACTION-AUFRUFE): nicht wer den Aufruf auslöst
+  entscheidet, sondern ob eine Meldung zu zeigen ist.
+- OFFENE PRÜFUNGEN FÜR DIE STUFE 1 (ausdrücklich KEINE Befunde — in dieser Runde wurde
+  nichts am Code erhoben; die Stufe 1 misst jede einzelne, bevor sie plant):
+  (1) Wie behandelt die bestehende Statistik-Sektion die PageView-Zeile heute — wird sie
+      angezeigt oder gefiltert? Davon hängt ab, ob der NENNER heute überhaupt schon
+      sichtbar ist und ob 9c ihn erstmals zeigt.
+  (2) Wie ist die bestehende Zähl-RPC genau geschnitten, und wer ruft sie auf? Erst das
+      belegt, dass eine Erweiterung ihren Aufrufer bräche (die Annahme, auf der die
+      Entscheidung "neue RPC" steht).
+  (3) Wo liegt die Aktivierungs-Action und was schreibt sie heute? Der Zeitstempel wird
+      dort gesetzt; ob das additiv möglich ist, ist am Code zu klären.
+  (4) Hat die Statistik-Sektion heute einen Fehlerkanal — oder entsteht er mit dieser
+      Scheibe neu?
+  (5) Die tatsächlich nächste freie Migrationsnummer ist am Verzeichnis ABZULEITEN, NIE
+      hartzukodieren. Eine hier notierte Nummer veraltete mit der nächsten Migration und
+      überschriebe dann eine bestehende Datei.
+
 ### Fix-Scheibe safeAction — Client-Fehlerbehandlung (ABGESCHLOSSEN — live bewiesen 2026-07-27, Commit bd05e34)
 WARUM DIESER ABSCHNITT HIER STEHT (sonst wirkt er später deplatziert): Die Scheibe ist
 KEINE A/B-Arbeit. Sie steht hier, weil es keine History-Datei zur Client-Fehlerbehandlung

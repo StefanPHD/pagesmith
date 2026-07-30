@@ -200,12 +200,14 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   TRAGENDE KONTROLLE: Dependabot aktiviert — Alerts, Security Updates, Dependency Graph, 1 Regel.
   EHRLICHE EINORDNUNG: Dauerhygiene, kein Launch-Gate; erledigt am 2026-07-24.
   BINDET-AN: laufend (aktiv).
-- BACKUPS + Restore-Drill (TEILWEISE ERLEDIGT 2026-07-29 — Backup-Tier steht; DRILL, PITR und
-  die Rebuild-Lücke bleiben OFFEN):
+- BACKUPS + Restore-Drill (TEILWEISE ERLEDIGT — Backup-Tier bestätigt 2026-07-29, DRILL
+  GEFAHREN UND BESTANDEN 2026-07-30; PITR und die migrations-only Rebuild-Lücke bleiben
+  OFFEN):
   RISIKO: Datenverlust ohne getesteten Wiederherstellungsweg (ein ungetestetes Backup
   ist kein Backup).
-  TRAGENDE KONTROLLE: Supabase-Backup-Tier bestätigen + EINEN echten Restore-Drill
-  fahren (kompletten Core-Tabellen-Drop durchspielen), danach reguläre Drills.
+  TRAGENDE KONTROLLE: Supabase-Backup-Tier bestätigen (erledigt) + EINEN echten
+  Restore-Drill fahren (kompletten Core-Tabellen-Drop durchspielen) — GEFAHREN UND
+  BESTANDEN am 2026-07-30, s. Punkt (1) unten; danach reguläre Drills.
   STAND 2026-07-29 — DAS BACKUP-TIER IST BESTÄTIGT: Supabase auf PRO -> TÄGLICHE Backups mit
   7 Tagen Retention. Die Messung vom 2026-07-24 ("FREE hat GAR KEINE Backups, kein Scheduled,
   kein PITR") ist damit ÜBERHOLT — sie bleibt hier nur als Herkunft der Entscheidung stehen,
@@ -214,19 +216,39 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   laufende DB trägt unersetzliche Daten — Projekte, CAPI-Tokens, published_content und die
   Event-Historie mit den Phase-8-Live-Beweisen. Genau deshalb ist der ungefahrene Drill kein
   Formalismus.
-  DREI DINGE SIND DAMIT AUSDRÜCKLICH NICHT ERLEDIGT — sie sind der Grund, warum die
-  TRAGENDE KONTROLLE nur zur Hälfte vollzogen ist:
-  (1) DER DRILL IST NICHT GEFAHREN. Ein Tier zu BUCHEN und einen Restore zu KÖNNEN sind zwei
-      verschiedene Aussagen; die Regel "ein ungetestetes Backup ist kein Backup" gilt
-      unverändert und wird durch ein Upgrade nicht eingelöst.
+  DER STAND JE PUNKT (einer davon jetzt GEMESSEN geklärt, zwei bleiben offen — das ist
+  der Grund, warum die TRAGENDE KONTROLLE weiterhin nur TEILWEISE vollzogen ist):
+  (1) DER DRILL WURDE GEFAHREN UND BESTANDEN — 2026-07-30, Methode "Restore to new
+      project" (ein neues, temporäres Supabase-Projekt aus einem Backup-Snapshot erzeugt,
+      gegen das die Proben liefen, danach wieder gelöscht) — nicht exakt die oben
+      skizzierte Methode ("kompletten Core-Tabellen-Drop durchspielen"), aber dieselbe
+      Frage beantwortend: kann aus einem Backup tatsächlich wiederhergestellt werden.
+      GEMESSEN (supabase/checks/restore-drill.sql, Teil A/B/C): Migrationsstand,
+      Event-Trigger-Liste und Funktionsliste (inkl. Sicherheitstyp) waren im
+      restaurierten Projekt ZEILENIDENTISCH zum Original; die Positivkontrolle
+      (Wegwerf-Tabelle ohne explizites "enable row level security") ergab
+      rls_automatisch_aktiviert = true — ensure_rls übersteht den Restore.
+      WAS DIESER DRILL NICHT GEPRÜFT HAT: ob Tabellen/Policies/Daten selbst vollständig
+      und unverändert im restaurierten Projekt ankamen. Teil A/B beschränken sich auf
+      schema_migrations, Event-Trigger und Funktionsliste; eine vollständige
+      Daten-/Tabellen-Restore-Verifikation ist NICHT Teil dieser Messung und bleibt
+      ausständig.
+      GRENZE: Der Beweis gilt für DIESEN Drill mit DIESER Backup-Generation, KEIN Beweis
+      für alle Zeit — ändert Supabase die Restore-Mechanik, wäre der Drill zu
+      wiederholen.
   (2) PITR IST NICHT GEBUCHT -> im Ernstfall bis zu 24 h Datenverlust (alles seit dem letzten
       täglichen Snapshot). Bewusste Entscheidung, kein Versehen — aber sie MUSS sichtbar
       bleiben: ein Text, der nur "Backups vorhanden" sagt, wäre eine stille Abschwächung
       dieses Items.
-  (3) DIE ensure_rls-REBUILD-LÜCKE BESTEHT UNVERÄNDERT. Der Event-Trigger hängt am CLUSTER,
-      nicht am Schema, und kann in keinem Schema-Dump enthalten sein; automatische Backups
-      ändern daran NICHTS. Der Drill würde diese Lücke weiterhin praktisch nachweisen
-      (s. CLAUDE.md "## Offene Punkte").
+  (3) DIE ensure_rls-REBUILD-LÜCKE BESTEHT WEITER — ABER NUR NOCH FÜR DEN
+      MIGRATIONS-ONLY-PFAD. Für den SUPABASE-RESTORE-Pfad ist die Frage durch (1) jetzt
+      gemessen beantwortet (der Trigger übersteht ihn). Unverändert offen bleibt ein
+      Aufbau REIN AUS DEN MIGRATIONSDATEIEN (z.B. lokales `supabase db reset`, CI,
+      Self-Hosting): dort fehlt ensure_rls weiterhin, weil kein CREATE in einer
+      Migration steht (s. CLAUDE.md "## Offene Punkte"). Der Event-Trigger hängt am
+      CLUSTER, nicht am Schema, und kann in keinem Schema-Dump/keiner Migrationsdatei
+      enthalten sein — automatische Backups UND dieser Drill ändern daran für den
+      Migrations-Pfad NICHTS.
   ZWISCHENLÖSUNG — HISTORISCH, MIT DEM PRO-WECHSEL NICHT MEHR TRAGEND: Ein manueller pg_dump WURDE
   gezogen — Umfang public-Schema + auth.users, AES256 verschlüsselt, extern abgelegt (nicht im
   Repo) und per "pg_restore --list" verifiziert; das Listing zeigte 5 Tabellen plus Funktionen

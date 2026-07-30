@@ -109,22 +109,38 @@ kaputtgeht.
   Domains PRO PROJEKT — geteilt über ALLE Kunden, also eine Multi-Tenant-Decke, nicht ein
   Per-Kunde-Limit. Der Per-User-Cap (Richtwert 3/User) schützt sie doppelt (Abuse + geteilte
   Decke). Pro-Upgrade VOR echter Skalierung einplanen.
-- rls_auto_enable-CREATE FEHLT IN DEN MIGRATIONEN (Trigger: DB-Neuaufbau / Staging /
-  Restore-Drill aus Tier 2): Die Event-Trigger-FUNKTION rls_auto_enable (aktiviert automatisch RLS
-  auf neuen public-Tabellen, SECURITY DEFINER), gebunden über den Event-Trigger ensure_rls
-  (ddl_command_end), existiert NUR in der laufenden DB — Zweck + Grant-Entzug sind in 0003
-  dokumentiert, aber ein CREATE steht in KEINER Migration. Bei einem Rebuild rein aus den
-  Migrationsdateien fehlt sie -> neue Tabellen bekämen dort NICHT mehr automatisch RLS (stiller
-  Verlust einer Schutzschicht). DDL verbatim archiviert unter supabase/manual/rls_auto_enable.sql
-  (beim Rebuild manuell mitziehen). evtowner = postgres (gemessen 2026-07-24) -> eine Migration
-  unter der NÄCHSTEN FREIEN Nummer (Stand 2026-07-28: 0019; ableiten aus supabase/migrations/,
-  NIE hardcoden — eine feste Nummer hier veraltet mit der nächsten Migration und überschriebe
-  dann eine bestehende Datei) ist ein realistischer Kandidat, aber KEINE Nebenbei-Zeile:
-  (a) create event trigger kennt KEIN
-  "if not exists" -> Katalog-Guard nötig (DO-Block gegen pg_event_trigger); (b) "create or replace
-  function" auf einer SICHERHEITSFUNKTION ersetzt die Definition VOLLSTÄNDIG (0014-Lektion) — jeder
-  Transkriptionsfehler degradiert still den RLS-Schutz, daher nach dem Lauf Byte-Abgleich gegen
-  pg_get_functiondef PFLICHT; (c) die Migration muss gegen die BESTEHENDE DB ein No-op sein.
+- rls_auto_enable-CREATE FEHLT IN DEN MIGRATIONEN (Trigger: DB-Neuaufbau / Staging
+  REIN AUS DEN MIGRATIONSDATEIEN — der Restore-Drill-Fall ist unten GEMESSEN geklärt,
+  das ist aber KEIN Freibrief für diese beiden anderen Fälle): Die Event-Trigger-FUNKTION
+  rls_auto_enable (aktiviert automatisch RLS auf neuen public-Tabellen, SECURITY DEFINER),
+  gebunden über den Event-Trigger ensure_rls (ddl_command_end), existiert NUR in der
+  laufenden DB — Zweck + Grant-Entzug sind in 0003 dokumentiert, aber ein CREATE steht
+  in KEINER Migration. Bei einem Rebuild REIN AUS DEN MIGRATIONSDATEIEN (z.B. lokales
+  `supabase db reset`, CI, Self-Hosting) fehlt sie weiterhin -> neue Tabellen bekämen
+  dort NICHT automatisch RLS (stiller Verlust einer Schutzschicht). DDL verbatim
+  archiviert unter supabase/manual/rls_auto_enable.sql (bei einem Migrations-only-Rebuild
+  manuell mitziehen). evtowner = postgres (gemessen 2026-07-24) -> eine Migration unter
+  der NÄCHSTEN FREIEN Nummer (ableiten aus supabase/migrations/, NIE hardcoden — eine
+  feste Nummer hier veraltet mit der nächsten Migration und überschriebe dann eine
+  bestehende Datei) bleibt ein realistischer Kandidat für GENAU DIESEN
+  Migrations-only-Fall, aber KEINE Nebenbei-Zeile: (a) create event trigger kennt KEIN
+  "if not exists" -> Katalog-Guard nötig (DO-Block gegen pg_event_trigger); (b) "create or
+  replace function" auf einer SICHERHEITSFUNKTION ersetzt die Definition VOLLSTÄNDIG
+  (0014-Lektion) — jeder Transkriptionsfehler degradiert still den RLS-Schutz, daher
+  nach dem Lauf Byte-Abgleich gegen pg_get_functiondef PFLICHT; (c) die Migration muss
+  gegen die BESTEHENDE DB ein No-op sein.
+  GEMESSEN (2026-07-30, Restore-Drill "Restore to new project",
+  supabase/checks/restore-drill.sql): Für den SUPABASE-RESTORE-Pfad ist die Frage jetzt
+  beantwortet — ensure_rls übersteht einen Restore aus einem Pro-Backup automatisch.
+  Teil A/B (Migrationsstand, Event-Trigger, Funktionsliste) waren zeilenidentisch
+  zwischen Original und restauriertem Projekt; die Positivkontrolle (Teil C,
+  Wegwerf-Tabelle ohne explizites RLS-Enable) ergab rls_automatisch_aktiviert = true.
+  Für den Restore-Fall ist damit KEIN manuelles Nachziehen von
+  supabase/manual/rls_auto_enable.sql mehr nötig.
+  GRENZE: Der Beweis gilt für DIESEN Drill mit DIESER Backup-Generation, KEIN Beweis für
+  alle Zeit — ändert Supabase die Restore-Mechanik, wäre der Drill zu wiederholen.
+  UNVERÄNDERT OFFEN bleiben die beiden anderen Trigger (DB-Neuaufbau / Staging rein aus
+  den Migrationsdateien): dort fehlt ensure_rls weiterhin, s. oben.
 - DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE (Trigger: die erste Scheibe, die
   personenbezogene Merkmale erfasst — Click-IDs, IP/UA, gehashte Kontaktdaten,
   Fingerprint-artige Merkmale; spätestens VOR dem ersten echten Ad-Traffic): Heute

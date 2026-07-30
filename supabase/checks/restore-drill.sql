@@ -35,10 +35,9 @@
 --              EXECUTE-Rechte anders liegen), sieht im Katalog IDENTISCH aus wie
 --              ein funktionierender. Nur die ECHTE CREATE TABLE in TEIL C prueft
 --              die tatsaechliche WIRKUNG statt der blossen Anwesenheit.
--- VERIFIZIERT: NOCH NIE — der Restore-Drill wurde bisher nicht gefahren (s.
---              CLAUDE.md "## Offene Punkte" und das Security-Manifest-Item
---              "BACKUPS + Restore-Drill", TEILWEISE ERLEDIGT). Diese Datei
---              bereitet den Drill vor, sie ersetzt ihn nicht.
+-- VERIFIZIERT: 2026-07-30 (Restore to new project). Teil A/B zeilenidentisch,
+--              Teil C rls_automatisch_aktiviert = true -- ensure_rls uebersteht
+--              den Restore.
 
 -- ============================================================================
 -- TEIL A — VOR DEM RESTORE, am ORIGINAL-Projekt ausfuehren.

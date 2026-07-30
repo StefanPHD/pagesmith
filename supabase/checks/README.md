@@ -59,3 +59,4 @@ Probe fährt, zieht das Datum nach.
 | `ab-test-flag.sql` | Läuft ein A/B-Test, ohne dass es etwas Auslieferbares gibt? |
 | `adblock-loss-gegenprobe.sql` | Rechnet `get_adblock_loss` richtig (unabhängiger zweiter Weg)? |
 | `db-stand.sql` | Wie sieht das `public`-Schema wirklich aus (Migrationen, Spalten, RLS, Indizes, Funktionen)? |
+| `restore-drill.sql` | Übersteht der Event-Trigger `ensure_rls` einen Supabase-Restore, oder muss er manuell nachgezogen werden? |

@@ -179,6 +179,22 @@ alte Version — real passiert.
 ein GO. Dort ist der Diff das Artefakt; ein Plan-Review prüfte dieselbe Sache
 zweimal. Zweistufig gilt für Bau-Scheiben.
 
+### Phasenende ab Phase 10 (leichte Archivierung)
+
+Die chirurgische Ausschnitt-Technik aus der Phase-9-Auslagerung entfällt
+vollständig — die aktive Datei IST bereits eigenständig. Der Ablauf verkürzt
+sich auf zwei Schritte:
+
+1. **Hebung (Ermessen wie bisher):** dauerhaft gültige Regeln aus
+   `docs/aktiver-stand.md` nach "## Immer beachten" / "## Offene Punkte"
+   heben, eigener Commit.
+2. **Archivierung (mechanisch, KEIN Anker nötig):** Kopf im Muster der
+   bestehenden Historien-Dateien voranstellen, die Datei nach
+   `docs/claude-history/phase-N-<thema>.md` umbenennen, den Roadmap-Eintrag
+   auf Haken + einen Verweissatz kollabieren, den Detail-Archiv-Eintrag
+   ergänzen, `docs/aktiver-stand.md` danach LÖSCHEN — nicht leer stehen
+   lassen, eine leere Datei sähe aus wie eine Phase ohne Inhalt.
+
 ### Aufklärung vor dem Eingriff
 
 **CC sieht immer erst am echten Code nach, bevor getesteter Code überschrieben
@@ -204,6 +220,16 @@ das WARUM einer Regel), nicht flächendeckend: **Code-first, History-for-why.**
 
 Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
 
+- **Auftrag 0 — PFLICHT-GATE, ab Phase 10, VOR jedem anderen Auftrag:** Lies
+  `docs/aktiver-stand.md` vollständig, FALLS sie existiert. Existiert sie
+  nicht, sag das ausdrücklich (keine aktive Phase) und frage nach, statt
+  anzunehmen. Nenne im ERSTEN Satz des Berichts die Scheiben-Überschrift,
+  unter der gearbeitet wird — das ist der Beweis, dass die Datei gelesen
+  wurde, nicht nur zitiert. Diese Anweisung gehört in JEDEN Bau- und
+  Aufklärungs-Prompt an CC, nicht nur in die `CLAUDE.md`: die `CLAUDE.md`
+  lädt automatisch, die Standdatei nicht — ein Gate im Prompt ist der
+  eigentliche Mechanismus, die `CLAUDE.md`-Zeile nur der sichtbare Hinweis
+  darauf.
 - **KONTEXT:** was, warum, Verweis auf die verbindliche `CLAUDE.md`-Sektion.
 - **HARTER SCOPE-WÄCHTER:** welche Dateien geändert werden — und **explizit
   welche nicht** („ingest.ts / resolve.ts / middleware.ts unberührt"). Der

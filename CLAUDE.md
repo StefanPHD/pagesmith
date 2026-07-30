@@ -293,6 +293,19 @@ Kalender.
   Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
   ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
 
+## Aktiver Stand — Verfahren ab Phase 10
+
+Ab Phase 10 wird der aktive Stand einer laufenden Phase NICHT mehr hier
+geführt, sondern in einer eigenen, nicht automatisch geladenen Datei:
+docs/aktiver-stand.md. Existiert diese Datei nicht, läuft aktuell keine
+Phase — dann gibt es hier nichts zu lesen und auch sonst nichts zu tun.
+
+Diese Datei muss JEDE Session, die an einer laufenden Phase arbeitet,
+ZUERST gelesen werden — das ist kein Vorschlag, sondern ein Pflicht-Gate
+("Auftrag 0") in jedem Bau- und Aufklärungs-Prompt. Details zum Ablauf
+(Anlegen zu Phasenbeginn, Fortschreiben während der Phase, Hebung +
+Archivierung am Phasenende): arbeitsweise.md.
+
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,
 Policy und jeder externe Call wird daran gemessen. B sind Skalierungs-Leitplanken für

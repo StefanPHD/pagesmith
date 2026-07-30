@@ -1,11 +1,11 @@
--- ZWECK:       Erhebt den KOMPLETTEN Ist-Zustand des public-Schemas in neun Proben:
---              Migrations-Protokoll, Spalten, Constraints, RLS/Policies, Grants,
---              Indizes, Funktionen, Event-Trigger. Das ist die Quelle fuer die
---              Sektion "## Aktueller DB-/Analytics-Stand" in CLAUDE.md. Ohne diese
---              Datei wurde die Sektion aus dem Gedaechtnis und aus den Migrations-
---              DATEIEN geschrieben — und hing dadurch drei Migrationen zurueck und
---              behauptete "ALLE Spalten NOT NULL" bei events, obwohl variant seit
---              0017 NULLABLE ist.
+-- ZWECK:       Erhebt den KOMPLETTEN Ist-Zustand des public-Schemas in ZEHN Proben:
+--              Migrations-Protokoll (inkl. Luecklosigkeit), Spalten, Constraints,
+--              RLS/Policies, Grants, Indizes, Funktionen, Event-Trigger. Das ist die
+--              Quelle fuer die Sektion "## Aktueller DB-/Analytics-Stand" in
+--              CLAUDE.md. Ohne diese Datei wurde die Sektion aus dem Gedaechtnis und
+--              aus den Migrations-DATEIEN geschrieben — und hing dadurch drei
+--              Migrationen zurueck und behauptete "ALLE Spalten NOT NULL" bei
+--              events, obwohl variant seit 0017 NULLABLE ist.
 -- ERWARTUNG:   Je Probe unten als eigener Kommentar. Weicht ein Wert ab, ist das ein
 --              echter Fund — entweder ist eine Migration nicht gelaufen, oder die
 --              Doku-Sektion ist veraltet. Beides ist berichtenswert, keines wird
@@ -19,20 +19,54 @@
 --              wie ein Befund aus. Probe 9 ist die BEWUSSTE Ausnahme: Event-Trigger
 --              sind cluster-weit und haben kein Schema.
 -- VERIFIZIERT: 2026-07-28, Ergebnisse in CLAUDE.md "## Aktueller DB-/Analytics-Stand"
+-- AKTUALISIERT: 2026-07-30 — NUR der Query-Text wurde auf 0019/0020 nachgezogen
+--              (Probe 1 ERWARTUNG, neue Probe 1b, Probe 2/7/8 ERWARTUNG). KEIN
+--              Lauf gegen echte Daten fand in dieser Runde statt — es bestand keine
+--              DB-Verbindung (s. Aufklärungsbericht). VERIFIZIERT oben bleibt
+--              deshalb UNVERAENDERT auf 2026-07-28 stehen; ein Nachziehen dieses
+--              Datums ist erst nach dem naechsten echten Lauf im SQL-Editor faellig.
 
 -- PROBE 1 — Migrations-Protokoll
--- ERWARTUNG: 18 Zeilen ('0001' bis '0018'). applied_at NUR bei '0018' gefuellt
---            (2026-07-27 18:09:01 UTC); 0001-0017 tragen NULL — sie sind ein
---            BACKFILL aus 0018, kein Vollzugsnachweis.
+-- ERWARTUNG: ZWANZIG Zeilen ('0001' bis '0020'). applied_at ist bei DREI Zeilen
+--            gefuellt — '0018', '0019', '0020' (Protokoll-Pflicht ab 0018, beide
+--            spaeteren Migrationen tragen den Insert bereits mit); 0001-0017 tragen
+--            NULL — sie sind ein BACKFILL aus 0018, kein Vollzugsnachweis.
 select version, filename, applied_at
 from public.schema_migrations
 order by version;
+
+-- PROBE 1b — Luecklosigkeit der Migrationsnummern
+-- ERWARTUNG: eine Zeile, luecke = false. anzahl_zeilen = erwartete_anzahl UND
+--            niedrigste = '0001' UND hoechste = '0020' beweisen zusammen die
+--            Luecklosigkeit rein arithmetisch (Zeilenzahl = Spannweite+1), OHNE die
+--            zwanzig Werte einzeln abzutippen. Die zweite Abfrage listet im
+--            Fehlerfall die FEHLENDEN Nummern explizit, statt nur "luecke = true"
+--            zu melden.
+select
+  min(version)                                  as niedrigste,
+  max(version)                                  as hoechste,
+  count(*)                                       as anzahl_zeilen,
+  (max(version::int) - min(version::int) + 1)    as erwartete_anzahl_bei_luecklos,
+  count(*) <> (max(version::int) - min(version::int) + 1) as luecke
+from public.schema_migrations;
+
+-- Nur bei Bedarf (luecke = true oben): zeigt die fehlenden Nummern konkret.
+select gs.nr
+from generate_series(
+       (select min(version::int) from public.schema_migrations),
+       (select max(version::int) from public.schema_migrations)
+     ) as gs(nr)
+where not exists (
+  select 1 from public.schema_migrations sm where sm.version::int = gs.nr
+)
+order by gs.nr;
 
 -- PROBE 2 — Spalten von projects + events
 -- ERWARTUNG: events traegt SIEBEN Spalten — id, project_id, event_type, event_id,
 --            source, created_at (alle NOT NULL) plus variant (NULLABLE, 0017).
 --            projects traegt u.a. tracking_key, html_b, mappings_b (alle NULLABLE),
---            ab_test_active (NOT NULL, default false), settings (NOT NULL, '{}').
+--            ab_test_active (NOT NULL, default false), ab_test_started_at
+--            (NULLABLE, KEIN Default, 0020), settings (NOT NULL, '{}').
 select table_name, ordinal_position, column_name, data_type,
        is_nullable, column_default
 from information_schema.columns
@@ -97,8 +131,10 @@ order by table_name, grantee;
 -- ERWARTUNG: events_pkey, events_project_id_idx, events_project_event_idx — KEIN
 --            Index auf variant (0017 legte bewusst keinen an). projects_pkey,
 --            projects_tracking_key_key (partial unique), projects_blocked_idx
---            (partial, traegt den Kill-Switch-Lookup). domains_pkey auf LABEL (nicht
---            id), domains_custom_host_key (partial unique), domains_project_id_idx.
+--            (partial, traegt den Kill-Switch-Lookup) — KEIN Index auf
+--            ab_test_started_at (0020: ein Zeilen-Lookup pro Auswertung ueber den
+--            PK, nie gefiltert/sortiert). domains_pkey auf LABEL (nicht id),
+--            domains_custom_host_key (partial unique), domains_project_id_idx.
 select tablename, indexname, indexdef
 from pg_indexes
 where schemaname = 'public'
@@ -106,8 +142,10 @@ where schemaname = 'public'
 order by tablename, indexname;
 
 -- PROBE 8 — Funktionen in public
--- ERWARTUNG: VIER. get_event_counts + get_adblock_loss + set_updated_at sind INVOKER
---            mit search_path=public. rls_auto_enable ist die EINZIGE SECURITY DEFINER
+-- ERWARTUNG: FUENF. get_event_counts + get_adblock_loss + get_variant_counts
+--            (0019, ERSETZT durch 0020 — Signatur/Rueckgabetyp byte-gleich, nur der
+--            Zeitfilter ist neu) + set_updated_at sind INVOKER mit
+--            search_path=public. rls_auto_enable ist die EINZIGE SECURITY DEFINER
 --            und traegt search_path=pg_catalog — das ist KORREKT und darf nicht auf
 --            public "korrigiert" werden (s. "DB-FUNKTIONEN + SEARCH_PATH").
 select p.proname,

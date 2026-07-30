@@ -18,13 +18,17 @@
 --              liefert sie drei Zeilen mit unterschiedlichen RLS-Werten und sieht
 --              wie ein Befund aus. Probe 9 ist die BEWUSSTE Ausnahme: Event-Trigger
 --              sind cluster-weit und haben kein Schema.
--- VERIFIZIERT: 2026-07-28, Ergebnisse in CLAUDE.md "## Aktueller DB-/Analytics-Stand"
--- AKTUALISIERT: 2026-07-30 — NUR der Query-Text wurde auf 0019/0020 nachgezogen
---              (Probe 1 ERWARTUNG, neue Probe 1b, Probe 2/7/8 ERWARTUNG). KEIN
---              Lauf gegen echte Daten fand in dieser Runde statt — es bestand keine
---              DB-Verbindung (s. Aufklärungsbericht). VERIFIZIERT oben bleibt
---              deshalb UNVERAENDERT auf 2026-07-28 stehen; ein Nachziehen dieses
---              Datums ist erst nach dem naechsten echten Lauf im SQL-Editor faellig.
+-- VERIFIZIERT: 2026-07-30, Ergebnisse in CLAUDE.md "## Aktueller DB-/Analytics-Stand" —
+--              echter Lauf im SQL-Editor durch Stefan. ALLE ZEHN Proben trafen ihre
+--              ERWARTUNG exakt, KEINE Abweichung.
+-- NACHTRAG:    DERSELBE TAG TRAEGT ZWEI VERSCHIEDENE EREIGNISSE, die nicht
+--              ineinanderfallen duerfen: VORMITTAGS wurde nur der Query-TEXT dieser
+--              Datei auf 0019/0020 nachgezogen (Probe 1 ERWARTUNG, neue Probe 1b,
+--              Probe 2/7/8 ERWARTUNG) — OHNE DB-Verbindung, da diese Umgebung keine
+--              Postgres-Direktverbindung hat (keine DATABASE_URL, keine verlinkte CLI,
+--              keine generische SQL-Ausfuehrungs-RPC; s. Aufklärungsbericht). ERST
+--              DANACH, am selben Tag, hat Stefan die so aktualisierten Proben ECHT im
+--              SQL-Editor gefahren — das ist der Lauf, den VERIFIZIERT oben datiert.
 
 -- PROBE 1 — Migrations-Protokoll
 -- ERWARTUNG: ZWANZIG Zeilen ('0001' bis '0020'). applied_at ist bei DREI Zeilen

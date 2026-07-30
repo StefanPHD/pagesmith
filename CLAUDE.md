@@ -165,42 +165,27 @@ kaputtgeht.
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur
 Ist-Zustand — Herleitung und Entscheidungen: docs/claude-history/phase-8-analytics.md.
-PROVENIENZ: GEMESSEN am 2026-07-28 im SQL-Editor (schema_migrations, information_schema.columns,
+PROVENIENZ: GEMESSEN am 2026-07-30 im SQL-Editor (schema_migrations, information_schema.columns,
 pg_constraint, pg_class+pg_policy, pg_policies, role_table_grants, pg_indexes, pg_proc,
 pg_event_trigger). Die Probe ist versioniert unter supabase/checks/db-stand.sql — vor jedem
 Neuschreiben dieser Sektion dort fahren, nicht frisch tippen. AUCH die Index-DEFINITIONEN sind
-diesmal gemessen (indexdef), nicht aus den Migrationsdateien übernommen.
+gemessen (indexdef), nicht aus den Migrationsdateien übernommen.
 FALLE bei jeder Wiederholung: schema_migrations existiert DREIMAL (public / auth / realtime).
 Jede Katalog-Abfrage MUSS das Schema filtern — sonst liefert sie drei Zeilen mit
 unterschiedlichen RLS-Werten und sieht wie ein Befund aus.
-ZWEI ZEILEN TRAGEN EINEN NACHTRAG VOM 2026-07-29 (Scheibe 9c-1, Migration 0019) — sie
-stammen NICHT aus der Probe, und sie sind unterschiedlich stark:
-- MIGRATIONSSTAND: ABGELESEN aus public.schema_migrations (Protokollzeile 0019 mit
-  applied_at, im Live-Test bestätigt). Die Tabelle IST hier das Instrument.
-- FUNKTIONSZAHL: GERECHNET (4 + 1). pg_proc wurde NICHT befragt; dass sonst nichts
-  dazugekommen ist, ist eine Ableitung, keine Messung.
-Der nächste Probenlauf ERSETZT beide. ER IST SEIT 2026-07-29 FÄLLIG: mit Migration 0020
-(Scheibe 9c-2) ist der Block weiter veraltet — BEISPIELE, ausdrücklich KEINE vollständige
-Liste: der Migrationsstand (0020 fehlt), die Spaltenliste von projects (ab_test_started_at
-fehlt) und die HERKUNFTSANGABE von get_variant_counts (dort steht "0019, Scheibe 9c-1";
-live läuft die Definition aus 0020, die den Zeitfilter trägt). NICHT betroffen ist die
-FUNKTIONSZAHL: 0020 ERSETZT die Funktion und legt keine neue an, der Wert aus dem
-9c-1-Nachtrag gilt weiter.
-WER SICH AUF DIESE AUFZÄHLUNG VERLÄSST, LIEST SIE FALSCH: der Probenlauf ersetzt den Block
-VOLLSTÄNDIG, nicht die genannten Stellen. Eine Liste, die erschöpfend wirkt, es aber nicht
-ist, erzeugt genau die falsche Sicherheit, gegen die dieser Hinweis gebaut ist.
-EIN Lauf deckt alles ab; er ist eine EIGENE Runde und wurde hier bewusst NICHT
-vorweggenommen, weil ein geratener Ist-Zustand schlimmer wäre als ein als veraltet
-markierter. Kein eigener Offener Punkt: die Fälligkeit hängt an der Migration, nicht am
-Kalender.
 
-- MIGRATIONSSTAND: 0001-0019. NACHGETRAGEN (nicht Teil der Probe vom 2026-07-28): 0019
-  (get_variant_counts, Scheibe 9c-1) wurde am 2026-07-29 ausgeführt; die Protokollzeile mit
-  applied_at ist bestätigt. Alles Übrige dieser Sektion stammt unverändert aus der Probe vom
-  2026-07-28 — wer den Gesamtstand neu erhebt, fährt supabase/checks/db-stand.sql.
-  Seit 0018 existiert public.schema_migrations als PROTOKOLL
-  (version PK / filename / applied_at; RLS aktiv, KEINE Policy). Gemessen: 18 Zeilen, applied_at
-  NUR bei 0018 (2026-07-27 18:09:01 UTC).
+ERGEBNIS DES LAUFS: Alle ZEHN Proben trafen ihre ERWARTUNG exakt, KEINE Abweichung. Das ist
+selbst eine Aussage wert — die wahrscheinlichere Alternative wäre ein stiller Drift zwischen
+Doku und Schema gewesen, genau wie er diese Sektion zuvor bereits einmal getroffen hat (die
+zwei Nachtrag-Markierungen aus 9c-1/9c-2, die zwischen 2026-07-28 und diesem Lauf hier
+standen). Beide sind mit diesem Lauf VOLLSTÄNDIG überholt und entfernt; die Sektion unten ist
+wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
+
+- MIGRATIONSSTAND: 0001-0020, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl =
+  Spannweite+1), nicht nur an der Dateisortierung abgelesen. Seit 0018 existiert
+  public.schema_migrations als PROTOKOLL (version PK / filename / applied_at; RLS aktiv, KEINE
+  Policy). Gemessen: 20 Zeilen, applied_at gefüllt bei DREI Zeilen — 0018, 0019, 0020
+  (Protokollpflicht ab 0018; beide späteren Migrationen tragen den Insert bereits selbst mit).
   EHRLICHE EINORDNUNG: Die Zeilen 0001-0017 sind ein BACKFILL aus 0018, KEIN Vollzugsnachweis —
   ihr applied_at ist bewusst NULL, weil der Ausführungszeitpunkt nicht bekannt ist. Dass sie
   gelaufen sind, belegen ihre WIRKUNGEN (Spalten/Constraints unten), nicht die Tabelle. Ab 0018
@@ -236,11 +221,12 @@ Kalender.
   CONSTRAINTS: events_event_type_max_len (length(event_type) <= 64); events_variant_valid
   (variant IS NULL OR variant IN ('a','b')). event_id trägt BEWUSST KEINEN Unique-Constraint
   (die geteilte browser/server-eventID IST der Verlustraten-Join).
-- TABELLE public.projects (server-logik-relevante Spalten): tracking_key text NULLABLE (2b-0,
-  server-autoritativ); html_b text NULLABLE + mappings_b jsonb NULLABLE (0016); ab_test_active
-  boolean NOT NULL DEFAULT false (0017); published_content jsonb NULLABLE; blocked_at +
-  blocked_reason NULLABLE (0008); settings jsonb NOT NULL DEFAULT '{}' (CLIENT-autoritativ, wird
-  von saveProject ganzheitlich ersetzt).
+- TABELLE public.projects (server-logik-relevante Spalten; SECHZEHN Spalten insgesamt):
+  tracking_key text NULLABLE (2b-0, server-autoritativ); html_b text NULLABLE + mappings_b
+  jsonb NULLABLE (0016); ab_test_active boolean NOT NULL DEFAULT false (0017);
+  ab_test_started_at timestamptz NULLABLE, KEIN Default (0020); published_content jsonb
+  NULLABLE; blocked_at + blocked_reason NULLABLE (0008); settings jsonb NOT NULL DEFAULT '{}'
+  (CLIENT-autoritativ, wird von saveProject ganzheitlich ersetzt).
   CONSTRAINTS: projects_variant_b_pair ((html_b IS NULL) = (mappings_b IS NULL));
   projects_ab_test_needs_variant_b (NOT ab_test_active OR html_b IS NOT NULL).
 - PRIMÄRSCHLÜSSEL, DIE NICHT "id" HEISSEN (Footgun, real aufgetreten): domains -> label;
@@ -253,20 +239,21 @@ Kalender.
     project_id).
   projects: projects_pkey (id); projects_tracking_key_key UNIQUE (tracking_key) WHERE
     tracking_key IS NOT NULL; projects_blocked_idx (blocked_at) WHERE blocked_at IS NOT NULL —
-    trägt den Kill-Switch-Lookup.
+    trägt den Kill-Switch-Lookup. KEIN Index auf ab_test_started_at (0020 legte bewusst keinen
+    an — ein Zeilen-Lookup pro Auswertung über den PK, nie gefiltert/sortiert).
   domains: domains_pkey (label); domains_custom_host_key UNIQUE (custom_host) WHERE custom_host
     IS NOT NULL; domains_project_id_idx (project_id).
   (projects_blocked_idx und domains_project_id_idx waren bisher in KEINER Doku-Zeile erfasst.)
-- FUNKTIONEN in public: FÜNF (VIER zum Zeitpunkt der Probe vom 2026-07-28, plus die mit 0019
-  am 2026-07-29 hinzugekommene — NACHGETRAGEN, nicht neu gemessen).
+- FUNKTIONEN in public: FÜNF — gemessen, nicht nachgetragen.
   get_event_counts(p_project_id) -> TABLE(event_type, count), gefiltert auf source='server'
     (0014) — SECURITY INVOKER, stable, search_path=public.
   get_adblock_loss(p_project_id) -> TABLE(total_server_conversions, confirmed_conversions,
     first_confirm_at) (0015) — INVOKER, stable, search_path=public.
   get_variant_counts(p_project_id) -> TABLE(event_type, count_a, count_b, count_none),
-    gefiltert auf source='server' (0019, Scheibe 9c-1) — INVOKER, stable,
-    search_path=public. Der source-Filter ist WÖRTLICH aus get_event_counts übernommen;
-    Divergenz zeigte zwei unvereinbare Zahlen im selben Dashboard.
+    gefiltert auf source='server' (ANGELEGT 0019, Scheibe 9c-1; seit 0020, Scheibe 9c-2, per
+    "create or replace function" um den Zeitfilter ERSETZT — Signatur und Rückgabetyp dabei
+    BYTE-GLEICH) — INVOKER, stable, search_path=public. Der source-Filter ist WÖRTLICH aus
+    get_event_counts übernommen; Divergenz zeigte zwei unvereinbare Zahlen im selben Dashboard.
   ALLE DREI RPCs: SECURITY INVOKER — die RLS des Aufrufers filtert von INNEN. Das ist eine
     Entscheidung, kein Zufall: als DEFINER würden die RPCs die RLS umgehen und Zahlen über
     ALLE Tenants liefern.

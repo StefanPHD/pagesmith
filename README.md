@@ -14,9 +14,8 @@ constantly and need them working in minutes.
 > ⚠️ **Status: built in public, not finished.** The core editor, server-side
 > tracking (client + server, deduplicated) and serving a published page — on an
 > isolated subdomain or on your own custom domain with automatic SSL — all work
-> today. Broader public/production launch hardening (abuse tooling, wider rate
-> limiting, compliance groundwork) is still in progress — see the roadmap. This is
-> a solo passion project developed openly.
+> today. It's still in private testing and not ready to carry anyone else's
+> production traffic yet. This is a solo passion project developed openly.
 
 ---
 
@@ -64,11 +63,20 @@ constantly and need them working in minutes.
 - **A/B traffic split** — visitors are split evenly across both variants in the
   serving layer and stay on their variant for the visit; each recorded event
   carries the variant it belongs to.
+- **Per-variant evaluation** — conversions and page views per variant, shown as
+  absolute counts with the rate alongside them. The rate is conversions per
+  *page view*, not per visitor. No winner is declared and no statistical
+  significance is calculated; events that carry no variant are reported
+  separately rather than folded away.
 
 ### In progress / planned
 
-- A/B testing: the split, per-variant data collection, and the per-variant
-  evaluation (conversion rate of A vs. B in the dashboard) are all live.
+- A clearer workspace: the areas that share one surface today (domain and
+  hosting, tracking, A/B testing, statistics) get their own structure.
+- More server-side tracking targets alongside Meta: TikTok, Google, Pinterest,
+  LinkedIn and your own custom pixels.
+- Rich-text editing — only plain text elements are detected today; formatting
+  such as bold or italic *inside* a paragraph isn't picked up yet.
 - Multi-page funnels (landing → checkout → thank-you, one project).
 - An AI-native MCP server so a marketer's AI tools can manage projects directly
   (longer-term vision).
@@ -92,9 +100,8 @@ constantly and need them working in minutes.
 ## Status & roadmap
 
 Server-side tracking, first-party ingestion, custom domain hosting (with
-automatic SSL) and server-side analytics are complete. A/B testing is partly
-there: the traffic split runs and every event carries its variant — the
-per-variant evaluation is what's left.
+automatic SSL), server-side analytics and A/B testing are complete — variants,
+the even traffic split and the per-variant evaluation all run today.
 
 - [x] **Phase 1 — Local-first foundation:** import, sandboxed preview, element
       detection.
@@ -118,10 +125,12 @@ per-variant evaluation is what's left.
 - [x] **Phase 8 — Analytics:** server-side event recording per project, a
       per-account statistics view, and the ad-blocker loss rate measured from
       real events sharing an event ID.
-- [ ] **Phase 9 — A/B testing:** authoring a second variant and the even traffic
-      split are live, and every recorded event carries its variant; the
-      per-variant evaluation is still open.
-- [ ] **Beyond:** multi-page funnels and an AI-native MCP server.
+- [x] **Phase 9 — A/B testing:** authoring a second variant, the even traffic
+      split, per-variant event recording and the per-variant evaluation are all
+      live.
+- [ ] **Beyond:** a clearer workspace structure, more server-side tracking
+      targets, rich-text editing, multi-page funnels and an AI-native MCP
+      server.
 
 ---
 

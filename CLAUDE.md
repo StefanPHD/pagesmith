@@ -159,7 +159,22 @@ kaputtgeht.
   sich nicht rückwirkend heilen, und die DSGVO-Sauberkeit IST das Verkaufsargument.
   Bindet die bestehende 30-Tage-Retentionspflicht (Manifest Tier 2) und die
   Zwei-Ebenen-Trennung Kunden- vs. Betreiber-Ebene aus der future-roadmap mit ein.
-  Browser-Fingerprinting ist bereits ENTSCHIEDEN: wird nicht gebaut.
+  Browser-Fingerprinting ist bereits ENTSCHIEDEN: wird nicht gebaut. EBENSO ERFASST
+  (Phase 9): eine „anonyme" Zufalls-ID in einem First-Party-Cookie zur
+  Besucher-Identifikation wäre ein fingerprint-artiges Merkmal und löst dieselbe Grenze
+  aus — auch das keine Option ohne eine vorherige Entscheidung hier.
+- COOKIE-DOKU-SCHNIPSEL FÜR DIE KUNDEN-DATENSCHUTZERKLÄRUNG FEHLT NOCH
+  (Trigger: vor dem öffentlichen Launch; Phase 9): Für das A/B-Test-Cookie
+  (__Host-ps_v) stellt Pagesmith dem Kunden heute KEINEN fertigen
+  Doku-Schnipsel bereit, den er in seine eigene Datenschutzerklärung
+  übernehmen könnte (Cookie-Name, Zweck, Lebensdauer) — das ist eine
+  PRODUKTPFLICHT, kein Nice-to-have, weil der Kunde sonst mangels dieser
+  Angabe rechtlich blank dasteht. Zusätzlich MUSS vor dem Launch anwaltlich
+  geklärt werden, ob ein reines Varianten-Cookie tatsächlich ohne
+  Einwilligung auskommt oder ob ein A/B-Test als Betreiber-Optimierung
+  gilt, die eine Einwilligung verlangt — Letzteres würde den Split brechen
+  (er muss vor dem ersten Rendern feststehen).
+  Herleitung: docs/claude-history/phase-9-ab-testing.md.
 - LABEL-VERGABE IST UNPROTOKOLLIERT (Trigger: vor öffentlichem Traffic bzw. mit
   dem Abuse-/Audit-Ausbau): assignDomainLabel und die Wiederherstellung
   schreiben KEINEN audit_logs-Eintrag, Custom-Domain-Mutationen dagegen schon
@@ -1702,6 +1717,39 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   nur noch den Mock (real aufgetreten: im Dispatch-Test MUSS die echte extractLabel
   laufen, sonst faengt er den 7c-2a-Rueckfall nicht). Verwandt und schaerfer:
   "TESTDATEN UND TEST-SEQUENZ MUESSEN DEN PRODUKTIVEN PFAD TREFFEN" unten.
+- MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE — VIER LEKTIONEN (Phase 9, mehrfach
+  live aufgetreten): Ergänzt TEST-DISZIPLIN oben um vier konkrete Fallstricke,
+  die erst eine scharfe Mutationsprobe bzw. ein genau gelesener Live-Test
+  sichtbar macht.
+  (a) DREIWERTIGE LOGIK MACHT EINE TS-PORTIERUNG BLIND: Hängt eine
+      Entscheidung an SQL-NULL-Semantik (ein Vergleich gegen NULL verwirft
+      die Zeile), verhält sich eine reine TypeScript-Nachbildung anders — ein
+      Vergleich gegen null liefert dort schlicht wahr oder falsch, die Zeile
+      bleibt bestehen, wo SQL sie aussortiert hätte. Eine solche Mutation
+      lässt sich über einen Unit-Test auf der Portierung NICHT fangen; der
+      Beweis muss über einen Wächter auf dem echten SQL-Text plus den
+      Live-Test laufen.
+  (b) EINE MUTATION, DIE GRÜN BLEIBT, HAT ZWEI MÖGLICHE URSACHEN, DIE NICHT
+      VERWECHSELT WERDEN DÜRFEN: entweder prüft der Test schlicht nichts
+      Relevantes — oder die Mutation selbst ist ein SCHLECHTES MODELL des
+      Fehlers, den sie erzeugen sollte (Fall (a) ist ein Beispiel dafür).
+      Beides verlangt Anhalten und Nachdenken, nicht dieselbe Reparatur. Bei
+      einem hohlen Wächter (ein zu weit gefasster Text-Ausschnitt trifft eine
+      andere Stelle als die gemeinte) wird die WURZEL behoben — der
+      Ausschnitt selbst —, nicht die Assertion enger geschrieben.
+  (c) EIN GROBES LIVE-TEST-INSTRUMENT (Offline schalten, eine Sperre setzen,
+      einen Netzabbruch simulieren) REISST OFT DIE VORAUSSETZUNG DESSEN MIT,
+      WAS ES EIGENTLICH PRÜFEN SOLL: ein anderer Kanal meldet sich zuerst,
+      und der eigentlich gemeinte Prüfschritt gilt fälschlich als bestanden,
+      obwohl er nie erreicht wurde. Bei jedem Live-Test-Schritt fragen:
+      welche Voraussetzung reisst das gewählte Instrument mit, und prüft der
+      Schritt wirklich nur die eine Achse, die er zu prüfen behauptet?
+  (d) EIN WÄCHTER, DER ÜBERWIEGEND ABWESENHEIT PRÜFT (kein security definer,
+      kein Tabellen-DDL, kein neuer Index), BRAUCHT EINE EIGENE
+      POSITIVKONTROLLE: ohne sie sind ein echter Nicht-Treffer und ein
+      kaputt gewordener Wächter am Ergebnis nicht zu unterscheiden — gerade
+      bei sicherheitsrelevanten Klauseln ist ein stiller Durchlass teuer.
+  Herleitung mit den konkreten Fundstellen: docs/claude-history/phase-9-ab-testing.md.
 - COMMIT-KONVENTIONEN: Conventional-Commit-Format type(scope): message (feat, fix, docs,
   chore, refactor). docs(claude)-Commits bleiben GETRENNT von feat/fix-Commits — der
   Verlauf wird gelesen, und eine Doku-Aenderung im Feature-Commit ist spaeter nicht mehr
@@ -1721,8 +1769,8 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Bug-Klasse. REGEL: Bei jedem Test gegen einen Zustandswechsel zuerst fragen, welche
   Datenlage der produktive Pfad erzeugt UND durch welche SCHRITTFOLGE sie entsteht — maximal
   unterscheidbare Fixtures und vorgeseedete Endzustände sind bequem und verfehlen die reale
-  Konstellation systematisch. Herleitung: die 9a-Sektion ("## Aktiver Stand — Phase 9",
-  NACHTRAG-Block).
+  Konstellation systematisch. Herleitung: docs/claude-history/phase-9-ab-testing.md,
+  Abschnitt zur Scheibe 9a (NACHTRAG-Block zum live gefundenen Bug).
 - CLIENT-SEITIGE SERVER-ACTION-AUFRUFE: KEIN WURF BLEIBT UNBEHANDELT — safeAction IST
   PFLICHT, WO UI-ZUSTAND DARAN HÄNGT (Fix-Scheibe 2026-07-27, Bestand gemessen 2026-07-28).
   GRUND (ohne ihn wird die Regel als überflüssig wegoptimiert): result.ok unterscheidet nur
@@ -1767,7 +1815,8 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   die wir nicht kennen; "wurde nicht ausgeführt" ein Ergebnis, das wir nicht kennen (bricht
   die Verbindung auf dem RÜCKWEG, ist der Write passiert). Die Entwarnung "deine Änderungen
   sind noch da" gilt NUR auf Speicherpfaden — beim Löschen wäre sie eine falsche Beruhigung.
-  Herleitung + Live-Nachweis: "## Aktiver Stand — Phase 9", Abschnitt "Fix-Scheibe safeAction".
+  Herleitung + Live-Nachweis: docs/claude-history/phase-9-ab-testing.md, Abschnitt
+  "Fix-Scheibe safeAction".
 - DIFF-VORLAGE = GEZIELTE VERIFIKATION, NICHT VOLLTEXT-PFLICHT (Review-Kalibrierung, 2026-07-23):
   Nach jedem Bau wird die Vorlage für das Review dreistufig geliefert — Grundsatz: nichts wird
   stillschweigend durchgewunken, aber nicht alles muss im Wortlaut fließen (Volltext-Diffs fressen
@@ -1826,6 +1875,39 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   steckt im Client-Bundle jeder Seite. Das Sicherheitsnetz dagegen ist der Event-Trigger ensure_rls,
   der beim Rebuild aus den Migrationen NICHT entsteht (s. "## Offene Punkte"). Bei JEDER neuen
   Tabelle: RLS explizit aktivieren und Policies bewusst setzen, NIE auf den Trigger verlassen.
+- HOST-ONLY-COOKIES AUF GETEILTEN WILDCARD-DOMAINS (Phase 9): Auf einer
+  Serving-Domain, die als Wildcard mehrere Kundenprojekte gleichzeitig
+  trägt, bekommt JEDES Cookie NIE ein explizites Domain-Attribut. Ein
+  gesetztes Domain-Attribut (z.B. auf der geteilten Registrable Domain) gilt
+  für ALLE Subdomains der Wildcard gemeinsam — ein Besucher, der bei Projekt
+  X einen Wert erhält, trüge ihn stillschweigend zu Projekt Y mit. Auf einer
+  Wildcard ist das der NORMALFALL, nicht ein Rand-Sonderfall, weil jedes
+  Kundenprojekt dieselbe Registrable Domain teilt. Host-only (kein
+  Domain-Attribut) bindet jedes Cookie an genau den Host, auf dem es gesetzt
+  wurde, und verhindert diese stille Cross-Tenant-Kopplung der Messung.
+  Herleitung: docs/claude-history/phase-9-ab-testing.md.
+- SET-COOKIE UND EINE ALS ÖFFENTLICH/CACHEBAR MARKIERTE ANTWORT VERTRAGEN
+  SICH NICHT (Phase 9): Setzt eine Antwort ein besucherunterscheidendes
+  Cookie, während sie gleichzeitig als public/cachebar ausgewiesen ist,
+  entsteht die klassische Konstellation, in der ein geteilter Zwischen-Cache
+  (CDN, Proxy) Antwort UND Cookie gemeinsam speichert und JEDEM
+  nachfolgenden Besucher denselben gespeicherten Wert ausliefert — ein
+  einzelner Erst-Besucher entscheidet dann stellvertretend für viele. Jede
+  Antwort, die ein solches Cookie TATSÄCHLICH setzt, braucht private,
+  no-store — und zwar NUR in dem Zweig, der wirklich setzt, damit Antworten
+  ohne Cookie-Setzung ihr bisheriges Cache-Verhalten unverändert behalten.
+  Herleitung: docs/claude-history/phase-9-ab-testing.md.
+- EIN SERVERSEITIG GELESENER COOKIE-WERT BLEIBT CLIENT-KONTROLLIERTE
+  EINGABE (Phase 9): HttpOnly verhindert nur den Zugriff durch JavaScript im
+  Browser — es verhindert NICHT, dass ein Aufrufer selbst einen beliebigen
+  Cookie-Header setzt. Jeder serverseitig gelesene Cookie-Wert braucht
+  deshalb Validierung VOR jeder Verwendung, genau wie jede andere
+  Nutzereingabe. Das gilt VERSCHÄRFT vor einem Schreibpfad in
+  Hintergrundcode (z.B. in after()), wo ein Bruch an einem
+  DB-CHECK-Constraint NICHT als Fehler sichtbar wird, sondern die
+  betroffene Zeile lautlos verschluckt — ein ungeprüfter Wert erzeugt dort
+  einen stillen Datenverlust statt einer lauten Ablehnung.
+  Herleitung: docs/claude-history/phase-9-ab-testing.md.
 - INGEST-204-CONTAINMENT (Sicherheitsregel, nicht bloß Defensive): /api/e bzw. handleIngest
   antwortet dem Client IMMER mit einer LEEREN 204 — nie ein Body, nie ein 500 — in JEDEM
   Pfad, auch bei Timeout/Abort/Body-Read-Fehler. GRUND (ohne ihn wird die Regel als
@@ -1886,6 +1968,21 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   scheitern, während die Zeilen sauber weiterlaufen). "Gerettet" behauptet Empfang und lügt,
   wenn CAPI kaputt ist. Analytics-Zahlen als "mindestens X%" ausweisen (sie können in BEIDE
   Richtungen irren). Herleitung: docs/claude-history/phase-8-analytics.md.
+- DARSTELLUNGS-EHRLICHKEIT BEI VERGLEICHSZAHLEN OHNE SIGNIFIKANZRECHNUNG
+  (Phase 9): Werden zwei oder mehr Werte nebeneinander gezeigt, für die KEINE
+  Signifikanz gerechnet wird, stehen ABSOLUTWERTE PRIMÄR und eine
+  Rate/Prozentzahl höchstens SEKUNDÄR daneben — eine Prozentzahl allein
+  verdeckt die Bezugsgrösse und wirkt bei einer kleinen wie bei einer grossen
+  Stichprobe gleich überzeugend, obwohl die Aussagekraft radikal
+  unterschiedlich ist. KEINE Sieger-Auszeichnung, KEINE Ampelfarben und keine
+  Formulierung, die einer Option einen Vorsprung zuschreibt, wo keine
+  Signifikanz vorliegt: das erzeugt Vertrauen, das die Zahlen nicht decken,
+  und die Zielgruppe trifft mit genau solchen Zahlen echte
+  Budget-Entscheidungen. Ebenso KEINE verdeckte Anzeige-Schwelle ("erst ab N
+  Fällen anzeigen") als Ersatz für eine echte Signifikanzrechnung — das wäre
+  ein verstecktes statistisches Urteil mit einer willkürlichen Konstante,
+  ohne die Rechnung offenzulegen, die man damit eigentlich vermeiden wollte.
+  Herleitung: docs/claude-history/phase-9-ab-testing.md.
 - SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN BLOB (Phase 8, live widerlegt):
   projects.settings ist CLIENT-autoritativ — saveProject ersetzt es GANZHEITLICH. Eine
   server-vergebene Identität (z.B. der trackingKey), dort abgelegt, wird beim nächsten
@@ -1967,6 +2064,16 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   gelaufen"-Gate missversteht, baut eine Automatik, die wir bewusst nicht haben — die
   Migrationen laufen weiterhin manuell im SQL-Editor, die Idempotenz-Guards in den Dateien
   selbst (if not exists, Katalog-Guard) bleiben die Absicherung gegen Doppelläufe.
+- ANLEGEN UND BEFÜLLEN EINER ADDITIVEN SPALTE NICHT VERSCHMELZEN (Phase 9):
+  Eine neue additive Spalte wird in einer Scheibe ANGELEGT (Migration plus
+  CHECK, falls nötig) und in einer separaten, FOLGENDEN Scheibe tatsächlich
+  BEFÜLLT — nicht beides in einem Schritt verschmolzen. GRUND: die
+  Schreiblogik lässt sich isoliert bauen und testen, bevor sie den
+  heissesten Pfad der Anwendung berührt, und ein Backfill sofort beim
+  Anlegen wäre ein GERATENER Wert in einer Spalte, die zu diesem Zeitpunkt
+  noch niemand liest und deren korrekter historischer Wert oft gar nicht
+  mehr rekonstruierbar ist.
+  Herleitung: docs/claude-history/phase-9-ab-testing.md.
 - BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN, NICHT AM KALENDER (dieselbe Naht wie
   "Migration vor Deploy", nur am anderen Ende) — NEU GEFASST 2026-07-29 nach dem
   Pro-Wechsel, NICHT gestrichen:

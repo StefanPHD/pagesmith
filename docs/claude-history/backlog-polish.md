@@ -215,3 +215,31 @@ miterledigen, sondern gebündelt abarbeiten.
   BESTEHENDER Test (9b-1p "TEST 7a") brauchte deshalb ein await findByText vor
   dem Klick; die Assertion selbst blieb unverändert. Beide Richtungen sind
   sicher, weil die Autorität der Server-Riegel ist und nicht der Button.
+- ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL, OHNE DASS DER CODE LANDET
+  (CodeImporter.tsx, gemeldet, Trigger: eilt nicht, low priority): Beim
+  ERSTEN Einfügen von Code nach Import schliesst sich das Code-Panel, der
+  Code landet aber NICHT im Feld; erst ein ZWEITES Einfügen übernimmt den
+  Code, das Panel bleibt dann aber offen.
+  FUNDSTELLEN: initialer Collapse-State (:351-353), das
+  userExpandedManually-Flag (:358), autoCollapseOnImport (:892-894),
+  toggleInputCollapsed (:1105-1111), Textarea + onPaste-Handler (:2686-2694).
+  HYPOTHESE (NICHT bewiesen, nicht reproduziert): Race zwischen dem synchron
+  im onPaste-Handler ausgelösten Collapse und dem separat, ERST NACH dem
+  nativen Paste-Insert feuernden onChange-Commit desselben kontrollierten
+  Feldes — der Collapse-Re-Render synchronisiert die (weiterhin gemountete,
+  nur versteckte) Textarea auf den noch alten code-State, bevor onChange den
+  neuen Wert committet. Erklärt beide Symptomhälften aus einer Ursache: nach
+  dem ersten fehlgeschlagenen Paste öffnet der Nutzer das Panel manuell
+  wieder -> userExpandedManually wird true -> beim zweiten Paste feuert
+  autoCollapseOnImport nicht mehr, der Wert committet ungestört, das Panel
+  bleibt aber offen.
+  -> Ein echter Fix braucht Live-Reproduktion (React-DevTools-Profiler, um
+  die tatsächliche Event-/Render-Reihenfolge zu bestätigen) — nicht Teil
+  dieser Notiz.
+- ROHES NUL-BYTE IN mappings.ts (Trigger: bei Gelegenheit prüfen, keine
+  bekannte Auswirkung): src/lib/mappings.ts enthält bei Offset ~6974 ein
+  rohes NUL-Byte (macht die Datei für grep ohne -a-Flag "binär"). Herkunft
+  ungeklärt — Encoding-Problem, Editor-Artefakt oder fehlerhafter Copy-Paste
+  sind gleichermassen plausibel.
+  -> Keine beobachtete Fehlfunktion, aber ein rohes NUL-Byte in Quellcode ist
+  ungewöhnlich genug, um es nicht stillschweigend zu ignorieren.

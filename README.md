@@ -67,9 +67,8 @@ constantly and need them working in minutes.
 
 ### In progress / planned
 
-- A/B testing: the split and the per-variant data collection are live; the
-  **per-variant evaluation** (conversion rate of A vs. B in the dashboard) is
-  still to come.
+- A/B testing: the split, per-variant data collection, and the per-variant
+  evaluation (conversion rate of A vs. B in the dashboard) are all live.
 - Multi-page funnels (landing → checkout → thank-you, one project).
 - An AI-native MCP server so a marketer's AI tools can manage projects directly
   (longer-term vision).

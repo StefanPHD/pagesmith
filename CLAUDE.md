@@ -91,7 +91,91 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       öffnet diese Checkbox nicht wieder.
 - [x] Phase 9 — A/B-Testing: ABGESCHLOSSEN & live bewiesen (2026-07-27 bis
       2026-07-29). Volle Herleitung: docs/claude-history/phase-9-ab-testing.md.
-- [ ] Phase 10 — AI-Native: Pagesmith MCP-Server. (Detail unter Zukunfts-Vision, war Phase 9)
+- [ ] Phase 10 — Workspace-Reorganisation: reine Informationsarchitektur, KEIN
+      neues Backend-Feature. Trennt die heute auf EINER Fläche liegenden
+      Einstellungsbereiche (Hosting/Domain, Tracking, A/B-Testing, Analytics)
+      in eigene Bereiche — Voraussetzung für Phase 11, BEVOR ein weiterer
+      Pixel-Typ dazukommt.
+- [ ] Phase 11 — Multi-Tracking (Server-Side Fan-Out): TikTok, Google,
+      Pinterest, LinkedIn, Custom-Pixel als weitere ADDITIVE Fan-Out-Ziele
+      neben Meta — source bleibt Beobachtungs-Ort, jedes Ziel bekommt seine
+      EIGENE additive Spalte, kein Umbau. Dazu das kleine
+      Tracking-Testmodus-Modul (test_event_code, s. future-roadmap.md,
+      "Tracking-Testmodus für Kunden"). AUSDRÜCKLICH AUSGENOMMEN:
+      Hotjar/Session-Recording ist KEIN Fan-Out-Ziel, sondern braucht einen
+      eigenen Custom-Script-Mechanismus — separat zu bewerten.
+      DESIGN-HINWEIS FÜRS KONZEPT-GESPRÄCH (verbindlich zu klären, NICHT
+      vorentschieden): Das heutige Consent-Gate (psConsent) ist fest in die
+      Meta-Pixel-Runtime eincodiert, kein wiederverwendbares Attribut. Mit
+      jedem weiteren Netzwerk droht sonst eine KOPIERTE Consent-Prüfung pro
+      Ziel — dasselbe Muster, das an anderer Stelle im Projekt konsequent
+      vermieden wird ("kein drittes Urteil"). Phase 11 konzipiert deshalb EIN
+      geteiltes Consent-Gate für alle Fan-Out-Ziele. Dabei GLEICH
+      mitzudenken: die separat erwähnte generische Action-Consent-Checkbox
+      (jede Aktion, nicht nur Tracking, gated) — beide Bedürfnisse sollen auf
+      DENSELBEN Mechanismus laufen, nicht zwei parallele Gates entstehen.
+- [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
+      heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
+      Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.
+      Export-Strategie — Klärung im Bau-Slice.
+      KONZEPT-KANDIDAT, NICHT garantierter Umfang: Dynamic Text Replacement
+      (Überschriften-Austausch per URL-Parameter) berührt dieselbe
+      Text-Element-Infrastruktur, löst aber ein ANDERES Problem
+      (Parameter-Substitution statt Markup-Erhalt) — im Konzept-Gespräch zu
+      Phase 12 prüfen, ob es mitgebaut wird oder eigenständig bleibt, NICHT
+      automatisch bündeln.
+- [ ] Phase 13 — E-Mail-/ESP-Webhooks: Pagesmith wird KEIN Versender
+      (Owner-Entscheidung) — stattdessen Webhooks auf Performance-Events, der
+      Kunde behält seinen bestehenden ESP.
+- [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic): Per-Tenant-
+      Rate-Limiting auf /api/e + /api/capi, Safe-Browsing-Check der
+      Redirect-Ziele, Login-Brute-Force (zuerst Supabase-Auth-Built-in
+      prüfen). Security-Manifest-Tier-1 (s. "## Security Manifest & Launch
+      Blocker"), kein Produkt-Feature. Bleibt an dieser Stelle: echter
+      Ad-Traffic ist noch nicht terminiert, kein Grund zum Vorziehen.
+- [ ] Phase 15 — Public-Launch-Restarbeit (Tier 0): E-Mail-Bestätigung
+      (Dashboard-Toggle), Abuse-Kanal + security.txt (s. "## Security
+      Manifest & Launch Blocker", Tier 0). Subprozessor-/Kunden-DPA ist KEIN
+      Bau-Auftrag, sondern ein juristisches Dokument, das Stefan separat
+      aufsetzt. Kein Termin — App bleibt im privaten Test-/Beta-Betrieb.
+- [ ] Phase 16 — Analytics-Vertiefung (Uniques, Traffic-Health-Metriken):
+      braucht als ERSTEN Schritt die Datenklassen-Grenze-Entscheidung (s.
+      "## Offene Punkte") — eine gehashte Besucher-Kennung ist
+      personenbezogen und löst die 30-Tage-Retentionspflicht aus. Eigenes
+      Konzept-Gespräch VOR jedem Bau dieser Phase.
+- [ ] Phase 17 — Multi-Page-Funnels (s. future-roadmap.md, "Zukunftsrichtung:
+      Funnel-Architektur"): additive pages-Tabelle, funnel_step als neuer
+      Aktionstyp im bestehenden, type-diskriminierten Mapping-Modell — kein
+      Modellumbau. Setzt Phase 16 voraus.
+- [ ] Phase 18 — MCP-Server (verschoben von der ursprünglichen
+      Phase-10-Position, Detail: future-roadmap.md): dreht das
+      Sicherheitsmodell um — Lesen UND Schreiben mit voller Owner-Autorität
+      über einen langlebigen Key in fremder KI-Umgebung. Eigene
+      Autorisierungsschicht, KEIN angehängter Endpunkt. Bewusst ans Ende
+      gestellt.
+
+**Bewusst nicht phasiert (Trigger fehlt):**
+- ROI/Attribution (s. future-roadmap.md, "Strategischer Nordstern:
+  Performance-CRM & CAPI-Attribution-Engine"): externe Ad-Spend-API noch
+  nicht vorhanden.
+- Click-ID-Erfassung/Dynamic-Audience-Engine: Datenklassen-Grenze, größere
+  Reichweite als Uniques.
+- GEO/llms.txt (s. future-roadmap.md, "Strategischer Nordstern: GEO"):
+  PRÄZISE fassen — nur die manuelle JSON-LD-Injektion (Säule 1,
+  Zwischenschritt 1c) trägt einen EXPLIZITEN Trigger ("wird erst gebaut, wenn
+  ein Kunde es fordert"). Die automatische llms.txt-Erzeugung (1a) ist
+  grundsätzlich baubar, aber schlicht noch nicht eingeplant — nicht denselben
+  harten Trigger unterstellen. KI-Crawler-Erfassung (Säule 3) braucht einen
+  eigenen, entkoppelten Schreibpfad auf der Serve-Route, KEINE reine
+  Konfigurationsdatei — das bei etwaiger Einplanung nicht unterschätzen.
+- Spur B (native JSON-Generierung) / Business-Website-Projekttyp (s.
+  future-roadmap.md, "Strategischer Ausblick: Projekttyp 'Business-Website'"):
+  eigene zweite Produktspur, deren natürlicher Zeitpunkt bei/nach Phase 18
+  (MCP) liegt — dort liegt laut future-roadmap.md ihr
+  Flaggschiff-Anwendungsfall.
+- Betreiber-Metriken/SaaS-Tarifgrenzen (Rate-Limiting nach Tarif,
+  In-App-Upgrade-Meldungen): kein Preismodell heute — kein Termin, reine
+  Notiz.
 
 
 ## Offene Punkte (aktive TODOs mit Trigger — nicht in ein Abschluss-Archiv)

@@ -334,6 +334,77 @@ PROJEKTWECHSEL").
 
 **NÄCHSTE SCHEIBE: 10a-2 — Bereich VERÖFFENTLICHEN extrahieren.**
 
+#### Scheibe 10a-2 — Bereich VERÖFFENTLICHEN extrahiert (ABGESCHLOSSEN, live verifiziert 2026-07-31)
+
+Zweite und letzte Extraktions-Scheibe. Commit `ef106a6`. Tests **672 -> 672**, **NULL
+geänderte Tests** — `CodeImporter.test.tsx` war nicht im Diff (der Commit trägt genau
+zwei Dateien: `CodeImporter.tsx` 23/249 und `PublishView.tsx` 329/0). Alle vier
+Pipeline-Gates grün: `tsc --noEmit`, `lint`, `vitest run`, `build`.
+
+**Was gebaut wurde.** `src/components/PublishView.tsx` trägt Veröffentlichen
+(Publish-Button, Live-URL, Hinweis-Slot, Statuszeile), Variante B (A/B-Test-Schalter
+UND Entfernen) und die Domain-Verwaltung. **20 Props** — und **kein einziger neu
+geschriebener Rückruf**: alle drei Handler und der Setter werden unverändert
+durchgereicht (das unterscheidet 10a-2 von 10a-1, wo `onMetaPixelIdChange` eine neue
+Inline-Funktion brauchte). Kein Hook, kein `settings`, kein Import aus
+`src/lib/settings.ts`, kein umschließendes Element (Fragment). **Zeilenidentisch
+geblieben** (je per Byte-Vergleich gegen den Vorzustand belegt): die drei Handler
+`handlePublish`, `handleToggleAbTest`, `handleRemoveVariantB`, der gesamte
+Ableitungsblock und die vier Lade-Effekte. **Reihenfolge im Panel unverändert** — die
+drei Abschnitte standen nach 10a-1 bereits konsekutiv, es gab nichts umzusortieren.
+
+**Zwei Entscheidungen, mit Grund.**
+- **`DomainManager` wird von `PublishView` selbst importiert und gerendert (Weg 1).**
+  Verworfen wurde der Slot über den Container: sein einziger Vorteil wäre, in 10b ein
+  EINZELNES Kind auszuhängen — also genau das, was die dauerhafte Regel aus 10a-1
+  verbietet, und obendrein unsichtbar für den, der die Komponente liest.
+- **`emptyPublishTarget` geht ROH hinein** (`"a" | "b" | null`) statt als fertig
+  berechnetes `publishDisabled`. Dadurch bleibt die `disabled`-Bedingung wörtlich im
+  JSX stehen und erzeugt keine Diff-Zeile. Eine Verschmälerung der Schnittstellen
+  gehört in eine eigene Runde, nicht nebenbei in einen Refactor, dessen ganzer Wert an
+  der Enge des Nachweises hängt.
+
+**NACHGESCHÄRFTE REGEL — ersetzt die Fassung aus 10a-1, die notwendig, aber nicht
+hinreichend war.** Eine Ableitung wandert NUR mit in die Ansicht, wenn sie
+ausschließlich von dieser Ansicht gelesen wird **UND ihre Eingänge ebenfalls
+mitwandern oder ohnehin Props sind**. `publishNotice` erfüllt die erste Bedingung,
+nicht die zweite: es hängt über `emptyPublishMessage` und `emptyPublishTarget` an
+`publishPairs`, und das liest `handlePublish`. Bei 10a-2 wanderte deshalb **KEINE
+einzige** Ableitung mit, bei 10a-1 waren es vier — VERÖFFENTLICHEN hängt über
+`publishPairs` und `settings` tiefer in BAUEN, als MESSEN es tat.
+
+**Mutationsproben.** Drei mit Schreibwirkung, alle rot: `onPublish` ↔
+`onRemoveVariantB` (**9** rot), `onToggleAbTest` ↔ `onRemoveVariantB` (**11** rot),
+`variantBusy` ↔ `variantBRemoveConfirming` (**3** rot). **Ausdrücklich NICHT per
+Mutation geprüft:** die String-Props `hostingLabel`, `liveUrl`, `activeVariantLabel` —
+ihre Verwechslung erzeugt keinen falschen Schreibvorgang, sondern eine falsche
+Anzeige, und wurde über die Live-Schritte abgedeckt.
+
+**Live bestätigt (zwölf Schritte, Stefan).** Keine Hydration-Warnung; Reihenfolge und
+Trennlinien unverändert; Erstveröffentlichung mit aufrufbarer Live-URL; Re-Publish
+transportiert die Änderung; Publish-Riegel mit genau einem Hinweis; A/B-Test starten
+und stoppen inklusive stehenbleibendem Zeitstempel; Verweigerungspfad bei
+unveröffentlichter Variante B; Abbrechen-Pfad; echtes Entfernen bei aktiver Variante B
+mit Rückfall auf A-Inhalt; Domain-Liste lädt beim erneuten Öffnen neu.
+
+**BEFUND, DER DIE ARCHITEKTUR-ENTSCHEIDUNG BESTÄTIGT.** Beim Projektwechsel bleiben
+**Eingabefeld und Add-Fehlermeldung** des `DomainManager` stehen (`input`
+`DomainManager.tsx:27`, `addError` `:29` — beide haben keinen an `projectId`
+gebundenen Schreibpfad). Der Container HAT einen Rücksetz-Mechanismus für genau diesen
+Fall — `applyZenForLoadedCode` setzt beim Projektwechsel die projekt-ungebundenen
+View-Zustände zurück —, aber er **endet an der Komponentengrenze**, weil
+`DomainManager` seinen Zustand selbst hält. Genau deshalb verlangt Entscheidung 3, dass
+die neuen Bereiche reine Kinder OHNE eigenen Zustand sind: damit Rücksetzungen
+sichtbare Zuweisungen bleiben statt stillschweigend auszubleiben. `DomainManager` ist
+die GEERBTE Ausnahme von dieser Regel — und dort tritt der Fehler auf. **Von 10a-2
+nicht verursacht:** Commit `ef106a6` enthält `DomainManager.tsx` nicht, und die
+Bedingung über seinem Aufruf ist unverändert (vorher wie nachher allein
+`isSettingsOpen`). Details, Umfang und Fix-Kandidat: Backlog-Eintrag
+"DOMAINMANAGER BEHÄLT EINGABE UND FEHLERMELDUNG ÜBER DEN PROJEKTWECHSEL".
+
+**NÄCHSTE SCHEIBE: 10b — die Fläche aus dem Dokumentfluss nehmen, eigener
+Scroll-Container, Bereichswechsel innerhalb.**
+
 ### Ausdrücklich NICHT in dieser Phase
 
 - Extraktion des Bauen-Bereichs (Entscheidung 5).

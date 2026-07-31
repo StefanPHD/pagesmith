@@ -144,6 +144,35 @@ den Zen-Modus belegt (`isInputCollapsed` `:351`, `userExpandedManually` `:358`) 
 zwei Auf-/Zuklapp-Idiome mit verschiedener Bedeutung auf einer Oberfläche sind
 eine Bedienfalle. Und der Inhalt bliebe im Fluss, das Kernproblem also ungelöst.
 
+**FORM DER FLÄCHE — entschieden vor 10b-1 (ergänzt, ersetzt nichts oben).**
+**Drawer von rechts, volle Höhe, fixiert, mit eigenem Scroll-Container.** Grund:
+Der Inhalt ist hoch — sechs Abschnitte plus je Domain eine DNS-Tabelle; volle Höhe
+trägt das, ein Höhendeckel an einem Toolbar-Anker nicht. Der Workspace bleibt beim
+Öffnen und Schließen exakt an seinem Platz.
+*Verworfen — Overlay unter der Toolbar* (das Muster des Projekt-Dropdowns,
+`:1856`): trägt technisch, ist aber für einen Inhalt dieser Höhe, verankert an
+einem kleinen Knopf, schief.
+*Verworfen — Modal:* blockiert den Workspace vollständig und braucht Fokusfalle
+und Escape-Behandlung — mehr Maschinerie, als eine reine Umstellung will.
+
+**PRÄZISIERUNG zur Formulierung "permanent sichtbar" weiter oben:** Gemeint war
+und ist **NICHT VERDRÄNGT**. Ein Drawer verdeckt den Workspace teilweise, solange
+er offen ist; das ist hingenommen und hier benannt, damit es später nicht als
+Abweichung gelesen wird. **"Permanent gemountet" bleibt dagegen hart und
+unverändert.**
+
+**ZWEI BEREICHE, nicht drei:** Bauen IST der Workspace und liegt nicht auf der
+Fläche. Umgeschaltet wird zwischen Veröffentlichen und Messen.
+
+**MOUNT-FOLGE, die I6 in 10b-1 trägt:** Weil innerhalb der Fläche nur VERSTECKT
+wird (I1), sind beide Bereiche gemountet, sobald die Fläche offen ist.
+`DomainManager` mountet damit **exakt wie heute** — beim Öffnen der Fläche,
+unabhängig vom aktiven Bereich. Der Bereichswechsel selbst löst **KEINEN**
+Server-Aufruf aus.
+
+Der Umschaltzustand ist **neuer View-State** und liegt nach Entscheidung 3 im
+Container, wie `isSettingsOpen`.
+
 **3. Zustandsheimat und Mount-Disziplin.**
 Der Zustand von `CodeImporter` bleibt im Container; Veröffentlichen und Messen
 werden reine Kind-Komponenten ohne eigenen Projekt-Zustand.
@@ -253,28 +282,49 @@ Werden in jedem Folge-Prompt wörtlich zitiert.
   eine erst mit der Fläche mountende Komponente, verschiebt sich ihr Start vom
   Seitenaufruf auf das erste Öffnen, und das ist eine Verhaltensänderung, auch
   wenn am Ende dieselben Zahlen stehen (s. Entscheidung 3).
+  **KLARSTELLUNG, WAS "VERHALTEN" HIER MEINT (ergänzt vor 10b-1; I6 selbst bleibt
+  im Wortlaut unverändert, weil 10a-1 und 10a-2 sich darauf berufen).** Gemeint
+  sind: dieselben Bedienelemente, dieselben Aktionen, dieselben Server-Aufrufe zu
+  denselben Zeitpunkten, dieselben Zustandsübergänge — und vor allem KEINE neue
+  Produktfähigkeit. NICHT gemeint sind Position und Sichtbarkeit der Fläche sowie
+  die Existenz eines Bereichs-Umschalters: Genau das wird in 10b-1 NACH ABSICHT
+  anders, es ist der Zweck der Scheibe und kein Verstoß. Für 10a-1 und 10a-2 galt
+  und gilt I6 unverändert im engeren Sinn — dort war jede Differenz außer der
+  Abschnitts-Reihenfolge (10a-1) bzw. gar keine (10a-2) ausgeschlossen.
+  Ohne diese Klarstellung läse sich 10b-1 wörtlich als dreifacher Verstoß gegen
+  die eigene Invariante; die ursprüngliche Formulierung war zu weit.
 
 ### Scheiben-Schnitt der Phase
 
-Vier Scheiben, in dieser Reihenfolge:
+Fünf Scheiben, in dieser Reihenfolge:
 
 | Scheibe | Inhalt | Stand |
 |---|---|---|
 | **10a-1** | Bereich MESSEN extrahieren | **abgeschlossen** (s. unten) |
 | **10a-2** | Bereich VERÖFFENTLICHEN extrahieren | **abgeschlossen** (s. unten) |
-| **10b** | Die Fläche: aus dem Dokumentfluss nehmen, eigener Scroll-Container, Bereichswechsel innerhalb | offen |
+| **10b-1** | Die Fläche: Drawer rechts, aus dem Dokumentfluss, eigener Scroll-Container, Bereichswechsel innerhalb (versteckend) | offen |
+| **10b-2** | Mount-Disziplin `DomainManager`: der Zustand über den Projektwechsel (s. Backlog) | offen |
 | **10c** | I3 — die Zustandssignale an der Navigation | offen |
 
 **ORDNUNGSPRINZIP — zuerst die Eingriffe, deren Ergebnis man vorher kennt, dann die
 sichtbaren.** Bei 10a-1 und 10a-2 lautet der Nachweis "unverändert" — der billigste
 Beweis, den es gibt: die Bestandstests müssen grün bleiben, mehr ist nicht zu zeigen.
-Erst 10b ändert etwas Sichtbares, und es tut das dann auf sauber geschnittenen
+Erst 10b-1 ändert etwas Sichtbares, und es tut das dann auf sauber geschnittenen
 Komponenten statt in einer Monolith-Datei. Extraktion und Navigation sind zwei
 Wirkungen mit VERSCHIEDENEN Risikoprofilen; zusammen gebaut wäre bei einem Fehlschlag
 nicht unterscheidbar, welche der beiden ihn verursacht hat.
 
+**WARUM 10b GETEILT IST — dieselbe Logik eine Ebene tiefer.** 10b-1 ändert Position
+und Sichtbarkeit; 10b-2 ändert einen Zustands-LEBENSZYKLUS und ist damit eine
+DEKLARATIONSPFLICHTIGE Verhaltensänderung, die I6 nicht deckt. Zusammen gebaut wäre
+bei einem Fehlschlag wiederum nicht unterscheidbar, welche der beiden ihn verursacht
+hat. **10b-2 folgt unmittelbar auf 10b-1** — es ist keine Vertagung, sondern eine
+Trennung der Nachweise.
+
 **VERHÄLTNIS ZU I6 — damit 10c später nicht als Verstoß gelesen wird.** I6 ("kein
-Verhalten ändert sich") bindet **10a-1, 10a-2 und 10b**. **10c ist per Konstruktion
+Verhalten ändert sich") bindet **10a-1, 10a-2 und 10b-1** — für 10b-1 in der Lesart
+der KLARSTELLUNG bei I6 (Position, Sichtbarkeit und der Umschalter sind nach Absicht
+neu und kein Verstoß). **10b-2 bindet es NICHT**, s. den Absatz darüber. **10c ist per Konstruktion
 eine Ergänzung**: Die Trennung nimmt der Oberfläche eine Sichtbarkeit, die die
 einflächige Anordnung umsonst mitgeliefert hat — auf einer Fläche sah man jeden
 Zustand beim Scrollen ohnehin. 10c stellt genau diese Sichtbarkeit wieder her. Das
@@ -418,9 +468,5 @@ Scroll-Container, Bereichswechsel innerhalb.**
 
 ### Noch offen — gehört in die Stufe-1-Planung
 
-- Die konkrete Ausprägung der Fläche: Drawer, Overlay oder andere Form. In
-  derselben Datei existiert bereits ein Overlay-Muster (Projekt-Dropdown `:1856`:
-  `absolute … z-10 … max-h-96 overflow-y-auto`) — als vorhandenes Muster genannt,
-  nicht als Auswahl.
 - Die Benennung der Bereiche in der Oberfläche.
 - Die Umsetzung von I3.

@@ -2238,3 +2238,62 @@ describe("Lauf-Abgrenzung (Scheibe 9c-2)", () => {
     expect(screen.queryByText(/Ein erneuter Start beginnt/)).toBeNull();
   });
 });
+
+/*
+ * Phase 10 Scheibe 10a-1 — der Bereich MESSEN ist in MeasureView extrahiert und steht
+ * im Einstellungs-Panel als BLOCK: Tracking-Pixel, Statistik, Auswertung je Variante
+ * unmittelbar hintereinander, ohne dass ein VEROEFFENTLICHEN-Abschnitt dazwischenfaellt.
+ * Das ist die EINZIGE beabsichtigte Verhaltensdifferenz der Scheibe (I6) und deshalb
+ * das Einzige, was hier neu geprueft wird — alles Uebrige ist Regression und wird von
+ * den Bestandstests getragen.
+ *
+ * BEWUSST compareDocumentPosition UND NICHT textContent.indexOf: ein Index im
+ * zusammengefassten Text haengt am ersten zufaelligen Teilstring-Treffer und bliebe
+ * z.B. am Wort "Veröffentlichen" im Publish-BUTTON haengen statt an der Ueberschrift —
+ * der Test wuerde dann etwas anderes messen, als er behauptet.
+ */
+describe("Phase 10 Scheibe 10a-1: MESSEN steht als Block im Einstellungs-Panel", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>`;
+  const openSettings = () =>
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+  // Folgt b dem Element a in der Dokumentreihenfolge?
+  const follows = (a: Element, b: Element) =>
+    Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+
+  it("Tracking-Pixel -> Statistik -> Auswertung, und KEIN Veroeffentlichen-Abschnitt dazwischen", async () => {
+    getVariantCounts.mockResolvedValueOnce({
+      ok: true,
+      rows: [
+        { event_type: "__ps_pageview", count_a: 40, count_b: 38, count_none: 0 },
+        { event_type: "Purchase", count_a: 2, count_b: 5, count_none: 0 },
+      ],
+    } as never);
+    // Variante B vorhanden -> der Abschnitt "Variante B" existiert und ist damit ein
+    // zweiter VEROEFFENTLICHEN-Abschnitt, der dazwischenfallen KOENNTE.
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+      />,
+    );
+    await screen.findByText("Titel");
+    openSettings();
+    await screen.findByText("Auswertung je Variante");
+
+    const heading = (name: string) => screen.getByRole("heading", { name });
+    const tracking = heading("Tracking-Pixel");
+    const statistik = heading("Statistik");
+    const auswertung = heading("Auswertung je Variante");
+    const publish = heading("Veröffentlichen");
+    const varianteB = heading("Variante B");
+
+    // Der MESSEN-Block in sich.
+    expect(follows(tracking, statistik)).toBe(true);
+    expect(follows(statistik, auswertung)).toBe(true);
+    // BEIDE VEROEFFENTLICHEN-Abschnitte liegen DAHINTER, nicht dazwischen.
+    expect(follows(auswertung, publish)).toBe(true);
+    expect(follows(auswertung, varianteB)).toBe(true);
+  });
+});

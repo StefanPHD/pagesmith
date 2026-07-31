@@ -115,6 +115,10 @@ vi.mock("@/app/projects/domain-actions", () => ({
 }));
 
 // Erst nach dem Mock importieren, damit der Mock greift.
+// listProjectDomains kommt aus DEMSELBEN gemockten Modul (oben, vi.mock) — der
+// Import liefert genau die dortige vi.fn()-Instanz und macht sie fuer die
+// Aufruf-Zaehlung in Scheibe 10b-1 (T2) greifbar. KEIN neuer Mock.
+import { listProjectDomains } from "@/app/projects/domain-actions";
 import CodeImporter from "@/components/CodeImporter";
 import {
   ACTION_THROW_MESSAGE,
@@ -2295,5 +2299,97 @@ describe("Phase 10 Scheibe 10a-1: MESSEN steht als Block im Einstellungs-Panel",
     // BEIDE VEROEFFENTLICHEN-Abschnitte liegen DAHINTER, nicht dazwischen.
     expect(follows(auswertung, publish)).toBe(true);
     expect(follows(auswertung, varianteB)).toBe(true);
+  });
+});
+
+/*
+ * Phase 10 Scheibe 10b-1 — das Einstellungs-Panel ist ein Drawer mit zwei Reitern
+ * (Messen / Live). Geprueft wird die TRAGENDE Eigenschaft der Scheibe: innerhalb
+ * der Flaeche wird VERSTECKT, nicht ausgehaengt (I1) — und der Reiterwechsel kostet
+ * deshalb keinen Server-Aufruf (Entscheidung 2).
+ *
+ * WAS HIER NICHT GEPRUEFT WERDEN KANN, ausdruecklich: Die SICHTBARKEIT. In Stufe 1
+ * gemessen — die Vitest-Umgebung laedt kein Stylesheet, `display` einer
+ * `.hidden`-Klasse ist in jsdom `block` wie ohne Klasse. Kein Test in dieser Datei
+ * darf deshalb behaupten, ein Bereich sei unsichtbar. Optik, Position, Scroll und
+ * Verdraengung sind ausschliesslich Live-Test-Achsen.
+ *
+ * Die Reiter werden ueber VERANKERTE Rollen-Abfragen adressiert
+ * (getByRole("button", { name: /^Messen$/ })). Das ist nicht nur Zukunftsschutz:
+ * DomainManager rendert bereits heute ein Status-Badge mit dem Text "Live" — eine
+ * Text-Abfrage waere dort mehrdeutig, sobald eine Domain verbunden ist.
+ */
+describe("Phase 10 Scheibe 10b-1: Drawer mit Reitern (Messen / Live)", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>`;
+  const openDrawer = () =>
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+  const tab = (name: RegExp) => screen.getByRole("button", { name });
+
+  it("T1: nach einem Reiterwechsel stehen BEIDE Bereiche weiterhin im DOM", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openDrawer();
+
+    // Startbereich ist "Messen" — trotzdem ist der Live-Bereich gemountet.
+    expect(screen.getByRole("heading", { name: "Tracking-Pixel" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Veröffentlichen" })).toBeTruthy();
+
+    fireEvent.click(tab(/^Live$/));
+
+    // Und nach dem Wechsel ist der Messen-Bereich NICHT verschwunden.
+    expect(screen.getByRole("heading", { name: "Tracking-Pixel" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Veröffentlichen" })).toBeTruthy();
+  });
+
+  it("T2: ein Reiterwechsel erzeugt KEINEN zusaetzlichen Server-Aufruf", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openDrawer();
+
+    // Der Drawer-Mount laedt die Domain-Liste — genau wie das Panel vorher.
+    await waitFor(() =>
+      expect(vi.mocked(listProjectDomains).mock.calls.length).toBeGreaterThan(0),
+    );
+    const nachOeffnen = vi.mocked(listProjectDomains).mock.calls.length;
+
+    fireEvent.click(tab(/^Live$/));
+    fireEvent.click(tab(/^Messen$/));
+    fireEvent.click(tab(/^Live$/));
+
+    // Haengte der Wechsel einen Bereich aus, mountete DomainManager neu und der
+    // Zaehler stiege. Er darf sich nicht bewegen.
+    expect(vi.mocked(listProjectDomains).mock.calls.length).toBe(nachOeffnen);
+  });
+
+  it("T3 (STRUKTUR, KEINE Sichtbarkeit): die Huelle des inaktiven Bereichs traegt die Versteck-Klasse, die des aktiven nicht — und nach dem Wechsel umgekehrt", async () => {
+    // EHRLICHE BENENNUNG, PFLICHT: Dies ist eine STRUKTUR-Zusicherung. Sie belegt,
+    // dass die Bedingung am richtigen Bereich haengt — NICHT, dass irgendetwas
+    // unsichtbar ist. jsdom wertet die Klasse nicht aus (s. Kopfkommentar). Ohne
+    // diesen Test liefe der Fehler "Bedingung falsch, beide Bereiche sichtbar"
+    // durch alle uebrigen Tests gruen hindurch, weil T1 nur DOM-Praesenz prueft.
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openDrawer();
+
+    // Die Huellen sind die beiden direkten Kinder des Drawers. MeasureView gibt ein
+    // Fragment zurueck -> "Tracking-Pixel" ist DIREKTES Kind seiner Huelle.
+    // PublishView ebenso, seine erste Ueberschrift steckt aber noch im
+    // Abschnitts-div -> eine Ebene weiter hoch.
+    const messenHuelle = () =>
+      screen.getByRole("heading", { name: "Tracking-Pixel" })
+        .parentElement as HTMLElement;
+    const liveHuelle = () =>
+      screen.getByRole("heading", { name: "Veröffentlichen" }).parentElement
+        ?.parentElement as HTMLElement;
+
+    // Startzustand: Messen aktiv -> Messen-Huelle ohne "hidden", Live-Huelle mit.
+    expect(messenHuelle().className).not.toContain("hidden");
+    expect(liveHuelle().className).toContain("hidden");
+
+    fireEvent.click(tab(/^Live$/));
+
+    // Nach dem Wechsel exakt umgekehrt.
+    expect(messenHuelle().className).toContain("hidden");
+    expect(liveHuelle().className).not.toContain("hidden");
   });
 });

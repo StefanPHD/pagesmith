@@ -345,6 +345,13 @@ export default function CodeImporter({
   // FEUERT echt (Redirect). Strikt getrennt: der funktionale Modus injiziert NIE
   // die Selektions-Bruecke, der Edit-Modus feuert NIE eine Aktion.
   const [previewMode, setPreviewMode] = useState<"edit" | "functional">("edit");
+  // Aktiver Bereich im Einstellungs-Drawer (Phase 10 Scheibe 10b-1). REINER
+  // View-State, exakt wie previewMode daneben: projekt-UNGEBUNDEN und deshalb
+  // BEWUSST NICHT in applyZenForLoadedCode zurueckgesetzt — ein Projektwechsel
+  // aendert nicht, welchen Bereich der Nutzer gerade ansieht. Startwert "measure",
+  // damit die Reihenfolge der Reiter (Messen, Live) und der Startbereich
+  // uebereinstimmen.
+  const [drawerArea, setDrawerArea] = useState<"measure" | "publish">("measure");
   // Kategorie-Filter der Elementliste (Scheibe 1b). REINER View-State: steuert nur,
   // welche Elemente in der Liste gerendert werden. Beruehrt selectedElementId NICHT
   // (ein weggefiltertes ausgewaehltes Element behaelt seine Auswahl + Bruecke +
@@ -1867,65 +1874,134 @@ export default function CodeImporter({
         )}
       </div>
 
-      {/* Einstellungs-Panel. REIHENFOLGE seit Phase 10 Scheibe 10a-1: zuerst der
-          Bereich MESSEN (Tracking-Pixel + Statistik + Auswertung je Variante, als
-          eigene Komponente), danach VEROEFFENTLICHEN (Publish, Variante B, eigene
-          Domain). Die Flaeche selbst ist unveraendert — sie liegt weiterhin im
-          Dokumentfluss hinter demselben Gate; das aendert erst eine spaetere
-          Scheibe. */}
+      {/* EINSTELLUNGS-DRAWER (Phase 10 Scheibe 10b-1). Die Flaeche liegt seit
+          dieser Scheibe AUSSERHALB des Dokumentflusses: fixed, volle Hoehe, rechts
+          angeschlagen, mit EIGENEM Scroll-Container. Damit verdraengt das Oeffnen
+          den Workspace samt Edit-iframe nicht mehr nach unten — der gemessene
+          Ausloeser der ganzen Phase.
+          GATE UNVERAENDERT: dasselbe isSettingsOpen wie vorher. Der Drawer als
+          GANZES wird beim Schliessen abgebaut (I1) — exakt die heutige
+          Panel-Grenze, weshalb DomainManager weiterhin genau beim Oeffnen mountet.
+          KEIN Vorfahre traegt transform/filter/perspective/contain/will-change
+          (in layout.tsx, page.tsx, globals.css und der Wurzel geprueft), fixed
+          bezieht sich also auf den Viewport und degradiert nicht zu absolute. */}
       {isSettingsOpen && (
-        <div className="rounded-lg border border-gray-300 bg-white px-4 py-3">
+        <div className="fixed inset-y-0 right-0 z-20 flex w-[30rem] max-w-full flex-col overflow-y-auto border-l border-gray-300 bg-white px-4 py-3 shadow-xl">
+          {/* Reiterzeile. Die beiden Reiter spiegeln das Idiom des
+              Varianten-Umschalters in der Toolbar (role=group + aria-pressed),
+              damit auf einer Oberflaeche nicht zwei Umschalt-Idiome stehen.
+              BESCHRIFTUNG "Live" statt "Veroeffentlichen" ist KEINE Kosmetik: ein
+              Reiter dieses Namens haette denselben zugaenglichen Namen getragen wie
+              der Publish-Knopf in PublishView und acht bestehende
+              getByRole-Abfragen mehrdeutig gemacht — im schlimmsten Fall still,
+              naemlich wenn der Publish-Knopf gerade "Erneut veroeffentlichen"
+              heisst.
+              DAS SCHLIESS-ELEMENT ist eine AUSGLEICHSMASSNAHME fuer ein Problem,
+              das GENAU DIESE Scheibe erzeugt: der Drawer ist fixed, der
+              Toolbar-Schalter nicht — scrollt die Seite, waere er sonst der einzige
+              und dann unerreichbare Schliessweg. Bewusst NICHT dazu: Escape,
+              Fokusfalle, Backdrop. */}
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div
+              className="flex rounded-md border border-gray-300 p-0.5 text-sm font-medium"
+              role="group"
+              aria-label="Bereich"
+            >
+              {(
+                [
+                  { key: "measure", label: "Messen" },
+                  { key: "publish", label: "Live" },
+                ] as const
+              ).map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setDrawerArea(tab.key)}
+                  aria-pressed={drawerArea === tab.key}
+                  className={`rounded px-3 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                    drawerArea === tab.key
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsSettingsOpen(false)}
+              aria-label="Bereich schliessen"
+              className="shrink-0 rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              ✕
+            </button>
+          </div>
+
           {/* Bereich MESSEN. Bekommt ausschliesslich FERTIGE Werte: die vier
               Lade-Effekte bleiben oben im Container und feuern beim Seitenaufruf,
               nicht erst beim Oeffnen des Panels (Phase-10-Entscheidung 3).
               settings/setSettings gehen bewusst NICHT hinein — der Blob wird von
               BAUEN, VEROEFFENTLICHEN und dem Export gelesen, deshalb bleibt der
-              Container sein einziger Schreiber und bekommt nur schmale Rueckrufe. */}
-          <MeasureView
-            projectId={projectId}
-            metaPixelId={getMetaPixelId(settings)}
-            onMetaPixelIdChange={(value) =>
-              setSettings((prev) => setMetaPixelId(prev, value))
-            }
-            capiTokenSet={getCapiTokenSet(settings)}
-            capiTokenInput={capiTokenInput}
-            onCapiTokenInputChange={setCapiTokenInput}
-            capiTokenStatus={capiTokenStatus}
-            capiTokenError={capiTokenError}
-            capiRemoveConfirming={capiRemoveConfirming}
-            onCapiRemoveConfirmingChange={setCapiRemoveConfirming}
-            capiRemoving={capiRemoving}
-            onSetCapiToken={handleSetCapiToken}
-            onRemoveCapiToken={handleRemoveCapiToken}
-            eventCounts={eventCounts}
-            adblockLoss={adblockLoss}
-            variantCounts={variantCounts}
-            abTestStartedAt={abTestStartedAt}
-            hasVariantB={hasVariantB}
-          />
+              Container sein einziger Schreiber und bekommt nur schmale Rueckrufe.
+              VERSTECKT, NICHT AUSGEHAENGT (I1): dasselbe Muster wie am Edit-iframe
+              weiter unten — echtes display:none per Tailwind-Klasse "hidden".
+              WEDER das HTML-Attribut hidden NOCH aria-hidden: beide nehmen den
+              Teilbaum aus dem Accessibility-Tree, und getByRole filtert per Default
+              danach — saemtliche Bestandsabfragen auf den inaktiven Bereich gingen
+              dann rot. Die Dokumentreihenfolge (MESSEN vor LIVE) haengt bewusst
+              NICHT am aktiven Reiter; sie traegt den 10a-1-Positionstest. */}
+          <div className={drawerArea === "measure" ? "" : "hidden"}>
+            <MeasureView
+              projectId={projectId}
+              metaPixelId={getMetaPixelId(settings)}
+              onMetaPixelIdChange={(value) =>
+                setSettings((prev) => setMetaPixelId(prev, value))
+              }
+              capiTokenSet={getCapiTokenSet(settings)}
+              capiTokenInput={capiTokenInput}
+              onCapiTokenInputChange={setCapiTokenInput}
+              capiTokenStatus={capiTokenStatus}
+              capiTokenError={capiTokenError}
+              capiRemoveConfirming={capiRemoveConfirming}
+              onCapiRemoveConfirmingChange={setCapiRemoveConfirming}
+              capiRemoving={capiRemoving}
+              onSetCapiToken={handleSetCapiToken}
+              onRemoveCapiToken={handleRemoveCapiToken}
+              eventCounts={eventCounts}
+              adblockLoss={adblockLoss}
+              variantCounts={variantCounts}
+              abTestStartedAt={abTestStartedAt}
+              hasVariantB={hasVariantB}
+            />
+          </div>
 
-          <PublishView
-            projectId={projectId}
-            hasVariantB={hasVariantB}
-            activeVariantLabel={activeVariantLabel}
-            onPublish={handlePublish}
-            emptyPublishTarget={emptyPublishTarget}
-            publishStatus={publishStatus}
-            publishNotice={publishNotice}
-            hostingLabel={hostingLabel}
-            liveUrl={liveUrl}
-            publishRestored={publishRestored}
-            onToggleAbTest={handleToggleAbTest}
-            abTestActive={abTestActive}
-            abTestStartedAt={abTestStartedAt}
-            variantBusy={variantBusy}
-            variantStatus={variantStatus}
-            variantError={variantError}
-            variantBPublished={variantBPublished}
-            variantBRemoveConfirming={variantBRemoveConfirming}
-            onRemoveConfirmingChange={setVariantBRemoveConfirming}
-            onRemoveVariantB={handleRemoveVariantB}
-          />
+          {/* Bereich VEROEFFENTLICHEN — identisches Versteck-Muster, identische
+              Props wie vor der Scheibe. PublishView.tsx selbst ist unberuehrt. */}
+          <div className={drawerArea === "publish" ? "" : "hidden"}>
+            <PublishView
+              projectId={projectId}
+              hasVariantB={hasVariantB}
+              activeVariantLabel={activeVariantLabel}
+              onPublish={handlePublish}
+              emptyPublishTarget={emptyPublishTarget}
+              publishStatus={publishStatus}
+              publishNotice={publishNotice}
+              hostingLabel={hostingLabel}
+              liveUrl={liveUrl}
+              publishRestored={publishRestored}
+              onToggleAbTest={handleToggleAbTest}
+              abTestActive={abTestActive}
+              abTestStartedAt={abTestStartedAt}
+              variantBusy={variantBusy}
+              variantStatus={variantStatus}
+              variantError={variantError}
+              variantBPublished={variantBPublished}
+              variantBRemoveConfirming={variantBRemoveConfirming}
+              onRemoveConfirmingChange={setVariantBRemoveConfirming}
+              onRemoveVariantB={handleRemoveVariantB}
+            />
+          </div>
         </div>
       )}
 

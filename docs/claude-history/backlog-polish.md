@@ -243,3 +243,58 @@ miterledigen, sondern gebündelt abarbeiten.
   sind gleichermassen plausibel.
   -> Keine beobachtete Fehlfunktion, aber ein rohes NUL-Byte in Quellcode ist
   ungewöhnlich genug, um es nicht stillschweigend zu ignorieren.
+- KEIN GEMEINSAMER CHOKEPOINT FÜR DIE PROJEKT-WURZELN (erhoben 2026-07-31,
+  Phase-10-Aufklärung; Trigger: sobald ein Bereich EIGENEN Projekt-Zustand
+  bekommt): Die sieben Wurzeln eines geladenen Projekts (projectId, code,
+  savedCode, mappings, savedMappings, settings, savedSettings) werden in DREI
+  Ladepfaden je EINZELN von Hand gesetzt — handleSwitch
+  (CodeImporter.tsx:1604-1612), handleDelete im Nachrücker-Zweig (:1667-1674)
+  und resetToEmpty (:873-880). Ein vierter Eingang ist der Server-Seed über die
+  Props (src/app/page.tsx:39-49 -> Initialisierung :182, :185, :190, :194, :195,
+  :200, :201).
+  Die beiden GETEILTEN Unterroutinen decken diese Wurzeln NICHT ab: seedVariantState
+  (:939-956) deckt nur den Varianten-Zustand, applyZenForLoadedCode (:899-931) nur
+  den projekt-ungebundenen View-State. Beide werden aus allen drei Pfaden gerufen
+  (:1614/:1676/:883 bzw. :1623/:1685/:885) — die Wurzeln laufen durch keine davon.
+  -> BESTEHENDE Divergenzquelle (eine vergessene Zuweisung in EINEM Pfad zeigt
+  Projekt A mit der Baseline von B), NICHT von Phase 10 verschärft, solange die
+  Bereiche reine Kind-Komponenten ohne eigenen Projekt-Zustand bleiben (s.
+  docs/aktiver-stand.md, Entscheidung 3). Wird zur VORAUSSETZUNG, sobald ein
+  Bereich eigenen Projekt-Zustand bekommt: dann müsste jeder neue Zustand an drei
+  Stellen nachgezogen werden, und die vierte (der Server-Seed) ist kein Handler,
+  in dem man es bemerken würde.
+- DOKU-NACHZUG: "PHASE 10" STEHT NOCH FÜR DEN MCP-SERVER, DER INZWISCHEN PHASE 18
+  IST (erhoben 2026-07-31; Trigger: nächste Doku-Aufräumrunde — NICHT jetzt
+  korrigieren): Die Roadmap führt den MCP-Server seit der Phasenplanung 10-18 als
+  Phase 18 (CLAUDE.md, Roadmap-Zeile "Phase 18 — MCP-Server", "verschoben von der
+  ursprünglichen Phase-10-Position"). VIER Fundstellen tragen noch die alte
+  Nummer, alle am Text verifiziert:
+  (1) CLAUDE.md:601 — Security Manifest, Tier 2: "MCP-SICHERHEIT: … BINDET-AN:
+      Phase 10."
+  (2) CLAUDE.md:1076 — "## Immer beachten", session-unabhängige Mutationen: "So
+      kann die spätere MCP-Schicht (Phase 10) dieselbe geprüfte Logik
+      wiederverwenden".
+  (3) CLAUDE.md:1144 — "## Detail-Archiv", Beschreibung der future-roadmap.md:
+      "nicht-gebaute Vision: Phase 8 (Analytics), Phase 10 (MCP), …".
+  (4) docs/claude-history/security-manifest-full.md:311 und :314 — "EXPLIZIT kein
+      Launch-Gate (das Feature existiert vor Phase 10 nicht)" bzw. "BINDET-AN:
+      Phase 10."
+  -> BEIM ABARBEITEN ZWINGEND ZUSAMMEN: (1) und (4) sind die Tier-Übersicht und
+  die Vollfassung DESSELBEN Manifest-Items. Die Regel im Kopf des Security-Manifests
+  verlangt, dass beide Fassungen deckungsgleich sind und IMMER im selben Commit
+  geändert werden. Wer nur die CLAUDE.md-Stelle korrigiert, verletzt beim Abarbeiten
+  genau die Regel, die schon einmal gebrochen wurde (der Kill-Switch stand in der
+  Vollfassung als offener Blocker, während er längst gebaut und live verifiziert war).
+  An diesen vier Fundstellen ist es reiner Nummern-Nachzug ohne inhaltliche Wirkung —
+  die Bindung selbst ("bindet an die MCP-Phase") bleibt dort in allen vier Fällen
+  korrekt.
+  -> ABER DAS THEMA IST MIT DEN NUMMERN NICHT ERLEDIGT: In
+  docs/claude-history/future-roadmap.md:49 trägt die MCP-Vision noch die
+  ÜBERSCHRIFT "## Phase 10 — AI-Native: Pagesmith MCP-Server (Vision, NACH
+  Go-Live)", und die Timing-Begründung darunter (:55-59) stellt ausdrücklich auf
+  Go-Live ab: "TIMING (Owner-Entscheidung, endgültig): Phase 10, NACH Phase 7
+  (Hosting/Go-Live)". Phase 7 ist inzwischen abgeschlossen, die Position aber auf
+  Phase 18 verschoben — dort steht also eine INHALTLICHE Überarbeitung aus
+  (Überschrift UND Timing-Begründung), nicht nur eine Ziffer. Wer nur die vier
+  Nummern zieht, hat das Thema NICHT erledigt und lässt die Begründung stehen,
+  die die alte Position getragen hat.

@@ -298,3 +298,55 @@ miterledigen, sondern gebündelt abarbeiten.
   (Überschrift UND Timing-Begründung), nicht nur eine Ziffer. Wer nur die vier
   Nummern zieht, hat das Thema NICHT erledigt und lässt die Begründung stehen,
   die die alte Position getragen hat.
+- FEHLENDER WÄCHTER FÜR DEN TOKEN-PFAD (erhoben 2026-07-31 aus der Mutationsprobe
+  zu Phase 10 Scheibe 10a-1; Trigger: sobald jemand die Setzen-Kette oder ihre
+  disabled-Bedingung anfasst): Der "Setzen"-Button des CAPI-Tokens ist deaktiviert
+  über `!projectId || !capiTokenInput.trim() || capiTokenStatus === "saving"`
+  (MeasureView.tsx:192-196); handleSetCapiToken trägt dieselben ersten beiden
+  Bedingungen noch einmal als Riegel (CodeImporter.tsx:1153-1154). GEMESSEN: Es
+  gibt KEINEN Test, der unabhängig davon prüft, dass der Klartext-Token nicht in
+  settings landet. Der einzige Test, der den Token überhaupt als Geheimnis
+  behandelt, ist "TEST 5 (Invariante vi)" (CodeImporter.test.tsx:1609-1648) — er
+  prüft ausschliesslich, dass das Secret in KEINER Konsolen-Ausgabe und nicht im
+  sichtbaren Text steht; settings sieht er nie an. Der Pixel-Test
+  (CodeImporter.test.tsx:385-399) prüft settings zwar per toEqual exakt, tippt aber
+  nie in das Token-Feld und kann den Pfad deshalb nicht treffen.
+  -> FOLGE: Eine einseitige Fehlverdrahtung des Token-Rückrufs (Token flösse in
+  settings und beim nächsten Speichern in eine Spalte, die der Owner LESEN kann —
+  während der CAPI-Token bewusst in project_tokens ohne SELECT-Policy liegt) wird
+  heute nur deshalb rot, weil die Setzen-Kette ausfällt: capiTokenInput bleibt
+  leer, der Button bleibt disabled, die Action wird nie gerufen, und TEST 5
+  scheitert an der ausbleibenden Meldung. Der Schutz ist damit ein NEBENEFFEKT der
+  Button-Logik, kein benannter Wächter. Wer die disabled-Bedingung lockert,
+  entfernt unbemerkt die einzige Abdeckung dieses Pfades. Nicht von 10a-1
+  verursacht — die Mutationsprobe hat es nur sichtbar gemacht.
+- GESTAFFELTER RÜCKBAU BEIM PROJEKTWECHSEL (beobachtet und am Code GEMESSEN
+  2026-07-31, Phase 10 Scheibe 10a-1; Trigger: mit der UX-Politur dieser Phase,
+  spätestens vor Fremd-Traffic): Beim Projektwechsel werden die Projekt-Wurzeln und
+  der Varianten-Zustand SYNCHRON in EINEM Render gesetzt — handleSwitch setzt
+  projectId, code/savedCode, mappings/savedMappings, settings/savedSettings
+  unmittelbar nacheinander und ruft seedVariantState
+  (CodeImporter.tsx:1545-1560). Die vier Analytics-/Varianten-Zustände hängen
+  dagegen an [projectId] und ziehen ASYNCHRON nach: eventCounts, adblockLoss,
+  variantCounts und variantBPublished werden AUSSCHLIESSLICH in den .then()-
+  Callbacks ihrer Lade-Effekte geschrieben (CodeImporter.tsx:601, :619, :646,
+  :677). GEGENGEPROBT: Ausserhalb dieser vier Stellen gibt es im gesamten Container
+  KEINE weitere Schreibstelle für sie — insbesondere leert weder handleSwitch noch
+  applyZenForLoadedCode noch resetToEmpty noch handleDelete einen der vier Werte.
+  Zwischen dem Setzen von projectId und dem Auflösen der Promises steht also der
+  Wert des VORIGEN Projekts.
+  -> WARUM DAS MEHR ALS OPTIK IST: In diesem Fenster zeigt die Oberfläche Zahlen des
+  Vorprojekts unter dem Namen des neuen (activeName leitet synchron aus projects +
+  projectId ab, CodeImporter.tsx:796). Die Zielgruppe trifft mit genau diesen Zahlen
+  Budget-Entscheidungen. Verschärfend bei der Varianten-Auswertung: showVariantCounts
+  liest hasVariantData aus dem noch alten variantCounts (MeasureView.tsx:127-130) —
+  die Sektion kann also sichtbar BLEIBEN und die Zahlen des Vorprojekts zeigen,
+  obwohl das neue Projekt nie einen Test hatte. Der gestaffelte Eindruck entsteht,
+  weil die vier Promises unabhängig voneinander auflösen.
+  -> WAS EIN FIX KOSTEN WÜRDE: Ein synchrones Leeren der vier Zustände müsste an
+  ALLEN Projekt-Ladepfaden nachgezogen werden — und genau die laufen heute durch
+  keinen gemeinsamen Chokepoint (s. Eintrag "KEIN GEMEINSAMER CHOKEPOINT FÜR DIE
+  PROJEKT-WURZELN" oben). Beide Punkte gehören deshalb zusammen abgearbeitet, sonst
+  bekommt ein Ladepfad die Leerung und ein anderer nicht.
+  -> NICHT von Phase 10 verursacht: das Verhalten ist älter als die Scheibe, die
+  Umsortierung hat es nur sichtbarer gemacht. I6 ist gewahrt.

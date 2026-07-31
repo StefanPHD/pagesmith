@@ -28,6 +28,11 @@ neuer Datenpfad. Die heute auf EINER Fläche liegenden Einstellungsbereiche
 Produkt-Loops getrennt, BEVOR Phase 11 einen weiteren Pixel-Typ hinzufügt und
 denselben Bereich erneut überlädt.
 
+**ZEITSTAND DIESES ABSATZES: VOR den Bau-Scheiben, GELÖST DURCH 10b-1.** Er
+beschreibt den Auslöser der Phase im Präsens und bleibt als Begründung stehen —
+seine Zeilennummern und sein Befund gelten für den Stand vor 10a-1. Seit Commit
+`e2a1add` liegt die Fläche außerhalb des Dokumentflusses und verdrängt nichts mehr.
+
 Der Auslöser ist am Code messbar, nicht bloß Geschmack: Das Einstellungs-Panel
 liegt als gewöhnliches Flex-Kind im Dokumentfluss (`src/components/CodeImporter.tsx:1936`,
 im Flex-Column-Container `:1709`) und steht in der DOM-Reihenfolge VOR dem
@@ -41,6 +46,25 @@ Scroll-Container und stapelt sechs Abschnitte plus `DomainManager`.
 
 Alle Zeilenangaben am echten Code erhoben (2026-07-31), nicht aus einem Bericht
 übernommen. Sie tragen Entscheidungen — wer sie ändert, prüft die Entscheidung mit.
+
+**ZEITSTAND DIESES ABSCHNITTS UND DER ENTSCHEIDUNGEN DARUNTER.** Die Zeilenangaben
+wurden am 2026-07-31 **VOR den Bau-Scheiben** erhoben und waren damals korrekt.
+Durch 10a-1, 10a-2 und 10b-1 sind die Angaben zu **`CodeImporter.tsx`** überholt
+(Beispiel: das Panel-Gate stand `:1936`, steht heute `:1888`). Sie werden **BEWUSST
+nicht nachgezogen**: Dieser Abschnitt dokumentiert, **WARUM** entschieden wurde,
+nicht **WO** etwas steht — und die stehende Regel verbietet ohnehin, eine
+Zeilennummer aus einem Dokument in einen Prompt zu übernehmen. **Jede frische
+Messung am Code schlägt jede Angabe hier.**
+**NUR `CodeImporter.tsx` ist betroffen — gemessen, nicht angenommen:** Die drei
+Bau-Commits fassten ausschließlich `CodeImporter.tsx`, `CodeImporter.test.tsx`,
+`MeasureView.tsx` (neu) und `PublishView.tsx` (neu) an. Die Angaben zu
+`DomainManager.tsx` (T2, T4), `ActionPanel.tsx` (T2), `src/lib/settings.ts` (T5)
+und `src/app/page.tsx` (Entscheidung 2) **gelten unverändert** und wurden
+stichprobenartig nachgeprüft.
+**LEHRE FÜR KÜNFTIGE RECORDS (Kandidat für die Hebung nach "## Immer beachten" am
+Phasenende):** Der haltbare Anker ist der **SYMBOLNAME**
+(`applyZenForLoadedCode`, `settingsEqual`, `statusBadge`), nicht die Zeile. Namen
+überleben Refactorings, Zeilennummern nicht.
 
 - **T1 — Der gesamte Zustand von `CodeImporter.tsx` ist dort deklariert.** 46
   `useState`, 5 `useRef`, 9 `useMemo`, alle im Komponenten-Rumpf zwischen `:182`
@@ -193,6 +217,12 @@ die `document.hidden`-Pause (T4, Präzisierung 3) greift dabei nicht, weil der T
 ja sichtbar ist. Der Bereichswechsel ist NEU und darf nichts kosten; die
 Flächengrenze existiert HEUTE SCHON und bleibt, wie sie ist.
 
+**ALLGEMEINE FORM DAVON (Kandidat für die Hebung nach "## Immer beachten" am
+Phasenende):** Ein wiederkehrender Aufruf gegen einen externen Dienst wird an die
+Sichtbarkeit des **BEREICHS** gebunden, der ihn braucht, nicht an die des **Tabs**.
+Die `document.hidden`-Pause greift nicht, wenn der Nutzer im selben Tab anderswo
+arbeitet. (Der Absatz darüber ist der konkrete Fall und bleibt als Beleg stehen.)
+
 **DIE LADE-EFFEKTE BLEIBEN IM CONTAINER — sie wandern NICHT in die extrahierten
 Bereiche.** Vier Lade-Effekte in `CodeImporter.tsx` feuern heute beim MOUNT DES
 CONTAINERS, also beim Seitenaufruf und vollständig unabhängig vom Settings-Gate:
@@ -259,6 +289,9 @@ Werden in jedem Folge-Prompt wörtlich zitiert.
   `formatRelative` im Projekt-Menü (`:3003`–`:3012`, Gate `:1855`) — beide heute
   NUR deshalb sicher, weil ihr jeweiliges Gate geschlossen startet (`:275` bzw.
   `:330`).
+  **(Kandidat für die Hebung nach "## Immer beachten" am Phasenende — die Regel
+  gilt unabhängig von Phase 10: sie ist eine Hydration-Regel, keine
+  Workspace-Regel.)**
 - **I3** Die Trennung darf keinen Zustand verstecken. Pro Bereich wird benannt,
   welche Zustände aufmerksamkeitswürdig sind und wie sie an der Navigation SELBST
   sichtbar werden — "nicht besucht" und "in Ordnung" dürfen nicht gleich aussehen.
@@ -302,7 +335,7 @@ Fünf Scheiben, in dieser Reihenfolge:
 |---|---|---|
 | **10a-1** | Bereich MESSEN extrahieren | **abgeschlossen** (s. unten) |
 | **10a-2** | Bereich VERÖFFENTLICHEN extrahieren | **abgeschlossen** (s. unten) |
-| **10b-1** | Die Fläche: Drawer rechts, aus dem Dokumentfluss, eigener Scroll-Container, Bereichswechsel innerhalb (versteckend) | offen |
+| **10b-1** | Die Fläche: Drawer rechts, aus dem Dokumentfluss, eigener Scroll-Container, Bereichswechsel innerhalb (versteckend) | **abgeschlossen** (s. unten) |
 | **10b-2** | Mount-Disziplin `DomainManager`: der Zustand über den Projektwechsel (s. Backlog) | offen |
 | **10c** | I3 — die Zustandssignale an der Navigation | offen |
 
@@ -414,7 +447,8 @@ drei Abschnitte standen nach 10a-1 bereits konsekutiv, es gab nichts umzusortier
   gehört in eine eigene Runde, nicht nebenbei in einen Refactor, dessen ganzer Wert an
   der Enge des Nachweises hängt.
 
-**NACHGESCHÄRFTE REGEL — ersetzt die Fassung aus 10a-1, die notwendig, aber nicht
+**NACHGESCHÄRFTE REGEL (Kandidat für die Hebung nach "## Immer beachten" am
+Phasenende) — ersetzt die Fassung aus 10a-1, die notwendig, aber nicht
 hinreichend war.** Eine Ableitung wandert NUR mit in die Ansicht, wenn sie
 ausschließlich von dieser Ansicht gelesen wird **UND ihre Eingänge ebenfalls
 mitwandern oder ohnehin Props sind**. `publishNotice` erfüllt die erste Bedingung,
@@ -455,6 +489,131 @@ Bedingung über seinem Aufruf ist unverändert (vorher wie nachher allein
 **NÄCHSTE SCHEIBE: 10b — die Fläche aus dem Dokumentfluss nehmen, eigener
 Scroll-Container, Bereichswechsel innerhalb.**
 
+#### Scheibe 10b-1 — Einstellungen als Drawer mit Bereichs-Reitern (ABGESCHLOSSEN, live verifiziert 2026-07-31)
+
+Erste Scheibe der Phase mit sichtbarer Wirkung. Commit `e2a1add`. Tests
+**672 -> 675**, **NULL geänderte Bestands-Assertionen** (die Testdatei trägt 96
+Einfügungen und 0 Löschungen). Alle vier Pipeline-Gates grün: `tsc --noEmit`,
+`lint`, `vitest run`, `build`.
+
+**Was gebaut wurde.** Das Einstellungs-Panel ist ein **Drawer von rechts** —
+`fixed inset-y-0 right-0 z-20 w-[30rem] max-w-full overflow-y-auto`. Darin zwei
+Bereiche (**Messen**, **Live**) über eine Reiterzeile, umgeschaltet **VERSTECKEND
+per Tailwind-Klasse** nach dem Muster des Edit-iframes — weder das HTML-Attribut
+`hidden` noch `aria-hidden`, weil beide den Teilbaum aus dem Accessibility-Tree
+nähmen und die bestehenden `getByRole`-Abfragen bräche. Neuer View-State
+`drawerArea` neben `previewMode`, **projekt-ungebunden und bewusst NICHT in
+`applyZenForLoadedCode`**. `MeasureView`, `PublishView`, `DomainManager` und
+`ActionPanel` sind **nicht im Diff**; die Props beider Bereiche sind unverändert.
+Die vier Lade-Effekte sind **zeilenidentisch** (Byte-Vergleich gegen den
+Vorzustand, Versatz nur durch die sieben neuen State-Zeilen).
+
+**KANDIDAT FÜR DIE HEBUNG nach "## Immer beachten" am Phasenende — der Satz oben
+zum Versteck-Mechanismus:** weder das HTML-Attribut `hidden` noch `aria-hidden`,
+weil beide den Teilbaum aus dem Accessibility-Tree nehmen und `getByRole` per
+Default danach filtert. Gilt für jede künftige Versteck-Stelle, nicht nur für
+diese; der Fehler wäre ein Schwall roter Bestandstests ohne erkennbare Ursache.
+
+**I6 in der geklärten Lesart gehalten:** dieselben Aktionen, dieselben
+Server-Aufrufe zu denselben Zeitpunkten, keine neue Produktfähigkeit. Nach
+Absicht neu sind Position, Sichtbarkeit und die Reiter.
+
+**DAS SCHLIESSKREUZ IST EINE AUSGLEICHSMASSNAHME, keine neue Fähigkeit.** Der
+Drawer ist `fixed`, der Toolbar-Schalter nicht — bei gescrollter Seite wäre der
+einzige Schließweg aus dem Sichtfeld gewandert. **Das Problem entsteht durch diese
+Scheibe, das Element gleicht es aus.** Live bestätigt (Schritt 11). Bewusst NICHT
+dazu: Escape-Handler, Fokusfalle, Backdrop-Klick.
+
+**ALLGEMEINE FORM DAVON (Kandidat für die Hebung nach "## Immer beachten" am
+Phasenende):** Wer ein Element aus dem Dokumentfluss nimmt (`fixed` oder
+`absolute`), prüft, ob der **BEDIENWEG** dorthin mitscrollt. Das fixierte Element
+bleibt stehen, sein Auslöser nicht — bei gescrollter Seite kann der einzige Zugang
+aus dem Sichtfeld wandern. (Der Absatz darüber ist der konkrete Fall und bleibt als
+Beleg stehen.)
+
+**BENENNUNG DER BEREICHE — entschieden und damit erledigt: "Messen" und "Live".**
+Grund für *Live* statt *Veröffentlichen*: Ein gleichnamiger Reiter neben dem
+Publish-Knopf hätte zwei Bedienelemente mit **identischem Namen und verschiedener
+Wirkung** ergeben. Acht bestehende Abfragen hätten den Reiter mitgefunden; bei
+einem bereits veröffentlichten Projekt (der Knopf heißt dann „Erneut
+veröffentlichen") hätte eine Abfrage **nur noch den Reiter** getroffen und still
+das falsche Element geklickt. *Verworfen wurden `aria-label` und `role="tab"`:*
+beide hätten die ABFRAGEN eindeutig gemacht und zwei gleichnamige Bedienelemente
+auf dem Bildschirm stehen lassen — das Instrument justiert statt der Sache.
+„Live" deckt außerdem alle drei Abschnitte des Bereichs, „Veröffentlichen" nur
+einen.
+**DAZU ein gemessener Nebenbefund:** In der laufenden App trägt eine verbundene
+Domain ein Status-Abzeichen mit dem exakten Text **„Live"** im selben Reiter —
+`DomainManager.tsx:478` (`statusBadge`), gerendert als `<span>` bei `:259`–`:261`,
+**keine Button-Rolle**. Räumlich und optisch klar getrennt, deshalb hingenommen —
+aber festgehalten, damit es bei künftigen Abfragen bekannt ist. Die neuen Tests
+adressieren die Reiter deshalb über **verankerte Rollen-Abfragen**
+(`getByRole("button", { name: /^Live$/ })`).
+
+**DAUERHAFTE REGEL daraus (Kandidat für die Hebung nach "## Immer beachten" am
+Phasenende):** Zwei Bedienelemente mit **gleichem Namen und verschiedener Wirkung**
+sind ein **OBERFLÄCHEN**-Problem, kein Testproblem. Wird eine Testabfrage
+mehrdeutig, ist **zuerst die Oberfläche zu prüfen** — nicht die Abfrage eindeutig
+zu machen. Genau das war hier die Entscheidung: `aria-label` und `role="tab"`
+hätten die Abfragen repariert und die Doppeldeutigkeit auf dem Bildschirm stehen
+lassen.
+
+**DAUERHAFTER PRÜFSCHRITT daraus (Kandidat für die Hebung nach "## Immer beachten"
+am Phasenende):** Ein neues Bedienelement kann bestehende Abfragen auf **zwei**
+Weisen brechen — es macht sie **mehrdeutig**, ODER es kippt eine Behauptung über
+die **ABWESENHEIT** eines Textes (`not.toContain`, `queryBy… toBeNull` und
+Verwandte). **Beides VOR dem Bau prüfen, nicht danach.** In dieser Scheibe fand die
+erste Prüfung acht gefährdete Abfragen; die zweite fand keine, aber erst nachdem
+66 Negativ-Behauptungen einzeln durchgesehen waren — ohne den ausdrücklichen
+Prüfschritt wäre sie gar nicht gefahren worden.
+
+**BEFUND ZUR TESTABDECKUNG, DER DIE SCHEIBE ÜBERDAUERT.** Zwei der drei
+Mutationen — *Versteck-Bedingung an beiden Hüllen entfernt* und *die beiden
+Reiter-`onClick` vertauscht* — werden **ausschließlich vom neuen Struktur-Test
+gefangen**; die übrigen 90 Tests laufen dabei grün durch. **Zwei Fehlerklassen
+hängen damit an EINEM Test.** Wer ihn später als redundant empfindet, entfernt die
+einzige Abdeckung dieser beiden Fälle. Der Test sichert **Struktur, NICHT
+Sichtbarkeit** — jsdom wertet die Klasse nicht aus (in Stufe 1 gemessen: kein
+Stylesheet in `vitest.config.ts`, `display` einer `.hidden`-Klasse ist `block`,
+`checkVisibility` fehlt). Die Sichtbarkeit selbst ist ausschließlich live
+nachweisbar und wurde in den Schritten 2 und 3 bestätigt. Die dritte Mutation
+(Verstecken → bedingtes Rendern) traf **36 Tests**.
+
+**KANDIDAT FÜR DIE HEBUNG nach "## Immer beachten" am Phasenende — die Messung
+oben zur Testumgebung:** kein Stylesheet in `vitest.config.ts`, `display` einer
+`.hidden`-Klasse ist in jsdom `block` wie ohne Klasse, `checkVisibility` fehlt.
+Das ist eine dauerhafte Eigenschaft des Setups, nicht der Phase: sie entscheidet,
+was ein Test überhaupt behaupten darf, und verhindert Tests, die nur so aussehen,
+als prüften sie Sichtbarkeit.
+
+**Live bestätigt (dreizehn Schritte, Stefan).** Keine Hydration-Warnung; je Reiter
+ausschließlich die zugehörigen Abschnitte; keine Verdrängung des Workspace beim
+Öffnen und Schließen; Seiten-Scrollposition unberührt; der Drawer scrollt intern;
+Auswahl, Highlighting und Scrollposition im Vorschau-iframe bleiben erhalten;
+Reiterwechsel ohne jede Netzwerk-Anfrage; Schließen und erneutes Öffnen lädt die
+Domain-Liste wie zuvor; beide Bereiche voll bedienbar; Schließkreuz nach
+Seiten-Scroll erreichbar; schmales Fenster bedienbar; Projekt-Dropdown nicht
+verdeckt.
+
+**GESTALTUNGS-BEFUND AUS DEM LIVE-TEST — KEIN FEHLER.** Der erste Abschnitt im
+Live-Reiter trägt seine Trennlinien-Klassen selbst (`PublishView.tsx:85`,
+`mt-4 border-t border-gray-200 pt-4`) und zeigt sie im Drawer **freistehend über
+„Veröffentlichen"**. Der Owner beurteilt das als **GEWINN**: Die Linie trennt die
+Reiterzeile klar vom Inhalt und wirkt luftiger. Im Messen-Reiter fehlt sie, weil
+`MeasureView`s erster Knoten (`:140`, die Überschrift „Tracking-Pixel") diese
+Klassen bewusst nicht trägt — dort wirkt es gedrängter.
+**ZIEL, aber NICHT durch Duplizieren:** Die Linie gehört **nicht zusätzlich** in
+`MeasureView`. Sie trennt die REITERZEILE vom Inhalt und ist damit eine Eigenschaft
+des **DRAWERS**, nicht der Bereiche. Richtige Umsetzung: eine Trennlinie **unter der
+Reiterzeile im Drawer**, und die Klassen verschwinden dafür aus
+`PublishView.tsx:85`. Eine Stelle statt zwei — und keine Ansicht trägt Wissen über
+ihre Position im Drawer, was bei einem dritten Bereich oder einer Umsortierung
+sonst sofort wieder falsch wäre.
+**TRIGGER: Scheibe 10c.** Sie arbeitet ohnehin an der Reiterzeile, weil dort die
+Zustandssignale aus I3 hinkommen — dieselbe Fläche, ein Eingriff.
+
+**NÄCHSTE SCHEIBE: 10b-2 — Mount-Disziplin `DomainManager`.**
+
 ### Ausdrücklich NICHT in dieser Phase
 
 - Extraktion des Bauen-Bereichs (Entscheidung 5).
@@ -468,5 +627,4 @@ Scroll-Container, Bereichswechsel innerhalb.**
 
 ### Noch offen — gehört in die Stufe-1-Planung
 
-- Die Benennung der Bereiche in der Oberfläche.
 - Die Umsetzung von I3.

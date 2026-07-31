@@ -261,7 +261,7 @@ Vier Scheiben, in dieser Reihenfolge:
 | Scheibe | Inhalt | Stand |
 |---|---|---|
 | **10a-1** | Bereich MESSEN extrahieren | **abgeschlossen** (s. unten) |
-| **10a-2** | Bereich VERÖFFENTLICHEN extrahieren | offen |
+| **10a-2** | Bereich VERÖFFENTLICHEN extrahieren | **abgeschlossen** (s. unten) |
 | **10b** | Die Fläche: aus dem Dokumentfluss nehmen, eigener Scroll-Container, Bereichswechsel innerhalb | offen |
 | **10c** | I3 — die Zustandssignale an der Navigation | offen |
 

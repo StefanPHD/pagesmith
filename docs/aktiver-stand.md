@@ -3,9 +3,10 @@
 Aktiver Stand der GERADE LAUFENDEN Phase 10: Entscheidungen, Gründe, verworfene
 Alternativen, Invarianten und offene Punkte. Diese Datei wird während der Phase
 fortgeschrieben und ist der Pflicht-Einstieg jedes Bau- und Aufklärungs-Prompts
-("Auftrag 0"). Sie beschreibt eine OFFENE Phase — es ist noch nichts gebaut, und
-kein Abschnitt hier behauptet einen Bau- oder Verifikationsstand. Angelegt am
-2026-07-31, vor der ersten Zeile Code (Kadenz: Gedächtnis zuerst).
+("Auftrag 0"). Sie beschreibt eine OFFENE Phase. Angelegt am 2026-07-31, vor der
+ersten Zeile Code (Kadenz: Gedächtnis zuerst). Was GEBAUT und live verifiziert
+ist, steht ausschließlich unter "### Abgeschlossene Scheiben" — jeder andere
+Abschnitt beschreibt Absicht, keinen Bau- oder Verifikationsstand.
 
 Der aktive Ist-Stand des SYSTEMS (Migrationsstand, events-Schema, Policies, RPCs,
 Indizes) steht WEITERHIN in der Root unter "## Aktueller DB-/Analytics-Stand"; die
@@ -253,6 +254,86 @@ Werden in jedem Folge-Prompt wörtlich zitiert.
   Seitenaufruf auf das erste Öffnen, und das ist eine Verhaltensänderung, auch
   wenn am Ende dieselben Zahlen stehen (s. Entscheidung 3).
 
+### Scheiben-Schnitt der Phase
+
+Vier Scheiben, in dieser Reihenfolge:
+
+| Scheibe | Inhalt | Stand |
+|---|---|---|
+| **10a-1** | Bereich MESSEN extrahieren | **abgeschlossen** (s. unten) |
+| **10a-2** | Bereich VERÖFFENTLICHEN extrahieren | offen |
+| **10b** | Die Fläche: aus dem Dokumentfluss nehmen, eigener Scroll-Container, Bereichswechsel innerhalb | offen |
+| **10c** | I3 — die Zustandssignale an der Navigation | offen |
+
+**ORDNUNGSPRINZIP — zuerst die Eingriffe, deren Ergebnis man vorher kennt, dann die
+sichtbaren.** Bei 10a-1 und 10a-2 lautet der Nachweis "unverändert" — der billigste
+Beweis, den es gibt: die Bestandstests müssen grün bleiben, mehr ist nicht zu zeigen.
+Erst 10b ändert etwas Sichtbares, und es tut das dann auf sauber geschnittenen
+Komponenten statt in einer Monolith-Datei. Extraktion und Navigation sind zwei
+Wirkungen mit VERSCHIEDENEN Risikoprofilen; zusammen gebaut wäre bei einem Fehlschlag
+nicht unterscheidbar, welche der beiden ihn verursacht hat.
+
+**VERHÄLTNIS ZU I6 — damit 10c später nicht als Verstoß gelesen wird.** I6 ("kein
+Verhalten ändert sich") bindet **10a-1, 10a-2 und 10b**. **10c ist per Konstruktion
+eine Ergänzung**: Die Trennung nimmt der Oberfläche eine Sichtbarkeit, die die
+einflächige Anordnung umsonst mitgeliefert hat — auf einer Fläche sah man jeden
+Zustand beim Scrollen ohnehin. 10c stellt genau diese Sichtbarkeit wieder her. Das
+ist beim Erreichen von 10c AUSDRÜCKLICH zu deklarieren und nicht stillschweigend
+unter I6 durchlaufen zu lassen.
+
+### Abgeschlossene Scheiben
+
+#### Scheibe 10a-1 — Bereich MESSEN extrahiert (ABGESCHLOSSEN, live verifiziert 2026-07-31)
+
+Erste Bau-Scheibe der Phase. Commit `6982dba`. Tests **671 -> 672**, keine
+Bestands-Assertion geändert (die Testdatei trägt null gelöschte Zeilen). Alle vier
+Pipeline-Gates grün: `tsc --noEmit`, `lint`, `vitest run`, `build`.
+
+**Was gebaut wurde.** `src/components/MeasureView.tsx` trägt jetzt Tracking-Pixel
+(Meta-Pixel-ID + CAPI-Token), Statistik (event_type-Counts + Adblocker-Verlust) und
+Auswertung je Variante. **18 Props**, ausschließlich fertige Werte und schmale
+Rückrufe — **weder `settings` noch `setSettings`**, kein Import aus
+`src/lib/settings.ts`, **kein eigener Hook** (kein `useState`/`useEffect`/`useRef`/
+`useMemo` in der Datei) und **kein umschließendes Element**: die Rückgabe ist ein
+Fragment, der gerenderte DOM ändert sich daher außer in der Reihenfolge nicht. Die
+vier Lade-Effekte sind **zeilenidentisch** im Container geblieben (Byte-Vergleich
+gegen den Vorzustand: keine Differenz). Panel-Reihenfolge jetzt: Tracking-Pixel,
+Statistik, Auswertung je Variante, Veröffentlichen, Variante B, Eigene Domain.
+
+**Live bestätigt (neun Schritte, Stefan).** Keine Hydration-Warnung bei
+geschlossenem Panel; Reihenfolge und Trennlinien wie geplant; Pixel-ID mit
+Dirty-Punkt, Speichern und Reload; Token setzen und zweistufig entfernen inklusive
+Abbrechen-Pfad; Statistik und Verlustrate korrekt (angezeigt: "mindestens 13 %");
+Varianten-Auswertung je Variante getrennt; Projektwechsel reseedet ohne Leak aus dem
+Vorprojekt.
+
+**BEFUND AUS DER MUTATIONSPROBE, DER BESTEHEN BLEIBT — von 10a-1 nicht verursacht,
+nur sichtbar gemacht.** Die einseitige Fehlverdrahtung des Token-Rückrufs (der
+Klartext-Token flösse dann in `settings` und beim nächsten Speichern in eine Spalte,
+die der Owner lesen kann — während der CAPI-Token bewusst in einer Tabelle ohne
+SELECT-Policy liegt) wird heute NUR dadurch rot, dass die Setzen-Kette ausfällt: das
+Eingabefeld bleibt leer, der Button bleibt `disabled`, die Action wird nie gerufen.
+Der Schutz ist ein **NEBENEFFEKT der Button-Logik, kein benannter Wächter** — kein
+Test behauptet, dass der Token nicht in `settings` landen darf. Wer die
+`disabled`-Bedingung entfernt, entfernt unbemerkt die einzige Abdeckung dieses
+Pfades. Eigener Backlog-Eintrag ("FEHLENDER WÄCHTER FÜR DEN TOKEN-PFAD").
+
+**REGEL FÜR 10a-2, aus dieser Scheibe gewonnen.** Eine Ableitung wandert NUR mit in
+die Ansicht, wenn sie AUSSCHLIESSLICH von dieser Ansicht gelesen wird. Bei 10a-1 traf
+das auf `variantRows`, `hasVariantData`, `variantCountsFailed` und
+`showVariantCounts` zu — sie sind mitsamt Erklärblock nach `MeasureView` gewandert.
+`publishPairs` erfüllt die Bedingung NICHT (`handlePublish` liest es) und bleibt im
+Container.
+
+**BEOBACHTUNG BEIM PROJEKTWECHSEL.** Beim Wechsel ist ein sichtbarer, gestaffelter
+Rückbau der Bereiche zu sehen; das Verhalten ist älter als diese Scheibe und wurde
+durch die Umsortierung lediglich sichtbarer — **I6 bleibt gewahrt**, geändert hat
+sich die Sichtbarkeit eines bestehenden Verhaltens, nicht das Verhalten. Gemessene
+Ursache und Risiko: eigener Backlog-Eintrag ("GESTAFFELTER RÜCKBAU BEIM
+PROJEKTWECHSEL").
+
+**NÄCHSTE SCHEIBE: 10a-2 — Bereich VERÖFFENTLICHEN extrahieren.**
+
 ### Ausdrücklich NICHT in dieser Phase
 
 - Extraktion des Bauen-Bereichs (Entscheidung 5).
@@ -270,6 +351,5 @@ Werden in jedem Folge-Prompt wörtlich zitiert.
   derselben Datei existiert bereits ein Overlay-Muster (Projekt-Dropdown `:1856`:
   `absolute … z-10 … max-h-96 overflow-y-auto`) — als vorhandenes Muster genannt,
   nicht als Auswahl.
-- Der Schnitt der Bau-Scheiben und ihre Reihenfolge.
 - Die Benennung der Bereiche in der Oberfläche.
 - Die Umsetzung von I3.

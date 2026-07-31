@@ -374,7 +374,7 @@ miterledigen, sondern gebündelt abarbeiten.
       Domains des NEUEN Projekts. Für DIESEN Pfad ist es veralteter
       ANZEIGEzustand. Die Formulierung deckt aber NICHT den Fall (d) ab, und
       "Anzeige" heisst dort ausdrücklich nicht "folgenlos" — s. (d2).
-  (d) EINE AUSNAHME ZU (c), ebenfalls gemessen und beim Live-Test nicht berührt:
+  (d) EINE AUSNAHME ZU (c) — am Code gemessen UND in der laufenden App BEOBACHTET:
       Der Lade-Effect trägt ein frühes `if (!projectId) return` (:54). Beim Wechsel
       auf ein NEUES, noch ungespeichertes Projekt ("+ Neues Projekt" ->
       resetToEmpty -> setProjectId(null), CodeImporter.tsx:812ff) läuft der Effect
@@ -382,6 +382,14 @@ miterledigen, sondern gebündelt abarbeiten.
       `domains.length > 0` (:144) — dort steht dann die Domain-Liste des VORIGEN
       Projekts. Beim erneuten Öffnen des Panels ist sie weg (Neu-Mount), aber
       solange es offen bleibt, ist sie sichtbar.
+      BEOBACHTUNGSBEFUND (Owner, 2026-07-31, laufende App): von einem Projekt mit
+      verbundener Custom-Domain bei GEÖFFNETEM Einstellungs-Panel auf "+ Neues
+      Projekt" gewechselt -> die Domain-Zeile des vorigen Projekts bleibt sichtbar,
+      einschliesslich ihres Entfernen-Knopfs, unter dem neuen Projekt. Der Knopf
+      wurde bewusst NICHT geklickt. Dieser Eintrag ruht damit NICHT mehr auf einer
+      Schlusskette: die Sichtbarkeit ist BEOBACHTET, die fehlenden Riegel sind am
+      Code GEMESSEN (d2). Ungetestet bleibt allein die AUSFÜHRUNG des
+      Löschvorgangs — absichtlich, sie wäre destruktiv.
   (d2) DIESE VERALTETE LISTE IST BEDIENBAR — gemessen, und der Grund, warum dieser
       Eintrag NICHT als reine Kosmetik geführt wird:
       - DomainRow bekommt projectId GAR NICHT als Prop (:164-172: domain, pollTick,
@@ -430,6 +438,9 @@ miterledigen, sondern gebündelt abarbeiten.
       Stufe-1-Planung von 10b, und er wird dort ENTSCHIEDEN, nicht nur erwähnt — 10b
       darf nicht abgeschlossen werden, solange er offen ist. Unabhängig davon
       BLOCKIEREND, bevor ein anderer Nutzer als der Owner die App benutzt.
+      DIESE TERMINIERUNG ÄNDERT SICH UNTER EINER BEDINGUNG: Verzögert sich 10b, oder
+      bekommt jemand ausser dem Owner Zugang, wird der Fix ein eigener, VORGEZOGENER
+      Schritt.
   KEIN REMOUNT beim Projektwechsel (gemessen): Der Aufruf
   `<DomainManager projectId={projectId} />` (PublishView.tsx:326) trägt KEINEN key
   und steht unter keiner eigenen Bedingung; `<PublishView …>`

@@ -352,8 +352,9 @@ miterledigen, sondern gebündelt abarbeiten.
   Umsortierung hat es nur sichtbarer gemacht. I6 ist gewahrt.
 - DOMAINMANAGER BEHÄLT EINGABE UND FEHLERMELDUNG ÜBER DEN PROJEKTWECHSEL
   (beobachtet Stefan 2026-07-31 beim Live-Test zu Scheibe 10a-2, Ursache am Code
-  GEMESSEN; Trigger: Stufe-1-Planung von 10b — dort wird die Mount-Disziplin
-  gebaut, und dies ist eine Mount-Frage): In Projekt A eine bereits anderswo
+  GEMESSEN; Trigger GEFEUERT — Entscheidung 2026-07-31, s. ENTSCHIEDEN-Block
+  unten. Behebung eingeplant als Scheibe 10b-2; der Eintrag bleibt OFFEN, bis
+  10b-2 abgeschlossen ist): In Projekt A eine bereits anderswo
   verknüpfte Domain eintippen, die rote Fehlermeldung provozieren, dann oben das
   Projekt wechseln -> Eingabetext UND Fehlermeldung bleiben stehen; erst ein
   Reload setzt zurück.
@@ -441,6 +442,15 @@ miterledigen, sondern gebündelt abarbeiten.
       DIESE TERMINIERUNG ÄNDERT SICH UNTER EINER BEDINGUNG: Verzögert sich 10b, oder
       bekommt jemand ausser dem Owner Zugang, wird der Fix ein eigener, VORGEZOGENER
       Schritt.
+      ENTSCHIEDEN 2026-07-31, VOR der Planung: Der Fix bekommt eine EIGENE Scheibe
+      10b-2, unmittelbar nach 10b-1, und wird dort als Verhaltensänderung
+      DEKLARIERT. NICHT in 10b-1 mitgebaut — zwei Wirkungen mit verschiedenen
+      Risikoprofilen (s. docs/aktiver-stand.md, "Scheiben-Schnitt der Phase").
+      VORAUSSETZUNG, weiterhin offen und in 10b-2 zu MESSEN statt anzunehmen:
+      Verschiebt ein Remount die ZAHL oder den ZEITPUNKT der Server-Aufrufe
+      gegenüber heute? Und ausdrücklich mitzuprüfen: Bei einem ungespeicherten
+      Projekt ist projectId null — ein Key aus einem Nullwert verhält sich nicht wie
+      ein Key, und genau dieser Fall ist der BEOBACHTETE (s. (d)).
   KEIN REMOUNT beim Projektwechsel (gemessen): Der Aufruf
   `<DomainManager projectId={projectId} />` (PublishView.tsx:326) trägt KEINEN key
   und steht unter keiner eigenen Bedingung; `<PublishView …>`

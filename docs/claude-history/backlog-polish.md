@@ -350,3 +350,118 @@ miterledigen, sondern gebündelt abarbeiten.
   bekommt ein Ladepfad die Leerung und ein anderer nicht.
   -> NICHT von Phase 10 verursacht: das Verhalten ist älter als die Scheibe, die
   Umsortierung hat es nur sichtbarer gemacht. I6 ist gewahrt.
+- DOMAINMANAGER BEHÄLT EINGABE UND FEHLERMELDUNG ÜBER DEN PROJEKTWECHSEL
+  (beobachtet Stefan 2026-07-31 beim Live-Test zu Scheibe 10a-2, Ursache am Code
+  GEMESSEN; Trigger: Stufe-1-Planung von 10b — dort wird die Mount-Disziplin
+  gebaut, und dies ist eine Mount-Frage): In Projekt A eine bereits anderswo
+  verknüpfte Domain eintippen, die rote Fehlermeldung provozieren, dann oben das
+  Projekt wechseln -> Eingabetext UND Fehlermeldung bleiben stehen; erst ein
+  Reload setzt zurück.
+  GEMESSENER UMFANG — welche Zustände bleiben stehen und welche nicht:
+  (a) BLEIBEN STEHEN: input (DomainManager.tsx:27) und addError (:29). Beide haben
+      KEINEN an projectId gebundenen Schreibpfad — input wird nur bei :95 (nach
+      erfolgreichem Hinzufügen) und :116 (onChange) gesetzt, addError nur bei :88
+      (Start von handleAdd) und :98 (Fehlschlag). Kein Effect berührt sie.
+  (b) WERDEN ZURÜCKGESETZT: domains (:63) und loadError (:64/:66) über den
+      Lade-Effect :53-72 mit deps [projectId] (:72) — also asynchron, nach dem
+      Roundtrip. Ebenso die sieben Zustände je Domain-Zeile (status :173,
+      checking :174, cooldownLeft :175, cooldownTimer :176, confirming :178,
+      removing :179, removeError :180) und copied (:419): sie sterben mit dem
+      Unmount ihrer Zeile, weil DomainRow auf d.label gekeyt ist (:148) und die
+      neue Liste andere Labels trägt. Das ist eine Mount-Grenze, keine Zuweisung.
+  (c) KEIN LECK ZWISCHEN NUTZERN, und beim Wechsel auf ein GESPEICHERTES Projekt
+      auch keines zwischen Projekten: die Liste lädt neu (:53-72) und zeigt die
+      Domains des NEUEN Projekts. Für DIESEN Pfad ist es veralteter
+      ANZEIGEzustand. Die Formulierung deckt aber NICHT den Fall (d) ab, und
+      "Anzeige" heisst dort ausdrücklich nicht "folgenlos" — s. (d2).
+  (d) EINE AUSNAHME ZU (c), ebenfalls gemessen und beim Live-Test nicht berührt:
+      Der Lade-Effect trägt ein frühes `if (!projectId) return` (:54). Beim Wechsel
+      auf ein NEUES, noch ungespeichertes Projekt ("+ Neues Projekt" ->
+      resetToEmpty -> setProjectId(null), CodeImporter.tsx:812ff) läuft der Effect
+      also nicht, und die Liste rendert unbedingt weiter über
+      `domains.length > 0` (:144) — dort steht dann die Domain-Liste des VORIGEN
+      Projekts. Beim erneuten Öffnen des Panels ist sie weg (Neu-Mount), aber
+      solange es offen bleibt, ist sie sichtbar.
+  (d2) DIESE VERALTETE LISTE IST BEDIENBAR — gemessen, und der Grund, warum dieser
+      Eintrag NICHT als reine Kosmetik geführt wird:
+      - DomainRow bekommt projectId GAR NICHT als Prop (:164-172: domain, pollTick,
+        onChanged). Die Zeile kennt nur domain.label und kann deshalb konstruktiv
+        nicht bemerken, dass der Projekt-Kontext gewechselt hat.
+      - "Status prüfen": KEIN projectId-Riegel. Handler :224 prüft nur
+        `checking || cooldownLeft > 0`, Button :265 ebenso; Aufruf
+        `checkDomainStatusAction(domain.label)` :230. Auch der Auto-Poll je Zeile
+        (:203-215) trägt keine projectId-Bedingung. Lesend, daher unkritisch.
+      - "Entfernen": KEIN projectId-Riegel und im Handler ÜBERHAUPT KEIN Riegel
+        (handleRemove :182 beginnt direkt mit setRemoving(true)); Buttons nur
+        `disabled={removing}` (:278 Auslöser, :297 Bestätigung); Aufruf
+        `removeCustomDomainAction(domain.label)` :186. DESTRUKTIV: der Klick löscht
+        die Domain WIRKLICH (Vercel-DELETE + DB-Zeile) — und zwar eine Domain des
+        VORIGEN Projekts, während die Toolbar das neue, leere Projekt anzeigt.
+      - Es ist kein Aufruf mit null: beide Zeilen-Aktionen benutzen projectId
+        NIRGENDS, sie arbeiten auf dem echten Label der veralteten Zeile. Der
+        Server-Aufruf ist also wohlgeformt und wird ausgeführt.
+      - "Domain hinzufügen" ist als EINZIGE Aktion abgeriegelt: handleAdd :86
+        (`if (!projectId || …) return`), Button :124, Eingabefeld :117.
+      ENTWARNUNG, soweit sie trägt (ebenfalls gemessen): serverseitig ist beides
+      autorisiert. checkDomainStatusAction (domain-actions.ts:76-87) und
+      removeCustomDomainAction (:95-106) ziehen die userId AUSSCHLIESSLICH aus der
+      Session und delegieren an checkDomainStatus / removeCustomDomain, die je ein
+      explizites Ownership-Gate tragen (status.ts:105-121 — bei fremdem Owner
+      dieselbe Meldung wie not_found, also keine Existenz-Preisgabe;
+      remove.ts:76-78 — kein Vercel-Call vor bestandenem Gate). Ein fremdes oder
+      unbekanntes Label wird abgewiesen.
+      SCHWERE-EINORDNUNG (angehoben gegenüber der ersten Fassung dieses Eintrags):
+      KEINE Sicherheitslücke — die Domain gehört demselben Nutzer, und die
+      Zweistufigkeit (:277/:288) verhindert den Ein-Klick-Unfall. ABER eine
+      DESTRUKTIVE Aktion ist in einem Kontext erreichbar, den die Oberfläche
+      falsch beschriftet: Der Bestätigungstext nennt die Domain, nicht das Projekt,
+      und oben steht bereits der Name des neuen Projekts. Ein Nutzer, der nach dem
+      Anlegen eines neuen Projekts "aufräumt", löscht die Live-Adresse des alten.
+      FIX-EBENE — damit nicht der naheliegendste und schlechteste gewählt wird: Ein
+      projectId-Riegel JE AKTION ist symptomatisch; er lässt eine veraltete Liste mit
+      toten Knöpfen stehen und muss bei jeder künftigen Zeilen-Aktion erneut
+      angebracht werden. Die Render-Bedingung der Liste (:144) um projectId zu
+      erweitern ist besser. Am saubersten ist key={projectId} an der Komponente: dann
+      entsteht der veraltete Zustand gar nicht, und Eingabefeld (a), Add-Fehler (a)
+      und Liste (d) sind mit EINER Massnahme erledigt statt mit dreien — wer
+      symptomatisch fixt, lässt die beiden anderen Teilbefunde offen, ohne es zu
+      merken.
+      TERMINIERUNG (Owner-Entscheidung, getroffen 2026-07-31): Trigger bleibt die
+      Stufe-1-Planung von 10b, und er wird dort ENTSCHIEDEN, nicht nur erwähnt — 10b
+      darf nicht abgeschlossen werden, solange er offen ist. Unabhängig davon
+      BLOCKIEREND, bevor ein anderer Nutzer als der Owner die App benutzt.
+  KEIN REMOUNT beim Projektwechsel (gemessen): Der Aufruf
+  `<DomainManager projectId={projectId} />` (PublishView.tsx:326) trägt KEINEN key
+  und steht unter keiner eigenen Bedingung; `<PublishView …>`
+  (CodeImporter.tsx:1907) ebenso wenig. Das einzige Gate darüber ist isSettingsOpen
+  (CodeImporter.tsx:1876) — nichts davon ändert sich mit projectId.
+  -> WARUM MEHR ALS KOSMETIK: Die Fehlermeldung bewertet das VORIGE Projekt, steht
+  aber unter dem Namen des neuen ("Domain ist bereits verknüpft" bezieht sich dann
+  auf einen Konflikt, den es im aktuellen Projekt gar nicht gibt). Dieselbe
+  Fehlerklasse wie im Eintrag "GESTAFFELTER RÜCKBAU BEIM PROJEKTWECHSEL" oben:
+  synchron umgeschalteter Kontext, asynchron oder gar nicht nachgezogene Anzeige.
+  -> GEGENPROBE ActionPanel (hält ebenfalls eigenen Zustand, 10 useState): NICHT
+  betroffen, und zwar aus einem strukturellen Grund. ActionPanel rendert bei
+  selectedElement === null nur den Platzhalter (ActionPanel.tsx:59) und sonst
+  <ElementActions key={selectedElement.id} …> (:68-69); der Formular-Zustand liegt
+  unterhalb von ElementActions. Jeder Projekt-Ladepfad im Container setzt
+  setSelectedElementId(null) — resetToEmpty (CodeImporter.tsx:821), handleSwitch
+  (:1560), handleDelete (:1622), dazu switchVariant (:941) und
+  handleRemoveVariantB (:1017). Damit verschwindet ElementActions aus dem Baum und
+  sein Zustand stirbt. ActionPanels Zustand wird also über eine Mount-Grenze
+  zurückgesetzt, die der CONTAINER kontrolliert — DomainManagers Zustand nicht.
+  -> FIX-KANDIDAT, AUSDRÜCKLICH NICHT ENTSCHIEDEN: key={projectId} an der
+  Komponente. VOR einer Entscheidung zu MESSEN: Ein Remount stellt das
+  60-Sekunden-Poll-Intervall (:78) und die Status-Prüfung je Zeile (:203-215) neu
+  auf — ändert sich dadurch die ZAHL oder der ZEITPUNKT der Server-Aufrufe
+  gegenüber heute? Das ist offen und darf nicht angenommen werden.
+  -> ENTSCHEIDUNG GEHÖRT IN 10b: Läuft der Fix dort mit, ist er als
+  Verhaltensänderung zu DEKLARIEREN — I6 deckt ihn NICHT, denn er ändert einen
+  bestehenden Zustandsverlauf. Andernfalls bleibt der Punkt geparkt.
+  -> NICHT von Phase 10 verursacht: Commit ef106a6 (10a-2) enthält
+  DomainManager.tsx nicht — er trägt genau zwei Dateien (CodeImporter.tsx 23/249,
+  PublishView.tsx 329/0) —, und die Bedingung über dem Aufruf ist unverändert:
+  vorher stand er bei CodeImporter.tsx:2154 unter demselben einzigen Gate
+  isSettingsOpen. GEÄNDERT hat sich allein der ORT des Aufrufs (jetzt in
+  PublishView) und damit eine zusätzliche Komponentengrenze — keine Bedingung,
+  kein key, kein Mount-Zeitpunkt.

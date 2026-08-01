@@ -91,11 +91,11 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       öffnet diese Checkbox nicht wieder.
 - [x] Phase 9 — A/B-Testing: ABGESCHLOSSEN & live bewiesen (2026-07-27 bis
       2026-07-29). Volle Herleitung: docs/claude-history/phase-9-ab-testing.md.
-- [ ] Phase 10 — Workspace-Reorganisation: reine Informationsarchitektur, KEIN
-      neues Backend-Feature. Trennt die heute auf EINER Fläche liegenden
-      Einstellungsbereiche (Hosting/Domain, Tracking, A/B-Testing, Analytics)
-      in eigene Bereiche — Voraussetzung für Phase 11, BEVOR ein weiterer
-      Pixel-Typ dazukommt.
+- [x] Phase 10 — Workspace-Reorganisation: ABGESCHLOSSEN & live bewiesen
+      (2026-07-31 bis 2026-08-01). Die Einstellungsbereiche liegen jetzt als
+      Drawer mit zwei Reitern (Messen / Live) außerhalb des Dokumentflusses —
+      Voraussetzung für Phase 11. Volle Herleitung:
+      docs/claude-history/phase-10-workspace.md.
 - [ ] Phase 11 — Multi-Tracking (Server-Side Fan-Out): TikTok, Google,
       Pinterest, LinkedIn, Custom-Pixel als weitere ADDITIVE Fan-Out-Ziele
       neben Meta — source bleibt Beobachtungs-Ort, jedes Ziel bekommt seine
@@ -1302,6 +1302,16 @@ KEIN @-Import. Bei Arbeit an einem Thema die passende Datei gezielt lesen:
   (Client-Fehlerbehandlung) und Leere-Variante-Riegel (Publish verweigert
   leeren Inhalt). Der aktive Ist-Stand steht in der Root ("## Aktueller
   DB-/Analytics-Stand" bzw. "## Offene Punkte"), nicht hier.
+- docs/claude-history/phase-10-workspace.md — GESAMTE gebaute Phase 10
+  (Workspace-Reorganisation): Scheibe 10a-1 (Bereich MESSEN extrahiert), 10a-2
+  (Bereich VERÖFFENTLICHEN extrahiert), 10b-1 (Einstellungen als Drawer mit
+  Bereichs-Reitern), 10b-2 (Projektwechsel als Mount-Grenze für DomainManager),
+  10c-1 (Zustandssignal an der Reiterzeile + Trennlinie) und 10c-2 (der
+  Statuskanal des Drawers endet mit der Sitzung) — alle SECHS ABGESCHLOSSEN und
+  live bewiesen. Trägt zusätzlich die verworfenen Alternativen (eigene Routen,
+  Accordion, Modal) und die Invarianten der Phase. Die 17 dauerhaften Regeln
+  daraus stehen bereits oben unter "## Immer beachten" und werden dort NICHT
+  wiederholt; die Datei nennt im Kopf, welche das sind.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),

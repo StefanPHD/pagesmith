@@ -556,7 +556,12 @@ Ein Vorschlag, der eine davon bricht, ist kein Vorschlag.
 ## 9. PRÄFERENZEN & ÜBERTRAGUNG
 
 - **Zeit ist der schmerzhafteste Faktor.** Arbeit wird proportional gehalten,
-  nicht zeremoniell.
+  nicht zeremoniell — proportional zum RISIKO, nicht zum Zeitbudget. Das ist
+  ein Argument für WENIGER GLEICHZEITIG, nie für schneller pro Schritt.
+  Aufklärung, Messung und Nachweis sind nie die Stelle, an der gekürzt wird:
+  Eine übersprungene Messung kostet später mehr Zeit, als sie spart. Wo etwas
+  unklar ist, wird gemessen statt angenommen — auch wenn es eine Runde extra
+  kostet.
 - **Live-Tests führt Stefan selbst durch.** Jede Bau-Freigabe bekommt eine
   kurze, nummerierte Testanleitung mit **Regression zuerst** — sonst wird ein
   Fehlschlag als Nebenwirkung späterer Schritte missdeutet.

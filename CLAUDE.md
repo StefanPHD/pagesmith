@@ -96,6 +96,22 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Drawer mit zwei Reitern (Messen / Live) außerhalb des Dokumentflusses —
       Voraussetzung für Phase 11. Volle Herleitung:
       docs/claude-history/phase-10-workspace.md.
+- [ ] Phase 10.5 — Umzug middleware -> proxy (Next-Konvention): KLEIN, ABER
+      KEINE NEBENRUNDE. Next 16 hat die "middleware"-Dateikonvention
+      deprecated (Build-Warnung bei jedem Deployment); "proxy" ist der
+      Nachfolger, beide werden heute noch unterstützt. Umbenannt wird DATEI
+      UND FUNKTION (src/middleware.ts -> src/proxy.ts, `export function
+      middleware` -> `proxy`; ein reines Datei-Rename schlägt fehl, laut, nicht
+      still). Zwei Testdateien und die Doku-Stellen ziehen nach. EIN
+      ZWISCHENZUSTAND IST UNMÖGLICH: liegen beide Dateien gleichzeitig, bricht
+      der Build (E900) — es ist ein Alles-oder-nichts-Schnitt pro Deployment.
+      BETRIFFT DIE AUTH-GRENZE UND DIE HOST-WEICHE der Custom-Domain-
+      Auslieferung, deshalb LIVE-TEST AUF BEIDEN HOST-TYPEN (App-Host: Gate
+      greift, Login-Redirect; Kunden-Domain: Seite wird ausgeliefert, /api/e
+      kommt durch). VOR PHASE 11, weil die Datei dort nicht angefasst wird und
+      der Umbau mit jeder weiteren Phase teurer wird. Gemessene Belege,
+      Trefferliste und Rückweg: docs/claude-history/backlog-polish.md, Eintrag
+      "src/middleware.ts -> proxy.ts umbenennen".
 - [ ] Phase 11 — Multi-Tracking (Server-Side Fan-Out): TikTok, Google,
       Pinterest, LinkedIn, Custom-Pixel als weitere ADDITIVE Fan-Out-Ziele
       neben Meta — source bleibt Beobachtungs-Ort, jedes Ziel bekommt seine

@@ -118,7 +118,7 @@ vi.mock("@/app/projects/domain-actions", () => ({
 // listProjectDomains kommt aus DEMSELBEN gemockten Modul (oben, vi.mock) — der
 // Import liefert genau die dortige vi.fn()-Instanz und macht sie fuer die
 // Aufruf-Zaehlung in Scheibe 10b-1 (T2) greifbar. KEIN neuer Mock.
-import { listProjectDomains } from "@/app/projects/domain-actions";
+import { addCustomDomain, listProjectDomains } from "@/app/projects/domain-actions";
 import CodeImporter from "@/components/CodeImporter";
 import {
   ACTION_THROW_MESSAGE,
@@ -2391,5 +2391,124 @@ describe("Phase 10 Scheibe 10b-1: Drawer mit Reitern (Messen / Live)", () => {
     // Nach dem Wechsel exakt umgekehrt.
     expect(messenHuelle().className).toContain("hidden");
     expect(liveHuelle().className).not.toContain("hidden");
+  });
+});
+
+/*
+ * Phase 10 Scheibe 10b-2 — Mount-Disziplin DomainManager: key={projectId} an der
+ * Aufrufstelle (PublishView) macht den PROJEKTWECHSEL zur Mount-Grenze.
+ * DEKLARIERTE VERHALTENSAENDERUNG, I6 deckt sie nicht.
+ *
+ * WARUM NICHT UEBER DIE AUFRUFZAHL DES MOCKS GEPRUEFT — der naheliegende und hier
+ * HOHLE Weg: Lade- und Poll-Effect in DomainManager haengen ohnehin an [projectId].
+ * Bei p1 -> p2 laeuft der Lade-Effect also mit und ohne key genau einmal, bei
+ * p1 -> null in beiden Faellen gar nicht (frueher return bei !projectId). Ein Test
+ * auf listProjectDomains.mock.calls.length waere in BEIDEN Welten gruen und wuerde
+ * nichts messen. Diskriminierend ist allein der beobachtbare ZUSTAND: der Wert im
+ * Eingabefeld, der Text der Add-Fehlermeldung und die Anwesenheit der veralteten
+ * Domain-Zeile.
+ *
+ * BEIDE TESTS PRUEFEN DOM-PRAESENZ, NICHT SICHTBARKEIT (jsdom wertet die
+ * Versteck-Klasse nicht aus, s. Kopf des 10b-1-Blocks darueber). Der Drawer bleibt
+ * ueber den Projektwechsel offen: weder resetToEmpty noch applyZenForLoadedCode
+ * fasst isSettingsOpen oder drawerArea an — ohne diese Eigenschaft waere hier
+ * nichts pruefbar, weil DomainManager sonst ohnehin unmountete.
+ */
+describe("Phase 10 Scheibe 10b-2: der Projektwechsel ist eine Mount-Grenze fuer DomainManager", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>`;
+  const openDrawer = () =>
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+  const openProjectMenu = () =>
+    fireEvent.click(screen.getByRole("button", { name: /^Projekte/ }));
+
+  it("A: Wechsel auf '+ Neues Projekt' -> die Domain-Zeile des VORIGEN Projekts ist weg (nicht nur unsichtbar)", async () => {
+    // Der beobachtete Fall (Backlog, Teilbefund (d)/(d2)): ohne key laeuft der
+    // Lade-Effect wegen !projectId gar nicht, und die Liste rendert unbedingt
+    // weiter -> die Zeile des Vorprojekts bleibt stehen, samt destruktivem
+    // "Entfernen"-Knopf, unter dem Namen des neuen, leeren Projekts.
+    vi.mocked(listProjectDomains).mockResolvedValueOnce({
+      ok: true,
+      domains: [
+        {
+          label: "kunde-de-abc",
+          host: "kunde.de",
+          verificationStatus: "pending",
+          syncedAt: null,
+        },
+      ],
+    });
+
+    render(
+      <CodeImporter
+        initialProjectId="p1"
+        initialCode={HTML}
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+        ]}
+      />,
+    );
+    await screen.findByText("Titel");
+    openDrawer();
+
+    // VORBEDINGUNG: die Zeile ist wirklich da — sonst prueft der Test unten nichts.
+    expect(await screen.findByText("kunde.de")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Entfernen" })).toBeTruthy();
+
+    openProjectMenu();
+    fireEvent.click(screen.getByRole("button", { name: "+ Neues Projekt" }));
+
+    // Ohne key stuende hier weiterhin die Zeile des Vorprojekts.
+    expect(screen.queryByText("kunde.de")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Entfernen" })).toBeNull();
+  });
+
+  it("B: Wechsel auf ein anderes gespeichertes Projekt -> Eingabe UND Add-Fehlermeldung sind weg", async () => {
+    // Die literale Reproduktion aus dem Backlog: in Projekt A eine bereits
+    // verknuepfte Domain eintippen, die rote Meldung provozieren, Projekt wechseln.
+    vi.mocked(addCustomDomain).mockResolvedValueOnce({
+      ok: false,
+      error: "Domain ist bereits verknuepft.",
+      reason: "conflict_other_account",
+    });
+    loadProject.mockResolvedValueOnce({
+      id: "p2",
+      name: "P2",
+      html: HTML,
+      mappings: [],
+      settings: {},
+    });
+
+    render(
+      <CodeImporter
+        initialProjectId="p1"
+        initialCode={HTML}
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-02T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-01T00:00:00Z" },
+        ]}
+      />,
+    );
+    await screen.findByText("Titel");
+    openDrawer();
+
+    const feld = () =>
+      screen.getByPlaceholderText(/meine-domain/i) as HTMLInputElement;
+    fireEvent.change(feld(), { target: { value: "kunde.de" } });
+    fireEvent.click(screen.getByRole("button", { name: "Domain hinzufügen" }));
+
+    // VORBEDINGUNG: beide Zustaende sind wirklich gesetzt. Die Eingabe bleibt nach
+    // einem FEHLGESCHLAGENEN Hinzufuegen bewusst stehen (geleert wird sie nur im
+    // Erfolgsfall) — genau deshalb ueberlebte sie ohne key den Wechsel.
+    expect(await screen.findByText(/bereits verknuepft/)).toBeTruthy();
+    expect(feld().value).toBe("kunde.de");
+
+    openProjectMenu();
+    fireEvent.click(await screen.findByText("P2"));
+
+    await waitFor(() =>
+      expect(screen.queryByText(/bereits verknuepft/)).toBeNull(),
+    );
+    // Neu abgefragt: nach dem Remount ist es ein anderes DOM-Element.
+    expect(feld().value).toBe("");
   });
 });

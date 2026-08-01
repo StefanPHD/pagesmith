@@ -23,6 +23,22 @@ const AUTO_POLL_MS = 60_000; // Auto-Poll-Intervall; via Page Visibility API pau
 const COOLDOWN_MS = 10_000; // Client-Cooldown des manuellen "Status pruefen"-Buttons.
 
 export default function DomainManager({ projectId }: { projectId: string | null }) {
+  // AUFLAGE FUER JEDEN NEUEN ZUSTAND HIER (Phase 10 Scheibe 10b-2) — dieser Block ist
+  // die Schreibpfad-Grenze der Komponente, jeder Zustand entsteht in den naechsten
+  // Zeilen; deshalb steht die Auflage hier und nicht am Dateikopf.
+  // JEDER Zustand in dieser Komponente MUSS gegen projectId === null gesperrt sein.
+  // Heute ist das lueckenlos so — ANKER SIND DIE SYMBOLE, nicht Zeilennummern:
+  // loadList und der Lade-Effect kehren bei !projectId frueh zurueck (domains,
+  // loadError), der Poll-Effect ebenso (pollTick, und damit gibt es ohne Projekt gar
+  // kein Intervall), handleAdd ebenso (adding, addError), und das Eingabefeld ist
+  // ohne Projekt disabled (input).
+  // GRUND: Der Schutz beim PROJEKTWECHSEL ist ein key={projectId} an der Aufrufstelle
+  // (PublishView.tsx) — er greift NICHT zwischen zwei ungespeicherten Projekten
+  // (null -> null ist kein Key-Wechsel, React koerziert null zum konstanten Key
+  // "null"). Dass dort trotzdem nichts stehenbleibt, haengt AUSSCHLIESSLICH an den
+  // Sperren oben. Wer hier einen ungesperrten Zustand ergaenzt, holt einen Zustand
+  // zurueck, der den Projektwechsel ueberlebt — und zwar still, ohne Typfehler und
+  // ohne roten Test.
   const [domains, setDomains] = useState<CustomDomainListItem[]>([]);
   const [input, setInput] = useState("");
   const [adding, setAdding] = useState(false);

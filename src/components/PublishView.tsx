@@ -322,8 +322,36 @@ export default function PublishView({
 
       {/* Eigene Domain verbinden (Phase 7 Scheibe 7c-2c): Add-Domain-Formular +
           dynamische DNS-Anweisungen + Status-Refresh. Eigene Komponente statt
-          CodeImporter weiter aufzublaehen; projectId gated wie das Publish/CAPI-UI. */}
-      <DomainManager projectId={projectId} />
+          CodeImporter weiter aufzublaehen; projectId gated wie das Publish/CAPI-UI.
+
+          key={projectId} (Phase 10 Scheibe 10b-2) — DEKLARIERTE VERHALTENSAENDERUNG,
+          I6 deckt sie NICHT: sie aendert einen Zustands-LEBENSZYKLUS.
+          DomainManager ist die einzige Ansicht dieses Bereichs mit EIGENEM Zustand
+          (Container 6 useState, je Zeile 7, je kopierbarem Wert 1). Ohne den Key
+          ueberlebten die Eingabe (input) und der Add-Fehler (addError) den
+          Projektwechsel — und beim Wechsel auf ein noch UNGESPEICHERTES Projekt die
+          komplette Domain-LISTE des Vorprojekts, weil der Lade-Effect dort bei
+          !projectId frueh zurueckkehrt, waehrend die Liste unbedingt weiterrendert.
+          Diese veraltete Zeile war voll bedienbar, inklusive des destruktiven
+          "Entfernen"-Knopfs, unter dem Namen des neuen Projekts.
+          Der Key macht den Projektwechsel zur Mount-Grenze. ZAHL und ZEITPUNKT der
+          Server-Aufrufe aendern sich dadurch NICHT: Lade- und Poll-Effect hingen
+          ohnehin an [projectId], der Remount ersetzt einen deps-Neulauf durch einen
+          Mount-Lauf im selben Commit.
+          Das Gate isSettingsOpen bleibt die Flaechengrenze (Entscheidung 2); der Key
+          fuegt eine ZWEITE Mount-Grenze hinzu, er ersetzt die erste nicht.
+          ACHSE: projectId, NICHT drawerArea — der Reiterwechsel bleibt ein reines
+          Verstecken und loest weiterhin keinen Remount und keinen Server-Aufruf aus
+          (I1: "Der Wechsel innerhalb der Flaeche versteckt, er haengt nicht aus.").
+          VERWORFEN — ein projectId-Riegel JE AKTION: liesse eine tote Liste mit toten
+          Knoepfen stehen und muesste bei jeder kuenftigen Zeilen-Aktion erneut
+          angebracht werden. VERWORFEN — die Render-Bedingung der Liste erweitern:
+          loest Eingabe und Fehlermeldung nicht.
+          GRENZE, bewusst offen (Entscheidung zu 10b-2): null -> null, also zwei neue
+          Projekte nacheinander, ist KEIN Key-Wechsel und damit kein Remount. Heute
+          folgenlos, weil im Null-Zustand JEDER Schreibpfad gesperrt ist — die Auflage
+          dazu steht an der Schreibpfad-Grenze in DomainManager.tsx. */}
+      <DomainManager key={projectId} projectId={projectId} />
     </>
   );
 }

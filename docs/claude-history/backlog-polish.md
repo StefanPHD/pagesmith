@@ -58,6 +58,84 @@ miterledigen, sondern gebündelt abarbeiten.
 - src/middleware.ts -> proxy.ts umbenennen: Next 16.2.9 zeigt eine
   Deprecation-Warnung für die "middleware"-Konvention (proxy ist der Nachfolger).
   Funktioniert weiter, daher unkritisch.
+  STATUS: OFFEN, MIT ECHTEM TRIGGER — EINGEPLANT ALS **PHASE 10.5** (Roadmap-Zeile
+  in der Root-CLAUDE.md, zwischen Phase 10 und Phase 11). Bis 2026-08-01 hatte
+  dieser Eintrag KEINEN Trigger ("unkritisch"); er wird vor Phase 11 gebaut, weil
+  die Datei dort nicht angefasst wird und der Umbau mit jeder weiteren Phase
+  teurer wird. Die folgende Aufklärung ist am 2026-08-01 am installierten Paket
+  erhoben — DAMIT DIE NÄCHSTE SESSION NICHT NEU MESSEN MUSS.
+  VERSION, drei übereinstimmende Quellen: package.json "next": "16.2.12",
+  package-lock (node_modules/next) 16.2.12, node_modules/next/package.json
+  16.2.12. Die Notiz oben nennt 16.2.9 — das war der Stand bei ihrer Entstehung
+  und bleibt als Zeitdokument stehen.
+  BEIDE KONVENTIONEN WERDEN UNTERSTÜTZT — vier unabhängige Fundstellen im
+  installierten Paket:
+  (1) dist/lib/constants.js definiert BEIDES: MIDDLEWARE_FILENAME = 'middleware'
+      und PROXY_FILENAME = 'proxy'.
+  (2) dist/build/index.js erzeugt exakt die Build-Meldung, die Vercel zeigt:
+      warnOnce("The \"middleware\" file convention is deprecated. Please use
+      \"proxy\" instead. … /docs/messages/middleware-to-proxy").
+  (3) Die Doku liegt IM PAKET: dist/docs/01-app/03-api-reference/
+      03-file-conventions/proxy.md — und es gibt dort KEINE middleware.md mehr.
+  (4) Der Build-Output dieses Projekts beschriftet die Funktion bereits als
+      "ƒ Proxy (Middleware)".
+  FUNDORT: gleiche Ebene wie heute. dist/build/index.js akzeptiert eine solche
+  Datei nur, wenn isAtConventionLevel — normalizedFileDir === '/' ODER '/src'.
+  Ziel ist also src/proxy.ts, nicht das Projekt-Root.
+  DIE FUNKTION MUSS proxy HEISSEN (oder Default-Export sein). Belegt im
+  Entrypoint-Template dist/build/templates/middleware.js:
+      const isProxy = page === '/proxy' || page === '/src/proxy';
+      const handlerUserland = (isProxy ? mod.proxy : mod.middleware) || mod.default;
+  Fehlt der passende Export, wirft der ProxyMissingExportError ("must export a
+  function named `proxy` or a default function"). EIN REINES DATEI-RENAME SCHLÄGT
+  ALSO FEHL — aber LAUT, nicht still. OFFIZIELLER CODEMOD (benennt Datei UND
+  Funktion): npx @next/codemod@canary middleware-to-proxy .
+  BEIDE DATEIEN GLEICHZEITIG = BUILD-FEHLER, KEIN ÜBERGANGSZUSTAND. dist/build/
+  index.js: if (middlewareFilePath) { if (proxyFilePath) { throw new Error("Both
+  middleware file … and proxy file … are detected. Please use … only.") } } mit
+  __NEXT_ERROR_CODE "E900". Es ist ein throw, keine Warnung — ein Nebeneinander
+  zum Vergleichen gibt es nicht.
+  RUNTIME — DIE FRAGE IST BEANTWORTET UND WAR DIE EINZIGE ECHTE UNBEKANNTE:
+  proxy.md sagt "Proxy defaults to using the Node.js runtime. The runtime config
+  option is not available in Proxy files"; die Versionshistorie dort nennt zu
+  v16.0.0 "Proxy defaults to the Node.js runtime". OWNER-MESSUNG (2026-08-01, im
+  Vercel-Dashboard): ALLE Functions des Projekts laufen BEREITS unter Node.js
+  24.x. Die Umstellung VERSCHIEBT die Runtime damit NICHT, und der empirische
+  Beweis für x-forwarded-host (s. CLAUDE.md, "HOST-QUELLE FÜR APP-vs-SERVING-
+  BRANCHING") bleibt in DERSELBEN Umgebung gültig. BELEGART: Owner-Messung im
+  Dashboard, NICHT am Repo prüfbar — das Build-Manifest führt kein runtime-Feld,
+  und der Kommentar "Edge-Middleware" in host.ts ist eine Formulierung, kein
+  Messwert.
+  WAS NACHZIEHT — vollständige Trefferliste, neu erhoben:
+  - CODE: src/middleware.ts (Datei + exportierte Funktion middleware).
+  - NICHT BETROFFEN, leicht zu verwechseln: src/lib/supabase/middleware.ts
+    (updateSession) ist ein normales Hilfsmodul, KEINE Konventionsdatei — es
+    behält seinen Namen. Wer es "mit umbenennt", ändert zwei Importe ohne Not.
+  - TESTS (zwei Dateien): src/middleware.test.ts importiert { middleware } from
+    "./middleware" und mockt "@/lib/supabase/middleware" (13 Tests: Host-
+    Verzweigung + Ingest-Passthrough inkl. Leak-Gegenprobe);
+    src/lib/supabase/middleware.test.ts importiert { updateSession } from
+    "./middleware" (8 Tests aufs Auth-Gate). Die erste Datei zieht mit Namen UND
+    Import nach; die zweite bleibt unberührt (sie testet das Hilfsmodul).
+  - DOKU, Stellen mit dem DATEINAMEN (Zeitdokumente — beim Abarbeiten
+    entscheiden, welche stehen bleiben): arbeitsweise.md (Scope-Beispiel),
+    phase-2-3-foundation.md (2x), phase-6-capi.md (2x, davon eine für das
+    Hilfsmodul), phase-7-hosting.md ("src/middleware.ts (Entry, KEIN
+    middleware->proxy-Rename)" — damals bewusst NICHT mitgemacht), sowie dieser
+    Eintrag. In der Root-CLAUDE.md nennt die Regel HISTORIE-CHECK VOR EINGRIFF IN
+    KERN-DATEIEN die "Middleware/Proxy-Schicht" bereits mit beiden Namen und
+    braucht nichts.
+  - WERKZEUG: .claude/settings.local.json trägt zwei Allowlist-Einträge mit dem
+    Dateinamen.
+  RÜCKWEG: Instant Rollback im Vercel-Dashboard auf das vorherige READY-
+  Deployment — Sekunden, ohne Build. Im Repo ein git revert der beiden Commits.
+  Wegen E900 gibt es KEINEN schrittweisen Wechsel; der Rückweg ist der ganze
+  Schnitt zurück.
+  NACHWEIS-AUFLAGE (aus der Aufklärung): Die Tests rufen die Funktion DIREKT auf
+  und beweisen deshalb NICHT, dass Next die Datei unter der neuen Konvention
+  überhaupt lädt. Das kann nur ein Deployment zeigen — Live-Test auf BEIDEN
+  Host-Typen (App-Host: Auth-Gate greift; Kunden-Domain: Seite wird ausgeliefert
+  und /api/e kommt durch).
 - src/app/layout.tsx: veraltete "Create Next App"-Metadata (title/description)
   durch echte Pagesmith-Metadata ersetzen.
 - VOR öffentlichem Launch: E-Mail-Bestätigung in Supabase wieder einschalten

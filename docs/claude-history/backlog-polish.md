@@ -530,3 +530,56 @@ miterledigen, sondern gebündelt abarbeiten.
          dem State-Block von DomainManager.
      (5) Die Label-Vergabe bleibt unprotokolliert (eigener Punkt in CLAUDE.md,
          "## Offene Punkte") — von dieser Scheibe nicht berührt.
+- ZWEI SIGNAL-KANDIDATEN AUS DomainManager GELANGEN NICHT AN DIE REITERZEILE
+  STATUS: OFFEN — BENANNTE GRENZE VON SCHEIBE 10c-1 (2026-08-01, Commit 065573d),
+  ausdrücklich KEIN Versäumnis. 10c-1 hat GEMESSEN, dass beide Kandidaten
+  signalwürdig WÄREN, und sie NICHT gebaut, weil kein Weg nach oben die
+  Phase-10-Entscheidung 3 wahrt (Bereiche sind reine Kinder; DomainManager ist die
+  geerbte Ausnahme). Der Eintrag trägt die Vorarbeit, damit sie nicht verlorengeht.
+  DIE BEIDEN KANDIDATEN (Fundstellen am Code erhoben 2026-08-01; ANKER SIND DIE
+  SYMBOLE, die Zeilen altern):
+  (a) LADEFEHLER DER DOMAIN-LISTE — loadError (DomainManager.tsx:48), gesetzt in
+      loadList (:63) und im Lade-Effect (:82), gerendert :154. Entsteht OHNE Zutun:
+      der Effect läuft beim Mount und bei jedem projectId-Wechsel (deps :88), völlig
+      unabhängig vom aktiven Reiter. Konkreter Ablauf: Drawer offen im Reiter MESSEN,
+      Projekt wechseln -> DomainManager remountet (10b-2) -> Liste scheitert -> der
+      rote Text steht im VERSTECKTEN Live-Bereich.
+  (b) "AKTION NÖTIG" AN EINER DOMAIN-ZEILE — statusBadge (:489), Treffer bei
+      fineState wrong_record/proxy_detected bzw. grob misconfigured (:497), gerendert
+      über const badge (:266). Speist sich aus dem Zeilen-Status (DomainRow, status
+      :189), den der Effect :219-231 aus checkDomainStatusAction (:223) holt, deps
+      [domain.label, pollTick] (:231). WIEDERKEHREND: der 60-Sekunden-Poll
+      (AUTO_POLL_MS :22, setInterval :94) läuft, solange der Drawer offen ist — die
+      document.hidden-Pause greift NICHT, wenn der Nutzer im selben Tab nur im
+      anderen Bereich arbeitet. Ein Domain-Status kann also kippen, während MESSEN
+      aktiv ist. Dies ist der EINZIGE wiederkehrend im Hintergrund entstehende
+      Zustand des ganzen Drawers.
+      ER ERFÜLLT DAS KRITERIUM WÖRTLICH ("nur wenn der Nutzer JETZT handeln kann"):
+      falscher DNS-Eintrag oder aktiver Proxy sind behebbar. Er ist damit der
+      STÄRKSTE der drei Kandidaten und trotzdem der unerreichbarste.
+  WARUM NICHT GEBAUT — die geprüften Wege mit ihren Kosten:
+     (W1) RÜCKRUF-PROP nach oben (für (b) zwei Hops: DomainRow -> DomainManager ->
+          PublishView -> Container). Erzeugt eine RÜCKWÄRTS-ABHÄNGIGKEIT (das Kind
+          schiebt in den Elternteil); für (b) zusätzlich neuer Zustand in
+          DomainManager, weil die Meldungen je Zeile gesammelt werden müssten.
+          Nebenwirkung: PublishView verlöre sein 10a-2-Merkmal "kein einziger neu
+          geschriebener Rückruf".
+     (W2) LISTENZUSTAND HOCHZIEHEN (domains + loadError + Lade-Effect in den
+          Container). Löst NUR (a), nicht (b). UND ER HOLT DEN 10b-2-BUG ZURÜCK: die
+          Mount-Grenze hinge dann am Container, wo key={projectId} NICHT greift —
+          beim Wechsel auf ein ungespeichertes Projekt bliebe die alte Liste stehen,
+          exakt der gerade behobene Zustand, sofern nicht zusätzlich explizit geleert
+          wird.
+     (W3) STATUS JE ZEILE IN DomainManager SAMMELN (Map label -> fineState). Für (b)
+          der einzige "saubere" Weg — und fügt genau den Zustand hinzu, den
+          Entscheidung 3 vermeiden will.
+     (W4) CONTEXT/STORE: dieselbe Klasse wie W1, nur unsichtbarer; zusätzlich ein
+          neues Idiom, das das Projekt heute nicht kennt.
+     (W5) CONTAINER RUFT DIE ACTIONS SELBST: zweiter Rechenweg UND doppelte
+          Vercel-Calls je Poll gegen einen externen Anbieter. Ausgeschlossen.
+  TRIGGER: sobald entschieden wird, ob DomainManager seinen Zustand behalten soll.
+  KEIN eigener Termin — die Frage ist eine Architektur-Entscheidung, kein Bug.
+  WAS OFFEN BLEIBT, falls jemand nur einen Teil angeht: (a) allein ist über W2
+  erreichbar und wäre trotzdem der schwächere Kandidat; (b) ist der stärkere und hat
+  KEINEN Weg, der die Entscheidung wahrt. Wer (a) baut und (b) liegen lässt, hat die
+  einzige wirklich im Hintergrund entstehende Meldung weiterhin unsichtbar.

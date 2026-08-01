@@ -2511,4 +2511,36 @@ describe("Phase 10 Scheibe 10b-2: der Projektwechsel ist eine Mount-Grenze fuer 
     // Neu abgefragt: nach dem Remount ist es ein anderes DOM-Element.
     expect(feld().value).toBe("");
   });
+
+  it("C: erstes Speichern eines neuen Projekts (null -> echte ID) laedt die Domain-Liste GENAU EINMAL, mit der NEUEN id", async () => {
+    // Deckt den Uebergang null -> echte ID ab, den KEIN anderer Test prueft: das ist
+    // die Stelle, an der key={projectId} erstmals vom konstanten "null" wechselt
+    // (React koerziert null zum String-Key "null").
+    // ER PRUEFT DAS ARGUMENT, NICHT NUR DIE ZAHL: ein DomainManager, der beim
+    // Uebergang mit dem ALTEN Wert (null) oder gar nicht laedt, faellt hier auf,
+    // waehrend eine reine Aufrufzaehlung ihn durchliesse.
+    // WAS ER NICHT PRUEFT — gemessen, nicht angenommen (Mutation N1, 2026-08-01):
+    // Wird key={projectId} entfernt, bleibt DIESER Test GRUEN. Er sichert also NICHT
+    // die Mount-Grenze, sondern die DEPS-KETTE: dass der Uebergang ueberhaupt einen
+    // Load mit der NEUEN id ausloest. Die Mount-Grenze sichern allein A und B (beide
+    // werden von N1 rot). Wer diesen Test als "Key-Waechter" liest, ueberschaetzt ihn.
+    // Rot wird er, wenn der fruehe Return im Lade-Effect faellt (Mutation N2: dann
+    // laedt schon der Null-Zustand, und die Vorbedingung unten kippt).
+    render(<CodeImporter initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openDrawer();
+
+    // VORBEDINGUNG: ohne Projekt wird NICHTS geladen (frueher Return im
+    // Lade-Effect). Ohne sie koennte die Zahl unten von einem frueheren Lauf stammen.
+    expect(vi.mocked(listProjectDomains).mock.calls.length).toBe(0);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+
+    await waitFor(() =>
+      expect(vi.mocked(listProjectDomains).mock.calls.length).toBe(1),
+    );
+    // Die id aus dem saveProject-Bestandsmock — NICHT null, NICHT doppelt.
+    expect(vi.mocked(listProjectDomains)).toHaveBeenCalledWith("test-id");
+  });
 });

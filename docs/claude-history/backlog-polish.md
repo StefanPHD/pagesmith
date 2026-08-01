@@ -1,8 +1,51 @@
+## Merksätze und Nicht-Vorhaben (zählen NICHT als offene Punkte)
+Angelegt 2026-08-01. Drei Einträge dieser Datei sind KEINE Aufgaben und können
+deshalb nie "erledigt" werden — eine Verhaltensregel, eine ausdrücklich VERWORFENE
+Idee und eine dokumentierte, akzeptierte Verhaltensänderung. In der Polish-Liste
+zählten sie stillschweigend als offene Punkte mit und liessen sie länger aussehen,
+als sie ist. Ihr Inhalt ist wertvoll und bleibt WÖRTLICH unverändert; sie stehen nur
+an anderer Stelle.
+WARUM DIESER ABSCHNITT OBEN STEHT und nicht am Dateiende: Neue Backlog-Einträge
+werden ans DATEIENDE angehängt. Läge dieser Abschnitt dort, landete jeder künftige
+Eintrag stillschweigend INNERHALB der Nicht-Vorhaben. Oben kann das nicht passieren.
+
+- DEBUGGING-MERKSATZ (aus dem "Autosave"-Fehlalarm dieser Phase): Bei Widerspruch
+  zwischen Code-Analyse und Live-Verhalten ZUERST den Dev-Server neu starten
+  (stale Cache/Build) und im Network-Tab den echten DB-Write prüfen, statt
+  wiederholt denselben Code zu lesen. Die Code-Analyse war korrekt — der
+  vermeintliche Autosave ließ sich im Code nicht finden, weil es keinen gab.
+- Editor Element->Code-Zeile-Scroll: bewusst verworfen — bräuchte echten
+  Code-Editor (CodeMirror/Monaco), Nutzen für Marketer fraglich (arbeiten in der
+  Preview, nicht im Rohcode).
+- PUBLISH-BUTTON HÄNGT AN debouncedCode (Leere-Variante-Riegel, deklarierte
+  Verhaltensänderung 2026-07-28): Folge der geteilten Paar-Ableitung
+  (publishPairs) — Handler und Button lesen jetzt zwingend dieselbe Quelle,
+  und die ist debouncedCode. Das startet bewusst als "" (Hydration-Parität,
+  server- und client-identischer erster Paint), der Button ist damit nach
+  JEDEM Mount für die Debounce-Spanne gesperrt, nicht nur während des Tippens.
+  -> Live NICHT sichtbar (GEMESSEN 2026-07-28: bei gefülltem Projekt erscheint
+  beim Öffnen des Panels kein Leer-Hinweis) — der Nutzer muss erst das
+  Einstellungs-Panel öffnen, das dauert länger als der Debounce. Ein
+  BESTEHENDER Test (9b-1p "TEST 7a") brauchte deshalb ein await findByText vor
+  dem Klick; die Assertion selbst blieb unverändert. Beide Richtungen sind
+  sicher, weil die Autorität der Server-Riegel ist und nicht der Button.
+
 ## Polish-Liste (gesammelt für einen späteren, separaten Aufräum-Durchgang)
 Bewusst aufgeschobene Aufräum-Arbeiten — NICHT im laufenden Feature-Schritt
 miterledigen, sondern gebündelt abarbeiten.
 - FOLGE-SCHRITT: Weg-C Scheibe 2 = Neu-Verknüpfen (Re-Link) eines verwaisten
-  Mappings auf ein aktuelles Element. AUSSCHLIESSLICH vom Menschen ausgelöst, NIE
+  Mappings auf ein aktuelles Element.
+  ERLEDIGT — Kennzeichnung am 2026-08-01 nachgetragen (der Eintrag stand seit dem
+  Bau als offen in der Liste). BELEG, am Code neu erhoben: der Handler
+  handleRelinkOrphan existiert in CodeImporter.tsx und wird aus dem Orphan-Dropdown
+  gerufen (aria-label "Verknüpfen mit Element"); die Anzeige speist sich aus
+  findOrphans. Vom MENSCHEN ausgelöst wie gefordert — das Dropdown ist der einzige
+  Eingang, es wird nichts automatisch geraten. Testabdeckung vorhanden, u.a.
+  "Re-Link ist KATEGORIE-eingeschraenkt", "Re-Link eines Text-Orphans postet
+  PS_SET_TEXT ans neue Zielelement" und "Re-Link redirect-Orphan auf
+  Element-mit-track -> KEINE Fehlalarm-Warnung".
+  Der ursprüngliche Eintragstext bleibt unverändert stehen:
+  AUSSCHLIESSLICH vom Menschen ausgelöst, NIE
   automatisch geraten (gleiche Fehlerklasse wie früher die positionsbasierten IDs).
   Baut auf der fertigen Scheibe-1-Anzeige (findOrphans + Sektion) auf.
 - INVARIANTE (Team-Gedächtnis): "Übernehmen" (handleAssignMapping) wirkt NUR in
@@ -12,11 +55,6 @@ miterledigen, sondern gebündelt abarbeiten.
   saveProject-Action; Assign-Pfad -> 0 Aufrufe, Pflicht-Gegenprobe Speichern-Pfad
   -> 1 Aufruf). Dazu kam die Komponenten-Test-Basis (@testing-library/react als
   devDep, vitest-Alias + .test.tsx + jsx via tsconfig).
-- DEBUGGING-MERKSATZ (aus dem "Autosave"-Fehlalarm dieser Phase): Bei Widerspruch
-  zwischen Code-Analyse und Live-Verhalten ZUERST den Dev-Server neu starten
-  (stale Cache/Build) und im Network-Tab den echten DB-Write prüfen, statt
-  wiederholt denselben Code zu lesen. Die Code-Analyse war korrekt — der
-  vermeintliche Autosave ließ sich im Code nicht finden, weil es keinen gab.
 - src/middleware.ts -> proxy.ts umbenennen: Next 16.2.9 zeigt eine
   Deprecation-Warnung für die "middleware"-Konvention (proxy ist der Nachfolger).
   Funktioniert weiter, daher unkritisch.
@@ -27,23 +65,48 @@ miterledigen, sondern gebündelt abarbeiten.
   -> jetzt im SECURITY MANIFEST (Tier 0) als Launch-Blocker geführt.
 - VOR öffentlichem Launch: Leaked Password Protection aktivieren — ist Pro-gated
   (Free Tier kann nicht). Beim Wechsel auf Supabase Pro (Phase 6) einschalten.
+  ERLEDIGT — Kennzeichnung am 2026-08-01 nachgetragen. BELEG: Die führende Fassung
+  ist das Security Manifest, dort Tier 1, Eintrag "LEAKED-PASSWORD-PROTECTION":
+  "ERLEDIGT (2026-07-29, mit dem Pro-Wechsel aktiviert — Supabase-HaveIBeenPwned-
+  Abgleich läuft). War Pro-gated; der Trigger 'Pro-Tier' ist eingetreten und wurde
+  im selben Zug abgearbeitet." Nicht am Code messbar (Dashboard-Einstellung).
   -> jetzt im SECURITY MANIFEST (Tier 1) als Launch-Blocker geführt.
 - VOR öffentlichem Launch: Next.js loggt Server-Action-Argumente im Klartext (im
   Scheibe-2a-Debug tauchte der CAPI-Token-Wert im Dev-Terminal auf). Prüfen, dass
   echte CAPI-Tokens nicht in Server-Logs landen (Prod-Logging der Action-Argumente
   unterdrücken).
+  TEILWEISE ERLEDIGT — Kennzeichnung am 2026-08-01 nachgetragen, und die Teilung
+  ist wichtig:
+  (a) DIE VERLANGTE PRÜFUNG IST GELAUFEN. BELEG: Security Manifest, Tier 2,
+      Eintrag "LOGGING-LEAK (herabgestuft von Tier 0, gemessen 2026-07-24)" — in
+      PRODUKTION wird das setCapiToken-Server-Action-Argument NICHT geloggt,
+      belegt per Differenztest mit Positivkontrolle; Log-Drains sind Pro-gated und
+      keine konfiguriert. KEINE Token-Rotation nötig. Die 2a-Beobachtung war das
+      Dev-Terminal.
+  (b) OFFEN BLEIBT der STRUKTURELLE FIX als Defense-in-Depth (den Token nicht als
+      Server-Action-Argument führen) sowie die dort benannten Restrisiken
+      (Fehlerpfad ungetestet, lokales Dev-Terminal). Das Manifest führt ihn als
+      laufende Hygiene, nicht mehr als Launch-Gate — samt Wiedervorlage bei JEDER
+      neuen Server Action mit Secret-Parameter.
   -> jetzt im SECURITY MANIFEST (Tier 0) als Launch-Blocker geführt.
 - project_tokens-Verschlüsselung at rest (aktuell Plaintext; tragende Kontrolle ist
   Isolation + RLS-SELECT-Sperre). pgcrypto / KMS-Envelope als spätere Härtung.
   -> jetzt im SECURITY MANIFEST (Tier 1) als Launch-Blocker geführt.
 - Phase-6-Abschlusstest nachholen: Browser+Server-Dedup im Meta-Test-Events-Tab, sobald
   eine Seite auf verknüpfter Domain (Phase 7) live ist.
+  ERLEDIGT 2026-08-01 — der Test ist gefahren, das Dedup ist bewiesen.
+  BELEGART: BESTÄTIGUNG DURCH DEN OWNER, NICHT am Code messbar. Der Nachweis liegt
+  im Meta Events Manager (geteilte eventID, Browser- und Server-Ereignis als EIN
+  dedupliziertes Ereignis) — ein externes Werkzeug, das kein Repo-Artefakt
+  hinterlässt. Wer diesen Punkt später anzweifelt, findet im Code KEINEN Beleg und
+  muss ihn erneut live fahren; das ist die Natur dieses Tests, kein Versäumnis.
 - Initial-Load-Preview erscheint ~300ms verzögert (bewusster Trade-off des
   Hydration-Fixes; bei Bedarf Mount-Effect-Variante, die debouncedCode sofort
   setzt).
-- Editor Element->Code-Zeile-Scroll: bewusst verworfen — bräuchte echten
-  Code-Editor (CodeMirror/Monaco), Nutzen für Marketer fraglich (arbeiten in der
-  Preview, nicht im Rohcode).
+  EINORDNUNG 2026-08-01: BEOBACHTETER TRADE-OFF, KEIN HANDLUNGSAUFTRAG. Wird
+  angefasst, wenn jemand den Bereich ohnehin öffnet oder es im Betrieb auffällt.
+  BEWUSST OHNE KRITERIUM: Ein ausgedachter Schwellwert ("ab 500 ms") wäre nicht
+  besser als die ehrliche Empfindung, nur schwerer zu widerrufen.
 - ELEMENTLISTE: VERSCHACHTELTE ELEMENTE ERSCHEINEN ALS DOPPEL-EINTRAG.
   BEFUND (real beobachtet): Trägt importiertes Kunden-HTML ein <a href="...">, das
   ein <button> umschliesst, zeigt die Elementliste ZWEI Einträge mit IDENTISCHEM
@@ -69,6 +132,17 @@ miterledigen, sondern gebündelt abarbeiten.
   benennen.
   EINORDNUNG: Polish, NICHT "Offene Punkte" — es geht nichts still kaputt, es ist
   eine Verständlichkeits-Frage. Kein Trigger, keine Dringlichkeit.
+  ERSTER SCHRITT ALS AUFGABE (ergänzt 2026-08-01, weil die Fix-Richtung ein
+  ERGEBNIS beschreibt und kein Kriterium — "Verschachtelung sichtbar machen" ist
+  nie nachweisbar erreicht): Zuerst zu ENTSCHEIDEN, nicht zu bauen — trägt die
+  Elementliste künftig eine HIERARCHIE (Kind eingerückt unter dem Elternteil) oder
+  bleibt sie FLACH mit einem Zusatz am Kind ("innerhalb von <a>")? Das ist die
+  Weiche: Die erste Variante ändert die Datenform der Liste (sie braucht die
+  Eltern-Kind-Beziehung, die die Detection heute nicht mitliefert), die zweite ist
+  eine reine Anzeige-Ergänzung an einem bestehenden Eintrag. ZU MESSEN VOR DER
+  ENTSCHEIDUNG: Liefert die Detection die Verschachtelung überhaupt schon mit, oder
+  müsste sie dafür erweitert werden? Erst danach ist überhaupt klar, ob dies eine
+  Nebenrunde oder eine eigene Scheibe ist.
 - RLS-KAPSELUNG: BLANKES auth.uid() IN BESTANDS-POLICIES (Performance, KEIN Leak).
   Gemessen 2026-07-24: nur events_select_own kapselt (select auth.uid()); die
   projects-/domains-/project_tokens-Policies tragen blankes auth.uid() und werten es
@@ -115,6 +189,10 @@ miterledigen, sondern gebündelt abarbeiten.
   -> Fix-Richtung, falls es je stört: den Umschalt-Pfad debouncedCode SYNCHRON
   nachziehen lassen, statt einen 300-ms-Guard zu bauen (ein Guard wäre Überbau
   und ein zweiter Mechanismus neben dem bestehenden Flash-Guard).
+  EINORDNUNG 2026-08-01: BEOBACHTETER TRADE-OFF, KEIN HANDLUNGSAUFTRAG. Wird
+  angefasst, wenn jemand den Bereich ohnehin öffnet oder es im Betrieb auffällt.
+  Der Eintrag sagt es selbst: kein Fehler, kein Datenweg betroffen, rein kosmetisch
+  und im Memo-Kommentar als benanntes transientes Fenster dokumentiert.
 
 - "LEER" UND "NICHT LADBAR" SIND IM UI NICHT UNTERSCHEIDBAR (Statistik- und
   Verlust-Kachel): getEventCounts liefert bei jedem Fehler [] und getAdblockLoss
@@ -125,6 +203,18 @@ miterledigen, sondern gebündelt abarbeiten.
   -> Fix bräuchte einen DRITTEN UI-Zustand ("nicht ladbar") und damit eine
   Rückgabeform, die ihn transportiert -> gehört zu 9c, nicht in eine eigene
   Runde.
+  NACHTRAG 2026-08-01 — DER 9c-VERWEIS IST EINGELÖST, ABER NUR FÜR EINE ANDERE
+  SEKTION; DIESER EINTRAG BLEIBT OFFEN. 9c hat den dritten Zustand für die
+  VARIANTEN-Auswertung gebaut: variantCountsFailed in MeasureView unterscheidet
+  {ok:false} ("Die Auswertung konnte nicht geladen werden") strukturell von
+  {ok:true, rows:[]} ("Noch keine Daten in diesem Testlauf"), gespeist aus dem
+  safeAction-Ersatzwert des zugehörigen Lade-Effekts. DIE ZWEI KACHELN DIESES
+  EINTRAGS SIND UNVERÄNDERT: getEventCounts und getAdblockLoss fallen weiterhin per
+  .catch() auf [] bzw. null, und die Anzeige sagt weiterhin "Noch keine Events."
+  bzw. "Warte auf erste Bestätigung." — am Code neu erhoben 2026-08-01. Der Verweis
+  "gehört zu 9c" ist damit ÜBERHOLT: er zeigt auf eine abgeschlossene Phase, die
+  diesen Punkt nicht mitgenommen hat. Er bleibt als Zeitdokument stehen; die
+  Zuordnung ist offen und gehört neu getroffen, wenn der Punkt angefasst wird.
 - FEHLERTEXT-ZUORDNUNG NUR AUF ZWEI PFADEN ABGESICHERT (safeAction, 2026-07-27):
   Tests nageln fest, dass der Speicherpfad SAVE_THROW_MESSAGE nutzt und der
   Publish-Pfad sie NICHT trägt. Die übrigen Nicht-Speicherpfade (Löschen,
@@ -177,6 +267,20 @@ miterledigen, sondern gebündelt abarbeiten.
   -> Falls es je stört: die Vereinheitlichung ist ein Code-Commit, KEINE
   Regeländerung. Die Untergrenze bleibt richtig, sonst wären drei korrekt
   gebaute Lade-Effekte plötzlich Verstöße.
+  EINORDNUNG 2026-08-01: BEOBACHTETER TRADE-OFF, KEIN HANDLUNGSAUFTRAG. Wird
+  angefasst, wenn jemand den Bereich ohnehin öffnet oder es im Betrieb auffällt.
+  ABER HIER GIBT ES EIN ECHTES KRITERIUM STATT EINER EMPFINDUNG — die ZAHL, denn
+  der Eintrag behauptet Wachstum. AM CODE GEZÄHLT (2026-08-01, Lade-Effekte OHNE
+  eigenen UI-Fehlerkanal): DREI per .catch() — getEventCounts, getAdblockLoss und
+  getVariantBPublished, alle in CodeImporter.tsx — und EINER per safeAction: der
+  Status-Effekt je Domain-Zeile in DomainRow (er verwirft ein {ok:false} wortlos,
+  hat also ebenfalls keinen Fehlerkanal). NICHT mitgezählt, weil sie einen
+  Fehlerkanal HABEN und damit unter die Pflicht-Regel fallen: der Listen-Lader in
+  DomainManager (loadError) und der getVariantCounts-Effekt (variantCountsFailed).
+  DAMIT STEHT ES 3:1 — exakt wie bei der Erhebung am 2026-07-28. Über die
+  Phase-10-Scheiben hinweg ist die Zahl NICHT gewachsen; die Sorge des Eintrags hat
+  sich bisher nicht bestätigt. KRITERIUM FÜR DIE WIEDERVORLAGE: erneut zählen und
+  vergleichen — steigt die Zahl, ist es ein Befund; bleibt sie, ist es Geschmack.
 - SERVER-FEHLER UND CLIENT-HINWEIS KÖNNEN DENSELBEN WORTLAUT TRAGEN
   (Leere-Variante-Riegel, beobachtet 2026-07-28): Bei einem Projekt OHNE
   Variante B zeigen BEIDE Ränge des Publish-Anzeigeslots denselben Satz
@@ -203,18 +307,6 @@ miterledigen, sondern gebündelt abarbeiten.
   zweite Stelle für dieselbe Frage — genau die Konstellation, aus der der
   9b-1-Befund kam. Fix wäre eine reine Funktion in variant.ts, die beide
   aufrufen: Code-Commit, keine Doku-Sache.
-- PUBLISH-BUTTON HÄNGT AN debouncedCode (Leere-Variante-Riegel, deklarierte
-  Verhaltensänderung 2026-07-28): Folge der geteilten Paar-Ableitung
-  (publishPairs) — Handler und Button lesen jetzt zwingend dieselbe Quelle,
-  und die ist debouncedCode. Das startet bewusst als "" (Hydration-Parität,
-  server- und client-identischer erster Paint), der Button ist damit nach
-  JEDEM Mount für die Debounce-Spanne gesperrt, nicht nur während des Tippens.
-  -> Live NICHT sichtbar (GEMESSEN 2026-07-28: bei gefülltem Projekt erscheint
-  beim Öffnen des Panels kein Leer-Hinweis) — der Nutzer muss erst das
-  Einstellungs-Panel öffnen, das dauert länger als der Debounce. Ein
-  BESTEHENDER Test (9b-1p "TEST 7a") brauchte deshalb ein await findByText vor
-  dem Klick; die Assertion selbst blieb unverändert. Beide Richtungen sind
-  sicher, weil die Autorität der Server-Riegel ist und nicht der Button.
 - ZEN-MODUS: ERSTES EINFÜGEN SCHLIESST DAS PANEL, OHNE DASS DER CODE LANDET
   (CodeImporter.tsx, gemeldet, Trigger: eilt nicht, low priority): Beim
   ERSTEN Einfügen von Code nach Import schliesst sich das Code-Panel, der
@@ -236,6 +328,23 @@ miterledigen, sondern gebündelt abarbeiten.
   -> Ein echter Fix braucht Live-Reproduktion (React-DevTools-Profiler, um
   die tatsächliche Event-/Render-Reihenfolge zu bestätigen) — nicht Teil
   dieser Notiz.
+  ERSTER SCHRITT ALS AUFGABE (ergänzt 2026-08-01): DIE AUFGABE IST NICHT "FIXEN",
+  SONDERN "REPRODUZIEREN". Die Hypothese oben bleibt unverändert stehen — sie ist
+  weiterhin unbewiesen, und ein Fix auf eine unbewiesene Ursache wäre geraten.
+  WAS EINE REPRODUKTION ZEIGEN MÜSSTE, damit sie den Namen verdient:
+  (1) den EINGABEWEG, der es auslöst (frisch geladene Seite, erstes Einfügen in die
+      leere Textarea — und ob Tastatur-Paste, Kontextmenü und Drag-Drop sich gleich
+      verhalten);
+  (2) die tatsächliche REIHENFOLGE von onPaste, dem Collapse-Re-Render und dem
+      onChange-Commit (Profiler-Aufzeichnung oder Log-Punkte an den drei Stellen) —
+      das ist der Kern der Hypothese;
+  (3) den ZUSTAND von code und isInputCollapsed unmittelbar nach dem ersten Paste,
+      der belegt, dass der Wert wirklich nicht committet wurde;
+  (4) die GEGENPROBE: bei gesetztem userExpandedManually tritt es nicht auf — das
+      erklärt die zweite Symptomhälfte und bestätigt oder widerlegt die Hypothese
+      als Ganzes.
+  ERST DANACH ist entscheidbar, ob der Fix am Collapse-Zeitpunkt, am kontrollierten
+  Feld oder an beidem ansetzt.
 - ROHES NUL-BYTE IN mappings.ts (Trigger: bei Gelegenheit prüfen, keine
   bekannte Auswirkung): src/lib/mappings.ts enthält bei Offset ~6974 ein
   rohes NUL-Byte (macht die Datei für grep ohne -a-Flag "binär"). Herkunft

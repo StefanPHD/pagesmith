@@ -351,10 +351,27 @@ miterledigen, sondern gebündelt abarbeiten.
   -> NICHT von Phase 10 verursacht: das Verhalten ist älter als die Scheibe, die
   Umsortierung hat es nur sichtbarer gemacht. I6 ist gewahrt.
 - DOMAINMANAGER BEHÄLT EINGABE UND FEHLERMELDUNG ÜBER DEN PROJEKTWECHSEL
+  ERLEDIGT 2026-08-01 (Commit 4abefdc, Scheibe 10b-2) — behoben durch
+  key={projectId} an der DomainManager-Aufrufstelle in PublishView: der
+  Projektwechsel ist damit eine Mount-Grenze, der veraltete Zustand entsteht gar
+  nicht erst. Live verifiziert; Nachweis im Test über A (veraltete Liste) und B
+  (Eingabe + Fehlermeldung), beide werden rot, sobald der key fällt.
+  DER EINTRAG WIRD NICHT GELÖSCHT: er trägt die Messung und die Begründung, und
+  der Abschnitt "NICHT BEHOBEN" am Ende ist weiterhin aktiv.
+  FORM DIESES VERMERKS = KONVENTION FÜR DIESE DATEI (bestätigt 2026-08-01):
+  Status als ERSTE Zeile unter dem Titel, "WAS DER FIX NICHT BEHOBEN HAT" am Ende.
+  Grund: Bei einem langen Eintrag liest sich eine Erledigt-Notiz mitten im Absatz
+  bis zum Ende wie offen. Der einzige ältere Präzedenzfall (Eintrag "INVARIANTE
+  (Team-Gedächtnis)" oben) setzt sein ERLEDIGT inline und ohne Datum/Hash — für
+  kurze Einträge tragbar, für lange nicht.
+  ACHTUNG — ALLE ZEILENNUMMERN ZU DomainManager.tsx IN DIESEM EINTRAG SIND SEIT
+  10b-2 UM +16 VERSCHOBEN (ein Auflagen-Kommentar über dem State-Block). Sie
+  bleiben als Zeitdokument stehen; der haltbare Anker ist der Symbolname.
   (beobachtet Stefan 2026-07-31 beim Live-Test zu Scheibe 10a-2, Ursache am Code
   GEMESSEN; Trigger GEFEUERT — Entscheidung 2026-07-31, s. ENTSCHIEDEN-Block
   unten. Behebung eingeplant als Scheibe 10b-2; der Eintrag bleibt OFFEN, bis
-  10b-2 abgeschlossen ist): In Projekt A eine bereits anderswo
+  10b-2 abgeschlossen ist — DIESE BEDINGUNG IST MIT DEM OBIGEN ERLEDIGT-VERMERK
+  EINGETRETEN): In Projekt A eine bereits anderswo
   verknüpfte Domain eintippen, die rote Fehlermeldung provozieren, dann oben das
   Projekt wechseln -> Eingabetext UND Fehlermeldung bleiben stehen; erst ein
   Reload setzt zurück.
@@ -486,3 +503,30 @@ miterledigen, sondern gebündelt abarbeiten.
   isSettingsOpen. GEÄNDERT hat sich allein der ORT des Aufrufs (jetzt in
   PublishView) und damit eine zusätzliche Komponentengrenze — keine Bedingung,
   kein key, kein Mount-Zeitpunkt.
+  -> AUFLÖSUNG DER OFFENEN MESSFRAGE (10b-2, gemessen): Die ZAHL und der ZEITPUNKT
+  der Server-Aufrufe ändern sich durch den Remount NICHT — Lade- und Poll-Effect
+  hängen ohnehin an [projectId], der Remount ersetzt einen deps-Neulauf durch einen
+  Mount-Lauf im selben Commit. Das Poll-Intervall wird sauber abgeräumt und einmal
+  neu aufgesetzt (ein Erzeuger, ein Vernichter je Effekt-Instanz); live über zwei
+  Minuten gegengeprobt, kein doppeltes Intervall.
+  -> WAS DER FIX NICHT BEHOBEN HAT — weiterhin OFFEN und der Grund, warum dieser
+  Eintrag stehen bleibt:
+     (1) handleRemove trägt weiterhin KEINEN projectId-Riegel (die Funktion beginnt
+         unverändert mit setRemoving(true)); die Zeilen-Buttons sind nur
+         disabled={removing}.
+     (2) DomainRow bekommt projectId weiterhin NICHT als Prop (domain, pollTick,
+         onChanged) und kann einen Kontextwechsel konstruktiv nicht bemerken.
+     (3) Der Schutz ist eine MOUNT-Eigenschaft, kein Riegel in der Aktion: die
+         veraltete Zeile ist nicht mehr erreichbar, weil sie nicht mehr EXISTIERT.
+         Wird der Remount aufgehoben (key entfernt, memo davor, Zustand hochgezogen,
+         Fläche dauerhaft gemountet), ist die Lücke SOFORT und STILL zurück — kein
+         Typfehler, kein roter Build. Einzige Verteidigung sind die beiden Tests.
+     (4) Die Grenze null -> null (zwei ungespeicherte Projekte nacheinander) ist KEIN
+         Key-Wechsel und wurde bewusst NICHT konstruktiv geschlossen (verworfen: ein
+         Wechselzähler, der eine fünfte Zuweisung an die vier setProjectId-Stellen
+         gehängt hätte — s. Eintrag "KEIN GEMEINSAMER CHOKEPOINT FÜR DIE
+         PROJEKT-WURZELN"). Heute folgenlos, weil im Null-Zustand jeder Schreibpfad
+         gesperrt ist; diese Bedingung TRÄGT den Schutz und steht als Auflage über
+         dem State-Block von DomainManager.
+     (5) Die Label-Vergabe bleibt unprotokolliert (eigener Punkt in CLAUDE.md,
+         "## Offene Punkte") — von dieser Scheibe nicht berührt.

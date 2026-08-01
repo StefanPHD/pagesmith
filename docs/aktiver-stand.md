@@ -55,12 +55,18 @@ nicht nachgezogen**: Dieser Abschnitt dokumentiert, **WARUM** entschieden wurde,
 nicht **WO** etwas steht — und die stehende Regel verbietet ohnehin, eine
 Zeilennummer aus einem Dokument in einen Prompt zu übernehmen. **Jede frische
 Messung am Code schlägt jede Angabe hier.**
-**NUR `CodeImporter.tsx` ist betroffen — gemessen, nicht angenommen:** Die drei
-Bau-Commits fassten ausschließlich `CodeImporter.tsx`, `CodeImporter.test.tsx`,
-`MeasureView.tsx` (neu) und `PublishView.tsx` (neu) an. Die Angaben zu
-`DomainManager.tsx` (T2, T4), `ActionPanel.tsx` (T2), `src/lib/settings.ts` (T5)
-und `src/app/page.tsx` (Entscheidung 2) **gelten unverändert** und wurden
-stichprobenartig nachgeprüft.
+**SEIT 10b-2 GILT DASSELBE FÜR `DomainManager.tsx` — die frühere Fassung dieses
+Absatzes ("NUR `CodeImporter.tsx` ist betroffen … die Angaben zu `DomainManager.tsx`
+gelten unverändert") ist damit ÜBERHOLT und wurde ERSETZT, nicht ergänzt.** 10b-2 hat
+dort einen 16-zeiligen Auflagen-Kommentar über den State-Block gesetzt; ALLE Angaben
+darunter verschieben sich um **+16** (gemessen: der State-Block stand `:26`–`:34`,
+steht heute `:42`–`:50`; der Lade-Effect stand `:53`, steht `:69`; der Poll-Effect
+stand `:76`, steht `:92`; der Status-Effect je Zeile stand `:203`, steht `:219`).
+Die Zitate in T2/T4 und in den Scheiben-Vermerken bleiben stehen — sie sind
+Zeitdokument; korrigiert wird hier, nicht dort.
+**Unverändert gültig** sind allein die Angaben zu `ActionPanel.tsx` (T2),
+`src/lib/settings.ts` (T5) und `src/app/page.tsx` (Entscheidung 2): diese drei
+Dateien hat KEINE Bau-Scheibe der Phase angefasst.
 **LEHRE FÜR KÜNFTIGE RECORDS (Kandidat für die Hebung nach "## Immer beachten" am
 Phasenende):** Der haltbare Anker ist der **SYMBOLNAME**
 (`applyZenForLoadedCode`, `settingsEqual`, `statusBadge`), nicht die Zeile. Namen
@@ -336,7 +342,7 @@ Fünf Scheiben, in dieser Reihenfolge:
 | **10a-1** | Bereich MESSEN extrahieren | **abgeschlossen** (s. unten) |
 | **10a-2** | Bereich VERÖFFENTLICHEN extrahieren | **abgeschlossen** (s. unten) |
 | **10b-1** | Die Fläche: Drawer rechts, aus dem Dokumentfluss, eigener Scroll-Container, Bereichswechsel innerhalb (versteckend) | **abgeschlossen** (s. unten) |
-| **10b-2** | Mount-Disziplin `DomainManager`: der Zustand über den Projektwechsel (s. Backlog) | offen |
+| **10b-2** | Mount-Disziplin `DomainManager`: der Zustand über den Projektwechsel (s. Backlog) | **abgeschlossen** (s. unten) |
 | **10c** | I3 — die Zustandssignale an der Navigation | offen |
 
 **ORDNUNGSPRINZIP — zuerst die Eingriffe, deren Ergebnis man vorher kennt, dann die
@@ -614,12 +620,87 @@ Zustandssignale aus I3 hinkommen — dieselbe Fläche, ein Eingriff.
 
 **NÄCHSTE SCHEIBE: 10b-2 — Mount-Disziplin `DomainManager`.**
 
+#### Scheibe 10b-2 — Projektwechsel als Mount-Grenze für `DomainManager` (ABGESCHLOSSEN, live verifiziert 2026-08-01)
+
+Commit `4abefdc`. Tests **675 -> 678** (677 im Bau-Commit, +1 im Nachtrag-Commit),
+**NULL geänderte Bestands-Assertionen**. Alle vier Pipeline-Gates grün:
+`tsc --noEmit`, `lint`, `vitest run`, `build`.
+**DEKLARIERTE VERHALTENSÄNDERUNG — I6 deckt sie NICHT, das ist der Zweck der
+Scheibe.**
+
+**Was gebaut wurde.** `key={projectId}` an der `DomainManager`-Aufrufstelle in
+`PublishView`. **Zahl und Zeitpunkt der Server-Aufrufe sind unverändert** — beide
+Effekte in `DomainManager` hingen ohnehin an `[projectId]`, der Remount ersetzt
+einen deps-Neulauf durch einen Mount-Lauf im selben Commit. Geändert hat sich das
+FENSTER, in dem alte Daten stehen: von „bis die neuen eintreffen" auf „gar nicht" —
+und beim Wechsel auf ein ungespeichertes Projekt von „dauerhaft" auf „gar nicht".
+*Verworfen — ein `projectId`-Riegel je Aktion:* ließe eine tote Liste mit toten
+Knöpfen stehen und müsste bei jeder künftigen Zeilen-Aktion erneut angebracht
+werden. *Verworfen — ein Wechselzähler als Key* (der einzige Weg, auch `null -> null`
+zu unterscheiden): er hätte eine FÜNFTE Zuweisung an die vier `setProjectId`-Stellen
+gehängt — genau der fehlende gemeinsame Chokepoint, der als eigener Backlog-Eintrag
+geführt wird. Ein Fix, der die bekannte Divergenzquelle erweitert, macht es
+schlechter.
+
+**GRENZE, bewusst offen.** `null -> null` (zwei neue Projekte nacheinander) ist KEIN
+Key-Wechsel — React koerziert `null` zum konstanten String-Key `"null"` (gemessen).
+Heute folgenlos, weil im Null-Zustand JEDER Schreibpfad gesperrt ist. **Diese
+Bedingung trägt den ganzen Schutz** und steht deshalb als Auflage über dem
+State-Block von `DomainManager`, dort, wo jemand einen neuen Zustand ergänzen würde.
+
+**RESTRISIKO.** Der Schutz ist eine MOUNT-Eigenschaft, kein Riegel in der Aktion:
+`handleRemove` trägt weiterhin keine Kontextprüfung, `DomainRow` kennt `projectId`
+weiterhin nicht. Die veraltete Zeile ist nicht mehr erreichbar, weil sie nicht mehr
+EXISTIERT — nicht, weil ihr Knopf abgesichert wäre. Wird der Remount später
+aufgehoben, ist die Lücke still zurück: kein Typfehler, kein roter Build.
+
+**WAS DIE DREI TESTS TRAGEN — und was NICHT (gemessen, nicht angenommen).** Die
+Mount-Grenze sichern allein die Tests A (veraltete Liste) und B (Eingabe +
+Fehlermeldung); beide werden rot, sobald der Key fällt. Test C (Übergang
+`null -> echte ID`, Argument = neue id) bleibt bei entferntem Key **GRÜN** — er
+sichert die DEPS-KETTE, nicht die Mount-Grenze. Das steht so in seinem Kommentar,
+damit ihn niemand als Key-Wächter liest. Rot wird C, wenn der frühe Return im
+Lade-Effect fällt.
+
+**BEFUND ZUM INSTRUMENT (Kandidat für die Hebung nach "## Immer beachten" am
+Phasenende).** Server-Actions erscheinen im Netzwerk-Tab als **POST auf die
+Seiten-URL**, NICHT unter ihrem Namen: der Klartextname steht nur als
+Sourcemap-Argument im Bundle (`createServerReference(<opake id>, callServer, …,
+"listProjectDomains")`), gesendet wird die opake ID im `next-action`-Header. Alle
+Actions einer Seite sehen in der Namensspalte identisch aus.
+**FOLGE FÜR JEDE LIVE-ANLEITUNG:** „im Netzwerk-Tab nach `<Action>` suchen" ist eine
+UNTAUGLICHE Sonde und erzeugt falsche Entwarnung. Tauglich sind: POSTs auf die
+Seiten-URL zählen, der `next-action`-Header — oder, schärfer, die Nachstellung im
+Test. **Genau dieser Fall ist in Live-Schritt 6 eingetreten:** kein Eintrag sichtbar,
+Aufruf nachweislich erfolgt.
+
+**BEFUND ZUM WERKZEUG (ebenfalls Hebungs-Kandidat).** Die CRLF-Falle trifft auch die
+RÜCKNAHME einer Mutation, nicht nur das Schreiben. Eine `sed`-Rücknahme hinterließ
+`CodeImporter.tsx` als geändert bei inhaltlich LEEREM Diff; ohne die Zählung im
+Scope-Wächter („genau drei Einträge") wäre eine vierte Datei in den Commit gewandert.
+Der Mutationszyklus — setzen, messen, zurücknehmen — ist ebenso werkzeuggefährdet wie
+das Schreiben selbst.
+
+**Live bestätigt (sieben Schritte, Stefan).** Veraltete Domain-Zeile verschwindet
+sofort; Eingabe und Fehlermeldung werden beim Projektwechsel zurückgesetzt;
+`null -> null` verhält sich wie dokumentiert; der getippte Text überlebt den
+REITERwechsel und stirbt beim PROJEKTwechsel (die richtige Achse); Klick auf das
+bereits aktive Projekt setzt nichts zurück; kein doppeltes Poll-Intervall über zwei
+Minuten gegen Vercel, Cooldown arbeitet normal. **Schritt 6 über die Nachstellung im
+Test bestätigt, NICHT über die Browser-Beobachtung** — s. Befund zum Instrument.
+
+**NÄCHSTE SCHEIBE: 10c — I3, die Zustandssignale an der Reiterzeile, plus die
+Trennlinie unter die Reiterzeile (aus 10b-1).**
+
 ### Ausdrücklich NICHT in dieser Phase
 
 - Extraktion des Bauen-Bereichs (Entscheidung 5).
-- Zusammenführung der drei Projekt-Ladepfade (`handleSwitch` `:1604`–`:1612`,
-  `handleDelete` `:1667`–`:1674`, `resetToEmpty` `:873`–`:880`) — eigener
-  Backlog-Eintrag.
+- Zusammenführung der drei Projekt-Ladepfade (`handleSwitch`, `handleDelete`,
+  `resetToEmpty` in `src/components/CodeImporter.tsx`) — eigener Backlog-Eintrag.
+  BEWUSST OHNE ZEILENANGABEN (umgestellt 2026-08-01, Nachtrag zu 10b-2): die
+  früheren Nummern waren nach drei Bau-Scheiben falsch, und heutige wären es nach
+  den nächsten drei wieder. Der haltbare Anker ist der SYMBOLNAME — s. den
+  Zeitstand-Block oben.
 - Der Zen-Modus-Paste-Bug (I4).
 - Phase-11-Inhalte: kein weiterer Pixel-Typ, kein Fan-Out-Ziel, kein
   Consent-Mechanismus (Entscheidung 6 ist Anordnung, kein Bau).

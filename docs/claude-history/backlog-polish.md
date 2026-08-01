@@ -259,7 +259,8 @@ miterledigen, sondern gebündelt abarbeiten.
   -> BESTEHENDE Divergenzquelle (eine vergessene Zuweisung in EINEM Pfad zeigt
   Projekt A mit der Baseline von B), NICHT von Phase 10 verschärft, solange die
   Bereiche reine Kind-Komponenten ohne eigenen Projekt-Zustand bleiben (s.
-  docs/aktiver-stand.md, Entscheidung 3). Wird zur VORAUSSETZUNG, sobald ein
+  docs/claude-history/phase-10-workspace.md, Entscheidung 3). Wird zur
+  VORAUSSETZUNG, sobald ein
   Bereich eigenen Projekt-Zustand bekommt: dann müsste jeder neue Zustand an drei
   Stellen nachgezogen werden, und die vierte (der Server-Seed) ist kein Handler,
   in dem man es bemerken würde.
@@ -462,7 +463,8 @@ miterledigen, sondern gebündelt abarbeiten.
       ENTSCHIEDEN 2026-07-31, VOR der Planung: Der Fix bekommt eine EIGENE Scheibe
       10b-2, unmittelbar nach 10b-1, und wird dort als Verhaltensänderung
       DEKLARIERT. NICHT in 10b-1 mitgebaut — zwei Wirkungen mit verschiedenen
-      Risikoprofilen (s. docs/aktiver-stand.md, "Scheiben-Schnitt der Phase").
+      Risikoprofilen (s. docs/claude-history/phase-10-workspace.md,
+      "Scheiben-Schnitt der Phase").
       VORAUSSETZUNG, weiterhin offen und in 10b-2 zu MESSEN statt anzunehmen:
       Verschiebt ein Remount die ZAHL oder den ZEITPUNKT der Server-Aufrufe
       gegenüber heute? Und ausdrücklich mitzuprüfen: Bei einem ungespeicherten
@@ -733,3 +735,98 @@ miterledigen, sondern gebündelt abarbeiten.
       sondern die Anzeige eines laufenden Vorgangs. Sie zurückzusetzen, während der
       Vorgang noch läuft, entsperrte einen Button, der gesperrt sein soll — hier
       wäre ein Reset SCHÄDLICH. Die beiden Sorten dürfen nicht in einen Topf.
+- EXTRAKTION DES BAUEN-BEREICHS AUS CodeImporter.tsx
+  STATUS: OFFEN — BEWUSST AUFGESCHOBENER UMFANG AUS PHASE 10 (Entscheidung 5,
+  ausgelagert 2026-08-01). Er stand dort unter "Ausdrücklich NICHT in dieser Phase"
+  und hätte nach der Archivierung nur noch im Archiv gelebt; deshalb dieser Eintrag.
+  Ein Eintrag zu viel kostet Lesezeit, ein verlorener Punkt kostet die Sache.
+  WORUM ES GEHT: Phase 10 hat MESSEN und VERÖFFENTLICHEN in eigene Komponenten
+  gezogen (MeasureView, PublishView). BAUEN — der Drei-Zonen-Workspace mit
+  Code-Eingabe, Elementliste, Vorschau/Edit-iframe und ActionPanel — blieb im
+  Container.
+  DIE DREI GRÜNDE FÜR DIE AUSLASSUNG, alle aus Entscheidung 5:
+  (1) Am Bauen-Bereich hängt der GESAMTE Handler-Block. Am Code neu gemessen
+      (2026-08-01): CodeImporter.tsx trägt 31 Funktionen im Komponenten-Rumpf, von
+      resetToEmpty bis commitRename, dazu 48 useState, 11 useMemo und 6 useRef. Die
+      Zonen MESSEN und VERÖFFENTLICHEN kamen mit 18 bzw. 20 Props aus; für BAUEN
+      trägt die Phase-10-Datei KEINE Prop-Schätzung, und der Grund dafür steht dort:
+      es wurde nicht durchgerechnet, weil die Auslassung schon aus (2) und (3) folgt.
+      Wer es angeht, rechnet es zuerst aus.
+  (2) Der Bereich darf NIE unmounten (Entscheidung 2): An ihm hängt der
+      ungespeicherte Entwurf. Eine Extraktion ist deshalb nur als VERSTECKEN
+      denkbar, nicht als Aushängen — s. die Regel "Eine Komponente mit eigenem
+      Zustand darf nicht hinter einem Umschalter liegen, der sie aushängt" in der
+      Root-CLAUDE.md.
+  (3) Der Nutzen war für Phase 11 nicht abrufbar: Phase 11 lädt ausschliesslich in
+      den Messen-/Tracking-Bereich. Eine Bauen-Extraktion hätte Risiko erzeugt, ohne
+      das Problem zu lösen, das die Phase auslöste.
+  TRIGGER: wenn eine Phase den Bauen-Bereich ohnehin invasiv anfasst — dann ist der
+  Aufwand ohnehin da und die Extraktion kostet nur noch die Differenz. KEIN eigener
+  Termin; ausdrücklich "aufgeschoben, nicht ausgeschlossen".
+  VOLLE HERLEITUNG: docs/claude-history/phase-10-workspace.md, Entscheidung 5.
+- DER DRITTE STATUSKANAL (variantStatus/variantError) ENDET NICHT MIT DER
+  DRAWER-SITZUNG
+  STATUS: OFFEN — BENANNTE LÜCKE VON SCHEIBE 10c-2 (Entscheidung O1, Commit
+  31b8ab2, ausgelagert 2026-08-01). 10c-2 löst ZWEI VON DREI Kanälen; das war so
+  entschieden und wurde nicht kaschiert. Der Punkt stand unter "Noch offen" und
+  hätte nach der Archivierung nur noch dort gelebt.
+  WORUM ES GEHT: Der Statuskanal des Einstellungs-Drawers wird beim ÖFFNEN geleert
+  (resetDrawerStatusChannel) — publishStatus/publishError und
+  capiTokenStatus/capiTokenError. variantStatus/variantError bleiben ausgenommen
+  und überleben damit Reiterwechsel UND Schliessen.
+  GRUND FÜR DIE AUSNAHME (am Code gemessen, 2026-08-01): Der Kanal hat DREI
+  Auslöser, und einer davon — handleCreateVariantB, ausgelöst vom "+ Variante
+  B"-Knopf — sitzt in der TOOLBAR und ist bei GESCHLOSSENEM Drawer klickbar. Sein
+  Fehler wird auch dort angezeigt (die Toolbar-Stelle greift bei !hasVariantB; die
+  Drawer-Stelle liegt im hasVariantB-Block von PublishView, beide schliessen sich
+  gegenseitig aus). Der Kanal ist strukturell nicht Teil der Drawer-Sitzung.
+  DIE VIER GEPRÜFTEN OPTIONEN (10c-2, Stufe 1):
+  (O1, GEWÄHLT) Kanal ganz ausnehmen. Kosten: zwei von drei Kanälen gelöst.
+  (O2, VERWORFEN) Nur zurücksetzen, wenn hasVariantB — also wenn die Meldung im
+      Drawer stand. Technisch trivial, aber ein ZWEITES URTEIL über den Anzeigeort:
+      dieselbe Duplikat-Klasse, die 10c-1 nur deshalb akzeptiert hat, weil es dort
+      keine Alternative gab. Hier gab es eine. DAS IST DER KERN DER ENTSCHEIDUNG —
+      wer den Punkt später angeht, muss sie kennen, sonst greift er zu O2 als
+      "offensichtlicher" Lösung.
+  (O3, VERWORFEN) Den Kanal trennen (eigener Zustand für den Toolbar-Fall). Der
+      Code hat "Ein State, zwei Orte" BEWUSST so gebaut; das aufzubrechen ist ein
+      eigener Umbau mit eigenem Nachweis.
+  (O4, VERWORFEN) Mit zurücksetzen und den Verlust hinnehmen: löscht eine Meldung
+      ausserhalb des Drawers, die der Nutzer eventuell nie gelesen hat.
+  ACHTUNG — T5 BEWACHT HEUTE, DASS DER KANAL DRAUSSEN BLEIBT: Der Test "ein
+  Varianten-Fehler ÜBERLEBT Schliessen und Öffnen" (10c-2-Block in
+  CodeImporter.test.tsx) wird ROT, sobald jemand den Kanal aufnimmt — Mutation M3
+  hat das belegt, und er ist der EINZIGE Test, der es fängt. Wer den Punkt umsetzt,
+  ändert diesen Test BEWUSST und begründet die Änderung; ein "der Test ist wohl
+  veraltet" wäre genau der Fehler, gegen den er geschrieben wurde.
+  TRIGGER: kein eigener Termin. Fällig, sobald der Toolbar-Auslöser verschwindet
+  oder der Kanal getrennt wird — dann ist die Ausnahme gegenstandslos.
+  VOLLE HERLEITUNG: docs/claude-history/phase-10-workspace.md, Scheibe 10c-2.
+- I3 IN DER WEITERGEHENDEN LESART: "NICHT BESUCHT" UND "IN ORDNUNG" SEHEN GLEICH AUS
+  STATUS: OFFEN — VON SCHEIBE 10c-1 AUSDRÜCKLICH NICHT ANGEGANGEN (ausgelagert
+  2026-08-01). Der Punkt stand unter "Noch offen" und hätte nach der Archivierung
+  nur noch im Archiv gelebt.
+  WORUM ES GEHT: Invariante I3 der Phase 10 lautete wörtlich: "Die Trennung darf
+  keinen Zustand verstecken. Pro Bereich wird benannt, welche Zustände
+  aufmerksamkeitswürdig sind und wie sie an der Navigation SELBST sichtbar werden —
+  'nicht besucht' und 'in Ordnung' dürfen nicht gleich aussehen." 10c-1 hat davon
+  NUR die Fehler-Hälfte gelöst: ein handlungsfähiger Fehler, der im unsichtbaren
+  Bereich entsteht, leuchtet an der Reiterzeile. Die andere Hälfte steht offen.
+  WAS ES KONKRET HIESSE: Ein Reiter müsste unterscheidbar machen, ob der Nutzer
+  seinen Bereich in diesem Projekt je geöffnet hat — also ein BESUCHT-Zustand je
+  Bereich und je Projekt. Das ist ein neues Konzept, keine Fehleranzeige: Es
+  braucht einen persistenten oder zumindest projekt-gebundenen Zustand (wo? settings
+  ist client-besessen und wird ganzheitlich ersetzt — s. "SERVER-EIGENE IDENTITÄT
+  NIE IN EINEN CLIENT-BESESSENEN BLOB" in der Root), eine Regel für sein Ende und
+  eine Antwort darauf, was "besucht" nach einer Änderung im Bereich bedeutet.
+  WARUM 10c-1 ES NICHT ANGING: Die Scheibe war auf das geschärfte Signal-Kriterium
+  geschnitten — "ein Signal leuchtet NUR, wenn der Nutzer JETZT etwas tun kann".
+  Ein "nicht besucht"-Hinweis erfüllt das gerade NICHT: Er ist ein normaler
+  Anfangszustand und würde bei jedem frischen Projekt an beiden Reitern leuchten —
+  genau die Signal-Ermüdung, die das Kriterium ausschliesst. Der Punkt ist damit
+  kein vergessener Rest, sondern einer, der ohne ein anderes Anzeige-Mittel als das
+  Fehler-Signal nicht lösbar ist.
+  TRIGGER: kein eigener Termin. Sinnvoll erst mit einem Onboarding-/Fortschritts-
+  Konzept, das ohnehin einen Besucht-Zustand braucht.
+  VOLLE HERLEITUNG: docs/claude-history/phase-10-workspace.md, Invariante I3 und
+  Scheibe 10c-1.

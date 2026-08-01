@@ -1,24 +1,46 @@
-# Phase 10 — Workspace-Reorganisation (laufende Phase)
+# Phase 10 — Workspace-Reorganisation (ausgelagerte Historie)
 
-Aktiver Stand der GERADE LAUFENDEN Phase 10: Entscheidungen, Gründe, verworfene
-Alternativen, Invarianten und offene Punkte. Diese Datei wird während der Phase
-fortgeschrieben und ist der Pflicht-Einstieg jedes Bau- und Aufklärungs-Prompts
-("Auftrag 0"). Sie beschreibt eine OFFENE Phase. Angelegt am 2026-07-31, vor der
-ersten Zeile Code (Kadenz: Gedächtnis zuerst). Was GEBAUT und live verifiziert
-ist, steht ausschließlich unter "### Abgeschlossene Scheiben" — jeder andere
-Abschnitt beschreibt Absicht, keinen Bau- oder Verifikationsstand.
+Volle Herleitung, Entscheidungen, Tests und Live-Verifikation der GEBAUTEN
+Phase-10-Arbeit. Umfang (chronologisch): Scheibe 10a-1 (Bereich MESSEN extrahiert),
+10a-2 (Bereich VERÖFFENTLICHEN extrahiert), 10b-1 (Einstellungen als Drawer mit
+Bereichs-Reitern), 10b-2 (Projektwechsel als Mount-Grenze für `DomainManager`),
+10c-1 (Zustandssignal an der Reiterzeile + Trennlinie) und 10c-2 (Der Statuskanal
+des Drawers endet mit der Sitzung) — alle SECHS ABGESCHLOSSEN und live bewiesen
+(2026-07-31 bis 2026-08-01). Diese Datei wurde am 2026-08-01 hierher ausgelagert;
+sie hieß bis dahin `docs/aktiver-stand.md` und war der Pflicht-Einstieg jedes
+Bau-Prompts der laufenden Phase. **Es läuft keine Phase 10 mehr** — wer den
+aktuellen Zustand sucht, ist hier falsch.
 
 Der aktive Ist-Stand des SYSTEMS (Migrationsstand, events-Schema, Policies, RPCs,
-Indizes) steht WEITERHIN in der Root unter "## Aktueller DB-/Analytics-Stand"; die
-dauerhaft geltenden Regeln unter "## Immer beachten" bzw. "## Code-Qualität …" —
-sie gelten hier unverändert und werden NICHT wiederholt. Diese Datei trägt, was
-NUR für Phase 10 gilt: den Schnitt, die Begründung und die Grenzen. Am Phasenende
-wird sie nach dem Muster der bestehenden Historien-Dateien mit einem Archiv-Kopf
-versehen, nach `docs/claude-history/phase-10-workspace.md` umbenannt und hier
-gelöscht. Das Verfahren steht verbindlich in der Root-CLAUDE.md unter
-"## Aktiver Stand — Verfahren ab Phase 10" (lädt jede Session automatisch); der
-ausführliche Ablauf zusätzlich in `docs/claude-history/arbeitsweise.md`,
-Abschnitt "Phasenende ab Phase 10".
+Indizes) steht WEITERHIN in der Root unter "## Aktueller DB-/Analytics-Stand" bzw.
+"## Offene Punkte". **SIEBZEHN dauerhafte Regeln aus dieser Phase wurden VOR der
+Auslagerung generalisiert in die Root gehoben** — fünfzehn als eigene Einträge
+unter "## Immer beachten", zwei als Lektionen (e) und (f) im bestehenden Block
+"MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE" (der dadurch von VIER auf SECHS
+Lektionen gewachsen ist). Welche das im Einzelnen sind, steht im Block
+"## GEHOBEN AM 2026-08-01" direkt unter diesem Kopf. Sie werden HIER NICHT
+wiederholt: **Diese Datei trägt die BEGRÜNDUNG dazu, nicht den aktuellen Zustand.**
+Bei einem Widerspruch zwischen einer Formulierung hier und der Root-Fassung gilt
+die Root-Fassung.
+
+AUSLAGERUNGSPRÜFUNG (2026-08-01) — DREI PUNKTE WURDEN VOR DEM SCHLIESSEN INS
+BACKLOG ÜBERFÜHRT. Die Prüfung, ob ein Punkt aus "### Noch offen" oder
+"### Ausdrücklich NICHT in dieser Phase" nach der Auslagerung nur noch HIER lebt —
+also in einer Datei, die KEINE Session automatisch lädt —, fand drei solche Punkte:
+die Extraktion des Bauen-Bereichs (Entscheidung 5), den dritten Statuskanal
+`variantStatus`/`variantError` (von 10c-2 ausgenommen, s. O1) und die weitergehende
+Lesart von I3 ("nicht besucht" ≠ "in Ordnung"). **Alle drei haben seit dem
+2026-08-01 einen eigenen Eintrag in `docs/claude-history/backlog-polish.md`**; die
+Abschnitte hier bleiben als BEGRÜNDUNG stehen. Alle übrigen offenen Punkte der
+Phase waren bereits dort geführt bzw. stehen in der Roadmap der Root.
+DIESER ABSATZ IST ZUGLEICH DER BELEG, DASS DIE PRÜFUNG STATTGEFUNDEN HAT — eine
+Archivierung braucht sie: Archivdateien werden gezielt gelesen, nicht
+durchgeblättert, und ein Punkt, der nur hier steht, ist praktisch verloren.
+
+Das Verfahren für den aktiven Stand einer LAUFENDEN Phase steht unverändert in der
+Root-CLAUDE.md unter "## Aktiver Stand — Verfahren ab Phase 10" (lädt jede Session
+automatisch); der ausführliche Ablauf zusätzlich in
+`docs/claude-history/arbeitsweise.md`, Abschnitt "Phasenende ab Phase 10".
 
 ## GEHOBEN AM 2026-08-01 — RUNDE 1 DES PHASENABSCHLUSSES
 

@@ -677,3 +677,59 @@ miterledigen, sondern gebündelt abarbeiten.
   (c) Der Umfang: NUR saveError/saveStatus, oder gehört der Fall in eine grössere
       Runde zusammen mit "KEIN GEMEINSAMER CHOKEPOINT FÜR DIE PROJEKT-WURZELN"?
       Drei Ausprägungen derselben Klasse sprechen für die grössere Runde.
+- HALB BESTÄTIGTE DESTRUKTIVE ABFRAGEN ÜBERLEBEN DAS SCHLIESSEN DES DRAWERS
+  STATUS: OFFEN — GEMESSENER, BEWUSST NICHT MITGEBAUTER BEFUND AUS SCHEIBE 10c-2
+  (2026-08-01, Commit 31b8ab2). Kein eigener Termin; BLOCKIEREND, bevor jemand ausser
+  dem Owner die App benutzt — dieselbe Bedingung wie bei den beiden anderen
+  Projektwechsel-/Sitzungs-Einträgen oben.
+  BEFUND: Klickt der Nutzer "CAPI-Token entfernen" oder "Variante B entfernen", steht
+  die zweistufige Bestätigung offen ("Tracking für dieses Projekt deaktivieren? Der
+  Token wird gelöscht." bzw. "Variante B endgültig entfernen? Ihr HTML und ihre
+  Verknüpfungen gehen verloren."). Schliesst er den Drawer, ohne zu bestätigen oder
+  abzubrechen, steht die Abfrage beim nächsten Öffnen wieder da — auch Stunden
+  später, ohne jeden Bezug zu dem, was der Nutzer dann gerade tut.
+  GEMESSEN (Anker sind die SYMBOLE, die Zeilen altern):
+  - Die Flags liegen im CONTAINER, nicht in den Ansichten: capiRemoveConfirming
+    (CodeImporter.tsx:266) und variantBRemoveConfirming (:237); dazu die Busy-Flags
+    capiRemoving (:267) und variantBusy (:219). Sie werden als Props durchgereicht
+    (:2084-:2085 bzw. :2118-:2119) und in MeasureView.tsx:223 bzw. PublishView.tsx:295
+    gerendert.
+  - DESHALB überleben sie das Schliessen: Das Drawer-Gate baut nur die FLÄCHE ab
+    (I1); der Container bleibt gemountet, seine Zustände sterben nicht mit ihr.
+  - ZURÜCKGESETZT werden sie heute an drei Sorten von Stellen, aber an KEINER, die
+    mit dem Drawer zu tun hat: beim Projektwechsel über applyZenForLoadedCode (:895,
+    :909) und jeweils am Ende ihres eigenen Vorgangs (handleRemoveVariantB :1124 im
+    Erfolgs- und :1128 im Fehlerzweig; handleRemoveCapiToken :1284 bzw. :1289).
+  - NICHT BETROFFEN und der lehrreiche Gegenfall: die Zeilen-Bestätigung im
+    DomainManager (confirming, DomainManager.tsx:194, gerendert :304) verschwindet
+    beim Schliessen von selbst — sie stirbt mit dem Unmount der Komponente. Wo der
+    Zustand dort liegt, wo er hingehört, löst sich das Problem ohne Zutun.
+  EINORDNUNG — DIESELBE FEHLERKLASSE WIE DER STATUSKANAL AUS 10c-2, IN EINER HINSICHT
+  SCHÄRFER: Dort blieb ein HINWEIS stehen; hier bleibt eine SCHARF GESTELLTE
+  DESTRUKTIVE AKTION stehen, deren Auslöser der Nutzer vergessen haben kann. Der
+  nächste Klick auf "Ja, entfernen" löscht dann wirklich (CAPI-Token bzw. das HTML
+  und die Verknüpfungen von Variante B). Verwandt mit "DOMAINMANAGER BEHÄLT EINGABE
+  UND FEHLERMELDUNG ÜBER DEN PROJEKTWECHSEL" (dort war es der Entfernen-Knopf einer
+  veralteten Zeile), nur auf der Sitzungs- statt auf der Projekt-Achse.
+  WARUM 10c-2 IHN NICHT MITGENOMMEN HAT — bewusste Grenze, kein Übersehen: Eine
+  offene Bestätigung ist eine BEDIENABSICHT, kein Statuskanal. Die Scheibe war auf
+  "der Statuskanal endet mit der Sitzung" geschnitten, und ihr Reset räumt genau vier
+  Werte. Die Bestätigungs-Flags mitzunehmen hiesse, eine zweite Fehlerklasse in
+  denselben Nachweis zu packen — dieselbe Vermischung, die bei 10b und 10c bewusst
+  vermieden wurde.
+  FIX-KANDIDAT, AUSDRÜCKLICH NICHT ENTSCHIEDEN: die beiden Flags (und ihre
+  Busy-Partner) in resetDrawerStatusChannel aufnehmen — mechanisch trivial.
+  VORHER ZU ENTSCHEIDEN, nicht anzunehmen:
+  (a) IST "ABBRECHEN" DIE RICHTIGE ANTWORT? Ein Reset bricht die Abfrage stillschwei-
+      gend ab. Das ist bei einer destruktiven Aktion vermutlich richtig, aber es ist
+      eine Produktentscheidung: Der Nutzer hat den Knopf bewusst gedrückt.
+  (b) BEIM ÖFFNEN ODER BEIM SCHLIESSEN? Der Statuskanal wird beim ÖFFNEN geräumt
+      (Nachzügler-Loch, s. 10c-2). Für eine Bestätigung gilt dieselbe Überlegung
+      nicht — dort gibt es keinen Nachzügler; ein Reset beim Schliessen wäre
+      ehrlicher, weil die Abfrage dann nicht unsichtbar weiterlebt. Das wären dann
+      ZWEI verschiedene Zeitpunkte in derselben Fläche, und genau das gehört
+      entschieden statt nebenbei gebaut.
+  (c) GEHÖREN DIE BUSY-FLAGS DAZU? capiRemoving/variantBusy sind KEINE Absicht,
+      sondern die Anzeige eines laufenden Vorgangs. Sie zurückzusetzen, während der
+      Vorgang noch läuft, entsperrte einen Button, der gesperrt sein soll — hier
+      wäre ein Reset SCHÄDLICH. Die beiden Sorten dürfen nicht in einen Topf.

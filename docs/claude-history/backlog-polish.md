@@ -583,3 +583,97 @@ miterledigen, sondern gebündelt abarbeiten.
   erreichbar und wäre trotzdem der schwächere Kandidat; (b) ist der stärkere und hat
   KEINEN Weg, der die Entscheidung wahrt. Wer (a) baut und (b) liegen lässt, hat die
   einzige wirklich im Hintergrund entstehende Meldung weiterhin unsichtbar.
+- SPEICHER-/LADEFEHLER (saveError) ÜBERLEBT DEN PROJEKTWECHSEL — ZONE BAUEN
+  STATUS: OFFEN (beobachtet Stefan 2026-08-01 beim Live-Test zu Scheibe 10c-2,
+  Ursache am Code GEMESSEN 2026-08-01). Kein eigener Termin; BLOCKIEREND, bevor
+  jemand ausser dem Owner die App benutzt — dieselbe Bedingung wie beim Eintrag
+  "DOMAINMANAGER BEHÄLT EINGABE UND FEHLERMELDUNG ÜBER DEN PROJEKTWECHSEL".
+  DIE BEIDEN BEOBACHTUNGEN (Owner, wörtlich):
+  (B1) "Speichern schlägt fehl (offline), die rote Meldung erscheint im Workspace.
+       Projekt wechseln -> die Meldung bleibt projektübergreifend stehen."
+  (B2) "Ein Projektwechsel im Offline-Modus scheitert ('Projekt konnte nicht
+       geladen werden'). Danach wieder online gehen und erneut wechseln -> die
+       rote Lade-Fehlermeldung bleibt stehen."
+  EIN EINTRAG, NICHT ZWEI — und das ist selbst das Messergebnis: B1 und B2 tragen
+  DENSELBEN Zustand und haben DIESELBE Ursache. Sie sehen nur verschieden aus, weil
+  zwei verschiedene Stellen denselben Kanal befüllen.
+  GEMESSENE URSACHE (Anker sind die SYMBOLE, die Zeilen altern):
+  - EIN Zustandspaar für beide Fälle: saveStatus (CodeImporter.tsx:322) und
+    saveError (:323). Angezeigt in der Workspace-Kopfzeile (:2450-:2453) unter der
+    Bedingung saveStatus === "error" && saveError.
+  - FÜNF Setz-Stellen, verteilt über vier Vorgänge: handleSave (:1229-:1230 und
+    :1189-:1190), handleSwitch (:1631-:1632, der Text aus B2), handleDelete
+    (:1674-:1675) und commitRename (:1730-:1731).
+  - DIE EIGENTLICHE LÜCKE: applyZenForLoadedCode — die geteilte Rücksetz-Routine
+    aller Projekt-Ladepfade — leert saveStatus/saveError NICHT. Sie leert
+    uploadError, capiTokenStatus/capiTokenError, publishStatus/publishError/
+    publishRestored und variantStatus/variantError, dazu die Busy-/Bestätigungs-
+    Flags. GEGENGEPROBT: Von den FÜNF *Error-Kanälen des Containers (variantError,
+    capiTokenError, publishError, saveError, uploadError) fehlt dort GENAU EINER,
+    nämlich saveError. Es ist kein Muster, es ist eine einzelne Auslassung.
+  - EINZIGE ENTLEERUNG heute: der Beginn des nächsten Speicherversuchs
+    (setSaveError(null) in handleSave). Der Auto-Reset per Timeout gilt NUR für
+    saveStatus === "saved" (Effekt :590-:594) — "error" läuft nie ab.
+  ZU B2 GESONDERT, weil der Verdacht dort ein anderer war: Der Fehlerpfad in
+  handleSwitch kehrt VOR setProjectId und VOR applyZenForLoadedCode früh zurück
+  (:1629-:1633) — die Rücksetz-Routine läuft also gar nicht. DAS IST ABER NICHT DIE
+  URSACHE, sondern nur ein erschwerender Umstand: Auch der NÄCHSTE, ERFOLGREICHE
+  Wechsel räumt die Meldung nicht, weil applyZenForLoadedCode sie nicht kennt.
+  Genau das beschreibt B2, und genau deshalb ist es derselbe Befund wie B1.
+  NEBENBEFUND aus demselben frühen Return: setIsProjectMenuOpen(false) steht
+  dahinter, das Projekt-Menü bleibt nach einem gescheiterten Wechsel also offen.
+  Für einen Wiederholungsversuch plausibel, hier nur festgehalten.
+  GILT FÜR ALLE LADEPFADE (gemessen): resetToEmpty und handleDelete rufen dieselbe
+  Routine und lassen die Meldung damit ebenso stehen; "+ Neues Projekt" trägt den
+  Fehler des vorigen Projekts also mit in ein leeres, nie gespeichertes Projekt.
+  WARUM DAS MEHR ALS OPTIK IST — die Meldung ist nach dem Wechsel nachweislich
+  FALSCH, und zwar auf zwei Ebenen:
+  (1) TEXT: Bei B2 behauptet "Projekt konnte nicht geladen werden.", das aktuelle
+      Projekt sei nicht ladbar, während sein Inhalt im Editor steht. Bei B1 bezieht
+      sich der Text auf einen Speicherversuch, den es in diesem Projekt nie gab.
+      Daneben steht der Name des NEUEN Projekts (activeName :839-:840 leitet
+      synchron aus projects + projectId ab) — dieselbe Konstellation wie im Eintrag
+      "GESTAFFELTER RÜCKBAU BEIM PROJEKTWECHSEL".
+  (2) DIE PRIMÄRAKTION ÄNDERT IHRE BESCHRIFTUNG: Der Speichern-Button liest
+      denselben Zustand (:2477-:2482) und heisst bei saveStatus === "error"
+      "Erneut versuchen". Nach dem Wechsel steht dort also "Erneut versuchen" für
+      ein Projekt, in dem nie etwas versucht wurde. Das ist der Teil, der über
+      Anzeige hinausgeht: Der Nutzer liest eine Wiederholung dessen, was er zuletzt
+      tat, und trifft damit ein anderes Projekt.
+  EINORDNUNG — DRITTE AUSPRÄGUNG DERSELBEN FEHLERKLASSE: "eine Meldung, die für das
+  FALSCHE Projekt gilt". Die beiden anderen stehen oben: "GESTAFFELTER RÜCKBAU BEIM
+  PROJEKTWECHSEL" (Zahlen des Vorprojekts unter dem neuen Namen, Zone MESSEN) und
+  "DOMAINMANAGER BEHÄLT EINGABE UND FEHLERMELDUNG ÜBER DEN PROJEKTWECHSEL" (Zone
+  LIVE, inzwischen behoben). Dieser hier ist die Ausprägung in ZONE BAUEN — und
+  damit die letzte der drei Zonen. Das legt nahe, dass die Klasse strukturell ist
+  und nicht dreimal zufällig auftrat; s. auch "KEIN GEMEINSAMER CHOKEPOINT FÜR DIE
+  PROJEKT-WURZELN".
+  NICHT VON PHASE 10 VERURSACHT — gemessen, nicht behauptet: Über den GESAMTEN
+  Phase-10-Bereich (6982dba~1..31b8ab2, 19 Commits) enthält der Diff von
+  CodeImporter.tsx KEINE EINZIGE hinzugefügte oder entfernte Zeile mit saveError
+  oder saveStatus, und weder der Rumpf von handleSwitch noch handleDelete noch
+  applyZenForLoadedCode wurde angefasst. Der Befund ist älter als die Phase; 10c-2
+  hat ihn nur sichtbar gemacht.
+  WIE GEFUNDEN — die Lehre trägt weiter als der Bug: Live-Schritt 4 zu 10c-2 prüfte,
+  dass saveError den DRAWER-Reset ÜBERLEBT (Übergriffs-Wächter, er tut es). Beim
+  Danebenschauen fiel auf, dass er auch den PROJEKTWECHSEL überlebt, wo er es NICHT
+  sollte. Ein Test prüft "bleibt bei X stehen"; die Frage "sollte er bei Y auch
+  stehenbleiben?" stellt keiner. WER EINEN ÜBERLEBENS-TEST SCHREIBT, PRÜFT IM SELBEN
+  ZUG, WELCHE ANDEREN GRENZEN DERSELBE ZUSTAND ÜBERLEBT — die Antwort ist dort
+  billig zu haben und später teuer.
+  FIX-KANDIDAT, AUSDRÜCKLICH NICHT ENTSCHIEDEN: setSaveStatus("idle") +
+  setSaveError(null) in applyZenForLoadedCode aufnehmen — eine Zeile mehr in der
+  Routine, die die vier anderen Kanäle bereits leert.
+  VORHER ZU MESSEN, statt es anzunehmen:
+  (a) Der Fehlerpfad von handleSwitch kehrt VOR der Routine zurück. Ein Reset IN der
+      Routine räumt die Meldung damit erst beim nächsten ERFOLGREICHEN Wechsel — das
+      löst B2, aber es lässt die Meldung während der gescheiterten Versuche stehen,
+      was dort richtig ist. Prüfen, ob das die gewünschte Semantik ist.
+  (b) applyZenForLoadedCode wird auch von switchVariant und vom Erfolgspfad von
+      handleRemoveVariantB gerufen. Ein Reset dort leert den Speicher-Fehler also
+      AUCH beim Varianten-Umschalten. Ob das erwünscht ist, ist eine eigene Frage —
+      und genau die Art Kopplung, wegen der 10c-2 diese Routine bewusst NICHT
+      wiederverwendet hat.
+  (c) Der Umfang: NUR saveError/saveStatus, oder gehört der Fall in eine grössere
+      Runde zusammen mit "KEIN GEMEINSAMER CHOKEPOINT FÜR DIE PROJEKT-WURZELN"?
+      Drei Ausprägungen derselben Klasse sprechen für die grössere Runde.

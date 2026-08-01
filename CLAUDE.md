@@ -407,7 +407,7 @@ Diese Datei muss JEDE Session, die an einer laufenden Phase arbeitet,
 ZUERST gelesen werden — das ist kein Vorschlag, sondern ein Pflicht-Gate
 ("Auftrag 0") in jedem Bau- und Aufklärungs-Prompt. Details zum Ablauf
 (Anlegen zu Phasenbeginn, Fortschreiben während der Phase, Hebung +
-Archivierung am Phasenende): arbeitsweise.md.
+Archivierung am Phasenende): docs/arbeitsweise.md.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,

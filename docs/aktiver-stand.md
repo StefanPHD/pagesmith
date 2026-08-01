@@ -335,7 +335,7 @@ Werden in jedem Folge-Prompt wörtlich zitiert.
 
 ### Scheiben-Schnitt der Phase
 
-Fünf Scheiben, in dieser Reihenfolge:
+Sechs Scheiben, in dieser Reihenfolge:
 
 | Scheibe | Inhalt | Stand |
 |---|---|---|
@@ -343,7 +343,8 @@ Fünf Scheiben, in dieser Reihenfolge:
 | **10a-2** | Bereich VERÖFFENTLICHEN extrahieren | **abgeschlossen** (s. unten) |
 | **10b-1** | Die Fläche: Drawer rechts, aus dem Dokumentfluss, eigener Scroll-Container, Bereichswechsel innerhalb (versteckend) | **abgeschlossen** (s. unten) |
 | **10b-2** | Mount-Disziplin `DomainManager`: der Zustand über den Projektwechsel (s. Backlog) | **abgeschlossen** (s. unten) |
-| **10c** | I3 — die Zustandssignale an der Navigation | offen |
+| **10c-1** | I3 — das Zustandssignal an der Reiterzeile + die Trennlinie aus 10b-1 | **abgeschlossen** (s. unten) |
+| **10c-2** | Zurücksetzen der Fehlerzustände beim Verlassen der Fläche | offen |
 
 **ORDNUNGSPRINZIP — zuerst die Eingriffe, deren Ergebnis man vorher kennt, dann die
 sichtbaren.** Bei 10a-1 und 10a-2 lautet der Nachweis "unverändert" — der billigste
@@ -359,6 +360,13 @@ DEKLARATIONSPFLICHTIGE Verhaltensänderung, die I6 nicht deckt. Zusammen gebaut 
 bei einem Fehlschlag wiederum nicht unterscheidbar, welche der beiden ihn verursacht
 hat. **10b-2 folgt unmittelbar auf 10b-1** — es ist keine Vertagung, sondern eine
 Trennung der Nachweise.
+
+**WARUM 10c GETEILT IST — dieselbe Logik ein drittes Mal.** 10c-1 ist rein ADDITIV
+(ein Signal, das es vorher nicht gab, plus eine verschobene Trennlinie); 10c-2 ändert
+einen Zustands-LEBENSZYKLUS — Fehlerzustände, die heute Reiterwechsel und
+Drawer-Schließen überleben, sollen beim Verlassen der Fläche enden — und ist damit
+wie 10b-2 DEKLARATIONSPFLICHTIG. Zusammen gebaut wäre bei einem Fehlschlag nicht
+unterscheidbar, welche der beiden ihn verursacht hat.
 
 **VERHÄLTNIS ZU I6 — damit 10c später nicht als Verstoß gelesen wird.** I6 ("kein
 Verhalten ändert sich") bindet **10a-1, 10a-2 und 10b-1** — für 10b-1 in der Lesart
@@ -692,6 +700,81 @@ Test bestätigt, NICHT über die Browser-Beobachtung** — s. Befund zum Instrum
 **NÄCHSTE SCHEIBE: 10c — I3, die Zustandssignale an der Reiterzeile, plus die
 Trennlinie unter die Reiterzeile (aus 10b-1).**
 
+#### Scheibe 10c-1 — Zustandssignal an der Reiterzeile + Trennlinie (ABGESCHLOSSEN, live verifiziert 2026-08-01)
+
+Commit `065573d`. Tests **678 -> 682**, **NULL geänderte Bestands-Assertionen**
+(die Testdatei trägt 106 Einfügungen und 0 Löschungen). Alle vier Pipeline-Gates
+grün: `tsc --noEmit`, `lint`, `vitest run`, `build`.
+**10c ist per Konstruktion eine ERGÄNZUNG** (so im Abschnitt "VERHÄLTNIS ZU I6"
+oben): das Signal ist neu und **nach Absicht** neu.
+
+**Was gebaut wurde.** Ein Zustandssignal in der **Drawer-Kopfzeile**
+(`CodeImporter.tsx`, Bedingung `const measureSignal`, Knoten in der Kopfzeile
+zwischen Reitergruppe und Schließkreuz), **außerhalb der Reiter-Buttons**; sichtbarer
+Text „Messen: Auswertung nicht geladen", `title` mit der Handlung („… bitte die Seite
+neu laden."). Dazu die **Trennlinie aus 10b-1** (`border-b border-gray-200 pb-3` an
+der Kopfzeile): Sie trennt die **Reiterzeile vom Inhalt** und ist damit eine
+Eigenschaft des **DRAWERS**, nicht der Bereiche. Die Klassen
+`mt-4 border-t border-gray-200 pt-4` sind dafür aus dem ersten Abschnitt von
+`PublishView` entfallen — **die Sektions-`div` bleibt**, weil die Elternkette von
+10b-1 T3 (`getByRole("heading").parentElement.parentElement`) an genau dieser Ebene
+hängt; T3 ist unberührt und grün. `DomainManager.tsx` ist **nicht im Diff**;
+`MeasureView.tsx` trägt ausschließlich einen Kommentar, keine Code-Zeile.
+**Damit ist der GESTALTUNGS-BEFUND aus dem 10b-1-Vermerk erledigt** („TRIGGER:
+Scheibe 10c") — genau in der dort vorgezeichneten Form: eine Stelle statt zwei,
+und keine Ansicht trägt mehr Wissen über ihre Position im Drawer. Der
+10b-1-Vermerk selbst bleibt als Zeitdokument unverändert stehen.
+
+**DAS KRITERIUM — vom Owner geschärft, dauerhaft gültig (Kandidat für die Hebung nach
+"## Immer beachten" am Phasenende).** Ein Signal leuchtet **NUR, wenn der Nutzer JETZT
+etwas tun kann**. NICHT qualifiziert: wartende Vorgänge, bei denen niemand handeln
+kann (DNS-Propagierung), und normale Anfangszustände (kein Projekt gespeichert, keine
+Domain, keine Daten, Test nicht gestartet). Grund: Ein Reiter, der stundenlang
+leuchtet, ohne dass jemand handeln kann, erzeugt **Signal-Ermüdung** — dann ist das
+Signal wertlos.
+
+**WAS NICHT SIGNALISIERT WIRD, mit Grund.** `publishStatus`, `capiTokenStatus` und
+`variantStatus` im Fehlerzustand hatte der Nutzer beim Entstehen **auf dem Schirm**
+(alle drei entstehen ausschließlich durch einen Klick im eigenen Bereich). Dass sie
+Reiterwechsel **UND** Drawer-Schließen überleben, ist **kein Grund für ein Signal —
+es ist der Fehler selbst**. Die Antwort darauf ist **10c-2**, nicht ein Signal.
+
+**DIE BEDINGUNG UND IHR PREIS.** Das Signal prüft nicht nur den Fehlerzustand, sondern
+zusätzlich den **Sichtbarkeits-Term** aus `MeasureView` — sonst leuchtete es auch dort,
+wo unten gar keine Fehlermeldung steht (Projekt ohne Variante B und ohne
+protokollierten Teststart). Damit existiert **dasselbe Urteil an zwei Stellen**.
+Präzise: **nicht die Zahlen sind dupliziert** — I5 ist gewahrt, gelesen wird derselbe
+State-Wert aus derselben RPC —, sondern **das Urteil über die Anzeige**. Beide Stellen
+tragen einen Kommentar, der auf die andere verweist; **der WÄCHTER ist aber T2, nicht
+der Kommentar.**
+
+**BEFUND AUS DER MUTATIONSPROBE, DER DIE SCHEIBE ÜBERDAUERT (Kandidat für die Hebung
+am Phasenende).** Die Annahme, ein Signaltext **IM** Reiter-Button breche die fünf
+verankerten Reiter-Abfragen, ist **WIDERLEGT**: Mutation M3 (Knoten in den
+Messen-Button verschoben) machte **genau einen** Test rot — T4 —, alle fünf
+Bestands-Abfragen blieben grün. Grund: In ihren Fixtures lädt die Varianten-Auswertung
+erfolgreich, das Signal leuchtet dort **nie**, der zugängliche Name bleibt „Messen".
+Der Fehlgriff wäre im gesamten Bestand **unsichtbar** geblieben und wird **allein von
+T4** gefangen, weil nur dieser Test das Signal absichtlich zum Leuchten bringt.
+**DIE ALLGEMEINE LEHRE — sie gehört in die bestehende Regel aus 10b-1 (der
+Prüfschritt "ein neues Bedienelement bricht bestehende Abfragen auf zwei Weisen"):**
+Ein Bestandstest schützt nur die Zustände, die **seine Fixture herstellt**. Eine neue
+Bedingung erzeugt **neue Zustände**, und darin sind die alten Tests blind. Ein neues
+Element wird deshalb **IN DEM ZUSTAND geprüft, DEN ES HERSTELLT**, nicht nur im
+Ruhezustand.
+
+**Live bestätigt (Stefan).** Kein Signal im Normalbetrieb beim Durchklicken beider
+Reiter; kein Nachleuchten nach Wiederherstellung des Normalzustands; die Trennlinie
+sitzt in beiden Reitern an identischer Position, keine zweite Linie mehr über
+„Veröffentlichen"; Reiter unverändert bedienbar; kein Signal am ⚙-Knopf bei
+geschlossenem Drawer.
+**SCHRITT 1 (Signal bei echtem Fehler) IST ÜBER T3 ABGEDECKT, NICHT ÜBER DEN
+BROWSER** — so benannt und ausdrücklich **nicht** als Live-Schritt verbucht: der
+Fehlerfall ist manuell schwer isolierbar, der Test stellt ihn reproduzierbar her.
+
+**NÄCHSTE SCHEIBE: 10c-2 — Zurücksetzen der Fehlerzustände beim Verlassen der
+Fläche.**
+
 ### Ausdrücklich NICHT in dieser Phase
 
 - Extraktion des Bauen-Bereichs (Entscheidung 5).
@@ -708,4 +791,15 @@ Trennlinie unter die Reiterzeile (aus 10b-1).**
 
 ### Noch offen — gehört in die Stufe-1-Planung
 
-- Die Umsetzung von I3.
+- **I3 ist TEILWEISE eingelöst (10c-1), nicht erledigt.** EINGELÖST: „nicht besucht"
+  und „in Ordnung" sehen zwar weiterhin gleich aus, aber ein **Fehler**, der im
+  unsichtbaren Bereich entsteht, wird an der Navigation selbst sichtbar — für den
+  einen Zustand, der diese Eigenschaft heute erfüllt und der handlungsfähig ist
+  (Varianten-Auswertung nicht ladbar). OFFEN bleiben DREI Dinge, jedes mit eigenem
+  Weg: **(1)** die drei Fehlerzustände, die ihren Bereich überleben statt zu enden —
+  das ist **10c-2** und ausdrücklich KEIN Signal-Thema; **(2)** die beiden gemessenen,
+  nicht gebauten Signal-Kandidaten aus `DomainManager` (Ladefehler der Liste,
+  „Aktion nötig" je Zeile) — eigener Backlog-Eintrag, Trigger dort; **(3)** die
+  weitergehende Lesart von I3 („nicht besucht" ≠ „in Ordnung"), die 10c-1
+  ausdrücklich NICHT angeht: sie verlangte einen Besucht-Zustand je Bereich und
+  damit ein neues Konzept, keine Fehleranzeige.

@@ -2650,3 +2650,134 @@ describe("Phase 10 Scheibe 10c-1: Zustandssignal an der Reiterzeile", () => {
     expect(screen.getByRole("button", { name: /^Live$/ })).toBeTruthy();
   });
 });
+
+/*
+ * Phase 10 Scheibe 10c-2 — DER STATUSKANAL DES DRAWERS ENDET MIT DER SITZUNG.
+ * DEKLARIERTE VERHALTENSAENDERUNG, I6 deckt sie nicht.
+ *
+ * ZWEI ACHSEN, BEIDE GLEICH WICHTIG: (i) der Kanal ueberlebt den REITERWECHSEL —
+ * Messen und Live sind DIESELBE Sitzung; (ii) er ist nach Schliessen und erneutem
+ * Oeffnen weg. Ein Test nur fuer (ii) liesse einen Reset an drawerArea unbemerkt
+ * durch, und der waere die naheliegendste Fehlimplementierung.
+ *
+ * Der Reset laeuft beim OEFFNEN, nicht beim Schliessen (Nachzuegler-Loch, s.
+ * Kommentar an resetDrawerStatusChannel). Fuer die Tests heisst das: nach dem
+ * Schliessen ist der Text ohnehin aus dem DOM (die Flaeche ist abgebaut) — die
+ * Aussage steckt AUSSCHLIESSLICH in der Pruefung NACH dem erneuten Oeffnen.
+ *
+ * T4 und T5 sind Wächter gegen ZU VIEL: T4 gegen einen Uebergriff in die Zone
+ * BAUEN, T5 gegen das nachtraegliche Aufnehmen des Varianten-Kanals (Entscheidung
+ * O1 — dieser Kanal ist strukturell nicht Teil der Drawer-Sitzung).
+ */
+describe("Phase 10 Scheibe 10c-2: der Statuskanal des Drawers endet mit der Sitzung", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>`;
+  const toggleDrawer = () =>
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+  const tab = (name: RegExp) =>
+    fireEvent.click(screen.getByRole("button", { name }));
+
+  async function publishFehlschlag() {
+    publishProject.mockResolvedValueOnce({
+      ok: false as const,
+      error: "Publish kaputt.",
+    } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    toggleDrawer();
+    fireEvent.click(screen.getByRole("button", { name: "Veröffentlichen" }));
+    // VORBEDINGUNG: der Fehler steht wirklich da — sonst prueft der Test nichts.
+    expect(await screen.findByText("Publish kaputt.")).toBeTruthy();
+  }
+
+  it("T1 (Achse i): der Fehler UEBERLEBT den Reiterwechsel — Messen und Live sind dieselbe Sitzung", async () => {
+    await publishFehlschlag();
+
+    tab(/^Messen$/);
+    tab(/^Live$/);
+    tab(/^Messen$/);
+
+    // Haengte der Reset an drawerArea, waere der Text hier weg.
+    expect(screen.queryByText("Publish kaputt.")).toBeTruthy();
+  });
+
+  it("T2 (Achse ii): nach Schliessen und erneutem Oeffnen ist er weg", async () => {
+    await publishFehlschlag();
+
+    toggleDrawer(); // schliessen
+    toggleDrawer(); // wieder oeffnen — HIER laeuft der Reset
+
+    // Der Drawer ist offen (der Publish-Knopf ist wieder da), aber ohne Meldung.
+    expect(screen.getByRole("button", { name: "Veröffentlichen" })).toBeTruthy();
+    expect(screen.queryByText("Publish kaputt.")).toBeNull();
+  });
+
+  it("T3 (zweiter Kanal): auch der CAPI-Fehler ist nach dem erneuten Oeffnen weg", async () => {
+    // Nicht nur ein Kanal traegt die Scheibe: ein Reset, der publish leert und capi
+    // vergisst, laeuft sonst durch.
+    setCapiToken.mockResolvedValueOnce({
+      ok: false as const,
+      error: "Token abgelehnt.",
+    } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    toggleDrawer();
+    fireEvent.change(screen.getByPlaceholderText(/CAPI-Token einfügen/), {
+      target: { value: "geheim" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Setzen" }));
+    expect(await screen.findByText("Token abgelehnt.")).toBeTruthy();
+
+    toggleDrawer();
+    toggleDrawer();
+
+    expect(screen.queryByText("Token abgelehnt.")).toBeNull();
+  });
+
+  it("T4 (Waechter gegen Uebergriff): ein Fehler AUSSERHALB des Drawers ueberlebt", async () => {
+    // saveError gehoert der Zone BAUEN und wird in der Workspace-Kopfzeile
+    // angezeigt. Ein zu breiter Reset (z.B. applyZenForLoadedCode wiederverwendet)
+    // loeschte ihn mit.
+    saveProject.mockResolvedValueOnce({
+      ok: false as const,
+      error: "Speichern kaputt.",
+    } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    expect(await screen.findByText("Speichern kaputt.")).toBeTruthy();
+
+    toggleDrawer();
+    toggleDrawer();
+
+    expect(screen.queryByText("Speichern kaputt.")).toBeTruthy();
+  });
+
+  it("T5 (Waechter fuer O1): ein Varianten-Fehler UEBERLEBT Schliessen und Oeffnen", async () => {
+    // BEWUSST ausgenommen: einer der drei Ausloeser dieses Kanals ("+ Variante B")
+    // sitzt in der Toolbar und ist bei GESCHLOSSENEM Drawer klickbar — der Kanal ist
+    // strukturell nicht Teil der Drawer-Sitzung. Ohne diesen Test koennte ihn jemand
+    // spaeter "der Vollstaendigkeit halber" mit aufnehmen.
+    setAbTestActive.mockResolvedValueOnce({
+      ok: false as const,
+      error: "Riegel greift.",
+    } as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+      />,
+    );
+    await screen.findByText("Titel");
+    toggleDrawer();
+    tab(/^Live$/);
+    fireEvent.click(screen.getByRole("button", { name: "Test starten" }));
+    expect(await screen.findByText("Riegel greift.")).toBeTruthy();
+
+    toggleDrawer();
+    toggleDrawer();
+
+    expect(screen.queryByText("Riegel greift.")).toBeTruthy();
+  });
+});

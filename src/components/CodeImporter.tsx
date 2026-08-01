@@ -914,6 +914,53 @@ export default function CodeImporter({
     setVariantError(null);
   }
 
+  // DER STATUSKANAL DES DRAWERS ENDET MIT DER SITZUNG (Phase 10 Scheibe 10c-2).
+  // DEKLARIERTE VERHALTENSAENDERUNG — I6 deckt sie NICHT, das ist ihr Zweck.
+  //
+  // DAS MODELL: Der offene Drawer ist eine SITZUNG. Der REITERWECHSEL beendet sie
+  // NICHT — wer zwischen Messen und Live wechselt, ist in derselben Sitzung, und ein
+  // Publish-Fehler darf nicht verschwinden, weil man kurz die Zahlen ansieht. Das
+  // OEFFNEN beginnt eine neue. Deshalb haengt der Aufruf an isSettingsOpen und NIE an
+  // drawerArea; ein Reset an der Reiter-Achse waere der Fehler, den Test T1 faengt.
+  //
+  // BEIM OEFFNEN, NICHT BEIM SCHLIESSEN: Die Handler laufen asynchron weiter, wenn
+  // der Drawer zugeht (der Container bleibt gemountet, nur die Flaeche wird
+  // abgebaut). Ein Fehlschlag kann also NACH dem Schliessen eintreffen. Ein Reset am
+  // Schliessen liesse genau diesen Nachzuegler stehen — beim naechsten Oeffnen laege
+  // wieder eine alte Meldung da. Am Oeffnen gibt es dieses Loch nicht. Nebeneffekt:
+  // nur EINE Stelle braucht den Aufruf, das Schliesskreuz bleibt unveraendert.
+  //
+  // ERFOLGSQUITTUNGEN ENDEN MIT — bewusst kein === "error"-Guard. publishStatus und
+  // capiTokenStatus tragen auch "published" bzw. "saved" ("✓ aktualisiert",
+  // "Token gespeichert ✓") und haben KEINEN Auto-Reset. Eine Quittung, die beim
+  // erneuten Oeffnen noch "✓ aktualisiert" sagt, ist keine Bestaetigung mehr, sondern
+  // eine Behauptung ueber einen Zustand, den niemand mehr geprueft hat — derselbe
+  // Fehler wie der stehengebliebene Fehlertext. Deshalb heisst die Scheibe auch nicht
+  // "Fehlerzustaende enden mit der Sitzung", sondern DER STATUSKANAL endet mit ihr.
+  //
+  // variantStatus/variantError SIND BEWUSST NICHT DABEI (O1) — die Scheibe loest ZWEI
+  // VON DREI KANAELEN, und das steht hier statt es zu kaschieren. Grund: Einer der
+  // drei Ausloeser ("+ Variante B", handleCreateVariantB) sitzt in der TOOLBAR und ist
+  // bei GESCHLOSSENEM Drawer klickbar; sein Fehler wird auch dort angezeigt (die
+  // Toolbar-Stelle greift bei !hasVariantB). Der Kanal ist strukturell nicht Teil der
+  // Drawer-Sitzung. Ein hasVariantB-Guard koennte das trennen, waere aber ein ZWEITES
+  // URTEIL ueber den Anzeigeort — in 10c-1 nur akzeptiert, weil es keine Alternative
+  // gab; hier gibt es eine. Waechter dagegen ist Test T5.
+  //
+  // NICHT applyZenForLoadedCode WIEDERVERWENDEN: die leert zusaetzlich die Zen-Flags,
+  // capiTokenInput, die Bestaetigungs- und Busy-Flags und uploadError — sie zoege Zone
+  // BAUEN und halb bestaetigte Loesch-Dialoge mit herein.
+  // GENAU DIE VIER WERTE DES FREIGEGEBENEN UMFANGS. publishRestored ist bewusst NICHT
+  // dabei: es wird nur ZUSAMMEN mit publishStatus === "published" gerendert und von
+  // jedem Publish neu gesetzt — ein Reset waere ohne sichtbare Wirkung und wuerde den
+  // deklarierten Umfang still erweitern.
+  function resetDrawerStatusChannel() {
+    setPublishStatus("idle");
+    setPublishError(null);
+    setCapiTokenStatus("idle");
+    setCapiTokenError(null);
+  }
+
   // Varianten-Zustand aus dem GELADENEN Projekt ableiten (kanonischer Chokepoint,
   // gerufen an GENAU denselben Stellen wie setSavedMappings/setSavedSettings).
   // Ein Projektwechsel muss den Stash aus html_b/mappings_b des NEUEN Projekts
@@ -1774,9 +1821,18 @@ export default function CodeImporter({
           <span className="text-xs text-red-600">{variantError}</span>
         )}
 
+        {/* UMSCHALTER — er oeffnet UND schliesst. Der Zielzustand wird deshalb im
+            Handler berechnet und NICHT im setState-Updater ausgewertet: ein
+            Seiteneffekt im Updater liefe unter StrictMode doppelt. Der Reset haengt
+            am OEFFNEN (s. resetDrawerStatusChannel); das Schliesskreuz im Drawer
+            bleibt dadurch unveraendert — es gibt genau EINE Stelle. */}
         <button
           type="button"
-          onClick={() => setIsSettingsOpen((v) => !v)}
+          onClick={() => {
+            const next = !isSettingsOpen;
+            setIsSettingsOpen(next);
+            if (next) resetDrawerStatusChannel();
+          }}
           aria-expanded={isSettingsOpen}
           className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >

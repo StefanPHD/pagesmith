@@ -20,6 +20,42 @@ gelöscht. Das Verfahren steht verbindlich in der Root-CLAUDE.md unter
 ausführliche Ablauf zusätzlich in `docs/claude-history/arbeitsweise.md`,
 Abschnitt "Phasenende ab Phase 10".
 
+## GEHOBEN AM 2026-08-01 — RUNDE 1 DES PHASENABSCHLUSSES
+
+Die folgenden Aussagen dieser Datei stehen seit dem 2026-08-01 in der Root-CLAUDE.md
+unter "## Immer beachten" und gelten dort dauerhaft und unabhängig von Phase 10. Sie
+bleiben hier im Wortlaut stehen (Zeitdokument mit dem konkreten Fall); die Root-Fassung
+ist die allgemeine. **Bei Widerspruch gilt die Root-Fassung.**
+Markierung zentral statt an fünfzehn Einzelstellen — die Einzelmarkierungen
+("Kandidat für die Hebung …") bleiben unverändert, damit der Text lesbar bleibt.
+
+1. Der haltbare Anker ist der SYMBOLNAME, nicht die Zeilennummer (Zeitstand-Block).
+2. Wiederkehrender externer Aufruf an die Sichtbarkeit des BEREICHS, nicht des Tabs
+   (Entscheidung 3).
+3. Komponente mit eigenem Zustand nicht hinter einen aushängenden Umschalter
+   (Entscheidung 3) — inkl. der Umkehrung aus 10c-2 (Zustand dort halten, wo seine
+   Lebensdauer endet).
+4. Kein zeit-/locale-abhängiger Wert in einem beim ersten Render sichtbaren Teilbaum
+   (I2, T6).
+5. Verstecken per CSS-Klasse — weder `hidden` noch `aria-hidden` (10b-1).
+6. Wer ein Element aus dem Dokumentfluss nimmt, prüft den BEDIENWEG (10b-1).
+7. Zwei gleichnamige Bedienelemente sind ein Oberflächen-Problem — samt dem
+   Prüfschritt "zwei Weisen, bestehende Abfragen zu brechen" (10b-1).
+8. Die Testumgebung wertet kein CSS aus (10b-1).
+9. Server-Actions sind im Netzwerk-Tab nicht am Namen erkennbar (10b-2).
+10. Ein Signal leuchtet nur, wenn der Nutzer JETZT handeln kann (10c-1).
+11. Aufräumen am ANFANG einer Sitzung, nicht an ihrem Ende (10c-2).
+12. Was die Hülle vom Inhalt trennt, gehört der Hülle (10b-1-Gestaltungsbefund).
+13. Nur ein Test ist ein Wächter — Kommentar und Nebeneffekt sind keiner (10a-1,
+    10b-2, 10c-1).
+14. Beim Extrahieren wandert eine Ableitung nur mit, wenn auch ihre Eingänge
+    mitwandern (10a-2).
+15. Werkzeug-Regel: `sed -i` strippt still das CR — auch bei der RÜCKNAHME (10b-2).
+Zusätzlich als Lektionen **(e)** und **(f)** in den bestehenden Block
+"MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE" eingefügt (jetzt SECHS Lektionen):
+Fixture-Blindheit bestehender Tests (10c-1) und "eine Fehlerklasse an genau einem
+Test" (10b-1, 10c-1).
+
 ## Aktiver Stand — Phase 10 (Workspace-Reorganisation)
 
 Reine Informationsarchitektur. KEIN neues Backend-Feature, KEINE Migration, KEIN

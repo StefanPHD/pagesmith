@@ -661,10 +661,10 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   nur noch den Mock (real aufgetreten: im Dispatch-Test MUSS die echte extractLabel
   laufen, sonst faengt er den 7c-2a-Rueckfall nicht). Verwandt und schaerfer:
   "TESTDATEN UND TEST-SEQUENZ MUESSEN DEN PRODUKTIVEN PFAD TREFFEN" unten.
-- MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE — VIER LEKTIONEN (Phase 9, mehrfach
-  live aufgetreten): Ergänzt TEST-DISZIPLIN oben um vier konkrete Fallstricke,
-  die erst eine scharfe Mutationsprobe bzw. ein genau gelesener Live-Test
-  sichtbar macht.
+- MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE — SECHS LEKTIONEN (Phase 9, mehrfach
+  live aufgetreten; (e) und (f) aus Phase 10): Ergänzt TEST-DISZIPLIN oben um
+  konkrete Fallstricke, die erst eine scharfe Mutationsprobe bzw. ein genau
+  gelesener Live-Test sichtbar macht.
   (a) DREIWERTIGE LOGIK MACHT EINE TS-PORTIERUNG BLIND: Hängt eine
       Entscheidung an SQL-NULL-Semantik (ein Vergleich gegen NULL verwirft
       die Zeile), verhält sich eine reine TypeScript-Nachbildung anders — ein
@@ -693,7 +693,24 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
       POSITIVKONTROLLE: ohne sie sind ein echter Nicht-Treffer und ein
       kaputt gewordener Wächter am Ergebnis nicht zu unterscheiden — gerade
       bei sicherheitsrelevanten Klauseln ist ein stiller Durchlass teuer.
-  Herleitung mit den konkreten Fundstellen: docs/claude-history/phase-9-ab-testing.md.
+  (e) EIN BESTANDSTEST SCHÜTZT NUR DIE ZUSTÄNDE, DIE SEINE FIXTURE HERSTELLT.
+      Eine neue Bedingung erzeugt NEUE Zustände, und darin sind die alten Tests
+      blind — auch wenn sie genau die Stelle adressieren, die man ändert. Ein
+      neues Element wird deshalb IN DEM ZUSTAND geprüft, DEN ES HERSTELLT, nicht
+      nur im Ruhezustand. BELEG (Phase 10): Die Annahme, ein Signaltext IM
+      Reiter-Button breche die fünf verankerten Reiter-Abfragen, war falsch —
+      in deren Fixtures leuchtet das Signal nie, der zugängliche Name bleibt
+      unverändert. Der Fehlgriff wäre im gesamten Bestand unsichtbar geblieben.
+  (f) WIRD EINE FEHLERKLASSE VON GENAU EINEM TEST GEFANGEN, GEHÖRT DAS IN SEINEN
+      KOMMENTAR. Sonst entfernt ihn jemand später als vermeintlich redundant und
+      nimmt damit die einzige Abdeckung mit. Nach jeder Mutationsrunde zählen,
+      welcher Test gefallen ist — bleibt es bei EINEM, ist der Test ein
+      Einzelstück und wird als solches benannt. BELEG (Phase 10, zweimal): der
+      Struktur-Test der Reiter trägt allein zwei Fehlerklassen; der Wächter für
+      den zugänglichen Namen der Reiter ist der einzige Test, der das Signal
+      überhaupt zum Leuchten bringt.
+  Herleitung mit den konkreten Fundstellen: docs/claude-history/phase-9-ab-testing.md
+  bzw. docs/claude-history/phase-10-workspace.md.
 - COMMIT-KONVENTIONEN: Conventional-Commit-Format type(scope): message (feat, fix, docs,
   chore, refactor). docs(claude)-Commits bleiben GETRENNT von feat/fix-Commits — der
   Verlauf wird gelesen, und eine Doku-Aenderung im Feature-Commit ist spaeter nicht mehr
@@ -1093,6 +1110,153 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Wahrheitsquelle (settings.hosting / settings.capi.tokenSet / ...) ist korrekt für beide
   Fälle. Beim Publish-Leak zusätzlich sicherheitsrelevant: falscher "veröffentlicht"-
   Zustand könnte Ad-Budget auf die falsche URL lenken.
+- DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER (Phase 10, an der
+  eigenen Doku widerlegt): Wer in Doku, Kommentar oder Backlog auf Code verweist,
+  nennt den SYMBOLNAMEN (applyZenForLoadedCode, settingsEqual, statusBadge). Namen
+  überleben Refactorings, Zeilennummern nicht — und eine falsche Zeilennummer ist
+  teurer als keine, weil sie auf eine ANDERE Stelle zeigt statt zum Suchen zu
+  zwingen. BELEG: Ein 16-zeiliger Kommentar verschob in Phase 10 sämtliche Angaben
+  einer Datei um +16; ein Dokument, das zwei Runden zuvor als "gemessen" galt, war
+  damit falsch. Zeilennummern in einem MESSBERICHT bleiben erlaubt (sie datieren
+  sich selbst); in dauerhaften Dokumenten nicht.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- EIN WIEDERKEHRENDER AUFRUF GEGEN EINEN EXTERNEN DIENST HÄNGT AN DER SICHTBARKEIT
+  DES BEREICHS, DER IHN BRAUCHT — NICHT AN DER DES TABS (Phase 10): Die
+  document.hidden-Pause greift NICHT, wenn der Nutzer im selben Tab anderswo
+  arbeitet; ein Poll läuft dann weiter, obwohl niemand hinsieht, und multipliziert
+  sich über alle Nutzer. BELEG: das 60-Sekunden-Poll-Intervall der Domain-Liste
+  gegen Vercel — es rechtfertigt allein, dass die Einstellungs-Fläche beim
+  Schliessen ABGEBAUT wird, statt dauerhaft gemountet zu bleiben.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- EINE KOMPONENTE MIT EIGENEM ZUSTAND DARF NICHT HINTER EINEM UMSCHALTER LIEGEN,
+  DER SIE AUSHÄNGT (Phase 10): Entweder sie wird VERSTECKT statt ausgehängt, oder
+  ihr Zustand wird hochgezogen. Sonst entscheidet ein reiner Ansichtswechsel
+  darüber, ob Arbeit verlorengeht. Umgekehrt gilt dieselbe Regel als WERKZEUG: Wo
+  der Zustand dort liegt, wo seine Lebensdauer endet, löst sich das Aufräumen ohne
+  eine Zeile Code. BELEG: Die Bestätigung einer Domain-Zeile stirbt mit dem Unmount
+  ihrer Komponente; die gleichartige Bestätigung im Container überlebt das
+  Schliessen der Fläche und steht Stunden später scharf da.
+  Verwandt: "ABLEITEN STATT LÖSCHEN" oben. Herleitung:
+  docs/claude-history/phase-10-workspace.md.
+- KEIN ZEIT- ODER LOCALE-ABHÄNGIGER WERT IN EINEM TEILBAUM, DER BEIM ERSTEN RENDER
+  SICHTBAR IST (Hydration-Regel, Phase 10): toLocale*, Intl.*, Date.now() und
+  Verwandte formatieren auf Server und Client verschieden (Zeitzone, Locale) und
+  erzeugen einen Hydration-Mismatch. Solche Ausgaben gehören hinter ein Gate, das
+  im ersten Render GARANTIERT geschlossen ist — und diese Abhängigkeit gehört an
+  die Fundstelle kommentiert, weil sie sonst beim nächsten Umbau unbemerkt kippt.
+  BELEG: Die lokalisierte Datumsausgabe der Varianten-Auswertung und formatRelative
+  im Projekt-Menü sind NUR deshalb kollisionsfrei, weil ihr jeweiliges Gate
+  deterministisch geschlossen startet. VERWORFEN wurden dort Mount-Flag,
+  suppressHydrationWarning und ein fester timeZone-Parameter: der erste baut
+  Mechanik gegen ein Problem, das es nicht gibt, der zweite unterdrückt die Meldung
+  statt der Abweichung, der dritte nimmt dem Nutzer seine lokale Zeit.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- VERSTECKEN PER CSS-KLASSE — WEDER DAS HTML-ATTRIBUT hidden NOCH aria-hidden
+  (Phase 10): Beide nehmen den Teilbaum aus dem Accessibility-Tree, und getByRole
+  filtert per Default danach — jede Bestandsabfrage auf den inaktiven Teilbaum geht
+  dann rot, ohne erkennbare Ursache. Wer einen gemounteten Teilbaum unsichtbar
+  machen will, nutzt echtes display:none per Klasse. GEGENPROBE beim Testen: Die
+  Klasse belegt STRUKTUR, nicht Sichtbarkeit — s. die jsdom-Regel unten.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- WER EIN ELEMENT AUS DEM DOKUMENTFLUSS NIMMT (fixed/absolute), PRÜFT, OB DER
+  BEDIENWEG DORTHIN MITSCROLLT (Phase 10): Das fixierte Element bleibt stehen, sein
+  Auslöser nicht — bei gescrollter Seite kann der einzige Zugang (oder der einzige
+  Schliessweg) aus dem Sichtfeld wandern. BELEG: Der Einstellungs-Drawer ist fixed,
+  sein Toolbar-Schalter nicht; ohne das Schliesskreuz IM Drawer wäre er bei
+  gescrollter Seite nicht mehr schliessbar gewesen. Die Ausgleichsmassnahme gehört
+  in dieselbe Scheibe, die das Problem erzeugt.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- ZWEI BEDIENELEMENTE MIT GLEICHEM NAMEN UND VERSCHIEDENER WIRKUNG SIND EIN
+  OBERFLÄCHEN-PROBLEM, KEIN TESTPROBLEM (Phase 10): Wird eine Testabfrage
+  mehrdeutig, ist ZUERST die Oberfläche zu prüfen — nicht die Abfrage eindeutig zu
+  machen. aria-label oder role reparieren die Abfrage und lassen die
+  Doppeldeutigkeit auf dem Bildschirm stehen; das justiert das Instrument statt der
+  Sache. BELEG: Ein Reiter "Veröffentlichen" neben dem gleichnamigen Publish-Knopf
+  hätte acht Abfragen mehrdeutig gemacht — bei bereits veröffentlichtem Projekt
+  hätte eine davon still den falschen Knopf getroffen; gewählt wurde ein anderer
+  NAME.
+  PFLICHT-PRÜFSCHRITT VOR DEM BAU, nicht danach: Ein neues Bedienelement oder ein
+  neuer Text kann bestehende Abfragen auf ZWEI Weisen brechen — es macht sie
+  MEHRDEUTIG, ODER es kippt eine Behauptung über die ABWESENHEIT eines Textes
+  (not.toContain, queryBy… toBeNull und Verwandte). Beide Achsen einzeln durchgehen.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- DIE TESTUMGEBUNG WERTET KEIN CSS AUS (gemessen, dauerhafte Eigenschaft des
+  Setups): vitest.config.ts lädt kein Stylesheet, display einer .hidden-Klasse ist
+  in jsdom "block" wie ohne Klasse, checkVisibility fehlt. FOLGE: KEIN Test darf
+  behaupten, etwas sei sichtbar oder unsichtbar. Prüfbar sind DOM-Präsenz,
+  Attribute und Textinhalt; Sichtbarkeit, Position, Farbe und Verdrängung sind
+  ausschliesslich Live-Test-Achsen. Ein Test, der eine Klasse prüft, benennt sich
+  selbst als STRUKTUR-Zusicherung.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- SERVER-ACTIONS SIND IM NETZWERK-TAB NICHT AN IHREM NAMEN ERKENNBAR (gemessen am
+  gebauten Bundle, Phase 10): Sie erscheinen als POST auf die SEITEN-URL; der
+  Klartextname steht nur als Sourcemap-Argument im Bundle
+  (createServerReference(<opake id>, callServer, …, "name")), gesendet wird die
+  opake ID im next-action-Header. Alle Actions einer Seite sehen in der
+  Namensspalte identisch aus. FOLGE FÜR JEDE LIVE-ANLEITUNG: "im Netzwerk-Tab nach
+  <Action> suchen" ist eine UNTAUGLICHE Sonde und erzeugt FALSCHE ENTWARNUNG.
+  Tauglich sind: POSTs auf die Seiten-URL zählen, der next-action-Header — oder,
+  schärfer, die Nachstellung im Test. BELEG: Ein Live-Schritt meldete "kein
+  Aufruf", während der Aufruf nachweislich stattfand.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- EIN SIGNAL LEUCHTET NUR, WENN DER NUTZER JETZT ETWAS TUN KANN (Phase 10,
+  Produkt-Regel für Statusanzeigen): NICHT qualifiziert sind wartende Vorgänge, bei
+  denen niemand handeln kann (DNS-Propagierung), und normale Anfangszustände (nichts
+  gespeichert, keine Daten, nichts gestartet). Grund: Eine Anzeige, die stundenlang
+  leuchtet, ohne dass jemand handeln kann, erzeugt SIGNAL-ERMÜDUNG — dann ist sie
+  wertlos, auch für den Fall, der wirklich zählt. ZWEITE BEDINGUNG: Das Signal muss
+  dieselbe Sichtbarkeits-Bedingung tragen wie die Meldung, auf die es zeigt — sonst
+  führt es in einen Bereich, in dem nichts steht.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- AUFRÄUMEN AM ANFANG EINER SITZUNG, NICHT AN IHREM ENDE (Phase 10): Soll ein
+  Kontext "sauber starten", wird er beim BETRETEN zurückgesetzt, nicht beim
+  Verlassen. Grund: Laufende Handler enden nicht mit der Ansicht — ein Fehlschlag
+  kann NACH dem Verlassen eintreffen und stünde beim nächsten Betreten wieder da.
+  Nebeneffekt: Es gibt meist nur EINEN Eintrittspunkt, aber mehrere Ausgänge.
+  BELEG: Der Statuskanal des Einstellungs-Drawers wird beim Öffnen geleert; ein
+  Reset beim Schliessen hätte genau den nachträglich eintreffenden Fehler
+  stehenlassen, den die Massnahme abschaffen sollte.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- WAS DIE HÜLLE VOM INHALT TRENNT, GEHÖRT DER HÜLLE — NICHT DEM INHALT (Phase 10):
+  Trennlinien, Abstände und Rahmen, die eine Navigation von ihrem Inhalt abgrenzen,
+  sind Eigenschaft des CONTAINERS. Trägt der erste Abschnitt eines austauschbaren
+  Bereichs sie selbst, weiss dieser Bereich etwas über seine POSITION — und bei
+  einem dritten Bereich oder einer Umsortierung ist es sofort wieder falsch;
+  ausserdem sieht jeder Bereich anders aus, je nachdem, ob er die Klassen trägt.
+  Eine Stelle statt zwei.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- NUR EIN TEST IST EIN WÄCHTER — EIN KOMMENTAR ODER EIN NEBENEFFEKT IST KEINER
+  (Phase 10, zwei Ausprägungen): (1) Wird eine Entscheidung bewusst an ZWEI Stellen
+  getroffen (ein deklariertes Duplikat), sichern Querverweis-Kommentare sie NICHT —
+  sie werden beim Ändern nicht gelesen. Der Wächter ist ein Test, der rot wird, wenn
+  nur eine Seite geändert wird; der Kommentar sagt, WELCHER. (2) Ein Schutz, der nur
+  NEBENEFFEKT einer anderen Logik ist (eine Mount-Grenze, eine disabled-Bedingung),
+  verschwindet STILL, sobald diese Logik sich ändert — kein Typfehler, kein roter
+  Build. Wer sich auf so einen Schutz verlässt, schreibt den Test dazu, der ihn
+  benennt. BELEG: Der Schutz vor einer destruktiven Aktion auf veralteten Daten
+  ruht auf einer Mount-Grenze; und der Schutz des CAPI-Klartext-Tokens ruhte allein
+  auf einer disabled-Bedingung, ohne dass ein Test ihn behauptete.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- BEIM EXTRAHIEREN EINER ANSICHT WANDERT EINE ABLEITUNG NUR MIT, WENN SIE
+  AUSSCHLIESSLICH VON DIESER ANSICHT GELESEN WIRD **UND** IHRE EINGÄNGE EBENFALLS
+  MITWANDERN ODER OHNEHIN PROPS SIND (Phase 10, nachgeschärft nach der ersten,
+  unzureichenden Fassung): Sonst zieht die Ableitung eine Kette von Werten aus dem
+  Container mit sich, die dort gebraucht werden — oder sie muss neu berechnet
+  werden, und dann gibt es zwei Rechenwege für dieselbe Frage. BELEG: Bei der ersten
+  Extraktion wanderten vier Ableitungen mit, bei der zweiten KEINE einzige, weil
+  deren Eingänge im Container gelesen werden.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG STILL DAS CR (Phase 10, real
+  aufgetreten): Eine mit sed geschriebene ODER ZURÜCKGENOMMENE Datei kann danach als
+  geändert gelten, obwohl ihr Inhalts-Diff LEER ist — und wandert unbemerkt in den
+  Commit. Für Datei-Änderungen das Edit-Werkzeug nutzen, nicht sed. DER
+  MUTATIONSZYKLUS IST EBENSO GEFÄHRDET WIE DER BAU: setzen, messen, zurücknehmen —
+  nach der Rücknahme IMMER git status prüfen und leere Diffs (Datei gelistet, aber
+  numstat leer) ausdrücklich ausschliessen. BELEG: Ohne die Datei-ZÄHLUNG im
+  Scope-Wächter ("genau drei Einträge") wäre eine vierte Datei in den Commit
+  gewandert. Ergänzt "COMMIT-KONVENTIONEN" oben um eine zweite Prüfung neben der
+  Secret-Prüfung.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
 - NAHT-HYGIENE (7c-2, aktiv): 7c-2 koppelt Domain-/Routing-Logik NICHT an Tracking-/
   Lead-Logik. Die Andock-Punkte für spätere Module existieren BEREITS (neutraler
   /api/e-Trichter, projekt-scoped Settings); "nahtloses Andocken" folgt aus sauberen

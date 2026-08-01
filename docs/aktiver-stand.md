@@ -344,7 +344,7 @@ Sechs Scheiben, in dieser Reihenfolge:
 | **10b-1** | Die Fläche: Drawer rechts, aus dem Dokumentfluss, eigener Scroll-Container, Bereichswechsel innerhalb (versteckend) | **abgeschlossen** (s. unten) |
 | **10b-2** | Mount-Disziplin `DomainManager`: der Zustand über den Projektwechsel (s. Backlog) | **abgeschlossen** (s. unten) |
 | **10c-1** | I3 — das Zustandssignal an der Reiterzeile + die Trennlinie aus 10b-1 | **abgeschlossen** (s. unten) |
-| **10c-2** | Zurücksetzen der Fehlerzustände beim Verlassen der Fläche | offen |
+| **10c-2** | Der Statuskanal des Drawers endet mit der Sitzung (Zurücksetzen beim Verlassen der Fläche) | **abgeschlossen** (s. unten) |
 
 **ORDNUNGSPRINZIP — zuerst die Eingriffe, deren Ergebnis man vorher kennt, dann die
 sichtbaren.** Bei 10a-1 und 10a-2 lautet der Nachweis "unverändert" — der billigste
@@ -775,6 +775,65 @@ Fehlerfall ist manuell schwer isolierbar, der Test stellt ihn reproduzierbar her
 **NÄCHSTE SCHEIBE: 10c-2 — Zurücksetzen der Fehlerzustände beim Verlassen der
 Fläche.**
 
+#### Scheibe 10c-2 — Der Statuskanal des Drawers endet mit der Sitzung (ABGESCHLOSSEN, live verifiziert 2026-08-01)
+
+**Letzte Bau-Scheibe der Phase.** Commit `31b8ab2`. Tests **682 -> 687**, **NULL
+geänderte Bestands-Assertionen** (die Testdatei trägt 131 Einfügungen und 0
+Löschungen). Alle vier Pipeline-Gates grün: `tsc --noEmit`, `lint`, `vitest run`,
+`build`. **DEKLARIERTE VERHALTENSÄNDERUNG — I6 deckt sie NICHT**, das ist ihr Zweck.
+
+**DAS MODELL: Der offene Drawer ist eine SITZUNG.** Der **Reiterwechsel beendet sie
+NICHT** — wer zwischen Messen und Live wechselt, verliert seinen Publish-Fehler
+nicht, weil er kurz die Zahlen ansieht. **Das Schließen beendet sie**, beim nächsten
+Öffnen ist der Bereich sauber. Umgesetzt als `resetDrawerStatusChannel` im Container,
+aufgerufen aus dem Toolbar-Umschalter. Der Aufruf hängt an `isSettingsOpen` und
+**NIE** an `drawerArea`; ein Reset an der Reiter-Achse wäre der Fehler, den Test T1
+fängt (Mutation M1 belegt es).
+
+**DREI ENTSCHEIDUNGEN MIT GRUND.**
+- **Reset beim ÖFFNEN, nicht beim Schließen.** Die Handler laufen asynchron weiter,
+  wenn der Drawer zugeht (der Container bleibt gemountet — I1: nur die Fläche wird
+  abgebaut). Ein Reset am Schließen ließe einen **nachträglich eintreffenden** Fehler
+  stehen, also genau den Zustand, den die Scheibe abschafft. Nebeneffekt: **eine
+  Stelle statt zwei**, das Schließkreuz bleibt unverändert. **Live belegt (Schritt 6).**
+- **Die Erfolgsquittungen enden mit.** Bewusst kein `=== "error"`-Guard:
+  `publishStatus` und `capiTokenStatus` tragen auch „published" bzw. „saved"
+  („✓ aktualisiert", „Token gespeichert ✓") und haben KEINEN Auto-Reset. Eine
+  Quittung, die beim erneuten Öffnen noch „✓ aktualisiert" sagt, ist keine
+  Bestätigung mehr, sondern eine **Behauptung über einen Zustand, den niemand geprüft
+  hat**. Deshalb heißt die Scheibe **STATUSKANAL**, nicht „Fehlerzustände".
+- **O1: Der Varianten-Kanal bleibt draußen.** Einer seiner drei Auslöser
+  („+ Variante B") sitzt in der **TOOLBAR** und ist bei geschlossenem Drawer
+  klickbar; sein Fehler wird auch dort angezeigt. Der Kanal ist **strukturell nicht
+  Teil der Sitzung**. Ein `hasVariantB`-Guard könnte das trennen, wäre aber ein
+  **zweites Urteil über den Anzeigeort** — in 10c-1 nur akzeptiert, weil es keine
+  Alternative gab; hier gibt es eine. **DIE SCHEIBE LÖST ZWEI VON DREI KANÄLEN** — so
+  benannt, nicht kaschiert. Wächter dagegen ist **T5**; die Mutation, die O1 verletzt
+  (M3), wird **allein von ihm** gefangen.
+
+**GEMESSEN UND NICHT GEBAUT.** Der **Projektwechsel war bereits vollständig
+abgedeckt**: Alle sechs Werte werden von der bestehenden Rücksetz-Routine
+(`applyZenForLoadedCode`) geleert, und sie läuft auf jedem Projekt-Ladepfad. Die
+Scheibe schrumpfte dadurch in der Stufe-1-Planung auf **die eine neue Grenze**.
+
+**BEFUND, NICHT MITGEBAUT — gehört in den Backlog (eigener Eintrag).** Halb
+bestätigte **destruktive Abfragen** (Token entfernen, Variante B entfernen)
+überleben das Schließen ebenfalls. Dieselbe Fehlerklasse, in einer Hinsicht
+**schärfer**: hier steht kein Hinweis, sondern eine **scharf gestellte Aktion**,
+deren Auslöser der Nutzer vergessen haben kann. **Bewusst nicht mitgenommen:** es ist
+eine Bedienabsicht, kein Statuskanal — und der Schnitt der Scheibe trägt genau diese
+Unterscheidung.
+
+**Live bestätigt (sieben Schritte, Stefan).** Fehler überlebt den Reiterwechsel;
+nach Schließen und Öffnen weg; zweiter Kanal (CAPI) ebenso; kein Übergriff auf
+Workspace-Meldungen; die Toolbar-Meldung überlebt (O1); ein Nachzügler wird beim
+Öffnen geräumt; Projektwechsel unverändert.
+
+**DABEI GEFUNDEN, AUSSERHALB DER SCHEIBE.** Zwei Workspace-Befunde beim
+Projektwechsel (`saveError`/`saveStatus` überleben ihn) — eigener Backlog-Eintrag,
+nicht von Phase 10 verursacht. Sie sind der Grund, warum **jetzt jede der drei Zonen
+dieselbe Fehlerklasse zeigt**: eine Aussage, die für das falsche Projekt gilt.
+
 ### Ausdrücklich NICHT in dieser Phase
 
 - Extraktion des Bauen-Bereichs (Entscheidung 5).
@@ -796,8 +855,11 @@ Fläche.**
   unsichtbaren Bereich entsteht, wird an der Navigation selbst sichtbar — für den
   einen Zustand, der diese Eigenschaft heute erfüllt und der handlungsfähig ist
   (Varianten-Auswertung nicht ladbar). OFFEN bleiben DREI Dinge, jedes mit eigenem
-  Weg: **(1)** die drei Fehlerzustände, die ihren Bereich überleben statt zu enden —
-  das ist **10c-2** und ausdrücklich KEIN Signal-Thema; **(2)** die beiden gemessenen,
+  Weg: **(1)** ERLEDIGT DURCH 10c-2, aber nur ZU ZWEI DRITTELN: `publishStatus` und
+  `capiTokenStatus` enden mit der Drawer-Sitzung; **`variantStatus`/`variantError`
+  bleiben ausgenommen** (O1 — ein Auslöser sitzt in der Toolbar, s. den 10c-2-Vermerk).
+  Was von (1) offen bleibt, ist damit genau dieser dritte Kanal — und die Frage, ob er
+  je zur Sitzung gehören soll; **(2)** die beiden gemessenen,
   nicht gebauten Signal-Kandidaten aus `DomainManager` (Ladefehler der Liste,
   „Aktion nötig" je Zeile) — eigener Backlog-Eintrag, Trigger dort; **(3)** die
   weitergehende Lesart von I3 („nicht besucht" ≠ „in Ordnung"), die 10c-1

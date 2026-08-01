@@ -2544,3 +2544,109 @@ describe("Phase 10 Scheibe 10b-2: der Projektwechsel ist eine Mount-Grenze fuer 
     expect(vi.mocked(listProjectDomains)).toHaveBeenCalledWith("test-id");
   });
 });
+
+/*
+ * Phase 10 Scheibe 10c-1 — Zustandssignal an der Reiterzeile (Invariante I3: "Die
+ * Trennung darf keinen Zustand verstecken"). Genau EIN signalfaehiger Zustand: die
+ * Varianten-Auswertung im Bereich MESSEN konnte nicht geladen werden.
+ *
+ * DIE WICHTIGERE HAELFTE IST DIE ABWESENHEIT. Ein Signal, das immer leuchtet, ist der
+ * Fehlerfall dieser Scheibe — dann ist es wertlos und erzeugt Signal-Ermuedung.
+ * Deshalb pruefen ZWEI der vier Tests, dass es AUS bleibt, und nur einer, dass es an
+ * geht.
+ *
+ * T2 IST ZUGLEICH DER WAECHTER FUER EIN BEWUSSTES DUPLIKAT: die Bedingung des Signals
+ * (CodeImporter.tsx, const measureSignal) bildet nach, wann MeasureView den Fehlertext
+ * ueberhaupt rendert (dort showVariantCounts). Beide Stellen tragen einen Kommentar,
+ * der auf die jeweils andere verweist; wer nur eine aendert, wird HIER rot.
+ *
+ * ANKER IST DAS title-ATTRIBUT (queryByTitle) — bestehendes Idiom dieser Datei
+ * ("preview", "Verknuepft: track"). KEINE Klassen-Abfrage: jsdom wertet Klassen nicht
+ * aus, ein Test darauf behauptete Sichtbarkeit, die er nicht pruefen kann.
+ */
+describe("Phase 10 Scheibe 10c-1: Zustandssignal an der Reiterzeile", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>`;
+  const SIGNAL_TITLE =
+    "Die Auswertung je Variante konnte nicht geladen werden — bitte die Seite neu laden.";
+  const openDrawer = () =>
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+  const signal = () => screen.queryByTitle(SIGNAL_TITLE);
+
+  it("T1: Normalbetrieb (Auswertung laedt) -> KEIN Signal", async () => {
+    // Bestands-Default des Mocks ist {ok:true, rows:[]}.
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+      />,
+    );
+    await screen.findByText("Titel");
+    openDrawer();
+
+    // Erst abwarten, dass der Lade-Effekt DURCH ist — sonst pruefte der Test nur,
+    // dass das Signal vor dem Laden noch nicht da ist, und waere hohl.
+    await waitFor(() => expect(vi.mocked(getVariantCounts)).toHaveBeenCalled());
+    expect(signal()).toBeNull();
+  });
+
+  it("T2: Ladefehler, aber die Sektion wuerde gar nichts anzeigen -> KEIN Signal", async () => {
+    // {ok:false} bei einem Projekt OHNE Variante B und OHNE protokollierten
+    // Teststart: MeasureView rendert den Fehlertext dann nicht (showVariantCounts
+    // ist falsch). Ein Signal zeigte hier auf einen Bereich, in dem nichts steht —
+    // genau der Fall, den das Kriterium "nur wenn der Nutzer JETZT handeln kann"
+    // ausschliesst.
+    getVariantCounts.mockResolvedValueOnce({ ok: false } as never);
+    render(<CodeImporter initialProjectId="proj-1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    openDrawer();
+
+    await waitFor(() => expect(vi.mocked(getVariantCounts)).toHaveBeenCalled());
+    expect(signal()).toBeNull();
+    // GEGENPROBE zur Voraussetzung: der Fehlertext steht wirklich nirgends.
+    expect(document.body.textContent).not.toContain(
+      "Die Auswertung konnte nicht geladen werden",
+    );
+  });
+
+  it("T3: Ladefehler bei einem Projekt mit Variante B -> Signal, auch im INAKTIVEN Reiter", async () => {
+    getVariantCounts.mockResolvedValueOnce({ ok: false } as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+      />,
+    );
+    await screen.findByText("Titel");
+    openDrawer();
+
+    // Der Fehler sitzt in MESSEN; wir schauen auf LIVE. Genau dafuer gibt es das
+    // Signal: der Bereich ist versteckt, der Zustand bleibt.
+    fireEvent.click(screen.getByRole("button", { name: /^Live$/ }));
+    expect(await screen.findByTitle(SIGNAL_TITLE)).toBeTruthy();
+  });
+
+  it("T4: bei leuchtendem Signal bleiben die zugaenglichen Namen der Reiter unveraendert", async () => {
+    // WAECHTER gegen die verworfene Form (Text IM Button oder aria-label): beides
+    // aenderte den zugaenglichen Namen und braeche die fuenf verankerten
+    // Reiter-Abfragen der Bestandstests.
+    getVariantCounts.mockResolvedValueOnce({ ok: false } as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML}
+        initialVariantBHtml={HTML}
+        initialVariantBMappings={[]}
+      />,
+    );
+    await screen.findByText("Titel");
+    openDrawer();
+    await screen.findByTitle(SIGNAL_TITLE);
+
+    expect(screen.getByRole("button", { name: /^Messen$/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /^Live$/ })).toBeTruthy();
+  });
+});

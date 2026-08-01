@@ -81,8 +81,16 @@ export default function PublishView({
           Seite unter label.publayer.net live. Erzeugt das funktionale Dokument
           CLIENT-seitig (wie Export, WYSIWYG) und speichert es via publishProject.
           Braucht ein gespeichertes Projekt (projectId) -> sonst deaktiviert +
-          Hinweis (wie beim CAPI-Token). */}
-      <div className="mt-4 border-t border-gray-200 pt-4">
+          Hinweis (wie beim CAPI-Token).
+          KEIN mt-4/border-t/pt-4 mehr (Scheibe 10c-1): Diese Klassen trugen die
+          Trennlinie, die im Drawer freistehend UEBER "Veroeffentlichen" stand,
+          waehrend der Messen-Reiter keine hatte. Die Linie ist jetzt eine
+          Eigenschaft der DRAWER-Kopfzeile (CodeImporter.tsx) — eine Stelle statt
+          zwei, und beide Bereiche beginnen gleich. Das div BLEIBT: eine bestehende
+          Testabfrage findet die Bereichs-Huelle ueber
+          getByRole("heading").parentElement.parentElement, und diese Kette haengt
+          an genau dieser Ebene. */}
+      <div>
         <h2 className="mb-1 text-sm font-medium text-gray-700">
           Veröffentlichen
         </h2>

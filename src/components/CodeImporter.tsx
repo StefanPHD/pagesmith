@@ -723,6 +723,43 @@ export default function CodeImporter({
   // Anzeige-Label der aktiven Variante (Toolbar, Export-Button, Publish-Hinweis).
   const activeVariantLabel = activeVariant === "b" ? "B" : "A";
 
+  // SIGNAL AN DER REITERZEILE (Phase 10 Scheibe 10c-1, Invariante I3: "Die Trennung
+  // darf keinen Zustand verstecken"). Genau EIN signalfaehiger Zustand: die
+  // Varianten-Auswertung im Bereich MESSEN konnte nicht geladen werden.
+  //
+  // WARUM NUR DIESER: Ein Signal leuchtet nur, wenn der Nutzer JETZT handeln kann.
+  // Dieser Fehler entsteht OHNE Zutun (Lade-Effekt) und potenziell waehrend der
+  // Bereich unsichtbar ist — er ist der einzige lesbare Zustand dieser Art. Die
+  // beiden anderen Kandidaten (Domain-Liste nicht ladbar, "Aktion noetig" je
+  // Domain-Zeile) liegen IN DomainManager bzw. eine Ebene tiefer in DomainRow und
+  // sind hier bewusst NICHT abgebildet: sie nach oben zu melden hiesse entweder den
+  // Listenzustand an den Container zu haengen (dort greift key={projectId} NICHT —
+  // das holte den 10b-2-Bug zurueck) oder eine Rueckwaerts-Abhaengigkeit Kind ->
+  // Container zu bauen, bei "Aktion noetig" zusaetzlich mit neuem Zustand in
+  // DomainManager. Beides widerspricht Entscheidung 3 der Phase.
+  //
+  // KEIN drawerArea IM TERM — bewusst: das Signal leuchtet auch im AKTIVEN Reiter.
+  // Ein Signal, das beim Hinschauen verschwindet, liest sich als Flackern, und die
+  // Bedingung bleibt so rein zustandsbasiert.
+  //
+  // I5 GEWAHRT: gelesen wird DERSELBE State-Wert (variantCounts aus get_variant_counts),
+  // kein zweiter Rechenweg und keine zweite Abfrage.
+  //
+  // ACHTUNG — DUPLIKAT MIT ANSAGE: Der Term bildet nach, WANN MeasureView den
+  // Fehlertext tatsaechlich rendert (dort: variantCountsFailed + showVariantCounts).
+  // Er ist die zweite Stelle desselben Urteils; die erste steht in MeasureView.tsx
+  // ueber showVariantCounts und traegt denselben Hinweis zurueck. BEIDE MUESSEN
+  // SYNCHRON BLEIBEN. Der Waechter dagegen ist Test T2 des 10c-1-Blocks ("Signal
+  // bleibt AUS, wenn der Fehler gar nicht angezeigt wird") — wer eine Seite aendert
+  // und die andere vergisst, wird dort rot.
+  // Der Term ist die VEREINFACHTE Form von showVariantCounts fuer den Fehlerfall,
+  // nicht eine andere Regel: bei {ok:false} sind die Zeilen leer, also ist
+  // hasVariantData zwingend false, und showVariantCounts reduziert sich beweisbar
+  // auf (abTestStartedAt !== null || hasVariantB).
+  const measureSignal =
+    variantCounts?.ok === false &&
+    (abTestStartedAt !== null || hasVariantB);
+
   // DIE PAAR-ABLEITUNG, EINMAL — geteilt zwischen Publish-HANDLER und Publish-BUTTON.
   // Sie lag frueher INNERHALB von handlePublish; der Leer-Guard braucht dieselben
   // Werte, und eine zweite Ableitung nur fuer die disabled-Bedingung waeren ZWEI
@@ -1901,7 +1938,14 @@ export default function CodeImporter({
               Toolbar-Schalter nicht — scrollt die Seite, waere er sonst der einzige
               und dann unerreichbare Schliessweg. Bewusst NICHT dazu: Escape,
               Fokusfalle, Backdrop. */}
-          <div className="mb-3 flex items-center justify-between gap-3">
+          {/* KOPFZEILE. Die Trennlinie (border-b + pb-3, Scheibe 10c-1) trennt die
+              REITERZEILE vom Inhalt und ist damit eine Eigenschaft des DRAWERS, nicht
+              der Bereiche — deshalb steht sie HIER und nicht in den Ansichten. Sie
+              ersetzt die Linie, die bisher der erste Abschnitt von PublishView selbst
+              trug (10b-1-Befund): dort stand sie freistehend ueber "Veroeffentlichen",
+              im Messen-Reiter fehlte sie ganz. Eine Stelle statt zwei, und keine
+              Ansicht traegt mehr Wissen ueber ihre Position im Drawer. */}
+          <div className="mb-3 flex items-center justify-between gap-3 border-b border-gray-200 pb-3">
             <div
               className="flex rounded-md border border-gray-300 p-0.5 text-sm font-medium"
               role="group"
@@ -1928,6 +1972,24 @@ export default function CodeImporter({
                 </button>
               ))}
             </div>
+            {/* ZUSTANDSSIGNAL (I3). Liegt AUSSERHALB der Reiter-Buttons — das ist
+                keine Kosmetik: Text INNERHALB eines Buttons geht in seinen
+                zugaenglichen Namen ein, und ein aria-label ersetzte ihn. Beides
+                braeche die fuenf verankerten Reiter-Abfragen
+                (getByRole("button", { name: /^Messen$/ })). Nach der 10b-1-Regel ist
+                das ein OBERFLAECHEN-Problem, das man nicht durch Anpassen der Tests
+                loest. Der sichtbare Text traegt den BEFUND, das title die HANDLUNG.
+                KEIN truncate zusammen mit text-red-600 an einem span: ein
+                bestehender Test prueft dokumentweit auf genau diese Kombination
+                (sie gehoert dem zentralen Speicher-Fehlerkanal). */}
+            {measureSignal && (
+              <span
+                title="Die Auswertung je Variante konnte nicht geladen werden — bitte die Seite neu laden."
+                className="ml-auto mr-2 whitespace-nowrap text-xs font-medium text-red-600"
+              >
+                Messen: Auswertung nicht geladen
+              </span>
+            )}
             <button
               type="button"
               onClick={() => setIsSettingsOpen(false)}

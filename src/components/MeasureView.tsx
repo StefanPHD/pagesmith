@@ -123,6 +123,15 @@ export default function MeasureView({
   // Fehlerzweig beteiligt). Das ist RICHTIG so: die Messung hat stattgefunden, die Zeilen
   // sind echt, und sie zu verstecken hiesse, ein Ergebnis zu unterschlagen, weil sein
   // Gegenstand geloescht wurde. Ueberraschend genug, um hier zu stehen.
+  // ZWEITE STELLE DESSELBEN URTEILS — MIT ANSAGE (Phase 10 Scheibe 10c-1). Das
+  // Zustandssignal an der Reiterzeile (CodeImporter.tsx, const measureSignal) bildet
+  // nach, WANN der Fehlertext unten tatsaechlich erscheint, damit es nicht auf einen
+  // Bereich zeigt, in dem gar nichts steht. Es liest denselben State-Wert, rechnet
+  // also nichts neu — aber es beurteilt dieselbe Frage ein zweites Mal.
+  // BEIDE MUESSEN SYNCHRON BLEIBEN: Wer showVariantCounts hier aendert, aendert die
+  // Bedingung dort mit. Der Waechter dagegen ist Test T2 des 10c-1-Blocks ("Signal
+  // bleibt AUS, wenn der Fehler gar nicht angezeigt wird") — eine einseitige
+  // Aenderung wird dort rot.
   const variantCountsFailed = variantCounts?.ok === false;
   const showVariantCounts =
     hasVariantData ||

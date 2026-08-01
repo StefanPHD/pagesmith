@@ -1222,7 +1222,12 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   leuchtet, ohne dass jemand handeln kann, erzeugt SIGNAL-ERMÜDUNG — dann ist sie
   wertlos, auch für den Fall, der wirklich zählt. ZWEITE BEDINGUNG: Das Signal muss
   dieselbe Sichtbarkeits-Bedingung tragen wie die Meldung, auf die es zeigt — sonst
-  führt es in einen Bereich, in dem nichts steht.
+  führt es in einen Bereich, in dem nichts steht. DRITTE BEDINGUNG, DER TEXT: der
+  SICHTBARE Text trägt den BEFUND (was nicht stimmt, und wo), das title-Attribut die
+  HANDLUNG (was zu tun ist). Beides in den sichtbaren Text zu packen sprengt jede
+  Leiste; nur die Handlung zu zeigen zwingt zum Raten, was überhaupt kaputt ist. Der
+  Befund muss ausserdem den BEREICH erkennen lassen, sonst weiss der Nutzer nicht,
+  wohin er klicken soll.
   Herleitung: docs/claude-history/phase-10-workspace.md.
 - AUFRÄUMEN AM ANFANG EINER SITZUNG, NICHT AN IHREM ENDE (Phase 10): Soll ein
   Kontext "sauber starten", wird er beim BETRETEN zurückgesetzt, nicht beim
@@ -1232,6 +1237,46 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   BELEG: Der Statuskanal des Einstellungs-Drawers wird beim Öffnen geleert; ein
   Reset beim Schliessen hätte genau den nachträglich eintreffenden Fehler
   stehenlassen, den die Massnahme abschaffen sollte.
+  Herleitung: docs/claude-history/phase-10-workspace.md.
+- WELCHE REGEL WANN GREIFT: ZWEI KLASSEN VON FEHLERN, UND SIE WERDEN VERSCHIEDEN
+  BEHANDELT (Phase 10, der Rahmen über den drei Regeln in dieser Nachbarschaft —
+  "EIN SIGNAL LEUCHTET NUR …", "AUFRÄUMEN AM ANFANG …" und dieser hier; sie werden
+  NICHT wiederholt, sondern eingeordnet).
+  KLASSE A — INTERAKTIVE AKTION: Der Nutzer hat geklickt, der Fehler erscheint IN
+  SEINEM SICHTFELD, unmittelbar neben dem Bedienelement. Er braucht KEIN bleibendes
+  Signal — er sieht ihn ja — und er wird beim Verlassen des Kontexts
+  ZURÜCKGESETZT (Mechanik: s. "AUFRÄUMEN AM ANFANG EINER SITZUNG"). Ein
+  Klasse-A-Fehler, der seinen Kontext überlebt, ist nicht signalwürdig, sondern
+  SELBST der Fehler.
+  KLASSE B — HINTERGRUND-EREIGNIS: Entsteht OHNE Zutun (Lade-Effekt, Poll,
+  Nachzügler) und potenziell, während sein Bereich unsichtbar ist. Nur DIESE Klasse
+  bekommt ein Signal — und zwar unter den Bedingungen der Regel "EIN SIGNAL LEUCHTET
+  NUR, WENN DER NUTZER JETZT ETWAS TUN KANN".
+  WO DAS SIGNAL SITZT — CONTEXT FIRST: in den Bereich, in dem das Problem
+  HANDHABBAR ist (am Reiter/Abschnitt), NICHT global am Haupt-Bedienelement. Ein
+  Signal am globalen Icon liest sich als Störung der ganzen Anwendung; ein Fehler in
+  den Einstellungen gehört dorthin, wo er behebbar ist. AUSNAHME: echte
+  systemkritische Blocker, die den ganzen Editor betreffen — die dürfen global sein.
+  ZUSTANDSBASIERT, NICHT FLACKERND: Die Signalbedingung liest AUSSCHLIESSLICH den
+  Fehlerzustand, NIE die gerade aktive Ansicht. Ein Signal, das beim Anklicken des
+  Reiters verschwindet, verschwindet beim Hinschauen statt beim Lösen — es
+  beschreibt dann die Navigation, nicht den Zustand. Es geht aus, wenn das Problem
+  weg ist, und sonst nie.
+  BELEG AUS DEM BESTAND (Symbole am Code erhoben): Von den drei Statuskanälen des
+  Einstellungs-Drawers sind zwei KLASSE A — publishStatus/publishError und
+  capiTokenStatus/capiTokenError; genau diese vier Werte leert
+  resetDrawerStatusChannel beim Öffnen, und keiner von ihnen trägt ein Signal.
+  KLASSE B ist die Varianten-Auswertung: measureSignal liest
+  variantCounts?.ok === false (plus den Sichtbarkeits-Term) und enthält
+  KEIN drawerArea — das Signal bleibt über Reiterwechsel hinweg stehen und geht erst
+  aus, wenn der Ladefehler weg ist.
+  OFFENE FRAGE, ehrlich als offen geführt: Ob die Trennung A/B trennscharf bleibt,
+  ist UNGEPRÜFT. Dieselbe Aktion kann interaktiv UND im Hintergrund auftreten — beim
+  Multi-Tracking-Fan-Out (Phase 11) ist ein Ziel-Fehlschlag interaktiv, wenn der
+  Nutzer gerade veröffentlicht, und Hintergrund, wenn er beim Besucher-Traffic
+  passiert. Das ist die erste Bewährungsprobe dieser Einteilung; wer sie dort
+  anwendet, prüft ZUERST, ob die Klasse am AUSLÖSER hängt oder am ZEITPUNKT, und
+  schreibt das Ergebnis hierher zurück.
   Herleitung: docs/claude-history/phase-10-workspace.md.
 - WAS DIE HÜLLE VOM INHALT TRENNT, GEHÖRT DER HÜLLE — NICHT DEM INHALT (Phase 10):
   Trennlinien, Abstände und Rahmen, die eine Navigation von ihrem Inhalt abgrenzen,

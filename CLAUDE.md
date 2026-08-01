@@ -1325,6 +1325,16 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Schema-Erweiterungen ohne realen Konsumenten + Spec. Kontext:
   docs/claude-history/future-roadmap.md.
 
+## Aktive Dokumente (nicht geladen, nicht Teil des CC-Kontexts)
+Aktiv und konstant gepflegt — im Unterschied zum Detail-Archiv darunter, das
+ABGESCHLOSSENE Historie trägt. Hier steht, was fortlaufend gilt, aber bewusst
+nicht in jede Session geladen wird.
+- docs/arbeitsweise.md — Arbeits- und Prompt-Disziplin (Kadenz, Stufen,
+  Nachweisführung, Phasenende-Ablauf). VOM ARCHITEKTEN GEPFLEGT und NICHT Teil
+  des CC-Kontexts: CC bekommt sie nicht automatisch und soll sie nicht lesen; sie
+  beschreibt, WIE Aufträge entstehen, nicht was gebaut wird. Die CLAUDE.md
+  verweist an einer Stelle auf sie ("## Aktiver Stand — Verfahren ab Phase 10").
+
 ## Detail-Archiv (bei Bedarf lesen — NICHT automatisch geladen)
 Abgeschlossene Phasen-Historie + Vollbegründungen sind ausgelagert, damit CLAUDE.md unter
 dem 150k-Ladelimit bleibt (jede Session lädt nur diese Root-Datei). Reine Pfad-Verweise,

@@ -58,8 +58,9 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Mapping-Modell ein zweites Mal bestätigt.
 - [x] Phase 6 — Server-Side Tracking (CAPI): KOMPLETT (Mechanik). Type-diskriminiertes
       Mapping -> Mehr-Aktion -> echtes Meta-Pixel (consent-sauber) -> Secret-Storage
-      (service_role + heiligstes Gate) -> CAPI-Route -> Dedup-Beacon. Offener
-      End-to-End-Dedup-Sichtbarkeitstest auf verknüpfter Domain -> Phase 7.
+      (service_role + heiligstes Gate) -> CAPI-Route -> Dedup-Beacon. Der
+      End-to-End-Dedup-Sichtbarkeitstest auf verknüpfter Domain ist in Phase 7
+      BESTÄTIGT worden (Owner, Meta Events Manager) — nichts mehr offen.
 - [x] Phase 7 — Hosting & Go-Live: ABGESCHLOSSEN.
       Alle Scheiben (7a Serving, 7b First-Party-Ingest, 7c-1 Middleware-Inversion +
       Custom-Domain-Serving, 7c-2a Wildcard-Infra (publayer.net), 7c-2b Add-Domain-

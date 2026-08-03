@@ -1201,3 +1201,34 @@ miterledigen, sondern gebündelt abarbeiten.
   jeweils festgehalten ist. Solange es keine Liste gibt, kann keine Prüfung sie
   durchsetzen — und eine Prüfung ohne vollständige Liste wäre schlimmer als
   keine, weil sie Vollständigkeit suggeriert.
+- WITH-CHECK-POLICIES DER GEHEIMNIS-TABELLE: SCHREIBWEG AM GATE VORBEI?
+  STATUS: OFFEN — ZU PRÜFEN (erhoben 2026-08-03).
+  DIES IST EINE ABLEITUNG AUS DEM POLICY-TEXT, KEINE MESSUNG. Die Kennzeichnung
+  ist Teil der Aussage: NIEMAND HAT ES VERSUCHT. Wer diesen Eintrag später liest,
+  liest eine Vermutung, keinen Befund — und darf ihn nicht als solchen zitieren.
+  GEMESSEN IST NUR: Die Insert-Policy in
+  supabase/migrations/0005_project_tokens.sql:38-39 verlangt ausschliesslich
+  auth.uid() = user_id, NICHT dass das Projekt dem Nutzer gehört — die
+  Migrationsdatei sagt das selbst (:35-37: "WITH CHECK prueft NUR user_id, NICHT
+  dass project_id dem User gehoert"). Der anon-Schlüssel liegt öffentlich im
+  ausgelieferten Bundle (Root-CLAUDE.md, "GRANTS SCHÜTZEN NICHTS").
+  DER VERDACHT, ALS VERDACHT: Ein beliebiger eingeloggter Nutzer könnte damit
+  direkt gegen die Tabelle schreiben und eine Token-Zeile für ein FREMDES Projekt
+  anlegen, sofern dort noch keine existiert. Das Ownership-Gate der Server-Action
+  (src/app/projects/actions.ts:566-580) wird dabei NICHT durchlaufen, weil dieser
+  Weg daran vorbeigeht.
+  UNGEPRÜFT UND ENTSCHEIDEND — zwei Dinge, ohne die der Verdacht weder bestätigt
+  noch entkräftet ist: (1) ob RLS im LAUFENDEN Katalog so steht wie in der Datei,
+  und (2) was der Fremdschlüssel auf die Projekte zulässt.
+  VERMUTETE AUSWIRKUNG, KLEIN: ein fremder Token zu einer fremden Pixel-ID lässt
+  Forwards scheitern. Es wäre aber ein UNAUTORISIERTER SCHREIBZUGRIFF auf die
+  Tabelle mit den Geheimnissen — und das ist die Achse, auf der es zählt, nicht
+  die Auswirkung.
+  ERSTER SCHRITT: am LAUFENDEN Katalog prüfen, welche Policies dort tatsächlich
+  stehen. Die Migrationsdatei ist NICHT der Beweis dafür — dieselbe Unterscheidung
+  wie bei ensure_rls (s. Root-CLAUDE.md, "## Offene Punkte"). Erst danach
+  entscheiden, ob überhaupt etwas zu tun ist.
+  BEZUG: Die Entscheidung zur NEUEN Tabelle (Phase 11, aktiver Stand, Punkt (d))
+  nimmt diese Policies bewusst NICHT mit — sie trägt RLS mit LEERER Policy-Liste.
+  Der Verdacht wandert damit nicht weiter; er betrifft ausschliesslich die
+  BESTEHENDE Tabelle.

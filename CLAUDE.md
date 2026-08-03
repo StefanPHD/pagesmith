@@ -603,7 +603,7 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Stichtag der Adblocker-Verlustrate nach vorn -> die angezeigte Rate ändert sich RÜCKWIRKEND
   und STILL. Pruning muss die Verlustraten-Verankerung berücksichtigen.
 - MCP-SICHERHEIT: scoped Tokens (nie globale Master-Rechte) + lückenloses Audit-Logging
-  aller KI-induzierten Mutationen. BINDET-AN: Phase 10.
+  aller KI-induzierten Mutationen. BINDET-AN: Phase 18.
 
 ## Projektstruktur
 - src/app/         Next.js App Router (Pages, API-Routes)
@@ -1130,7 +1130,7 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
 - Session-unabhängige Mutationen (MCP-Vorbereitung, kostenlos ab jetzt): Jede neue
   Server-Mutation als REINE Funktion (userId, params) bauen — Autorisierung
   (Ownership-Prüfung) DAVOR, Geschäftslogik DAHINTER, sauber getrennt (wie setCapiToken
-  es bereits fast tut). So kann die spätere MCP-Schicht (Phase 10) dieselbe geprüfte Logik
+  es bereits fast tut). So kann die spätere MCP-Schicht (Phase 18) dieselbe geprüfte Logik
   wiederverwenden, mit MCP-Autorisierung als ANDEREM Eingang zur GLEICHEN Funktion. Kein
   jetziger Bau, nur Baustil — verbessert den Code ohnehin (Testbarkeit, Trennung von
   Auth und Logik).
@@ -1410,7 +1410,7 @@ KEIN @-Import. Bei Arbeit an einem Thema die passende Datei gezielt lesen:
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),
-  Phase 10 (MCP), Funnel-Architektur, Owned-Traffic-Module, Smart-Tracking, Advanced
+  Phase 18 (MCP), Funnel-Architektur, Owned-Traffic-Module, Smart-Tracking, Advanced
   Features.
 - docs/claude-history/backlog-polish.md — aufgeschobene Aufräumarbeiten (Polish-Liste).
 - supabase/checks/ — versionierte, NUR LESENDE Messproben für Live-Tests und Gegenproben.

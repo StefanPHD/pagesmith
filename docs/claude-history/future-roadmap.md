@@ -46,18 +46,21 @@ Ingest-Endpoint /api/e als EIN Trichter für alle Events gehosteter Seiten. Heut
 Meta-CAPI-Forward; Phase-8-Persistenz (Dashboard, Betreiber-Metriken, Verlustraten-
 Vergleich) hängt sich später ADDITIV in denselben Trichter. Keine weitere Vorab-Abstraktion.
 
-## Phase 10 — AI-Native: Pagesmith MCP-Server (Vision, NACH Go-Live)
+## Phase 18 — AI-Native: Pagesmith MCP-Server (Vision, NACH Go-Live)
 Ziel: Pagesmith als natives Tool in KI-Umgebungen der Marketer (Claude Desktop, Cursor,
 Windsurf) via eigenem MCP-Server (Model Context Protocol, JSON-RPC-Endpunkt z.B. /api/mcp).
 Marketer generiert im Profil einen Pagesmith-MCP-Key; seine KI kann dann Projekte anlegen,
 Tracking-Status abfragen, Meta-Tokens aktualisieren etc. Verwandelt Pagesmith von
 Web-App zu KI-Infrastruktur — potenzielles Alleinstellungsmerkmal.
 
-TIMING (Owner-Entscheidung, endgültig): Phase 10, NACH Phase 7 (Hosting/Go-Live). Grund:
-MCP ist ein Feature für eine Nutzerbasis, die es vor Go-Live noch nicht gibt; sein Wert
-entsteht, wenn reale Projekte existieren, die eine KI managen kann. Es JETZT zu bauen
-verstößt gegen "kleine beweisbare Slices / Abstraktion erst bei 2+ Fällen" und lenkt vom
-Wert-Schalter (Go-Live) ab.
+TIMING (Stand 2026-08-03): Phase 18, bewusst ans ENDE der Roadmap gestellt. Grund, wie
+in der Root-CLAUDE.md: MCP dreht das Sicherheitsmodell um — Lesen UND Schreiben mit
+voller Owner-Autorität über einen langlebigen Key in fremder KI-Umgebung. Es braucht
+eine eigene Autorisierungsschicht, KEINEN angehängten Endpunkt.
+ÜBERHOLT, als Zeitdokument festgehalten: Die frühere Fassung band MCP an "NACH Phase 7
+(Hosting/Go-Live)" und begründete das mit der fehlenden Nutzerbasis vor Go-Live. Phase 7
+ist abgeschlossen — die Bindung ordnet nichts mehr —, und die Position trägt heute nicht
+mehr das Nutzerbasis-, sondern das Sicherheitsargument.
 
 VOR DEM BAU ZU KLÄREN (Bedrohungsmodell — eigene Phase, KEIN Endpunkt-Anhängsel):
 MCP dreht das bisherige Sicherheitsmodell um. Bisher: Owner schreibt nur eingeloggt
@@ -290,7 +293,7 @@ JS-Snippet-Copy-Paste minimieren.
   bei nativer Generierung WEISS das System bereits zur Erzeugungszeit, dass ein
   Button der Hero-CTA ist — keine nachträgliche Heuristik/Ratewerk wie bei
   importiertem Fremd-HTML nötig.
-- SYNERGIE MIT PHASE 10 (MCP): Spur B gibt der MCP-Vision (scoped Tokens, Audit-
+- SYNERGIE MIT PHASE 18 (MCP): Spur B gibt der MCP-Vision (scoped Tokens, Audit-
   Logging aller KI-induzierten Mutationen) einen konkreten Flaggschiff-Anwendungs-
   fall statt nur abstrakter Prinzipien.
 - EIGENSTÄNDIGE, KLEINERE MODULE, die KEINE der beiden Spuren-Architektur brauchen
@@ -395,6 +398,16 @@ TIMING: strikt NACH Phase 8 (Analytics/ROI) und NACH der ersten echten Umsetzung
 der Zweigleisigen Architektur (Spur B muss für andere Zwecke ohnehin existieren,
 bevor Business-Website darauf aufbauen kann). Kein Vorziehen — "Abstraktion erst
 bei echtem Bedarf".
+
+NOTIZ (2026-08-03, BENANNT UND NICHT AUFGELÖST): Diese Zeitbedingung und die
+Verortung in der Root-CLAUDE.md sind MÖGLICHERWEISE DIVERGENT. Hier steht
+"strikt NACH Phase 8"; die Root führt Spur B / Business-Website unter "Bewusst
+nicht phasiert" mit dem natürlichen Zeitpunkt "bei/nach Phase 18 (MCP)". Die
+zweite Aussage ist die STRENGERE — Phase 8 ist längst abgeschlossen, Phase 18
+liegt am Ende der Roadmap. Ob beide dasselbe meinen (Phase 8 als Mindest-
+bedingung, Phase 18 als erwarteter Zeitpunkt) oder ob eine die andere ablöst,
+ist eine OWNER-ENTSCHEIDUNG und wurde in der Doku-Runde vom 2026-08-03 NICHT
+getroffen. Keine der beiden Aussagen ist dabei geändert worden.
 
 ## Strategischer Nordstern: Performance-CRM & CAPI-Attribution-Engine
 (Owner-Vision 2026-07-24. NICHT gebaut, KEIN Auftrag, KEIN Vorbau. Zweck: heutige

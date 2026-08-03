@@ -453,7 +453,35 @@ miterledigen, sondern gebündelt abarbeiten.
   in dem man es bemerken würde.
 - DOKU-NACHZUG: "PHASE 10" STEHT NOCH FÜR DEN MCP-SERVER, DER INZWISCHEN PHASE 18
   IST (erhoben 2026-07-31; Trigger: nächste Doku-Aufräumrunde — NICHT jetzt
-  korrigieren): Die Roadmap führt den MCP-Server seit der Phasenplanung 10-18 als
+  korrigieren):
+  ERLEDIGT 2026-08-03 — abgearbeitet in der Doku-Runde nach Phase 10.5. Der
+  ursprüngliche Eintragstext bleibt darunter WÖRTLICH stehen; er war in vier
+  Punkten unvollständig, und genau das ist der Teil, der aufbewahrt gehört:
+  (a) ES WAREN NICHT VIER FUNDSTELLEN, SONDERN ZWÖLF. Neben den vier gelisteten:
+      die Überschrift und die TIMING-Zeile in future-roadmap.md, die
+      SYNERGIE-Zeile ebenda, ZWEI QUELLKOMMENTARE
+      (src/app/projects/domain-actions.ts, src/lib/domains/register.ts) und eine
+      Stelle in einer Phasen-Historie (phase-7-hosting.md) — Letztere BEWUSST
+      STEHENGELASSEN, weil Phasen-Historien Zeitdokumente sind.
+  (b) "PHASE 10" IST IM REPO DOPPELT BELEGT: einmal für den MCP-Server (falsch)
+      und einmal für die Workspace-Reorganisation (richtig, ZWANZIG Nennungen in
+      src/, davon zehn in Testdateien). Ein pauschaler Nummernzug hätte die
+      zwanzig korrekten Angaben zerstört. Der Eintrag hat diese Kollision nicht
+      benannt — ohne die Gegenprobe wäre sie beim Abarbeiten unsichtbar geblieben.
+  (c) DIE HIER GEFÜHRTEN ZEILENNUMMERN WAREN ZUM ABARBEITUNGSZEITPUNKT VERALTET
+      (CLAUDE.md:601/1076/1144 — tatsächlich :606/:1133/:1413). Erneuter Beleg für
+      die Regel "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER"
+      (Root-CLAUDE.md, "## Immer beachten"). Editiert wurde deshalb über den
+      WORTLAUT, nicht über die Nummer.
+  (d) IN DEN ZWEI QUELLKOMMENTAREN WURDE DIE NUMMER GESTRICHEN, NICHT KORRIGIERT.
+      Eine Phasennummer in einem Quellkommentar ist ein wandernder Zeiger; sie war
+      schon einmal falsch. Ohne sie ist die Aussage — MCP hängt sich mit eigener
+      Autorisierung an denselben Eingang — dauerhaft richtig.
+  DIE IM EINTRAG VERANKERTE MANIFEST-INVARIANTE WURDE EINGEHALTEN: Tier-Übersicht
+  (CLAUDE.md) und Vollfassung (security-manifest-full.md) sind im SELBEN Commit
+  geändert worden. Kein Item-STATUS wurde dabei berührt, nur Zeitangaben.
+  Der ursprüngliche Eintragstext, unverändert:
+  Die Roadmap führt den MCP-Server seit der Phasenplanung 10-18 als
   Phase 18 (CLAUDE.md, Roadmap-Zeile "Phase 18 — MCP-Server", "verschoben von der
   ursprünglichen Phase-10-Position"). VIER Fundstellen tragen noch die alte
   Nummer, alle am Text verifiziert:

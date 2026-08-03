@@ -308,8 +308,8 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   Dritten -> geleakter Key = Vollzugriff inkl. Token-Write.
   TRAGENDE KONTROLLE: scoped Tokens (z.B. action:read_only), NIE globale Master-
   Rechte; lückenloses Audit-Logging aller KI-induzierten Mutationen.
-  EHRLICHE EINORDNUNG: EXPLIZIT kein Launch-Gate (das Feature existiert vor Phase 10
-  nicht); deckt sich mit dem bestehenden "Session-unabhängige Mutationen / MCP-ready"-
+  EHRLICHE EINORDNUNG: EXPLIZIT kein Launch-Gate (das Feature entsteht erst mit
+  Phase 18); deckt sich mit dem bestehenden "Session-unabhängige Mutationen / MCP-ready"-
   Baustil.
-  BINDET-AN: Phase 10.
+  BINDET-AN: Phase 18.
 

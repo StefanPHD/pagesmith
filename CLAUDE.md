@@ -1262,20 +1262,38 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Reset beim Schliessen hätte genau den nachträglich eintreffenden Fehler
   stehenlassen, den die Massnahme abschaffen sollte.
   Herleitung: docs/claude-history/phase-10-workspace.md.
-- WELCHE REGEL WANN GREIFT: ZWEI KLASSEN VON FEHLERN, UND SIE WERDEN VERSCHIEDEN
-  BEHANDELT (Phase 10, der Rahmen über den drei Regeln in dieser Nachbarschaft —
-  "EIN SIGNAL LEUCHTET NUR …", "AUFRÄUMEN AM ANFANG …" und dieser hier; sie werden
-  NICHT wiederholt, sondern eingeordnet).
-  KLASSE A — INTERAKTIVE AKTION: Der Nutzer hat geklickt, der Fehler erscheint IN
-  SEINEM SICHTFELD, unmittelbar neben dem Bedienelement. Er braucht KEIN bleibendes
-  Signal — er sieht ihn ja — und er wird beim Verlassen des Kontexts
-  ZURÜCKGESETZT (Mechanik: s. "AUFRÄUMEN AM ANFANG EINER SITZUNG"). Ein
-  Klasse-A-Fehler, der seinen Kontext überlebt, ist nicht signalwürdig, sondern
-  SELBST der Fehler.
-  KLASSE B — HINTERGRUND-EREIGNIS: Entsteht OHNE Zutun (Lade-Effekt, Poll,
-  Nachzügler) und potenziell, während sein Bereich unsichtbar ist. Nur DIESE Klasse
-  bekommt ein Signal — und zwar unter den Bedingungen der Regel "EIN SIGNAL LEUCHTET
-  NUR, WENN DER NUTZER JETZT ETWAS TUN KANN".
+- WELCHE REGEL WANN GREIFT: BEKOMMT DIESER FEHLER EIN BLEIBENDES SIGNAL? (Phase 10;
+  das KRITERIUM neu gefasst 2026-08-03 — der Rahmen über den drei Regeln in dieser
+  Nachbarschaft: "EIN SIGNAL LEUCHTET NUR …", "AUFRÄUMEN AM ANFANG …" und dieser
+  hier; sie werden NICHT wiederholt, sondern eingeordnet).
+  DAS KRITERIUM, EIN EINZIGER SATZ: Ein Fehler bekommt genau dann ein bleibendes
+  Signal, wenn SEINE BEDINGUNG NOCH WAHR IST, wenn der Nutzer das nächste Mal
+  hinsieht. Ist sie das nicht, erscheint er in dessen Sichtfeld und wird beim
+  BETRETEN des Kontexts zurückgesetzt (Mechanik: s. "AUFRÄUMEN AM ANFANG EINER
+  SITZUNG"). Das Signal selbst steht zusätzlich unter den Bedingungen der Regel
+  "EIN SIGNAL LEUCHTET NUR, WENN DER NUTZER JETZT ETWAS TUN KANN".
+  WAS DIESES KRITERIUM ABLÖST — UND WARUM ES NICHT ZURÜCKGEDREHT WERDEN DARF: Bis
+  2026-08-03 stand hier eine Einteilung in "KLASSE A — interaktive Aktion" gegen
+  "KLASSE B — Hintergrund-Ereignis". Beide waren NÄHERUNGEN für genau die eine Frage
+  oben, und sie nähern FALSCH. Dass der Nutzer geklickt hat, sagt nichts darüber,
+  wie lange die Bedingung wahr bleibt: EIN INTERAKTIVER FEHLER KANN EIN DAUERHAFTER
+  ZUSTAND SEIN.
+  BELEG, DER DIE ALTE FASSUNG WIDERLEGT HAT (erster realer Fall, 2026-08-03): Eine
+  Track-Aktion in einem Projekt OHNE hinterlegte Pixel-ID/Token ist nach dem alten
+  Muster Klasse A — der Nutzer klickt, der Fehler steht in seinem Sichtfeld, also
+  kein Signal. Das ist FALSCH. Der Zustand bleibt wahr, bis jemand einen Pixel
+  hinterlegt; er überlebt jeden Kontextwechsel und ist genau das, wofür ein Signal
+  existiert. Die alte Regel wurde in diesem Fall in die falsche Richtung angewandt —
+  sie war nicht bloss unscharf, sie hat aktiv fehlgeleitet.
+  DER GEMESSENE BESTAND, UNVERÄNDERT ÜBERNOMMEN, jetzt richtig erklärt (Symbole am
+  Code erhoben): publishStatus/publishError und capiTokenStatus/capiTokenError
+  beschreiben einen ABGESCHLOSSENEN VERSUCH — beim nächsten Hinsehen ist ihre
+  Aussage veraltet. Deshalb kein Signal, und deshalb leert resetDrawerStatusChannel
+  genau diese vier Werte beim Öffnen. Der Ladefehler der Varianten-Auswertung
+  dagegen ist beim nächsten Hinsehen NOCH DA, weil niemand erneut geladen hat —
+  deshalb trägt measureSignal ihn (liest variantCounts?.ok === false plus den
+  Sichtbarkeits-Term und enthält KEIN drawerArea). DAS NEUE KRITERIUM ERKLÄRT BEIDE
+  FÄLLE; das alte traf sie nur zufällig richtig.
   WO DAS SIGNAL SITZT — CONTEXT FIRST: in den Bereich, in dem das Problem
   HANDHABBAR ist (am Reiter/Abschnitt), NICHT global am Haupt-Bedienelement. Ein
   Signal am globalen Icon liest sich als Störung der ganzen Anwendung; ein Fehler in
@@ -1286,22 +1304,23 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Reiters verschwindet, verschwindet beim Hinschauen statt beim Lösen — es
   beschreibt dann die Navigation, nicht den Zustand. Es geht aus, wenn das Problem
   weg ist, und sonst nie.
-  BELEG AUS DEM BESTAND (Symbole am Code erhoben): Von den drei Statuskanälen des
-  Einstellungs-Drawers sind zwei KLASSE A — publishStatus/publishError und
-  capiTokenStatus/capiTokenError; genau diese vier Werte leert
-  resetDrawerStatusChannel beim Öffnen, und keiner von ihnen trägt ein Signal.
-  KLASSE B ist die Varianten-Auswertung: measureSignal liest
-  variantCounts?.ok === false (plus den Sichtbarkeits-Term) und enthält
-  KEIN drawerArea — das Signal bleibt über Reiterwechsel hinweg stehen und geht erst
-  aus, wenn der Ladefehler weg ist.
-  OFFENE FRAGE, ehrlich als offen geführt: Ob die Trennung A/B trennscharf bleibt,
-  ist UNGEPRÜFT. Dieselbe Aktion kann interaktiv UND im Hintergrund auftreten — beim
-  Multi-Tracking-Fan-Out (Phase 11) ist ein Ziel-Fehlschlag interaktiv, wenn der
-  Nutzer gerade veröffentlicht, und Hintergrund, wenn er beim Besucher-Traffic
-  passiert. Das ist die erste Bewährungsprobe dieser Einteilung; wer sie dort
-  anwendet, prüft ZUERST, ob die Klasse am AUSLÖSER hängt oder am ZEITPUNKT, und
-  schreibt das Ergebnis hierher zurück.
-  Herleitung: docs/claude-history/phase-10-workspace.md.
+  DIE FRÜHER HIER OFFEN GEFÜHRTE FRAGE IST BEANTWORTET (Fan-Out, Phase 11): Sie
+  lautete, ob die Klasse am AUSLÖSER hängt oder am ZEITPUNKT. Die Antwort ist: an
+  KEINEM von beiden — die Frage war falsch gestellt. Beim Multi-Tracking-Fan-Out
+  sind es ZWEI VERSCHIEDENE EREIGNISSE, nicht dasselbe zu zwei Zeitpunkten:
+  - Eine abgewiesene ZIELKONFIGURATION ist ein ZUSTAND des Projekts: einmal wahr,
+    bleibend, behebbar. Ihre Bedingung ist beim nächsten Hinsehen noch wahr — sie
+    bekommt ein Signal.
+  - Ein gescheiterter FORWARD beim Besucher-Traffic ist ein VORKOMMNIS im
+    Ingest-Pfad: unbegrenzt oft, ohne Zustandsänderung.
+  FOLGE, die dazugehört: Der server-seitige Ziel-Fehlschlag gehört NICHT ins
+  Fehlersystem. Er ist keine Meldung, sondern eine GRÖSSE — dieselbe Denkfigur wie
+  die Adblocker-Verlustrate. Wer ihn als Fehlermeldung baut, hängt eine Anzeige an
+  ein Ereignis, das pro Besucher eintreten kann. S. "WORTWAHL DASHBOARD 'NUR
+  server-seitig erfasst', NIEMALS 'gerettet'".
+  Herleitung: docs/claude-history/phase-10-workspace.md — dort steht die
+  A/B-Beobachtung von damals unverändert. Sie war korrekt BEOBACHTET; untauglich war
+  sie als KRITERIUM, nicht als Beschreibung.
 - WAS DIE HÜLLE VOM INHALT TRENNT, GEHÖRT DER HÜLLE — NICHT DEM INHALT (Phase 10):
   Trennlinien, Abstände und Rahmen, die eine Navigation von ihrem Inhalt abgrenzen,
   sind Eigenschaft des CONTAINERS. Trägt der erste Abschnitt eines austauschbaren

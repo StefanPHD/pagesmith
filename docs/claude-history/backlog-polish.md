@@ -1045,3 +1045,34 @@ miterledigen, sondern gebündelt abarbeiten.
   Hotspot, weil jeder zusätzliche Aufwand dort sich mit dem Traffic ALLER Kunden
   zusammen multipliziert.
   TRIGGER: kein eigener Termin.
+- TTFB DER KUNDENSEITE — DAS PRODUKTVERSPRECHEN IST NICHT GEDECKT
+  STATUS: OFFEN (angelegt 2026-08-03 am Phasenende 10.5).
+  BEFUND, GEMESSEN: Auf Commit 9ccd044 (VOR dem Umzug) warm 519 ms (cached) bis
+  1.780 ms (dynamisch), kalt 1.830 ms. Auf Commit c40ebb8 (NACH dem Umzug)
+  450-476 ms über drei Aufrufe.
+  GRENZE — DIE BEIDEN REIHEN SIND NICHT VERGLEICHBAR, und das ist der wichtigste
+  Satz dieses Eintrags: Die Vorher-Reihe streut über einen FAKTOR DREI und
+  vermischt gecachte mit dynamischen Auslieferungen. Der Unterschied zwischen den
+  Reihen darf NICHT als Verbesserung gelesen werden — er ist UNGEKLÄRT. Wer ihn
+  als Erfolg des Umzugs verbucht, schreibt eine Verbesserung fest, die niemand
+  gemessen hat, und verliert damit den Anlass, sauber nachzumessen.
+  WARUM DER EINTRAG TROTZDEM STEHT, unabhängig von der Vergleichbarkeit: Das
+  Produktversprechen lautet "ultraschnelles reines HTML statt WordPress-Ballast"
+  (s. Vision in der Root-CLAUDE.md). In DIESEN Grössenordnungen trägt der Satz
+  nicht — und zwar in beiden Reihen. Das ist kein Messfehler, sondern eine Lücke
+  zwischen Anspruch und Ist.
+  ERSTER SCHRITT, in dieser Reihenfolge: (1) Eine saubere Messreihe auf EINEM
+  Regime — dynamisch, Cache aus —, zehn Aufrufe, die ersten drei verworfen. Erst
+  damit gibt es überhaupt eine belastbare Zahl. (2) Danach am Code klären, WO die
+  Zeit hingeht: /app-serve, die Supabase-Abfrage oder die Auslieferung. Heute
+  weiss das niemand.
+  KEIN ZIEL FESTLEGEN, bevor (2) beantwortet ist. Eine Zielzahl ohne Kenntnis des
+  Engpasses ist geraten und lenkt die Arbeit an die falsche Stelle.
+  ZWEITER, GETRENNTER PUNKT — ABRECHNUNG DER FUNCTION-AUFRUFE (eigene Achse,
+  nicht Teil der Latenzfrage): Ob Vercel auf dem HOBBY-Plan Edge-Middleware-
+  Aufrufe und Node-Function-Aufrufe GLEICH verrechnet, ist UNGEMESSEN. Seit dem
+  Umzug (Phase 10.5) läuft jeder Beacon als Node-Function-Aufruf. Das wiegt hier
+  schwerer als eine Kostenfrage sonst: Der Ausfallmodus des Hobby-Plans ist ein
+  HARTER STOPP, keine Rechnung — also ausgefallene Kundenseiten, nicht ein
+  überraschender Rechnungsbetrag.
+  TRIGGER: vor echtem Ad-Traffic.

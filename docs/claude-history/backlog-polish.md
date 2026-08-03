@@ -1017,3 +1017,31 @@ miterledigen, sondern gebündelt abarbeiten.
   Konzept, das ohnehin einen Besucht-Zustand braucht.
   VOLLE HERLEITUNG: docs/claude-history/phase-10-workspace.md, Invariante I3 und
   Scheibe 10c-1.
+- MATCHER DER KONVENTIONSDATEI SCHLIESST DIE INGEST-PFADE NICHT AUS
+  STATUS: OFFEN — BEWUSST NICHT TEIL VON PHASE 10.5 (angelegt 2026-08-03 bei der
+  Eröffnung jener Phase, aus deren Aufklärung der Befund stammt).
+  BEFUND (gemessen 2026-08-03): Der Matcher in src/middleware.ts:34-46 ist ein
+  einziger negativer Ausdruck und schliesst NUR vier Dinge aus — _next/static,
+  _next/image, favicon.ico und die aufgezählten Bilddateien. /api/e und /api/capi
+  sind damit GEMATCHT: die Konventionsdatei läuft bei jedem Beacon jedes Besuchers
+  jeder Kundenseite an und tut dort nichts weiter, als den Request durchzureichen
+  (src/middleware.ts:25-28, exakter Pfad-Vergleich, dann NextResponse.next()). Ein
+  Ausschluss im Matcher wäre schneller als ein Passthrough im Code — der Ausschluss
+  greift, bevor die Funktion überhaupt startet.
+  GRENZE, UND SIE IST DER GRUND FÜR DIE ABTRENNUNG: Das ist eine
+  Verhaltensänderung auf dem HEISSESTEN Pfad der Anwendung. Greift der Ausschluss
+  zu weit, verliert die Kunden-Domain ihre Host-Weiche — dann läuft die
+  Host-Verzweigung für betroffene Pfade gar nicht mehr, und der Ausfall ist nicht
+  laut, sondern still. Damit hat der Punkt ein ANDERES Risikoprofil als eine reine
+  Umbenennung, die den Rumpf unangetastet lässt. Beides in einen Schnitt zu legen
+  hiesse, im Fehlerfall nicht mehr unterscheiden zu können, welche der beiden
+  Änderungen ihn verursacht hat.
+  ERSTER SCHRITT (am Code, vor jedem Plan): klären, ob der Passthrough-Zweig
+  ausser dem Durchreichen noch etwas tut, das bei einem Matcher-Ausschluss
+  ENTFIELE — und zwar für beide Pfade getrennt, /api/e und /api/capi. Solange das
+  nicht am Code beantwortet ist, gibt es keinen Plan, sondern nur eine Vermutung.
+  BEZUG: CLAUDE.md, "## Code-Qualität, Performance & SaaS-Skalierung", Abschnitt
+  A, Regel "/API/E-SCHLANKHEIT" — sie benennt genau diesen Pfad als den realen
+  Hotspot, weil jeder zusätzliche Aufwand dort sich mit dem Traffic ALLER Kunden
+  zusammen multipliziert.
+  TRIGGER: kein eigener Termin.

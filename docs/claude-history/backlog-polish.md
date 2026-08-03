@@ -1119,3 +1119,60 @@ miterledigen, sondern gebündelt abarbeiten.
   HARTER STOPP, keine Rechnung — also ausgefallene Kundenseiten, nicht ein
   überraschender Rechnungsbetrag.
   TRIGGER: vor echtem Ad-Traffic.
+- PAGEVIEW-EMITTER IGNORIERT EINE ERTEILTE ABLEHNUNG
+  STATUS: OFFEN — BLOCKIEREND VOR FREMDNUTZUNG (erhoben 2026-08-03 in der
+  Aufklärung zur Phase-11-Eröffnung).
+  BEFUND, GEMESSEN: buildPageViewScript (src/lib/analytics/pageview-emitter.ts:30-52)
+  ruft WEDER psConsent NOCH window.pagesmithConsent. Die IIFE feuert nach dem
+  window.__ps_pv-Guard (:33) unbedingt einen Beacon an /api/e (:45). Von den ZWEI
+  first-party-Inline-Skripten einer publizierten Seite ist damit EINES gegated
+  (das Wiring-Skript, generate.ts:346-352, enthält psConsent) und EINES NICHT.
+  WAS DABEI TATSÄCHLICH GESCHRIEBEN WIRD — bewusst genau benannt, weil eine zu
+  weite Fassung den Punkt schwächt: persistEvent schreibt project_id, event_type,
+  event_id, source, variant und created_at, ausdrücklich KEIN IP/UA
+  (src/lib/analytics/persist.ts:75, PersistEventParams :34-57). IP und User-Agent
+  werden im Ingest NUR innerhalb des Forward-Blocks aufgelöst
+  (src/lib/capi/ingest.ts:316-317, umschlossen von der Bedingung in :313) — und
+  den erreicht ein PageView nie, weil isForwardable ihn ausschliesst
+  (src/lib/analytics/events.ts:34-36). Der Defekt ist also KEINE
+  PII-Erhebung gegen den Willen des Besuchers; er ist eine MISSACHTETE ABLEHNUNG.
+  WARUM ES EIN DEFEKT IST, ohne jede rechtliche Wertung: Es trifft ausgerechnet
+  den Betreiber, der den Hook implementiert HAT. Sein Besucher lehnt ab, der
+  Conversion-Pfad hält sich daran (meta.ts:163), der PageView-Pfad nicht. Das
+  System liest ein Nein und überschreibt es auf EINEM VON ZWEI Wegen —
+  inkonsistent mit dem eigenen Entwurf. Ein Betreiber, der die eine Hälfte
+  geprüft hat, hat keinen Anlass, die andere zu vermuten.
+  VERMUTETE URSACHE (als VERMUTUNG gekennzeichnet, nicht gemessen): zwei
+  Erzeugungswege. Der Emitter wird beim Publish per reiner String-Operation
+  eingefügt (injectPageViewEmitter, aufgerufen in src/app/projects/actions.ts:974
+  und :1004), das Wiring-Skript kommt aus dem Generator. Die Consent-Regel kennt
+  nur einer der beiden Wege.
+  ERSTER SCHRITT: klären, gegen WELCHEN Schlüssel der Emitter prüfen soll. Das
+  hängt an der offenen Frage (a) der Phase 11 (Schlüssel-Namensraum) und lässt
+  sich davor nicht beantworten, ohne den Namen zu präjudizieren.
+- DER CONSENT-HOOK IST EINE SCHNITTSTELLE, DIE NIEMAND KENNT
+  STATUS: OFFEN — BLOCKIEREND VOR FREMDNUTZUNG (erhoben 2026-08-03 in der
+  Aufklärung zur Phase-11-Eröffnung).
+  BEFUND, GEMESSEN: Pagesmith LIEST window.pagesmithConsent an DREI Stellen
+  (src/lib/tracking/meta.ts:105-106, :114, :163) und SETZT es an NULL. Kein
+  Banner, keine Komponente, keine Einstellung, kein Hinweis im Produkt — die
+  Repo-weite Suche findet als Setzer ausschliesslich zwei vi.stubGlobal-Aufrufe
+  in Tests. Fehlt der Hook, liefert psConsent() true (meta.ts:107).
+  WARUM ES EIN PRODUKTBEFUND IST, kein Rechtsgutachten: Als ARCHITEKTUR ist die
+  Aufgabenteilung vertretbar — der Seitenbetreiber ist der Verantwortliche, und
+  ein Hook, den er bedient, ist ein legitimer Übergabepunkt. Aber NICHTS im
+  Produkt sagt ihm, DASS es diesen Hook gibt. Er erfüllt eine Bedingung nicht,
+  von der er nichts weiss.
+  DIESELBE FEHLERKLASSE WIE "TRACK-AKTION OHNE PIXEL-ID": eine unsichtbare
+  Bedingung mit stillem Ausfall — nur dass der Ausfall hier nicht das Tracking
+  betrifft, sondern seine Voraussetzung.
+  AUSDRÜCKLICH NICHT EMPFOHLEN: den Client-Default auf false zu drehen. Das
+  würde das Tracking JEDES bestehenden Kunden augenblicklich abschalten, ohne
+  dass einer davon etwas falsch gemacht hätte. Die Richtung des Standardwerts
+  ist eine PRODUKTENTSCHEIDUNG MIT UMSTELLUNGSPFAD, kein Einzeiler. (Das
+  beschlossene Consent-Modell der Phase 11 hält den Top-Level-Default aus genau
+  diesem Grund permissiv und zieht die Strenge nur in die neue Objektform.)
+  ERSTER SCHRITT: entscheiden, WO IM PRODUKT der Betreiber davon erfährt. Fällt
+  mit der Produktanforderung aus dem aktiven Stand der Phase 11 zusammen (die
+  vollständige Schlüsselliste muss dort stehen, wo Tracking eingerichtet wird) —
+  beide sind dieselbe Frage, einmal für den Hook und einmal für seine Schlüssel.

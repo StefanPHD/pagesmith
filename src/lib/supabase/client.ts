@@ -3,7 +3,7 @@ import { createBrowserClient } from "@supabase/ssr";
 /**
  * Supabase-Client fuer den Browser (Client-Komponenten, z.B. die Login/Signup-
  * Formulare). Liest/Schreibt die Auth-Cookies ueber document.cookie; die
- * Session-Aktualisierung passiert serverseitig in der Middleware.
+ * Session-Aktualisierung passiert serverseitig in der Proxy-Datei.
  *
  * Nur die beiden oeffentlichen, durch RLS abgesicherten Keys werden verwendet.
  * Der service_role-Key kommt hier NIEMALS vor.

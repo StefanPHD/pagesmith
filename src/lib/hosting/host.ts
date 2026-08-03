@@ -1,5 +1,5 @@
 // Reine Hosting-/Host-Logik (kein React, kein Server, kein DB, kein DOM). Wird von
-// der Edge-Middleware, der Serve-Route und der Publish-Action geteilt -> MUSS
+// der Proxy-Datei (Node-Runtime), der Serve-Route und der Publish-Action geteilt -> MUSS
 // dependency-frei und unit-testbar bleiben.
 //
 // eTLD+1-ISOLATION: gehostete (fremde) Seiten laufen auf einer SEPARATEN Registrable
@@ -104,7 +104,7 @@ const APP_HOSTS = new Set([
 
 /**
  * Der effektive Host eines Requests — die EINZIGE Host-Quelle fuer die Branch-
- * Entscheidung (Middleware/Edge) UND den Serve-Lookup (Route/Node). Eine Quelle ->
+ * Entscheidung (Proxy-Datei/Node) UND den Serve-Lookup (Route/Node). Eine Quelle ->
  * kein Split-Brain zwischen Verzweigung und Lookup.
  *
  * Praezedenz an GENAU dieser Stelle: x-forwarded-host (in Prod von Vercels Edge

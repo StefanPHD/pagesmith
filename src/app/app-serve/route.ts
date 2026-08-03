@@ -1,5 +1,5 @@
 // Serve-Route (Phase 7 Scheibe 7a): liefert eine PUBLIZIERTE Seite unter
-// label.publayer.net aus. NUR intern erreichbar — die Middleware rewritet Serving-Hosts
+// label.publayer.net aus. NUR intern erreichbar — die Proxy-Datei rewritet Serving-Hosts
 // (*.publayer.net / *.lvh.me) hierher; ein direkter Zugriff ueber den App-Host wird vom
 // Label-Guard mit 404 abgewiesen (kein Bypass zu App-Daten).
 //
@@ -52,7 +52,7 @@ function blocked(): Response {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  // DIESELBE Host-Quelle wie die Middleware-Verzweigung (kein Split-Brain).
+  // DIESELBE Host-Quelle wie die Proxy-Verzweigung (kein Split-Brain).
   const host = resolveEffectiveHost(request.headers);
 
   // GUARD: ungueltiger/leerer Host -> 404 ohne jeden Lookup. Kein Bypass.

@@ -1370,7 +1370,7 @@ export default function CodeImporter({
     setPublishStatus("publishing");
     setPublishError(null);
     // Publish bäckt den RELATIVEN /api/e-Beacon ein (Phase 7b): die gehostete Seite
-    // läuft same-origin auf *.publayer.net -> /api/e wird von der Middleware chirurgisch
+    // läuft same-origin auf *.publayer.net -> /api/e wird von der Proxy-Datei chirurgisch
     // durchgelassen und trifft den Ingest-Handler. Kein absoluter Pfad/keine env nötig.
     // Scheibe 9a: EIN Publish schreibt BEIDE Varianten (falls B existiert) in EINEM
     // atomaren Write -> es gibt kein "nur A publishen", das B veraltet zuruecklassen

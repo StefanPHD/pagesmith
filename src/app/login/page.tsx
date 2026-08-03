@@ -9,8 +9,8 @@ type Mode = "login" | "signup";
 /**
  * Eine Seite fuer Login UND Signup (E-Mail + Passwort) mit Modus-Umschalter.
  * Nutzt den Supabase-Browser-Client. Nach Erfolg -> Editor (/), router.refresh()
- * damit die Middleware das neue Session-Cookie sieht. Das Auth-Gate (eingeloggt
- * auf /login -> /) liegt in der Middleware.
+ * damit die Proxy-Datei das neue Session-Cookie sieht. Das Auth-Gate (eingeloggt
+ * auf /login -> /) liegt in der Proxy-Datei.
  */
 export default function LoginPage() {
   const router = useRouter();

@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
  * cookies() (in Next 16 asynchron).
  *
  * setAll kann in reinen Server-Komponenten fehlschlagen, weil dort keine
- * Cookies gesetzt werden duerfen — das ist unkritisch, weil die Middleware
+ * Cookies gesetzt werden duerfen — das ist unkritisch, weil die Proxy-Datei
  * die Session-Cookies bei jedem Request auffrischt. Daher das try/catch
  * gemaess offiziellem @supabase/ssr-Muster.
  */
@@ -29,7 +29,7 @@ export async function createClient() {
             );
           } catch {
             // Aufruf aus einer Server-Komponente: kann ignoriert werden, solange
-            // die Middleware die Session aktualisiert.
+            // die Proxy-Datei die Session aktualisiert.
           }
         },
       },

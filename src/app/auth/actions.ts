@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 
 /**
  * Server-Action: meldet den User ab und leitet auf /login um. Das Loeschen der
- * Session-Cookies uebernimmt der Supabase-Server-Client; die Middleware setzt
+ * Session-Cookies uebernimmt der Supabase-Server-Client; die Proxy-Datei setzt
  * danach das Auth-Gate durch.
  */
 export async function signOut() {

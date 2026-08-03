@@ -102,7 +102,9 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Nachfolger, beide werden heute noch unterstützt. Umbenannt wird DATEI
       UND FUNKTION (src/middleware.ts -> src/proxy.ts, `export function
       middleware` -> `proxy`; ein reines Datei-Rename schlägt fehl, laut, nicht
-      still). Zwei Testdateien und die Doku-Stellen ziehen nach. EIN
+      still). NUR src/middleware.test.ts zieht nach, dazu die Doku-Stellen.
+      FALLE: src/lib/supabase/middleware.test.ts ist der Test des HILFSMODULS
+      mit dem Auth-Gate, KEINE Konventionsdatei — es bleibt UNBERÜHRT. EIN
       ZWISCHENZUSTAND IST UNMÖGLICH: liegen beide Dateien gleichzeitig, bricht
       der Build (E900) — es ist ein Alles-oder-nichts-Schnitt pro Deployment.
       BETRIFFT DIE AUTH-GRENZE UND DIE HOST-WEICHE der Custom-Domain-

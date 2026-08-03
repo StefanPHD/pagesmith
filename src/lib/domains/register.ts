@@ -9,7 +9,7 @@ import { writeAuditLog, countRecentAttempts, type AuditRecord } from "@/lib/doma
 // Autorisierung DAVOR (Ownership-Gate), Geschaeftslogik DAHINTER. Bewusst KEIN
 // "use server"-Modul -> waere es eine Server-Action, koennte ein Client userId frei
 // waehlen (Bypass). Die "use server"-Schicht (app/projects/domain-actions) reicht die
-// verifizierte userId aus der Session herein; MCP (Phase 10) haengt sich mit EIGENER
+// verifizierte userId aus der Session herein; MCP haengt sich mit EIGENER
 // Autorisierung an denselben Eingang.
 
 // Per-User-Hard-Cap (Hobby-Kontingent + Abuse-Schutz, 7c-2-Grundkonzept). Niedriger

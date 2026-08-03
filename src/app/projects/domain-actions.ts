@@ -16,7 +16,7 @@ import {
 
 // Duenne "use server"-Schicht: uebersetzt die Session in eine verifizierte userId und
 // reicht sie an die reine (userId, params)-Mutation weiter. KEINE Geschaeftslogik hier —
-// so bleibt registerCustomDomain session-unabhaengig (MCP-Wiederverwendung, Phase 10)
+// so bleibt registerCustomDomain session-unabhaengig (MCP-Wiederverwendung)
 // und der userId-Parameter ist NICHT client-waehlbar (die Session bestimmt ihn).
 //
 // NEXT-REGEL (Runtime-Fallstrick): eine "use server"-Datei darf keine IMPORTIERTEN Typen

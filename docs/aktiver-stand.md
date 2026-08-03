@@ -12,8 +12,9 @@ VERFAHREN AM PHASENENDE — drei Schritte, in dieser Reihenfolge:
    ganze Herleitung in einem einzigen Backlog-Eintrag lag. Phase 11 ist
    mehrscheibig — ihre Herleitung hat keinen anderen Ort.
 
-DIESE DATEI ERÖFFNET DIE PHASE, SIE PLANT SIE NICHT. Es gibt hier bewusst KEINE
-Scheiben-Einteilung; s. den Abschnitt am Ende.
+DIESE DATEI ERÖFFNET DIE PHASE. Seit 2026-08-03 nennt sie die REIHENFOLGE der
+ersten beiden Scheiben, aber NICHT deren Inhalt — und vor der ersten steht eine
+Erhebung. S. den Abschnitt am Ende.
 
 ---
 
@@ -93,10 +94,10 @@ unbekannt.
 
 ## Fragen, die der Bau beantworten MUSS
 
-(a) und (e) sind seit 2026-08-03 ENTSCHIEDEN und stehen als Entscheidungen
-unten; (f) ist seit demselben Datum GEPRÜFT und trägt eine Folge, keine offene
-Frage mehr. (b), (c), (d), (g), (h) und (i) sind AUSDRÜCKLICH OFFEN und werden
-hier weder beantwortet noch vorentschieden.
+(a), (d) und (e) sind seit 2026-08-03 ENTSCHIEDEN und stehen als Entscheidungen
+unten; (f) ist seit demselben Datum GEPRÜFT, und die Auflage aus (g) ist ERFÜLLT
+— beide tragen eine Folge, keine offene Frage mehr. (b), (c), (h) und (i) sind
+AUSDRÜCKLICH OFFEN und werden hier weder beantwortet noch vorentschieden.
 
 **PROVENIENZ ALLER ANGABEN ZU FREMDEN SCHNITTSTELLEN IN DIESEM ABSCHNITT —
 EINMAL, FÜR ALLE FOLGENDEN PUNKTE:** Was hier über Pinterest, TikTok, LinkedIn
@@ -166,16 +167,68 @@ gegenläufige Argumente, beide notiert, keines ausgewählt:
 Die Entscheidung berührt die Datenklassen-Grenze (CLAUDE.md, "## Offene Punkte")
 und gehört nicht in einen Bau-Schritt.
 
-**(d) DAS ZIEL-SCHEMA FÜR DIE GEHEIMNISSE.**
-GEMESSEN: `project_tokens` trägt genau EINE Spalte für Zugangsdaten,
-`meta_capi_token` (`supabase/migrations/0005_project_tokens.sql:20`). Fünf Ziele
-brauchen je eigene Zugangsdaten — das ist eine SCHEMA-ÄNDERUNG an der Tabelle mit
-den Geheimnissen, mit RLS-Berührung, NICHT eine weitere Einstellung im JSON.
-GEMESSEN EBENFALLS: `settings.capi` wurde bewusst NEBEN `pixels` gelegt und im
-Kommentar als "plattform-AGNOSTISCH" begründet (`src/lib/settings.ts:25-32`). Für
-einen einzigen CAPI trug das; bei fünf Zielen mit je eigenem Handle und Token ist
-OFFEN, ob es unter die Plattform wandern muss.
-ZU ENTWERFEN, NICHT ZU SETZEN.
+**(d) DAS ZIEL-SCHEMA FÜR DIE GEHEIMNISSE — ENTSCHIEDEN (OWNER, 2026-08-03).**
+
+**PROVENIENZ DIESES BLOCKS — er steht unter Vorbehalt:** Was hier folgt, ist
+ENTWURF und ENTSCHEIDUNG, NICHTS davon ist am Code gemessen. Insbesondere ist
+NICHT gemessen, wie die heutige Geheimnis-Tabelle geschützt ist und wer auf sie
+schreibt. Der Entwurf steht deshalb unter dem Vorbehalt der ERHEBUNG, die ihm
+folgt (s. Schluss-Abschnitt) — bestätigt sie ihn nicht, gilt die Erhebung.
+
+**GEHEIMNISSE WERDEN ALS ZEILEN GESPEICHERT, geschlüsselt über PROJEKT UND
+ZIEL. Ein Geheimnis pro Zeile.**
+
+BEGRÜNDUNG, in dieser Reihenfolge:
+- Einzeln setzbar, einzeln löschbar, einzeln rotierbar — ohne bestehende
+  Datensätze zu berühren.
+- **OFFENE ANZAHL**, und das ist der entscheidende Punkt: Die Zahl der
+  Custom-Slots ist bewusst NICHT festgelegt (s. Entscheidung (a)). Bei Spalten
+  wäre ein zweiter Custom-Slot eine SACKGASSE; bei Zeilen ist er eine weitere
+  Zeile.
+
+**DER ZIELWERT WIRD PER CONSTRAINT ERZWUNGEN — und der PREIS steht dabei:** Ein
+neues Ziel ist damit eine MIGRATION, nicht nur eine Zeile. Das ist bewusst so
+gewählt. Ohne Erzwingung wäre der Zielwert ein freier String, und ein Geheimnis
+unter "pintrest" liesse sich speichern, ohne dass etwas meckert — der Adapter
+sucht "pinterest", findet nichts, das Ziel bleibt STILL inaktiv.
+Der Preis ist gering, weil ein neues Ziel ohnehin Adapter-Code mitbringt; die
+Constraint-Erweiterung fährt in DERSELBEN Scheibe mit.
+**UND ES IST DIE ERSTE STELLE IM PRODUKT, AN DER DER NAMENSRAUM AUS (a)
+DURCHGESETZT WIRD** statt nur dokumentiert zu sein — s. den Backlog-Eintrag
+"RESERVIERTE NAMEN SIND NICHT GESCHÜTZT".
+
+VERWORFEN, mit Grund: eine Nachschlagetabelle mit Fremdschlüssel. Sie verspricht
+"neues Ziel = INSERT statt Migration", löst das aber nicht — in diesem Projekt
+ist auch ein INSERT eine Migrationsdatei, weil der Neuaufbau ausschliesslich aus
+Migrationen läuft. Sie kauft eine Tabelle und spart nichts.
+
+**RLS GEHÖRT AUSDRÜCKLICH IN DIE MIGRATION DER NEUEN TABELLE**, nicht in einen
+Mechanismus daneben. GRUND, aus den offenen Ops-Punkten: `rls_auto_enable` steht
+in KEINER Migration. Für BESTEHENDE Tabellen ist das ein bekanntes Restrisiko;
+für eine NEUE Tabelle ist es AKUT — ein Neuaufbau allein aus den Migrationen
+erzeugte sonst eine GEHEIMNIS-Tabelle OHNE Zeilenschutz. Das ist der Unterschied
+zwischen "unwahrscheinlich" und "unmöglich" bei den Zugangsdaten aller Kunden.
+
+**BEWUSST GETRAGENES RISIKO — ausdrücklich SO formuliert und NICHT als
+Entwurfsentscheidung:** Ein Geheimnis pro Zeile deckt beide BEKANNTEN Fälle
+(Meta, Pinterest). Ziele mit OAuth-artiger Anmeldung brauchen typischerweise
+MEHRERE Werte nebeneinander; Google Ads ist ungeprüft (s. (i)) und ist damit
+nicht nur ein Schnittstellen-, sondern auch ein SCHEMA-Risiko. Stellt sich das
+heraus, ist es eine ZWEITE Migration auf der Geheimnis-Tabelle. Der Preis wurde
+am 2026-08-03 gekannt und in Kauf genommen, statt auf Verdacht Komplexität zu
+bauen ("Abstraktion erst bei 2+ realen Fällen").
+
+**WAS AN (d) NOCH OFFEN BLEIBT — als PRÜFAUFTRAG an die folgende Erhebung, NICHT
+als Behauptung:** `settings.capi` führt VERMUTLICH zwei verschiedene Dinge —
+`trackingKey` identifiziert das PROJEKT beim Ingest und bliebe, wo er ist;
+`tokenSet` ist die Anzeige "Geheimnis hinterlegt?" und gäbe es künftig PRO ZIEL.
+Trifft das zu, wandert nur die ZWEITE Hälfte unter die Plattform, nicht der ganze
+Block. AM CODE ZU PRÜFEN, bevor irgendetwas entworfen wird.
+
+**KEIN EIGENES "AKTIV"-KENNZEICHEN.** Heute ist ein Ziel aktiv, wenn seine
+Zugangsdaten auflösen. Das trägt auch bei fünf Zielen und hält "nicht
+eingerichtet" von "eingerichtet, aber fehlerhaft" unterscheidbar — genau die
+Trennung, die bei den Analytics-Kacheln fehlt.
 
 **(e) DIE REIHENFOLGE DER ZIELE — ENTSCHIEDEN (OWNER, 2026-08-03):
 PINTEREST TRÄGT DIE ERSTE SCHEIBE.**
@@ -228,16 +281,46 @@ löst nicht das Problem, für das der server-seitige Weg existiert.
 Der Schlüssel `ga4` bleibt vom Namensraum her BESTEHEN (Entscheidung (a) wird
 davon nicht berührt); was HINTER ihm liegt, ist offen.
 
-**(g) DIE GEFAHR DER ÜBERANPASSUNG.** Pinterest ist Meta so ähnlich, dass eine
-Verallgemeinerung auf DIESER Basis überangepasst wäre: Die Projektregel
-"Abstraktion erst bei 2+ Fällen" wäre nur dem BUCHSTABEN nach erfüllt — zwei
-Fälle, aber derselbe Fall zweimal.
-**VERBINDLICHE AUFLAGE, KEINE EMPFEHLUNG:** Der Entwurf der Ziel-Schnittstelle
-wird GEGEN DIE LINKEDIN-HÜLLE GEPRÜFT, BEVOR er festgeschrieben wird. Nicht
-gebaut — nur daraufhin GELESEN, ob sie hineinpasst.
+**(g) DIE GEFAHR DER ÜBERANPASSUNG — AUFLAGE ERFÜLLT (2026-08-03).**
+
+Pinterest ist Meta so ähnlich, dass eine Verallgemeinerung auf DIESER Basis
+überangepasst wäre: Die Projektregel "Abstraktion erst bei 2+ Fällen" wäre nur
+dem BUCHSTABEN nach erfüllt — zwei Fälle, aber derselbe Fall zweimal.
+**DIE AUFLAGE LAUTETE:** Der Entwurf der Ziel-Schnittstelle wird GEGEN DIE
+LINKEDIN-HÜLLE GEPRÜFT, BEVOR er festgeschrieben wird. Nicht gebaut — nur
+daraufhin GELESEN, ob sie hineinpasst.
 LinkedIn bricht die Annahme "gleiche Hülle, andere Zugangsdaten" VOLLSTÄNDIG:
 eine conversion-URN, `conversionHappenedAt`, ein `conversionValue`-Objekt und ein
 `userIds`-Array aus Paaren von `idType` und `idValue`.
+
+**DIE PRÜFUNG IST AM 2026-08-03 GESCHEHEN. BEFUND:** Meta und Pinterest teilen
+fast alles. LinkedIn teilt NICHTS davon — nicht die Feldnamen, nicht die
+Verschachtelung, nicht die Zeiteinheit (Sekunden gegen Millisekunden). Gemeinsam
+ist nur die BEDEUTUNG: welches Ereignis, wann, welcher Wert, welche Identität,
+welche Kennung zur Entdopplung.
+
+**VIER ANFORDERUNGEN, die daraus folgen und OHNE LinkedIn nicht sichtbar gewesen
+wären — sie BINDEN den späteren Entwurf:**
+1. **EIN ZIEL IST EIN ADAPTER, KEIN PARAMETERSATZ.** Der Adapter besitzt
+   Endpunkt, Auth-Kopf, Hülle, Zeiteinheit UND Fehlerdeutung. Metas
+   Fehler-Envelope mit `fbtrace_id` ist bereits heute typisiert und ist
+   Meta-eigen.
+2. **EIN ADAPTER MUSS EIN EREIGNIS ABLEHNEN KÖNNEN, ohne dass etwas kaputt ist.**
+   LinkedIn braucht pro Ereignistyp eine vorab angelegte Conversion-Regel; fehlt
+   sie, ist das Ereignis NICHT ABBILDBAR. Das ist etwas anderes als ein
+   Netzwerkfehler und muss im Ergebnis UNTERSCHEIDBAR sein. Ohne LinkedIn hätte
+   die Schnittstelle nur "gesendet" und "fehlgeschlagen" gekannt.
+3. **IDENTITÄT IST EIN BÜNDEL, KEINE FESTE FELDLISTE.** Heute steht im Code Metas
+   `user_data`-Form; Pinterest verwendet ZUFÄLLIG dieselben Namen, LinkedIn
+   verlangt typisierte Paare. Die neutrale Form sagt, WELCHE Kennungen vorliegen;
+   jeder Adapter nimmt sich, was er versteht.
+4. **DAS SCHEMA DARF EINE KONFIGURATION PRO EREIGNISTYP NICHT AUSSCHLIESSEN.**
+   Sie gibt es heute nicht und sie gehört NICHT in die erste Scheibe — aber ein
+   Schema, das sie unmöglich macht, wäre bei LinkedIn eine Sackgasse (s. (h)).
+
+**WARUM DIE AUFLAGE IHREN ZWECK ERFÜLLT HAT, ausdrücklich:** Ohne sie wäre die
+Verallgemeinerung ein gemeinsamer Payload-Bauer mit Ziel-Feldern geworden — an
+Meta und Pinterest überangepasst, beim DRITTEN Ziel gesprengt.
 
 **(h) LINKEDIN BRAUCHT EINE KONFIGURATIONSDIMENSION, DIE ES NICHT GIBT.**
 Conversion-Regeln müssen im Campaign Manager angelegt sein, BEVOR Ereignisse
@@ -297,19 +380,31 @@ nach, statt es umzuschreiben.
 
 ---
 
-## Keine Scheiben-Einteilung
+## Die ersten beiden Scheiben — und was davor liegt
 
-Mit (e) ist entschieden, WOMIT die erste Scheibe arbeitet — Pinterest. Das ist
-NICHT dasselbe wie eine Einteilung, und der Schnitt ist damit NICHT freigegeben.
-Zwei Dinge blockieren ihn weiterhin:
-- **(d) ist offen:** Das Ziel-Schema für die Geheimnisse steht nicht fest. Solange
-  unklar ist, wohin Handle und Token eines zweiten Ziels gehören, hat die erste
-  Scheibe keinen definierten Endzustand — sie könnte nur raten, was sie
-  hinterlässt.
-- **Die Auflage aus (g) ist NICHT ERFÜLLT:** Der Entwurf der Ziel-Schnittstelle
-  ist nicht gegen die LinkedIn-Hülle gelesen worden. Ohne diese Gegenprobe wäre
-  jede Verallgemeinerung an Meta und Pinterest überangepasst.
+Die beiden Blocker aus der vorigen Fassung sind weg: (d) ist entschieden, die
+Auflage aus (g) ist erfüllt. **DAMIT IST NICHT "geschnitten werden darf",
+sondern die REIHENFOLGE der ersten beiden Scheiben bekannt** — und davor liegt
+noch eine Erhebung.
 
-ERST DANACH entsteht eine Einteilung. Diese Datei hat schon zweimal an einer
-beantworteten Frage gehangen (erst (a), dann (e)) — sie beschreibt deshalb
-ausdrücklich, was NOCH blockiert, statt nur zu sagen, was erledigt ist.
+**ERSTE SCHEIBE: DIE UMSTELLUNG DER GEHEIMNIS-TABELLE, OHNE JEDE
+VERHALTENSÄNDERUNG.** Meta bleibt einziges Ziel, alles funktioniert weiter, nur
+an anderer Stelle gespeichert. Nichts am Fan-Out, nichts am Consent, kein neues
+Netzwerk.
+
+**PINTEREST IST DIE ZWEITE SCHEIBE**, nicht die erste — auch wenn (e) es als
+"erstes Ziel" benennt. GRUND: Die Migration ist die RISKANTESTE Änderung dieser
+Phase. Sie mit einem neuen Ziel zu bündeln hiesse, im Fehlerfall nicht zu wissen,
+welche der beiden Wirkungen ihn verursacht hat. (e) entscheidet, WELCHES Ziel
+zuerst kommt; diese Zeile entscheidet, dass VOR dem ersten Ziel die Umstellung
+steht.
+
+**VOR DER ERSTEN SCHEIBE STEHT EINE ERHEBUNG, KEINE PLANUNG.** Zu klären ist:
+wie die heutige Geheimnis-Tabelle geschützt ist, wer auf sie schreibt, wie die
+bestehenden Migrationen aufgebaut sind, und ob der `trackingKey` wirklich
+projektweit ist (s. den Prüfauftrag in (d)). Der Entwurf in (d) steht unter dem
+Vorbehalt dieser Erhebung — bestätigt sie ihn nicht, gilt die Erhebung.
+
+Diese Datei hat schon dreimal an einer erledigten Frage gehangen (erst (a), dann
+(e), jetzt (d)/(g)) — sie benennt deshalb ausdrücklich, was NOCH davorliegt,
+statt nur zu sagen, was erledigt ist.

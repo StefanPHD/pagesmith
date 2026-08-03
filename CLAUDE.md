@@ -96,24 +96,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       Drawer mit zwei Reitern (Messen / Live) außerhalb des Dokumentflusses —
       Voraussetzung für Phase 11. Volle Herleitung:
       docs/claude-history/phase-10-workspace.md.
-- [ ] Phase 10.5 — Umzug middleware -> proxy (Next-Konvention): KLEIN, ABER
-      KEINE NEBENRUNDE. Next 16 hat die "middleware"-Dateikonvention
-      deprecated (Build-Warnung bei jedem Deployment); "proxy" ist der
-      Nachfolger, beide werden heute noch unterstützt. Umbenannt wird DATEI
-      UND FUNKTION (src/middleware.ts -> src/proxy.ts, `export function
-      middleware` -> `proxy`; ein reines Datei-Rename schlägt fehl, laut, nicht
-      still). NUR src/middleware.test.ts zieht nach, dazu die Doku-Stellen.
-      FALLE: src/lib/supabase/middleware.test.ts ist der Test des HILFSMODULS
-      mit dem Auth-Gate, KEINE Konventionsdatei — es bleibt UNBERÜHRT. EIN
-      ZWISCHENZUSTAND IST UNMÖGLICH: liegen beide Dateien gleichzeitig, bricht
-      der Build (E900) — es ist ein Alles-oder-nichts-Schnitt pro Deployment.
-      BETRIFFT DIE AUTH-GRENZE UND DIE HOST-WEICHE der Custom-Domain-
-      Auslieferung, deshalb LIVE-TEST AUF BEIDEN HOST-TYPEN (App-Host: Gate
-      greift, Login-Redirect; Kunden-Domain: Seite wird ausgeliefert, /api/e
-      kommt durch). VOR PHASE 11, weil die Datei dort nicht angefasst wird und
-      der Umbau mit jeder weiteren Phase teurer wird. Gemessene Belege,
-      Trefferliste und Rückweg: docs/claude-history/backlog-polish.md, Eintrag
-      "src/middleware.ts -> proxy.ts umbenennen".
+- [x] Phase 10.5 — Umzug middleware -> proxy (Next-Konvention): ABGESCHLOSSEN
+      & live bewiesen (2026-08-03). Volle Herleitung:
+      docs/claude-history/backlog-polish.md, Eintrag "src/middleware.ts ->
+      proxy.ts umbenennen".
 - [ ] Phase 11 — Multi-Tracking (Server-Side Fan-Out): TikTok, Google,
       Pinterest, LinkedIn, Custom-Pixel als weitere ADDITIVE Fan-Out-Ziele
       neben Meta — source bleibt Beobachtungs-Ort, jedes Ziel bekommt seine
@@ -1094,6 +1080,41 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   nach JEDER Änderung ist ein REDEPLOY PFLICHT. Sonst trägt das laufende Bundle still den
   alten Wert, OHNE Fehlermeldung. Server-only Env-Vars vor der ersten Prod-Nutzung im
   Vercel-Dashboard setzen (sie sind nicht build-zeit-gebunden, fehlen aber sonst zur Laufzeit).
+- DAS ETIKETT IM NEXT-BUILD-OUTPUT BENENNT DIE KONVENTION, NICHT DIE LAUFZEIT (Phase 10.5,
+  gemessen 2026-08-03): Die Zeile "ƒ Proxy (Middleware)" stand VOR und NACH dem Umzug
+  middleware -> proxy WÖRTLICH UNVERÄNDERT da — während die Laufzeit im selben Schritt von
+  der Edge auf Node wechselte. Das Etikett ist damit ein KONSTANTER Text und trägt KEINE
+  Information über die Laufzeit. Wer eine Runtime daraus abliest, liegt falsch, und zwar
+  ohne es zu merken: Der Text sieht in beiden Zuständen aus wie eine Bestätigung.
+  IN DIESEM PROJEKT BEREITS ZWEIMAL PASSIERT — beide Male in die falsche Richtung:
+  (1) in der Aufklärung, wo das Etikett als einer von vier Belegen dafür geführt wurde,
+  dass Next die neue Konvention schon zieht; (2) im Bau-Plan, wo "Etikett zeigt ƒ Proxy
+  OHNE die Klammer" zunächst als LADEBEWEIS-Kriterium vorgesehen war — hätte es als
+  Kriterium gegolten, wäre eine gelungene Umstellung als gescheitert gemeldet worden.
+  WO DIE LAUFZEIT WIRKLICH STEHT (beides am eigenen Build gemessen, nicht aus Doku):
+  - EDGE: Eintrag in .next/server/middleware-manifest.json; files und entrypoint liegen
+    unter server/edge/, gebaut über ein edge-wrapper-Template.
+  - NODE: Eintrag in .next/server/functions-config-manifest.json mit "runtime": "nodejs",
+    dazu .next/server/middleware.js im CommonJS-Format (require/module.exports) plus ein
+    .nft.json (Node File Trace) — beide gibt es im Edge-Fall nicht.
+  GRENZE: Gilt für Next 16.2.12 und den Turbopack-Build dieses Projekts. Ändert Next die
+  Ausgabe oder das Manifest-Schema, ist die Zuordnung neu zu messen — die REGEL bleibt.
+  FOLGE, und sie ist der eigentliche Punkt: Jede künftige Runtime-Frage wird AM MANIFEST
+  beantwortet. Nie am Etikett, nie an einem Doku-Zitat. Ein Zitat sagt, was gelten SOLL;
+  das Manifest sagt, was der Build TATSÄCHLICH erzeugt hat.
+- DIE NEXT-KONVENTIONSDATEI IST src/proxy.ts UND LÄUFT IN DER NODE-RUNTIME (Fakt über den
+  heutigen Code, Stand Phase 10.5): Sie exportiert die Funktion proxy. Die Laufzeit ist
+  dort NICHT konfigurierbar — Edge steht für die proxy-Konvention nicht zur Verfügung
+  (Herkunft dieser Aussage: Next-Doku im installierten Paket, NICHT eigene Messung; eigene
+  Messung ist der Node-Befund oben). Wer also eine Edge-Laufzeit für diese Datei braucht,
+  hat kein Konfigurationsproblem, sondern muss die Konvention wechseln.
+  IHR MATCHER SCHLIESST NUR VIER DINGE AUS: _next/static, _next/image, favicon.ico und die
+  aufgezählten Bilddateien. Daraus folgt, was leicht übersehen wird: /api/e UND /api/capi
+  laufen DURCH diese Datei hindurch — bei jedem Beacon jedes Besuchers jeder Kundenseite.
+  Der Passthrough im Rumpf reicht sie nur durch. Ein Ausschluss im Matcher wäre der
+  kürzere Weg, ist aber eine Verhaltensänderung auf dem heissesten Pfad und deshalb
+  bewusst NICHT mitgebaut: docs/claude-history/backlog-polish.md, Eintrag "MATCHER DER
+  KONVENTIONSDATEI SCHLIESST DIE INGEST-PFADE NICHT AUS".
 - HOST-QUELLE FÜR APP-vs-SERVING-BRANCHING (Sicherheit): x-forwarded-host ist die Quelle,
   empirisch auf einem echten Vercel-Preview als vertrauenswürdig BEWIESEN (Vercels Edge
   überschreibt einen client-gefälschten x-forwarded-host mit dem echten Host — die Doku

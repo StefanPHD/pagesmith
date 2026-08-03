@@ -1064,8 +1064,23 @@ miterledigen, sondern gebündelt abarbeiten.
   ERSTER SCHRITT, in dieser Reihenfolge: (1) Eine saubere Messreihe auf EINEM
   Regime — dynamisch, Cache aus —, zehn Aufrufe, die ersten drei verworfen. Erst
   damit gibt es überhaupt eine belastbare Zahl. (2) Danach am Code klären, WO die
-  Zeit hingeht: /app-serve, die Supabase-Abfrage oder die Auslieferung. Heute
-  weiss das niemand.
+  Zeit hingeht: /app-serve, die Supabase-Abfrage, die Auslieferung — ODER der
+  VERBINDUNGSAUFBAU, s. den vierten Kandidaten gleich darunter. Heute weiss das
+  niemand.
+  VIERTER KANDIDAT — VERBINDUNGSAUFBAU (DNS, TLS, Erstkontakt), GEMESSEN
+  2026-08-03: Auf dem APP-HOST, frisches Inkognito-Fenster nach über zehn Minuten
+  Ruhe, dauerte es 612 ms bis zur Antwort. Davon entfallen rund 50 ms auf die
+  Konventionsdatei selbst — das ist der warme, eingeschwungene Wert DERSELBEN
+  Route. Die Differenz von rund 560 ms ist Verbindungsaufbau.
+  GRENZE: gemessen auf dem APP-Host, NICHT auf einer Kunden-Domain. Ob dort
+  dieselbe Grössenordnung anfällt, ist UNGEPRÜFT — Kunden-Domains haben eigene
+  DNS- und Zertifikatswege.
+  WARUM DER KANDIDAT DAZUGEHÖRT: Auf einer Landingpage ist praktisch jeder
+  Besucher ein Erstbesucher. Ein Anteil dieser Grösse wäre damit der GRÖSSTE
+  Einzelposten — und er kam in keinem der drei bisherigen Kandidaten vor, die
+  alle erst NACH dem Verbindungsaufbau ansetzen.
+  KANDIDAT, KEINE DIAGNOSE: Dass die Zahl gross ist, sagt nicht, dass sie
+  vermeidbar ist. Was daraus folgt, entscheidet Schritt (2), nicht dieser Eintrag.
   KEIN ZIEL FESTLEGEN, bevor (2) beantwortet ist. Eine Zielzahl ohne Kenntnis des
   Engpasses ist geraten und lenkt die Arbeit an die falsche Stelle.
   ZWEITER, GETRENNTER PUNKT — ABRECHNUNG DER FUNCTION-AUFRUFE (eigene Achse,

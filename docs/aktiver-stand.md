@@ -48,8 +48,8 @@ nächsten Aufräumen "korrigiert":**
   Umstellung mit Migrationspfad für Bestandskunden.
 
 **4. UNSERE EIGENE AUSWERTUNG BEKOMMT EINEN EIGENEN SCHLÜSSEL** (Arbeitsname:
-`analytics` — der endgültige Name hängt an der offenen Frage (a) unten und ist
-NICHT festgelegt). Ohne einen solchen Schlüssel liesse sich der PageView-Defekt
+`analytics` — die SCHREIBWEISE ist mit Entscheidung (a) unten festgelegt, der
+NAME noch nicht). Ohne einen solchen Schlüssel liesse sich der PageView-Defekt
 gar nicht schliessen: Es gäbe nichts, wogegen der Emitter prüfen könnte.
 
 **5. DAS CONSENT-SIGNAL WIRD IMMER MITGESCHICKT — auch bei Vollzustimmung.**
@@ -91,19 +91,55 @@ unbekannt.
 
 ---
 
-## Drei offene Fragen, die der Bau beantworten MUSS
+## Fragen, die der Bau beantworten MUSS
 
-Alle drei sind AUSDRÜCKLICH OFFEN. Keine wird hier beantwortet oder
+(a) ist seit 2026-08-03 ENTSCHIEDEN und steht als Entscheidung unten; (b) bis
+(f) sind AUSDRÜCKLICH OFFEN und werden hier weder beantwortet noch
 vorentschieden.
 
-**(a) DER SCHLÜSSEL-NAMENSRAUM.** Sobald der erste Kunde gegen diese Namen
-schreibt, sind sie eine Einbahnstrasse — sie stehen dann in fremdem Seiten-Code,
-den wir weder sehen noch ändern können.
-ERSTER SCHRITT, vor jeder Festlegung: AM CODE ERHEBEN, wie Ziele HEUTE benannt
-sind — in der CAPI-Konfiguration, in der `events`-Tabelle und in der Oberfläche.
-Weichen die Consent-Namen davon ab, trägt das Produkt ZWEI Namen für dieselbe
-Sache, und jede spätere Fehlersuche muss beide kennen. Erst nach dieser Erhebung
-wird festgelegt.
+**(a) DER SCHLÜSSEL-NAMENSRAUM — ENTSCHIEDEN (OWNER, 2026-08-03).**
+
+**DER NAMENSRAUM WIRD NICHT NEU ERFUNDEN, SONDERN ERWEITERT.** Er existiert
+bereits als `settings.pixels.<platform>` (`src/lib/settings.ts:4-8`, `:12-16`)
+mit genau einem Mitglied: `meta`. Der dortige Kommentarkopf hat die Nest-Form
+ausdrücklich für weitere Plattformen angelegt — "OHNE flache Keys und OHNE
+Migration pro Plattform".
+
+**WARUM DIE CONSENT-SCHLÜSSEL DARAN GEBUNDEN WERDEN:** Der Betreiber pflegt
+seine Ziele in den Einstellungen und schreibt DIESELBEN Namen in seinen
+Consent-Hook. Zwei Vokabulare hiessen: er lernt beide, und jede spätere
+Fehlersuche muss beide kennen.
+Die vier im Repo gemessenen Handschriften (`__psFoo`, `__ps_foo`, `PS_FOO`,
+`pagesmith-foo`) gelten für LAUFZEIT-INTERNAS. Die Schlüssel im Rückgabewert des
+Hooks sind kein Runtime-Symbol, sondern FACHVOKABULAR — sie fallen deshalb nicht
+unter jene Handschriften.
+
+**SCHREIBWEISE: snake_case, klein.**
+BEGRÜNDUNG, DIE ZWINGEND DAZUGEHÖRT — ohne sie sieht `google_ads` wie eine
+Ausnahme aus und wird beim nächsten Aufräumen geglättet: Der Betreiber schreibt
+diese Schlüssel in einem JS-OBJEKTLITERAL. `{ google-ads: true }` ist ein
+SYNTAXFEHLER; nur der Unterstrich funktioniert ohne Anführungszeichen. An `meta`
+allein war die Regel nicht ablesbar — bei einem einzigen einwortigen Mitglied
+sieht man nicht, ob "ein Wort" oder "snake_case" gilt.
+
+**DIE SCHLÜSSEL:** `meta` · `google_ads` · `ga4` · `tiktok` · `pinterest` ·
+`linkedin` · `custom` · plus der Schlüssel für die eigene Auswertung
+(Arbeitsname `analytics`, s. den offenen Punkt darunter).
+
+**GOOGLE IST ZWEI ZIELE, NICHT EINS.** Google Ads Conversions und GA4 sind
+verschiedene Produkte mit verschiedenen Schnittstellen, Zugangsdaten und
+Semantiken — und Einwilligungsbanner trennen sie üblicherweise in "Marketing"
+gegen "Statistik". Deshalb zwei Schlüssel.
+
+**CUSTOM IST GENAU EIN SCHLÜSSEL.** Drittanbieter-Pixel fallen im Banner unter
+eine gemeinsame Kategorie. WIE VIELE Custom-ZIELE ein Projekt haben kann, ist
+davon ENTKOPPELT und ausdrücklich NICHT entschieden — die Slot-Zahl steht in
+unserem Schema, ist jederzeit änderbar und für niemanden ausserhalb sichtbar.
+DER SCHLÜSSEL IST DIE EINBAHNSTRASSE, DIE SLOT-ZAHL NICHT.
+
+WAS AN (a) NOCH OFFEN BLEIBT: der endgültige Name für die eigene Auswertung.
+`analytics` ist ein Arbeitsname; die SCHREIBWEISE steht damit fest, der NAME
+noch nicht.
 
 **(b) DIE FORM DES WIRE-FELDES.** Die Angabe sitzt im `/api/e`-Body — auf dem
 Pfad, für den die Regel "/API/E-SCHLANKHEIT" (CLAUDE.md, Abschnitt A) gilt: Er
@@ -120,6 +156,37 @@ gegenläufige Argumente, beide notiert, keines ausgewählt:
   weniger — neben IP und User-Agent, die auf dem Forward-Pfad ohnehin anfallen.
 Die Entscheidung berührt die Datenklassen-Grenze (CLAUDE.md, "## Offene Punkte")
 und gehört nicht in einen Bau-Schritt.
+
+**(d) DAS ZIEL-SCHEMA FÜR DIE GEHEIMNISSE.**
+GEMESSEN: `project_tokens` trägt genau EINE Spalte für Zugangsdaten,
+`meta_capi_token` (`supabase/migrations/0005_project_tokens.sql:20`). Fünf Ziele
+brauchen je eigene Zugangsdaten — das ist eine SCHEMA-ÄNDERUNG an der Tabelle mit
+den Geheimnissen, mit RLS-Berührung, NICHT eine weitere Einstellung im JSON.
+GEMESSEN EBENFALLS: `settings.capi` wurde bewusst NEBEN `pixels` gelegt und im
+Kommentar als "plattform-AGNOSTISCH" begründet (`src/lib/settings.ts:25-32`). Für
+einen einzigen CAPI trug das; bei fünf Zielen mit je eigenem Handle und Token ist
+OFFEN, ob es unter die Plattform wandern muss.
+ZU ENTWERFEN, NICHT ZU SETZEN.
+
+**(e) DIE REIHENFOLGE DER ZIELE.** Die fünf sind NICHT fünf Kopien desselben
+Musters; jedes bringt eigene Pflichtfelder mit. Die Roadmap-Formulierung
+"additive Fan-Out-Ziele" (CLAUDE.md, Roadmap-Zeile Phase 11) verdeckt das.
+ERSTER SCHRITT: erheben, welches Ziel dem Meta-Muster (IP, User-Agent,
+Cookie-Kennung) am nächsten liegt. Das ist eine ERHEBUNG AN DEN SCHNITTSTELLEN,
+keine Vermutung.
+
+**(f) GA4 BRAUCHT MÖGLICHERWEISE ETWAS, DAS WIR IM BLOCKER-FALL NICHT HABEN.**
+DIES IST EINE ANNAHME, KEIN BEFUND — die Kennzeichnung ist Teil der Aussage:
+Das Measurement Protocol verlangt VERMUTLICH eine Client-ID, die GA4 selbst im
+Browser vergibt. Trifft das zu, fehlt sie ausgerechnet dann, wenn GA4s Skript
+geblockt wurde — also in genau dem Fall, für den der server-seitige Weg
+überhaupt existiert. Ein Ersatz-Identifikator aus unserer Hand erzeugte in GA4
+eine ZWEITE Nutzerpopulation.
+HERKUNFT: Kenntnisstand des Architekten über eine FREMDE Schnittstelle, NICHT am
+Code gemessen und in dieser Runde NICHT nachgeprüft. Gegen die AKTUELLE
+GA4-Dokumentation zu prüfen, BEVOR jemand baut.
+FOLGE, BEREITS ENTSCHIEDEN: GA4 kommt NICHT in die erste Scheibe. Der Namensraum
+bleibt davon unberührt — betroffen ist nur die Reihenfolge.
 
 ---
 
@@ -165,6 +232,8 @@ nach, statt es umzuschreiben.
 
 ## Keine Scheiben-Einteilung
 
-Sie entsteht erst, wenn die offene Frage (a) beantwortet ist. Vorher wäre jeder
-Schnitt geraten: Der Namensraum entscheidet mit darüber, was eine Scheibe
-überhaupt abschliessen kann und welche Migration sie hinterlässt.
+Sie entsteht erst, wenn die offene Frage (e) — die Reihenfolge der Ziele —
+beantwortet ist. Bis 2026-08-03 hing sie an (a); jene Frage ist entschieden, und
+damit ist ein Schnitt NICHT automatisch möglich: Solange nicht erhoben ist,
+welches Ziel dem Meta-Muster am nächsten liegt, wäre die erste Scheibe geraten.
+Von (f) ist bereits bekannt, dass GA4 nicht in ihr liegt.

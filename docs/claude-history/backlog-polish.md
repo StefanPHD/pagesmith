@@ -1176,3 +1176,28 @@ miterledigen, sondern gebündelt abarbeiten.
   mit der Produktanforderung aus dem aktiven Stand der Phase 11 zusammen (die
   vollständige Schlüsselliste muss dort stehen, wo Tracking eingerichtet wird) —
   beide sind dieselbe Frage, einmal für den Hook und einmal für seine Schlüssel.
+- RESERVIERTE NAMEN SIND NICHT GESCHÜTZT
+  STATUS: OFFEN (erhoben 2026-08-03).
+  BEFUND, GEMESSEN: TrackConfig.event ist ein freier String; die EINZIGE
+  Validierung ist eine Leerprüfung (src/components/ActionPanel.tsx:554,
+  "const valid = event.trim() !== ''"). Nichts hindert einen Betreiber daran, ein
+  Event __ps_pageview zu nennen — dann greift isForwardable
+  (src/lib/analytics/events.ts:34-36) und der CAPI-Forward dieses Events
+  unterbleibt LAUTLOS: kein Fehler, keine Meldung, nur eine Conversion, die nie
+  bei Meta ankommt.
+  DER SCHUTZ IST PROBABILISTISCH, NICHT DURCHGESETZT: Er steht als Begründung im
+  Kommentar an der Konstante — der Token sei "praktisch nicht versehentlich
+  eintippbar" (events.ts:21-23). Das ist eine Wahrscheinlichkeitsaussage, keine
+  Prüfung. GEMESSEN: Es gibt KEINE zentrale Liste reservierter Namen und KEINE
+  gemeinsame Prüf-Funktion; die beiden reservierten Token (__ps_pageview,
+  events.ts:24; __ps_browser, events.ts:65) sind ausschliesslich an ihren eigenen
+  Deklarationen als reserviert vermerkt.
+  WARUM ES JETZT WICHTIGER WIRD: Phase 11 eröffnet mit den Consent-Schlüsseln
+  einen ZWEITEN Namensraum, in dem der Betreiber schreibt — und dort sind die
+  Namen kurz und naheliegend (meta, custom, analytics). Eine Kollision ist damit
+  wahrscheinlicher als bei __ps_pageview, wo die Unwahrscheinlichkeit selbst der
+  Schutz war.
+  ERSTER SCHRITT: erheben, WELCHE Namen im Produkt reserviert sind und WO das
+  jeweils festgehalten ist. Solange es keine Liste gibt, kann keine Prüfung sie
+  durchsetzen — und eine Prüfung ohne vollständige Liste wäre schlimmer als
+  keine, weil sie Vollständigkeit suggeriert.

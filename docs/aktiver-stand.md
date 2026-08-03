@@ -93,9 +93,18 @@ unbekannt.
 
 ## Fragen, die der Bau beantworten MUSS
 
-(a) ist seit 2026-08-03 ENTSCHIEDEN und steht als Entscheidung unten; (b) bis
-(f) sind AUSDRÜCKLICH OFFEN und werden hier weder beantwortet noch
-vorentschieden.
+(a) und (e) sind seit 2026-08-03 ENTSCHIEDEN und stehen als Entscheidungen
+unten; (f) ist seit demselben Datum GEPRÜFT und trägt eine Folge, keine offene
+Frage mehr. (b), (c), (d), (g), (h) und (i) sind AUSDRÜCKLICH OFFEN und werden
+hier weder beantwortet noch vorentschieden.
+
+**PROVENIENZ ALLER ANGABEN ZU FREMDEN SCHNITTSTELLEN IN DIESEM ABSCHNITT —
+EINMAL, FÜR ALLE FOLGENDEN PUNKTE:** Was hier über Pinterest, TikTok, LinkedIn
+und GA4 steht, stammt aus FREMDER DOKUMENTATION, vom Architekten am 2026-08-03
+im Web gelesen. Es ist WEDER am Code gemessen NOCH eigene Betriebserfahrung.
+FREMDE SCHNITTSTELLEN ÄNDERN SICH OHNE UNSER ZUTUN — vor dem Bau ist deshalb
+gegen die dann AKTUELLE Anbieter-Dokumentation gegenzuprüfen, nicht gegen diesen
+Text. Er hält den Kenntnisstand eines Tages fest, keine dauerhafte Zusage.
 
 **(a) DER SCHLÜSSEL-NAMENSRAUM — ENTSCHIEDEN (OWNER, 2026-08-03).**
 
@@ -168,25 +177,83 @@ einen einzigen CAPI trug das; bei fünf Zielen mit je eigenem Handle und Token i
 OFFEN, ob es unter die Plattform wandern muss.
 ZU ENTWERFEN, NICHT ZU SETZEN.
 
-**(e) DIE REIHENFOLGE DER ZIELE.** Die fünf sind NICHT fünf Kopien desselben
-Musters; jedes bringt eigene Pflichtfelder mit. Die Roadmap-Formulierung
-"additive Fan-Out-Ziele" (CLAUDE.md, Roadmap-Zeile Phase 11) verdeckt das.
-ERSTER SCHRITT: erheben, welches Ziel dem Meta-Muster (IP, User-Agent,
-Cookie-Kennung) am nächsten liegt. Das ist eine ERHEBUNG AN DEN SCHNITTSTELLEN,
-keine Vermutung.
+**(e) DIE REIHENFOLGE DER ZIELE — ENTSCHIEDEN (OWNER, 2026-08-03):
+PINTEREST TRÄGT DIE ERSTE SCHEIBE.**
 
-**(f) GA4 BRAUCHT MÖGLICHERWEISE ETWAS, DAS WIR IM BLOCKER-FALL NICHT HABEN.**
-DIES IST EINE ANNAHME, KEIN BEFUND — die Kennzeichnung ist Teil der Aussage:
-Das Measurement Protocol verlangt VERMUTLICH eine Client-ID, die GA4 selbst im
-Browser vergibt. Trifft das zu, fehlt sie ausgerechnet dann, wenn GA4s Skript
-geblockt wurde — also in genau dem Fall, für den der server-seitige Weg
-überhaupt existiert. Ein Ersatz-Identifikator aus unserer Hand erzeugte in GA4
-eine ZWEITE Nutzerpopulation.
-HERKUNFT: Kenntnisstand des Architekten über eine FREMDE Schnittstelle, NICHT am
-Code gemessen und in dieser Runde NICHT nachgeprüft. Gegen die AKTUELLE
-GA4-Dokumentation zu prüfen, BEVOR jemand baut.
-FOLGE, BEREITS ENTSCHIEDEN: GA4 kommt NICHT in die erste Scheibe. Der Namensraum
-bleibt davon unberührt — betroffen ist nur die Reihenfolge.
+Die fünf Ziele sind NICHT fünf Kopien desselben Musters; jedes bringt eigene
+Pflichtfelder mit. Die Roadmap-Formulierung "additive Fan-Out-Ziele" (CLAUDE.md,
+Roadmap-Zeile Phase 11) verdeckt das. Die Reihenfolge ist deshalb eine
+Entscheidung und kein Zufall.
+
+BEGRÜNDUNG, in dieser Reihenfolge:
+- IDENTITÄT: Pinterest verlangt mindestens EINES von — gehashte E-Mail, gehashte
+  Mobile-Advertising-IDs, ODER das PAAR aus Client-IP und User-Agent. Das Paar
+  ALLEIN genügt, und genau das erheben wir heute schon.
+- HÜLLE: Die Nutzlast ist der von Meta sehr ähnlich — ein `data`-Array mit
+  `event_name`, `action_source`, `event_time`, `event_id`, `event_source_url`,
+  `user_data` und `custom_data` mit `currency` und `value`.
+- FOLGE: Die erste Scheibe braucht KEINE neue Datenerfassung. Sie trennt damit
+  die ARCHITEKTUR-Aufgabe (Fan-Out) sauber von neuen FEATURE-Anforderungen —
+  scheitert sie, liegt es am Fan-Out und nicht an einem fehlenden Datenfeld.
+
+**DIE WAHL IST NICHT NACH KOMMERZIELLER RELEVANZ GETROFFEN**, sondern danach,
+was die Scheibe BEWEISEN kann. Das steht hier ausdrücklich, weil es sonst als
+Produktpriorität gelesen wird — Pinterest ist der geeignete ERSTE FALL, keine
+Aussage darüber, welches Ziel dem Geschäft am meisten bringt.
+
+**TIKTOK FOLGT ALS ZWEITES — mit einer AUSDRÜCKLICH OFFENEN Frage.** Ob IP und
+User-Agent ALLEIN für einen erfolgreichen Aufruf genügen, ist NICHT geklärt: die
+Sekundärquellen widersprechen sich, auch dazu, ob TikTok Deduplizierung
+unterstützt. Die Zuordnung lehnt sich an gehashte E-Mail und die Klick-Kennung
+`ttclid` aus der Anzeigen-URL an — `ttclid` zu lesen wäre eine NEUE Fähigkeit,
+die wir heute nicht haben. VOR der TikTok-Scheibe an TIKTOKS EIGENER
+Dokumentation nachmessen, NICHT an Blogs.
+
+**(f) GA4 — GEPRÜFT (2026-08-03). DIE FRÜHERE ANNAHME IST BESTÄTIGT.**
+
+Bis zu diesem Datum stand hier eine ungeprüfte Annahme des Architekten. Sie
+trifft zu, und der Befund ist schärfer als die Annahme:
+- Das GA4-Measurement-Protocol ist dazu gedacht, bereits über gtag oder GTM
+  erhobene Ereignisse zu ERGÄNZEN. Ohne diese ist nur eingeschränkte Auswertung
+  verfügbar.
+- GA4 verknüpft geografische Angaben über die `client_id`, und geografische
+  Daten lassen sich über das Protokoll NICHT selbst mitsenden.
+- Die `client_id` steckt im `_ga`-Cookie, das gtag setzt — im Blocker-Fall also
+  NICHT vorhanden.
+
+**FOLGE, SCHÄRFER ALS BISHER: GA4 IST KEIN FAN-OUT-ZIEL IM SELBEN SINN WIE DIE
+ANDEREN.** Es ist nicht nur zeitlich nach hinten zu schieben, sondern ALS ZIEL ZU
+ÜBERDENKEN: Ein Protokoll, das voraussetzt, was der Blocker gerade verhindert,
+löst nicht das Problem, für das der server-seitige Weg existiert.
+Der Schlüssel `ga4` bleibt vom Namensraum her BESTEHEN (Entscheidung (a) wird
+davon nicht berührt); was HINTER ihm liegt, ist offen.
+
+**(g) DIE GEFAHR DER ÜBERANPASSUNG.** Pinterest ist Meta so ähnlich, dass eine
+Verallgemeinerung auf DIESER Basis überangepasst wäre: Die Projektregel
+"Abstraktion erst bei 2+ Fällen" wäre nur dem BUCHSTABEN nach erfüllt — zwei
+Fälle, aber derselbe Fall zweimal.
+**VERBINDLICHE AUFLAGE, KEINE EMPFEHLUNG:** Der Entwurf der Ziel-Schnittstelle
+wird GEGEN DIE LINKEDIN-HÜLLE GEPRÜFT, BEVOR er festgeschrieben wird. Nicht
+gebaut — nur daraufhin GELESEN, ob sie hineinpasst.
+LinkedIn bricht die Annahme "gleiche Hülle, andere Zugangsdaten" VOLLSTÄNDIG:
+eine conversion-URN, `conversionHappenedAt`, ein `conversionValue`-Objekt und ein
+`userIds`-Array aus Paaren von `idType` und `idValue`.
+
+**(h) LINKEDIN BRAUCHT EINE KONFIGURATIONSDIMENSION, DIE ES NICHT GIBT.**
+Conversion-Regeln müssen im Campaign Manager angelegt sein, BEVOR Ereignisse
+gesendet werden. Der Betreiber legt also PRO EREIGNISTYP eine Regel an, und deren
+Kennung müsste PRO EREIGNIS gespeichert werden.
+Heute ist ein Ereignis ein FREIER STRING (`TrackConfig.event`) ohne jede
+Zielkonfiguration daneben. Das ist eine GRÖSSERE PRODUKTÄNDERUNG als "ein
+weiteres Ziel" — sie berührt, wie ein Ereignis überhaupt beschrieben wird.
+NEBENBEFUND: Bei LinkedIn reist die IP UNVERSCHLÜSSELT als eigener ID-Typ.
+
+**(i) GOOGLE ADS IST UNGEPRÜFT.** Von fünf Zielen sind DREI geprüft (Pinterest,
+TikTok, LinkedIn) und GA4 ist geklärt. Google Ads wurde in dieser Runde NICHT
+untersucht — weder Identitätsanforderungen noch Hülle noch Zugangsdaten.
+Der Punkt steht hier als EIGENER Eintrag, damit die Lücke nicht in einer
+Aufzählung untergeht: "vier von fünf betrachtet" liest sich sonst wie
+Vollständigkeit.
 
 ---
 
@@ -232,8 +299,17 @@ nach, statt es umzuschreiben.
 
 ## Keine Scheiben-Einteilung
 
-Sie entsteht erst, wenn die offene Frage (e) — die Reihenfolge der Ziele —
-beantwortet ist. Bis 2026-08-03 hing sie an (a); jene Frage ist entschieden, und
-damit ist ein Schnitt NICHT automatisch möglich: Solange nicht erhoben ist,
-welches Ziel dem Meta-Muster am nächsten liegt, wäre die erste Scheibe geraten.
-Von (f) ist bereits bekannt, dass GA4 nicht in ihr liegt.
+Mit (e) ist entschieden, WOMIT die erste Scheibe arbeitet — Pinterest. Das ist
+NICHT dasselbe wie eine Einteilung, und der Schnitt ist damit NICHT freigegeben.
+Zwei Dinge blockieren ihn weiterhin:
+- **(d) ist offen:** Das Ziel-Schema für die Geheimnisse steht nicht fest. Solange
+  unklar ist, wohin Handle und Token eines zweiten Ziels gehören, hat die erste
+  Scheibe keinen definierten Endzustand — sie könnte nur raten, was sie
+  hinterlässt.
+- **Die Auflage aus (g) ist NICHT ERFÜLLT:** Der Entwurf der Ziel-Schnittstelle
+  ist nicht gegen die LinkedIn-Hülle gelesen worden. Ohne diese Gegenprobe wäre
+  jede Verallgemeinerung an Meta und Pinterest überangepasst.
+
+ERST DANACH entsteht eine Einteilung. Diese Datei hat schon zweimal an einer
+beantworteten Frage gehangen (erst (a), dann (e)) — sie beschreibt deshalb
+ausdrücklich, was NOCH blockiert, statt nur zu sagen, was erledigt ist.

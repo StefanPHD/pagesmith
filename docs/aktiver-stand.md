@@ -13,8 +13,8 @@ VERFAHREN AM PHASENENDE — drei Schritte, in dieser Reihenfolge:
    mehrscheibig — ihre Herleitung hat keinen anderen Ort.
 
 DIESE DATEI ERÖFFNET DIE PHASE. Seit 2026-08-03 nennt sie die REIHENFOLGE der
-ersten beiden Scheiben, aber NICHT deren Inhalt — und vor der ersten steht eine
-Erhebung. S. den Abschnitt am Ende.
+ersten beiden Scheiben, und der INHALT der ERSTEN steht am Ende als DREISCHRITT
+— Reihenfolge inbegriffen. S. den Abschnitt am Ende.
 
 ---
 
@@ -169,11 +169,13 @@ und gehört nicht in einen Bau-Schritt.
 
 **(d) DAS ZIEL-SCHEMA FÜR DIE GEHEIMNISSE — ENTSCHIEDEN (OWNER, 2026-08-03).**
 
-**PROVENIENZ DIESES BLOCKS — er steht unter Vorbehalt:** Was hier folgt, ist
-ENTWURF und ENTSCHEIDUNG, NICHTS davon ist am Code gemessen. Insbesondere ist
-NICHT gemessen, wie die heutige Geheimnis-Tabelle geschützt ist und wer auf sie
-schreibt. Der Entwurf steht deshalb unter dem Vorbehalt der ERHEBUNG, die ihm
-folgt (s. Schluss-Abschnitt) — bestätigt sie ihn nicht, gilt die Erhebung.
+**PROVENIENZ DIESES BLOCKS — ENTWURF, DER SEINE PRÜFUNG BESTANDEN HAT:** Bis zum
+2026-08-03 stand dieser Block unter dem Vorbehalt einer noch AUSSTEHENDEN
+Erhebung. Die Erhebung ist gefahren und hat ihn BESTÄTIGT; ihre Befunde stehen in
+der Ausgangslage unter "Zur ERSTEN SCHEIBE".
+**WAS DAS NICHT HEISST:** Die FORM der neuen Tabelle bleibt ENTWURF und ist nicht
+am Code gemessen — gemessen ist der BESTAND, gegen den sie sich richtet. Eine
+bestandene Prüfung macht aus einem Entwurf keine Messung.
 
 **GEHEIMNISSE WERDEN ALS ZEILEN GESPEICHERT, geschlüsselt über PROJEKT UND
 ZIEL. Ein Geheimnis pro Zeile.**
@@ -218,17 +220,59 @@ heraus, ist es eine ZWEITE Migration auf der Geheimnis-Tabelle. Der Preis wurde
 am 2026-08-03 gekannt und in Kauf genommen, statt auf Verdacht Komplexität zu
 bauen ("Abstraktion erst bei 2+ realen Fällen").
 
-**WAS AN (d) NOCH OFFEN BLEIBT — als PRÜFAUFTRAG an die folgende Erhebung, NICHT
-als Behauptung:** `settings.capi` führt VERMUTLICH zwei verschiedene Dinge —
-`trackingKey` identifiziert das PROJEKT beim Ingest und bliebe, wo er ist;
-`tokenSet` ist die Anzeige "Geheimnis hinterlegt?" und gäbe es künftig PRO ZIEL.
-Trifft das zu, wandert nur die ZWEITE Hälfte unter die Plattform, nicht der ganze
-Block. AM CODE ZU PRÜFEN, bevor irgendetwas entworfen wird.
+**DER PRÜFAUFTRAG ZU `settings.capi` IST BEANTWORTET (2026-08-03) — hier das
+ERGEBNIS, nicht mehr die Frage:** `settings.capi` führt tatsächlich ZWEI Dinge
+unterschiedlicher Reichweite.
+- `trackingKey` identifiziert das PROJEKT und bleibt, wo er ist — mit einem
+  STÄRKEREN Grund als der Prüfauftrag annahm: Er ist in bereits ausgelieferte
+  Seiten EINGEBACKEN (s. Ausgangslage Punkt 15).
+- `tokenSet` bräuchte eine Vervielfachung, aber ERST AB DEM ZWEITEN ZIEL
+  (s. Ausgangslage Punkt 16).
+Es wandert also nur die ZWEITE Hälfte unter die Plattform, nicht der ganze Block
+— und nicht in dieser Scheibe.
 
 **KEIN EIGENES "AKTIV"-KENNZEICHEN.** Heute ist ein Ziel aktiv, wenn seine
 Zugangsdaten auflösen. Das trägt auch bei fünf Zielen und hält "nicht
 eingerichtet" von "eingerichtet, aber fehlerhaft" unterscheidbar — genau die
 Trennung, die bei den Analytics-Kacheln fehlt.
+
+**DIE POLICY-ENTSCHEIDUNG (OWNER, 2026-08-03): DIE NEUE TABELLE TRÄGT KEINE
+NUTZER-SPALTE UND KEINE `WITH CHECK`-POLICIES. RLS IST AKTIVIERT, DIE
+POLICY-LISTE IST LEER.**
+
+BEGRÜNDUNG, in dieser Reihenfolge. **Der Architekt hatte das GEGENTEIL empfohlen
+und wurde widerlegt — das gehört mit in den Text**, sonst liest die nächste
+Instanz die leere Policy-Liste als Versäumnis und "repariert" sie:
+
+1. **DIE POLICY SCHÜTZT NICHT GEGEN DEN ANGRIFF, UM DEN ES GEHT.**
+   `WITH CHECK (auth.uid() = user_id)` prüft nur, dass jemand die EIGENE
+   Nutzer-ID einträgt — genau das täte ein Angreifer ohnehin. Die Ownership des
+   PROJEKTS wird dort nicht geprüft; die Migrationsdatei sagt das selbst
+   (`supabase/migrations/0005_project_tokens.sql:35-37`). Mit (Projekt, Ziel) als
+   Schlüssel wird der Schutz noch SCHWÄCHER: gegen das Schreiben auf ein fremdes
+   ZIEL im EIGENEN Projekt greift er gar nicht.
+2. **EIN INSTRUMENT, DAS SCHUTZ ANZEIGT OHNE ZU SCHÜTZEN, IST SCHLIMMER ALS
+   KEINS.** Wer das Schema liest und "RLS aktiviert, Policies vorhanden" sieht,
+   schliesst daraus, die Datenbank trage die Autorisierung. Das ist der Weg, auf
+   dem eine spätere Änderung das Gate in der Server-Action für redundant hält.
+3. **KEINE ALTLAST IN EINER NEUEN TABELLE:** Eine Nutzer-Spalte hat ohne diese
+   Policies keinen Zweck (s. Ausgangslage Punkt 10).
+
+**VERPFLICHTENDE FOLGE:** Trägt die Datenbank keine Schreib-Autorisierung, ist
+**DAS OWNERSHIP-GATE IN DEN SERVER-ACTIONS DIE EINZIGE KONTROLLE.**
+Dieser Satz gehört in den KOMMENTARKOPF der neuen Migration — nicht als Beiwerk,
+sondern als der Satz, der jemanden davon abhält, das Gate später für redundant zu
+halten. Die vier Tests, die prüfen, dass der privilegierte Client im
+Nicht-Owner-Pfad NIE instanziiert wird (`src/app/projects/actions.test.ts:147`,
+`:215`, `:295`, `:309`), sichern damit die EINZIGE tragende Kontrolle ab und sind
+der Regressionswächter dieser Scheibe.
+
+**VERIFIKATION NACH DEM EINSPIELEN — präzise formuliert, weil die naheliegende
+Formulierung zu schwach ist:** Geprüft wird NICHT "keine SELECT-Policy", sondern
+**RLS AKTIVIERT UND POLICY-LISTE LEER**. Unter aktiver RLS ohne JEDE Policy ist
+die Tabelle für `anon` und `authenticated` vollständig verschlossen; nur
+`service_role` kommt durch. In EINER Abfrage prüfbar, in einer Sekunde
+beurteilbar — kein Formvergleich, keine Auslegung.
 
 **(e) DIE REIHENFOLGE DER ZIELE — ENTSCHIEDEN (OWNER, 2026-08-03):
 PINTEREST TRÄGT DIE ERSTE SCHEIBE.**
@@ -378,14 +422,75 @@ nach, statt es umzuschreiben.
    jedem Kunden ohne eigenes Banner eintritt und fail open endet. Ebenso
    ungetestet: der werfende Hook (`meta.ts:109`).
 
+### Zur ERSTEN SCHEIBE (Geheimnis-Tabelle) — Erhebung vom 2026-08-03
+
+Dieselbe Provenienz-Regel wie oben: ÜBERNOMMEN, nicht in dieser Runde neu
+erhoben. Andere Achse als die Punkte 1-7 — dort ging es um die Einwilligung,
+hier um die Tabelle, die die erste Scheibe umstellt.
+
+8. **DIE BEIDEN `WITH CHECK`-POLICIES WERDEN VON KEINEM CODEPFAD GENUTZT.**
+   Sie stehen in `supabase/migrations/0005_project_tokens.sql:38-42`. Beide
+   Schreibstellen (`src/app/projects/actions.ts:582-585` Upsert,
+   `:656-659` Delete) und die eine Lesestelle (`src/lib/capi/token.ts:123-127`)
+   laufen über den `service_role`-Client und umgehen die Zeilenregeln. Die
+   Policies stammen aus einer FRÜHEREN Fassung, in der der Schreibweg über den
+   Sitzungs-Client lief; der Wechsel ist in `actions.ts:543-546` festgehalten.
+9. **DIE TRAGENDEN KONTROLLEN SIND ZWEI ANDERE — und das ist der wichtigste
+   Punkt dieser Erhebung:**
+   - die **FEHLENDE SELECT-Policy** (`0005:28-31`): unter aktiver RLS ohne
+     SELECT-Policy ist die Tabelle für `anon` und `authenticated` unlesbar,
+     auch für den Owner selbst;
+   - das **OWNERSHIP-GATE in den zwei Server-Actions**, das den privilegierten
+     Client ERST NACH bestandener Prüfung instanziiert
+     (`actions.ts:566-580` bzw. `:644-655`).
+10. **`user_id` existiert in der heutigen Tabelle AUSSCHLIESSLICH, um jene
+    Policies zu bedienen** — der Kommentar an der Spalte sagt es wörtlich
+    (`0005:15-16`: "user_id fuer die RLS-WITH-CHECK-Ownership … beim Schreiben").
+11. **Das Geheimnis liegt im KLARTEXT.** `0005:17-20` benennt das ausdrücklich
+    und nennt die Isolation — eigene Tabelle plus SELECT-Sperre — als tragende
+    Kontrolle, NICHT Verschlüsselung.
+12. **MIGRATIONEN WERDEN VON HAND im Supabase-SQL-Editor ausgeführt, VOR dem
+    Code-Deploy.** Jede Migrationsdatei sagt es im Kopf (`0005:2`, `0019:2`,
+    `0020:2`); `package.json:5-12` trägt kein Migrations-Skript, `ci.yml` fährt
+    vier Gates ohne jede DB-Berührung, es gibt keine Supabase-CLI-Konfiguration.
+    Es gibt bewusst KEINEN Runner.
+    **EIN DOKUMENTIERTER SCHEMA-RÜCKWEG EXISTIERT NICHT** — weder in einer
+    Migration noch in der Doku. Vercels Instant Rollback stellt CODE wieder her,
+    NICHT das Schema.
+13. **Die Datenbanktypen sind HANDGEPFLEGT.** Kein `Database`-Typ, kein
+    typisierter `createClient<…>`, keine Supabase-CLI als Dependency, kein
+    `gen types`-Schritt — es gibt KEINEN Generierungslauf, den eine zusätzliche
+    Struktur stören könnte. Ebenso: KEIN `SELECT *` im Produktivcode; alle drei
+    Zugriffe nennen ihre Spalten explizit.
+14. **KEIN TEST KANN RLS PRÜFEN.** Die Suite mockt jeden Datenbankzugriff; die
+    Gates laufen nachweislich ohne Umgebungsvariablen (`.github/workflows/ci.yml:19-26`,
+    dort gemessen festgehalten). Eine Policy ist eine Eigenschaft der Datenbank —
+    ohne echte Verbindung kann kein Test sie auslösen.
+    **DIE RLS-LAGE IST AUSSCHLIESSLICH DURCH DIE MIGRATIONSDATEI UND EINE
+    LIVE-PRÜFUNG GEDECKT.** Was die Suite deckt, ist die Anwendungsschicht: vier
+    Tests prüfen, dass der privilegierte Client im Nicht-Owner-Pfad NIE
+    instanziiert wird (`src/app/projects/actions.test.ts:147`, `:215`, `:295`,
+    `:309`).
+15. **`trackingKey` IST PROJEKTWEIT — bestätigt**, mit einem Grund, der über den
+    Prüfauftrag hinausgeht: Der Ingest löst ihn gegen die Projektzeile auf
+    (`src/lib/capi/token.ts:96-99`, Filter auf die server-autoritative Spalte),
+    und er ist in BEREITS AUSGELIEFERTE Seiten EINGEBACKEN (`generate.ts:350`,
+    `meta.ts:211`). Beim Entfernen des Tokens wird er bewusst ERHALTEN
+    (`actions.ts:618-622`). **Eine Vervielfachung bräche live stehende Seiten.**
+16. **`tokenSet` bräuchte eine Vervielfachung — aber ERST MIT DEM ZWEITEN ZIEL,
+    NICHT IN DIESER SCHEIBE.** Er ist heute ein einzelner Boolean für genau ein
+    Geheimnis (`src/lib/settings.ts:24`, `:80-82`), gelesen von der Oberfläche
+    (`MeasureView.tsx:192`, `:211`, `:251`). Solange Meta das einzige Ziel ist,
+    bleibt er richtig.
+
 ---
 
-## Die ersten beiden Scheiben — und was davor liegt
+## Die ersten beiden Scheiben — und der Zuschnitt der ersten
 
 Die beiden Blocker aus der vorigen Fassung sind weg: (d) ist entschieden, die
-Auflage aus (g) ist erfüllt. **DAMIT IST NICHT "geschnitten werden darf",
-sondern die REIHENFOLGE der ersten beiden Scheiben bekannt** — und davor liegt
-noch eine Erhebung.
+Auflage aus (g) ist erfüllt. **DAMIT IST DIE REIHENFOLGE DER ERSTEN BEIDEN
+SCHEIBEN BEKANNT** — und für die erste auch ihr Zuschnitt, s. den Dreischritt
+weiter unten.
 
 **ERSTE SCHEIBE: DIE UMSTELLUNG DER GEHEIMNIS-TABELLE, OHNE JEDE
 VERHALTENSÄNDERUNG.** Meta bleibt einziges Ziel, alles funktioniert weiter, nur
@@ -399,12 +504,38 @@ welche der beiden Wirkungen ihn verursacht hat. (e) entscheidet, WELCHES Ziel
 zuerst kommt; diese Zeile entscheidet, dass VOR dem ersten Ziel die Umstellung
 steht.
 
-**VOR DER ERSTEN SCHEIBE STEHT EINE ERHEBUNG, KEINE PLANUNG.** Zu klären ist:
-wie die heutige Geheimnis-Tabelle geschützt ist, wer auf sie schreibt, wie die
-bestehenden Migrationen aufgebaut sind, und ob der `trackingKey` wirklich
-projektweit ist (s. den Prüfauftrag in (d)). Der Entwurf in (d) steht unter dem
-Vorbehalt dieser Erhebung — bestätigt sie ihn nicht, gilt die Erhebung.
+**DIE ERHEBUNG IST GEFAHREN (2026-08-03)** und hat den Entwurf in (d) bestätigt;
+ihre Befunde stehen oben unter "Zur ERSTEN SCHEIBE", die daraus folgende
+Policy-Entscheidung in (d). Der Vorbehalt ist damit eingelöst.
+
+### Der Zuschnitt der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge
+
+**1. MIGRATION, VON HAND, VOR DEM CODE-DEPLOY.** Neue Tabelle mit (Projekt,
+Ziel) als Schlüssel, RLS aktiviert, KEINE Policy, Trigger für den
+Aktualisierungs-Zeitstempel, Constraint auf den Zielwert, Übernahme der
+bestehenden Zeilen als das Meta-Ziel, Protokoll-Eintrag als LETZTE Anweisung.
+**DIE ALTE TABELLE WIRD NICHT ANGEFASST** — ohne den zugehörigen Code ist diese
+Migration ein NO-OP und damit gefahrlos früh einspielbar.
+
+**2. KATALOG-PRÜFUNG NACH DEM EINSPIELEN.** RLS aktiviert UND Policy-Liste leer
+(s. die Verifikation in (d)). **ERST DANACH Code** — die Reihenfolge ist die
+bestehende fail-closed-Regel, nicht eine Vorsichtsmassnahme dieser Scheibe.
+
+**3. CODE: LESEN aus der neuen Tabelle, SCHREIBEN in BEIDE.**
+**DER DOPPELSCHREIB IST DER GRUND, WARUM EIN CODE-ROLLBACK GEFAHRLOS IST:** Die
+alte Fassung liest ihre unveränderte Tabelle — und auch das, was WÄHREND des
+Fensters geschrieben wurde, steht dort. Ohne den Doppelschreib wären genau diese
+Schreibvorgänge verloren. Das ist die Antwort auf den Umstand, dass ein
+Schema-Rückweg nicht existiert (s. Ausgangslage Punkt 12).
+
+**AUSDRÜCKLICH NICHT IN DIESER SCHEIBE:** die alte Spalte oder Tabelle
+entfernen · `settings.capi` anfassen · `tokenSet` vervielfachen · Pinterest ·
+irgendeine Verhaltensänderung.
+
+**KEINE TABELLEN-, SPALTEN- ODER CONSTRAINT-NAMEN** stehen hier — die entstehen
+in der Scheibe, nicht in diesem Dokument.
 
 Diese Datei hat schon dreimal an einer erledigten Frage gehangen (erst (a), dann
-(e), jetzt (d)/(g)) — sie benennt deshalb ausdrücklich, was NOCH davorliegt,
-statt nur zu sagen, was erledigt ist.
+(e), dann (d)/(g)) — sie benennt deshalb ausdrücklich, was NOCH davorliegt, statt
+nur zu sagen, was erledigt ist. Hier ist es die Reihenfolge selbst: Schritt 2
+steht zwischen Migration und Code, nicht daneben.

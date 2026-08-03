@@ -232,7 +232,7 @@ Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
   darauf.
 - **KONTEXT:** was, warum, Verweis auf die verbindliche `CLAUDE.md`-Sektion.
 - **HARTER SCOPE-WÄCHTER:** welche Dateien geändert werden — und **explizit
-  welche nicht** („ingest.ts / resolve.ts / middleware.ts unberührt"). Der
+  welche nicht** („ingest.ts / resolve.ts / proxy.ts unberührt"). Der
   Zusatz „auch nicht nur schnell" gehört dazu, er wirkt.
 - **PFLICHT-GATES vor dem Plan:** präzise Fragen, am echten Code zu beantworten,
   je mit Datei:Zeile. Dazu: *„wo du etwas nicht am Code entscheiden kannst, sag
@@ -366,7 +366,7 @@ fehlen (s. Abschnitt 2b).
 
 Ein Vorschlag, der eine davon bricht, ist kein Vorschlag.
 
-- **Next.js 16.2.9**, App Router, Turbopack. Die **Middleware macht
+- **Next.js 16.2.12**, App Router, Turbopack. Die **Proxy-Datei macht
   Host-Inversion** (App-Host vs. Serving-Host). TypeScript durchgehend
   **strict**, Node v24.16.0 lokal, Tailwind CSS.
 - **Supabase** (Postgres + Auth + RLS): **ausschließlich über den

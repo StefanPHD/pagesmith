@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { resolveEffectiveHost, isAppHost } from "@/lib/hosting/host";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // HOST-VERZWEIGUNG ZUERST — INVERSION (Phase 7c-1): nicht mehr "ist Serving-Host?",
   // sondern "ist APP-Host?" (geschlossene Allowlist). Dadurch teilen *.publayer.net UND
   // beliebige Custom-Domains DENSELBEN Serving-Zweig, ohne pro Domain eine Regel.

@@ -8,7 +8,7 @@ const { updateSession } = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/supabase/middleware", () => ({ updateSession }));
 
-import { middleware } from "./middleware";
+import { proxy } from "./proxy";
 
 function requestFor(url: string, host: string): NextRequest {
   return new NextRequest(new URL(url), { headers: { host } });
@@ -32,9 +32,9 @@ function rewritePath(res: Response): string | null {
 
 afterEach(() => vi.clearAllMocks());
 
-describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
+describe("proxy — Host-Verzweigung (Scheibe 7a)", () => {
   it("Serving-Host (*.publayer.net) -> rewrite auf /app-serve, KEIN Auth-Gate", async () => {
-    const res = await middleware(
+    const res = await proxy(
       requestFor("http://meinprojekt.publayer.net/", "meinprojekt.publayer.net")
     );
     // NextResponse.rewrite setzt den internen Rewrite-Header auf /app-serve.
@@ -46,7 +46,7 @@ describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
   });
 
   it("Serving-Host lokal (*.lvh.me) -> ebenfalls rewrite (fork-frei)", async () => {
-    const res = await middleware(
+    const res = await proxy(
       requestFor("http://meinprojekt.lvh.me:3000/", "meinprojekt.lvh.me:3000")
     );
     expect(res.headers.get("x-middleware-rewrite")).not.toBeNull();
@@ -54,7 +54,7 @@ describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
   });
 
   it("App-Host -> updateSession() UNVERAENDERT aufgerufen (Auth-Gate intakt)", async () => {
-    await middleware(requestFor("http://localhost:3000/", "localhost:3000"));
+    await proxy(requestFor("http://localhost:3000/", "localhost:3000"));
     expect(updateSession).toHaveBeenCalledTimes(1);
   });
 
@@ -62,13 +62,13 @@ describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
     // FLAG 2 (bewusst gekippt): unter der Inversion ist die App NUR die Allowlist
     // (pagesmith.app). Bare publayer.net faellt jetzt in den Serving-Zweig -> /app-serve
     // (dort 404 mangels Label/custom_host), NICHT mehr ins Auth-Gate.
-    const res = await middleware(requestFor("http://publayer.net/", "publayer.net"));
+    const res = await proxy(requestFor("http://publayer.net/", "publayer.net"));
     expect(rewritePath(res)).toBe("/app-serve");
     expect(updateSession).not.toHaveBeenCalled();
   });
 
   it("Custom-Host (test-custom.local) -> serving branch (rewrite), KEIN Auth-Gate", async () => {
-    const res = await middleware(
+    const res = await proxy(
       requestFor("http://test-custom.local/", "test-custom.local")
     );
     expect(rewritePath(res)).toBe("/app-serve");
@@ -76,7 +76,7 @@ describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
   });
 
   it("Preview-Host (*.vercel.app) -> App-Host, updateSession (Allowlist-Vollstaendigkeit)", async () => {
-    await middleware(
+    await proxy(
       requestFor(
         "http://pagesmith-git-main.vercel.app/",
         "pagesmith-git-main.vercel.app"
@@ -88,7 +88,7 @@ describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
   it("x-forwarded-host bestimmt die Verzweigung (EINE Host-Quelle, Praezedenz)", async () => {
     // host allein waere localhost (App); der bevorzugte x-forwarded-host ist ein
     // Custom-Host -> Serving-Zweig. Beweist: Branch nutzt resolveEffectiveHost.
-    const res = await middleware(
+    const res = await proxy(
       requestForXfh("http://localhost/", "localhost", "test-custom.local")
     );
     expect(rewritePath(res)).toBe("/app-serve");
@@ -96,9 +96,9 @@ describe("middleware — Host-Verzweigung (Scheibe 7a)", () => {
   });
 });
 
-describe("middleware — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
+describe("proxy — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
   it("Serving-Host + /api/e -> DURCHGELASSEN (kein /app-serve-Rewrite, kein Auth-Gate)", async () => {
-    const res = await middleware(
+    const res = await proxy(
       requestFor("http://meinprojekt.publayer.net/api/e", "meinprojekt.publayer.net")
     );
     // Passthrough (NextResponse.next) -> KEIN interner Rewrite-Header.
@@ -107,7 +107,7 @@ describe("middleware — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
   });
 
   it("Serving-Host + /api/capi (Alt-Export-Alias) -> ebenfalls durchgelassen (Paritaet)", async () => {
-    const res = await middleware(
+    const res = await proxy(
       requestFor("http://meinprojekt.publayer.net/api/capi", "meinprojekt.publayer.net")
     );
     expect(res.headers.get("x-middleware-rewrite")).toBeNull();
@@ -115,7 +115,7 @@ describe("middleware — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
   });
 
   it("CHIRURGISCH: Serving-Host + ANDERE /api-Route -> weiter /app-serve-Rewrite", async () => {
-    const res = await middleware(
+    const res = await proxy(
       requestFor("http://meinprojekt.publayer.net/api/anders", "meinprojekt.publayer.net")
     );
     const rewrite = res.headers.get("x-middleware-rewrite");
@@ -126,14 +126,14 @@ describe("middleware — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
 
   it("CHIRURGISCH: /api/etwas beginnend mit 'e' (/api/evil) -> KEIN Passthrough, Rewrite", async () => {
     // Praefix-Falle: exakter Match, nicht startsWith('/api/e').
-    const res = await middleware(
+    const res = await proxy(
       requestFor("http://meinprojekt.publayer.net/api/evil", "meinprojekt.publayer.net")
     );
     expect(rewritePath(res)).toBe("/app-serve");
   });
 
   it("Custom-Host + /api/e -> DURCHGELASSEN (Passthrough faellt jetzt AUCH fuer Custom-Domains an)", async () => {
-    const res = await middleware(
+    const res = await proxy(
       requestFor("http://test-custom.local/api/e", "test-custom.local")
     );
     expect(res.headers.get("x-middleware-rewrite")).toBeNull();
@@ -141,7 +141,7 @@ describe("middleware — First-Party-Ingest-Passthrough (Scheibe 7b)", () => {
   });
 
   it("LEAK-GEGENPROBE: Custom-Host + ANDERE /api-Route -> KEIN Passthrough, Rewrite (kein App-API-Leak)", async () => {
-    const res = await middleware(
+    const res = await proxy(
       requestFor("http://test-custom.local/api/projects", "test-custom.local")
     );
     expect(rewritePath(res)).toBe("/app-serve");

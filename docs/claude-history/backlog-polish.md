@@ -1232,3 +1232,37 @@ miterledigen, sondern gebündelt abarbeiten.
   nimmt diese Policies bewusst NICHT mit — sie trägt RLS mit LEERER Policy-Liste.
   Der Verdacht wandert damit nicht weiter; er betrifft ausschliesslich die
   BESTEHENDE Tabelle.
+
+- IMPORTIERTES HTML KANN BELIEBIGE SKRIPTE MITBRINGEN, AM CONSENT VORBEI
+  STATUS: OFFEN (gemessen 2026-08-04).
+  BEFUND, GEMESSEN: Weder annotateAndDetect (Import/Vorschau) noch
+  generateFunctional im Modus "export" (Export/Veröffentlichen) entfernt
+  <script>. Beide sind reine DOMParser-Round-Trips und führen externes wie
+  inline <script> verbatim mit; ein Sanitizer existiert an keiner Stelle des
+  Pfades. Nachgewiesen mit einer Wegwerf-Probe gegen die echten Pfade, danach
+  entfernt.
+  WARUM DAS DIE CONSENT-ARCHITEKTUR BETRIFFT: Der Gate deckt, was PAGESMITH
+  einbettet. Was die SEITE SELBST mitbringt, läuft daran vorbei. Der Regelfall
+  des Produkts ist importiertes, oft KI-erzeugtes HTML — das häufig
+  Analytics-Schnipsel enthält, die der Betreiber nicht bewusst wahrgenommen hat.
+  Wer den Consent-Hook implementiert, hält seine Seite danach für konform; für
+  alles in seinem eigenen HTML stimmt das nicht.
+  EINORDNUNG, ohne Dramatisierung: Es ist SEIN Code auf SEINER Seite, also seine
+  Verantwortung. Das Produkt sagt es ihm aber nirgends — dieselbe Fehlerklasse
+  wie "Track-Aktion ohne Pixel-ID" und "der Consent-Hook, den niemand kennt":
+  eine unsichtbare Bedingung mit stillem Ausfall.
+  ZWEI DINGE, DIE DIE REICHWEITE BEGRENZEN KÖNNTEN — VERMUTUNG, NICHT GEMESSEN:
+  (1) Die Kundenseite wird auf der Kunden-Domain ausgeliefert, also in einem
+  anderen Ursprung als die App; ein Skript dort käme an App-Sitzungen vermutlich
+  nicht heran. (2) Der Code erkennt bereits fremde Meta-Pixel und meldet das auf
+  der Konsole — ein Bewusstsein für die Klasse existiert also. BEIDES ZU PRÜFEN.
+  ERSTER SCHRITT: entscheiden, welche Frage zuerst beantwortet wird — ob dem
+  Betreiber angezeigt wird, WAS sein HTML mitbringt (Erkennung, kein Eingriff),
+  oder ob überhaupt gefiltert wird. Das sind zwei verschiedene Vorhaben mit
+  verschiedenem Risiko; ein Filter kann fremde Seiten brechen, eine Anzeige
+  nicht.
+  KEINE MASSNAHME VORSCHLAGEN, bevor das entschieden ist.
+  BEZUG: docs/claude-history/future-roadmap.md, Abschnitt
+  "Session-Analyse-Werkzeuge auf Kundenseiten" — dort steht dieselbe Messung als
+  Begründung dafür, dass ein Custom-Script-Feld Schadensbegrenzung wäre und
+  keine neue Fähigkeit.

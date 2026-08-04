@@ -598,3 +598,89 @@ Seite und muss ihre Bedeutung nicht nachträglich rekonstruieren.
   Inhalte an Crawler ausliefern. Der bestehende blocked-Check in der Serve-Route deckt
   das ab — bei jedem neuen Ausgabepfad explizit mitprüfen.
 
+## Session-Analyse-Werkzeuge auf Kundenseiten (Vision)
+
+TIMING (Stand 2026-08-03, NICHT endgültig): Phase 14/15 — Härtung vor echtem
+Ad-Traffic bzw. Public-Launch-Restarbeit. Der Grund ist inhaltlich: Das Vorhaben
+setzt EINEN geteilten Consent-Mechanismus voraus, den erst Phase 11 schafft, und
+es holt fremden Code auf Kundenseiten — beides gehört in die Nachbarschaft der
+Härtung, nicht davor. Diese Einordnung ist ein STAND, keine Festlegung: die
+MCP-Timing-Zeile weiter oben in dieser Datei zeigt, wie eine an eine Phase
+gebundene Begründung überholt, sobald jene Phase abgeschlossen ist. Wer diese
+Zeile später bewegt, prüft zuerst, ob ihre BEGRÜNDUNG noch trägt — nicht nur ihre
+Nummer.
+
+### BESCHLOSSEN (Owner, 2026-08-03)
+Abgedeckt werden DREI Betreiber-Typen, ohne Bevormundung:
+- wer bereits ein Hotjar-Abo hat, trägt seine Site-ID ein;
+- wer keins will, bekommt eine kostenlose Alternative angeboten;
+- wer ein anderes Werkzeug nutzt, trägt es in ein universelles Custom-Script-Feld
+  ein.
+
+Der Konflikt mit dem Produktversprechen (ultraschnelles reines HTML) wird über
+TRANSPARENZ gelöst, NICHT über ein Verbot: beim Aktivieren steht ein
+ausdrücklicher Hinweis, dass Sitzungsaufzeichnung die Ladezeit beeinflusst. Die
+Entscheidung bleibt beim Betreiber. Das ist bewusst so entschieden — wer später
+ein hartes Verbot oder eine stille Drosselung erwägt, ändert eine getroffene
+Entscheidung, nicht ein Detail.
+
+### ARCHITEKTUR-EINORDNUNG: ZWEI MECHANISMEN, NICHT DREI VARIANTEN
+Die drei Betreiber-Typen oben sind eine Bedarfs-Aufzählung, keine
+Architektur. Technisch sind es ZWEI Mechanismen:
+- KURATIERT (ID-Feld): Der Betreiber trägt eine Kennung ein, WIR erzeugen das
+  Snippet und bestimmen, wann es lädt. Nur hier greift der Consent-Gate sauber,
+  weil wir den Ladezeitpunkt in der Hand haben.
+- NOTAUSGANG (Custom-Script-Feld): beliebiger fremder Code. Wir können ihn erst
+  NACH Einwilligung einfügen — aber wir können nicht prüfen, was er tut.
+Die Tür wird als Tür geführt, nicht als dritte gleichrangige Option. Wer sie im
+UI gleichrangig neben die kuratierten Felder stellt, verwischt genau den
+Unterschied, der ihre Existenz rechtfertigt.
+
+GEMESSEN (2026-08-03, an fremder Doku, nicht angenommen): Hotjars Events-API ist
+client-seitiges JavaScript und nur auf Seiten verfügbar, die den Tracking-Code
+tragen; einen Server-Endpunkt gibt es nicht. FOLGE FÜR DIE EINORDNUNG:
+Session-Werkzeuge sind KEINE Fan-Out-Ziele im Sinne von Phase 11, sondern
+SKRIPT-EINBETTUNG — dieselbe Klasse wie die Meta-Pixel-ID. Wer sie in den
+server-seitigen Fan-Out einsortiert, plant gegen eine Schnittstelle, die es nicht
+gibt.
+
+### DREI OFFENE FRAGEN (ausdrücklich offen — keine ist vorentschieden)
+1. EIGENE CONSENT-SCHLÜSSEL. Session-Werkzeuge dürfen NICHT unter den Schlüssel
+   für unsere eigene Auswertung fallen: Wer der Reichweitenmessung zustimmt, hat
+   nicht zugestimmt, dass ein Dritter seine Mausbewegungen aufzeichnet. Es ist
+   dieselbe Unterscheidung, die schon zwischen den beiden Google-Zielen gezogen
+   wurde. ZU KLÄRENDE FOLGE: Der Namensraum aus Phase 11 (Entscheidung (a))
+   bekommt damit Mitglieder, die KEINE Fan-Out-Ziele sind — der Namensraum ist
+   dann breiter als der Fan-Out. Welche Namen das sind, wird HIER bewusst nicht
+   festgelegt.
+2. DER SCHLÜSSEL "custom". Er wurde als EIN Schlüssel beschlossen, weil
+   Drittanbieter-PIXEL im Consent-Banner unter eine Kategorie fallen. Ein Feld
+   für BELIEBIGEN Code fällt dort nicht selbstverständlich hinein. Zu
+   entscheiden, BEVOR gebaut wird — nicht beim Bauen nebenbei.
+3. EMPFEHLEN ODER ANBIETEN. Ein Feld ist neutral; eine Empfehlung im Produkt ist
+   eine Aussage, für die der Betreiber geradesteht. Vor jeder Empfehlung sind die
+   AKTUELLEN Nutzungsbedingungen des empfohlenen Werkzeugs zu lesen, insbesondere,
+   was der Anbieter mit den erhobenen Daten tun darf. NICHT geprüft — dieser Text
+   trifft deshalb bewusst KEINE Aussage darüber.
+
+### ERSTER SCHRITT, VOR JEDER PLANUNG (er kann die Begründung umdrehen)
+AM CODE MESSEN, ob Pagesmith heute `<script>` aus importiertem HTML entfernt.
+Nicht vermuten — die Antwort ändert die BEGRÜNDUNG des ganzen Vorhabens, nicht
+nur ein Detail:
+- Falls NEIN: Betreiber können bereits jetzt beliebigen Code auf ihre Seite
+  bringen. Das Custom-Feld wäre dann SCHADENSBEGRENZUNG — es holt Skripte aus dem
+  ungeprüften HTML in einen Slot, der wenigstens am Consent hängt.
+- Falls JA: Es wäre eine NEUE Fähigkeit und braucht ein anderes Mass an Vorsicht.
+
+ERGEBNIS DER MESSUNG (2026-08-04, am Code gemessen, Wegwerf-Probe gegen den
+echten Import- und Export-Pfad, danach entfernt): NEIN — Pagesmith entfernt
+`<script>` heute NICHT. Weder `annotateAndDetect` (Import/Vorschau) noch
+`generateFunctional` im Modus "export" (Export/Veröffentlichen) filtert: beide
+sind reine DOMParser-Round-Trips, die externes wie inline `<script>` verbatim
+mitführen; ein Sanitizer existiert an keiner Stelle des Pfades. Damit gilt der
+erste Fall: DAS CUSTOM-FELD IST SCHADENSBEGRENZUNG, KEINE NEUE FÄHIGKEIT. Die
+Fähigkeit ist schon da, sie hängt heute nur an keinem Consent.
+GRENZE DIESER MESSUNG: sie gilt für den HEUTIGEN Code (Stand 2026-08-04). Führt
+jemand später eine Filterung ein, kippt die Begründung zurück in den zweiten Fall
+— vor dem Bau erneut messen, nicht diese Zeile zitieren.
+

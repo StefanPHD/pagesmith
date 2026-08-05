@@ -28,6 +28,13 @@
 --              FRUEHERER LAUF, historisch: 2026-07-30 — ALLE ZEHN Proben trafen ihre
 --              ERWARTUNG exakt, KEINE Abweichung. Diese Bilanz gilt fuer JENEN Lauf
 --              und jene Erwartungen, nicht fuer die heutigen.
+--              PROBE 2 UND PROBE 7 SIND SEITHER AUF project_secrets ERWEITERT (die
+--              Tabellenliste ihrer Abfrage trug sie vorher nicht, die neue Tabelle war
+--              damit von KEINER Probe auf Spalten und Indizes erfasst). Ihre
+--              ERWARTUNGEN sind gegen den Lauf vom 2026-08-05 formuliert, aber IN
+--              DIESER FORM NOCH NICHT GEFAHREN — fuer die erweiterten Proben gibt es
+--              also KEIN Verifiziert-Datum. Wer sie das erste Mal faehrt, traegt es
+--              hier nach.
 -- NACHTRAG:    DERSELBE TAG TRAEGT ZWEI VERSCHIEDENE EREIGNISSE, die nicht
 --              ineinanderfallen duerfen: VORMITTAGS wurde nur der Query-TEXT dieser
 --              Datei auf 0019/0020 nachgezogen (Probe 1 ERWARTUNG, neue Probe 1b,
@@ -72,17 +79,26 @@ where not exists (
 )
 order by gs.nr;
 
--- PROBE 2 — Spalten von projects + events
+-- PROBE 2 — Spalten von projects + events + project_secrets
 -- ERWARTUNG: events traegt SIEBEN Spalten — id, project_id, event_type, event_id,
 --            source, created_at (alle NOT NULL) plus variant (NULLABLE, 0017).
 --            projects traegt u.a. tracking_key, html_b, mappings_b (alle NULLABLE),
 --            ab_test_active (NOT NULL, default false), ab_test_started_at
 --            (NULLABLE, KEIN Default, 0020), settings (NOT NULL, '{}').
+--            project_secrets (0021) traegt FUENF Spalten — project_id (uuid), target
+--            (text), secret (text), created_at, updated_at (beide timestamptz).
+--            KEINE user_id-Spalte: die Alt-Tabelle project_tokens fuehrt sie nur, um
+--            ihre WITH-CHECK-Policies zu bedienen; ohne Policies haette sie hier
+--            keinen Zweck (s. den Kommentarkopf von 0021).
+--            WAS DIE PROBE ZEIGEN SOLL, statt es zu behaupten: Migration 0021 legt
+--            alle fuenf Spalten NOT NULL an und gibt created_at/updated_at je ein
+--            now()-Default mit. Ob die DB das traegt, ist genau die Frage dieser
+--            Probe — deshalb steht es hier als Soll, nicht als Befund.
 select table_name, ordinal_position, column_name, data_type,
        is_nullable, column_default
 from information_schema.columns
 where table_schema = 'public'
-  and table_name in ('projects', 'events')
+  and table_name in ('projects', 'events', 'project_secrets')
 order by table_name, ordinal_position;
 
 -- PROBE 3 — Constraints (Schema-gefiltert)
@@ -155,7 +171,7 @@ where table_schema = 'public'
 group by table_name, grantee
 order by table_name, grantee;
 
--- PROBE 7 — Indizes auf events, projects, domains
+-- PROBE 7 — Indizes auf events, projects, domains, project_secrets
 -- ERWARTUNG: events_pkey, events_project_id_idx, events_project_event_idx — KEIN
 --            Index auf variant (0017 legte bewusst keinen an). projects_pkey,
 --            projects_tracking_key_key (partial unique), projects_blocked_idx
@@ -163,10 +179,20 @@ order by table_name, grantee;
 --            ab_test_started_at (0020: ein Zeilen-Lookup pro Auswertung ueber den
 --            PK, nie gefiltert/sortiert). domains_pkey auf LABEL (nicht id),
 --            domains_custom_host_key (partial unique), domains_project_id_idx.
+--            project_secrets: GENAU EIN Eintrag — der Index, den der ZUSAMMENGESETZTE
+--            Primaerschluessel (project_id, target) mitbringt. Seinen Namen vergibt
+--            Postgres selbst; er steht hier bewusst NICHT ausgeschrieben, damit diese
+--            Datei keinen Namen behauptet, den niemand gemessen hat.
+--            DASS SONST KEIN INDEX DASTEHT, IST EINE ENTSCHEIDUNG UND KEIN FEHLEN —
+--            der Satz gehoert hierher, sonst liest jemand den einzelnen Eintrag als
+--            Luecke und legt einen Index "nach": Der PK traegt genau den Zugriff des
+--            Lesepfads, eine Gleichheit auf BEIDEN Spalten. Wer hier einen zweiten
+--            Eintrag sieht, hat einen Befund — jemand hat einen Index angelegt, ohne
+--            den Zugriff zu nennen, der ihn braucht.
 select tablename, indexname, indexdef
 from pg_indexes
 where schemaname = 'public'
-  and tablename in ('events', 'projects', 'domains')
+  and tablename in ('events', 'projects', 'domains', 'project_secrets')
 order by tablename, indexname;
 
 -- PROBE 8 — Funktionen in public

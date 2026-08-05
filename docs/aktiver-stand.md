@@ -595,39 +595,6 @@ soll.
 **ERST DANACH Code** — die Reihenfolge ist die bestehende fail-closed-Regel, nicht
 eine Vorsichtsmassnahme dieser Scheibe.
 
-**VOLLZOGEN AM 2026-08-05 — SCHRITT 1 UND SCHRITT 2.** Die Migration
-(`supabase/migrations/0021_project_secrets.sql`) ist von Hand im SQL-Editor
-gelaufen, die Katalog-Prüfung unmittelbar danach. Die folgenden Werte sind
-GEMESSEN und vom Owner zurückgemeldet — keiner davon ist abgeleitet oder
-gerundet:
-- Ausgangszahl vor dem Lauf (Positivkontrolle): FÜNF Zeilen in der Alt-Tabelle.
-- Protokoll-Eintrag 0021 vorhanden, applied_at gefüllt (2026-08-05) — der Lauf
-  ist also bis zu seiner letzten Anweisung durchgelaufen.
-- RLS aktiv: true.
-- Policy-Liste: leer, NULL Zeilen.
-- Übernahme: Quelle FÜNF, Ziel FÜNF, gleich; die Wertgleichheits-Probe meldet
-  NULL Abweichungen.
-Alle fünf Proben trafen ihre Erwartung. Die Probe selbst ist versioniert unter
-`supabase/checks/project-secrets-umstellung.sql` und dort mit demselben Datum als
-verifiziert vermerkt.
-
-**BAU B IST DAMIT NICHT FREIGEGEBEN.** Dieser Absatz steht hier, weil der Vermerk
-darüber sonst als vollständige Freigabe gelesen wird:
-- **EINE BEWERTUNGSSCHWELLE STEHT NOCH AUS** — die letzte der fünf, die vor dem
-  Lauf festgelegt wurden: dass ein ZWEITER Lauf die Übernahme-Proben nicht
-  verändert. Die vier anderen sind mit den Messwerten oben erfüllt. Bis dahin ist
-  die entschiedene Wiederholbarkeit eine Zusage der Migrationsdatei, kein
-  Nachweis.
-- **DER NACHHOL-LAUF GEHÖRT UNMITTELBAR VOR DEN BAU-B-DEPLOY**, nicht irgendwann
-  danach. Er hat ZWEI Funktionen: er weist die Wiederholbarkeit nach UND er holt
-  jede Zeile nach, die seit dem ersten Lauf im Fenster entstanden ist. **DAS
-  FREIGABE-GATE SIND DIE ÜBERNAHME-PROBEN NACH IHM**, nicht die vom 2026-08-05 —
-  die waren im Moment ihrer Erhebung korrekt und können vom Fenster überholt
-  worden sein.
-- **SOLANGE BAU B NICHT DEPLOYT IST, SCHREIBT DER LAUFENDE CODE AUSSCHLIESSLICH
-  IN DIE ALT-TABELLE.** Das ist der bewusste No-op-Zustand dieser Scheibe, kein
-  Fehler — und genau der Grund, warum es den Nachhol-Lauf gibt.
-
 **3. CODE: LESEN aus der neuen Tabelle, SCHREIBEN in BEIDE.**
 **DER DOPPELSCHREIB IST DER GRUND, WARUM EIN CODE-ROLLBACK GEFAHRLOS IST:** Die
 alte Fassung liest ihre unveränderte Tabelle — und auch das, was WÄHREND des
@@ -646,3 +613,105 @@ Diese Datei hat schon dreimal an einer erledigten Frage gehangen (erst (a), dann
 (e), dann (d)/(g)) — sie benennt deshalb ausdrücklich, was NOCH davorliegt, statt
 nur zu sagen, was erledigt ist. Hier ist es die Reihenfolge selbst: Schritt 2
 steht zwischen Migration und Code, nicht daneben.
+
+### Protokoll der ersten Scheibe — Vollzug und Abschluss
+
+Der Dreischritt darüber ist der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+Beide Vermerke standen zuvor zwischen den Schritten und haben den Maßstab damit
+zerschnitten — Anweisung und Protokoll lagen ineinander.
+
+**VOLLZOGEN AM 2026-08-05 — SCHRITT 1 UND SCHRITT 2.** Die Migration
+(`supabase/migrations/0021_project_secrets.sql`) ist von Hand im SQL-Editor
+gelaufen, die Katalog-Prüfung unmittelbar danach. Die folgenden Werte sind
+GEMESSEN und vom Owner zurückgemeldet — keiner davon ist abgeleitet oder
+gerundet:
+- Ausgangszahl vor dem Lauf (Positivkontrolle): FÜNF Zeilen in der Alt-Tabelle.
+- Protokoll-Eintrag 0021 vorhanden, applied_at gefüllt (2026-08-05) — der Lauf
+  ist also bis zu seiner letzten Anweisung durchgelaufen.
+- RLS aktiv: true.
+- Policy-Liste: leer, NULL Zeilen.
+- Übernahme: Quelle FÜNF, Ziel FÜNF, gleich; die Wertgleichheits-Probe meldet
+  NULL Abweichungen.
+Alle fünf Proben trafen ihre Erwartung. Die Probe selbst ist versioniert unter
+`supabase/checks/project-secrets-umstellung.sql` und dort mit demselben Datum als
+verifiziert vermerkt.
+
+**BAU B IST DAMIT NICHT FREIGEGEBEN.** — EINGELÖST AM 2026-08-05, s. den
+Abschluss darunter. Die drei Punkte bleiben unverändert stehen: sie sind der
+Maßstab, an dem der Abschluss gemessen wurde, und ohne sie wäre nicht mehr
+erkennbar, WAS dort eigentlich erfüllt worden ist.
+Dieser Absatz stand hier, weil der Vermerk darüber sonst als vollständige
+Freigabe gelesen wird:
+- **EINE BEWERTUNGSSCHWELLE STEHT NOCH AUS** — die letzte der fünf, die vor dem
+  Lauf festgelegt wurden: dass ein ZWEITER Lauf die Übernahme-Proben nicht
+  verändert. Die vier anderen sind mit den Messwerten oben erfüllt. Bis dahin ist
+  die entschiedene Wiederholbarkeit eine Zusage der Migrationsdatei, kein
+  Nachweis.
+- **DER NACHHOL-LAUF GEHÖRT UNMITTELBAR VOR DEN BAU-B-DEPLOY**, nicht irgendwann
+  danach. Er hat ZWEI Funktionen: er weist die Wiederholbarkeit nach UND er holt
+  jede Zeile nach, die seit dem ersten Lauf im Fenster entstanden ist. **DAS
+  FREIGABE-GATE SIND DIE ÜBERNAHME-PROBEN NACH IHM**, nicht die vom 2026-08-05 —
+  die waren im Moment ihrer Erhebung korrekt und können vom Fenster überholt
+  worden sein.
+- **SOLANGE BAU B NICHT DEPLOYT IST, SCHREIBT DER LAUFENDE CODE AUSSCHLIESSLICH
+  IN DIE ALT-TABELLE.** Das ist der bewusste No-op-Zustand dieser Scheibe, kein
+  Fehler — und genau der Grund, warum es den Nachhol-Lauf gibt.
+
+**ABGESCHLOSSEN AM 2026-08-05 — SCHRITT 3 UND DAMIT DIE GANZE ERSTE SCHEIBE.**
+Der Nachhol-Lauf ist gefahren, der Code ist deployt, der Live-Test bestätigt.
+Die folgenden Werte sind GEMESSEN und vom Owner zurückgemeldet — keiner davon
+ist abgeleitet:
+- Deploy: Vercel-Commit d06a30b, Status Ready.
+- Nachhol-Lauf gefahren; die Wertgleichheits-Probe danach: NULL Abweichungen.
+- Bestandszählung nach dem Nachhol-Lauf: Quelle VIER, Ziel VIER, gleich.
+- REGRESSION: Server-Event im Meta Events Manager unter "Empfangen von: Server",
+  dedupliziert über die geteilte eventID.
+- `/api/e` antwortet mit leerer 204. NACHTRAG ZUR MESSUNG, weil er sonst als
+  Widerspruch stehenbliebe: Der zuvor gemeldete 200 war ein MESSFEHLER — gemessen
+  worden war ein UI-Request, nicht der Beacon.
+- DOPPELSCHREIB: über alle Bestandszeilen identischer Wert in BEIDEN Tabellen.
+- LÖSCHPFAD: nach dem Entfernen über die Oberfläche trägt KEINE der beiden
+  Tabellen noch eine Zeile für das Projekt.
+- OWNERSHIP-GATE, Gegenprobe über die DevTools aus einem FREMDEN Account: die
+  Aktion wird abgewiesen, und in KEINER der beiden Tabellen entsteht eine Zeile.
+
+**ALLE FÜNF VORAB FESTGELEGTEN BEWERTUNGSSCHWELLEN SIND ERFÜLLT.** Die fünfte —
+ein zweiter Lauf verändert die Übernahme-Proben nicht — ist damit NACHGEWIESEN
+und nicht mehr nur zugesagt: der Nachhol-Lauf ist genau dieser zweite Lauf.
+
+**DAS FENSTER IST GESCHLOSSEN.** Seit dem Deploy schreibt jeder Vorgang in beide
+Tabellen; es kann keine Zeile mehr entstehen, die nur in einer von beiden steht.
+
+**DIE BESTANDSZÄHLUNG TRÄGT MEHR ALS EINE ZAHL — deshalb steht sie hier und
+nicht nur in der Prüf-Datei:** Der Rückgang von FÜNF auf VIER ist in BEIDEN
+Tabellen angekommen. Das bestätigt den Doppel-Delete aus einer ANDEREN Richtung
+als der Live-Schritt, und es schliesst zugleich eine überzählige Zeile aus — die
+könnte die Wertgleichheits-Probe allein nicht sehen, weil sie von der
+Alt-Tabelle ausgeht und eine Zeile, die es nur im Ziel gibt, nie berührt.
+
+**DIE FREMDZUGRIFFS-GEGENPROBE IST STÄRKER AUSGEFALLEN ALS GEPLANT, und das ist
+der Grund, sie eigens zu benennen:** Sie prüft nicht "der Owner darf", sondern
+"ein FREMDER darf nicht — und es entsteht KEINE Zeile". Ein bloss abgewiesener
+Aufruf hätte nichts bewiesen: Die Abweisung ist sichtbar, ein trotzdem
+erfolgter Schreibvorgang wäre es nicht. Erst die Gegenprobe IN DER DATENBANK
+macht aus "sieht abgewehrt aus" einen Nachweis.
+
+**WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** Die Alt-Tabelle bleibt
+bestehen und wird weiter beschrieben. Ihr Rückbau ist eine EIGENE Scheibe mit
+eigenem Nachweis und wird von diesem Abschluss NICHT mitgetragen. Sie ist die
+einzige Rollback-Reserve, weil ein Schema-Rückweg nicht existiert (s.
+Ausgangslage Punkt 12) — wer sie vorzeitig entfernt, nimmt die Absicherung mit,
+die diese Scheibe überhaupt gefahrlos gemacht hat.
+
+**LEKTION AUS DEM BAU — HEBUNGSKANDIDAT FÜR CLAUDE.md, "## Immer beachten"
+(NICHT eingetragen; die Entscheidung darüber fällt am Phasenende):**
+Beim Umbau ist ein Bestandstest HOHL geworden, nicht bloss veraltet. Er
+behauptete die ABWESENHEIT eines Zugriffs auf die Alt-Tabelle im
+Kill-Switch-Pfad — eine Aussage, die nach der Umstellung IMMER aufgegangen wäre,
+weil der Lesepfad diese Tabelle gar nicht mehr kennt. Er meldete weiter Erfolg
+und deckte nichts mehr.
+VERALLGEMEINERTE FORM: Wird der GEGENSTAND einer Abwesenheits-Behauptung durch
+einen Umbau entfernt, bleibt der Wächter grün und schützt nichts. Bei jedem
+Umbau, der eine Quelle oder ein Ziel AUSTAUSCHT, sind deshalb die
+Abwesenheits-Behauptungen eigens durchzugehen — sie sind die einzige Testart,
+die durch das Verschwinden ihres Gegenstands STÄRKER aussieht statt schwächer.

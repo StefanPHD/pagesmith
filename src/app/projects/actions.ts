@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { META_TARGET } from "@/lib/capi/token";
 import type { Mapping } from "@/lib/mappings";
 import {
   ensureTrackingKey,
@@ -542,6 +543,8 @@ export type SetCapiTokenResult =
  *    WITH-CHECK, kein RETURNING-Konflikt mit der write-only-SELECT-Sperre (die frueher
  *    per authenticated-Client den Read-back scheitern liess). Die SELECT-Sperre selbst
  *    BLEIBT unveraendert (keine neue Policy) — nur der WRITE laeuft privilegiert.
+ *    SEIT PHASE 11 SCHEIBE 1 IST DAS EIN DOPPELSCHREIB in BEIDE Geheimnis-Tabellen,
+ *    Reihenfolge und Fehlerverhalten festgelegt — s. den Kommentar an der Stelle.
  * 5. settings-Merge (trackingKey lazy + tokenSet) bleibt ueber den authenticated-SSR-
  *    Client (RLS greift; kein Grund fuer service_role auf der geschuetzten Zeile).
  *
@@ -578,6 +581,30 @@ export async function setCapiToken(
   //    dem bestandenen Ownership-Gate, instanziieren. Oberhalb dieser Zeile steht im
   //    Nicht-Owner-Pfad KEINE Admin-Zeile -> der RLS-Bypass ist ohne Gate unerreichbar.
   const admin = createAdminClient();
+
+  // 2a) DOPPELSCHREIB, NEUE TABELLE ZUERST (Phase 11 Scheibe 1).
+  //     REIHENFOLGE IST ENTSCHIEDEN, nicht beliebig: Bricht es NACH diesem Vorgang
+  //     ab, liest der LIVE-Pfad (getCapiConfigByTrackingKey) bereits den korrekten
+  //     Wert und nur die Rollback-Reserve in project_tokens ist veraltet.
+  //     Umgekehrt — alt zuerst — laese der Live-Pfad NICHTS, und der Server-Forward
+  //     stuerbe lautlos, waehrend die Oberflaeche "Token gesetzt" zeigt.
+  //     KEIN updated_at im Patch: bei Konflikt fuehrt der Trigger
+  //     project_secrets_set_updated_at ihn nach, beim Insert der Spalten-Default.
+  const { error: secretError } = await admin
+    .from("project_secrets")
+    .upsert(
+      { project_id: projectId, target: META_TARGET, secret: trimmed },
+      { onConflict: "project_id,target" },
+    );
+  // BEIDE MUESSEN GELINGEN. Kein "nur protokollieren und weiter": eine still
+  // wegdriftende Alt-Tabelle machte das Code-Rollback zur Falle statt zur
+  // Absicherung — sie ist die einzige Reserve, weil ein Schema-Rueckweg fehlt.
+  // Durchgereicht wird AUSSCHLIESSLICH message, nie details/hint: das Geheimnis
+  // selbst gehoert in keine Meldung und in kein Log.
+  if (secretError) return { ok: false, error: secretError.message };
+
+  // 2b) ALT-TABELLE, unveraendert — sie bleibt bis zu einer eigenen Scheibe die
+  //     Rollback-Reserve fuer die vorige Code-Fassung.
   const row = { project_id: projectId, user_id: user.id, meta_capi_token: trimmed };
   const { error: tokenError } = await admin
     .from("project_tokens")
@@ -625,9 +652,10 @@ export type RemoveCapiTokenResult = { ok: true } | { ok: false; error: string };
  * 1. Session-Check (authenticated-SSR-Client).
  * 2. OWNERSHIP-GATE ZWINGEND ueber DENSELBEN SSR-Client (RLS greift). Nicht gefunden ->
  *    Abbruch VOR jeder Admin-Zeile (IDOR-safe, Admin-Client gar nicht instanziiert).
- * 3. DELETE ueber den Admin-Client (service_role): project_tokens hat KEINE DELETE-Policy
- *    fuer authenticated -> das Loeschen laeuft ausschliesslich privilegiert. Idempotent
- *    (0 Zeilen = ok).
+ * 3. DELETE ueber den Admin-Client (service_role): keine der beiden Geheimnis-Tabellen
+ *    traegt eine DELETE-Policy fuer authenticated -> das Loeschen laeuft ausschliesslich
+ *    privilegiert. Idempotent (0 Zeilen = ok). Seit Phase 11 Scheibe 1 ist es ein
+ *    DOPPEL-DELETE, gleiche Reihenfolge und gleiches Fehlerverhalten wie beim Setzen.
  * 4. settings-Merge (tokenSet:false, trackingKey erhalten) ueber den SSR-Client.
  */
 export async function removeCapiToken(
@@ -653,6 +681,23 @@ export async function removeCapiToken(
   // 2) HARTE INVARIANTE: Admin-Client (service_role) erst HIER, NACH dem Gate. Oberhalb
   //    steht im Nicht-Owner-Pfad KEINE Admin-Zeile -> RLS-Bypass ohne Gate unerreichbar.
   const admin = createAdminClient();
+
+  // 2a) NEUE TABELLE ZUERST — dieselbe Begruendung wie beim Setzen, nur in die
+  //     andere Richtung: Bricht es danach ab, ist das Ziel fuer den LIVE-Pfad
+  //     bereits abgeschaltet (kein Forward mit einem Geheimnis, das der Nutzer
+  //     entfernt hat). Alt zuerst hiesse: die Alt-Tabelle ist leer, der Live-Pfad
+  //     forwarded weiter.
+  //     Der Ziel-Filter ist Pflicht: ohne ihn loeschte diese Zeile spaeter die
+  //     Geheimnisse ALLER Ziele des Projekts, obwohl nur Meta gemeint ist.
+  const { error: secretDelError } = await admin
+    .from("project_secrets")
+    .delete()
+    .eq("project_id", projectId)
+    .eq("target", META_TARGET);
+  // BEIDE MUESSEN GELINGEN — s. setCapiToken. Nur message, nie details/hint.
+  if (secretDelError) return { ok: false, error: secretDelError.message };
+
+  // 2b) ALT-TABELLE, unveraendert.
   const { error: delError } = await admin
     .from("project_tokens")
     .delete()

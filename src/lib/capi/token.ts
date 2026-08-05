@@ -40,28 +40,44 @@ export type TrackingKeyResolution = {
   capiConfig: CapiConfig | null;
 };
 
+/**
+ * DER ZIELWERT FUER META in der Geheimnis-Tabelle project_secrets (Phase 11
+ * Scheibe 1). EINE Quelle fuer den LESE-Filter hier und den SCHREIB-Wert in den
+ * Server-Actions — bewusst KEIN Literal an zwei Stellen.
+ *
+ * WARUM DAS NICHT KOSMETIK IST: Die beiden Seiten scheitern VERSCHIEDEN. Ein
+ * falscher Wert im SCHREIB-Pfad prallt am CHECK project_secrets_target_valid ab
+ * und ist damit laut. Ein falscher Wert im LESE-Filter findet schlicht keine
+ * Zeile — der Resolver liefert capiConfig: null, der Ingest antwortet weiter mit
+ * leerer 204, und der Server-Forward stirbt LAUTLOS. Eine geteilte Konstante
+ * macht die stille Seite von der lauten abhaengig.
+ */
+export const META_TARGET = "meta";
+
 /** Serverseitig aufgeloeste CAPI-Konfiguration fuer EIN Projekt. */
 export type CapiConfig = {
   // OEFFENTLICHE Meta-Pixel-ID (aus settings.pixels.meta.pixelId). Kein Secret,
   // aber serverseitig aufgeloest, damit der Client die pixelId NIE selbst sendet.
   pixelId: string;
-  // GEHEIMER Meta-CAPI-Token (aus project_tokens, RLS-SELECT-gesperrt). Verlaesst
-  // den Server NIE — weder in eine HTTP-Response noch in ein Log.
+  // GEHEIMER Meta-CAPI-Token (aus project_secrets, RLS ohne jede Policy).
+  // Verlaesst den Server NIE — weder in eine HTTP-Response noch in ein Log.
   token: string;
 };
 
 /**
  * Loest einen OEFFENTLICHEN trackingKey server-seitig zur vollstaendigen
  * CAPI-Konfiguration { pixelId, token } auf. Nutzt den service_role-Client
- * (bypassed RLS) — der einzige Weg, die SELECT-gesperrte Tabelle project_tokens
- * zu lesen.
+ * (bypassed RLS) — der einzige Weg, die policy-freie Tabelle project_secrets zu
+ * lesen.
  *
  * EINE trackingKey-Aufloesung: der erste Query holt id UND settings aus derselben
  * projects-Zeile (kein zweiter Key-Lookup); die pixelId kommt via getMetaPixelId
- * aus genau dieser Zeile. Der zweite Query holt den Token per project_id.
+ * aus genau dieser Zeile. Der zweite Query holt das Geheimnis per (project_id,
+ * Ziel). GENAU ZWEI Abfragen, unveraendert gegenueber der project_tokens-Fassung
+ * — die Umstellung TAUSCHT eine Abfrage, sie ergaenzt keine (/api/e-Schlankheit).
  *
- * Aufloesung: trackingKey (in projects.settings.capi.trackingKey, oeffentlich)
- *   -> project_id (+ settings.pixels.meta.pixelId) -> project_tokens.meta_capi_token.
+ * Aufloesung: trackingKey (server-autoritative Spalte projects.tracking_key)
+ *   -> project_id (+ settings.pixels.meta.pixelId) -> project_secrets.secret.
  *
  * Gibt null zurueck (KEIN Throw — jeder dieser Zustaende ist regulaer), wenn:
  * - der Key leer ist, ODER
@@ -119,17 +135,23 @@ export async function getCapiConfigByTrackingKey(
   const pixelId = getMetaPixelId((project.settings ?? {}) as ProjectSettings);
   if (!pixelId) return { projectId, blocked: false, abTestActive, capiConfig: null };
 
-  // Schritt 2: project_id -> Token. Fehlende Zeile (Token nie gesetzt) -> kein Forward.
+  // Schritt 2: (project_id, Ziel) -> Geheimnis (Phase 11 Scheibe 1). Fehlende Zeile
+  // (Token nie gesetzt) -> kein Forward. Die Achse ist jetzt das PAAR: dieselbe
+  // Tabelle traegt kuenftig weitere Ziele, und ohne den Ziel-Filter laese ein
+  // spaeteres Ziel den Meta-Pfad mit fremden Zugangsdaten.
+  // KEIN RUECKFALL auf project_tokens: er machte eine unvollstaendige Uebernahme
+  // unsichtbar und entwertete genau die Pruefung, die vor diesem Deploy steht.
   const { data: row, error: tokenError } = await admin
-    .from("project_tokens")
-    .select("meta_capi_token")
+    .from("project_secrets")
+    .select("secret")
     .eq("project_id", projectId)
+    .eq("target", META_TARGET)
     .maybeSingle();
 
   if (tokenError || !row)
     return { projectId, blocked: false, abTestActive, capiConfig: null };
 
-  const token = row.meta_capi_token ?? null;
+  const token = row.secret ?? null;
   if (!token) return { projectId, blocked: false, abTestActive, capiConfig: null };
 
   return { projectId, blocked: false, abTestActive, capiConfig: { pixelId, token } };

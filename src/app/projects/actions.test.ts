@@ -11,7 +11,13 @@ vi.mock("server-only", () => ({}));
 
 // service_role-Admin-Client mocken. adminUpsert ist der SPY, auf dem die
 // sicherheitskritischen Assertions laufen (im IDOR-Fall NIE aufgerufen).
-const { createAdminClient, adminUpsert, adminDelete } = vi.hoisted(() => {
+//
+// PHASE 11 SCHEIBE 1 — adminTables ZEICHNET DIE ANGESPROCHENE TABELLE AUF, in der
+// REIHENFOLGE der from()-Aufrufe. Vorher verwarf der Mock den Tabellennamen; ein
+// Doppelschreib-Test haette damit nur geprueft, dass ZWEIMAL irgendetwas geschrieben
+// wird — also den Mock statt den Code. Die Reihenfolge ist eine ENTSCHEIDUNG
+// (neue Tabelle zuerst) und braucht deshalb eine Aufzeichnung, die sie sichtbar macht.
+const { createAdminClient, adminUpsert, adminDelete, adminTables, adminDeleteEq } = vi.hoisted(() => {
   // Signatur ueber den Generic -> calls[0][0]/[1] sind typisiert, ohne ungenutzte
   // Parameter in der Implementierung (die vi.fn ohnehin nur zum Aufzeichnen braucht).
   const adminUpsert = vi.fn<
@@ -19,18 +25,29 @@ const { createAdminClient, adminUpsert, adminDelete } = vi.hoisted(() => {
       then: (onF: (v: unknown) => unknown) => unknown;
     }
   >(() => ({ then: (onF) => onF({ error: null }) }));
+  // Angesprochene Tabellen in Aufruf-Reihenfolge (s. Kommentar oben).
+  const adminTables: string[] = [];
+  // Filter der DELETE-Kette, damit der Ziel-Filter pruefbar ist: ohne ihn loeschte
+  // removeCapiToken spaeter die Geheimnisse ALLER Ziele eines Projekts.
+  const adminDeleteEq: [string, unknown][] = [];
   // DELETE-Kette (removeCapiToken): .delete().eq(...) -> thenable { error: null }.
   const adminDelete = vi.fn(() => {
     const chain: Record<string, unknown> = {
-      eq: () => chain,
+      eq: (col: string, val: unknown) => {
+        adminDeleteEq.push([col, val]);
+        return chain;
+      },
       then: (onF: (v: unknown) => unknown) => onF({ error: null }),
     };
     return chain;
   });
   const createAdminClient = vi.fn(() => ({
-    from: vi.fn(() => ({ upsert: adminUpsert, delete: adminDelete })),
+    from: vi.fn((table: string) => {
+      adminTables.push(table);
+      return { upsert: adminUpsert, delete: adminDelete };
+    }),
   }));
-  return { createAdminClient, adminUpsert, adminDelete };
+  return { createAdminClient, adminUpsert, adminDelete, adminTables, adminDeleteEq };
 });
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
@@ -104,6 +121,11 @@ function makeClient(opts: {
 
 afterEach(() => {
   vi.clearAllMocks();
+  // vi.clearAllMocks() leert nur Spy-Aufzeichnungen, nicht unsere eigenen Arrays —
+  // ohne diese zwei Zeilen truegen Reihenfolge- und Filter-Proben Reste des
+  // Vorgaengertests mit sich.
+  adminTables.length = 0;
+  adminDeleteEq.length = 0;
 });
 
 describe("setCapiToken (Scheibe 2a)", () => {
@@ -121,16 +143,19 @@ describe("setCapiToken (Scheibe 2a)", () => {
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.trackingKey).toBeTruthy();
 
-    // Token-Write laeuft ueber den service_role-Admin-Client, GENAU einmal.
+    // Token-Write laeuft ueber den service_role-Admin-Client — EIN Client, seit
+    // Phase 11 Scheibe 1 aber ZWEI Schreibvorgaenge (Doppelschreib).
     expect(createAdminClient).toHaveBeenCalledTimes(1);
-    expect(adminUpsert).toHaveBeenCalledTimes(1);
+    expect(adminUpsert).toHaveBeenCalledTimes(2);
+    // Die ALT-Zeile ist der ZWEITE Vorgang (die neue Tabelle kommt zuerst) —
+    // Aussage unveraendert, nur der Index folgt der entschiedenen Reihenfolge:
     // Token (getrimmt) mit user_id aus der Session + onConflict project_id.
-    expect(adminUpsert.mock.calls[0][0]).toMatchObject({
+    expect(adminUpsert.mock.calls[1][0]).toMatchObject({
       project_id: "proj-1",
       user_id: "user-1",
       meta_capi_token: "SECRET",
     });
-    expect(adminUpsert.mock.calls[0][1]).toEqual({ onConflict: "project_id" });
+    expect(adminUpsert.mock.calls[1][1]).toEqual({ onConflict: "project_id" });
 
     // settings-Update laeuft ueber den authenticated-SSR-Client (nicht Admin).
     const patch = rec.updatePatch as {
@@ -156,11 +181,82 @@ describe("setCapiToken (Scheibe 2a)", () => {
     const result = await setCapiToken("proj-1", "SECRET");
     expect(result.ok).toBe(true);
 
-    // Der authenticated-SSR-Client beruehrt project_tokens NIE (weder .from noch
-    // .select). Nur der Admin-Client (service_role) schreibt.
+    // POSITIVKONTROLLE — sie steht VOR den Abwesenheits-Behauptungen, weil diese sonst
+    // auch dann aufgingen, wenn die Aufzeichnung schlicht leer bliebe.
+    expect(rec.fromTables).toContain("projects");
+    expect(adminTables).toEqual(["project_secrets", "project_tokens"]);
+
+    // Der authenticated-SSR-Client beruehrt KEINE der beiden Geheimnis-Tabellen (weder
+    // .from noch .select). Nur der Admin-Client (service_role) schreibt.
+    // PHASE 11 SCHEIBE 1: die Zusicherung ist AUSGEWEITET, nicht verschoben — sie gilt
+    // fuer die Alt-Tabelle UND fuer die neue, solange in beide geschrieben wird.
     expect(rec.fromTables).not.toContain("project_tokens");
+    expect(rec.fromTables).not.toContain("project_secrets");
     expect(rec.selectCols.some((s) => s.table === "project_tokens")).toBe(false);
+    expect(rec.selectCols.some((s) => s.table === "project_secrets")).toBe(false);
+    expect(adminUpsert).toHaveBeenCalledTimes(2);
+  });
+
+  // PHASE 11 SCHEIBE 1 — DER EINZIGE TEST, DER DIE REIHENFOLGE DES DOPPELSCHREIBS
+  // PRUEFT. Sie ist eine Entscheidung, kein Zufall: bricht es nach dem NEUEN Vorgang
+  // ab, liest der Live-Pfad den korrekten Wert und nur die Rollback-Reserve ist
+  // veraltet. Andersherum laese er nichts und der Server-Forward stuerbe lautlos.
+  // Wer diesen Test entfernt, nimmt die einzige Absicherung dieser Richtung mit.
+  it("Phase 11 Scheibe 1: DOPPELSCHREIB in BEIDE Tabellen — neue Tabelle ZUERST", async () => {
+    makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": { data: { id: "proj-1", settings: {} }, error: null },
+        "projects.update": { error: null },
+      },
+    });
+
+    const result = await setCapiToken("proj-1", "SECRET");
+    expect(result.ok).toBe(true);
+    expect(adminTables).toEqual(["project_secrets", "project_tokens"]);
+  });
+
+  it("Phase 11 Scheibe 1: die neue Zeile traegt (project_id, target, secret) und das Konflikt-PAAR", async () => {
+    makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": { data: { id: "proj-1", settings: {} }, error: null },
+        "projects.update": { error: null },
+      },
+    });
+
+    await setCapiToken("proj-1", "  SECRET  ");
+    // Zielwert als LITERAL, nicht als importierte Konstante: der Test nagelt den Wert
+    // fest, den die Datenbank per CHECK erwartet — zoege er die Konstante mit, ruschte
+    // eine Aenderung an ihr gruen durch.
+    expect(adminUpsert.mock.calls[0][0]).toEqual({
+      project_id: "proj-1",
+      target: "meta",
+      secret: "SECRET",
+    });
+    // Konflikt-Ziel ist das PAAR. Stuende hier nur project_id, schluege der Upsert bei
+    // einem zweiten Ziel desselben Projekts fehl oder ueberschriebe die falsche Zeile.
+    expect(adminUpsert.mock.calls[0][1]).toEqual({ onConflict: "project_id,target" });
+    // KEINE user_id in der neuen Tabelle — die Spalte gibt es dort nicht.
+    expect(adminUpsert.mock.calls[0][0]).not.toHaveProperty("user_id");
+  });
+
+  it("Phase 11 Scheibe 1: scheitert der NEUE Schreibvorgang, wird die Alt-Tabelle NICHT mehr angefasst", async () => {
+    makeClient({
+      user: { id: "user-1" },
+      results: {
+        "projects.select": { data: { id: "proj-1", settings: {} }, error: null },
+      },
+    });
+    adminUpsert.mockReturnValueOnce({
+      then: (onF: (v: unknown) => unknown) => onF({ error: { message: "boom" } }),
+    });
+
+    const result = await setCapiToken("proj-1", "SECRET");
+    expect(result.ok).toBe(false);
+    // BEIDE MUESSEN GELINGEN: der Vorgang kippt, statt halb durchzulaufen.
     expect(adminUpsert).toHaveBeenCalledTimes(1);
+    expect(adminTables).toEqual(["project_secrets"]);
   });
 
   it("erhaelt einen bestehenden trackingKey (lazy nur beim ERSTEN Set)", async () => {
@@ -284,9 +380,10 @@ describe("removeCapiToken (CAPI-Token entfernen)", () => {
 
     const result = await removeCapiToken("proj-1");
     expect(result.ok).toBe(true);
-    // DELETE lief GENAU einmal ueber den service_role-Admin-Client.
+    // DELETE laeuft ueber den service_role-Admin-Client — EIN Client, seit Phase 11
+    // Scheibe 1 aber ZWEI Loeschvorgaenge (Doppel-Delete).
     expect(createAdminClient).toHaveBeenCalledTimes(1);
-    expect(adminDelete).toHaveBeenCalledTimes(1);
+    expect(adminDelete).toHaveBeenCalledTimes(2);
     // settings-Update ueber den SSR-Client: tokenSet flippt auf false.
     const patch = rec.updatePatch as { settings: { capi: { tokenSet: boolean } } };
     expect(patch.settings.capi.tokenSet).toBe(false);
@@ -313,9 +410,35 @@ describe("removeCapiToken (CAPI-Token entfernen)", () => {
     });
 
     await removeCapiToken("proj-1");
-    // Der SSR-Client fasst project_tokens NIE an -> Loeschen kann nur ueber admin laufen.
+    // POSITIVKONTROLLE zuerst (s. WRITE-ONLY-Test oben).
+    expect(rec.fromTables).toContain("projects");
+    expect(adminTables).toEqual(["project_secrets", "project_tokens"]);
+    // Der SSR-Client fasst KEINE der beiden Geheimnis-Tabellen an -> Loeschen kann nur
+    // ueber admin laufen. AUSGEWEITET in Phase 11 Scheibe 1, nicht verschoben.
     expect(rec.fromTables).not.toContain("project_tokens");
-    expect(adminDelete).toHaveBeenCalledTimes(1);
+    expect(rec.fromTables).not.toContain("project_secrets");
+    expect(adminDelete).toHaveBeenCalledTimes(2);
+  });
+
+  // PHASE 11 SCHEIBE 1 — EINZIGER TEST FUER REIHENFOLGE UND ZIEL-FILTER DES
+  // DOPPEL-DELETES. Der Ziel-Filter ist kein Detail: ohne ihn loeschte diese Aktion
+  // spaeter die Geheimnisse ALLER Ziele des Projekts, obwohl nur Meta gemeint ist —
+  // und das faellt erst auf, wenn ein zweites Ziel existiert.
+  it("Phase 11 Scheibe 1: DOPPEL-DELETE — neue Tabelle ZUERST, gefiltert auf Projekt UND Ziel", async () => {
+    makeClient({
+      user: { id: "user-1" },
+      results: { "projects.select": setRow, "projects.update": { error: null } },
+    });
+
+    const result = await removeCapiToken("proj-1");
+    expect(result.ok).toBe(true);
+    expect(adminTables).toEqual(["project_secrets", "project_tokens"]);
+    // Zielwert als LITERAL (s. Begruendung beim Schreibpfad).
+    expect(adminDeleteEq).toEqual([
+      ["project_id", "proj-1"],
+      ["target", "meta"],
+      ["project_id", "proj-1"],
+    ]);
   });
 
   it("trackingKey bleibt erhalten, nur tokenSet flippt auf false (Gegenprobe)", async () => {

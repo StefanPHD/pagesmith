@@ -62,7 +62,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
               },
               error: null,
             }
-          : { data: { meta_capi_token: "SECRET-TOKEN" }, error: null }
+          : { data: { secret: "SECRET-TOKEN" }, error: null }
       );
       return builder;
     });
@@ -72,6 +72,78 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     // Die Aufloesungs-Achse ist die server-autoritative Spalte, nicht settings->capi->>trackingKey.
     expect(eqSpy).toHaveBeenCalledWith("tracking_key", "tk-abc");
     expect(eqSpy).not.toHaveBeenCalledWith("settings->capi->>trackingKey", "tk-abc");
+  });
+
+  // Phase 11 Scheibe 1 — DIE LESEQUELLE. Der einzige Test, der die UMSTELLUNG selbst
+  // festnagelt: faellt er weg, koennte der Resolver unbemerkt wieder die Alt-Tabelle
+  // lesen, und die Umstellung waere nur noch in der Doku wahr.
+  it("Phase 11 Scheibe 1: das Geheimnis kommt aus project_secrets — project_tokens wird NICHT mehr gelesen", async () => {
+    const { from } = mockAdmin({
+      projects: projectWithPixel("proj-1", "PIXEL-123"),
+      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
+    });
+
+    const res = await getCapiConfigByTrackingKey("tk-abc");
+    expect(res?.capiConfig).toEqual({ pixelId: "PIXEL-123", token: "SECRET-TOKEN" });
+
+    // POSITIVKONTROLLE fuer die Abwesenheits-Behauptung darunter: die Aufzeichnung ist
+    // nachweislich gefuellt. Ohne sie ginge ein not.toHaveBeenCalledWith auch dann auf,
+    // wenn der Mock gar nichts mitschreibt.
+    expect(from).toHaveBeenCalledWith("projects");
+    expect(from).toHaveBeenCalledWith("project_secrets");
+    expect(from).not.toHaveBeenCalledWith("project_tokens");
+    // GENAU ZWEI Abfragen: die Umstellung TAUSCHT eine, sie ergaenzt keine
+    // (/api/e-Schlankheit auf dem meistgetroffenen Pfad der Plattform).
+    expect(from).toHaveBeenCalledTimes(2);
+  });
+
+  // Phase 11 Scheibe 1 — TIPPFEHLER-WAECHTER FUER DIE NEUE TABELLE, nach dem Muster des
+  // 9b-2-Waechters darunter. Der Builder-Mock akzeptiert JEDE Select-Liste und JEDEN
+  // Filter; ohne diesen Test waere ein falscher Spalten- oder Zielwert von nichts
+  // gedeckt — und er faellt nicht laut aus, sondern liefert schlicht keine Zeile:
+  // capiConfig null, weiter leere 204, Server-Forward tot.
+  // DER ZIELWERT STEHT HIER ALS LITERAL, NICHT als importierte Konstante: der Test soll
+  // den WIRE-Wert festnageln. Zoege er die Konstante mit, ruschte eine Aenderung an ihr
+  // gruen durch.
+  it("Phase 11 Scheibe 1 — TIPPFEHLER-WAECHTER: select('secret'), Filter auf project_id UND target='meta'", async () => {
+    const calls: { table: string; cols: string; eqs: [string, unknown][] }[] = [];
+    const from = vi.fn((table: string) => {
+      const entry = { table, cols: "", eqs: [] as [string, unknown][] };
+      calls.push(entry);
+      const builder: Record<string, unknown> = {};
+      builder.select = vi.fn((cols: string) => {
+        entry.cols = cols;
+        return builder;
+      });
+      builder.eq = vi.fn((col: string, val: unknown) => {
+        entry.eqs.push([col, val]);
+        return builder;
+      });
+      builder.maybeSingle = vi.fn(async () =>
+        table === "projects"
+          ? {
+              data: {
+                id: "proj-1",
+                settings: { pixels: { meta: { pixelId: "PIXEL-123" } } },
+                blocked_at: null,
+              },
+              error: null,
+            }
+          : { data: { secret: "SECRET-TOKEN" }, error: null }
+      );
+      return builder;
+    });
+    createAdminClient.mockReturnValue({ from });
+
+    await getCapiConfigByTrackingKey("tk-abc");
+
+    const secrets = calls.find((c) => c.table === "project_secrets");
+    if (!secrets) throw new Error("kein Zugriff auf project_secrets aufgezeichnet");
+    expect(secrets.cols).toBe("secret");
+    expect(secrets.eqs).toEqual([
+      ["project_id", "proj-1"],
+      ["target", "meta"],
+    ]);
   });
 
   // Scheibe 9b-2 — DER TIPPFEHLER-WAECHTER. Der Builder-Mock oben gibt sich mit JEDER
@@ -118,7 +190,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
         },
         error: null,
       },
-      project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
+      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
@@ -131,7 +203,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
   it("loest trackingKey -> { projectId, capiConfig } auf (eine Aufloesung)", async () => {
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
-      project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
+      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
     });
     // Phase 8 Scheibe 1: die projectId reitet in DERSELBEN Aufloesung mit (sie wurde
     // vorher intern schon aufgeloest und verworfen) -> KEINE zweite Query.
@@ -154,7 +226,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
   it("unbekannter trackingKey (kein Projekt) -> null", async () => {
     mockAdmin({
       projects: { data: null, error: null },
-      project_tokens: { data: { meta_capi_token: "x" }, error: null },
+      project_secrets: { data: { secret: "x" }, error: null },
     });
     expect(await getCapiConfigByTrackingKey("tk-missing")).toBeNull();
   });
@@ -165,7 +237,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
   it("ROBUSTHEIT: Projekt ohne Meta-Pixel-ID -> capiConfig null (kein Forward-Ziel)", async () => {
     mockAdmin({
       projects: { data: { id: "proj-1", settings: {} }, error: null },
-      project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
+      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
@@ -175,12 +247,12 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     });
   });
 
-  it("ROBUSTHEIT: trackingKey + Pixel gesetzt, aber project_tokens-Zeile fehlt -> capiConfig null (kein Throw)", async () => {
+  it("ROBUSTHEIT: trackingKey + Pixel gesetzt, aber project_secrets-Zeile fehlt -> capiConfig null (kein Throw)", async () => {
     // Projekt hat trackingKey + Pixel, aber der Token wurde nie gesetzt (oder Race).
     // Muss sauber aufloesen, nicht werfen.
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
-      project_tokens: { data: null, error: null },
+      project_secrets: { data: null, error: null },
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
@@ -193,7 +265,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
   it("ROBUSTHEIT: Token-Zeile vorhanden, aber Token null -> capiConfig null", async () => {
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
-      project_tokens: { data: { meta_capi_token: null }, error: null },
+      project_secrets: { data: { secret: null }, error: null },
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
@@ -206,7 +278,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
   it("DB-Fehler beim Token-Read -> capiConfig null (kein Throw)", async () => {
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
-      project_tokens: { data: null, error: { message: "boom" } },
+      project_secrets: { data: null, error: { message: "boom" } },
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
@@ -225,11 +297,14 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
         data: { id: "proj-1", settings: { pixels: { meta: { pixelId: "PIXEL-123" } } }, blocked_at: "2026-07-14T00:00:00Z" },
         error: null,
       },
-      project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
+      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
     });
     await getCapiConfigByTrackingKey("tk-abc");
-    // Frueh-Verwerfen VOR der Token-Aufloesung: project_tokens wird nie abgefragt.
-    expect(from).not.toHaveBeenCalledWith("project_tokens");
+    // Frueh-Verwerfen VOR der Geheimnis-Aufloesung: project_secrets wird nie abgefragt.
+    // MIT DER SCHEIBE NACHGEZOGEN, und das war Pflicht: stuende hier weiter
+    // "project_tokens", waere die Zusicherung HOHL — der Resolver fragt diese Tabelle
+    // seit der Umstellung in KEINEM Pfad mehr, die Behauptung ginge also immer auf.
+    expect(from).not.toHaveBeenCalledWith("project_secrets");
   });
 
   it("KILL-SWITCH Gegenprobe: ungesperrtes Projekt (blocked_at null) -> CapiConfig wie bisher", async () => {
@@ -238,7 +313,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
         data: { id: "proj-1", settings: { pixels: { meta: { pixelId: "PIXEL-123" } } }, blocked_at: null },
         error: null,
       },
-      project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
+      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
     });
     expect(await getCapiConfigByTrackingKey("tk-abc")).toEqual({
       projectId: "proj-1",
@@ -270,7 +345,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
         },
         error: null,
       },
-      project_tokens: { data: { meta_capi_token: "SECRET-TOKEN" }, error: null },
+      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",

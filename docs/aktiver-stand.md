@@ -872,6 +872,16 @@ SCHEIBE IST und nicht ihr Nebenprodukt.
 
 ### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
 
+**EINGELÖST AM 2026-08-05 — alle DREI Fragen sind beantwortet; die Antworten
+stehen unter "### Protokoll der zweiten Scheibe — Vollzug und Abschluss" und im
+Bau selbst.** Die Fragen bleiben unverändert stehen: Sie sind der MASSSTAB, an dem
+der Plan gemessen wurde — ohne sie wäre nicht mehr erkennbar, WAS beantwortet
+worden ist.
+**DIE DRITTE FRAGE IST NUR FÜR DIESES EINE ZIEL BEANTWORTET** und geht beim
+nächsten Ziel wieder auf — dann trifft sie auf den Backlog-Punkt, dass der
+Meta-Ziel-Name inzwischen an DREI Stellen im Repo als Wert steht; das ist DIESELBE
+Sache und nicht zweierlei, einmal als offene Frage und einmal als Aufräumbedarf.
+
 Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
 
 - An welcher STELLE im ausgelieferten Dokument steht die Auswertung, damit BEIDE
@@ -883,3 +893,77 @@ Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
 
 **KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht
 nach dem Bau, getrennt vom Zuschnitt, wie bei der ersten Scheibe.
+
+**EINGELÖST AM 2026-08-05** — der Protokollblock existiert jetzt, s. "### Protokoll
+der zweiten Scheibe — Vollzug und Abschluss". Der Satz darüber bleibt stehen: er
+hält fest, dass Zuschnitt und Protokoll von Anfang an getrennt geführt wurden,
+nicht erst nachträglich sortiert.
+
+### Protokoll der zweiten Scheibe — Vollzug und Abschluss
+
+Der Zuschnitt darüber ist der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+
+**ABGESCHLOSSEN AM 2026-08-05 — DAS GETEILTE CONSENT-GATE IST GEBAUT, DEPLOYT UND
+LIVE GEPRÜFT.** Die folgenden Werte sind GEMESSEN und vom Owner zurückgemeldet —
+keiner davon ist abgeleitet:
+- Deployment Ready, Commit-Hash abgeglichen.
+- OHNE HOOK: unverändert — Server-Event im Meta Events Manager mit geteilter
+  eventID.
+- BOOLEAN false: blockiert, kein Script-Load, kein Beacon.
+- OBJEKT OHNE ZIEL-SCHLÜSSEL: blockiert. **Das ist die Umkehr, live bestätigt.**
+- OBJEKT MIT ZIEL-SCHLÜSSEL: feuert, das Server-Event kommt an.
+- UNTYPISIERTER RÜCKGABEWERT: blockiert. **Die erweiterte Reichweite, live
+  bestätigt** — sie war beim Zuschnitt noch nicht vorgesehen.
+- DIREKT GESETZTER WERT, beide Richtungen: erlaubend feuert, verbietend blockiert.
+- Der PageView-Beacon geht auf Seiten ohne Mappings unverändert raus (204).
+- Der Block liegt auch im Export-Download, VOR Wiring und Datenblock.
+
+#### Zwei Grenzen, die erst der Live-Test aufgedeckt hat
+
+Beide wurden als vermeintliche FEHLSCHLÄGE gemeldet und erwiesen sich als etwas
+anderes. Sie stehen deshalb als EIGENSCHAFTEN hier und nicht als Fussnoten.
+
+**(a) EIN CODE-DEPLOY ERREICHT BESTEHENDE SEITEN NICHT.** Das ausgelieferte HTML
+entsteht beim PUBLISH und wird abgelegt; die Serve-Route liefert es unverändert
+aus. Eine Seite behält ihr ALTES Gate, bis sie NEU PUBLIZIERT wird — bis dahin
+läuft sie im alten Fail-open. **Das betrifft JEDE künftige Scheibe, die die
+Laufzeit anfasst**, nicht nur diese. Live beobachtet: Der Schritt zur Objektform
+schlug zunächst fehl und war nach dem Republish positiv. Wer das nicht weiss,
+liest einen korrekten Bau als Fehlschlag.
+
+**(b) NACH DEM SCRIPT-LOAD ENDET UNSERE KONTROLLE.** Metas Script hängt EIGENE
+Klick-Listener an und feuert autonom weiter — es fragt unser Gate nicht. Ein
+WIDERRUF mitten in der Sitzung stoppt diese Ereignisse also nicht.
+BELEGT, nicht vermutet: Der Netzwerk-Eintrag nennt als Initiator fbevents.js und
+als Ereignis SubscribedButtonClick — einen Namen, den unser Code NIE erzeugt, weil
+er ausschliesslich Ereignisse aus der Mapping-Tabelle sendet. Gegenprobe nach
+hartem Neuladen OHNE vorherigen erlaubten Klick: kein Request.
+**DAS IST KEIN FEHLER DES GATES, sondern die Kehrseite seiner Position:** Es sitzt
+VOR dem Script-Load, weil schon der Load IP und Referer leakt. Es verspricht
+"kein Load ohne Einwilligung" — nicht "Rücknahme nach dem Load".
+HEBUNGSKANDIDAT FÜR EINE EIGENE SCHEIBE: Metas eigener Mechanismus für den
+Widerruf. Hier NICHT geplant.
+
+#### Was diese Scheibe ausdrücklich NICHT geleistet hat
+
+- **DER PAGEVIEW-EMITTER BLEIBT UNGEGATED** — eigene Scheibe, direkt danach.
+- **DAS WIRE-FELD FEHLT WEITERHIN**; nötig ab dem zweiten Ziel.
+- **DER META-ZIEL-NAME STEHT JETZT AN DREI STELLEN IM REPO ALS WERT.** Ein
+  gemeinsamer Ort berührte den Server und war in dieser Scheibe ausgeschlossen.
+  BACKLOG — beim dritten Ziel eine echte Frage, keine Aufräumarbeit.
+
+#### Zwei Lektionen aus dem Bau — HEBUNGSKANDIDATEN für CLAUDE.md
+
+NICHT eingetragen; die Entscheidung darüber fällt am Phasenende.
+
+**(a) EINE GRÜN GEBLIEBENE MUTATION IST EIN BEFUND, KEIN ANLASS ZUR REPARATUR.**
+Der Test war nicht falsch — er war an dieser Achse nicht DISKRIMINIEREND: Test und
+Mutation stimmten bei der gewählten Eingabe überein. Der trennende Fall war die
+VERBIETENDE Richtung. **Die Gegenmutation in die andere Richtung ist das Mittel,
+das "prüft nichts" von "prüft eine andere Achse" trennt** — ohne sie bleibt beides
+ununterscheidbar.
+
+**(b) "BLOCKIERT" UND "ABGESTÜRZT" SEHEN AN EINER ABWESENHEITS-ASSERTION IDENTISCH
+AUS.** Ein Test, der nur prüft, dass etwas NICHT passiert, kann einen abgebrochenen
+Handler nicht von einem wirksamen Gate unterscheiden. Es braucht zusätzlich einen
+Test, der prüft, dass der Handler ZU ENDE läuft.

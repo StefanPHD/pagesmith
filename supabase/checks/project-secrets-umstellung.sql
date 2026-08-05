@@ -44,9 +44,13 @@
 --                  im Spiel: dann STOPP und untersuchen, NICHT ein drittes Mal laufen
 --                  lassen. Ein Lauf, der eine Zahl geradezieht, die man nicht erklaeren
 --                  kann, verdeckt die Ursache, statt sie zu beseitigen.
--- VERIFIZIERT: NOCH NICHT. Geschrieben 2026-08-05 zusammen mit 0021; die Migration ist
---              zu diesem Zeitpunkt NICHT eingespielt und diese Datei nie gelaufen. Nach
---              dem ersten echten Lauf im SQL-Editor ist hier das Datum einzutragen.
+-- VERIFIZIERT: 2026-08-05 — echter Lauf im SQL-Editor durch Stefan, unmittelbar nach dem
+--              Einspielen von 0021. ALLE FUENF Proben trafen ihre ERWARTUNG, KEINE
+--              Abweichung; die Messwerte stehen in docs/aktiver-stand.md beim Zuschnitt
+--              der ersten Scheibe.
+--              WAS DIESES DATUM NICHT DECKT: den NACHHOL-LAUF (s. WANN, Punkt c). Es
+--              belegt die Zeitpunkte (a) und (b) — NICHT das Freigabe-Gate fuer den
+--              Code-Deploy, das steht weiterhin aus.
 
 -- DAS FENSTER — kurz, weil es der Grund fuer den Nachhol-Lauf ist: Zwischen dem
 -- Einspielen von 0021 und dem Bau-B-Deploy schreibt der laufende Code weiterhin

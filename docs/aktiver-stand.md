@@ -285,10 +285,32 @@ Instanz die leere Policy-Liste als Versäumnis und "repariert" sie:
 **DAS OWNERSHIP-GATE IN DEN SERVER-ACTIONS DIE EINZIGE KONTROLLE.**
 Dieser Satz gehört in den KOMMENTARKOPF der neuen Migration — nicht als Beiwerk,
 sondern als der Satz, der jemanden davon abhält, das Gate später für redundant zu
-halten. Die vier Tests, die prüfen, dass der privilegierte Client im
-Nicht-Owner-Pfad NIE instanziiert wird (`src/app/projects/actions.test.ts:147`,
-`:215`, `:295`, `:309`), sichern damit die EINZIGE tragende Kontrolle ab und sind
-der Regressionswächter dieser Scheibe.
+halten.
+
+**DIE REGRESSIONSWÄCHTER — RICHTIGGESTELLT AM 2026-08-05, ERNEUT AM CODE
+GEMESSEN.** Bis dahin stand hier, VIER namentlich genannte Tests in
+`src/app/projects/actions.test.ts` prüften, dass der privilegierte Client im
+Nicht-Owner-Pfad nie instanziiert wird. Die Beschreibung trug nicht: zwei der
+vier sind HAPPY-PATH-Tests, die das Gegenteil voraussetzen — dort MUSS der
+privilegierte Client entstehen, sonst gäbe es nichts zu schreiben. Es sind ZWEI
+VERSCHIEDENE AUSSAGEN, beide tragend, KEINE ersetzt die andere:
+
+1. **KEIN PRIVILEGIERTER CLIENT OHNE BESTANDENES GATE.** Getragen von „IDOR-SCHUTZ
+   (heiligstes Gate): fremde project_id …", „IDOR (heiligstes Gate): fremdes
+   Projekt …", den beiden „nicht eingeloggt …"-Tests (je einer bei setCapiToken
+   und removeCapiToken) und „leerer Token -> error, KEIN DB-Zugriff …". Alle
+   behaupten dasselbe: `createAdminClient` wurde NICHT aufgerufen.
+2. **DER AUTHENTIFIZIERTE CLIENT FASST DIE GEHEIMNIS-TABELLE NIE AN.** Getragen
+   von „WRITE-ONLY: der SSR-Client fasst project_tokens NIE an …", „DELETE laeuft
+   ueber den Admin-Client (service_role), nicht ueber den SSR-Client" und
+   „selektiert nur projects-Spalten …, NIE project_tokens".
+
+**DIE ZWEITE AUSSAGE IST DIE, DIE DURCH DIESE SCHEIBE WANDERT — und sie wird
+AUSGEWEITET, NICHT VERSCHOBEN.** Nach Bau B muss sie für die Alt-Tabelle UND für
+die neue gelten. Wer sie beim Umbau nur umhängt, verliert die Zusicherung
+ausgerechnet für die Tabelle, in die weiterhin geschrieben wird.
+Die erste Aussage bleibt von dieser Scheibe unberührt; sie sichert die EINZIGE
+tragende Schreib-Kontrolle ab.
 
 **VERIFIKATION NACH DEM EINSPIELEN — präzise formuliert, weil die naheliegende
 Formulierung zu schwach ist:** Geprüft wird NICHT "keine SELECT-Policy", sondern
@@ -490,10 +512,14 @@ hier um die Tabelle, die die erste Scheibe umstellt.
     dort gemessen festgehalten). Eine Policy ist eine Eigenschaft der Datenbank —
     ohne echte Verbindung kann kein Test sie auslösen.
     **DIE RLS-LAGE IST AUSSCHLIESSLICH DURCH DIE MIGRATIONSDATEI UND EINE
-    LIVE-PRÜFUNG GEDECKT.** Was die Suite deckt, ist die Anwendungsschicht: vier
-    Tests prüfen, dass der privilegierte Client im Nicht-Owner-Pfad NIE
-    instanziiert wird (`src/app/projects/actions.test.ts:147`, `:215`, `:295`,
-    `:309`).
+    LIVE-PRÜFUNG GEDECKT.** Was die Suite deckt, ist die Anwendungsschicht — und
+    zwar in ZWEI getrennten Aussagen, nicht in einer: kein privilegierter Client
+    ohne bestandenes Gate, UND der authentifizierte Client fasst die
+    Geheimnis-Tabelle nie an. Welche Tests welche Aussage tragen, steht bei der
+    Policy-Entscheidung in (d). AUSNAHME VON DER PROVENIENZ-REGEL DIESES
+    ABSCHNITTS, ausdrücklich: Dieser Punkt ist am 2026-08-05 ERNEUT am Code
+    gemessen und richtiggestellt worden — die Fassung vom 2026-08-03 zog beide
+    Aussagen fälschlich zu einer zusammen.
 15. **`trackingKey` IST PROJEKTWEIT — bestätigt**, mit einem Grund, der über den
     Prüfauftrag hinausgeht: Der Ingest löst ihn gegen die Projektzeile auf
     (`src/lib/capi/token.ts:96-99`, Filter auf die server-autoritative Spalte),
@@ -568,6 +594,39 @@ diese Probe ist die Katalog-Prüfung genau an der Stelle blind, an der sie trage
 soll.
 **ERST DANACH Code** — die Reihenfolge ist die bestehende fail-closed-Regel, nicht
 eine Vorsichtsmassnahme dieser Scheibe.
+
+**VOLLZOGEN AM 2026-08-05 — SCHRITT 1 UND SCHRITT 2.** Die Migration
+(`supabase/migrations/0021_project_secrets.sql`) ist von Hand im SQL-Editor
+gelaufen, die Katalog-Prüfung unmittelbar danach. Die folgenden Werte sind
+GEMESSEN und vom Owner zurückgemeldet — keiner davon ist abgeleitet oder
+gerundet:
+- Ausgangszahl vor dem Lauf (Positivkontrolle): FÜNF Zeilen in der Alt-Tabelle.
+- Protokoll-Eintrag 0021 vorhanden, applied_at gefüllt (2026-08-05) — der Lauf
+  ist also bis zu seiner letzten Anweisung durchgelaufen.
+- RLS aktiv: true.
+- Policy-Liste: leer, NULL Zeilen.
+- Übernahme: Quelle FÜNF, Ziel FÜNF, gleich; die Wertgleichheits-Probe meldet
+  NULL Abweichungen.
+Alle fünf Proben trafen ihre Erwartung. Die Probe selbst ist versioniert unter
+`supabase/checks/project-secrets-umstellung.sql` und dort mit demselben Datum als
+verifiziert vermerkt.
+
+**BAU B IST DAMIT NICHT FREIGEGEBEN.** Dieser Absatz steht hier, weil der Vermerk
+darüber sonst als vollständige Freigabe gelesen wird:
+- **EINE BEWERTUNGSSCHWELLE STEHT NOCH AUS** — die letzte der fünf, die vor dem
+  Lauf festgelegt wurden: dass ein ZWEITER Lauf die Übernahme-Proben nicht
+  verändert. Die vier anderen sind mit den Messwerten oben erfüllt. Bis dahin ist
+  die entschiedene Wiederholbarkeit eine Zusage der Migrationsdatei, kein
+  Nachweis.
+- **DER NACHHOL-LAUF GEHÖRT UNMITTELBAR VOR DEN BAU-B-DEPLOY**, nicht irgendwann
+  danach. Er hat ZWEI Funktionen: er weist die Wiederholbarkeit nach UND er holt
+  jede Zeile nach, die seit dem ersten Lauf im Fenster entstanden ist. **DAS
+  FREIGABE-GATE SIND DIE ÜBERNAHME-PROBEN NACH IHM**, nicht die vom 2026-08-05 —
+  die waren im Moment ihrer Erhebung korrekt und können vom Fenster überholt
+  worden sein.
+- **SOLANGE BAU B NICHT DEPLOYT IST, SCHREIBT DER LAUFENDE CODE AUSSCHLIESSLICH
+  IN DIE ALT-TABELLE.** Das ist der bewusste No-op-Zustand dieser Scheibe, kein
+  Fehler — und genau der Grund, warum es den Nachhol-Lauf gibt.
 
 **3. CODE: LESEN aus der neuen Tabelle, SCHREIBEN in BEIDE.**
 **DER DOPPELSCHREIB IST DER GRUND, WARUM EIN CODE-ROLLBACK GEFAHRLOS IST:** Die

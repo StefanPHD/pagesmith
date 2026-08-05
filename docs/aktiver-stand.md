@@ -12,9 +12,15 @@ VERFAHREN AM PHASENENDE — drei Schritte, in dieser Reihenfolge:
    ganze Herleitung in einem einzigen Backlog-Eintrag lag. Phase 11 ist
    mehrscheibig — ihre Herleitung hat keinen anderen Ort.
 
-DIESE DATEI ERÖFFNET DIE PHASE. Seit 2026-08-03 nennt sie die REIHENFOLGE der
-ersten beiden Scheiben, und der INHALT der ERSTEN steht am Ende als DREISCHRITT
-— Reihenfolge inbegriffen. S. den Abschnitt am Ende.
+DIESE DATEI ERÖFFNET DIE PHASE. Sie führt die REIHENFOLGE der ersten DREI
+Scheiben: (1) die Umstellung der Geheimnis-Tabelle — ABGESCHLOSSEN und live
+bewiesen, (2) das geteilte Consent-Gate, (3) Pinterest als erstes zusätzliches
+Ziel, noch NICHT zugeschnitten. Die Zuschnitte stehen unter "### Der Zuschnitt
+der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge" und "## Die zweite
+Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)"; was die erste Scheibe
+tatsächlich ergeben hat, unter "### Protokoll der ersten Scheibe — Vollzug und
+Abschluss". Verwiesen wird auf Überschriften, nicht auf Positionen: "am Ende"
+wandert mit jedem angehängten Abschnitt mit, ohne dass jemand es merkt.
 
 ---
 
@@ -536,10 +542,17 @@ hier um die Tabelle, die die erste Scheibe umstellt.
 
 ## Die ersten beiden Scheiben — und der Zuschnitt der ersten
 
+**ÜBERHOLT AM 2026-08-05 — die Überschrift und der Einleitungssatz darunter
+meinen mit "der zweiten Scheibe" noch PINTEREST. Pinterest ist jetzt die DRITTE
+Scheibe; die zweite ist das geteilte Consent-Gate (s. "## Die zweite Scheibe —
+DAS GETEILTE CONSENT-GATE (Zuschnitt)").** Der Stempel steht hier, statt den
+Text zu ändern: was unten über die ERSTE Scheibe steht, ist unverändert richtig
+und war der Maßstab, an dem sie gemessen wurde.
+
 Die beiden Blocker aus der vorigen Fassung sind weg: (d) ist entschieden, die
 Auflage aus (g) ist erfüllt. **DAMIT IST DIE REIHENFOLGE DER ERSTEN BEIDEN
-SCHEIBEN BEKANNT** — und für die erste auch ihr Zuschnitt, s. den Dreischritt
-weiter unten.
+SCHEIBEN BEKANNT** — und für die erste auch ihr Zuschnitt, s. "### Der Zuschnitt
+der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge".
 
 **ERSTE SCHEIBE: DIE UMSTELLUNG DER GEHEIMNIS-TABELLE, OHNE JEDE
 VERHALTENSÄNDERUNG.** Meta bleibt einziges Ziel, alles funktioniert weiter, nur
@@ -552,6 +565,14 @@ Phase. Sie mit einem neuen Ziel zu bündeln hiesse, im Fehlerfall nicht zu wisse
 welche der beiden Wirkungen ihn verursacht hat. (e) entscheidet, WELCHES Ziel
 zuerst kommt; diese Zeile entscheidet, dass VOR dem ersten Ziel die Umstellung
 steht.
+
+**ÜBERHOLT AM 2026-08-05 — FALSCH IST AUSSCHLIESSLICH DIE NUMMER: Pinterest ist
+jetzt die DRITTE Scheibe** (die zweite ist das geteilte Consent-Gate, s. "## Die
+zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)"). **DIE BEGRÜNDUNG
+DARÜBER BLEIBT GÜLTIG UND IST EINGELÖST** — die riskante Migration wurde NICHT
+mit einem neuen Ziel gebündelt, sie ist allein gefahren und abgeschlossen. Der
+Stempel nimmt den Satz also nicht zurück, er datiert ihn: Wer ihn als Rücknahme
+liest, hält die Entscheidung für revidiert, die tatsächlich befolgt wurde.
 
 **DIE ERHEBUNG IST GEFAHREN (2026-08-03)** und hat den Entwurf in (d) bestätigt;
 ihre Befunde stehen oben unter "Zur ERSTEN SCHEIBE", die daraus folgende
@@ -715,3 +736,93 @@ einen Umbau entfernt, bleibt der Wächter grün und schützt nichts. Bei jedem
 Umbau, der eine Quelle oder ein Ziel AUSTAUSCHT, sind deshalb die
 Abwesenheits-Behauptungen eigens durchzugehen — sie sind die einzige Testart,
 die durch das Verschwinden ihres Gegenstands STÄRKER aussieht statt schwächer.
+
+---
+
+## Die zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)
+
+**ENTSCHEIDUNG (OWNER, 2026-08-05): DIE ZWEITE SCHEIBE IST DAS GETEILTE
+CONSENT-GATE. PINTEREST RÜCKT AUF SCHEIBE DREI.** Die frühere Reihenfolge —
+Pinterest als zweite Scheibe — ist damit überholt.
+
+BEGRÜNDUNG, in dieser Reihenfolge. Sie gehört zwingend dazu, sonst liest die
+nächste Instanz die Umstellung als Verzögerung des eigentlichen Features:
+
+1. **DIE HEUTIGE AUSWERTUNG MACHT AUS JEDEM OBJEKT EIN "ERLAUBT".** Das
+   beschlossene Modell sagt das GEGENTEIL: fehlender Schlüssel = keine
+   Einwilligung. Wer die Objektform einführt, ohne die Auswertung zu ändern,
+   baut ein STILLES FAIL-OPEN — und trifft damit ausgerechnet den Betreiber, der
+   sorgfältig war und sich Ziel für Ziel geäussert hat.
+2. **EIN BOOLEAN KANN NICHT ZWISCHEN ZIELEN UNTERSCHEIDEN.** Solange die
+   Einwilligung EIN Boolean ist, gilt: wer für Meta zugestimmt hat, hat für
+   jedes weitere Ziel zugestimmt. Das ist keine Unschärfe, das widerspricht dem
+   Verkaufsargument des Produkts.
+3. **SIE FÄHRT ALLEIN** — dieselbe Begründung wie bei der ersten Scheibe: Die
+   Scheibe hat KEINE Abhängigkeit zu Pinterest, ändert aber Verhalten auf
+   BEREITS AUSGELIEFERTEN Seiten. Gebündelt wäre im Fehlerfall nicht zu
+   erkennen, welche der beiden Wirkungen ihn verursacht hat.
+
+### Der Zuschnitt der zweiten Scheibe
+
+**IN DIESER SCHEIBE:** Die Einwilligungs-Auswertung wird aus der Meta-Laufzeit
+HERAUSGEZOGEN an eine Stelle, die NICHT von der Anwesenheit eines Pixels
+abhängt, und versteht ab dann BOOLEAN ODER OBJEKT je Ziel.
+
+**DAS VERHALTEN, ausdrücklich als ABSICHT und nicht als Nebenwirkung — sonst
+wird es später als Fehler "repariert":**
+- KEIN HOOK: unverändert ERLAUBT.
+- BOOLEAN: unverändert.
+- WIRFT DER HOOK: unverändert VERBOTEN.
+- **OBJEKT: HIER KEHRT SICH DAS VERHALTEN UM.** Heute erlaubt ein Objekt alles;
+  künftig entscheidet der Schlüssel des Ziels, und ein FEHLENDER Schlüssel
+  VERBIETET. Das ist der Zweck der Scheibe, nicht ihr Kollateralschaden.
+
+**AUSDRÜCKLICH NICHT IN DIESER SCHEIBE, je mit Grund:**
+- **DAS WIRE-FELD** (das Einwilligungs-Signal reist zum Server). Bei EINEM Ziel
+  genügt das Client-Gate: ohne Einwilligung geht der Conversion-Beacon gar nicht
+  erst ab. Erst wenn ein Beacon für ein Ziel erlaubt und für ein anderes
+  verboten sein kann, MUSS der Server es wissen. Die Scheibe bleibt damit rein
+  clientseitig — kein Ingest, kein Forward, kein Schema.
+- **DER PAGEVIEW-EMITTER UNTER DAS GATE.** Das ist eine echte
+  Verhaltensänderung: sie kann Seitenaufrufe unterdrücken, die heute gezählt
+  werden. Zusammengebaut wäre bei einem Fehlschlag nicht erkennbar, welche
+  Hälfte ihn verursacht hat. EIGENE Scheibe, direkt danach.
+- **PINTEREST, ein zweites Ziel, jede Änderung am Forward.**
+- **DIE GENERISCHE AKTIONS-EINWILLIGUNG.** Sie ist KEIN Bauziel dieser Scheibe,
+  aber eine AUFLAGE an ihren Entwurf: das Gate muss sie später bedienen können,
+  OHNE dass ein zweites Urteil entsteht.
+
+### Drei gemessene Bindungen, die die DRITTE Scheibe binden
+
+PROVENIENZ: am Code gemessen in der Aufklärungs-Runde vom 2026-08-05 (read-only).
+Sie stehen hier und nicht in einer Randnotiz, damit die dritte Scheibe sie
+findet, bevor sie zugeschnitten wird.
+
+**(a) DER FORWARD WARTET.** Ein Aufruf, im Request erwartet, gedeckelt auf DREI
+Sekunden — NICHT im Hintergrund-Mechanismus, in dem der Persist läuft. Zwei
+seriell erwartete Empfänger verdoppelten das auf dem heissesten Pfad des
+Produkts. ZU KLÄREN VOR DEM ZWEITEN ZIEL.
+
+**(b) ES GIBT KEINEN NEUTRALEN ORT FÜR EINE EVENT-KENNUNG.** Beide
+Erzeugungsstellen liegen im Meta-Pfad bzw. im PageView-Emitter, und DIESELBE
+Kennung trägt den Verlustraten-Join. Ein zweites Ziel fasst damit die
+Marquee-Metrik an — das ist keine Nebenwirkung, die man beim Bauen bemerkt,
+sondern eine Vorbedingung.
+
+**(c) DIE EINWILLIGUNGS-AUSWERTUNG LEBT HEUTE IM META-LAUFZEIT-TEXT** und
+existiert OHNE Pixel-ID gar nicht. Das ist der Grund, warum das Herausziehen die
+SCHEIBE IST und nicht ihr Nebenprodukt.
+
+### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
+
+Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
+
+- An welcher STELLE im ausgelieferten Dokument steht die Auswertung, damit BEIDE
+  späteren Konsumenten sie erreichen? Verdrahtungs-Text und Emitter entstehen an
+  verschiedenen Punkten; ihre REIHENFOLGE im Dokument entscheidet.
+- Was passiert, wenn die Auswertung FEHLT, weil ein Konsument sie zeitlich VOR
+  ihrer Definition erreicht?
+- Welche ZIEL-SCHLÜSSEL kennt das Gate zu diesem Zeitpunkt, und WOHER?
+
+**KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht
+nach dem Bau, getrennt vom Zuschnitt, wie bei der ersten Scheibe.

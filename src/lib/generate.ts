@@ -8,6 +8,7 @@
 
 import type { Mapping } from "./mappings";
 import { buildMetaRuntime, metaTrackStatement } from "./tracking/meta";
+import { buildConsentRuntime, CONSENT_SCRIPT_ID } from "./tracking/consent";
 
 const PAGESMITH_ID_ATTR = "data-pagesmith-id";
 
@@ -351,8 +352,20 @@ export function generateFunctional(
         options?.capiProxyUrl ?? ""
       );
 
+      // GETEILTES CONSENT-GATE (Phase 11, zweite Scheibe): der Block wird erzeugt,
+      // wenn ein Tracking-Konsument erzeugt wird, und steht VOR ihm. Er haengt WEDER
+      // an der Pixel-ID (er entsteht auch ohne Meta-Runtime) noch traegt er Meta-
+      // Wissen. Die Regel selbst lebt in tracking/consent.ts — EIN Urteil.
+      const consentScript = doc.createElement("script");
+      consentScript.setAttribute("id", CONSENT_SCRIPT_ID);
+      consentScript.textContent = buildConsentRuntime();
+
       // Vor </body> haengen; Fallback documentElement, falls kein body existiert.
+      // REIHENFOLGE IST TRAGEND: das Gate ZUERST — das Wiring ruft __psConsent beim
+      // ersten Klick, und die publizierte Seite haengt den PageView-Emitter noch
+      // dahinter. Ein Konsument vor seiner Definition liefe ins Leere.
       const target = doc.body ?? doc.documentElement;
+      target.appendChild(consentScript);
       target.appendChild(dataScript);
       target.appendChild(wiringScript);
     }

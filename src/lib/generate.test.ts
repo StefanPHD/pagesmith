@@ -153,13 +153,21 @@ let mountedDoc: Document;
 function mountAndWire(output: string): void {
   mountedDoc = new DOMParser().parseFromString(output, "text/html");
   vi.stubGlobal("document", mountedDoc);
-  // Die beiden injizierten Scripts: Datenblock (id=pagesmith-mappings) + Wiring.
-  // Geparstes HTML fuehrt <script> NICHT aus -> wir evaluieren das Wiring bewusst;
-  // es referenziert das (gestubbte) globale document.
-  const wiring = Array.from(mountedDoc.querySelectorAll("script")).find(
-    (s) => s.id !== "pagesmith-mappings"
-  );
-  window.eval(wiring?.textContent ?? "");
+  // Geparstes HTML fuehrt <script> NICHT aus -> wir evaluieren die Laufzeit-Scripts
+  // bewusst; sie referenzieren das (gestubbte) globale document.
+  //
+  // PHASE 11, ZWEITE SCHEIBE: Es sind jetzt ZWEI — das Consent-Gate
+  // (id=pagesmith-consent) definiert __psConsent, das Wiring konsumiert es. Beide
+  // werden in DOKUMENT-Reihenfolge ausgewertet, wie es der Browser taete.
+  //
+  // AUSGEWAEHLT WIRD UEBER DIE KENNUNG des Datenblocks, NICHT ueber einen Index: die
+  // frueherere Fassung nahm "das erste Script, das nicht der Datenblock ist" — mit
+  // einem dritten Script waere diese Wahl still mehrdeutig geworden, ohne dass etwas
+  // rot wird.
+  for (const s of Array.from(mountedDoc.querySelectorAll("script"))) {
+    if (s.id === "pagesmith-mappings") continue;
+    window.eval(s.textContent ?? "");
+  }
 }
 
 // Klick auf das erste Element, das auf selector passt; gibt das Event zurueck
@@ -602,6 +610,189 @@ describe("Wiring-Verhalten TRACK (Meta-Pixel, Scheibe 1b)", () => {
     // present-Filter greift typ-agnostisch -> leere Tabelle -> kein Script.
     expect(out).not.toContain("pagesmith-mappings");
     expect(out).not.toContain("Ghost");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// GETEILTES CONSENT-GATE (Phase 11, zweite Scheibe).
+//
+// Alle Verhaltens-Tests hier FUEHREN AUS (mountAndWire evaluiert Gate + Wiring in
+// Dokument-Reihenfolge) und pruefen WIRKUNGEN, nicht Zeichenketten: kein
+// fbevents-Script im Dokument, kein fbq-Call, kein Beacon.
+//
+// DIE UMKEHR: Ein Objekt erlaubte frueher ALLES (`!!obj`). Jetzt entscheidet der
+// Ziel-Schluessel, und ein fehlender verbietet. Ebenso wechseln Zeichenkette, Zahl,
+// null und Feld von erlaubt auf verboten — die Verhaltensaenderung ist GROESSER als
+// die Objektform allein.
+// ---------------------------------------------------------------------------
+
+describe("Consent-Gate: Auswertungsregel je Ziel (Phase 11, zweite Scheibe)", () => {
+  // Feuert eine Track-Aktion mit gesetztem Pixel und meldet, ob Meta beruehrt wurde.
+  // KEIN fbq-Stub: bleibt der Bootstrap aus, entsteht auch kein connect.facebook.net-
+  // Script — dessen Abwesenheit ist der schaerfere Beweis (so wie im Bestandstest).
+  function firedWithConsent(value: unknown): boolean {
+    // HYGIENE, sonst misst der Test den VORGAENGER: Der fbevents-Bootstrap setzt
+    // window.fbq SELBST (nicht per stubGlobal) -> vi.unstubAllGlobals raeumt ihn
+    // nicht ab. Ein stehengebliebenes fbq loest im naechsten Mount den
+    // Fremd-Pixel-Frueh-Ausstieg aus, es entstuende KEIN Script — ein erlaubter
+    // Fall saehe dann wie ein verbotener aus. Real aufgetreten.
+    delete (globalThis as unknown as { fbq?: unknown }).fbq;
+    vi.stubGlobal("pagesmithConsent", value);
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    return (
+      mountedDoc.querySelectorAll('script[src*="connect.facebook.net"]').length > 0
+    );
+  }
+
+  it("OBJEKT OHNE ZIEL-SCHLUESSEL -> nichts feuert (DIE UMKEHR)", () => {
+    // Rot, wenn die Objekt-Auswertung wieder pauschal erlaubt (Mutation M1).
+    expect(firedWithConsent(() => ({ pinterest: true }))).toBe(false);
+  });
+
+  it("OBJEKT MIT ZIEL-SCHLUESSEL true -> alles feuert (POSITIVKONTROLLE)", () => {
+    // Ohne diesen Test zeigte der Test darueber nur, dass IRGENDETWAS blockiert,
+    // nicht dass der SCHLUESSEL entscheidet.
+    expect(firedWithConsent(() => ({ meta: true }))).toBe(true);
+  });
+
+  it("SCHLUESSELWERT TRUTHY STATT true (1) -> nichts feuert", () => {
+    // Rot, wenn der Schluesselvergleich auf truthy aufweicht (Mutation M2).
+    expect(firedWithConsent(() => ({ meta: 1 }))).toBe(false);
+  });
+
+  it("KEIN FUNKTIONSZWANG: Wert DIREKT gesetzt, Objekt mit Ziel-Schluessel -> feuert", () => {
+    // Der Fall ist die naheliegendste Verwechslung, sobald die Objektform
+    // dokumentiert ist. ALLEIN ist dieser Test NICHT diskriminierend: ein
+    // zurueckkehrender Funktionszwang liesse einen Nicht-Funktions-Wert ebenfalls
+    // durch (alte Fassung: "keine Funktion -> erlaubt"), das Ergebnis waere
+    // dasselbe. Den Unterschied macht erst der Test darunter — gefunden durch die
+    // Mutation M3, die hier zunaechst GRUEN blieb.
+    expect(firedWithConsent({ meta: true })).toBe(true);
+  });
+
+  it("KEIN FUNKTIONSZWANG, VERBIETENDE RICHTUNG: Wert DIREKT gesetzt, Objekt OHNE Ziel-Schluessel -> nichts feuert", () => {
+    // DER EINZELSTUECK-TEST FUER MUTATION M3: nur dieser Fall unterscheidet "der
+    // direkte Wert wird AUSGEWERTET" von "ein Nicht-Funktions-Wert gilt als nichts
+    // gesagt". Wer ihn entfernt, nimmt die einzige Absicherung des Funktionszwang-
+    // Verbots mit.
+    expect(firedWithConsent({ pinterest: true })).toBe(false);
+  });
+
+  it("ZEICHENKETTE zurueckgegeben -> nichts feuert (fail-closed)", () => {
+    expect(firedWithConsent(() => "ja")).toBe(false);
+  });
+
+  it("KEIN HOOK -> feuert (bisher ungetestet, bleibt unveraendert)", () => {
+    // Rot, wenn der Ausfallmodus auf verboten kippt (Mutation M4). "Nichts gesetzt"
+    // heisst ERLAUBT: er hat nie entschieden.
+    expect(firedWithConsent(undefined)).toBe(true);
+  });
+
+  it("HOOK WIRFT -> feuert nicht (bisher ungetestet, bleibt unveraendert)", () => {
+    expect(
+      firedWithConsent(() => {
+        throw new Error("boom");
+      })
+    ).toBe(false);
+  });
+});
+
+describe("Consent-Gate: FEHLT die Auswertung (Phase 11, zweite Scheibe)", () => {
+  // Baut das Dokument wie mountAndWire, ENTFERNT aber den Consent-Block vor der
+  // Auswertung. Damit ist der Zustand nachgestellt, den die strukturelle Garantie
+  // ausschliessen soll — die Frage ist, was die Seite dann tut.
+  function mountWithoutGate(output: string): void {
+    // Reste aus Vorgaengertests abraeumen: __psConsent wird von deren evaluierten
+    // Bloecken gesetzt und ueberlebt vi.unstubAllGlobals (kein stubGlobal).
+    delete (globalThis as unknown as { __psConsent?: unknown }).__psConsent;
+    delete (globalThis as unknown as { fbq?: unknown }).fbq;
+    mountedDoc = new DOMParser().parseFromString(output, "text/html");
+    vi.stubGlobal("document", mountedDoc);
+    mountedDoc.querySelector("#pagesmith-consent")?.remove();
+    for (const s of Array.from(mountedDoc.querySelectorAll("script"))) {
+      if (s.id === "pagesmith-mappings") continue;
+      window.eval(s.textContent ?? "");
+    }
+  }
+
+  it("FEHLENDE Auswertung -> nichts feuert (fail-closed)", () => {
+    // WAS DIESER TEST FAENGT: die FAIL-OPEN-Richtung — eine fehlende Auswertung als
+    // "erlaubt" zu behandeln. Gemessen: rot, sobald der Aufruf nur noch bei
+    // vorhandener Auswertung blockt.
+    // WAS ER NICHT FAENGT, und das steht hier, damit niemand sich auf ihn verlaesst:
+    // das ENTFERNEN der Existenzpruefung (Mutation M7). Dann wirft der Aufruf, der
+    // Handler bricht ab — und "kein fbevents-Script" ist ebenfalls wahr, nur aus dem
+    // falschen Grund. Diesen Fall faengt allein der REDIRECT-Test darunter.
+    mountWithoutGate(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(
+      mountedDoc.querySelectorAll('script[src*="connect.facebook.net"]').length
+    ).toBe(0);
+  });
+
+  it("FEHLENDE Auswertung -> der Klick-Handler laeuft ZU ENDE: der REDIRECT findet statt", () => {
+    // DER EIGENTLICHE GRUND DIESER PRUEFUNG: Er prueft die SEITE, nicht das
+    // Tracking. Ein Wurf im Track-Zweig toetete die Kernfunktion der Kundenseite —
+    // der Besucher klickt und landet nirgends.
+    // EINZELSTUECK: Er ist der EINZIGE Test, der das Entfernen der Existenzpruefung
+    // (Mutation M7) faengt — gemessen. Der Test darueber bleibt dabei gruen, weil
+    // "nichts gefeuert" auch auf einen abgebrochenen Handler zutrifft. Wer diesen
+    // Test als redundant entfernt, nimmt die einzige Absicherung mit.
+    const html = `<!DOCTYPE html><html><body><a href="#" data-pagesmith-id="ps-aaaaaa">Los</a></body></html>`;
+    mountWithoutGate(
+      generateFunctional(
+        html,
+        [track("ps-aaaaaa", "Lead"), redirect("ps-aaaaaa", "https://ziel.example")],
+        "export",
+        { metaPixelId: PIXEL }
+      )
+    );
+    const ev = click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(hrefValue).toBe("https://ziel.example");
+    expect(ev.defaultPrevented).toBe(true);
+  });
+});
+
+describe("Consent-Gate: Platzierung im Dokument (Phase 11, zweite Scheibe)", () => {
+  const GATE = 'id="pagesmith-consent"';
+
+  it("der Block steht auch OHNE Pixel-ID im Output", () => {
+    // Rot, wenn der Block wieder an die Pixel-ID gebunden wird (Mutation M5).
+    const out = generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export");
+    expect(out).toContain(GATE);
+    expect(out).not.toContain("fbq(");
+  });
+
+  it("der Block steht VOR seinen Konsumenten", () => {
+    // Rot, wenn die Einfuegereihenfolge kippt (Mutation M6). Ein Konsument vor der
+    // Definition liefe ins Leere — im Browser entscheidet die Dokumentreihenfolge.
+    const out = generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+      metaPixelId: PIXEL,
+    });
+    expect(out.indexOf(GATE)).toBeGreaterThan(-1);
+    expect(out.indexOf(GATE)).toBeLessThan(out.indexOf("pagesmith-mappings"));
+    expect(out.indexOf(GATE)).toBeLessThan(out.indexOf("__psMetaFire"));
+  });
+
+  it("REINE TEXTSEITE: kein Konsument -> KEIN Block, KEIN Script (Zusage unveraendert)", () => {
+    const out = generateFunctional(
+      "<!DOCTYPE html><html><body><h1>nur Text</h1></body></html>",
+      [],
+      "export",
+      { metaPixelId: PIXEL }
+    );
+    expect(out).not.toContain(GATE);
+    expect(out).not.toContain("pagesmith-mappings");
+    expect(out).not.toContain("<script");
   });
 });
 

@@ -1,0 +1,76 @@
+// GETEILTES CONSENT-GATE (Phase 11, zweite Scheibe). Erzeugt den Laufzeit-JS-Text,
+// der die Einwilligung JE ZIEL beurteilt. Reiner String-Bau, kein DOM, kein React.
+//
+// WARUM EIGENE DATEI UND NICHT tracking/meta.ts: Jene Datei weist sich im Kopf als
+// Meta-EIGENE, isolierte Einheit aus. Ein zielUEBERGREIFENDES Urteil gehoert dort
+// nicht hin — und es haenge dort an der Pixel-ID, weil der Meta-Block NUR bei
+// gesetzter Pixel-ID gesplicet wird. Genau diese Bindung loest die Scheibe auf.
+//
+// EIN URTEIL: Die Regel steht GENAU EINMAL, hier. Es gibt zwei EINFUEGESTELLEN
+// (generate.ts fuer das Wiring-Dokument, pageview-emitter.ts fuer die publizierte
+// Seite ohne Wiring), aber nur diese eine Implementierung.
+
+// KENNUNG des Blocks. Ueber sie ist er auffindbar — fuer die zweite Einfuegestelle
+// (Doppel-Einfuegung ausschliessen) UND fuer den Test-Helfer. Eine Auswahl ueber
+// "das erste Script, das nicht der Datenblock ist" waere eine POSITIONS- statt
+// Namensbindung; genau die fuehrt dieses Projekt als Fehlerklasse.
+export const CONSENT_SCRIPT_ID = "pagesmith-consent";
+
+// Der Ziel-Schluessel fuer Meta. Schreibweise aus dem Namensraum settings.pixels.
+// <platform> (Entscheidung (a): snake_case, klein). BEWUSST NICHT aus lib/capi/
+// token.ts importiert: jene Datei traegt `import "server-only"` und ist fuer
+// erzeugten Browser-Code nicht erreichbar.
+export const META_CONSENT_TARGET = "meta";
+
+/**
+ * Der Laufzeit-Text des Gates. Setzt window.__psConsent(target) -> boolean.
+ *
+ * DIE REGEL, wie sie in docs/aktiver-stand.md unter "DIE AUSWERTUNGSREGEL" steht —
+ * sie ist dort ABSCHLIESSEND, hier wird nichts ergaenzt. Die Trennlinie ist NICHT
+ * die Datenform, sondern eine einzige Frage: HAT SICH DER BETREIBER UEBERHAUPT
+ * GEAEUSSERT?
+ *  - nichts gesetzt            -> ERLAUBT (er hat nie entschieden)
+ *  - Funktion                  -> aufrufen; ein Wurf -> VERBOTEN
+ *  - kein Funktionszwang       -> ein DIREKT gesetzter Wert wird DIREKT ausgewertet
+ *  - Wert ist GENAU true       -> ERLAUBT
+ *  - Wert ist ein Objekt       -> der Ziel-Schluessel muss GENAU true sein
+ *  - alles uebrige             -> VERBOTEN
+ *
+ * GENAU true STATT TRUTHY, auch bei Schluesselwerten: Truthy wieder zuzulassen
+ * waere die WIEDERHOLUNG genau des Fehlers, der diese Scheibe ausgeloest hat (die
+ * heutige Auswertung macht per `!!` aus JEDEM Objekt ein "erlaubt").
+ *
+ * FAIL-CLOSED ist Absicht, nicht Haerte: Ein Datenschutz-Gate blockiert bei
+ * Fehlkonfiguration, statt mutmasslich durchzulassen. Fail-closed heisst, der
+ * Betreiber MERKT es — sein Tracking hoert auf. Fail-open heisst, niemand merkt es.
+ *
+ * SERIALISIERUNGSSICHER: enthaelt kein literales </script>.
+ */
+export function buildConsentRuntime(): string {
+  return `window.__psConsent = function (t) {
+  var v = window.pagesmithConsent;
+  if (v === undefined) return true;
+  if (typeof v === "function") {
+    try { v = v(); } catch (e) { return false; }
+  }
+  if (v === true) return true;
+  if (v !== null && typeof v === "object") return v[t] === true;
+  return false;
+};`;
+}
+
+/** Der fertige Script-Block MIT Kennung — fuer die String-Einfuegestelle. */
+export function buildConsentScript(): string {
+  return `<script id="${CONSENT_SCRIPT_ID}">
+${buildConsentRuntime()}
+</script>`;
+}
+
+/**
+ * Traegt das Dokument den Block bereits? PRUEFBAR statt auf Aufrufreihenfolge
+ * verlassen: die zweite Einfuegestelle fragt hier, bevor sie einfuegt — so gibt es
+ * EIN BLOCK JE DOKUMENT, unabhaengig davon, wer zuerst laeuft.
+ */
+export function hasConsentScript(html: string): boolean {
+  return html.includes(`id="${CONSENT_SCRIPT_ID}"`);
+}

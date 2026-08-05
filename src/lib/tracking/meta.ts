@@ -7,6 +7,7 @@
 // Reiner String-Bau, kein DOM, kein React.
 
 import { BROWSER_CONFIRM_MARKER } from "@/lib/analytics/events";
+import { META_CONSENT_TARGET } from "@/lib/tracking/consent";
 
 // Standard-Events von Meta (Pixel). "Custom…" ist KEIN Standard-Event, sondern der
 // Schalter auf fbq('trackCustom', <freier Name>) — siehe ActionPanel.
@@ -31,14 +32,17 @@ export const META_VALUE_EVENTS: ReadonlySet<string> = new Set([
   "Subscribe",
 ]);
 
-// Laufzeit-Runtime fuer das Wiring. Definiert psConsent + lazy Init + Fire. Wird NUR
+// Laufzeit-Runtime fuer das Wiring. Definiert lazy Init + Fire. Wird NUR
 // gesplicet, wenn eine Pixel-ID gesetzt ist (sonst kein Snippet, kein fbq im Output).
 //
-// CONSENT-CHOKEPOINT (Verschaerfung): psConsent() gated ALLES, was Meta beruehrt —
-// den SCRIPT-LOAD (fbevents.js), fbq('init') UND jedes Event. Schon der Script-Load
-// leakt IP/Referer an Meta -> er liegt deshalb INNERHALB __psMetaInit, hinter
-// psConsent(), lazy beim ERSTEN consented Fire. 1b-Default permissiv (true); Scheibe 3
-// verdrahtet echtes Consent ueber window.pagesmithConsent und flippt den Default.
+// CONSENT-CHOKEPOINT (Verschaerfung): die Einwilligungs-Pruefung gated ALLES, was
+// Meta beruehrt — den SCRIPT-LOAD (fbevents.js), fbq('init') UND jedes Event. Schon
+// der Script-Load leakt IP/Referer an Meta -> er liegt deshalb INNERHALB
+// __psMetaInit, hinter der Pruefung, lazy beim ERSTEN consented Fire.
+// PHASE 11, ZWEITE SCHEIBE: Das URTEIL lebt nicht mehr hier, sondern im geteilten
+// Gate (tracking/consent.ts, window.__psConsent). Die zwei PRUEFSTELLEN bleiben, wo
+// sie waren — sie fragen jetzt fuer den Ziel-Schluessel META_CONSENT_TARGET. Der
+// Gate-Block wird von derselben Injektion erzeugt wie dieser Text und steht VOR ihm.
 //
 // KEIN Auto-PageView: fbq('init', …) wird OHNE folgendes fbq('track','PageView')
 // aufgerufen -> 1b ist strikt on-click. Page-Load-Events sind eine spaetere Scheibe.
@@ -49,7 +53,7 @@ export const META_VALUE_EVENTS: ReadonlySet<string> = new Set([
 // beide Konsumenten gereicht (kein zweiter Generator -> kein Dedup-Bruch).
 //
 // CAPI-BEACON (Scheibe 2b-ii): navigator.sendBeacon an den Pagesmith-Proxy, INNERHALB
-// __psMetaFire hinter DEMSELBEN psConsent()-Gate wie fbq, mit der geteilten eid. Nur
+// __psMetaFire hinter DEMSELBEN Consent-Gate wie fbq, mit der geteilten eid. Nur
 // gebaut, wenn ein trackingKey vorliegt (Vorbedingung wie die Pixel-ID beim Browser-
 // Event, mit dem der Beacon dedupliziert). Siehe buildCapiBeaconStatement.
 //
@@ -100,19 +104,23 @@ export function buildMetaRuntime(
     if (__psConfirmQueue.length >= __PS_CONFIRM_CAP) return;
     __psConfirmQueue.push({ id: eid, ev: ev });
   }
-  function psConsent() {
-    try {
-      return typeof window.pagesmithConsent === "function"
-        ? !!window.pagesmithConsent()
-        : true;
-    } catch (e) {
-      return false;
-    }
-  }
   function __psMetaInit() {
     if (__psFbReady) return true;
-    if (!psConsent()) return false;
-    // Script-Load liegt HINTER psConsent (Verschaerfung): vor Consent kein Request
+    // EXISTENZPRUEFUNG, KEIN ZWEITES URTEIL — und der Kommentar steht hier, damit
+    // sie spaeter nicht als Regel-Dublette "aufgeraeumt" wird: Geprueft wird, OB
+    // ein Urteil da ist, NICHT wie es ausfaellt. Die Regel bleibt an genau einer
+    // Stelle (tracking/consent.ts).
+    // WARUM UEBERHAUPT: Seit die Auswertung ein eigener Block ist, ist ihr Aufruf
+    // eine BLOCKUEBERGREIFENDE Referenz. Ein direkter Aufruf wuerfe, wenn sie fehlt
+    // — mitten im Klick-Handler, der danach noch den REDIRECT ausfuehren muss. Ein
+    // Tracking-Fehler toetete so die Kernfunktion der Kundenseite. Die strukturelle
+    // Garantie (der Block wird immer vor den Konsumenten erzeugt) bleibt richtig;
+    // sie ist nur nicht die einzige Verteidigung, die diese Folge verdient.
+    // FAIL-CLOSED aus demselben Grund wie die Regel selbst: Fehlt das Urteil, ist
+    // NICHT bekannt, ob eingewilligt wurde.
+    if (typeof __psConsent !== "function") return false;
+    if (!__psConsent(${JSON.stringify(META_CONSENT_TARGET)})) return false;
+    // Script-Load liegt HINTER der Consent-Pruefung (Verschaerfung): vor Consent kein Request
     // an connect.facebook.net. Standard-fbevents-Bootstrap OHNE Auto-PageView.
     !(function (f, b, e, v, n, t, s) {
       // FOREIGN (Scheibe A, die EINZIGE editierte Bestandszeile): traegt die importierte
@@ -160,7 +168,11 @@ export function buildMetaRuntime(
   }
   function __psMetaFire(cfg) {
     if (!cfg || !cfg.event) return;
-    if (!psConsent()) return;
+    // EXISTENZPRUEFUNG, KEIN ZWEITES URTEIL — s. die Begruendung in __psMetaInit.
+    // Diese Stelle ist die teurere von beiden: Sie liegt im Klick-Handler, und
+    // hinter ihr wartet der Redirect.
+    if (typeof __psConsent !== "function") return;
+    if (!__psConsent(${JSON.stringify(META_CONSENT_TARGET)})) return;
     if (!__psMetaInit()) return;
     var eid =
       window.crypto && window.crypto.randomUUID
@@ -172,7 +184,7 @@ export function buildMetaRuntime(
     if (cfg.isCustom) fbq("trackCustom", cfg.event, params, { eventID: eid });
     else fbq("track", cfg.event, params, { eventID: eid });${beaconStmt}
     // Scheibe A: dieselbe lokale eid wie fbq/Beacon (KEIN zweiter Generator -> der
-    // Verlustraten-Join ueber event_id traegt). Liegt hinter demselben psConsent-Gate.
+    // Verlustraten-Join ueber event_id traegt). Liegt hinter demselben Consent-Gate.
     __psConfirm(eid, cfg.event);
   }`;
 }

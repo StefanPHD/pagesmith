@@ -10,6 +10,7 @@
 // wird — wie PAGEVIEW_EVENT — via JSON.stringify eingesetzt: kein Injektions-Vektor.
 
 import { PAGEVIEW_EVENT } from "./events";
+import { buildConsentScript, hasConsentScript } from "@/lib/tracking/consent";
 
 const SCRIPT_ID = "__ps_pve";
 
@@ -56,7 +57,20 @@ export function buildPageViewScript(trackingKey: string): string {
 // 1:1 aufs Original), Script davor einfuegen; fehlt </body>, ans Ende anhaengen (ein
 // Script am Dokumentende feuert trotzdem). KEIN Regex, KEIN Parser.
 export function injectPageViewEmitter(html: string, trackingKey: string): string {
-  const script = buildPageViewScript(trackingKey);
+  // ZWEITE EINFUEGESTELLE DES GETEILTEN CONSENT-GATES (Phase 11, zweite Scheibe).
+  // Sie ist noetig, weil eine publizierte Seite OHNE Mappings KEIN Wiring traegt —
+  // dann kaeme der Block aus generate.ts nicht, und die publizierte Seite haette
+  // einen Tracking-Konsumenten (diesen Emitter) ohne Gate. Damit haengt der Block
+  // WEDER an der Pixel-ID NOCH an der Mapping-Tabelle.
+  //
+  // EIN BLOCK JE DOKUMENT, PRUEFBAR: hasConsentScript fragt das Dokument, statt sich
+  // auf eine Aufrufreihenfolge zu verlassen. Traegt es den Block schon (Wiring-Fall),
+  // wird nichts ergaenzt.
+  //
+  // DER EMITTER SELBST BLEIBT UNGEGATED — er TRAEGT den Block nur, er konsumiert ihn
+  // nicht. Ihn hinter das Gate zu stellen ist eine EIGENE Scheibe.
+  const gate = hasConsentScript(html) ? "" : buildConsentScript();
+  const script = gate + buildPageViewScript(trackingKey);
   const idx = html.toLowerCase().lastIndexOf("</body>");
   if (idx === -1) return html + script;
   return html.slice(0, idx) + script + html.slice(idx);

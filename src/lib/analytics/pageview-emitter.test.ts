@@ -47,6 +47,28 @@ describe("injectPageViewEmitter", () => {
     expect(out).toContain("window.__ps_pv");
   });
 
+  // PHASE 11, ZWEITE SCHEIBE: die zweite Einfuegestelle des geteilten Consent-Gates.
+  // Sie traegt den Fall "publizierte Seite OHNE Wiring" — dort kaeme der Block sonst
+  // von niemandem, obwohl mit dem Emitter ein Tracking-Konsument da ist.
+  it("(f) OHNE Wiring: der Emitter bringt den Consent-Block MIT, und zwar VOR sich", () => {
+    const out = injectPageViewEmitter(
+      "<html><body><h1>nur Text</h1></body></html>",
+      "k"
+    );
+    expect(out).toContain('id="pagesmith-consent"');
+    expect(out.indexOf('id="pagesmith-consent"')).toBeLessThan(
+      out.indexOf("__ps_pv")
+    );
+  });
+
+  it("(g) EIN BLOCK JE DOKUMENT: ist er schon da, ergaenzt der Emitter KEINEN zweiten", () => {
+    // Geprueft wird das DOKUMENT, nicht eine Aufrufreihenfolge.
+    const withGate = `<html><body><script id="pagesmith-consent"></scr` +
+      `ipt></body></html>`;
+    const out = injectPageViewEmitter(withGate, "k");
+    expect(out.split('id="pagesmith-consent"').length - 1).toBe(1);
+  });
+
   it("(e) kommt DANEBEN: CAPI-Wiring bleibt erhalten, Emitter kommt zusaetzlich", () => {
     // Simuliert ein CAPI-Projekt-HTML mit Meta-Wiring-Marker.
     const input = "<html><body><h1>x</h1><script>__psMetaFire(a.config);</script></body></html>";

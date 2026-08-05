@@ -765,17 +765,58 @@ nächste Instanz die Umstellung als Verzögerung des eigentlichen Features:
 ### Der Zuschnitt der zweiten Scheibe
 
 **IN DIESER SCHEIBE:** Die Einwilligungs-Auswertung wird aus der Meta-Laufzeit
-HERAUSGEZOGEN an eine Stelle, die NICHT von der Anwesenheit eines Pixels
-abhängt, und versteht ab dann BOOLEAN ODER OBJEKT je Ziel.
+HERAUSGEZOGEN an eine Stelle, die WEDER an der Pixel-ID NOCH an der
+Mapping-Tabelle hängt, und beurteilt die Einwilligung ab dann JE ZIEL. Welche
+Eingabe wie beurteilt wird, steht abschliessend unter "DIE AUSWERTUNGSREGEL".
 
-**DAS VERHALTEN, ausdrücklich als ABSICHT und nicht als Nebenwirkung — sonst
-wird es später als Fehler "repariert":**
-- KEIN HOOK: unverändert ERLAUBT.
-- BOOLEAN: unverändert.
-- WIRFT DER HOOK: unverändert VERBOTEN.
-- **OBJEKT: HIER KEHRT SICH DAS VERHALTEN UM.** Heute erlaubt ein Objekt alles;
-  künftig entscheidet der Schlüssel des Ziels, und ein FEHLENDER Schlüssel
-  VERBIETET. Das ist der Zweck der Scheibe, nicht ihr Kollateralschaden.
+**DIE AUSWERTUNGSREGEL (ENTSCHIEDEN, OWNER, 2026-08-05).** Sie steht hier
+VOLLSTÄNDIG, damit der Bau nicht zwischen zwei Fassungen wählen muss, und
+ausdrücklich als ABSICHT und nicht als Nebenwirkung — sonst wird sie später als
+Fehler "repariert".
+
+**DIE TRENNLINIE IST NICHT DIE DATENFORM, SONDERN EINE EINZIGE FRAGE: HAT SICH
+DER BETREIBER ÜBERHAUPT GEÄUSSERT?** Dieser Satz trägt alle sechs Zeilen
+darunter; wer sie ohne ihn liest, hält sie für eine Liste von Sonderfällen.
+- **NICHTS GESETZT: ERLAUBT.** Er hat nie entschieden.
+- **FUNKTION: AUFRUFEN. EIN WURF: VERBOTEN.**
+- **KEIN FUNKTIONSZWANG** — ist der Wert DIREKT gesetzt, wird er DIREKT
+  ausgewertet. Wer den Wert direkt zuweist, hat sich SORGFÄLTIG geäussert; ihn
+  als "nie entschieden" zu behandeln wäre genau der Fehler, den diese Scheibe
+  abschafft. Es ist ausserdem die NAHELIEGENDSTE Verwechslung, sobald die
+  Objektform dokumentiert ist.
+- **WERT IST GENAU `true`: ERLAUBT.**
+- **WERT IST EIN OBJEKT:** der Ziel-Schlüssel muss GENAU `true` sein. Fehlt er
+  oder ist er etwas anderes: VERBOTEN. Ein FELD fällt hierunter und ist damit
+  verboten.
+- **ALLES ÜBRIGE: VERBOTEN.**
+
+**"GENAU `true`" STATT "TRUTHY" — die Begründung gehört zwingend dazu, sonst
+wird die Strenge später als Härte gelesen und aufgeweicht:** Truthy wieder
+zuzulassen, auch nur für Schlüsselwerte, wäre die WIEDERHOLUNG genau des
+Fehlers, der diese Scheibe ausgelöst hat.
+
+**DIE REICHWEITE — Teil DIESER Regel, kein eigener Punkt:** Es wechseln MEHRERE
+Eingabeformen von erlaubt auf verboten, nicht nur die Objektform ohne Schlüssel;
+auch ZEICHENKETTE, ZAHL, `null` und FELD. Der Grund ist für alle derselbe: **Ein
+Datenschutz-Gate blockiert bei Fehlkonfiguration, statt mutmasslich
+durchzulassen.** Fail-closed heisst hier, dass der Betreiber es MERKT — sein
+Tracking hört auf. Fail-open heisst, dass es NIEMAND merkt.
+**FOLGE, die mit hierhergehört: Die Verhaltensänderung dieser Scheibe ist damit
+GRÖSSER als beim Zuschnitt angenommen.** Der Live-Test hat entsprechend mehr zu
+zeigen als nur die Objektform.
+
+**DIE PLATZIERUNG (ENTSCHIEDEN, OWNER, 2026-08-05): Die Auswertung wird IMMER
+DANN erzeugt, wenn MINDESTENS EIN Tracking-Konsument erzeugt wird, und steht VOR
+allen. Sie hängt WEDER an der Pixel-ID NOCH an der Mapping-Tabelle.**
+- WARUM NICHT INS WIRING: Eine publizierte Seite ohne Mappings trägt den
+  PageView-Emitter, aber KEIN Wiring — am Code gemessen. Die Auswertung dort
+  abzulegen hiesse, sie in der nächsten Scheibe wieder herauszuholen.
+- WARUM DIE ZUSAGE "REINE TEXTSEITE OHNE SCRIPT" INTAKT BLEIBT: Ohne Konsument
+  gibt es nichts einzuwilligen, also auch keinen Block.
+**DER MECHANISMUS IST OFFEN** und wird als PFLICHT-GATE des Bau-Prompts geführt,
+nicht hier entschieden: ob der Erzeuger den Publish- vom Export-Pfad
+unterscheidet und ob der Emitter-Einfüger den Block tragen könnte, ist
+UNGEMESSEN.
 
 **AUSDRÜCKLICH NICHT IN DIESER SCHEIBE, je mit Grund:**
 - **DAS WIRE-FELD** (das Einwilligungs-Signal reist zum Server). Bei EINEM Ziel
@@ -791,6 +832,22 @@ wird es später als Fehler "repariert":**
 - **DIE GENERISCHE AKTIONS-EINWILLIGUNG.** Sie ist KEIN Bauziel dieser Scheibe,
   aber eine AUFLAGE an ihren Entwurf: das Gate muss sie später bedienen können,
   OHNE dass ein zweites Urteil entsteht.
+
+### Zwei gemessene Befunde zur Testlage DIESER Scheibe
+
+PROVENIENZ: am Code gemessen in der Stufe-1-Runde vom 2026-08-05.
+
+**(a) DER TEST-HELFER WÄHLT SEIN SCRIPT STILL.** `mountAndWire` in
+`src/lib/generate.test.ts` nimmt das ERSTE Script, das nicht der Datenblock ist.
+Ein DRITTES Script macht die Wahl mehrdeutig, OHNE dass etwas rot wird. Das ist
+eine Schwäche des HELFERS, unabhängig davon, welcher Mechanismus gewählt wird —
+hier festgehalten, NICHT gelöst.
+
+**(b) DIE SUITE FÜHRT AUS, sie vergleicht nicht nur Text.** `mountAndWire`
+evaluiert den erzeugten Text und prüft WIRKUNGEN — das ist stärker als erwartet.
+Was sie trotzdem NICHT zeigt: Sie läuft nicht im Browser, sie evaluiert genau EIN
+Script, sie sieht den PageView-Emitter nie, und sie kennt keinen Betreiber-Hook,
+der erst NACH dem Parsen gesetzt wird.
 
 ### Drei gemessene Bindungen, die die DRITTE Scheibe binden
 

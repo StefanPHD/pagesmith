@@ -194,10 +194,33 @@ gewählt. Ohne Erzwingung wäre der Zielwert ein freier String, und ein Geheimni
 unter "pintrest" liesse sich speichern, ohne dass etwas meckert — der Adapter
 sucht "pinterest", findet nichts, das Ziel bleibt STILL inaktiv.
 Der Preis ist gering, weil ein neues Ziel ohnehin Adapter-Code mitbringt; die
-Constraint-Erweiterung fährt in DERSELBEN Scheibe mit.
-**UND ES IST DIE ERSTE STELLE IM PRODUKT, AN DER DER NAMENSRAUM AUS (a)
-DURCHGESETZT WIRD** statt nur dokumentiert zu sein — s. den Backlog-Eintrag
-"RESERVIERTE NAMEN SIND NICHT GESCHÜTZT".
+Constraint-Erweiterung fährt in DERSELBEN Scheibe mit — **und genau daran hängt
+sein UMFANG, ENTSCHIEDEN (OWNER, 2026-08-05): DER CONSTRAINT LÄSST NUR DEN
+META-SCHLÜSSEL ZU, NICHT DIE VOLLE SCHLÜSSELLISTE AUS (a).**
+
+BEGRÜNDUNG, in dieser Reihenfolge — sie gehört zwingend dazu, sonst wird die enge
+Liste später als Versäumnis gelesen und "vervollständigt":
+- Die volle Liste enthält Ziele, deren ZUGANGSDATEN-FORM ungeprüft ist (Google
+  Ads, s. (i)) oder bekannt NICHT PASST: mehrwertige Anmeldungen gegen ein
+  Geheimnis pro Zeile — das steht als bewusst getragenes Risiko weiter unten in
+  dieser Entscheidung.
+- Ein Constraint, der einen solchen Wert zuliesse, BEHAUPTETE EINE PASSUNG, DIE
+  (d) SELBST VERNEINT. Das ist dieselbe Figur wie bei den verworfenen
+  `WITH CHECK`-Policies weiter unten: eine Regel, die Schutz ANZEIGT, ohne zu
+  schützen.
+- Und die Wirkung nach aussen: Eine Zeile für ein Ziel, für das es keinen Code
+  gibt, sieht aus wie funktionierende Konfiguration. Niemand meldet dem
+  Betreiber, dass sie keiner liest.
+
+FOLGE — sie steckt im Satz oben schon drin und wird hier nur zu Ende geführt:
+JEDES weitere Ziel bringt seine EIGENE Constraint-Erweiterung mit. Das ist der
+BEABSICHTIGTE Preis, kein Overhead. Es ist der sichtbare Moment, in dem ein Ziel
+real wird, und es erzwingt bei jedem neuen Ziel erneut den Blick auf die
+Reihenfolge Migration-vor-Code-Deploy.
+
+**UND DER CONSTRAINT SELBST IST DIE ERSTE STELLE IM PRODUKT, AN DER DER
+NAMENSRAUM AUS (a) DURCHGESETZT WIRD** statt nur dokumentiert zu sein — s. den
+Backlog-Eintrag "RESERVIERTE NAMEN SIND NICHT GESCHÜTZT".
 
 VERWORFEN, mit Grund: eine Nachschlagetabelle mit Fremdschlüssel. Sie verspricht
 "neues Ziel = INSERT statt Migration", löst das aber nicht — in diesem Projekt
@@ -512,14 +535,39 @@ Policy-Entscheidung in (d). Der Vorbehalt ist damit eingelöst.
 
 **1. MIGRATION, VON HAND, VOR DEM CODE-DEPLOY.** Neue Tabelle mit (Projekt,
 Ziel) als Schlüssel, RLS aktiviert, KEINE Policy, Trigger für den
-Aktualisierungs-Zeitstempel, Constraint auf den Zielwert, Übernahme der
-bestehenden Zeilen als das Meta-Ziel, Protokoll-Eintrag als LETZTE Anweisung.
+Aktualisierungs-Zeitstempel, Constraint auf den Zielwert — NUR auf den
+Meta-Schlüssel, Begründung in (d) und hier ausdrücklich NICHT wiederholt —,
+Übernahme der bestehenden Zeilen als das Meta-Ziel, Protokoll-Eintrag als LETZTE
+Anweisung.
 **DIE ALTE TABELLE WIRD NICHT ANGEFASST** — ohne den zugehörigen Code ist diese
 Migration ein NO-OP und damit gefahrlos früh einspielbar.
 
+**DIE MIGRATION IST WIEDERHOLBAR — FOLGENLOS, NICHT SCHEITERND (ENTSCHIEDEN,
+OWNER, 2026-08-05).** Ein zweiter Lauf bricht nicht ab, und er ÜBERSCHREIBT
+NICHTS. Der zweite Teil ist der wichtigere und der Grund, warum er hier
+ausgeschrieben steht: Wäre ein Wert nach dem ersten Lauf geändert worden, setzte
+ein überschreibender zweiter Lauf ihn auf den alten zurück — STILLER DATENVERLUST
+IM GEWAND EINER IDEMPOTENZ-MASSNAHME, und niemand sähe einen Fehler, weil die
+Migration ja "durchgelaufen" ist. Wiederholbar heisst hier deshalb genau eines:
+Die Übernahme lässt bestehende Zeilen unberührt.
+Objekte, deren Anlegen keine "existiert bereits"-Form kennt, brauchen dafür einen
+KATALOG-GUARD. Die Denkfigur wird hier nur BENANNT, nicht ausgeschrieben — sie
+steht ausformuliert in CLAUDE.md, "## Offene Punkte", beim Event-Trigger.
+
 **2. KATALOG-PRÜFUNG NACH DEM EINSPIELEN.** RLS aktiviert UND Policy-Liste leer
-(s. die Verifikation in (d)). **ERST DANACH Code** — die Reihenfolge ist die
-bestehende fail-closed-Regel, nicht eine Vorsichtsmassnahme dieser Scheibe.
+(s. die Verifikation in (d)). **DAZU EINE DRITTE, GLEICHRANGIGE PROBE: DIE
+ÜBERNOMMENE ZEILENZAHL GEGEN DIE QUELLE** — und dafür wird die Ausgangszahl VOR
+dem Lauf erhoben, als Positivkontrolle.
+WARUM SIE NICHT WEGGELASSEN WERDEN DARF: "null Zeilen übernommen, weil die Quelle
+leer war" und "null Zeilen übernommen, weil der Lesezugriff nicht griff" sehen am
+ERGEBNIS identisch aus. Ohne die vorher erhobene Ausgangszahl ist der Unterschied
+hinterher nicht mehr herstellbar. Der zweite Fall fiele sonst erst auf, wenn der
+neue Lesepfad live ist — und DORT IST DER AUSFALL LAUTLOS: der Ingest antwortet
+unverändert, die Browser-Seite läuft weiter, nur der Server-Forward stirbt. Ohne
+diese Probe ist die Katalog-Prüfung genau an der Stelle blind, an der sie tragen
+soll.
+**ERST DANACH Code** — die Reihenfolge ist die bestehende fail-closed-Regel, nicht
+eine Vorsichtsmassnahme dieser Scheibe.
 
 **3. CODE: LESEN aus der neuen Tabelle, SCHREIBEN in BEIDE.**
 **DER DOPPELSCHREIB IST DER GRUND, WARUM EIN CODE-ROLLBACK GEFAHRLOS IST:** Die

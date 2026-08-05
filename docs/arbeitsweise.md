@@ -332,16 +332,42 @@ Arbeitsweise, keine Repo-Regel.
 - **Grüne Pipeline ≠ funktioniert.** Der Live-Blick entscheidet.
 
 **Die teuerste Einzelregel:** Schreib nie eine Tatsachenbehauptung in einen
-Bau-Prompt, die du aus einem Dokument hast statt aus einer Messung. Alles
+Prompt, die du aus einem Dokument hast statt aus einer Messung. Alles
 Ungeprüfte geht als **Frage** in den Prompt, nicht als Vorgabe.
+
+**Sie gilt für JEDEN Prompt, nicht nur für Bau-Prompts.** Die engere Lesart
+war nie beschlossen, sie hat sich eingeschlichen — und gebrochen wurde die
+Regel fast immer in Doku- und Plan-Runden. Dort ist ein falscher Satz teurer
+als im Bau-Prompt: Den Bau-Prompt prüft CC am Code, das entstehende Dokument
+prüft niemand mehr.
+
+**Ein Dokument ist keine Messung, auch wenn es sagt, es sei eine.** Eine
+Angabe, die einmal erhoben und seither zusammengefasst wurde, ist Zweithand,
+und Provenienz verfällt lautlos über jede Zusammenfassung. Eine Übergabe hat
+eine Beschreibung weitergereicht, die am Code nicht mehr stimmte, und an
+anderer Stelle eine offene Frage geführt, die im Original nie stand — die
+Zusammenfassung war nicht ungenauer als das Original, sie enthielt etwas
+anderes.
+
+**Der Test im Moment des Schreibens:** *Woher weiss ich das?* Lautet die
+Antwort „steht in einem Dokument" statt „wurde in dieser oder der vorigen
+Runde am Repo erhoben", geht der Satz als Frage in den Prompt, nicht als
+Kontext.
 
 **Und das Gegengewicht — ohne das die Liste oben entgleist:** Sie gilt für
 Aussagen, auf denen **Code oder eine Entscheidung aufbaut**. Sie gilt *nicht*
 für den Zustand der Dokumentation selbst. Ob ein Vermerk 19 oder 22 Zeilen hat,
 ändert kein Verhalten; ob eine Regel richtig formuliert ist, sehr wohl. **Lies
-den Text, nicht die Bilanz.** Verifikation, die kein Risiko adressiert, ist
-Zeremonie — und Zeremonie kostet genau die Stunden, die für die nächste Scheibe
-fehlen (s. Abschnitt 2b).
+den Text, nicht die Bilanz. Aber was ein Dokument SAGT, ist keine Bilanz.**
+Der Ausnahmesatz meint Kennzahlen ÜBER Dokumente — Zeilenzahlen,
+Diff-Bilanzen, „geht die Arithmetik auf". Er meint NICHT Aussagen darüber,
+WAS in einem Dokument steht. Die sind Prämissen, auf denen eine ganze Runde
+aufbaut: Ein Prompt behauptete, die Standdatei führe zwei Fragen als offen
+und widerspreche sich — die Fragen standen dort nie, und die Runde musste
+zurückgenommen werden. Wer den Ausnahmesatz auf solche Fälle anwendet, hebelt
+die Regel genau dort aus, wo sie am billigsten greifen würde. Verifikation,
+die kein Risiko adressiert, ist Zeremonie — und Zeremonie kostet genau die
+Stunden, die für die nächste Scheibe fehlen (s. Abschnitt 2b).
 
 ### Review-Kalibrierung — nach Tragweite, nicht nach Artefakt-Typ
 

@@ -476,6 +476,28 @@ keine Statusänderung für etwas, das noch nicht existiert.
   KEIN pauschales "Drittanbieter nie synchron", das würde die Dedup-Garantie
   gefährden): die Beacon-Antwort an den Client darf NICHT auf den Meta-Call warten,
   aber der CAPI-Call selbst muss zuverlässig zugestellt werden.
+  SOLL UND IST FALLEN HIER AUSEINANDER — getrennt aufgeschrieben am 2026-08-05, weil der
+  Satz darüber sonst als Beschreibung des heutigen Codes gelesen wird und er ist es nicht:
+  - IST, GEMESSEN am 2026-08-05 in handleIngest (src/lib/capi/ingest.ts): Der Meta-Forward
+    wird mit await IM REQUEST erwartet, gedeckelt per AbortController auf
+    META_FORWARD_TIMEOUT_MS; das abschliessende status(204) steht DAHINTER. Die
+    Beacon-Antwort wartet also auf Meta — bis zum Deckel. Der Hintergrund-Mechanismus
+    (after aus next/server) existiert im selben Handler, trägt aber NUR den Analytics-
+    Persist über schedulePersist, nicht den Forward.
+  - SOLL: der Satz oben. Er ist als ABSICHT richtig und wird NICHT gestrichen — er ist nur
+    NOCH NICHT EINGELÖST.
+  - WARUM ES EINE UMSTELLUNG BRAUCHT UND KEINE STREICHUNG: Beide Hälften gelten
+    gleichzeitig — die Antwort soll sich von Metas Latenz lösen, UND der Forward muss
+    trotzdem zuverlässig zugestellt werden. Wer nur die erste Hälfte umsetzt, verliert
+    Conversions; wer nur die zweite liest, sieht keinen Änderungsbedarf.
+  - AUFGESCHOBEN ist die Umstellung als "CAPI-Forward auf Hintergrund-Zustellung umstellen
+    (die 204 löst sich von Metas Latenz)" mit dem Trigger "falls Beacon-Latenz je ein
+    echtes Problem wird" — s. "## Aktueller DB-/Analytics-Stand", letzter Punkt, und
+    docs/claude-history/phase-8-analytics.md.
+  - FOLGE FÜR DIE NÄCHSTE SCHEIBE (Phase 11, zweites Fan-Out-Ziel): ZWEI seriell erwartete
+    Empfänger verdoppelten die Wartezeit auf dem meistgetroffenen Pfad der Plattform. Die
+    Klärung gehört VOR das zweite Ziel, nicht danach — sonst wird der Trigger oben durch
+    genau die Scheibe erfüllt, die ihn ignoriert hat.
 - RATE-LIMITING: siehe Security Manifest Tier 1 (Per-Tenant-Limiting /api/e+/api/capi)
   — hier nur Cross-Link, keine Duplikation.
 - AUDIT-LOGS: siehe Security Manifest (Vercel-Domain-Mutations-Log) — hier nur

@@ -18,9 +18,16 @@
 --              liefert sie drei Zeilen mit unterschiedlichen RLS-Werten und sieht
 --              wie ein Befund aus. Probe 9 ist die BEWUSSTE Ausnahme: Event-Trigger
 --              sind cluster-weit und haben kein Schema.
--- VERIFIZIERT: 2026-07-30, Ergebnisse in CLAUDE.md "## Aktueller DB-/Analytics-Stand" —
---              echter Lauf im SQL-Editor durch Stefan. ALLE ZEHN Proben trafen ihre
---              ERWARTUNG exakt, KEINE Abweichung.
+-- VERIFIZIERT: ZULETZT GEFAHREN 2026-08-05, nach Migration 0021; die Ergebnisse dieses
+--              Laufs stehen in CLAUDE.md "## Aktueller DB-/Analytics-Stand". Mit
+--              DIESEM Lauf sind die ERWARTUNGEN unten auf den Stand nach 0021 gezogen
+--              (Proben 1, 1b, 3, 4, 6).
+--              KEINE TREFFERBILANZ FUER DEN 2026-08-05-LAUF: gemeldet wurden WERTE,
+--              nicht "alle Proben trafen ihre Erwartung". Hier steht deshalb keine —
+--              eine erfundene Bilanz waere schlimmer als gar keine.
+--              FRUEHERER LAUF, historisch: 2026-07-30 — ALLE ZEHN Proben trafen ihre
+--              ERWARTUNG exakt, KEINE Abweichung. Diese Bilanz gilt fuer JENEN Lauf
+--              und jene Erwartungen, nicht fuer die heutigen.
 -- NACHTRAG:    DERSELBE TAG TRAEGT ZWEI VERSCHIEDENE EREIGNISSE, die nicht
 --              ineinanderfallen duerfen: VORMITTAGS wurde nur der Query-TEXT dieser
 --              Datei auf 0019/0020 nachgezogen (Probe 1 ERWARTUNG, neue Probe 1b,
@@ -31,8 +38,8 @@
 --              SQL-Editor gefahren — das ist der Lauf, den VERIFIZIERT oben datiert.
 
 -- PROBE 1 — Migrations-Protokoll
--- ERWARTUNG: ZWANZIG Zeilen ('0001' bis '0020'). applied_at ist bei DREI Zeilen
---            gefuellt — '0018', '0019', '0020' (Protokoll-Pflicht ab 0018, beide
+-- ERWARTUNG: EINUNDZWANZIG Zeilen ('0001' bis '0021'). applied_at ist bei VIER Zeilen
+--            gefuellt — '0018', '0019', '0020', '0021' (Protokoll-Pflicht ab 0018, alle
 --            spaeteren Migrationen tragen den Insert bereits mit); 0001-0017 tragen
 --            NULL — sie sind ein BACKFILL aus 0018, kein Vollzugsnachweis.
 select version, filename, applied_at
@@ -41,9 +48,9 @@ order by version;
 
 -- PROBE 1b — Luecklosigkeit der Migrationsnummern
 -- ERWARTUNG: eine Zeile, luecke = false. anzahl_zeilen = erwartete_anzahl UND
---            niedrigste = '0001' UND hoechste = '0020' beweisen zusammen die
+--            niedrigste = '0001' UND hoechste = '0021' beweisen zusammen die
 --            Luecklosigkeit rein arithmetisch (Zeilenzahl = Spannweite+1), OHNE die
---            zwanzig Werte einzeln abzutippen. Die zweite Abfrage listet im
+--            Werte einzeln abzutippen. Die zweite Abfrage listet im
 --            Fehlerfall die FEHLENDEN Nummern explizit, statt nur "luecke = true"
 --            zu melden.
 select
@@ -83,6 +90,13 @@ order by table_name, ordinal_position;
 --            variant IN ('a','b')), projects_variant_b_pair,
 --            projects_ab_test_needs_variant_b. KEIN Unique auf events.event_id —
 --            die geteilte browser/server-eventID IST der Verlustraten-Join.
+--            SEIT 0021 zusaetzlich die Constraints von project_secrets: der CHECK
+--            project_secrets_target_valid (target = 'meta'), der ZUSAMMENGESETZTE
+--            Primaerschluessel (project_id, target) und der Fremdschluessel auf
+--            projects(id) ON DELETE CASCADE. Deren Namen vergibt Postgres selbst; sie
+--            stehen hier bewusst NICHT ausgeschrieben, damit diese Datei keinen Namen
+--            behauptet, den niemand gemessen hat. Die Abfrage ist SCHEMA-weit, also
+--            tauchen sie hier auf — ohne diesen Zusatz saehen sie wie ein Fund aus.
 select rel.relname as tabelle, con.conname,
        pg_get_constraintdef(con.oid) as definition
 from pg_constraint con
@@ -92,11 +106,18 @@ where nsp.nspname = 'public'
 order by rel.relname, con.conname;
 
 -- PROBE 4 — Tabellen, RLS-Status, Policy-Anzahl
--- ERWARTUNG: SECHS Tabellen (projects, domains, project_tokens, events, audit_logs,
---            schema_migrations), ALLE mit rls_aktiv = true. Policy-Zahlen: projects 4,
---            domains 3, project_tokens 2, events 1, audit_logs 0,
---            schema_migrations 0. Summe ZEHN. Die Null-Werte sind Absicht, kein
---            Versaeumnis (s. "APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI").
+-- ERWARTUNG: SIEBEN Tabellen (projects, domains, project_tokens, events, audit_logs,
+--            schema_migrations, project_secrets), ALLE mit rls_aktiv = true.
+--            Policy-Zahlen: projects 4, domains 3, project_tokens 2, events 1,
+--            audit_logs 0, schema_migrations 0, project_secrets 0. Summe ZEHN — die
+--            neue Tabelle traegt KEINE Policy und aendert die Summe deshalb nicht.
+--            Die Null-Werte sind Absicht, kein Versaeumnis (s. "APPEND-ONLY-TABELLEN
+--            BLEIBEN POLICY-FREI" — die Regel nennt project_secrets bewusst nicht in
+--            ihrer Aufzaehlung, s. den Satz am Ende jener Regel).
+--            BEI project_secrets IST DIE NULL DIE TRAGENDE KONTROLLE: unter aktiver
+--            RLS ohne JEDE Policy ist die Geheimnis-Tabelle fuer anon und
+--            authenticated vollstaendig verschlossen. Steht hier je eine Zahl > 0,
+--            ist das KEIN Fortschritt, sondern ein Befund.
 select rel.relname as tabelle,
        rel.relrowsecurity as rls_aktiv,
        count(pol.polname) as policies
@@ -120,9 +141,12 @@ order by tablename, policyname;
 
 -- PROBE 6 — Rollen-Grants
 -- ERWARTUNG: anon, authenticated UND service_role haben volle DML-Rechte auf ALLE
---            SECHS Tabellen, inkl. project_tokens und schema_migrations. Das ist der
---            Supabase-Default und wird NICHT als Schutzschicht gelesen: Isolation und
---            write-only-Gate tragen ausschliesslich ueber RLS.
+--            SIEBEN Tabellen, inkl. project_tokens, schema_migrations UND
+--            project_secrets. Das ist der Supabase-Default und wird NICHT als
+--            Schutzschicht gelesen: Isolation und write-only-Gate tragen
+--            ausschliesslich ueber RLS. Bei project_secrets ist der Kontrast am
+--            schaerfsten — volle Grants, und trotzdem verschlossen, weil keine
+--            einzige Policy existiert.
 select table_name, grantee,
        string_agg(privilege_type, ', ' order by privilege_type) as rechte
 from information_schema.role_table_grants

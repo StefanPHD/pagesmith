@@ -119,6 +119,12 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       mitzudenken: die separat erwähnte generische Action-Consent-Checkbox
       (jede Aktion, nicht nur Tracking, gated) — beide Bedürfnisse sollen auf
       DENSELBEN Mechanismus laufen, nicht zwei parallele Gates entstehen.
+      STAND: Die ERSTE SCHEIBE ist ABGESCHLOSSEN und LIVE BEWIESEN (2026-08-05)
+      — die Umstellung der Geheimnis-Tabelle auf (Projekt, Ziel), ohne jede
+      Verhaltensänderung: Migration 0021, Katalog-Prüfung, Nachhol-Lauf, Code,
+      Live-Test. Die Phase bleibt OFFEN, weil noch KEIN zweites Ziel existiert.
+      Protokoll, Entscheidungen und was diese Scheibe ausdrücklich NICHT
+      beweist: docs/aktiver-stand.md.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.
@@ -270,37 +276,51 @@ kaputtgeht.
 ## Aktueller DB-/Analytics-Stand (Ist-Zustand, kein Konzept)
 Was der nächste Migrations-/Analytics-Schritt als Ausgangslage in der Root findet. Nur
 Ist-Zustand — Herleitung und Entscheidungen: docs/claude-history/phase-8-analytics.md.
-PROVENIENZ: GEMESSEN am 2026-07-30 im SQL-Editor (schema_migrations, information_schema.columns,
-pg_constraint, pg_class+pg_policy, pg_policies, role_table_grants, pg_indexes, pg_proc,
-pg_event_trigger). Die Probe ist versioniert unter supabase/checks/db-stand.sql — vor jedem
-Neuschreiben dieser Sektion dort fahren, nicht frisch tippen. AUCH die Index-DEFINITIONEN sind
-gemessen (indexdef), nicht aus den Migrationsdateien übernommen.
+PROVENIENZ: GEMESSEN am 2026-08-05 im SQL-Editor, nach Migration 0021 (schema_migrations,
+information_schema.columns, pg_constraint, pg_class+pg_policy, pg_policies, role_table_grants,
+pg_indexes, pg_proc, pg_event_trigger). Die Probe ist versioniert unter
+supabase/checks/db-stand.sql — vor jedem Neuschreiben dieser Sektion dort fahren, nicht frisch
+tippen. AUCH die Index-DEFINITIONEN sind gemessen (indexdef), nicht aus den Migrationsdateien
+übernommen. Der vorige Stand dieser Sektion stammte vom 2026-07-30 und war mit 0021 überholt.
 FALLE bei jeder Wiederholung: schema_migrations existiert DREIMAL (public / auth / realtime).
 Jede Katalog-Abfrage MUSS das Schema filtern — sonst liefert sie drei Zeilen mit
 unterschiedlichen RLS-Werten und sieht wie ein Befund aus.
 
-ERGEBNIS DES LAUFS: Alle ZEHN Proben trafen ihre ERWARTUNG exakt, KEINE Abweichung. Das ist
+ERGEBNIS DES LAUFS VOM 2026-07-30 — ausdrücklich DIESEM Datum zugeordnet, damit der Absatz
+nicht als Ergebnis des Laufs vom 2026-08-05 gelesen wird: Alle ZEHN Proben trafen ihre
+ERWARTUNG exakt, KEINE Abweichung. Das ist
 selbst eine Aussage wert — die wahrscheinlichere Alternative wäre ein stiller Drift zwischen
 Doku und Schema gewesen, genau wie er diese Sektion zuvor bereits einmal getroffen hat (die
 zwei Nachtrag-Markierungen aus 9c-1/9c-2, die zwischen 2026-07-28 und diesem Lauf hier
 standen). Beide sind mit diesem Lauf VOLLSTÄNDIG überholt und entfernt; die Sektion unten ist
 wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
 
-- MIGRATIONSSTAND: 0001-0020, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl =
+- MIGRATIONSSTAND: 0001-0021, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl =
   Spannweite+1), nicht nur an der Dateisortierung abgelesen. Seit 0018 existiert
   public.schema_migrations als PROTOKOLL (version PK / filename / applied_at; RLS aktiv, KEINE
-  Policy). Gemessen: 20 Zeilen, applied_at gefüllt bei DREI Zeilen — 0018, 0019, 0020
-  (Protokollpflicht ab 0018; beide späteren Migrationen tragen den Insert bereits selbst mit).
+  Policy). Gemessen: 21 Zeilen, Spannweite 0001-0021; applied_at gefüllt bei 0018, 0019, 0020
+  und 0021 — bei 0021 mit dem 2026-08-05 (Protokollpflicht ab 0018; alle späteren Migrationen
+  tragen den Insert bereits selbst mit).
   EHRLICHE EINORDNUNG: Die Zeilen 0001-0017 sind ein BACKFILL aus 0018, KEIN Vollzugsnachweis —
   ihr applied_at ist bewusst NULL, weil der Ausführungszeitpunkt nicht bekannt ist. Dass sie
   gelaufen sind, belegen ihre WIRKUNGEN (Spalten/Constraints unten), nicht die Tabelle. Ab 0018
   ist der Eintrag ein echtes Protokoll. PROTOKOLL, KEIN STEUERUNGSMECHANISMUS: es gibt keinen
   Migrations-Runner und soll keinen geben (s. "## Immer beachten").
-- TABELLEN in public: SECHS — projects, domains, project_tokens, events, audit_logs,
-  schema_migrations. Bei ALLEN ist RLS aktiv. (Die frühere Zahl "fünf" ist seit 0018 überholt.)
+- TABELLEN in public: SIEBEN — projects, domains, project_tokens, events, audit_logs,
+  schema_migrations, project_secrets. Bei ALLEN ist RLS aktiv. (Die frühere Zahl "sechs" ist
+  seit 0021 überholt und wird ERSETZT, nicht ergänzt — dieselbe Behandlung wie zuvor die
+  überholte "fünf".)
 - POLICIES: ZEHN. projects 4 (select/insert/update/delete); domains 3 (select/insert/update —
   KEINE DELETE); project_tokens 2 (insert/update — KEINE SELECT, das write-only-Gate auf den
-  CAPI-Token); events 1 (events_select_own, SELECT); audit_logs 0; schema_migrations 0.
+  CAPI-Token); events 1 (events_select_own, SELECT); audit_logs 0; schema_migrations 0;
+  project_secrets 0.
+  BEI project_secrets IST DIE LEERE POLICY-LISTE DIE TRAGENDE KONTROLLE — der Satz gehört
+  zwingend dazu, sonst liest jemand die Null als Lücke und "repariert" sie: unter aktiver RLS
+  ohne JEDE Policy ist die Tabelle für anon und authenticated VOLLSTÄNDIG verschlossen, nur
+  service_role kommt durch. Die einzige Schreib-Autorisierung liegt im OWNERSHIP-GATE der
+  Server-Actions. Es ist dieselbe Denkfigur wie bei project_tokens, audit_logs und events,
+  hier aber VERSCHÄRFT: project_secrets ist die GEHEIMNIS-Tabelle, und sie hängt vollständig
+  an dieser Leere.
   Bei events ist das Fehlen der INSERT/UPDATE/DELETE-Policy eine ENTSCHEIDUNG, keine Lücke:
   Writes laufen ausschließlich über service_role (Ingest-Pfad, persistEvent). Der Owner LIEST
   seine Events, er schreibt sie nie. Wer hier eine Write-Policy ergänzt, öffnet den
@@ -314,10 +334,10 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   events_select_own spiegelt die Ownership-ACHSE von projects_select_own 1:1 — EXISTS-Semi-Join
   statt direktem Vergleich, also andere SYNTAX bei gleicher ACHSE. Beide Unterschiede (Kapselung
   und EXISTS) sind bekannt und unbedenklich; eine Divergenz in der ACHSE selbst WÄRE das Leak.
-- ROLLEN-GRANTS: anon, authenticated UND service_role haben volle DML-Rechte auf ALLE SECHS
-  public-Tabellen, inkl. project_tokens und schema_migrations. Die Tenant-Isolation und das
-  write-only-Gate tragen damit AUSSCHLIESSLICH über RLS (s. "## Immer beachten", "GRANTS
-  SCHÜTZEN NICHTS").
+- ROLLEN-GRANTS: anon, authenticated UND service_role haben volle DML-Rechte auf ALLE SIEBEN
+  public-Tabellen, inkl. project_tokens, schema_migrations UND project_secrets. Die
+  Tenant-Isolation und das write-only-Gate tragen damit AUSSCHLIESSLICH über RLS (s. "## Immer
+  beachten", "GRANTS SCHÜTZEN NICHTS").
 - TABELLE public.events: id uuid PK (gen_random_uuid()); project_id uuid FK -> projects
   ON DELETE CASCADE; event_type text; event_id text; source text (KEIN Default); created_at
   timestamptz (now()) — diese SECHS NOT NULL. DAZU: variant text NULLABLE (0017).
@@ -334,9 +354,17 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   (CLIENT-autoritativ, wird von saveProject ganzheitlich ersetzt).
   CONSTRAINTS: projects_variant_b_pair ((html_b IS NULL) = (mappings_b IS NULL));
   projects_ab_test_needs_variant_b (NOT ab_test_active OR html_b IS NOT NULL).
+- TABELLE public.project_secrets (0021, Phase 11 Scheibe 1): project_id uuid; target text;
+  secret text; created_at timestamptz; updated_at timestamptz. PRIMÄRSCHLÜSSEL ist das PAAR
+  (project_id, target) — kein einspaltiger Schlüssel, s. die Footgun-Zeile darunter.
+  FK project_id -> projects(id) ON DELETE CASCADE. KEINE user_id-Spalte.
+  CONSTRAINT project_secrets_target_valid: CHECK (target = 'meta') — der Zielwert ist eng
+  gefasst, jedes weitere Ziel bringt seine EIGENE Constraint-Erweiterung mit.
+  TRIGGER project_secrets_set_updated_at, gebunden an DIESELBE Funktion set_updated_at wie
+  projects und project_tokens — KEINE zweite Implementierung.
 - PRIMÄRSCHLÜSSEL, DIE NICHT "id" HEISSEN (Footgun, real aufgetreten): domains -> label;
-  project_tokens -> project_id; schema_migrations -> version. Vor der Nutzung eines Feldnamens
-  die Migration nachsehen.
+  project_tokens -> project_id; schema_migrations -> version; project_secrets -> das PAAR
+  (project_id, target). Vor der Nutzung eines Feldnamens die Migration nachsehen.
 - INDIZES (gemessen per indexdef):
   events: events_pkey (id); events_project_id_idx (project_id — trägt den äußeren Scan UND die
     Policy); events_project_event_idx (project_id, event_id — 0015, trägt den korrelierten
@@ -349,7 +377,12 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   domains: domains_pkey (label); domains_custom_host_key UNIQUE (custom_host) WHERE custom_host
     IS NOT NULL; domains_project_id_idx (project_id).
   (projects_blocked_idx und domains_project_id_idx waren bisher in KEINER Doku-Zeile erfasst.)
-- FUNKTIONEN in public: FÜNF — gemessen, nicht nachgetragen.
+  project_secrets: AUSSER dem PK KEIN Index. Das ist eine ENTSCHEIDUNG, keine Auslassung: der
+    PK (project_id, target) trägt genau den Zugriff des Lesepfads — eine Gleichheit auf BEIDEN
+    Spalten. Wer hier später einen Index ergänzt, sollte vorher einen Zugriff nennen können,
+    der ihn braucht.
+- FUNKTIONEN in public: FÜNF (2026-08-05 erneut gemessen: unverändert) — gemessen, nicht
+  nachgetragen.
   get_event_counts(p_project_id) -> TABLE(event_type, count), gefiltert auf source='server'
     (0014) — SECURITY INVOKER, stable, search_path=public.
   get_adblock_loss(p_project_id) -> TABLE(total_server_conversions, confirmed_conversions,
@@ -366,7 +399,8 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   rls_auto_enable() — Event-Trigger-Funktion, SECURITY DEFINER, volatile,
     search_path=pg_catalog. NICHT public — das ist korrekt und beabsichtigt, s.
     "## Immer beachten", "DB-FUNKTIONEN + SEARCH_PATH".
-- EVENT-TRIGGER: SIEBEN. ensure_rls (ddl_command_end -> rls_auto_enable, evtowner postgres,
+- EVENT-TRIGGER: SIEBEN (2026-08-05 erneut gemessen: unverändert). ensure_rls
+  (ddl_command_end -> rls_auto_enable, evtowner postgres,
   aktiviert) plus SECHS Supabase-Plattform-Trigger (issue_graphql_placeholder,
   issue_pg_cron_access, issue_pg_graphql_access, issue_pg_net_access, pgrst_ddl_watch,
   pgrst_drop_watch; evtowner supabase_admin). ensure_rls existiert NUR in der laufenden DB, aus
@@ -654,6 +688,11 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   SCHUETZEN NICHTS"), bei audit_logs die Unveraenderlichkeit UND das Rate-Limit, das
   seine Zaehlgrundlage aus genau diesem Log zieht (lib/domains/audit.ts). Wer dort eine
   Policy ergaenzt, macht das Audit faelschbar und das Limit umgehbar.
+  DIESE AUFZAEHLUNG IST NICHT DIE VOLLSTAENDIGE LISTE DER POLICY-FREIEN TABELLEN: Policy-
+  Freiheit kommt im System aus ZWEI verschiedenen Gruenden vor — append-only (diese Regel)
+  UND ausschliesslicher service_role-Zugriff bei service-seitig geschriebenen Tabellen
+  (project_secrets, events). Wer die Liste oben als vollstaendig liest, haelt eine
+  policy-freie Tabelle ausserhalb davon fuer einen Fehler und "repariert" sie.
 - AUDIT-LOG-DISZIPLIN: GENAU EIN Eintrag pro Mutations-AUFRUF, auch bei frueher
   Ablehnung — geschrieben aus einem finally, damit kein Ausgang ihn verliert (Muster:
   register.ts / remove.ts). Nie Doppel-Feuern (verfaelscht das Rate-Limit), nie
@@ -841,6 +880,14 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   steckt im Client-Bundle jeder Seite. Das Sicherheitsnetz dagegen ist der Event-Trigger ensure_rls,
   der beim Rebuild aus den Migrationen NICHT entsteht (s. "## Offene Punkte"). Bei JEDER neuen
   Tabelle: RLS explizit aktivieren und Policies bewusst setzen, NIE auf den Trigger verlassen.
+  ERGÄNZT 2026-08-05 — DAS SCHÄRFERE BEISPIEL, ohne dass am Obenstehenden etwas zurückgenommen
+  wird: project_secrets (0021, die Geheimnis-Tabelle der Phase 11) trägt RLS aktiv und KEINE
+  EINZIGE Policy. Der Unterschied zu project_tokens ist genau der Punkt: project_tokens trägt
+  ZWEI Policies (insert/update), project_secrets trägt KEINE — sie ist damit das REINSTE
+  Beispiel dieser Regel im System. Für anon und authenticated ist sie vollständig
+  verschlossen, obwohl beide per Grant volle DML-Rechte auf ihr haben; die einzige
+  Schreib-Autorisierung liegt im Ownership-Gate der Server-Actions. Wer dort eine Policy
+  ergänzt, gewinnt keinen Schutz, sondern nur dessen Anschein.
 - HOST-ONLY-COOKIES AUF GETEILTEN WILDCARD-DOMAINS (Phase 9): Auf einer
   Serving-Domain, die als Wildcard mehrere Kundenprojekte gleichzeitig
   trägt, bekommt JEDES Cookie NIE ein explizites Domain-Attribut. Ein

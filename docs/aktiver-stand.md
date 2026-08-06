@@ -16,17 +16,18 @@ DIESE DATEI ERÖFFNET DIE PHASE. Sie führt die REIHENFOLGE der Scheiben: (1) di
 Umstellung der Geheimnis-Tabelle — ABGESCHLOSSEN und live bewiesen, (2) das
 geteilte Consent-Gate — ABGESCHLOSSEN und live bewiesen, (3) der PageView-Emitter
 hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) die NAHT des
-Meta-Forwards — ZUGESCHNITTEN, noch nicht gebaut, (5) der Forward löst sich von
+Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) der Forward löst sich von
 der ANTWORT — PLATZHALTER, (6) Pinterest als erstes zusätzliches Ziel —
 PLATZHALTER. Die Zuschnitte stehen unter "### Der
 Zuschnitt der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge", "## Die
 zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)", "## Die dritte
 Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)" und "## Die vierte
-Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)"; was die DREI
+Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)"; was die VIER
 abgeschlossenen Scheiben tatsächlich ergeben haben, unter "### Protokoll der
 ersten Scheibe — Vollzug und Abschluss", "### Protokoll der zweiten Scheibe —
-Vollzug und Abschluss" und "### Protokoll der dritten Scheibe — Vollzug und
-Abschluss". Verwiesen wird auf Überschriften, nicht auf Positionen: "am Ende"
+Vollzug und Abschluss", "### Protokoll der dritten Scheibe — Vollzug und
+Abschluss" und "### Protokoll der vierten Scheibe — Vollzug und Abschluss".
+Verwiesen wird auf Überschriften, nicht auf Positionen: "am Ende"
 wandert mit jedem angehängten Abschnitt mit, ohne dass jemand es merkt.
 
 **DIE ZÄHLUNG HAT SICH AM 2026-08-06 VERSCHOBEN** — der PageView-Emitter war bis
@@ -1884,46 +1885,15 @@ Features:
 
 ### Der Zuschnitt der vierten Scheibe
 
-**IN DIESER SCHEIBE:** Der Meta-Forward wird aus dem Kontrollfluss von
-`handleIngest` in eine EIGENE server-only-Datei mit EINER benannten Funktion
-gelöst. Sonst nichts.
+**VERDICHTET AM 2026-08-06, NACH DEM ABSCHLUSS.** Was hier stand, waren zu grossen
+Teilen ANWEISUNGEN FÜR DIESEN EINEN BAU — der Umzugs- und der Bleibe-Katalog, die
+sechs Verhaltens-Invarianten als Review-Massstab, der Neutralitäts-Beweis samt
+seiner Stopp-Bedingung und die Ausschlussliste. Sie sind mit dem Protokoll
+abgelaufen und dort in ihrem Ergebnis festgehalten (s. "### Protokoll der vierten
+Scheibe — Vollzug und Abschluss"). **WAS STEHEN BLEIBT, BINDET KÜNFTIGE ARBEIT** —
+das zweite Ziel wird gegen genau diese vier Entscheidungen geplant.
 
-**WAS MIT UMZIEHT:**
-- der URL-Bau samt `META_GRAPH_VERSION` und dem Token im Query-String,
-- die Zusammensetzung der Nutzlast mit Metas Feldnamen (`data`, `event_name`,
-  `event_time`, `event_id`, `action_source`, `user_data`, `custom_data`,
-  `event_source_url`) UND den Typprüfungen, die zu diesen Feldern gehören,
-- die Zeiteinheit (Sekunden),
-- das Timeout-/Abbruch-Gerüst um genau diesen Aufruf,
-- `META_TEST_EVENT_CODE` an der Stelle, an der es die Nutzlast ergänzt,
-- der Fehler-Envelope und seine Deutung: `MetaErrorBody`, `describeMetaError`,
-  `META_ERROR_MSG_MAX`, `asLogValue`.
-
-**WAS AM PLATZ BLEIBT:** Body-Read und 400-Guard · das 204-Containment (`status`,
-`CORS_HEADERS`) · die trackingKey-Auflösung · der Kill-Switch-Zweig · der frühe
-Return des Confirm-Zweigs · das Varianten-Lesen · die Persist-Einplanung
-(`schedulePersist`) · das `isForwardable`-Gate.
-**DASS `isForwardable` BLEIBT, IST EINE ENTSCHEIDUNG UND KEIN VERSEHEN:** Es ist
-heute Meta-gebunden (sein eigener Kommentar sagt es), aber es entscheidet, OB
-überhaupt geforwardet wird — es gehört damit auf die Seite des Handlers, nicht in
-den Adapter. Wer es mitnimmt, verlagert eine Verzweigung des Kontrollflusses in
-etwas, das nur senden soll.
-
-**DIE VERHALTENS-INVARIANTEN, nummeriert — sie sind der Massstab des Reviews:**
-1. **DIE SEQUENZ ÄNDERT SICH NICHT.** Die Antwort steht weiterhin HINTER dem
-   Forward. Die Entkopplung ist die FÜNFTE Scheibe, nicht diese.
-2. **DIE NAHT WIRFT NIE.** Das 204-Containment gilt unverändert in JEDEM Pfad —
-   auch das Fehler-Gerüst selbst darf nicht nach aussen werfen.
-3. **TIMEOUT-WERT UND DECKELUNGS-MECHANIK BLEIBEN IDENTISCH.**
-4. **KEIN LOG FÜHRT URL ODER TOKEN.** Die URL trägt den Token im Query-String;
-   diese Zusage ist der Grund, warum die bestehende Log-Disziplin mit umzieht und
-   nicht neu geschrieben wird.
-5. **DER DRAHT-PAYLOAD IST GLEICH:** gleiche Feldnamen, gleiche Bedingungen für
-   das Weglassen optionaler Felder, gleiche Zeiteinheit.
-6. **DIE ROUTEN-PARITÄT BLEIBT:** `/api/e` und `/api/capi` exportieren weiterhin
-   DIESELBEN Funktionsreferenzen.
-
-**KEINE ABSTRAKTION: EINE DATEI, EINE FUNKTION, META IM NAMEN.** Kein Interface,
+**(1) KEINE ABSTRAKTION: EINE DATEI, EINE FUNKTION, META IM NAMEN.** Kein Interface,
 kein Array von Zielen, kein Registry-Punkt.
 BEGRÜNDUNG, die zwingend dazugehört, sonst wird die fehlende Verallgemeinerung
 später als halbe Arbeit gelesen: **Bei genau EINEM Fall ist ein benanntes
@@ -1934,8 +1904,8 @@ Projektregel wie bei der Geheimnis-Tabelle ("Abstraktion erst bei 2+ realen
 Fällen"), und die Auflage aus Frage (g) sagt bereits, woran eine zu früh
 geratene Form zerbräche: an LinkedIn.
 
-**DIE RÜCKGABEFORM BLEIBT UNVERÄNDERT WIE HEUTE; DAS LOGGING LIEGT IN DER NAHT.**
-Kein Ergebnistyp, kein Erfolgs-/Fehlschlag-Wert.
+**(2) DIE RÜCKGABEFORM BLEIBT UNVERÄNDERT WIE HEUTE; DAS LOGGING LIEGT IN DER
+NAHT.** Kein Ergebnistyp, kein Erfolgs-/Fehlschlag-Wert.
 BEGRÜNDUNG: Ein Ergebnistyp verschöbe die Log-Stelle in den Handler zurück und
 bräche damit genau die Neutralität, die diese Scheibe beweisen soll — der
 Handler bekäme eine Fallunterscheidung, die er heute nicht hat. **Die Frage, ob
@@ -1944,45 +1914,38 @@ zur unsichtbaren Forward-Abweisung geparkt** (s. "#### Der Token-Zwischenfall �
 die stille Fehlerklasse, zum ERSTEN MAL beobachtet"). Sie wird hier NICHT
 vorentschieden und auch nicht nebenbei mitgebaut.
 
-**DER NEUTRALITÄTS-BEWEIS: DIE BESTEHENDEN TESTS DIESES PFADES LAUFEN
-UNVERÄNDERT DURCH.** Eine Anpassung auch nur EINES Tests ist eine
-**STOPP-BEDINGUNG** und wird VORGELEGT, nicht nachgezogen. Grund: Diese Scheibe
-behauptet, nichts am Verhalten zu ändern. Ein angepasster Test ist entweder der
-Beweis, dass die Behauptung nicht stimmt — oder der Beweis, dass der Test am
-Bau statt an der Sache hing. Beides muss gesehen werden, bevor es verschwindet.
-**GEMESSEN AM 2026-08-06 (read-only), was diese Erwartung STÜTZT — an SECHS
-namentlich genannten Dateien, nicht an "allen":** `ingest.persist.test.ts`,
-`ingest.timeout.test.ts`, `ingest.confirm.test.ts`, `ingest.forwardable.test.ts`,
-`ingest.variant.test.ts` (alle in `src/lib/capi/`) und
-`src/app/api/capi/route.test.ts`. Jede von ihnen mockt ausschliesslich über
-MODUL-PFADE (`server-only`, `@/lib/capi/token`, `@/lib/capi/config`,
-`next/server`, `@/lib/analytics/persist`) und prüft die Wirkung über
-`global.fetch`. Ein Modul-Pfad-Mock greift unabhängig davon, WELCHE Datei
-importiert — eine neue Datei in der Kette ändert daran nichts.
+**(3) DIE GRENZE: DIE NAHT BEKOMMT FERTIGE NEUTRALE WERTE, KEIN REQUEST-OBJEKT
+(ENTSCHEIDUNG OWNER, 2026-08-06).** `clientIp: string | undefined` und
+`userAgent: string` reisen als Argumente; `resolveClientIp` und
+`isLoopbackOrEmpty` BLEIBEN im Handler, samt dem `META_TEST_EVENT_CODE`-Zweig —
+dessen Gegenstand ist der Tracking-Testmodus und wurde hier NICHT
+mitentschieden. Ermittelt werden beide Werte INNERHALB der Forward-Bedingung,
+also genau dann wie bisher.
+**DER PREIS STEHT DABEI, sonst wird die Entscheidung später für eine Unsauberkeit
+gehalten:** Ein Meta-eigener Zweig bleibt im Handler, und dessen JSDoc nennt
+weiterhin einen Meta-Payload-Feldnamen (s. Befund (b) im Protokoll).
+**WAS SIE BINDET:** Ein zweiter Adapter bekommt IP und User-Agent EBENFALLS
+fertig — er importiert sie nicht vom ersten und löst sie nicht selbst auf. Sonst
+entstünden zwei Auflösungswege für dieselbe Frage.
 
-**ZWEI GRENZEN DIESER STÜTZE, ausdrücklich:**
-- **DIE ERHOBENE MENGE IST KLEINER ALS DIE MENGE DER TESTS AUF DIESEM PFAD.**
-  NICHT erhoben sind `src/app/api/ingest-parity.test.ts` und
-  `src/lib/capi/token.test.ts` — beide berühren den Pfad — sowie die
-  client-seitigen `src/lib/tracking/meta.confirm.test.ts` und
-  `src/lib/generate.test.ts`, die den Server-Forward nicht prüfen. Für diese vier
-  ist die Aussage oben NICHT geprüft, weder positiv noch negativ.
-- **SIE SAGT NUR, DASS DIE MOCKS TRAGEN.** Sie sagt NICHT voraus, dass der Bau
-  keinen Import vergisst — sie nimmt dem Beweis nur seine unwahrscheinlichste
-  Ausrede.
-
-**AUSDRÜCKLICH NICHT IN DIESER SCHEIBE, je mit Grund:**
-- **DIE ENTKOPPLUNG VON DER ANTWORT.** Eigene, direkt folgende Scheibe (Invariante
-  1). Zusammengebaut wäre bei einem Fehlschlag nicht erkennbar, welche Hälfte ihn
-  verursacht hat — und der Neutralitäts-Beweis wäre nicht mehr führbar.
-- **PINTEREST ODER EIN ZWEITES ZIEL.** Es ist die SECHSTE Scheibe.
-- **JEDE VERALLGEMEINERUNG** — s. "KEINE ABSTRAKTION".
-- **DAS WIRE-FELD.** Unverändert der Grund aus der zweiten und dritten Scheibe:
-  nötig erst ab dem zweiten Ziel.
-- **DER GEMEINSAME ABLAGEORT FÜR ZIEL-NAMEN.** Backlog, und beim zweiten Ziel
-  eine echte Frage.
+**(4) DAS GATE GEHÖRT DEM HANDLER, NICHT DEM ADAPTER.** `isForwardable` ist heute
+Meta-gebunden (sein eigener Kommentar sagt es), aber es entscheidet, OB überhaupt
+geforwardet wird — eine Verzweigung des Kontrollflusses. Wer sie in den Adapter
+zieht, macht aus einer Sende-Funktion eine, die auch noch entscheidet.
+**DIESER PUNKT STAND NICHT AUF DER KANDIDATENLISTE DES OWNERS FÜR "WAS BLEIBT" UND
+WIRD HIER ERGÄNZT**, weil er das zweite Ziel unmittelbar bindet: dort ist neu zu
+beantworten, ob EIN Gate für alle Ziele entscheidet oder JEDES Ziel sein eigenes
+bekommt — und diese Frage lässt sich nicht stellen, wenn die Regel verschwunden
+ist, dass das Gate beim Handler liegt.
 
 ### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
+
+**ALLE DREI FRAGEN SIND EINGELÖST AM 2026-08-06** — durch die Stufe-1-Erhebung und
+die Owner-Entscheidungen darauf; die Antworten stehen unter "### Protokoll der
+vierten Scheibe — Vollzug und Abschluss" und in den vier verdichteten
+Entscheidungen darüber. Die Fragen bleiben unverändert stehen: Sie sind der
+MASSSTAB, an dem der Plan gemessen wurde — ohne sie wäre nicht mehr erkennbar,
+WAS beantwortet worden ist.
 
 Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
 
@@ -2003,8 +1966,229 @@ Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
   werden heute mit demselben Helfer geprüft — die Trennlinie läuft mitten durch
   diese Prüfungen.
 
+**EINGELÖST AM 2026-08-06** — der Protokollblock existiert jetzt, s. "### Protokoll
+der vierten Scheibe — Vollzug und Abschluss". Der Satz darunter bleibt unverändert
+stehen: er hält fest, dass Zuschnitt und Protokoll von Anfang an getrennt geführt
+wurden, nicht erst nachträglich sortiert.
+
 **KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
 dem Bau, getrennt vom Zuschnitt, wie bei den ersten drei Scheiben.
+
+### Protokoll der vierten Scheibe — Vollzug und Abschluss
+
+Der Zuschnitt darüber ist der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+**DIE BUCHSTABEN IN DIESEM PROTOKOLL SIND LOKAL** und haben nichts mit denen des
+Zuschnitts zu tun — dieselbe Handschrift wie bei den Protokollen der zweiten und
+dritten Scheibe.
+
+**ABGESCHLOSSEN AM 2026-08-06 — DER META-FORWARD LIEGT IN EINER EIGENEN NAHT, IST
+GEBAUT, DEPLOYT UND LIVE GEPRÜFT.**
+
+**DER BAU, gemessen am eigenen Lauf:**
+- Neue Datei `src/lib/capi/meta-forward.ts` mit EINER exportierten Funktion
+  `forwardToMeta`. Umgezogen sind URL-Bau, Nutzlast samt Metas Feldnamen und deren
+  Typprüfungen, die Zeiteinheit, das Timeout-/Abbruch-Gerüst
+  (`META_FORWARD_TIMEOUT_MS`) und die Fehlerdeutung (`MetaErrorBody`,
+  `describeMetaError`, `META_ERROR_MSG_MAX`, `asLogValue`).
+- Am Platz geblieben sind Body-Read und 400-Guard, das 204-Containment (`status`,
+  `CORS_HEADERS`), die trackingKey-Auflösung, der Kill-Switch-Zweig, der frühe
+  Return des Confirm-Zweigs, das Varianten-Lesen, `schedulePersist` und das
+  `isForwardable`-Gate.
+- **DIE SEQUENZ IST UNBERÜHRT:** das `await` steht weiterhin im Handler, die leere
+  204 dahinter. Die Ablösung von der Antwort ist die FÜNFTE Scheibe.
+- **DER NEUTRALITÄTS-BEWEIS IST GEFÜHRT:** 40 Testdateien, **716 Tests vor dem Bau
+  und 716 danach, KEINER angepasst**; `tsc --noEmit`, `eslint` und `next build`
+  grün. PROVENIENZ: lokaler Lauf am 2026-08-06. GRENZE: Die Suite kennt kein
+  Postgres und spricht nie mit Meta (`fetch` ist in allen Tests dieses Pfades
+  gemockt) — sie beweist Verdrahtung und Nutzlast-Form, nicht Zustellung.
+- Ein Zwischenstand ist eigens gemessen worden: **nach dem Anlegen der neuen Datei
+  und VOR jeder Änderung an `handleIngest` lief die Suite unverändert grün** — der
+  additive No-op-Zustand ist damit belegt, nicht behauptet.
+
+**DIE ZWEI PFLICHT-MUTATIONEN, beide ROT:**
+- Feldname im Nutzlast-Bau verfälscht (`event_name` -> `event_nam`): **2 Dateien,
+  10 Tests** — `src/app/api/capi/route.test.ts` (Happy-Path) und alle NEUN
+  `(b2)`-Fälle in `src/lib/capi/ingest.forwardable.test.ts`.
+- Die Forward-URL in die Fehlermeldung des `catch` aufgenommen: **1 Datei, 1 Test**
+  — `src/lib/capi/ingest.timeout.test.ts`, an der Zusicherung, dass weder Token
+  noch `graph.facebook.com` im Log erscheinen.
+Nach jeder Rücknahme wurden `git status` und `git diff --numstat` geprüft; beide
+Male exakt zwei Einträge mit identischen Zeilenzahlen, kein leerer Diff.
+
+**DIE FORMALE GEGENPROBE** (`grep` in `src/lib/capi/ingest.ts` nach zehn
+Meta-Payload-Begriffen) ergab **DREI Treffer statt der erwarteten null** — s.
+Befund (b).
+
+**DIE LIVE-WERTE, gemeldet von Stefan am 2026-08-06 gegen das deployte
+Produktions-Deployment.** Keiner davon ist abgeleitet.
+- **(1) REGRESSION — der eigentliche Beweis der Scheibe.** Auf einer Seite mit
+  Pixel-ID und gültigem Token eine Conversion ausgelöst; die Beacons gingen an
+  `/api/e` raus. Im Meta Events Manager erschien das Ereignis als **PAAR** (Browser
+  UND Server) und wurde unter der geteilten eventID **dedupliziert**. **OHNE
+  Republish** — und genau das ist der Teil, den kein anderer Schritt trägt: eine
+  BESTEHENDE, nicht neu veröffentlichte Seite läuft unverändert weiter.
+- **(2) PAGEVIEW-ISOLATION.** Reiner Seitenaufruf, Anfrage an `/api/e` mit
+  `event = __ps_pageview`, **KEIN** Server-Ereignis im Events Manager. Das
+  `isForwardable`-Gate greift also weiterhin im Handler. **NACH einem Republish**
+  gemessen, Grund s. Beobachtung (B).
+- **(3) OHNE FORWARD-KONFIGURATION.** Ein Projekt mit gesetzter Pixel-ID, aber OHNE
+  Token: Der Purchase-Beacon ging ab und wurde mit 204 quittiert; im Events Manager
+  erschien das Ereignis **NUR als Browser-Ereignis**, kein Server-Ereignis. Der
+  Handler geht bei `capiConfig === null` also nicht in die Naht.
+**DIE ANGABE "OHNE REPUBLISH" GILT NICHT FÜR ALLE DREI SCHRITTE** — sie steht
+deshalb je Schritt und nicht im Kopf. Wer sie pauschal liest, hält Schritt 2 für
+einen Nachweis, den er nicht führt.
+**NICHT ZURÜCKGEMELDET und deshalb hier auch nicht behauptet:** ein Abgleich des
+Deployment-Hashes im Vercel-Dashboard. Der gepushte Stand ist `8ccdf2a`; dass das
+geprüfte Deployment genau diesen trug, ist NICHT gemessen worden.
+
+#### Zwei Beobachtungen zur Messung selbst — der wertvollere Teil dieses Protokolls
+
+Beide betreffen Fehlerfiguren, die wiederkehren, und stehen deshalb als eigener
+Block und nicht als Fussnote zu den Werten.
+
+**(A) DER ERSTE ANLAUF VON SCHRITT 3 HAT SEINE ACHSE NICHT ERREICHT.** Das steht
+hier, OBWOHL der Schritt inzwischen bestanden ist — der bestandene zweite Anlauf
+macht den ersten nicht ungeschehen, er macht ihn lehrreich.
+Geprüft wurde zuerst ein Projekt OHNE Pixel-ID **und** ohne Token. Ohne Pixel-ID
+wird die Meta-Laufzeit gar nicht erst in die Seite injiziert; es entstand nie ein
+Conversion-Beacon, der den Handler hätte erreichen können. Beobachtet wurde allein
+der Seitenaufruf. **Das Verhalten war korrekt, der Schluss wäre falsch gewesen: eine
+FALSCHE ENTWARNUNG, kein falscher Alarm** — und das ist die teurere Richtung, weil
+sie wie ein bestandener Test aussieht.
+**DIE ANLEITUNG TRUG DEN FEHLER, NICHT DIE AUSFÜHRUNG.** Sie sagte "ohne
+hinterlegten Token" und benannte nicht, dass die Pixel-ID gesetzt bleiben MUSS,
+damit überhaupt ein Beacon entsteht. Eine Voraussetzung, die der Schritt braucht,
+aber nicht nennt, wird beim Ausführen weggelassen — und niemandem fällt es auf.
+**DIE ARCHITEKTUR-SEITE GEHÖRT DAZU:** Der Owner wollte den Schritt zuerst aus dem
+Diff HERLEITEN (der `if`-Kopf ist unverändert, der Zweig ist unit-gedeckt) statt
+ihn zu wiederholen. Der Einwand kam von Stefan und war richtig: **eine Messung, die
+billig ist, wird nicht durch eine Herleitung ersetzt.** Die Herleitung war
+schlüssig — und hätte trotzdem nichts über die deployte Laufzeit gesagt.
+
+**(B) SCHRITT 2 LIEF NACH EINEM REPUBLISH**, und das gehört ins Protokoll statt in
+den Verlauf. Im Kopf der ausgelieferten Seite stand noch ein Consent-Script aus
+einem früheren Test, das den Seitenaufruf unterdrückt hätte. "Kein Server-Ereignis"
+hätte dann das **CONSENT**-Gate gemessen statt des **FORWARD**-Gates — dieselbe
+Fehlerfigur wie (A), nur in der anderen Richtung: der Schritt wäre bestanden
+worden, ohne seine Achse je berührt zu haben.
+**WAS DER REPUBLISH DER MESSUNG NIMMT UND WAS NICHT:** Für Schritt 2 nichts —
+geprüft wurde eine reine SERVER-Entscheidung, und der Emitter erzeugt seinen Beacon
+unabhängig davon, wann die Seite publiziert wurde. Nicht mehr mit abgedeckt ist
+allein, dass eine BESTEHENDE, nicht neu veröffentlichte Seite unverändert
+weiterläuft. **Diese Achse trägt Schritt 1**, der ohne Republish lief — deshalb
+kostet der Republish hier nichts.
+**DER SATZ, DER BLEIBT:** Ein Live-Test-Schritt prüft nicht nur seine Achse, er
+SETZT EINEN ZUSTAND DER SEITE VORAUS. Vor dem Schritt ist zu prüfen, ob im
+ausgelieferten HTML etwas steht, das die geprüfte Wirkung VOR der geprüften Stelle
+abfängt.
+
+#### Die Abweichung von der Byte-Gleichheit — eine, und sie steht hier
+
+Die Scheibe hat zugesagt, den Rumpf WÖRTLICH zu übernehmen. Für die ANWEISUNGEN ist
+das eingehalten; für ihre REIHENFOLGE an genau einer Stelle nicht:
+**Die Berechnung von `eventTime` liegt jetzt HINTER dem Ermitteln von `clientIp`
+und `userAgent`, vorher lag sie davor.** Ursache ist die Grenz-Entscheidung: die
+beiden Werte werden im Handler ermittelt, `eventTime` erst in der Naht.
+**WIRKUNG, eingeordnet und nicht kleingeredet:** `event_time` wird um
+Mikrosekunden später gelesen und kann dadurch in seltenen Fällen um EINE SEKUNDE
+abweichen von dem, was die alte Reihenfolge geliefert hätte. Folgenlos —
+`event_time` ist nicht der Dedup-Schlüssel (das ist `event_id`), und Metas
+Annahmefenster liegt bei Tagen.
+**WARUM DAS HIER STEHT UND NICHT IM CODE:** Der Befund trägt keine Regel für die
+Zukunft — die beiden Berechnungen sind voneinander unabhängig, und wer die
+Reihenfolge später wieder ändert, ändert nichts. Ein Kommentar an der Fundstelle
+wäre eine Episode ohne Konsequenz. Der richtige Ort für eine Abweichung von einer
+ZUSAGE ist das Protokoll, das gegen diese Zusage misst.
+
+#### Fünf Befunde, die diese Scheibe hinterlässt
+
+**(a) DIE UNGESICHERTE `asString`-KOPIE.** Der Helfer existiert jetzt zweimal:
+einmal in `handleIngest` (Pflichtfeld-Prüfung, Confirm-Marker, `resolveClientIp`),
+einmal privat in `meta-forward.ts` (optionale Nutzlast-Felder). **Gekoppelt sind
+sie allein durch Kommentare, die einander nennen und ausdrücklich sagen, dass KEIN
+TEST ihre Gleichheit hält.** Bewusst getragen: die saubere Lösung wäre eine dritte,
+neutrale Datei gewesen und lag ausserhalb des Zuschnitts. **Die dritte Kopie kommt
+mit dem zweiten Ziel — und DANN wird die neutrale Datei richtig**, weil aus zwei
+Fällen drei werden und die Abstraktionsregel des Projekts sie deckt.
+
+**(b) DIE GEGENPROBE ERGAB DREI TREFFER STATT KEINEM.** Erwartet war, dass in
+`src/lib/capi/ingest.ts` kein Meta-Payload-Begriff mehr vorkommt. Gefunden wurden
+drei: zwei KOMMENTARE (im Kopf von `CapiRequestBody` und im JSDoc von
+`resolveClientIp`) und ein CLIENT-Body-Feldname (`_fbp` in `CapiRequestBody`, das
+Feld des Beacons, nicht Metas `user_data.fbp`). **Im CODE steht kein
+Meta-Payload-Feldname mehr.** Der Treffer im JSDoc von `resolveClientIp` ist der
+sichtbare Preis der Grenz-Entscheidung: Die IP-Auflösung bleibt beim Handler und
+beschreibt ihre Wirkung notgedrungen in Metas Vokabular.
+
+**(c) DIE MUTATIONS-VORHERSAGE WAR ZU ENG — und das ist ein Befund, kein
+Nebensatz.** Vorhergesagt war, dass GENAU EINE Testdatei fällt; gefallen sind ZWEI
+mit zehn Fällen, weil `ingest.forwardable.test.ts` die Nutzlast ebenfalls
+inspiziert. **Der daraus abgeleitete Melde-Punkt "der Draht-Payload ist ein
+Einzelstück" ist damit WIDERLEGT und erledigt** — es braucht keinen
+Kommentar-Nachtrag in `route.test.ts`. Dies ist das zweite Mal in dieser Phase,
+dass eine Mutations-Vorhersage in die günstige Richtung falsch war.
+
+**(d) DER CONVERSION-BEACON HAT ALS EINZIGER KEINEN keepalive-FALLBACK.**
+`buildCapiBeaconStatement` ruft `navigator.sendBeacon`, **liest dessen Rückgabewert
+nicht** und hat keinen `fetch`-Fallback — anders als `buildPixelConfirmStatement`
+und `buildPageViewScript`, die beide den Rückgabewert prüfen und mit
+`keepalive: true` nachfassen. Nach dem Buchstaben der Projektregel ist das kein
+Verstoss (`sendBeacon` IST der navigationssichere Weg), aber ausgerechnet der
+Beacon, der die Conversion trägt, ist der einzige ohne Rückfallweg. Erhoben am
+2026-08-06, AUSSERHALB dieser Scheibe. **Backlog-Kandidat, hier nur benannt.**
+
+**(e) WAS INVARIANTE 1 SCHÜTZT, IST EIN NEBENEFFEKT DER MOCK-STRATEGIE — und das
+BINDET DIE FÜNFTE SCHEIBE.** Dieser Befund steht nicht auf der Liste des Auftrags
+und wird ergänzt, weil er die direkt folgende Scheibe unmittelbar trifft. Gemessen
+am 2026-08-06: **Kein Test behauptet "die Antwort steht hinter dem Forward".** Rot
+würden bei einer Verlegung in den Hintergrund-Mechanismus trotzdem drei Stellen —
+`route.test.ts` (dort ist `after` ein reines No-op, die Callbacks laufen nie),
+`ingest.persist.test.ts` (Test „(d) ISOLATION" prüft `fetch` VOR `runScheduled()`)
+und alle drei Tests in `ingest.timeout.test.ts` (sie greifen unmittelbar auf
+`mock.calls[0]` zu). NICHT rot würden `ingest.confirm.test.ts` (ruft
+`runScheduled()` vorher) und die überwiegend negativen Prüfungen in
+`ingest.forwardable.test.ts` und `ingest.variant.test.ts`.
+**FOLGE FÜR DIE FÜNFTE SCHEIBE:** Diese drei Stellen werden dort rot — als
+ERWARTETER Beweis, nicht als Fehlschlag. Wer das nicht vorher weiss, liest einen
+gelungenen Bau als Regression und zieht die falsche Konsequenz.
+
+#### Was diese Scheibe ausdrücklich NICHT geleistet hat
+
+- **DIE ABLÖSUNG DES FORWARDS VON DER ANTWORT.** Die Sequenz ist unverändert; das
+  `await` steht. FÜNFTE Scheibe.
+- **KEINE LATENZ-MESSUNG.** Sie ist unverändert, weil die Sequenz unverändert ist —
+  aber gemessen wurde sie nicht. Die Messung gehört zur fünften Scheibe und misst
+  gegen die Roh-Werte unter "## Der Messbefund, der die Reihenfolge der Scheiben 4
+  bis 6 trägt".
+- **KEINE VERALLGEMEINERUNG.** Eine Datei, eine Funktion, Meta im Namen.
+- **DAS WIRE-FELD FEHLT WEITERHIN**; nötig ab dem zweiten Ziel.
+- **DER GEMEINSAME ABLAGEORT FÜR ZIEL-NAMEN** bleibt Backlog.
+- **DER ÜBERHOLTE KOMMENTARKOPF von `src/app/api/e/route.ts`** ("Heute nur
+  Meta-CAPI-Forward; Phase-8-Persistenz haengt sich spaeter ADDITIV in denselben
+  Trichter") ist doppelt überholt und wurde bewusst NICHT angefasst — eigene Runde.
+
+#### Vier Hebungskandidaten für CLAUDE.md — BENANNT, NICHT GEHOBEN
+
+Die Entscheidung darüber fällt am Phasenende.
+
+**(a) EINE ANLEITUNG, DIE EINE VORAUSSETZUNG NICHT NENNT, ERZEUGT EINE FALSCHE
+ENTWARNUNG.** Verwandt mit der bestehenden Regel über Live-Test-Instrumente, aber
+auf einer anderen Achse: Dort reisst das INSTRUMENT die Voraussetzung mit, hier
+nennt die ANLEITUNG sie nicht — und der Ausführende kann nicht wissen, dass sie
+fehlt.
+
+**(b) EINE BILLIGE MESSUNG WIRD NICHT DURCH EINE HERLEITUNG ERSETZT.** Eine
+schlüssige Herleitung aus dem Diff sagt nichts über die deployte Laufzeit. Der
+Einwand kam vom Owner-Gegenüber und hat sich als richtig erwiesen.
+
+**(c) EIN LIVE-TEST-SCHRITT SETZT EINEN ZUSTAND DER SEITE VORAUS.** Vor dem Schritt
+prüfen, ob im ausgelieferten HTML etwas steht, das die geprüfte Wirkung VOR der
+geprüften Stelle abfängt.
+
+**(d) EINE MUTATIONS-VORHERSAGE KANN IN BEIDE RICHTUNGEN FALSCH SEIN** — bereits
+aus der dritten Scheibe als Kandidat notiert, hier **zum zweiten Mal eingetreten**.
+Das ist kein neuer Kandidat, sondern ein zweiter Beleg für denselben.
 
 ---
 

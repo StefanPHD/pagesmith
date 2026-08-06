@@ -241,6 +241,16 @@ Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
 - **Geschützte INVARIANTEN, nummeriert und wörtlich benannt.** Nicht „die Doku
   beachten", sondern die konkrete Regel im Wortlaut — nur so ist der Check
   sichtbar und prüfbar.
+
+  **EINE SCOPE-INVARIANTE SCHÜTZT AUCH DIE AUSSAGE ÜBER DAS GESCHÜTZTE.**
+  „Datei X wird nicht angefasst" friert nicht nur ihren Code ein, sondern auch
+  ihren Kommentarkopf — und der beschreibt oft genau das Verhalten, das die
+  Scheibe gerade ändert. Ein falscher Kommentar neben seinem Gegenbeweis fällt
+  niemandem auf, weil dort niemand sucht.
+  **AUFLAGE:** Wer eine Datei unter Scope-Schutz stellt, nimmt ihren
+  Kommentarkopf ausdrücklich aus, sobald die Scheibe dessen Gegenstand berührt —
+  als PRÜFEN UND MELDEN, nicht als ändern. Die Änderung bleibt eine eigene
+  Entscheidung.
 - **STOPP-BEDINGUNGEN, explizit:** wann CC abbrechen und vorlegen muss.
   Auslegungsregel: Eine Stopp-Bedingung schützt vor einer **Handlung** — ordnen
   andere Anweisungen dieselbe Unterlassung ohnehin an und hat CC nichts getan,
@@ -335,19 +345,15 @@ Arbeitsweise, keine Repo-Regel.
 Prompt, die du aus einem Dokument hast statt aus einer Messung. Alles
 Ungeprüfte geht als **Frage** in den Prompt, nicht als Vorgabe.
 
-**Sie gilt für JEDEN Prompt, nicht nur für Bau-Prompts.** Die engere Lesart
-war nie beschlossen, sie hat sich eingeschlichen — und gebrochen wurde die
-Regel fast immer in Doku- und Plan-Runden. Dort ist ein falscher Satz teurer
-als im Bau-Prompt: Den Bau-Prompt prüft CC am Code, das entstehende Dokument
-prüft niemand mehr.
+**Sie gilt für JEDEN Prompt, nicht nur für Bau-Prompts.** Ein falscher Satz
+wiegt dort schwerer als im Bau-Prompt: Den Bau-Prompt prüft CC am Code, das
+entstehende Dokument prüft niemand mehr.
 
 **Ein Dokument ist keine Messung, auch wenn es sagt, es sei eine.** Eine
 Angabe, die einmal erhoben und seither zusammengefasst wurde, ist Zweithand,
-und Provenienz verfällt lautlos über jede Zusammenfassung. Eine Übergabe hat
-eine Beschreibung weitergereicht, die am Code nicht mehr stimmte, und an
-anderer Stelle eine offene Frage geführt, die im Original nie stand — die
-Zusammenfassung war nicht ungenauer als das Original, sie enthielt etwas
-anderes.
+und Provenienz verfällt lautlos über jede Zusammenfassung. Und eine
+Zusammenfassung ist nicht nur potenziell UNGENAUER als das Original — sie
+kann etwas ENTHALTEN, das dort nie stand.
 
 **Der Test im Moment des Schreibens:** *Woher weiss ich das?* Lautet die
 Antwort „steht in einem Dokument" statt „wurde in dieser oder der vorigen
@@ -362,12 +368,10 @@ den Text, nicht die Bilanz. Aber was ein Dokument SAGT, ist keine Bilanz.**
 Der Ausnahmesatz meint Kennzahlen ÜBER Dokumente — Zeilenzahlen,
 Diff-Bilanzen, „geht die Arithmetik auf". Er meint NICHT Aussagen darüber,
 WAS in einem Dokument steht. Die sind Prämissen, auf denen eine ganze Runde
-aufbaut: Ein Prompt behauptete, die Standdatei führe zwei Fragen als offen
-und widerspreche sich — die Fragen standen dort nie, und die Runde musste
-zurückgenommen werden. Wer den Ausnahmesatz auf solche Fälle anwendet, hebelt
-die Regel genau dort aus, wo sie am billigsten greifen würde. Verifikation,
-die kein Risiko adressiert, ist Zeremonie — und Zeremonie kostet genau die
-Stunden, die für die nächste Scheibe fehlen (s. Abschnitt 2b).
+aufbaut. Wer den Ausnahmesatz auf solche Fälle anwendet, hebelt die Regel
+genau dort aus, wo sie am billigsten greifen würde. Verifikation, die kein
+Risiko adressiert, ist Zeremonie — und Zeremonie kostet genau die Stunden,
+die für die nächste Scheibe fehlen (s. Abschnitt 2b).
 
 ### Review-Kalibrierung — nach Tragweite, nicht nach Artefakt-Typ
 

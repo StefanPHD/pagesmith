@@ -1,6 +1,7 @@
 import { after } from "next/server";
 import { getCapiConfigByTrackingKey } from "@/lib/capi/token";
-import { META_GRAPH_VERSION, META_TEST_EVENT_CODE } from "@/lib/capi/config";
+import { META_TEST_EVENT_CODE } from "@/lib/capi/config";
+import { forwardToMeta } from "@/lib/capi/meta-forward";
 import { persistEvent } from "@/lib/analytics/persist";
 import {
   BROWSER_CONFIRM_MARKER,
@@ -26,6 +27,9 @@ import { errorName } from "@/lib/errors";
  * identische CORS-Header, ein OPTIONS-Handler.
  *
  * Erste externe API-Integration der App: unser Server ruft aktiv Metas Graph-CAPI auf.
+ * SEIT PHASE 11 SCHEIBE 4 NICHT MEHR VON HIER AUS — der Aufruf samt Nutzlast, Zeiteinheit,
+ * Timeout-Geruest und Fehlerdeutung liegt in src/lib/capi/meta-forward.ts; dieser Handler
+ * entscheidet nur noch, OB geforwardet wird, und erwartet den Aufruf weiterhin im Request.
  * ANONYMER cross-origin Endpoint (der Beacon aus 2b-ii kommt vom ausgelieferten
  * Export/der gehosteten Seite, nicht aus einer Owner-Session). Autorisierung = der
  * oeffentliche trackingKey als CAPABILITY: er loest server-seitig (nur hier, via
@@ -68,19 +72,23 @@ const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-// Striktes Timeout auf den Meta-Forward (A-Regel "defensive Timeouts"). Ohne das
-// blockiert ein haengendes Meta die Serverless-Funktion bis ans Plattform-Limit — und
-// zwar im HOTSPOT, der von JEDEM Besucher JEDER Kundenseite getroffen wird. Bewusst
-// kuerzer als die 8s des Vercel-Clients (interaktive Owner-Mutation): 3s kappt echte
-// Haenger, bricht aber legitime Latenzspitzen (1-2s) nicht ab.
-const META_FORWARD_TIMEOUT_MS = 3_000;
-
 // Body-lose Status-Antwort mit CORS-Headern. NIE ein Body — der Token/die Config
 // duerfen die Response nie erreichen.
 function status(code: number): Response {
   return new Response(null, { status: code, headers: CORS_HEADERS });
 }
 
+/**
+ * Trimmt einen unbekannten Wert zu einem String; alles Nicht-String wird "".
+ *
+ * EINE ZWEITE, ZEICHENGLEICHE KOPIE STEHT IN src/lib/capi/meta-forward.ts. Dort traegt
+ * sie die optionalen Nutzlast-Felder, hier die Pflichtfeld-Pruefung (die den 400
+ * erzeugt), den Confirm-Marker und die IP-Aufloesung.
+ * KEIN TEST SICHERT DIE GLEICHHEIT DER BEIDEN KOPIEN. Das ist bewusst so und nicht
+ * uebersehen: die saubere Loesung waere eine dritte, neutrale Datei gewesen, und die lag
+ * ausserhalb des Zuschnitts der Naht-Scheibe. Wer eine der beiden aendert, aendert die
+ * andere von Hand mit — es wird nichts rot.
+ */
 function asString(v: unknown): string {
   return typeof v === "string" ? v.trim() : "";
 }
@@ -116,64 +124,6 @@ function resolveClientIp(request: Request): string | undefined {
   // (loopback || leer): in Dev mit Test-Code -> valide Dummy-Public-IP; sonst omit.
   if (META_TEST_EVENT_CODE) return "123.123.123.123";
   return undefined;
-}
-
-// Metas Fehler-Envelope (Graph API). Nur die Felder, die wir fuer die Diagnose lesen.
-type MetaErrorBody = {
-  error?: {
-    message?: unknown;
-    code?: unknown;
-    error_subcode?: unknown;
-    type?: unknown;
-    fbtrace_id?: unknown;
-  };
-};
-
-// Metas message ist Beschreibungstext (kein Secret), aber unbegrenzt lang -> kappen.
-const META_ERROR_MSG_MAX = 200;
-
-function asLogValue(v: unknown): string {
-  if (v === undefined || v === null || v === "") return "-";
-  return String(v).slice(0, META_ERROR_MSG_MAX);
-}
-
-/**
- * Uebersetzt eine ABGELEHNTE Meta-Antwort in EINE sanitized Logzeile.
- *
- * SECRETS-DISZIPLIN (2a-Lektion, nicht verhandelbar): geloggt werden AUSSCHLIESSLICH
- * Metas eigene strukturierte Fehlerfelder. NIE die Forward-URL (sie traegt den
- * access_token im Query-String), NIE der Token, NIE unsere Payload/user_data (die traegt
- * IP/UA/ggf. PII). Es fliesst hier NICHTS aus dem Request hinein — nur Metas Antwort.
- *
- * WIRFT NIE: JSON-Parse und Text-Fallback sind je eigenstaendig abgesichert. Eine
- * unlesbare Antwort ist selbst ein Diagnose-Ergebnis, kein Grund fuer einen Fehlerpfad.
- */
-async function describeMetaError(res: Response): Promise<string> {
-  let body: unknown = null;
-  try {
-    body = await res.clone().json();
-  } catch {
-    // Kein JSON (HTML-Fehlerseite, leerer Body, Gateway-Antwort) -> Rohtext, gekappt.
-    try {
-      const text = (await res.text()).trim();
-      return `[capi] Meta forward rejected: non-JSON body=${
-        text ? text.slice(0, META_ERROR_MSG_MAX) : "-"
-      }`;
-    } catch {
-      return "[capi] Meta forward rejected: body unreadable";
-    }
-  }
-
-  const err = (body as MetaErrorBody | null)?.error;
-  if (!err) return "[capi] Meta forward rejected: no error envelope";
-
-  return (
-    `[capi] Meta forward rejected: code=${asLogValue(err.code)}` +
-    ` subcode=${asLogValue(err.error_subcode)}` +
-    ` type=${asLogValue(err.type)}` +
-    ` fbtrace=${asLogValue(err.fbtrace_id)}` +
-    ` msg=${asLogValue(err.message)}`
-  );
 }
 
 /**
@@ -304,85 +254,34 @@ export async function handleIngest(request: Request): Promise<Response> {
   schedulePersist(resolution.projectId, event, eventID, "server", variant);
 
   // --- FORWARD NUR FUER CONVERSIONS (Scheibe 2a) ---
-  // Der gesamte Meta-Pfad (Payload-Bau + Forward) liegt jetzt INNERHALB dieser einen
-  // Bedingung — UMSCHLOSSEN, nicht editiert. Zwei Gruende, warum auch der Payload-Bau
-  // mit hineinwandert und nicht nur der fetch: (1) fuer ein PageView waere er reine
+  // NICHTS META-BEZOGENES PASSIERT AUSSERHALB DIESER BEDINGUNG. Das ist die tragende
+  // Aussage und sie gilt unveraendert; nur ihr ORT hat sich verschoben: Seit Phase 11
+  // Scheibe 4 liegt der Meta-Pfad (Payload-Bau + Forward) NICHT MEHR im Rumpf hier,
+  // sondern in src/lib/capi/meta-forward.ts — ERREICHBAR ausschliesslich von dieser
+  // Stelle aus. Der Satz "liegt INNERHALB dieser Bedingung" stand hier bis dahin und
+  // beschrieb den Rumpf; wer ihn heute so liest, sucht den Payload-Bau an der falschen
+  // Stelle.
+  // Zwei Gruende, warum auch der Payload-Bau hinter dem Gate liegt und nicht nur der
+  // fetch — sie sind der Grund, warum die Naht KOMPLETT hinter dieser Bedingung
+  // aufgerufen wird und nicht etwa teilweise davor: (1) fuer ein PageView waere er reine
   // Verschwendung, und PageView ist ab 2b der VOLUMEN-Event im Hotspot (/api/e-
   // Schlankheits-Regel); (2) er referenziert config, das hier erst geprueft vorliegt.
   const config = resolution.capiConfig;
   if (config && isForwardable(event)) {
     // --- Server-gesetzte Felder (NIE aus Client-Payload) ---
-    const eventTime = Math.floor(Date.now() / 1000);
+    // Sie werden HIER ermittelt, INNERHALB der Bedingung — also genau dann, wenn wirklich
+    // geforwardet wird, und nicht auf Vorrat fuer jeden Beacon (/api/e-Schlankheit).
+    // Die IP-Aufloesung bleibt beim Handler, weil sie Request-HEADER liest; die Naht soll
+    // kein HTTP kennen, sondern Metas Vokabular.
     const clientIp = resolveClientIp(request);
     const userAgent = asString(request.headers.get("user-agent"));
 
-    // --- Meta-Payload zusammensetzen (undefined-Felder weglassen) ---
-    const userData: Record<string, unknown> = {};
-    if (clientIp) userData.client_ip_address = clientIp;
-    if (userAgent) userData.client_user_agent = userAgent;
-    const fbp = asString(body._fbp);
-    if (fbp) userData.fbp = fbp;
-
-    const customData: Record<string, unknown> = {};
-    if (typeof body.value === "number") customData.value = body.value;
-    const currency = asString(body.currency);
-    if (currency) customData.currency = currency;
-
-    const serverEvent: Record<string, unknown> = {
-      // isCustom aendert die Graph-CAPI-Call-Shape NICHT: ein "Custom Event" ist dort
-      // schlicht ein freier event_name (kein trackCustom-Split wie im Browser-Pixel).
-      // isCustom wird fuer Symmetrie mit der Pixel-Seite mitgefuehrt, nicht verzweigt.
-      event_name: event,
-      event_time: eventTime,
-      event_id: eventID,
-      action_source: "website",
-      user_data: userData,
-    };
-    const eventSourceUrl = asString(body.eventSourceUrl);
-    if (eventSourceUrl) serverEvent.event_source_url = eventSourceUrl;
-    if (Object.keys(customData).length > 0) serverEvent.custom_data = customData;
-
-    const payload: Record<string, unknown> = { data: [serverEvent] };
-    // test_event_code NUR wenn env gesetzt (dev-only). NIE hartcodiert / in Prod.
-    if (META_TEST_EVENT_CODE) payload.test_event_code = META_TEST_EVENT_CODE;
-
-    // --- Forward AWAIT-en; Fehler sanitized loggen; Client kriegt IMMER 204. ---
-    //
-    // 204-CONTAINMENT: die KOMPLETTE Timeout-Scaffolding (AbortController + setTimeout)
-    // liegt INNERHALB des fire-and-log-try. Das Muster ist aus lib/vercel/client.ts
-    // gespiegelt, aber die UMSCHLIESSUNG ist bewusst ANDERS: dort steht das Geruest VOR
-    // dem try und der catch RETURNIERT ein Ergebnis (der Vercel-Client darf einen
-    // Setup-Fehler propagieren) — der Ingest darf das NIE. Hier muendet jeder Pfad, auch
-    // ein Stolpern des Geruests selbst, im catch und damit in der garantierten leeren 204.
-    // `timer` steht als REINE Deklaration aussen (kann nicht werfen), damit finally ihn
-    // sieht. Ein Abort landet als DOMException im catch und wird dank errorName() als
-    // "AbortError" statt "unknown" geloggt.
-    const url = `https://graph.facebook.com/${META_GRAPH_VERSION}/${config.pixelId}/events?access_token=${config.token}`;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    try {
-      const controller = new AbortController();
-      timer = setTimeout(() => controller.abort(), META_FORWARD_TIMEOUT_MS);
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-      if (!res.ok) {
-        // KEIN Token/access_token/sensibler Response-Body ins Log — nur Status.
-        console.error(`[capi] Meta forward failed: HTTP ${res.status}`);
-        // ADDITIV: Metas STRUKTURIERTEN Ablehnungsgrund nachziehen. Ohne ihn ist ein
-        // HTTP 400 nicht diagnostizierbar (Pixel-/Token-Problem? Payload-Feld? Permission?)
-        // -> wir raten sonst. Der Body-Read liegt INNERHALB des fire-and-log-try: wirft er,
-        // faengt ihn der bestehende catch, der Client bekommt weiterhin 204.
-        console.error(await describeMetaError(res));
-      }
-    } catch (err) {
-      // Nur eine generische Meldung — nie die URL (traegt den Token) / den Token.
-      console.error(`[capi] Meta forward error: ${errorName(err)}`);
-    } finally {
-      clearTimeout(timer);
-    }
+    // Der Aufruf wird WEITERHIN IM REQUEST ERWARTET — das await ist kein Versehen: die
+    // 204 steht nach wie vor DAHINTER. Die Abloesung von der Antwort ist eine EIGENE,
+    // spaetere Aenderung; wer das await hier entfernt, baut sie unangekuendigt mit ein.
+    // forwardToMeta WIRFT NIE (Vertrag in meta-forward.ts) -> das 204-Containment dieses
+    // Handlers bleibt intakt, ohne den Aufruf zu umschliessen.
+    await forwardToMeta(config, event, eventID, body, clientIp, userAgent);
   }
 
   return status(204);

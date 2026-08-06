@@ -431,9 +431,14 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
       Event-Trigger am Cluster hängt und in keinem Schema-Dump steckt.
   Der Restore-DRILL ist weiterhin nicht gefahren -> s. "## Security Manifest & Launch
   Blocker", BACKUPS.
-- AUFGESCHOBEN (konditionale Optimierung, kein Footgun): CAPI-Forward auf Hintergrund-
-  Zustellung umstellen (die 204 löst sich von Metas Latenz) — Trigger: falls Beacon-Latenz je
-  ein echtes Problem wird. Detail: docs/claude-history/phase-8-analytics.md.
+- GEPLANT (war: AUFGESCHOBEN): CAPI-Forward auf Hintergrund-Zustellung umstellen (die 204
+  löst sich von Metas Latenz) — als EIGENE Scheibe der laufenden Phase geplant. Der frühere
+  Trigger "falls Beacon-Latenz je ein echtes Problem wird" ist ERSETZT, nicht ergänzt: er
+  sagt "nichts zu tun", und das trifft nicht mehr zu.
+  GRENZE: GEPLANT heisst NICHT gebaut und NICHT bewiesen — der heutige Code wartet
+  unverändert (s. "## Code-Qualität, Performance & SaaS-Skalierung", /API/E-SCHLANKHEIT,
+  IST-Teil). Wie der Zuschnitt geführt wird: s. "## Aktiver Stand — Verfahren ab Phase 10".
+  Detail zum ursprünglichen Aufschub: docs/claude-history/phase-8-analytics.md.
 
 ## Aktiver Stand — Verfahren ab Phase 10
 
@@ -506,14 +511,28 @@ keine Statusänderung für etwas, das noch nicht existiert.
     gleichzeitig — die Antwort soll sich von Metas Latenz lösen, UND der Forward muss
     trotzdem zuverlässig zugestellt werden. Wer nur die erste Hälfte umsetzt, verliert
     Conversions; wer nur die zweite liest, sieht keinen Änderungsbedarf.
-  - AUFGESCHOBEN ist die Umstellung als "CAPI-Forward auf Hintergrund-Zustellung umstellen
-    (die 204 löst sich von Metas Latenz)" mit dem Trigger "falls Beacon-Latenz je ein
-    echtes Problem wird" — s. "## Aktueller DB-/Analytics-Stand", letzter Punkt, und
-    docs/claude-history/phase-8-analytics.md.
-  - FOLGE FÜR DIE NÄCHSTE SCHEIBE (Phase 11, zweites Fan-Out-Ziel): ZWEI seriell erwartete
-    Empfänger verdoppelten die Wartezeit auf dem meistgetroffenen Pfad der Plattform. Die
-    Klärung gehört VOR das zweite Ziel, nicht danach — sonst wird der Trigger oben durch
-    genau die Scheibe erfüllt, die ihn ignoriert hat.
+  - GEPLANT, NICHT MEHR AUFGESCHOBEN: Die Umstellung ("CAPI-Forward auf Hintergrund-
+    Zustellung, die 204 löst sich von Metas Latenz") ist als EIGENE Scheibe der laufenden
+    Phase geplant. Der frühere Trigger "falls Beacon-Latenz je ein echtes Problem wird" ist
+    damit ERSETZT und darf nicht zurückkommen — er sagt "nichts zu tun", und genau das
+    trifft nicht mehr zu.
+    GRENZE, ohne die der Satz zu viel behauptet: GEPLANT heisst NICHT gebaut und NICHT
+    bewiesen. Bis der Nachweis vorliegt, gilt der IST-Teil oben unverändert. Wie der
+    Zuschnitt geführt wird: s. "## Aktiver Stand — Verfahren ab Phase 10". Herleitung des
+    ursprünglichen Aufschubs: docs/claude-history/phase-8-analytics.md.
+  - JEDER WEITERE EMPFÄNGER VERSCHÄRFT DIESE REGEL, UND NEBENLÄUFIGKEIT LÖST DAS NICHT:
+    Wird neben Meta ein weiteres Ziel im Request erwartet, wächst die Funktionslaufzeit.
+    Wer nebenläufig statt seriell wartet, wartet auf das MAXIMUM statt auf die SUMME — das
+    ist eine Dämpfung, keine Aufhebung: es genügt EIN langsamer Empfänger, und das Maximum
+    wandert mit jedem zusätzlichen Empfänger nach oben, auch im Normalfall und nicht nur im
+    seltenen Ausreisser.
+    WO DER PREIS LIEGT — der Satz gehört zwingend dazu, sonst wird die Regel beim nächsten
+    Refactor wegoptimiert, weil sie an der falschen Stelle gesucht wird: NICHT in der
+    Wartezeit des BESUCHERS (ein keepalive-Beacon blockiert weder Rendering noch
+    Interaktion, und ein Tracking-Verlust entsteht beim ABSENDEN, nicht beim Antworten),
+    sondern in FUNKTIONSLAUFZEIT und NEBENLÄUFIGKEIT auf dem meistgetroffenen Pfad der
+    Plattform, multipliziert über ALLE Kunden. Wer den Preis beim Besucher sucht, findet
+    keinen und streicht die Regel.
 - RATE-LIMITING: siehe Security Manifest Tier 1 (Per-Tenant-Limiting /api/e+/api/capi)
   — hier nur Cross-Link, keine Duplikation.
 - AUDIT-LOGS: siehe Security Manifest (Vercel-Domain-Mutations-Log) — hier nur

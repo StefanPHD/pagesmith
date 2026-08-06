@@ -109,21 +109,37 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       "Tracking-Testmodus für Kunden"). AUSDRÜCKLICH AUSGENOMMEN:
       Hotjar/Session-Recording ist KEIN Fan-Out-Ziel, sondern braucht einen
       eigenen Custom-Script-Mechanismus — separat zu bewerten.
-      DESIGN-HINWEIS FÜRS KONZEPT-GESPRÄCH (verbindlich zu klären, NICHT
-      vorentschieden): Das heutige Consent-Gate (psConsent) ist fest in die
-      Meta-Pixel-Runtime eincodiert, kein wiederverwendbares Attribut. Mit
-      jedem weiteren Netzwerk droht sonst eine KOPIERTE Consent-Prüfung pro
-      Ziel — dasselbe Muster, das an anderer Stelle im Projekt konsequent
-      vermieden wird ("kein drittes Urteil"). Phase 11 konzipiert deshalb EIN
-      geteiltes Consent-Gate für alle Fan-Out-Ziele. Dabei GLEICH
-      mitzudenken: die separat erwähnte generische Action-Consent-Checkbox
-      (jede Aktion, nicht nur Tracking, gated) — beide Bedürfnisse sollen auf
-      DENSELBEN Mechanismus laufen, nicht zwei parallele Gates entstehen.
-      STAND: Die ERSTE SCHEIBE ist ABGESCHLOSSEN und LIVE BEWIESEN (2026-08-05)
-      — die Umstellung der Geheimnis-Tabelle auf (Projekt, Ziel), ohne jede
-      Verhaltensänderung: Migration 0021, Katalog-Prüfung, Nachhol-Lauf, Code,
-      Live-Test. Die Phase bleibt OFFEN, weil noch KEIN zweites Ziel existiert.
-      Protokoll, Entscheidungen und was diese Scheibe ausdrücklich NICHT
+      DAS GETEILTE CONSENT-GATE IST GEBAUT. Die Einwilligungs-Auswertung liegt
+      in einer EIGENEN Datei (src/lib/tracking/consent.ts, buildConsentRuntime),
+      hängt WEDER an der Pixel-ID NOCH an der Mapping-Tabelle und wird von
+      BEIDEN Konsumenten gefragt — der Meta-Laufzeit und dem PageView-Emitter.
+      Sie beurteilt die Einwilligung JE ZIEL.
+      RICHTIGGESTELLT, NICHT GESTEMPELT: Hier stand, das Consent-Gate sei fest
+      in die Meta-Laufzeit eincodiert, und es wurde beim alten Namen genannt.
+      Beides hat die zweite Scheibe beseitigt. Der Satz ist eine DESIGN-VORGABE
+      für diese Phase — ein Satz, an dem sich ein Entwurf ausrichtet, darf nicht
+      in falscher Fassung stehen, sonst plant die nächste Instanz einen Bau, den
+      es schon gibt.
+      DIE GEFAHR, GEGEN DIE ER GESCHRIEBEN WURDE, IST DAMIT ABGEWENDET: eine
+      KOPIERTE Consent-Prüfung pro Ziel — dasselbe Muster, das an anderer Stelle
+      im Projekt konsequent vermieden wird ("kein drittes Urteil").
+      WEITERHIN OFFEN, als AUFLAGE an den Entwurf und ausdrücklich NICHT
+      vorentschieden: die separat erwähnte generische Action-Consent-Checkbox
+      (jede Aktion, nicht nur Tracking, gated). Sie muss auf DEMSELBEN
+      Mechanismus laufen; ein zweites Urteil darf nicht entstehen.
+      Protokoll und Begründung: docs/aktiver-stand.md, "## Die zweite Scheibe —
+      DAS GETEILTE CONSENT-GATE (Zuschnitt)" und "### Protokoll der zweiten
+      Scheibe — Vollzug und Abschluss".
+      STAND: DREI SCHEIBEN SIND ABGESCHLOSSEN UND LIVE BEWIESEN.
+      (1) DIE UMSTELLUNG DER GEHEIMNIS-TABELLE auf (Projekt, Ziel), ohne jede
+      Verhaltensänderung — Migration 0021, Katalog-Prüfung, Nachhol-Lauf, Code,
+      Live-Test (2026-08-05).
+      (2) DAS GETEILTE CONSENT-GATE — die Auswertung aus der Meta-Laufzeit
+      herausgezogen, ab dann JE ZIEL beurteilt (2026-08-05).
+      (3) DER PAGEVIEW-EMITTER HINTER DEM GATE — er fragt VOR dem Senden für den
+      Schlüssel der eigenen Auswertung (2026-08-06).
+      DIE PHASE BLEIBT OFFEN, WEIL NOCH KEIN ZWEITES ZIEL EXISTIERT.
+      Protokolle, Entscheidungen und was jede Scheibe ausdrücklich NICHT
       beweist: docs/aktiver-stand.md.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.

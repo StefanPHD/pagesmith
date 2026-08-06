@@ -16,9 +16,11 @@ DIESE DATEI ERÖFFNET DIE PHASE. Sie führt die REIHENFOLGE der Scheiben: (1) di
 Umstellung der Geheimnis-Tabelle — ABGESCHLOSSEN und live bewiesen, (2) das
 geteilte Consent-Gate — ABGESCHLOSSEN und live bewiesen, (3) der PageView-Emitter
 hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) die NAHT des
-Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) der Forward löst sich von
-der ANTWORT — PLATZHALTER, (6) Pinterest als erstes zusätzliches Ziel —
-PLATZHALTER. Die Zuschnitte stehen unter "### Der
+Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) Pinterest als erstes
+zusätzliches Ziel — PLATZHALTER. Die Entkopplung des Forwards von der Antwort war
+als fünfte Scheibe geführt und ist am 2026-08-06 GESTRICHEN (s. "## Die
+GESTRICHENE fünfte Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT").
+Die Zuschnitte stehen unter "### Der
 Zuschnitt der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge", "## Die
 zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)", "## Die dritte
 Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)" und "## Die vierte
@@ -47,23 +49,36 @@ zusammengesucht wird. GEZÄHLT WIRD DIE WANDERUNG VON PINTERESTS NUMMER, nichts
 sonst** — nicht die Zahl der Scheiben, nicht die Zahl der Umplanungen:
 - **ZWEITE -> DRITTE (2026-08-05):** das geteilte Consent-Gate schiebt sich davor.
 - **DRITTE -> VIERTE (2026-08-06):** der PageView-Emitter schiebt sich davor.
-- **VIERTE -> SECHSTE (2026-08-06, diese Runde):** Naht und Entkopplung schieben
-  sich davor.
-**ZWEI DER DREI WANDERUNGEN TRAGEN DASSELBE DATUM.** Das Datum unterscheidet sie
+- **VIERTE -> SECHSTE (2026-08-06):** Naht und Entkopplung schieben sich davor.
+- **SECHSTE -> FÜNFTE (2026-08-06):** die Entkopplung wird GESTRICHEN und fällt
+  weg. **DIE ERSTE WANDERUNG NACH VORN** — alle drei davor gingen nach hinten.
+**DREI DER VIER WANDERUNGEN TRAGEN DASSELBE DATUM.** Das Datum unterscheidet sie
 also NICHT — wer sie auseinanderhalten will, liest die URSACHE, nicht den Stempel.
 
-**DIE DREI URSACHEN SIND DREI VERSCHIEDENE, und das gehört dazu, sonst liest sich
-diese Runde wie eine weitere Umsortierung:**
+**DIE VIER URSACHEN SIND VIER VERSCHIEDENE, und das gehört dazu, sonst liest sich
+jede Runde wie eine weitere Umsortierung:**
 - Die ERSTE entstand aus einer erkannten VORBEDINGUNG: die damalige Auswertung
   hätte aus der Objektform ein stilles Fail-open gemacht.
 - Die ZWEITE entstand daraus, dass ein AUSSCHLUSS zur eigenen Scheibe wurde — der
   PageView-Emitter war bis dahin ein Ausschluss der zweiten Scheibe.
-- Die DRITTE entsteht aus einer MESSUNG — s. "## Der Messbefund, der die
+- Die DRITTE entstand aus einer MESSUNG — s. "## Der Messbefund, der die
   Reihenfolge der Scheiben 4 bis 6 trägt".
+- Die VIERTE entsteht aus einer RECHERCHE, die eine ANNAHME WIDERLEGT hat: die
+  Entkopplung sollte die Funktion entlasten; sie tut es unter dem heutigen
+  Ausführungsmodell nicht. Das ist eine EIGENE Ursache und keine Unterart der
+  dritten — eine Messung sagt, WIE GROSS etwas ist, eine Recherche sagt, ob es
+  ÜBERHAUPT SO FUNKTIONIERT, wie man dachte. S. "## Die GESTRICHENE fünfte
+  Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT".
 
 **DER ÄLTERE STEMPEL DARÜBER BLEIBT WORT FÜR WORT STEHEN:** er war am 2026-08-06
 richtig, und ein überschriebener Stempel verwischt, dass die Nummer überhaupt
 gewandert ist.
+
+**NACHGEZOGEN AM 2026-08-06 — PINTEREST IST JETZT DIE FÜNFTE SCHEIBE.** Die
+Entkopplung des Forwards von der Antwort ist gestrichen; ihr Zweck geht als
+AUFLAGE in den Pinterest-Zuschnitt über. Die beiden Stempel darüber bleiben Wort
+für Wort stehen — sie waren zu ihrer Zeit richtig, und der ganze Wert dieser
+Kette liegt darin, dass man die Bewegung noch sieht.
 
 ---
 
@@ -1105,12 +1120,35 @@ Reihenfolge:
   ALLE Kunden. Das ist die Grösse, um die es geht — nicht die Wartezeit dessen,
   der die Seite gerade ansieht.
 
-**FOLGE: (a) IST KEINE PINTEREST-BINDUNG MEHR.** Sie ist der Grund, warum VOR
-Pinterest zwei eigene Scheiben liegen — s. "## Der Messbefund, der die
-Reihenfolge der Scheiben 4 bis 6 trägt", "## Die vierte Scheibe — DIE NAHT DES
-META-FORWARDS (Zuschnitt)" und "## Die fünfte Scheibe — DER FORWARD LÖST SICH VON
-DER ANTWORT (Platzhalter)". Die Zahlen und das, was sie ausdrücklich NICHT
-begründen, stehen dort und werden hier NICHT wiederholt.
+**DIE FOLGE — RICHTIGGESTELLT AM 2026-08-06, und es ist die ZWEITE
+Richtigstellung an diesem Punkt.** Hier stand: "(a) IST KEINE PINTEREST-BINDUNG
+MEHR. Sie ist der Grund, warum VOR Pinterest zwei eigene Scheiben liegen."
+**BEIDE HALBSÄTZE TREFFEN NICHT MEHR ZU.** RICHTIGGESTELLT und nicht gestempelt,
+weil dieser Absatz eine VORGABE für einen noch kommenden Zuschnitt ist — und
+dieser Zuschnitt entsteht als Nächstes; ein Stempel liesse die falsche Fassung als
+Handlungsanweisung stehen.
+- **(a) BINDET DIESE SCHEIBE WIEDER — als AUFLAGE, nicht als eigene Scheibe.** Der
+  Fan-Out zu mehreren Empfängern läuft NEBENLÄUFIG, mit EINEM Deckel für alle
+  Empfänger, NIE hintereinander. Ausformuliert steht die Auflage bei der Scheibe,
+  die sie einzulösen hat: "## Die fünfte Scheibe — PINTEREST ALS ZWEITES ZIEL
+  (Platzhalter)".
+- **ES LIEGT EINE SCHEIBE DAVOR, NICHT ZWEI.** Die Naht ist gebaut und live
+  bewiesen ("## Die vierte Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)"); die
+  Entkopplung ist am 2026-08-06 GESTRICHEN worden ("## Die GESTRICHENE fünfte
+  Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT"). Der frühere Verweis zeigte
+  auf deren Platzhalter-Überschrift und ginge heute ins Leere.
+- **DER MECHANISMUS IM BLOCK DARÜBER GILT UNVERÄNDERT:** Nebenläufigkeit DÄMPFT
+  die Verdopplung, hebt sie NICHT auf, und das Maximum wandert mit der Zahl der
+  Empfänger nach oben. **ÜBERHOLT IST ALLEIN DIE PREIS-ANGABE "FUNKTIONSLAUFZEIT
+  UND NEBENLÄUFIGKEIT"** — unter Fluid Compute pausiert die Active-CPU-Abrechnung,
+  solange die Funktion auf I/O wartet; was bleibt, ist die BELEGUNG VON
+  CONCURRENCY-SLOTS. **DIE HEUTIGE FASSUNG STEHT IN CLAUDE.md, Abschnitt A,
+  /API/E-SCHLANKHEIT.** Der Wortlaut darüber wird bewusst NICHT nachgezogen: er
+  gehört zum unangetasteten Richtigstellungs-Block. **Wer den Preis von dort
+  übernimmt, misst gegen ein überholtes Kostenmodell.**
+- **DIE LATENZ-ZAHLEN** stehen unverändert unter "## Der Messbefund, der die
+  Reihenfolge der Scheiben 4 bis 6 trägt" — samt dem, was sie ausdrücklich NICHT
+  begründen. Sie werden hier NICHT wiederholt.
 **(b) UND (c) SIND DAVON UNBERÜHRT** und binden weiterhin Pinterest.
 
 **(b) ES GIBT KEINEN NEUTRALEN ORT FÜR EINE EVENT-KENNUNG.** Beide
@@ -2153,6 +2191,16 @@ und alle drei Tests in `ingest.timeout.test.ts` (sie greifen unmittelbar auf
 ERWARTETER Beweis, nicht als Fehlschlag. Wer das nicht vorher weiss, liest einen
 gelungenen Bau als Regression und zieht die falsche Konsequenz.
 
+**NACHTRAG AM 2026-08-06: DIESER BEFUND HAT SEINEN ADRESSATEN VERLOREN, ER IST
+ABER NICHT FALSCH GEWORDEN.** Die Entkopplung ist gestrichen (s. "## Die
+GESTRICHENE fünfte Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT); es gibt
+derzeit keine Scheibe, in der diese drei Stellen rot würden.
+**ER WIRD DESHALB NICHT GESTRICHEN:** Die Messung selbst gilt unverändert, und
+**sie wird wieder scharf, sobald der Trigger jener Streichung eintritt** — eine
+gemessene Grenze unter echtem Traffic oder ein Wegfall von Fluid Compute. Ein
+gestrichener Befund müsste dann neu erhoben werden, und niemand wüsste, dass es
+ihn schon einmal gab.
+
 #### Was diese Scheibe ausdrücklich NICHT geleistet hat
 
 - **DIE ABLÖSUNG DES FORWARDS VON DER ANTWORT.** Die Sequenz ist unverändert; das
@@ -2192,21 +2240,66 @@ Das ist kein neuer Kandidat, sondern ein zweiter Beleg für denselben.
 
 ---
 
-## Die fünfte Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT (Platzhalter)
+## Die GESTRICHENE fünfte Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT
 
-**ZWECK:** Die leere 204 wartet nicht mehr auf Meta — der Forward wird zuverlässig
-zugestellt, aber nicht mehr im Antwortpfad erwartet.
+**GESTRICHEN AM 2026-08-06 (ENTSCHEIDUNG OWNER). SIE WIRD NICHT GEBAUT.** Ihr
+Zweck geht als AUFLAGE in den Pinterest-Zuschnitt über; Pinterest rückt damit von
+SECHS auf FÜNF.
 
-**KEIN ZUSCHNITT.** Er entsteht nach dem Bau der vierten Scheibe und gegen deren
-Ergebnis; alles Weitere hier wäre geraten. Was die Scheibe einzulösen hat, steht
-in CLAUDE.md, Abschnitt A ("/API/E-SCHLANKHEIT"): BEIDE Hälften gelten
-gleichzeitig — die Antwort löst sich von Metas Latenz, UND der Forward muss
-trotzdem zuverlässig zugestellt werden. Wer nur die erste Hälfte umsetzt,
-verliert Conversions.
+**DER GRUND — UND SEINE PROVENIENZ, die hier vor dem Grund steht, weil sie ihn
+begrenzt:** Was folgt, ist eine RECHERCHE in der VERCEL- UND NEXT-DOKUMENTATION,
+gelesen am 2026-08-06 vom Architekten. **Es ist KEINE Messung am eigenen System.**
+Am eigenen Projekt gemessen sind AUSSCHLIESSLICH die zwei Dashboard-Werte unten —
+die beiden Quellen werden hier bewusst nicht vermischt.
+
+**AUS DER ANBIETER-DOKU:**
+- `after()` setzt auf `waitUntil` auf und verlängert die Lebensdauer DERSELBEN
+  Invocation, bis deren Promises abgeschlossen sind. **Die Invocation wird also
+  NICHT kürzer — nur die Antwort geht früher raus.** Genau das war die Annahme,
+  auf der die Scheibe stand.
+- Unter Fluid Compute pausiert die Active-CPU-Abrechnung, solange die Funktion auf
+  I/O wartet. Das Warten auf Meta IST I/O.
+- `waitUntil` sichert ABSCHLUSS zu, nicht ERFOLG: kein Wiederholungsweg, und beim
+  Herunterskalieren bleiben nach SIGTERM nur noch bis zu 500 ms.
+
+**GEMESSEN AM EIGENEN PROJEKT (Vercel-Dashboard, Stefan, 2026-08-06):** Fluid
+Compute ist AKTIV; die Default Max Duration steht auf 300 Sekunden. **Mehr ist
+nicht gemessen.**
+
+**FOLGE:** Die Umstellung brächte keinen messbaren Gewinn und kostete die
+Zusicherung, dass der Forward vor der Antwort **abgeschlossen ODER am Deckel
+gescheitert** ist. Ein Conversion-Forward ist kritische Arbeit — diese Zusicherung
+für nichts aufzugeben wäre ein schlechter Tausch.
+
+**WANN SIE ZURÜCKKÄME (Trigger, präzise und ausdrücklich NICHT "falls es je ein
+Problem wird"):** eine GEMESSENE Grenze unter echtem Traffic (Concurrency-Slots
+bzw. Skalierungsverhalten auf dem Ingest-Pfad), ODER ein Wegfall von Fluid Compute.
+
+**DER BISHERIGE TEXT BLEIBT DARUNTER LESBAR** — was gestrichen wird, muss erkennbar
+bleiben, sonst misst der Rest der Datei gegen nichts. Er ist ab hier HISTORISCH:
+
+> **ZWECK:** Die leere 204 wartet nicht mehr auf Meta — der Forward wird zuverlässig
+> zugestellt, aber nicht mehr im Antwortpfad erwartet.
+>
+> **KEIN ZUSCHNITT.** Er entsteht nach dem Bau der vierten Scheibe und gegen deren
+> Ergebnis; alles Weitere hier wäre geraten. Was die Scheibe einzulösen hat, steht
+> in CLAUDE.md, Abschnitt A ("/API/E-SCHLANKHEIT"): BEIDE Hälften gelten
+> gleichzeitig — die Antwort löst sich von Metas Latenz, UND der Forward muss
+> trotzdem zuverlässig zugestellt werden. Wer nur die erste Hälfte umsetzt,
+> verliert Conversions.
+
+**EIN PRÜFKANDIDAT FÜRS PHASENENDE, hier nur festgehalten und NICHT ausgeführt:**
+Die SOLL-Hälfte der Regel /API/E-SCHLANKHEIT in CLAUDE.md ("die Beacon-Antwort darf
+NICHT auf den Meta-Call warten") stammt aus einem Kostenmodell, das diese Recherche
+überholt hat. **Die Regel ist in dieser Runde ausdrücklich NICHT geändert worden** —
+eine Regel in CLAUDE.md zu kippen ist eine eigene Entscheidung mit eigener
+Begründungslast, und sie gehört ans Phasenende zu den übrigen Hebungen. Wer sie
+vorher anfasst, ändert eine dauerhaft geladene Regel auf Basis einer Doku-Lesung
+von einem Tag.
 
 ---
 
-## Die sechste Scheibe — PINTEREST ALS ZWEITES ZIEL (Platzhalter)
+## Die fünfte Scheibe — PINTEREST ALS ZWEITES ZIEL (Platzhalter)
 
 **ZWECK:** Das erste zusätzliche Fan-Out-Ziel neben Meta — die Scheibe, für die
 die ganze Phase existiert.
@@ -2246,3 +2339,16 @@ ohne Lösungsvorschlag — der Zuschnitt entsteht in einer eigenen Runde:
 Sie ist der Grund für die Scheiben vier und fünf und dort abgehandelt — s. "###
 Gemessene Bindungen, die die PINTEREST-SCHEIBE binden", Punkt (a), in seiner
 richtiggestellten Fassung.
+
+**RICHTIGGESTELLT AM 2026-08-06: SIE IST WIEDER EINE BINDUNG DIESER SCHEIBE — als
+AUFLAGE, nicht als eigene Scheibe.** Der Satz darüber verwies auf zwei Scheiben;
+eine davon (die Entkopplung) ist gestrichen (s. "## Die GESTRICHENE fünfte Scheibe
+— DER FORWARD LÖST SICH VON DER ANTWORT"). Die vierte Scheibe hat die Naht gebaut,
+die Entkopplung entfällt — **damit landet der wartende Forward endgültig HIER.**
+**DIE AUFLAGE, NUR BENANNT — der Zuschnitt entsteht in einer eigenen Runde:** Der
+Fan-Out zu mehreren Empfängern läuft NEBENLÄUFIG, mit EINEM Deckel für alle
+Empfänger, NIE hintereinander. Warum Nebenläufigkeit nur DÄMPFT und nicht aufhebt
+(Maximum statt Summe, wandernd mit der Zahl der Empfänger), steht bei Punkt (a)
+jener Bindungen; **WO DER PREIS LIEGT, ist dort ÜBERHOLT** — die aktuelle Fassung
+steht in CLAUDE.md, Abschnitt A, /API/E-SCHLANKHEIT: nicht Funktionslaufzeit,
+sondern die BELEGUNG VON CONCURRENCY-SLOTS. Hier wird beides NICHT wiederholt.

@@ -431,14 +431,22 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
       Event-Trigger am Cluster hängt und in keinem Schema-Dump steckt.
   Der Restore-DRILL ist weiterhin nicht gefahren -> s. "## Security Manifest & Launch
   Blocker", BACKUPS.
-- GEPLANT (war: AUFGESCHOBEN): CAPI-Forward auf Hintergrund-Zustellung umstellen (die 204
-  löst sich von Metas Latenz) — als EIGENE Scheibe der laufenden Phase geplant. Der frühere
-  Trigger "falls Beacon-Latenz je ein echtes Problem wird" ist ERSETZT, nicht ergänzt: er
-  sagt "nichts zu tun", und das trifft nicht mehr zu.
-  GRENZE: GEPLANT heisst NICHT gebaut und NICHT bewiesen — der heutige Code wartet
-  unverändert (s. "## Code-Qualität, Performance & SaaS-Skalierung", /API/E-SCHLANKHEIT,
-  IST-Teil). Wie der Zuschnitt geführt wird: s. "## Aktiver Stand — Verfahren ab Phase 10".
-  Detail zum ursprünglichen Aufschub: docs/claude-history/phase-8-analytics.md.
+- NICHT GEPLANT (war: AUFGESCHOBEN, dann kurzzeitig GEPLANT): CAPI-Forward auf
+  Hintergrund-Zustellung umstellen (die 204 löst sich von Metas Latenz). Am 2026-08-06
+  GESTRICHEN, weil die BEGRÜNDUNG weggefallen ist — nicht, weil die Absicht vertagt wäre:
+  after() verlängert dieselbe Invocation statt sie zu verkürzen, unter Fluid Compute
+  pausiert die Active-CPU-Abrechnung beim Warten auf I/O, und waitUntil sichert ABSCHLUSS
+  zu, nicht ERFOLG. Der Gewinn wäre nicht messbar, der Preis wäre die Zusicherung, dass der
+  Forward vor der Antwort abgeschlossen oder am Deckel gescheitert ist.
+  TRIGGER (nicht "falls es je ein Problem wird"): eine GEMESSENE Grenze unter echtem
+  Traffic (Concurrency-Slots bzw. Skalierungsverhalten auf dem Ingest-Pfad) ODER ein
+  Wegfall von Fluid Compute.
+  PROVENIENZ UND GRENZE: Anbieter-Doku vom 2026-08-06 plus zwei Dashboard-Werte (Fluid
+  Compute aktiv, Default Max Duration 300 s) — KEINE Messung am eigenen Ingest-Pfad; ändert
+  der Anbieter sein Ausführungsmodell, ist die Entscheidung neu zu prüfen. Volle Fassung
+  mit allen drei Punkten: s. "## Code-Qualität, Performance & SaaS-Skalierung",
+  /API/E-SCHLANKHEIT. Detail zum ursprünglichen Aufschub:
+  docs/claude-history/phase-8-analytics.md.
 
 ## Aktiver Stand — Verfahren ab Phase 10
 
@@ -511,15 +519,34 @@ keine Statusänderung für etwas, das noch nicht existiert.
     gleichzeitig — die Antwort soll sich von Metas Latenz lösen, UND der Forward muss
     trotzdem zuverlässig zugestellt werden. Wer nur die erste Hälfte umsetzt, verliert
     Conversions; wer nur die zweite liest, sieht keinen Änderungsbedarf.
-  - GEPLANT, NICHT MEHR AUFGESCHOBEN: Die Umstellung ("CAPI-Forward auf Hintergrund-
-    Zustellung, die 204 löst sich von Metas Latenz") ist als EIGENE Scheibe der laufenden
-    Phase geplant. Der frühere Trigger "falls Beacon-Latenz je ein echtes Problem wird" ist
-    damit ERSETZT und darf nicht zurückkommen — er sagt "nichts zu tun", und genau das
-    trifft nicht mehr zu.
-    GRENZE, ohne die der Satz zu viel behauptet: GEPLANT heisst NICHT gebaut und NICHT
-    bewiesen. Bis der Nachweis vorliegt, gilt der IST-Teil oben unverändert. Wie der
-    Zuschnitt geführt wird: s. "## Aktiver Stand — Verfahren ab Phase 10". Herleitung des
-    ursprünglichen Aufschubs: docs/claude-history/phase-8-analytics.md.
+  - NICHT GEPLANT — und zwar, weil die BEGRÜNDUNG weggefallen ist, nicht weil die Absicht
+    vertagt wäre. Die Umstellung ("CAPI-Forward auf Hintergrund-Zustellung, die 204 löst
+    sich von Metas Latenz") war als eigene Scheibe zugeschnitten und ist am 2026-08-06
+    GESTRICHEN worden. Der noch frühere Trigger "falls Beacon-Latenz je ein echtes Problem
+    wird" bleibt ebenfalls ERSETZT und darf nicht zurückkommen.
+    WARUM SIE NICHTS BRINGT — PROVENIENZ: VERCEL-/NEXT-DOKU, gelesen am 2026-08-06. KEINE
+    Messung am eigenen Ingest-Pfad:
+    · after() setzt auf waitUntil auf und verlängert die Lebensdauer DERSELBEN Invocation,
+      bis deren Promises abgeschlossen sind. Die Invocation wird also NICHT kürzer — nur
+      die Antwort geht früher raus.
+    · Unter Fluid Compute pausiert die Active-CPU-Abrechnung, solange die Funktion auf I/O
+      wartet. Das Warten auf Meta IST I/O.
+    · waitUntil sichert ABSCHLUSS zu, nicht ERFOLG: kein Wiederholungsweg, und beim
+      Herunterskalieren bleiben nach SIGTERM nur noch bis zu 500 ms.
+    GEMESSEN AM EIGENEN PROJEKT (Vercel-Dashboard, 2026-08-06) — und NUR diese zwei Werte
+    sind gemessen, alles andere oben ist Anbieter-Doku: Fluid Compute ist AKTIV, die
+    Default Max Duration steht auf 300 Sekunden.
+    FOLGE: Die Umstellung brächte keinen messbaren Gewinn und kostete die Zusicherung, dass
+    der Forward vor der Antwort abgeschlossen ODER am Deckel gescheitert ist. Ein
+    Conversion-Forward ist kritische Arbeit — diese Zusicherung für nichts aufzugeben wäre
+    ein schlechter Tausch.
+    TRIGGER, präzise und ausdrücklich NICHT "falls es je ein Problem wird": eine GEMESSENE
+    Grenze unter echtem Traffic (Concurrency-Slots bzw. Skalierungsverhalten auf dem
+    Ingest-Pfad), ODER ein Wegfall von Fluid Compute.
+    GRENZE DIESER ENTSCHEIDUNG, die mitmuss: Sie stützt sich auf ANBIETER-DOKU plus die zwei
+    Dashboard-Werte, NICHT auf eine Messung am eigenen Ingest-Pfad. Ändert der Anbieter sein
+    Ausführungsmodell, ist sie NEU ZU PRÜFEN. Herleitung des ursprünglichen Aufschubs:
+    docs/claude-history/phase-8-analytics.md.
   - JEDER WEITERE EMPFÄNGER VERSCHÄRFT DIESE REGEL, UND NEBENLÄUFIGKEIT LÖST DAS NICHT:
     Wird neben Meta ein weiteres Ziel im Request erwartet, wächst die Funktionslaufzeit.
     Wer nebenläufig statt seriell wartet, wartet auf das MAXIMUM statt auf die SUMME — das
@@ -530,9 +557,14 @@ keine Statusänderung für etwas, das noch nicht existiert.
     Refactor wegoptimiert, weil sie an der falschen Stelle gesucht wird: NICHT in der
     Wartezeit des BESUCHERS (ein keepalive-Beacon blockiert weder Rendering noch
     Interaktion, und ein Tracking-Verlust entsteht beim ABSENDEN, nicht beim Antworten),
-    sondern in FUNKTIONSLAUFZEIT und NEBENLÄUFIGKEIT auf dem meistgetroffenen Pfad der
-    Plattform, multipliziert über ALLE Kunden. Wer den Preis beim Besucher sucht, findet
-    keinen und streicht die Regel.
+    sondern in der BELEGUNG VON CONCURRENCY-SLOTS auf dem meistgetroffenen Pfad der
+    Plattform, multipliziert über ALLE Kunden: eine länger offene Invocation belegt ihren
+    Platz länger, und unter Last wird früher auf weitere Instanzen skaliert. Wer den Preis
+    beim Besucher sucht, findet keinen und streicht die Regel.
+    PRÄZISIERT AM 2026-08-06: Hier stand "FUNKTIONSLAUFZEIT und NEBENLÄUFIGKEIT", und das
+    ist zu grob — unter Fluid Compute pausiert die Active-CPU-Abrechnung, solange die
+    Funktion auf I/O wartet. Was bleibt, ist der SLOT, nicht die Rechenzeit. PROVENIENZ
+    dieser Präzisierung: Anbieter-Doku vom 2026-08-06, KEINE eigene Messung.
 - RATE-LIMITING: siehe Security Manifest Tier 1 (Per-Tenant-Limiting /api/e+/api/capi)
   — hier nur Cross-Link, keine Duplikation.
 - AUDIT-LOGS: siehe Security Manifest (Vercel-Domain-Mutations-Log) — hier nur

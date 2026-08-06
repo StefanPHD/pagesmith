@@ -15,11 +15,14 @@ VERFAHREN AM PHASENENDE — drei Schritte, in dieser Reihenfolge:
 DIESE DATEI ERÖFFNET DIE PHASE. Sie führt die REIHENFOLGE der Scheiben: (1) die
 Umstellung der Geheimnis-Tabelle — ABGESCHLOSSEN und live bewiesen, (2) das
 geteilte Consent-Gate — ABGESCHLOSSEN und live bewiesen, (3) der PageView-Emitter
-hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) Pinterest als erstes
-zusätzliches Ziel, noch NICHT zugeschnitten. Die Zuschnitte stehen unter "### Der
+hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) die NAHT des
+Meta-Forwards — ZUGESCHNITTEN, noch nicht gebaut, (5) der Forward löst sich von
+der ANTWORT — PLATZHALTER, (6) Pinterest als erstes zusätzliches Ziel —
+PLATZHALTER. Die Zuschnitte stehen unter "### Der
 Zuschnitt der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge", "## Die
-zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)" und "## Die dritte
-Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)"; was die DREI
+zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)", "## Die dritte
+Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)" und "## Die vierte
+Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)"; was die DREI
 abgeschlossenen Scheiben tatsächlich ergeben haben, unter "### Protokoll der
 ersten Scheibe — Vollzug und Abschluss", "### Protokoll der zweiten Scheibe —
 Vollzug und Abschluss" und "### Protokoll der dritten Scheibe — Vollzug und
@@ -32,6 +35,34 @@ dahin kein eigener Zuschnitt, sondern ein AUSSCHLUSS der zweiten Scheibe.
 hier und nicht nur an den betroffenen Stellen, weil eine verschobene Nummer die
 einzige Art von Fehler ist, die beim Lesen wie eine Bestätigung aussieht: "die
 dritte Scheibe" liest sich in JEDEM Zustand plausibel.
+
+**DIE NUMMER IST AM 2026-08-06 EIN DRITTES MAL GEWANDERT — UND ZUM ERSTEN MAL UM
+ZWEI STELLEN.** Vor Pinterest liegen jetzt ZWEI Scheiben, die es vorher nicht
+gab: die NAHT des Meta-Forwards und die ENTKOPPLUNG des Forwards von der Antwort.
+**PINTEREST IST DAMIT DIE SECHSTE SCHEIBE, nicht mehr die vierte.**
+
+**DIE ZÄHLUNG EINMAL VOLLSTÄNDIG, damit sie nicht an jeder Stelle neu
+zusammengesucht wird. GEZÄHLT WIRD DIE WANDERUNG VON PINTERESTS NUMMER, nichts
+sonst** — nicht die Zahl der Scheiben, nicht die Zahl der Umplanungen:
+- **ZWEITE -> DRITTE (2026-08-05):** das geteilte Consent-Gate schiebt sich davor.
+- **DRITTE -> VIERTE (2026-08-06):** der PageView-Emitter schiebt sich davor.
+- **VIERTE -> SECHSTE (2026-08-06, diese Runde):** Naht und Entkopplung schieben
+  sich davor.
+**ZWEI DER DREI WANDERUNGEN TRAGEN DASSELBE DATUM.** Das Datum unterscheidet sie
+also NICHT — wer sie auseinanderhalten will, liest die URSACHE, nicht den Stempel.
+
+**DIE DREI URSACHEN SIND DREI VERSCHIEDENE, und das gehört dazu, sonst liest sich
+diese Runde wie eine weitere Umsortierung:**
+- Die ERSTE entstand aus einer erkannten VORBEDINGUNG: die damalige Auswertung
+  hätte aus der Objektform ein stilles Fail-open gemacht.
+- Die ZWEITE entstand daraus, dass ein AUSSCHLUSS zur eigenen Scheibe wurde — der
+  PageView-Emitter war bis dahin ein Ausschluss der zweiten Scheibe.
+- Die DRITTE entsteht aus einer MESSUNG — s. "## Der Messbefund, der die
+  Reihenfolge der Scheiben 4 bis 6 trägt".
+
+**DER ÄLTERE STEMPEL DARÜBER BLEIBT WORT FÜR WORT STEHEN:** er war am 2026-08-06
+richtig, und ein überschriebener Stempel verwischt, dass die Nummer überhaupt
+gewandert ist.
 
 ---
 
@@ -1012,13 +1043,32 @@ Was sie trotzdem NICHT zeigt: Sie läuft nicht im Browser, sie evaluiert genau E
 Script, sie sieht den PageView-Emitter nie, und sie kennt keinen Betreiber-Hook,
 der erst NACH dem Parsen gesetzt wird.
 
-### Drei gemessene Bindungen, die die PINTEREST-SCHEIBE binden
+### Gemessene Bindungen, die die PINTEREST-SCHEIBE binden
 
 **ÜBERSCHRIFT NACHGEZOGEN AM 2026-08-06:** Sie hiess "die DRITTE Scheibe", und
 damit war Pinterest gemeint. Pinterest ist jetzt die VIERTE Scheibe. Die
 Überschrift nennt seither das ZIEL statt einer Nummer — die Nummer ist in dieser
 Phase schon zweimal gewandert, und die Bindungen unten haben sich nie auf eine
 Zählung bezogen, sondern auf das erste zusätzliche Ziel.
+
+**ÜBERSCHRIFT RICHTIGGESTELLT AM 2026-08-06 — DIE ZAHL IST RAUS, NICHT NUR
+KORRIGIERT.** Sie hiess "Drei gemessene Bindungen, die die PINTEREST-SCHEIBE
+binden". Nach der Richtigstellung von (a) binden nur noch ZWEI der drei Punkte
+Pinterest; (a) ist der Grund für die Scheiben vier und fünf geworden. "Drei" wäre
+damit schlicht falsch.
+**WARUM KEINE NEUE ZAHL, SONDERN GAR KEINE:** Diese Überschrift hat aus genau
+demselben Grund schon einmal ihre Nummer verloren (s. den Vermerk darüber). Eine
+Zahl in einer Überschrift, deren Inhalt wandert, ist die Angabe, die beim Lesen
+wie eine Bestätigung aussieht und still veraltet. RICHTIGGESTELLT und nicht
+gestempelt, weil dieser Abschnitt auf einen NOCH KOMMENDEN Bau zeigt und in
+dieser Rolle gelesen wird — ein Stempel liesse die falsche Zahl als
+Handlungsanweisung stehen.
+**DER ALTE WORTLAUT STEHT ABSICHTLICH IM SATZ OBEN.** Zwei Stellen dieser Datei
+verweisen im Wortlaut auf ihn und sind bewusst NICHT nachgezogen: der Ausschluss
+"DIE LATENZ-FRAGE" im Zuschnitt der dritten Scheibe und der Gegenproben-Bericht
+im Sammelposten. Beide gehören zu ABGESCHLOSSENEN Vorgängen — ein Bericht
+darüber, was eine Gegenprobe GEFUNDEN hat, würde durch ein Nachziehen falsch.
+Über den alten Wortlaut hier bleiben beide auffindbar.
 
 PROVENIENZ: am Code gemessen in der Aufklärungs-Runde vom 2026-08-05 (read-only).
 Sie stehen hier und nicht in einer Randnotiz, damit die Pinterest-Scheibe sie
@@ -1028,6 +1078,39 @@ findet, bevor sie zugeschnitten wird.
 Sekunden — NICHT im Hintergrund-Mechanismus, in dem der Persist läuft. Zwei
 seriell erwartete Empfänger verdoppelten das auf dem heissesten Pfad des
 Produkts. ZU KLÄREN VOR DEM ZWEITEN ZIEL.
+
+**RICHTIGGESTELLT AM 2026-08-06, AUSDRÜCKLICH NICHT GESTEMPELT.** Der Satz oben
+ist als WARNUNG richtig und wird NICHT zurückgenommen — der Forward wartet
+tatsächlich, `META_FORWARD_TIMEOUT_MS` deckelt ihn tatsächlich, und der Persist
+läuft tatsächlich woanders. Als BESCHREIBUNG ist er unvollständig, und weil diese
+Bindung eine VORGABE für den Zuschnitt eines noch kommenden Baus ist, wäre die
+Lücke in genau diesen Zuschnitt gewandert. Drei Ergänzungen, in dieser
+Reihenfolge:
+- **NEBENLÄUFIGER BAU DÄMPFT DIE VERDOPPLUNG, HEBT SIE NICHT AUF.** Wer die
+  Empfänger nebenläufig statt seriell erwartet, wartet auf das MAXIMUM statt auf
+  die SUMME. Bei ähnlichen Verteilungen wandert damit auch der NORMALFALL nach
+  oben, nicht nur der seltene Ausreisser — das Maximum zweier Ziehungen liegt
+  systematisch über einer einzelnen. Der Satz oben liest sich, als sei die
+  Nebenläufigkeit die Antwort. Sie ist es nicht.
+- **ES BLEIBT NICHT BEI ZWEI ZIEHUNGEN.** Über die Zahl der Ziele, die einmal
+  gleichzeitig ziehen, wird der Deckel aus einer Ausnahme zu einer regelmässig
+  erreichten Grösse. WIE VIELE es sind, ist NICHT entschieden und der Punkt hängt
+  nicht daran: die Roadmap-Zeile in CLAUDE.md nennt FÜNF weitere Ziele neben
+  Meta, die Schlüsselliste in Entscheidung (a) dieser Datei nennt SECHS, und GA4
+  ist nach (f) als Ziel überhaupt zu überdenken. Die Richtung ist in jeder dieser
+  Lesarten dieselbe.
+- **DER PREIS LIEGT NICHT BEIM BESUCHER.** Er liegt in FUNKTIONSLAUFZEIT und
+  NEBENLÄUFIGKEIT auf dem meistgetroffenen Pfad der Plattform, multipliziert über
+  ALLE Kunden. Das ist die Grösse, um die es geht — nicht die Wartezeit dessen,
+  der die Seite gerade ansieht.
+
+**FOLGE: (a) IST KEINE PINTEREST-BINDUNG MEHR.** Sie ist der Grund, warum VOR
+Pinterest zwei eigene Scheiben liegen — s. "## Der Messbefund, der die
+Reihenfolge der Scheiben 4 bis 6 trägt", "## Die vierte Scheibe — DIE NAHT DES
+META-FORWARDS (Zuschnitt)" und "## Die fünfte Scheibe — DER FORWARD LÖST SICH VON
+DER ANTWORT (Platzhalter)". Die Zahlen und das, was sie ausdrücklich NICHT
+begründen, stehen dort und werden hier NICHT wiederholt.
+**(b) UND (c) SIND DAVON UNBERÜHRT** und binden weiterhin Pinterest.
 
 **(b) ES GIBT KEINEN NEUTRALEN ORT FÜR EINE EVENT-KENNUNG.** Beide
 Erzeugungsstellen liegen im Meta-Pfad bzw. im PageView-Emitter, und DIESELBE
@@ -1697,3 +1780,285 @@ BLÖCKE NACHFÜHRT, KANN SPÄTER NICHT MEHR LESEN, WORAUF DIE ENTSCHEIDUNG BERUH
 nebeneinander angewandt, und ohne diesen Satz wirken sie wie Willkür:** **Eine
 VORGABE wird RICHTIGGESTELLT, ein ZEITDOKUMENT wird GESTEMPELT, eine ENTSCHEIDUNG
 bleibt UNANGETASTET.**
+
+---
+
+## Der Messbefund, der die Reihenfolge der Scheiben 4 bis 6 trägt
+
+PROVENIENZ: Vercel-Log, gemessen von Stefan am 2026-08-06, DREIZEHN Aufrufe. Die
+Werte stehen roh, ungerundet und ungefiltert.
+
+**MIT FORWARD** (Pixel-ID UND Token gesetzt), NEUN Werte in ms:
+998 · 822 · 377 · 1020 · 671 · 1680 · 643 · 453 · 662
+
+**OHNE FORWARD** (keine Pixel-ID), VIER Werte in ms:
+635 · 296 · 266 · 237
+
+**DER 3000-MS-DECKEL WURDE IN KEINEM WERT ERREICHT.** `META_FORWARD_TIMEOUT_MS`
+hat in dieser Messung also NICHT gegriffen: gemessen ist der REGULÄRE Verlauf,
+nicht das Verhalten am Deckel. Wer die Zahlen als Aussage über den Deckel liest,
+liest sie falsch.
+
+**WAS AUS DIESEN WERTEN GERECHNET IST — und deshalb ausdrücklich KEIN Messwert:**
+Die Trennung steht hier, weil eine rückwärts gerechnete Zahl beim späteren Lesen
+wie eine gemessene aussieht.
+- Spanne mit Forward: 377 bis 1680, Median 671 (neun Werte).
+- Spanne ohne Forward: 237 bis 635, Median 281 — bei VIER Werten ist der Median
+  das Mittel zweier Nachbarn und keine belastbare Mitte.
+- Differenz der Mediane: rund 390 ms.
+
+**ZWEI GRENZEN, DIE ZWINGEND DAZUGEHÖREN — ohne sie wird die Zahl später falsch
+gelesen:**
+
+**(i) DIE DIFFERENZ IST NICHT DER FORWARD, SONDERN SEINE OBERGRENZE.** Der Pfad
+ohne Pixel-ID spart NICHT nur den Forward, sondern auch eine Datenbank-Runde:
+`getCapiConfigByTrackingKey` kehrt bei fehlender Pixel-ID ZURÜCK, BEVOR die
+Geheimnis-Abfrage läuft. Die erste Gruppe enthält damit ZWEI Supabase-Runden, die
+zweite nur EINE.
+**PROVENIENZ DIESER EINEN AUSSAGE IST DER CODE, NICHT DAS LOG** — sie stammt aus
+der Aufklärung vom 2026-08-06 (read-only, am frühen Return in
+`getCapiConfigByTrackingKey` gelesen). Das Vercel-Log kann sie nicht zeigen; wer
+sie dem Log zuschreibt, hält eine Code-Lesung für eine Messung.
+
+**(ii) DREIZEHN AUFRUFE SIND EINE GRÖSSENORDNUNG, KEINE VERTEILUNG.** Eine
+Region, Niedriglast, ein Zeitpunkt. Kaltstarts sind ENTHALTEN und NICHT getrennt
+ausgewiesen — ein einzelner Wert kann also überwiegend Startzeit sein. Aus diesen
+Zahlen lässt sich eine Richtung ablesen und sonst nichts; jede Perzentil-Aussage
+wäre erfunden.
+
+### Was dieser Befund ausdrücklich NICHT begründet
+
+Der Abschnitt steht hier, damit niemand die Scheiben 4 und 5 später an einem
+Massstab misst, der nie gemeint war. **DREI BEGRÜNDUNGEN TRAGEN NICHT:**
+
+- **CORE WEB VITALS TRAGEN NICHT.** Ein keepalive-Beacon blockiert WEDER das
+  Rendering NOCH die Interaktion. Die Antwortzeit des Ingest taucht in keiner
+  dieser Kennzahlen auf. Wer so argumentiert, verspricht eine Wirkung, die es
+  nicht gibt.
+- **TRACKING-VERLUSTE TRAGEN NICHT.** Verluste entstehen beim ABSENDEN
+  (Blocker, Seiten-Teardown ohne keepalive), nicht beim ANTWORTEN. Eine langsame
+  204 kostet keine Conversion.
+- **EIN ZWEISTELLIGER MILLISEKUNDEN-ZIELWERT TRÄGT NICHT.** Der Boden liegt nach
+  der Messung oben bei der Supabase-Runde, die auch die zweite Gruppe noch
+  enthält, und der Datenzugriffsweg ist eine harte Rahmenbedingung (CLAUDE.md,
+  Abschnitt A: ausschliesslich über den Supabase-JS-Client, keine direkte
+  Verbindung, kein ORM). Ein Ziel unterhalb dieses Bodens wäre kein Ziel, sondern
+  ein Versprechen gegen die eigene Architektur.
+
+**DIE ERWARTUNG — AUSDRÜCKLICH ALS ERWARTUNG UND NICHT ALS ZIELWERT:** Nach der
+Entkopplung liegt die Antwortzeit in der GRÖSSENORDNUNG der zweiten Gruppe.
+**GEMESSEN WIRD NACH DEM LIVE-TEST DER FÜNFTEN SCHEIBE**, gegen dieselben
+Roh-Werte oben. Der Unterschied zwischen Erwartung und Zielwert ist nicht
+Wortklauberei: Eine Erwartung, die sich nicht bestätigt, ist ein BEFUND; ein
+verfehlter Zielwert ist ein FEHLSCHLAG. Hier ist nur das Erste gemeint.
+
+---
+
+## Die vierte Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)
+
+**ENTSCHEIDUNG (OWNER, 2026-08-06): VOR PINTEREST LIEGEN ZWEI EIGENE SCHEIBEN.
+DIE VIERTE IST DIE NAHT, DIE FÜNFTE DIE ENTKOPPLUNG. PINTEREST RÜCKT AUF SCHEIBE
+SECHS.**
+
+BEGRÜNDUNG, in dieser Reihenfolge — sie gehört zwingend dazu, sonst liest die
+nächste Instanz zwei Scheiben Vorarbeit als Verzögerung des eigentlichen
+Features:
+
+1. **DER FORWARD IST HEUTE KEINE NAHT, SONDERN EINGEWACHSEN.** Gemessen am
+   2026-08-06 (read-only): URL-Bau, Nutzlast, Zeiteinheit, Timeout-Gerüst und
+   Fehlerdeutung liegen ALLE im Rumpf von `handleIngest`, und der Empfänger ist
+   ein Singular (`CapiConfig` mit `pixelId` und `token`). Es gibt keine Funktion,
+   kein Interface und keinen Punkt, an dem ein zweites Ziel einhängen könnte. Ein
+   zweites Ziel MÜSSTE diese Trennung also ohnehin vornehmen — die Frage ist nur,
+   ob sie ALLEIN fährt oder zusammen mit einem neuen Netzwerk.
+2. **SIE FÄHRT ALLEIN** — dieselbe Begründung wie bei der ersten und der zweiten
+   Scheibe: Gebündelt wäre im Fehlerfall nicht zu erkennen, welche der beiden
+   Wirkungen ihn verursacht hat. Hier wiegt das schwerer als sonst, weil diese
+   Scheibe VERHALTENSNEUTRAL sein soll — und Neutralität lässt sich nur
+   nachweisen, wenn sonst nichts passiert.
+3. **DIE REIHENFOLGE NAHT VOR ENTKOPPLUNG IST NICHT BELIEBIG.** Die Entkopplung
+   verschiebt den Aufruf; solange der Aufruf über ein Dutzend Zeilen im
+   Handler-Rumpf verstreut ist, verschiebt man kein Stück Code, sondern
+   rekonstruiert es. Erst die Naht macht die fünfte Scheibe zu einer kleinen
+   Änderung.
+
+### Der Zuschnitt der vierten Scheibe
+
+**IN DIESER SCHEIBE:** Der Meta-Forward wird aus dem Kontrollfluss von
+`handleIngest` in eine EIGENE server-only-Datei mit EINER benannten Funktion
+gelöst. Sonst nichts.
+
+**WAS MIT UMZIEHT:**
+- der URL-Bau samt `META_GRAPH_VERSION` und dem Token im Query-String,
+- die Zusammensetzung der Nutzlast mit Metas Feldnamen (`data`, `event_name`,
+  `event_time`, `event_id`, `action_source`, `user_data`, `custom_data`,
+  `event_source_url`) UND den Typprüfungen, die zu diesen Feldern gehören,
+- die Zeiteinheit (Sekunden),
+- das Timeout-/Abbruch-Gerüst um genau diesen Aufruf,
+- `META_TEST_EVENT_CODE` an der Stelle, an der es die Nutzlast ergänzt,
+- der Fehler-Envelope und seine Deutung: `MetaErrorBody`, `describeMetaError`,
+  `META_ERROR_MSG_MAX`, `asLogValue`.
+
+**WAS AM PLATZ BLEIBT:** Body-Read und 400-Guard · das 204-Containment (`status`,
+`CORS_HEADERS`) · die trackingKey-Auflösung · der Kill-Switch-Zweig · der frühe
+Return des Confirm-Zweigs · das Varianten-Lesen · die Persist-Einplanung
+(`schedulePersist`) · das `isForwardable`-Gate.
+**DASS `isForwardable` BLEIBT, IST EINE ENTSCHEIDUNG UND KEIN VERSEHEN:** Es ist
+heute Meta-gebunden (sein eigener Kommentar sagt es), aber es entscheidet, OB
+überhaupt geforwardet wird — es gehört damit auf die Seite des Handlers, nicht in
+den Adapter. Wer es mitnimmt, verlagert eine Verzweigung des Kontrollflusses in
+etwas, das nur senden soll.
+
+**DIE VERHALTENS-INVARIANTEN, nummeriert — sie sind der Massstab des Reviews:**
+1. **DIE SEQUENZ ÄNDERT SICH NICHT.** Die Antwort steht weiterhin HINTER dem
+   Forward. Die Entkopplung ist die FÜNFTE Scheibe, nicht diese.
+2. **DIE NAHT WIRFT NIE.** Das 204-Containment gilt unverändert in JEDEM Pfad —
+   auch das Fehler-Gerüst selbst darf nicht nach aussen werfen.
+3. **TIMEOUT-WERT UND DECKELUNGS-MECHANIK BLEIBEN IDENTISCH.**
+4. **KEIN LOG FÜHRT URL ODER TOKEN.** Die URL trägt den Token im Query-String;
+   diese Zusage ist der Grund, warum die bestehende Log-Disziplin mit umzieht und
+   nicht neu geschrieben wird.
+5. **DER DRAHT-PAYLOAD IST GLEICH:** gleiche Feldnamen, gleiche Bedingungen für
+   das Weglassen optionaler Felder, gleiche Zeiteinheit.
+6. **DIE ROUTEN-PARITÄT BLEIBT:** `/api/e` und `/api/capi` exportieren weiterhin
+   DIESELBEN Funktionsreferenzen.
+
+**KEINE ABSTRAKTION: EINE DATEI, EINE FUNKTION, META IM NAMEN.** Kein Interface,
+kein Array von Zielen, kein Registry-Punkt.
+BEGRÜNDUNG, die zwingend dazugehört, sonst wird die fehlende Verallgemeinerung
+später als halbe Arbeit gelesen: **Bei genau EINEM Fall ist ein benanntes
+Duplikat ehrlicher als eine Abstraktion, die aus einem Fall geraten ist.** Das
+zweite Ziel bekommt seine EIGENE benannte Funktion — und erst der DRITTE Fall
+ersetzt das Modell, wenn er zeigt, welche Form trägt. Das ist dieselbe
+Projektregel wie bei der Geheimnis-Tabelle ("Abstraktion erst bei 2+ realen
+Fällen"), und die Auflage aus Frage (g) sagt bereits, woran eine zu früh
+geratene Form zerbräche: an LinkedIn.
+
+**DIE RÜCKGABEFORM BLEIBT UNVERÄNDERT WIE HEUTE; DAS LOGGING LIEGT IN DER NAHT.**
+Kein Ergebnistyp, kein Erfolgs-/Fehlschlag-Wert.
+BEGRÜNDUNG: Ein Ergebnistyp verschöbe die Log-Stelle in den Handler zurück und
+bräche damit genau die Neutralität, die diese Scheibe beweisen soll — der
+Handler bekäme eine Fallunterscheidung, die er heute nicht hat. **Die Frage, ob
+der AUSGANG eines Forwards eine sichtbare GRÖSSE wird, bleibt am Backlog-Punkt
+zur unsichtbaren Forward-Abweisung geparkt** (s. "#### Der Token-Zwischenfall —
+die stille Fehlerklasse, zum ERSTEN MAL beobachtet"). Sie wird hier NICHT
+vorentschieden und auch nicht nebenbei mitgebaut.
+
+**DER NEUTRALITÄTS-BEWEIS: DIE BESTEHENDEN TESTS DIESES PFADES LAUFEN
+UNVERÄNDERT DURCH.** Eine Anpassung auch nur EINES Tests ist eine
+**STOPP-BEDINGUNG** und wird VORGELEGT, nicht nachgezogen. Grund: Diese Scheibe
+behauptet, nichts am Verhalten zu ändern. Ein angepasster Test ist entweder der
+Beweis, dass die Behauptung nicht stimmt — oder der Beweis, dass der Test am
+Bau statt an der Sache hing. Beides muss gesehen werden, bevor es verschwindet.
+**GEMESSEN AM 2026-08-06 (read-only), was diese Erwartung STÜTZT — an SECHS
+namentlich genannten Dateien, nicht an "allen":** `ingest.persist.test.ts`,
+`ingest.timeout.test.ts`, `ingest.confirm.test.ts`, `ingest.forwardable.test.ts`,
+`ingest.variant.test.ts` (alle in `src/lib/capi/`) und
+`src/app/api/capi/route.test.ts`. Jede von ihnen mockt ausschliesslich über
+MODUL-PFADE (`server-only`, `@/lib/capi/token`, `@/lib/capi/config`,
+`next/server`, `@/lib/analytics/persist`) und prüft die Wirkung über
+`global.fetch`. Ein Modul-Pfad-Mock greift unabhängig davon, WELCHE Datei
+importiert — eine neue Datei in der Kette ändert daran nichts.
+
+**ZWEI GRENZEN DIESER STÜTZE, ausdrücklich:**
+- **DIE ERHOBENE MENGE IST KLEINER ALS DIE MENGE DER TESTS AUF DIESEM PFAD.**
+  NICHT erhoben sind `src/app/api/ingest-parity.test.ts` und
+  `src/lib/capi/token.test.ts` — beide berühren den Pfad — sowie die
+  client-seitigen `src/lib/tracking/meta.confirm.test.ts` und
+  `src/lib/generate.test.ts`, die den Server-Forward nicht prüfen. Für diese vier
+  ist die Aussage oben NICHT geprüft, weder positiv noch negativ.
+- **SIE SAGT NUR, DASS DIE MOCKS TRAGEN.** Sie sagt NICHT voraus, dass der Bau
+  keinen Import vergisst — sie nimmt dem Beweis nur seine unwahrscheinlichste
+  Ausrede.
+
+**AUSDRÜCKLICH NICHT IN DIESER SCHEIBE, je mit Grund:**
+- **DIE ENTKOPPLUNG VON DER ANTWORT.** Eigene, direkt folgende Scheibe (Invariante
+  1). Zusammengebaut wäre bei einem Fehlschlag nicht erkennbar, welche Hälfte ihn
+  verursacht hat — und der Neutralitäts-Beweis wäre nicht mehr führbar.
+- **PINTEREST ODER EIN ZWEITES ZIEL.** Es ist die SECHSTE Scheibe.
+- **JEDE VERALLGEMEINERUNG** — s. "KEINE ABSTRAKTION".
+- **DAS WIRE-FELD.** Unverändert der Grund aus der zweiten und dritten Scheibe:
+  nötig erst ab dem zweiten Ziel.
+- **DER GEMEINSAME ABLAGEORT FÜR ZIEL-NAMEN.** Backlog, und beim zweiten Ziel
+  eine echte Frage.
+
+### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
+
+Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
+
+- **Wo verläuft die Grenze zwischen NEUTRALER EINGABE und METAS VOKABULAR?**
+  Das ist die eine offene Entwurfsfrage dieser Scheibe und bewusst NICHT
+  vorentschieden. Zwei Stellen machen sie konkret, beide am 2026-08-06 gemessen:
+  · `resolveClientIp` liefert einen NEUTRALEN Wert (die Client-IP), trägt aber
+    einen Meta-EIGENEN Zweig — der Dev-Dummy hängt an `META_TEST_EVENT_CODE`.
+  · `asString` wird von BEIDEN Seiten benutzt: von der Pflichtfeld-Prüfung, die
+    bleibt, UND von der Nutzlast-Zusammensetzung, die geht.
+  Wer die Grenze zieht, entscheidet für beide — mitnehmen, dalassen oder teilen.
+- **Was von den Meta-Konstanten muss überhaupt umziehen?** `META_GRAPH_VERSION`
+  und `META_TEST_EVENT_CODE` liegen bereits in einer eigenen server-only-Datei.
+  Ein "Umzug", der sie erneut bewegt, wäre Arbeit ohne Wirkung — zu prüfen ist,
+  wer sie künftig importiert, nicht wo sie liegen.
+- **Bleibt die 400-Antwort byte-gleich, wenn der Body-Read am Platz bleibt, die
+  Feld-Typprüfungen aber umziehen?** Die Pflichtfelder und die optionalen Felder
+  werden heute mit demselben Helfer geprüft — die Trennlinie läuft mitten durch
+  diese Prüfungen.
+
+**KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
+dem Bau, getrennt vom Zuschnitt, wie bei den ersten drei Scheiben.
+
+---
+
+## Die fünfte Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT (Platzhalter)
+
+**ZWECK:** Die leere 204 wartet nicht mehr auf Meta — der Forward wird zuverlässig
+zugestellt, aber nicht mehr im Antwortpfad erwartet.
+
+**KEIN ZUSCHNITT.** Er entsteht nach dem Bau der vierten Scheibe und gegen deren
+Ergebnis; alles Weitere hier wäre geraten. Was die Scheibe einzulösen hat, steht
+in CLAUDE.md, Abschnitt A ("/API/E-SCHLANKHEIT"): BEIDE Hälften gelten
+gleichzeitig — die Antwort löst sich von Metas Latenz, UND der Forward muss
+trotzdem zuverlässig zugestellt werden. Wer nur die erste Hälfte umsetzt,
+verliert Conversions.
+
+---
+
+## Die sechste Scheibe — PINTEREST ALS ZWEITES ZIEL (Platzhalter)
+
+**ZWECK:** Das erste zusätzliche Fan-Out-Ziel neben Meta — die Scheibe, für die
+die ganze Phase existiert.
+
+**KEIN ZUSCHNITT.** Die Entscheidung, dass Pinterest das erste zusätzliche Ziel
+ist, steht unverändert in Frage (e) und wird hier nicht wiederholt.
+
+**VIER BINDUNGEN AUS DER AUFKLÄRUNG VOM 2026-08-06 GELTEN FÜR DIESE SCHEIBE UND
+SIND NOCH NICHT ZUGESCHNITTEN.** Sie stehen hier nur BENANNT, mit Symbolnamen und
+ohne Lösungsvorschlag — der Zuschnitt entsteht in einer eigenen Runde:
+
+1. **ES GIBT KEINEN NEUTRALEN ORT FÜR DIE EVENT-KENNUNG.** Zwei Erzeugungsstellen
+   im erzeugten Browser-Code — in `__psMetaFire` (`buildMetaRuntime`) und in
+   `buildPageViewScript` —, textlich dupliziert, ohne gemeinsame Quelle. Der
+   Server erzeugt nie eine. **Das BESTÄTIGT Bindung (b) der Erhebung vom
+   2026-08-05 und ist keine neue Erkenntnis** — neu ist nur, dass es am
+   heutigen Code nachgemessen ist.
+2. **DER SERVER ERFÄHRT NICHTS ÜBER DIE EINWILLIGUNG.** `CapiRequestBody` führt
+   kein solches Feld, und keine Stelle in `src/lib/capi/` oder
+   `src/lib/analytics/persist.ts` kennt den Begriff. Das ist die offene Frage (b)
+   "DIE FORM DES WIRE-FELDES" — sie wird mit dem zweiten Ziel fällig, weil ab
+   dann ein Beacon für ein Ziel erlaubt und für ein anderes verboten sein kann.
+3. **DER META-ZIELNAME LIEGT IN DREI UNABHÄNGIGEN KOPIEN:** `META_TARGET`
+   (server-only), `META_CONSENT_TARGET` (client-erreichbar) und das Literal im
+   CHECK der Geheimnis-Tabelle. Die Trennung der ersten beiden ist BEGRÜNDET —
+   die server-only-Datei ist aus erzeugtem Browser-Code nicht erreichbar, und der
+   Kommentar an `META_CONSENT_TARGET` sagt genau das. Ein zweites Ziel
+   vervielfacht diese Dreiheit UND bringt seine eigene Constraint-Erweiterung mit
+   (so entschieden in (d), als beabsichtigter Preis).
+4. **`tokenSet` IST EIN EINZELNER BOOLEAN IM CLIENT-BESESSENEN BLOB** und
+   entscheidet zur LAUFZEIT nichts: Ob geforwardet wird, entscheidet allein die
+   Auflösung in `getCapiConfigByTrackingKey` (Pixel-ID plus Geheimnis-Zeile).
+   Ausgangslage Punkt 16 sagt, dass er eine Vervielfachung braucht — "ERST MIT
+   DEM ZWEITEN ZIEL". Das ist diese Scheibe.
+
+**DIE FÜNFTE BINDUNG JENER AUFKLÄRUNG IST ES NICHT MEHR:** der wartende Forward.
+Sie ist der Grund für die Scheiben vier und fünf und dort abgehandelt — s. "###
+Gemessene Bindungen, die die PINTEREST-SCHEIBE binden", Punkt (a), in seiner
+richtiggestellten Fassung.

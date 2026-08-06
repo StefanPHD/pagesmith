@@ -10,7 +10,11 @@
 // wird — wie PAGEVIEW_EVENT — via JSON.stringify eingesetzt: kein Injektions-Vektor.
 
 import { PAGEVIEW_EVENT } from "./events";
-import { buildConsentScript, hasConsentScript } from "@/lib/tracking/consent";
+import {
+  ANALYTICS_CONSENT_TARGET,
+  buildConsentScript,
+  hasConsentScript,
+} from "@/lib/tracking/consent";
 
 const SCRIPT_ID = "__ps_pve";
 
@@ -28,10 +32,42 @@ const SCRIPT_ID = "__ps_pve";
 //   JSON.parse(request.text()), content-type-agnostisch.
 // - Bare Payload {trackingKey, eventID, event}: KEIN Pfad/Referrer (Ein-Seiten-Tool).
 //   source='server' setzt der Handler.
+//
+// --- DAS EINWILLIGUNGS-GATE (Phase 11, dritte Scheibe) -----------------------
+// Zwei Zeilen, ZWISCHEN Guard-LESEN und Kennungs-Erzeugung. Beides ist entschieden
+// und keine Bau-Wahl:
+//
+// WARUM GENAU DIESE STELLE — Zuschnitt (j) im Wortlaut, nicht als Verweis: "Der
+// Guard beantwortet 'STEHT UEBERHAUPT ETWAS AN?', die Einwilligung 'DARF ES?'. Die
+// zweite Frage zu stellen, wenn die erste schon NEIN sagt, ist ein URTEIL UEBER
+// EINEN VORGANG, DEN ES NICHT GIBT." Der Grund ist die AUSSAGE, nicht der gesparte
+// Aufruf — wer das fuer eine Mikro-Optimierung haelt, stellt es beim naechsten
+// Umbau achtlos um.
+// Dass sie VOR dem Guard-SETZEN steht, ist dagegen KEINE eigene Wahl: es folgt
+// zwingend aus (c) — der Guard bedeutet "fuer diesen Load ist ein Seitenaufruf
+// raus", und ihn im BLOCKIERTEN Fall zu setzen waere eine falsche Aussage.
+//
+// DIE EXISTENZPRUEFUNG IST KEIN ZWEITES URTEIL — der Kommentar steht hier, damit
+// sie spaeter nicht als Regel-Dublette "aufgeraeumt" wird: Geprueft wird, OB ein
+// Urteil da ist, NICHT wie es ausfaellt. Die Regel selbst bleibt an genau einer
+// Stelle (tracking/consent.ts). Sie ist noetig, weil der Aufruf eine
+// BLOCKUEBERGREIFENDE Referenz ist: fehlt der Block (s. hasConsentScript unten),
+// wuerfe ein direkter Aufruf, und der Wurf verliesse die IIFE — die try/catch
+// unten umschliessen NUR das Senden. FAIL-CLOSED aus demselben Grund wie die Regel:
+// fehlt das Urteil, ist NICHT bekannt, ob eingewilligt wurde. Der Betreiber merkt
+// es (die Seitenaufrufe hoeren auf) — fail-open merkte niemand.
+// Zeichengleich zur Meta-Fassung (tracking/meta.ts, __psMetaInit/__psMetaFire):
+// blosser Bezeichner, damit die zweite Instanz derselben Denkfigur als solche
+// erkennbar bleibt. `typeof` auf einen nicht deklarierten Bezeichner wirft nicht.
+//
+// (k): Der SENDE-FEHLSCHLAG ist davon NICHT beruehrt. Ein Sendeversuch liefert
+// "angenommen", nicht "zugestellt"; der Guard bleibt dort unveraendert wie bisher.
 export function buildPageViewScript(trackingKey: string): string {
   return `<script id="${SCRIPT_ID}">
 (function(){
   if (window.__ps_pv) return;
+  if (typeof __psConsent !== "function") return;
+  if (!__psConsent(${JSON.stringify(ANALYTICS_CONSENT_TARGET)})) return;
   var eid = (window.crypto && window.crypto.randomUUID)
     ? window.crypto.randomUUID()
     : "e" + Date.now() + "-" + Math.random().toString(16).slice(2);

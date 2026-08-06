@@ -22,6 +22,31 @@ export const CONSENT_SCRIPT_ID = "pagesmith-consent";
 // erzeugten Browser-Code nicht erreichbar.
 export const META_CONSENT_TARGET = "meta";
 
+// Der Ziel-Schluessel fuer UNSERE EIGENE Auswertung (Phase 11, dritte Scheibe).
+//
+// EIGENE BEGRUENDUNGSZEILE, bewusst NICHT unter den Kommentar darueber gehaengt:
+// Jener begruendet die Schreibweise mit dem PLATTFORM-Namensraum settings.pixels.
+// <platform> — und `analytics` ist KEINE Plattform, sondern eine KATEGORIE. Die
+// Begruendung dort traegt fuer ihn also nicht.
+//
+// DASS DER NAMENSRAUM KATEGORIE UND ANBIETER MISCHT, IST ABSICHT (Zuschnitt (b)):
+// pro Anbieter ist FEINER als pro Kategorie, und feiner ist fuer dieses Produkt
+// richtig — der Betreiber soll Meta erlauben und Pinterest verbieten koennen. Die
+// Mischung laesst sich auf ZWEI Weisen falsch "reparieren": Wer auf Kategorien
+// harmonisiert, verliert die Anbieter-Granularitaet; wer `marketing` NEBEN `meta`
+// stellt, erzeugt zwei Urteile fuer dieselbe Sache.
+//
+// EINBAHNSTRASSE (Zuschnitt (a)): Ab dieser Scheibe steht der Name in
+// AUSGELIEFERTEM Code, und Betreiber tragen ihn in ihre eigene Konfiguration ein.
+// Eine spaetere Umbenennung passt nicht mehr zu ihrem Schluessel — und weil das
+// Gate fail-closed ist, schaltet sie deren Statistik AB, ohne sichtbaren Fehler.
+//
+// SCHREIBWEISE snake_case/klein gilt fuer ihn genauso; sie folgt daraus, dass der
+// Betreiber diese Schluessel in einem JS-Objektliteral schreibt. Und der ORT ist
+// aus demselben Grund dieser wie bei META_CONSENT_TARGET: keine server-only-Datei,
+// damit der Wert in erzeugten Browser-Code eingesetzt werden kann.
+export const ANALYTICS_CONSENT_TARGET = "analytics";
+
 /**
  * Der Laufzeit-Text des Gates. Setzt window.__psConsent(target) -> boolean.
  *

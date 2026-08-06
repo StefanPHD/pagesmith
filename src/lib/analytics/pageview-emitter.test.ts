@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   buildPageViewScript,
   injectPageViewEmitter,
@@ -90,5 +90,199 @@ describe("buildPageViewScript", () => {
     expect(script.match(/<\/script>/g)?.length).toBe(1);
     expect(script.endsWith("</script>")).toBe(true);
     expect(script.toLowerCase()).not.toContain("</body>");
+  });
+});
+
+// ===========================================================================
+// WIRKUNGS-HARNESS + WIRKUNGS-TESTS (Phase 11, dritte Scheibe)
+//
+// DIE TESTS DARUEBER PRUEFEN STRUKTUR, DIESE PRUEFEN WIRKUNG. Fuer eine Scheibe,
+// deren ganzer Gegenstand "feuert / feuert nicht" ist, war die Struktur allein
+// die Luecke: Ein Teilstring beweist nicht, dass der Emitter schweigt.
+//
+// DER HARNESS LAEUFT UEBER DEN ECHTEN EINFUEGER und evaluiert die Scripts in
+// DOKUMENT-REIHENFOLGE. Er stellt die Reihenfolge NICHT von Hand her — genau das
+// ist der Unterschied zur billigeren Variante: Faellt die Einfuegung des
+// Gate-Blocks aus, merkt der Harness es, statt darueber hinwegzugehen.
+// ===========================================================================
+
+const HTML_OHNE_WIRING = "<html><body><h1>nur Text</h1></body></html>";
+const KEY = "tk-harness";
+
+type BeaconSpy = ReturnType<typeof vi.fn>;
+type Mutable = Record<string, unknown>;
+
+/**
+ * Baut das Dokument ueber injectPageViewEmitter, evaluiert alle Scripts in
+ * Dokument-Reihenfolge und gibt den sendBeacon-Spion zurueck.
+ *
+ * DREI HYGIENE-PFLICHTEN, je mit ihrem Grund — ohne sie misst der Test den
+ * VORGAENGER statt den eigenen Fall:
+ *
+ * (1) __psConsent ABRAEUMEN. Der Gate-Block setzt es beim Evaluieren SELBST, also
+ *     nicht ueber vi.stubGlobal — vi.unstubAllGlobals raeumt es deshalb NICHT ab.
+ *     Ein stehengebliebenes Urteil aus dem Vorgaengertest ueberlebte sonst in den
+ *     Fall "Block fehlt" hinein und machte ihn gruen aus dem falschen Grund.
+ * (2) __ps_pv ABRAEUMEN — die schaerfste der drei. Der Guard ist eine
+ *     Eigenschaft von window und ueberlebt jeden Test. OHNE DIESE ZEILE SAEHE
+ *     JEDER TEST AB DEM ZWEITEN EINEN GESETZTEN GUARD und meldete "kein Beacon",
+ *     UNABHAENGIG VON DER EINWILLIGUNG: Jeder Verbots-Test waere gruen, ohne
+ *     irgendetwas zu pruefen.
+ * (3) sendBeacon SETZEN. jsdom implementiert navigator.sendBeacon NICHT — ohne
+ *     Spion ist `navigator.sendBeacon && …` falsy, der Emitter faellt auf fetch
+ *     zurueck (in jsdom ebenfalls nicht vorhanden) und tut LAUTLOS NICHTS. Der
+ *     Spion ist damit Voraussetzung der Messung, nicht Komfort.
+ *
+ * removeGate stellt den Zustand aus Befund (f) nach: das Dokument traegt den
+ * Block nicht, obwohl der Emitter da ist.
+ */
+function mountEmitter(
+  consent: unknown,
+  opts: { removeGate?: boolean } = {}
+): BeaconSpy {
+  delete (globalThis as unknown as Mutable).__psConsent; // (1)
+  delete (window as unknown as Mutable).__ps_pv; // (2)
+  const beacon = vi.fn(() => true); // (3)
+  (navigator as unknown as Mutable).sendBeacon = beacon;
+
+  vi.stubGlobal("pagesmithConsent", consent);
+
+  const doc = new DOMParser().parseFromString(
+    injectPageViewEmitter(HTML_OHNE_WIRING, KEY),
+    "text/html"
+  );
+  if (opts.removeGate) doc.querySelector("#pagesmith-consent")?.remove();
+  // Geparstes HTML fuehrt <script> nicht aus -> bewusst evaluieren, in genau der
+  // Reihenfolge, in der sie im Dokument stehen (wie es der Browser taete).
+  for (const s of Array.from(doc.querySelectorAll("script"))) {
+    window.eval(s.textContent ?? "");
+  }
+  return beacon;
+}
+
+/** Die Nutzlast des ersten Beacons (text/plain-Blob -> JSON). */
+async function payloadOf(beacon: BeaconSpy): Promise<Record<string, unknown>> {
+  const [, blob] = beacon.mock.calls[0] as unknown as [string, Blob];
+  return JSON.parse(await blob.text());
+}
+
+/** Der Guard-Wert nach dem Mount, oder undefined. */
+function guardValue(): unknown {
+  return (window as unknown as Mutable).__ps_pv;
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  delete (navigator as unknown as Mutable).sendBeacon;
+  delete (globalThis as unknown as Mutable).__psConsent;
+  delete (window as unknown as Mutable).__ps_pv;
+});
+
+describe("PageView-Emitter hinter dem Gate — WIRKUNG", () => {
+  it("T1 KEIN HOOK -> der Beacon geht raus (Bestandszusage, POSITIVKONTROLLE)", async () => {
+    // ROT DURCH: einen Ausfallmodus, der "nie entschieden" als verboten liest.
+    // "Nichts gesetzt" heisst ERLAUBT — kippte das, bräche es JEDEN Bestandskunden.
+    const beacon = mountEmitter(undefined);
+    expect(beacon).toHaveBeenCalledTimes(1);
+    const [url] = beacon.mock.calls[0] as unknown as [string, Blob];
+    expect(url).toBe("/api/e");
+    expect(await payloadOf(beacon)).toEqual({
+      trackingKey: KEY,
+      eventID: expect.any(String),
+      event: PAGEVIEW_EVENT,
+    });
+  });
+
+  it("T2 OBJEKT MIT analytics:true -> Beacon, Nutzlast unveraendert", async () => {
+    // ROT DURCH: einen falsch gelesenen Schluessel. Prueft zugleich, dass die
+    // Nutzlast BYTE-GLEICH bleibt (kein Wire-Feld — Ausschluss der Scheibe).
+    const beacon = mountEmitter(() => ({ analytics: true }));
+    expect(beacon).toHaveBeenCalledTimes(1);
+    expect(Object.keys(await payloadOf(beacon)).sort()).toEqual([
+      "event",
+      "eventID",
+      "trackingKey",
+    ]);
+  });
+
+  it("T3 OBJEKT OHNE analytics ({meta:true}) -> KEIN Beacon (DIE UMKEHR + der Schluesselbeweis)", () => {
+    // ROT DURCH ZWEI Mutationen, und das macht ihn zum schaerfsten Test hier:
+    // M-A (Pruefung entfernt -> er feuert) UND M-D (Schluessel auf `meta`
+    // gedreht -> {meta:true} waere dann erlaubt und er feuerte ebenfalls).
+    expect(mountEmitter(() => ({ meta: true }))).not.toHaveBeenCalled();
+  });
+
+  it("T4 BOOLEAN false -> KEIN Beacon", () => {
+    // ROT DURCH: M-A (Pruefung entfernt).
+    expect(mountEmitter(() => false)).not.toHaveBeenCalled();
+  });
+
+  it("T5 FEHLENDER GATE-BLOCK -> KEIN Beacon (fail-closed nach (d))", () => {
+    // T5 IST DER BEACON-WAECHTER: er misst, OB gesendet wurde — und sonst nichts.
+    // ROT DURCH: M-B (Ausfallmodus der Existenzpruefung auf erlaubt gedreht).
+    //
+    // DER MOUNT IST GEGEN EINEN WURF ABGESCHIRMT. Der Grund ist nicht die
+    // Mechanik, sondern die RICHTUNG DES ROTS: Ohne die Abschirmung meldete T5
+    // unter der Mutation, die die Existenzpruefung entfernt, einen Fehlschlag, der
+    // sich liest wie "ein Beacon ging raus" — der Wurf aus dem Emitter schlug bis
+    // in den Testkoerper durch, noch bevor die Assertion lief. EIN TEST, DESSEN
+    // ROT IN DIE FALSCHE RICHTUNG ZEIGT, SCHICKT DEN LESER AN DIE FALSCHE STELLE.
+    //
+    // ARBEITSTEILUNG, ausdruecklich: T5 bemerkt einen ABSTURZ BEWUSST NICHT — das
+    // tut T7, der ABSTURZ-WAECHTER, und er ist der EINZIGE, der ihn faengt.
+    // DASS T5 IHN NICHT BEMERKT, IST BEABSICHTIGT UND KEINE NACHLAESSIGKEIT:
+    // Lektion (b) warnt davor, dass ein Absturz UNBEMERKT bleibt — er bleibt es
+    // nicht, T7 sieht ihn. Wer T7 spaeter als redundant entfernt, macht aus dieser
+    // Arbeitsteilung genau die Luecke, vor der die Lektion warnt.
+    //
+    // DIE ABSCHIRMUNG FAENGT DEN WURF, SIE UNTERDRUECKT IHN NICHT ANDERSWO: sie
+    // liegt allein um DIESEN Mount; T7 evaluiert unabgeschirmt.
+    try {
+      mountEmitter(undefined, { removeGate: true });
+    } catch {
+      // bewusst geschluckt — der Waechter dafuer ist T7.
+    }
+    // Der Spion haengt am navigator und ist auch dann lesbar, wenn der Mount
+    // vorzeitig endete: der Harness setzt ihn VOR dem Evaluieren.
+    const spy = (navigator as unknown as Mutable).sendBeacon as BeaconSpy;
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it("T6 BLOCKIERT -> der Guard bleibt UNGESETZT (Einloesung von (c))", () => {
+    // ROT DURCH: M-C (Guard vor die Pruefung gezogen). Der Guard bedeutet "fuer
+    // diesen Load ist ein Seitenaufruf raus" — im blockierten Fall gab es keinen.
+    mountEmitter(() => false);
+    expect(guardValue()).toBeUndefined();
+  });
+
+  it("T6' ERLAUBT -> der Guard IST gesetzt und traegt DIESELBE Kennung wie die Nutzlast", async () => {
+    // POSITIVKONTROLLE ZU T6: Ohne sie zeigte T6 nur, dass IRGENDETWAS den Guard
+    // nicht setzt — nicht, dass er im erlaubten Fall sehr wohl gesetzt wird.
+    // ROT DURCH: einen zweiten Kennungs-Erzeuger (dann divergieren Guard und
+    // Nutzlast) oder einen Guard, der gar nicht mehr gesetzt wird.
+    const beacon = mountEmitter(() => ({ analytics: true }));
+    const payload = await payloadOf(beacon);
+    expect(typeof guardValue()).toBe("string");
+    expect(guardValue()).toBe(payload.eventID);
+  });
+
+  it("T7 FEHLENDER GATE-BLOCK -> das Evaluieren WIRFT NICHT", () => {
+    // T7 IST DER ABSTURZ-WAECHTER und das EINZELSTUECK dieser Scheibe: der EINZIGE
+    // Test, der das Entfernen der Existenzpruefung faengt.
+    //
+    // ARBEITSTEILUNG, ausdruecklich: T5 ist der BEACON-WAECHTER — er misst, OB
+    // gesendet wurde, und bemerkt einen Absturz BEWUSST NICHT (sein Mount ist
+    // abgeschirmt). T7 misst den ABSTURZ, und sonst nichts. "blockiert" und
+    // "abgestuerzt" sehen an einer Abwesenheits-Assertion identisch aus — deshalb
+    // braucht es beide.
+    // DASS T5 DEN ABSTURZ NICHT BEMERKT, IST BEABSICHTIGT UND KEINE
+    // NACHLAESSIGKEIT: Lektion (b) warnt davor, dass ein Absturz UNBEMERKT bleibt
+    // — er bleibt es nicht, weil DIESER Test ihn sieht. WER IHN SPAETER ALS
+    // REDUNDANT ENTFERNT, macht aus der beabsichtigten Arbeitsteilung genau die
+    // Luecke, vor der die Lektion warnt.
+    //
+    // Die try/catch im Emitter umschliessen NUR das Senden; ein Wurf an der
+    // Pruefstelle verliesse die IIFE und window.eval.
+    expect(() => mountEmitter(undefined, { removeGate: true })).not.toThrow();
   });
 });

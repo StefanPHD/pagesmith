@@ -468,22 +468,82 @@ PROVENIENZ: Vollständig ÜBERNOMMEN aus der Aufklärungsrunde vom **2026-08-03*
 Nichts davon ist in dieser Runde neu erhoben worden; wer es anzweifelt, misst
 nach, statt es umzuschreiben.
 
+**STEMPEL AM GANZEN ABSCHNITT — 2026-08-06. ER GILT FÜR ALLE PUNKTE GEMEINSAM
+UND ERSETZT KEINEN EINZELNEN.** Dieser Abschnitt beschreibt den Stand VOR der
+Phase und ist durch sie in Teilen überholt. **DAS IST KEINE NACHLÄSSIGKEIT,
+SONDERN EIGENSCHAFT: Je erfolgreicher die Arbeit, desto falscher wird eine
+Ausgangslage.** Ein Abschnitt, der beschreibt, wogegen man angetreten ist, muss
+altern — sonst hätte die Phase nichts bewegt.
+
+**WELCHE PUNKTE ÜBERHOLT SIND, UND WODURCH — mit Nummern, damit niemand den
+GANZEN Abschnitt für überholt hält:**
+- **Punkte 1, 2 und 3** — durch die ZWEITE Scheibe: die Einwilligungs-Auswertung
+  ist aus dem Meta-Laufzeit-Text herausgezogen und dabei umbenannt worden.
+- **Punkt 4** — der NACHSATZ durch die ZWEITE Scheibe (ein dritter eigener Block
+  kam hinzu), der HAUPTSATZ durch die DRITTE (der Emitter steht seither hinter
+  dem Gate).
+- **Punkt 7** — durch die ZWEITE Scheibe; er trägt seinen eigenen Stempel bereits
+  unmittelbar über sich.
+- **Punkte 8 und 13** — durch die ERSTE Scheibe: der Doppelschreib und der
+  Wechsel des Lesepfads auf die neue Geheimnis-Tabelle.
+Je überholtem Punkt steht die heutige Lage als EIGENE Zeile am Punkt selbst, mit
+Symbolnamen statt Zeilennummer.
+
+**DIE ÜBRIGEN PUNKTE — 5, 6, 9, 10, 11, 12, 14, 15 UND 16 — SIND VON DEN DREI
+SCHEIBEN NICHT ÜBERHOLT.** Das ist geprüft, aber NICHT gleich tief, und der
+Unterschied gehört dazu: 5, 6, 9, 10, 11, 15 und 16 sind am 2026-08-06 am Code
+nachgemessen; bei 12 und 14 ist nur geprüft, dass keine der drei Scheiben ihren
+Gegenstand angefasst hat — ihr übriger Inhalt trägt weiter die Provenienz vom
+2026-08-03.
+
+**DER WORTLAUT BLEIBT VOLLSTÄNDIG STEHEN, WEIL ER DER MASSSTAB IST.** Die drei
+Protokolle messen gegen diese Lage. Wer den Abschnitt umschreibt, nimmt der Datei
+genau den Bezugspunkt, an dem sich zeigt, was die Phase bewirkt hat.
+
+**WIE ER ZU LESEN IST: als ZUSTANDSBERICHT MIT DATUM, nicht als Beschreibung des
+heutigen Codes.** Wer daraus einen Bau ableitet, misst gegen einen Zustand, den
+es nicht mehr gibt — und das ist die teuerste Art, diese Datei falsch zu
+benutzen, weil ein veralteter Messbericht sich beim Lesen wie ein aktueller
+anfühlt.
+
 1. **`psConsent()` liest `window.pagesmithConsent` — und NIRGENDS wird es
    gesetzt.** Deklaration in `src/lib/tracking/meta.ts:103-111`, als String im
    erzeugten Laufzeit-Text. Die Repo-weite Suche findet keine einzige
    Produktivstelle, die den Wert schreibt: kein Banner, keine Komponente, keine
    Einstellung. Die einzigen Setzer sind zwei `vi.stubGlobal`-Aufrufe in Tests.
+   **HEUTE (ZWEITE SCHEIBE):** Die Auswertung ist `buildConsentRuntime` in
+   `src/lib/tracking/consent.ts` und heisst zur Laufzeit `window.__psConsent`;
+   `psConsent` gibt es in `tracking/meta.ts` nicht mehr. UNVERÄNDERT gilt der
+   Kern: keine Produktivstelle SETZT `window.pagesmithConsent`, gelesen wird es
+   allein in `buildConsentRuntime`. Überholt ist die Zahl der Test-Setzer — es
+   sind vier in zwei Dateien.
 2. **Drei Lesestellen, alle in derselben Datei:** `meta.ts:105-106` (die
    Auswertung selbst), `meta.ts:114` (gated den Script-Load in `__psMetaInit`),
    `meta.ts:163` (gated jedes Event in `__psMetaFire`).
+   **HEUTE (ZWEITE UND DRITTE SCHEIBE):** Die Auswertung steht nicht mehr bei
+   ihren Lesestellen. Gefragt wird sie an DREI Stellen in ZWEI Dateien:
+   `__psMetaInit` und `__psMetaFire` in `tracking/meta.ts` für
+   `META_CONSENT_TARGET`, `buildPageViewScript` in
+   `analytics/pageview-emitter.ts` für `ANALYTICS_CONSENT_TARGET`.
 3. **Fehlt der Hook, liefert `psConsent()` `true`** (`meta.ts:107`). Wirft der
    Hook, liefert es `false` (`meta.ts:109`).
+   **HEUTE (ZWEITE SCHEIBE):** Die Regel steht in `buildConsentRuntime`. BEIDE
+   Aussagen gelten dort der Sache nach weiter — nichts gesetzt bleibt erlaubend,
+   ein Wurf bleibt verbietend —, aber unter anderem Namen und mit ERWEITERTER
+   Reichweite: mehrere weitere Eingabeformen sind seither verboten (s. "DIE
+   AUSWERTUNGSREGEL").
 4. **Der PageView-Emitter trägt KEIN Gate und feuert unbedingt.**
    `buildPageViewScript` (`src/lib/analytics/pageview-emitter.ts:30-52`) ruft
    weder `psConsent` noch `window.pagesmithConsent`; die IIFE feuert nach dem
    `window.__ps_pv`-Guard (`:33`) einen Beacon an `/api/e` (`:45`). Von den zwei
    first-party-Inline-Skripten einer publizierten Seite ist damit EINES gegated
    und EINES nicht.
+   **HEUTE — HAUPTSATZ DURCH DIE DRITTE SCHEIBE, NACHSATZ DURCH DIE ZWEITE:**
+   `buildPageViewScript` fragt vor dem Senden `__psConsent` für
+   `ANALYTICS_CONSENT_TARGET`, zwischen Guard-LESEN und Kennungs-Erzeugung — der
+   Emitter trägt also ein Gate. Und die publizierte Seite trägt seit der zweiten
+   Scheibe einen DRITTEN eigenen Block, den Gate-Block selbst
+   (`buildConsentScript`); gegated sind seither BEIDE Konsumenten.
 5. **Der Server kennt KEIN Einwilligungsfeld.** `CapiRequestBody`
    (`src/lib/capi/ingest.ts:48-60`) führt `trackingKey`, `eventID`, `event`,
    `value`, `currency`, `eventSourceUrl`, `isCustom`, `_fbp`, `obs` — und nichts
@@ -528,6 +588,11 @@ hier um die Tabelle, die die erste Scheibe umstellt.
    Policies stammen aus einer FRÜHEREN Fassung, in der der Schreibweg über den
    Sitzungs-Client lief; der Wechsel ist im JSDoc-Kopf von `setCapiToken`
    (`actions.ts`, Punkt 4 des Zwei-Client-Flusses) festgehalten.
+   **HEUTE (ERSTE SCHEIBE):** Die Lesestelle liest `project_secrets` statt
+   `project_tokens`, und jede der beiden Server-Actions schreibt bzw. löscht in
+   BEIDEN Tabellen — aus EINER Schreibanweisung je Action sind ZWEI geworden
+   (Doppelschreib). Die AUSSAGE des Punktes gilt unverändert: alle diese Zugriffe
+   laufen über den `service_role`-Client, die beiden Policies bleiben ungenutzt.
 9. **DIE TRAGENDEN KONTROLLEN SIND ZWEI ANDERE — und das ist der wichtigste
    Punkt dieser Erhebung:**
    - die **FEHLENDE SELECT-Policy** (`0005:28-31`): unter aktiver RLS ohne
@@ -556,6 +621,10 @@ hier um die Tabelle, die die erste Scheibe umstellt.
     `gen types`-Schritt — es gibt KEINEN Generierungslauf, den eine zusätzliche
     Struktur stören könnte. Ebenso: KEIN `SELECT *` im Produktivcode; alle drei
     Zugriffe nennen ihre Spalten explizit.
+    **HEUTE (ERSTE SCHEIBE):** Es sind FÜNF Zugriffe auf die Geheimnis-Tabellen,
+    nicht drei — vier in `actions.ts` (Upsert und Delete je Tabelle), einer in
+    `token.ts`. Dass keiner `SELECT *` nutzt und jeder seine Spalten explizit
+    nennt, gilt unverändert.
 14. **KEIN TEST KANN RLS PRÜFEN.** Die Suite mockt jeden Datenbankzugriff; die
     Gates laufen nachweislich ohne Umgebungsvariablen (`.github/workflows/ci.yml:19-26`,
     dort gemessen festgehalten). Eine Policy ist eine Eigenschaft der Datenbank —
@@ -871,10 +940,27 @@ allen. Sie hängt WEDER an der Pixel-ID NOCH an der Mapping-Tabelle.**
   abzulegen hiesse, sie in der nächsten Scheibe wieder herauszuholen.
 - WARUM DIE ZUSAGE "REINE TEXTSEITE OHNE SCRIPT" INTAKT BLEIBT: Ohne Konsument
   gibt es nichts einzuwilligen, also auch keinen Block.
-**DER MECHANISMUS IST OFFEN** und wird als PFLICHT-GATE des Bau-Prompts geführt,
-nicht hier entschieden: ob der Erzeuger den Publish- vom Export-Pfad
-unterscheidet und ob der Emitter-Einfüger den Block tragen könnte, ist
-UNGEMESSEN.
+**DER MECHANISMUS IST GEMESSEN — RICHTIGGESTELLT AM 2026-08-06.** Hier stand, er
+sei OFFEN und werde als PFLICHT-GATE des Bau-Prompts geführt: ob der Erzeuger den
+Publish- vom Export-Pfad unterscheidet und ob der Emitter-Einfüger den Block
+tragen könnte, sei UNGEMESSEN. **DIE MESSUNG LIEGT SEIT DEM BAU VOR:**
+- **DER ERZEUGER UNTERSCHEIDET DIE PFADE NICHT.** `generateFunctional` kennt
+  keinen eigenen Publish-Modus — Publish und Export laufen durch DENSELBEN
+  Aufruf. Seine einzige Verzweigung hängt an der Zahl der Laufzeit-Mappings,
+  nicht am Pfad: ohne sie entsteht dort GAR KEIN Block.
+- **DER EMITTER-EINFÜGER TRÄGT DEN BLOCK.** `injectPageViewEmitter` fragt
+  `hasConsentScript` und ergänzt ihn, wenn er fehlt.
+- **DESHALB ZWEI EINFÜGESTELLEN BEI EINER IMPLEMENTIERUNG** — `generate.ts` für
+  das Wiring-Dokument, `injectPageViewEmitter` für die publizierte Seite ohne
+  Wiring. EIN Urteil, zwei Träger.
+
+**WARUM RICHTIGGESTELLT UND NICHT GESTEMPELT — die Begründung gehört in den Text,
+sonst bekommt dieser Abschnitt beim nächsten Aufräumen die Behandlung der
+Ausgangslage:** Ein ZUSCHNITT sagt, WAS ZU BAUEN IST, und wird in dieser Rolle
+gelesen. Dass die Protokolle später gegen ihn messen, ändert daran nichts — **ein
+Maßstab mit falschen Angaben taugt nicht als Maßstab.** Und diese Aussage war die
+teuerste von allen: **Sie FORDERT EINE MESSUNG, DIE LÄNGST VORLIEGT.** Wer sie
+unverändert liest, misst noch einmal, was schon gebaut ist.
 
 **AUSDRÜCKLICH NICHT IN DIESER SCHEIBE, je mit Grund:**
 - **DAS WIRE-FELD** (das Einwilligungs-Signal reist zum Server). Bei EINEM Ziel
@@ -886,6 +972,12 @@ UNGEMESSEN.
   Verhaltensänderung: sie kann Seitenaufrufe unterdrücken, die heute gezählt
   werden. Zusammengebaut wäre bei einem Fehlschlag nicht erkennbar, welche
   Hälfte ihn verursacht hat. EIGENE Scheibe, direkt danach.
+  **EINGELÖST AM 2026-08-06: die DRITTE Scheibe IST diese eigene Scheibe** (s.
+  "## Die dritte Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)").
+  **DER WORTLAUT BLEIBT, weil hier NICHTS FALSCH IST, sondern nur ERLEDIGT** —
+  anders als bei der Mechanismus-Aussage darüber, die eine Messung forderte, die
+  es längst gab. Der Ausschluss war richtig, und seine Begründung ist der Grund,
+  warum die dritte Scheibe ALLEIN gefahren ist.
 - **PINTEREST, ein zweites Ziel, jede Änderung am Forward.**
 - **DIE GENERISCHE AKTIONS-EINWILLIGUNG.** Sie ist KEIN Bauziel dieser Scheibe,
   aber eine AUFLAGE an ihren Entwurf: das Gate muss sie später bedienen können,
@@ -943,9 +1035,25 @@ Kennung trägt den Verlustraten-Join. Ein zweites Ziel fasst damit die
 Marquee-Metrik an — das ist keine Nebenwirkung, die man beim Bauen bemerkt,
 sondern eine Vorbedingung.
 
-**(c) DIE EINWILLIGUNGS-AUSWERTUNG LEBT HEUTE IM META-LAUFZEIT-TEXT** und
-existiert OHNE Pixel-ID gar nicht. Das ist der Grund, warum das Herausziehen die
-SCHEIBE IST und nicht ihr Nebenprodukt.
+**(c) DIE EINWILLIGUNGS-AUSWERTUNG LEBT SEIT DER ZWEITEN SCHEIBE IN EINER EIGENEN
+DATEI** — `buildConsentRuntime` in `src/lib/tracking/consent.ts` — und hängt
+WEDER an der Pixel-ID NOCH an der Mapping-Tabelle: Den Block erzeugen ZWEI
+Einfügestellen, `generate.ts` für das Wiring-Dokument und
+`injectPageViewEmitter` für die publizierte Seite ohne Wiring.
+
+**RICHTIGGESTELLT AM 2026-08-06, AUSDRÜCKLICH NICHT GESTEMPELT.** Bis dahin stand
+hier: die Auswertung lebe HEUTE im Meta-Laufzeit-Text und existiere OHNE Pixel-ID
+gar nicht. **BEIDE HALBSÄTZE SIND ÜBERHOLT.** Der Grund für die Richtigstellung
+liegt in der Überschrift darüber: Diese Bindungen zeigen auf die NOCH KOMMENDE
+Pinterest-Scheibe und lesen sich deshalb als VORGABE — sie wird gegen sie
+geplant. Ein Stempel liesse die falsche Fassung als Handlungsanweisung stehen.
+**PROVENIENZ DIESES EINEN PUNKTES IST DAMIT DER 2026-08-06**, nicht der
+2026-08-05 des Abschnittskopfs.
+
+**DER NACHSATZ BLEIBT UNANGETASTET UND RICHTIG, weil er eine historische Aussage
+ist und keine über den heutigen Code:** Genau diese Bindung war der Grund, warum
+das Herausziehen die SCHEIBE IST und nicht ihr Nebenprodukt. Sie ist eingelöst,
+nicht widerlegt.
 
 ### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
 
@@ -1454,11 +1562,21 @@ festgehalten:**
   Einwilligungs-Auswertung als Funktion im Meta-Laufzeit-Text mit drei
   Lesestellen — der Bau der ZWEITEN Scheibe hat sie in eine eigene Datei
   herausgezogen und dabei umbenannt.
-- **"## Gemessene Ausgangslage", Punkt 4 — NUR DER NACHSATZ** (GEMESSEN): Der
-  HAUPTSATZ, dass der Emitter kein Gate trägt, ist WEITERHIN RICHTIG und ist der
-  Grund für die dritte Scheibe; überholt ist allein die Zählung "zwei
-  first-party-Inline-Skripte", weil der Bau der ZWEITEN Scheibe einen weiteren
-  Block hinzugefügt hat.
+- **"## Gemessene Ausgangslage", Punkt 4 — HAUPTSATZ UND NACHSATZ** (GEMESSEN;
+  **RICHTIGGESTELLT AM 2026-08-06**): Der NACHSATZ — die Zählung "zwei
+  first-party-Inline-Skripte" — ist überholt, weil der Bau der ZWEITEN Scheibe
+  einen weiteren Block hinzugefügt hat. **UND DER HAUPTSATZ EBENSO:** Die DRITTE
+  Scheibe hat den Emitter hinter das Gate gestellt; `buildPageViewScript` fragt
+  `__psConsent`. Hier stand bis zur Richtigstellung, der Hauptsatz sei WEITERHIN
+  RICHTIG und der Grund für die dritte Scheibe.
+  **DIESER EINTRAG HAT SICH SELBST ÜBERHOLT** — geschrieben VOR dem Bau der
+  dritten Scheibe, falsch SEIT ihm. **Das ist genau die Klasse, die dieser
+  Sammelposten beschreibt, angewandt auf ihn selbst** — er belegt seine eigene
+  These, statt von ihr beschädigt zu werden.
+  **RICHTIGGESTELLT STATT GESTEMPELT, und das ist der Unterschied zur
+  Ausgangslage darüber:** Der Sammelposten ist eine ARBEITSANWEISUNG für die
+  Runde, die ihn abarbeitet, kein Zeitdokument. Ein Stempel liesse die falsche
+  Fassung als Anweisung stehen — und die nächste Runde arbeitete nach ihr.
 - **"### Drei gemessene Bindungen, die die PINTEREST-SCHEIBE binden", Punkt (c)**
   (GEMESSEN): Er sagt, die Einwilligungs-Auswertung LEBE HEUTE im
   Meta-Laufzeit-Text und existiere ohne Pixel-ID gar nicht — genau das hat die
@@ -1514,3 +1632,68 @@ sonst wird die Reihenfolge für Bequemlichkeit gehalten:
   Fehler, den diese Phase schon einmal gemacht hat (s. "### Vier gemessene
   Befunde, die diese Scheibe binden", Punkt (i), Absatz "DIE HERKUNFT DES
   FEHLERS").
+
+### Dieser Sammelposten ist erledigt — 2026-08-06
+
+**WAS AUFGELÖST IST:**
+- **Die "## Gemessene Ausgangslage" trägt einen Stempel AM KOPF**, der benennt,
+  welche Punkte überholt sind und durch WELCHE Scheibe — und ebenso, welche
+  NICHT. Der Wortlaut ist vollständig erhalten; er ist der Maßstab der drei
+  Protokolle.
+- **Sechs Punkte tragen je eine Zeile mit der heutigen Lage**, mit Symbolnamen:
+  1, 2, 3, 4, 8 und 13. Punkt 7 trug seinen Stempel schon.
+- **Die Bindung (c) ist RICHTIGGESTELLT**, nicht gestempelt — sie steht unter
+  einer Überschrift, die auf die noch kommende Pinterest-Scheibe zeigt.
+- **Der eigene Eintrag zu Punkt 4 ist richtiggestellt.** Er hatte sich selbst
+  überholt.
+
+**ZWEI STELLEN, DIE DIE GEGENPROBE VOM 2026-08-06 NICHT HATTE — sie stehen hier
+und nicht in der Liste darüber, damit deren Zahl "vier" das bleibt, was jene
+Gegenprobe tatsächlich fand:** **Punkt 8** (Lesepfad und Doppelschreib) und
+**Punkt 13** (die Zählung "alle drei Zugriffe"), beide überholt durch die ERSTE
+Scheibe. Die Gegenprobe hatte auf die Einwilligung geschaut und die
+Geheimnis-Achse übersehen — **eine Gegenprobe ist selbst nicht vollständig, nur
+weil sie datiert und gemessen ist.**
+
+**DER VIERTE EINTRAG IST JETZT GEMESSEN — der Verdacht ist WIDERLEGT.** Er stand
+als "AUSDRÜCKLICH UNGEMESSEN": ob die in (d) NAMENTLICH genannten
+Regressionswächter noch so heissen. Am 2026-08-06 nachgemessen an
+`src/app/projects/actions.test.ts`: **alle SIEBEN genannten Testnamen existieren
+wörtlich**, beide Aussagen sind unverändert getragen. Der Eintrag oben bleibt im
+Wortlaut stehen — er hielt korrekt fest, was zu seiner Zeit ungemessen war.
+
+**WAS NICHT ERLEDIGT IST — und es ist kein Rest, sondern eine bewusste
+Auslassung:** **DIE 15 NICHT NACHGEZOGENEN ANKER BLEIBEN OFFEN.** Sie sind als
+**POTENZIELL VERSCHOBEN** zu lesen, nicht als geprüft — die Begründung steht
+oben unter "VOLLZOGEN AM 2026-08-06 — UND ZWAR BEWUSST NUR ZUM TEIL".
+
+#### Die Gegenprobe fand DREI weitere Stellen — angefasst wurde GENAU EINE
+
+Sie stehen hier mit ihrem Grund, weil ein unbegründetes Stehenlassen beim
+nächsten Lesen wie ein Übersehen aussieht — und dann "repariert" wird.
+
+**ANGEFASST: der Zuschnitt der ZWEITEN Scheibe** ("DER MECHANISMUS IST OFFEN …
+UNGEMESSEN" und der Ausschluss "DER PAGEVIEW-EMITTER UNTER DAS GATE"). Die erste
+Stelle ist RICHTIGGESTELLT, die zweite als EINGELÖST markiert bei unverändertem
+Wortlaut. Begründung beider steht dort.
+
+**STEHENGELASSEN — Fund (1), "DER PAGEVIEW-EMITTER BLEIBT UNGEGATED" im Protokoll
+der zweiten Scheibe:** **Ein Protokoll ist ein BERICHT ÜBER EINEN VOLLZOGENEN
+VORGANG. Es altert nicht — es datiert sich.** Was diese Scheibe nicht geleistet
+hat, hat sie nicht geleistet, und das bleibt wahr, egal was danach kam. Der Satz
+ist ausserdem durch seinen EIGENEN NACHSATZ aufgelöst ("eigene Scheibe, direkt
+danach") — er zeigt selbst dorthin, wo er eingelöst wurde.
+
+**STEHENGELASSEN — Fund (3), "Die strenge Variante kostet HEUTE nichts, weil die
+Objektform noch gar nicht existiert" im Block "## Beschlossenes Consent-Modell
+(OWNER-ENTSCHEIDUNG, 2026-08-03)":** Ein Entscheidungsblock hält fest, was zu
+einem Zeitpunkt entschieden wurde UND AUS WELCHEN GRÜNDEN. Die Begründung war zu
+ihrer Zeit richtig; **dass sie inzwischen EINGELÖST ist, widerlegt sie nicht,
+sondern BESTÄTIGT sie** — die strenge Variante wurde tatsächlich ohne
+Migrationspfad eingeführt, genau weil sie damals nichts kostete. **WER SOLCHE
+BLÖCKE NACHFÜHRT, KANN SPÄTER NICHT MEHR LESEN, WORAUF DIE ENTSCHEIDUNG BERUHTE.**
+
+**DIE DREI HANDSCHRIFTEN, in EINEM Satz — diese Runde hat sie zum ersten Mal
+nebeneinander angewandt, und ohne diesen Satz wirken sie wie Willkür:** **Eine
+VORGABE wird RICHTIGGESTELLT, ein ZEITDOKUMENT wird GESTEMPELT, eine ENTSCHEIDUNG
+bleibt UNANGETASTET.**

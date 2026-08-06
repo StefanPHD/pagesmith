@@ -486,6 +486,18 @@ nach, statt es umzuschreiben.
    (`src/lib/capi/ingest.ts:313`). Die Einwilligung kommt darin nicht vor —
    weder direkt noch über einen der beiden Operanden. Der Server-Pfad endet
    damit FAIL OPEN; das Gate liegt vollständig im Client.
+**PUNKT 7 IST ÜBERHOLT — GESTEMPELT AM 2026-08-06. DER WORTLAUT DARUNTER BLEIBT
+UNVERÄNDERT.** Überholt hat ihn der Bau der ZWEITEN Scheibe. **DIE DORT GENANNTEN
+LÜCKEN SIND GESCHLOSSEN:** der FEHLENDE Hook und der WERFENDE Hook sind beide
+abgedeckt — und die Testnamen BENENNEN DIE GESCHLOSSENE LÜCKE SELBST. Auch die
+Zahl "ZWEI" trifft nicht mehr zu; es sind seither drei eigene Blöcke.
+**DIE FOLGE, und sie ist der Grund für diesen Stempel:** Wer Punkt 7 als AKTUELL
+liest, plant Tests, DIE ES BEREITS GIBT, und hält die Abdeckung für DÜNNER, als
+sie ist.
+**DER WORTLAUT BLEIBT** — dieser Abschnitt weist sich in seinem Kopf als
+HISTORISCH aus und hat seinen Wert genau darin: Er hält fest, gegen welche Lage
+die Phase angetreten ist. Ein Umschreiben nähme ihm das.
+
 7. **Es gibt genau ZWEI Consent-Tests, beide in `src/lib/generate.test.ts`:**
    `:575` ("weder Script-Load noch init/Event") und `:760` ("WEDER fbq NOCH
    Beacon (selbes Gate)"). BEIDE stubben `pagesmithConsent` auf `() => false`.
@@ -867,6 +879,19 @@ UNGEMESSEN.
 
 ### Zwei gemessene Befunde zur Testlage DIESER Scheibe
 
+**ÜBERHOLTER STAND — GESTEMPELT AM 2026-08-06. DER WORTLAUT UNTEN BLEIBT
+UNVERÄNDERT.** Beide Befunde beschreiben die Lage, in der DIESE Scheibe GEPLANT
+wurde. **Genau ihr Bau hat den Test-Helfer dann geändert:** Er wählt sein Script
+nicht mehr über eine POSITION, sondern schliesst den Datenblock über dessen
+KENNUNG aus, und er evaluiert ALLE übrigen Scripts in DOKUMENT-REIHENFOLGE.
+Überholt sind damit ZWEI Stellen unten — **(a) ganz**, und **in (b) die
+Teilaussage "sie evaluiert genau EIN Script"**. Der übrige Inhalt von (b) gilt
+weiter.
+**HIER IST DER STEMPEL RICHTIG, anders als bei Befund (i) der dritten Scheibe:**
+Dort ist der Satz eine VORGABE AN EINEN BAU und wurde deshalb richtiggestellt;
+hier ist er ein HISTORISCHER MESSSTEMPEL und trägt seinen Wert genau dadurch,
+dass er die Ausgangslage festhält, gegen die geplant wurde.
+
 PROVENIENZ: am Code gemessen in der Stufe-1-Runde vom 2026-08-05.
 
 **(a) DER TEST-HELFER WÄHLT SEIN SCRIPT STILL.** `mountAndWire` in
@@ -1025,7 +1050,7 @@ ALLEIN fährt und nicht mit Pinterest gebündelt wird.
 **IN DIESER SCHEIBE:** Der PageView-Emitter fragt VOR dem Senden das geteilte
 Gate für den Schlüssel der eigenen Auswertung. Sonst nichts.
 
-**DIE BUCHSTABEN (a) BIS (i) IN DIESEM ABSCHNITT SIND LOKAL** und haben nichts
+**DIE BUCHSTABEN (a) BIS (k) IN DIESEM ABSCHNITT SIND LOKAL** und haben nichts
 mit den gleichnamigen Punkten unter "## Fragen, die der Bau beantworten MUSS" zu
 tun. Dieselbe Handschrift wie bei der zweiten Scheibe, die ihre Befunde ebenfalls
 lokal durchbuchstabiert.
@@ -1073,6 +1098,31 @@ Sie beobachtet Metas Script-Load; ohne Meta-Einwilligung gibt es nichts zu
 bestätigen. Sie unter `analytics` zu stellen erzeugte ein ZWEITES URTEIL OHNE
 JEDE VERHALTENSDIFFERENZ — Aufwand und eine zusätzliche Fehlerquelle für ein
 Ergebnis, das in jedem Fall dasselbe ist.
+
+**(j) DIE PRÜFUNG SITZT ZWISCHEN GUARD-LESEN UND KENNUNGS-ERZEUGUNG (ENTSCHIEDEN,
+OWNER, 2026-08-06). NICHT DAVOR.**
+**DER GRUND IST DIE AUSSAGE, NICHT DER GESPARTE AUFRUF** — ohne diesen Satz wird
+die Festlegung als Mikro-Optimierung gelesen und beim nächsten Umbau achtlos
+umgestellt: Der Guard beantwortet "STEHT ÜBERHAUPT ETWAS AN?", die Einwilligung
+"DARF ES?". Die zweite Frage zu stellen, wenn die erste schon NEIN sagt, ist ein
+URTEIL ÜBER EINEN VORGANG, DEN ES NICHT GIBT.
+**DASS SIE VOR DEM GUARD-SETZEN STEHT, IST KEINE EIGENE WAHL** — das folgt
+bereits ZWINGEND aus (c): Läge sie dahinter, wäre der Guard im blockierten Fall
+gesetzt, und genau das verbietet (c). **(j) entscheidet also nur die verbleibende
+Freiheit** zwischen Guard-LESEN und Kennungs-Erzeugung, nicht die Seite des
+Guard-SETZENS. Wer das verwechselt, hält (j) für die Begründung von (c) und kann
+beide gemeinsam kippen.
+
+**(k) (c) MEINT NUR DEN BLOCKIERTEN FALL, NICHT DEN SENDE-FEHLSCHLAG
+(ENTSCHIEDEN, OWNER, 2026-08-06). DER FEHLSCHLAG-PFAD BLEIBT UNVERÄNDERT WIE
+HEUTE.**
+GRUND: Ein Sendeversuch liefert **"ANGENOMMEN", nicht "ZUGESTELLT"**. Den Guard am
+Fehlschlag auszurichten hiesse, eine ZUSAGE ZU MACHEN, DIE DER BROWSER NICHT
+GIBT. **Nur im blockierten Fall ist die Aussage "nichts ging raus" BELEGBAR** —
+dort hat unser eigener Code die Entscheidung getroffen, und niemand sonst.
+**FOLGE FÜR DEN BAU:** (c) ist damit eine Regel über EINEN ZWEIG, nicht über den
+AUSGANG des Sendens. Wer sie auf den Fehlschlag ausdehnt, baut eine ZWEITE
+Verhaltensänderung in eine Scheibe, die "sonst nichts" tun soll.
 
 ### Die Parse-Zeit-Schwäche — eine EIGENSCHAFT, keine Fussnote
 
@@ -1145,14 +1195,42 @@ steht als eigener Befund und nicht als Nebensatz zu (g), damit niemand die beide
 Kennzahlen für dieselbe hält — die Marquee-Metrik der Phase 8 bleibt von dieser
 Scheibe unberührt.
 
-**(i) DIE TESTLAGE SIEHT DEN EMITTER NICHT.** Der ausführende Test-Helfer
-evaluiert genau EIN Script und sieht den Emitter NIE; die Emitter-Tests prüfen
-ausschliesslich STRUKTUR, nie WIRKUNG.
-**FÜR EINE SCHEIBE, DEREN GANZER GEGENSTAND "feuert / feuert nicht" IST, IST DAS
-DIE LÜCKE** — und sie trifft direkt auf die Lektion aus dem Bau der zweiten
-Scheibe, dass "blockiert" und "abgestürzt" an einer Abwesenheits-Assertion
-IDENTISCH aussehen (s. "#### Zwei Lektionen aus dem Bau — HEBUNGSKANDIDATEN für
-CLAUDE.md", Punkt (b)).
+**(i) DIE TESTLAGE SIEHT DEN EMITTER NICHT — RICHTIGGESTELLT AM 2026-08-06,
+ERNEUT AM CODE GEMESSEN.** Bis dahin stand hier, der ausführende Test-Helfer
+evaluiere GENAU EIN Script. **Das ist FALSCH: Er evaluiert ALLE Scripts ausser
+dem Datenblock, in DOKUMENT-REIHENFOLGE.**
+**HIER STEHT BEWUSST KEIN STEMPEL, anders als an den beiden Nummern-Stellen
+dieser Datei:** (i) ist eine VORGABE AN DEN BAU, keine datierte Entscheidung. Ein
+Satz, an dem sich ein Bau ausrichtet, wird RICHTIGGESTELLT und nicht kommentiert —
+ein Stempel liesse die falsche Fassung als Handlungsanweisung stehen.
+
+**WAS GEMESSEN STIMMT UND UNVERÄNDERT BLEIBT — beides trägt weiter:**
+- **Der Helfer sieht den Emitter NIE.** Sein Eingang enthält ihn nicht.
+- **Die Emitter-Tests prüfen ausschliesslich STRUKTUR, nie WIRKUNG.**
+
+**DIE FOLGE GEHÖRT ZWINGEND DAZU, sonst wirkt die Richtigstellung wie eine
+Formsache: DIE LÜCKE IST KLEINER ALS BESCHRIEBEN.** Der Mechanismus "mehrere
+Scripts in DOKUMENT-REIHENFOLGE ausführen" EXISTIERT BEREITS und ist ERPROBT. Was
+fehlt, ist also nicht der Mechanismus, sondern ein EINGANG, der den Emitter
+enthält.
+
+**WAS DAVON UNBERÜHRT BLEIBT:** Für eine Scheibe, deren ganzer Gegenstand
+"feuert / feuert nicht" ist, ist die VERBLEIBENDE Lücke immer noch DIE Lücke —
+und sie trifft direkt auf die Lektion aus dem Bau der zweiten Scheibe, dass
+"blockiert" und "abgestürzt" an einer Abwesenheits-Assertion IDENTISCH aussehen
+(s. "#### Zwei Lektionen aus dem Bau — HEBUNGSKANDIDATEN für CLAUDE.md",
+Punkt (b)).
+
+**DIE HERKUNFT DES FEHLERS — als eigener Satz, weil die KLASSE neu ist:** Der
+Satz war am 2026-08-05 RICHTIG. Überholt hat ihn der Bau der ZWEITEN Scheibe —
+**DERSELBE BAU, DESSEN BEFUND ER IST.**
+**EIN GEMESSENER BEFUND KANN DURCH DIE SCHEIBE VERFALLEN, DIE IHN ERZEUGT HAT.**
+
+**HEBUNGSKANDIDAT FÜR CLAUDE.md, "## Immer beachten"** (NICHT eingetragen; die
+Entscheidung darüber fällt am Phasenende): Wer einen Befund aus einer DOKU-STELLE
+übernimmt, muss prüfen, ob eine SEITHER GEBAUTE Scheibe ihn berührt hat. **DIE
+PROVENIENZ-ANGABE SCHÜTZT DAVOR NICHT** — sie sagt, WANN gemessen wurde, nicht,
+WAS SEITHER GESCHAH.
 
 **AUSDRÜCKLICH NICHT IN DIESER SCHEIBE, je mit Grund:**
 - **DAS WIRE-FELD** (das Einwilligungs-Signal reist zum Server). Unverändert der
@@ -1173,6 +1251,16 @@ CLAUDE.md", Punkt (b)).
 
 ### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
 
+**EINE DER DREI FRAGEN IST EINGELÖST AM 2026-08-06 — DIE ZWEITE:** wo die Prüfung
+relativ zum Guard und relativ zum Senden sitzt. **Die Antwort steht als
+Entscheidung (j) im Zuschnitt darüber.** Die Frage bleibt unverändert stehen: Sie
+ist der MASSSTAB, an dem (j) gemessen wird — ohne sie wäre nicht mehr erkennbar,
+WAS beantwortet worden ist.
+**DIE BEIDEN ANDEREN SIND AUSDRÜCKLICH OFFEN** — die ERSTE (wie die Wirkung
+testbar wird) und die DRITTE (ob die Struktur-Zusage aus (f) eine eigene Probe
+braucht). Der Satz steht hier, weil eine einzelne Einlösung sonst als Erledigung
+des GANZEN Abschnitts gelesen wird. Beide werden vom Bau beantwortet, nicht hier.
+
 Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
 
 - Wie wird die WIRKUNG des Emitters überhaupt testbar, gegeben (i)? Eine Antwort,
@@ -1184,3 +1272,55 @@ Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
 
 **KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
 dem Bau, getrennt vom Zuschnitt, wie bei den ersten beiden Scheiben.
+
+---
+
+## Sammelposten: die Ausgangslage ist von der Phase überholt (eigene Runde)
+
+**DIE KLASSE, als Satz:** Ein Abschnitt "Gemessene Ausgangslage" beschreibt
+zwangsläufig einen Zustand, den die Phase selbst abräumt. **JE ERFOLGREICHER DIE
+ARBEIT, DESTO FALSCHER WIRD ER.** Das ist keine Nachlässigkeit, sondern eine
+EIGENSCHAFT mehrscheibiger Phasen — und genau deshalb braucht sie eine EIGENE
+RUNDE und keine Nebenbei-Korrektur: Wer einzelne Punkte im Vorbeigehen anfasst,
+zerlegt einen zusammenhängenden, datierten Stand in eine Mischung aus alt und
+neu, die hinterher niemand mehr auseinanderhalten kann.
+
+**WAS DIE GEGENPROBE VOM 2026-08-06 GEFUNDEN HAT — vier Stellen, je in EINEM
+Satz und über ihre ÜBERSCHRIFT benannt. HIER WIRD NICHTS AUFGELÖST, nur
+festgehalten:**
+
+- **"## Gemessene Ausgangslage", Punkte 1 BIS 3** (GEMESSEN): Sie beschreiben die
+  Einwilligungs-Auswertung als Funktion im Meta-Laufzeit-Text mit drei
+  Lesestellen — der Bau der ZWEITEN Scheibe hat sie in eine eigene Datei
+  herausgezogen und dabei umbenannt.
+- **"## Gemessene Ausgangslage", Punkt 4 — NUR DER NACHSATZ** (GEMESSEN): Der
+  HAUPTSATZ, dass der Emitter kein Gate trägt, ist WEITERHIN RICHTIG und ist der
+  Grund für die dritte Scheibe; überholt ist allein die Zählung "zwei
+  first-party-Inline-Skripte", weil der Bau der ZWEITEN Scheibe einen weiteren
+  Block hinzugefügt hat.
+- **"### Drei gemessene Bindungen, die die PINTEREST-SCHEIBE binden", Punkt (c)**
+  (GEMESSEN): Er sagt, die Einwilligungs-Auswertung LEBE HEUTE im
+  Meta-Laufzeit-Text und existiere ohne Pixel-ID gar nicht — genau das hat die
+  zweite Scheibe aufgelöst; das Präsens ist falsch geworden.
+- **"DIE REGRESSIONSWÄCHTER" in (d) — AUSDRÜCKLICH UNGEMESSEN, ein VERDACHT und
+  KEIN BEFUND:** Dort steht eine NAMENTLICHE Liste von Tests, deren Gegenstand
+  ein späterer Bau angefasst hat. Ob die Namen noch stimmen, ist in KEINER Runde
+  nachgemessen worden. Das Wort UNGEMESSEN steht hier, damit niemand den Verdacht
+  später als Befund weiterreicht.
+
+**DIE ZEILENNUMMERN, als eigener Punkt und ohne Einzelaufzählung:** Nach zwei
+Bauten sind etliche der Anker in dieser Datei verschoben. Die Regel dagegen
+EXISTIERT BEREITS (CLAUDE.md: der haltbare Anker ist der Symbolname, nicht die
+Zeilennummer). Das Nachziehen gehört in dieselbe eigene Runde — es ist Arbeit,
+keine Nebenbei-Korrektur.
+
+**WANN: VOR DER VIERTEN SCHEIBE, NICHT VOR DER DRITTEN.** Der Grund gehört dazu,
+sonst wird die Reihenfolge für Bequemlichkeit gehalten:
+- **Die DRITTE Scheibe ist ZUGESCHNITTEN, und ihre Befunde sind am 2026-08-06
+  GEMESSEN** — sie hängt an nichts aus diesem Sammelposten. Diese Runde vor sie
+  zu ziehen hielte einen Bau auf, der bereits auf frischen Messungen steht.
+- **Die VIERTE setzt dagegen auf Aussagen auf, die HIERHER gehören** — auf die
+  Bindungen und auf die Ausgangslage. Sie ungeprüft zu übernehmen wäre genau der
+  Fehler, den diese Phase schon einmal gemacht hat (s. "### Vier gemessene
+  Befunde, die diese Scheibe binden", Punkt (i), Absatz "DIE HERKUNFT DES
+  FEHLERS").

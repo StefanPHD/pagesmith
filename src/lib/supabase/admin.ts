@@ -3,8 +3,16 @@ import { createClient } from "@supabase/supabase-js";
 
 /**
  * Privilegierter Supabase-Client mit dem service_role-Key. service_role BYPASSED
- * RLS by default -> das ist der EINZIGE Lese-Pfad fuer die RLS-SELECT-gesperrte
- * Tabelle project_tokens (Read-Consumer in Scheibe 2b).
+ * RLS by default -> er ist der EINZIGE Weg an die Geheimnis-Tabellen, die fuer
+ * anon/authenticated verschlossen sind.
+ *
+ * HEUTIGER ZUSTAND (seit Phase 11, erster Scheibe): GELESEN wird project_secrets
+ * (getCapiConfigByTrackingKey). GESCHRIEBEN wird in BEIDE — project_secrets UND
+ * project_tokens (Doppelschreib in setCapiToken/removeCapiToken; die Alt-Tabelle
+ * ist die Rollback-Reserve). Bis dahin stand hier, dieser Client sei der
+ * "Lese-Pfad fuer project_tokens" — jene Tabelle wird im Produktivcode nur noch
+ * BESCHRIEBEN, nie gelesen. Richtiggestellt, weil der Satz erklaeren soll, wofuer
+ * es diesen Client gibt; mit der falschen Tabelle erklaert er das Gegenteil.
  *
  * SECRETS-DISZIPLIN (hart):
  * - `import "server-only"` erzwingt einen Build-Fehler, sollte dieses Modul jemals

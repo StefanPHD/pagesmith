@@ -23,7 +23,10 @@ export type ProjectSettings = {
   //                 stehen / spaeter in den Export gebacken werden.
   //   tokenSet    = NICHT-sensibler Indikator "CAPI-Token gesetzt?" fuer die
   //                 write-only-UI ("••• gesetzt").
-  // Der ECHTE Token liegt NIE hier — nur server-only in der Tabelle project_tokens.
+  // Der ECHTE Token liegt NIE hier — nur server-only in den Geheimnis-Tabellen
+  // project_secrets (gelesen) und project_tokens (mitgeschrieben, Rollback-Reserve).
+  // Die tragende Zusage ist der erste Halbsatz und bleibt unveraendert; nachgezogen
+  // ist nur, WO er stattdessen liegt.
   capi?: {
     trackingKey?: string;
     tokenSet?: boolean;

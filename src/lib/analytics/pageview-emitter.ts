@@ -103,8 +103,17 @@ export function injectPageViewEmitter(html: string, trackingKey: string): string
   // auf eine Aufrufreihenfolge zu verlassen. Traegt es den Block schon (Wiring-Fall),
   // wird nichts ergaenzt.
   //
-  // DER EMITTER SELBST BLEIBT UNGEGATED — er TRAEGT den Block nur, er konsumiert ihn
-  // nicht. Ihn hinter das Gate zu stellen ist eine EIGENE Scheibe.
+  // DIESE FUNKTION TRAEGT DEN BLOCK, SIE KONSUMIERT IHN NICHT — und genau dafuer steht
+  // dieser Absatz: TRAGEN und FRAGEN sind zwei verschiedene Dinge an zwei
+  // verschiedenen Stellen DERSELBEN Datei. Hier wird der Block nur eingefuegt;
+  // GEFRAGT wird er in buildPageViewScript, vor dem Senden.
+  // DER EMITTER SELBST IST GEGATED (Phase 11, dritte Scheibe): buildPageViewScript
+  // fragt vor dem Senden fuer den Schluessel der eigenen Auswertung. Bis dahin stand
+  // hier das GEGENTEIL — er bleibe ungegated, und ihn hinter das Gate zu stellen sei
+  // eine eigene Scheibe. Diese Scheibe ist gebaut, und der Gegenbeweis steht in
+  // DIESER Datei. RICHTIGGESTELLT statt gestempelt: Der Satz ist eine Aussage ueber
+  // das HEUTIGE Verhalten, keine datierte Entscheidung — er darf nicht in falscher
+  // Fassung neben seinem Gegenbeweis stehenbleiben.
   const gate = hasConsentScript(html) ? "" : buildConsentScript();
   const script = gate + buildPageViewScript(trackingKey);
   const idx = html.toLowerCase().lastIndexOf("</body>");

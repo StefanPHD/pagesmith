@@ -526,8 +526,11 @@ export type SetCapiTokenResult =
 
 /**
  * Setzt den GEHEIMEN Meta-CAPI-Token eines Projekts (Scheibe 2a, Secret-Plumbing).
- * Write-only: der Token wird in die RLS-SELECT-gesperrte Tabelle project_tokens
- * geschrieben und erreicht den Client NIE zurueck.
+ * Write-only: der Token wird in die RLS-SELECT-gesperrten Geheimnis-Tabellen
+ * project_secrets UND project_tokens geschrieben (Doppelschreib seit Phase 11
+ * Scheibe 1, s. Punkt 4 unten) und erreicht den Client NIE zurueck. Die
+ * write-only-Zusage gilt fuer BEIDE — ergaenzt, weil hier zuvor nur die
+ * Alt-Tabelle stand und der gelesene Wert seither in der neuen liegt.
  *
  * Zwei-Client-Fluss (bewusst getrennt):
  * 1. Session-Check ueber den authenticated-SSR-Client (createClient).
@@ -640,7 +643,10 @@ export type RemoveCapiTokenResult = { ok: true } | { ok: false; error: string };
 
 /**
  * Entfernt den GEHEIMEN Meta-CAPI-Token eines Projekts (Gegenstueck zu setCapiToken).
- * Loescht die project_tokens-Zeile und flippt settings.capi.tokenSet auf false.
+ * Loescht die Geheimnis-Zeile in project_secrets UND project_tokens (Doppel-Delete
+ * seit Phase 11 Scheibe 1, s. Punkt 3 unten) und flippt settings.capi.tokenSet auf
+ * false. Ergaenzt, weil hier zuvor nur die Alt-Tabelle stand — die Spiegelung des
+ * Schreibpfads, nur auf dem Loeschpfad.
  *
  * ABLEITEN STATT LOESCHEN: der trackingKey (oeffentlicher Handle, in Exporte eingebacken)
  * BLEIBT erhalten — nur der Aktivierungszustand (tokenSet) wird umgelegt. Das Tracking ist

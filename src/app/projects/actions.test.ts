@@ -73,8 +73,9 @@ import {
  * Minimaler, chainbarer SSR-Client-Mock. Pro (table.op) ein Ergebnis:
  * - "<table>.select" -> von maybeSingle() aufgeloest (Query).
  * - "<table>.update" -> vom await auf dem Builder aufgeloest (Mutation, thenable).
- * Zeichnet select-Spalten, update-Patch und die from()-Tabellen auf. Der
- * project_tokens-Write laeuft NICHT hierueber (der geht ueber den Admin-Client).
+ * Zeichnet select-Spalten, update-Patch und die from()-Tabellen auf. Die
+ * Writes auf die Geheimnis-Tabellen project_secrets UND project_tokens laufen
+ * NICHT hierueber (die gehen ueber den Admin-Client).
  */
 function makeClient(opts: {
   user: { id: string } | null;
@@ -372,7 +373,7 @@ describe("removeCapiToken (CAPI-Token entfernen)", () => {
     error: null,
   };
 
-  it("Happy-Path: DELETE project_tokens (admin) + settings.tokenSet:false, ok", async () => {
+  it("Happy-Path: DELETE project_secrets + project_tokens (admin) + settings.tokenSet:false, ok", async () => {
     const { rec } = makeClient({
       user: { id: "user-1" },
       results: { "projects.select": setRow, "projects.update": { error: null } },

@@ -1232,7 +1232,12 @@ export default function CodeImporter({
   }
 
   // CAPI-Token setzen (Scheibe 2a, write-only). Der GEHEIME Token geht nur in die
-  // Server-Action (project_tokens, RLS-SELECT-gesperrt) und kommt NIE zurueck. Bei
+  // Server-Action und kommt NIE zurueck. Er landet dort in BEIDEN Geheimnis-Tabellen
+  // (project_secrets und project_tokens, beide RLS-SELECT-gesperrt) — seit Phase 11
+  // Scheibe 1 ein Doppelschreib. BEIDE sind hier genannt, weil die Zusage "landet nie
+  // im Browser" fuer BEIDE traegt: Stuende nur eine da, liesse sich das lesen, als
+  // gaelte sie fuer die andere nicht — und DIESE Datei ist eine Client-Komponente,
+  // also die teuerste Stelle im Repo fuer genau dieses Missverstaendnis. Bei
   // Erfolg spiegeln wir NUR {trackingKey, tokenSet:true} in settings UND
   // savedSettings (setCapiState laesst pixels/Pixel-ID unangetastet -> eine unsaved
   // Pixel-ID-Edit bleibt erhalten; settingsEqual ignoriert capi -> kein false-dirty).

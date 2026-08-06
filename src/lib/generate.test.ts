@@ -798,7 +798,7 @@ describe("Consent-Gate: Platzierung im Dokument (Phase 11, zweite Scheibe)", () 
 
 // ---------------------------------------------------------------------------
 // CAPI-Dedup-Beacon (Phase 6 Scheibe 2b-ii): neben fbq feuert __psMetaFire ein
-// navigator.sendBeacon an /api/capi — hinter DEMSELBEN psConsent-Gate, mit der
+// navigator.sendBeacon an /api/capi — hinter DEMSELBEN __psConsent-Gate, mit der
 // GETEILTEN eid, als text/plain-Blob. Der eventID-Identitaets-Test ist der Kern
 // der Scheibe (er bewacht das Dedup): er fuehrt das Wiring WIRKLICH aus und
 // vergleicht die Beacon-Payload-eventID STRING-IDENTISCH mit der an fbq gereichten.

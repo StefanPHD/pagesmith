@@ -123,7 +123,11 @@ export async function getCapiConfigByTrackingKey(
   const abTestActive = Boolean(project.ab_test_active);
 
   // KILL-SWITCH (Tier 0): gesperrtes Projekt -> FRUEHER Return, VOR der Pixel-/Token-
-  // Aufloesung (die project_tokens-Query laeuft bei gesperrt weiterhin NICHT). Neu in
+  // Aufloesung — bei gesperrt laeuft die Geheimnis-Abfrage aus Schritt 2 (project_secrets)
+  // weiterhin NICHT. Die Tabelle ist seit Phase 11 Scheibe 1 project_secrets; hier stand
+  // bis dahin project_tokens, und jene Abfrage gibt es nicht mehr. Die AUSSAGE des
+  // Kommentars ist unveraendert und der Grund, warum er hier steht: Der Ausstieg liegt
+  // VOR JEDER Aufloesung, es findet also KEIN Geheimnis-Zugriff statt. Neu in
   // Scheibe 2a: statt null wird blocked:true GEMELDET — der Handler verzweigt darauf
   // EXPLIZIT und verwirft, bevor irgendetwas persistiert oder geforwarded wird. Fuer den
   // anonymen Aufrufer bleibt das Ergebnis identisch (204, kein Zustandsleck); der

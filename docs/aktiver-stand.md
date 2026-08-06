@@ -15,15 +15,16 @@ VERFAHREN AM PHASENENDE — drei Schritte, in dieser Reihenfolge:
 DIESE DATEI ERÖFFNET DIE PHASE. Sie führt die REIHENFOLGE der Scheiben: (1) die
 Umstellung der Geheimnis-Tabelle — ABGESCHLOSSEN und live bewiesen, (2) das
 geteilte Consent-Gate — ABGESCHLOSSEN und live bewiesen, (3) der PageView-Emitter
-hinter das Gate — ZUGESCHNITTEN, noch nicht gebaut, (4) Pinterest als erstes
+hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) Pinterest als erstes
 zusätzliches Ziel, noch NICHT zugeschnitten. Die Zuschnitte stehen unter "### Der
 Zuschnitt der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge", "## Die
 zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)" und "## Die dritte
-Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)"; was die beiden
+Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)"; was die DREI
 abgeschlossenen Scheiben tatsächlich ergeben haben, unter "### Protokoll der
-ersten Scheibe — Vollzug und Abschluss" bzw. "### Protokoll der zweiten Scheibe —
-Vollzug und Abschluss". Verwiesen wird auf Überschriften, nicht auf Positionen:
-"am Ende" wandert mit jedem angehängten Abschnitt mit, ohne dass jemand es merkt.
+ersten Scheibe — Vollzug und Abschluss", "### Protokoll der zweiten Scheibe —
+Vollzug und Abschluss" und "### Protokoll der dritten Scheibe — Vollzug und
+Abschluss". Verwiesen wird auf Überschriften, nicht auf Positionen: "am Ende"
+wandert mit jedem angehängten Abschnitt mit, ohne dass jemand es merkt.
 
 **DIE ZÄHLUNG HAT SICH AM 2026-08-06 VERSCHOBEN** — der PageView-Emitter war bis
 dahin kein eigener Zuschnitt, sondern ein AUSSCHLUSS der zweiten Scheibe.
@@ -1214,12 +1215,19 @@ Scripts in DOKUMENT-REIHENFOLGE ausführen" EXISTIERT BEREITS und ist ERPROBT. W
 fehlt, ist also nicht der Mechanismus, sondern ein EINGANG, der den Emitter
 enthält.
 
-**WAS DAVON UNBERÜHRT BLEIBT:** Für eine Scheibe, deren ganzer Gegenstand
-"feuert / feuert nicht" ist, ist die VERBLEIBENDE Lücke immer noch DIE Lücke —
-und sie trifft direkt auf die Lektion aus dem Bau der zweiten Scheibe, dass
-"blockiert" und "abgestürzt" an einer Abwesenheits-Assertion IDENTISCH aussehen
+**DIE LÜCKE IST MIT DER DRITTEN SCHEIBE GESCHLOSSEN — RICHTIGGESTELLT AM
+2026-08-06.** Hier stand, für eine Scheibe, deren ganzer Gegenstand "feuert /
+feuert nicht" ist, sei die VERBLEIBENDE Lücke "immer noch DIE Lücke". Das ist seit
+dem Bau falsch: **DIE SUITE PRÜFT DIE WIRKUNG**, nicht mehr nur die Struktur —
+der oben vermisste EINGANG existiert jetzt (s. "### Protokoll der dritten Scheibe
+— Vollzug und Abschluss").
+**AUCH HIER KEIN STEMPEL, dieselbe Begründung wie oben:** (i) ist eine VORGABE AN
+EINEN BAU. Ein Satz, an dem sich ein Bau ausrichtet, wird RICHTIGGESTELLT und
+nicht kommentiert.
+**WAS BLEIBT, ist die Lektion, an der die Lösung sich ausrichten musste:**
+"blockiert" und "abgestürzt" sehen an einer Abwesenheits-Assertion IDENTISCH aus
 (s. "#### Zwei Lektionen aus dem Bau — HEBUNGSKANDIDATEN für CLAUDE.md",
-Punkt (b)).
+Punkt (b)) — beantwortet wurde sie mit ZWEI Wächtern auf GETRENNTEN Achsen.
 
 **DIE HERKUNFT DES FEHLERS — als eigener Satz, weil die KLASSE neu ist:** Der
 Satz war am 2026-08-05 RICHTIG. Überholt hat ihn der Bau der ZWEITEN Scheibe —
@@ -1256,10 +1264,20 @@ relativ zum Guard und relativ zum Senden sitzt. **Die Antwort steht als
 Entscheidung (j) im Zuschnitt darüber.** Die Frage bleibt unverändert stehen: Sie
 ist der MASSSTAB, an dem (j) gemessen wird — ohne sie wäre nicht mehr erkennbar,
 WAS beantwortet worden ist.
-**DIE BEIDEN ANDEREN SIND AUSDRÜCKLICH OFFEN** — die ERSTE (wie die Wirkung
-testbar wird) und die DRITTE (ob die Struktur-Zusage aus (f) eine eigene Probe
-braucht). Der Satz steht hier, weil eine einzelne Einlösung sonst als Erledigung
-des GANZEN Abschnitts gelesen wird. Beide werden vom Bau beantwortet, nicht hier.
+**DIE BEIDEN ANDEREN SIND EBENFALLS EINGELÖST — AM 2026-08-06, DURCH DEN BAU.**
+Damit sind ALLE DREI Fragen beantwortet; die Antworten stehen unter "### Protokoll
+der dritten Scheibe — Vollzug und Abschluss" und im Bau selbst. Die Fragen bleiben
+unverändert stehen: Sie sind der MASSSTAB, an dem der Plan gemessen wurde — ohne
+sie wäre nicht mehr erkennbar, WAS beantwortet worden ist.
+- **DIE ERSTE** (wie die Wirkung testbar wird): durch den WIRKUNGS-HARNESS. Er
+  läuft über den echten Einfüger und evaluiert die Scripts in
+  DOKUMENT-REIHENFOLGE.
+- **DIE DRITTE** (ob die Struktur-Zusage aus (f) eine eigene Probe braucht): **DIE
+  ANTWORT IST NEIN.** Sie wird BEHAVIOURISTISCH geprüft — der fehlende Gate-Block
+  führt zu KEINEM Beacon und zu KEINEM Wurf. **Eine zusätzliche Struktur-Probe wäre
+  genau die VERKLEIDETE PRÜFUNG gewesen, vor der der Auftrag gewarnt hat:** eine
+  weitere Zusicherung über den TEXT, die aussieht wie ein Nachweis über die
+  WIRKUNG.
 
 Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
 
@@ -1270,8 +1288,138 @@ Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
   das ERGEBNIS fest, nicht die STELLE.
 - Bleibt die Struktur-Zusage aus (f) prüfbar, oder braucht sie eine EIGENE Probe?
 
+**EINGELÖST AM 2026-08-06** — der Protokollblock existiert jetzt, s. "### Protokoll
+der dritten Scheibe — Vollzug und Abschluss". Der Satz darunter bleibt unverändert
+stehen: er hält fest, dass Zuschnitt und Protokoll von Anfang an getrennt geführt
+wurden, nicht erst nachträglich sortiert.
+
 **KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
 dem Bau, getrennt vom Zuschnitt, wie bei den ersten beiden Scheiben.
+
+### Protokoll der dritten Scheibe — Vollzug und Abschluss
+
+Der Zuschnitt darüber ist der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+**DIE BUCHSTABEN IN DIESEM PROTOKOLL SIND LOKAL** und haben nichts mit (a) bis (k)
+des Zuschnitts zu tun — dieselbe Handschrift wie beim Protokoll der zweiten
+Scheibe.
+
+**ABGESCHLOSSEN AM 2026-08-06 — DER PAGEVIEW-EMITTER STEHT HINTER DEM GETEILTEN
+GATE, IST GEBAUT, DEPLOYT UND LIVE GEPRÜFT.** Die folgenden Werte sind GEMESSEN
+und vom Owner zurückgemeldet — keiner davon ist abgeleitet:
+- Deployment Ready, Commit-Hash abgeglichen.
+- **METHODE:** Der Hook stand SYNCHRON und als ERSTES im Kunden-HTML; danach je
+  Variante ein Republish und ein hartes Neuladen, Netzwerk-Tab mit "Preserve log".
+- **KEIN HOOK:** genau EIN Beacon an den Ingest. Der permissive Ausfallmodus gilt
+  unverändert.
+- **NUR DER META-SCHLÜSSEL — BEIDE Achsen gemessen:**
+  · beim LADEN kein Beacon;
+  · beim KLICK zwei Anfragen an den Ingest (der Conversion-Beacon und die
+    Bestätigung, beide mit dem Kauf-Ereignis, KEINE davon der Seitenaufruf), und in
+    der Meta-Oberfläche das VOLLSTÄNDIGE PAAR unter DERSELBEN Ereignis-Kennung —
+    einmal Browser, einmal Server, letzteres als dedupliziert markiert.
+- **META UND ANALYTICS:** genau EIN Beacon.
+- **BOOLEAN false:** kein Beacon.
+
+**DER ZWEIACHSEN-SCHRITT IST DER EIGENTLICHE NACHWEIS.** Er zeigt, was KEINER der
+anderen Schritte zeigen kann: **Wer Meta erlaubt und zur Statistik nichts sagt,
+bekommt Meta UND KEINE STATISTIK.** Ein versehentlich geteiltes Urteil — ein Gate,
+das beide Ziele in Wahrheit gemeinsam beurteilt — wäre NUR DORT aufgefallen. Die
+übrigen drei Schritte hätten es widerspruchsfrei überlebt.
+
+**DIE UNTERSCHEIDUNG NACH DEM ZEITPUNKT gehört dazu, weil sie beim Messen fast
+danebengegangen wäre:** ALLE DREI Beacons gehen an DIESELBE Adresse. Der
+Seitenaufruf feuert beim LADEN, Conversion und Bestätigung beim KLICK. **Wer nur
+ZÄHLT, statt den ZEITPUNKT und das EREIGNIS-FELD zu prüfen, hält zwei
+Klick-Beacons für einen durchgerutschten Seitenaufruf — oder umgekehrt.** Die
+Zahl allein trägt hier nichts.
+
+**DIE SUITE PRÜFT SEIT DIESER SCHEIBE DIE WIRKUNG, nicht mehr nur die Struktur.
+DIE LÜCKE AUS BEFUND (i) IST DAMIT GESCHLOSSEN.**
+
+#### Die Grenze, die der Live-Test aufgedeckt hat — der Hook muss aus dem DOKUMENT kommen
+
+**DER BEFUND:** Die ursprüngliche Anleitung sah vor, den Hook per KONSOLE zu
+setzen und dann neu zu laden. **Das funktioniert NICHT.** Ein Reload verwirft den
+gesamten JS-Zustand des Fensters; der Hook ist beim Parsen weg, und der Emitter
+fällt auf den permissiven Ausfallmodus zurück. **Jeder Verbots-Schritt sähe wie
+ein FEHLSCHLAG DES GATES aus**, obwohl das Gate genau richtig arbeitet.
+
+**DIE FOLGE, und sie ist der Wert dieses Blocks: Das ist DIESELBE FALLE, die
+einen Betreiber mit asynchron ladendem Consent-Werkzeug trifft** — die
+Parse-Zeit-Eigenschaft (s. "### Die Parse-Zeit-Schwäche — eine EIGENSCHAFT, keine
+Fussnote"), im Kleinen und unter Laborbedingungen. **Sie ist damit nicht mehr nur
+hergeleitet, sondern BEOBACHTET.**
+
+**DIE METHODE, DIE STATTDESSEN TRÄGT:** Der Hook kommt aus dem DOKUMENT selbst,
+synchron und vor allem anderen. Das ist genau die Anforderung an die Einbindung,
+die der Zuschnitt formuliert — **der Live-Test STELLT SIE NACH, statt sie zu
+umgehen.** Jede künftige Prüfung des Gates läuft so.
+
+#### Der Token-Zwischenfall — die stille Fehlerklasse, zum ERSTEN MAL beobachtet
+
+Er steht als eigener Block, weil er eine im Projekt längst beschriebene
+Fehlerklasse zum ersten Mal BEOBACHTET zeigt statt nur hergeleitet.
+
+**DER HERGANG, gemessen:** Nach dem Widerruf des kompromittierten Test-Tokens war
+für das Projekt kein gültiges Zugangsdatum mehr hinterlegt. Der Live-Test zeigte
+daraufhin in der Meta-Oberfläche NUR Browser-Ereignisse, KEIN Server-Ereignis.
+Nach dem Erzeugen eines neuen Tokens erschien SOFORT wieder das vollständige
+Paar: dieselbe Ereignis-Kennung, einmal Browser, einmal Server, als dedupliziert
+markiert.
+
+**WAS DARAN ZÄHLT:**
+- **DER AUSFALL WAR VOLLSTÄNDIG LAUTLOS.** Die Seite lud, der Beacon ging raus,
+  der Ingest antwortete wie immer mit leerer 204, die Browser-Ereignisse kamen an.
+  **KEINE EINZIGE ANZEIGE IM PRODUKT hat gemeldet, dass der Server-Forward tot
+  war.**
+- **ER WAR NUR SICHTBAR, WEIL DIE NACHGELAGERTE WIRKUNG GEPRÜFT WURDE.** Wer den
+  Nachweis über einen STATUSCODE geführt hätte, hätte den Ausfall NICHT bemerkt —
+  die Antwort war in beiden Zuständen dieselbe.
+- **ER WAR DIE FOLGE EINER RICHTIGEN HANDLUNG.** Das Token wurde widerrufen, weil
+  es in einen Chatverlauf geraten war. **Der Widerruf war korrekt; was fehlte, war
+  der Schritt danach.**
+- **DIE PAARUNG VON TOKEN UND DATENSATZ-KENNUNG ist im Projekt bereits als
+  Fehlerklasse beschrieben.** HIER IST SIE ZUM ERSTEN MAL BEOBACHTET WORDEN, nicht
+  nur hergeleitet.
+
+**BACKLOG-KANDIDAT, hier nur BENANNT und NICHT geplant:** Der Betreiber hat heute
+keine Möglichkeit zu erkennen, dass sein Server-Forward abgewiesen wird. Ob und
+wie das sichtbar gemacht werden kann, ist eine EIGENE Frage — sie berührt den
+Ingest-Pfad und gehört nicht in diese Scheibe.
+
+#### Was diese Scheibe ausdrücklich NICHT geleistet hat
+
+- **DIE PARSE-ZEIT-SCHWÄCHE BLEIBT.** Sie ist BENANNT, nicht behoben.
+- **DIE BETREIBER-DOKUMENTATION SAMT SNIPPET FEHLT WEITERHIN — und sie ist nach
+  diesem Live-Test DRINGENDER als vorher:** Die Anforderung "synchron im Kopf" ist
+  jetzt nicht mehr nur eine Auflage, sondern **nachweislich der Unterschied
+  zwischen WIRKSAM und WIRKUNGSLOS.**
+- **DER SUBSTRING-TEST auf den vorhandenen Gate-Block BLEIBT, WIE ER IST.** Die
+  Entscheidung dazu steht im Zuschnitt.
+- **DER META-ZIEL-NAME LIEGT WEITERHIN AN DREI STELLEN**; jetzt kommt der
+  Analytics-Schlüssel dazu. BACKLOG.
+
+#### Drei Lektionen aus dem Bau — HEBUNGSKANDIDATEN für CLAUDE.md
+
+NICHT eingetragen; die Entscheidung darüber fällt am Phasenende.
+
+**(a) EINE MUTATIONS-VORHERSAGE KANN IN BEIDE RICHTUNGEN FALSCH SEIN.** Ein
+unerwartetes ROT ist genauso ein Befund wie ein unerwartetes Grün — **es fällt nur
+seltener auf, weil rot nach Erfolg aussieht.** In dieser Scheibe traf es DREIMAL
+zu: zweimal waren die Tests SCHÄRFER als geplant, einmal zeigte das Rot IN DIE
+FALSCHE RICHTUNG.
+
+**(b) EIN TEST, DESSEN ROT IN DIE FALSCHE RICHTUNG ZEIGT, IST SCHLECHTER ALS
+EINER, DER SCHWEIGT.** Ein Wurf, der bis in den Testkörper durchschlägt, meldet
+einen Fehlschlag, der sich liest wie DAS GEGENTEIL dessen, was passiert ist.
+**Zwei Wächter mit getrennten Achsen sind die Antwort — und die Trennung MUSS im
+Kommentar stehen**, sonst wird der bewusst blinde als nachlässig gelesen und der
+andere als redundant entfernt.
+
+**(c) EINE ÜBERTRAGUNG AUS EINEM PRÄZEDENZFALL IST EINE VERMUTUNG, KEINE MESSUNG.**
+Die falsche Vorhersage kam daher, dass die Meta-Prüfstelle in einem
+EREIGNIS-HANDLER liegt, der einen Wurf schluckt — beim Emitter steht NICHTS
+dazwischen. **Dieselbe Denkfigur, andere Umgebung, anderes Ergebnis.**
 
 ---
 

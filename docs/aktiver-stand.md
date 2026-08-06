@@ -12,15 +12,25 @@ VERFAHREN AM PHASENENDE — drei Schritte, in dieser Reihenfolge:
    ganze Herleitung in einem einzigen Backlog-Eintrag lag. Phase 11 ist
    mehrscheibig — ihre Herleitung hat keinen anderen Ort.
 
-DIESE DATEI ERÖFFNET DIE PHASE. Sie führt die REIHENFOLGE der ersten DREI
-Scheiben: (1) die Umstellung der Geheimnis-Tabelle — ABGESCHLOSSEN und live
-bewiesen, (2) das geteilte Consent-Gate, (3) Pinterest als erstes zusätzliches
-Ziel, noch NICHT zugeschnitten. Die Zuschnitte stehen unter "### Der Zuschnitt
-der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge" und "## Die zweite
-Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)"; was die erste Scheibe
-tatsächlich ergeben hat, unter "### Protokoll der ersten Scheibe — Vollzug und
-Abschluss". Verwiesen wird auf Überschriften, nicht auf Positionen: "am Ende"
-wandert mit jedem angehängten Abschnitt mit, ohne dass jemand es merkt.
+DIESE DATEI ERÖFFNET DIE PHASE. Sie führt die REIHENFOLGE der Scheiben: (1) die
+Umstellung der Geheimnis-Tabelle — ABGESCHLOSSEN und live bewiesen, (2) das
+geteilte Consent-Gate — ABGESCHLOSSEN und live bewiesen, (3) der PageView-Emitter
+hinter das Gate — ZUGESCHNITTEN, noch nicht gebaut, (4) Pinterest als erstes
+zusätzliches Ziel, noch NICHT zugeschnitten. Die Zuschnitte stehen unter "### Der
+Zuschnitt der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge", "## Die
+zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)" und "## Die dritte
+Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)"; was die beiden
+abgeschlossenen Scheiben tatsächlich ergeben haben, unter "### Protokoll der
+ersten Scheibe — Vollzug und Abschluss" bzw. "### Protokoll der zweiten Scheibe —
+Vollzug und Abschluss". Verwiesen wird auf Überschriften, nicht auf Positionen:
+"am Ende" wandert mit jedem angehängten Abschnitt mit, ohne dass jemand es merkt.
+
+**DIE ZÄHLUNG HAT SICH AM 2026-08-06 VERSCHOBEN** — der PageView-Emitter war bis
+dahin kein eigener Zuschnitt, sondern ein AUSSCHLUSS der zweiten Scheibe.
+**PINTEREST IST DAMIT DIE VIERTE SCHEIBE, nicht mehr die dritte.** Der Satz steht
+hier und nicht nur an den betroffenen Stellen, weil eine verschobene Nummer die
+einzige Art von Fehler ist, die beim Lesen wie eine Bestätigung aussieht: "die
+dritte Scheibe" liest sich in JEDEM Zustand plausibel.
 
 ---
 
@@ -54,10 +64,16 @@ nächsten Aufräumen "korrigiert":**
   Objektform noch gar nicht existiert. Später eingeführt wäre sie eine
   Umstellung mit Migrationspfad für Bestandskunden.
 
-**4. UNSERE EIGENE AUSWERTUNG BEKOMMT EINEN EIGENEN SCHLÜSSEL** (Arbeitsname:
-`analytics` — die SCHREIBWEISE ist mit Entscheidung (a) unten festgelegt, der
-NAME noch nicht). Ohne einen solchen Schlüssel liesse sich der PageView-Defekt
-gar nicht schliessen: Es gäbe nichts, wogegen der Emitter prüfen könnte.
+**4. UNSERE EIGENE AUSWERTUNG BEKOMMT EINEN EIGENEN SCHLÜSSEL.** Ohne einen
+solchen Schlüssel liesse sich der PageView-Defekt gar nicht schliessen: Es gäbe
+nichts, wogegen der Emitter prüfen könnte.
+**DER NAME IST SEIT DEM 2026-08-06 ENTSCHIEDEN (OWNER): `analytics`.** Er war bis
+dahin ein Arbeitsname; die SCHREIBWEISE stand mit Entscheidung (a) schon fest,
+der NAME nicht. Begründung, die Kategorie-gegen-Anbieter-Frage und die
+Einbahnstrassen-Folge stehen bei der Scheibe, die ihn AUSLIEFERT — s. "## Die
+dritte Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)",
+Entscheidungen (a) und (b). Sie werden hier NICHT wiederholt: der Schlüssel wird
+erst dort zur Vertragsgrösse.
 
 **5. DAS CONSENT-SIGNAL WIRD IMMER MITGESCHICKT — auch bei Vollzustimmung.**
 BEGRÜNDUNG: Wird es nur bei Einschränkung gesendet, bedeutet ein fehlendes Feld
@@ -139,8 +155,8 @@ allein war die Regel nicht ablesbar — bei einem einzigen einwortigen Mitglied
 sieht man nicht, ob "ein Wort" oder "snake_case" gilt.
 
 **DIE SCHLÜSSEL:** `meta` · `google_ads` · `ga4` · `tiktok` · `pinterest` ·
-`linkedin` · `custom` · plus der Schlüssel für die eigene Auswertung
-(Arbeitsname `analytics`, s. den offenen Punkt darunter).
+`linkedin` · `custom` · `analytics` (die eigene Auswertung; der Name ist seit dem
+2026-08-06 entschieden, s. den eingelösten Punkt darunter).
 
 **GOOGLE IST ZWEI ZIELE, NICHT EINS.** Google Ads Conversions und GA4 sind
 verschiedene Produkte mit verschiedenen Schnittstellen, Zugangsdaten und
@@ -153,9 +169,13 @@ davon ENTKOPPELT und ausdrücklich NICHT entschieden — die Slot-Zahl steht in
 unserem Schema, ist jederzeit änderbar und für niemanden ausserhalb sichtbar.
 DER SCHLÜSSEL IST DIE EINBAHNSTRASSE, DIE SLOT-ZAHL NICHT.
 
-WAS AN (a) NOCH OFFEN BLEIBT: der endgültige Name für die eigene Auswertung.
-`analytics` ist ein Arbeitsname; die SCHREIBWEISE steht damit fest, der NAME
-noch nicht.
+WAS AN (a) NOCH OFFEN WAR — EINGELÖST AM 2026-08-06 (OWNER): der endgültige Name
+für die eigene Auswertung. **Er lautet `analytics` und ist damit KEIN Arbeitsname
+mehr.** Die Frage bleibt als Frage stehen, weil sie der MASSSTAB war: ohne sie
+wäre nicht mehr erkennbar, WAS beantwortet worden ist. Begründung, die
+Kategorie-gegen-Anbieter-Frage und die Einbahnstrassen-Folge: "## Die dritte
+Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)", Entscheidungen (a)
+und (b).
 
 **(b) DIE FORM DES WIRE-FELDES.** Die Angabe sitzt im `/api/e`-Body — auf dem
 Pfad, für den die Regel "/API/E-SCHLANKHEIT" (CLAUDE.md, Abschnitt A) gilt: Er
@@ -549,6 +569,12 @@ DAS GETEILTE CONSENT-GATE (Zuschnitt)").** Der Stempel steht hier, statt den
 Text zu ändern: was unten über die ERSTE Scheibe steht, ist unverändert richtig
 und war der Maßstab, an dem sie gemessen wurde.
 
+**NACHGEZOGEN AM 2026-08-06: Pinterest ist jetzt die VIERTE Scheibe** — die
+dritte ist der PageView-Emitter hinter dem Gate (s. "## Die dritte Scheibe — DER
+PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)"). Der ältere Stempel darüber bleibt
+Wort für Wort stehen: er war am 2026-08-05 richtig, und ein überschriebener
+Stempel verwischt, dass die Nummer ZWEIMAL gewandert ist.
+
 Die beiden Blocker aus der vorigen Fassung sind weg: (d) ist entschieden, die
 Auflage aus (g) ist erfüllt. **DAMIT IST DIE REIHENFOLGE DER ERSTEN BEIDEN
 SCHEIBEN BEKANNT** — und für die erste auch ihr Zuschnitt, s. "### Der Zuschnitt
@@ -573,6 +599,12 @@ DARÜBER BLEIBT GÜLTIG UND IST EINGELÖST** — die riskante Migration wurde NI
 mit einem neuen Ziel gebündelt, sie ist allein gefahren und abgeschlossen. Der
 Stempel nimmt den Satz also nicht zurück, er datiert ihn: Wer ihn als Rücknahme
 liest, hält die Entscheidung für revidiert, die tatsächlich befolgt wurde.
+
+**NACHGEZOGEN AM 2026-08-06 — DIE NUMMER IST ERNEUT GEWANDERT: Pinterest ist
+jetzt die VIERTE Scheibe.** Dazwischen liegt der PageView-Emitter hinter dem Gate
+(s. "## Die dritte Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)").
+An der Begründung ändert das erneut NICHTS — sie sagt, dass VOR dem ersten Ziel
+die Umstellung steht, nicht, welche Nummer das Ziel trägt.
 
 **DIE ERHEBUNG IST GEFAHREN (2026-08-03)** und hat den Entwurf in (d) bestätigt;
 ihre Befunde stehen oben unter "Zur ERSTEN SCHEIBE", die daraus folgende
@@ -849,10 +881,16 @@ Was sie trotzdem NICHT zeigt: Sie läuft nicht im Browser, sie evaluiert genau E
 Script, sie sieht den PageView-Emitter nie, und sie kennt keinen Betreiber-Hook,
 der erst NACH dem Parsen gesetzt wird.
 
-### Drei gemessene Bindungen, die die DRITTE Scheibe binden
+### Drei gemessene Bindungen, die die PINTEREST-SCHEIBE binden
+
+**ÜBERSCHRIFT NACHGEZOGEN AM 2026-08-06:** Sie hiess "die DRITTE Scheibe", und
+damit war Pinterest gemeint. Pinterest ist jetzt die VIERTE Scheibe. Die
+Überschrift nennt seither das ZIEL statt einer Nummer — die Nummer ist in dieser
+Phase schon zweimal gewandert, und die Bindungen unten haben sich nie auf eine
+Zählung bezogen, sondern auf das erste zusätzliche Ziel.
 
 PROVENIENZ: am Code gemessen in der Aufklärungs-Runde vom 2026-08-05 (read-only).
-Sie stehen hier und nicht in einer Randnotiz, damit die dritte Scheibe sie
+Sie stehen hier und nicht in einer Randnotiz, damit die Pinterest-Scheibe sie
 findet, bevor sie zugeschnitten wird.
 
 **(a) DER FORWARD WARTET.** Ein Aufruf, im Request erwartet, gedeckelt auf DREI
@@ -967,3 +1005,182 @@ ununterscheidbar.
 AUS.** Ein Test, der nur prüft, dass etwas NICHT passiert, kann einen abgebrochenen
 Handler nicht von einem wirksamen Gate unterscheiden. Es braucht zusätzlich einen
 Test, der prüft, dass der Handler ZU ENDE läuft.
+
+---
+
+## Die dritte Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)
+
+**ENTSCHEIDUNG (OWNER, 2026-08-06): DIE DRITTE SCHEIBE IST DER PAGEVIEW-EMITTER
+HINTER DEM GETEILTEN GATE. PINTEREST RÜCKT AUF SCHEIBE VIER.**
+
+Diese Scheibe war bis zum 2026-08-06 kein Zuschnitt, sondern ein AUSSCHLUSS der
+zweiten (s. "### Der Zuschnitt der zweiten Scheibe", Punkt "DER PAGEVIEW-EMITTER
+UNTER DAS GATE"). Ausgeschlossen war sie dort, weil sie eine ECHTE
+Verhaltensänderung trägt: Sie kann Seitenaufrufe unterdrücken, die heute gezählt
+werden. **DIESER GRUND IST NICHT ENTFALLEN** — er ist jetzt der Grund, warum sie
+ALLEIN fährt und nicht mit Pinterest gebündelt wird.
+
+### Der Zuschnitt der dritten Scheibe
+
+**IN DIESER SCHEIBE:** Der PageView-Emitter fragt VOR dem Senden das geteilte
+Gate für den Schlüssel der eigenen Auswertung. Sonst nichts.
+
+**DIE BUCHSTABEN (a) BIS (i) IN DIESEM ABSCHNITT SIND LOKAL** und haben nichts
+mit den gleichnamigen Punkten unter "## Fragen, die der Bau beantworten MUSS" zu
+tun. Dieselbe Handschrift wie bei der zweiten Scheibe, die ihre Befunde ebenfalls
+lokal durchbuchstabiert.
+
+**(a) DER SCHLÜSSEL HEISST `analytics` (ENTSCHIEDEN, OWNER, 2026-08-06). ER IST
+DAMIT KEIN ARBEITSNAME MEHR.**
+GRUND: Er entspricht der üblichen Kategorie in Consent-Plattformen — der
+Betreiber findet in seinem eigenen Werkzeug ein Wort wieder, das er kennt.
+**DIE FOLGE GEHÖRT ZWINGEND DAZU, sonst liest sich (a) wie eine
+Geschmacksentscheidung:** Mit DIESER Scheibe steht der Schlüssel in
+AUSGELIEFERTEM Code und wird damit zur VERTRAGSGRÖSSE — Betreiber tragen ihn in
+ihre eigene Konfiguration ein. Eine spätere Umbenennung passt dann nicht mehr zu
+ihrem Schlüssel, und weil das Gate fail-closed ist, schaltet sie deren Statistik
+AB, ohne dass irgendwo ein Fehler sichtbar wird. **EINBAHNSTRASSE, BEWUSST
+BETRETEN.**
+
+**(b) DER NAMENSRAUM MISCHT KATEGORIE UND ANBIETER — UND DAS IST ABSICHT.**
+`analytics` ist eine KATEGORIE, `meta` und `pinterest` sind ANBIETER. Pro
+Anbieter ist FEINER als pro Kategorie, und feiner ist für dieses Produkt richtig:
+Der Betreiber soll Meta erlauben und Pinterest verbieten können, nicht nur
+"Marketing" im Ganzen.
+**DER SATZ STEHT HIER, WEIL DIE MISCHUNG SONST WIE EINE UNSAUBERKEIT AUSSIEHT —
+und sie lässt sich auf ZWEI Weisen falsch "reparieren":**
+- Wer auf KATEGORIEN HARMONISIERT, verliert die Anbieter-Granularität und damit
+  genau die Unterscheidung, für die diese Phase überhaupt existiert.
+- Wer `marketing` NEBEN `meta` stellt, erzeugt ZWEI URTEILE FÜR DIESELBE SACHE.
+  Das ist dieselbe Figur, die diese Phase an anderer Stelle konsequent vermeidet.
+
+**(c) DER GUARD WIRD NUR GESETZT, WENN TATSÄCHLICH GESENDET WURDE.**
+Er bedeutet: "für diesen Load ist ein Seitenaufruf raus". Ihn im BLOCKIERTEN Fall
+zu setzen wäre eine FALSCHE AUSSAGE — sie behauptete einen Seitenaufruf, den es
+nie gab. Heute ist das folgenlos, weil niemand ihn ein zweites Mal liest; morgen
+ist es die FALLE FÜR JEDEN NACHHOL-VERSUCH, der an genau diesem Guard scheiterte,
+ohne dass jemand verstünde, warum.
+
+**(d) EXISTENZPRÜFUNG WIE BEI META, UND FAIL-CLOSED.**
+Die Begründung ist NICHT nur Konsistenz mit den beiden Meta-Prüfstellen: Fehlt
+das Urteil, HÖREN DIE SEITENAUFRUFE AUF, und jemand merkt es. Fail-open liefe
+still weiter, und niemand erführe je, dass das Gate gar nicht gegriffen hat.
+**DAS IST ZUGLEICH DIE HALBE ANTWORT AUF BEFUND (f) UNTEN:** Es macht einen
+fehlenden Gate-Block LAUT statt LEISE.
+
+**(e) DIE BESTÄTIGUNG BLEIBT BEIM META-SCHLÜSSEL.**
+Sie beobachtet Metas Script-Load; ohne Meta-Einwilligung gibt es nichts zu
+bestätigen. Sie unter `analytics` zu stellen erzeugte ein ZWEITES URTEIL OHNE
+JEDE VERHALTENSDIFFERENZ — Aufwand und eine zusätzliche Fehlerquelle für ein
+Ergebnis, das in jedem Fall dasselbe ist.
+
+### Die Parse-Zeit-Schwäche — eine EIGENSCHAFT, keine Fussnote
+
+Sie steht als eigener Block, weil der Bau sie NICHT behebt. Wer sie als Detail
+liest, hält den Zuschnitt für unvollständig; wer sie als Eigenschaft liest,
+weiss, was das Gate für den Emitter verspricht und was nicht.
+
+**GEMESSEN (2026-08-06, read-only):** Der Emitter feuert BEIM PARSEN. Die beiden
+Meta-Prüfstellen fragen erst BEIM KLICK. **Am Gate ist nichts anders** — derselbe
+Block, dieselbe Regel, derselbe Aufruf. Der Unterschied ist ALLEIN DER ZEITPUNKT.
+
+**DIE FOLGE, und sie ist der eigentliche Inhalt dieses Blocks:** Die Regel "kein
+Hook -> erlaubt" bedeutet "er hat NIE ENTSCHIEDEN". Zur Parse-Zeit kann dasselbe
+Signal aber etwas anderes heissen: "er hat NOCH NICHT GEANTWORTET". Beim Klick
+fallen die beiden zusammen, weil ein Klick immer später kommt. Beim Emitter
+fallen sie NICHT zusammen.
+**DAS GATE IST FÜR DEN EMITTER ALSO STRUKTURELL SCHWÄCHER ALS FÜR META** — nicht
+weil es schlechter gebaut wäre, sondern weil es früher gefragt wird.
+
+**ENTSCHIEDEN (OWNER, 2026-08-06): NICHT WARTEN.** Kein Aufschub, kein
+Zeitfenster, keine Wiederholung. GRUND, in dieser Reihenfolge:
+- Warten VERFÄLSCHT KURZE BESUCHE: Wer die Seite vor Ablauf des Fensters
+  verlässt, würde gar nicht gezählt — die Statistik verlöre ausgerechnet die
+  Besuche, die für einen Media Buyer am meisten aussagen.
+- Warten RÄT AUF EINE ZEIT, DIE NIEMAND KENNT. Es gibt keinen Wert, der für alle
+  Consent-Werkzeuge richtig ist, und wir hätten kein Mittel, den gewählten je zu
+  überprüfen.
+
+**STATTDESSEN EINE ANFORDERUNG AN DIE EINBINDUNG:** Der Hook muss SYNCHRON IM
+`<head>` stehen und ZUR PARSE-ZEIT antworten können. Steht er später, GREIFT DAS
+GATE FÜR DEN SEITENAUFRUF NICHT — für die Meta-Ereignisse greift es weiterhin.
+Das ist eine benennbare Grenze, keine Fehlfunktion, und sie gehört als solche
+gesagt statt weggelassen.
+
+**ZWEI AUFLAGEN AN DIE SPÄTERE BETREIBER-DOKUMENTATION — HIER NUR FESTGEHALTEN,
+AUSDRÜCKLICH NICHT GEGENSTAND DIESER SCHEIBE** (die Dokumentation ist ein eigener
+Liefergegenstand, s. die Ausschlüsse unten):
+- **EIN BEISPIEL DARF DIE FORM ZEIGEN, NIE DIE PRÜFUNG EINER BESTIMMTEN
+  CONSENT-PLATTFORM.** Jede Plattform hält ihren Zustand anders. Ein
+  plattformspezifisches Beispiel MACHT DEN BETREIBER SICHER, OHNE IHN ZU
+  SCHÜTZEN: Er kopiert es, es sieht aus wie eine Prüfung, und ob es seinen
+  tatsächlichen Zustand liest, weiss niemand.
+- **BEIM ERSTEN BESUCH HAT NIEMAND ZUGESTIMMT.** Eine ehrliche Prüfung antwortet
+  dann "nein". **ERSTBESUCHER FEHLEN DAMIT SYSTEMATISCH IN DER STATISTIK.** Das
+  ist die LOGISCHE FOLGE des Modells, kein Fehler — aber wer es nicht VORHER
+  liest, hält seine Zahlen für kaputt und meldet einen Bug, den es nicht gibt.
+
+### Vier gemessene Befunde, die diese Scheibe binden
+
+PROVENIENZ: am Code gemessen in der Aufklärungs-Runde vom 2026-08-06 (read-only).
+
+**(f) DIE PRÜFUNG AUF EINEN VORHANDENEN GATE-BLOCK IST EIN SUBSTRING-TEST ÜBER
+DAS GANZE DOKUMENT.** Trüge das importierte Kunden-HTML dieselbe Zeichenfolge —
+auch nur in einem Kommentar —, käme auf einer Seite OHNE Wiring KEIN Block, und
+der Emitter stünde OHNE URTEIL da.
+**WARUM DAS JETZT ZÄHLT UND VORHER NICHT:** Bisher war der Block für den Emitter
+ein BEIFAHRER — er trug ihn, ohne ihn zu brauchen. Diese Scheibe macht ihn zur
+VORBEDINGUNG. Durch (d) wird der Fall LAUT statt STILL: der Emitter schweigt,
+statt unbemerkt weiterzulaufen.
+
+**(g) DIE STATISTIK-KENNZAHL "Conversions je Seitenaufruf" HAT DEN SEITENAUFRUF
+IM NENNER.** Ein unterdrückter Seitenaufruf HEBT die angezeigte Rate — und zwar
+OHNE dass irgendwo etwas fehlt aussieht. Die Zahl wird nicht falsch gerechnet;
+ihre Grundgesamtheit schrumpft.
+
+**(h) DIE VERLUSTRATE IST NICHT BETROFFEN.** Der Präfix-Filter schliesst
+Seitenaufrufe an allen drei Stellen aus: Stichtag und Nenner tragen ihn WÖRTLICH,
+der Zähler ist eine Teilmenge des Nenners. GEMESSEN, NICHT ANGENOMMEN. Der Punkt
+steht als eigener Befund und nicht als Nebensatz zu (g), damit niemand die beiden
+Kennzahlen für dieselbe hält — die Marquee-Metrik der Phase 8 bleibt von dieser
+Scheibe unberührt.
+
+**(i) DIE TESTLAGE SIEHT DEN EMITTER NICHT.** Der ausführende Test-Helfer
+evaluiert genau EIN Script und sieht den Emitter NIE; die Emitter-Tests prüfen
+ausschliesslich STRUKTUR, nie WIRKUNG.
+**FÜR EINE SCHEIBE, DEREN GANZER GEGENSTAND "feuert / feuert nicht" IST, IST DAS
+DIE LÜCKE** — und sie trifft direkt auf die Lektion aus dem Bau der zweiten
+Scheibe, dass "blockiert" und "abgestürzt" an einer Abwesenheits-Assertion
+IDENTISCH aussehen (s. "#### Zwei Lektionen aus dem Bau — HEBUNGSKANDIDATEN für
+CLAUDE.md", Punkt (b)).
+
+**AUSDRÜCKLICH NICHT IN DIESER SCHEIBE, je mit Grund:**
+- **DAS WIRE-FELD** (das Einwilligungs-Signal reist zum Server). Unverändert der
+  Grund aus der zweiten Scheibe: nötig erst ab dem zweiten Ziel. Die Scheibe
+  bleibt rein clientseitig — kein Ingest, kein Schema.
+- **PINTEREST ODER EIN ZWEITES ZIEL.** Es ist die VIERTE Scheibe; hier ändert
+  sich nichts an ihr.
+- **JEDE ÄNDERUNG AM FORWARD.** Der Seitenaufruf wird ohnehin nicht geforwardet;
+  ein Eingriff dort wäre eine zweite Wirkung im selben Schritt.
+- **DIE LATENZ-FRAGE.** Sie bindet das zweite Ziel, nicht diese Scheibe (s. "###
+  Drei gemessene Bindungen, die die PINTEREST-SCHEIBE binden", Punkt (a)).
+- **DIE BETREIBER-DOKUMENTATION SAMT SNIPPET.** Eigener Liefergegenstand — sie
+  braucht einen ORT, DEN ES HEUTE NICHT GIBT. Die zwei Auflagen an sie stehen
+  oben festgehalten, damit sie nicht verlorengehen; ERLEDIGT SIND SIE DAMIT
+  NICHT.
+- **DER GEMEINSAME ABLAGEORT FÜR ZIEL-NAMEN.** Backlog — er berührt den Server
+  und liegt damit ausserhalb einer rein clientseitigen Scheibe.
+
+### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
+
+Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
+
+- Wie wird die WIRKUNG des Emitters überhaupt testbar, gegeben (i)? Eine Antwort,
+  die nur eine weitere Struktur-Zusicherung hinzufügt, beantwortet die Frage
+  nicht.
+- Wo genau sitzt die Prüfung RELATIV ZUM GUARD und RELATIV ZUM SENDEN? (c) legt
+  das ERGEBNIS fest, nicht die STELLE.
+- Bleibt die Struktur-Zusage aus (f) prüfbar, oder braucht sie eine EIGENE Probe?
+
+**KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
+dem Bau, getrennt vom Zuschnitt, wie bei den ersten beiden Scheiben.

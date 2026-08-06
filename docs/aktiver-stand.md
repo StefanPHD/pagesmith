@@ -520,11 +520,14 @@ hier um die Tabelle, die die erste Scheibe umstellt.
 
 8. **DIE BEIDEN `WITH CHECK`-POLICIES WERDEN VON KEINEM CODEPFAD GENUTZT.**
    Sie stehen in `supabase/migrations/0005_project_tokens.sql:38-42`. Beide
-   Schreibstellen (`src/app/projects/actions.ts:582-585` Upsert,
-   `:656-659` Delete) und die eine Lesestelle (`src/lib/capi/token.ts:123-127`)
+   Schreibstellen (`src/app/projects/actions.ts`, Upsert in `setCapiToken`,
+   Delete in `removeCapiToken`) und die eine Lesestelle
+   (`src/lib/capi/token.ts`, die Geheimnis-Abfrage in
+   `getCapiConfigByTrackingKey`)
    laufen über den `service_role`-Client und umgehen die Zeilenregeln. Die
    Policies stammen aus einer FRÜHEREN Fassung, in der der Schreibweg über den
-   Sitzungs-Client lief; der Wechsel ist in `actions.ts:543-546` festgehalten.
+   Sitzungs-Client lief; der Wechsel ist im JSDoc-Kopf von `setCapiToken`
+   (`actions.ts`, Punkt 4 des Zwei-Client-Flusses) festgehalten.
 9. **DIE TRAGENDEN KONTROLLEN SIND ZWEI ANDERE — und das ist der wichtigste
    Punkt dieser Erhebung:**
    - die **FEHLENDE SELECT-Policy** (`0005:28-31`): unter aktiver RLS ohne
@@ -532,7 +535,8 @@ hier um die Tabelle, die die erste Scheibe umstellt.
      auch für den Owner selbst;
    - das **OWNERSHIP-GATE in den zwei Server-Actions**, das den privilegierten
      Client ERST NACH bestandener Prüfung instanziiert
-     (`actions.ts:566-580` bzw. `:644-655`).
+     (`actions.ts`, in `setCapiToken` bzw. `removeCapiToken` je die
+     `projects`-Ownership-Abfrage unmittelbar vor `createAdminClient()`).
 10. **`user_id` existiert in der heutigen Tabelle AUSSCHLIESSLICH, um jene
     Policies zu bedienen** — der Kommentar an der Spalte sagt es wörtlich
     (`0005:15-16`: "user_id fuer die RLS-WITH-CHECK-Ownership … beim Schreiben").
@@ -567,10 +571,13 @@ hier um die Tabelle, die die erste Scheibe umstellt.
     Aussagen fälschlich zu einer zusammen.
 15. **`trackingKey` IST PROJEKTWEIT — bestätigt**, mit einem Grund, der über den
     Prüfauftrag hinausgeht: Der Ingest löst ihn gegen die Projektzeile auf
-    (`src/lib/capi/token.ts:96-99`, Filter auf die server-autoritative Spalte),
+    (`src/lib/capi/token.ts`, `getCapiConfigByTrackingKey`, Filter auf die
+    server-autoritative Spalte),
     und er ist in BEREITS AUSGELIEFERTE Seiten EINGEBACKEN (`generate.ts:350`,
     `meta.ts:211`). Beim Entfernen des Tokens wird er bewusst ERHALTEN
-    (`actions.ts:618-622`). **Eine Vervielfachung bräche live stehende Seiten.**
+    (`actions.ts`, in `removeCapiToken` der `settings`-Merge, der
+    `getTrackingKey(current)` unverändert zurückschreibt).
+    **Eine Vervielfachung bräche live stehende Seiten.**
 16. **`tokenSet` bräuchte eine Vervielfachung — aber ERST MIT DEM ZWEITEN ZIEL,
     NICHT IN DIESER SCHEIBE.** Er ist heute ein einzelner Boolean für genau ein
     Geheimnis (`src/lib/settings.ts:24`, `:80-82`), gelesen von der Oberfläche
@@ -1467,6 +1474,35 @@ Bauten sind etliche der Anker in dieser Datei verschoben. Die Regel dagegen
 EXISTIERT BEREITS (CLAUDE.md: der haltbare Anker ist der Symbolname, nicht die
 Zeilennummer). Das Nachziehen gehört in dieselbe eigene Runde — es ist Arbeit,
 keine Nebenbei-Korrektur.
+
+**VOLLZOGEN AM 2026-08-06 — UND ZWAR BEWUSST NUR ZUM TEIL. DIE ZAHL STEHT HIER,
+weil "nicht nachgezogen" sonst als "es waren wenige" gelesen wird:** Erhoben
+wurden ALLE **41** Anker der Datei; **18** treffen, **23** treffen nicht.
+Nachgezogen wurden davon **8** — die, die auf SICHERHEITSRELEVANTEN Code zeigen
+(Ownership-Gate, Schreib-/Lesepfad eines Geheimnisses, RLS-Policy, Kill-Switch,
+Ingest-Containment). **15 nicht treffende Anker BLEIBEN, WIE SIE SIND.**
+
+**DER GRUND FÜR DIE AUSWAHL:** Diese Datei wird am Phasenende archiviert. Dreissig
+Anker in einem Dokument zu drehen, das ins Archiv geht, ist Zeremonie. Die
+VOLLERHEBUNG kam trotzdem zuerst — die Auswahl IST die Entscheidung, und auf einer
+Stichprobe hätte ein sicherheitsrelevanter Anker liegenbleiben können, nur weil er
+nicht in der Probe war.
+
+**WIE EIN NICHT NACHGEZOGENER ANKER ZU LESEN IST:** als **POTENZIELL VERSCHOBEN**,
+NICHT als geprüft und nicht als treffend. Wer eine Zeilennummer in dieser Datei
+findet, die nicht durch einen Symbolnamen ersetzt ist, prüft sie am Code nach,
+bevor er sie benutzt.
+
+**ZWEI BEFUNDE AUS DER ERHEBUNG, die nicht in der Zahl stecken:**
+- **DIE ANKER IN MIGRATIONSDATEIEN TREFFEN ALLE ACHT** (0005 sechsmal, 0019 und
+  0020 je einmal). Das war die ERWARTUNG (angewandte Migrationen werden nicht
+  umgeschrieben) — sie ist jetzt GEMESSEN und nicht mehr nur erwartet.
+- **DIE CONSENT-ANKER DER "## Gemessenen Ausgangslage" (Punkte 1-4 und 7) SIND
+  NICHT NUR VERSCHOBEN, SONDERN ZEIGEN AUF EINE AUSSAGE, DIE DIE PHASE SELBST
+  ABGERÄUMT HAT** — `psConsent` lebt seit der zweiten Scheibe nicht mehr in
+  `tracking/meta.ts`. Sie sind deshalb ausdrücklich NICHT angefasst worden: Ein
+  Anker-Nachzug hätte dort die Aussage mitverändert. Das gehört in genau die
+  Auflösung, die dieser Sammelposten oben schon benennt.
 
 **WANN: VOR DER VIERTEN SCHEIBE, NICHT VOR DER DRITTEN.** Der Grund gehört dazu,
 sonst wird die Reihenfolge für Bequemlichkeit gehalten:

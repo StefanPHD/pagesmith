@@ -157,7 +157,7 @@ Migration (falls vorhanden) im SQL-Editor VOR dem Deploy  ← fail-closed
    ↓
 Push → Deploy → Deployment verifizieren (Vercel „Ready"!) → LIVE-TEST
    ↓
-docs(claude)-Abschluss-Vermerk in DERSELBEN Runde
+docs(claude)-Abschluss-Vermerk + Verdichtung des Zuschnitts, DERSELBE Commit
 ```
 
 Zwei Dinge daran sind hart erarbeitet und nicht verhandelbar:
@@ -178,6 +178,17 @@ alte Version — real passiert.
 **Ausnahme:** Reine Doku-Commits laufen **einstufig** — ein Prompt, ein Diff,
 ein GO. Dort ist der Diff das Artefakt; ein Plan-Review prüfte dieselbe Sache
 zweimal. Zweistufig gilt für Bau-Scheiben.
+
+**BEIM ABSCHLUSS-VERMERK WIRD DER ZUSCHNITT VERDICHTET.** Ein Zuschnitt trägt
+zweierlei: Anweisungen für seine Scheibe, die mit dem Protokoll ablaufen, und
+Entscheidungen, die darüber hinaus binden. Nur das Zweite bleibt stehen.
+**WARUM ZUM ABSCHLUSS UND NICHT SPÄTER:** Solange beide unverdichtet
+nebeneinander stehen, driften sie — jede spätere Korrektur am einen erzeugt
+eine Runde für das andere. Die Verdichtung bündelt diese Runden in eine, zu
+einem Zeitpunkt, an dem ohnehin beide gelesen werden.
+**GRENZE:** Der Zuschnitt ist der Maßstab, gegen den das Protokoll misst. Was
+gestrichen wird, muss im Protokoll erkennbar bleiben — sonst misst es gegen
+nichts. Der Verlauf ist KEIN Ersatz: Er wird beim Pflicht-Gate nicht gelesen.
 
 ### Phasenende ab Phase 10 (leichte Archivierung)
 

@@ -330,7 +330,13 @@ VERSCHIEDENE AUSSAGEN, beide tragend, KEINE ersetzt die andere:
 2. **DER AUTHENTIFIZIERTE CLIENT FASST DIE GEHEIMNIS-TABELLE NIE AN.** Getragen
    von „WRITE-ONLY: der SSR-Client fasst project_tokens NIE an …", „DELETE laeuft
    ueber den Admin-Client (service_role), nicht ueber den SSR-Client" und
-   „selektiert nur projects-Spalten …, NIE project_tokens".
+   „selektiert nur projects-Spalten …, NIE project_secrets, NIE project_tokens".
+   **NACHGEZOGEN AM 2026-08-06 — und der Grund gehört dazu, sonst liest sich die
+   Ergänzung als Kosmetik:** Der Absatz darunter sagt „AUSGEWEITET, NICHT
+   VERSCHOBEN". **Ab dieser Runde stimmt das erstmals für ALLE DREI Träger
+   WÖRTLICH, nicht nur für zwei** — der dritte hielt bis dahin nur STRUKTURELL,
+   über die exakte Projektions-Zusicherung, also als Nebenwirkung einer fremden
+   Strenge. Am Code gemessen und per Mutation belegt.
 
 **DIE ZWEITE AUSSAGE IST DIE, DIE DURCH DIESE SCHEIBE WANDERT — und sie wird
 AUSGEWEITET, NICHT VERSCHOBEN.** Nach Bau B muss sie für die Alt-Tabelle UND für

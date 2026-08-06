@@ -465,7 +465,7 @@ describe("removeCapiToken (CAPI-Token entfernen)", () => {
 });
 
 describe("loadProject — Payload traegt NIE den Token", () => {
-  it("selektiert nur projects-Spalten (id,name,html,mappings,settings), NIE project_tokens", async () => {
+  it("selektiert nur projects-Spalten (id,name,html,mappings,settings), NIE project_secrets, NIE project_tokens", async () => {
     const { rec } = makeClient({
       user: { id: "user-1" },
       results: {
@@ -487,8 +487,28 @@ describe("loadProject — Payload traegt NIE den Token", () => {
     expect(row?.settings).toEqual({ capi: { trackingKey: "k", tokenSet: true } });
     expect(JSON.stringify(row)).not.toContain("meta_capi_token");
 
+    // POSITIVKONTROLLE — sie steht VOR den Abwesenheits-Behauptungen, weil diese sonst
+    // auch dann aufgingen, wenn die Aufzeichnung schlicht leer bliebe (Muster der zwei
+    // Schwestertests WRITE-ONLY und DELETE).
+    // SIE LIEGT AUF rec.fromTables, DERSELBEN AUFZEICHNUNG WIE DIE ZWEI BEHAUPTUNGEN
+    // DARUNTER — und das ist der Punkt: Das toEqual auf rec.selectCols weiter unten ist
+    // eine Positivkontrolle fuer die ANDERE Aufzeichnung und deckt diese hier NICHT.
+    // Zwei getrennte Aufzeichnungen, zwei getrennte Kontrollen.
+    expect(rec.fromTables).toContain("projects");
+
     // project_tokens wird nie abgefragt; die Projektion enthaelt keinen Token.
     expect(rec.fromTables).not.toContain("project_tokens");
+    // PHASE 11 SCHEIBE 1 — WOERTLICH AUSGEWEITET, und der Grund ist NICHT Symmetrie
+    // zu den beiden anderen Traegern dieser Zusicherung:
+    // Fuer project_secrets hielt sie bisher NUR STRUKTUR-BEDINGT, ueber die exakte
+    // Projektions-Zusicherung weiter unten — ein Lesezugriff haette dort einen zweiten
+    // selectCols-Eintrag erzeugt und das toEqual gebrochen. Die Sicherheitsaussage war
+    // damit NEBENWIRKUNG EINER FREMDEN STRENGE. Jetzt steht sie als EIGENE Aussage da.
+    // AUFLAGE FUER SPAETER: Wer die Projektions-Zusicherung lockert (ein Feld dazu,
+    // toEqual auf etwas Weicheres), MUSS diese Zeile unangetastet lassen — sie ist der
+    // Grund, warum das Lockern dann trotzdem sicher waere. Eine tragende Zusage darf
+    // nicht davon abhaengen, dass eine ANDERE Zusicherung streng bleibt.
+    expect(rec.fromTables).not.toContain("project_secrets");
     // SPALTENLISTE GEWACHSEN, SCHAERFE UNVERAENDERT (Scheibe 9a) — NICHT "bis gruen
     // angepasst": Der Test schuetzt laut Namen "kein Token in der Projektion", und
     // genau das pruefen die beiden Zeilen darueber (fromTables / JSON.stringify) —

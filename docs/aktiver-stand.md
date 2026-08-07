@@ -17,7 +17,7 @@ Umstellung der Geheimnis-Tabelle — ABGESCHLOSSEN und live bewiesen, (2) das
 geteilte Consent-Gate — ABGESCHLOSSEN und live bewiesen, (3) der PageView-Emitter
 hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) die NAHT des
 Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) das Einwilligungs-Signal
-reist zum Server — ZUGESCHNITTEN, NOCH NICHT GEBAUT, (6) Pinterest als erstes
+reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) Pinterest als erstes
 zusätzliches Ziel — PLATZHALTER. Die Entkopplung des Forwards von der Antwort war
 als fünfte Scheibe geführt und ist am 2026-08-06 GESTRICHEN (s. "## Die
 GESTRICHENE fünfte Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT").
@@ -36,11 +36,12 @@ Zuschnitt der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge", "## Die
 zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)", "## Die dritte
 Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)", "## Die vierte
 Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)" und "## Die fünfte Scheibe —
-DAS EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)"; was die VIER
+DAS EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)"; was die FÜNF
 abgeschlossenen Scheiben tatsächlich ergeben haben, unter "### Protokoll der
 ersten Scheibe — Vollzug und Abschluss", "### Protokoll der zweiten Scheibe —
 Vollzug und Abschluss", "### Protokoll der dritten Scheibe — Vollzug und
-Abschluss" und "### Protokoll der vierten Scheibe — Vollzug und Abschluss".
+Abschluss", "### Protokoll der vierten Scheibe — Vollzug und Abschluss" und
+"### Protokoll der fünften Scheibe — Vollzug und Abschluss".
 Verwiesen wird auf Überschriften, nicht auf Positionen: "am Ende"
 wandert mit jedem angehängten Abschnitt mit, ohne dass jemand es merkt.
 
@@ -2517,6 +2518,22 @@ Stelle benennt genau das als Absicht.
 
 ### Der Zuschnitt der fünften Scheibe
 
+**VERDICHTET AM 2026-08-07, NACH DEM ABSCHLUSS.** Was hier stand, waren zu grossen
+Teilen ANWEISUNGEN FÜR DIESEN EINEN BAU — die sechs Verhaltens-Invarianten als
+Review-Massstab, die Ausschlussliste und die Fassung von Punkt (3), die der Bau
+widerlegt hat. Sie sind mit dem Protokoll abgelaufen und dort in ihrem ERGEBNIS
+festgehalten (s. "### Protokoll der fünften Scheibe — Vollzug und Abschluss").
+**WAS STEHEN BLEIBT, BINDET KÜNFTIGE ARBEIT** — das zweite Ziel wird gegen genau
+diese vier Entscheidungen geplant.
+**WAS TROTZ DER VERDICHTUNG UNANGETASTET BLEIBT, und der Grund gehört dazu, sonst
+wirkt es wie ein vergessener Rest:** die "### Die gemessene Ausgangslage dieser
+Scheibe" (ein DATIERTER Messbericht, kein Bau-Auftrag — und ihre Punkte (a), (c)
+und (d) binden die sechste Scheibe unmittelbar) und die Fragen unter "### Was der
+Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben" DIESES Abschnitts
+(die Überschrift trägt jede Scheibe, gemeint ist die eigene: sie sind der MASSSTAB,
+an dem der Plan gemessen wurde; alle vier bisherigen Scheiben führen sie aus
+demselben Grund weiter).
+
 **IN DIESER SCHEIBE:** Der Einwilligungs-Zustand reist im Beacon mit und wird im
 Ingest gelesen — **mit Meta als EINZIGEM Ziel und verhaltensneutral**. Kein
 zweites Ziel, kein Adapter, keine Änderung am Draht zu Meta.
@@ -2581,14 +2598,29 @@ das neue Ziel also nie einen Forward, bis sie neu publiziert wird.**
 Republish wirksam, und das ist die ehrlichere der beiden Möglichkeiten: Die
 Alternative hiesse, ein Ziel zu beliefern, zu dem der Besucher nie gefragt wurde.
 
-**(3) WAS MITREIST: DIE URTEILE ZU DEN SCHLÜSSELN, DIE DIE SEITE KENNT.** Der
-Emitter muss beim Publish erfahren, WELCHE Ziele konfiguriert sind, und für jedes
-fragen. **Das ist heute nicht der Fall** — der erzeugte Code kennt nur seinen je
-eigenen Schlüssel, eine Liste existiert nirgends (Ausgangslage (d)). Diese
-Scheibe stellt genau das her, und nicht mehr.
-**DIE FORM DES FELDES IST AUSDRÜCKLICH NICHT VORENTSCHIEDEN.** Sie ist die offene
-Frage (b) dieser Datei ("DIE FORM DES WIRE-FELDES") und eine Frage an den
-Stufe-1-Plan (s. unten). Hier steht keine Antwort, damit keine geraten wird.
+**(3) WAS MITREIST: DIE ENGE FORM — EIN SCHLÜSSEL AUF EINEM BEACON (ENTSCHEIDUNG
+OWNER, 2026-08-07, NACH DEM STUFE-1-BEFUND).**
+
+**HIER STAND DIE WEITE FORM: "die Urteile zu den Schlüsseln, DIE DIE SEITE KENNT",
+und dazu, der Emitter müsse beim Publish erfahren, welche Ziele konfiguriert sind.
+DER ZUSCHNITT WAR DAMIT ZU WEIT.** Widerlegt hat ihn nicht der Geschmack, sondern
+der Code — die Herleitung steht im Protokoll unter "#### Der Zuschnitt war zu
+weit, und das bindet". Sie wird hier NICHT wiederholt; hier steht nur das
+Ergebnis.
+
+**ES REIST GENAU EIN SCHLÜSSEL AUF GENAU EINEM BEACON:** das Meta-Urteil auf dem
+CONVERSION-Beacon. **PageView und Confirm bleiben byte-gleich.**
+
+**WAS ES BINDET — der Satz für das zweite Ziel:** Ein weiteres Ziel erweitert das
+Feld um SEINEN Schlüssel auf DEMSELBEN Beacon, nach DERSELBEN Figur — das Urteil
+wird **GEHOBEN, nicht neu erfragt**. Wer stattdessen an einer zweiten Stelle
+nachfragt, erzeugt einen zweiten Schnappschuss zu einem anderen Zeitpunkt, und der
+Draht trüge dann eine Aussage, die der Entscheidung widersprechen kann, die den
+Beacon überhaupt durchgelassen hat.
+
+**DIE OFFENE FRAGE (b) DIESER DATEI ("DIE FORM DES WIRE-FELDES") IST DAMIT
+BEANTWORTET** — für EIN Ziel. Sie geht beim zweiten nicht wieder auf: Die Form
+trägt beliebig viele Schlüssel; was hinzukommt, ist ein Schlüssel, keine neue Form.
 
 **(4) WAS AUSDRÜCKLICH NICHT MITREIST — DER CONFIRM-BEACON BLEIBT SCHMAL.** Zwei
 Gründe, beide gemessen:
@@ -2616,51 +2648,35 @@ und AUFGELÖST, nicht übergangen:
 - **FÜR JEDEN ANDEREN PFAD GILT (5) UNVERÄNDERT.** Die Auflösung ist eine
   Ausnahme für EINEN identifizierbaren Pfad, keine Aufweichung der Regel.
 
-### Sechs Verhaltens-Invarianten — der Massstab des Reviews
+### Die sechs Verhaltens-Invarianten und die Ausschlussliste — ABGELAUFEN
 
-Sie sind nummeriert, damit ein Review sie EINZELN quittieren kann.
+**GESTRICHEN AM 2026-08-07 MIT DEM ABSCHLUSS.** Beide waren ANWEISUNGEN FÜR DIESEN
+EINEN BAU: die Invarianten der Massstab des Reviews, die Ausschlussliste die
+Grenze des Zuschnitts. **IHR ERGEBNIS STEHT IM PROTOKOLL** — dort ist jede der
+sechs Invarianten einzeln quittiert, mit dem Beleg daneben, und dort steht auch,
+was ausgeschlossen blieb.
 
-1. **BEI EINEM ZIEL ÄNDERT SICH NICHTS AM DRAHT ZU META.** Gleiche Nutzlast,
-   gleiche Sequenz, gleiches Timeout. `forwardToMeta` wird nicht angefasst.
-2. **DIE 400-ANTWORT BLEIBT UNVERÄNDERT.** Das neue Feld taucht in KEINEM
-   Pflichtfeld-Guard auf.
-3. **DER INGEST WIRFT NIE.** Ein Feld BELIEBIGER Form — fehlend, leer, falsch
-   typisiert, verschachtelt, riesig — darf keinen Wurf erzeugen; das
-   204-Containment gilt in jedem Pfad. **Das ist keine Formsache:** Ein Wurf aus
-   dem Handler erzeugte einen 500 und leakte damit den Gültigkeitszustand des
-   trackingKeys an einen anonymen Aufrufer.
-4. **DAS BROWSER-GATE BLEIBT UNBERÜHRT.** Die bestehende Auswertungsregel wird
-   NICHT angefasst — kein zweites Urteil, keine zweite Implementierung. Was diese
-   Scheibe hinzufügt, FRAGT das Gate, es ERSETZT es nicht.
-5. **DER CONFIRM-PFAD BLEIBT WIE HEUTE.** Weder Nutzlast noch Zweig ändern sich.
-6. **KEIN LOG FÜHRT DEN EINWILLIGUNGS-ZUSTAND.** Er ist eine Aussage über einen
-   Besucher; ein Logeintrag darüber wäre eine Datenerhebung, die niemand
-   beschlossen hat.
-
-### Ausdrücklich nicht in dieser Scheibe, je mit Grund
-
-- **PINTEREST UND JEDER ADAPTER.** Sechste Scheibe. Diese hier ist genau deshalb
-  beweisbar, weil kein neues Netzwerk daneben steht.
-- **DER NEBENLÄUFIGE FAN-OUT MIT EINEM DECKEL.** Auflage der sechsten Scheibe (s.
-  dort); bei einem Empfänger gibt es nichts nebenläufig zu machen.
-- **DIE CONSTRAINT-ERWEITERUNG DER GEHEIMNIS-TABELLE.** Sie gehört laut
-  Entscheidung (d) zu dem Ziel, das sie braucht — hier entsteht kein Ziel.
-- **DER GEMEINSAME ABLAGEORT FÜR ZIELNAMEN.** Backlog, unverändert; er ist beim
-  DRITTEN Ziel eine echte Frage.
-- **DIE VERVIELFACHUNG VON `tokenSet`.** Ausgangslage Punkt 16 bindet sie ans
-  ZWEITE ZIEL, und das ist die sechste Scheibe.
-- **DIE WURF-LÜCKE IN `__psConsent`** (s. den Backlog-Kandidaten unten). **DER
-  GRUND IST HIER EIN BESONDERER und darf nicht mit den übrigen verwechselt
-  werden:** Diese Scheibe muss das Gate STABIL halten, um beweisbar zu sein. Wer
-  gleichzeitig die Auswertung anfasst, kann bei einem Fehlschlag nicht mehr
-  trennen, ob das Feld oder das Gate ihn verursacht hat. **Das ist kein Aufschub
-  aus Bequemlichkeit — es ist dieselbe Trennungs-Regel, die schon die Scheiben
-  eins, zwei und vier allein fahren liess.**
-- **DIE BETREIBER-DOKUMENTATION SAMT SNIPPET.** Eigener Liefergegenstand,
-  unverändert offen, und seit dem Live-Test der dritten Scheibe dringender als
-  zuvor.
+**WAS AUS DER AUSSCHLUSSLISTE NICHT MIT IHR VERSCHWINDET, weil es KEIN Ausschluss
+dieser Scheibe war, sondern ein offener Punkt:** die Wurf-Lücke in `__psConsent`
+(s. "### Zwei Backlog-Kandidaten aus derselben Aufklärung — BENANNT, NICHT
+GEPLANT") und die
+Betreiber-Dokumentation samt Snippet (unverändert offener Liefergegenstand, seit
+dem Live-Test der dritten Scheibe dringender als zuvor). Die übrigen Punkte —
+Pinterest, der nebenläufige Fan-Out, die Constraint-Erweiterung, der gemeinsame
+Ablageort für Zielnamen, die Vervielfachung von `tokenSet` — stehen sämtlich
+bereits bei der SECHSTEN Scheibe und wären hier eine Zweitschrift.
 
 ### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
+
+**ALLE FÜNF FRAGEN SIND EINGELÖST AM 2026-08-07** — durch die Stufe-1-Erhebung, die
+Owner-Entscheidungen darauf und den Bau; die Antworten stehen unter "### Protokoll
+der fünften Scheibe — Vollzug und Abschluss" und in den vier Entscheidungen
+darüber. Die Fragen bleiben unverändert stehen: Sie sind der MASSSTAB, an dem der
+Plan gemessen wurde — ohne sie wäre nicht mehr erkennbar, WAS beantwortet worden
+ist.
+**EINE DAVON HAT MEHR GELEISTET ALS BEANTWORTET ZU WERDEN:** Die erste Frage nach
+der FORM hat den Zuschnitt widerlegt. Eine Frage, die eine Vorgabe kippt, ist der
+Grund, warum dieser Abschnitt in jeder Scheibe geführt wird.
 
 Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
 
@@ -2685,6 +2701,11 @@ Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
   Fall?** Der Pfad wird von JEDEM Besucher JEDER Kundenseite getroffen
   (CLAUDE.md, /API/E-SCHLANKHEIT). Der schlanke Fall ist ein Projekt ohne
   Pixel-ID, der breite eines mit allen konfigurierten Zielen.
+
+**EINGELÖST AM 2026-08-07** — der Protokollblock existiert jetzt, s. "### Protokoll
+der fünften Scheibe — Vollzug und Abschluss". Der Satz darunter bleibt unverändert
+stehen: er hält fest, dass Zuschnitt und Protokoll von Anfang an getrennt geführt
+wurden, nicht erst nachträglich sortiert.
 
 **KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
 dem Bau, getrennt vom Zuschnitt, wie bei den ersten vier Scheiben.
@@ -2725,6 +2746,240 @@ Ausgangslage (c)). Heute folgenlos, weil beide Fragen im selben synchronen Aufru
 liegen und ein deterministischer Hook zweimal dasselbe sagt. **BENANNT, WEIL ES
 MIT JEDEM WEITEREN ZIEL MEHR WIRD** und weil ein Betreiber-Hook fremder Code ist,
 über dessen Determinismus wir nichts wissen.
+
+**NACHGETRAGEN AM 2026-08-07:** Der Bau hat diese Zahl NICHT erhöht — das Urteil
+wird gehoben statt neu erfragt, und ein zählender Wächter hält es fest. (B) bleibt
+damit unverändert als Kandidat stehen: Er beschreibt die ZWEI Aufrufe, die es
+schon vorher gab, nicht einen neuen.
+
+---
+
+### Protokoll der fünften Scheibe — Vollzug und Abschluss
+
+Der Zuschnitt darüber ist der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+**DIE BUCHSTABEN IN DIESEM PROTOKOLL SIND LOKAL** und haben nichts mit (a) bis (g)
+der Ausgangslage zu tun — dieselbe Handschrift wie bei den Protokollen der
+zweiten, dritten und vierten Scheibe.
+
+**ABGESCHLOSSEN AM 2026-08-07 — DAS EINWILLIGUNGS-URTEIL REIST IM BEACON, WIRD IM
+INGEST GELESEN, IST GEBAUT, DEPLOYT UND LIVE GEPRÜFT.** Commit `f4cfd65`.
+
+**DIE LIVE-WERTE, gemeldet von Stefan am 2026-08-07 gegen das deployte
+Produktions-Deployment.** Keiner davon ist abgeleitet:
+
+- **(1) ALT-SEITE — die teuerste Zusage, und der Normalfall trägt sie.** Der
+  Quelltext der bestehenden Seite wurde geprüft: **der Feldname kommt darin NICHT
+  vor.** Conversion ausgelöst, der Server-Forward lief durch, in der Meta-Oberfläche
+  als **dedupliziertes Paar** zugeordnet. **OHNE Republish** — und genau das ist der
+  Teil, den kein anderer Schritt trägt.
+- **(2) NEUE SEITE, ERLAUBT.** Editor hart neu geladen, dann republisht. Im
+  Request-Body reist das Feld **mit Erlaubnis** mit, Anfrage-Typ `ping`. Das
+  Ereignis kam im Events Manager an.
+- **(3) VERBOT UND POSITIVKONTROLLE**, per handgebautem POST gegen DASSELBE
+  Projekt: Verbot → **204, KEIN Ereignis** im Events Manager. Positivkontrolle mit
+  Erlaubnis → **204, Ereignis kam an.**
+
+**DIE PRÜFUNG DES QUELLTEXTS IN SCHRITT 1 IST NICHT BEIWERK, sondern das, was den
+Schritt überhaupt zu einem Nachweis macht:** Ohne sie wäre "eine alte Seite" eine
+Behauptung über den Publish-Zeitpunkt. Mit ihr ist die Abwesenheit des Feldes am
+ausgelieferten Dokument BELEGT — und nur die Abwesenheit prüft die Alt-Seiten-Regel.
+
+**NICHT ZURÜCKGEMELDET und deshalb hier auch nicht behauptet:** ein Abgleich des
+Deployment-Hashes im Vercel-Dashboard gegen `f4cfd65`. Dass das geprüfte Deployment
+genau diesen Stand trug, ist NICHT gemessen worden — **dieselbe Lücke wie bei der
+vierten Scheibe**, und sie steht hier aus demselben Grund: Ein Live-Test gegen ein
+älteres Deployment sähe im Erfolgsfall identisch aus.
+
+#### Warum Schritt 3 ohne die Positivkontrolle NICHTS wert gewesen wäre
+
+**BEIDE AUFRUFE ANTWORTEN MIT DERSELBEN LEEREN 204.** Das ist kein Mangel des
+Tests, sondern bewusstes Sicherheitsdesign des Ingest — der Statuscode darf über
+den Zustand nichts verraten.
+
+**FOLGE: "KEIN EREIGNIS" ALLEIN IST MEHRDEUTIG.** Es hiesse ebenso gut, dass das
+Zugangsdatum abgelaufen ist, dass das Projekt gesperrt wurde oder dass der
+Forward aus einem ganz anderen Grund stirbt. **Das ist nicht hypothetisch: Genau
+dieser Fall ist in der DRITTEN Scheibe eingetreten** (s. "#### Der
+Token-Zwischenfall — die stille Fehlerklasse, zum ERSTEN MAL beobachtet") — der
+Forward war tot, die Seite lud, der Beacon ging raus, der Ingest antwortete wie
+immer, und KEINE Anzeige im Produkt meldete etwas.
+
+**DIE POSITIVKONTROLLE IM SELBEN ZEITFENSTER SCHLIESST DAS AUS**, und nur sie: Sie
+zeigt, dass derselbe Schlüssel, dasselbe Projekt und dasselbe Zugangsdatum in
+DIESEM Moment ein Server-Ereignis erzeugen. Erst dadurch ist die Abwesenheit im
+Verbots-Fall dem VERBOT zurechenbar und nicht dem Zufall.
+
+#### Was der Live-Test ausdrücklich NICHT beweist
+
+- **EIN ECHTER BESUCHER KANN MIT EINEM ZIEL KEIN VERBOT ERZEUGEN.** Der
+  Conversion-Beacon entsteht nur hinter dem Gate; das Feld ist im Browser
+  STRUKTURELL immer erlaubend. **Schritt 3 prüft den LESER, nicht die
+  Erzeuger-Kette** — er stellt einen Zustand nach, den die Erzeuger-Kette heute
+  nicht hervorbringen kann.
+- **ER BEWEIST NICHT, DASS EINE ABLEHNUNG IN EINEM ECHTEN CONSENT-WERKZEUG DEN
+  SERVER ERREICHT.** Bei Ablehnung geht gar kein Beacon ab; es gibt nichts, das
+  ankommen könnte.
+- **ER BEWEIST DIE META-NUTZLAST NICHT.** Dass das Signal NICHT an Meta
+  weitergereicht wird, trägt ein Test, kein Live-Blick.
+- **ER BEWEIST DIE BYTE-GLEICHHEIT VON PAGEVIEW UND CONFIRM NICHT.** Die trägt die
+  formale Gegenprobe (c) unten.
+- **ER SAGT NICHTS ÜBER LAST, NEBENLÄUFIGKEIT ODER LATENZ.** Es wurde keine Latenz
+  gemessen; die Sequenz ist unverändert, aber unverändert heisst hier
+  "unangetastet", nicht "nachgemessen".
+- **SCHRITT 1 BEWEIST NICHTS ÜBER NEUE SEITEN, SCHRITT 2 NICHTS ÜBER ALTE.** Die
+  Achsen sind getrennt und ersetzen einander nicht.
+
+#### Der Bau, gemessen am eigenen Lauf
+
+PROVENIENZ: lokaler Lauf am 2026-08-07. **GRENZE, die zwingend dazugehört:** Die
+Suite kennt kein Postgres, spricht nie mit Meta (`fetch` ist auf diesem Pfad
+gemockt) und läuft in keinem Browser — sie beweist Verdrahtung, Regel und
+Nutzlast-FORM, nicht Zustellung.
+
+- **716 Tests vor dem Bau, 771 danach — KEINER angepasst.** 40 Testdateien vorher,
+  43 nachher; die 55 neuen verteilen sich auf 23 (Leser), 21 (Handler) und 11
+  (Erzeuger). `tsc --noEmit`, `eslint` und `next build` grün.
+- **DER ADDITIVE ZWISCHENSTAND IST EIGENS GEMESSEN:** nach dem Anlegen des Lesers
+  und VOR jeder Änderung an `handleIngest` lief die Suite mit 41 Dateien und 739
+  Tests grün. **Der No-op-Zustand ist damit belegt, nicht behauptet** — dieselbe
+  Methode wie bei der Naht.
+- **DIE SECHS VERHALTENS-INVARIANTEN, EINZELN QUITTIERT:** (1) `forwardToMeta` ist
+  in keinem Diff-Hunk; (2) der Pflichtfeld-Guard trägt keinen neuen Term, zwei
+  Tests halten es fest; (3) alle kaputten Formen antworten mit 204, ein eigener
+  Wächter prüft die Antwort statt nur die Abwesenheit des Forwards; (4) `consent.ts`
+  ist unangetastet und die Zahl der Hook-Aufrufe unverändert (Gegenprobe (b));
+  (5) `pageview-emitter.ts` in keinem Diff, `buildPixelConfirmStatement`
+  byte-gleich (Gegenprobe (c)); (6) der Zweig loggt nichts.
+
+**DIE DREI PFLICHT-MUTATIONEN, Vorhersage und Ergebnis nebeneinander:**
+
+| Mutation | Vorhersage (Stufe 1) | Vorhersage vor dem Lauf | ERGEBNIS |
+|---|---|---|---|
+| **M1** abwesend = verboten | "4 Dateien, ~14 Fälle" | 5 Dateien | **7 Dateien, 34 Tests rot** |
+| **M2** truthy statt genau `true` | "genau EIN Fall" | 2 Dateien, 4 Tests | **2 Dateien, 4 Tests — punktgenau** |
+| **M3** Guard vor den Confirm-Return | "kein einziger Test rot" | 1 Datei, 3 Tests | **1 Datei, 3 Tests — punktgenau** |
+
+Nach jeder Rücknahme wurden `git status` und `git diff --numstat` geprüft; jedes
+Mal exakt zwei getrackte Einträge mit identischen Zeilenzahlen, kein leerer Diff.
+
+**DIE DREI FORMALEN GEGENPROBEN:**
+- **(a) Der Feldname über `src/`:** fünf Dateien statt der erwarteten sechs, das
+  rohe Literal im gesamten Produktivcode **genau EINMAL**. S. Befund (c).
+- **(b) `__psConsent(` im erzeugten Text:** **2 vorher, 2 nachher**; die
+  Existenzprüfungen ebenso 2 zu 2. Gemessen gegen `git show HEAD:…`, nicht
+  geschätzt.
+- **(c) PageView und Confirm byte-gleich:** Der Emitter erscheint in KEINER
+  Diff-Datei; `buildPixelConfirmStatement` liegt in der geänderten Datei und wurde
+  deshalb byte-verglichen — **744 zu 744 Byte, identisch.**
+
+**DER ZUWACHS IM DRAHT: 20 Byte, und zwar GERECHNET, NICHT GEMESSEN** — Komma,
+Feldname, Doppelpunkt und das Urteils-Objekt, ausschliesslich auf dem
+Conversion-Beacon. PageView und Confirm: null. Die Rechnung setzt den heutigen
+Feld- und Schlüsselnamen voraus; ein längerer Name änderte sie.
+
+**DREI ABWEICHUNGEN VOM FREIGEGEBENEN STUFE-1-PLAN, im Bau deklariert:** der
+Ziel-Schlüssel aus dem Consent- statt dem Geheimnis-Vokabular (der Commit-Text
+übernimmt diese Begründung ausdrücklich); der Body-Typ des Handlers bleibt ohne
+das Feld, weil ein Literal dort die zweite Kopie des Namens wäre; und ein vierter
+Kommentarkopf wurde erweitert. **Die letzten beiden sind nicht beanstandet
+worden** — festgehalten als das, was sie sind: nicht beanstandet, nicht
+ausdrücklich freigegeben.
+
+#### Drei Befunde, die künftige Arbeit binden
+
+**(a) M3 WAR DER WERTVOLLSTE TEST DIESER SCHEIBE.** Die Sorge aus Stufe 1 war, die
+PLATZIERUNG des Guards — innerhalb der Forward-Bedingung statt weiter oben — hänge
+nur an einem Kommentar. **Sie hängt an drei Wächtern. Aber nur, weil die Fälle 3,
+5 und 6 gebaut wurden**: der Persist bei verbotenem Forward, der PageView mit
+Verbots-Feld, die Bestätigung mit Verbots-Feld. **Ohne sie wäre M3 grün geblieben,
+und die Vorhersage aus Stufe 1 ("kein einziger Test rot") wäre eingetreten** — als
+Befund, dass die Platzierung ungedeckt ist.
+**DIE VERALLGEMEINERUNG:** Eine PLATZIERUNG ist eine eigene Zusicherung, und sie
+wird nur von Tests gedeckt, die den Unterschied zwischen zwei Platzierungen
+SICHTBAR machen. Tests, die nur die Regel prüfen, decken sie nicht.
+
+**(b) DIE M1-VORHERSAGE WAR ZU ENG — ZUM DRITTEN MAL IN DIESER PHASE, und wieder
+in die günstige Richtung.** Nicht bedacht war, dass `ingest.confirm.test.ts` und
+`ingest.persist.test.ts` als GEGENPROBEN ebenfalls forwarden.
+**DAS IST DER DRITTE BELEG FÜR DEN HEBUNGSKANDIDATEN "EINE MUTATIONS-VORHERSAGE
+KANN IN BEIDE RICHTUNGEN FALSCH SEIN"** — notiert in der dritten Scheibe, zum
+zweiten Mal eingetreten in der vierten.
+**WARUM DER BELEG HIER STEHT UND NICHT DORT, ausdrücklich:** Der Auftrag verlangte
+den Vermerk beim Kandidaten selbst; der Scope-Wächter derselben Runde erklärt die
+Protokolle der Scheiben 1 bis 4 für unberührbar. **Beides zusammen geht nicht, und
+das Protokoll der vierten Scheibe ist ein Bericht über einen vollzogenen Vorgang —
+es altert nicht, es datiert sich.** Der Zähler steht deshalb hier, mit Zeiger
+dorthin.
+
+**(c) DIE GEGENPROBE FIEL ENGER AUS ALS ERWARTET.** Erwartet waren sechs Dateien
+mit dem Feldnamen, gefunden sind fünf: **Der Ingest kennt den Namen gar nicht**, er
+ruft nur den Leser. Im gesamten Produktivcode steht das Literal **genau einmal**.
+**DAS IST DIE EIGENSCHAFT, WEGEN DER NAME UND LESER IN EINER DATEI LIEGEN** — und
+sie bindet: Wer den Namen später an einer zweiten Stelle ausschreibt, macht aus
+einem Tippfehler ein stilles Fail-OPEN, weil ein nicht gefundenes Feld "abwesend"
+heisst und "abwesend" erlaubt.
+
+#### Der Zuschnitt war zu weit, und das bindet
+
+Der Zuschnitt verlangte **"die Urteile zu den Schlüsseln, DIE DIE SEITE KENNT"**.
+Gebaut wurde die ENGE Form: EIN Schlüssel auf EINEM Beacon. **Widerlegt wurde die
+weite Fassung am Code, nicht am Geschmack** — die Stufe-1-Erhebung hat sie
+auseinandergenommen, und der Owner hat den Befund angenommen.
+
+**DER SCHÄRFSTE GRUND ZUERST, weil er als einziger nicht mit der Zahl der Ziele
+verschwindet: DIE WEITE FORM ERZEUGTE MEHRERE SCHNAPPSCHÜSSE ZU MEHREREN
+ZEITPUNKTEN, die der Server als EINE Aussage läse.** Das Urteil wird nirgends
+gemerkt; jede Frage ruft den Betreiber-Hook neu. Ein zweiter Schlüssel im selben
+Body käme also aus einer zweiten Ziehung — und könnte der Entscheidung
+widersprechen, die den Beacon überhaupt durchgelassen hat. **Die enge Form hebt den
+Boolean, der den Beacon durchgelassen hat: Widerspruchsfreiheit PER KONSTRUKTION,
+nicht per Zusage.**
+
+DIE DREI ÜBRIGEN GRÜNDE, in dieser Reihenfolge:
+- **NUR EIN BEACON KANN FORWARDEN.** Der Confirm kehrt vor dem Lesen von
+  `capiConfig` zurück, der PageView scheitert am `isForwardable`-Gate.
+- **NUR EIN SCHLÜSSEL STEUERT EINE SERVER-ENTSCHEIDUNG.** Der Analytics-Schlüssel
+  entscheidet ausschliesslich im Browser, OB ein Beacon entsteht.
+- **DIE WEITE FORM HÄTTE DEN VOLUMEN-BEACON MIT 20 BIS 30 PROZENT BYTES BELASTET**
+  (gerechnet, nicht gemessen; Annahmen im Stufe-1-Plan) — für einen Wert, den
+  niemand liest. Der PageView ist ab Phase 8 der Volumen-Event im Hotspot.
+- **UND SIE HÄTTE EINEN BESTEHENDEN TEST GEBROCHEN:** Die exakte Schlüsselmenge der
+  PageView-Nutzlast ist verankert. Das allein wäre eine Stopp-Bedingung gewesen.
+
+**WAS ES BINDET:** Ein zweites Ziel erweitert das Feld um SEINEN Schlüssel auf
+DEMSELBEN Beacon, nach DERSELBEN Figur — **gehoben, nicht neu erfragt**. Die Form
+trägt beliebig viele Schlüssel; was hinzukommt, ist ein Schlüssel, keine neue Form.
+
+**WAS DARAN GRUNDSÄTZLICH IST, über diese Scheibe hinaus:** Ein Zuschnitt kann
+seinen eigenen Gegenstand zu weit fassen, ohne dass es beim Schreiben auffällt —
+"alle Schlüssel, die die Seite kennt" liest sich vollständiger und damit besser als
+"einer". **Aufgefallen ist es erst, weil die Stufe-1-Fragen AM CODE zu beantworten
+waren.** Eine Stufe, die nur den Zuschnitt umsetzt, hätte die weite Form gebaut.
+
+#### Ein neuer Backlog-Kandidat — BENANNT, NICHT GEPLANT
+
+**DER BETREIBER ERFÄHRT NICHT, DASS EIN NEUES ZIEL ERST NACH DEM REPUBLISH WIRKT.**
+Der Anstoss kam vom Owner-Gegenüber.
+
+**DER MECHANISMUS, und er folgt zwingend aus Entscheidung (2):** Ein VORHANDENES
+Feld ohne den neuen Schlüssel ist ein VERBOT. Eine Seite, die vor der Einführung
+eines Ziels publiziert wurde, trägt das Feld — aber ohne dessen Schlüssel. **Sie
+bekommt für das neue Ziel also nie einen Forward, bis sie neu veröffentlicht wird.**
+Der Betreiber richtet das Ziel ein, sieht "Token gesetzt", und es passiert nichts.
+
+**DAS IST DIESELBE FEHLERKLASSE WIE "EIN INSTRUMENT, DAS SCHUTZ ANZEIGT, OHNE ZU
+SCHÜTZEN"** (s. die Policy-Entscheidung in Frage (d)): Eine Anzeige behauptet einen
+Zustand, den der Code nicht trägt. Verwandt mit dem Backlog-Punkt zur unsichtbaren
+Forward-Abweisung aus der dritten Scheibe — **beide Male sieht der Betreiber eine
+funktionierende Konfiguration und bekommt keine Ereignisse.**
+
+**ES IST KEIN FEHLER DIESER SCHEIBE.** Die Alternative wäre, ein Ziel zu beliefern,
+zu dem der Besucher nie gefragt wurde. **Fehlend ist nicht das Verhalten, sondern
+die MITTEILUNG.**
+
+**DER ÜBERTRAG NACH `docs/claude-history/backlog-polish.md` STEHT AUS** — wie bei
+den beiden Kandidaten aus der Aufklärung. Mit diesem Eintrag sind es DREI, die mit
+dieser Datei untergingen, wenn sie am Phasenende ohne Übertrag archiviert wird.
 
 ---
 
@@ -2817,3 +3072,24 @@ Empfänger, NIE hintereinander. Warum Nebenläufigkeit nur DÄMPFT und nicht auf
 jener Bindungen; **WO DER PREIS LIEGT, ist dort ÜBERHOLT** — die aktuelle Fassung
 steht in CLAUDE.md, Abschnitt A, /API/E-SCHLANKHEIT: nicht Funktionslaufzeit,
 sondern die BELEGUNG VON CONCURRENCY-SLOTS. Hier wird beides NICHT wiederholt.
+
+### ZWEI HINWEISE AUS DER FÜNFTEN SCHEIBE — HINWEISE, KEINE AUFLAGEN
+
+Nachgetragen am 2026-08-07, nach dem Abschluss der fünften Scheibe. **Sie stehen
+ausdrücklich NICHT als Auflagen**, sondern damit der Zuschnitt dieser Scheibe sie
+kennt, wenn er entsteht — was daraus folgt, entscheidet jene Runde.
+
+**(1) DAS SIGNAL-FELD WIRD HIER UM EINEN SCHLÜSSEL ERWEITERT, NICHT UM EINE FORM.**
+Die fünfte Scheibe hat die enge Form gebaut: ein Schlüssel auf dem
+Conversion-Beacon, das Urteil GEHOBEN statt neu erfragt. Die Figur ist im Zuschnitt
+jener Scheibe unter Punkt (3) festgehalten und im Protokoll begründet.
+
+**(2) DIE REPUBLISH-EIGENSCHAFT WIRD HIER ZUM ERSTEN MAL REAL.** Weil ein
+VORHANDENES Feld ohne den neuen Schlüssel ein VERBOT ist, bekommt eine nicht neu
+veröffentlichte Seite für Pinterest nie einen Forward — der Betreiber richtet das
+Ziel ein, sieht "Token gesetzt", und es passiert nichts. **Bis zu dieser Scheibe
+war das eine Herleitung; ab ihr trifft es echte Projekte.**
+**DAS VERHALTEN IST GEWOLLT** (die Alternative wäre, ein Ziel zu beliefern, zu dem
+der Besucher nie gefragt wurde) — **fehlend ist die MITTEILUNG an den Betreiber.**
+Sie steht als Backlog-Kandidat im Protokoll der fünften Scheibe und ist von dort
+zu holen, nicht hier zu lösen.

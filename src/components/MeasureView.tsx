@@ -9,6 +9,8 @@ import type {
 // Datei traegt bewusst KEIN "server-only" (dort ausdruecklich kommentiert), ist also
 // client-importierbar — genau dafuer wurde sie seinerzeit aus tracking/meta.ts geloest.
 import { PAGEVIEW_EVENT } from "@/lib/analytics/events";
+import type { TrackingTarget } from "@/lib/settings";
+import TargetCard from "@/components/TargetCard";
 
 // Anzeige-Label je event_type fuer die Analytics-Sektion (Scheibe 3). Der reservierte
 // PageView-Token wird lesbar; jeder Conversion-Name (Purchase/Lead/Custom…) steht als
@@ -49,18 +51,12 @@ function eventTypeLabel(eventType: string): string {
  */
 export default function MeasureView({
   projectId,
-  metaPixelId,
-  onMetaPixelIdChange,
-  capiTokenSet,
-  capiTokenInput,
-  onCapiTokenInputChange,
-  capiTokenStatus,
-  capiTokenError,
-  capiRemoveConfirming,
-  onCapiRemoveConfirmingChange,
-  capiRemoving,
-  onSetCapiToken,
-  onRemoveCapiToken,
+  targets,
+  pixelIdFor,
+  onPixelIdChange,
+  configuredTargets,
+  onCredentialsSaved,
+  onCredentialsRemoved,
   eventCounts,
   adblockLoss,
   variantCounts,
@@ -68,19 +64,18 @@ export default function MeasureView({
   hasVariantB,
 }: {
   projectId: string | null;
-  // --- Tracking-Pixel ---
-  metaPixelId: string;
-  onMetaPixelIdChange: (value: string) => void;
-  capiTokenSet: boolean;
-  capiTokenInput: string;
-  onCapiTokenInputChange: (value: string) => void;
-  capiTokenStatus: "idle" | "saving" | "saved" | "error";
-  capiTokenError: string | null;
-  capiRemoveConfirming: boolean;
-  onCapiRemoveConfirmingChange: (value: boolean) => void;
-  capiRemoving: boolean;
-  onSetCapiToken: () => void;
-  onRemoveCapiToken: () => void;
+  // --- Tracking-Pixel: eine Karte je Ziel ---
+  targets: readonly TrackingTarget[];
+  pixelIdFor: (target: TrackingTarget) => string;
+  onPixelIdChange: (target: TrackingTarget, value: string) => void;
+  /** null = noch nicht geladen; das traegt den dritten Karten-Zustand. */
+  configuredTargets: TrackingTarget[] | null;
+  onCredentialsSaved: (
+    forProjectId: string,
+    target: TrackingTarget,
+    trackingKey: string,
+  ) => void;
+  onCredentialsRemoved: (forProjectId: string, target: TrackingTarget) => void;
   // --- Statistik ---
   eventCounts: EventCount[];
   adblockLoss: AdblockLoss | null;
@@ -140,127 +135,54 @@ export default function MeasureView({
 
   return (
     <>
-      {/* Projekt-Einstellungen (Scheibe 1b): projektweite Tracking-Pixel. Als
-          beschriftete Plattform-LISTE aufgebaut -> weitere Plattformen (Google/
-          TikTok/…) passen spaeter als weitere Zeilen daneben, ohne Umbau. In 1b
-          genau EINE Zeile: Meta-Pixel-ID. Projektweit (nicht pro Element);
-          Aenderung -> dirty -> grosser Speichern-Button persistiert (kein Auto-Save).
-          Pixel-ID ist OEFFENTLICH -> Plain-Feld, kein Secret-Handling. */}
+      {/* TRACKING-PIXEL: EINE KARTE JE PLATTFORM (Phase 11 Scheibe 6, zweite
+          Haelfte). Der Kommentar von 1b sagte "als beschriftete Plattform-LISTE
+          aufgebaut -> weitere Plattformen passen spaeter als weitere Zeilen
+          daneben" — das ist hiermit eingeloest, nur als Karten statt als Zeilen.
+
+          DIE UEBERSCHRIFT BLEIBT, DIE KARTEN LIEGEN DARUNTER. Keine Karte traegt
+          eine Ueberschriften-Rolle: der Reihenfolge-Test der Phase 10 waehlt
+          Abschnitte ueber role="heading", und eine gleichnamige Karten-Ueberschrift
+          machte ihn mehrdeutig. */}
       <h2 className="mb-1 text-sm font-medium text-gray-700">
         Tracking-Pixel
       </h2>
       <p className="mb-3 text-xs text-gray-500">
-        Projektweite Pixel-IDs. Gilt für alle Tracking-Events dieses Projekts.
+        Projektweite Zugangsdaten je Plattform. Gilt für alle Tracking-Events
+        dieses Projekts.
       </p>
+      {/* DER PROJEKT-HINWEIS STEHT EINMAL, NICHT JE KARTE. Er beschreibt eine
+          Eigenschaft des PROJEKTS ("noch nicht gespeichert"), nicht eine des
+          Ziels — je Karte wiederholt waere er nicht nur redundant, sondern bei
+          zwei Karten auch zweimal derselbe Text. */}
+      {!projectId && (
+        <p className="mb-3 text-xs text-gray-500">
+          Projekt zuerst speichern, dann sind Zugangsdaten setzbar.
+        </p>
+      )}
       <div className="flex flex-col gap-3">
-        <label className="flex flex-col gap-1 text-sm sm:flex-row sm:items-center sm:gap-3">
-          <span className="w-40 shrink-0 font-medium text-gray-700">
-            Meta-Pixel-ID
-          </span>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={metaPixelId}
-            onChange={(e) => onMetaPixelIdChange(e.target.value)}
-            placeholder="z.B. 123456789012345"
-            className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        {targets.map((target) => (
+          <TargetCard
+            // key AM PROJEKT (Phase 11 Scheibe 6): der Projektwechsel ist damit
+            // eine MOUNT-Grenze — Eingabe, Status, Fehler, Bestaetigung und
+            // Busy-Flag der Karte sterben mit ihm. Dieselbe Figur wie bei
+            // DomainManager, und der zweite Anlass im Repo dafuer.
+            // Das ZIEL steht mit im Schluessel, weil die Karten sonst allein
+            // ueber ihre Position unterschieden waeren.
+            key={`${projectId ?? "neu"}:${target}`}
+            projectId={projectId}
+            target={target}
+            pixelId={pixelIdFor(target)}
+            onPixelIdChange={(value) => onPixelIdChange(target, value)}
+            configured={
+              configuredTargets === null
+                ? null
+                : configuredTargets.includes(target)
+            }
+            onCredentialsSaved={onCredentialsSaved}
+            onCredentialsRemoved={onCredentialsRemoved}
           />
-        </label>
-
-        {/* Meta-CAPI-Token (Scheibe 2a): GEHEIM, write-only. Der echte Wert
-            geht nur in die Server-Action und kommt NIE zurueck -> das Feld
-            startet/bleibt leer, gespeist wird es NIE aus settings. Der
-            "gesetzt?"-Indikator kommt aus settings.capi.tokenSet. Ohne
-            gespeichertes Projekt (kein projectId) fehlt die project_id fuer
-            den FK -> deaktiviert + Hinweis. */}
-        <label className="flex flex-col gap-1 text-sm sm:flex-row sm:items-start sm:gap-3">
-          <span className="w-40 shrink-0 pt-2 font-medium text-gray-700">
-            Meta CAPI-Token
-            <span className="block text-xs font-normal text-gray-400">
-              Server-Side, geheim
-            </span>
-          </span>
-          <div className="flex w-full max-w-xs flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <input
-                type="password"
-                autoComplete="off"
-                value={capiTokenInput}
-                onChange={(e) => onCapiTokenInputChange(e.target.value)}
-                disabled={!projectId}
-                placeholder={
-                  capiTokenSet
-                    ? "Neuen Token eingeben zum Ersetzen"
-                    : "CAPI-Token einfügen"
-                }
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100"
-              />
-              <button
-                type="button"
-                onClick={onSetCapiToken}
-                disabled={
-                  !projectId ||
-                  !capiTokenInput.trim() ||
-                  capiTokenStatus === "saving"
-                }
-                className="shrink-0 rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
-              >
-                {capiTokenStatus === "saving" ? "…" : "Setzen"}
-              </button>
-              {/* "Entfernen" nur wenn bereits ein Token gesetzt ist. */}
-              {projectId && capiTokenSet && !capiRemoveConfirming && (
-                <button
-                  type="button"
-                  onClick={() => onCapiRemoveConfirmingChange(true)}
-                  disabled={capiRemoving}
-                  className="shrink-0 rounded-md border border-red-200 px-2 py-2 text-xs text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Entfernen
-                </button>
-              )}
-            </div>
-            {/* Zweistufige Bestaetigung — deaktiviert das Tracking (destruktiv). */}
-            {capiRemoveConfirming && (
-              <div className="flex flex-wrap items-center gap-2 rounded-md bg-red-50 px-3 py-2">
-                <span className="text-xs text-red-700">
-                  Tracking für dieses Projekt deaktivieren? Der Token wird gelöscht.
-                </span>
-                <button
-                  type="button"
-                  onClick={onRemoveCapiToken}
-                  disabled={capiRemoving}
-                  className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300"
-                >
-                  {capiRemoving ? "Entferne…" : "Ja, entfernen"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onCapiRemoveConfirmingChange(false)}
-                  disabled={capiRemoving}
-                  className="rounded-md border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Abbrechen
-                </button>
-              </div>
-            )}
-            {!projectId && (
-              <span className="text-xs text-gray-500">
-                Projekt zuerst speichern, dann ist der Token setzbar.
-              </span>
-            )}
-            {projectId && capiTokenSet && (
-              <span className="text-xs text-green-600">••• gesetzt</span>
-            )}
-            {capiTokenStatus === "saved" && (
-              <span className="text-xs text-green-600">
-                Token gespeichert ✓
-              </span>
-            )}
-            {capiTokenStatus === "error" && capiTokenError && (
-              <span className="text-xs text-red-600">{capiTokenError}</span>
-            )}
-          </div>
-        </label>
+        ))}
       </div>
 
       {/* Statistik (Phase 8 Scheibe 3): server-seitige Analytics-Counts des aktiven

@@ -16,16 +16,15 @@ import {
   getAdblockLoss,
   getEventCounts,
   getVariantCounts,
+  listConfiguredTargets,
   listProjects,
   loadProject,
   publishProject,
-  removeCapiToken,
   removeVariantB,
   renameProject,
   saveProject,
   saveVariantB,
   setAbTestActive as setAbTestActiveAction,
-  setCapiToken,
   type AdblockLoss,
   type EventCount,
   type ProjectListItem,
@@ -45,15 +44,16 @@ import {
 } from "@/lib/mappings";
 import { editPreviewHtml, generateFunctional } from "@/lib/generate";
 import {
-  getCapiTokenSet,
   getHostingLabel,
-  getMetaPixelId,
+  getPixelId,
   getTrackingKey,
   setCapiState,
   setHostingState,
-  setMetaPixelId,
+  setPixelId,
   settingsEqual,
+  TRACKING_TARGETS,
   type ProjectSettings,
+  type TrackingTarget,
 } from "@/lib/settings";
 import { getCapiProxyUrl } from "@/lib/capi/proxy";
 import { buildLiveUrl } from "@/lib/hosting/host";
@@ -253,18 +253,13 @@ export default function CodeImporter({
   // nicht. Wird das Panel je per Default geoeffnet, muss die Formatierung vorher
   // hydration-sicher werden (Mount-Flag oder fester timeZone-Parameter).
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  // Write-only-Eingabe fuer den GEHEIMEN CAPI-Token (Scheibe 2a). Startet IMMER
-  // leer und wird NIE aus settings gespeist -> der echte Token faehrt nie in den
-  // Client. Der "gesetzt?"-Indikator kommt aus settings.capi.tokenSet, nicht hier.
-  const [capiTokenInput, setCapiTokenInput] = useState("");
-  const [capiTokenStatus, setCapiTokenStatus] = useState<
-    "idle" | "saving" | "saved" | "error"
-  >("idle");
-  const [capiTokenError, setCapiTokenError] = useState<string | null>(null);
-  // Token-Entfernen: zweistufige Inline-Bestaetigung (destruktiv -> deaktiviert Tracking).
-  // Reiner View-State, projekt-ungebunden -> beim Projektwechsel mit zuruecksetzen.
-  const [capiRemoveConfirming, setCapiRemoveConfirming] = useState(false);
-  const [capiRemoving, setCapiRemoving] = useState(false);
+  // DIE FUENF ZUSTAENDE DER ZUGANGSDATEN-VERWALTUNG LIEGEN SEIT PHASE 11 SCHEIBE 6
+  // (zweite Haelfte) IN DER KARTE (TargetCard), nicht mehr hier. Sie beschreiben je
+  // einen Vorgang an EINEM Ziel; im Container muessten sie je Ziel vervielfacht und
+  // an zwei Reset-Stellen je Ziel wieder geleert werden. In der Karte erledigt das
+  // der Mount — dieselbe Figur wie bei DomainManager.
+  // WAS HIER BLEIBT, ist der Kanal in die andere Richtung: die Spiegelung des
+  // trackingKeys in den Einstellungs-Blob, s. handleCredentialsSaved weiter unten.
   // Hosting/Publish (Phase 7 Scheibe 7a). NUR der TRANSIENTE Aktions-Status lebt hier;
   // der "veröffentlicht?"-Zustand + die Live-URL werden AUS settings.hosting ABGELEITET
   // (hostingLabel/liveUrl unten), NICHT als eigener leakender State gehalten — exakt
@@ -285,6 +280,16 @@ export default function CodeImporter({
   // Adblocker-Verlustrate (Phase 8 Scheibe B). null = noch keine Aussage moeglich
   // (Neutral-Status), NICHT "0% Verlust". Projekt-abgeleitet wie eventCounts.
   const [adblockLoss, setAdblockLoss] = useState<AdblockLoss | null>(null);
+  // Ziele mit hinterlegten Zugangsdaten (Phase 11 Scheibe 6, zweite Haelfte).
+  // ABGELEITET aus der Geheimnis-Tabelle, NICHT aus dem Einstellungs-Blob: Der Blob
+  // ist client-besessen, die Geheimnis-Tabelle ist dieselbe Quelle, die auch der
+  // Forward-Pfad liest. Zwei Wahrheiten werden damit zu einer.
+  // null = NOCH NICHT GELADEN, ein Array = geladen (auch wenn es leer ist). Genau
+  // diese Unterscheidung traegt den dritten Karten-Zustand; dieselbe Form wie bei
+  // variantCounts darunter, aus demselben Grund.
+  const [configuredTargets, setConfiguredTargets] = useState<
+    TrackingTarget[] | null
+  >(null);
   // Auswertung je Variante (Phase 9 Scheibe 9c-1). DREI Zustaende, bewusst nicht zwei:
   // null = noch nicht geladen, {ok:false} = NICHT LADBAR, {ok:true} = geladen (ggf. mit
   // leeren rows). Genau diese Unterscheidung fehlt den beiden Kacheln darueber, deren
@@ -418,7 +423,7 @@ export default function CodeImporter({
     () =>
       previewMode === "functional"
         ? generateFunctional(debouncedCode, mappings, "preview", {
-            metaPixelId: getMetaPixelId(settings),
+            metaPixelId: getPixelId(settings, "meta"),
             trackingKey: getTrackingKey(settings),
             capiProxyUrl: getCapiProxyUrl(),
           })
@@ -605,6 +610,32 @@ export default function CodeImporter({
       : Promise.resolve<EventCount[]>([]);
     load.then((counts) => {
       if (!cancelled) setEventCounts(counts);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
+
+  // Ziele mit hinterlegten Zugangsdaten laden (Phase 11 Scheibe 6, zweite Haelfte).
+  // IDENTISCHER SCHNITT wie die drei Effekte um ihn herum: cancelled-Guard, setState
+  // nur im then, Achse [projectId].
+  //
+  // EINE RUNDE FUER ALLE ZIELE, und das ist der Grund, warum der Effekt HIER liegt
+  // und nicht in der Karte: Eine Karte je Ziel mit eigenem Effekt kostete eine Runde
+  // JE ZIEL — auf einem Pfad, der bei jedem Projektwechsel laeuft.
+  //
+  // KEIN .catch() AUF EINEN LEER-WERT NOETIG: listConfiguredTargets wirft nicht, sie
+  // gibt bei jedem Fehler eine leere Liste zurueck. GENAU DAS IST DIE BENANNTE
+  // SCHWAECHE (s. den Kommentar an der Statuszeile in TargetCard): ein Fehlschlag
+  // ist von "nichts konfiguriert" nicht zu unterscheiden. Behoben werden koennte er
+  // nur in der Action selbst — Backlog, nicht hier mit einem Notbehelf.
+  useEffect(() => {
+    let cancelled = false;
+    const load = projectId
+      ? listConfiguredTargets(projectId)
+      : Promise.resolve<TrackingTarget[]>([]);
+    load.then((targets) => {
+      if (!cancelled) setConfiguredTargets(targets);
     });
     return () => {
       cancelled = true;
@@ -886,14 +917,14 @@ export default function CodeImporter({
     // uploadError ist projekt-ungebundener View-State -> beim Kontext-Wechsel
     // mit zuruecksetzen, sonst leuchtet ein Fehler aus Projekt A in B weiter.
     setUploadError(null);
-    // CAPI-Token-Eingabe/Status ebenso projekt-ungebunden: leeren, damit kein
-    // stehengebliebener Klartext / Fehler in den neuen Kontext leckt. Der
-    // "gesetzt?"-Indikator selbst reseedet ueber settings (getCapiTokenSet).
-    setCapiTokenInput("");
-    setCapiTokenStatus("idle");
-    setCapiTokenError(null);
-    setCapiRemoveConfirming(false);
-    setCapiRemoving(false);
+    // DIE FUENF CAPI-ZEILEN SIND HIER ENTFALLEN (Phase 11 Scheibe 6, zweite Haelfte).
+    // Sie leerten Eingabe, Status, Fehler, Bestaetigung und Busy-Flag der
+    // Token-Verwaltung. Diese Zustaende liegen jetzt in der Karte, und die wird beim
+    // Projektwechsel ueber ihren `key` neu gemontiert — der Mount leert sie, ohne
+    // dass eine Stelle je Ziel nachgezogen werden muss.
+    // DER KOMMENTAR STEHT HIER UND NICHT NUR IM COMMIT: Wer kuenftig einen weiteren
+    // ziel-gebundenen Zustand anlegt, soll sehen, dass diese Funktion dafuer NICHT
+    // mehr der Ort ist.
     // Publish: NUR der transiente Aktions-Status wird hier geleert (ein "gerade
     // veröffentlicht"/Fehler aus Projekt A darf nicht in B stehenbleiben). Der
     // "veröffentlicht?"-Indikator + die Live-URL reseeden ueber settings.hosting
@@ -954,11 +985,16 @@ export default function CodeImporter({
   // dabei: es wird nur ZUSAMMEN mit publishStatus === "published" gerendert und von
   // jedem Publish neu gesetzt — ein Reset waere ohne sichtbare Wirkung und wuerde den
   // deklarierten Umfang still erweitern.
+  // NACHGEZOGEN (Phase 11 Scheibe 6, zweite Haelfte): Die beiden CAPI-Zeilen sind
+  // ENTFALLEN. Der Statuskanal der Zugangsdaten liegt jetzt in der Karte, und die
+  // wird beim Schliessen des Drawers ABGEBAUT — der Kanal endet damit erst recht mit
+  // der Sitzung, nur ueber den Mount statt ueber diesen Reset.
+  // DIE AUSSAGE DES BLOCKS DARUEBER GILT UNVERAENDERT fuer den Publish-Kanal, und
+  // die Begruendung "beim OEFFNEN, nicht beim Schliessen" bleibt seine tragende
+  // Zeile. Was sich geaendert hat, ist die ZAHL der Kanaele, nicht die Regel.
   function resetDrawerStatusChannel() {
     setPublishStatus("idle");
     setPublishError(null);
-    setCapiTokenStatus("idle");
-    setCapiTokenError(null);
   }
 
   // Varianten-Zustand aus dem GELADENEN Projekt ableiten (kanonischer Chokepoint,
@@ -1231,75 +1267,72 @@ export default function CodeImporter({
     }
   }
 
-  // CAPI-Token setzen (Scheibe 2a, write-only). Der GEHEIME Token geht nur in die
-  // Server-Action und kommt NIE zurueck. Er landet dort in BEIDEN Geheimnis-Tabellen
-  // (project_secrets und project_tokens, beide RLS-SELECT-gesperrt) — seit Phase 11
-  // Scheibe 1 ein Doppelschreib. BEIDE sind hier genannt, weil die Zusage "landet nie
-  // im Browser" fuer BEIDE traegt: Stuende nur eine da, liesse sich das lesen, als
-  // gaelte sie fuer die andere nicht — und DIESE Datei ist eine Client-Komponente,
-  // also die teuerste Stelle im Repo fuer genau dieses Missverstaendnis. Bei
-  // Erfolg spiegeln wir NUR {trackingKey, tokenSet:true} in settings UND
-  // savedSettings (setCapiState laesst pixels/Pixel-ID unangetastet -> eine unsaved
-  // Pixel-ID-Edit bleibt erhalten; settingsEqual ignoriert capi -> kein false-dirty).
-  // Danach das Eingabefeld leeren (kein Roundtrip des Klartexts).
-  async function handleSetCapiToken() {
-    // Ohne persistierte Projektzeile gibt es keine project_id fuer den FK -> die UI
-    // deaktiviert den Button in diesem Fall; hier zusaetzlich als Riegel.
-    if (!projectId) return;
-    if (!capiTokenInput.trim()) return;
+  // DIE SPIEGELUNG DER ZUGANGSDATEN IN DEN EINSTELLUNGS-BLOB (Phase 11 Scheibe 6,
+  // zweite Haelfte). Der AUFRUF der Server-Actions liegt seit dieser Haelfte in der
+  // Karte; was hier bleibt, ist der Rueckweg — und zwar aus einem Grund, der nicht
+  // Bequemlichkeit ist:
+  //
+  // WARUM DIE SPIEGELUNG UEBERHAUPT NOETIG IST: settings.capi.trackingKey speist die
+  // funktionale VORSCHAU und das EXPORT-/PUBLISH-Dokument (getTrackingKey an beiden
+  // Stellen). Ohne sie traege eine Seite, die unmittelbar nach dem ersten Setzen
+  // publiziert wird, KEINEN Conversion-Beacon — und sie saehe funktionierend aus,
+  // weil der PageView-Emitter serverseitig aus der Spalte kommt. Der Zustand heilte
+  // beim naechsten Projektladen, das bereits publizierte Dokument NICHT.
+  //
+  // DER KENNUNGS-VERGLEICH IST DER EIGENTLICHE INHALT DIESER FUNKTION.
+  // Ein Nachzuegler — Projektwechsel WAEHREND der Aufruf laeuft — schriebe sonst den
+  // trackingKey von Projekt A in den Blob von Projekt B, und zwar auch in
+  // savedSettings, also OHNE Dirty-Markierung. Ein anschliessendes Speichern
+  // persistierte den fremden Schluessel; der trackingKey ist der Schluessel, ueber
+  // den der Ingest ein Projekt aufloest.
+  // WARUM NICHT EIN ABBRUCH-WAECHTER IN DER KARTE: Der loeste den Nachzuegler auch,
+  // verwuerfe aber JEDEN Rueckruf nach dem Unmount — auch den, der eintrifft, wenn
+  // der Betreiber bloss die Flaeche schliesst, waehrend er im SELBEN Projekt bleibt.
+  // Dann fehlte der trackingKey im Blob, obwohl er in der Datenbank steht. Der
+  // Vergleich hier verwirft NUR den echten Fehlfall.
+  // WARUM EIN REF UND KEIN STATE: Der Rueckruf laeuft aus einer async-Fortsetzung
+  // und sieht sonst den projectId-Wert des Renders, in dem die Karte gebaut wurde.
+  const projectIdRef = useRef(projectId);
+  useEffect(() => {
+    projectIdRef.current = projectId;
+  }, [projectId]);
 
-    setCapiTokenStatus("saving");
-    setCapiTokenError(null);
-    // "meta" IST KEIN PLATZHALTER: Diese Oberflaeche verwaltet genau EIN Ziel, und
-    // das Argument schreibt fest, was hier ohnehin geschieht. Variabel wird der Wert
-    // erst mit der Karte je Plattform (Phase 11, sechste Scheibe, zweite Haelfte) —
-    // dort kommt er aus der Karte, nicht von hier. Gilt ebenso fuer
-    // handleRemoveCapiToken darunter.
-    const result = await safeAction(
-      () => setCapiToken(projectId, "meta", capiTokenInput),
-      actionThrew()
+  function handleCredentialsSaved(
+    forProjectId: string,
+    target: TrackingTarget,
+    trackingKey: string,
+  ) {
+    if (forProjectId !== projectIdRef.current) return;
+    // Der Indikator speist sich aus DIESER Liste, nicht aus dem Blob — ohne die
+    // Nachfuehrung stuende die Karte nach dem Speichern weiter auf "Nicht
+    // konfiguriert", bis jemand das Projekt wechselt. null = der Lade-Effect ist
+    // noch unterwegs; ein Klick ist dann nicht moeglich, der Zweig ist Vorsorge.
+    setConfiguredTargets((prev) =>
+      prev === null || prev.includes(target) ? prev : [...prev, target],
     );
-    if (result.ok) {
-      setSettings((prev) =>
-        setCapiState(prev, { trackingKey: result.trackingKey, tokenSet: true }),
-      );
-      setSavedSettings((prev) =>
-        setCapiState(prev, { trackingKey: result.trackingKey, tokenSet: true }),
-      );
-      setCapiTokenInput("");
-      setCapiTokenStatus("saved");
-    } else {
-      setCapiTokenError(result.error);
-      setCapiTokenStatus("error");
-    }
+    // setCapiState laesst pixels unangetastet -> eine ungespeicherte Pixel-ID-Edit
+    // bleibt erhalten; settingsEqual ignoriert capi -> kein false-dirty.
+    setSettings((prev) => setCapiState(prev, { trackingKey, tokenSet: true }));
+    setSavedSettings((prev) => setCapiState(prev, { trackingKey, tokenSet: true }));
   }
 
-  async function handleRemoveCapiToken() {
-    if (!projectId || capiRemoving) return;
-    setCapiRemoving(true);
-    setCapiTokenError(null);
-    const result = await safeAction(
-      () => removeCapiToken(projectId, "meta"),
-      actionThrew()
+  function handleCredentialsRemoved(forProjectId: string, target: TrackingTarget) {
+    if (forProjectId !== projectIdRef.current) return;
+    setConfiguredTargets((prev) =>
+      prev === null ? prev : prev.filter((t) => t !== target),
     );
-    if (result.ok) {
-      // tokenSet:false in settings UND savedSettings spiegeln (trackingKey erhalten,
-      // wie serverseitig) -> "••• gesetzt" verschwindet, kein false-dirty.
-      setSettings((prev) =>
-        setCapiState(prev, { trackingKey: getTrackingKey(prev), tokenSet: false }),
-      );
-      setSavedSettings((prev) =>
-        setCapiState(prev, { trackingKey: getTrackingKey(prev), tokenSet: false }),
-      );
-      setCapiRemoveConfirming(false);
-      setCapiRemoving(false);
-      setCapiTokenStatus("idle");
-    } else {
-      setCapiRemoving(false);
-      setCapiRemoveConfirming(false);
-      setCapiTokenError(result.error);
-      setCapiTokenStatus("error");
-    }
+    // trackingKey ERHALTEN (er kommt aus prev, also aus dem eigenen Projekt) — nur
+    // der Aktivierungszustand faellt. tokenSet wird seit dieser Haelfte von NIEMANDEM
+    // mehr gelesen: die Karte leitet ihren Status aus der Geheimnis-Tabelle ab.
+    // ES BLEIBT TROTZDEM STEHEN, weil der Server es weiterhin schreibt und ein
+    // einseitiges Entfernen hier den Blob gegen die Datenbank driften liesse.
+    // Backlog: den Wert ganz abschaffen — das ist eine eigene Runde.
+    setSettings((prev) =>
+      setCapiState(prev, { trackingKey: getTrackingKey(prev), tokenSet: false }),
+    );
+    setSavedSettings((prev) =>
+      setCapiState(prev, { trackingKey: getTrackingKey(prev), tokenSet: false }),
+    );
   }
 
   // Export: erzeugt das funktionale Dokument FRISCH im Handler (nicht aus dem
@@ -1328,7 +1361,7 @@ export default function CodeImporter({
     capiProxyUrl: string
   ): string {
     return generateFunctional(html, docMappings, "export", {
-      metaPixelId: getMetaPixelId(settings),
+      metaPixelId: getPixelId(settings, "meta"),
       trackingKey: getTrackingKey(settings),
       capiProxyUrl,
     });
@@ -2082,20 +2115,16 @@ export default function CodeImporter({
           <div className={drawerArea === "measure" ? "" : "hidden"}>
             <MeasureView
               projectId={projectId}
-              metaPixelId={getMetaPixelId(settings)}
-              onMetaPixelIdChange={(value) =>
-                setSettings((prev) => setMetaPixelId(prev, value))
+              // DIE ZIELE KOMMEN AUS DER KONSTANTE, nicht aus einer Liste hier: so
+              // erscheint ein kuenftiges Ziel ohne eine Aenderung an dieser Stelle.
+              targets={TRACKING_TARGETS}
+              pixelIdFor={(t) => getPixelId(settings, t)}
+              onPixelIdChange={(t, value) =>
+                setSettings((prev) => setPixelId(prev, t, value))
               }
-              capiTokenSet={getCapiTokenSet(settings)}
-              capiTokenInput={capiTokenInput}
-              onCapiTokenInputChange={setCapiTokenInput}
-              capiTokenStatus={capiTokenStatus}
-              capiTokenError={capiTokenError}
-              capiRemoveConfirming={capiRemoveConfirming}
-              onCapiRemoveConfirmingChange={setCapiRemoveConfirming}
-              capiRemoving={capiRemoving}
-              onSetCapiToken={handleSetCapiToken}
-              onRemoveCapiToken={handleRemoveCapiToken}
+              configuredTargets={configuredTargets}
+              onCredentialsSaved={handleCredentialsSaved}
+              onCredentialsRemoved={handleCredentialsRemoved}
               eventCounts={eventCounts}
               adblockLoss={adblockLoss}
               variantCounts={variantCounts}

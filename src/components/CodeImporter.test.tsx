@@ -38,6 +38,7 @@ const {
   setAbTestActive,
   getVariantBPublished,
   getVariantCounts,
+  listConfiguredTargets,
 } = vi.hoisted(() => ({
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
   // Scheibe 9a: die Varianten-Actions. saveVariantB ist der Spy, auf dem der
@@ -79,6 +80,10 @@ const {
   // erscheint in den Bestandstests NICHT (keine zugeordneten Zeilen). Ein Default von
   // {ok:false} haette in jedem Bestandstest eine Fehlermeldung eingeblendet.
   getVariantCounts: vi.fn(async (): Promise<unknown> => ({ ok: true, rows: [] })),
+  // Phase 11 Scheibe 6, zweite Haelfte: Default ist eine LEERE Liste -> in den
+  // Bestandstests steht jede Karte auf "Nicht konfiguriert". Ein Default mit Zielen
+  // haette in jedem Bestandstest einen Entfernen-Knopf eingeblendet.
+  listConfiguredTargets: vi.fn(async (): Promise<unknown> => []),
 }));
 
 vi.mock("@/app/projects/actions", () => ({
@@ -98,6 +103,7 @@ vi.mock("@/app/projects/actions", () => ({
   setAbTestActive,
   getVariantBPublished,
   getVariantCounts,
+  listConfiguredTargets,
 }));
 
 // DomainManager (in der Publish-Sektion gemountet) zieht ueber @/app/projects/domain-
@@ -446,6 +452,7 @@ describe("CodeImporter — Scheibe 2a: CAPI-Token write-only Indikator + Reseed"
   }
 
   it("tokenSet:true -> '••• gesetzt'-Indikator; Eingabefeld bleibt LEER (write-only)", async () => {
+    listConfiguredTargets.mockResolvedValueOnce(["meta"]);
     render(
       <CodeImporter
         initialCode="<button>X</button>"
@@ -455,7 +462,7 @@ describe("CodeImporter — Scheibe 2a: CAPI-Token write-only Indikator + Reseed"
     );
     openSettings();
     // Indikator sichtbar (der gruene Span, nicht der Placeholder).
-    expect(screen.getByText("••• gesetzt")).toBeTruthy();
+    expect(await screen.findByText("Zugangsdaten hinterlegt")).toBeTruthy();
     // Der echte Token faehrt NIE in den Client -> das Passwortfeld ist leer.
     expect(tokenInput().value).toBe("");
     expect(tokenInput().type).toBe("password");
@@ -463,6 +470,7 @@ describe("CodeImporter — Scheibe 2a: CAPI-Token write-only Indikator + Reseed"
 
   it("Projektwechsel reseedet den Indikator (kein Leak: 'gesetzt' von A bleibt nicht in B)", async () => {
     // P2 hat KEINEN CAPI-Token (settings ohne capi).
+    listConfiguredTargets.mockResolvedValueOnce(["meta"]);
     loadProject.mockResolvedValueOnce({
       id: "p2",
       name: "P2",
@@ -482,14 +490,14 @@ describe("CodeImporter — Scheibe 2a: CAPI-Token write-only Indikator + Reseed"
       />
     );
     openSettings();
-    expect(screen.getByText("••• gesetzt")).toBeTruthy();
+    expect(await screen.findByText("Zugangsdaten hinterlegt")).toBeTruthy();
 
     // Auf P2 wechseln -> Indikator verschwindet (P2 hat keinen Token).
     fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
     fireEvent.click(await screen.findByText("P2"));
 
     await waitFor(() =>
-      expect(screen.queryByText("••• gesetzt")).toBeNull()
+      expect(screen.queryByText("Zugangsdaten hinterlegt")).toBeNull()
     );
   });
 
@@ -702,43 +710,47 @@ describe("CAPI-Token entfernen + Platzhalter-Klarheit", () => {
     fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
   }
 
-  it("CAPI-Token entfernen: 'Entfernen' sichtbar wenn tokenSet true", () => {
+  it("CAPI-Token entfernen: 'Entfernen' sichtbar wenn tokenSet true", async () => {
+    listConfiguredTargets.mockResolvedValueOnce(["meta"]);
     render(<CodeImporter initialProjectId="proj-1" initialSettings={withToken} />);
     openSettings();
-    expect(screen.getByRole("button", { name: "Entfernen" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Meta entfernen" })).toBeTruthy();
   });
 
   it("CAPI-Token entfernen: 'Entfernen' NICHT im DOM wenn kein Token gesetzt", () => {
     render(<CodeImporter initialProjectId="proj-1" initialSettings={{}} />);
     openSettings();
-    expect(screen.queryByRole("button", { name: "Entfernen" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Meta entfernen" })).toBeNull();
   });
 
   it("CAPI-Token entfernen: Bestätigen ruft removeCapiToken(projectId) + spiegelt tokenSet:false ('••• gesetzt' verschwindet)", async () => {
+    listConfiguredTargets.mockResolvedValueOnce(["meta"]);
     render(<CodeImporter initialProjectId="proj-1" initialSettings={withToken} />);
     openSettings();
-    expect(screen.getByText("••• gesetzt")).toBeTruthy();
+    expect(await screen.findByText("Zugangsdaten hinterlegt")).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", { name: "Entfernen" }));
-    fireEvent.click(screen.getByRole("button", { name: "Ja, entfernen" }));
+    fireEvent.click(screen.getByRole("button", { name: "Meta entfernen" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ja, Meta entfernen" }));
 
     await waitFor(() => expect(removeCapiToken).toHaveBeenCalledWith("proj-1", "meta"));
-    await waitFor(() => expect(screen.queryByText("••• gesetzt")).toBeNull());
+    await waitFor(() => expect(screen.queryByText("Zugangsdaten hinterlegt")).toBeNull());
   });
 
-  it("CAPI-Token entfernen: Abbrechen -> kein removeCapiToken-Call", () => {
+  it("CAPI-Token entfernen: Abbrechen -> kein removeCapiToken-Call", async () => {
+    listConfiguredTargets.mockResolvedValueOnce(["meta"]);
     render(<CodeImporter initialProjectId="proj-1" initialSettings={withToken} />);
     openSettings();
-    fireEvent.click(screen.getByRole("button", { name: "Entfernen" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Meta entfernen" }));
     fireEvent.click(screen.getByRole("button", { name: "Abbrechen" }));
     expect(removeCapiToken).not.toHaveBeenCalled();
   });
 
-  it("Platzhalter bei gesetztem Token ist neutral ('Neuen Token eingeben zum Ersetzen'), nicht die '•••'-Variante", () => {
+  it("Platzhalter bei gesetztem Token ist neutral ('Neuen Token eingeben zum Ersetzen'), nicht die '•••'-Variante", async () => {
+    listConfiguredTargets.mockResolvedValueOnce(["meta"]);
     render(<CodeImporter initialProjectId="proj-1" initialSettings={withToken} />);
     openSettings();
     expect(
-      screen.getByPlaceholderText("Neuen Token eingeben zum Ersetzen"),
+      await screen.findByPlaceholderText("Neuen Token eingeben zum Ersetzen"),
     ).toBeTruthy();
     expect(screen.queryByPlaceholderText(/gesetzt/)).toBeNull();
   });
@@ -1632,7 +1644,7 @@ describe("CodeImporter — safeAction: geworfene Server-Action-Fehler", () => {
       fireEvent.change(screen.getByPlaceholderText(/CAPI-Token einfügen/), {
         target: { value: SECRET },
       });
-      fireEvent.click(screen.getByRole("button", { name: "Setzen" }));
+      fireEvent.click(screen.getByRole("button", { name: "Meta speichern" }));
 
       await waitFor(() =>
         expect(document.body.textContent).toContain("konnte nicht abgeschlossen"),
@@ -2724,7 +2736,7 @@ describe("Phase 10 Scheibe 10c-2: der Statuskanal des Drawers endet mit der Sitz
     fireEvent.change(screen.getByPlaceholderText(/CAPI-Token einfügen/), {
       target: { value: "geheim" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Setzen" }));
+    fireEvent.click(screen.getByRole("button", { name: "Meta speichern" }));
     expect(await screen.findByText("Token abgelehnt.")).toBeTruthy();
 
     toggleDrawer();

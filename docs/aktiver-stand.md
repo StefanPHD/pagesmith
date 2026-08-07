@@ -16,15 +16,27 @@ DIESE DATEI ERÖFFNET DIE PHASE. Sie führt die REIHENFOLGE der Scheiben: (1) di
 Umstellung der Geheimnis-Tabelle — ABGESCHLOSSEN und live bewiesen, (2) das
 geteilte Consent-Gate — ABGESCHLOSSEN und live bewiesen, (3) der PageView-Emitter
 hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) die NAHT des
-Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) Pinterest als erstes
+Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) das Einwilligungs-Signal
+reist zum Server — ZUGESCHNITTEN, NOCH NICHT GEBAUT, (6) Pinterest als erstes
 zusätzliches Ziel — PLATZHALTER. Die Entkopplung des Forwards von der Antwort war
 als fünfte Scheibe geführt und ist am 2026-08-06 GESTRICHEN (s. "## Die
 GESTRICHENE fünfte Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT").
+
+**ZWEI VERSCHIEDENE SCHEIBEN TRAGEN DAMIT DAS WORT "FÜNFTE" IN IHRER ÜBERSCHRIFT,
+und dieser Satz steht hier, damit niemand die eine für die andere hält:** Die
+GESTRICHENE fünfte Scheibe war der Forward, der sich von der Antwort löst — sie
+wird NICHT gebaut. Die fünfte Scheibe ist seit dem 2026-08-06 eine ANDERE, das
+Einwilligungs-Signal zum Server. Die Überschrift der gestrichenen bleibt
+UNANGETASTET: Sie hielt die Nummer fest, die jene Scheibe zum Zeitpunkt ihrer
+Streichung trug, und ein nachgezogener Name verwischte, dass an dieser Stelle je
+etwas anderes stand.
+
 Die Zuschnitte stehen unter "### Der
 Zuschnitt der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge", "## Die
 zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)", "## Die dritte
-Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)" und "## Die vierte
-Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)"; was die VIER
+Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)", "## Die vierte
+Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)" und "## Die fünfte Scheibe —
+DAS EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)"; was die VIER
 abgeschlossenen Scheiben tatsächlich ergeben haben, unter "### Protokoll der
 ersten Scheibe — Vollzug und Abschluss", "### Protokoll der zweiten Scheibe —
 Vollzug und Abschluss", "### Protokoll der dritten Scheibe — Vollzug und
@@ -52,10 +64,15 @@ sonst** — nicht die Zahl der Scheiben, nicht die Zahl der Umplanungen:
 - **VIERTE -> SECHSTE (2026-08-06):** Naht und Entkopplung schieben sich davor.
 - **SECHSTE -> FÜNFTE (2026-08-06):** die Entkopplung wird GESTRICHEN und fällt
   weg. **DIE ERSTE WANDERUNG NACH VORN** — alle drei davor gingen nach hinten.
-**DREI DER VIER WANDERUNGEN TRAGEN DASSELBE DATUM.** Das Datum unterscheidet sie
+- **FÜNFTE -> SECHSTE (2026-08-06):** das Einwilligungs-Signal zum Server schiebt
+  sich davor. **DAMIT IST DIE VORIGE WANDERUNG WIEDER EINGEHOLT** — Pinterest
+  steht auf derselben Nummer wie schon einmal, aber aus einem ANDEREN Grund und
+  mit einer anderen Scheibe davor. Wer nur die Nummer vergleicht, hält das für
+  eine Rücknahme; es ist keine.
+**VIER DER FÜNF WANDERUNGEN TRAGEN DASSELBE DATUM.** Das Datum unterscheidet sie
 also NICHT — wer sie auseinanderhalten will, liest die URSACHE, nicht den Stempel.
 
-**DIE VIER URSACHEN SIND VIER VERSCHIEDENE, und das gehört dazu, sonst liest sich
+**DIE FÜNF URSACHEN SIND FÜNF VERSCHIEDENE, und das gehört dazu, sonst liest sich
 jede Runde wie eine weitere Umsortierung:**
 - Die ERSTE entstand aus einer erkannten VORBEDINGUNG: die damalige Auswertung
   hätte aus der Objektform ein stilles Fail-open gemacht.
@@ -69,6 +86,17 @@ jede Runde wie eine weitere Umsortierung:**
   dritten — eine Messung sagt, WIE GROSS etwas ist, eine Recherche sagt, ob es
   ÜBERHAUPT SO FUNKTIONIERT, wie man dachte. S. "## Die GESTRICHENE fünfte
   Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT".
+- Die FÜNFTE entsteht aus einem ZUSCHNEIDE-BEFUND: Beim Zuschneiden der
+  Pinterest-Scheibe ist aufgefallen, dass eine ihrer BINDUNGEN für sich allein
+  baubar UND beweisbar ist — das Einwilligungs-Signal zum Server. **DAS IST WEDER
+  DIE DRITTE URSACHE NOCH DIE VIERTE, und die Abgrenzung gehört dazu, sonst wird
+  sie als "schon wieder dasselbe" gelesen:** Bei der dritten wurde ein AUSSCHLUSS
+  zur Scheibe — dort war die Sache bereits als eigener Gegenstand benannt und
+  bewusst herausgehalten. Hier war sie als BINDUNG geführt, also als Vorbedingung
+  einer anderen Scheibe, und der Befund ist, dass sie ohne jene Scheibe steht.
+  Und anders als bei der vierten ist nichts WIDERLEGT worden: Die Bindung war
+  richtig beschrieben, nur ihr ORT war es nicht. S. "## Die fünfte Scheibe — DAS
+  EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)".
 
 **DER ÄLTERE STEMPEL DARÜBER BLEIBT WORT FÜR WORT STEHEN:** er war am 2026-08-06
 richtig, und ein überschriebener Stempel verwischt, dass die Nummer überhaupt
@@ -79,6 +107,15 @@ Entkopplung des Forwards von der Antwort ist gestrichen; ihr Zweck geht als
 AUFLAGE in den Pinterest-Zuschnitt über. Die beiden Stempel darüber bleiben Wort
 für Wort stehen — sie waren zu ihrer Zeit richtig, und der ganze Wert dieser
 Kette liegt darin, dass man die Bewegung noch sieht.
+
+**ERNEUT NACHGEZOGEN AM 2026-08-06 — PINTEREST IST JETZT DIE SECHSTE SCHEIBE.**
+Davor liegt das Einwilligungs-Signal zum Server (s. "## Die fünfte Scheibe — DAS
+EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)"). **DIE DREI STEMPEL DARÜBER
+BLEIBEN WORT FÜR WORT STEHEN.** Dass Pinterest heute wieder auf SECHS steht, wo
+es schon einmal stand, ist der Grund, warum diese Kette überhaupt geführt wird:
+Ein blosser Blick auf die aktuelle Nummer liesse die vierte Wanderung wie einen
+Irrtum aussehen, den man hätte auslassen können. Sie war keiner — dazwischen ist
+eine Scheibe gestrichen und eine andere entstanden.
 
 ---
 
@@ -1130,13 +1167,26 @@ Handlungsanweisung stehen.
 - **(a) BINDET DIESE SCHEIBE WIEDER — als AUFLAGE, nicht als eigene Scheibe.** Der
   Fan-Out zu mehreren Empfängern läuft NEBENLÄUFIG, mit EINEM Deckel für alle
   Empfänger, NIE hintereinander. Ausformuliert steht die Auflage bei der Scheibe,
-  die sie einzulösen hat: "## Die fünfte Scheibe — PINTEREST ALS ZWEITES ZIEL
+  die sie einzulösen hat: "## Die sechste Scheibe — PINTEREST ALS ZWEITES ZIEL
   (Platzhalter)".
+  **NUR DIE NUMMER NACHGEZOGEN AM 2026-08-06** — die Überschrift hiess "Die
+  fünfte Scheibe" und der Verweis wäre sonst ins Leere gelaufen, genau wie der,
+  den der Punkt darunter beschreibt. **AN DER AUFLAGE ÄNDERT SICH NICHTS.**
 - **ES LIEGT EINE SCHEIBE DAVOR, NICHT ZWEI.** Die Naht ist gebaut und live
   bewiesen ("## Die vierte Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)"); die
   Entkopplung ist am 2026-08-06 GESTRICHEN worden ("## Die GESTRICHENE fünfte
   Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT"). Der frühere Verweis zeigte
   auf deren Platzhalter-Überschrift und ginge heute ins Leere.
+  **RICHTIGGESTELLT AM 2026-08-06, NUR DIE ZAHL: ES LIEGT WIEDER EINE UNGEBAUTE
+  SCHEIBE DAVOR** — das Einwilligungs-Signal zum Server ("## Die fünfte Scheibe —
+  DAS EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)"). Der Satz darüber
+  bleibt in der Sache richtig: Von den beiden damals gemeinten Scheiben ist eine
+  gebaut und eine gestrichen. **DIE NEUE SCHEIBE IST KEINE VON JENEN ZWEIEN** —
+  wer sie damit gleichsetzt, hält die Entkopplung für wiederbelebt. Sie ist es
+  nicht; ihr Trigger steht unverändert bei ihrer Streichung.
+  **AN DER AUFLAGE AUS DIESEM PUNKT ÄNDERT DAS NICHTS:** Der nebenläufige Fan-Out
+  mit EINEM Deckel bindet weiterhin die PINTEREST-Scheibe, nicht die fünfte — die
+  fünfte fasst den Forward nicht an (s. dort Invariante 1).
 - **DER MECHANISMUS IM BLOCK DARÜBER GILT UNVERÄNDERT:** Nebenläufigkeit DÄMPFT
   die Verdopplung, hebt sie NICHT auf, und das Maximum wandert mit der Zahl der
   Empfänger nach oben. **ÜBERHOLT IST ALLEIN DIE PREIS-ANGABE "FUNKTIONSLAUFZEIT
@@ -1824,6 +1874,16 @@ bleibt UNANGETASTET.**
 
 ## Der Messbefund, der die Reihenfolge der Scheiben 4 bis 6 trägt
 
+**DIE ZAHLEN IN DER ÜBERSCHRIFT SIND DIE VON DAMALS — RICHTIGSTELLUNG AM
+2026-08-06, OHNE DEN TEXT ZU ÄNDERN.** "4 bis 6" meinte Naht, Entkopplung und
+Pinterest. Die Entkopplung ist gestrichen, und die heutige FÜNFTE Scheibe ist
+eine andere (das Einwilligungs-Signal zum Server). **DIESER MESSBEFUND TRÄGT SIE
+NICHT** — er sagt nichts über ein Body-Feld, und die fünfte Scheibe fasst den
+Forward nicht an. Er trägt weiterhin die Naht und bindet die Latenz-Auflage der
+Pinterest-Scheibe. **DIE ÜBERSCHRIFT BEHÄLT IHRE ZAHLEN**, weil sie festhält,
+welche Reihenfolge dieser Befund einmal begründet hat; wer sie nachzöge, machte
+aus einem Zeitdokument eine Behauptung über heute.
+
 PROVENIENZ: Vercel-Log, gemessen von Stefan am 2026-08-06, DREIZEHN Aufrufe. Die
 Werte stehen roh, ungerundet und ungefiltert.
 
@@ -1887,7 +1947,14 @@ Massstab misst, der nie gemeint war. **DREI BEGRÜNDUNGEN TRAGEN NICHT:**
 **DIE ERWARTUNG — AUSDRÜCKLICH ALS ERWARTUNG UND NICHT ALS ZIELWERT:** Nach der
 Entkopplung liegt die Antwortzeit in der GRÖSSENORDNUNG der zweiten Gruppe.
 **GEMESSEN WIRD NACH DEM LIVE-TEST DER FÜNFTEN SCHEIBE**, gegen dieselben
-Roh-Werte oben. Der Unterschied zwischen Erwartung und Zielwert ist nicht
+Roh-Werte oben.
+**RICHTIGGESTELLT AM 2026-08-06 — DIESE ERWARTUNG HAT KEINEN ADRESSATEN MEHR.**
+Sie gehörte zur Entkopplung, und die ist gestrichen. **SIE GILT NICHT FÜR DIE
+HEUTIGE FÜNFTE SCHEIBE** — die verschiebt den Forward nicht und darf die
+Antwortzeit gar nicht verändern (s. dort Invariante 1). Wer den Satz nach der
+Umnummerierung wörtlich befolgt, misst eine Wirkung, die niemand gebaut hat, und
+liest ihr Ausbleiben als Fehlschlag. Die Erwartung bleibt im Wortlaut stehen und
+wird wieder scharf, falls der Trigger der Streichung eintritt. Der Unterschied zwischen Erwartung und Zielwert ist nicht
 Wortklauberei: Eine Erwartung, die sich nicht bestätigt, ist ein BEFUND; ein
 verfehlter Zielwert ist ein FEHLSCHLAG. Hier ist nur das Erste gemeint.
 
@@ -2299,7 +2366,374 @@ von einem Tag.
 
 ---
 
-## Die fünfte Scheibe — PINTEREST ALS ZWEITES ZIEL (Platzhalter)
+## Die fünfte Scheibe — DAS EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)
+
+**ENTSCHEIDUNG (OWNER, 2026-08-06): DAS WIRE-FELD IST EINE EIGENE SCHEIBE UND
+FÄHRT VOR PINTEREST. PINTEREST RÜCKT AUF SCHEIBE SECHS.**
+
+BEGRÜNDUNG, in dieser Reihenfolge — sie gehört zwingend dazu, sonst liest die
+nächste Instanz noch eine Scheibe Vorarbeit als weitere Verzögerung des
+eigentlichen Features:
+
+1. **SIE WAR EINE BINDUNG UND IST EINE SCHEIBE.** Das Wire-Feld stand als Punkt 2
+   der Pinterest-Bindungen ("DER SERVER ERFÄHRT NICHTS ÜBER DIE EINWILLIGUNG"),
+   also als VORBEDINGUNG einer anderen Scheibe. Beim Zuschneiden ist aufgefallen,
+   dass es diese Rolle nicht braucht: Es ist ALLEIN baubar UND — und das ist der
+   entscheidende Halbsatz — ALLEIN BEWEISBAR. Ein Feld, das reist und gelesen
+   wird, lässt sich mit EINEM Ziel vollständig prüfen; es braucht kein zweites,
+   um zu zeigen, dass es trägt.
+2. **SIE FÄHRT ALLEIN** — dieselbe Begründung wie bei den Scheiben eins, zwei und
+   vier: Gebündelt wäre im Fehlerfall nicht zu erkennen, welche der beiden
+   Wirkungen ihn verursacht hat. Hier wiegt es so schwer wie bei der Naht, weil
+   auch diese Scheibe VERHALTENSNEUTRAL sein soll — und Neutralität lässt sich
+   nur nachweisen, wenn sonst nichts passiert.
+3. **SIE ÄNDERT VERHALTEN AUF BEREITS AUSGELIEFERTEN SEITEN — genauer: sie darf
+   es GERADE NICHT.** Das ausgelieferte HTML entsteht beim Publish (Grenze (a)
+   im Protokoll der zweiten Scheibe). Eine Scheibe, die ein neues Body-Feld
+   einführt, trifft damit zwangsläufig auf Seiten, die es nie senden werden. Wie
+   der Server das behandelt, ist die zweite tragende Entscheidung unten — und sie
+   ist zu wichtig, um in einer Ziel-Scheibe mitzulaufen.
+
+**ZUR NAMENSGLEICHHEIT MIT DER GESTRICHENEN FÜNFTEN SCHEIBE:** s. den Kopf dieser
+Datei. Die beiden haben nichts miteinander zu tun, und die gestrichene bleibt
+gestrichen.
+
+### Die gemessene Ausgangslage dieser Scheibe
+
+PROVENIENZ: **am Code gemessen in der Aufklärungs-Runde vom 2026-08-06
+(read-only)**, nach dem Bau der vierten Scheibe. NICHTS davon ist aus einer
+früheren Runde dieser Datei übernommen; wo eine ältere Stelle dasselbe sagt, ist
+es unabhängig nachgemessen worden. **DIE ANKER SIND SYMBOLNAMEN, KEINE
+ZEILENNUMMERN** — die Regel dafür steht in CLAUDE.md, und diese Datei hat mit
+verschobenen Ankern bereits Lehrgeld gezahlt (s. "## Sammelposten: die
+Ausgangslage ist von der Phase überholt (eigene Runde)").
+
+**DIE BUCHSTABEN (a) BIS (g) IN DIESEM ABSCHNITT SIND LOKAL** und haben nichts
+mit den gleichnamigen Punkten unter "## Fragen, die der Bau beantworten MUSS" zu
+tun — dieselbe Handschrift wie bei der zweiten, dritten und vierten Scheibe.
+
+**(a) DREI FRAGESTELLEN, ZWEI ZEITPUNKTE — UND EIN ERBE.** Im ganzen Repo wird
+`__psConsent` an GENAU DREI Stellen gefragt: `__psMetaInit` und `__psMetaFire`
+(beide in `buildMetaRuntime`, `src/lib/tracking/meta.ts`) für den Meta-Schlüssel,
+und `buildPageViewScript` (`src/lib/analytics/pageview-emitter.ts`) für den
+Analytics-Schlüssel. Es gibt keine vierte.
+- **CONVERSION: dieselbe synchrone Ausführung wie das Absenden.** In
+  `__psMetaFire` liegen zwischen der Frage und dem `sendBeacon` aus
+  `buildCapiBeaconStatement` nur Kennungs-Erzeugung und die `fbq`-Aufrufe — kein
+  `await`, kein Timer, nichts, was den Aufruf verlassen könnte.
+- **PAGEVIEW: ebenfalls dieselbe synchrone Ausführung** — aber BEIM PARSEN, nicht
+  beim Klick (die Eigenschaft steht ausformuliert unter "### Die
+  Parse-Zeit-Schwäche — eine EIGENSCHAFT, keine Fussnote").
+- **DER CONFIRM FRAGT GAR NICHT. ER ERBT, über ZWEI Pfade** — und der zweite ist
+  der Grund, warum dieser Befund den Zuschnitt trägt:
+  · Ist der Ladezustand schon aufgelöst, sendet `__psConfirmSend` unmittelbar aus
+    `__psMetaFire` heraus, also hinter derselben Frage.
+  · Ist er noch offen, wird die Bestätigung GEPUFFERT und erst gesendet, wenn
+    `__psPixelResolve` die Schlange leert — angestossen vom `onload` des
+    fbevents-Script-Elements. **Zwischen Urteil und Absenden liegt dann ein
+    vollständiger Ladevorgang eines FREMDEN Scripts.** Der Kommentar an
+    `buildMetaRuntime` sagt selbst, dass dieser Fall bei der ERSTEN Conversion
+    "fast immer" eintritt.
+  · Der Sende-Rumpf `buildPixelConfirmStatement` enthält KEINEN
+    `__psConsent`-Aufruf — geprüft, nicht angenommen.
+
+**(b) DER RÜCKGABE-VERTRAG VON `__psConsent`: AUSSCHLIESSLICH `true` ODER `false`
+— ABER DIE FUNKTION KANN WERFEN.** Jeder Ausgang des von `buildConsentRuntime`
+erzeugten Textes ist ein Boolean-Literal oder ein `===`-Vergleich; `undefined`
+oder ein Objekt sind als RÜCKGABE nicht erzeugbar.
+**DER `try` UMSCHLIESST NUR DEN HOOK-AUFRUF.** Zwei Anweisungen liegen ausserhalb
+und können werfen: das LESEN von `window.pagesmithConsent` (ein werfender
+Accessor) und der SCHLÜSSEL-ZUGRIFF auf dem gelieferten Objekt (ein werfender
+Getter, ein Proxy). Das gilt AUCH für ein Objekt, das eine Hook-Funktion
+zurückgegeben hat — der Aufruf ist zu diesem Zeitpunkt bereits aus dem `try`
+heraus.
+**FOLGE FÜR DIESE SCHEIBE:** Der Vertrag "es kommt ein Boolean" trägt für den
+NORMALFALL und ist die Grundlage von Entscheidung (1) unten. Die Wurf-Lücke ist
+davon UNBERÜHRT und wird hier NICHT behoben — s. die Ausschlüsse und den
+Backlog-Kandidaten am Ende dieses Abschnitts.
+
+**(c) DER BETREIBER-HOOK WIRD OHNE ARGUMENT GERUFEN.** `buildConsentRuntime` ruft
+ihn parameterlos auf. **Er erfährt also NICHT, wonach gefragt wird, und muss alle
+Ziele auf einmal beantworten** — die Objektform IST dieser Kanal, die
+Boolean-Form beantwortet ebenfalls alles auf einmal. Auf der Ebene darüber ist
+`__psConsent` dagegen strikt "eine Frage, ein Schlüssel". **DIE BEIDEN EBENEN
+SIND VERSCHIEDEN, und wer sie verwechselt, entwirft ein Feld für die falsche.**
+**DAS ERGEBNIS WIRD NIRGENDS GEMERKT:** Der Rückgabewert wird an keiner der drei
+Stellen einer Variablen zugewiesen; jede Frage ruft den Hook erneut. Gemerkt
+werden nur FOLGEN eines Urteils — `__psFbReady` (danach wird die Prüfung in
+`__psMetaInit` nie wieder erreicht) und `window.__ps_pv`.
+**DARAUS EIN GEMESSENER NEBENBEFUND:** Beim ERSTEN consented Klick wird der Hook
+ZWEIMAL gerufen (einmal in `__psMetaFire`, einmal in `__psMetaInit`), ab dem
+zweiten nur noch einmal. Ein nicht-deterministischer Hook kann zwischen zwei
+Aufrufen verschieden antworten. Das ist HEUTE folgenlos; für diese Scheibe ist es
+eine Frage an den Plan (s. unten).
+
+**(d) DER ERZEUGTE CODE KENNT KEINE LISTE DER SCHLÜSSEL.** `buildConsentRuntime`
+enthält KEIN einziges Schlüssel-Literal — der Schlüssel kommt als Parameter
+herein. Jeder Konsument setzt genau EIN Literal ein: `META_CONSENT_TARGET` bzw.
+`ANALYTICS_CONSENT_TARGET`, beide als EINZELWERTE in `src/lib/tracking/consent.ts`
+deklariert, nicht als Feld, Union oder Record.
+**DIE VOLLE SCHLÜSSELLISTE AUS ENTSCHEIDUNG (a) EXISTIERT NUR IN DIESER DOKU, IN
+KEINER CODEZEILE.** Welche Schlüssel im ausgelieferten Dokument stehen, hängt
+damit an der Projektkonfiguration: ohne Pixel-ID nur der Analytics-Schlüssel, mit
+Pixel-ID beide. **DAS IST DER BEFUND, AN DEM "WAS MITREIST" HÄNGT** — es gibt
+heute nichts, was der Emitter aufzählen könnte.
+
+**(e) DER INGEST KENNT KEIN LAUFZEIT-SCHEMA.** `CapiRequestBody` ist ein
+TypeScript-Typ; die Zuweisung nach `JSON.parse` ist eine reine Behauptung. Im
+Projekt existiert KEINE Validierungsbibliothek (Suche nach `zod`, `valibot`,
+`yup` über `package.json` und `src`: null Treffer), keine Allowlist, keine
+Schlüssel-Zählung.
+**EIN UNBEKANNTES BODY-FELD IST HEUTE EIN REINES NO-OP:** Es erzeugt keinen 400,
+es reist mit dem Objekt bis `forwardToMeta` (das nur seine vier bekannten Felder
+liest und die Nutzlast feldweise zusammensetzt, nicht per Spread), und es
+erreicht `persistEvent` nicht, weil dort fünf benannte Werte ankommen. **Es
+kostet Bytes auf dem Hotspot-Pfad und sonst nichts.**
+
+**(f) DER SERVER KANN DEN EINWILLIGUNGS-ZUSTAND HEUTE WEDER DIREKT NOCH INDIREKT
+ABLEITEN.** `CapiRequestBody` führt kein solches Feld, und über `src/lib/capi/`
+und `src/lib/analytics/` liefert eine Suche nach dem Begriff null Treffer. **DREI
+SCHEIN-ABLEITUNGEN LIEGEN NAHE UND TRAGEN NICHT — sie stehen hier, damit sie
+nicht später als Fund präsentiert werden:**
+- **DIE ANKUNFT EINES BEACONS:** Sie belegt Einwilligung nur für DAS EINE Ziel,
+  dessen Erzeuger sie passiert hat, und ihre Umkehrung gilt nicht — Ablehnung,
+  Blocker und abgebrochener Seiten-Teardown haben dieselbe Signatur (dieselbe
+  Nicht-Zurechenbarkeit wie unter "## Bekannte Folge dieser Entscheidung (offen
+  benannt, nicht kleingeredet)").
+- **DER `obs`-MARKER:** Er belegt einen erfolgreichen Meta-Script-Load, ist damit
+  eine Aussage über einen VERGANGENEN Klick — im gepufferten Fall über einen
+  deutlich vergangenen — und ist ausserdem client-geliefert und untrusted.
+- **`_fbp`:** Das Cookie setzt Metas eigenes Script; es kann aus einem anderen
+  Besuch stammen, fehlt in vielen ERLAUBTEN Fällen (lazy init im selben Klick,
+  vom Code selbst kommentiert), und sein Fehlen bedeutet nichts.
+
+**(g) DIE 400-ACHSE HÄNGT AN GENAU DREI BEDINGUNGEN** — Parse-Erfolg,
+Objekt-Natur des Body, und Vorhandensein der drei Pflichtfelder nach `asString`.
+Danach kennt `handleIngest` nur noch 204-Ausgänge: unbekannter Key, Kill-Switch,
+der frühe Return des Confirm-Zweigs und der Normal-Ausgang. **DER
+CONFIRM-ZWEIG KEHRT ZURÜCK, BEVOR `capiConfig` ÜBERHAUPT GELESEN WIRD** — der
+Forward ist von dort strukturell nicht erreichbar, und der Kommentar an der
+Stelle benennt genau das als Absicht.
+
+### Der Zuschnitt der fünften Scheibe
+
+**IN DIESER SCHEIBE:** Der Einwilligungs-Zustand reist im Beacon mit und wird im
+Ingest gelesen — **mit Meta als EINZIGEM Ziel und verhaltensneutral**. Kein
+zweites Ziel, kein Adapter, keine Änderung am Draht zu Meta.
+
+**(1) ES REIST DAS URTEIL, NICHT DER ROHZUSTAND (ENTSCHEIDUNG OWNER,
+2026-08-06).** Der Client sendet das Ergebnis der Auswertung, nicht den Wert, aus
+dem sie entstanden ist.
+
+BEGRÜNDUNG, in dieser Reihenfolge:
+- **DIE AUSWERTUNGSREGEL EXISTIERT NUR ALS TEXT.** `buildConsentRuntime` gibt
+  einen String zurück; geurteilt wird erst im Browser. Es gibt KEINE exportierte
+  Funktion, die einen Einwilligungs-Wert beurteilt — gemessen, s. Ausgangslage
+  (b). Server-seitiges Urteilen bräuchte deshalb entweder eine ZWEITE
+  Implementierung oder ein Ausführen des erzeugten Textes gegen eine Attrappe.
+- **DIE ZWEITE IMPLEMENTIERUNG IST DIE TEUERSTE VARIANTE, DIE DENKBAR IST.** Sie
+  bräche die Zusage, die die zweite Scheibe überhaupt erst hergestellt hat: EIN
+  URTEIL, die Regel steht genau einmal (der Datei-Kommentar von
+  `src/lib/tracking/consent.ts` sagt es wörtlich). Und sie bräche sie an der
+  gefährlichsten Stelle — zwei Urteile über dieselbe Einwilligung, die
+  auseinanderlaufen können, ohne dass etwas rot wird.
+- **DIE ATTRAPPE IST NICHT BILLIGER, SIE IST NUR VERSTECKTER.** Sie hiesse, im
+  Ingest-Hotspot fremd-beeinflussten Text auszuführen.
+- **WARUM DIE CLIENT-ANGABE HIER GENÜGT — und der Satz gehört zwingend dazu,
+  sonst wird die Entscheidung später für Nachlässigkeit gehalten:** Wer
+  "erlaubt" fälscht, schadet nur sich selbst. Wer "verboten" fälscht, erreicht
+  nichts, was er nicht schon durch das blosse UNTERDRÜCKEN des Beacons erreichen
+  könnte. **Die Einwilligung ist ein Schutz FÜR den Besucher, keine Grenze GEGEN
+  ihn** — anders als eine Projekt-Kennung braucht sie keine Serverwahrheit.
+  Der Unterschied zur bestehenden Marker-Hygiene (der Client sendet NIE den
+  `source`-Wert selbst) ist genau dieser: Dort könnte ein Aufrufer die Analytics
+  FREMDER Projekte einfärben, hier kann er nur seine eigene Messung verkleinern.
+
+**(2) DIE ALT-SEITEN-UNTERSCHEIDUNG (ENTSCHEIDUNG OWNER, 2026-08-06).**
+- **FELD GANZ ABWESEND** heisst "diese Seite ist ÄLTER als das Feld". Verhalten:
+  **wie heute — der Forward läuft.**
+- **FELD VORHANDEN, Ziel-Schlüssel fehlt oder ist nicht `true`:** **VERBOTEN,
+  fail-closed.**
+
+BEGRÜNDUNG: **Ein Code-Deploy erreicht bestehende Seiten NICHT** — das
+ausgelieferte HTML entsteht beim Publish und wird abgelegt (Grenze (a) im
+Protokoll der zweiten Scheibe, dort live beobachtet). Wäre der Server
+fail-closed auf ein FEHLENDES Feld, verlöre JEDE bestehende Kundenseite ihren
+Forward — **lautlos, mit unveränderter leerer 204**, und die Browser-Ereignisse
+liefen weiter. Das ist exakt die Signatur des Token-Zwischenfalls aus der dritten
+Scheibe: ein vollständiger Ausfall, den keine Anzeige im Produkt meldet.
+
+**DIE UNTERSCHEIDUNG WEICHT DIE FAIL-CLOSED-REGEL NICHT AUF.** Sie gilt für das
+URTEIL, nicht für den TRANSPORTWEG. Ist ein Urteil da, wird es streng gelesen —
+"genau `true`", alles andere verbietet, wie im Browser-Gate. Ist gar keines da,
+liegt kein Urteil vor, das man streng lesen könnte, sondern eine Seite aus einer
+Zeit vor der Frage. **Das ist dieselbe Denkfigur wie "nichts gesetzt heisst
+erlaubt" beim Hook selbst** (s. "## Beschlossenes Consent-Modell
+(OWNER-ENTSCHEIDUNG, 2026-08-03)", Entscheidung 3): Wer nie gefragt wurde, hat
+nicht abgelehnt.
+
+**WAS SIE BINDET — gehört in den Zuschnitt der SECHSTEN Scheibe und wird hier nur
+festgehalten:** Eine nicht neu veröffentlichte Seite kann für ein NEUES Ziel
+keine Einwilligung tragen; ihr Feld nennt den neuen Schlüssel nicht, und nach der
+Regel oben ist ein vorhandenes Feld ohne Schlüssel ein VERBOT. **Sie bekommt für
+das neue Ziel also nie einen Forward, bis sie neu publiziert wird.**
+**DAS IST EINE EIGENSCHAFT, KEIN FEHLER** — ein neues Ziel wird erst nach dem
+Republish wirksam, und das ist die ehrlichere der beiden Möglichkeiten: Die
+Alternative hiesse, ein Ziel zu beliefern, zu dem der Besucher nie gefragt wurde.
+
+**(3) WAS MITREIST: DIE URTEILE ZU DEN SCHLÜSSELN, DIE DIE SEITE KENNT.** Der
+Emitter muss beim Publish erfahren, WELCHE Ziele konfiguriert sind, und für jedes
+fragen. **Das ist heute nicht der Fall** — der erzeugte Code kennt nur seinen je
+eigenen Schlüssel, eine Liste existiert nirgends (Ausgangslage (d)). Diese
+Scheibe stellt genau das her, und nicht mehr.
+**DIE FORM DES FELDES IST AUSDRÜCKLICH NICHT VORENTSCHIEDEN.** Sie ist die offene
+Frage (b) dieser Datei ("DIE FORM DES WIRE-FELDES") und eine Frage an den
+Stufe-1-Plan (s. unten). Hier steht keine Antwort, damit keine geraten wird.
+
+**(4) WAS AUSDRÜCKLICH NICHT MITREIST — DER CONFIRM-BEACON BLEIBT SCHMAL.** Zwei
+Gründe, beide gemessen:
+- **ER FORWARDET NIE.** Sein Zweig kehrt zurück, bevor `capiConfig` gelesen wird;
+  ein Urteil hätte dort nichts zu entscheiden. Seine Nutzlast ist heute bewusst
+  die schmalste der drei — der Kommentar an `buildPixelConfirmStatement` nennt
+  weitere Felder "tote Bytes im /api/e-Hotspot".
+- **SEIN URTEIL WÄRE STRUKTURELL VERALTET.** Er fragt nicht selbst, er ERBT — und
+  im gepufferten Fall sendet er erst nach dem Laden des Fremdscripts
+  (Ausgangslage (a)). **Ein veraltetes Urteil im Draht ist schlechter als
+  keines, weil der Server ihm glaubte.**
+
+**DIES IST EINE ENTSCHEIDUNG MIT GRUND, KEIN VERGESSEN — und sie steht in
+SPANNUNG zu Entscheidung (5) des Consent-Modells** ("DAS CONSENT-SIGNAL WIRD
+IMMER MITGESCHICKT — auch bei Vollzustimmung"). Die Spannung wird hier BENANNT
+und AUFGELÖST, nicht übergangen:
+- **DAS ARGUMENT VON (5) IST EINDEUTIGKEIT:** Ein fehlendes Feld dürfe nicht
+  DREI Dinge gleichzeitig heissen (Altbestand, Vollzustimmung, Defekt).
+- **AUFGELÖST ZUGUNSTEN DER HOTSPOT-REGEL UND DER AKTUALITÄT** — und der Grund,
+  warum das (5) nicht bricht: **Die Mehrdeutigkeit, gegen die (5) geschrieben
+  wurde, ENTSTEHT HIER GAR NICHT.** Der Confirm-Pfad ist am `obs`-Marker
+  erkennbar, BEVOR ein Einwilligungs-Feld überhaupt gelesen würde — der Server
+  muss auf diesem Pfad nichts raten, weil er weiss, auf welchem Pfad er ist. Ein
+  fehlendes Feld heisst dort nicht "unklar", sondern "Confirm".
+- **FÜR JEDEN ANDEREN PFAD GILT (5) UNVERÄNDERT.** Die Auflösung ist eine
+  Ausnahme für EINEN identifizierbaren Pfad, keine Aufweichung der Regel.
+
+### Sechs Verhaltens-Invarianten — der Massstab des Reviews
+
+Sie sind nummeriert, damit ein Review sie EINZELN quittieren kann.
+
+1. **BEI EINEM ZIEL ÄNDERT SICH NICHTS AM DRAHT ZU META.** Gleiche Nutzlast,
+   gleiche Sequenz, gleiches Timeout. `forwardToMeta` wird nicht angefasst.
+2. **DIE 400-ANTWORT BLEIBT UNVERÄNDERT.** Das neue Feld taucht in KEINEM
+   Pflichtfeld-Guard auf.
+3. **DER INGEST WIRFT NIE.** Ein Feld BELIEBIGER Form — fehlend, leer, falsch
+   typisiert, verschachtelt, riesig — darf keinen Wurf erzeugen; das
+   204-Containment gilt in jedem Pfad. **Das ist keine Formsache:** Ein Wurf aus
+   dem Handler erzeugte einen 500 und leakte damit den Gültigkeitszustand des
+   trackingKeys an einen anonymen Aufrufer.
+4. **DAS BROWSER-GATE BLEIBT UNBERÜHRT.** Die bestehende Auswertungsregel wird
+   NICHT angefasst — kein zweites Urteil, keine zweite Implementierung. Was diese
+   Scheibe hinzufügt, FRAGT das Gate, es ERSETZT es nicht.
+5. **DER CONFIRM-PFAD BLEIBT WIE HEUTE.** Weder Nutzlast noch Zweig ändern sich.
+6. **KEIN LOG FÜHRT DEN EINWILLIGUNGS-ZUSTAND.** Er ist eine Aussage über einen
+   Besucher; ein Logeintrag darüber wäre eine Datenerhebung, die niemand
+   beschlossen hat.
+
+### Ausdrücklich nicht in dieser Scheibe, je mit Grund
+
+- **PINTEREST UND JEDER ADAPTER.** Sechste Scheibe. Diese hier ist genau deshalb
+  beweisbar, weil kein neues Netzwerk daneben steht.
+- **DER NEBENLÄUFIGE FAN-OUT MIT EINEM DECKEL.** Auflage der sechsten Scheibe (s.
+  dort); bei einem Empfänger gibt es nichts nebenläufig zu machen.
+- **DIE CONSTRAINT-ERWEITERUNG DER GEHEIMNIS-TABELLE.** Sie gehört laut
+  Entscheidung (d) zu dem Ziel, das sie braucht — hier entsteht kein Ziel.
+- **DER GEMEINSAME ABLAGEORT FÜR ZIELNAMEN.** Backlog, unverändert; er ist beim
+  DRITTEN Ziel eine echte Frage.
+- **DIE VERVIELFACHUNG VON `tokenSet`.** Ausgangslage Punkt 16 bindet sie ans
+  ZWEITE ZIEL, und das ist die sechste Scheibe.
+- **DIE WURF-LÜCKE IN `__psConsent`** (s. den Backlog-Kandidaten unten). **DER
+  GRUND IST HIER EIN BESONDERER und darf nicht mit den übrigen verwechselt
+  werden:** Diese Scheibe muss das Gate STABIL halten, um beweisbar zu sein. Wer
+  gleichzeitig die Auswertung anfasst, kann bei einem Fehlschlag nicht mehr
+  trennen, ob das Feld oder das Gate ihn verursacht hat. **Das ist kein Aufschub
+  aus Bequemlichkeit — es ist dieselbe Trennungs-Regel, die schon die Scheiben
+  eins, zwei und vier allein fahren liess.**
+- **DIE BETREIBER-DOKUMENTATION SAMT SNIPPET.** Eigener Liefergegenstand,
+  unverändert offen, und seit dem Live-Test der dritten Scheibe dringender als
+  zuvor.
+
+### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
+
+Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
+
+- **Welche FORM trägt das Feld, und wie unterscheidet der Leser "abwesend" von
+  "leer"?** BEIDE ENDEN benennen — die erzeugende Stelle im Browser-Text UND die
+  lesende im Ingest. Die Unterscheidung ist nicht kosmetisch: An ihr hängt
+  Entscheidung (2), und "abwesend" und "leer" sehen in JavaScript wie in JSON
+  leicht gleich aus.
+- **Woher weiss der Emitter beim Publish, welche Ziele konfiguriert sind?** Heute
+  weiss er es nicht (Ausgangslage (d)). Die Antwort entscheidet mit, ob eine
+  Liste entsteht — und wo sie liegt.
+- **Wo im Ingest wird gelesen, ohne die 400-Achse zu berühren?** Die drei
+  400-Bedingungen stehen in Ausgangslage (g); die Antwort muss zeigen, dass keine
+  davon einen neuen Term bekommt.
+- **Wie viele Hook-Aufrufe entstehen pro Beacon NACH der Änderung, und wie viele
+  sind es HEUTE?** Heute sind es zwei beim ersten consented Klick und einer
+  danach (Ausgangslage (c)). Ein nicht-deterministischer Hook kann zwischen zwei
+  Aufrufen verschieden antworten — die Frage ist, ob die Änderung diese Zahl
+  erhöht und was das für die Widerspruchsfreiheit des mitgesendeten Urteils
+  heisst.
+- **Wieviele BYTES wachsen auf dem Hotspot-Pfad, im schlanksten und im breitesten
+  Fall?** Der Pfad wird von JEDEM Besucher JEDER Kundenseite getroffen
+  (CLAUDE.md, /API/E-SCHLANKHEIT). Der schlanke Fall ist ein Projekt ohne
+  Pixel-ID, der breite eines mit allen konfigurierten Zielen.
+
+**KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
+dem Bau, getrennt vom Zuschnitt, wie bei den ersten vier Scheiben.
+
+### Zwei Backlog-Kandidaten aus derselben Aufklärung — BENANNT, NICHT GEPLANT
+
+PROVENIENZ: beide **am Code gemessen am 2026-08-06 (read-only)**, beide
+**AUSSERHALB** dieser Scheibe. **Beobachtbar am Code, NICHT live gesehen** — der
+Unterschied gehört dazu: Ein am Code gelesener Pfad sagt, dass etwas eintreten
+KANN, nicht, dass es eingetreten IST.
+**SIE STEHEN HIER UND NICHT IN `docs/claude-history/backlog-polish.md`**, weil
+diese Runde ausschliesslich diese Datei anfassen durfte. **DER ÜBERTRAG DORTHIN
+STEHT AUS** und ist mit dem Phasenende fällig, spätestens mit der Archivierung
+dieser Datei — sonst gehen beide mit ihr unter.
+
+**(A) DIE WURF-LÜCKE IN `__psConsent` — VOM OWNER ALS DRINGEND EINGESTUFT.** Der
+`try` in `buildConsentRuntime` umschliesst nur den Hook-Aufruf. Ein werfender
+`window`-Accessor oder ein werfender Getter beim Schlüssel-Zugriff läuft
+ungebremst durch `__psMetaFire` in den Klick-Handler des Wirings. **KEIN TEST
+DECKT DAS AB** — gedeckt ist allein der werfende Hook-AUFRUF.
+**PRÄZISIERUNG AM CODE, die den Befund SCHÄRFT statt ihn abzuschwächen — sie
+gehört dazu, sonst wird beim Bau am falschen Fall gemessen:** Was verlorengeht,
+ist nicht in allen Fällen dasselbe.
+· Bei einem `<a>` im EXPORT-Modus ist die Ziel-URL zusätzlich ins `href` gebacken
+  (der Redirect-Bake in `generateFunctional`). Fällt der Handler aus, unterbleibt
+  auch sein `preventDefault`, und der Browser navigiert NATIV zur richtigen
+  Adresse — der Besucher merkt nichts.
+· Bei einem NICHT-Anker (`<button>`, `<div>`) gibt es kein `href`. Der Bake
+  überspringt sie ausdrücklich. **Dort ist der Redirect vollständig weg, und der
+  Besucher klickt ins Leere.**
+**DAS IST DIE TEURERE HÄLFTE und zugleich die unauffälligere:** Der Fehler tritt
+nur bei bestimmten Element-Typen auf und sähe wie ein sporadischer Defekt der
+Kundenseite aus. **Eigene kleine Scheibe.**
+
+**(B) DER HOOK WIRD BEIM ERSTEN CONSENTED KLICK ZWEIMAL GEFRAGT**, ohne dass das
+Ergebnis gemerkt wird — einmal in `__psMetaFire`, einmal in `__psMetaInit` (s.
+Ausgangslage (c)). Heute folgenlos, weil beide Fragen im selben synchronen Aufruf
+liegen und ein deterministischer Hook zweimal dasselbe sagt. **BENANNT, WEIL ES
+MIT JEDEM WEITEREN ZIEL MEHR WIRD** und weil ein Betreiber-Hook fremder Code ist,
+über dessen Determinismus wir nichts wissen.
+
+---
+
+## Die sechste Scheibe — PINTEREST ALS ZWEITES ZIEL (Platzhalter)
+
+**ÜBERSCHRIFT NACHGEZOGEN AM 2026-08-06:** Sie hiess "Die fünfte Scheibe". Davor
+liegt jetzt das Einwilligungs-Signal zum Server (s. "## Die fünfte Scheibe — DAS
+EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)"). Die vollständige Kette der
+Wanderungen steht im Kopf dieser Datei und wird hier nicht wiederholt.
 
 **ZWECK:** Das erste zusätzliche Fan-Out-Ziel neben Meta — die Scheibe, für die
 die ganze Phase existiert.
@@ -2307,9 +2741,23 @@ die ganze Phase existiert.
 **KEIN ZUSCHNITT.** Die Entscheidung, dass Pinterest das erste zusätzliche Ziel
 ist, steht unverändert in Frage (e) und wird hier nicht wiederholt.
 
-**VIER BINDUNGEN AUS DER AUFKLÄRUNG VOM 2026-08-06 GELTEN FÜR DIESE SCHEIBE UND
+**DREI BINDUNGEN AUS DER AUFKLÄRUNG VOM 2026-08-06 GELTEN FÜR DIESE SCHEIBE UND
 SIND NOCH NICHT ZUGESCHNITTEN.** Sie stehen hier nur BENANNT, mit Symbolnamen und
 ohne Lösungsvorschlag — der Zuschnitt entsteht in einer eigenen Runde:
+
+**RICHTIGGESTELLT AM 2026-08-06 — DIE ZAHL WAR "VIER".** Punkt 2 ist seit der
+Umnummerierung KEINE Bindung dieser Scheibe mehr; er IST die fünfte Scheibe
+geworden. **DIE NUMMERIERUNG DER VIER PUNKTE BLEIBT TROTZDEM STEHEN, UND DAS IST
+ABSICHT:** Punkt 2 trägt an seiner Stelle die Angabe, wohin er gewandert ist —
+wer ihn herausnähme, liesse eine Lücke, an der niemand mehr sähe, dass hier je
+eine Bindung stand. Diese Datei verweist an vielen Stellen auf NUMERIERTE Punkte
+(die "## Gemessene Ausgangslage" wird durchgängig so zitiert); eine Umnummerierung
+ist deshalb in diesem Dokument ein teurer Vorgang.
+**GEMESSEN UND EIGENS GESAGT, damit die Begründung nicht mehr behauptet, als sie
+trägt:** Auf die vier Punkte DIESER Liste verweist derzeit KEINE andere Stelle der
+Datei. Die Regel ist also vorbeugend, nicht rettend.
+RICHTIGGESTELLT und nicht gestempelt, weil dieser Abschnitt auf einen NOCH
+KOMMENDEN Bau zeigt und als Handlungsanweisung gelesen wird.
 
 1. **ES GIBT KEINEN NEUTRALEN ORT FÜR DIE EVENT-KENNUNG.** Zwei Erzeugungsstellen
    im erzeugten Browser-Code — in `__psMetaFire` (`buildMetaRuntime`) und in
@@ -2322,6 +2770,16 @@ ohne Lösungsvorschlag — der Zuschnitt entsteht in einer eigenen Runde:
    `src/lib/analytics/persist.ts` kennt den Begriff. Das ist die offene Frage (b)
    "DIE FORM DES WIRE-FELDES" — sie wird mit dem zweiten Ziel fällig, weil ab
    dann ein Beacon für ein Ziel erlaubt und für ein anderes verboten sein kann.
+   **RICHTIGGESTELLT AM 2026-08-06: DAS IST KEINE BINDUNG DIESER SCHEIBE MEHR —
+   ES IST DIE FÜNFTE SCHEIBE.** Der Zuschnitt steht unter "## Die fünfte Scheibe
+   — DAS EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)"; dort ist auch die
+   offene Frage (b) verortet. **DER BEFUND SELBST BLEIBT WÖRTLICH STEHEN UND IST
+   UNVERÄNDERT RICHTIG** — er ist am 2026-08-06 erneut am Code nachgemessen
+   worden. Falsch war nie SEIN INHALT, sondern allein sein ORT: Der Satz "sie
+   wird mit dem zweiten Ziel fällig" liest sich als Vorbedingung EINER ANDEREN
+   Scheibe, und genau das hat der Zuschnitt widerlegt — sie ist ALLEIN baubar und
+   ALLEIN beweisbar. **DAS IST DIE FÜNFTE URSACHE DER NUMMERN-WANDERUNG** (s. den
+   Kopf dieser Datei).
 3. **DER META-ZIELNAME LIEGT IN DREI UNABHÄNGIGEN KOPIEN:** `META_TARGET`
    (server-only), `META_CONSENT_TARGET` (client-erreichbar) und das Literal im
    CHECK der Geheimnis-Tabelle. Die Trennung der ersten beiden ist BEGRÜNDET —
@@ -2339,6 +2797,13 @@ ohne Lösungsvorschlag — der Zuschnitt entsteht in einer eigenen Runde:
 Sie ist der Grund für die Scheiben vier und fünf und dort abgehandelt — s. "###
 Gemessene Bindungen, die die PINTEREST-SCHEIBE binden", Punkt (a), in seiner
 richtiggestellten Fassung.
+
+**ERGÄNZT AM 2026-08-06 — ES IST JETZT NICHT MEHR NUR EINE:** Auch Punkt 2 oben
+ist keine Bindung dieser Scheibe mehr, sondern die fünfte Scheibe geworden. Der
+Satz darüber bleibt unangetastet; er betrifft eine ANDERE Bindung aus derselben
+Aufklärung, und beide Vorgänge haben verschiedene Ursachen — der wartende Forward
+wanderte, weil eine Recherche eine Annahme widerlegte, Punkt 2, weil er allein
+baubar ist.
 
 **RICHTIGGESTELLT AM 2026-08-06: SIE IST WIEDER EINE BINDUNG DIESER SCHEIBE — als
 AUFLAGE, nicht als eigene Scheibe.** Der Satz darüber verwies auf zwei Scheiben;

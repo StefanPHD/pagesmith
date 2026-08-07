@@ -17,8 +17,9 @@ Umstellung der Geheimnis-Tabelle — ABGESCHLOSSEN und live bewiesen, (2) das
 geteilte Consent-Gate — ABGESCHLOSSEN und live bewiesen, (3) der PageView-Emitter
 hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) die NAHT des
 Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) das Einwilligungs-Signal
-reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) Pinterest als erstes
-zusätzliches Ziel — PLATZHALTER. Die Entkopplung des Forwards von der Antwort war
+reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) die ZUGANGSDATEN JE ZIEL
+— ZUGESCHNITTEN, NOCH NICHT GEBAUT, (7) Pinterest als erstes zusätzliches Ziel —
+PLATZHALTER. Die Entkopplung des Forwards von der Antwort war
 als fünfte Scheibe geführt und ist am 2026-08-06 GESTRICHEN (s. "## Die
 GESTRICHENE fünfte Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT").
 
@@ -35,8 +36,9 @@ Die Zuschnitte stehen unter "### Der
 Zuschnitt der ersten Scheibe — DREI SCHRITTE in dieser Reihenfolge", "## Die
 zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)", "## Die dritte
 Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)", "## Die vierte
-Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)" und "## Die fünfte Scheibe —
-DAS EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)"; was die FÜNF
+Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)", "## Die fünfte Scheibe —
+DAS EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)" und "## Die sechste
+Scheibe — DIE ZUGANGSDATEN JE ZIEL (Zuschnitt)"; was die FÜNF
 abgeschlossenen Scheiben tatsächlich ergeben haben, unter "### Protokoll der
 ersten Scheibe — Vollzug und Abschluss", "### Protokoll der zweiten Scheibe —
 Vollzug und Abschluss", "### Protokoll der dritten Scheibe — Vollzug und
@@ -70,11 +72,14 @@ sonst** — nicht die Zahl der Scheiben, nicht die Zahl der Umplanungen:
   steht auf derselben Nummer wie schon einmal, aber aus einem ANDEREN Grund und
   mit einer anderen Scheibe davor. Wer nur die Nummer vergleicht, hält das für
   eine Rücknahme; es ist keine.
-**VIER DER FÜNF WANDERUNGEN TRAGEN DASSELBE DATUM.** Das Datum unterscheidet sie
+- **SECHSTE -> SIEBTE (2026-08-07):** die ZUGANGSDATEN JE ZIEL schieben sich
+  davor. **DIE ERSTE WANDERUNG MIT EINEM ANDEREN DATUM** — bis hierher trugen
+  vier von fünf denselben Stempel.
+**VIER DER SECHS WANDERUNGEN TRAGEN DASSELBE DATUM.** Das Datum unterscheidet sie
 also NICHT — wer sie auseinanderhalten will, liest die URSACHE, nicht den Stempel.
 
-**DIE FÜNF URSACHEN SIND FÜNF VERSCHIEDENE, und das gehört dazu, sonst liest sich
-jede Runde wie eine weitere Umsortierung:**
+**DIE SECHS URSACHEN SIND SECHS VERSCHIEDENE, und das gehört dazu, sonst liest
+sich jede Runde wie eine weitere Umsortierung:**
 - Die ERSTE entstand aus einer erkannten VORBEDINGUNG: die damalige Auswertung
   hätte aus der Objektform ein stilles Fail-open gemacht.
 - Die ZWEITE entstand daraus, dass ein AUSSCHLUSS zur eigenen Scheibe wurde — der
@@ -98,6 +103,16 @@ jede Runde wie eine weitere Umsortierung:**
   Und anders als bei der vierten ist nichts WIDERLEGT worden: Die Bindung war
   richtig beschrieben, nur ihr ORT war es nicht. S. "## Die fünfte Scheibe — DAS
   EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)".
+- Die SECHSTE entsteht aus einer VORBEDINGUNG, DIE NIEMAND VERMUTET HATTE: Die
+  Aufklärung zur Pinterest-Scheibe hat gefunden, dass Oberfläche und
+  Server-Aktionen KEINE Ziel-Dimension kennen — ein zweites Ziel hätte dort
+  nirgends hingekonnt. **DAS IST NICHT DIE FÜNFTE URSACHE, und die Abgrenzung ist
+  hier besonders wichtig, weil beide nach "die Aufklärung fand etwas" klingen:**
+  Bei der fünften war die Sache ALS BINDUNG GEFÜHRT und stellte sich als allein
+  baubar heraus — sie stand also bereits im Dokument. **Hier war sie ÜBERHAUPT
+  NICHT ALS GEGENSTAND GEFÜHRT.** Keine Bindung, kein Ausschluss, keine offene
+  Frage nannte sie. S. "## Die sechste Scheibe — DIE ZUGANGSDATEN JE ZIEL
+  (Zuschnitt)".
 
 **DER ÄLTERE STEMPEL DARÜBER BLEIBT WORT FÜR WORT STEHEN:** er war am 2026-08-06
 richtig, und ein überschriebener Stempel verwischt, dass die Nummer überhaupt
@@ -117,6 +132,18 @@ es schon einmal stand, ist der Grund, warum diese Kette überhaupt geführt wird
 Ein blosser Blick auf die aktuelle Nummer liesse die vierte Wanderung wie einen
 Irrtum aussehen, den man hätte auslassen können. Sie war keiner — dazwischen ist
 eine Scheibe gestrichen und eine andere entstanden.
+
+**EIN VIERTES MAL NACHGEZOGEN AM 2026-08-07 — PINTEREST IST JETZT DIE SIEBTE
+SCHEIBE.** Davor liegen die ZUGANGSDATEN JE ZIEL (s. "## Die sechste Scheibe —
+DIE ZUGANGSDATEN JE ZIEL (Zuschnitt)"). **DIE VIER STEMPEL DARÜBER BLEIBEN WORT
+FÜR WORT STEHEN.**
+**DIESE WANDERUNG IST VON ANDERER ART ALS DIE VIER DAVOR, und der Satz gehört
+dazu, weil er über Pinterest mehr sagt als eine Nummer:** Die bisherigen
+Verschiebungen entstanden daraus, dass etwas BEREITS GEFÜHRTES seinen Platz
+wechselte — eine Bindung, ein Ausschluss, eine gestrichene Scheibe. **Hier ist
+etwas dazugekommen, das im ganzen Dokument nicht vorkam.** Wer daraus schliesst,
+dass Pinterest weiter wegrückt, liest richtig; wer daraus schliesst, dass die
+Planung schwankt, liest falsch — die Vorbedingung war vorher schlicht unbekannt.
 
 ---
 
@@ -1168,11 +1195,14 @@ Handlungsanweisung stehen.
 - **(a) BINDET DIESE SCHEIBE WIEDER — als AUFLAGE, nicht als eigene Scheibe.** Der
   Fan-Out zu mehreren Empfängern läuft NEBENLÄUFIG, mit EINEM Deckel für alle
   Empfänger, NIE hintereinander. Ausformuliert steht die Auflage bei der Scheibe,
-  die sie einzulösen hat: "## Die sechste Scheibe — PINTEREST ALS ZWEITES ZIEL
+  die sie einzulösen hat: "## Die siebte Scheibe — PINTEREST ALS ZWEITES ZIEL
   (Platzhalter)".
   **NUR DIE NUMMER NACHGEZOGEN AM 2026-08-06** — die Überschrift hiess "Die
   fünfte Scheibe" und der Verweis wäre sonst ins Leere gelaufen, genau wie der,
   den der Punkt darunter beschreibt. **AN DER AUFLAGE ÄNDERT SICH NICHTS.**
+  **ERNEUT NUR DIE NUMMER NACHGEZOGEN AM 2026-08-07** — aus "sechste" wurde
+  "siebte", weil die Zugangsdaten je Ziel sich davorschieben. An der Auflage
+  ändert auch das nichts: Sie bindet die Scheibe, die den Fan-Out baut.
 - **ES LIEGT EINE SCHEIBE DAVOR, NICHT ZWEI.** Die Naht ist gebaut und live
   bewiesen ("## Die vierte Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)"); die
   Entkopplung ist am 2026-08-06 GESTRICHEN worden ("## Die GESTRICHENE fünfte
@@ -2528,7 +2558,8 @@ diese vier Entscheidungen geplant.
 **WAS TROTZ DER VERDICHTUNG UNANGETASTET BLEIBT, und der Grund gehört dazu, sonst
 wirkt es wie ein vergessener Rest:** die "### Die gemessene Ausgangslage dieser
 Scheibe" (ein DATIERTER Messbericht, kein Bau-Auftrag — und ihre Punkte (a), (c)
-und (d) binden die sechste Scheibe unmittelbar) und die Fragen unter "### Was der
+und (d) binden die Ziel-Scheibe unmittelbar — die trug am 2026-08-07 die Nummer
+sieben) und die Fragen unter "### Was der
 Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben" DIESES Abschnitts
 (die Überschrift trägt jede Scheibe, gemeint ist die eigene: sie sind der MASSSTAB,
 an dem der Plan gemessen wurde; alle vier bisherigen Scheiben führen sie aus
@@ -2589,8 +2620,10 @@ erlaubt" beim Hook selbst** (s. "## Beschlossenes Consent-Modell
 (OWNER-ENTSCHEIDUNG, 2026-08-03)", Entscheidung 3): Wer nie gefragt wurde, hat
 nicht abgelehnt.
 
-**WAS SIE BINDET — gehört in den Zuschnitt der SECHSTEN Scheibe und wird hier nur
-festgehalten:** Eine nicht neu veröffentlichte Seite kann für ein NEUES Ziel
+**WAS SIE BINDET — gehört in den Zuschnitt DER SCHEIBE, DIE EIN ZIEL HINZUFÜGT,
+und wird hier nur festgehalten** (sie hiess beim Schreiben "die sechste" und trägt
+seit dem 2026-08-07 die Nummer sieben; **die Nummer ist nachgezogen, der SATZ
+unverändert** — er bindet die Ziel-Scheibe, nicht eine Zahl)**:** Eine nicht neu veröffentlichte Seite kann für ein NEUES Ziel
 keine Einwilligung tragen; ihr Feld nennt den neuen Schlüssel nicht, und nach der
 Regel oben ist ein vorhandenes Feld ohne Schlüssel ein VERBOT. **Sie bekommt für
 das neue Ziel also nie einen Forward, bis sie neu publiziert wird.**
@@ -2664,7 +2697,14 @@ Betreiber-Dokumentation samt Snippet (unverändert offener Liefergegenstand, sei
 dem Live-Test der dritten Scheibe dringender als zuvor). Die übrigen Punkte —
 Pinterest, der nebenläufige Fan-Out, die Constraint-Erweiterung, der gemeinsame
 Ablageort für Zielnamen, die Vervielfachung von `tokenSet` — stehen sämtlich
-bereits bei der SECHSTEN Scheibe und wären hier eine Zweitschrift.
+anderswo und wären hier eine Zweitschrift.
+**NACHGEZOGEN AM 2026-08-07, weil "anderswo" seither nicht mehr EIN Ort ist:** Die
+Constraint-Erweiterung und die Vervielfachung von `tokenSet` sind Gegenstand der
+SECHSTEN Scheibe (Zugangsdaten je Ziel), Pinterest und der Fan-Out der SIEBTEN,
+der gemeinsame Ablageort bleibt Backlog. Hier stand "sämtlich bereits bei der
+SECHSTEN Scheibe" — beim Schreiben dieses Absatzes richtig, wenige Stunden später
+durch die Umnummerierung nicht mehr. **Dass beides denselben Tag trägt, ist der
+Grund, warum diese Datei Ursachen und nicht Daten führt.**
 
 ### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
 
@@ -2983,12 +3023,237 @@ dieser Datei untergingen, wenn sie am Phasenende ohne Übertrag archiviert wird.
 
 ---
 
-## Die sechste Scheibe — PINTEREST ALS ZWEITES ZIEL (Platzhalter)
+## Die sechste Scheibe — DIE ZUGANGSDATEN JE ZIEL (Zuschnitt)
+
+**ENTSCHEIDUNG (OWNER, 2026-08-07): DIE SECHSTE SCHEIBE IST NICHT PINTEREST,
+SONDERN DIE ZUGANGSDATEN JE ZIEL. PINTEREST RÜCKT AUF SIEBEN.**
+
+BEGRÜNDUNG, in dieser Reihenfolge:
+
+1. **DIE AUFKLÄRUNG HAT EINE VORBEDINGUNG GEFUNDEN, DIE NIEMAND VERMUTET HATTE.**
+   Oberfläche und Server-Aktionen kennen KEINE Ziel-Dimension — nicht als
+   Parameter, nicht als Zustand, nicht als Beschriftung. Ein zweites Ziel hätte
+   dort nirgends hingekonnt.
+2. **SIE STAND IN KEINER LISTE DIESER DATEI.** Weder unter den Bindungen der
+   Pinterest-Scheibe noch in einem Ausschluss noch in einer offenen Frage. **Das
+   unterscheidet diese Wanderung von allen fünf davor**, in denen jeweils etwas
+   BEREITS GEFÜHRTES seinen Platz wechselte.
+3. **SIE FÄHRT ALLEIN** — dieselbe Begründung wie bei den Scheiben eins, zwei,
+   vier und fünf: Gebündelt mit einem neuen Netzwerk wäre im Fehlerfall nicht zu
+   erkennen, welche der beiden Wirkungen ihn verursacht hat. Hier wiegt es
+   besonders schwer, weil diese Scheibe die OBERFLÄCHE anfasst und deren Wirkung
+   sich nicht mit einer Zahl nachweisen lässt.
+
+### Die gemessene Ausgangslage dieser Scheibe
+
+PROVENIENZ: **am Code gemessen in der Aufklärungs-Runde vom 2026-08-07
+(read-only)**, nach dem Abschluss der fünften Scheibe. **DIE ANKER SIND
+SYMBOLNAMEN, KEINE ZEILENNUMMERN.**
+
+**DIE BUCHSTABEN (a) BIS (h) SIND LOKAL** und haben nichts mit den gleichnamigen
+Punkten unter "## Fragen, die der Bau beantworten MUSS" zu tun — dieselbe
+Handschrift wie in den Scheiben zwei bis fünf.
+
+**(a) ZEHN STELLEN SIND AUF EIN ZIEL VERDRAHTET.** Vollständig aufgezählt, weil
+eine Auswahl beim Bau genau die übersehene Stelle wäre:
+1. **Beschriftungen** "Meta-Pixel-ID" und "Meta CAPI-Token" in `MeasureView`.
+2. **GENAU EIN Pixel-Eingabefeld und GENAU EIN Token-Eingabefeld.**
+3. **Prop-Namen ohne Ziel-Dimension:** `metaPixelId`, `onMetaPixelIdChange`,
+   `capiTokenSet`, `capiTokenInput`, `onSetCapiToken`, `onRemoveCapiToken`.
+4. **Container-Zustände im Singular** in `CodeImporter`: `capiTokenInput`,
+   `capiTokenStatus`, `capiTokenError`, dazu `capiRemoving` und
+   `capiRemoveConfirming`.
+5. **Die Server-Aktionen haben KEINEN Ziel-Parameter:** `setCapiToken(projectId,
+   token)` und `removeCapiToken(projectId)`.
+6. **Der Settings-Typ** `ProjectSettings` führt unter `pixels` genau ein Mitglied.
+7. **`settingsEqual` vergleicht genau EIN Feld** (`getMetaPixelId`); ihr eigener
+   Kommentar sagt "Weitere user-editierbare Plattform-Felder wachsen hier mit".
+8. **`tokenSet` ist ein einzelner Boolean.**
+9. **Der Platzhaltertext** des Pixel-Feldes nennt ein Meta-Format.
+10. **Der Bestätigungstext beim Entfernen** spricht von "Tracking für dieses
+    Projekt deaktivieren" — also projektweit, nicht zielbezogen.
+
+**(b) DIE ABLAGE IST HEUTE ZWEIGETEILT, UND DIE HÄLFTEN HABEN VERSCHIEDENE FORM.**
+`settings.pixels` ist plattform-GENESTET und im Datei-Kommentar ausdrücklich für
+weitere Plattformen angelegt ("OHNE flache Keys und OHNE Migration pro
+Plattform"). `settings.capi` liegt DANEBEN, nicht darunter, und ist FLACH
+(`trackingKey`, `tokenSet`) — mit eigener Begründung: es ist der server-seitige
+Forward-Kanal, keine Pixel-Konfiguration. **Beide Formen existieren also
+nebeneinander im selben Blob; welche eine Ziel-Dimension aufnimmt, entscheidet
+diese Datei NICHT.**
+
+**(c) `settings` IST CLIENT-BESESSEN.** `saveProject` ersetzt den Blob
+GANZHEITLICH. Was dort steht, ist die Erklärung des Betreibers, nicht die
+Wahrheit des Servers.
+
+**(d) `tokenSet` ENTSCHEIDET ZUR LAUFZEIT NICHTS.** Gemessen: Es wird ausserhalb
+der Ableitung `getCapiTokenSet` und des UI-Pfades von KEINER Stelle gelesen. Ob
+geforwardet wird, entscheidet allein `getCapiConfigByTrackingKey` aus ZWEI anderen
+Quellen — der Pixel-ID in `settings` UND der Zeile in `project_secrets`.
+**ES SIND ZWEI WAHRHEITEN, DIE AUSEINANDERLAUFEN KÖNNEN**, und sie sind schon
+einmal auseinandergelaufen: Im Live-Test der dritten Scheibe war das Token
+widerrufen, die Oberfläche zeigte weiter "gesetzt", der Server-Forward war tot,
+und KEINE Anzeige im Produkt meldete es.
+
+**(e) DER CHECK-CONSTRAINT LÄSST GENAU EINEN ZIELWERT ZU.**
+`project_secrets_target_valid` prüft `target in ('meta')`. Der Kommentar an Ort
+und Stelle nennt den Preis vorab und bezeichnet ihn als beabsichtigt: "JEDES
+weitere Ziel bringt seine EIGENE Constraint-Erweiterung mit … der sichtbare
+Moment, in dem ein Ziel real wird."
+
+**(f) DER ZIELNAME LIEGT IN DREI UNABHÄNGIGEN KOPIEN:** `META_TARGET`
+(server-only, in `capi/token.ts`), `META_CONSENT_TARGET` (client-erreichbar, in
+`tracking/consent.ts`) und das SQL-Literal im CHECK.
+**WIDERSPRUCH ZUR VORLAGE DIESER RUNDE, am Code gemessen und deshalb hier
+festgehalten:** Der Auftrag sagt, die server-only-Grenze schliesse eine einzige
+gemeinsame Quelle aus. **Das trifft so NICHT zu.** Die Grenze wirkt nur in EINE
+Richtung: Eine server-only-Datei ist aus erzeugtem Browser-Code unerreichbar —
+umgekehrt darf server-seitiger Code sehr wohl aus einer neutralen Datei
+importieren, und `capi/ingest.ts` tut das bereits mit `META_CONSENT_TARGET`.
+**DIE BEIDEN TS-KOPIEN LIESSEN SICH ALSO ZUSAMMENLEGEN.** Ausgeschlossen ist
+allein die DRITTE: Ein CHECK-Constraint ist SQL und kann keine TypeScript-Konstante
+referenzieren. **Es sind zwei verschiedene Mechanismen, und nur der zweite ist
+zwingend.** Ob eine Zusammenlegung wünschenswert ist — ein Wert der
+Geheimnis-Tabelle, der seinen Namen aus dem Consent-Vokabular bezöge —, ist eine
+Entwurfsfrage und wird hier NICHT entschieden.
+
+**(g) ES GIBT KEINE ANZEIGE JE ZIEL.** Alle drei Lesepfade — `get_event_counts`,
+`get_adblock_loss`, `get_variant_counts` — aggregieren PRO PROJEKT. **Das ist
+strukturell und nicht bloss unfertig:** `events` trägt keine Ziel-Spalte, also
+könnte keine dieser Funktionen je Ziel gruppieren.
+
+**(h) ES GIBT KEINE ANZEIGE, DIE EINEN FORWARD-AUSGANG ZEIGT.** `forwardToMeta`
+gibt `Promise<void>` zurück und loggt nur; der Handler erfährt nichts. Der
+Betreiber sieht heute nicht, ob sein Server-Forward angenommen oder abgewiesen
+wurde — dazu liegt seit der dritten Scheibe ein Backlog-Punkt vor.
+
+### Der Zuschnitt der sechsten Scheibe
+
+**ZWECK: DIE ZIEL-DIMENSION WIRD EINGEZOGEN** — in der Ablage, in den
+Server-Aktionen und in der Oberfläche. **ES WIRD NICHTS GESENDET.**
+
+**(1) DIE TRAGENDE ENTSCHEIDUNG (OWNER, 2026-08-07): EINE KARTE JE PLATTFORM.**
+Jede Karte trägt Name, Erkennungszeichen und genau die Felder, die diese Plattform
+braucht.
+**SIE IST NICHT BLOSS GRUPPIERUNG, und dieser Halbsatz ist die eigentliche
+Entscheidung:** Darunter bekommen die Server-Aktionen und die Ablage DIESELBE
+Dimension. Ohne das behauptete die Oberfläche mehr, als der Code trägt — eine
+Karte je Ziel über einer Ablage, die nur eines kennt, wäre genau das Instrument,
+das etwas ANZEIGT, ohne es zu tragen.
+
+**(2) DIE STATUSANZEIGE (ENTSCHEIDUNG OWNER, 2026-08-07). DIE FORMULIERUNG IST
+TEIL DER ENTSCHEIDUNG, nicht ihre Ausschmückung.** Die Karte zeigt
+AUSSCHLIESSLICH, was sie weiss:
+**"Nicht konfiguriert"** gegen **"Zugangsdaten hinterlegt"**.
+**AUSDRÜCKLICH VERBOTEN:** "aktiv", "läuft", "verbunden" — und ein grüner Haken
+ohne Messung.
+
+BEGRÜNDUNG: Die Anzeige liest einen CLIENT-BESESSENEN Wert, der Forward eine
+ANDERE Quelle (s. Ausgangslage (c) und (d)). **Der Live-Test der dritten Scheibe
+hat gezeigt, dass beide auseinanderlaufen: Token widerrufen, Anzeige grün, Forward
+tot — und nichts im Produkt meldete es.**
+**UND DER GRUND, WARUM DIE KARTE STRENGER SEIN MUSS ALS EINE LISTE:** Eine Karte
+mit Logo ist ein STÄRKERES VERSPRECHEN als eine Zeile in einer Liste. Sie darf
+deshalb WENIGER behaupten, nicht mehr. Wer das für Wortklauberei hält, hat den
+Fall aus der dritten Scheibe nicht als das gelesen, was er war: ein vollständiger,
+lautloser Ausfall bei grüner Anzeige.
+
+**(3) DER TESTKNOPF: SEIN PLATZ WIRD VORGESEHEN, SEINE FUNKTION NICHT GEBAUT.**
+Er braucht Adapter, die es hier nicht gibt — **er gehört in die SIEBTE Scheibe.**
+In DIESER Scheibe wird die Statusanzeige so formuliert, dass er sie später
+ERGÄNZT statt ihr zu WIDERSPRECHEN.
+**SEINE DREI AUFLAGEN SIND BEREITS ENTSCHIEDEN und stehen hier, damit sie dort
+nicht neu verhandelt werden:**
+- **(i) ER HEISST "Zugangsdaten testen" UND MELDET "Verbindung & Token gültig".**
+  Nie etwas über ZUSTELLUNG. Ein Test, der Zustellung behauptet, wäre dieselbe
+  Lüge wie ein grüner Haken ohne Messung — nur teurer, weil ihm jemand glaubt.
+- **(ii) SEIN ERGEBNIS IST FLÜCHTIG und wird NICHT persistiert.** Ein
+  gespeichertes "gültig" ist ab der nächsten Sekunde eine Behauptung über die
+  Vergangenheit.
+- **(iii) ER MELDET DIE RÜCKMELDUNG DER PLATTFORM NEUTRAL**, ohne Deutung, welche
+  Angabe falsch war — **und der Text wird MASKIERT, weil Metas Fehlermeldung
+  Teile des Tokens zurückspiegelt.** Das ist kein hypothetisches Risiko: Der
+  Fehler-Envelope wird im Projekt bereits sanitized geloggt, aus genau diesem
+  Grund.
+
+**(4) WAS DIE SCHEIBE HERSTELLT** — fünf Dinge, und nichts darüber hinaus:
+- Die **Ablage** trägt Zugangsdaten je Ziel.
+- Die **Server-Aktionen** tragen das Ziel als Parameter.
+- Die **Geheimnis-Tabelle** lässt den zweiten Zielwert zu.
+- Die **Oberfläche** zeigt je Ziel eine Karte.
+- Der **Indikator** existiert je Ziel.
+
+### Fünf Verhaltens-Invarianten — der Massstab des Reviews
+
+1. **ES WIRD NICHTS GESENDET.** Kein Adapter, kein Forward, keine Netzwerk-Anfrage
+   an einen Anbieter. **Der Ingest-Pfad wird NICHT angefasst.**
+2. **DER META-PFAD VERHÄLT SICH UNVERÄNDERT.** Wer heute Meta eingerichtet hat,
+   forwardet nach dieser Scheibe genauso — **inklusive bestehender
+   Geheimnis-Zeilen, die nicht wandern.**
+3. **DIE OBERFLÄCHE BEHAUPTET KEINE WIRKUNG.**
+4. **DIE ZUGANGSDATEN-DISZIPLIN BLEIBT:** Ownership-Gate vor jedem privilegierten
+   Zugriff, kein Geheimnis verlässt je den Server, kein Log führt eines.
+5. **DIE PERSISTENZ WIRD NICHT ANGEFASST.** Keine Ziel-Spalte in der
+   Ereignis-Tabelle, keine zusätzliche Schreibstelle.
+
+### Ausdrücklich nicht in dieser Scheibe, je mit Grund
+
+- **JEDER FORWARD UND JEDER ADAPTER.** Siebte Scheibe. Diese hier ist genau
+  deshalb beweisbar, weil kein Netzwerk daneben steht.
+- **DER NEBENLÄUFIGE FAN-OUT MIT EINEM DECKEL.** Auflage der siebten; bei null
+  neuen Empfängern gibt es nichts nebenläufig zu machen.
+- **DIE FUNKTION DES TESTKNOPFES.** Nur sein Platz und die drei Auflagen, s. (3).
+- **DIE ÜBERSETZUNGSTABELLE FÜR EREIGNISNAMEN.** Sie gehört in den Adapter, den es
+  hier nicht gibt.
+- **DIE ZUSAMMENLEGUNG DER DREI ZIELNAMEN-KOPIEN.** Erweist sie sich beim Bau als
+  eigener Gegenstand: **MELDEN, NICHT MITBAUEN.** Die Ausgangslage (f) hält fest,
+  dass zwei der drei technisch zusammenlegbar wären und die dritte nicht — das ist
+  ein Befund, kein Auftrag.
+- **DIE PERSISTENZ und alles, was den Forward-AUSGANG sichtbar machen würde.**
+  Letzteres ist ein eigener Backlog-Punkt seit der dritten Scheibe und würde die
+  Zusage aus Invariante 3 sofort wieder aufweichen.
+
+### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
+
+Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
+
+- **Welche FORM nimmt die Ablage je Ziel?** `settings.pixels` ist genestet,
+  `settings.capi` flach (Ausgangslage (b)). **BEIDE ENDEN benennen** — wo der
+  Betreiber schreibt und wo gelesen wird.
+- **Wandern bestehende Meta-Daten, oder treten die neuen daneben?** Und die Frage
+  dahinter, die Invariante 2 scharf macht: **Was passiert mit einem Projekt, das
+  heute Meta eingerichtet hat?**
+- **Wie bekommen die Server-Aktionen das Ziel, OHNE dass ein Aufrufer ein fremdes
+  Ziel schreiben kann?** Das Ownership-Gate prüft heute das PROJEKT; ein
+  Ziel-Parameter ist eine zweite Achse.
+- **Wie viele DB-Runden kostet eine Karte je Ziel beim Laden?**
+- **Trägt der CHECK-Constraint eine Erweiterung, oder braucht es eine andere
+  Form?** Der Preis war als "sichtbarer Moment" beabsichtigt (Ausgangslage (e)) —
+  die Frage ist, ob er das bei zwei Zielen noch ist.
+- **Was zeigt die Karte für ein Ziel, das es in der Ablage noch nicht gibt?**
+
+**KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
+dem Bau, getrennt vom Zuschnitt, wie bei den ersten fünf Scheiben.
+
+---
+
+## Die siebte Scheibe — PINTEREST ALS ZWEITES ZIEL (Platzhalter)
 
 **ÜBERSCHRIFT NACHGEZOGEN AM 2026-08-06:** Sie hiess "Die fünfte Scheibe". Davor
 liegt jetzt das Einwilligungs-Signal zum Server (s. "## Die fünfte Scheibe — DAS
 EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)"). Die vollständige Kette der
 Wanderungen steht im Kopf dieser Datei und wird hier nicht wiederholt.
+
+**ERNEUT NACHGEZOGEN AM 2026-08-07:** Sie hiess "Die sechste Scheibe". Davor
+liegen jetzt die ZUGANGSDATEN JE ZIEL (s. "## Die sechste Scheibe — DIE
+ZUGANGSDATEN JE ZIEL (Zuschnitt)"). **DER STEMPEL DARÜBER BLEIBT WORT FÜR WORT
+STEHEN.**
+**WAS SICH DAMIT INHALTLICH VERSCHIEBT und nicht nur die Nummer — der Satz gehört
+hierher, sonst wird der Zuschnitt dieser Scheibe zu gross geschnitten:** Die
+Ablage je Ziel, der Ziel-Parameter der Server-Aktionen, die Erweiterung des
+CHECK-Constraints, die Karte in der Oberfläche und der Indikator je Ziel gehören
+seither zur SECHSTEN Scheibe. **Was HIER bleibt, ist das SENDEN** — Adapter,
+Forward, Fan-Out und die Funktion des Testknopfes.
 
 **ZWECK:** Das erste zusätzliche Fan-Out-Ziel neben Meta — die Scheibe, für die
 die ganze Phase existiert.
@@ -2996,9 +3261,15 @@ die ganze Phase existiert.
 **KEIN ZUSCHNITT.** Die Entscheidung, dass Pinterest das erste zusätzliche Ziel
 ist, steht unverändert in Frage (e) und wird hier nicht wiederholt.
 
-**DREI BINDUNGEN AUS DER AUFKLÄRUNG VOM 2026-08-06 GELTEN FÜR DIESE SCHEIBE UND
+**ZWEI BINDUNGEN AUS DER AUFKLÄRUNG VOM 2026-08-06 GELTEN FÜR DIESE SCHEIBE UND
 SIND NOCH NICHT ZUGESCHNITTEN.** Sie stehen hier nur BENANNT, mit Symbolnamen und
 ohne Lösungsvorschlag — der Zuschnitt entsteht in einer eigenen Runde:
+
+**RICHTIGGESTELLT AM 2026-08-07 — DIE ZAHL WAR "DREI".** Punkt 4 (`tokenSet`) ist
+seit der Umnummerierung eine Bindung der SECHSTEN Scheibe, und von Punkt 3 ist es
+die eine Hälfte ebenso. **ES BLEIBEN Punkt 1 GANZ und Punkt 3 ZUR HÄLFTE.** Die
+Nummerierung bleibt aus demselben Grund stehen wie beim vorigen Mal: Jeder
+gewanderte Punkt trägt an seiner Stelle die Angabe, wohin er gewandert ist.
 
 **RICHTIGGESTELLT AM 2026-08-06 — DIE ZAHL WAR "VIER".** Punkt 2 ist seit der
 Umnummerierung KEINE Bindung dieser Scheibe mehr; er IST die fünfte Scheibe
@@ -3042,16 +3313,33 @@ KOMMENDEN Bau zeigt und als Handlungsanweisung gelesen wird.
    Kommentar an `META_CONSENT_TARGET` sagt genau das. Ein zweites Ziel
    vervielfacht diese Dreiheit UND bringt seine eigene Constraint-Erweiterung mit
    (so entschieden in (d), als beabsichtigter Preis).
+   **RICHTIGGESTELLT AM 2026-08-07 — DIE HÄLFTEN LIEGEN JETZT IN VERSCHIEDENEN
+   SCHEIBEN:** Die CONSTRAINT-ERWEITERUNG gehört zur SECHSTEN (Zugangsdaten je
+   Ziel), die Vervielfachung der ZIELNAMEN-Kopien zu dieser hier — sie entsteht
+   erst, wenn ein Ziel Code bekommt.
 4. **`tokenSet` IST EIN EINZELNER BOOLEAN IM CLIENT-BESESSENEN BLOB** und
    entscheidet zur LAUFZEIT nichts: Ob geforwardet wird, entscheidet allein die
    Auflösung in `getCapiConfigByTrackingKey` (Pixel-ID plus Geheimnis-Zeile).
    Ausgangslage Punkt 16 sagt, dass er eine Vervielfachung braucht — "ERST MIT
    DEM ZWEITEN ZIEL". Das ist diese Scheibe.
+   **RICHTIGGESTELLT AM 2026-08-07: DAS IST KEINE BINDUNG DIESER SCHEIBE MEHR —
+   ES IST DIE SECHSTE.** Der Indikator je Ziel gehört zu den Zugangsdaten, nicht
+   zum Senden (s. "## Die sechste Scheibe — DIE ZUGANGSDATEN JE ZIEL
+   (Zuschnitt)"). **DER BEFUND SELBST BLEIBT WÖRTLICH STEHEN UND IST UNVERÄNDERT
+   RICHTIG** — am 2026-08-07 erneut am Code nachgemessen: `tokenSet` wird zur
+   Laufzeit von keiner Stelle gelesen. Falsch war nur der letzte Halbsatz, und
+   zwar aus demselben Grund wie bei Punkt 2: der ORT, nicht der INHALT.
 
 **DIE FÜNFTE BINDUNG JENER AUFKLÄRUNG IST ES NICHT MEHR:** der wartende Forward.
 Sie ist der Grund für die Scheiben vier und fünf und dort abgehandelt — s. "###
 Gemessene Bindungen, die die PINTEREST-SCHEIBE binden", Punkt (a), in seiner
 richtiggestellten Fassung.
+
+**ERNEUT ERGÄNZT AM 2026-08-07 — ES SIND JETZT DREI:** Auch Punkt 4 und die eine
+Hälfte von Punkt 3 sind zur SECHSTEN Scheibe gewandert. **DIE DREI HABEN DREI
+VERSCHIEDENE GRÜNDE** — der wartende Forward wurde von einer Recherche verschoben,
+Punkt 2 war allein baubar, Punkt 4 gehört zu einer Vorbedingung, die es beim
+Schreiben jener Aufklärung noch gar nicht gab.
 
 **ERGÄNZT AM 2026-08-06 — ES IST JETZT NICHT MEHR NUR EINE:** Auch Punkt 2 oben
 ist keine Bindung dieser Scheibe mehr, sondern die fünfte Scheibe geworden. Der

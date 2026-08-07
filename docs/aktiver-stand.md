@@ -18,8 +18,17 @@ geteilte Consent-Gate — ABGESCHLOSSEN und live bewiesen, (3) der PageView-Emit
 hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) die NAHT des
 Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) das Einwilligungs-Signal
 reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) die ZUGANGSDATEN JE ZIEL
-— ZUGESCHNITTEN, NOCH NICHT GEBAUT, (7) Pinterest als erstes zusätzliches Ziel —
-PLATZHALTER. Die Entkopplung des Forwards von der Antwort war
+— **HÄLFTE A GEBAUT UND LIVE BEWIESEN, DIE KARTE STEHT AUS**, (7) Pinterest als
+erstes zusätzliches Ziel — PLATZHALTER.
+
+**DIE SECHSTE IST DIE ERSTE SCHEIBE DIESER PHASE, DIE IN ZWEI HÄLFTEN FÄHRT**, und
+der Satz steht hier, damit die Zeile darüber nicht als "fast fertig" gelesen wird:
+Beim Zuschneiden zeigte sich, dass die Ablage-Hälfte ohne eine einzige
+Oberflächen-Datei beweisbar ist, die Karten-Hälfte dagegen bestehende
+Oberflächen-Tests notwendig umschreibt. Gebündelt wäre im Fehlerfall nicht zu
+trennen, welche der beiden Wirkungen ihn verursacht hat. Was Hälfte A tatsächlich
+ergeben hat: "### Protokoll der sechsten Scheibe, HÄLFTE A — Vollzug (die Scheibe
+ist NICHT abgeschlossen)". Die Entkopplung des Forwards von der Antwort war
 als fünfte Scheibe geführt und ist am 2026-08-06 GESTRICHEN (s. "## Die
 GESTRICHENE fünfte Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT").
 
@@ -3050,6 +3059,25 @@ PROVENIENZ: **am Code gemessen in der Aufklärungs-Runde vom 2026-08-07
 (read-only)**, nach dem Abschluss der fünften Scheibe. **DIE ANKER SIND
 SYMBOLNAMEN, KEINE ZEILENNUMMERN.**
 
+**STEMPEL AM GANZEN ABSCHNITT — 2026-08-07, NACH HÄLFTE A. ER GILT FÜR ALLE PUNKTE
+GEMEINSAM UND ERSETZT KEINEN EINZELNEN.** Dieser Abschnitt beschreibt den Stand VOR
+der Scheibe und ist durch ihre erste Hälfte in Teilen überholt — dieselbe
+Eigenschaft, die die "## Gemessene Ausgangslage" der ganzen Phase trägt: Je
+erfolgreicher die Arbeit, desto falscher wird eine Ausgangslage.
+**WELCHE PUNKTE ÜBERHOLT SIND, MIT NUMMERN, damit niemand den GANZEN Abschnitt für
+überholt hält:**
+- **(a), Nummern 5, 6 und 7** — durch Hälfte A: Die Server-Actions tragen das Ziel
+  als Parameter, der Settings-Typ ist über die bekannten Ziele geschlüsselt, und
+  `settingsEqual` vergleicht über alle Ziele statt über ein Feld.
+- **(b)**, teilweise: `settings.pixels` ist jetzt ziel-geschlüsselt; `settings.capi`
+  liegt unverändert flach daneben.
+- **(e)** — durch Migration 0022: der CHECK lässt zwei Zielwerte zu.
+- **(f)** — die Zahl stimmt nicht mehr: **es sind VIER Kopien**, s. das Protokoll.
+**UNBERÜHRT UND WEITER GÜLTIG:** (a) Nummern 1, 2, 3, 4, 8, 9, 10 (sämtlich
+Oberfläche — Hälfte A hat sie nicht angefasst), (c), (d), (g) und (h). **DIE ZEHN
+VERDRAHTETEN STELLEN SIND ALSO ZU SIEBEN GEWORDEN, NICHT ZU NULL** — und die sieben
+sind genau der Gegenstand der zweiten Hälfte.
+
 **DIE BUCHSTABEN (a) BIS (h) SIND LOKAL** und haben nichts mit den gleichnamigen
 Punkten unter "## Fragen, die der Bau beantworten MUSS" zu tun — dieselbe
 Handschrift wie in den Scheiben zwei bis fünf.
@@ -3129,6 +3157,24 @@ wurde — dazu liegt seit der dritten Scheibe ein Backlog-Punkt vor.
 
 ### Der Zuschnitt der sechsten Scheibe
 
+**VERDICHTET AM 2026-08-07, NACH HÄLFTE A — UND ZWAR WENIGER ALS BEI DEN VORIGEN
+SCHEIBEN. Der Grund gehört an den Anfang, sonst wirkt der stehengebliebene Text wie
+Nachlässigkeit: DIESE SCHEIBE IST NICHT FERTIG.** Ein Zuschnitt läuft mit dem
+Protokoll ab; hier gibt es erst ein halbes Protokoll.
+**WAS DESHALB VOLLSTÄNDIG STEHEN BLEIBT, entgegen der sonstigen Handschrift:**
+- **Die fünf Verhaltens-Invarianten.** Sie waren der Massstab für Hälfte A und sind
+  es unverändert für Hälfte B — die Karte darf so wenig senden, so wenig behaupten
+  und so wenig an der Persistenz ändern wie die Ablage.
+- **Die Ausschlussliste.** Jeder ihrer Punkte betrifft weiterhin die zweite Hälfte
+  oder die siebte Scheibe; nichts davon ist durch Hälfte A erledigt.
+- **Die Entscheidungen (1) bis (3)** — Karte, Statuswortlaut, Testknopf. Sie sind
+  der Auftrag der zweiten Hälfte und noch nicht eingelöst.
+**VERDICHTET IST ALLEIN (4)**, die Herstellungs-Liste: Sie trägt jetzt an jedem
+Punkt, ob er steht oder aussteht. **WAS DABEI WEGFÄLLT, IST NICHTS** — es kommt
+Information hinzu.
+**Die sechs Stufe-1-Fragen bleiben ebenfalls unverändert stehen**; vier sind durch
+Hälfte A beantwortet, zwei gehören der Karte. Welche welche ist, steht im Protokoll.
+
 **ZWECK: DIE ZIEL-DIMENSION WIRD EINGEZOGEN** — in der Ablage, in den
 Server-Aktionen und in der Oberfläche. **ES WIRD NICHTS GESENDET.**
 
@@ -3176,12 +3222,21 @@ nicht neu verhandelt werden:**
   Fehler-Envelope wird im Projekt bereits sanitized geloggt, aus genau diesem
   Grund.
 
-**(4) WAS DIE SCHEIBE HERSTELLT** — fünf Dinge, und nichts darüber hinaus:
-- Die **Ablage** trägt Zugangsdaten je Ziel.
-- Die **Server-Aktionen** tragen das Ziel als Parameter.
-- Die **Geheimnis-Tabelle** lässt den zweiten Zielwert zu.
-- Die **Oberfläche** zeigt je Ziel eine Karte.
-- Der **Indikator** existiert je Ziel.
+**(4) WAS DIE SCHEIBE HERSTELLT** — fünf Dinge, und nichts darüber hinaus.
+**STAND NACH HÄLFTE A, je Punkt nachgetragen am 2026-08-07:**
+- Die **Ablage** trägt Zugangsdaten je Ziel. — **STEHT** (`pixels.<ziel>`,
+  `getPixelId`/`setPixelId`).
+- Die **Server-Aktionen** tragen das Ziel als Parameter. — **STEHT**, verpflichtend
+  und ohne Vorgabewert.
+- Die **Geheimnis-Tabelle** lässt den zweiten Zielwert zu. — **STEHT**, Migration
+  0022, live geprüft.
+- Die **Oberfläche** zeigt je Ziel eine Karte. — **STEHT AUS.** Zweite Hälfte.
+- Der **Indikator** existiert je Ziel. — **HALB.** Die Ableitung existiert
+  (`listConfiguredTargets`, aus der Geheimnis-Tabelle statt aus dem Blob), **aber
+  niemand ruft sie.** Sie wird erst mit der Karte wirksam.
+**DIE HALBE ZEILE IST DIE EHRLICHE**, und sie steht ausdrücklich nicht als "steht":
+Eine Ableitung, die niemand aufruft, ist gebaut und unbewiesen im Betrieb — ihre
+Wirkung ist ausschliesslich durch Tests gedeckt.
 
 ### Fünf Verhaltens-Invarianten — der Massstab des Reviews
 
@@ -3232,8 +3287,189 @@ Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
   die Frage ist, ob er das bei zwei Zielen noch ist.
 - **Was zeigt die Karte für ein Ziel, das es in der Ablage noch nicht gibt?**
 
+**EINGELÖST FÜR HÄLFTE A AM 2026-08-07** — der Protokollblock existiert jetzt, s.
+"### Protokoll der sechsten Scheibe, HÄLFTE A — Vollzug (die Scheibe ist NICHT
+abgeschlossen)". Der Satz darunter bleibt unverändert stehen; er hält fest, dass
+Zuschnitt und Protokoll von Anfang an getrennt geführt wurden.
+
 **KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
 dem Bau, getrennt vom Zuschnitt, wie bei den ersten fünf Scheiben.
+
+### Protokoll der sechsten Scheibe, HÄLFTE A — Vollzug (die Scheibe ist NICHT abgeschlossen)
+
+Der Zuschnitt darüber ist der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+**DIE BUCHSTABEN IN DIESEM PROTOKOLL SIND LOKAL.**
+
+**DIES IST EIN HALBES PROTOKOLL, und der Satz gehört in die erste Zeile:** Gebaut,
+deployt und live geprüft ist die ZIEL-DIMENSION UNTER DER OBERFLÄCHE. **Die Karte je
+Plattform steht aus** und bekommt ihr eigenes Protokoll. Wer diesen Block als
+Abschluss der sechsten Scheibe liest, hält eine Ablage ohne Bedienung für ein
+fertiges Feature.
+
+**VOLLZOGEN AM 2026-08-07 — Commit `5b29fac`, Migration `0022` von Hand im
+SQL-Editor VOR dem Code-Deploy.**
+
+**DIE LIVE-WERTE, gemeldet von Stefan am 2026-08-07.** Keiner davon ist abgeleitet:
+
+- **(1) DER CONSTRAINT.** Definition im Wortlaut:
+  `CHECK ((target = ANY (ARRAY['meta'::text, 'pinterest'::text])))`. Migration 0022
+  ordnungsgemäss angewendet, Protokoll-Eintrag vorhanden. Ein Wegwerf-Insert mit
+  `'pinterest'` wurde ANGENOMMEN, einer mit `'pintrest'` ABGEWIESEN (Postgres
+  **23514**, `check_violation`). Die Transaktion wurde zurückgerollt, die Zeilenzahl
+  blieb bei **VIER**.
+  **DIE ABWEISUNG IST DER WERTVOLLERE DER BEIDEN INSERTS.** Die Annahme zeigt, dass
+  das neue Ziel möglich ist; erst die Abweisung zeigt, dass der Schutz noch da ist.
+  Ein Constraint, der alles annimmt, sähe an der Annahme allein identisch aus.
+- **(2) EIN BESTEHENDES META-PROJEKT.** Auf einer bestehenden, **NICHT neu
+  publizierten** Seite eine Conversion ausgelöst. Im Events Manager erschien das
+  **PAAR** unter geteilter eventID, das Server-Ereignis als **dedupliziert**
+  markiert. **Das ist der Nachweis für Invariante 2**, und er ist ohne eine Zeile
+  neuen Forward-Codes zu haben: Meta forwardet ohnehin — geprüft wurde, dass die
+  Ziel-Dimension daran nichts verschoben hat.
+
+#### Die Grenze der Zeilenzahl-Messung — wichtiger als der Wert selbst
+
+**DIE VIER IST EIN NACHHER-WERT, KEIN VORHER-WERT.** Die Anleitung verlangte die
+Ausgangszahl VOR dem Einspielen; erhoben wurde sie DANACH.
+
+**WAS DAMIT BEWIESEN IST:** Der Constraint-Tausch hat keine Zeile ENTFERNT (sonst
+stünde dort weniger als das, was der Rollback-Test wiederfand), und der
+Rollback-Test hat die Zahl gehalten.
+**WAS NICHT BEWIESEN IST:** genau der Vergleich vorher/nachher, für den die Zahl
+gedacht war.
+
+**WARUM DIE LÜCKE HIER KLEIN IST — und das ist eine HERLEITUNG, keine Messung:**
+Die Migration enthält kein `insert`, `update` oder `delete` auf der Tabelle, kann
+also keine Zeile berühren; und ein `add constraint` scheitert, wenn eine bestehende
+Zeile den neuen Satz verletzt — die Migration lief durch, also haben alle Zeilen
+bestanden. **Beides sind Schlüsse aus dem Text und aus dem Ausgang, nicht aus einem
+Messwert.**
+
+**DIE FEHLERFIGUR, DIE BLEIBT, und sie ist der Grund für diesen eigenen Punkt: EINE
+VORHER-MESSUNG, DIE NACH DEM EINGRIFF ERHOBEN WIRD, IST KEINE VORHER-MESSUNG — sie
+sieht nur aus wie eine.** Hätte die Migration Zeilen angefasst, wäre der Schaden bei
+genau diesem Ablauf UNSICHTBAR geblieben: Die Zahl hätte gestimmt, weil sie den
+Schaden schon enthielt.
+**DIE ANLEITUNG TRUG DEN FEHLER, NICHT DIE AUSFÜHRUNG.** Sie nannte den Schritt,
+aber nicht, dass er NUR VOR dem Eingriff etwas wert ist — dieselbe Klasse wie
+Beobachtung (A) im Protokoll der vierten Scheibe, wo eine Anleitung eine
+Voraussetzung nicht nannte und der Schritt seine Achse nie erreichte.
+
+#### Der Bau, gemessen am eigenen Lauf
+
+PROVENIENZ: lokale Läufe am 2026-08-07. **GRENZE, die zwingend dazugehört:** Die
+Suite kennt kein Postgres und läuft in keinem Browser — sie beweist Verdrahtung und
+Regeln, **nicht den CHECK und nicht die Oberfläche**. Der CHECK ist ausschliesslich
+live geprüft (s. (1)).
+
+- **771 Tests vor dem Bau, 807 danach**; 43 Testdateien vorher, 45 nachher. Die 36
+  neuen verteilen sich auf 17 (Ablage) und 19 (Aktionen).
+- **An bestehenden Tests änderte sich AUSSCHLIESSLICH DIE ARITÄT: 18
+  Argumentlisten** — 17 in `actions.test.ts`, 1 in `CodeImporter.test.tsx`. Kein
+  Testname, kein Aufbau, keine Erwartung, kein Kommentar.
+- **DER ADDITIVE ZWISCHENSTAND IST EIGENS GEMESSEN:** nach den Ableitungen und VOR
+  jeder Änderung an den Server-Actions lief die Suite mit 44 Dateien und 788 Tests
+  grün — der No-op-Zustand ist belegt, nicht behauptet.
+- **Die vier Gates grün:** `tsc --noEmit`, `eslint`, `vitest run`, `next build`.
+
+**DIE ZWEI PFLICHT-MUTATIONEN, Vorhersage und Ergebnis nebeneinander:**
+
+| Mutation | Vorhersage vor dem Lauf | ERGEBNIS |
+|---|---|---|
+| **M1** Ziel-Prüfung in den Server-Actions entfernt | 1 Datei, 2 Tests | **1 Datei, 2 Tests — punktgenau** |
+| **M2** der Ziel-Zweig liest leer | 3 Dateien, ~10 Tests | **4 Dateien, 21 Tests — zu eng** |
+
+**ZU M2 EIN BEFUND ÜBER DIE MUTATION SELBST:** Der Auftrag lautete "den
+Alt-Blob-Pfad umdrehen". **Den gibt es nicht** — die gewählte Ablage-Form macht alte
+und neue Gestalt identisch, ein Lese-Rückfall existiert nicht. Gefahren wurde die
+getreue Entsprechung (das Lesen des Ziel-Zweigs brechen), und zwar vorher angesagt.
+**Dass die Mutation ins Leere zeigte, IST das Ergebnis der Formwahl** und kein
+Mangel der Anleitung.
+
+**DIE GEGENPROBEN:** `git diff` über `capi/` und `tracking/` **leer** (Invariante 1);
+die `capi.tokenSet`-Lesestellen unverändert die UI-Pfade; die Migration enthält
+**null** schreibende Anweisungen auf `project_secrets`.
+
+**ZWEI SCOPE-ERWEITERUNGEN, beide vom Owner einzeln freigegeben und hier
+festgehalten, damit der Umfang später nicht kleiner aussieht, als er war:** zwei
+Aritäts-Zeilen plus ein Kommentar in `CodeImporter.tsx`, und eine Aritäts-Zeile in
+`CodeImporter.test.tsx`. **Beide entstanden aus Befund (a) unten**, nicht aus einer
+Erweiterung des Vorhabens.
+
+#### Drei Befunde, die künftige Arbeit binden
+
+**(a) ZWEIMAL HAT EINE UNVOLLSTÄNDIGE ZÄHLUNG DIESE RUNDE BLOCKIERT.** Zuerst zwei
+übersehene PRODUKTIV-Aufrufstellen (der Stufe-1-Plan zählte nur die Test-Aufrufe),
+dann eine Argumentlisten-Erwartung, die als "prüft die Argumente nicht" gemeldet
+war — **weil der TESTNAME statt der Assertion gelesen wurde.**
+**DIE FIGUR IST BEIDE MALE DIESELBE:** Eine Zählung, die nicht nach Produktivcode
+und Test trennt, und ein Testname, der wie eine Zusicherung klingt, liefern eine
+Antwort, die sich wie eine BESTÄTIGUNG liest. **Beide Male war der Bau blockiert,
+nicht kaputt** — und beide Male kostete es eine eigene Runde.
+**AUFGELÖST WURDE ES DURCH EINE FORMALE SUCHE, DIE GETRENNT AUSZÄHLT:** je Datei,
+Produktivcode gegen Test, und bei Tests zusätzlich "prüft Argumente" gegen "prüft
+nur, DASS gerufen wurde". Ergebnis: zwei Produktiv-Aufrufer, zwei Definitionen,
+18 argumentprüfende Tests — **ausgezählt statt geschätzt.**
+
+**(b) DIE M2-VORHERSAGE WAR ZUM VIERTEN MAL IN DIESER PHASE ZU ENG**, wieder in die
+günstige Richtung. Nicht bedacht war, dass die Auflösung im FORWARD-Pfad die
+Meta-Brücke benutzt — ihr Bruch fiel dort sofort auf, und `capi/token.test.ts` wurde
+zur vierten roten Datei. **Das ist zugleich der beste Beleg dafür, dass die Brücke
+bleiben musste:** Sie war nicht Bequemlichkeit, sondern der Grund, warum eine
+unantastbare Datei unangetastet bleiben konnte.
+
+**(c) DER ZUSCHNITT HAT DAS PFLICHT-GATE ERSETZT.** Für die Bau-Runde reichten
+**212 der 3384 Zeilen** dieser Datei — 6,0 %, gemessen. **Kein Rückgriff auf den
+Rest war nötig**, weder für einen Befund noch für eine Entscheidung.
+**DAS FUNKTIONIERT, WEIL JEDE SCHEIBE IHRE AUSGANGSLAGE SELBST MITBRINGT** — und es
+ist die nachträgliche Rechtfertigung dafür, dass diese Blöcke je Scheibe geschrieben
+wurden. **GRENZE:** Das gilt für eine Scheibe MIT eigener Ausgangslage. Eine, die
+sich auf verstreute Aussagen der Datei stützt, kann das nicht.
+
+#### Der vierte Kopie-Befund — GEMELDET, NICHT MITGEBAUT
+
+Der Zuschnitt schliesst die Zusammenlegung der Zielnamen-Kopien aus und verlangt für
+den Fall, dass sie sich beim Bau als Gegenstand erweist: **melden, nicht mitbauen.**
+**SIE HAT SICH ERWIESEN, und hier ist die Meldung:**
+
+Die Laufzeit-Prüfung braucht die MENGE der Ziele. Sie kann nicht in `capi/token.ts`
+stehen (server-only, aus dem Client unerreichbar) und nicht in der Actions-Datei
+(eine "use server"-Datei darf ausschliesslich async-Funktionen exportieren). Sie
+liegt deshalb in `settings.ts` — **und damit steht der Wert "meta" jetzt an einer
+VIERTEN Stelle** neben `META_TARGET`, `META_CONSENT_TARGET` und dem CHECK.
+**"pinterest" ist von Geburt an doppelt:** in derselben Liste und im CHECK.
+**NICHT ZUSAMMENGELEGT, wie angeordnet.** Die Ausgangslage (f) hält fest, dass zwei
+der TS-Kopien technisch vereinbar wären und die SQL-Kopie nicht — daran ändert die
+vierte nichts, sie vergrössert nur den Gegenstand.
+
+#### Was diese Hälfte ausdrücklich NICHT geleistet hat
+
+- **DIE KARTE JE PLATTFORM.** Eigene Runde. Die Oberfläche verwaltet unverändert
+  genau ein Ziel.
+- **`listConfiguredTargets` EXISTIERT, WIRD ABER VON NIEMANDEM GERUFEN.** Ihre
+  Wirkung ist ausschliesslich durch Tests gedeckt — im Betrieb ist sie unbewiesen.
+- **`capi.tokenSet` WIRD WEITER GESCHRIEBEN UND WEITER GELESEN.** Es wird erst
+  unread, wenn die Karte den abgeleiteten Indikator benutzt. **Es ist NICHT tot,
+  sondern unverändert** — die Formulierung "wird nicht mehr gelesen" beschreibt den
+  Zustand NACH der zweiten Hälfte, nicht den heutigen.
+- **ES WIRD NICHTS GESENDET.** Kein Adapter existiert; der Ingest-Pfad ist in keinem
+  Diff-Hunk.
+- **EINE GEHEIMNIS-ZEILE BEWEIST NICHT, DASS ZUGANGSDATEN FUNKTIONIEREN.** Sie
+  existiert auch bei widerrufenem Token. Genau deshalb lautet der beschlossene
+  Wortlaut der Karte "Zugangsdaten hinterlegt" und nicht "aktiv" — und genau deshalb
+  bleibt der Testknopf nötig.
+
+#### Welche Stufe-1-Fragen Hälfte A beantwortet hat
+
+**VIER VON SECHS**, und zwar: die FORM der Ablage (ziel-geschlüsselt unter `pixels`,
+Indikator abgeleitet statt geführt), der Umgang mit BESTEHENDEN Meta-Daten (sie
+wandern nicht, die Form ist dieselbe geblieben), wie die Server-Actions das Ziel
+BEKOMMEN ohne ein fremdes schreiben zu lassen (verpflichtender Parameter plus
+Laufzeit-Prüfung vor dem privilegierten Client), und ob der CHECK eine Erweiterung
+trägt (ja, als ersetzende Migration).
+**ZWEI GEHÖREN DER KARTE:** wie viele DB-Runden das Laden kostet (die Ableitung
+kostet EINE für alle Ziele — was die Karte daraus macht, entscheidet sie) und was
+die Karte für ein Ziel ohne Ablage-Eintrag zeigt.
 
 ---
 

@@ -18,17 +18,28 @@ geteilte Consent-Gate — ABGESCHLOSSEN und live bewiesen, (3) der PageView-Emit
 hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) die NAHT des
 Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) das Einwilligungs-Signal
 reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) die ZUGANGSDATEN JE ZIEL
-— **HÄLFTE A GEBAUT UND LIVE BEWIESEN, HÄLFTE B ZUGESCHNITTEN UND NOCH NICHT
-GEBAUT**, (7) Pinterest als erstes zusätzliches Ziel — PLATZHALTER.
+— **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (7) Pinterest als erstes
+zusätzliches Ziel — PLATZHALTER.
 
-**DIE SECHSTE IST DIE ERSTE SCHEIBE DIESER PHASE, DIE IN ZWEI HÄLFTEN FÄHRT**, und
-der Satz steht hier, damit die Zeile darüber nicht als "fast fertig" gelesen wird:
+**DAMIT SIND SECHS SCHEIBEN ABGESCHLOSSEN. OFFEN IST NUR NOCH PINTEREST** — und
+damit erstmals in dieser Phase das, wofür sie eröffnet wurde: ein zweites Ziel, das
+tatsächlich sendet.
+
+**DIE SECHSTE IST DIE ERSTE SCHEIBE DIESER PHASE, DIE IN ZWEI HÄLFTEN FUHR.**
 Beim Zuschneiden zeigte sich, dass die Ablage-Hälfte ohne eine einzige
 Oberflächen-Datei beweisbar ist, die Karten-Hälfte dagegen bestehende
 Oberflächen-Tests notwendig umschreibt. Gebündelt wäre im Fehlerfall nicht zu
-trennen, welche der beiden Wirkungen ihn verursacht hat. Was Hälfte A tatsächlich
-ergeben hat: "### Protokoll der sechsten Scheibe, HÄLFTE A — Vollzug (die Scheibe
-ist NICHT abgeschlossen)". Die Entkopplung des Forwards von der Antwort war
+trennen, welche der beiden Wirkungen ihn verursacht hat. **DIE TEILUNG HAT SICH
+BEWÄHRT, und der Beleg ist konkret:** Der Befund, der beinahe durchgerutscht wäre
+(die abgeleitete Anzeige frischte nach einer Mutation nicht auf), war ein reiner
+Oberflächen-Befund — in einem gebündelten Bau hätte er neben einer Migration und
+zwei Server-Aktionen gestanden.
+Die beiden Protokolle stehen unter "### Protokoll der sechsten Scheibe, HÄLFTE A —
+Vollzug (die Scheibe ist NICHT abgeschlossen)" und "### Protokoll der sechsten
+Scheibe, HÄLFTE B — Vollzug und Abschluss". **DER TITEL DES ERSTEN BLEIBT WORT FÜR
+WORT STEHEN, obwohl die Scheibe jetzt abgeschlossen IST:** Er beschrieb den Zustand
+zum Zeitpunkt seines Vollzugs richtig, und ein nachgezogener Titel verwischte, dass
+die Scheibe je in zwei Hälften stand. Die Entkopplung des Forwards von der Antwort war
 als fünfte Scheibe geführt und ist am 2026-08-06 GESTRICHEN (s. "## Die
 GESTRICHENE fünfte Scheibe — DER FORWARD LÖST SICH VON DER ANTWORT").
 
@@ -47,12 +58,15 @@ zweite Scheibe — DAS GETEILTE CONSENT-GATE (Zuschnitt)", "## Die dritte
 Scheibe — DER PAGEVIEW-EMITTER HINTER DAS GATE (Zuschnitt)", "## Die vierte
 Scheibe — DIE NAHT DES META-FORWARDS (Zuschnitt)", "## Die fünfte Scheibe —
 DAS EINWILLIGUNGS-SIGNAL REIST ZUM SERVER (Zuschnitt)" und "## Die sechste
-Scheibe — DIE ZUGANGSDATEN JE ZIEL (Zuschnitt)"; was die FÜNF
+Scheibe — DIE ZUGANGSDATEN JE ZIEL (Zuschnitt)"; was die SECHS
 abgeschlossenen Scheiben tatsächlich ergeben haben, unter "### Protokoll der
 ersten Scheibe — Vollzug und Abschluss", "### Protokoll der zweiten Scheibe —
 Vollzug und Abschluss", "### Protokoll der dritten Scheibe — Vollzug und
-Abschluss", "### Protokoll der vierten Scheibe — Vollzug und Abschluss" und
-"### Protokoll der fünften Scheibe — Vollzug und Abschluss".
+Abschluss", "### Protokoll der vierten Scheibe — Vollzug und Abschluss",
+"### Protokoll der fünften Scheibe — Vollzug und Abschluss" und — als einzige
+Scheibe mit ZWEI Protokollen — "### Protokoll der sechsten Scheibe, HÄLFTE A —
+Vollzug (die Scheibe ist NICHT abgeschlossen)" samt "### Protokoll der sechsten
+Scheibe, HÄLFTE B — Vollzug und Abschluss".
 Verwiesen wird auf Überschriften, nicht auf Positionen: "am Ende"
 wandert mit jedem angehängten Abschnitt mit, ohne dass jemand es merkt.
 
@@ -3157,6 +3171,55 @@ wurde — dazu liegt seit der dritten Scheibe ein Backlog-Punkt vor.
 
 ### Der Zuschnitt der sechsten Scheibe
 
+**ZWEITE VERDICHTUNG AM 2026-08-07, NACH DEM ABSCHLUSS BEIDER HÄLFTEN. JETZT LÄUFT
+AB, WAS IN DER ERSTEN RUNDE BEWUSST STEHENBLIEB** — der Stempel darunter bleibt
+Wort für Wort stehen, weil er zu seinem Zeitpunkt richtig war und zeigt, warum
+damals nichts wegkonnte.
+
+**WAS ABGELAUFEN IST — es hat seinen Zweck erfüllt und steht ab jetzt in den beiden
+Protokollen, nicht mehr hier:**
+- **Die fünf Verhaltens-Invarianten als MASSSTAB.** Sie sind gemessen worden; das
+  Ergebnis steht in den Live-Werten beider Hälften. **AUSNAHME, s. unten.**
+- **Die Ausschlussliste** — jeder Punkt ist entweder eingehalten oder als
+  Backlog-Kandidat weitergeführt.
+- **Die sechs Stufe-1-Fragen der Scheibe** und die sieben der Hälfte B. Alle
+  beantwortet; welche wo, steht in den beiden Protokollen.
+- **Die Herstellungs-Liste (4).** Alle fünf Punkte stehen.
+
+**WAS BLEIBT, WEIL ES DIE SIEBTE SCHEIBE BINDET** — und das ist der einzige Grund,
+aus dem hier noch etwas steht:
+- **(2) DER STATUSWORTLAUT samt den verbotenen Wörtern UND der Grün-Grenze.** Die
+  Grenze ist seit dem Feinschliff nicht mehr nur Text, sondern durch einen eigenen
+  Wächter gedeckt, der Klassen prüft.
+- **(3) DIE DREI AUFLAGEN DES TESTKNOPFES.** Sein Platz existiert jetzt; seine
+  Funktion ist Gegenstand der siebten.
+- **(1) DIE KARTE ALS ORT DES ZUSTANDS.** Ein Adapter, der Zustand braucht, findet
+  ihn dort — nicht im Container.
+- **DER AUSLIEFERUNGS-HINWEIS UND DIE FRAGE, WORAN JEMAND ERKENNT, DASS ER
+  VERSCHWINDEN MUSS.** Die Antwort steht im Code, nicht in einem Kommentar: Er hängt
+  an `hasAdapter` in `TARGET_CARDS`. **Wer den Adapter baut und das Feld umlegt,
+  entfernt den Hinweis damit automatisch** — wer es vergisst, sieht ihn weiter
+  dastehen.
+
+**WIDERSPRUCH ZUM VERDICHTUNGS-VORSCHLAG, an zwei Stellen — die Liste oben ist
+UNVOLLSTÄNDIG, und beide Lücken binden die siebte Scheibe härter als das, was drin
+steht:**
+- **INVARIANTE 2 LÄUFT NICHT AB: "DER META-PFAD VERHÄLT SICH UNVERÄNDERT."** Sie war
+  der Massstab dieser Scheibe UND ist die schärfste Auflage der nächsten: Ein
+  zweites Ziel, das Metas Forward verschiebt, wäre ein Rückschritt, den kein
+  Pinterest-Erfolg aufwiegt. **Sie ist die einzige der fünf, die sich auf die
+  siebte Scheibe fortsetzt** — die übrigen vier (nichts senden, nichts behaupten,
+  Zugangsdaten-Disziplin, Persistenz unangetastet) sind entweder erfüllt, ohnehin
+  dauerhafte Projektregeln oder werden von der siebten bewusst aufgehoben.
+  **INVARIANTE 1 WIRD VON DER SIEBTEN AUSDRÜCKLICH AUFGEHOBEN** — sie ist der Grund,
+  warum es die siebte gibt.
+- **ZWEI AUSSCHLÜSSE SIND AUFLAGEN AN DIE SIEBTE, KEINE ERLEDIGTEN PUNKTE:** der
+  **NEBENLÄUFIGE FAN-OUT MIT EINEM DECKEL** (bei null Empfängern gab es nichts
+  nebenläufig zu machen — mit dem ersten Empfänger wird die Auflage scharf) und die
+  **ÜBERSETZUNGSTABELLE FÜR EREIGNISNAMEN**, die in den Adapter gehört. Beide würden
+  mit der Ausschlussliste untergehen, obwohl sie nach vorn binden.
+
+**DER STEMPEL DER ERSTEN VERDICHTUNG, unverändert:**
 **VERDICHTET AM 2026-08-07, NACH HÄLFTE A — UND ZWAR WENIGER ALS BEI DEN VORIGEN
 SCHEIBEN. Der Grund gehört an den Anfang, sonst wirkt der stehengebliebene Text wie
 Nachlässigkeit: DIESE SCHEIBE IST NICHT FERTIG.** Ein Zuschnitt läuft mit dem
@@ -3238,62 +3301,55 @@ nicht neu verhandelt werden:**
 Eine Ableitung, die niemand aufruft, ist gebaut und unbewiesen im Betrieb — ihre
 Wirkung ist ausschliesslich durch Tests gedeckt.
 
-### Fünf Verhaltens-Invarianten — der Massstab des Reviews
+### Fünf Verhaltens-Invarianten — ABGELAUFEN, bis auf eine
 
-1. **ES WIRD NICHTS GESENDET.** Kein Adapter, kein Forward, keine Netzwerk-Anfrage
-   an einen Anbieter. **Der Ingest-Pfad wird NICHT angefasst.**
+**ALLE FÜNF SIND GEMESSEN**; das Ergebnis steht in den Live-Werten beider Hälften.
+Sie werden hier nicht mehr im Wortlaut geführt — **mit EINER Ausnahme, die nicht
+abläuft, sondern sich fortsetzt:**
+
 2. **DER META-PFAD VERHÄLT SICH UNVERÄNDERT.** Wer heute Meta eingerichtet hat,
-   forwardet nach dieser Scheibe genauso — **inklusive bestehender
-   Geheimnis-Zeilen, die nicht wandern.**
-3. **DIE OBERFLÄCHE BEHAUPTET KEINE WIRKUNG.**
-4. **DIE ZUGANGSDATEN-DISZIPLIN BLEIBT:** Ownership-Gate vor jedem privilegierten
-   Zugriff, kein Geheimnis verlässt je den Server, kein Log führt eines.
-5. **DIE PERSISTENZ WIRD NICHT ANGEFASST.** Keine Ziel-Spalte in der
-   Ereignis-Tabelle, keine zusätzliche Schreibstelle.
+   forwardet genauso — **inklusive bestehender Geheimnis-Zeilen, die nicht wandern.**
+   **SIE IST DIE SCHÄRFSTE AUFLAGE AN DIE SIEBTE SCHEIBE:** Ein zweites Ziel, das
+   Metas Forward verschiebt, wäre ein Rückschritt, den kein Pinterest-Erfolg
+   aufwiegt. In DIESER Scheibe war sie zweifach belegt — auf der Forward-Achse
+   (Hälfte A, dedupliziertes Paar im Events Manager) und auf der Oberflächen-Achse
+   (Hälfte B, Live-Wert (4)).
 
-### Ausdrücklich nicht in dieser Scheibe, je mit Grund
+**Invariante 1 ("es wird nichts gesendet") wird von der siebten Scheibe
+AUSDRÜCKLICH AUFGEHOBEN** — sie ist der Grund, warum es die siebte gibt. Die
+Invarianten 3, 4 und 5 sind erfüllt und decken sich mit dauerhaften Projektregeln.
 
-- **JEDER FORWARD UND JEDER ADAPTER.** Siebte Scheibe. Diese hier ist genau
-  deshalb beweisbar, weil kein Netzwerk daneben steht.
-- **DER NEBENLÄUFIGE FAN-OUT MIT EINEM DECKEL.** Auflage der siebten; bei null
-  neuen Empfängern gibt es nichts nebenläufig zu machen.
-- **DIE FUNKTION DES TESTKNOPFES.** Nur sein Platz und die drei Auflagen, s. (3).
+### Ausdrücklich nicht in dieser Scheibe — ABGELAUFEN, bis auf drei
+
+**WAS EINGEHALTEN WURDE, ist in den Protokollen gemessen und wird hier nicht mehr
+aufgezählt. WAS NACH VORN BINDET — und diese drei würden mit der Liste untergehen:**
+
+- **JEDER FORWARD UND JEDER ADAPTER.** Siebte Scheibe.
+- **DER NEBENLÄUFIGE FAN-OUT MIT EINEM DECKEL.** **Auflage der siebten, und sie
+  wird dort erst SCHARF:** Bei null neuen Empfängern gab es nichts nebenläufig zu
+  machen; mit dem ersten wächst die Funktionslaufzeit des Ingest-Pfades. Die
+  Projektregel dazu steht in CLAUDE.md ("/API/E-SCHLANKHEIT") und ist ausdrücklich
+  KEINE Dämpfung, sondern eine Verschärfung je Empfänger.
 - **DIE ÜBERSETZUNGSTABELLE FÜR EREIGNISNAMEN.** Sie gehört in den Adapter, den es
   hier nicht gibt.
-- **DIE ZUSAMMENLEGUNG DER DREI ZIELNAMEN-KOPIEN.** Erweist sie sich beim Bau als
-  eigener Gegenstand: **MELDEN, NICHT MITBAUEN.** Die Ausgangslage (f) hält fest,
-  dass zwei der drei technisch zusammenlegbar wären und die dritte nicht — das ist
-  ein Befund, kein Auftrag.
-- **DIE PERSISTENZ und alles, was den Forward-AUSGANG sichtbar machen würde.**
-  Letzteres ist ein eigener Backlog-Punkt seit der dritten Scheibe und würde die
-  Zusage aus Invariante 3 sofort wieder aufweichen.
 
-### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
+**DIE ZUSAMMENLEGUNG DER ZIELNAMEN-KOPIEN** ist gemeldet und nicht mitgebaut, wie
+angeordnet — sie steht jetzt als Befund im halben Protokoll (dort sind es VIER
+Kopien) und hat sich mit der Karte auf **FÜNF** vermehrt (`hasAdapter` in
+`TARGET_CARDS`). **Backlog, kein Auftrag.**
 
-Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
+### Was der Stufe-1-Plan beantworten MUSSTE — ALLE SECHS BEANTWORTET
 
-- **Welche FORM nimmt die Ablage je Ziel?** `settings.pixels` ist genestet,
-  `settings.capi` flach (Ausgangslage (b)). **BEIDE ENDEN benennen** — wo der
-  Betreiber schreibt und wo gelesen wird.
-- **Wandern bestehende Meta-Daten, oder treten die neuen daneben?** Und die Frage
-  dahinter, die Invariante 2 scharf macht: **Was passiert mit einem Projekt, das
-  heute Meta eingerichtet hat?**
-- **Wie bekommen die Server-Aktionen das Ziel, OHNE dass ein Aufrufer ein fremdes
-  Ziel schreiben kann?** Das Ownership-Gate prüft heute das PROJEKT; ein
-  Ziel-Parameter ist eine zweite Achse.
-- **Wie viele DB-Runden kostet eine Karte je Ziel beim Laden?**
-- **Trägt der CHECK-Constraint eine Erweiterung, oder braucht es eine andere
-  Form?** Der Preis war als "sichtbarer Moment" beabsichtigt (Ausgangslage (e)) —
-  die Frage ist, ob er das bei zwei Zielen noch ist.
-- **Was zeigt die Karte für ein Ziel, das es in der Ablage noch nicht gibt?**
+Sie standen hier als Fragen, damit keine Antwort geraten wird. **VIER hat Hälfte A
+beantwortet, ZWEI die Karte** — welche welche ist und wie sie ausgingen, steht unter
+"#### Welche Stufe-1-Fragen Hälfte A beantwortet hat" und "#### Welche
+Stufe-1-Fragen der Hälfte B beantwortet sind". Der Wortlaut der Fragen ist damit
+abgelaufen.
 
-**EINGELÖST FÜR HÄLFTE A AM 2026-08-07** — der Protokollblock existiert jetzt, s.
-"### Protokoll der sechsten Scheibe, HÄLFTE A — Vollzug (die Scheibe ist NICHT
-abgeschlossen)". Der Satz darunter bleibt unverändert stehen; er hält fest, dass
-Zuschnitt und Protokoll von Anfang an getrennt geführt wurden.
-
-**KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
-dem Bau, getrennt vom Zuschnitt, wie bei den ersten fünf Scheiben.
+**BEIDE PROTOKOLLBLÖCKE EXISTIEREN** — s. "### Protokoll der sechsten Scheibe,
+HÄLFTE A — Vollzug (die Scheibe ist NICHT abgeschlossen)" und "### Protokoll der
+sechsten Scheibe, HÄLFTE B — Vollzug und Abschluss". Zuschnitt und Protokoll wurden
+von Anfang an getrennt geführt.
 
 ### Protokoll der sechsten Scheibe, HÄLFTE A — Vollzug (die Scheibe ist NICHT abgeschlossen)
 
@@ -3684,45 +3740,30 @@ Persistenz unangetastet. **ERGÄNZT um:**
    aber er hält die Entscheidung fest, und das ist ehrlicher als eine Zusicherung im
    Kommentar.
 
-### Ausdrücklich nicht in dieser Hälfte, je mit Grund
+### Ausdrücklich nicht in dieser Hälfte — ABGELAUFEN, bis auf zwei
 
-- **DIE FUNKTION DES TESTKNOPFES.** Siebte Scheibe; nur sein Platz entsteht hier.
-- **GESTALTERISCHE PRIMITIVE.** Eigene Arbeit. Hier wird abgeschrieben, was im
-  Abschnitt schon steht (Ausgangslage (c)) — eine Primitiven-Runde nebenbei wäre
-  eine zweite Wirkung im selben Schritt.
-- **DIE NAMENSKOLLISION "Entfernen"/"Ja, entfernen"** zwischen Token, Domain und
-  Veröffentlichen. **Sie ist ÄLTER als diese Scheibe** und heute nur latent, weil
-  keine Vorrichtung beides gleichzeitig setzt. Backlog — **aber die Karte darf sie
-  NICHT VERSCHÄRFEN.**
-- **DIE REPARATUR DES NACHZÜGLER-BEFUNDS AN ANDEREN HANDLERN.** Nur der Token-Pfad
-  profitiert von (A); die übrigen bleiben, wie sie sind.
-- **JEDER ADAPTER, JEDER FORWARD.** Unverändert die siebte Scheibe.
+**WAS EINGEHALTEN WURDE, steht gemessen im Protokoll. WAS BLEIBT:**
 
-### Was der Stufe-1-Plan der HÄLFTE B beantworten MUSS — als Fragen, nicht als Vorgaben
+- **GESTALTERISCHE PRIMITIVE.** Weiterhin nicht gebaut; der Preis ist mit der
+  zweiten Karte gewachsen. Backlog **(B)**.
+- **DIE REPARATUR DES NACHZÜGLER-BEFUNDS AN DEN ÜBRIGEN HANDLERN.** Nur der
+  Zugangsdaten-Pfad ist abgesichert. Backlog **(C)**.
 
-Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
+**DIE NAMENSKOLLISION "Entfernen"/"Ja, entfernen" IST FÜR DIE KARTE ERLEDIGT, für
+das Produkt NICHT.** Die Auflage lautete, die Karte dürfe sie nicht verschärfen —
+**tatsächlich hat sie sie für ihren Teil AUFGELÖST:** Die ziel-spezifischen Namen
+sind eindeutig, und der Token-Knopf trägt nicht mehr denselben Namen wie die
+Domain-Zeile. **Für Domain und Variante B besteht sie unverändert fort**, Backlog
+**(A)**.
 
-- **Welchen `key` trägt die Karte, und was genau ist damit ihre Lebensdauer?** Das
-  Projekt, das Ziel, oder beides — und was folgt daraus für das Schliessen der
-  Fläche?
-- **Welche der fünf Zustände wandern in die Karte, welche bleiben?** Die
-  Sitzungs-Achse ist heute nur für zwei gezogen (Ausgangslage (a)) — **was wird aus
-  den anderen drei?**
-- **Was geschieht mit der Container-Spiegelung von `trackingKey` und Indikator?**
-  Sie überlebt den Unmount der Karte und ist funktional gebraucht — s. den
-  Widerspruch bei (A).
-- **Woher bekommt die Karte den Ladezustand, und wie unterscheidet sie ihn von
-  "nicht konfiguriert"?**
-- **An welcher der vier Stellen, an denen Projektdaten in die Oberfläche gelangen,
-  wird die Ableitung aufgerufen?** Preis je Kandidat.
-- **Wie erkennt der Betreiber, dass das zweite Ziel noch nichts sendet?**
-- **Welche der 16 Teststellen brechen tatsächlich — und wie viele davon lassen sich
-  durch die GESTALTUNG der Karte entschärfen statt durch Anpassen des Tests?** Die
-  Reihenfolge ist nicht gleichgültig: Eine Gestaltung, die eine Abfrage eindeutig
-  lässt, ist besser als eine Abfrage, die eindeutig gemacht wird.
+### Was der Stufe-1-Plan der HÄLFTE B beantworten MUSSTE — ALLE SIEBEN BEANTWORTET
 
-**KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
-dem Bau, getrennt vom Zuschnitt, wie bei allen Scheiben davor.
+Die Antworten stehen unter "#### Welche Stufe-1-Fragen der Hälfte B beantwortet
+sind"; der Wortlaut der Fragen ist damit abgelaufen. **EINE DAVON IST GESONDERT
+FESTGEHALTEN**, weil ihre Antwort danebenlag: die Zahl der brechenden Teststellen.
+
+**DER PROTOKOLLBLOCK EXISTIERT** — s. "### Protokoll der sechsten Scheibe, HÄLFTE B
+— Vollzug und Abschluss".
 
 ### Drei neue Backlog-Kandidaten — BENANNT, NICHT GEPLANT
 
@@ -3753,6 +3794,335 @@ Entscheidung (A) — **für die anderen nicht.** Welche Handler dieselbe Figur t
 ist NICHT ausgezählt worden; gemessen ist allein der Token-Pfad. **Das ist eine
 Lücke in dieser Aufklärung und steht hier als solche**, nicht als Vollständigkeits-
 Behauptung.
+
+### Vier weitere Backlog-Kandidaten aus der HÄLFTE B — BENANNT, NICHT GEPLANT
+
+PROVENIENZ: alle vier **beim Bau bzw. im Betrieb am 2026-08-07 gefunden**, alle vier
+**AUSSERHALB** dieser Hälfte. **Damit sind es ZEHN Kandidaten, die mit dieser Datei
+untergingen, wenn sie ohne Übertrag nach `docs/claude-history/backlog-polish.md`
+archiviert wird** — drei aus den Scheiben davor, drei aus der Aufklärung der Hälfte
+B, vier aus dieser Runde. **Der Übertrag steht weiterhin aus und ist am Phasenende
+fällig.**
+
+**(D) DIE ABLEITUNG MACHT EINEN FEHLSCHLAG NICHT VON LEERE UNTERSCHEIDBAR.**
+`listConfiguredTargets` gibt bei jedem Fehler `[]` zurück; die Karte kann daraus
+nicht lesen, ob nichts hinterlegt ist oder ob die Abfrage scheiterte. **Sie müsste
+beides unterscheidbar machen** — dann könnte die Karte einen vierten Zustand ehrlich
+zeigen. **Die Änderung liegt in `src/app/projects/actions.ts`, nicht in der Karte;
+wer sie in der Karte versucht, baut einen Notbehelf, der rät.**
+
+**(E) DAS ZURÜCKSETZEN DER MOCK-ABLAGE IN DER GANZEN TESTBASIS.** `vi.clearAllMocks()`
+im `afterEach` leert weder die `...Once`-Warteschlange noch bleibende
+Implementierungen — beide Richtungen sind in dieser Runde real aufgetreten (s. den
+Werkzeug-Befund im Protokoll). **Der naheliegende Umbau auf `resetAllMocks` ist KEIN
+Einzeiler:** Er nähme jeden Default aus den Mock-Fabriken mit, und genau auf diesen
+Defaults ruhen die Bestandstests. **Eigene Runde mit eigenem Nachweis.**
+
+**(F) DIE KARTE TRÄGT ZWEI FELDER MIT VERSCHIEDENEM SPEICHERVERHALTEN, UND SIE
+ERKLÄRT ES NICHT.** Die öffentliche Kennung (Pixel-/Tag-ID) wandert in den
+Einstellungs-Blob und wird erst mit dem globalen Speichern-Knopf persistiert; die
+Zugangsdaten gehen **sofort** über eine eigene Server-Aktion in die
+Geheimnis-Tabelle. **Zwei Felder, äusserlich gleich, mit verschiedener Wirkung beim
+Verlassen der Seite.** Das ist erklärungsbedürftig — heute steht kein Wort dazu auf
+der Karte.
+
+**(G) EIN AKKORDEON FÜR DIE ZIEL-KARTEN, WENN ES MEHR ALS ZWEI WERDEN.**
+**MIT DEM PREIS, und der gehört in denselben Satz wie die Idee:** Eingeklappt
+verschwindet der Status. **Die eingeklappte Zeile müsste ihn mitführen, sonst nimmt
+das Akkordeon der Karte ihren Zweck** — der Betreiber öffnete sie nur, um zu sehen,
+was vorher auf einen Blick dastand.
+
+### Vermerk zu den Anmerkungen aus dem Betrieb
+
+Die Beobachtungen, die beim Live-Test neben den sechs Achsen angefallen sind, sind
+**BEOBACHTUNGEN, KEINE AUFTRÄGE**. Vor dem Launch steht ohnehin eine vollständige
+Überarbeitung der Oberfläche; **was nicht FOLGE einer Scheibe ist, wartet dort.**
+
+**DIE UNTERSCHEIDUNG IST NICHT FORMAL, sie hat in dieser Runde genau eine Grenze
+gezogen:** Die beiden Feinschliff-Befunde wurden SOFORT behoben, weil sie Folge
+dieser Scheibe waren — die gestauchte Eingabe entstand aus Entscheidung E3, der
+schwache Anker aus dem Wechsel des Indikators. **Alles andere ist Bestand und wartet
+auf die Überarbeitung.**
+
+---
+
+### Protokoll der sechsten Scheibe, HÄLFTE B — Vollzug und Abschluss
+
+Der Zuschnitt unter "### Der Zuschnitt der HÄLFTE B — DIE KARTE JE PLATTFORM" ist
+der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+**DIE BUCHSTABEN IN DIESEM PROTOKOLL SIND LOKAL.**
+
+**MIT DIESEM BLOCK IST DIE SECHSTE SCHEIBE VOLLSTÄNDIG.** Das halbe Protokoll der
+Hälfte A bleibt daneben stehen und wird NICHT eingearbeitet — es hält fest, was zu
+seinem Zeitpunkt bewiesen war, und genau diese Trennung ist der Grund, warum die
+Scheibe in zwei Hälften fuhr.
+
+**VOLLZOGEN AM 2026-08-07 — Commit `3a1987c`.** Er trägt Bau UND Feinschliff in
+EINEM Commit; der ursprüngliche Bau-Commit `08e28c2` wurde per `--amend`
+zusammengeführt und die Historie einmal überschrieben. **KEINE Migration** — diese
+Hälfte fasst die Datenbank nicht an.
+
+#### Die Live-Werte, gemeldet von Stefan am 2026-08-07
+
+Keiner davon ist abgeleitet. **Alle sechs Achsen des Zuschnitts sind bestätigt.**
+
+- **(1) ZWEI KARTEN.** Meta trägt "Zugangsdaten hinterlegt", Pinterest "Nicht
+  konfiguriert". Der Auslieferungs-Hinweis steht **AUSSCHLIESSLICH** unter
+  Pinterest. **Das ist der Nachweis für Invariante 6** — die zweite Karte ist
+  sichtbar UND als folgenlos erkennbar.
+- **(2) "WIRD GELADEN" IST UNTER GEDROSSELTEM NETZ SICHTBAR, sonst nicht.** **DIE
+  ACHSE IST DAMIT BELEGT, NICHT DER NORMALFALL** — und dieser Halbsatz ist der
+  ehrliche: Im Alltag sieht der Betreiber den dritten Zustand fast nie. Das
+  entwertet ihn nicht; er existiert für den Moment, in dem die Ableitung langsam
+  ist, und genau dort wäre die stärkere Aussage falsch.
+- **(3) PINTEREST SPEICHERN:** Quittung erscheint, das Feld leert sich, der Status
+  springt **SOFORT** auf "hinterlegt", der Entfernen-Knopf erscheint.
+  **DAS IST DER NACHWEIS FÜR DEN BEFUND, DER BEINAHE DURCHGERUTSCHT WÄRE** — s. den
+  benannten Punkt (a) unten. Ohne die Nachführung stünde hier weiter "Nicht
+  konfiguriert", und **bei Pinterest gibt es keinen zweiten Kanal, der widerspräche.**
+- **(4) META UNVERÄNDERT.** Entfernen lässt den Status fallen, der Knopf
+  verschwindet. **Der Nachweis für Invariante 2** auf der Oberflächen-Achse; die
+  Forward-Achse war bereits in Hälfte A geprüft.
+- **(5) BEIDE BESTÄTIGUNGEN PARALLEL OFFEN**, eindeutig beschriftet, sauber
+  abbrechbar. **Das ist die Live-Bestätigung für die ziel-spezifischen Namen** —
+  der Fall, in dem zwei gleichnamige Knöpfe gleichzeitig dastünden, ist herstellbar
+  und wurde hergestellt.
+- **(6) PROJEKTWECHSEL:** alles auf "Nicht konfiguriert", **kein Entwurf im Feld,
+  kein halb offener Lösch-Dialog.** Der Preis aus Entscheidung (A) ist damit
+  eingetreten — und zwar als das gewünschte Verhalten, nicht als Verlust.
+
+#### Der Feinschliff — zwei im Betrieb beobachtete Befunde, beide FOLGE dieser Scheibe
+
+Er lief als eigene Runde NACH dem bestandenen Live-Test und steckt im selben
+Commit.
+
+**(I) DAS EINGABEFELD WURDE VOM ENTFERNEN-KNOPF GESTAUCHT, bis sein Platzhalter
+abschnitt** — sichtbar war nur noch "Neuen To". **DIE URSACHE WAR DIESE SCHEIBE
+SELBST:** Entscheidung E3 machte aus den kurzen Namen "Setzen"/"Entfernen"
+ziel-spezifische. Mehr Text, weniger Platz — und die Karte ohne Entfernen-Knopf
+zeigte das Problem nicht, weil dort nur EIN Knopf neben dem Feld stand.
+**BEHOBEN:** Feld und Knöpfe stehen in getrennten Zeilen, die Knopfzeile bricht um
+(`flex-wrap`, abgeschrieben von der Bestätigungszeile darunter). **Live bestätigt.**
+**DIE FIGUR, die über den Fall hinausgeht: EINE ENTSCHEIDUNG ÜBER SPRACHE IST AUCH
+EINE ÜBER PLATZ.** Der Zuschnitt hat E3 fachlich begründet und richtig entschieden;
+dass längere Namen ein Feld verdrängen, stand in keiner Zeile — und **kein Test
+konnte es fangen**, weil die Testumgebung kein CSS auswertet.
+
+**(II) DER STATUSTEXT WAR SCHWÄCHER SICHTBAR ALS DER FRÜHERE INDIKATOR.** Der
+Betreiber fand nach dem Speichern keinen deutlichen Anker.
+**DIE UNTERSCHEIDUNG, DIE DEN EINGRIFF TRÄGT — und sie ist der Kern, nicht die
+Formalie: DER ZUSCHNITT VERBIETET EINE BEHAUPTUNG, KEINE SICHTBARKEIT.**
+"Zugangsdaten hinterlegt" ist wahr; sie deutlicher zu zeigen, macht sie nicht
+unwahrer. **BEHOBEN:** Fläche, Schriftgewicht, Kontrast — **KEIN Grün, kein Haken,
+kein Symbol.** Der Wortlaut ist byte-gleich geblieben, Entscheidung (2) unberührt.
+Die beiden anderen Zustände behalten ihr Gewicht; der Anker sitzt an **EINER**
+Stelle, nicht zusätzlich am Feld.
+
+#### Vier benannte Punkte, die künftige Arbeit binden
+
+**(a) EINE ABGELEITETE ANZEIGE BRAUCHT EINEN WEG, NACH EINER MUTATION
+AUFZUFRISCHEN.**
+
+Wer eine Anzeige von einer GEFÜHRTEN Quelle auf eine ABGELEITETE umstellt,
+verlagert damit auch die Frage, **WER sie nach einer Änderung aktualisiert** — und
+die Antwort ist nicht mehr "der Schreiber des Wertes". Eine geführte Anzeige wird
+von demselben Vorgang aktualisiert, der den Wert setzt. Eine abgeleitete hat ihre
+eigene Quelle, und die weiss von der Mutation nichts.
+
+**WARUM ES HIER FAST DURCHGERUTSCHT WÄRE:** Bei Meta stand der alte Indikator
+DANEBEN — der Blob-Wert `capi.tokenSet` wird weiter geschrieben, also hätte ein
+zweiter Kanal die Lücke verdeckt. **Beim zweiten Ziel wäre die Karte der EINZIGE
+Rückmeldekanal gewesen, und sie hätte geschwiegen.** Der Betreiber hätte gespeichert
+und nichts gesehen.
+
+**WO ES AUFFIEL:** in einem FREIGEGEBENEN Bestandstest, der die alte Zusage hielt
+("der Indikator verschwindet nach dem Entfernen"). Er blieb rot, obwohl seine
+Vorrichtung stimmte — der Fehler lag im Code, nicht im Test. **EIN BESTANDSTEST HAT
+HIER EINE LÜCKE IM NEUEN ENTWURF GEFANGEN**, nicht eine Regression im alten.
+
+**WAS DER PLAN VERSÄUMT HAT:** Er hat den Indikator abgeleitet und die Rückrufe
+entworfen — aber nie gefragt, was die Ableitung nach einer Mutation auffrischt.
+**Die Frage stand auch in keiner der sieben Stufe-1-Fragen der Hälfte B.**
+
+**(b) EINE VORBEDINGUNG, DIE AUCH DER ALTE ZUSTAND ERFÜLLT, IST KEINE
+VORBEDINGUNG.**
+
+Sie trennt nicht zwischen VORHER und NACHHER, und ein Test darauf ist grün **aus
+dem falschen Grund**.
+
+**ABGRENZUNG, die zwingend dazugehört, sonst wird der Punkt als Dopplung gelesen:
+DAS IST NICHT DIESELBE AUSSAGE WIE "das grobe Instrument reisst die Voraussetzung
+mit" (Projektregel, Lektion (c)).** Jene spricht vom INSTRUMENT — der Eingriff
+zerstört, was er messen wollte. Diese spricht vom ANKER — die Messung findet statt,
+aber ihr Bezugspunkt unterscheidet die beiden Zustände nicht. **Ein Instrument kann
+tadellos sein und der Anker trotzdem untauglich.**
+
+**BELEG:** Der erste Wächter für den Nachzügler-Riegel war hohl. Seine Vorbedingung
+lautete "beide Karten stehen auf nicht konfiguriert" — und das war schon durch den
+STEHENGEBLIEBENEN Wert des vorigen Projekts erfüllt. Der Nachzügler wurde
+tatsächlich geschrieben und danach vom noch laufenden Ladevorgang des neuen
+Projekts wieder überschrieben. **Der Test war grün, weil eine Wettlaufsituation ihn
+rettete, nicht weil der Riegel hielt** — er hätte den Riegel jederzeit stillschweigend
+fallen lassen.
+
+**AUFGELÖST DURCH EINE VERANKERUNG, NICHT DURCH EINE SCHÄRFERE ASSERTION:** Das
+zweite Projekt bekam einen Zustand, den **nur es** haben kann. Steht der da, ist
+sein Ladevorgang nachweislich abgeschlossen. **VIER SONDEN waren nötig, um dorthin
+zu kommen** — gemessen, nicht nachgebessert.
+
+**(c) EIN GRÜNER TEST IST KEIN BELEG, DASS DER GRUND SEINER GRÜNHEIT DERSELBE
+GEBLIEBEN IST.**
+
+Ein Test dieser Phase blieb durchgehend grün, **während sein TRÄGER wechselte**: Die
+Zusage "der Fehler ist nach dem erneuten Öffnen weg" hielt vorher, weil ein
+Reset-Aufruf ihn leerte, und hält nachher, weil die Komponente ABGEBAUT wird, die
+ihn hält. **Die Zusage ist dieselbe, der Mechanismus ein anderer.**
+
+**NIEMAND HÄTTE ES GEMERKT, WEIL ER NIE ROT WURDE.** Ein roter Test zwingt zum
+Hinsehen; ein grüner nicht. **FOLGE FÜR JEDEN UMBAU:** Wer einen Zustand von einem
+Ort an einen anderen verlegt, prüft die Tests, die ihn BETREFFEN — nicht nur die,
+die dabei brechen.
+
+**(d) EINE ZÄHLUNG ENTLANG EINER ACHSE IST BEI EINEM UMBAU SYSTEMATISCH ZU NIEDRIG,
+NICHT ZUFÄLLIG.**
+
+Dieselbe Änderung brach Bestandstests auf **DREI** Achsen, und die Achsen überlagern
+sich zeilenweise:
+
+| Achse | Was kippt |
+|---|---|
+| **BESCHRIFTUNG** | `"Entfernen"` → `"Meta entfernen"`, `"Setzen"` → `"Meta speichern"`, `"Ja, entfernen"` → `"Ja, Meta entfernen"` |
+| **QUELLE DES ZUSTANDS** | `capi.tokenSet` aus dem Blob → `listConfiguredTargets` aus der Geheimnis-Tabelle; Text `"••• gesetzt"` → `"Zugangsdaten hinterlegt"` |
+| **SYNCHRONITÄT** | die neue Quelle ist asynchron, die betroffenen Testkörper waren es nicht |
+
+**DIE ERSTE ZÄHLUNG SAH NUR DIE ERSTE ACHSE, DIE ZWEITE FAND DIE ZWEITE, UND ERST
+EINE PROBE FAND DIE DRITTE.** Die dritte war aus dem Code nicht abzulesen: Ein
+synchroner Testkörper läuft nach `render()` weiter, bevor die Mikrotask der
+Ableitung gelaufen ist — die Karte steht dann noch auf "Wird geladen". Belegt wurde
+es durch zwei Proben, nicht durch Nachdenken.
+
+**AUSDRÜCKLICH FESTGEHALTEN: `capi.tokenSet` IST DER EINZIGE WERT, DESSEN QUELLE
+GEWECHSELT HAT.** `pixels.<ziel>.pixelId` und `capi.trackingKey` kommen weiterhin
+aus dem Blob — deshalb blieben die Vorrichtungen, die nur diese beiden setzen,
+unberührt und grün.
+
+**VIERTER BELEG IN DIESER PHASE FÜR EINE ZU ENGE VORHERSAGE, alle vier in dieselbe
+Richtung.** Die drei davor stehen in den Protokollen der Scheiben vier, fünf und im
+halben Protokoll der Hälfte A. **DASS ALLE VIER IN DIESELBE RICHTUNG GEHEN, IST DIE
+EIGENTLICHE AUSSAGE** — eine zufällige Streuung träfe mal nach oben, mal nach unten.
+
+#### Der Bau, gemessen am eigenen Lauf
+
+PROVENIENZ: lokale Läufe am 2026-08-07. **GRENZE, die zwingend dazugehört:** Die
+Testumgebung wertet **kein CSS** aus. Sie beweist Verdrahtung, Texte, Attribute und
+Klassennamen — **nicht Sichtbarkeit, nicht Breite, nicht Abschneiden.** Der
+Feinschliff (I) ist deshalb ausschliesslich live geprüft.
+
+- **807 Tests vor dem Bau, 827 danach**; 45 Testdateien vorher, 46 nachher. Die
+  neuen liegen sämtlich in `TargetCard.test.tsx` (20 Tests: 18 aus dem Bau, 1
+  Container-Wächter, 1 Grenz-Wächter aus dem Feinschliff).
+- **An `CodeImporter.test.tsx` änderten sich 28 hinzugefügte und 16 entfernte
+  Zeilen.** **KEIN Testname wurde geändert** — die drei `it`-Zeilen im Diff tragen
+  ausschliesslich `() =>` → `async () =>`.
+- **Die vier Gates grün:** `tsc --noEmit`, `eslint`, `vitest run`, `next build`.
+
+**DIE DREI PFLICHT-MUTATIONEN, Vorhersage und Ergebnis nebeneinander:**
+
+| Mutation | Vorhersage vor dem Lauf | ERGEBNIS |
+|---|---|---|
+| **M1** der Ladezustand entfällt (zwei Zustände statt drei) | 2 Tests, beide in `TargetCard.test.tsx` | **2 Tests, genau diese — punktgenau** |
+| **M2** ein verbotenes Wort in den Statustext | 4 Tests | **6 Tests — zu eng** |
+| **M3** der Kennungs-Vergleich im Container entfällt | grün (kein Test deckt ihn) | **grün — Vorhersage getroffen, aber sie war das Eingeständnis einer Lücke** |
+
+**ZU M2:** Die zwei zusätzlichen waren die beiden Kollateral-Tests. Ich hatte deren
+Mechanismus zu diesem Zeitpunkt **bereits diagnostiziert** und trotzdem nicht in die
+Vorhersage eingerechnet — s. Punkt (d).
+
+**ZU M3, und das ist der wertvollere der drei:** Die Vorhersage "grün" war richtig
+und benannte damit eine **ungedeckte Zusicherung**. Der Riegel, den Entscheidung E1
+ausdrücklich als Schutz gegen den Nachzügler freigegeben hatte, liess sich
+ersatzlos entfernen, ohne dass ein Test rot wurde. **Danach zwei weitere Läufe:** der
+erste mit dem hohlen Wächter (grün — s. Punkt (b)), der dritte mit dem verankerten
+Wächter (**1 rot, genau dieser**).
+
+**DER GRENZ-WÄCHTER GEGEN GRÜN — und warum er kein zweiter Wortlaut-Wächter ist:**
+Er prüft die **gesetzten Klassen**, nicht den Text, und scannt JEDES Element der
+Karte auf `green|emerald|teal|lime` — auch einen Punkt, den jemand später
+danebenstellt. **DIE BEGRÜNDUNG IST EIN EINZIGER SATZ: EINE FARBE ÄNDERT KEINEN
+TEXT.** Der bestehende Wortlaut-Wächter hätte ein grünes "Zugangsdaten hinterlegt"
+**wortlos durchgelassen**; die Mutation hat es bewiesen (1 rot, und zwar nur der
+neue). Beide tragen eine Positivkontrolle, weil beide überwiegend Abwesenheit
+prüfen.
+
+**DIE UNTERSCHEIDUNG, DIE GRÜN AN GENAU EINER STELLE ERLAUBT LÄSST:** Die Quittung
+nach dem Speichern berichtet über eine **AUSGEFÜHRTE HANDLUNG** ("der Vorgang ist
+durchgelaufen"), **nicht über einen FORTDAUERNDEN ZUSTAND** — und sie ist
+**flüchtig**: sie stirbt mit dem Mount der Karte, überlebt also weder Projektwechsel
+noch das Schliessen der Fläche. **Genau das unterscheidet sie vom Statusfeld, das
+dauerhaft dasteht und deshalb neutral bleiben muss.** Sie kollidiert nicht mit dem
+Wächter, weil sie im geprüften Zustand gar nicht im DOM ist.
+
+**DER WERKZEUG-BEFUND — BEIDE MOCK-FORMEN ÜBERLEBEN DAS ZURÜCKSETZEN, IN
+ENTGEGENGESETZTER RICHTUNG.** `vi.clearAllMocks()` leert die AUFRUFE, aber weder die
+Warteschlange noch die Implementierung:
+
+| Form | überlebt als | Schadensbild |
+|---|---|---|
+| `mockResolvedValueOnce` | unverbrauchter Warteschlangen-Eintrag | ein **fehlgeschlagener** Test verfälscht den **nächsten** |
+| `mockResolvedValue` | bleibende Implementierung | ein **erfolgreicher** Test verfälscht **alle folgenden** |
+
+**BEIDE RICHTUNGEN SIND GEMESSEN, nicht abgeleitet:** die erste an den zwei
+Kollateral-Tests, die zweite am ersten Anlauf der Vorrichtungen (drei rote Tests in
+FREMDEN Blöcken). Backlog, s. unten.
+
+**DER KOLLATERAL-NACHWEIS, DOPPELT GEFÜHRT — und die Doppelung ist der Punkt:**
+- **über die HUNK-GRENZEN:** Der Diff springt von Zeile 500 auf Zeile 713; der Block
+  der beiden betroffenen Tests liegt dazwischen und trägt **keinen einzigen Hunk**.
+  Sie wurden grün, **ohne angefasst zu werden**.
+- **über eine MUTATION:** M2 liess künstlich vier Tests rot werden — und **exakt
+  dieselben zwei** kippten mit.
+**EIN NACHWEIS ALLEIN HÄTTE NICHT GEREICHT:** Die Hunk-Grenzen zeigen, dass niemand
+sie repariert hat; erst die Mutation zeigt, dass der vermutete Mechanismus auch
+wirklich der wirkende ist.
+
+#### Was diese Hälfte ausdrücklich NICHT geleistet hat
+
+- **ES WIRD NICHTS GESENDET.** Kein Adapter existiert. Zugangsdaten für Pinterest
+  lassen sich hinterlegen und entfernen — **gesendet wird nichts, an niemanden.**
+  Genau dafür steht der Auslieferungs-Hinweis auf der Karte.
+- **DER FEHLSCHLAG-FALL DER ABLEITUNG. BENANNT, NICHT BEHOBEN.**
+  `listConfiguredTargets` antwortet auf JEDEN Fehler — fehlende Sitzung, fremdes
+  Projekt, Datenbankfehler — mit einer LEEREN Liste. Die Karte liest daraus "Nicht
+  konfiguriert", **obwohl sie in Wahrheit nichts weiss**. Ein vierter Zustand liesse
+  sich in der Karte NICHT ehrlich ableiten: Der Unterschied entsteht in
+  `src/app/projects/actions.ts`, und die Datei war in dieser Hälfte unantastbar. **Die
+  Stelle trägt den Kommentar, der genau dorthin zeigt.**
+- **DER NACHZÜGLER AN DEN DREI ÜBRIGEN HANDLERN.** Nur der Zugangsdaten-Pfad ist
+  abgesichert. Welche anderen Handler dieselbe Figur tragen, ist weiterhin **nicht
+  ausgezählt**.
+- **KEINE GESTALTERISCHEN PRIMITIVE.** Die Karte schreibt ihre Klassen selbst, wie
+  jede Stelle davor. Mit der zweiten Karte ist der Preis dieses Fehlens gewachsen,
+  nicht gesunken.
+- **HINTERLEGTE ZUGANGSDATEN BEWEISEN NICHT, DASS SIE GÜLTIG SIND.** Eine
+  Geheimnis-Zeile existiert auch bei längst widerrufenem Token. Genau deshalb heisst
+  der Zustand "hinterlegt" und nicht "aktiv" — und genau deshalb bleibt der
+  Testknopf der siebten Scheibe nötig.
+
+#### Welche Stufe-1-Fragen der Hälfte B beantwortet sind
+
+**SIEBEN VON SIEBEN**, und zwar: der `key` der Karte (`projekt:ziel`, Lebensdauer
+also Projektwechsel UND Flächengrenze); welche der fünf Zustände wandern (ALLE
+fünf, in die Karte); was aus der Container-Spiegelung wird (sie bleibt, bekommt aber
+den Kennungs-Vergleich und das Ziel-Argument); woher der Ladezustand kommt (`null`
+aus der Ableitung, als eigener dritter Zustand); wo die Ableitung gerufen wird (EIN
+projekt-gekoppelter Effekt im Container, eine Runde für alle Ziele); wie der
+Betreiber die Folgenlosigkeit erkennt (ein Hinweis auf der Karte, gesteuert über
+`hasAdapter`); und wie viele Teststellen brechen (**gemessen: 10 brechend statt der
+angekündigten 8**, plus 3 hohl gewordene, plus 6 Vorrichtungen und 3
+Warte-Anpassungen — s. Punkt (d)).
+
+**DIE LETZTE FRAGE IST DIE EINZIGE, DEREN ANTWORT DANEBENLAG**, und sie lag in die
+bequeme Richtung daneben.
 
 ---
 

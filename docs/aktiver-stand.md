@@ -18,8 +18,8 @@ geteilte Consent-Gate — ABGESCHLOSSEN und live bewiesen, (3) der PageView-Emit
 hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) die NAHT des
 Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) das Einwilligungs-Signal
 reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) die ZUGANGSDATEN JE ZIEL
-— **HÄLFTE A GEBAUT UND LIVE BEWIESEN, DIE KARTE STEHT AUS**, (7) Pinterest als
-erstes zusätzliches Ziel — PLATZHALTER.
+— **HÄLFTE A GEBAUT UND LIVE BEWIESEN, HÄLFTE B ZUGESCHNITTEN UND NOCH NICHT
+GEBAUT**, (7) Pinterest als erstes zusätzliches Ziel — PLATZHALTER.
 
 **DIE SECHSTE IST DIE ERSTE SCHEIBE DIESER PHASE, DIE IN ZWEI HÄLFTEN FÄHRT**, und
 der Satz steht hier, damit die Zeile darüber nicht als "fast fertig" gelesen wird:
@@ -3470,6 +3470,289 @@ trägt (ja, als ersetzende Migration).
 **ZWEI GEHÖREN DER KARTE:** wie viele DB-Runden das Laden kostet (die Ableitung
 kostet EINE für alle Ziele — was die Karte daraus macht, entscheidet sie) und was
 die Karte für ein Ziel ohne Ablage-Eintrag zeigt.
+
+---
+
+### Die gemessene Ausgangslage der HÄLFTE B
+
+PROVENIENZ: **am Code gemessen in der Aufklärungs-Runde vom 2026-08-07
+(read-only)**, nach dem Vollzug der Hälfte A. **DIE ANKER SIND SYMBOLNAMEN, KEINE
+ZEILENNUMMERN.** Dieser Block misst die OBERFLÄCHE; die Ausgangslage der ganzen
+Scheibe ("### Die gemessene Ausgangslage dieser Scheibe") bleibt daneben stehen und
+wird hier nicht wiederholt.
+
+**DIE BUCHSTABEN (a) BIS (h) SIND LOKAL** und haben nichts mit denen der
+Scheiben-Ausgangslage zu tun.
+
+**(a) FÜNF ZUSTÄNDE, DREI LEBENSDAUERN — UND DIE DRITTE IST NUR HALB GEZOGEN.**
+Die Token-Verwaltung im Container führt `capiTokenInput`, `capiTokenStatus`,
+`capiTokenError`, `capiRemoveConfirming` und `capiRemoving`. **Alle fünf gehören
+inhaltlich zu EINEM Ziel** — jeder beschreibt einen Vorgang an einem Zugangsdatum.
+`capiTokenSet` ist KEIN Zustand, sondern eine Ableitung aus `settings`.
+- **Am Projektwechsel hängen ALLE FÜNF:** `applyZenForLoadedCode` leert sie, und
+  zwar an fünf Aufrufstellen (neues Projekt, Import, Varianten-Wiederherstellung,
+  Projektwechsel, Nachrücker nach dem Löschen).
+- **An der Drawer-Sitzung hängen NUR ZWEI:** `resetDrawerStatusChannel` setzt
+  `capiTokenStatus` und `capiTokenError` zurück — beim ÖFFNEN, nie beim Schliessen,
+  und an `isSettingsOpen`, nie an der Reiter-Achse.
+**RICHTIGSTELLUNG EINER ANNAHME DES AUFTRAGS, am Code belegt:** Die Vorlage dieser
+Runde geht von einer sauberen Dreiteilung Ziel/Projekt/Sitzung aus. **Die
+Sitzungs-Achse ist nur für ZWEI der fünf gezogen, und das ist eine DOKUMENTIERTE
+ENTSCHEIDUNG, kein Zufall:** Der Kommentar an `resetDrawerStatusChannel` nennt
+`capiTokenInput`, die Bestätigungs- und die Busy-Flags ausdrücklich als
+ausgenommen, weil jener Reset sonst "halb bestätigte Lösch-Dialoge" mitzöge.
+**WER DIE KARTE GEGEN EINE SAUBERE DREITEILUNG BAUT, ÄNDERT DAMIT STILLSCHWEIGEND
+DAS VERHALTEN DER ÜBRIGEN DREI.**
+
+**(b) EINE KOMPONENTE MIT EIGENEM ZUSTAND EXISTIERT BEREITS — GENAU EINE.**
+`DomainManager` hält sechs Zustände im Container, sieben je Zeile und einen je
+kopierbarem Wert. Sie wird an ZWEI Grenzen ein- und ausgehängt: an der
+FLÄCHENGRENZE (der Bereich mountet erst beim Öffnen des Drawers) und über
+`key={projectId}`, der den Projektwechsel zur Mount-Grenze macht. `PublishView`
+nennt sie im Kommentar "die einzige Ansicht dieses Bereichs mit EIGENEM Zustand".
+**FÜR DEN MESSEN-BEREICH GILT HEUTE DAS GEGENTEIL, und auch das steht im Code:**
+`MeasureView` weist sich im Kopf als "REINE ANSICHT — KEIN eigener Projekt-Zustand,
+KEIN Lade-Effekt" aus und bekommt ausschliesslich fertige Werte.
+
+**(c) ES GIBT KEINE GESTALTERISCHEN PRIMITIVE.** Kein `Button`, kein `Panel`, kein
+`Badge` — gemessen über alle Komponenten. Jede Stelle schreibt ihre Klassen selbst.
+**WAS WIEDERVERWENDBAR IST, SIND MUSTER ZUM ABSCHREIBEN, KEINE KOMPONENTEN:** die
+Abschnitts-Überschrift, der Abschnitts-Trenner, die Erklärzeile, der Primärknopf,
+der Gefahrenknopf, der Bestätigungs-Kasten, die Statustexte in Grün/Rot/Grau und
+das Eingabefeld. **CLAUDE.md verlangt solche Primitive ausdrücklich** ("Wiederver-
+wendbare Primitive (Button, Panel, Badge) statt copy-paste-Styles") — sie fehlen.
+
+**(d) ES GIBT IM GANZEN PRODUKT KEIN BILD, KEIN ICON-SYSTEM, KEINE KONVENTION FÜR
+ANBIETER-ZEICHEN.** Gemessen über alle Komponenten ausserhalb der Tests: kein
+`<img>`, kein `next/image`, kein Bild-Asset. Das einzige `<svg>` im Produktivcode
+ist ein Chevron in vier Richtungen, `aria-hidden`.
+
+**(e) SECHZEHN TESTSTELLEN SIND BETROFFEN — GETRENNT AUSGEZÄHLT, nicht geschätzt.**
+Alle in `CodeImporter.test.tsx`; eine eigene Testdatei für `MeasureView` existiert
+nicht.
+- **ACHT WÄHLEN EIN ELEMENT** (Auswahl zum Lesen oder Klicken): der
+  Platzhalter-Helfer der Token-Eingabe (drei Verwendungen), zweimal der Knopf
+  "Entfernen", einmal der Platzhalter "Neuen Token eingeben zum Ersetzen", zweimal
+  der Platzhalter "CAPI-Token einfügen", zweimal der Knopf "Setzen".
+- **ACHT PRÜFEN EINE AUSSAGE** (die Abfrage IST die Assertion): dreimal die
+  Anwesenheit von "••• gesetzt", zweimal dessen Abwesenheit, einmal der Hinweis
+  "Projekt zuerst speichern", einmal die Anwesenheit und einmal die Abwesenheit von
+  "Entfernen".
+- **DAVON BRECHEN 13 SICHER, 1 BEDINGT, 2 GAR NICHT.** Bedingt ist die Anwesenheit
+  von "Entfernen" (sie bricht erst, wenn ZWEI Ziele Zugangsdaten tragen); unbetroffen
+  sind die beiden Abwesenheits-Prüfungen, deren Text in keiner Karte vorkäme.
+**DIE MECHANIK, ohne die die Zahl falsch gelesen wird:** `getBy*` UND `queryBy*`
+werfen beide bei MEHREREN Treffern. **Eine Abwesenheits-Prüfung ist also nicht
+automatisch sicher** — sie bricht ebenso, sobald zwei Karten denselben Text tragen.
+
+**(f) GENAU EIN TEST PRÜFT DIE REIHENFOLGE DER ABSCHNITTE.** Er wählt fünf
+Überschriften über ihre Rolle ("Tracking-Pixel", "Statistik", "Auswertung je
+Variante", "Veröffentlichen", "Variante B") und prüft vier Positions-Beziehungen.
+**Er bricht NICHT an zwei Karten**, solange die Überschrift "Tracking-Pixel" einmal
+bleibt und die Karten darunter liegen — und er bricht sofort, wenn eine Karte diese
+Überschrift ersetzt oder je Karte eine Überschriften-Rolle desselben Namens
+entsteht.
+
+**(g) "LÄDT NOCH" UND "GIBT ES NICHT" SEHEN HEUTE IDENTISCH AUS.** Die vier
+Lade-Zustände des Containers starten leer (`[]` bzw. `null`); es gibt **kein**
+Lade-Flag, **kein** Skelett, **keinen** Platzhalter. `MeasureView` zeigt bei leerer
+Zählung den Satz "Noch keine Events." — also während des Ladens dasselbe wie bei
+echter Leere.
+**FÜR DIE STATISTIK IST DAS HINGENOMMEN. FÜR EINE KARTE HIESSE DASSELBE MUSTER: ein
+Ziel, dessen Zugangsdaten gerade geladen werden, zeigte "Nicht konfiguriert" — die
+STÄRKERE Aussage im unsichersten Moment.**
+
+**(h) DIE ABLEITUNG KOSTET EINE RUNDE FÜR ALLE ZIELE.** `listConfiguredTargets`
+liest die Ziel-Spalte der Geheimnis-Tabelle mit einem Filter auf das Projekt; die
+Zahl der Karten ändert daran nichts. **Nur ein Kandidat verhält sich anders: ein
+Aufruf JE KARTE — dort wächst die Rundenzahl mit der Zahl der Ziele.**
+Zum Vergleich, gemessen: Ein Seitenaufruf mit gespeichertem Projekt kostet heute
+etwa SECHS Runden (Projekt laden, Projektliste, vier Lade-Effekte). **GRENZE: das
+ist eine Zählung der Aufrufe im Code, keine Messung am laufenden System.**
+
+#### Der Nachzügler-Befund — der wertvollste Fund dieser Aufklärung
+
+Er steht als eigener benannter Punkt, weil er als Fussnote untergehen würde.
+
+**WAS PASSIERT:** Wird während eines laufenden Speicher- oder Löschvorgangs das
+Projekt gewechselt, löst das `await` DANACH auf und schreibt in den Zustand des
+NEUEN Projekts. Betroffen sind der `trackingKey` und der Indikator — **und zwar
+auch in die GESPEICHERTE Fassung des Einstellungs-Blobs, also OHNE
+Dirty-Markierung.** Ein anschliessendes Speichern persistierte den fremden
+Schlüssel in das falsche Projekt.
+Der Ablauf im Einzelnen: Der Aufruf trägt die RICHTIGE Projekt-Kennung (sie steckt
+im Closure) — geschrieben wird also ins richtige Projekt. Inzwischen leert der
+Projektwechsel die fünf Zustände. **Erst danach** läuft der Erfolgszweig und setzt
+Status und Blob — auf dem inzwischen ausgetauschten Zustand.
+**Die Handler tragen KEINEN `cancelled`-Guard** — anders als die vier Lade-Effekte
+desselben Containers, die genau dafür einen haben.
+
+**WARUM DAS SCHWER WIEGT:** Der `trackingKey` ist der Schlüssel, über den der
+Ingest ein Projekt auflöst. Er ist ausserdem in ausgelieferte Seiten eingebacken.
+
+**WAS ES NICHT IST:** **kein Sicherheitsloch.** Geschrieben wird ins richtige
+Projekt, das Ownership-Gate greift. Und es ist **BESTAND** — von dieser Scheibe
+weder erzeugt noch verschärft; sie vervielfacht nur die Zahl der Handler, die so
+laufen können.
+
+**PROVENIENZ UND GRENZE: am Code GELESEN, NICHT live beobachtet.** Ob der Fall je
+eingetreten ist, ist unbekannt und aus dem Code nicht zu entscheiden.
+
+**WIE ER GEFUNDEN WURDE, und das gehört dazu:** Gefragt war, ob sich ein
+BESTEHENDES Verhalten bei N Karten VERVIELFACHT. Gefunden wurde etwas Schlimmeres
+als Vervielfachung. **EINE FRAGE NACH DEM MASS HAT EINEN MANGEL DER ART
+AUFGEDECKT** — und sie hätte ihn nicht gefunden, wenn sie nach dem Mangel selbst
+gefragt hätte, denn niemand hatte ihn vermutet.
+
+---
+
+### Der Zuschnitt der HÄLFTE B — DIE KARTE JE PLATTFORM
+
+**DIE ENTSCHEIDUNGEN (1) BIS (3) DES ZUSCHNITTS GELTEN UNVERÄNDERT** — die Karte je
+Plattform, der Statuswortlaut samt der verbotenen Wörter, der Platz des Testknopfes
+und seine drei Auflagen. Sie stehen unter "### Der Zuschnitt der sechsten Scheibe"
+und werden hier **NICHT wiederholt**; eine zweite Fassung wäre die Gelegenheit, an
+der beide auseinanderlaufen.
+
+**VIER NEUE ENTSCHEIDUNGEN (OWNER, 2026-08-07):**
+
+**(A) DIE KARTE HÄLT IHREN EIGENEN ZUSTAND und wird über einen `key` am
+Projektwechsel neu gemountet.** Der Präzedenzfall steht im Repo: `DomainManager`
+ist die einzige Ansicht mit eigenem Zustand und wird genau so gehalten.
+
+**WAS DAS NEBENBEI LÖST:** Ein Nachzügler schreibt nach einem Projektwechsel in
+eine AUSGEHÄNGTE Komponente und wird verworfen. Der Befund oben verschwindet
+insoweit **OHNE Reparatur**.
+
+**WIDERSPRUCH ZUR VORLAGE, am Code belegt und deshalb hier festgehalten — DIE
+ENTSCHEIDUNG LÖST DEN BEFUND NUR ZUR HÄLFTE:** Der Erfolgszweig schreibt heute
+NICHT nur in eigene Zustände, sondern spiegelt `trackingKey` und Indikator in den
+CONTAINER-Blob (`settings` UND `savedSettings`). **Diese Spiegelung ist nicht
+entbehrlich:** Der `trackingKey` aus dem Blob speist die funktionale Vorschau UND
+das Export-/Publish-Dokument — ohne ihn trüge eine frisch eingerichtete Seite
+keinen Beacon. **Ein Container-Write überlebt den Unmount der Karte.** Ob und wie
+er mitwandert oder gegen den Projektwechsel abgesichert wird, ist damit eine FRAGE
+AN DEN STUFE-1-PLAN und nicht durch (A) allein beantwortet.
+
+**DER PREIS, ausdrücklich:** Beim Schliessen der Fläche stirbt auch ein HALB
+BESTÄTIGTER Lösch-Dialog. **Das ist eine VERHALTENSÄNDERUNG** gegenüber heute, wo
+er absichtlich überlebt.
+**WARUM SIE ANGENOMMEN WIRD:** Ein Lösch-Dialog, der das Schliessen überlebt und
+später scharf dasteht, ist selbst ein Problem — die Projektregel führt ihn als
+BELEG für die Gefahr an, nicht als gewünschtes Verhalten.
+**GRENZE:** Auch die ERFOLGSQUITTUNG geht verloren, wenn während des Speicherns
+gewechselt wird. **Der Vorgang selbst läuft durch** — nur seine Rückmeldung
+erreicht niemanden.
+
+**(B) DIE KARTE KENNT DREI ZUSTÄNDE, NICHT ZWEI:** "Wird geladen" · "Nicht
+konfiguriert" · "Zugangsdaten hinterlegt".
+**BEGRÜNDUNG:** Ohne den dritten zeigte ein Ziel im unsichersten Moment die
+STÄRKERE Aussage — genau gegen die Entscheidung, dass die Karte nur sagt, was sie
+weiss. **Der Ladezustand ist kein Sonderfall der Abwesenheit**, und heute sehen
+beide identisch aus (Ausgangslage (g)).
+**WARUM NICHT "KARTE ERST ZEIGEN, WENN GELADEN":** Das erzeugte einen Sprung im
+Aufbau der Fläche.
+
+**(C) KEIN LOGO, KEIN ANBIETER-ZEICHEN — UND AUCH KEIN PLATZ DAFÜR.** Die Karte ist
+rein typografisch.
+**BEGRÜNDUNG:** Es gibt im Produkt keine Bildquelle, kein Icon-System und keine
+Konvention (Ausgangslage (d)). **Ein vorgesehener, leerer Platz wäre ein Kästchen,
+das nach einem Fehler aussieht.** Kommt später ein Zeichen, ist das eine eigene
+Entscheidung mit eigenen Fragen — Herkunft, Lizenz fremder Marken, Ladeverhalten.
+**DAS BERÜHRT ENTSCHEIDUNG (1) NICHT:** Dort steht "Name, Erkennungszeichen und
+genau die Felder" — das Erkennungszeichen ist damit der NAME, nicht ein Bild.
+
+**(D) DIE ABSCHNITTS-ÜBERSCHRIFT BLEIBT, DIE KARTEN LIEGEN DARUNTER.** Keine Karte
+trägt eine Überschriften-Rolle mit demselben Namen.
+**BEGRÜNDUNG:** Genau ein Test prüft die Reihenfolge der Abschnitte über
+Überschriften-Rollen (Ausgangslage (f)). **Er soll GRÜN bleiben**, weil er eine
+Aussage über den Aufbau der Fläche hält, die diese Scheibe nicht ändern will.
+
+### Zwei zusätzliche Verhaltens-Invarianten
+
+**DIE FÜNF DES ZUSCHNITTS GELTEN UNVERÄNDERT WEITER** — nichts gesendet, der
+Meta-Pfad unverändert, keine behauptete Wirkung, die Zugangsdaten-Disziplin, die
+Persistenz unangetastet. **ERGÄNZT um:**
+
+6. **DIE ZWEITE KARTE IST SICHTBAR, ABER FOLGENLOS.** Zugangsdaten für das zweite
+   Ziel lassen sich eintragen und entfernen; **gesendet wird nichts**, weil kein
+   Adapter existiert. **Das muss dem Betreiber erkennbar sein — WIE, ist eine Frage
+   an den Stufe-1-Plan.** Ohne diese Erkennbarkeit wäre die Karte genau das
+   Instrument, das etwas anzeigt, ohne es zu tragen.
+7. **KEIN TEXT DER KARTE BEHAUPTET WIRKUNG.** Ein Wortlaut-Wächter hält es fest —
+   ein Test, der die verbotenen Wörter ausschliesst. Er prüft nicht die Wahrnehmung,
+   aber er hält die Entscheidung fest, und das ist ehrlicher als eine Zusicherung im
+   Kommentar.
+
+### Ausdrücklich nicht in dieser Hälfte, je mit Grund
+
+- **DIE FUNKTION DES TESTKNOPFES.** Siebte Scheibe; nur sein Platz entsteht hier.
+- **GESTALTERISCHE PRIMITIVE.** Eigene Arbeit. Hier wird abgeschrieben, was im
+  Abschnitt schon steht (Ausgangslage (c)) — eine Primitiven-Runde nebenbei wäre
+  eine zweite Wirkung im selben Schritt.
+- **DIE NAMENSKOLLISION "Entfernen"/"Ja, entfernen"** zwischen Token, Domain und
+  Veröffentlichen. **Sie ist ÄLTER als diese Scheibe** und heute nur latent, weil
+  keine Vorrichtung beides gleichzeitig setzt. Backlog — **aber die Karte darf sie
+  NICHT VERSCHÄRFEN.**
+- **DIE REPARATUR DES NACHZÜGLER-BEFUNDS AN ANDEREN HANDLERN.** Nur der Token-Pfad
+  profitiert von (A); die übrigen bleiben, wie sie sind.
+- **JEDER ADAPTER, JEDER FORWARD.** Unverändert die siebte Scheibe.
+
+### Was der Stufe-1-Plan der HÄLFTE B beantworten MUSS — als Fragen, nicht als Vorgaben
+
+Sie sind AM CODE zu klären; hier steht keine Antwort, damit keine geraten wird.
+
+- **Welchen `key` trägt die Karte, und was genau ist damit ihre Lebensdauer?** Das
+  Projekt, das Ziel, oder beides — und was folgt daraus für das Schliessen der
+  Fläche?
+- **Welche der fünf Zustände wandern in die Karte, welche bleiben?** Die
+  Sitzungs-Achse ist heute nur für zwei gezogen (Ausgangslage (a)) — **was wird aus
+  den anderen drei?**
+- **Was geschieht mit der Container-Spiegelung von `trackingKey` und Indikator?**
+  Sie überlebt den Unmount der Karte und ist funktional gebraucht — s. den
+  Widerspruch bei (A).
+- **Woher bekommt die Karte den Ladezustand, und wie unterscheidet sie ihn von
+  "nicht konfiguriert"?**
+- **An welcher der vier Stellen, an denen Projektdaten in die Oberfläche gelangen,
+  wird die Ableitung aufgerufen?** Preis je Kandidat.
+- **Wie erkennt der Betreiber, dass das zweite Ziel noch nichts sendet?**
+- **Welche der 16 Teststellen brechen tatsächlich — und wie viele davon lassen sich
+  durch die GESTALTUNG der Karte entschärfen statt durch Anpassen des Tests?** Die
+  Reihenfolge ist nicht gleichgültig: Eine Gestaltung, die eine Abfrage eindeutig
+  lässt, ist besser als eine Abfrage, die eindeutig gemacht wird.
+
+**KEIN PROTOKOLLBLOCK** — es gibt noch nichts zu protokollieren. Er entsteht nach
+dem Bau, getrennt vom Zuschnitt, wie bei allen Scheiben davor.
+
+### Drei neue Backlog-Kandidaten — BENANNT, NICHT GEPLANT
+
+PROVENIENZ: alle drei **am Code gemessen am 2026-08-07 (read-only)**, alle drei
+**AUSSERHALB** dieser Hälfte. **Der Übertrag nach `docs/claude-history/backlog-polish.md`
+steht aus** — zusammen mit den drei Kandidaten aus den Scheiben davor sind es damit
+SECHS, die mit dieser Datei untergingen, wenn sie ohne Übertrag archiviert wird.
+
+**(A) DIE NAMENSKOLLISION IM PRODUKT — und die Regel dagegen ist BEREITS VERLETZT.**
+"Entfernen" trägt heute ZWEI verschiedene Bedienelemente (der CAPI-Token und die
+Domain-Zeile), "Ja, entfernen" sogar DREI (Token, Domain, Variante B). **Und beide
+Bereiche des Drawers stehen GLEICHZEITIG im DOM** — der Reiterwechsel versteckt per
+Klasse, er hängt nicht aus. **Die Mehrdeutigkeit ist heute nur deshalb latent, weil
+keine Test-Vorrichtung Token und Domain gleichzeitig setzt.**
+**DIE PROJEKTREGEL SAGT DAZU:** "ZWEI BEDIENELEMENTE MIT GLEICHEM NAMEN UND
+VERSCHIEDENER WIRKUNG SIND EIN OBERFLÄCHEN-PROBLEM, KEIN TESTPROBLEM." Sie ist
+verletzt, **unabhängig von dieser Scheibe** — und der Fund entstand nur, weil eine
+Zählung nach "wählt" und "prüft" getrennt hat.
+
+**(B) ES GIBT KEINE GESTALTERISCHEN PRIMITIVE, obwohl eine Projektregel sie
+verlangt.** CLAUDE.md, UX-Prinzipien: "Wiederverwendbare Primitive (Button, Panel,
+Badge) statt copy-paste-Styles." Gemessen: keine einzige. Jede Karte, jeder Knopf
+und jeder Statustext wiederholt seine Klassenkette. **Mit jeder weiteren Karte
+wächst der Preis dieses Fehlens.**
+
+**(C) DER NACHZÜGLER-BEFUND AN DEN ÜBRIGEN HANDLERN.** Für den Token-Pfad löst ihn
+Entscheidung (A) — **für die anderen nicht.** Welche Handler dieselbe Figur tragen,
+ist NICHT ausgezählt worden; gemessen ist allein der Token-Pfad. **Das ist eine
+Lücke in dieser Aufklärung und steht hier als solche**, nicht als Vollständigkeits-
+Behauptung.
 
 ---
 

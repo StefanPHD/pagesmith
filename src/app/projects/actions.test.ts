@@ -140,7 +140,7 @@ describe("setCapiToken (Scheibe 2a)", () => {
       },
     });
 
-    const result = await setCapiToken("proj-1", "  SECRET  ");
+    const result = await setCapiToken("proj-1", "meta", "  SECRET  ");
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.trackingKey).toBeTruthy();
 
@@ -179,7 +179,7 @@ describe("setCapiToken (Scheibe 2a)", () => {
       },
     });
 
-    const result = await setCapiToken("proj-1", "SECRET");
+    const result = await setCapiToken("proj-1", "meta", "SECRET");
     expect(result.ok).toBe(true);
 
     // POSITIVKONTROLLE — sie steht VOR den Abwesenheits-Behauptungen, weil diese sonst
@@ -212,7 +212,7 @@ describe("setCapiToken (Scheibe 2a)", () => {
       },
     });
 
-    const result = await setCapiToken("proj-1", "SECRET");
+    const result = await setCapiToken("proj-1", "meta", "SECRET");
     expect(result.ok).toBe(true);
     expect(adminTables).toEqual(["project_secrets", "project_tokens"]);
   });
@@ -226,7 +226,7 @@ describe("setCapiToken (Scheibe 2a)", () => {
       },
     });
 
-    await setCapiToken("proj-1", "  SECRET  ");
+    await setCapiToken("proj-1", "meta", "  SECRET  ");
     // Zielwert als LITERAL, nicht als importierte Konstante: der Test nagelt den Wert
     // fest, den die Datenbank per CHECK erwartet — zoege er die Konstante mit, ruschte
     // eine Aenderung an ihr gruen durch.
@@ -253,7 +253,7 @@ describe("setCapiToken (Scheibe 2a)", () => {
       then: (onF: (v: unknown) => unknown) => onF({ error: { message: "boom" } }),
     });
 
-    const result = await setCapiToken("proj-1", "SECRET");
+    const result = await setCapiToken("proj-1", "meta", "SECRET");
     expect(result.ok).toBe(false);
     // BEIDE MUESSEN GELINGEN: der Vorgang kippt, statt halb durchzulaufen.
     expect(adminUpsert).toHaveBeenCalledTimes(1);
@@ -281,7 +281,7 @@ describe("setCapiToken (Scheibe 2a)", () => {
       },
     });
 
-    const result = await setCapiToken("proj-1", "NEW-SECRET");
+    const result = await setCapiToken("proj-1", "meta", "NEW-SECRET");
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.trackingKey).toBe("existing-key");
     const patch = rec.updatePatch as {
@@ -304,7 +304,7 @@ describe("setCapiToken (Scheibe 2a)", () => {
         "projects.update": { error: null },
       },
     });
-    await setCapiToken("proj-1", "SECRET");
+    await setCapiToken("proj-1", "meta", "SECRET");
     const patch = rec.updatePatch as { settings: { pixels: { meta: { pixelId: string } } } };
     expect(patch.settings.pixels.meta.pixelId).toBe("999");
   });
@@ -321,7 +321,7 @@ describe("setCapiToken (Scheibe 2a)", () => {
       },
     });
 
-    const result = await setCapiToken("foreign-proj", "SECRET");
+    const result = await setCapiToken("foreign-proj", "meta", "SECRET");
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toMatch(/nicht gefunden/i);
 
@@ -335,7 +335,7 @@ describe("setCapiToken (Scheibe 2a)", () => {
 
   it("nicht eingeloggt -> error, kein service_role-Write, kein Admin-Client", async () => {
     const { rec } = makeClient({ user: null });
-    const result = await setCapiToken("proj-1", "SECRET");
+    const result = await setCapiToken("proj-1", "meta", "SECRET");
     expect(result.ok).toBe(false);
     expect(adminUpsert).not.toHaveBeenCalled();
     expect(createAdminClient).not.toHaveBeenCalled();
@@ -344,7 +344,7 @@ describe("setCapiToken (Scheibe 2a)", () => {
 
   it("leerer Token -> error, KEIN DB-Zugriff (weder SSR noch Admin)", async () => {
     const { client } = makeClient({ user: { id: "user-1" } });
-    const result = await setCapiToken("proj-1", "   ");
+    const result = await setCapiToken("proj-1", "meta", "   ");
     expect(result.ok).toBe(false);
     expect(client.from).not.toHaveBeenCalled();
     expect(createAdminClient).not.toHaveBeenCalled();
@@ -361,7 +361,7 @@ describe("setCapiToken (Scheibe 2a)", () => {
       then: (onF: (v: unknown) => unknown) => onF({ error: { message: "boom" } }),
     });
 
-    const result = await setCapiToken("proj-1", "SECRET");
+    const result = await setCapiToken("proj-1", "meta", "SECRET");
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBe("boom");
   });
@@ -379,7 +379,7 @@ describe("removeCapiToken (CAPI-Token entfernen)", () => {
       results: { "projects.select": setRow, "projects.update": { error: null } },
     });
 
-    const result = await removeCapiToken("proj-1");
+    const result = await removeCapiToken("proj-1", "meta");
     expect(result.ok).toBe(true);
     // DELETE laeuft ueber den service_role-Admin-Client — EIN Client, seit Phase 11
     // Scheibe 1 aber ZWEI Loeschvorgaenge (Doppel-Delete).
@@ -396,7 +396,7 @@ describe("removeCapiToken (CAPI-Token entfernen)", () => {
       results: { "projects.select": { data: null, error: null } },
     });
 
-    const result = await removeCapiToken("foreign-proj");
+    const result = await removeCapiToken("foreign-proj", "meta");
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toMatch(/nicht gefunden/i);
     expect(adminDelete).not.toHaveBeenCalled();
@@ -410,7 +410,7 @@ describe("removeCapiToken (CAPI-Token entfernen)", () => {
       results: { "projects.select": setRow, "projects.update": { error: null } },
     });
 
-    await removeCapiToken("proj-1");
+    await removeCapiToken("proj-1", "meta");
     // POSITIVKONTROLLE zuerst (s. WRITE-ONLY-Test oben).
     expect(rec.fromTables).toContain("projects");
     expect(adminTables).toEqual(["project_secrets", "project_tokens"]);
@@ -431,7 +431,7 @@ describe("removeCapiToken (CAPI-Token entfernen)", () => {
       results: { "projects.select": setRow, "projects.update": { error: null } },
     });
 
-    const result = await removeCapiToken("proj-1");
+    const result = await removeCapiToken("proj-1", "meta");
     expect(result.ok).toBe(true);
     expect(adminTables).toEqual(["project_secrets", "project_tokens"]);
     // Zielwert als LITERAL (s. Begruendung beim Schreibpfad).
@@ -448,7 +448,7 @@ describe("removeCapiToken (CAPI-Token entfernen)", () => {
       results: { "projects.select": setRow, "projects.update": { error: null } },
     });
 
-    const result = await removeCapiToken("proj-1");
+    const result = await removeCapiToken("proj-1", "meta");
     expect(result.ok).toBe(true);
     const patch = rec.updatePatch as { settings: { capi: { trackingKey: string; tokenSet: boolean } } };
     expect(patch.settings.capi.trackingKey).toBe("keep-me"); // NICHT geloescht
@@ -457,7 +457,7 @@ describe("removeCapiToken (CAPI-Token entfernen)", () => {
 
   it("nicht eingeloggt -> error, kein Admin-Client, kein DELETE", async () => {
     makeClient({ user: null });
-    const result = await removeCapiToken("proj-1");
+    const result = await removeCapiToken("proj-1", "meta");
     expect(result.ok).toBe(false);
     expect(createAdminClient).not.toHaveBeenCalled();
     expect(adminDelete).not.toHaveBeenCalled();

@@ -8,9 +8,11 @@ import {
   ensureTrackingKey,
   getHostingLabel,
   getTrackingKey,
+  isTrackingTarget,
   setCapiState,
   setHostingState,
   type ProjectSettings,
+  type TrackingTarget,
 } from "@/lib/settings";
 import {
   buildLiveUrl,
@@ -556,10 +558,33 @@ export type SetCapiTokenResult =
  */
 export async function setCapiToken(
   projectId: string,
+  target: TrackingTarget,
   token: string,
 ): Promise<SetCapiTokenResult> {
   const trimmed = token.trim();
   if (!trimmed) return { ok: false, error: "Token darf nicht leer sein." };
+
+  // ZIEL-PRUEFUNG — DIE ZWEITE ACHSE (Phase 11, sechste Scheibe).
+  //
+  // WARUM UEBERHAUPT: `target: TrackingTarget` ist eine Zusage des COMPILERS. Eine
+  // Server Action nimmt entgegen, was ueber die Leitung kommt; zur Laufzeit ist der
+  // Typ geloescht. Ohne diese Zeile faenge erst der CHECK der Geheimnis-Tabelle
+  // einen unbekannten Wert.
+  //
+  // WARUM HIER OBEN UND NICHT "der CHECK macht das schon": Zwischen beiden liegt das
+  // Instanziieren des PRIVILEGIERTEN Clients. Die tragende Regel dieses Pfades lautet,
+  // dass er erst nach bestandenen Pruefungen entsteht — ein abgewiesener Aufruf soll
+  // ihn gar nicht erst erzeugen. Der CHECK bleibt trotzdem noetig und ist keine
+  // Dublette: Er deckt JEDEN Schreibweg ab, auch kuenftige, die diese Action nicht
+  // benutzen. Zwei Ebenen, zwei Reichweiten.
+  //
+  // WAS SIE NICHT LEISTET, damit niemand mehr in sie hineinliest: Sie prueft die
+  // MENGE der Ziele, nicht die Berechtigung an einem einzelnen. Dass jemand im
+  // EIGENEN Projekt ein Ziel einrichtet, das er noch nicht benutzt, ist kein
+  // Angriff — es ist der Zweck dieser Action. Die Projekt-Grenze zieht allein das
+  // Ownership-Gate darunter.
+  if (!isTrackingTarget(target))
+    return { ok: false, error: "Unbekanntes Tracking-Ziel." };
 
   const supabase = await createClient();
   const {
@@ -593,10 +618,13 @@ export async function setCapiToken(
   //     stuerbe lautlos, waehrend die Oberflaeche "Token gesetzt" zeigt.
   //     KEIN updated_at im Patch: bei Konflikt fuehrt der Trigger
   //     project_secrets_set_updated_at ihn nach, beim Insert der Spalten-Default.
+  //     DAS ZIEL KOMMT SEIT PHASE 11 SCHEIBE 6 VOM AUFRUFER, nicht mehr aus der
+  //     Konstante. META_TARGET bleibt trotzdem im Spiel — es traegt unten die
+  //     Alt-Tabelle, die keine Ziel-Spalte hat.
   const { error: secretError } = await admin
     .from("project_secrets")
     .upsert(
-      { project_id: projectId, target: META_TARGET, secret: trimmed },
+      { project_id: projectId, target, secret: trimmed },
       { onConflict: "project_id,target" },
     );
   // BEIDE MUESSEN GELINGEN. Kein "nur protokollieren und weiter": eine still
@@ -608,11 +636,23 @@ export async function setCapiToken(
 
   // 2b) ALT-TABELLE, unveraendert — sie bleibt bis zu einer eigenen Scheibe die
   //     Rollback-Reserve fuer die vorige Code-Fassung.
-  const row = { project_id: projectId, user_id: user.id, meta_capi_token: trimmed };
-  const { error: tokenError } = await admin
-    .from("project_tokens")
-    .upsert(row, { onConflict: "project_id" });
-  if (tokenError) return { ok: false, error: tokenError.message };
+  //     NUR FUER META, und das ist kein Sonderfall, sondern der einzig moegliche
+  //     Umgang mit ihr: project_tokens hat KEINE Ziel-Spalte. Ihr einziges
+  //     Geheimnis-Feld heisst meta_capi_token und ist per Primaerschluessel
+  //     (project_id) auf EINE Zeile je Projekt festgelegt. Ein anderes Ziel dort
+  //     hineinzuschreiben UEBERSCHRIEBE die Meta-Rollback-Reserve mit einem fremden
+  //     Geheimnis — der Code-Rollback, den sie absichern soll, faende dann den
+  //     falschen Wert vor und der Meta-Forward liefe mit Pinterests Zugangsdaten.
+  //     Fuer ein neues Ziel gibt es KEINE Rollback-Reserve, und es braucht auch
+  //     keine: Vor dieser Scheibe existierte es nicht, ein Rollback faellt also auf
+  //     einen Zustand ohne dieses Ziel zurueck.
+  if (target === META_TARGET) {
+    const row = { project_id: projectId, user_id: user.id, meta_capi_token: trimmed };
+    const { error: tokenError } = await admin
+      .from("project_tokens")
+      .upsert(row, { onConflict: "project_id" });
+    if (tokenError) return { ok: false, error: tokenError.message };
+  }
 
   // 3) Identitaet ableiten + DUAL-WRITE. trackingKey aus der SPALTE (Autoritaet,
   //    Scheibe 2b-0), idempotent (bestehender Wert 1:1). Geschrieben wird er in BEIDE:
@@ -621,9 +661,28 @@ export async function setCapiToken(
   //      Einbettung, byte-gleicher Wert -> CAPI-Client-Pfad bleibt identisch.
   //    tokenSet=true, pixels unangetastet. updated_at explizit. Ueber den
   //    authenticated-SSR-Client (RLS greift auf der geschuetzten projects-Zeile).
+  //
+  //    DER trackingKey WIRD FUER JEDES ZIEL SICHERGESTELLT: Er identifiziert das
+  //    PROJEKT, nicht ein Ziel (Ausgangslage: er ist in ausgelieferte Seiten
+  //    eingebacken), und die Ableitung ist idempotent.
+  //    tokenSet DAGEGEN BLEIBT META-EIGEN. Es ist der Indikator der alten,
+  //    ziel-losen Oberflaeche; ihn bei einem anderen Ziel zu setzen behauptete
+  //    "Meta ist eingerichtet", ohne dass es stimmt. Der ziel-genaue Indikator wird
+  //    NICHT hier gefuehrt, sondern aus der Geheimnis-Tabelle abgeleitet
+  //    (listConfiguredTargets) — die einzige Quelle, die auch der Forward-Pfad liest.
+  //    BACKLOG, hier nur BENANNT: capi.tokenSet wird damit weiter GESCHRIEBEN, aber
+  //    ab der Oberflaechen-Haelfte nicht mehr GELESEN. Es zu entfernen ist eine
+  //    eigene Runde — es steht in einem client-besessenen Blob, den ein alter Tab
+  //    jederzeit zurueckschreiben kann.
   const current = (owned.settings ?? {}) as ProjectSettings;
   const trackingKey = ensureTrackingKey(owned.tracking_key as string | null);
-  const nextSettings = setCapiState(current, { trackingKey, tokenSet: true });
+  const nextSettings =
+    target === META_TARGET
+      ? setCapiState(current, { trackingKey, tokenSet: true })
+      : setCapiState(current, {
+          trackingKey,
+          tokenSet: current.capi?.tokenSet === true,
+        });
 
   const { error: settingsError } = await supabase
     .from("projects")
@@ -666,7 +725,15 @@ export type RemoveCapiTokenResult = { ok: true } | { ok: false; error: string };
  */
 export async function removeCapiToken(
   projectId: string,
+  target: TrackingTarget,
 ): Promise<RemoveCapiTokenResult> {
+  // ZIEL-PRUEFUNG VOR JEDEM DB-ZUGRIFF — dieselbe Begruendung wie bei setCapiToken.
+  // Auf dem LOESCHPFAD waere ein unbekanntes Ziel zwar folgenlos (der Filter faende
+  // keine Zeile), aber die Symmetrie ist hier die Absicherung: Wer die Pruefung nur
+  // auf einer Seite fuehrt, hat sie beim naechsten Umbau auf keiner.
+  if (!isTrackingTarget(target))
+    return { ok: false, error: "Unbekanntes Tracking-Ziel." };
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -699,23 +766,29 @@ export async function removeCapiToken(
     .from("project_secrets")
     .delete()
     .eq("project_id", projectId)
-    .eq("target", META_TARGET);
+    .eq("target", target);
   // BEIDE MUESSEN GELINGEN — s. setCapiToken. Nur message, nie details/hint.
   if (secretDelError) return { ok: false, error: secretDelError.message };
 
-  // 2b) ALT-TABELLE, unveraendert.
-  const { error: delError } = await admin
-    .from("project_tokens")
-    .delete()
-    .eq("project_id", projectId);
-  if (delError) return { ok: false, error: delError.message };
+  // 2b) ALT-TABELLE, unveraendert — und NUR FUER META, spiegelbildlich zum Setzen:
+  //     Sie traegt keine Ziel-Spalte, ein Delete dort loeschte bei JEDEM Ziel die
+  //     Meta-Rollback-Reserve. Wer Pinterest entfernt, darf Metas Reserve nicht
+  //     mitnehmen.
+  if (target === META_TARGET) {
+    const { error: delError } = await admin
+      .from("project_tokens")
+      .delete()
+      .eq("project_id", projectId);
+    if (delError) return { ok: false, error: delError.message };
+  }
 
   // 3) settings mergen: tokenSet=false, trackingKey ERHALTEN, pixels unangetastet.
   //    Ueber den SSR-Client (RLS greift auf der geschuetzten projects-Zeile).
+  //    tokenSet flippt NUR beim Meta-Ziel — es ist Metas Indikator, s. setCapiToken.
   const current = (owned.settings ?? {}) as ProjectSettings;
   const nextSettings = setCapiState(current, {
     trackingKey: getTrackingKey(current),
-    tokenSet: false,
+    tokenSet: target === META_TARGET ? false : current.capi?.tokenSet === true,
   });
   const { error: settingsError } = await supabase
     .from("projects")
@@ -725,6 +798,73 @@ export async function removeCapiToken(
   if (settingsError) return { ok: false, error: settingsError.message };
 
   return { ok: true };
+}
+
+/**
+ * DER INDIKATOR JE ZIEL (Phase 11, sechste Scheibe). Liefert die Ziele, fuer die
+ * dieses Projekt ein Geheimnis hinterlegt hat.
+ *
+ * ABGELEITET, NICHT GEFUEHRT — und das ist die tragende Entscheidung dieser
+ * Funktion: Der Zustand steht NICHT im Einstellungs-Blob. Zwei Gruende, der zweite
+ * ist der wichtigere:
+ * 1. Der Blob ist CLIENT-besessen (saveProject ersetzt ihn ganzheitlich). Ein dort
+ *    gefuehrter Indikator ueberlebt nur, solange der Client ihn zurueckspiegelt.
+ * 2. DIESE FUNKTION LIEST DIESELBE QUELLE WIE DER FORWARD-PFAD
+ *    (getCapiConfigByTrackingKey liest project_secrets). Zwei Wahrheiten, die
+ *    auseinanderlaufen koennen, werden damit zu einer.
+ *
+ * WAS SIE TROTZDEM NICHT LEISTET, und der Satz gehoert zwingend dazu, sonst wird
+ * die Anzeige darueber staerker gelesen, als sie ist: Eine Geheimnis-Zeile
+ * existiert auch dann, wenn das Token laengst WIDERRUFEN ist. Sie beantwortet
+ * "sind Zugangsdaten hinterlegt?", NICHT "funktionieren sie?". Genau deshalb
+ * lautet der Wortlaut der Karte "Zugangsdaten hinterlegt" und nicht "aktiv" — und
+ * genau deshalb bleibt der Testknopf noetig.
+ *
+ * KEIN GEHEIMNIS VERLAESST DEN SERVER: selektiert wird AUSSCHLIESSLICH die
+ * target-Spalte. Die secret-Spalte kommt in dieser Funktion nicht vor, und ein
+ * Test haelt das fest.
+ *
+ * Gleiches Gate-Muster wie die beiden Schreib-Actions: Ownership-Pruefung ueber den
+ * authentifizierten Client, der privilegierte Client ERST DANACH. Bei fehlender
+ * Berechtigung, fehlender Sitzung oder DB-Fehler eine LEERE Liste — die Oberflaeche
+ * zeigt dann "nicht konfiguriert", was im Zweifel die schwaechere Behauptung ist.
+ */
+export async function listConfiguredTargets(
+  projectId: string,
+): Promise<TrackingTarget[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  // 1) Ownership-Gate ueber den authenticated-SSR-Client (RLS greift).
+  const { data: owned, error: ownError } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (ownError || !owned) return [];
+
+  // 2) HARTE INVARIANTE: Admin-Client erst HIER, NACH dem Gate. project_secrets
+  //    traegt RLS ohne jede Policy -> nur service_role kommt durch.
+  const admin = createAdminClient();
+
+  // EINE Runde fuer ALLE Ziele. Die Zahl der Karten aendert die Zahl der Abfragen
+  // NICHT — das ist der Grund, warum hier nicht je Ziel gefragt wird.
+  const { data, error } = await admin
+    .from("project_secrets")
+    .select("target")
+    .eq("project_id", projectId);
+  if (error || !data) return [];
+
+  // Der Filter ist kein Zierrat: Die DB kann Werte tragen, die dieser Code (noch)
+  // nicht kennt — etwa nach einem Rollback auf eine aeltere Fassung. Ein unbekannter
+  // Wert wird verworfen, statt als Ziel ausgegeben zu werden.
+  return data
+    .map((row) => (row as { target: unknown }).target)
+    .filter(isTrackingTarget);
 }
 
 /** Ergebnis von publishProject. Bei Erfolg die absolute Live-URL + das Label. */

@@ -722,7 +722,7 @@ describe("CAPI-Token entfernen + Platzhalter-Klarheit", () => {
     fireEvent.click(screen.getByRole("button", { name: "Entfernen" }));
     fireEvent.click(screen.getByRole("button", { name: "Ja, entfernen" }));
 
-    await waitFor(() => expect(removeCapiToken).toHaveBeenCalledWith("proj-1"));
+    await waitFor(() => expect(removeCapiToken).toHaveBeenCalledWith("proj-1", "meta"));
     await waitFor(() => expect(screen.queryByText("••• gesetzt")).toBeNull());
   });
 

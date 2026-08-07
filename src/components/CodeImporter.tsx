@@ -1250,8 +1250,13 @@ export default function CodeImporter({
 
     setCapiTokenStatus("saving");
     setCapiTokenError(null);
+    // "meta" IST KEIN PLATZHALTER: Diese Oberflaeche verwaltet genau EIN Ziel, und
+    // das Argument schreibt fest, was hier ohnehin geschieht. Variabel wird der Wert
+    // erst mit der Karte je Plattform (Phase 11, sechste Scheibe, zweite Haelfte) —
+    // dort kommt er aus der Karte, nicht von hier. Gilt ebenso fuer
+    // handleRemoveCapiToken darunter.
     const result = await safeAction(
-      () => setCapiToken(projectId, capiTokenInput),
+      () => setCapiToken(projectId, "meta", capiTokenInput),
       actionThrew()
     );
     if (result.ok) {
@@ -1274,7 +1279,7 @@ export default function CodeImporter({
     setCapiRemoving(true);
     setCapiTokenError(null);
     const result = await safeAction(
-      () => removeCapiToken(projectId),
+      () => removeCapiToken(projectId, "meta"),
       actionThrew()
     );
     if (result.ok) {

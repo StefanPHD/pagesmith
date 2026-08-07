@@ -8,6 +8,7 @@
 
 import { BROWSER_CONFIRM_MARKER } from "@/lib/analytics/events";
 import { META_CONSENT_TARGET } from "@/lib/tracking/consent";
+import { CONSENT_WIRE_FIELD } from "@/lib/tracking/consent-wire";
 
 // Standard-Events von Meta (Pixel). "Custom…" ist KEIN Standard-Event, sondern der
 // Schalter auf fbq('trackCustom', <freier Name>) — siehe ActionPanel.
@@ -172,7 +173,17 @@ export function buildMetaRuntime(
     // Diese Stelle ist die teurere von beiden: Sie liegt im Klick-Handler, und
     // hinter ihr wartet der Redirect.
     if (typeof __psConsent !== "function") return;
-    if (!__psConsent(${JSON.stringify(META_CONSENT_TARGET)})) return;
+    // DAS URTEIL WIRD GEHOBEN, NICHT ZWEIMAL ERFRAGT (Phase 11, fuenfte Scheibe).
+    // Der Beacon-Rumpf weiter unten schickt es an den Server mit; er fragt NICHT
+    // erneut. Zwei Gruende, und der zweite ist der tragende:
+    // (1) KEIN ZUSAETZLICHER HOOK-AUFRUF. Der Betreiber-Hook ist fremder Code auf
+    //     dem Klick-Pfad; die Zahl der Aufrufe bleibt exakt wie vorher.
+    // (2) EIN SCHNAPPSCHUSS. Das Urteil wird nirgends gemerkt — jede Frage ruft den
+    //     Hook neu. Ein zweiter Aufruf koennte anders antworten, und dann traege der
+    //     Draht eine Aussage, die der Entscheidung WIDERSPRICHT, die diesen Beacon
+    //     ueberhaupt durchgelassen hat. So ist die Widerspruchsfreiheit strukturell.
+    var __c = __psConsent(${JSON.stringify(META_CONSENT_TARGET)});
+    if (!__c) return;
     if (!__psMetaInit()) return;
     var eid =
       window.crypto && window.crypto.randomUUID
@@ -206,6 +217,19 @@ export function buildMetaRuntime(
 // weglassen, NICHT verzoegern (die eid traegt das Dedup, _fbp ist Match-Quality-Bonus).
 // try/catch: der Beacon darf den Klick nie werfen. sendBeacon ist navigationssicher
 // -> feuert im Track-vor-Redirect-Block VOR der Weiterleitung, ohne sie zu verzoegern.
+//
+// DAS EINWILLIGUNGS-SIGNAL (Phase 11, fuenfte Scheibe): Der Body traegt zusaetzlich
+// CONSENT_WIRE_FIELD mit dem Urteil JE ZIEL — heute genau eines. Der Wert ist die in
+// __psMetaFire GEHOBENE Variable __c, nicht ein zweiter Hook-Aufruf; `=== true`
+// spiegelt die Strenge der Auswertungsregel.
+// DASS ER HEUTE IMMER `true` IST, IST KEINE NACHLAESSIGKEIT, SONDERN EINE FOLGE DER
+// POSITION — und der Satz gehoert hierher, sonst haelt ihn jemand fuer toten Code und
+// entfernt ihn: Dieser Rumpf wird INNERHALB von __psMetaFire gesplicet, hinter dem
+// Gate. Ein Beacon existiert also nur im erlaubten Fall. Sobald ein ZWEITES Ziel
+// dazukommt, kann derselbe Beacon fuer das eine erlaubt und fuer das andere verboten
+// sein — dann traegt dieses Feld erstmals eine Unterscheidung.
+// DER LESER (capi/ingest.ts) BRAUCHT ES SCHON HEUTE: Ohne das Feld kann er
+// "abwesend = alte Seite" nicht von "vorhanden, aber verboten" trennen.
 export function buildCapiBeaconStatement(
   trackingKey: string,
   proxyUrl: string
@@ -224,7 +248,8 @@ export function buildCapiBeaconStatement(
           eventID: eid,
           event: cfg.event,
           eventSourceUrl: location.href,
-          isCustom: !!cfg.isCustom
+          isCustom: !!cfg.isCustom,
+          ${JSON.stringify(CONSENT_WIRE_FIELD)}: { ${JSON.stringify(META_CONSENT_TARGET)}: __c === true }
         };
         if (typeof cfg.value === "number") __b.value = cfg.value;
         if (cfg.currency) __b.currency = cfg.currency;

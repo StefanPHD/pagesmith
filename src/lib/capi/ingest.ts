@@ -2,6 +2,17 @@ import { after } from "next/server";
 import { getCapiConfigByTrackingKey } from "@/lib/capi/token";
 import { META_TEST_EVENT_CODE } from "@/lib/capi/config";
 import { forwardToMeta } from "@/lib/capi/meta-forward";
+import { consentAllows } from "@/lib/tracking/consent-wire";
+// DER SCHLUESSEL KOMMT AUS DEM CONSENT-VOKABULAR, NICHT AUS DEM DER GEHEIMNIS-TABELLE
+// (META_TARGET in capi/token.ts) — obwohl beide heute "meta" lauten. Zwei Gruende:
+// (1) Der Schluessel IM DRAHT ist der, den der Betreiber in seinen eigenen
+//     Consent-Hook schreibt. Das ist dieses Vokabular.
+// (2) DIESELBE Konstante setzt das Feld im erzeugten Browser-Text (tracking/meta.ts);
+//     eine server-only-Datei ist von dort gar nicht erreichbar. Naehme der Leser die
+//     andere, haengten Setzer und Leser an zwei unabhaengig definierten Literalen,
+//     die nur zufaellig gleich sind — genau die Drift, die im Repo bereits als
+//     "der Meta-Zielname liegt in drei Kopien" vermerkt ist.
+import { META_CONSENT_TARGET } from "@/lib/tracking/consent";
 import { persistEvent } from "@/lib/analytics/persist";
 import {
   BROWSER_CONFIRM_MARKER,
@@ -268,6 +279,28 @@ export async function handleIngest(request: Request): Promise<Response> {
   // Schlankheits-Regel); (2) er referenziert config, das hier erst geprueft vorliegt.
   const config = resolution.capiConfig;
   if (config && isForwardable(event)) {
+    // --- EINWILLIGUNG (Phase 11, fuenfte Scheibe) — EIGENER SICHTBARER ZWEIG ---
+    //
+    // WARUM KEIN DRITTER TERM IM if-KOPF DARUEBER: Dieselbe Lektion wie beim
+    // Kill-Switch (2a) und beim Confirm-Zweig — ein Term in einer zusammengesetzten
+    // Bedingung kann bei einem Refactor lautlos wegfallen und ist nicht einzeln rot
+    // faerbbar. Ein Schutz gehoert in eine Verzweigung, die man sieht.
+    //
+    // WARUM INNERHALB DER FORWARD-BEDINGUNG UND NICHT WEITER OBEN: /api/e-
+    // Schlankheit, woertlich dieselbe Begruendung wie bei clientIp/userAgent drei
+    // Zeilen tiefer — geprueft wird genau dann, wenn wirklich geforwardet wird, und
+    // nicht auf Vorrat fuer jeden Beacon. Der PageView (der VOLUMEN-Event) und der
+    // Confirm (frueher Return weiter oben) erreichen diese Zeile nie.
+    //
+    // ABWESENDES FELD HEISST ERLAUBT — die Alt-Seiten-Regel. Sie steht ausformuliert
+    // am Leser (tracking/consent-wire.ts) und wird hier NICHT wiederholt; der Grund
+    // in einem Satz: Ein Code-Deploy erreicht bereits publizierte Seiten nicht.
+    //
+    // KEIN LOG: Der Einwilligungs-Zustand ist eine Aussage ueber einen BESUCHER. Ihn
+    // zu protokollieren waere eine Datenerhebung, die niemand beschlossen hat — und
+    // sie fiele ausgerechnet auf dem meistgetroffenen Pfad der Plattform an.
+    if (!consentAllows(body, META_CONSENT_TARGET)) return status(204);
+
     // --- Server-gesetzte Felder (NIE aus Client-Payload) ---
     // Sie werden HIER ermittelt, INNERHALB der Bedingung — also genau dann, wenn wirklich
     // geforwardet wird, und nicht auf Vorrat fuer jeden Beacon (/api/e-Schlankheit).

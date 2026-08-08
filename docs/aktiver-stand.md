@@ -21,8 +21,17 @@ reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) die ZUGANGSDATEN JE ZI
 — **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (7) die AUFLÖSUNG TRÄGT
 MEHRERE ZIELE — **ABGESCHLOSSEN und live bewiesen**, (8) DER BEACON VERLÄSST METAS
 LAUFZEIT — **ABGESCHLOSSEN und live bewiesen**, (9) DIE EINWILLIGUNG JE ZIEL —
-**HÄLFTE A ZUGESCHNITTEN, HÄLFTE B PLATZHALTER**, (10) PINTEREST SENDET —
+**ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (10) PINTEREST SENDET —
 PLATZHALTER.
+
+**NACHGEZOGEN AM 2026-08-08, SPÄT — NEUN SIND ABGESCHLOSSEN, OFFEN IST EINE.** Hier
+stand bei (9) "HÄLFTE A ZUGESCHNITTEN, HÄLFTE B PLATZHALTER". Beide Hälften sind am
+selben Tag gebaut und live bewiesen worden; die Scheibe ist vollständig.
+**DAMIT IST DIE PHASE AUF IHRE LETZTE SCHEIBE ZUSAMMENGELAUFEN** — und es ist die,
+für die sie eröffnet wurde: ein zweites Ziel, das tatsächlich sendet. **ALLES, WAS SIE
+BRAUCHT, STEHT:** die Geheimnis-Ablage je Ziel, die Karte je Plattform, die Auflösung
+über mehrere Ziele, der Beacon ausserhalb von Metas Laufzeit, und seit der neunten der
+Draht, der die Einwilligung JE ZIEL trägt. **Was fehlt, ist der Adapter.**
 
 **NACHGEZOGEN AM 2026-08-08 — DIE NEUNTE FÄHRT IN ZWEI HÄLFTEN.** Sie stand hier
 als "PLATZHALTER". **DIE ZAHL DER OFFENEN SCHEIBEN ÄNDERT SICH DADURCH NICHT** —
@@ -5548,7 +5557,13 @@ beschrieben (T6 erreicht sie gar nicht mehr), und der neue Test, der die Abdecku
 Bau-Scope ausgeschlossen war — und weil sie, in den Bau gebündelt, dessen Fehlerbild
 verwischt hätte.
 
-#### NICHT VERDICHTET — und warum
+#### NICHT VERDICHTET — und warum (EINGELÖST am 2026-08-08)
+
+**ÜBERSCHRIFTEN-STEMPEL, 2026-08-08:** Diese Überschrift hiess "#### NICHT VERDICHTET
+— und warum". **DER BLOCK BLEIBT WORT FÜR WORT STEHEN** — er hält eine Entscheidung
+fest, die zu ihrer Zeit richtig war, und seine Aufzählung ist die Vorlage, gegen die
+verdichtet wurde. **Was er ankündigt, ist eingetreten:** s. "### DIE NEUNTE SCHEIBE IST
+ABGESCHLOSSEN — DIE VERDICHTUNG", wo die fünf Punkte einzeln abgearbeitet sind.
 
 **DIE SCHEIBE IST NICHT FERTIG. Es wird NICHTS verdichtet, NICHTS als ABGELAUFEN
 markiert, NICHTS gestrichen.** Dieselbe Handschrift wie bei der sechsten Scheibe: Die
@@ -5592,6 +5607,14 @@ wird bei jeder Frage neu gelesen), der Rückgabewert eines Funktions-Hooks (frem
 Code, nicht zu Determinismus verpflichtet), der Wurf-Ausgang (ein Wurf beim zweiten
 Aufruf liefert `false`), und die FORM des Wertes (ein Wechsel zwischen `true` und einem
 Objekt ändert die ausgewertete Regel).
+
+**ABGELAUFEN AM 2026-08-08 — DER PREIS IST BEZAHLT.** Auf der KLICK-Seite können diese
+vier Werte nicht mehr auseinanderlaufen: Es gibt nur noch EINE Ziehung je Ereignis, und
+ein Test mit einem Hook, der beim zweiten Aufruf anders antwortet, hält das fest.
+**DER ABSATZ BLEIBT WORT FÜR WORT STEHEN** — er benennt, WOGEGEN gebaut wurde, und ohne
+ihn liest sich die Lösung wie eine Vorsichtsmassnahme ohne Anlass.
+**DIE GRENZE, DIE BLEIBT:** Für den PageView-Emitter ist das **gegenstandslos, nicht
+gelöst** — anderes Ereignis, anderer Gültigkeitsbereich, anderer Schlüssel.
 
 #### Die gemessene Ausgangslage der HÄLFTE B — Provenienz: Aufklärung vom 2026-08-08
 
@@ -5770,7 +5793,15 @@ Umstellung rot sein können und danach grün.
 
 **PROVENIENZ: am Code gemessen am 2026-08-08, read-only.**
 
-**(1) DIE WURF-LÜCKE AUSSERHALB DER ABSICHERUNG.** In `buildConsentRuntime` liegt nur
+**(1) DIE WURF-LÜCKE AUSSERHALB DER ABSICHERUNG — BESTÄTIGT, NICHT NEU.**
+**RICHTIGGESTELLT AM 2026-08-08:** Hier stand sie als Erstfund dieser Aufklärung. **Das
+ist falsch — sie steht bereits im Zuschnitt der FÜNFTEN Scheibe** ("DER `try`
+UMSCHLIESST NUR DEN HOOK-AUFRUF", mit denselben zwei Anweisungen) und wurde beim
+Abschluss jener Scheibe ausdrücklich als offener Punkt weitergereicht, der NICHT ihr
+Ausschluss war. **Was diese Aufklärung beisteuert, ist eine ZWEITE, unabhängige
+Messung desselben Sachverhalts — und die macht ihn nicht kleiner, sondern grösser: Er
+hat zwei Scheiben überlebt, ohne dass ihn jemand angefasst hat.**
+In `buildConsentRuntime` liegt nur
 der Funktionsaufruf im `try`; das **Lesen** des Betreiber-Werts und der
 **Schlüsselzugriff** liegen davor bzw. dahinter. Ein Getter oder Proxy mit Wurf
 verlässt damit `__psConsent`, und weil weder `__psMetaFire` noch der Klick-Handler in
@@ -5784,6 +5815,327 @@ fällt ein Array in den Objekt-Zweig und wird über den `undefined`-Schlüsselzu
 verboten. **KEIN Verhaltensunterschied gefunden** (beide antworten "verboten"), **wohl
 aber ein Unterschied in der ABSICHT**, den ein Leser für ein Versehen halten und
 "reparieren" könnte. Genau deshalb steht er hier.
+
+#### Protokoll der neunten Scheibe, HÄLFTE B — Vollzug und Abschluss
+
+**GEBAUT AM 2026-08-08**, freigegeben auf Basis des Stufe-1-Plans. **SIEBEN Dateien**,
+Commit `feat(consent): eine Ziehung, N Antworten — der Draht traegt alle Ziele`:
+`tracking/consent.ts`, `tracking/meta.ts`, `generate.ts`, `CodeImporter.tsx` (geändert),
+`tracking/consent.test.ts` (neu), `generate.test.ts` und `meta.consent-wire.test.ts`
+(erweitert).
+
+**MIT DIESER HÄLFTE IST DIE NEUNTE SCHEIBE VOLLSTÄNDIG.**
+
+##### Die Live-Werte, gemeldet von Stefan am 2026-08-08 — MIT Republish
+
+**PROVENIENZ: Meldung von Stefan aus dem Betrieb. NICHT von mir gemessen, nicht
+nachgeprüft.**
+
+- Der **Quelltext der Seite trägt die neue Laufzeit**.
+- **Im Request-Payload des Beacons steht das Feld mit BEIDEN Schlüsseln.** **Das ist
+  der sichtbare Beweis dieser Hälfte in Produktion** — und der einzige, den es geben
+  kann: Es gibt keinen zweiten Adapter, also kann sich der zweite Schlüssel nirgends
+  sonst zeigen als im Draht selbst.
+- Im Events Manager das Ereignis als **"Empfangen von: Server"**, dedupliziertes Paar
+  unter geteilter Kennung.
+- Der **Server-Ereignis-Zähler stieg um eins**.
+
+**WARUM DER REPUBLISH DIESMAL NÖTIG WAR — und warum das die Aussage stärkt statt sie
+zu schwächen:** Bei der HÄLFTE A trug der Nachweis gerade daran, dass NICHT neu
+veröffentlicht wurde (die alte Seite war der Prüfgegenstand). Hier ist es umgekehrt:
+Der Draht ändert sich, also kann ihn nur eine neu veröffentlichte Seite tragen. **Die
+beiden Live-Tests prüfen deshalb entgegengesetzte Zustände, und beide sind richtig
+zugeschnitten.**
+**UND DIE ZWEI SONDEN MESSEN VERSCHIEDENE DINGE**, wie im Protokoll der HÄLFTE A
+präzisiert: Der Events Manager misst den FORWARD, der Zähler den PERSIST. Erst das
+Paar trennt die beiden Fehlschläge.
+
+##### Der Bau, gemessen am eigenen Lauf
+
+**PROVENIENZ: von mir gemessen am 2026-08-08 auf diesem Rechner, an diesem Codestand,
+per `npx vitest run` bzw. `npx tsc --noEmit`. GRENZE: ein Lauf; die Zahlen veralten mit
+der nächsten Testdatei.**
+
+| | Dateien | Tests |
+|---|---|---|
+| vorher | 49 | **878** |
+| nachher | 50 | **951** (+73) |
+
+**KEIN BESTANDSTEST ROT.** Die +73 verteilen sich auf **50** in `consent.test.ts`
+(dem ersten eigenen Test der Auswertungsregel), **15** in `meta.consent-wire.test.ts`
+und **8** in `generate.test.ts`.
+
+**DER BYTE-BEWEIS:** `buildConsentRuntime` ist **zeichenweise identisch zu vorher** —
+Funktionsrumpf 364 Zeichen davor wie danach, Vergleich gegen `git show HEAD:`. Die
+einzige gelöschte Zeile der ganzen Datei ist der Aufruf in `buildConsentScript`,
+ersetzt durch `buildConsentRuntimes`.
+
+**DIE MUTATIONEN — Vorhersage VOR dem Lauf, dann Ergebnis:**
+
+| | Mutation | Vorhersage | Ergebnis |
+|---|---|---|---|
+| **M1** | zweimal ziehen statt einmal | 5, namentlich genannt | **5, exakt diese** |
+| **M3** | Kennung an zwei Stellen | 2 | **2, exakt diese** |
+| **M4a** | Wache 1 (Script-Load) entfernt | 2 | **2, exakt diese** |
+| **M4b** | Wache 2 (Pixel-Aufrufe) entfernt | 1 sicher, zweiter unsicher | **2 — Zahl passt, IDENTITÄT nicht** |
+| **M4c** | Wache 3 (Bestätigung) entfernt | 1 | **1, exakt dieser** |
+| **M4d** | Wache 4 (Untergrenze) entfernt | 2 | **2, exakt diese** |
+
+**KEINE MUTATION BLIEB GRÜN. M2 ENTFIEL ERSATZLOS** — es gibt keinen Zweig "Liste nicht
+ermittelbar", weil die gewählte Quelle nicht fehlschlagen kann.
+
+**M1 IST DER TEST DIESER HÄLFTE, und seine Trefferverteilung ist selbst eine Aussage:**
+**fünf Tests fallen — DREI auf der Wirkungs-Ebene und ZWEI auf der Text-Ebene**, und
+**alle fünf stammen aus dieser Sitzung**. **Der gesamte Bestand ist gegen zweimaliges
+Ziehen BLIND.** Das ist kein Vorwurf an ihn: Er wurde geschrieben, als zweimaliges
+Ziehen der Normalzustand war.
+
+##### Die vier Wachen-Mutationen — GEDECKT IST NICHT GLEICH GUT GEDECKT
+
+**Der wertvollste Punkt dieses Baus, und er wäre ohne die Mutationen unsichtbar
+geblieben.** Alle vier Wachen sind gedeckt — aber **wie stark**, geht weit auseinander:
+
+- **Der BEACON fällt mit ZWEI Fällen** (ein Text-Wächter, ein Wirkungs-Test).
+- **Die BESTÄTIGUNG fällt mit EINEM** — **und der liegt nur auf der TEXT-Ebene.** Der
+  Grund ist keine Nachlässigkeit, sondern eine Eigenschaft des Gegenstands:
+  `__psConfirm` **puffert**, solange das Fremdscript nicht geladen ist. Ohne eine
+  Simulation des Ladevorgangs ist "sie wurde nicht gerufen" von "sie hat gepuffert"
+  nicht zu unterscheiden. **Der Test benennt sich deshalb selbst als einziger Wächter
+  seiner Wache.**
+
+**DER SCHWERWIEGENDSTE BEFUND, und er kam aus M4b:** Rot wurde **nicht** der
+Wirkungs-Test der Wache 2, sondern der des Beacons — **weil `fbq(...)` ohne geladenen
+Bootstrap einen Wurf erzeugt**. Der Wurf verschluckt den Beacon; **in Produktion nähme
+er den REDIRECT mit**, denn der Klick-Handler in `buildWiringScript` sichert nicht ab.
+**DIE WACHE SCHÜTZT DAMIT DIE KERNFUNKTION DER KUNDENSEITE, NICHT NUR DAS TOR.**
+**PRÄZISIERUNG GEGENÜBER DEM AUFTRAGSTEXT, weil die Bedingung enger ist als "bei
+verbotenem Ziel":** Der Wurf tritt ein, wenn **METAS Ziel verboten und mindestens ein
+ANDERES erlaubt** ist. Sind alle verboten, kehrt Wache 4 vorher zurück, und es
+passiert gar nichts.
+
+##### Drei Auslegungen, die über die Owner-Entscheidungen hinausgingen
+
+Sie stehen hier, weil ein späterer Leser sonst im Code eine Form findet, die in keiner
+Entscheidung steht.
+
+**(1) DIE LESART VON E4.** "Bootstrap unverändert" liess zwei Lesarten zu. Bliebe er
+**wörtlich** unverändert, zöge er weiter selbst — beim ersten Klick gäbe es **zwei**
+Ziehungen, und die tragende Entscheidung wäre nicht eingelöst. Gebaut ist deshalb: **die
+Wache bleibt an ihrem Ort, mit ihrer Rolle und ihrem Fail-closed-Verhalten; ihre QUELLE
+wechselt** — `__psMetaInit` bekommt das Urteil übergeben. **Ohne Ziel-Liste bleibt sie
+wörtlich wie zuvor.**
+
+**(2) DER LEERE FALL WAR NICHT ABGEDECKT — und hätte Invariante 1 gebrochen.** Die
+Vorsorge-Klausel zielt auf einen FEHLSCHLAG. **Eine leere Liste entsteht aber ohne
+jeden Fehler:** ein Projekt mit `trackingKey`, aber ohne eine einzige Kennung — seit
+der achten Scheibe sendet ein solches Projekt Server-Ereignisse. Ein leeres Feld hätte
+ihm den Forward **rückwirkend** genommen, sobald jemand später eine Kennung einträgt,
+ohne neu zu veröffentlichen. **Gebaut ist deshalb: leere Liste -> der erzeugte Text ist
+wörtlich der von vor dieser Hälfte.** Kein leeres Feld, und keine neue Bauform.
+
+**(3) EINE GEFAHR AUS DEM PLAN IST GEGENSTANDSLOS — gemessen.** Der Stufe-1-Plan warnte,
+eine ungespeicherte Kennungs-Änderung könne Draht und Auflösung auseinanderlaufen
+lassen. **`publishProject` schreibt `settings` in dieselbe Zeile, aus der
+`getCapiConfigByTrackingKey` liest** — beim Publish stammen Draht und Auflösung aus
+EINEM Objekt in EINER Operation. Es bleibt allein der bekannte "Republish
+fehlt"-Fall.
+
+##### Eine Werkzeug-Lektion aus diesem Bau
+
+**GEMELDET, weil sie allgemein ist und weil ein späterer Leser sonst nicht weiss, dass
+der Arbeitsbaum in dieser Sitzung kurzzeitig verloren war.**
+Für eine Gegenprobe entstand eine Wegwerf-Testdatei, die `git stash` und `git stash pop`
+**innerhalb des Tests** ausführte. Der Testlauf führte das aus: **der gesamte Bau lag
+für einen Moment im Stash, der Arbeitsbaum stand auf HEAD.** Aufgefallen ist es an
+Marker-Proben (vier Suchbegriffe, kein Treffer), behoben mit `git stash pop`,
+**verifiziert über die unveränderte Testzahl.**
+**DIE REGEL: Kein zustandsänderndes Git-Kommando gehört in eine Datei, die ein
+Testlauf ausführt.** Verwandt mit der bestehenden Werkzeug-Regel zu `sed -i`, aber
+schärfer — dort ging es um eine stille Änderung, hier um den kompletten Arbeitsstand.
+
+### DER OFFENE BEFUND — DER ERSTE KLICK NACH DEM LADEN
+
+**DIESER BEFUND IST ÄLTER ALS DIESE HÄLFTE.** Stefan hat dasselbe Muster schon vor
+diesem Bau gesehen; er ist also **keine Folge** der Umstellung. Er steht hier, weil er
+in dieser Sitzung zum ersten Mal systematisch eingekreist wurde.
+
+**DAS MUSTER:** Beim **ersten** Conversion-Klick nach einem Seitenladen erscheint bei
+Meta nur das **BROWSER**-Ereignis, nicht das Server-Ereignis. Beim **zweiten** Klick
+erscheinen **beide**. **Im Netzwerk-Tab sind in beiden Fällen alle Beacons sichtbar.**
+
+**WAS GEMESSEN IST — Provenienz: Beobachtungen von Stefan am 2026-08-08, NICHT von mir
+nachgeprüft:**
+- Der Beacon geht beim ersten Klick hinaus, **mit vollständigem Payload**.
+- **Das Cookie des Anbieters ist bereits vorhanden.** Die naheliegende Vermutung, es
+  fehle beim ersten Klick, ist damit **WIDERLEGT**.
+  **DAS IST BEMERKENSWERT, und zwar am eigenen Code:** `buildCapiBeaconStatement` trägt
+  den Kommentar, das Cookie fehle beim ersten Klick unter Umständen ("lazy init im
+  selben Klick") und werde dann weggelassen. **Die Messung zeigt den anderen Fall.**
+- Der Handler läuft durch und antwortet mit der **leeren 204**.
+- Im Ausführungsprotokoll steht der **ausgehende Aufruf an den Anbieter**, und unser
+  Fehlerpfad hat **NICHT** angeschlagen.
+- Unter der Diagnose des Anbieters steht **keine Meldung**.
+
+**DIE FORMULIERUNG, DIE DEN BEFUND TRÄGT: DER FORWARD GING NACHWEISLICH HINAUS; OB ER
+VOM ANBIETER ANGENOMMEN ODER VERWORFEN WURDE, IST MIT UNSEREN MITTELN NICHT
+FESTSTELLBAR.**
+
+**WARUM NICHT — am Code belegt:** Unsere Fehlerdeutung hängt am **HTTP-Status**;
+`forwardToMeta` verzweigt auf `res.ok`, und die Deutung läuft **nur innerhalb** dieses
+Zweigs. **Ob dieser Anbieter mit Erfolg antwortet und ein Ereignis trotzdem verwirft,
+ist NIE GEMESSEN worden.**
+**UND HIER SCHLIESST SICH EIN KREIS, DER SCHON AUFGESCHRIEBEN IST:** Für das ZWEITE
+Ziel steht genau dieser zweite Fehlerweg als Auflage im Dokument (s. "### Die
+Anbieter-Befunde zum zweiten Ziel", Punkt (b)) — **für das erste haben wir ihn nie
+gebraucht und deshalb nie geprüft.** **"Kein Fehler" heisst also: KEIN FEHLER, DEN
+UNSER ADAPTER ERKENNEN KANN.**
+
+**DIE PLAUSIBELSTE ERKLÄRUNG — ausdrücklich VERMUTUNG, nicht Befund:** Die
+Deduplizierung des Anbieters könnte bei fast gleichzeitigem Eintreffen das
+Browser-Ereignis bevorzugen. Beim ersten Klick geht der Server-Beacon hinaus, **bevor**
+das Fremdscript bereit ist; beim zweiten ist die Reihenfolge umgekehrt. **NICHT
+NACHPRÜFBAR — der Beleg läge im System des Anbieters.**
+
+**EINSCHÄTZUNG DES OWNERS — als EINSCHÄTZUNG und nicht als Feststellung:** Im echten
+Betrieb sei das Risiko gering, weil Nutzer erst nach der Initialisierung klicken.
+**NICHT GEMESSEN** — hängt an Ladezeiten, Netzqualität und Klickverhalten.
+
+**WAS NICHT ERHOBEN WURDE und beim nächsten Mal dazugehört:** ob der **Statistik-Zähler**
+nach dem ersten Klick allein stieg. **Er ist die einzige Sonde, die wir selbst
+kontrollieren** — sie trennt "unser Persist lief" von "der Anbieter hat es verworfen",
+und genau diese Trennung fehlt dem Befund heute.
+
+### Ein Punkt, der den Architekten betrifft — FÜNF ABWEICHUNGEN, VIER OHNE MESSUNG
+
+**ÜBERSCHRIFTEN-STEMPEL, 2026-08-08:** Diese Überschrift hiess "VIER ANGABEN OHNE
+MESSUNG", während der Rumpf darunter **fünf** Abweichungen aufzählte. Die
+Unterscheidung ist begründbar (vier Angaben ohne Messung plus eine falsche Zuordnung),
+aber sie war im Kopf nicht sichtbar. **NACHGEZOGEN, weil ein Block über ungeprüfte
+Zahlen der letzte Ort ist, an dem eine Zahl im Kopf nicht zum Rumpf passen darf.**
+
+**Er gehört ins Protokoll, weil er eine bestehende Regel bestätigt und eine NEUE
+Anwendung derselben zeigt.**
+
+**IN DIESER SITZUNG STANDEN VIER ANGABEN IN EINER COMMIT-MESSAGE, die aus keinem
+Bericht stammten** — vom Architekten geschrieben. Sie wurden gegen die eigenen Läufe
+geprüft und **korrigiert, BEVOR committet wurde**.
+
+**PRÄZISIERUNG GEGENÜBER DER FORMULIERUNG DES AUFTRAGS, und sie schwächt den Punkt
+nicht ab:** **DREI** davon waren Zahlen bzw. Zahl-Aussagen (die Testzahl; "M1 fällt mit
+genau einem Test"; "der Beacon fällt mit 17 Fällen"), **die vierte war keine Zahl,
+sondern eine Aussage über die gebaute FORM** ("bei 'kein Ziel erlaubt' entsteht die
+Kennung umsonst" — gebaut ist das Gegenteil, die Wache steht davor). **Dazu kam eine
+fünfte Abweichung**, die kein Messwert war, sondern eine falsche Zuordnung im
+fbq-Absatz. **Die Zahl "vier" beschreibt also die Meldung, nicht die Fehlerklasse.**
+
+**DIE FEHLERRICHTUNG GEHÖRT DAZU, und sie ist der eigentliche Gehalt:** Alle klangen
+**PLAUSIBLER als die Wahrheit**. "Genau ein Test fällt" ist die elegantere Geschichte
+als "fünf fallen"; "die Kennung entsteht umsonst" ist die interessantere Pointe als
+"die Wache steht davor". **Die Prosa wurde optimiert, und dabei entstanden Zahlen.**
+
+**DIE REGEL DAGEGEN EXISTIERT BEREITS** — dieses Dokument verlangt für jede Zahl eine
+Provenienz. **Sie wurde bisher nur gegen DOKUMENTE angewandt. Sie gilt genauso für
+Text, den der Architekt gerade selbst geschrieben hat.**
+
+**UND WARUM EINE COMMIT-MESSAGE DER SCHLIMMSTE ORT DAFÜR IST: Sie wird später als BELEG
+gelesen, nicht als Kommentar.** Ein Dokument lässt sich richtigstellen; eine
+veröffentlichte Commit-Message nur um den Preis eines Force-Push.
+
+##### Was diese Scheibe ausdrücklich NICHT geleistet hat
+
+- **ES SENDET NICHTS AN EIN ZWEITES ZIEL.** Kein Adapter — das ist die zehnte Scheibe.
+- **DER DRAHT TRÄGT DEN ZWEITEN SCHLÜSSEL, OHNE DASS IHN JEMAND LIEST.** Der Server
+  entscheidet je Ziel, findet aber keinen Empfänger.
+- **BESTEHENDE SEITEN TRAGEN IHN NICHT.** Ohne Republish bleibt alles wie zuvor — und
+  das ist die Zusage, nicht die Einschränkung.
+- **DIE DOPPELTE ZIEHUNGS-ZEILE** in der Auswertung bleibt. Sie ist der Preis der
+  Byte-Gleichheit, an beiden Stellen kommentiert und als Backlog-Kandidat gemeldet.
+- **DIE VORSORGE-KLAUSEL HAT KEINE CODE-STELLE**, weil die gewählte Quelle nicht
+  fehlschlagen kann. **Sie bleibt Auflage im Dokument** — bindend für jede künftige
+  Quelle, die schweigen kann.
+- **DER CONSENT-SCHLÜSSEL DES ZWEITEN ZIELS IST NICHT UMGEZOGEN**, und der Umzug ist
+  **GEGENSTANDSLOS geworden, nicht verschoben**: Die Liste entsteht aus einer
+  Konstanten, der Schlüssel wird über die Abbildung nachgeschlagen, und beide Orte sind
+  gleich unumkehrbar. **DIE AUFLAGE AUS DER HÄLFTE A IST DAMIT ERFÜLLT.** Wer später
+  einen Umzug sucht, sucht etwas, das nie fällig wurde.
+- **DER BEFUND ZUM ERSTEN KLICK IST NICHT GELÖST** (s. den eigenen Block oben).
+
+##### Welche Stufe-1-Fragen der HÄLFTE B beantwortet sind
+
+Alle sechs aus "#### Was der Stufe-1-Plan der HÄLFTE B beantworten MUSS":
+1. **Woraus entsteht die Liste, und kann sie fehlschlagen?** Aus `TRACKING_TARGETS`,
+   gefiltert nach gesetzter Kennung, abgebildet über `CONSENT_KEY_BY_TARGET`.
+   **Sie kann nicht fehlschlagen.**
+2. **Welche Form nimmt die Regel-Erweiterung, bleibt die Einzel-Antwort byte-gleich?**
+   Zwei Funktionen; die alte unangetastet. **Byte-gleich, gemessen.**
+3. **Was geschieht mit der zweiten Prüfung im Bootstrap?** Sie bleibt, ihre Quelle
+   wechselt (s. Auslegung 1).
+4. **Was tritt an die Stelle des Total-Abbruchs, und wo entsteht die Kennung?** Vier
+   einzelne Wachen; die Kennung **vor** ihnen, an genau einer Stelle.
+5. **Was geschieht bei "kein Ziel erlaubt"?** Wache 4 kehrt zurück — **vor** der
+   Kennung. Es passiert nichts.
+6. **Zieht der Consent-Schlüssel um?** **Nein, und der Umzug ist gegenstandslos**
+   (s. oben).
+
+### DIE NEUNTE SCHEIBE IST ABGESCHLOSSEN — DIE VERDICHTUNG
+
+**Der Moment, den das Protokoll der HÄLFTE A angekündigt hat, ist eingetreten.** Dort
+stand: "Die Verdichtung kommt mit dem Abschluss der zweiten Hälfte, nicht davor." Sie
+folgt hier, Punkt für Punkt, **und es wird NICHTS gelöscht** — Abgelaufenes wird
+markiert, damit die Herleitung lesbar bleibt.
+
+**DIE FÜNF PUNKTE, DIE DIE HÄLFTE A FÜR DIE HÄLFTE B STEHEN LIESS:**
+
+1. **"N URTEILE SIND HEUTE N ZIEHUNGEN" — EINGELÖST, ABGELAUFEN.** Es ist jetzt EINE
+   Ziehung, und sie ist per Test bewiesen.
+2. **"DIE ZAHL DER FRAGESTELLEN UND DIE ZAHL DER HOOK-AUFRUFE SIND VERSCHIEDENE
+   GRÖSSEN" — BLEIBT, und sie ist SCHÄRFER GEWORDEN.** Der neue Pfad hat EINE
+   Fundstelle und EINEN Aufruf; der alte hat ZWEI Fundstellen und je nach Klick-Nummer
+   einen oder zwei Aufrufe. **Wer die Zähl-Wächter liest, muss ab jetzt wissen, WELCHEN
+   Pfad sie zählen** — sie decken seit dieser Hälfte nur noch den alten.
+3. **"DIE REDUNDANZ SKALIERT NICHT MIT" — EINGELÖST, ABGELAUFEN.** Aus der einen Wache
+   für alles sind vier Wachen für je eines geworden; der Total-Abbruch ist ersetzt.
+4. **"KEIN TEST DECKT EINEN HOOK, DER VERSCHIEDEN ANTWORTET" — EINGELÖST, ABGELAUFEN.**
+   Es gibt jetzt zwei: einen in `consent.test.ts` (an der Regel) und einen in
+   `generate.test.ts` (am fertigen Dokument). **Ebenso ABGELAUFEN sind die VIER
+   divergenzfähigen Werte**, die im Kopf der HÄLFTE B als ihr Preis geführt wurden —
+   sie können auf der Klick-Seite nicht mehr auseinanderlaufen.
+   **DIE GRENZE, DIE BLEIBT: für den PageView-Emitter ist das gegenstandslos, nicht
+   gelöst** — anderes Ereignis, anderer Gültigkeitsbereich, anderer Schlüssel.
+5. **"`configuredTargets` IST BEI JEDEM FEHLER LEER" — NICHT eingelöst, aber
+   UMGEWIDMET.** Für diese Scheibe ist der Punkt **gegenstandslos geworden**, weil die
+   Liste nicht von dort kommt. **Er bleibt ein Befund über die OBERFLÄCHE** (die Karte
+   kann "Fehler" nicht von "nichts konfiguriert" unterscheiden) und gehört ab jetzt
+   dorthin, nicht mehr zu dieser Scheibe.
+
+**WAS AUS DEM ZUSCHNITT DER BEIDEN HÄLFTEN ABLÄUFT:** die sieben Verhaltens-Invarianten
+der HÄLFTE B und die sechs der HÄLFTE A — sie waren Auflagen an einen Bau, der
+stattgefunden hat, und sind im Protokoll je einzeln quittiert. **Die Ausschlusslisten
+laufen ebenfalls ab, mit ZWEI Ausnahmen, die weitergelten:** die **Wurf-Lücke**
+ausserhalb der Absicherung und der **Array-Riegel** — beide stehen als
+Backlog-Kandidaten und sind von keiner Scheibe erledigt.
+
+**WAS BINDEND BLEIBT — SIEBEN, einzeln benannt.** Die Aufzählung steht hier, damit die
+Zahl eine Quelle hat und nicht nachträglich passend gemacht werden muss:
+
+1. **"FRAGESTELLEN UND HOOK-AUFRUFE SIND VERSCHIEDENE GRÖSSEN"** — als Regel, jetzt
+   schärfer: die Zähl-Wächter decken nur noch den ALTEN Pfad.
+2. **`configuredTargets` IST BEI JEDEM FEHLER LEER** — umgewidmet zum Befund über die
+   OBERFLÄCHE, nicht mehr über diese Scheibe.
+3. **DIE WURF-LÜCKE AUSSERHALB DER ABSICHERUNG** — Backlog, **seit der fünften Scheibe
+   offen und in dieser zum zweiten Mal gemessen.**
+4. **DER ARRAY-RIEGEL** — im Server-Leser vorhanden, in der Browser-Regel nicht; kein
+   Verhaltensunterschied, aber einer in der Absicht. Backlog.
+5. **DIE DOPPELTE ZIEHUNGS-ZEILE** in der Auswertung — der Preis der Byte-Gleichheit,
+   an beiden Stellen kommentiert. Backlog.
+6. **DIE VORSORGE-KLAUSEL "kein leeres Feld, lieber gar keins"** — ohne Code-Stelle,
+   weil die heutige Quelle nicht fehlschlagen kann; bindend für jede künftige, die
+   schweigen kann.
+7. **DER OFFENE BEFUND ZUM ERSTEN KLICK NACH DEM LADEN** — s. den eigenen Block oben.
+
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WIRD:** die gemessenen Ausgangslagen beider
+Hälften und die Befunde, die sie tragen. **Sie sind die HERLEITUNG** — wer nur das
+Ergebnis liest, kann nicht mehr prüfen, ob die Entscheidung richtig war.
 
 ---
 

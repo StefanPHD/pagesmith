@@ -5393,23 +5393,58 @@ ist offen.
 achte Scheibe hat sie als Bindung festgeschrieben. **Der Befund lockert die
 Anforderung für EIN Ziel, nicht die Invariante.**
 
-**(g) DIE OBERFLÄCHEN-BESCHRIFTUNGEN — UND HIER WEICHE ICH VOM AUFTRAG AB, WEIL
-ZWEI ANGABEN NICHT STIMMEN.**
-*Ablesung von Stefan am 2026-08-07:* Der Betreiber sieht im Anbieter-Konto eine
-**Konto-Kennung** und ein **Zugriffstoken**.
-**ERSTE ABWEICHUNG — "im Wortlaut" liegt nicht vor.** Der Auftrag verlangt die
-Beschriftungen im Wortlaut und liefert zwei deutsche BESCHREIBUNGEN. **Ich schreibe
-keine erfundenen Anbieter-Labels hin**; was hier steht, ist die Beschreibung, und
-sie ist als solche gekennzeichnet.
-**ZWEITE ABWEICHUNG — "sie sind bereits in der Karte übernommen" trifft nicht zu.**
-*Am eigenen Code nachgemessen (2026-08-08):* Die Karte trägt für dieses Ziel
-`publicLabel: "Pinterest-Tag-ID"` und `secretLabel: "Pinterest-Zugangsdaten"` —
-**das sind nicht die abgelesenen Begriffe.**
-**WAS ICH NICHT ENTSCHEIDEN KANN, und ich sage es statt es zu plausibilisieren:**
-ob die Karte die Anbieter-Begriffe spiegeln SOLL (dann fehlt eine Änderung) oder ob
-sie bewusst eigene Worte führt (dann ist die Aussage im Auftrag schlicht falsch).
-**Beides ist vertretbar; das Dokument darf hier nicht raten.** Der Zuschnitt der
-zehnten Scheibe hat es zu klären.
+**(g) DIE DREI GRÖSSEN DES ZWEITEN ZIELS — RICHTIGGESTELLT AM 2026-08-08, NICHT
+GESTEMPELT.**
+
+**WAS HIER STAND UND WARUM ES WEICHT:** Punkt (g) trug eine OFFENE FRAGE — ob die
+Karte die Anbieter-Begriffe spiegeln solle —, weil zwei Angaben des damaligen
+Auftrags nicht trugen: die Beschriftungen lagen nicht im Wortlaut vor, und die
+Behauptung, sie seien in der Karte bereits übernommen, war am Code widerlegt.
+**BEIDE MELDUNGEN WAREN RICHTIG UND SIND DER ANLASS DIESER RUNDE.** Ersetzt wird
+die offene FRAGE, nicht der Befund: Das Material liegt jetzt vor, und es ist mehr
+als eine Beschriftung.
+**RICHTIGGESTELLT und nicht gestempelt, weil dieser Punkt eine VORGABE für einen
+kommenden Zuschnitt ist.** Eine Vorgabe, die als offene Frage stehenbleibt, während
+die Antwort daneben steht, schickt den Zuschnitt auf eine Suche, die schon erledigt
+ist — dieselbe Behandlung wie bei der Consent-Gate-Vorgabe in CLAUDE.md.
+
+**PROVENIENZ, DREIFACH GETRENNT — sie bestimmt, was von jeder Zeile zu halten ist:**
+- **DIE SCHNITTSTELLEN-NAMEN:** *Anbieter-Doku, gelesen am 2026-08-08.*
+- **DIE ZAHLEN und die Feststellung, dass es ZWEI Kennungen sind:** *von Stefan am
+  2026-08-08 im eigenen Live-Konto abgelesen.*
+- **DER ZUSTAND DER KARTE:** *am eigenen Code gemessen (2026-08-08).*
+
+**ES SIND DREI GRÖSSEN, UND DER KERN IST, DASS ES DREI SIND UND NICHT ZWEI:**
+1. **DIE KONTO-KENNUNG.** In der Schnittstelle `ad_account_id`; sie steht im
+   Endpunkt-PFAD. *Im Konto abgelesen: ZWÖLFSTELLIG.*
+2. **DAS GEHEIMNIS.** In der Schnittstelle `access_token`; es reist als Bearer im
+   `Authorization`-HEADER. In der Anbieter-Oberfläche heisst es **"Conversion
+   Token"**.
+3. **DIE TAG-KENNUNG.** Sie gehört zum BROWSER-TAG. *Im Konto abgelesen:
+   DREIZEHNSTELLIG.* **WIR INJIZIEREN KEIN BROWSER-TAG** (s. Punkt (f)) — **sie
+   kommt im Server-Aufruf NICHT VOR.**
+
+**(1) UND (3) SIND ZWEI VERSCHIEDENE NUMMERN** — gemessen, nicht hergeleitet:
+zwölf Stellen gegen dreizehn, beide im selben Konto abgelesen.
+
+**DAMIT BENENNT (g), WAS (a) NUR BESCHRIEB.** Punkt (a) sagte "eine KONTO-KENNUNG
+im Pfad" und "das Geheimnis als Bearer"; hier stehen die Feldnamen dazu. **Die
+Provenienzen bleiben getrennt** — (a) stammt aus der Doku-Lesung vom 2026-08-07,
+diese Namen aus der vom 2026-08-08.
+
+**WAS ICH DAVON NICHT PRÜFEN KANN, und ich sage es, statt zu plausibilisieren:**
+Die Schnittstellen-Namen `ad_account_id` und `access_token`, die
+Oberflächen-Bezeichnung "Conversion Token" und **beide Stellenzahlen** sind mir als
+ANGABEN übergeben worden. Ich habe weder die Anbieter-Doku noch das Konto gesehen.
+**Sie sind AUFGENOMMEN, nicht verifiziert** — es gilt "#### Die Grenze dieser
+Aufnahme" unverändert.
+**WAS ICH SEHR WOHL GEMESSEN HABE:** den Zustand der Karte. Er steht in der Auflage
+darunter, nicht hier — er ist kein Anbieter-Befund.
+
+**WAS AUS DIESEM PUNKT FOLGT, STEHT NICHT HIER**, weil es keine Aussage über den
+Anbieter mehr ist, sondern eine Auflage an unseren Code: s. "### Die Auflage aus
+Punkt (g) — DIE KARTE FRAGT HEUTE NACH DER FALSCHEN KENNUNG" und "### Die Frage,
+die grösser ist als die Beschriftung — OFFEN, NICHT ENTSCHIEDEN".
 
 #### Die Grenze dieser Aufnahme
 
@@ -5604,6 +5639,125 @@ war das eine Herleitung; ab ihr trifft es echte Projekte.**
 der Besucher nie gefragt wurde) — **fehlend ist die MITTEILUNG an den Betreiber.**
 Sie steht als Backlog-Kandidat im Protokoll der fünften Scheibe und ist von dort
 zu holen, nicht hier zu lösen.
+
+### Die Auflage aus Punkt (g) — DIE KARTE FRAGT HEUTE NACH DER FALSCHEN KENNUNG
+
+Aufgenommen am 2026-08-08. **PROVENIENZ, getrennt:** Der Zustand der Karte ist **am
+eigenen Code gemessen (2026-08-08)**; die Grössen, auf die er trifft, stammen aus
+Punkt (g) und tragen dessen Provenienz (Anbieter-Doku und Ablesung im Konto, beides
+NICHT von mir prüfbar).
+
+**DER BEFUND, am Code gemessen:** `TARGET_CARDS.pinterest` trägt
+`publicLabel: "Pinterest-Tag-ID"` und `publicPlaceholder: "z.B. 2612345678901"` —
+**dreizehn Stellen.** Beides zeigt auf die TAG-Kennung, also auf Grösse (3). **Der
+Adapter wird Grösse (1) brauchen**, die Konto-Kennung im Endpunkt-Pfad.
+
+**DIE FEHLERFIGUR, und sie ist in diesem Projekt bekannt:** Der Betreiber trägt eine
+gültig AUSSEHENDE Nummer ein, die Karte zeigt "Zugangsdaten hinterlegt", und der
+Forward liefe gegen ein Konto, das es nicht gibt. **Eine Anzeige, die etwas
+bestätigt, was der Server nicht trägt** — dieselbe Klasse wie der Token-Zwischenfall
+der dritten Scheibe (s. "#### Der Token-Zwischenfall — die stille Fehlerklasse, zum
+ERSTEN MAL beobachtet").
+
+**UND DIE VERWECHSLUNG IST EINGEBAUT, NICHT ZUFÄLLIG:** Beide Zahlen stehen in
+DERSELBEN Anbieter-Oberfläche, beide sehen nach einer Kennung dieses Anbieters aus.
+Der Unterschied ist für UNS architektonisch bedeutsam (Endpunkt-Pfad gegen
+Browser-Tag) und für den BETREIBER unsichtbar. **Die Beschriftung muss die Arbeit
+machen** — es gibt keine zweite Stelle, an der der Unterschied ihm auffiele.
+
+**DASS DIE KARTE SCHON STEHT, MACHT ES DRINGENDER, NICHT WENIGER DRINGEND.** Sie ist
+gebaut, live, und lädt zur Falscheingabe ein. Ein Feld, das es noch nicht gibt, kann
+man beim Bauen richtig beschriften; eines, das steht, sammelt bis dahin falsche
+Werte ein.
+
+**DIE STELLENZAHL IST EIN PRÜFBARES MERKMAL** — zwölf gegen dreizehn:
+- **Als Platzhaltertext im Feld ist sie die billigste verfügbare Hilfe.** Heute steht
+  dort die falsche.
+- **OB DARAUS EINE EINGABE-PRÜFUNG WIRD, ENTSCHEIDET DER ZUSCHNITT.** Hier wird es
+  ausdrücklich NICHT entschieden.
+- **VERLASSEN DARF SICH NIEMAND DARAUF: Anbieter ändern Formate.** Eine Prüfung auf
+  eine Stellenzahl wäre eine HILFE gegen Vertipper, KEINE Zusicherung über die
+  Gültigkeit des Kontos.
+
+**KEIN PRODUKTIVCODE IN DIESER RUNDE.** Die Karte ist NICHT geändert worden; hier
+steht die Auflage, nicht ihre Umsetzung.
+
+### Die Frage, die grösser ist als die Beschriftung — OFFEN, NICHT ENTSCHIEDEN
+
+**DIE SECHSTE SCHEIBE HAT DIE ABLAGE UNTER EINER ANNAHME GEBAUT:** dass das
+öffentliche Feld eine PIXEL-ID-artige Angabe ist. **Für dieses Ziel ist es eine
+KONTO-Kennung.** Formal dasselbe — ein String im Einstellungs-Blob —, inhaltlich
+etwas anderes.
+
+**OB DARAUS EINE UMBENENNUNG IM DATENMODELL FOLGT ODER NUR EINE IN DER
+BESCHRIFTUNG, ENTSCHEIDET DER ZUSCHNITT DIESER SCHEIBE.** Hier steht ausschliesslich,
+was eine Umbenennung KOSTEN würde.
+
+#### Die Zeiger-Prüfung — am eigenen Code gemessen am 2026-08-08
+
+**WIE DAS ÖFFENTLICHE FELD HEUTE HEISST — ZWEI EBENEN, und sie kosten verschieden
+viel:**
+- **(1) DER JSON-SCHLÜSSEL IM GESPEICHERTEN BLOB:** `settings.pixels.<ziel>.pixelId`,
+  deklariert als `ProjectSettings` in `src/lib/settings.ts`. Der Zwischenknoten heisst
+  `pixels`, das Blatt `pixelId`. **BEIDE Namen tragen die Annahme.**
+- **(2) DIE SYMBOLNAMEN IM CODE:** `getPixelId`/`setPixelId` und die Meta-Sonderfälle
+  `getMetaPixelId`/`setMetaPixelId` (`src/lib/settings.ts`); das Typfeld
+  `CapiConfig.pixelId` (`src/lib/capi/token.ts`); die Requisiten `pixelId` und
+  `onPixelIdChange` (`TargetCard`) sowie `pixelIdFor` und `onPixelIdChange`
+  (`MeasureView`); die Erzeuger-Option `metaPixelId` (`generate.ts`).
+
+**WER ES LIEST UND SCHREIBT — gemessen, mit Symbolnamen:**
+- **`getPixelId` ist die EINZIGE Lesestelle des Blattes**; alles andere geht durch
+  sie. Aufrufer: `getMetaPixelId`, `settingsEqual` (Dirty-Vergleich über ALLE
+  `TRACKING_TARGETS`), `getCapiConfigByTrackingKey` (der Auflösungs-Pfad des
+  Forwards) und `CodeImporter` — dort zweimal als `metaPixelId` an die Erzeugung und
+  einmal als `pixelIdFor` an `MeasureView`.
+- **`setPixelId` ist die einzige Schreibstelle.** Aufrufer: `setMetaPixelId` und
+  `CodeImporter` (über `onPixelIdChange`).
+- **DER WERT VERLÄSST DEN BLOB IN ZWEI RICHTUNGEN:** in den Endpunkt-PFAD
+  (`forwardToMeta` in `src/lib/capi/meta-forward.ts` baut
+  `.../${config.pixelId}/events`) und in den erzeugten Browser-Code
+  (`buildMetaRuntime` in `src/lib/tracking/meta.ts`, als `PS_PIXEL_ID`).
+- **UMFANG:** 23 Dateien nennen einen dieser Namen — **8 Produktivdateien**
+  (`settings.ts`, `capi/token.ts`, `capi/meta-forward.ts`, `generate.ts`,
+  `tracking/meta.ts`, `TargetCard.tsx`, `MeasureView.tsx`, `CodeImporter.tsx`) und
+  15 Testdateien.
+
+**BRÄCHE EINE UMBENENNUNG ZEIGER? JA — UND DIE ZWEI EBENEN BRECHEN VERSCHIEDEN. Das
+ist die Antwort:**
+- **DIE SYMBOL-EBENE BRICHT LAUT.** Eine Umbenennung von `getPixelId` und Verwandten
+  ist mechanisch: TypeScript zeigt jede Fundstelle, der Build wird rot. **Teuer, aber
+  ungefährlich.**
+- **DIE BLOB-EBENE BRICHT STILL, und das ist der eigentliche Befund.**
+  `projects.settings` ist CLIENT-besessen und wird von `saveProject` GANZHEITLICH
+  ersetzt. Ein Blob aus der Zeit davor trägt `pixelId`; Code, der einen neuen Namen
+  läse, bekäme `""`. **Und `""` ist im Auflösungs-Pfad kein Fehler, sondern ein
+  FILTER:** `getCapiConfigByTrackingKey` verwirft Einträge mit leerer Kennung.
+  **Der Forward hörte auf, ohne dass irgendwo etwas rot wird.**
+- **UND ES GIBT EINE AUSDRÜCKLICHE ENTSCHEIDUNG GEGEN GENAU DAS, am Code gemessen:**
+  Der Kommentar an `getPixelId` hält fest, dass es KEINEN Alt-Blob-Rückfall gibt —
+  und zwar deshalb, weil sich die FORM bei der Ziel-Parametrisierung nicht geändert
+  hat ("Alt und neu sind DIESELBE Form"). **Eine Umbenennung des Blattes schafft
+  genau den zweiten Lesepfad, den jene Scheibe vermieden hat.**
+
+**EIN NEBENBEFUND AUS DERSELBEN MESSUNG, und er ist ein STEHENGEBLIEBENER ZEIGER:**
+`getMetaPixelId` und `setMetaPixelId` haben **KEINEN Aufrufer im Produktivcode** —
+nur Tests rufen sie. Drei Stellen behaupten das Gegenteil: der Kommentar an
+`getMetaPixelId` selbst ("capi/token.ts ruft sie im Aufloesungs-Pfad des Forwards
+auf"), der Kommentar in `getCapiConfigByTrackingKey` ("settings reitet weiter in
+DERSELBEN Projektion mit (fuer getMetaPixelId)") und der Brücken-Test in
+`settings.targets.test.ts`. **Der Aufruf ist seit der Ziel-Parametrisierung
+`getPixelId`** — der Kommentar zwei Zeilen darüber sagt das sogar ("getPixelId statt
+getMetaPixelId"). **GEMELDET, NICHT GEÄNDERT:** kein Produktivcode in dieser Runde.
+Es verschiebt die Kostenrechnung oben in EINE Richtung — jene beiden Symbole sind
+billiger umzubenennen, als ihre Kommentare vermuten lassen.
+
+**WAS DAS FÜR DEN ZUSCHNITT HEISST — als Aufstellung, NICHT als Empfehlung:** Eine
+Änderung nur an der BESCHRIFTUNG (`publicLabel`, `publicHint`, `publicPlaceholder`
+in `TARGET_CARDS`) kostet eine Datei und keinen Zeiger. Eine Umbenennung der SYMBOLE
+kostet 23 Dateien und keinen stillen Bruch. Eine Umbenennung des JSON-SCHLÜSSELS
+kostet zusätzlich einen Wanderungspfad für bestehende Blobs — **oder sie bricht
+still. WELCHE davon nötig ist, ist hier NICHT entschieden.**
 
 ---
 

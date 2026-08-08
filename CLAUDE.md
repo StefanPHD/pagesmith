@@ -529,12 +529,23 @@ keine Statusänderung für etwas, das noch nicht existiert.
   aber der CAPI-Call selbst muss zuverlässig zugestellt werden.
   SOLL UND IST FALLEN HIER AUSEINANDER — getrennt aufgeschrieben am 2026-08-05, weil der
   Satz darüber sonst als Beschreibung des heutigen Codes gelesen wird und er ist es nicht:
-  - IST, GEMESSEN am 2026-08-05 in handleIngest (src/lib/capi/ingest.ts): Der Meta-Forward
+  - IST, GEMESSEN am 2026-08-05, am 2026-08-08 erneut am Code erhoben: Der Meta-Forward
     wird mit await IM REQUEST erwartet, gedeckelt per AbortController auf
     META_FORWARD_TIMEOUT_MS; das abschliessende status(204) steht DAHINTER. Die
     Beacon-Antwort wartet also auf Meta — bis zum Deckel. Der Hintergrund-Mechanismus
     (after aus next/server) existiert im selben Handler, trägt aber NUR den Analytics-
     Persist über schedulePersist, nicht den Forward.
+    WO DAS HEUTE LIEGT — ORTSANGABE RICHTIGGESTELLT (Phase 11 Scheibe 4): Die Messung vom
+    2026-08-05 fand all das in handleIngest (src/lib/capi/ingest.ts), und so stand es hier.
+    Seither liegen Nutzlast-Bau, AbortController, Timer und Fehlerdeutung in
+    src/lib/capi/meta-forward.ts (forwardToMeta); in handleIngest stehen nur noch das await
+    und die 204 dahinter.
+    DER SACHVERHALT SELBST IST UNVERÄNDERT — verschoben hat sich der ORT, nicht das
+    Verhalten. Genau deshalb RICHTIGGESTELLT und NICHT gestempelt: Wäre das Verhalten
+    anders geworden, wäre die alte Messung ein Zeitdokument. So ist sie ein MASSSTAB mit
+    einem toten Verweis — und dieser Block ist der Maßstab, gegen den die nächste Änderung
+    an diesem Pfad misst. Wer den Deckel in ingest.ts sucht und nicht findet, hält ihn für
+    abgeschafft und baut den nächsten Empfänger ohne ihn.
   - SOLL: der Satz oben. Er ist als ABSICHT richtig und wird NICHT gestrichen — er ist nur
     NOCH NICHT EINGELÖST.
   - WARUM ES EINE UMSTELLUNG BRAUCHT UND KEINE STREICHUNG: Beide Hälften gelten
@@ -1304,10 +1315,32 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   muss beim Projektladen am kanonischen Chokepoint aus dem GELADENEN Projekt ABGELEITET
   werden — nicht nur bei Bedarf gelöscht. Dreimal aufgetreten (uploadError -> capiTokenSet
   -> Publish-State). "Löschen" ist die schwächere Regel: sie zeigt einen "war schon mal
-  an"-Zustand (z.B. bereits publiziertes Projekt) fälschlich als aus. Ableiten aus der
-  Wahrheitsquelle (settings.hosting / settings.capi.tokenSet / ...) ist korrekt für beide
-  Fälle. Beim Publish-Leak zusätzlich sicherheitsrelevant: falscher "veröffentlicht"-
-  Zustand könnte Ad-Budget auf die falsche URL lenken.
+  an"-Zustand (z.B. bereits publiziertes Projekt) fälschlich als aus. Beim Publish-Leak
+  zusätzlich sicherheitsrelevant: falscher "veröffentlicht"-Zustand könnte Ad-Budget auf
+  die falsche URL lenken.
+  AUS WELCHER QUELLE — die zweite Hälfte der Regel, und ohne sie führt die erste in die
+  Irre: Ein abgeleiteter Zustand ist nur so gut wie seine Quelle. Behaupten ZWEI Quellen
+  dasselbe, wird die genommen, aus der auch die WIRKUNG gespeist wird — dieselbe Tabelle,
+  dieselbe Zeile, die der ausführende Pfad liest. Ein CLIENT-besessener Blob-Wert ist die
+  SCHWÄCHERE: er überlebt nur, solange der Client ihn zurückspiegelt, und ein alter Tab
+  kann ihn jederzeit überschreiben. BEISPIEL, an dem beide Seiten sichtbar sind: "sind
+  Zugangsdaten für dieses Ziel hinterlegt?" wird aus der Geheimnis-Tabelle abgeleitet
+  (listConfiguredTargets), weil GENAU DIESE Tabelle auch der Forward-Pfad liest
+  (getCapiConfigByTrackingKey) — zwei Wahrheiten werden damit zu einer.
+  RICHTIGGESTELLT (Phase 11 Scheibe 6), Wortlaut vorher: "Ableiten aus der Wahrheitsquelle
+  (settings.hosting / settings.capi.tokenSet / ...) ist korrekt für beide Fälle." DER
+  ZWEITE WERT IST KEINE WAHRHEITSQUELLE MEHR. Am Code gemessen (2026-08-08): getCapiTokenSet
+  hat im Produktivcode KEINEN Aufrufer; settings.capi.tokenSet wird von Server und Client
+  weiterhin GESCHRIEBEN, aber nur noch gelesen, um sich selbst fortzuschreiben. Wer dem
+  alten Beispiel folgte, baute das Gegenteil dessen, was jene Scheibe entschieden hat.
+  RICHTIGGESTELLT und NICHT gestempelt, weil diese Regel eine VORGABE ist: ein Maßstab mit
+  falschen Angaben taugt nicht als Maßstab.
+  settings.hosting BLEIBT als Beispiel richtig — für den CLIENT-seitigen View-State. Es
+  ersetzt NICHT die Regel weiter oben in dieser Sektion, dass die domains-ZEILE die
+  alleinige Wahrheit über "ist dieses Projekt live?" ist; settings.hosting ist deren
+  Spiegel, und der Publish-Pfad leitet aus der Zeile ab, nicht aus dem Spiegel.
+  Die Aufzählung im ersten Satz und das "Dreimal aufgetreten" bleiben unangetastet: sie
+  benennen VIEW-States und eine Historie, nicht Quellen.
 - DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER (Phase 10, an der
   eigenen Doku widerlegt): Wer in Doku, Kommentar oder Backlog auf Code verweist,
   nennt den SYMBOLNAMEN (applyZenForLoadedCode, settingsEqual, statusBadge). Namen
@@ -1443,11 +1476,23 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   hinterlegt; er überlebt jeden Kontextwechsel und ist genau das, wofür ein Signal
   existiert. Die alte Regel wurde in diesem Fall in die falsche Richtung angewandt —
   sie war nicht bloss unscharf, sie hat aktiv fehlgeleitet.
-  DER GEMESSENE BESTAND, UNVERÄNDERT ÜBERNOMMEN, jetzt richtig erklärt (Symbole am
-  Code erhoben): publishStatus/publishError und capiTokenStatus/capiTokenError
-  beschreiben einen ABGESCHLOSSENEN VERSUCH — beim nächsten Hinsehen ist ihre
-  Aussage veraltet. Deshalb kein Signal, und deshalb leert resetDrawerStatusChannel
-  genau diese vier Werte beim Öffnen. Der Ladefehler der Varianten-Auswertung
+  DER GEMESSENE BESTAND, jetzt richtig erklärt (Symbole am Code erhoben):
+  publishStatus/publishError beschreiben einen ABGESCHLOSSENEN VERSUCH — beim
+  nächsten Hinsehen ist ihre Aussage veraltet. Deshalb kein Signal, und deshalb
+  leert resetDrawerStatusChannel genau diese ZWEI Werte beim Öffnen.
+  BELEG RICHTIGGESTELLT (Phase 11 Scheibe 6; am Code gemessen 2026-08-08): Hier
+  standen VIER Werte, weil capiTokenStatus/capiTokenError mitgezählt waren. Beide
+  gibt es im Container nicht mehr — der Statuskanal der Zugangsdaten liegt in der
+  Karte je Ziel und heisst dort status/error. DIE REGEL IST UNBERÜHRT und steht
+  wörtlich wie zuvor; überholt war allein ihr Beleg, also eine TATSACHENBEHAUPTUNG
+  ÜBER DEN CODE.
+  DER NEUE BELEG TRITT DANEBEN, weil er die STÄRKERE Illustration derselben Regel
+  ist: Jener Zustand liegt jetzt dort, wo seine Lebensdauer endet, und stirbt mit
+  dem ABBAU seiner Komponente — beim Projektwechsel über den key, beim Schliessen
+  der Fläche über den Abbau des Drawers. Er braucht gar keinen Reset mehr. Ein
+  Zustand, der von selbst endet, ist die bessere Bauform als einer, den ein Aufruf
+  leeren muss; der Reset bleibt für den Publish-Kanal, weil dieser im Container
+  lebt und dort leben muss. Der Ladefehler der Varianten-Auswertung
   dagegen ist beim nächsten Hinsehen NOCH DA, weil niemand erneut geladen hat —
   deshalb trägt measureSignal ihn (liest variantCounts?.ok === false plus den
   Sichtbarkeits-Term und enthält KEIN drawerArea). DAS NEUE KRITERIUM ERKLÄRT BEIDE

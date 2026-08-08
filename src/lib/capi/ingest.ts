@@ -6,7 +6,7 @@ import {
 } from "@/lib/capi/token";
 import { META_TEST_EVENT_CODE } from "@/lib/capi/config";
 import { forwardToMeta } from "@/lib/capi/meta-forward";
-import { consentAllows } from "@/lib/tracking/consent-wire";
+import { CONSENT_WIRE_FIELD, consentAllows } from "@/lib/tracking/consent-wire";
 // DER SCHLUESSEL KOMMT AUS DEM CONSENT-VOKABULAR, NICHT AUS DEM DER GEHEIMNIS-TABELLE
 // (META_TARGET in capi/token.ts) — obwohl beide heute "meta" lauten. Zwei Gruende:
 // (1) Der Schluessel IM DRAHT ist der, den der Betreiber in seinen eigenen
@@ -16,7 +16,15 @@ import { consentAllows } from "@/lib/tracking/consent-wire";
 //     andere, haengten Setzer und Leser an zwei unabhaengig definierten Literalen,
 //     die nur zufaellig gleich sind — genau die Drift, die im Repo bereits als
 //     "der Meta-Zielname liegt in drei Kopien" vermerkt ist.
-import { META_CONSENT_TARGET } from "@/lib/tracking/consent";
+// SEIT DER NEUNTEN SCHEIBE STEHT DIESE BEGRUENDUNG AN DER ABBILDUNG SELBST
+// (tracking/consent-targets.ts): Der Handler kennt keinen Consent-Schluessel mehr
+// im Klartext, er schlaegt ihn je Ziel nach. Der Absatz darueber bleibt, weil er
+// den GRUND fuer die Trennung der beiden Vokabulare traegt — wer ihn streicht,
+// entfernt die Erklaerung, warum die Abbildung ueberhaupt existiert.
+import {
+  CONSENT_KEY_BY_TARGET,
+  LEGACY_CONSENT_ROLE,
+} from "@/lib/tracking/consent-targets";
 import { persistEvent } from "@/lib/analytics/persist";
 import {
   BROWSER_CONFIRM_MARKER,
@@ -187,7 +195,10 @@ function schedulePersist(
  * Der Wert stammt aus derselben Aufloesung, die ihn aus project_secrets.target gelesen
  * hat; ihn gegen das ANDERE Vokabular zu pruefen haengte zwei unabhaengig definierte
  * Literale aneinander, die nur zufaellig gleich sind. Die Begruendung der Gegenrichtung
- * steht am Import von META_CONSENT_TARGET oben.
+ * steht seit der neunten Scheibe an CONSENT_KEY_BY_TARGET (tracking/consent-targets.ts)
+ * — dort wird der Consent-Schluessel je Ziel NACHGESCHLAGEN, statt ihn hier
+ * gleichzusetzen. ZEIGER NACHGEZOGEN: Hier stand "am Import von META_CONSENT_TARGET
+ * oben"; diesen Import gibt es seit derselben Scheibe nicht mehr.
  *
  * SIE WIRFT NIE — dieselbe Auflage wie beim Adapter selbst, und sie ist hier
  * strukturell erfuellt: Der Rumpf besteht aus einem Gleichheitsvergleich und einer
@@ -205,6 +216,71 @@ function dispatchForward(
     return forwardToMeta(entry.config, event, eventID, body, clientIp, userAgent);
   }
   return Promise.resolve();
+}
+
+/**
+ * DIE EINWILLIGUNG JE ZIEL (Phase 11, neunte Scheibe, Haelfte A).
+ *
+ * Nimmt die aufgeloesten Empfaenger und gibt die zurueck, fuer die der Draht eine
+ * Erlaubnis traegt. REINE FUNKTION, WIRFT NIE — consentAllows traegt denselben
+ * Vertrag, und der Rest sind zwei Nachschlaege in totalen Zuordnungen.
+ *
+ * WARUM EINE EIGENE, BENANNTE UND EXPORTIERTE FUNKTION statt eines Filters im
+ * Fan-Out-Ausdruck: Die Entscheidung muss EINZELN ROT FAERBBAR bleiben. In der
+ * `allSettled`-Zeile verschwaende sie neben der Ziel-Adapter-Zuordnung — dieselbe
+ * Lektion wie beim Kill-Switch (2a) und beim Confirm-Zweig. Der Export existiert
+ * ausschliesslich fuer den Test, und der Grund dafuer ist scharf: ES GIBT HEUTE
+ * NUR EINEN ADAPTER. Ueber den Handler ist "Ziel X waere erlaubt gewesen" fuer
+ * jedes andere Ziel gar nicht beobachtbar — ein uebersprungenes Ziel ohne Adapter
+ * sieht an der Netzwerk-Grenze genauso aus wie ein verbotenes. Die Kreuzprobe
+ * (Invariante 6) ist deshalb NUR hier moeglich, nicht am Handler.
+ *
+ * DIE REGEL, in zwei Zweigen:
+ *  - FELD GANZ ABWESEND -> erlaubt ist GENAU das Ziel mit der ALTBESTANDS-ROLLE.
+ *    Jedes weitere ist NEU und damit verboten, unabhaengig davon, wie es heisst.
+ *  - FELD VORHANDEN -> je Ziel entscheidet der Leser, mit dem Consent-Schluessel
+ *    DIESES Ziels.
+ *
+ * WARUM DIE ROLLE UND NICHT "alle erlaubt" (die Regel bis zur achten Scheibe):
+ * Bei EINEM Ziel hiess "abwesend" tatsaechlich "die Seite ist aelter als das
+ * Feld". Bei N Zielen heisst es "ueber DIESES Ziel wurde nie gefragt" — und
+ * daraus ein Ja zu machen, waere ein Forward an ein Ziel ohne Einwilligung.
+ * Die Rolle haelt beide Faelle auseinander, ohne einen Anbieternamen in die Regel
+ * zu schreiben; welches Ziel sie traegt, steht in tracking/consent-targets.ts.
+ *
+ * WARUM DIE ANWESENHEIT HIER GELESEN WIRD UND NICHT IM LESER: consentAllows ist
+ * ziel-parametrisiert und bleibt unveraendert (es beantwortet "erlaubt der Draht
+ * dieses Ziel?"). Aus seinem Boolean allein ist "abwesend" nicht von "vorhanden
+ * mit true" zu unterscheiden — beides ist true. Die Ausnahme braucht genau diese
+ * eine zusaetzliche Angabe, und sie ist keine Aussage ueber ein Ziel, sondern
+ * ueber den Body.
+ */
+export function allowedTargets(
+  targets: ResolvedTarget[],
+  body: CapiRequestBody,
+): ResolvedTarget[] {
+  // ABWESEND HEISST HIER `undefined`, UND DAS IST KEINE ZUFAELLIGKEIT: JSON kennt
+  // kein undefined -> ein Feld, das im Text fehlt, ist hier undefined, und JEDES
+  // vorhandene Feld traegt einen JSON-Wert (auch null). Genau an dieser Eigenschaft
+  // haengt die Trennung "abwesend" gegen "vorhanden, aber leer" — zwei Bodies, die
+  // beim Lesen fast gleich aussehen und entgegengesetzt ausgehen.
+  // DIE AUSFUEHRLICHE BEGRUENDUNG STEHT AM LESER (tracking/consent-wire.ts, an
+  // consentAllows) und wird hier NICHT wiederholt. Dieser Kommentar sichert nichts
+  // — gesichert wird durch die Tests; er erklaert, warum hier auf undefined und
+  // nicht auf Falsyness geprueft wird.
+  // DER FELDNAME WIRD IMPORTIERT, NIE abgeschrieben: ein zweites Literal braeche
+  // das Feld STILL (der Leser faende nichts, das hiesse "abwesend", und abwesend
+  // heisst erlaubt — ein stiller Fail-OPEN).
+  const wireAbsent =
+    (body as Record<string, unknown>)[CONSENT_WIRE_FIELD] === undefined;
+
+  if (wireAbsent) {
+    return targets.filter((entry) => LEGACY_CONSENT_ROLE[entry.target]);
+  }
+
+  return targets.filter((entry) =>
+    consentAllows(body, CONSENT_KEY_BY_TARGET[entry.target]),
+  );
 }
 
 export async function handleIngestOptions(): Promise<Response> {
@@ -349,13 +425,29 @@ export async function handleIngest(request: Request): Promise<Response> {
     // KEIN LOG: Der Einwilligungs-Zustand ist eine Aussage ueber einen BESUCHER. Ihn
     // zu protokollieren waere eine Datenerhebung, die niemand beschlossen hat — und
     // sie fiele ausgerechnet auf dem meistgetroffenen Pfad der Plattform an.
-    // EINE PRUEFUNG FUER DIE GANZE MENGE, und das ist bei EINEM Empfaenger exakt
-    // richtig — der Draht zu Meta aendert sich nicht. Eine Pruefung JE ZIEL ist
-    // ausdruecklich NICHT diese Scheibe: Das Feld im Draht traegt heute nur einen
-    // Schluessel, weil der Beacon nur innerhalb von Metas Gate ueberhaupt entsteht.
-    // Wer hier je einen zweiten Empfaenger einhaengt, OHNE dass der Browser-Pfad das
-    // Signal je Ziel liefert, gated ihn mit METAS Einwilligung — das waere falsch.
-    if (!consentAllows(body, META_CONSENT_TARGET)) return status(204);
+    // EINE PRUEFUNG JE ZIEL (Phase 11, neunte Scheibe, Haelfte A). Bis hierher stand
+    // hier EINE Pruefung fuer die GANZE Menge, mit Metas Schluessel — bei EINEM
+    // Empfaenger exakt richtig, bei zweien falsch: Sie gatete jeden weiteren
+    // Empfaenger mit METAS Einwilligung. Genau davor warnte der Kommentar, der hier
+    // stand, und diese Zeile loest die Warnung ein.
+    //
+    // DIE REGEL SELBST STEHT IN allowedTargets (oben), NICHT HIER. Der Grund ist der
+    // Test: Ohne einen zweiten Adapter ist die Entscheidung fuer jedes andere Ziel
+    // am Handler nicht beobachtbar — uebersprungen und verboten sehen an der
+    // Netzwerk-Grenze gleich aus. Die zwei Zeilen hier sind die SICHTBARE
+    // Verzweigung, die Funktion ist die PRUEFBARE Einheit; beides zusammen ist
+    // Invariante 4.
+    //
+    // DER FRUEHE AUSGANG BLEIBT — er beantwortet nur eine andere Frage als vorher:
+    // frueher "verbietet der Draht?", jetzt "bleibt ueberhaupt ein Empfaenger?".
+    // Er MUSS vor der IP-/User-Agent-Aufloesung stehen (drei Zeilen tiefer): sonst
+    // liefen zwei Header-Lesungen auf Vorrat fuer einen Beacon, der garantiert
+    // nichts sendet — auf dem meistgetroffenen Pfad der Plattform.
+    // NACH AUSSEN IST ER VON "kein Ziel aufgeloest" NICHT UNTERSCHEIDBAR, und das
+    // ist Absicht (204-Containment): beides ist die leere 204. Im Code sind es zwei
+    // getrennte, sichtbare Zweige — die Laengen-Wache oben und dieser hier.
+    const allowed = allowedTargets(targets, body);
+    if (allowed.length === 0) return status(204);
 
     // --- Server-gesetzte Felder (NIE aus Client-Payload) ---
     // Sie werden HIER ermittelt, INNERHALB der Bedingung — also genau dann, wenn wirklich
@@ -392,7 +484,7 @@ export async function handleIngest(request: Request): Promise<Response> {
     //   die Antwort von der Empfaenger-Latenz, und das ist die am 2026-08-06
     //   gestrichene Scheibe durch die Hintertuer.
     await Promise.allSettled(
-      targets.map((entry) =>
+      allowed.map((entry) =>
         dispatchForward(entry, event, eventID, body, clientIp, userAgent),
       ),
     );

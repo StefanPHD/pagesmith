@@ -55,6 +55,11 @@ import {
   type ProjectSettings,
   type TrackingTarget,
 } from "@/lib/settings";
+// Die Bruecke Ziel-Vokabular -> Consent-Vokabular (Phase 11, neunte Scheibe).
+// LESEND importiert: Der Draht traegt die Schluessel des CONSENT-Namensraums, nicht
+// die Werte der Geheimnis-Tabelle. Beide lauten heute gleich; sie gleichzusetzen
+// waere genau die Drift, gegen die die Abbildung steht.
+import { CONSENT_KEY_BY_TARGET } from "@/lib/tracking/consent-targets";
 import { getCapiProxyUrl } from "@/lib/capi/proxy";
 import { buildLiveUrl } from "@/lib/hosting/host";
 import {
@@ -419,6 +424,41 @@ export default function CodeImporter({
   // Preview-Injektionen leben nur in previewHtml, NIE im code) -> idempotent,
   // kein doppeltes Einbacken. mappings ist nicht debounced -> eine neue Aktion
   // wirkt sofort sichtbar.
+  // DIE ZIEL-LISTE FUER DEN DRAHT (Phase 11, neunte Scheibe, HAELFTE B).
+  //
+  // WAS SIE IST: die CONSENT-Schluessel der Ziele, fuer die der Betreiber eine
+  // oeffentliche Kennung eingetragen hat. Die Liste der MOEGLICHEN Ziele
+  // (TRACKING_TARGETS) wird dafuer nach genau dieser Eintragung gefiltert.
+  //
+  // WARUM DIE FILTERUNG KEINE OPTIMIERUNG IST, SONDERN SEMANTIK: Eine Liste ALLER
+  // bekannten Ziele fragte den Besucher nach Datenempfaengern, mit denen der
+  // Betreiber nichts zu tun hat. Das Eintragen der Kennung IST seine
+  // Absichtserklaerung und der ehrlichste verfuegbare Marker.
+  //
+  // WARUM NICHT DIE LISTE DER ZIELE MIT ZUGANGSDATEN: Wer die Kennung eintraegt
+  // und den Token nachreicht, haette dann einen Empfaenger, nach dem der Besucher
+  // nie gefragt wurde — im Normalablauf, nicht im Ausnahmefall.
+  //
+  // WARUM NICHT DIE AUFGELOESTE MENGE DES SERVERS: Sie erreicht den Browser nie.
+  // Der Erzeuger laeuft HIER, der Server bekommt fertiges HTML. Die Paar-Menge
+  // hier nachzubilden waere eine zweite Implementierung der Paarungsregel, deren
+  // Divergenz lautlos waere — und sie ist nicht noetig: DER DRAHT DARF
+  // GROSSZUEGIGER SEIN ALS DIE AUFLOESUNG. Ein Schluessel fuer ein Ziel ohne
+  // Empfaenger ist folgenlos; gefaehrlich ist allein die Gegenrichtung.
+  //
+  // DIE QUELLE KANN NICHT FEHLSCHLAGEN: TRACKING_TARGETS ist eine Konstante,
+  // settings liegt im Speicher. Es gibt hier keinen Ladevorgang, der schweigen
+  // koennte — deshalb entsteht auch nie ein LEERES Feld aus einem Fehler. Der
+  // leere Fall bleibt moeglich (kein Ziel traegt eine Kennung), und ihn behandelt
+  // der Erzeuger: leere Liste -> gar kein Feld, nicht ein leeres.
+  const consentTargets = useMemo(
+    () =>
+      TRACKING_TARGETS.filter((t) => getPixelId(settings, t) !== "").map(
+        (t) => CONSENT_KEY_BY_TARGET[t]
+      ),
+    [settings]
+  );
+
   const functionalHtml = useMemo(
     () =>
       previewMode === "functional"
@@ -426,9 +466,10 @@ export default function CodeImporter({
             metaPixelId: getPixelId(settings, "meta"),
             trackingKey: getTrackingKey(settings),
             capiProxyUrl: getCapiProxyUrl(),
+            consentTargets,
           })
         : "",
-    [previewMode, debouncedCode, mappings, settings]
+    [previewMode, debouncedCode, mappings, settings, consentTargets]
   );
 
   // Edit-iframe-HTML: bei aktivem Text-Override zeigt AUCH der Editieren-Modus den
@@ -1364,6 +1405,7 @@ export default function CodeImporter({
       metaPixelId: getPixelId(settings, "meta"),
       trackingKey: getTrackingKey(settings),
       capiProxyUrl,
+      consentTargets,
     });
   }
 

@@ -62,11 +62,36 @@ export const META_VALUE_EVENTS: ReadonlySet<string> = new Set([
 export function buildMetaRuntime(
   pixelId: string,
   capiTrackingKey = "",
-  capiProxyUrl = ""
+  capiProxyUrl = "",
+  // DIE ZIEL-LISTE (Phase 11, neunte Scheibe, HAELFTE B). Die CONSENT-Schluessel
+  // der Ziele, nach denen diese Seite fragen soll — vom AUFRUFER gebildet, weil
+  // nur er die Projekt-Einstellungen kennt. Der Erzeuger bleibt eine reine
+  // Funktion und lernt kein Datenmodell.
+  //
+  // LEER HEISST: ALLES BLEIBT WIE VORHER. Das ist kein Grenzfall-Kosmetik,
+  // sondern der Weg, auf dem Invariante 1 beweisbar wird — eine Seite ohne jede
+  // gesetzte Kennung bekommt WOERTLICH den Text von vor dieser Haelfte, samt
+  // Einzel-Ziehung und Einzel-Schluessel im Draht.
+  // UND ES IST DER GRUND, WARUM HIER KEIN LEERES FELD ENTSTEHEN KANN: Ein
+  // vorhandenes, leeres Einwilligungs-Feld verboete nach der HAELFTE A ALLES,
+  // auch das Alt-Ziel — die Altbestands-Ausnahme verlangt ein ABWESENDES Feld.
+  // Ein Projekt ohne jede Kennung kann heute ohnehin nichts forwarden (die
+  // Aufloesung verlangt eine Kennung); ohne diesen Zweig verloere es aber seinen
+  // Forward RUECKWIRKEND, sobald jemand spaeter eine Kennung eintraegt, ohne neu
+  // zu veroeffentlichen.
+  consentTargets: readonly string[] = []
 ): string {
+  // MEHRERE ZIELE ODER DER ALTE PFAD? Diese eine Frage steuert die vier
+  // Bau-Zeit-Zweige unten. Sie ist BEWUSST an der LAENGE aufgehaengt und nicht an
+  // der Existenz: ein leeres Array ist truthy.
+  const many = consentTargets.length > 0;
   // Der Beacon-Block wird ZUR BAU-ZEIT gegated (drei Faelle) und in __psMetaFire
   // nach den fbq-Zeilen gesplicet -> teilt dort die lokale eid.
-  const beaconStmt = buildCapiBeaconStatement(capiTrackingKey, capiProxyUrl);
+  const beaconStmt = buildCapiBeaconStatement(
+    capiTrackingKey,
+    capiProxyUrl,
+    consentTargets
+  );
   // Scheibe A: der SENDE-Rumpf der Pixel-Bestaetigung, ebenfalls bau-zeit-gegated.
   // Das Zustands-Geruest drumherum (State/Queue/Resolve) wird IMMER gebaut — EIN
   // Bootstrap-Pfad statt zweier Varianten (eine bau-zeit-Verzweigung IM Bootstrap waere
@@ -100,6 +125,43 @@ export function buildMetaRuntime(
   //   METAS Script-Load; ohne Meta gibt es nichts zu messen. Das ist eine
   //   ENTSCHEIDUNG der achten Scheibe, keine Auslassung — die Verlustrate bleibt
   //   Meta-gebunden.
+  // DIE WACHE DES BOOTSTRAPS — sie BLEIBT, nur ihre QUELLE wechselt (HAELFTE B).
+  //
+  // Sie ist Metas eigene Wache und bleibt richtig: Schon der Script-Load leakt IP
+  // und Referer an den Anbieter, also darf er nie vor dem Urteil liegen. Und sie
+  // ist BEREITS HEUTE die Redundanz gegen ein Versagen der Feuer-Funktion — sie
+  // wird nicht dazu gemacht.
+  //
+  // WAS SICH AENDERT UND WARUM NUR DAS: Bis hierher ZOG sie selbst. Damit gab es
+  // beim ersten Klick ZWEI Ziehungen, und ein Betreiber-Hook, der beim zweiten Mal
+  // anders antwortet, konnte Feuer-Funktion und Bootstrap gegeneinander stellen.
+  // Ab der Ziel-Liste bekommt sie das Urteil UEBERGEBEN — dieselbe Wache, derselbe
+  // Ort, EIN Schnappschuss.
+  // OHNE Liste bleibt sie WOERTLICH wie zuvor, samt Existenzpruefung und eigener
+  // Ziehung; das ist die Haelfte des Byte-Gleichheits-Beweises fuer den alten Pfad.
+  const initParam = many ? "ok" : "";
+  const initJudgement = many
+    ? `
+    // DAS URTEIL KOMMT AUS DER GETEILTEN ZIEHUNG (HAELFTE B). Hier wird NICHT
+    // erneut gefragt — ein zweiter Schnappschuss koennte der Entscheidung
+    // widersprechen, die diesen Klick ueberhaupt durchgelassen hat.
+    if (!ok) return false;`
+    : `
+    // EXISTENZPRUEFUNG, KEIN ZWEITES URTEIL — und der Kommentar steht hier, damit
+    // sie spaeter nicht als Regel-Dublette "aufgeraeumt" wird: Geprueft wird, OB
+    // ein Urteil da ist, NICHT wie es ausfaellt. Die Regel bleibt an genau einer
+    // Stelle (tracking/consent.ts).
+    // WARUM UEBERHAUPT: Seit die Auswertung ein eigener Block ist, ist ihr Aufruf
+    // eine BLOCKUEBERGREIFENDE Referenz. Ein direkter Aufruf wuerfe, wenn sie fehlt
+    // — mitten im Klick-Handler, der danach noch den REDIRECT ausfuehren muss. Ein
+    // Tracking-Fehler toetete so die Kernfunktion der Kundenseite. Die strukturelle
+    // Garantie (der Block wird immer vor den Konsumenten erzeugt) bleibt richtig;
+    // sie ist nur nicht die einzige Verteidigung, die diese Folge verdient.
+    // FAIL-CLOSED aus demselben Grund wie die Regel selbst: Fehlt das Urteil, ist
+    // NICHT bekannt, ob eingewilligt wurde.
+    if (typeof __psConsent !== "function") return false;
+    if (!__psConsent(${JSON.stringify(META_CONSENT_TARGET)})) return false;`;
+
   const pixelPrelude = hasPixel
     ? `
   var PS_PIXEL_ID = ${JSON.stringify(pixelId)};
@@ -134,22 +196,8 @@ export function buildMetaRuntime(
     if (__psConfirmQueue.length >= __PS_CONFIRM_CAP) return;
     __psConfirmQueue.push({ id: eid, ev: ev });
   }
-  function __psMetaInit() {
-    if (__psFbReady) return true;
-    // EXISTENZPRUEFUNG, KEIN ZWEITES URTEIL — und der Kommentar steht hier, damit
-    // sie spaeter nicht als Regel-Dublette "aufgeraeumt" wird: Geprueft wird, OB
-    // ein Urteil da ist, NICHT wie es ausfaellt. Die Regel bleibt an genau einer
-    // Stelle (tracking/consent.ts).
-    // WARUM UEBERHAUPT: Seit die Auswertung ein eigener Block ist, ist ihr Aufruf
-    // eine BLOCKUEBERGREIFENDE Referenz. Ein direkter Aufruf wuerfe, wenn sie fehlt
-    // — mitten im Klick-Handler, der danach noch den REDIRECT ausfuehren muss. Ein
-    // Tracking-Fehler toetete so die Kernfunktion der Kundenseite. Die strukturelle
-    // Garantie (der Block wird immer vor den Konsumenten erzeugt) bleibt richtig;
-    // sie ist nur nicht die einzige Verteidigung, die diese Folge verdient.
-    // FAIL-CLOSED aus demselben Grund wie die Regel selbst: Fehlt das Urteil, ist
-    // NICHT bekannt, ob eingewilligt wurde.
-    if (typeof __psConsent !== "function") return false;
-    if (!__psConsent(${JSON.stringify(META_CONSENT_TARGET)})) return false;
+  function __psMetaInit(${initParam}) {
+    if (__psFbReady) return true;${initJudgement}
     // Script-Load liegt HINTER der Consent-Pruefung (Verschaerfung): vor Consent kein Request
     // an connect.facebook.net. Standard-fbevents-Bootstrap OHNE Auto-PageView.
     !(function (f, b, e, v, n, t, s) {
@@ -200,18 +248,40 @@ export function buildMetaRuntime(
 
   // Der lazy Bootstrap-Aufruf. Er gehoert zum Pixel, NICHT zum Beacon — ohne Pixel
   // gibt es kein __psMetaInit, und ein Aufruf liefe ins Leere.
-  const initCallStmt = hasPixel ? `
-    if (!__psMetaInit()) return;` : "";
+  //
+  // MIT ZIEL-LISTE IST ER DIE ERSTE VON VIER EINZELNEN WACHEN (HAELFTE B) und
+  // BRICHT NICHT MEHR AB: Ein `return` hier toetete den Beacon mit, obwohl ein
+  // ANDERES Ziel erlaubt sein kann. Sein Ergebnis reist stattdessen als __ok
+  // weiter und gated die zwei Meta-eigenen Verbraucher darunter.
+  const initCallStmt = hasPixel
+    ? many
+      ? `
+    // WACHE 1 — DER SCRIPT-LOAD. Er folgt METAS Urteil, nicht "irgendeines
+    // erlaubt": schon der Load leakt IP und Referer an den Anbieter.
+    var __ok = __psMetaInit(__c[${JSON.stringify(META_CONSENT_TARGET)}] === true);`
+      : `
+    if (!__psMetaInit()) return;`
+    : "";
 
   // Die fbq-Zeilen samt ihrer Parameter. `params` wird AUSSCHLIESSLICH von ihnen
   // gelesen und wandert deshalb mit ihnen — ein leeres params-Objekt ohne fbq waere
   // toter Code im Klick-Pfad.
-  const fbqStmt = hasPixel ? `
+  const fbqBody = `
     var params = {};
     if (typeof cfg.value === "number") params.value = cfg.value;
     if (cfg.currency) params.currency = cfg.currency;
     if (cfg.isCustom) fbq("trackCustom", cfg.event, params, { eventID: eid });
-    else fbq("track", cfg.event, params, { eventID: eid });` : "";
+    else fbq("track", cfg.event, params, { eventID: eid });`;
+  const fbqStmt = hasPixel
+    ? many
+      ? `
+    // WACHE 2 — DIE PIXEL-AUFRUFE. Eigene Verzweigung, nicht an die Wache darueber
+    // angehaengt: Ein Schutz, der nur Nebeneffekt eines fremden Zweigs ist,
+    // verschwindet beim naechsten Umbau lautlos.
+    if (__ok) {${fbqBody.replace(/\n {4}/g, "\n      ")}
+    }`
+      : fbqBody
+    : "";
 
   // DIE KENNUNG ENTSTEHT UNVERAENDERT IN __psMetaFire — GENAU EINMAL, FUER ALLE
   // DREI VERBRAUCHER. Sie bleibt eine LOKALE Variable dieser Funktion, auch
@@ -226,18 +296,69 @@ export function buildMetaRuntime(
   //
   // Der Bestaetigungs-Aufruf bleibt an der Pixel-ID, weil die Maschinerie
   // dahinter es tut (s. oben).
-  const confirmCallStmt = hasPixel ? `
+  const confirmCallStmt = hasPixel
+    ? many
+      ? `
+    // WACHE 3 — DIE BESTAETIGUNG. Sie folgt METAS Urteil, weil sie Adblocking ueber
+    // METAS Script-Load misst; ohne geladenes fbevents gibt es nichts zu bestaetigen.
+    // Eigene Verzweigung aus demselben Grund wie Wache 2.
+    if (__ok) __psConfirm(eid, cfg.event);`
+      : `
     // Scheibe A: dieselbe lokale eid wie fbq/Beacon (KEIN zweiter Generator -> der
     // Verlustraten-Join ueber event_id traegt). Liegt hinter demselben Consent-Gate.
-    __psConfirm(eid, cfg.event);` : "";
+    __psConfirm(eid, cfg.event);`
+    : "";
 
-  return `${pixelPrelude}
-  function __psMetaFire(cfg) {
-    if (!cfg || !cfg.event) return;
+  // DIE KENNUNG — EIGENES STUECK, damit sie in beiden Pfaden an GENAU EINER Stelle
+  // steht und im Ziel-Listen-Pfad VOR die vier Wachen wandern kann, ohne dass ihr
+  // Text ein zweites Mal getippt wird. Zwei Erzeugungsstellen braechen Metas
+  // Deduplizierung UND den Verlustraten-Join, lautlos.
+  const eidStmt = `
+    var eid =
+      window.crypto && window.crypto.randomUUID
+        ? window.crypto.randomUUID()
+        : "e" + Date.now() + "-" + Math.random().toString(16).slice(2);`;
+
+  // Die Oder-Kette ueber alle Schluessel der Liste — "ist IRGENDEINES erlaubt?".
+  // Bau-Zeit erzeugt statt zur Laufzeit geschleift: kein for-in ueber ein fremdes
+  // Objekt, keine Schluessel-Aufzaehlung auf dem Klick-Pfad.
+  const anyAllowed = consentTargets
+    .map((k) => `__c[${JSON.stringify(k)}] === true`)
+    .join(" || ");
+
+  const fireHead = many
+    ? `
+    // EXISTENZPRUEFUNG, KEIN ZWEITES URTEIL — s. die Begruendung in __psMetaInit.
+    // Sie fragt nach DER Funktion, die hier auch gerufen wird: seit der HAELFTE B
+    // ist das __psConsentAll. Fehlt sie, ist NICHT bekannt, ob eingewilligt wurde
+    // -> fail-closed, und der Redirect dahinter bleibt unangetastet.
+    if (typeof __psConsentAll !== "function") return;
+    // DIE EINE ZIEHUNG (Phase 11, HAELFTE B). Der Betreiber-Hook wird pro Klick
+    // GENAU EINMAL gefragt, und ALLE Ziele werden aus DIESEM Schnappschuss
+    // beantwortet. Frueher fragte jede Stelle selbst; ein Hook, der beim zweiten
+    // Mal anders antwortet, konnte den Draht mit sich selbst in Widerspruch
+    // bringen. Jetzt ist die Widerspruchsfreiheit strukturell.
+    var __c = __psConsentAll(${JSON.stringify([...consentTargets])});
+    // WACHE 4 — DIE UNTERGRENZE DES BEACONS: Ist KEIN einziges Ziel erlaubt,
+    // passiert gar nichts. Sie steht VOR der Kennung, weil hinter ihr kein
+    // Verbraucher mehr kommt, der eine braeuchte.
+    if (!(${anyAllowed})) return;`
+    : `
     // EXISTENZPRUEFUNG, KEIN ZWEITES URTEIL — s. die Begruendung in __psMetaInit.
     // Diese Stelle ist die teurere von beiden: Sie liegt im Klick-Handler, und
     // hinter ihr wartet der Redirect.
-    if (typeof __psConsent !== "function") return;
+    if (typeof __psConsent !== "function") return;`;
+
+  if (many) {
+    return `${pixelPrelude}
+  function __psMetaFire(cfg) {
+    if (!cfg || !cfg.event) return;${fireHead}${eidStmt}${initCallStmt}${fbqStmt}${beaconStmt}${confirmCallStmt}
+  }`;
+  }
+
+  return `${pixelPrelude}
+  function __psMetaFire(cfg) {
+    if (!cfg || !cfg.event) return;${fireHead}
     // DAS URTEIL WIRD GEHOBEN, NICHT ZWEIMAL ERFRAGT (Phase 11, fuenfte Scheibe).
     // Der Beacon-Rumpf weiter unten schickt es an den Server mit; er fragt NICHT
     // erneut. Zwei Gruende, und der zweite ist der tragende:
@@ -248,11 +369,7 @@ export function buildMetaRuntime(
     //     Draht eine Aussage, die der Entscheidung WIDERSPRICHT, die diesen Beacon
     //     ueberhaupt durchgelassen hat. So ist die Widerspruchsfreiheit strukturell.
     var __c = __psConsent(${JSON.stringify(META_CONSENT_TARGET)});
-    if (!__c) return;${initCallStmt}
-    var eid =
-      window.crypto && window.crypto.randomUUID
-        ? window.crypto.randomUUID()
-        : "e" + Date.now() + "-" + Math.random().toString(16).slice(2);${fbqStmt}${beaconStmt}${confirmCallStmt}
+    if (!__c) return;${initCallStmt}${eidStmt}${fbqStmt}${beaconStmt}${confirmCallStmt}
   }`;
 }
 
@@ -288,7 +405,10 @@ export function buildMetaRuntime(
 // "abwesend = alte Seite" nicht von "vorhanden, aber verboten" trennen.
 export function buildCapiBeaconStatement(
   trackingKey: string,
-  proxyUrl: string
+  proxyUrl: string,
+  // DIE ZIEL-LISTE (HAELFTE B) — dieselbe wie bei buildMetaRuntime, durchgereicht.
+  // LEER heisst: der Draht traegt den EINEN Schluessel wie vor dieser Haelfte.
+  consentTargets: readonly string[] = []
 ): string {
   if (!trackingKey) return "";
   if (!proxyUrl) {
@@ -305,7 +425,7 @@ export function buildCapiBeaconStatement(
           event: cfg.event,
           eventSourceUrl: location.href,
           isCustom: !!cfg.isCustom,
-          ${JSON.stringify(CONSENT_WIRE_FIELD)}: { ${JSON.stringify(META_CONSENT_TARGET)}: __c === true }
+          ${JSON.stringify(CONSENT_WIRE_FIELD)}: { ${consentTargets.length > 0 ? consentTargets.map((k) => `${JSON.stringify(k)}: __c[${JSON.stringify(k)}] === true`).join(", ") : `${JSON.stringify(META_CONSENT_TARGET)}: __c === true`} }
         };
         if (typeof cfg.value === "number") __b.value = cfg.value;
         if (cfg.currency) __b.currency = cfg.currency;

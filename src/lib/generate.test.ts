@@ -1591,3 +1591,166 @@ describe("T7 Aequivalenz: leerer Roh-Input <=> leeres funktionales Dokument", ()
     expect(doc).toContain(PIXEL);
   });
 });
+
+// ===========================================================================
+// HAELFTE B — EINE ZIEHUNG, N ANTWORTEN (Phase 11, neunte Scheibe).
+//
+// AUSGEFUEHRT, nicht gelesen: Die Text-Waechter liegen in
+// tracking/meta.consent-wire.test.ts. Hier steht die WIRKUNG im fertigen
+// Dokument — wie oft der Betreiber-Hook gefragt wird, und was die vier Wachen
+// tun.
+// ===========================================================================
+
+const ZIELE = ["meta", "pinterest"];
+
+describe("HAELFTE B: der Hook wird pro Klick GENAU EINMAL gefragt", () => {
+  function fireWith(consent: unknown, targets = ZIELE) {
+    delete (globalThis as unknown as { fbq?: unknown }).fbq;
+    const beacon = stubBeacon();
+    vi.stubGlobal("pagesmithConsent", consent);
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+        consentTargets: targets,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    return beacon;
+  }
+
+  it("EIN Aufruf pro Klick — AUCH mit Pixel-ID (vorher waren es zwei)", async () => {
+    // DER TEST, DER DIE ENTSCHEIDUNG BEWEIST. Vor dieser Haelfte fragten
+    // __psMetaFire UND __psMetaInit je einmal; beim ersten Klick waren das ZWEI
+    // Ziehungen. ROT DURCH M1.
+    const hook = vi.fn(() => ({ meta: true, pinterest: true }));
+    fireWith(hook);
+    expect(hook).toHaveBeenCalledTimes(1);
+  });
+
+  it("ein Hook, der beim ZWEITEN Aufruf anders antwortet, kann nichts mehr spalten", async () => {
+    // Vorher haette __psMetaFire die erste Antwort gesehen und __psMetaInit die
+    // zweite: Der Beacon waere gegangen, das Pixel nicht geladen worden — zwei
+    // Aussagen aus zwei Momenten in EINEM Klick.
+    const hook = vi
+      .fn()
+      .mockReturnValueOnce({ meta: true, pinterest: true })
+      .mockReturnValue({ meta: false, pinterest: false });
+    const beacon = fireWith(hook);
+
+    expect(hook).toHaveBeenCalledTimes(1);
+    expect(beacon).toHaveBeenCalledTimes(1);
+    const [, blob] = beacon.mock.calls[0] as unknown as [string, Blob];
+    const payload = JSON.parse(await blob.text());
+    expect(payload.cns).toEqual({ meta: true, pinterest: true });
+  });
+
+  it("JE KLICK wird neu gezogen — kein Zwischenspeicher ueber Ereignisse", () => {
+    const hook = vi.fn(() => ({ meta: true, pinterest: true }));
+    fireWith(hook);
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(hook).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("HAELFTE B: die vier Wachen, einzeln", () => {
+  function run(consent: unknown, targets = ZIELE) {
+    delete (globalThis as unknown as { fbq?: unknown }).fbq;
+    const beacon = stubBeacon();
+    const fbq = vi.fn();
+    vi.stubGlobal("pagesmithConsent", consent);
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+        consentTargets: targets,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    return {
+      beacon,
+      fbq,
+      script:
+        mountedDoc.querySelectorAll('script[src*="connect.facebook.net"]').length,
+    };
+  }
+
+  it("WACHE 1+2: Meta VERBOTEN, ein anderes Ziel erlaubt -> KEIN Script, KEIN fbq", () => {
+    // ROT DURCH M4 an Wache 1. Und die eigentliche Aussage dieser Haelfte: Der
+    // Klick bricht NICHT mehr ab, nur weil Meta verboten ist.
+    const r = run({ meta: false, pinterest: true });
+    expect(r.script).toBe(0);
+    expect(
+      (globalThis as unknown as { fbq?: { mock?: unknown } }).fbq
+    ).toBeUndefined();
+  });
+
+  it("WACHE 4: Meta verboten, ein anderes Ziel erlaubt -> der Beacon geht TROTZDEM", async () => {
+    // DIE UMKEHR, fuer die diese Haelfte existiert. Vor ihr toetete ein einziges
+    // Nein von Meta alles; der Server bekam nie die Gelegenheit, je Ziel zu
+    // entscheiden.
+    const r = run({ meta: false, pinterest: true });
+    expect(r.beacon).toHaveBeenCalledTimes(1);
+    const [, blob] = r.beacon.mock.calls[0] as unknown as [string, Blob];
+    expect(JSON.parse(await blob.text()).cns).toEqual({
+      meta: false,
+      pinterest: true,
+    });
+  });
+
+  it("WACHE 4: KEIN Ziel erlaubt -> gar nichts, und trotzdem kein Wurf", () => {
+    // ROT DURCH M4 an Wache 4 (Invariante 5).
+    const r = run({ meta: false, pinterest: false });
+    expect(r.beacon).not.toHaveBeenCalled();
+    expect(r.script).toBe(0);
+  });
+
+  it("POSITIVKONTROLLE: beide erlaubt -> Script, fbq-Bootstrap UND Beacon", async () => {
+    // Ohne sie zeigten die drei Tests darueber nur, dass IRGENDETWAS blockiert.
+    const r = run({ meta: true, pinterest: true });
+    expect(r.script).toBe(1);
+    expect(r.beacon).toHaveBeenCalledTimes(1);
+    const [, blob] = r.beacon.mock.calls[0] as unknown as [string, Blob];
+    expect(JSON.parse(await blob.text()).cns).toEqual({
+      meta: true,
+      pinterest: true,
+    });
+  });
+
+  it("INVARIANTE 1: EIN Ziel in der Liste -> die Nutzlast ist die von vorher", async () => {
+    // Der Draht eines Projekts mit nur einer Kennung aendert sich NICHT — weder
+    // im Inhalt noch in der Zahl der Schluessel.
+    const r = run({ meta: true }, ["meta"]);
+    const [, blob] = r.beacon.mock.calls[0] as unknown as [string, Blob];
+    expect(JSON.parse(await blob.text()).cns).toEqual({ meta: true });
+  });
+
+  it("INVARIANTE 3: fbq und Beacon teilen weiterhin DIESELBE Kennung", async () => {
+    // ROT DURCH M3, und er ist auf dem NEUEN Pfad der einzige Waechter dafuer:
+    // Der bestehende Dedup-Test uebergibt KEINE Ziel-Liste und deckt damit nur
+    // den alten Pfad. Zwei Erzeugungsstellen braechen Metas Deduplizierung UND
+    // den Verlustraten-Join — lautlos, weil beide Werte fuer sich gueltig
+    // aussehen.
+    const fbq = stubFbq();
+    const beacon = stubBeacon();
+    vi.stubGlobal("pagesmithConsent", { meta: true, pinterest: true });
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+        consentTargets: ZIELE,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+
+    const fbqEventId = fbqCalls(fbq, "track")[0][3].eventID as string;
+    const [, blob] = beacon.mock.calls[0] as unknown as [string, Blob];
+    const payload = JSON.parse(await blob.text());
+    expect(typeof fbqEventId).toBe("string");
+    expect(fbqEventId.length).toBeGreaterThan(0);
+    expect(payload.eventID).toBe(fbqEventId);
+  });
+});

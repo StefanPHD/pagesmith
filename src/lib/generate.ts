@@ -8,7 +8,7 @@
 
 import type { Mapping } from "./mappings";
 import { buildMetaRuntime, metaTrackStatement } from "./tracking/meta";
-import { buildConsentRuntime, CONSENT_SCRIPT_ID } from "./tracking/consent";
+import { buildConsentRuntimes, CONSENT_SCRIPT_ID } from "./tracking/consent";
 
 const PAGESMITH_ID_ATTR = "data-pagesmith-id";
 
@@ -65,7 +65,8 @@ function buildWiringScript(
   mode: GenerateMode,
   metaPixelId: string,
   capiTrackingKey: string,
-  capiProxyUrl: string
+  capiProxyUrl: string,
+  consentTargets: readonly string[]
 ): string {
   const hasPixel = metaPixelId !== "";
   // PHASE 11, ACHTE SCHEIBE — DIE VORBEDINGUNG IST GEFALLEN.
@@ -85,7 +86,8 @@ function buildWiringScript(
   const metaRuntime = buildMetaRuntime(
     metaPixelId,
     capiTrackingKey,
-    capiProxyUrl
+    capiProxyUrl,
+    consentTargets
   );
   // ZWEI FRAGEN, ZWEI ARGUMENTE: ob __psMetaFire existiert (dann darf es gerufen
   // werden), und ob ein Pixel gesetzt ist (dann entfaellt die Warnung). Seit dieser
@@ -271,7 +273,18 @@ export function generateFunctional(
   // CAPI-trackingKey (aus settings) + absolute Proxy-URL (env-abgeleitet, vom
   // Aufrufer gebildet — die REINE Engine liest NIE selbst env). Beide leer -> kein
   // Beacon (trackingKey leer: still; proxyUrl leer bei gesetztem Key: fail-loud warn).
-  options?: { metaPixelId?: string; trackingKey?: string; capiProxyUrl?: string }
+  // options.consentTargets (Phase 11, neunte Scheibe, HAELFTE B): die
+  // CONSENT-Schluessel der Ziele, nach denen die Seite fragen soll. Vom AUFRUFER
+  // gebildet — nur er kennt die Projekt-Einstellungen; die REINE Engine lernt kein
+  // Datenmodell (dieselbe Trennung wie bei capiProxyUrl, das die Engine auch nie
+  // selbst aus env liest). FEHLT ODER LEER -> der erzeugte Text ist WOERTLICH der
+  // von vor dieser Haelfte, samt Einzel-Ziehung und Einzel-Schluessel im Draht.
+  options?: {
+    metaPixelId?: string;
+    trackingKey?: string;
+    capiProxyUrl?: string;
+    consentTargets?: readonly string[];
+  }
 ): string {
   if (!html || !html.trim()) return "";
 
@@ -364,7 +377,8 @@ export function generateFunctional(
         mode,
         options?.metaPixelId ?? "",
         options?.trackingKey ?? "",
-        options?.capiProxyUrl ?? ""
+        options?.capiProxyUrl ?? "",
+        options?.consentTargets ?? []
       );
 
       // GETEILTES CONSENT-GATE (Phase 11, zweite Scheibe): der Block wird erzeugt,
@@ -373,7 +387,10 @@ export function generateFunctional(
       // Wissen. Die Regel selbst lebt in tracking/consent.ts — EIN Urteil.
       const consentScript = doc.createElement("script");
       consentScript.setAttribute("id", CONSENT_SCRIPT_ID);
-      consentScript.textContent = buildConsentRuntime();
+      // BEIDE Laufzeit-Funktionen (HAELFTE B). Der Plural ist Absicht: stuende hier
+      // der Singular, fehlte __psConsentAll auf jeder Seite MIT Wiring — und die
+      // Feuer-Funktion kehrte an ihrer Existenzpruefung um, fail-closed und lautlos.
+      consentScript.textContent = buildConsentRuntimes();
 
       // Vor </body> haengen; Fallback documentElement, falls kein body existiert.
       // REIHENFOLGE IST TRAGEND: das Gate ZUERST — das Wiring ruft __psConsent beim

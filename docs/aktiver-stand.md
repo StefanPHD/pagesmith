@@ -5575,7 +5575,13 @@ KEINE ÄNDERUNG" ist eingelöst und weiterhin wahr; der Befund zur Alt-Seiten-Re
 gebaut. **Beide bleiben, weil sie die HERLEITUNG tragen** — wer nur das Ergebnis liest,
 kann nicht mehr prüfen, ob die Entscheidung richtig war.
 
-### Die HÄLFTE B — DER DRAHT TRÄGT N SCHLÜSSEL (Platzhalter)
+### Die HÄLFTE B — DER DRAHT TRÄGT N SCHLÜSSEL (Zuschnitt)
+
+**ÜBERSCHRIFTEN-STEMPEL, 2026-08-08:** Diese Überschrift trug bis heute
+"(Platzhalter)". Sie ist umbenannt, weil die HÄLFTE B jetzt zugeschnitten ist.
+**KEIN Zeiger im Dokument verwies auf die alte Fassung** (geprüft: die Zeichenkette
+"DER DRAHT TRÄGT N SCHLÜSSEL" kam genau einmal vor, nämlich in der Überschrift
+selbst) — die Umbenennung bricht also nichts.
 
 **GEGENSTAND:** Der Draht trägt N Schlüssel aus **EINER** Ziehung, und **Invariante 5
 der achten Scheibe wird ersetzt**.
@@ -5586,6 +5592,198 @@ wird bei jeder Frage neu gelesen), der Rückgabewert eines Funktions-Hooks (frem
 Code, nicht zu Determinismus verpflichtet), der Wurf-Ausgang (ein Wurf beim zweiten
 Aufruf liefert `false`), und die FORM des Wertes (ein Wechsel zwischen `true` und einem
 Objekt ändert die ausgewertete Regel).
+
+#### Die gemessene Ausgangslage der HÄLFTE B — Provenienz: Aufklärung vom 2026-08-08
+
+**PROVENIENZ UND GRENZE für diesen ganzen Block:** read-only am Repo gemessen, an
+diesem einen Tag, an diesem Codestand (nach dem Bau der HÄLFTE A). **KEINE
+Live-Messung, KEINE Datenbank-Abfrage.** Ändert sich der Code, ist jede Zahl hier neu
+zu erheben.
+
+- **DER ZIELSCHLÜSSEL KOMMT IN DER AUSWERTUNGSREGEL GENAU EINMAL VOR**, in genau
+  einer Zeile (`buildConsentRuntime` in `tracking/consent.ts`, die Objekt-Zeile
+  `return v[t] === true`). **DIE ZIEHUNG IST VOLLSTÄNDIG ZIELUNABHÄNGIG** — sie
+  besteht aus zwei Anweisungen (dem Lesen von `window.pagesmithConsent` und, falls es
+  eine Funktion ist, ihrem Aufruf), und keine von beiden kennt `t`. **Drei der fünf
+  Auswertungszweige sind es ebenfalls** (nie geäussert, genau `true`, alles übrige).
+  **FOLGE: "Eine Ziehung, N Antworten" ist KEINE Umstrukturierung, sondern eine
+  Trennung entlang einer Naht, die schon da ist.**
+- **DIE ABSICHERUNG DECKT GENAU EINE DER DREI WERFENDEN ANWEISUNGEN.** Innerhalb des
+  `try` liegt allein der Funktionsaufruf. **AUSSERHALB liegen das Lesen des
+  Betreiber-Werts** (ein Getter mit Wurf) **und der Schlüsselzugriff** (ein Proxy mit
+  werfender Falle). **WO EIN SOLCHER WURF LANDET — verfolgt:** `__psMetaFire` ruft
+  ohne `try`; der Klick-Handler in `buildWiringScript` (`generate.ts`, modul-lokal)
+  umschliesst den Aufruf nicht, seine einzige Absicherung liegt um das Parsen des
+  Datenblocks; der Redirect wird NACH der Aktionsschleife ausgeführt. **Der Wurf tötet
+  also die Weiterleitung** — genau die Folge, gegen die die Existenzprüfung an
+  `__psMetaInit` geschrieben wurde, und die deckt nur den FEHLENDEN Block, nicht den
+  werfenden Hook.
+  **EINORDNUNG, die dazugehört: Das braucht pathologischen Betreiber-Code (Getter
+  bzw. Proxy), nicht bloss Fehlkonfiguration, und es ist KEIN Angriffsvektor** — der
+  Betreiber beschädigt seine eigene Seite.
+- **DER EMITTER KANN AN KEINER GEMEINSAMEN ZIEHUNG TEILNEHMEN. Drei unabhängige
+  Belege, jeder allein hinreichend:**
+  (1) **anderer Gültigkeitsbereich** — `buildPageViewScript` erzeugt eine eigene IIFE
+      in einem eigenen Script; `buildMetaRuntime` lebt in der IIFE von
+      `buildWiringScript`. Geteilt ist ausschliesslich das globale `__psConsent`.
+  (2) **anderes EREIGNIS** — der Emitter läuft beim Parsen, `__psMetaFire` beim Klick.
+      Dazwischen kann der Besucher seine Einwilligung ändern. **Ein geteilter
+      Schnappschuss wäre hier nicht bloss unmöglich, er wäre FALSCH.**
+  (3) **anderer Schlüssel** — `ANALYTICS_CONSENT_TARGET` gegen `META_CONSENT_TARGET`.
+- **DIE AUSWERTUNGSREGEL HAT KEINEN EIGENEN TEST.** `buildConsentRuntime` wird von
+  **keiner** Testdatei importiert (gemessen über das ganze `src`). Ihre Zweige werden
+  nur MITTELBAR geprüft — durch Ausführung des erzeugten Textes in `generate.test.ts`
+  (über den Helfer `firedWithConsent`) und in `pageview-emitter.test.ts` (T1–T7).
+  **FOLGE: Eine Änderung an ihrem TEXT sieht kein Wächter.** Entdeckt wird sie nur,
+  wenn sie das VERHALTEN in einem der ausgeführten Fälle ändert.
+- **DIE VIER TEXT-WÄCHTER ZÄHLEN EINEN NAMEN, NICHT EINE FRAGESTELLE.** Zwei in
+  `generate.test.ts` (zwei bzw. eine im Wiring) und zwei in `meta.consent-wire.test.ts`
+  (Aufrufstellen und Existenzprüfungen, je genau zwei). Alle vier zählen die
+  Zeichenkette `__psConsent(` bzw. `typeof __psConsent`. **Eine Form mit einem ANDEREN
+  Namen bliebe von ihnen ungesehen — Befund, nicht Vorwurf:** Sie wurden gegen einen
+  zusätzlichen Aufruf DESSELBEN Namens geschrieben und tun das zuverlässig.
+- **KEIN TEST DECKT EINEN HOOK, DER BEI AUFEINANDERFOLGENDEN AUFRUFEN VERSCHIEDEN
+  ANTWORTET** (gemessen: kein `mockReturnValueOnce`, kein aufrufabhängiger
+  Rückgabewert auf `pagesmithConsent`). **Das ist genau der Zustand, den diese Hälfte
+  ausschliessen soll — und er ist heute weder belegt noch widerlegt.**
+- **DER TOTAL-ABBRUCH TRÄGT VIER KONSUMENTEN UND EINE GETEILTE RESSOURCE AUF EINEM
+  URTEIL.** Hinter `if (!__c) return;` in `__psMetaFire` liegen FÜNF Dinge: der
+  **Script-Load** samt `fbq("init")` (über `__psMetaInit`), die **Ereignis-Kennung**,
+  die **Pixel-Aufrufe**, der **Beacon** und die **Bestätigung**.
+  **RICHTIGGESTELLT GEGENÜBER DEM AUFTRAG UND GEGENÜBER MEINEM EIGENEN BERICHT, weil
+  die Unterscheidung den Bau steuert:** Beide Fassungen sagten "vier Konsumenten" und
+  zählten dann fünf Dinge auf. **Die Ereignis-Kennung ist KEIN Konsument, sondern eine
+  geteilte RESSOURCE** — die vier Konsumenten bekommen je eine Wache, die Kennung
+  bekommt keine, sondern muss WANDERN (s. Invariante 3). Wer sie mitzählt, sucht für
+  sie eine Wache, die es nicht geben darf.
+- **DIE ANGABE, AUS DER EINE LISTE ENTSTÜNDE, IST BEI JEDEM FEHLER LEER STATT
+  UNBEKANNT.** `listConfiguredTargets` gibt `[]` zurück bei fehlender Sitzung,
+  fremdem Projekt UND DB-Fehler; der Ladeeffekt in `CodeImporter` übernimmt das
+  ungefiltert. **"Nichts konfiguriert" und "ich weiss es nicht" sind an diesem Wert
+  nicht unterscheidbar** — am Code als benannte Schwäche kommentiert.
+- **DER ERZEUGER LÄUFT IM BROWSER.** Das funktionale HTML entsteht im Client
+  (`generateFunctional`, gerufen aus `CodeImporter`); `publishProject` nimmt es als
+  ARGUMENT entgegen und hängt nur noch den Emitter an (`injectPageViewEmitter`).
+  **Der Server sieht den Erzeuger nie.** Das ist der zweite und schwerere Schnitt in
+  der Kette — der erste ist das options-Objekt von `generateFunctional`, das einen
+  einzelnen Meta-Wert trägt und keine Ziel-Liste kennt.
+
+#### Der Zuschnitt der HÄLFTE B
+
+**ZWECK:** Der Draht trägt die Urteile **aller Ziele, nach denen die Seite fragt** —
+aus **EINER** Ziehung. **Der Total-Abbruch wird ersetzt.**
+
+**ENTSCHEIDUNG (OWNER, 2026-08-08) — EINE ZIEHUNG, N ANTWORTEN.** Der erzeugte Text
+fragt den Betreiber-Hook **EINMAL pro Ereignis** und beantwortet daraus alle
+Schlüssel. **Die Auswertungsregel DARF dafür wachsen oder eine zweite gezielte
+Funktion bekommen.**
+**BEGRÜNDUNG:** Es geht nicht darum, Divergenz unwahrscheinlich zu machen, sondern sie
+**STRUKTURELL auszuschliessen**. Ein Ereignis, ein Schnappschuss, alle Ziele auf
+demselben.
+**DIE GRENZE, GEMESSEN UND AUSDRÜCKLICH: DAS GILT FÜR DIE KLICK-SEITE.** Für den
+Emitter ist es **GEGENSTANDSLOS, nicht verletzt** — anderes Ereignis, anderer
+Gültigkeitsbereich, anderer Schlüssel (s. die drei Belege oben). **Wer "drei werden
+eins" plant, plant gegen den Code.**
+
+**ENTSCHEIDUNG (OWNER, 2026-08-08) — DER DRAHT DARF GROSSZÜGIGER SEIN ALS DIE
+AUFLÖSUNG.** Das ist die **tragende Unterscheidung dieser Hälfte**:
+- **DIE PAARUNG entscheidet, WER empfangen kann.** Sie bleibt allein beim Server
+  (`getCapiConfigByTrackingKey`, Pixel-ID UND Geheimnis).
+- **DIE EINWILLIGUNG entscheidet, OB er darf.** Sie ist eine Aussage des BESUCHERS
+  über ein ZIEL und hängt NICHT daran, ob Zugangsdaten hinterlegt sind.
+
+**FOLGE:** Trägt der Draht einen Schlüssel für ein Ziel **ohne** Zugangsdaten, ist das
+**FOLGENLOS** — der Server hat dort keinen Empfänger, die erlaubte Menge kann ihn gar
+nicht enthalten. **Der gefährliche Fall ist der umgekehrte** (der Server löst ein Ziel
+auf, dessen Schlüssel im Draht fehlt: Feld vorhanden, Schlüssel fehlt, also verboten —
+lautlos), **und eine grosszügige Liste schliesst ihn aus.**
+**WAS DAS AUFLÖST:** Die Liste ist damit **KEINE Paarungs-Frage**. Die Paar-Menge im
+Client nachzubilden wäre eine **zweite Implementierung**, deren Divergenz lautlos wäre
+— und sie ist **nicht nötig**.
+**UND WARUM DIE STRENGE FASSUNG NICHT GEHT:** "Die Liste kommt aus der autoritativen
+Quelle" ist **am Code nicht baubar**. Der Erzeuger läuft im Browser; die aufgelöste
+Menge erreicht ihn nie. **Wörtlich genommen wäre diese Hälfte nicht baubar.**
+
+**ENTSCHEIDUNG (OWNER, 2026-08-08) — KEIN LEERES FELD, LIEBER GAR KEINS.** Kann die
+Liste nicht ermittelt werden, wird das Feld **VOLLSTÄNDIG WEGGELASSEN**, nicht leer
+geschrieben.
+**BEGRÜNDUNG:** Ein VORHANDENES, leeres Feld verbietet nach HÄLFTE A **ALLES, auch das
+Alt-Ziel** — die Altbestands-Ausnahme verlangt ein **ABWESENDES** Feld, nicht ein
+leeres. Ein einziger fehlgeschlagener Ladevorgang nähme der Seite ihr gesamtes
+Server-Tracking, lautlos, bis zum nächsten Publish. **Ein Teilausfall ist einem
+lautlosen Totalausfall vorzuziehen.**
+**DIE REGEL GILT AUCH DANN, WENN SIE HEUTE NICHT GREIFT:** Ergibt der Plan, dass die
+Liste aus einer Quelle kommt, die gar nicht fehlschlagen kann, **bleibt die Auflage
+bestehen** — sie schützt gegen jede künftige Quelle, die schweigen kann.
+**GEMESSEN DAZU, ALS BEFUND UND NICHT ALS VORENTSCHEIDUNG:** Im Client existiert
+mindestens eine Quelle, die nicht fehlschlagen KANN — `TRACKING_TARGETS` ist eine
+Konstante ohne Ladevorgang. **Die Vorsorge-Klausel des Owners ist also nicht
+theoretisch, sondern trifft genau den Fall, dass der Plan diese Quelle wählt.** WELCHE
+Quelle es wird, ist hier NICHT entschieden.
+
+**ENTSCHEIDUNG (OWNER, 2026-08-08) — DIE AUSWERTUNGSREGEL BEKOMMT EINEN EIGENEN TEST.**
+Sie wächst, und heute importiert sie **keine** Testdatei.
+**AUFLAGE: Er MUSS einen Hook enthalten, der beim ZWEITEN Aufruf anders antwortet.**
+Das ist der **einzige** Test, der die Entscheidung beweist — er muss vor der
+Umstellung rot sein können und danach grün.
+
+**VERHALTENS-INVARIANTEN:**
+1. **BEI EINEM ZIEL ÄNDERT SICH NICHTS** am Draht und am Verhalten.
+2. **DIE ZAHL DER ZIEHUNGEN PRO EREIGNIS STEIGT NICHT.** Heute: einer je Klick, zwei
+   beim ersten. **PRÄZISIERUNG, weil der Satz sonst falsch gelesen wird: die "zwei
+   beim ersten" gelten NUR mit gesetzter Pixel-ID** — ohne Pixel entsteht
+   `__psMetaInit` gar nicht, und es ist immer genau einer. Der einzige
+   Laufzeit-Zähler, den es gibt, misst ausgerechnet diesen zweiten Fall.
+3. **DIE EREIGNIS-KENNUNG ENTSTEHT WEITERHIN GENAU EINMAL**, für alle Verbraucher.
+   Sie liegt heute **HINTER** dem Abbruch — wandert er, muss sie mitwandern oder
+   davor entstehen. Zwei Erzeugungsstellen brächen Metas Deduplizierung UND den
+   Verlustraten-Join, lautlos.
+4. **DER SCRIPT-LOAD BLEIBT HINTER METAS URTEIL.** Schon der Load leakt IP und
+   Referer an den Anbieter.
+5. **KEIN BEACON, WENN KEIN EINZIGES ZIEL ERLAUBT IST.**
+6. **DIE BESTÄTIGUNGS-MASCHINERIE BLEIBT AN META.** Entscheidung der achten Scheibe,
+   unverändert: sie misst Adblocking über METAS Script-Load.
+7. **DER EMITTER BLEIBT UNBERÜHRT** — Fragestelle, Schlüssel, Zeitpunkt.
+
+**AUSDRÜCKLICH NICHT IN DIESER HÄLFTE:**
+- **JEDER ADAPTER.** Zehnte Scheibe.
+- **DIE WURF-LÜCKE AUSSERHALB DER ABSICHERUNG.** Backlog; **diese Hälfte muss die
+  Regel stabil halten, um beweisbar zu sein.**
+- **DIE ASYMMETRIE ZWISCHEN BROWSER-REGEL UND SERVER-LESER** beim Array-Riegel. Kein
+  Verhaltensunterschied gefunden; Backlog.
+
+#### Was der Stufe-1-Plan der HÄLFTE B beantworten MUSS
+
+- **Aus welcher Angabe entsteht die Liste, und KANN sie fehlschlagen?** Wenn ja: wie
+  wird das Feld dann **weggelassen** statt leer geschrieben?
+- **Welche Form nimmt die Regel-Erweiterung?** Bleibt die Einzel-Antwort
+  **byte-gleich**?
+- **Was geschieht mit der zweiten Prüfung im Bootstrap** (`__psMetaInit`)? Sie ist
+  heute die Redundanz des Meta-Pfads.
+- **Was tritt an die Stelle des Total-Abbruchs, und wo entsteht dann die Kennung?**
+- **Was geschieht bei "kein Ziel erlaubt"?**
+- **Zieht der Consent-Schlüssel des zweiten Ziels in dieser Hälfte um?** Die Auflage
+  sagt: sobald der Erzeuger ihn schreibt, wird er zur Einbahnstrasse — **und der
+  Zeitpunkt ist der erste Publish nach dem Deploy, nicht der Deploy.**
+
+#### Zwei Backlog-Kandidaten aus der Aufklärung zur HÄLFTE B — BENANNT, NICHT GEPLANT
+
+**PROVENIENZ: am Code gemessen am 2026-08-08, read-only.**
+
+**(1) DIE WURF-LÜCKE AUSSERHALB DER ABSICHERUNG.** In `buildConsentRuntime` liegt nur
+der Funktionsaufruf im `try`; das **Lesen** des Betreiber-Werts und der
+**Schlüsselzugriff** liegen davor bzw. dahinter. Ein Getter oder Proxy mit Wurf
+verlässt damit `__psConsent`, und weil weder `__psMetaFire` noch der Klick-Handler in
+`buildWiringScript` absichern, **stirbt die Weiterleitung**. **Braucht pathologischen
+Betreiber-Code; kein Angriffsvektor.** Nicht in dieser Hälfte, weil sie die Regel
+stabil halten muss, um ihre eigene Änderung beweisen zu können.
+
+**(2) DER ARRAY-RIEGEL EXISTIERT IM SERVER-LESER, NICHT IN DER BROWSER-REGEL.**
+`consentAllows` prüft ausdrücklich `Array.isArray`; `buildConsentRuntime` nicht — dort
+fällt ein Array in den Objekt-Zweig und wird über den `undefined`-Schlüsselzugriff
+verboten. **KEIN Verhaltensunterschied gefunden** (beide antworten "verboten"), **wohl
+aber ein Unterschied in der ABSICHT**, den ein Leser für ein Versehen halten und
+"reparieren" könnte. Genau deshalb steht er hier.
 
 ---
 

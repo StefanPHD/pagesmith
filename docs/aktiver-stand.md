@@ -19,8 +19,8 @@ hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) die NAHT des
 Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) das Einwilligungs-Signal
 reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) die ZUGANGSDATEN JE ZIEL
 — **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (7) die AUFLÖSUNG TRÄGT
-MEHRERE ZIELE — ZUGESCHNITTEN, (8) der BROWSER-PFAD LÖST SICH VON META —
-PLATZHALTER, (9) PINTEREST SENDET — PLATZHALTER.
+MEHRERE ZIELE — **ABGESCHLOSSEN und live bewiesen**, (8) der BROWSER-PFAD LÖST
+SICH VON META — PLATZHALTER, (9) PINTEREST SENDET — PLATZHALTER.
 
 **NACHGEZOGEN AM 2026-08-08 — AUS EINER SCHEIBE WURDEN DREI.** Bis dahin stand an
 Position (7) "Pinterest als erstes zusätzliches Ziel — PLATZHALTER", und darunter
@@ -29,13 +29,20 @@ und damit erstmals in dieser Phase das, wofür sie eröffnet wurde: ein zweites 
 das tatsächlich sendet." **DER ERSTE HALBSATZ GILT UNVERÄNDERT, DER ZWEITE NICHT
 MEHR.**
 
-**SECHS SCHEIBEN SIND ABGESCHLOSSEN. OFFEN SIND DREI.** Sie sind KEINE
-Umsortierung derselben Arbeit und auch keine Verfeinerung eines zu grossen
-Zuschnitts: Die Aufklärung vom 2026-08-08 hat einen STRUKTURELLEN Befund geliefert,
-der die Reihenfolge erzwingt — der Conversion-Beacon existiert heute nur INNERHALB
-von Metas Gate. Solange das so ist, kann ein zweites Ziel gar nicht beliefert
-werden, auch wenn Adapter, Auflösung und Vokabular fertig wären. Der Befund steht
-vollständig unter "## Der Befund, der die Teilung der siebten Scheibe erzwingt".
+**NACHGEZOGEN AM 2026-08-08, ABENDS — SIEBEN SIND ABGESCHLOSSEN, OFFEN SIND ZWEI.**
+Hier stand "SECHS SCHEIBEN SIND ABGESCHLOSSEN. OFFEN SIND DREI"; die siebte ist am
+selben Tag gebaut und live bewiesen worden.
+
+Die verbleibenden zwei sind KEINE Umsortierung derselben Arbeit und auch keine
+Verfeinerung eines zu grossen Zuschnitts: Die Aufklärung vom 2026-08-08 hat einen
+STRUKTURELLEN Befund geliefert, der die Reihenfolge erzwingt — der
+Conversion-Beacon existiert heute nur INNERHALB von Metas Gate. Solange das so
+ist, kann ein zweites Ziel gar nicht beliefert werden, auch wenn Adapter,
+Auflösung und Vokabular fertig wären. Der Befund steht vollständig unter "## Der
+Befund, der die Teilung der siebten Scheibe erzwingt".
+**DIE SIEBTE HAT DARAN NICHTS GEÄNDERT, und das ist kein Versäumnis, sondern ihr
+Zuschnitt:** Sie hat die SERVER-Seite auf mehrere Ziele gestellt. Der Befund
+betrifft den BROWSER-Pfad und ist unverändert der Gegenstand der achten.
 
 **DIE SECHSTE IST DIE ERSTE SCHEIBE DIESER PHASE, DIE IN ZWEI HÄLFTEN FUHR.**
 Beim Zuschneiden zeigte sich, dass die Ablage-Hälfte ohne eine einzige
@@ -4280,7 +4287,19 @@ sie BEHAUPTET.** Die erste darf sich ändern, die zweite nicht. **Ändert sich a
 dieser Dateien mehr als die Form, ist das eine STOPP-BEDINGUNG** — vorlegen, nicht
 nachziehen.
 
-### Die gemessene Ausgangslage dieser Scheibe
+### Die gemessene Ausgangslage dieser Scheibe — ABGELAUFEN
+
+**GESTEMPELT AM 2026-08-08 MIT DEM ABSCHLUSS. Sie beschreibt den Zustand VOR dem
+Bau und wird NICHT nachgezogen** — sie ist ein Zeitdokument, und ihr ganzer Wert
+liegt darin, dass man den Ausgangszustand noch sieht. Vier ihrer fünf Punkte sind
+seit dem Bau schlicht nicht mehr wahr: Es gibt keinen `.eq("target", …)` mehr,
+kein `maybeSingle()` auf der Geheimnis-Abfrage, kein Feld `capiConfig` und keinen
+Frühausstieg an METAS Pixel-ID. **Wer sie als Beschreibung des heutigen Codes
+liest, plant gegen ein Schema, das es nicht mehr gibt.**
+**PUNKT (d) IST DER EINZIGE, DER UNVERÄNDERT GILT:** Der Deckelwert ist weiterhin
+modul-privat. Er steht als Backlog-Kandidat, nicht als Aufgabe dieser Scheibe.
+**WAS AUS IHR NACH VORN BINDET, steht verdichtet unter "### Was aus dieser Scheibe
+nach vorn bindet".**
 
 PROVENIENZ: **am Code gemessen in der Aufklärungs-Runde vom 2026-08-08
 (read-only)**, die Zählungen am 2026-08-08 nachgeprüft. Nur was DIESE Scheibe
@@ -4372,44 +4391,286 @@ Obergrenze, die NICHT mit der Zahl der Empfänger wächst.
 **OB DAS AM CODE SO BAUBAR IST, beantwortet der Stufe-1-Plan. Findet er, dass es
 nicht geht: STOPP und vorlegen, nicht umgehen.**
 
-### Die sechs Verhaltens-Invarianten
+### Die sechs Verhaltens-Invarianten — ABGELAUFEN
 
-1. **BEI EINEM ZIEL ÄNDERT SICH NICHTS AM DRAHT ZU META.** Gleiche Nutzlast, gleiche
-   Sequenz, gleiche Obergrenze.
-2. **DIE RUNDENZAHL WÄCHST NICHT MIT DER ZAHL DER ZIELE.** Der Ingest-Pfad wird von
-   JEDEM Besucher JEDER Kundenseite getroffen.
-3. **DER INGEST WIRFT NIE.** Das 204-Containment gilt in jedem Pfad — auch dann, wenn
-   ein Empfänger seinen Vertrag bricht.
-4. **EIN LANGSAMER EMPFÄNGER REISST KEINEN SCHNELLEN MIT.**
-5. **DIE FORWARD-ENTSCHEIDUNG BLEIBT SICHTBAR.** Kill-Switch, Confirm-Return und
-   Einwilligungs-Zweig bleiben EIGENE Zweige, kein Term in einer zusammengesetzten
-   Bedingung.
-6. **ES WIRD NICHTS AN EIN NEUES ZIEL GESENDET.**
+**ALLE SECHS SIND GEMESSEN**; ihr Ergebnis steht im Protokoll unten, je mit dem
+Beleg daneben. Sie waren ANWEISUNGEN FÜR DIESEN EINEN BAU und werden hier nicht
+mehr im Wortlaut geführt.
+**WAS SICH FORTSETZT, steht verdichtet unter "### Was aus dieser Scheibe nach vorn
+bindet"** — und zwar in einer schärferen Fassung als die Invarianten selbst: Eine
+Invariante sagt, was ein Bau nicht kaputt machen darf; die Verdichtung sagt, was
+der NÄCHSTE Bau einzuhalten hat.
+**AUSDRÜCKLICH: Invariante 6 ("es wird nichts an ein neues Ziel gesendet") LÄUFT
+NICHT AB, sie wird von der NEUNTEN Scheibe aufgehoben** — nicht von der achten.
+Bis dahin gilt sie, und die Zuordnung setzt sie strukturell durch.
 
-### Ausdrücklich nicht in dieser Scheibe, je mit Grund
+### Ausdrücklich nicht in dieser Scheibe — ABGELAUFEN, bis auf zwei
 
-- **DER PINTEREST-ADAPTER.** Neunte Scheibe. **Diese hier ist beweisbar, WEIL kein
-  neues Netzwerk daneben steht** — ein Fehlschlag hat dann genau eine mögliche
-  Ursache.
-- **DER BROWSER-PFAD.** Achte Scheibe, s. den Befund-Block darüber.
-- **DER ZWEITE SCHLÜSSEL IM DRAHT, BEIDE ENDEN.** Er hängt am Browser-Pfad; der
-  Leser nimmt den Schlüssel ohnehin schon als Parameter.
-- **DER TESTKNOPF, das ZIEL-VOKABULAR, der NEUTRALE ORT DER KENNUNG.**
-- **`hasAdapter` UMLEGEN.** Es wäre eine Behauptung über eine Auslieferung, die es
-  nicht gibt.
+**WAS EINGEHALTEN WURDE, ist im Protokoll gemessen und wird hier nicht mehr
+aufgezählt. ZWEI Punkte würden mit der Liste untergehen und binden nach vorn:**
 
-### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
+- **DER ZWEITE SCHLÜSSEL IM DRAHT, BEIDE ENDEN.** Er hängt am Browser-Pfad —
+  **und er ist seit diesem Bau DRINGENDER, nicht weniger dringend:** Der Handler
+  prüft die Einwilligung EINMAL für die ganze Menge, mit METAS Schlüssel. Solange
+  der Draht nur einen Schlüssel trägt, ist das bei einem Empfänger exakt richtig
+  und beim zweiten falsch. Die Stelle im Code trägt diesen Satz als Kommentar.
+- **`hasAdapter` UMLEGEN.** Weiterhin eine Behauptung über eine Auslieferung, die
+  es nicht gibt — die Karte sagt zu Recht "Auslieferung folgt". **Die siebte
+  Scheibe ändert daran NICHTS, obwohl sie die Ablage vollständig macht:** Ein Ziel
+  kann jetzt vollständig aufgelöst werden und wird trotzdem übersprungen.
+
+### Was der Stufe-1-Plan beantworten MUSSTE — ALLE FÜNF BEANTWORTET
+
+Die Fragen bleiben im Wortlaut stehen: Sie sind der MASSSTAB, an dem der Plan
+gemessen wurde — ohne sie wäre nicht mehr erkennbar, WAS beantwortet wurde.
 
 1. Welche FORM trägt die Menge im Rückgabetyp, und wie bleibt dabei die Zusage
    "zwei Abfragen, nicht mehr" eingehalten?
+   → **Eine Liste von Paaren aus Ziel-Name und Zugangsdaten; die Zusage hält, weil
+   die zweite Abfrage `in(target, …)` statt `eq(target, …)` benutzt und auf
+   `maybeSingle()` verzichtet.**
 2. Was ersetzt den Frühausstieg an Metas Pixel-ID, ohne dass ein Ziel ohne Pixel-ID
    still durchfällt — und ohne eine dritte Abfrage?
+   → **Die Frage "hat IRGENDEIN bekanntes Ziel eine Pixel-ID?", beantwortet aus
+   den `settings`, die ohnehin schon in der ersten Projektion mitreiten. Null
+   zusätzliche Runden.**
 3. Trägt der Code eine gemeinsame FRIST ohne geteiltes Abbruchsignal? Wenn nein:
    STOPP.
+   → **JA, aber nur in der ABGELEITETEN Form** — s. den ersten Punkt der
+   Verdichtung unten. Die explizite Form wäre nicht baubar gewesen; das war der
+   einzige STOPP-nahe Befund des Plans und ist dort offen vorgelegt worden.
 4. Welche der 22 nicht-kommentierenden Test-Fundstellen sind Vorrichtung, welche
    Erwartung — und stimmt die Vorhersage mit den gemessenen 13/9 überein?
+   → **13/9 stimmten. Die ZAHL DER VORRICHTUNGEN nicht** — es waren 20, s. Punkt
+   (b) im Protokoll.
 5. Wie wird belegt, dass die beiden STILLEN Lesestellen wirklich angefasst wurden,
    wenn nur die dritte den Build bricht?
+   → **Die erste über den COMPILER (Feld umbenannt), die zweite über einen
+   HEADER-ZEUGEN.** Beide Belege sind durch Mutationen geprüft.
+
+### Was aus dieser Scheibe nach vorn bindet
+
+**DAS IST DIE VERDICHTUNG. Alles darüber ist Zeitdokument; was hier steht, bindet
+den nächsten Bau.** Acht Punkte, jeder mit dem Grund, warum er bindet.
+
+1. **DIE FRIST IST EINE EIGENSCHAFT DER ANORDNUNG, KEIN BAUTEIL.** Gleichzeitiger
+   Start plus EIGENER Deckel je Empfänger ergibt das MAXIMUM, nicht die Summe —
+   die Gesamtwartezeit wächst nicht mit der Zahl der Empfänger. **KEIN
+   `Promise.race`, KEIN gemeinsamer Wecker, KEIN geteiltes Abbruchsignal.** Ein
+   geteiltes Signal träfe ALLE und liesse einen hängenden Zweitempfänger den
+   Meta-Forward mitkappen; ein Wecker per race hörte auf zu WARTEN, ohne
+   abzubrechen — das wäre die gestrichene Scheibe durch die Hintertür.
+2. **`allSettled` UND NIEMALS `all`.** Der Unterschied ist nicht Stil, sondern das
+   204-Containment: `allSettled` rejectet nie, also kann kein Empfänger einen Wurf
+   aus dem Handler heraustragen. `Promise.all` machte aus der garantierten leeren
+   204 einen 500 — und der leakt den Gültigkeitszustand des trackingKeys.
+3. **DIE FORWARD-WACHE PRÜFT DIE LÄNGE, NIE DIE EXISTENZ.** Eine leere Menge ist
+   truthy; ein blosses `if (targets)` wäre immer wahr, die Wache Dekoration. Der
+   Compiler sieht das nicht.
+4. **DER FAN-OUT ITERIERT ÜBER DIE AUFGELÖSTE MENGE, NIE ÜBER DIE LISTE DER
+   BEKANNTEN ZIELE.** Sonst liefe ein Ziel ohne Zugangsdaten mit — oder mit denen
+   eines anderen. Eine formale Suche nach der Ziel-Liste im Handler muss LEER
+   bleiben; sie ist der billigste Wächter dieser Zusage.
+5. **ZWEI DB-RUNDEN, UNABHÄNGIG VON DER ZAHL DER ZIELE.** *Ergänzt gegenüber dem
+   Kandidaten des Owners, und ich halte ihn für den am leichtesten zu brechenden:*
+   Eine Abfrage JE ZIEL ist die naheliegende Lösung, und sie ist bei EINEM Ziel von
+   der richtigen nicht zu unterscheiden. Nur ein Test mit ZWEI Zielen trennt sie.
+6. **NUR VOLLSTÄNDIGE PAARE WERDEN EMPFÄNGER.** *Ergänzt.* Pixel-ID ohne Geheimnis
+   und Geheimnis ohne Pixel-ID fallen JE ZIEL heraus. Ohne die Paarung könnte ein
+   Ziel mit den Zugangsdaten eines anderen laufen — die Fehlerklasse, gegen die
+   vorher allein der Ziel-Filter der Abfrage stand.
+7. **EIN ZIEL, DAS NICHT IN DER BEKANNTEN LISTE STEHT, FÄLLT VOR DER
+   GEHEIMNIS-ABFRAGE HERAUS.** *Ergänzt, als Falle für die neunte Scheibe:* Der
+   Frühausstieg und der Ziel-Filter lesen beide dieselbe Liste. Wer ein Ziel
+   einführt, ohne es dort einzutragen, bekommt keinen Fehler — er bekommt gar
+   nichts.
+8. **DIE EINWILLIGUNG WIRD EINMAL FÜR DIE GANZE MENGE GEPRÜFT, MIT METAS
+   SCHLÜSSEL.** *Ergänzt, und ich halte diesen für den folgenreichsten:* Bei einem
+   Empfänger ist das exakt richtig. Wer einen zweiten einhängt, BEVOR der
+   Browser-Pfad das Signal je Ziel liefert, gated ihn mit METAS Einwilligung. Das
+   verbindet diese Scheibe mit der achten und ist der Grund, warum die
+   Reihenfolge 8 vor 9 gilt.
+
+**WIDERSPRUCH ZUM KANDIDATEN DES OWNERS, ausdrücklich:** Seine vier Punkte sind
+alle richtig und stehen oben als 1 bis 4. **Vier fehlten** — und die vier
+Ergänzungen haben eine Gemeinsamkeit, die sie erklärt: Die Kandidaten des Owners
+beschreiben die ANORDNUNG des Fan-Outs, die Ergänzungen beschreiben die AUFLÖSUNG
+davor. Beide Hälften binden, und die zweite ist die stillere.
+
+---
+
+### Protokoll der siebten Scheibe — Vollzug und Abschluss
+
+Der Zuschnitt darüber ist der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+**DIE BUCHSTABEN IN DIESEM PROTOKOLL SIND LOKAL.**
+
+**VOLLZOGEN AM 2026-08-08 — Commit `ee1e0a3`. KEINE Migration** — diese Scheibe
+fasst die Datenbank nicht an, der Deploy lief ohne SQL-Vorlauf.
+
+#### Die Live-Werte, gemeldet von Stefan am 2026-08-08
+
+Keiner davon ist abgeleitet. **Die Scheibe hat GENAU EINE Live-Achse** — Meta
+forwardet unverändert —, und beide Angaben unten gehören zu ihr.
+
+- **(1) DAS PAAR.** Auf einer bestehenden, **NICHT neu publizierten** Seite mit
+  Pixel-ID und Zugangsdaten wurde nach dem Code-Deploy eine Conversion mit
+  erteilter Einwilligung ausgelöst. Im Events Manager steht das **PAAR** unter
+  geteilter eventID, das Server-Ereignis als **dedupliziert** markiert.
+  **DASS DIE SEITE NICHT NEU PUBLIZIERT WURDE, IST DIE AUSSAGEKRAFT:** Das
+  ausgelieferte HTML ist byte-gleich das von vor dem Deploy. Geändert hat sich
+  ausschliesslich der Server — ein Unterschied im Ergebnis könnte also nur von
+  dort kommen.
+- **(2) DER ZÄHLER IN DER PROJEKT-STATISTIK IST GESTIEGEN.**
+
+**WARUM (2) KEIN BEIWERK IST — und der Absatz gehört zwingend dazu, sonst liest
+sich die zweite Angabe wie eine Nettigkeit:** Am Statuscode sind ZWEI Befunde
+NICHT unterscheidbar, weil `/api/e` in jedem Pfad mit einer leeren 204 antwortet:
+- ein **gebrochener Forward** bei laufendem Persist, und
+- ein **gebrochener Persist** bei laufendem Forward.
+**Jede der beiden Angaben allein lässt die andere Möglichkeit offen.** (1) allein
+bewiese den Forward und schwiege über die Sequenz davor; (2) allein bewiese den
+Persist und schwiege über den Forward. **Erst beide zusammen belegen, dass die
+SEQUENZ unberührt ist** — und die Sequenz ist genau das, was diese Scheibe
+angefasst hat: Persist, Wache, Einwilligung, Header, Fan-Out, 204.
+
+#### Der Bau, gemessen am eigenen Lauf
+
+PROVENIENZ: lokale Läufe am 2026-08-08. **GRENZE:** Die Suite kennt kein Postgres
+und läuft in keinem Browser; der PostgREST-Builder ist gemockt. Sie beweist
+Verdrahtung, Abfrage-GESTALT und Anordnung — **nicht, dass PostgREST auf `in()`
+ohne `maybeSingle()` so antwortet, wie der Mock es tut.** Das deckt allein der
+Live-Test (1).
+
+- **827 Tests vorher, 837 nachher**; 46 Testdateien vorher, 47 nachher. Die zehn
+  neuen: acht in `fan-out.test.ts`, zwei in `token.test.ts`.
+  *Provenienz: "nachher" gemessen; "vorher" aus dem Protokoll der sechsten
+  Scheibe übernommen, in dieser Runde nicht nachgemessen.*
+- **In den sieben Bestandsdateien änderte sich AUSSCHLIESSLICH die Vorrichtung.**
+  Keine einzige `expect`-Zeile. Nachgeprüft: Alle neun Erwartungen auf die
+  Feldform liegen geschlossen in `token.test.ts`.
+- **Die vier Gates grün:** `tsc --noEmit`, `eslint`, `vitest run`, `next build`.
+
+**DER COMPILER-BRUCH NACH SCHRITT 1 — der Beleg, dass das Umbenennen kein
+Nebeneffekt war:** Nach dem reinen Umbenennen, vor jeder Logik, meldete `tsc`
+GENAU DREI Stellen — die Lesestelle im Handler, die eine Erwartung im
+Resolver-Test und den fehlenden Typ-Import. **Die stille Stelle 1 war damit laut,
+ohne dass ein Test sie behaupten musste.**
+
+**DIE VIER MUTATIONEN, Vorhersage und Ergebnis nebeneinander:**
+
+| Mutation | Vorhersage vor dem Lauf | ERGEBNIS |
+|---|---|---|
+| **M1** Wache zurück auf `targets &&` | 1 Test, und zwar der Header-Zeuge; sonst nichts | **1 rot, genau dieser — punktgenau.** Die beiden Kandidaten, die mitfallen könnten, blieben grün wie vorhergesagt. |
+| **M2** das Abbruchsignal teilen | — | **NICHT AUSFÜHRBAR.** Das Signal entsteht im Adapter; es zu teilen verlangte eine Signatur-Änderung an einer für diese Scheibe unantastbaren Datei. |
+| **M2-Ersatz** den Fan-Out serialisieren | *keine vorab notiert* | **3 rot** — Gleichzeitigkeit, Frist und Containment. |
+| **M2b** `all` statt `allSettled`, Gleichzeitigkeit unverändert | 1 Test (Containment) | **1 rot, genau dieser.** |
+| **M3** eine Abfrage je Ziel | 1–2 Tests; der Ein-Ziel-Wächter bleibt grün | **1 rot: der ZWEI-Ziele-Rundenzähler.** Der Ein-Ziel-Wächter blieb grün. |
+
+**DIE DREI GEGENPROBEN:**
+- **Unantastbare Dateien:** Diff über den Browser-Pfad, die Ablage-Ableitungen,
+  die Server-Aktionen, den Meta-Adapter und alle Migrationen — **LEER.**
+- **DIE FORMALE SUCHE NACH DER ZIEL-LISTE IM HANDLER: KEIN TREFFER.** Der Fan-Out
+  iteriert über die AUFGELÖSTE Menge, nie über die Liste der bekannten Ziele.
+  **Das ist die billigste und schärfste der drei** — sie ist ein Ein-Wort-Grep und
+  deckt eine Zusage ab, die sonst nur ein Kommentar trüge.
+- **Rundenzahl:** eine im schlanksten, zwei im breitesten Fall, unabhängig von der
+  Zahl der Ziele.
+
+#### Vier benannte Punkte, die künftige Arbeit binden
+
+**(a) DER COMPILER ZEIGT FOLGEFEHLER NICHT NEBENEINANDER, SONDERN NACHEINANDER.**
+
+Eine Stelle, die von einer fehlerhaften Variablen liest, bleibt STUMM, bis die
+erste behoben ist. **Wer einen Umbau danach plant, dass "der Compiler alles
+zeigt", sieht seine Arbeit in Etappen und hält jede für die letzte.**
+
+**BELEG:** Der Stufe-1-Plan führte drei Lesestellen und nannte die dritte "laut".
+Sie war es nicht — sie erschien erst, nachdem die erste behoben war, weil die
+Variable bis dahin selbst fehlerbehaftet war. **Die Aussage "der Compiler macht
+sie laut" war richtig; die Aussage "er macht sie GLEICHZEITIG laut" war es nie,
+und niemand hatte sie geprüft.**
+
+**(b) EINE INFORMATION ZU HABEN HEISST NICHT, SIE AUF DER RICHTIGEN ACHSE
+AUSGEWERTET ZU HABEN.**
+
+**BELEG:** Der Bau brauchte SIEBEN Vorrichtungs-Änderungen mehr als vorhergesagt
+— die Modul-Mocks der sieben Bestandsdateien, weil der Handler eine zweite
+Konstante aus dem gemockten Modul importiert. **Die Information stand im eigenen
+Stufe-1-Bericht:** Dort war ausgezählt worden, welche Module jene Dateien mocken
+— gelesen, um zu belegen, dass der Adapter ECHT läuft. **Beim Zählen der
+Vorrichtungen wurde dieselbe Zeile nicht mitgedacht.** Gezählt wurden
+Fixture-Literale; Modul-Fakturen sind eine zweite Achse.
+
+**FÜNFTER BELEG IN DIESER PHASE FÜR EINE ZU ENGE VORHERSAGE, alle fünf in dieselbe
+Richtung.** Die vier davor stehen in den Protokollen der Scheiben vier, fünf und
+sechs. **Dass es immer dieselbe Richtung ist, ist die eigentliche Aussage** — eine
+zufällige Streuung träfe mal nach oben, mal nach unten.
+
+**(c) EINE MUTATION, DIE ZWEI ACHSEN GLEICHZEITIG BEWEGT, IST KEINE MUTATION,
+SONDERN EIN UMBAU.**
+
+Ihr Ergebnis sagt nicht, WELCHE Achse gedeckt ist. **BELEG:** Der Ersatz für die
+nicht ausführbare Mutation serialisierte den Fan-Out — und änderte damit
+Gleichzeitigkeit UND Containment in einem Schritt. Drei Tests fielen; welcher zu
+welcher Achse gehörte, war am Ergebnis nicht zu sehen.
+**AUFGELÖST DURCH TEILEN UND VORAB-ANSAGE, nicht durch Nachbessern am Code:** Die
+zweite Probe bewegte nur die Containment-Achse, mit vorher notierter Vorhersage.
+Danach lagen die Achsen sauber getrennt.
+
+**(d) EIN SCHUTZ, DER SICH NICHT LAUTLOS ENTFERNEN LÄSST, BRAUCHT KEINEN TEST —
+ABER DAS MUSS GEPRÜFT SEIN, NICHT ANGENOMMEN.**
+
+**BELEG:** Ein geteiltes Abbruchsignal liesse sich nur über eine
+Signatur-Änderung am Adapter bauen — also nicht versehentlich und nicht leise.
+Der Schutz ist deshalb struktureller Art, und ein Test dafür wäre kaum baubar.
+**WAS IHN TRÄGT, IST EIN KOMMENTAR AN DER FAN-OUT-STELLE — UND EIN KOMMENTAR IST
+KEIN WÄCHTER.** Das ist eine SCHWÄCHE und steht hier als solche, nicht als
+Entwarnung. Die Projektregel "NUR EIN TEST IST EIN WÄCHTER" gilt unverändert; sie
+ist hier nicht erfüllbar, und genau das gehört benannt.
+
+#### Was diese Scheibe ausdrücklich NICHT geleistet hat
+
+- **ES SENDET NICHTS AN EIN NEUES ZIEL.** Kein Adapter existiert. Die Zuordnung
+  kennt genau einen Empfänger, jedes andere Ziel wird still übersprungen.
+- **DIE ANORDNUNG IST LIVE NICHT PRÜFBAR.** Es gibt keinen zweiten Empfänger; die
+  Tests arbeiten mit einem STELLVERTRETER, der zweimal dasselbe Ziel einsetzt —
+  eine Konstellation, die der Resolver nicht erzeugen kann. **Was er nicht
+  beweist, steht bei ihm in der Testdatei.**
+- **DIE FRIST UNTER ECHTER NEBENLÄUFIGKEIT IST NICHT GEMESSEN.** Die Tests laufen
+  mit gestellten Zeitgebern; über Concurrency-Slots sagen sie nichts.
+- **EIN ZWEITER ADAPTER IST NICHT AUF DENSELBEN DECKEL VERPFLICHTET.** Der Wert
+  bleibt modul-privat; nichts erzwingt, dass ein zweiter dieselbe Zahl nimmt.
+- **DER BROWSER-PFAD IST UNBERÜHRT.** Der Befund, der die Teilung erzwingt, gilt
+  unverändert — der Conversion-Beacon existiert weiterhin nur innerhalb von Metas
+  Gate.
+
+### Zwei Backlog-Kandidaten aus dem Bau — BENANNT, NICHT GEPLANT
+
+**PROVENIENZ: am Code gemessen am 2026-08-08, nach dem Bau.** Kein Termin, keine
+Zusage.
+
+**(1) `getMetaPixelId` HAT KEINEN AUFRUFER MEHR — UND IHR KOPFKOMMENTAR BEGRÜNDET
+IHRE EXISTENZ MIT GENAU DEM AUFRUFER, DEN ES NICHT MEHR GIBT.** Der Resolver liest
+seit dieser Scheibe die ziel-parametrisierte Ableitung; die Meta-Sonderfassung ist
+damit tot.
+**PRÄZISIERT GEGENÜBER DER AUFTRAGSFASSUNG, weil sie sonst zwei Dinge in einen
+Topf wirft:** Der Auftrag nannte "die ziel-spezifischen Pixel-ID-Ableitungen".
+**Die ziel-PARAMETRISIERTEN sind quicklebendig und tragen den ganzen Lesepfad** —
+tot sind allein die beiden META-Sonderfassungen. Und von diesen beiden ist nur die
+LESENDE in dieser Scheibe gestorben; **die schreibende hatte schon vorher keinen
+Aufrufer im Produktivcode.** Sie wird also mitgenannt, aber nicht dieser Scheibe
+zugeschrieben.
+**EIN DRITTER FUND AN DERSELBEN STELLE, der im Auftrag nicht vorkam:** In den
+Ablage-Tests steht ein BRÜCKEN-Test, dessen Kommentar sagt, der Resolver rufe die
+Meta-Sonderfassung im Forward-Pfad. **Auch das ist seit diesem Bau falsch** — der
+Test sichert damit eine Gleichwertigkeit, auf die kein Produktivpfad mehr baut.
+
+**(2) EINIGE TESTTITEL UND KOMMENTARE TRAGEN NOCH DEN ALTEN FELDNAMEN.** Sie
+stehen in den sieben Bestandsdateien und im Resolver-Test.
+**WARUM SIE STEHENBLIEBEN:** Einen Testnamen zu ändern ginge über "nur die
+Vorrichtung" hinaus — und genau diese Grenze war die STOPP-Bedingung des
+Zuschnitts. **Gemeldet, nicht getan** ist hier die Einhaltung der Auflage, nicht
+ihre Umgehung.
 
 ---
 

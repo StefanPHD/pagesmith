@@ -5123,6 +5123,132 @@ vorliegen müssen:**
   und sind hier nie niedergeschrieben worden. Der Zuschnitt der zehnten Scheibe muss
   sie zuerst aufnehmen; sie hier zu erraten wäre genau der Fehler, gegen den die
   Provenienz-Disziplin dieses Dokuments steht.
+  **ERLEDIGT AM 2026-08-08: SIE STEHEN JETZT HIER.** S. "### Die Anbieter-Befunde
+  zum zweiten Ziel — AUFGENOMMEN, NICHT GEPRÜFT", Punkt (b). **DER SATZ DARÜBER
+  BLEIBT WORT FÜR WORT STEHEN** — er hält fest, dass das Material einmal gefehlt
+  hat, und genau das war der Anlass für die Aufnahme.
+
+### Die Anbieter-Befunde zum zweiten Ziel — AUFGENOMMEN, NICHT GEPRÜFT
+
+**DIE PROVENIENZ STEHT VOR DEN WERTEN, weil sie ihre Belastbarkeit bestimmt.
+DREITEILIG UND NICHT ZU VERMISCHEN:**
+- **ANBIETER-DOKU**, gelesen vom Architekten am 2026-08-07.
+- **HANDMESSUNGEN von Stefan am 2026-08-07**, per `curl` gegen den Testmodus.
+- **OBERFLÄCHEN-ABLESUNGEN von Stefan am 2026-08-07** im Anbieter-Konto.
+
+**KEINE dieser Angaben ist am eigenen Code gemessen. KEINE ist seither
+nachgeprüft.**
+**WAS ICH SEHR WOHL NACHGEMESSEN HABE, und es ist eigens getrennt:** In den
+Punkten unten steht mehrfach ein KONTRAST zum ersten Adapter ("anders als beim
+ersten"). **Die Aussagen über UNSEREN Code habe ich am 2026-08-08 nachgemessen**
+und als solche markiert; die Aussagen über den Anbieter nicht — die kann ich
+nicht prüfen.
+
+**(a) ENDPUNKT UND AUTHENTIFIZIERUNG.** *Anbieter-Doku.* Der Endpunkt führt eine
+KONTO-KENNUNG im Pfad; das Geheimnis reist im `Authorization`-Header als Bearer,
+NICHT im Query-String.
+**FOLGE, DIE DEN ADAPTER BINDET: Die URL ist bei diesem Anbieter NICHT geheim.**
+*Der Kontrast ist am eigenen Code nachgemessen (2026-08-08):* Metas Forward-URL
+trägt `?access_token=<Geheimnis>` — deshalb steht in jenem Adapter, die URL dürfe
+NIE ins Log. **Die Log-Disziplin bleibt, ihr GRUND verschiebt sich** — beim zweiten
+Ziel wäre sie nicht mehr durch die URL begründet, sondern durch die Nutzlast.
+**Wer den Grund für die Regel hält, streicht sie beim zweiten Adapter.**
+
+**(b) ZWEI FEHLERWEGE MIT VERSCHIEDENEN FORMATEN — DER WICHTIGSTE BEFUND.**
+- **Ungültiges Geheimnis:** echter HTTP-Fehlerstatus (**401**), Rumpf mit
+  `code`/`message`/`status`. *HANDMESSUNG von Stefan.*
+- **Abgelehnte Nutzlast oder abgelehnter Ereignisname:** **HTTP-ERFOLG**, der
+  Fehlschlag steht im RUMPF — Zahl empfangener gegen Zahl verarbeiteter
+  Ereignisse, je Ereignis ein Status. *Anbieter-Doku.*
+
+**DIE AUFLAGE: Der Adapter muss BEIDE Wege prüfen.**
+- Nur den Status zu lesen liesse ein abgelehntes Ereignis **als Erfolg**
+  durchgehen.
+- Nur den Rumpf zu lesen liesse ein totes Geheimnis unbemerkt — **und der
+  Erfolgs-Rumpf hat eine ANDERE FORM als der Fehler-Rumpf.** Ein Parser für nur
+  eine von beiden findet nichts und meldet nichts.
+
+**WARUM DAS DEN BESTEHENDEN ADAPTER NICHT ALS VORLAGE TAUGEN LÄSST — am eigenen
+Code nachgemessen (2026-08-08):** Der Meta-Adapter verzweigt AUSSCHLIESSLICH auf
+`res.ok`; die Fehlerdeutung läuft nur INNERHALB dieses Zweigs. **Ein Erfolgsstatus
+mit Fehlschlag im Rumpf würde dort vollständig unbemerkt bleiben.** Das ist bei
+Meta korrekt und beim zweiten Ziel die Fehlerklasse selbst. **Wer den Adapter
+abschreibt, erbt genau die Blindheit, gegen die diese Auflage steht.**
+
+**(c) DER EREIGNISNAME IST EIN ENUM, KEIN FREIER STRING.** *Anbieter-Doku.* Eigene
+Namen müssen im Anbieter-Konto registriert und auf Standard-Ereignisse abgebildet
+werden, mit einer Obergrenze je Konto; sonst bleiben sie **ungetrackt**.
+**ENTSCHEIDUNG (OWNER, 2026-08-07): ÜBERSETZUNGSTABELLE IM ADAPTER.** Jedes Ziel
+bringt sein eigenes Vokabular mit; die Tabelle liegt beim ZIEL, nicht zentral.
+**DIE ENTSCHEIDUNG STAND SCHON — NEU IST IHRE BEGRÜNDUNG.** Die Bindung oben
+("DIE EREIGNISNAMEN-ÜBERSETZUNG GEHÖRT IN DEN ADAPTER") war aus der Struktur
+begründet (Metas freier `event_name` gegen einen fremden Namensraum); **hier steht
+zum ersten Mal, WORAUS der fremde Namensraum besteht** — ein Enum mit
+Registrierungspflicht und Deckel.
+**AUFLAGE DAZU:** Der Betreiber muss SEHEN, wie seine Zuordnungen übersetzt werden
+— **sonst ist unsere Vermutung unsichtbar statt korrigierbar.** Ein ungetracktes
+Ereignis fällt sonst genauso lautlos aus wie ein toter Forward.
+
+**(d) DIE IDENTITÄTS-ANFORDERUNG.** *Anbieter-Doku.* Als Minimum genügt das PAAR
+aus Client-IP und User-Agent, wenn keine stärkere Kennung vorliegt.
+**FOLGE: BEIDE müssen vorhanden sein.** *Am eigenen Code nachgemessen
+(2026-08-08):* Der Meta-Adapter lässt **jedes von beiden EINZELN weg**, wenn es
+leer ist — zwei unabhängige Bedingungen, keine gemeinsame. **Das ist eine
+Bedingung, die er nicht kennt**, und sie ist auf dem Ingest-Pfad real: In
+Produktion ohne Test-Code bleibt die IP weg, sobald sie loopback oder leer ist.
+**Ein Adapter, der das Muster übernimmt, sendet dann ein halbes Paar.**
+
+**(e) DER TESTMODUS LIEGT IM QUERY-STRING, NICHT IN DER NUTZLAST.** *Anbieter-Doku;
+die Handmessung lief über genau diesen Weg.* Die Doku warnt selbst davor, ihn vor
+echten Aufrufen nicht zu entfernen.
+*Der Kontrast ist am eigenen Code nachgemessen (2026-08-08):* Metas Test-Code
+wandert in die NUTZLAST (`payload.test_event_code`), gegated an einer
+Umgebungsvariablen. **Zwei Ziele, zwei Orte** — wer den Meta-Weg kopiert, setzt
+ihn beim zweiten Ziel an eine Stelle, an der er nichts tut.
+
+**(f) DEDUPLIZIERUNG SETZT EINEN BROWSER-TAG DESSELBEN ANBIETERS VORAUS.**
+*Anbieter-Doku.* **Wir injizieren keinen.**
+**FOLGE, ALS BEFUND UND NICHT ALS ENTSCHEIDUNG:** Die Kennung muss für dieses Ziel
+dann nur **EINDEUTIG** sein, nicht **GETEILT**. Ob je ein Browser-Tag dazukommt,
+ist offen.
+**WAS DAS NICHT AUFHEBT:** Die geteilte Kennung bleibt für META zwingend, und die
+achte Scheibe hat sie als Bindung festgeschrieben. **Der Befund lockert die
+Anforderung für EIN Ziel, nicht die Invariante.**
+
+**(g) DIE OBERFLÄCHEN-BESCHRIFTUNGEN — UND HIER WEICHE ICH VOM AUFTRAG AB, WEIL
+ZWEI ANGABEN NICHT STIMMEN.**
+*Ablesung von Stefan am 2026-08-07:* Der Betreiber sieht im Anbieter-Konto eine
+**Konto-Kennung** und ein **Zugriffstoken**.
+**ERSTE ABWEICHUNG — "im Wortlaut" liegt nicht vor.** Der Auftrag verlangt die
+Beschriftungen im Wortlaut und liefert zwei deutsche BESCHREIBUNGEN. **Ich schreibe
+keine erfundenen Anbieter-Labels hin**; was hier steht, ist die Beschreibung, und
+sie ist als solche gekennzeichnet.
+**ZWEITE ABWEICHUNG — "sie sind bereits in der Karte übernommen" trifft nicht zu.**
+*Am eigenen Code nachgemessen (2026-08-08):* Die Karte trägt für dieses Ziel
+`publicLabel: "Pinterest-Tag-ID"` und `secretLabel: "Pinterest-Zugangsdaten"` —
+**das sind nicht die abgelesenen Begriffe.**
+**WAS ICH NICHT ENTSCHEIDEN KANN, und ich sage es statt es zu plausibilisieren:**
+ob die Karte die Anbieter-Begriffe spiegeln SOLL (dann fehlt eine Änderung) oder ob
+sie bewusst eigene Worte führt (dann ist die Aussage im Auftrag schlicht falsch).
+**Beides ist vertretbar; das Dokument darf hier nicht raten.** Der Zuschnitt der
+zehnten Scheibe hat es zu klären.
+
+#### Die Grenze dieser Aufnahme
+
+**DIESE ANGABEN SIND NICHT AM CODE GEMESSEN UND NICHT WIEDERHOLBAR GEPRÜFT.**
+Anbieter ändern Schnittstellen. **Vor dem Zuschnitt der zehnten Scheibe sind sie zu
+VERIFIZIEREN, nicht zu übernehmen** — was hier steht, ist der Stand vom 2026-08-07
+und die Begründung dafür, **WONACH zu fragen ist**, nicht die Antwort.
+
+**UND DER GRUND, WARUM SIE ÜBERHAUPT HIER STEHEN:** Sie existierten bis heute
+**ausschliesslich im Gesprächsverlauf**. Der wird beim Pflicht-Gate nicht gelesen
+und endet mit der Sitzung. **Ein Zuschnitt, der sie voraussetzt, wäre an fehlendem
+Material gescheitert** — gemeldet in der Aufklärung zur siebten Scheibe, damals
+noch unter deren Nummer.
+**DAS IST DIE FIGUR, DIE ÜBER DIESEN FALL HINAUSGEHT: Wissen, das nur im Gespräch
+existiert, ist für die nächste Sitzung nicht vorhanden.** Es ist nicht knapp, nicht
+strittig, nicht vergessen — es ist schlicht weg, und der Ausfall zeigt sich erst,
+wenn jemand darauf baut.
 
 **ERNEUT NACHGEZOGEN AM 2026-08-08, SPAETER AM TAG:** Sie hiess "Die neunte
 Scheibe". Davor schiebt sich die EINWILLIGUNG JE ZIEL. **DER STEMPEL DARUNTER

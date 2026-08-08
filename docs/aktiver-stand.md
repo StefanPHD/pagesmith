@@ -19,8 +19,9 @@ hinter das Gate — ABGESCHLOSSEN und live bewiesen, (4) die NAHT des
 Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) das Einwilligungs-Signal
 reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) die ZUGANGSDATEN JE ZIEL
 — **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (7) die AUFLÖSUNG TRÄGT
-MEHRERE ZIELE — **ABGESCHLOSSEN und live bewiesen**, (8) der BROWSER-PFAD LÖST
-SICH VON META — PLATZHALTER, (9) PINTEREST SENDET — PLATZHALTER.
+MEHRERE ZIELE — **ABGESCHLOSSEN und live bewiesen**, (8) DER BEACON VERLÄSST METAS
+LAUFZEIT — ZUGESCHNITTEN, (9) DIE EINWILLIGUNG JE ZIEL — PLATZHALTER,
+(10) PINTEREST SENDET — PLATZHALTER.
 
 **NACHGEZOGEN AM 2026-08-08 — AUS EINER SCHEIBE WURDEN DREI.** Bis dahin stand an
 Position (7) "Pinterest als erstes zusätzliches Ziel — PLATZHALTER", und darunter
@@ -32,6 +33,12 @@ MEHR.**
 **NACHGEZOGEN AM 2026-08-08, ABENDS — SIEBEN SIND ABGESCHLOSSEN, OFFEN SIND ZWEI.**
 Hier stand "SECHS SCHEIBEN SIND ABGESCHLOSSEN. OFFEN SIND DREI"; die siebte ist am
 selben Tag gebaut und live bewiesen worden.
+
+**ERNEUT NACHGEZOGEN AM 2026-08-08 — OFFEN SIND DREI, NICHT ZWEI.** Der Stempel
+darüber bleibt Wort für Wort stehen; er war richtig, als er geschrieben wurde. Die
+Aufklärung zum Browser-Pfad hat die achte Scheibe danach in ZWEI geteilt: das
+HERAUSLÖSEN des Beacons (achte) und die EINWILLIGUNG JE ZIEL (neunte). **Die Zahl
+der abgeschlossenen Scheiben ändert sich dadurch nicht** — nur die der offenen.
 
 Die verbleibenden zwei sind KEINE Umsortierung derselben Arbeit und auch keine
 Verfeinerung eines zu grossen Zuschnitts: Die Aufklärung vom 2026-08-08 hat einen
@@ -122,16 +129,22 @@ sonst** — nicht die Zahl der Scheiben, nicht die Zahl der Umplanungen:
   erste war VIERTE -> SECHSTE. **UND DIE ERSTE, BEI DER PINTEREST NICHT HINTER
   FREMDE SCHEIBEN RÜCKT, SONDERN HINTER ZWEI, DIE AUS SEINER EIGENEN AUFKLÄRUNG
   ENTSTANDEN SIND** — das unterscheidet sie von allen sechs davor.
-**VIER DER SIEBEN WANDERUNGEN TRAGEN DASSELBE DATUM.** Das Datum unterscheidet sie
-also NICHT — wer sie auseinanderhalten will, liest die URSACHE, nicht den Stempel.
-**NACHGEZOGEN AM 2026-08-08: hier stand "VIER DER SECHS".** Geändert hat sich die
-Zahl der Wanderungen, nicht die Aussage — es sind weiterhin genau vier, die den
-2026-08-06 tragen.
+- **NEUNTE -> ZEHNTE (2026-08-08):** die EINWILLIGUNG JE ZIEL schiebt sich davor.
+  **DIE ZWEITE WANDERUNG AM SELBEN TAG** — und die erste, bei der eine Scheibe
+  Pinterest verschiebt, die es beim Aufwachen dieses Tages noch gar nicht gab.
+**VIER DER ACHT WANDERUNGEN TRAGEN DASSELBE DATUM (den 2026-08-06); DREI DEN
+2026-08-08.** Das Datum unterscheidet sie also NICHT — wer sie auseinanderhalten
+will, liest die URSACHE, nicht den Stempel.
+**NACHGEZOGEN AM 2026-08-08: hier stand "VIER DER SECHS", danach "VIER DER
+SIEBEN".** Geändert hat sich die Zahl der Wanderungen, nicht die Aussage — es sind
+weiterhin genau vier, die den 2026-08-06 tragen.
+**UND EINE NEUE BEOBACHTUNG, die die alte nicht ersetzt, sondern schärft:** Seit
+dem 2026-08-08 ist auch das Datum "2026-08-08" kein Unterscheidungsmerkmal mehr —
+es trägt inzwischen DREI Wanderungen mit drei verschiedenen Ursachen.
 
-**DIE SIEBEN URSACHEN SIND SIEBEN VERSCHIEDENE, und das gehört dazu, sonst liest
-sich jede Runde wie eine weitere Umsortierung** (bis zum 2026-08-08 stand hier
-"DIE SECHS URSACHEN SIND SECHS VERSCHIEDENE" — die Aufzählung ist gewachsen, die
-Aussage nicht):
+**DIE ACHT URSACHEN SIND ACHT VERSCHIEDENE, und das gehört dazu, sonst liest
+sich jede Runde wie eine weitere Umsortierung** (hier stand nacheinander "SECHS"
+und "SIEBEN" — die Aufzählung ist gewachsen, die Aussage nicht):
 - Die ERSTE entstand aus einer erkannten VORBEDINGUNG: die damalige Auswertung
   hätte aus der Objektform ein stilles Fail-open gemacht.
 - Die ZWEITE entstand daraus, dass ein AUSSCHLUSS zur eigenen Scheibe wurde — der
@@ -176,6 +189,17 @@ Aussage nicht):
   und live bewiesen); ungeprüft war seine ERREICHBARKEIT. Die Maschinerie steht, ihr
   Anwendungsfall ist strukturell nicht anzusteuern. S. "## Der Befund, der die
   Teilung der siebten Scheibe erzwingt".
+- Die ACHTE entsteht aus einer ZWINGENDEN ABHÄNGIGKEIT, DIE KEINE LISTE KANNTE:
+  Der Beacon-Rumpf liest Werte aus dem Gültigkeitsbereich der Meta-Laufzeit, allen
+  voran die EVENT-KENNUNG — er nimmt sie beim Herauslösen NICHT mit, und mit ihr
+  ginge der Verlustraten-Join verloren.
+  **DAS IST NICHT DIE SIEBTE URSACHE, und die Abgrenzung ist fein, weil beide aus
+  einer Aufklärung zum Browser-Pfad stammen:** Bei der siebten war die
+  ERREICHBARKEIT eines bekannten Gegenstands ungeprüft — das Wire-Feld existierte,
+  nur kam nichts bei ihm an. **Hier ist der Gegenstand bekannt UND erreichbar; was
+  ungeprüft war, sind seine KOSTEN.** Das Herauslösen ist jederzeit möglich; es
+  zieht nur etwas mit, das niemand aufgeschrieben hatte. S. "## Die achte Scheibe —
+  DER BEACON VERLÄSST METAS LAUFZEIT (Zuschnitt)".
 
 **DER ÄLTERE STEMPEL DARÜBER BLEIBT WORT FÜR WORT STEHEN:** er war am 2026-08-06
 richtig, und ein überschriebener Stempel verwischt, dass die Nummer überhaupt
@@ -221,6 +245,16 @@ kann überhaupt etwas an ein zweites Ziel gehen. **Wer nur die Nummer liest, sie
 zum fünften Mal dieselbe Bewegung; wer die Ursache liest, sieht eine andere Art von
 Runde — die erste, in der nicht etwas VOR Pinterest tritt, sondern Pinterest selbst
 auseinanderfällt.**
+
+**EIN SECHSTES MAL NACHGEZOGEN AM 2026-08-08 — PINTEREST IST JETZT DIE ZEHNTE
+SCHEIBE.** Davor schiebt sich die EINWILLIGUNG JE ZIEL (neunte). **DIE SECHS
+STEMPEL DARÜBER BLEIBEN WORT FÜR WORT STEHEN.**
+**DAS IST DIE ZWEITE WANDERUNG DESSELBEN TAGES, und sie hat mit der ersten NICHTS
+gemeinsam ausser dem Datum:** Beim fünften Mal zerfiel Pinterest selbst in drei
+Teile. **Hier zerfällt die ACHTE Scheibe in zwei** — Pinterest ist nur der Letzte
+in der Reihe und rückt deshalb mit. Wer die beiden zusammenzieht, sieht eine Phase,
+die an einem Tag zweimal umgeplant wurde; wer sie trennt, sieht zwei Aufklärungen,
+die je einen anderen Gegenstand teilten.
 
 ---
 
@@ -4223,6 +4257,20 @@ Statistik". **DAS IST ZU WEIT.** Am Code gemessen: `injectPageViewEmitter` wird 
 `buildPageViewScript` fragt das Gate für den EIGENEN Analytics-Schlüssel, nicht für
 Metas. **DIE SEITENAUFRUFE LAUFEN ALSO WEITER. Was fehlt, sind ausschliesslich die
 CONVERSIONS.**
+
+**RICHTIGGESTELLT AM 2026-08-08 (Aufklärung zum Browser-Pfad, read-only): "AUSSCHLIESSLICH
+DIE CONVERSIONS" IST ZU ENG — ES FEHLT AUCH DIE ADBLOCKER-VERLUSTRATE.**
+Am Code gemessen: Die GESAMTE Bestätigungs-Maschinerie steht im Rückgabetext von
+`buildMetaRuntime` — der Ladezustand, die Warteschlange, ihr Deckel, `__psConfirmSend`,
+`__psPixelResolve` und `__psConfirm`. Ohne Pixel-ID wird keine einzige davon erzeugt,
+also entsteht **keine Browser-Bestätigung**, und ohne sie hat die Verlustrate keinen
+Zähler. **Das ist die Marquee-Metrik der Phase 8.**
+**DER FEHLER LAG BEIM OWNER**, und er ist von derselben Art wie der darüber: Gezählt
+wurde, was der Beacon SENDET, nicht, was in derselben Laufzeit noch alles steht.
+**Ein Projekt ohne Meta-Pixel zeigt damit: Seitenaufrufe, null Conversions und keine
+Verlustrate.** RICHTIGGESTELLT und NICHT gestempelt, weil dieser Block eine VORGABE
+für einen kommenden Zuschnitt ist — die zu enge Fassung hätte die Kosten des
+Herauslösens zu klein erscheinen lassen.
 **WARUM DAS SCHLIMMER IST ALS "NICHTS":** Ein Dashboard, das gar nichts zeigt, wird
 als kaputt ERKANNT. Ein Dashboard, das Seitenaufrufe zählt und null Conversions,
 sieht aus wie eine Seite, die niemand konvertiert — der Betreiber sucht den Fehler
@@ -4269,6 +4317,33 @@ konfiguriert sind. Gemessen ist nur, dass er es heute nicht erfährt: Die Kette
 `buildCapiBeaconStatement` reicht DREI SKALARE durch (Pixel-ID, trackingKey,
 Proxy-URL) und endet **drei Aufrufe vor dem Erzeuger**, ohne je eine Ziel-Liste
 gesehen zu haben.
+
+**RICHTIGGESTELLT AM 2026-08-08: "DREI AUFRUFE VOR DEM ERZEUGER" BESCHREIBT DIE
+KETTE RICHTIG UND DIE GRENZE FALSCH.**
+Am Code gemessen: **Die Grenze liegt EINE Zeile VOR der Kette** — im Objektliteral
+der Aufruferin, mit dem `generateFunctional` seine `options` bekommt. Dort ist die
+Projekt-Konfiguration VOLLSTÄNDIG im Gültigkeitsbereich, und die Ziel-Liste
+(`TRACKING_TARGETS`) ist in DERSELBEN Datei importiert. Herausgeschnitten werden
+drei Skalare; ab da ist die Information weg.
+**DIE VIER WEITERREICHUNGEN VERLIEREN NICHTS — SIE HATTEN ES NIE.**
+**WARUM DAS ZÄHLT und nicht Wortklauberei ist:** Die alte Fassung liest sich, als
+müsste eine Kette VERLÄNGERT werden — als läge die Quelle weit weg und müsste
+durchgereicht werden. Tatsächlich steht sie **am ersten Glied** und wird dort
+weggeschnitten. Ein Zuschnitt gegen die alte Fassung plante vier Signatur-Änderungen
+gegen eine, die es braucht.
+RICHTIGGESTELLT statt gestempelt, aus demselben Grund wie oben.
+
+**DRITTE RICHTIGSTELLUNG, UND SIE BETRIFFT DIE BEWEISLAGE, NICHT DEN BEFUND: DIE
+KOPPLUNG BEACON↔PIXEL IST VON KEINEM TEST BEHAUPTET.**
+Gemessen am 2026-08-08: Es gibt DREI Tests für Seiten ohne Pixel-ID — sie prüfen,
+dass kein `fbq(`-Aufruf entsteht, dass der Consent-Block trotzdem dasteht, und dass
+der Editier-Pfad beacon-frei bleibt. **KEINER prüft, dass ohne Pixel-ID auch KEIN
+BEACON entsteht.**
+**FOLGE, und sie ist unangenehm:** Die heutige Kopplung ist kein zugesicherter
+Zustand, sondern ein NEBENEFFEKT der Splice-Stelle. **Wer sie löst, bricht nichts
+Rotes** — es gibt also keinen Unterschied zwischen "absichtlich gelöst" und
+"nebenbei verloren". Nach der Projektregel "NUR EIN TEST IST EIN WÄCHTER" heisst
+das: Der Wächter muss ENTSTEHEN, BEVOR die Kopplung angefasst wird.
 
 ---
 
@@ -4401,7 +4476,9 @@ bindet"** — und zwar in einer schärferen Fassung als die Invarianten selbst: 
 Invariante sagt, was ein Bau nicht kaputt machen darf; die Verdichtung sagt, was
 der NÄCHSTE Bau einzuhalten hat.
 **AUSDRÜCKLICH: Invariante 6 ("es wird nichts an ein neues Ziel gesendet") LÄUFT
-NICHT AB, sie wird von der NEUNTEN Scheibe aufgehoben** — nicht von der achten.
+NICHT AB, sie wird von der ZEHNTEN Scheibe aufgehoben** — nicht von der achten
+und nicht von der neunten. (Nachgezogen am 2026-08-08: hier stand "NEUNTEN"; die
+Nummer waere durch die Teilung STILL auf eine andere Scheibe umgesprungen.)
 Bis dahin gilt sie, und die Zuordnung setzt sie strukturell durch.
 
 ### Ausdrücklich nicht in dieser Scheibe — ABGELAUFEN, bis auf zwei
@@ -4480,7 +4557,7 @@ den nächsten Bau.** Acht Punkte, jeder mit dem Grund, warum er bindet.
    Ziel mit den Zugangsdaten eines anderen laufen — die Fehlerklasse, gegen die
    vorher allein der Ziel-Filter der Abfrage stand.
 7. **EIN ZIEL, DAS NICHT IN DER BEKANNTEN LISTE STEHT, FÄLLT VOR DER
-   GEHEIMNIS-ABFRAGE HERAUS.** *Ergänzt, als Falle für die neunte Scheibe:* Der
+   GEHEIMNIS-ABFRAGE HERAUS.** *Ergänzt, als Falle für die ZEHNTE Scheibe (bis zum 2026-08-08 "neunte"):* Der
    Frühausstieg und der Ziel-Filter lesen beide dieselbe Liste. Wer ein Ziel
    einführt, ohne es dort einzutragen, bekommt keinen Fehler — er bekommt gar
    nichts.
@@ -4674,22 +4751,141 @@ ihre Umgehung.
 
 ---
 
-## Die achte Scheibe — DER BROWSER-PFAD LÖST SICH VON META (Platzhalter)
+## Die achte Scheibe — DER BEACON VERLÄSST METAS LAUFZEIT (Zuschnitt)
 
-**ZWECK:** Der Conversion-Beacon entsteht und feuert, ohne dass Metas Pixel-ID
-konfiguriert und Metas Einwilligung erteilt sein muss — damit das Wire-Feld der
-fünften Scheibe seinen Anwendungsfall überhaupt erreichen kann.
+**ÜBERSCHRIFT NACHGEZOGEN AM 2026-08-08:** Sie hiess "DER BROWSER-PFAD LÖST SICH
+VON META (Platzhalter)". Der alte Titel deckte ZWEI Scheiben ab; seit der Teilung
+trägt diese hier nur noch die erste Hälfte — das Herauslösen. Die Einwilligung je
+Ziel ist die neunte.
 
-**KEIN ZUSCHNITT, UND SIE BRAUCHT EINE EIGENE AUFKLÄRUNG.** Ihr Gegenstand ist der
-Befund unter "## Der Befund, der die Teilung der siebten Scheibe erzwingt"; die
-beiden dort benannten Wege (eine Ausführung gegen getrennte Ausführungen) haben je
-einen Preis, und keiner ist entschieden. Die Aufklärung hat ausserdem zu klären,
-WOHER der Erzeuger die konfigurierten Ziele erfährt — **heute endet der Weg drei
-Aufrufe vor ihm**, s. ebendort.
+**ZWECK:** Der Conversion-Beacon entsteht unabhängig von Metas Pixel-ID. **Die
+Einwilligung bleibt in dieser Scheibe unverändert METAS Urteil.**
+
+### Die tragende Abhängigkeit — und sie ist grösser als benannt
+
+**ENTSCHEIDUNG (OWNER, 2026-08-08): DIE EVENT-KENNUNG WANDERT MIT.** Sie ist heute
+eine lokale Variable der Meta-Laufzeit; verlässt der Beacon diese Laufzeit,
+verliert er sie — und mit ihr den Verlustraten-Join. **Das ist keine Option neben
+dem Herauslösen, sondern seine BEDINGUNG.**
+
+**RICHTIGGESTELLT AM 2026-08-08, am Code gemessen: ES SIND DREI WERTE, NICHT EINER.**
+Der Beacon-Rumpf liest aus dem Gültigkeitsbereich von `__psMetaFire`:
+1. **die Kennung `eid`** — benannt, s. oben;
+2. **`cfg`**, den Parameter von `__psMetaFire`, für Ereignisnamen, Wert, Währung
+   und das Custom-Flag;
+3. **`__c`**, das gehobene Einwilligungs-Urteil.
+**WARUM DER DRITTE DER HEIKELSTE IST:** Invariante 5 verlangt, dass ohne Metas
+Einwilligung weiterhin kein Beacon geht. Invariante 4 verbietet eine vierte
+Fragestelle. **Beide zusammen heissen: das URTEIL muss genauso wandern wie die
+Kennung.** Wer nur die Kennung mitnimmt und die Einwilligung neu erfragt, erfüllt
+Invariante 5 und bricht Invariante 4 — und zwar lautlos.
+**DER ERSTE UND DER ZWEITE WERT SIND HARMLOS, DER DRITTE IST ES NICHT**, und das
+ist der Grund, warum er hier eigens steht statt in einer Aufzählung mitzulaufen.
+
+### Die Verhaltensänderung, ausdrücklich benannt
+
+**Ein Projekt OHNE Meta-Pixel bekommt nach dieser Scheibe server-seitige
+Conversions in der Statistik, wo es bisher keine hatte. Das ist GEWOLLT — es ist
+der Zweck.** Es gehört benannt, weil es die **erste Scheibe dieser Phase ist, deren
+Zusage NICHT Verhaltensneutralität heisst.**
+
+**PRÄZISIERT, weil "Conversions" zwei Dinge heissen kann:** Was entsteht, sind
+Zeilen in der Ereignis-Tabelle mit `source='server'` — **kein Forward.** Ein
+Projekt ohne Meta-Pixel löst weiterhin keine Empfänger auf; die Auflösung der
+siebten Scheibe verlangt ein vollständiges Paar aus Pixel-ID und Geheimnis. **Die
+Statistik wächst, der Draht bleibt leer.**
+
+### Die Verlustrate bleibt Meta-gebunden — mit einem Pflicht-Gate
+
+**ENTSCHEIDUNG (OWNER, 2026-08-08).** Die Bestätigung wird NICHT gelöst; sie misst
+Adblocking über Metas Script-Load, und das ist in dieser Phase keine eigene Arbeit
+wert.
+
+**DIE BEDINGUNG DAZU IST EIN PFLICHT-GATE DER STUFE 1:** Zu messen ist, **was die
+Verlustraten-Anzeige für ein Projekt OHNE Meta zeigt.** Zwischen "gar nichts" und
+"voller Verlust" liegt der Unterschied zwischen einer **FEHLENDEN** und einer
+**FALSCHEN** Kennzahl. **Ergibt die Messung das Zweite, ist das eine
+STOPP-Bedingung und die Entscheidung wird neu vorgelegt.**
+**WARUM DAS VOR DEM BAU ZU MESSEN IST UND NICHT DANACH:** Nach dieser Scheibe
+erzeugt so ein Projekt erstmals server-beobachtete Conversions — also einen
+NENNER ohne Zähler. Die Anzeige kann dadurch von "keine Aussage" auf eine Zahl
+kippen, ohne dass jemand sie angefasst hat.
+
+### Zwei Auflagen an den Bau
+
+**(1) DER BASIS-TEST ZUERST.** Die heutige Kopplung Beacon↔Pixel ist ungedeckt
+(dritte Richtigstellung im Befund-Block). **Bevor sie gelöst wird, entsteht der
+Test, der sie BEHAUPTET** — sonst ist nicht belegbar, dass sie absichtlich gelöst
+wurde und nicht nebenbei. Er ist der einzige Test dieser Scheibe, der am Ende
+ABSICHTLICH umgeschrieben wird; genau das macht ihn zum Beleg.
+
+**(2) AUSFÜHREN STATT LESEN.** Gemessen am 2026-08-08: Von 146 Text-Behauptungen
+dieser Ecke führen nur **49** den erzeugten Text wirklich aus — und die beiden
+Dateien, die Beacon und Bestätigung abdecken, **keine einzige**; sie prüfen
+ausschliesslich Zeichenketten. **Was diese Scheibe anfasst, wird AUSGEFÜHRT
+geprüft.** Ein Umbau, der den Rumpf syntaktisch erhält und semantisch verschiebt,
+wäre in einer Zeichenketten-Prüfung unsichtbar.
+
+### Sechs Verhaltens-Invarianten
+
+1. **MIT META-PIXEL ÄNDERT SICH NICHTS.** Gleiche Reihenfolge beim Klick, gleicher
+   Draht, gleiche Kennung, gleiche Bestätigung.
+2. **DER TRACK FEUERT WEITERHIN VOR DER NAVIGATION.**
+3. **DIE KENNUNG IST DIESELBE FÜR BEACON, PIXEL UND BESTÄTIGUNG.** Ein
+   auseinanderlaufender Wert bricht den Verlustraten-Join.
+4. **DIE EINWILLIGUNG BLEIBT EIN SCHNAPPSCHUSS.** Keine zusätzliche Fragestelle —
+   heute sind es drei.
+5. **OHNE EINWILLIGUNG FÜR META GEHT WEITERHIN KEIN BEACON.** Das je Ziel zu
+   trennen ist die NEUNTE Scheibe.
+6. **DER PAGEVIEW-EMITTER BLEIBT UNBERÜHRT.**
+
+**EINE FOLGE VON INVARIANTE 5, die dazugehört, weil sie sonst beim Lesen wie ein
+Fehler aussieht:** Nach dieser Scheibe wird die Conversion eines Projekts, das Meta
+gar nicht benutzt, durch METAS Einwilligungs-Schlüssel gegated. **Das ist der
+bewusst gezahlte Preis dafür, dass hier keine vierte Fragestelle entsteht** — und
+es ist genau der Zustand, den die neunte Scheibe auflöst.
+
+### Ausdrücklich nicht in dieser Scheibe
+
+- **DIE EINWILLIGUNG JE ZIEL.** Neunte.
+- **DER ZWEITE SCHLÜSSEL IM DRAHT.**
+- **DASS DER ERZEUGER DIE ZIELE ERFÄHRT.** Er braucht sie hier nicht — der Beacon
+  entsteht künftig unabhängig, nicht ziel-abhängig.
+- **DIE BESTÄTIGUNGS-MASCHINERIE.**
+- **JEDER ADAPTER.**
+
+### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
+
+1. **Was zeigt die Verlustraten-Anzeige für ein Projekt ohne Meta?** PFLICHT, s.
+   oben. Fehlende oder falsche Kennzahl — das ist die STOPP-Frage.
+2. **Wo entsteht die Kennung künftig, und wer liest sie?** Alle drei Leser
+   benennen.
+3. **Wohin wandert der Beacon-Rumpf, und was liest er dort aus dem
+   Gültigkeitsbereich?** Drei Werte, s. die tragende Abhängigkeit.
+4. **Was passiert mit dem Klick-Handler, wenn keine Meta-Laufzeit existiert?** Er
+   hängt heute eine Warnung an.
+5. **Welche Tests behaupten die heutige Kopplung, und welche müssen zuerst
+   entstehen?**
 
 ---
 
-## Die neunte Scheibe — PINTEREST SENDET (Platzhalter)
+## Die neunte Scheibe — DIE EINWILLIGUNG JE ZIEL (Platzhalter)
+
+**ZWECK:** Ein Beacon kann für ein Ziel erlaubt und für ein anderes verboten sein —
+damit das Wire-Feld der fünften Scheibe seinen Anwendungsfall erreicht.
+
+**KEIN ZUSCHNITT.** **HIER FÄLLT DIE ENTSCHEIDUNG ZWISCHEN DEN BEIDEN WEGEN** (eine
+Ausführung gegen getrennte Ausführungen), die der Befund-Block benennt. **IHR PREIS
+SIND VIER WERTE, die zwischen zwei Ziehungen des Betreiber-Hooks auseinanderlaufen
+können** — am Code gemessen am 2026-08-08: der Hook-Wert selbst (er wird bei jeder
+Frage neu gelesen), der Rückgabewert eines Funktions-Hooks (fremder Code, nicht zu
+Determinismus verpflichtet), der Wurf-Ausgang (ein Wurf beim zweiten Aufruf liefert
+`false`), und die FORM des Wertes (ein Wechsel zwischen `true` und einem Objekt
+ändert die ausgewertete Regel).
+
+---
+
+## Die zehnte Scheibe — PINTEREST SENDET (Platzhalter)
 
 **ZWECK:** Das erste zusätzliche Fan-Out-Ziel neben Meta bekommt seinen eigenen
 benannten Adapter und wird tatsächlich beliefert — die Scheibe, für die die ganze
@@ -4705,9 +4901,13 @@ vorliegen müssen:**
 - **DIE BEIDEN AUSSERHALB GEMESSENEN FEHLERWEGE DES ANBIETERS BINDEN IHN.**
   **AUSDRÜCKLICH FESTGEHALTEN, weil es sonst beim Zuschnitt fehlt: WELCHE das sind,
   steht in DIESEM Dokument nicht** — sie wurden ausserhalb recherchiert und gemessen
-  und sind hier nie niedergeschrieben worden. Der Zuschnitt der neunten Scheibe muss
+  und sind hier nie niedergeschrieben worden. Der Zuschnitt der zehnten Scheibe muss
   sie zuerst aufnehmen; sie hier zu erraten wäre genau der Fehler, gegen den die
   Provenienz-Disziplin dieses Dokuments steht.
+
+**ERNEUT NACHGEZOGEN AM 2026-08-08, SPAETER AM TAG:** Sie hiess "Die neunte
+Scheibe". Davor schiebt sich die EINWILLIGUNG JE ZIEL. **DER STEMPEL DARUNTER
+BLEIBT WORT FÜR WORT STEHEN** — er beschreibt eine ANDERE Wanderung desselben Tages.
 
 **ÜBERSCHRIFT NACHGEZOGEN AM 2026-08-08:** Sie hiess "Die siebte Scheibe — PINTEREST
 ALS ZWEITES ZIEL". **DIE ZWEI STEMPEL DARUNTER BLEIBEN WORT FÜR WORT STEHEN.**
@@ -4927,3 +5127,36 @@ Code-Kopien tragen VERSCHIEDENE Vokabulare (Consent-Schlüssel gegen Ziel-Wert d
 Geheimnis-Tabelle), die heute nur zufällig gleich lauten. Was der Kandidat verlangt,
 ist eine ENTSCHEIDUNG darüber, ob sie dasselbe sein sollen — und einen Wächter für
 die SQL-Kopie, egal wie sie ausfällt.
+
+---
+
+## Ein Backlog-Kandidat aus der Aufklärung zum Browser-Pfad — BENANNT, NICHT GEPLANT
+
+**EIGENE SEKTION, obwohl der Abschnitt darüber dasselbe Datum trägt:** Jener stammt
+aus der Aufklärung zur AUFLÖSUNG, dieser aus der zum BROWSER-PFAD. Beide fanden am
+2026-08-08 statt; sie am Datum zu unterscheiden ginge nicht, am Gegenstand schon.
+**PROVENIENZ: am Code gemessen am 2026-08-08 (read-only).** Kein Termin, keine
+Zusage.
+
+**ZWEI TESTDATEIEN DECKEN BEACON UND BESTÄTIGUNG AB UND FÜHREN DEN ERZEUGTEN TEXT
+NIE AUS.** Sie prüfen ausschliesslich Zeichenketten — zusammen 22 Tests, kein
+einziger Lauf des erzeugten Codes.
+
+**DIE FEHLERFIGUR, gegen die der Kandidat steht:** Ein Umbau, der den Rumpf
+**syntaktisch erhält und semantisch verschiebt**, bleibt in einer
+Zeichenketten-Prüfung unsichtbar. Ein Wert, der aus einem anderen
+Gültigkeitsbereich gelesen wird als vorher, sieht im Text identisch aus.
+
+**DIE ZAHL, MIT IHRER ACHSE:** Von 146 Text-Behauptungen dieser Ecke prüfen 103 die
+ANWESENHEIT eines Bausteins, 43 seine ABWESENHEIT, und **49 führen den Text
+tatsächlich aus** — die Ausführungen liegen geschlossen in zwei ANDEREN Dateien
+(Engine und PageView-Emitter).
+**GRENZE:** Die Zahlen sind über `toContain`/`toMatch` und die drei
+Ausführungs-Helfer ausgezählt; andere Zusicherungsformen (Attribut-Prüfungen,
+Snapshot-freie Struktur-Abfragen) sind NICHT mitgezählt. Die Verhältnisse stimmen,
+die Absolutwerte sind eine Untergrenze.
+
+**WAS DIESER KANDIDAT AUSDRÜCKLICH NICHT VERLANGT:** die beiden Dateien
+umzuschreiben. Die achte Scheibe trägt bereits die Auflage "AUSFÜHREN STATT LESEN"
+für das, was SIE anfasst. Der Kandidat betrifft den REST — die Zusicherungen, die
+sie nicht berührt und die weiterhin nur den Wortlaut prüfen.

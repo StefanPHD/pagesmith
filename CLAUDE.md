@@ -311,12 +311,25 @@ zwei Nachtrag-Markierungen aus 9c-1/9c-2, die zwischen 2026-07-28 und diesem Lau
 standen). Beide sind mit diesem Lauf VOLLSTÄNDIG überholt und entfernt; die Sektion unten ist
 wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
 
-- MIGRATIONSSTAND: 0001-0021, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl =
-  Spannweite+1), nicht nur an der Dateisortierung abgelesen. Seit 0018 existiert
-  public.schema_migrations als PROTOKOLL (version PK / filename / applied_at; RLS aktiv, KEINE
-  Policy). Gemessen: 21 Zeilen, Spannweite 0001-0021; applied_at gefüllt bei 0018, 0019, 0020
-  und 0021 — bei 0021 mit dem 2026-08-05 (Protokollpflicht ab 0018; alle späteren Migrationen
-  tragen den Insert bereits selbst mit).
+- MIGRATIONSSTAND: 0001-0022. ZWEI PROVENIENZEN, hier bewusst GETRENNT gehalten — die
+  Sektions-Provenienz oben (2026-08-05) deckt nur die erste ab:
+  · 0001-0021, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl = Spannweite+1),
+    nicht nur an der Dateisortierung abgelesen. GEMESSEN am 2026-08-05: 21 Zeilen,
+    Spannweite 0001-0021; applied_at gefüllt bei 0018, 0019, 0020 und 0021 — bei 0021 mit
+    dem 2026-08-05.
+  · 0022 (Zielwert-Erweiterung der Geheimnis-Tabelle, Phase 11 Scheibe 6) — LIVE BESTÄTIGT
+    am 2026-08-07 im SQL-Editor, im Live-Test jener Scheibe: ordnungsgemäss angewendet,
+    Protokoll-Eintrag vorhanden. Die Lückenlosigkeits-Rechnung wurde dabei NICHT wiederholt;
+    für 0022 liegt ein VOLLZUGSNACHWEIS vor, nicht die erneute Spannweiten-Probe.
+  DIE GRENZE, DIE ZWINGEND DAZUGEHÖRT — und sie gilt für JEDE künftige Fortschreibung dieser
+  Zeile, nicht nur für 0022: Ob eine Migration in der LAUFENDEN DB angewandt ist, ist AM REPO
+  NICHT entscheidbar. Eine Datei in supabase/migrations/ beweist nur, dass sie GESCHRIEBEN
+  wurde — es gibt keinen Migrations-Runner (s. unten), also gibt es auch keinen Automatismus,
+  der aus der Datei einen Vollzug macht. Diese Zeile darf deshalb NIE aus dem Verzeichnis
+  fortgeschrieben werden, sondern ausschliesslich aus einer Messung oder einem Live-Test.
+  Seit 0018 existiert public.schema_migrations als PROTOKOLL (version PK / filename /
+  applied_at; RLS aktiv, KEINE Policy); Protokollpflicht ab 0018, alle späteren Migrationen
+  tragen den Insert bereits selbst mit.
   EHRLICHE EINORDNUNG: Die Zeilen 0001-0017 sind ein BACKFILL aus 0018, KEIN Vollzugsnachweis —
   ihr applied_at ist bewusst NULL, weil der Ausführungszeitpunkt nicht bekannt ist. Dass sie
   gelaufen sind, belegen ihre WIRKUNGEN (Spalten/Constraints unten), nicht die Tabelle. Ab 0018
@@ -374,8 +387,17 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   secret text; created_at timestamptz; updated_at timestamptz. PRIMÄRSCHLÜSSEL ist das PAAR
   (project_id, target) — kein einspaltiger Schlüssel, s. die Footgun-Zeile darunter.
   FK project_id -> projects(id) ON DELETE CASCADE. KEINE user_id-Spalte.
-  CONSTRAINT project_secrets_target_valid: CHECK (target = 'meta') — der Zielwert ist eng
-  gefasst, jedes weitere Ziel bringt seine EIGENE Constraint-Erweiterung mit.
+  CONSTRAINT project_secrets_target_valid: CHECK ((target = ANY (ARRAY['meta'::text,
+  'pinterest'::text]))) — Definition im WORTLAUT, LIVE ABGELESEN am 2026-08-07 und damit
+  ABWEICHEND von der Sektions-Provenienz oben (nicht aus der Migrationsdatei übernommen).
+  0021 legte den Constraint mit einem EINZIGEN Zielwert an; 0022 hat ihn ERSETZT (drop + add
+  in EINER Transaktion). Der Zielwert bleibt eng gefasst, jedes weitere Ziel bringt seine
+  EIGENE Constraint-Erweiterung mit — der beabsichtigte Preis: der sichtbare Moment, in dem
+  ein Ziel real wird.
+  MITGEMESSEN am 2026-08-07, und es ist der wertvollere der beiden Belege: ein
+  Wegwerf-Insert mit 'pinterest' wurde ANGENOMMEN, einer mit 'pintrest' ABGEWIESEN (Postgres
+  23514, check_violation). Die Annahme allein sähe bei einem Constraint, der alles
+  durchlässt, identisch aus — erst die Abweisung zeigt, dass der Schutz noch da ist.
   TRIGGER project_secrets_set_updated_at, gebunden an DIESELBE Funktion set_updated_at wie
   projects und project_tokens — KEINE zweite Implementierung.
 - PRIMÄRSCHLÜSSEL, DIE NICHT "id" HEISSEN (Footgun, real aufgetreten): domains -> label;

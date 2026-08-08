@@ -5,7 +5,12 @@ vi.mock("server-only", () => ({}));
 const { getCapiConfigByTrackingKey } = vi.hoisted(() => ({
   getCapiConfigByTrackingKey: vi.fn(),
 }));
-vi.mock("@/lib/capi/token", () => ({ getCapiConfigByTrackingKey }));
+// META_TARGET kommt seit Scheibe 7 mit: der Handler waehlt seinen Adapter darueber.
+// Der Wert steht hier als Literal, damit der Mock die Modul-FORM abbildet.
+vi.mock("@/lib/capi/token", () => ({
+  getCapiConfigByTrackingKey,
+  META_TARGET: "meta",
+}));
 
 vi.mock("@/lib/capi/config", () => ({
   META_GRAPH_VERSION: "v21.0",
@@ -66,7 +71,9 @@ function resolutionWithTest(abTestActive: boolean) {
     projectId: "proj-1",
     blocked: false,
     abTestActive,
-    capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
+    targets: [
+      { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
+    ],
   };
 }
 
@@ -227,7 +234,7 @@ describe("A/B-Variante im Ingest (Phase 9 Scheibe 9b-2)", () => {
       projectId: "proj-gesperrt",
       blocked: true,
       abTestActive: true,
-      capiConfig: null,
+      targets: [],
     });
 
     const res = await handleIngest(

@@ -5,7 +5,12 @@ vi.mock("server-only", () => ({}));
 const { getCapiConfigByTrackingKey } = vi.hoisted(() => ({
   getCapiConfigByTrackingKey: vi.fn(),
 }));
-vi.mock("@/lib/capi/token", () => ({ getCapiConfigByTrackingKey }));
+// META_TARGET kommt seit Scheibe 7 mit: der Handler waehlt seinen Adapter darueber.
+// Der Wert steht hier als Literal, damit der Mock die Modul-FORM abbildet.
+vi.mock("@/lib/capi/token", () => ({
+  getCapiConfigByTrackingKey,
+  META_TARGET: "meta",
+}));
 
 vi.mock("@/lib/capi/config", () => ({
   META_GRAPH_VERSION: "v21.0",
@@ -58,7 +63,9 @@ beforeEach(() => {
     projectId: "proj-1",
     blocked: false,
     abTestActive: false,
-    capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
+    targets: [
+      { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
+    ],
   });
   persistEvent.mockResolvedValue(undefined);
   global.fetch = vi.fn(async () => new Response(null, { status: 200 }));
@@ -150,7 +157,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
       projectId: "proj-gesperrt",
       blocked: true,
       abTestActive: false,
-      capiConfig: null,
+      targets: [],
     });
 
     const res = await handleIngest(makeRequest(CONFIRM_BODY));
@@ -180,7 +187,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
       projectId: "proj-ohne-meta",
       blocked: false,
       abTestActive: false,
-      capiConfig: null,
+      targets: [],
     });
 
     const res = await handleIngest(makeRequest(CONFIRM_BODY));

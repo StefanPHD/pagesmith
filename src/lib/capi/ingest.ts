@@ -1,5 +1,9 @@
 import { after } from "next/server";
-import { getCapiConfigByTrackingKey } from "@/lib/capi/token";
+import {
+  getCapiConfigByTrackingKey,
+  META_TARGET,
+  type ResolvedTarget,
+} from "@/lib/capi/token";
 import { META_TEST_EVENT_CODE } from "@/lib/capi/config";
 import { forwardToMeta } from "@/lib/capi/meta-forward";
 import { consentAllows } from "@/lib/tracking/consent-wire";
@@ -169,6 +173,40 @@ function schedulePersist(
   });
 }
 
+/**
+ * DIE ZUORDNUNG ZIEL -> ADAPTER (Phase 11, siebte Scheibe).
+ *
+ * Sie kennt heute GENAU EINEN Empfaenger. Jedes andere Ziel wird STILL uebersprungen,
+ * und das ist keine Nachlaessigkeit, sondern die strukturelle Durchsetzung der Zusage
+ * "es wird nichts an ein neues Ziel gesendet": Ein Ziel, dessen Zugangsdaten hinterlegt
+ * sind, dessen Adapter aber nicht existiert, kann hier nichts ausloesen — es gibt
+ * keinen Zweig, der es koennte.
+ *
+ * DAS ZIEL-VOKABULAR IST DAS DER GEHEIMNIS-TABELLE (META_TARGET aus capi/token.ts),
+ * NICHT das des Consent-Gates (META_CONSENT_TARGET) — obwohl beide heute "meta" lauten.
+ * Der Wert stammt aus derselben Aufloesung, die ihn aus project_secrets.target gelesen
+ * hat; ihn gegen das ANDERE Vokabular zu pruefen haengte zwei unabhaengig definierte
+ * Literale aneinander, die nur zufaellig gleich sind. Die Begruendung der Gegenrichtung
+ * steht am Import von META_CONSENT_TARGET oben.
+ *
+ * SIE WIRFT NIE — dieselbe Auflage wie beim Adapter selbst, und sie ist hier
+ * strukturell erfuellt: Der Rumpf besteht aus einem Gleichheitsvergleich und einer
+ * Weiterreichung. forwardToMeta traegt seinen eigenen Vertrag (meta-forward.ts).
+ */
+function dispatchForward(
+  entry: ResolvedTarget,
+  event: string,
+  eventID: string,
+  body: CapiRequestBody,
+  clientIp: string | undefined,
+  userAgent: string,
+): Promise<void> {
+  if (entry.target === META_TARGET) {
+    return forwardToMeta(entry.config, event, eventID, body, clientIp, userAgent);
+  }
+  return Promise.resolve();
+}
+
 export async function handleIngestOptions(): Promise<Response> {
   // Body-loser Preflight-Handler der Vollstaendigkeit halber. KEINE Logik baut darauf.
   return status(204);
@@ -277,8 +315,20 @@ export async function handleIngest(request: Request): Promise<Response> {
   // aufgerufen wird und nicht etwa teilweise davor: (1) fuer ein PageView waere er reine
   // Verschwendung, und PageView ist ab 2b der VOLUMEN-Event im Hotspot (/api/e-
   // Schlankheits-Regel); (2) er referenziert config, das hier erst geprueft vorliegt.
-  const config = resolution.capiConfig;
-  if (config && isForwardable(event)) {
+  //
+  // DIE WACHE PRUEFT DIE LAENGE, NICHT DIE EXISTENZ (Phase 11, siebte Scheibe). Bis
+  // hierher stand hier `const config = resolution.capiConfig; if (config && …)` — mit
+  // einer MENGE waere daraus eine Bedingung geworden, die IMMER wahr ist: Ein leeres
+  // Array ist truthy. Die Wache haette dann nichts mehr entschieden, der Kommentar
+  // darueber waere zur Behauptung geworden, und Einwilligungs-Auswertung samt
+  // Header-Lesungen liefen fuer JEDEN Beacon JEDES Projekts OHNE Zugangsdaten — genau
+  // das, was die drei Zeilen weiter unten ausdruecklich ausschliessen.
+  // DAS IST DIE GEFAEHRLICHSTE STELLE DIESER SCHEIBE, weil sie LAUTLOS falsch wird:
+  // Der Compiler sieht sie nicht, und ein Test, der nur "es wurde nichts gesendet"
+  // prueft, ginge in beiden Zustaenden durch (eine Schleife ueber eine leere Menge
+  // sendet ohnehin nichts). Was sie sichtbar macht, ist fan-out.test.ts.
+  const targets = resolution.targets;
+  if (targets.length > 0 && isForwardable(event)) {
     // --- EINWILLIGUNG (Phase 11, fuenfte Scheibe) — EIGENER SICHTBARER ZWEIG ---
     //
     // WARUM KEIN DRITTER TERM IM if-KOPF DARUEBER: Dieselbe Lektion wie beim
@@ -299,6 +349,12 @@ export async function handleIngest(request: Request): Promise<Response> {
     // KEIN LOG: Der Einwilligungs-Zustand ist eine Aussage ueber einen BESUCHER. Ihn
     // zu protokollieren waere eine Datenerhebung, die niemand beschlossen hat — und
     // sie fiele ausgerechnet auf dem meistgetroffenen Pfad der Plattform an.
+    // EINE PRUEFUNG FUER DIE GANZE MENGE, und das ist bei EINEM Empfaenger exakt
+    // richtig — der Draht zu Meta aendert sich nicht. Eine Pruefung JE ZIEL ist
+    // ausdruecklich NICHT diese Scheibe: Das Feld im Draht traegt heute nur einen
+    // Schluessel, weil der Beacon nur innerhalb von Metas Gate ueberhaupt entsteht.
+    // Wer hier je einen zweiten Empfaenger einhaengt, OHNE dass der Browser-Pfad das
+    // Signal je Ziel liefert, gated ihn mit METAS Einwilligung — das waere falsch.
     if (!consentAllows(body, META_CONSENT_TARGET)) return status(204);
 
     // --- Server-gesetzte Felder (NIE aus Client-Payload) ---
@@ -309,12 +365,37 @@ export async function handleIngest(request: Request): Promise<Response> {
     const clientIp = resolveClientIp(request);
     const userAgent = asString(request.headers.get("user-agent"));
 
+    // --- DER FAN-OUT (Phase 11, siebte Scheibe) ---
+    //
     // Der Aufruf wird WEITERHIN IM REQUEST ERWARTET — das await ist kein Versehen: die
     // 204 steht nach wie vor DAHINTER. Die Abloesung von der Antwort ist eine EIGENE,
     // spaetere Aenderung; wer das await hier entfernt, baut sie unangekuendigt mit ein.
-    // forwardToMeta WIRFT NIE (Vertrag in meta-forward.ts) -> das 204-Containment dieses
-    // Handlers bleibt intakt, ohne den Aufruf zu umschliessen.
-    await forwardToMeta(config, event, eventID, body, clientIp, userAgent);
+    //
+    // allSettled UND NIEMALS all. Der Unterschied ist nicht Stil, sondern das
+    // 204-Containment: allSettled rejectet NIE, also kann kein Empfaenger einen Wurf
+    // aus diesem Handler heraustragen. Promise.all reichte einen vertragsbruechigen
+    // Adapter DURCH — aus der garantierten leeren 204 wuerde ein 500, und der leakt
+    // den Gueltigkeitszustand des trackingKeys an einen anonymen Aufrufer. Die
+    // Garantie ruht damit weiterhin auf der STRUKTUR und nicht darauf, dass sich alle
+    // Adapter an ihren Vertrag halten.
+    //
+    // DIE FRIST IST EINE EIGENSCHAFT DIESER ANORDNUNG, KEIN BAUTEIL — und der naechste,
+    // der hier eine sucht, soll lesen, warum es keine gibt: Alle Empfaenger starten
+    // GLEICHZEITIG (map + allSettled, nicht for-await), und jeder traegt SEIN EIGENES
+    // Timeout-Geruest im Adapter. Die Gesamtwartezeit ist damit das MAXIMUM der
+    // Einzeldeckel, nicht ihre Summe — sie waechst NICHT mit der Zahl der Empfaenger.
+    // AUFLAGE, ausdruecklich: KEIN Promise.race, KEIN gemeinsamer Wecker, KEIN
+    // geteiltes AbortSignal.
+    // · Ein geteiltes Abbruchsignal traefe ALLE — ein haengender Zweitempfaenger
+    //   kappte den Meta-Forward mit, der ohne ihn durchgekommen waere.
+    // · Ein Wecker per race hoerte auf zu WARTEN, ohne abzubrechen — damit loeste sich
+    //   die Antwort von der Empfaenger-Latenz, und das ist die am 2026-08-06
+    //   gestrichene Scheibe durch die Hintertuer.
+    await Promise.allSettled(
+      targets.map((entry) =>
+        dispatchForward(entry, event, eventID, body, clientIp, userAgent),
+      ),
+    );
   }
 
   return status(204);

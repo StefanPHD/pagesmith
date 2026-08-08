@@ -15,15 +15,26 @@ import { getCapiConfigByTrackingKey } from "./token";
 
 /**
  * Baut einen minimalen, chainbaren Supabase-Client-Mock. Pro Tabelle ein
- * vorkonfiguriertes maybeSingle()-Ergebnis. select()/eq() geben den Builder zurueck,
- * maybeSingle() loest das hinterlegte Ergebnis auf.
+ * vorkonfiguriertes Ergebnis. select()/eq()/in() geben den Builder zurueck.
+ *
+ * ZWEI ENDEN, und das ist seit Phase 11 Scheibe 7 noetig: Die projects-Abfrage endet
+ * auf maybeSingle() (EINE Zeile), die Geheimnis-Abfrage endet auf NICHTS — sie darf
+ * mehrere Zeilen liefern und wird direkt awaited. Der echte PostgREST-Builder ist
+ * dafuer thenable; dieser Mock ist es jetzt auch. Ohne das `then` liefe ein `await`
+ * auf den Builder in den Builder selbst und der Resolver bekaeme kein data/error.
  */
 function mockAdmin(results: Record<string, { data: unknown; error: unknown }>) {
   const from = vi.fn((table: string) => {
+    const result = () => results[table] ?? { data: null, error: null };
     const builder: Record<string, unknown> = {};
     builder.select = vi.fn(() => builder);
     builder.eq = vi.fn(() => builder);
-    builder.maybeSingle = vi.fn(async () => results[table]);
+    builder.in = vi.fn(() => builder);
+    builder.maybeSingle = vi.fn(async () => result());
+    builder.then = (
+      onOk: (v: unknown) => unknown,
+      onErr?: (e: unknown) => unknown,
+    ) => Promise.resolve(result()).then(onOk, onErr);
     return builder;
   });
   createAdminClient.mockReturnValue({ from });
@@ -37,6 +48,17 @@ function projectWithPixel(id: string, pixelId: string) {
     error: null,
   };
 }
+
+/** Die Geheimnis-ZEILEN einer Abfrage — seit Scheibe 7 eine Liste, keine Einzelzeile. */
+function secretRows(rows: { target: string; secret: string | null }[]) {
+  return { data: rows, error: null };
+}
+
+/** Der aufgeloeste Meta-Empfaenger, wie ihn die Menge traegt. */
+const META_ENTRY = {
+  target: "meta",
+  config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
+};
 
 afterEach(() => {
   vi.clearAllMocks();
@@ -62,8 +84,18 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
               },
               error: null,
             }
-          : { data: { secret: "SECRET-TOKEN" }, error: null }
+          : { data: [{ target: "meta", secret: "SECRET-TOKEN" }], error: null }
       );
+      builder.in = vi.fn(() => builder);
+      builder.then = (
+        onOk: (v: unknown) => unknown,
+        onErr?: (e: unknown) => unknown,
+      ) =>
+        Promise.resolve(
+          table === "projects"
+            ? { data: null, error: null }
+            : { data: [{ target: "meta", secret: "SECRET-TOKEN" }], error: null },
+        ).then(onOk, onErr);
       return builder;
     });
     createAdminClient.mockReturnValue({ from });
@@ -80,11 +112,11 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
   it("Phase 11 Scheibe 1: das Geheimnis kommt aus project_secrets — project_tokens wird NICHT mehr gelesen", async () => {
     const { from } = mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
-      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
+      project_secrets: secretRows([{ target: "meta", secret: "SECRET-TOKEN" }]),
     });
 
     const res = await getCapiConfigByTrackingKey("tk-abc");
-    expect(res?.capiConfig).toEqual({ pixelId: "PIXEL-123", token: "SECRET-TOKEN" });
+    expect(res?.targets).toEqual([META_ENTRY]);
 
     // POSITIVKONTROLLE fuer die Abwesenheits-Behauptung darunter: die Aufzeichnung ist
     // nachweislich gefuellt. Ohne sie ginge ein not.toHaveBeenCalledWith auch dann auf,
@@ -97,6 +129,80 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     expect(from).toHaveBeenCalledTimes(2);
   });
 
+  // Phase 11 Scheibe 7 — DIE RUNDENZAHL WAECHST NICHT MIT DER ZAHL DER ZIELE.
+  //
+  // WARUM DIESER TEST ZWEI ZIELE BRAUCHT und der Zwei-Runden-Waechter darueber nicht
+  // genuegt: Bei EINEM Ziel sind "eine Runde fuer alle" und "eine Runde JE Ziel"
+  // dasselbe — der Waechter oben ginge auch dann auf, wenn der Resolver je Ziel
+  // fragte. Erst ein zweites Ziel trennt die beiden Faelle. Der Test ist damit der
+  // EINZIGE, der Invariante 2 gegen einen Rueckfall auf eine Abfrage je Ziel deckt.
+  it("Scheibe 7: ZWEI Ziele -> immer noch GENAU ZWEI Abfragen, Reihenfolge deterministisch", async () => {
+    const { from } = mockAdmin({
+      projects: {
+        data: {
+          id: "proj-1",
+          settings: {
+            pixels: {
+              meta: { pixelId: "PIXEL-123" },
+              pinterest: { pixelId: "TAG-987" },
+            },
+          },
+          blocked_at: null,
+        },
+        error: null,
+      },
+      // Absichtlich in UMGEKEHRTER Reihenfolge: die Ausgabe darf NICHT von der
+      // Zeilenfolge der Datenbank abhaengen, sondern folgt TRACKING_TARGETS.
+      project_secrets: secretRows([
+        { target: "pinterest", secret: "PIN-SECRET" },
+        { target: "meta", secret: "SECRET-TOKEN" },
+      ]),
+    });
+
+    const res = await getCapiConfigByTrackingKey("tk-abc");
+
+    expect(from).toHaveBeenCalledTimes(2);
+    expect(res?.targets).toEqual([
+      META_ENTRY,
+      { target: "pinterest", config: { pixelId: "TAG-987", token: "PIN-SECRET" } },
+    ]);
+  });
+
+  // Phase 11 Scheibe 7 — DIE PAARUNG JE ZIEL. Ein halbes Ziel ist KEIN Empfaenger.
+  //
+  // BEIDE RICHTUNGEN IN EINEM TEST, und das ist Absicht: Sie scheitern verschieden.
+  // Ohne Pixel-ID fragt der Resolver das Geheimnis gar nicht erst ab; ohne Geheimnis
+  // faellt das Ziel erst bei der Paarung heraus. Deckte der Test nur eine Richtung,
+  // liesse die andere ein Ziel mit den Zugangsdaten eines fremden laufen.
+  it("Scheibe 7: nur VOLLSTAENDIGE Paare werden Empfaenger (Pixel ohne Geheimnis und umgekehrt fallen heraus)", async () => {
+    mockAdmin({
+      projects: {
+        data: {
+          id: "proj-1",
+          settings: {
+            pixels: {
+              meta: { pixelId: "PIXEL-123" },
+              // pinterest hat ein Geheimnis, aber KEINE Pixel-ID.
+            },
+          },
+          blocked_at: null,
+        },
+        error: null,
+      },
+      project_secrets: secretRows([
+        { target: "meta", secret: "SECRET-TOKEN" },
+        { target: "pinterest", secret: "PIN-SECRET" },
+      ]),
+    });
+
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: false,
+      targets: [META_ENTRY],
+    });
+  });
+
   // Phase 11 Scheibe 1 — TIPPFEHLER-WAECHTER FUER DIE NEUE TABELLE, nach dem Muster des
   // 9b-2-Waechters darunter. Der Builder-Mock akzeptiert JEDE Select-Liste und JEDEN
   // Filter; ohne diesen Test waere ein falscher Spalten- oder Zielwert von nichts
@@ -105,10 +211,20 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
   // DER ZIELWERT STEHT HIER ALS LITERAL, NICHT als importierte Konstante: der Test soll
   // den WIRE-Wert festnageln. Zoege er die Konstante mit, ruschte eine Aenderung an ihr
   // gruen durch.
-  it("Phase 11 Scheibe 1 — TIPPFEHLER-WAECHTER: select('secret'), Filter auf project_id UND target='meta'", async () => {
-    const calls: { table: string; cols: string; eqs: [string, unknown][] }[] = [];
+  it("TIPPFEHLER-WAECHTER: select('target, secret'), eq(project_id) UND in(target, ['meta'])", async () => {
+    const calls: {
+      table: string;
+      cols: string;
+      eqs: [string, unknown][];
+      ins: [string, unknown][];
+    }[] = [];
     const from = vi.fn((table: string) => {
-      const entry = { table, cols: "", eqs: [] as [string, unknown][] };
+      const entry = {
+        table,
+        cols: "",
+        eqs: [] as [string, unknown][],
+        ins: [] as [string, unknown][],
+      };
       calls.push(entry);
       const builder: Record<string, unknown> = {};
       builder.select = vi.fn((cols: string) => {
@@ -129,8 +245,21 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
               },
               error: null,
             }
-          : { data: { secret: "SECRET-TOKEN" }, error: null }
+          : { data: [{ target: "meta", secret: "SECRET-TOKEN" }], error: null }
       );
+      builder.in = vi.fn((col: string, vals: unknown) => {
+        entry.ins.push([col, vals]);
+        return builder;
+      });
+      builder.then = (
+        onOk: (v: unknown) => unknown,
+        onErr?: (e: unknown) => unknown,
+      ) =>
+        Promise.resolve(
+          table === "projects"
+            ? { data: null, error: null }
+            : { data: [{ target: "meta", secret: "SECRET-TOKEN" }], error: null },
+        ).then(onOk, onErr);
       return builder;
     });
     createAdminClient.mockReturnValue({ from });
@@ -139,11 +268,12 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
 
     const secrets = calls.find((c) => c.table === "project_secrets");
     if (!secrets) throw new Error("kein Zugriff auf project_secrets aufgezeichnet");
-    expect(secrets.cols).toBe("secret");
-    expect(secrets.eqs).toEqual([
-      ["project_id", "proj-1"],
-      ["target", "meta"],
-    ]);
+    expect(secrets.cols).toBe("target, secret");
+    // Der Projekt-Filter bleibt eine Gleichheit …
+    expect(secrets.eqs).toEqual([["project_id", "proj-1"]]);
+    // … der Ziel-Filter ist seit Scheibe 7 eine MENGE. Er bleibt der Filter, der ein
+    // Ziel davor schuetzt, den Pfad eines anderen mit fremden Zugangsdaten zu lesen.
+    expect(secrets.ins).toEqual([["target", ["meta"]]]);
   });
 
   // Scheibe 9b-2 — DER TIPPFEHLER-WAECHTER. Der Builder-Mock oben gibt sich mit JEDER
@@ -190,20 +320,20 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
         },
         error: null,
       },
-      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
+      project_secrets: secretRows([{ target: "meta", secret: "SECRET-TOKEN" }]),
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
       blocked: false,
       abTestActive: true,
-      capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
+      targets: [META_ENTRY],
     });
   });
 
   it("loest trackingKey -> { projectId, capiConfig } auf (eine Aufloesung)", async () => {
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
-      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
+      project_secrets: secretRows([{ target: "meta", secret: "SECRET-TOKEN" }]),
     });
     // Phase 8 Scheibe 1: die projectId reitet in DERSELBEN Aufloesung mit (sie wurde
     // vorher intern schon aufgeloest und verworfen) -> KEINE zweite Query.
@@ -211,7 +341,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       projectId: "proj-1",
       blocked: false,
       abTestActive: false,
-      capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
+      targets: [META_ENTRY],
     });
   });
 
@@ -226,7 +356,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
   it("unbekannter trackingKey (kein Projekt) -> null", async () => {
     mockAdmin({
       projects: { data: null, error: null },
-      project_secrets: { data: { secret: "x" }, error: null },
+      project_secrets: secretRows([{ target: "meta", secret: "x" }]),
     });
     expect(await getCapiConfigByTrackingKey("tk-missing")).toBeNull();
   });
@@ -237,13 +367,13 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
   it("ROBUSTHEIT: Projekt ohne Meta-Pixel-ID -> capiConfig null (kein Forward-Ziel)", async () => {
     mockAdmin({
       projects: { data: { id: "proj-1", settings: {} }, error: null },
-      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
+      project_secrets: secretRows([{ target: "meta", secret: "SECRET-TOKEN" }]),
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
       blocked: false,
       abTestActive: false,
-      capiConfig: null,
+      targets: [],
     });
   });
 
@@ -252,26 +382,26 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     // Muss sauber aufloesen, nicht werfen.
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
-      project_secrets: { data: null, error: null },
+      project_secrets: { data: [], error: null },
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
       blocked: false,
       abTestActive: false,
-      capiConfig: null,
+      targets: [],
     });
   });
 
   it("ROBUSTHEIT: Token-Zeile vorhanden, aber Token null -> capiConfig null", async () => {
     mockAdmin({
       projects: projectWithPixel("proj-1", "PIXEL-123"),
-      project_secrets: { data: { secret: null }, error: null },
+      project_secrets: secretRows([{ target: "meta", secret: null }]),
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
       blocked: false,
       abTestActive: false,
-      capiConfig: null,
+      targets: [],
     });
   });
 
@@ -284,7 +414,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       projectId: "proj-1",
       blocked: false,
       abTestActive: false,
-      capiConfig: null,
+      targets: [],
     });
   });
 
@@ -297,7 +427,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
         data: { id: "proj-1", settings: { pixels: { meta: { pixelId: "PIXEL-123" } } }, blocked_at: "2026-07-14T00:00:00Z" },
         error: null,
       },
-      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
+      project_secrets: secretRows([{ target: "meta", secret: "SECRET-TOKEN" }]),
     });
     await getCapiConfigByTrackingKey("tk-abc");
     // Frueh-Verwerfen VOR der Geheimnis-Aufloesung: project_secrets wird nie abgefragt.
@@ -313,13 +443,13 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
         data: { id: "proj-1", settings: { pixels: { meta: { pixelId: "PIXEL-123" } } }, blocked_at: null },
         error: null,
       },
-      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
+      project_secrets: secretRows([{ target: "meta", secret: "SECRET-TOKEN" }]),
     });
     expect(await getCapiConfigByTrackingKey("tk-abc")).toEqual({
       projectId: "proj-1",
       blocked: false,
       abTestActive: false,
-      capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
+      targets: [META_ENTRY],
     });
   });
 
@@ -345,14 +475,14 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
         },
         error: null,
       },
-      project_secrets: { data: { secret: "SECRET-TOKEN" }, error: null },
+      project_secrets: secretRows([{ target: "meta", secret: "SECRET-TOKEN" }]),
     });
     await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
       projectId: "proj-1",
       blocked: true,
       abTestActive: false,
-      // KEINE Config bei gesperrt — der Token wird gar nicht erst gelesen.
-      capiConfig: null,
+      // KEINE Empfaenger bei gesperrt — Geheimnisse werden gar nicht erst gelesen.
+      targets: [],
     });
   });
 });

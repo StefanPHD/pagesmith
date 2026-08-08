@@ -1,6 +1,11 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getMetaPixelId, type ProjectSettings } from "@/lib/settings";
+import {
+  getPixelId,
+  TRACKING_TARGETS,
+  type ProjectSettings,
+  type TrackingTarget,
+} from "@/lib/settings";
 
 /**
  * Aufloesung EINES trackingKeys (Phase 8 Scheibe 1, ADDITIV erweitert).
@@ -10,9 +15,20 @@ import { getMetaPixelId, type ProjectSettings } from "@/lib/settings";
  * braucht die project_id als FK -> sie wird jetzt MITGELIEFERT statt weggeworfen.
  * KEINE zweite Query (die /api/e-Schlankheits-Regel bleibt gewahrt).
  *
- * capiConfig ist null, wenn das Projekt existiert und NICHT gesperrt ist, aber keine
- * Meta-Pixel-ID / keinen CAPI-Token traegt -> der Aufrufer forwarded dann nicht (exakt
- * das bisherige Verhalten, nur feiner aufgeloest).
+ * targets ist LEER, wenn das Projekt existiert und NICHT gesperrt ist, aber kein Ziel
+ * ein vollstaendiges Paar aus Pixel-ID UND Geheimnis traegt -> der Aufrufer forwarded
+ * dann nicht.
+ *
+ * DIE MENGE (Phase 11, siebte Scheibe) — sie ersetzt das fruehere Einzelfeld
+ * capiConfig. Zwei Dinge daran sind Entscheidung, nicht Geschmack:
+ * 1. DER FELDNAME WURDE MITGEAENDERT. Bliebe er, uebernaehme der Handler den neuen
+ *    Typ STILL — die Umstellung waere dort unsichtbar. Der neue Name macht jede
+ *    Lesestelle im Build laut. Das ist der Beleg an ihrer Stelle, kein Test.
+ * 2. LEER STATT null. Die Unterscheidung "Projekt nicht aufloesbar" gegen "Projekt
+ *    ohne Ziel" bleibt erhalten und liegt jetzt auf ZWEI Ebenen: die Funktion gibt
+ *    null (kein Projekt), die Menge ist leer (Projekt ohne Ziel). Der AUFRUFER MUSS
+ *    dafuer auf die LAENGE pruefen — eine leere Menge ist truthy, ein blosses
+ *    `if (targets)` waere immer wahr und die Forward-Wache damit wirkungslos.
  *
  * blocked (Scheibe 2a): der Kill-Switch-Zustand wird jetzt MITGELIEFERT statt in ein
  * null zu muenden. Grund: mit der Entkopplung persistiert der Ingest auch OHNE
@@ -37,7 +53,13 @@ export type TrackingKeyResolution = {
    * Testzeitraum-Abgrenzung. Die Werte sind permanent und werden nie transformiert.
    */
   abTestActive: boolean;
-  capiConfig: CapiConfig | null;
+  targets: ResolvedTarget[];
+};
+
+/** Ein AUFGELOESTER Empfaenger: sein Ziel-Name plus die vollstaendigen Zugangsdaten. */
+export type ResolvedTarget = {
+  target: TrackingTarget;
+  config: CapiConfig;
 };
 
 /**
@@ -71,13 +93,17 @@ export type CapiConfig = {
  * lesen.
  *
  * EINE trackingKey-Aufloesung: der erste Query holt id UND settings aus derselben
- * projects-Zeile (kein zweiter Key-Lookup); die pixelId kommt via getMetaPixelId
- * aus genau dieser Zeile. Der zweite Query holt das Geheimnis per (project_id,
- * Ziel). GENAU ZWEI Abfragen, unveraendert gegenueber der project_tokens-Fassung
- * — die Umstellung TAUSCHT eine Abfrage, sie ergaenzt keine (/api/e-Schlankheit).
+ * projects-Zeile (kein zweiter Key-Lookup); die Pixel-IDs kommen via getPixelId
+ * aus genau dieser Zeile. Der zweite Query holt die Geheimnisse ALLER Ziele in
+ * EINER Runde. GENAU ZWEI Abfragen — unveraendert seit der project_tokens-Fassung.
+ * DIE ZUSAGE GILT AUCH FUER MEHRERE ZIELE, und sie ist der Grund fuer die Form der
+ * zweiten Abfrage: `in(target, ...)` statt `eq(target, ...)`, KEIN maybeSingle().
+ * Eine Abfrage JE ZIEL waere die naheliegende und falsche Loesung — sie liesse die
+ * Rundenzahl mit der Zahl der Ziele wachsen, auf dem Pfad, den JEDER Besucher
+ * JEDER Kundenseite trifft (/api/e-Schlankheit).
  *
  * Aufloesung: trackingKey (server-autoritative Spalte projects.tracking_key)
- *   -> project_id (+ settings.pixels.meta.pixelId) -> project_secrets.secret.
+ *   -> project_id (+ settings.pixels.<ziel>.pixelId) -> project_secrets.secret je Ziel.
  *
  * Gibt null zurueck (KEIN Throw — jeder dieser Zustaende ist regulaer), wenn:
  * - der Key leer ist, ODER
@@ -88,10 +114,15 @@ export type CapiConfig = {
  * (totale Funktion ohne Sonderfall); der Handler liest es in diesem Fall nie, weil er
  * vorher zurueckkehrt.
  *
- * Gibt capiConfig: null zurueck, wenn das Projekt existiert
- * und offen ist, aber KEINE Meta-Pixel-ID (ohne Pixel-Ziel kein Forward) bzw. (noch) KEINE
- * Token-Zeile hat (trackingKey gesetzt, Token nie gesetzt / Race) -> kein Forward, aber
+ * Gibt eine LEERE targets-Menge zurueck, wenn das Projekt existiert und offen ist, aber
+ * KEIN Ziel eine Pixel-ID (ohne Pixel-Ziel kein Forward) bzw. (noch) keine Geheimnis-Zeile
+ * hat (trackingKey gesetzt, Zugangsdaten nie gesetzt / Race) -> kein Forward, aber
  * Analytics-Persist ist erlaubt.
+ *
+ * NUR VOLLSTAENDIGE PAARE KOMMEN IN DIE MENGE. Ein Ziel mit Geheimnis, aber ohne
+ * Pixel-ID faellt heraus, und umgekehrt — die Paarung geschieht JE ZIEL. Ohne sie
+ * koennte ein Ziel mit den Zugangsdaten eines anderen laufen; genau davor schuetzte
+ * bis hierher der Ziel-Filter der zweiten Abfrage allein.
  */
 export async function getCapiConfigByTrackingKey(
   trackingKey: string,
@@ -133,30 +164,73 @@ export async function getCapiConfigByTrackingKey(
   // anonymen Aufrufer bleibt das Ergebnis identisch (204, kein Zustandsleck); der
   // Unterschied ist nur intern sichtbar. Halbe Sperre = keine Sperre.
   if (project.blocked_at)
-    return { projectId, blocked: true, abTestActive, capiConfig: null };
+    return { projectId, blocked: true, abTestActive, targets: [] };
 
-  // pixelId aus derselben Zeile — kein zweiter Lookup. Reuse der Settings-Ableitung.
-  const pixelId = getMetaPixelId((project.settings ?? {}) as ProjectSettings);
-  if (!pixelId) return { projectId, blocked: false, abTestActive, capiConfig: null };
+  // Die Pixel-IDs ALLER bekannten Ziele aus derselben Zeile — kein zweiter Lookup.
+  // Reuse der Settings-Ableitung, jetzt ziel-parametrisiert (getPixelId statt
+  // getMetaPixelId).
+  //
+  // DER FRUEHAUSSTIEG BEANTWORTET EINE ANDERE FRAGE ALS VORHER, und das ist der Kern
+  // der Umstellung an dieser Stelle: Er fragte "hat META eine Pixel-ID?" und war damit
+  // an EIN Ziel gebunden — ein Projekt mit Zugangsdaten fuer ein anderes Ziel, aber
+  // ohne Meta-Pixel, kehrte hier zurueck, BEVOR die Geheimnis-Abfrage ueberhaupt lief.
+  // Er fragt jetzt "hat IRGENDEIN bekanntes Ziel eine Pixel-ID?".
+  // ER KOSTET WEITERHIN NULL ZUSAETZLICHE RUNDEN: settings reitet bereits in der
+  // Projektion oben mit, die Schleife ist eine reine Speicher-Operation.
+  const settings = (project.settings ?? {}) as ProjectSettings;
+  const withPixel = TRACKING_TARGETS.map((target) => ({
+    target,
+    pixelId: getPixelId(settings, target),
+  })).filter((entry) => entry.pixelId !== "");
 
-  // Schritt 2: (project_id, Ziel) -> Geheimnis (Phase 11 Scheibe 1). Fehlende Zeile
-  // (Token nie gesetzt) -> kein Forward. Die Achse ist jetzt das PAAR: dieselbe
-  // Tabelle traegt kuenftig weitere Ziele, und ohne den Ziel-Filter laese ein
-  // spaeteres Ziel den Meta-Pfad mit fremden Zugangsdaten.
+  if (withPixel.length === 0)
+    return { projectId, blocked: false, abTestActive, targets: [] };
+
+  // Schritt 2: (project_id, Ziel) -> Geheimnisse ALLER in Frage kommenden Ziele in
+  // EINER Runde (Phase 11 Scheibe 7). Fehlende Zeile (Zugangsdaten nie gesetzt) ->
+  // dieses Ziel forwarded nicht.
+  //
+  // `in` STATT `eq`, UND DER FILTER BLEIBT: Er ist Sperre und Sicherung zugleich —
+  // ohne ihn laese ein Ziel den Pfad eines anderen mit fremden Zugangsdaten. Gefragt
+  // wird nur nach den Zielen, die ueberhaupt eine Pixel-ID tragen; alles andere waere
+  // ein Geheimnis, das niemand paaren koennte.
+  // KEIN maybeSingle(): die Abfrage darf MEHRERE Zeilen liefern. Es zu behalten waere
+  // die stillste Art, die Scheibe zu verfehlen — bei zwei Zeilen liefert PostgREST
+  // dann keinen brauchbaren Wert.
   // KEIN RUECKFALL auf project_tokens: er machte eine unvollstaendige Uebernahme
-  // unsichtbar und entwertete genau die Pruefung, die vor diesem Deploy steht.
-  const { data: row, error: tokenError } = await admin
+  // unsichtbar und entwertete genau die Pruefung, die vor jenem Deploy stand.
+  const { data: rows, error: secretsError } = await admin
     .from("project_secrets")
-    .select("secret")
+    .select("target, secret")
     .eq("project_id", projectId)
-    .eq("target", META_TARGET)
-    .maybeSingle();
+    .in(
+      "target",
+      withPixel.map((entry) => entry.target),
+    );
 
-  if (tokenError || !row)
-    return { projectId, blocked: false, abTestActive, capiConfig: null };
+  if (secretsError || !rows)
+    return { projectId, blocked: false, abTestActive, targets: [] };
 
-  const token = row.secret ?? null;
-  if (!token) return { projectId, blocked: false, abTestActive, capiConfig: null };
+  // Geheimnisse nach Ziel greifbar machen. Der Schluessel bleibt bewusst ein roher
+  // string: nachgeschlagen wird ausschliesslich mit Werten aus TRACKING_TARGETS, ein
+  // unbekannter Wert aus der Datenbank kann damit gar nicht getroffen werden.
+  const secretByTarget = new Map<string, string>();
+  for (const row of rows as { target: unknown; secret: unknown }[]) {
+    if (typeof row.target !== "string") continue;
+    const secret = typeof row.secret === "string" ? row.secret : "";
+    if (!secret) continue;
+    secretByTarget.set(row.target, secret);
+  }
 
-  return { projectId, blocked: false, abTestActive, capiConfig: { pixelId, token } };
+  // DIE PAARUNG — JE ZIEL. Nur wer BEIDES traegt, wird Empfaenger. Die Reihenfolge
+  // folgt TRACKING_TARGETS und ist damit deterministisch, nicht von der Zeilenfolge
+  // der Datenbank abhaengig.
+  const targets: ResolvedTarget[] = [];
+  for (const entry of withPixel) {
+    const token = secretByTarget.get(entry.target);
+    if (!token) continue;
+    targets.push({ target: entry.target, config: { pixelId: entry.pixelId, token } });
+  }
+
+  return { projectId, blocked: false, abTestActive, targets };
 }

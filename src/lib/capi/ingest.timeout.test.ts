@@ -5,7 +5,12 @@ vi.mock("server-only", () => ({}));
 const { getCapiConfigByTrackingKey } = vi.hoisted(() => ({
   getCapiConfigByTrackingKey: vi.fn(),
 }));
-vi.mock("@/lib/capi/token", () => ({ getCapiConfigByTrackingKey }));
+// META_TARGET kommt seit Scheibe 7 mit: der Handler waehlt seinen Adapter darueber.
+// Der Wert steht hier als Literal, damit der Mock die Modul-FORM abbildet.
+vi.mock("@/lib/capi/token", () => ({
+  getCapiConfigByTrackingKey,
+  META_TARGET: "meta",
+}));
 
 vi.mock("@/lib/capi/config", () => ({
   META_GRAPH_VERSION: "v21.0",
@@ -74,7 +79,9 @@ beforeEach(() => {
     projectId: "proj-1",
     blocked: false,
     abTestActive: false,
-    capiConfig: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
+    targets: [
+      { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
+    ],
   });
   persistEvent.mockResolvedValue(undefined);
   errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});

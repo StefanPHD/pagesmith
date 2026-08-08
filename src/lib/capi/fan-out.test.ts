@@ -275,6 +275,20 @@ describe("Fan-Out — Containment und Ziel-Zuordnung", () => {
   // Eintrag ist vollstaendig (Pixel-ID und Geheimnis), er waere also "fertig
   // konfiguriert" — und trotzdem darf nichts hinausgehen, solange kein Adapter
   // existiert.
+  //
+  // SEIT DER NEUNTEN SCHEIBE (Einwilligung je Ziel) ERREICHT DIESER TEST DIE
+  // ZIEL-ADAPTER-ZUORDNUNG GAR NICHT MEHR. Das ist etwas anderes als "er deckt sie
+  // nicht mehr allein": Der Draht traegt hier kein Einwilligungs-Feld, die
+  // Altbestands-Rolle erlaubt nur Meta, die erlaubte Menge ist damit LEER — und der
+  // Ausgang bei leerer Menge kehrt zurueck, BEVOR dispatchForward ueberhaupt
+  // aufgerufen wird.
+  // WAS ER WEITERHIN BEWEIST: dass ein adapterloses Ziel allein nichts hinausschickt
+  // und die Antwort eine leere 204 bleibt.
+  // WAS ER NICHT MEHR BEWEIST: dass die ZUORDNUNG es ueberspringt. Er ist gruen aus
+  // einem Grund, den sein Name nicht nennt — wer ihn als Waechter der Zuordnung liest,
+  // ueberschaetzt ihn.
+  // NICHT REPARIERT, NUR BENANNT: Wo die verlorene Abdeckung heute liegt, steht in
+  // ingest.consent-targets.test.ts am Fall "Feld MIT VERBOT fuer Meta".
   it("T6: ein Ziel OHNE Adapter wird uebersprungen — kein Aufruf, trotzdem 204", async () => {
     getCapiConfigByTrackingKey.mockResolvedValue(
       resolution([
@@ -292,6 +306,18 @@ describe("Fan-Out — Containment und Ziel-Zuordnung", () => {
   // Grund gruen ist: Steht neben dem adapterlosen Ziel ein Meta-Eintrag, geht GENAU
   // EIN Aufruf hinaus — der von Meta. Ohne diesen Test waere T6 auch dann gruen,
   // wenn der Fan-Out ueberhaupt nichts mehr sendet.
+  //
+  // SEIT DER NEUNTEN SCHEIBE GILT FUER IHN ETWAS ANDERES ALS FUER T6, und genau dieser
+  // Unterschied ist der Befund — eine Sammelformulierung fuer beide waere falsch: Er
+  // erreicht die Zuordnung WEITERHIN, denn Meta bleibt uebrig und wird durchgereicht.
+  // ABER WAS DAS ADAPTERLOSE ZIEL ENTFERNT, IST JETZT DIE EINWILLIGUNG UND NICHT DER
+  // FEHLENDE ADAPTER: Ohne Wire-Feld erlaubt die Altbestands-Rolle nur Meta, der
+  // Pinterest-Eintrag faellt also schon VOR der Zuordnung heraus.
+  // WAS ER WEITERHIN BEWEIST: seine urspruengliche Aufgabe als Positivkontrolle zu T6 —
+  // dass ueberhaupt etwas hinausgeht, und zwar genau Metas Aufruf.
+  // WAS ER NICHT MEHR BEWEIST: dass ein adapterloses Ziel NEBEN Meta von der Zuordnung
+  // uebersprungen wird. Dieselbe Fundstelle wie bei T6: der Fall "Feld MIT VERBOT fuer
+  // Meta" in ingest.consent-targets.test.ts.
   it("T7: adapterloses Ziel NEBEN Meta -> genau EIN Aufruf, und zwar Metas", async () => {
     getCapiConfigByTrackingKey.mockResolvedValue(
       resolution([

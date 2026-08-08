@@ -300,6 +300,23 @@ describe("handleIngest: Invariante 1 — bei Meta aendert sich nichts", () => {
     // DIE GEGENPROBE ZUM VORIGEN, und sie zeigt zugleich die Grenze dieser Ebene:
     // Pinterest IST hier erlaubt, es geht trotzdem nichts hinaus — weil es keinen
     // Adapter hat. Genau deshalb liegt die Kreuzprobe eine Ebene tiefer.
+    //
+    // UND ER TRAEGT EINE ABDECKUNG, DIE SEIN NAME NICHT NENNT: Er ist der EINZIGE
+    // Test im Repo, der dispatchForward mit einem ADAPTERLOSEN Ziel AUFRUFT — die
+    // erlaubte Menge ist hier genau [pinterest], der Eintrag laeuft also in die
+    // Zuordnung hinein und wird dort uebersprungen. In fan-out.test.ts taten das bis
+    // zur neunten Scheibe T6 und T7; beide erreichen die Zuordnung mit einem
+    // adapterlosen Ziel heute nicht mehr (Begruendung steht in ihren Koepfen, je
+    // Test verschieden).
+    // WARUM DAS HIER STEHT: Traegt ein einzelner Test eine Fehlerklasse, gehoert das
+    // in seinen Kommentar — sonst entfernt ihn jemand spaeter als vermeintlich
+    // redundant und nimmt die einzige Abdeckung mit.
+    // DIE GRENZE, DIE ZWINGEND DAZUGEHOERT: Diese Abdeckung ist ein NEBENEFFEKT
+    // seines Aufbaus, KEINE Absicht seines Namens — sie haengt allein daran, dass
+    // Meta verboten und Pinterest erlaubt ist. Wer den Fall umbaut (etwa beide
+    // verbietet), verliert sie LAUTLOS: nichts wird rot, denn "kein Aufruf" bliebe
+    // wahr. Ob die Zuordnung einen EIGENEN Waechter bekommt, ist eine Frage fuer die
+    // zehnte Scheibe, wo der zweite Adapter entsteht — hier NICHT entschieden.
     const res = await handleIngest(makeRequest(wire(false, true)));
 
     expect(res.status).toBe(204);

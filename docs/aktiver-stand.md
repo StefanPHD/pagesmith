@@ -20,8 +20,8 @@ Meta-Forwards — ABGESCHLOSSEN und live bewiesen, (5) das Einwilligungs-Signal
 reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) die ZUGANGSDATEN JE ZIEL
 — **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (7) die AUFLÖSUNG TRÄGT
 MEHRERE ZIELE — **ABGESCHLOSSEN und live bewiesen**, (8) DER BEACON VERLÄSST METAS
-LAUFZEIT — ZUGESCHNITTEN, (9) DIE EINWILLIGUNG JE ZIEL — PLATZHALTER,
-(10) PINTEREST SENDET — PLATZHALTER.
+LAUFZEIT — **ABGESCHLOSSEN und live bewiesen**, (9) DIE EINWILLIGUNG JE ZIEL —
+PLATZHALTER, (10) PINTEREST SENDET — PLATZHALTER.
 
 **NACHGEZOGEN AM 2026-08-08 — AUS EINER SCHEIBE WURDEN DREI.** Bis dahin stand an
 Position (7) "Pinterest als erstes zusätzliches Ziel — PLATZHALTER", und darunter
@@ -39,6 +39,13 @@ darüber bleibt Wort für Wort stehen; er war richtig, als er geschrieben wurde.
 Aufklärung zum Browser-Pfad hat die achte Scheibe danach in ZWEI geteilt: das
 HERAUSLÖSEN des Beacons (achte) und die EINWILLIGUNG JE ZIEL (neunte). **Die Zahl
 der abgeschlossenen Scheiben ändert sich dadurch nicht** — nur die der offenen.
+
+**EIN DRITTES MAL NACHGEZOGEN AM 2026-08-08 — ACHT SIND ABGESCHLOSSEN, OFFEN SIND
+ZWEI.** Die achte ist am selben Tag gebaut und live bewiesen worden. **DREI STEMPEL
+FÜR EINEN TAG, und das ist kein Durcheinander, sondern die Handschrift dieses Tages:**
+Er trug zwei Aufklärungen, eine Teilung und zwei fertige Scheiben. Wer die Kette liest
+statt nur die letzte Zahl, sieht die Reihenfolge — wer nur die Zahl liest, hält sie
+für schwankend.
 
 Die verbleibenden zwei sind KEINE Umsortierung derselben Arbeit und auch keine
 Verfeinerung eines zu grossen Zuschnitts: Die Aufklärung vom 2026-08-08 hat einen
@@ -4826,46 +4833,258 @@ ausschliesslich Zeichenketten. **Was diese Scheibe anfasst, wird AUSGEFÜHRT
 geprüft.** Ein Umbau, der den Rumpf syntaktisch erhält und semantisch verschiebt,
 wäre in einer Zeichenketten-Prüfung unsichtbar.
 
-### Sechs Verhaltens-Invarianten
+### Sechs Verhaltens-Invarianten — ABGELAUFEN
 
-1. **MIT META-PIXEL ÄNDERT SICH NICHTS.** Gleiche Reihenfolge beim Klick, gleicher
-   Draht, gleiche Kennung, gleiche Bestätigung.
-2. **DER TRACK FEUERT WEITERHIN VOR DER NAVIGATION.**
-3. **DIE KENNUNG IST DIESELBE FÜR BEACON, PIXEL UND BESTÄTIGUNG.** Ein
-   auseinanderlaufender Wert bricht den Verlustraten-Join.
-4. **DIE EINWILLIGUNG BLEIBT EIN SCHNAPPSCHUSS.** Keine zusätzliche Fragestelle —
-   heute sind es drei.
-5. **OHNE EINWILLIGUNG FÜR META GEHT WEITERHIN KEIN BEACON.** Das je Ziel zu
-   trennen ist die NEUNTE Scheibe.
-6. **DER PAGEVIEW-EMITTER BLEIBT UNBERÜHRT.**
+**ALLE SECHS SIND GEMESSEN**; ihr Ergebnis steht im Protokoll unten. Sie waren
+ANWEISUNGEN FÜR DIESEN EINEN BAU und werden hier nicht mehr im Wortlaut geführt.
+**WAS SICH FORTSETZT, steht verdichtet unter "### Was aus dieser Scheibe nach vorn
+bindet"** — und Invariante 4 steht dort in einer SCHÄRFEREN Fassung, weil ihre
+hiesige ("heute sind es drei") den zweiten Zustand verschwieg.
+**AUSDRÜCKLICH: Invariante 5 LÄUFT NICHT AB, sie wird von der NEUNTEN Scheibe
+AUFGEHOBEN** — sie ist der Zustand, den jene auflöst, und muss bis dahin gelten.
 
-**EINE FOLGE VON INVARIANTE 5, die dazugehört, weil sie sonst beim Lesen wie ein
-Fehler aussieht:** Nach dieser Scheibe wird die Conversion eines Projekts, das Meta
-gar nicht benutzt, durch METAS Einwilligungs-Schlüssel gegated. **Das ist der
-bewusst gezahlte Preis dafür, dass hier keine vierte Fragestelle entsteht** — und
-es ist genau der Zustand, den die neunte Scheibe auflöst.
+### Ausdrücklich nicht in dieser Scheibe — ABGELAUFEN, bis auf zwei
 
-### Ausdrücklich nicht in dieser Scheibe
+**WAS EINGEHALTEN WURDE, ist im Protokoll gemessen. ZWEI Punkte binden nach vorn:**
 
-- **DIE EINWILLIGUNG JE ZIEL.** Neunte.
-- **DER ZWEITE SCHLÜSSEL IM DRAHT.**
-- **DASS DER ERZEUGER DIE ZIELE ERFÄHRT.** Er braucht sie hier nicht — der Beacon
-  entsteht künftig unabhängig, nicht ziel-abhängig.
-- **DIE BESTÄTIGUNGS-MASCHINERIE.**
-- **JEDER ADAPTER.**
+- **DIE EINWILLIGUNG JE ZIEL.** Neunte — und sie ist seit diesem Bau **dringender
+  benennbar**: Ein Besucher, der Meta verbietet, bekommt jetzt auch auf einer
+  Seite OHNE Meta-Pixel keinen Beacon. Das ist der bewusst gezahlte Preis dafür,
+  dass keine vierte Fragestelle entstand.
+- **DIE BESTÄTIGUNGS-MASCHINERIE.** Sie bleibt Meta-gebunden, und damit die
+  Verlustrate. **ENTSCHEIDUNG, keine Auslassung** — sie misst Adblocking über
+  METAS Script-Load.
 
-### Was der Stufe-1-Plan beantworten MUSS — als Fragen, nicht als Vorgaben
+### Was der Stufe-1-Plan beantworten MUSSTE — ALLE FÜNF BEANTWORTET
 
-1. **Was zeigt die Verlustraten-Anzeige für ein Projekt ohne Meta?** PFLICHT, s.
-   oben. Fehlende oder falsche Kennzahl — das ist die STOPP-Frage.
-2. **Wo entsteht die Kennung künftig, und wer liest sie?** Alle drei Leser
-   benennen.
+Die Fragen bleiben im Wortlaut: Sie sind der MASSSTAB, an dem der Plan gemessen
+wurde.
+
+1. **Was zeigt die Verlustraten-Anzeige für ein Projekt ohne Meta?**
+   → **GAR NICHTS — der Neutral-Text.** Über dreiwertige Logik hergeleitet
+   (`min()` über die leere Menge liefert NULL, der Zeitvergleich wird UNKNOWN, es
+   passiert keine Zeile) und **am 2026-08-08 live gemessen.** KEIN STOPP.
+2. **Wo entsteht die Kennung künftig, und wer liest sie?**
+   → **Unverändert in `__psMetaFire`, genau einmal.** Drei Leser: `fbq`, der
+   Beacon, die Bestätigung.
 3. **Wohin wandert der Beacon-Rumpf, und was liest er dort aus dem
-   Gültigkeitsbereich?** Drei Werte, s. die tragende Abhängigkeit.
-4. **Was passiert mit dem Klick-Handler, wenn keine Meta-Laufzeit existiert?** Er
-   hängt heute eine Warnung an.
+   Gültigkeitsbereich?**
+   → **NIRGENDWOHIN.** Er bleibt, wo er ist; entfernt wurde allein seine
+   VORBEDINGUNG. Genau deshalb bleiben die drei Werte in Reichweite.
+4. **Was passiert mit dem Klick-Handler, wenn keine Meta-Laufzeit existiert?**
+   → Er hängt die Warnung an **und zusätzlich den Aufruf**, sobald es eine
+   Laufzeit gibt. Zwei unabhängige Fragen, zwei Argumente.
 5. **Welche Tests behaupten die heutige Kopplung, und welche müssen zuerst
    entstehen?**
+   → **KEINER behauptete sie.** Der Basis-Test entstand vor dem Bau und lief grün.
+
+### Was aus dieser Scheibe nach vorn bindet
+
+**DAS IST DIE VERDICHTUNG. Alles darüber ist Zeitdokument.** Acht Punkte; die
+ersten vier sind die Kandidaten des Owners, die letzten vier ergänzt.
+
+1. **DIE KENNUNG ENTSTEHT AN GENAU EINER STELLE und wird von DREI Verbrauchern
+   gelesen** — `fbq`, dem Beacon, der Bestätigung. Zwei Erzeugungsstellen brechen
+   Metas Deduplizierung UND den Verlustraten-Join, und zwar lautlos: beide Werte
+   sehen für sich gültig aus.
+2. **DIE BESTÄTIGUNG UND DAMIT DIE VERLUSTRATE BLEIBEN META-GEBUNDEN.**
+3. **BEIDE EINSETZ-ZWEIGE DES KLICK-PFADS TRAGEN DIESELBE ANWEISUNG** — der
+   `click`- UND der `auxclick`-Zweig. Der zweite ist die Stelle, die man vergisst;
+   der Mittelklick ("im neuen Tab öffnen") ist auf einer Landingpage kein Randfall.
+4. **DIE ZAHL DER FRAGESTELLEN IM ERZEUGTEN TEXT ÜBERSTEIGT DREI NIE.**
+   **RICHTIGGESTELLT GEGENÜBER DEM KANDIDATEN "bleibt bei drei":** Sie BLEIBT nicht
+   bei drei, sie ist ZUSTANDSABHÄNGIG. Mit Pixel drei (Bootstrap, Fire, Emitter),
+   ohne Pixel zwei (Fire, Emitter), ohne jede Konfiguration eine. **DREI IST DIE
+   OBERGRENZE, nicht der Wert.** Wer nur "drei" prüft, übersieht, dass die Zahl auf
+   der pixel-losen Seite von null auf eins gestiegen ist — verlangt von Invariante 5
+   und deshalb richtig, aber es steht nirgends, wenn man es nicht hinschreibt.
+5. **DIE LAUFZEIT ENTSCHEIDET SELBST, OB SIE ENTSTEHT** — Pixel ODER Beacon
+   genügt. *Ergänzt.* Wer diese Entscheidung zurück an den Aufrufer verlegt, macht
+   die Scheibe rückgängig, ohne eine Zeile zu löschen.
+6. **ZWEI UNABHÄNGIGE FRAGEN, ZWEI ARGUMENTE** in der Track-Anweisung: existiert
+   die Laufzeit, und ist ein Pixel gesetzt. *Ergänzt.* Sie fielen bis zu dieser
+   Scheibe zusammen; wer sie wieder zusammenlegt, holt die Kopplung zurück.
+7. **DIE BAU-ZEIT-BLÖCKE SIND AUF BYTE-IDENTITÄT GESCHNITTEN.** *Ergänzt, und es
+   ist der unauffälligste der acht:* Die führenden Zeilenumbrüche stehen IM Block,
+   nicht im Rahmen. Wer die Funktion umformatiert, verliert den Nachweis für
+   Invariante 1 — **lautlos, weil kein Test die Byte-Identität prüft; sie wurde
+   EINMALIG per Sonde gemessen.**
+8. **AUF DER PIXEL-LOSEN SEITE HAT DAS EINWILLIGUNGS-GATE KEINE REDUNDANZ.**
+   *Ergänzt, und für die neunte Scheibe das Wichtigste:* Mit Pixel prüft der
+   Bootstrap ein zweites Mal; ohne Pixel trägt eine einzige Wache. Wer dort etwas
+   umbaut, hat kein Netz.
+
+---
+
+### Protokoll der achten Scheibe — Vollzug und Abschluss
+
+Der Zuschnitt darüber ist der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+**DIE BUCHSTABEN IN DIESEM PROTOKOLL SIND LOKAL.**
+
+**VOLLZOGEN AM 2026-08-08 — Commit `b3c0d94`. KEINE Migration.**
+
+#### Die Live-Werte, gemeldet von Stefan am 2026-08-08
+
+Keiner davon ist abgeleitet. **ZWEI ACHSEN, ZWEI PROJEKTE, EIN DURCHGANG — und
+beide brauchten einen REPUBLISH**, weil das ausgelieferte HTML beim Publish
+entsteht.
+
+- **(1) MIT PIXEL-ID, nach Republish:** Das **PAAR** unter geteilter Kennung im
+  Events Manager, Server-Ereignis **dedupliziert**. Conversion-Zähler **+1**. Die
+  Verlustraten-Kachel blieb im gewohnten Zustand und **fiel NICHT auf den
+  Neutral-Text zurück**. **Das ist der Nachweis für Invariante 1 auf der
+  Auslieferungs-Achse.**
+- **(2) OHNE PIXEL-ID und ohne Zugangsdaten, nach Republish:** Seitenaufrufe UND
+  **Conversions erstmals server-seitig erfasst**; im Events Manager **KEINERLEI
+  Ereignis**; die Verlustraten-Kachel zeigt **weiterhin den Neutral-Text**.
+
+**EINE PRÄZISIERUNG ZU (2), weil "ohne Zugangsdaten" sonst in die Irre führt:** Der
+Beacon braucht keinen Geheimnis-Eintrag, aber er braucht einen **trackingKey** —
+und den vergibt `publishProject` über `ensureTrackingKey` **unbedingt**, bei jedem
+Publish, unabhängig von Pixel und Geheimnis. Ohne trackingKey entstünde gar keine
+Laufzeit. **Der Fall ist also "kein Pixel, kein Geheimnis, aber ein Handle", und
+das ist der Normalfall jedes je veröffentlichten Projekts.**
+
+**WARUM DER LETZTE PUNKT VON (2) DER WICHTIGSTE IST — und er ist es aus einem
+Grund, der über diesen Test hinausgeht:**
+Das Pflicht-Gate der Stufe 1 hatte über DREIWERTIGE LOGIK **hergeleitet**, dass ein
+Projekt ohne Bestätigung den Neutral-Text behält: `min()` über die leere Menge
+liefert NULL, der Zeitvergleich gegen NULL wird UNKNOWN, keine Zeile passiert die
+Bedingung, das Ergebnis ist `(0, 0, NULL)`. **Jetzt ist es GEMESSEN** — und zwar an
+einem Projekt, das erstmals Server-Zeilen **ohne Browser-Gegenstück** erzeugt, also
+genau in dem Zustand, den die Herleitung betraf.
+**UND (1) IST DIE GEGENPROBE:** Bei einem Projekt MIT Bestätigungs-Historie fiel die
+Rate NICHT zurück. **Beide Richtungen an einem Tag.** Die Projektregel verlangt für
+einen Wächter, der überwiegend Abwesenheit prüft, eine eigene Positivkontrolle —
+hier ist sie ein zweites Projekt statt eines zweiten Testfalls.
+
+#### Der Bau, gemessen am eigenen Lauf
+
+PROVENIENZ: lokale Läufe am 2026-08-08. **GRENZE:** Die Suite kennt keinen echten
+Browser und kein echtes fbevents; `sendBeacon` und `fetch` sind Stubs. Sie beweist
+Verdrahtung, Text und Wirkung im jsdom — **nicht, dass Meta die Nutzlast annimmt.**
+Das deckt allein der Live-Wert (1).
+
+- **837 Tests vorher, 851 nachher** (+14); **Testdateien unverändert 47** — keine
+  neue Datei. *Provenienz: beide Werte in derselben Sitzung gemessen.*
+- **In KEINER Bestandsdatei änderte sich eine ERWARTUNG.** Die zwei bedingt
+  freigegebenen Testdateien blieben vollständig unberührt.
+- **Die vier Gates grün:** `tsc --noEmit`, `eslint`, `vitest run`, `next build`.
+
+**DIE FORMWAHL UND IHR GRUND — der eigentliche Ertrag dieses Baus:**
+Gewählt wurde die Form, die den erzeugten Laufzeit-Text **mit gesetzter Pixel-ID
+BYTE-GLEICH lässt**: **7630 zu 7630 Bytes**, gemessen per temporärer Sonde VOR und
+NACH dem Bau, `diff` leer, die Sonde rückstandsfrei entfernt (`grep`: 0 Treffer).
+**DAMIT IST INVARIANTE 1 GEMESSEN STATT ARGUMENTIERT.**
+**DER OWNER HATTE ZUR ANDEREN FORM GENEIGT** (der Rollentausch mit dem ehrlicheren
+Namen). Die andere hätte den exportierten Bezeichner umbenannt und damit
+**dreizehn Aufrufstellen in zwei nur BEDINGT freigegebenen Dateien** bewegt — und,
+schwerer wiegend, **den billigsten Nachweis zerstört**, weil die 24
+Zeichenketten-Zusicherungen jener Dateien dann hätten nachgezogen werden müssen.
+**DER BEWEIS-GRUND STICHT DEN NAMENS-GRUND.** Die Namensfrage geht als
+Backlog-Kandidat weiter — das ist der Zweig, den die Freigabe ausdrücklich vorsah.
+
+**DER BASIS-TEST:** vor dem Bau entstanden, **GRÜN gelaufen** (82/82 in seiner
+Datei), danach vom Bau **rot gemacht — genau diese zwei und keine anderen**, und
+erst dann in einem eigenen Schritt umgedreht, mit Richtung und Datum im Kommentar.
+**Ein Test, der erst nach dem Umbau entsteht, kann nie zeigen, dass die Kopplung
+vorher bestand.**
+
+**DIE DREI MUTATIONEN, Vorhersage und Ergebnis nebeneinander:**
+
+| Mutation | Vorhersage vor dem Lauf | ERGEBNIS |
+|---|---|---|
+| **M1** Kennung getrennt erzeugen | 2 Dateien · 4–7 Tests · Erwartungen; Risiko-Achse benannt | **7 Tests in 3 Dateien.** Zahl getroffen, **Dateizahl um eins zu eng** — und die dritte war die benannte Risiko-Achse |
+| **M2** Einwilligung neu erfragen statt heben | 2 Dateien · 2–4 Tests · Erwartungen | **8 Tests in 2 Dateien.** Dateizahl getroffen, **Testzahl zu eng** — die zwei zusätzlichen sind die Fragestellen-Zähler aus DIESER Sitzung |
+| **M3** Beacon ohne Einwilligungs-Prüfung | 2 Dateien · 8–14 Tests · Erwartungen | **2 Tests in 1 Datei — ZU WEIT.** S. Punkt (a) |
+
+**KEINE Mutation blieb grün.**
+
+#### Drei benannte Punkte, die künftige Arbeit binden
+
+**(a) DERSELBE SCHUTZ KANN AUF EINEM PFAD ZWEIFACH UND AUF EINEM ANDEREN EINFACH
+VORHANDEN SEIN — UND DER EINFACHE IST DER NEUE.**
+
+**BELEG:** Die dritte Mutation entfernte die Einwilligungs-Rückkehr und traf
+trotzdem nur ZWEI Tests. Der Grund: **Mit Pixel-ID prüft der Bootstrap ein zweites
+Mal** — fällt die erste Wache, hält die zweite, und die Bestandstests messen genau
+diesen Pfad. **Ohne Pixel-ID gibt es die zweite Wache nicht**, weil der Bootstrap
+dort gar nicht entsteht.
+**BEIDE Tests, die die Mutation fangen, sind in derselben Sitzung entstanden. Ohne
+sie wäre sie VOLLSTÄNDIG GRÜN geblieben** — der Schutz wäre nachweislos gewesen,
+obwohl er existiert.
+**DIE FIGUR ÜBER DEN FALL HINAUS:** Wer einen Schutz auf einem redundanten Pfad
+misst, misst die Redundanz. Die Frage lautet nicht "ist er gedeckt", sondern **"auf
+WELCHEM Pfad ist er gedeckt"** — und der ungeschützteste ist meist der neueste.
+
+**(b) EINE ZAHL, DIE GLEICH BLEIBT, KANN AN EINER STELLE STEIGEN UND AN EINER
+ANDEREN NICHT EXISTIEREN.**
+
+**BELEG:** Die formale Gegenprobe erwartete "drei zu drei" Fragestellen. Für eine
+Seite MIT Pixel stimmt das exakt. Für eine Seite OHNE Pixel geht die Zahl **von
+null auf eins** — es ist **keine vierte** Fragestelle, sondern **dieselbe, die es
+dort nie gab**, und sie ist von der Einwilligungs-Invariante ZWINGEND verlangt.
+**EINE ERWARTUNG, DIE NUR DEN EINEN ZUSTAND NENNT, VERSCHWEIGT DEN ANDEREN** — und
+zwar so, dass die Prüfung aufgeht. Die Gegenprobe war nicht falsch, sie war
+UNVOLLSTÄNDIG; das ist schwerer zu bemerken.
+
+**(c) DIE ERSTE ZU PESSIMISTISCHE VORHERSAGE DIESER PHASE.**
+
+Sechs Vorhersagen waren zu eng, **alle in dieselbe Richtung**; diese lag **zu
+weit** — und in derselben Runde lagen zwei weitere wieder zu eng. **Der Grund ist
+benennbar und wiederholbar:** Vorhergesagt war eine Erwartungsänderung, die nur
+einträte, wenn eine BESTEHENDE Zusage mit umgeschrieben würde (die
+`console.warn`-Zusage). **Genau das wurde bewusst NICHT getan** — sie blieb eine
+wahre Aussage, ihre Streichung wäre eine zweite Wirkung gewesen.
+**EINE VORHERSAGE ÜBER EINEN BAU, DESSEN UMFANG NOCH OFFEN IST, MISST DEN WEITESTEN
+DENKBAREN BAU, NICHT DEN GEWÄHLTEN.** Das erklärt die Richtung, nicht die Serie:
+Die sechs zu engen entstanden beim ZÄHLEN, diese eine beim SCHÄTZEN DES UMFANGS.
+**Zwei verschiedene Fehlerquellen, die man nicht in eine Statistik werfen darf.**
+
+#### Was diese Scheibe ausdrücklich NICHT geleistet hat
+
+- **DIE EINWILLIGUNG JE ZIEL.** Neunte. **Ein Besucher, der Meta verbietet, bekommt
+  auf BEIDEN Seiten keinen Beacon — auch auf der pixel-losen.** Der bewusst
+  gezahlte Preis dafür, dass keine vierte Fragestelle entstand.
+- **ES SENDET NICHTS AN EIN NEUES ZIEL.**
+- **BESTEHENDE SEITEN PROFITIEREN NICHT.** Ohne Republish bleibt jede ausgelieferte
+  Seite exakt wie zuvor — der Serve-Pfad injiziert nichts.
+- **DIE BESTÄTIGUNGS-MASCHINERIE BLEIBT META-GEBUNDEN**, und damit die Verlustrate.
+  Entscheidung, keine Auslassung.
+- **DIE KENNUNGS-IDENTITÄT ÜBER ALLE DREI VERBRAUCHER ist live nur zu ZWEIEN
+  sichtbar** (das deduplizierte Paar). Die dritte, die Bestätigung, wirkt nur
+  mittelbar über die Verlustrate und erst über Tage.
+
+### Zwei Backlog-Kandidaten aus der achten Scheibe — BENANNT, NICHT GEPLANT
+
+**PROVENIENZ: am Code gemessen am 2026-08-08, nach dem Bau.** Kein Termin, keine
+Zusage.
+
+**(1) VIER KOMMENTARSTELLEN IN ZWEI DATEIEN SIND ÜBERHOLT — ALLE AUS DERSELBEN
+URSACHE.** Sie beschreiben die Pixel-ID als VORBEDINGUNG des Beacons: der Kopf der
+Laufzeit-Funktion ("wird NUR gesplicet, wenn eine Pixel-ID gesetzt ist"), der
+Dateikopf ("ISOLIERTE Einheit"), die Klammer am Beacon-Erzeuger ("Vorbedingung wie
+die Pixel-ID") und der Options-Kommentar der Engine ("Track-Aktion ist ein no-op").
+**DAZU DIE NAMENSFRAGE:** Zwei Symbole tragen Meta im Namen und decken eine Rolle
+ab, die nicht mehr nur Meta ist.
+**EIN GEGENSTAND, EINE EIGENE RUNDE** — und der Grund, sie zusammenzuhalten: Wer
+die Kommentare richtigstellt, ohne die Namen zu entscheiden, schreibt viermal
+"trotz des Namens".
+
+**(2) ZUSTAND 2 — DIE STEIGENDE, FALSCHE VERLUSTRATE.** Ein Projekt, das einmal
+ein Meta-Pixel hatte und es entfernt hat, trägt einen echten Stichtag. Die neuen
+Server-Zeilen passieren dessen Zeitfilter, haben aber **strukturell kein
+Browser-Gegenstück** — sie erhöhen den Nenner, nie den Zähler. **Die angezeigte
+Rate steigt gegen 100 % und behauptet Adblocking, wo kein Pixel existiert, das
+geblockt werden könnte.**
+**AM 2026-08-08 LIVE NICHT EINGETRETEN — UND DAS IST KEIN FREISPRUCH:** Der
+Live-Test prüfte ein Projekt OHNE diese Historie. **Er kann den Zustand nicht
+ausschliessen, nur zeigen, dass er nicht der Normalfall ist.**
+**ER ENTSTEHT NICHT DURCH DIESE SCHEIBE, WIRD VON IHR ABER SICHTBAR.** Die
+Reparatur läge in der Auswertung — also in einer Migration, die diese Scheibe
+ausschloss.
+**WAS AM CODE NICHT ENTSCHEIDBAR IST:** wie viele Projekte diesen Zustand haben.
+Das braucht eine Datenbank-Abfrage.
 
 ---
 

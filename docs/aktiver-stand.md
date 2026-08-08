@@ -21,7 +21,15 @@ reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) die ZUGANGSDATEN JE ZI
 — **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (7) die AUFLÖSUNG TRÄGT
 MEHRERE ZIELE — **ABGESCHLOSSEN und live bewiesen**, (8) DER BEACON VERLÄSST METAS
 LAUFZEIT — **ABGESCHLOSSEN und live bewiesen**, (9) DIE EINWILLIGUNG JE ZIEL —
-PLATZHALTER, (10) PINTEREST SENDET — PLATZHALTER.
+**HÄLFTE A ZUGESCHNITTEN, HÄLFTE B PLATZHALTER**, (10) PINTEREST SENDET —
+PLATZHALTER.
+
+**NACHGEZOGEN AM 2026-08-08 — DIE NEUNTE FÄHRT IN ZWEI HÄLFTEN.** Sie stand hier
+als "PLATZHALTER". **DIE ZAHL DER OFFENEN SCHEIBEN ÄNDERT SICH DADURCH NICHT** —
+eine Scheibe in zwei Hälften bleibt eine Scheibe, genau wie bei der sechsten.
+Warum sie teilt: Die Server-Seite ist ohne den Erzeuger beweisbar, und in der
+Aufklärung ist ein Befund aufgetaucht, der ALLEIN auf der Server-Seite liegt und
+für sich behoben werden kann.
 
 **NACHGEZOGEN AM 2026-08-08 — AUS EINER SCHEIBE WURDEN DREI.** Bis dahin stand an
 Position (7) "Pinterest als erstes zusätzliches Ziel — PLATZHALTER", und darunter
@@ -5088,19 +5096,189 @@ Das braucht eine Datenbank-Abfrage.
 
 ---
 
-## Die neunte Scheibe — DIE EINWILLIGUNG JE ZIEL (Platzhalter)
+## Die neunte Scheibe — DIE EINWILLIGUNG JE ZIEL (Zuschnitt der HÄLFTE A)
+
+**ÜBERSCHRIFTEN-STEMPEL, 2026-08-08:** Diese Überschrift trug bis heute
+"(Platzhalter)". Sie ist umbenannt, weil die HÄLFTE A jetzt zugeschnitten ist.
+**KEIN Zeiger im Dokument verwies auf die alte Fassung** (geprüft: die Zeichenkette
+"Die neunte Scheibe" kam genau einmal vor, nämlich in der Überschrift selbst) — die
+Umbenennung bricht also nichts.
 
 **ZWECK:** Ein Beacon kann für ein Ziel erlaubt und für ein anderes verboten sein —
 damit das Wire-Feld der fünften Scheibe seinen Anwendungsfall erreicht.
 
-**KEIN ZUSCHNITT.** **HIER FÄLLT DIE ENTSCHEIDUNG ZWISCHEN DEN BEIDEN WEGEN** (eine
-Ausführung gegen getrennte Ausführungen), die der Befund-Block benennt. **IHR PREIS
-SIND VIER WERTE, die zwischen zwei Ziehungen des Betreiber-Hooks auseinanderlaufen
-können** — am Code gemessen am 2026-08-08: der Hook-Wert selbst (er wird bei jeder
-Frage neu gelesen), der Rückgabewert eines Funktions-Hooks (fremder Code, nicht zu
-Determinismus verpflichtet), der Wurf-Ausgang (ein Wurf beim zweiten Aufruf liefert
-`false`), und die FORM des Wertes (ein Wechsel zwischen `true` und einem Objekt
-ändert die ausgewertete Regel).
+**DIE SCHEIBE FÄHRT IN ZWEI HÄLFTEN**, so wie die sechste. **HÄLFTE A ist reine
+Server-Seite**: der Handler urteilt je Ziel, und die Alt-Seiten-Regel wird
+ziel-abhängig. **HÄLFTE B ist der Draht** und bleibt Platzhalter.
+
+### Die gemessene Ausgangslage — Provenienz: Aufklärung vom 2026-08-08
+
+**PROVENIENZ UND GRENZE für diesen ganzen Block:** read-only am Repo gemessen, an
+diesem einen Tag, am damaligen Stand. **KEINE Live-Messung, KEINE Datenbank-Abfrage.**
+Ändert sich der Code, ist jede Zahl hier neu zu erheben.
+
+- **DER LESER BRAUCHT KEINE ÄNDERUNG.** `consentAllows` ist bereits
+  **ziel-parametrisiert**: es nimmt den Zielschlüssel als Argument. Überzählige
+  Schlüssel im Feld **ignoriert** es (es liest ausschliesslich `wire[target]`), ein
+  fehlender Schlüssel ergibt `undefined === true` und damit **fail-closed**. **Was
+  fehlt, ist ein zweiter AUFRUF, keine zweite Implementierung.**
+- **DIE SERVER-SEITE IST OHNE DEN ERZEUGER BEWEISBAR.** In `ingest.consent.test.ts`
+  entsteht der Body **von Hand**; der Test braucht weder `buildCapiBeaconStatement`
+  noch einen erzeugten Text. **Das ist der Grund, warum die Teilung überhaupt möglich
+  ist.**
+- **DIE ZAHL DER FRAGESTELLEN UND DIE ZAHL DER HOOK-AUFRUFE SIND VERSCHIEDENE
+  GRÖSSEN.** Mit Pixel stehen **drei** Fragestellen im Text (`__psMetaInit`,
+  `__psMetaFire`, der PageView-Emitter), aber es fallen **zwei** Aufrufe beim ERSTEN
+  Klick und **einer** bei jedem weiteren — weil `__psMetaInit` mit
+  `if (__psFbReady) return true;` **vor** der Frage zurückkehrt. **Der Aufruf-Wert
+  schwankt schon heute je nach Klick-Nummer.** Wer eine Text-Zusicherung als
+  Aussage über Aufrufe liest, prüft etwas anderes.
+- **N URTEILE SIND HEUTE N ZIEHUNGEN.** `buildConsentRuntime` erzeugt eine Funktion,
+  die **genau einen** Schlüssel nimmt und **genau einen** Boolean liefert — und die
+  den Rohwert des Betreiber-Hooks **bei jedem Aufruf neu liest**. N Urteile heissen
+  bei dieser Signatur N Ziehungen.
+- **DIE REDUNDANZ SKALIERT NICHT MIT.** Die zweite Prüfung liegt in `__psMetaInit`
+  und fragt nach `META_CONSENT_TARGET` — sie ist **Meta-eigen** und deckt ein zweites
+  Ziel nicht. Und der Total-Abbruch `if (!__c) return;`, der heute alles deckt, **muss
+  ersetzt werden**, sobald ein einzelnes Nein nicht mehr alles beenden darf. **Aus
+  einer Wache für alles werden N Wachen für je eines.**
+- **GENAU EIN TEST ZÄHLT HOOK-AUFRUFE** — der Aufruf-Zähler im Block "Invariante 5"
+  in `generate.test.ts`, und **er ist aus der achten Scheibe**, also vom selben Tag.
+  Alles andere zählt **Fundstellen im Text**.
+- **KEIN TEST DECKT EINEN HOOK, DER BEI AUFEINANDERFOLGENDEN AUFRUFEN VERSCHIEDEN
+  ANTWORTET.** Gemessen über `mockReturnValueOnce`, Aufrufzähler und verwandte Muster
+  in `generate.test.ts`, `src/lib/tracking/` und `ingest.consent.test.ts`: **kein
+  Treffer.** **Die vier divergenzfähigen Werte sind von keinem Test berührt** — sie
+  sind der Preis der HÄLFTE B, s. dort.
+- **`configuredTargets` IST BEI JEDEM FEHLER LEER, NICHT `null`.** Fehlende Sitzung,
+  fremdes Projekt, DB-Fehler — `listConfiguredTargets` endet in allen Fällen in einer
+  leeren Liste. **"Kein Ziel konfiguriert" und "ich weiss es nicht" sind an diesem
+  Wert nicht unterscheidbar.** Das ist am Code als benannte Schwäche kommentiert, kein
+  neuer Befund — es bindet aber die HÄLFTE B, nicht die HÄLFTE A.
+
+### DER BEFUND, DER DIE HÄLFTE A TRÄGT — DIE ALT-SEITEN-REGEL ERLAUBT, WAS SIE VERBIETEN MÜSSTE
+
+**Eine Seite, die VOR der fünften Scheibe publiziert wurde, trägt das Wire-Feld
+ÜBERHAUPT NICHT.** Für sie greift die erste Klausel von `consentAllows`: fehlt das
+Feld, lautet die Antwort **ERLAUBT — und zwar für JEDES Ziel, nach dem gefragt wird.**
+**Der Besucher wurde über das neue Ziel nie gefragt, und der Server würde forwarden.**
+
+**ABGRENZUNG, DIE DAZUGEHÖRT — DAS IST NICHT DER "REPUBLISH FEHLT"-ZUSTAND.** Der
+steht als zweiter Hinweis der fünften Scheibe im Platzhalter der zehnten und
+beschreibt eine **andere** Lage: dort trägt die Seite das Feld **mit dem alten
+Schlüssel**, der neue fehlt darin, und die Regel **verbietet KORREKT**. **Hier fehlt
+das Feld ganz, und sie erlaubt.** Zwei Zustände, die beim Lesen gleich klingen und
+gegenläufig ausgehen.
+
+**DIE FÜNFTE SCHEIBE HAT NICHT FALSCH ENTSCHIEDEN.** Zu ihrer Zeit gab es genau ein
+Ziel. **"Feld abwesend" hiess damals tatsächlich "die Seite ist älter als das Feld"**,
+und die Alternative wäre gewesen, jeder bestehenden Kundenseite lautlos den Forward zu
+nehmen — genau der Schaden, gegen den die Regel geschrieben wurde.
+
+**DIE ENTSCHEIDUNG WAR RICHTIG UND SKALIERT NICHT.** Bei N Zielen heisst abwesend
+nicht mehr "alt", sondern **"über dieses Ziel wurde nie gefragt"** — und die Regel
+macht daraus ein Ja.
+
+**WARUM DAS SCHWERER WIEGT ALS EINE FEHLENDE ZUSTELLUNG:** Es ist ein **Forward an ein
+Ziel, zu dem der Besucher nie befragt wurde** — genau das, was das Consent-Modell
+verhindern soll. Eine ausgebliebene Zustellung kostet eine Conversion; das hier
+kostet die Zusage, auf der die Einwilligung beruht.
+
+**NICHT AM CODE ENTSCHEIDBAR:** wie viele veröffentlichte Seiten kein Feld tragen. Das
+braucht eine Abfrage gegen die abgelegten Seiten. **Am Code steht nur, dass der Fall
+strukturell möglich ist** — betroffen wäre jede Seite, die vor dem Deploy der fünften
+Scheibe zuletzt publiziert wurde.
+
+### Der Zuschnitt der HÄLFTE A
+
+**ZWECK:** Der Handler urteilt **je Ziel**, und die Alt-Seiten-Regel wird
+**ziel-abhängig**. **NUR Server-Seite; der Draht trägt weiterhin einen Schlüssel.**
+
+**ENTSCHEIDUNG (OWNER, 2026-08-08) — DIE AUSNAHME HÄNGT AN DER ROLLE, NICHT AM
+ZIELTYP:** Bei **ganz fehlendem** Feld gilt **GENAU EIN** Ziel als erlaubt —
+dasjenige, für das die fünfte Scheibe den Altbestands-Fall entschieden hat. **Jedes
+weitere Ziel ist NEU und damit verboten**, unabhängig davon, wie es heisst.
+
+**BEGRÜNDUNG, warum nicht "Meta erlaubt, Rest verboten":** Das schriebe einen
+Anbieternamen als Sonderfall in eine Regel; beim dritten Ziel stünde dort eine Liste,
+die niemand mehr begründen kann. **Die Rollen-Fassung sagt einem späteren Leser, WARUM
+die Ausnahme existiert.**
+
+**VERWORFEN, und der Vollständigkeit halber benannt:** gar keine Ausnahme. Das nähme
+jeder bestehenden Kundenseite den Forward — genau das, wogegen die fünfte Scheibe
+geschrieben wurde.
+
+**WIE DAS IM CODE AUSSIEHT, ist eine Frage an den Stufe-1-Plan.** Hier steht keine
+Form, damit keine geraten wird.
+
+**WIDERSPRUCH ZUR PRÄMISSE DIESER ENTSCHEIDUNG — GEMESSEN AM 2026-08-08, GEHÖRT AN
+DEN PLAN:** Es gibt heute **KEINE Rollen-Markierung im Code**. `TRACKING_TARGETS` ist
+eine **Reihenfolge**, kein Rollenträger; die einzigen rollenhaften Namen sind
+`META_TARGET` und `META_CONSENT_TARGET`, und die tragen **den Anbieternamen**. **Die
+Auflage "ohne einen Anbieternamen als Sonderfall" verlangt also etwas, das der Code
+heute nicht anbietet** — sie ist erfüllbar, aber nicht durch Verwendung eines
+vorhandenen Merkmals. Ob "das erste Element der Liste" als Rollenträger taugt, ist
+eine Plan-Frage und **hier ausdrücklich nicht entschieden**.
+
+**DIE PRÜFUNG BLEIBT EIN SICHTBARER ZWEIG.** Der frühe Ausgang **kann nicht bleiben**
+— ein Ziel verboten und eines erlaubt darf den Handler nicht abbrechen. **WAS AN SEINE
+STELLE TRITT, ist eine Frage an den Plan, MIT der Auflage:** Die Entscheidung darf
+nicht in einem Ausdruck neben der Ziel-Adapter-Zuordnung verschwinden. **Die Regel
+dagegen steht im Code an genau dieser Stelle** — als Kommentar über der heutigen
+Prüfung in `handleIngest`.
+
+**VERHALTENS-INVARIANTEN:**
+1. **BEI EINEM ZIEL ÄNDERT SICH NICHTS.** Meta **verhält sich** wie heute, in allen
+   drei Feldzuständen: abwesend, vorhanden mit Schlüssel, vorhanden ohne.
+   **PRÄZISIERUNG, weil der Satz sonst falsch gelesen wird: im dritten Zustand
+   forwardet Meta heute NICHT** (`wire["meta"]` ist dort `undefined`). "Wie heute"
+   heisst dort also "weiterhin kein Forward", nicht "forwardet".
+2. **DIE ANTWORT BLEIBT IN JEDEM PFAD DIE LEERE 204.**
+3. **DER LESER WIRD NICHT VERÄNDERT.** Er ist bereits ziel-parametrisiert; was
+   entsteht, ist ein zweiter Aufruf.
+4. **DIE ENTSCHEIDUNG BLEIBT SICHTBAR UND EINZELN ROT FÄRBBAR.**
+5. **DER ERZEUGER WIRD NICHT ANGEFASST.** Der Draht trägt weiterhin einen Schlüssel;
+   HÄLFTE B ändert das.
+6. **DIE KREUZPROBE IST PFLICHT:** je Ziel ein Fall, in dem **GENAU DIESES** verboten
+   und **alle anderen** erlaubt sind. **Ein Test, der beide gleichzeitig verbietet,
+   wäre auch bei VERTAUSCHTEN Wachen grün.**
+
+**AUSDRÜCKLICH NICHT IN HÄLFTE A:**
+- **DER DRAHT MIT N SCHLÜSSELN**, beide Enden.
+- **DIE ERSETZUNG VON INVARIANTE 5 DER ACHTEN SCHEIBE.**
+- **JEDE ÄNDERUNG AN DER AUSWERTUNGSREGEL.**
+- **JEDER ADAPTER.**
+
+**EINE FOLGE, DIE IM AUFTRAG NICHT STAND UND VOR DEM PLAN BEKANNT SEIN MUSS:** Weil
+der Draht unverändert **einen** Schlüssel trägt (Invariante 5) und die neue Ausnahme
+das zweite Ziel auch bei ganz fehlendem Feld verbietet, ist ein zweites Ziel **nach
+HÄLFTE A auf JEDER Seite unerreichbar** — in allen drei Feldzuständen. **Das ist kein
+Fehler, sondern die beabsichtigte fail-closed-Lage**; es heisst aber, dass HÄLFTE A
+**live nichts Neues zeigen kann** ausser "Meta unverändert". Derselbe Nachweis-Zuschnitt
+wie bei der siebten Scheibe.
+
+### Was der Stufe-1-Plan der HÄLFTE A beantworten MUSS
+
+- **Woran erkennt der Code das EINE Ziel mit Altbestands-Rolle**, ohne einen
+  Anbieternamen als Sonderfall zu führen? (S. den Widerspruch oben: ein vorhandenes
+  Merkmal dafür gibt es nicht.)
+- **Was tritt an die Stelle des frühen Ausgangs**, ohne die Sichtbarkeit zu verlieren?
+- **Wie viele veröffentlichte Seiten tragen kein Feld?** Wenn nicht messbar:
+  **ausdrücklich sagen**, statt zu schätzen.
+- **Welche bestehenden Tests behaupten heute das Verhalten bei ganz fehlendem Feld**,
+  und welche werden durch diese Hälfte rot?
+
+### Die HÄLFTE B — DER DRAHT TRÄGT N SCHLÜSSEL (Platzhalter)
+
+**GEGENSTAND:** Der Draht trägt N Schlüssel aus **EINER** Ziehung, und **Invariante 5
+der achten Scheibe wird ersetzt**.
+
+**IHR PREIS SIND VIER WERTE, die zwischen zwei Ziehungen des Betreiber-Hooks
+auseinanderlaufen können** — am Code gemessen am 2026-08-08: der Hook-Wert selbst (er
+wird bei jeder Frage neu gelesen), der Rückgabewert eines Funktions-Hooks (fremder
+Code, nicht zu Determinismus verpflichtet), der Wurf-Ausgang (ein Wurf beim zweiten
+Aufruf liefert `false`), und die FORM des Wertes (ein Wechsel zwischen `true` und einem
+Objekt ändert die ausgewertete Regel).
 
 ---
 
@@ -5505,3 +5683,58 @@ die Absolutwerte sind eine Untergrenze.
 umzuschreiben. Die achte Scheibe trägt bereits die Auflage "AUSFÜHREN STATT LESEN"
 für das, was SIE anfasst. Der Kandidat betrifft den REST — die Zusicherungen, die
 sie nicht berührt und die weiterhin nur den Wortlaut prüfen.
+
+---
+
+## Zwei Backlog-Kandidaten aus der Aufklärung zur EINWILLIGUNG JE ZIEL — BENANNT, NICHT GEPLANT
+
+**EIGENE SEKTION, und der Grund ist derselbe wie beim Abschnitt darüber:** auch
+diese Aufklärung fand am 2026-08-08 statt. **Drei Aufklärungen dieser Phase tragen
+inzwischen dasselbe Datum** — Auflösung, Browser-Pfad, Einwilligung je Ziel. Sie sind
+am **Gegenstand** zu unterscheiden, nie am Datum. **PROVENIENZ: am Repo gemessen am
+2026-08-08 (read-only).** Kein Termin, keine Zusage.
+
+### (1) ZWEI VERDICHTUNGEN TRAGEN DIESELBE UNTERÜBERSCHRIFT
+
+**"### Was aus dieser Scheibe nach vorn bindet" kommt in diesem Dokument ZWEIMAL
+vor** — einmal in der siebten, einmal in der achten Scheibe.
+
+**WARUM DAS EIN MANGEL IST UND KEINE SCHÖNHEITSFRAGE:** Beide Verdichtungen sind
+**Pflicht-Lesestoff** eines Auftrag-0-Gates. Ein Gate, das "die Verdichtung der
+ACHTEN Scheibe" verlangt, benennt damit einen Anker, den es zweimal gibt — die
+richtige Fundstelle liess sich nur über ihren **Abschnittsbereich** isolieren, nicht
+über den Titel. **Eine Überschrift, die nur über ihren Abschnittsbereich auffindbar
+ist, ist kein Anker.**
+
+**REAL AUFGETRETEN am 2026-08-08**, im Gate zur Aufklärung dieser Scheibe. Der Griff
+ging nicht daneben — er kostete einen zusätzlichen Schritt, und beim nächsten Mal
+kann er danebengehen.
+
+**DIE ERWARTBARE FEHLERFIGUR:** ein Gate liest die Verdichtung der **falschen**
+Scheibe und meldet das Gate trotzdem als erfüllt. Beide Texte sehen gleich aus und
+enthalten beide Bindungen — die Verwechslung wäre **nicht am Ergebnis erkennbar**.
+
+**WAS ER VERLANGT UND WAS NICHT:** Er verlangt **eindeutige Verdichtungs-Titel**. Er
+verlangt **NICHT**, die Verdichtungen selbst anzufassen, und **NICHT**, andere
+gleichnamige Unterüberschriften zu vereinheitlichen. **BINDET DIE PROJEKTREGEL "DER
+HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER" ein** — hier auf ihrer
+Doku-Seite: ein Anker taugt nur, wenn er **eindeutig** ist.
+
+### (2) KEIN TEST DECKT EINEN HOOK, DER VERSCHIEDEN ANTWORTET
+
+**Kein Test der Suite deckt einen Betreiber-Hook, der bei aufeinanderfolgenden
+Aufrufen VERSCHIEDEN antwortet.**
+
+**GEMESSEN** über `mockReturnValueOnce`, Aufrufzähler und verwandte Muster in
+`generate.test.ts`, `src/lib/tracking/` und `ingest.consent.test.ts`: **kein Treffer.**
+**GRENZE:** gemessen über diese Muster, an diesem Tag; eine anders geschriebene
+Divergenz-Fixture wäre nicht mitgezählt worden.
+
+**WARUM DAS GENAU HIER ZÄHLT:** Es ist der Preis, den die **HÄLFTE B** ausdrücklich
+als ihre tragende Frage führt — die vier divergenzfähigen Werte. **Sie sind heute von
+keinem Test berührt.**
+
+**DER KANDIDAT IST NICHT DIE HÄLFTE B.** Er steht daneben und gilt **auch dann**, wenn
+die Hälfte B den Draht auf eine einzige Ziehung umstellt: Solange **irgendein**
+erzeugter Text den Hook mehr als einmal fragt — und mit Pixel tut er das heute beim
+ersten Klick —, ist die Divergenz möglich und ungedeckt.

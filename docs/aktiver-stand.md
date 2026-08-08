@@ -5268,6 +5268,313 @@ wie bei der siebten Scheibe.
 - **Welche bestehenden Tests behaupten heute das Verhalten bei ganz fehlendem Feld**,
   und welche werden durch diese Hälfte rot?
 
+### Protokoll der neunten Scheibe, HÄLFTE A — Vollzug (die Scheibe ist NICHT abgeschlossen)
+
+**DIES IST EIN HALBES PROTOKOLL.** Die HÄLFTE B — der Draht mit N Schlüsseln — steht
+aus; ihr Platzhalter folgt unmittelbar darunter. **Was hier abgeschlossen ist, ist die
+SERVER-SEITE**: der Handler urteilt je Ziel, und die Alt-Seiten-Regel ist
+ziel-abhängig. **Dieselbe Handschrift wie bei der sechsten Scheibe** — solange die
+zweite Hälfte fehlt, trägt die Überschrift es sichtbar mit.
+
+**GEBAUT AM 2026-08-08**, freigegeben auf Basis des Stufe-1-Plans. **VIER Dateien**,
+Commit `feat(consent): die Einwilligung wird je Ziel geprueft`:
+`src/lib/capi/ingest.ts` (geändert), `src/lib/tracking/consent-targets.ts` (neu),
+`src/lib/tracking/consent-targets.test.ts` (neu),
+`src/lib/capi/ingest.consent-targets.test.ts` (neu).
+
+#### Die Live-Werte, gemeldet von Stefan am 2026-08-08
+
+**PROVENIENZ: Meldung von Stefan aus dem Betrieb. NICHT von mir gemessen, nicht
+nachgeprüft.**
+
+- Bestehendes Projekt mit Pixel-ID und hinterlegten Zugangsdaten, **OHNE Republish**,
+  direkt nach dem Deploy.
+- Conversion **mit** Einwilligung ausgelöst.
+- Im Events Manager als **"Empfangen von: Server"** gelistet, **dedupliziertes Paar**
+  unter geteilter Kennung.
+- Der **Server-Ereignis-Zähler stieg um eins**.
+
+**WARUM "KEIN REPUBLISH" DIE GANZE AUSSAGEKRAFT TRÄGT — sofern die Voraussetzung
+zutrifft, s. den Absatz danach:** Eine Seite, die nicht neu veröffentlicht wurde, trägt
+ihr **altes** HTML. Ist das ein HTML ohne Wire-Feld, ist das genau der Zustand, für den
+die Rollen-Regel entschieden wurde. **Hätte die Rolle das falsche Ziel getroffen, wäre
+der Forward LAUTLOS ausgeblieben** — unveränderte leere 204, weiterlaufende
+Browser-Ereignisse, nichts, was Alarm schlägt. **Das ist die einzige Art, wie diese
+Hälfte real hätte schaden können.**
+
+**WARUM DIE ZWEITE ANGABE DAZUGEHÖRT — und hier PRÄZISIERE ich die Formulierung des
+Auftrags, statt sie zu übernehmen:** Der Auftrag sagt, *"der Zähler trennt Forward von
+Persist"*. **Das kann der Zähler nicht allein.** Er zählt Zeilen in `events` mit
+`source='server'` — er misst also den **PERSIST**. Den **FORWARD** misst
+ausschliesslich der Events Manager. **Die Trennung entsteht erst aus dem PAAR:**
+- Forward tot, Persist heil -> Events Manager zeigt nichts, **der Zähler steigt
+  trotzdem**.
+- Persist tot, Forward heil -> Events Manager zeigt "Server", **der Zähler bleibt
+  stehen**.
+
+**WARUM DIESE PRÄZISIERUNG KEINE HAARSPALTEREI IST:** Wer den Satz in seiner
+Kurzfassung liest, könnte den Events-Manager-Schritt später als redundant streichen und
+den Zähler behalten — **und der Zähler steigt bei totem Forward exakt gleich.** Der
+Satz des Auftrags stimmt in seiner ABSICHT (am Statuscode sähen beide Fehlschläge
+identisch aus, deshalb braucht es eine nachgelagerte Beobachtung) und ist in seiner
+ZUSCHREIBUNG zu grosszügig. Beides steht hier, damit die nächste Live-Anleitung beide
+Sonden behält.
+
+#### Die Grenze des Live-Tests — WELCHEN der zwei Zustände er getroffen hat, ist NICHT festgehalten
+
+**WIDERSPRUCH ZUR PRÄMISSE, und er gehört zwingend hierher, weil das Protokoll sonst
+mehr behauptet als der Lauf hergibt.**
+
+Der Auftrag setzt voraus, die Seite habe ihr altes HTML **ohne** Wire-Feld getragen.
+**Das ist eine ABLEITUNG aus "kein Republish", keine Beobachtung** — und sie hält nur,
+wenn die Seite **vor** dem Deploy der fünften Scheibe zuletzt veröffentlicht wurde. War
+sie danach publiziert, trägt ihr HTML das Feld **mit** dem Meta-Schlüssel, denn das
+Projekt hat eine Pixel-ID und `buildCapiBeaconStatement` setzt es dann.
+
+**UND JETZT DER PUNKT: BEIDE ZUSTÄNDE ERZEUGEN DIESELBE BEOBACHTUNG.** Die Conversion
+wurde **mit** Einwilligung ausgelöst:
+- **Feld abwesend** -> die Altbestands-Rolle erlaubt Meta -> Forward.
+- **Feld vorhanden mit `meta: true`** -> der Leser erlaubt Meta -> Forward.
+
+**Der Events Manager zeigt in beiden Fällen dasselbe.** Der Lauf beweist damit
+**zweifelsfrei die eine Achse, die er beweisen sollte — "Meta unverändert"** —, aber
+**er sagt nicht, welchen der beiden Zweige er durchlaufen hat.** Wenn er den
+Vorhandenen durchlief, ist die Rollen-Regel live **nicht** angefasst worden.
+
+**WAS DAS ENTSCHIEDE, falls es je gebraucht wird:** ein Blick in den Quelltext der
+ausgelieferten Seite (trägt sie den Feldnamen aus `CONSENT_WIRE_FIELD`?) **oder** das
+Datum der letzten Veröffentlichung gegen das Deploy-Datum der fünften Scheibe. **Beides
+ist nicht erhoben worden**, und ich trage es nicht nach, weil ich es nicht messen kann.
+
+**WARUM DAS DEN VOLLZUG NICHT UMSTÖSST:** Die zugesagte Achse war "Meta unverändert",
+und die ist erfüllt. **Die Rollen-Regel selbst ist per Test bewiesen** (A1/A2, M1, M2) —
+und das war von Anfang an so zugeschnitten, weil der Live-Test nach dieser Hälfte
+strukturell nichts Neues zeigen kann. **Es ist dieselbe Lektion wie in Phase 9(c):** Ein
+grobes Live-Instrument trifft oft mehrere Zustände gleichzeitig, und welchen es getroffen
+hat, muss man SEPARAT festhalten — sonst liest ein späterer Leser einen Beweis, den der
+Lauf nicht geführt hat.
+
+#### Der Bau, gemessen am eigenen Lauf
+
+**PROVENIENZ: von mir gemessen am 2026-08-08 auf diesem Rechner, an diesem Codestand,
+per `npx vitest run` bzw. `npx tsc --noEmit`. GRENZE: ein Lauf, keine Wiederholung —
+und die Zahlen veralten mit der nächsten Testdatei.**
+
+| | Dateien | Tests |
+|---|---|---|
+| vorher | 47 | **851** |
+| nachher | 49 | **878** (+27) |
+
+**KEIN BESTANDSTEST ROT.** Die +27 sind ausschliesslich neu: **6** Daten-Wächter in
+`consent-targets.test.ts`, **21** in `ingest.consent-targets.test.ts`. Typprüfung
+sauber.
+
+**DIE VIER MUTATIONEN — Vorhersage VOR dem Lauf, dann Ergebnis:**
+
+| | Mutation | Vorhersage | Ergebnis |
+|---|---|---|---|
+| **M1** | Ausnahme auf ALLE Ziele ausgedehnt | genau 2 (A1, "Rollen-Ziel nicht aufgelöst") | **2, exakt diese** |
+| **M2** | Ausnahme ganz entfernt | breit; Klasse benannt, Einzelzahl ausdrücklich NICHT | **39 in 8 Dateien** |
+| **M3** | Wachen vertauscht | genau 6, davon **2 im Bestand** | **6, exakt diese** |
+| **M4** | leere-Menge-Ausgang entfernt | genau 1 | **1, exakt dieser** |
+
+**KEINE MUTATION BLIEB GRÜN.** M4 fällt auf **genau einen** Test — er ist damit ein
+Einzelstück und trägt das in seinem Kommentar.
+
+#### Die schärfste Mutation — vertauschte Wachen ERZEUGEN einen Forward
+
+**M3 ist der wertvollste Lauf dieser Hälfte, und der Grund ist nicht die Trefferzahl.**
+
+Vertauscht man die Wachen (Ziel A wird gegen den Schlüssel von B geprüft), fallen
+erwartungsgemäss die zwei Kreuzproben. **Zusätzlich fallen ZWEI BESTANDSTESTS in
+`ingest.consent.test.ts`**, und der zweite ist der scharfe:
+
+- **`(2) forwardet, und die Meta-Nutzlast traegt das Signal NICHT`** — Meta läse
+  Pinterests fehlenden Schlüssel und **verhinderte** einen Forward, den es geben muss.
+- **`(4) fremder Schluessel -> 204 ohne Forward`** — der Draht trägt
+  `{ pinterest: true }`, Metas Schlüssel fehlt. Vertauscht liest Meta Pinterests `true`
+  und **FORWARDET**.
+
+**DAS IST DIE AUSSAGE: Eine vertauschte Wache verhindert nicht nur einen Forward, sie
+ERZEUGT einen, den es nicht geben darf** — ein Server-Ereignis an ein Ziel, für das der
+Besucher ausdrücklich einem ANDEREN zugestimmt hat. **Der symmetrische Fall (beide
+verboten) ist gegen diese Vertauschung blind**; nur ein Fall, in dem GENAU EINES
+verboten ist, trennt die Wachen. Genau das verlangt Invariante 6, und genau deshalb
+steht der blinde Fall im Test mit dem Kommentar, dass er kein Beweis ist.
+
+**UND ES WAR VORHERGESAGT** — beide Bestandstests standen namentlich in der
+M3-Vorhersage, bevor der Lauf startete.
+
+#### Die M2-Vorhersage war ZU ENG und trotzdem KALIBRIERT
+
+**GEMESSEN: 39 rote Tests in ACHT Dateien. Vorhergesagt waren SIEBEN Dateien** —
+`ingest.confirm.test.ts` fehlte in der M2-Liste (dort sind es die Gegenproben "dieselbe
+Conversion OHNE Marker forwardet").
+
+**WARUM DAS TROTZDEM KEIN FEHLSCHLAG IST — drei Gründe, und sie gelten nur zusammen:**
+1. **DIE KLASSE WAR VORAB BENANNT:** die Fixtures, die still an "abwesend = erlaubt"
+   hängen. Sie standen im Stufe-1-Plan namentlich aufgezählt, `ingest.confirm.test.ts`
+   **eingeschlossen**.
+2. **DIE EINZELZAHL WAR AUSDRÜCKLICH NICHT VORHERGESAGT** — der Plan schrieb "ich nenne
+   die Klasse, nicht die Einzelzahl".
+3. **DIE ABWEICHUNG LIEGT INNERHALB DIESER KLASSE**, nicht ausserhalb.
+
+**UND DER PLAN HATTE DIE RICHTUNG DES FEHLERS ANGESAGT:** Auf die Frage, welche der
+beiden Fehlerquellen hier die wahrscheinlichere sei, stand dort **"zu eng beim ZÄHLEN —
+deutlich"**, mit der Begründung, dass die Frage eine Zählfrage ist und zwei Testebenen
+plus die stillen Fixtures gleichzeitig hängen. **Genau so ist es eingetreten.**
+
+**WAS DAS VON DEN SECHS FÄLLEN DAVOR UNTERSCHEIDET:** Dort war die Unschärfe
+**unbenannt** — die Vorhersage klang bestimmt und war es nicht.
+**PROVENIENZ DER ZAHLEN "SECHS" UND "SIEBEN": vom Architekten benannt (sechs zu eng beim
+ZÄHLEN, eine zu weit beim SCHÄTZEN DES UMFANGS). Ich habe sie NICHT am Dokument
+nachgezählt** und trage sie als Fremdangabe, nicht als Messung.
+
+**S4 (eine Mutation trifft mehr als vorhergesagt) habe ich als NICHT ausgelöst gewertet
+und NICHT nachgebessert** — kein Test wurde nach dem Lauf angepasst.
+
+#### Drei benannte Punkte, die künftige Arbeit binden
+
+**(a) EINE REGEL KANN RICHTIG SEIN UND NICHT SKALIEREN — UND DER BRUCH ZEIGT SICH NICHT
+AN IHR, SONDERN AN IHRER BEGRÜNDUNG.**
+"Feld abwesend heisst erlaubt" war begründet mit "die Seite ist älter als das Feld". Bei
+EINEM Ziel deckten sich Regel und Begründung vollständig. Beim zweiten fallen sie
+auseinander: **Die Regel gilt unverändert weiter, während ihr Grund sie nicht mehr
+trägt** — "abwesend" heisst jetzt für ein Ziel "alte Seite" und für ein anderes "nie
+gefragt".
+**WER PRÜFEN WILL, OB EINE REGEL SKALIERT, PRÜFT IHRE BEGRÜNDUNG, NICHT IHREN
+WORTLAUT.** Am Wortlaut war nichts zu sehen; er war bis zuletzt korrekt formuliert.
+
+**(b) EIN ANBIETERNAME ALS WERT IST ETWAS ANDERES ALS EIN ANBIETERNAME ALS SONDERFALL.**
+"Wenn das Ziel X heisst, dann …" wird beim dritten Fall eine Liste, die niemand mehr
+begründen kann. **"Die Rolle trägt X" ist EINE Zeile, und sie trägt ihren Grund mit.**
+Die Regel (`allowedTargets`) nennt ausschliesslich die Rolle und kennt keinen Anbieter;
+welches Ziel sie trägt, steht in `LEGACY_CONSENT_ROLE`.
+**GEMESSEN DAZU (von mir, 2026-08-08, per `grep` über den Produktivcode):** Anbieternamen
+als **quotierter Wert** im Produktivcode **12 vorher, 13 nachher** — **genau EIN neuer**,
+und er ist benannt: der Consent-Schlüssel des zweiten Ziels in `CONSENT_KEY_BY_TARGET`.
+**GRENZE DIESER ZÄHLUNG:** Sie erfasst quotierte String-Werte. Die **unquotierten
+Record-Schlüssel** (vier Stück in den zwei neuen Zuordnungen) sind nicht mitgezählt —
+sie sind keine freie Wahl, sondern vom Typ `Record<TrackingTarget, …>` **erzwungen**, und
+genau darauf beruht die Compiler-Frage beim dritten Ziel.
+
+**(c) EINE VORHERSAGE, DIE IHRE EIGENE UNSCHÄRFE BENENNT, IST AUCH DANN BRAUCHBAR, WENN
+SIE DANEBENLIEGT.** Entscheidend ist, ob die Abweichung **INNERHALB der vorab benannten
+Klasse** liegt. **Diese ist die erste dieser Phase, bei der das vorher gesagt wurde.**
+**WAS DARAUS FOLGT, und es ist die eigentliche Regel:** Eine Vorhersage soll nicht
+bestimmter klingen, als sie ist. Der Preis der Unschärfe ist eine Zeile ("ich nenne die
+Klasse, nicht die Zahl") — der Preis der falschen Bestimmtheit ist, dass niemand
+unterscheiden kann, ob ein Überlauf ein Zufall oder ein Befund war.
+
+#### Ein VIERTER Punkt, den der Auftrag nicht nennt — die Abdeckung der Adapter-Zuordnung IST GEWANDERT
+
+**PROVENIENZ: am Code gelesen (2026-08-08), NICHT per Mutation belegt. Der Bau-Auftrag
+war zu diesem Zeitpunkt abgeschlossen, und eine Mutationsprobe wäre ein Code-Eingriff
+gewesen. Wer den Punkt schärfen will, mutiert `dispatchForward` und zählt.**
+
+Der Auftrag sagt, zwei Fan-Out-Tests seien "aus einem ZWEITEN Grund grün". **Bei einem
+der beiden ist es schärfer als das:**
+
+- **`T6: ein Ziel OHNE Adapter wird uebersprungen`** — die Auflösung enthält nur
+  Pinterest, der Draht trägt kein Feld. `allowedTargets` liefert damit eine **leere**
+  Menge, und der neue Ausgang kehrt zurück, **BEVOR `dispatchForward` überhaupt
+  aufgerufen wird**. Der Test ist grün, aber **er erreicht die Zuordnung nicht mehr** —
+  er deckt sie nicht mehr "nicht allein", sondern **gar nicht**.
+- **`T7: adapterloses Ziel NEBEN Meta`** — hier bleibt Meta übrig, `dispatchForward`
+  läuft einmal. Der Test beweist weiterhin "genau EIN Aufruf, und zwar Metas", aber der
+  Pinterest-Eintrag erreicht die Zuordnung nie: **Was ihn entfernt, ist jetzt die
+  Einwilligung, nicht der fehlende Adapter.**
+
+**WAS DIE LÜCKE SCHLIESST, und es ist ein Zufallsbefund:** Im neuen Test
+`Feld MIT VERBOT fuer Meta -> kein Aufruf, obwohl Pinterest erlaubt ist` bleibt genau
+Pinterest übrig, `dispatchForward` wird damit **mit einem adapterlosen Ziel aufgerufen**
+und überspringt es. **Dieser Test trägt seit dieser Hälfte die Abdeckung, die T6
+verloren hat — und sein Kommentar sagt das nicht.** Er ist als Grenz-Illustration
+geschrieben, nicht als Wächter der Zuordnung.
+**DAS IST GENAU DIE FEHLERKLASSE AUS PHASE 10, LEKTION (f):** Trägt ein einzelner Test
+eine Fehlerklasse, gehört das in seinen Kommentar — sonst entfernt ihn jemand später als
+vermeintlich redundant. **Der Hinweis in BEIDEN Köpfen steht AUS** (s. den Backlog
+darunter); die Dateien lagen nicht im Bau-Scope.
+
+#### Was diese Hälfte ausdrücklich NICHT geleistet hat
+
+- **DER DRAHT TRÄGT WEITERHIN EINEN SCHLÜSSEL.** Das ist die HÄLFTE B, und Invariante 5
+  hat es für diese Hälfte ausdrücklich ausgeschlossen.
+- **EIN ZWEITES ZIEL IST AUF JEDER SEITE UNERREICHBAR** — in allen drei Feldzuständen:
+  abwesend (die Rolle verbietet es), vorhanden mit einem Schlüssel (seiner fehlt darin),
+  vorhanden ohne (dasselbe). **Das ist die BEABSICHTIGTE fail-closed-Lage, kein Fehler.**
+- **DER LIVE-TEST KONNTE NICHTS NEUES ZEIGEN** — nur, dass nichts kaputt ist. Das war
+  vorab so zugeschnitten und in der Anleitung vorangestellt; ein ausbleibendes zweites
+  Ziel ist kein Fehlschlag. **Und welchen Zweig er durchlief, ist offen** (s. oben).
+- **WIE VIELE VERÖFFENTLICHTE SEITEN KEIN FELD TRAGEN, IST UNBEKANNT.** Es braucht eine
+  Abfrage gegen die abgelegten Seiten (`projects.published_content`), sinnvoll eingegrenzt
+  auf die Seiten, die überhaupt einen Conversion-Beacon erzeugen. **Sie ändert die Regel
+  NICHT, nur die Dringlichkeit der Mitteilung an Betreiber** — und sie steht aus.
+- **ZWEI FAN-OUT-TESTS HABEN IHRE AUSSAGE VERLOREN** (s. den vierten Punkt oben). Der
+  Hinweis in ihrem Kopf steht aus — **eigene Runde**, die Datei lag nicht im Scope.
+- **KEINE ÄNDERUNG AN `consentAllows`.** Byte-gleich; per `git diff` über die geschützten
+  Dateien gegengeprobt, Ergebnis leer. **Invariante 3 gehalten.**
+
+#### Welche Stufe-1-Fragen der HÄLFTE A beantwortet sind
+
+Alle vier aus "### Was der Stufe-1-Plan der HÄLFTE A beantworten MUSS":
+1. **Woran erkennt der Code das eine Ziel mit Altbestands-Rolle?** An
+   `LEGACY_CONSENT_ROLE`, einem Merkmal je Ziel — nicht an einem Namensvergleich.
+2. **Was tritt an die Stelle des frühen Ausgangs?** Eine benannte reine Funktion
+   (`allowedTargets`) plus **zwei sichtbare Zeilen** im Handler, der Ausgang bei leerer
+   Menge **VOR** der Header-Auflösung.
+3. **Wie viele Seiten tragen kein Feld?** **NICHT beantwortbar** — ausdrücklich gesagt
+   statt geschätzt, s. oben.
+4. **Welche Bestandstests behaupten das Verhalten bei fehlendem Feld?** Vollständig
+   vorgelegt, getrennt nach "prüft" und "wählt" — **keiner musste geändert werden.**
+
+### Ein Backlog-Kandidat aus der HÄLFTE A — BENANNT, NICHT GEPLANT, plus eine AUFLAGE
+
+**AUFLAGE AN DIE HÄLFTE B (kein Backlog — sie MUSS dort erledigt werden):** Der
+Consent-Schlüssel des zweiten Ziels steht heute als **Literal** in
+`CONSENT_KEY_BY_TARGET`; der von Meta wird als Konstante importiert. **Solange der
+Erzeuger den Schlüssel nicht schreibt, ist das folgenlos** — der Draht trägt ihn nie,
+also lautet die Antwort für dieses Ziel bei vorhandenem Feld ohnehin "nicht erlaubt".
+**SOBALD DER ERZEUGER IHN SCHREIBT, WIRD ER ZUR EINBAHNSTRASSE:** Er steht dann in
+ausgeliefertem Code und in fremden Betreiber-Konfigurationen, und eine spätere
+Umbenennung schaltet deren Messung fail-closed ab, ohne sichtbaren Fehler. **Er gehört
+dann als Konstante neben den ersten** (`tracking/consent.ts`) und wird von dort
+importiert. Die Begründung steht bereits am Code.
+
+**BACKLOG-KANDIDAT: DIE ZWEI FAN-OUT-TESTS BEKOMMEN IHREN HINWEIS.** `T6` und `T7` in
+`src/lib/capi/fan-out.test.ts` decken die Ziel-Adapter-Zuordnung nicht mehr wie
+beschrieben (T6 erreicht sie gar nicht mehr), und der neue Test, der die Abdeckung
+übernommen hat, sagt es nicht. **Eine eigene Runde**, weil sie eine Datei berührt, die im
+Bau-Scope ausgeschlossen war — und weil sie, in den Bau gebündelt, dessen Fehlerbild
+verwischt hätte.
+
+#### NICHT VERDICHTET — und warum
+
+**DIE SCHEIBE IST NICHT FERTIG. Es wird NICHTS verdichtet, NICHTS als ABGELAUFEN
+markiert, NICHTS gestrichen.** Dieselbe Handschrift wie bei der sechsten Scheibe: Die
+Verdichtung kommt mit dem Abschluss der zweiten Hälfte, nicht davor.
+
+**WAS FÜR DIE HÄLFTE B STEHENBLEIBEN MUSS — geprüft, nicht pauschal behauptet.** Aus
+"### Die gemessene Ausgangslage — Provenienz: Aufklärung vom 2026-08-08":
+- **"N URTEILE SIND HEUTE N ZIEHUNGEN"** — der Kern des Problems der Hälfte B. Ohne
+  diesen Satz beginnt ihr Zuschnitt bei null.
+- **"DIE ZAHL DER FRAGESTELLEN UND DIE ZAHL DER HOOK-AUFRUFE SIND VERSCHIEDENE
+  GRÖSSEN"** — die Falle, an der eine Text-Zusicherung als Aussage über Aufrufe
+  missverstanden wird.
+- **"DIE REDUNDANZ SKALIERT NICHT MIT"** — die Meta-eigene zweite Prüfung in
+  `__psMetaInit` und der Total-Abbruch, der ersetzt werden muss. **Das ist die
+  Erzeuger-Arbeit der Hälfte B**, die Invariante 5 hier ausgeschlossen hat.
+- **"KEIN TEST DECKT EINEN HOOK, DER BEI AUFEINANDERFOLGENDEN AUFRUFEN VERSCHIEDEN
+  ANTWORTET"** — plus die **vier divergenzfähigen Werte** im Platzhalter der Hälfte B.
+  Sie sind ihr ausgewiesener Preis.
+- **"`configuredTargets` IST BEI JEDEM FEHLER LEER"** — dort ausdrücklich als Bindung
+  der Hälfte B markiert.
+
+**WAS DIE HÄLFTE A VERBRAUCHT HAT, BLEIBT TROTZDEM STEHEN:** Der Satz "DER LESER BRAUCHT
+KEINE ÄNDERUNG" ist eingelöst und weiterhin wahr; der Befund zur Alt-Seiten-Regel ist
+gebaut. **Beide bleiben, weil sie die HERLEITUNG tragen** — wer nur das Ergebnis liest,
+kann nicht mehr prüfen, ob die Entscheidung richtig war.
+
 ### Die HÄLFTE B — DER DRAHT TRÄGT N SCHLÜSSEL (Platzhalter)
 
 **GEGENSTAND:** Der Draht trägt N Schlüssel aus **EINER** Ziehung, und **Invariante 5

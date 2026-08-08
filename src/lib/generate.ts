@@ -68,14 +68,29 @@ function buildWiringScript(
   capiProxyUrl: string
 ): string {
   const hasPixel = metaPixelId !== "";
-  // Der CAPI-Beacon (2b-ii) lebt in der Meta-Runtime (__psMetaFire) -> nur gebaut,
-  // wenn ein Pixel gesetzt ist (dieselbe Vorbedingung wie das Browser-Event, mit dem
-  // er dedupliziert). trackingKey/proxyUrl entscheiden IN buildMetaRuntime ueber den
+  // PHASE 11, ACHTE SCHEIBE — DIE VORBEDINGUNG IST GEFALLEN.
+  //
+  // Hier stand: die Laufzeit wird NUR gebaut, wenn ein Pixel gesetzt ist ("dieselbe
+  // Vorbedingung wie das Browser-Event, mit dem er dedupliziert"). Der Satz war fuer
+  // den DEDUP-Fall richtig und fuer alles andere zu eng: Der Conversion-Beacon ist in
+  // __psMetaFire hineingesplicet, also sendete ein Projekt ohne Meta-Pixel NICHTS —
+  // keine Conversion, kein Server-Ereignis, keine Statistik.
+  //
+  // JETZT WIRD IMMER GERUFEN, und buildMetaRuntime entscheidet SELBST, ob etwas
+  // entsteht: ein Pixel ODER ein Beacon-Rumpf. Ohne beides liefert sie "" — eine
+  // Seite ohne jede Tracking-Konfiguration bleibt damit exakt wie zuvor, inklusive
+  // der Zahl der Einwilligungs-Fragestellen.
+  // trackingKey/proxyUrl entscheiden weiterhin IN buildMetaRuntime ueber den
   // konkreten Beacon-Zweig (still / fail-loud / feuern).
-  const metaRuntime = hasPixel
-    ? buildMetaRuntime(metaPixelId, capiTrackingKey, capiProxyUrl)
-    : "";
-  const trackStmt = metaTrackStatement(hasPixel);
+  const metaRuntime = buildMetaRuntime(
+    metaPixelId,
+    capiTrackingKey,
+    capiProxyUrl
+  );
+  // ZWEI FRAGEN, ZWEI ARGUMENTE: ob __psMetaFire existiert (dann darf es gerufen
+  // werden), und ob ein Pixel gesetzt ist (dann entfaellt die Warnung). Seit dieser
+  // Scheibe fallen die beiden NICHT mehr zusammen — genau das ist ihr Zweck.
+  const trackStmt = metaTrackStatement(metaRuntime !== "", hasPixel);
   return `(function () {
   var MODE = ${JSON.stringify(mode)};${metaRuntime}
   var dataEl = document.getElementById("${MAPPINGS_SCRIPT_ID}");

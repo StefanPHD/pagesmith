@@ -72,7 +72,36 @@ export function buildMetaRuntime(
   // Bootstrap-Pfad statt zweier Varianten (eine bau-zeit-Verzweigung IM Bootstrap waere
   // genau die Divergenz-Falle auf dem gerade reparierten CAPI-Pfad).
   const confirmSendStmt = buildPixelConfirmStatement(capiTrackingKey, capiProxyUrl);
-  return `
+
+  // --- PHASE 11, ACHTE SCHEIBE: DER BEACON HAENGT NICHT MEHR AN DER PIXEL-ID ---
+  //
+  // Bis hierher entschied der AUFRUFER (generate.ts), ob diese Funktion ueberhaupt
+  // gerufen wird — und zwar an der Pixel-ID. Der Beacon-Rumpf wird aber IN
+  // __psMetaFire hineingesplicet, existierte also nur mit Pixel. Ein Projekt, das
+  // server-seitig messen wollte, ohne Meta zu benutzen, sendete NICHTS.
+  //
+  // JETZT ENTSCHEIDET DIESE FUNKTION SELBST, und die Bedingung ist "gibt es hier
+  // ueberhaupt etwas zu tun": ein Pixel ODER ein Beacon-Rumpf. Ohne beides bleibt
+  // der Text LEER wie zuvor — eine Seite ohne jede Tracking-Konfiguration bekommt
+  // keine Laufzeit und damit auch KEINE zusaetzliche Einwilligungs-Frage.
+  const hasPixel = pixelId !== "";
+  if (!hasPixel && !beaconStmt) return "";
+
+  // DIE VIER BAU-ZEIT-GEGATETEN BLOECKE. Sie sind so geschnitten, dass ihre
+  // Aneinanderreihung MIT gesetzter Pixel-ID den frueheren Text BYTE-GLEICH
+  // ergibt — das ist der Beweis fuer Invariante 1 ("mit Meta-Pixel aendert sich
+  // nichts") und der Grund fuer die auf den ersten Blick eigenartigen
+  // Schnittkanten (fuehrende Zeilenumbrueche im Block statt im Rahmen).
+  //
+  // WAS PIXEL-GEBUNDEN BLEIBT und warum es NICHT mitwandert:
+  // - der fbevents-Bootstrap und fbq — sie SIND Meta;
+  // - die gesamte BESTAETIGUNGS-Maschinerie (Ladezustand, Warteschlange, Deckel,
+  //   __psConfirmSend, __psPixelResolve, __psConfirm). Sie misst Adblocking ueber
+  //   METAS Script-Load; ohne Meta gibt es nichts zu messen. Das ist eine
+  //   ENTSCHEIDUNG der achten Scheibe, keine Auslassung — die Verlustrate bleibt
+  //   Meta-gebunden.
+  const pixelPrelude = hasPixel
+    ? `
   var PS_PIXEL_ID = ${JSON.stringify(pixelId)};
   var __psFbReady = false;
   // --- ADBLOCKER-BESTAETIGUNG (Scheibe A) ---------------------------------------
@@ -166,7 +195,43 @@ export function buildMetaRuntime(
     fbq("init", PS_PIXEL_ID);
     __psFbReady = true;
     return true;
-  }
+  }`
+    : "";
+
+  // Der lazy Bootstrap-Aufruf. Er gehoert zum Pixel, NICHT zum Beacon — ohne Pixel
+  // gibt es kein __psMetaInit, und ein Aufruf liefe ins Leere.
+  const initCallStmt = hasPixel ? `
+    if (!__psMetaInit()) return;` : "";
+
+  // Die fbq-Zeilen samt ihrer Parameter. `params` wird AUSSCHLIESSLICH von ihnen
+  // gelesen und wandert deshalb mit ihnen — ein leeres params-Objekt ohne fbq waere
+  // toter Code im Klick-Pfad.
+  const fbqStmt = hasPixel ? `
+    var params = {};
+    if (typeof cfg.value === "number") params.value = cfg.value;
+    if (cfg.currency) params.currency = cfg.currency;
+    if (cfg.isCustom) fbq("trackCustom", cfg.event, params, { eventID: eid });
+    else fbq("track", cfg.event, params, { eventID: eid });` : "";
+
+  // DIE KENNUNG ENTSTEHT UNVERAENDERT IN __psMetaFire — GENAU EINMAL, FUER ALLE
+  // DREI VERBRAUCHER. Sie bleibt eine LOKALE Variable dieser Funktion, auch
+  // nachdem der Beacon sich von der Pixel-ID geloest hat, und das ist der Grund,
+  // warum der Beacon-Rumpf NICHT herausgezogen wurde, sondern nur seine
+  // Vorbedingung entfiel: fbq, der Beacon und die Bestaetigung lesen DIESELBE
+  // Variable. Zwei Erzeugungsstellen braechen Metas Deduplizierung UND den
+  // Verlustraten-Join — lautlos, weil beide Werte fuer sich gueltig aussehen.
+  // DIESER KOMMENTAR STEHT IN DER QUELLE UND NICHT IM ERZEUGTEN TEXT: Der
+  // erzeugte Text muss mit gesetzter Pixel-ID BYTE-GLEICH bleiben, und jede
+  // zusaetzliche Zeile darin braeche genau den Beweis, den Invariante 1 braucht.
+  //
+  // Der Bestaetigungs-Aufruf bleibt an der Pixel-ID, weil die Maschinerie
+  // dahinter es tut (s. oben).
+  const confirmCallStmt = hasPixel ? `
+    // Scheibe A: dieselbe lokale eid wie fbq/Beacon (KEIN zweiter Generator -> der
+    // Verlustraten-Join ueber event_id traegt). Liegt hinter demselben Consent-Gate.
+    __psConfirm(eid, cfg.event);` : "";
+
+  return `${pixelPrelude}
   function __psMetaFire(cfg) {
     if (!cfg || !cfg.event) return;
     // EXISTENZPRUEFUNG, KEIN ZWEITES URTEIL — s. die Begruendung in __psMetaInit.
@@ -183,20 +248,11 @@ export function buildMetaRuntime(
     //     Draht eine Aussage, die der Entscheidung WIDERSPRICHT, die diesen Beacon
     //     ueberhaupt durchgelassen hat. So ist die Widerspruchsfreiheit strukturell.
     var __c = __psConsent(${JSON.stringify(META_CONSENT_TARGET)});
-    if (!__c) return;
-    if (!__psMetaInit()) return;
+    if (!__c) return;${initCallStmt}
     var eid =
       window.crypto && window.crypto.randomUUID
         ? window.crypto.randomUUID()
-        : "e" + Date.now() + "-" + Math.random().toString(16).slice(2);
-    var params = {};
-    if (typeof cfg.value === "number") params.value = cfg.value;
-    if (cfg.currency) params.currency = cfg.currency;
-    if (cfg.isCustom) fbq("trackCustom", cfg.event, params, { eventID: eid });
-    else fbq("track", cfg.event, params, { eventID: eid });${beaconStmt}
-    // Scheibe A: dieselbe lokale eid wie fbq/Beacon (KEIN zweiter Generator -> der
-    // Verlustraten-Join ueber event_id traegt). Liegt hinter demselben Consent-Gate.
-    __psConfirm(eid, cfg.event);
+        : "e" + Date.now() + "-" + Math.random().toString(16).slice(2);${fbqStmt}${beaconStmt}${confirmCallStmt}
   }`;
 }
 
@@ -300,11 +356,29 @@ export function buildPixelConfirmStatement(
     }`;
 }
 
-// Die Anweisung im Track-Zweig des Wiring-Handlers, je nach Pixel-Konfiguration:
-// - Pixel gesetzt -> echtes Meta-Fire (navigationssicher via fbevents/sendBeacon).
-// - keine Pixel-ID -> no-op mit console.warn (kein fbq, kein Snippet im Output).
-export function metaTrackStatement(hasPixel: boolean): string {
-  return hasPixel
-    ? "__psMetaFire(a.config);"
+// Die Anweisung im Track-Zweig des Wiring-Handlers.
+//
+// ZWEI UNABHAENGIGE FRAGEN, DESHALB ZWEI PARAMETER (Phase 11, achte Scheibe) — und
+// die Trennung ist der ganze Punkt dieser Scheibe: Bis hierher entschied EINE Frage
+// (die Pixel-ID) beides, weil beides zusammenfiel.
+// - hasRuntime: EXISTIERT __psMetaFire ueberhaupt? Nur dann darf es gerufen werden;
+//   sonst wuerfe der Klick-Handler auf einer Seite ohne jede Tracking-Konfiguration.
+//   Seit dieser Scheibe entsteht die Laufzeit auch OHNE Pixel — naemlich dann, wenn
+//   es einen Beacon zu senden gibt.
+// - hasPixel: soll die Meta-WARNUNG mit? Sie bleibt eine wahre Aussage ("Meta-Pixel
+//   nicht konfiguriert") und wird deshalb NICHT gestrichen. Sie ist ab jetzt aber
+//   kein "no-op"-Hinweis mehr: der Klick sendet trotzdem, nur eben nicht an Meta.
+//   DASS SIE BLEIBT, IST EINE ENTSCHEIDUNG: Sie zu entfernen waere eine zweite
+//   Wirkung in dieser Scheibe und wuerde eine bestehende Zusage umschreiben, die
+//   mit dem Zweck hier nichts zu tun hat.
+export function metaTrackStatement(
+  hasRuntime: boolean,
+  hasPixel: boolean
+): string {
+  const warn = hasPixel
+    ? ""
     : 'console.warn("[pagesmith] Meta-Pixel nicht konfiguriert: " + ((a.config && a.config.event) || ""));';
+  if (!hasRuntime) return warn;
+  return warn ? `${warn}
+            __psMetaFire(a.config);` : "__psMetaFire(a.config);";
 }

@@ -994,6 +994,304 @@ describe("CAPI-Dedup-Beacon (Scheibe 2b-ii)", () => {
 });
 
 // ---------------------------------------------------------------------------
+// DIE KOPPLUNG BEACON<->PIXEL-ID (Phase 11, achte Scheibe — BASIS-TEST).
+//
+// WARUM DIESE TESTS EXISTIEREN, obwohl sie einen Zustand behaupten, der gleich
+// aufgehoben wird: Bis heute war die Kopplung von KEINEM Test gedeckt. Sie ist
+// kein zugesicherter Zustand, sondern ein NEBENEFFEKT davon, dass der
+// Beacon-Rumpf in __psMetaFire hineingesplicet wird — und __psMetaFire entsteht
+// nur mit Pixel-ID. Wer sie loeste, braeche nichts Rotes; "absichtlich geloest"
+// und "nebenbei verloren" waeren am Ergebnis nicht zu unterscheiden.
+//
+// DIE REIHENFOLGE IST DER GANZE BEWEIS: Diese Tests laufen GRUEN, BEVOR die
+// Kopplung angefasst wird. Ein Test, der erst nach dem Umbau entsteht, kann den
+// Ausgangszustand nie mehr belegen.
+//
+// SIE PRUEFEN AUSGEFUEHRT, NICHT ALS ZEICHENKETTE: Ein Zeichenketten-Test auf
+// die Abwesenheit von "navigator.sendBeacon(" saehe identisch aus, wenn der
+// Rumpf zwar entstuende, aber nie erreicht wuerde. Geprueft wird der SPY.
+//
+// POSITIVKONTROLLE IST PFLICHT, weil beide ueberwiegend ABWESENHEIT pruefen:
+// ohne sie waere ein kaputter Stub von einem echten Nicht-Treffer nicht zu
+// unterscheiden.
+// ---------------------------------------------------------------------------
+
+// UMGEDREHT AM 2026-08-08, IN EINEM EIGENEN SCHRITT — und die Richtung gehoert
+// hierher, sonst ist der Beweis spaeter nicht mehr lesbar:
+//
+// DIESE BEIDEN TESTS BEHAUPTETEN ZUERST DAS GEGENTEIL ("ohne Pixel-ID entsteht
+// KEIN Beacon") UND LIEFEN GRUEN. Damit war die alte Kopplung erstmals belegt —
+// sie war bis dahin von keinem Test gedeckt, also nicht von einem Nebeneffekt zu
+// unterscheiden. Dann hat der Bau sie GEZIELT rot gemacht; genau diese zwei und
+// keine anderen. Erst danach wurde die Erwartung invertiert.
+//
+// WARUM DIE REIHENFOLGE DER GANZE BEWEIS IST: Ein Test, der erst NACH dem Umbau
+// entsteht, kann nie zeigen, dass die Kopplung vorher bestand. "Absichtlich
+// geloest" und "nebenbei verloren" saehen an ihm identisch aus.
+describe("Beacon OHNE Pixel-ID (Phase 11, achte Scheibe)", () => {
+  it("Klick OHNE Pixel-ID -> sendBeacon feuert (Gegenprobe: MIT Pixel-ID unveraendert)", () => {
+    const beacon = stubBeacon();
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        // KEIN metaPixelId — trackingKey und Proxy sind gesetzt, es fehlt ALLEIN
+        // der Pixel. Damit haengt das Ergebnis an nichts anderem.
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(beacon).toHaveBeenCalledTimes(1);
+
+    // --- GEGENPROBE: derselbe Aufbau, nur mit Pixel-ID (Invariante 1) ---
+    stubFbq();
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(beacon).toHaveBeenCalledTimes(2);
+  });
+
+  // DIE ZWEITE EINSETZ-STELLE, und sie ist die, die man vergisst: Der
+  // Klick-Handler und der auxclick-Handler bekommen BEIDE dieselbe
+  // Track-Anweisung eingesetzt. Ein Test nur auf dem Klick-Pfad deckte die
+  // Haelfte der Verdrahtung — und der Mittelklick ("im neuen Tab oeffnen") ist
+  // auf einer Landingpage kein Randfall.
+  it("MITTELKLICK OHNE Pixel-ID -> sendBeacon feuert (Gegenprobe: MIT Pixel-ID unveraendert)", () => {
+    const beacon = stubBeacon();
+    mountAndWire(
+      generateFunctional(MAPPED_LINK, [track("ps-aaaaaa", "Lead")], "export", {
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    aux('[data-pagesmith-id="ps-aaaaaa"]', 1);
+    expect(beacon).toHaveBeenCalledTimes(1);
+
+    stubFbq();
+    mountAndWire(
+      generateFunctional(MAPPED_LINK, [track("ps-aaaaaa", "Lead")], "export", {
+        metaPixelId: PIXEL,
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    aux('[data-pagesmith-id="ps-aaaaaa"]', 1);
+    expect(beacon).toHaveBeenCalledTimes(2);
+  });
+
+  // RECHTSKLICK-SCHUTZ, mitgezogen: Der button-Guard im auxclick-Zweig ist aelter
+  // als diese Scheibe, aber er lag bisher NUR auf dem fbq-Pfad. Jetzt schuetzt er
+  // auch den Beacon vor einer Ghost-Conversion aus dem Kontextmenue.
+  it("RECHTSKLICK OHNE Pixel-ID -> KEIN sendBeacon", () => {
+    const beacon = stubBeacon();
+    mountAndWire(
+      generateFunctional(MAPPED_LINK, [track("ps-aaaaaa", "Lead")], "export", {
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    aux('[data-pagesmith-id="ps-aaaaaa"]', 2);
+    expect(beacon).not.toHaveBeenCalled();
+  });
+
+  // OHNE JEDE KONFIGURATION bleibt alles wie zuvor. Das ist die Untergrenze der
+  // Scheibe: Sie fuegt nichts hinzu, wo es nichts zu senden gibt — insbesondere
+  // KEINE Laufzeit und damit KEINE zusaetzliche Einwilligungs-Fragestelle.
+  it("weder Pixel noch trackingKey -> KEINE Laufzeit, KEIN Beacon, KEINE Fragestelle", () => {
+    const beacon = stubBeacon();
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export"
+    );
+    expect(out).not.toContain("__psMetaFire(cfg)");
+    expect(out).not.toContain("__psConsent(");
+    mountAndWire(out);
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(beacon).not.toHaveBeenCalled();
+  });
+});
+
+describe("Invariante 3: EINE Kennung fuer alle drei Verbraucher", () => {
+  // AUSGEFUEHRT fuer zwei der drei Verbraucher — schaerfer geht es hier nicht:
+  // Die Bestaetigung laesst sich ohne Simulation des Ladezustands nicht ausfuehren,
+  // sie ist deshalb als Zeichenkette gedeckt (Test darunter). Der Bestandstest
+  // "DEDUP-KERN" prueft dieselbe Achse MIT Pixel; dieser hier ist sein
+  // Gegenstueck OHNE.
+  it("OHNE Pixel-ID traegt der Beacon eine eid, und es gibt nur EINEN Erzeuger im Text", async () => {
+    const beacon = stubBeacon();
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { trackingKey: TK, capiProxyUrl: PROXY }
+    );
+    // GENAU EINE Erzeugungsstelle. Zwei waeren der lautlose Bruch: Metas Dedup
+    // und der Verlustraten-Join haengen beide an der Identitaet dieses Wertes.
+    expect(out.split("window.crypto.randomUUID()").length - 1).toBe(1);
+
+    mountAndWire(out);
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    const [url, blob] = beacon.mock.calls[0] as unknown as [string, Blob];
+    expect(url).toBe(PROXY);
+    expect(blob.type).toBe("text/plain");
+    const payload = JSON.parse(await blob.text());
+    expect(typeof payload.eventID).toBe("string");
+    expect(payload.eventID.length).toBeGreaterThan(0);
+    expect(payload.trackingKey).toBe(TK);
+    expect(payload.event).toBe("Lead");
+  });
+
+  it("MIT Pixel-ID lesen fbq, Beacon UND Bestaetigung denselben Bezeichner", () => {
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { metaPixelId: PIXEL, trackingKey: TK, capiProxyUrl: PROXY }
+    );
+    expect(out.split("window.crypto.randomUUID()").length - 1).toBe(1);
+    expect(out).toContain('fbq("track", cfg.event, params, { eventID: eid })');
+    expect(out).toContain("eventID: eid");
+    expect(out).toContain("__psConfirm(eid, cfg.event);");
+  });
+});
+
+describe("Invariante 4: die Zahl der Fragestellen im erzeugten Text", () => {
+  // LESART (A), ENTSCHIEDEN: gezaehlt werden FRAGESTELLEN IM TEXT, nicht Aufrufe
+  // pro Klick. Lesart (B) haelt heute auch — aber nur, weil zwei Zweige zufaellig
+  // disjunkt sind; sie ist nur durch Nachdenken ueber Erreichbarkeit pruefbar.
+  // (A) ist zaehlbar, und dieser Test zaehlt.
+  //
+  // DIE ARITHMETIK, weil dieser Test nur einen TEIL des Dokuments sieht: Die
+  // dritte Fragestelle steckt im PageView-Emitter, den erst der Server beim
+  // Publish anhaengt. Hier zaehlbar sind also zwei (mit Pixel: __psMetaInit und
+  // __psMetaFire) bzw. eine (ohne Pixel: nur __psMetaFire) — plus die des
+  // Emitters ergibt das DREI bzw. ZWEI auf der fertigen Seite.
+  function fragestellen(out: string): number {
+    return out.split("__psConsent(").length - 1;
+  }
+
+  it("MIT Pixel-ID: ZWEI im Wiring — unveraendert gegenueber vorher", () => {
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { metaPixelId: PIXEL, trackingKey: TK, capiProxyUrl: PROXY }
+    );
+    expect(fragestellen(out)).toBe(2);
+  });
+
+  it("OHNE Pixel-ID: EINE im Wiring — nicht null und nicht zwei", () => {
+    // NICHT NULL, weil Invariante 5 sie verlangt: ohne Metas Einwilligung geht
+    // weiterhin kein Beacon. NICHT ZWEI, weil __psMetaInit gar nicht entsteht.
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { trackingKey: TK, capiProxyUrl: PROXY }
+    );
+    expect(fragestellen(out)).toBe(1);
+  });
+});
+
+describe("Invariante 5: ohne Metas Einwilligung geht weiterhin kein Beacon", () => {
+  it("OHNE Pixel-ID und Einwilligung verweigert -> KEIN Beacon", () => {
+    const beacon = stubBeacon();
+    vi.stubGlobal("pagesmithConsent", () => false);
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(beacon).not.toHaveBeenCalled();
+  });
+
+  it("OHNE Pixel-ID und Einwilligung NUR fuer ein anderes Ziel -> KEIN Beacon", () => {
+    // DIE SCHAERFERE FASSUNG: Der Besucher hat etwas erlaubt, nur nicht Meta. Dass
+    // hier trotzdem nichts geht, IST der Zustand, den die neunte Scheibe aufloest —
+    // er steht hier als Zusicherung, damit sein Wegfall dort SICHTBAR wird.
+    const beacon = stubBeacon();
+    vi.stubGlobal("pagesmithConsent", { pinterest: true });
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(beacon).not.toHaveBeenCalled();
+  });
+
+  it("OHNE Pixel-ID und Einwilligung fuer Meta -> Beacon feuert (Positivkontrolle)", () => {
+    const beacon = stubBeacon();
+    vi.stubGlobal("pagesmithConsent", { meta: true });
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(beacon).toHaveBeenCalledTimes(1);
+  });
+
+  it("GENAU EIN Hook-Aufruf pro Klick ohne Pixel-ID (kein zweites Erfragen)", () => {
+    // Die Zahl der AUFRUFE ist die zweite Achse neben der Zahl der Fundstellen.
+    // Beide zusammen decken Invariante 4; einzeln taete es keine.
+    const hook = vi.fn(() => true);
+    stubBeacon();
+    vi.stubGlobal("pagesmithConsent", hook);
+    mountAndWire(
+      generateFunctional(MAPPED_BUTTON, [track("ps-aaaaaa", "Lead")], "export", {
+        trackingKey: TK,
+        capiProxyUrl: PROXY,
+      })
+    );
+    click('[data-pagesmith-id="ps-aaaaaa"]');
+    expect(hook).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("Die Bestaetigungs-Maschinerie bleibt an der Pixel-ID", () => {
+  // ENTSCHEIDUNG DER SCHEIBE, kein Uebersehen: Die Bestaetigung misst Adblocking
+  // ueber METAS Script-Load. Ohne Meta gibt es nichts zu messen — die
+  // Verlustrate bleibt Meta-gebunden.
+  // ZEICHENKETTE STATT AUSFUEHRUNG, offen benannt: Der Ladezustand liesse sich
+  // nur mit einer Simulation des fbevents-Ladevorgangs ausfuehren; das ist eine
+  // eigene Arbeit. Die Positivkontrolle darunter macht den Unterschied zwischen
+  // "nicht da" und "Test misst nichts" sichtbar.
+  it("OHNE Pixel-ID: keine Bestaetigungs-Maschinerie im Text", () => {
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { trackingKey: TK, capiProxyUrl: PROXY }
+    );
+    expect(out).not.toContain("__psConfirm(");
+    expect(out).not.toContain("__psPixelResolve");
+    expect(out).not.toContain("__psConfirmQueue");
+  });
+
+  it("MIT Pixel-ID: sie ist vollstaendig da (Positivkontrolle)", () => {
+    const out = generateFunctional(
+      MAPPED_BUTTON,
+      [track("ps-aaaaaa", "Lead")],
+      "export",
+      { metaPixelId: PIXEL, trackingKey: TK, capiProxyUrl: PROXY }
+    );
+    expect(out).toContain("__psConfirm(");
+    expect(out).toContain("__psPixelResolve");
+    expect(out).toContain("__psConfirmQueue");
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Text-Override (Phase 5): in der VORSCHAU ersetzt das Wiring beim Laden den
 // textContent per ps-id; im EXPORT wird der Typ gar nicht erst eingebacken.
 // ---------------------------------------------------------------------------

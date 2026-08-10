@@ -21,8 +21,24 @@ reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) die ZUGANGSDATEN JE ZI
 — **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (7) die AUFLÖSUNG TRÄGT
 MEHRERE ZIELE — **ABGESCHLOSSEN und live bewiesen**, (8) DER BEACON VERLÄSST METAS
 LAUFZEIT — **ABGESCHLOSSEN und live bewiesen**, (9) DIE EINWILLIGUNG JE ZIEL —
-**ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (10) PINTEREST SENDET —
+**ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (10) DER ADAPTER FÜR DAS ZWEITE
+ZIEL — **ZUGESCHNITTEN**, (11) DIE KARTE FRAGT NACH DER RICHTIGEN KENNUNG —
+PLATZHALTER, (12) PINTEREST SENDET — PLATZHALTER, (13) DER TESTKNOPF —
 PLATZHALTER.
+
+**NACHGEZOGEN AM 2026-08-09 — NEUN SIND ABGESCHLOSSEN, OFFEN SIND VIER.** Hier stand
+"(10) PINTEREST SENDET — PLATZHALTER", und der Stempel darunter sagte "OFFEN IST
+EINE". **BEIDE BLEIBEN WORT FÜR WORT STEHEN** — sie waren richtig, als sie
+geschrieben wurden, und der Wert dieser Kette liegt darin, dass die Bewegung sichtbar
+bleibt.
+**DIE ZAHL DER ABGESCHLOSSENEN SCHEIBEN ÄNDERT SICH NICHT** — nur die der offenen,
+und zwar von EINS auf VIER. Warum sie teilt, steht unter "## Aus einer offenen
+Scheibe werden VIER (OWNER-ENTSCHEIDUNG, 2026-08-09)"; die Reihenfolge von (11) vor
+(12) ist nicht Geschmack, sondern ein Befund — s. "## Der Befund, der die Reihenfolge
+festlegt — EINE KORREKTUR DER BESCHRIFTUNG ÄNDERT NICHT DEN GESPEICHERTEN WERT".
+**DER SATZ AUS DEM STEMPEL DARUNTER, "Was fehlt, ist der Adapter", IST DAMIT ZU ENG
+GEWORDEN** — er bleibt trotzdem stehen: Der Adapter fehlt weiterhin, er ist nur nicht
+mehr das Einzige.
 
 **NACHGEZOGEN AM 2026-08-08, SPÄT — NEUN SIND ABGESCHLOSSEN, OFFEN IST EINE.** Hier
 stand bei (9) "HÄLFTE A ZUGESCHNITTEN, HÄLFTE B PLATZHALTER". Beide Hälften sind am
@@ -156,19 +172,36 @@ sonst** — nicht die Zahl der Scheiben, nicht die Zahl der Umplanungen:
 - **NEUNTE -> ZEHNTE (2026-08-08):** die EINWILLIGUNG JE ZIEL schiebt sich davor.
   **DIE ZWEITE WANDERUNG AM SELBEN TAG** — und die erste, bei der eine Scheibe
   Pinterest verschiebt, die es beim Aufwachen dieses Tages noch gar nicht gab.
-**VIER DER ACHT WANDERUNGEN TRAGEN DASSELBE DATUM (den 2026-08-06); DREI DEN
-2026-08-08.** Das Datum unterscheidet sie also NICHT — wer sie auseinanderhalten
-will, liest die URSACHE, nicht den Stempel.
+- **ZEHNTE -> ZWÖLFTE (2026-08-09):** der ADAPTER (zehnte) und die KARTE MIT DER
+  RICHTIGEN KENNUNG (elfte) schieben sich davor; der TESTKNOPF (dreizehnte) tritt
+  DAHINTER. **DIE DRITTE WANDERUNG UM ZWEI STELLEN** — die beiden davor waren
+  VIERTE -> SECHSTE und SIEBTE -> NEUNTE.
+  **UND DIE ZWEITE, BEI DER PINTEREST NICHT HINTER FREMDE SCHEIBEN RÜCKT, SONDERN
+  SELBST AUSEINANDERFÄLLT** — die erste war SIEBTE -> NEUNTE. **DER UNTERSCHIED ZU
+  JENER GEHÖRT DAZU, sonst liest sich das als Wiederholung:** Dort zerfiel der
+  Gegenstand entlang einer ABHÄNGIGKEIT (die Auflösung war ohne neues Netzwerk
+  prüfbar, der Browser-Pfad musste VORHER geöffnet werden). Hier zerfällt er entlang
+  seiner NACHWEISFORM — s. die neunte Ursache unten.
+  **ES IST AUSSERDEM DIE ERSTE WANDERUNG, BEI DER EINE SCHEIBE HINTER PINTEREST
+  ENTSTEHT:** der Testknopf. Alle acht davor haben ausschliesslich Scheiben DAVOR
+  geschoben.
+**VIER DER NEUN WANDERUNGEN TRAGEN DASSELBE DATUM (den 2026-08-06); DREI DEN
+2026-08-08; EINE DEN 2026-08-09.** Das Datum unterscheidet sie also NICHT — wer sie
+auseinanderhalten will, liest die URSACHE, nicht den Stempel.
 **NACHGEZOGEN AM 2026-08-08: hier stand "VIER DER SECHS", danach "VIER DER
 SIEBEN".** Geändert hat sich die Zahl der Wanderungen, nicht die Aussage — es sind
 weiterhin genau vier, die den 2026-08-06 tragen.
+**ERNEUT NACHGEZOGEN AM 2026-08-09: davor stand "VIER DER ACHT".** Dieselbe Aussage,
+eine Wanderung mehr. **DER 2026-08-09 IST HEUTE EIN EINDEUTIGES DATUM — und dieser
+Satz ist mit der nächsten Runde falsch**, genauso wie es der 2026-08-08 einmal war.
+Wer ihn als Unterscheidungsmerkmal benutzt, benutzt einen, der sich abnutzt.
 **UND EINE NEUE BEOBACHTUNG, die die alte nicht ersetzt, sondern schärft:** Seit
 dem 2026-08-08 ist auch das Datum "2026-08-08" kein Unterscheidungsmerkmal mehr —
 es trägt inzwischen DREI Wanderungen mit drei verschiedenen Ursachen.
 
-**DIE ACHT URSACHEN SIND ACHT VERSCHIEDENE, und das gehört dazu, sonst liest
-sich jede Runde wie eine weitere Umsortierung** (hier stand nacheinander "SECHS"
-und "SIEBEN" — die Aufzählung ist gewachsen, die Aussage nicht):
+**DIE NEUN URSACHEN SIND NEUN VERSCHIEDENE, und das gehört dazu, sonst liest
+sich jede Runde wie eine weitere Umsortierung** (hier stand nacheinander "SECHS",
+"SIEBEN" und "ACHT" — die Aufzählung ist gewachsen, die Aussage nicht):
 - Die ERSTE entstand aus einer erkannten VORBEDINGUNG: die damalige Auswertung
   hätte aus der Objektform ein stilles Fail-open gemacht.
 - Die ZWEITE entstand daraus, dass ein AUSSCHLUSS zur eigenen Scheibe wurde — der
@@ -224,6 +257,32 @@ und "SIEBEN" — die Aufzählung ist gewachsen, die Aussage nicht):
   ungeprüft war, sind seine KOSTEN.** Das Herauslösen ist jederzeit möglich; es
   zieht nur etwas mit, das niemand aufgeschrieben hatte. S. "## Die achte Scheibe —
   DER BEACON VERLÄSST METAS LAUFZEIT (Zuschnitt)".
+- Die NEUNTE entsteht daraus, dass der Gegenstand in Teile mit VERSCHIEDENEN
+  NACHWEISFORMEN zerfällt: Der Adapter ist im Test bis an die Netzwerkgrenze
+  beweisbar; die Karte ist ein Oberflächen-Nachweis; das Verdrahten ist erst im
+  LIVE-Betrieb zu sehen; und der Testknopf macht genau EINE Aussage, die
+  ausschliesslich live prüfbar ist. **Vier Teile, vier Instrumente.**
+  **DAS IST NICHT DIE ACHTE URSACHE:** Dort war eine ZWINGENDE ABHÄNGIGKEIT der
+  Grund — der Beacon nimmt die Event-Kennung beim Herauslösen nicht mit, und ohne
+  sie bricht der Verlustraten-Join. Hier fehlt keine Abhängigkeit; jeder Teil
+  funktioniert.
+  **UND NICHT DIE SIEBTE:** Dort war die ERREICHBARKEIT eines bekannten Gegenstands
+  ungeprüft — die Maschinerie stand, ihr Anwendungsfall war strukturell nicht
+  anzusteuern. Hier ist alles erreichbar und alles baubar; **was auseinanderfällt,
+  ist der BEWEIS, nicht die Sache.**
+  **DIE SCHWERSTE ABGRENZUNG IST NICHT GEGEN EINE URSACHE, SONDERN GEGEN EINEN
+  STEMPEL, und sie gehört genau deshalb hierher:** Der fünfte Nachzug (SIEBTE ->
+  NEUNTE) begründet sich mit "ihre drei Teile sind nicht gleichzeitig beweisbar".
+  Das klingt wie dieselbe Sache und ist es nicht. **Dort war die REIHENFOLGE
+  erzwungen** — der Browser-Pfad musste geöffnet sein, BEVOR überhaupt etwas an ein
+  zweites Ziel gehen konnte; "nicht gleichzeitig" hiess dort "nicht vorher".
+  **Hier ist keine Reihenfolge technisch erzwungen**; die einzige, die gilt (Karte
+  VOR Verdrahten), stammt aus einem Anzeige-Befund und nicht aus einer technischen
+  Sperre — s. "## Der Befund, der die Reihenfolge festlegt". Was hier zerfällt, ist
+  das INSTRUMENT: Ein gebündelter Bau hätte einen Fehlschlag erzeugt, bei dem nicht
+  zu sagen wäre, ob der Adapter, die Beschriftung, die Zuordnung oder der Anbieter
+  ihn verursacht hat. S. "## Aus einer offenen Scheibe werden VIER
+  (OWNER-ENTSCHEIDUNG, 2026-08-09)".
 
 **DER ÄLTERE STEMPEL DARÜBER BLEIBT WORT FÜR WORT STEHEN:** er war am 2026-08-06
 richtig, und ein überschriebener Stempel verwischt, dass die Nummer überhaupt
@@ -279,6 +338,24 @@ Teile. **Hier zerfällt die ACHTE Scheibe in zwei** — Pinterest ist nur der Le
 in der Reihe und rückt deshalb mit. Wer die beiden zusammenzieht, sieht eine Phase,
 die an einem Tag zweimal umgeplant wurde; wer sie trennt, sieht zwei Aufklärungen,
 die je einen anderen Gegenstand teilten.
+
+**EIN SIEBTES MAL NACHGEZOGEN AM 2026-08-09 — PINTEREST IST JETZT DIE ZWÖLFTE
+SCHEIBE.** Davor liegen der ADAPTER (zehnte) und die KARTE MIT DER RICHTIGEN KENNUNG
+(elfte); dahinter tritt der TESTKNOPF (dreizehnte). **DIE SIEBEN STEMPEL DARÜBER
+BLEIBEN WORT FÜR WORT STEHEN.**
+**PINTEREST WANDERT DAMIT ZUM NEUNTEN MAL, UND DAS WIRD HIER NICHT KASCHIERT:** Es
+ist der sichtbare PREIS DAFÜR, DASS NICHT GEBÜNDELT WIRD. Jede dieser neun Runden
+hatte einen eigenen, benannten Grund, und keine war eine Rücknahme — aber die Summe
+ist trotzdem eine Zahl, die man sich anschauen muss. **WER SIE FÜR EIN ZEICHEN VON
+UNENTSCHLOSSENHEIT HÄLT, LIEST FALSCH; WER SIE FÜR KOSTENLOS HÄLT, EBENSO.** Der
+Gegenwert steht in den Protokollen: neun Scheiben, jede einzeln live bewiesen, keine
+mit einem Fehlerbild, das man nicht zuordnen konnte.
+**WAS DIESE WANDERUNG VON ALLEN ACHT DAVOR UNTERSCHEIDET:** Bisher rückte Pinterest
+weg, weil etwas DAVOR nötig wurde. Hier rückt es weg, weil sein eigener Nachweis
+sich von den Nachweisen der Teile trennt, die es umgeben — **zum ersten Mal entsteht
+auch eine Scheibe HINTER ihm.** Die zwölfte ist damit nicht mehr die letzte der
+Phase, aber sie bleibt die, für die die Phase eröffnet wurde: **ihr Live-Test ist
+der Beweis des Ganzen.**
 
 ---
 
@@ -6139,11 +6216,205 @@ Ergebnis liest, kann nicht mehr prüfen, ob die Entscheidung richtig war.
 
 ---
 
-## Die zehnte Scheibe — PINTEREST SENDET (Platzhalter)
+## Aus einer offenen Scheibe werden VIER (OWNER-ENTSCHEIDUNG, 2026-08-09)
+
+**ENTSCHEIDUNG:** Die letzte offene Scheibe wird in VIER geteilt:
+**(10) DER ADAPTER · (11) DIE KARTE FRAGT NACH DER RICHTIGEN KENNUNG ·
+(12) PINTEREST SENDET · (13) DER TESTKNOPF.**
+
+**DIE URSACHE, und sie ist die NEUNTE VERSCHIEDENE dieser Phase:** Die Aufklärung
+vom 2026-08-10 hat gezeigt, dass der Gegenstand in Teile mit **VERSCHIEDENEN
+NACHWEISFORMEN** zerfällt. Die vollständige Abgrenzung gegen die achte und die
+siebte Ursache steht im Kopf dieser Datei unter den neun Ursachen und wird hier
+NICHT wiederholt; hier steht, was die vier Teile voneinander trennt:
+
+| Scheibe | Wie sie bewiesen wird | Was ihr Nachweis NICHT zeigt |
+|---|---|---|
+| **(10) DER ADAPTER** | neue Tests, bis an die Netzwerkgrenze; plus ein unveränderter Bestand | dass der Anbieter die Nutzlast annimmt — es ruft ihn niemand |
+| **(11) DIE KARTE** | Oberflächen-Tests auf Beschriftung und Wortlaut | ob der eingetragene Wert richtig IST |
+| **(12) PINTEREST SENDET** | **LIVE**, im Konto des Anbieters | nichts davon ist im Test darstellbar |
+| **(13) DER TESTKNOPF** | Guards, Wortlaut und Flüchtigkeit im Test — **seine EINE Aussage aber ausschliesslich LIVE** | ob sie morgen noch gilt (das Ergebnis ist flüchtig, s. seine Auflage (ii)) |
+
+**WARUM DAS EINE TEILUNG RECHTFERTIGT UND NICHT NUR EINE GLIEDERUNG:** Ein
+gebündelter Bau erzeugte im Fehlerfall genau die Lage, die diese Phase in acht
+Runden vermieden hat — es bliebe **unentscheidbar, ob der Adapter, die
+Beschriftung, die Zuordnung oder der Anbieter** den Fehlschlag verursacht hat. Der
+Live-Test der zwölften ist der einzige, der ein fremdes System befragt; er darf
+nicht gleichzeitig die drei anderen Achsen mitprüfen. **Es ist dieselbe Figur wie
+bei der sechsten Scheibe** (dort: Ablage gegen Oberfläche), nur mit vier Teilen
+statt zwei — und dieselbe Projektregel wie bei den Live-Instrumenten: *ein grobes
+Instrument reisst oft die Voraussetzung dessen mit, was es prüfen soll.*
+
+**WAS DIE TEILUNG AUSDRÜCKLICH NICHT IST:** eine Verfeinerung eines zu gross
+geratenen Zuschnitts. **Ein Zuschnitt der zehnten Scheibe hat nie existiert** — sie
+stand seit ihrer Entstehung als PLATZHALTER, und die Aufklärung, die ihn vorbereiten
+sollte, hat stattdessen die Teilung ergeben.
+
+**DER PREIS STEHT IM KOPF DIESER DATEI und wird hier nicht verschwiegen:** Pinterest
+wandert damit zum NEUNTEN Mal.
+
+---
+
+## Der Befund, der die Reihenfolge festlegt — EINE KORREKTUR DER BESCHRIFTUNG ÄNDERT NICHT DEN GESPEICHERTEN WERT
+
+**PROVENIENZ, ZWEIGETEILT und nicht zu vermischen:**
+- **Die Aussagen über UNSEREN Code sind am Code gemessen (2026-08-10, read-only).**
+- **Die Aussagen über die Grössen des Anbieters** stammen aus Punkt (g) der
+  Anbieter-Befunde und tragen dessen Provenienz (Anbieter-Doku und Ablesung im
+  Konto, **von mir nicht prüfbar**).
+
+**DER BEFUND, in einem Satz:** Eine Korrektur der Beschriftung ändert **nicht den
+gespeicherten Wert**. Wer für das zweite Ziel bereits eine Nummer eingetragen hat,
+hat sie danach weiterhin — **unter einer Beschriftung, die etwas anderes verlangt.**
+
+**AM CODE BELEGT, warum das so ist:** `publicLabel`, `publicHint` und
+`publicPlaceholder` erscheinen in `TargetCard` ausschliesslich als Anzeigewerte
+(`{config.publicLabel}`, `{config.publicHint}`, `placeholder={config.publicPlaceholder}`).
+Keiner der drei berührt `value`, `onChange` oder einen Ablage-Pfad. Gelesen und
+geschrieben wird über `getPixelId`/`setPixelId` auf `settings.pixels.<ziel>.pixelId`
+— eine andere Achse. **Ein `placeholder` ist ausserdem per HTML nur sichtbar,
+solange das Feld leer ist: Genau derjenige, der bereits etwas eingetragen hat, sieht
+die korrigierte Hilfe NIE.**
+
+**DIE FOLGE, WENN DAS VERDRAHTEN VORHER KÄME:** Der Server forwardete gegen ein
+Konto, das es nicht gibt, und die Karte sagte weiterhin "Zugangsdaten hinterlegt".
+**PRÄZISIERUNG GEGENÜBER DER AUFTRAGSFASSUNG, und sie macht den Befund schärfer
+statt schwächer — am Code gemessen:** Der Statustext der Karte wird aus
+`listConfiguredTargets` abgeleitet, also aus der **Geheimnis-Zeile**. Er trifft über
+das öffentliche Feld **überhaupt keine Aussage** — er stünde auch dann auf
+"Zugangsdaten hinterlegt", wenn dort eine völlig andere Nummer oder Unsinn steht.
+**Die Anzeige widerspricht dem Server also nicht; sie schweigt über genau die
+Angabe, die falsch ist.**
+**ZEITFORM, damit niemand es für einen eingetretenen Vorfall hält:** Das ist ein
+KÜNFTIGER Zustand. **Heute kann er nicht eintreten** — `dispatchForward` kennt genau
+einen Zweig, ein Ziel ohne Adapter wird still übersprungen (`return
+Promise.resolve()`). Der Zustand entsteht **in dem Moment, in dem die zwölfte Scheibe
+die Zuordnung erweitert.**
+
+**FOLGE FÜR DIE REIHENFOLGE: DIE KARTE MUSS VOR DEM VERDRAHTEN KORRIGIERT SEIN.**
+Elfte vor zwölfter. Das ist die einzige Reihenfolge-Bindung dieser Teilung, und sie
+stammt aus einem Anzeige-Befund, nicht aus einer technischen Sperre.
+
+**AUFLAGE AN DIE ELFTE SCHEIBE:** Bestehende Werte für das zweite Ziel sind nach der
+Korrektur als **UNBESTÄTIGT** zu behandeln. **Ob daraus ein Hinweis in der Karte wird
+oder eine einmalige Bereinigung, entscheidet dort der Zuschnitt** — hier
+ausdrücklich NICHT.
+
+**WAS DIE AUFLAGE DRINGENDER MACHT, ALS SIE KLINGT — am Code gemessen (2026-08-10):
+Ein eingetragener Wert ist HEUTE SCHON WIRKSAM, obwohl nichts sendet.** Zwei Wege,
+und beide waren im Dokument bisher nicht benannt:
+1. **In der Auflösung:** `getCapiConfigByTrackingKey` bildet `withPixel` aus
+   `TRACKING_TARGETS` und filtert auf `pixelId !== ""`. Eine gesetzte Kennung bringt
+   das Ziel in den `in("target", …)`-Filter der Geheimnis-Abfrage; liegt eine
+   Geheimnis-Zeile vor, entsteht ein vollständiger `ResolvedTarget`.
+2. **Im ausgelieferten Draht:** `consentTargets` in `CodeImporter` entsteht aus
+   `TRACKING_TARGETS.filter(t => getPixelId(settings, t) !== "")`. **Jede seit der
+   neunten Scheibe neu veröffentlichte Seite eines solchen Projekts fragt den
+   Besucher bereits nach diesem Ziel.**
+**WAS DAS NICHT HEISST:** dass der WERT selbst irgendwo hinausgeht. Er tut es nicht
+— kein Erzeuger bettet ihn in eine Seite ein, und kein Adapter liest ihn. **Wirksam
+ist heute seine ANWESENHEIT, nicht sein Inhalt.**
+
+**EIN ZWEITER, KLEINERER BEFUND AUS DERSELBEN MESSUNG, der in die elfte Scheibe
+gehört und hier nur BENANNT wird:** `TARGET_CARDS.pinterest.publicHint` lautet
+"Öffentlich, steht im Seitenquelltext". **Für Meta ist das am Code wahr**
+(`buildMetaRuntime` bettet `PS_PIXEL_ID` ein). **Für das zweite Ziel ist es falsch**
+— es wird kein Browser-Tag injiziert (Anbieter-Befund (f)), und die Konto-Kennung
+stünde im Endpunkt-PFAD auf dem Server. **Es sind also DREI Beschriftungen, die eine
+Aussage über die Kennung tragen, nicht zwei** (`publicLabel`, `publicPlaceholder`
+und dieser Hinweis).
+
+**DIE FEHLERKLASSE IST BEKANNT: eine Anzeige, die etwas bestätigt, was der Server
+nicht trägt.** Sie ist in dieser Phase bereits einmal live eingetreten — s. "#### Der
+Token-Zwischenfall — die stille Fehlerklasse, zum ERSTEN MAL beobachtet" — und sie
+ist der Grund für den Wortlaut der Karte und für den Testknopf.
+
+---
+
+## Zwei Entscheidungen, die mit dieser Teilung fallen (OWNER, 2026-08-09)
+
+### (a) DAS ÖFFENTLICHE FELD BEHÄLT SEINEN NAMEN
+
+**ENTSCHEIDUNG:** `settings.pixels.<ziel>.pixelId` bleibt, wie es heisst — auf
+beiden Ebenen, dem JSON-Schlüssel wie den Symbolnamen.
+
+**DIE BEGRÜNDUNG STAMMT AUS DER ZEIGER-PRÜFUNG und ist eindeutig:** Die
+**SYMBOL-Ebene bricht LAUT** (TypeScript zeigt jede Fundstelle, der Build wird rot —
+teuer, aber ungefährlich). **Die JSON-Ebene bricht STILL:** Ein Blob aus der Zeit
+davor liefert unter einem neuen Schlüssel den leeren String, **und der ist im
+Auflösungs-Pfad kein Fehler, sondern ein FILTER** — `getCapiConfigByTrackingKey`
+verwirft Einträge mit leerer Kennung, der Eintrag fiele **lautlos aus dem Fan-Out**.
+**Für einen kosmetischen Gewinn ist das der falsche Tausch.**
+
+**PRÄZISIERUNG, am Code gemessen (2026-08-10), weil "aus dem Fan-Out" die Stelle zu
+spät ansetzt:** Der Eintrag fällt schon **VOR** dem Fan-Out heraus, nämlich im
+Filter `withPixel`; er erreicht die Geheimnis-Abfrage gar nicht. **Und er fällt ein
+ZWEITES Mal heraus, an einer ganz anderen Stelle:** aus `consentTargets` in
+`CodeImporter` — die nächste veröffentlichte Seite fragte den Besucher nicht mehr
+nach diesem Ziel. **Zwei stille Ausfälle aus einer Umbenennung, nicht einer.** Das
+verstärkt die Entscheidung; es ändert sie nicht.
+
+**WAS STATTDESSEN GESCHIEHT:** ein Kommentar an der Typdefinition (`ProjectSettings`
+in `src/lib/settings.ts`), dass das Feld **je Ziel Verschiedenes trägt** — für Meta
+eine Pixel-ID, für das zweite Ziel eine Konto-Kennung. **DAS IST KEIN AUFTRAG AN
+DIESE SCHEIBE:** Die zehnte fasst keine Oberfläche und keine Ablage an (Invariante
+6). Der Kommentar gehört zur ELFTEN, die ohnehin an den Beschriftungen arbeitet.
+
+**DIE UMBENENNUNG GEHT IN DEN BACKLOG, MIT DIESER BEGRÜNDUNG** — s. "## Zwei
+Backlog-Kandidaten aus der Aufklärung vom 2026-08-10". **Der Zusatz "mit dieser
+Begründung" ist der eigentliche Punkt:** Ein Backlog-Eintrag ohne sie liest sich
+später wie etwas Vergessenes, und der Nächste baut ihn.
+
+### (b) DIE ÜBERSETZUNGSTABELLE LIEGT IM ADAPTER
+
+**ENTSCHEIDUNG:** Jedes Ziel bringt sein Vokabular mit. **Keine zentrale
+Abbildung.**
+
+**SIE BESTÄTIGT, WAS SEIT DEM 2026-08-07 ENTSCHIEDEN IST** (s. Anbieter-Befund (c))
+und was die Bindung im Kopf dieser Scheibe aus der Struktur begründet hat: Der
+Meta-Adapter reicht `event` unverändert durch, weil ein "Custom Event" bei der
+Graph-CAPI schlicht ein freier `event_name` ist; ein Ziel mit eigenem Namensraum
+braucht die Abbildung an SEINER Naht, sonst entsteht sie im geteilten Pfad und
+betrifft Meta mit.
+
+**AM CODE GEMESSEN, was das heute heisst (2026-08-10):** Es gibt im Repo **keine
+Übersetzung**. `META_STANDARD_EVENTS` (in `src/lib/tracking/meta.ts`) ist die einzige
+Ereignis-Liste, sie trägt Metas Namen und liegt in Metas isolierter Einheit; ihr
+**einziger Leser im Produktivcode ist `ActionPanel`** (Dropdown und der
+`seededCustom`-Rückfall). **Weder `handleIngest` noch `forwardToMeta` noch
+`persistEvent` kennen sie.** Der Name reist von der Eingabe bis zu `event_name`
+**unverändert**, abgesehen von zwei Trimmungen. Eine Tabelle im Adapter ist damit
+die ERSTE Übersetzung dieses Systems überhaupt — und sie berührt nichts
+Bestehendes.
+
+---
+
+## Die zehnte Scheibe — DER ADAPTER FÜR DAS ZWEITE ZIEL (Zuschnitt)
+
+**ÜBERSCHRIFTEN-STEMPEL, 2026-08-09:** Diese Überschrift hiess "## Die zehnte
+Scheibe — PINTEREST SENDET (Platzhalter)". Sie ist umbenannt, weil die Scheibe
+geteilt und zugeschnitten ist; **der Name "PINTEREST SENDET" wandert unverändert an
+die ZWÖLFTE**, wo er hingehört.
+**GEPRÜFT, weil eine Umbenennung Zeiger bricht:** Die Zeichenkette "zehnte Scheibe"
+kommt in dieser Datei an fünf weiteren Stellen vor. Vier bleiben richtig — sie
+meinen den ADAPTER (im Protokoll der neunten: "Kein Adapter — das ist die zehnte
+Scheibe"; die zwei Stellen der Anbieter-Befunde, die den Zuschnitt der zehnten
+binden; die Falle aus der Verdichtung der siebten). **EINE wird durch diese Teilung
+FALSCH und ist ausserhalb dieser Runde gemeldet**, weil sie in der SIEBTEN Scheibe
+liegt: die Aussage, Invariante 6 ("es wird nichts an ein neues Ziel gesendet") werde
+"von der ZEHNTEN Scheibe aufgehoben". **Sie wird von der ZWÖLFTEN aufgehoben** — die
+zehnte sagt ausdrücklich das Gegenteil zu (s. ihre Invariante 1).
 
 **ZWECK:** Das erste zusätzliche Fan-Out-Ziel neben Meta bekommt seinen eigenen
 benannten Adapter und wird tatsächlich beliefert — die Scheibe, für die die ganze
 Phase existiert.
+
+**STEMPEL AM ZWECK, 2026-08-09 — DER SATZ IST DURCH DIE TEILUNG ZU WEIT GEWORDEN und
+bleibt trotzdem stehen:** Seine ERSTE Hälfte ("bekommt seinen eigenen benannten
+Adapter") ist der Zweck DIESER Scheibe. Seine ZWEITE ("und wird tatsächlich
+beliefert — die Scheibe, für die die ganze Phase existiert") gehört ab jetzt der
+ZWÖLFTEN. **Wer ihn ungestempelt läse, baute den Fan-Out mit** — und genau das
+verbietet Invariante 1 unten.
 
 **ZWEI BINDUNGEN, die aus der Aufklärung vom 2026-08-08 stammen und beim Zuschnitt
 vorliegen müssen:**
@@ -6162,6 +6433,12 @@ vorliegen müssen:**
   zum zweiten Ziel — AUFGENOMMEN, NICHT GEPRÜFT", Punkt (b). **DER SATZ DARÜBER
   BLEIBT WORT FÜR WORT STEHEN** — er hält fest, dass das Material einmal gefehlt
   hat, und genau das war der Anlass für die Aufnahme.
+
+**STEMPEL, 2026-08-09 — BEIDE BINDUNGEN SIND IM ZUSCHNITT EINGELÖST.** Die
+Ereignisnamen-Übersetzung steht dort als Punkt 3 der Trage-Liste und zusätzlich als
+Entscheidung (b); die beiden Fehlerwege stehen als Punkt 1. **DIE BINDUNGEN BLEIBEN
+WORT FÜR WORT STEHEN** — sie sind der MASSSTAB, gegen den der Zuschnitt zu lesen ist,
+und ein Zuschnitt, der seine eigene Vorgabe ersetzt, lässt sich nicht mehr prüfen.
 
 ### Die Anbieter-Befunde zum zweiten Ziel — AUFGENOMMEN, NICHT GEPRÜFT
 
@@ -6478,6 +6755,21 @@ richtig; nur ihr ORT wandert, dieselbe Behandlung wie bei den Punkten 2 und 4:
 
 ### ZWEI HINWEISE AUS DER FÜNFTEN SCHEIBE — HINWEISE, KEINE AUFLAGEN
 
+**STEMPEL, 2026-08-09 — HINWEIS (2) BINDET AB JETZT DIE ZWÖLFTE SCHEIBE.** Er sagt,
+die Republish-Eigenschaft werde "hier zum ersten Mal real": Ein Betreiber richtet das
+Ziel ein, sieht "Token gesetzt", und **ohne Republish passiert nichts**. Das tritt
+ein, wenn tatsächlich geliefert wird — also in der ZWÖLFTEN, nicht in der zehnten
+(die ruft niemanden) und nicht in der elften (die beschriftet nur).
+Hinweis (1) ist durch die neunte Scheibe eingelöst; der Draht trägt den zweiten
+Schlüssel.
+**DER BLOCK BLEIBT PHYSISCH HIER STEHEN**, weil ein Zeiger aus der neunten Scheibe
+auf ihn zeigt ("der zweite Hinweis der fünften Scheibe"). **AM CODE BESTÄTIGT
+(2026-08-10):** `LEGACY_CONSENT_ROLE.pinterest` ist `false`, und `allowedTargets`
+filtert bei abwesendem Feld auf die Rolle — eine nicht neu veröffentlichte Seite gibt
+dem zweiten Ziel also fail-closed nichts. **Die fehlende MITTEILUNG an den Betreiber
+bleibt, was sie war: ein Backlog-Kandidat aus der fünften Scheibe, hier nicht zu
+lösen.**
+
 Nachgetragen am 2026-08-07, nach dem Abschluss der fünften Scheibe. **Sie stehen
 ausdrücklich NICHT als Auflagen**, sondern damit der Zuschnitt dieser Scheibe sie
 kennt, wenn er entsteht — was daraus folgt, entscheidet jene Runde.
@@ -6498,6 +6790,17 @@ Sie steht als Backlog-Kandidat im Protokoll der fünften Scheibe und ist von dor
 zu holen, nicht hier zu lösen.
 
 ### Die Auflage aus Punkt (g) — DIE KARTE FRAGT HEUTE NACH DER FALSCHEN KENNUNG
+
+**STEMPEL, 2026-08-09 — DIESE AUFLAGE BINDET AB JETZT DIE ELFTE SCHEIBE, NICHT DIESE
+HIER.** Sie hat die elfte Scheibe VERURSACHT: Aus ihr ist ein eigener Gegenstand
+geworden, und der Befund über die Reihenfolge (s. "## Der Befund, der die Reihenfolge
+festlegt") hat sie VOR das Verdrahten gestellt. **DER TEXT BLEIBT PHYSISCH HIER
+STEHEN** — er gehört zu Punkt (g), auf den er sich Satz für Satz bezieht, und ein
+Umzug risse ihn von seiner Provenienz los. **Die zehnte Scheibe fasst die Karte NICHT
+an** (ihre Invariante 6).
+**WAS DIE ELFTE ZUSÄTZLICH ERBT und hier nicht steht:** die Auflage, bestehende Werte
+als UNBESTÄTIGT zu behandeln, und den dritten Beschriftungs-Befund
+(`publicHint`) — beides steht im Reihenfolge-Befund.
 
 Aufgenommen am 2026-08-08. **PROVENIENZ, getrennt:** Der Zustand der Karte ist **am
 eigenen Code gemessen (2026-08-08)**; die Grössen, auf die er trifft, stammen aus
@@ -6540,6 +6843,16 @@ Werte ein.
 steht die Auflage, nicht ihre Umsetzung.
 
 ### Die Frage, die grösser ist als die Beschriftung — OFFEN, NICHT ENTSCHIEDEN
+
+**STEMPEL, 2026-08-09 — SIE IST JETZT ENTSCHIEDEN, UND ZWAR AUF GRUND GENAU DIESES
+BLOCKS.** Das öffentliche Feld BEHÄLT seinen Namen; s. "## Zwei Entscheidungen, die
+mit dieser Teilung fallen", Entscheidung (a). **DIE ÜBERSCHRIFT BLEIBT WORT FÜR WORT
+STEHEN, obwohl sie "OFFEN" sagt** — und das ist hier ausnahmsweise die richtige
+Behandlung, nicht die bequeme: Dieser Block ist keine VORGABE für einen kommenden
+Bau (dann müsste er richtiggestellt werden), sondern die **KOSTENRECHNUNG**, die die
+Entscheidung getragen hat. Wer nur das Ergebnis liest, kann nicht mehr prüfen, ob sie
+richtig war. **Die Kostenrechnung darunter ist unverändert gültig** — die
+Entscheidung hat ihre Zahlen nicht widerlegt, sondern befolgt.
 
 **DIE SECHSTE SCHEIBE HAT DIE ABLAGE UNTER EINER ANNAHME GEBAUT:** dass das
 öffentliche Feld eine PIXEL-ID-artige Angabe ist. **Für dieses Ziel ist es eine
@@ -6615,6 +6928,236 @@ in `TARGET_CARDS`) kostet eine Datei und keinen Zeiger. Eine Umbenennung der SYM
 kostet 23 Dateien und keinen stillen Bruch. Eine Umbenennung des JSON-SCHLÜSSELS
 kostet zusätzlich einen Wanderungspfad für bestehende Blobs — **oder sie bricht
 still. WELCHE davon nötig ist, ist hier NICHT entschieden.**
+
+**STEMPEL, 2026-08-09 — SIE IST JETZT ENTSCHIEDEN: die BESCHRIFTUNG, sonst nichts.**
+Die Symbol- und die JSON-Ebene bleiben unberührt; die Beschriftung gehört der
+ELFTEN. **Die Aufstellung bleibt Wort für Wort stehen** — sie ist die Rechnung, aus
+der die Entscheidung folgt.
+
+### Der Zuschnitt der ZEHNTEN Scheibe — DER ADAPTER ENTSTEHT UND WIRD VON NIEMANDEM GERUFEN
+
+**ZWECK:** Der Adapter für das zweite Ziel entsteht **als eigene Datei**, samt seiner
+Übersetzungstabelle. **ER WIRD VON NIEMANDEM GERUFEN.**
+
+**DIE TRAGENDE ZUSAGE: NICHTS SENDET, NICHTS ÄNDERT SICH.** Die Scheibe ist **rein
+additiv**. Kein bestehender Pfad wird berührt, keine Zuordnung erweitert, keine
+Oberfläche angefasst. **Ihr Beweis sind neue Tests plus ein unveränderter Bestand.**
+
+**WARUM EINE SCHEIBE, DIE NICHTS BEWIRKT, TROTZDEM EINE IST — der Satz gehört an den
+Anfang, sonst wirkt sie wie Vorrat:** Sie ist der einzige Teil dieser Vierergruppe,
+der **ohne ein fremdes System vollständig prüfbar** ist. Was hier grün wird, muss im
+Live-Test der zwölften nicht mehr in Frage stehen; was hier nicht gebaut wird, würde
+dort im selben Fehlschlag stecken wie drei andere Ursachen.
+
+#### Was der Adapter tragen muss
+
+**PROVENIENZ, die mitwandert und nicht wegfällt:** Die fünf Punkte stammen aus den
+Anbieter-Befunden. **KEINER ist am Code gemessen; sie sind AUFGENOMMEN, nicht
+verifiziert** (s. "#### Die Grenze dieser Aufnahme"). **Vor dem Bau sind sie zu
+VERIFIZIEREN, nicht zu übernehmen.** Was ich am eigenen Code prüfen konnte, ist
+jeweils gesondert gekennzeichnet.
+
+1. **BEIDE FEHLERWEGE.** Der Statuscode ALLEIN genügt nicht: Eine abgelehnte Nutzlast
+   kommt mit **Erfolgsstatus** und meldet den Fehlschlag im **RUMPF**. Nur den Status
+   zu lesen liesse ein abgewiesenes Ereignis **als Erfolg** durchgehen; nur den Rumpf
+   zu lesen liesse ein totes Geheimnis unbemerkt. **UND DIE FORMEN SIND VERSCHIEDEN —
+   ein Parser für nur eine von beiden findet nichts und meldet nichts.**
+   *Am eigenen Code nachgemessen (2026-08-10), als Gegenbeispiel:* `forwardToMeta`
+   verzweigt ausschliesslich auf `res.ok`; **beide Log-Zeilen und der einzige
+   Body-Read (`describeMetaError`) liegen INNERHALB dieses Zweigs.** Und
+   `describeMetaError` wäre auch dann blind, wenn man sie erreichte: Sie sucht
+   `body.error` und meldete bei einem Erfolgs-Rumpf "no error envelope". **Wer den
+   Adapter abschreibt, erbt genau diese Blindheit.**
+2. **DAS IDENTITÄTS-PAAR.** **Beide Werte müssen vorhanden sein oder keiner.** Der
+   bestehende Adapter lässt jede Hälfte einzeln weg; **dieses Muster darf NICHT
+   abgeschrieben werden.**
+   *Am eigenen Code nachgemessen (2026-08-10):* Es sind zwei unabhängige Bedingungen
+   (`if (clientIp) …` / `if (userAgent) …`), und **beide Hälften können real leer
+   sein** — `resolveClientIp` gibt in Produktion `undefined` zurück, sobald die IP
+   loopback oder leer ist (der Dummy hängt an `META_TEST_EVENT_CODE`, und der ist in
+   Prod per Definition leer), und `asString(headers.get("user-agent"))` liefert `""`
+   bei fehlendem Header.
+3. **DIE ÜBERSETZUNGSTABELLE.** Ein Name, der **nicht abbildbar** ist, wird **NICHT
+   stillschweigend durchgereicht** — was stattdessen geschieht, ist eine **Frage an
+   den Stufe-1-Plan**.
+   *Am eigenen Code nachgemessen (2026-08-10):* Heute reist der Name von der Eingabe
+   bis `event_name` unverändert; es gibt im ganzen Repo keine Übersetzung, und die
+   einzige Ereignis-Liste ist Metas.
+4. **DAS GEHEIMNIS REIST IM HEADER**, nicht im Query-String. **Die Log-Disziplin
+   bleibt, ihr Grund verschiebt sich** — beim ersten Adapter ist sie durch die URL
+   begründet, hier wäre sie es durch die Nutzlast. **Wer den GRUND für die REGEL
+   hält, streicht sie beim zweiten Adapter.**
+5. **DER TESTMODUS liegt im QUERY-STRING**, nicht in der Nutzlast. Die Anbieter-Doku
+   warnt selbst davor, ihn vor echten Aufrufen nicht zu entfernen. **Ob er in dieser
+   Scheibe überhaupt ansprechbar wird, ist eine Frage an den Plan.**
+   *Am eigenen Code nachgemessen (2026-08-10), als Kontrast:* Metas Test-Code wandert
+   in die NUTZLAST (`payload.test_event_code`), gegated an `META_TEST_EVENT_CODE`.
+   **Zwei Ziele, zwei Orte** — wer den Meta-Weg kopiert, setzt ihn an eine Stelle, an
+   der er nichts tut.
+
+#### KEINE ABSTRAKTION, ZUM ZWEITEN MAL
+
+**Eine Datei, eine Funktion, der Anbieter im Namen.** Das Modell wird erst beim
+**DRITTEN** Fall ersetzt, nicht beim zweiten. **Was zwischen beiden Adaptern gleich
+aussieht, wird BENANNT, nicht zusammengeführt.**
+
+**DAS IST KEINE NEUE REGEL, sondern die WÖRTLICHE Einlösung dessen, was der erste
+Adapter selbst vorgibt** — sein Kopfkommentar sagt: "das zweite Ziel bekommt seine
+EIGENE benannte Funktion, und erst der DRITTE Fall zeigt, welche Form trägt."
+**WAS "BENENNEN STATT ZUSAMMENFÜHREN" KONKRET HEISST, am Code gemessen
+(2026-08-10):** Struktur, die wiederkehren wird, sind das Deckel-Gerüst
+(`AbortController` + Timer + `clearTimeout` im `finally`), der `fetch`-Aufruf, das
+Weglassen leerer Felder und die Kappung eines Fremdtextes vor dem Log. **Inhalt, der
+NICHT wiederkehrt**, ist das gesamte Feld-Vokabular: `event_name`, `event_time`,
+`event_id`, `action_source`, `user_data` mit `client_ip_address`/`client_user_agent`/
+`fbp`, `custom_data`, der Umschlag `{ data: [ … ] }` und der Fehler-Envelope. **Der
+Adapter darf die erste Gruppe SPIEGELN; zusammenlegen darf er nichts.**
+**EIN BEKANNTES, ANGENOMMENES DUPLIKAT wächst damit auf drei Kopien:** `asString`
+steht bereits doppelt (`ingest.ts` und `meta-forward.ts`), ausdrücklich ohne Test auf
+Gleichheit. Falls der neue Adapter es ein drittes Mal braucht, ist **DAS der dritte
+Fall** — und der Plan sagt dazu, was er tut, statt es beiläufig zu entscheiden.
+
+#### Verhaltens-Invarianten
+
+1. **NICHTS SENDET.** Keine Zuordnung, kein Aufruf, keine Netzwerk-Anfrage — nicht in
+   Produktion und nicht als Nebenwirkung eines Tests.
+2. **DER BESTEHENDE ADAPTER BLEIBT BYTE-GLEICH.** `src/lib/capi/meta-forward.ts` wird
+   nicht angefasst.
+3. **DER INGEST-PFAD WIRD NICHT ANGEFASST.** `src/lib/capi/ingest.ts` unverändert;
+   `dispatchForward` behält seinen einen Zweig.
+4. **DIE NEUE NAHT WIRFT NIE.** Dasselbe Containment wie beim ersten Adapter — **und
+   die Auflage, dass alles VOR dem `try` wurffrei sein muss, wandert MIT.**
+   **WARUM SIE MITWANDERT, obwohl heute niemand ruft:** Sie ist keine Eigenschaft des
+   Adapters, sondern eine Schuld an den AUFRUFER, den die zwölfte Scheibe anhängt.
+   Wer sie erst dort einführt, muss den Rumpf ein zweites Mal aufmachen.
+5. **KEIN LOG FÜHRT DAS GEHEIMNIS.** Auch nicht **mittelbar** über eine
+   Anbieter-Meldung.
+   **DAS WORT "MITTELBAR" TRÄGT HIER EINEN OFFENEN PUNKT ÜBER DEN ERSTEN ADAPTER, und
+   er gehört an diese Stelle, weil der Plan ihn sonst unbesehen kopiert:** Der
+   Meta-Adapter loggt `msg=` aus Metas Fehler-Envelope **ungekürzt bis 200 Zeichen**,
+   mit dem Kommentar, Metas `message` sei "Beschreibungstext (kein Secret)".
+   **Auflage (iii) des Testknopfes behauptet das GEGENTEIL** über dieselbe
+   Zeichenkette ("weil Metas Fehlermeldung Teile des Tokens zurückspiegelt").
+   **BEIDE KÖNNEN NICHT WAHR SEIN. WELCHE, IST AM CODE NICHT ENTSCHEIDBAR** — es
+   bräuchte eine echte abgelehnte Antwort. **Für DIESE Scheibe ist die Folge
+   eindeutig:** Der neue Adapter übernimmt die Annahme NICHT, sondern behandelt die
+   Anbieter-Meldung als potenziell geheimnistragend.
+6. **KEINE OBERFLÄCHE, KEINE MIGRATION.**
+
+#### Ausdrücklich nicht in dieser Scheibe
+
+- **DIE ZUORDNUNG.** Zwölfte — **und sie ist der Moment, in dem Risiko entsteht.**
+- **DIE KARTE.** Elfte.
+- **DER TESTKNOPF.** Dreizehnte.
+- **DIE SICHTBARKEIT DER ÜBERSETZUNG für den Betreiber.** Sie gehört zur Oberfläche.
+  *Am Code gemessen (2026-08-10), als Vorwarnung an die Runde, die sie zuschneidet:*
+  **Keine Ansichtskomponente sieht heute gleichzeitig den Ereignisnamen und die
+  Ziel-Liste** — `ActionPanel` kennt Mappings ohne Ziele, `MeasureView` Ziele ohne
+  Mappings; der einzige Ort mit beidem ist der Container `CodeImporter`.
+
+### Was der Stufe-1-Plan der ZEHNTEN Scheibe beantworten MUSS
+
+Sie stehen als FRAGEN da, damit keine Antwort geraten wird.
+
+- **Wie werden BEIDE Fehlerwege gelesen, ohne dass ein Parser am falschen Format
+  scheitert?**
+- **Was geschieht mit einem Ereignisnamen ohne Abbildung?**
+- **Woher bekommt der Adapter die Konto-Kennung, und wie heisst das Feld heute?**
+- **Wie wird die Anbieter-Meldung bereinigt, bevor sie ins Log geht?**
+- **Welche Tests beweisen den Rumpf-Fehlerweg, ohne einen echten Aufruf?**
+- **Bleibt der bestehende Adapter nachweislich byte-gleich?**
+
+**ZUR DRITTEN FRAGE, damit der Plan nicht bei null anfängt — am Code gemessen
+(2026-08-10):** Das Feld heisst heute `settings.pixels.<ziel>.pixelId`, gelesen über
+`getPixelId`; im aufgelösten Empfänger heisst es `CapiConfig.pixelId`. **Dass es für
+dieses Ziel eine KONTO-Kennung trägt, ist mit Entscheidung (a) bewusst so
+festgeschrieben** — die Frage lautet also nicht, ob umbenannt wird, sondern **über
+welchen Weg der Adapter an den Wert kommt, ohne dass die zehnte Scheibe die
+Auflösung anfasst** (Invariante 3).
+
+---
+
+## Die elfte Scheibe — DIE KARTE FRAGT NACH DER RICHTIGEN KENNUNG (Platzhalter)
+
+**ZWECK:** Die Karte des zweiten Ziels fragt nach der Grösse, die der Adapter
+tatsächlich braucht — der KONTO-Kennung —, statt nach der Tag-Kennung des
+Browser-Tags, den wir nicht injizieren.
+
+**KEIN ZUSCHNITT.** Ihre Grundlage steht in Punkt (g) der Anbieter-Befunde und in
+"### Die Auflage aus Punkt (g) — DIE KARTE FRAGT HEUTE NACH DER FALSCHEN KENNUNG".
+
+**IHRE AUFLAGE, aus "## Der Befund, der die Reihenfolge festlegt":** **Bestehende
+Werte für das zweite Ziel sind nach der Korrektur als UNBESTÄTIGT zu behandeln.** Ob
+daraus ein Hinweis in der Karte wird oder eine einmalige Bereinigung, **entscheidet
+dort der Zuschnitt** — hier ausdrücklich nicht.
+
+**SIE STEHT VOR DER ZWÖLFTEN, und das ist keine Vorliebe:** Eine Korrektur der
+Beschriftung ändert nicht den gespeicherten Wert; wer zuerst verdrahtet, forwardet
+gegen ein Konto, das es nicht gibt.
+
+---
+
+## Die zwölfte Scheibe — PINTEREST SENDET (Platzhalter)
+
+**ZWECK:** Die Zuordnung bekommt ihren zweiten Zweig, der Fan-Out beliefert
+tatsächlich ein zweites Ziel — **und ihr Live-Test ist der Beweis der ganzen Phase.**
+
+**KEIN ZUSCHNITT.**
+
+---
+
+## Die dreizehnte Scheibe — DER TESTKNOPF (Platzhalter)
+
+**ZWECK:** Der Betreiber kann prüfen, ob hinterlegte Zugangsdaten gültig sind, statt
+es aus einer Anzeige zu schliessen, die nur sagt, dass eine Geheimnis-Zeile
+existiert.
+
+**KEIN ZUSCHNITT.** **SEINE DREI AUFLAGEN SIND SEIT DER SECHSTEN SCHEIBE ENTSCHIEDEN
+und stehen hier, damit sie nicht neu verhandelt werden** (Wortlaut aus "### Der
+Zuschnitt der sechsten Scheibe", Punkt (3)):
+- **(i) ER HEISST "Zugangsdaten testen" UND MELDET "Verbindung & Token gültig".** Nie
+  etwas über ZUSTELLUNG. Ein Test, der Zustellung behauptet, wäre dieselbe Lüge wie
+  ein grüner Haken ohne Messung — nur teurer, weil ihm jemand glaubt.
+- **(ii) SEIN ERGEBNIS IST FLÜCHTIG und wird NICHT persistiert.** Ein gespeichertes
+  "gültig" ist ab der nächsten Sekunde eine Behauptung über die Vergangenheit.
+- **(iii) ER MELDET DIE RÜCKMELDUNG DER PLATTFORM NEUTRAL**, ohne Deutung, welche
+  Angabe falsch war — **und der Text wird MASKIERT, weil Metas Fehlermeldung Teile
+  des Tokens zurückspiegelt.**
+
+**SEIN NACHWEIS — PRÄZISER ALS "AUSSCHLIESSLICH LIVE", und der Unterschied ist der
+Grund, warum er eine eigene Scheibe ist:** Drei seiner vier Achsen sind im Test
+prüfbar — der WORTLAUT (der bestehende Wächter in `TargetCard.test.tsx` schliesst
+"aktiv", "läuft", "verbunden", "✓", "•••" und "gerettet" über den gesamten
+Kartentext aus, mit Positivkontrolle), die FLÜCHTIGKEIT (die Mount-Grenze der Karte
+über ihren `key`) und die GUARDS seiner Server-Aktion (das Muster
+"Ownership-Gate VOR dem privilegierten Client" ist in `actions.targets.test.ts`
+mehrfach vorgeführt). **AUSSCHLIESSLICH LIVE PRÜFBAR IST GENAU DIE EINE AUSSAGE, DIE
+ER MACHT:** dass ein echtes Geheimnis von einem echten Anbieter angenommen wird. Ein
+Test dagegen prüfte den Mock.
+**DAS IST KEINE ABSCHWÄCHUNG DER FESTSTELLUNG, sondern ihre Zuspitzung:** Sein
+gesamter PRODUKTWERT hängt an der einen Achse, die kein Test erreicht.
+
+**WAS AM CODE HEUTE FEHLT — gemessen am 2026-08-10 (read-only), damit sein Zuschnitt
+nicht bei null anfängt:**
+- **Es gibt kein Bedienelement.** "Sein Platz existiert jetzt" (sechste Scheibe)
+  meint die STRUKTUR — die Karte als Ort des Zustands und den Statuswortlaut, den er
+  ergänzt statt ihm zu widersprechen —, **nicht ein gerendertes Element.** In
+  `TargetCard` gibt es keinen deaktivierten Knopf und keinen Platzhalter, und das ist
+  konsistent mit Entscheidung (C) jener Scheibe ("ein vorgesehener, leerer Platz wäre
+  ein Kästchen, das nach einem Fehler aussieht").
+- **Es gibt keinen Lesepfad auf das Geheimnis mit Owner-Autorisierung.** Der einzige
+  Leser der `secret`-Spalte ist `getCapiConfigByTrackingKey` — `server-only`, über
+  den `trackingKey` autorisiert statt über die Sitzung, und er verlangt eine gesetzte
+  Kennung und ein vollständiges Paar. **Eine Funktion (Owner-Sitzung, Projekt, Ziel)
+  -> Geheimnis existiert nicht.**
+- **Es gibt keinen Rückkanal für einen Anbieter-Ausgang.** `forwardToMeta` gibt
+  `Promise<void>` zurück; der Kopf jener Datei führt einen Ergebnistyp ausdrücklich
+  als EIGENE, geparkte Frage.
+- **Ein Knopfname "Zugangsdaten testen" stünde bei zwei Karten ZWEIMAL identisch da.**
+  Die Karte hat dieses Problem für ihre bestehenden Knöpfe bereits gelöst
+  (`${config.name} speichern` / `${config.name} entfernen`, mit zwei Tests auf die
+  Eindeutigkeit). **Die Projektregel dazu gilt unverändert; sein Zuschnitt muss sie
+  einlösen, nicht neu entdecken.**
 
 ---
 
@@ -6749,3 +7292,83 @@ keinem Test berührt.**
 die Hälfte B den Draht auf eine einzige Ziehung umstellt: Solange **irgendein**
 erzeugter Text den Hook mehr als einmal fragt — und mit Pixel tut er das heute beim
 ersten Klick —, ist die Divergenz möglich und ungedeckt.
+
+**STEMPEL, 2026-08-09 — DIE MESSUNG "KEIN TREFFER" IST ÜBERHOLT, DER KANDIDAT NICHT.**
+Die Verdichtung der neunten Scheibe führt denselben Satz als "EINGELÖST, ABGELAUFEN"
+und nennt zwei Tests, die seither einen verschieden antwortenden Hook decken
+(`consent.test.ts` an der Regel, `generate.test.ts` am fertigen Dokument). **Die Zahl
+oben ist damit ein Zeitdokument vom 2026-08-08 und bleibt als solches stehen.** Was
+NICHT eingelöst ist, ist der letzte Absatz: der ALTE Pfad (mit Pixel, erster Klick)
+fragt weiterhin mehrfach. **Der Kandidat schrumpft auf genau diesen Rest.**
+**GEMELDET, NICHT ZUSAMMENGEFÜHRT:** Beide Fassungen zu vereinen hiesse, in die
+abgeschlossene neunte Scheibe hineinzuschreiben.
+
+---
+
+## Zwei Backlog-Kandidaten aus der Aufklärung vom 2026-08-10 — BENANNT, NICHT GEPLANT
+
+**EIGENE SEKTION, aus demselben Grund wie bei den drei Abschnitten darüber:** Sie
+stammt aus einer eigenen Aufklärung, und Aufklärungen dieser Phase sind am
+**Gegenstand** zu unterscheiden, nicht am Datum. **PROVENIENZ: am Repo gemessen am
+2026-08-10 (read-only).** Kein Termin, keine Zusage.
+
+### (1) DIE UMBENENNUNG DES ÖFFENTLICHEN FELDES
+
+**GEGENSTAND:** `settings.pixels.<ziel>.pixelId` heisst nach einer Pixel-ID und
+trägt für das zweite Ziel eine KONTO-Kennung. Die Symbolnamen (`getPixelId`,
+`setPixelId`, `CapiConfig.pixelId`, die Requisiten `pixelId`/`onPixelIdChange`, die
+Erzeuger-Option `metaPixelId`) tragen dieselbe Annahme.
+
+**WARUM ER NICHT IN DIESER PHASE GESCHIEHT — und diese Begründung ist der eigentliche
+Inhalt des Kandidaten, ohne sie hält ihn später jemand für vergessen und baut ihn:**
+Die zwei Ebenen brechen **verschieden**. Die SYMBOL-Ebene bricht **laut** — der Build
+wird rot, teuer, aber ungefährlich. Die JSON-Ebene bricht **still**: Ein
+Einstellungs-Blob aus der Zeit davor liefert unter einem neuen Schlüssel den leeren
+String, **und der ist kein Fehler, sondern ein FILTER.** Gemessen fällt der Eintrag
+dann an ZWEI Stellen lautlos heraus — aus `withPixel` in
+`getCapiConfigByTrackingKey` (also vor der Geheimnis-Abfrage, nicht erst im Fan-Out)
+und aus `consentTargets` in `CodeImporter`, womit die nächste veröffentlichte Seite
+den Besucher nicht mehr nach diesem Ziel fragte. **Für einen kosmetischen Gewinn ist
+das der falsche Tausch.**
+**UND ES GIBT EINE AUSDRÜCKLICHE ENTSCHEIDUNG GEGEN GENAU DAS, am Code:** Der
+Kommentar an `getPixelId` hält fest, dass es KEINEN Alt-Blob-Rückfall gibt — weil
+sich die FORM bei der Ziel-Parametrisierung nicht geändert hat. **Eine Umbenennung
+des Blattes schafft genau den zweiten Lesepfad, den jene Scheibe vermieden hat.**
+
+**WAS STATTDESSEN ENTSCHIEDEN IST:** Das Feld behält seinen Namen; ein Kommentar an
+der Typdefinition sagt, dass es je Ziel Verschiedenes trägt. S. "## Zwei
+Entscheidungen, die mit dieser Teilung fallen", Entscheidung (a).
+
+**UMFANG, falls er je gebaut wird — gemessen:** **8 Produktivdateien und 15
+Testdateien** nennen einen der Namen. **GRENZE:** Die Zahlen stammen aus der
+Zeiger-Prüfung vom 2026-08-08 und sind in dieser Runde NICHT nachgemessen; sie
+veralten mit jeder Datei, die einen dieser Namen aufnimmt.
+**EIN NEBENBEFUND AUS DERSELBEN PRÜFUNG, der die Rechnung in EINE Richtung
+verschiebt:** `getMetaPixelId` und `setMetaPixelId` haben **keinen Aufrufer im
+Produktivcode** — nur Tests rufen sie, und drei Stellen behaupten das Gegenteil.
+
+### (2) KEIN TEST DECKT DEN FAN-OUT MIT ZWEI ECHTEN EMPFÄNGERN
+
+**BESTÄTIGT durch die Aufklärung vom 2026-08-10, am Code gelesen.** Der Befund war
+im Protokoll der siebten Scheibe bereits als Nicht-Leistung benannt ("DIE ANORDNUNG
+IST LIVE NICHT PRÜFBAR … die Tests arbeiten mit einem STELLVERTRETER"); **hier steht
+er zum ersten Mal als Kandidat.**
+
+**DIE MESSUNG, mit ihrer Achse:** In `src/lib/capi/fan-out.test.ts` fahren die
+**vier** Tests, die zwei Empfänger brauchen (Gleichzeitigkeit, EIN Deckel für beide,
+kein geteiltes Abbruchsignal, plus die Containment-Probe), allesamt auf
+`TWO_ENTRIES` — **zweimal dasselbe Ziel `meta`**, unterschieden allein an der
+Pixel-ID und damit an der Forward-URL. **Der Kopf der Datei erklärt den
+Stellvertreter selbst** und sagt, dass der Resolver diese Konstellation gar nicht
+erzeugen kann (der Primärschlüssel der Geheimnis-Tabelle ist `(project_id, target)`).
+
+**WAS DAMIT UNGEDECKT IST, und es ist mehr als "zwei statt einem":** die Anordnung
+mit zwei VERSCHIEDENEN Adaptern — verschiedene Deckelwerte, verschiedene Fehlerwege,
+verschiedene Rumpfformate. **Er bindet damit den Kandidaten (1) des Abschnitts vom
+2026-08-08:** Der Deckelwert ist modul-privat, nichts erzwingt, dass ein zweiter
+dieselbe Zahl nimmt, und **kein Test sähe die Divergenz je nebeneinander.**
+
+**WANN ER EINLÖSBAR WIRD:** erst mit der ZWÖLFTEN Scheibe. Vorher gibt es keinen
+zweiten Empfänger, den ein Test einsetzen könnte — **der Kandidat ist also kein
+Versäumnis, sondern eine Vorbedingung, die noch fehlt.** **DAS IST KEIN AUFTRAG AN
+DIE ZWÖLFTE:** ob sie ihn mitnimmt, entscheidet ihr Zuschnitt.

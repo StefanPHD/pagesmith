@@ -52,7 +52,7 @@ export type ConfiguredState = boolean | null;
  * im Repo, an der Ziel-Wissen liegt (neben META_TARGET, META_CONSENT_TARGET, dem
  * CHECK der Geheimnis-Tabelle und TRACKING_TARGETS). GEMELDET, NICHT GELOEST — die
  * Zusammenlegung der Kopien ist aus dieser Scheibe ausdruecklich ausgeschlossen.
- * WANN ES UMGELEGT WIRD: sobald das Ziel einen Adapter bekommt (zwoelfte Scheibe).
+ * WANN ES UMGELEGT WIRD: sobald das Ziel tatsaechlich beliefert wird (zwoelfte Scheibe).
  * Dann verschwindet der Hinweis von selbst — er haengt an DIESEM Feld und an
  * keinem Kommentar.
  */

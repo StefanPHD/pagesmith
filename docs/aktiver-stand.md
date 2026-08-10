@@ -22,9 +22,19 @@ reist zum Server — ABGESCHLOSSEN und live bewiesen, (6) die ZUGANGSDATEN JE ZI
 MEHRERE ZIELE — **ABGESCHLOSSEN und live bewiesen**, (8) DER BEACON VERLÄSST METAS
 LAUFZEIT — **ABGESCHLOSSEN und live bewiesen**, (9) DIE EINWILLIGUNG JE ZIEL —
 **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (10) DER ADAPTER FÜR DAS ZWEITE
-ZIEL — **ZUGESCHNITTEN**, (11) DIE KARTE FRAGT NACH DER RICHTIGEN KENNUNG —
-**ABGESCHLOSSEN und live bewiesen**, (12) PINTEREST SENDET — PLATZHALTER,
-(13) DER TESTKNOPF — PLATZHALTER.
+ZIEL — **ABGESCHLOSSEN, OHNE LIVE-NACHWEIS**, (11) DIE KARTE FRAGT NACH DER
+RICHTIGEN KENNUNG — **ABGESCHLOSSEN und live bewiesen**, (12) PINTEREST SENDET —
+PLATZHALTER, (13) DER TESTKNOPF — PLATZHALTER.
+
+**NACHGEZOGEN AM 2026-08-10 — ELF SIND ABGESCHLOSSEN, OFFEN SIND ZWEI.** Hier stand
+bei (10) "ZUGESCHNITTEN", und der Stempel darunter sagte "ZEHN … OFFEN SIND DREI".
+**BEIDE BLEIBEN WORT FÜR WORT STEHEN.**
+**DIE FORMULIERUNG BEI (10) WEICHT BEWUSST VON ALLEN ANDEREN AB, und der Unterschied
+ist keine Nachlässigkeit:** Neun Scheiben tragen "ABGESCHLOSSEN **und live
+bewiesen**". Die zehnte kann das nicht tragen — **ihr Adapter wird von niemandem
+gerufen, ein Live-Nachweis ist für sie nicht führbar.** Wer die Zeile angleicht,
+behauptet eine Prüfung, die es nicht gab. **Die erste Gelegenheit dazu ist die
+ZWÖLFTE.**
 
 **NACHGEZOGEN AM 2026-08-10, SPÄT — ZEHN SIND ABGESCHLOSSEN, OFFEN SIND DREI.** Hier
 stand bei (11) "ZUGESCHNITTEN", und der Stempel darunter sagte "es bleiben vier".
@@ -7545,6 +7555,239 @@ festgeschrieben** — die Frage lautet also nicht, ob umbenannt wird, sondern **
 welchen Weg der Adapter an den Wert kommt, ohne dass die zehnte Scheibe die
 Auflösung anfasst** (Invariante 3).
 
+### Protokoll der zehnten Scheibe — Vollzug und Abschluss
+
+Der Zuschnitt darüber ist der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+**DIE BUCHSTABEN IN DIESEM PROTOKOLL SIND LOKAL.**
+
+**VOLLZOGEN AM 2026-08-10 — Commit `b82fa77`, gepusht. ZWEI Dateien
+(`pinterest-forward.ts`, `pinterest-forward.test.ts`), BEIDE NEU, 1093 Zeilen zu,
+NULL ab. KEINE bestehende Datei geändert, keine Migration.**
+
+#### DIESE SCHEIBE HAT KEINEN LIVE-TEST — und das ist ihre Bauform, kein Mangel
+
+Der Adapter wird von niemandem gerufen. **Es gibt nichts, was in Produktion zu
+beobachten wäre**, und ein Live-Test hätte nur bewiesen, dass sich nichts geändert
+hat — was die Suite bereits zeigt.
+
+**DER VERMERK WÄRE DABEI BEINAHE AUSGEFALLEN, und das gehört hierher, weil es eine
+FIGUR ist und kein Versehen:** In allen bisherigen Scheiben dieser Phase folgte das
+Protokoll dem Live-Test. Der Live-Test war der Auslöser. **Hier fiel der Auslöser weg
+— und der Schritt fiel mit**, obwohl er selbst gebraucht wurde. Bemerkt hat es das
+Owner-Gegenüber, nicht der Architekt.
+
+**EIN SCHRITT, DER AN EIN EREIGNIS GEKOPPELT IST, FÄLLT AUS, WENN DAS EREIGNIS
+AUSFÄLLT — AUCH WENN ER SELBST GEBRAUCHT WIRD.** Die Kopplung ist im Normalbetrieb
+unsichtbar, weil das Ereignis fast immer eintritt; **sie zeigt sich genau einmal,
+nämlich beim ersten Ausfall, und dann als Auslassung statt als Fehler.** S. Punkt (a).
+
+#### Der Bau, gemessen am eigenen Lauf
+
+**PROVENIENZ: von mir gemessen am 2026-08-10 auf diesem Rechner, `npx vitest run`
+bzw. `npx tsc --noEmit`. GRENZE: je ein Lauf; die Zahlen veralten mit der nächsten
+Testdatei.**
+
+| | Dateien | Tests |
+|---|---|---|
+| vorher | 50 | **957** |
+| nachher | **51** | **993** (+36) |
+
+**KEIN BESTANDSTEST ANGEFASST, KEINE ERWARTUNG GEÄNDERT.** Die +36 liegen geschlossen
+in der neuen Datei — 30 `it()`-Blöcke, einer davon siebenfach ausgerollt.
+**Die vier Gates grün, auf dem Endzustand nach der letzten Rücknahme:**
+`tsc --noEmit`, `eslint`, `vitest run` (993/993), `next build`.
+
+**DER NO-OP-ZWISCHENSTAND — GEMESSEN, NICHT BEHAUPTET.** Nachdem der Adapter
+existierte und **bevor** die Testdatei entstand: **50 Dateien, 957 Tests, unverändert
+gegenüber dem Basislauf**; `grep -rn "pinterest-forward" src/` ohne Treffer ausserhalb
+der Datei selbst; `tsc` und `eslint` grün.
+**DIE MESSUNG IST STÄRKER ALS GEPLANT und schwächer im Vorgehen — beides gehört
+gesagt:** Geplant war ein Rumpf mit Signatur; gebaut wurde die Datei in einem Zug.
+**Was der Zwischenstand belegt, ist damit mehr** (die VOLLSTÄNDIGE Datei ist ein
+No-op, nicht nur ein Gerüst) — **die vereinbarte Schrittfolge ist trotzdem nicht
+eingehalten worden.** S. Punkt (e).
+
+#### Die sechs Mutationen, Vorhersage und Ergebnis nebeneinander
+
+| Mutation | Vorhersage VOR dem Lauf | ERGEBNIS |
+|---|---|---|
+| **M1** Rumpf auf dem Erfolgspfad ignorieren | **10**: T2, T3, alle **sieben** T5, T12b | **10 rot, exakt diese — punktgenau** |
+| **M2** Warnung als stillen Erfolg behandeln | **2**: T2, T12b | **2 rot, exakt diese — punktgenau** |
+| **M3a** Schwärzung im Bereiniger entfernen | **1×2**: T12, T12b | **2 rot, exakt diese — punktgenau** |
+| **M3b** Nicht-JSON-Pfad loggt den rohen Rumpf | **1**: T13 | **1 rot, exakt dieser — punktgenau** |
+| **M4** Wert als Zahl senden | **1**: T14 | **1 rot, exakt dieser — punktgenau** |
+| **M5** Riegel in zwei unabhängige `if` aufspalten | **2**: T6, T7 | **2 rot, exakt diese — punktgenau** |
+
+**KEINE MUTATION BLIEB GRÜN. KEINE TRAF ÜBER IHRE VORHERSAGE HINAUS.** Das ist in
+dieser Phase der erste Bau, bei dem beides zugleich gilt.
+
+**ZWEI ERGEBNISSE SIND MEHR ALS EINE BESTÄTIGUNG:**
+- **M1 TRIFFT ZEHN TESTS.** Wer den Rumpf ignoriert, verliert **nicht einen Test,
+  sondern die GESAMTE Auswertung**. Das ist die Blindheit des ersten Adapters —
+  **hier zehnfach sichtbar gemacht statt behauptet.** Der Zuschnitt sagte, ein
+  Erfolgsstatus mit Fehlschlag im Rumpf bliebe dort "vollständig unbemerkt"; die Zahl
+  zehn ist die Grösse dieses "vollständig".
+- **M3a UND M3b FALLEN EINZELN.** Die zwei Bereinigungs-Pfade sind **getrennt**
+  gedeckt; eine Behebung, die nur einen anfasst, wird sofort sichtbar. **Das war der
+  Grund, die Mutation zu teilen** — dieselbe Lehre wie in der elften Scheibe: Eine
+  Mutation, die zwei Achsen bewegt, ist ein Umbau, und ihr Ergebnis sagt nicht,
+  welche Achse gedeckt ist.
+
+**DIE VORHERGESAGTE FEHLERQUELLE TRAT NICHT EIN, UND DER GRUND IST BAUSEITIG.** Der
+Stufe-1-Plan hatte **die KASKADE** als wahrscheinlichste benannt — nicht "zu eng beim
+Zählen", nicht "zu weit beim Schätzen — weil sieben Tests je eine eigene Antwort auf
+derselben Attrappe stellen. **Sie ist nicht aufgetreten:** `global.fetch` wird in
+`beforeEach` **neu zugewiesen**, eine unverbrauchte Warteschlange stirbt mit der
+alten Attrappe und kann keinen Nachfolger erreichen.
+**DIE AUFLAGE AUS DEM EIGENEN PLAN HAT GENAU DAS VERHINDERT, WOVOR SIE WARNTE** — und
+das ist die brauchbarere Lesart als "die Vorhersage war falsch": Eine Vorhersage über
+eine Fehlerquelle, die man im selben Zug verbaut, muss nicht eintreten, um richtig
+gewesen zu sein.
+
+### Die fünf Kontraste zum ersten Adapter — der Beleg für "keine Abstraktion, zum zweiten Mal"
+
+**AN FÜNF STELLEN SIEHT ES GLEICH AUS UND IST ES NICHT.** Sie stehen im Kopf der
+neuen Datei und hier, weil sie über den Einzelfall hinausgehen:
+
+| | Erster Adapter | Zweiter Adapter |
+|---|---|---|
+| **1. FEHLERWEGE** | verzweigt ausschliesslich auf `res.ok`; die Fehlerdeutung läuft nur INNERHALB dieses Zweigs | **erst am Status trennen, dann den Rumpf lesen** — eine abgelehnte Nutzlast kommt hier mit ERFOLGSSTATUS |
+| **2. DER TYP DES WERTES** | sendet eine **ZAHL** | erwartet eine **ZEICHENKETTE** |
+| **3. DAS IDENTITÄTS-PAAR** | lässt **jede Hälfte EINZELN weg** | **beide oder keiner** — ohne Kennung wird gar nicht gesendet |
+| **4. DER ORT DES TESTMODUS** | in der **NUTZLAST** (`test_event_code`) | im **QUERY-STRING** (`test=true`) |
+| **5. `action_source`** | `"website"` | **`"web"`** — Metas Wert existiert in diesem Enum nicht |
+
+**DER SATZ, DER SIE TRÄGT: EIN GEMEINSAMES MODELL HÄTTE AN JEDER DIESER FÜNF STELLEN
+DAS FALSCHE VEREINHEITLICHT — UND ZWAR SO, DASS ES BEIM LESEN RICHTIG AUSSIEHT.**
+Ein Adapter mit einer geteilten Nutzlast-Form hätte einen Typ, einen Ort und einen
+Enum-Wert festgelegt; jede dieser Festlegungen wäre für genau eines der beiden Ziele
+richtig gewesen, und **keine hätte sich beim Lesen als Fehler zu erkennen gegeben.**
+**Das ist der Grund, warum die Abstraktion beim DRITTEN Fall entsteht und nicht beim
+zweiten:** Zwei Fälle zeigen, WAS verschieden ist; erst der dritte zeigt, was
+tatsächlich gleich bleibt.
+
+#### Vier benannte Punkte, die künftige Arbeit binden
+
+**(a) EIN SCHRITT, DER AN EIN EREIGNIS GEKOPPELT IST, FÄLLT MIT DEM EREIGNIS AUS.**
+
+**BELEG:** Der Protokoll-Vermerk folgte in dieser Phase neunmal dem Live-Test. Hier
+gab es keinen — und der Vermerk wäre beinahe mit ausgefallen, obwohl er gebraucht
+wurde. **Die Kopplung war nie beschlossen; sie ist aus Gewohnheit entstanden**, und
+genau deshalb war sie unsichtbar.
+**DIE FIGUR ÜBER DEN FALL HINAUS:** Wer einen Schritt an einen Auslöser hängt, sollte
+wissen, ob der Schritt dem Auslöser DIENT oder ihm nur FOLGT. Dient er ihm, darf er
+mit ihm entfallen. Folgt er ihm bloss, ist die Kopplung eine Falle, die genau einmal
+zuschnappt — beim ersten Ausfall, und dann als **Auslassung** statt als Fehler.
+
+**(b) EIN BEREINIGER, DER DAS GEHEIMNIS KENNEN MUSS, IST SELBST EINE STELLE, AN DER
+ES VERLORENGEHEN KANN.**
+
+Der gebaute kennt es nicht. **Seine Aufgabe ist nicht "finde den Token", sondern
+"KEINE LANGE UNDURCHSICHTIGE ZEICHENFOLGE VERLÄSST DIESE FUNKTION" — eine Regel über
+die AUSGABE, nicht über das WISSEN.** Damit fängt er auch **Teil-Rückspiegelungen**
+und Geheimnisse, die wir gar nicht als solche kennen.
+**DIE GRENZE GEHÖRT DAZU und steht im selben Kommentar: EIN KURZES GEHEIMNIS GINGE
+DURCH.** Wir haben heute keines; bekämen wir eines, ist die Regel neu zu entscheiden.
+**WARUM DIE UMKEHRUNG MEHR IST ALS EINE FORMULIERUNG:** Die naheliegende Bauform
+hätte den Token an den Bereiniger übergeben. Sie hätte **exakt** den gemessenen Fall
+gefangen und **nur** ihn — und dafür eine zweite Stelle geschaffen, an der das
+Geheimnis im Speicher liegt und geloggt werden kann.
+
+**(c) EINE ERLAUBNIS IST KEIN AUFTRAG.**
+
+Der Stufe-1-Plan führte die URL als loggbar, weil sie bei diesem Anbieter **kein**
+Geheimnis trägt (es reist im Header). **Gebaut ist sie NICHT geloggt.** Der
+HTTP-Status trägt die Diagnose; die Kennung des Betreibers fügt nichts hinzu, und bei
+einer Scheibe mit Sicherheits-Bezug ist die **kleinere Oberfläche der bessere
+Vorgabewert**.
+**ALS ABWEICHUNG VOM EIGENEN PLAN DEKLARIERT, nicht stillschweigend eingeordnet** —
+sonst wäre der Plan im Nachhinein an den Bau angepasst worden, und beide hätten sich
+nicht mehr gegenseitig prüfen können.
+
+**(d) EIN IMPORT-VERBOT IST IM UNIT-TEST NICHT EHRLICH PRÜFBAR.**
+
+Der Plan führte "kein Import des Moduls ausserhalb seiner Testdatei" als **Test**.
+Gebaut ist es eine **formale Gegenprobe** (`grep` über `src/`).
+**DER GRUND: Ein Test dafür wäre ein Wächter gewesen, der etwas behauptet, das er
+nicht sehen kann.** Ein Unit-Test läuft innerhalb eines Modulgraphen; er kann nicht
+feststellen, wer ihn NICHT importiert. Er hätte grün gestanden und nichts gedeckt —
+**dieselbe Klasse wie ein hohler Test, nur schwerer zu bemerken, weil sein Name das
+Richtige verspricht.**
+
+**(e) EINE FÜNFTE, DIE DER AUFTRAG NICHT NENNT — sie betrifft die Arbeitsweise, nicht
+den Code, und wird deshalb hier und nicht im Backlog geführt:** Zwei
+Verfahrens-Abweichungen sind im Bau aufgetreten und im Bericht deklariert worden.
+Die Datei entstand **in einem Zug statt in den fünf vereinbarten Schritten** (der
+No-op-Zwischenstand wurde trotzdem gemessen), und **eine Mutation wurde per Skript
+statt per Edit-Werkzeug gesetzt** — dieselbe Klasse wie die Werkzeug-Regel zu
+`sed -i`. **Geprüft und unschädlich:** beide Dateien tragen null CR und sind
+zeilenende-konsistent. **Sie stehen hier, weil eine deklarierte Abweichung ein
+Vorgang ist und eine unbemerkte ein Risiko.**
+
+#### Was diese Scheibe ausdrücklich NICHT geleistet hat
+
+- **ES SENDET NICHTS.** Kein Aufrufer, keine Zuordnung, kein Import — formal
+  gegengeprobt.
+- **DIE TESTSUITE MISST DIE TREUE DES CODES ZU EINER TRANSKRIPTION, NICHT ZUM
+  VERTRAG.** Ist eine Angabe falsch aufgenommen, sind die Tests **grün und der
+  Adapter falsch** — und **NICHTS in dieser Scheibe kann es entdecken**, weil sie
+  keinen Aufrufer hat. **Die erste Gelegenheit zur Prüfung ist die ZWÖLFTE.**
+- **DER ERFOLGS-RUMPF IST NIE GEMESSEN WORDEN, und genau er trägt die Auswertung.**
+  Handgemessen ist ausschliesslich der **FEHLER**-Rumpf bei ungültigem Geheimnis
+  (2026-08-07). Die Abstufung steht in "#### Die Grenze dieser Aufnahme".
+- **DIE DRITTE `asString`-KOPIE IST REAL GEWORDEN.** Die Erwartung aus dem Protokoll
+  der VIERTEN Scheibe ist damit **fällig und NICHT eingelöst** — aufgeschoben aus
+  Scope-Gründen, nicht vergessen. Eine neutrale Datei berührte zwei unantastbare
+  Dateien.
+- **DER BEFUND ÜBER DEN BESTEHENDEN ADAPTER IST UNBERÜHRT.** Er loggt weiterhin bei
+  ungültigem Token ein Token-Fragment, über zwei Pfade. **Der neue Adapter macht die
+  Stelle sichtbar, indem er sie anders löst — er behebt sie nicht.**
+
+### DIE ZEHNTE SCHEIBE IST ABGESCHLOSSEN — DIE VERDICHTUNG
+
+**WAS ABLÄUFT — es hat seinen Zweck erfüllt und steht ab jetzt im Protokoll:**
+- **Die fünf Anforderungen der Trage-Liste.** Alle gebaut und je durch eine Mutation
+  belegt: beide Fehlerwege (M1), das Identitäts-Paar (M5), die Übersetzungstabelle
+  (T9–T11), das Geheimnis im Header (T16), der Testmodus im Query-String (T17).
+- **Die sechs Verhaltens-Invarianten.** Nichts sendet, der bestehende Adapter
+  byte-gleich, der Ingest-Pfad unberührt, die Wurffreiheit strukturell, kein Log führt
+  das Geheimnis, keine Oberfläche und keine Migration — alle sechs gegengeprobt.
+- **Die zehn Stufe-1-Fragen** (sechs alte, vier neue). Alle beantwortet.
+- **Die vier Ausschlüsse.** Eingehalten.
+
+**WAS BINDEND BLEIBT — SECHS, und der Adressat ist NICHT durchweg die zwölfte
+Scheibe. WIDERSPRUCH ZUM AUFTRAGSTEXT, der sagt, sie sei "der Adressat fast aller
+Bindungen": Es sind DREI von sechs, und die drei anderen richten sich an andere
+Stellen. Die Unterscheidung ist nicht formal — wer alles der zwölften zuschreibt,
+lädt ihr Arbeit auf, die dort nicht hingehört, und verliert die drei, die sie NICHT
+erledigen wird:**
+
+**AN DIE ZWÖLFTE:**
+1. **DER ADAPTER BRAUCHT EINEN AUFRUFER, und der muss die Konfigurationsform
+   abbilden.** `PinterestConfig` ist bewusst NICHT `CapiConfig` — die Struktur passt,
+   die Namen jener Form lügen. Die Abbildung entsteht dort.
+2. **`hasAdapter` IN `TARGET_CARDS` MUSS UMGELEGT WERDEN**, sonst steht der
+   Auslieferungs-Hinweis weiter da. Er hängt an DIESEM Feld und an keinem Kommentar.
+   *(Und der Wegweiser daneben nennt seit dem 2026-08-10 die richtige Bedingung.)*
+3. **IHR LIVE-TEST IST DIE ERSTE PRÜFUNG DER TRANSKRIPTION.** Alles, was diese
+   Scheibe über den Anbieter annimmt, wird dort zum ersten Mal von aussen bestätigt
+   oder widerlegt. **Das ist ihre wichtigste Erbschaft und keine Nebenbedingung.**
+
+**NICHT AN DIE ZWÖLFTE:**
+4. **DER BEFUND ÜBER DEN BESTEHENDEN ADAPTER** (Token-Fragment im Log, zwei Pfade).
+   **Adressat ist das Security-Manifest und eine EIGENE Runde** — nicht die zwölfte,
+   die ihn nicht anfasst. **Und er steht heute nur in dieser Datei, die am Phasenende
+   gelöscht wird.**
+5. **DIE FIGUR AUS PUNKT (a)** — ein Schritt, der an ein Ereignis gekoppelt ist.
+   **Adressat ist JEDE künftige Runde**, nicht eine bestimmte.
+6. **DER HEBUNGSKANDIDAT** (Wissen, das nur im Gespräch existiert). **Adressat ist
+   das Phasenende**; nur über CLAUDE.md überlebt er.
+
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WIRD:** die Anbieter-Befunde, die fünf Angaben,
+die sechs Entscheidungen und ihre Grenze. **Sie sind nicht Herleitung, sondern
+GRUNDLAGE** — der Adapter ist gegen sie gebaut, und die zwölfte prüft sie zum ersten
+Mal. Wer sie verdichtete, nähme dem Live-Test seinen Massstab.
+
 ---
 
 ## Die elfte Scheibe — DIE KARTE FRAGT NACH DER RICHTIGEN KENNUNG (Zuschnitt)
@@ -8426,3 +8669,69 @@ spricht.
 
 **ER BINDET DIE ZWÖLFTE SCHEIBE AN DER STELLE, AN DER SIE OHNEHIN HINSIEHT.** Ein
 Wort löst ihn.
+
+**STEMPEL, 2026-08-10 — ERLEDIGT, Commit `07f7bb1`.** Die Wortgruppe „einen Adapter
+bekommt" ist durch „tatsächlich beliefert wird" ersetzt; Nummer und Bedingung stimmen
+wieder überein. **Der Text darüber bleibt Wort für Wort stehen** — er hält die
+Fehlerfigur fest, aus der Punkt (b) der elften Scheibe entstanden ist ("wer eine
+Hälfte einer Aussage korrigiert, macht die andere zur Falle").
+
+---
+
+## Vier Backlog-Kandidaten aus dem Bau der ZEHNTEN Scheibe — BENANNT, NICHT GEPLANT
+
+**EIGENE SEKTION, weil sie aus dem BAU stammt und nicht aus einer Aufklärung** —
+dieselbe Trennung wie bei der siebten und der elften Scheibe. **PROVENIENZ: am Code
+gemessen am 2026-08-10, während und nach dem Bau.** Kein Termin, keine Zusage.
+
+**WAS DIESE VIER VERBINDET, und der Satz gehört an den Anfang: DREI DAVON SIND AM
+ERSTEN ADAPTER, UND SIE SIND ALLE DADURCH SICHTBAR GEWORDEN, DASS DER ZWEITE SIE
+ANDERS LÖST.** Nicht durch eine Prüfung, nicht durch einen Fehlschlag — **durch einen
+Nachbarn, der dieselbe Frage anders beantwortet.** Der bestehende Adapter war in
+dieser Scheibe unantastbar; jeder Punkt ist deshalb gemeldet und nicht gebaut.
+
+### (1) DER ERSTE ADAPTER SETZT DIE KENNUNG OHNE KODIERUNG IN DEN PFAD
+
+`forwardToMeta` baut `.../${config.pixelId}/events` — **der Wert wird unverändert
+eingesetzt.** `getPixelId` trimmt ihn nur; die Karte nimmt jeden Text an (kein
+Format, keine Prüfung, kein Fehlerkanal am öffentlichen Feld).
+**FOLGE:** Ein Wert mit `/`, `?` oder `#` veränderte Pfad und Query der aufgerufenen
+URL. Der Host ist ein Literal und bleibt unberührt.
+**DER ZWEITE ADAPTER KODIERT** (`encodeURIComponent`), und der Kontrast ist der Grund
+für diesen Eintrag: **Zwei Nähte, dieselbe Stelle, verschiedene Antwort.**
+
+### (2) BEIM ERSTEN ADAPTER LIEGT DER NUTZLAST-BAU VOR DEM `try`
+
+**Die Wurffreiheit ist dort nur FAKTISCH erfüllt** — sie hängt daran, dass der Body
+aus `JSON.parse` stammt und deshalb keine werfenden Getter trägt, **also an einer
+Eigenschaft des AUFRUFERS, nicht der Funktion.** Der Kopfkommentar sagt es selbst und
+formuliert die Auflage; **eine Auflage ist kein Wächter.**
+**DER ZWEITE ADAPTER HÄLT SIE STRUKTURELL:** vor dem `try` steht keine Anweisung, und
+ein Test (T19) fährt einen werfenden Getter durch. **Beim ersten wäre derselbe Fall
+ein Wurf.**
+
+### (3) EIN NEGATIVER WERT GEHT DURCH
+
+Der zweite Adapter prüft `Number.isFinite` und lässt damit `NaN` und `Infinity`
+heraus — **einen negativen Betrag aber nicht.** Die Anbieter-Doku rät davon ab,
+**verbietet es aber nicht**, und eine eigenmächtige Verschärfung hätte eine Regel
+erfunden, die niemand aufgestellt hat.
+**GEMELDET STATT GEBAUT**, und die Grenze gehört dazu: Es ist nicht entschieden, ob
+ein negativer Wert je entsteht — `value` stammt aus dem anonymen Beacon, das Panel
+setzt `min="0"` am Eingabefeld, aber das ist eine Oberflächen-Schranke und keine
+Zusicherung über die Leitung.
+
+### (4) DIE NEUTRALE DATEI FÜR DIE TRIMM-FUNKTION — JETZT FÄLLIG STATT HYPOTHETISCH
+
+**BESTEHENDER KANDIDAT MIT VERMERK.** Das Protokoll der VIERTEN Scheibe sagt:
+*"Die dritte Kopie kommt mit dem zweiten Ziel — und DANN wird die neutrale Datei
+richtig, weil aus zwei Fällen drei werden und die Abstraktionsregel des Projekts sie
+deckt."*
+**DIE DRITTE KOPIE EXISTIERT SEIT DEM 2026-08-10.** `asString` steht jetzt in
+`ingest.ts`, `meta-forward.ts` und `pinterest-forward.ts`; **kein Test sichert die
+Gleichheit der drei.**
+**WARUM ER NICHT MITGEBAUT WURDE:** Eine neutrale Datei müsste die beiden bestehenden
+Fundstellen umstellen — beide Dateien waren unantastbar.
+**WAS SICH GEÄNDERT HAT: nicht die Sache, sondern ihr Status.** Der Kandidat war eine
+Vorhersage; er ist jetzt ein Zustand. **Wer ihn liest, findet die Bedingung erfüllt,
+unter der das Protokoll der vierten Scheibe ihn für richtig erklärt hat.**

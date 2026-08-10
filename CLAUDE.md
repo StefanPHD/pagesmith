@@ -831,8 +831,8 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   nur noch den Mock (real aufgetreten: im Dispatch-Test MUSS die echte extractLabel
   laufen, sonst faengt er den 7c-2a-Rueckfall nicht). Verwandt und schaerfer:
   "TESTDATEN UND TEST-SEQUENZ MUESSEN DEN PRODUKTIVEN PFAD TREFFEN" unten.
-- MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE — SECHS LEKTIONEN (Phase 9, mehrfach
-  live aufgetreten; (e) und (f) aus Phase 10): Ergänzt TEST-DISZIPLIN oben um
+- MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE — NEUN LEKTIONEN (Phase 9, mehrfach
+  live aufgetreten; (e) und (f) aus Phase 10, (g) bis (i) aus Phase 11): Ergänzt TEST-DISZIPLIN oben um
   konkrete Fallstricke, die erst eine scharfe Mutationsprobe bzw. ein genau
   gelesener Live-Test sichtbar macht.
   (a) DREIWERTIGE LOGIK MACHT EINE TS-PORTIERUNG BLIND: Hängt eine
@@ -879,8 +879,54 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
       Struktur-Test der Reiter trägt allein zwei Fehlerklassen; der Wächter für
       den zugänglichen Namen der Reiter ist der einzige Test, der das Signal
       überhaupt zum Leuchten bringt.
+  (g) TRIFFT EINE MUTATION MEHR ALS VORHERGESAGT, IST VOR JEDER REPARATUR ZU PRÜFEN,
+      OB DIE ZUSATZTREFFER DIESELBE FEHLERKLASSE MELDEN. Tun sie es nicht, ist der
+      Überschuss KEINE Abdeckung, sondern eine KASKADE — und wer ihn als Abdeckung
+      verbucht, schreibt sich eine Sicherheit auf, die es nicht gibt. BELEG: Eine
+      Mutation traf fünf statt drei Tests; die drei erwarteten meldeten "Found
+      multiple elements", die zwei zusätzlichen "Unable to find an element". Zwei
+      Fehlerklassen haben keine gemeinsame Ursache. Die Gegenprobe entscheidet es:
+      derselbe Block ISOLIERT unter derselben Mutation — grün. Ursache war ein
+      unverbrauchter Once-Wert aus einem früher abgebrochenen Test (clearAllMocks
+      leert die AUFRUFE, nicht die Warteschlange), also Folgeschaden statt Deckung.
+  (h) EINE MUTATION, DIE ZWEI ACHSEN GLEICHZEITIG BEWEGT, IST KEINE MUTATION, SONDERN
+      EIN UMBAU. Ihr Ergebnis sagt nicht, WELCHE Achse gedeckt ist. Aufgelöst wird das
+      durch TEILEN und eine Vorab-Ansage je Teilprobe, nicht durch Nachbessern am
+      Code. BELEG: Eine Serialisierung des Fan-Outs änderte Gleichzeitigkeit UND
+      Containment in einem Schritt; drei Tests fielen, und welcher zu welcher Achse
+      gehörte, war am Ergebnis nicht zu sehen.
+  (i) EINE VORHERSAGE, DIE IHRE EIGENE UNSCHÄRFE BENENNT, IST AUCH DANN BRAUCHBAR,
+      WENN SIE DANEBENLIEGT — entscheidend ist, ob die Abweichung INNERHALB der vorab
+      benannten Klasse liegt. Der Preis der Unschärfe ist eine Zeile ("ich nenne die
+      Klasse, nicht die Zahl"); der Preis der falschen Bestimmtheit ist, dass niemand
+      unterscheiden kann, ob ein Überlauf ein Zufall oder ein Befund war.
   Herleitung mit den konkreten Fundstellen: docs/claude-history/phase-9-ab-testing.md
   bzw. docs/claude-history/phase-10-workspace.md.
+- EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL, UND KEINE DAVON MACHT SIE ROT
+  (Ergänzung zu Lektion (d) darüber, die den vierten Fall führt — einen Wächter ohne
+  Positivkontrolle):
+  (1) IHR GEGENSTAND WIRD ENTFERNT. Nimmt ein Umbau die Sache weg, deren Abwesenheit
+      behauptet wird, geht die Behauptung ab da IMMER auf. Der Wächter meldet weiter
+      Erfolg und schützt nichts. BELEG: Ein Test behauptete, ein Pfad greife nicht auf
+      eine Alt-Tabelle zu — nach der Umstellung kannte der Pfad diese Tabelle gar nicht
+      mehr. FOLGE: Bei jedem Umbau, der eine Quelle oder ein Ziel AUSTAUSCHT, werden die
+      Abwesenheits-Behauptungen eigens durchgegangen; sie sind die einzige Testart, die
+      durch das Verschwinden ihres Gegenstands STÄRKER aussieht statt schwächer.
+  (2) SIE IST TRIVIAL WAHR. "Nichts passiert" gilt auch dann, wenn die geprüfte Wirkung
+      aus einem ganz anderen Grund gar nicht eintreten KANN — etwa weil eine
+      Vorbedingung tiefer im Pfad vorher zurückkehrt. Der Test ist grün, bevor es die
+      geprüfte Sache überhaupt gibt.
+  (3) "BLOCKIERT" UND "ABGESTÜRZT" SEHEN AN IHR IDENTISCH AUS. Ein Test, der nur prüft,
+      dass etwas NICHT passiert, unterscheidet ein wirksames Gate nicht von einem
+      abgebrochenen Handler. Es braucht zusätzlich einen Test, der prüft, dass der
+      Handler ZU ENDE läuft.
+  DAZU GEHÖRT EINE VIERTE, DIE KEIN TEST-, SONDERN EIN KOMMENTAR-FEHLER IST: EIN
+  TESTKOMMENTAR KANN EINE GARANTIE BEHAUPTEN, DIE SEIN TEST NICHT DECKT. Der Test ist
+  dann nicht falsch — seine SELBSTBESCHREIBUNG ist zu weit, und sie lädt dazu ein, eine
+  Achse für gedeckt zu halten und keinen Test dafür zu schreiben. BELEG: Ein Kommentar
+  behauptete "beide Aufrufe stehen, bevor einer antwortet"; bei serieller Abarbeitung
+  blieb der Test grün, weil das erste Bein sofort antwortet. Wird das entdeckt, wird
+  BEIDES getan — den Kommentar berichtigen UND den fehlenden Test ergänzen.
 - COMMIT-KONVENTIONEN: Conventional-Commit-Format type(scope): message (feat, fix, docs,
   chore, refactor). docs(claude)-Commits bleiben GETRENNT von feat/fix-Commits — der
   Verlauf wird gelesen, und eine Doku-Aenderung im Feature-Commit ist spaeter nicht mehr
@@ -969,6 +1015,105 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   entscheidet selbst über die Schnittkanten, und ein verlorener Teil fällt niemandem auf. Der
   Bericht beginnt mit einer UMFANGS-ANSAGE ("deckt Aufträge X-Y ab"), damit ein fehlender
   Abschnitt beim LESEN auffällt statt beim Nachzählen. Nie als Datei-Anhang (kommt leer an).
+- WAS NUR IM GESPRÄCH GESAGT WIRD, EXISTIERT FÜR DIE NÄCHSTE SITZUNG NICHT: Jede
+  Entscheidung, jede gemessene Angabe und jede Zusage, die künftige Arbeit BINDET, wird
+  noch in derselben Runde in eine Datei geschrieben — nicht in eine Antwort, nicht in
+  den Verlauf. BELEG: dreimal in EINER Phase; zweimal fiel es erst auf, als ein
+  Zuschnitt darauf bauen wollte und ins Leere griff, beim dritten Mal betraf es diese
+  Regel selbst, die bis zu ihrer Aufnahme nirgends stand. ABGRENZUNG zur
+  Protokollpflicht am Rundenende: die greift, WENN eine Runde endet — diese greift,
+  SOBALD etwas entschieden ist. Wer auf das Rundenende wartet, hat den Kontextwechsel
+  schon verloren.
+- EINE MUTATIONS-VORHERSAGE KANN IN BEIDE RICHTUNGEN FALSCH SEIN: Unerwartetes ROT ist
+  genauso ein Befund wie unerwartetes Grün — es fällt nur seltener auf, weil Rot nach
+  Erfolg aussieht. Beide Abweichungen werden VOR jeder Reparatur untersucht, nicht
+  weggebucht. BELEG: sechsmal in einer Phase, davon FÜNFMAL in dieselbe Richtung (zu
+  eng gezählt). Dass die Streuung einseitig ist, ist die eigentliche Aussage — Zufall
+  träfe mal nach oben, mal nach unten; eine systematische Ursache trifft immer dieselbe
+  Seite. Was bei einem Überschuss zu prüfen ist, steht als Lektion (g) an
+  "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE".
+- EINE REGEL KANN RICHTIG SEIN UND NICHT SKALIEREN — DER BRUCH ZEIGT SICH AN IHRER
+  BEGRÜNDUNG, NICHT AN IHREM WORTLAUT: Wer prüfen will, ob eine Regel den NÄCHSTEN Fall
+  noch trägt, liest ihre Begründung, nicht ihren Text. BELEG: "abwesendes Feld heisst
+  erlaubt", begründet mit "die Seite ist älter als das Feld". Bei EINEM Ziel deckten
+  sich Regel und Grund vollständig; beim zweiten heisst "abwesend" für das eine "alte
+  Seite" und für das andere "über dieses Ziel wurde nie gefragt" — und ein Ja daraus
+  wäre ein Forward ohne Einwilligung gewesen. Am WORTLAUT war bis zuletzt nichts zu
+  sehen; er war korrekt formuliert.
+- EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD — UND DAS FÄLLT
+  NIEMANDEM AUF, WEIL DIE REGEL WEITER STIMMT: Ein Beleg ist eine TATSACHENBEHAUPTUNG
+  ÜBER DEN CODE und altert mit ihm; die Regel darüber altert nicht mit. Wer eine Regel
+  als Maßstab benutzt, prüft ihren Beleg am HEUTIGEN Code, bevor er ihm folgt. Ist er
+  überholt, wird er RICHTIGGESTELLT und nicht gestempelt — ein Maßstab mit falschen
+  Angaben taugt nicht als Maßstab, auch wenn sein Satz stimmt. BELEG: In dieser Datei
+  ist die Figur VIERMAL angewandt worden ("RICHTIGGESTELLT, NICHT GESTEMPELT"), ohne je
+  als Regel formuliert zu sein. Eine Regel, die viermal gebraucht wurde, ohne zu
+  existieren, ist reif. ABGRENZUNG zur Regel darüber: dort trägt die BEGRÜNDUNG nicht
+  mehr, hier ist die TATSACHENANGABE veraltet — die Regel bleibt in beiden Fällen wahr.
+- EINE VORBEDINGUNG, DIE AUCH DER ALTE ZUSTAND ERFÜLLT, IST KEINE VORBEDINGUNG: Sie
+  trennt VORHER nicht von NACHHER, und ein Test darauf ist grün AUS DEM FALSCHEN GRUND.
+  BELEG: Ein Wächter verlangte "beide Karten stehen auf nicht konfiguriert" — das war
+  schon durch den stehengebliebenen Wert des VORIGEN Projekts erfüllt. Der Test war
+  grün, weil eine Wettlaufsituation ihn rettete, nicht weil der Riegel hielt. AUFGELÖST
+  DURCH EINE VERANKERUNG, NICHT DURCH EINE SCHÄRFERE ASSERTION: Der Zustand bekam ein
+  Merkmal, das NUR er haben kann. ABGRENZUNG zu Lektion (c) an "MUTATIONSPROBEN": jene
+  spricht vom INSTRUMENT, das die Voraussetzung mitreisst — diese vom ANKER, der die
+  beiden Zustände nicht unterscheidet. Ein Instrument kann tadellos sein und der Anker
+  trotzdem untauglich.
+- EIN GRÜNER TEST IST KEIN BELEG, DASS DER GRUND SEINER GRÜNHEIT DERSELBE GEBLIEBEN
+  IST: Wer einen Zustand von einem Ort an einen anderen verlegt, prüft die Tests, die
+  ihn BETREFFEN — nicht nur die, die dabei brechen. BELEG: Eine Zusage ("der Fehler ist
+  nach dem erneuten Öffnen weg") hielt vorher, weil ein Reset-Aufruf ihn leerte, und
+  hält nachher, weil die haltende Komponente ABGEBAUT wird. Zusage gleich, Mechanismus
+  anders, Test durchgehend grün — niemand hätte es gemerkt, weil ein roter Test zum
+  Hinsehen zwingt und ein grüner nicht. ABGRENZUNG zu "NUR EIN TEST IST EIN WÄCHTER":
+  dort geht es um einen Schutz OHNE Test, hier um einen Test, der seinen Gegenstand
+  unbemerkt gewechselt hat.
+- EINE ZÄHLUNG ENTLANG EINER ACHSE IST BEI EINEM UMBAU SYSTEMATISCH ZU NIEDRIG, NICHT
+  ZUFÄLLIG: Vor jeder Umfangs-Zahl werden die Achsen einzeln benannt, an denen eine
+  Änderung brechen kann — und die Zahl gilt je Achse, nicht insgesamt. BELEG: Dieselbe
+  Änderung brach Bestandstests auf DREI Achsen (Beschriftung, Quelle des Zustands,
+  Synchronität), und die Achsen überlagerten sich zeilenweise. Die erste Zählung sah nur
+  die erste, die zweite fand die zweite, und die dritte war aus dem Code überhaupt nicht
+  ablesbar — sie fand erst eine Probe. Wer EINE Achse zählt, zählt zu niedrig, und zwar
+  immer nach unten.
+- EINE BEDINGUNG, DIE EINE ARBEIT AN EINE ANDERE HÄNGT, MUSS BENENNEN, WAS DER
+  GEGENSTAND BRAUCHT — NICHT, WAS ZUR SELBEN ZEIT GERADE SONST NOCH AUSSTEHT: Sonst gilt
+  sie als erfüllt, sobald das Zufällige erledigt ist, und die Arbeit sieht baubar aus,
+  ohne es zu sein. BELEG: Ein Vorhaben war an "es braucht die Adapter, die es hier nicht
+  gibt" gebunden. Beide Adapter entstanden — und es war KEINEN Schritt näher, weil ihm
+  in Wahrheit ein Lesepfad, ein Rückkanal und eine Maskierung fehlten. Die Bedingung war
+  formuliert worden, als GAR KEIN Adapter existierte; sie beschrieb, was zufällig auch
+  fehlte.
+- WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR FALLE: Eine
+  Teilkorrektur an einem Satz, der zwei zusammengehörige Angaben trägt, ist gefährlicher
+  als gar keine — danach stimmt die eine Hälfte, und genau deshalb liest niemand die
+  andere nach. Vor jeder punktuellen Korrektur wird der GANZE Satz gelesen. BELEG:
+  Angeordnet war, in einem Kommentar nur eine Nummer nachzuziehen; danach war die Nummer
+  richtig und die BEDINGUNG davor falsch, und der Satz sah korrigiert aus.
+- EINE ANLEITUNG, DIE EINE VORAUSSETZUNG NICHT NENNT, ERZEUGT EINE FALSCHE ENTWARNUNG:
+  Wer eine Prüfanleitung schreibt, nennt die Zustände, die vorliegen MÜSSEN, damit der
+  Schritt überhaupt etwas messen kann — der Ausführende kann nicht wissen, dass eine
+  fehlt, und meldet dann "geprüft, in Ordnung" für einen Schritt, der nie stattgefunden
+  hat. ABGRENZUNG zu Lektion (c) an "MUTATIONSPROBEN": dort reisst das INSTRUMENT die
+  Voraussetzung mit — hier nennt die ANLEITUNG sie nicht, und das Instrument ist in
+  Ordnung. Zwei verschiedene Achsen, dieselbe falsche Entwarnung als Ergebnis.
+- EIN LIVE-TEST-SCHRITT SETZT EINEN ZUSTAND DES PRÜFLINGS VORAUS: Vor dem Schritt wird
+  geprüft, ob im ausgelieferten Artefakt etwas steht, das die geprüfte Wirkung SCHON VOR
+  der geprüften Stelle abfängt. Fehlt der vorausgesetzte Zustand, misst der Schritt
+  einen Fehlschlag, der keiner ist — und die Suche beginnt am falschen Ende. Ein solcher
+  Schritt gehört als PFLICHT-STOPP in die Anleitung, nicht als Hinweis: was er
+  abfängt, ist korrektes Verhalten und darf nicht als Befund protokolliert werden.
+  BELEG: Ein ausgelieferter Consent-Schlüssel entsteht zur ERZEUGUNGSZEIT; wer nach dem
+  Eintragen einer Kennung nicht neu veröffentlicht, misst ein fail-closed-Verhalten und
+  schreibt es dem Adapter zu.
+- EINE BILLIGE MESSUNG WIRD NICHT DURCH EINE HERLEITUNG ERSETZT: Eine schlüssige
+  Ableitung aus dem Code oder dem Diff sagt nichts über die deployte Laufzeit. Ist die
+  Messung billig, wird gemessen — und wo nicht gemessen wurde, steht das dabei.
+  ABGRENZUNG zur Provenienz-Disziplin, die in dieser Datei schon gelebt wird: jene
+  verlangt, die HERKUNFT einer Angabe zu nennen; diese verlangt, die Messung nicht
+  wegzulassen, nur weil eine Herleitung überzeugend klingt. Eine korrekt als
+  "hergeleitet" gekennzeichnete Angabe ist ehrlich und trotzdem die schlechtere.
 - Erst der nutzbare Kern, dann Infrastruktur.
 - Importierter User-Code läuft NUR im sandboxed iframe (sandbox="allow-scripts",
   niemals allow-same-origin), nie ungesandboxt.

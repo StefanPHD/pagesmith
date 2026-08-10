@@ -1567,6 +1567,32 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Scope-Wächter ("genau drei Einträge") wäre eine vierte Datei in den Commit
   gewandert. Ergänzt "COMMIT-KONVENTIONEN" oben um eine zweite Prüfung neben der
   Secret-Prüfung.
+  DIE REICHWEITE DIESER REGEL IST DIE WIRKUNG, NICHT DAS KOMMANDO IN IHREM TITEL:
+  JEDES Werkzeug, das eine Datei GANZ NEU SCHREIBT, statt sie zu BEARBEITEN, kann
+  Zeichen verändern, die niemand angefasst hat. Betroffen sind ZEILENENDEN und
+  KODIERUNG, einzeln oder beides zugleich — eine zurückgeschriebene Datei kann ihre
+  Umlaute und Gedankenstriche doppelt kodiert wiederbekommen, obwohl an ihrem Inhalt
+  nichts geändert wurde.
+  WARUM DAS STILL IST UND DESHALB TEUER: Kein Werkzeug meldet etwas, der Bau läuft
+  weiter, die Tests bleiben grün. Sichtbar wird es ausschliesslich im DIFF — wer nur
+  auf "grün" schaut, sieht es nie.
+  DIE KOMMANDOS SIND BEISPIELE, NICHT DIE LISTE: die in-place-Schreiber (sed -i,
+  perl -i), die Ganz-Datei-Schreiber der PowerShell (Set-Content, Add-Content,
+  Out-File) und die Umlenkungen > und >> in beiden Welten, tee, jedes Skript mit
+  einem writeFileSync-Äquivalent, ein Formatierer-Durchlauf über eine ganze Datei —
+  und das Write-Werkzeug, wo es eine BESTEHENDE Datei ersetzt statt sie zu
+  bearbeiten. WER SEIN WERKZEUG HIER NICHT FINDET, IST NICHT AUSGENOMMEN: Die Frage
+  lautet nie "steht es in der Aufzählung?", sondern "schreibt es die ganze Datei?".
+  DIE VORSCHRIFT OBEN — für Datei-Änderungen das Editier-Werkzeug nutzen — GILT
+  DAMIT FÜR ALLE DIESE WERKZEUGE, nicht nur für das eine im Titel genannte. Ebenso
+  die Prüfung: nach jedem Schreiben UND nach jeder Rücknahme git status, leere Diffs
+  ausschliessen. BEI KODIERUNGS-VERDACHT KOMMT EINE ZWEITE PRÜFUNG DAZU, und sie ist
+  nicht dieselbe: Ein doppelt kodierter Text zählt als INHALT, der Diff ist also
+  gerade NICHT leer, sondern gross — geprüft wird per Suche nach zerstörten Zeichen
+  im Diff, nicht per Zeilenzahl.
+  IST ES PASSIERT: aus der Versionsverwaltung wiederherstellen und die Änderung mit
+  dem Editier-Werkzeug neu eintragen. Eine Reparatur mit demselben Werkzeugtyp kann
+  denselben Fehler ein zweites Mal erzeugen.
   Herleitung: docs/claude-history/phase-10-workspace.md.
 - NAHT-HYGIENE (7c-2, aktiv): 7c-2 koppelt Domain-/Routing-Logik NICHT an Tracking-/
   Lead-Logik. Die Andock-Punkte für spätere Module existieren BEREITS (neutraler

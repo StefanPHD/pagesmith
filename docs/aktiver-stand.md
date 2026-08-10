@@ -23,8 +23,13 @@ MEHRERE ZIELE — **ABGESCHLOSSEN und live bewiesen**, (8) DER BEACON VERLÄSST 
 LAUFZEIT — **ABGESCHLOSSEN und live bewiesen**, (9) DIE EINWILLIGUNG JE ZIEL —
 **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (10) DER ADAPTER FÜR DAS ZWEITE
 ZIEL — **ZUGESCHNITTEN**, (11) DIE KARTE FRAGT NACH DER RICHTIGEN KENNUNG —
-PLATZHALTER, (12) PINTEREST SENDET — PLATZHALTER, (13) DER TESTKNOPF —
+**ZUGESCHNITTEN**, (12) PINTEREST SENDET — PLATZHALTER, (13) DER TESTKNOPF —
 PLATZHALTER.
+
+**NACHGEZOGEN AM 2026-08-10 — DIE ELFTE IST ZUGESCHNITTEN.** Hier stand bei (11)
+"PLATZHALTER". **DIE ZAHL DER OFFENEN SCHEIBEN ÄNDERT SICH NICHT** — es bleiben vier;
+zugeschnitten sind jetzt zwei davon. **KEINE WANDERUNG** — Pinterest steht unverändert
+auf der ZWÖLFTEN, und die Kette im Kopf bleibt bei neun Einträgen.
 
 **NACHGEZOGEN AM 2026-08-09 — NEUN SIND ABGESCHLOSSEN, OFFEN SIND VIER.** Hier stand
 "(10) PINTEREST SENDET — PLATZHALTER", und der Stempel darunter sagte "OFFEN IST
@@ -6300,6 +6305,17 @@ Korrektur als **UNBESTÄTIGT** zu behandeln. **Ob daraus ein Hinweis in der Kart
 oder eine einmalige Bereinigung, entscheidet dort der Zuschnitt** — hier
 ausdrücklich NICHT.
 
+**STEMPEL, 2026-08-10 — DIESE AUFLAGE IST ERLEDIGT, UND ZWAR DURCH MESSUNG, NICHT
+DURCH BAU.** Eine Datenbank-Abfrage hat GENAU EIN betroffenes Projekt gefunden, es
+gehört dem Betreiber selbst, und der Wert wird VON HAND korrigiert. Die drei
+Kandidaten (stehen lassen · kennzeichnen · einmalig entfernen) sind damit
+gegenstandslos — **ihre Befunde bleiben stehen, weil sie über den Fall hinausgehen.**
+S. "### Die Auflage zu bestehenden Werten ist ERLEDIGT — durch Messung, nicht durch
+Bau" in der elften Scheibe.
+**DER AUFLAGEN-TEXT BLEIBT WORT FÜR WORT STEHEN:** Er war richtig, solange die
+Datenlage unbekannt war, und **eine Auflage, die durch Messung entfällt, wird sonst
+später als übergangen gelesen** statt als beantwortet.
+
 **WAS DIE AUFLAGE DRINGENDER MACHT, ALS SIE KLINGT — am Code gemessen (2026-08-10):
 Ein eingetragener Wert ist HEUTE SCHON WIRKSAM, obwohl nichts sendet.** Zwei Wege,
 und beide waren im Dokument bisher nicht benannt:
@@ -7077,23 +7093,259 @@ Auflösung anfasst** (Invariante 3).
 
 ---
 
-## Die elfte Scheibe — DIE KARTE FRAGT NACH DER RICHTIGEN KENNUNG (Platzhalter)
+## Die elfte Scheibe — DIE KARTE FRAGT NACH DER RICHTIGEN KENNUNG (Zuschnitt)
+
+**ÜBERSCHRIFTEN-STEMPEL, 2026-08-10:** Diese Überschrift trug bis heute
+"(Platzhalter)". Sie ist umbenannt, weil die Scheibe jetzt zugeschnitten ist.
+**GEPRÜFT, weil eine Umbenennung Zeiger bricht:** Die Zeichenkette "elfte Scheibe"
+kommt an drei weiteren Stellen vor (Wanderungs-Kette, siebter Nachzug-Stempel,
+Stempel an "### Die Auflage aus Punkt (g)"); **keine davon zitiert den Titel** — alle
+nennen die Nummer. Die Umbenennung bricht nichts.
 
 **ZWECK:** Die Karte des zweiten Ziels fragt nach der Grösse, die der Adapter
 tatsächlich braucht — der KONTO-Kennung —, statt nach der Tag-Kennung des
 Browser-Tags, den wir nicht injizieren.
 
-**KEIN ZUSCHNITT.** Ihre Grundlage steht in Punkt (g) der Anbieter-Befunde und in
-"### Die Auflage aus Punkt (g) — DIE KARTE FRAGT HEUTE NACH DER FALSCHEN KENNUNG".
+**IHRE GRUNDLAGE** steht in Punkt (g) der Anbieter-Befunde und in "### Die Auflage aus
+Punkt (g) — DIE KARTE FRAGT HEUTE NACH DER FALSCHEN KENNUNG".
+*(Hier stand "KEIN ZUSCHNITT". Der Zuschnitt folgt unten.)*
 
 **IHRE AUFLAGE, aus "## Der Befund, der die Reihenfolge festlegt":** **Bestehende
 Werte für das zweite Ziel sind nach der Korrektur als UNBESTÄTIGT zu behandeln.** Ob
 daraus ein Hinweis in der Karte wird oder eine einmalige Bereinigung, **entscheidet
 dort der Zuschnitt** — hier ausdrücklich nicht.
+**STEMPEL, 2026-08-10 — ERLEDIGT, durch Messung.** S. "### Die Auflage zu bestehenden
+Werten ist ERLEDIGT — durch Messung, nicht durch Bau". Der Satz darüber bleibt Wort
+für Wort stehen.
 
 **SIE STEHT VOR DER ZWÖLFTEN, und das ist keine Vorliebe:** Eine Korrektur der
 Beschriftung ändert nicht den gespeicherten Wert; wer zuerst verdrahtet, forwardet
 gegen ein Konto, das es nicht gibt.
+
+### Die gemessene Ausgangslage der ELFTEN Scheibe
+
+**DER TITEL NENNT DIE SCHEIBE, und das ist kein Stil, sondern die Vermeidung eines
+bekannten Mangels:** "### Die gemessene Ausgangslage **dieser** Scheibe" steht in
+diesem Dokument bereits ZWEIMAL (fünfte und sechste Scheibe). Ein dritter gleichnamiger
+Titel wäre kein Anker mehr — genau der Backlog-Kandidat "ZWEI VERDICHTUNGEN TRAGEN
+DIESELBE UNTERÜBERSCHRIFT", eine Ecke weiter. **Das Vorbild steht in der neunten
+Scheibe: "### Die gemessene Ausgangslage der HÄLFTE B".** Die beiden bestehenden
+werden dabei NICHT angefasst.
+
+**PROVENIENZ, ZWEIGETEILT UND NICHT ZU VERMISCHEN — sie bestimmt, was von jeder Zeile
+zu halten ist:**
+- **DIE AUSSAGEN ÜBER DEN CODE:** am Repo gemessen in der Aufklärung vom **2026-08-10
+  (read-only)**, Codestand `cf137de`.
+- **DIE DATENLAGE:** **EINE Datenbank-Abfrage von Stefan am 2026-08-10.** **Sie stammt
+  NICHT aus dem Repo und ist von mir nicht prüfbar** — das Repo enthält keine
+  Projektdaten. Ich habe sie AUFGENOMMEN, nicht verifiziert.
+
+**(a) ES SIND DREI FALSCHE FELDER, NICHT ZWEI.** `TARGET_CARDS.pinterest` trägt
+`publicLabel: "Pinterest-Tag-ID"` und `publicPlaceholder: "z.B. 2612345678901"` —
+beide nennen die **TAG**-Kennung, also Grösse (3) aus Punkt (g). **Das dritte Feld ist
+der HILFETEXT**, und es ist das gefährlichere:
+`publicHint: "Öffentlich, steht im Seitenquelltext"` steht in **BEIDEN** Karten
+**BYTE-GLEICH** und sieht deshalb wie ein neutraler, geteilter Satz aus.
+**ER IST EINE ZIEL-SPEZIFISCHE TATSACHENBEHAUPTUNG.** Für das ERSTE Ziel ist er am
+Code wahr: `buildMetaRuntime` bettet `var PS_PIXEL_ID = <pixelId>` in den erzeugten
+Text. Für das ZWEITE injiziert **niemand** etwas (Anbieter-Befund (f): kein
+Browser-Tag) — dort landet ausschliesslich der **Consent-SCHLÜSSEL** `"pinterest"`
+über `consentTargets`, **nie der Wert**. Und die Grösse, die der Adapter braucht,
+stünde im Endpunkt-PFAD auf dem Server, also erst recht nicht im Quelltext.
+**EIN SATZ, DER AN ZWEI STELLEN IDENTISCH STEHT UND NUR AN EINER STIMMT, IST DIE
+UNAUFFÄLLIGSTE FORM EINER FALSCHEN AUSSAGE.** Er trägt kein Anbieter-Wort, das
+stutzig macht; seine Gleichheit liest sich als Absicht.
+**DER BEFUND SELBST IST NICHT NEU** — "## Der Befund, der die Reihenfolge festlegt"
+führt ihn bereits als "DREI Beschriftungen, nicht zwei". **NEU ist die
+BYTE-GLEICHHEIT** und damit die Erklärung, warum er übersehen wird.
+
+**(b) DIE FORM TRÄGT BEIDE FÄLLE BEREITS.** `TARGET_CARDS` ist ein
+`Record<TrackingTarget, TargetCardConfig>`; `publicLabel`, `publicHint` und
+`publicPlaceholder` sind je Ziel eigene Felder, und der Typ ist **erschöpfend** — ein
+drittes Ziel erzwingt hier einen Compiler-Fehler. `TargetCard` liest ausschliesslich
+`const config = TARGET_CARDS[target]`; es gibt **keine Verzweigung, kein
+`if (target === …)` und keine zweite Fundstelle.**
+**FÜR DAS ERSTE ZIEL STIMMEN ALLE DREI FELDER.** **ES FEHLT KEIN MECHANISMUS — ES IST
+EINE ZEILE, KEINE FORM.**
+
+**(c) DIE KORREKTUR IST IN BEIDE RICHTUNGEN UNGEDECKT.** Gemessen über alle
+`*ByPlaceholderText`/`*ByLabelText`/`*ByText`-Aufrufe und alle `toContain`/`toBe` auf
+die drei Zeichenketten: **NULL Tests WÄHLEN sie, NULL Tests BEHAUPTEN sie.**
+**SIE BRICHT NICHTS — UND NICHTS HIELTE FEST, DASS SIE STATTGEFUNDEN HAT. EINE
+SPÄTERE RÜCKNAHME WÄRE EBENSO STILL.** Das ist der Grund für die tragende Auflage des
+Zuschnitts.
+
+**(d) ZWEI RÄNDER, die ein neuer Text nicht überschreiten darf:**
+1. **DAS MUSTER DES ERSTEN ZIELS.** In `CodeImporter.test.tsx` wählt
+   `pixelInput() = screen.getByPlaceholderText(/123456789012345/)` **Metas**
+   öffentliches Feld; `getByPlaceholderText` **wirft bei mehreren Treffern**, und im
+   Container werden beide Karten gerendert. Ein Platzhalter, der diese Zeichenkette
+   **enthielte**, machte **ZWEI** Tests jener Datei mehrdeutig (die beiden `it()` des
+   Blocks "Scheibe 1b: Settings (Meta-Pixel-ID) Persistenz + Isolation"). Der heutige
+   Wert tut das nicht.
+2. **DER WORTLAUT-WÄCHTER.** Zwei Tests in `TargetCard.test.tsx` prüfen über
+   `container.textContent` gegen `VERBOTEN = ["aktiv","läuft","verbunden","✓","•••",
+   "gerettet"]`, je mit Positivkontrolle. **Er greift auf JEDEN neuen Text der Karte.**
+   *(Ein dritter Rand, schwächer: der Test "die Karte des einen Ziels traegt NIE das
+   Vokabular des anderen" behauptet `not.toContain("CAPI")`.)*
+
+**(e) DIE DATENLAGE — AUFGENOMMEN VON STEFAN, NICHT VON MIR GEMESSEN.** **GENAU EIN
+Projekt trägt einen Wert für das zweite Ziel.** Er ist **elfstellig** und
+offensichtlich getippt — **weder die Konto- noch die Tag-Kennung**, sondern ein
+Platzhalter aus dem Live-Test der sechsten Scheibe. **Das Projekt gehört dem Betreiber
+selbst.**
+**DIE GRENZE, DIE ZWINGEND DAZUGEHÖRT:** Der Schluss "weder noch" ruht auf **drei**
+Zahlen, von denen nur **eine** aus dieser Abfrage stammt: elf (gemessen), zwölf
+(Konto-Kennung) und dreizehn (Tag-Kennung). **Die letzten beiden sind Ablesungen im
+Anbieter-Konto vom 2026-08-08 und tragen die Provenienz von Punkt (g) — ungeprüft.**
+Für DIESEN Fall trägt der Schluss trotzdem, weil der Wert als getippter Platzhalter
+erkannt ist und nicht allein über seine Länge. **Für einen künftigen Fall wäre die
+Stellenzahl allein kein Beweis.**
+
+### Die Auflage zu bestehenden Werten ist ERLEDIGT — durch Messung, nicht durch Bau
+
+**EIGENER BLOCK, und der Grund steht voran: Eine Auflage, die durch Messung entfällt,
+wird sonst später als ÜBERGANGEN gelesen statt als BEANTWORTET.** Im Dokument steht
+sie an zwei Stellen; ohne diesen Block müsste ein späterer Leser aus ihrem Fehlen im
+Zuschnitt schliessen, dass sie jemand vergessen hat.
+
+**DIE AUFLAGE LAUTETE:** *Bestehende Werte für das zweite Ziel sind nach der Korrektur
+als UNBESTÄTIGT zu behandeln; ob Hinweis oder Bereinigung, entscheidet der Zuschnitt.*
+
+**SIE IST DURCH MESSUNG AUFGELÖST.** Ein einziges betroffenes Projekt, dem Betreiber
+selbst gehörend, mit einem Wert, den er selbst gesetzt hat. **Er wird VON HAND
+korrigiert. Keine Migration, kein Karten-Hinweis, keine neue Statusquelle.**
+
+**DIE DREI KANDIDATEN SIND DAMIT GEGENSTANDSLOS — IHRE BEFUNDE BLEIBEN STEHEN, weil
+sie über diesen Fall hinaus gelten:**
+
+**(i) STEHEN LASSEN IST DER STILLE AUSGANG.** Der Wert bleibt falsch, und **keine
+Stelle im System markiert ihn.** Die Statuszeile sagt weiterhin "Zugangsdaten
+hinterlegt" — sie leitet über `listConfiguredTargets` aus der **Geheimnis-Zeile** ab
+und **trifft über das öffentliche Feld gar keine Aussage.** Sie stünde auch dann so
+da, wenn dort Unsinn steht. Der korrigierte Platzhalter hilft nicht: `placeholder` ist
+per HTML nur bei **leerem** Feld sichtbar — genau derjenige, der bereits etwas
+eingetragen hat, sieht die Hilfe nie.
+
+**(ii) EINMALIG ENTFERNEN HÄLT NICHT.** **Kein Schreiber merged mit dem
+Datenbank-Stand:** `saveProject` und `saveVariantB` ersetzen `projects.settings`
+GANZHEITLICH mit dem Client-Zustand. **Ein Browser-Tab, der vor der Bereinigung
+geladen wurde, schreibt den Wert beim nächsten Speichern zurück — ohne Fehler und
+ohne Spur.**
+**DAS IST DIE LEKTION AUS MIGRATION 0012, IN DIE ANDERE RICHTUNG GELESEN.** Ihr Kopf
+begründet die eigene Bauform genau damit: *"projects.settings ist CLIENT-autoritativ —
+saveProject ersetzt es GANZHEITLICH mit dem Client-settings (kein Read-Merge), sodass
+ein server-eigenes Feld darin beim nächsten Save still verschwindet."* Sie schrieb
+deshalb in eine **Spalte** und liess `settings` ausdrücklich unberührt.
+**UND: KEINE DER 22 MIGRATIONEN HAT JE IN DEN BLOB GESCHRIEBEN** — gemessen am
+2026-08-10 über alle Dateien in `supabase/migrations/` (`set settings`, `settings =`,
+`jsonb_set`, `- 'capi'`, `#-`: kein Treffer). **Wer diesen Kandidaten baute, baute die
+erste Migration dieses Projekts, die es tut** — gegen eine dokumentierte Entscheidung,
+die aus einem live aufgetretenen Fehler stammt.
+**WAS ES SEHR WOHL GIBT, damit die Aussage nicht zu weit klingt:** einen einmaligen
+Datenlauf auf einer TABELLE (Migration 0021, `insert … select … on conflict do
+nothing`, mit Nachhol-Lauf und versionierter Messprobe). **Der Blob ist der
+Unterschied, nicht die Einmaligkeit.**
+
+**(iii) KENNZEICHNEN HAT KEINEN ORT.** "Unbestätigt" ist eine Aussage über das
+**öffentliche Feld**; der Kartenzustand (`ConfiguredState = boolean | null`, drei
+Texte) leitet aus der **Geheimnis-Tabelle** ab — eine andere Achse. Ein vierter
+Zustand bräuchte eine **QUELLE**, und alle drei denkbaren haben einen Preis, der
+grösser ist als der Nutzen: ein Merker im **Blob** (client-besessen, ein alter Tab
+schreibt ihn weg), eine **Spalte** (Migration), eine Ableitung aus der
+**Stellenzahl** (eine Heuristik, die der Anbieter jederzeit bricht).
+
+### Der Befund, der über diesen Fall hinausgeht
+
+**DAS FELD HAT EINEN OFFENSICHTLICHEN UNSINN ANGENOMMEN UND GESPEICHERT.** Keine
+Prüfung, kein Hinweis, und die Karte sagt weiterhin "Zugangsdaten hinterlegt".
+
+**PRÄZISIERT, am Code, weil "angenommen" sonst nach einer versagenden Prüfung klingt:
+Es gibt gar keine.** Das öffentliche Feld ist ein `type="text"` mit `inputMode="numeric"`
+und einem `onChange`, das den Rohwert durchreicht; `setPixelId` trimmt und schreibt.
+**Es existiert im gesamten Pfad kein Begriff von "unsinnig"** — weder eine Längen-,
+noch eine Zeichen-, noch eine Formatprüfung. Und das öffentliche Feld hat **keinen
+Fehlerkanal**: `error` in `TargetCard` wird ausschliesslich aus `setCapiToken` und
+`removeCapiToken` gespeist, also aus dem **Geheimnis**-Pfad.
+
+**DER EIGENTLICHE PUNKT IST NICHT DER GEFUNDENE WERT, SONDERN DER NÄCHSTE: Wer sich
+vertippt oder die falsche der beiden Nummern kopiert, erzeugt denselben Zustand — nur
+MERKT er es nicht, weil sein Wert plausibel aussieht.** Der gefundene ist als
+Platzhalter erkennbar; eine echte Tag-Kennung an der Stelle der Konto-Kennung ist es
+nicht. **Und beide Nummern stehen in DERSELBEN Anbieter-Oberfläche** — die
+Verwechslung ist eingebaut, nicht zufällig (Punkt (g)).
+
+**DARAUS FOLGT DIE ROLLE DER STELLENZAHL IM PLATZHALTER: Sie ist KEINE PRÜFUNG.**
+Anbieter ändern Formate, und das Dokument führt diese Grenze bereits ("VERLASSEN DARF
+SICH NIEMAND DARAUF"). **Sie ist die billigste verfügbare Hilfe an genau der Stelle,
+an der jemand die falsche Nummer einfügt** — sichtbar im Moment des Einfügens, bevor
+der Wert existiert.
+
+**BACKLOG-KANDIDAT, ausdrücklich NICHT in dieser Scheibe:** eine Eingabe-Prüfung oder
+ein Abgleich, der eine offensichtlich unmögliche Kennung erkennt. S. "## Zwei
+Backlog-Kandidaten aus der Aufklärung zur KARTE — BENANNT, NICHT GEPLANT".
+
+### Der Zuschnitt der ELFTEN Scheibe
+
+**ZWECK:** Die Karte fragt für das zweite Ziel nach der **KONTO-Kennung** statt nach
+der Tag-Kennung. **DREI Zeichenketten in EINER Datei.**
+
+**DIE TRAGENDE AUFLAGE: SIE BEKOMMT EINEN ZEUGEN.** Der Bau ist drei Zeilen, **aber
+ohne Test wäre die Korrektur eine Aussage ohne Beleg — und ihre Rücknahme ebenso still
+wie ihr Ausbleiben.** Ausgangslage (c) ist die Messung dazu: heute deckt kein einziger
+Test diese drei Zeichenketten, in keine Richtung.
+**DAS IST DIE PROJEKTREGEL "NUR EIN TEST IST EIN WÄCHTER", angewandt auf einen Fall,
+in dem der Bau kleiner ist als sein Nachweis** — und genau deshalb steht sie hier als
+TRAGENDE Auflage und nicht als Nebensatz.
+
+**WAS DER TEST HALTEN MUSS — drei Zusicherungen:**
+1. **Die drei Felder der Karte des zweiten Ziels tragen die KONTO-Kennung, nicht die
+   Tag-Kennung.**
+2. **Der Hilfetext der beiden Karten ist NICHT MEHR IDENTISCH.** **Das ist die
+   Zusicherung, die am ehesten wieder verlorengeht, weil die Gleichheit wie Absicht
+   aussieht** — s. Ausgangslage (a). Eine Zusicherung nur auf den neuen Wortlaut
+   finge ein späteres Zurück-Vereinheitlichen erst, wenn jemand den exakten Text
+   trifft; eine Zusicherung auf die **Ungleichheit** fängt es immer.
+3. **Die Karte des ersten Ziels bleibt unverändert.**
+
+**VERHALTENS-INVARIANTEN:**
+1. **KEIN FORWARD WIRD BERÜHRT.** Kein Adapter, keine Zuordnung, kein Ingest-Pfad.
+2. **DER GESPEICHERTE WERT WIRD NICHT ANGEFASST** — weder gelesen noch geschrieben
+   noch bereinigt.
+3. **DIE KARTE DES ERSTEN ZIELS BLEIBT BYTE-GLEICH.**
+4. **KEIN NEUER PLATZHALTER PASST AUF DAS MUSTER DES ERSTEN ZIELS.** *Präzise: er darf
+   die Zeichenkette `123456789012345` nicht ENTHALTEN* — der Selektor ist ein
+   Teilstring-Muster, kein Vollvergleich.
+5. **DER WORTLAUT-WÄCHTER BLEIBT GRÜN.**
+6. **KEINE MIGRATION, KEINE SERVER-AKTION, KEINE NEUE STATUSQUELLE.**
+
+**AUSDRÜCKLICH NICHT IN DIESER SCHEIBE:**
+- **DIE SICHTBARKEIT DER ÜBERSETZUNG.** Ihre Vorbedingungen entstehen in einer anderen
+  Scheibe und existieren teils noch nicht. **Am Code gemessen (2026-08-10):** `ActionPanel`
+  — die Stelle, an der der Betreiber Ereignisnamen verdrahtet (`TrackActions`/`TrackForm`,
+  `CUSTOM_EVENT`) — **kennt die Ziele überhaupt nicht**; `ActionPanelProps` führt
+  `selectedElement`, `mappings` und vier Rückrufe, **kein `settings`, keine `targets`,
+  keine `projectId`**. Dazu die zweite Sperre: Ob die Tabelle aus Client-Code
+  erreichbar ist, entscheidet die ZEHNTE Scheibe beim Anlegen der Datei — der
+  Präzedenzfall `meta-forward.ts` trägt `import "server-only"` in Zeile 1.
+- **DIE ZUORDNUNG.** Zwölfte.
+- **JEDE EINGABE-PRÜFUNG.**
+
+### Was der Stufe-1-Plan der ELFTEN Scheibe beantworten MUSS
+
+Sie stehen als FRAGEN da, damit keine Antwort geraten wird.
+
+- **Welcher Wortlaut?** Er muss dem entsprechen, was der Betreiber in seinem
+  Anbieter-Konto **an derselben Stelle wiederfindet**. *(Punkt (g) nennt den
+  Schnittstellen-Namen `ad_account_id` und die Oberflächen-Bezeichnung des
+  Geheimnisses ("Conversion Token") — **wie die KONTO-Kennung in der Oberfläche des
+  Anbieters heisst, steht dort NICHT.** Fehlt sie, ist das eine Anbieter-Angabe, die
+  vorzulegen und nicht zu erfinden ist.)*
+- **Wie lautet der Hilfetext, wenn die Kennung NICHT im Quelltext steht?** Er muss eine
+  wahre Aussage über DIESES Ziel treffen und darf nicht der des ersten sein.
+- **Welcher Platzhalter, ohne den Rand des ersten Ziels zu berühren?**
+- **Wo liegt der Test, und wie hält er die NICHT-Identität der beiden Hilfetexte
+  fest?**
 
 ---
 
@@ -7372,3 +7624,61 @@ dieselbe Zahl nimmt, und **kein Test sähe die Divergenz je nebeneinander.**
 zweiten Empfänger, den ein Test einsetzen könnte — **der Kandidat ist also kein
 Versäumnis, sondern eine Vorbedingung, die noch fehlt.** **DAS IST KEIN AUFTRAG AN
 DIE ZWÖLFTE:** ob sie ihn mitnimmt, entscheidet ihr Zuschnitt.
+
+---
+
+## Zwei Backlog-Kandidaten aus der Aufklärung zur KARTE — BENANNT, NICHT GEPLANT
+
+**EIGENE SEKTION, obwohl der Abschnitt darüber DASSELBE DATUM trägt** — und der Grund
+ist derselbe, aus dem dieses Dokument schon drei Sektionen mit dem 2026-08-08 führt:
+Jener stammt aus der Aufklärung zum ADAPTER, dieser aus der zur KARTE. **Aufklärungen
+dieser Phase sind am GEGENSTAND zu unterscheiden, nie am Datum.**
+**PROVENIENZ: am Repo gemessen am 2026-08-10 (read-only).** Kein Termin, keine
+Zusage.
+
+### (1) EINE EINGABE-PRÜFUNG FÜR OFFENSICHTLICH UNMÖGLICHE KENNUNGEN
+
+**GEGENSTAND:** Das öffentliche Feld der Karte nimmt jeden Wert an. Am Code gemessen:
+`type="text"`, `inputMode="numeric"`, ein `onChange`, das den Rohwert durchreicht,
+`setPixelId`, das trimmt und schreibt. **Keine Längen-, keine Zeichen-, keine
+Formatprüfung, und kein Fehlerkanal am öffentlichen Feld** — `error` in `TargetCard`
+speist sich ausschliesslich aus dem Geheimnis-Pfad.
+
+**DIE FEHLERFIGUR, gegen die der Kandidat steht — und sie ist NICHT der gefundene
+Wert:** Ein getippter Platzhalter fällt einem Menschen auf. **Eine echte Tag-Kennung
+an der Stelle der Konto-Kennung fällt niemandem auf** — beide Nummern stehen in
+DERSELBEN Anbieter-Oberfläche, beide sehen nach einer Kennung dieses Anbieters aus,
+und die Karte bestätigt derweil "Zugangsdaten hinterlegt" (eine Aussage über die
+Geheimnis-Zeile, nicht über das Feld).
+
+**WAS ER AUSDRÜCKLICH NICHT IST: eine Zusicherung über die Gültigkeit des Kontos.**
+Das Dokument führt die Grenze bereits ("VERLASSEN DARF SICH NIEMAND DARAUF: Anbieter
+ändern Formate"). Eine Prüfung wäre eine **Hilfe gegen Vertipper**, mehr nicht — und
+sie steht damit in derselben Klasse wie die Stellenzahl im Platzhalter, nur teurer.
+
+**WARUM ER NICHT IN DIE ELFTE GEHÖRT:** Sie ändert drei Zeichenketten und fasst weder
+Zustand noch Ablauf an. Eine Prüfung brächte einen Fehlerkanal an ein Feld, das heute
+keinen hat — **eine zweite Wirkung in einer Scheibe, deren ganzer Wert ihre Kleinheit
+ist.**
+
+### (2) KEIN TEST ÜBER DEN VOLLEN KREIS "EINGEBEN → SPEICHERN → NEU LADEN → WIEDERSEHEN"
+
+**GEMESSEN:** Für das ERSTE Ziel decken zwei Tests je ein Stück des Kreises, und ihre
+Trennung ist der Befund — **keiner deckt den Übergang dazwischen:**
+- `„Pixel-ID -> dirty -> grosser Speichern-Button reicht settings an saveProject"`
+  prüft die **ÜBERGABE** (das vierte Argument gleicht `{ pixels: { meta: { pixelId:
+  "999000111" } } }`), **nicht die Wiederanzeige.**
+- `„Projektwechsel reseedet settings (kein Leak …)"` prüft die **WIEDERANZEIGE aus
+  geladenen Daten**, **nicht nach einem Speichern.**
+
+**FÜR DAS ZWEITE ZIEL GIBT ES ZU KEINEM TEIL DES KREISES EINEN TEST.** Von den sieben
+Tests, die `target="pinterest"` rendern oder prüfen, betrifft **keiner** das
+öffentliche Feld — alle sieben liegen auf dem Geheimnis-Pfad, den Knopfnamen oder dem
+Adapter-Hinweis.
+
+**WARUM DAS GERADE HIER ZÄHLT:** Es ist derselbe Bestand, gegen den eine Bereinigung
+oder eine Kennzeichnung hätte bewiesen werden müssen — **beide Kandidaten sind durch
+Messung gegenstandslos geworden, die Lücke im Bestand ist es nicht.**
+
+**WAS ER NICHT VERLANGT:** die bestehenden zwei Tests umzuschreiben. Sie sind für ihre
+Achsen richtig; **fehlend ist der Übergang, nicht ihre Aussage.**

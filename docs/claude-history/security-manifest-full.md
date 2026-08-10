@@ -173,6 +173,304 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   "LABEL-VERGABE IST UNPROTOKOLLIERT".
   BINDET-AN: 7c-2 (Vercel-Domains-API) — abgeschlossen; der Rest bindet an den
   Abuse-/Audit-Ausbau bzw. an öffentlichen Traffic.
+- META-FEHLERLOG SPIEGELT DAS ZUGANGSDATUM ZURÜCK (EINGESTUFT 2026-08-10 als TIER 1 —
+  OWNER-ENTSCHEIDUNG; HERKUNFT: die Sektion "OHNE STUFE — Einstufung steht aus", die mit
+  diesem Zug leer wurde und deshalb entfernt ist. Befund erhoben 2026-08-10):
+  ZUR FORM DIESES ZUGES, und sie gehört hierher, weil die Warteraum-Regel mit der Sektion
+  verschwunden ist: Die eine zuvor vollzogene Umstufung dieser Datei (LOGGING-LEAK,
+  Tier 0 -> Tier 2) trägt RICHTUNG und HERKUNFT im Titel. Eine RICHTUNG gibt es hier
+  NICHT — ein Warteraum ist keine Stufe, von der aus etwas auf- oder absteigt; der Titel
+  nennt deshalb ZUG und HERKUNFT. Alles Übrige folgt dem Präzedenzfall: das Item ist
+  physisch gezogen, am alten Ort bleibt KEIN Platzhalter, die alte Lage ist allein über
+  diesen Titel lesbar.
+  RISIKO: describeMetaError in src/lib/capi/meta-forward.ts trägt Fremdtext aus der
+  Antwort des Anbieters in unser Server-Log. Stuft der Anbieter das übergebene
+  Zugangsdatum als MALFORMED ein, spiegelt er die gesendete Zeichenkette in seiner
+  Meldung zurück — und diese Meldung wird geloggt. Ein Log-Eintrag ist irreversibel,
+  sobald er exportiert oder indexiert ist (dieselbe Eigenschaft, die der LOGGING-LEAK-
+  Eintrag in Tier 2 für seinen eigenen, ANDEREN Mechanismus benennt).
+  DER PFAD IM EINZELNEN — AM CODE ERHOBEN am 2026-08-10, KEINE Handmessung: Die Funktion
+  hat VIER Ausgänge, nicht zwei. Zwei sind sauber (ein Marker bei unlesbarem Rumpf, ein
+  Marker bei fehlendem Fehler-Umschlag). ZWEI tragen Fremdtext:
+  · DER JSON-PFAD loggt fünf benannte Felder des Anbieter-Umschlags, darunter dessen
+    freien Meldungstext (msg=), je über asLogValue auf META_ERROR_MSG_MAX gekappt.
+  · DER NICHT-JSON-RÜCKFALL loggt den ROHEN Antwort-Rumpf, ungeprüft, auf dieselbe
+    Länge gekappt. DAS IST DIE BREITERE DER BEIDEN ÖFFNUNGEN: der JSON-Pfad greift
+    wenigstens ein benanntes Feld heraus, dieser Pfad gibt heraus, was kommt.
+  BEIDE KAPPUNGEN SCHNEIDEN VOM ANFANG (slice(0, MAX)). Sie begrenzen die LÄNGE, nicht
+  den INHALT — ein Geheimnis am Anfang der Zeichenkette überlebt die Kappung vollständig.
+  DAS GEHT ÜBER DIE VORLAGE HINAUS UND VERSCHÄRFT DEN BEFUND — AM CODE ERHOBEN,
+  2026-08-10: Das Zugangsdatum reist bei diesem Anbieter im QUERY-STRING der Forward-URL
+  (…/events?access_token=…), nicht in einem Header. DIE DATEI WEISS DAS: der Kopf von
+  describeMetaError schreibt ausdrücklich "NIE die Forward-URL (sie traegt den
+  access_token im Query-String)". Dieselbe Zeichenkette, deren Transportweg dort als
+  geheimnistragend erkannt und ausgeschlossen wird, kommt über die Antwort des Anbieters
+  zurück und wird geloggt. Die Vorsichtsmassnahme ist vorhanden und wirkt auf dem HINWEG;
+  der RÜCKWEG ist ungedeckt.
+  DIE MESSUNG — PROVENIENZ: HANDMESSUNG von Stefan am 2026-08-07 per curl. KEINE
+  Anbieter-Doku, KEINE Code-Messung. Zwei Aufrufe:
+  (1) Ein Zugangsdatum, das der Anbieter als MALFORMED erkennt: Er spiegelt die
+      übergebene Zeichenkette VOLLSTÄNDIG in der Meldung zurück. Gesendet wurde eine
+      Dummy-Zeichenkette; sie stand komplett in der Antwort.
+  (2) Ein Zugangsdatum in unparsbarer Form: generische Meldung, KEINE Rückspiegelung.
+  DIE WEITE DES BEFUNDS IST SCHMALER, ALS SIE ZUERST AUSSAH — und das gehört an den
+  Anfang, nicht ans Ende: GEMESSEN ist die Rückspiegelung NUR für den Fall, in dem der
+  Anbieter das Zugangsdatum als MALFORMED einstuft. NICHT GEMESSEN ist, was ein ECHTES,
+  WOHLGEFORMTES, aber WIDERRUFENES oder ABGELAUFENES Zugangsdatum auslöst — der Anbieter
+  antwortet dort mit einer anderen Meldungsart, und ob sie das Zugangsdatum nennt, weiss
+  niemand.
+  DIE ENTLASTENDE FOLGE, weil sie die Einstufung berührt: GESPIEGELT WIRD AUSGERECHNET
+  DANN, WENN DAS ZUGANGSDATUM KEIN FUNKTIONIERENDES ZUGANGSDATUM IST. Ein Tippfehler beim
+  Einfügen landet im Log — aber ein Tippfehler öffnet nichts.
+  OFFENER PUNKT — EIN MECHANISMUS, DER DIE OBERGRENZE DES BEFUNDS HEBT (ÜBERLEGUNG des
+  Architekten, 2026-08-10; NICHT GEMESSEN — keine Anbieter-Doku, keine Handmessung, keine
+  Code-Messung):
+  Eine Gateway- oder Fehlerseite spiegelt häufig die ANGEFRAGTE URL zurück. Bei diesem
+  Anbieter steht das Zugangsdatum IN dieser URL, im Query-String. FOLGE: Auf dem
+  NICHT-JSON-Pfad könnte damit ein GÜLTIGES Zugangsdatum ins Log geraten — und das ist der
+  einzige Weg, auf dem das strukturell möglich ist; auf den übrigen Wegen kommt zurück,
+  was der Anbieter selbst in seine Meldung schreibt.
+  DIE GRENZE, und sie ist der halbe Punkt: NICHT GEMESSEN. Weder ist belegt, dass dieser
+  Anbieter je eine Nicht-JSON-Antwort liefert, noch dass eine solche die URL enthielte. Es
+  ist eine Überlegung über eine verbreitete Bauart FREMDER Systeme, nicht über dieses.
+  WARUM ER TROTZDEM IM EINTRAG STEHT: Er hebt die OBERGRENZE. Ohne ihn lautet die
+  schärfste denkbare Auswirkung "ein abgelehntes Zugangsdatum im Log", mit ihm "ein
+  funktionierendes". Eine Einstufung, die ihn nicht kennt, stuft eine andere Sache ein.
+  WAS DIE CODE-SEITE HERGIBT — am Code erhoben 2026-08-10. Sie STÜTZT den Mechanismus in
+  drei Punkten und ENTKRÄFTET ihn in keinem:
+  · ERREICHBAR: Der Nicht-JSON-Rückfall hat keinen Guard. Er wird betreten, sobald eine
+    Antwort mit !res.ok ankommt, deren Rumpf nicht als JSON parst — kein toter Code.
+    Timeout und Abort erreichen ihn NICHT: die münden im äusseren catch, das allein
+    errorName loggt.
+  · DIE DATEI RECHNET SELBST MIT DIESER ANTWORTART: Der Kommentar über dem Rückfall nennt
+    wörtlich "HTML-Fehlerseite, leerer Body, Gateway-Antwort". Das ist die ERWARTUNG des
+    Autors, keine Messung — aber es ist genau die Bauart, die der Mechanismus voraussetzt.
+  · DAS ZUGANGSDATUM STEHT UNKODIERT IN DER URL (String-Interpolation, kein
+    encodeURIComponent). Eine Rückspiegelung träfe es wortgleich, sofern das spiegelnde
+    System es nicht selbst umschreibt.
+  WAS DIE CODE-SEITE EINSCHRÄNKT, OHNE ZU ENTKRÄFTEN: Gekappt wird vom ANFANG auf 200
+  Zeichen eines zuvor GETRIMMTEN Rumpfes. Steht die URL erst hinter Zeichen 200 einer
+  HTML-Fehlerseite, erreicht sie das Log nicht. Das ist eine Schranke — aber eine, die an
+  einer Eigenschaft der FREMDEN Seite hängt, die niemand hier kontrolliert.
+  WAS ICH NICHT KANN, ausdrücklich: Ob dieser Anbieter je eine Nicht-JSON-Antwort liefert,
+  wie sie aufgebaut wäre und ob sie die URL trägt, ist am Repo NICHT entscheidbar. Dafür
+  braucht es eine Messung gegen den Anbieter oder einen Fund in den Laufzeit-Protokollen.
+  EINE VERSCHÄRFUNG, DIE BEIM PRÜFEN AUFFIEL (am Code entscheidbar, erhoben 2026-08-10):
+  Der Nicht-JSON-Rückfall läuft bei JEDER abgelehnten Antwort, unabhängig vom GRUND der
+  Ablehnung — er ist NICHT an eine Ablehnung des Zugangsdatums gebunden. Auf DIESEM Pfad
+  trägt E1 deshalb nicht: die Anfrage kann an etwas ganz anderem scheitern (Berechtigung,
+  Nutzlast-Feld, ein Zwischensystem), WÄHREND das Zugangsdatum gültig ist. Belegt ist
+  damit die VORAUSSETZUNG des Mechanismus — ein gültiges Zugangsdatum in einer
+  scheiternden Anfrage ist der Normalfall dieses Pfades, kein Sonderfall —, NICHT die
+  Rückspiegelung selbst.
+  EINE PRÄMISSE WAR ZUNÄCHST UMGEKEHRT BESCHRIEBEN, und das gehört festgehalten, weil sie
+  in eine Einstufung gewandert wäre: Der Architekt hatte den Fall zuerst als "wohlgeformt,
+  aber ungültig — der häufigste Realfall" geführt, also als den Fall mit einem BRAUCHBAREN
+  Zugangsdatum, und dies vor dieser Runde selbst richtiggestellt. Wäre die Stufe auf der
+  ersten Fassung gesetzt worden, hätte sie eine Wirkung unterstellt, die die Messung nicht
+  hergibt.
+  TRAGENDE KONTROLLE: HEUTE KEINE. Der Pfad ist ungedeckt; was ihn im Moment ruhig hält,
+  ist Erreichbarkeit (s. unten), nicht eine Kontrolle. Die Form einer künftigen Kontrolle
+  ist NICHT vorentschieden — sowohl das Schwärzen der Ausgabe als auch das Weglassen des
+  Fremdtexts kämen in Frage, und beides berührt die Diagnosefähigkeit, für die die
+  Felder überhaupt eingeführt wurden.
+  WARUM ER UNENTDECKT BLIEB — EIN FALSCHER BELEG HAT IHN VERDECKT, an ZWEI Stellen:
+  · Über der Kappungs-Konstanten steht "Metas message ist Beschreibungstext (kein
+    Secret), aber unbegrenzt lang -> kappen." Der Klammerzusatz ist die Behauptung, die
+    die Handmessung widerlegt hat.
+  · Der Kopf von describeMetaError sagt "geloggt werden AUSSCHLIESSLICH Metas eigene
+    strukturierte Fehlerfelder … NIE der Token".
+  DIE ZWEITE STELLE WIDERSPRICHT SICH SELBST, UNABHÄNGIG VON JEDER MESSUNG: Ein ROHER
+  Antwort-Rumpf ist kein "strukturiertes Fehlerfeld". Der Nicht-JSON-Rückfall verletzt
+  die Zusage seines eigenen Kopfkommentars, und DAS war am Code allein entscheidbar,
+  immer — es brauchte dafür weder die Handmessung noch den Anbieter.
+  ER WAR SCHON EINMAL AKTENKUNDIG: Am 2026-08-08 wurde die Kollision zwischen diesem
+  Kommentar und einer Maskierungs-Auflage gemeldet, mit dem Satz, sie sei am Code nicht
+  entscheidbar. Für die JSON-Hälfte stimmt das, und entscheidbar war sie seit der
+  Handmessung vom 2026-08-07. Für die Nicht-JSON-Hälfte stimmt es NICHT: die war am Code
+  entscheidbar, und zwar früher.
+  DIE ERREICHBARKEIT — MELDUNG von Stefan am 2026-08-10, weder Code-Messung noch
+  Handmessung: ZUR ZEIT TRÄGT KEIN PROJEKT EIN ZUGANGSDATUM DIESES ANBIETERS. Ohne
+  Zugangsdatum kein Forward, ohne Forward kein Fehler, ohne Fehler keine Logzeile. DER
+  PFAD IST HEUTE NICHT ERREICHBAR.
+  DIE CODE-SEITE DIESER AUSSAGE, und nur sie ist von mir erhoben (2026-08-10): Der
+  Aufrufer ruft forwardToMeta ausschliesslich aus einem Zweig, der eine vorhandene
+  Konfiguration voraussetzt. Ist keine da, wird die Funktion nie betreten. Die
+  Code-Seite stützt die Meldung; sie ersetzt sie nicht — ob eine Konfiguration in der
+  Datenbank steht, ist am Repo nicht entscheidbar.
+  GRENZE, UND SIE IST DER WICHTIGERE TEIL: Das ist eine Aussage über HEUTE, nicht über
+  die Vergangenheit. Während dieser Phase liefen Forwards; ob dabei je eine
+  Fehlerantwort mit Rückspiegelung entstand, ist NICHT geprüft.
+  WONACH IN DEN LAUFZEIT-PROTOKOLLEN ZU SUCHEN WÄRE — die Marker sind Literale im Code
+  und deshalb exakt suchbar (am Code erhoben 2026-08-10):
+  · "[capi] Meta forward rejected: non-JSON body=" — der BREITE Pfad. Jeder Treffer ist
+    ein roher Fremd-Rumpf im Log und zuerst zu lesen.
+  · "[capi] Meta forward rejected: code=" — der JSON-Pfad. Betroffen ist das Feld hinter
+    " msg=" am ZEILENENDE; die vier Felder davor sind Kennungen und Typnamen.
+  · "[capi] Meta forward failed: HTTP " — trägt NUR den Status und ist unbedenklich,
+    steht aber unmittelbar VOR jeder der beiden obigen Zeilen und ist deshalb der
+    zuverlässigere ANKER, wenn man die Vorkommen zählen statt lesen will.
+  DIE SUCHE SELBST IST NICHT HARMLOS: Wer sie fährt, liest möglicherweise genau das
+  Geheimnis, dessen Anwesenheit er prüfen will — und ein Kopieren des Ergebnisses in
+  einen Chat, ein Ticket oder eine Doku trägt es weiter. Die Prüfung sagt "getroffen
+  oder nicht", nicht "hier ist die Zeile".
+  OFFEN, AM REPO NICHT ENTSCHEIDBAR — zwei Punkte, beide Angaben über den BETRIEB:
+  (1) WER die Laufzeit-Protokolle lesen kann. Der bestehende LOGGING-LEAK-Eintrag hält
+      für 2026-07-24 fest, dass Log-Drains Pro-gated und keine konfiguriert sind — also
+      dass die Protokolle die Plattform nicht verlassen. OB DAS HEUTE NOCH GILT, IST
+      NICHT ERHOBEN, und der Personenkreis mit Zugriff ist es ebenso wenig. Es ist die
+      Angabe, die aus "ein Geheimnis steht im Log" erst eine Reichweite macht.
+  (2) OB DER FALL JE EINGETRETEN IST.
+  EHRLICHE EINORDNUNG: Der Befund ist SCHMAL GEMESSEN und BREIT GEBAUT. Gemessen ist ein
+  Fall, in dem das gespiegelte Zugangsdatum nichts öffnet; gebaut ist ein Pfad, der
+  herausgibt, was kommt, ohne zu wissen, was es ist. Diese beiden Sätze zeigen in
+  verschiedene Richtungen, und es wäre eine Selbsttäuschung, den bequemeren zu nehmen:
+  weder trägt die eine Messung eine Aussage über alle Fehlerarten des Anbieters, noch
+  entlastet die heutige Unerreichbarkeit den Code — sie ist ein Zustand der Datenbank,
+  kein Merkmal der Funktion, und sie endet mit der ersten hinterlegten Konfiguration.
+  BINDET-AN: das erste Projekt, das ein Zugangsdatum dieses Anbieters trägt — nach dem
+  ersten Login, vor echtem Ad-Traffic. Dort endet die Erreichbarkeit, dort beisst der
+  Befund, und es ist derselbe Moment, den die Stufe benennt. (Hier stand "OFFEN,
+  gemeinsam mit der Stufe"; beides ist am 2026-08-10 entschieden.)
+  DIE GRUNDLAGE DER EINSTUFUNG steht im Block darunter: die Prüfung gegen alle drei
+  Stufen, unverändert wie vor der Entscheidung, und an ihrem Ende die Entscheidung selbst.
+
+  GRUNDLAGE DER EINSTUFUNG (nach den Kriterien dieser Datei) — die Prüfung stand VOR der
+  Entscheidung und bleibt stehen; die getroffene Stufe steht am Ende. EINE AUSNAHME, und
+  sie ist unten markiert: eine Tatsachenbehauptung im Tier-0-Abschnitt wurde am Code
+  WIDERLEGT und ist richtiggestellt, nicht gestempelt — eine Prüfung, die auf einer
+  falschen Tatsache ruht, taugt nicht als Grundlage.
+  DIE PRIMÄRE ACHSE DIESER DATEI IST DER MOMENT, IN DEM DAS RISIKO BEISST (Kopf: "NICHT
+  alles ist P0. Sequenziert nach dem Moment …"), NICHT die Schwere. Schwere kommt nur bei
+  Tier 0 als Zusatzmerkmal vor. Wer nach Schwere einstuft, benutzt ein Kriterium, das die
+  Datei nicht führt.
+  VIER TATSACHEN GEHEN IN JEDE DER DREI PRÜFUNGEN EIN — zwei entlastende, zwei belastende.
+  DAZU EIN MECHANISMUS, DER AUSDRÜCKLICH KEINE TATSACHE IST (B3): Er zählt in KEINER der
+  drei Prüfungen als BELEG für eine Wirkung — wohl aber als OFFENE FRAGE, und als solche
+  wirkt er an zwei Stellen: in der Wiedervorlage und gegen die Ruhe, die Tier 2 behauptet:
+  E1 Das gespiegelte Zugangsdatum ist gemessen KEIN funktionierendes Zugangsdatum.
+  E2 Der Pfad ist heute nicht erreichbar (Meldung, kein Merkmal des Codes).
+  B1 Es sind ZWEI Pfade, und der zweite gibt alles heraus, was kommt.
+  B2 Der Widerrufs-/Ablauf-Fall ist NICHT gemessen und damit offen.
+  B3 (KEINE MESSUNG, ÜBERLEGUNG des Architekten): Spiegelte eine Gateway-/Fehlerseite die
+     angefragte URL zurück, geriete auf dem Nicht-JSON-Pfad ein GÜLTIGES Zugangsdatum ins
+     Log. Das hebt die OBERGRENZE des Befunds — belegt ist davon nichts.
+
+  TIER 0 — "Harte Launch-Blocker (katastrophal beim ersten bösen Nutzer / irreversibel)"
+  ERFÜLLT: die IRREVERSIBILITÄT. Ein geschriebener Log-Eintrag ist nicht zurückholbar,
+    sobald er exportiert oder indexiert ist — der bestehende Tier-2-Eintrag nennt genau
+    diese Eigenschaft als seine eigene. B1 verstärkt sie: der breite Pfad gibt heraus,
+    was kommt, also auch das, was B2 offenlässt.
+  NICHT ERFÜLLT: "beim ersten bösen Nutzer" — aber aus einem ANDEREN Grund als dem, der
+    hier zuerst stand. RICHTIGGESTELLT AM CODE (2026-08-10), NICHT GESTEMPELT: Der Satz
+    "ein Fremder kann ihn nicht auslösen" stammte vom Architekten und ist WIDERLEGT. Der
+    Pfad braucht keinen Angreifer, um SCHARF zu werden — er braucht einen eigenen
+    Konfigurationsfehler des Betreibers. AUSLÖSEN kann ein Fremder ihn sehr wohl: ein
+    Besucher-Beacon erreicht den Forward (src/lib/capi/ingest.ts, der Zweig
+    "targets.length > 0 && isForwardable(event)"; value/currency/eventSourceUrl/_fbp und
+    der Event-Name kommen aus dem Client-Body, ein abgelehnter Aufruf ist also von aussen
+    provozierbar). Nur trägt eine so provozierte Ablehnung nach dem GEMESSENEN Stand kein
+    Geheimnis.
+    GENAU GENOMMEN — die Bedingungen gehören dazu, sonst ist auch die Richtigstellung zu
+    weit: Der Fremde erreicht den Forward NUR bei einem Projekt mit hinterlegten
+    Zugangsdaten, NUR mit einem forwardbaren Event (PageView und Confirm erreichen die
+    Zeile nie) und NUR hinter dem Einwilligungs-Gate. Er verschiebt die Erreichbarkeit
+    also NICHT nach vorn: E2 gilt unverändert.
+    WARUM DER SATZ NICHT STILL ÜBERSCHRIEBEN WIRD: Er hätte ZWEIMAL in einer
+    Sicherheits-Einstufung gestanden — als Tatsache, auf der eine Stufe ruht.
+    "katastrophal" trägt E1 weiterhin nicht: gespiegelt wird gemessen das, was nichts
+    öffnet.
+  OFFEN: ob B2 die Nicht-Erfüllung kippt. Spiegelte der Anbieter auch ein WIDERRUFENES
+    oder ABGELAUFENES Zugangsdatum, wäre E1 nur noch eine Teil-Entlastung — und ein
+    solches Zugangsdatum war einmal gültig. Dasselbe gilt für B3: träfe er zu, wäre ein
+    GÜLTIGES Zugangsdatum betroffen, und "katastrophal" stünde neu zur Debatte.
+
+  TIER 1 — "Vor echtem Ad-Traffic / Spend (nicht vor dem ersten Login)"
+  ERFÜLLT: der MOMENT passt. Der Pfad wird erreichbar, sobald echte Projekte
+    Zugangsdaten tragen — also mit dem Betrieb, nicht mit dem ersten Login. E2 ist damit
+    kein Gegenargument gegen diese Stufe, sondern ihre Beschreibung.
+  NICHT ERFÜLLT: die Bindung an TRAFFIC bzw. SPEND im Wortsinn. Der Auslöser ist eine
+    fehlerhafte Eingabe von Zugangsdaten, kein Traffic-Volumen. EIN einzelner Betreiber
+    mit EINEM Tippfehler genügt, ganz ohne Ad-Spend — die Stufe würde den Moment
+    richtig, den GRUND aber falsch benennen.
+
+  TIER 2 — "Laufende Hygiene / verankerte Prinzipien (KEIN Gate)"
+  ERFÜLLT: die NACHBARSCHAFT und E2. Der Vorgänger-Eintrag zur selben Sache (Geheimnis
+    im Log) steht hier; seine TRAGENDE KONTROLLE ("minimieren, wo der Token überhaupt
+    hinreist") beschreibt auch für diesen Befund die naheliegende Richtung. Ein heute
+    unerreichbarer Pfad braucht kein Gate.
+  NICHT ERFÜLLT: "verankertes Prinzip". Dies ist ein KONKRETER, gemessener, offener
+    Defekt an einer benannten Stelle — kein Grundsatz und keine Dauerhygiene. Und die
+    Sektion trägt "KEIN Gate" in der Überschrift: ein Eintrag mit offener Weite (B2)
+    behauptete dort mehr Ruhe, als gemessen ist.
+
+  WAS DIE WIEDERVORLAGE-KLAUSEL DES BESTEHENDEN EINTRAGS WÖRTLICH HERGIBT — der Wortlaut,
+  nicht seine Auslegung: "WIEDERVORLAGE: der Befund gilt fuer den HEUTIGEN Code —
+  setCapiToken ist die EINZIGE Server Action mit Secret-Parameter (erhoben 2026-07-24).
+  Bei JEDER neuen Server Action mit Secret-Parameter neu bewerten."
+  SIE NENNT ALS ANLASS EINE NEUE SERVER-AKTION MIT GEHEIMNIS-PARAMETER. DER HIESIGE
+  ANLASS IST EIN ANDERER: keine Server-Aktion, sondern dieselbe Sache — ein Geheimnis im
+  Log — in einer anderen Naht, nämlich einer von uns selbst geschriebenen Logzeile auf
+  einem Fehlerpfad. Nach dem BUCHSTABEN greift die Klausel nicht. Ob ihr ZWECK damit
+  erfüllt ist, ist eine Owner-Entscheidung und wird hier nicht getroffen.
+
+  WAS DIESER EINTRAG NICHT TUT: Er ändert am bestehenden LOGGING-LEAK-Eintrag NICHTS. Der
+  bleibt Wort für Wort stehen, samt seiner Herabstufung — er war richtig für den
+  Gegenstand, den er beurteilt hat (ein Framework-Verhalten auf einem Server-Action-
+  Argument), und dieser Gegenstand ist ein anderer. Er hat den hiesigen Fehlerpfad sogar
+  ausdrücklich offengelassen: "der FEHLERpfad ist ungetestet".
+
+  DIE ENTSCHEIDUNG — TIER 1 (Owner-Entscheidung, 2026-08-10)
+  BEGRÜNDUNG ENTLANG DER PRIMÄREN ACHSE DIESER DATEI, dem MOMENT und nicht der Schwere:
+  Der Pfad wird erreichbar, sobald ein echtes Projekt ein Zugangsdatum trägt. Das ist NACH
+  dem ersten Login und VOR echtem Ad-Traffic — genau das Fenster, das Tier 1 beschreibt.
+  Vorher ist er unerreichbar (E2), nachher ist er dauerhaft offen.
+  WAS AN DIESER STUFE NICHT PASST, und es steht hier und nicht in einer Fussnote: Der
+  Titel der Sektion bindet an TRAFFIC bzw. SPEND. Der Auslöser hier ist kein Volumen,
+  sondern EINE fehlerhafte Eingabe eines einzelnen Betreibers. DIE STUFE BENENNT DEN
+  MOMENT RICHTIG UND DEN GRUND FALSCH. Das ist der Preis, und er wird gezahlt, weil diese
+  Datei nach dem MOMENT sequenziert.
+  WARUM NICHT TIER 0 — DIESE BEGRÜNDUNG IST NEU. Die erste ruhte auf der Behauptung, ein
+  Fremder könne den Pfad nicht auslösen; die ist am Code widerlegt (s. Grundlage-Block,
+  TIER 0 / NICHT ERFÜLLT) und die Begründung fällt mit ihr. DIE STUFE BLEIBT, ihr Grund
+  ist ein anderer — und der neue ist ehrlicher als der alte:
+  Die Sektion verlangt "katastrophal beim ersten bösen Nutzer". Der erste böse Nutzer KANN
+  den Pfad betreten — das ist am Code erhoben. Was er nach dem GEMESSENEN Stand vorfindet,
+  ist eine Logzeile OHNE Geheimnis.
+  DER WEG VON "AUSGELÖST" ZU "EIN FUNKTIONIERENDES GEHEIMNIS IM LOG" LÄUFT ÜBER DREI
+  UNGEMESSENE GLIEDER: (a) dass der Anbieter überhaupt eine Nicht-JSON-Antwort liefert;
+  (b) dass sie die angefragte URL trägt; (c) dass die URL innerhalb der gekappten Länge
+  steht. KEINES davon ist belegt.
+  DIE KETTE BESCHREIBT DEN NICHT-JSON-PFAD (B3) — der andere Weg gehört danebengestellt,
+  sonst liest sich "drei Glieder" wie eine Aussage über den ganzen Befund: Über den
+  JSON-Pfad hängt alles an EINEM ungemessenen Glied (B2), aber selbst wenn es trägt, ist
+  ein WIDERRUFENES oder ABGELAUFENES Zugangsdatum eines, das nichts mehr öffnet. Zu
+  "katastrophal" führt nur die dreigliedrige Kette.
+  "KATASTROPHAL" STÜNDE DAMIT AUF DREI UNGEMESSENEN GLIEDERN, NICHT AUF EINER MESSUNG.
+  Tier 0 auf eine solche Kette zu setzen hiesse, die primäre Achse dieser Datei durch eine
+  Vermutung zu ersetzen — und der Kopf warnt ausdrücklich davor, dass eine Liste, auf der
+  alles "kritisch" ist, nichts priorisiert.
+  DIE IRREVERSIBILITÄT ALLEIN TRÄGT DIE STUFE NICHT; sie ist Zusatzmerkmal, nicht Achse.
+  WAS DIE STUFE KIPPT, steht in der Wiedervorlage (2): Wird EIN Glied der Kette gemessen
+  und trägt es, ist Tier 0 neu zu prüfen.
+  WARUM NICHT TIER 2: Die Sektion trägt "KEIN Gate" in der Überschrift und sammelt
+  Grundsätze und Dauerhygiene. Dies ist ein konkreter, gemessener, OFFENER Defekt an einer
+  benannten Stelle — und mit einem offenen Punkt (B2) und einem ungeklärten Mechanismus
+  (B3) behauptete "kein Gate" mehr Ruhe, als gemessen ist.
+  WIEDERVORLAGE — drei Anlässe, bei denen die Stufe NEU zu prüfen ist:
+  (1) Ergibt eine Messung, dass auch ein WIDERRUFENES oder ABGELAUFENES Zugangsdatum
+      gespiegelt wird (B2), ist die entlastende Tatsache E1 nur noch eine halbe.
+  (2) Ergibt sich, dass der Nicht-JSON-Pfad die URL zurückträgt (B3), wäre ein GÜLTIGES
+      Zugangsdatum betroffen — dann ist TIER 0 neu zu prüfen. Gemeint ist jedes der drei
+      Glieder (a) Nicht-JSON-Antwort, (b) URL darin, (c) innerhalb der Kappung: jedes
+      gemessene und tragende Glied verkürzt die Kette, die die Stufe heute hält.
+  (3) Wird ein Log-Abfluss eingerichtet, verlassen die Zeilen den bisherigen
+      Zugriffsbereich. Der bestehende LOGGING-LEAK-Eintrag nennt genau das als seine
+      eigene Bedingung ("Log-Drains sind Pro-gated und keine konfiguriert").
+  PROVENIENZEN GETRENNT, weil in diesem Eintrag drei verschiedene zusammenlaufen: die
+  STUFE ist eine OWNER-ENTSCHEIDUNG (2026-08-10), der Mechanismus B3 eine ÜBERLEGUNG des
+  Architekten (2026-08-10, nicht gemessen), die Rückspiegelung eine HANDMESSUNG
+  (2026-08-07, Stefan, per curl).
 
 ### Tier 2 — Laufende Hygiene / verankerte Prinzipien (KEIN Gate)
 - LOGGING-LEAK (herabgestuft von Tier 0, gemessen 2026-07-24):
@@ -312,183 +610,3 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   Phase 18); deckt sich mit dem bestehenden "Session-unabhängige Mutationen / MCP-ready"-
   Baustil.
   BINDET-AN: Phase 18.
-
-### OHNE STUFE — Einstufung steht aus (Owner-Entscheidung)
-DIESE SEKTION IST EIN WARTERAUM, KEINE VIERTE STUFE. Sie existiert, weil in dieser Datei
-die SEKTION die Stufe IST: ein Eintrag unter einer Tier-Überschrift trägt deren Stufe,
-gleichgültig was sein Text sagt. Ein Befund, dessen Einstufung ausdrücklich aussteht,
-hätte unter jeder der drei Überschriften faktisch eine bekommen. Wer hier einstuft, ZIEHT
-den Eintrag in die Zielsektion (so wie es die eine vollzogene Umstufung dieser Datei
-vorgemacht hat) — er lässt ihn nicht hier stehen und schreibt eine Stufe daneben. Ist die
-Sektion leer, wird sie entfernt.
-
-- META-FEHLERLOG SPIEGELT DAS ZUGANGSDATUM ZURÜCK (erhoben 2026-08-10, STUFE OFFEN):
-  RISIKO: describeMetaError in src/lib/capi/meta-forward.ts trägt Fremdtext aus der
-  Antwort des Anbieters in unser Server-Log. Stuft der Anbieter das übergebene
-  Zugangsdatum als MALFORMED ein, spiegelt er die gesendete Zeichenkette in seiner
-  Meldung zurück — und diese Meldung wird geloggt. Ein Log-Eintrag ist irreversibel,
-  sobald er exportiert oder indexiert ist (dieselbe Eigenschaft, die der LOGGING-LEAK-
-  Eintrag in Tier 2 für seinen eigenen, ANDEREN Mechanismus benennt).
-  DER PFAD IM EINZELNEN — AM CODE ERHOBEN am 2026-08-10, KEINE Handmessung: Die Funktion
-  hat VIER Ausgänge, nicht zwei. Zwei sind sauber (ein Marker bei unlesbarem Rumpf, ein
-  Marker bei fehlendem Fehler-Umschlag). ZWEI tragen Fremdtext:
-  · DER JSON-PFAD loggt fünf benannte Felder des Anbieter-Umschlags, darunter dessen
-    freien Meldungstext (msg=), je über asLogValue auf META_ERROR_MSG_MAX gekappt.
-  · DER NICHT-JSON-RÜCKFALL loggt den ROHEN Antwort-Rumpf, ungeprüft, auf dieselbe
-    Länge gekappt. DAS IST DIE BREITERE DER BEIDEN ÖFFNUNGEN: der JSON-Pfad greift
-    wenigstens ein benanntes Feld heraus, dieser Pfad gibt heraus, was kommt.
-  BEIDE KAPPUNGEN SCHNEIDEN VOM ANFANG (slice(0, MAX)). Sie begrenzen die LÄNGE, nicht
-  den INHALT — ein Geheimnis am Anfang der Zeichenkette überlebt die Kappung vollständig.
-  DAS GEHT ÜBER DIE VORLAGE HINAUS UND VERSCHÄRFT DEN BEFUND — AM CODE ERHOBEN,
-  2026-08-10: Das Zugangsdatum reist bei diesem Anbieter im QUERY-STRING der Forward-URL
-  (…/events?access_token=…), nicht in einem Header. DIE DATEI WEISS DAS: der Kopf von
-  describeMetaError schreibt ausdrücklich "NIE die Forward-URL (sie traegt den
-  access_token im Query-String)". Dieselbe Zeichenkette, deren Transportweg dort als
-  geheimnistragend erkannt und ausgeschlossen wird, kommt über die Antwort des Anbieters
-  zurück und wird geloggt. Die Vorsichtsmassnahme ist vorhanden und wirkt auf dem HINWEG;
-  der RÜCKWEG ist ungedeckt.
-  DIE MESSUNG — PROVENIENZ: HANDMESSUNG von Stefan am 2026-08-07 per curl. KEINE
-  Anbieter-Doku, KEINE Code-Messung. Zwei Aufrufe:
-  (1) Ein Zugangsdatum, das der Anbieter als MALFORMED erkennt: Er spiegelt die
-      übergebene Zeichenkette VOLLSTÄNDIG in der Meldung zurück. Gesendet wurde eine
-      Dummy-Zeichenkette; sie stand komplett in der Antwort.
-  (2) Ein Zugangsdatum in unparsbarer Form: generische Meldung, KEINE Rückspiegelung.
-  DIE WEITE DES BEFUNDS IST SCHMALER, ALS SIE ZUERST AUSSAH — und das gehört an den
-  Anfang, nicht ans Ende: GEMESSEN ist die Rückspiegelung NUR für den Fall, in dem der
-  Anbieter das Zugangsdatum als MALFORMED einstuft. NICHT GEMESSEN ist, was ein ECHTES,
-  WOHLGEFORMTES, aber WIDERRUFENES oder ABGELAUFENES Zugangsdatum auslöst — der Anbieter
-  antwortet dort mit einer anderen Meldungsart, und ob sie das Zugangsdatum nennt, weiss
-  niemand.
-  DIE ENTLASTENDE FOLGE, weil sie die Einstufung berührt: GESPIEGELT WIRD AUSGERECHNET
-  DANN, WENN DAS ZUGANGSDATUM KEIN FUNKTIONIERENDES ZUGANGSDATUM IST. Ein Tippfehler beim
-  Einfügen landet im Log — aber ein Tippfehler öffnet nichts.
-  EINE PRÄMISSE WAR ZUNÄCHST UMGEKEHRT BESCHRIEBEN, und das gehört festgehalten, weil sie
-  in eine Einstufung gewandert wäre: Der Architekt hatte den Fall zuerst als "wohlgeformt,
-  aber ungültig — der häufigste Realfall" geführt, also als den Fall mit einem BRAUCHBAREN
-  Zugangsdatum, und dies vor dieser Runde selbst richtiggestellt. Wäre die Stufe auf der
-  ersten Fassung gesetzt worden, hätte sie eine Wirkung unterstellt, die die Messung nicht
-  hergibt.
-  TRAGENDE KONTROLLE: HEUTE KEINE. Der Pfad ist ungedeckt; was ihn im Moment ruhig hält,
-  ist Erreichbarkeit (s. unten), nicht eine Kontrolle. Die Form einer künftigen Kontrolle
-  ist NICHT vorentschieden — sowohl das Schwärzen der Ausgabe als auch das Weglassen des
-  Fremdtexts kämen in Frage, und beides berührt die Diagnosefähigkeit, für die die
-  Felder überhaupt eingeführt wurden.
-  WARUM ER UNENTDECKT BLIEB — EIN FALSCHER BELEG HAT IHN VERDECKT, an ZWEI Stellen:
-  · Über der Kappungs-Konstanten steht "Metas message ist Beschreibungstext (kein
-    Secret), aber unbegrenzt lang -> kappen." Der Klammerzusatz ist die Behauptung, die
-    die Handmessung widerlegt hat.
-  · Der Kopf von describeMetaError sagt "geloggt werden AUSSCHLIESSLICH Metas eigene
-    strukturierte Fehlerfelder … NIE der Token".
-  DIE ZWEITE STELLE WIDERSPRICHT SICH SELBST, UNABHÄNGIG VON JEDER MESSUNG: Ein ROHER
-  Antwort-Rumpf ist kein "strukturiertes Fehlerfeld". Der Nicht-JSON-Rückfall verletzt
-  die Zusage seines eigenen Kopfkommentars, und DAS war am Code allein entscheidbar,
-  immer — es brauchte dafür weder die Handmessung noch den Anbieter.
-  ER WAR SCHON EINMAL AKTENKUNDIG: Am 2026-08-08 wurde die Kollision zwischen diesem
-  Kommentar und einer Maskierungs-Auflage gemeldet, mit dem Satz, sie sei am Code nicht
-  entscheidbar. Für die JSON-Hälfte stimmt das, und entscheidbar war sie seit der
-  Handmessung vom 2026-08-07. Für die Nicht-JSON-Hälfte stimmt es NICHT: die war am Code
-  entscheidbar, und zwar früher.
-  DIE ERREICHBARKEIT — MELDUNG von Stefan am 2026-08-10, weder Code-Messung noch
-  Handmessung: ZUR ZEIT TRÄGT KEIN PROJEKT EIN ZUGANGSDATUM DIESES ANBIETERS. Ohne
-  Zugangsdatum kein Forward, ohne Forward kein Fehler, ohne Fehler keine Logzeile. DER
-  PFAD IST HEUTE NICHT ERREICHBAR.
-  DIE CODE-SEITE DIESER AUSSAGE, und nur sie ist von mir erhoben (2026-08-10): Der
-  Aufrufer ruft forwardToMeta ausschliesslich aus einem Zweig, der eine vorhandene
-  Konfiguration voraussetzt. Ist keine da, wird die Funktion nie betreten. Die
-  Code-Seite stützt die Meldung; sie ersetzt sie nicht — ob eine Konfiguration in der
-  Datenbank steht, ist am Repo nicht entscheidbar.
-  GRENZE, UND SIE IST DER WICHTIGERE TEIL: Das ist eine Aussage über HEUTE, nicht über
-  die Vergangenheit. Während dieser Phase liefen Forwards; ob dabei je eine
-  Fehlerantwort mit Rückspiegelung entstand, ist NICHT geprüft.
-  WONACH IN DEN LAUFZEIT-PROTOKOLLEN ZU SUCHEN WÄRE — die Marker sind Literale im Code
-  und deshalb exakt suchbar (am Code erhoben 2026-08-10):
-  · "[capi] Meta forward rejected: non-JSON body=" — der BREITE Pfad. Jeder Treffer ist
-    ein roher Fremd-Rumpf im Log und zuerst zu lesen.
-  · "[capi] Meta forward rejected: code=" — der JSON-Pfad. Betroffen ist das Feld hinter
-    " msg=" am ZEILENENDE; die vier Felder davor sind Kennungen und Typnamen.
-  · "[capi] Meta forward failed: HTTP " — trägt NUR den Status und ist unbedenklich,
-    steht aber unmittelbar VOR jeder der beiden obigen Zeilen und ist deshalb der
-    zuverlässigere ANKER, wenn man die Vorkommen zählen statt lesen will.
-  DIE SUCHE SELBST IST NICHT HARMLOS: Wer sie fährt, liest möglicherweise genau das
-  Geheimnis, dessen Anwesenheit er prüfen will — und ein Kopieren des Ergebnisses in
-  einen Chat, ein Ticket oder eine Doku trägt es weiter. Die Prüfung sagt "getroffen
-  oder nicht", nicht "hier ist die Zeile".
-  OFFEN, AM REPO NICHT ENTSCHEIDBAR — zwei Punkte, beide Angaben über den BETRIEB:
-  (1) WER die Laufzeit-Protokolle lesen kann. Der bestehende LOGGING-LEAK-Eintrag hält
-      für 2026-07-24 fest, dass Log-Drains Pro-gated und keine konfiguriert sind — also
-      dass die Protokolle die Plattform nicht verlassen. OB DAS HEUTE NOCH GILT, IST
-      NICHT ERHOBEN, und der Personenkreis mit Zugriff ist es ebenso wenig. Es ist die
-      Angabe, die aus "ein Geheimnis steht im Log" erst eine Reichweite macht.
-  (2) OB DER FALL JE EINGETRETEN IST.
-  EHRLICHE EINORDNUNG: Der Befund ist SCHMAL GEMESSEN und BREIT GEBAUT. Gemessen ist ein
-  Fall, in dem das gespiegelte Zugangsdatum nichts öffnet; gebaut ist ein Pfad, der
-  herausgibt, was kommt, ohne zu wissen, was es ist. Diese beiden Sätze zeigen in
-  verschiedene Richtungen, und es wäre eine Selbsttäuschung, den bequemeren zu nehmen:
-  weder trägt die eine Messung eine Aussage über alle Fehlerarten des Anbieters, noch
-  entlastet die heutige Unerreichbarkeit den Code — sie ist ein Zustand der Datenbank,
-  kein Merkmal der Funktion, und sie endet mit der ersten hinterlegten Konfiguration.
-  BINDET-AN: OFFEN, gemeinsam mit der Stufe. Die Erreichbarkeit endet mit dem ersten
-  Projekt, das ein Zugangsdatum dieses Anbieters trägt — das ist der Moment, ab dem der
-  Befund beisst, und damit der Kandidat für dieses Feld.
-  DIE GRUNDLAGE FÜR DIE EINSTUFUNG steht im Block darunter. KEINE Auswahl, KEINE
-  Empfehlung — die Stufe ist eine Owner-Entscheidung, die aussteht.
-
-  GRUNDLAGE FÜR DIE AUSSTEHENDE EINSTUFUNG (nach den Kriterien dieser Datei)
-  DIE PRIMÄRE ACHSE DIESER DATEI IST DER MOMENT, IN DEM DAS RISIKO BEISST (Kopf: "NICHT
-  alles ist P0. Sequenziert nach dem Moment …"), NICHT die Schwere. Schwere kommt nur bei
-  Tier 0 als Zusatzmerkmal vor. Wer nach Schwere einstuft, benutzt ein Kriterium, das die
-  Datei nicht führt.
-  VIER TATSACHEN GEHEN IN JEDE DER DREI PRÜFUNGEN EIN — zwei entlastende, zwei belastende:
-  E1 Das gespiegelte Zugangsdatum ist gemessen KEIN funktionierendes Zugangsdatum.
-  E2 Der Pfad ist heute nicht erreichbar (Meldung, kein Merkmal des Codes).
-  B1 Es sind ZWEI Pfade, und der zweite gibt alles heraus, was kommt.
-  B2 Der Widerrufs-/Ablauf-Fall ist NICHT gemessen und damit offen.
-
-  TIER 0 — "Harte Launch-Blocker (katastrophal beim ersten bösen Nutzer / irreversibel)"
-  ERFÜLLT: die IRREVERSIBILITÄT. Ein geschriebener Log-Eintrag ist nicht zurückholbar,
-    sobald er exportiert oder indexiert ist — der bestehende Tier-2-Eintrag nennt genau
-    diese Eigenschaft als seine eigene. B1 verstärkt sie: der breite Pfad gibt heraus,
-    was kommt, also auch das, was B2 offenlässt.
-  NICHT ERFÜLLT: "beim ersten bösen Nutzer". Der Pfad braucht KEINEN Angreifer, sondern
-    einen eigenen Konfigurationsfehler des Betreibers; ein Fremder kann ihn nicht
-    auslösen. Und "katastrophal" trägt E1 nicht: gespiegelt wird gemessen das, was nichts
-    öffnet.
-  OFFEN: ob B2 die Nicht-Erfüllung kippt. Spiegelte der Anbieter auch ein WIDERRUFENES
-    oder ABGELAUFENES Zugangsdatum, wäre E1 nur noch eine Teil-Entlastung — und ein
-    solches Zugangsdatum war einmal gültig.
-
-  TIER 1 — "Vor echtem Ad-Traffic / Spend (nicht vor dem ersten Login)"
-  ERFÜLLT: der MOMENT passt. Der Pfad wird erreichbar, sobald echte Projekte
-    Zugangsdaten tragen — also mit dem Betrieb, nicht mit dem ersten Login. E2 ist damit
-    kein Gegenargument gegen diese Stufe, sondern ihre Beschreibung.
-  NICHT ERFÜLLT: die Bindung an TRAFFIC bzw. SPEND im Wortsinn. Der Auslöser ist eine
-    fehlerhafte Eingabe von Zugangsdaten, kein Traffic-Volumen. EIN einzelner Betreiber
-    mit EINEM Tippfehler genügt, ganz ohne Ad-Spend — die Stufe würde den Moment
-    richtig, den GRUND aber falsch benennen.
-
-  TIER 2 — "Laufende Hygiene / verankerte Prinzipien (KEIN Gate)"
-  ERFÜLLT: die NACHBARSCHAFT und E2. Der Vorgänger-Eintrag zur selben Sache (Geheimnis
-    im Log) steht hier; seine TRAGENDE KONTROLLE ("minimieren, wo der Token überhaupt
-    hinreist") beschreibt auch für diesen Befund die naheliegende Richtung. Ein heute
-    unerreichbarer Pfad braucht kein Gate.
-  NICHT ERFÜLLT: "verankertes Prinzip". Dies ist ein KONKRETER, gemessener, offener
-    Defekt an einer benannten Stelle — kein Grundsatz und keine Dauerhygiene. Und die
-    Sektion trägt "KEIN Gate" in der Überschrift: ein Eintrag mit offener Weite (B2)
-    behauptete dort mehr Ruhe, als gemessen ist.
-
-  WAS DIE WIEDERVORLAGE-KLAUSEL DES BESTEHENDEN EINTRAGS WÖRTLICH HERGIBT — der Wortlaut,
-  nicht seine Auslegung: "WIEDERVORLAGE: der Befund gilt fuer den HEUTIGEN Code —
-  setCapiToken ist die EINZIGE Server Action mit Secret-Parameter (erhoben 2026-07-24).
-  Bei JEDER neuen Server Action mit Secret-Parameter neu bewerten."
-  SIE NENNT ALS ANLASS EINE NEUE SERVER-AKTION MIT GEHEIMNIS-PARAMETER. DER HIESIGE
-  ANLASS IST EIN ANDERER: keine Server-Aktion, sondern dieselbe Sache — ein Geheimnis im
-  Log — in einer anderen Naht, nämlich einer von uns selbst geschriebenen Logzeile auf
-  einem Fehlerpfad. Nach dem BUCHSTABEN greift die Klausel nicht. Ob ihr ZWECK damit
-  erfüllt ist, ist eine Owner-Entscheidung und wird hier nicht getroffen.
-
-  WAS DIESER EINTRAG NICHT TUT: Er ändert am bestehenden LOGGING-LEAK-Eintrag NICHTS. Der
-  bleibt Wort für Wort stehen, samt seiner Herabstufung — er war richtig für den
-  Gegenstand, den er beurteilt hat (ein Framework-Verhalten auf einem Server-Action-
-  Argument), und dieser Gegenstand ist ein anderer. Er hat den hiesigen Fehlerpfad sogar
-  ausdrücklich offengelassen: "der FEHLERpfad ist ungetestet".
-

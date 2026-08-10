@@ -720,6 +720,10 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   (In-DB-Key = Theater, echtes Envelope braucht KMS). BINDET-AN: Härtung nach Launch.
 - VERCEL-TOKEN scoped + Domain-Mutations-AUDIT-LOG: Token minimal scopen + jede
   Domain-Mutation mit Actor + Zeit protokollieren. BINDET-AN: 7c-2.
+- META-FEHLERLOG SPIEGELT DAS ZUGANGSDATUM ZURÜCK (eingestuft 2026-08-10, zuvor ohne Stufe;
+  OFFEN): describeMetaError (src/lib/capi/meta-forward.ts) loggt Fremdtext aus der
+  Anbieter-Antwort — darin kann das gesendete Zugangsdatum zurückgespiegelt sein.
+  BINDET-AN: das erste Projekt mit hinterlegtem Zugangsdatum.
 
 ### Tier 2 — Laufende Hygiene / verankerte Prinzipien (KEIN Gate)
 - LOGGING-LEAK (herabgestuft von Tier 0, gemessen 2026-07-24): In PRODUKTION wird das

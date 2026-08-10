@@ -35,6 +35,26 @@ vi.mock("@/lib/capi/meta-forward", async (importActual) => {
   };
 });
 
+// DASSELBE MUSTER EIN ZWEITES MAL, FUER DEN ZWEITEN ADAPTER (zwoelfte Scheibe) —
+// und aus WOERTLICH demselben Grund: Auch er wirft per Vertrag nie, also kann nur
+// ein Durchreich-Schalter den VERTRAGSBRUCH herstellen, gegen den allSettled
+// schuetzt. Solange `pinOverride.fn` null ist, laeuft die ECHTE Implementierung —
+// samt eigenem Timeout-Geruest, eigenem AbortController und eigener Nutzlast.
+// WAERE ER PAUSCHAL GEMOCKT, prueften die Isolations-Tests unten nur noch den Mock,
+// und die Aussage "zwei ECHTE Empfaenger" waere genau die, die verlorenginge.
+const { pinOverride } = vi.hoisted(() => ({
+  pinOverride: { fn: null as null | (() => Promise<void>) },
+}));
+vi.mock("@/lib/capi/pinterest-forward", async (importActual) => {
+  const actual =
+    await importActual<typeof import("@/lib/capi/pinterest-forward")>();
+  return {
+    forwardToPinterest: (
+      ...args: Parameters<typeof actual.forwardToPinterest>
+    ) => (pinOverride.fn ? pinOverride.fn() : actual.forwardToPinterest(...args)),
+  };
+});
+
 const { after, scheduled } = vi.hoisted(() => {
   const scheduled: Array<() => Promise<void> | void> = [];
   return {
@@ -50,27 +70,61 @@ const { persistEvent } = vi.hoisted(() => ({ persistEvent: vi.fn() }));
 vi.mock("@/lib/analytics/persist", () => ({ persistEvent }));
 
 import { handleIngest } from "./ingest";
+// BEWUSST die ECHTEN Konstanten, KEINE Kopien — dieselbe Disziplin wie in
+// ingest.consent-targets.test.ts: Feldname und Ziel-Schluessel muessen dieselben
+// sein, die Erzeuger und Leser benutzen. Ein handgeschriebenes Literal hier liesse
+// eine Divergenz gruen durchrutschen, und der Ausgang waere fail-closed und lautlos.
+import { CONSENT_WIRE_FIELD } from "@/lib/tracking/consent-wire";
+import { CONSENT_KEY_BY_TARGET } from "@/lib/tracking/consent-targets";
 
 // ===========================================================================
-// DER FAN-OUT (Phase 11, siebte Scheibe).
+// DER FAN-OUT (Phase 11, siebte Scheibe; um zwei ECHTE Empfaenger erweitert in der
+// ZWOELFTEN).
 //
 // WAS HIER GEPRUEFT WIRD, ist die ANORDNUNG: die Wache vor dem Block, der
 // gleichzeitige Start, die Frist als Eigenschaft dieser Gleichzeitigkeit, die
 // Isolation der Empfaenger untereinander und die Zuordnung Ziel -> Adapter.
 //
-// DIE GRENZE, DIE ZWINGEND DAZUGEHOERT: ES GIBT HEUTE NUR EINEN ADAPTER. Wo diese
-// Datei ZWEI Empfaenger braucht, setzt sie ZWEIMAL DAS ZIEL "meta" mit
-// verschiedenen Pixel-IDs ein. Diese Konstellation kann der Resolver NICHT erzeugen
-// — der Primaerschluessel der Geheimnis-Tabelle ist (Projekt, Ziel), es gibt also
-// hoechstens eine Zeile je Ziel. Sie ist ein STELLVERTRETER, und zwar ein bewusst
-// gewaehlter: Geprueft wird der Fan-Out ueber N Eintraege, und dafuer ist die
-// Identitaet der Ziele gleichgueltig. Was sie NICHT beweist, ist das Verhalten eines
-// zweiten ECHTEN Netzwerks — das kann sie nicht, weil es keines gibt.
+// ZWEI SORTEN VON "ZWEI EMPFAENGERN" STEHEN IN DIESER DATEI NEBENEINANDER, und der
+// Unterschied ist der Grund, warum beide bleiben:
+//
+//  (1) DER STELLVERTRETER (TWO_ENTRIES, T2/T3/T4): ZWEIMAL das Ziel "meta" mit
+//      verschiedenen Pixel-IDs. Diese Konstellation kann der Resolver NICHT
+//      erzeugen — der Primaerschluessel der Geheimnis-Tabelle ist (Projekt, Ziel),
+//      es gibt hoechstens eine Zeile je Ziel. Geprueft wird der Fan-Out ueber N
+//      EINTRAEGE, und dafuer ist die Identitaet der Ziele gleichgueltig. ER BLEIBT:
+//      beide Beine laufen durch DENSELBEN Adapter, also durch denselben Deckel —
+//      genau das macht ihn fuer die Frist-Tests zum schaerferen Instrument.
+//  (2) ZWEI ECHTE EMPFAENGER (der letzte describe-Block, zwoelfte Scheibe): Meta
+//      und Pinterest nebeneinander, ZWEI verschiedene Adapter, zwei verschiedene
+//      Endpunkte, zwei unabhaengige Timeout-Geruests. Bis zur elften Scheibe war
+//      das nicht baubar, weil es nur EINEN Adapter gab — der Backlog-Kandidat
+//      "KEIN TEST DECKT DEN FAN-OUT MIT ZWEI ECHTEN EMPFAENGERN" ist damit erledigt.
+//
+// DIE GRENZE, DIE FUER BEIDE SORTEN GILT: `fetch` ist gestellt. Diese Datei beweist
+// die ANORDNUNG, nicht das Verhalten eines echten fremden Netzwerks — und schon gar
+// nicht die Treue der Pinterest-Transkription zur Wirklichkeit. Das kann nur der
+// Live-Test der zwoelften Scheibe.
 // ===========================================================================
 
 const META_ENTRY = {
   target: "meta",
   config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" },
+};
+
+/**
+ * Der ZWEITE ECHTE Empfaenger (zwoelfte Scheibe).
+ *
+ * Die Feldnamen sind die der AUFLOESUNG (CapiConfig: pixelId/token) — die
+ * Uebersetzung in die eigene Form des zweiten Adapters (adAccountId/token) ist
+ * genau das, was die Zuordnung leistet und was T10 prueft. Die Werte sind
+ * ABSICHTLICH unverwechselbar und teilen KEINEN Teilstring mit Metas Werten:
+ * Nur so kann eine Assertion "die Kennung steht im Pfad, das Geheimnis NICHT"
+ * ueberhaupt etwas zeigen.
+ */
+const PIN_ENTRY = {
+  target: "pinterest",
+  config: { pixelId: "ADACCT-4242", token: "PINSECRET-9999" },
 };
 
 /** Zwei Empfaenger, an ihren Pixel-IDs (und damit an der Forward-URL) unterscheidbar. */
@@ -94,10 +148,66 @@ function makeRequest(): Request {
   });
 }
 
+/**
+ * EIN REQUEST MIT IDENTITAETS-PAAR UND EINWILLIGUNG FUER BEIDE ZIELE.
+ *
+ * DIE ZWEI HEADER SIND KEINE KOSMETIK UND DUERFEN NICHT ENTFERNT WERDEN — sie sind
+ * die Voraussetzung dafuer, dass der zweite Adapter ueberhaupt sendet:
+ * `forwardToPinterest` traegt als erste Anweisung im try das IDENTITAETS-PAAR
+ * (`if (!clientIp || !userAgent) return;`) und kehrt ohne beides VOR jedem fetch
+ * zurueck — ohne Log, ohne Spur. Ein Fixture ohne diese Header laesst JEDEN Test
+ * ueber das zweite Ziel gruen werden, auch wenn die Zuordnung gar nichts tut: "kein
+ * Aufruf" waere dann wahr aus einem Grund, den der Testname nicht nennt.
+ * DER ERSTE ADAPTER HAT DIESEN RIEGEL NICHT (er laesst jede Haelfte einzeln weg) —
+ * deshalb faellt das Fehlen bei Meta nicht auf und bei Pinterest schon.
+ * GEMESSEN AN GENAU DIESER STELLE (zwoelfte Scheibe, Stufe 1): Der Bestandstest
+ * "Feld MIT VERBOT fuer Meta" in ingest.consent-targets.test.ts war deshalb still
+ * hohl geworden — die Ausgangslage jener Scheibe sagte, "es geht dann ein Aufruf
+ * hinaus", und im eigenen Fixture ging keiner hinaus.
+ *
+ * DIE ADRESSE MUSS OEFFENTLICH SEIN: resolveClientIp verwirft loopback (::1,
+ * 127.0.0.0/8) und leere Werte; mit gemocktem META_TEST_EVENT_CODE ("") gibt es
+ * dann auch keine Dev-Dummy-IP. 203.0.113.7 stammt aus dem Dokumentations-Block
+ * TEST-NET-3 und ist garantiert keine echte Adresse.
+ *
+ * DAS EINWILLIGUNGS-FELD IST GETRENNT SCHALTBAR, UND `null` IST KEIN GRENZFALL,
+ * SONDERN EIN EIGENER PRUEFZUSTAND: Es laesst das Feld GANZ weg und stellt damit
+ * die ALTBESTANDS-AUSNAHME her (der Zustand jeder heute publizierten Kundenseite).
+ * Mit Identitaets-Paar UND ohne Feld wird die Ausnahme zum ersten Mal scharf
+ * pruefbar — vorher waere ein durchgerutschter zweiter Empfaenger unsichtbar
+ * geblieben, weil er ohne Identitaet ohnehin nicht gesendet haette.
+ */
+function makeRequestWithIdentity(
+  consent: { meta: unknown; pinterest: unknown } | null = {
+    meta: true,
+    pinterest: true,
+  },
+): Request {
+  const body: Record<string, unknown> = {
+    trackingKey: "tk-abc",
+    eventID: "evt-123",
+    event: "Purchase",
+  };
+  if (consent) {
+    body[CONSENT_WIRE_FIELD] = {
+      [CONSENT_KEY_BY_TARGET.meta]: consent.meta,
+      [CONSENT_KEY_BY_TARGET.pinterest]: consent.pinterest,
+    };
+  }
+  return new Request("http://localhost/api/e", {
+    method: "POST",
+    headers: {
+      "user-agent": "Mozilla/5.0 (Fan-Out-Test)",
+      "x-vercel-forwarded-for": "203.0.113.7",
+    },
+    body: JSON.stringify(body),
+  });
+}
+
 function fetchCalls() {
   return (global.fetch as unknown as ReturnType<typeof vi.fn>).mock.calls as [
     string,
-    { signal: AbortSignal },
+    { signal: AbortSignal; headers?: Record<string, string> },
   ][];
 }
 
@@ -106,9 +216,18 @@ function callFor(pixelId: string) {
   return fetchCalls().find(([url]) => String(url).includes(`/${pixelId}/events`));
 }
 
+/** Der Aufruf an das jeweilige Netzwerk — ueber den HOST, nicht ueber die Kennung. */
+function metaCall() {
+  return fetchCalls().find(([url]) => String(url).includes("graph.facebook.com"));
+}
+function pinterestCall() {
+  return fetchCalls().find(([url]) => String(url).includes("api.pinterest.com"));
+}
+
 beforeEach(() => {
   scheduled.length = 0;
   override.fn = null;
+  pinOverride.fn = null;
   persistEvent.mockResolvedValue(undefined);
   getCapiConfigByTrackingKey.mockResolvedValue(resolution([META_ENTRY]));
   global.fetch = vi.fn(async () => new Response(null, { status: 200 }));
@@ -271,54 +390,69 @@ describe("Fan-Out — Containment und Ziel-Zuordnung", () => {
     expect(await res.text()).toBe("");
   });
 
-  // T6 — INVARIANTE 6, STRUKTURELL. Ein Ziel ohne Adapter loest NICHTS aus. Der
-  // Eintrag ist vollstaendig (Pixel-ID und Geheimnis), er waere also "fertig
-  // konfiguriert" — und trotzdem darf nichts hinausgehen, solange kein Adapter
-  // existiert.
+  // T6 — EIN EINZIGER EMPFAENGER, DEN DIE ALTBESTANDS-ROLLE NICHT DURCHLAESST.
   //
-  // SEIT DER NEUNTEN SCHEIBE (Einwilligung je Ziel) ERREICHT DIESER TEST DIE
-  // ZIEL-ADAPTER-ZUORDNUNG GAR NICHT MEHR. Das ist etwas anderes als "er deckt sie
-  // nicht mehr allein": Der Draht traegt hier kein Einwilligungs-Feld, die
-  // Altbestands-Rolle erlaubt nur Meta, die erlaubte Menge ist damit LEER — und der
-  // Ausgang bei leerer Menge kehrt zurueck, BEVOR dispatchForward ueberhaupt
-  // aufgerufen wird.
-  // WAS ER WEITERHIN BEWEIST: dass ein adapterloses Ziel allein nichts hinausschickt
-  // und die Antwort eine leere 204 bleibt.
-  // WAS ER NICHT MEHR BEWEIST: dass die ZUORDNUNG es ueberspringt. Er ist gruen aus
-  // einem Grund, den sein Name nicht nennt — wer ihn als Waechter der Zuordnung liest,
-  // ueberschaetzt ihn.
-  // NICHT REPARIERT, NUR BENANNT: Wo die verlorene Abdeckung heute liegt, steht in
-  // ingest.consent-targets.test.ts am Fall "Feld MIT VERBOT fuer Meta".
-  it("T6: ein Ziel OHNE Adapter wird uebersprungen — kein Aufruf, trotzdem 204", async () => {
+  // ZWEIMAL UMBENANNT WORDEN, UND BEIDE MALE AUS DEMSELBEN GRUND: Der Zustand, den
+  // dieses Fixture herstellt, ist ein anderer geworden, ohne dass eine Assertion sich
+  // geaendert haette.
+  //  - URSPRUENGLICH (siebte Scheibe) hiess er "ein Ziel OHNE Adapter wird
+  //    uebersprungen" und war Invariante 6, strukturell.
+  //  - SEIT DER NEUNTEN erreicht er die Zuordnung gar nicht mehr: Der Draht traegt
+  //    kein Einwilligungs-Feld, die Altbestands-Rolle erlaubt nur Meta, die erlaubte
+  //    Menge ist LEER — der Ausgang kehrt zurueck, BEVOR dispatchForward gerufen wird.
+  //  - SEIT DER ZWOELFTEN ist der Name zusaetzlich sachlich falsch: das zweite Ziel
+  //    HAT einen Adapter. Deshalb heisst er jetzt nach dem, was er wirklich prueft.
+  // WAS ER BEWEIST: Bleibt nach der Einwilligung kein Empfaenger uebrig, geht nichts
+  // hinaus und die Antwort ist eine leere 204.
+  // DIE ABDECKUNG "die ZUORDNUNG ueberspringt ein Ziel ohne Adapter" EXISTIERT NICHT
+  // MEHR — und sie kann nicht mehr existieren: Seit der zwoelften Scheibe hat JEDES
+  // bekannte Ziel einen Adapter, und ein UNBEKANNTES Ziel erreicht die Zuordnung nie
+  // (es faellt schon in allowedTargets heraus, weil weder LEGACY_CONSENT_ROLE noch
+  // CONSENT_KEY_BY_TARGET einen Eintrag dafuer haben). Der Rueckfall
+  // `return Promise.resolve()` in dispatchForward ist damit aus dem Handler heraus
+  // strukturell unerreichbar. Der frueher hier stehende Verweis auf
+  // ingest.consent-targets.test.ts ("Feld MIT VERBOT fuer Meta") ist mit dieser
+  // Scheibe hinfaellig und wurde entfernt, statt auf einen Test zu zeigen, der jene
+  // Abdeckung nicht mehr traegt.
+  // DAS FIXTURE TRAEGT SEIT DER ZWOELFTEN SCHEIBE DAS IDENTITAETS-PAAR (mit `null`
+  // fuer das Einwilligungs-Feld, damit die Altbestands-Rolle greift). VORHER WAR
+  // DIESE ASSERTION HOHL: Ohne IP und User-Agent haette der zweite Adapter auch dann
+  // nichts gesendet, wenn die Altbestands-Rolle ihn durchgelassen haette — "kein
+  // Aufruf" waere aus dem falschen Grund wahr gewesen. Jetzt ist es eine Aussage
+  // ueber die ROLLE.
+  it("T6: EIN Empfaenger, den die Altbestands-Rolle nicht durchlaesst -> kein Aufruf, trotzdem 204", async () => {
     getCapiConfigByTrackingKey.mockResolvedValue(
       resolution([
         { target: "pinterest", config: { pixelId: "TAG-987", token: "PIN" } },
       ]),
     );
 
-    const res = await handleIngest(makeRequest());
+    const res = await handleIngest(makeRequestWithIdentity(null));
 
     expect(res.status).toBe(204);
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
   // T7 — DIE GEGENPROBE ZU T6, und sie ist noetig, damit T6 nicht aus dem falschen
-  // Grund gruen ist: Steht neben dem adapterlosen Ziel ein Meta-Eintrag, geht GENAU
-  // EIN Aufruf hinaus — der von Meta. Ohne diesen Test waere T6 auch dann gruen,
-  // wenn der Fan-Out ueberhaupt nichts mehr sendet.
+  // Grund gruen ist: Steht neben dem nicht durchgelassenen Ziel ein Meta-Eintrag,
+  // geht GENAU EIN Aufruf hinaus — der von Meta. Ohne diesen Test waere T6 auch dann
+  // gruen, wenn der Fan-Out ueberhaupt nichts mehr sendet.
   //
   // SEIT DER NEUNTEN SCHEIBE GILT FUER IHN ETWAS ANDERES ALS FUER T6, und genau dieser
   // Unterschied ist der Befund — eine Sammelformulierung fuer beide waere falsch: Er
   // erreicht die Zuordnung WEITERHIN, denn Meta bleibt uebrig und wird durchgereicht.
-  // ABER WAS DAS ADAPTERLOSE ZIEL ENTFERNT, IST JETZT DIE EINWILLIGUNG UND NICHT DER
-  // FEHLENDE ADAPTER: Ohne Wire-Feld erlaubt die Altbestands-Rolle nur Meta, der
-  // Pinterest-Eintrag faellt also schon VOR der Zuordnung heraus.
-  // WAS ER WEITERHIN BEWEIST: seine urspruengliche Aufgabe als Positivkontrolle zu T6 —
-  // dass ueberhaupt etwas hinausgeht, und zwar genau Metas Aufruf.
-  // WAS ER NICHT MEHR BEWEIST: dass ein adapterloses Ziel NEBEN Meta von der Zuordnung
-  // uebersprungen wird. Dieselbe Fundstelle wie bei T6: der Fall "Feld MIT VERBOT fuer
-  // Meta" in ingest.consent-targets.test.ts.
-  it("T7: adapterloses Ziel NEBEN Meta -> genau EIN Aufruf, und zwar Metas", async () => {
+  // WAS DAS ZWEITE ZIEL ENTFERNT, IST DIE EINWILLIGUNG: Ohne Wire-Feld erlaubt die
+  // Altbestands-Rolle nur Meta, der Pinterest-Eintrag faellt schon VOR der Zuordnung
+  // heraus. SEIT DER ZWOELFTEN ist das der EINZIGE Grund — das Ziel hat jetzt einen
+  // Adapter, es wuerde also senden, sobald der Draht es erlaubt — der Nachweis
+  // dafuer steht im Block "ZWEI ECHTE EMPFAENGER" weiter unten, in derselben Datei.
+  // WAS ER BEWEIST: seine urspruengliche Aufgabe als Positivkontrolle zu T6 — dass
+  // ueberhaupt etwas hinausgeht, und zwar genau Metas Aufruf.
+  // DER VERWEIS AUF ingest.consent-targets.test.ts IST MIT DER ZWOELFTEN SCHEIBE
+  // ENTFERNT: Er zeigte auf den Fall "Feld MIT VERBOT fuer Meta" als Ort der
+  // Abdeckung "adapterloses Ziel laeuft in die Zuordnung hinein" — diese Abdeckung
+  // existiert nicht mehr (Begruendung bei T6).
+  it("T7: zweites Ziel OHNE Einwilligung neben Meta -> genau EIN Aufruf, und zwar Metas", async () => {
     getCapiConfigByTrackingKey.mockResolvedValue(
       resolution([
         { target: "pinterest", config: { pixelId: "TAG-987", token: "PIN" } },
@@ -326,10 +460,220 @@ describe("Fan-Out — Containment und Ziel-Zuordnung", () => {
       ]),
     );
 
-    await handleIngest(makeRequest());
+    // Auch hier das Identitaets-Paar, aus demselben Grund wie bei T6 — sonst
+    // koennte der zweite Empfaenger die Rolle durchbrechen, ohne dass es auffiele.
+    await handleIngest(makeRequestWithIdentity(null));
 
     expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(String(fetchCalls()[0][0])).toContain("/PIXEL-123/events");
     expect(String(fetchCalls()[0][0])).not.toContain("TAG-987");
+    expect(pinterestCall()).toBeUndefined();
+  });
+});
+
+// ===========================================================================
+// ZWEI ECHTE EMPFAENGER (Phase 11, ZWOELFTE Scheibe).
+//
+// AB HIER STEHEN ZWEI VERSCHIEDENE ADAPTER NEBENEINANDER — nicht mehr zweimal
+// derselbe. Was diese vier Tests zusammen tragen, ist die Zusage, die der Zuschnitt
+// als seine tragende bezeichnet: DER ERSTE EMPFAENGER VERHAELT SICH UNVERAENDERT,
+// auch wenn der zweite langsam ist, wirft oder seinen Vertrag bricht.
+//
+// ALLE FIXTURES HIER TRAGEN DAS IDENTITAETS-PAAR (s. makeRequestWithIdentity) — ohne
+// es sendet der zweite Adapter grundsaetzlich nicht, und jede dieser Assertions
+// waere aus dem falschen Grund gruen.
+// ===========================================================================
+
+describe("Fan-Out — ZWEI ECHTE EMPFAENGER (Meta und Pinterest nebeneinander)", () => {
+  /** Ein Erfolgs-Rumpf, wie der zweite Adapter ihn als Erfolg liest. */
+  function pinterestOkBody(): string {
+    return JSON.stringify({
+      num_events_received: 1,
+      num_events_processed: 1,
+      events: [{ status: "processed" }],
+    });
+  }
+
+  beforeEach(() => {
+    getCapiConfigByTrackingKey.mockResolvedValue(resolution([META_ENTRY, PIN_ENTRY]));
+    // Beide Beine antworten sauber; der Pinterest-Rumpf muss ein ECHTER Erfolgs-Rumpf
+    // sein, sonst schreibt evaluateSuccessBody eine Fehlerzeile ins Testprotokoll und
+    // verdeckt echte Meldungen.
+    global.fetch = vi.fn(async (url: string) =>
+      String(url).includes("api.pinterest.com")
+        ? new Response(pinterestOkBody(), { status: 200 })
+        : new Response(null, { status: 200 }),
+    ) as unknown as typeof fetch;
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  // =====================================================================
+  // T10 — DIE ZUORDNUNG UND DIE ABBILDUNG.
+  //
+  // DER EINZIGE TEST IM REPO GEGEN DIE VERTAUSCHTE ABBILDUNG, und er ist als
+  // solcher benannt, damit ihn niemand als redundant entfernt: Die beiden
+  // Konfigurations-Formen unterscheiden sich (CapiConfig {pixelId, token} gegen
+  // PinterestConfig {adAccountId, token}), und die Uebersetzung dazwischen ist ein
+  // Objektliteral aus ZWEI Feldern DESSELBEN Typs. Der Compiler faengt die falsche
+  // FORM (ein direktes Durchreichen bricht den Build, weil adAccountId fehlt), aber
+  // NICHT die vertauschten WERTE — `{ adAccountId: config.token, token:
+  // config.pixelId }` kompiliert anstandslos.
+  // WARUM DAS MEHR IST ALS EIN FEHLGESCHLAGENER FORWARD: Vertauscht stuende das
+  // GEHEIMNIS im Endpunkt-PFAD (und damit potenziell in fremden Zugriffsprotokollen),
+  // waehrend die oeffentliche Kennung als Bearer reiste. Deshalb prueft dieser Test
+  // BEIDE Richtungen einzeln: die Kennung IM Pfad, das Geheimnis NICHT im Pfad,
+  // sondern im Authorization-Header.
+  // =====================================================================
+  it("T10: beide Ziele erlaubt -> ZWEI Aufrufe, jeder an sein Netzwerk, mit richtig abgebildeter Konfiguration", async () => {
+    const res = await handleIngest(makeRequestWithIdentity());
+
+    expect(res.status).toBe(204);
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+
+    // --- Das erste Bein: unveraendert wie ohne den zweiten Empfaenger ---
+    const meta = metaCall();
+    expect(meta).toBeDefined();
+    expect(String(meta?.[0])).toContain("/PIXEL-123/events");
+    expect(String(meta?.[0])).not.toContain("ADACCT-4242");
+    expect(String(meta?.[0])).not.toContain("PINSECRET-9999");
+
+    // --- Das zweite Bein: Kennung im PFAD, Geheimnis im HEADER ---
+    const pin = pinterestCall();
+    expect(pin).toBeDefined();
+    expect(String(pin?.[0])).toContain("/v5/ad_accounts/ADACCT-4242/events");
+    expect(String(pin?.[0])).not.toContain("PINSECRET-9999");
+    expect(pin?.[1].headers?.Authorization).toBe("Bearer PINSECRET-9999");
+  });
+
+  // =====================================================================
+  // T11 — INVARIANTE 1, DER KERN DER SCHEIBE: EIN LANGSAMER ZWEITER EMPFAENGER
+  // REISST DEN ERSTEN NICHT MIT.
+  //
+  // Der Beweis ist das SIGNAL des ersten: Es darf NICHT abgebrochen sein, obwohl
+  // der zweite am Deckel abgebrochen wurde. Waere das Abbruchsignal geteilt (oder
+  // gaebe es einen gemeinsamen Wecker per Promise.race), traefe der Abbruch beide.
+  // BIS ZUR ELFTEN SCHEIBE WAR DAS NUR MIT ZWEI STELLVERTRETERN PRUEFBAR (T4) —
+  // hier laufen zum ersten Mal ZWEI VERSCHIEDENE Timeout-Geruests in ZWEI
+  // VERSCHIEDENEN Modulen gegeneinander.
+  //
+  // DIE 3000 STEHT ALS LITERAL, UND DAS IST EINE AUSSAGE: Sie spiegelt ZWEI
+  // unabhaengige, modul-private Konstanten (META_FORWARD_TIMEOUT_MS und
+  // PINTEREST_FORWARD_TIMEOUT_MS). Ihre Gleichheit ist heute Zufall der Herkunft und
+  // von keinem Test behauptet — es gibt keine Stelle, die beide nebeneinander sieht
+  // (gefuehrter Backlog-Kandidat). WIRD DIESER TEST HIER ROT, HEISST DAS: EINER DER
+  // BEIDEN DECKEL HAT SICH BEWEGT. Es heisst NICHT, dass die Anordnung kaputt ist.
+  // =====================================================================
+  it("T11: der zweite Empfaenger haengt bis zum Deckel — der erste bleibt UNBERUEHRT", async () => {
+    vi.useFakeTimers();
+    global.fetch = vi.fn(
+      (url: string, init?: { signal?: AbortSignal }) =>
+        String(url).includes("api.pinterest.com")
+          ? new Promise<Response>((_resolve, reject) => {
+              init?.signal?.addEventListener("abort", () =>
+                reject(new DOMException("Aborted", "AbortError")),
+              );
+            })
+          : Promise.resolve(new Response(null, { status: 200 })),
+    ) as unknown as typeof fetch;
+
+    const pending = handleIngest(makeRequestWithIdentity());
+    await vi.advanceTimersByTimeAsync(0);
+    // BEIDE AUFRUFE SIND ERFOLGT — aber dieser Test beweist damit NICHT, dass sie
+    // gleichzeitig gestartet sind, und der Kommentar sagt das ausdruecklich, weil er
+    // bis zur Mutationsprobe das Gegenteil behauptet hat: Das erste Bein antwortet
+    // hier SOFORT, also ist auch seriell nach dem Durchlauf der Mikrotasks der
+    // zweite Aufruf schon abgesetzt. GEMESSEN (M3-Probe, zwoelfte Scheibe): Bei
+    // serieller Abarbeitung bleibt dieser Test GRUEN. Die Gleichzeitigkeit traegt
+    // T14 (beide Beine haengen), diese Zeile traegt nur die Vorbedingung fuer die
+    // Signal-Assertions darunter.
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(3_000);
+    const res = await pending;
+
+    expect(res.status).toBe(204);
+    expect(pinterestCall()?.[1].signal.aborted).toBe(true);
+    expect(metaCall()?.[1].signal.aborted).toBe(false);
+  });
+
+  // =====================================================================
+  // T14 — DIE GLEICHZEITIGKEIT ZWEIER ECHTER EMPFAENGER.
+  //
+  // NACHGESCHOBEN NACH DER M3-PROBE DIESER SCHEIBE, und das steht hier, statt es zu
+  // verschweigen: Der Stufe-1-Plan sagte voraus, T11 werde bei serieller Abarbeitung
+  // rot. ER BLIEB GRUEN — weil dort das erste Bein sofort antwortet und der zweite
+  // Aufruf deshalb auch seriell schon abgesetzt ist, wenn gemessen wird. Die
+  // Gleichzeitigkeit ZWEIER ECHTER Empfaenger war damit ungedeckt; T2 und T3 decken
+  // sie nur fuer den Stellvertreter (zweimal derselbe Adapter).
+  //
+  // DIE DISKRIMINIERUNG: BEIDE Beine haengen. Gleichzeitig stehen nach dem Durchlauf
+  // der Mikrotasks ZWEI Aufrufe; seriell stuende genau EINER, denn das zweite Bein
+  // startete erst nach dem Abbruch des ersten. Und ein EINZIGER Vorlauf um den
+  // Deckel muss BEIDE abbrechen — seriell liefe der Test in seinen eigenen Timeout.
+  //
+  // DIE 3000 STEHT ALS LITERAL, UND DAS IST EINE AUSSAGE: Sie spiegelt ZWEI
+  // unabhaengige, modul-private Konstanten (META_FORWARD_TIMEOUT_MS in
+  // meta-forward.ts, PINTEREST_FORWARD_TIMEOUT_MS in pinterest-forward.ts). Ihre
+  // Gleichheit ist heute Zufall der Herkunft und von KEINER Stelle im Produktivcode
+  // behauptet — es gibt keinen Ort, der beide nebeneinander sieht (gefuehrter
+  // Backlog-Kandidat "DER DECKELWERT IST MODUL-PRIVAT UND VON AUSSEN NICHT LESBAR").
+  // WIRD DIESER TEST ROT, HEISST DAS ZUERST: EINER DER BEIDEN DECKEL HAT SICH
+  // BEWEGT. Es heisst NICHT automatisch, dass die Anordnung kaputt ist.
+  // =====================================================================
+  it("T14: BEIDE Empfaenger haengen -> beide Aufrufe stehen sofort, und EIN Deckel (3000ms) bricht beide ab", async () => {
+    vi.useFakeTimers();
+    global.fetch = vi.fn(
+      (_url: string, init?: { signal?: AbortSignal }) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () =>
+            reject(new DOMException("Aborted", "AbortError")),
+          );
+        }),
+    ) as unknown as typeof fetch;
+
+    const pending = handleIngest(makeRequestWithIdentity());
+    await vi.advanceTimersByTimeAsync(0);
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+
+    await vi.advanceTimersByTimeAsync(3_000);
+    const res = await pending;
+
+    expect(res.status).toBe(204);
+    expect(metaCall()?.[1].signal.aborted).toBe(true);
+    expect(pinterestCall()?.[1].signal.aborted).toBe(true);
+  });
+
+  // T12 — EIN WERFENDES ZWEITES BEIN, OHNE MOCK. Der ECHTE zweite Adapter faengt
+  // den Wurf in seinem eigenen catch; der Beweis ist, dass der erste Aufruf
+  // trotzdem hinausging und die Antwort eine leere 204 blieb. Das prueft die
+  // VERTRAGSTREUE des echten Adapters — im Unterschied zu T13, das den Vertrag
+  // ausser Kraft setzt.
+  it("T12: wirft das Netzwerk beim zweiten Empfaenger, geht der erste trotzdem hinaus", async () => {
+    global.fetch = vi.fn((url: string) => {
+      if (String(url).includes("api.pinterest.com")) throw new Error("Netz kaputt");
+      return Promise.resolve(new Response(null, { status: 200 }));
+    }) as unknown as typeof fetch;
+
+    const res = await handleIngest(makeRequestWithIdentity());
+
+    expect(res.status).toBe(204);
+    expect(await res.text()).toBe("");
+    expect(metaCall()).toBeDefined();
+  });
+
+  // T13 — DAS 204-CONTAINMENT MIT ZWEI ECHTEN ZIELEN. Das Gegenstueck zu T5, nur
+  // fuer das zweite Bein: Der echte Adapter wirft per Vertrag nie, also setzt dieser
+  // Test den Vertrag ueber den Durchreich-Schalter ausser Kraft. Mit Promise.all
+  // statt allSettled verliesse die Ablehnung den Handler, und aus der garantierten
+  // leeren 204 wuerde ein 500 — der leakt den Gueltigkeitszustand des trackingKeys
+  // an einen anonymen Aufrufer.
+  it("T13: bricht der ZWEITE Empfaenger seinen Vertrag, bleibt die Antwort eine leere 204 — und der erste sendet", async () => {
+    pinOverride.fn = () => Promise.reject(new Error("Vertragsbruch"));
+
+    const res = await handleIngest(makeRequestWithIdentity());
+
+    expect(res.status).toBe(204);
+    expect(await res.text()).toBe("");
+    expect(metaCall()).toBeDefined();
   });
 });

@@ -95,7 +95,7 @@ import TargetCard, {
   TARGET_CARDS,
 } from "@/components/TargetCard";
 import type { ConfiguredState } from "@/components/TargetCard";
-import type { TrackingTarget } from "@/lib/settings";
+import { TRACKING_TARGETS, type TrackingTarget } from "@/lib/settings";
 
 afterEach(() => {
   cleanup();
@@ -233,19 +233,47 @@ describe("TargetCard — der Wortlaut behauptet KEINE Wirkung", () => {
 describe("TargetCard — der Folgenlosigkeits-Hinweis haengt an hasAdapter", () => {
   const HINWEIS = /Auslieferung folgt/;
 
-  it("Ziel OHNE Adapter (pinterest) sagt ausdruecklich, dass es noch nicht sendet", () => {
-    // Die Karte darf nicht so aussehen, als wuerde sie durch das blosse Hinterlegen
-    // von Zugangsdaten senden. Bei Pinterest gibt es in dieser Scheibe keinen
-    // Adapter — das MUSS auf der Oberflaeche stehen, nicht nur im Zuschnitt.
-    expect(TARGET_CARDS.pinterest.hasAdapter).toBe(false);
-    renderCard({ target: "pinterest", configured: true });
-    expect(screen.getByText(HINWEIS)).toBeTruthy();
-  });
+  // =====================================================================
+  // WAS DIESER TEST ERSETZT, und warum er anders gebaut ist als seine zwei
+  // Vorgaenger (Phase 11, zwoelfte Scheibe):
+  //
+  // Bis hierher standen hier ZWEI Tests — "Ziel OHNE Adapter (pinterest) sagt
+  // ausdruecklich, dass es noch nicht sendet" (der den Hinweis erwartete) und "Ziel
+  // MIT Adapter (meta) traegt den Hinweis NICHT". Der erste ist mit dem zweiten
+  // Zweig in dispatchForward inhaltlich FALSCH geworden: Pinterest wird jetzt
+  // beliefert, hasAdapter ist true, der Hinweis erscheint zu Recht nicht mehr. Der
+  // zweite blieb zwar gruen, unterschied aber nichts mehr — ohne ein Ziel, das den
+  // Hinweis traegt, waere er auch dann gruen, wenn der Render-Zweig ersatzlos
+  // gestrichen wuerde. BEIDE gehen in diesem einen auf.
+  //
+  // ER LAEUFT UEBER DIE ZIEL-LISTE, NICHT UEBER EINE HANDLISTE: Kommt ein DRITTES
+  // Ziel dazu, dessen Adapter noch fehlt, wird dieser Test ROT — und das ist genau
+  // die Erinnerung, die der Mechanismus dann braucht ("setz hasAdapter: false, dann
+  // sagt die Karte es von selbst"). Eine Handliste haette geschwiegen.
+  //
+  // VERWORFEN: ein Test, der TARGET_CARDS zur Laufzeit mutiert, um den unerreichten
+  // Render-Zweig doch noch auszuloesen. Er koppelte sich an die Reihenfolge der
+  // Tests (das exportierte Objekt ist geteilter Modulzustand) — genau die Klasse,
+  // die in der elften Scheibe fuenf statt drei Tests hat fallen lassen.
+  // =====================================================================
+  it("KEIN Ziel traegt den Hinweis — und die Daten sagen dasselbe wie die Oberflaeche", () => {
+    for (const target of TRACKING_TARGETS) {
+      const { container, unmount } = renderCard({ target, configured: true });
 
-  it("Ziel MIT Adapter (meta) traegt den Hinweis NICHT", () => {
-    expect(TARGET_CARDS.meta.hasAdapter).toBe(true);
-    renderCard({ target: "meta", configured: true });
-    expect(screen.queryByText(HINWEIS)).toBeNull();
+      // POSITIVKONTROLLE, ohne die eine Abwesenheits-Behauptung wertlos waere: Ein
+      // leerer Render und ein echter Nicht-Treffer saehen sonst gleich aus. Der
+      // Statustext beweist, dass DIESE Karte wirklich gerendert wurde.
+      expect(screen.getByText(STATUS_CONFIGURED)).toBeTruthy();
+      expect(container.textContent).toContain(TARGET_CARDS[target].publicLabel);
+
+      // Die DATEN-Seite und die OBERFLAECHEN-Seite derselben Aussage, getrennt
+      // geprueft: Ein Umlegen des Feldes ohne Wirkung im Render (oder umgekehrt)
+      // faellt nur so auf.
+      expect(TARGET_CARDS[target].hasAdapter).toBe(true);
+      expect(screen.queryByText(HINWEIS)).toBeNull();
+
+      unmount();
+    }
   });
 });
 

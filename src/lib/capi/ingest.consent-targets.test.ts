@@ -205,6 +205,28 @@ describe("allowedTargets: kaputte Signal-Formen -> leer, nie ein Wurf", () => {
 // (2) DIE WIRKUNG — handleIngest
 // ===========================================================================
 
+/**
+ * DIE ZWEI HEADER SIND PFLICHT UND DUERFEN NICHT ENTFERNT WERDEN (Phase 11,
+ * zwoelfte Scheibe). Ohne sie ist die HAELFTE der Abdeckung dieser Datei hohl.
+ *
+ * GRUND: Der zweite Adapter (forwardToPinterest) traegt als erste Anweisung im try
+ * das IDENTITAETS-PAAR — `if (!clientIp || !userAgent) return;` — und kehrt ohne
+ * beides VOR jedem fetch zurueck, ohne Log und ohne Spur. Ein Fixture ohne diese
+ * Header laesst JEDE Assertion ueber das zweite Ziel gruen werden, auch wenn die
+ * Zuordnung ueberhaupt nichts tut: "kein Aufruf" waere dann wahr aus einem Grund,
+ * den der Testname nicht nennt. DER ERSTE ADAPTER HAT DIESEN RIEGEL NICHT (er laesst
+ * jede Haelfte einzeln weg) — deshalb faellt das Fehlen bei Meta nicht auf.
+ *
+ * DAS IST HIER REAL PASSIERT, nicht befuerchtet: Bis zur zwoelften Scheibe baute
+ * diese Datei ihre Requests OHNE Header. Der Fall "Feld MIT VERBOT fuer Meta" galt
+ * deshalb als der einzige Test, der die Zuordnung mit einem adapterlosen Ziel
+ * AUFRUFT — er tat es, aber der Adapter kehrte sofort zurueck, und die Ausgangslage
+ * der Scheibe sagte faelschlich, "es geht dann ein Aufruf hinaus".
+ *
+ * DIE ADRESSE MUSS OEFFENTLICH SEIN: resolveClientIp verwirft loopback und leere
+ * Werte, und mit gemocktem META_TEST_EVENT_CODE ("") gibt es keine Dev-Dummy-IP.
+ * 203.0.113.7 stammt aus TEST-NET-3 und ist garantiert keine echte Adresse.
+ */
 function makeRequest(wireValue?: { value: unknown }): Request {
   const body: Record<string, unknown> = {
     trackingKey: "tk-abc",
@@ -214,6 +236,10 @@ function makeRequest(wireValue?: { value: unknown }): Request {
   if (wireValue) body[CONSENT_WIRE_FIELD] = wireValue.value;
   return new Request("http://localhost/api/e", {
     method: "POST",
+    headers: {
+      "user-agent": "Mozilla/5.0 (Consent-Targets-Test)",
+      "x-vercel-forwarded-for": "203.0.113.7",
+    },
     body: JSON.stringify(body),
   });
 }
@@ -235,10 +261,17 @@ beforeEach(() => {
   persistEvent.mockResolvedValue(undefined);
   getCapiConfigByTrackingKey.mockResolvedValue(resolution([META_ENTRY, PIN_ENTRY]));
   global.fetch = vi.fn(async () => new Response(null, { status: 200 }));
+  // Der zweite Adapter liest den Antwort-RUMPF und meldet alles, was nicht
+  // eindeutig Erfolg ist, per console.error. Die Attrappe oben antwortet
+  // absichtlich body-los (diese Datei prueft WER gerufen wird, nicht WAS
+  // zurueckkommt) — ohne diesen Spion faerbte jeder solche Aufruf das
+  // Testprotokoll mit Fehlerzeilen ein und verdeckte echte Meldungen.
+  vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
 afterEach(() => {
   vi.clearAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe("handleIngest: ALLE Ziele verboten", () => {
@@ -296,30 +329,80 @@ describe("handleIngest: Invariante 1 — bei Meta aendert sich nichts", () => {
     expect(String(fetchCalls()[0][0])).toContain("/PIXEL-123/events");
   });
 
-  it("Feld MIT VERBOT fuer Meta -> kein Aufruf, obwohl Pinterest erlaubt ist", async () => {
-    // DIE GEGENPROBE ZUM VORIGEN, und sie zeigt zugleich die Grenze dieser Ebene:
-    // Pinterest IST hier erlaubt, es geht trotzdem nichts hinaus — weil es keinen
-    // Adapter hat. Genau deshalb liegt die Kreuzprobe eine Ebene tiefer.
+  it("Feld MIT VERBOT fuer Meta -> KEIN Meta-Aufruf, und genau EINER an Pinterest", async () => {
+    // DIE GEGENPROBE ZUM VORIGEN: Verbietet der Draht Meta und erlaubt Pinterest,
+    // geht Metas Aufruf NICHT hinaus und der des zweiten Ziels schon. Zusammen mit
+    // dem Test darueber ist das die Kreuzprobe auf der WIRKUNGS-Ebene — beide
+    // Richtungen einzeln, nicht nur "irgendetwas wurde gefiltert".
     //
-    // UND ER TRAEGT EINE ABDECKUNG, DIE SEIN NAME NICHT NENNT: Er ist der EINZIGE
-    // Test im Repo, der dispatchForward mit einem ADAPTERLOSEN Ziel AUFRUFT — die
-    // erlaubte Menge ist hier genau [pinterest], der Eintrag laeuft also in die
-    // Zuordnung hinein und wird dort uebersprungen. In fan-out.test.ts taten das bis
-    // zur neunten Scheibe T6 und T7; beide erreichen die Zuordnung mit einem
-    // adapterlosen Ziel heute nicht mehr (Begruendung steht in ihren Koepfen, je
-    // Test verschieden).
-    // WARUM DAS HIER STEHT: Traegt ein einzelner Test eine Fehlerklasse, gehoert das
-    // in seinen Kommentar — sonst entfernt ihn jemand spaeter als vermeintlich
-    // redundant und nimmt die einzige Abdeckung mit.
-    // DIE GRENZE, DIE ZWINGEND DAZUGEHOERT: Diese Abdeckung ist ein NEBENEFFEKT
-    // seines Aufbaus, KEINE Absicht seines Namens — sie haengt allein daran, dass
-    // Meta verboten und Pinterest erlaubt ist. Wer den Fall umbaut (etwa beide
-    // verbietet), verliert sie LAUTLOS: nichts wird rot, denn "kein Aufruf" bliebe
-    // wahr. Ob die Zuordnung einen EIGENEN Waechter bekommt, ist eine Frage fuer die
-    // zehnte Scheibe, wo der zweite Adapter entsteht — hier NICHT entschieden.
+    // ==================== HISTORIEN-BLOCK ====================
+    // DIESER TEST HAT SEINEN URSPRUENGLICHEN GEGENSTAND VERLOREN, und das gehoert
+    // hierher, damit niemand ihn spaeter fuer den alten haelt:
+    //
+    // BIS ZUR ZWOELFTEN SCHEIBE hiess er "kein Aufruf, obwohl Pinterest erlaubt ist"
+    // und bewies etwas anderes — dass ein ADAPTERLOSES Ziel in die Zuordnung
+    // hineinlaeuft und dort uebersprungen wird. Er war die EINZIGE Stelle im Repo,
+    // die dispatchForward ueberhaupt mit einem adapterlosen Ziel aufrief (T6 und T7
+    // in fan-out.test.ts taten das bis zur neunten Scheibe, seither nicht mehr).
+    //
+    // MIT DEM ZWEITEN ZWEIG IN dispatchForward IST PINTEREST KEIN ADAPTERLOSES ZIEL
+    // MEHR. Die alte Abdeckung existiert nicht nur nicht mehr — SIE KANN NICHT MEHR
+    // EXISTIEREN: Jedes bekannte Ziel hat jetzt einen Adapter, und ein UNBEKANNTES
+    // erreicht die Zuordnung nie (es faellt schon in allowedTargets heraus, weil
+    // weder LEGACY_CONSENT_ROLE noch CONSENT_KEY_BY_TARGET einen Eintrag dafuer
+    // tragen). Der Rueckfall `return Promise.resolve()` ist aus dem Handler heraus
+    // strukturell unerreichbar. Ein Test, der ihn ueber eine gefaelschte Aufloesung
+    // erzwaenge, prueefte einen Zustand, den das System nicht herstellen kann.
+    //
+    // WAS ER STATTDESSEN TRAEGT — und es ist mehr wert als das Verlorene: Er ist
+    // eine der Stellen, an denen die erlaubte Menge eine ECHTE TEILMENGE der
+    // aufgeloesten ist UND der ausgeschlossene Eintrag einen Adapter hat. Genau das
+    // ist die Konstellation, in der sich `allowed` und `targets` im Fan-Out
+    // beobachtbar unterscheiden. WIRD IM FAN-OUT UEBER `targets` STATT UEBER
+    // `allowed` ITERIERT, WIRD DIESER TEST ROT — und die Einwilligung je Ziel haengt
+    // an genau dieser Zeile. Beides compiliert, kein Typfehler, keine unbenutzte
+    // Variable: es gibt keinen strukturellen Zeugen dafuer, nur diesen Test und
+    // seine Nachbarn.
+    // =========================================================
     const res = await handleIngest(makeRequest(wire(false, true)));
 
     expect(res.status).toBe(204);
-    expect(global.fetch).not.toHaveBeenCalled();
+    expect(fetchCalls()).toHaveLength(1);
+    expect(String(fetchCalls()[0][0])).toContain("/v5/ad_accounts/TAG-987/events");
+    expect(String(fetchCalls()[0][0])).not.toContain("PIXEL-123");
+  });
+
+  it("Draht traegt NUR Metas Schluessel -> nur Meta, obwohl das zweite Ziel konfiguriert ist", async () => {
+    // INVARIANTE 5, DER REALISTISCHE FALL: Eine Seite, die veroeffentlicht wurde,
+    // BEVOR die zweite Kennung eingetragen war, traegt den zweiten Consent-Schluessel
+    // gar nicht im Draht — der Erzeuger schreibt ihn zur ERZEUGUNGSZEIT, nicht zur
+    // Laufzeit. Der Draht ist damit VORHANDEN (die Altbestands-Ausnahme greift also
+    // nicht), aber er sagt ueber das zweite Ziel nichts. Fail-closed: kein Forward.
+    // WARUM DAS EIN EIGENER TEST IST UND NICHT MIT wire(true,false) ZUSAMMENFAELLT:
+    // Dort steht ein ausdrueckliches VERBOT, hier fehlt die Angabe ganz. Beide muessen
+    // gleich ausgehen, und genau das ist die Aussage.
+    const res = await handleIngest(
+      makeRequest({ value: { [CONSENT_KEY_BY_TARGET.meta]: true } }),
+    );
+
+    expect(res.status).toBe(204);
+    expect(fetchCalls()).toHaveLength(1);
+    expect(String(fetchCalls()[0][0])).toContain("/PIXEL-123/events");
+  });
+
+  it("NUR das erste Ziel aufgeloest -> genau EIN Aufruf, auch wenn der Draht beide erlaubt", async () => {
+    // INVARIANTE 4: Ein Projekt ohne Zugangsdaten fuer das zweite Ziel verhaelt sich
+    // UNVERAENDERT. Der Draht erlaubt hier ausdruecklich BEIDE — es geht trotzdem nur
+    // einer hinaus, weil das zweite Ziel ohne vollstaendiges Paar gar nicht erst in
+    // die aufgeloeste Menge kommt. Die Einwilligung ist nicht die Stelle, die es
+    // heraushaelt, und dieser Test trennt die beiden Ursachen.
+    getCapiConfigByTrackingKey.mockResolvedValue(resolution([META_ENTRY]));
+
+    const res = await handleIngest(makeRequest(wire(true, true)));
+
+    expect(res.status).toBe(204);
+    expect(fetchCalls()).toHaveLength(1);
+    expect(String(fetchCalls()[0][0])).toContain("/PIXEL-123/events");
+    expect(String(fetchCalls()[0][0])).not.toContain("api.pinterest.com");
   });
 });

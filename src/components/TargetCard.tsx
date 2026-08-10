@@ -22,8 +22,12 @@ import type { TrackingTarget } from "@/lib/settings";
  *
  * WAS DIESE KARTE NICHT TUT — und der Absatz steht hier, damit niemand sie fuer
  * mehr haelt, als sie ist:
- * - SIE SENDET NICHTS. Es gibt keinen Adapter; sie legt Zugangsdaten ab, mehr
- *   nicht. Fuer Ziele ohne Adapter sagt sie das AUSDRUECKLICH (s. hasAdapter).
+ * - SIE SENDET NICHTS. Sie legt Zugangsdaten ab, mehr nicht. Der Satz stand hier
+ *   bis zur zwoelften Scheibe mit der Begruendung "es gibt keinen Adapter" — DIESE
+ *   BEGRUENDUNG TRAEGT NICHT MEHR (beide Ziele haben seither einen), DIE AUSSAGE
+ *   SCHON: Was sendet, ist der Ingest-Pfad; die Karte hinterlegt nur. Fuer ein Ziel
+ *   ohne AUSLIEFERUNG sagt sie das weiterhin ausdruecklich (s. hasAdapter) — heute
+ *   trifft das auf keines zu.
  * - SIE BEHAUPTET KEINE WIRKUNG. Der Statustext sagt, ob Zugangsdaten HINTERLEGT
  *   sind — nie, ob sie funktionieren. Eine Geheimnis-Zeile existiert auch bei
  *   widerrufenem Token; genau dieser Fall ist im Projekt schon einmal live
@@ -48,13 +52,19 @@ export type ConfiguredState = boolean | null;
  * heute auf Metas Begriffe zeigt. Beides zeigt in dieselbe Richtung; die Fachlage
  * ist der Grund, die Eindeutigkeit die Folge.
  *
- * hasAdapter STEUERT DEN FOLGENLOSIGKEITS-HINWEIS. Es ist damit die FUENFTE Stelle
- * im Repo, an der Ziel-Wissen liegt (neben META_TARGET, META_CONSENT_TARGET, dem
- * CHECK der Geheimnis-Tabelle und TRACKING_TARGETS). GEMELDET, NICHT GELOEST — die
- * Zusammenlegung der Kopien ist aus dieser Scheibe ausdruecklich ausgeschlossen.
- * WANN ES UMGELEGT WIRD: sobald das Ziel tatsaechlich beliefert wird (zwoelfte Scheibe).
- * Dann verschwindet der Hinweis von selbst — er haengt an DIESEM Feld und an
- * keinem Kommentar.
+ * hasAdapter STEUERT DEN FOLGENLOSIGKEITS-HINWEIS. Es ist damit eine von SECHS
+ * Stellen im Repo, an denen Ziel-Wissen liegt (neben META_TARGET,
+ * META_CONSENT_TARGET, dem CHECK der Geheimnis-Tabelle, TRACKING_TARGETS und seit
+ * der zwoelften Scheibe PINTEREST_TARGET in capi/ingest.ts). GEMELDET, NICHT
+ * GELOEST — die Zusammenlegung der Kopien ist seit der sechsten Scheibe
+ * ausdruecklich ausgeschlossen.
+ *
+ * ES IST UMGELEGT WORDEN (zwoelfte Scheibe), UND DAMIT IST DIE ZUSAGE EINGELOEST:
+ * Hier stand "WANN ES UMGELEGT WIRD: sobald das Ziel tatsaechlich beliefert wird …
+ * Dann verschwindet der Hinweis von selbst — er haengt an DIESEM Feld und an keinem
+ * Kommentar." Genau so ist es gekommen: EINE Zeile Daten, und der Hinweis war weg.
+ * HEUTE TRAEGT KEIN ZIEL MEHR `hasAdapter: false`. Feld und Render-Zweig bleiben
+ * trotzdem — s. die Begruendung am Zweig selbst.
  */
 export type TargetCardConfig = {
   name: string;
@@ -110,7 +120,11 @@ export const TARGET_CARDS: Record<TrackingTarget, TargetCardConfig> = {
     secretLabel: "Pinterest-Zugangsdaten",
     secretPlaceholderNew: "Zugangsdaten einfügen",
     secretPlaceholderReplace: "Neue Zugangsdaten eingeben zum Ersetzen",
-    hasAdapter: false,
+    // UMGELEGT IN DER ZWOELFTEN SCHEIBE: Die Zuordnung Ziel -> Adapter
+    // (dispatchForward in capi/ingest.ts) hat seither einen zweiten Zweig, dieses
+    // Ziel wird also tatsaechlich beliefert. Der Hinweis verschwindet damit von
+    // selbst — er haengt an DIESEM Feld.
+    hasAdapter: true,
   },
 };
 
@@ -266,7 +280,21 @@ export default function TargetCard({
       {/* Der Folgenlosigkeits-Hinweis (Invariante 6). Er sagt etwas ueber die
           AUSLIEFERUNG, der Status etwas ueber die ZUGANGSDATEN — zwei verschiedene
           Sachen, deshalb zwei Zeilen und kein Zusatz im Statustext. Ein Zusatz
-          dort haette den entschiedenen Wortlaut verhandelbar gemacht. */}
+          dort haette den entschiedenen Wortlaut verhandelbar gemacht.
+
+          UNERREICHTE VORSORGE, EHRLICH BENANNT (zwoelfte Scheibe): Seit beide Ziele
+          beliefert werden, traegt KEINE Konfiguration mehr hasAdapter: false —
+          dieser Zweig wird heute von nichts erreicht. Er bleibt trotzdem, und zwar
+          fuer den Moment, in dem ein DRITTES Ziel dazukommt, dessen Adapter noch
+          fehlt: Dann genuegt EINE Zeile Daten, und die Karte sagt es wieder von
+          selbst. Wer ihn entfernt, spart vier Zeilen und muss den Mechanismus genau
+          dann neu erfinden, wenn er am leichtesten vergessen wird.
+          WIE ER GEPRUEFT WIRD: ueber die DATEN, nicht ueber die Wirkung — der Test
+          in TargetCard.test.tsx laeuft ueber die Ziel-Liste und behauptet, dass
+          KEINES der Ziele den Hinweis traegt. Ein Test, der den Zweig ueber eine
+          Laufzeit-Mutation von TARGET_CARDS erzwaenge, wurde VERWORFEN: Er koppelte
+          sich an die Reihenfolge der Tests — genau die Klasse, die in der elften
+          Scheibe fuenf statt drei Tests hat fallen lassen. */}
       {!config.hasAdapter && (
         <p className="mb-2 text-xs text-gray-500">
           Auslieferung folgt — dieses Ziel sendet noch nicht.

@@ -6,6 +6,10 @@ import {
 } from "@/lib/capi/token";
 import { META_TEST_EVENT_CODE } from "@/lib/capi/config";
 import { forwardToMeta } from "@/lib/capi/meta-forward";
+import { forwardToPinterest } from "@/lib/capi/pinterest-forward";
+// NUR DER TYP. Er traegt den Waechter fuer die Ziel-Konstante unten (s. dort) und
+// erzeugt keine Laufzeit-Abhaengigkeit dieses Handlers auf den Einstellungs-Blob.
+import type { TrackingTarget } from "@/lib/settings";
 import { CONSENT_WIRE_FIELD, consentAllows } from "@/lib/tracking/consent-wire";
 // DER SCHLUESSEL KOMMT AUS DEM CONSENT-VOKABULAR, NICHT AUS DEM DER GEHEIMNIS-TABELLE
 // (META_TARGET in capi/token.ts) — obwohl beide heute "meta" lauten. Zwei Gruende:
@@ -182,13 +186,59 @@ function schedulePersist(
 }
 
 /**
- * DIE ZUORDNUNG ZIEL -> ADAPTER (Phase 11, siebte Scheibe).
+ * DER ZIELWERT FUER PINTEREST — LOKAL, UND DAS IST EINE ENTSCHEIDUNG MIT GRUND
+ * (Phase 11, zwoelfte Scheibe).
  *
- * Sie kennt heute GENAU EINEN Empfaenger. Jedes andere Ziel wird STILL uebersprungen,
- * und das ist keine Nachlaessigkeit, sondern die strukturelle Durchsetzung der Zusage
- * "es wird nichts an ein neues Ziel gesendet": Ein Ziel, dessen Zugangsdaten hinterlegt
- * sind, dessen Adapter aber nicht existiert, kann hier nichts ausloesen — es gibt
- * keinen Zweig, der es koennte.
+ * DER SYMMETRISCHE GRIFF WAERE EIN PINTEREST_TARGET NEBEN META_TARGET IN
+ * capi/token.ts. Er ist aus ZWEI unabhaengigen Gruenden nicht gemacht worden:
+ *  1. Die Aufloesung ist in dieser Scheibe unantastbar.
+ *  2. UND ER WAERE EINE STILLE FALLE: NEUN Testdateien mocken @/lib/capi/token mit
+ *     einer Fabrik, die genau zwei Schluessel liefert (getCapiConfigByTrackingKey,
+ *     META_TARGET). Ein WERT-Import von dort waere in jeder von ihnen `undefined`,
+ *     der Vergleich nie wahr — der neue Zweig waere in der GESAMTEN Handler-Suite
+ *     tot, und alles bliebe gruen.
+ *
+ * DER TYP IST DER WAECHTER, nicht der Name: `TrackingTarget` ist die Union aus
+ * TRACKING_TARGETS. Wuerde der Wert dort umbenannt, ist diese Zeile ein BUILD-Fehler
+ * — statt eines Forwards, der lautlos ausfaellt. Ein blosses Literal im Vergleich
+ * unten haette dieselbe Wirkung; die Konstante macht sie nur lesbar.
+ *
+ * SECHSTE FUNDSTELLE FUER ZIEL-WISSEN — GEMELDET, NICHT GELOEST. Die anderen fuenf:
+ * META_TARGET (capi/token.ts), META_CONSENT_TARGET (tracking/consent.ts), der CHECK
+ * project_secrets_target_valid, TRACKING_TARGETS (settings.ts) und
+ * TARGET_CARDS.hasAdapter (components/TargetCard.tsx). Die Zusammenlegung ist seit
+ * der sechsten Scheibe ausdruecklich ausgeschlossen und bleibt es hier.
+ */
+const PINTEREST_TARGET: TrackingTarget = "pinterest";
+
+/**
+ * DIE ZUORDNUNG ZIEL -> ADAPTER (Phase 11, siebte Scheibe; ZWEITER ZWEIG in der
+ * ZWOELFTEN).
+ *
+ * Sie kennt jetzt ZWEI Empfaenger. Jedes andere Ziel wird STILL uebersprungen, und
+ * das ist keine Nachlaessigkeit, sondern die strukturelle Durchsetzung der Zusage
+ * "es wird nichts an ein neues Ziel gesendet": Ein Ziel, dessen Zugangsdaten
+ * hinterlegt sind, dessen Adapter aber nicht existiert, kann hier nichts ausloesen —
+ * es gibt keinen Zweig, der es koennte.
+ * DER RUECKFALL IST HEUTE AUS DEM HANDLER HERAUS UNERREICHBAR, und das gehoert
+ * dazu, damit niemand einen Test dagegen erfindet: Jedes bekannte Ziel hat einen
+ * Adapter, und ein UNBEKANNTES kommt hier nie an — es faellt schon in
+ * allowedTargets heraus, weil weder LEGACY_CONSENT_ROLE noch CONSENT_KEY_BY_TARGET
+ * einen Eintrag dafuer tragen. Er bleibt trotzdem stehen: als Erschoepfungs-Rest
+ * fuer ein DRITTES Ziel und als die Zusage "wirft nie", die dieser Rumpf strukturell
+ * haelt.
+ *
+ * DIE KONFIGURATIONSFORMEN SIND VERSCHIEDEN, UND DIE UEBERSETZUNG LIEGT HIER — beim
+ * AUFRUFER, wie der Kopf von pinterest-forward.ts es ansagt. Der erste Adapter nimmt
+ * die aufgeloeste CapiConfig unveraendert; der zweite hat eine EIGENE Form
+ * (PinterestConfig), weil dieselbe Groesse dort Anzeigenkonto-ID heisst und im
+ * Endpunkt-PFAD steht statt in einem Browser-Tag.
+ * WAS DER COMPILER DABEI SICHERT UND WAS NICHT — der Unterschied ist der Grund fuer
+ * den einzigen Test, der hier haengt: Ein DIREKTES Durchreichen von entry.config
+ * bricht den BUILD (adAccountId fehlt). Eine VERTAUSCHUNG der beiden Werte
+ * kompiliert dagegen anstandslos, weil beide Felder Zeichenketten sind — und sie
+ * stuende das GEHEIMNIS in den Endpunkt-Pfad. Dagegen gibt es nur T10 in
+ * fan-out.test.ts.
  *
  * DAS ZIEL-VOKABULAR IST DAS DER GEHEIMNIS-TABELLE (META_TARGET aus capi/token.ts),
  * NICHT das des Consent-Gates (META_CONSENT_TARGET) — obwohl beide heute "meta" lauten.
@@ -214,6 +264,16 @@ function dispatchForward(
 ): Promise<void> {
   if (entry.target === META_TARGET) {
     return forwardToMeta(entry.config, event, eventID, body, clientIp, userAgent);
+  }
+  if (entry.target === PINTEREST_TARGET) {
+    return forwardToPinterest(
+      { adAccountId: entry.config.pixelId, token: entry.config.token },
+      event,
+      eventID,
+      body,
+      clientIp,
+      userAgent,
+    );
   }
   return Promise.resolve();
 }

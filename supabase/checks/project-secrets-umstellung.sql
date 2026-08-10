@@ -46,7 +46,8 @@
 --                  kann, verdeckt die Ursache, statt sie zu beseitigen.
 -- VERIFIZIERT: 2026-08-05 — echter Lauf im SQL-Editor durch Stefan, unmittelbar nach dem
 --              Einspielen von 0021. ALLE FUENF Proben trafen ihre ERWARTUNG, KEINE
---              Abweichung; die Messwerte stehen in docs/aktiver-stand.md beim Zuschnitt
+--              Abweichung; die Messwerte stehen in
+--              docs/claude-history/phase-11-multi-tracking-rohfassung.md beim Zuschnitt
 --              der ersten Scheibe.
 --              WAS DIESES DATUM NICHT DECKT: den NACHHOL-LAUF (s. WANN, Punkt c). Es
 --              belegt die Zeitpunkte (a) und (b) — NICHT das Freigabe-Gate fuer den

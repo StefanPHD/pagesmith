@@ -1862,6 +1862,19 @@ KEIN @-Import. Bei Arbeit an einem Thema die passende Datei gezielt lesen:
   Accordion, Modal) und die Invarianten der Phase. Die 17 dauerhaften Regeln
   daraus stehen bereits oben unter "## Immer beachten" und werden dort NICHT
   wiederholt; die Datei nennt im Kopf, welche das sind.
+- docs/claude-history/phase-11-multi-tracking.md — GESAMTE gebaute Phase 11
+  (Multi-Tracking / Server-Side Fan-Out): zwölf Scheiben von der Umstellung der
+  Geheimnis-Tabelle bis zum ersten live bewiesenen Forward an ein zweites Ziel. Trägt
+  den Einstiegs-Block für die nächste Sitzung (was erreicht ist, was offen bleibt, die
+  sechs weitergeltenden Auflagen), das beschlossene Consent-Modell, die
+  Anbieter-Befunde zum zweiten Ziel, den Arbeitsvorrat am ersten Adapter und die
+  verschobene dreizehnte Scheibe. DIES IST DIE FASSUNG, DIE GELESEN WIRD.
+- docs/claude-history/phase-11-multi-tracking-rohfassung.md — die ROHFASSUNG derselben
+  Phase: der ungekürzte Arbeitsstand, wie er WÄHREND des Baus geführt wurde,
+  zeichengleich verschoben. NICHT der Einstieg — der ist die kuratierte Datei darüber.
+  AUFSCHLAGEN, WENN MAN DORT ETWAS VERMISST: die Kuration war eine Auswahl, und diese
+  Datei ist der Rückfall für den Fall, dass dabei etwas übersehen wurde. Wird NICHT
+  gepflegt; ihre Zeiger sind tot oder werden es.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),

@@ -1,3 +1,38 @@
+# Phase 11 — Multi-Tracking / Server-Side Fan-Out — ROHFASSUNG (ungekürzter Arbeitsstand)
+
+**WAS SIE IST:** Der ungekürzte Arbeitsstand der Phase 11, so wie er WÄHREND des Baus
+geführt wurde — Zuschnitte, Protokolle, gemessene Ausgangslagen, Entscheidungen,
+Aufklärungen, Backlog-Blöcke und die vollständigen Stempel-Ketten, in denen jede
+Umplanung sichtbar blieb, ohne dass je ein früherer Stempel überschrieben wurde. Sie
+stand bis zum Phasenende unter `docs/aktiver-stand.md` und war dort das Pflicht-Gate
+jeder Session. **Zeichengleich verschoben, nicht neu geschrieben** — dieser Kopf ist
+das einzige, was hinzugekommen ist.
+
+**WAS SIE NICHT IST: DER EINSTIEG.** Der steht in
+`docs/claude-history/phase-11-multi-tracking.md`, und **das ist die Fassung, die
+gelesen wird** — kuratiert, nach der Hausform dieses Verzeichnisses, mit dem
+Einstiegs-Block für die nächste Sitzung, den weitergeltenden Auflagen und dem
+Arbeitsvorrat. Wer diese Rohfassung als Einstieg liest, liest 9500 Zeilen, von denen
+der grösste Teil beschreibt, was die Phase selbst abgeräumt hat.
+
+**WARUM SIE EXISTIERT:** Die kuratierte Fassung ist eine **AUSWAHL**. Sie wurde von
+einer Instanz getroffen, die gegen ihre **eigene Liste** geprüft hat, nicht gegen den
+Bestand — die Vollständigkeits-Probe verglich 228 Überschriften mit 25 und wies eine
+ZUORDNUNG nach, keine Eins-zu-eins-Abbildung. **Wäre dabei etwas übersehen worden,
+fände es jene Prüfung nicht.** Diese Datei ist der Rückfall für genau diesen Fall, und
+für keinen anderen: Wer in der kuratierten Fassung etwas vermisst, sucht es hier.
+
+**SIE WIRD NICHT GEPFLEGT.** Ihre Zeiger sind ab dem Moment ihrer Ablage tot oder
+werden es — sie verweist auf Überschriften ihrer selbst unter dem alten Pfad, auf
+Code-Stellen, die sich seither verschoben haben, und auf Zustände, die spätere Scheiben
+derselben Phase aufgehoben haben. **Wer hier etwas findet, prüft es am Code, bevor er
+es benutzt.** Auch inhaltlich ist sie ein ZEITDOKUMENT: Sie enthält Sätze, die zum
+Zeitpunkt ihres Schreibens richtig waren und es nicht geblieben sind; sie sind bewusst
+NICHT korrigiert worden, weil eine nachträglich geglättete Rohfassung ihren einzigen
+Zweck verlöre — zu zeigen, was tatsächlich dastand.
+
+---
+
 # Aktiver Stand — Phase 11 (Multi-Tracking / Server-Side Fan-Out)
 
 Eröffnet 2026-08-03. Diese Datei ist das Pflicht-Gate ("Auftrag 0") jeder

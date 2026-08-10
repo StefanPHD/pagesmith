@@ -527,6 +527,10 @@ keine Statusänderung für etwas, das noch nicht existiert.
   KEIN pauschales "Drittanbieter nie synchron", das würde die Dedup-Garantie
   gefährden): die Beacon-Antwort an den Client darf NICHT auf den Meta-Call warten,
   aber der CAPI-Call selbst muss zuverlässig zugestellt werden.
+  ACHTUNG, DIE BEIDEN HÄLFTEN DIESES SATZES HABEN SEIT DEM 2026-08-10 VERSCHIEDENEN
+  RANG: die ERSTE ist BEDINGT (sie wird mit einem benannten Trigger scharf), die ZWEITE
+  gilt UNBEDINGT. Wer nur diesen Satz liest, liest die erste Hälfte zu streng — die
+  Begründung steht im Stempel unter "SOLL" weiter unten.
   SOLL UND IST FALLEN HIER AUSEINANDER — getrennt aufgeschrieben am 2026-08-05, weil der
   Satz darüber sonst als Beschreibung des heutigen Codes gelesen wird und er ist es nicht:
   - IST, GEMESSEN am 2026-08-05, am 2026-08-08 erneut am Code erhoben: Der Meta-Forward
@@ -548,6 +552,40 @@ keine Statusänderung für etwas, das noch nicht existiert.
     abgeschafft und baut den nächsten Empfänger ohne ihn.
   - SOLL: der Satz oben. Er ist als ABSICHT richtig und wird NICHT gestrichen — er ist nur
     NOCH NICHT EINGELÖST.
+    STEMPEL 2026-08-10 — DIE SOLL-HÄLFTE IST BEDINGT GEWORDEN, NICHT GESTRICHEN. Was sie
+    FORDERT, bleibt wörtlich stehen; was sich ändert, ist ihr RANG: Sie ist keine Auflage
+    an den heutigen Code mehr, sondern wird erst mit dem unten benannten TRIGGER scharf.
+    DER BEFUND, DER DAS ENTSCHEIDET, und er ist NEU — er stand in keiner der beiden
+    bisherigen Fassungen: DER MECHANISMUS DIENT DEM PREIS NICHT, DEN DIESE REGEL SELBST
+    NENNT. Der Preis ist seit der Präzisierung ganz unten der SLOT, nicht die Rechenzeit.
+    Eine Hintergrund-Zustellung über after() verkürzt die Invocation aber NICHT — sie
+    lässt nur die Antwort früher hinausgehen, die Belegung des Slots bliebe identisch.
+    FOLGE: Die SOLL-Hälfte und die einzige noch tragende Preis-Begründung dieser Regel
+    hängen NICHT zusammen; ihre Umsetzung brächte an genau der Stelle, die den Preis
+    trägt, exakt nichts. Das ist ein schärferer Grund als "kein messbarer Gewinn" — er
+    sagt, dass Forderung und Begründung auseinanderlaufen, nicht bloss dass der Gewinn
+    klein ist.
+    GEMESSEN AM 2026-08-10 (formale Suche über src/): SECHS Stellen berufen sich auf diese
+    Regel — alle auf ihren KOPF (keine zusätzliche Arbeit je Beacon, keine zweite
+    Abfrage), in capi/ingest.ts und capi/token.ts. AUF DIE SOLL-HÄLFTE BERUFT SICH KEINE
+    EINZIGE. Sie hat im Produktivcode keinen Konsumenten und hatte nie einen.
+    WAS UNBERÜHRT BLEIBT: Die ZWEITE Hälfte ("der CAPI-Call muss zuverlässig zugestellt
+    werden") gilt UNBEDINGT weiter. Die Recherche berührt sie nicht — im Gegenteil, sie
+    ist der Grund, warum die Umstellung TEUER wäre (waitUntil sichert ABSCHLUSS zu, nicht
+    ERFOLG).
+    DIE ALTE BEGRÜNDUNG BLEIBT LESBAR UND WIRD NICHT GESTRICHEN: Sie war unter dem
+    damaligen Kostenmodell richtig — jeder zusätzliche synchrone Call multipliziert sich
+    mit dem Traffic aller Kunden — und sie ist die Herleitung, unter der mehrere Scheiben
+    dieser Phase entschieden wurden. Überholt hat sie eine Doku-Lesung, kein Sinneswandel.
+    DIE LÜCKE, DIE ZWINGEND DAZUGEHÖRT: Der Trigger unten hat ZWEI Hälften, und nur eine
+    hat einen Beobachter. "Wegfall von Fluid Compute" ist im Dashboard ablesbar. "Eine
+    GEMESSENE Grenze unter echtem Traffic" hat heute NIEMANDEN, der sie misst — es gibt
+    kein Monitoring auf Concurrency-Slots. Wer diese Hälfte scharf haben will, braucht
+    zuerst die Messung; ohne sie schlägt sie nie an und ist genau das "falls es je ein
+    Problem wird", das der Trigger ausdrücklich nicht sein soll.
+    PROVENIENZ DIESES STEMPELS: die Anbieter-Doku vom 2026-08-06 (KEINE Messung am
+    eigenen Ingest-Pfad, s. die GRENZE weiter unten) plus die formale Code-Suche vom
+    2026-08-10.
   - WARUM ES EINE UMSTELLUNG BRAUCHT UND KEINE STREICHUNG: Beide Hälften gelten
     gleichzeitig — die Antwort soll sich von Metas Latenz lösen, UND der Forward muss
     trotzdem zuverlässig zugestellt werden. Wer nur die erste Hälfte umsetzt, verliert

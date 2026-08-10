@@ -24,11 +24,33 @@ LAUFZEIT — **ABGESCHLOSSEN und live bewiesen**, (9) DIE EINWILLIGUNG JE ZIEL �
 **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (10) DER ADAPTER FÜR DAS ZWEITE
 ZIEL — **ABGESCHLOSSEN, OHNE LIVE-NACHWEIS**, (11) DIE KARTE FRAGT NACH DER
 RICHTIGEN KENNUNG — **ABGESCHLOSSEN und live bewiesen**, (12) PINTEREST SENDET —
-**ABGESCHLOSSEN und live bewiesen**, (13) DER TESTKNOPF — PLATZHALTER.
+**ABGESCHLOSSEN und live bewiesen**, (13) DER TESTKNOPF — **VERSCHOBEN**.
 
-**NACHGEZOGEN AM 2026-08-10, ZULETZT — ZWÖLF SIND ABGESCHLOSSEN, OFFEN IST EINE.**
-Hier stand bei (12) "PLATZHALTER". **Alle Stempel darunter bleiben Wort für Wort
-stehen.**
+**NACHGEZOGEN AM 2026-08-10, ALS LETZTES — ZWÖLF SIND ABGESCHLOSSEN, KEINE IST OFFEN.**
+Hier stand bei (13) "PLATZHALTER", und der Stempel darunter sagte "OFFEN IST EINE".
+**BEIDE BLEIBEN WORT FÜR WORT STEHEN.**
+
+**VERSCHOBEN IST NICHT OFFEN, UND DER UNTERSCHIED IST DER GANZE STEMPEL.** Eine offene
+Scheibe wartet in DIESER Phase auf ihren Bau. Die dreizehnte tut das nicht mehr: Sie
+ist am 2026-08-10 durch OWNER-ENTSCHEIDUNG in eine EIGENE SITZUNG verlegt worden,
+zusammen mit den weiteren Fan-Out-Zielen. **Sie ist NICHT gestrichen** — ihr Zweck,
+ihre drei Auflagen und die Aufklärung zu ihr bleiben vollständig erhalten und wandern
+mit. Wer hier eine offene Scheibe sucht, findet keine; wer den Testknopf sucht, findet
+ihn unter "## Die dreizehnte Scheibe — DER TESTKNOPF (VERSCHOBEN)" samt Begründung.
+
+**DIE PHASENFRAGE IST DAMIT BEANTWORTET.** Das Protokoll der zwölften Scheibe hat sie
+als Widerspruch (3) offengelassen: "Zweck erreicht" gilt für die STRUKTUR, nicht für
+den in der Roadmap aufgezählten UMFANG (TikTok, Google, Pinterest, LinkedIn,
+Custom-Pixel, Testmodus-Modul). **DIE ANTWORT DES OWNERS, 2026-08-10: Die weiteren
+Fan-Out-Ziele bleiben NICHT in dieser Phase.** Sie gehen in dieselbe neue Sitzung wie
+der Testknopf. **Die Auflage aus dem Stempel weiter unten — die Entscheidung muss VOR
+Schritt 2 des Phasenende-Verfahrens fallen — ist damit erfüllt, nicht entfallen.** Die
+Antwort ist zusätzlich AN JENEM WIDERSPRUCH selbst vermerkt, damit sie nicht nur hier
+im Kopf steht.
+
+**WAS DAS FÜR DAS PHASENENDE HEISST:** Die drei Schritte (Hebung, Roadmap-Haken,
+Historien-Datei plus Löschen dieser Datei) sind ab jetzt fällig; es steht keine Scheibe
+mehr aus, auf die zu warten wäre.
 
 **WAS DAS FÜR DIE PHASE BEDEUTET, und es ist mehr als eine Zahl: DER ZWECK, FÜR DEN
 PHASE 11 ERÖFFNET WURDE, IST ERREICHT.** Ein zweites Ziel sendet — nicht als Attrappe,
@@ -8864,10 +8886,22 @@ Auftragstext:**
    deren eigene Zeile mehr verspricht, als sie geliefert hat. **Fachlich stimme ich zu:**
    ein zweites Ziel, das sendet, ist die Struktur; jedes weitere ist eine Wiederholung
    desselben Handgriffs, kein neues Fundament.
+   **BEANTWORTET AM 2026-08-10 (OWNER-ENTSCHEIDUNG), hier vermerkt statt nur im Kopf:
+   DIE WEITEREN FAN-OUT-ZIELE BLEIBEN NICHT IN DIESER PHASE.** Sie gehen in dieselbe
+   neue Sitzung wie der verschobene Testknopf. **Der Widerspruch ist damit erledigt und
+   wird NICHT gestrichen:** Er hat die Entscheidung ausgelöst, und ohne ihn stünde hier
+   nur ein Haken. **Was er verlangt hat, ist eingetreten** — die Entscheidung ist
+   ausdrücklich gefallen, VOR dem Roadmap-Haken, nicht nebenbei mit ihm.
 
 ---
 
-## Die dreizehnte Scheibe — DER TESTKNOPF (Platzhalter)
+## Die dreizehnte Scheibe — DER TESTKNOPF (VERSCHOBEN)
+
+**ÜBERSCHRIFTEN-STEMPEL, 2026-08-10:** Der Zusatz „(Platzhalter)" ist durch
+„(VERSCHOBEN)" ersetzt. **Der ZWECK-Satz und die drei Auflagen bleiben wörtlich
+stehen** — sie sind entschieden und werden in der neuen Sitzung NICHT neu verhandelt.
+**VERSCHOBEN HEISST NICHT GESTRICHEN**: Was hier steht, wandert vollständig mit; was
+sich ändert, ist der ORT des Baus, nicht sein Gegenstand.
 
 **ZWECK:** Der Betreiber kann prüfen, ob hinterlegte Zugangsdaten gültig sind, statt
 es aus einer Anzeige zu schliessen, die nur sagt, dass eine Geheimnis-Zeile
@@ -8919,6 +8953,152 @@ nicht bei null anfängt:**
   (`${config.name} speichern` / `${config.name} entfernen`, mit zwei Tests auf die
   Eindeutigkeit). **Die Projektregel dazu gilt unverändert; sein Zuschnitt muss sie
   einlösen, nicht neu entdecken.**
+
+### Die Aufklärung zum TESTKNOPF — was er WIRKLICH braucht
+
+**PROVENIENZ: am Code gemessen am 2026-08-10, READ-ONLY.** Sie ist eine
+CODE-MESSUNG; die Verschiebung darunter ist eine OWNER-ENTSCHEIDUNG desselben Tages.
+**BEIDES IST GETRENNT ZU LESEN** — die Messung sagt, was da ist; die Entscheidung
+sagt, was damit geschieht.
+**SIE STEHT HIER, WEIL SIE SONST NUR IM GESPRÄCHSVERLAUF EXISTIERT** — dieselbe Figur,
+die diese Phase bereits zweimal protokolliert hat. **Wer die Scheibe in einer neuen
+Sitzung aufgreift, fände sonst eine Verschiebung ohne ihren Grund.**
+
+**(a) DIE VIER FEHLANZEIGEN.** Keine davon ist eine Vermutung; jede ist eine
+formale Suche über `src/`:
+- **KEIN LESEPFAD (Owner-Sitzung, Projekt, Ziel) → GEHEIMNIS.** Die `secret`-Spalte
+  hat im gesamten Produktivcode **genau einen** Leser: `getCapiConfigByTrackingKey`
+  (`capi/token.ts`, `import "server-only"`). Er autorisiert über den **`trackingKey`**,
+  nicht über die Sitzung. Die einzigen Server-Aktionen, die `project_secrets`
+  anfassen, sind `setCapiToken` und `removeCapiToken` (schreibend) sowie
+  `listConfiguredTargets` — und letztere liest **ausschliesslich die `target`-Spalte**,
+  nie `secret`.
+- **KEIN RÜCKKANAL AUS DEN ADAPTERN.** `forwardToMeta` und `forwardToPinterest` geben
+  beide `Promise<void>`. Der Ausgang wird protokolliert, nicht zurückgegeben
+  (Vertragssatz 3 im Kopf von `pinterest-forward.ts`). Die Funktionen, die den Ausgang
+  überhaupt kennen — `evaluateSuccessBody`, `describeErrorBody`, `describeMetaError`,
+  `sanitizeProviderText` — tragen **kein `export`**.
+- **KEIN AUFRUF OHNE VOLLSTÄNDIGES PAAR.** `getCapiConfigByTrackingKey` liefert ein
+  Ziel nur, wenn Kennung UND Geheimnis vorliegen. Ein Knopf soll aber gerade prüfen
+  können, bevor alles steht. **Ob das gewollt ist, ist am Code nicht entscheidbar** —
+  es ist eine Entscheidung, keine Messung.
+- **KEINE MASKIERUNG IN RICHTUNG CLIENT.** Es existiert **eine** echte Bereinigung,
+  `sanitizeProviderText` — modul-privat in `pinterest-forward.ts`, und sie schreibt
+  ins **Log**, nicht an einen Aufrufer.
+
+**(b) DIE BEDINGUNG WAR VON ANFANG AN FALSCH BENANNT.** Entscheidung (3) der sechsten
+Scheibe knüpfte den Knopf an *„Er braucht Adapter, die es hier nicht gibt — er gehört
+in die SIEBTE Scheibe."* **BEIDE ADAPTER EXISTIEREN SEIT DER ZEHNTEN UND ZWÖLFTEN, UND
+ER IST KEINEN SCHRITT NÄHER.** Was ihm fehlt, sind die vier Fehlanzeigen aus (a) —
+**und keine davon hätte die siebte Scheibe mitgebracht.**
+**DER OWNER FÜHRT DEN FEHLER AUF SICH ZURÜCK.** Die Aufzeichnung dazu, weil sie mehr
+trägt als eine Zuschreibung: Die Bedingung war zu einem Zeitpunkt formuliert, an dem
+**gar kein** Adapter existierte — sie beschrieb damit etwas, das zufällig auch fehlte,
+statt das, was fehlt. **DIE ÜBERTRAGBARE FORM: Eine Bedingung, die eine Scheibe an
+eine andere hängt, muss benennen, was der Gegenstand BRAUCHT — nicht, was zur selben
+Zeit gerade sonst noch aussteht.** Sonst gilt sie als erfüllt, sobald das Zufällige
+erledigt ist, und die Scheibe sieht baubar aus, ohne es zu sein.
+
+**(c) EIN KNOPFDRUCK ERZEUGT BEIM ERSTEN ANBIETER EIN ECHTES EREIGNIS IN DEN DATEN DES
+KUNDEN.** Gemessen: Beide Testmodi sind **globale Betriebsschalter der Instanz**, keine
+Eigenschaft eines Aufrufs — `META_TEST_EVENT_CODE` (`capi/config.ts`, wandert in
+`payload.test_event_code`) und `PINTEREST_TEST_MODE` (gelesen in `testModeQuery`,
+hängt `?test=true` an). **Den einen zu setzen legte den Verkehr ALLER Projekte dieser
+Instanz in den Test-Tab**; bei Meta hängt an derselben Variable zusätzlich der
+Dev-Dummy der IP in `resolveClientIp` — sie hat **zwei** Wirkungen.
+**OHNE IHN LANDET EIN ERFUNDENES EREIGNIS IN DER AUSWERTUNG, AN DER DER BETREIBER
+SEINE ANZEIGEN OPTIMIERT.** `forwardToMeta` baut eine vollständige Nutzlast mit
+`event_name`, `event_id` und `action_source: "website"`.
+**DAS IST KEIN AUFWANDS-BEFUND: Ein Knopf, der die Daten des Kunden verschmutzt, ist
+schlechter als kein Knopf.**
+**PRÄZISIERUNG, DIE DAZUGEHÖRT und die Aussage nicht abschwächt, sondern verortet:**
+Das gilt, **solange der Aufruf ein EREIGNIS ist**. Es ist damit keine Eigenschaft des
+Knopfes an sich, sondern die Folge der VORFRAGE unten — welcher Aufruf überhaupt
+gewählt wird. **Ein Anbieter-Endpunkt, der Zugangsdaten ohne Ereignis prüft, hätte
+diese Folge nicht; ob es ihn gibt, steht im Repo nirgends und ist am Code nicht
+entscheidbar.**
+
+**(d) DIE MASKIERUNG IN RICHTUNG CLIENT EXISTIERT FÜR DEN ERSTEN ANBIETER GAR NICHT.**
+`describeMetaError` gibt Metas `message` **unbereinigt** aus und schreibt im
+Nicht-JSON-Fall `text.slice(0, 200)`; der Kopf von `pinterest-forward.ts` nennt das
+ausdrücklich *„die BREITERE der beiden Öffnungen"* und wandert bewusst nicht mit.
+**DAS IST DERSELBE GEGENSTAND, DER SEIT DEM 2026-08-10 ALS TIER 1 IM MANIFEST STEHT**
+("META-FEHLERLOG SPIEGELT DAS ZUGANGSDATUM ZURÜCK", BINDET-AN: das erste Projekt mit
+hinterlegtem Zugangsdatum). Auflage (iii) verlangt maskierten Fremdtext in Richtung
+Client — **heute gibt es Maskierung nur für EINEN der beiden Anbieter, nur in Richtung
+LOG, und nur modul-privat.**
+
+**(e) DIE SERVER-AKTIONEN, DIE HEUTE EINEN AUSGEHENDEN AUFRUF MIT EINEM GEHEIMNIS
+AUSLÖSEN, BENUTZEN UNSER GEHEIMNIS.** `addCustomDomain`, `checkDomainStatusAction`
+und `removeCustomDomainAction` erreichen über `register.ts` / `status.ts` /
+`remove.ts` den `vercel/client.ts` mit `process.env.VERCEL_API_TOKEN` — einem
+projekt-gebundenen Least-Privilege-Token von UNS.
+**BEIM KNOPF REISTE DAS GEHEIMNIS DES KUNDEN. Das ist die nächste Verwandte, und der
+Unterschied ist der Befund.**
+**KORREKTUR ZUR ZAHL, und sie stammt aus dieser Runde:** In der Aufklärung waren es
+**vier** — `listProjectDomains` war mitgezählt. **Am Code nachgeprüft: sie ruft Vercel
+NICHT**, sie liest ausschliesslich die `domains`-Tabelle. **ES SIND DREI.**
+
+**(f) FÜR ZIEL- UND GEHEIMNIS-AKTIONEN GIBT ES HEUTE KEINE HÄUFIGKEITSGRENZE UND KEINE
+SPUR.** Beides existiert **nur** auf dem Domain-Pfad: `RATE_LIMIT_PER_HOUR = 5` in
+`register.ts` und `remove.ts`, gezählt über `countRecentAttempts` gegen `audit_logs`,
+**action-spezifisch** (`"domain_add_attempt"` gegen `"domain_remove"`, damit ein
+Budget das andere nicht aufzehrt), mit `writeAuditLog` aus einem `finally`.
+**`setCapiToken`, `removeCapiToken` und `listConfiguredTargets` tragen weder ein
+Rate-Limit noch einen Audit-Eintrag.** Das OWNERSHIP-Gate dagegen ist überall
+vorhanden und einheitlich — inklusive der harten Invariante „Admin-Client erst NACH
+dem Gate".
+
+**(g) DIE FLÜCHTIGKEIT IST BEREITS GEBAUT, ohne dass jemand sie für den Knopf gebaut
+hätte.** Die fünf Zustände von `TargetCard` (`input`, `status`, `error`, `confirming`,
+`removing`) leben im **Mount**, und der endet an zwei Grenzen: Projektwechsel über den
+`key` und Abbau des Drawers. Der Kopf jener Datei sagt es wörtlich: *„Hier löst der
+Mount das Aufräumen."* **Ein sechster lokaler Zustand erbt das, ohne dass etwas gebaut
+werden müsste.**
+**WAS FEHLT, IST DIE ZUSICHERUNG, DASS DAS ERGEBNIS NIRGENDS SONST LANDET.** Heute
+tragen zwei Rückrufe (`onCredentialsSaved`, `onCredentialsRemoved`) bewusst Werte nach
+oben — **ein dritter bräche Auflage (ii).**
+
+**(h) EINE NAHT ZUM PRÜFEN, kein Fehler.** Der Wortlaut-Wächter in
+`TargetCard.test.tsx` verbietet über den GESAMTEN Kartentext u.a. **„verbunden"**; die
+vorgeschriebene Erfolgsmeldung aus Auflage (i) lautet **„Verbindung & Token gültig"**.
+**GEMESSEN: Er schlüge NICHT an** — die Prüfung ist ein `toLowerCase().includes(...)`,
+und „verbunden" ist in „Verbindung" nicht enthalten (gegengeprobt). **ES IST ALSO KEIN
+KONFLIKT, SONDERN EINE STELLE, AN DER SPÄTER JEMAND STOLPERT:** zwei Wörter desselben
+Stamms, von denen eines verboten und das andere vorgeschrieben ist. **Wer die
+Verbotsliste je um eine Wortstamm-Prüfung schärft, macht die vorgeschriebene Meldung
+unzulässig, ohne es zu merken.**
+
+### Die Verschiebung — OWNER-ENTSCHEIDUNG, 2026-08-10
+
+**SIE WIRD NICHT GEBAUT UND NICHT GESTRICHEN.** Sie wandert in eine EIGENE SITZUNG,
+zusammen mit den weiteren Fan-Out-Zielen.
+**DIE BEGRÜNDUNG IST ARCHITEKTONISCH, NICHT TERMINLICH** — und sie steht vollständig
+hier, damit niemand sie später für ein Vertagen aus Zeitmangel hält:
+
+- **ER IST KEINE SCHEIBE.** Die Aufklärung oben zählt **FÜNF einzeln beweisbare
+  Teile** — der Lesepfad, der Rückkanal, die Maskierung in Richtung Client, die
+  Oberfläche samt Knopf und Zuständen, und die eine Aussage, die er macht — **plus
+  eine VORFRAGE, die keine Bau-Einheit ist: WAS überhaupt aufgerufen wird.** Ohne
+  ihre Antwort hat kein Zuschnitt einen Gegenstand.
+- **ER BRAUCHT EINGRIFFE IN BEIDE ADAPTER** — einen Rückkanal **und** einen Testmodus
+  je Aufruf. Beide sind heute genau nicht so gebaut (s. (a) und (c)).
+- **UND DER META-ADAPTER MUSS OHNEHIN ANGEFASST WERDEN**, für den Tier-1-Befund aus
+  (d). **Den Knopf jetzt zu bauen hiesse, dieselbe Datei ZWEIMAL zu öffnen, in zwei
+  Sitzungen, mit einer offenen Sicherheitssache dazwischen.**
+- **ZUSAMMEN IST ES BILLIGER UND SICHERER: erst der Leak, dann der Rückkanal, dann der
+  Knopf.**
+
+**WAS MITWANDERT UND WÖRTLICH STEHENBLEIBT: die drei Auflagen aus der sechsten
+Scheibe** — (i) der Name und die Meldung, (ii) die Flüchtigkeit, (iii) die neutrale,
+maskierte Rückmeldung. **Sie sind entschieden und werden in der neuen Sitzung NICHT
+neu verhandelt.** Ebenso wandern mit: die vier gemessenen Befunde oben und die
+Aufklärung dieser Runde.
+
+**WAS DIE VERSCHIEBUNG NICHT ENTSCHEIDET, ausdrücklich:** die Vorfrage. Welcher Aufruf
+gewählt wird — ein Rückkanal aus den bestehenden Adaptern, ein eigener Prüf-Aufruf je
+Anbieter, oder ein anbieter-eigener Endpunkt ohne Ereignis — **ist offen und war
+schon in der Aufklärung als nicht am Code entscheidbar markiert.**
 
 ---
 

@@ -1266,3 +1266,351 @@ miterledigen, sondern gebündelt abarbeiten.
   "Session-Analyse-Werkzeuge auf Kundenseiten" — dort steht dieselbe Messung als
   Begründung dafür, dass ein Custom-Script-Feld Schadensbegrenzung wäre und
   keine neue Fähigkeit.
+
+- DIE WURF-LÜCKE IN `__psConsent` — VOM OWNER ALS DRINGEND EINGESTUFT
+  STATUS: OFFEN (am Code gemessen 2026-08-06, beobachtbar am Code, NICHT live
+  gesehen). HERKUNFT: Aufklärung zur fünften Scheibe der Phase 11; in der
+  Aufklärung zur neunten BESTÄTIGT, nicht neu gefunden.
+  BEFUND: Der `try` in `buildConsentRuntime` umschliesst nur den Hook-AUFRUF. Ein
+  werfender `window`-Accessor oder ein werfender Getter beim Schlüssel-Zugriff läuft
+  ungebremst durch `__psMetaFire` in den Klick-Handler des Wirings. KEIN TEST DECKT
+  DAS AB.
+  WAS VERLORENGEHT, IST NICHT IN ALLEN FÄLLEN DASSELBE — und die teurere Hälfte ist
+  die unauffälligere: Bei einem `<a>` im Export-Modus ist die Ziel-URL zusätzlich ins
+  `href` gebacken; fällt der Handler aus, unterbleibt auch sein `preventDefault`, und
+  der Browser navigiert NATIV zur richtigen Adresse — der Besucher merkt nichts. Bei
+  einem NICHT-Anker (`<button>`, `<div>`) gibt es kein `href`; dort ist der Redirect
+  VOLLSTÄNDIG weg, und der Besucher klickt ins Leere. Das sähe wie ein sporadischer
+  Defekt der Kundenseite aus.
+  ERSTER SCHRITT: den Riegel um den Schlüssel-Zugriff ziehen, nicht nur um den
+  Aufruf — und den Nicht-Anker-Fall als Testfall bauen, nicht den Anker-Fall.
+  BEZUG: docs/claude-history/phase-11-multi-tracking.md, "## Das beschlossene
+  Consent-Modell".
+
+- DER CONSENT-HOOK WIRD BEIM ERSTEN ERLAUBTEN KLICK ZWEIMAL GEFRAGT
+  STATUS: OFFEN (am Code gemessen 2026-08-06). HERKUNFT: Aufklärung zur fünften
+  Scheibe der Phase 11.
+  BEFUND: Einmal in `__psMetaFire`, einmal in `__psMetaInit` — ohne dass das Ergebnis
+  gemerkt wird. HEUTE FOLGENLOS, weil beide Fragen im selben synchronen Aufruf liegen
+  und ein deterministischer Hook zweimal dasselbe sagt.
+  WARUM ER TROTZDEM STEHT: Es wird mit jedem weiteren Ziel mehr, und ein
+  Betreiber-Hook ist FREMDER Code, über dessen Determinismus wir nichts wissen.
+  NACHTRAG (2026-08-07): Der Bau der sechsten Scheibe hat die Zahl NICHT erhöht — das
+  Urteil wird dort gehoben statt neu erfragt, und ein zählender Wächter hält es fest.
+  Der Kandidat beschreibt unverändert die ZWEI Aufrufe, die es schon vorher gab.
+
+- DER BETREIBER ERFÄHRT NICHT, DASS EIN NEUES ZIEL ERST NACH DEM REPUBLISH WIRKT
+  STATUS: OFFEN (Anstoss vom Owner-Gegenüber, 2026-08-07). HERKUNFT: Zuschnitt der
+  sechsten Scheibe der Phase 11.
+  DER MECHANISMUS, und er folgt zwingend aus der Consent-Entscheidung: Ein
+  VORHANDENES Draht-Feld ohne den neuen Schlüssel ist ein VERBOT. Eine Seite, die vor
+  der Einführung eines Ziels publiziert wurde, trägt das Feld — aber ohne dessen
+  Schlüssel. Sie bekommt für das neue Ziel nie einen Forward, bis sie neu
+  veröffentlicht wird. Der Betreiber richtet das Ziel ein, sieht "Zugangsdaten
+  hinterlegt", und es passiert nichts.
+  ES IST KEIN FEHLER DES VERHALTENS: Die Alternative wäre, ein Ziel zu beliefern, zu
+  dem der Besucher nie gefragt wurde. FEHLEND IST NICHT DAS VERHALTEN, SONDERN DIE
+  MITTEILUNG.
+  DIESELBE FEHLERKLASSE wie "Track-Aktion ohne Pixel-ID" und "der Consent-Hook, den
+  niemand kennt": eine unsichtbare Bedingung mit stillem Ausfall.
+  BEZUG: derselbe Sachverhalt trägt im Live-Test der zwölften Scheibe den
+  PFLICHT-STOPP — s. docs/claude-history/phase-11-multi-tracking.md, "## Der Einstieg
+  für die nächste Sitzung", Auflage 6.
+
+- DIE NAMENSKOLLISION IM PRODUKT — DIE PROJEKTREGEL IST BEREITS VERLETZT
+  STATUS: OFFEN (am Code gemessen 2026-08-07). HERKUNFT: Aufklärung zur sechsten
+  Scheibe der Phase 11, Hälfte A.
+  BEFUND: "Entfernen" trägt ZWEI verschiedene Bedienelemente (CAPI-Token und
+  Domain-Zeile), "Ja, entfernen" sogar DREI (Token, Domain, Variante B). Und BEIDE
+  Bereiche des Drawers stehen GLEICHZEITIG im DOM — der Reiterwechsel versteckt per
+  Klasse, er hängt nicht aus. Die Mehrdeutigkeit ist heute nur deshalb latent, weil
+  keine Test-Vorrichtung Token und Domain gleichzeitig setzt.
+  DIE PROJEKTREGEL SAGT: "ZWEI BEDIENELEMENTE MIT GLEICHEM NAMEN UND VERSCHIEDENER
+  WIRKUNG SIND EIN OBERFLÄCHEN-PROBLEM, KEIN TESTPROBLEM." Sie ist verletzt,
+  unabhängig von jener Scheibe. Der Fund entstand nur, weil eine Zählung nach "wählt"
+  und "prüft" getrennt hat.
+
+- ES GIBT KEINE GESTALTERISCHEN PRIMITIVE, OBWOHL EINE PROJEKTREGEL SIE VERLANGT
+  STATUS: OFFEN (am Code gemessen 2026-08-07). HERKUNFT: Aufklärung zur sechsten
+  Scheibe der Phase 11, Hälfte A.
+  BEFUND: Root-CLAUDE.md, UX-Prinzipien, verlangt "wiederverwendbare Primitive
+  (Button, Panel, Badge) statt copy-paste-Styles". Gemessen: KEINE EINZIGE. Jede
+  Karte, jeder Knopf und jeder Statustext wiederholt seine Klassenkette.
+  MIT JEDER WEITEREN KARTE WÄCHST DER PREIS DIESES FEHLENS.
+
+- DER NACHZÜGLER-BEFUND AN DEN ÜBRIGEN HANDLERN IST NICHT AUSGEZÄHLT
+  STATUS: OFFEN (Lücke der Aufklärung vom 2026-08-07, ausdrücklich als solche
+  benannt). HERKUNFT: Aufklärung zur sechsten Scheibe der Phase 11, Hälfte A.
+  BEFUND: Für den Token-Pfad ist die Nachzügler-Figur gelöst (der Rückruf trägt die
+  Projekt-Kennung, auf die er sich bezieht). WELCHE ANDEREN HANDLER DIESELBE FIGUR
+  TRAGEN, IST NICHT AUSGEZÄHLT WORDEN — gemessen ist allein der Token-Pfad.
+  DAS STEHT HIER ALS LÜCKE, NICHT ALS VOLLSTÄNDIGKEITS-BEHAUPTUNG.
+  ERSTER SCHRITT: die Handler auszählen, die einen asynchronen Rückruf in
+  projekt-gebundenen Zustand schreiben.
+
+- DIE ABLEITUNG MACHT EINEN FEHLSCHLAG NICHT VON LEERE UNTERSCHEIDBAR
+  STATUS: OFFEN (beim Bau am 2026-08-07 gefunden). HERKUNFT: sechste Scheibe der
+  Phase 11, Hälfte B.
+  BEFUND: `listConfiguredTargets` gibt bei JEDEM Fehler `[]` zurück; die Karte kann
+  daraus nicht lesen, ob nichts hinterlegt ist oder ob die Abfrage scheiterte.
+  WO DIE ÄNDERUNG LIEGT: in `src/app/projects/actions.ts`, NICHT in der Karte. Wer
+  sie in der Karte versucht, baut einen Notbehelf, der rät.
+  ERST DANN könnte die Karte einen vierten Zustand ehrlich zeigen.
+
+- DAS ZURÜCKSETZEN DER MOCK-ABLAGE IN DER GANZEN TESTBASIS
+  STATUS: OFFEN (beim Bau am 2026-08-07 gefunden, in Phase 11 mehrfach real
+  eingetreten). HERKUNFT: sechste Scheibe der Phase 11, Hälfte B.
+  BEFUND: `vi.clearAllMocks()` im `afterEach` leert WEDER die `...Once`-Warteschlange
+  NOCH bleibende Implementierungen — beide Richtungen sind real aufgetreten. In der
+  elften Scheibe hat ein unverbrauchter Once-Wert aus einem abgebrochenen Test zwei
+  fremde Tests rot gemacht (die KASKADE, s. Root-CLAUDE.md, Lektion (g) an
+  "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE").
+  DER NAHELIEGENDE UMBAU AUF `resetAllMocks` IST KEIN EINZEILER: Er nähme jeden
+  Default aus den Mock-Fabriken mit, und genau auf diesen Defaults ruhen die
+  Bestandstests. EIGENE RUNDE MIT EIGENEM NACHWEIS.
+
+- DER TESTDATEI `CodeImporter.test.tsx` FEHLT DER WARN-KOMMENTAR IHRER SCHWESTER
+  STATUS: OFFEN (am Code gemessen 2026-08-10). HERKUNFT: Bau der elften Scheibe der
+  Phase 11.
+  BEFUND: Ihr `afterEach` ruft `cleanup()` und `vi.clearAllMocks()`; `TargetCard.test.tsx`
+  trägt an derselben Stelle den Warnkommentar dazu, `CodeImporter.test.tsx` nicht.
+  WAS DEN KANDIDATEN SCHARF MACHT — es ist nicht die eine Mutation: Jene Tests würden
+  von JEDEM frühen Abbruch im Vorgänger rot, unabhängig von der Ursache. Ein späterer
+  Leser sieht mehr rote Tests und schliesst auf eine breitere Wirkung, als es sie gibt.
+  ERSTER SCHRITT (der billigere von zweien): den Warnkommentar übernehmen. Der zweite
+  wäre ein Verbrauchs-Nachweis für die Warteschlange.
+  BEZUG: derselbe Gegenstand wie der Eintrag darüber, aus anderer Richtung.
+
+- DIE KARTE TRÄGT ZWEI FELDER MIT VERSCHIEDENEM SPEICHERVERHALTEN UND ERKLÄRT ES NICHT
+  STATUS: OFFEN (im Betrieb am 2026-08-07 gefunden). HERKUNFT: sechste Scheibe der
+  Phase 11, Hälfte B.
+  BEFUND: Die öffentliche Kennung (Pixel-/Konto-ID) wandert in den Einstellungs-Blob
+  und wird erst mit dem globalen Speichern-Knopf persistiert; die Zugangsdaten gehen
+  SOFORT über eine eigene Server-Aktion in die Geheimnis-Tabelle. Zwei Felder,
+  äusserlich gleich, mit verschiedener Wirkung beim Verlassen der Seite.
+  HEUTE STEHT KEIN WORT DAZU AUF DER KARTE.
+
+- EIN AKKORDEON FÜR DIE ZIEL-KARTEN, WENN ES MEHR ALS ZWEI WERDEN
+  STATUS: OFFEN, IDEE MIT PREIS (2026-08-07). HERKUNFT: sechste Scheibe der Phase 11,
+  Hälfte B.
+  DER PREIS GEHÖRT IN DENSELBEN SATZ WIE DIE IDEE: Eingeklappt verschwindet der
+  Status. Die eingeklappte Zeile müsste ihn MITFÜHREN, sonst nimmt das Akkordeon der
+  Karte ihren Zweck — der Betreiber öffnete sie nur, um zu sehen, was vorher auf
+  einen Blick dastand.
+
+- `getMetaPixelId` HAT KEINEN AUFRUFER MEHR, UND IHR KOPFKOMMENTAR BEGRÜNDET EINEN
+  ZUSTAND, DEN ES NICHT MEHR GIBT
+  STATUS: OFFEN (am Code gemessen 2026-08-08). HERKUNFT: Bau der siebten Scheibe der
+  Phase 11.
+  BEFUND: Die Auflösung ist auf `getPixelId` (ziel-parametrisiert) umgestellt; die
+  alte Einzelfunktion blieb stehen. Ein dritter Fund an derselben Stelle: auch
+  Kommentare in der Umgebung beschreiben den abgelösten Zustand.
+  ERSTER SCHRITT: prüfen, ob sie ausser in Tests noch gelesen wird — dann entfernen
+  oder ihren Kopf richtigstellen.
+
+- EINIGE TESTTITEL UND KOMMENTARE TRAGEN NOCH DEN ALTEN FELDNAMEN
+  STATUS: OFFEN (am Code gemessen 2026-08-08). HERKUNFT: Bau der siebten Scheibe der
+  Phase 11.
+  WARUM SIE STEHENBLIEBEN: Einen Testnamen zu ändern ginge über "nur die Vorrichtung
+  anfassen" hinaus, und die Runde durfte das nicht.
+  EINORDNUNG: reine Lesbarkeit, kein Verhaltensrisiko — aber ein Testtitel, der einen
+  Feldnamen nennt, den es nicht mehr gibt, kostet beim nächsten Suchen Zeit.
+
+- VIER KOMMENTARSTELLEN IN ZWEI DATEIEN SIND ÜBERHOLT, PLUS EINE NAMENSFRAGE
+  STATUS: OFFEN (am Code gemessen 2026-08-08). HERKUNFT: Bau der achten Scheibe der
+  Phase 11.
+  BEFUND: Alle vier stammen aus derselben Ursache — der Beacon hing bis dahin
+  INNERHALB von Metas Gate, und die Kommentare beschreiben diese Kopplung noch.
+  DIE NAMENSFRAGE DAZU: Zwei Symbole tragen Meta im Namen und decken eine Rolle ab,
+  die nicht mehr Meta-spezifisch ist. EIN GEGENSTAND, EINE EIGENE RUNDE — wer nur die
+  Kommentare anfasst und die Namen stehen lässt, hat die Hälfte gemacht.
+
+- DIE STEIGENDE, FALSCHE VERLUSTRATE
+  STATUS: OFFEN (am Code gemessen 2026-08-08). HERKUNFT: Bau der achten Scheibe der
+  Phase 11.
+  BEFUND: Ein Projekt, das einmal einen Zustand erreicht hat, in dem
+  Server-Beobachtungen ohne zugehörige Browser-Bestätigung anfallen, zeigt eine
+  Adblocker-Verlustrate, die STEIGT, ohne dass ein Adblocker im Spiel wäre.
+  ER ENTSTEHT NICHT DURCH JENE SCHEIBE, WIRD VON IHR ABER SICHTBAR.
+  WARUM ER HIER ZÄHLT: Die Verlustrate ist die Marquee-Metrik des Produkts. Eine
+  Zahl, die aus dem falschen Grund steigt, ist teurer als eine fehlende.
+  BEZUG: Root-CLAUDE.md, "WORTWAHL DASHBOARD 'NUR server-seitig erfasst', NIEMALS
+  'gerettet'" — dieselbe Achse der Produkt-Ehrlichkeit.
+
+- DER ARRAY-RIEGEL EXISTIERT IM SERVER-LESER, NICHT IN DER BROWSER-REGEL
+  STATUS: OFFEN (am Code gemessen 2026-08-08). HERKUNFT: Aufklärung zur neunten
+  Scheibe der Phase 11, Hälfte B.
+  BEFUND: Der server-seitige Leser weist ein Array als Signal-Form ab; die im Browser
+  erzeugte Regel tut das nicht in derselben Schärfe. Zwei Leser derselben Eingabe mit
+  verschiedener Strenge.
+  EINORDNUNG: Kein bekannter Fall, in dem es heute auseinanderläuft — die
+  Kennzeichnung ist Teil der Aussage.
+
+- DER DECKELWERT IST MODUL-PRIVAT UND VON AUSSEN NICHT LESBAR
+  STATUS: OFFEN (am Code gemessen 2026-08-08, seit 2026-08-10 EINGETRETEN).
+  HERKUNFT: Aufklärung vom 2026-08-08 zur Auflösung, Phase 11.
+  BEFUND, ALS ER GESCHRIEBEN WURDE: `META_FORWARD_TIMEOUT_MS` trägt kein `export`.
+  Bekäme ein zweiter Empfänger seinen eigenen Wert, existierten zwei unabhängige
+  Zahlen für dieselbe Frage — und KEIN Test kann ihre Divergenz bemerken, weil keine
+  Stelle sie je nebeneinander sieht.
+  WAS SICH SEITHER GEÄNDERT HAT: Der zweite Empfänger existiert.
+  `PINTEREST_FORWARD_TIMEOUT_MS` steht ebenfalls auf 3_000 und ebenfalls modul-privat.
+  DER KANDIDAT WAR EINE VORHERSAGE UND IST JETZT EIN ZUSTAND.
+  EIN TEST UNTERSTELLT DIE GLEICHHEIT BEREITS FAKTISCH (`T14` in
+  `src/lib/capi/fan-out.test.ts`) und ist dort entsprechend beschriftet: Wird er rot,
+  heisst das ZUERST "einer der beiden Deckel hat sich bewegt".
+  ES IST DIESELBE KLASSE wie das `asString`-Duplikat, nur eine Ebene gefährlicher:
+  Ein divergenter TEXT fällt beim Lesen auf, eine divergente ZAHL nicht.
+
+- DAS ZIEL-VOKABULAR HAT MEHRERE UNABHÄNGIGE KOPIEN, EINE DAVON AUSSERHALB JEDER
+  PRÜFUNG
+  STATUS: OFFEN (am Code gemessen 2026-08-08, fortgeschrieben 2026-08-10).
+  HERKUNFT: Aufklärung vom 2026-08-08 zur Auflösung, Phase 11.
+  GEMESSEN: `META_TARGET` (server-only), `META_CONSENT_TARGET` (client-erreichbar),
+  `TRACKING_TARGETS` (client-erreichbar) und der CHECK der Geheimnis-Tabelle. Seit
+  der zwölften Scheibe kommt `PINTEREST_TARGET` in `src/lib/capi/ingest.ts` dazu, seit
+  der sechsten `TARGET_CARDS.hasAdapter`.
+  "UNABHÄNGIG" HEISST PRÄZISE: eine Änderung an einer macht die anderen nicht rot. Die
+  übrigen Fundstellen sind TYP-GEBUNDEN an `TRACKING_TARGETS` — ein Tippfehler dort
+  bricht den Build und zählt nicht mit.
+  DIE GEFÄHRLICHE IST DER CHECK: Er hat keinen Compiler und keinen Test und kann gegen
+  alle anderen driften, ohne dass irgendetwas rot wird. Ein Geheimnis unter einem
+  verschriebenen Zielwert liesse sich speichern, der Adapter suchte den richtigen,
+  fände nichts, und das Ziel bliebe STILL inaktiv.
+  DER KANDIDAT IST AUSDRÜCKLICH NICHT "die Kopien zusammenlegen": Zwei von ihnen
+  tragen VERSCHIEDENE Vokabulare (Consent-Schlüssel gegen Zielwert der
+  Geheimnis-Tabelle), die heute nur zufällig gleich lauten. Verlangt ist eine
+  ENTSCHEIDUNG, ob sie dasselbe sein sollen — und ein Wächter für die SQL-Kopie, egal
+  wie sie ausfällt.
+  GEMESSEN UND DAZUGEHÖRIG: `src/lib/capi/token.ts` importiert bereits aus
+  `src/lib/settings.ts` — eine Ableitung der server-seitigen Kopie aus der Ziel-Liste
+  bräuchte KEINE neue Import-Kante. Umgekehrt geht es nicht: Die server-only-Datei ist
+  aus client-erreichbarem Code nicht importierbar, und der Verzicht auf diese Kante ist
+  im Ingest ausdrücklich BEGRÜNDET, nicht vergessen.
+
+- ZWEI TESTDATEIEN DECKEN BEACON UND BESTÄTIGUNG AB UND FÜHREN DEN ERZEUGTEN TEXT NIE AUS
+  STATUS: OFFEN (am Code gemessen 2026-08-08). HERKUNFT: Aufklärung zum Browser-Pfad,
+  Phase 11.
+  BEFUND: Sie prüfen ausschliesslich Zeichenketten — zusammen 22 Tests, kein einziger
+  Lauf des erzeugten Codes.
+  DIE FEHLERFIGUR: Ein Umbau, der den Rumpf SYNTAKTISCH ERHÄLT und SEMANTISCH
+  VERSCHIEBT, bleibt in einer Zeichenketten-Prüfung unsichtbar. Ein Wert, der aus einem
+  anderen Gültigkeitsbereich gelesen wird als vorher, sieht im Text identisch aus.
+  DIE ZAHL MIT IHRER ACHSE: Von 146 Text-Behauptungen dieser Ecke prüfen 103 die
+  ANWESENHEIT eines Bausteins, 43 seine ABWESENHEIT, und 49 führen den Text
+  tatsächlich aus — die Ausführungen liegen geschlossen in zwei ANDEREN Dateien.
+  GRENZE: über `toContain`/`toMatch` und die drei Ausführungs-Helfer ausgezählt; andere
+  Zusicherungsformen sind NICHT mitgezählt. Die Verhältnisse stimmen, die Absolutwerte
+  sind eine Untergrenze.
+  WAS ER NICHT VERLANGT: die beiden Dateien umzuschreiben. Er betrifft den REST — die
+  Zusicherungen, die weiterhin nur den Wortlaut prüfen.
+
+- ZWEI VERDICHTUNGEN TRAGEN DIESELBE UNTERÜBERSCHRIFT
+  STATUS: OFFEN (real aufgetreten 2026-08-08). HERKUNFT: Aufklärung zur Einwilligung
+  je Ziel, Phase 11.
+  BEFUND: Zwei verschiedene Verdichtungen sind unter derselben Unterüberschrift
+  abgelegt; ein Gate griff im Betrieb zur FALSCHEN.
+  WARUM DAS KEIN SCHÖNHEITSFEHLER IST: Eine Überschrift, die zweimal vorkommt, ist kein
+  Anker mehr — und die Projektregel zum haltbaren Anker (Symbolname statt Zeilennummer)
+  setzt Eindeutigkeit voraus.
+
+- KEIN TEST DECKT EINEN CONSENT-HOOK, DER VERSCHIEDEN ANTWORTET
+  STATUS: OFFEN (am Code gemessen 2026-08-08). HERKUNFT: Aufklärung zur Einwilligung
+  je Ziel, Phase 11.
+  BEFUND: Geprüft ist ein Hook, der wirft, und einer, der einen festen Wert liefert.
+  NICHT geprüft ist einer, der bei zwei Aufrufen VERSCHIEDEN antwortet — genau der
+  Fall, den der Doppelfrage-Kandibat weiter oben möglich macht.
+  BEZUG: Eintrag "DER CONSENT-HOOK WIRD BEIM ERSTEN ERLAUBTEN KLICK ZWEIMAL GEFRAGT" —
+  beide zusammen beschreiben denselben Riss aus zwei Richtungen.
+
+- DIE UMBENENNUNG DES ÖFFENTLICHEN FELDES
+  STATUS: OFFEN, MIT AUSDRÜCKLICHER ENTSCHEIDUNG DAGEGEN FÜR PHASE 11 (2026-08-10).
+  HERKUNFT: Aufklärung vom 2026-08-10, Phase 11.
+  BEFUND: Das öffentliche Feld heisst im Datenmodell nach Metas Vokabular, trägt aber
+  seit dem zweiten Ziel eine Grösse, die dort anders heisst.
+  WAS ENTSCHIEDEN IST: Das Feld BEHÄLT seinen Namen; ein Kommentar an der Fundstelle
+  trägt die Erklärung. Eine Umbenennung berührte Datenmodell, Server-Aktionen und
+  Oberfläche gleichzeitig.
+  DER EINTRAG STEHT HIER, DAMIT DIE ENTSCHEIDUNG AUFFINDBAR BLEIBT — nicht als Auftrag.
+
+- EINE EINGABE-PRÜFUNG FÜR OFFENSICHTLICH UNMÖGLICHE KENNUNGEN
+  STATUS: OFFEN (am Code gemessen 2026-08-10). HERKUNFT: Aufklärung zur Karte,
+  Phase 11.
+  BEFUND: Das öffentliche Kennungs-Feld hat KEINE Prüfung und KEINEN Fehlerkanal. Der
+  Betreiber kann jeden Text eintragen; der Adapter setzt ihn (kodiert) in den
+  Endpunkt-Pfad.
+  WAS ER AUSDRÜCKLICH NICHT IST: eine Zusicherung über die Gültigkeit des Kontos. Eine
+  Formatprüfung machte die ungeprüfte Stellenzahl aus dem Anbieter-Konto zur Bedingung
+  — das ist genau der Fehler, den der Adapter-Kommentar ausschliesst.
+  ERSTER SCHRITT: entscheiden, ob überhaupt geprüft wird, und wenn ja: nur auf
+  OFFENSICHTLICH Unmögliches (leer, Leerzeichen, Steuerzeichen), nicht auf Form.
+
+- KEIN TEST ÜBER DEN VOLLEN KREIS "EINGEBEN → SPEICHERN → NEU LADEN → WIEDERSEHEN"
+  STATUS: OFFEN (am Code gemessen 2026-08-10). HERKUNFT: Aufklärung zur Karte,
+  Phase 11.
+  BEFUND: Der volle Kreis ist im Live-Test der elften Scheibe EINMAL gefahren worden
+  und hat gehalten; ein TEST, der ihn hält, existiert nicht.
+  EINORDNUNG: Der Live-Test beweist den Kreis für EINEN Zeitpunkt. Was ihn gegen den
+  nächsten Umbau hält, wäre ein Test — und die Projektregel "ein grüner Test ist kein
+  Beleg, dass der Grund seiner Grünheit derselbe geblieben ist" zielt genau darauf.
+
+- DER ERSTE ADAPTER SETZT DIE KENNUNG OHNE KODIERUNG IN DEN PFAD
+  STATUS: OFFEN (am Code gemessen 2026-08-09). HERKUNFT: Bau der zehnten Scheibe der
+  Phase 11. ARBEITSVORRAT, NICHT POLISH — s. den Sammelvermerk am Ende dieser Gruppe.
+  BEFUND: `src/lib/capi/meta-forward.ts` setzt die Pixel-ID unkodiert in die URL; der
+  ZWEITE Adapter kodiert (`encodeURIComponent`). Der Kontrast ist der Grund, warum es
+  auffiel.
+  DAZU GEHÖRT: Das öffentliche Feld hat keine Eingabe-Prüfung (eigener Eintrag oben) —
+  der Wert ist owner-kontrolliert, nicht besucher-kontrolliert. GEMELDET: ob das
+  Sicherheitsbezug hat, ist NICHT entschieden und gehört ins Manifest-Gespräch, nicht
+  hierher.
+
+- BEIM ERSTEN ADAPTER LIEGT DER NUTZLAST-BAU VOR DEM `try`
+  STATUS: OFFEN (am Code gemessen 2026-08-09). HERKUNFT: Bau der zehnten Scheibe der
+  Phase 11. ARBEITSVORRAT, NICHT POLISH.
+  BEFUND: Die Zusage "wirft nie" ist beim ERSTEN Adapter nur FAKTISCH erfüllt — sie
+  hängt daran, dass der Body aus `JSON.parse` stammt und deshalb keine werfenden
+  Getter trägt, also an einer Eigenschaft des AUFRUFERS. Beim ZWEITEN hängt sie an der
+  ANORDNUNG (vor dem `try` steht keine Anweisung) und hält auch dann, wenn jemand
+  später eine Zeile ergänzt.
+  WARUM DAS ZÄHLT: Ein Wurf verliesse die Funktion, liefe durch das `await` des
+  Aufrufers und aus dem Handler heraus — statt der garantierten leeren 204 entstünde
+  ein 500, und der leakt den Gültigkeitszustand des trackingKeys an einen anonymen
+  Aufrufer.
+
+- DIE NEUTRALE DATEI FÜR DIE TRIMM-FUNKTION — JETZT FÄLLIG STATT HYPOTHETISCH
+  STATUS: OFFEN (am Code gemessen 2026-08-09). HERKUNFT: vorhergesagt im Protokoll der
+  vierten Scheibe der Phase 11, eingetreten mit der zehnten. ARBEITSVORRAT, NICHT
+  POLISH.
+  BEFUND: `asString` steht zeichengleich in `src/lib/capi/ingest.ts`,
+  `src/lib/capi/meta-forward.ts` und `src/lib/capi/pinterest-forward.ts`. KEIN TEST
+  SICHERT DIE GLEICHHEIT DER DREI.
+  DAS PROTOKOLL DER VIERTEN SCHEIBE HAT DIESEN MOMENT VORHERGESAGT: "Die dritte Kopie
+  kommt mit dem zweiten Ziel — und DANN wird die neutrale Datei richtig, weil aus zwei
+  Fällen drei werden und die Abstraktionsregel des Projekts sie deckt."
+  WAS SICH GEÄNDERT HAT: nicht die Sache, sondern ihr STATUS. Der Kandidat war eine
+  Vorhersage; er ist jetzt ein Zustand.
+
+- KEIN WÄCHTER HÄLT DEN ERZEUGTEN CONSENT-LAUFZEIT-TEXT GEGEN SEINE SPEZIFIKATION
+  STATUS: OFFEN (am Code gemessen 2026-08-10). HERKUNFT: Blocker-Runde zur
+  Archivierung der Phase 11. ARBEITSVORRAT, NICHT POLISH.
+  BEFUND: Der Kommentarkopf von `buildConsentRuntime` erklärt seine Aufzählung zur
+  VERBINDLICHEN Fassung dessen, was geschieht, und sagt: weichen Code und Doku ab, ist
+  das ein Befund und kein Ermessen. ES GIBT KEINEN TEST, DER DEN ERZEUGTEN TEXT GEGEN
+  DIESE AUFZÄHLUNG HÄLT, und keinen gegen die Doku.
+  DER SATZ IST DAMIT EINE VERPFLICHTUNG, KEINE ZUSICHERUNG — der Kommentar sagt das
+  selbst, an Ort und Stelle.
+  ERSTER SCHRITT: einen Test, der die sechs Zweige gegen das erzeugte Verhalten stellt.
+  BEZUG: docs/claude-history/phase-11-multi-tracking.md, "## Das beschlossene
+  Consent-Modell".
+
+- SAMMELVERMERK ZU DEN VIER EINTRÄGEN MIT DER MARKIERUNG "ARBEITSVORRAT, NICHT POLISH"
+  STATUS: HINWEIS, kein eigener Vorgang (2026-08-10).
+  Sie stehen in DIESER Datei, weil ein Eintrag zu viel billig ist und einer, der
+  nirgends steht, nach dem Löschen der Standdatei weg wäre. IHR EIGENTLICHER FINDEWEG
+  IST EIN ANDERER: die Roadmap-Zeile "Phase 11" in der Root-CLAUDE.md zeigt auf
+  docs/claude-history/phase-11-multi-tracking.md, und dort stehen sie unter "## Der
+  Arbeitsvorrat — vier fällige Punkte am ersten Adapter" mit ihrer vollen Herleitung.
+  DREI VON IHNEN BETREFFEN DIESELBE DATEI (`src/lib/capi/meta-forward.ts`) und gehören
+  gebündelt — zusammen mit dem Tier-1-Punkt aus dem Security-Manifest, der dieselbe
+  Datei anfasst.

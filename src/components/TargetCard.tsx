@@ -52,7 +52,7 @@ export type ConfiguredState = boolean | null;
  * im Repo, an der Ziel-Wissen liegt (neben META_TARGET, META_CONSENT_TARGET, dem
  * CHECK der Geheimnis-Tabelle und TRACKING_TARGETS). GEMELDET, NICHT GELOEST — die
  * Zusammenlegung der Kopien ist aus dieser Scheibe ausdruecklich ausgeschlossen.
- * WANN ES UMGELEGT WIRD: sobald das Ziel einen Adapter bekommt (siebte Scheibe).
+ * WANN ES UMGELEGT WIRD: sobald das Ziel einen Adapter bekommt (zwoelfte Scheibe).
  * Dann verschwindet der Hinweis von selbst — er haengt an DIESEM Feld und an
  * keinem Kommentar.
  */
@@ -78,11 +78,35 @@ export const TARGET_CARDS: Record<TrackingTarget, TargetCardConfig> = {
     secretPlaceholderReplace: "Neuen Token eingeben zum Ersetzen",
     hasAdapter: true,
   },
+  // DIE DREI OEFFENTLICHEN FELDER NENNEN DIE KONTO-KENNUNG (Phase 11, elfte
+  // Scheibe). Sie nannten bis dahin die TAG-Kennung des Browser-Tags — und den
+  // injizieren wir gar nicht; der Adapter braucht die Kennung, die im
+  // Endpunkt-PFAD steht. Zwei verschiedene Nummern im selben Anbieter-Konto,
+  // und der Unterschied ist fuer den Betreiber unsichtbar.
+  //
+  // (1) DAS ANBIETER-PRAEFIX BLEIBT, obwohl der Kartenname es schon traegt: Die
+  //     Karte des ersten Ziels ist genauso gebaut ("Meta-Pixel-ID"). Zwei
+  //     Beschriftungen in verschiedener Bauart waeren schlechter als eine lange.
+  //     "Anzeigenkonto-ID" ist der Wortlaut, den der Betreiber im Anbieter-Konto
+  //     wiederfindet — nicht die interne Bezeichnung "Konto-Kennung" und nicht
+  //     der Schnittstellen-Name ad_account_id.
+  // (2) DER HILFETEXT TRIFFT EINE DOPPELAUSSAGE, die auf dieser Karte bisher
+  //     keinen Ausdruck hatte: HERKUNFT plus ABGRENZUNG. Er ist NICHT mehr der
+  //     des ersten Ziels — dort ist "steht im Seitenquelltext" wahr, weil
+  //     buildMetaRuntime die Kennung als PS_PIXEL_ID einbettet; hier injiziert
+  //     kein Erzeuger etwas, es landet allein der Consent-Schluessel. "Server-…"
+  //     ist ausgeschlossen, weil es mit dem Untertext des Geheimnis-Feldes
+  //     kollidierte ("Server-Side, geheim") — und genau dieser Unterschied ist
+  //     das, was die Karte erklaeren muss.
+  // (3) DER PLATZHALTER IST ABSTEIGEND, damit er nicht als Kuerzung von Metas
+  //     aufsteigendem Beispiel gelesen wird. Er darf Metas Zeichenkette nicht
+  //     ENTHALTEN — CodeImporter.test.tsx waehlt Metas Feld ueber dessen
+  //     Platzhalter, per Teilstring-Muster.
   pinterest: {
     name: "Pinterest",
-    publicLabel: "Pinterest-Tag-ID",
-    publicHint: "Öffentlich, steht im Seitenquelltext",
-    publicPlaceholder: "z.B. 2612345678901",
+    publicLabel: "Pinterest-Anzeigenkonto-ID",
+    publicHint: "Aus dem Anzeigenkonto, nicht im Seitenquelltext",
+    publicPlaceholder: "z.B. 987654321098",
     secretLabel: "Pinterest-Zugangsdaten",
     secretPlaceholderNew: "Zugangsdaten einfügen",
     secretPlaceholderReplace: "Neue Zugangsdaten eingeben zum Ersetzen",

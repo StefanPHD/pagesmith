@@ -327,6 +327,118 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
   });
 });
 
+/**
+ * DIE KARTE FRAGT NACH DER RICHTIGEN KENNUNG (Phase 11, elfte Scheibe).
+ *
+ * DER GEGENSTAND, in einem Satz: Die Karte des zweiten Ziels fragte nach der
+ * TAG-Kennung des Browser-Tags, den wir gar nicht injizieren; der Adapter braucht
+ * die KONTO-Kennung, die im Endpunkt-Pfad steht. Zwei verschiedene Nummern im
+ * selben Anbieter-Konto.
+ *
+ * WARUM EINE AENDERUNG VON DREI ZEICHENKETTEN EINEN EIGENEN TESTBLOCK BEKOMMT —
+ * und das ist die tragende Auflage der Scheibe, kein Zierrat: Vor diesem Block
+ * waehlte KEIN Test die drei Zeichenketten und KEINER behauptete sie. Die
+ * Korrektur brach also nichts, und nichts hielte fest, dass sie stattgefunden
+ * hat. Ihre spaetere Ruecknahme waere ebenso still gewesen wie ihr Ausbleiben.
+ */
+describe("TargetCard — die Karte fragt nach der richtigen Kennung", () => {
+  it("T1: die Beschriftung nennt die KONTO-Kennung, nicht die Tag-Kennung", () => {
+    // ZWEI ASSERTIONS, UND DIE ZWEITE IST DER EIGENTLICHE WAECHTER: "enthaelt
+    // Anzeigenkonto" allein bestuende auch ein Text, der BEIDE Groessen nennt.
+    // "Anzeigenkonto-ID" ist der Wortlaut, den der Betreiber im Anbieter-Konto
+    // wiederfindet (Kopier-Tooltip, deutschsprachige Oberflaeche) — nicht die
+    // interne Bezeichnung "Konto-Kennung" und nicht der Schnittstellen-Name
+    // ad_account_id.
+    expect(TARGET_CARDS.pinterest.publicLabel).toContain("Anzeigenkonto");
+    expect(TARGET_CARDS.pinterest.publicLabel).not.toContain("Tag");
+  });
+
+  it("T2: der Platzhalter zeigt nicht mehr die Tag-Kennung und beruehrt Metas Muster nicht", () => {
+    // DREI ASSERTIONS AUF DREI VERSCHIEDENEN ACHSEN.
+    //
+    // (1) DIE KORREKTUR: der Platzhalter nannte die dreizehnstellige TAG-Kennung.
+    // (2) DER RAND, und er wirkt ueber die Dateigrenze: CodeImporter.test.tsx
+    //     waehlt Metas oeffentliches Feld ueber dessen Platzhalter, per
+    //     getByPlaceholderText(/123456789012345/) — ein TEILSTRING-Muster.
+    //     getByPlaceholderText wirft bei MEHREREN Treffern, und im Container
+    //     stehen beide Karten im selben Baum. Ein Platzhalter, der diese fuenfzehn
+    //     Ziffern ENTHIELTE, machte dort zwei Tests mehrdeutig.
+    // (3) Die beiden Karten zeigen nicht dasselbe Beispiel.
+    //
+    // KEINE PRUEFUNG DER STELLENZAHL, und das ist eine Entscheidung (Owner,
+    // 2026-08-10), keine Luecke: Ein Test, der zwoelf Stellen behauptet, machte
+    // aus einer ungepruesten ABLESUNG im Anbieter-Konto eine Zusicherung UNSERES
+    // Codes. Aendert der Anbieter das Format, wuerde er rot aus einem Grund, der
+    // mit unserem Bau nichts zu tun hat — und der Naechste reparierte den
+    // Platzhalter passend zum Test statt passend zur Wirklichkeit. Der Platzhalter
+    // HAT zwoelf Stellen; dieser Test sichert die GRENZE, nicht die Ablesung.
+    expect(TARGET_CARDS.pinterest.publicPlaceholder).not.toContain("2612345678901");
+    expect(TARGET_CARDS.pinterest.publicPlaceholder).not.toContain("123456789012345");
+    expect(TARGET_CARDS.pinterest.publicPlaceholder).not.toBe(
+      TARGET_CARDS.meta.publicPlaceholder,
+    );
+  });
+
+  it("T3: der Hilfetext trifft eine WAHRE Aussage ueber dieses Ziel", () => {
+    // Fuer das ERSTE Ziel ist "steht im Seitenquelltext" wahr: buildMetaRuntime
+    // bettet die Kennung als PS_PIXEL_ID in den erzeugten Text ein. Fuer das
+    // ZWEITE injiziert kein Erzeuger irgendetwas — dort landet allein der
+    // Consent-Schluessel, nie der Wert. Der Hilfetext muss das sagen.
+    expect(TARGET_CARDS.pinterest.publicHint).toContain("nicht im Seitenquelltext");
+  });
+
+  // =====================================================================
+  // T4 — DER EINZIGE TEST, DER DIE WIEDER-VEREINHEITLICHUNG FAENGT.
+  //
+  // Er steht hier mit diesem Kommentar, weil die Projektregel es verlangt: Traegt
+  // ein einzelner Test eine Fehlerklasse, gehoert das in seinen Kommentar — sonst
+  // entfernt ihn spaeter jemand als vermeintlich redundant und nimmt die einzige
+  // Abdeckung mit.
+  //
+  // DIE FEHLERKLASSE: Der Hilfetext stand in BEIDEN Karten BYTE-GLEICH und sah
+  // deshalb wie ein neutraler, geteilter Satz aus. Er war aber eine
+  // ZIEL-SPEZIFISCHE Tatsachenbehauptung, und nur an einer der beiden Stellen
+  // stimmte sie. Ein Satz, der an zwei Stellen identisch steht und nur an einer
+  // stimmt, ist die unauffaelligste Form einer falschen Aussage — und die
+  // Gleichheit liest sich als Absicht.
+  //
+  // WARUM DIESE FORM UND KEINE WORTLAUT-ZUSICHERUNG: Der Vergleich laeuft
+  // zwischen den beiden LEBENDEN Werten, nicht gegen ein Literal. Er faengt
+  // deshalb JEDE Wieder-Vereinheitlichung, in BEIDE Richtungen und mit JEDEM
+  // Wortlaut — auch die, bei der jemand beide Karten auf einen neuen gemeinsamen
+  // Text setzt. Eine Zusicherung auf den neuen Wortlaut faenge sie erst, wenn
+  // jemand zufaellig den alten Text wieder traefe.
+  // =====================================================================
+  it("T4: die Hilfetexte der beiden Karten sind NICHT identisch", () => {
+    expect(TARGET_CARDS.pinterest.publicHint).not.toBe(
+      TARGET_CARDS.meta.publicHint,
+    );
+  });
+
+  it("T5: die Karte des ERSTEN Ziels bleibt unveraendert", () => {
+    // Invariante 3 der Scheibe. Er ist KEIN Zeuge der Korrektur — er lief schon
+    // vorher gruen und soll es bleiben; er faengt die versehentliche
+    // Mitaenderung des Nachbarn.
+    expect(TARGET_CARDS.meta.publicLabel).toBe("Meta-Pixel-ID");
+    expect(TARGET_CARDS.meta.publicHint).toBe("Öffentlich, steht im Seitenquelltext");
+    expect(TARGET_CARDS.meta.publicPlaceholder).toBe("z.B. 123456789012345");
+  });
+
+  it("T6: die Beschriftung kommt auch auf dem Bildschirm an", () => {
+    // T1 prueft den DATENSATZ, dieser Test den gerenderten Baum — zwei
+    // verschiedene Fehler: ein falscher Wert gegen einen, der die JSX gar nicht
+    // mehr erreicht.
+    //
+    // GEPRUEFT WIRD UEBER container.textContent UND NICHT ueber getByText, und
+    // das ist kein Geschmack: Beschriftung und Hilfetext liegen im SELBEN
+    // aeusseren <span> (der Hilfetext als verschachteltes <span> darin). Ein
+    // Text-Matcher traefe damit Eltern UND Kind, und getByText wirft bei
+    // mehreren Treffern.
+    const { container } = renderCard({ target: "pinterest" });
+    expect(container.textContent).toContain("Pinterest-Anzeigenkonto-ID");
+  });
+});
+
 describe("TargetCard — die Rueckrufe tragen Projekt UND Ziel", () => {
   it("Speichern ruft setCapiToken(projectId, target, wert) und meldet BEIDE Kennungen zurueck", async () => {
     const onCredentialsSaved = vi.fn();

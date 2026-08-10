@@ -30,6 +30,10 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
   niemand einen zweiten Provider vermutet, den es nicht gibt.
 
 ## Roadmap & aktueller Stand
+DIE MARKER: [x] abgeschlossen · [ ] offen · [~] TEILS ERLEDIGT — ein benannter Teil
+steht und ist bewiesen, ein benannter Teil steht aus. Der dritte Marker ist NEU und
+wird nur dort gesetzt, wo beide Teile im Text der Zeile ausdrücklich stehen; ohne diese
+Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
 - [x] Phase 1 — Lokales Grundgerüst: Import, Sandbox-iframe-Preview, Erkennung
       von Buttons/Forms/Links. Alles in React-State, kein Server. Scanner steht
       in src/components/CodeImporter.tsx.
@@ -101,7 +105,19 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       & live bewiesen (2026-08-03). Volle Herleitung:
       docs/claude-history/backlog-polish.md, Eintrag "src/middleware.ts ->
       proxy.ts umbenennen".
-- [ ] Phase 11 — Multi-Tracking (Server-Side Fan-Out): TikTok, Google,
+- [~] Phase 11 — Multi-Tracking (Server-Side Fan-Out): TEILS ERLEDIGT.
+      ERLEDIGT IST DIE STRUKTUR: Der Fan-Out beliefert ein ZWEITES Ziel — live
+      bewiesen gegen ein echtes fremdes System, nicht gegen eine Attrappe. Auflösung
+      über mehrere Ziele, Einwilligung JE ZIEL, Oberfläche je Plattform und der
+      nebenläufige Fan-Out mit EIGENEM Deckel je Empfänger sind gebaut und geprüft.
+      OFFEN SIND DIE WIEDERHOLUNGEN: die weiteren Ziele der Aufzählung unten, das
+      Tracking-Testmodus-Modul und der Testknopf. SIE SIND WIEDERHOLUNGEN DESSELBEN
+      HANDGRIFFS, KEIN NEUES FUNDAMENT — wer den offenen Teil für gleich gross hält
+      wie den erledigten, plant eine Phase, die es so nicht mehr gibt. Ein weiteres
+      Ziel ist ein Adapter, ein Eintrag in der Zuordnung, ein Zielwert im CHECK und
+      ein Live-Test; alles, was daran schwierig war, ist einmal gemacht.
+      Volle Herleitung: docs/claude-history/phase-11-multi-tracking.md.
+      TikTok, Google,
       Pinterest, LinkedIn, Custom-Pixel als weitere ADDITIVE Fan-Out-Ziele
       neben Meta — source bleibt Beobachtungs-Ort, jedes Ziel bekommt seine
       EIGENE additive Spalte, kein Umbau. Dazu das kleine
@@ -127,9 +143,7 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       vorentschieden: die separat erwähnte generische Action-Consent-Checkbox
       (jede Aktion, nicht nur Tracking, gated). Sie muss auf DEMSELBEN
       Mechanismus laufen; ein zweites Urteil darf nicht entstehen.
-      Protokoll und Begründung: docs/aktiver-stand.md, "## Die zweite Scheibe —
-      DAS GETEILTE CONSENT-GATE (Zuschnitt)" und "### Protokoll der zweiten
-      Scheibe — Vollzug und Abschluss".
+      Protokoll und Begründung: docs/claude-history/phase-11-multi-tracking.md.
       STAND: DREI SCHEIBEN SIND ABGESCHLOSSEN UND LIVE BEWIESEN.
       (1) DIE UMSTELLUNG DER GEHEIMNIS-TABELLE auf (Projekt, Ziel), ohne jede
       Verhaltensänderung — Migration 0021, Katalog-Prüfung, Nachhol-Lauf, Code,
@@ -139,8 +153,14 @@ Jeder Schritt soll demobar / screenshot-tauglich sein.
       (3) DER PAGEVIEW-EMITTER HINTER DEM GATE — er fragt VOR dem Senden für den
       Schlüssel der eigenen Auswertung (2026-08-06).
       DIE PHASE BLEIBT OFFEN, WEIL NOCH KEIN ZWEITES ZIEL EXISTIERT.
+      RICHTIGGESTELLT, NICHT GESTRICHEN: Der Satz darüber und die Zählung "DREI
+      SCHEIBEN" waren richtig, als sie geschrieben wurden, und sie bleiben als
+      Zeitmarke lesbar. Beide TRAGEN NICHT MEHR: Es sind ZWÖLF Scheiben, und das
+      zweite Ziel wird beliefert — genau daran hing die Aussage "bleibt offen". Was
+      heute offen ist, steht im Kopf dieser Zeile und ist etwas anderes: nicht die
+      Struktur, sondern ihre Wiederholungen.
       Protokolle, Entscheidungen und was jede Scheibe ausdrücklich NICHT
-      beweist: docs/aktiver-stand.md.
+      beweist: docs/claude-history/phase-11-multi-tracking.md.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

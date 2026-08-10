@@ -23,8 +23,21 @@ MEHRERE ZIELE — **ABGESCHLOSSEN und live bewiesen**, (8) DER BEACON VERLÄSST 
 LAUFZEIT — **ABGESCHLOSSEN und live bewiesen**, (9) DIE EINWILLIGUNG JE ZIEL —
 **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (10) DER ADAPTER FÜR DAS ZWEITE
 ZIEL — **ZUGESCHNITTEN**, (11) DIE KARTE FRAGT NACH DER RICHTIGEN KENNUNG —
-**ZUGESCHNITTEN**, (12) PINTEREST SENDET — PLATZHALTER, (13) DER TESTKNOPF —
-PLATZHALTER.
+**ABGESCHLOSSEN und live bewiesen**, (12) PINTEREST SENDET — PLATZHALTER,
+(13) DER TESTKNOPF — PLATZHALTER.
+
+**NACHGEZOGEN AM 2026-08-10, SPÄT — ZEHN SIND ABGESCHLOSSEN, OFFEN SIND DREI.** Hier
+stand bei (11) "ZUGESCHNITTEN", und der Stempel darunter sagte "es bleiben vier".
+**BEIDE BLEIBEN WORT FÜR WORT STEHEN.**
+**DIE ELFTE IST DIE ERSTE SCHEIBE DIESER PHASE, DIE VOR EINER FRÜHER
+ZUGESCHNITTENEN FERTIG WIRD** — die zehnte steht seit dem 2026-08-09 zugeschnitten
+und ist bei einer fehlenden Anbieter-Angabe angehalten. **Das ist kein Vorziehen und
+keine Umplanung:** Die elfte war von Anfang an unabhängig von den fünf offenen
+Angaben, weil sie weder Adapter noch Zuordnung anfasst. **Wer die Nummern als
+Reihenfolge liest, liest hier falsch** — die Nummer sagt, wovon eine Scheibe abhängt,
+nicht wann sie gebaut wird.
+**PINTEREST WANDERT NICHT.** Es steht unverändert auf der ZWÖLFTEN, und die Kette im
+Kopf bleibt bei neun Einträgen.
 
 **NACHGEZOGEN AM 2026-08-10 — DIE ELFTE IST ZUGESCHNITTEN.** Hier stand bei (11)
 "PLATZHALTER". **DIE ZAHL DER OFFENEN SCHEIBEN ÄNDERT SICH NICHT** — es bleiben vier;
@@ -7347,6 +7360,235 @@ Sie stehen als FRAGEN da, damit keine Antwort geraten wird.
 - **Wo liegt der Test, und wie hält er die NICHT-Identität der beiden Hilfetexte
   fest?**
 
+### Protokoll der elften Scheibe — Vollzug und Abschluss
+
+Der Zuschnitt darüber ist der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+**DIE BUCHSTABEN IN DIESEM PROTOKOLL SIND LOKAL.**
+
+**VOLLZOGEN AM 2026-08-10 — Commit `3b3ca98`, gepusht. ZWEI Dateien
+(`TargetCard.tsx`, `TargetCard.test.tsx`), 140 Zeilen zu, 4 ab. KEINE Migration,
+keine Server-Aktion, kein Adapter.**
+
+#### Die Live-Werte, gemeldet von Stefan am 2026-08-10
+
+**PROVENIENZ: Meldung von Stefan aus dem Betrieb. NICHT von mir gemessen, nicht
+nachgeprüft.** Die Achsen sind ausschliesslich das, was die Testumgebung nicht sehen
+kann — `vitest.config.ts` lädt kein Stylesheet, in jsdom ist jede Klasse `block`.
+
+- **(1) DIE LÄNGERE BESCHRIFTUNG TRÄGT.** "Pinterest-Anzeigenkonto-ID" (25 Zeichen
+  gegen 17 zuvor) ist **vollständig lesbar, wird nicht abgeschnitten und verschiebt
+  das Eingabefeld nicht.** Das war die eigentliche Risiko-Achse: An genau dieser
+  Karte ist im Feinschliff der sechsten Scheibe schon einmal ein Platzhalter
+  gestaucht worden, weil ziel-spezifische Namen mehr Platz brauchen.
+- **(2) DER HILFETEXT SITZT ALS UNTERZEILE** und unterscheidet sich eindeutig von
+  dem der Nachbarkarte **UND** vom Untertext des Geheimnis-Feldes. **Beide
+  Abgrenzungen zählen einzeln:** Die erste ist der Zweck der Scheibe, die zweite war
+  der Grund, "Server-…" als Formulierung auszuschliessen.
+- **(3) DER PLATZHALTER ERSCHEINT BEIM LEEREN.** Nach Einsetzen der echten Kennung,
+  Speichern und **Neuladen** bleibt der Wert erhalten.
+
+**DER TESTWEG WEICHT VON DER ANLEITUNG AB, UND ZWAR NACH OBEN.** Die Anleitung sah
+den Entwicklungsserver vor; geprüft wurde gegen ein **deploytes
+Vorschau-Deployment**.
+**WARUM DAS DER STÄRKERE NACHWEIS IST:** Der Entwicklungsserver zeigt Stile aus
+derselben Quelle, aber nicht durch denselben Bau — kein Produktions-Build, keine
+Optimierung, andere Schriftbeschaffung. **Für eine Achse, die ausschliesslich
+Umbruch, Abschneiden und Position prüft, ist das ein Unterschied.** Gemessen wurde in
+der belastbareren Umgebung.
+**DIE GRENZE BLEIBT: ein Blick, eine Fensterbreite, ein Browser.**
+**UND EINE ZWEITE, die dieselbe Phase schon einmal ausdrücklich benannt hat
+(Protokoll der vierten Scheibe):** Ein Abgleich, WELCHES Deployment geprüft wurde,
+ist nicht zurückgemeldet worden und wird deshalb hier auch nicht behauptet.
+
+#### Schritt 3 hat mehr geliefert als seine Achse — der volle Kreis, einmal
+
+**Seine Achse war der Platzhalter.** Gefahren ist er den **VOLLEN KREIS**: eintragen,
+speichern, neu laden, wiedersehen. **Das ist genau die Lücke, die als
+Backlog-Kandidat geführt wird, weil KEIN Test sie deckt** — und für das ZWEITE Ziel
+gab es zu keinem Teil davon einen Test.
+
+**DAS ERSETZT DEN KANDIDATEN NICHT, und der Satz gehört zwingend dazu:** Ein
+Live-Blick ist **kein Wächter**. Er lief **nach** dem Bau, nicht bei jeder Änderung,
+und er lief **einmal**. Der Vermerk steht beim Kandidaten selbst.
+
+#### Der ROTE Lauf — der Zeuge entstand VOR der Korrektur
+
+**PROVENIENZ: von mir gemessen am 2026-08-10 auf diesem Rechner.**
+
+**VORHERSAGE, notiert VOR dem Lauf:** T1, T2, T3, T4, T6 werden rot; **T5 bleibt
+grün**, weil er Invarianten-Wächter ist und kein Zeuge.
+**ERGEBNIS: 5 rot, 21 grün von 26 in der Datei — genau die vorhergesagten.**
+
+**DIE BYTE-GLEICHHEIT DER BEIDEN HILFETEXTE, IM ZUSCHNITT NUR BEHAUPTET, STEHT DAMIT
+ALS AUSGABE EINES LAUFS:**
+```
+AssertionError: expected 'Öffentlich, steht im Seitenquelltext' not to be
+                'Öffentlich, steht im Seitenquelltext' // Object.is equality
+```
+**EIN TEST, DER ERST NACH DER KORREKTUR ENTSTANDEN WÄRE, HÄTTE DAS NIE ZEIGEN
+KÖNNEN.** Dieselbe Figur wie der Basis-Test der achten Scheibe.
+**UND JEDE DER FÜNF MELDUNGEN TRUG DEN ECHTEN IST-WERT** — `'Pinterest-Tag-ID'`,
+`'z.B. 2612345678901'`, `'Öffentlich, steht im Seitenquelltext'`. Der rote Lauf ist
+damit zugleich die Messung der Ausgangslage, nicht nur ihr Nachweis.
+
+#### Der Bau, gemessen am eigenen Lauf
+
+**PROVENIENZ: von mir gemessen am 2026-08-10, `npx vitest run` bzw. `npx tsc
+--noEmit`. GRENZE: je ein Lauf; die Zahlen veralten mit der nächsten Testdatei.**
+
+| | Dateien | Tests |
+|---|---|---|
+| vorher | 50 | **951** |
+| nachher | 50 | **957** (+6) |
+
+**BEIDE WERTE SIND IN DIESER RUNDE NEU ERHOBEN** — die 951 sind **nicht** aus dem
+Protokoll der neunten Scheibe übernommen. **+6 = genau die sechs neuen Tests. KEIN
+Bestandstest angefasst, KEINE Erwartung geändert.**
+**Die vier Gates grün, auf dem ENDZUSTAND nach der letzten Rücknahme:**
+`tsc --noEmit`, `eslint`, `vitest run` (957/957), `next build`.
+
+#### Die drei Mutationen, Vorhersage und Ergebnis nebeneinander
+
+| Mutation | Vorhersage VOR dem Lauf | ERGEBNIS |
+|---|---|---|
+| **M1** Hilfetext auf den des ersten Ziels zurücksetzen | 2 Tests, namentlich T3 und T4 | **2 rot, exakt diese — punktgenau.** |
+| **M2** Beschriftung auf die Tag-Kennung zurücksetzen | 2 Tests, namentlich T1 und T6; **T4 bleibt grün** | **2 rot, exakt diese — punktgenau. T4 grün.** |
+| **M3** Platzhalter auf Metas Wert setzen | 3 Tests in 2 Dateien | **5 rot in 2 Dateien — mehr als vorhergesagt.** S. Punkt (a). |
+
+**KEINE MUTATION BLIEB GRÜN.**
+**M2 IST DIE DISKRIMINIERENDE:** T4 blieb dort grün. **Die drei Felder fallen
+EINZELN, nicht als Block** — hätte eine Mutation alle sechs Tests gekippt, prüften
+sie nur, dass irgendetwas anders ist.
+
+#### Die Stellenzahl steht in KEINEM Test — und der Grund gehört dazu
+
+**Sie ist eine UNGEPRÜFTE ABLESUNG** im Anbieter-Konto (2026-08-08). **Ein Test
+darauf machte sie zu einer Zusicherung UNSERES Codes.** Ändert der Anbieter das
+Format, würde er rot aus einem Grund, der mit unserem Bau nichts zu tun hat — **und
+der Nächste reparierte den Platzhalter passend zum Test statt passend zur
+Wirklichkeit.**
+**DER PLATZHALTER HAT ZWÖLF STELLEN; DER TEST SICHERT DIE GRENZE ZU METAS SELEKTOR,
+NICHT DIE ABLESUNG.** Die Begründung steht auch im Kommentar von T2, nicht nur hier.
+
+#### Drei benannte Punkte, die künftige Arbeit binden
+
+**(a) EINE DRITTE FEHLERKATEGORIE BEI MUTATIONS-VORHERSAGEN: DIE KASKADE.**
+
+Bisher kannte diese Phase zwei: **"zu eng beim Zählen"** (sechsmal, alle in dieselbe
+Richtung) und **"zu weit beim Schätzen eines noch offenen Umfangs"** (einmal). **Hier
+tritt eine dritte auf, und sie ist keine Unterart der beiden.**
+
+M3 traf **fünf statt drei** Tests. **ZWEI davon decken die Mutation gar nicht.** Der
+Mechanismus, am Code belegt: `afterEach` jener Datei ruft `cleanup()` und
+`vi.clearAllMocks()` — **`clearAllMocks` leert die AUFRUFE, nicht die
+`mockResolvedValueOnce`-Warteschlange.** Ein Test setzt einen Once-Wert und **wirft
+davor, bevor er ihn verbraucht**; der unverbrauchte Wert überlebt in die
+Warteschlange und wird vom nächsten Test eingesammelt, der dieselbe Attrappe ruft.
+
+**WAS MICH STUTZIG MACHTE, BEVOR ICH ETWAS ANFASSTE — die Fehlerklasse stimmte
+nicht:** Die drei erwarteten meldeten `Found multiple elements`; die zwei
+zusätzlichen meldeten `Unable to find an element`. **Zwei Fehlerklassen haben keine
+gemeinsame Ursache in einem Platzhalter.**
+**DIE GEGENPROBE, die es entscheidet:** derselbe Block ISOLIERT, unter derselben
+Mutation — **grün**. Es ist keine Abdeckung, es ist eine Kaskade.
+
+**DIE VORHERSAGE WAR DAMIT NICHT ZU ENG, SONDERN RICHTIG** — für die Tests, die die
+Sache prüfen. Die beiden anderen sind Folgeschaden.
+**UND ES IST EIN BEFUND ÜBER DEN BESTAND, nicht über den Bau:** Jene zwei Tests
+würden von **JEDEM** frühen Abbruch im Vorgänger rot, unabhängig von der Ursache.
+Sie decken nichts; sie stehen nur in der Reihe dahinter. **Backlog.**
+
+**DIE REGEL, die über den Fall hinausgeht:** Trifft eine Mutation mehr als
+vorhergesagt, ist **vor jeder Reparatur** zu prüfen, ob die Zusatztreffer dieselbe
+FEHLERKLASSE melden. Tun sie es nicht, ist der Überschuss keine Abdeckung — und wer
+ihn als solche verbucht, schreibt sich eine Sicherheit auf, die es nicht gibt.
+
+**(b) WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR FALLE.**
+
+Angeordnet war, in einem Kommentar **NUR** eine Scheiben-Nummer nachzuziehen
+(`siebte` → `zwoelfte`). **Danach war die Nummer richtig und die BEDINGUNG davor
+falsch:** Der Satz lautet jetzt "sobald das Ziel einen Adapter bekommt (zwoelfte
+Scheibe)" — **der Adapter entsteht in der ZEHNTEN**; umgelegt wird `hasAdapter` in
+der zwölften, weil der Hinweis von der AUSLIEFERUNG spricht. Die Bedingung stammt aus
+der Zeit vor der Teilung, als beides eine Scheibe war.
+
+**UND DAS ERGEBNIS LIEST SICH PLAUSIBLER ALS VORHER, weil eine gerade nachgezogene
+Zahl Vertrauen erzeugt.** Wer den Satz nach der Korrektur liest, sieht eine frische
+Nummer und prüft den Rest nicht mehr.
+
+**RICHTIGSTELLUNG GEGENÜBER DEM AUFTRAGSTEXT, am Code gemessen am 2026-08-10:** Der
+Auftrag sagt "gemeldet statt geglättet, **dann in einer zweiten Anweisung behoben**".
+**BEHOBEN IST ER NICHT.** Gemeldet wurde er zweimal (im Bau-Bericht und in der
+Commit-Rückmeldung); eine zweite Anweisung ist nie ergangen, und `git show
+HEAD:src/components/TargetCard.tsx` trägt den Satz unverändert. **DIESE RUNDE KANN
+IHN NICHT BEHEBEN** — sie fasst ausschliesslich dieses Dokument an.
+**ER BINDET DAMIT DIE ZWÖLFTE SCHEIBE**, und zwar an der Stelle, an der sie ohnehin
+hinsehen muss: Wer `hasAdapter` umlegt, liest genau diesen Satz.
+
+**(c) EINE ERWARTUNG UND EINE ANWEISUNG KÖNNEN EINANDER WIDERSPRECHEN, OHNE DASS ES
+JEMANDEM AUFFÄLLT.**
+
+Die formale Gegenprobe zählte **Wertzeilen** ("genau drei geänderte Werte unterhalb
+von `pinterest:`, plus die Nummer; jede weitere Zeile ist ein Befund"). **Dieselbe
+Runde verlangte zusätzlich Begründungen IM Datensatz** — 24 Zeilen Kommentar.
+**Der Überschuss war ANGEORDNET, nicht gedehnt.** Gemeldet, nicht stillschweigend
+eingeordnet: Eine Gegenprobe, deren Erwartung man beim Auswerten nachjustiert, prüft
+nichts mehr.
+
+#### Was diese Scheibe ausdrücklich NICHT geleistet hat
+
+- **SIE BEWEIST NICHT, DASS DIE BEZEICHNUNG RICHTIG IST.** "Anzeigenkonto-ID" ist
+  eine **Ablesung in einer fremden Oberfläche**, deutschsprachige Fassung, belegt über
+  einen Kopier-Tooltip — **von mir nicht geprüft**, und sie kann sich mit der
+  Oberfläche des Anbieters ändern.
+- **SIE BEWEIST NICHT, DASS ZWÖLF STELLEN STIMMEN.** Bewusst in keinem Test.
+- **SIE BEWEIST NICHT, DASS DER EINGETRAGENE WERT RICHTIG IST.** Die Karte hat keine
+  Prüfung und keinen Fehlerkanal am öffentlichen Feld; die Statuszeile leitet aus der
+  Geheimnis-Zeile ab. **Das entscheidet sich erst am Forward — zwölfte Scheibe.**
+- **ES SENDET NICHTS.** `hasAdapter` ist unverändert `false`, der
+  Auslieferungs-Hinweis steht weiterhin und ist wahr.
+- **DIE FIXTURES IN VIER TESTDATEIEN TRAGEN WEITERHIN DIE ALTE GRÖSSE.** Präzise:
+  **DREI** tragen `"TAG-987"` (`fan-out.test.ts`, `ingest.consent-targets.test.ts`,
+  `token.test.ts`), **EINE** trägt die dreizehnstellige Zahl
+  (`settings.targets.test.ts`). Ausserhalb der Freigabe, gemeldet, unverändert.
+- **DER HALB KORRIGIERTE KOMMENTARSATZ STEHT** — s. Punkt (b).
+
+### DIE ELFTE SCHEIBE IST ABGESCHLOSSEN — DIE VERDICHTUNG
+
+**WAS ABLÄUFT — es hat seinen Zweck erfüllt und steht ab jetzt im Protokoll, nicht
+mehr im Zuschnitt:**
+- **Die drei Zusicherungen** ("die drei Felder nennen die Konto-Kennung", "die
+  Hilfetexte sind nicht identisch", "die Karte des ersten Ziels bleibt unverändert").
+  Alle drei sind gemessen: die ersten beiden durch T1/T2/T3/T4/T6 und den roten Lauf,
+  die dritte doppelt — durch T5 **und** durch den byte-genauen Vergleich des
+  `meta`-Eintrags gegen `HEAD` (zehn Zeilen, `diff` leer).
+- **Die sechs Verhaltens-Invarianten.** Kein Forward berührt, der gespeicherte Wert
+  nicht angefasst, die Karte des ersten Ziels byte-gleich, kein Platzhalter auf Metas
+  Muster, der Wortlaut-Wächter grün, keine Migration und keine neue Statusquelle.
+- **Die vier Stufe-1-Fragen.** Alle beantwortet: der Wortlaut aus der Ablesung, der
+  Hilfetext als Doppelaussage, der absteigende Platzhalter, der Test in
+  `TargetCard.test.tsx` mit `not.toBe` zwischen den beiden lebenden Werten.
+- **Die drei Ausschlüsse.** Eingehalten.
+
+**WAS BINDEND BLEIBT — VIER, einzeln benannt, damit die Zahl eine Quelle hat:**
+
+1. **DER HALB KORRIGIERTE KOMMENTARSATZ** in `TargetCard.tsx`. **Er bindet die
+   ZWÖLFTE**, weil sie genau dort hinsieht, wenn sie `hasAdapter` umlegt. **Ein Wort
+   löst ihn** ("bekommt" → "tatsächlich beliefert wird").
+2. **`hasAdapter` UND DER AUSLIEFERUNGS-HINWEIS.** Er hängt an DIESEM Feld und an
+   keinem Kommentar — wer die zwölfte baut und das Feld vergisst, sieht den Hinweis
+   weiter dastehen. **Unverändert bindend, seit der sechsten Scheibe.**
+3. **DIE KASKADEN-KATEGORIE** aus Punkt (a). Sie gilt für **jede** künftige
+   Mutationsrunde dieser Phase, nicht nur für Oberflächen-Tests.
+4. **DER BEFUND ÜBER DEN FALL HINAUS** — das öffentliche Feld hat keine Prüfung und
+   keinen Fehlerkanal. **Er läuft NICHT ab**, weil ihn diese Scheibe ausdrücklich
+   nicht behandelt hat; er steht als Backlog-Kandidat.
+
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WIRD:** die gemessene Ausgangslage und die
+erledigte Auflage samt ihren drei Kandidaten-Befunden. **Sie sind die HERLEITUNG** —
+wer nur das Ergebnis liest, kann nicht mehr prüfen, ob die Entscheidung richtig war.
+Und die drei Kandidaten-Befunde gelten ausdrücklich **über diesen Fall hinaus**.
+
 ---
 
 ## Die zwölfte Scheibe — PINTEREST SENDET (Platzhalter)
@@ -7682,3 +7924,64 @@ Messung gegenstandslos geworden, die Lücke im Bestand ist es nicht.**
 
 **WAS ER NICHT VERLANGT:** die bestehenden zwei Tests umzuschreiben. Sie sind für ihre
 Achsen richtig; **fehlend ist der Übergang, nicht ihre Aussage.**
+
+**VERMERK, 2026-08-10 — DER KREIS IST EINMAL LIVE GEFAHREN WORDEN, UND DER KANDIDAT
+BLEIBT TROTZDEM.** Schritt 3 des Live-Tests der elften Scheibe ist ihn vollständig
+gegangen — eintragen, speichern, neu laden, wiedersehen —, **und zwar für das ZWEITE
+Ziel**, für das es zu keinem Teil davon einen Test gab.
+**WARUM DAS DEN KANDIDATEN NICHT ERLEDIGT, und der Satz ist der ganze Grund für
+diesen Vermerk: Ein Live-Blick ist kein Wächter.** Er lief **nach** dem Bau, nicht bei
+jeder Änderung, und er lief **einmal**. Wer ihn als Abdeckung verbucht, hat den
+Unterschied zwischen einer Messung und einer Zusicherung aufgegeben.
+**WAS SICH TROTZDEM GEÄNDERT HAT:** Der Kreis ist nicht mehr unbelegt — er ist
+einmal, an einem Datum, in einer Umgebung durchlaufen worden. Das verschiebt die
+DRINGLICHKEIT, nicht die Sache.
+
+---
+
+## Zwei Punkte aus dem Bau der ELFTEN Scheibe — EINER NEU, EINER OFFEN
+
+**EIGENE SEKTION, weil sie aus dem BAU stammt und nicht aus einer Aufklärung** —
+dieselbe Trennung wie bei "### Zwei Backlog-Kandidaten aus dem Bau" in der siebten
+Scheibe. **PROVENIENZ: am Code gemessen am 2026-08-10, während und nach dem Bau.**
+
+### (1) BACKLOG-KANDIDAT: DER TESTDATEI FEHLT DER WARN-KOMMENTAR IHRER SCHWESTER
+
+**GEGENSTAND:** `src/components/CodeImporter.test.tsx` ruft in ihrem `afterEach`
+`cleanup()` und `vi.clearAllMocks()`. **`clearAllMocks` leert die AUFRUFE, nicht die
+`mockResolvedValueOnce`-Warteschlange.** Bricht ein Test ab, bevor er seinen
+Once-Wert verbraucht, sammelt ihn der nächste Test ein, der dieselbe Attrappe ruft.
+
+**DIE FEHLERFIGUR, live eingetreten:** In der Mutationsrunde M3 fielen zwei Tests des
+Blocks "Scheibe 7a", die mit der Mutation **nichts zu tun haben**. Isoliert liefen
+sie unter derselben Mutation **grün**.
+
+**WAS DEN KANDIDATEN SCHARF MACHT — es ist nicht die eine Mutation:** Jene zwei Tests
+würden von **JEDEM** frühen Abbruch im Vorgänger rot, unabhängig von der Ursache. Ein
+späterer Leser sieht fünf rote Tests und schliesst auf eine breitere Wirkung, als es
+sie gibt.
+
+**WAS ER VERLANGT — zwei Dinge, und das erste ist das billigere:**
+- **DEN WARN-KOMMENTAR**, den die Schwesterdatei `TargetCard.test.tsx` an genau
+  derselben Stelle bereits trägt: *"ACHTUNG, in diesem Projekt schon zweimal teuer
+  geworden: clearAllMocks leert die AUFRUFE, nicht die Implementierungen und nicht
+  die Once-Warteschlange."*
+- **EINEN VERBRAUCHS-NACHWEIS** für die Warteschlange — dass kein Once-Wert einen
+  Test überlebt.
+
+**WARUM ER NICHT MITGEBAUT WURDE:** `CodeImporter.test.tsx` lag ausserhalb der
+Freigabe der elften Scheibe. **Gemeldet, nicht getan.**
+
+### (2) OFFEN, KEIN BACKLOG: DER HALB KORRIGIERTE KOMMENTARSATZ
+
+**Er steht hier und NICHT im Backlog, weil er eine bekannte, benannte Unrichtigkeit
+im Produktivcode ist und nicht eine aufgeschobene Verbesserung.**
+
+`TargetCard.tsx` sagt im Kopf von `TargetCardConfig`: *"WANN ES UMGELEGT WIRD: sobald
+das Ziel einen Adapter bekommt (zwoelfte Scheibe)."* **Die Nummer stimmt seit dem
+2026-08-10; die Bedingung davor nicht** — der Adapter entsteht in der ZEHNTEN,
+umgelegt wird `hasAdapter` in der zwölften, weil der Hinweis von der AUSLIEFERUNG
+spricht.
+
+**ER BINDET DIE ZWÖLFTE SCHEIBE AN DER STELLE, AN DER SIE OHNEHIN HINSIEHT.** Ein
+Wort löst ihn.

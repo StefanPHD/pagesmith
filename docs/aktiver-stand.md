@@ -24,7 +24,36 @@ LAUFZEIT — **ABGESCHLOSSEN und live bewiesen**, (9) DIE EINWILLIGUNG JE ZIEL �
 **ABGESCHLOSSEN und live bewiesen, BEIDE HÄLFTEN**, (10) DER ADAPTER FÜR DAS ZWEITE
 ZIEL — **ABGESCHLOSSEN, OHNE LIVE-NACHWEIS**, (11) DIE KARTE FRAGT NACH DER
 RICHTIGEN KENNUNG — **ABGESCHLOSSEN und live bewiesen**, (12) PINTEREST SENDET —
-PLATZHALTER, (13) DER TESTKNOPF — PLATZHALTER.
+**ABGESCHLOSSEN und live bewiesen**, (13) DER TESTKNOPF — PLATZHALTER.
+
+**NACHGEZOGEN AM 2026-08-10, ZULETZT — ZWÖLF SIND ABGESCHLOSSEN, OFFEN IST EINE.**
+Hier stand bei (12) "PLATZHALTER". **Alle Stempel darunter bleiben Wort für Wort
+stehen.**
+
+**WAS DAS FÜR DIE PHASE BEDEUTET, und es ist mehr als eine Zahl: DER ZWECK, FÜR DEN
+PHASE 11 ERÖFFNET WURDE, IST ERREICHT.** Ein zweites Ziel sendet — nicht als Attrappe,
+nicht als Zuschnitt, sondern gegen ein echtes fremdes System, mit drei von drei
+angekommenen Ereignissen im Anzeigenkonto des Anbieters. **DIE DREIZEHNTE IST KOMFORT,
+KEIN FUNDAMENT:** Der Testknopf macht sichtbar, was heute schon funktioniert; ohne ihn
+fehlt niemandem eine Fähigkeit, sondern eine Bequemlichkeit. **Wer die Phase nach der
+zwölften anhält, verliert kein Stück Substanz.**
+
+**DIE ZEHNTE HAT IHREN LIVE-NACHWEIS JETZT — GELIEFERT VON DER ZWÖLFTEN.** Der Stempel
+darunter sagt: *"ihr Adapter wird von niemandem gerufen, ein Live-Nachweis ist für sie
+nicht führbar. Die erste Gelegenheit dazu ist die ZWÖLFTE."* **Die Gelegenheit ist
+genutzt worden.** Ihre Beschriftung in der Kette oben — "ABGESCHLOSSEN, OHNE
+LIVE-NACHWEIS" — **wird trotzdem NICHT angeglichen**, aus demselben Grund, aus dem
+kein Stempel dieser Kette je überschrieben wurde: Sie war richtig, als sie geschrieben
+wurde. **Der Nachweis gehört der zwölften, nicht der zehnten** — was die zehnte
+ablieferte, war ein ungerufener Adapter, und genau das sagt ihre Zeile.
+
+**EINE AUFLAGE AN DAS PHASENENDE, die aus dieser Scheibe folgt und NICHT von ihr
+entschieden wird — s. den WIDERSPRUCH am Ende des Protokolls der zwölften Scheibe:**
+Die Roadmap-Zeile "Phase 11" in CLAUDE.md nennt **TikTok, Google, Pinterest, LinkedIn,
+Custom-Pixel** und das Testmodus-Modul. **Erreicht ist der STRUKTURELLE Zweck (ein
+zweites Ziel sendet), nicht der aufgezählte UMFANG.** Ob die Phase mit EINEM zweiten
+Ziel abgehakt wird oder ob die übrigen Ziele in ihr bleiben, ist eine
+Owner-Entscheidung und muss VOR Schritt 2 des Phasenende-Verfahrens fallen.
 
 **NACHGEZOGEN AM 2026-08-10 — ELF SIND ABGESCHLOSSEN, OFFEN SIND ZWEI.** Hier stand
 bei (10) "ZUGESCHNITTEN", und der Stempel darunter sagte "ZEHN … OFFEN SIND DREI".
@@ -8556,6 +8585,285 @@ ist die Ankunft im Konto des Anbieters.
    gilt** — und wo werden seine Abweichungen protokolliert? Ohne diese Antwort ist
    der Zuschnitt formal erfüllbar, ohne dass sein eigentlicher Gegenstand
    stattgefunden hat.
+
+---
+
+### Protokoll der zwölften Scheibe — Vollzug und Abschluss
+
+Der Zuschnitt darüber ist der MASSSTAB; was hier steht, ist die MESSUNG dagegen.
+
+**VOLLZOGEN AM 2026-08-10 — Commit `a6deeb7`, gepusht. FÜNF Dateien: `capi/ingest.ts`,
+`components/TargetCard.tsx` und drei Testdateien (`capi/fan-out.test.ts`,
+`capi/ingest.consent-targets.test.ts`, `components/TargetCard.test.tsx`). 636 Zeilen
+zu, 93 ab. KEIN Adapter, KEINE Auflösung, KEINE Migration, KEINE Server-Aktion.**
+
+**993 Tests vorher, 999 nachher — BEIDE Zahlen gemessen, keine gerechnet.** Der
+Vorher-Wert stammt aus einem Lauf gegen den gestashten Arbeitsbaum, nicht aus einer
+Subtraktion. `tsc --noEmit` fehlerfrei.
+
+**WAS GEBAUT WURDE, in einem Satz:** `dispatchForward` hat einen zweiten Zweig, der
+`CapiConfig` auf `PinterestConfig` abbildet und `forwardToPinterest` zurückgibt; die
+Karte trägt `hasAdapter: true` für das zweite Ziel. **Der Meta-Zweig hat sich um kein
+Zeichen geändert** — er steht im Diff als Kontextzeile.
+
+#### Der rote Lauf — eigener Punkt, weil die Reihenfolge die Aussage trägt
+
+**ERST DIE TESTS, DANN DER ZWEIG.** Mit geschriebenen Tests und noch fehlendem Zweig
+waren **DREI** rot, namentlich:
+
+- `T10: beide Ziele erlaubt -> ZWEI Aufrufe, jeder an sein Netzwerk, mit richtig
+  abgebildeter Konfiguration` — *expected 2 times, but got 1 times*
+- `T11: der zweite Empfaenger haengt bis zum Deckel — der erste bleibt UNBERUEHRT` —
+  *expected 2 times, but got 1 times*
+- `Feld MIT VERBOT fuer Meta -> KEIN Meta-Aufruf, und genau EINER an Pinterest` —
+  *expected [] to have a length of 1 but got +0*
+
+**DAMIT IST DIE ABDECKUNG BEWIESEN UND NICHT BEHAUPTET.** Ein Test, der erst nach dem
+Bau geschrieben wird, ist gegen die eine Frage blind, die zählt: ob er ohne die
+Änderung überhaupt gefallen wäre.
+
+**UND DER LAUF HAT MEHR GESAGT, ALS ER SOLLTE — der erste von zwei Vorhersage-Fehlern
+dieser Scheibe:** `T12` und `T13` waren **schon ohne den Zweig grün**. Der Stufe-1-Plan
+hatte `T12` als rot vorhergesagt. **Die Tests sind richtig, die Vorhersage war falsch**
+— beide behaupten das CONTAINMENT (leere 204, erstes Bein geht hinaus), nicht die
+EXISTENZ des Zweigs; ohne ihn ist ihre Aussage trivial wahr. S. Punkt (b) unten.
+
+#### Die vier Mutationen — PUNKTGENAU, ABER ERST IN DER ZWEITEN RUNDE
+
+**DIE UNTERSCHEIDUNG IST DER ERTRAG, NICHT EINE EINSCHRÄNKUNG.** Wer nur die
+Schlusszahlen liest, hält die Vorhersagen für durchgehend richtig; sie waren es
+zweimal nicht, und **beide Male hat der Fehlschlag etwas gefunden.**
+
+| | Mutation | Vorhersage | Ergebnis |
+|---|---|---|---|
+| **M1** | über die ungefilterte statt die einwilligungs-gefilterte Menge iterieren | 5 rot | **5 rot, exakt diese** |
+| **M2** | den zweiten Zweig entfernen | 3 rot | **3 rot, exakt diese** |
+| **M3** | seriell statt gleichzeitig | 3 rot | **3 rot, exakt diese** |
+| **M4-i** | Konfiguration direkt durchreichen | Build bricht | `TS2345: Property 'adAccountId' is missing` |
+| **M4-ii** | Kennung und Geheimnis vertauscht | kompiliert, 2 rot | **`tsc` grün, 2 rot, exakt diese** |
+
+**M1 IST DIE TEUERSTE, UND SIE WAR VORHER VON GENAU EINEM TEST GEDECKT** — von dem,
+der in dieser Scheibe seinen Gegenstand verloren hat. Nach der Härtung fallen **fünf**:
+`T7` sowie die vier Fälle in `ingest.consent-targets.test.ts`. **Bliebe M1 grün, wäre
+die Einwilligung je Ziel ungedeckt** — das war die STOPP-Bedingung des Bauauftrags, und
+sie ist nicht eingetreten.
+
+**M4 IST DIE EINZIGE MUTATION MIT ZWEI GETRENNTEN AUSGÄNGEN, und der Unterschied ist
+der Grund für den einzigen Test, der an der Abbildung hängt:** Der Compiler fängt die
+falsche FORM laut; die vertauschten WERTE fängt er nicht, weil beide Felder
+Zeichenketten sind. **Vertauscht stünde das GEHEIMNIS im Endpunkt-Pfad** und die
+öffentliche Kennung im `Authorization`-Header. Dagegen gab es keinen Wächter; `T10`
+ist er.
+
+#### Die Live-Werte, gemeldet von Stefan am 2026-08-10
+
+**PROVENIENZ: MELDUNG VON STEFAN AUS DEM BETRIEB. NICHT von mir gemessen, nicht
+nachgeprüft.** Die Achsen sind ausschliesslich das, was keine Testumgebung erreichen
+kann — hinter dem gestellten `fetch` liegt in jedem Test eine Attrappe, nie ein
+Anbieter.
+
+- **(1) DER PFLICHT-STOPP IST BESTANDEN.** Beide Ziele konfiguriert, und der
+  Consent-Draht führt **BEIDE** Schlüssel im ausgelieferten Quelltext. **Das war die
+  Falle, die diese Scheibe am ehesten in eine Fehlersuche am falschen Ende geführt
+  hätte** (Meldung (4b) der Ausgangslage: der Schlüssel entsteht zur ERZEUGUNGSZEIT).
+- **(2) DAS CONVERSION-EREIGNIS DREIMAL AUSGELÖST.**
+- **(3) IM ANZEIGENKONTO DES ZWEITEN ANBIETERS: Ereignistyp „Checkout", Quelle „API",
+  DREI VON DREI angekommen.**
+- **(4) BEIM ERSTEN ANBIETER: Ereignistyp „Kauf", Deduplizierung zwischen Browser und
+  Server wie zuvor.**
+- **(5) KEINE der drei Log-Zeilen des zweiten Adapters erschien. Stille.**
+
+**EINE GRENZE AN PUNKT (2)/(5), die zwingend dazugehört — WIDERSPRUCH ZUR GEMELDETEN
+FORMULIERUNG:** Gemeldet wurde ausserdem, *„die Laufzeit-Protokolle zeigen die
+gleichzeitigen Aufrufe an BEIDE Empfänger"*. **UNSER CODE SCHREIBT DAS NICHT.** Beide
+Adapter protokollieren bei Erfolg **nichts** (`forwardToPinterest` schweigt, sobald
+`evaluateSuccessBody` „processed" liest; `forwardToMeta` verzweigt nur auf `res.ok`) —
+Punkt (5) sagt genau das. **Beide Meldungen sind nur unter EINER Lesart vereinbar:**
+Was da zu sehen war, ist die Beobachtungs-Ansicht der Plattform (Aufrufe/Invocations),
+**nicht eine Zeile aus unserem Code**. **UND DIE GLEICHZEITIGKEIT IST DARAUS ERST
+RECHT NICHT ABLESBAR** — sie bleibt eine Test-Aussage (`T14`), keine Live-Beobachtung.
+Wer diesen Punkt später als Live-Beleg für die Anordnung zitiert, zitiert etwas, das
+nicht gemessen wurde.
+
+#### Was der Live-Test bewiesen hat — der Ertrag, den keine andere Scheibe liefern kann
+
+**DIE TRANSKRIPTION HAT GEHALTEN.** Endpunkt, Nutzlast-Feldnamen, Zeiteinheit
+(Sekunden), das Identitäts-Paar und die Übersetzung des Ereignisnamens
+(`Purchase → checkout`) stammten **sämtlich aus einer Doku-Lesung vom 2026-08-10, die
+niemand je gegen die Wirklichkeit gehalten hatte.** Der Zuschnitt nannte als
+**wahrscheinlichste** Abweichung, dass der Adapter einen Fehlschlag meldet, **während
+das Ereignis ankommt** — weil `evaluateSuccessBody` den Erfolgs-Rumpf in der
+strengsten Lesart prüft und der Rumpf **nie gemessen** worden war.
+**ES GAB KEINE ABWEICHUNG. Das ist der seltenere Ausgang**, und er wird hier als
+solcher vermerkt, nicht als Selbstverständlichkeit. **Die Protokoll-Auflage des
+Zuschnitts — jede Abweichung festhalten, auch die folgenlose — ist damit erfüllt, und
+zwar mit dem Ergebnis NULL.**
+
+**DIE STILLE IST EIN BEFUND, ABER NUR IM PAAR.** Für sich allein hat sie **DREI**
+Ursachen: echter Erfolg · das fehlende Identitäts-Paar (der Adapter kehrt vor jedem
+`fetch` zurück, ohne Log) · der Empfänger stand gar nicht in der erlaubten Menge. **Erst
+zusammen mit der Ankunft im Konto bleibt genau eine übrig.**
+**WER SPÄTER NUR DIE STILLE ZITIERT, ZITIERT KEINEN BEWEIS.**
+
+**DIE POSITIVKONTROLLE HAT IHRE ROLLE ERFÜLLT, OBWOHL SIE NICHT GEBRAUCHT WURDE** —
+der erste Empfänger verhielt sich unverändert, samt Dedup zwischen Browser und Server.
+**Und sie hat mehr getan als danebenzustehen:** Weil dieselben drei Auslösungen bei
+BEIDEN Anbietern erscheinen, sind die drei Pinterest-Ereignisse an dieselben drei
+Klicks gebunden — ohne sie wäre „drei von drei" eine Zahl ohne Bezugsgrösse. Wäre nur
+einer der beiden angekommen, wäre der Fehlschlag **lokalisierbar** gewesen.
+
+#### Was der Live-Test NICHT beweist — so wichtig wie der Block darüber
+
+**NICHT BEWIESEN IST DIE SEMANTIK.** Dass das Ereignis als „Checkout" ankommt, zeigt,
+dass die Übersetzung **DURCHGEHT** — nicht, dass die Auswertung des Anbieters sie als
+abgeschlossenen Kauf **zählt**. Das entscheidet sich in seinen Berichten über Tage,
+nicht an einer Antwort. **Der Zuschnitt hat diese Grenze VORAB gezogen; sie steht hier,
+weil ein bestandener Test sie sonst überschreibt.**
+
+**EBENFALLS NICHT BEWIESEN:**
+- dass der **Deckel unter echter Netzlast** greift;
+- dass die **Anordnung bei langsamen Antworten** hält — die Tests arbeiten mit
+  gestellten Zeitgebern, und die Gleichzeitigkeit ist eine Test-Aussage, keine
+  Live-Beobachtung (s. den Widerspruch oben);
+- dass ein **Fehlerfall des zweiten Anbieters richtig gedeutet** wird: **er ist NIE
+  eingetreten.** `evaluateSuccessBody` mit seinen drei Ausgängen und `describeErrorBody`
+  sind weiterhin **ausschliesslich gegen die Transkription** geprüft. **Der bestandene
+  Erfolgspfad sagt über den Fehlerpfad nichts** — im Gegenteil, er hat ihn nicht einmal
+  berührt;
+- dass die **Gleichheit der beiden Deckel** (3 s / 3 s) beabsichtigt ist — sie bleibt
+  Zufall der Herkunft und geführter Backlog-Kandidat.
+
+#### Die S5-Richtigstellung — eine als „GEMESSEN" markierte Aussage trug nicht
+
+**EIGENER BENANNTER PUNKT, wie beim Bau festgehalten.** Zusatzbefund **(iv)** der
+Ausgangslage sagt über den Test „Feld MIT VERBOT fuer Meta": *„die erlaubte Menge ist
+`[pinterest]` … und **es geht dann ein Aufruf hinaus**."*
+
+**IN SEINEM EIGENEN FIXTURE GING KEINER HINAUS.** Der Request trug weder `user-agent`
+noch eine vertraute Weiterleitungs-Adresse; `resolveClientIp` lieferte `undefined`, und
+`forwardToPinterest` kehrt am Identitäts-Paar **vor jedem `fetch`** zurück — ohne Log,
+ohne Spur. **Der Test hätte seinen Gegenstand verloren UND wäre dabei GRÜN geblieben**,
+getragen von einer ganz anderen Ursache als von seinem Namen.
+
+**DIE BAU-AUFLAGE DARAUS UND IHR ERTRAG:** Jedes Fixture, das einen Aufruf ans zweite
+Ziel erwartet oder ausschliesst, trägt das Identitäts-Paar; die Begründung steht **an
+den Fixture-Hilfsfunktionen** (`makeRequestWithIdentity` bzw. `makeRequest`), nicht nur
+im Bericht — sonst entfernt sie der Nächste als überflüssig.
+**DIE GEGENPROBE FAND ZWEI WEITERE BESTANDSTESTS DERSELBEN BAUART**, die niemand im
+Blick hatte: `T6` und `T7` schlossen einen Aufruf ans zweite Ziel aus, ohne das Paar zu
+tragen. **Nach der Härtung fällt M1 mit FÜNF statt vier Tests.**
+**EINE GEGENPROBE, DIE FINDET, WOGEGEN SIE GESCHRIEBEN IST, IST DIE AUSNAHME** —
+meistens bestätigen sie. Diese hat die Zahl der gedeckten Fälle um ein Viertel erhöht,
+nachdem der Bau bereits grün war.
+
+#### Vier benannte Punkte aus dem Bau
+
+**(a) EIN TESTKOMMENTAR KANN EINE GARANTIE BEHAUPTEN, DIE SEIN TEST NICHT DECKT.**
+`T11` trug die Zeile *„beide Aufrufe stehen, BEVOR einer antwortet — gleichzeitig,
+nicht seriell"*. **Bei serieller Abarbeitung blieb er grün**, weil das erste Bein sofort
+antwortet und der zweite Aufruf deshalb auch seriell schon abgesetzt ist, wenn gemessen
+wird. **Der Test war nicht falsch — seine Selbstbeschreibung war zu weit.**
+**BERICHTIGT UND ERGÄNZT, nicht eines von beidem:** Der Kommentar nennt jetzt die
+Messung, und `T14` (BEIDE Beine hängen) trägt die Gleichzeitigkeit zweier echter
+Empfänger. **Ein zu weiter Kommentar ist teurer als gar keiner** — er lädt dazu ein,
+eine Achse für gedeckt zu halten und keinen Test dafür zu schreiben.
+
+**(b) EIN TEST KANN OHNE DEN GEGENSTAND GRÜN SEIN, WEIL SEINE AUSSAGE TRIVIAL WAHR
+IST.** `T12` und `T13` waren schon vor dem Zweig grün: Sie behaupten **Containment**,
+nicht **Existenz**. **Die Vorhersage war falsch, die Tests sind richtig** — sie bewachen
+etwas anderes (`allSettled` gegen `Promise.all`). **Der Fehler liegt in der Zuordnung
+Test → Fehlerklasse, nicht im Test.**
+
+**(c) DIE WERKZEUG-REGEL GILT WEITER ALS IHR WORTLAUT.** Sie nennt in CLAUDE.md ein
+bestimmtes Kommando (`sed -i` strippt still das CR); **ihr Gegenstand ist jedes
+Werkzeug, das eine Datei GANZ neu schreibt.** Ein solcher Aufruf (`Set-Content` beim
+Setzen einer Mutation) hat hier `capi/ingest.ts` **doppelt kodiert** — jeder Umlaut und
+jeder Gedankenstrich zerstört, der Diff sprang von 66/6 auf 126/66. **Aus git
+wiederhergestellt, mit dem Editier-Werkzeug neu eingetragen, Kontrolle über alle fünf
+Dateien ohne Treffer.**
+**HEBUNGSKANDIDAT FÜR CLAUDE.md, "## Immer beachten": die bestehende Regel um diese
+Ausprägung ergänzen** — sie ist heute an EIN Kommando gebunden und trifft damit den
+Fall nicht, der eingetreten ist. **NICHT eingetragen**, weil diese Runde ausschliesslich
+diese Datei anfasst.
+
+**(d) STILLE IST NUR IM PAAR EIN BEFUND.** S. den Block „Was der Live-Test bewiesen
+hat". **Der Punkt steht hier ein zweites Mal, weil er die Form hat, in der er beim
+nächsten Mal gebraucht wird:** Ein Adapter, der bei Erfolg schweigt, macht das Log zu
+einer Halbaussage — die andere Hälfte liegt immer beim Empfänger.
+
+#### Was die Scheibe NICHT geleistet hat
+
+- **DER TESTKNOPF.** Dreizehnte.
+- **DIE SICHTBARKEIT DER ÜBERSETZUNG** für den Betreiber — er sieht bis heute nicht,
+  unter welchem Namen sein Ereignis beim zweiten Anbieter ankommt. **Der Live-Test hat
+  das für EINEN Namen beantwortet, das Produkt beantwortet es für keinen.**
+- **JEDE EINGABE-PRÜFUNG** für die Kennung.
+- **DIE ÜBERFÜHRUNG DES CONSENT-SCHLÜSSELS IN EINE KONSTANTE** (Meldung (4a) der
+  Ausgangslage). Fällig, aber nicht diese Scheibe.
+- **DER FEHLERPFAD DES ZWEITEN ANBIETERS** ist nie eingetreten.
+- **DER RÜCKFALL DER ZUORDNUNG** (`return Promise.resolve()`) ist **strukturell
+  unerreichbar**: Jedes bekannte Ziel hat einen Adapter, und ein unbekanntes fällt schon
+  in `allowedTargets` heraus, weil weder `LEGACY_CONSENT_ROLE` noch
+  `CONSENT_KEY_BY_TARGET` einen Eintrag dafür tragen. **Ein Test dagegen prüfte einen
+  Zustand, den das System nicht herstellen kann** — er bleibt trotzdem stehen, als
+  Erschöpfungs-Rest für ein drittes Ziel.
+
+#### Der Abgleich gegen den Massstab
+
+- **Die sechs Invarianten.** (1) Der erste Empfänger ist unberührt — im Diff als
+  Kontextzeile und live bestätigt. (2) Die Rundenzahl wächst nicht — die zweite Abfrage
+  in `token.ts` war schon vorher zielunabhängig, es war nichts zu bauen. (3) Der Ingest
+  wirft nie — `T13`. (4) Ein Projekt ohne Zugangsdaten für das zweite Ziel verhält sich
+  unverändert — eigener Test. (5) Die Einwilligung entscheidet je Ziel — M1 mit fünf
+  Tests. (6) **Der Adapter wurde nicht angefasst** — er steht nicht im Diff.
+- **Die sieben Stufe-1-Fragen.** Alle beantwortet; die gefährlichste (Frage 6, `allowed`
+  gegen `targets`) hat **keinen strukturellen Zeugen** — kein Typfehler, keine unbenutzte
+  Variable — und hängt deshalb allein an M1.
+- **Die fünf Ausschlüsse.** Eingehalten.
+
+**WAS BINDEND BLEIBT — VIER, einzeln benannt, damit die Zahl eine Quelle hat:**
+
+1. **DER FEHLERPFAD DES ZWEITEN ANBIETERS IST UNGEPRÜFT.** Wer `evaluateSuccessBody`
+   oder `describeErrorBody` anfasst, misst gegen eine **Transkription**, nicht gegen
+   eine Messung. **Der bestandene Live-Test ändert daran nichts** — er hat den
+   Erfolgspfad bestätigt und den Fehlerpfad nicht berührt.
+2. **DAS IDENTITÄTS-PAAR IM FIXTURE.** Jeder künftige Test, der einen Aufruf ans zweite
+   Ziel erwartet **oder ausschliesst**, trägt `user-agent` und eine nicht-loopback
+   Weiterleitungs-Adresse. **Ohne das ist er still hohl** — der Adapter kehrt vor jedem
+   `fetch` zurück, und „kein Aufruf" wird aus dem falschen Grund wahr.
+3. **DER ABBILDUNGS-WÄCHTER IST EIN EINZELSTÜCK.** `T10` ist der einzige Test gegen die
+   vertauschte Kennung. **Wer ihn als redundant entfernt, nimmt den einzigen Schutz
+   davor mit, dass das Geheimnis in den Endpunkt-Pfad wandert.** Im Testkommentar als
+   solcher benannt.
+4. **DIE SECHSTE FUNDSTELLE FÜR ZIEL-WISSEN.** `PINTEREST_TARGET` in `capi/ingest.ts`
+   ist dazugekommen; der Wächter ist der **TYP**, nicht der Name. **Gemeldet, nicht
+   gelöst** — die Zusammenlegung ist seit der sechsten Scheibe ausgeschlossen.
+
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WIRD:** die Ausgangslage mit ihren sieben Aussagen
+und beiden Meldungen, und der Live-Test-Block des Zuschnitts. **Sie sind der MASSSTAB**
+— ohne sie ist nicht mehr prüfbar, ob „keine Abweichung" ein Ergebnis oder ein
+Versäumnis war. **Insbesondere Meldung (4b)** (der Consent-Schlüssel entsteht zur
+Erzeugungszeit) bleibt wörtlich stehen: Sie ist der Grund für den Pflicht-Stopp, und
+der nächste Live-Test eines Ziels braucht sie unverändert.
+
+**WIDERSPRUCH — DREI PUNKTE, an denen ich etwas anderes für bindend halte als der
+Auftragstext:**
+
+1. **„ALLE VIER MUTATIONEN PUNKTGENAU" GILT ERST FÜR DIE ZWEITE RUNDE.** Die
+   Erst-Vorhersagen waren **zweimal** falsch (M2 und M3), und beide Fehlschläge haben
+   etwas gefunden — den trivial-wahren Test (b) und die zu weite Selbstbeschreibung (a).
+   **Die Formulierung ohne diesen Zusatz wäre die schmeichelhaftere und die weniger
+   nützliche.**
+2. **„DIE LAUFZEIT-PROTOKOLLE ZEIGEN DIE GLEICHZEITIGEN AUFRUFE" IST KEINE AUSSAGE
+   UNSERES CODES.** S. die Grenze am Live-Wert-Block. Die Gleichzeitigkeit bleibt eine
+   Test-Aussage.
+3. **„DER ZWECK IST ERREICHT" IST WAHR FÜR DIE STRUKTUR, NICHT FÜR DEN AUFGEZÄHLTEN
+   UMFANG.** Die Roadmap-Zeile "Phase 11" nennt vier weitere Ziele und das
+   Testmodus-Modul. **Ich halte es für bindend, dass diese Entscheidung ausdrücklich
+   fällt, bevor der Roadmap-Haken gesetzt wird** — sonst hakt jemand eine Phase ab,
+   deren eigene Zeile mehr verspricht, als sie geliefert hat. **Fachlich stimme ich zu:**
+   ein zweites Ziel, das sendet, ist die Struktur; jedes weitere ist eine Wiederholung
+   desselben Handgriffs, kein neues Fundament.
 
 ---
 

@@ -50,10 +50,28 @@ export const ANALYTICS_CONSENT_TARGET = "analytics";
 /**
  * Der Laufzeit-Text des Gates. Setzt window.__psConsent(target) -> boolean.
  *
- * DIE REGEL, wie sie in docs/aktiver-stand.md unter "DIE AUSWERTUNGSREGEL" steht —
- * sie ist dort ABSCHLIESSEND, hier wird nichts ergaenzt. Die Trennlinie ist NICHT
- * die Datenform, sondern eine einzige Frage: HAT SICH DER BETREIBER UEBERHAUPT
- * GEAEUSSERT?
+ * DIESE AUFZAEHLUNG IST DIE VERBINDLICHE FASSUNG DESSEN, WAS GESCHIEHT. Sie steht
+ * hier, wo das Verhalten entsteht.
+ * DIE ABSICHT UND IHRE HERLEITUNG stehen in
+ * docs/claude-history/phase-11-multi-tracking.md unter "## Das beschlossene
+ * Consent-Modell": Herkunft der Entscheidung, Begruendung, verworfene Alternativen.
+ * DAS IST EIN KONTEXT-ZEIGER, KEIN AUTORITAETS-ZEIGER.
+ * WEICHEN BEIDE AB, IST DAS EIN BEFUND UND KEIN ERMESSEN: Es gewinnt nicht der Code,
+ * weil er laeuft — es entsteht eine Frage, die jemand beantworten muss.
+ * SEINE GRENZE, und sie gehoert in denselben Kommentar: HEUTE BEMERKT DIESE
+ * ABWEICHUNG NIEMAND. Es gibt keinen Waechter, der den erzeugten Laufzeit-Text
+ * gegen diese Aufzaehlung haelt, und keinen gegen die Doku. DER SATZ IST DAMIT EINE
+ * VERPFLICHTUNG, KEINE ZUSICHERUNG — wer sich auf ihn verlaesst, verlaesst sich auf
+ * Aufmerksamkeit. WAS ER TROTZDEM LEISTET: Er sagt, WIE zu entscheiden ist, wenn es
+ * jemand bemerkt; vorher war das offen.
+ * WARUM DIE AUTORITAET HIER LIEGT UND NICHT DORT: Eine Doku-Datei kann verdichtet,
+ * umformuliert oder verschoben werden. Der teure Fall ist NICHT der tote Zeiger —
+ * den sucht jemand — sondern der, der noch AUFLOEST, waehrend das Ziel etwas
+ * anderes sagt. Ein Sicherheitspfad darf seinen Massstab nicht an einer Stelle
+ * haben, die sich still aendern kann.
+ *
+ * Die Trennlinie ist NICHT die Datenform, sondern eine einzige Frage: HAT SICH DER
+ * BETREIBER UEBERHAUPT GEAEUSSERT?
  *  - nichts gesetzt            -> ERLAUBT (er hat nie entschieden)
  *  - Funktion                  -> aufrufen; ein Wurf -> VERBOTEN
  *  - kein Funktionszwang       -> ein DIREKT gesetzter Wert wird DIREKT ausgewertet

@@ -8275,12 +8275,287 @@ Und die drei Kandidaten-Befunde gelten ausdrücklich **über diesen Fall hinaus*
 
 ---
 
-## Die zwölfte Scheibe — PINTEREST SENDET (Platzhalter)
+## Die zwölfte Scheibe — PINTEREST SENDET (Zuschnitt)
+
+**ÜBERSCHRIFTEN-STEMPEL, 2026-08-10:** Der Zusatz „(Platzhalter)" ist durch
+„(Zuschnitt)" ersetzt. **Der ZWECK-Satz des Platzhalters bleibt wörtlich stehen** —
+er war richtig und wird nicht umformuliert, nur ergänzt.
 
 **ZWECK:** Die Zuordnung bekommt ihren zweiten Zweig, der Fan-Out beliefert
 tatsächlich ein zweites Ziel — **und ihr Live-Test ist der Beweis der ganzen Phase.**
+**EIN Eintrag in `dispatchForward`.**
 
-**KEIN ZUSCHNITT.**
+**DIE BESONDERHEIT DIESER SCHEIBE, und sie gehört an den Anfang: SIE IST DIE
+KLEINSTE UND DIE RISKANTESTE DER PHASE.** Bis hierher hat nichts gesendet. Mit
+diesem Eintrag geht zum ersten Mal ein Aufruf an ein ZWEITES fremdes System — **gegen
+eine TRANSKRIPTION, die niemand je geprüft hat** (die Anbieter-Befunde und die fünf
+Angaben vom 2026-08-10, beide aus Doku, keine Messung). **Der Bau ist trivial; DER
+LIVE-TEST IST DER EIGENTLICHE GEGENSTAND.**
+
+**DIE TRAGENDE ZUSAGE: DER ERSTE EMPFÄNGER VERHÄLT SICH UNVERÄNDERT.** Das ist die
+Invariante, die seit der siebten Scheibe weiterläuft, und **sie ist hier zum ersten
+Mal wirklich gefährdet** — vorher stand kein zweiter Empfänger daneben. Bis zur
+elften Scheibe war „unberührt" eine Aussage über Code, den niemand anfasste; ab
+dieser ist es eine Aussage über zwei Empfänger, die sich denselben Handler, dieselbe
+Antwort und dieselbe Frist teilen.
+
+---
+
+### Die gemessene Ausgangslage der ZWÖLFTEN Scheibe — eine ZUSAMMENFÜHRUNG, keine neue Erhebung
+
+**PROVENIENZ: am Code gemessen am 2026-08-10 (read-only).** Sieben Aussagen aus fünf
+Scheiben, **je mit der Scheibe, aus der sie stammt** — geprüft wurde gegen den CODE,
+nicht gegen die Protokolle. **SECHS TRAGEN UNVERÄNDERT. EINE TRÄGT NICHT MEHR, WIE
+SIE FORMULIERT WAR, UND EINE ZWEITE IST ZU GROB** — beide sind als MELDUNG markiert.
+
+**(1) DIE AUFLÖSUNG LIEFERT EINE MENGE; DER FAN-OUT ITERIERT ÜBER DIE AUFGELÖSTE
+MENGE, NIE ÜBER DIE LISTE DER BEKANNTEN ZIELE.** *(siebte Scheibe.)* **TRÄGT.**
+`getCapiConfigByTrackingKey` gibt `TrackingKeyResolution` mit
+`targets: ResolvedTarget[]`; der Handler liest `const targets = resolution.targets`,
+die Wache lautet `targets.length > 0 && isForwardable(event)` (LÄNGE, nicht Existenz),
+gesendet wird über `allowed.map(...)` in `Promise.allSettled`. **Eine formale Suche
+nach `TRACKING_TARGETS` in `capi/ingest.ts` bleibt leer** — der billigste Wächter
+dieser Zusage, unverändert grün.
+
+> **MELDUNG — PRÄZISIERUNG, kein Widerspruch:** Der Fan-Out iteriert **nicht über
+> `targets`, sondern über `allowed`** — das Ergebnis von `allowedTargets(targets,
+> body)`. Es sind **ZWEI** Verengungen hintereinander: die Auflösung (nur
+> vollständige Paare) und die Einwilligung (je Ziel). Wer „die aufgelöste Menge"
+> liest und beim Bauen `targets` einsetzt, **baut die Einwilligung lautlos aus** —
+> und zwar an genau der Stelle, die diese Scheibe anfasst.
+
+**(2) DIE FRIST IST EINE EIGENSCHAFT DER ANORDNUNG: GLEICHZEITIGER START, EIGENER
+DECKEL JE EMPFÄNGER, KEIN GETEILTES ABBRUCHSIGNAL.** *(siebte Scheibe.)* **TRÄGT.**
+`allowed.map(...)` plus `Promise.allSettled` (kein `for await`), und jeder Adapter
+trägt sein eigenes Gerüst: `META_FORWARD_TIMEOUT_MS` in `meta-forward.ts`,
+`PINTEREST_FORWARD_TIMEOUT_MS` in `pinterest-forward.ts`, **je ein eigener
+`AbortController` INNERHALB der jeweiligen Funktion.** Eine Suche nach
+`Promise.race` und nach einem geteilten Signal in `src/lib/capi/` liefert keinen
+Treffer.
+**DIE ZAHLEN, mit Provenienz und Grenze:** beide Deckel stehen auf **3_000 ms**,
+**am Code abgelesen am 2026-08-10**. **GRENZE:** Es sind zwei getrennte
+modul-private Konstanten; **ihre Gleichheit ist heute Zufall der Herkunft und von
+keinem Test behauptet** (der Backlog-Kandidat „DER DECKELWERT IST MODUL-PRIVAT UND
+VON AUSSEN NICHT LESBAR" steht in dieser Datei). Wer aus „3 Sekunden" eine
+Gesamtaussage macht, unterstellt eine Kopplung, die es nicht gibt.
+
+**(3) DIE EINWILLIGUNG WIRD JE ZIEL GEPRÜFT; DIE ALT-SEITEN-AUSNAHME GILT NUR FÜR
+DAS ZIEL MIT DER ALTBESTANDS-ROLLE.** *(neunte Scheibe, Hälfte A.)* **TRÄGT.**
+`allowedTargets` liest zuerst die ANWESENHEIT von `CONSENT_WIRE_FIELD`; ist das Feld
+abwesend, filtert es über `LEGACY_CONSENT_ROLE`, sonst je Eintrag über
+`consentAllows(body, CONSENT_KEY_BY_TARGET[entry.target])`. Gemessen:
+`LEGACY_CONSENT_ROLE = { meta: true, pinterest: false }`,
+`CONSENT_KEY_BY_TARGET = { meta: META_CONSENT_TARGET, pinterest: "pinterest" }`.
+**Die Regel im Handler nennt keinen Anbieternamen.**
+
+**(4) DER DRAHT TRÄGT DIE URTEILE ALLER ZIELE, AUS EINER ZIEHUNG.** *(neunte
+Scheibe, Hälfte B.)* **TRÄGT — mit einem Kommentar daneben, der es nicht mehr tut.**
+Gemessen in `tracking/meta.ts`: **eine** Ziehung (`var __c =
+__psConsentAll([...consentTargets])`), daraus die Oder-Kette `anyAllowed` und das
+Draht-Objekt unter `CONSENT_WIRE_FIELD` (`"cns"`) mit **einem Feld je Schlüssel**
+(`__c[k] === true`). Die Liste kommt aus `CodeImporter.tsx`:
+`TRACKING_TARGETS.filter(t => getPixelId(settings, t) !== "").map(t =>
+CONSENT_KEY_BY_TARGET[t])`.
+
+> **MELDUNG — EIN KOMMENTAR TRÄGT NICHT MEHR, UND ES IST DER, AN DEM DIESE SCHEIBE
+> HÄNGT.** `tracking/consent-targets.ts` sagt über den Pinterest-Wert: *„weil der
+> Erzeuger den Schlüssel noch nicht schreibt (Haelfte B) … BIS DAHIN ist er
+> folgenlos: Der Draht traegt ihn nie, also lautet die Antwort fuer dieses Ziel bei
+> vorhandenem Feld ohnehin ‚nicht erlaubt'."* **HÄLFTE B IST GEBAUT.** Der Erzeuger
+> schreibt den Schlüssel für **jedes** Ziel mit gesetzter Kennung — für Pinterest
+> also, sobald ein Projekt eine Anzeigenkonto-ID trägt. **ZWEI FOLGEN, und die
+> zweite ist eine Auflage an den Live-Test:**
+> **(a) DIE ANGEKÜNDIGTE EINBAHNSTRASSE IST DA.** Der Wert steht mit der ersten
+> Veröffentlichung eines so konfigurierten Projekts in AUSGELIEFERTEM Code und in
+> fremden Betreiber-Konfigurationen. Die im selben Kommentar versprochene
+> Überführung nach `tracking/consent.ts` (als importierte Konstante, wie bei Meta)
+> **ist nicht geschehen**. **GEMELDET, NICHT GETAN** — sie ändert eine Datei, die
+> diese Scheibe nicht anfasst, und gehört als eigener Kandidat behandelt.
+> **(b) DER SCHLÜSSEL ENTSTEHT ZUR ERZEUGUNGSZEIT, NICHT ZUR LAUFZEIT.** Eine Seite,
+> die VOR dem Eintragen der Anzeigenkonto-ID veröffentlicht wurde, trägt ihn nicht;
+> ihr Draht verbietet das zweite Ziel dann fail-closed und lautlos. **Wer live
+> testet, ohne nach dem Eintragen NEU zu veröffentlichen, misst einen Fehlschlag,
+> der keiner ist** — und würde ihn dem Adapter oder der Transkription zuschreiben.
+
+**(5) DER ADAPTER EXISTIERT, IST GETESTET UND WIRD VON NIEMANDEM GERUFEN.** *(zehnte
+Scheibe.)* **TRÄGT.** `forwardToPinterest` steht in `src/lib/capi/pinterest-forward.ts`;
+**eine formale Suche über `src/` nach `forwardToPinterest` und nach
+`pinterest-forward` liefert Treffer NUR in dieser Datei und in
+`pinterest-forward.test.ts`** — kein Produktivcode ruft ihn. `dispatchForward` trägt
+genau einen Zweig (`entry.target === META_TARGET`) und gibt sonst
+`Promise.resolve()` zurück.
+**SEINE KONFIGURATIONSFORM IST EIGEN:** `PinterestConfig { adAccountId, token }` —
+**nicht** `CapiConfig { pixelId, token }`. Der Kopf jener Datei sagt es ausdrücklich:
+*„DER AUFRUFER (zwoelfte Scheibe) bildet sie aus der Aufloesung ab."*
+
+**(6) DIE KARTE FRAGT NACH DER RICHTIGEN KENNUNG.** *(elfte Scheibe.)* **TRÄGT.**
+`TARGET_CARDS.pinterest.publicLabel` lautet „Pinterest-Anzeigenkonto-ID", der
+Hilfetext „Aus dem Anzeigenkonto, nicht im Seitenquelltext", der Platzhalter ist
+absteigend. **Das ist die Kennung, die der Adapter in den Endpunkt-PFAD setzt** —
+nicht die Kennung des Browser-Tags, den wir gar nicht injizieren.
+
+**(7) DER AUSLIEFERUNGS-HINWEIS HÄNGT AN EINEM FELD DER KARTEN-KONFIGURATION.**
+*(sechste Scheibe, bestätigt in der elften.)* **TRÄGT.** In `TargetCard` steht
+`{!config.hasAdapter && (…„Auslieferung folgt — dieses Ziel sendet noch nicht."…)}`;
+gemessen `TARGET_CARDS.pinterest.hasAdapter === false`, `TARGET_CARDS.meta.hasAdapter
+=== true`. **Der halb korrigierte Kommentarsatz daneben ist erledigt** (Commit
+`07f7bb1`): er nennt jetzt die AUSLIEFERUNG als Bedingung, nicht den Adapter.
+
+**WAS DIE ZUSAMMENFÜHRUNG ZUSÄTZLICH ERGIBT — VIER BEFUNDE, die in keiner der sieben
+Aussagen stehen und die den Bau unmittelbar betreffen:**
+
+**(i) DIE ABBILDUNG IST TYPGESICHERT — der Wächter ist der Compiler, kein Test.**
+`entry.config` ist `CapiConfig`; ein direktes Durchreichen an `forwardToPinterest`
+**bricht den BUILD**, weil `adAccountId` fehlt. Die naheliegende Verwechslung („die
+Struktur passt doch") ist damit nicht lautlos möglich. **Das ist der billigste
+Wächter dieser Scheibe und er existiert bereits.**
+
+**(ii) DER NUTZLAST-TYP PASST OHNE JEDE ÄNDERUNG.** `PinterestForwardBody` liest
+`value`, `currency`, `eventSourceUrl` — eine **Teilmenge** von `CapiRequestBody`;
+`_fbp` fehlt dort absichtlich (es ist Metas Cookie). Der neue Zweig kann denselben
+`body` durchreichen wie der bestehende. **Invariante 6 ist an dieser Stelle also
+nicht in Gefahr: es gibt nichts am Adapter zu ändern, damit er gerufen werden kann.**
+
+**(iii) DIE RUNDENZAHL IST BEREITS UNABHÄNGIG VON DER ZAHL DER ZIELE.** Die zweite
+Abfrage in `token.ts` lautet `select("target, secret").eq("project_id", …).in("target",
+…)` — **eine** Runde für alle Ziele, seit der sechsten Scheibe. **Invariante 2
+verlangt also nichts zu BAUEN, sondern nichts KAPUTTZUMACHEN**; sie ist eine
+Nicht-Änderungs-Zusage und wird durch eine formale Suche nach einer zweiten Abfrage
+belegt, nicht durch einen Zähl-Test.
+
+**(iv) GENAU EIN BESTEHENDER TEST WIRD DURCH DIESE SCHEIBE INHALTLICH FALSCH.** Es
+ist *„Feld MIT VERBOT fuer Meta -> kein Aufruf, obwohl Pinterest erlaubt ist"* in
+`ingest.consent-targets.test.ts` — **der einzige Test im Repo, der `dispatchForward`
+mit einem ADAPTERLOSEN Ziel aufruft**; sein eigener Kommentar sagt das und nennt es
+einen NEBENEFFEKT seines Aufbaus. Mit dem zweiten Zweig ist Pinterest kein
+adapterloses Ziel mehr: die erlaubte Menge ist `[pinterest]`, und **es geht dann ein
+Aufruf hinaus**. **Er wird nicht „angepasst", er verliert seinen Gegenstand** — und
+mit ihm verschwindet die letzte Stelle, an der die Zuordnung mit einem Ziel ohne
+Adapter geprüft wird. **Gegenprobe, damit die Zahl EINS eine Quelle hat:** `T6` und
+`T7` in `fan-out.test.ts` bleiben grün — beide fahren mit ABWESENDEM Draht-Feld, die
+Altbestands-Rolle lässt dort nur Meta durch, sie erreichen die Zuordnung seit der
+neunten Scheibe gar nicht mehr (steht je in ihren Köpfen).
+
+---
+
+### Der Zuschnitt der ZWÖLFTEN Scheibe
+
+**WAS DIE SCHEIBE HERSTELLT — zwei Dinge, mehr nicht:**
+- **DIE ZUORDNUNG KENNT ZWEI EMPFÄNGER.** `dispatchForward` bekommt EINEN Zweig für
+  das zweite Ziel, der die Auflösung auf `PinterestConfig` abbildet und
+  `forwardToPinterest` zurückgibt. Der bestehende Meta-Zweig bleibt, wie er ist.
+- **DER AUSLIEFERUNGS-HINWEIS DER KARTE VERSCHWINDET.** `hasAdapter` wird für das
+  zweite Ziel umgelegt. Er hängt an DIESEM Feld und an keinem Kommentar.
+
+**VERHALTENS-INVARIANTEN — SECHS:**
+1. **DER ERSTE EMPFÄNGER IST UNBERÜHRT.** Gleiche Nutzlast, gleiche Sequenz, gleicher
+   Deckel — **und er darf von einem langsamen oder fehlschlagenden zweiten NICHT
+   mitgerissen werden.**
+2. **DIE RUNDENZAHL WÄCHST NICHT.** (Sie ist heute schon unabhängig, s. Befund (iii)
+   — die Invariante schützt den Bestand, sie fordert keinen Bau.)
+3. **DER INGEST WIRFT NIE**, auch wenn der neue Empfänger seinen Vertrag bricht.
+   `allSettled` trägt das strukturell; die 204 bleibt leer.
+4. **EIN PROJEKT OHNE ZUGANGSDATEN FÜR DAS ZWEITE ZIEL VERHÄLT SICH UNVERÄNDERT.**
+   Ohne vollständiges Paar steht das Ziel gar nicht erst in der aufgelösten Menge.
+5. **DIE EINWILLIGUNG ENTSCHEIDET JE ZIEL.** Eine Seite ohne den zweiten Schlüssel im
+   Draht bekommt keinen zweiten Forward — auch dann nicht, wenn Zugangsdaten
+   hinterlegt sind.
+6. **DER ADAPTER WIRD NICHT GEÄNDERT.** Findet der Bau etwas an ihm, ist das eine
+   **STOPP-Bedingung**: er ist gebaut und getestet, und eine Änderung hier wäre eine
+   Korrektur ohne eigene Scheibe. *(Nach Befund (ii) ist keine nötig, damit er
+   gerufen werden kann — die Bedingung ist also scharf und nicht bloss formal.)*
+
+**AUSDRÜCKLICH NICHT IN DIESER SCHEIBE:**
+- **DER TESTKNOPF.** Dreizehnte.
+- **JEDE ÄNDERUNG AM ERSTEN ADAPTER**, einschliesslich des Log-Befunds (er ist am
+  2026-08-10 im Security-Manifest als **Tier 1** eingestuft worden und hat dort seine
+  eigene Runde).
+- **DIE SICHTBARKEIT DER ÜBERSETZUNG** für den Betreiber — er sieht nicht, unter
+  welchem Namen sein Ereignis beim zweiten Anbieter ankommt.
+- **JEDE EINGABE-PRÜFUNG** für die Anzeigenkonto-ID.
+- *(Ergänzt aus der Zusammenführung, damit die Liste nicht wächst, ohne dass es
+  auffällt:)* **DIE ÜBERFÜHRUNG DES CONSENT-SCHLÜSSELS IN EINE KONSTANTE** — Meldung
+  (4a) oben. Sie ist fällig, aber sie ist nicht diese Scheibe.
+
+---
+
+### Der Live-Test IST der Gegenstand, nicht der Abschluss
+
+**WAS ER ZUM ERSTEN MAL PRÜFEN KANN — vier Dinge, die bisher NIEMAND geprüft hat,
+weil nichts gesendet hat:**
+- **OB DER ENDPUNKT STIMMT.** `https://api.pinterest.com/v5/ad_accounts/{id}/events`,
+  Host, Pfadform und Kennungs-Position — bisher ausschliesslich aus der Doku
+  abgeschrieben.
+- **OB DIE NUTZLAST-FELDNAMEN STIMMEN.** `data`-Array, `event_name`, `action_source`,
+  `event_time` (SEKUNDEN), `event_id`, `user_data` mit dem Paar aus IP und
+  User-Agent, `custom_data` mit `currency`/`value`.
+- **OB DER ERFOLGS-RUMPF SO AUSSIEHT, WIE TRANSKRIBIERT.** Der Adapter wertet
+  `num_events_received`/`num_events_processed` und die Ereignis-Urteile in
+  `evaluateSuccessBody` aus, **in der strengsten Lesart** — was nicht eindeutig
+  Erfolg meldet, ist keiner. **Sieht der Rumpf anders aus, meldet er Fehlschläge, die
+  keine sind.** Das ist die wahrscheinlichste Abweichung dieser Scheibe.
+- **OB DIE ÜBERSETZUNG DES EREIGNISNAMENS BEIM ANBIETER ANKOMMT, WIE GEMEINT.**
+  `EVENT_MAP` bildet acht Namen ab (`Purchase → checkout`, `Lead → lead`, …); alles
+  andere geht unverändert hinaus.
+
+**WAS ER NICHT KANN, und das gehört genauso festgehalten:** **Ob ein Ereignis im
+Konto des Betreibers SEMANTISCH richtig einsortiert ist.** Ein angenommener Aufruf
+beweist, dass Endpunkt, Format und Zugangsdaten stimmen — **nicht**, dass
+`checkout` dort dasselbe bedeutet wie `Purchase` hier. Das entscheidet sich in der
+**Auswertung des Anbieters**, nicht an einer Antwort.
+
+**DIE AUFLAGE, die daraus folgt und Teil des Zuschnitts ist: JEDE ABWEICHUNG
+ZWISCHEN TRANSKRIPTION UND WIRKLICHKEIT WIRD ALS BEFUND PROTOKOLLIERT — auch wenn
+sie folgenlos ist.** Ein zusätzliches Feld, ein anderer Enum-Wert, ein abweichender
+Erfolgs-Rumpf, eine unerwartete Fehlerform: **alles gehört ins Protokoll dieser
+Scheibe.** Sie ist der einzige Ertrag, den **keine andere Scheibe liefern kann** —
+jede spätere Änderung am zweiten Adapter misst gegen genau diese Aufzeichnung.
+
+**WAS ER VORAUSSETZT — fünf Bedingungen, und drei davon sind nicht offensichtlich:**
+1. Echte Zugangsdaten des zweiten Anbieters, hinterlegt über die Karte.
+2. Eine echte **Anzeigenkonto-ID** — nicht die Tag-Kennung.
+3. **NEU VERÖFFENTLICHEN NACH DEM EINTRAGEN DER KENNUNG.** Sonst fehlt der
+   Consent-Schlüssel im Draht (Meldung (4b)) und der Forward unterbleibt korrekt.
+4. Ein **forwardbares** Ereignis — der PageView (`__ps_pageview`) und die
+   Bestätigung erreichen den Fan-Out nie.
+5. **Einwilligung für BEIDE Ziele** im Consent-Hook der Testseite, sonst ist der
+   Test einseitig.
+
+**WO DAS ERGEBNIS ABGELESEN WIRD:** in den **Laufzeit-Protokollen**, an den
+Literalen `[capi] Pinterest forward rejected: …` bzw. der Zeile aus
+`evaluateSuccessBody`. **NICHT im Netzwerk-Tab des Besuchers** — der sieht nur den
+Beacon an `/api/e`; der Forward ist server-seitig. **Und ein ausbleibender Fehler ist
+KEIN Erfolgsnachweis:** der Adapter schreibt bei sauberem Erfolg nichts. Der Beweis
+ist die Ankunft im Konto des Anbieters.
+
+---
+
+### Was der Stufe-1-Plan der ZWÖLFTEN Scheibe beantworten MUSS
+
+**Als FRAGEN, nicht als Vorgaben** — fünf aus dem Auftrag, zwei ergänzt.
+
+1. **Wo genau steht die Zuordnung, und was ändert sich an ihr?** (Symbol, Form des
+   neuen Zweigs, und ob der bestehende Zweig dabei eine Zeile ändert.)
+2. **Woher kommt die Konfigurationsform des zweiten Adapters?** Sie ist EIGEN
+   (`PinterestConfig`), nicht die des ersten — wie wird `CapiConfig` darauf
+   abgebildet, und an welcher Stelle?
+3. **Welche Tests behaupten heute, dass GENAU EIN Ziel einen Adapter hat**, und was
+   geschieht mit jedem einzelnen von ihnen?
+4. **Was geschieht mit dem Auslieferungs-Hinweis, und welche Tests hängen daran?**
+   *(Zusatzfrage, die dabei zwingend mitbeantwortet werden muss: Mit zwei Zielen
+   trägt KEINES mehr `hasAdapter: false` — bleibt der Render-Zweig als Vorsorge für
+   ein drittes Ziel stehen, und wie wird er dann noch geprüft?)*
+5. **Wie lässt sich Invariante 1 im Test belegen** — ein langsamer oder werfender
+   zweiter Empfänger neben einem gesunden ersten? *(Der Backlog-Kandidat „KEIN TEST
+   DECKT DEN FAN-OUT MIT ZWEI ECHTEN EMPFÄNGERN" steht in dieser Datei; diese Scheibe
+   ist der Moment, in dem er baubar wird.)*
+6. **ERGÄNZT: Iteriert der neue Code über `allowed` oder über `targets`?** Die Frage
+   klingt trivial und ist die gefährlichste der Liste — beide compilieren, und der
+   Unterschied ist die Einwilligung (Meldung (1)).
+7. **ERGÄNZT: Wird der Live-Test durchgeführt, BEVOR die Scheibe als abgeschlossen
+   gilt** — und wo werden seine Abweichungen protokolliert? Ohne diese Antwort ist
+   der Zuschnitt formal erfüllbar, ohne dass sein eigentlicher Gegenstand
+   stattgefunden hat.
 
 ---
 

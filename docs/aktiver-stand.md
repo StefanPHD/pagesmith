@@ -6626,6 +6626,20 @@ existiert, ist für die nächste Sitzung nicht vorhanden.** Es ist nicht knapp, 
 strittig, nicht vergessen — es ist schlicht weg, und der Ausfall zeigt sich erst,
 wenn jemand darauf baut.
 
+**ERWEITERT AM 2026-08-10 — DIE GRENZE GILT AUCH FÜR DIE FÜNF ANGABEN DARUNTER, UND
+SIE WIRD DABEI NICHT ABGESCHWÄCHT.** Auch sie sind **ANBIETER-DOKU vom 2026-08-10,
+nicht am eigenen Konto geprüft** und nicht am Code gemessen.
+**EINE UNTERSCHEIDUNG DARF DABEI NICHT VERWISCHEN, und sie ist der Grund für diesen
+Satz: DER ERFOLGS-RUMPF IST NIE GEMESSEN WORDEN.** Gemessen wurde am 2026-08-07
+ausschliesslich der **FEHLER**-Rumpf bei ungültigem Geheimnis (Handmessung, Punkt
+(b), erster Spiegelstrich). **Alles, was über den Erfolgs-Rumpf gesagt wird —
+`num_events_received`, `num_events_processed`, `events[]`, `status`,
+`error_message`, `warning_message` — steht auf Doku, nicht auf einer Antwort, die
+jemand gesehen hat.**
+**WARUM GERADE DAS ZÄHLT:** Es ist die Angabe, an der die tragende Anforderung 1
+dieser Scheibe hängt. **Die eine Rumpfform, die der Adapter beherrschen muss, ist
+zugleich die einzige der beiden, die niemand je in der Hand hatte.**
+
 **ERNEUT NACHGEZOGEN AM 2026-08-08, SPAETER AM TAG:** Sie hiess "Die neunte
 Scheibe". Davor schiebt sich die EINWILLIGUNG JE ZIEL. **DER STEMPEL DARUNTER
 BLEIBT WORT FÜR WORT STEHEN** — er beschreibt eine ANDERE Wanderung desselben Tages.
@@ -6781,6 +6795,433 @@ richtig; nur ihr ORT wandert, dieselbe Behandlung wie bei den Punkten 2 und 4:
 - **PUNKT 3 (die Vervielfachung der Zielnamen-Kopien)** bleibt bei DIESER Scheibe:
   Er entsteht erst, wenn ein Ziel Code bekommt, und das geschieht hier. Die
   Zusammenlegung der Kopien ist davon getrennt und steht als Backlog-Kandidat.
+
+### Die fünf Angaben vom 2026-08-10 — DIE LÜCKE, AN DER DER BAU HING
+
+**SIE ERGÄNZEN DIE ANBIETER-BEFUNDE (a) BIS (g), SIE ERSETZEN SIE NICHT.** Wo eine
+neue Angabe einen bestehenden Punkt schärft, steht der Verweis dabei.
+
+**PROVENIENZ, EINHEITLICH UND GETRENNT VON DEN ÄLTEREN: ANBIETER-DOKU, vom
+Architekten abgerufen am 2026-08-10, IM WORTLAUT statt in Zusammenfassung.**
+**NICHT am Code gemessen, NICHT im Konto nachgeprüft.** Es gilt "#### Die Grenze
+dieser Aufnahme" samt ihrer Erweiterung vom selben Tag.
+**WAS ICH DAVON PRÜFEN KANN UND WAS NICHT — ausdrücklich, statt zu
+plausibilisieren:** Die **Feldnamen, Enum-Werte und Pfadformen kann ich NICHT
+prüfen**; ich habe weder die Doku noch das Konto gesehen. Geprüft habe ich
+ausschliesslich das, was gegen **unseren** Code oder gegen die **Liste selbst**
+läuft — und wo ich dabei etwas gefunden habe, steht es als Meldung dabei.
+
+**WARUM DIESER BLOCK ÜBERHAUPT ENTSTEHT:** Stufe 2 dieser Scheibe ist am 2026-08-10
+bei **S5** angehalten worden, **bevor Bau-Schritt 1 lief** — fünf Angaben fehlten,
+und eine Datei mit erfundenen Feldnamen wäre genau das gewesen, was der Zuschnitt
+verbietet. **Es existiert kein Torso, kein angefangener Adapter, keine unversionierte
+Datei** (am Repo geprüft am 2026-08-10: `src/lib/capi/` trägt genau einen Adapter,
+`meta-forward.ts`; eine formale Suche über `src/` nach `*pinterest*` liefert keinen
+Treffer).
+
+**(1) ENDPUNKT UND KOPFZEILEN.**
+```
+POST https://api.pinterest.com/v5/ad_accounts/{ad_account_id}/events
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+**SCHÄRFT PUNKT (a) UND (g):** Jene sagten „eine KONTO-KENNUNG im Pfad" und nannten
+den Feldnamen `ad_account_id`; **hier steht zum ersten Mal, WO im Pfad er sitzt und
+gegen welchen Host gesendet wird.**
+
+**(2) DIE NUTZLAST.** Ein Objekt mit dem Schlüssel `data`, darin ein **ARRAY** von
+Ereignissen. **Wir senden genau eines.**
+- **PFLICHT je Ereignis:** `event_name` · `action_source` · `event_time` (Unix-**SEKUNDEN**, ganzzahlig) · `event_id`
+- **OPTIONAL:** `event_source_url` (nullable) · `opt_out` (boolean) · `partner_name` (nullable; `"direct"` für direkte Anbindung)
+- **PFLICHT-OBJEKT `user_data`. Es MUSS mindestens eines enthalten:** `em` · `hashed_maids` · **ODER das PAAR** `client_ip_address` + `client_user_agent`.
+  - `client_ip_address`: gültige IPv4/IPv6, **AUSDRÜCKLICH KEINE Null-Adresse**.
+  - `client_user_agent`: **roh, NICHT gehasht**.
+  - `em`: SHA-256, im Doku-Beispiel als **ARRAY**.
+- **OPTIONAL-OBJEKT `custom_data`:** `currency` (ISO-4217) · `value`.
+- **`action_source` ist ein Enum:** `app_android` · `app_ios` · `web` · `offline`.
+
+**SCHÄRFT PUNKT (d):** Jener sagte „als Minimum genügt das PAAR aus Client-IP und
+User-Agent"; **hier stehen die Feldnamen, die Alternativen (`em`, `hashed_maids`) und
+die Bedingung, dass die IP keine Null-Adresse sein darf.**
+**UND ER BESTÄTIGT DIE ZEITEINHEIT ALS DIESELBE WIE BEIM ERSTEN ZIEL** — Sekunden,
+nicht Millisekunden. **Das ist die einzige Stelle, an der ein Abschreiben vom ersten
+Adapter richtig wäre**; alles andere daneben ist es nicht (s. (c) unten).
+
+**(3) DER TESTMODUS.** Query-Parameter `test=true`. **Im Testmodus werden höchstens
+20 Ereignisse je Anfrage verarbeitet.** Die Doku warnt ausdrücklich davor, ihn vor
+echten Aufrufen nicht zu entfernen.
+**SCHÄRFT PUNKT (e):** Jener sagte „liegt im QUERY-STRING"; **hier steht der Name.**
+**FÜR E6 heisst das:** Der Schalter ist jetzt baubar. **Die 20er-Grenze ist für uns
+heute gegenstandslos** — wir senden genau ein Ereignis —, sie steht hier nur, damit
+niemand sie später neu suchen muss.
+
+**(4) DIE ENUM-WERTE DER EREIGNISNAMEN.** Im Wortlaut, wie übergeben:
+```
+add_payment_info · add_to_cart · add_to_wishlist · app_install · app_open ·
+checkout · contact · customize_product · find_location · initiate_checkout ·
+lead · page_visit · schedule · search · signup · start_trial ·
+submit_application · subscribe · view_category · view_content · watch_video
+```
+**ES SIND EINUNDZWANZIG, UND DIE LISTE IST VOLLSTÄNDIG — AUFGELÖST AM 2026-08-10.**
+
+**WAS HIER STAND UND WARUM ES WEICHT:** Die Angabe kam überschrieben mit „DIE
+ZWEIUNDZWANZIG ENUM-WERTE, vollständig". **Ausgezählt waren es einundzwanzig** (von
+mir gezählt am 2026-08-10, duplikatfrei geprüft), und an dieser Stelle stand die
+Meldung, es sei nicht entscheidbar, ob die Zahl falsch ist **oder ein Wert fehlt** —
+mit dem Vorbehalt, der Stufe-1-Plan dürfe die Liste erst danach benutzen.
+**DER VORBEHALT IST AUFGELÖST: DIE ZAHL WAR FALSCH, KEIN WERT FEHLT.**
+
+**DIE URSACHE GEHÖRT DAZU, weil sie eine bekannte Figur ist:** Gezählt wurden die
+**ZEILEN der Doku-Tabelle** statt der **ENUM-WERTE**. Die Tabelle trägt 21 benannte
+Ereignisse **plus EINE Zeile für „eigener Name"** — **22 Zeilen, 21 Werte.** Die
+zusätzliche Zeile ist keine Auslassung, sondern ein anderer Gegenstand: Sie
+beschreibt den Weg für selbstvergebene Namen, der eine Zeile darunter mit seinen vier
+Auflagen steht.
+*Provenienz der Auflösung: Anbieter-Doku, 2026-08-10, vom Architekten nachgesehen.*
+
+**WARUM DIE MELDUNG TROTZDEM STEHEN BLEIBT und nicht gestrichen wird:** Die
+Fehlerfigur, gegen die sie geschrieben war, ist unverändert real. **Fehlte ein Wert,
+gälte ein Ereignisname als „nicht abbildbar", der in Wahrheit eine Entsprechung
+hat.** Nach Entscheidung (1) würde er dann unverändert durchgereicht — **und landete
+beim Anbieter als abgelehntes Ereignis, obwohl eine Abbildung existierte.** Der
+Fehler wäre nicht laut, sondern eine verlorene Conversion mit korrekt aussehender
+Fehlermeldung. **Der Zweifel war richtig; er ist nur beantwortet.**
+**DER STUFE-1-PLAN DARF DIE LISTE BENUTZEN.**
+
+**EIGENE NAMEN sind zulässig, aber GEBUNDEN — vier Auflagen:** nur Buchstaben,
+Ziffern, Unterstrich und Bindestrich · höchstens **100 Zeichen** · höchstens
+**FÜNFZEHN je Werbekonto** · und sie müssen im Anbieter-Konto auf ein
+Standard-Ereignis abgebildet werden.
+**SCHÄRFT PUNKT (c):** Jener sagte „Enum mit Registrierungspflicht und Deckel";
+**hier steht, wie hoch der Deckel ist und welche Zeichen erlaubt sind.**
+
+**(5) DER ANTWORT-RUMPF — die Angabe, an der der Bau hing.**
+```
+num_events_received · num_events_processed · events[]
+   je Ereignis:  status ("processed" | "failed") · error_message · warning_message
+```
+**SCHÄRFT PUNKT (b), zweiter Spiegelstrich, UND LÖST S5 AUF:** Jener beschrieb „Zahl
+empfangener gegen Zahl verarbeiteter Ereignisse, je Ereignis ein Status" — **eine
+Beschreibung, kein Ausdruck.** Hier stehen die Feldnamen. **Damit ist Anforderung 1
+formulierbar.**
+**UND ER TRÄGT EIN DRITTES FELD, DAS IN KEINER BISHERIGEN ANGABE VORKAM:**
+`warning_message`. S. Punkt (a) im Block darunter.
+
+---
+
+### Die sechs Entscheidungen zum Adapter (OWNER, 2026-08-09) — hier erstmals niedergeschrieben
+
+**PROVENIENZ, und sie ist eine EIGENE, weder Doku noch Messung: OWNER-ENTSCHEIDUNGEN
+vom 2026-08-09**, im Gesprächsverlauf getroffen, **am 2026-08-10 hier erstmals
+niedergeschrieben.** Sie sind keine Angabe über den Anbieter und kein Befund über
+unseren Code — sie sagen, **wie sich der Adapter verhalten soll.**
+
+**SIE TRETEN NEBEN DEN ZUSCHNITT, SIE ÄNDERN IHN NICHT.** Der Zuschnitt sagt, WAS die
+Scheibe herstellt und was sie nicht anfasst; diese sechs sagen, WIE der Adapter sich
+in den Fällen verhält, die der Zuschnitt offenliess.
+
+**(1) DER EREIGNISNAME.** Abbildbare Namen werden **übersetzt**, alle anderen
+**UNVERÄNDERT gesendet**.
+**BEGRÜNDUNG:** Ein **Sammelname** wäre der einzige **STILLE** Ausgang — er käme als
+Erfolg zurück, während das Ereignis **unter falscher Bedeutung** landet. Und **nicht
+zu senden** nähme dem Betreiber den Weg, eigene Namen im Anbieter-Konto zu
+registrieren; **das ist eine Entscheidung über SEIN Konto.**
+
+**(2) DIE FEHLERWEGE.** Erst am **Statuscode** trennen, dann den **Rumpf** lesen.
+**EIN UNLESBARER RUMPF IST EIN FEHLSCHLAG, nie ein Erfolg** — leer, abgeschnitten,
+kein JSON, fehlende Erfolgs-Angabe: **alles Fehlschlag.**
+
+**(3) DIE WURFFREIHEIT.** **STRUKTURELL**, nicht durch Augenschein. Der neue Adapter
+bekommt sie richtig, **auch wenn der erste sie nur faktisch hat.** Der Unterschied
+wird im Kommentar **BENANNT**; der erste wird **NICHT** angefasst.
+
+**(4) DAS IDENTITÄTS-PAAR.** **Beide oder keiner.** Bleibt **KEINE** Kennung übrig,
+wird **NICHT gesendet** — ein Aufruf ohne jede Identität kann beim Anbieter nichts
+bewirken und kostet auf dem meistgetroffenen Pfad.
+
+**(5) DIE BEREINIGUNG — PRÄZISIERT AM 2026-08-10, und die Präzisierung ist keine
+Verfeinerung, sondern eine Korrektur.**
+**GLEICHE FELDER, ABER DER FREIE TEXT DES ANBIETERS WIRD BEREINIGT, BEVOR ER IN EIN
+LOG GEHT.** Typ und Code unverändert; **die Meldung nur gefiltert.**
+Dass das Geheimnis im Header reist, bleibt **KEIN Grund für weniger** — was heute
+nicht zurückkommt, kann morgen zurückkommen.
+
+**(6) DER TESTMODUS.** **Ansprechbar, aber standardmässig AUS.**
+
+#### Wie (5) zu seiner Präzisierung kam — INVARIANTE 5 STICHT
+
+**WAS (5) URSPRÜNGLICH SAGTE:** *„wie beim Vorbild, gleiche Kappung, **gleiche
+Auswahl**."* Dagegen stand **Invariante 5 des Zuschnitts**: *„Der neue Adapter
+übernimmt die Annahme NICHT, sondern behandelt die Anbieter-Meldung als potenziell
+geheimnistragend."* **Beide zusammen verlangten, einen Text zu loggen, den man
+zugleich für möglicherweise geheimnistragend hält.**
+
+**AUFGELÖST: INVARIANTE 5 STICHT.**
+
+**DIE FORMULIERUNG „GLEICHE AUSWAHL" SETZTE VORAUS, DASS DAS VORBILD RICHTIG HANDELT.
+DAS TUT ES NICHT.** Der Kommentar des ersten Adapters behauptet, die Meldung des
+Anbieters sei kein Geheimnis (*„Metas message ist Beschreibungstext (kein Secret),
+aber unbegrenzt lang -> kappen."*). **Am 2026-08-07 wurde das Gegenteil GEMESSEN: Die
+Fehlerantwort auf ein defektes Token spiegelt den übergebenen Token zurück.**
+*PROVENIENZ: **HANDMESSUNG von Stefan** am 2026-08-07 — keine Anbieter-Doku und keine
+Code-Messung. Ich habe sie nicht gesehen.*
+
+**DIE KAPPUNG AUF 200 ZEICHEN HILFT NICHT — der Token steht am ANFANG der Meldung.**
+*Die POSITION ist Teil der Handmessung und von mir nicht prüfbar. **Was ich am Code
+prüfen kann, ist der Mechanismus, und er bestätigt die Folge:*** `asLogValue`
+schneidet mit `String(v).slice(0, META_ERROR_MSG_MAX)` — **vom ANFANG her.** Eine
+Kappung, die die ersten 200 Zeichen BEHÄLT, entfernt nichts, was dort steht. **Sie
+begrenzt die Länge, nicht den Inhalt.**
+
+**DER FEHLER LAG BEIM OWNER, und das gehört festgehalten, weil es die Figur trägt:**
+„Gleiche Auswahl" wurde formuliert, **ohne das Vorbild gegen die eigene Messung zu
+halten** — **dieselbe Messung**, aus der zwei Tage zuvor die **Maskierungs-Auflage des
+Testknopfes** entstand (*„der Text wird MASKIERT, weil Metas Fehlermeldung Teile des
+Tokens zurückspiegelt"*). **Die Angabe lag vor, sie war im selben Dokument
+niedergeschrieben, und sie wurde beim Formulieren der Entscheidung nicht
+herangezogen.**
+**WAS DAS ÜBER DIE FEHLERKLASSE SAGT: Eine Entscheidung, die sich auf ein VORBILD
+beruft, erbt dessen Fehler mit — und zwar unbesehen, weil das Vorbild als geprüft
+gilt.** „Wie beim Vorbild" ist eine Abkürzung, die genau dann teuer wird, wenn das
+Vorbild an der fraglichen Stelle nie geprüft wurde.
+
+---
+
+### DER BEFUND ÜBER DEN BESTEHENDEN ADAPTER — er schreibt ein Token-Fragment ins Log
+
+**ER IST KEIN GEGENSTAND DIESER SCHEIBE UND WIRD HIER NICHT GEBAUT.** Er steht als
+eigener Block und nicht unter den Backlog-Kandidaten, **weil er schwerer ist als
+einer: er betrifft eine Regel, die das Projekt als HART führt.**
+**DIE ENTSCHEIDUNG, OB UND WANN ER BEHOBEN WIRD, FÄLLT NICHT HIER.**
+
+**GEGENSTAND:** `forwardToMeta` loggt über `describeMetaError` den **freien Text der
+Anbieter-Meldung**, gekappt, **mit einem Kommentar daneben, der ihn als geheimnisfrei
+ausweist.** Die **Handmessung von Stefan am 2026-08-07** widerlegt den Kommentar: Die
+Fehlerantwort auf ein defektes Token spiegelt den übergebenen Token zurück.
+
+**FOLGE: Bei jedem ungültigen oder abgelaufenen Token schreibt der Adapter ein
+Token-Fragment in ein Log.** Das verletzt die Regel, die im Projekt als hart geführt
+wird — der Kopf von `describeMetaError` formuliert sie selbst: *„SECRETS-DISZIPLIN
+(2a-Lektion, nicht verhandelbar) … NIE der Token."*
+
+#### Am Code erhoben (2026-08-10, read-only) — WAS er tatsächlich loggt
+
+**Es gibt in `meta-forward.ts` GENAU DREI `console.`-Aufrufe.** Zwei sind
+unbedenklich, **einer ist es nicht** — und er hat **ZWEI** Pfade, nicht einen:
+
+| Stelle | Was hinausgeht | Geheimnis? |
+|---|---|---|
+| `console.error(\`[capi] Meta forward failed: HTTP ${res.status}\`)` | nur der Statuscode | **nein** |
+| `console.error(\`[capi] Meta forward error: ${errorName(err)}\`)` | nur der Fehler-NAME | **nein** |
+| `console.error(await describeMetaError(res))` | s. die zwei Pfade darunter | **JA** |
+
+**PFAD 1 — DER JSON-PFAD.** `describeMetaError` liest fünf Felder aus Metas Envelope
+und schreibt sie in eine Zeile: `code` · `error_subcode` · `type` · `fbtrace_id` ·
+**`msg=${asLogValue(err.message)}`**. **Die Meldung IST darunter** — Ihr Text nimmt
+das an, und **ich bestätige es am Code.** `asLogValue` filtert nichts; es ersetzt nur
+Leerwerte durch `"-"` und kappt auf 200 Zeichen **vom Anfang her**.
+
+**PFAD 2 — DER NICHT-JSON-RÜCKFALL, und er steht in Ihrem Auftragstext NICHT:**
+Lässt sich die Antwort nicht als JSON lesen, schreibt dieselbe Funktion
+**`non-JSON body=${text.slice(0, META_ERROR_MSG_MAX)}`** — also **den ROHEN
+Antwort-Rumpf**, ungeprüft, ebenfalls auf 200 Zeichen vom Anfang gekappt.
+**DAS IST DIE BREITERE DER BEIDEN ÖFFNUNGEN:** Pfad 1 gibt ein benanntes Feld heraus,
+Pfad 2 alles, was zurückkam. **Ich melde ihn, weil eine Behebung, die nur `msg`
+maskiert, ihn stehen liesse.**
+
+**WAS ICH NICHT PRÜFEN KANN:** ob Metas Meldung den Token wirklich zurückspiegelt und
+an welcher Stelle. **Das ist die Handmessung vom 2026-08-07**, und ich habe sie nicht
+gesehen. **Was ich prüfen kann, ist die Mechanik — und sie trägt die Folge:** Wenn ein
+Token im Text steht und die Kappung vom Anfang her schneidet, bleibt er drin.
+
+#### Was ihn schärfer macht als einen gewöhnlichen Backlog-Kandidaten
+
+**ER IST SEIT DER VIERTEN SCHEIBE IM BESTAND UND UNENTDECKT GEBLIEBEN, WEIL DER
+KOMMENTAR DANEBEN DAS GEGENTEIL BEHAUPTET.** Ein **falscher Beleg** hat den Befund
+verdeckt.
+**DAS IST DIESELBE FIGUR, DIE DIESE PHASE MEHRFACH PROTOKOLLIERT HAT — hier mit einer
+SICHERHEITS-Folge:** Eine Aussage, die neben dem Code steht und ihn als geprüft
+ausweist, wird beim Lesen nicht mehr hinterfragt. Die Phase kennt sie als *„eine
+gerade nachgezogene Zahl erzeugt Vertrauen"* und als *„die Prosa wurde optimiert, und
+dabei entstanden Zahlen"*. **Hier hat sie eine Zeile abgedeckt, die ein Geheimnis
+hinausträgt.**
+
+**DER BEFUND WAR ÜBRIGENS SCHON EINMAL AKTENKUNDIG, und das macht ihn nicht besser,
+sondern schlechter:** Die Aufklärung zum Adapter hat am 2026-08-08 die **Kollision
+zwischen dem Kommentar und der Maskierungs-Auflage des Testknopfes** gemeldet — mit
+dem Satz, beide könnten nicht wahr sein und es sei am Code nicht entscheidbar.
+**Entscheidbar war es die ganze Zeit; die Messung existierte seit dem 2026-08-07.**
+Sie stand nur nicht dort, wo jemand sie gegen den Kommentar gehalten hätte.
+
+---
+
+### Ein Hebungskandidat, der selbst unter seine eigene Figur fällt
+
+**BEFUND, geprüft am 2026-08-10:** **CLAUDE.md trägt KEINE Regel** für die Figur
+*„Entscheidungen und Angaben, die im Gespräch fallen und nicht niedergeschrieben
+werden, existieren für die nächste Sitzung nicht."* Gesucht wurde über die
+naheliegenden Begriffe; **kein Treffer in „## Immer beachten" oder anderswo.**
+
+**DIE FIGUR IST BENANNT — aber nicht als Regel und nicht an einem haltbaren Ort.** Sie
+steht in "#### Die Grenze dieser Aufnahme", **in einem Befund über einen
+Einzelfall**, im Wortlaut: *„Wissen, das nur im Gespräch existiert, ist für die
+nächste Sitzung nicht vorhanden."*
+
+**SIE STEHT DAMIT IN EINER DATEI, DIE AM PHASENENDE GELÖSCHT WIRD.** Das Verfahren im
+Kopf dieser Datei sagt es selbst: *„EIGENE HISTORIEN-DATEI unter
+`docs/claude-history/` anlegen, dann DIESE Datei löschen."* Was dorthin wandert, wird
+als Historie gelesen, nicht als Regel.
+
+**ZWEI BELEGE IN DERSELBEN PHASE, und beide fielen erst auf, als jemand darauf bauen
+wollte:**
+- **Die ANBIETER-BEFUNDE**, aufgenommen am 2026-08-08, nachdem ein Zuschnitt an ihrem
+  Fehlen gescheitert wäre.
+- **Die SECHS ENTSCHEIDUNGEN**, aufgenommen am 2026-08-10, nachdem eine Doku-Runde sie
+  als Kurzzeichen referenziert hatte, die im Dokument nichts trafen.
+
+**UND DER PUNKT, DER DIESEN BLOCK ÜBERHAUPT RECHTFERTIGT: DER HEBUNGSKANDIDAT FÄLLT
+SELBST UNTER DIE FIGUR, DIE ER BESCHREIBT.** Er entstand im Gespräch, und bis zu
+diesem Absatz stand er nirgends. **Bliebe er dort, wäre er der dritte Beleg seiner
+eigenen Regel** — und der einzige, bei dem man es vorher gewusst hätte.
+**DIE ENTSCHEIDUNG ÜBER DIE HEBUNG FÄLLT AM PHASENENDE**, wie bei allen
+Hebungskandidaten dieser Phase. **Aufgenommen ist er hiermit; gehoben ist er nicht.**
+
+---
+
+### Vier Punkte, die den Zuschnitt ändern — die Entscheidungen bleiben, diese treten daneben
+
+**KEIN NEUER ZUSCHNITT, KEINE GEÄNDERTE ENTSCHEIDUNG.** Die sechs Entscheidungen im
+Block darüber gelten unverändert; jeder Punkt hier nennt, welche er berührt. **Die
+Kurzzeichen E1 bis E6 entsprechen den Nummern (1) bis (6) jenes Blocks.**
+
+**STEMPEL, 2026-08-10 — DIE MELDUNG, DIE HIER STAND, IST EINGELÖST.** Sie sagte: *„DIE
+KURZZEICHEN E1 BIS E6 SIND IN DIESEM DOKUMENT KEIN ANKER … die sechs Entscheidungen
+sind NIRGENDS in dieser Datei niedergeschrieben … sie existieren bisher ausschliesslich
+im Gesprächsverlauf."* **Am Repo geprüft war das richtig; seit dem Block darüber ist es
+nicht mehr wahr.**
+**DER BEFUND BLEIBT TROTZDEM FESTGEHALTEN, weil er eine Figur benennt und keinen
+Einzelfall:** Es war das **ZWEITE Mal in dieser Phase**, dass Material nur im Gespräch
+existierte — beim ersten Mal waren es die Anbieter-Befunde, und "#### Die Grenze
+dieser Aufnahme" hält es dort mit demselben Satz fest: *„Wissen, das nur im Gespräch
+existiert, ist für die nächste Sitzung nicht vorhanden."*
+**WAS DAVON BLEIBT: Jeder der vier Punkte trägt die berührte Entscheidung weiterhin im
+WORTLAUT mit**, nicht nur ihr Kurzzeichen. Das war die Notmassnahme; **es ist jetzt
+Redundanz, und sie schadet nicht** — wer den Punkt liest, muss nicht springen.
+
+**(a) ES GIBT EIN DRITTES ERGEBNIS JE EREIGNIS: `warning_message`.**
+**BERÜHRT E2** („erst am Statuscode trennen, dann den Rumpf lesen; ein unlesbarer
+Rumpf ist ein Fehlschlag").
+Ein Ereignis kann `"processed"` sein **UND** eine Warnung tragen. **Der Rumpf-Leser
+muss DREI Ausgänge kennen, nicht zwei:** verarbeitet · verarbeitet mit Warnung ·
+fehlgeschlagen.
+**EINE WARNUNG IST WEDER FEHLER NOCH STILLER ERFOLG.** Wer sie nicht liest, verliert
+eine Rückmeldung, **die der Anbieter ausdrücklich sendet** — und zwar in genau dem
+Feld, das er dafür vorgesehen hat. **E2 wird dadurch nicht falsch, nur unvollständig:**
+Die Trennung „erst Status, dann Rumpf" bleibt; der Rumpf-Zweig bekommt einen dritten
+Ausgang statt zweier.
+
+**(b) DIE OFFENE FRAGE AUS E1 IST BEANTWORTET, UND ZWAR GÜNSTIG — RICHTIGGESTELLT,
+NICHT GESTRICHEN.**
+**BERÜHRT E1** („abbildbare Namen werden übersetzt, alle anderen unverändert
+gesendet").
+**WAS DER ZUSCHNITT ALS LÜCKE FÜHRT, im Wortlaut:** *„Ob ein nicht registrierter
+eigener Name laut abgewiesen oder still nicht ausgewertet wird, ist NICHT GEMESSEN.
+Trifft das Zweite zu, fängt ihn auch der Rumpf-Fehlerweg nicht."*
+**DAS DOKU-BEISPIEL ZEIGT GENAU DIESEN FALL:** Ein unbekannter Name führt zu
+`status: "failed"` mit Fehlermeldung im Rumpf. **Das Durchreichen erzeugt also KEINEN
+stillen Ausgang** — der Rumpf-Fehlerweg fängt ihn.
+**DIE GRENZE BLEIBT, und sie ist der Grund für die Richtigstellung statt der
+Streichung: Das ist eine DOKU-AUSSAGE, keine Messung an unserem Konto.** Der
+Lücken-Vermerk war richtig, solange die Angabe fehlte; **er bleibt als Herleitung
+stehen und trägt ab jetzt diese Antwort daneben.**
+**WAS SICH DAMIT FÜR E1 ÄNDERT: NICHTS AN DER ENTSCHEIDUNG, ETWAS AN IHREM PREIS.**
+Sie wurde unter der Annahme getroffen, der Ausgang könne still sein. **Er ist es
+nicht** — die Entscheidung war also günstiger, als sie sein musste.
+
+**(c) `custom_data.value` REIST ALS ZEICHENKETTE, NICHT ALS ZAHL.**
+**BERÜHRT die Trage-Liste des Zuschnitts und „KEINE ABSTRAKTION, ZUM ZWEITEN MAL".**
+Die Doku sagt, der Wert werde als **String** angenommen und intern geparst.
+**AM EIGENEN CODE GEMESSEN (2026-08-10):** Der erste Adapter sendet eine **ZAHL** —
+`if (typeof body.value === "number") customData.value = body.value;` in
+`forwardToMeta`. **Der Typ wird dort geprüft und unverändert übernommen.**
+**WER DAS MUSTER ABSCHREIBT, SENDET DEN FALSCHEN TYP** — und das ist genau die Klasse
+Fehler, gegen die „**eine Datei, eine Funktion, der Anbieter im Namen**" geschrieben
+ist. **Es ist der dritte Kontrast dieser Art**, neben dem Ort des Testmodus (Nutzlast
+gegen Query-String) und der Zerlegung der Fehlerwege.
+
+**(d) `client_ip_address` DARF KEINE NULL-ADRESSE SEIN — GEPRÜFT, KEINE VERLETZUNG.**
+**BERÜHRT E4** („beide oder keiner; bleibt keine Kennung übrig, wird nicht gesendet").
+**AM EIGENEN CODE GEMESSEN (2026-08-10), read-only:** Der Dev-Dummy-Zweig steht in
+`resolveClientIp` (`src/lib/capi/ingest.ts`) und setzt **`"123.123.123.123"`** — eine
+gültige, öffentliche IPv4. **KEINE Null-Adresse. Die Anbieter-Regel wäre also NICHT
+verletzt.**
+**ZWEI BEFUNDE STEHEN TROTZDEM DANEBEN, und der zweite ist der schärfere:**
+- **DER ZWEIG HÄNGT AN METAS UMGEBUNGSVARIABLE.** Er greift nur, wenn
+  `META_TEST_EVENT_CODE` gesetzt ist. **Ein Pinterest-Aufruf in der
+  Entwicklungsumgebung bekäme eine IP also nur, wenn METAS Test-Code gesetzt ist** —
+  eine Kopplung, die niemand entschieden hat und die beim Lesen wie ein Zufall
+  aussieht.
+- **IN PRODUKTION GIBT ES DEN DUMMY NICHT.** `META_TEST_EVENT_CODE` ist dort per
+  Definition leer, `resolveClientIp` gibt `undefined` zurück, sobald die vertraute IP
+  loopback oder leer ist. **Dann fehlt eine Hälfte des Paares, und E4 greift: nicht
+  senden.** Das ist kein neuer Befund — er stand schon in der Stufe-1-Aufklärung —,
+  aber er ist jetzt an eine ausdrückliche Anbieter-Regel geknüpft statt an eine
+  Vermutung.
+**NICHTS GEÄNDERT.** Gemeldet.
+
+---
+
+### Was der Stufe-1-Plan der ZEHNTEN Scheibe ZUSÄTZLICH beantworten MUSS
+
+**Ergänzend zu den sechs bestehenden Fragen. Sie stehen als FRAGEN da, damit keine
+Antwort geraten wird.**
+
+- **Wie liest der Rumpf-Leser DREI Ausgänge statt zwei?** (verarbeitet · verarbeitet
+  mit Warnung · fehlgeschlagen)
+- **Welche unserer Standard-Ereignisnamen haben im Enum eine Entsprechung, welche
+  nicht?**
+- **Was geschieht mit einem eigenen Namen, der die Zeichen-Regel des Anbieters
+  verletzt** (etwa ein Leerzeichen)? **Der Betreiber kann solche Namen heute
+  verdrahten** — das Panel prüft nur auf Nicht-Leerheit.
+- **Welchen Wert setzt der Dev-Dummy-Zweig für die IP?** — **beantwortet, s. Punkt
+  (d):** `"123.123.123.123"`, keine Null-Adresse.
+
+**DIE GEGENÜBERSTELLUNG — die linke Spalte am Repo gemessen am 2026-08-10, die
+Zuordnung aus der ZWECKSPALTE der Anbieter-Doku (2026-08-10). ALLE ACHT SIND
+BELEGT.**
+
+| `META_STANDARD_EVENTS` | Enum-Wert | Grundlage |
+|---|---|---|
+| `Lead` | `lead` | Namensgleichheit |
+| `InitiateCheckout` | `initiate_checkout` | Namensgleichheit |
+| `AddToCart` | `add_to_cart` | Namensgleichheit |
+| `ViewContent` | `view_content` | Namensgleichheit |
+| `Contact` | `contact` | Namensgleichheit |
+| `Subscribe` | `subscribe` | Namensgleichheit |
+| `CompleteRegistration` | `signup` | **Zweckspalte:** erfasst Menschen, die sich für ein Produkt oder einen Dienst REGISTRIEREN |
+| `Purchase` | `checkout` | **Zweckspalte:** erfasst Menschen, die Transaktionen ABSCHLIESSEN — abgegrenzt gegen `initiate_checkout`, das den BEGONNENEN, nicht abgeschlossenen Vorgang erfasst |
+
+**RICHTIGGESTELLT AM 2026-08-10 — HIER STAND BEI DEN LETZTEN ZWEI „NICHT SICHER".**
+Der Grund war eine **fehlende Spalte**, nicht eine fehlende Angabe: Die Doku-Tabelle
+trägt neben dem Namen einen **ZWECK**, und der war beim Weitergeben weggelassen
+worden. **Mit ihr sind beide Zuordnungen keine Ähnlichkeit mehr, sondern eine
+Zuordnung AUS DER QUELLE.**
+
+**WARUM DER ZWEIFEL RICHTIG WAR — und dieser Absatz bleibt, auch wenn die Frage
+beantwortet ist:** Ohne die Zweckspalte war `Purchase` → `checkout` eine
+**Ähnlichkeit**. `initiate_checkout` stand daneben und hielt **beide** Lesarten offen
+(„Kauf abgeschlossen" gegen „Kaufvorgang begonnen"). **`Purchase` ist zugleich das
+wichtigste Conversion-Ereignis des Produkts**, und eine falsche Abbildung wäre dort
+die teuerste denkbare gewesen: **sie käme als Erfolg zurück und landete unter
+falscher Bedeutung** — genau der stille Ausgang, den Entscheidung (1) verworfen hat.
+**Es war also nicht Vorsicht, sondern die richtige Klasse Zweifel am richtigen Feld.**
+
+**DIE GRENZE BLEIBT: DOKU, NICHT MESSUNG.** Die Zweckspalte ist eine Aussage des
+Anbieters über sein eigenes Vokabular; **niemand hat geprüft, wie ein `checkout`-Ereignis
+in unserem Konto tatsächlich ausgewertet wird.** Es gilt "#### Die Grenze dieser
+Aufnahme" samt ihrer Erweiterung unverändert.
+
+---
 
 ### ZWEI HINWEISE AUS DER FÜNFTEN SCHEIBE — HINWEISE, KEINE AUFLAGEN
 

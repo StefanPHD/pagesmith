@@ -1,6 +1,11 @@
 import "server-only";
 import { META_GRAPH_VERSION, META_TEST_EVENT_CODE } from "@/lib/capi/config";
 import { errorName } from "@/lib/errors";
+// DAS GETEILTE WERKZEUG, NICHT DIE POLITIK: Die formbasierte Schwaerzung liegt in
+// einer REINEN Datei und wird von mehreren Adaptern benutzt. Welches Feld hier wie
+// behandelt wird, entscheiden die drei Aufbereitungen unten — das bleibt Metas
+// eigene Sache.
+import { redactOpaque } from "@/lib/redact";
 import type { CapiConfig } from "@/lib/capi/token";
 
 /**
@@ -81,57 +86,6 @@ const META_ERROR_MSG_MAX = 200;
 // kurz; ein langer Wert dort ist bereits ein Befund und braucht keine 200 Zeichen.
 // EINE Zahl fuer alle kurzen Felder, bewusst nicht vier gleiche nebeneinander.
 const META_SHORT_MAX = 64;
-
-/**
- * DIE UNTERGRENZE DER SCHWAERZUNG. Zusammenhaengende token-artige Zeichenfolgen ab
- * dieser Laenge werden ersetzt. Woerter einer Fehlermeldung liegen darunter,
- * Zugangsdaten darueber.
- */
-const META_OPAQUE_MIN = 20;
-
-const META_REDACTED = "<redacted>";
-
-/**
- * DIE SCHWAERZUNG DES ERSTEN ADAPTERS — BEWUSSTES DUPLIKAT, vier Angaben dazu:
- *
- * 1. ES IST EIN DUPLIKAT UND KEIN VERSEHEN. Es entsteht mit offenen Augen, weil die
- *    Alternative — das Gegenstueck des zweiten Adapters mitzubenutzen — in dieser
- *    Scheibe NICHT beweisbar wirkungslos waere (Grund unter 4.).
- * 2. WAS ES DUPLIZIERT: die FORMBASIERTE Idee aus sanitizeProviderText in
- *    capi/pinterest-forward.ts — "keine lange undurchsichtige Zeichenfolge verlaesst
- *    diese Funktion". Eine Regel ueber die AUSGABE, nicht ueber das Wissen: sie faengt
- *    auch Teil-Rueckspiegelungen und Geheimnisse, die wir gar nicht als solche kennen.
- *    NICHT dupliziert ist die FELD-POLITIK — welches Feld wie behandelt wird, ist je
- *    Adapter verschieden.
- * 3. WORIN ES ABSICHTLICH ABWEICHT, und beides gilt nur hier:
- *    · Die AUSNAHME fuer den Trace-Bezeichner (asTraceId) existiert drueben nicht —
- *      jener Anbieter hat gar kein Trace-Feld. Wer von dort abschriebe, schwaerzte
- *      ausgerechnet den Wert, dessen ganzer Zweck die Undurchsichtigkeit ist.
- *    · Der Ersatzwert "-" traegt drueben eine VERZWEIGUNG (die Warn-Erkennung liest
- *      ihn), hier nur eine Darstellung. Ein geteiltes Werkzeug haette die Verzweigung
- *      des einen Adapters zur Eigenschaft des anderen gemacht.
- * 4. WANN DAS DUPLIKAT AUFGELOEST WIRD: sobald die sechs heute UNGEDECKTEN Achsen des
- *    Gegenstuecks durch Charakterisierungs-Tests festgenagelt sind — Reihenfolge,
- *    Mindestlaenge, Nicht-Strings, Leerwerte, Kappung, Globalitaet. Erst dann ist ein
- *    Umzug in eine geteilte reine Datei beweisbar wirkungslos. Vorher waere er ein
- *    unbeobachteter Eingriff in einen fremden, laufenden Pfad.
- *
- * WAS DIESER KOMMENTAR NICHT IST: ein WAECHTER. Die Uebereinstimmung der beiden Kopien
- * ist durch KEINEN Test gesichert — wer eine Seite aendert, macht nichts rot. Jede
- * Kopie ist nur fuer sich bewacht (diese durch meta-forward.test.ts). Das ist der
- * bewusst getragene Preis, nicht ein uebersehener Zustand.
- *
- * DIE GRENZE GEHOERT IN DENSELBEN KOMMENTAR: EIN KURZES GEHEIMNIS GINGE DURCH. Wir
- * haben heute keines; bekaemen wir eines, ist diese Regel neu zu entscheiden.
- *
- * WIRFT NIE: eine Ersetzung auf einem String, sonst nichts.
- */
-function redactOpaque(text: string): string {
-  return text.replace(
-    new RegExp(`[A-Za-z0-9_-]{${META_OPAQUE_MIN},}`, "g"),
-    META_REDACTED,
-  );
-}
 
 /**
  * Die gemeinsame Normalisierung der drei Aufbereitungen — WOERTLICH die des frueheren

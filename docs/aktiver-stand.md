@@ -31,10 +31,12 @@ Existiert sie nicht, läuft keine Phase.
 
 ## 2. Wo die Phase steht
 
-**STAND 2026-08-11:** Die Scheibe „Log-Leak am Meta-Adapter" ist ERLEDIGT und live
-bestätigt (Abschnitt 3). Der offene Umfang darunter ist davon UNBERÜHRT — jene
-Scheibe war eine Härtung am ERSTEN Adapter und kein Posten dieser Liste. Keine
-Neubewertung, nur der Stand.
+**STAND 2026-08-11:** DREI Scheiben sind erledigt und stehen in Abschnitt 3 —
+TikTok als drittes Ziel (live bewiesen), die Extraktion des Schwärz-Primitivs und
+der Log-Leak am Meta-Adapter (live bestätigt). **TIKTOK IST DAMIT KEIN OFFENER
+POSTEN MEHR** und aus der Liste unten herausgenommen; **GEBAUT UND TATSÄCHLICH
+BELIEFERT SIND JETZT DREI ZIELE.** Die beiden übrigen Ziele sind davon UNBERÜHRT —
+keine Neubewertung, nur der Stand.
 
 **DIE STRUKTUR IST ERLEDIGT.** Was gebaut, geprüft und live bewiesen ist, steht in
 CLAUDE.md an der Phase-11-Zeile; die volle Herleitung in
@@ -43,124 +45,24 @@ für die nächste Sitzung" und "## Die zwölf Scheiben". Beides wird hier NICHT
 wiederholt.
 
 **DIE OFFENEN ZIELE SIND KEINE KLASSE — SIE WERDEN EINZELN GELESEN.** Bis zum
-2026-08-11 stand hier und in CLAUDE.md, die drei offenen Ziele seien
+2026-08-11 stand hier und in CLAUDE.md, die damals drei offenen Ziele seien
 "Wiederholungen desselben Handgriffs, kein neues Fundament". Diese Aussage hatte
-KEIN EINZIGES GEPRÜFTES MITGLIED; die Befunde darunter lösen sie je Ziel auf.
+KEIN EINZIGES GEPRÜFTES MITGLIED; die Befunde darunter lösen sie je Ziel auf. **EINES
+DER DREI HAT SICH SEITHER ALS WIEDERHOLUNG ERWIESEN — durch den BAU, nicht durch die
+Behauptung.**
 
-**PROVENIENZ DER ZIEL-BEFUNDE — SIE IST NICHT MEHR EINHEITLICH, UND GENAU DAS IST
-BEIM LESEN ZU BEACHTEN:**
-- **POSTEN 2 UND 3 (LinkedIn, Google): VOLLSTÄNDIG RECHERCHE.** Anbieter-Recherche
-  des Architekten vom **2026-08-11 an FREMDER DOKUMENTATION** — **NICHT am Code
-  gemessen, NICHT live bestätigt, kein Aufruf gegen ein echtes System.**
-- **POSTEN 1 (TikTok): GEMISCHT.** Ein Teil seiner Angaben ist am **2026-08-11
-  GEMESSEN** worden (Messweg am Posten selbst), ein Teil bleibt Recherche, ein Teil
-  ist ungeklärt. **JEDE EINZELNE ANGABE DORT TRÄGT IHREN RANG IM TEXT** — GEMESSEN,
-  RECHERCHIERT oder UNGEKLÄRT. Wer den Rang nicht mitliest, hält eine Handmessung
-  für eine Doku-Lesung oder umgekehrt.
-- **DIE MESSUNG WERTET DIE ÜBRIGEN ZIELE NICHT AUF.** LinkedIn und Google sind
-  unverändert unbelegt; dass ein Nachbar-Posten gemessen wurde, ändert daran nichts.
+**PROVENIENZ DER BEIDEN VERBLIEBENEN ZIEL-BEFUNDE — sie ist einheitlich, und sie ist
+SCHWACH:** Anbieter-Recherche des Architekten vom **2026-08-11 an FREMDER
+DOKUMENTATION** — **NICHT am Code gemessen, NICHT live bestätigt, kein Aufruf gegen
+ein echtes System.**
+**DASS TIKTOK GEBAUT UND LIVE BEWIESEN IST, WERTET SIE NICHT AUF.** LinkedIn und
+Google sind unverändert unbelegt; dass ein Nachbar-Posten den ganzen Weg bis zur
+Produktion gegangen ist, ändert an ihrem Rang nichts. Wer das verwechselt, plant
+einen Bau auf einer Doku-Lesung.
 
-**DER OFFENE UMFANG, sechs Posten mit VERSCHIEDENEM Rang:**
+**DER OFFENE UMFANG, fünf Posten mit VERSCHIEDENEM Rang:**
 
-1. **TIKTOK — AUF DER STRUKTUR-ACHSE EINE WIEDERHOLUNG. DIE EINST OFFENE FRAGE IST
-   BEANTWORTET.**
-   **DER MESSWEG, einmal für alle mit GEMESSEN gekennzeichneten Angaben dieses
-   Postens:** am **2026-08-11 durch den Owner** — HTTP-Aufrufe VON HAND gegen den
-   Events-API-Endpunkt des Anbieters, mit echtem Zugangsdatum und Pixel-Kennung im
-   EIGENEN Werbekonto, ausschliesslich im TESTMODUS; Nachweis im Test-Ereignis-Tab
-   der Anbieter-Oberfläche. **DAS IST EINE MESSUNG AM FREMDEN SYSTEM — NICHT am
-   Code gemessen und NICHT über unseren eigenen Ingest-Pfad gelaufen.**
-   **SCHÄRFUNG DES MESSWEGS, und sie gehört dazu, weil ohne sie drei Angaben
-   falsch geworden wären:** Die Antwort-RÜMPFE wurden mit einem ROHEN HTTP-Werkzeug
-   erhoben, nachdem sich das zuvor benutzte PowerShell-Kommando als untauglich
-   erwiesen hatte — es verbrauchte den Antwortstrom selbst und lieferte deshalb
-   Länge null. Warum das kein Nebensatz ist, steht als Kandidat 13 in Abschnitt 7.
-   - **GEMESSEN — DIE OFFENE FRAGE IST BEANTWORTET: IP UND USER-AGENT GENÜGEN.**
-     Sie lautete, ob die beiden ALLEIN für einen erfolgreichen Aufruf reichen; bis
-     zum 2026-08-11 stand hier, das sei VOR dem Bau zu messen. Ein Aufruf mit einem
-     Nutzer-Objekt aus ausschliesslich diesen beiden Werten wurde **ANGENOMMEN UND
-     VERARBEITET**: das Ereignis erscheint im Test-Tab mit übereinstimmender
-     Ereignis-Kennung, und beide Werte stehen dort unter den
-     Kunden-Informationsparametern. **Die Klick-Kennung wird NICHT gebraucht; die
-     Datenklassen-Grenze wird nicht berührt.**
-     *Warum nicht an der Entwickler-Referenz, wie die frühere Auflage verlangte:*
-     Sie liegt hinter einer JavaScript-Anwendung und ist nicht abrufbar. Gemessen
-     wurde an der API selbst — **der STÄRKERE Zeuge, weil eine Doku das Verhalten
-     BESCHREIBT und die API es IST.**
-   - **GEMESSEN — DER FACHLICHE STATUS STEHT IM RUMPF, NICHT IM HTTP-CODE.** Der
-     Erfolgsfall ist HTTP 200 mit einem `code`-Feld auf `null`, dazu `message`,
-     `request_id` und ein LEERES `data`-Objekt — **keine Rückmeldung je Ereignis**,
-     anders als beim zweiten Ziel. **FOLGE FÜR DEN ADAPTER: Eine reine
-     Statusprüfung hielte jede fachliche Ablehnung für einen Erfolg.** Dieselbe
-     Falle wie beim zweiten Ziel, an einem anderen Anbieter — diesmal VOR dem Bau
-     bekannt.
-   - **GEMESSEN — DIE QUITTUNG IST IDENTITÄTSBLIND.** Ein Aufruf **GANZ OHNE**
-     Nutzer-Objekt bekommt DIESELBE Erfolgsantwort. Die Antwort taugt damit NICHT
-     als Nachweis, dass die Identität angekommen ist; das zeigt allein der
-     Test-Tab, und der ist **kein Produktionsinstrument**. **Ohne diese Gegenprobe
-     wäre der erste Befund aus dem falschen Grund für wahr gehalten worden.**
-   - **GEMESSEN — ZWEI GETRENNTE FEHLERKANÄLE.** Ein ungültiges Zugangsdatum
-     liefert HTTP 401; Fachliches läuft über das `code`-Feld einer 200er-Antwort.
-     *Von den vier Befunden darunter GESCHÄRFT, nicht ersetzt: Es gibt auch echte
-     Fehlerstatus mit Rumpf — der Status trennt die Kanäle also gröber, als dieser
-     Satz allein nahelegt.*
-   - **GEMESSEN — DIE FEHLERFORM IST DIESELBE WIE DIE ERFOLGSFORM:** `code`,
-     `message`, `request_id`. Im Erfolgsfall kommt ein leeres `data`-Objekt dazu,
-     im Fehlerfall fehlt es. **EIN Rumpf-Leser trägt beide Wege** — einfacher als
-     bei beiden bestehenden Adaptern. *Damit ist die frühere Lücke "die RUMPFFORM
-     der 401 ist nicht festgehalten" GESCHLOSSEN.*
-   - **GEMESSEN — DER HTTP-STATUS TRÄGT DIE FEHLERKLASSE NICHT.** Erhoben wurden
-     DREI verschiedene Fehlercodes auf ZWEI Status: ein Berechtigungsfehler zur
-     Ereignisquelle kam mit 401, ein Schema-Fehler mit 400, ein Token-Fehler
-     ebenfalls mit 401 — **zwei verschiedene Codes teilen sich denselben Status.**
-     **FOLGE FÜR DEN ADAPTER: Das `code`-Feld ist die tragende Angabe, der Status
-     nur ein grober Vorfilter.** Ein Adapter, der auf den Status verzweigt,
-     unterscheidet "falsche Kennung" nicht von "falschem Zugangsdatum". *Damit ist
-     auch die frühere Lücke "wie eine FACHLICHE Ablehnung aussieht" GESCHLOSSEN.*
-   - **GEMESSEN — DIE MELDUNG SPIEGELT UNSERE EIGENE EINGABE ZURÜCK, WÖRTLICH.**
-     Bei einer absichtlich unzulässigen Ereignisquellen-Kennung enthielt die
-     Meldung genau den von uns gesendeten Wert im Klartext; bei einem unzulässigen
-     Enum-Wert nannte sie die erlaubten Werte. (Der zurückgespiegelte Wert wird
-     hier bewusst NICHT abgedruckt — der Sachverhalt trägt ohne ihn.)
-     **DAS IST DIE ECHO-ACHSE, GEMESSEN STATT VERMUTET.** Beim ersten Adapter war
-     sie eine begründete Annahme; hier ist sie belegt. **FOLGE: Der TikTok-Adapter
-     bekommt die Schwärzung VON ANFANG AN, nicht als Nachrüstung.** Die Politik JE
-     FELD ist erneut eine EIGENE — nicht vom ersten Adapter abschreiben.
-   - **GEMESSEN — DIE DREI FEHLERCODES SIND UNTERSCHEIDBAR, der Betreiber-Fall ist
-     damit diagnostizierbar:** falsch eingetragene Kennung und ungültiges
-     Zugangsdatum tragen verschiedene Codes UND verschiedene Meldungen. **Ohne
-     Rumpf-Leser sähen beide für uns gleich aus.**
-   - **GEMESSEN — DER EREIGNISNAME WANDERT.** Gesendet wurde `CompletePayment`, die
-     Oberfläche des Anbieters zeigt `Purchase`. Der Betreiber sucht also einen
-     anderen Namen, als wir senden — **gehört in die Betreiber-Doku**, sonst meldet
-     jemand einen Fehler, der keiner ist. Dieselbe Klasse wie beim zweiten Ziel.
-   - **GEMESSEN — DER TEST-TAB BEANSTANDET FEHLENDE FELDER:** Währung, Wert und
-     eine Inhalts-Kennung fehlten im Kauf-Ereignis. Währung und Wert trägt unser
-     Mapping bereits (`TrackConfig` in `src/lib/mappings.ts`), die Inhalts-Kennung
-     nicht.
-   - **RECHERCHIERT (fremde Doku, s. Provenienz oben), NICHT gemessen:** eine
-     Pixel-Kennung je Projekt trägt alle Ereignisse und der Ereignisname reist in
-     der Nutzlast · das Zugangsdatum ist ein langlebiges Token aus dem Events
-     Manager und passt in die Geheimnis-Tabelle · es gibt Deduplizierung über eine
-     Ereignis-Kennung · es gibt einen Testmodus, dessen Code pro Sitzung WECHSELT
-     und deshalb nichts ist, was man hinterlegt.
-   - **UNGEKLÄRT — als LÜCKE geführt, NICHT als bestanden.** *Zwei früher hier
-     geführte Lücken (Rumpfform der 401, Aussehen einer fachlichen Ablehnung) sind
-     durch die Befunde oben GESCHLOSSEN und stehen dort; offen bleibt:*
-     der VOLLSTÄNDIGE UMFANG des Fehlercode-Bereichs — drei Codes sind gemessen,
-     wie viele es gibt, ist unbekannt · die VOLLSTÄNDIGE LISTE der
-     Standard-Ereignisnamen und die Abbildung unserer Namen darauf · **ob
-     Ereignisse ohne E-Mail und Telefonnummer für die ATTRIBUTION zählen.** Der
-     Test-Tab warnt,
-     Ereignisse ohne diese Werte würden "nur mit Manual Advanced Matching gezählt";
-     ob damit nur eine ZÄHLUNG gemeint ist oder die Attribution insgesamt, ist **AM
-     TEXT NICHT ENTSCHEIDBAR**. Das ist eine Frage an den ANBIETER, keine an den
-     Code — und sie entscheidet, ob TikTok dem Betreiber als nutzbar oder als
-     eingeschränkt zu beschreiben ist.
-   - **RECHERCHIERT, unverändert — eine Erwartungs-Frage an den Betreiber, kein
-     Baufehler:** Die Match-Qualität ist mit IP und User-Agent allein strukturell
-     niedrig, und sie steuert beim Anbieter den Zugang zu Optimierungszielen.
-2. **LINKEDIN — KEINE WIEDERHOLUNG.** Die Kennung ist eine Conversion-Regel-URN
+1. **LINKEDIN — KEINE WIEDERHOLUNG.** Die Kennung ist eine Conversion-Regel-URN
    und gilt **JE EREIGNISTYP**, nicht je Projekt. **OWNER-ENTSCHEIDUNG vom
    2026-08-11:** Zuordnung Ereignisname -> URN (Option B), damit Kunden auf
    Conversion-Typen optimieren können. Das berührt, **WIE EIN EREIGNIS BESCHRIEBEN
@@ -173,7 +75,7 @@ BEIM LESEN ZU BEACHTEN:**
    Abwesenheit**.
    Immerhin: das Zugangsdatum ist ein nicht ablaufendes Token aus dem Campaign
    Manager und passt in die Geheimnis-Tabelle.
-3. **GOOGLE — ZWEI ZIELE, NICHT EINS, und keines davon zugeschnitten.** Google Ads
+2. **GOOGLE — ZWEI ZIELE, NICHT EINS, und keines davon zugeschnitten.** Google Ads
    Conversions und GA4 sind verschiedene Produkte mit verschiedenen Schnittstellen
    und Semantiken. Der bisherige Weg für Offline-Conversions ist für NEUE Zugänge
    seit Mitte Juni 2026 geschlossen; der Nachfolger ist für den relevanten Fall
@@ -185,15 +87,15 @@ BEIM LESEN ZU BEACHTEN:**
    Anmeldungen passen nicht auf ein Geheimnis pro Zeile; im Ernstfall eine ZWEITE
    Migration auf der Geheimnis-Tabelle.
    **FOLGE: Google bekommt eine eigene KONZEPT-Runde, KEINE Scheibe.**
-4. **DAS TRACKING-TESTMODUS-MODUL** (`test_event_code`). Klein, eigenständig;
+3. **DAS TRACKING-TESTMODUS-MODUL** (`test_event_code`). Klein, eigenständig;
    Kontext in `docs/claude-history/future-roadmap.md`, "Tracking-Testmodus für
    Kunden".
-5. **DER TESTKNOPF — KEINE SCHEIBE.** Mehrere einzeln beweisbare Teile plus eine
+4. **DER TESTKNOPF — KEINE SCHEIBE.** Mehrere einzeln beweisbare Teile plus eine
    unentschiedene VORFRAGE (was überhaupt aufgerufen wird). Ohne deren Antwort hat
    kein Zuschnitt einen Gegenstand. Auflagen, Messbefunde und Begründung:
    `docs/claude-history/phase-11-multi-tracking.md`, "## Die dreizehnte Scheibe —
    Der Testknopf (VERSCHOBEN, Owner 2026-08-10)".
-6. **CUSTOM-PIXEL — KEINE WIEDERHOLUNG, SONDERN EINE EIGENE ARCHITEKTUR-SCHEIBE.**
+5. **CUSTOM-PIXEL — KEINE WIEDERHOLUNG, SONDERN EINE EIGENE ARCHITEKTUR-SCHEIBE.**
    Ungeklärt ist ZUERST, was es überhaupt ist: ein CLIENT-seitiges Snippet (dann
    gar kein Fan-Out-Ziel) oder ein SERVER-seitiger Empfänger mit kundeneigenem
    Endpunkt (dann hängen Fragen daran, die kein anderes Ziel stellt). Der Zuschnitt
@@ -230,7 +132,105 @@ Fassung. Als Kandidat festgehalten in Abschnitt 7.
 
 ---
 
-## 3. Die ABGESCHLOSSENE Scheibe: der Log-Leak am Meta-Adapter
+## 3. Die abgeschlossenen Scheiben — JÜNGSTE ZUERST
+
+**DIE REIHENFOLGE IST DIE LESEHILFE, und sie hängt an den COMMITS, nicht am Datum:**
+Alle drei sind am selben Tag fertig geworden; entstanden sind sie in der Reihenfolge
+`0291448` -> `91dbfe7` -> `86e6911`. Oben steht die jüngste. Wer den heutigen Stand
+sucht, liest 3.1 und hört auf, sobald er genug hat.
+
+---
+
+### 3.1 TIKTOK ALS DRITTES FAN-OUT-ZIEL — ERLEDIGT UND LIVE BEWIESEN (2026-08-11)
+
+**Commits:** `86e6911` (Bau), `8ff598a` (Richtigstellung der Consent-Schlüssel-
+Begründung).
+
+**WAS GEBAUT WURDE:** der Adapter (`forwardToTiktok` in
+`src/lib/capi/tiktok-forward.ts`), die sechs Vokabular-Stellen, die Migration `0023`
+und zwanzig Tests; dazu vier geplante Mutationsproben plus eine Gegenprobe, alle mit
+vorab notierter Vorhersage und ohne Abweichung.
+**WO DIE ANBIETER-FORM STEHT:** im KOPF DES ADAPTERS — Endpunkt, Auth-Kopfzeile,
+Rumpfform, Feldnamen, Zeiteinheit, beide Antwortformen, drei Fehlercodes und die
+sechs Stellen, an denen dieser Adapter anders ist als die beiden bestehenden. Sie
+wird hier NICHT wiederholt; der Code ist dafür die Quelle, nicht diese Datei.
+
+**DER LIVE-TEST — GEMESSEN am 2026-08-11** gegen die DEPLOYTE Produktion, Testmodus
+des Anbieters aktiv, publizierte Seite, echter Besucher-Kontext:
+
+- **MIGRATION 0023 — eingespielt und gemessen:** Einfügen mit dem neuen Zielwert
+  ANGENOMMEN, Einfügen mit einem Tippfehler mit **23514** ABGEWIESEN, die
+  Constraint-Definition trägt drei Zielwerte im Wortlaut. Probe-Zeilen entfernt,
+  Gegenprobe null. **Die Annahme allein hätte nichts bewiesen** — bei einem
+  Constraint, der alles durchlässt, sähe sie identisch aus.
+- **REGRESSION:** Meta und Pinterest unverändert, beide Forwards im Log, und **kein**
+  TikTok-Forward vor dem Hinterlegen der Zugangsdaten.
+- **DER EINWILLIGUNGS-SCHLÜSSEL:** nach dem Republish im ausgelieferten Quelltext
+  nachgewiesen. **Die tragende Zeichenfolge ist die Abfrage im Beacon-Rumpf, nicht
+  das Feld allein** — das Feld beweist nur, dass irgendein Draht existiert.
+- **DER FAN-OUT:** alle DREI Ziele im selben Lauf im Log.
+- **DER NACHWEIS BEIM ANBIETER:** Das Ereignis erscheint im Testmodus-Tab als
+  **STANDARD-Ereignis** unter dem erwarteten Namen, mit übereinstimmender
+  Ereignis-Kennung, Wert, Währung, IP und User-Agent. **Keine Custom-Kennzeichnung.**
+  **EINE UNTERSCHEIDUNG, DIE MITMUSS, weil sie schon einmal zu einer Fehllesung
+  geführt hat:** Die Angabe zur INTEGRATIONSART („von Hand geschrieben") steht bei
+  JEDEM unserer Ereignisse, auch bei den nachweislich standardisierten. **Sie ist
+  NICHT die Custom-Kennzeichnung** — die steht als Suffix am Titel. Wer die beiden
+  verwechselt, liest ein Standard-Ereignis als Custom.
+- **DER ADAPTER SCHWEIGT BEIM ERFOLG:** keine Zeile im Log, also `code 0`.
+- **DIE GEGENPROBE mit absichtlich falschem Zugangsdatum:** genau EINE Zeile — HTTP
+  401, der Fehlercode lesbar, die Anbieter-Meldung unbereinigt weitergereicht (kein
+  Wort erreicht die Schwärzungs-Grenze), die **Vorgangs-Kennung GESCHWÄRZT**, und das
+  Zugangsdatum erscheint **nirgends**.
+  **DAS IST EINE POSITIVKONTROLLE DER SCHWÄRZUNG IM ECHTEN BETRIEB, und sie ist mehr
+  wert als der Erfolgsfall:** Beim ersten Adapter blieb die Schwärzung im Live-Test
+  STUMM — die Meldung trug keine Folge über der Grenze, und der Nachweis hing allein
+  am Echo-Test. Hier hat sie sichtbar gefeuert.
+
+**WAS DER LIVE-TEST NICHT GEZEIGT HAT:** die RÜCKSPIEGELUNG unserer eigenen Eingabe.
+Sie ist am 2026-08-11 an einem ANDEREN Fehlerweg gemessen; im Live-Lauf trat dieser
+Weg nicht ein. **Die Schwärzung dagegen ist live belegt** — beides gehört
+auseinandergehalten.
+
+**UNGEKLÄRT, unverändert aus dem Zuschnitt übernommen und NICHT durch diesen
+Abschluss erledigt:** der vollständige Umfang des Fehlercode-Bereichs (drei Codes
+sind gemessen, wie viele es gibt, ist unbekannt) · die vollständige Liste der
+Standard-Ereignisnamen beim Anbieter und die Abbildung unserer Namen darauf · **ob
+Ereignisse ohne E-Mail und Telefonnummer für die ATTRIBUTION zählen** (der Test-Tab
+warnt, sie würden „nur mit Manual Advanced Matching gezählt"; ob damit eine ZÄHLUNG
+gemeint ist oder die Attribution insgesamt, ist am Text nicht entscheidbar — eine
+Frage an den ANBIETER, keine an den Code).
+**RECHERCHIERT, unverändert:** Die Match-Qualität ist mit IP und User-Agent allein
+strukturell niedrig und steuert beim Anbieter den Zugang zu Optimierungszielen —
+eine Erwartungs-Frage an den Betreiber, kein Baufehler.
+
+---
+
+### 3.2 DIE EXTRAKTION DES SCHWÄRZ-PRIMITIVS — ERLEDIGT (2026-08-11)
+
+**Commit:** `91dbfe7`. **KEIN LIVE-TEST, und das ist keine Lücke:** Die Scheibe
+ändert kein Verhalten; ihr Beweis ist die ZEICHENGLEICHHEIT des verschobenen Rumpfes
+plus die unverändert grünen Tests des ersten Adapters.
+
+**WAS GEBAUT WURDE:** `redactOpaque` und die zwei Konstanten, an denen es hängt, sind
+aus `src/lib/capi/meta-forward.ts` in die REINE Datei `src/lib/redact.ts` gezogen
+worden — **der Funktionsrumpf zeichengleich, per `diff` belegt**; die einzige
+Abweichung ist das Schlüsselwort `export`. Ein zeichengleich verschobener reiner
+Rumpf kann sein Verhalten nicht ändern.
+**WAS NICHT MITWANDERTE:** die drei Aufbereitungen und die zwei Deckel-Konstanten.
+Sie tragen METAS POLITIK — welches Feld wie behandelt wird —, und die ist je Adapter
+verschieden. **Geteilt wird das WERKZEUG, nicht die Politik.**
+**ACHT CHARAKTERISIERUNGEN** halten das heutige Verhalten fest (Mindestlänge
+beidseitig der Grenze, der Zeichenvorrat als Teil der Grenze, Globalität, Wurf bei
+Nicht-Strings, Leerwerte, und dass das Primitiv NICHT kappt); vier Mutationsproben
+trafen exakt die vorhergesagten Tests.
+**DAS ZWEITE ZIEL BENUTZT DIE DATEI BEWUSST NICHT:** Seine eigene Fassung ist an
+sechs Achsen ungedeckt, ein Umzug wäre heute ein unbeobachteter Eingriff. Die
+Auflösungs-Bedingung steht im Kopf der neuen Datei — s. auch den Vorrats-Punkt dazu.
+
+---
+
+### 3.3 DER LOG-LEAK AM META-ADAPTER — ERLEDIGT UND LIVE BESTÄTIGT (2026-08-11)
 
 **ERLEDIGT UND LIVE BESTÄTIGT (2026-08-11).** Einstufung: Tier 1 im
 Security-Manifest, Item "META-FEHLERLOG SPIEGELT DAS ZUGANGSDATUM ZURÜCK"
@@ -417,15 +417,19 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
 - **WURFFREIHEIT DES NUTZLAST-BAUS:** Bei `forwardToMeta` liegt der Nutzlast- und
   URL-Bau ausserhalb des umschliessenden `try`; beim zweiten Adapter hält dieselbe
   Zusage an der ANORDNUNG.
-- **DRITTE TRIMM-KOPIE:** `asString` steht in `src/lib/capi/ingest.ts`,
-  `src/lib/capi/meta-forward.ts` und `src/lib/capi/pinterest-forward.ts`.
+- **VIERTE TRIMM-KOPIE:** `asString` steht in `src/lib/capi/ingest.ts`,
+  `src/lib/capi/meta-forward.ts`, `src/lib/capi/pinterest-forward.ts` und seit dem
+  dritten Ziel in `src/lib/capi/tiktok-forward.ts`. **Derselbe Punkt, eine Kopie
+  mehr — kein neuer.**
 - **ABWESENHEITS-TEST OHNE EIGENE POSITIVKONTROLLE:** in
   `src/lib/capi/ingest.timeout.test.ts` der Test, der die schnelle Antwort prüft —
   seine Behauptung über den Log-Kanal steht ohne Nachweis, dass dieser Kanal im
   selben Lauf etwas fangen würde.
-- **ZWEI UNABHÄNGIGE KONSTANTEN DESSELBEN WERTES FÜR DIESELBE AUFGABE:**
-  `META_ERROR_MSG_MAX` in `src/lib/capi/meta-forward.ts` und `PINTEREST_LOG_MAX` in
-  `src/lib/capi/pinterest-forward.ts`.
+- **DREI UNABHÄNGIGE KONSTANTEN DESSELBEN WERTES FÜR DIESELBE AUFGABE:**
+  `META_ERROR_MSG_MAX` in `src/lib/capi/meta-forward.ts`, `PINTEREST_LOG_MAX` in
+  `src/lib/capi/pinterest-forward.ts` und `TIKTOK_LOG_MAX` in
+  `src/lib/capi/tiktok-forward.ts` — dazu drei gleichlautende Timeout-Deckel.
+  **Derselbe Punkt, eine Zahl mehr — kein neuer.**
 - **SECHS UNGEDECKTE ACHSEN AM SCHWÄRZ-PRIMITIV DES ZWEITEN ADAPTERS**
   (`sanitizeProviderText` in `src/lib/capi/pinterest-forward.ts`): Reihenfolge,
   Mindestlänge, Nicht-Strings, Leerwerte, Kappung, Globalität — Kandidat für eine
@@ -441,6 +445,29 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
 - **DER NICHT-JSON-AUSGANG IST LIVE NICHT ERZWINGBAR** (er verlangt eine
   nicht-JSON-Antwort des Anbieters) und bleibt damit dauerhaft eine
   Test-only-Achse.
+- **DIE VORGANGS-KENNUNG DES DRITTEN ANBIETERS WIRD IMMER GESCHWÄRZT**
+  (`asLogShort` in `src/lib/capi/tiktok-forward.ts`): Sie ist strukturell eine lange
+  undurchsichtige Folge und liegt in JEDEM Aufruf über der Grenze — das Feld liefert
+  nie einen Wert und sieht trotzdem aus wie unterdrückte Information. Zwei Auswege,
+  beide **UNENTSCHIEDEN**: das Feld weglassen, oder ihm eine benannte Ausnahme geben
+  wie beim ersten Adapter. Letzteres braucht denselben GEMESSENEN Grund, der dort
+  vorlag und hier fehlt — dass der Support dieses Anbieters ohne den Wert nicht
+  arbeiten kann. **Die Entscheidung gegen die Ausnahme beim Bau war richtig und
+  bleibt es; was fehlt, ist eine Messung.**
+- **UNS FEHLT DIE INHALTS-KENNUNG, die der Anbieter erwartet** (`TrackConfig` in
+  `src/lib/mappings.ts` trägt Wert und Währung, keine Inhalts-Kennung): Der Test-Tab
+  beanstandet sie im Betrieb dauerhaft — bekannt und akzeptiert. **Gemessener
+  Nebenbefund:** Der Anbieter leitet aus unseren zwei Feldern selbst ein Sammelfeld
+  ab; dort läge die Kennung, wenn wir eine hätten.
+- **EINE WARNUNG AN DER OBERFLÄCHE, dass ein frei benanntes Ereignis beim dritten
+  Anbieter nicht optimierungsfähig ist** (`ActionPanel` in `src/components/`):
+  eigener Bereich, eigene Produktfrage, kein Live-Nachweis nötig. **Die Messung, die
+  sie belegt:** ein erfundener Name wird angenommen und als Custom geführt, und die
+  Quittung sagt das nicht — nur die Oberfläche des Anbieters tut es.
+- **DER GEHEIMNIS-PLATZHALTER IST BEI ZWEI ZIELKARTEN IDENTISCH**
+  (`TARGET_CARDS` in `src/components/TargetCard.tsx`): für den Nutzer folgenlos, weil
+  die BESCHRIFTUNGEN sich unterscheiden — für eine Testabfrage über den Platzhalter
+  nicht.
 
 Die vier fälligen Punkte am ersten Adapter und das Gegenstück bei den
 Deckelwerten stehen ausformuliert in
@@ -449,12 +476,13 @@ fällige Punkte am ersten Adapter" — hier nur der Zeiger, keine Kopie.
 
 ---
 
-## 7. Hebungs-Kandidaten aus dieser Scheibe
+## 7. Hebungs-Kandidaten — aus ALLEN Scheiben dieser Phase
 
 **SIE WERDEN JETZT NICHT GEHOBEN.** Die Hebung nach CLAUDE.md, "## Immer beachten",
 ist Sache des PHASENENDES — hier stehen Kandidaten, keine Auswahl. Je Kandidat ein
-Satz, der Beleg aus dieser Scheibe und die Prüfung, ob eine bestehende Regel ihn
-schon abdeckt (geprüft am 2026-08-11 durch Durchsicht von "## Immer beachten").
+Satz, der Beleg aus der Scheibe, aus der er stammt, und die Prüfung, ob eine
+bestehende Regel ihn schon abdeckt (geprüft am 2026-08-11 durch Durchsicht von
+"## Immer beachten"). **Die Zwischenüberschriften nennen die Herkunft.**
 
 1. **EINE KAPPUNG IST KEINE MASKIERUNG:** Sie behält den ANFANG und begrenzt die
    LÄNGE, nicht den INHALT — ein Geheimnis am Anfang überlebt sie vollständig.
@@ -608,3 +636,48 @@ wichtigste dieser Sitzung:**
     STRIPPT IN DIESER UMGEBUNG STILL DAS CR" — sie handelt davon, dass ein Werkzeug
     den GEGENSTAND still verändert; hier verändert es das ERGEBNIS, ohne den
     Gegenstand anzufassen. Verwandt, gegenläufig, nicht dasselbe.
+
+**AUS DEM BAU DES DRITTEN ZIELS (2026-08-11), vier weitere — die ersten drei hängen
+zusammen und betreffen dieselbe Naht: eine Zusicherung, die an einer MENGE hängt:**
+
+14. **WER EINE MENGE ERWEITERT, SUCHT AUCH NACH DEM NEUEN WERT ALS GEGENBEISPIEL.**
+    Eine Strukturprüfung findet, wer über die Menge ITERIERT; sie findet NICHT, wer
+    ein künftiges Mitglied bereits als "unbekannt" VERWENDET. Das ist eine eigene
+    Suchachse — nach dem WERT, nicht nach der Form.
+    *Beleg:* Ein Bestandstest benutzte den künftigen Zielnamen als Platzhalter für
+    einen unbekannten Wert und wurde rot, ohne dass sich an dem geändert hätte, was
+    er schützt. Meine Durchsicht hatte nach Struktur gesucht und ihn übersehen.
+    *Abdeckung:* TEILWEISE. Der PFLICHT-PRÜFSCHRITT an "ZWEI BEDIENELEMENTE MIT
+    GLEICHEM NAMEN…" nennt ZWEI Achsen (eine Abfrage wird mehrdeutig; eine
+    Abwesenheits-Behauptung kippt) — beide über TEXT IN DER OBERFLÄCHE. Dies wäre
+    eine DRITTE: ein WERT in einer Fixture.
+15. **DIE MEHRDEUTIGKEITS-REGEL GILT AUCH FÜR DATEN-ELEMENTE, nicht nur für
+    Bedienelemente.** Ein neuer Eintrag in einer Liste erzeugt ein neues Element und
+    kann bestehende Abfragen genauso mehrdeutig machen wie ein neuer Knopf.
+    *Beleg:* Eine Testabfrage setzte implizit "genau eine unkonfigurierte Karte"
+    voraus und fiel mit "Found multiple elements".
+    *Abdeckung:* JA, DER SACHE NACH — aber der GELTUNGSBEREICH der bestehenden Regel
+    ist zu eng formuliert. Sie spricht von Bedienelementen und Texten; hier war es
+    ein Datensatz, der ein weiteres Element rendert. **Kein neuer Kandidat, sondern
+    eine Erweiterung des Geltungsbereichs jener Regel.**
+16. **EINE TEST-ZUSICHERUNG, DIE VON EINER MENGE ABHÄNGT, BRICHT BEIM NÄCHSTEN
+    MITGLIED WIEDER. DIE REPARATUR ENTFERNT DIE ABHÄNGIGKEIT, SIE ZIEHT SIE NICHT
+    NACH.**
+    *Beleg:* Ein synthetischer Wert wird nie real; ein Karten-Anker ist von der
+    Kartenzahl unabhängig. Beide Reparaturen halten beim VIERTEN Ziel — eine
+    Zählung ("genau zwei unkonfigurierte") hätte bei drei Zielen gegriffen und beim
+    vierten erneut gebrochen.
+    *Abdeckung:* KEINE Regel sagt das. Kandidat 7 spricht vom Korrigieren einer
+    MENGEN-AUSSAGE, dieser vom Korrigieren einer davon ABHÄNGIGEN Zusicherung — und
+    er nennt das Kriterium, an dem eine Reparatur zu messen ist.
+17. **EIN KOMMENTAR VOM NACHBAREINTRAG WIRD ÜBERNOMMEN, NICHT GEPRÜFT.**
+    *Beleg:* Die Begründung der Consent-Schlüssel war seit der neunten Scheibe
+    falsch und wurde beim dritten Ziel unverändert weitergereicht — die REGEL stimmte
+    weiter, der BELEG nicht, und niemand hat ihn am Code nachgesehen, weil er beim
+    Nachbarn schon dastand.
+    *Abdeckung:* NEIN, ER GEHT NICHT IN DER BESTEHENDEN REGEL AUF — und die Prüfung
+    ist der Ertrag: "EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD"
+    beschreibt das ALTERN einer Angabe und verlangt, sie vor Gebrauch am heutigen
+    Code zu prüfen. Dieser hier beschreibt den ÜBERTRAGUNGSWEG, auf dem ein bereits
+    falscher Beleg sich VERMEHRT. Altern und Verbreiten sind zwei verschiedene
+    Vorgänge; die zweite Kopie ist ab dem ersten Tag falsch.

@@ -81,19 +81,37 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       bewiesen gegen ein echtes fremdes System, nicht gegen eine Attrappe. Auflösung
       über mehrere Ziele, Einwilligung JE ZIEL, Oberfläche je Plattform und der
       nebenläufige Fan-Out mit EIGENEM Deckel je Empfänger sind gebaut und geprüft.
-      OFFEN SIND DIE WIEDERHOLUNGEN: die weiteren Ziele der Aufzählung unten, das
-      Tracking-Testmodus-Modul und der Testknopf. SIE SIND WIEDERHOLUNGEN DESSELBEN
-      HANDGRIFFS, KEIN NEUES FUNDAMENT — wer den offenen Teil für gleich gross hält
-      wie den erledigten, plant eine Phase, die es so nicht mehr gibt. Ein weiteres
-      Ziel ist ein Adapter, ein Eintrag in der Zuordnung, ein Zielwert im CHECK und
-      ein Live-Test; alles, was daran schwierig war, ist einmal gemacht.
+      GEBAUT UND TATSÄCHLICH BELIEFERT SIND ZWEI ZIELE: Meta und Pinterest.
+      OFFEN ALS WIEDERHOLUNGEN SIND DREI ZIELE — TikTok, Google und LinkedIn —,
+      dazu das Tracking-Testmodus-Modul und der Testknopf. DIESE DREI SIND
+      WIEDERHOLUNGEN DESSELBEN HANDGRIFFS, KEIN NEUES FUNDAMENT — wer sie für
+      gleich gross hält wie den erledigten Teil, plant eine Phase, die es so nicht
+      mehr gibt. Ein solches Ziel ist ein Adapter, ein Eintrag in der Zuordnung,
+      ein Zielwert im CHECK und ein Live-Test; alles, was daran schwierig war, ist
+      einmal gemacht. CUSTOM-PIXEL GEHÖRT NICHT ZU DIESEN DREI — eigener Absatz
+      weiter unten. AUCH DER TESTKNOPF FÄLLT NICHT IN DIESE KLASSE: er ist keine
+      Scheibe, sondern mehrere einzeln beweisbare Teile plus eine unentschiedene
+      Vorfrage — Auflagen, Messbefunde und Begründung stehen in
+      docs/claude-history/phase-11-multi-tracking.md, "Die dreizehnte Scheibe —
+      Der Testknopf (VERSCHOBEN, Owner 2026-08-10)".
       Volle Herleitung: docs/claude-history/phase-11-multi-tracking.md.
-      TikTok, Google,
-      Pinterest, LinkedIn, Custom-Pixel als weitere ADDITIVE Fan-Out-Ziele
-      neben Meta — source bleibt Beobachtungs-Ort, jedes Ziel bekommt seine
-      EIGENE additive Spalte, kein Umbau. Dazu das kleine
+      TikTok, Google und LinkedIn als weitere ADDITIVE Fan-Out-Ziele
+      neben Meta und Pinterest — source bleibt Beobachtungs-Ort, jedes Ziel
+      bekommt seine EIGENE additive Spalte, kein Umbau. Dazu das kleine
       Tracking-Testmodus-Modul (test_event_code, s. future-roadmap.md,
-      "Tracking-Testmodus für Kunden"). AUSDRÜCKLICH AUSGENOMMEN:
+      "Tracking-Testmodus für Kunden").
+      CUSTOM-PIXEL IST KEINE WIEDERHOLUNG, SONDERN EINE EIGENE
+      ARCHITEKTUR-SCHEIBE. UNGEKLÄRT IST ZUERST, WAS ES ÜBERHAUPT IST, und die
+      beiden Lesarten führen an verschiedene Orte:
+      (a) ein CLIENT-SEITIGES Snippet — dann ist es gar kein Fan-Out-Ziel,
+      sondern derselbe Fall wie das gleich darunter ausgenommene Hotjar;
+      (b) ein SERVER-SEITIGER Empfänger mit KUNDENEIGENEM Endpunkt — dann hängen
+      drei Fragen daran, die KEIN anderes Ziel stellt: SSRF-Schutz bei einem
+      betreiber-konfigurierten ausgehenden Aufruf, die Aufhebung des
+      Primärschlüssels (project_id, target) bei mehreren Endpunkten pro Projekt,
+      und ein dynamisches Nutzlast-Mapping ohne bekanntes Zielschema.
+      DER ZUSCHNITT ENTSTEHT ERST NACH DIESER KLÄRUNG, nicht davor.
+      AUSDRÜCKLICH AUSGENOMMEN:
       Hotjar/Session-Recording ist KEIN Fan-Out-Ziel, sondern braucht einen
       eigenen Custom-Script-Mechanismus — separat zu bewerten.
       DAS GETEILTE CONSENT-GATE IST GEBAUT. Die Einwilligungs-Auswertung liegt

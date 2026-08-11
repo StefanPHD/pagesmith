@@ -39,22 +39,36 @@ import { META_CONSENT_TARGET } from "@/lib/tracking/consent";
  * auseinanderlaufen, ohne dass irgendwo etwas rot wird.
  *
  * PINTEREST TRAEGT SEINEN WERT ALS LITERAL, und das ist kein Versehen: Fuer
- * dieses Ziel gibt es noch KEINE Consent-Konstante, weil der Erzeuger den
- * Schluessel noch nicht schreibt (Haelfte B). Die Schreibweise folgt derselben
- * Regel wie bei Meta — dem Namensraum settings.pixels.<platform>, snake_case und
- * klein. SOBALD DER ERZEUGER IHN SCHREIBT, wird der Wert zur Einbahnstrasse (er
- * steht dann in fremden Konfigurationen) und gehoert als Konstante nach
- * tracking/consent.ts, von wo er hier importiert wird — wie der von Meta. BIS
- * DAHIN ist er folgenlos: Der Draht traegt ihn nie, also lautet die Antwort fuer
- * dieses Ziel bei vorhandenem Feld ohnehin "nicht erlaubt".
+ * dieses Ziel gibt es KEINE Consent-Konstante in tracking/consent.ts, aus der er
+ * importiert werden koennte — anders als bei Meta. Die Schreibweise folgt derselben
+ * Regel wie dort: dem Namensraum settings.pixels.<platform>, snake_case und klein.
+ *
+ * DER SCHLUESSEL KOMMT HEUTE IM DRAHT AN, sobald das Ziel eine Kennung traegt.
+ * ENTSCHIEDEN WIRD DAS IM MEMO consentTargets in components/CodeImporter.tsx: Es
+ * laeuft ueber TRACKING_TARGETS, filtert auf eine gesetzte Pixel-ID und bildet
+ * ueber DIESE Zuordnung ab. Der Erzeuger schreibt den Schluessel daraufhin an ZWEI
+ * Stellen in den ausgelieferten Text — in die Ziehung (__psConsentAll) und in das
+ * Draht-Feld des Beacons, beide in tracking/meta.ts.
+ *
+ * DARAUS FOLGT FUER DIE SCHREIBWEISE: SIE IST EINE EINBAHNSTRASSE. Ein publizierter
+ * Text traegt sie, und ein Code-Deploy erreicht ihn nicht. Ein spaeterer Wechsel der
+ * Schreibweise braeche JEDE bereits ausgelieferte Seite, und zwar LAUTLOS: Der Leser
+ * faende den neuen Schluessel im Draht nicht, und "nicht gefunden" heisst hier
+ * fail-closed "nicht erlaubt" (consentAllows in tracking/consent-wire.ts).
+ *
+ * OFFEN UND NICHT ENTSCHIEDEN: ob die Literal-Werte damit als Konstanten nach
+ * tracking/consent.ts gehoeren, von wo sie hier importiert wuerden — wie der von
+ * Meta. Das ist der Ort; die Entscheidung faellt nicht hier.
  */
 export const CONSENT_KEY_BY_TARGET: Record<TrackingTarget, string> = {
   meta: META_CONSENT_TARGET,
   pinterest: "pinterest",
-  // TIKTOK TRAEGT SEINEN WERT AUS DEMSELBEN GRUND ALS LITERAL wie Pinterest: Der
-  // Erzeuger schreibt diesen Schluessel noch nicht in den Browser-Text (Haelfte B),
-  // also traegt der Draht ihn nie und der Wert ist bis dahin folgenlos. Schreibweise
-  // nach derselben Regel — Namensraum settings.pixels.<platform>, snake_case, klein.
+  // TIKTOK TRAEGT SEINEN WERT AUS DEMSELBEN GRUND ALS LITERAL wie Pinterest: keine
+  // Consent-Konstante in tracking/consent.ts, aus der er importiert werden koennte.
+  // Schreibweise nach derselben Regel — Namensraum settings.pixels.<platform>,
+  // snake_case, klein. Auch hier kommt der Schluessel im Draht an, sobald das Ziel
+  // eine Kennung traegt, und ist damit eine EINBAHNSTRASSE — Herleitung und die
+  // offene Konstanten-Frage stehen im Absatz ueber dieser Zuordnung.
   tiktok: "tiktok",
 };
 

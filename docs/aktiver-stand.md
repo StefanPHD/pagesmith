@@ -36,44 +36,107 @@ bestätigt (Abschnitt 3). Der offene Umfang darunter ist davon UNBERÜHRT — je
 Scheibe war eine Härtung am ERSTEN Adapter und kein Posten dieser Liste. Keine
 Neubewertung, nur der Stand.
 
-**DIE STRUKTUR IST ERLEDIGT, DIE WIEDERHOLUNGEN SIND OFFEN.** Was gebaut, geprüft
-und live bewiesen ist, steht in CLAUDE.md an der Phase-11-Zeile; die volle
-Herleitung in `docs/claude-history/phase-11-multi-tracking.md`, dort besonders
-"## Der Einstieg für die nächste Sitzung" und "## Die zwölf Scheiben". Beides
-wird hier NICHT wiederholt.
+**DIE STRUKTUR IST ERLEDIGT.** Was gebaut, geprüft und live bewiesen ist, steht in
+CLAUDE.md an der Phase-11-Zeile; die volle Herleitung in
+`docs/claude-history/phase-11-multi-tracking.md`, dort besonders "## Der Einstieg
+für die nächste Sitzung" und "## Die zwölf Scheiben". Beides wird hier NICHT
+wiederholt.
 
-**DER OFFENE UMFANG, vier Posten mit VERSCHIEDENEM Rang:**
+**DIE OFFENEN ZIELE SIND KEINE KLASSE — SIE WERDEN EINZELN GELESEN.** Bis zum
+2026-08-11 stand hier und in CLAUDE.md, die drei offenen Ziele seien
+"Wiederholungen desselben Handgriffs, kein neues Fundament". Diese Aussage hatte
+KEIN EINZIGES GEPRÜFTES MITGLIED; die Befunde darunter lösen sie je Ziel auf.
 
-1. **DREI ADAPTER-ZIELE — TikTok, Google, LinkedIn.** Echte Wiederholungen
-   desselben Handgriffs: Adapter, Eintrag in der Zuordnung, Zielwert im CHECK,
-   Live-Test. Kein neues Fundament. Die Auflage "ein drittes Ziel erzwingt eine
-   Entscheidung, keine Kopie" steht im Einstiegs-Block der Historien-Datei; die
-   Auflage, dass jedes weitere Ziel seine EIGENE Constraint-Erweiterung mitbringt,
-   steht in `docs/db-stand.md`, "## Aktueller DB-/Analytics-Stand (Ist-Zustand,
-   kein Konzept)", beim CHECK `project_secrets_target_valid` — dort wird sie
-   gepflegt, im Einstiegs-Block wird sie nur berichtet. Beide gelten unverändert.
-2. **DAS TRACKING-TESTMODUS-MODUL** (`test_event_code`). Klein, eigenständig;
+**PROVENIENZ ALLER DREI ZIEL-BEFUNDE, EINMAL UND VERBINDLICH FÜR DIE POSTEN 1 BIS
+3:** Anbieter-Recherche des Architekten vom **2026-08-11 an FREMDER
+DOKUMENTATION**. **NICHT am Code gemessen, NICHT live bestätigt, kein Aufruf gegen
+ein echtes System.** Bei TikTok zusätzlich: **teils aus Hilfeseiten, NICHT aus der
+Entwickler-Referenz.**
+
+**DER OFFENE UMFANG, sechs Posten mit VERSCHIEDENEM Rang:**
+
+1. **TIKTOK — AUF DER STRUKTUR-ACHSE EINE WIEDERHOLUNG, mit EINER offenen Frage.**
+   GEPRÜFT (Provenienz oben): eine Pixel-Kennung je Projekt trägt alle Ereignisse,
+   der Ereignisname reist in der Nutzlast · das Zugangsdatum ist ein langlebiges
+   Token aus dem Events Manager und passt in die Geheimnis-Tabelle · es gibt
+   Deduplizierung über eine Ereignis-Kennung · es gibt einen Testmodus, dessen Code
+   pro Sitzung WECHSELT und deshalb nichts ist, was man hinterlegt.
+   **OFFEN und VOR dem Bau an TikToks ENTWICKLER-REFERENZ zu messen:** ob IP und
+   User-Agent ALLEIN für einen erfolgreichen Aufruf genügen. Belegt ist nur, dass
+   beide als Match-Keys geführt werden — NICHT, dass ein Aufruf ohne weitere
+   Kennung angenommen wird. Die Klick-Kennung zu lesen wäre eine NEUE Fähigkeit,
+   die es heute nicht gibt.
+   **AUSSERDEM, und es ist keine Bau-, sondern eine Erwartungs-Frage an den
+   Betreiber:** Die Match-Qualität ist mit IP und User-Agent allein strukturell
+   niedrig, und sie steuert beim Anbieter den Zugang zu Optimierungszielen. Das ist
+   kein Baufehler.
+2. **LINKEDIN — KEINE WIEDERHOLUNG.** Die Kennung ist eine Conversion-Regel-URN
+   und gilt **JE EREIGNISTYP**, nicht je Projekt. **OWNER-ENTSCHEIDUNG vom
+   2026-08-11:** Zuordnung Ereignisname -> URN (Option B), damit Kunden auf
+   Conversion-Typen optimieren können. Das berührt, **WIE EIN EREIGNIS BESCHRIEBEN
+   WIRD**, und ist damit eine PRODUKTÄNDERUNG, keine Adapter-Wiederholung.
+   Weitere Abweichungen (Provenienz oben): Zeit in MILLISEKUNDEN (Meta: Sekunden) ·
+   Betrag als Zeichenkette · Erfolg ist 201 · DREI Fehlerwege mit ZWEI
+   verschiedenen Rumpfformen · ein Versions-Header, dessen Wert ein Datum ist und
+   der abgeschaltet wird · als Identität nur die IP, NUR IPv4, der User-Agent zählt
+   dort nicht · kein Testmodus gefunden — **ein Nicht-Treffer, KEIN Beweis der
+   Abwesenheit**.
+   Immerhin: das Zugangsdatum ist ein nicht ablaufendes Token aus dem Campaign
+   Manager und passt in die Geheimnis-Tabelle.
+3. **GOOGLE — ZWEI ZIELE, NICHT EINS, und keines davon zugeschnitten.** Google Ads
+   Conversions und GA4 sind verschiedene Produkte mit verschiedenen Schnittstellen
+   und Semantiken. Der bisherige Weg für Offline-Conversions ist für NEUE Zugänge
+   seit Mitte Juni 2026 geschlossen; der Nachfolger ist für den relevanten Fall
+   allowlist-only und verlangt einen OAuth-Fluss mit Verifizierung — also eine
+   **AUTORISIERUNGSSCHICHT, keinen Tabelleneintrag**. Der GA4-Weg verlangt eine
+   Besucher-Kennung aus einem Cookie, das dieses Produkt nicht setzt, und liefert
+   ohnehin keine Ads-Conversion.
+   Dazu ein bereits am **2026-08-03** benanntes **SCHEMA-RISIKO**: mehrwertige
+   Anmeldungen passen nicht auf ein Geheimnis pro Zeile; im Ernstfall eine ZWEITE
+   Migration auf der Geheimnis-Tabelle.
+   **FOLGE: Google bekommt eine eigene KONZEPT-Runde, KEINE Scheibe.**
+4. **DAS TRACKING-TESTMODUS-MODUL** (`test_event_code`). Klein, eigenständig;
    Kontext in `docs/claude-history/future-roadmap.md`, "Tracking-Testmodus für
    Kunden".
-3. **DER TESTKNOPF — KEINE SCHEIBE.** Mehrere einzeln beweisbare Teile plus eine
+5. **DER TESTKNOPF — KEINE SCHEIBE.** Mehrere einzeln beweisbare Teile plus eine
    unentschiedene VORFRAGE (was überhaupt aufgerufen wird). Ohne deren Antwort hat
    kein Zuschnitt einen Gegenstand. Auflagen, Messbefunde und Begründung:
    `docs/claude-history/phase-11-multi-tracking.md`, "## Die dreizehnte Scheibe —
    Der Testknopf (VERSCHOBEN, Owner 2026-08-10)".
-4. **CUSTOM-PIXEL — KEINE WIEDERHOLUNG, SONDERN EINE EIGENE ARCHITEKTUR-SCHEIBE.**
+6. **CUSTOM-PIXEL — KEINE WIEDERHOLUNG, SONDERN EINE EIGENE ARCHITEKTUR-SCHEIBE.**
    Ungeklärt ist ZUERST, was es überhaupt ist: ein CLIENT-seitiges Snippet (dann
    gar kein Fan-Out-Ziel) oder ein SERVER-seitiger Empfänger mit kundeneigenem
    Endpunkt (dann hängen Fragen daran, die kein anderes Ziel stellt). Der Zuschnitt
    entsteht NACH dieser Klärung. Ausformuliert an der Phase-11-Zeile in CLAUDE.md.
 
-**VERMERK ZUR DIVERGENZ — er gehört zwingend hierher.** Der Einstiegs-Block in
-`docs/claude-history/phase-11-multi-tracking.md` führt Custom-Pixel weiterhin
-zusammen mit den drei Zielen als Wiederholung. **Das ist ÜBERHOLT.** Der Block
-wird trotzdem NICHT korrigiert: Er liegt in einer Historien-Datei, und Historie
-wird hier nicht nachträglich umgeschrieben — sie ist ein Bericht vom 2026-08-10
-und als solcher richtig. **Ab heute steuert DIESE Datei.** Wer beide liest, folgt
-dieser hier; die deckungsgleiche Fassung steht ausserdem an der Phase-11-Zeile in
-CLAUDE.md.
+**ZWEI AUFLAGEN GELTEN FÜR JEDES ZIEL, DAS GEBAUT WIRD, unverändert:** "ein drittes
+Ziel erzwingt eine Entscheidung, keine Kopie" steht im Einstiegs-Block der
+Historien-Datei; die Auflage, dass jedes weitere Ziel seine EIGENE
+Constraint-Erweiterung mitbringt, steht in `docs/db-stand.md`, "## Aktueller
+DB-/Analytics-Stand (Ist-Zustand, kein Konzept)", beim CHECK
+`project_secrets_target_valid` — dort wird sie gepflegt, im Einstiegs-Block wird
+sie nur berichtet.
+
+**VERMERK ZUR DIVERGENZ — er gehört zwingend hierher, und er betrifft seit dem
+2026-08-11 ZWEI Stellen desselben Blocks.** Der Einstiegs-Block in
+`docs/claude-history/phase-11-multi-tracking.md` führt (1) Custom-Pixel zusammen
+mit den drei Zielen als Wiederholung und (2) auch die drei Ziele selbst als
+"Wiederholungen desselben Handgriffs". **BEIDES IST ÜBERHOLT.** Der Block wird
+trotzdem NICHT korrigiert: Er liegt in einer Historien-Datei, und Historie wird
+hier nicht nachträglich umgeschrieben — er ist ein Bericht vom 2026-08-10 und als
+solcher richtig. **DIESE Datei steuert.** Wer beide liest, folgt dieser hier.
+
+**DIE ROHFASSUNG HAT DIESER FORMULIERUNG AM 2026-08-03 NAMENTLICH WIDERSPROCHEN —
+und der Einspruch stand ACHT TAGE unbeachtet.** In
+`docs/claude-history/phase-11-multi-tracking-rohfassung.md`, Abschnitt "## Fragen,
+die der Bau beantworten MUSS", Punkt (e), steht: *"Die fünf Ziele sind NICHT fünf
+Kopien desselben Musters; jedes bringt eigene Pflichtfelder mit. Die
+Roadmap-Formulierung 'additive Fan-Out-Ziele' (CLAUDE.md, Roadmap-Zeile Phase 11)
+verdeckt das."* Die zitierte Zeile blieb bis zum 2026-08-11 unverändert.
+**WARUM DAS HIERHER GEHÖRT:** Es erklärt, warum die Information im Repo LAG und
+trotzdem nicht GEWIRKT hat — sie lag in der Datei, die ausdrücklich als "wird
+nicht gepflegt, NICHT der Einstieg" geführt wird, und fehlte in der kuratierten
+Fassung. Als Kandidat festgehalten in Abschnitt 7.
 
 ---
 
@@ -348,3 +411,34 @@ schon abdeckt (geprüft am 2026-08-11 durch Durchsicht von "## Immer beachten").
    *Beleg:* Der Live-Lauf vom 2026-08-11 erreichte nur die Parse-Ablehnung; die
    Signatur-Ablehnung wäre nur mit einem echten Zugangsdatum erreichbar gewesen.
    *Abdeckung:* KEINE bestehende Regel sagt das.
+
+**AUS DER AUFLÖSUNG DER "WIEDERHOLUNGEN" (2026-08-11), drei weitere Kandidaten:**
+
+7. **EINE MENGEN-AUSSAGE WIRD NICHT DADURCH RICHTIG, DASS MAN EIN FALSCHES
+   MITGLIED ENTFERNT.** Wer eine Menge korrigiert, prüft die VERBLEIBENDEN
+   Mitglieder — sonst wird die Aussage präziser statt wahr.
+   *Beleg:* Die Custom-Pixel-Korrektur vom 2026-08-11 nahm ein Mitglied heraus und
+   zog sieben Fundstellen nach, ohne die drei übrigen zu prüfen; von diesen dreien
+   trägt eines die Aussage nur halb und eines gar nicht.
+   *Abdeckung:* NAHE VERWANDT, aber eine andere Achse — "WER EINE HÄLFTE EINER
+   AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR FALLE" spricht von ZWEI Angaben in EINEM
+   Satz; hier geht es um die MITGLIEDER einer Menge.
+8. **EINE NICHTERWÄHNUNG IST KEINE ENTWARNUNG.** Hatte eine Prüfung EINEN
+   Gegenstand, sagt sie über die übrigen nichts — auch nicht implizit.
+   *Beleg:* Aus "nur LinkedIn bricht die Hülle" wurde geschlossen, TikTok passe.
+   Die Auflage jener Prüfung lautete wörtlich, der Entwurf werde GEGEN DIE
+   LINKEDIN-HÜLLE geprüft; über TikTok stand dort nie ein Hüllen-Befund.
+   *Abdeckung:* KEINE deckt sie. Zwei stehen daneben: "EINE ABWESENHEITS-BEHAUPTUNG
+   WIRD AUF DREI WEISEN HOHL" (über Tests) und "EINE ANLEITUNG, DIE EINE
+   VORAUSSETZUNG NICHT NENNT, ERZEUGT EINE FALSCHE ENTWARNUNG" (über Anleitungen) —
+   keine über den GELTUNGSBEREICH einer Prüfung.
+9. **ZWEIMAL IN FOLGE LAG DIE TRAGENDE AUSSAGE IN DER DATEI, DIE ALS "WIRD NICHT
+   GEPFLEGT, NICHT DER EINSTIEG" GEFÜHRT WIRD** — und fehlte in der kuratierten
+   Fassung. Das ist ein Befund über das KURATIONS-KRITERIUM, nicht über die
+   Rohfassung.
+   *Beleg:* der LinkedIn-Block (g)/(h) und der namentliche Einspruch gegen die
+   Roadmap-Formulierung in (e); beide fehlen in
+   `docs/claude-history/phase-11-multi-tracking.md`.
+   *Abdeckung:* KEINE Regel sagt das. Der Zeiger auf die Rohfassung in CLAUDE.md,
+   "## Detail-Archiv", nennt sie als Rückfall, "wenn man dort etwas VERMISST" — er
+   sagt nichts darüber, WAS bei der Kuration verlorengeht.

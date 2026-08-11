@@ -82,22 +82,34 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       über mehrere Ziele, Einwilligung JE ZIEL, Oberfläche je Plattform und der
       nebenläufige Fan-Out mit EIGENEM Deckel je Empfänger sind gebaut und geprüft.
       GEBAUT UND TATSÄCHLICH BELIEFERT SIND ZWEI ZIELE: Meta und Pinterest.
-      OFFEN ALS WIEDERHOLUNGEN SIND DREI ZIELE — TikTok, Google und LinkedIn —,
-      dazu das Tracking-Testmodus-Modul und der Testknopf. DIESE DREI SIND
-      WIEDERHOLUNGEN DESSELBEN HANDGRIFFS, KEIN NEUES FUNDAMENT — wer sie für
-      gleich gross hält wie den erledigten Teil, plant eine Phase, die es so nicht
-      mehr gibt. Ein solches Ziel ist ein Adapter, ein Eintrag in der Zuordnung,
-      ein Zielwert im CHECK und ein Live-Test; alles, was daran schwierig war, ist
-      einmal gemacht. CUSTOM-PIXEL GEHÖRT NICHT ZU DIESEN DREI — eigener Absatz
-      weiter unten. AUCH DER TESTKNOPF FÄLLT NICHT IN DIESE KLASSE: er ist keine
+      OFFEN SIND DREI ZIELE — TikTok, Google und LinkedIn —, dazu das
+      Tracking-Testmodus-Modul und der Testknopf. DIE DREI ZIELE HABEN
+      VERSCHIEDENEN RANG UND WERDEN JE ZIEL GELESEN, NICHT ALS KLASSE. Die
+      Befunde je Ziel samt Provenienz stehen in docs/aktiver-stand.md,
+      "## 2. Wo die Phase steht" — hier nur der Rang:
+      · TIKTOK — auf der Struktur-Achse eine WIEDERHOLUNG: ein Adapter, ein
+      Eintrag in der Zuordnung, ein Zielwert im CHECK, ein Live-Test. EINE Frage
+      bleibt offen und ist VOR dem Bau an der ENTWICKLER-Referenz des Anbieters
+      zu messen; welche, steht in der Standdatei.
+      · LINKEDIN — KEINE Wiederholung: die Kennung gilt JE EREIGNISTYP, nicht je
+      Projekt. Das berührt, WIE EIN EREIGNIS BESCHRIEBEN WIRD, und ist damit eine
+      PRODUKTÄNDERUNG, keine Adapter-Wiederholung (Owner-Entscheidung 2026-08-11).
+      · GOOGLE — ZWEI Ziele, nicht eins, und keines zugeschnitten. Der Zugang
+      verlangt eine AUTORISIERUNGSSCHICHT statt eines Tabelleneintrags, dazu ein
+      SCHEMA-RISIKO auf der Geheimnis-Tabelle. Google bekommt eine eigene
+      KONZEPT-Runde, KEINE Scheibe.
+      CUSTOM-PIXEL GEHÖRT ZU KEINEM DIESER POSTEN — eigener Absatz weiter unten.
+      DER TESTKNOPF FÄLLT IN KEINE DIESER KLASSEN: er ist keine
       Scheibe, sondern mehrere einzeln beweisbare Teile plus eine unentschiedene
       Vorfrage — Auflagen, Messbefunde und Begründung stehen in
       docs/claude-history/phase-11-multi-tracking.md, "Die dreizehnte Scheibe —
       Der Testknopf (VERSCHOBEN, Owner 2026-08-10)".
       Volle Herleitung: docs/claude-history/phase-11-multi-tracking.md.
-      TikTok, Google und LinkedIn als weitere ADDITIVE Fan-Out-Ziele
-      neben Meta und Pinterest — source bleibt Beobachtungs-Ort, jedes Ziel
-      bekommt seine EIGENE additive Spalte, kein Umbau. Dazu das kleine
+      SOURCE BLEIBT BEOBACHTUNGS-ORT: jedes Ziel
+      bekommt seine EIGENE additive Spalte, kein Umbau. DAS IST EINE AUSSAGE ÜBER
+      DAS events-SCHEMA, NICHT über die Gleichartigkeit der Anbieter — s.
+      "TRACKING-source = BEOBACHTUNGS-ORT, NIE ZIEL" unter "## Immer beachten".
+      Dazu das kleine
       Tracking-Testmodus-Modul (test_event_code, s. future-roadmap.md,
       "Tracking-Testmodus für Kunden").
       CUSTOM-PIXEL IST KEINE WIEDERHOLUNG, SONDERN EINE EIGENE

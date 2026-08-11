@@ -1215,6 +1215,17 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   gelaufen"-Gate missversteht, baut eine Automatik, die wir bewusst nicht haben — die
   Migrationen laufen weiterhin manuell im SQL-Editor, die Idempotenz-Guards in den Dateien
   selbst (if not exists, Katalog-Guard) bleiben die Absicherung gegen Doppelläufe.
+- OB EINE MIGRATION IN DER LAUFENDEN DB ANGEWANDT IST, IST AM REPO NICHT
+  ENTSCHEIDBAR: Eine Datei in supabase/migrations/ beweist, dass sie
+  GESCHRIEBEN wurde — nicht, dass sie gelaufen ist. Es gibt keinen
+  Migrations-Runner und soll keinen geben (s. "MIGRATION IMMER VOR
+  CODE-DEPLOY"), also macht kein Automatismus aus einer Datei einen Vollzug.
+  FOLGE: Eine Aussage über den angewandten Stand wird NIE aus dem Verzeichnis
+  fortgeschrieben, sondern ausschliesslich aus einer Messung im SQL-Editor
+  oder aus einem Live-Test — und der Beleg dafür gehört dazu. Wer aus der
+  Anwesenheit einer Datei auf den Zustand der Datenbank schliesst, plant gegen
+  ein Schema, das es so nicht geben muss. Der gemessene Ist-Stand steht in
+  docs/db-stand.md (NICHT automatisch geladen).
 - ANLEGEN UND BEFÜLLEN EINER ADDITIVEN SPALTE NICHT VERSCHMELZEN (Phase 9):
   Eine neue additive Spalte wird in einer Scheibe ANGELEGT (Migration plus
   CHECK, falls nötig) und in einer separaten, FOLGENDEN Scheibe tatsächlich

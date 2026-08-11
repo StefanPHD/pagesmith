@@ -2,7 +2,7 @@
 --              Migrations-Protokoll (inkl. Luecklosigkeit), Spalten, Constraints,
 --              RLS/Policies, Grants, Indizes, Funktionen, Event-Trigger. Das ist die
 --              Quelle fuer die Sektion "## Aktueller DB-/Analytics-Stand" in
---              CLAUDE.md. Ohne diese Datei wurde die Sektion aus dem Gedaechtnis und
+--              docs/db-stand.md. Ohne diese Datei wurde die Sektion aus dem Gedaechtnis und
 --              aus den Migrations-DATEIEN geschrieben — und hing dadurch drei
 --              Migrationen zurueck und behauptete "ALLE Spalten NOT NULL" bei
 --              events, obwohl variant seit 0017 NULLABLE ist.
@@ -19,7 +19,7 @@
 --              wie ein Befund aus. Probe 9 ist die BEWUSSTE Ausnahme: Event-Trigger
 --              sind cluster-weit und haben kein Schema.
 -- VERIFIZIERT: ZULETZT GEFAHREN 2026-08-05, nach Migration 0021; die Ergebnisse dieses
---              Laufs stehen in CLAUDE.md "## Aktueller DB-/Analytics-Stand". Mit
+--              Laufs stehen in docs/db-stand.md "## Aktueller DB-/Analytics-Stand". Mit
 --              DIESEM Lauf sind die ERWARTUNGEN unten auf den Stand nach 0021 gezogen
 --              (Proben 1, 1b, 3, 4, 6).
 --              KEINE TREFFERBILANZ FUER DEN 2026-08-05-LAUF: gemeldet wurden WERTE,

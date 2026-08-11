@@ -30,7 +30,7 @@
  * Gegenstand, weil sie zwei Vokabulare vereinigt (Consent-Schluessel und
  * Ziel-Wert der Geheimnis-Tabelle), die heute nur zufaellig gleich lauten.
  */
-export const TRACKING_TARGETS = ["meta", "pinterest"] as const;
+export const TRACKING_TARGETS = ["meta", "pinterest", "tiktok"] as const;
 
 /** Ein bekanntes Tracking-Ziel. */
 export type TrackingTarget = (typeof TRACKING_TARGETS)[number];

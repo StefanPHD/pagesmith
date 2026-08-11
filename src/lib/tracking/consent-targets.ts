@@ -51,6 +51,11 @@ import { META_CONSENT_TARGET } from "@/lib/tracking/consent";
 export const CONSENT_KEY_BY_TARGET: Record<TrackingTarget, string> = {
   meta: META_CONSENT_TARGET,
   pinterest: "pinterest",
+  // TIKTOK TRAEGT SEINEN WERT AUS DEMSELBEN GRUND ALS LITERAL wie Pinterest: Der
+  // Erzeuger schreibt diesen Schluessel noch nicht in den Browser-Text (Haelfte B),
+  // also traegt der Draht ihn nie und der Wert ist bis dahin folgenlos. Schreibweise
+  // nach derselben Regel — Namensraum settings.pixels.<platform>, snake_case, klein.
+  tiktok: "tiktok",
 };
 
 /**
@@ -86,4 +91,11 @@ export const CONSENT_KEY_BY_TARGET: Record<TrackingTarget, string> = {
 export const LEGACY_CONSENT_ROLE: Record<TrackingTarget, boolean> = {
   meta: true,
   pinterest: false,
+  // FALSE, UND DIE FEHLERKLASSE GEHOERT DANEBEN: Bei einem Draht OHNE
+  // Einwilligungs-Feld hiesse `true` hier ein FORWARD OHNE EINWILLIGUNG an ein Ziel,
+  // ueber das der Besucher nie gefragt wurde — jede bereits publizierte Kundenseite
+  // traegt das Feld nicht, und ein Code-Deploy erreicht sie nicht. Der Schaden waere
+  // auf keinem unserer Kanaele sichtbar: es gaebe keinen Fehler, nur einen Forward
+  // zuviel.
+  tiktok: false,
 };

@@ -7,6 +7,7 @@ import {
 import { META_TEST_EVENT_CODE } from "@/lib/capi/config";
 import { forwardToMeta } from "@/lib/capi/meta-forward";
 import { forwardToPinterest } from "@/lib/capi/pinterest-forward";
+import { forwardToTiktok } from "@/lib/capi/tiktok-forward";
 // NUR DER TYP. Er traegt den Waechter fuer die Ziel-Konstante unten (s. dort) und
 // erzeugt keine Laufzeit-Abhaengigkeit dieses Handlers auf den Einstellungs-Blob.
 import type { TrackingTarget } from "@/lib/settings";
@@ -212,6 +213,18 @@ function schedulePersist(
 const PINTEREST_TARGET: TrackingTarget = "pinterest";
 
 /**
+ * DER ZIELWERT FUER TIKTOK — lokal, aus denselben zwei Gruenden wie der darueber:
+ * die Aufloesung ist unantastbar, und ein WERT-Import aus capi/token.ts waere in den
+ * neun Testdateien, die jenes Modul mit einer Zwei-Schluessel-Fabrik mocken,
+ * `undefined` — der Zweig unten waere in der gesamten Handler-Suite tot, und alles
+ * bliebe gruen.
+ * DER TYP IST DER WAECHTER, nicht der Name: Wuerde der Wert in TRACKING_TARGETS
+ * umbenannt, ist diese Zeile ein BUILD-Fehler statt eines Forwards, der lautlos
+ * ausfaellt.
+ */
+const TIKTOK_TARGET: TrackingTarget = "tiktok";
+
+/**
  * DIE ZUORDNUNG ZIEL -> ADAPTER (Phase 11, siebte Scheibe; ZWEITER ZWEIG in der
  * ZWOELFTEN).
  *
@@ -274,6 +287,14 @@ function dispatchForward(
       clientIp,
       userAgent,
     );
+  }
+  // DAS DRITTE ZIEL NIMMT DIE AUFGELOESTE CONFIG UNVERAENDERT — wie das erste und
+  // anders als das zweite. Der Grund liegt in den NAMEN: Bei jenem heisst die
+  // oeffentliche Groesse Anzeigenkonto-ID und steht im Endpunkt-PFAD, hier ist sie
+  // tatsaechlich eine Pixel-Kennung und steht im RUMPF. Eine eigene Form waere hier
+  // ein Duplikat ohne Aussage.
+  if (entry.target === TIKTOK_TARGET) {
+    return forwardToTiktok(entry.config, event, eventID, body, clientIp, userAgent);
   }
   return Promise.resolve();
 }

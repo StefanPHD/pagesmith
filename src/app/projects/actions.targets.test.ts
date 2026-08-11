@@ -262,9 +262,23 @@ describe("listConfiguredTargets", () => {
     // Die DB kann nach einem Rollback auf eine aeltere Code-Fassung Werte tragen,
     // die hier unbekannt sind. Sie als Ziel auszugeben hiesse, der Oberflaeche eine
     // Karte anzubieten, die es nicht gibt.
+    //
+    // DER UNBEKANNTE WERT MUSS SYNTHETISCH SEIN, UND DAS IST DIE EIGENTLICHE
+    // LEHRE DIESER ZEILE: Hier stand bis zur TikTok-Scheibe "tiktok" — ein
+    // plausibler Zielname, der mit jener Scheibe REAL wurde. Der Test war damit
+    // rot, ohne dass sich an dem geaendert haette, was er schuetzt. JEDER
+    // plausible Anbietername kann spaeter real werden; "ga4", "custom",
+    // "linkedin" sind dieselbe Falle mit Verzoegerung. Nur ein Wert, der
+    // NIEMALS ein Ziel sein kann, haelt diesen Test unabhaengig von der
+    // Ziel-Menge. Wer ihn ersetzt, waehlt wieder einen solchen.
     makeClient({ user: { id: "u1" } });
     setSelectResult({
-      data: [{ target: "meta" }, { target: "tiktok" }, { target: null }, {}],
+      data: [
+        { target: "meta" },
+        { target: "__kein_ziel__" },
+        { target: null },
+        {},
+      ],
       error: null,
     });
     expect(await listConfiguredTargets("proj-1")).toEqual(["meta"]);

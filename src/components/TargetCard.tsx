@@ -126,6 +126,28 @@ export const TARGET_CARDS: Record<TrackingTarget, TargetCardConfig> = {
     // selbst — er haengt an DIESEM Feld.
     hasAdapter: true,
   },
+  // DAS DRITTE ZIEL. Die oeffentliche Kennung heisst hier tatsaechlich Pixel-ID —
+  // anders als beim zweiten Ziel, wo der Adapter die ANZEIGENKONTO-Kennung braucht
+  // und die Karte deshalb umbenannt werden musste. Der Hilfetext folgt derselben
+  // Doppelaussage wie dort (HERKUNFT plus ABGRENZUNG): Die Kennung stammt aus dem
+  // Events Manager des Anbieters, und wir injizieren KEIN Browser-Tag — im
+  // Seitenquelltext landet allein der Consent-Schluessel.
+  // DER PLATZHALTER IST ABSTEIGEND und enthaelt Metas aufsteigende Beispielziffern
+  // NICHT: CodeImporter.test.tsx waehlt Metas Feld ueber dessen Platzhalter, per
+  // Teilstring-Muster.
+  tiktok: {
+    name: "TikTok",
+    publicLabel: "TikTok-Pixel-ID",
+    publicHint: "Aus dem Events Manager, nicht im Seitenquelltext",
+    publicPlaceholder: "z.B. CABCDE0123FGHIJKLMNO",
+    secretLabel: "TikTok-Zugangsdaten",
+    secretPlaceholderNew: "Zugangsdaten einfügen",
+    secretPlaceholderReplace: "Neue Zugangsdaten eingeben zum Ersetzen",
+    // Der Adapter entsteht in DERSELBEN Scheibe wie dieser Eintrag — das Ziel wird
+    // ab dem Deploy tatsaechlich beliefert. Ein `false` hier waere schon am Tag der
+    // Aufnahme falsch.
+    hasAdapter: true,
+  },
 };
 
 /** Die drei erlaubten Statustexte. Mehr gibt es nicht, und das ist die Zusage. */

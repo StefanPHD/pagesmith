@@ -1,4 +1,12 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 // Die Karte ruft ZWEI Server-Actions auf. Beide hier gemockt — der echte Modul-Import
@@ -104,6 +112,24 @@ afterEach(() => {
   // setzt hier KEIN Test ein bleibendes mockResolvedValue — nur ...Once.
   vi.clearAllMocks();
 });
+
+/**
+ * METAS KARTE als Anker fuer EINGEGRENZTE Abfragen.
+ *
+ * WARUM ES DEN ANKER BRAUCHT: Jede Karte zeigt denselben Statustext. Eine
+ * unqualifizierte Abfrage darauf ist nur so lange eindeutig, wie GENAU EINE Karte
+ * im gesuchten Zustand steht — eine Voraussetzung, die von der ZAHL DER ZIELE
+ * abhaengt und mit jedem weiteren Ziel neu bricht. Der Kartenname ist dagegen
+ * eindeutig und bleibt es.
+ *
+ * DER ANKER IST DER KOPF DER KARTE (Name und Status stehen in derselben Zeile).
+ * Bewusst NICHT ueber die Platzhalter der Eingabefelder: Das Geheimnis-Feld traegt
+ * bei Pinterest und TikTok denselben Platzhaltertext — unterschieden werden sie
+ * ueber ihre BESCHRIFTUNG, nicht ueber den Platzhalter.
+ */
+function metaKarte(): HTMLElement {
+  return screen.getByText(TARGET_CARDS.meta.name).parentElement!;
+}
 
 function renderCard(
   overrides: {
@@ -622,12 +648,19 @@ describe("Container-Waechter: ein Rueckruf nach dem Projektwechsel darf NICHTS a
 
     // Auf B wechseln. VORBEDINGUNG mit Beweiskraft: B hat PINTEREST hinterlegt —
     // steht dieser Text da, ist Bs Lade-Vorgang nachweislich ABGESCHLOSSEN und
-    // kann den fremden Eintrag nicht mehr wegraeumen. Metas Karte steht dann als
-    // EINZIGE auf "nicht konfiguriert", die Abfrage darauf ist eindeutig.
+    // kann den fremden Eintrag nicht mehr wegraeumen.
+    //
+    // DIE ABFRAGE WIRD AUF METAS KARTE EINGEGRENZT, NICHT AUF EINE ZAHL. Hier
+    // stand bis zur TikTok-Scheibe eine unqualifizierte Abfrage auf den
+    // Statustext — sie setzte voraus, dass Metas Karte die EINZIGE unkonfigurierte
+    // ist, und genau das galt nur, solange es ZWEI Ziele gab. Eine Zaehlung waere
+    // dieselbe Abhaengigkeit in neuer Gestalt: bei drei Zielen gruen, beim vierten
+    // wieder rot. Der Anker ist deshalb Metas Karte selbst — er traegt unabhaengig
+    // davon, wie viele Ziele daneben stehen.
     fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
     fireEvent.click(await screen.findByText("P2"));
     expect(await screen.findByText(STATUS_CONFIGURED)).toBeTruthy();
-    expect(screen.getByText(STATUS_UNCONFIGURED)).toBeTruthy();
+    expect(within(metaKarte()).getByText(STATUS_UNCONFIGURED)).toBeTruthy();
 
     // JETZT trifft die Antwort fuer A ein. Sie gehoert einem Projekt, das nicht
     // mehr offen ist.
@@ -638,7 +671,7 @@ describe("Container-Waechter: ein Rueckruf nach dem Projektwechsel darf NICHTS a
     // OHNE den Kennungs-Vergleich stuende Metas Karte hier auf "Zugangsdaten
     // hinterlegt" — Projekt B haette den Zustand von Projekt A geerbt.
     expect(screen.getAllByText(STATUS_CONFIGURED)).toHaveLength(1);
-    expect(screen.getByText(STATUS_UNCONFIGURED)).toBeTruthy();
+    expect(within(metaKarte()).getByText(STATUS_UNCONFIGURED)).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Meta entfernen" })).toBeNull();
   });
 });

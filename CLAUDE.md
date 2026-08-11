@@ -1154,9 +1154,13 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Das ist ein STILLER Fehlzustand: nichts schlägt sichtbar Alarm, weil Browser-Events
   durchkommen. VERIFIKATION daher IMMER über "Empfangen von: Server" im Events Manager
   (idealerweise als dedupliziertes Server-Event unter geteilter eventID), NIE über die bloße
-  Anwesenheit von Browser-Events. Das describeMetaError-Ops-Logging im ingest.ts-Forward-
-  Fehlerpfad macht solche Ablehnungen sofort lesbar (code/subcode/type/fbtrace/msg,
-  sanitized). Hinweis: Das Token liegt in der DB (setCapiToken-Flow), nicht in einer
+  Anwesenheit von Browser-Events. Das describeMetaError-Ops-Logging im Forward-Fehlerpfad
+  (src/lib/capi/meta-forward.ts) macht solche Ablehnungen sofort lesbar
+  (code/subcode/type/fbtrace/msg): Fremdtext aus der Anbieter-Antwort wird nach FORM
+  geschwärzt — zusammenhängende token-artige Folgen ab zwanzig Zeichen — und danach
+  gekappt; der Trace-Bezeichner ist die eigens benannte AUSNAHME und bleibt vollständig
+  lesbar, weil er das einzige ist, womit man den Anbieter-Support ansprechen kann.
+  Hinweis: Das Token liegt in der DB (setCapiToken-Flow), nicht in einer
   Env-Var -> Token-Wechsel wirkt sofort, ohne Redeploy.
 - KLICK-WIRING vs. Maustasten (Lektion, Phase-4-Bugfix): 'click' deckt NUR die linke
   Maustaste ab. Mittelklick feuert 'auxclick' (eigenes, separates Event), Rechtsklick

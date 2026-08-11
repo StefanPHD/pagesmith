@@ -73,36 +73,187 @@ type MetaErrorBody = {
   };
 };
 
-// Metas message ist Beschreibungstext (kein Secret), aber unbegrenzt lang -> kappen.
+// Deckel fuer Metas FREIEN Beschreibungstext (message). Unbegrenzt lang -> kappen.
 const META_ERROR_MSG_MAX = 200;
 
-function asLogValue(v: unknown): string {
-  if (v === undefined || v === null || v === "") return "-";
-  return String(v).slice(0, META_ERROR_MSG_MAX);
+// HARTER, kurzer Deckel fuer die enum-artigen Felder (code, subcode, type), fuer den
+// Trace-Bezeichner und fuer die Content-Type-Kopfzeile. Alle vier sind ihrer Natur nach
+// kurz; ein langer Wert dort ist bereits ein Befund und braucht keine 200 Zeichen.
+// EINE Zahl fuer alle kurzen Felder, bewusst nicht vier gleiche nebeneinander.
+const META_SHORT_MAX = 64;
+
+/**
+ * DIE UNTERGRENZE DER SCHWAERZUNG. Zusammenhaengende token-artige Zeichenfolgen ab
+ * dieser Laenge werden ersetzt. Woerter einer Fehlermeldung liegen darunter,
+ * Zugangsdaten darueber.
+ */
+const META_OPAQUE_MIN = 20;
+
+const META_REDACTED = "<redacted>";
+
+/**
+ * DIE SCHWAERZUNG DES ERSTEN ADAPTERS — BEWUSSTES DUPLIKAT, vier Angaben dazu:
+ *
+ * 1. ES IST EIN DUPLIKAT UND KEIN VERSEHEN. Es entsteht mit offenen Augen, weil die
+ *    Alternative — das Gegenstueck des zweiten Adapters mitzubenutzen — in dieser
+ *    Scheibe NICHT beweisbar wirkungslos waere (Grund unter 4.).
+ * 2. WAS ES DUPLIZIERT: die FORMBASIERTE Idee aus sanitizeProviderText in
+ *    capi/pinterest-forward.ts — "keine lange undurchsichtige Zeichenfolge verlaesst
+ *    diese Funktion". Eine Regel ueber die AUSGABE, nicht ueber das Wissen: sie faengt
+ *    auch Teil-Rueckspiegelungen und Geheimnisse, die wir gar nicht als solche kennen.
+ *    NICHT dupliziert ist die FELD-POLITIK — welches Feld wie behandelt wird, ist je
+ *    Adapter verschieden.
+ * 3. WORIN ES ABSICHTLICH ABWEICHT, und beides gilt nur hier:
+ *    · Die AUSNAHME fuer den Trace-Bezeichner (asTraceId) existiert drueben nicht —
+ *      jener Anbieter hat gar kein Trace-Feld. Wer von dort abschriebe, schwaerzte
+ *      ausgerechnet den Wert, dessen ganzer Zweck die Undurchsichtigkeit ist.
+ *    · Der Ersatzwert "-" traegt drueben eine VERZWEIGUNG (die Warn-Erkennung liest
+ *      ihn), hier nur eine Darstellung. Ein geteiltes Werkzeug haette die Verzweigung
+ *      des einen Adapters zur Eigenschaft des anderen gemacht.
+ * 4. WANN DAS DUPLIKAT AUFGELOEST WIRD: sobald die sechs heute UNGEDECKTEN Achsen des
+ *    Gegenstuecks durch Charakterisierungs-Tests festgenagelt sind — Reihenfolge,
+ *    Mindestlaenge, Nicht-Strings, Leerwerte, Kappung, Globalitaet. Erst dann ist ein
+ *    Umzug in eine geteilte reine Datei beweisbar wirkungslos. Vorher waere er ein
+ *    unbeobachteter Eingriff in einen fremden, laufenden Pfad.
+ *
+ * WAS DIESER KOMMENTAR NICHT IST: ein WAECHTER. Die Uebereinstimmung der beiden Kopien
+ * ist durch KEINEN Test gesichert — wer eine Seite aendert, macht nichts rot. Jede
+ * Kopie ist nur fuer sich bewacht (diese durch meta-forward.test.ts). Das ist der
+ * bewusst getragene Preis, nicht ein uebersehener Zustand.
+ *
+ * DIE GRENZE GEHOERT IN DENSELBEN KOMMENTAR: EIN KURZES GEHEIMNIS GINGE DURCH. Wir
+ * haben heute keines; bekaemen wir eines, ist diese Regel neu zu entscheiden.
+ *
+ * WIRFT NIE: eine Ersetzung auf einem String, sonst nichts.
+ */
+function redactOpaque(text: string): string {
+  return text.replace(
+    new RegExp(`[A-Za-z0-9_-]{${META_OPAQUE_MIN},}`, "g"),
+    META_REDACTED,
+  );
 }
 
 /**
- * Uebersetzt eine ABGELEHNTE Meta-Antwort in EINE sanitized Logzeile.
+ * Die gemeinsame Normalisierung der drei Aufbereitungen — WOERTLICH die des frueheren
+ * asLogValue: fehlende und leere Werte werden zum Ersatzwert, alles andere zur
+ * Zeichenkette. Hier wird NICHT geschwaerzt und NICHT gekappt; das entscheidet die
+ * jeweilige Aufbereitung.
+ */
+function asLogString(v: unknown): string | null {
+  if (v === undefined || v === null || v === "") return null;
+  return String(v);
+}
+
+/**
+ * DIE GEWOEHNLICHE AUFBEREITUNG — schwaerzt, dann kappt. Sie traegt Metas FREIEN Text
+ * (message) und ist der VORGABE-WEG: Wer spaeter ein sechstes Envelope-Feld ergaenzt
+ * und den naheliegenden Griff tut, bekommt die Schwaerzung, ohne daran denken zu
+ * muessen.
+ *
+ * ERST SCHWAERZEN, DANN KAPPEN — die Reihenfolge ist nicht beliebig, und die umgekehrte
+ * waere AKTIV SCHAEDLICH: Die Kappung behaelt den ANFANG. Liegt eine undurchsichtige
+ * Folge auf der Kappungsgrenze, bliebe nach einem Schnitt zuerst ein Rest UNTERHALB der
+ * Mindestlaenge stehen — die Schwaerzung fande ihn dann nicht mehr, und ein Teil des
+ * Geheimnisses ginge hinaus. Das ist schlimmer als gar keine Schwaerzung, weil die
+ * Zeile bereinigt AUSSIEHT. Festgenagelt in meta-forward.test.ts, Test (e).
+ */
+function asProviderText(v: unknown): string {
+  const s = asLogString(v);
+  if (s === null) return "-";
+  return redactOpaque(s).slice(0, META_ERROR_MSG_MAX);
+}
+
+/**
+ * DIE ENUM-ARTIGE AUFBEREITUNG — schwaerzt ebenfalls und kappt zusaetzlich HART.
+ * Fuer code, subcode, type und die Content-Type-Kopfzeile.
+ *
+ * SIE SCHWAERZT MIT, obwohl diese Felder ihrer Natur nach kurz sind: Die Felder sind als
+ * unknown deklariert, weil ihr Inhalt vom ANBIETER kommt und nicht von uns — "enum-artig"
+ * beschreibt die Erwartung, nicht eine Zusicherung. Eine Ausnahme braucht einen Grund;
+ * hier gibt es keinen, und der Vorgabe-Weg bleibt so ohne Loch.
+ */
+function asProviderEnum(v: unknown): string {
+  const s = asLogString(v);
+  if (s === null) return "-";
+  return redactOpaque(s).slice(0, META_SHORT_MAX);
+}
+
+/**
+ * DIE AUSNAHME — der Trace-Bezeichner wird NICHT geschwaerzt, nur gekappt.
+ *
+ * SIE IST EIGENS BENANNT UND KEIN SCHALTER-ARGUMENT, damit die Ausnahme AN DER
+ * FUNDSTELLE LESBAR ist: vier Felder rufen gleich, eines ruft anders. Ein
+ * Wahrheitswert in einer Argumentliste verschwaende und waere beim naechsten Feld
+ * kopierbar, ohne dass es auffiele.
+ *
+ * DER GRUND, und er ist NICHT "ist kein Secret" — diese Behauptung ist genau der
+ * Satztyp, den diese Scheibe an anderer Stelle ersetzt hat:
+ * DIE BELEGTE ECHO-ACHSE IST DER QUERY-PARAMETER, in dem das Zugangsdatum zu Meta
+ * reist. Was zurueckgespiegelt werden kann, endet in Metas FEHLERMELDUNG und im
+ * NICHT-JSON-RUMPF — beide sind geschwaerzt bzw. gar nicht mehr im Log. Der
+ * Trace-Bezeichner ist dagegen ein vom ANBIETER ERZEUGTER Vorgangsschluessel; er ist
+ * kein Ort, an dem unsere Eingabe wieder auftaucht.
+ * UND ER IST DAS EINZIGE, WAS DIE UNTERSUCHUNG TRAEGT: Der Fehlschlag, um den es hier
+ * geht, ist STILL (Browser-Events laufen weiter, der Server-Forward stirbt lautlos).
+ * Wer ihn beim Anbieter untersuchen laesst, braucht genau diesen Bezeichner — er ist
+ * lang und undurchsichtig, also faellt er der Schwaerzung als ERSTES zum Opfer.
+ *
+ * IHR WAECHTER ist meta-forward.test.ts, Test (d); ohne ihn waere sie nur eine Absicht.
+ */
+function asTraceId(v: unknown): string {
+  const s = asLogString(v);
+  if (s === null) return "-";
+  return s.slice(0, META_SHORT_MAX);
+}
+
+/**
+ * Uebersetzt eine ABGELEHNTE Meta-Antwort in EINE bereinigte Logzeile.
  *
  * SECRETS-DISZIPLIN (2a-Lektion, nicht verhandelbar): geloggt werden AUSSCHLIESSLICH
  * Metas eigene strukturierte Fehlerfelder. NIE die Forward-URL (sie traegt den
  * access_token im Query-String), NIE der Token, NIE unsere Payload/user_data (die traegt
  * IP/UA/ggf. PII). Es fliesst hier NICHTS aus dem Request hinein — nur Metas Antwort.
  *
- * WIRFT NIE: JSON-Parse und Text-Fallback sind je eigenstaendig abgesichert. Eine
- * unlesbare Antwort ist selbst ein Diagnose-Ergebnis, kein Grund fuer einen Fehlerpfad.
+ * UND GENAU DAS GENUEGTE NICHT: Metas Antwort selbst kann unsere Eingabe TRAGEN. Jeder
+ * Wert, der von druessen kommt, laeuft deshalb durch eine der drei Aufbereitungen —
+ * gewoehnlich (asProviderText), enum-artig (asProviderEnum) oder die eine benannte
+ * AUSNAHME (asTraceId). Hier steht kein einziger roher Fremdwert mehr.
+ *
+ * WIRFT NIE: JSON-Parse, Text-Lesung und Kopfzeilen-Zugriff sind abgesichert bzw.
+ * wurffrei. Eine unlesbare Antwort ist selbst ein Diagnose-Ergebnis, kein Grund fuer
+ * einen Fehlerpfad — und ein Wurf von hier verliesse ueber forwardToMeta und
+ * handleIngest den Handler und machte aus der garantierten leeren 204 einen 500.
  */
 async function describeMetaError(res: Response): Promise<string> {
   let body: unknown = null;
   try {
     body = await res.clone().json();
   } catch {
-    // Kein JSON (HTML-Fehlerseite, leerer Body, Gateway-Antwort) -> Rohtext, gekappt.
+    // KEIN JSON (HTML-Fehlerseite, leerer Body, Gateway-Antwort).
+    //
+    // DER RUMPF GEHT NICHT MEHR INS LOG. Hier stand bis zu dieser Scheibe
+    // text.slice(0, META_ERROR_MSG_MAX), also alles was zurueckkam — die BREITERE der
+    // beiden Oeffnungen, und eine Kappung schuetzt dort gar nichts: sie behaelt den
+    // ANFANG, und genau dort stuende ein zurueckgespiegeltes Zugangsdatum.
+    //
+    // AN SEINE STELLE TRETEN DREI ANGABEN UEBER DIE ANTWORT, mit verschiedener Herkunft:
+    //  · STATUS  — aus dem Antwort-Objekt. Kleine Ganzzahl, KEIN Fremdtext.
+    //  · TYPE    — die Content-Type-KOPFZEILE. DAS IST FREMDTEXT: eine Kopfzeile ist
+    //              frei belegbar, nichts garantiert einen wohlgeformten Medientyp.
+    //              Deshalb laeuft sie durch dieselbe schwaerzende Aufbereitung wie die
+    //              enum-artigen Felder. Sie ungefiltert auszugeben hiesse, die Oeffnung
+    //              am Rumpf zu schliessen und an der Kopfzeile wieder aufzumachen.
+    //  · LEN     — von UNS aus dem gelesenen Text berechnet. Kein Fremdtext.
+    // Der Rumpf wird also weiterhin GELESEN (ohne Lesung keine Laenge), er wandert nur
+    // nicht mehr in die Zeile.
     try {
-      const text = (await res.text()).trim();
-      return `[capi] Meta forward rejected: non-JSON body=${
-        text ? text.slice(0, META_ERROR_MSG_MAX) : "-"
-      }`;
+      const length = (await res.text()).length;
+      return (
+        `[capi] Meta forward rejected: non-JSON body suppressed,` +
+        ` HTTP ${res.status}` +
+        ` type=${asProviderEnum(res.headers.get("content-type"))}` +
+        ` len=${length}`
+      );
     } catch {
       return "[capi] Meta forward rejected: body unreadable";
     }
@@ -112,11 +263,11 @@ async function describeMetaError(res: Response): Promise<string> {
   if (!err) return "[capi] Meta forward rejected: no error envelope";
 
   return (
-    `[capi] Meta forward rejected: code=${asLogValue(err.code)}` +
-    ` subcode=${asLogValue(err.error_subcode)}` +
-    ` type=${asLogValue(err.type)}` +
-    ` fbtrace=${asLogValue(err.fbtrace_id)}` +
-    ` msg=${asLogValue(err.message)}`
+    `[capi] Meta forward rejected: code=${asProviderEnum(err.code)}` +
+    ` subcode=${asProviderEnum(err.error_subcode)}` +
+    ` type=${asProviderEnum(err.type)}` +
+    ` fbtrace=${asTraceId(err.fbtrace_id)}` +
+    ` msg=${asProviderText(err.message)}`
   );
 }
 

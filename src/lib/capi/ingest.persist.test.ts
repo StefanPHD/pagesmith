@@ -189,7 +189,7 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
   });
 });
 
-describe("Meta-Ablehnung: sanitized Diagnose-Logging", () => {
+describe("Meta-Ablehnung: geschwaerztes und gekapptes Diagnose-Logging", () => {
   function rejectingFetch(status: number, body: unknown) {
     return vi.fn(
       async () =>
@@ -246,14 +246,24 @@ describe("Meta-Ablehnung: sanitized Diagnose-Logging", () => {
     const res = await handleIngest(makeRequest(VALID_BODY));
     const logged = spy.mock.calls.map((c: unknown[]) => String(c[0])).join("\n");
 
-    expect(logged).toContain("non-JSON body=");
+    // NACHGEZOGEN, NICHT AUFGEWEICHT: Bis zu dieser Scheibe folgte hinter "body=" der
+    // Rohtext der Antwort. Er wird nicht mehr ausgegeben — die zweite Zusicherung ist
+    // die schaerfere und war vorher gar nicht moeglich.
+    expect(logged).toContain("non-JSON body suppressed");
+    expect(logged).not.toContain("Bad Gateway");
     expect(res.status).toBe(204);
     expect(await res.text()).toBe("");
 
     spy.mockRestore();
   });
 
-  it("ueberlange Meta-message wird gekappt (kein Log-Bloat)", async () => {
+  it("ueberlange gleichfoermige Meta-message wird GESCHWAERZT (nicht bloss gekappt)", async () => {
+    // NACHGEZOGEN, UND DIE FIXTURE IST DER BEFUND: Fuenftausend gleiche Zeichen sind
+    // eine lange undurchsichtige Folge — von einem zurueckgespiegelten Geheimnis nicht
+    // unterscheidbar. Sie MUSS deshalb geschwaerzt werden, und genau darum kann sie den
+    // DECKEL nicht mehr zeigen: es bleibt nichts uebrig, das gekappt werden koennte.
+    // DIE KAPPUNGS-ACHSE IST NICHT VERSCHWUNDEN, sie liegt jetzt in
+    // meta-forward.test.ts, Test (g) — dort mit einer Fixture aus kurzen Woertern.
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
     global.fetch = rejectingFetch(400, {
       error: { code: 100, message: "X".repeat(5_000) },
@@ -264,8 +274,10 @@ describe("Meta-Ablehnung: sanitized Diagnose-Logging", () => {
       .map((c: unknown[]) => String(c[0]))
       .find((l) => l.includes("Meta forward rejected"))!;
 
-    expect(rejected).toContain("msg=" + "X".repeat(200));
-    expect(rejected).not.toContain("X".repeat(201));
+    // Positivkontrolle: die Zeile ist da und traegt weiter ihre Diagnose.
+    expect(rejected).toContain("code=100");
+    expect(rejected).toContain("msg=<redacted>");
+    expect(rejected).not.toContain("X".repeat(20));
 
     spy.mockRestore();
   });

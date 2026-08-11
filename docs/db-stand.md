@@ -66,7 +66,7 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   ihr applied_at ist bewusst NULL, weil der Ausführungszeitpunkt nicht bekannt ist. Dass sie
   gelaufen sind, belegen ihre WIRKUNGEN (Spalten/Constraints unten), nicht die Tabelle. Ab 0018
   ist der Eintrag ein echtes Protokoll. PROTOKOLL, KEIN STEUERUNGSMECHANISMUS: es gibt keinen
-  Migrations-Runner und soll keinen geben (s. "## Immer beachten").
+  Migrations-Runner und soll keinen geben (s. CLAUDE.md, "## Immer beachten").
 - TABELLEN in public: SIEBEN — projects, domains, project_tokens, events, audit_logs,
   schema_migrations, project_secrets. Bei ALLEN ist RLS aktiv. (Die frühere Zahl "sechs" ist
   seit 0021 überholt und wird ERSETZT, nicht ergänzt — dieselbe Behandlung wie zuvor die
@@ -86,7 +86,8 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   Writes laufen ausschließlich über service_role (Ingest-Pfad, persistEvent). Der Owner LIEST
   seine Events, er schreibt sie nie. Wer hier eine Write-Policy ergänzt, öffnet den
   Analytics-Schreibpfad für den Client — dieselbe Denkfigur wie bei project_tokens und
-  audit_logs (s. "## Immer beachten", "APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI"), nur für eine
+  audit_logs (s. CLAUDE.md, "## Immer beachten", "APPEND-ONLY-TABELLEN BLEIBEN
+  POLICY-FREI"), nur für eine
   Tabelle, die jene Regel heute NICHT nennt.
 - auth.uid()-KAPSELUNG (bekannte Abweichung, reiner Performance-Punkt, KEIN Leak): NUR
   events_select_own trägt (select auth.uid()) gekapselt. projects/domains/project_tokens tragen
@@ -97,8 +98,8 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   und EXISTS) sind bekannt und unbedenklich; eine Divergenz in der ACHSE selbst WÄRE das Leak.
 - ROLLEN-GRANTS: anon, authenticated UND service_role haben volle DML-Rechte auf ALLE SIEBEN
   public-Tabellen, inkl. project_tokens, schema_migrations UND project_secrets. Die
-  Tenant-Isolation und das write-only-Gate tragen damit AUSSCHLIESSLICH über RLS (s. "## Immer
-  beachten", "GRANTS SCHÜTZEN NICHTS").
+  Tenant-Isolation und das write-only-Gate tragen damit AUSSCHLIESSLICH über RLS
+  (s. CLAUDE.md, "## Immer beachten", "GRANTS SCHÜTZEN NICHTS").
 - TABELLE public.events: id uuid PK (gen_random_uuid()); project_id uuid FK -> projects
   ON DELETE CASCADE; event_type text; event_id text; source text (KEIN Default); created_at
   timestamptz (now()) — diese SECHS NOT NULL. DAZU: variant text NULLABLE (0017).
@@ -168,36 +169,29 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   set_updated_at() — Trigger-Funktion, INVOKER, volatile, search_path=public.
   rls_auto_enable() — Event-Trigger-Funktion, SECURITY DEFINER, volatile,
     search_path=pg_catalog. NICHT public — das ist korrekt und beabsichtigt, s.
-    "## Immer beachten", "DB-FUNKTIONEN + SEARCH_PATH".
+    CLAUDE.md, "## Immer beachten", "DB-FUNKTIONEN + SEARCH_PATH".
 - EVENT-TRIGGER: SIEBEN (2026-08-05 erneut gemessen: unverändert). ensure_rls
   (ddl_command_end -> rls_auto_enable, evtowner postgres,
   aktiviert) plus SECHS Supabase-Plattform-Trigger (issue_graphql_placeholder,
   issue_pg_cron_access, issue_pg_graphql_access, issue_pg_net_access, pgrst_ddl_watch,
   pgrst_drop_watch; evtowner supabase_admin). ensure_rls existiert NUR in der laufenden DB, aus
-  KEINER Migration reproduzierbar -> "## Offene Punkte".
+  KEINER Migration reproduzierbar -> CLAUDE.md, "## Offene Punkte".
 - BACKUPS: Supabase liegt seit 2026-07-29 auf PRO -> TÄGLICHE Backups mit 7 Tagen
   Retention. Die frühere Aussage "Free hat KEINE Backups" ist damit überholt.
   WAS NICHT GELÖST IST — zwei Dinge, die ein "Backups vorhanden" sonst verdeckt:
   (1) PITR ist NICHT gebucht -> im Ernstfall bis zu 24 h Datenverlust (alles seit dem
       letzten täglichen Snapshot). Das ist eine bewusste Entscheidung, kein Versehen.
   (2) Ein Rebuild REIN AUS DEN MIGRATIONEN bliebe unvollständig (ensure_rls /
-      rls_auto_enable, s. "## Offene Punkte") — das Upgrade ändert daran NICHTS, weil der
+      rls_auto_enable, s. CLAUDE.md, "## Offene Punkte") — das Upgrade ändert daran NICHTS, weil der
       Event-Trigger am Cluster hängt und in keinem Schema-Dump steckt.
-  Der Restore-DRILL ist weiterhin nicht gefahren -> s. "## Security Manifest & Launch
-  Blocker", BACKUPS.
+  Der Restore-DRILL ist weiterhin nicht gefahren -> s. CLAUDE.md, "## Security Manifest &
+  Launch Blocker", BACKUPS.
 - NICHT GEPLANT (war: AUFGESCHOBEN, dann kurzzeitig GEPLANT): CAPI-Forward auf
   Hintergrund-Zustellung umstellen (die 204 löst sich von Metas Latenz). Am 2026-08-06
-  GESTRICHEN, weil die BEGRÜNDUNG weggefallen ist — nicht, weil die Absicht vertagt wäre:
-  after() verlängert dieselbe Invocation statt sie zu verkürzen, unter Fluid Compute
-  pausiert die Active-CPU-Abrechnung beim Warten auf I/O, und waitUntil sichert ABSCHLUSS
-  zu, nicht ERFOLG. Der Gewinn wäre nicht messbar, der Preis wäre die Zusicherung, dass der
-  Forward vor der Antwort abgeschlossen oder am Deckel gescheitert ist.
-  TRIGGER (nicht "falls es je ein Problem wird"): eine GEMESSENE Grenze unter echtem
-  Traffic (Concurrency-Slots bzw. Skalierungsverhalten auf dem Ingest-Pfad) ODER ein
-  Wegfall von Fluid Compute.
-  PROVENIENZ UND GRENZE: Anbieter-Doku vom 2026-08-06 plus zwei Dashboard-Werte (Fluid
-  Compute aktiv, Default Max Duration 300 s) — KEINE Messung am eigenen Ingest-Pfad; ändert
-  der Anbieter sein Ausführungsmodell, ist die Entscheidung neu zu prüfen. Volle Fassung
-  mit allen drei Punkten: s. "## Code-Qualität, Performance & SaaS-Skalierung",
-  /API/E-SCHLANKHEIT. Detail zum ursprünglichen Aufschub:
+  GESTRICHEN, weil die BEGRÜNDUNG weggefallen ist — nicht, weil die Absicht vertagt wäre.
+  DAS WARUM STEHT AN GENAU EINER STELLE, und diese Zeile führt es bewusst NICHT aus:
+  CLAUDE.md, Sektion "## Code-Qualität, Performance & SaaS-Skalierung", Eintrag
+  /API/E-SCHLANKHEIT. Dort stehen die Begründung, der TRIGGER, die PROVENIENZ und die
+  GRENZE der Entscheidung — zwei Fassungen derselben Begründung müssten synchron gehalten
+  werden und sind es schon einmal nicht gewesen. Detail zum ursprünglichen Aufschub:
   docs/claude-history/phase-8-analytics.md.

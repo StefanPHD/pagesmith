@@ -389,10 +389,15 @@ keine Statusänderung für etwas, das noch nicht existiert.
     trägt, exakt nichts. Das ist ein schärferer Grund als "kein messbarer Gewinn" — er
     sagt, dass Forderung und Begründung auseinanderlaufen, nicht bloss dass der Gewinn
     klein ist.
-    GEMESSEN AM 2026-08-10 (formale Suche über src/): SECHS Stellen berufen sich auf diese
-    Regel — alle auf ihren KOPF (keine zusätzliche Arbeit je Beacon, keine zweite
-    Abfrage), in capi/ingest.ts und capi/token.ts. AUF DIE SOLL-HÄLFTE BERUFT SICH KEINE
-    EINZIGE. Sie hat im Produktivcode keinen Konsumenten und hatte nie einen.
+    GEMESSEN AM 2026-08-11 (formale Suche über src/, case-INSENSITIV, MEHRZEILIG und mit
+    Testdateien; alle drei Anforderungen sind nötig — ein Vorkommen zitiert den Namen in
+    GROSSSCHREIBUNG, zwei stehen über einen Zeilenumbruch getrennt und entgehen einer
+    zeilenweisen Suche, und eines liegt in einer Testdatei):
+    ACHT Stellen berufen sich auf diese Regel — alle auf ihren KOPF (keine zusätzliche
+    Arbeit je Beacon, keine zweite Abfrage), in capi/ingest.ts (drei), capi/token.ts
+    (drei), capi/token.test.ts (eine) und tracking/consent-wire.ts (eine). AUF DIE
+    SOLL-HÄLFTE BERUFT SICH KEINE EINZIGE. Sie hat im Produktivcode keinen Konsumenten
+    und hatte nie einen.
     WAS UNBERÜHRT BLEIBT: Die ZWEITE Hälfte ("der CAPI-Call muss zuverlässig zugestellt
     werden") gilt UNBEDINGT weiter. Die Recherche berührt sie nicht — im Gegenteil, sie
     ist der Grund, warum die Umstellung TEUER wäre (waitUntil sichert ABSCHLUSS zu, nicht

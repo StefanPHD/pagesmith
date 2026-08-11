@@ -37,57 +37,28 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
 - [x] Phase 1 — Lokales Grundgerüst: Import, Sandbox-iframe-Preview, Erkennung
       von Buttons/Forms/Links. Alles in React-State, kein Server. Scanner steht
       in src/components/CodeImporter.tsx.
-- [x] Phase 2 — Click & Connect: Drei-Zonen-Workspace, postMessage-Klick-Brücke,
-      bidirektionales Highlighting. Siehe Detail-Block unten.
-- [x] Phase 3 — Persistenz & Auth (Supabase): stabile Element-IDs, E-Mail/Passwort-
-      Auth, Code-Persistenz, Multi-Projekt-Verwaltung. Fundament steht. Siehe
-      Detail-Block unten. Advanced Features (Consent-Gate, DTR) folgen danach.
-- [x] Mapping-/Action-Zuweisung + Weg-C-Netz: die "Click & Connect"-Wertschöpfung —
-      Aktionen zuweisen/konfigurieren/speichern (Redirect) und verwaiste Mappings
-      sichtbar machen/löschen/neu-verknüpfen. Siehe Detail-Blöcke unten.
-- [x] Phase 4 — Code-Generierung + HTML-Export: generateFunctional bäckt die
-      Mappings in funktionales HTML (reine Engine + funktionale Vorschau), Ausgabe
-      per Download/Copy. Client-seitig via DOMParser (kein Cheerio — es wurde auch in
-      der späteren Serving-Schicht nie eingeführt, die Injektion dort ist eine reine
-      String-Op). Siehe Detail-Blöcke unten.
-- [x] Phase 4.5 — Editor-Politur: (A) Datei-Upload/Drag-Drop als zweiter
-      Import-Weg neben Copy-Paste und (B) Zen-Modus — der Collapse versteckt NUR
-      die Code-EINGABE (Textarea + Upload), die Elementliste bleibt IMMER sichtbar.
-      Reiner lokaler UI-View-State, KEIN Daten-/Mapping-Zustand, berührt
-      dirty-Tracking nicht. ABGESCHLOSSEN (live getestet, inkl. Politur). Siehe
-      Detail-Block unten.
-- [x] Phase 5 — In-Place Copywriting: ABGESCHLOSSEN (live). Textdetektion +
-      Override in Preview, Edit UND Export (Scheibe 1 + 1b + 2) sowie Text-Live-Patch
-      im Edit-Modus ohne Reload-Sprung (Scheibe 3). Type-diskriminiertes
-      Mapping-Modell ein zweites Mal bestätigt.
-- [x] Phase 6 — Server-Side Tracking (CAPI): KOMPLETT (Mechanik). Type-diskriminiertes
-      Mapping -> Mehr-Aktion -> echtes Meta-Pixel (consent-sauber) -> Secret-Storage
-      (service_role + heiligstes Gate) -> CAPI-Route -> Dedup-Beacon. Der
-      End-to-End-Dedup-Sichtbarkeitstest auf verknüpfter Domain ist in Phase 7
-      BESTÄTIGT worden (Owner, Meta Events Manager) — nichts mehr offen.
-- [x] Phase 7 — Hosting & Go-Live: ABGESCHLOSSEN.
-      Alle Scheiben (7a Serving, 7b First-Party-Ingest, 7c-1 Middleware-Inversion +
-      Custom-Domain-Serving, 7c-2a Wildcard-Infra (publayer.net), 7c-2b Add-Domain-
-      Mutation, 7c-2c DNS-Anweisungs-UX + Domain entfernen) LIVE VERIFIZIERT — zuletzt
-      bestätigt durch einen echten Produktions-Smoke: test.thrty.store wurde über
-      die deployte Produktions-URL (pagesmith-delta.vercel.app, NICHT localhost)
-      hinzugefügt und ist dort als "Live" bestätigt — beweist, dass
-      VERCEL_API_TOKEN/VERCEL_PROJECT_ID auch in Vercels eigener Serverless-Runtime
-      funktionieren, nicht nur lokal. Vollständiges Detail (inkl. 7c-2-Familie):
-      docs/claude-history/phase-7-hosting.md. (war Phase 6)
-- [x] Phase 8 — Analytics & ROI-Ökosystem (Vision): First-Party-Server-Side-Analytics
-      (Traffic-Gesundheit, ROI/Attribution, Betreiber-Metriken) + Adblocker-Verlustrate
-      über geteilte-eventID-Vergleich ECHTER Events. (war A/B-Testing) — Scheibe 1
-      (Persistenz-Fundament) LIVE in Produktion bewiesen (events via after() neben
-      CAPI-Forward, source='server'), ebenso die nachgelagerte CAPI-Härtung (3s-Timeout +
-      errorName-Util). Scheibe 2 (PageView-Tracking) KOMPLETT & live bewiesen (2b-0 server-
-      autoritative trackingKey-Spalte + 2b-1 server-injizierter PageView-Emitter). Scheibe 3
-      (Read-Pfad-Fundament) KOMPLETT & live bewiesen (owner-SELECT-RLS + get_event_counts +
-      Statistik-Sektion; tenant-isolierte Anzeige gegengeprobt). Scheibe A (Bestätigungs-Signal) +
-      Scheibe B (Verlustraten-RPC get_adblock_loss + Kachel, Migration 0015) KOMPLETT & live
-      bewiesen (2026-07-23) — die Marquee-Metrik steht. Phase 8 als Feature rund: Erfassen ->
-      tenant-isolierte Anzeige -> Adblocker-Verlustrate. Ist-Stand:
-      "## Aktueller DB-/Analytics-Stand"; volle Herleitung: docs/claude-history/phase-8-analytics.md.
+- [x] Phase 2 — Click & Connect: ABGESCHLOSSEN. Volle Herleitung:
+      docs/claude-history/phase-2-3-foundation.md.
+- [x] Phase 3 — Persistenz & Auth (Supabase): ABGESCHLOSSEN. Volle Herleitung:
+      docs/claude-history/phase-2-3-foundation.md.
+- [x] Mapping-/Action-Zuweisung + Weg-C-Netz: ABGESCHLOSSEN. Volle Herleitung:
+      docs/claude-history/phase-4-mapping-codegen-export.md.
+- [x] Phase 4 — Code-Generierung + HTML-Export: ABGESCHLOSSEN. Volle Herleitung:
+      docs/claude-history/phase-4-mapping-codegen-export.md.
+- [x] Phase 4.5 — Editor-Politur (Datei-Upload/Drag-Drop + Zen-Modus):
+      ABGESCHLOSSEN & live getestet. Volle Herleitung:
+      docs/claude-history/phase-4.5-editor-politur.md.
+- [x] Phase 5 — In-Place Copywriting: ABGESCHLOSSEN & live bewiesen. Volle
+      Herleitung: docs/claude-history/phase-5-copywriting.md.
+- [x] Phase 6 — Server-Side Tracking (CAPI): ABGESCHLOSSEN & live bewiesen — der
+      End-to-End-Dedup-Sichtbarkeitstest wurde in Phase 7 bestätigt (Owner, Meta
+      Events Manager). Volle Herleitung: docs/claude-history/phase-6-capi.md.
+- [x] Phase 7 — Hosting & Go-Live (war Phase 6): ABGESCHLOSSEN & live bewiesen
+      (Produktions-Smoke über die deployte Produktions-URL, NICHT localhost).
+      Volle Herleitung: docs/claude-history/phase-7-hosting.md.
+- [x] Phase 8 — Analytics & ROI-Ökosystem (war A/B-Testing): ABGESCHLOSSEN & live
+      bewiesen (2026-07-23). Ist-Stand: "## Aktueller DB-/Analytics-Stand"; volle
+      Herleitung: docs/claude-history/phase-8-analytics.md.
       ABGEHAKT 2026-07-29: der ZUGESAGTE Umfang ist fertig und live bewiesen. Die vier
       Weiterentwicklungen (Uniques, Charts/Zeiträume, CAPI-Einbettung server-vereinheitlichen,
       Launch-Härtung) sind IDEEN OHNE TERMIN und OHNE Zusage — sie hingen bisher als offener
@@ -144,21 +115,6 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       (jede Aktion, nicht nur Tracking, gated). Sie muss auf DEMSELBEN
       Mechanismus laufen; ein zweites Urteil darf nicht entstehen.
       Protokoll und Begründung: docs/claude-history/phase-11-multi-tracking.md.
-      STAND: DREI SCHEIBEN SIND ABGESCHLOSSEN UND LIVE BEWIESEN.
-      (1) DIE UMSTELLUNG DER GEHEIMNIS-TABELLE auf (Projekt, Ziel), ohne jede
-      Verhaltensänderung — Migration 0021, Katalog-Prüfung, Nachhol-Lauf, Code,
-      Live-Test (2026-08-05).
-      (2) DAS GETEILTE CONSENT-GATE — die Auswertung aus der Meta-Laufzeit
-      herausgezogen, ab dann JE ZIEL beurteilt (2026-08-05).
-      (3) DER PAGEVIEW-EMITTER HINTER DEM GATE — er fragt VOR dem Senden für den
-      Schlüssel der eigenen Auswertung (2026-08-06).
-      DIE PHASE BLEIBT OFFEN, WEIL NOCH KEIN ZWEITES ZIEL EXISTIERT.
-      RICHTIGGESTELLT, NICHT GESTRICHEN: Der Satz darüber und die Zählung "DREI
-      SCHEIBEN" waren richtig, als sie geschrieben wurden, und sie bleiben als
-      Zeitmarke lesbar. Beide TRAGEN NICHT MEHR: Es sind ZWÖLF Scheiben, und das
-      zweite Ziel wird beliefert — genau daran hing die Aussage "bleibt offen". Was
-      heute offen ist, steht im Kopf dieser Zeile und ist etwas anderes: nicht die
-      Struktur, sondern ihre Wiederholungen.
       Protokolle, Entscheidungen und was jede Scheibe ausdrücklich NICHT
       beweist: docs/claude-history/phase-11-multi-tracking.md.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
@@ -195,10 +151,9 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       Aktionstyp im bestehenden, type-diskriminierten Mapping-Modell — kein
       Modellumbau. Setzt Phase 16 voraus.
 - [ ] Phase 18 — MCP-Server (verschoben von der ursprünglichen
-      Phase-10-Position, Detail: future-roadmap.md): dreht das
-      Sicherheitsmodell um — Lesen UND Schreiben mit voller Owner-Autorität
-      über einen langlebigen Key in fremder KI-Umgebung. Eigene
-      Autorisierungsschicht, KEIN angehängter Endpunkt. Bewusst ans Ende
+      Phase-10-Position; umgedrehtes Sicherheitsmodell, Bedrohungsmodell und
+      Scope: future-roadmap.md, "Phase 18 — AI-Native: Pagesmith MCP-Server"):
+      Eigene Autorisierungsschicht, KEIN angehängter Endpunkt. Bewusst ans Ende
       gestellt.
 
 **Bewusst nicht phasiert (Trigger fehlt):**
@@ -1826,49 +1781,42 @@ KEIN @-Import. Bei Arbeit an einem Thema die passende Datei gezielt lesen:
   + A11y-Politur.
 - docs/claude-history/phase-5-copywriting.md — In-Place Copywriting (Text-Mapping,
   Live-Patch PS_SET_TEXT, direkt-in-DOM-Export, revert-Lektion).
-- docs/claude-history/phase-6-capi.md — Server-Side Tracking / Meta-CAPI (Scheiben
-  0–2b-ii, Secret-Storage, Dedup-Beacon, alle Debug-Lektionen).
-- docs/claude-history/phase-7-hosting.md — Hosting/Go-Live: 7a/7b + 7c-Konzept + 7c-1
-  + XFH-Gate-Vollbeweis + die KOMPLETTE 7c-2-Familie (2a Wildcard-Infra, 2b Add-Domain-
-  Mutation, 2c DNS-Anweisungs-UX, Entfernen). DORT stehen auch die Hosting-Ops-Details, die
+- docs/claude-history/phase-6-capi.md — Server-Side Tracking / Meta-CAPI
+  (Secret-Storage, Dedup-Beacon, alle Debug-Lektionen).
+- docs/claude-history/phase-7-hosting.md — Hosting/Go-Live inkl. XFH-Gate-Vollbeweis
+  und der kompletten 7c-2-Familie (Wildcard-Infra, Add-Domain-Mutation,
+  DNS-Anweisungs-UX, Entfernen). DORT stehen auch die Hosting-Ops-Details, die
   bewusst NICHT in der Root liegen: Registrierungs-Rate-Limit (5/Stunde/User),
   Support-Playbooks für CAA-Records und Metas Traffic-Permissions-Allow-List, die
   Vercel-Fehler-Mappings (409 domain_already_in_use -> Heilung) und das
   Verification-vs-Configuration-Statusmodell. Bei Domain-/DNS-Support-Fragen zuerst hier
   nachsehen.
-- docs/claude-history/phase-8-analytics.md — GESAMTE gebaute Phase 8: Scheibe 1 (Analytics-
-  Persistenz-Fundament) + CAPI-Härtung (3s-Timeout + errorName-Util) sowie die am 2026-07-24
-  ausgelagerten Scheiben 2a (Handler-Umbau/Kill-Switch), 2b-0 (server-autoritative tracking_key-
-  Spalte), 2b-1 (PageView-Emitter), 3 (Read-Pfad/owner-SELECT-RLS + Counts), A + B (Adblocker-
-  Verlustrate): volle Herleitung, Entscheidungen, Tests, Live-Verifikation je Scheibe (mit
-  STATUS-NACHTRAG). Der aktive Ist-Stand steht in der Root ("## Aktueller DB-/Analytics-Stand"),
-  nicht hier.
+- docs/claude-history/phase-8-analytics.md — GESAMTE gebaute Phase 8 (Analytics-
+  Persistenz, CAPI-Härtung, Kill-Switch im Ingest, tracking_key-Spalte, PageView-Emitter,
+  Read-Pfad/owner-SELECT-RLS, Adblocker-Verlustrate): volle Herleitung, Entscheidungen,
+  Tests, Live-Verifikation je Scheibe. Der aktive Ist-Stand steht in der Root
+  ("## Aktueller DB-/Analytics-Stand"), nicht hier.
 - docs/claude-history/phase-9-ab-testing.md — GESAMTE gebaute Phase 9
-  (A/B-Testing): Scheibe 9a (Varianten-Authoring), 9b-1 (Split in der
-  Serve-Route + Cookie + Aktivierungs-Flag), 9b-1p (UI-Politur), 9b-2
-  (variant in Ingest und Persist), 9c-1 (Auswertung je Variante) und 9c-2
-  (Lauf-Abgrenzung) — alle SECHS ABGESCHLOSSEN und live bewiesen; dazu die
-  zwei mitgereisten Nicht-A/B-Scheiben Fix-Scheibe safeAction
+  (A/B-Testing: Varianten-Authoring, Split in der Serve-Route + Cookie,
+  variant in Ingest und Persist, Auswertung je Variante, Lauf-Abgrenzung);
+  dazu die zwei mitgereisten Nicht-A/B-Scheiben Fix-Scheibe safeAction
   (Client-Fehlerbehandlung) und Leere-Variante-Riegel (Publish verweigert
   leeren Inhalt). Der aktive Ist-Stand steht in der Root ("## Aktueller
   DB-/Analytics-Stand" bzw. "## Offene Punkte"), nicht hier.
 - docs/claude-history/phase-10-workspace.md — GESAMTE gebaute Phase 10
-  (Workspace-Reorganisation): Scheibe 10a-1 (Bereich MESSEN extrahiert), 10a-2
-  (Bereich VERÖFFENTLICHEN extrahiert), 10b-1 (Einstellungen als Drawer mit
-  Bereichs-Reitern), 10b-2 (Projektwechsel als Mount-Grenze für DomainManager),
-  10c-1 (Zustandssignal an der Reiterzeile + Trennlinie) und 10c-2 (der
-  Statuskanal des Drawers endet mit der Sitzung) — alle SECHS ABGESCHLOSSEN und
-  live bewiesen. Trägt zusätzlich die verworfenen Alternativen (eigene Routen,
-  Accordion, Modal) und die Invarianten der Phase. Die 17 dauerhaften Regeln
-  daraus stehen bereits oben unter "## Immer beachten" und werden dort NICHT
-  wiederholt; die Datei nennt im Kopf, welche das sind.
+  (Workspace-Reorganisation: Bereiche MESSEN und VERÖFFENTLICHEN extrahiert,
+  Einstellungen als Drawer mit Bereichs-Reitern, Projektwechsel als Mount-Grenze,
+  Zustandssignal an der Reiterzeile, Statuskanal des Drawers). Trägt zusätzlich
+  die verworfenen Alternativen (eigene Routen, Accordion, Modal) und die
+  Invarianten der Phase. Die 17 dauerhaften Regeln daraus stehen bereits oben
+  unter "## Immer beachten" und werden dort NICHT wiederholt; die Datei nennt im
+  Kopf, welche das sind.
 - docs/claude-history/phase-11-multi-tracking.md — GESAMTE gebaute Phase 11
-  (Multi-Tracking / Server-Side Fan-Out): zwölf Scheiben von der Umstellung der
-  Geheimnis-Tabelle bis zum ersten live bewiesenen Forward an ein zweites Ziel. Trägt
-  den Einstiegs-Block für die nächste Sitzung (was erreicht ist, was offen bleibt, die
-  sechs weitergeltenden Auflagen), das beschlossene Consent-Modell, die
-  Anbieter-Befunde zum zweiten Ziel, den Arbeitsvorrat am ersten Adapter und die
-  verschobene dreizehnte Scheibe. DIES IST DIE FASSUNG, DIE GELESEN WIRD.
+  (Multi-Tracking / Server-Side Fan-Out). Trägt den Einstiegs-Block für die nächste
+  Sitzung (was erreicht ist, was offen bleibt, die sechs weitergeltenden Auflagen),
+  das beschlossene Consent-Modell, die Anbieter-Befunde zum zweiten Ziel, den
+  Arbeitsvorrat am ersten Adapter und die verschobene dreizehnte Scheibe.
+  DIES IST DIE FASSUNG, DIE GELESEN WIRD.
 - docs/claude-history/phase-11-multi-tracking-rohfassung.md — die ROHFASSUNG derselben
   Phase: der ungekürzte Arbeitsstand, wie er WÄHREND des Baus geführt wurde,
   zeichengleich verschoben. NICHT der Einstieg — der ist die kuratierte Datei darüber.

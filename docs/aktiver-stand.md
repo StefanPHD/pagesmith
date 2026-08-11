@@ -47,29 +47,81 @@ wiederholt.
 "Wiederholungen desselben Handgriffs, kein neues Fundament". Diese Aussage hatte
 KEIN EINZIGES GEPRÜFTES MITGLIED; die Befunde darunter lösen sie je Ziel auf.
 
-**PROVENIENZ ALLER DREI ZIEL-BEFUNDE, EINMAL UND VERBINDLICH FÜR DIE POSTEN 1 BIS
-3:** Anbieter-Recherche des Architekten vom **2026-08-11 an FREMDER
-DOKUMENTATION**. **NICHT am Code gemessen, NICHT live bestätigt, kein Aufruf gegen
-ein echtes System.** Bei TikTok zusätzlich: **teils aus Hilfeseiten, NICHT aus der
-Entwickler-Referenz.**
+**PROVENIENZ DER ZIEL-BEFUNDE — SIE IST NICHT MEHR EINHEITLICH, UND GENAU DAS IST
+BEIM LESEN ZU BEACHTEN:**
+- **POSTEN 2 UND 3 (LinkedIn, Google): VOLLSTÄNDIG RECHERCHE.** Anbieter-Recherche
+  des Architekten vom **2026-08-11 an FREMDER DOKUMENTATION** — **NICHT am Code
+  gemessen, NICHT live bestätigt, kein Aufruf gegen ein echtes System.**
+- **POSTEN 1 (TikTok): GEMISCHT.** Ein Teil seiner Angaben ist am **2026-08-11
+  GEMESSEN** worden (Messweg am Posten selbst), ein Teil bleibt Recherche, ein Teil
+  ist ungeklärt. **JEDE EINZELNE ANGABE DORT TRÄGT IHREN RANG IM TEXT** — GEMESSEN,
+  RECHERCHIERT oder UNGEKLÄRT. Wer den Rang nicht mitliest, hält eine Handmessung
+  für eine Doku-Lesung oder umgekehrt.
+- **DIE MESSUNG WERTET DIE ÜBRIGEN ZIELE NICHT AUF.** LinkedIn und Google sind
+  unverändert unbelegt; dass ein Nachbar-Posten gemessen wurde, ändert daran nichts.
 
 **DER OFFENE UMFANG, sechs Posten mit VERSCHIEDENEM Rang:**
 
-1. **TIKTOK — AUF DER STRUKTUR-ACHSE EINE WIEDERHOLUNG, mit EINER offenen Frage.**
-   GEPRÜFT (Provenienz oben): eine Pixel-Kennung je Projekt trägt alle Ereignisse,
-   der Ereignisname reist in der Nutzlast · das Zugangsdatum ist ein langlebiges
-   Token aus dem Events Manager und passt in die Geheimnis-Tabelle · es gibt
-   Deduplizierung über eine Ereignis-Kennung · es gibt einen Testmodus, dessen Code
-   pro Sitzung WECHSELT und deshalb nichts ist, was man hinterlegt.
-   **OFFEN und VOR dem Bau an TikToks ENTWICKLER-REFERENZ zu messen:** ob IP und
-   User-Agent ALLEIN für einen erfolgreichen Aufruf genügen. Belegt ist nur, dass
-   beide als Match-Keys geführt werden — NICHT, dass ein Aufruf ohne weitere
-   Kennung angenommen wird. Die Klick-Kennung zu lesen wäre eine NEUE Fähigkeit,
-   die es heute nicht gibt.
-   **AUSSERDEM, und es ist keine Bau-, sondern eine Erwartungs-Frage an den
-   Betreiber:** Die Match-Qualität ist mit IP und User-Agent allein strukturell
-   niedrig, und sie steuert beim Anbieter den Zugang zu Optimierungszielen. Das ist
-   kein Baufehler.
+1. **TIKTOK — AUF DER STRUKTUR-ACHSE EINE WIEDERHOLUNG. DIE EINST OFFENE FRAGE IST
+   BEANTWORTET.**
+   **DER MESSWEG, einmal für alle mit GEMESSEN gekennzeichneten Angaben dieses
+   Postens:** am **2026-08-11 durch den Owner** — HTTP-Aufrufe VON HAND gegen den
+   Events-API-Endpunkt des Anbieters, mit echtem Zugangsdatum und Pixel-Kennung im
+   EIGENEN Werbekonto, ausschliesslich im TESTMODUS; Nachweis im Test-Ereignis-Tab
+   der Anbieter-Oberfläche. **DAS IST EINE MESSUNG AM FREMDEN SYSTEM — NICHT am
+   Code gemessen und NICHT über unseren eigenen Ingest-Pfad gelaufen.**
+   - **GEMESSEN — DIE OFFENE FRAGE IST BEANTWORTET: IP UND USER-AGENT GENÜGEN.**
+     Sie lautete, ob die beiden ALLEIN für einen erfolgreichen Aufruf reichen; bis
+     zum 2026-08-11 stand hier, das sei VOR dem Bau zu messen. Ein Aufruf mit einem
+     Nutzer-Objekt aus ausschliesslich diesen beiden Werten wurde **ANGENOMMEN UND
+     VERARBEITET**: das Ereignis erscheint im Test-Tab mit übereinstimmender
+     Ereignis-Kennung, und beide Werte stehen dort unter den
+     Kunden-Informationsparametern. **Die Klick-Kennung wird NICHT gebraucht; die
+     Datenklassen-Grenze wird nicht berührt.**
+     *Warum nicht an der Entwickler-Referenz, wie die frühere Auflage verlangte:*
+     Sie liegt hinter einer JavaScript-Anwendung und ist nicht abrufbar. Gemessen
+     wurde an der API selbst — **der STÄRKERE Zeuge, weil eine Doku das Verhalten
+     BESCHREIBT und die API es IST.**
+   - **GEMESSEN — DER FACHLICHE STATUS STEHT IM RUMPF, NICHT IM HTTP-CODE.** Der
+     Erfolgsfall ist HTTP 200 mit einem `code`-Feld auf `null`, dazu `message`,
+     `request_id` und ein LEERES `data`-Objekt — **keine Rückmeldung je Ereignis**,
+     anders als beim zweiten Ziel. **FOLGE FÜR DEN ADAPTER: Eine reine
+     Statusprüfung hielte jede fachliche Ablehnung für einen Erfolg.** Dieselbe
+     Falle wie beim zweiten Ziel, an einem anderen Anbieter — diesmal VOR dem Bau
+     bekannt.
+   - **GEMESSEN — DIE QUITTUNG IST IDENTITÄTSBLIND.** Ein Aufruf **GANZ OHNE**
+     Nutzer-Objekt bekommt DIESELBE Erfolgsantwort. Die Antwort taugt damit NICHT
+     als Nachweis, dass die Identität angekommen ist; das zeigt allein der
+     Test-Tab, und der ist **kein Produktionsinstrument**. **Ohne diese Gegenprobe
+     wäre der erste Befund aus dem falschen Grund für wahr gehalten worden.**
+   - **GEMESSEN — ZWEI GETRENNTE FEHLERKANÄLE.** Ein ungültiges Zugangsdatum
+     liefert HTTP 401; Fachliches läuft über das `code`-Feld einer 200er-Antwort.
+   - **GEMESSEN — DER EREIGNISNAME WANDERT.** Gesendet wurde `CompletePayment`, die
+     Oberfläche des Anbieters zeigt `Purchase`. Der Betreiber sucht also einen
+     anderen Namen, als wir senden — **gehört in die Betreiber-Doku**, sonst meldet
+     jemand einen Fehler, der keiner ist. Dieselbe Klasse wie beim zweiten Ziel.
+   - **GEMESSEN — DER TEST-TAB BEANSTANDET FEHLENDE FELDER:** Währung, Wert und
+     eine Inhalts-Kennung fehlten im Kauf-Ereignis. Währung und Wert trägt unser
+     Mapping bereits (`TrackConfig` in `src/lib/mappings.ts`), die Inhalts-Kennung
+     nicht.
+   - **RECHERCHIERT (fremde Doku, s. Provenienz oben), NICHT gemessen:** eine
+     Pixel-Kennung je Projekt trägt alle Ereignisse und der Ereignisname reist in
+     der Nutzlast · das Zugangsdatum ist ein langlebiges Token aus dem Events
+     Manager und passt in die Geheimnis-Tabelle · es gibt Deduplizierung über eine
+     Ereignis-Kennung · es gibt einen Testmodus, dessen Code pro Sitzung WECHSELT
+     und deshalb nichts ist, was man hinterlegt.
+   - **UNGEKLÄRT — als LÜCKE geführt, NICHT als bestanden:** die RUMPFFORM der 401
+     (nur der Status ist festgehalten) · wie eine FACHLICHE Ablehnung aussieht
+     (`code` ungleich `null`) — der Fall ist nie eingetreten · **ob Ereignisse ohne
+     E-Mail und Telefonnummer für die ATTRIBUTION zählen.** Der Test-Tab warnt,
+     Ereignisse ohne diese Werte würden "nur mit Manual Advanced Matching gezählt";
+     ob damit nur eine ZÄHLUNG gemeint ist oder die Attribution insgesamt, ist **AM
+     TEXT NICHT ENTSCHEIDBAR**. Das ist eine Frage an den ANBIETER, keine an den
+     Code — und sie entscheidet, ob TikTok dem Betreiber als nutzbar oder als
+     eingeschränkt zu beschreiben ist.
+   - **RECHERCHIERT, unverändert — eine Erwartungs-Frage an den Betreiber, kein
+     Baufehler:** Die Match-Qualität ist mit IP und User-Agent allein strukturell
+     niedrig, und sie steuert beim Anbieter den Zugang zu Optimierungszielen.
 2. **LINKEDIN — KEINE WIEDERHOLUNG.** Die Kennung ist eine Conversion-Regel-URN
    und gilt **JE EREIGNISTYP**, nicht je Projekt. **OWNER-ENTSCHEIDUNG vom
    2026-08-11:** Zuordnung Ereignisname -> URN (Option B), damit Kunden auf
@@ -442,3 +494,38 @@ schon abdeckt (geprüft am 2026-08-11 durch Durchsicht von "## Immer beachten").
    *Abdeckung:* KEINE Regel sagt das. Der Zeiger auf die Rohfassung in CLAUDE.md,
    "## Detail-Archiv", nennt sie als Rückfall, "wenn man dort etwas VERMISST" — er
    sagt nichts darüber, WAS bei der Kuration verlorengeht.
+
+**AUS DER BERICHTS-LÜCKE UND DER TIKTOK-MESSUNG (2026-08-11), zwei weitere:**
+
+10. **EIN VERWEIS AUF DEN EIGENEN, NOCH NICHT FERTIGEN BERICHT IST EINE
+    TATSACHENBEHAUPTUNG ÜBER EIN ARTEFAKT, DAS IM MOMENT DER BEHAUPTUNG NOCH NICHT
+    EXISTIERT** ("steht oben", "s. Abschnitt X", "im Anhang"). Es ist die einzige
+    Behauptungsklasse, die strukturell ungeprüft bleibt: Für alles andere gilt, dass
+    eine Behauptung an ihrem Gegenstand geprüft wird — hier ist der Gegenstand der
+    noch nicht abgeschickte Text.
+    *Beleg:* Der Bericht zu Commit `b64a953` verwies auf einen Volltext-Diff, der im
+    Antworttext nie stand. Vier andere Nachweise waren da (Scope,
+    Überschriften-Identität, Hunk-Zahl, Secret-Probe) — und der einzige, den ein
+    Review braucht, fehlte. **Ein Review, das aus Kennzahlen statt aus dem
+    Gegenstand besteht, findet nicht statt; es sieht nur so aus.**
+    *Die zwei Auswege:* Belege INLINE statt per Verweis — oder ein Abgleich der
+    Umfangs-Ansage gegen den FERTIGEN Text, bevor er hinausgeht.
+    *Abdeckung:* TEILWEISE. Die Vorlage-Regel ("DIFF-VORLAGE = GEZIELTE
+    VERIFIKATION") kennt das Instrument ("Der Bericht beginnt mit einer
+    UMFANGS-ANSAGE … damit ein fehlender Abschnitt beim LESEN auffällt") und einen
+    verwandten Fall ("Nie als Datei-Anhang (kommt leer an)"). Sie benennt aber NICHT
+    die Behauptungsklasse selbst und nicht, dass die Umfangs-Ansage GEGEN den
+    fertigen Text zu prüfen ist statt gegen den Auftrag.
+11. **EINE ERFOLGSQUITTUNG KANN BLIND SEIN FÜR DAS, WAS MAN MISST.** Antwortet ein
+    fremdes System mit und ohne den gemessenen Bestandteil IDENTISCH, belegt seine
+    Quittung nichts über diesen Bestandteil — es braucht eine Gegenprobe, die ihn
+    weglässt.
+    *Beleg:* Die Antwort des Anbieters war mit und ohne Nutzer-Objekt identisch;
+    ohne die Gegenprobe wäre "IP und User-Agent genügen" aus dem falschen Grund für
+    wahr gehalten worden.
+    *Abdeckung:* KEINE deckt sie. Zwei stehen daneben, beide auf anderer Achse:
+    "EINE VORBEDINGUNG, DIE AUCH DER ALTE ZUSTAND ERFÜLLT, IST KEINE VORBEDINGUNG"
+    spricht von einem SELBSTGEWÄHLTEN Anker im Test, hier geht es um die Antwort
+    eines FREMDEN Systems, auf die niemand Einfluss hat; "EINE
+    ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL" spricht ausdrücklich von
+    TESTS, hier von einer LIVE-MESSUNG.

@@ -88,9 +88,11 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       Befunde je Ziel samt Provenienz stehen in docs/aktiver-stand.md,
       "## 2. Wo die Phase steht" — hier nur der Rang:
       · TIKTOK — auf der Struktur-Achse eine WIEDERHOLUNG: ein Adapter, ein
-      Eintrag in der Zuordnung, ein Zielwert im CHECK, ein Live-Test. EINE Frage
-      bleibt offen und ist VOR dem Bau an der ENTWICKLER-Referenz des Anbieters
-      zu messen; welche, steht in der Standdatei.
+      Eintrag in der Zuordnung, ein Zielwert im CHECK, ein Live-Test. Die einst
+      offene Identitätsfrage ist am 2026-08-11 GEMESSEN und BEANTWORTET: IP und
+      User-Agent genügen, die Klick-Kennung wird nicht gebraucht. Was daneben
+      gemessen wurde, was Recherche blieb und was ungeklärt ist, steht je Angabe
+      in docs/aktiver-stand.md, Posten 1.
       · LINKEDIN — KEINE Wiederholung: die Kennung gilt JE EREIGNISTYP, nicht je
       Projekt. Das berührt, WIE EIN EREIGNIS BESCHRIEBEN WIRD, und ist damit eine
       PRODUKTÄNDERUNG, keine Adapter-Wiederholung (Owner-Entscheidung 2026-08-11).

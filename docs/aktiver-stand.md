@@ -88,11 +88,14 @@ steht, ist vor dem Bau am Repo zu messen:**
 - **DIE ENUM-ARTIGEN FELDER** (Code, Subcode, Typ) **WERDEN HART BEGRENZT.**
 - **`fbtrace_id` BLEIBT UNGESCHWÄRZT** und wird nur längenbegrenzt — Begründung
   und Auflage in Abschnitt 4 (a).
-- **DAS SCHWÄRZ-PRIMITIV DES ZWEITEN ADAPTERS WANDERT IN EINE REINE GETEILTE
-  DATEI**; beide Adapter benutzen danach dasselbe Werkzeug. **WÄCHTER DAFÜR, DASS
-  SICH DAS VERHALTEN DES ZWEITEN ADAPTERS NICHT ÄNDERT:** seine bestehenden
-  Schwärzungs-Tests in `src/lib/capi/pinterest-forward.test.ts` — sie bleiben
-  unverändert und müssen grün bleiben.
+- **DER META-ADAPTER BEKOMMT EINE EIGENE, BENANNTE SCHWÄRZUNG.** Sie entsteht in
+  `src/lib/capi/meta-forward.ts` und wird dort als BEWUSSTES DUPLIKAT kenntlich
+  gemacht — mit dem, was sie dupliziert, und der Bedingung, unter der das Duplikat
+  aufgelöst wird. **DER ZWEITE ADAPTER WIRD IN DIESER SCHEIBE NICHT ANGEFASST:
+  kein Import, kein Byte.** Hier stand bis zum 2026-08-11 das Gegenteil (das
+  Primitiv wandere in eine geteilte Datei, die bestehenden Tests des zweiten
+  Adapters seien der Wächter dafür); die Herleitung dieser Umkehr steht in
+  Abschnitt 4 (d).
 - **DER KOMMENTAR, DER DIE FEHLERMELDUNG DES ANBIETERS FÜR UNBEDENKLICH ERKLÄRT,
   WIRD ERSETZT** — s. Abschnitt 4 (b).
 - **DER NEUE TEST IST DAS EIGENTLICHE ERGEBNIS DER SCHEIBE:** eine Fixture, in der
@@ -133,11 +136,52 @@ Undurchsichtigkeit ist.** Das reiht sich in die FÜNF bereits benannten Stellen
 ein, an denen die Adapter gleich aussehen und es nicht sind (aufgezählt im Kopf
 von `src/lib/capi/pinterest-forward.ts`).
 
-**(d) DIE NICHT-ZUSAMMENLEGUNG BLEIBT.** Sie betrifft die FEHLERDEUTUNG, nicht das
-Schwärz-Primitiv. Geteilt wird ein WERKZEUG; die POLITIK — welches Feld wie
-behandelt wird — bleibt je Adapter eigen. Das ist kein Aufweichen der Auflage
-"die Abstraktion entsteht beim DRITTEN Fall", sondern ihre Anwendung: (a) und (c)
-sind der Beleg, dass die Politik gerade NICHT gleich ist.
+**(d) DAS SCHWÄRZ-PRIMITIV WIRD NICHT GETEILT — UMGEKEHRT AM 2026-08-11 nach der
+Aufklärung, nicht bloss präzisiert.** Hier stand, es wandere in eine geteilte
+Datei, und die bestehenden Tests des zweiten Adapters seien der Wächter dafür,
+dass sich dessen Verhalten dabei nicht ändert. **DIESE ZUSAGE TRÄGT NICHT.**
+
+GEMESSEN am 2026-08-11 an `src/lib/capi/pinterest-forward.test.ts` (read-only,
+alle Tests der Datei durchgesehen): Der Bestand sichert die Schwärzung als
+TATSACHE — eine lange undurchsichtige Folge wird ersetzt — und den Durchlass
+kurzer Anbieter-Texte. An SECHS Achsen sichert er NICHTS: die REIHENFOLGE von
+Schwärzen und Kappen, die MINDESTLÄNGE, die Behandlung von NICHT-STRINGS, die von
+LEERWERTEN, die KAPPUNG selbst und die GLOBALITÄT der Ersetzung.
+
+**DIE SCHWERSTE DAVON IST DIE REIHENFOLGE, und sie allein trägt die Umkehr.**
+Beobachtbar wird sie ausschliesslich dort, wo eine undurchsichtige Folge auf der
+Kappungsgrenze LIEGT. Wird zuerst gekappt, bleibt von einer Folge, die kurz vor
+der Grenze beginnt, ein Rest unterhalb der Mindestlänge stehen — er wird danach
+NICHT mehr ersetzt und geht als TEIL-Leak hinaus. In keiner heutigen Fixture
+überschreitet eine solche Folge die Grenze, **also lässt eine Vertauschung der
+beiden Schritte jeden einzelnen Test grün.** Ein Bruch dieser Art ist genau die
+Fehlerklasse, gegen die diese Scheibe gebaut ist.
+
+**DARAUS KEHRT SICH DAS ARGUMENT UM.** Die in dieser Scheibe entstehende Fassung
+bekommt Echo-Test, Zwilling und geteilte Mutationsproben und ist damit die BESSER
+BEWACHTE. Die ungeschützte zu teilen hiesse, ihr die Autorität eines geteilten
+Bauteils zu geben — und der zweite Adapter erbte künftige Änderungen an ihr, ohne
+dass irgendetwas rot würde.
+
+**DIE VEREINHEITLICHUNG FÄLLT NICHT WEG, SIE WIRD EINE EIGENE SCHEIBE** — mit
+Charakterisierungs-Tests VOR dem Umzug, weil erst die beweisen, dass er nichts
+geändert hat. Als Vorrat geführt in Abschnitt 6.
+
+**UNBERÜHRT BLEIBT DIE URSPRÜNGLICHE AUSSAGE DIESES PUNKTES:** Die
+Nicht-Zusammenlegung der FEHLERDEUTUNG gilt unverändert weiter; (a) und (c) sind
+ihr Beleg. Die POLITIK — welches Feld wie behandelt wird — bleibt je Adapter
+eigen, und sie ist nachweislich verschieden.
+
+**(e) SIEBTER UNTERSCHIED: DER LEERWERT IST BEIM ZWEITEN ADAPTER EINE
+VERZWEIGUNG, KEINE FORMATIERUNG.** Sein Bereiniger liefert für Nicht-Strings und
+für Leerwerte einen Ersatzwert, und genau gegen diesen Ersatzwert entscheidet der
+zweite Adapter, OB überhaupt eine Warn-Zeile entsteht. **Ein geteiltes Primitiv
+hätte die Verzweigung des einen Adapters zur Eigenschaft des anderen gemacht:** Wer
+den Ersatzwert im geteilten Werkzeug änderte, verschöbe drüben einen
+Kontrollfluss, nicht eine Darstellung — und keiner der Tests, die dort etwas
+behaupten, trüge diesen Zusammenhang im Namen. Der Punkt reiht sich in die fünf im
+Kopf von `src/lib/capi/pinterest-forward.ts` benannten Stellen und in (c) ein; es
+sind jetzt sieben.
 
 ---
 
@@ -181,6 +225,13 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
 - **ZWEI UNABHÄNGIGE KONSTANTEN DESSELBEN WERTES FÜR DIESELBE AUFGABE:**
   `META_ERROR_MSG_MAX` in `src/lib/capi/meta-forward.ts` und `PINTEREST_LOG_MAX` in
   `src/lib/capi/pinterest-forward.ts`.
+- **SECHS UNGEDECKTE ACHSEN AM SCHWÄRZ-PRIMITIV DES ZWEITEN ADAPTERS**
+  (`sanitizeProviderText` in `src/lib/capi/pinterest-forward.ts`): Reihenfolge,
+  Mindestlänge, Nicht-Strings, Leerwerte, Kappung, Globalität — Kandidat für eine
+  EIGENE Scheibe mit Charakterisierungs-Tests VOR einer späteren Vereinheitlichung.
+- **EIN TESTNAME BEHAUPTET DIE SCHWÄRZUNG FÜR EIN FELD, DAS SEINE FIXTURE NICHT
+  DECKT:** `T12b` in `src/lib/capi/pinterest-forward.test.ts` nennt `error_message`
+  und `warning_message`, seine Fixture trägt nur `warning_message`.
 
 Die vier fälligen Punkte am ersten Adapter und das Gegenstück bei den
 Deckelwerten stehen ausformuliert in

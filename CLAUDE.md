@@ -77,22 +77,17 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       docs/claude-history/backlog-polish.md, Eintrag "src/middleware.ts ->
       proxy.ts umbenennen".
 - [~] Phase 11 — Multi-Tracking (Server-Side Fan-Out): TEILS ERLEDIGT.
-      ERLEDIGT IST DIE STRUKTUR: Der Fan-Out beliefert ein ZWEITES Ziel — live
-      bewiesen gegen ein echtes fremdes System, nicht gegen eine Attrappe. Auflösung
+      ERLEDIGT IST DIE STRUKTUR: Der Fan-Out beliefert MEHRERE Ziele — live
+      bewiesen gegen echte fremde Systeme, nicht gegen eine Attrappe. Auflösung
       über mehrere Ziele, Einwilligung JE ZIEL, Oberfläche je Plattform und der
       nebenläufige Fan-Out mit EIGENEM Deckel je Empfänger sind gebaut und geprüft.
-      GEBAUT UND TATSÄCHLICH BELIEFERT SIND ZWEI ZIELE: Meta und Pinterest.
-      OFFEN SIND DREI ZIELE — TikTok, Google und LinkedIn —, dazu das
-      Tracking-Testmodus-Modul und der Testknopf. DIE DREI ZIELE HABEN
+      GEBAUT UND TATSÄCHLICH BELIEFERT SIND DREI ZIELE: Meta, Pinterest und TikTok
+      — alle drei im selben Lauf live bewiesen (2026-08-11).
+      OFFEN SIND ZWEI ZIELE — Google und LinkedIn —, dazu das
+      Tracking-Testmodus-Modul und der Testknopf. DIE BEIDEN ZIELE HABEN
       VERSCHIEDENEN RANG UND WERDEN JE ZIEL GELESEN, NICHT ALS KLASSE. Die
       Befunde je Ziel samt Provenienz stehen in docs/aktiver-stand.md,
       "## 2. Wo die Phase steht" — hier nur der Rang:
-      · TIKTOK — auf der Struktur-Achse eine WIEDERHOLUNG: ein Adapter, ein
-      Eintrag in der Zuordnung, ein Zielwert im CHECK, ein Live-Test. Die einst
-      offene Identitätsfrage ist am 2026-08-11 GEMESSEN und BEANTWORTET: IP und
-      User-Agent genügen, die Klick-Kennung wird nicht gebraucht. Was daneben
-      gemessen wurde, was Recherche blieb und was ungeklärt ist, steht je Angabe
-      in docs/aktiver-stand.md, Posten 1.
       · LINKEDIN — KEINE Wiederholung: die Kennung gilt JE EREIGNISTYP, nicht je
       Projekt. Das berührt, WIE EIN EREIGNIS BESCHRIEBEN WIRD, und ist damit eine
       PRODUKTÄNDERUNG, keine Adapter-Wiederholung (Owner-Entscheidung 2026-08-11).

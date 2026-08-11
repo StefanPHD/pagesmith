@@ -70,6 +70,11 @@ BEIM LESEN ZU BEACHTEN:**
    EIGENEN Werbekonto, ausschliesslich im TESTMODUS; Nachweis im Test-Ereignis-Tab
    der Anbieter-Oberfläche. **DAS IST EINE MESSUNG AM FREMDEN SYSTEM — NICHT am
    Code gemessen und NICHT über unseren eigenen Ingest-Pfad gelaufen.**
+   **SCHÄRFUNG DES MESSWEGS, und sie gehört dazu, weil ohne sie drei Angaben
+   falsch geworden wären:** Die Antwort-RÜMPFE wurden mit einem ROHEN HTTP-Werkzeug
+   erhoben, nachdem sich das zuvor benutzte PowerShell-Kommando als untauglich
+   erwiesen hatte — es verbrauchte den Antwortstrom selbst und lieferte deshalb
+   Länge null. Warum das kein Nebensatz ist, steht als Kandidat 13 in Abschnitt 7.
    - **GEMESSEN — DIE OFFENE FRAGE IST BEANTWORTET: IP UND USER-AGENT GENÜGEN.**
      Sie lautete, ob die beiden ALLEIN für einen erfolgreichen Aufruf reichen; bis
      zum 2026-08-11 stand hier, das sei VOR dem Bau zu messen. Ein Aufruf mit einem
@@ -96,6 +101,35 @@ BEIM LESEN ZU BEACHTEN:**
      wäre der erste Befund aus dem falschen Grund für wahr gehalten worden.**
    - **GEMESSEN — ZWEI GETRENNTE FEHLERKANÄLE.** Ein ungültiges Zugangsdatum
      liefert HTTP 401; Fachliches läuft über das `code`-Feld einer 200er-Antwort.
+     *Von den vier Befunden darunter GESCHÄRFT, nicht ersetzt: Es gibt auch echte
+     Fehlerstatus mit Rumpf — der Status trennt die Kanäle also gröber, als dieser
+     Satz allein nahelegt.*
+   - **GEMESSEN — DIE FEHLERFORM IST DIESELBE WIE DIE ERFOLGSFORM:** `code`,
+     `message`, `request_id`. Im Erfolgsfall kommt ein leeres `data`-Objekt dazu,
+     im Fehlerfall fehlt es. **EIN Rumpf-Leser trägt beide Wege** — einfacher als
+     bei beiden bestehenden Adaptern. *Damit ist die frühere Lücke "die RUMPFFORM
+     der 401 ist nicht festgehalten" GESCHLOSSEN.*
+   - **GEMESSEN — DER HTTP-STATUS TRÄGT DIE FEHLERKLASSE NICHT.** Erhoben wurden
+     DREI verschiedene Fehlercodes auf ZWEI Status: ein Berechtigungsfehler zur
+     Ereignisquelle kam mit 401, ein Schema-Fehler mit 400, ein Token-Fehler
+     ebenfalls mit 401 — **zwei verschiedene Codes teilen sich denselben Status.**
+     **FOLGE FÜR DEN ADAPTER: Das `code`-Feld ist die tragende Angabe, der Status
+     nur ein grober Vorfilter.** Ein Adapter, der auf den Status verzweigt,
+     unterscheidet "falsche Kennung" nicht von "falschem Zugangsdatum". *Damit ist
+     auch die frühere Lücke "wie eine FACHLICHE Ablehnung aussieht" GESCHLOSSEN.*
+   - **GEMESSEN — DIE MELDUNG SPIEGELT UNSERE EIGENE EINGABE ZURÜCK, WÖRTLICH.**
+     Bei einer absichtlich unzulässigen Ereignisquellen-Kennung enthielt die
+     Meldung genau den von uns gesendeten Wert im Klartext; bei einem unzulässigen
+     Enum-Wert nannte sie die erlaubten Werte. (Der zurückgespiegelte Wert wird
+     hier bewusst NICHT abgedruckt — der Sachverhalt trägt ohne ihn.)
+     **DAS IST DIE ECHO-ACHSE, GEMESSEN STATT VERMUTET.** Beim ersten Adapter war
+     sie eine begründete Annahme; hier ist sie belegt. **FOLGE: Der TikTok-Adapter
+     bekommt die Schwärzung VON ANFANG AN, nicht als Nachrüstung.** Die Politik JE
+     FELD ist erneut eine EIGENE — nicht vom ersten Adapter abschreiben.
+   - **GEMESSEN — DIE DREI FEHLERCODES SIND UNTERSCHEIDBAR, der Betreiber-Fall ist
+     damit diagnostizierbar:** falsch eingetragene Kennung und ungültiges
+     Zugangsdatum tragen verschiedene Codes UND verschiedene Meldungen. **Ohne
+     Rumpf-Leser sähen beide für uns gleich aus.**
    - **GEMESSEN — DER EREIGNISNAME WANDERT.** Gesendet wurde `CompletePayment`, die
      Oberfläche des Anbieters zeigt `Purchase`. Der Betreiber sucht also einen
      anderen Namen, als wir senden — **gehört in die Betreiber-Doku**, sonst meldet
@@ -110,10 +144,14 @@ BEIM LESEN ZU BEACHTEN:**
      Manager und passt in die Geheimnis-Tabelle · es gibt Deduplizierung über eine
      Ereignis-Kennung · es gibt einen Testmodus, dessen Code pro Sitzung WECHSELT
      und deshalb nichts ist, was man hinterlegt.
-   - **UNGEKLÄRT — als LÜCKE geführt, NICHT als bestanden:** die RUMPFFORM der 401
-     (nur der Status ist festgehalten) · wie eine FACHLICHE Ablehnung aussieht
-     (`code` ungleich `null`) — der Fall ist nie eingetreten · **ob Ereignisse ohne
-     E-Mail und Telefonnummer für die ATTRIBUTION zählen.** Der Test-Tab warnt,
+   - **UNGEKLÄRT — als LÜCKE geführt, NICHT als bestanden.** *Zwei früher hier
+     geführte Lücken (Rumpfform der 401, Aussehen einer fachlichen Ablehnung) sind
+     durch die Befunde oben GESCHLOSSEN und stehen dort; offen bleibt:*
+     der VOLLSTÄNDIGE UMFANG des Fehlercode-Bereichs — drei Codes sind gemessen,
+     wie viele es gibt, ist unbekannt · die VOLLSTÄNDIGE LISTE der
+     Standard-Ereignisnamen und die Abbildung unserer Namen darauf · **ob
+     Ereignisse ohne E-Mail und Telefonnummer für die ATTRIBUTION zählen.** Der
+     Test-Tab warnt,
      Ereignisse ohne diese Werte würden "nur mit Manual Advanced Matching gezählt";
      ob damit nur eine ZÄHLUNG gemeint ist oder die Attribution insgesamt, ist **AM
      TEXT NICHT ENTSCHEIDBAR**. Das ist eine Frage an den ANBIETER, keine an den
@@ -529,3 +567,44 @@ schon abdeckt (geprüft am 2026-08-11 durch Durchsicht von "## Immer beachten").
     eines FREMDEN Systems, auf die niemand Einfluss hat; "EINE
     ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL" spricht ausdrücklich von
     TESTS, hier von einer LIVE-MESSUNG.
+
+**AUS DEN TIKTOK-FEHLERWEGEN (2026-08-11), zwei weitere — der erste ist der
+wichtigste dieser Sitzung:**
+
+12. **EIN MESSERGEBNIS ZÄHLT ERST, WENN IM SELBEN LAUF EIN AUFRUF MITLÄUFT, VON DEM
+    MAN WEISS, WIE ER AUSGEHEN MUSS.** Ein Ergebnis, das aus ZWEI Gründen so
+    aussehen kann wie beobachtet, ist kein Ergebnis, sondern eine Frage.
+    *Beleg — FÜNF Fälle an EINEM Anbieter an EINEM Tag, alle mit derselben
+    Ursache:* eine Nichterwähnung wurde als Entwarnung gelesen · eine
+    Erfolgsquittung wurde für einen Identitäts-Nachweis gehalten, bis die
+    Gegenprobe OHNE Nutzer-Objekt dieselbe Antwort lieferte · eine Probe lief mit
+    einem Zugangsdatum, dessen Gültigkeit ungeprüft war, und mass etwas anderes als
+    beabsichtigt · drei Fehler-Rümpfe schienen leer, weil das Werkzeug den
+    Antwortstrom verbraucht hatte · zwei Fehlerarten schienen ununterscheidbar,
+    weil derselbe Leser beide Male nichts lieferte.
+    **IN VIER VON FÜNF FÄLLEN HAT ERST EINE KONTROLLE MIT BEKANNTEM SOLL-AUSGANG
+    DEN FEHLER GEZEIGT** — nicht der Verdacht, nicht die Wiederholung.
+    *Abdeckung — und die Frage "dieselbe Regel in weiterem Geltungsbereich oder
+    eine eigene?" beantworte ich mit: EINE EIGENE.* Die Denkfigur ist dieselbe wie
+    in "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL" und in der
+    Mutations-Lektion "EIN WÄCHTER, DER ÜBERWIEGEND ABWESENHEIT PRÜFT, BRAUCHT EINE
+    EIGENE POSITIVKONTROLLE" — aber beide adressieren einen Wächter im EIGENEN
+    Code, den man selbst schreibt und dessen Kontrolle man in dieselbe Testdatei
+    legt. Hier sind Instrument UND Gegenstand FREMD: Die Kontrolle muss im selben
+    LAUF gegen dasselbe fremde System gehen, und ihr Soll-Ausgang muss VORHER
+    feststehen, weil man ihn nicht herstellen kann. Am nächsten steht die
+    Live-Test-Lektion "EIN GROBES LIVE-TEST-INSTRUMENT REISST OFT DIE VORAUSSETZUNG
+    DESSEN MIT, WAS ES PRÜFEN SOLL" — die spricht vom INSTRUMENT, diese vom
+    fehlenden MITLAUFENDEN NACHWEIS. *Kandidat 11 ist ein Sonderfall von diesem
+    hier, Kandidat 8 teilweise; wer 12 hebt, prüft, ob 11 darin aufgeht.*
+13. **EIN WERKZEUG KANN EINEN BEFUND ERZEUGEN, DEN DER GEGENSTAND NICHT HERGIBT.**
+    Ein HTTP-Leser, der den Antwortstrom vorher selbst verbraucht, liefert einen
+    leeren Rumpf — **ununterscheidbar von einem Anbieter, der keinen sendet.**
+    *Beleg:* Dieselben drei Aufrufe lieferten mit einem rohen Werkzeug Rümpfe von
+    117, 137 und 142 Bytes.
+    **FOLGE, die mitmuss: Wo ein Messergebnis eine ABWESENHEIT ist, wird das
+    WERKZEUG GEWECHSELT, bevor die Abwesenheit als Befund gilt.**
+    *Abdeckung:* KEINE deckt sie. Die nächste ist die Werkzeug-Regel "sed -i
+    STRIPPT IN DIESER UMGEBUNG STILL DAS CR" — sie handelt davon, dass ein Werkzeug
+    den GEGENSTAND still verändert; hier verändert es das ERGEBNIS, ohne den
+    Gegenstand anzufassen. Verwandt, gegenläufig, nicht dasselbe.

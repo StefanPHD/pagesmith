@@ -468,6 +468,26 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   (`TARGET_CARDS` in `src/components/TargetCard.tsx`): für den Nutzer folgenlos, weil
   die BESCHRIFTUNGEN sich unterscheiden — für eine Testabfrage über den Platzhalter
   nicht.
+- **DIE KACHEL-BESCHRIFTUNG BEHAUPTET MEHR, ALS DIE ZAHL DECKT** (die
+  Verlust-Kachel in `src/components/MeasureView.tsx`): Sie heisst
+  "Adblocker-Verlust" und misst die Blockrate GENAU EINES Anbieters — bei EINEM
+  Ziel war das dasselbe, bei DREIEN nicht mehr. **KLEIN und als NÄCHSTE Scheibe
+  vorgesehen: Text und Test, KEINE Architektur.** **NICHT zu verwechseln mit
+  Befund 4 in Abschnitt 8** — jener ist ein DEFEKT und braucht eine fehlende
+  Dimension.
+- **DIE BETREIBER-DOKUMENTATION WÄCHST UM ZWEI PUNKTE** (kein Symbolname: dieses
+  Dokument existiert im Repo noch nicht — verwandt ist der offene Posten
+  "COOKIE-DOKU-SCHNIPSEL" in CLAUDE.md, "## Offene Punkte"): (1) dass Pagesmith
+  KEINEN Einwilligungs-Dialog mitliefert und ohne einen ALLE Ziele als erlaubt
+  gelten; (2) die GRENZE DER DEDUPLIZIERUNG in der belastbaren Fassung — unsere
+  Deduplizierung führt Browser und Server über eine GETEILTE Ereignis-Kennung
+  zusammen, und diese Zusage gilt für Ereignisse **AUS DIESEM BUILDER**; ein Tag,
+  das zusätzlich über einen Tag-Manager oder ein Shop-System eingebunden ist,
+  erzeugt Ereignisse mit FREMDEN Kennungen, die keine Deduplizierung
+  zusammenführen kann — weder unsere noch die des Anbieters. **AUSDRÜCKLICH NICHT
+  "zu 100 % Konfigurationsfehler":** Eine Absolutheits-Aussage wird vom ersten
+  Gegenbeispiel widerlegt, und dann fällt die ganze Argumentation, obwohl sie im
+  Kern stimmt.
 
 Die vier fälligen Punkte am ersten Adapter und das Gegenstück bei den
 Deckelwerten stehen ausformuliert in
@@ -681,3 +701,128 @@ zusammen und betreffen dieselbe Naht: eine Zusicherung, die an einer MENGE häng
     Code zu prüfen. Dieser hier beschreibt den ÜBERTRAGUNGSWEG, auf dem ein bereits
     falscher Beleg sich VERMEHRT. Altern und Verbreiten sind zwei verschiedene
     Vorgänge; die zweite Kopie ist ab dem ersten Tag falsch.
+
+---
+
+## 8. Beschlossen und verortet — NICHT in dieser Phase gebaut
+
+**WAS DIESER ABSCHNITT IST:** Vorhaben, die am 2026-08-12 aus einer Aufklärung
+entstanden sind, ENTSCHIEDEN wurden und einen ORT bekommen haben — aber in Phase 11
+NICHT gebaut werden. **HIER WIRD KEINE SCHEIBE ERÖFFNET.**
+
+**DREI DINGE WERDEN AUSEINANDERGEHALTEN und stehen deshalb in drei eigenen Blöcken:**
+ein BEFUND ist eine Messung am Code, eine ENTSCHEIDUNG ist ein Owner-Beschluss mit
+Datum, eine VERORTUNG ist die Angabe, WO das Vorhaben ab jetzt steht. Wer sie
+zusammenzieht, liest eine Messung als Zusage oder einen Ort als Termin.
+
+**AM PHASENENDE:** Dieser Abschnitt wird gehoben wie der Rest der Datei. Er kann dabei
+nichts verlieren — jedes Vorhaben trägt unten seinen ORT, und alle diese Orte liegen
+AUSSERHALB dieser Datei (CLAUDE.md bzw. Abschnitt 6). Diese Datei ist ihre
+BEGRÜNDUNG, nicht ihr TRÄGER.
+
+---
+
+### 8.1 DIE VIER BEFUNDE — RANG: GEMESSEN
+
+**PROVENIENZ, einheitlich für alle vier:** Read-only-Aufklärung am 2026-08-12, am
+CODE erhoben (Erzeuger, Ingest, die drei Consent-Dateien, die Verlustraten-RPC samt
+ihrer TS-Spiegelung, die Kachel). **KEIN Live-Test, KEIN Aufruf gegen ein echtes
+System.** Für den Schema-Teil gilt der Vorrang von `docs/db-stand.md`.
+
+**BEFUND 1 — PAGESMITH LIEFERT KEINEN EINWILLIGUNGS-DIALOG.** Der Betreiber-Hook wird
+an zwei Stellen GELESEN und nirgends GESETZT; er ist fremder Betreiber-Code. Das
+Gate-Snippet dagegen wird bei JEDEM Publish ausgeliefert. **Es gibt keinen Schalter
+zum Abschalten, weil es nichts abzuschalten gibt.**
+
+**BEFUND 2 — OHNE GESETZTEN HOOK GELTEN ALLE ZIELE ALS ERLAUBT.** Der
+Auslieferungs-Zustand einer publizierten Seite ist damit: alle konfigurierten Ziele
+werden beliefert, ohne dass je jemand gefragt wurde.
+**DAS IST IM CODE AUSDRÜCKLICH ALS ENTSCHEIDUNG BEGRÜNDET** ("nichts gesetzt → er hat
+nie entschieden"), und die Fail-Closed-Regel gilt bewusst dem URTEIL, nicht dessen
+ABWESENHEIT. **BEFUND 2 WIDERSPRICHT IHR ALSO NICHT** — wer ihn so liest, hält eine
+gewollte Asymmetrie für ein Loch und "repariert" sie.
+**FOLGE FÜRS PRODUKT, und sie ist der eigentliche Ertrag dieses Befundes:**
+"DSGVO-konform out-of-the-box" trifft heute NICHT zu. Konform wird es erst, wenn der
+Betreiber selbst ein CMP einbaut und den Hook bedient.
+
+**BEFUND 3 — DIE ADBLOCKER-KACHEL MISST DIE BLOCKRATE GENAU EINES ANBIETERS**, nicht
+die unseres eigenen Beacons. Die Bestätigung hängt am Laden des Anbieter-Scripts;
+ohne dessen Kennung entsteht NIE eine Browser-Zeile, und die Kachel bleibt dauerhaft
+im Neutral-Status. Der SICHTBARE Text nennt weder einen Anbieter noch eine
+Einwilligung.
+**WARUM DER EIGENE KANAL DORT STRUKTURELL UNSICHTBAR IST:** Würde unser eigener
+Beacon geblockt, entstünde WEDER die Server- NOCH die Browser-Zeile — der Fall fällt
+aus Zähler UND Nenner heraus.
+
+**BEFUND 4 — SEIT PHASE 11 KANN DIE KACHEL EINEN VERLUST ANZEIGEN, DEN ES NICHT
+GIBT.** Wird EIN Ziel abgelehnt und ein anderes erlaubt, geht der Beacon hinaus und
+die Server-Zeile entsteht, die Browser-Bestätigung bleibt aus: **Nenner wächst,
+Zähler nicht.** Die Zahl steigt, obwohl nichts geblockt wurde — sie liest sich als
+Adblocker-Verlust und ist eine Einwilligungs-Entscheidung. **Im Ein-Ziel-Pfad war das
+unmöglich**, dort unterblieb ohne Einwilligung der ganze Beacon.
+**HEUTE FÄLLT ES NICHT AUF**, weil kein Projekt ein CMP hat und deshalb nie etwas
+abgelehnt wird; **mit einem Einwilligungs-Dialog WIRD ES REAL.** Das ist die Naht
+zwischen diesem Befund und dem Vorhaben aus 8.3 (a).
+**DIE SAUBERE BEHEBUNG BRAUCHT ZU WISSEN, OB DAS BETREFFENDE ZIEL JE EREIGNIS
+EINGEWILLIGT WAR.** Die events-Tabelle trägt keine Ziel-Spalte — genau die "eigene
+additive Spalte", die die Roadmap für Ziele vorsieht. **Deshalb ist das eine
+Analytics-Arbeit und keine Consent-Arbeit.**
+
+---
+
+### 8.2 DIE VIER OWNER-ENTSCHEIDUNGEN — RANG: ENTSCHIEDEN (alle 2026-08-12)
+
+**E1 — DIE ARCHITEKTUR BLEIBT FÜR DEN LAUNCH, WIE SIE IST:** EIN Ziel als Hybrid aus
+Browser-Tag und Server-Forward, die übrigen als reiner Server-Fan-Out.
+*Begründung:* Der Hauptanwendungsfall der Zielgruppe ist damit von Tag eins
+vollständig abgedeckt; das Momentum wird nicht für eine Verbreiterung unterbrochen,
+die kein Kunde heute verlangt.
+
+**E2 — KEINE BEVORMUNDUNG, ABER EIN HINWEIS.** Der Betreiber entscheidet
+eigenverantwortlich über seinen Einwilligungs-Dialog. **Wir weisen hin, wir erzwingen
+nicht.**
+
+**E3 — EIN EIGENER EINWILLIGUNGS-DIALOG WIRD GEBAUT, UND EIN FREMDER BLEIBT
+EINBINDBAR.** Beides über DENSELBEN Hook — er ist produzentenneutral, und der
+Konsument steht seit der zweiten Scheibe dieser Phase.
+
+**E4 — DER HYBRID-SCHALTER JE KANAL bleibt VISION** und wird NICHT vorgezogen.
+
+---
+
+### 8.3 DIE VERORTUNG — WO JEDES VORHABEN AB JETZT STEHT
+
+**(a) DER EINWILLIGUNGS-DIALOG → CLAUDE.md, "## Roadmap & aktueller Stand", NEUE
+ZEILE "Phase 11.5 — Einwilligungs-Dialog".** Marker `[ ]`, eingeordnet NACH Phase 11
+und VOR einem Beta-Launch mit fremden Nutzern. Die Zeile trägt Marker, Titel und die
+BINDUNGEN; das Detail bleibt hier.
+**ZUR NUMMER, damit niemand eine stille Umnummerierung vermutet:** `11.5` ist
+gewählt, weil sie FREI ist (Präzedenz 4.5, 10.5). Es wurde KEINE bestehende Nummer
+verschoben.
+
+**(b) DIE AUFSCHLÜSSELUNG DER NUR SERVER-SEITIG ERFASSTEN CONVERSIONS JE ZIEL →
+CLAUDE.md, Phase-8-Zeile**, als FÜNFTER Posten der dort geführten
+Weiterentwicklungen: **IDEE OHNE TERMIN UND OHNE ZUSAGE.**
+*Zur Wortwahl:* "gerettet" ist an dieser Kachel verboten (CLAUDE.md, "## Immer
+beachten", "WORTWAHL DASHBOARD") — deshalb "nur server-seitig erfasst".
+
+**(c) DIE BEHEBUNG VON BEFUND 4 → CLAUDE.md, Phase-8-Zeile**, als SECHSTER Posten, in
+derselben Bauform: **IDEE OHNE TERMIN UND OHNE ZUSAGE.**
+**WARUM DORT UND NICHT IN 11.5:** (b) und (c) brauchen DIESELBE fehlende Dimension
+(die Ziel-Spalte auf den Ereignissen). Sie hängen an der Analytics-Familie, nicht am
+Dialog — der Dialog macht Befund 4 nur SICHTBAR, er verursacht ihn nicht.
+**DIE CHECKBOX DER PHASE 8 GEHT DADURCH NICHT WIEDER AUF.** Der Satz dort gilt für
+beide wörtlich mit.
+
+**(d) DIE KACHEL-BESCHRIFTUNG → Abschnitt 6 dieser Datei (Vorrat).** KLEIN, als
+NÄCHSTE Scheibe vorgesehen: **Text und Test, keine Architektur.** Sie ist von (c)
+GETRENNT zu halten — (d) ist eine Beschriftung, die zu viel behauptet, (c) ist ein
+Defekt.
+
+**(e) DIE BETREIBER-DOKUMENTATION → Abschnitt 6 dieser Datei (Vorrat).** Zwei Punkte:
+der fehlende Einwilligungs-Dialog samt seiner Folge, und die GRENZE DER
+DEDUPLIZIERUNG in der belastbaren, NICHT-absoluten Fassung.
+
+**(f) DER HYBRID-SCHALTER JE KANAL → KEIN ORT, und das ist die Aussage.** Er bleibt
+VISION (E4). Er bekommt bewusst KEINE Roadmap-Zeile, weil eine Zeile ihn zu einem
+Posten machte, der abgearbeitet werden will.

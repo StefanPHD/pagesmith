@@ -65,6 +65,28 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       Haken an dieser Zeile und liessen die Phase unfertig aussehen, obwohl sie es nicht ist.
       Wird eine davon gebaut, bekommt sie eine EIGENE Scheibe mit eigenem Nachweis; sie
       öffnet diese Checkbox nicht wieder.
+      ZWEI WEITERE KOMMEN DAZU (2026-08-12), in DERSELBEN Bauform und mit derselben
+      Ausdrücklichkeit — IDEEN OHNE TERMIN UND OHNE ZUSAGE:
+      · eine AUFSCHLÜSSELUNG DER NUR SERVER-SEITIG ERFASSTEN CONVERSIONS JE ZIEL.
+        (Wortwahl bewusst: "gerettet" ist an dieser Kachel verboten — s. "WORTWAHL
+        DASHBOARD" unter "## Immer beachten".)
+      · die BEHEBUNG EINES DEFEKTS, den Phase 11 erzeugt hat (GEMESSEN 2026-08-12,
+        read-only am Code): Wird EIN Ziel abgelehnt und ein anderes erlaubt, entsteht
+        die Server-Zeile, die Browser-Bestätigung bleibt aus — der Nenner der
+        Adblocker-Kachel wächst ohne den Zähler, die Zahl steigt, obwohl nichts
+        geblockt wurde. HEUTE FÄLLT ES NICHT AUF, weil ohne Einwilligungs-Dialog nie
+        etwas abgelehnt wird; mit Phase 11.5 WIRD ES REAL.
+      BEIDE BRAUCHEN DIESELBE FEHLENDE DIMENSION und stehen NUR deshalb hier statt in
+      Phase 11.5: die events-Tabelle trägt keine Ziel-Spalte — genau die EIGENE
+      ADDITIVE SPALTE, die für Ziele ohnehin vorgesehen ist (s. "TRACKING-source =
+      BEOBACHTUNGS-ORT, NIE ZIEL" unter "## Immer beachten").
+      DIE ZAHL "VIER" OBEN IST DER STAND VOM 2026-07-29 und wird NICHT überschrieben —
+      sie ist als Aussage über JENEN Tag richtig; mit diesen beiden sind es SECHS. Wer
+      sie heute als vollständige Liste liest, zählt zu niedrig.
+      DER SATZ, DASS DIE CHECKBOX NICHT WIEDER AUFGEHT, GILT FÜR SIE WÖRTLICH MIT:
+      wird eine davon gebaut, bekommt sie eine EIGENE Scheibe mit eigenem Nachweis.
+      Befunde, Owner-Entscheidungen und Verortung: docs/aktiver-stand.md, "## 8.
+      Beschlossen und verortet — NICHT in dieser Phase gebaut".
 - [x] Phase 9 — A/B-Testing: ABGESCHLOSSEN & live bewiesen (2026-07-27 bis
       2026-07-29). Volle Herleitung: docs/claude-history/phase-9-ab-testing.md.
 - [x] Phase 10 — Workspace-Reorganisation: ABGESCHLOSSEN & live bewiesen
@@ -144,6 +166,53 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       Protokoll und Begründung: docs/claude-history/phase-11-multi-tracking.md.
       Protokolle, Entscheidungen und was jede Scheibe ausdrücklich NICHT
       beweist: docs/claude-history/phase-11-multi-tracking.md.
+- [ ] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP):
+      NACH Phase 11 und VOR einem Beta-Launch mit fremden Nutzern.
+      DIE NUMMER IST GEWÄHLT, WEIL SIE FREI IST (Präzedenz: 4.5, 10.5): die Phase
+      gehört zwischen 11 und 12, und KEINE bestehende Nummer wird verschoben.
+      GRUND, GEMESSEN am 2026-08-12 (read-only am Code): Pagesmith liefert KEINEN
+      Einwilligungs-Dialog — der Hook wird an zwei Stellen GELESEN und nirgends
+      GESETZT, er ist fremder Betreiber-Code. Ohne gesetzten Hook gelten ALLE Ziele
+      als erlaubt; der Auslieferungs-Zustand einer publizierten Seite ist damit:
+      alle konfigurierten Ziele werden beliefert, ohne dass je jemand gefragt wurde.
+      FOLGE FÜRS PRODUKT, und sie ist der Grund für die eigene Phase: "konform
+      out-of-the-box" trifft heute NICHT zu — die Konformität hängt allein am CMP
+      des Betreibers. ENTSCHIEDEN (Owner 2026-08-12): ein eigener Dialog wird
+      gebaut, ein fremder bleibt einbindbar.
+      IHRE BINDUNGEN — sie sind das, was diese Zeile trägt; das Detail steht in
+      der Standdatei, nicht hier:
+      · ZWEI PRODUZENTEN, EIN VERTRAG: der eigene Dialog UND ein fremdes CMP
+        bedienen DENSELBEN Hook. Er ist produzentenneutral, und der Konsument
+        steht seit Phase 11 — er wird nicht angefasst.
+      · DER VORHER-ZUSTAND IST DIE EIGENTLICHE ARBEIT. Ein Dialog, der erst NACH
+        der Entscheidung setzt, ändert nichts: bis dahin gilt "nicht gesetzt", und
+        der erste Seitenaufruf ist durch. Der eigene Dialog setzt VOR jedem Beacon
+        einen Wert, der Ablehnung bedeutet, und überschreibt ihn nach der
+        Zustimmung.
+        DAS KEHRT DIE HEUTIGE VORGABE UM UND NUR FÜR DEN DIALOG-FALL: Die Regel
+        für den Fremd-CMP-Fall ("nichts gesetzt" heisst, der Betreiber hat nie
+        entschieden) bleibt UNANGETASTET. Die Fail-Closed-Regel ist von beidem
+        nicht berührt — sie gilt dem URTEIL, nicht dessen Abwesenheit.
+      · DIE ZIEL-SCHLÜSSEL SIND EINE EINBAHNSTRASSE: Der Dialog bezieht sie aus
+        DERSELBEN Quelle wie der Erzeuger, NIE aus einer zweiten Liste. Eine
+        Divergenz wäre lautlos — ein unbekannter Schlüssel heisst fail-closed
+        "nicht erlaubt", ohne dass irgendwo etwas rot wird.
+      · DAS RISIKO IST VON ANDERER KLASSE ALS BEI EINEM ADAPTER: Ein fehlerhafter
+        Adapter macht EIN Projekt kaputt, ein fehlerhafter Dialog JEDE Kundenseite
+        gleichzeitig. Ein Betreiber mit eigenem CMP darf NIE von unserem abhängen.
+      · SIE IST EINE PHASE, KEINE SCHEIBE: Granularität, Ablehnen so einfach wie
+        Zustimmen, Widerruf, Speicherung der Entscheidung, Darstellung auf fremden
+        Seiten, Sprache.
+      KEINE BEVORMUNDUNG, ABER EIN HINWEIS (Owner 2026-08-12): Der Betreiber
+      entscheidet eigenverantwortlich über seinen Einwilligungs-Dialog. Wir weisen
+      hin, wir erzwingen nicht.
+      AUSDRÜCKLICH NICHT IN DIESER PHASE (Owner 2026-08-12): Der Hybrid-Schalter je
+      Kanal bleibt VISION und wird NICHT vorgezogen; die Architektur bleibt für den
+      Launch unverändert — EIN Ziel als Hybrid aus Browser-Tag und Server-Forward,
+      die übrigen als reiner Server-Fan-Out.
+      Befunde mit ihrem Rang, die vier Owner-Entscheidungen und die Verortung:
+      docs/aktiver-stand.md, "## 8. Beschlossen und verortet — NICHT in dieser
+      Phase gebaut".
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

@@ -85,7 +85,7 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       sie heute als vollständige Liste liest, zählt zu niedrig.
       DER SATZ, DASS DIE CHECKBOX NICHT WIEDER AUFGEHT, GILT FÜR SIE WÖRTLICH MIT:
       wird eine davon gebaut, bekommt sie eine EIGENE Scheibe mit eigenem Nachweis.
-      Befunde, Owner-Entscheidungen und Verortung: docs/aktiver-stand.md, "## 8.
+      Befunde, Owner-Entscheidungen und Verortung: docs/aktiver-stand.md, "## 7.
       Beschlossen und verortet — NICHT in dieser Phase gebaut".
 - [x] Phase 9 — A/B-Testing: ABGESCHLOSSEN & live bewiesen (2026-07-27 bis
       2026-07-29). Volle Herleitung: docs/claude-history/phase-9-ab-testing.md.
@@ -211,7 +211,7 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       Launch unverändert — EIN Ziel als Hybrid aus Browser-Tag und Server-Forward,
       die übrigen als reiner Server-Fan-Out.
       Befunde mit ihrem Rang, die vier Owner-Entscheidungen und die Verortung:
-      docs/aktiver-stand.md, "## 8. Beschlossen und verortet — NICHT in dieser
+      docs/aktiver-stand.md, "## 7. Beschlossen und verortet — NICHT in dieser
       Phase gebaut".
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.

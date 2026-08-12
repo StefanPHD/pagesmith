@@ -540,6 +540,73 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   "zu 100 % Konfigurationsfehler":** Eine Absolutheits-Aussage wird vom ersten
   Gegenbeispiel widerlegt, und dann fällt die ganze Argumentation, obwohl sie im
   Kern stimmt.
+- **DIE FAN-OUT-TESTS KENNEN DAS DRITTE ZIEL NICHT** (`src/lib/capi/fan-out.test.ts`):
+  GEMESSEN am Repo (2026-08-12), formale Suche über die Datei nach dem Zielnamen —
+  **NULL Treffer**. Abgebildet ist dort der Fan-Out mit ZWEI Empfängern; der Lauf mit
+  DREI Zielen, den der Live-Test der Scheibe 3.2 gezeigt hat, hat im Bestand keinen
+  Wächter. **Was still kaputtgeht:** eine Änderung an Nebenläufigkeit oder Containment,
+  die erst ab dem DRITTEN Empfänger bricht, fällt keinem Test auf.
+  **GRENZE ZUM PUNKT "DREI UNABHÄNGIGE KONSTANTEN" OBEN, sie ist ausdrücklich zu
+  ziehen:** Jener sagt, dass eine ZAHL unbeobachtet ist (die Deckelwerte, deren
+  Gleichheit ein Test faktisch unterstellt). Dieser sagt, dass ein ganzer EMPFÄNGER in
+  der Datei nicht vorkommt. **Zwei verschiedene Lücken — keiner der beiden deckt den
+  anderen.** Gemessener Beleg für die Trennung: die beiden Kommentare in jener Datei,
+  die die Deckel-Annahme benennen, führen die Konstanten des ERSTEN und des ZWEITEN
+  Adapters auf; die des dritten kommt dort nicht vor.
+- **KEIN KREUZVERGLEICH BEIM ZWEITEN ZIEL** (`EVENT_MAP` in
+  `src/lib/capi/pinterest-forward.ts`, Testbestand `src/lib/capi/pinterest-forward.test.ts`):
+  GEMESSEN am Repo (2026-08-12), formale Suche über `src/` nach `META_STANDARD_EVENTS` —
+  Treffer in `components/ActionPanel.tsx`, `lib/tracking/meta.ts`,
+  `lib/capi/ingest.forwardable.test.ts` und `lib/capi/tiktok-forward.test.ts`, **nicht**
+  in der Testdatei des zweiten Ziels. **Was still kaputtgeht:** Wächst unsere eigene
+  Standardliste um einen neunten Namen, wird ausschliesslich `T11` rot — der Wächter des
+  DRITTEN Ziels. Die Tabelle des zweiten bleibt stumm, und der neue Name ginge dort als
+  nicht abgebildeter Name hinaus, unter einer Bedeutung, die niemand vergeben hat.
+- **ZWEI DECKUNGSGLEICHE, UNABHÄNGIGE NORMALISIERUNGEN VOR DEM GETEILTEN PRIMITIV**
+  (`asLogString` in `src/lib/capi/meta-forward.ts`, `normalizeProviderValue` in
+  `src/lib/capi/tiktok-forward.ts`): GEMESSEN am Repo (2026-08-12) — gleiche
+  Vorprüfung (fehlend, `null` und Leerwert werden zum Leer-Ergebnis), gleiche
+  Umwandlung über `String`, gleicher Rückgabetyp, verschiedene Namen, zwei Dateien.
+  **KEIN Test sichert ihre Gleichheit**; wer eine ändert, macht nichts rot. **Was still
+  kaputtgeht:** Fiele an einer der beiden der Riegel weg, erreichte ein Nicht-String
+  `redactOpaque` — das Primitiv ist ausdrücklich NICHT defensiv und wirft, und ein Wurf
+  auf diesem Pfad bräche die garantierte leere 204.
+  **DASSELBE MUSTER WIE DIE "VIERTE TRIMM-KOPIE" OBEN, ABER EIN ANDERER GEGENSTAND:**
+  Dort geht es um `asString`, hier um die Normalisierung davor. Jener Punkt verzeichnet
+  diese beiden NICHT.
+- **"KONFIGURIERT" HEISST AN ZWEI ORTEN VERSCHIEDENES** (`listConfiguredTargets` in
+  `src/app/projects/actions.ts` gegen die Paarung in `getCapiConfigByTrackingKey`,
+  `src/lib/capi/token.ts`): GEMESSEN am Repo (2026-08-12) — die Oberfläche leitet
+  "konfiguriert" ALLEIN aus der Anwesenheit einer Zeile in der Geheimnis-Tabelle ab; der
+  Forward nimmt nur auf, wer Zugangsdaten UND eine gesetzte Kennung trägt. **Was still
+  kaputtgeht:** Ein Ziel mit hinterlegten Zugangsdaten, aber ohne Kennung steht in der
+  Karte als "Zugangsdaten hinterlegt" und wird nie beliefert — ohne Meldung, ohne
+  Logzeile, auf keinem Kanal sichtbar.
+  **ABGRENZUNG, ohne die der Punkt als Widerspruch gelesen wird:** Der Kopf von
+  `listConfiguredTargets` nennt als tragende Entscheidung, dass sie DIESELBE Quelle liest
+  wie der Forward-Pfad. Das ist richtig — für das GEHEIMNIS, und damit für genau die
+  HÄLFTE der Bedingung. Die Kennung kommt aus dem Einstellungs-Blob und ist von jener
+  Zusage nicht erfasst. Ebenso richtig und ebenso halb bleibt das Beispiel in CLAUDE.md,
+  "ABLEITEN STATT LÖSCHEN … AUS WELCHER QUELLE".
+  **NICHT ZU VERWECHSELN mit der bereits im Code benannten Schwäche** (jeder Fehlschlag
+  jener Ableitung liefert eine LEERE Liste, "kaputt" sieht aus wie "nichts
+  konfiguriert"): Das ist die Achse LADEN, diese hier die Achse VOLLSTÄNDIGKEIT.
+- **DIE ZAHL "SECHS VOKABULAR-STELLEN" IN ABSCHNITT 3.2 STEHT OHNE AUFZÄHLUNG.**
+  REKONSTRUIERT am Repo (2026-08-12) ergeben sich sechs CODE-Stellen, die den Zielwert
+  des dritten Ziels tragen: `TRACKING_TARGETS` (`src/lib/settings.ts`),
+  `CONSENT_KEY_BY_TARGET` und `LEGACY_CONSENT_ROLE`
+  (`src/lib/tracking/consent-targets.ts`), `TARGET_CARDS`
+  (`src/components/TargetCard.tsx`), `TIKTOK_TARGET` und der zugehörige Zweig in
+  `dispatchForward` (beide `src/lib/capi/ingest.ts`).
+  **DIESE REKONSTRUKTION IST NICHT BELEGT, SONDERN ABGELEITET, und sie ist mehrdeutig:**
+  Zählt man den Import des Adapters statt des Dispatch-Zweigs, oder rechnet man die
+  Migration mit (die Abschnitt 3.2 SEPARAT nennt), kommt dieselbe Zahl mit anderer
+  Aufteilung heraus. **Was still kaputtgeht:** Wer beim VIERTEN Ziel "die sechs Stellen"
+  abarbeitet, ohne zu wissen, WELCHE sechs, trifft fünf und lässt eine aus — und keine
+  davon wird rot; ein fehlender Eintrag heisst fail-closed "nicht erlaubt" oder "kein
+  Adapter", beides lautlos.
+  **WARUM HIER UND NICHT ALS KORREKTUR AN 3.2:** Eine abgeschlossene Scheibe wird nicht
+  umgeschrieben. Die Aufzählung tritt DANEBEN, mit ihrer eigenen Provenienz.
 
 Die vier fälligen Punkte am ersten Adapter und das Gegenstück bei den
 Deckelwerten stehen ausformuliert in
@@ -754,6 +821,79 @@ zusammen und betreffen dieselbe Naht: eine Zusicherung, die an einer MENGE häng
     falscher Beleg sich VERMEHRT. Altern und Verbreiten sind zwei verschiedene
     Vorgänge; die zweite Kopie ist ab dem ersten Tag falsch.
 
+**AUS DER SCHEMA-ENTSCHEIDUNG ZUM PRIMÄRSCHLÜSSEL (2026-08-12), einer — und er ist der
+einzige Kandidat dieser Datei, der ZWEI verschiedene Zielorte hat:**
+
+18. **MEHRERE KENNUNGEN JE ZIEL BRECHEN EINEN SCHLÜSSEL (PROJEKT, ZIEL) NICHT —
+    MEHRERE EMPFÄNGER DESSELBEN TYPS JE PROJEKT BRECHEN IHN.** Zwei Achsen, die beim
+    Lesen wie eine aussehen: Die eine vervielfacht die KENNUNG, die andere die
+    EMPFÄNGER-INSTANZ. Wer sie zusammenzieht, hält einen Schlüssel für gebrochen,
+    sobald irgendein Ziel mehr als eine Kennung braucht — und baut ein Schema um, dem
+    nichts fehlt.
+    *Beleg (GEMESSEN am Repo, 2026-08-12):* Die Trennung steht bereits im Code, sie
+    musste nicht erfunden werden — die KENNUNG liegt ziel-geschlüsselt im
+    Einstellungs-Blob (`ProjectSettings.pixels` in `src/lib/settings.ts`), das
+    ZUGANGSDATUM in der Geheimnis-Tabelle mit einer Zeile je Ziel
+    (`primary key (project_id, target)` in
+    `supabase/migrations/0021_project_secrets.sql`), und der Auflösungs-Pfad führt
+    beide erst am Ende zusammen (`getCapiConfigByTrackingKey` in
+    `src/lib/capi/token.ts`). **WAS DEM BELEG FEHLT UND WAS ER TROTZDEM TRÄGT:** Diese
+    Trennung ist NICHT als Schema-Prinzip gebaut worden, sondern aus dem Unterschied
+    öffentlich/geheim (der Kommentar an der Pixel-ID sagt es wörtlich). Sie belegt also,
+    dass die zwei Achsen im Code bereits AUSEINANDERLIEGEN — nicht, dass jemand sie je
+    unterschieden hätte. Genau das ist der Grund, warum es die Regel braucht.
+    *Abdeckung:* **KEINE bestehende Regel deckt sie, auch nicht teilweise** (formal
+    geprüft am 2026-08-12 durch Suche über "## Immer beachten" nach Primärschlüssel,
+    additiver Spalte und client-besessenem Blob). **DREI STEHEN DANEBEN, jede auf einer
+    anderen Achse, und alle drei würden bei einer Stichwortsuche gefunden:**
+    "POSTGREST-QUERIES + ECHTE PRIMÄRSCHLÜSSEL" verlangt, den ECHTEN Schlüssel
+    nachzusehen statt ihn aus einem Feldnamen zu raten — sie handelt vom LESEN eines
+    bestehenden Schlüssels, nicht davon, ob er unter einer neuen Anforderung hält.
+    "ANLEGEN UND BEFÜLLEN EINER ADDITIVEN SPALTE NICHT VERSCHMELZEN" handelt von der
+    REIHENFOLGE zweier Scheiben, nicht von Kardinalität. "TRACKING-source =
+    BEOBACHTUNGS-ORT, NIE ZIEL" ist die nächste Verwandte — sie verbietet, ZWEI
+    Bedeutungen in EINE Spalte zu legen, und spricht damit ebenfalls von Dimensionen;
+    ihr Gegenstand ist aber die SEMANTIK einer Spalte, hier ist es die KARDINALITÄT
+    eines Schlüssels. Ebenso wenig decken die Blob-Regeln ("SERVER-EIGENE IDENTITÄT NIE
+    IN EINEN CLIENT-BESESSENEN BLOB", "ABLEITEN STATT LÖSCHEN … AUS WELCHER QUELLE"):
+    Sie sagen, WO ein Wert liegen darf und aus welcher Quelle abzuleiten ist — nicht,
+    wie viele Zeilen es von ihm geben darf.
+    *Herkunft und Volltext:* Abschnitt 7.4, **"DER PRIMÄRSCHLÜSSEL DER
+    GEHEIMNIS-TABELLE BLEIBT — ENTSCHIEDEN (Owner, 2026-08-12)"** (Nummer UND Titel,
+    damit der Zeiger eine Nachnummerierung übersteht).
+    **DIESER KANDIDAT HAT ZWEI ZIELORTE, UND SIE DÜRFEN NICHT ZUSAMMENFALLEN — sonst
+    wandert am Phasenende nur die Hälfte:**
+    - **NACH "## Immer beachten": die ZWEI-ACHSEN-UNTERSCHEIDUNG selbst.** Sie ist eine
+      Regel über SCHEMATA und überdauert diese Phase; sie gilt für jeden künftigen
+      Schlüssel der Form (Projekt, Ziel), nicht nur für die Geheimnis-Tabelle.
+    - **NACH "## Offene Punkte": die BEIDEN TRIGGER aus 7.4**, in der dortigen Bauform
+      (Trigger plus was sonst still kaputtgeht) — (i) die Custom-Pixel-Vorfrage fällt
+      zugunsten eines SERVER-Empfängers mit kundeneigenem Endpunkt, (ii) es zeigt
+      sich, dass die KENNUNG NICHT IN DEN EINSTELLUNGS-BLOB GEHÖRT — gleichgültig aus
+      welchem Grund; Beispiele, und ausdrücklich KEINE abschliessende Liste: je Kennung
+      ein EIGENES Zugangsdatum · die Kennung SELBST ein Geheimnis · server-autoritativ
+      vergeben.
+      **DER TRIGGER NENNT DEN GEGENSTAND, NICHT DEN ANLASS, und darauf kommt es an:**
+      Eine Fassung "je Kennung ein eigenes Zugangsdatum" fängt den zweiten Kipp-Weg
+      nicht — eine geheime oder server-autoritativ vergebene Kennung braucht KEIN
+      eigenes Zugangsdatum, gehört aber trotzdem nicht in den client-besessenen Blob;
+      dann stünden mehrere Zeilen mit demselben Ziel im selben Projekt, und der
+      Schlüssel bricht, ohne dass der Trigger anschlägt. **Ein Trigger, der den
+      wahrscheinlichsten Kipp-Fall seiner eigenen Prämisse nicht fängt, schlägt nie
+      an.** Dieser zweite Kipp-Weg ist HERGELEITET aus dem gemessenen Kommentar an der
+      Pixel-ID (öffentlich/geheim, GEMESSEN 2026-08-12) — NICHT selbst gemessen. **Mit
+      ihnen wandert die GRENZE:** Dass die LinkedIn-URN eine KENNUNG ist und kein
+      ZUGANGSDATUM, ist **GELESEN** (fremde Anbieter-Dokumentation, Recherche vom
+      2026-08-11) und **NICHT gemessen**; kippt diese Lesart, fallen beide Achsen
+      zusammen und die Entscheidung ist NEU zu treffen. Eine Trigger-Liste ohne diese
+      Grenze läse sich, als wäre die Entscheidung gemessen abgesichert.
+    **WARUM DIESER KANDIDAT ÜBERHAUPT HIER STEHT, obwohl 7.4 seine Warnung selbst
+    trägt:** Der Phasenende-Ablauf liest DIESEN Abschnitt. Ein Posten, der nur in
+    Abschnitt 7 vor seinem eigenen Verlust warnt, hängt daran, dass jemand ihn zufällig
+    liest; hier ist er ein Mechanismus. **Und er ist besonders verlustgefährdet:** Eine
+    unterbliebene Arbeit hinterlässt keine Spur im Code — nur dieser Text sagt, dass ein
+    naheliegender Schema-Umbau geprüft und bewusst NICHT gemacht wurde.
+
 ---
 
 ## 7. Beschlossen und verortet — NICHT in dieser Phase gebaut
@@ -881,3 +1021,104 @@ DEDUPLIZIERUNG in der belastbaren, NICHT-absoluten Fassung.
 **(f) DER HYBRID-SCHALTER JE KANAL → KEIN ORT, und das ist die Aussage.** Er bleibt
 VISION (E4). Er bekommt bewusst KEINE Roadmap-Zeile, weil eine Zeile ihn zu einem
 Posten machte, der abgearbeitet werden will.
+
+---
+
+### 7.4 DER PRIMÄRSCHLÜSSEL DER GEHEIMNIS-TABELLE BLEIBT — ENTSCHIEDEN (Owner, 2026-08-12)
+
+**WARUM DIESER POSTEN EIN EIGENER UNTERABSCHNITT IST UND NICHT IN 7.1/7.2/7.3 STEHT —
+der Grund gehört dazu, sonst sieht die Ablage nach Willkür aus:** 7.1 und 7.2 tragen
+ihre Anzahl in der Überschrift ("DIE VIER BEFUNDE", "DIE VIER OWNER-ENTSCHEIDUNGEN"),
+und beide Zahlen sind als Aussage über jene Erhebung richtig — ein fünfter Eintrag dort
+machte sie falsch. 7.3 wiederum setzt voraus, dass jedes Vorhaben einen ORT AUSSERHALB
+dieser Datei trägt; **dieser Posten hat keinen, weil er eine Entscheidung GEGEN einen
+Umbau ist.** Er steht deshalb geschlossen hier, mit Befund, Entscheidung, Grenze und
+Trigger in einem Block. **Die Drei-Block-Trennung von 7.1 bis 7.3 bleibt davon
+unberührt.**
+
+**FOLGE FÜRS PHASENENDE, und sie ist der Preis dieser Ablage:** Der Einleitungssatz von
+Abschnitt 7 ("Er kann dabei nichts verlieren — jedes Vorhaben trägt unten seinen ORT")
+gilt für 7.3. **Für 7.4 gilt er NICHT.** Wird dieser Posten am Phasenende nicht
+ausdrücklich gehoben, geht er mit dieser Datei verloren — und mit ihm die Begründung,
+warum ein naheliegender Schema-Umbau bewusst UNTERBLIEBEN ist. Eine unterbliebene
+Arbeit hinterlässt keine Spur im Code; nur dieser Text sagt, dass sie geprüft wurde.
+
+**DIE ENTSCHEIDUNG:** Der Primärschlüssel `(project_id, target)` auf `project_secrets`
+BLEIBT. **Kein Umbau in dieser Phase.**
+
+**DER BEFUND, DER SIE TRÄGT — ES SIND ZWEI ACHSEN, NICHT EINE.** Das ist der ganze
+Ertrag dieser Runde: Wer sie zusammenzieht, hält den Primärschlüssel für gebrochen,
+sobald irgendein Ziel mehr als eine Kennung braucht.
+
+- **DIE KENNUNGS-ACHSE: mehrere Kennungen je Ziel, aber genau EIN Zugangsdatum je
+  Ziel.** Der Fall ist LinkedIn — eine Conversion-Regel-URN JE EREIGNISTYP. **Sie
+  berührt den Primärschlüssel NICHT:** Was sich vervielfacht, ist die KENNUNG, und die
+  liegt gar nicht in der Geheimnis-Tabelle.
+- **DIE INSTANZ-ACHSE: mehrere Empfänger DESSELBEN Typs je Projekt, jeder mit eigenem
+  Endpunkt UND eigenem Geheimnis.** Der Fall ist Custom-Pixel in seiner
+  Server-Empfänger-Lesart. **NUR SIE BRICHT IHN** — erst hier gibt es zwei Zeilen mit
+  demselben `target` im selben Projekt.
+
+**DIE TRENNUNG EXISTIERT BEREITS IM CODE, sie muss nicht erfunden werden** — GEMESSEN
+am Repo (2026-08-12), Symbolnamen statt Zeilennummern:
+
+- Die KENNUNG liegt im Einstellungs-Blob, ziel-geschlüsselt: `ProjectSettings.pixels`
+  (`src/lib/settings.ts`) als `Partial<Record<TrackingTarget, { pixelId }>>`.
+- Das ZUGANGSDATUM liegt in der Geheimnis-Tabelle, eine Zeile je Ziel:
+  `primary key (project_id, target)` in `supabase/migrations/0021_project_secrets.sql`.
+- Der Auflösungs-Pfad hält beide getrennt und führt sie erst am Ende zusammen
+  (`getCapiConfigByTrackingKey`, `src/lib/capi/token.ts`): die Kennungen je Ziel kommen
+  aus dem Blob (`withPixel`), die Geheimnisse in EINER Runde aus der Tabelle, und die
+  PAARUNG je Ziel nimmt nur auf, wer BEIDES trägt.
+
+**DIE BEGRÜNDUNG, DREI STRÄNGE:**
+
+1. **FÜR DIE INSTANZ-ACHSE EXISTIERT GENAU EIN KONSUMENT, UND DESSEN VORFRAGE IST
+   UNGEKLÄRT.** Custom-Pixel ist in seiner ersten Lesart ein CLIENT-seitiges Snippet —
+   dann ist es gar kein Fan-Out-Ziel, und **die Achse entfällt vollständig** (Abschnitt
+   2, Posten 5). Ein Umbau heute entschiede eine Frage, die niemand gestellt hat.
+2. **DIE PROJEKT-PRÄZEDENZ:** Abstraktion erst beim dritten Fall, davor ein BENANNTES
+   Duplikat. Hier gibt es nicht einmal den zweiten Fall — es gibt einen möglichen.
+3. **KEINE SCHEMA-ERWEITERUNG OHNE REALEN KONSUMENTEN UND SPEC.**
+
+**DIE GRENZE — SIE STEHT HIER UND NICHT IN EINER FUSSNOTE, WEIL SIE DIE ENTSCHEIDUNG
+TRÄGT:** Dass die LinkedIn-URN eine KENNUNG ist und kein ZUGANGSDATUM, ist **GELESEN**
+(Anbieter-Recherche des Architekten vom 2026-08-11 an FREMDER DOKUMENTATION; die
+Befunde stehen in Abschnitt 2, Posten 1) — **NICHT gemessen, NICHT live bestätigt, kein
+Aufruf gegen ein echtes System.** **KIPPT DIESE LESART, FALLEN BEIDE ACHSEN ZUSAMMEN**,
+und die Entscheidung ist NEU zu treffen — nicht nachzujustieren.
+
+**DIE TRIGGER — GENAU ZWEI, JE EINZELN HINREICHEND, und ausdrücklich NICHT "falls es je
+nötig wird":**
+
+- **(i)** Die Custom-Pixel-Vorfrage fällt zugunsten eines SERVER-Empfängers mit
+  kundeneigenem Endpunkt.
+- **(ii)** Es zeigt sich, dass die KENNUNG NICHT IN DEN EINSTELLUNGS-BLOB GEHÖRT —
+  gleichgültig, aus welchem Grund. Beispiele, und ausdrücklich KEINE abschliessende
+  Liste: je Kennung ist ein EIGENES Zugangsdatum nötig · die Kennung ist SELBST ein
+  Geheimnis · sie wird SERVER-AUTORITATIV vergeben.
+
+**WARUM (ii) DEN GEGENSTAND NENNT UND NICHT DEN ANLASS — und warum die engere Fassung
+("eine Messung zeigt, dass je Kennung ein EIGENES Zugangsdatum nötig ist") ersetzt werden
+musste:** Der Beleg dieser Entscheidung ruht auf dem Unterschied ÖFFENTLICH/GEHEIM. Genau
+daraus folgt ein ZWEITER Kipp-Weg, den die engere Fassung nicht fängt: **Ist die Kennung
+SELBST ein Geheimnis oder wird sie SERVER-AUTORITATIV vergeben, braucht sie KEIN eigenes
+Zugangsdatum** — sie gehört aber trotzdem nicht in den client-besessenen Blob. Dann
+stünden mehrere Zeilen mit demselben Ziel im selben Projekt, **und der Primärschlüssel
+bricht, OHNE dass der Trigger anschlägt.** **EIN TRIGGER, DER DEN WAHRSCHEINLICHSTEN
+KIPP-FALL SEINER EIGENEN PRÄMISSE NICHT FÄNGT, SCHLÄGT NIE AN** — die Entscheidung wirkte
+dann abgesichert, ohne es zu sein.
+**PROVENIENZ DIESER AUFWEITUNG:** Der zweite Kipp-Weg ist **HERGELEITET** aus dem
+gemessenen Kommentar an der Pixel-ID (öffentlich, kein Secret, Geheimnis liegt in der
+Geheimnis-Tabelle — GEMESSEN am Repo, 2026-08-12). **Der Kipp-Weg selbst ist NICHT
+gemessen**: gemessen ist die Trennung, abgeleitet ist, woran sie brechen kann.
+
+**UNBERÜHRT, und das gehört dazu, sonst sucht es jemand an der falschen Stelle:** Die
+Einwilligung fällt **JE ZIEL, nie je Ereignis** (`CONSENT_KEY_BY_TARGET` in
+`src/lib/tracking/consent-targets.ts`, ausgewertet in `allowedTargets`,
+`src/lib/capi/ingest.ts` — GEMESSEN am Repo, 2026-08-12). **Diese Achse berührt den
+Draht nicht.**
+
+**AUSDRÜCKLICH NICHT ENTSCHIEDEN:** Was "konfiguriert" heisst, wenn die Kennung JE
+EREIGNISTYP gilt. Das bleibt OFFEN und ist der nächste Schritt derselben Runde — nicht
+eine Folge dieser Entscheidung.

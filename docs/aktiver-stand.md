@@ -138,12 +138,24 @@ Fassung. Als Kandidat festgehalten in Abschnitt 6.
 
 ---
 
-## 3. Die abgeschlossenen Scheiben — JÜNGSTE ZUERST
+## 3. Die abgeschlossenen Scheiben — STABILE NUMMERN, KEINE CHRONOLOGIE
 
-**DIE REIHENFOLGE IST DIE LESEHILFE, und sie hängt an den COMMITS, nicht am Datum:**
-Entstanden sind sie in der Reihenfolge `0291448` -> `91dbfe7` -> `86e6911` ->
-`9ad3080`. Oben steht die jüngste. Wer den heutigen Stand sucht, liest 3.1 und hört
-auf, sobald er genug hat.
+**DIE NUMMER IST EIN STABILER BEZEICHNER UND WIRD NIE NEU VERGEBEN.** Ein neuer
+Vermerk tritt HINTEN an, auch wenn er der jüngste ist. **DER GRUND IST TEUER
+BEZAHLT:** Eine Nachnummerierung hat in dieser Phase bereits lebende Verweise
+getötet, und die Reparatur kostete zwei Runden.
+**DIE REIHENFOLGE IM TEXT SAGT DAMIT NICHTS MEHR ÜBER DAS ALTER.** Wer sie als
+Lesehilfe benutzt, liest das Falsche — die Position eines Vermerks ist seit dem
+Wegfall der Nachnummerierung eine Frage seiner Entstehung, nicht seines Rangs.
+**DIE AUTORITÄT IST DIE COMMIT-KETTE:** Entstanden sind sie in der Reihenfolge
+`0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080`. Sie wächst mit jeder Scheibe, und
+ihr LETZTES GLIED ist der jüngste COMMITTETE Vermerk.
+**DIE LÜCKE GEHÖRT ZUR REGEL, sonst greift sie im wichtigsten Moment nicht:** Ein
+Vermerk, der in der Kette NICHT vorkommt, ist noch nicht committet — und damit per
+Konstruktion der jüngste. **Wer den heutigen Stand sucht, sieht ZUERST dort nach.**
+Welcher das ist, sagt der Vermerk selbst: Er führt seinen ausstehenden Commit als
+offenen Punkt, und dort wird die Nummer nachgetragen — womit er in die Kette
+einrückt und die Lücke wandert.
 **WARUM DIE COMMITS UND NICHT DAS DATUM — der Grund ist mit der vierten Scheibe eher
 STÄRKER geworden, nicht schwächer:** Die ersten drei sind am selben Tag fertig
 geworden, das Datum trennte sie also gar nicht. Die vierte stammt vom Folgetag und
@@ -388,6 +400,100 @@ AUFGELÖST, nur auf den Vorrat.
 Kennung im Endpunkt-Pfad, die Wurffreiheit des Nutzlast-Baus, die dritte
 Trimm-Kopie (alle drei im Vorrat, Abschnitt 5), der Testknopf und weitere Ziele
 (beide in Abschnitt 2).
+
+---
+
+### 3.5 DER BENANNTE ZUSTAND ENTSTEHT — SCHEIBE A DER VEREINHEITLICHUNG, ERLEDIGT (2026-08-12)
+
+**WARUM DIESER VERMERK UNTEN STEHT UND NICHT OBEN, entgegen der Regel "jüngste
+zuerst" am Kopf dieses Abschnitts:** Eine Einordnung als neue 3.1 verlangte, die
+vier bestehenden Vermerke nachzunummerieren — und das tötete SECHS lebende Verweise
+in dieser Datei (die Lesehilfe am Abschnittskopf, zwei Vorrats-Punkte, die
+Verortung 7.3 (d) und zwei Querverweise innerhalb der Vorrats-Punkte). Genau diese
+Fehlerklasse ist in dieser Phase schon einmal eingetreten und zwei Runden lang
+repariert worden. **Die Reihenfolge-Regel bleibt für die vier bestehenden Vermerke
+gültig; sie ist hier zugunsten stabiler Nummern zurückgestellt, nicht aufgehoben.**
+
+**Commit:** steht bei Abfassung dieses Vermerks noch aus (Stufe 2 ist abgeschlossen,
+die Freigabe nicht erteilt). **Wer ihn nachträgt, trägt die Nummer hier ein.**
+
+**WAS GEBAUT WURDE — ZWEI NEUE DATEIEN, KEINE BESTEHENDE GEÄNDERT:** der benannte
+Zustand samt seinen zwei einzeln verwendbaren Prädikaten (`targetReadiness`,
+`hasPixelId`, `hasSecret` in `src/lib/tracking/target-readiness.ts`) und die
+zugehörige Testdatei. **NEUN Tests** (T1–T9); die Suite wächst von 1037 auf 1046,
+die Zahl der Testdateien von 54 auf 55. Alle vier Gates grün (tsc, lint, vitest,
+build).
+
+**DER ZUSTAND HAT KEINEN KONSUMENTEN, und das ist der Zuschnitt, kein Versäumnis:**
+Die Datei wird von NICHTS importiert. Die Anwendung verhält sich nach dieser Scheibe
+zeichengleich wie vorher.
+
+**KEIN DRITTES URTEIL — die tragende Grenze, und sie ist eingehalten:** Die Datei
+NIMMT die drei Tatsachen ENTGEGEN und behauptet über kein Ziel etwas. Sie enthält
+keine Ziel-Liste, keinen Record über Ziele und keinen Vergleich gegen einen
+Zielwert. Der Grund steht im Dateikopf: Beide heutigen Quellen sind für eine reine
+Datei unerreichbar — die eine liegt in einer Client-Komponente, die Server-Actions
+importiert, die andere in einem Handler, der server-only-Module zieht.
+
+**ZWEI ENTSCHEIDUNGEN, DIE IM CODE BEGRÜNDET STEHEN:**
+- **Der Zustand nennt ALLE fehlenden Teile, nicht einen Grund** — damit entfällt jede
+  Rangfolge. Der Bestand gibt keine her: Die einzige Reihenfolge im Repo steht im
+  Auflösungs-Pfad und ist dort ausdrücklich mit ABFRAGE-ÖKONOMIE begründet, nicht mit
+  Vorrang. Der erste Konsument, der eine Rangfolge bräuchte, entsteht in Scheibe B.
+- **Die Adapter-Tatsache ist eine Eigenschaft des BUILDS, nicht des Projekts** —
+  Kennung und Zugangsdatum stammen aus den Daten eines Projekts, "hat dieses Ziel
+  einen Adapter" ändert sich nur mit einem Deploy. Wer sie später in den
+  Einstellungen oder in der Geheimnis-Tabelle sucht, sucht am falschen Ort.
+
+**EIN GEMESSENER NEBENBEFUND, der beim Bau sichtbar wurde und im Bestand liegt:**
+Die beiden Leer-Regeln sind ASYMMETRISCH. Die Kennung läuft durch `getPixelId` und
+ist getrimmt — ein Wert aus reinem Leerraum gilt als abwesend. Das Zugangsdatum wird
+im Auflösungs-Pfad NICHT getrimmt — ein Geheimnis aus reinem Leerraum gilt dort als
+VORHANDEN. **Das ist kein Fehler dieser Scheibe, sondern der abgebildete Bestand**,
+und T6 nagelt ihn samt Begründung fest. Wer die beiden "harmonisiert", ändert
+Verhalten, ohne es zu merken.
+
+**DIE FÜNF MUTATIONSPROBEN — alle mit Vorab-Ansage, alle ohne Abweichung im
+Ergebnis** (2026-08-12, je genau eine Achse, nach jeder Probe Rücknahme und
+Prüfsummen-Abgleich, weil `git diff` neue Dateien nicht sieht):
+M1 Lieferfähigkeits-Bedingung aufgeweicht → sechs Tests, alle derselben Klasse ·
+M2 Trim der Kennung entfernt → zwei · M3 Leer-Prüfung des Zugangsdatums auf reine
+Existenz → zwei · M4 Adapter-Teil aus der Sammlung → **genau einer** ·
+M5 Nutzlast auf die leere Menge → fünf.
+
+**WAS DIE PROBEN AN EINER ZUSAGE KORRIGIERT HABEN, und das ist der Ertrag, den man
+sonst verlöre:** Der Zuschnitt nahm an, T9 trage die Fehlerklasse "der Zustand
+kollabiert auf einen Wahrheitswert" ALLEIN. **M5 hat das widerlegt** — es fielen
+fünf Tests. Der Kommentar an T9 ist deshalb auf das Gemessene berichtigt: Er ist
+nicht der einzige Wächter, aber der einzige Test, der ZWEI Fehl-Zustände
+MITEINANDER vergleicht. **Umgekehrt ist T7 durch M4 als echtes Einzelstück BELEGT**
+und trägt den Vermerk. Bei T8 ist die Aussage bewusst schwächer gefasst: Sie beruht
+auf der Abdeckung, nicht auf einer Probe — seine Fehlerklasse entsteht erst mit
+einem Konsumenten und ist als Ein-Achsen-Mutation hier gar nicht herstellbar.
+
+**KEIN LIVE-TEST, UND DAS IST KEINE LÜCKE:** Ein Live-Test beweist Verhalten; hier
+hat sich keines geändert, weil es keinen Aufrufer gibt. Was in Scheibe B live zu
+prüfen ist, steht dort.
+
+**SCHEIBE C IST KEIN ÜBERNEHMEN, SONDERN EIN QUELLE-SCHAFFEN — dieser Befund gehört
+zwingend hierher, weil der Zuschnitt sie sonst für die kleinste der vier hält:**
+Bei B und D gibt es je eine bestehende Ableitung, die auf den neuen Zustand
+umgestellt wird. Bei C gibt es das NICHT. Die Adapter-Tatsache hat nach dieser
+Scheibe unverändert ZWEI Träger — das Feld `hasAdapter` in `TARGET_CARDS`
+(`src/components/TargetCard.tsx`) und die Ziel-Zweige in `dispatchForward`
+(`src/lib/capi/ingest.ts`) —, und **beide bestehen fort**. Der neue Zustand nimmt
+die Tatsache entgegen; er bezieht sie nicht. **OFFEN und in dieser Scheibe NICHT
+entschieden ist, ob sich daraus überhaupt eine gemeinsame Quelle machen lässt, ohne
+den Ingest-Pfad anzufassen.** Solange das offen ist, ist C keine kleine Scheibe und
+kein Nachziehen — sie ist die einzige der vier, die eine neue Wahrheitsquelle
+erzeugen muss, statt eine bestehende umzuhängen.
+
+**WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** dass irgendein Konsument den
+Zustand benutzt (es gibt keinen) · dass die drei Teile mit den Quellen
+übereinstimmen, aus denen sie später gespeist werden (getestet sind Eingaben, nicht
+Herkünfte) · dass der Defekt behoben ist (T3 bildet ihn ab, behebt ihn nicht — die
+beiden divergierenden Urteile stehen unverändert) · irgendetwas über Darstellung
+oder Wortlaut (es gibt keine Ansicht).
 
 ---
 

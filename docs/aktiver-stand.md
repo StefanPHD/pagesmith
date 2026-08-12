@@ -31,6 +31,12 @@ Existiert sie nicht, läuft keine Phase.
 
 ## 2. Wo die Phase steht
 
+**STAND 2026-08-12:** Eine VIERTE Scheibe ist erledigt und steht als jüngste in
+Abschnitt 3 — die BESCHRIFTUNG der Verlust-Kachel. Sie ändert ausschliesslich TEXT;
+an Zielen, Struktur, Berechnung und Zahlen ändert sich durch sie NICHTS. **Der Stand
+vom 2026-08-11 darunter bleibt in jedem Wort gültig** und wird deshalb nicht
+überschrieben — er ist als Aussage über JENEN Tag richtig.
+
 **STAND 2026-08-11:** DREI Scheiben sind erledigt und stehen in Abschnitt 3 —
 TikTok als drittes Ziel (live bewiesen), die Extraktion des Schwärz-Primitivs und
 der Log-Leak am Meta-Adapter (live bestätigt). **TIKTOK IST DAMIT KEIN OFFENER
@@ -128,20 +134,83 @@ verdeckt das."* Die zitierte Zeile blieb bis zum 2026-08-11 unverändert.
 **WARUM DAS HIERHER GEHÖRT:** Es erklärt, warum die Information im Repo LAG und
 trotzdem nicht GEWIRKT hat — sie lag in der Datei, die ausdrücklich als "wird
 nicht gepflegt, NICHT der Einstieg" geführt wird, und fehlte in der kuratierten
-Fassung. Als Kandidat festgehalten in Abschnitt 7.
+Fassung. Als Kandidat festgehalten in Abschnitt 6.
 
 ---
 
 ## 3. Die abgeschlossenen Scheiben — JÜNGSTE ZUERST
 
 **DIE REIHENFOLGE IST DIE LESEHILFE, und sie hängt an den COMMITS, nicht am Datum:**
-Alle drei sind am selben Tag fertig geworden; entstanden sind sie in der Reihenfolge
-`0291448` -> `91dbfe7` -> `86e6911`. Oben steht die jüngste. Wer den heutigen Stand
-sucht, liest 3.1 und hört auf, sobald er genug hat.
+Entstanden sind sie in der Reihenfolge `0291448` -> `91dbfe7` -> `86e6911` ->
+`9ad3080`. Oben steht die jüngste. Wer den heutigen Stand sucht, liest 3.1 und hört
+auf, sobald er genug hat.
+**WARUM DIE COMMITS UND NICHT DAS DATUM — der Grund ist mit der vierten Scheibe eher
+STÄRKER geworden, nicht schwächer:** Die ersten drei sind am selben Tag fertig
+geworden, das Datum trennte sie also gar nicht. Die vierte stammt vom Folgetag und
+liesse sich am Datum einordnen — aber eine Regel, die nur solange trägt, wie die
+Scheiben auf verschiedene Tage fallen, ist keine.
 
 ---
 
-### 3.1 TIKTOK ALS DRITTES FAN-OUT-ZIEL — ERLEDIGT UND LIVE BEWIESEN (2026-08-11)
+### 3.1 DIE BESCHRIFTUNG DER VERLUST-KACHEL — ERLEDIGT (2026-08-12)
+
+**Commit:** `9ad3080`.
+
+**WAS GEÄNDERT WURDE — AUSSCHLIESSLICH TEXT:** Die Verlust-Kachel (`MeasureView` in
+`src/components/`) trägt eine Hinweiszeile, die den gemessenen ANBIETER benennt. Dazu
+eine Testdefinition über beide Zustände der Kachel. **Sonst nichts.**
+
+**WAS AUSDRÜCKLICH NICHT GEÄNDERT WURDE, und der Satz gehört hierher, weil eine
+Kachel-Scheibe genau danach aussieht:** KEINE Berechnung, KEIN Schwellwert, KEIN
+Zustand, KEINE Anzeige-Bedingung. Die RPC, ihre TS-Spiegelung, der Lesepfad und jede
+Migration blieben unberührt. **Die Zahl ist dieselbe wie vorher** — sie war nie
+falsch, nur ihre Überschrift war zu breit.
+
+**DER GEMESSENE GRUND (2026-08-12, read-only am Code):** Der ZÄHLER entsteht aus einer
+Browser-Bestätigung, und die hängt am `onload` von **Metas Script-Element**. Ohne
+Metas Kennung existiert die Bestätigungs-Maschinerie gar nicht — dann entsteht NIE
+eine browser-Zeile, und die Kachel bleibt dauerhaft im Neutral-Status. Die Zahl ist
+damit die Blockrate GENAU EINES Anbieters.
+**WARUM DAS ERST JETZT EINE FALSCHE BESCHRIFTUNG IST:** Mit EINEM Ziel war
+"Adblocker-Verlust" dasselbe wie "Blockrate dieses Anbieters". Seit ein Projekt bis zu
+drei Ziele trägt, klingt die Überschrift breiter, als die Zahl deckt — **und sie steht
+in der OBERFLÄCHE, nicht in einer Doku.**
+
+**DIE ZEILE STEHT AUSSERHALB DER VERZWEIGUNG, und das war eine Entscheidung, keine
+Bequemlichkeit:** Der Neutral-Status ("Warte auf erste Bestätigung") war über den
+GRUND genauso stumm wie die Zahl. Dieselbe eine Zeile erklärt jetzt auch das
+Schweigen. Eine zweite, eigene Zeile für den Neutral-Fall wäre eine Zeile mehr in
+einer Seitenspalte gewesen, in der Wachstum anderes verdrängt.
+
+**DER ANBIETER-NAME KOMMT AUS `TARGET_CARDS`** (`src/components/TargetCard.tsx`),
+nicht als Literal: Der Zugriff ist gegen `Record<TrackingTarget, …>` compiler-geprüft.
+Wird das Ziel umbenannt, ist die Zeile ein BUILD-Fehler statt einer Beschriftung, die
+still auf einen Anbieter zeigt, den es nicht mehr gibt.
+
+**KEIN LIVE-TEST — UND DAS IST KEINE LÜCKE, SONDERN DIE FOLGE DES ZUSCHNITTS:** Ein
+Live-Test beweist Verhalten. Hier hat sich keines geändert: kein Rechenweg, kein
+Zustand, keine Bedingung, kein Request. Was sich geändert hat, ist ein Textknoten —
+und dass er gerendert wird, ist im Test beweisbar.
+**WAS DAMIT UNBEWIESEN BLEIBT, ausdrücklich:** wie die Zeile AUSSIEHT. Die
+Testumgebung wertet kein CSS aus; Abstand, Position und Verdrängung in der
+Seitenspalte sind Live-Test-Achsen und wurden NICHT gemessen. Der Test ist eine
+STRUKTUR- und TEXT-Zusicherung.
+
+**DIE PROBEN:** Zwei Mutationsproben mit vorab notierter Vorhersage, beide ohne
+Abweichung — die Zeile entfernt (beide Fälle fallen), die Zeile in den Zahlen-Zweig
+verschoben (**genau der Neutral-Fall fällt**). Die zweite ist der Ertrag: Sie belegt,
+dass der Neutral-Fall der EINZIGE Wächter dieser Fehlerklasse ist und keine
+Verdopplung — der Befund steht im Kommentar des Tests, damit ihn niemand später als
+redundant entfernt.
+
+**AUSDRÜCKLICH NICHT BEHOBEN:** dass bei ABGELEHNTER Einwilligung für dieses Ziel der
+Nenner ohne den Zähler wächst. Das ist ein DEFEKT, keine Beschriftung, und er braucht
+eine Ziel-Dimension auf den Ereignissen — verortet in Abschnitt 7.3 (c) und an der
+Phase-8-Zeile in CLAUDE.md. **Hier wurde nur der Text wahr.**
+
+---
+
+### 3.2 TIKTOK ALS DRITTES FAN-OUT-ZIEL — ERLEDIGT UND LIVE BEWIESEN (2026-08-11)
 
 **Commits:** `86e6911` (Bau), `8ff598a` (Richtigstellung der Consent-Schlüssel-
 Begründung).
@@ -206,7 +275,7 @@ eine Erwartungs-Frage an den Betreiber, kein Baufehler.
 
 ---
 
-### 3.2 DIE EXTRAKTION DES SCHWÄRZ-PRIMITIVS — ERLEDIGT (2026-08-11)
+### 3.3 DIE EXTRAKTION DES SCHWÄRZ-PRIMITIVS — ERLEDIGT (2026-08-11)
 
 **Commit:** `91dbfe7`. **KEIN LIVE-TEST, und das ist keine Lücke:** Die Scheibe
 ändert kein Verhalten; ihr Beweis ist die ZEICHENGLEICHHEIT des verschobenen Rumpfes
@@ -230,7 +299,7 @@ Auflösungs-Bedingung steht im Kopf der neuen Datei — s. auch den Vorrats-Punk
 
 ---
 
-### 3.3 DER LOG-LEAK AM META-ADAPTER — ERLEDIGT UND LIVE BESTÄTIGT (2026-08-11)
+### 3.4 DER LOG-LEAK AM META-ADAPTER — ERLEDIGT UND LIVE BESTÄTIGT (2026-08-11)
 
 **ERLEDIGT UND LIVE BESTÄTIGT (2026-08-11).** Einstufung: Tier 1 im
 Security-Manifest, Item "META-FEHLERLOG SPIEGELT DAS ZUGANGSDATUM ZURÜCK"
@@ -300,13 +369,24 @@ Anbieter-Support ansprechen kann.
   Nicht-JSON-Ausgang und zum Containment gedeckt: als LÜCKE vermerkt, NICHT als
   bestanden.
 
-**ZU ABSCHNITT 5:** Der describe-Name ist im Bau-Commit nachgezogen; der Satz in
-CLAUDE.md wird mit dem unmittelbar folgenden Commit richtiggestellt, beide Achsen
-zusammen.
+**DIE ZWEI NACHZUZIEHENDEN BELEGE SIND VOLLZOGEN — beide Achsen, wie verlangt**
+(geprüft am 2026-08-12 am Bestand): Der `describe`-Name in
+`src/lib/capi/ingest.persist.test.ts` nennt die Schwärzung, nicht mehr "sanitized"
+(nachgezogen im Bau-Commit). Der Eintrag "CAPI-TOKEN UND PIXEL-/DATASET-ID SIND EIN
+PAAR" in CLAUDE.md nennt weder "sanitized" noch die Ingest-Datei, sondern die
+Schwärzung nach FORM und `src/lib/capi/meta-forward.ts` (nachgezogen im unmittelbar
+folgenden Commit).
+**HIER STAND EIN VERWEIS AUF EINEN EIGENEN ABSCHNITT 5 mit der Anforderungsliste.**
+Der Abschnitt ist am 2026-08-12 aufgelöst, weil beide Punkte vollzogen sind und seine
+Überschrift ("dieser Scheibe") mit der vierten Scheibe mehrdeutig wurde. **Der Verweis
+ist deshalb nicht bloss entfernt, sondern durch den Vollzug ERSETZT:** Eine blosse
+Streichung hätte eine Zusage verschwinden lassen, ohne zu sagen, ob sie eingelöst
+wurde — und eine stehengelassene Nummer hätte nach der Nachnummerierung noch
+AUFGELÖST, nur auf den Vorrat.
 
 **AUSDRÜCKLICH NICHT IN DIESER SCHEIBE — unverändert offen:** die Kodierung der
 Kennung im Endpunkt-Pfad, die Wurffreiheit des Nutzlast-Baus, die dritte
-Trimm-Kopie (alle drei im Vorrat, Abschnitt 6), der Testknopf und weitere Ziele
+Trimm-Kopie (alle drei im Vorrat, Abschnitt 5), der Testknopf und weitere Ziele
 (beide in Abschnitt 2).
 
 ---
@@ -366,7 +446,7 @@ dass irgendetwas rot würde.
 
 **DIE VEREINHEITLICHUNG FÄLLT NICHT WEG, SIE WIRD EINE EIGENE SCHEIBE** — mit
 Charakterisierungs-Tests VOR dem Umzug, weil erst die beweisen, dass er nichts
-geändert hat. Als Vorrat geführt in Abschnitt 6.
+geändert hat. Als Vorrat geführt in Abschnitt 5.
 
 **UNBERÜHRT BLEIBT DIE URSPRÜNGLICHE AUSSAGE DIESES PUNKTES:** Die
 Nicht-Zusammenlegung der FEHLERDEUTUNG gilt unverändert weiter; (a) und (c) sind
@@ -386,28 +466,7 @@ sind jetzt sieben.
 
 ---
 
-## 5. Was beim Abschluss dieser Scheibe mitzuziehen ist
-
-**ZWEI BELEGE SIND FALSCH. Sie werden im Abschluss-Vermerk richtiggestellt — in
-EINEM Zug mit dem Bau, wenn sie dadurch wahr werden; nicht vorher, nicht in einer
-eigenen Runde.** (Die Regel dahinter: eine Regel kann gültig bleiben, während ihr
-Beleg falsch wird — CLAUDE.md, "## Immer beachten".)
-
-- **CLAUDE.md, "## Immer beachten", Eintrag "CAPI-TOKEN UND PIXEL-/DATASET-ID SIND
-  EIN PAAR":** Der Schlusssatz dieses Eintrags nennt das Ops-Logging **"sanitized"**
-  und verortet es in der **Ingest-Datei**. Beides ist zu prüfen und
-  richtigzustellen — die Bereinigung gegen den Bestand an
-  `src/lib/capi/meta-forward.ts` (`describeMetaError`), der Ort gegen die Naht, die
-  seit der vierten Scheibe dort liegt. **Zwei Achsen, ein Satz** — wer nur eine
-  korrigiert, macht die andere zur Falle.
-- **`src/lib/capi/ingest.persist.test.ts`:** Der `describe`-Block zum
-  Meta-Ablehnungs-Logging trägt dieselbe unzutreffende Zusage im NAMEN. Ein
-  Testname, der eine Garantie behauptet, die sein Test nicht deckt, lädt dazu ein,
-  eine Achse für gedeckt zu halten.
-
----
-
-## 6. Vorrat — gemeldet, nicht in dieser Scheibe
+## 5. Vorrat — gemeldet, nicht in dieser Scheibe
 
 Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
 
@@ -468,13 +527,6 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   (`TARGET_CARDS` in `src/components/TargetCard.tsx`): für den Nutzer folgenlos, weil
   die BESCHRIFTUNGEN sich unterscheiden — für eine Testabfrage über den Platzhalter
   nicht.
-- **DIE KACHEL-BESCHRIFTUNG BEHAUPTET MEHR, ALS DIE ZAHL DECKT** (die
-  Verlust-Kachel in `src/components/MeasureView.tsx`): Sie heisst
-  "Adblocker-Verlust" und misst die Blockrate GENAU EINES Anbieters — bei EINEM
-  Ziel war das dasselbe, bei DREIEN nicht mehr. **KLEIN und als NÄCHSTE Scheibe
-  vorgesehen: Text und Test, KEINE Architektur.** **NICHT zu verwechseln mit
-  Befund 4 in Abschnitt 8** — jener ist ein DEFEKT und braucht eine fehlende
-  Dimension.
 - **DIE BETREIBER-DOKUMENTATION WÄCHST UM ZWEI PUNKTE** (kein Symbolname: dieses
   Dokument existiert im Repo noch nicht — verwandt ist der offene Posten
   "COOKIE-DOKU-SCHNIPSEL" in CLAUDE.md, "## Offene Punkte"): (1) dass Pagesmith
@@ -496,7 +548,7 @@ fällige Punkte am ersten Adapter" — hier nur der Zeiger, keine Kopie.
 
 ---
 
-## 7. Hebungs-Kandidaten — aus ALLEN Scheiben dieser Phase
+## 6. Hebungs-Kandidaten — aus ALLEN Scheiben dieser Phase
 
 **SIE WERDEN JETZT NICHT GEHOBEN.** Die Hebung nach CLAUDE.md, "## Immer beachten",
 ist Sache des PHASENENDES — hier stehen Kandidaten, keine Auswahl. Je Kandidat ein
@@ -704,7 +756,7 @@ zusammen und betreffen dieselbe Naht: eine Zusicherung, die an einer MENGE häng
 
 ---
 
-## 8. Beschlossen und verortet — NICHT in dieser Phase gebaut
+## 7. Beschlossen und verortet — NICHT in dieser Phase gebaut
 
 **WAS DIESER ABSCHNITT IST:** Vorhaben, die am 2026-08-12 aus einer Aufklärung
 entstanden sind, ENTSCHIEDEN wurden und einen ORT bekommen haben — aber in Phase 11
@@ -717,12 +769,12 @@ zusammenzieht, liest eine Messung als Zusage oder einen Ort als Termin.
 
 **AM PHASENENDE:** Dieser Abschnitt wird gehoben wie der Rest der Datei. Er kann dabei
 nichts verlieren — jedes Vorhaben trägt unten seinen ORT, und alle diese Orte liegen
-AUSSERHALB dieser Datei (CLAUDE.md bzw. Abschnitt 6). Diese Datei ist ihre
+AUSSERHALB dieser Datei (CLAUDE.md bzw. Abschnitt 5). Diese Datei ist ihre
 BEGRÜNDUNG, nicht ihr TRÄGER.
 
 ---
 
-### 8.1 DIE VIER BEFUNDE — RANG: GEMESSEN
+### 7.1 DIE VIER BEFUNDE — RANG: GEMESSEN
 
 **PROVENIENZ, einheitlich für alle vier:** Read-only-Aufklärung am 2026-08-12, am
 CODE erhoben (Erzeuger, Ingest, die drei Consent-Dateien, die Verlustraten-RPC samt
@@ -762,7 +814,7 @@ Adblocker-Verlust und ist eine Einwilligungs-Entscheidung. **Im Ein-Ziel-Pfad wa
 unmöglich**, dort unterblieb ohne Einwilligung der ganze Beacon.
 **HEUTE FÄLLT ES NICHT AUF**, weil kein Projekt ein CMP hat und deshalb nie etwas
 abgelehnt wird; **mit einem Einwilligungs-Dialog WIRD ES REAL.** Das ist die Naht
-zwischen diesem Befund und dem Vorhaben aus 8.3 (a).
+zwischen diesem Befund und dem Vorhaben aus 7.3 (a).
 **DIE SAUBERE BEHEBUNG BRAUCHT ZU WISSEN, OB DAS BETREFFENDE ZIEL JE EREIGNIS
 EINGEWILLIGT WAR.** Die events-Tabelle trägt keine Ziel-Spalte — genau die "eigene
 additive Spalte", die die Roadmap für Ziele vorsieht. **Deshalb ist das eine
@@ -770,7 +822,7 @@ Analytics-Arbeit und keine Consent-Arbeit.**
 
 ---
 
-### 8.2 DIE VIER OWNER-ENTSCHEIDUNGEN — RANG: ENTSCHIEDEN (alle 2026-08-12)
+### 7.2 DIE VIER OWNER-ENTSCHEIDUNGEN — RANG: ENTSCHIEDEN (alle 2026-08-12)
 
 **E1 — DIE ARCHITEKTUR BLEIBT FÜR DEN LAUNCH, WIE SIE IST:** EIN Ziel als Hybrid aus
 Browser-Tag und Server-Forward, die übrigen als reiner Server-Fan-Out.
@@ -790,7 +842,7 @@ Konsument steht seit der zweiten Scheibe dieser Phase.
 
 ---
 
-### 8.3 DIE VERORTUNG — WO JEDES VORHABEN AB JETZT STEHT
+### 7.3 DIE VERORTUNG — WO JEDES VORHABEN AB JETZT STEHT
 
 **(a) DER EINWILLIGUNGS-DIALOG → CLAUDE.md, "## Roadmap & aktueller Stand", NEUE
 ZEILE "Phase 11.5 — Einwilligungs-Dialog".** Marker `[ ]`, eingeordnet NACH Phase 11
@@ -814,12 +866,15 @@ Dialog — der Dialog macht Befund 4 nur SICHTBAR, er verursacht ihn nicht.
 **DIE CHECKBOX DER PHASE 8 GEHT DADURCH NICHT WIEDER AUF.** Der Satz dort gilt für
 beide wörtlich mit.
 
-**(d) DIE KACHEL-BESCHRIFTUNG → Abschnitt 6 dieser Datei (Vorrat).** KLEIN, als
-NÄCHSTE Scheibe vorgesehen: **Text und Test, keine Architektur.** Sie ist von (c)
-GETRENNT zu halten — (d) ist eine Beschriftung, die zu viel behauptet, (c) ist ein
-Defekt.
+**(d) DIE KACHEL-BESCHRIFTUNG → GEBAUT, Abschnitt 3.1 (Commit `9ad3080`).** Sie stand
+hier am 2026-08-12 als Vorrats-Punkt und war am selben Tag erledigt: Text und Test,
+keine Architektur. **Sie bleibt trotzdem als eigener Eintrag stehen, statt aus der
+Verortung zu verschwinden** — sonst sähe die Liste so aus, als sei sie nie beschlossen
+worden, und der Unterschied zu (c) ginge mit ihr verloren: **(d) war eine
+Beschriftung, die zu viel behauptet, (c) ist ein DEFEKT.** Die beiden dürfen auch im
+Rückblick nicht zusammenfallen.
 
-**(e) DIE BETREIBER-DOKUMENTATION → Abschnitt 6 dieser Datei (Vorrat).** Zwei Punkte:
+**(e) DIE BETREIBER-DOKUMENTATION → Abschnitt 5 dieser Datei (Vorrat).** Zwei Punkte:
 der fehlende Einwilligungs-Dialog samt seiner Folge, und die GRENZE DER
 DEDUPLIZIERUNG in der belastbaren, NICHT-absoluten Fassung.
 

@@ -126,6 +126,9 @@ vi.mock("@/app/projects/domain-actions", () => ({
 // Aufruf-Zaehlung in Scheibe 10b-1 (T2) greifbar. KEIN neuer Mock.
 import { addCustomDomain, listProjectDomains } from "@/app/projects/domain-actions";
 import CodeImporter from "@/components/CodeImporter";
+// Der ANBIETER-NAME aus derselben Konstante, die die Ansicht liest. Der Test
+// behauptet damit, dass der Name GERENDERT wird — nicht, wie er lautet.
+import { TARGET_CARDS } from "@/components/TargetCard";
 import {
   ACTION_THROW_MESSAGE,
   SAVE_THROW_MESSAGE,
@@ -822,6 +825,71 @@ describe("Adblocker-Verlust-Kachel: Wortlaut + Neutral-Status (Scheibe B)", () =
     );
     expect(document.body.textContent).not.toMatch(/NaN/);
   });
+
+  // --- DIE KACHEL SAGT, WAS SIE MISST -------------------------------------------
+  //
+  // WAS DIESER TEST SCHUETZT: dass der gemessene ANBIETER in der Kachel BENANNT ist.
+  // Der Zaehler entsteht aus einer Bestaetigung, die am Laden von Metas Script
+  // haengt — die Zahl ist die Blockrate GENAU EINES Anbieters. Seit ein Projekt bis
+  // zu drei Ziele traegt, klingt die Ueberschrift breiter, als die Zahl deckt.
+  //
+  // BEWUSST NICHT DER GANZE SATZ: Ein Test auf den vollen Wortlaut waere beim
+  // naechsten Wortdreher rot, ohne dass sich etwas geaendert haette.
+  //
+  // DER ANKER IST DIE KACHEL, NICHT DAS DOKUMENT. "Meta" steht auch auf der
+  // Zielkarte (Feld-Beschriftungen, Speichern-/Entfernen-Knoepfe) — eine Abfrage
+  // ueber document.body ginge auch dann durch, wenn die Zeile fehlte. Der Test waere
+  // trivial wahr.
+  //
+  // ZWEI ZUSTAENDE IN EINER DEFINITION, und das ist keine Bequemlichkeit: Die Zeile
+  // steht AUSSERHALB der Verzweigung der Kachel. Ein Test allein im Zahlen-Zustand
+  // fienge NICHT, wenn jemand sie in den Zahlen-Zweig hineinzoege — der
+  // Neutral-Status verloere sie dann still. Und ein Kommentar, der beide Zustaende
+  // behauptet, waere genau die Selbstbeschreibung, die weiter reicht als ihr Test.
+  // GEMESSEN, NICHT BEHAUPTET: Eine Mutationsprobe, die die Zeile in den Zahlen-Zweig
+  // verschiebt, laesst GENAU EINEN Fall fallen — den Neutral-Status. Er ist damit der
+  // EINZIGE Waechter dieser Fehlerklasse und keine Verdopplung des anderen Falls.
+  //
+  // DER ZUSTANDS-MARKER WIRD ZUERST ABGEWARTET, sonst sind die zwei Faelle EINER:
+  // Ueberschrift und Hinweiszeile stehen schon VOR dem Laden da, ein sofortiges
+  // Nachsehen pruefte also beide Male denselben Vor-Lade-Render.
+  const KACHEL_ZUSTAENDE: Array<[string, unknown, string | RegExp]> = [
+    [
+      "Neutral-Status",
+      {
+        total_server_conversions: 0,
+        confirmed_conversions: 0,
+        first_confirm_at: null,
+      },
+      "Warte auf erste Bestätigung.",
+    ],
+    [
+      "Zahlen-Zustand",
+      {
+        total_server_conversions: 19,
+        confirmed_conversions: 11,
+        first_confirm_at: "2026-07-23T10:00:00.000Z",
+      },
+      /mindestens\s*42\s*%/,
+    ],
+  ];
+
+  it.each(KACHEL_ZUSTAENDE)(
+    "nennt den gemessenen Anbieter — %s",
+    async (_zustand, loss, zustandsMarker) => {
+      getAdblockLoss.mockResolvedValueOnce(loss);
+
+      render(<CodeImporter initialProjectId="proj-1" initialSettings={{}} />);
+      openSettings();
+
+      await waitFor(() =>
+        expect(screen.getByText(zustandsMarker)).toBeTruthy(),
+      );
+
+      const kachel = screen.getByText("Adblocker-Verlust").parentElement;
+      expect(kachel?.textContent).toContain(TARGET_CARDS.meta.name);
+    },
+  );
 });
 
 describe("CodeImporter — Scheibe 9a: A/B-Varianten (Wurzeltausch)", () => {

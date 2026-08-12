@@ -10,7 +10,9 @@ import type {
 // client-importierbar — genau dafuer wurde sie seinerzeit aus tracking/meta.ts geloest.
 import { PAGEVIEW_EVENT } from "@/lib/analytics/events";
 import type { TrackingTarget } from "@/lib/settings";
-import TargetCard from "@/components/TargetCard";
+// TARGET_CARDS liefert den ANBIETER-NAMEN fuer die Verlust-Kachel (s. dort). Named
+// neben dem Default-Import derselben Datei — kein zweiter Modulpfad.
+import TargetCard, { TARGET_CARDS } from "@/components/TargetCard";
 
 // Anzeige-Label je event_type fuer die Analytics-Sektion (Scheibe 3). Der reservierte
 // PageView-Token wird lesbar; jeder Conversion-Name (Purchase/Lead/Custom…) steht als
@@ -235,6 +237,40 @@ export default function MeasureView({
             <h3 className="mb-1 text-sm font-medium text-gray-700">
               Adblocker-Verlust
             </h3>
+            {/* WAS DIESE ZAHL MISST — GEMESSEN am 2026-08-12, nur der TEXT wurde
+                geaendert: Die Bestaetigung, aus der der Zaehler entsteht, haengt am
+                LADEN VON METAS SCRIPT. Ohne Metas Kennung entsteht NIE eine
+                browser-Zeile, und die Kachel bleibt dauerhaft im Neutral-Status.
+                Die Zahl ist also die Blockrate GENAU EINES Anbieters.
+                WARUM DIE ZEILE UEBERHAUPT NOETIG WURDE: Mit EINEM Ziel war
+                "Adblocker-Verlust" dasselbe wie "Blockrate dieses Anbieters". Seit
+                Phase 11 traegt ein Projekt bis zu drei Ziele — die Ueberschrift
+                klingt seither breiter, als die Zahl deckt, und sie steht in der
+                OBERFLAECHE, nicht in einer Doku.
+                "ALLEIN" IST DAS TRAGENDE WORT: Es sagt, dass die uebrigen Ziele
+                NICHT eingehen, ohne vorauszusetzen, dass es welche gibt — der Satz
+                bleibt fuer ein Projekt mit nur einem Ziel genauso wahr.
+                SIE STEHT AUSSERHALB DER VERZWEIGUNG, und das ist eine Entscheidung:
+                Der Neutral-Status ("Warte auf erste Bestaetigung") war ueber den
+                GRUND genauso stumm wie die Zahl. Hier erklaert dieselbe Zeile das
+                Schweigen mit — ein Projekt ohne Metas Kennung sieht jetzt, WORAUF
+                gewartet wird. Eine zweite, eigene Zeile fuer den Neutral-Fall waere
+                eine Zeile mehr in einer Seitenspalte, in der Wachstum anderes
+                verdraengt.
+                DER NAME KOMMT AUS DER KONSTANTE, nicht als Literal: TARGET_CARDS ist
+                Record<TrackingTarget, …>, der Zugriff also compiler-geprueft. Wird
+                das Ziel in TRACKING_TARGETS umbenannt, ist diese Zeile ein
+                BUILD-Fehler statt einer Beschriftung, die still auf einen Anbieter
+                zeigt, den es nicht mehr gibt.
+                SIE BESCHREIBT, SIE EMPFIEHLT NICHT: keine Handlungsaufforderung,
+                kein Hinweis auf weitere Ziele. Die Kachel sagt, was sie misst.
+                WAS SIE NICHT BEHEBT (Vorrat/Abschnitt 8 der Standdatei): dass bei
+                ABGELEHNTER Einwilligung fuer dieses Ziel der Nenner ohne den Zaehler
+                waechst. Das ist ein DEFEKT und braucht eine Ziel-Dimension auf den
+                Ereignissen — hier wurde nur der Text wahr. */}
+            <p className="mb-2 text-xs text-gray-500">
+              Gemessen allein am {TARGET_CARDS.meta.name}-Pixel.
+            </p>
             {!adblockLoss ||
             adblockLoss.first_confirm_at === null ||
             adblockLoss.total_server_conversions === 0 ? (

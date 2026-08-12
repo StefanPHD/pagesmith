@@ -607,6 +607,43 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   Adapter", beides lautlos.
   **WARUM HIER UND NICHT ALS KORREKTUR AN 3.2:** Eine abgeschlossene Scheibe wird nicht
   umgeschrieben. Die Aufzählung tritt DANEBEN, mit ihrer eigenen Provenienz.
+- **EIN ADAPTER KANN HEUTE KEIN EREIGNIS ABLEHNEN** (`dispatchForward` in
+  `src/lib/capi/ingest.ts`, dazu `forwardToMeta`, `forwardToPinterest` und
+  `forwardToTiktok`): GEMESSEN am Repo (2026-08-12) — die Zuordnung gibt `Promise<void>`
+  zurück, und alle DREI Adapter tragen die Zusage "SIE GIBT NICHTS ZURUECK" wörtlich in
+  ihrem Kopf. **Es gibt damit keinen Rückgabewert, der "für dieses Ereignis nicht
+  abbildbar" von "gesendet" oder "fehlgeschlagen" unterscheiden könnte.**
+  **Was still kaputtgeht:** Ein Ziel, das ein einzelnes Ereignis nicht abbilden kann,
+  hat heute nur die Wahl zwischen Senden und stillem Nichtstun — beides sieht von aussen
+  gleich aus.
+  **DER PREIS IST GRÖSSER ALS EIN NEUES ZIEL, und deshalb steht er hier:** Ein Rückkanal
+  berührt ALLE DREI bestehenden Adapter, nicht nur einen neu hinzukommenden. Er gehört
+  zum Preis eines Ziels mit Kennung JE EREIGNISTYP (s. Abschnitt 7.5, "WAS NICHT GEBAUT
+  WIRD").
+- **DER IDENTITÄTS-RIEGEL IST NICHT BEI ALLEN DREI ADAPTERN GLEICH** (`forwardToMeta`,
+  `forwardToPinterest`, `forwardToTiktok`): GEMESSEN am Repo (2026-08-12), formale Suche
+  über die drei Adapter — ZWEI von ihnen brechen ohne IP **oder** ohne User-Agent ab,
+  bevor irgendein Aufruf hinausgeht; **beim ersten kommt dieser Riegel NICHT vor**. Dort
+  werden die beiden Felder nur konditional in die Nutzlast gesetzt, und der Aufruf geht
+  trotzdem hinaus.
+  **Was still kaputtgeht:** Wer die drei Adapter für gleich gebaut hält, liest aus dem
+  Verhalten des einen eine Regel für die anderen — in beide Richtungen falsch. **Ob die
+  Ungleichheit richtig oder falsch ist, ist hier NICHT entschieden**; gemeldet ist, dass
+  sie besteht und nirgends als Unterschied benannt wird (die Liste der Adapter-
+  Unterschiede im Kopf von `src/lib/capi/pinterest-forward.ts` führt sie nicht).
+- **DAS ERGEBNIS DES FAN-OUTS WIRD VERWORFEN** (der Fan-Out in
+  `src/lib/capi/ingest.ts`): GEMESSEN am Repo (2026-08-12) — das Sammel-Warten wird
+  erwartet, sein RÜCKGABEWERT aber nirgends gelesen. Welcher Empfänger geliefert hat und
+  welcher nicht, ist im Handler vorhanden und wird fallengelassen.
+  **Was still kaputtgeht:** Es gibt keinen Ort, an dem ein dauerhaft ausfallender
+  Empfänger auffiele — die Diagnose lebt allein in flüchtigen Logzeilen der einzelnen
+  Adapter, und die tragen weder Projekt- noch Ereignis-Bezug.
+  **DIE ZWEITE HÄLFTE DIESES BEFUNDES IST BEREITS VERZEICHNET UND WIRD HIER NUR
+  VERWIESEN, NICHT WIEDERHOLT:** dass die Analytics-Zeile kein Ziel kennt, steht als
+  BEFUND 4 in Abschnitt 7.1 und ist über Abschnitt 7.3 (b) und (c) an der Phase-8-Zeile
+  in CLAUDE.md verortet (fehlende Ziel-Dimension auf den Ereignissen). **Neu ist allein
+  der verworfene Rückgabewert** — er ist eine Aussage über den HANDLER, nicht über das
+  Schema, und von jener Dimension unabhängig.
 
 Die vier fälligen Punkte am ersten Adapter und das Gegenstück bei den
 Deckelwerten stehen ausformuliert in
@@ -1122,3 +1159,155 @@ Draht nicht.**
 **AUSDRÜCKLICH NICHT ENTSCHIEDEN:** Was "konfiguriert" heisst, wenn die Kennung JE
 EREIGNISTYP gilt. Das bleibt OFFEN und ist der nächste Schritt derselben Runde — nicht
 eine Folge dieser Entscheidung.
+**NACHTRAG (2026-08-12): DIESER SCHRITT IST GETAN.** Die Antwort steht in 7.5; sie
+beantwortet die Frage nicht durch eine Definition, sondern durch einen benannten
+Zustand mit drei Teilen — und die Vollständigkeits-Achse, um die es hier ging, wird
+ausdrücklich NICHT gebaut.
+
+---
+
+### 7.5 "KONFIGURIERT" WIRD EIN BENANNTER ZUSTAND — ENTSCHIEDEN (Owner, 2026-08-12)
+
+**WARUM EIN EIGENER UNTERABSCHNITT, wie schon bei 7.4:** 7.1 und 7.2 tragen ihre Anzahl
+in der Überschrift ("DIE VIER BEFUNDE", "DIE VIER OWNER-ENTSCHEIDUNGEN") — beide Zahlen
+sind als Aussage über jene Erhebung richtig und dürfen nicht durch einen Nachtrag falsch
+werden. 7.3 setzt einen ORT AUSSERHALB dieser Datei voraus, und den hat dieser Posten
+heute NICHT: CLAUDE.md bekommt seine Zeile erst, wenn gebaut ist. **Die
+Drei-Block-Trennung von 7.1 bis 7.3 bleibt unberührt**; dieser Posten trägt Befund,
+Entscheidung, Auflage und Nicht-Gebautes geschlossen in sich.
+**FOLGE FÜRS PHASENENDE, gleich wie bei 7.4:** Ohne ausdrückliche Hebung geht dieser
+Posten mit dieser Datei verloren — samt der Begründung, warum vier Scheiben und nicht
+eine.
+
+---
+
+**DER BEFUND — SECHS STELLEN, VIER BEDINGUNGEN.** GEMESSEN am Repo (2026-08-12),
+Symbolnamen statt Zeilennummern. Sechs Stellen beantworten heute die Frage "ist dieses
+Ziel konfiguriert bzw. lieferfähig", und sie prüfen dabei VIER verschiedene Dinge:
+
+1. **`listConfiguredTargets`** (`src/app/projects/actions.ts`) — Bedingung: es existiert
+   eine Zeile in der Geheimnis-Tabelle mit diesem Ziel; unbekannte Werte fallen durch die
+   Ziel-Prüfung, jeder Fehlerzustand liefert eine LEERE Liste. **Die Kennung geht NICHT
+   ein.** → **ANZEIGE** (speist den Statustext der Karte).
+2. **`getCapiConfigByTrackingKey`** (`src/lib/capi/token.ts`), dort die PAARUNG —
+   Bedingung: die Kennung des Ziels ist nicht leer **UND** es existiert ein nicht-leeres
+   Geheimnis. Nur wer BEIDES trägt, wird Empfänger. → **WIRKUNG.**
+3. **Das Consent-Memo `consentTargets`** (`src/components/CodeImporter.tsx`) —
+   Bedingung: die Kennung des Ziels ist nicht leer, abgebildet über
+   `CONSENT_KEY_BY_TARGET`. **Das Zugangsdatum geht NICHT ein.** → **WIRKUNG**, und die
+   folgenreichste: Es entscheidet, welche Einwilligungs-Schlüssel in den AUSGELIEFERTEN
+   Text gebacken werden.
+4. **`dispatchForward`** (`src/lib/capi/ingest.ts`) — Bedingung: das Ziel trifft einen
+   der drei Adapter-Zweige; jedes andere fällt still auf den Erschöpfungs-Rest. →
+   **WIRKUNG.**
+5. **`TARGET_CARDS[...].hasAdapter`** (`src/components/TargetCard.tsx`) — Bedingung: ein
+   statisches Datenfeld je Ziel; heute tragen alle drei `true`, der Zweig ist damit
+   unerreicht. → **ANZEIGE.**
+6. **Das Meta-Kennungs-Gate im Erzeuger** (`getPixelId` für Meta, gereicht an
+   `generateFunctional` in `src/components/CodeImporter.tsx`) — Bedingung: Metas Kennung
+   ist nicht leer; sonst kein Meta-Snippet und die Track-Aktion ist ein no-op. →
+   **WIRKUNG**, aber nur für EIN Ziel.
+
+**DIE VIER BEDINGUNGEN, damit die Liste nicht als sechsfache Wiederholung gelesen wird:**
+Geheimnis vorhanden (1) · Kennung vorhanden (3, 6) · Kennung UND Geheimnis (2) · Adapter
+vorhanden (4, 5).
+
+**ZWEI ABGRENZUNGEN GEHÖREN ZWINGEND DAZU:**
+
+- **`allowedTargets`** (`src/lib/capi/ingest.ts`) **STEHT DANEBEN UND WIRD NICHT
+  MITGEZÄHLT.** Sie beantwortet eine ANDERE Frage: die EINWILLIGUNG je Ziel, nicht die
+  Konfiguration. Wer sie in die Liste zieht, vereinheitlicht zwei Fragen zu einer — und
+  das wäre genau der Fehler, gegen den dieser Posten steht.
+- **DAS META-KENNUNGS-GATE (6) BLEIBT AUSSERHALB DER VEREINHEITLICHUNG.** Es entscheidet
+  über die BROWSER-LAUFZEIT, nicht über den Server-Forward. Dass es bei den anderen
+  Zielen kein Gegenstück hat, ist kein Versäumnis, sondern die HYBRID-FRAGE — und die ist
+  als E4/E1 (7.2) ausdrücklich VISION und nicht vorgezogen. Es steht in der Liste, weil
+  es die Frage faktisch beantwortet; es steht NICHT im Umbau, weil es sie für eine andere
+  Achse beantwortet.
+
+---
+
+**DIE ENTSCHEIDUNG:** "Konfiguriert" wird ein **BENANNTER ZUSTAND**, kein Wahrheitswert.
+
+**DIE BAUFORM HAT ZWEI PRÄZEDENZFÄLLE IM REPO, beide bewährt:** die Union des
+Serve-Resolvers (`ServeResult` in `src/lib/hosting/resolve.ts`, GEMESSEN 2026-08-12: drei
+Zweige `ok`/`blocked`/`notfound`) und das geteilte Auslieferbarkeits-Prädikat aus Phase 9
+(`deliverableVariantB`/`nonEmptyHtml` in `src/lib/hosting/variant.ts`, gelesen von Serve-
+und Publish-Pfad UND von der Oberfläche). **Der Zustand wird also nicht erfunden, sondern
+nach vorhandenem Muster gebaut.**
+
+**DREI TEILE, UND JEDER HAT HEUTE EINEN REALEN KONSUMENTEN** — das ist der Grund, warum
+es genau diese drei sind und keine vierten: **Kennung vorhanden** (Konsumenten 3 und 6) ·
+**Zugangsdatum vorhanden** (Konsument 1) · **Adapter vorhanden** (Konsumenten 4 und 5).
+Der Zustand aus allen dreien ist, was Konsument 2 heute schon verlangt.
+
+**VIER SCHEIBEN, IN DIESER REIHENFOLGE:**
+
+- **A — DER ZUSTAND ENTSTEHT, OHNE EINEN EINZIGEN KONSUMENTEN.** In einer reinen Datei,
+  mit Charakterisierungen, rein additiv: nichts ändert sich. *Begründung:* dieselbe wie
+  bei "ANLEGEN UND BEFÜLLEN EINER ADDITIVEN SPALTE NICHT VERSCHMELZEN" (CLAUDE.md, "##
+  Immer beachten") — die Logik lässt sich isoliert bauen und festnageln, BEVOR sie einen
+  laufenden Pfad berührt.
+- **B — DIE OBERFLÄCHEN-ABLEITUNG UND DIE PAARUNG GEHEN ÜBER** (Konsumenten 1 und 2).
+  **DAS IST DIE SCHEIBE, DIE DEN BESTANDS-DEFEKT BEHEBT:** Ein Ziel mit hinterlegten
+  Zugangsdaten, aber ohne Kennung steht heute als konfiguriert da und wird nie beliefert
+  — ohne Meldung, auf keinem Kanal sichtbar (verzeichnet in Abschnitt 5,
+  "'KONFIGURIERT' HEISST AN ZWEI ORTEN VERSCHIEDENES").
+  **GEMESSEN (2026-08-12): DAFÜR IST KEINE NEUE ABFRAGE NÖTIG.** Die Karte bekommt die
+  Kennung bereits als Eigenschaft und den Geheimnis-Zustand aus der Ableitung; **beide
+  Hälften liegen dort nebeneinander und werden heute nur nicht zusammen befragt.**
+- **C — DIE ADAPTER-ACHSE** (Konsumenten 4 und 5). *Begründung für die Trennung von B:*
+  Sie berührt den INGEST-Pfad, B nicht.
+- **D — DAS CONSENT-MEMO, ALLEIN UND ZULETZT** (Konsument 3), und **NUR mit einem
+  BYTE-GLEICHHEITS-NACHWEIS auf dem erzeugten Text**. *Begründung:* Es ist die einzige
+  Stelle, deren Fehler JEDE Kundenseite gleichzeitig trifft und die **kein Code-Deploy
+  repariert** — der ausgelieferte Text ist bereits beim Kunden.
+
+**WARUM VIER UND NICHT EINE:** Eine Änderung, die mehrere Achsen gleichzeitig bewegt, ist
+kein Umbau-Schritt, sondern ein Umbau — hinterher sagt kein Test, welche Achse gedeckt
+ist. Die Denkfigur steht als Mutations-Lektion (h) unter "## Immer beachten".
+
+---
+
+**DIE INVARIANTE — SIE GILT IN JEDER DER VIER SCHEIBEN, ALS AUFLAGE AN DEN ENTWURF:**
+
+> **DER EINWILLIGUNGS-SCHLÜSSEL HÄNGT AN DER BLOSSEN ANWESENHEIT EINER KENNUNG, NIEMALS
+> AN VOLLSTÄNDIGKEIT.** Kein Entwurf darf den Schlüssel eines Ziels von einem
+> zusammengesetzten Zustand abhängig machen — die Bedingung für den Draht bleibt genau
+> das eine Merkmal, das sie heute ist.
+
+**DIE BEGRÜNDUNG MUSS MIT, sonst wird die Auflage beim ersten Vereinheitlichungs-Reflex
+gebrochen:** Der Draht ist eine EINBAHNSTRASSE (ein publizierter Text trägt ihn, ein
+Code-Deploy erreicht ihn nicht), und ein fehlender Schlüssel heisst fail-closed "nicht
+erlaubt". **Verlöre ein Ziel seinen Schlüssel, weil es als "unvollständig" gilt, entstünde
+aus einer TEILkonfiguration lautlos GAR KEINE Auslieferung** — auch für die Ereignisse,
+deren Kennung sehr wohl hinterlegt ist. Der Schaden wäre auf keinem Kanal sichtbar und
+durch ein Deploy nicht heilbar.
+
+---
+
+**WAS NICHT GEBAUT WIRD — DIE VOLLSTÄNDIGKEITS-ACHSE** ("Kennungen für ALLE Ereignisse
+vorhanden"). *Grund:* **kein realer Konsument** — kein Ziel trägt heute eine Kennung je
+Ereignistyp. **Dieselbe Linie wie die Primärschlüssel-Entscheidung in 7.4:** keine
+Erweiterung ohne Konsumenten.
+
+**TRIGGER, präzise und ausdrücklich NICHT "falls es je nötig wird":** sobald ein Ziel eine
+Kennung JE EREIGNISTYP trägt.
+
+**WAS DANN SOFORT GILT — festgehalten, damit es nicht neu erhoben werden muss** (GEMESSEN
+am Repo, 2026-08-12):
+
+- **DER NENNER IST DIE VEREINIGUNG DER TRACK-EREIGNISSE AUS BEIDEN VARIANTEN-MAPPINGS.**
+  A und B laufen nachweislich auseinander: Der Umschalter tauscht die Wurzeln, eine
+  Änderung schreibt in die aktive, und der Speicherpfad je Variante berührt die Spalten
+  der anderen NICHT. **Nichts gleicht sie danach an, und KEINE Stelle im Produktivcode
+  bildet ihre Vereinigung.** Ein Nenner, der nur A kennt, meldet vollständig, während
+  beim halben Traffic nichts ankommt.
+- **ES BRAUCHT DAFÜR KEINE ZUSÄTZLICHE DATENBANK-RUNDE.** Beide Mengen reisen bereits in
+  derselben Projekt-Ladeantwort und liegen im Container — zwei Ebenen von der Karte
+  entfernt.
+- **"UNVOLLSTÄNDIG" IST AUS DER KONFIGURATION ZU RECHNEN, NIE AUS LAUFZEITDATEN.** Ein
+  nicht beliefertes Ziel hinterlässt heute in KEINEM persistierten Datensatz eine Spur —
+  wer die Antwort aus den Ereignissen ableiten wollte, leitete sie aus dem Nichts ab.
+  Verwandt und getrennt zu halten: der verworfene Fan-Out-Rückgabewert und die fehlende
+  Ziel-Dimension (Abschnitt 5 bzw. BEFUND 4 in 7.1).

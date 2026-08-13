@@ -1089,6 +1089,135 @@ Zugangsdaten · ob die zwei Zeilen über die Auslieferung je eine werden.
 
 ---
 
+### 3.10 DER WÄCHTER ÜBER DAS CONSENT-MEMO — SCHEIBE D1, ERLEDIGT (2026-08-13)
+
+**Commit:** STEHT AUS. Nach der Regel am Kopf dieses Abschnitts ist dieser Vermerk
+damit **die Lücke in der Kette und per Konstruktion der jüngste**; die Nummer wird hier
+nachgetragen, sobald committet ist, und die Lücke wandert weiter. Die Kette endet
+heute bei `724edd3` (C2).
+
+**WAS GEBAUT WURDE — AUSSCHLIESSLICH TESTS, KEIN PRODUKTIVCODE** (GEMESSEN am Repo,
+2026-08-13: `git diff --numstat` weist **278 eingefügte und NULL gelöschte** Zeilen in
+**genau einer** Datei aus, `src/components/CodeImporter.test.tsx`; `git diff
+--name-only` liefert keine Datei ohne `.test.` im Namen): neun Tests (D-T1 bis D-T9),
+die den Consent-Schlüsselsatz **durch die Komponente** prüfen. Suite 1061 → **1070**,
+Testdateien unverändert 55, alle vier Gates grün (tsc, lint, vitest, build).
+
+**DER BEFUND, DER D1 FÄLLIG GEMACHT HAT — GEMESSEN am Repo (2026-08-13, formale Suche):**
+Die Ableitung vom Einstellungs-Stand zum Consent-Schlüsselsatz war von **KEINEM Test
+gedeckt**. `consentTargets`, `__psConsentAll` und `cns` hatten in
+`src/components/CodeImporter.test.tsx` **NULL Treffer**; Deckung bestand
+**ausschliesslich** in `src/lib/generate.test.ts` — und dort wird die Liste **VON HAND
+übergeben**. **Die Engine war bewacht, die Ableitung nicht.** Ein Fehler im Memo hätte
+jede neu publizierte Seite Ziele verlieren lassen, ohne dass ein Test rot wird.
+
+**DER PRÜFLINGS-WECHSEL IST DER GRUND FÜR DIE BAUFORM, nicht Bequemlichkeit:** Ein
+Aufruf des Erzeugers mit selbst gebauter Liste beweist die ENGINE. Prüfling ist das
+MEMO, und das läuft nur, wenn die Komponente läuft. **Genau diese Verwechslung ist der
+Grund, warum die Achse trotz vorhandener Engine-Tests ungedeckt war** — sie sah gedeckt
+aus.
+
+---
+
+**DAS ERGEBNIS VON M6 IST DIE BELEGTE AUSGANGSLAGE FÜR D2 — und dieser Absatz ist der
+eigentliche Ertrag von D1.** GEMESSEN (2026-08-13, `hasPixelId` in
+`src/lib/tracking/target-readiness.ts` um den Trim gebracht, volle Suite):
+
+- **`target-readiness.test.ts`: T4 und T5 fallen**, beide melden wörtlich dieselbe
+  Klasse („ein Wert aus reinem Leerraum gilt als vorhanden"). **Abdeckung, keine
+  Kaskade.**
+- **`token.test.ts`: KEIN Treffer**, und das war **vorab angesagt und gemessen
+  begründet** — `getCapiConfigByTrackingKey` ruft `hasPixelId(getPixelId(...))`, und
+  `getPixelId` trimmt VORHER; die Aufweichung ist auf dieser Achse unsichtbar. **Damit
+  ist die Ansage der Vorgabe („token.test.ts meldet auf seiner Achse") am Code
+  widerlegt worden, BEVOR die Probe lief.**
+- **`TargetCard.test.tsx`: KEIN Treffer** — gemessen trägt dort keine Fixture einen
+  reinen Leerraum-Wert.
+- **D-T6 UND D-T7 SIND GRÜN GEBLIEBEN.** Das ist der Beleg: **Das Memo folgt einer
+  Änderung am geteilten Prädikat heute NICHT.** Die Prämisse von D2 trägt.
+
+**WAS DAS FÜR D2 BINDET:** Dieselbe Probe nach D2 muss **das Gegenteil** zeigen — D-T6
+und D-T7 müssen dann MITFALLEN. Tun sie es nicht, hat D2 die Übernahme nicht
+vollzogen, gleichgültig wie der Diff aussieht. **Beide Hälften sind hier festgehalten,
+weil die zweite ohne die erste keinen Vergleichspunkt hätte.**
+
+---
+
+**WARUM D1 VOR D2 LÄUFT — die Begründung des geteilten Zuschnitts:** Wer die Zeile mit
+dem grössten Radius der Phase in demselben Schritt ändert, in dem er ihren ersten
+Wächter schreibt, kann hinterher **nicht sagen, welche Achse gedeckt ist**. Das ist
+wörtlich Mutations-Lektion (h) aus CLAUDE.md. **Der Radius ist gemessen, nicht
+behauptet:** Der Schlüssel ist eine EINBAHNSTRASSE — ein publizierter Text trägt ihn,
+ein Code-Deploy erreicht ihn nicht, und ein fehlender Schlüssel heisst beim Leser
+fail-closed „nicht erlaubt" (`consentAllows` in `src/lib/tracking/consent-wire.ts`).
+
+**DIE SIEBEN PROBEN — alle mit Vorab-Ansage, ALLE OHNE ABWEICHUNG** (2026-08-13, je
+genau eine Achse, nach jeder Probe Rücknahme mit dem Editier-Werkzeug, danach `git
+status` UND Prüfsummen-Abgleich gegen eine **vor der ersten Mutation** genommene
+Referenz — die Lehre aus 3.9):
+M1 ein Ziel übersprungen → **drei** (D-T1, D-T3, D-T5) · M2 auf ein festes Ziel
+verdrahtet → **fünf** · M3 Ordnung umgekehrt → **drei** (nur die Fixturen mit mehr als
+einem Schlüssel können eine Ordnung sehen) · M4 leere Liste umgangen → **genau einer**
+· M5 eigener Schlüsselsatz im Publish-Zweig → **genau einer** · M6 s. oben · M7
+Leere-Bedingung entfernt → **sieben**. Gegenprobe unverändert → **1070/1070 grün**.
+
+**M7 IST EINE SIEBTE PROBE, DIE DIE VORGABE NICHT VERLANGT HAT, und der Grund gehört
+dazu:** Unter M1 bis M6 fallen **D-T6 und D-T7 kein einziges Mal** — M6 sagt ihre
+Grünheit sogar voraus. Ohne eine eigene Probe wären beide genau der Fall „grün
+geblieben, also unbelegt", und ihre Kommentare hätten eine Wirksamkeit behauptet, die
+keine Messung trägt.
+
+**ZWEI EINZELSTÜCKE SIND BELEGT, EINE ALLEINSTELLUNG IST WIDERLEGT** — und alle drei
+Vermerke stehen erst seit der jeweiligen Probe im Kommentar, nicht seit dem Zuschnitt:
+- **D-T4 (M4): genau einer von 1070.** Einziger Wächter des Strukturbruchs bei leerer
+  Liste.
+- **D-T9 (M5): genau einer von 1070.** Kein anderer Test im Bestand vergleicht die
+  beiden Auslieferwege miteinander.
+- **D-T6/D-T7 (M7): KEIN Einzelstück** — sie fallen mit fünf weiteren derselben
+  Klasse. **Der Kommentar sagt das jetzt so**, statt eine Alleinstellung zu
+  unterstellen; dazu die Grenze, dass es am Memo **keine Mutation gibt, die nur den
+  Trim trifft** — der Trim liegt in `getPixelId`, nicht dort.
+
+**EIN GEMESSENER NEBENBEFUND AUS M4, der D-T8 im Nachhinein rechtfertigt:** Unter M4
+blieb **D-T8 grün, obwohl seine Liste ebenfalls leer ist** — ohne Kennung UND ohne
+Tracking-Schlüssel gibt `buildMetaRuntime` `""` zurück, die Liste erreicht den Text gar
+nicht. **Das ist genau die Voraussetzung, die D-T8 behauptet**, und sie ist damit nicht
+nur begründet, sondern an einer fremden Probe sichtbar geworden.
+
+---
+
+**DIE G3-MESSUNG — sie gehört hierher, weil sie einen Vorrats-Punkt auflöst** (GEMESSEN
+am Repo, 2026-08-13): **Das Memo MUSS den LAUFENDEN Stand lesen.** `buildDocumentFor`
+in `src/components/CodeImporter.tsx` liest im selben Ausdruck `getPixelId(settings,
+"meta")` und `getTrackingKey(settings)` — der erzeugte Text entsteht also **aus
+demselben laufenden Stand**. Läse das Memo den gespeicherten, trüge **ein und dasselbe
+Dokument** eine Meta-Laufzeit und einen Draht, der nach ihr nie fragt. **Ein
+gespeicherter Stand wäre hier ein DEFEKT, kein konservativerer Zustand** — der
+Unterschied zur Karte aus B2 ist, dass jene beurteilt, was der SERVER später mit dem
+GESPEICHERTEN Projekt tut, während das Memo beschreibt, was in DIESES Dokument
+hineingeht.
+
+**DAMIT IST DER VORRATS-PUNKT ZUM UNGESPEICHERTEN KENNUNGS-ZUSTAND in seinem Unterpunkt
+zum Consent-Memo GEGENSTANDSLOS** — er ist in Abschnitt 5 **durch den Vollzug ersetzt,
+nicht gestrichen**.
+
+---
+
+**WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** dass die Doppelung beseitigt ist — sie
+besteht fort, das Memo trägt weiterhin seine EIGENE Ausformulierung der
+Leere-Bedingung, **bewacht statt beseitigt**, genau wie bei C1 · dass **Invariante (6)
+aus Abschnitt 7.5** erfüllt wäre — **sie bleibt bis D2 unerfüllt** · dass
+`targetReadiness` benutzt wird (es gibt weiterhin keinen Konsumenten, und **der Trigger
+aus Abschnitt 3.8 bleibt scharf**) · irgendetwas über die Byte-Gleichheit des erzeugten
+Textes — das ist das Gate von D2 und hier nicht gefahren · irgendetwas über die
+Oberfläche, die Adapter-Achse oder den Ingest · dass ein ausgelieferter Schlüsselsatz
+beim Betreiber-Hook oder beim Leser richtig ANKOMMT (die Tests messen den erzeugten
+Text, nicht seinen Empfang).
+**KEIN LIVE-TEST, UND KEINER WÄRE MÖGLICH:** Es entstehen ausschliesslich Tests, kein
+Verhalten ändert sich. Was live zu prüfen ist, gehört zu D2 und steht dort.
+
+---
+
 ## 4. Was an Entscheidungen gefallen ist — bindet über die Scheibe hinaus
 
 **(a) OWNER-ENTSCHEIDUNG: `fbtrace_id` BLEIBT UNGESCHWÄRZT, nur hart
@@ -1468,12 +1597,24 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   - **NIE EIN DEFEKT GEWESEN, und das gehört dazu, sonst sucht jemand einen Fix:** das
     EINGABEFELD. Dass es zeigt, was gerade getippt wird, ist die einzig richtige
     Behandlung — es liest den laufenden Wert weiter, und das bleibt so.
-  - **OFFEN, UNVERÄNDERT IM RANG:** dieselbe Optimistik im **Consent-Memo**
-    (`consentTargets` in `src/components/CodeImporter.tsx`), das ebenfalls den
-    laufenden Stand liest. **Was still kaputtgeht, ist hier NICHT gemessen** — der
-    erzeugte Text entsteht im Publish-Pfad, der seinerseits aus dem laufenden Stand
-    baut; ob laufend und gespeichert dort je auseinanderfallen, ist eine eigene
-    Messung. B2 hat das Memo nicht angefasst und beantwortet es nicht.
+  - **GEGENSTANDSLOS — DURCH DEN VOLLZUG ERSETZT, NICHT GESTRICHEN (Scheibe D1, s.
+    Abschnitt 3.10):** die vermutete Optimistik im **Consent-Memo** (`consentTargets`
+    in `src/components/CodeImporter.tsx`). **DER URSPRÜNGLICHE PUNKT, unverändert, weil
+    er die Herleitung trägt:** „dieselbe Optimistik im Consent-Memo, das ebenfalls den
+    laufenden Stand liest. Was still kaputtgeht, ist hier NICHT gemessen — der erzeugte
+    Text entsteht im Publish-Pfad, der seinerseits aus dem laufenden Stand baut; ob
+    laufend und gespeichert dort je auseinanderfallen, ist eine eigene Messung."
+    **DIE MESSUNG IST GEFAHREN (GEMESSEN am Repo, 2026-08-13):** `buildDocumentFor`
+    liest im selben Ausdruck `getPixelId(settings, "meta")` und
+    `getTrackingKey(settings)` — der erzeugte Text entsteht aus **demselben laufenden
+    Stand** wie der Schlüsselsatz. **Es gibt hier kein Auseinanderfallen, das gemessen
+    werden könnte**; das Memo MUSS den laufenden Stand lesen, und ein gespeicherter
+    wäre ein DEFEKT statt eines konservativeren Zustands.
+    **WARUM ERSETZT UND NICHT GESTRICHEN:** Eine blosse Streichung liesse offen, ob der
+    Punkt beantwortet oder vergessen wurde — und sie verlöre die Unterscheidung zur
+    Karte aus B2, die aus demselben Zeiger stammt und dort sehr wohl ein Risiko trug.
+    **DIE BEIDEN ANDEREN UNTERPUNKTE (Eingabefeld, Auslieferungs-Aussage) BLEIBEN
+    UNBERÜHRT.**
 - **DER GESPEICHERTE STAND IST EIN SPIEGEL, NICHT DIE DATENBANK** (`savedSettings` in
   `src/components/CodeImporter.tsx`, seit Scheibe B2 bis in `TargetCard` gereicht):
   GEMESSEN am Repo (2026-08-13) — er wird beim Laden aus der Projekt-Zeile geseedet und

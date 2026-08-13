@@ -2861,3 +2861,281 @@ describe("Phase 10 Scheibe 10c-2: der Statuskanal des Drawers endet mit der Sitz
     expect(screen.queryByText("Riegel greift.")).toBeTruthy();
   });
 });
+
+// ===========================================================================
+// PHASE 11, SCHEIBE D1 — DER WAECHTER UEBER DAS CONSENT-MEMO
+//
+// GEGENSTAND: die ABLEITUNG vom Einstellungs-Stand zum Consent-Schluesselsatz —
+// das Memo consentTargets in CodeImporter.tsx. Es filtert TRACKING_TARGETS auf
+// eine gesetzte Kennung und bildet ueber CONSENT_KEY_BY_TARGET ab; der Erzeuger
+// schreibt das Ergebnis an ZWEI Stellen in den ausgelieferten Text — in die
+// Ziehung (__psConsentAll) und in das Draht-Feld des Beacons (cns), beide in
+// tracking/meta.ts.
+//
+// DER GEMESSENE ANLASS (2026-08-13, formale Suche ueber diese Datei): "consentTargets",
+// "__psConsentAll" und "cns" hatten hier NULL Treffer. Deckung bestand
+// AUSSCHLIESSLICH in lib/generate.test.ts — und dort wird die Liste VON HAND
+// uebergeben. Die Engine war damit gedeckt, die ABLEITUNG nicht: Ein Fehler im Memo
+// haette jede neu publizierte Seite Ziele verlieren lassen, ohne dass ein Test rot
+// wird.
+//
+// WARUM DURCH DIE KOMPONENTE UND NICHT UEBER generateFunctional — der Grund ist der
+// Prueflings-Wechsel: Ein Aufruf des Erzeugers mit einer selbst gebauten Liste
+// beweist die ENGINE. Pruefling ist hier aber das MEMO, und das laeuft nur, wenn die
+// Komponente laeuft. Genau diese Verwechslung ist der Grund, warum die Achse trotz
+// vorhandener Engine-Tests ungedeckt war.
+//
+// WARUM DIESE ACHSE EINEN EIGENEN WAECHTER RECHTFERTIGT: Der Schluessel ist eine
+// EINBAHNSTRASSE. Ein publizierter Text traegt ihn, ein Code-Deploy erreicht ihn
+// nicht — und ein fehlender Schluessel heisst beim Leser fail-closed "nicht erlaubt"
+// (consentAllows in tracking/consent-wire.ts). Ein Fehler hier ist auf keinem Kanal
+// sichtbar und durch kein Deploy heilbar.
+//
+// ABFRAGE-DISZIPLIN: KEINE unqualifizierte Textsuche und KEINE Zaehlung. Bei drei
+// Zielen steht derselbe Schluessel MEHRFACH im Dokument (einmal in der Ziehung,
+// einmal im Draht) — eine Suche nach "meta" oder ein Zaehlen von Treffern waere in
+// beide Richtungen blind. Die beiden Leser unten ziehen die Schluessel ANKERND
+// heraus und vergleichen die FOLGE mit toEqual.
+// ===========================================================================
+describe("CodeImporter — Scheibe D1: das Consent-Memo, durch die Komponente bewacht", () => {
+  type D1Settings = NonNullable<Parameters<typeof CodeImporter>[0]["initialSettings"]>;
+
+  const D1_HTML =
+    '<!DOCTYPE html><html><head></head><body><button data-pagesmith-id="ps-aaaaaa">Kaufen</button></body></html>';
+  const D1_MAPPINGS = [
+    { elementId: "ps-aaaaaa", type: "track" as const, config: { event: "Lead" } },
+  ];
+  // OHNE trackingKey entsteht KEIN Beacon-Rumpf und damit kein Draht-Feld. Dass die
+  // Beobachtbarkeit daran haengt und NICHT am Memo, ist die Aussage von D-T8.
+  const D1_TK = { trackingKey: "tk-d1", tokenSet: true };
+
+  const ORIGINAL_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+  beforeEach(() => {
+    // Der Export-Pfad bildet seine Proxy-URL aus dieser Variablen. Fehlt sie, faellt
+    // buildCapiBeaconStatement in den fail-loud-Zweig und der Draht entfaellt — dann
+    // pruefte die Haelfte "verdrahtete Schluessel" nichts.
+    process.env.NEXT_PUBLIC_APP_URL = "https://app.pagesmith.io";
+  });
+  afterEach(() => {
+    if (ORIGINAL_APP_URL === undefined) delete process.env.NEXT_PUBLIC_APP_URL;
+    else process.env.NEXT_PUBLIC_APP_URL = ORIGINAL_APP_URL;
+  });
+
+  // DIE GEZOGENEN Schluessel: das Argument des __psConsentAll-AUFRUFS.
+  // ANKER IST DIE OEFFNENDE KLAMMER DIREKT AM NAMEN — die DEFINITION der Funktion
+  // lautet "window.__psConsentAll = function (ts)" und traegt diese Form NICHT.
+  // Sie steht auf JEDER Seite mit Wiring; ohne diesen Anker meldete der Leser auch
+  // dort einen Treffer, wo gar kein Aufruf erzeugt wurde. null = kein Aufruf.
+  function gezogeneSchluessel(doc: string): string[] | null {
+    const m = doc.match(/__psConsentAll\((\[[^\]]*\])\)/);
+    return m ? (JSON.parse(m[1]) as string[]) : null;
+  }
+
+  // DIE VERDRAHTETEN Schluessel: die Feldnamen im cns-Objekt des Beacon-Rumpfes.
+  // Anker ist der Feldname selbst, nicht ein Ziel-Wort — der Ausschnitt endet an der
+  // ersten schliessenden Klammer, das Objekt enthaelt keine geschachtelte. null =
+  // kein Draht-Feld.
+  function verdrahteteSchluessel(doc: string): string[] | null {
+    const m = doc.match(/"cns": \{([^}]*)\}/);
+    if (!m) return null;
+    return Array.from(m[1].matchAll(/"([^"]+)":/g)).map((t) => t[1]);
+  }
+
+  // Das EXPORT-Dokument, so wie der Kunde es herunterlaedt — abgefangen an der
+  // Zwischenablage, dieselbe Bauform wie im Artefakt-Riegel der Scheibe 9a.
+  async function exportDokument(settings: D1Settings): Promise<string> {
+    const writeText = vi.fn(async () => {});
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    try {
+      render(
+        <CodeImporter
+          initialProjectId="p-d1"
+          initialCode={D1_HTML}
+          initialMappings={D1_MAPPINGS}
+          initialSettings={settings}
+        />,
+      );
+      // Die Detection abwarten: der Export liest debouncedCode, nicht code.
+      await screen.findByText("Kaufen");
+      fireEvent.click(
+        screen.getByRole("button", { name: "In Zwischenablage kopieren" }),
+      );
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+      return (writeText.mock.calls[0] as unknown[])[0] as string;
+    } finally {
+      delete (navigator as { clipboard?: unknown }).clipboard;
+    }
+  }
+
+  it("D-T1: alle drei Kennungen -> beide Stellen tragen alle drei Schluessel", async () => {
+    // WIRD ROT, WENN das Memo ein Ziel auslaesst, ein Ziel erfindet oder die
+    // Abbildung ueber CONSENT_KEY_BY_TARGET verliert.
+    const doc = await exportDokument({
+      pixels: {
+        meta: { pixelId: "111" },
+        pinterest: { pixelId: "222" },
+        tiktok: { pixelId: "333" },
+      },
+      capi: D1_TK,
+    });
+    expect(gezogeneSchluessel(doc)).toEqual(["meta", "pinterest", "tiktok"]);
+    expect(verdrahteteSchluessel(doc)).toEqual(["meta", "pinterest", "tiktok"]);
+  });
+
+  it("D-T2: NUR Pinterest, kein Meta-Pixel -> nur dessen Schluessel, und keine Meta-Laufzeit", async () => {
+    // WIRD ROT, WENN das Memo auf Meta fest verdrahtet ist oder ein Ziel ohne
+    // Kennung mitnimmt. Die zweite Zusicherung ist der Gegenbeweis dazu, dass der
+    // Schluessel an der Meta-Kennung haengen koennte: hier gibt es keine.
+    const doc = await exportDokument({
+      pixels: { pinterest: { pixelId: "222" } },
+      capi: D1_TK,
+    });
+    expect(gezogeneSchluessel(doc)).toEqual(["pinterest"]);
+    expect(verdrahteteSchluessel(doc)).toEqual(["pinterest"]);
+    expect(doc).not.toContain("PS_PIXEL_ID");
+  });
+
+  it("D-T3: NUR TikTok -> nur dessen Schluessel", async () => {
+    // WIRD ROT, WENN das Memo auf ein festes Ziel verdrahtet ist. Das dritte Ziel
+    // ist das LETZTE der Konstanten-Ordnung — ein Memo, das nur den Kopf der Liste
+    // sieht, faellt hier und nicht bei D-T2.
+    const doc = await exportDokument({
+      pixels: { tiktok: { pixelId: "333" } },
+      capi: D1_TK,
+    });
+    expect(gezogeneSchluessel(doc)).toEqual(["tiktok"]);
+    expect(verdrahteteSchluessel(doc)).toEqual(["tiktok"]);
+  });
+
+  it("D-T4: KEINE Kennung -> der Alt-Pfad, kein __psConsentAll-Aufruf", async () => {
+    // WIRD ROT, WENN die leere Liste umgangen wird — dann entstuende der
+    // Mehr-Ziele-Pfad, wo der Alt-Pfad stehen muss.
+    // DER STRUKTURBRUCH IST DER GEGENSTAND, nicht die Schluesselmenge: Bei leerer
+    // Liste kippt buildMetaRuntime auf VIER bau-zeit-gegatete Bloecke zurueck —
+    // Einzel-Ziehung __psConsent("meta") statt der Sammel-Ziehung, und im Draht
+    // "__c === true" statt "__c[...] === true". Genau daran unterscheidet sich
+    // dieser Fall von "nur Meta konfiguriert", wo die Schluesselmenge dieselbe ist.
+    // EINZELSTUECK, GEMESSEN (Mutationsprobe M4 am 2026-08-13: bei leerer Liste alle
+    // Ziele zurueckgeben -> GENAU DIESER Test faellt, 1 von 1070). Er ist der einzige
+    // Waechter dieser Fehlerklasse; wer ihn als Variante von D-T2/D-T3 entfernt, nimmt
+    // die einzige Abdeckung des Strukturbruchs mit.
+    const doc = await exportDokument({ pixels: {}, capi: D1_TK });
+    expect(gezogeneSchluessel(doc)).toBeNull();
+    expect(verdrahteteSchluessel(doc)).toEqual(["meta"]);
+    expect(doc).toContain('"cns": { "meta": __c === true }');
+  });
+
+  it("D-T5: Meta + TikTok -> die Luecke in der Mitte, Ordnung erhalten", async () => {
+    // WIRD ROT, WENN das Memo die Ordnung von TRACKING_TARGETS nicht erhaelt oder
+    // ein uebersprungenes Ziel doch mitnimmt. Die Ordnung ist keine Kosmetik: Sie
+    // steht WOERTLICH im ausgelieferten Text und ist damit Teil der Einbahnstrasse.
+    const doc = await exportDokument({
+      pixels: { meta: { pixelId: "111" }, tiktok: { pixelId: "333" } },
+      capi: D1_TK,
+    });
+    expect(gezogeneSchluessel(doc)).toEqual(["meta", "tiktok"]);
+    expect(verdrahteteSchluessel(doc)).toEqual(["meta", "tiktok"]);
+  });
+
+  it("D-T6: eine Kennung aus reinem Leerraum gilt als ABWESEND", async () => {
+    // WIRD ROT, WENN die Leere-Bedingung des Memos den Trim verliert. Das ist die
+    // EINZIGE Achse, an der die heutige Ausformulierung (Vergleich gegen "") und das
+    // geteilte Praedikat hasPixelId ueberhaupt etwas zu entscheiden haben — beide
+    // laufen durch getPixelId, das trimmt.
+    // KEIN EINZELSTUECK, UND DAS IST GEMESSEN (M7 am 2026-08-13: die Leere-Bedingung
+    // des Memos entfernt -> dieser Test faellt zusammen mit SECHS weiteren, alle
+    // derselben Klasse "ein Ziel ohne Kennung wird verdrahtet"). Der Vermerk steht
+    // hier, damit niemand ihm eine Alleinstellung zuschreibt, die die Probe nicht
+    // hergegeben hat.
+    // WAS DIE PROBE NICHT ZEIGEN KONNTE: eine Mutation, die NUR den Trim trifft, gibt
+    // es am Memo nicht — der Trim liegt in getPixelId, nicht hier.
+    const doc = await exportDokument({
+      pixels: { meta: { pixelId: "111" }, pinterest: { pixelId: "   " } },
+      capi: D1_TK,
+    });
+    expect(gezogeneSchluessel(doc)).toEqual(["meta"]);
+    expect(verdrahteteSchluessel(doc)).toEqual(["meta"]);
+  });
+
+  it("D-T7: eine LEERE Kennung gilt als abwesend", async () => {
+    // WIRD ROT, WENN die Leere-Bedingung ganz entfaellt und die blosse Anwesenheit
+    // des Feldes genuegt. Getrennt von D-T6 gefuehrt, weil beide Fixturen
+    // verschiedene Stellen des Ausdrucks treffen: hier den Vergleich, dort den Trim.
+    const doc = await exportDokument({
+      pixels: { meta: { pixelId: "111" }, tiktok: { pixelId: "" } },
+      capi: D1_TK,
+    });
+    expect(gezogeneSchluessel(doc)).toEqual(["meta"]);
+    expect(verdrahteteSchluessel(doc)).toEqual(["meta"]);
+  });
+
+  it("D-T8 (VORAUSSETZUNG der uebrigen sieben): ohne Kennung UND ohne Tracking-Schluessel steht gar nichts im Text", async () => {
+    // DIESER TEST IST KEINE ZUGABE, SONDERN DIE VORAUSSETZUNG DER UEBRIGEN SIEBEN.
+    // Die Beobachtbarkeit haengt am TRACKING-SCHLUESSEL, nicht am Memo: Ohne ihn und
+    // ohne Meta-Kennung gibt buildMetaRuntime "" zurueck (tracking/meta.ts), und dann
+    // steht WEDER eine Ziehung NOCH ein Draht-Feld im Dokument.
+    // NIMMT JEMAND DEN SCHLUESSEL AUS EINER FIXTURE der uebrigen sieben, waeren die
+    // dortigen Zusicherungen ueber die verdrahteten Schluessel trivial wahr und
+    // saehen weiter wie Abdeckung aus. Dieser Test macht die Abhaengigkeit sichtbar,
+    // statt sie zu unterstellen.
+    const doc = await exportDokument({ pixels: {} });
+    expect(gezogeneSchluessel(doc)).toBeNull();
+    expect(verdrahteteSchluessel(doc)).toBeNull();
+    // GEGENPROBE IM SELBEN TEST: das Wiring selbst ENTSTEHT sehr wohl. Ohne sie
+    // waeren beide Zusicherungen darueber auch dann wahr, wenn gar kein Dokument
+    // erzeugt worden waere.
+    expect(doc).toContain("data-pagesmith-id=\"ps-aaaaaa\"");
+  });
+
+  it("D-T9: das Publish-Artefakt traegt DENSELBEN Schluesselsatz wie das Export-Dokument", async () => {
+    // WIRD ROT, WENN einer der vier Konsumenten des Memos eine eigene Liste bekommt.
+    // Das Memo speist Vorschau, Export und BEIDE Publish-Artefakte; ein Test auf nur
+    // einem Weg liesse offen, ob die anderen dieselbe Quelle benutzen.
+    // EINZELSTUECK, GEMESSEN (Mutationsprobe M5 am 2026-08-13: der Publish-Zweig
+    // bekommt eine eigene Liste -> GENAU DIESER Test faellt, 1 von 1070). Kein anderer
+    // Test im Bestand vergleicht die beiden Auslieferwege miteinander.
+    const writeText = vi.fn(async () => {});
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    try {
+      render(
+        <CodeImporter
+          initialProjectId="p-d1"
+          initialCode={D1_HTML}
+          initialMappings={D1_MAPPINGS}
+          initialSettings={{
+            pixels: { meta: { pixelId: "111" }, pinterest: { pixelId: "222" } },
+            capi: D1_TK,
+          }}
+        />,
+      );
+      await screen.findByText("Kaufen");
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "In Zwischenablage kopieren" }),
+      );
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+      const exportDoc = (writeText.mock.calls[0] as unknown[])[0] as string;
+
+      fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+      fireEvent.click(screen.getByRole("button", { name: /^Veröffentlichen$/ }));
+      await waitFor(() => expect(publishProject).toHaveBeenCalledTimes(1));
+      const publishDoc = (publishProject.mock.calls[0] as unknown[])[1] as string;
+
+      // VORBEDINGUNG, sonst vergliche der Test zweimal "nichts": beide Wege muessen
+      // ueberhaupt einen Schluesselsatz tragen.
+      expect(gezogeneSchluessel(exportDoc)).toEqual(["meta", "pinterest"]);
+      expect(gezogeneSchluessel(publishDoc)).toEqual(gezogeneSchluessel(exportDoc));
+      expect(verdrahteteSchluessel(publishDoc)).toEqual(
+        verdrahteteSchluessel(exportDoc),
+      );
+    } finally {
+      delete (navigator as { clipboard?: unknown }).clipboard;
+    }
+  });
+});

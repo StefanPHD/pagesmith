@@ -2803,3 +2803,152 @@ weiterhin, was drei Absätze höher steht, samt dem Nenner aus beiden Varianten-
 verzeichnet:** Geteilt sind die BEDINGUNGEN, nicht das URTEIL — `listConfiguredTargets`
 fragt weiterhin nur nach der Existenz einer Geheimnis-Zeile, der Forward nach Kennung UND
 Zugangsdatum. S. Abschnitt 5, „'KONFIGURIERT' HEISST AN ZWEI ORTEN VERSCHIEDENES".
+
+---
+
+## 8. Die Hebung — SCHRITT 1 DES PHASENENDES, VOLLZOGEN (2026-08-13)
+
+**WAS DIESER ABSCHNITT IST:** das Protokoll darüber, wohin jeder Kandidat und jeder
+Vorrats-Punkt dieser Datei gehoben wurde. **Ohne ihn behauptet die Datei in Schritt 2
+weiterhin, alles sei ungehoben** — und wer sie dann archiviert, weiss nicht, was schon
+woanders steht und was mit ihr verlorenginge.
+
+**SCHRITT 2 IST NICHT TEIL DIESER RUNDE.** Kein Haken, keine Umbenennung, keine Löschung,
+keine Aussage darüber, wie der Marker-Konflikt der Roadmap-Zeile gelöst wird.
+
+---
+
+### 8.1 Die 19 Hebungs-Kandidaten aus Abschnitt 6
+
+**SIEBEN sind als eigene Regel nach CLAUDE.md, „## Immer beachten" gegangen** — davon
+trägt eine drei Kandidaten und eine weitere vier:
+
+- **SCHWÄRZUNG — VIER TEILE, DIE NUR ZUSAMMEN TRAGEN** trägt die Kandidaten 1, 2, 5 und 6
+  (Kappung ist keine Maskierung · erst schwärzen, dann kappen · eine Formregel trifft auch
+  das Gewollte · ein Leak-Test läuft nie mit echtem Geheimnis).
+- **EIN KOMMENTAR IST EINE BEHAUPTUNG, KEINE EIGENSCHAFT — UND ER VERMEHRT SICH** trägt
+  die Kandidaten 3 und 17.
+- **MENGEN — ZWEI REGELN, DIE ZUSAMMENGEHÖREN** trägt die Kandidaten 7 und 16.
+- **BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS RICHTIGE GEMESSEN
+  WIRD — VIER TEILE** trägt die Kandidaten 8, 11 und 12 sowie Abschnitt 4 (f) dieser
+  Datei (die A/B-Vorbedingung, als eigener Teil (e) mit dem Wort PFLICHT-VORBEDINGUNG).
+  **DIE ZUSAMMENLEGUNG WAR EIN ZWEITER SCHRITT:** Kandidat 12 und 19 und 4 (f) standen
+  zunächst als drei Regeln nebeneinander; sie sagen dasselbe aus drei Richtungen und
+  wurden auf Owner-Anweisung zu einer gemacht. Der Verlust-Nachweis lief über eine formale
+  Suche je Aussage.
+- **MEHRERE KENNUNGEN JE ZIEL BRECHEN EINEN SCHLÜSSEL NICHT — MEHRERE EMPFÄNGER
+  DESSELBEN TYPS BRECHEN IHN** ist Kandidat 18, erster Zielort.
+- **WER EINE STREICHUNG PLANT, ZÄHLT AUCH DIE SÄTZE, DIE DEN GELÖSCHTEN NAMEN TRAGEN** —
+  aus Abschnitt 3.12, **nicht unter den 19 geführt**, auf Owner-Anweisung mitgehoben.
+- Kandidat **19** ist in der Zusammenlegung als Teil (d) aufgegangen.
+
+**FÜNF sind an BESTEHENDE Regeln in CLAUDE.md angehängt worden** — sie ergänzen dort einen
+Fall, ohne die Regel umzuformulieren:
+
+- Kandidat **4** → „EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL", als weitere
+  Weise (die Fixture trägt den Gegenstand gar nicht).
+- Kandidat **10** → „DIFF-VORLAGE = GEZIELTE VERIFIKATION", als Behauptungsklasse
+  „Verweis auf den eigenen, noch nicht fertigen Bericht".
+- Kandidat **13** → „WERKZEUG-REGEL: sed -i …", als Gegenrichtung (ein Werkzeug erzeugt
+  einen Befund, den der Gegenstand nicht hergibt).
+- Kandidaten **14 und 15** → „ZWEI BEDIENELEMENTE MIT GLEICHEM NAMEN …", als dritte Achse
+  und als Erweiterung des Geltungsbereichs auf Daten-Elemente.
+- Die Lehre aus 3.10/3.11 (eine Mutations-Ansage ohne Lesen der Komposition misst nichts)
+  → Mutations-Lektion (b), als dritte Ursache für einen grün bleibenden Mutanten.
+  **Nicht unter den 19 geführt**, auf Owner-Anweisung mitgehoben, und ausdrücklich
+  geprüft: sie gehört in eine bestehende Lektion, nicht daneben.
+
+**EINER ist ins Detail-Archiv gegangen:** Kandidat **9** — als Warnsatz am Zeiger auf
+`docs/claude-history/phase-11-multi-tracking-rohfassung.md`, weil dort der Mangel sitzt
+(die kuratierte Fassung hat zweimal genau das weggelassen, was getragen hätte).
+
+**EINER hat ZWEI Zielorte, wie er selbst vorschrieb:** Kandidat **18** — die
+Zwei-Achsen-Unterscheidung nach „## Immer beachten", die beiden Trigger aus Abschnitt 7.4
+nach „## Offene Punkte". Sie dürfen nicht zusammenfallen, sonst wandert nur die Hälfte.
+
+---
+
+### 8.2 Die 31 Vorrats-Punkte aus Abschnitt 5
+
+**FÜNF sind nach CLAUDE.md, „## Offene Punkte" gegangen** — je mit Trigger und mit „was
+still kaputtgeht":
+
+- **P14** (Betreiber-Dokumentation) → Eintrag „BETREIBER-DOKUMENTATION FEHLT — ZWEI
+  PUNKTE", neben dem COOKIE-DOKU-SCHNIPSEL und in dessen Bauform. **Beide Teile sind mit**,
+  die Deduplizierungs-Grenze in der NICHT-absoluten Fassung.
+- **P17, P24, P25** (die drei Wege an der 204-Achse) → EIN gemeinsamer Eintrag „DREI WEGE,
+  AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE", ausdrücklich als **RANG OFFEN,
+  UNGEMESSEN**. Der Eintrag behauptet den Manifest-Rang nicht und schliesst ihn nicht aus;
+  sein Trigger ist die fehlende Messung selbst.
+- Dazu aus Abschnitt 7.4 die **beiden Primärschlüssel-Trigger** und aus 7.5 die
+  **Vollständigkeits-Achse** samt ihrem wörtlichen Trigger.
+
+**VIERUNDZWANZIG sind in `docs/claude-history/backlog-polish.md` gegangen**, ans
+Dateiende, in der dortigen Bauform und **je mit ihrem Messbefund UNVERÄNDERT** — nichts
+wurde dabei neu erhoben. Das sind die neunzehn reinen Aufräum-Punkte plus **P18**
+(„konfiguriert" heisst an zwei Orten Verschiedenes, strukturelle Hälfte), **P22** (das
+Ergebnis des Fan-Outs wird verworfen), **P27** („Zeile existiert" ruht auf dem
+Schreibpfad), **P20** (ein Adapter kann kein Ereignis ablehnen) und der verdichtete Block
+**„WAS DANN SOFORT GILT"** aus Abschnitt 7.5.
+
+**P18 UND P22 TRAGEN EINEN VERMERK, DER KEIN TRIGGER IST:** „Zu prüfen, sobald der
+Logging-/Monitoring-Umbau ansteht" — und ausdrücklich dazu, dass das **KEIN Trigger im
+Sinne von „## Offene Punkte"** ist, weil jener Abschnitt einen benennbaren Zeitpunkt
+verlangt. Ohne diesen Zusatz wandern beide beim nächsten Lesen dorthin.
+
+**P27 GING IN DEN BACKLOG UND NICHT NACH `docs/db-stand.md`:** Jene Datei wird nach ihrer
+eigenen Charta ausschliesslich aus einer Messung des IST-ZUSTANDS fortgeschrieben und
+trägt keine Vorhaben; ausserdem nennt der Punkt keinen Zeitpunkt.
+
+**P20 IST EINE ABWEICHUNG VOM VORSCHLAG, und sie steht hier, statt unbemerkt zu bleiben:**
+Vorgeschlagen war, ihn an den LinkedIn-Posten zu hängen. Dieser Posten bekommt seinen Ort
+aber erst in Schritt 2, und ein Vorgriff darauf ist ausgeschlossen. Der Punkt liegt
+deshalb im Backlog — **mit seiner Bindung im Text**: ein Rückkanal berührt alle drei
+bestehenden Adapter und gehört zum Preis eines Ziels mit Kennung je Ereignistyp.
+
+**ZWEI SIND AUSDRÜCKLICH FALLENGELASSEN:**
+
+- **P19** („DIE ZAHL ‚SECHS VOKABULAR-STELLEN' STEHT OHNE AUFZÄHLUNG"). **Begründung:
+  ersetzt, nicht vergessen.** Der Kopf von `src/lib/tracking/target-adapters.ts` trägt seit
+  der C2-Scheibe eine gemessene Aufzählung von ACHT Stellen samt der Korrektur der alten
+  Sechs; zwei der sechs rekonstruierten Stellen existieren nicht mehr. **Was verlorengeht:**
+  der Hinweis, dass Abschnitt 3.2 seine Zahl ohne Aufzählung führt — und 3.2 wandert in
+  Schritt 2 ohnehin ins Archiv.
+- **P28** („DIE KARTE ZEIGT DEN UNGESPEICHERTEN KENNUNGS-ZUSTAND"). **Begründung: alle
+  drei Unterpunkte sind erledigt oder gegenstandslos** — die Auslieferungs-Aussage mit
+  Scheibe B2, das Eingabefeld war nie ein Defekt, und die dritte Hälfte (das Consent-Memo)
+  ist mit der G3-Messung der D2-Runde gegenstandslos geworden. **Verlust: keiner**, der
+  Rest ist Historie.
+
+**ZWEI WAREN BEREITS ERLEDIGT** und sind in dieser Datei schon durch den Vollzug ersetzt:
+**P26** (die Eingabe-Form, die den Geheimnis-Wert nahm) und **P31** (die Zusammensetzung
+`targetReadiness`).
+
+---
+
+### 8.3 Drei Regeln sind NICHT gehoben, sondern AUSGELAGERT worden
+
+**Nach `docs/db-regeln.md`, zeichengleich und per Prüfsumme nachgewiesen:**
+„BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN, NICHT AM KALENDER" · „MIGRATION IMMER VOR
+CODE-DEPLOY" · „DB-FUNKTIONEN + SEARCH_PATH".
+
+**DER GRUND IST GEMESSEN UND KEIN AUFRÄUM-WUNSCH: die Hebung passte nicht mehr ins
+Ladelimit.** `CLAUDE.md` stand vor der Hebung bei 138 325 Bytes; die Hebung dieser einen
+Phase kostet rund 13 KB, und das dokumentierte Ladelimit ist 150 000. Ohne die Auslagerung
+hätte Schritt 1 entweder darüber gelegen oder Regeln stillschweigend nicht gehoben — und
+eine nicht gehobene Regel wird nicht mehr gelesen.
+
+**DIE BAUFORM IST DIE DER DB-AUSLAGERUNG:** ein Pflicht-Stopp in `CLAUDE.md`, der beide
+Dateien nennt, plus eine Grenze — `docs/db-regeln.md` trägt REGELN, `docs/db-stand.md` den
+gemessenen ZUSTAND, und bei denselben Tätigkeiten werden beide geladen.
+
+**EIN RESTPOSTEN GEHÖRT DAZU:** Drei Zeiger ausserhalb des damaligen Scopes verweisen auf
+„CLAUDE.md, ## Immer beachten, DB-FUNKTIONEN + SEARCH_PATH" (`docs/db-stand.md` sowie
+`supabase/checks/db-stand.sql` und `restore-drill.sql`). Sie sind **nicht geändert**,
+sondern **auflösbar gemacht**: Der Pflicht-Stopp nennt die drei ausgelagerten Titel, damit
+ein Leser den Namen weiterhin in `CLAUDE.md` findet und daneben den neuen Ort.
+
+**DASS DIE DATEI DAMIT NAHE AM LIMIT BLEIBT, IST SELBST EIN OFFENER PUNKT** — er steht in
+CLAUDE.md, „## Offene Punkte", Eintrag „CLAUDE.md NÄHERT SICH DEM LADELIMIT", mit dem
+Trigger „vor der nächsten Hebung an einem Phasenende" und **ausdrücklich ohne Vorschlag,
+was ausgelagert werden soll**.

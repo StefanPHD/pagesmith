@@ -498,6 +498,22 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   TRAGENDE KONTROLLE: Dependabot aktiviert — Alerts, Security Updates, Dependency Graph, 1 Regel.
   EHRLICHE EINORDNUNG: Dauerhygiene, kein Launch-Gate; erledigt am 2026-07-24.
   BINDET-AN: laufend (aktiv).
+- DEPENDABOT-MELDUNGEN OFFEN, NICHT GESICHTET (2026-08-13):
+  RISIKO: Auf dem Default-Branch stehen ZEHN Verwundbarkeits-Meldungen, davon ACHT hoch
+  und zwei mittel. Solange sie nicht gesichtet sind, ist unbekannt, ob eine davon
+  Produktivcode betrifft, erreichbar oder ausnutzbar ist.
+  HERKUNFT: die Push-Ausgabe von GitHub, dreimal am 2026-08-13 identisch. KEINE andere
+  Quelle, KEINE eigene Prüfung im Dashboard.
+  TRAGENDE KONTROLLE: heute KEINE über die blosse Meldung hinaus. Der Eintrag darüber
+  ("DEPENDABOT — ERLEDIGT") trägt die AKTIVIERUNG und ist als solche Aussage unverändert
+  richtig; er sagt nichts über offene Meldungen, und ein Leser schliesst aus "ERLEDIGT"
+  auf "nichts offen".
+  EHRLICHE EINORDNUNG: Die Meldungen sind AUSDRÜCKLICH NICHT BEWERTET. Ob dies Tier 2
+  bleibt oder höher gehört, ist damit offen — die Ablage hier ist vorläufig und folgt dem
+  Nachbar-Eintrag, nicht einer Einschätzung des Risikos.
+  BINDET-AN: zu bestimmen, sobald die Meldungen gesichtet sind. Die Einstufung verlangt
+  eine Bewertung, die niemand vorgenommen hat; ein erfundener Zeitpunkt wäre schlimmer als
+  keiner, weil er den Posten als terminiert aussehen liesse.
 - BACKUPS + Restore-Drill (TEILWEISE ERLEDIGT — Backup-Tier bestätigt 2026-07-29, DRILL
   GEFAHREN UND BESTANDEN 2026-07-30; PITR und die migrations-only Rebuild-Lücke bleiben
   OFFEN):

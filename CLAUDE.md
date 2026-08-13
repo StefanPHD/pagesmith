@@ -359,6 +359,60 @@ kaputtgeht.
   Bewusst nicht in der Fix-Scheibe mitgebaut: writeAuditLog verlangt einen
   service_role-Client, den publishProject bewusst NICHT instanziiert
   (dokumentierte Entscheidung) — das umzustossen gehört in eine eigene Runde.
+- DER PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets BLEIBT — ENTSCHIEDEN
+  (Owner, 2026-08-12), Herleitung: Phase-11-Historie. ZWEI TRIGGER, je einzeln
+  hinreichend: (i) die Custom-Pixel-Vorfrage fällt zugunsten eines SERVER-Empfängers mit
+  kundeneigenem Endpunkt; (ii) es zeigt sich, dass die KENNUNG NICHT IN DEN
+  EINSTELLUNGS-BLOB GEHÖRT — GLEICHGÜLTIG AUS WELCHEM GRUND (Beispiele, KEINE
+  abschliessende Liste: je Kennung ein eigenes Zugangsdatum · die Kennung selbst ein
+  Geheimnis · server-autoritativ vergeben). (ii) nennt bewusst den GEGENSTAND und nicht
+  den Anlass: eine engere Fassung fängt den wahrscheinlichsten Kipp-Fall nicht, und ein
+  Trigger, der das nicht tut, schlägt nie an. GRENZE, die die Entscheidung trägt: dass die
+  LinkedIn-URN eine KENNUNG ist und kein ZUGANGSDATUM, ist GELESEN (Anbieter-Doku,
+  2026-08-11) und NICHT gemessen. KIPPT DIESE LESART, FALLEN BEIDE ACHSEN ZUSAMMEN, und
+  die Entscheidung ist NEU zu treffen. Was still kaputtgeht: mehrere Zeilen mit demselben
+  target im selben Projekt — der Schlüssel bricht, ohne dass der Trigger anschlägt.
+- DREI WEGE, AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE — RANG OFFEN,
+  UNGEMESSEN (Trigger: die Messung selbst — ein Lauf, der prüft, ob ein Wurf auf dem
+  Ingest-Pfad die garantierte leere 204 bricht): (1) die zwei deckungsgleichen
+  Normalisierungen vor dem geteilten Schwärz-Primitiv (asLogString in capi/meta-forward.ts,
+  normalizeProviderValue in capi/tiktok-forward.ts) — fiele an einer der Riegel weg,
+  erreichte ein Nicht-String redactOpaque, und das wirft; (2) ein Nicht-String als
+  Zugangsdatum, der den Resolver passiert (CapiConfig.token in capi/token.ts); (3)
+  getPixelId (lib/settings.ts) wirft bei einer Nicht-Zeichenketten-Kennung — die
+  Optional-Verkettung schützt gegen null, nicht gegen eine Zahl. DER RANG WIRD HIER WEDER
+  BEHAUPTET NOCH AUSGESCHLOSSEN: Bricht die 204, ist es ein Containment-Bruch und gehört
+  ins Sicherheits-Manifest; wird der Wert nur gecastet, ist es eine Notiz. Ohne die Messung
+  ist beides gleich plausibel. Was still kaputtgeht: das Containment ist als
+  Sicherheitsregel geführt (Enumeration-Schutz) — bleibt die Messung aus, bleibt offen, ob
+  eine Sicherheitszusage hält.
+- BETREIBER-DOKUMENTATION FEHLT — ZWEI PUNKTE (Trigger: vor dem öffentlichen Launch; wie
+  der COOKIE-DOKU-SCHNIPSEL darüber eine PRODUKTPFLICHT, kein Nice-to-have): (1) dass
+  Pagesmith KEINEN Einwilligungs-Dialog mitliefert und ohne einen ALLE Ziele als erlaubt
+  gelten — daraus folgt, dass "konform out-of-the-box" heute nicht zutrifft; (2) die GRENZE
+  DER DEDUPLIZIERUNG in der belastbaren, NICHT-absoluten Fassung: unsere Deduplizierung
+  führt Browser und Server über eine GETEILTE Ereignis-Kennung zusammen, und diese Zusage
+  gilt für Ereignisse AUS DIESEM BUILDER; ein zusätzlich über Tag-Manager oder Shop-System
+  eingebundenes Tag erzeugt FREMDE Kennungen, die keine Deduplizierung zusammenführen kann.
+  AUSDRÜCKLICH NICHT "zu 100 % Konfigurationsfehler" — eine Absolutheits-Aussage wird vom
+  ersten Gegenbeispiel widerlegt, und dann fällt die ganze Argumentation. Was still
+  kaputtgeht: der Betreiber erfährt beides erst, wenn es ihn trifft.
+- DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
+  Grund: kein realer Konsument, kein Ziel trägt heute eine Kennung je Ereignistyp. TRIGGER,
+  wörtlich und ausdrücklich nicht "falls es je nötig wird": sobald ein Ziel eine Kennung JE
+  EREIGNISTYP trägt. Was still kaputtgeht: Ein Nenner, der nur Variante A kennt, meldet
+  vollständig, während beim halben Traffic nichts ankommt. Die drei Messbefunde, die dann
+  sofort gelten und nicht neu erhoben werden müssen, stehen in
+  docs/claude-history/backlog-polish.md, "VOLLSTÄNDIGKEITS-ACHSE — WAS DANN SOFORT GILT".
+- CLAUDE.md NÄHERT SICH DEM LADELIMIT (Trigger: vor der nächsten Hebung an einem
+  Phasenende): GEMESSEN am 2026-08-13 — die Datei steht bei rund 149 KB gegenüber dem
+  dokumentierten 150k-Ladelimit, "## Immer beachten" trägt rund 1 200 Zeilen und 80 Regeln,
+  und allein die Hebung dieser Phase hat rund 11 KB gekostet. Jede Phase fügt mehrere
+  Regeln hinzu; die Datei wurde zuletzt schon einmal von 147 auf 138 KB gebracht. Was still
+  kaputtgeht: Ohne Entscheidung endet die nächste Hebung entweder ÜBER dem Ladelimit oder
+  damit, dass gefilterte Regeln stillschweigend nicht gehoben werden — und eine nicht
+  gehobene Regel wird nicht mehr gelesen. HIER STEHT AUSDRÜCKLICH KEIN VORSCHLAG, WAS
+  AUSGELAGERT WIRD: das gehört in eine Arbeitsweise-Runde am Phasenübergang.
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
@@ -371,6 +425,18 @@ und es fällt erst in der laufenden DB auf.
 UND AUCH DANN IST SIE KEINE QUELLE: Ein Dokument beschreibt einen Codezustand, es belegt
 ihn nicht. Was gilt, steht im Repo bzw. in der laufenden DB — gemessen wird am Code oder
 im SQL-Editor (Probe: supabase/checks/db-stand.sql), nicht abgelesen.
+ERGÄNZT 2026-08-13 — ES SIND ZWEI DATEIEN, UND BEI DENSELBEN TÄTIGKEITEN WERDEN BEIDE
+GELADEN: docs/db-stand.md trägt den gemessenen ZUSTAND, docs/db-regeln.md die dauerhaften
+REGELN. Der Pflicht-Stopp oben gilt für beide unverändert; der Satz darüber ist NICHT
+umformuliert, sondern erweitert.
+DREI REGELN SIND AM 2026-08-13 AUS "## Immer beachten" NACH docs/db-regeln.md GEZOGEN und
+stehen dort ZEICHENGLEICH: "BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN, NICHT AM KALENDER" ·
+"MIGRATION IMMER VOR CODE-DEPLOY" · "DB-FUNKTIONEN + SEARCH_PATH".
+DIE TITEL STEHEN HIER, WEIL DREI ZEIGER AUSSERHALB DES DAMALIGEN SCOPES AUF SIE VERWEISEN
+(docs/db-stand.md sowie supabase/checks/db-stand.sql und restore-drill.sql, je mit dem
+Pfad "CLAUDE.md, ## Immer beachten"): Wer einem davon folgt, findet den Titel weiterhin in
+dieser Datei und daneben den Ort, an dem die Regel jetzt steht. Ohne diese Nennung zeigten
+alle drei ins Leere.
 
 ## Aktiver Stand — Verfahren ab Phase 10
 
@@ -682,6 +748,16 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Server Action mit Secret-Parameter (erhoben 2026-07-24). Bei JEDER neuen Server Action mit
   Secret-Parameter neu bewerten.
 - DEPENDABOT: ERLEDIGT (2026-07-24: Alerts, Security Updates, Dependency Graph aktiv, 1 Regel).
+- DEPENDABOT-MELDUNGEN OFFEN, NICHT GESICHTET (2026-08-13): Auf dem Default-Branch stehen
+  ZEHN Verwundbarkeits-Meldungen, davon ACHT hoch und zwei mittel. HERKUNFT: die
+  Push-Ausgabe von GitHub, dreimal am 2026-08-13 identisch. AUSDRÜCKLICH: Die Meldungen
+  sind NICHT bewertet — weder auf Erreichbarkeit noch auf Ausnutzbarkeit noch darauf, ob
+  eine davon Produktivcode betrifft. WARUM ALS EIGENER EINTRAG NEBEN DEM OBEN: Jener ist
+  als Aussage über die AKTIVIERUNG richtig und bleibt es; ein Leser schliesst aus
+  "ERLEDIGT" aber auf "nichts offen", und genau das trifft nicht zu.
+  BINDET-AN: zu bestimmen, sobald die Meldungen gesichtet sind — die Einstufung verlangt
+  eine Bewertung, die niemand vorgenommen hat, und ein erfundener Zeitpunkt wäre schlimmer
+  als keiner.
 - BACKUPS + Restore-Drill (TEILWEISE ERLEDIGT — Backup-Tier steht, DRILL WEITERHIN OFFEN):
   BACKUP-TIER BESTÄTIGT (2026-07-29): Supabase auf PRO -> TÄGLICHE Backups, 7 Tage Retention.
   Die frühere Einordnung "Free hat GAR KEINE Backups" ist überholt und wurde ersetzt, nicht
@@ -796,6 +872,12 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
       einem hohlen Wächter (ein zu weit gefasster Text-Ausschnitt trifft eine
       andere Stelle als die gemeinte) wird die WURZEL behoben — der
       Ausschnitt selbst —, nicht die Assertion enger geschrieben.
+      DRITTE URSACHE, ergaenzt 2026-08-13: DIE MUTIERTE STELLE IST DURCH EINE
+      KOMPOSITION VERDECKT. Wer eine Mutation ansagt, liest zuerst, was ZWISCHEN
+      der mutierten Funktion und dem Pruefling liegt — sonst misst die Probe
+      nichts. BELEG: hasPixelId ohne Trim blieb an jedem Aufrufer unsichtbar, weil
+      getPixelId vorher trimmt; die Ansage "diese Tests muessen fallen" stand
+      zweimal im Auftrag und war beide Male unerfuellbar.
   (c) EIN GROBES LIVE-TEST-INSTRUMENT (Offline schalten, eine Sperre setzen,
       einen Netzabbruch simulieren) REISST OFT DIE VORAUSSETZUNG DESSEN MIT,
       WAS ES EIGENTLICH PRÜFEN SOLL: ein anderer Kanal meldet sich zuerst,
@@ -872,12 +954,19 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   behauptete "beide Aufrufe stehen, bevor einer antwortet"; bei serieller Abarbeitung
   blieb der Test grün, weil das erste Bein sofort antwortet. Wird das entdeckt, wird
   BEIDES getan — den Kommentar berichtigen UND den fehlenden Test ergänzen.
+  UND EINE WEITERE WEISE, ergänzt 2026-08-13: DIE FIXTURE TRÄGT DEN GEGENSTAND
+  GAR NICHT. Enthält sie nichts, was durchsickern könnte, ist die Behauptung
+  trivial wahr — anders als bei (2), wo eine Vorbedingung TIEFER IM PFAD greift.
+  BELEG: keine Meta-Fixture liess die Anbieter-Antwort das Zugangsdatum
+  zurückspiegeln; die "kein Token im Log"-Zusicherungen konnten den Echo-Fall
+  nicht fangen.
 - COMMIT-KONVENTIONEN: Conventional-Commit-Format type(scope): message (feat, fix, docs,
   chore, refactor). docs(claude)-Commits bleiben GETRENNT von feat/fix-Commits — der
   Verlauf wird gelesen, und eine Doku-Aenderung im Feature-Commit ist spaeter nicht mehr
   auffindbar. Vor JEDEM Push git status/git diff auf versehentliche Secrets/.env-Inhalte
   pruefen. Taucht eine Migration im Diff auf, gilt zusaetzlich die
-  Migration-VOR-Code-Deploy-Reihenfolge (eigene Regel unten).
+  Migration-VOR-Code-Deploy-Reihenfolge (eigene Regel: docs/db-regeln.md, "MIGRATION IMMER
+  VOR CODE-DEPLOY").
 - TESTDATEN UND TEST-SEQUENZ MÜSSEN DEN PRODUKTIVEN PFAD TREFFEN (Phase 9, zwei live
   gefundene Fehlschläge): (1) DATENLAGE: der 9a-Umschalt-Test gab A und B bewusst
   UNTERSCHIEDLICHES HTML, um die Ableitungskette maximal sichtbar zu machen — und sparte
@@ -960,6 +1049,11 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   entscheidet selbst über die Schnittkanten, und ein verlorener Teil fällt niemandem auf. Der
   Bericht beginnt mit einer UMFANGS-ANSAGE ("deckt Aufträge X-Y ab"), damit ein fehlender
   Abschnitt beim LESEN auffällt statt beim Nachzählen. Nie als Datei-Anhang (kommt leer an).
+  EIN VERWEIS AUF DEN EIGENEN, NOCH NICHT FERTIGEN BERICHT ("steht oben", "s. Abschnitt X")
+  IST EINE BEHAUPTUNG ÜBER EIN ARTEFAKT, DAS ES NOCH NICHT GIBT — die einzige
+  Behauptungsklasse, die strukturell ungeprüft bleibt. Die Umfangs-Ansage wird deshalb
+  gegen den FERTIGEN Text geprüft, nicht gegen den Auftrag. BELEG: ein Bericht verwies auf
+  einen Volltext-Diff, der im Antworttext nie stand.
 - WAS NUR IM GESPRÄCH GESAGT WIRD, EXISTIERT FÜR DIE NÄCHSTE SITZUNG NICHT: Jede
   Entscheidung, jede gemessene Angabe und jede Zusage, die künftige Arbeit BINDET, wird
   noch in derselben Runde in eine Datei geschrieben — nicht in eine Antwort, nicht in
@@ -1261,42 +1355,6 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   nachsehen, nie aus dem Feldnamen "id" annehmen — der PK der domains-Tabelle ist label,
   NICHT id. Beides zusammen erzeugte den Bug: eine nicht-existente Spalte -> PostgREST-42703
   -> verschluckt -> still leere Liste.
-- DB-FUNKTIONEN + SEARCH_PATH (Advisor-Regel, präzisiert nach Messung 2026-07-28): Jede neue
-  DB-Funktion bekommt eine FIXIERTE search_path-Klausel (sonst flaggt der Supabase-Advisor
-  "Function Search Path Mutable"). WELCHER Wert, hängt vom SICHERHEITSMODUS ab:
-  - SECURITY INVOKER (Normalfall): `set search_path = public`. Body zusätzlich voll
-    qualifizieren (public.tabelle).
-  - SECURITY DEFINER: `set search_path = pg_catalog` — der MINIMALE Pfad, NICHT public. Grund:
-    eine DEFINER-Funktion läuft mit Owner-Rechten; löst sie unqualifizierte Namen über public
-    auf, kann ein dort angelegtes Objekt die Auflösung kapern. Alles ausserhalb von pg_catalog
-    im Body voll qualifizieren.
-  GEMESSENER IST-ZUSTAND, der NICHT "korrigiert" werden darf (2026-07-28): rls_auto_enable —
-  die EINZIGE SECURITY-DEFINER-Funktion im System — trägt search_path=pg_catalog. Das ist
-  korrekt. Die frühere Fassung dieser Regel sagte pauschal "gilt für SECURITY INVOKER wie
-  DEFINER" und hätte beim Rebuild aus supabase/manual/rls_auto_enable.sql zu einer "Korrektur"
-  auf public eingeladen — das hätte die einzige Sicherheitsfunktion des Systems STILL
-  geschwächt, mit der Doku als Rückendeckung. Bei jedem Rebuild bleibt der Byte-Abgleich gegen
-  pg_get_functiondef Pflicht (s. "## Offene Punkte").
-- MIGRATION IMMER VOR CODE-DEPLOY (fail-closed): Eine Migration läuft IMMER im SQL-Editor VOR
-  dem zugehörigen Code-Deploy — sonst liest der neue Code eine Spalte/Funktion, die es noch
-  nicht gibt (bei CAPI hätte das die laufende trackingKey-Auflösung gebrochen). Umgekehrt ist
-  eine Migration OHNE den zugehörigen Code in der Regel ein No-op und damit gefahrlos. Detail:
-  docs/claude-history/phase-8-analytics.md.
-  PROTOKOLL-PFLICHT (ab 0018): JEDE künftige Migration schreibt als LETZTE Anweisung ihren
-  eigenen Eintrag:
-  ```sql
-  insert into public.schema_migrations (version, filename, applied_at)
-  values ('00XX', '00XX_name.sql', now()) on conflict (version) do nothing;
-  ```
-  AM ENDE, damit der Eintrag nur bei erfolgreichem Durchlauf entsteht — bricht die Migration
-  vorher ab, gibt es keine Zeile, die einen nie vollzogenen Lauf behauptet. Zweck: "welche
-  Migration ist gelaufen?" war bisher NICHT direkt messbar (nur die WIRKUNGEN waren es —
-  Spalte da? Constraint da?), damit hing die Reihenfolge-Regel allein an Disziplin.
-  ACHTUNG — PROTOKOLL, KEIN STEUERUNGSMECHANISMUS: Es gibt KEINEN Migrations-Runner, der aus
-  schema_migrations liest, und es soll keinen geben. Wer die Tabelle als "hat schon
-  gelaufen"-Gate missversteht, baut eine Automatik, die wir bewusst nicht haben — die
-  Migrationen laufen weiterhin manuell im SQL-Editor, die Idempotenz-Guards in den Dateien
-  selbst (if not exists, Katalog-Guard) bleiben die Absicherung gegen Doppelläufe.
 - OB EINE MIGRATION IN DER LAUFENDEN DB ANGEWANDT IST, IST AM REPO NICHT
   ENTSCHEIDBAR: Eine Datei in supabase/migrations/ beweist, dass sie
   GESCHRIEBEN wurde — nicht, dass sie gelaufen ist. Es gibt keinen
@@ -1318,30 +1376,6 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   noch niemand liest und deren korrekter historischer Wert oft gar nicht
   mehr rekonstruierbar ist.
   Herleitung: docs/claude-history/phase-9-ab-testing.md.
-- BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN, NICHT AM KALENDER (dieselbe Naht wie
-  "Migration vor Deploy", nur am anderen Ende) — NEU GEFASST 2026-07-29 nach dem
-  Pro-Wechsel, NICHT gestrichen:
-  WAS ENTFÄLLT: die Pflicht zum manuellen pg_dump nach jeder Migration. Supabase Pro zieht
-  TÄGLICH automatisch (7 Tage Retention); ein Handlauf daneben wäre Arbeit ohne Zugewinn.
-  WAS BLEIBT — und das war immer der eigentliche Kern der Regel: die WIRKRICHTUNG. Ein
-  Backup wird nicht durch ALTER gefährlich, sondern dadurch, dass das SCHEMA seither
-  weitergezogen ist; ein Restore liefert dann eine DB, die der deployte Code nicht bedienen
-  kann. Automatische Backups nehmen diese Gefahr NICHT weg, sie verschieben sie nur: das
-  jüngste Backup ist jetzt höchstens 24 h alt, kann aber trotzdem VOR einer Migration liegen,
-  die seither gelaufen ist.
-  DARAUS DIE HEUTIGE FASSUNG: Nach JEDER ausgeführten Migration gilt das automatische Backup
-  als NICHT mehr code-kompatibel, bis der nächste tägliche Snapshot durch ist. In diesem
-  Fenster ist ein Restore nur mit anschliessendem manuellen Nachziehen der Migration
-  brauchbar. Wer in diesem Fenster eine riskante Operation fährt, zieht vorher EINEN
-  manuellen Dump — nicht als Routine, sondern als Absicherung genau dieser Lücke.
-  KEIN VERSTOSS GEGEN DIE DATENZUGRIFFS-REGEL: ein pg_dump ist ein OPS-Weg. Die Regel "nur
-  über den Supabase-JS-Client" gilt für ANWENDUNGScode; wer sie auf Betriebswerkzeuge
-  ausdehnt, verbietet sich das einzige Mittel, das dieses Fenster überhaupt absichert.
-  Seit 0018 trägt jeder Dump schema_migrations IN SICH: der abgedeckte Stand steht im Backup
-  selbst statt in einer Notiz daneben, die verlorengeht. Das gilt für automatische Backups
-  genauso und ist der Grund, warum die Lücke überhaupt erkennbar ist.
-  Ist-Stand (Tier, PITR-Loch, Drill): "## Security Manifest & Launch Blocker", BACKUPS —
-  hier nur die Regel.
 - ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH UMGESCHRIEBEN (Entscheidung der
   Doku-Aufräumrunde 2026-07-28): Eine Migrationsdatei dokumentiert, was TATSÄCHLICH in der DB
   gelaufen ist. Sie im Nachhinein zu ändern — auch nur einen Kommentar — entkoppelt die Datei
@@ -1519,6 +1553,12 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   neuer Text kann bestehende Abfragen auf ZWEI Weisen brechen — es macht sie
   MEHRDEUTIG, ODER es kippt eine Behauptung über die ABWESENHEIT eines Textes
   (not.toContain, queryBy… toBeNull und Verwandte). Beide Achsen einzeln durchgehen.
+  DRITTE ACHSE UND WEITERER GELTUNGSBEREICH, ergänzt 2026-08-13: Auch ein DATEN-Element
+  kann Abfragen mehrdeutig machen — ein neuer Listeneintrag rendert ein weiteres Element
+  wie ein neuer Knopf (BELEG: eine Abfrage setzte "genau eine unkonfigurierte Karte"
+  voraus und fiel mit "Found multiple elements"). Und wer eine MENGE erweitert, sucht
+  zusätzlich nach dem NEUEN WERT als Gegenbeispiel: eine Strukturprüfung findet, wer über
+  die Menge ITERIERT, nicht wer ein künftiges Mitglied als "unbekannt" VERWENDET.
   Herleitung: docs/claude-history/phase-10-workspace.md.
 - DIE TESTUMGEBUNG WERTET KEIN CSS AUS (gemessen, dauerhafte Eigenschaft des
   Setups): vitest.config.ts lädt kein Stylesheet, display einer .hidden-Klasse ist
@@ -1698,6 +1738,13 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   IST ES PASSIERT: aus der Versionsverwaltung wiederherstellen und die Änderung mit
   dem Editier-Werkzeug neu eintragen. Eine Reparatur mit demselben Werkzeugtyp kann
   denselben Fehler ein zweites Mal erzeugen.
+  DIE GEGENRICHTUNG GEHÖRT DAZU, ergänzt 2026-08-13: EIN WERKZEUG KANN AUCH EINEN BEFUND
+  ERZEUGEN, DEN DER GEGENSTAND NICHT HERGIBT — es verändert dann das ERGEBNIS, ohne den
+  Gegenstand anzufassen. WO EIN MESSERGEBNIS EINE ABWESENHEIT IST, WIRD DAS WERKZEUG
+  GEWECHSELT, bevor die Abwesenheit als Befund gilt. BELEGE: ein HTTP-Leser, der den
+  Antwortstrom vorher selbst verbraucht, liefert leere Rümpfe (roh gemessen: 117/137/142
+  Bytes); und grep meldet für eine Datei mit einem NUL-Byte "Binary file … matches" STATT
+  der Trefferzeilen (src/lib/mappings.ts, gemessen 2026-08-13).
   Herleitung: docs/claude-history/phase-10-workspace.md.
 - NAHT-HYGIENE (7c-2, aktiv): 7c-2 koppelt Domain-/Routing-Logik NICHT an Tracking-/
   Lead-Logik. Die Andock-Punkte für spätere Module existieren BEREITS (neutraler
@@ -1705,6 +1752,74 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Nähten + additiver Disziplin, NICHT aus spekulativem Vorbau. KEINE Webhook-Interfaces/
   Schema-Erweiterungen ohne realen Konsumenten + Spec. Kontext:
   docs/claude-history/future-roadmap.md.
+- SCHWÄRZUNG — VIER TEILE, DIE NUR ZUSAMMEN TRAGEN (Phase 11): (a) EINE KAPPUNG IST KEINE
+  MASKIERUNG — sie behält den ANFANG und begrenzt die LÄNGE; ein Geheimnis am Anfang
+  überlebt sie vollständig. (b) ERST SCHWÄRZEN, DANN KAPPEN — umgekehrt bleibt von einer
+  Folge auf der Kappungsgrenze ein Rest unter der Mindestlänge stehen und geht als
+  TEIL-Leak hinaus, in einer Zeile, die bereinigt AUSSIEHT. (c) EINE SCHWÄRZUNG NACH FORM
+  TRIFFT AUCH DAS, WAS FORMGLEICH UND GEWOLLT IST — die Ausnahme braucht einen EIGENEN
+  NAMEN (kein Schalter-Argument) und einen EIGENEN TEST. (d) EIN LEAK-TEST WIRD NIE MIT
+  EINEM ECHTEN GEHEIMNIS GEFAHREN: ein formbasierter Schutz sieht echt und erfunden als
+  DIESELBE Eingabe, der echte Wert misst denselben Pfad nur mit Schadenspotenzial.
+  BELEG: beide Kappungen auf dem Meta-Fehlerpfad standen jahrelang da und schützten nie;
+  der live gemessene Trace-Bezeichner (23 Zeichen) wäre von derselben Regel gefressen
+  worden, die das Geheimnis fängt.
+- EIN KOMMENTAR IST EINE BEHAUPTUNG, KEINE EIGENSCHAFT — UND ER VERMEHRT SICH (Phase 11):
+  Wer über FREMDES Verhalten Unbedenklichkeit behauptet, hält damit eine Schutzmassnahme
+  auf; und ein bereits falscher Beleg wird beim Nachbareintrag ABGESCHRIEBEN statt geprüft
+  — die zweite Kopie ist ab dem ersten Tag falsch. ABGRENZUNG zu "EINE REGEL KANN GÜLTIG
+  BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD": dort ALTERT eine Angabe, hier VERBREITET sie
+  sich. BELEG: "Metas message ist Beschreibungstext (kein Secret)" stand über dem Feld,
+  das den Leak trug; die falsche Consent-Schlüssel-Begründung wurde beim dritten Ziel
+  unverändert weitergereicht.
+- MENGEN — ZWEI REGELN, DIE ZUSAMMENGEHÖREN (Phase 11): (a) EINE MENGEN-AUSSAGE WIRD NICHT
+  DADURCH RICHTIG, DASS MAN EIN FALSCHES MITGLIED ENTFERNT — wer korrigiert, prüft die
+  VERBLEIBENDEN, sonst wird sie präziser statt wahr. (b) EINE TEST-ZUSICHERUNG, DIE VON
+  EINER MENGE ABHÄNGT, BRICHT BEIM NÄCHSTEN MITGLIED WIEDER: die Reparatur ENTFERNT die
+  Abhängigkeit, sie zieht sie nicht nach. BELEG: eine Mitglieder-Korrektur zog sieben
+  Fundstellen nach, ohne die drei übrigen zu prüfen; eine Zählung "genau zwei
+  unkonfigurierte" hätte bei drei Zielen gegriffen und beim vierten erneut gebrochen.
+- BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS RICHTIGE GEMESSEN WIRD
+  — VIER TEILE (Phase 11):
+  (a) DER MITLÄUFER: Ein Messergebnis zählt erst, wenn im SELBEN Lauf gegen dasselbe fremde
+  System ein Aufruf mitläuft, dessen Soll-Ausgang VORHER feststeht. Ein Ergebnis, das aus
+  ZWEI Gründen so aussehen kann wie beobachtet, ist keines, sondern eine Frage. Der
+  Soll-Ausgang muss vorher feststehen, weil man ihn bei einem fremden System nicht
+  herstellen kann. BELEG: fünf Fehldeutungen an EINEM Anbieter an EINEM Tag, in vier von
+  fünf Fällen zeigte erst die Kontrolle den Fehler.
+  (b) EINE NICHTERWÄHNUNG IST KEINE ENTWARNUNG: Hatte eine Prüfung EINEN Gegenstand, sagt
+  sie über die übrigen nichts — auch nicht implizit. BELEG: aus "nur LinkedIn bricht die
+  Hülle" wurde geschlossen, TikTok passe; über TikTok stand dort nie ein Hüllen-Befund.
+  (c) EINE ERFOLGSQUITTUNG KANN BLIND SEIN FÜR DAS, WAS MAN MISST: Antwortet ein fremdes
+  System mit und ohne den gemessenen Bestandteil IDENTISCH, belegt seine Quittung darüber
+  nichts — es braucht eine Gegenprobe, die ihn weglässt. BELEG: die Antwort des Anbieters
+  war mit und ohne Nutzer-Objekt identisch.
+  (d) EIN VERDACHT, DER EINEN FEHLERORT NENNT, BEVOR EINE MESSUNG IHN EINGEGRENZT HAT,
+  KOSTET DIE HOPS, DIE ER ÜBERSPRINGT: Bei einer Kette aus mehreren Übergängen wird nicht
+  am vermuteten Ende begonnen, sondern HALBIERT — zwei Beobachtungen, die je die halbe
+  Kette entlasten, schlagen jede Begehung. BELEG: eine Kette aus fünf Hops, vier davon
+  durch ZWEI Beobachtungen entlastet (ausgelieferter Quelltext, Datenbank-Zeile).
+  (e) PFLICHT-VORBEDINGUNG, KEINE EMPFEHLUNG — VOR JEDER LIVE-KONTROLLE WIRD DER
+  A/B-BETRIEB FESTGESTELLT: Ist er aktiv, wird ENTWEDER abgeschaltet ODER die
+  AUSGELIEFERTE Variante bestimmt, BEVOR irgendein Ergebnis beurteilt wird. Sie ist kein
+  Teil (a) und keine Fussnote dazu: (a) verlangt einen zweiten Aufruf, (e) verlangt einen
+  bekannten ZUSTAND DES PRÜFLINGS. GRUND: Die Varianten tragen GETRENNTE Mapping-Sätze und
+  können verschiedene Ereignisnamen und Beträge führen; wer das nicht prüft, misst eine
+  unbekannte Konfiguration, und jedes Ergebnis ist von einem echten Befund nicht zu
+  unterscheiden. BELEG: eine Änderung an der EINEN Variante, ausgeliefert wurde die ANDERE
+  — aufgelöst hat es EINE Abfrage über BEIDE Mapping-Spalten.
+- MEHRERE KENNUNGEN JE ZIEL BRECHEN EINEN SCHLÜSSEL (PROJEKT, ZIEL) NICHT — MEHRERE
+  EMPFÄNGER DESSELBEN TYPS JE PROJEKT BRECHEN IHN (Phase 11): Zwei Achsen, die beim Lesen
+  wie eine aussehen — die eine vervielfacht die KENNUNG, die andere die EMPFÄNGER-INSTANZ.
+  Wer sie zusammenzieht, hält einen Schlüssel für gebrochen, sobald irgendein Ziel mehr als
+  eine Kennung braucht, und baut ein Schema um, dem nichts fehlt. BELEG: Kennung im
+  Einstellungs-Blob (ProjectSettings.pixels), Zugangsdatum in der Geheimnis-Tabelle mit
+  einer Zeile je Ziel — die Trennung lag im Code, bevor sie jemand als Prinzip benannte.
+- WER EINE STREICHUNG PLANT, ZÄHLT NICHT NUR DIE IMPORTE, SONDERN AUCH DIE SÄTZE, DIE DEN
+  GELÖSCHTEN NAMEN TRAGEN (Phase 11): tsc und build fangen die Importe — und nur die. Ein
+  Kommentar, der ein totes Symbol verbietet, kompiliert einwandfrei und sieht wie eine
+  geltende Regel aus. BELEG: nach vier grünen Gates trugen drei Kommentare den Namen einer
+  gestrichenen Zusammensetzung weiter; die Streichung war da noch nicht fertig.
 
 ## Aktive Dokumente (nicht geladen, nicht Teil des CC-Kontexts)
 Aktiv und konstant gepflegt — im Unterschied zum Detail-Archiv darunter, das
@@ -1778,6 +1893,11 @@ KEIN @-Import. Bei Arbeit an einem Thema die passende Datei gezielt lesen:
   AUFSCHLAGEN, WENN MAN DORT ETWAS VERMISST: die Kuration war eine Auswahl, und diese
   Datei ist der Rückfall für den Fall, dass dabei etwas übersehen wurde. Wird NICHT
   gepflegt; ihre Zeiger sind tot oder werden es.
+  WAS BEI DER KURATION VERLORENGING — ZWEIMAL IN FOLGE GENAU DIE TRAGENDE AUSSAGE: der
+  LinkedIn-Befund (g)/(h) und der namentliche Einspruch gegen die Roadmap-Formulierung
+  "additive Fan-Out-Ziele", der ACHT TAGE unbeachtet blieb. Beide standen NUR hier. Das
+  ist ein Befund über das KURATIONS-KRITERIUM, nicht über diese Datei — wer eine Phase
+  kuriert, prüft, ob das Weggelassene irgendwo eine Entscheidung getragen hätte.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),

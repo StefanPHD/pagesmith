@@ -1614,3 +1614,168 @@ miterledigen, sondern gebündelt abarbeiten.
   DREI VON IHNEN BETREFFEN DIESELBE DATEI (`src/lib/capi/meta-forward.ts`) und gehören
   gebündelt — zusammen mit dem Tier-1-Punkt aus dem Security-Manifest, der dieselbe
   Datei anfasst.
+
+## Aus Phase 11 gehoben (2026-08-13) — Vorrats-Punkte aus docs/aktiver-stand.md
+
+Übernommen im Zug der Hebung am Phasenende. **Jeder Punkt trägt seinen Messbefund aus der
+Standdatei UNVERÄNDERT** — nichts ist hier neu erhoben worden; wo eine Angabe ein Datum
+trägt, ist es das der ursprünglichen Messung.
+
+- KODIERUNG DER KENNUNG IM ENDPUNKT-PFAD: `forwardToMeta` in `src/lib/capi/meta-forward.ts`
+  setzt die Kennung anders in den Pfad ein als `forwardToPinterest` in
+  `src/lib/capi/pinterest-forward.ts`. GEMESSEN (2026-08-13): Meta interpoliert die
+  Pixel-Kennung roh in den Pfad, Pinterest fuehrt sie durch `encodeURIComponent`.
+- WURFFREIHEIT DES NUTZLAST-BAUS: Bei `forwardToMeta` liegt der Nutzlast- und URL-Bau
+  ausserhalb des umschliessenden `try`; beim zweiten Adapter haelt dieselbe Zusage an der
+  ANORDNUNG. GEMESSEN (2026-08-13): Metas URL-Bau steht vor dem `try`, Pinterests
+  innerhalb.
+- VIERTE TRIMM-KOPIE: `asString` steht in `src/lib/capi/ingest.ts`,
+  `src/lib/capi/meta-forward.ts`, `src/lib/capi/pinterest-forward.ts` und seit dem dritten
+  Ziel in `src/lib/capi/tiktok-forward.ts`. Derselbe Punkt, eine Kopie mehr — kein neuer.
+- ABWESENHEITS-TEST OHNE EIGENE POSITIVKONTROLLE: in
+  `src/lib/capi/ingest.timeout.test.ts` der Test, der die schnelle Antwort prueft — seine
+  Behauptung ueber den Log-Kanal steht ohne Nachweis, dass dieser Kanal im selben Lauf
+  etwas fangen wuerde.
+- DREI UNABHAENGIGE KONSTANTEN DESSELBEN WERTES FUER DIESELBE AUFGABE:
+  `META_ERROR_MSG_MAX` (`meta-forward.ts`), `PINTEREST_LOG_MAX` (`pinterest-forward.ts`)
+  und `TIKTOK_LOG_MAX` (`tiktok-forward.ts`), alle 200 — dazu drei gleichlautende
+  Timeout-Deckel (je 3_000).
+- SECHS UNGEDECKTE ACHSEN AM SCHWAERZ-PRIMITIV DES ZWEITEN ADAPTERS
+  (`sanitizeProviderText` in `src/lib/capi/pinterest-forward.ts`): Reihenfolge,
+  Mindestlaenge, Nicht-Strings, Leerwerte, Kappung, Globalitaet — Kandidat fuer eine EIGENE
+  Scheibe mit Charakterisierungs-Tests VOR einer spaeteren Vereinheitlichung.
+- EIN TESTNAME BEHAUPTET DIE SCHWAERZUNG FUER EIN FELD, DAS SEINE FIXTURE NICHT DECKT:
+  `T12b` in `src/lib/capi/pinterest-forward.test.ts` nennt `error_message` und
+  `warning_message`, seine Fixture traegt nur `warning_message`.
+- EINE KONSTANTE DECKT FUENF FELDER AB: `META_SHORT_MAX` in
+  `src/lib/capi/meta-forward.ts` gilt fuer Code, Subcode, Typ, Trace-Bezeichner und
+  Content-Type — wer sie fuer eines anhebt, hebt sie fuer alle; heute richtig, weil alle
+  fuenf kurz sind, aber eine Kopplung, die niemand bemerkt, bis eines sie sprengt.
+- DER NICHT-JSON-AUSGANG IST LIVE NICHT ERZWINGBAR (er verlangt eine nicht-JSON-Antwort
+  des Anbieters) und bleibt damit dauerhaft eine Test-only-Achse.
+- DIE VORGANGS-KENNUNG DES DRITTEN ANBIETERS WIRD IMMER GESCHWAERZT (`asLogShort` in
+  `src/lib/capi/tiktok-forward.ts`): Sie ist strukturell eine lange undurchsichtige Folge
+  und liegt in JEDEM Aufruf ueber der Grenze — das Feld liefert nie einen Wert und sieht
+  trotzdem aus wie unterdrueckte Information. Zwei Auswege, beide UNENTSCHIEDEN: das Feld
+  weglassen, oder ihm eine benannte Ausnahme geben wie beim ersten Adapter. Letzteres
+  braucht denselben GEMESSENEN Grund, der dort vorlag und hier fehlt — dass der Support
+  dieses Anbieters ohne den Wert nicht arbeiten kann.
+- UNS FEHLT DIE INHALTS-KENNUNG, die der Anbieter erwartet (`TrackConfig` in
+  `src/lib/mappings.ts` traegt `event`, `isCustom?`, `value?`, `currency?` — keine
+  Inhalts-Kennung): Der Test-Tab beanstandet sie im Betrieb dauerhaft — bekannt und
+  akzeptiert. Gemessener Nebenbefund: Der Anbieter leitet aus unseren zwei Feldern selbst
+  ein Sammelfeld ab; dort laege die Kennung, wenn wir eine haetten.
+- EINE WARNUNG AN DER OBERFLAECHE, dass ein frei benanntes Ereignis beim dritten Anbieter
+  nicht optimierungsfaehig ist (`ActionPanel` in `src/components/`): eigener Bereich,
+  eigene Produktfrage, kein Live-Nachweis noetig. Die Messung, die sie belegt: ein
+  erfundener Name wird angenommen und als Custom gefuehrt, und die Quittung sagt das nicht
+  — nur die Oberflaeche des Anbieters tut es. GEMESSEN (2026-08-13): `ActionPanel.tsx`
+  traegt heute keine solche Warnung.
+- DER GEHEIMNIS-PLATZHALTER IST BEI ZWEI ZIELKARTEN IDENTISCH (`TARGET_CARDS` in
+  `src/components/TargetCard.tsx`): fuer den Nutzer folgenlos, weil die BESCHRIFTUNGEN
+  sich unterscheiden — fuer eine Testabfrage ueber den Platzhalter nicht. GEMESSEN
+  (2026-08-13): Pinterest und TikTok tragen beide denselben Platzhaltertext.
+- DIE FAN-OUT-TESTS KENNEN DAS DRITTE ZIEL NUR IM KREUZVERGLEICH
+  (`src/lib/capi/fan-out.test.ts`): Der Punkt stand als "kennen es NICHT" (GEMESSEN
+  2026-08-12, null Treffer). SEITHER TEILWEISE ERLEDIGT durch die C1-Scheibe — GEMESSEN
+  (2026-08-13): fuenf Treffer, aber ausschliesslich im Kreuzvergleich-Block. Der Block zu
+  Nebenlaeufigkeit und Containment traegt weiterhin den Namen "ZWEI ECHTE EMPFAENGER".
+  Was still kaputtgeht: eine Aenderung, die erst ab dem DRITTEN Empfaenger bricht, faellt
+  keinem Test auf.
+- KEIN KREUZVERGLEICH BEIM ZWEITEN ZIEL (`EVENT_MAP` in
+  `src/lib/capi/pinterest-forward.ts`): GEMESSEN am Repo (2026-08-12, erneut 2026-08-13),
+  formale Suche nach `META_STANDARD_EVENTS` — kein Treffer in
+  `pinterest-forward.test.ts`. Was still kaputtgeht: Waechst unsere Standardliste um einen
+  neunten Namen, wird ausschliesslich `T11` rot — der Waechter des DRITTEN Ziels. Die
+  Tabelle des zweiten bleibt stumm, und der neue Name ginge dort als nicht abgebildeter
+  Name hinaus, unter einer Bedeutung, die niemand vergeben hat.
+- EIN ADAPTER KANN HEUTE KEIN EREIGNIS ABLEHNEN (`dispatchForward` in
+  `src/lib/capi/ingest.ts`, dazu die drei Adapter): GEMESSEN (2026-08-12, erneut
+  2026-08-13) — die Zuordnung gibt `Promise<void>` zurueck, und alle drei Adapter tragen
+  die Zusage "SIE GIBT NICHTS ZURUECK" woertlich in ihrem Kopf. Es gibt keinen
+  Rueckgabewert, der "fuer dieses Ereignis nicht abbildbar" von "gesendet" oder
+  "fehlgeschlagen" unterscheiden koennte. DER PREIS IST GROESSER ALS EIN NEUES ZIEL: Ein
+  Rueckkanal beruehrt ALLE DREI bestehenden Adapter — er gehoert zum Preis eines Ziels mit
+  Kennung JE EREIGNISTYP.
+- DER IDENTITAETS-RIEGEL IST NICHT BEI ALLEN DREI ADAPTERN GLEICH: GEMESSEN (2026-08-12,
+  erneut 2026-08-13) — Pinterest und TikTok brechen ohne IP oder User-Agent ab, bevor
+  irgendein Aufruf hinausgeht; beim ersten kommt dieser Riegel NICHT vor, dort werden die
+  beiden Felder nur konditional in die Nutzlast gesetzt. Ob die Ungleichheit richtig oder
+  falsch ist, ist NICHT entschieden; gemeldet ist, dass sie besteht und nirgends als
+  Unterschied benannt wird.
+- ZWEI UNABHAENGIGE RIEGEL AUF DERSELBEN ACHSE — DER ZWEITE DECKT DEN ERSTEN ZU
+  (`getCapiConfigByTrackingKey` in `src/lib/capi/token.ts`: `hasSecret` in der
+  Geheimnis-Schleife und der Falsy-Riegel in der Paarung darunter): GEMESSEN
+  (Mutationsproben M2/M3 am 2026-08-13) — wird `hasSecret` aufgeweicht, faellt ein leeres
+  oder `null`-Geheimnis trotzdem am zweiten Riegel heraus. DER RIEGEL BLEIBT, und dieser
+  Punkt beantragt NICHT seine Entfernung: Er ist eine zweite, unabhaengige Deckung auf dem
+  meistgetroffenen Pfad der Plattform. Was still kaputtgeht, ist etwas anderes: Jeder Test,
+  der diese Achse ueber einen FALSY Wert prueft, ist blind gegen einen Fehler im ersten
+  Riegel. Wer hier kuenftig einen Waechter baut, waehlt einen TRUTHY Wert (Muster: N3 in
+  `src/lib/capi/token.test.ts`).
+- DER GESPEICHERTE STAND IST EIN SPIEGEL, NICHT DIE DATENBANK (`savedSettings` in
+  `src/components/CodeImporter.tsx`, seit Scheibe B2 bis in `TargetCard` gereicht):
+  GEMESSEN (2026-08-13) — er wird beim Laden aus der Projekt-Zeile geseedet und im
+  Erfolgszweig des Speicherns nachgefuehrt; eine Bestaetigung aus der Datenbank holt er
+  nie. Ein zweiter Tab, der dasselbe Projekt speichert, macht ihn stumm veraltet.
+  Aufloesbar nur mit einer neuen Abfrage, und die war in B2 ausdruecklich ausgeschlossen.
+  PRAEZEDENZ, kein neues Risiko: Dieselbe Bauform traegt seit Phase 7 der Publish-Zustand.
+- EIN STANDARD-EREIGNIS OHNE BETRAGS-FELD — OFFENE PRODUKTFRAGE, KEIN BEFUND UEBER EINEN
+  FEHLER (`META_VALUE_EVENTS` in `src/lib/tracking/meta.ts`, gelesen ueber `showValue` in
+  `src/components/ActionPanel.tsx`): GEMESSEN (Live, 2026-08-13) — bei einem der
+  Standard-Ereignisse laesst die Oberflaeche keinen Betrag eingeben, das Feld erscheint
+  nicht. UNGEMESSEN ist zweierlei, und beides entscheidet den Rang: ob das eine BEWUSSTE
+  fachliche Einschraenkung ist oder eine beilaeufige Folge der Feld-Logik, UND ob der
+  Anbieter fuer dieses Ereignis ueberhaupt einen Wert annimmt. Was still kaputtgeht, falls
+  es beilaeufig ist: Der Betreiber kann fuer dieses Ereignis keinen Wert hinterlegen,
+  bekommt dafuer keine Begruendung zu sehen, und in der Auswertung beim Anbieter fehlt der
+  Umsatz. KEINE REPARATUR UND KEIN VORSCHLAG: Solange die zweite Provenienz fehlt, waere
+  jede Aenderung eine Wette darauf, welcher der beiden Faelle vorliegt.
+- "KONFIGURIERT" HEISST AN ZWEI ORTEN VERSCHIEDENES — DIE STRUKTURELLE HAELFTE BESTEHT
+  FORT (`listConfiguredTargets` in `src/app/projects/actions.ts` gegen die Paarung in
+  `getCapiConfigByTrackingKey`, `src/lib/capi/token.ts`): GEMESSEN (2026-08-12, erneut
+  2026-08-13) — die Oberflaechen-Ableitung selektiert ausschliesslich die Ziel-Spalte und
+  liest den Wert nie; der Forward verlangt Kennung UND Zugangsdatum. Die SICHTBARE Haelfte
+  ist mit Scheibe B2 behoben (die Karte sagt selbst, dass an ein Ziel nichts gesendet
+  wird); geteilt ist seither die BEDINGUNG (`hasPixelId`), nicht das URTEIL.
+  ZU PRUEFEN, SOBALD DER LOGGING-/MONITORING-UMBAU ANSTEHT. **DAS IST KEIN TRIGGER IM
+  SINNE VON "## Offene Punkte"** — jener Abschnitt verlangt einen benennbaren Zeitpunkt,
+  und ein Umbau, den niemand terminiert hat, ist keiner. Der Vermerk steht hier, damit der
+  Punkt beim naechsten Lesen nicht dorthin wandert.
+- DAS ERGEBNIS DES FAN-OUTS WIRD VERWORFEN (der Fan-Out in `src/lib/capi/ingest.ts`):
+  GEMESSEN (2026-08-12, erneut 2026-08-13) — das Sammel-Warten wird erwartet, sein
+  RUECKGABEWERT aber nirgends gelesen; direkt danach steht die leere 204. Welcher
+  Empfaenger geliefert hat und welcher nicht, ist im Handler vorhanden und wird
+  fallengelassen. ERSTE INSTANZ, GEMESSEN (Live, 2026-08-13, berichtet): In einem realen
+  Lauf hat ein Ziel dauerhaft NICHT geliefert; das Einzige, was davon existierte, war eine
+  fluechtige Logzeile ohne Projekt- und ohne Ereignis-Bezug — bemerkt wurde es NUR, weil
+  jemand aus einem ANDEREN Grund ins Protokoll sah. Damit beschreibt der Punkt keinen
+  MOEGLICHEN, sondern einen EINGETRETENEN Zustand.
+  ZU PRUEFEN, SOBALD DER LOGGING-/MONITORING-UMBAU ANSTEHT. **DAS IST KEIN TRIGGER IM
+  SINNE VON "## Offene Punkte"** — dieselbe Begruendung wie beim Punkt darueber.
+- "ZEILE EXISTIERT" GLEICH "WERT VORHANDEN" RUHT AUF DEM SCHREIBPFAD, NICHT AUF DEM SCHEMA
+  (`setCapiToken` in `src/app/projects/actions.ts` gegen
+  `supabase/migrations/0021_project_secrets.sql`): GEMESSEN (2026-08-12, erneut
+  2026-08-13) — die Spalte ist `not null`, und `not null` ist nicht "nicht leer"; der
+  einzige CHECK der Tabelle bindet `target`. Nicht-leer ist allein zugesichert, weil die
+  Server-Action trimmt und bei leerem Ergebnis abbricht. Was still kaputtgeht: Jeder
+  Schreibweg, der an dieser Action vorbeigeht — und ueber `service_role` ist das der
+  einzige Weg, den es auf dieser Tabelle ueberhaupt gibt —, kann eine Zeile erzeugen, die
+  die Oberflaeche als konfiguriert meldet. Ein CHECK auf Nicht-Leere machte aus dem
+  schwachen Argument das starke. WARUM HIER UND NICHT IN `docs/db-stand.md`: Jene Datei
+  wird ausschliesslich aus einer Messung des IST-ZUSTANDS fortgeschrieben und traegt keine
+  Vorhaben; dieser Punkt nennt ausserdem keinen Zeitpunkt.
+- VOLLSTAENDIGKEITS-ACHSE — WAS DANN SOFORT GILT (Rueckverweis aus CLAUDE.md,
+  "## Offene Punkte", Eintrag "DIE VOLLSTAENDIGKEITS-ACHSE IST NICHT GEBAUT"): Drei
+  Messbefunde, GEMESSEN am Repo (2026-08-12), damit sie beim Bau nicht neu erhoben werden
+  muessen. (1) DER NENNER IST DIE VEREINIGUNG DER TRACK-EREIGNISSE AUS BEIDEN
+  VARIANTEN-MAPPINGS: A und B laufen nachweislich auseinander — der Umschalter tauscht die
+  Wurzeln, eine Aenderung schreibt in die aktive, und der Speicherpfad je Variante
+  beruehrt die Spalten der anderen NICHT; KEINE Stelle im Produktivcode bildet ihre
+  Vereinigung. Ein Nenner, der nur A kennt, meldet vollstaendig, waehrend beim halben
+  Traffic nichts ankommt. (2) ES BRAUCHT KEINE ZUSAETZLICHE DATENBANK-RUNDE: Beide Mengen
+  reisen bereits in derselben Projekt-Ladeantwort und liegen im Container — zwei Ebenen
+  von der Karte entfernt. (3) "UNVOLLSTAENDIG" IST AUS DER KONFIGURATION ZU RECHNEN, NIE
+  AUS LAUFZEITDATEN: Ein nicht beliefertes Ziel hinterlaesst in KEINEM persistierten
+  Datensatz eine Spur — wer die Antwort aus den Ereignissen ableiten wollte, leitete sie
+  aus dem Nichts ab.

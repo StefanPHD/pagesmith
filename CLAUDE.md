@@ -98,74 +98,81 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       & live bewiesen (2026-08-03). Volle Herleitung:
       docs/claude-history/backlog-polish.md, Eintrag "src/middleware.ts ->
       proxy.ts umbenennen".
-- [~] Phase 11 — Multi-Tracking (Server-Side Fan-Out): TEILS ERLEDIGT.
-      ERLEDIGT IST DIE STRUKTUR: Der Fan-Out beliefert MEHRERE Ziele — live
-      bewiesen gegen echte fremde Systeme, nicht gegen eine Attrappe. Auflösung
-      über mehrere Ziele, Einwilligung JE ZIEL, Oberfläche je Plattform und der
-      nebenläufige Fan-Out mit EIGENEM Deckel je Empfänger sind gebaut und geprüft.
-      GEBAUT UND TATSÄCHLICH BELIEFERT SIND DREI ZIELE: Meta, Pinterest und TikTok
-      — alle drei im selben Lauf live bewiesen (2026-08-11).
-      OFFEN SIND ZWEI ZIELE — Google und LinkedIn —, dazu das
-      Tracking-Testmodus-Modul und der Testknopf. DIE BEIDEN ZIELE HABEN
-      VERSCHIEDENEN RANG UND WERDEN JE ZIEL GELESEN, NICHT ALS KLASSE. Die
-      Befunde je Ziel samt Provenienz stehen in docs/aktiver-stand.md,
-      "## 2. Wo die Phase steht" — hier nur der Rang:
-      · LINKEDIN — KEINE Wiederholung: die Kennung gilt JE EREIGNISTYP, nicht je
-      Projekt. Das berührt, WIE EIN EREIGNIS BESCHRIEBEN WIRD, und ist damit eine
-      PRODUKTÄNDERUNG, keine Adapter-Wiederholung (Owner-Entscheidung 2026-08-11).
-      · GOOGLE — ZWEI Ziele, nicht eins, und keines zugeschnitten. Der Zugang
-      verlangt eine AUTORISIERUNGSSCHICHT statt eines Tabelleneintrags, dazu ein
-      SCHEMA-RISIKO auf der Geheimnis-Tabelle. Google bekommt eine eigene
-      KONZEPT-Runde, KEINE Scheibe.
-      CUSTOM-PIXEL GEHÖRT ZU KEINEM DIESER POSTEN — eigener Absatz weiter unten.
-      DER TESTKNOPF FÄLLT IN KEINE DIESER KLASSEN: er ist keine
-      Scheibe, sondern mehrere einzeln beweisbare Teile plus eine unentschiedene
-      Vorfrage — Auflagen, Messbefunde und Begründung stehen in
-      docs/claude-history/phase-11-multi-tracking.md, "Die dreizehnte Scheibe —
-      Der Testknopf (VERSCHOBEN, Owner 2026-08-10)".
-      Volle Herleitung: docs/claude-history/phase-11-multi-tracking.md.
-      SOURCE BLEIBT BEOBACHTUNGS-ORT: jedes Ziel
-      bekommt seine EIGENE additive Spalte, kein Umbau. DAS IST EINE AUSSAGE ÜBER
-      DAS events-SCHEMA, NICHT über die Gleichartigkeit der Anbieter — s.
-      "TRACKING-source = BEOBACHTUNGS-ORT, NIE ZIEL" unter "## Immer beachten".
-      Dazu das kleine
-      Tracking-Testmodus-Modul (test_event_code, s. future-roadmap.md,
-      "Tracking-Testmodus für Kunden").
-      CUSTOM-PIXEL IST KEINE WIEDERHOLUNG, SONDERN EINE EIGENE
-      ARCHITEKTUR-SCHEIBE. UNGEKLÄRT IST ZUERST, WAS ES ÜBERHAUPT IST, und die
-      beiden Lesarten führen an verschiedene Orte:
-      (a) ein CLIENT-SEITIGES Snippet — dann ist es gar kein Fan-Out-Ziel,
-      sondern derselbe Fall wie das gleich darunter ausgenommene Hotjar;
-      (b) ein SERVER-SEITIGER Empfänger mit KUNDENEIGENEM Endpunkt — dann hängen
-      drei Fragen daran, die KEIN anderes Ziel stellt: SSRF-Schutz bei einem
-      betreiber-konfigurierten ausgehenden Aufruf, die Aufhebung des
-      Primärschlüssels (project_id, target) bei mehreren Endpunkten pro Projekt,
-      und ein dynamisches Nutzlast-Mapping ohne bekanntes Zielschema.
-      DER ZUSCHNITT ENTSTEHT ERST NACH DIESER KLÄRUNG, nicht davor.
-      AUSDRÜCKLICH AUSGENOMMEN:
-      Hotjar/Session-Recording ist KEIN Fan-Out-Ziel, sondern braucht einen
-      eigenen Custom-Script-Mechanismus — separat zu bewerten.
-      DAS GETEILTE CONSENT-GATE IST GEBAUT. Die Einwilligungs-Auswertung liegt
-      in einer EIGENEN Datei (src/lib/tracking/consent.ts, buildConsentRuntime),
-      hängt WEDER an der Pixel-ID NOCH an der Mapping-Tabelle und wird von
-      BEIDEN Konsumenten gefragt — der Meta-Laufzeit und dem PageView-Emitter.
-      Sie beurteilt die Einwilligung JE ZIEL.
-      RICHTIGGESTELLT, NICHT GESTEMPELT: Hier stand, das Consent-Gate sei fest
-      in die Meta-Laufzeit eincodiert, und es wurde beim alten Namen genannt.
-      Beides hat die zweite Scheibe beseitigt. Der Satz ist eine DESIGN-VORGABE
-      für diese Phase — ein Satz, an dem sich ein Entwurf ausrichtet, darf nicht
-      in falscher Fassung stehen, sonst plant die nächste Instanz einen Bau, den
-      es schon gibt.
-      DIE GEFAHR, GEGEN DIE ER GESCHRIEBEN WURDE, IST DAMIT ABGEWENDET: eine
-      KOPIERTE Consent-Prüfung pro Ziel — dasselbe Muster, das an anderer Stelle
-      im Projekt konsequent vermieden wird ("kein drittes Urteil").
-      WEITERHIN OFFEN, als AUFLAGE an den Entwurf und ausdrücklich NICHT
-      vorentschieden: die separat erwähnte generische Action-Consent-Checkbox
-      (jede Aktion, nicht nur Tracking, gated). Sie muss auf DEMSELBEN
-      Mechanismus laufen; ein zweites Urteil darf nicht entstehen.
-      Protokoll und Begründung: docs/claude-history/phase-11-multi-tracking.md.
-      Protokolle, Entscheidungen und was jede Scheibe ausdrücklich NICHT
-      beweist: docs/claude-history/phase-11-multi-tracking.md.
+- [x] Phase 11 — Multi-Tracking (Server-Side Fan-Out): ABGESCHLOSSEN & live
+      bewiesen (2026-08-03 bis 2026-08-13). Gebaut und belegt: server-seitiger
+      Fan-Out an DREI Ziele, Auflösung über mehrere Ziele, Einwilligung JE ZIEL,
+      Oberfläche je Plattform, nebenläufiger Fan-Out mit EIGENEM Deckel je
+      Empfänger. Herleitung: docs/claude-history/phase-11-multi-tracking.md; der aktive
+      Stand der Phase: docs/claude-history/phase-11-multi-tracking-aktiver-stand.md.
+      DER HAKEN GILT DEM GEBAUTEN TEIL. Was NICHT gebaut wurde, steht als eigene
+      Zeile darunter (11.1–11.4 und 11.6) — NICHT als Sammelposten, weil die
+      offenen Ziele KEINE Klasse sind.
+- [ ] Phase 11.1 — LinkedIn als Fan-Out-Ziel: KEINE Adapter-Wiederholung, sondern
+      eine PRODUKTÄNDERUNG. Die Kennung ist eine Conversion-Regel-URN und gilt JE
+      EREIGNISTYP, nicht je Projekt; OWNER-ENTSCHEIDUNG (2026-08-11): Zuordnung
+      Ereignisname -> URN (Option B), damit Kunden auf Conversion-Typen optimieren
+      können. Das berührt, WIE EIN EREIGNIS BESCHRIEBEN WIRD.
+      WEITERE ABWEICHUNGEN: Zeit in MILLISEKUNDEN (Meta: Sekunden) · Betrag als
+      Zeichenkette · Erfolg ist 201 · DREI Fehlerwege mit ZWEI Rumpfformen · ein
+      Versions-Header, dessen Wert ein Datum ist und der abgeschaltet wird · als
+      Identität nur die IP, NUR IPv4, kein User-Agent · kein Testmodus gefunden —
+      ein NICHT-TREFFER, KEIN Beweis der Abwesenheit. Immerhin: das Zugangsdatum
+      ist ein nicht ablaufendes Token und passt in die Geheimnis-Tabelle.
+      PROVENIENZ: GELESEN an FREMDER Anbieter-Doku (2026-08-11) — NICHT gemessen,
+      NICHT live bestätigt. Dass TikTok als drittes Ziel live bewiesen ist, WERTET
+      DAS NICHT AUF; wer das verwechselt, plant einen Bau auf einer Doku-Lesung.
+      ZWEI AUFLAGEN FÜR JEDES WEITERE ZIEL: "ein drittes Ziel erzwingt eine
+      Entscheidung, keine Kopie" — und jedes Ziel bringt seine EIGENE
+      Constraint-Erweiterung auf project_secrets mit (docs/db-stand.md, CHECK
+      project_secrets_target_valid). DAZU EIN PREIS, DER GRÖSSER IST ALS DIESES
+      ZIEL: Ein nicht abbildbares Ereignis hat keinen Rückkanal, und ein solcher
+      berührt ALLE DREI Adapter (backlog-polish.md, "EIN ADAPTER KANN HEUTE KEIN
+      EREIGNIS ABLEHNEN").
+- [ ] Phase 11.2 — Google: EINE KONZEPT-RUNDE, KEINE SCHEIBE. Es sind ZWEI Ziele,
+      nicht eins, und keines zugeschnitten: Google Ads Conversions und GA4 sind
+      verschiedene Produkte mit verschiedenen Schnittstellen und Semantiken. Der
+      bisherige Weg für Offline-Conversions ist für NEUE Zugänge seit Mitte Juni
+      2026 geschlossen; der Nachfolger ist für den relevanten Fall allowlist-only
+      und verlangt einen OAuth-Fluss mit Verifizierung — also eine
+      AUTORISIERUNGSSCHICHT, keinen Tabelleneintrag. Der GA4-Weg verlangt eine
+      Besucher-Kennung aus einem Cookie, das dieses Produkt nicht setzt, und
+      liefert ohnehin keine Ads-Conversion; er berührt damit zusätzlich die
+      DATENKLASSEN-GRENZE (s. "## Offene Punkte").
+      SCHEMA-RISIKO (benannt 2026-08-03): mehrwertige Anmeldungen passen nicht auf
+      ein Geheimnis pro Zeile; im Ernstfall eine ZWEITE Migration auf der
+      Geheimnis-Tabelle.
+      PROVENIENZ: GELESEN an FREMDER Anbieter-Doku (2026-08-11) — NICHT gemessen,
+      NICHT live bestätigt; der Live-Beweis des dritten Ziels wertet sie NICHT auf.
+      DIE ZWEI AUFLAGEN AUS 11.1 GELTEN HIER WÖRTLICH MIT.
+- [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code): klein und
+      eigenständig, damit ein Kunde seine Einrichtung prüfen kann, ohne echte
+      Conversions zu erzeugen. Kontext: docs/claude-history/future-roadmap.md,
+      "Tracking-Testmodus für Kunden".
+      PROVENIENZ: bislang nur als NAME geführt — kein Zuschnitt, keine Recherche,
+      keine Entscheidung. Gemessen ist allein, dass der zweite Adapter einen
+      Testmodus-Parameter kennt (testModeQuery) und beim ersten der Test-Code in
+      die NUTZLAST wandert; für LinkedIn steht ein Nicht-Treffer.
+- [ ] Phase 11.4 — Der Testknopf: KEINE SCHEIBE, sondern mehrere einzeln
+      beweisbare Teile plus eine UNENTSCHIEDENE VORFRAGE — was beim Druck auf den
+      Knopf überhaupt aufgerufen wird. OHNE DEREN ANTWORT HAT KEIN ZUSCHNITT EINEN
+      GEGENSTAND. Auflagen und Messbefunde: phase-11-multi-tracking.md, "## Die
+      dreizehnte Scheibe". WAS IHM IN WAHRHEIT FEHLT, gemessen: ein Lesepfad, ein
+      Rückkanal und eine Maskierung — NICHT die Adapter. Die frühere Bindung "es
+      braucht die Adapter, die es hier nicht gibt" ist mit dem zweiten und dritten
+      Ziel eingelöst worden, ohne dass der Testknopf näher gerückt wäre.
+- [ ] Phase 11.6 — Custom-Pixel: KEINE Wiederholung, sondern eine EIGENE
+      ARCHITEKTUR-SCHEIBE — und ihre VORFRAGE ist offen: was es überhaupt ist.
+      (a) ein CLIENT-seitiges Snippet — dann gar kein Fan-Out-Ziel, sondern
+      derselbe Fall wie das ausgenommene Hotjar. (b) ein SERVER-seitiger
+      Empfänger mit KUNDENEIGENEM Endpunkt — dann hängen drei Fragen daran, die
+      KEIN anderes Ziel stellt: SSRF-Schutz bei einem betreiber-konfigurierten
+      ausgehenden Aufruf, die Aufhebung des Primärschlüssels (project_id, target)
+      bei mehreren Endpunkten pro Projekt, und ein dynamisches Nutzlast-Mapping
+      ohne bekanntes Zielschema. DER ZUSCHNITT ENTSTEHT ERST NACH DIESER KLÄRUNG.
+      Lesart (b) ist der EINZIGE bekannte Konsument der Instanz-Achse und damit
+      Trigger (i) der Primärschlüssel-Entscheidung (s. "## Offene Punkte").
+      DIE NUMMER TRÄGT KEINE REIHENFOLGE: 11.6 steht hinter 11.5, weil davor nur
+      vier Nummern frei waren — nicht, weil dieses Vorhaben später käme.
 - [ ] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP):
       NACH Phase 11 und VOR einem Beta-Launch mit fremden Nutzern.
       DIE NUMMER IST GEWÄHLT, WEIL SIE FREI IST (Präzedenz: 4.5, 10.5): die Phase
@@ -1887,6 +1894,10 @@ KEIN @-Import. Bei Arbeit an einem Thema die passende Datei gezielt lesen:
   das beschlossene Consent-Modell, die Anbieter-Befunde zum zweiten Ziel, den
   Arbeitsvorrat am ersten Adapter und die verschobene dreizehnte Scheibe.
   DIES IST DIE FASSUNG, DIE GELESEN WIRD.
+- docs/claude-history/phase-11-multi-tracking-aktiver-stand.md — der STEUERNDE Stand
+  derselben Phase (bis zum Phasenende docs/aktiver-stand.md), archiviert: zwölf
+  Scheiben-Protokolle, die über ihre Scheibe hinaus bindenden Entscheidungen, der Vorrat
+  und das Protokoll der Hebung.
 - docs/claude-history/phase-11-multi-tracking-rohfassung.md — die ROHFASSUNG derselben
   Phase: der ungekürzte Arbeitsstand, wie er WÄHREND des Baus geführt wurde,
   zeichengleich verschoben. NICHT der Einstieg — der ist die kuratierte Datei darüber.

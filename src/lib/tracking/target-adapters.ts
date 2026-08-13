@@ -1,5 +1,7 @@
 // WELCHE ZIELE DIESER BUILD BELIEFERN KANN (Phase 11, Scheibe C2 der
-// Vereinheitlichung; Entscheidung in docs/aktiver-stand.md, Abschnitt 7.5).
+// Vereinheitlichung; Entscheidung in
+// docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, Abschnitt 7.5
+// "'KONFIGURIERT' WIRD EIN BENANNTER ZUSTAND").
 //
 // WARUM ES DIESE DATEI GIBT — der GEMESSENE Anlass: Die Adapter-Tatsache wurde bis
 // hierher an ZWEI Orten behauptet, und die beiden waren durch NICHTS verbunden — das

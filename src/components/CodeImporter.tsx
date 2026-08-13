@@ -64,7 +64,8 @@ import { CONSENT_KEY_BY_TARGET } from "@/lib/tracking/consent-targets";
 // er heisst. Die Begruendung steht am Memo unten und als Auflage an der Funktion
 // selbst.
 // HIER STAND EINMAL DER NAME EINER ZUSAMMENSETZUNG; sie ist gestrichen
-// (docs/aktiver-stand.md, "3.12 DIE ZUSAMMENSETZUNG WIRD GESTRICHEN"). Das Verbot ist
+// (docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, Abschnitt 3.12
+// "DIE ZUSAMMENSETZUNG WIRD GESTRICHEN"). Das Verbot ist
 // dadurch BREITER geworden, nicht schwaecher: Es galt einem Symbol, jetzt gilt es dem
 // Gegenstand.
 import { hasPixelId } from "@/lib/tracking/target-readiness";
@@ -464,7 +465,8 @@ export default function CodeImporter({
   // Das Memo befragt AUSSCHLIESSLICH das Kennungs-Praedikat, NIEMALS einen
   // ZUSAMMENGESETZTEN Zustand — gleichgueltig, wie er heisst und ob es ihn heute
   // ueberhaupt gibt. HIER STAND EINMAL DER NAME EINER SOLCHEN ZUSAMMENSETZUNG; sie ist
-  // gestrichen (docs/aktiver-stand.md, "3.12 DIE ZUSAMMENSETZUNG WIRD GESTRICHEN").
+  // gestrichen (docs/claude-history/phase-11-multi-tracking-aktiver-stand.md,
+  // Abschnitt 3.12 "DIE ZUSAMMENSETZUNG WIRD GESTRICHEN").
   // WER DAS FUER EINE VERWAESSERUNG HAELT, LIEST ES FALSCH HERUM: Ein Verbot, das ein
   // Symbol nennt, endet mit dem Symbol; eines, das den Gegenstand nennt, gilt auch fuer
   // die naechste Zusammensetzung, die noch niemand gebaut hat.

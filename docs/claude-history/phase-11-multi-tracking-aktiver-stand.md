@@ -1,3 +1,33 @@
+# Phase 11 — Multi-Tracking (Server-Side Fan-Out): DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der aktive Stand der LAUFENDEN Phase 11 — das, was jeweils galt,
+nicht das, was geworden ist. Sie hiess bis zum Phasenende `docs/aktiver-stand.md` und war
+die Datei, die **GESTEUERT hat**: Jede Session, die an der Phase arbeitete, las sie ZUERST
+("Auftrag 0"), und wo sie einer anderen Fassung widersprach, galt sie.
+
+**ZEITRAUM:** angelegt am 2026-08-11 auf dem Stand von HEAD `102f4a0`; archiviert am
+2026-08-13 mit dem Abschluss der Phase.
+
+**SIE WIRD NICHT MEHR FORTGESCHRIEBEN.** Ihre Regeln sind gehoben (CLAUDE.md,
+"## Immer beachten" und "## Offene Punkte"), ihr Vorrat steht in
+`docs/claude-history/backlog-polish.md`, und was offen blieb, trägt eigene Roadmap-Zeilen
+(Phase 11.1 bis 11.4 und 11.6). Das Protokoll dieser Hebung steht in ihrem **Abschnitt 8**.
+
+**SIE IST NICHT DER MITSCHRIEB DANEBEN.** Drei Dateien tragen diese Phase, und sie sind
+verschieden:
+- `phase-11-multi-tracking.md` — die **kuratierte Historie**, der Einstieg.
+- **diese Datei** — der **steuernde Stand**: Scheiben-Protokolle mit stabilen Nummern,
+  Entscheidungen, die über ihre Scheibe hinaus banden, der Vorrat, die Hebungs-Kandidaten.
+- `phase-11-multi-tracking-rohfassung.md` — der **ungekürzte Arbeitsstand während des
+  Baus**, ausdrücklich ungepflegt.
+
+**IHRE VERWEISE SIND AB HIER ZEITDOKUMENTE.** Sie zeigen auf Zeilen, Abschnitte und
+Zustände, wie sie am Tag ihrer Entstehung waren; was heute gilt, steht im Repo. Die
+Warnung, die sie selbst führte, gilt für sie jetzt doppelt: **sie ist keine Quelle für
+Codezustände** — sie nennt Orte, an denen zu messen ist.
+
+---
+
 # Aktiver Stand — Phase 11 (Multi-Tracking / Server-Side Fan-Out)
 
 Angelegt am 2026-08-11, auf dem Stand von HEAD `102f4a0`. Die Phase läuft; der

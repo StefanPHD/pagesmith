@@ -7,7 +7,9 @@ import {
   type TrackingTarget,
 } from "@/lib/settings";
 // DIE BEIDEN BEDINGUNGEN DIESES PFADES STEHEN SEIT PHASE 11 SCHEIBE B1 NICHT MEHR
-// HIER, SONDERN IN EINER REINEN DATEI (docs/aktiver-stand.md, Abschnitt 7.5).
+// HIER, SONDERN IN EINER REINEN DATEI
+// (docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, Abschnitt 7.5
+// "'KONFIGURIERT' WIRD EIN BENANNTER ZUSTAND").
 //
 // WARUM: SECHS Stellen im Repo beantworten die Frage "ist dieses Ziel konfiguriert
 // bzw. lieferfaehig", und sie pruefen dabei VIER verschiedene Dinge. Zwei davon
@@ -28,7 +30,8 @@ import {
 // gar nicht: gefragt wird nur nach den Zielen, die den Filter unten passiert haben
 // (Abfrage-Oekonomie).
 // HIER STAND EINMAL DER NAME EINER ZUSAMMENSETZUNG; sie ist gestrichen
-// (docs/aktiver-stand.md, "3.12 DIE ZUSAMMENSETZUNG WIRD GESTRICHEN"). Die Regel ist
+// (docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, Abschnitt 3.12
+// "DIE ZUSAMMENSETZUNG WIRD GESTRICHEN"). Die Regel ist
 // dadurch BREITER geworden, nicht schwaecher — sie galt einem Symbol und gilt jetzt
 // dem Gegenstand.
 import { hasPixelId, hasSecret } from "@/lib/tracking/target-readiness";

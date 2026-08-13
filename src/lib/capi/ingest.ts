@@ -311,7 +311,8 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
  * Typ-Zusicherung — die behauptete genau das, was hasAdapter prueft, ein zweites Mal.
  * ER IST HEUTE AUS DEM HANDLER HERAUS UNERREICHBAR, und das gehoert dazu, damit
  * niemand einen Test dagegen erfindet (GEMESSEN, Scheibe C1, festgehalten in
- * docs/aktiver-stand.md, Abschnitt 3.8): Jedes bekannte Ziel steht in der Liste, und
+ * docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, Abschnitt 3.8 "DER
+ * WAECHTER UEBER DIE ADAPTER-ACHSE"): Jedes bekannte Ziel steht in der Liste, und
  * ein UNBEKANNTES kommt hier nie an — es faellt schon in allowedTargets heraus, weil
  * weder LEGACY_CONSENT_ROLE noch CONSENT_KEY_BY_TARGET einen Eintrag dafuer tragen.
  * MIT EINEM VIERTEN ZIEL OHNE ADAPTER WIRD ER ERREICHBAR: Dessen Consent-Eintraege

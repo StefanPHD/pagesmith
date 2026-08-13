@@ -17,7 +17,7 @@ import { errorName } from "@/lib/errors";
  * KEINE ABSTRAKTION, ZUM ZWEITEN MAL: eine Datei, eine Funktion, der Anbieter im
  * Namen. Das Modell wird erst beim DRITTEN Fall ersetzt, nicht beim zweiten. Was
  * zwischen diesem Adapter und src/lib/capi/meta-forward.ts gleich AUSSIEHT, ist
- * unten BENANNT, nicht zusammengefuehrt — und an fuenf Stellen sieht es gleich aus
+ * unten BENANNT, nicht zusammengefuehrt — und an SIEBEN Stellen sieht es gleich aus
  * und ist es NICHT:
  *  1. FEHLERWEGE: Meta verzweigt ausschliesslich auf res.ok. Dieser Anbieter meldet
  *     eine abgelehnte Nutzlast mit ERFOLGSSTATUS und dem Fehlschlag im RUMPF. Wer
@@ -28,6 +28,23 @@ import { errorName } from "@/lib/errors";
  *  4. DER TESTMODUS: Metas Test-Code wandert in die NUTZLAST, dieser hier in den
  *     QUERY-STRING.
  *  5. action_source: Meta kennt "website", dieses Enum kennt nur "web".
+ *  6. KEIN TRACE-FELD: Metas Antwort traegt einen Vorgangs-Bezeichner, der dort die
+ *     eigens benannte AUSNAHME von der Schwaerzung ist. Dieser Anbieter hat keinen —
+ *     hier werden ALLE Felder gleichfoermig geschwaerzt. Wer beim ersten Adapter
+ *     abschreibt, schwaerzt ausgerechnet den Wert, dessen ganzer Zweck die
+ *     Undurchsichtigkeit ist.
+ *  7. DER LEERWERT IST HIER EINE VERZWEIGUNG, KEINE FORMATIERUNG: Der Bereiniger
+ *     liefert fuer Nicht-Strings und Leerwerte einen Ersatzwert, und gegen genau
+ *     diesen Ersatzwert entscheidet dieser Adapter, OB ueberhaupt eine Warn-Zeile
+ *     entsteht. Wer den Ersatzwert in einem geteilten Werkzeug aenderte, verschoebe
+ *     hier einen KONTROLLFLUSS, nicht eine Darstellung.
+ *
+ * DIE PUNKTE 6 UND 7 SIND AM 2026-08-13 NACHGETRAGEN WORDEN, und der Befund gehoert
+ * dazu: Sie standen seit dem 2026-08-05 in der Standdatei der Phase MIT DER ANGABE,
+ * sie seien hier aufgezaehlt — sie waren es nicht. Die Liste behauptete
+ * Vollstaendigkeit, die sie nicht hatte, und ein Adapter-Bauer haette sie geglaubt.
+ * WER DIESE LISTE ERWEITERT, TRAEGT DEN PUNKT AUCH HIER EIN, nicht nur dort, wo er
+ * gefunden wurde.
  *
  * DIE ANGABEN UEBER DEN ANBIETER SIND ANBIETER-DOKU, NICHT GEMESSEN. Endpunkt,
  * Feldnamen, Enum-Werte, beide Rumpfformen und der Testmodus-Parameter stammen aus

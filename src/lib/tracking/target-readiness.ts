@@ -1,5 +1,7 @@
 // DIE ZWEI GETEILTEN PRAEDIKATE ZUR LIEFERFAEHIGKEIT EINES ZIELS (Phase 11,
-// Vereinheitlichung; Entscheidung in docs/aktiver-stand.md, Abschnitt 7.5).
+// Vereinheitlichung; Entscheidung in
+// docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, Abschnitt 7.5
+// "'KONFIGURIERT' WIRD EIN BENANNTER ZUSTAND").
 //
 // WAS DIESE DATEI IST: zwei Praedikate mit vier Produktiv-Aufrufstellen (GEMESSEN am
 // Repo, 2026-08-13). hasPixelId hat DREI — die Auslieferungs-Zeile der Karte
@@ -12,7 +14,9 @@
 // GESTRICHEN (Owner-Entscheidung 2026-08-13). Sie hat VIER Scheiben ohne einen
 // einzigen Konsumenten ueberstanden; benutzt wurden immer nur die beiden Praedikate.
 // WER SIE WIEDER BAUEN WILL, LIEST ZUERST DEN TRIGGER samt Auflage an ihrer
-// Eingabe-Form in docs/aktiver-stand.md, Abschnitt 5, "DIE ZUSAMMENSETZUNG
+// Eingabe-Form in docs/claude-history/backlog-polish.md bzw., als Herleitung, in
+// docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, Abschnitt 5
+// "Vorrat — gemeldet, nicht in dieser Scheibe", Punkt "DIE ZUSAMMENSETZUNG
 // targetReadiness WAR VERFRUEHT UND IST GESTRICHEN" — ohne diesen Hinweis schneidet
 // der naechste Anlauf denselben Schnitt noch einmal.
 //
@@ -67,7 +71,9 @@
  *
  * SIE IST EINZELN EXPORTIERT, UND DAS IST EINE AUFLAGE, KEINE BEQUEMLICHKEIT:
  * "DER EINWILLIGUNGS-SCHLUESSEL HAENGT AN DER BLOSSEN ANWESENHEIT EINER KENNUNG,
- * NIEMALS AN VOLLSTAENDIGKEIT" (docs/aktiver-stand.md, Abschnitt 7.5). Das
+ * NIEMALS AN VOLLSTAENDIGKEIT"
+ * (docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, Abschnitt 7.5
+ * "'KONFIGURIERT' WIRD EIN BENANNTER ZUSTAND"). Das
  * Consent-Memo (consentTargets in components/CodeImporter.tsx) darf ausschliesslich
  * DIESE Funktion befragen und NIE targetReadiness.
  * DER GRUND, ausgeschrieben, damit die Auflage beim naechsten

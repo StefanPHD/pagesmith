@@ -148,8 +148,8 @@ getötet, und die Reparatur kostete zwei Runden.
 Lesehilfe benutzt, liest das Falsche — die Position eines Vermerks ist seit dem
 Wegfall der Nachnummerierung eine Frage seiner Entstehung, nicht seines Rangs.
 **DIE AUTORITÄT IST DIE COMMIT-KETTE:** Entstanden sind sie in der Reihenfolge
-`0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080` -> `81b544f`. Sie wächst mit jeder
-Scheibe, und ihr LETZTES GLIED ist der jüngste COMMITTETE Vermerk.
+`0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080` -> `81b544f` -> `6ef7d2f`. Sie wächst
+mit jeder Scheibe, und ihr LETZTES GLIED ist der jüngste COMMITTETE Vermerk.
 **DIE LÜCKE GEHÖRT ZUR REGEL, sonst greift sie im wichtigsten Moment nicht:** Ein
 Vermerk, der in der Kette NICHT vorkommt, ist noch nicht committet — und damit per
 Konstruktion der jüngste. **Wer den heutigen Stand sucht, sieht ZUERST dort nach.**
@@ -503,9 +503,8 @@ oder Wortlaut (es gibt keine Ansicht).
 
 ### 3.6 DIE PAARUNG BENUTZT DIE GETEILTEN PRÄDIKATE — SCHEIBE B1 DER VEREINHEITLICHUNG, ERLEDIGT (2026-08-13)
 
-**Commit:** steht bei Abfassung dieses Vermerks noch aus (Stufe 2 samt Nachzug ist
-abgeschlossen, die Freigabe nicht erteilt). **Wer ihn nachträgt, trägt die Nummer hier
-ein** — und rückt diesen Vermerk damit in die Kette am Abschnittskopf ein.
+**Commit:** `6ef7d2f` (GEMESSEN am Repo, 2026-08-13, `git log`). Damit steht in
+Abschnitt 3 **keine Lücke mehr** — alle sechs Vermerke tragen ihre Nummer.
 
 **B1 HEISST NICHT „DEFEKT BEHOBEN", und dieser Satz steht bewusst zuerst:** Nach dieser
 Scheibe divergieren die beiden Urteile UNVERÄNDERT weiter — die Oberflächen-Ableitung
@@ -580,14 +579,80 @@ Abweichung. Gegenprobe unverändert → alles grün.
 und meldet wörtlich dieselbe Klasse („ein leeres Zugangsdatum gilt als vorhanden") an
 einer zweiten Fixture.
 
-**KEIN LIVE-TEST BIS HIERHER — die Kontrolle steht aus und ist PFLICHT.** Sie ist klein,
-weil B1 kein Verhalten ändert, aber der Pfad ist der meistgetroffene der Plattform.
-**EIN Fall mit vorher festgelegtem Soll-Ausgang:** ein vollständig konfiguriertes Ziel
-forwardet weiter. Nachweis an ZWEI Orten — Laufzeitprotokoll von `/api/e` (Invocation
-mit 204, KEINE Fehlerzeile des Adapters) und Events Manager („Empfangen von: Server").
-**Dass es derselbe Lauf ist, erkennt man an der Ereignis-Kennung, nicht an der Uhrzeit.**
-Vorbedingung, sonst misst der Lauf ein korrektes Fail-Closed: die Seite ist NACH der
-letzten Kennungs-Änderung neu veröffentlicht.
+**DIE LIVE-KONTROLLE IST GEFAHREN UND BESTANDEN — GEMESSEN (Live, 2026-08-13, Lauf des
+Architekten gegen die deployte Produktion; nicht von mir beobachtet, sondern berichtet).**
+Hier stand bis zum Lauf, sie stehe aus; das war als Aussage über jenen Zeitpunkt richtig.
+Der Fall hatte seinen Soll-Ausgang VORHER festgelegt: ein vollständig eingerichtetes Ziel
+forwardet weiter. **WORAUF DAS ERGEBNIS RUHT, in drei Teilen:**
+- Auslösung auf der PRODUKTIONS-URL, nicht lokal; `/api/e` antwortete **204**.
+- Am kontrollierten Ziel **keine Fehlerzeile** im Laufzeitprotokoll. **Diese Abwesenheit
+  ist hier ein Beleg und nicht bloss ein Schweigen — und der Grund gehört zwingend
+  dazu:** Derselbe Log-Kanal hat im SELBEN Lauf nachweislich geschrieben, nämlich für ein
+  anderes Ziel (s. den Block darunter). Ohne diesen Mitläufer wären „nichts passiert" und
+  „der Kanal schreibt gar nicht" nicht zu unterscheiden gewesen.
+- Das **Server-Ereignis kam im Werkzeug des Anbieters an**, zugeordnet über die
+  **EREIGNIS-KENNUNG** — nicht über die Uhrzeit. Die Uhrzeit trennt zwei Auslösungen in
+  derselben Minute nicht und sagt bei einem deduplizierten Paar nicht, welche Hälfte man
+  vor sich hat.
+
+**DIE FOLGERUNG, ENG GEFASST:** Die Übernahme der beiden Bedingungen ist **für ein
+vollständig eingerichtetes Ziel verhaltensneutral**. **NICHT belegt** ist damit
+irgendetwas über die anderen Ziele, über die Oberfläche oder über den Defekt — der Lauf
+hatte EINEN Gegenstand, und eine Prüfung mit einem Gegenstand sagt über die übrigen
+nichts.
+
+**DER BELEG, DEN NIEMAND GEPLANT HAT — GEMESSEN (Live, 2026-08-13, derselbe Lauf,
+berichtet):** Im selben Lauf hat ein ANDERES Ziel einen Fehler erzeugt, weil sein
+Zugangsdatum ungültig war. **Die Logzeile trug die Kennung GESCHWÄRZT.**
+
+**WARUM DAS MEHR WERT IST ALS JEDE FIXTURE:** Eine Fixture prüft die Schwärzung gegen
+einen Rumpf, den wir selbst geschrieben haben — sie kann nur enthalten, woran der Autor
+gedacht hat. Hier hat die Schwärzung gegen einen **ECHTEN fremden Fehler-Rumpf**
+gehalten, und zwar in einem Lauf, der zu einem **anderen Zweck** gefahren wurde. Ein
+Beleg, den niemand hergestellt hat, ist kein Artefakt des Aufbaus.
+
+**ZWEI GRENZEN, ohne die der Beleg überdehnt wird:**
+- Er deckt **EINEN Fehlerweg EINES Anbieters**. Über die übrigen Fehlerwege desselben
+  Anbieters und über die anderen Adapter sagt er **nichts** — eine Prüfung mit einem
+  Gegenstand sagt über die übrigen nichts.
+- Dass jenes Zugangsdatum ungültig ist, ist ein **Zustand eines TESTPROJEKTS**, kein
+  Befund über den Code. Beides gehört getrennt: der Code hat sich richtig verhalten, die
+  Konfiguration war kaputt.
+
+**ES WAR DER DRITTE ADAPTER, UND DAMIT IST DIES DIE ZWEITE LIVE-INSTANZ** (berichtet,
+nicht von mir beobachtet — dieselbe Provenienz wie der Rest dieses Blocks). Die ERSTE
+steht in Abschnitt 3.2, **„TIKTOK ALS DRITTES FAN-OUT-ZIEL"** (Nummer UND Titel, damit
+der Zeiger eine Nachnummerierung übersteht): die Gegenprobe vom 2026-08-11 mit
+absichtlich falschem Zugangsdatum, HTTP 401, Vorgangs-Kennung geschwärzt. **3.2 bleibt
+unberührt** — der Beleg tritt daneben, er wird dort nicht nachgetragen.
+
+**DER ZUGEWINN IST ALLEIN DIE UNGEPLANTHEIT, NICHT DER LIVE-CHARAKTER.** Den hatte die
+Gegenprobe schon; sie lief gegen dasselbe echte fremde System. Neu ist, dass **niemand
+die Lage hergestellt hat**: Der Lauf hatte einen anderen Zweck, das Zugangsdatum war
+nicht absichtlich falsch, und die Schwärzung hat trotzdem gehalten. Wer den Unterschied
+verwischt, zählt eine Wiederholung als neuen Beweis.
+
+**WAS DADURCH NICHT BELEGT IST, und es bleibt im Rang unverändert:** Der ZWEITE Adapter
+hat **weiterhin keine Live-Beobachtung** seiner Schwärzung. Der Vorrats-Punkt „SECHS
+UNGEDECKTE ACHSEN AM SCHWÄRZ-PRIMITIV DES ZWEITEN ADAPTERS" steht unangetastet — dieser
+Beleg berührt ihn nicht, weder stärkend noch schwächend.
+
+**HIER WURDE EINMAL MEHR BEHAUPTET, ALS DER BESTAND HERGAB — und dieser Absatz ist der
+wertvollste Teil des Eintrags, weil er sonst niemandem auffiele.** Der Zuschnitt dieses
+Belegs führte als Begründung, die Schwärzung des dritten Adapters sei „bisher gegen
+selbst gebaute Rümpfe geprüft" gewesen; daraus hätte sich die ERSTE Live-Bestätigung
+überhaupt ergeben. **Die Nachprüfung am Bestand hat das gefangen:** 3.2 trägt die
+Gegenprobe vom 2026-08-11 und nennt sie dort ausdrücklich eine „Positivkontrolle der
+Schwärzung im echten Betrieb". Die Formulierung ist deshalb auf die tragfähige Hälfte
+zurückgenommen worden, BEVOR sie in die Datei kam. **Ohne diesen Absatz läse sich der
+Block, als hätte nie jemand danebengelegen** — und die nächste Behauptung dieser Art
+hätte kein Vorbild, an dem sie sich prüft.
+
+**WARUM DIESER BELEG HIER STEHT UND NICHT IN 3.2, wo die Schwärzung entstanden ist:**
+Eine abgeschlossene Scheibe wird nicht umgeschrieben. Derselbe Grundsatz hat schon die
+Aufzählung der sechs Vokabular-Stellen aus 3.2 herausgehalten (s. Abschnitt 5) — der
+Beleg tritt DANEBEN, mit eigener Provenienz, an der Scheibe, deren Lauf ihn erzeugt hat.
+3.2 bleibt unberührt.
 
 **WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** dass der Defekt behoben ist (s. oben —
 die beiden Urteile divergieren weiter) · dass `targetReadiness` benutzt wird (es gibt
@@ -851,7 +916,14 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   in CLAUDE.md verortet (fehlende Ziel-Dimension auf den Ereignissen). **Neu ist allein
   der verworfene Rückgabewert** — er ist eine Aussage über den HANDLER, nicht über das
   Schema, und von jener Dimension unabhängig.
-
+  **ERSTE INSTANZ, GEMESSEN (Live, 2026-08-13, berichtet) — ADDITIV, der Punkt darüber
+  bleibt unverändert:** In einem realen Lauf hat ein Ziel dauerhaft NICHT geliefert. Das
+  Einzige, was davon existierte, war eine flüchtige Logzeile ohne Projekt- und ohne
+  Ereignis-Bezug; bemerkt wurde es NUR, weil jemand aus einem ANDEREN Grund ins
+  Protokoll sah. **Damit beschreibt dieser Punkt keinen MÖGLICHEN, sondern einen
+  EINGETRETENEN Zustand.** Die Ursache lag im Testprojekt (ein ungültiges Zugangsdatum)
+  und nicht im Code — das ändert am Befund nichts: Er handelt davon, dass ein
+  dauerhafter Ausfall **nirgends auffällt**, nicht davon, warum er eintrat.
 - **ZWEI UNABHÄNGIGE RIEGEL AUF DERSELBEN ACHSE — DER ZWEITE DECKT DEN ERSTEN ZU**
   (`getCapiConfigByTrackingKey` in `src/lib/capi/token.ts`: `hasSecret` in der
   Geheimnis-Schleife und `if (!token) continue` in der Paarung darunter): GEMESSEN

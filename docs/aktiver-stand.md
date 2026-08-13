@@ -149,8 +149,8 @@ Lesehilfe benutzt, liest das Falsche — die Position eines Vermerks ist seit de
 Wegfall der Nachnummerierung eine Frage seiner Entstehung, nicht seines Rangs.
 **DIE AUTORITÄT IST DIE COMMIT-KETTE:** Entstanden sind sie in der Reihenfolge
 `0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080` -> `81b544f` -> `6ef7d2f` -> `70cc265`
--> `ca321c3` -> `724edd3`. Sie wächst mit jeder Scheibe, und ihr LETZTES GLIED ist der
-jüngste COMMITTETE Vermerk.
+-> `ca321c3` -> `724edd3` -> `6e1be7a`. Sie wächst mit jeder Scheibe, und ihr LETZTES
+GLIED ist der jüngste COMMITTETE Vermerk.
 **DIE LÜCKE GEHÖRT ZUR REGEL, sonst greift sie im wichtigsten Moment nicht:** Ein
 Vermerk, der in der Kette NICHT vorkommt, ist noch nicht committet — und damit per
 Konstruktion der jüngste. **Wer den heutigen Stand sucht, sieht ZUERST dort nach.**
@@ -1091,10 +1091,18 @@ Zugangsdaten · ob die zwei Zeilen über die Auslieferung je eine werden.
 
 ### 3.10 DER WÄCHTER ÜBER DAS CONSENT-MEMO — SCHEIBE D1, ERLEDIGT (2026-08-13)
 
-**Commit:** STEHT AUS. Nach der Regel am Kopf dieses Abschnitts ist dieser Vermerk
-damit **die Lücke in der Kette und per Konstruktion der jüngste**; die Nummer wird hier
-nachgetragen, sobald committet ist, und die Lücke wandert weiter. Die Kette endet
-heute bei `724edd3` (C2).
+**Commit:** `6e1be7a` — **NACHGETRAGEN am 2026-08-13 im Zug der Scheibe D2, wie es der
+Satz an dieser Stelle verlangte.** Hier stand bis dahin „STEHT AUS" und „die Kette endet
+heute bei `724edd3`"; beides war als Aussage über jenen Zeitpunkt richtig und ist es seit
+dem Push nicht mehr. **Der Nachtrag ist nicht Kosmetik:** Nach der Regel am
+Abschnittskopf ist ein Vermerk ohne Nummer die Lücke in der Kette und damit der jüngste
+— mit einem weiteren Vermerk darunter zeigte diese Lücke auf die falsche Scheibe und
+behauptete zugleich etwas Unwahres über diese hier. **Dieselbe Fehlerklasse ist in dieser
+Phase schon zweimal eingetreten** (3.5 und 3.8).
+**EINE ABWEICHUNG VON DER COMMIT-KONVENTION GEHÖRT DAZU, weil sie im Verlauf sonst
+niemandem auffällt:** `6e1be7a` trägt den Test-Block UND diesen Doku-Vermerk in EINEM
+`test(ui)`-Commit. CLAUDE.md verlangt getrennte `docs(claude)`-Commits; die
+Zusammenlegung war eine Owner-Anordnung nach ausdrücklichem Hinweis, keine Nachlässigkeit.
 
 **WAS GEBAUT WURDE — AUSSCHLIESSLICH TESTS, KEIN PRODUKTIVCODE** (GEMESSEN am Repo,
 2026-08-13: `git diff --numstat` weist **278 eingefügte und NULL gelöschte** Zeilen in
@@ -1119,8 +1127,8 @@ aus.
 
 ---
 
-**DAS ERGEBNIS VON M6 IST DIE BELEGTE AUSGANGSLAGE FÜR D2 — und dieser Absatz ist der
-eigentliche Ertrag von D1.** GEMESSEN (2026-08-13, `hasPixelId` in
+**DAS ERGEBNIS VON M6 — DIE BEOBACHTUNG STEHT, DIE ZUSAGE DARÜBER IST
+RICHTIGGESTELLT (2026-08-13, in der D2-Runde).** GEMESSEN (2026-08-13, `hasPixelId` in
 `src/lib/tracking/target-readiness.ts` um den Trim gebracht, volle Suite):
 
 - **`target-readiness.test.ts`: T4 und T5 fallen**, beide melden wörtlich dieselbe
@@ -1133,13 +1141,38 @@ eigentliche Ertrag von D1.** GEMESSEN (2026-08-13, `hasPixelId` in
   widerlegt worden, BEVOR die Probe lief.**
 - **`TargetCard.test.tsx`: KEIN Treffer** — gemessen trägt dort keine Fixture einen
   reinen Leerraum-Wert.
-- **D-T6 UND D-T7 SIND GRÜN GEBLIEBEN.** Das ist der Beleg: **Das Memo folgt einer
-  Änderung am geteilten Prädikat heute NICHT.** Die Prämisse von D2 trägt.
+- **D-T6 UND D-T7 SIND GRÜN GEBLIEBEN.**
 
-**WAS DAS FÜR D2 BINDET:** Dieselbe Probe nach D2 muss **das Gegenteil** zeigen — D-T6
-und D-T7 müssen dann MITFALLEN. Tun sie es nicht, hat D2 die Übernahme nicht
-vollzogen, gleichgültig wie der Diff aussieht. **Beide Hälften sind hier festgehalten,
-weil die zweite ohne die erste keinen Vergleichspunkt hätte.**
+**DIE BEOBACHTUNGEN OBEN SIND UNVERÄNDERT RICHTIG. WAS FÄLLT, IST DIE ZUSAGE, DIE AUS
+IHNEN GEZOGEN WURDE.** Hier stand als Überschrift „DAS ERGEBNIS VON M6 IST DIE BELEGTE
+AUSGANGSLAGE FÜR D2 — und dieser Absatz ist der eigentliche Ertrag von D1", am letzten
+Spiegelstrich „Das ist der Beleg: Das Memo folgt einer Änderung am geteilten Prädikat
+heute NICHT. Die Prämisse von D2 trägt", und darunter „WAS DAS FÜR D2 BINDET: Dieselbe
+Probe nach D2 muss das Gegenteil zeigen — D-T6 und D-T7 müssen dann MITFALLEN. Tun sie
+es nicht, hat D2 die Übernahme nicht vollzogen, gleichgültig wie der Diff aussieht."
+
+**GEMESSEN (D2-Runde, 2026-08-13): M6 IST AUF DIESER ACHSE IN KEINEM ZUSTAND
+AUSSAGEFÄHIG.** `getPixelId` trimmt vor `hasPixelId`; die Whitespace-Achse liegt
+**vollständig in `getPixelId`**, und D2 hat die nicht angefasst. Das Grünbleiben von
+D-T6/D-T7 belegte deshalb **NICHT**, dass das Memo nicht folgt — es belegte nur, dass
+**diese Mutation dort nichts zeigen kann**. Nach D2 ist M6 zeichengleich ausgegangen:
+wieder nur T4 und T5, D-T6 und D-T7 wieder grün.
+
+**DER GRUND STAND EINEN SPIEGELSTRICH WEITER OBEN UND WURDE NICHT ÜBERTRAGEN.** Die
+Begründung für „`token.test.ts`: KEIN Treffer" ist wörtlich dieselbe wie die für
+D-T6/D-T7 — dieselbe Komposition `hasPixelId(getPixelId(...))`. Sie war gemessen, sie
+war aufgeschrieben, und sie wurde auf die Nachbar-Achse nicht angewandt.
+
+**WAS AN DIE STELLE TRITT — M6b, in Abschnitt 3.11:** dieselbe Mutation, aber auf
+**reine Existenz** aufgeweicht (`typeof x === "string"`) — die einzige Aufweichung, die
+den Trim ÜBERLEBT, weil sie auch `""` durchlässt —, gefahren als
+**Zwei-Zustands-Vergleich** gegen den Stand vor und nach D2. Sie trägt den Beleg, den
+M6 nicht tragen konnte.
+
+**DIE LEHRE, und sie ist der Ertrag dieser Richtigstellung: EINE ANSAGE, DIE EINE
+MUTATION FÜR AUSSAGEFÄHIG HÄLT, OHNE DIE KOMPOSITION DAVOR ZU LESEN, MISST NICHTS — und
+sie stand ZWEIMAL so im Auftrag** (in D1 und in D2). Vor jeder Mutations-Ansage ist zu
+lesen, was zwischen der mutierten Funktion und dem Prüfling noch liegt.
 
 ---
 
@@ -1215,6 +1248,150 @@ beim Betreiber-Hook oder beim Leser richtig ANKOMMT (die Tests messen den erzeug
 Text, nicht seinen Empfang).
 **KEIN LIVE-TEST, UND KEINER WÄRE MÖGLICH:** Es entstehen ausschliesslich Tests, kein
 Verhalten ändert sich. Was live zu prüfen ist, gehört zu D2 und steht dort.
+
+---
+
+### 3.11 DAS CONSENT-MEMO BEZIEHT SEINE BEDINGUNG AUS DEM GETEILTEN PRÄDIKAT — SCHEIBE D2, ERLEDIGT (2026-08-13)
+
+**Commit:** STEHT AUS. Nach der Regel am Kopf dieses Abschnitts ist dieser Vermerk damit
+die Lücke in der Kette und per Konstruktion der jüngste; die Nummer wird hier
+nachgetragen, sobald committet ist. Die Kette endet heute bei `6e1be7a` (D1).
+
+**WAS GEBAUT WURDE — EINE DATEI, EINE ERSETZTE ZEILE** (GEMESSEN am Repo, 2026-08-13:
+`git diff --numstat` weist **18 eingefügte und EINE gelöschte** Zeile in
+`src/components/CodeImporter.tsx` aus; `src/components/CodeImporter.test.tsx` steht
+**nicht** im Diff, ebenso wenig `target-readiness.ts`, `generate.ts`, `TargetCard.tsx`,
+`MeasureView.tsx`, `capi/ingest.ts`, `capi/token.ts`, `capi/fan-out.test.ts`): der Import
+von `hasPixelId`, die Ersetzung des Vergleichs gegen die leere Zeichenkette durch
+`hasPixelId(getPixelId(settings, t))`, und der Kommentar-Zusatz am bestehenden Block.
+**Suite unverändert 1070**, Testdateien unverändert 55, alle vier Gates grün.
+
+---
+
+**DER BYTE-GLEICHHEITS-NACHWEIS — BEIDE HÄLFTEN, und die zweite trägt ohne die erste
+nichts** (GEMESSEN, 2026-08-13, neun Konfigurationen je mit Export-Text UND
+Publish-Argument = **18 Dateien**, erzeugt DURCH DIE KOMPONENTE):
+
+- **ERSTE HÄLFTE — die Selbstkontrolle VOR der Änderung:** Derselbe Lauf zweimal in zwei
+  Verzeichnisse, `diff -r` darüber → **leer**. **Ohne sie wäre der spätere leere
+  Vergleich aus ZWEI Gründen erklärbar** — Wertgleichheit ODER ein Vergleich, der nie
+  etwas findet.
+- **EINE POSITIVKONTROLLE TRAT DAZU, die der Auftrag nicht verlangt hat:** Die 18 Dateien
+  tragen **13 verschiedene Prüfsummen**. Die Matrix spannt also tatsächlich verschiedene
+  Texte auf; hätte sie 18-mal denselben Text erzeugt, wäre auch der Selbstcheck leer
+  gewesen und trotzdem wertlos. **Die fünf Dubletten sind erklärt und kein Mangel:**
+  02/07/08 erzeugen denselben Schlüsselsatz `["meta"]` (die Leerraum- und die
+  Leer-Kennung fallen beide heraus), und bei der Negativkontrolle ohne Tracking-Schlüssel
+  sind Export- und Publish-Text **identisch** — ohne Beacon gibt es keine Proxy-URL, an
+  der sich die beiden Wege sonst unterscheiden.
+- **ZWEITE HÄLFTE — der Vergleich NACH der Änderung:** `diff -r` über alle 18 Dateien →
+  **leer, exit 0**, gegengeprüft über die Prüfsummen (**alle 18 identisch**).
+- **DAS INSTRUMENT WAR IN BEIDEN LÄUFEN DASSELBE:** Der Wegwerf-Lauf wurde vor der
+  Änderung aus dem Baum genommen, byte-genau gesichert und danach byte-identisch
+  zurückgeholt (`cmp` bestätigt). Ein neu getipptes Instrument hätte den Vergleich
+  entwertet.
+
+---
+
+**DIE PROBE — UND SIE IST ANDERS AUSGEGANGEN, ALS DER AUFTRAG ANGESAGT HAT.** Der Auftrag
+verlangte: „M6 erneut, identisch zur D1-Fassung … D-T6 und D-T7 MÜSSEN JETZT FALLEN".
+**Das ist nicht eingetreten, und es KONNTE nicht eintreten** — der Grund war vor dem Lauf
+angesagt und stand schon im D1-Vermerk:
+
+- **M6 (Trim aus `hasPixelId` entfernt) nach D2: T4 und T5 in `target-readiness.test.ts`,
+  sonst nichts. D-T6 und D-T7 GRÜN — zeichengleich zum D1-Ergebnis.**
+- **URSACHE, GEMESSEN:** `getPixelId` trimmt VOR `hasPixelId`. Nach D2 lautet die
+  Komposition im Memo `hasPixelId(getPixelId(...))` — **wörtlich dieselbe wie in
+  `capi/token.ts`**, für die in D1 vorab angesagt und dann gemessen wurde, dass M6 dort
+  unsichtbar ist. Eine whitespace-Kennung ist bei `hasPixelId` schon als `""` angekommen.
+- **DAS IST DIE DRITTE ERKLÄRUNG FÜR EINEN GRÜNEN MUTANTEN, nicht die erste oder zweite:**
+  Der Test prüft sehr wohl etwas, und die Übernahme ist vollzogen — **die MUTATION ist
+  ein schlechtes Modell**. Sie misst eine Eigenschaft, die die Komposition verdeckt.
+- **EIN BEFUND, DER OHNE DIESE PROBE NICHT SICHTBAR GEWESEN WÄRE:** Nach D2 speisen
+  **D-T6 und D-T7 DENSELBEN Wert** in das Prädikat — beide Fixturen kollabieren durch
+  `getPixelId` auf `""`. Die Whitespace-Achse liegt vollständig in `getPixelId`, und die
+  hat D2 nicht angefasst. Die beiden Tests bleiben trotzdem getrennt richtig: Sie
+  behaupten über die FIXTURE, nicht über den Prädikat-Eingang.
+
+**M6b — DIE PROBE, DIE DEN ERTRAG TATSÄCHLICH TRÄGT** (hinzugenommen, weil M6 ihn nicht
+tragen kann): `hasPixelId` auf **reine Existenz** aufgeweicht (`typeof x === "string"`) —
+die einzige Aufweichung, die den Trim von `getPixelId` ÜBERLEBT, weil sie auch `""`
+durchlässt. **GEMESSEN als ZWEI-ZUSTANDS-VERGLEICH, dieselbe Mutation gegen zwei
+Code-Stände:**
+
+- **M6b auf dem D2-Stand: 16 Tests rot**, darunter **D-T2, D-T3, D-T4, D-T5, D-T6, D-T7,
+  D-T9**.
+- **M6b auf dem Vor-D2-Stand** (Memo zurück auf den alten Wortlaut, Mutation unverändert):
+  **9 Tests rot — die sieben D-Tests sind GRÜN.**
+- **DIE DIFFERENZ IST EXAKT DIESE SIEBEN.** Die übrigen neun Treffer
+  (`target-readiness.test.ts`, `token.test.ts`, `TargetCard.test.tsx`) sind in BEIDEN
+  Zuständen identisch — sie hängen nicht am Memo.
+
+**DAS IST DER ERTRAG VON D, GEMESSEN STATT BEHAUPTET:** Unter einer identischen Mutation
+des geteilten Prädikats **folgt das Memo nach D2 und folgte vor D2 nicht.**
+**DER ÜBERSCHUSS BEI M6b IST ABDECKUNG, KEINE KASKADE:** Angesagt waren die sieben plus
+`target-readiness.test.ts`; getroffen wurden zusätzlich `token.test.ts` und
+`TargetCard.test.tsx` — **die beiden anderen Konsumenten desselben Prädikats**, mit
+wörtlich derselben Fehlerklasse („ein Ziel ohne Kennung gilt als vorhanden"). **Meine
+Ansage war zu eng gezählt, und zwar wieder nach unten** — dieselbe einseitige Richtung,
+vor der CLAUDE.md warnt.
+
+---
+
+**INVARIANTE (6) AUS ABSCHNITT 7.5 IST ERFÜLLT.** Alle Konsumenten beziehen ihre
+Bedingungen jetzt aus denselben Funktionen: die Oberflächen-Ableitung und die Paarung über
+`hasPixelId`/`hasSecret` (B1, B2), die Adapter-Achse über `TARGETS_WITH_ADAPTER` (C2), das
+Consent-Memo über `hasPixelId` (D2). **Die vierteilige Reihe A–D ist damit abgeschlossen.**
+
+**DER ERTRAG IST SCHMAL, UND DAS GEHÖRT IN DENSELBEN ATEMZUG:** Geteilt wird der
+**Leere-Vergleich**, NICHT die Trim-Politik — beide Seiten liefen schon vor D2 durch
+dieselbe Leseform `getPixelId`. **Wer D mit C2 gleichsetzt, überschätzt es:** C2 hat zwei
+Träger einer Tatsache auf eine Quelle gebracht; D2 hat eine Bedingung an eine benannte
+Funktion gehängt, die dieselbe Antwort gab. Der Gewinn ist die KOPPLUNG für künftige
+Änderungen am Prädikat — belegt durch M6b —, nicht ein behobenes Verhalten.
+
+**DIE GRENZE DER BYTE-GLEICHHEIT, und sie darf nicht überdehnt werden:** Sie gilt für
+**jede Eingabe, die über `JSON.parse` aus dem Einstellungs-Blob entstehen kann**. Sie gilt
+NICHT für ein handgebautes Objekt, dessen `trim()` etwas anderes als eine Zeichenkette
+liefert — dort gäbe `getPixelId` entgegen seiner Typangabe einen Nicht-String zurück, den
+die alte Fassung aufgenommen und die neue verworfen hätte. **Der Fall ist auf dem
+produktiven Pfad unerreichbar** (JSON kennt keine Methoden, keine Getter, keine Proxies —
+dasselbe Vertragsargument, das `consentAllows` in `tracking/consent-wire.ts` bereits
+trägt), **und die Abweichung ginge in Richtung ÜBEREINSTIMMUNG mit dem Auflösungs-Pfad**,
+der `hasPixelId` seit B1 benutzt. Sie ist deshalb als Grenze vermerkt und nicht als Risiko.
+
+---
+
+**OFFENE FRAGE — NICHT BEANTWORTET, WEIL SIE EINE OWNER-ENTSCHEIDUNG IST: DER TRIGGER AUS
+ABSCHNITT 3.8 IST JETZT FÄLLIG.** Er lautete: „Bleibt die Zusammensetzung
+`targetReadiness` auch nach Scheibe D **ohne Konsumenten**, ist zu entscheiden, ob sie
+verfrüht war." **GEMESSEN am Repo (2026-08-13): Sie hat alle vier Scheiben ohne einen
+einzigen Konsumenten überstanden** — importiert werden ausschliesslich die beiden
+Prädikate `hasPixelId` und `hasSecret`. **Die Entscheidung fällt nicht hier.** Was für sie
+spricht und was gegen sie, ist in 3.5 und 3.6 bereits am Kontrollfluss belegt (die
+server-only-Datei kennt den Adapter nicht; für ein Ziel ohne Kennung wird der
+Geheimnis-Wert gar nicht erst geholt).
+
+---
+
+**DER LIVE-TEST STEHT AUS UND IST PFLICHT.** Er ist der einzige Nachweis am
+AUSGELIEFERTEN Artefakt; der Byte-Nachweis oben misst den Erzeuger im Test, nicht die
+deployte Laufzeit. Ablauf und die beiden Pflicht-Stopps stehen im Bericht zu dieser
+Scheibe; ohne ihn bleibt D2 **nicht live bewiesen**, und dieser Vermerk sagt das
+ausdrücklich statt es offenzulassen.
+
+---
+
+**WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** irgendetwas über die deployte Laufzeit
+(der Live-Test steht aus) · dass `targetReadiness` benutzt wird (unverändert kein
+Konsument) · irgendetwas über die Oberfläche, die Adapter-Achse, den Ingest oder das
+Schema · dass ein ausgelieferter Schlüsselsatz beim Betreiber-Hook oder beim Leser
+ANKOMMT (gemessen ist der erzeugte Text, nicht sein Empfang) · dass die hinterlegten
+Zugangsdaten FUNKTIONIEREN · dass der Defekt aus Abschnitt 5 („'KONFIGURIERT' HEISST AN
+ZWEI ORTEN VERSCHIEDENES") in seiner strukturellen Hälfte behoben wäre — **die
+Oberflächen-Ableitung fragt weiterhin nur nach der Zeilen-Existenz, der Forward nach
+Kennung UND Zugangsdatum; geteilt sind die BEDINGUNGEN, nicht das URTEIL** · ob die zwei
+Zeilen über die Auslieferung je eine werden.
 
 ---
 

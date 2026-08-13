@@ -60,6 +60,9 @@ import {
 // die Werte der Geheimnis-Tabelle. Beide lauten heute gleich; sie gleichzusetzen
 // waere genau die Drift, gegen die die Abbildung steht.
 import { CONSENT_KEY_BY_TARGET } from "@/lib/tracking/consent-targets";
+// NUR das Kennungs-Praedikat, NIE die Zusammensetzung targetReadiness — die
+// Begruendung steht am Memo unten und als Auflage an der Funktion selbst.
+import { hasPixelId } from "@/lib/tracking/target-readiness";
 import { getCapiProxyUrl } from "@/lib/capi/proxy";
 import { buildLiveUrl } from "@/lib/hosting/host";
 import {
@@ -451,9 +454,23 @@ export default function CodeImporter({
   // koennte — deshalb entsteht auch nie ein LEERES Feld aus einem Fehler. Der
   // leere Fall bleibt moeglich (kein Ziel traegt eine Kennung), und ihn behandelt
   // der Erzeuger: leere Liste -> gar kein Feld, nicht ein leeres.
+  //
+  // DIE BEDINGUNG IST hasPixelId, UND SIE DARF NIE MEHR SEIN ALS DAS (Scheibe D2):
+  // Das Memo befragt AUSSCHLIESSLICH das Kennungs-Praedikat, NIEMALS die
+  // Zusammensetzung targetReadiness. Der Schluessel haengt an der BLOSSEN
+  // Anwesenheit einer Kennung — haengte er an einem zusammengesetzten Zustand,
+  // verloere ein teilweise eingerichtetes Ziel seinen Schluessel, und aus einer
+  // TEILkonfiguration entstuende lautlos GAR KEINE Auslieferung, auch fuer die
+  // Ereignisse, deren Kennung hinterlegt ist. Der Draht ist eine EINBAHNSTRASSE:
+  // ein publizierter Text traegt ihn, ein Code-Deploy erreicht ihn nicht.
+  // DER LAUFENDE STAND IST HIER RICHTIG, und das ist der Unterschied zur Karte:
+  // Die Karte beurteilt, was der SERVER spaeter mit dem GESPEICHERTEN Projekt tut;
+  // dieses Memo beschreibt, was in DIESES Dokument hineingeht — und das Dokument
+  // wird aus demselben laufenden Stand gebaut wie die Kennung daneben
+  // (buildDocumentFor liest getPixelId(settings, "meta") im selben Ausdruck).
   const consentTargets = useMemo(
     () =>
-      TRACKING_TARGETS.filter((t) => getPixelId(settings, t) !== "").map(
+      TRACKING_TARGETS.filter((t) => hasPixelId(getPixelId(settings, t))).map(
         (t) => CONSENT_KEY_BY_TARGET[t]
       ),
     [settings]

@@ -105,6 +105,9 @@ import TargetCard, {
 } from "@/components/TargetCard";
 import type { ConfiguredState } from "@/components/TargetCard";
 import { TRACKING_TARGETS, type TrackingTarget } from "@/lib/settings";
+// DIE QUELLE, nicht eine Annahme ueber sie: Der Durchlauf ueber die Ziel-Liste rechnet
+// die Tatsache genauso aus wie MeasureView.
+import { hasAdapter } from "@/lib/tracking/target-adapters";
 
 afterEach(() => {
   cleanup();
@@ -137,6 +140,7 @@ function renderCard(
     projectId?: string | null;
     target?: TrackingTarget;
     configured?: ConfiguredState;
+    hasAdapter?: boolean;
     pixelId?: string;
     savedPixelId?: string;
     onCredentialsSaved?: (
@@ -150,6 +154,9 @@ function renderCard(
   const props = {
     projectId: "p1" as string | null,
     target: "meta" as TrackingTarget,
+    // Default: das Ziel hat einen Empfaenger — der Zustand ALLER heutigen Ziele. Die
+    // beiden Tests, die den Hinweis-Zweig pruefen, setzen ihn ausdruecklich.
+    hasAdapter: true,
     pixelId: "",
     // Default LEER, genau wie pixelId: Der Ausgangszustand einer frischen Karte ist
     // "keine Kennung, nichts gespeichert".
@@ -298,18 +305,29 @@ describe("TargetCard — der Folgenlosigkeits-Hinweis haengt an hasAdapter", () 
   // DIE ERINNERUNG, DIE ER ZU SEIN BEHAUPTETE, LEISTET SEIT C1 EIN ANDERER: der
   // Kreuzvergleich Ziel -> Adapter in capi/fan-out.test.ts. Er faehrt jedes Ziel
   // durch den Handler und sieht, welcher Adapter wirklich gerufen wird.
-  // DIE ASSERTION HIER BLEIBT UNVERAENDERT — sie deckt die Gegenrichtung (Behauptung
-  // entfernt, waehrend der Zweig steht) und die Oberflaechen-Seite, und beides deckt
-  // der Kreuzvergleich nicht.
+  // HIER STAND "DIE ASSERTION HIER BLEIBT UNVERAENDERT — sie deckt die Gegenrichtung
+  // (Behauptung entfernt, waehrend der Zweig steht) und die Oberflaechen-Seite". Das
+  // war fuer C1 wahr und ist mit C2 falsch geworden: Die Behauptung, die dieser Test
+  // gegen sich selbst pruefte (das Feld hasAdapter in TARGET_CARDS), GIBT ES NICHT
+  // MEHR. Die Daten-Seite liest jetzt die EINE Quelle, die Oberflaechen-Seite bleibt.
   //
-  // VERWORFEN: ein Test, der TARGET_CARDS zur Laufzeit mutiert, um den unerreichten
-  // Render-Zweig doch noch auszuloesen. Er koppelte sich an die Reihenfolge der
-  // Tests (das exportierte Objekt ist geteilter Modulzustand) — genau die Klasse,
-  // die in der elften Scheibe fuenf statt drei Tests hat fallen lassen.
+  // VERWORFEN WAR ein Test, der TARGET_CARDS zur Laufzeit mutiert, um den unerreichten
+  // Render-Zweig doch noch auszuloesen — er koppelte sich an die Reihenfolge der Tests
+  // (geteilter Modulzustand), genau die Klasse, die in der elften Scheibe fuenf statt
+  // drei Tests hat fallen lassen. DIE VERWERFUNG BLEIBT RICHTIG UND HAT SICH ERLEDIGT:
+  // Seit C2 kommt die Tatsache als PROP herein, der Zweig ist ohne jede Mutation
+  // erreichbar (s. die zwei Tests darunter).
   // =====================================================================
   it("KEIN Ziel traegt den Hinweis — und die Daten sagen dasselbe wie die Oberflaeche", () => {
     for (const target of TRACKING_TARGETS) {
-      const { container, unmount } = renderCard({ target, configured: true });
+      const { container, unmount } = renderCard({
+        target,
+        configured: true,
+        // DIE ABLEITUNG AUS DER QUELLE, nicht ein hingeschriebenes true: Genau so
+        // rechnet MeasureView, und damit prueft dieser Lauf die Kette Quelle -> Karte
+        // statt einer Annahme ueber sie.
+        hasAdapter: hasAdapter(target),
+      });
 
       // POSITIVKONTROLLE, ohne die eine Abwesenheits-Behauptung wertlos waere: Ein
       // leerer Render und ein echter Nicht-Treffer saehen sonst gleich aus. Der
@@ -318,13 +336,39 @@ describe("TargetCard — der Folgenlosigkeits-Hinweis haengt an hasAdapter", () 
       expect(container.textContent).toContain(TARGET_CARDS[target].publicLabel);
 
       // Die DATEN-Seite und die OBERFLAECHEN-Seite derselben Aussage, getrennt
-      // geprueft: Ein Umlegen des Feldes ohne Wirkung im Render (oder umgekehrt)
-      // faellt nur so auf.
-      expect(TARGET_CARDS[target].hasAdapter).toBe(true);
+      // geprueft. Die Daten-Seite fragt seit C2 die QUELLE, nicht mehr ein Feld an der
+      // Karten-Konfiguration.
+      expect(hasAdapter(target)).toBe(true);
       expect(screen.queryByText(HINWEIS)).toBeNull();
 
       unmount();
     }
+  });
+
+  // =====================================================================
+  // DIE ZWEI TESTS, DIE ES VOR C2 NICHT GEBEN KONNTE.
+  //
+  // Der Render-Zweig war unerreichbar, solange die Tatsache aus einem Modul-Objekt
+  // kam: Alle drei Ziele trugen "hat einen Adapter", und der einzige Weg zum Zweig
+  // waere eine Laufzeit-Mutation jenes Objekts gewesen — begruendet verworfen. Seit
+  // die Tatsache eine PROP ist, genuegt ein Wert.
+  // SIE PRUEFEN DIE WIRKUNG, NICHT DIE QUELLE: Ob die Liste richtig gefuellt ist,
+  // sichert der Compiler (Zuordnung im Verteiler) und der Kreuzvergleich in
+  // fan-out.test.ts; hier steht nur, dass die Karte auf die Tatsache reagiert.
+  // =====================================================================
+  it("C2-A: OHNE Adapter erscheint der Hinweis", () => {
+    // WIRD ROT, WENN: der Render-Zweig entfernt wird oder seine Bedingung umgekehrt.
+    renderCard({ configured: true, hasAdapter: false });
+    expect(screen.getByText(HINWEIS)).toBeTruthy();
+  });
+
+  it("C2-B: MIT Adapter fehlt er — mit Positivkontrolle im selben Zustand", () => {
+    // POSITIVKONTROLLE ZUERST: Ohne sie waere diese Abwesenheits-Behauptung von einem
+    // leeren Render nicht zu unterscheiden.
+    // WIRD ROT, WENN: der Hinweis bedingungslos rendert.
+    renderCard({ configured: true, hasAdapter: true });
+    expect(screen.getByText(STATUS_CONFIGURED)).toBeTruthy();
+    expect(screen.queryByText(HINWEIS)).toBeNull();
   });
 });
 
@@ -445,6 +489,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
         <TargetCard
           projectId="p1"
           target="meta"
+          hasAdapter={true}
           pixelId=""
           savedPixelId=""
           onPixelIdChange={vi.fn()}
@@ -455,6 +500,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
         <TargetCard
           projectId="p1"
           target="pinterest"
+          hasAdapter={true}
           pixelId=""
           savedPixelId=""
           onPixelIdChange={vi.fn()}
@@ -481,6 +527,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
         <TargetCard
           projectId="p1"
           target="meta"
+          hasAdapter={true}
           pixelId=""
           savedPixelId=""
           onPixelIdChange={vi.fn()}
@@ -491,6 +538,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
         <TargetCard
           projectId="p1"
           target="pinterest"
+          hasAdapter={true}
           pixelId=""
           savedPixelId=""
           onPixelIdChange={vi.fn()}

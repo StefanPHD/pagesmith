@@ -13,6 +13,7 @@ import type { TrackingTarget } from "@/lib/settings";
 // TARGET_CARDS liefert den ANBIETER-NAMEN fuer die Verlust-Kachel (s. dort). Named
 // neben dem Default-Import derselben Datei — kein zweiter Modulpfad.
 import TargetCard, { TARGET_CARDS } from "@/components/TargetCard";
+import { hasAdapter } from "@/lib/tracking/target-adapters";
 
 // Anzeige-Label je event_type fuer die Analytics-Sektion (Scheibe 3). Der reservierte
 // PageView-Token wird lesbar; jeder Conversion-Name (Purchase/Lead/Custom…) steht als
@@ -183,6 +184,15 @@ export default function MeasureView({
             key={`${projectId ?? "neu"}:${target}`}
             projectId={projectId}
             target={target}
+            // ABGELEITET, NICHT BEHAUPTET (Scheibe C2): Die Quelle bleibt die Liste
+            // in lib/tracking/target-adapters.ts — hier wird sie nur GELESEN. Lesen
+            // ist kein Behaupten; ein zweiter Ort, der es SETZT, waere genau die
+            // Doppelung, die diese Scheibe beseitigt hat.
+            // WARUM HIER UND NICHT IN DER KARTE: Bekaeme die Karte die Tatsache nicht
+            // als Prop, sondern holte sie selbst, waere ihr Hinweis-Zweig im Test nur
+            // ueber eine Mutation von Modulzustand erreichbar — und die ist dort
+            // begruendet verworfen.
+            hasAdapter={hasAdapter(target)}
             pixelId={pixelIdFor(target)}
             savedPixelId={savedPixelIdFor(target)}
             onPixelIdChange={(value) => onPixelIdChange(target, value)}

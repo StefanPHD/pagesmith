@@ -946,6 +946,134 @@ einen Adapter tragen.
 
 ---
 
+### 3.9 DIE ADAPTER-TATSACHE BEKOMMT EINE QUELLE — SCHEIBE C2, ERLEDIGT (2026-08-13)
+
+**Commit:** steht bei Abfassung dieses Vermerks noch aus (Stufe 2 ist abgeschlossen,
+die Freigabe nicht erteilt). **Wer ihn nachträgt, trägt die Nummer hier ein** — und
+rückt diesen Vermerk in die Kette am Abschnittskopf ein, in der er heute die Lücke ist.
+
+**DIE QUELLE EXISTIERT, UND BEIDE TRÄGER HABEN AUFGEHÖRT ZU BEHAUPTEN.** Die Tatsache
+„bringt dieser Build für dieses Ziel einen Empfänger mit" steht seit dieser Scheibe
+**einmal** — als Liste in einer reinen Datei (`TARGETS_WITH_ADAPTER` in
+`src/lib/tracking/target-adapters.ts`), von beiden Seiten lesbar.
+- **Träger 1 hat aufgehört:** Das Feld `hasAdapter` in `TARGET_CARDS` ist entfallen;
+  jene Konfiguration beschreibt nur noch Beschriftungen. Die Karte bekommt die Tatsache
+  als **PROP**, abgeleitet in `MeasureView` aus der Liste.
+- **Träger 2 hat aufgehört:** Die drei Ziel-Vergleiche in `dispatchForward` sind
+  entfallen, dazu die beiden lokalen Ziel-Konstanten und der `META_TARGET`-Import. An
+  ihrer Stelle steht eine Zuordnung, deren Vollständigkeit der Compiler prüft.
+Suite 1059 → **1061**, Testdateien unverändert 55, alle vier Gates grün.
+
+**EIN VIERTES ZIEL OHNE ADAPTER BLEIBT MÖGLICH — und daran hing diese Scheibe.** Die
+Zuordnung ist über die **Adapter-Union** erschöpfend, **nicht** über die Ziel-Union: Die
+Liste ist eine TEILMENGE der Ziele. Ein neues Ziel, das nicht in sie aufgenommen wird,
+verlangt keinen Eintrag — **und die Karte sagt dann von selbst, dass an dieses Ziel
+nichts gesendet wird.** Wäre die Zuordnung über die Ziel-Union gebaut, müsste jedes Ziel
+einen Empfänger haben; der Hinweis hätte keinen Fall mehr, den er beschreiben könnte.
+**Der Unterschied steckt in einer einzigen Typ-Angabe**, und deshalb steht er hier.
+
+**DER ANZEIGE-ZWEIG IST ZUM ERSTEN MAL BEWEISBAR.** Er war unerreichbar, solange die
+Tatsache aus einem Modul-Objekt kam — der einzige Weg wäre eine Laufzeit-Mutation jenes
+Objekts gewesen, und die ist im Bestand begründet verworfen. Seit die Tatsache eine Prop
+ist, genügt ein Wert: **zwei neue Tests** prüfen ihn in beiden Richtungen. **Die alte
+Verwerfung bleibt richtig; sie hat sich erledigt.**
+
+**VIER FEHLERKLASSEN SIND JETZT BUILD-FEHLER UND HABEN DESHALB KEINEN TEST:** ein
+fehlender Eintrag · ein überzähliger Eintrag · ein Wert in der Liste, den es als Ziel
+nicht gibt · ein umbenanntes Ziel. **Der Grund steht an der Zuordnung im Code:** Ein Test
+neben einem Compiler-Fehler prüft nichts und suggeriert, die Bindung hänge an ihm — wer
+die Bindung später lockert, hielte den noch grünen Test für eine Absicherung.
+**WAS WEITERHIN EINEN TEST BRAUCHT, WEIL ES KOMPILIERT:** die **Vertauschung** zweier
+Einträge (der C1-Kreuzvergleich) und die Vertauschung der beiden Werte in der
+Config-Umformung des zweiten Ziels (T10). Beide sind unverändert in Kraft.
+
+**DER ERSCHÖPFUNGS-REST IST UNVERÄNDERT UNERREICHBAR** (Befund aus Abschnitt 3.8, gilt
+wörtlich weiter): Jedes bekannte Ziel steht in der Liste, ein unbekanntes fällt schon am
+Einwilligungs-Gate heraus. Er bleibt als **ausdrücklicher Nein-Zweig** der
+Zugehörigkeits-Prüfung stehen — er hält die Zusage sichtbar und erspart an der
+Nachschlag-Stelle eine Typ-Zusicherung, die genau das ein zweites Mal behauptete, was
+die Prüfung entscheidet. **NEU IST EINE AUSSICHT, KEINE ÄNDERUNG:** Mit einem vierten
+Ziel ohne Adapter wird er erreichbar — dessen Consent-Einträge erzwingt der Compiler, es
+passiert also das Gate und fällt hier heraus.
+
+**WAS NICHT ERLEDIGT IST:** **Invariante (6) aus Abschnitt 7.5 ist erst nach D erfüllt.**
+C2 vereinheitlicht die ADAPTER-Achse; das Consent-Memo (Konsument 3) ist unangetastet.
+**`targetReadiness` hat weiterhin KEINEN Konsumenten** — auch nicht den Adapter-Teil: C2
+schafft eine eigene Quelle in einer eigenen Datei und rührt jene nicht an. **Der Trigger
+aus Abschnitt 3.8 bleibt damit scharf:** Bleibt die Zusammensetzung auch nach D ohne
+Konsumenten, ist zu entscheiden, ob sie verfrüht war.
+
+---
+
+**DIE FÜNF RICHTIGSTELLUNGEN — EIGENER PUNKT, weil sie der eigentliche Preis dieser
+Scheibe waren.** C2 kostete wenig Code und machte fünf dokumentierte Belege falsch.
+Keiner davon war eine Regel; alle waren Tatsachenangaben über den Code:
+1. **`target-readiness.ts`, der Dateikopf:** „eine dritte Quelle neben den **beiden
+   bestehenden**". **Die Regel steht wörtlich wie vorher** (eine Ziel-Liste gehört nicht
+   in jene Datei); nachgezogen ist nur die Arithmetik.
+2. **`target-readiness.ts`, an der Adapter-Tatsache:** „Ihre beiden heutigen Träger
+   bleiben unverändert bestehen." **Beide gibt es nicht mehr.**
+3. **`fan-out.test.ts`, der Kopf des C1-Wächters:** nannte die zwei Träger als bestehend.
+   **NUR der Kommentar — keine Assertion wurde angefasst**, sie gelten unverändert, weil
+   die Vertauschung weiterhin kompiliert.
+4. **`TargetCard.test.tsx`:** „DIE ASSERTION HIER BLEIBT UNVERÄNDERT." War für C1 wahr,
+   ist durch C2 falsch geworden — die Assertion prüfte ein Feld, das es nicht mehr gibt.
+5. **`ingest.ts`, die Aufzählung der Fundstellen für Ziel-Wissen** — s. den eigenen
+   Absatz darunter.
+
+**DIE LEHRE, und sie ist älter als diese Scheibe: EINE REGEL KANN GÜLTIG BLEIBEN,
+WÄHREND IHR BELEG ALTERT.** Ein Beleg ist eine Tatsachenbehauptung über den Code und
+altert mit ihm; die Regel darüber altert nicht mit. **Der Preis eines Umbaus sind nicht
+nur die Zeilen, die er ändert, sondern die Sätze, die er falsch macht** — und die findet
+nur, wer vor dem Bau danach sucht.
+
+**DIE NEUZÄHLUNG (GEMESSEN, 2026-08-13):** **ACHT** Stellen tragen einen Zielwert oder
+eine ziel-geschlüsselte Aussage; die Aufzählung steht im Kopf der neuen Datei. **DIE
+ALTE ZAHL WAR SECHS UND WAR SCHON DAMALS ZU NIEDRIG** — sie zählte
+`CONSENT_KEY_BY_TARGET` und `LEGACY_CONSENT_ROLE` nicht mit, obwohl es beide seit der
+neunten Scheibe gibt. C2 nimmt zwei Stellen weg und fügt eine hinzu; **dass die Zahl
+trotzdem steigt, liegt an der Korrektur, nicht an dieser Scheibe.**
+**NICHT MITKORRIGIERT, sondern gemeldet:** Der Vorrats-Punkt „DIE ZAHL ‚SECHS
+VOKABULAR-STELLEN' IN ABSCHNITT 3.2" nennt ebenfalls eine Sechs — er zählt aber etwas
+anderes (die Code-Stellen, die den Wert des DRITTEN Ziels tragen) und ist von dieser
+Zählung nicht berührt.
+
+---
+
+**DIE VIER PROBEN — mit Vorab-Ansage, und ZWEI Ansagen waren zu eng:**
+- **M1** (Eintrag entfernt): **BUILD-Fehler wie angesagt** — `TS2741: Property 'meta' is
+  missing … but required in type Record<…>`. **Die Bindung hängt am Compiler, belegt.**
+  **ABWEICHUNG:** Ich sagte „KEIN roter Test"; es fielen zusätzlich Tests. Grund:
+  **`vitest` typprüft nicht** — zur Laufzeit fehlt der Eintrag dann schlicht. Die
+  Stopp-Bedingung („roter Test STATT Build-Fehler") ist nicht eingetreten.
+- **M2** (zwei Einträge vertauscht): `tsc` **grün** — die Vertauschung kompiliert, genau
+  deshalb braucht sie einen Test. Gefallen sind die beiden C1-Läufe plus 47 weitere,
+  **alle derselben Klasse** (das Meta-Bein erreicht Metas Adapter nicht). Abdeckung,
+  keine Kaskade.
+- **M3** (Zugehörigkeits-Prüfung invertiert): **alle drei C1-Läufe wie angesagt.**
+  **ABWEICHUNG:** Ich sagte „`tsc` bleibt grün" — er wurde rot (`TS2349: Type 'never' has
+  no call signatures`). Der Grund ist die Verengung selbst: Nach dem invertierten Riegel
+  ist das Ziel im Rest `never`. **Ein Zugewinn, keine Schwäche** — dieselbe Achse doppelt
+  gesichert.
+- **M4** (Prop-Bedingung an der Karte umgekehrt): **genau die drei Karten-Tests, kein
+  Treffer ausserhalb. Keine Abweichung.**
+- **Gegenprobe unverändert → 1061/1061 grün.**
+
+**DER LIVE-KONTROLLFALL STEHT AUS UND IST PFLICHT** — C2 ist der erste Eingriff dieser
+Runde in den Ingest-Pfad. Ein Fall mit vorher festgelegtem Soll-Ausgang (ein vollständig
+eingerichtetes Ziel forwardet unverändert weiter, zugeordnet über die Ereignis-Kennung)
+plus ein zweiter, kostenloser Beobachtungspunkt: **an keiner der drei Karten darf der
+Folgenlosigkeits-Hinweis erscheinen.**
+
+**WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** dass Invariante (6) erfüllt wäre (erst
+nach D) · irgendetwas über das Consent-Memo · dass `targetReadiness` benutzt wird ·
+irgendetwas über den Erschöpfungs-Rest (unverändert unerreichbar) · die Anzeige eines
+Ziels ohne Adapter **im Betrieb** (den Zustand gibt es nicht; er ist nur im Test
+herstellbar) · die fachliche Richtigkeit eines Adapters oder die Gültigkeit von
+Zugangsdaten · ob die zwei Zeilen über die Auslieferung je eine werden.
+
+---
+
 ## 4. Was an Entscheidungen gefallen ist — bindet über die Scheibe hinaus
 
 **(a) OWNER-ENTSCHEIDUNG: `fbtrace_id` BLEIBT UNGESCHWÄRZT, nur hart

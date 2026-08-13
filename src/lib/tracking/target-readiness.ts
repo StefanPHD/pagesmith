@@ -20,9 +20,16 @@
 // KEIN DRITTES URTEIL, und das ist die tragende Grenze dieser Datei: Sie NIMMT die
 // drei Tatsachen ENTGEGEN und BEHAUPTET ueber kein Ziel etwas. Hier steht keine
 // Ziel-Liste, kein Record ueber Ziele, kein Vergleich gegen einen Zielwert. Wer hier
-// eine solche Zuordnung ergaenzt, schafft eine dritte Quelle neben den beiden
-// bestehenden — und die drei koennten auseinanderlaufen, ohne dass irgendetwas rot
-// wird. Genau dagegen ist diese Arbeit gerichtet.
+// eine solche Zuordnung ergaenzt, schafft eine WEITERE Quelle neben den bestehenden —
+// und sie koennten auseinanderlaufen, ohne dass irgendetwas rot wird. Genau dagegen
+// ist diese Arbeit gerichtet.
+// DIE REGEL STEHT WOERTLICH WIE VORHER; NACHGEZOGEN IST NUR IHRE ARITHMETIK. Hier
+// stand "eine dritte Quelle neben den beiden bestehenden" — das war richtig, solange
+// es zwei Traeger gab. Scheibe C2 hat die Adapter-Tatsache auf EINE Quelle gebracht
+// (TARGETS_WITH_ADAPTER in tracking/target-adapters.ts), die beiden alten Traeger
+// behaupten nichts mehr. Die Zahl altert, das Verbot nicht: Eine Ziel-Liste gehoert
+// weiterhin NICHT hierher — dass sie anderswo entstanden ist, ist der Beleg dafuer
+// und nicht die Ausnahme davon.
 //
 // SIE IST REIN: keine Direktive, kein Import. Weder `import "server-only"` (das
 // sperrte sie fuer die Oberflaeche) noch `"use client"` (das sperrte sie fuer den
@@ -123,13 +130,18 @@ export function hasSecret(secret: unknown): secret is string {
  * EINSTELLUNGEN ODER IN DER GEHEIMNIS-TABELLE SUCHT, SUCHT AM FALSCHEN ORT. Sie
  * steht in keinem Datensatz und kann dort auch nicht stehen.
  *
- * SIE WIRD IN DIESER SCHEIBE ENTGEGENGENOMMEN UND NICHT BEHAUPTET. Ihre beiden
- * heutigen Traeger bleiben unveraendert bestehen: das Feld hasAdapter in TARGET_CARDS
- * (components/TargetCard.tsx) und die Ziel-Zweige in dispatchForward
- * (capi/ingest.ts). Diese Datei kann sie nicht von dort beziehen — die eine Quelle
- * liegt in einer Client-Komponente, die Server-Actions importiert, die andere in
- * einem Handler, der server-only-Module zieht. Ein Import waere in beide Richtungen
- * ein Fehler; eine eigene Kopie waere das dritte Urteil (s. Dateikopf).
+ * SIE WIRD ENTGEGENGENOMMEN UND NICHT BEHAUPTET — daran hat sich nichts geaendert.
+ * WOHER SIE HEUTE KOMMT, IST NACHGEZOGEN (Scheibe C2): Hier stand, ihre beiden
+ * Traeger — das Feld hasAdapter in TARGET_CARDS und die Ziel-Zweige in
+ * dispatchForward — blieben unveraendert bestehen, und diese Datei koenne sie von
+ * dort nicht beziehen, weil die eine Quelle in einer Client-Komponente und die andere
+ * in einem server-only-Handler liegt. BEIDE TRAEGER GIBT ES NICHT MEHR: Die Tatsache
+ * steht seit C2 EINMAL, in der reinen Datei tracking/target-adapters.ts, und ist von
+ * beiden Seiten erreichbar.
+ * WAS SICH DADURCH NICHT AENDERT, und deshalb bleibt der Absatz stehen: Diese Datei
+ * bezieht sie trotzdem NICHT selbst. Ein Import jener Liste hierher machte aus dem
+ * Entgegennehmen ein Nachschlagen und braechte eine Ziel-Liste in Reichweite dieser
+ * Datei — das Verbot im Kopf gilt unveraendert.
  */
 export type ReadinessInput = {
   pixelId: unknown;

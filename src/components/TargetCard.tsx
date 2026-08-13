@@ -53,19 +53,16 @@ export type ConfiguredState = boolean | null;
  * heute auf Metas Begriffe zeigt. Beides zeigt in dieselbe Richtung; die Fachlage
  * ist der Grund, die Eindeutigkeit die Folge.
  *
- * hasAdapter STEUERT DEN FOLGENLOSIGKEITS-HINWEIS. Es ist damit eine von SECHS
- * Stellen im Repo, an denen Ziel-Wissen liegt (neben META_TARGET,
- * META_CONSENT_TARGET, dem CHECK der Geheimnis-Tabelle, TRACKING_TARGETS und seit
- * der zwoelften Scheibe PINTEREST_TARGET in capi/ingest.ts). GEMELDET, NICHT
- * GELOEST — die Zusammenlegung der Kopien ist seit der sechsten Scheibe
- * ausdruecklich ausgeschlossen.
- *
- * ES IST UMGELEGT WORDEN (zwoelfte Scheibe), UND DAMIT IST DIE ZUSAGE EINGELOEST:
- * Hier stand "WANN ES UMGELEGT WIRD: sobald das Ziel tatsaechlich beliefert wird …
- * Dann verschwindet der Hinweis von selbst — er haengt an DIESEM Feld und an keinem
- * Kommentar." Genau so ist es gekommen: EINE Zeile Daten, und der Hinweis war weg.
- * HEUTE TRAEGT KEIN ZIEL MEHR `hasAdapter: false`. Feld und Render-Zweig bleiben
- * trotzdem — s. die Begruendung am Zweig selbst.
+ * DAS FELD hasAdapter IST MIT SCHEIBE C2 ENTFALLEN. Es stand hier und steuerte den
+ * Folgenlosigkeits-Hinweis — und war damit die ZWEITE Behauptung ueber dieselbe
+ * Tatsache neben den Ziel-Zweigen im Verteiler; die beiden waren durch nichts
+ * verbunden. Die Tatsache steht jetzt EINMAL, in TARGETS_WITH_ADAPTER
+ * (lib/tracking/target-adapters.ts), und erreicht diese Karte als PROP.
+ * WARUM ALS PROP UND NICHT DURCH EIGENEN ZUGRIFF AUF DIE LISTE: Nur so ist der
+ * Hinweis-Zweig im Test erreichbar, ohne Modulzustand zu mutieren — und genau das
+ * ist hier schon einmal begruendet verworfen worden (s. den Zweig selbst).
+ * DIESE KONFIGURATION BESCHREIBT SEITHER NUR NOCH BESCHRIFTUNGEN. Ueber Adapter
+ * behauptet sie nichts mehr.
  */
 export type TargetCardConfig = {
   name: string;
@@ -75,7 +72,6 @@ export type TargetCardConfig = {
   secretLabel: string;
   secretPlaceholderNew: string;
   secretPlaceholderReplace: string;
-  hasAdapter: boolean;
 };
 
 export const TARGET_CARDS: Record<TrackingTarget, TargetCardConfig> = {
@@ -87,7 +83,6 @@ export const TARGET_CARDS: Record<TrackingTarget, TargetCardConfig> = {
     secretLabel: "Meta CAPI-Token",
     secretPlaceholderNew: "CAPI-Token einfügen",
     secretPlaceholderReplace: "Neuen Token eingeben zum Ersetzen",
-    hasAdapter: true,
   },
   // DIE DREI OEFFENTLICHEN FELDER NENNEN DIE KONTO-KENNUNG (Phase 11, elfte
   // Scheibe). Sie nannten bis dahin die TAG-Kennung des Browser-Tags — und den
@@ -121,11 +116,6 @@ export const TARGET_CARDS: Record<TrackingTarget, TargetCardConfig> = {
     secretLabel: "Pinterest-Zugangsdaten",
     secretPlaceholderNew: "Zugangsdaten einfügen",
     secretPlaceholderReplace: "Neue Zugangsdaten eingeben zum Ersetzen",
-    // UMGELEGT IN DER ZWOELFTEN SCHEIBE: Die Zuordnung Ziel -> Adapter
-    // (dispatchForward in capi/ingest.ts) hat seither einen zweiten Zweig, dieses
-    // Ziel wird also tatsaechlich beliefert. Der Hinweis verschwindet damit von
-    // selbst — er haengt an DIESEM Feld.
-    hasAdapter: true,
   },
   // DAS DRITTE ZIEL. Die oeffentliche Kennung heisst hier tatsaechlich Pixel-ID —
   // anders als beim zweiten Ziel, wo der Adapter die ANZEIGENKONTO-Kennung braucht
@@ -144,10 +134,6 @@ export const TARGET_CARDS: Record<TrackingTarget, TargetCardConfig> = {
     secretLabel: "TikTok-Zugangsdaten",
     secretPlaceholderNew: "Zugangsdaten einfügen",
     secretPlaceholderReplace: "Neue Zugangsdaten eingeben zum Ersetzen",
-    // Der Adapter entsteht in DERSELBEN Scheibe wie dieser Eintrag — das Ziel wird
-    // ab dem Deploy tatsaechlich beliefert. Ein `false` hier waere schon am Tag der
-    // Aufnahme falsch.
-    hasAdapter: true,
   },
 };
 
@@ -182,6 +168,7 @@ export function noDeliveryText(publicLabel: string): string {
 export default function TargetCard({
   projectId,
   target,
+  hasAdapter,
   pixelId,
   savedPixelId,
   onPixelIdChange,
@@ -191,6 +178,20 @@ export default function TargetCard({
 }: {
   projectId: string | null;
   target: TrackingTarget;
+  /**
+   * Bringt DIESER BUILD fuer das Ziel einen Empfaenger mit? (Scheibe C2)
+   *
+   * KEINE EIGENSCHAFT DES PROJEKTS, sondern des Builds — sie aendert sich nur mit
+   * einem Deploy. Abgeleitet wird sie in MeasureView aus TARGETS_WITH_ADAPTER
+   * (lib/tracking/target-adapters.ts), der EINEN Quelle; dieselbe Liste bindet den
+   * Verteiler im Ingest-Pfad.
+   *
+   * PFLICHTIG UND NICHT OPTIONAL: Ein Default liesse eine vergessene Aufrufstelle
+   * still durchrutschen — und zwar in die gefaehrliche Richtung, denn der
+   * naheliegende Default waere "hat einen Adapter". So ist eine vergessene Stelle
+   * ein BUILD-Fehler.
+   */
+  hasAdapter: boolean;
   pixelId: string;
   /**
    * Die zuletzt GESPEICHERTE Kennung dieses Ziels — NICHT die im Feld stehende.
@@ -343,20 +344,21 @@ export default function TargetCard({
           Sachen, deshalb zwei Zeilen und kein Zusatz im Statustext. Ein Zusatz
           dort haette den entschiedenen Wortlaut verhandelbar gemacht.
 
-          UNERREICHTE VORSORGE, EHRLICH BENANNT (zwoelfte Scheibe): Seit beide Ziele
-          beliefert werden, traegt KEINE Konfiguration mehr hasAdapter: false —
-          dieser Zweig wird heute von nichts erreicht. Er bleibt trotzdem, und zwar
-          fuer den Moment, in dem ein DRITTES Ziel dazukommt, dessen Adapter noch
-          fehlt: Dann genuegt EINE Zeile Daten, und die Karte sagt es wieder von
-          selbst. Wer ihn entfernt, spart vier Zeilen und muss den Mechanismus genau
-          dann neu erfinden, wenn er am leichtesten vergessen wird.
-          WIE ER GEPRUEFT WIRD: ueber die DATEN, nicht ueber die Wirkung — der Test
-          in TargetCard.test.tsx laeuft ueber die Ziel-Liste und behauptet, dass
-          KEINES der Ziele den Hinweis traegt. Ein Test, der den Zweig ueber eine
-          Laufzeit-Mutation von TARGET_CARDS erzwaenge, wurde VERWORFEN: Er koppelte
-          sich an die Reihenfolge der Tests — genau die Klasse, die in der elften
-          Scheibe fuenf statt drei Tests hat fallen lassen. */}
-      {!config.hasAdapter && (
+          UNERREICHT IM BETRIEB, ABER SEIT SCHEIBE C2 BEWEISBAR — und das ist der
+          Unterschied, den diese Scheibe an dieser Stelle macht: Solange jedes
+          bekannte Ziel in TARGETS_WITH_ADAPTER steht, erreicht ihn kein Betrieb.
+          ERREICHEN kann ihn aber jetzt jeder Test, denn die Tatsache kommt als PROP
+          herein und nicht mehr aus einem Modul-Objekt.
+          HIER STAND, ER SEI NUR UEBER DIE DATEN PRUEFBAR, und ein Test, der ihn ueber
+          eine Laufzeit-Mutation von TARGET_CARDS erzwaenge, sei VERWORFEN (er
+          koppelte sich an die Reihenfolge der Tests — die Klasse, die in der elften
+          Scheibe fuenf statt drei Tests hat fallen lassen). DIE VERWERFUNG BLEIBT
+          RICHTIG; sie hat sich nur erledigt, weil es die Modul-Mutation nicht mehr
+          braucht.
+          ER BLEIBT AUS DEMSELBEN GRUND WIE VORHER: fuer den Moment, in dem ein Ziel
+          ohne Empfaenger dazukommt. Dann genuegt es, es NICHT in die Liste zu
+          schreiben, und die Karte sagt es von selbst. */}
+      {!hasAdapter && (
         <p className="mb-2 text-xs text-gray-500">
           Auslieferung folgt — dieses Ziel sendet noch nicht.
         </p>

@@ -706,16 +706,27 @@ describe("Fan-Out — ZWEI ECHTE EMPFAENGER (Meta und Pinterest nebeneinander)",
 // ===========================================================================
 // DER KREUZVERGLEICH ZIEL -> ADAPTER (Phase 11, Scheibe C1).
 //
-// WOGEGEN ER GEBAUT IST — GEMESSEN am Repo (2026-08-13): Die Adapter-Tatsache wird
-// an ZWEI Orten behauptet, und die beiden sind durch NICHTS verbunden. Der eine ist
-// das Feld hasAdapter in TARGET_CARDS (components/TargetCard.tsx), der andere sind
-// die Ziel-Zweige in dispatchForward (capi/ingest.ts). Kein Typ und bis hierher kein
-// Test hielt sie zusammen.
+// WOGEGEN ER GEBAUT WURDE — GEMESSEN am Repo (2026-08-13, Scheibe C1): Die
+// Adapter-Tatsache wurde damals an ZWEI Orten behauptet, und die beiden waren durch
+// NICHTS verbunden — das Feld hasAdapter in TARGET_CARDS (components/TargetCard.tsx)
+// und die Ziel-Zweige in dispatchForward (capi/ingest.ts). Kein Typ und kein Test
+// hielt sie zusammen.
 // DIE GEFAEHRLICHE RICHTUNG WAR VOLLSTAENDIG UNBEWACHT: Wer einen Ziel-Zweig
-// entfernt, waehrend die Karte weiter einen Adapter behauptet, bekam KEINEN roten
-// Test — das Ziel sendet dann nichts, die Oberflaeche sagt nichts, und es gibt weder
+// entfernte, waehrend die Karte weiter einen Adapter behauptete, bekam KEINEN roten
+// Test — das Ziel sendete dann nichts, die Oberflaeche sagte nichts, und es gab weder
 // Fehler noch Logzeile. Die harmlose Gegenrichtung (Behauptung entfernt, Zweig
 // bleibt) war dagegen gedeckt.
+//
+// SEIT SCHEIBE C2 GIBT ES DIE BEIDEN TRAEGER NICHT MEHR — NACHGEZOGEN IST DIESER
+// KOMMENTAR, KEINE ASSERTION: Die Tatsache steht jetzt EINMAL
+// (TARGETS_WITH_ADAPTER in tracking/target-adapters.ts), das Feld an der Karte ist
+// entfallen, und die Zuordnung im Verteiler ist compiler-gebunden. Damit sind ein
+// FEHLENDER und ein UEBERZAEHLIGER Eintrag BUILD-Fehler und brauchen hier keinen
+// Test.
+// WARUM DIESER BLOCK TROTZDEM UNVERAENDERT GILT — und das ist der Grund, warum an
+// seinen Zusicherungen nichts angefasst wurde: Die VERTAUSCHUNG zweier Eintraege
+// kompiliert anstandslos. Gegen sie hilft kein Typ, sondern nur ein Lauf, der sieht,
+// welcher Adapter wirklich gerufen wird. Genau das tut er.
 //
 // WAS DIESER BLOCK MISST UND WAS NICHT: Er misst die ZUORDNUNG — erreicht das
 // aufgeloeste Ziel X genau den Adapter X? Er misst NICHT, ob dieser Adapter fachlich

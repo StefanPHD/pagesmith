@@ -1,16 +1,24 @@
 import { after } from "next/server";
 import {
   getCapiConfigByTrackingKey,
-  META_TARGET,
   type ResolvedTarget,
 } from "@/lib/capi/token";
+// DIE EINE QUELLE FUER "HAT DIESES ZIEL EINEN EMPFAENGER" (Scheibe C2). Eine REINE
+// Datei, damit auch die Oberflaeche sie lesen kann — dieser Handler ist server-only
+// und taugte deshalb nicht als Quelle, obwohl er bis hierher eine war.
+import {
+  hasAdapter,
+  type TargetWithAdapter,
+} from "@/lib/tracking/target-adapters";
 import { META_TEST_EVENT_CODE } from "@/lib/capi/config";
 import { forwardToMeta } from "@/lib/capi/meta-forward";
 import { forwardToPinterest } from "@/lib/capi/pinterest-forward";
 import { forwardToTiktok } from "@/lib/capi/tiktok-forward";
-// NUR DER TYP. Er traegt den Waechter fuer die Ziel-Konstante unten (s. dort) und
-// erzeugt keine Laufzeit-Abhaengigkeit dieses Handlers auf den Einstellungs-Blob.
-import type { TrackingTarget } from "@/lib/settings";
+// HIER STAND EIN TYP-IMPORT VON TrackingTarget ("NUR DER TYP … er traegt den Waechter
+// fuer die Ziel-Konstante unten"). Mit Scheibe C2 sind die beiden lokalen
+// Ziel-Konstanten entfallen, und damit sein einziger Verwender. Die Zusage, dass
+// dieser Handler keine LAUFZEIT-Abhaengigkeit auf den Einstellungs-Blob hat, gilt
+// unveraendert — er importiert von dort jetzt gar nichts mehr.
 import { CONSENT_WIRE_FIELD, consentAllows } from "@/lib/tracking/consent-wire";
 // DER SCHLUESSEL KOMMT AUS DEM CONSENT-VOKABULAR, NICHT AUS DEM DER GEHEIMNIS-TABELLE
 // (META_TARGET in capi/token.ts) — obwohl beide heute "meta" lauten. Zwei Gruende:
@@ -187,85 +195,130 @@ function schedulePersist(
 }
 
 /**
- * DER ZIELWERT FUER PINTEREST — LOKAL, UND DAS IST EINE ENTSCHEIDUNG MIT GRUND
- * (Phase 11, zwoelfte Scheibe).
- *
- * DER SYMMETRISCHE GRIFF WAERE EIN PINTEREST_TARGET NEBEN META_TARGET IN
- * capi/token.ts. Er ist aus ZWEI unabhaengigen Gruenden nicht gemacht worden:
- *  1. Die Aufloesung ist in dieser Scheibe unantastbar.
- *  2. UND ER WAERE EINE STILLE FALLE: NEUN Testdateien mocken @/lib/capi/token mit
- *     einer Fabrik, die genau zwei Schluessel liefert (getCapiConfigByTrackingKey,
- *     META_TARGET). Ein WERT-Import von dort waere in jeder von ihnen `undefined`,
- *     der Vergleich nie wahr — der neue Zweig waere in der GESAMTEN Handler-Suite
- *     tot, und alles bliebe gruen.
- *
- * DER TYP IST DER WAECHTER, nicht der Name: `TrackingTarget` ist die Union aus
- * TRACKING_TARGETS. Wuerde der Wert dort umbenannt, ist diese Zeile ein BUILD-Fehler
- * — statt eines Forwards, der lautlos ausfaellt. Ein blosses Literal im Vergleich
- * unten haette dieselbe Wirkung; die Konstante macht sie nur lesbar.
- *
- * SECHSTE FUNDSTELLE FUER ZIEL-WISSEN — GEMELDET, NICHT GELOEST. Die anderen fuenf:
- * META_TARGET (capi/token.ts), META_CONSENT_TARGET (tracking/consent.ts), der CHECK
- * project_secrets_target_valid, TRACKING_TARGETS (settings.ts) und
- * TARGET_CARDS.hasAdapter (components/TargetCard.tsx). Die Zusammenlegung ist seit
- * der sechsten Scheibe ausdruecklich ausgeschlossen und bleibt es hier.
+ * DIE ZWEI LOKALEN ZIELWERTE SIND MIT SCHEIBE C2 ENTFALLEN — hier standen
+ * PINTEREST_TARGET und TIKTOK_TARGET, je mit der Begruendung, warum sie LOKAL und
+ * nicht in capi/token.ts liegen. Beide Gruende sind weiterhin richtig und gelten der
+ * Zuordnung unten unveraendert:
+ *  1. Die Aufloesung bleibt unantastbar.
+ *  2. DIE STILLE FALLE BESTEHT FORT: NEUN Testdateien mocken @/lib/capi/token mit
+ *     einer Fabrik, die genau zwei Schluessel liefert. Ein WERT-Import eines
+ *     Zielwerts von dort waere in jeder von ihnen `undefined`, der Nachschlag ginge
+ *     ins Leere — der Empfaenger waere in der GESAMTEN Handler-Suite tot, und alles
+ *     bliebe gruen. Die Schluessel der Zuordnung sind deshalb LITERALE, die der
+ *     Compiler gegen die Adapter-Union prueft, und kein importierter Wert.
+ * DER TYP IST DER WAECHTER, nicht der Name — das gilt jetzt schaerfer als vorher:
+ * Wird ein Ziel in TRACKING_TARGETS umbenannt, bricht nicht mehr eine Zeile, sondern
+ * die Liste, die Zuordnung und drei weitere Records.
  */
-const PINTEREST_TARGET: TrackingTarget = "pinterest";
 
 /**
- * DER ZIELWERT FUER TIKTOK — lokal, aus denselben zwei Gruenden wie der darueber:
- * die Aufloesung ist unantastbar, und ein WERT-Import aus capi/token.ts waere in den
- * neun Testdateien, die jenes Modul mit einer Zwei-Schluessel-Fabrik mocken,
- * `undefined` — der Zweig unten waere in der gesamten Handler-Suite tot, und alles
- * bliebe gruen.
- * DER TYP IST DER WAECHTER, nicht der Name: Wuerde der Wert in TRACKING_TARGETS
- * umbenannt, ist diese Zeile ein BUILD-Fehler statt eines Forwards, der lautlos
- * ausfaellt.
+ * EIN EMPFAENGER, EINHEITLICH VON AUSSEN GESEHEN. Die Form ist bei allen dieselbe —
+ * der aufgeloeste Eintrag plus die fuenf unveraenderten Argumente; was je Ziel
+ * verschieden ist, liegt INNEN.
  */
-const TIKTOK_TARGET: TrackingTarget = "tiktok";
+type Forwarder = (
+  entry: ResolvedTarget,
+  event: string,
+  eventID: string,
+  body: CapiRequestBody,
+  clientIp: string | undefined,
+  userAgent: string,
+) => Promise<void>;
 
 /**
- * DIE ZUORDNUNG ZIEL -> ADAPTER (Phase 11, siebte Scheibe; ZWEITER ZWEIG in der
- * ZWOELFTEN).
+ * DIE ZUORDNUNG ZIEL -> ADAPTER (Phase 11, siebte Scheibe; zweiter Zweig in der
+ * zwoelften; SEIT SCHEIBE C2 EINE ZUORDNUNG STATT DREIER VERGLEICHE).
  *
- * Sie kennt jetzt ZWEI Empfaenger. Jedes andere Ziel wird STILL uebersprungen, und
- * das ist keine Nachlaessigkeit, sondern die strukturelle Durchsetzung der Zusage
- * "es wird nichts an ein neues Ziel gesendet": Ein Ziel, dessen Zugangsdaten
- * hinterlegt sind, dessen Adapter aber nicht existiert, kann hier nichts ausloesen —
- * es gibt keinen Zweig, der es koennte.
- * DER RUECKFALL IST HEUTE AUS DEM HANDLER HERAUS UNERREICHBAR, und das gehoert
- * dazu, damit niemand einen Test dagegen erfindet: Jedes bekannte Ziel hat einen
- * Adapter, und ein UNBEKANNTES kommt hier nie an — es faellt schon in
- * allowedTargets heraus, weil weder LEGACY_CONSENT_ROLE noch CONSENT_KEY_BY_TARGET
- * einen Eintrag dafuer tragen. Er bleibt trotzdem stehen: als Erschoepfungs-Rest
- * fuer ein DRITTES Ziel und als die Zusage "wirft nie", die dieser Rumpf strukturell
- * haelt.
+ * WAS SICH GEAENDERT HAT UND WARUM: Bis hierher standen hier drei
+ * Gleichheitsvergleiche, und die Tatsache "dieses Ziel hat einen Adapter" wurde
+ * dadurch ein ZWEITES Mal behauptet — neben dem Feld hasAdapter in TARGET_CARDS.
+ * Beide waren durch nichts verbunden; ein entfernter Zweig blieb lautlos. Jetzt gibt
+ * es die Tatsache EINMAL (TARGETS_WITH_ADAPTER in tracking/target-adapters.ts), und
+ * diese Zuordnung ist ihre Folge.
  *
- * DIE KONFIGURATIONSFORMEN SIND VERSCHIEDEN, UND DIE UEBERSETZUNG LIEGT HIER — beim
- * AUFRUFER, wie der Kopf von pinterest-forward.ts es ansagt. Der erste Adapter nimmt
- * die aufgeloeste CapiConfig unveraendert; der zweite hat eine EIGENE Form
- * (PinterestConfig), weil dieselbe Groesse dort Anzeigenkonto-ID heisst und im
- * Endpunkt-PFAD steht statt in einem Browser-Tag.
- * WAS DER COMPILER DABEI SICHERT UND WAS NICHT — der Unterschied ist der Grund fuer
- * den einzigen Test, der hier haengt: Ein DIREKTES Durchreichen von entry.config
- * bricht den BUILD (adAccountId fehlt). Eine VERTAUSCHUNG der beiden Werte
- * kompiliert dagegen anstandslos, weil beide Felder Zeichenketten sind — und sie
- * stuende das GEHEIMNIS in den Endpunkt-Pfad. Dagegen gibt es nur T10 in
- * fan-out.test.ts.
+ * DIE BINDUNG GREIFT IN BEIDE RICHTUNGEN, UND SIE IST EINE COMPILER-BINDUNG:
+ * `Record<TargetWithAdapter, …>` ist ueber die ADAPTER-Union erschoepfend — ein
+ * fehlender Eintrag ist ein BUILD-Fehler, ein ueberzaehliger ebenso.
+ * SIE IST AUSDRUECKLICH NICHT UEBER TrackingTarget GEBAUT, und das ist der Kern:
+ * Waere sie es, MUESSTE jedes Ziel einen Adapter haben — ein viertes Ziel ohne
+ * Empfaenger waere dann nicht mehr moeglich, und der Hinweis auf der Karte ("dieses
+ * Ziel sendet noch nicht") haette keinen Fall mehr, den er beschreiben koennte. Die
+ * Liste ist eine TEILMENGE der Ziele, und genau daran haengt diese Moeglichkeit.
  *
- * DAS ZIEL-VOKABULAR IST DAS DER GEHEIMNIS-TABELLE (META_TARGET aus capi/token.ts),
- * NICHT das des Consent-Gates (META_CONSENT_TARGET) — obwohl beide heute "meta" lauten.
- * Der Wert stammt aus derselben Aufloesung, die ihn aus project_secrets.target gelesen
- * hat; ihn gegen das ANDERE Vokabular zu pruefen haengte zwei unabhaengig definierte
- * Literale aneinander, die nur zufaellig gleich sind. Die Begruendung der Gegenrichtung
- * steht seit der neunten Scheibe an CONSENT_KEY_BY_TARGET (tracking/consent-targets.ts)
- * — dort wird der Consent-Schluessel je Ziel NACHGESCHLAGEN, statt ihn hier
- * gleichzusetzen. ZEIGER NACHGEZOGEN: Hier stand "am Import von META_CONSENT_TARGET
- * oben"; diesen Import gibt es seit derselben Scheibe nicht mehr.
+ * DESHALB STEHT HIER KEIN TEST GEGEN DIESE VIER FEHLERKLASSEN (fehlender Eintrag,
+ * ueberzaehliger Eintrag, unbekannter Wert in der Liste, umbenanntes Ziel): Sie sind
+ * seit C2 BUILD-Fehler. Ein Test neben einem Compiler-Fehler prueft nichts und
+ * suggeriert, die Bindung haenge an ihm — wer ihn spaeter entfernt, glaubt dann,
+ * etwas verloren zu haben, oder schlimmer: wer die Bindung lockert, haelt den noch
+ * gruenen Test fuer eine Absicherung.
+ * WAS WEITERHIN EINEN TEST BRAUCHT, weil es KOMPILIERT: die VERTAUSCHUNG zweier
+ * Eintraege (der Kreuzvergleich in fan-out.test.ts) und die Vertauschung der beiden
+ * Werte in der Umformung unten (T10, ebenda).
  *
- * SIE WIRFT NIE — dieselbe Auflage wie beim Adapter selbst, und sie ist hier
- * strukturell erfuellt: Der Rumpf besteht aus einem Gleichheitsvergleich und einer
- * Weiterreichung. forwardToMeta traegt seinen eigenen Vertrag (meta-forward.ts).
+ * DIE SCHLUESSEL SIND LITERALE, KEINE IMPORTIERTEN WERTE — s. den Absatz ueber den
+ * entfallenen lokalen Konstanten: Ein Wert-Import aus einem Modul, das neun
+ * Testdateien mocken, waere dort `undefined`, und der Empfaenger waere in der
+ * gesamten Handler-Suite tot. Der Compiler prueft die Literale gegen die Union; das
+ * leistet dasselbe ohne diese Falle.
+ */
+const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
+  meta: (entry, event, eventID, body, clientIp, userAgent) =>
+    forwardToMeta(entry.config, event, eventID, body, clientIp, userAgent),
+
+  // DIE ASYMMETRIE VERSCHWINDET NICHT, SIE WANDERT — vom Kontrollfluss in die Daten,
+  // und sie steht jetzt bei dem EINEN Eintrag, der sie braucht.
+  // DIE UEBERSETZUNG LIEGT BEIM AUFRUFER, wie der Kopf von pinterest-forward.ts es
+  // ansagt: Der erste und der dritte Adapter nehmen die aufgeloeste CapiConfig
+  // unveraendert, der zweite hat eine EIGENE Form (PinterestConfig) — dieselbe
+  // Groesse heisst dort Anzeigenkonto-ID und steht im Endpunkt-PFAD statt im Rumpf.
+  // WAS DER COMPILER DABEI SICHERT UND WAS NICHT — der Grund fuer den einzigen Test,
+  // der an dieser Zeile haengt: Ein DIREKTES Durchreichen von entry.config bricht den
+  // BUILD (adAccountId fehlt). Eine VERTAUSCHUNG der beiden Werte kompiliert dagegen
+  // anstandslos, weil beide Felder Zeichenketten sind — und sie stuende das GEHEIMNIS
+  // in den Endpunkt-Pfad. Dagegen gibt es nur T10 in fan-out.test.ts.
+  pinterest: (entry, event, eventID, body, clientIp, userAgent) =>
+    forwardToPinterest(
+      { adAccountId: entry.config.pixelId, token: entry.config.token },
+      event,
+      eventID,
+      body,
+      clientIp,
+      userAgent,
+    ),
+
+  // DAS DRITTE ZIEL NIMMT DIE AUFGELOESTE CONFIG UNVERAENDERT — wie das erste und
+  // anders als das zweite. Der Grund liegt in den NAMEN: Bei jenem heisst die
+  // oeffentliche Groesse Anzeigenkonto-ID und steht im Endpunkt-PFAD, hier ist sie
+  // tatsaechlich eine Pixel-Kennung und steht im RUMPF. Eine eigene Form waere hier
+  // ein Duplikat ohne Aussage.
+  tiktok: (entry, event, eventID, body, clientIp, userAgent) =>
+    forwardToTiktok(entry.config, event, eventID, body, clientIp, userAgent),
+};
+
+/**
+ * WAEHLT DEN EMPFAENGER EINES ZIELS UND REICHT WEITER.
+ *
+ * DAS ZIEL-VOKABULAR IST DAS DER GEHEIMNIS-TABELLE, NICHT das des Consent-Gates —
+ * obwohl beide heute gleich lauten. Der Wert stammt aus derselben Aufloesung, die ihn
+ * aus project_secrets.target gelesen hat; ihn gegen das ANDERE Vokabular zu pruefen
+ * haengte zwei unabhaengig definierte Literale aneinander, die nur zufaellig gleich
+ * sind. Die Gegenrichtung ist an CONSENT_KEY_BY_TARGET (tracking/consent-targets.ts)
+ * begruendet — dort wird der Consent-Schluessel je Ziel NACHGESCHLAGEN.
+ *
+ * DER ERSCHOEPFUNGS-REST IST DER NEIN-ZWEIG DER ZUGEHOERIGKEITS-PRUEFUNG, und er
+ * bleibt aus zwei Gruenden ein AUSDRUECKLICHER Zweig: Er haelt die Zusage "ein Ziel
+ * ohne Eintrag sendet nichts" sichtbar, und er erspart an der Nachschlag-Stelle eine
+ * Typ-Zusicherung — die behauptete genau das, was hasAdapter prueft, ein zweites Mal.
+ * ER IST HEUTE AUS DEM HANDLER HERAUS UNERREICHBAR, und das gehoert dazu, damit
+ * niemand einen Test dagegen erfindet (GEMESSEN, Scheibe C1, festgehalten in
+ * docs/aktiver-stand.md, Abschnitt 3.8): Jedes bekannte Ziel steht in der Liste, und
+ * ein UNBEKANNTES kommt hier nie an — es faellt schon in allowedTargets heraus, weil
+ * weder LEGACY_CONSENT_ROLE noch CONSENT_KEY_BY_TARGET einen Eintrag dafuer tragen.
+ * MIT EINEM VIERTEN ZIEL OHNE ADAPTER WIRD ER ERREICHBAR: Dessen Consent-Eintraege
+ * erzwingt der Compiler, es passiert also das Gate — und faellt hier heraus.
+ *
+ * SIE WIRFT NIE — dieselbe Auflage wie beim Adapter selbst, und sie ist strukturell
+ * erfuellt: ein Nachschlag in einer totalen Zuordnung und eine Weiterreichung.
  */
 function dispatchForward(
   entry: ResolvedTarget,
@@ -275,28 +328,16 @@ function dispatchForward(
   clientIp: string | undefined,
   userAgent: string,
 ): Promise<void> {
-  if (entry.target === META_TARGET) {
-    return forwardToMeta(entry.config, event, eventID, body, clientIp, userAgent);
-  }
-  if (entry.target === PINTEREST_TARGET) {
-    return forwardToPinterest(
-      { adAccountId: entry.config.pixelId, token: entry.config.token },
-      event,
-      eventID,
-      body,
-      clientIp,
-      userAgent,
-    );
-  }
-  // DAS DRITTE ZIEL NIMMT DIE AUFGELOESTE CONFIG UNVERAENDERT — wie das erste und
-  // anders als das zweite. Der Grund liegt in den NAMEN: Bei jenem heisst die
-  // oeffentliche Groesse Anzeigenkonto-ID und steht im Endpunkt-PFAD, hier ist sie
-  // tatsaechlich eine Pixel-Kennung und steht im RUMPF. Eine eigene Form waere hier
-  // ein Duplikat ohne Aussage.
-  if (entry.target === TIKTOK_TARGET) {
-    return forwardToTiktok(entry.config, event, eventID, body, clientIp, userAgent);
-  }
-  return Promise.resolve();
+  const target = entry.target;
+  if (!hasAdapter(target)) return Promise.resolve();
+  return FORWARDER_BY_TARGET[target](
+    entry,
+    event,
+    eventID,
+    body,
+    clientIp,
+    userAgent,
+  );
 }
 
 /**

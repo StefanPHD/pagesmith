@@ -475,6 +475,11 @@ MITEINANDER vergleicht. **Umgekehrt ist T7 durch M4 als echtes Einzelstück BELE
 und trägt den Vermerk. Bei T8 ist die Aussage bewusst schwächer gefasst: Sie beruht
 auf der Abdeckung, nicht auf einer Probe — seine Fehlerklasse entsteht erst mit
 einem Konsumenten und ist als Ein-Achsen-Mutation hier gar nicht herstellbar.
+**DIE ZEIGER AUF T7, T8 UND T9 SIND SEIT DEM 2026-08-13 TOT** (s. Abschnitt 3.12): Diese
+sieben Tests liefen über die Zusammensetzung und sind mit ihr entfallen. **Der Absatz
+bleibt unverändert** — er ist ein Bericht über jene Runde, und seine Lehre (ob ein Test
+ein Einzelstück ist, sagt die Messung und nicht der Zuschnitt) überdauert die Tests, an
+denen sie gewonnen wurde. **T5 und T6 gibt es weiter, unverändert.**
 
 **KEIN LIVE-TEST, UND DAS IST KEINE LÜCKE:** Ein Live-Test beweist Verhalten; hier
 hat sich keines geändert, weil es keinen Aufrufer gibt. Was in Scheibe B live zu
@@ -936,6 +941,9 @@ begründet **verworfen** (sie koppelt sich an die Reihenfolge der Tests).
 nach Scheibe D **ohne Konsumenten**, ist zu entscheiden, ob sie verfrüht war. **Nach C
 wird das NICHT geprüft** — C braucht sie nicht, und eine Prüfung mitten in der Reihe
 beantwortete die Frage zu früh.
+**DIESER TRIGGER HAT AUSGELÖST UND IST ABGEARBEITET (2026-08-13, s. Abschnitt 3.12):** Die
+Zusammensetzung ist gestrichen. Der Absatz bleibt wörtlich stehen — er ist die Herleitung
+—, aber wer ihn heute als offenen Posten liest, liest ihn falsch.
 
 ---
 
@@ -1007,6 +1015,9 @@ C2 vereinheitlicht die ADAPTER-Achse; das Consent-Memo (Konsument 3) ist unanget
 schafft eine eigene Quelle in einer eigenen Datei und rührt jene nicht an. **Der Trigger
 aus Abschnitt 3.8 bleibt damit scharf:** Bleibt die Zusammensetzung auch nach D ohne
 Konsumenten, ist zu entscheiden, ob sie verfrüht war.
+**NACHGETRAGEN (2026-08-13): DER TRIGGER HAT AUSGELÖST — die Zusammensetzung ist
+gestrichen, s. Abschnitt 3.12.** Der Satz darüber war als Aussage über jenen Zeitpunkt
+richtig und bleibt stehen; „scharf" ist er seither nicht mehr.
 
 ---
 
@@ -1377,6 +1388,9 @@ Prädikate `hasPixelId` und `hasSecret`. **Die Entscheidung fällt nicht hier.**
 spricht und was gegen sie, ist in 3.5 und 3.6 bereits am Kontrollfluss belegt (die
 server-only-Datei kennt den Adapter nicht; für ein Ziel ohne Kennung wird der
 Geheimnis-Wert gar nicht erst geholt).
+**SIE IST INZWISCHEN GEFALLEN (Owner, 2026-08-13): die Zusammensetzung ist GESTRICHEN,
+s. Abschnitt 3.12.** Der Absatz bleibt stehen, weil er die Frage in ihrer offenen Form
+festhält — wer nur ihn liest, hält sie für unbeantwortet.
 
 ---
 
@@ -1428,6 +1442,95 @@ hinterlegten Zugangsdaten FUNKTIONIEREN · dass der Defekt aus Abschnitt 5
 behoben wäre — **die Oberflächen-Ableitung fragt weiterhin nur nach der Zeilen-Existenz,
 der Forward nach Kennung UND Zugangsdatum; geteilt sind die BEDINGUNGEN, nicht das
 URTEIL** · ob die zwei Zeilen über die Auslieferung je eine werden.
+
+---
+
+### 3.12 DIE ZUSAMMENSETZUNG WIRD GESTRICHEN — ERLEDIGT (2026-08-13)
+
+**Commit:** STEHT AUS. Nach der Regel am Kopf dieses Abschnitts ist dieser Vermerk damit
+die Lücke in der Kette und per Konstruktion der jüngste; die Nummer wird hier
+nachgetragen, sobald committet ist. Die Kette endet heute bei `1a83536`.
+
+**DIE ENTSCHEIDUNG (Owner, 2026-08-13):** `targetReadiness` samt ihren drei Typen ist
+**GESTRICHEN**. Die beiden Prädikate `hasPixelId` und `hasSecret` **BLEIBEN**.
+
+**DER GEMESSENE GRUND (Repo, 2026-08-13, formale Suche über `src/`): VIER
+Produktiv-Aufrufstellen für die Prädikate, NULL für die Zusammensetzung.** `hasPixelId`
+drei (Karte, Auflösungs-Pfad, Consent-Memo), `hasSecret` eine (Geheimnis-Schleife). Die
+Zusammensetzung hatte keinen Aufruf, keinen Import ausserhalb ihrer Datei, und ihre drei
+exportierten Typen kamen nirgends sonst vor.
+
+---
+
+**WARUM SIE VERFRÜHT WAR — und dieser Absatz ist der eigentliche Ertrag, weil ohne ihn
+der nächste Anlauf denselben Schnitt noch einmal macht. ZWEI GRÜNDE, und beide waren
+schon in Scheibe A MESSBAR:**
+
+1. **IHRE EINGABE-FORM VERLANGTE DEN GEHEIMNIS-WERT, den die Oberfläche nie hat und nie
+   haben darf.** `ReadinessInput` nahm `secret: unknown` — den WERT. Die
+   Oberflächen-Ableitung kennt aber nur einen Wahrheitswert aus der Zeilen-Existenz
+   (`listConfiguredTargets` selektiert ausschliesslich die Ziel-Spalte). Ein
+   Oberflächen-Konsument hätte also entweder einen zweiten Eingang gebraucht — oder einen
+   Ersatzwert fabriziert und damit verdeckt behauptet, „Zeile existiert" heisse
+   „nicht-leeres Geheimnis".
+2. **DIE OBERFLÄCHE WAR DER EINZIGE ORT, DER JE ALLE DREI TEILE ZUGLEICH GEBRAUCHT
+   HÄTTE.** Der Auflösungs-Pfad kann sie strukturell nicht zusammen befragen: Er ist
+   server-only und kennt den Adapter nicht, und für ein Ziel OHNE Kennung holt er den
+   Geheimnis-Wert aus Abfrage-Ökonomie gar nicht erst. **Der einzig mögliche Konsument
+   war damit genau der, den Grund 1 ausschliesst.**
+
+**BEIDES STAND SEIT SCHEIBE A IM REPO — ALS BEFUND FÜR SPÄTER NOTIERT, NICHT ALS ZWEIFEL
+AM ZUSCHNITT GELESEN.** Grund 1 als Vorrats-Punkt („DER BENANNTE ZUSTAND NIMMT DEN
+GEHEIMNIS-WERT ENTGEGEN, DEN DIE OBERFLÄCHE NIE HAT"), Grund 2 als Kontrollfluss-Notiz in
+3.5 und im Kopf von `capi/token.ts`. **DAS IST DIE LEHRE, und sie ist grösser als dieser
+Fall:** Ein Befund, der die TRAGFÄHIGKEIT eines Bauteils betrifft, wird nicht als
+Arbeitsvorrat abgelegt — er gehört gegen den Zuschnitt gehalten, solange der noch
+offen ist. Als Vorrat notiert wandert er an den Ort, den man erst NACH dem Bau liest.
+
+**WAS 7.5 VERLANGT HAT, IST TROTZDEM ERFÜLLT — und das ist kein Widerspruch:** Die
+Entscheidung dort lautete, „konfiguriert" werde ein BENANNTER ZUSTAND und kein
+Wahrheitswert. **Geliefert haben das die PRÄDIKATE und die KARTE**, nicht die
+Zusammensetzung: Ein Ziel mit Zugangsdaten und ohne Kennung sagt seit B2 selbst, dass an
+es nichts gesendet wird — die Ununterscheidbarkeit, gegen die 7.5 stand, ist an der
+Anzeige behoben. **7.5 UND ALLE VERMERKE 3.5 BIS 3.11 BLEIBEN GÜLTIG**; sie sind
+Berichte über ihre Runden und werden nicht umgeschrieben.
+**WAS 7.5 IM NACHHINEIN GENAU BENANNT HAT, und was nicht:** Der Satz „DREI TEILE, UND
+JEDER HAT HEUTE EINEN REALEN KONSUMENTEN" war und ist **richtig** — er sagte etwas über
+die TEILE. Falsch war der Schluss daraus auf die ZUSAMMENSETZUNG; drei Teile mit je einem
+Konsumenten ergeben keinen Konsumenten für ihre Verknüpfung. **Der Satz wird deshalb
+nicht angetastet.**
+
+---
+
+**DER BYTE-NACHWEIS FÜR DIE BEIDEN BLEIBENDEN PRÄDIKATE — er ersetzt hier den Live-Test**
+(GEMESSEN, 2026-08-13): Der zusammenhängende Ausschnitt aus beiden Doku-Kommentaren und
+beiden Funktionsrümpfen wurde vor und nach dem Schnitt in je eine Datei geschrieben;
+**beide tragen dieselbe Prüfsumme `0a3b49b2…fa70f`, `diff` ist leer.** Der
+Auflösungs-Pfad liegt auf dem meistgetroffenen Pfad der Plattform — was byte-gleich
+bleibt, kann sich nicht anders verhalten. **T5 und T6 sind unverändert und grün.**
+
+**DASS `tsc` UND `build` GRÜN SIND, IST HIER DER EIGENTLICHE BEWEIS DER
+KONSUMENTENFREIHEIT** — nicht die Testzahl. Ein gelöschter Export, den irgendetwas
+importiert, ist ein BUILD-Fehler; beide Gates liefen durch, und damit ist gemessen statt
+behauptet, dass die Zusammensetzung nirgends gebraucht wurde. **Die Suite fiel um genau
+die vorhergesagten sieben Tests: 1070 → 1063**, Testdateien unverändert 55.
+
+**EINE KOPPLUNG IST DABEI SICHTBAR GEWORDEN, die man sonst erst beim Bruch bemerkt:**
+`tracking/target-adapters.ts` **ZITIERT** den Absatz „KEIN DRITTES URTEIL" aus dem Kopf
+dieser Datei WÖRTLICH, als Begründung dafür, dass die Adapter-Liste nicht dorthin gehört.
+Der Absatz bleibt deshalb **unangetastet**, obwohl sein Beleg gealtert ist („die drei
+Tatsachen" gibt es nicht mehr); die Alterung steht als eigener Satz daneben. **Wer ihn
+umformuliert, lässt ein Zitat in einer anderen Datei ins Leere zeigen.**
+
+---
+
+**WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** irgendetwas über Verhalten — es hat
+sich keines geändert, und ein Live-Test wäre gegenstandslos · dass die Prädikate richtig
+sind (sie sind unverändert, nicht neu geprüft) · irgendetwas über die Oberfläche, den
+Ingest, die Adapter-Achse oder das Schema · dass eine Zusammensetzung nie wieder nötig
+wird — der Trigger samt Auflage steht im Vorrat.
+**KEIN LIVE-TEST, UND KEINER WÄRE MÖGLICH:** Es entfällt ausschliesslich Code ohne
+Konsumenten; der Byte-Nachweis oben ist der Ersatz, den der Auftrag dafür vorsah.
 
 ---
 
@@ -1776,14 +1879,23 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   `unknown` entgegen und wäre robust, kommt aber erst NACH `getPixelId` zum Zug.
   **UNGEMESSEN**, ob der Wurf im Ingest die leere 204 bricht — dieselbe offene Frage
   wie beim Punkt darüber, anderer Gegenstand.
-- **DER BENANNTE ZUSTAND NIMMT DEN GEHEIMNIS-WERT ENTGEGEN, DEN DIE OBERFLÄCHE NIE HAT**
-  (`ReadinessInput` in `src/lib/tracking/target-readiness.ts`): GEMESSEN am Repo
-  (2026-08-13) — das Feld ist der WERT, und die Oberfläche darf ihn nach der
-  Zuschnitts-Invariante nie sehen; sie hat nur einen Wahrheitswert aus der
-  Zeilen-Existenz. **Was still kaputtgeht:** Scheibe C braucht dann entweder einen
-  zweiten Eingang für bereits entschiedene Tatsachen — oder die Karte fabriziert einen
-  Ersatzwert, und damit behauptet sie verdeckt „Zeile existiert heisst nicht-leeres
-  Geheimnis", als Wert getarnt.
+- **GEGENSTANDSLOS — DURCH DEN VOLLZUG ERSETZT, NICHT GESTRICHEN (2026-08-13, s.
+  Abschnitt 3.12): DIE EINGABE-FORM, DIE DEN GEHEIMNIS-WERT NAHM.** Sie ist mit der
+  Zusammensetzung entfallen; `ReadinessInput` gibt es nicht mehr.
+  **DER URSPRÜNGLICHE PUNKT, unverändert, weil er die Herleitung trägt:** „DER BENANNTE
+  ZUSTAND NIMMT DEN GEHEIMNIS-WERT ENTGEGEN, DEN DIE OBERFLÄCHE NIE HAT
+  (`ReadinessInput`): GEMESSEN am Repo (2026-08-13) — das Feld ist der WERT, und die
+  Oberfläche darf ihn nach der Zuschnitts-Invariante nie sehen; sie hat nur einen
+  Wahrheitswert aus der Zeilen-Existenz. Was still kaputtgeht: Scheibe C braucht dann
+  entweder einen zweiten Eingang für bereits entschiedene Tatsachen — oder die Karte
+  fabriziert einen Ersatzwert, und damit behauptet sie verdeckt ‚Zeile existiert heisst
+  nicht-leeres Geheimnis', als Wert getarnt."
+  **WARUM ERSETZT UND NICHT GESTRICHEN:** Dieser Punkt ist im Nachhinein die SCHÄRFSTE
+  Begründung dafür, dass die Zusammensetzung verfrüht war — er hat den Konstruktionsfehler
+  benannt, bevor jemand ihn so nannte. Eine Streichung nähme genau den Beleg mit, den ein
+  künftiger Anlauf braucht. **DIE AUFLAGE, DIE ER HINTERLÄSST, steht als Bedingung am
+  Trigger im Punkt weiter unten:** Eine neue Zusammensetzung darf den Geheimnis-WERT
+  nicht verlangen.
 - **„ZEILE EXISTIERT" GLEICH „WERT VORHANDEN" RUHT AUF DEM SCHREIBPFAD, NICHT AUF DEM
   SCHEMA** (`setCapiToken` in `src/app/projects/actions.ts` gegen
   `supabase/migrations/0021_project_secrets.sql`): GEMESSEN am Repo (2026-08-12) — die
@@ -1862,12 +1974,19 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   Die „WARNUNG AN DER OBERFLÄCHE" betrifft FREI benannte Ereignisse — hier geht es um
   ein STANDARD-Ereignis.
 
-- **DIE ZUSAMMENSETZUNG `targetReadiness` HAT VIER SCHEIBEN OHNE KONSUMENTEN ÜBERSTANDEN —
-  DER TRIGGER AUS ABSCHNITT 3.8 IST FÄLLIG** (`targetReadiness` in
-  `src/lib/tracking/target-readiness.ts`). **DIE FRAGE IST OFFEN UND WIRD HIER NICHT
-  BEANTWORTET:** Zu entscheiden ist, ob sie verfrüht war. **Das ist eine
-  Owner-Entscheidung; dieser Punkt trägt nur die BELEGE, die sie braucht, und schlägt
-  ausdrücklich nichts vor.**
+- **DIE ZUSAMMENSETZUNG `targetReadiness` WAR VERFRÜHT UND IST GESTRICHEN — VOLLZOGEN
+  (Owner-Entscheidung 2026-08-13, s. Abschnitt 3.12).** Der Punkt wird **nicht gestrichen,
+  sondern durch den Vollzug ersetzt**: Eine blosse Streichung liesse offen, ob die Frage
+  beantwortet oder vergessen wurde — und sie verlöre den TRIGGER, der als einziger
+  verhindert, dass der nächste Anlauf denselben Schnitt noch einmal macht.
+  **DER TRIGGER FÜR EINE NEUE ZUSAMMENSETZUNG, mit seiner Auflage:** Sie wird erst wieder
+  fällig, wenn ein REALER Konsument existiert, der alle Teile ZUGLEICH braucht — und der
+  einzige Ort, an dem das je der Fall gewesen wäre, ist die Oberfläche.
+  **DIE AUFLAGE IST BINDEND UND KEIN Hinweis:** Ihre Eingabe-Form darf dann NICHT den
+  Geheimnis-WERT verlangen. Genau daran ist die alte gescheitert — die Oberfläche hat
+  den Wert nie und darf ihn nie haben; sie kennt nur einen Wahrheitswert aus der
+  Zeilen-Existenz (s. den ersetzten Punkt weiter oben).
+  **DIE BELEGE, DIE ZUR ENTSCHEIDUNG GEFÜHRT HABEN, bleiben unverändert stehen:**
   **WORTLAUT DES TRIGGERS (Abschnitt 3.8):** „Bleibt die Zusammensetzung `targetReadiness`
   auch nach Scheibe D **ohne Konsumenten**, ist zu entscheiden, ob sie verfrüht war. Nach C
   wird das NICHT geprüft — C braucht sie nicht, und eine Prüfung mitten in der Reihe
@@ -1895,12 +2014,17 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
     server-only-Seite kennt den Adapter nicht, und für ein Ziel OHNE Kennung wird der
     Geheimnis-Wert dort gar nicht erst geholt; ein Konsument müsste also erst einen
     Zustand herstellen, den der heutige Pfad aus Abfrage-Ökonomie vermeidet.
+  **DIE BEIDEN VORHERSAGEN OBEN SIND EINGETROFFEN (GEMESSEN, 2026-08-13):** Der Wegfall
+  WAR eine reine Streichung — `tsc`, `vitest` und `build` blieben grün, keine
+  Produktiv-Zeile ausserhalb der einen Datei musste angefasst werden, und die Suite fiel
+  um genau die vorhergesagten sieben Tests (1070 → 1063).
   **WARUM DIESER PUNKT IM VORRAT STEHT UND NICHT IN 3.11 ALLEIN:** 3.11 nennt die Frage
   auch, aber als Teil eines SCHEIBEN-VERMERKS — und Scheiben-Vermerke sind
   abgeschlossene Historie, die am Phasenende archiviert wird. **Der Vorrat ist die Liste,
-  die die nächste Sitzung als OFFENES liest.** Abschnitt 7 schied aus: er trägt
-  ENTSCHIEDENE Vorhaben mit einem Ort, und hier ist nichts entschieden. **Die beiden
-  Stellen widersprechen sich nicht — diese hier ist die getragene.**
+  die die nächste Sitzung liest.** **HIER STAND „und hier ist nichts entschieden" — das
+  war bis zum 2026-08-13 richtig und ist es seither nicht mehr;** der Punkt trägt jetzt
+  den Vollzug und den Trigger, nicht mehr die offene Frage. **Die beiden Stellen
+  widersprechen sich nicht — diese hier ist die getragene.**
 
 Die vier fälligen Punkte am ersten Adapter und das Gegenstück bei den
 Deckelwerten stehen ausformuliert in

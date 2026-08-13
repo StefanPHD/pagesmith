@@ -1,5 +1,20 @@
-// DER BENANNTE ZUSTAND "IST DIESES ZIEL LIEFERFAEHIG?" (Phase 11, Scheibe A der
+// DIE ZWEI GETEILTEN PRAEDIKATE ZUR LIEFERFAEHIGKEIT EINES ZIELS (Phase 11,
 // Vereinheitlichung; Entscheidung in docs/aktiver-stand.md, Abschnitt 7.5).
+//
+// WAS DIESE DATEI IST: zwei Praedikate mit vier Produktiv-Aufrufstellen (GEMESSEN am
+// Repo, 2026-08-13). hasPixelId hat DREI — die Auslieferungs-Zeile der Karte
+// (TargetCard in components/TargetCard.tsx), den Kennungs-Filter im Aufloesungs-Pfad
+// (getCapiConfigByTrackingKey in capi/token.ts) und das Consent-Memo (consentTargets
+// in components/CodeImporter.tsx). hasSecret hat EINE: die Geheimnis-Schleife in
+// derselben Aufloesungs-Funktion. Mehr steht hier nicht.
+//
+// HIER STAND EINMAL EINE ZUSAMMENSETZUNG (targetReadiness samt drei Typen) — SIE IST
+// GESTRICHEN (Owner-Entscheidung 2026-08-13). Sie hat VIER Scheiben ohne einen
+// einzigen Konsumenten ueberstanden; benutzt wurden immer nur die beiden Praedikate.
+// WER SIE WIEDER BAUEN WILL, LIEST ZUERST DEN TRIGGER samt Auflage an ihrer
+// Eingabe-Form in docs/aktiver-stand.md, Abschnitt 5, "DIE ZUSAMMENSETZUNG
+// targetReadiness WAR VERFRUEHT UND IST GESTRICHEN" — ohne diesen Hinweis schneidet
+// der naechste Anlauf denselben Schnitt noch einmal.
 //
 // WARUM ES DIESE DATEI GIBT — der GEMESSENE Anlass, nicht ein Aufraeum-Wunsch:
 // SECHS Stellen im Repo beantworten heute die Frage "ist dieses Ziel konfiguriert
@@ -12,17 +27,20 @@
 // als konfiguriert in der Oberflaeche und wird NIE beliefert — ohne Meldung, ohne
 // Logzeile, auf keinem Kanal sichtbar.
 //
-// WAS DIESE DATEI IN DIESER SCHEIBE IST: der Zustand allein, mit Tests, OHNE einen
-// einzigen Konsumenten. Sie wird von NICHTS importiert. Die Uebernahme durch die
-// bestehenden Urteile sind die Scheiben B, C und D — bis dahin verhaelt sich die
-// Anwendung zeichengleich wie vorher.
-//
 // KEIN DRITTES URTEIL, und das ist die tragende Grenze dieser Datei: Sie NIMMT die
 // drei Tatsachen ENTGEGEN und BEHAUPTET ueber kein Ziel etwas. Hier steht keine
 // Ziel-Liste, kein Record ueber Ziele, kein Vergleich gegen einen Zielwert. Wer hier
 // eine solche Zuordnung ergaenzt, schafft eine WEITERE Quelle neben den bestehenden —
 // und sie koennten auseinanderlaufen, ohne dass irgendetwas rot wird. Genau dagegen
 // ist diese Arbeit gerichtet.
+// DER WORTLAUT DIESES ABSATZES BLEIBT UNANGETASTET, OBWOHL SEIN BELEG GEALTERT IST,
+// und der Grund ist eine KOPPLUNG, die man sonst erst beim Bruch bemerkt:
+// tracking/target-adapters.ts ZITIERT ihn woertlich als Begruendung dafuer, dass die
+// Adapter-Liste NICHT hierher gehoert. Wer ihn umformuliert, laesst jenes Zitat ins
+// Leere zeigen — und jene Datei ist von dieser Scheibe ausgenommen.
+// WAS GEALTERT IST: "die drei Tatsachen" gibt es seit der Streichung nicht mehr; diese
+// Datei nimmt gar nichts mehr entgegen. DAS VERBOT GILT UNVERAENDERT und jetzt fuer
+// die beiden Praedikate: eine Ziel-Liste gehoert hier nicht her.
 // DIE REGEL STEHT WOERTLICH WIE VORHER; NACHGEZOGEN IST NUR IHRE ARITHMETIK. Hier
 // stand "eine dritte Quelle neben den beiden bestehenden" — das war richtig, solange
 // es zwei Traeger gab. Scheibe C2 hat die Adapter-Tatsache auf EINE Quelle gebracht
@@ -33,36 +51,10 @@
 //
 // SIE IST REIN: keine Direktive, kein Import. Weder `import "server-only"` (das
 // sperrte sie fuer die Oberflaeche) noch `"use client"` (das sperrte sie fuer den
-// Ingest-Pfad). Die Richtung bleibt server-only -> rein, nie umgekehrt. Sie muss von
-// BEIDEN Seiten erreichbar sein, weil die beiden Urteile, die sie einmal ersetzen
-// soll, auf verschiedenen Seiten liegen.
-//
-// DIE BAUFORM IST NICHT ERFUNDEN, sondern hat zwei Praezedenzfaelle im Repo:
-// die Union des Serve-Resolvers (ServeResult in hosting/resolve.ts: ein `kind` plus
-// Nutzlast je Zweig) und das geteilte Auslieferbarkeits-Praedikat aus Phase 9
-// (nonEmptyHtml als kleines Praedikat, deliverableVariantB als Zusammensetzung
-// darauf, beide in hosting/variant.ts). Von dort stammt auch die Aufteilung in
-// EINZELN verwendbare Praedikate plus EINE Zusammensetzung: Konsumenten greifen auf
-// verschiedenen Hoehen zu, ohne dass eine Bedingung zweimal ausformuliert wird.
-
-/**
- * Ein Teil, der fehlen kann.
- *
- * DAS SIND TEIL-NAMEN, KEINE ZIEL-NAMEN. Diese Datei kennt keine Anbieter.
- */
-export type ReadinessPart = "pixelId" | "secret" | "adapter";
-
-/**
- * Der benannte Zustand. `ready` heisst: alle drei Teile liegen vor.
- *
- * WARUM KEIN WAHRHEITSWERT — der Grund ist der gemessene Defekt oben: "nicht
- * konfiguriert" und "konfiguriert, aber nicht lieferfaehig" sehen heute an jeder
- * Anzeige gleich aus, und genau deshalb ist der Defekt nie jemandem aufgefallen. Ein
- * Wahrheitswert reproduzierte diese Ununterscheidbarkeit im neuen Bauteil.
- */
-export type TargetReadiness =
-  | { kind: "ready" }
-  | { kind: "incomplete"; missing: readonly ReadinessPart[] };
+// Ingest-Pfad). Die Richtung bleibt server-only -> rein, nie umgekehrt. Sie MUSS von
+// beiden Seiten erreichbar sein, und das ist seit den Scheiben B1/B2/D2 keine Absicht
+// mehr, sondern Betrieb: hasPixelId wird aus zwei Client-Komponenten UND aus dem
+// server-only-Aufloesungs-Pfad gerufen.
 
 /**
  * KENNUNG VORHANDEN — die oeffentliche Kennung des Ziels.
@@ -114,67 +106,4 @@ export function hasPixelId(pixelId: unknown): boolean {
  */
 export function hasSecret(secret: unknown): secret is string {
   return typeof secret === "string" && secret !== "";
-}
-
-/**
- * Die drei Tatsachen, aus denen sich der Zustand ergibt.
- *
- * ZWEI DAVON SIND EIGENSCHAFTEN EINES PROJEKTS, EINE IST EINE EIGENSCHAFT DIESES
- * BUILDS — und diese Unterscheidung ist der Grund, warum adapterExists ein
- * gewoehnlicher Wahrheitswert ist und die beiden anderen nicht:
- *  - pixelId und secret stammen aus den Daten EINES Projekts (Einstellungs-Blob und
- *    Geheimnis-Tabelle). Sie sind je Projekt verschieden.
- *  - adapterExists sagt, ob DIESER BUILD fuer das Ziel einen Empfaenger mitbringt.
- *    Das ist fuer alle Projekte gleich und aendert sich nur mit einem Deploy.
- * FOLGE, und sie gehoert ausgeschrieben hierher: WER DIESE TATSACHE SPAETER IN DEN
- * EINSTELLUNGEN ODER IN DER GEHEIMNIS-TABELLE SUCHT, SUCHT AM FALSCHEN ORT. Sie
- * steht in keinem Datensatz und kann dort auch nicht stehen.
- *
- * SIE WIRD ENTGEGENGENOMMEN UND NICHT BEHAUPTET — daran hat sich nichts geaendert.
- * WOHER SIE HEUTE KOMMT, IST NACHGEZOGEN (Scheibe C2): Hier stand, ihre beiden
- * Traeger — das Feld hasAdapter in TARGET_CARDS und die Ziel-Zweige in
- * dispatchForward — blieben unveraendert bestehen, und diese Datei koenne sie von
- * dort nicht beziehen, weil die eine Quelle in einer Client-Komponente und die andere
- * in einem server-only-Handler liegt. BEIDE TRAEGER GIBT ES NICHT MEHR: Die Tatsache
- * steht seit C2 EINMAL, in der reinen Datei tracking/target-adapters.ts, und ist von
- * beiden Seiten erreichbar.
- * WAS SICH DADURCH NICHT AENDERT, und deshalb bleibt der Absatz stehen: Diese Datei
- * bezieht sie trotzdem NICHT selbst. Ein Import jener Liste hierher machte aus dem
- * Entgegennehmen ein Nachschlagen und braechte eine Ziel-Liste in Reichweite dieser
- * Datei — das Verbot im Kopf gilt unveraendert.
- */
-export type ReadinessInput = {
-  pixelId: unknown;
-  secret: unknown;
-  adapterExists: boolean;
-};
-
-/**
- * Setzt die drei Teile zu einem benannten Zustand zusammen.
- *
- * ER NENNT ALLE FEHLENDEN TEILE, NICHT EINEN GRUND — und damit entfaellt jede
- * Rangfolge. DAS IST EINE ENTSCHEIDUNG MIT EINEM GEMESSENEN GRUND: Der heutige Code
- * gibt keine Rangfolge her. Die einzige Reihenfolge, die im Bestand ueberhaupt
- * existiert, steht im Aufloesungs-Pfad (die Kennung wird vor dem Geheimnis geprueft,
- * capi/token.ts) — und sie ist dort ausdruecklich mit ABFRAGE-OEKONOMIE begruendet,
- * nicht mit Vorrang: gefragt wird nur nach Zielen, die ueberhaupt eine Kennung
- * tragen. Keine Anzeige, keine Meldung und kein Sortierschluessel im Repo
- * unterscheidet heute zwischen fehlenden Teilen. Der erste Konsument, der eine
- * Rangfolge braeuchte, entsteht in Scheibe B; sie wird DORT entschieden und nicht
- * hier vorweggenommen.
- *
- * DIE REIHENFOLGE IN `missing` IST DIE DEKLARATIONS-REIHENFOLGE, damit Tests stabil
- * sind — SIE IST KEINE RANGFOLGE. Wer aus ihr eine liest, liest eine Aussage, die
- * hier niemand getroffen hat.
- *
- * WIRFT NIE: drei typeof-Vergleiche, ein Array-Bau, kein Zugriff auf Fremdes.
- */
-export function targetReadiness(input: ReadinessInput): TargetReadiness {
-  const missing: ReadinessPart[] = [];
-  if (!hasPixelId(input.pixelId)) missing.push("pixelId");
-  if (!hasSecret(input.secret)) missing.push("secret");
-  if (!input.adapterExists) missing.push("adapter");
-
-  if (missing.length === 0) return { kind: "ready" };
-  return { kind: "incomplete", missing };
 }

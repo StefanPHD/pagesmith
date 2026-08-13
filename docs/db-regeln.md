@@ -86,3 +86,50 @@ Regel, die vorher jede Session gelesen wurde** — das ist kein Redaktionsvorgan
   genauso und ist der Grund, warum die Lücke überhaupt erkennbar ist.
   Ist-Stand (Tier, PITR-Loch, Drill): "## Security Manifest & Launch Blocker", BACKUPS —
   hier nur die Regel.
+
+## Die vierte Regel — HIER entstanden, NICHT aus CLAUDE.md gehoben
+
+**WARUM SIE UNTER EINER EIGENEN ÜBERSCHRIFT STEHT, und das ist keine Formsache:** Der
+Abschnitt darüber sagt zu, seine **drei** Blöcke seien zeichengleich aus CLAUDE.md
+übernommen. Diese Regel stammt nicht von dort — sie ist am 2026-08-13 neu geschrieben
+worden. Stünde sie unter jener Überschrift, wäre die Herkunftszusage falsch, und zwar
+still: Niemand hätte einen Anlass, sie nachzuprüfen. Die drei Blöcke oben bleiben
+unberührt und per Prüfsumme belegt.
+
+- WER DB-CODE ANFASST, LEGT DIE GELESENE ANBIETER-DOKU ALS PROVENIENZ VOR (neu
+  2026-08-13; AUSLÖSER: derselbe wie der Pflicht-Stopp — Migration, Schema, Policy/RLS,
+  RPC bzw. DB-Funktion, Analytics-Lesepfad; dazu search_path, Advisor-Befunde und
+  Backup/PITR): Vor dem Plan wird die AKTUELLE Supabase-Doku zur berührten Sache
+  aufgeschlagen. Der Skill `.claude/skills/supabase-doku/SKILL.md` trägt die Quellen und
+  löst die Regel aus; er ERSETZT sie nicht — fällt der Skill aus, gilt die Regel
+  unverändert.
+  DREI ANGABEN, und sie gehören zusammen: DATUM der Lesung · FUNDSTELLE (Seite und
+  Abschnitt, NICHT "die Supabase-Doku") · FOLGE FÜR DEN BAU (was sich daraus ändert —
+  auch "nichts", dann ausdrücklich).
+  KEINE ANGABE AUS DEM GEDÄCHTNIS. Wo keine Lesung stattgefunden hat, steht das da; eine
+  Angabe ohne Provenienz gilt als UNGEPRÜFT und trägt keinen Plan.
+  DAS GATE — der Teil, ohne den die Regel ein Ehrenwort bleibt: Jede andere Pflicht in
+  diesem Projekt hat einen Mechanismus, der von aussen sichtbar ist — ein Build-Fehler,
+  ein roter Test, eine Prüfsumme, ein Stopp, der gelesen wird. Diese hier hat die
+  VORLAGE: Trifft eine Runde den Auslöser, gehören die drei Angaben IN DIE VERLANGTE
+  RÜCKGABE, an derselben Stelle wie die Umfangs-Ansage. Damit ist eine fehlende
+  Provenienz beim Review SICHTBAR, statt im Kopf des Bauenden zu bleiben. Das ist der
+  einzige Unterschied zwischen dieser Regel und einem guten Vorsatz.
+  DER GRUND, ohne den die Regel beim ersten Zeitdruck fällt: Anbieter-Verhalten altert
+  schneller als jedes Trainingswissen, und ein falscher Endpunkt, ein falscher Default
+  oder eine gedrehte Policy-Semantik fällt hier NICHT im Build auf, sondern erst in der
+  laufenden DB. Dieselbe Klasse hat in diesem Projekt schon zweimal zugeschlagen: der
+  hardcodierte Serving-Suffix erzeugte auf der neuen Serving-Domain lautlose 404er
+  (s. "ABLEITEN STATT HARDCODEN" in CLAUDE.md), und der für NEUE Zugänge geschlossene
+  Google-Weg fiel ausschliesslich durch eine Doku-Lesung auf — aus dem Gedächtnis wäre
+  eine Scheibe auf einen Weg zugeschnitten worden, den es für uns nicht mehr gibt
+  (Roadmap-Zeile 11.2).
+  SIE IST KEINE NEUE DISZIPLIN, SONDERN DIE BESTEHENDE AUF EINEN NEUEN GEGENSTAND:
+  GEMESSEN/GELESEN mit Datum und Quelle gilt hier seit Phase 11 für Anbieter-Befunde.
+  Diese Regel dehnt sie auf die Doku aus, die einem Bau VORAUSGEHT — sie erfindet kein
+  Vokabular und keinen zweiten Weg.
+  WIDERSPRICHT EIN DOKU-BEFUND EINER DER DREI REGELN OBEN, WIRD DIE REGEL NICHT
+  GEÄNDERT: Jene tragen eigene Messungen an DIESER Datenbank, und eine davon verbietet
+  ausdrücklich, den gemessenen Zustand zu "korrigieren". Der Widerspruch wird VORGELEGT
+  (beide Seiten, Datum, Fundstelle), der Owner entscheidet. Eine stille Angleichung an
+  die Anbieter-Doku wäre genau der Fehler, gegen den jene Regeln geschrieben wurden.

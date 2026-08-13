@@ -1779,3 +1779,60 @@ trägt, ist es das der ursprünglichen Messung.
   AUS LAUFZEITDATEN: Ein nicht beliefertes Ziel hinterlaesst in KEINEM persistierten
   Datensatz eine Spur — wer die Antwort aus den Ereignissen ableiten wollte, leitete sie
   aus dem Nichts ab.
+- DIE PROVENIENZ-PFLICHT STEHT AN ZWEI ORTEN — BEKANNTE SCHULD, KEIN VERSEHEN (angelegt
+  2026-08-13): Dieselbe Fehlerklasse — eine Anbieter-Angabe aus dem Gedaechtnis statt aus
+  einer Lesung — ist ab jetzt ZWEIMAL geregelt. In `docs/db-regeln.md` (vierte Regel) fuer
+  Supabase, und in den Roadmap-Zeilen 11.1/11.2 fuer fremde Werbe-Anbieter ("eine eigene
+  Anbieter-Recherche mit derselben Sorgfalt, NICHTS DAVON AUS DEM GEDAECHTNIS"). Zwei
+  Aussagen, EIN Gegenstand, kein gemeinsamer Ort — und keine der beiden weiss von der
+  anderen. WARUM SIE HEUTE NICHT ZUSAMMENGEFUEHRT WERDEN: Der gemeinsame Ort waere
+  CLAUDE.md, "## Immer beachten", und dort sind nach der Archivierung der Phase 11 noch
+  30 Bytes frei (GEMESSEN 2026-08-13). Eine Zusammenfuehrung waere heute nicht additiv,
+  sondern erzwaenge eine Kuerzung an bestehenden Regeln — das ist ein eigener Vorgang mit
+  eigener Freigabe, kein Nebenbei. TRIGGER: sobald CLAUDE.md wieder Platz hat (er haengt
+  am offenen Punkt "CLAUDE.md NAEHERT SICH DEM LADELIMIT"). DER SATZ, DER MITMUSS: Wer die
+  Doppelung spaeter findet, soll sie als BEKANNTE SCHULD lesen und nicht als
+  Nachlaessigkeit — sie ist gesehen, benannt und datiert, und die Entscheidung, sie
+  vorerst stehen zu lassen, ist bewusst gefallen.
+- DEKLARATIVE SCHEMAS — EINE OFFENE FRAGE, AUSDRUECKLICH KEINE EMPFEHLUNG (angelegt
+  2026-08-13): BEFUND, GELESEN (Supabase-Blog zu Agenten-Evals, 31.07.2026; vom Owner in
+  den Auftrag eingebracht, von dieser Runde NICHT selbst nachgeschlagen — die Angabe ist
+  damit UNGEPRUEFT im Sinne der neuen Provenienz-Regel): Agenten greifen nicht zu
+  deklarativen Schema-Workflows und schreiben Migrationen von Hand, selbst in Projekten,
+  die bereits deklarative Schemas benutzen. GEMESSEN AM REPO (2026-08-13): Dieses Projekt
+  fuehrt 23 handgeschriebene Migrationen (0001 bis 0023) und hat KEIN
+  `supabase/schemas`-Verzeichnis. UNGEMESSEN IST, ob das hier RICHTIG ist — eine bewusste
+  Bauform — oder ein SYMPTOM genau des beschriebenen Verhaltens. DIE FRAGE BERUEHRT EINE
+  DOKUMENTIERTE ENTSCHEIDUNG und ist deshalb keine Aufraeumarbeit: `docs/db-regeln.md`
+  haelt fest, dass die Migrationen manuell im SQL-Editor laufen und es "KEINEN
+  Migrations-Runner" gibt "und keinen geben soll". Ein deklarativer Workflow erzeugt
+  Migrationen aus einem Schema-Stand — wer ihn einfuehrt, ruehrt genau daran. KEINE
+  EMPFEHLUNG, KEIN VORSCHLAG, KEIN TRIGGER: Die Frage steht, die Antwort nicht. Wer sie
+  beantworten will, faengt bei der Messung an, nicht beim Werkzeug.
+- DIE search_path-DIVERGENZ — VORGELEGT UND NICHT AUFGELOEST (angelegt 2026-08-13, beim
+  Bau des Supabase-Doku-Skills aufgefallen): Anbieter-Doku und Bestandsregel nennen fuer
+  SECURITY DEFINER VERSCHIEDENE Werte. BEIDE SEITEN, je mit Provenienz:
+  · GELESEN (2026-08-13, Supabase "Database Functions", Abschnitt "Security `definer` vs
+    `invoker`"): Der Anbieter empfiehlt den LEEREN Pfad (`search_path = ''`) und
+    verlangt dafuer die volle Qualifizierung JEDER Relation im Rumpf.
+  · Die Bestandsregel in `docs/db-regeln.md` ("DB-FUNKTIONEN + SEARCH_PATH") verlangt
+    `pg_catalog` und traegt eine GEMESSENE Warnung (2026-07-28) dazu: rls_auto_enable —
+    die einzige SECURITY-DEFINER-Funktion des Systems — laeuft mit genau diesem Wert, und
+    eine "Korrektur" haette die einzige Sicherheitsfunktion des Systems STILL geschwaecht,
+    mit der Doku als Rueckendeckung.
+  UNGEMESSEN: welcher Wert fuer DIESE Funktion in DIESER Datenbank richtig ist.
+  DAS IST KEIN LOCH, SONDERN EIN UNTERSCHIED IN DER STRENGE, und dieser Satz gehoert zum
+  Eintrag: Beide zielen auf DASSELBE — minimaler Pfad, volle Qualifizierung — und
+  unterscheiden sich darin, WIE WEIT der Pfad zusammengezogen wird. Der leere Pfad ist die
+  striktere Fassung desselben Gedankens, nicht sein Gegenteil. Wer hier einen BEFUND
+  liest, liest etwas hinein, das nicht dasteht: Es ist nichts kaputt, nichts ungeschuetzt
+  und nichts zu reparieren.
+  TRIGGER, GEKOPPELT: sobald der offene Punkt "rls_auto_enable-CREATE FEHLT IN DEN
+  MIGRATIONEN" (CLAUDE.md, "## Offene Punkte") bearbeitet wird. Dieselbe Funktion,
+  derselbe Moment — dort steht ohnehin der Byte-Abgleich gegen pg_get_functiondef an, und
+  genau dann liegt der gemessene Ist-Wert auf dem Tisch, den es fuer eine Entscheidung
+  braucht. Frueher waere sie ohne Messgrundlage zu treffen.
+  KEINE EMPFEHLUNG, KEINE ANGLEICHUNG, KEINE AENDERUNG AN DER BESTANDSREGEL. Die
+  Vorlage ist die Erledigung dieses Eintrags, nicht ihr Anfang — die neue vierte Regel in
+  `docs/db-regeln.md` verlangt fuer genau diesen Fall, VORZULEGEN statt anzugleichen, und
+  dieser Eintrag IST diese Vorlage.

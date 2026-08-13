@@ -285,10 +285,22 @@ describe("TargetCard — der Folgenlosigkeits-Hinweis haengt an hasAdapter", () 
   // Hinweis traegt, waere er auch dann gruen, wenn der Render-Zweig ersatzlos
   // gestrichen wuerde. BEIDE gehen in diesem einen auf.
   //
-  // ER LAEUFT UEBER DIE ZIEL-LISTE, NICHT UEBER EINE HANDLISTE: Kommt ein DRITTES
-  // Ziel dazu, dessen Adapter noch fehlt, wird dieser Test ROT — und das ist genau
-  // die Erinnerung, die der Mechanismus dann braucht ("setz hasAdapter: false, dann
-  // sagt die Karte es von selbst"). Eine Handliste haette geschwiegen.
+  // ER LAEUFT UEBER DIE ZIEL-LISTE, NICHT UEBER EINE HANDLISTE: Ein weiteres Ziel
+  // bekommt seinen Durchlauf von selbst; eine Handliste haette geschwiegen.
+  //
+  // WAS ER NICHT LEISTET — HIER STAND EINE ZU WEITE ZUSAGE, und sie ist GEMESSEN
+  // falsch (2026-08-13, Scheibe C1): "Kommt ein DRITTES Ziel dazu, dessen Adapter
+  // noch fehlt, wird dieser Test ROT — und das ist genau die Erinnerung, die der
+  // Mechanismus dann braucht." Rot wird er nur, wenn jemand hasAdapter BEREITS auf
+  // false gesetzt hat — also erst, NACHDEM das Fehlen erkannt wurde. Ein fehlender
+  // Adapter bei behauptetem Adapter ist fuer ihn unsichtbar: Er vergleicht eine
+  // Konstante mit sich selbst und sieht den Verteiler nie.
+  // DIE ERINNERUNG, DIE ER ZU SEIN BEHAUPTETE, LEISTET SEIT C1 EIN ANDERER: der
+  // Kreuzvergleich Ziel -> Adapter in capi/fan-out.test.ts. Er faehrt jedes Ziel
+  // durch den Handler und sieht, welcher Adapter wirklich gerufen wird.
+  // DIE ASSERTION HIER BLEIBT UNVERAENDERT — sie deckt die Gegenrichtung (Behauptung
+  // entfernt, waehrend der Zweig steht) und die Oberflaechen-Seite, und beides deckt
+  // der Kreuzvergleich nicht.
   //
   // VERWORFEN: ein Test, der TARGET_CARDS zur Laufzeit mutiert, um den unerreichten
   // Render-Zweig doch noch auszuloesen. Er koppelte sich an die Reihenfolge der

@@ -816,6 +816,136 @@ Verdrängung sind Live-Test-Achsen).
 
 ---
 
+### 3.8 DER WÄCHTER ÜBER DIE ADAPTER-ACHSE — SCHEIBE C1, ERLEDIGT (2026-08-13)
+
+**Commit:** steht bei Abfassung dieses Vermerks noch aus (Stufe 2 ist abgeschlossen,
+die Freigabe nicht erteilt). **Wer ihn nachträgt, trägt die Nummer hier ein** — und
+rückt diesen Vermerk in die Kette am Abschnittskopf ein, in der er heute die Lücke ist.
+
+**WAS GEBAUT WURDE — AUSSCHLIESSLICH TESTS, KEIN PRODUKTIVCODE** (GEMESSEN am Repo,
+2026-08-13: der Diff enthält genau zwei Dateien, beide mit `.test.` im Namen): der
+Kreuzvergleich Ziel → Adapter in `src/lib/capi/fan-out.test.ts` — ein Lauf je Ziel
+durch den Handler, erzeugt über `TRACKING_TARGETS`, mit einer über die Ziel-Union
+erschöpfenden Spion-Zuordnung —, dazu erstmals ein Schalter für den dritten Adapter in
+jener Datei, und die Berichtigung eines Kommentars in
+`src/components/TargetCard.test.tsx`. Suite 1055 → **1059**, Testdateien unverändert
+55, alle vier Gates grün.
+
+**DER BELEG STATT DER BEHAUPTUNG — GEMESSEN (2026-08-13):** Die Mutationsprobe M1 (der
+Ziel-Zweig des dritten Ziels entfernt) macht jetzt **genau einen** Test rot. **Vor C1
+wäre sie VOLLSTÄNDIG GRÜN durchgelaufen.** Damit ist der Befund aus der
+Aufklärungsrunde nicht mehr hergeleitet, sondern belegt — **und geschlossen**: Die
+beiden Träger der Adapter-Tatsache konnten in EINEM Schritt auseinanderlaufen, ohne
+dass irgendetwas rot wurde.
+
+**WAS C1 NICHT TUT, und der Satz steht bewusst früh:** Es schafft **keine Quelle**. Die
+Adapter-Tatsache wird weiterhin an ZWEI Orten behauptet — im Feld `hasAdapter` in
+`TARGET_CARDS` und in den Ziel-Zweigen von `dispatchForward`. **Sie ist BEWACHT, nicht
+BESEITIGT.** C2 steht aus, und **Invariante (6) aus Abschnitt 7.5 bleibt unerfüllt.**
+
+---
+
+**DER M3-BEFUND — EIGENSTÄNDIG, KEINE FUSSNOTE ZUR PROBE.**
+
+**INVARIANTE 7 („ein unbekanntes Ziel sendet nichts") WIRD HEUTE VOM
+EINWILLIGUNGS-GATE GETRAGEN, NICHT VOM ERSCHÖPFUNGS-REST** (GEMESSEN am Repo,
+2026-08-13): `allowedTargets` schlägt den Consent-Schlüssel eines unbekannten Ziels in
+`CONSENT_KEY_BY_TARGET` nach, findet nichts und verwirft es — **bevor `dispatchForward`
+es sieht**. Die drei bekannten Ziele treffen je einen Zweig. **Es gibt damit heute
+KEINE Eingabe, die den Rest hinter den Zweigen erreicht;** er ist eine zweite Linie,
+die aus keiner Richtung angefahren werden kann.
+
+**FOLGE FÜR C2, ausdrücklich:** Die Fail-Closed-Zusage hängt **NICHT** an dem
+Kontrollfluss, den C2 ersetzt. Wer beim Umbau um den Erschöpfungs-Rest fürchtet,
+fürchtet um die falsche Stelle — und wer ihn für den Träger der Zusage hält, baut die
+Absicherung an einen Ort, der sie nie getragen hat.
+
+**ZWEITE FOLGE, allgemeiner und über diese Phase hinaus: EIN UNERREICHBARER ZWEIG IST
+VON KEINEM TEST DECKBAR — AUCH NICHT DURCH EINEN BESSEREN.** Wer für ihn einen Wächter
+sucht, sucht etwas, das es nicht geben kann; was er finden kann, ist der Beleg der
+Unerreichbarkeit.
+
+---
+
+**WARUM M3 GRÜN BLIEB — EINE DRITTE MÖGLICHKEIT, DIE IN DER VORGABE FEHLTE.**
+
+Die Auflage kennt bei einem grün bleibenden Mutanten zwei Erklärungen: „der Test prüft
+nichts" oder „die Mutation ist ein schlechtes Modell". **Hier trifft KEINE von beiden.**
+Der Test prüft sehr wohl etwas, und die Mutation bildet den Fehler korrekt nach — **DER
+GEGENSTAND IST AUS KEINER EINGABE ERREICHBAR.** Die Mutation misst damit eine
+Eigenschaft des CODES, nicht eine des Wächters.
+
+**DAS GEHÖRT BEIM NÄCHSTEN GRÜNEN MUTANTEN MITGELESEN:** Bevor ein grüner Mutant als
+hohler Test gebucht wird, ist zu prüfen, ob die mutierte Stelle überhaupt anfahrbar
+ist. Ein Wächter, der dafür erfunden wird, wäre ein Wächter über Nichts — und er sähe
+aus wie Abdeckung.
+
+**WAS AUSDRÜCKLICH NICHT GETAN WURDE:** das unbekannte Ziel am Einwilligungs-Gate
+vorbeizuschleusen. Das wäre über eine Eigenheit des Schlüssel-Nachschlags möglich
+gewesen. **Der Grund gegen den Griff gehört mit:** Er verankerte eine Sprachkuriosität
+in einem Test, über den später jemand stolpert — und er machte aus einem sauberen
+Befund („unerreichbar") eine Konstruktion, die nur im Test existiert.
+
+---
+
+**W4 MISST ETWAS ANDERES ALS BEAUFTRAGT, UND DAS WAR RICHTIG.** Beauftragt war ein Lauf
+„Ziel ohne Adapter-Behauptung → kein Aufruf". **Am Handler wäre er trivial wahr aus dem
+falschen Grund gewesen** — nicht weil der Verteiler schweigt, sondern weil das Ziel
+schon vorher ausscheidet. W4 behauptet deshalb, was er misst: **das unbekannte Ziel
+fällt am Einwilligungs-Gate**, mit einem bekannten Ziel als **Mitläufer im selben
+Lauf**, dessen Spion feuert — ohne ihn wäre „kein Adapter gerufen" auch dann wahr, wenn
+gar nichts stattgefunden hätte.
+
+---
+
+**DIE WIDERLEGTE SELBSTBESCHREIBUNG — EIGENER PUNKT, weil sie eine Klasse ist und kein
+Einzelfall.** Der Kommentar am Bestandstest zum Folgenlosigkeits-Hinweis behauptete, er
+werde rot, wenn ein Ziel ohne Adapter dazukommt. **GEMESSEN falsch (2026-08-13):** Rot
+wird er erst, **nachdem** jemand das Fehlen erkannt und `hasAdapter: false` eingetragen
+hat; er vergleicht eine Konstante mit sich selbst und sieht den Verteiler nie. **Die
+Assertion bleibt unverändert** — sie deckt die Gegenrichtung (Behauptung entfernt,
+während der Zweig steht) und die Oberflächen-Seite, und beides deckt der Kreuzvergleich
+nicht. Berichtigt wurde die ZUSAGE, nicht der Test. Dieselbe Behandlung wie bei T9 in
+Abschnitt 3.5 und bei N1 in Abschnitt 3.6.
+
+---
+
+**DIE ENTSCHEIDUNG ZU C2: SIE KOMMT.** *Begründung:* Von den vier Stellen, die
+Ziel-Wissen tragen, binden **drei** erschöpfend über die Ziel-Union (`TARGET_CARDS`,
+`CONSENT_KEY_BY_TARGET`, `LEGACY_CONSENT_ROLE`) — beim nächsten Ziel fragt dort der
+Compiler. **Der Verteiler ist die eine, die schweigt.** C2 legt damit nichts an, das es
+noch nicht gibt; es **entfernt eine Doppelung, die heute besteht**. Die Vorbau-Linie aus
+Abschnitt 7.4 („keine Erweiterung ohne realen Konsumenten") greift deshalb nicht: Die
+beiden Konsumenten existieren, sie widersprechen sich nur noch nicht.
+
+**DIE BAUFORM IST ENTSCHIEDEN: DIE KARTE BEKOMMT DIE TATSACHE ALS PROP**, nicht durch
+eigenen Zugriff auf die Liste. *Grund:* Nur so wird der heute **unerreichte**
+Anzeige-Zweig beweisbar — ein Test übergibt schlicht „kein Adapter". Der andere Weg
+zwänge zu einer Mutation von Modulzustand im Test, und die ist im Bestand bereits
+begründet **verworfen** (sie koppelt sich an die Reihenfolge der Tests).
+
+---
+
+**ALS TRIGGER, NICHT ALS VORWURF:** Bleibt die Zusammensetzung `targetReadiness` auch
+nach Scheibe D **ohne Konsumenten**, ist zu entscheiden, ob sie verfrüht war. **Nach C
+wird das NICHT geprüft** — C braucht sie nicht, und eine Prüfung mitten in der Reihe
+beantwortete die Frage zu früh.
+
+---
+
+**WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** dass die zweite Behauptung beseitigt
+ist (sie besteht fort, bewacht) · dass Invariante (6) aus 7.5 erfüllt wäre (erst nach C
+und D) · irgendetwas über den Erschöpfungs-Rest (s. den M3-Befund) · die fachliche
+Richtigkeit eines Adapters, die Gültigkeit von Zugangsdaten oder die Annahme beim
+Anbieter — die drei Adapter sind im neuen Block ausgeschaltet · die Nutzlast-Abbildung
+des zweiten Ziels (das bleibt T10) · Fristen, Nebenläufigkeit und Containment (die
+Blöcke darüber).
+**KEIN LIVE-TEST, UND KEINER WÄRE MÖGLICH:** Es entstehen ausschliesslich Tests, kein
+Verhalten ändert sich — und der Anzeige-Zweig ist unerreichbar, solange alle drei Ziele
+einen Adapter tragen.
+
+---
+
 ## 4. Was an Entscheidungen gefallen ist — bindet über die Scheibe hinaus
 
 **(a) OWNER-ENTSCHEIDUNG: `fbtrace_id` BLEIBT UNGESCHWÄRZT, nur hart

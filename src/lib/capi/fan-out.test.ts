@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
@@ -55,6 +55,24 @@ vi.mock("@/lib/capi/pinterest-forward", async (importActual) => {
   };
 });
 
+// DASSELBE MUSTER EIN DRITTES MAL, FUER DEN DRITTEN ADAPTER (Phase 11, Scheibe C1).
+// DIESE DATEI KANNTE IHN BIS HIERHER NICHT — gemessen am Repo (2026-08-12, formale
+// Suche: NULL Treffer), und genau deshalb war der dritte Ziel-Zweig im Verteiler von
+// KEINEM Test gedeckt. Der Schalter folgt dem Muster der beiden darueber: Solange
+// `tikOverride.fn` null ist, laeuft die ECHTE Implementierung; der Kreuzvergleich
+// unten setzt ihn, weil er die ZUORDNUNG messen will und nicht das Netzwerk.
+const { tikOverride } = vi.hoisted(() => ({
+  tikOverride: { fn: null as null | (() => Promise<void>) },
+}));
+vi.mock("@/lib/capi/tiktok-forward", async (importActual) => {
+  const actual =
+    await importActual<typeof import("@/lib/capi/tiktok-forward")>();
+  return {
+    forwardToTiktok: (...args: Parameters<typeof actual.forwardToTiktok>) =>
+      tikOverride.fn ? tikOverride.fn() : actual.forwardToTiktok(...args),
+  };
+});
+
 const { after, scheduled } = vi.hoisted(() => {
   const scheduled: Array<() => Promise<void> | void> = [];
   return {
@@ -76,6 +94,9 @@ import { handleIngest } from "./ingest";
 // eine Divergenz gruen durchrutschen, und der Ausgang waere fail-closed und lautlos.
 import { CONSENT_WIRE_FIELD } from "@/lib/tracking/consent-wire";
 import { CONSENT_KEY_BY_TARGET } from "@/lib/tracking/consent-targets";
+// DIE ZIEL-LISTE, NICHT eine Handliste: Der Kreuzvergleich unten laeuft ueber sie,
+// damit ein VIERTES Ziel dort automatisch einen eigenen Lauf bekommt.
+import { TRACKING_TARGETS, type TrackingTarget } from "@/lib/settings";
 
 // ===========================================================================
 // DER FAN-OUT (Phase 11, siebte Scheibe; um zwei ECHTE Empfaenger erweitert in der
@@ -228,6 +249,10 @@ beforeEach(() => {
   scheduled.length = 0;
   override.fn = null;
   pinOverride.fn = null;
+  // Der dritte Schalter wird hier MIT zurueckgesetzt, obwohl ihn heute nur der
+  // letzte Block setzt: Ein Schalter, der nur an einer Stelle geleert wird, traegt
+  // seinen Wert in jeden Test, der danach laeuft.
+  tikOverride.fn = null;
   persistEvent.mockResolvedValue(undefined);
   getCapiConfigByTrackingKey.mockResolvedValue(resolution([META_ENTRY]));
   global.fetch = vi.fn(async () => new Response(null, { status: 200 }));
@@ -675,5 +700,160 @@ describe("Fan-Out — ZWEI ECHTE EMPFAENGER (Meta und Pinterest nebeneinander)",
     expect(res.status).toBe(204);
     expect(await res.text()).toBe("");
     expect(metaCall()).toBeDefined();
+  });
+});
+
+// ===========================================================================
+// DER KREUZVERGLEICH ZIEL -> ADAPTER (Phase 11, Scheibe C1).
+//
+// WOGEGEN ER GEBAUT IST — GEMESSEN am Repo (2026-08-13): Die Adapter-Tatsache wird
+// an ZWEI Orten behauptet, und die beiden sind durch NICHTS verbunden. Der eine ist
+// das Feld hasAdapter in TARGET_CARDS (components/TargetCard.tsx), der andere sind
+// die Ziel-Zweige in dispatchForward (capi/ingest.ts). Kein Typ und bis hierher kein
+// Test hielt sie zusammen.
+// DIE GEFAEHRLICHE RICHTUNG WAR VOLLSTAENDIG UNBEWACHT: Wer einen Ziel-Zweig
+// entfernt, waehrend die Karte weiter einen Adapter behauptet, bekam KEINEN roten
+// Test — das Ziel sendet dann nichts, die Oberflaeche sagt nichts, und es gibt weder
+// Fehler noch Logzeile. Die harmlose Gegenrichtung (Behauptung entfernt, Zweig
+// bleibt) war dagegen gedeckt.
+//
+// WAS DIESER BLOCK MISST UND WAS NICHT: Er misst die ZUORDNUNG — erreicht das
+// aufgeloeste Ziel X genau den Adapter X? Er misst NICHT, ob dieser Adapter fachlich
+// richtig baut, ob Zugangsdaten gelten oder ob ein Anbieter annimmt; die drei Adapter
+// sind hier ausgeschaltet. Fuer die Nutzlast-Abbildung des zweiten Ziels ist T10
+// zustaendig, fuer Fristen und Isolation die Bloecke darueber.
+//
+// ER LAEUFT UEBER TRACKING_TARGETS UND UEBER EINE VOLLSTAENDIGE ZUORDNUNG: Kommt ein
+// VIERTES Ziel dazu, entsteht sein Lauf von selbst, und die Zuordnung darunter ist
+// ohne einen Eintrag dafuer ein BUILD-FEHLER. Eine Handliste haette beides nicht
+// geleistet — sie waere still geblieben, und genau darum geht es hier.
+// ===========================================================================
+describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Adapter)", () => {
+  /**
+   * EIN SPION JE ADAPTER, ueber die Ziel-Liste erschoepfend geschluesselt.
+   *
+   * DIE FORM IST DER STOLPERDRAHT: Record<TrackingTarget, ...> zwingt beim vierten
+   * Ziel zu einer Entscheidung, statt es stillschweigend auszulassen.
+   */
+  const SPY_BY_TARGET: Record<TrackingTarget, Mock<() => void>> = {
+    meta: vi.fn<() => void>(),
+    pinterest: vi.fn<() => void>(),
+    tiktok: vi.fn<() => void>(),
+  };
+
+  /**
+   * EIN AUFGELOESTER EMPFAENGER JE ZIEL. Die Werte tragen den Zielnamen, damit ein
+   * Fehlschlag im Protokoll sofort zeigt, WELCHER Lauf gemeint war.
+   */
+  function entryFor(target: TrackingTarget) {
+    return { target, config: { pixelId: "PX-" + target, token: "SEC-" + target } };
+  }
+
+  /**
+   * DER RUMPF TRAEGT DIE EINWILLIGUNG JE ZIEL, UND DAS IST KEIN BALLAST.
+   *
+   * Ohne das Feld greift die ALTBESTANDS-AUSNAHME (LEGACY_CONSENT_ROLE in
+   * tracking/consent-targets.ts): Erlaubt waere dann GENAU das eine Ziel mit der
+   * Altbestands-Rolle, und jeder Lauf ueber ein anderes Ziel endete schon am
+   * Einwilligungs-Gate — VOR dem Verteiler. Die Behauptung "der Adapter wurde
+   * gerufen" waere dann falsch, und die Behauptung "die anderen nicht" waere wahr aus
+   * einem Grund, den der Testname nicht nennt.
+   * DIE SCHLUESSEL KOMMEN AUS DER ECHTEN ZUORDNUNG, nie abgeschrieben: ein Literal
+   * hier liesse eine Divergenz zwischen den beiden Vokabularen gruen durchrutschen,
+   * und der Ausgang waere fail-closed und lautlos.
+   */
+  function requestWithConsentForAll(): Request {
+    const consent: Record<string, boolean> = {};
+    for (const t of TRACKING_TARGETS) consent[CONSENT_KEY_BY_TARGET[t]] = true;
+    return new Request("http://localhost/api/e", {
+      method: "POST",
+      // DIE KOPFZEILEN STEHEN MIT, OBWOHL DIE ADAPTER HIER AUSGESCHALTET SIND:
+      // Faellt der Schalter je weg, entschiede sonst der Identitaets-Riegel in zwei
+      // der drei Adapter ueber das Ergebnis, und dieser Block maesse ploetzlich etwas
+      // anderes, ohne dass sein Name sich aendert.
+      headers: {
+        "user-agent": "Mozilla/5.0 (Kreuzvergleich)",
+        "x-vercel-forwarded-for": "203.0.113.7",
+      },
+      body: JSON.stringify({
+        trackingKey: "tk-abc",
+        eventID: "evt-123",
+        event: "Purchase",
+        [CONSENT_WIRE_FIELD]: consent,
+      }),
+    });
+  }
+
+  beforeEach(() => {
+    // Die drei Adapter werden AUSGESCHALTET und durch Spione ersetzt: Gemessen wird
+    // die Zuordnung, nicht das Netzwerk. Liefen die echten Adapter, entschieden ihre
+    // Identitaets-Riegel, Nutzlast-Bauten und Antwort-Auswertungen mit — drei
+    // Fehlerquellen, die mit der Frage nichts zu tun haben.
+    override.fn = async () => {
+      SPY_BY_TARGET.meta();
+    };
+    pinOverride.fn = async () => {
+      SPY_BY_TARGET.pinterest();
+    };
+    tikOverride.fn = async () => {
+      SPY_BY_TARGET.tiktok();
+    };
+  });
+
+  for (const target of TRACKING_TARGETS) {
+    it("W-" + target + ": das aufgeloeste Ziel erreicht GENAU seinen Adapter, die anderen NICHT", async () => {
+      // WIRD ROT, WENN: der Ziel-Zweig dieses Ziels fehlt (dann feuert kein Spion),
+      // wenn zwei Zweige vertauscht sind (dann feuert der falsche), oder wenn ein
+      // Zweig doppelt greift.
+      // DIE POSITIVKONTROLLE STECKT IM SELBEN LAUF und ist der Grund, warum die
+      // "nicht gerufen"-Haelfte hier nicht trivial wahr ist: Im selben Durchgang
+      // feuert nachweislich EIN Spion. Waere die Verdrahtung insgesamt tot, faende
+      // diese Zeile es sofort.
+      getCapiConfigByTrackingKey.mockResolvedValue(resolution([entryFor(target)]));
+
+      const res = await handleIngest(requestWithConsentForAll());
+
+      expect(res.status).toBe(204);
+      expect(SPY_BY_TARGET[target]).toHaveBeenCalledTimes(1);
+      for (const other of TRACKING_TARGETS) {
+        if (other === target) continue;
+        expect(SPY_BY_TARGET[other]).not.toHaveBeenCalled();
+      }
+    });
+  }
+
+  // =====================================================================
+  // W4 — DER ERSCHOEPFUNGS-REST IST UEBER DEN HANDLER NICHT BEOBACHTBAR, UND DAS IST
+  // EIN BEFUND, KEINE LUECKE DIESES BLOCKS.
+  //
+  // GEMESSEN (2026-08-13): Ein unbekanntes Ziel erreicht den Verteiler GAR NICHT.
+  // allowedTargets schlaegt seinen Consent-Schluessel in CONSENT_KEY_BY_TARGET nach,
+  // findet nichts und laesst es fallen — fail-closed, VOR dispatchForward. Fuer die
+  // drei bekannten Ziele wiederum existiert je ein Zweig. Es gibt damit heute KEINE
+  // Eingabe, die den Rest hinter den drei Zweigen erreicht.
+  // FOLGE, die dazugehoert: Die Zusage "ein unbekanntes Ziel sendet nichts" ist heute
+  // vom EINWILLIGUNGS-GATE getragen; der Erschoepfungs-Rest ist ihre zweite,
+  // unbeobachtbare Linie. Wer ihn aendert, wird von keinem Test gefangen — nicht weil
+  // dieser Block schwach waere, sondern weil die Zeile unerreichbar ist.
+  // DIESER TEST BEHAUPTET DESHALB, WAS ER WIRKLICH MISST, und nicht mehr.
+  // =====================================================================
+  it("W4: ein unbekanntes Ziel faellt schon am Einwilligungs-Gate — es erreicht den Verteiler nicht", async () => {
+    // DIE POSITIVKONTROLLE FAEHRT IM SELBEN LAUF MIT: Neben dem unbekannten Ziel
+    // steht ein bekanntes. Feuert dessen Spion, ist bewiesen, dass der Lauf den
+    // Verteiler ueberhaupt erreicht hat — ohne diesen Mitlaeufer waere "kein Adapter
+    // gerufen" auch dann wahr, wenn gar nichts stattgefunden haette.
+    getCapiConfigByTrackingKey.mockResolvedValue(
+      resolution([
+        entryFor("meta"),
+        { target: "linkedin", config: { pixelId: "PX-x", token: "SEC-x" } },
+      ]),
+    );
+
+    const res = await handleIngest(requestWithConsentForAll());
+
+    expect(res.status).toBe(204);
+    expect(SPY_BY_TARGET.meta).toHaveBeenCalledTimes(1);
+    expect(SPY_BY_TARGET.pinterest).not.toHaveBeenCalled();
+    expect(SPY_BY_TARGET.tiktok).not.toHaveBeenCalled();
   });
 });

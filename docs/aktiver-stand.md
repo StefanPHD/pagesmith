@@ -149,8 +149,8 @@ Lesehilfe benutzt, liest das Falsche — die Position eines Vermerks ist seit de
 Wegfall der Nachnummerierung eine Frage seiner Entstehung, nicht seines Rangs.
 **DIE AUTORITÄT IST DIE COMMIT-KETTE:** Entstanden sind sie in der Reihenfolge
 `0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080` -> `81b544f` -> `6ef7d2f` -> `70cc265`
--> `ca321c3` -> `724edd3` -> `6e1be7a` -> `c0bfd50`. Sie wächst mit jeder Scheibe, und ihr
-LETZTES GLIED ist der jüngste COMMITTETE Vermerk.
+-> `ca321c3` -> `724edd3` -> `6e1be7a` -> `c0bfd50` -> `f81cbdc`. Sie wächst mit jeder
+Scheibe, und ihr LETZTES GLIED ist der jüngste COMMITTETE Vermerk.
 **DIE LÜCKE GEHÖRT ZUR REGEL, sonst greift sie im wichtigsten Moment nicht:** Ein
 Vermerk, der in der Kette NICHT vorkommt, ist noch nicht committet — und damit per
 Konstruktion der jüngste. **Wer den heutigen Stand sucht, sieht ZUERST dort nach.**
@@ -1447,9 +1447,14 @@ URTEIL** · ob die zwei Zeilen über die Auslieferung je eine werden.
 
 ### 3.12 DIE ZUSAMMENSETZUNG WIRD GESTRICHEN — ERLEDIGT (2026-08-13)
 
-**Commit:** STEHT AUS. Nach der Regel am Kopf dieses Abschnitts ist dieser Vermerk damit
-die Lücke in der Kette und per Konstruktion der jüngste; die Nummer wird hier
-nachgetragen, sobald committet ist. Die Kette endet heute bei `1a83536`.
+**Commit:** `f81cbdc` (GEMESSEN am Repo, 2026-08-13, `git log`). Hier stand bis dahin
+„STEHT AUS" und „die Kette endet heute bei `1a83536`"; beides war als Aussage über jenen
+Zeitpunkt richtig. **Damit steht in Abschnitt 3 KEINE Lücke mehr** — gezählt am
+2026-08-13 über alle zwölf Vermerke: jeder trägt seinen Hash.
+**DIESELBE ABWEICHUNG VON DER COMMIT-KONVENTION WIE BEI 3.10 UND 3.11:** `f81cbdc` trägt
+die Code-Änderung UND diesen Doku-Vermerk in EINEM `refactor(tracking)`-Commit. CLAUDE.md
+verlangt getrennte `docs(claude)`-Commits; die Zusammenlegung war eine Owner-Anordnung
+nach ausdrücklichem Hinweis.
 
 **DIE ENTSCHEIDUNG (Owner, 2026-08-13):** `targetReadiness` samt ihren drei Typen ist
 **GESTRICHEN**. Die beiden Prädikate `hasPixelId` und `hasSecret` **BLEIBEN**.
@@ -1531,6 +1536,37 @@ Ingest, die Adapter-Achse oder das Schema · dass eine Zusammensetzung nie wiede
 wird — der Trigger samt Auflage steht im Vorrat.
 **KEIN LIVE-TEST, UND KEINER WÄRE MÖGLICH:** Es entfällt ausschliesslich Code ohne
 Konsumenten; der Byte-Nachweis oben ist der Ersatz, den der Auftrag dafür vorsah.
+
+---
+
+**NACHTRAG (2026-08-13, eigene Runde, NUR KOMMENTARE): DIE DREI TOTEN VERWEISE SIND
+NACHGEZOGEN.** Der Schnitt selbst hat den Namen aus dem Code entfernt — aber drei
+KOMMENTARE trugen ihn weiter und verboten namentlich etwas, das es nicht mehr gab:
+zwei in `CodeImporter.tsx` (am Import des Prädikats und am Memo `consentTargets`) und
+einer in `capi/token.ts` (am Import-Block). **GEMESSEN (formale Suche über `src/` und
+`docs/`, 2026-08-13): genau diese drei; keine vierte Code-Fundstelle ausser den
+historischen Sätzen in `target-readiness.ts` und ihrer Testdatei, die den Namen
+ABSICHTLICH tragen.** Die Fundstellen in `docs/` sind unangetastet — dort benennt der
+Name, was es damals gab, und ist historisch richtig.
+
+**DIE REGELN BLIEBEN, UND SIE SIND BREITER GEWORDEN — das ist der Ertrag, nicht die
+Aufräumarbeit:** Aus „nie die Zusammensetzung `targetReadiness`" wurde „nie ein
+ZUSAMMENGESETZTER Zustand, gleichgültig wie er heisst und ob es ihn heute überhaupt
+gibt". **Ein Verbot, das ein SYMBOL nennt, endet mit dem Symbol; eines, das den
+GEGENSTAND nennt, gilt auch für die nächste Zusammensetzung, die noch niemand gebaut
+hat.** Der Grund ist an allen drei Stellen ungekürzt geblieben — die Einbahnstrasse, das
+fail-closed, und dass aus einer Teilkonfiguration lautlos GAR KEINE Auslieferung
+entstünde.
+**DER SATZ, DER DIE HISTORIE TRÄGT, STEHT AN JEDER DER DREI STELLEN:** dass hier einmal
+der Name einer Zusammensetzung stand, dass sie gestrichen ist, und der Verweis auf diesen
+Vermerk. **Ohne ihn liest jemand die Verschärfung als Verwässerung** — und macht sie
+beim nächsten Aufräumen wieder rückgängig.
+
+**DIE LEHRE, und sie ist der Grund für diese eigene Runde: WER EINE STREICHUNG PLANT,
+ZÄHLT NICHT NUR DIE IMPORTE, SONDERN AUCH DIE SÄTZE, DIE DEN GELÖSCHTEN NAMEN TRAGEN.**
+`tsc` und `build` fangen die Importe — und nur die. Ein Kommentar, der ein totes Symbol
+verbietet, kompiliert einwandfrei und sieht wie eine geltende Regel aus; genau deshalb
+war die Streichung nach vier grünen Gates noch nicht fertig.
 
 ---
 
@@ -2016,8 +2052,13 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
     Zustand herstellen, den der heutige Pfad aus Abfrage-Ökonomie vermeidet.
   **DIE BEIDEN VORHERSAGEN OBEN SIND EINGETROFFEN (GEMESSEN, 2026-08-13):** Der Wegfall
   WAR eine reine Streichung — `tsc`, `vitest` und `build` blieben grün, keine
-  Produktiv-Zeile ausserhalb der einen Datei musste angefasst werden, und die Suite fiel
-  um genau die vorhergesagten sieben Tests (1070 → 1063).
+  AUSFÜHRBARE Zeile ausserhalb der einen Datei musste angefasst werden, und die Suite
+  fiel um genau die vorhergesagten sieben Tests (1070 → 1063).
+  **PRÄZISIERT (2026-08-13, nach der Kommentar-Runde): hier stand „keine Produktiv-Zeile",
+  und das war zu breit.** Drei KOMMENTARE in zwei Produktiv-Dateien mussten sehr wohl
+  nachgezogen werden — sie verboten namentlich ein Symbol, das es nicht mehr gab. **Die
+  Aussage über das VERHALTEN bleibt unberührt** (kein ausführbarer Code, keine Test-
+  Assertion); überholt war allein das Wort. S. den Nachtrag in Abschnitt 3.12.
   **WARUM DIESER PUNKT IM VORRAT STEHT UND NICHT IN 3.11 ALLEIN:** 3.11 nennt die Frage
   auch, aber als Teil eines SCHEIBEN-VERMERKS — und Scheiben-Vermerke sind
   abgeschlossene Historie, die am Phasenende archiviert wird. **Der Vorrat ist die Liste,

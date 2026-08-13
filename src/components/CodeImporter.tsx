@@ -60,8 +60,13 @@ import {
 // die Werte der Geheimnis-Tabelle. Beide lauten heute gleich; sie gleichzusetzen
 // waere genau die Drift, gegen die die Abbildung steht.
 import { CONSENT_KEY_BY_TARGET } from "@/lib/tracking/consent-targets";
-// NUR das Kennungs-Praedikat, NIE die Zusammensetzung targetReadiness — die
-// Begruendung steht am Memo unten und als Auflage an der Funktion selbst.
+// NUR das Kennungs-Praedikat, NIE ein ZUSAMMENGESETZTER Zustand — gleichgueltig, wie
+// er heisst. Die Begruendung steht am Memo unten und als Auflage an der Funktion
+// selbst.
+// HIER STAND EINMAL DER NAME EINER ZUSAMMENSETZUNG; sie ist gestrichen
+// (docs/aktiver-stand.md, "3.12 DIE ZUSAMMENSETZUNG WIRD GESTRICHEN"). Das Verbot ist
+// dadurch BREITER geworden, nicht schwaecher: Es galt einem Symbol, jetzt gilt es dem
+// Gegenstand.
 import { hasPixelId } from "@/lib/tracking/target-readiness";
 import { getCapiProxyUrl } from "@/lib/capi/proxy";
 import { buildLiveUrl } from "@/lib/hosting/host";
@@ -456,8 +461,14 @@ export default function CodeImporter({
   // der Erzeuger: leere Liste -> gar kein Feld, nicht ein leeres.
   //
   // DIE BEDINGUNG IST hasPixelId, UND SIE DARF NIE MEHR SEIN ALS DAS (Scheibe D2):
-  // Das Memo befragt AUSSCHLIESSLICH das Kennungs-Praedikat, NIEMALS die
-  // Zusammensetzung targetReadiness. Der Schluessel haengt an der BLOSSEN
+  // Das Memo befragt AUSSCHLIESSLICH das Kennungs-Praedikat, NIEMALS einen
+  // ZUSAMMENGESETZTEN Zustand — gleichgueltig, wie er heisst und ob es ihn heute
+  // ueberhaupt gibt. HIER STAND EINMAL DER NAME EINER SOLCHEN ZUSAMMENSETZUNG; sie ist
+  // gestrichen (docs/aktiver-stand.md, "3.12 DIE ZUSAMMENSETZUNG WIRD GESTRICHEN").
+  // WER DAS FUER EINE VERWAESSERUNG HAELT, LIEST ES FALSCH HERUM: Ein Verbot, das ein
+  // Symbol nennt, endet mit dem Symbol; eines, das den Gegenstand nennt, gilt auch fuer
+  // die naechste Zusammensetzung, die noch niemand gebaut hat.
+  // Der Schluessel haengt an der BLOSSEN
   // Anwesenheit einer Kennung — haengte er an einem zusammengesetzten Zustand,
   // verloere ein teilweise eingerichtetes Ziel seinen Schluessel, und aus einer
   // TEILkonfiguration entstuende lautlos GAR KEINE Auslieferung, auch fuer die

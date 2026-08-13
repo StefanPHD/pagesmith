@@ -19,12 +19,18 @@ import {
 // ERSETZT, NICHT ERGAENZT: Hier steht nach dieser Scheibe KEINE eigene
 // Ausformulierung mehr daneben. Wer eine ergaenzt, hat wieder zwei Wahrheiten.
 //
-// NUR DIE BEIDEN PRAEDIKATE, NICHT DIE ZUSAMMENSETZUNG — und das ist kein
-// Auslassen, sondern am Kontrollfluss begruendet: targetReadiness verlangt als
-// dritten Teil "hat dieses Ziel einen Adapter", und diese Datei kennt ihn nicht
-// (sie ist server-only und zieht weder TARGET_CARDS noch dispatchForward). Und der
-// Geheimnis-WERT existiert hier fuer ein Ziel OHNE Kennung gar nicht: gefragt wird
-// nur nach den Zielen, die den Filter unten passiert haben (Abfrage-Oekonomie).
+// NUR DIE BEIDEN PRAEDIKATE, NIE EIN ZUSAMMENGESETZTER ZUSTAND — gleichgueltig, wie
+// er heisst. Das ist kein Auslassen, sondern am Kontrollfluss begruendet, und die
+// Begruendung gilt jeder denkbaren Zusammensetzung, nicht einer bestimmten: Eine
+// solche verlangte als dritten Teil "hat dieses Ziel einen Adapter", und diese Datei
+// kennt ihn nicht (sie ist server-only und zieht weder TARGET_CARDS noch
+// dispatchForward). Und der Geheimnis-WERT existiert hier fuer ein Ziel OHNE Kennung
+// gar nicht: gefragt wird nur nach den Zielen, die den Filter unten passiert haben
+// (Abfrage-Oekonomie).
+// HIER STAND EINMAL DER NAME EINER ZUSAMMENSETZUNG; sie ist gestrichen
+// (docs/aktiver-stand.md, "3.12 DIE ZUSAMMENSETZUNG WIRD GESTRICHEN"). Die Regel ist
+// dadurch BREITER geworden, nicht schwaecher — sie galt einem Symbol und gilt jetzt
+// dem Gegenstand.
 import { hasPixelId, hasSecret } from "@/lib/tracking/target-readiness";
 
 /**

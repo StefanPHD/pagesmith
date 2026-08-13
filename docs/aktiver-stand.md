@@ -149,8 +149,8 @@ Lesehilfe benutzt, liest das Falsche — die Position eines Vermerks ist seit de
 Wegfall der Nachnummerierung eine Frage seiner Entstehung, nicht seines Rangs.
 **DIE AUTORITÄT IST DIE COMMIT-KETTE:** Entstanden sind sie in der Reihenfolge
 `0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080` -> `81b544f` -> `6ef7d2f` -> `70cc265`
--> `ca321c3` -> `724edd3` -> `6e1be7a`. Sie wächst mit jeder Scheibe, und ihr LETZTES
-GLIED ist der jüngste COMMITTETE Vermerk.
+-> `ca321c3` -> `724edd3` -> `6e1be7a` -> `c0bfd50`. Sie wächst mit jeder Scheibe, und ihr
+LETZTES GLIED ist der jüngste COMMITTETE Vermerk.
 **DIE LÜCKE GEHÖRT ZUR REGEL, sonst greift sie im wichtigsten Moment nicht:** Ein
 Vermerk, der in der Kette NICHT vorkommt, ist noch nicht committet — und damit per
 Konstruktion der jüngste. **Wer den heutigen Stand sucht, sieht ZUERST dort nach.**
@@ -1253,9 +1253,15 @@ Verhalten ändert sich. Was live zu prüfen ist, gehört zu D2 und steht dort.
 
 ### 3.11 DAS CONSENT-MEMO BEZIEHT SEINE BEDINGUNG AUS DEM GETEILTEN PRÄDIKAT — SCHEIBE D2, ERLEDIGT (2026-08-13)
 
-**Commit:** STEHT AUS. Nach der Regel am Kopf dieses Abschnitts ist dieser Vermerk damit
-die Lücke in der Kette und per Konstruktion der jüngste; die Nummer wird hier
-nachgetragen, sobald committet ist. Die Kette endet heute bei `6e1be7a` (D1).
+**Commit:** `c0bfd50` (GEMESSEN am Repo, 2026-08-13, `git log`). Hier stand bis dahin
+„STEHT AUS" und „die Kette endet heute bei `6e1be7a`"; beides war als Aussage über jenen
+Zeitpunkt richtig. **Damit steht in Abschnitt 3 KEINE Lücke mehr** — gezählt am 2026-08-13
+über alle elf Vermerke: jeder trägt seinen Hash (3.2 und 3.4 in eigener Schreibweise —
+„**Commits:**" bzw. im Fliesstext des Bau-Absatzes —, aber beide in der Kette).
+**EINE ABWEICHUNG VON DER COMMIT-KONVENTION GEHÖRT DAZU, wie schon bei 3.10:** `c0bfd50`
+trägt die Code-Änderung UND diesen Doku-Vermerk in EINEM `refactor(ui)`-Commit. CLAUDE.md
+verlangt getrennte `docs(claude)`-Commits; die Zusammenlegung war eine Owner-Anordnung
+nach ausdrücklichem Hinweis.
 
 **WAS GEBAUT WURDE — EINE DATEI, EINE ERSETZTE ZEILE** (GEMESSEN am Repo, 2026-08-13:
 `git diff --numstat` weist **18 eingefügte und EINE gelöschte** Zeile in
@@ -1374,24 +1380,54 @@ Geheimnis-Wert gar nicht erst geholt).
 
 ---
 
-**DER LIVE-TEST STEHT AUS UND IST PFLICHT.** Er ist der einzige Nachweis am
-AUSGELIEFERTEN Artefakt; der Byte-Nachweis oben misst den Erzeuger im Test, nicht die
-deployte Laufzeit. Ablauf und die beiden Pflicht-Stopps stehen im Bericht zu dieser
-Scheibe; ohne ihn bleibt D2 **nicht live bewiesen**, und dieser Vermerk sagt das
-ausdrücklich statt es offenzulassen.
+**DIE LIVE-KONTROLLE IST GEFAHREN UND BESTANDEN — GEMESSEN (Live, 2026-08-13, Lauf des
+Architekten gegen die deployte Produktion; berichtet, nicht von mir beobachtet).** Hier
+stand bis zum Lauf die Ankündigung („DER LIVE-TEST STEHT AUS UND IST PFLICHT … ohne ihn
+bleibt D2 nicht live bewiesen"); sie war als Aussage über jenen Zeitpunkt richtig.
+**WAS DAS ERGEBNIS TRÄGT, in vier Teilen:**
+
+- **BEIDE PFLICHT-STOPPS EINGEHALTEN, und ohne sie wäre der Vergleich wertlos gewesen:**
+  Der A/B-Betrieb wurde festgestellt und **beide Abrufe auf DIESELBE Variante
+  festgenagelt** (Abschnitt 4 (f) — sonst misst man einen Variantenunterschied und liest
+  ihn als Byte-Abweichung); **D2 wurde ISOLIERT deployt** (ein zweiter Bau im selben
+  Deploy machte jede Abweichung unzuordenbar); und die Seite wurde **im Editor NEU
+  VERÖFFENTLICHT** — der Schlüssel entsteht zur ERZEUGUNGSZEIT, ohne Republish misst der
+  Lauf die alte Seite.
+- **DER QUELLTEXT-VERGLEICH ÜBER DEN DEPLOY HINWEG: LEER.** **Das ist die Byte-Gleichheit
+  am AUSGELIEFERTEN ARTEFAKT** — der Testlauf oben hatte sie nur an der KOMPONENTE
+  gezeigt. Zwei verschiedene Gegenstände; der erste beweist den Erzeuger, dieser das, was
+  beim Kunden liegt.
+- **DER MITLÄUFER, und er trägt den Vergleich erst:** Ohne ihn wäre „leer" **auch dann
+  wahr, wenn die Seite gar nicht neu erzeugt worden wäre**. Die Conversion kam an;
+  Browser- und Server-Bein wurden über **DIESELBE EREIGNIS-KENNUNG** zusammengeführt —
+  nicht über die Uhrzeit, die zwei Auslösungen in derselben Minute nicht trennt.
+- **DIE BEOBACHTUNG, DIE NIEMAND GEPLANT HAT, und sie belegt eigenständig etwas:** Der
+  Draht trug **NUR den Schlüssel des EINEN Ziels mit gesetzter Kennung**, nicht die
+  Schlüssel aller eingerichteten Ziele. Das zweite Ziel hat **Zugangsdaten, aber keine
+  Kennung** — und steht deshalb nicht im Draht. **Die Ableitung folgt im BETRIEB der
+  Konfiguration**, an einem Projekt, das nicht dafür gebaut wurde. **GRENZE:** EIN
+  Projekt, EINE Konfiguration; die übrigen acht der neun Konfigurationen bleiben
+  Test-Achsen und sind durch diesen Lauf NICHT berührt.
+
+**DIE FOLGERUNG, ENG GEFASST: D2 hat den ausgelieferten Text nicht verändert.** **NICHT
+belegt** ist der Alt-Pfad — er ist im Betrieb nur mit einem Projekt GANZ OHNE Kennung
+erreichbar, und dann forwardet ohnehin nichts — und nichts über die übrigen
+Konfigurationen aus D1.
 
 ---
 
 **WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** irgendetwas über die deployte Laufzeit
-(der Live-Test steht aus) · dass `targetReadiness` benutzt wird (unverändert kein
-Konsument) · irgendetwas über die Oberfläche, die Adapter-Achse, den Ingest oder das
-Schema · dass ein ausgelieferter Schlüsselsatz beim Betreiber-Hook oder beim Leser
-ANKOMMT (gemessen ist der erzeugte Text, nicht sein Empfang) · dass die hinterlegten
-Zugangsdaten FUNKTIONIEREN · dass der Defekt aus Abschnitt 5 („'KONFIGURIERT' HEISST AN
-ZWEI ORTEN VERSCHIEDENES") in seiner strukturellen Hälfte behoben wäre — **die
-Oberflächen-Ableitung fragt weiterhin nur nach der Zeilen-Existenz, der Forward nach
-Kennung UND Zugangsdatum; geteilt sind die BEDINGUNGEN, nicht das URTEIL** · ob die zwei
-Zeilen über die Auslieferung je eine werden.
+JENSEITS des einen gefahrenen Falls — **hier stand „der Live-Test steht aus", und das ist
+seit dem Lauf überholt; überholt ist aber NUR die Ankündigung, nicht die Einschränkung:
+der Lauf hatte EIN Projekt und EINE Konfiguration** · dass `targetReadiness` benutzt wird
+(unverändert kein Konsument) · irgendetwas über die Oberfläche, die Adapter-Achse, den
+Ingest oder das Schema · dass ein ausgelieferter Schlüsselsatz beim Betreiber-Hook oder
+beim Leser ANKOMMT (gemessen ist der erzeugte Text, nicht sein Empfang) · dass die
+hinterlegten Zugangsdaten FUNKTIONIEREN · dass der Defekt aus Abschnitt 5
+(„'KONFIGURIERT' HEISST AN ZWEI ORTEN VERSCHIEDENES") in seiner strukturellen Hälfte
+behoben wäre — **die Oberflächen-Ableitung fragt weiterhin nur nach der Zeilen-Existenz,
+der Forward nach Kennung UND Zugangsdatum; geteilt sind die BEDINGUNGEN, nicht das
+URTEIL** · ob die zwei Zeilen über die Auslieferung je eine werden.
 
 ---
 
@@ -1825,6 +1861,46 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   von einem Feld, das es gibt und das für ein bestimmtes Ereignis nicht angeboten wird.
   Die „WARNUNG AN DER OBERFLÄCHE" betrifft FREI benannte Ereignisse — hier geht es um
   ein STANDARD-Ereignis.
+
+- **DIE ZUSAMMENSETZUNG `targetReadiness` HAT VIER SCHEIBEN OHNE KONSUMENTEN ÜBERSTANDEN —
+  DER TRIGGER AUS ABSCHNITT 3.8 IST FÄLLIG** (`targetReadiness` in
+  `src/lib/tracking/target-readiness.ts`). **DIE FRAGE IST OFFEN UND WIRD HIER NICHT
+  BEANTWORTET:** Zu entscheiden ist, ob sie verfrüht war. **Das ist eine
+  Owner-Entscheidung; dieser Punkt trägt nur die BELEGE, die sie braucht, und schlägt
+  ausdrücklich nichts vor.**
+  **WORTLAUT DES TRIGGERS (Abschnitt 3.8):** „Bleibt die Zusammensetzung `targetReadiness`
+  auch nach Scheibe D **ohne Konsumenten**, ist zu entscheiden, ob sie verfrüht war. Nach C
+  wird das NICHT geprüft — C braucht sie nicht, und eine Prüfung mitten in der Reihe
+  beantwortete die Frage zu früh." **Die Reihe ist zu Ende, die Bedingung ist eingetreten.**
+  **DIE BELEGE — GEMESSEN am Repo (2026-08-13, formale Suche über `src/`):**
+  - **DIE BEIDEN PRÄDIKATE HABEN VIER PRODUKTIV-AUFRUFSTELLEN.** `hasPixelId` DREI: das
+    Consent-Memo (`consentTargets` in `src/components/CodeImporter.tsx`, seit D2), die
+    Auslieferungs-Zeile der Karte (`TargetCard` in `src/components/TargetCard.tsx`, seit
+    B2) und der Kennungs-Filter im Auflösungs-Pfad (`getCapiConfigByTrackingKey` in
+    `src/lib/capi/token.ts`, seit B1). `hasSecret` EINE: die Geheimnis-Schleife in
+    derselben Funktion.
+  - **DIE ZUSAMMENSETZUNG HAT NULL.** Kein Produktiv-Aufruf, kein Import ausserhalb ihrer
+    eigenen Datei; auch ihre drei exportierten Typen (`ReadinessPart`, `TargetReadiness`,
+    `ReadinessInput`) kommen nirgends sonst vor. Die drei Dateien, die aus
+    `target-readiness.ts` importieren, holen sich **ausschliesslich die Prädikate**.
+  - **WAS IHR WEGFALL BERÜHRTE:** die Funktion selbst, ihre drei Typen und **SIEBEN der
+    neun Tests** ihrer Testdatei (T1, T2, T3, T4, T7, T8, T9 laufen über den
+    `readiness`-Helfer). **NICHT berührt** wären T5 und T6 — sie prüfen die Prädikate
+    direkt — und keine einzige Produktiv-Zeile. **Der Wegfall wäre eine reine
+    Streichung**, kein Umbau.
+  - **WAS IHR BLEIBEN BERÜHRT:** nichts am Verhalten, und das ist genau der Punkt. Sie
+    kostet eine Datei, drei Typen und sieben Tests, die eine Zusammensetzung
+    charakterisieren, die niemand aufruft. **Dagegen steht, was in 3.5 und 3.6 am
+    KONTROLLFLUSS belegt ist** — und das ist kein Vorschlag, sondern die Fundstelle: Die
+    server-only-Seite kennt den Adapter nicht, und für ein Ziel OHNE Kennung wird der
+    Geheimnis-Wert dort gar nicht erst geholt; ein Konsument müsste also erst einen
+    Zustand herstellen, den der heutige Pfad aus Abfrage-Ökonomie vermeidet.
+  **WARUM DIESER PUNKT IM VORRAT STEHT UND NICHT IN 3.11 ALLEIN:** 3.11 nennt die Frage
+  auch, aber als Teil eines SCHEIBEN-VERMERKS — und Scheiben-Vermerke sind
+  abgeschlossene Historie, die am Phasenende archiviert wird. **Der Vorrat ist die Liste,
+  die die nächste Sitzung als OFFENES liest.** Abschnitt 7 schied aus: er trägt
+  ENTSCHIEDENE Vorhaben mit einem Ort, und hier ist nichts entschieden. **Die beiden
+  Stellen widersprechen sich nicht — diese hier ist die getragene.**
 
 Die vier fälligen Punkte am ersten Adapter und das Gegenstück bei den
 Deckelwerten stehen ausformuliert in
@@ -2513,3 +2589,52 @@ am Repo, 2026-08-12):
   wer die Antwort aus den Ereignissen ableiten wollte, leitete sie aus dem Nichts ab.
   Verwandt und getrennt zu halten: der verworfene Fan-Out-Rückgabewert und die fehlende
   Ziel-Dimension (Abschnitt 5 bzw. BEFUND 4 in 7.1).
+
+---
+
+**DIE VIER SCHEIBEN SIND GEBAUT — 7.5 IST ABGESCHLOSSEN (2026-08-13).** Je Scheibe der
+Vermerk mit **Nummer UND Titel**, damit der Zeiger eine Nachnummerierung übersteht:
+
+- **A** → **3.5, „DER BENANNTE ZUSTAND ENTSTEHT — SCHEIBE A DER VEREINHEITLICHUNG"**
+  (`81b544f`).
+- **B** → in ZWEI Scheiben zerlegt, wie es der Bau ergab: **3.6, „DIE PAARUNG BENUTZT DIE
+  GETEILTEN PRÄDIKATE — SCHEIBE B1 DER VEREINHEITLICHUNG"** (`6ef7d2f`) und **3.7, „DIE
+  KARTE SAGT, DASS EIN ZIEL NICHT BELIEFERT WIRD — SCHEIBE B2"** (`70cc265`).
+- **C** → ebenfalls zweigeteilt: **3.8, „DER WÄCHTER ÜBER DIE ADAPTER-ACHSE — SCHEIBE C1"**
+  (`ca321c3`) und **3.9, „DIE ADAPTER-TATSACHE BEKOMMT EINE QUELLE — SCHEIBE C2"**
+  (`724edd3`).
+- **D** → ebenso: **3.10, „DER WÄCHTER ÜBER DAS CONSENT-MEMO — SCHEIBE D1"** (`6e1be7a`)
+  und **3.11, „DAS CONSENT-MEMO BEZIEHT SEINE BEDINGUNG AUS DEM GETEILTEN PRÄDIKAT —
+  SCHEIBE D2"** (`c0bfd50`).
+
+**DASS AUS VIER SCHEIBEN SIEBEN VERMERKE WURDEN, IST KEINE ABWEICHUNG VOM PLAN, SONDERN
+SEINE ANWENDUNG:** Dieselbe Begründung, die oben „VIER UND NICHT EINE" trägt, hat B, C
+und D im Bau je noch einmal geteilt — Wächter zuerst, Übernahme danach, damit hinterher
+sagbar bleibt, welche Achse gedeckt ist.
+
+**INVARIANTE (6) IST ERFÜLLT** (GEMESSEN am Repo, 2026-08-13, formale Suche über `src/`):
+Alle Konsumenten beziehen ihre Bedingungen aus DENSELBEN Funktionen. `hasPixelId` hat
+DREI Aufrufstellen — die Auslieferungs-Zeile der Karte (`TargetCard` in
+`src/components/TargetCard.tsx`), der Kennungs-Filter im Auflösungs-Pfad
+(`getCapiConfigByTrackingKey` in `src/lib/capi/token.ts`) und das Consent-Memo
+(`consentTargets` in `src/components/CodeImporter.tsx`); `hasSecret` EINE, die
+Geheimnis-Schleife in derselben Auflösungs-Funktion; die Adapter-Tatsache kommt aus der
+einen Liste `TARGETS_WITH_ADAPTER` (`src/lib/tracking/target-adapters.ts`).
+**`listConfiguredTargets` IST AUSDRÜCKLICH KEINE DIESER STELLEN** — sie ruft `hasPixelId`
+NICHT und sieht die Kennung gar nicht an; sie liefert der Karte nur den
+Geheimnis-Zustand, und die Karte legt die Kennung daneben. Wer dort eine Aufrufstelle
+sucht, sucht am falschen Ort — und genau darauf beruht die Hälfte, die unten als offen
+vermerkt ist.
+
+**WAS DABEI NICHT ÜBERDEHNT WERDEN DARF, und dieser Satz MUSS mit:** Behoben ist der
+BESTANDS-DEFEKT (B2 — ein Ziel mit Zugangsdaten und ohne Kennung sagt jetzt selbst, dass
+an es nichts gesendet wird), und aufgelöst sind die ZWEI DOPPELUNGEN (C2 für die
+Adapter-Tatsache, D2 für den Leere-Vergleich des Memos). **DIE VOLLSTÄNDIGKEITS-ACHSE IST
+UNVERÄNDERT NICHT GEBAUT, und ihr TRIGGER oben steht unverändert.** „7.5 abgeschlossen"
+heisst **NICHT**, dass eine Kennung JE EREIGNISTYP damit möglich wäre — für die gilt
+weiterhin, was drei Absätze höher steht, samt dem Nenner aus beiden Varianten-Mappings.
+
+**EINE HÄLFTE DES URSPRÜNGLICHEN BEFUNDES BLEIBT ZUDEM OFFEN, und sie ist im Vorrat
+verzeichnet:** Geteilt sind die BEDINGUNGEN, nicht das URTEIL — `listConfiguredTargets`
+fragt weiterhin nur nach der Existenz einer Geheimnis-Zeile, der Forward nach Kennung UND
+Zugangsdatum. S. Abschnitt 5, „'KONFIGURIERT' HEISST AN ZWEI ORTEN VERSCHIEDENES".

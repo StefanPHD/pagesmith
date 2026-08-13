@@ -148,8 +148,9 @@ getötet, und die Reparatur kostete zwei Runden.
 Lesehilfe benutzt, liest das Falsche — die Position eines Vermerks ist seit dem
 Wegfall der Nachnummerierung eine Frage seiner Entstehung, nicht seines Rangs.
 **DIE AUTORITÄT IST DIE COMMIT-KETTE:** Entstanden sind sie in der Reihenfolge
-`0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080` -> `81b544f` -> `6ef7d2f` -> `70cc265`.
-Sie wächst mit jeder Scheibe, und ihr LETZTES GLIED ist der jüngste COMMITTETE Vermerk.
+`0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080` -> `81b544f` -> `6ef7d2f` -> `70cc265`
+-> `ca321c3` -> `724edd3`. Sie wächst mit jeder Scheibe, und ihr LETZTES GLIED ist der
+jüngste COMMITTETE Vermerk.
 **DIE LÜCKE GEHÖRT ZUR REGEL, sonst greift sie im wichtigsten Moment nicht:** Ein
 Vermerk, der in der Kette NICHT vorkommt, ist noch nicht committet — und damit per
 Konstruktion der jüngste. **Wer den heutigen Stand sucht, sieht ZUERST dort nach.**
@@ -818,9 +819,14 @@ Verdrängung sind Live-Test-Achsen).
 
 ### 3.8 DER WÄCHTER ÜBER DIE ADAPTER-ACHSE — SCHEIBE C1, ERLEDIGT (2026-08-13)
 
-**Commit:** steht bei Abfassung dieses Vermerks noch aus (Stufe 2 ist abgeschlossen,
-die Freigabe nicht erteilt). **Wer ihn nachträgt, trägt die Nummer hier ein** — und
-rückt diesen Vermerk in die Kette am Abschnittskopf ein, in der er heute die Lücke ist.
+**Commit:** `ca321c3` (GEMESSEN am Repo, 2026-08-13, `git log`). **NACHGETRAGEN im
+selben Zug wie 3.9, und der Grund gehört dazu:** Diese Zeile stand noch auf „steht
+noch aus", obwohl der Commit längst existierte. Nach der Regel am Abschnittskopf heisst
+eine fehlende Nummer „noch nicht committet — und damit per Konstruktion der jüngste";
+mit einem committeten Vermerk darunter zeigte die Lücke auf die falsche Scheibe und
+behauptete zugleich etwas Unwahres über diese hier. **Der Nachtrag hat keinen eigenen
+Anlass gehabt** — C1 hat keinen Live-Test, mit dem er sich hätte bündeln können; genau
+deshalb blieb er eine Runde liegen.
 
 **WAS GEBAUT WURDE — AUSSCHLIESSLICH TESTS, KEIN PRODUKTIVCODE** (GEMESSEN am Repo,
 2026-08-13: der Diff enthält genau zwei Dateien, beide mit `.test.` im Namen): der
@@ -948,9 +954,8 @@ einen Adapter tragen.
 
 ### 3.9 DIE ADAPTER-TATSACHE BEKOMMT EINE QUELLE — SCHEIBE C2, ERLEDIGT (2026-08-13)
 
-**Commit:** steht bei Abfassung dieses Vermerks noch aus (Stufe 2 ist abgeschlossen,
-die Freigabe nicht erteilt). **Wer ihn nachträgt, trägt die Nummer hier ein** — und
-rückt diesen Vermerk in die Kette am Abschnittskopf ein, in der er heute die Lücke ist.
+**Commit:** `724edd3` (GEMESSEN am Repo, 2026-08-13, `git log`). Damit steht in
+Abschnitt 3 **keine Lücke mehr** — alle neun Vermerke tragen ihre Nummer.
 
 **DIE QUELLE EXISTIERT, UND BEIDE TRÄGER HABEN AUFGEHÖRT ZU BEHAUPTEN.** Die Tatsache
 „bringt dieser Build für dieses Ziel einen Empfänger mit" steht seit dieser Scheibe
@@ -1059,11 +1064,21 @@ Zählung nicht berührt.
   Treffer ausserhalb. Keine Abweichung.**
 - **Gegenprobe unverändert → 1061/1061 grün.**
 
-**DER LIVE-KONTROLLFALL STEHT AUS UND IST PFLICHT** — C2 ist der erste Eingriff dieser
-Runde in den Ingest-Pfad. Ein Fall mit vorher festgelegtem Soll-Ausgang (ein vollständig
-eingerichtetes Ziel forwardet unverändert weiter, zugeordnet über die Ereignis-Kennung)
-plus ein zweiter, kostenloser Beobachtungspunkt: **an keiner der drei Karten darf der
-Folgenlosigkeits-Hinweis erscheinen.**
+**DER LIVE-KONTROLLFALL IST GEFAHREN UND BESTANDEN — GEMESSEN (Live, 2026-08-13, Lauf
+des Architekten; berichtet, nicht von mir beobachtet).** Hier stand bis zum Lauf die
+Ankündigung; sie war als Aussage über jenen Zeitpunkt richtig. **WAS DAS ERGEBNIS
+TRÄGT:**
+- **Auslösung auf der PRODUKTIONS-URL**, der Ingest antwortete **204**.
+- **Das Server-Ereignis kam beim Anbieter an UND WURDE MIT DEM BROWSER-BEIN
+  ZUSAMMENGEFÜHRT** — der Anbieter führt beide als **dedupliziert**. **DER SATZ, DER
+  MITMUSS:** Ohne ein passendes Server-Ereignis gäbe es nichts zu deduplizieren; **die
+  Markierung ist damit der Beleg, dass die Weiterleitung angekommen ist**, und nicht
+  bloss eine Anzeige über den Browser-Pixel.
+- **Der zweite Beobachtungspunkt:** An **keiner** der drei Karten erschien der
+  Folgenlosigkeits-Hinweis — die Ableitung aus der Liste verhält sich neutral.
+
+**DIE FOLGERUNG, ENG GEFASST: C2 hat nichts verändert.** **NICHT belegt** ist
+irgendetwas über ein Ziel OHNE Adapter (den Zustand gibt es nicht) oder über Scheibe D.
 
 **WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** dass Invariante (6) erfüllt wäre (erst
 nach D) · irgendetwas über das Consent-Memo · dass `targetReadiness` benutzt wird ·
@@ -1146,6 +1161,40 @@ Kontrollfluss, nicht eine Darstellung — und keiner der Tests, die dort etwas
 behaupten, trüge diesen Zusammenhang im Namen. Der Punkt reiht sich in die fünf im
 Kopf von `src/lib/capi/pinterest-forward.ts` benannten Stellen und in (c) ein; es
 sind jetzt sieben.
+
+**(f) VOR JEDER LIVE-KONTROLLE WIRD DER A/B-BETRIEB FESTGESTELLT — VERSCHÄRFTE
+VORBEDINGUNG (2026-08-13).**
+
+**DIE REGEL:** Vor jeder Live-Kontrolle ist festzustellen, **ob der A/B-Betrieb aktiv
+ist**. Ist er es, wird **entweder abgeschaltet oder die AUSGELIEFERTE Variante
+bestimmt** — und zwar **BEVOR** irgendein Ergebnis beurteilt wird.
+**DER GRUND:** Die beiden Varianten tragen **getrennte Mapping-Sätze** und können
+verschiedene Ereignisnamen und Beträge führen. Wer das nicht prüft, misst **eine
+unbekannte Konfiguration** — und jedes Ergebnis, das dabei herauskommt, ist von einem
+echten Befund nicht zu unterscheiden.
+
+**DER ANLASS — GEMESSEN (Live, 2026-08-13):** Eine Änderung wurde an der EINEN Variante
+vorgenommen, ausgeliefert wurde die ANDERE. Daraus entstand der Verdacht, der Editor
+persistiere nicht bzw. der Erzeuger lasse Werte fallen — **über mehrere Hops hinweg,
+mit einer Ursachen-Zuweisung, die keine Messung trug.** Aufgelöst hat es **eine einzige
+Datenbank-Abfrage über BEIDE Mapping-Spalten**: Beide Sätze waren korrekt, verschieden,
+und der Schalter stand an.
+
+**DIE LEHRE, ausgeschrieben, weil sie über diesen Fall hinausgeht:** Der Verdacht nannte
+einen **Fehlerort**, bevor eine **Messung** ihn eingegrenzt hatte. Die Kette hatte FÜNF
+Hops; entlastet wurden VIER davon durch **ZWEI** Beobachtungen — den Quelltext der
+ausgelieferten Seite und die Datenbank-Zeile. **Wer die Kette an einem Ende halbiert,
+statt sie zu begehen, ist in zwei Schritten fertig.**
+
+**KEIN FRÜHERES ERGEBNIS DIESER PHASE KIPPT DADURCH, und das ist GEPRÜFT, nicht
+beruhigend gemeint:** Die bisherigen Live-Kontrollen hingen an der WEITERLEITUNG, und
+die läuft in beiden Varianten. Der Variantenstand hätte an ihrem Ausgang nichts geändert
+— er hätte nur, wie hier geschehen, eine falsche Fährte legen können.
+
+**EINE BEOBACHTUNG AUS DEMSELBEN LAUF IST ZURÜCKGEZOGEN UND STEHT NIRGENDS ALS BEFUND:**
+„ein Ereignis kam nur vom Browser an" — in dem, was tatsächlich vorlag, kam jenes
+Ereignis nicht vor. **Auf ihr baut nichts auf**, und sie wird hier ausschliesslich
+genannt, damit niemand sie später aus dem Gedächtnis wieder aufnimmt.
 
 ---
 
@@ -1441,6 +1490,24 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   Publish-Zustand (`settings.hosting` als Spiegel der `domains`-Zeile) — dort ist die
   Wahrheitsquelle in CLAUDE.md ausdrücklich benannt.
 
+- **EIN STANDARD-EREIGNIS OHNE BETRAGS-FELD — OFFENE PRODUKTFRAGE, KEIN BEFUND ÜBER
+  EINEN FEHLER** (`META_VALUE_EVENTS` in `src/lib/tracking/meta.ts`, gelesen über
+  `showValue` in `src/components/ActionPanel.tsx`): **GEMESSEN (Live, 2026-08-13):** Bei
+  einem der Standard-Ereignisse lässt die Oberfläche **keinen Betrag eingeben** — das
+  Feld erscheint nicht. **UNGEMESSEN ist zweierlei, und beides entscheidet den Rang:**
+  ob das eine BEWUSSTE fachliche Einschränkung ist oder eine beiläufige Folge der
+  Feld-Logik, **und** ob der Anbieter für dieses Ereignis überhaupt einen Wert annimmt.
+  **Was still kaputtgeht, falls es beiläufig ist:** Der Betreiber kann für dieses
+  Ereignis keinen Wert hinterlegen, bekommt dafür keine Begründung zu sehen, und in der
+  Auswertung beim Anbieter fehlt der Umsatz — ohne dass irgendwo ein Fehler entsteht.
+  **KEINE REPARATUR UND KEIN VORSCHLAG HIER:** Solange die zweite Provenienz fehlt, wäre
+  jede Änderung eine Wette darauf, welcher der beiden Fälle vorliegt.
+  **ABGRENZUNG zu den zwei Nachbarn, sonst liest es sich als dasselbe:** „UNS FEHLT DIE
+  INHALTS-KENNUNG" handelt von einem Feld, das es im Modell GAR NICHT gibt; dieser Punkt
+  von einem Feld, das es gibt und das für ein bestimmtes Ereignis nicht angeboten wird.
+  Die „WARNUNG AN DER OBERFLÄCHE" betrifft FREI benannte Ereignisse — hier geht es um
+  ein STANDARD-Ereignis.
+
 Die vier fälligen Punkte am ersten Adapter und das Gegenstück bei den
 Deckelwerten stehen ausformuliert in
 `docs/claude-history/phase-11-multi-tracking.md`, "## Der Arbeitsvorrat — vier
@@ -1726,6 +1793,27 @@ einzige Kandidat dieser Datei, der ZWEI verschiedene Zielorte hat:**
     liest; hier ist er ein Mechanismus. **Und er ist besonders verlustgefährdet:** Eine
     unterbliebene Arbeit hinterlässt keine Spur im Code — nur dieser Text sagt, dass ein
     naheliegender Schema-Umbau geprüft und bewusst NICHT gemacht wurde.
+
+**AUS DEM C2-LIVE-LAUF (2026-08-13), einer:**
+
+19. **EIN VERDACHT, DER EINEN FEHLERORT NENNT, BEVOR EINE MESSUNG IHN EINGEGRENZT HAT,
+    KOSTET DIE HOPS, DIE ER ÜBERSPRINGT.** Bei einer Kette aus mehreren Übergängen wird
+    nicht am vermuteten Ende begonnen, sondern **halbiert**: zwei Beobachtungen an
+    Stellen, die je die halbe Kette entlasten, schlagen jede Begehung.
+    *Beleg:* Eine Änderung an der einen A/B-Variante, ausgeliefert war die andere. Die
+    Kette hatte FÜNF Hops; VIER waren durch ZWEI Beobachtungen entlastet — den
+    Quelltext der ausgelieferten Seite und die Datenbank-Zeile über BEIDE
+    Mapping-Spalten. Der Verdacht hatte zuvor Editor und Erzeuger benannt, ohne Messung.
+    *Abdeckung:* **KEINE bestehende Regel sagt das.** Zwei stehen daneben, beide auf
+    anderer Achse: „EINE BILLIGE MESSUNG WIRD NICHT DURCH EINE HERLEITUNG ERSETZT"
+    verlangt zu messen, sagt aber nichts über die REIHENFOLGE der Messpunkte; die
+    Live-Test-Lektion „EIN GROBES INSTRUMENT REISST DIE VORAUSSETZUNG MIT" handelt vom
+    Instrument, nicht von der Suchstrategie.
+    *Herkunft und Volltext:* Abschnitt 4, **„(f) VOR JEDER LIVE-KONTROLLE WIRD DER
+    A/B-BETRIEB FESTGESTELLT"** (Nummer UND Titel, damit der Zeiger eine
+    Umnummerierung übersteht). **DIE VORBEDINGUNG SELBST GEHÖRT NICHT HIERHER, SONDERN
+    DORTHIN:** Sie muss HEUTE wirken, nicht erst am Phasenende. Dieser Kandidat trägt
+    allein die verallgemeinerte Lehre.
 
 ---
 

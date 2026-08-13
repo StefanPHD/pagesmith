@@ -148,8 +148,8 @@ getötet, und die Reparatur kostete zwei Runden.
 Lesehilfe benutzt, liest das Falsche — die Position eines Vermerks ist seit dem
 Wegfall der Nachnummerierung eine Frage seiner Entstehung, nicht seines Rangs.
 **DIE AUTORITÄT IST DIE COMMIT-KETTE:** Entstanden sind sie in der Reihenfolge
-`0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080` -> `81b544f` -> `6ef7d2f`. Sie wächst
-mit jeder Scheibe, und ihr LETZTES GLIED ist der jüngste COMMITTETE Vermerk.
+`0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080` -> `81b544f` -> `6ef7d2f` -> `70cc265`.
+Sie wächst mit jeder Scheibe, und ihr LETZTES GLIED ist der jüngste COMMITTETE Vermerk.
 **DIE LÜCKE GEHÖRT ZUR REGEL, sonst greift sie im wichtigsten Moment nicht:** Ein
 Vermerk, der in der Kette NICHT vorkommt, ist noch nicht committet — und damit per
 Konstruktion der jüngste. **Wer den heutigen Stand sucht, sieht ZUERST dort nach.**
@@ -665,9 +665,8 @@ FUNKTIONIEREN.
 
 ### 3.7 DIE KARTE SAGT, DASS EIN ZIEL NICHT BELIEFERT WIRD — SCHEIBE B2, ERLEDIGT (2026-08-13)
 
-**Commit:** steht bei Abfassung dieses Vermerks noch aus (Stufe 2 ist abgeschlossen,
-die Freigabe nicht erteilt). **Wer ihn nachträgt, trägt die Nummer hier ein** — und
-rückt diesen Vermerk in die Kette am Abschnittskopf ein, in der er heute die Lücke ist.
+**Commit:** `70cc265` (GEMESSEN am Repo, 2026-08-13, `git log`). Damit steht in
+Abschnitt 3 **keine Lücke mehr** — alle sieben Vermerke tragen ihre Nummer.
 
 **DER DEFEKT IST FÜR DIE ANZEIGE BEHOBEN, FÜR DIE STRUKTUR NICHT.** Ein Ziel mit
 hinterlegten Zugangsdaten, aber ohne Kennung sagt jetzt selbst, dass an es nichts
@@ -738,18 +737,78 @@ eigener Punkt im Vorrat verzeichnet.
 (verbotene Wörter, Grün-Verbot, Abwesenheit des Adapter-Hinweises) — die neue Zeile
 läuft in deren Fixturen mit und kollidiert mit keinem.
 
-**DER LIVE-TEST STEHT AUS UND IST PFLICHT.** Er ist der Grund, warum der Vorrats-Punkt
-„'KONFIGURIERT' HEISST AN ZWEI ORTEN VERSCHIEDENES" **unberührt stehen bleibt**: Er
-wird nicht durch den Bau ersetzt, sondern durch den bestandenen Lauf. Zu prüfen sind
-der Kontroll-Fall (vollständiges Ziel forwardet weiter) und **die beiden
-ungespeicherten Richtungen** — getippt-und-nicht-gespeichert (die Zeile MUSS stehen
-bleiben) und gelöscht-und-nicht-gespeichert (es darf KEINE erscheinen).
+**DER LIVE-TEST IST GEFAHREN UND BESTANDEN — GEMESSEN (Live, 2026-08-13, Lauf des
+Architekten; berichtet, nicht von mir beobachtet).** Hier stand bis zum Lauf die
+Ankündigung; sie war als Aussage über jenen Zeitpunkt richtig. **WAS DAS ERGEBNIS
+TRÄGT, in fünf Teilen:**
+
+- **DER AUSGANGSZUSTAND ÜBER DREI ZIELE, in einem Blick:** das vollständig
+  eingerichtete Ziel **ohne** Zeile · das Ziel mit hinterlegten Zugangsdaten und ohne
+  Kennung **mit** Zeile · das leere Ziel **ohne** Zeile. Erst die drei nebeneinander
+  zeigen, dass die Zeile an BEIDEN Hälften der Bedingung hängt und nicht bloss an
+  einer — ein Ziel allein hätte jede der drei Fehlbedingungen durchgelassen.
+- **DIE BEIDEN UNGESPEICHERTEN RICHTUNGEN, EINZELN GEPRÜFT — der eigentliche Prüfling
+  dieser Scheibe:** Eine getippte, NICHT gespeicherte Kennung ändert das Urteil
+  **nicht**, die Zeile blieb stehen. Eine gelöschte, NICHT gespeicherte Kennung löst
+  **keinen** Alarm aus, es erschien keine Zeile. **DIE NAIVE FASSUNG WÄRE HIER
+  GESCHEITERT** — sie hätte im ersten Fall eine Entwarnung gegeben, während das Ziel
+  weiterhin nichts empfängt, und im zweiten einen Ausfall behauptet, den es nicht gibt.
+  Das ist der Grund, warum das Urteil den gespeicherten Stand liest, jetzt gemessen
+  statt begründet.
+- **DIE NACHFÜHRUNG NACH DEM SPEICHERN, in beide Richtungen und OHNE Projektwechsel:**
+  Speichern der getippten Kennung → die Zeile verschwindet; Speichern der Löschung →
+  die Zeile ist zurück. Das bestätigt live, was am Code gemessen war (der gespeicherte
+  Stand wird im Erfolgszweig des Speicherns nachgeführt).
+- **K3 LIVE:** Zugangsdaten entfernt → der Statustext springt auf „nicht konfiguriert",
+  **und die Zeile verschwindet**. Ohne diesen Schritt bliebe offen, ob die Zeile an den
+  Zugangsdaten hängt oder nur an der fehlenden Kennung.
+- **DER KONTROLL-FALL, im selben Lauf und mit vorher festgelegtem Soll-Ausgang:** Das
+  vollständig eingerichtete Ziel forwardet unverändert weiter, zugeordnet über die
+  **EREIGNIS-KENNUNG**. **OHNE IHN WÄRE „KEINE ZEILE BEI DIESEM ZIEL" AUS ZWEI GRÜNDEN
+  ERKLÄRBAR** — weil die Bedingung richtig verneint, oder weil die Zeile überhaupt nie
+  erscheint. Erst der Mitläufer trennt das.
+
+**DIE FOLGERUNG, ENG GEFASST:** Die Anzeige stimmt jetzt mit der Lieferfähigkeit
+überein. **NICHT belegt** ist irgendetwas über die STRUKTUR, über Scheibe C oder über
+Scheibe D.
+
+**DER GEMESSENE TEXT IST ZUGLEICH DER BELEG FÜR DIE WORTLAUT-WAHL** (GEMESSEN, Live,
+2026-08-13): Auf der Karte des zweiten Ziels erschien die Zeile mit dessen
+**Anzeigenkonto-Kennung** — nicht mit einer Pixel-ID. **Damit ruht die Entscheidung
+gegen ein fest verdrahtetes Wort nicht mehr auf einer Überlegung, sondern auf einer
+Beobachtung:** Ein festes „Pixel-ID" wäre auf genau dieser Karte sichtbar falsch
+gewesen, und zwar für jeden Betreiber, der sie öffnet.
+
+**ZWEI ZEILEN, ZWEI NAMEN — festgehalten, weil die Bezeichnung im Live-Bericht bereits
+EINMAL VERRUTSCHT IST.** Dort hiess die neue Zeile „Adapter-Hinweiszeile"; das ist der
+Name der anderen. **Die Sache war korrekt beobachtet** — jene blieb stumm —, nur das
+Wort war falsch. Die beiden sind:
+- **DER FOLGENLOSIGKEITS-HINWEIS** („Auslieferung folgt — dieses Ziel sendet noch
+  nicht."), gerendert unter `!config.hasAdapter` und gespeist aus dem Feld `hasAdapter`
+  in `TARGET_CARDS` (`src/components/TargetCard.tsx`). Er beschreibt eine **Eigenschaft
+  DIESES BUILDS** — gibt es für dieses Ziel überhaupt einen Empfänger? — und ist für
+  alle Projekte gleich. **Heute unerreicht:** kein Ziel trägt `hasAdapter: false`.
+  Gegenstand von Scheibe C.
+- **DIE ZEILE ÜBER DIE AUSLIEFERUNG** (`noDeliveryText`, gerendert unter
+  `configured === true && !hasPixelId(savedPixelId)`, dieselbe Datei). Sie beschreibt
+  eine **Eigenschaft DIESES PROJEKTS** — fehlt hier die Kennung? — und ist je Projekt
+  verschieden. Sie ist seit dieser Scheibe erreichbar und live gesehen.
+
+**DER SATZ, DER MITMUSS:** Läuft dieselbe Bezeichnung für beide, liest jemand später
+einen Vollzug für Scheibe C, den es nicht gibt — der Folgenlosigkeits-Hinweis ist durch
+diesen Live-Test in KEINER Weise berührt worden, er kann es gar nicht sein.
 
 **WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** dass die Anzeige die DATENBANK
 spiegelt (sie spiegelt den zuletzt geladenen bzw. gespeicherten Stand) · irgendetwas
 über die Adapter-Achse — der Folgenlosigkeits-Hinweis bleibt sein eigener, unerreichter
-Zweig, und die Karte kann nach B2 **zwei** Zeilen über die Auslieferung tragen, die
-erst C zu einer zusammenführt · irgendetwas über das Consent-Memo (D) · dass
+Zweig, und die Karte kann nach B2 **zwei** Zeilen über die Auslieferung tragen, deren
+zweite Gegenstand von C ist. **HIER STAND "die erst C zu einer zusammenführt", und das
+war ein Vorgriff:** Entschieden ist für C ausschliesslich, dass die ADAPTER-ACHSE
+übergeht (Abschnitt 7.5). Ob daraus EINE Zeile wird, ist eine Produktentscheidung und
+NICHT getroffen — die Karte hat ihre zwei Zeilen ausdrücklich getrennt, weil sie
+verschiedene Sachen sagen, und diese Trennung trägt seit diesem Vermerk Namen. **Wer C
+zuschneidet, darf den Halbsatz nicht als Auftrag lesen.** · irgendetwas über das
+Consent-Memo (D) · dass
 `targetReadiness` benutzt wird — benutzt ist `hasPixelId`, die Zusammensetzung hat
 weiterhin keinen Konsumenten · dass die hinterlegten Zugangsdaten FUNKTIONIEREN · wie
 die Zeile AUSSIEHT (die Testumgebung wertet kein CSS aus; Abstand, Umbruch und
@@ -940,13 +999,25 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   **DASSELBE MUSTER WIE DIE "VIERTE TRIMM-KOPIE" OBEN, ABER EIN ANDERER GEGENSTAND:**
   Dort geht es um `asString`, hier um die Normalisierung davor. Jener Punkt verzeichnet
   diese beiden NICHT.
-- **"KONFIGURIERT" HEISST AN ZWEI ORTEN VERSCHIEDENES** (`listConfiguredTargets` in
+- **"KONFIGURIERT" HEISST AN ZWEI ORTEN VERSCHIEDENES — HALB VOLLZOGEN (Scheibe B2,
+  live bestanden 2026-08-13, s. Abschnitt 3.7).** Der Punkt wird **nicht gestrichen,
+  sondern durch den Vollzug ersetzt**: Eine blosse Streichung liesse offen, ob er
+  erledigt oder vergessen wurde — und sie verlöre die Hälfte, die noch offen ist.
+  **BEHOBEN IST DIE SICHTBARE HÄLFTE:** Ein Ziel mit hinterlegten Zugangsdaten und ohne
+  Kennung sagt jetzt selbst, dass an es nichts gesendet wird; die Anzeige stimmt mit der
+  Lieferfähigkeit überein. **NICHT BEHOBEN IST DIE STRUKTURELLE:** Die Frage wird
+  weiterhin an ZWEI ORTEN beantwortet — geteilt ist die BEDINGUNG (`hasPixelId`), nicht
+  das URTEIL. **Invariante (6) aus Abschnitt 7.5 ist erst nach C und D erfüllt.**
+  **WER HIER NUR "ERLEDIGT" LIEST, HÄLT DIE STRUKTUR FÜR AUFGERÄUMT** — sie ist es
+  nicht, und genau deshalb steht der Punkt weiter hier statt in einem Abschluss.
+  **DER URSPRÜNGLICHE BEFUND, unverändert, weil er die Herleitung trägt**
+  (`listConfiguredTargets` in
   `src/app/projects/actions.ts` gegen die Paarung in `getCapiConfigByTrackingKey`,
   `src/lib/capi/token.ts`): GEMESSEN am Repo (2026-08-12) — die Oberfläche leitet
   "konfiguriert" ALLEIN aus der Anwesenheit einer Zeile in der Geheimnis-Tabelle ab; der
   Forward nimmt nur auf, wer Zugangsdaten UND eine gesetzte Kennung trägt. **Was still
-  kaputtgeht:** Ein Ziel mit hinterlegten Zugangsdaten, aber ohne Kennung steht in der
-  Karte als "Zugangsdaten hinterlegt" und wird nie beliefert — ohne Meldung, ohne
+  kaputtging:** Ein Ziel mit hinterlegten Zugangsdaten, aber ohne Kennung stand in der
+  Karte als "Zugangsdaten hinterlegt" und wurde nie beliefert — ohne Meldung, ohne
   Logzeile, auf keinem Kanal sichtbar.
   **ABGRENZUNG, ohne die der Punkt als Widerspruch gelesen wird:** Der Kopf von
   `listConfiguredTargets` nennt als tragende Entscheidung, dass sie DIESELBE Quelle liest

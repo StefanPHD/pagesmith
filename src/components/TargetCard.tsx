@@ -4,6 +4,7 @@ import { useState } from "react";
 import { removeCapiToken, setCapiToken } from "@/app/projects/actions";
 import { actionThrew, safeAction } from "@/lib/safe-action";
 import type { TrackingTarget } from "@/lib/settings";
+import { hasPixelId } from "@/lib/tracking/target-readiness";
 
 /**
  * DIE KARTE JE PLATTFORM (Phase 11, sechste Scheibe, zweite Haelfte).
@@ -155,10 +156,34 @@ export const STATUS_LOADING = "Wird geladen";
 export const STATUS_UNCONFIGURED = "Nicht konfiguriert";
 export const STATUS_CONFIGURED = "Zugangsdaten hinterlegt";
 
+/**
+ * DIE ZEILE UEBER DIE AUSLIEFERUNG (Phase 11, Scheibe B2). Sie erscheint, wenn
+ * Zugangsdaten hinterlegt sind und die KENNUNG fehlt — ein Zustand, der bis hierher
+ * auf keinem Kanal sichtbar war: Die Karte sagte "Zugangsdaten hinterlegt", der
+ * Auflaesungs-Pfad nahm das Ziel nie auf, und niemand erfuhr es.
+ *
+ * SIE IST EINE FUNKTION UND KEIN FESTER TEXT, weil ihr variabler Teil die
+ * BESTEHENDE Beschriftung des oeffentlichen Feldes dieser Karte ist
+ * (TargetCardConfig.publicLabel). DER GRUND GEHOERT HIERHER: Ein fest verdrahtetes
+ * Wort widerspraeche der Karte, auf der die Zeile steht, sobald ein Ziel sein Feld
+ * anders nennt — und genau das ist eingetreten, das zweite Ziel fragt nach der
+ * Anzeigenkonto-Kennung und nicht nach einer Pixel-ID. Es gibt deshalb KEINE zweite
+ * Bezeichnung fuer dasselbe Feld; die Zeile zitiert die Beschriftung, die zwei
+ * Zeilen weiter unten am Eingabefeld steht.
+ *
+ * BENANNT UND EXPORTIERT, damit die Tests sie AUFRUFEN statt abzuschreiben: Eine
+ * abgeschriebene Zeichenkette im Test bliebe gruen, wenn hier jemand den Wortlaut
+ * aendert — sie prueft dann nur noch sich selbst.
+ */
+export function noDeliveryText(publicLabel: string): string {
+  return `Ohne ${publicLabel} wird an dieses Ziel nichts gesendet.`;
+}
+
 export default function TargetCard({
   projectId,
   target,
   pixelId,
+  savedPixelId,
   onPixelIdChange,
   configured,
   onCredentialsSaved,
@@ -167,6 +192,20 @@ export default function TargetCard({
   projectId: string | null;
   target: TrackingTarget;
   pixelId: string;
+  /**
+   * Die zuletzt GESPEICHERTE Kennung dieses Ziels — NICHT die im Feld stehende.
+   *
+   * ZWEI WERTE FUER DIESELBE SACHE, UND DAS IST ABSICHT: `pixelId` ist, was der
+   * Betreiber gerade tippt (das Feld muss es zeigen); dieser Wert ist, was
+   * ausgeliefert wird. Die Zeile ueber die AUSLIEFERUNG haengt am zweiten, denn
+   * eine Aussage darueber, dass nichts gesendet wird, darf nicht beim Tippen
+   * verschwinden — der Forward liest die Datenbank, nicht das Formular.
+   *
+   * PFLICHTIG UND NICHT OPTIONAL: Ein Default liesse eine vergessene Aufrufstelle
+   * still auf "" zurueckfallen, und die Karte behauptete dort dauerhaft, es werde
+   * nichts gesendet. So ist eine vergessene Stelle ein BUILD-Fehler.
+   */
+  savedPixelId: string;
   onPixelIdChange: (value: string) => void;
   /** null = noch nicht geladen. S. den Kommentar an der Statuszeile unten. */
   configured: ConfiguredState;
@@ -320,6 +359,42 @@ export default function TargetCard({
       {!config.hasAdapter && (
         <p className="mb-2 text-xs text-gray-500">
           Auslieferung folgt — dieses Ziel sendet noch nicht.
+        </p>
+      )}
+
+      {/* DIE ZEILE UEBER DIE AUSLIEFERUNG (Scheibe B2). Sie steht bewusst HIER und
+          nicht im Statustext: Die Karte hat diese Trennung schon getroffen (s. den
+          Kommentar am Hinweis darueber) — der Status sagt etwas ueber die
+          ZUGANGSDATEN, diese Zeile etwas ueber die AUSLIEFERUNG. "Zugangsdaten
+          hinterlegt" ist wahr und bleibt wortgleich stehen; was fehlte, war die
+          zweite Aussage daneben.
+
+          DIE BEDINGUNG LIEST DEN GESPEICHERTEN WERT, NICHT DEN GETIPPTEN. Am
+          laufenden Wert waere sie in genau den zwei Faellen falsch, in denen jemand
+          gerade handelt: Wer eine Kennung eintippt und nicht speichert, bekaeme eine
+          ENTWARNUNG fuer ein Ziel, das weiterhin nichts empfaengt; wer sie loescht
+          und nicht speichert, einen ALARM fuer eines, das unveraendert beliefert
+          wird.
+
+          DIE GRENZE, und sie gehoert an diese Stelle: Der gespeicherte Zustand ist
+          ein SPIEGEL des zuletzt geladenen bzw. erfolgreich gespeicherten Standes,
+          NICHT die Datenbank. Ein zweiter Tab, der dasselbe Projekt speichert, macht
+          ihn stumm veraltet. Er ist der beste verfuegbare Stellvertreter OHNE eine
+          neue Abfrage — und er ist dieselbe Bauform, die das Projekt fuer den
+          Publish-Zustand schon einsetzt (settings.hosting als Spiegel der
+          domains-Zeile).
+
+          `configured === true` STATT `configured`: Der Nicht-geladen-Fall ist falsy
+          und wuerde sonst mitgefangen — die Karte behauptete im unsichersten Moment,
+          es werde nichts gesendet. Dieselbe Dreiwertigkeit wie beim Statustext.
+
+          hasPixelId IST DIE GETEILTE BEDINGUNG (lib/tracking/target-readiness.ts),
+          KEINE zweite Ausformulierung: Genau dieses Praedikat entscheidet seit
+          Scheibe B1 auch im Aufloesungs-Pfad, ob ein Ziel eine Kennung traegt. Wer
+          hier `savedPixelId !== ""` schreibt, hat wieder zwei Wahrheiten. */}
+      {configured === true && !hasPixelId(savedPixelId) && (
+        <p className="mb-2 text-xs text-gray-500">
+          {noDeliveryText(config.publicLabel)}
         </p>
       )}
 

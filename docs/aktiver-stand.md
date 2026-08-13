@@ -663,6 +663,100 @@ FUNKTIONIEREN.
 
 ---
 
+### 3.7 DIE KARTE SAGT, DASS EIN ZIEL NICHT BELIEFERT WIRD — SCHEIBE B2, ERLEDIGT (2026-08-13)
+
+**Commit:** steht bei Abfassung dieses Vermerks noch aus (Stufe 2 ist abgeschlossen,
+die Freigabe nicht erteilt). **Wer ihn nachträgt, trägt die Nummer hier ein** — und
+rückt diesen Vermerk in die Kette am Abschnittskopf ein, in der er heute die Lücke ist.
+
+**DER DEFEKT IST FÜR DIE ANZEIGE BEHOBEN, FÜR DIE STRUKTUR NICHT.** Ein Ziel mit
+hinterlegten Zugangsdaten, aber ohne Kennung sagt jetzt selbst, dass an es nichts
+gesendet wird. **Was NICHT erledigt ist:** Die Frage „ist dieses Ziel lieferfähig"
+wird weiterhin an mehreren Orten beantwortet; geteilt ist die BEDINGUNG (`hasPixelId`),
+nicht das URTEIL. **Invariante (6) aus 7.5 — „Urteil 1 und 2 beantworten die Frage über
+DIESELBEN Funktionen" — ist erst nach C und D erfüllt.**
+
+**WAS GEBAUT WURDE — VIER DATEIEN, REIN ADDITIV** (GEMESSEN am Repo, 2026-08-13:
+`git diff --numstat` weist in ALLEN vier Dateien **null gelöschte Zeilen** aus — es
+wurde nichts ersetzt, nur eingefügt):
+- `TargetCard` (`src/components/TargetCard.tsx`): die Pflicht-Prop `savedPixelId`, die
+  Bedingung `configured === true && !hasPixelId(savedPixelId)`, die Zeile — und der
+  benannte Text `noDeliveryText`.
+- `MeasureView` (`src/components/MeasureView.tsx`): `savedPixelIdFor` als zweite
+  Skalar-Funktion, reine Durchreichung. **Kein Blob** — die Entscheidung „nur Skalare
+  herein" im Kopf jener Datei bleibt gültig und wird bestätigt.
+- `CodeImporter` (`src/components/CodeImporter.tsx`): EINE Prop-Zeile, gebildet aus
+  `savedSettings` statt `settings`. **Kein neuer Zustand, kein neuer Effekt, keine
+  neue Abfrage, keine neue Action.**
+- Sechs Tests (K1–K6) plus die neue Prop in allen bestehenden Aufrufstellen. Suite
+  1049 → **1055**, Testdateien unverändert 55, alle vier Gates grün.
+
+**DIE ZEILE STEHT NEBEN DEM STATUS, NICHT IN IHM** — die Karte hatte diese Trennung
+schon getroffen (Status = ZUGANGSDATEN, eigene Zeile = AUSLIEFERUNG), und der
+entschiedene Wortlaut „Zugangsdaten hinterlegt" bleibt damit unverhandelt. **INVARIANTE
+(8) IST AM DIFF BELEGT:** Statustext, seine drei Zweige, die Klassen, der Platzhalter
+und der Entfernen-Knopf tragen **keine einzige** geänderte Zeile.
+
+**DER TEXT ZITIERT DIE BESTEHENDE FELD-BESCHRIFTUNG, statt ein eigenes Wort zu
+erfinden** (Owner-Vorgabe). Der Grund steht an der Fundstelle: Ein fest verdrahtetes
+Wort widerspräche der Karte, auf der die Zeile steht, sobald ein Ziel sein Feld anders
+nennt — **und das ist bereits eingetreten**, das zweite Ziel fragt nach der
+Anzeigenkonto-Kennung und nicht nach einer Pixel-ID. Der Text ist eine benannte,
+exportierte Funktion; die Tests RUFEN sie auf, statt eine Zeichenkette abzuschreiben.
+
+**DIE ENTSCHEIDENDE WAHL: DAS URTEIL LIEST DEN GESPEICHERTEN WERT, NICHT DEN
+GETIPPTEN.** Am laufenden Wert wäre die Zeile in genau den zwei Fällen falsch, in denen
+jemand gerade handelt — beim Tippen eine falsche ENTWARNUNG für ein Ziel, das weiterhin
+nichts empfängt, beim Löschen ein falscher ALARM für eines, das unverändert beliefert
+wird. **GEMESSEN am Code (2026-08-13):** Der gespeicherte Stand existiert seit Scheibe
+1b als Dirty-Baseline (`savedSettings` in `CodeImporter`), wird an denselben Punkten
+reseedet wie `savedMappings` und **im Erfolgszweig des Speicherns nachgeführt** — die
+Zeile korrigiert sich damit im selben Durchgang wie das Speichern, nicht erst beim
+Projektwechsel.
+
+**DIE GRENZE, die an der Fundstelle steht und hier wiederholt wird, weil sie die Wahl
+trägt:** Der gespeicherte Stand ist ein **SPIEGEL**, nicht die Datenbank. Ein zweiter
+Tab macht ihn stumm veraltet. Er ist der beste Stellvertreter OHNE neue Abfrage, und er
+benutzt dieselbe Bauform, die das Projekt für den Publish-Zustand längst einsetzt. Als
+eigener Punkt im Vorrat verzeichnet.
+
+**DIE ZWEI PROBEN — mit Vorab-Ansage, und die zweite hat eine Ansage widerlegt:**
+- **M5** (Zeile in den falschen Zweig): **K1, K3, K5.** K2 und K4 blieben grün wie
+  angesagt. **Von K5/K6 fiel nur K5** — K6 behauptet eine ABWESENHEIT und ist unter
+  dieser Mutation trivial wahr, weil die Zeile in seiner Fixture auch im verschobenen
+  Zweig fehlt. Innerhalb der angesagten Klasse, aber es engt K6s Reichweite ein: **Er
+  unterscheidet nur die M6-Achse, nicht die Zweig-Achse.**
+- **M6** (Urteil liest den laufenden Wert): **K5 UND K6 fielen — keiner von beiden ist
+  hohl.** **ABWEICHUNG: K2 fiel mit**, obwohl ich es ausgeschlossen hatte. Ursache
+  gemessen: K2 setzt allein `savedPixelId` und lässt `pixelId` auf dem Default, die
+  beiden Werte sind dort also gegenläufig — meine Ansage („in K1–K4 sind beide gleich")
+  galt für K1, K3, K4, nicht für K2. **Dieselbe Fehlerklasse, also Abdeckung und keine
+  Kaskade.** Der Kommentar an der Fixture ist auf das Gemessene berichtigt: **DREI
+  Tests bewachen diese Achse, nicht zwei.**
+- Gegenprobe unverändert → alles grün.
+**KEIN BESTANDSTEST IST GEFALLEN**, insbesondere nicht die drei bekannten Wächter
+(verbotene Wörter, Grün-Verbot, Abwesenheit des Adapter-Hinweises) — die neue Zeile
+läuft in deren Fixturen mit und kollidiert mit keinem.
+
+**DER LIVE-TEST STEHT AUS UND IST PFLICHT.** Er ist der Grund, warum der Vorrats-Punkt
+„'KONFIGURIERT' HEISST AN ZWEI ORTEN VERSCHIEDENES" **unberührt stehen bleibt**: Er
+wird nicht durch den Bau ersetzt, sondern durch den bestandenen Lauf. Zu prüfen sind
+der Kontroll-Fall (vollständiges Ziel forwardet weiter) und **die beiden
+ungespeicherten Richtungen** — getippt-und-nicht-gespeichert (die Zeile MUSS stehen
+bleiben) und gelöscht-und-nicht-gespeichert (es darf KEINE erscheinen).
+
+**WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** dass die Anzeige die DATENBANK
+spiegelt (sie spiegelt den zuletzt geladenen bzw. gespeicherten Stand) · irgendetwas
+über die Adapter-Achse — der Folgenlosigkeits-Hinweis bleibt sein eigener, unerreichter
+Zweig, und die Karte kann nach B2 **zwei** Zeilen über die Auslieferung tragen, die
+erst C zu einer zusammenführt · irgendetwas über das Consent-Memo (D) · dass
+`targetReadiness` benutzt wird — benutzt ist `hasPixelId`, die Zusammensetzung hat
+weiterhin keinen Konsumenten · dass die hinterlegten Zugangsdaten FUNKTIONIEREN · wie
+die Zeile AUSSIEHT (die Testumgebung wertet kein CSS aus; Abstand, Umbruch und
+Verdrängung sind Live-Test-Achsen).
+
+---
+
 ## 4. Was an Entscheidungen gefallen ist — bindet über die Scheibe hinaus
 
 **(a) OWNER-ENTSCHEIDUNG: `fbtrace_id` BLEIBT UNGESCHWÄRZT, nur hart
@@ -983,14 +1077,40 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   **ABGRENZUNG zu „'KONFIGURIERT' HEISST AN ZWEI ORTEN VERSCHIEDENES" oben:** Jener
   Punkt handelt von ZWEI Urteilen, die verschiedene Dinge prüfen. Dieser handelt davon,
   worauf die eine Hälfte des einen Urteils überhaupt ruht. Jener bleibt unberührt.
-- **DIE KARTE ZEIGT DEN UNGESPEICHERTEN KENNUNGS-ZUSTAND** (`pixelIdFor` in
-  `src/components/CodeImporter.tsx`, gereicht über `MeasureView` an `TargetCard`):
-  GEMESSEN am Repo (2026-08-12) — die Karte liest den laufenden Einstellungs-Zustand,
-  der Auflösungs-Pfad die persistierte Zeile. **Was still kaputtgeht:** Zwischen Eingabe
-  und Speichern behauptet die Oberfläche einen Zustand, den die Auslieferung nicht hat.
-  Das ist heute folgenlos, weil keine Anzeige eine Aussage über die AUSLIEFERUNG trifft
-  — **mit Scheibe B2 trifft eine.** Dieselbe Optimistik trägt das Consent-Memo, dort
-  seit jeher.
+- **DIE KARTE ZEIGT DEN UNGESPEICHERTEN KENNUNGS-ZUSTAND — GETEILT, WEIL NUR EIN TEIL
+  ERLEDIGT IST** (`pixelIdFor` in `src/components/CodeImporter.tsx`, gereicht über
+  `MeasureView` an `TargetCard`): GEMESSEN am Repo (2026-08-12) — die Karte liest den
+  laufenden Einstellungs-Zustand, der Auflösungs-Pfad die persistierte Zeile. Der Punkt
+  wird NICHT gestrichen, sondern in seine zwei Leser zerlegt; der Fundstellen-Zeiger
+  deckte beide, das Risiko trug nur einer.
+  - **ERLEDIGT (Scheibe B2, s. Abschnitt 3.7):** die Aussage über die AUSLIEFERUNG.
+    Genau vor ihr warnte der Punkt („heute folgenlos, weil keine Anzeige eine Aussage
+    über die AUSLIEFERUNG trifft — mit Scheibe B2 trifft eine"). Sie liest jetzt den
+    GESPEICHERTEN Stand.
+  - **NIE EIN DEFEKT GEWESEN, und das gehört dazu, sonst sucht jemand einen Fix:** das
+    EINGABEFELD. Dass es zeigt, was gerade getippt wird, ist die einzig richtige
+    Behandlung — es liest den laufenden Wert weiter, und das bleibt so.
+  - **OFFEN, UNVERÄNDERT IM RANG:** dieselbe Optimistik im **Consent-Memo**
+    (`consentTargets` in `src/components/CodeImporter.tsx`), das ebenfalls den
+    laufenden Stand liest. **Was still kaputtgeht, ist hier NICHT gemessen** — der
+    erzeugte Text entsteht im Publish-Pfad, der seinerseits aus dem laufenden Stand
+    baut; ob laufend und gespeichert dort je auseinanderfallen, ist eine eigene
+    Messung. B2 hat das Memo nicht angefasst und beantwortet es nicht.
+- **DER GESPEICHERTE STAND IST EIN SPIEGEL, NICHT DIE DATENBANK** (`savedSettings` in
+  `src/components/CodeImporter.tsx`, seit Scheibe B2 bis in `TargetCard` gereicht):
+  GEMESSEN am Repo (2026-08-13) — er wird beim Laden aus der Projekt-Zeile geseedet und
+  im Erfolgszweig des Speicherns nachgeführt; eine Bestätigung aus der Datenbank holt
+  er nie. **Was still kaputtgeht:** Ein zweiter Tab, der dasselbe Projekt speichert,
+  macht ihn stumm veraltet — die Zeile über die Auslieferung urteilte dann auf einem
+  überholten Stand, ohne dass irgendwo etwas rot wird. Auflösbar nur mit einer neuen
+  Abfrage, und die war in B2 ausdrücklich ausgeschlossen.
+  **ABGRENZUNG zu den beiden Nachbarn, sonst liest sich das als dieselbe Sache:** Der
+  Punkt darüber handelt von laufend gegen gespeichert (innerhalb des Clients), dieser
+  von gespeichert gegen Datenbank. „'KONFIGURIERT' HEISST AN ZWEI ORTEN VERSCHIEDENES"
+  handelt von zwei Urteilen über verschiedene Dinge. Drei Achsen, keine deckt eine
+  andere. **PRÄZEDENZ, kein neues Risiko:** Dieselbe Bauform trägt seit Phase 7 der
+  Publish-Zustand (`settings.hosting` als Spiegel der `domains`-Zeile) — dort ist die
+  Wahrheitsquelle in CLAUDE.md ausdrücklich benannt.
 
 Die vier fälligen Punkte am ersten Adapter und das Gegenstück bei den
 Deckelwerten stehen ausformuliert in

@@ -97,6 +97,7 @@ vi.mock("@/app/projects/domain-actions", () => ({
 import CodeImporter from "@/components/CodeImporter";
 
 import TargetCard, {
+  noDeliveryText,
   STATUS_CONFIGURED,
   STATUS_LOADING,
   STATUS_UNCONFIGURED,
@@ -137,6 +138,7 @@ function renderCard(
     target?: TrackingTarget;
     configured?: ConfiguredState;
     pixelId?: string;
+    savedPixelId?: string;
     onCredentialsSaved?: (
       forProjectId: string,
       target: TrackingTarget,
@@ -149,6 +151,17 @@ function renderCard(
     projectId: "p1" as string | null,
     target: "meta" as TrackingTarget,
     pixelId: "",
+    // Default LEER, genau wie pixelId: Der Ausgangszustand einer frischen Karte ist
+    // "keine Kennung, nichts gespeichert".
+    // WELCHE TESTS DIE BEIDEN WERTE UNTERSCHEIDEN — GEMESSEN, NICHT ABGELEITET
+    // (Mutationsprobe M6 am 2026-08-13: das Urteil liest den laufenden statt den
+    // gespeicherten Wert): Es fielen K2, K5 UND K6 — DREI, nicht zwei. Die Ansage
+    // lautete "nur K5/K6, weil in K1-K4 beide Werte gleich sind"; das gilt fuer K1,
+    // K3 und K4, aber NICHT fuer K2, das allein savedPixelId setzt und pixelId auf
+    // dem Default belaesst. K2 bewacht diese Achse also mit, ohne dafuer gebaut
+    // worden zu sein. Wer den Satz "nur K5/K6 unterscheiden sie" wieder hinschreibt,
+    // schreibt eine Ableitung auf, die die Messung widerlegt hat.
+    savedPixelId: "",
     onPixelIdChange: vi.fn(),
     configured: false as ConfiguredState,
     onCredentialsSaved: vi.fn(),
@@ -303,6 +316,113 @@ describe("TargetCard — der Folgenlosigkeits-Hinweis haengt an hasAdapter", () 
   });
 });
 
+/**
+ * DIE ZEILE UEBER DIE AUSLIEFERUNG (Phase 11, Scheibe B2).
+ *
+ * DER GEGENSTAND, in einem Satz: Ein Ziel mit hinterlegten Zugangsdaten, aber ohne
+ * Kennung stand als "Zugangsdaten hinterlegt" da und wurde nie beliefert — der
+ * Aufloesungs-Pfad verwirft es im Kennungs-Filter. Kein Kanal sagte es.
+ *
+ * WORAUF DIE ABFRAGEN ZEIGEN, und das ist eine bewusste Wahl: Sie bauen den
+ * erwarteten Text ueber noDeliveryText(TARGET_CARDS[ziel].publicLabel) — sie rufen
+ * die Konstante AUF, statt eine Zeichenkette abzuschreiben. Ein abgeschriebener Text
+ * bliebe gruen, wenn jemand den Wortlaut in der Karte aendert; er prueefte dann nur
+ * noch sich selbst.
+ * ER IST ZUGLEICH DER ANKER: Der bestehende Karten-Anker (metaKarte) umfasst NUR die
+ * Kopfzeile aus Name und Status — die Zeile steht darunter und liegt ausserhalb.
+ * Weil der Text die Feld-Beschriftung DIESES Ziels traegt und die drei Ziele
+ * verschiedene tragen, ist die Abfrage ziel-eindeutig, ohne zu zaehlen und ohne von
+ * der Zahl der Karten abzuhaengen.
+ */
+describe("TargetCard — die Zeile ueber die Auslieferung", () => {
+  const metaZeile = () => noDeliveryText(TARGET_CARDS.meta.publicLabel);
+
+  it("K1: Zugangsdaten hinterlegt UND gespeicherte Kennung leer -> die Zeile steht, der Statustext ist UNVERAENDERT", () => {
+    // ZWEI ASSERTIONS, UND DIE ZWEITE IST DER EIGENTLICHE WAECHTER: Ohne sie ginge
+    // dieser Test auch durch, wenn jemand die Aussage in den Statustext zieht — und
+    // damit den entschiedenen Wortlaut "Zugangsdaten hinterlegt" verhandelbar macht.
+    // Status und Auslieferung sind zwei Sachen, deshalb zwei Zeilen.
+    // WIRD ROT, WENN: die Kennungs-Haelfte aus der Bedingung faellt, oder wenn der
+    // Statustext mitwandert.
+    renderCard({ configured: true, savedPixelId: "" });
+    expect(screen.getByText(metaZeile())).toBeTruthy();
+    expect(screen.getByText(STATUS_CONFIGURED)).toBeTruthy();
+  });
+
+  it("K2: Zugangsdaten hinterlegt UND gespeicherte Kennung gesetzt -> KEINE Zeile", () => {
+    // POSITIVKONTROLLE ZUERST (Projektregel zu Waechtern, die Abwesenheit pruefen):
+    // Ohne sie waeren ein leerer Render und ein echter Nicht-Treffer nicht zu
+    // unterscheiden.
+    // WIRD ROT, WENN: die Zeile bedingungslos rendert.
+    renderCard({ configured: true, savedPixelId: "123456789012345" });
+    expect(screen.getByText(STATUS_CONFIGURED)).toBeTruthy();
+    expect(screen.queryByText(metaZeile())).toBeNull();
+  });
+
+  it("K3: nichts hinterlegt und keine Kennung -> KEINE Zeile", () => {
+    // DER FUER DEN BETREIBER WICHTIGSTE DER SECHS: Ohne ihn schriee JEDE frische
+    // Karte, dass nichts gesendet wird — und ein Signal, das immer leuchtet, ist
+    // keines.
+    // WIRD ROT, WENN: die Zugangsdaten-Haelfte aus der Bedingung faellt.
+    renderCard({ configured: false, savedPixelId: "" });
+    expect(screen.getByText(STATUS_UNCONFIGURED)).toBeTruthy();
+    expect(screen.queryByText(metaZeile())).toBeNull();
+  });
+
+  it("K4: noch nicht geladen -> KEINE Zeile, auch ohne Kennung", () => {
+    // Der Ladezustand ist falsy und wuerde von einem blossen `configured &&`
+    // mitgefangen — die Karte behauptete dann im unsichersten Moment, es werde
+    // nichts gesendet. Dieselbe Dreiwertigkeit, die schon der Statustext traegt.
+    // WIRD ROT, WENN: `configured === true` zu `configured` verkuerzt wird.
+    renderCard({ configured: null, savedPixelId: "" });
+    expect(screen.getByText(STATUS_LOADING)).toBeTruthy();
+    expect(screen.queryByText(metaZeile())).toBeNull();
+  });
+
+  // =====================================================================
+  // K5 UND K6 — EINE FEHLERKLASSE IN ZWEI RICHTUNGEN.
+  //
+  // SIE FALLEN BEI DERSELBEN MUTATION (das Urteil liest den laufenden statt den
+  // gespeicherten Wert), und das steht hier, damit niemand einen von beiden fuer
+  // ein Einzelstueck haelt und den anderen als redundant entfernt.
+  //
+  // WARUM ES TROTZDEM BEIDE GIBT: Die zwei Richtungen sind fuer den Betreiber
+  // VERSCHIEDEN SCHWER. K5 ist die falsche ENTWARNUNG — die Warnung verschwindet,
+  // waehrend das Ziel weiterhin nichts empfaengt; wer darauf vertraut, schaltet
+  // Anzeigen auf ein totes Ziel. K6 ist der falsche ALARM — die Karte behauptet
+  // einen Ausfall, den es nicht gibt; das kostet Vertrauen in die Anzeige, aber
+  // keine Conversions. Ein einzelner Test deckte die Klasse ab, aber nur EINE
+  // dieser beiden Aussagen, und die Wahl waere willkuerlich.
+  // =====================================================================
+
+  it("K5: getippt, aber NICHT gespeichert -> die Zeile bleibt stehen, und das Feld traegt den getippten Wert", () => {
+    // DIE ENTWARNUNG DARF NICHT BEIM TIPPEN KOMMEN. Der Forward liest die Datenbank,
+    // nicht das Formular — solange nicht gespeichert ist, empfaengt dieses Ziel
+    // nichts, und die Karte muss das weiter sagen.
+    // DIE ZWEITE ASSERTION BEWEIST, DASS BEIDE WERTE GLEICHZEITIG ANLIEGEN: Ohne sie
+    // waere nicht zu sehen, ob die Karte den richtigen von zweien nimmt oder ob der
+    // getippte Wert schlicht nirgends angekommen ist.
+    // WIRD ROT, WENN: das Urteil den laufenden Wert liest.
+    renderCard({ configured: true, pixelId: "999", savedPixelId: "" });
+    expect(screen.getByText(metaZeile())).toBeTruthy();
+    expect(
+      (screen.getByPlaceholderText(TARGET_CARDS.meta.publicPlaceholder) as HTMLInputElement)
+        .value,
+    ).toBe("999");
+  });
+
+  it("K6: geloescht, aber NICHT gespeichert -> KEINE Zeile", () => {
+    // DIE GEGENRICHTUNG: Wer das Feld leert und nicht speichert, aendert an der
+    // Auslieferung nichts — das Ziel wird unveraendert beliefert. Eine Zeile hier
+    // waere ein Alarm fuer einen Ausfall, den es nicht gibt.
+    // POSITIVKONTROLLE, weil dies eine Abwesenheits-Behauptung ist.
+    // WIRD ROT, WENN: das Urteil den laufenden Wert liest.
+    renderCard({ configured: true, pixelId: "", savedPixelId: "123456789012345" });
+    expect(screen.getByText(STATUS_CONFIGURED)).toBeTruthy();
+    expect(screen.queryByText(metaZeile())).toBeNull();
+  });
+});
+
 describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () => {
   it("die Bedienelemente beider Karten sind EINDEUTIG benannt", () => {
     // Die Projektregel nennt zwei gleich benannte Bedienelemente mit verschiedener
@@ -314,6 +434,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           projectId="p1"
           target="meta"
           pixelId=""
+          savedPixelId=""
           onPixelIdChange={vi.fn()}
           configured={true}
           onCredentialsSaved={vi.fn()}
@@ -323,6 +444,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           projectId="p1"
           target="pinterest"
           pixelId=""
+          savedPixelId=""
           onPixelIdChange={vi.fn()}
           configured={true}
           onCredentialsSaved={vi.fn()}
@@ -348,6 +470,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           projectId="p1"
           target="meta"
           pixelId=""
+          savedPixelId=""
           onPixelIdChange={vi.fn()}
           configured={true}
           onCredentialsSaved={vi.fn()}
@@ -357,6 +480,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           projectId="p1"
           target="pinterest"
           pixelId=""
+          savedPixelId=""
           onPixelIdChange={vi.fn()}
           configured={true}
           onCredentialsSaved={vi.fn()}

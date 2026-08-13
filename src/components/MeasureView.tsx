@@ -55,6 +55,7 @@ export default function MeasureView({
   projectId,
   targets,
   pixelIdFor,
+  savedPixelIdFor,
   onPixelIdChange,
   configuredTargets,
   onCredentialsSaved,
@@ -69,6 +70,14 @@ export default function MeasureView({
   // --- Tracking-Pixel: eine Karte je Ziel ---
   targets: readonly TrackingTarget[];
   pixelIdFor: (target: TrackingTarget) => string;
+  /**
+   * Die zuletzt GESPEICHERTE Kennung je Ziel (Scheibe B2). Zweite Skalar-Funktion
+   * neben pixelIdFor, KEIN Blob: Die Karte braucht beide Werte fuer verschiedene
+   * Dinge — den laufenden fuers Eingabefeld, den gespeicherten fuer die Aussage
+   * ueber die Auslieferung. Diese Ansicht entscheidet nichts davon, sie reicht
+   * durch; das Urteil faellt in der Karte, wo auch der Nicht-geladen-Fall liegt.
+   */
+  savedPixelIdFor: (target: TrackingTarget) => string;
   onPixelIdChange: (target: TrackingTarget, value: string) => void;
   /** null = noch nicht geladen; das traegt den dritten Karten-Zustand. */
   configuredTargets: TrackingTarget[] | null;
@@ -175,6 +184,7 @@ export default function MeasureView({
             projectId={projectId}
             target={target}
             pixelId={pixelIdFor(target)}
+            savedPixelId={savedPixelIdFor(target)}
             onPixelIdChange={(value) => onPixelIdChange(target, value)}
             configured={
               configuredTargets === null

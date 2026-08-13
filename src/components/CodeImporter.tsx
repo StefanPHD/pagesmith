@@ -2161,6 +2161,14 @@ export default function CodeImporter({
               // erscheint ein kuenftiges Ziel ohne eine Aenderung an dieser Stelle.
               targets={TRACKING_TARGETS}
               pixelIdFor={(t) => getPixelId(settings, t)}
+              // DER GESPEICHERTE STAND, aus savedSettings statt settings (Scheibe
+              // B2). Die Karte braucht BEIDE: den laufenden fuers Eingabefeld, den
+              // gespeicherten fuer die Aussage, ob dieses Ziel beliefert wird —
+              // sonst verschwaende die Warnung beim Tippen, ohne dass sich an der
+              // Auslieferung etwas geaendert haette. KEIN neuer Zustand: die
+              // Dirty-Baseline gibt es seit Scheibe 1b, und sie wird an denselben
+              // Punkten reseedet wie savedMappings.
+              savedPixelIdFor={(t) => getPixelId(savedSettings, t)}
               onPixelIdChange={(t, value) =>
                 setSettings((prev) => setPixelId(prev, t, value))
               }

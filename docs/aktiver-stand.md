@@ -148,8 +148,8 @@ getötet, und die Reparatur kostete zwei Runden.
 Lesehilfe benutzt, liest das Falsche — die Position eines Vermerks ist seit dem
 Wegfall der Nachnummerierung eine Frage seiner Entstehung, nicht seines Rangs.
 **DIE AUTORITÄT IST DIE COMMIT-KETTE:** Entstanden sind sie in der Reihenfolge
-`0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080`. Sie wächst mit jeder Scheibe, und
-ihr LETZTES GLIED ist der jüngste COMMITTETE Vermerk.
+`0291448` -> `91dbfe7` -> `86e6911` -> `9ad3080` -> `81b544f`. Sie wächst mit jeder
+Scheibe, und ihr LETZTES GLIED ist der jüngste COMMITTETE Vermerk.
 **DIE LÜCKE GEHÖRT ZUR REGEL, sonst greift sie im wichtigsten Moment nicht:** Ein
 Vermerk, der in der Kette NICHT vorkommt, ist noch nicht committet — und damit per
 Konstruktion der jüngste. **Wer den heutigen Stand sucht, sieht ZUERST dort nach.**
@@ -414,8 +414,12 @@ Fehlerklasse ist in dieser Phase schon einmal eingetreten und zwei Runden lang
 repariert worden. **Die Reihenfolge-Regel bleibt für die vier bestehenden Vermerke
 gültig; sie ist hier zugunsten stabiler Nummern zurückgestellt, nicht aufgehoben.**
 
-**Commit:** steht bei Abfassung dieses Vermerks noch aus (Stufe 2 ist abgeschlossen,
-die Freigabe nicht erteilt). **Wer ihn nachträgt, trägt die Nummer hier ein.**
+**Commit:** `81b544f` — NACHGETRAGEN am 2026-08-13, wie es der Satz an dieser Stelle
+verlangte. Hier stand bis dahin, der Commit stehe noch aus; das war als Aussage über
+jenen Tag richtig und ist es seit der Freigabe nicht mehr. **Der Nachtrag ist nicht
+Kosmetik:** Ein Vermerk ohne Nummer gilt nach der Regel am Abschnittskopf als der
+JÜNGSTE (die Lücke in der Kette), und mit einem weiteren Vermerk darunter zeigte
+diese Lücke auf die falsche Scheibe.
 
 **WAS GEBAUT WURDE — ZWEI NEUE DATEIEN, KEINE BESTEHENDE GEÄNDERT:** der benannte
 Zustand samt seinen zwei einzeln verwendbaren Prädikaten (`targetReadiness`,
@@ -494,6 +498,103 @@ Zustand benutzt (es gibt keinen) · dass die drei Teile mit den Quellen
 Herkünfte) · dass der Defekt behoben ist (T3 bildet ihn ab, behebt ihn nicht — die
 beiden divergierenden Urteile stehen unverändert) · irgendetwas über Darstellung
 oder Wortlaut (es gibt keine Ansicht).
+
+---
+
+### 3.6 DIE PAARUNG BENUTZT DIE GETEILTEN PRÄDIKATE — SCHEIBE B1 DER VEREINHEITLICHUNG, ERLEDIGT (2026-08-13)
+
+**Commit:** steht bei Abfassung dieses Vermerks noch aus (Stufe 2 samt Nachzug ist
+abgeschlossen, die Freigabe nicht erteilt). **Wer ihn nachträgt, trägt die Nummer hier
+ein** — und rückt diesen Vermerk damit in die Kette am Abschnittskopf ein.
+
+**B1 HEISST NICHT „DEFEKT BEHOBEN", und dieser Satz steht bewusst zuerst:** Nach dieser
+Scheibe divergieren die beiden Urteile UNVERÄNDERT weiter — die Oberflächen-Ableitung
+meldet konfiguriert, sobald eine Geheimnis-Zeile existiert, der Auflösungs-Pfad verlangt
+Kennung UND Zugangsdatum. **Geteilt ist allein die SPRACHE der Bedingungen.** Die
+Invariante (6) des Zuschnitts („Urteil 1 und 2 beantworten die Frage über DIESELBEN
+Funktionen") ist erst nach B2 erfüllt. Der Vorrats-Punkt „'KONFIGURIERT' HEISST AN ZWEI
+ORTEN VERSCHIEDENES" in Abschnitt 5 bleibt deshalb **unberührt stehen**.
+
+**WAS GEBAUT WURDE — DREI DATEIEN, KEIN NEUES VERHALTEN:**
+- `hasSecret` (`src/lib/tracking/target-readiness.ts`) trägt jetzt ein TYP-PRÄDIKAT
+  (`secret is string`) statt `boolean`. **Rumpf und Kommentare zeichengleich.**
+  **GEMESSEN (2026-08-13):** Beide Fassungen einzeln nach JavaScript übersetzt und
+  verglichen — der erzeugte Code ist BYTE-IDENTISCH (gleiche Prüfsumme). Die
+  Verfeinerung erspart dem Aufrufer eine Zusicherung, die noch einmal behauptete, was
+  das Prädikat gerade entschieden hat.
+- `getCapiConfigByTrackingKey` (`src/lib/capi/token.ts`) bezieht BEIDE Bedingungen aus
+  jener Datei: `hasPixelId` im Kennungs-Filter, `hasSecret` in der Geheimnis-Schleife.
+  **ERSETZT, NICHT ERGÄNZT** — es steht dort keine eigene Ausformulierung mehr daneben.
+- Drei Tests (N1, N2, N3) in `src/lib/capi/token.test.ts`. Die Suite wächst von 1046 auf
+  1049, die Zahl der Testdateien bleibt 55. Alle vier Gates grün (tsc, lint, vitest,
+  build).
+
+**WAS AUSDRÜCKLICH NICHT ANGEFASST WURDE:** die zweite Abfrage samt ihrem
+`in(target, …)`-Filter, die Reihenfolge Kennung-Filter → Früh-Ausstieg →
+Geheimnis-Abfrage, die Zahl der Abfragen (weiterhin GENAU ZWEI), der Kill-Switch-Zweig.
+**`targetReadiness` selbst hat auch nach B1 KEINEN Konsumenten** — importiert werden nur
+die beiden Prädikate. Der Grund ist am Kontrollfluss belegt und keine Auslassung: Die
+Zusammensetzung verlangt als dritten Teil den Adapter, den diese server-only-Datei nicht
+kennt, und für ein Ziel OHNE Kennung wird der Geheimnis-Wert dort gar nicht erst geholt.
+**Der erste Konsument entsteht in C.**
+
+**DER ERTRAG DIESER SCHEIBE IST EINE WIDERLEGTE ANNAHME, nicht der Umbau** — und sie
+steht hier, weil ein widerlegter Befund ein ERGEBNIS ist und kein Makel:
+
+Der Zuschnitt trug als gemessenen Befund, die Verhaltensneutralität sei auf einer Achse
+UNBEWACHT: Eine formale Suche über `src/` nach einer Fixture mit leerer Zeichenkette als
+Geheimnis hatte KEINEN Treffer ergeben (GEMESSEN am 2026-08-12), und daraus war
+geschlossen worden, eine Aufweichung von `hasSecret` liesse „ein Ziel mit leerem
+Zugangsdatum in den Forward laufen". **Die Mutationsproben M2 und M3 (GEMESSEN am
+2026-08-13) haben das widerlegt:** Der eigens dafür gebaute Test N1 blieb GRÜN. Ursache
+ist ein ZWEITER, unabhängiger Riegel tiefer im selben Pfad — die Paarung verwirft falsy
+Werte ohnehin (`if (!token) continue` in `getCapiConfigByTrackingKey`). Ein leeres
+Zugangsdatum wird also auch dann kein Empfänger, wenn das Prädikat vollständig kaputt
+ist.
+
+**DIE LEHRE, die den Fall überdauert: EINE SUCHE OHNE TREFFER BELEGT EINE LÜCKE ERST,
+WENN DER PFAD DANEBEN MITGELESEN IST.** Die Suche war korrekt ausgeführt; falsch war der
+Schluss von der fehlenden Fixture auf die fehlende Deckung.
+
+**WAS DARAUS FOLGTE — N3, und er ist mutationsbelegt:** Die Achse wird von einer ANDEREN
+Fixture bewacht als angenommen. Ein TRUTHY Nicht-String (die Zahl 42) passiert den
+Falsy-Riegel und wird heute allein von `hasSecret` verworfen. **GEMESSEN (M5 am
+2026-08-13, Prädikat auf reine Existenz aufgeweicht): N3 fällt, dazu T4 und T6 in
+`target-readiness.test.ts` — drei Tests, eine Fehlerklasse; N1, N2 und der
+Nachbar-Test „Token null" bleiben grün.** N3 ist damit der EINZIGE Test, der eine
+Aufweichung des geteilten Prädikats auf der token-Seite sichtbar macht; das steht in
+seinem Kommentar, damit ihn niemand als Variante von N1 entfernt.
+**N1 BLEIBT TROTZDEM** — seine Zusicherung ist wahr und stand vorher nirgends im Repo;
+er sichert das ERGEBNIS des Pfades, nicht die Bedingung, aus der es folgt. Sein
+Kommentar ist auf das Gemessene berichtigt und verweist für die Achse auf N3. Dieselbe
+Behandlung wie bei T9 in Abschnitt 3.5.
+
+**DIE FÜNF PROBEN — alle mit Vorab-Ansage** (2026-08-13, je genau eine Achse, nach jeder
+Probe Rücknahme, Prüfsummen-Abgleich und `git status` mit Ausschluss leerer Diffs):
+M1 Kennungs-Prädikat umgekehrt → **neun** Tests, alle in derselben Datei, alle derselben
+Klasse, keine Abweichung · M2 Prädikat auf reine Existenz → **Abweichung, s. oben** ·
+M3 Nicht-Leere-Prüfung entfernt → zwei, wie nach M2 korrigiert angesagt · M4 Trim
+ergänzt → zwei (T6 und N2), keine Abweichung · M5 (nach dem Nachzug) → drei, keine
+Abweichung. Gegenprobe unverändert → alles grün.
+**DER ÜBERSCHUSS BEI M2 UND M3 IST ABDECKUNG, KEINE KASKADE:** T4 fiel zusätzlich zu T6
+und meldet wörtlich dieselbe Klasse („ein leeres Zugangsdatum gilt als vorhanden") an
+einer zweiten Fixture.
+
+**KEIN LIVE-TEST BIS HIERHER — die Kontrolle steht aus und ist PFLICHT.** Sie ist klein,
+weil B1 kein Verhalten ändert, aber der Pfad ist der meistgetroffene der Plattform.
+**EIN Fall mit vorher festgelegtem Soll-Ausgang:** ein vollständig konfiguriertes Ziel
+forwardet weiter. Nachweis an ZWEI Orten — Laufzeitprotokoll von `/api/e` (Invocation
+mit 204, KEINE Fehlerzeile des Adapters) und Events Manager („Empfangen von: Server").
+**Dass es derselbe Lauf ist, erkennt man an der Ereignis-Kennung, nicht an der Uhrzeit.**
+Vorbedingung, sonst misst der Lauf ein korrektes Fail-Closed: die Seite ist NACH der
+letzten Kennungs-Änderung neu veröffentlicht.
+
+**WAS DIESE SCHEIBE AUSDRÜCKLICH NICHT BEWEIST:** dass der Defekt behoben ist (s. oben —
+die beiden Urteile divergieren weiter) · dass `targetReadiness` benutzt wird (es gibt
+keinen Konsumenten) · irgendetwas über die Oberfläche, das Consent-Memo oder die
+Adapter-Achse (B2, D und C) · was geschähe, wenn ein Nicht-String bis in einen Adapter
+liefe (UNGEMESSEN, s. den Vorrats-Punkt) · dass die hinterlegten Zugangsdaten
+FUNKTIONIEREN.
 
 ---
 
@@ -750,6 +851,74 @@ Je ein Satz, Datei und Symbolname. **Keine Bewertung, kein Fix.**
   in CLAUDE.md verortet (fehlende Ziel-Dimension auf den Ereignissen). **Neu ist allein
   der verworfene Rückgabewert** — er ist eine Aussage über den HANDLER, nicht über das
   Schema, und von jener Dimension unabhängig.
+
+- **ZWEI UNABHÄNGIGE RIEGEL AUF DERSELBEN ACHSE — DER ZWEITE DECKT DEN ERSTEN ZU**
+  (`getCapiConfigByTrackingKey` in `src/lib/capi/token.ts`: `hasSecret` in der
+  Geheimnis-Schleife und `if (!token) continue` in der Paarung darunter): GEMESSEN
+  (Mutationsproben M2/M3 am 2026-08-13) — wird `hasSecret` aufgeweicht, fällt ein
+  leeres oder `null`-Geheimnis trotzdem am Falsy-Riegel heraus.
+  **DER RIEGEL BLEIBT, UND DIESER PUNKT BEANTRAGT NICHT SEINE ENTFERNUNG:** Er ist eine
+  zweite, unabhängige Deckung auf dem meistgetroffenen Pfad der Plattform; ihn
+  wegzunehmen wäre eine Verschlechterung. **Was still kaputtgeht, ist etwas anderes:**
+  Jeder Test, der diese Achse über einen FALSY Wert prüft, ist blind gegen einen
+  Fehler im ersten Riegel — er kann nicht rot werden, weil der zweite die Wirkung
+  ohnehin verhindert. Wer hier künftig einen Wächter baut, wählt einen TRUTHY Wert
+  (Muster: N3 in `src/lib/capi/token.test.ts`), sonst schreibt er sich eine Sicherheit
+  auf, die es nicht gibt.
+- **UNGEMESSEN: WAS EIN NICHT-STRING ALS ZUGANGSDATUM AUSLÖST, WENN ER DEN RESOLVER
+  PASSIERT** (`CapiConfig.token` in `src/lib/capi/token.ts`): GEMESSEN ist nur die eine
+  Hälfte — heute verwirft `hasSecret` jeden Nicht-String, und N3 hält das fest. Fiele
+  diese Hälfte, stünde ein Wert in `CapiConfig.token`, dessen Vertrag eine Zeichenkette
+  nennt, und er ginge in einen Adapter. **Was dort geschieht, ist NICHT gemessen:** ob
+  etwas wirft, ob die garantierte leere 204 bricht, oder ob der Wert stillschweigend zu
+  einer Zeichenkette wird. **DIE MESSUNG ENTSCHEIDET SEINEN RANG** — bricht die 204,
+  ist es ein Containment-Bruch und gehört ins Manifest; wird der Wert nur gecastet, ist
+  es eine Notiz. Ohne die Messung ist beides gleich plausibel, und der Punkt darf nicht
+  nach dem schlimmeren Ausgang benannt werden.
+  **ABGRENZUNG zum Punkt „ZWEI DECKUNGSGLEICHE, UNABHÄNGIGE NORMALISIERUNGEN" oben, die
+  zwingend dazugehört:** Jener führt dieselbe FOLGE (ein Nicht-String erreicht
+  `redactOpaque`, das Primitiv wirft, die 204 bricht) — aber mit einem anderen
+  EINGANG, nämlich dem Wegfall einer Normalisierung IM Adapter, und für den
+  FEHLERTEXT des Anbieters. Hier ist der Eingang der Resolver und der Gegenstand das
+  ZUGANGSDATUM. Zwei Wege zu einer möglichen Wirkung; keiner deckt den anderen, und
+  dass die Wirkung dort schon benannt ist, macht sie hier nicht gemessen.
+- **`getPixelId` WIRFT BEI EINER NICHT-ZEICHENKETTEN-KENNUNG** (`getPixelId` in
+  `src/lib/settings.ts`): Die Optional-Verkettung vor `.trim()` schützt gegen `null`
+  und `undefined`, NICHT gegen eine Zahl — und der Einstellungs-Blob ist
+  client-besessen und nicht typgesichert. **Was still kaputtgeht:** ein Wurf im
+  Auflösungs-Pfad, BEVOR irgendein Forward stattfindet. `hasPixelId` nimmt bewusst
+  `unknown` entgegen und wäre robust, kommt aber erst NACH `getPixelId` zum Zug.
+  **UNGEMESSEN**, ob der Wurf im Ingest die leere 204 bricht — dieselbe offene Frage
+  wie beim Punkt darüber, anderer Gegenstand.
+- **DER BENANNTE ZUSTAND NIMMT DEN GEHEIMNIS-WERT ENTGEGEN, DEN DIE OBERFLÄCHE NIE HAT**
+  (`ReadinessInput` in `src/lib/tracking/target-readiness.ts`): GEMESSEN am Repo
+  (2026-08-13) — das Feld ist der WERT, und die Oberfläche darf ihn nach der
+  Zuschnitts-Invariante nie sehen; sie hat nur einen Wahrheitswert aus der
+  Zeilen-Existenz. **Was still kaputtgeht:** Scheibe C braucht dann entweder einen
+  zweiten Eingang für bereits entschiedene Tatsachen — oder die Karte fabriziert einen
+  Ersatzwert, und damit behauptet sie verdeckt „Zeile existiert heisst nicht-leeres
+  Geheimnis", als Wert getarnt.
+- **„ZEILE EXISTIERT" GLEICH „WERT VORHANDEN" RUHT AUF DEM SCHREIBPFAD, NICHT AUF DEM
+  SCHEMA** (`setCapiToken` in `src/app/projects/actions.ts` gegen
+  `supabase/migrations/0021_project_secrets.sql`): GEMESSEN am Repo (2026-08-12) — die
+  Spalte ist `not null`, und `not null` ist nicht `<> ''`; der einzige CHECK der Tabelle
+  bindet `target`. Nicht-leer ist allein zugesichert, weil die Server-Action trimmt und
+  bei leerem Ergebnis abbricht. **Was still kaputtgeht:** Jeder Schreibweg, der an
+  dieser Action vorbeigeht — und über `service_role` ist das der einzige Weg, den es
+  auf dieser Tabelle überhaupt gibt —, kann eine Zeile erzeugen, die die Oberfläche als
+  konfiguriert meldet. Ein CHECK auf Nicht-Leere machte aus dem schwachen Argument das
+  starke.
+  **ABGRENZUNG zu „'KONFIGURIERT' HEISST AN ZWEI ORTEN VERSCHIEDENES" oben:** Jener
+  Punkt handelt von ZWEI Urteilen, die verschiedene Dinge prüfen. Dieser handelt davon,
+  worauf die eine Hälfte des einen Urteils überhaupt ruht. Jener bleibt unberührt.
+- **DIE KARTE ZEIGT DEN UNGESPEICHERTEN KENNUNGS-ZUSTAND** (`pixelIdFor` in
+  `src/components/CodeImporter.tsx`, gereicht über `MeasureView` an `TargetCard`):
+  GEMESSEN am Repo (2026-08-12) — die Karte liest den laufenden Einstellungs-Zustand,
+  der Auflösungs-Pfad die persistierte Zeile. **Was still kaputtgeht:** Zwischen Eingabe
+  und Speichern behauptet die Oberfläche einen Zustand, den die Auslieferung nicht hat.
+  Das ist heute folgenlos, weil keine Anzeige eine Aussage über die AUSLIEFERUNG trifft
+  — **mit Scheibe B2 trifft eine.** Dieselbe Optimistik trägt das Consent-Memo, dort
+  seit jeher.
 
 Die vier fälligen Punkte am ersten Adapter und das Gegenstück bei den
 Deckelwerten stehen ausformuliert in

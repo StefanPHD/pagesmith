@@ -203,6 +203,116 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     });
   });
 
+  // =====================================================================
+  // N1 / N2 / N3 — DIE LEER-REGELN DIESES PFADES (Phase 11, Scheibe B1).
+  //
+  // WARUM SIE MIT DER SCHEIBE ENTSTEHEN, obwohl sie KEIN neues Verhalten pruefen:
+  // Die Uebernahme der beiden Bedingungen aus tracking/target-readiness ist
+  // verhaltensneutral, und die Frage war, ob diese Neutralitaet bewacht ist.
+  //
+  // HIER STAND EINE ANNAHME, DIE DIE MESSUNG WIDERLEGT HAT, und sie steht hier
+  // berichtigt statt gestrichen — weil die Widerlegung die eigentliche Auskunft ist:
+  // Angenommen war, eine Aufweichung der Nicht-Leere-Pruefung liesse "ein Ziel mit
+  // leerem Zugangsdatum in den Forward laufen"; Grundlage war eine formale Suche
+  // ueber src/ nach einer Fixture mit leerer Zeichenkette als Geheimnis (2026-08-12,
+  // KEIN Treffer).
+  // GEMESSEN (Mutationsproben M2/M3 am 2026-08-13): Das trifft NICHT zu. Ein solches Ziel wird auch
+  // dann kein Empfaenger, wenn hasSecret vollstaendig kaputt ist — die Paarung unten
+  // verwirft falsy Werte ein ZWEITES Mal (`if (!token) continue` in
+  // getCapiConfigByTrackingKey). EINE SUCHE OHNE TREFFER BELEGT EINE LUECKE ERST,
+  // WENN DER PFAD DANEBEN MITGELESEN IST.
+  // WAS BLEIBT: Die Achse ist bewacht — aber von N3, nicht von N1.
+  // =====================================================================
+
+  it("N1: ein Geheimnis, das die LEERE Zeichenkette ist, macht das Ziel NICHT zum Empfaenger", async () => {
+    // ER IST NICHT DER WAECHTER DIESER ACHSE — und diese Richtigstellung steht hier,
+    // weil der Zuschnitt das Gegenteil annahm und die MESSUNG es widerlegt hat
+    // (Mutationsprobe M2 am 2026-08-13: hasSecret auf reine Existenz reduziert ->
+    // dieser Test blieb GRUEN). Der Grund ist ein ZWEITER, unabhaengiger Riegel
+    // tiefer im Pfad: die Paarung liest das Geheimnis ueber `secretByTarget.get(...)`
+    // und verwirft es bei `if (!token) continue` — "" ist falsy und faellt dort
+    // ohnehin heraus. Gegen eine Aufweichung des Praedikats ist dieser Test damit
+    // BLIND: die gepruefte Wirkung kann aus einem anderen Grund gar nicht eintreten.
+    // WER DIESE ACHSE WIRKLICH BEWACHT, IST N3 (direkt darunter) — er waehlt einen
+    // TRUTHY Wert und laeuft deshalb am Falsy-Riegel vorbei.
+    //
+    // WARUM ER TROTZDEM BLEIBT: Seine Zusicherung ist wahr und wertvoll, und sie
+    // stand vorher nirgends im Repo — eine Zeile mit leerem Geheimnis wird kein
+    // Empfaenger. Er sichert das ERGEBNIS des Pfades, nicht die Bedingung, aus der
+    // es folgt. Er ist damit auch der Wachposten fuer den Fall, dass jemand den
+    // Falsy-Riegel entfernt UND das Praedikat aufweicht.
+    // WIRD ROT, WENN: BEIDE Riegel gleichzeitig fallen.
+    mockAdmin({
+      projects: projectWithPixel("proj-1", "PIXEL-123"),
+      project_secrets: secretRows([{ target: "meta", secret: "" }]),
+    });
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: false,
+      targets: [],
+    });
+  });
+
+  it("N2: ein Geheimnis aus reinem LEERRAUM macht das Ziel sehr wohl zum Empfaenger", async () => {
+    // ABGEBILDETER BESTAND, KEINE NACHLAESSIGKEIT. Die Kennung laeuft durch getPixelId
+    // und ist getrimmt; das Zugangsdatum wird hier NICHT getrimmt. Die beiden
+    // Leer-Regeln dieses Pfades sind damit ASYMMETRISCH — das sieht wie ein Fehler aus
+    // und ist der gemessene Bestand.
+    // WIRD ROT, WENN: jemand die beiden Regeln "harmonisiert" und im Geheimnis-Zweig
+    // einen Trim ergaenzt. Das waere eine Verhaltensaenderung auf dem meistgetroffenen
+    // Pfad der Plattform, getarnt als Aufraeumen — ohne diesen Test bliebe sie gruen.
+    // ER BEHAUPTET NICHT, DASS DAS RICHTIG IST. Er behauptet, dass es SO IST; eine
+    // Aenderung daran ist eine Entscheidung und kein Nebenbei.
+    mockAdmin({
+      projects: projectWithPixel("proj-1", "PIXEL-123"),
+      project_secrets: secretRows([{ target: "meta", secret: " " }]),
+    });
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: false,
+      targets: [{ target: "meta", config: { pixelId: "PIXEL-123", token: " " } }],
+    });
+  });
+
+  it("N3: ein TRUTHY Nicht-String als Geheimnis macht das Ziel NICHT zum Empfaenger", async () => {
+    // DER EINZIGE TEST, DER EINE AUFWEICHUNG DES GETEILTEN PRAEDIKATS AUF DIESER
+    // SEITE SICHTBAR MACHT — und das gehoert in seinen Kommentar, sonst entfernt ihn
+    // spaeter jemand als Variante von N1 und nimmt die einzige Abdeckung mit.
+    //
+    // WARUM GERADE DIESE FIXTURE, und sie ist der ganze Ertrag der Mutationsrunde:
+    // Der Falsy-Riegel in der Paarung (`if (!token) continue`) faengt "" und null —
+    // deshalb bleibt N1 gruen, wenn hasSecret aufweicht (GEMESSEN, M2 am 2026-08-13).
+    // Eine ZAHL ist truthy und passiert diesen Riegel. Heute wird sie trotzdem
+    // verworfen, weil hasSecret auf `typeof === "string"` besteht; faellt diese
+    // Haelfte, landet der Wert in der Map und von dort als `token` in der
+    // CapiConfig — deren Vertrag eine Zeichenkette nennt — und damit im Adapter.
+    // WIRD ROT, WENN: hasSecret Nicht-Strings durchlaesst (reine Existenz-Pruefung).
+    //
+    // DIE GRENZE, WOERTLICH: DIESER TEST SICHERT NUR, DASS KEIN EMPFAENGER ENTSTEHT.
+    // Was geschaehe, wenn ein Nicht-String bis in den Adapter liefe, ist UNGEMESSEN.
+    // Dass das geteilte Schwaerz-Primitiv (redactOpaque in lib/redact.ts) bei
+    // Nicht-Strings ausdruecklich WIRFT und ein Wurf auf diesem Pfad die garantierte
+    // leere 204 braeche, ist ein NACHBAR-Befund aus dem Vorrat — KEINE Aussage
+    // dieses Tests. Er behauptet darueber nichts, und er soll es nicht.
+    //
+    // DIE FIXTURE STEHT ROH STATT UEBER secretRows: jener Helfer typisiert das
+    // Geheimnis als `string | null`, und genau das ist hier der Gegenstand. Ihn zu
+    // weiten haette alle anderen Fixtures mit umgestellt, fuer die die enge
+    // Typisierung richtig ist.
+    mockAdmin({
+      projects: projectWithPixel("proj-1", "PIXEL-123"),
+      project_secrets: { data: [{ target: "meta", secret: 42 }], error: null },
+    });
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: false,
+      targets: [],
+    });
+  });
+
   // Phase 11 Scheibe 1 — TIPPFEHLER-WAECHTER FUER DIE NEUE TABELLE, nach dem Muster des
   // 9b-2-Waechters darunter. Der Builder-Mock akzeptiert JEDE Select-Liste und JEDEN
   // Filter; ohne diesen Test waere ein falscher Spalten- oder Zielwert von nichts

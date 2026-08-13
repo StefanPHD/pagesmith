@@ -6,6 +6,26 @@ import {
   type ProjectSettings,
   type TrackingTarget,
 } from "@/lib/settings";
+// DIE BEIDEN BEDINGUNGEN DIESES PFADES STEHEN SEIT PHASE 11 SCHEIBE B1 NICHT MEHR
+// HIER, SONDERN IN EINER REINEN DATEI (docs/aktiver-stand.md, Abschnitt 7.5).
+//
+// WARUM: SECHS Stellen im Repo beantworten die Frage "ist dieses Ziel konfiguriert
+// bzw. lieferfaehig", und sie pruefen dabei VIER verschiedene Dinge. Zwei davon
+// widersprechen sich sichtbar — die Oberflaechen-Ableitung meldet konfiguriert,
+// sobald eine Geheimnis-Zeile existiert, dieser Pfad verlangt Kennung UND
+// Zugangsdatum. Geteilt wird deshalb die SPRACHE der beiden Bedingungen, damit sie
+// nicht an zwei Orten getrennt weiterdriften koennen.
+//
+// ERSETZT, NICHT ERGAENZT: Hier steht nach dieser Scheibe KEINE eigene
+// Ausformulierung mehr daneben. Wer eine ergaenzt, hat wieder zwei Wahrheiten.
+//
+// NUR DIE BEIDEN PRAEDIKATE, NICHT DIE ZUSAMMENSETZUNG — und das ist kein
+// Auslassen, sondern am Kontrollfluss begruendet: targetReadiness verlangt als
+// dritten Teil "hat dieses Ziel einen Adapter", und diese Datei kennt ihn nicht
+// (sie ist server-only und zieht weder TARGET_CARDS noch dispatchForward). Und der
+// Geheimnis-WERT existiert hier fuer ein Ziel OHNE Kennung gar nicht: gefragt wird
+// nur nach den Zielen, die den Filter unten passiert haben (Abfrage-Oekonomie).
+import { hasPixelId, hasSecret } from "@/lib/tracking/target-readiness";
 
 /**
  * Aufloesung EINES trackingKeys (Phase 8 Scheibe 1, ADDITIV erweitert).
@@ -177,11 +197,15 @@ export async function getCapiConfigByTrackingKey(
   // Er fragt jetzt "hat IRGENDEIN bekanntes Ziel eine Pixel-ID?".
   // ER KOSTET WEITERHIN NULL ZUSAETZLICHE RUNDEN: settings reitet bereits in der
   // Projektion oben mit, die Schleife ist eine reine Speicher-Operation.
+  //
+  // hasPixelId STATT DES FRUEHEREN VERGLEICHS GEGEN "" (Scheibe B1): wertgleich, weil
+  // getPixelId immer eine getrimmte Zeichenkette liefert — die Bedingung ist damit nur
+  // noch an EINER Stelle im Repo ausgeschrieben, s. den Import-Block oben.
   const settings = (project.settings ?? {}) as ProjectSettings;
   const withPixel = TRACKING_TARGETS.map((target) => ({
     target,
     pixelId: getPixelId(settings, target),
-  })).filter((entry) => entry.pixelId !== "");
+  })).filter((entry) => hasPixelId(entry.pixelId));
 
   if (withPixel.length === 0)
     return { projectId, blocked: false, abTestActive, targets: [] };
@@ -214,12 +238,25 @@ export async function getCapiConfigByTrackingKey(
   // Geheimnisse nach Ziel greifbar machen. Der Schluessel bleibt bewusst ein roher
   // string: nachgeschlagen wird ausschliesslich mit Werten aus TRACKING_TARGETS, ein
   // unbekannter Wert aus der Datenbank kann damit gar nicht getroffen werden.
+  //
+  // hasSecret STATT DER FRUEHEREN ZWEI ZEILEN (Scheibe B1): Der Bestand nahm einen
+  // Nicht-String als "" und verwarf dann den leeren Wert — dieselbe Bedingung in zwei
+  // Schritten. hasSecret ist fuer exakt dieselben Eingaben falsch (Nicht-String und
+  // leere Zeichenkette) und TRIMMT NICHT: ein Geheimnis aus reinem Leerraum galt hier
+  // schon immer als VORHANDEN und gilt es weiterhin. Das ist der abgebildete Bestand,
+  // keine Nachlaessigkeit — wer es mit der getrimmten Kennungs-Regel "harmonisiert",
+  // aendert das Verhalten dieses Pfades (T6 in tracking/target-readiness.test.ts, N2
+  // hier daneben).
+  //
+  // ES IST EIN TYP-PRAEDIKAT, und deshalb braucht die Zeile darunter KEINE
+  // Zusicherung: Eine Zusicherung behauptete noch einmal, was das Praedikat gerade
+  // entschieden hat — genau die zweite Ausformulierung, gegen die diese Scheibe
+  // gerichtet ist.
   const secretByTarget = new Map<string, string>();
   for (const row of rows as { target: unknown; secret: unknown }[]) {
     if (typeof row.target !== "string") continue;
-    const secret = typeof row.secret === "string" ? row.secret : "";
-    if (!secret) continue;
-    secretByTarget.set(row.target, secret);
+    if (!hasSecret(row.secret)) continue;
+    secretByTarget.set(row.target, row.secret);
   }
 
   // DIE PAARUNG — JE ZIEL. Nur wer BEIDES traegt, wird Empfaenger. Die Reihenfolge

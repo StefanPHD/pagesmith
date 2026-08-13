@@ -105,7 +105,7 @@ export function hasPixelId(pixelId: unknown): boolean {
  *    die WIRKSAME Bedingung ab, nicht die anzeigende. Welche von beiden ein
  *    Konsument speist, entscheidet die Uebernahme-Scheibe, nicht diese hier.
  */
-export function hasSecret(secret: unknown): boolean {
+export function hasSecret(secret: unknown): secret is string {
   return typeof secret === "string" && secret !== "";
 }
 

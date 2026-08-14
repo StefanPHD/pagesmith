@@ -122,7 +122,7 @@ miterledigen, sondern gebündelt abarbeiten.
     phase-2-3-foundation.md (2x), phase-6-capi.md (2x, davon eine für das
     Hilfsmodul), phase-7-hosting.md ("src/middleware.ts (Entry, KEIN
     middleware->proxy-Rename)" — damals bewusst NICHT mitgemacht), sowie dieser
-    Eintrag. In der Root-CLAUDE.md nennt die Regel HISTORIE-CHECK VOR EINGRIFF IN
+    Eintrag. In docs/immer-beachten.md nennt die Regel HISTORIE-CHECK VOR EINGRIFF IN
     KERN-DATEIEN die "Middleware/Proxy-Schicht" bereits mit beiden Namen und
     braucht nichts.
   - WERKZEUG: .claude/settings.local.json trägt zwei Allowlist-Einträge mit dem
@@ -1212,7 +1212,7 @@ miterledigen, sondern gebündelt abarbeiten.
   auth.uid() = user_id, NICHT dass das Projekt dem Nutzer gehört — die
   Migrationsdatei sagt das selbst (:35-37: "WITH CHECK prueft NUR user_id, NICHT
   dass project_id dem User gehoert"). Der anon-Schlüssel liegt öffentlich im
-  ausgelieferten Bundle (Root-CLAUDE.md, "GRANTS SCHÜTZEN NICHTS").
+  ausgelieferten Bundle (docs/immer-beachten.md, "GRANTS SCHÜTZEN NICHTS").
   DER VERDACHT, ALS VERDACHT: Ein beliebiger eingeloggter Nutzer könnte damit
   direkt gegen die Tabelle schreiben und eine Token-Zeile für ein FREMDES Projekt
   anlegen, sofern dort noch keine existiert. Das Ownership-Gate der Server-Action
@@ -1364,7 +1364,7 @@ miterledigen, sondern gebündelt abarbeiten.
   BEFUND: `vi.clearAllMocks()` im `afterEach` leert WEDER die `...Once`-Warteschlange
   NOCH bleibende Implementierungen — beide Richtungen sind real aufgetreten. In der
   elften Scheibe hat ein unverbrauchter Once-Wert aus einem abgebrochenen Test zwei
-  fremde Tests rot gemacht (die KASKADE, s. Root-CLAUDE.md, Lektion (g) an
+  fremde Tests rot gemacht (die KASKADE, s. docs/immer-beachten.md, Lektion (g) an
   "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE").
   DER NAHELIEGENDE UMBAU AUF `resetAllMocks` IST KEIN EINZEILER: Er nähme jeden
   Default aus den Mock-Fabriken mit, und genau auf diesen Defaults ruhen die
@@ -1435,7 +1435,7 @@ miterledigen, sondern gebündelt abarbeiten.
   ER ENTSTEHT NICHT DURCH JENE SCHEIBE, WIRD VON IHR ABER SICHTBAR.
   WARUM ER HIER ZÄHLT: Die Verlustrate ist die Marquee-Metrik des Produkts. Eine
   Zahl, die aus dem falschen Grund steigt, ist teurer als eine fehlende.
-  BEZUG: Root-CLAUDE.md, "WORTWAHL DASHBOARD 'NUR server-seitig erfasst', NIEMALS
+  BEZUG: docs/immer-beachten.md, "WORTWAHL DASHBOARD 'NUR server-seitig erfasst', NIEMALS
   'gerettet'" — dieselbe Achse der Produkt-Ehrlichkeit.
 
 - DER ARRAY-RIEGEL EXISTIERT IM SERVER-LESER, NICHT IN DER BROWSER-REGEL

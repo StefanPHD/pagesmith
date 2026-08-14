@@ -414,13 +414,19 @@ kaputtgeht.
   docs/claude-history/backlog-polish.md, "VOLLSTÄNDIGKEITS-ACHSE — WAS DANN SOFORT GILT".
 - CLAUDE.md NÄHERT SICH DEM LADELIMIT (Trigger: vor der nächsten Hebung an einem
   Phasenende): GEMESSEN am 2026-08-13 — die Datei steht bei rund 149 KB gegenüber dem
-  dokumentierten 150k-Ladelimit, "## Immer beachten" trägt rund 1 200 Zeilen und 80 Regeln,
-  und allein die Hebung dieser Phase hat rund 11 KB gekostet. Jede Phase fügt mehrere
+  dokumentierten 150k-Ladelimit, "## Immer beachten" trägt 1 012 Zeilen und 80 Regeln,
+  und allein die Hebung dieser Phase hat 10 293 Bytes gekostet. Jede Phase fügt mehrere
   Regeln hinzu; die Datei wurde zuletzt schon einmal von 147 auf 138 KB gebracht. Was still
   kaputtgeht: Ohne Entscheidung endet die nächste Hebung entweder ÜBER dem Ladelimit oder
   damit, dass gefilterte Regeln stillschweigend nicht gehoben werden — und eine nicht
   gehobene Regel wird nicht mehr gelesen. HIER STEHT AUSDRÜCKLICH KEIN VORSCHLAG, WAS
   AUSGELAGERT WIRD: das gehört in eine Arbeitsweise-Runde am Phasenübergang.
+  ZWEI ZAHLEN NACHGEZOGEN (GEMESSEN am Repo, 2026-08-14): Hier stand "rund 1 200 Zeilen"
+  und "rund 11 KB"; gemessen sind 1 012 Zeilen (Abschnitt von der Überschrift bis zur
+  letzten Inhaltszeile) und 10 293 Bytes (Grösse von CLAUDE.md vor und nach dem
+  Hebungs-Commit 92c1a3b). Die beiden übrigen Zahlen des Eintrags halten der Messung
+  stand: 149 970 Bytes und 80 Regeln. HERKUNFT der beiden falschen: ein Diktat, das beim
+  Eintragen bereits als zu niedrig gemeldet und damals nicht nachgezogen wurde.
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
@@ -440,11 +446,17 @@ umformuliert, sondern erweitert.
 DREI REGELN SIND AM 2026-08-13 AUS "## Immer beachten" NACH docs/db-regeln.md GEZOGEN und
 stehen dort ZEICHENGLEICH: "BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN, NICHT AM KALENDER" ·
 "MIGRATION IMMER VOR CODE-DEPLOY" · "DB-FUNKTIONEN + SEARCH_PATH".
-DIE TITEL STEHEN HIER, WEIL DREI ZEIGER AUSSERHALB DES DAMALIGEN SCOPES AUF SIE VERWEISEN
-(docs/db-stand.md sowie supabase/checks/db-stand.sql und restore-drill.sql, je mit dem
-Pfad "CLAUDE.md, ## Immer beachten"): Wer einem davon folgt, findet den Titel weiterhin in
-dieser Datei und daneben den Ort, an dem die Regel jetzt steht. Ohne diese Nennung zeigten
-alle drei ins Leere.
+DIE TITEL STEHEN HIER, WEIL ZEIGER AUSSERHALB DES DAMALIGEN SCOPES AUF SIE VERWEISEN.
+NACHGEZOGEN AM 2026-08-14 (GEMESSEN am Repo) — die Zahl DREI war schon am 2026-08-13 zu
+hoch: Den Pfad "CLAUDE.md, ## Immer beachten" trugen nur ZWEI (docs/db-stand.md und
+supabase/checks/restore-drill.sql). Der dritte, supabase/checks/db-stand.sql, trägt allein
+den REGELTITEL — ohne Pfad, ohne Dateinamen, er zeigte also nie hierher.
+BEIDE PFAD-ZEIGER SIND AM 2026-08-14 AUF docs/db-regeln.md NACHGEZOGEN: Sie zeigten seit
+dem 2026-08-13 an der Regel vorbei, weil die Regel dorthin umgezogen war, und mit der
+Auslagerung von "## Immer beachten" wären sie ein zweites Mal falsch geworden.
+WAS DAMIT OFFEN IST UND HIER NICHT ENTSCHIEDEN WIRD: Der Titel-Zeiger in db-stand.sql
+braucht die Titel weiterhin an einem auffindbaren Ort; ein Pfad-Zeiger auf diese Datei
+existiert nicht mehr.
 
 ## Aktiver Stand — Verfahren ab Phase 10
 

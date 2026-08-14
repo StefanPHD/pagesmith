@@ -4,7 +4,7 @@ Der gemessene Ist-Zustand der Datenbank und des Analytics-Lesepfads: Migrationss
 Tabellen, Policies, Rollen-Grants, Spalten, Constraints, Indizes, Funktionen,
 Event-Trigger, Backups. NUR Ist-Zustand — die Herleitung und die Entscheidungen dahinter
 stehen in docs/claude-history/phase-8-analytics.md, die dauerhaft geltenden Regeln in
-CLAUDE.md unter "## Immer beachten" bzw. "## Code-Qualität, Performance &
+docs/immer-beachten.md bzw. in CLAUDE.md unter "## Code-Qualität, Performance &
 SaaS-Skalierung". Aus CLAUDE.md ausgelagert am 2026-08-11, zeichengleich; der Inhalt
 darunter ist unverändert.
 
@@ -66,7 +66,8 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   ihr applied_at ist bewusst NULL, weil der Ausführungszeitpunkt nicht bekannt ist. Dass sie
   gelaufen sind, belegen ihre WIRKUNGEN (Spalten/Constraints unten), nicht die Tabelle. Ab 0018
   ist der Eintrag ein echtes Protokoll. PROTOKOLL, KEIN STEUERUNGSMECHANISMUS: es gibt keinen
-  Migrations-Runner und soll keinen geben (s. CLAUDE.md, "## Immer beachten").
+  Migrations-Runner und soll keinen geben (s. docs/immer-beachten.md, "OB EINE MIGRATION
+  IN DER LAUFENDEN DB ANGEWANDT IST, IST AM REPO NICHT ENTSCHEIDBAR").
 - TABELLEN in public: SIEBEN — projects, domains, project_tokens, events, audit_logs,
   schema_migrations, project_secrets. Bei ALLEN ist RLS aktiv. (Die frühere Zahl "sechs" ist
   seit 0021 überholt und wird ERSETZT, nicht ergänzt — dieselbe Behandlung wie zuvor die
@@ -86,7 +87,7 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   Writes laufen ausschließlich über service_role (Ingest-Pfad, persistEvent). Der Owner LIEST
   seine Events, er schreibt sie nie. Wer hier eine Write-Policy ergänzt, öffnet den
   Analytics-Schreibpfad für den Client — dieselbe Denkfigur wie bei project_tokens und
-  audit_logs (s. CLAUDE.md, "## Immer beachten", "APPEND-ONLY-TABELLEN BLEIBEN
+  audit_logs (s. docs/immer-beachten.md, "APPEND-ONLY-TABELLEN BLEIBEN
   POLICY-FREI"), nur für eine
   Tabelle, die jene Regel heute NICHT nennt.
 - auth.uid()-KAPSELUNG (bekannte Abweichung, reiner Performance-Punkt, KEIN Leak): NUR
@@ -99,7 +100,7 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
 - ROLLEN-GRANTS: anon, authenticated UND service_role haben volle DML-Rechte auf ALLE SIEBEN
   public-Tabellen, inkl. project_tokens, schema_migrations UND project_secrets. Die
   Tenant-Isolation und das write-only-Gate tragen damit AUSSCHLIESSLICH über RLS
-  (s. CLAUDE.md, "## Immer beachten", "GRANTS SCHÜTZEN NICHTS").
+  (s. docs/immer-beachten.md, "GRANTS SCHÜTZEN NICHTS").
 - TABELLE public.events: id uuid PK (gen_random_uuid()); project_id uuid FK -> projects
   ON DELETE CASCADE; event_type text; event_id text; source text (KEIN Default); created_at
   timestamptz (now()) — diese SECHS NOT NULL. DAZU: variant text NULLABLE (0017).
@@ -169,7 +170,7 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   set_updated_at() — Trigger-Funktion, INVOKER, volatile, search_path=public.
   rls_auto_enable() — Event-Trigger-Funktion, SECURITY DEFINER, volatile,
     search_path=pg_catalog. NICHT public — das ist korrekt und beabsichtigt, s.
-    CLAUDE.md, "## Immer beachten", "DB-FUNKTIONEN + SEARCH_PATH".
+    docs/db-regeln.md, "DB-FUNKTIONEN + SEARCH_PATH".
 - EVENT-TRIGGER: SIEBEN (2026-08-05 erneut gemessen: unverändert). ensure_rls
   (ddl_command_end -> rls_auto_enable, evtowner postgres,
   aktiviert) plus SECHS Supabase-Plattform-Trigger (issue_graphql_placeholder,

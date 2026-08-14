@@ -598,7 +598,8 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   der nächste Snapshot durch ist; wer in diesem Fenster riskant operiert, zieht vorher EINEN
   manuellen Dump. Seit 0018 trägt jeder Dump schema_migrations IN SICH: der abgedeckte Stand
   ist im Backup selbst dokumentiert statt in einer Notiz daneben, die verlorengeht — genau
-  deshalb ist diese Lücke überhaupt erkennbar. Regeltext: CLAUDE.md "## Immer beachten".
+  deshalb ist diese Lücke überhaupt erkennbar. Regeltext: docs/db-regeln.md,
+  "BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN, NICHT AM KALENDER".
   BINDET-AN: laufend; erster Drill vor echten Kundendaten.
 - DATA-RETENTION:
   RISIKO: Analytics-Rohdaten (IP/UA) horten sich unbegrenzt an -> DSGVO-Speicher-

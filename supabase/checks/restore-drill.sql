@@ -63,8 +63,8 @@ order by et.evtname;
 
 -- TEIL A.3 — Funktionen in public mit Sicherheitstyp (= Probe 8 aus db-stand.sql)
 -- BESONDERES AUGENMERK: rls_auto_enable muss sicherheit = 'DEFINER' und
--- set_klauseln = {search_path=pg_catalog} tragen (nicht public — s. CLAUDE.md
--- "## Immer beachten", "DB-FUNKTIONEN + SEARCH_PATH").
+-- set_klauseln = {search_path=pg_catalog} tragen (nicht public — s.
+-- docs/db-regeln.md, "DB-FUNKTIONEN + SEARCH_PATH").
 select p.proname,
        case p.prosecdef when true then 'DEFINER' else 'INVOKER' end as sicherheit,
        p.provolatile as volatilitaet,

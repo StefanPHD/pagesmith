@@ -408,9 +408,12 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   ÜBER DEN CODE und altert mit ihm; die Regel darüber altert nicht mit. Wer eine Regel
   als Maßstab benutzt, prüft ihren Beleg am HEUTIGEN Code, bevor er ihm folgt. Ist er
   überholt, wird er RICHTIGGESTELLT und nicht gestempelt — ein Maßstab mit falschen
-  Angaben taugt nicht als Maßstab, auch wenn sein Satz stimmt. BELEG: In dieser Datei
-  ist die Figur VIERMAL angewandt worden ("RICHTIGGESTELLT, NICHT GESTEMPELT"), ohne je
-  als Regel formuliert zu sein. Eine Regel, die viermal gebraucht wurde, ohne zu
+  Angaben taugt nicht als Maßstab, auch wenn sein Satz stimmt. BELEG: Die Figur ist
+  VIERMAL angewandt worden ("RICHTIGGESTELLT, NICHT GESTEMPELT"), ohne je
+  als Regel formuliert zu sein — DREIMAL in dieser Datei, das vierte Mal in CLAUDE.md,
+  "## Code-Qualität, Performance & SaaS-Skalierung". (Die Aufteilung ist am 2026-08-14
+  nachgezogen worden, als dieser Abschnitt aus CLAUDE.md ausgelagert wurde; die Zahl
+  VIER ist unverändert.) Eine Regel, die viermal gebraucht wurde, ohne zu
   existieren, ist reif. ABGRENZUNG zur Regel darüber: dort trägt die BEGRÜNDUNG nicht
   mehr, hier ist die TATSACHENANGABE veraltet — die Regel bleibt in beiden Fällen wahr.
 - EINE VORBEDINGUNG, DIE AUCH DER ALTE ZUSTAND ERFÜLLT, IST KEINE VORBEDINGUNG: Sie
@@ -473,7 +476,7 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - EINE BILLIGE MESSUNG WIRD NICHT DURCH EINE HERLEITUNG ERSETZT: Eine schlüssige
   Ableitung aus dem Code oder dem Diff sagt nichts über die deployte Laufzeit. Ist die
   Messung billig, wird gemessen — und wo nicht gemessen wurde, steht das dabei.
-  ABGRENZUNG zur Provenienz-Disziplin, die in dieser Datei schon gelebt wird: jene
+  ABGRENZUNG zur Provenienz-Disziplin, die in CLAUDE.md schon gelebt wird: jene
   verlangt, die HERKUNFT einer Angabe zu nennen; diese verlangt, die Messung nicht
   wegzulassen, nur weil eine Herleitung überzeugend klingt. Eine korrekt als
   "hergeleitet" gekennzeichnete Angabe ist ehrlich und trotzdem die schlechtere.
@@ -499,8 +502,8 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   (4) SCOPE DER REGEL: greift NUR bei Eingriff in bestehende Kern-/geteilte Dateien, nicht bei jeder
       trivialen neuen Datei. Erste Verteidigungslinie bleibt diese "Immer beachten"-Sektion (immer
       geladen); die History ist die zweite, tiefere Linie fürs WARUM.
-  Verweis auf die Archiv-Landkarte: die Zuordnung Thema -> History-Datei steht unter
-  "## Detail-Archiv".
+  Verweis auf die Archiv-Landkarte: die Zuordnung Thema -> History-Datei steht in
+  CLAUDE.md, "## Detail-Archiv".
 - PERMANENTER Alias /api/capi darf NIE entfernt werden (Phase 7b): bereits in freier
   Wildbahn ausgelieferte Alt-Exporte tragen die absolute /api/capi-URL fest eingebacken
   und beaconen weiter dorthin. Neue Exporte/gehostete Seiten nutzen /api/e (geteilter
@@ -512,7 +515,7 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Owner) hält ALLEIN dadurch, dass project_tokens RLS aktiv hat und KEINE SELECT-Policy trägt. Eine
   neue Tabelle ohne "enable row level security" ist damit SOFORT für anon offen — und der anon-Key
   steckt im Client-Bundle jeder Seite. Das Sicherheitsnetz dagegen ist der Event-Trigger ensure_rls,
-  der beim Rebuild aus den Migrationen NICHT entsteht (s. "## Offene Punkte"). Bei JEDER neuen
+  der beim Rebuild aus den Migrationen NICHT entsteht (s. CLAUDE.md, "## Offene Punkte"). Bei JEDER neuen
   Tabelle: RLS explizit aktivieren und Policies bewusst setzen, NIE auf den Trigger verlassen.
   ERGÄNZT 2026-08-05 — DAS SCHÄRFERE BEISPIEL, ohne dass am Obenstehenden etwas zurückgenommen
   wird: project_secrets (0021, die Geheimnis-Tabelle der Phase 11) trägt RLS aktiv und KEINE

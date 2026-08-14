@@ -1836,3 +1836,25 @@ trägt, ist es das der ursprünglichen Messung.
   Vorlage ist die Erledigung dieses Eintrags, nicht ihr Anfang — die neue vierte Regel in
   `docs/db-regeln.md` verlangt fuer genau diesen Fall, VORZULEGEN statt anzugleichen, und
   dieser Eintrag IST diese Vorlage.
+
+## Nachtrag 2026-08-14 — KANDIDAT für "## Immer beachten" (noch KEINE Regel)
+Eigener Abschnitt, weil ein Anhängen ans Dateiende den Eintrag sonst unter
+"Aus Phase 11 gehoben (2026-08-13)" einsortiert hätte — er stammt nicht von dort.
+Er hat heute keinen anderen Ort: Es existiert keine Standdatei, also auch keine
+Kandidatenliste. Gehoben wird er NICHT in dieser Runde.
+
+- EINE MESSUNG, DIE DIE ERWARTUNG TRIFFT, WIRD NICHT NACHGEPRÜFT.
+  DER GEMESSENE FALL (2026-08-14): Ein Zähl-Lauf mit `git log --since` ergab SECHS —
+  genau die Zahl, die der Architekt zuvor aus der Erinnerung genannt hatte. `--since`
+  schneidet an UTC-Mitternacht; ein Commit um 08:34 (+0200) fiel lautlos aus der
+  Menge. Die richtige Zahl ist SIEBEN.
+  WAS STILL KAPUTTGEHT: Eine Zahl, die zur Erwartung passt, bekommt keine Gegenprobe —
+  sie sieht aus wie eine Bestätigung. Aufgefallen ist es nur, weil zur Abwesenheit eine
+  POSITIVKONTROLLE gefahren wurde: dasselbe Muster traf im fehlenden Commit direkt
+  sehr wohl.
+  ABGRENZUNG ZUR BESTEHENDEN REGEL, sie ist nötig: "Ein Nicht-Treffer ist kein Beweis
+  ohne Positivkontrolle" adressiert die ABWESENHEIT. Hier war das Ergebnis kein
+  Nicht-Treffer, sondern eine plausible ZAHL — und plausibel ist gefährlicher als leer.
+  ZWEITER TEIL, aus demselben Lauf: Ein Zeitfilter am Werkzeug arbeitet in UTC, die
+  Zeitstempel im Repo nicht. Wer nach Datum filtert, filtert am AUTOR-Datum per
+  Zeichenvergleich.

@@ -121,8 +121,7 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       Zeichenkette · Erfolg ist 201 · DREI Fehlerwege mit ZWEI Rumpfformen · ein
       Versions-Header, dessen Wert ein Datum ist und der abgeschaltet wird · als
       Identität nur die IP, NUR IPv4, kein User-Agent · kein Testmodus gefunden —
-      ein NICHT-TREFFER, KEIN Beweis der Abwesenheit. Immerhin: das Zugangsdatum
-      ist ein nicht ablaufendes Token und passt in die Geheimnis-Tabelle.
+      ein NICHT-TREFFER, KEIN Beweis der Abwesenheit.
       PROVENIENZ: GELESEN an FREMDER Anbieter-Doku (2026-08-11) — NICHT gemessen,
       NICHT live bestätigt. Dass TikTok als drittes Ziel live bewiesen ist, WERTET
       DAS NICHT AUF; wer das verwechselt, plant einen Bau auf einer Doku-Lesung.
@@ -133,6 +132,54 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       ZIEL: Ein nicht abbildbares Ereignis hat keinen Rückkanal, und ein solcher
       berührt ALLE DREI Adapter (backlog-polish.md, "EIN ADAPTER KANN HEUTE KEIN
       EREIGNIS ABLEHNEN").
+      RICHTIGGESTELLT AM 2026-08-14, NICHT GESTEMPELT: Diese Zeile ist der Maßstab,
+      gegen den ein späterer Bau misst, und ein Maßstab mit einer falschen Angabe
+      taugt nicht. WORTLAUT VORHER, er stand oben hinter dem Nicht-Treffer zum
+      Testmodus: "Immerhin: das Zugangsdatum ist ein nicht ablaufendes Token und
+      passt in die Geheimnis-Tabelle." BEIDE HÄLFTEN DIESES SATZES FALLEN:
+      · DAS ZUGANGS-TOKEN LÄUFT NACH 60 TAGEN AB. PROVENIENZ: GELESEN an der
+        EIGENEN App-Oberfläche im Entwicklerportal des Anbieters (2026-08-14) —
+        NICHT gemessen, es ist KEIN Aufruf gegen die Schnittstelle gefahren worden.
+      · ES PASST NICHT IN DIE GEHEIMNIS-TABELLE. project_secrets hält einen SKALAR
+        je Zeile — die Spalte ist "secret text not null", der Schlüssel ist
+        (project_id, target) (0021_project_secrets.sql) —, während ein OAuth-Zugang
+        MEHRERE Werte nebeneinander braucht: Token, Erneuerungs-Token,
+        Ablaufzeitpunkt.
+      OFFENE VORFRAGE, UND SIE ENTSCHEIDET DEN UMFANG: Ob die Conversions API auch
+      ein APP-EIGENES Token annimmt (Anmeldung mit Anwendungs-Zugangsdaten, ohne
+      Nutzer-Fluss). Betrachtet wurde bislang NUR ein dreibeiniger OAuth-Fluss; der
+      zweibeinige Weg ist NICHT geprüft. Die Antwort entscheidet zwischen einer
+      Autorisierungsschicht MIT Nutzer-Fluss und einer reinen SERVER-SEITIGEN
+      Erneuerung. VOR dieser Klärung hat kein Zuschnitt einen Gegenstand.
+      DER SCHEMA-BEFUND DARÜBER HÄNGT NICHT AN DIESER ANTWORT — HÖCHSTENS IN SEINER
+      REICHWEITE, UND DIE BEIDEN ZWEIGE TRAGEN DABEI VERSCHIEDENEN RANG: Für den
+      DREIBEINIGEN Fluss ist die Mehrwertigkeit GEDECKT (Token, Erneuerungs-Token,
+      Ablaufzeitpunkt — Portal-Lesung 2026-08-14). Für den ZWEIBEINIGEN ist sie eine
+      ABLEITUNG OHNE QUELLE: ungeprüft ist dort nicht nur, OB der Weg offensteht,
+      sondern auch, WELCHE Wertform er verlangt. Steht er offen und verlangt er wider
+      Erwarten nur EINEN Wert, SCHRUMPFT der Befund auf den dreibeinigen Fall — er
+      kippt nicht. Die Vorfrage entscheidet damit den PREIS der
+      Autorisierungsschicht, NICHT die Eignung der Skalar-Spalte für den gedeckten
+      Zweig.
+      DIE AUTORISIERUNGSSCHICHT GEHÖRT NICHT ALLEIN ZU 11.1: Sie ist gemeinsames
+      Fundament mit 11.2. Nur für LinkedIn gebaut wäre sie überangepasst.
+      11.1 IST DERZEIT EXTERN BLOCKIERT: Beim Anbieter läuft ein
+      Genehmigungsverfahren (Stand 2026-08-14), Dauer unbestimmt. HIER STEHT
+      AUSDRÜCKLICH KEIN Zeitpunkt — ein erfundener liesse den Posten als terminiert
+      aussehen.
+      BEFUND, KEIN ZUSCHNITT: Eine LinkedIn-Verbindung kann OHNE Zutun des Kunden
+      brechen (Ablauf, Widerruf); die drei BESTEHENDEN Ziele tragen ein STATISCHES
+      Geheimnis. Läuft ein Zugang still ab, hört das Weiterleiten auf, ohne dass es
+      jemand bemerkt. OB UND WIE das ein bleibendes Signal bekommt, wird HIER NICHT
+      entschieden — die Regeln dafür stehen in docs/immer-beachten.md, und die
+      Einordnung gehört in den Zuschnitt.
+      AUF DREI GESUCHTEN ACHSEN FINDET SICH KEINE GEPLANTE HINTERGRUNDAUSFÜHRUNG
+      (gemessen 2026-08-14): KEINE vercel.json · KEIN schedule/cron in
+      .github/workflows/ci.yml · KEIN pg_cron-Aufruf unter supabase/. DREI
+      NICHT-TREFFER, KEIN Beweis der Abwesenheit — die Reichweite dieser Aussage
+      ist die der drei Achsen und nicht mehr. FOLGE, unter demselben Vorbehalt:
+      Eine Token-Erneuerung über alle Mandanten wäre eine
+      Infrastruktur-ERSTANLAGE, kein Nebenbei-Schritt.
 - [ ] Phase 11.2 — Google: EINE KONZEPT-RUNDE, KEINE SCHEIBE. Es sind ZWEI Ziele,
       nicht eins, und keines zugeschnitten: Google Ads Conversions und GA4 sind
       verschiedene Produkte mit verschiedenen Schnittstellen und Semantiken. Der
@@ -146,6 +193,13 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       SCHEMA-RISIKO (benannt 2026-08-03): mehrwertige Anmeldungen passen nicht auf
       ein Geheimnis pro Zeile; im Ernstfall eine ZWEITE Migration auf der
       Geheimnis-Tabelle.
+      ERGÄNZT 2026-08-14 — der Text darüber ist NICHT umformuliert, nur erweitert:
+      DIESES SCHEMA-RISIKO GILT SEIT DEM 2026-08-14 AUCH FÜR 11.1. Dort ist das
+      Zugangsdatum als ABLAUFEND erkannt worden (Richtigstellung an jener Zeile),
+      und ein OAuth-Zugang braucht Token, Erneuerungs-Token und Ablaufzeitpunkt
+      NEBENEINANDER. FOLGE: Die AUTORISIERUNGSSCHICHT ist BEIDEN Zeilen gemeinsames
+      Fundament und gehört keiner von beiden allein — wer sie für eine der beiden
+      allein zuschneidet, baut sie überangepasst und ein zweites Mal.
       PROVENIENZ: GELESEN an FREMDER Anbieter-Doku (2026-08-11) — NICHT gemessen,
       NICHT live bestätigt; der Live-Beweis des dritten Ziels wertet sie NICHT auf.
       DIE ZWEI AUFLAGEN AUS 11.1 GELTEN HIER WÖRTLICH MIT.

@@ -200,8 +200,9 @@ miterledigen, sondern gebündelt abarbeiten.
   Hinweis "innerhalb von <a>", o.ä.) — NICHT deduplizieren.
   WARNUNG (der eigentliche Grund für diese Notiz): Genau das Konstrukt "<a>
   umschliesst <button>" ist das, was der href-Bake- + auxclick-Fix behandelt
-  (Phase-4-Lektion, live verifiziert; s. CLAUDE.md "Immer beachten": 'click' deckt
-  NUR die linke Maustaste ab, Mittelklick feuert auxclick). Wer die Liste
+  (Phase-4-Lektion, live verifiziert; s. docs/immer-beachten.md, "KLICK-WIRING vs.
+  Maustasten": 'click' deckt NUR die linke Maustaste ab, Mittelklick feuert
+  auxclick). Wer die Liste
   "aufräumt", indem er das innere oder äussere Element wegdedupliziert, kann den
   getesteten Mittelklick-/Navigations-Pfad STILL brechen. -> Vor jedem Eingriff in
   die Detection-/Generate-Schicht gilt der HISTORIE-CHECK: erst der echte Code,
@@ -471,7 +472,7 @@ miterledigen, sondern gebündelt abarbeiten.
   (c) DIE HIER GEFÜHRTEN ZEILENNUMMERN WAREN ZUM ABARBEITUNGSZEITPUNKT VERALTET
       (CLAUDE.md:601/1076/1144 — tatsächlich :606/:1133/:1413). Erneuter Beleg für
       die Regel "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER"
-      (Root-CLAUDE.md, "## Immer beachten"). Editiert wurde deshalb über den
+      (docs/immer-beachten.md). Editiert wurde deshalb über den
       WORTLAUT, nicht über die Nummer.
   (d) IN DEN ZWEI QUELLKOMMENTAREN WURDE DIE NUMMER GESTRICHEN, NICHT KORRIGIERT.
       Eine Phasennummer in einem Quellkommentar ist ein wandernder Zeiger; sie war
@@ -1837,7 +1838,7 @@ trägt, ist es das der ursprünglichen Messung.
   `docs/db-regeln.md` verlangt fuer genau diesen Fall, VORZULEGEN statt anzugleichen, und
   dieser Eintrag IST diese Vorlage.
 
-## Nachtrag 2026-08-14 — KANDIDAT für "## Immer beachten" (noch KEINE Regel)
+## Nachtrag 2026-08-14 — KANDIDAT für docs/immer-beachten.md (noch KEINE Regel)
 Eigener Abschnitt, weil ein Anhängen ans Dateiende den Eintrag sonst unter
 "Aus Phase 11 gehoben (2026-08-13)" einsortiert hätte — er stammt nicht von dort.
 Er hat heute keinen anderen Ort: Es existiert keine Standdatei, also auch keine

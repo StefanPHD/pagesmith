@@ -58,7 +58,8 @@ export function deliverableVariantB(published: PublishedLike): string | null {
  * WARUM HIER UND NICHT AM RIEGEL (das ist kein Stilfrage): actions.ts traegt
  * "use server" und darf AUSSCHLIESSLICH async-Funktionen als Werte exportieren —
  * eine exportierte Konstante dort loest beim Serverstart einen ReferenceError aus
- * (real aufgetretener 7c-2c-Bug, s. "## Immer beachten"). variant.ts ist die
+ * (real aufgetretener 7c-2c-Bug, s. docs/immer-beachten.md,
+ * "USE SERVER"-DATEIEN). variant.ts ist die
  * REINE Datei (KEINE Imports, kein server-only), die schon das Praedikat haelt:
  * Praedikat und sein menschenlesbares Negativ-Ergebnis liegen am selben Ort und
  * sind von Server UND Client importierbar.

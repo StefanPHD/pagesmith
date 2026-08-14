@@ -735,7 +735,8 @@ export default function CodeImporter({
   // darueber (cancelled-Guard, setState nur im then), mit EINEM bewussten Unterschied:
   //
   // safeAction STATT .catch() AUF DEN LEER-WERT. Die Achse ist nicht "Handler vs. Effekt",
-  // sondern ob ein UI-Zustand am Aufruf haengt (s. "## Immer beachten"): hier haengt ein
+  // sondern ob ein UI-Zustand am Aufruf haengt (s. docs/immer-beachten.md,
+  // "CLIENT-SEITIGE SERVER-ACTION-AUFRUFE"): hier haengt ein
   // FEHLERKANAL daran. Ein Wurf muss als "nicht ladbar" sichtbar werden, nicht als "keine
   // Daten" — der Ersatzwert ist deshalb {ok:false} und NICHT {ok:true, rows:[]}.
   //

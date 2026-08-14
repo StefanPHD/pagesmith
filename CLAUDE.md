@@ -71,23 +71,27 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       · eine AUFSCHLÜSSELUNG DER NUR SERVER-SEITIG ERFASSTEN CONVERSIONS JE ZIEL.
         (Wortwahl bewusst: "gerettet" ist an dieser Kachel verboten — s. "WORTWAHL
         DASHBOARD" in docs/immer-beachten.md.)
-      · die BEHEBUNG EINES DEFEKTS, den Phase 11 erzeugt hat (GEMESSEN 2026-08-12,
-        read-only am Code): Wird EIN Ziel abgelehnt und ein anderes erlaubt, entsteht
-        die Server-Zeile, die Browser-Bestätigung bleibt aus — der Nenner der
-        Adblocker-Kachel wächst ohne den Zähler, die Zahl steigt, obwohl nichts
-        geblockt wurde. HEUTE FÄLLT ES NICHT AUF, weil ohne Einwilligungs-Dialog nie
-        etwas abgelehnt wird; mit Phase 11.5 WIRD ES REAL.
-      BEIDE BRAUCHEN DIESELBE FEHLENDE DIMENSION und stehen NUR deshalb hier statt in
-      Phase 11.5: die events-Tabelle trägt keine Ziel-Spalte — genau die EIGENE
+      · die BEHEBUNG EINES DEFEKTS, den Phase 11 erzeugt hat — AM 2026-08-14 VON HIER
+        NACH "## Offene Punkte" GEWANDERT, Eintrag "DIE ADBLOCKER-KACHEL ZÄHLT EINE
+        ABGELEHNTE EINWILLIGUNG ALS VERLUST". GRUND DES UMZUGS: Er stand hier zwischen
+        Ideen ohne Termin und wurde deshalb wie eine gelesen; er ist ein GEMESSENER
+        Fehler mit benanntem Trigger. Der Verweis bleibt stehen, weil ihn sonst hier
+        sucht, wer diese Liste kennt.
+      DIE AUFSCHLÜSSELUNG BRAUCHT EINE FEHLENDE DIMENSION und steht NUR deshalb hier
+      statt in Phase 11.5: die events-Tabelle trägt keine Ziel-Spalte — genau die EIGENE
       ADDITIVE SPALTE, die für Ziele ohnehin vorgesehen ist (s. "TRACKING-source =
-      BEOBACHTUNGS-ORT, NIE ZIEL" in docs/immer-beachten.md).
+      BEOBACHTUNGS-ORT, NIE ZIEL" in docs/immer-beachten.md). DER AUSGEZOGENE DEFEKT
+      BRAUCHT DIESELBE Dimension — das war der Grund, warum beide am 2026-08-12
+      zusammen hier standen, und er gilt unverändert.
       DIE ZAHL "VIER" OBEN IST DER STAND VOM 2026-07-29 und wird NICHT überschrieben —
-      sie ist als Aussage über JENEN Tag richtig; mit diesen beiden sind es SECHS. Wer
-      sie heute als vollständige Liste liest, zählt zu niedrig.
+      sie ist als Aussage über JENEN Tag richtig; mit den beiden vom 2026-08-12 waren es
+      SECHS. HIER STEHEN SEIT DEM 2026-08-14 FÜNF, weil der Defekt ausgezogen ist. Wer
+      eine dieser Zahlen als heutige Liste liest, zählt falsch.
       DER SATZ, DASS DIE CHECKBOX NICHT WIEDER AUFGEHT, GILT FÜR SIE WÖRTLICH MIT:
       wird eine davon gebaut, bekommt sie eine EIGENE Scheibe mit eigenem Nachweis.
-      Befunde, Owner-Entscheidungen und Verortung: docs/aktiver-stand.md, "## 7.
-      Beschlossen und verortet — NICHT in dieser Phase gebaut".
+      Befunde, Owner-Entscheidungen und Verortung:
+      docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, "## 7. Beschlossen
+      und verortet — NICHT in dieser Phase gebaut".
 - [x] Phase 9 — A/B-Testing: ABGESCHLOSSEN & live bewiesen (2026-07-27 bis
       2026-07-29). Volle Herleitung: docs/claude-history/phase-9-ab-testing.md.
 - [x] Phase 10 — Workspace-Reorganisation: ABGESCHLOSSEN & live bewiesen
@@ -219,8 +223,8 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       Launch unverändert — EIN Ziel als Hybrid aus Browser-Tag und Server-Forward,
       die übrigen als reiner Server-Fan-Out.
       Befunde mit ihrem Rang, die vier Owner-Entscheidungen und die Verortung:
-      docs/aktiver-stand.md, "## 7. Beschlossen und verortet — NICHT in dieser
-      Phase gebaut".
+      docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, "## 7. Beschlossen
+      und verortet — NICHT in dieser Phase gebaut".
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.
@@ -427,6 +431,26 @@ kaputtgeht.
   Hebungs-Commit 92c1a3b). Die beiden übrigen Zahlen des Eintrags halten der Messung
   stand: 149 970 Bytes und 80 Regeln. HERKUNFT der beiden falschen: ein Diktat, das beim
   Eintragen bereits als zu niedrig gemeldet und damals nicht nachgezogen wurde.
+- DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
+  — mit einem Einwilligungs-Dialog wird der Defekt real; HEUTE FÄLLT ER NICHT AUF, weil
+  ohne Dialog nie etwas abgelehnt wird): GEMESSEN am 2026-08-12, read-only am Code.
+  DER MECHANISMUS: Wird EIN Ziel abgelehnt und ein anderes erlaubt, geht der Beacon hinaus
+  und die Server-Zeile entsteht, die Browser-Bestätigung bleibt aus — der Nenner der
+  Adblocker-Kachel wächst ohne den Zähler. Die Zahl steigt, obwohl nichts geblockt wurde:
+  Sie liest sich als Adblocker-Verlust und ist in Wahrheit eine Einwilligungs-Entscheidung.
+  Im Ein-Ziel-Pfad war das unmöglich — dort unterblieb ohne Einwilligung der ganze Beacon.
+  WAS DIE BEHEBUNG BRAUCHT: zu wissen, ob das betreffende Ziel JE EREIGNIS eingewilligt
+  war. Die events-Tabelle trägt keine Ziel-Spalte — genau die EIGENE ADDITIVE SPALTE, die
+  für Ziele ohnehin vorgesehen ist (s. "TRACKING-source = BEOBACHTUNGS-ORT, NIE ZIEL" in
+  docs/immer-beachten.md). Deshalb ist das eine ANALYTICS-Arbeit und keine Consent-Arbeit.
+  WARUM ER AM 2026-08-14 HIERHER GEWANDERT IST: Er stand in der Phase-8-Roadmap-Zeile
+  zwischen fünf IDEEN OHNE TERMIN UND OHNE ZUSAGE und wurde deshalb wie eine gelesen. Er
+  ist keine Idee, sondern ein GEMESSENER Fehler mit benanntem Trigger.
+  Was still kaputtgeht: Sobald ein Einwilligungs-Dialog steht, meldet die Kachel
+  Adblocker-Verluste, die keine sind — und das ist die Marquee-Metrik des Produkts, an
+  der man der Zahl nichts ansieht.
+  Herleitung: docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, "## 7.
+  Beschlossen und verortet — NICHT in dieser Phase gebaut".
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

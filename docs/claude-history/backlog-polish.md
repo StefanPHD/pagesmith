@@ -1881,3 +1881,20 @@ Kandidatenliste. Gehoben wird er NICHT in dieser Runde.
   ABGRENZUNG ZUR BESTEHENDEN WERKZEUG-REGEL: Jene handelt davon, dass ein Werkzeug den
   GEGENSTAND still verändert, und ihre Gegenrichtung davon, dass es einen BEFUND
   ERZEUGT. Hier ENTFERNT es einen Befund — eine dritte Richtung.
+- EINE ZAHL IN EINER COMMIT-MESSAGE IST NACH DEM PUSH NICHT MEHR KORRIGIERBAR — ALSO
+  WIRD SIE VORHER GEMESSEN.
+  DIE GEMESSENEN FÄLLE (2026-08-14): Drei Zahlen kamen aus der Erinnerung des
+  Architekten in Commit-Messages und waren alle drei falsch — "rund 13 KB" (gemessen
+  10 293 Bytes), "elf Stellen" (gemessen 18 Hunks), "sechsmal" (gemessen siebenmal).
+  WAS STILL KAPUTTGEHT: Der Diff wird geprüft, die Message nicht. Sie beschreibt ihn,
+  aber niemand hält sie gegen ihn — und nach dem Push ist sie nur per Force zu ändern.
+  Bei "Build in Public" wird genau dieser Verlauf gelesen.
+  WAS SIE GEFANGEN HAT: dass die Zahlen VOR dem Push gegen die eigene Messung gehalten
+  wurden, solange ein Amend ohne Force möglich war. Kein Gate hat das erzwungen.
+  DIE ABLEITUNG, falls dies gehoben wird: Jede Zahl in einer Commit-Message gehört
+  gegen die Messung derselben Runde geprüft, BEVOR gepusht wird — und wo sie abweicht,
+  wird amendet, nicht gepusht.
+  ABGRENZUNG ZUR BESTEHENDEN REGEL "jede Zahl ist gemessen oder ausdrücklich als
+  geschätzt gekennzeichnet": Jene gilt Dokumenten und Berichten, die sich korrigieren
+  lassen. Hier ist der TRÄGER nach dem Push unveränderlich — das ist der Unterschied,
+  der sie zu einer eigenen Regel macht.

@@ -211,8 +211,8 @@ vollständig — die aktive Datei IST bereits eigenständig. Der Ablauf verkürz
 sich auf zwei Schritte:
 
 1. **Hebung (Ermessen wie bisher):** dauerhaft gültige Regeln aus
-   `docs/aktiver-stand.md` nach "## Immer beachten" / "## Offene Punkte"
-   heben, eigener Commit.
+   `docs/aktiver-stand.md` nach `docs/immer-beachten.md` / `CLAUDE.md`,
+   "## Offene Punkte" heben, eigener Commit.
 2. **Archivierung (mechanisch, KEIN Anker nötig):** Kopf im Muster der
    bestehenden Historien-Dateien voranstellen, die Datei nach
    `docs/claude-history/phase-N-<thema>.md` umbenennen, den Roadmap-Eintrag
@@ -510,8 +510,8 @@ Ein Vorschlag, der eine davon bricht, ist kein Vorschlag.
 > **Provenienz:** Das hier ist eine **Landkarte zur Orientierung**, verdichtet
 > aus der `CLAUDE.md` und — für einzelne Punkte, die dort nicht stehen — aus den
 > Phasen-Historien unter `docs/claude-history/`. Die verbindliche Fassung mit
-> vollem Wortlaut steht in der `CLAUDE.md` unter „## Immer beachten" und in den
-> Phasen-Sektionen. Findest du eine Aussage von hier dort nicht wieder, liegt sie
+> vollem Wortlaut steht in `docs/immer-beachten.md` und in den
+> Phasen-Sektionen der `CLAUDE.md`. Findest du eine Aussage von hier dort nicht wieder, liegt sie
 > in der History — **nicht** annehmen, sie sei überholt. Bei einem Eingriff gilt
 > **Code-first**: erst den echten Code lesen, dann gezielt das WARUM.
 > Die Begründungen sind der wertvollste Teil: Ohne sie wird eine Regel beim

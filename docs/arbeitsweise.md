@@ -284,6 +284,7 @@ History, eine Zahl ohne Messung.
 
 ```
 AUFKLÄRUNG — READ-ONLY. KEINE Änderung, KEIN Commit.
+== AUFTRAG 0 ==   PFLICHT-GATE, BEIDE Dateien — s. „Prompt-Bauform für CC".
 == AUFTRAG 1..n ==   (je eine präzise Frage, am Code zu beantworten)
 == INVARIANTEN ==
 (i) READ-ONLY. (ii) Jede Aussage mit Datei:Zeile, keine Vermutung als Befund.
@@ -309,6 +310,42 @@ Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
   lädt automatisch, die Standdatei nicht — ein Gate im Prompt ist der
   eigentliche Mechanismus, die `CLAUDE.md`-Zeile nur der sichtbare Hinweis
   darauf.
+- **Auftrag 0 — ZWEITE DATEI, seit dem 2026-08-14:** `docs/immer-beachten.md`.
+  Sie lädt **NICHT** automatisch und trägt rund achtzig Regeln; ihr Gate stand
+  bisher **nur** im Stub der `CLAUDE.md` — also in der schwächeren Hälfte. **Die
+  Begründung des Bullets darüber trägt wörtlich auch für sie:** ein Gate im
+  Prompt ist der eigentliche Mechanismus, die `CLAUDE.md`-Zeile nur der
+  sichtbare Hinweis darauf. Der Bullet darüber wird dadurch **ergänzt, nicht
+  ersetzt** — Auftrag 0 umfasst ab jetzt **BEIDE** Dateien.
+
+  **WAS CC IM ERSTEN SATZ DES BERICHTS NENNT:** aus `docs/immer-beachten.md` die
+  **Marke** aus ihrer ersten Zeile UND die **Überschrift der letzten Regel** der
+  Datei; aus der Standdatei — falls sie existiert — die Scheiben-Überschrift wie
+  oben.
+  *Warum zwei Angaben aus einer Datei — der Grund gehört dazu, sonst kürzt ihn
+  jemand weg:* Die Marke steht im Stub der `CLAUDE.md` und ließe sich von dort
+  abschreiben, ohne die Datei je zu öffnen. Die letzte Regelüberschrift steht
+  ausschließlich am ENDE jener Datei, ändert sich mit jeder angefügten Regel und
+  ist nicht zu erraten.
+
+  **DER UNTERSCHIED ZWISCHEN DEN BEIDEN DATEIEN, und er ist der wichtigere
+  Teil:** Die Standdatei **darf** fehlen — dann läuft keine Phase, und CC sagt
+  das ausdrücklich und fragt nach (unverändert, s. oben).
+  `docs/immer-beachten.md` fehlt **NIE** legitim: Fehlt sie, hat CC ohne rund
+  achtzig Regeln gearbeitet. Dann wird **NICHT** nachgefragt und **NICHT**
+  weitergearbeitet — **ANHALTEN und melden**, bevor irgendetwas anderes
+  passiert.
+
+  **DAS GATE GILT IN JEDEM Bau- UND Aufklärungs-Prompt, nicht nur im ersten der
+  Sitzung.** *Grund:* Eine Sitzung läuft lang, Kontext wird unterwegs
+  verdichtet, und was in Runde 1 gelesen wurde, ist in Runde 20 nicht garantiert
+  präsent — bei einer Datei dieser Größe erst recht nicht.
+
+  **DIE ZWEITE HÄLFTE, ohne die das Gate folgenlos bleibt:** Fehlt die Angabe in
+  CCs Bericht, ist das **beim Review zu bemerken**. Ein Gate, das niemand liest,
+  ist keines. Das ist die **einzige** Stelle dieser Regel, an der **kein**
+  Mechanismus greift — sie hängt allein an der Aufmerksamkeit des Lesers, und
+  genau deshalb steht sie hier ausdrücklich.
 - **KONTEXT:** was, warum, Verweis auf die verbindliche `CLAUDE.md`-Sektion.
 - **HARTER SCOPE-WÄCHTER:** welche Dateien geändert werden — und **explizit
   welche nicht** („ingest.ts / resolve.ts / proxy.ts unberührt"). Der

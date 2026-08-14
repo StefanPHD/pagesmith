@@ -1925,3 +1925,34 @@ Kandidatenliste. Gehoben wird er NICHT in dieser Runde.
   am 2026-08-14): Der Kopf jener Datei trägt heute SIEBEN durchnummerierte Unterschiede;
   die beiden fehlenden sind mit dem Archivierungs-Commit `3ad7995` nachgetragen worden.
   Kandidat ist die LEHRE, nicht der Fall.
+- EINE ALS UNGEPRÜFT GEFÜHRTE FORM ALS PASSEND ZU BEHAUPTEN IST EIN VERGLEICHS-FEHLER,
+  KEIN WISSENSLÜCKEN-FEHLER — UND ES BRAUCHT DAFÜR KEINE WIDERLEGUNG IM REPO, EIN
+  VORBEHALT GENÜGT.
+  DER GEMESSENE FALL (gefunden am 2026-08-14): In der Roadmap-Zeile 11.1 stand seit dem
+  2026-08-11 "Immerhin: das Zugangsdatum ist ein nicht ablaufendes Token und passt in
+  die Geheimnis-Tabelle." Im Repo lag zu diesem Zeitpunkt KEIN Gegenbeweis — sondern
+  eine EINSTUFUNG, und die ist der Maßstab: Der Kommentar am CHECK in
+  `supabase/migrations/0021_project_secrets.sql` nennt Ziele, "deren Zugangsdaten-FORM
+  ungeprueft ist oder bekannt NICHT auf 'ein Geheimnis pro Zeile' passt (OAuth-artige
+  Anmeldungen brauchen mehrere Werte nebeneinander)". Das sind ZWEI Hälften; für
+  LinkedIn galt am 2026-08-11 die ERSTE — UNGEPRÜFT. Drei Tage später stand in der
+  Roadmap, die Form passe. Der Fehler war also nicht, eine bekannte Widerlegung
+  übersehen zu haben, sondern eine ausdrücklich als ungeprüft geführte Form als geprüft
+  zu BEHAUPTEN.
+  WAS STILL KAPUTTGEHT: Ein Vorbehalt liest sich wie eine offene Frage, nicht wie ein
+  Verbot — also hält niemand die neue Aussage dagegen, und sie sieht danach geprüft aus,
+  obwohl sie den einzigen Prüfstand des Repos gerade übergeht. Mehr Recherche nach
+  aussen verhindert das nicht: die Einstufung stand schon da, sie wurde nur nicht
+  gelesen.
+  DIE ABLEITUNG, falls dies gehoben wird: Wer eine Aussage über die FORM oder EIGNUNG
+  eines Werts in ein Dokument schreibt, sucht vorher im Repo die Stelle, die diese Form
+  BESCHRÄNKT ODER EINSTUFT — Constraint, Migration, Kommentar. Führt sie den Fall als
+  UNGEPRÜFT, ist "es passt" nicht schreibbar; schreibbar ist dann nur "ungeprüft" oder
+  das Ergebnis einer Prüfung, die auch stattgefunden hat.
+  ABGRENZUNG ZU DEN BEIDEN NACHBAR-KANDIDATEN, gegen DIESE Fassung nachgeprüft — beide
+  halten, aber an anderer Stelle als zuvor: "Ein Dokument kann behaupten, etwas stehe im
+  Code" handelt von einem BELEG, dessen Vollzug nie stattfand; hier ist der Beleg
+  vorhanden und vollzogen, er sagt nur etwas anderes, als die neue Aussage unterstellt.
+  "Eine Messung, die die Erwartung trifft, wird nicht nachgeprüft" setzt eine MESSUNG
+  voraus, der die Gegenprobe fehlte; hier gab es gar keine — an ihrer Stelle stand der
+  Vorbehalt, der eine verlangt hätte.

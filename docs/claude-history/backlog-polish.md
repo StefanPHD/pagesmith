@@ -6,7 +6,11 @@ zählten sie stillschweigend als offene Punkte mit und liessen sie länger ausse
 als sie ist. Ihr Inhalt ist wertvoll und bleibt WÖRTLICH unverändert; sie stehen nur
 an anderer Stelle.
 WARUM DIESER ABSCHNITT OBEN STEHT und nicht am Dateiende: Neue Backlog-Einträge
-werden ans DATEIENDE angehängt. Läge dieser Abschnitt dort, landete jeder künftige
+werden ans DATEIENDE angehängt — seit dem 2026-08-13 aber unter eine EIGENE
+ÜBERSCHRIFT, wenn dort bereits eine datierte Sektion steht (heute "Aus Phase 11
+gehoben (2026-08-13)"); sonst rutscht der neue Eintrag stillschweigend unter eine
+FREMDE HERKUNFT. Beim Eintrag vom 2026-08-14 ist genau das aufgefallen und so gelöst
+worden. Läge dieser Abschnitt dort, landete jeder künftige
 Eintrag stillschweigend INNERHALB der Nicht-Vorhaben. Oben kann das nicht passieren.
 
 - DEBUGGING-MERKSATZ (aus dem "Autosave"-Fehlalarm dieser Phase): Bei Widerspruch
@@ -1898,3 +1902,26 @@ Kandidatenliste. Gehoben wird er NICHT in dieser Runde.
   geschätzt gekennzeichnet": Jene gilt Dokumenten und Berichten, die sich korrigieren
   lassen. Hier ist der TRÄGER nach dem Push unveränderlich — das ist der Unterschied,
   der sie zu einer eigenen Regel macht.
+- EIN DOKUMENT KANN JAHRELANG BEHAUPTEN, ETWAS STEHE IM CODE, OHNE DASS ES DORT STEHT —
+  UND EINE DURCHNUMMERIERTE LISTE BEHAUPTET DABEI VOLLSTÄNDIGKEIT.
+  DER GEMESSENE FALL (gefunden am 2026-08-13 beim Gate vor der Archivierung): Die
+  Standdatei führte seit dem 2026-08-05 zwei Adapter-Unterschiede mit der Angabe, sie
+  seien im Kopf von `src/lib/capi/pinterest-forward.ts` aufgezählt. Sie waren es nie.
+  Jene Liste zählte FÜNF durch — und eine durchnummerierte Liste liest sich als
+  vollständig, auch wenn sie es nicht ist.
+  WAS STILL KAPUTTGEHT: Ein Adapter-Bauer liest die Liste AM ORT DER ARBEIT und glaubt
+  ihr. Die Standdatei, die die zwei fehlenden trug, liest er nicht — und nach der
+  Archivierung hätte er sie gar nicht mehr gelesen.
+  WAS ES GEFANGEN HAT: nicht die Liste und nicht der Vermerk, sondern ein GATE VOR DER
+  LÖSCHUNG — die Frage "steht hier etwas, das gelesen werden muss und nur hier steht?",
+  abschnittsweise durchgegangen.
+  DIE ABLEITUNG, falls dies gehoben wird: Wer eine Aussage der Form "steht im Code" in
+  ein Dokument schreibt, trägt sie im selben Zug DORT ein. Und wer eine nummerierte
+  Liste erweitert, prüft, ob die Zahl davor mitwandert.
+  ABGRENZUNG ZUR BESTEHENDEN REGEL "eine Regel kann gültig bleiben, während ihr Beleg
+  falsch wird": Jene handelt vom ALTERN eines einmal richtigen Belegs. Hier war der
+  Beleg NIE richtig — der Vollzug hat nie stattgefunden.
+  DER FALL SELBST IST ERLEDIGT, damit ihn niemand ein zweites Mal repariert (GEMESSEN
+  am 2026-08-14): Der Kopf jener Datei trägt heute SIEBEN durchnummerierte Unterschiede;
+  die beiden fehlenden sind mit dem Archivierungs-Commit `3ad7995` nachgetragen worden.
+  Kandidat ist die LEHRE, nicht der Fall.

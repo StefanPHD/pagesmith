@@ -1795,6 +1795,14 @@ trägt, ist es das der ursprünglichen Messung.
   Doppelung spaeter findet, soll sie als BEKANNTE SCHULD lesen und nicht als
   Nachlaessigkeit — sie ist gesehen, benannt und datiert, und die Entscheidung, sie
   vorerst stehen zu lassen, ist bewusst gefallen.
+  TRIGGER EINGETRETEN AM 2026-08-14 (GEMESSEN am Repo): Mit der Auslagerung von
+  "## Immer beachten" nach docs/immer-beachten.md steht CLAUDE.md bei 70 144 Bytes —
+  79 856 Bytes unter dem 150k-Ladelimit statt der 30 von oben. Die Platz-Begruendung
+  traegt damit nicht mehr, und die Zusammenfuehrung ist ABARBEITBAR.
+  SIE IST IN DIESEM NACHTRAG AUSDRUECKLICH NICHT AUSGEFUEHRT WORDEN: Sie aendert eine
+  Regel ueber ZWEI Dateien hinweg und gehoert damit in die naechste Hebung, nicht in
+  eine Ortsangaben-Runde. WAS SICH GEAENDERT HAT, IST DER GEMEINSAME ORT: nicht mehr
+  CLAUDE.md, sondern docs/immer-beachten.md — dort ist der Platz.
 - DEKLARATIVE SCHEMAS — EINE OFFENE FRAGE, AUSDRUECKLICH KEINE EMPFEHLUNG (angelegt
   2026-08-13): BEFUND, GELESEN (Supabase-Blog zu Agenten-Evals, 31.07.2026; vom Owner in
   den Auftrag eingebracht, von dieser Runde NICHT selbst nachgeschlagen — die Angabe ist
@@ -1838,7 +1846,7 @@ trägt, ist es das der ursprünglichen Messung.
   `docs/db-regeln.md` verlangt fuer genau diesen Fall, VORZULEGEN statt anzugleichen, und
   dieser Eintrag IST diese Vorlage.
 
-## Nachtrag 2026-08-14 — KANDIDAT für docs/immer-beachten.md (noch KEINE Regel)
+## Nachtrag 2026-08-14 — KANDIDATEN für docs/immer-beachten.md (noch KEINE Regeln)
 Eigener Abschnitt, weil ein Anhängen ans Dateiende den Eintrag sonst unter
 "Aus Phase 11 gehoben (2026-08-13)" einsortiert hätte — er stammt nicht von dort.
 Er hat heute keinen anderen Ort: Es existiert keine Standdatei, also auch keine
@@ -1859,3 +1867,17 @@ Kandidatenliste. Gehoben wird er NICHT in dieser Runde.
   ZWEITER TEIL, aus demselben Lauf: Ein Zeitfilter am Werkzeug arbeitet in UTC, die
   Zeitstempel im Repo nicht. Wer nach Datum filtert, filtert am AUTOR-Datum per
   Zeichenvergleich.
+- EIN FILTER, DER DIFF-PRÄFIXE ENTFERNT, VERSCHLUCKT ZEILEN, DIE SELBST MIT DEM
+  PRÄFIX-ZEICHEN BEGINNEN.
+  DER GEMESSENE FALL (2026-08-14): Ein Filter gegen `^(\+\+\+|---)` sollte die
+  Diff-Kopfzeilen entfernen — er hätte jede GELÖSCHTE SQL-Kommentarzeile verschluckt,
+  weil "-" (Diff-Präfix) plus "--" (SQL-Kommentar) im Diff als "---" erscheint. Der
+  Nachweis "keine ausführbare Zeile berührt" wäre damit TRIVIAL WAHR gewesen.
+  WAS STILL KAPUTTGEHT: Der Filter meldet keinen Fehler, er meldet WENIGER. Und
+  weniger sieht aus wie ein sauberes Ergebnis.
+  WAS IHN GEFANGEN HAT: zwei unabhängige Instrumente statt eines, das zweite mit
+  POSITIVKONTROLLE (eine ausführbare Zeile angehängt und geprüft, dass der Wächter
+  anschlägt).
+  ABGRENZUNG ZUR BESTEHENDEN WERKZEUG-REGEL: Jene handelt davon, dass ein Werkzeug den
+  GEGENSTAND still verändert, und ihre Gegenrichtung davon, dass es einen BEFUND
+  ERZEUGT. Hier ENTFERNT es einen Befund — eine dritte Richtung.

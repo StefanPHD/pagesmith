@@ -175,6 +175,20 @@ Stefan"* — nicht der fertige Text.
 **Vor dem Live-Test wird das Deployment verifiziert.** Sonst testet Stefan die
 alte Version — real passiert.
 
+**PRÄZISIERUNG ZU „DERSELBE Commit" (letzte Zeile der Kadenz).** Gemeint sind
+**Vermerk UND Verdichtung in EINEM Commit** — **nicht** der Code-Commit. Der
+Code ist an dieser Stelle längst gepusht; ihn zu erreichen hieße, einen
+gepushten Commit zu amenden. Ein Widerspruch zur Konvention
+„`docs(claude)`-Commits bleiben getrennt von `feat`/`fix`" besteht damit nicht:
+Es sind zwei verschiedene Commits, und die Doku-Runde bleibt ihr eigener.
+
+**ZUR REIHENFOLGE — der Satz spart Runden:** Der Vermerk trägt bereits den HASH
+des Code-Commits und das ERGEBNIS des Live-Tests; beides ist zu diesem Zeitpunkt
+bekannt. Wird der Vermerk stattdessen vorgezogen und in den Code-Commit gelegt,
+braucht es hinterher eine ZWEITE Doku-Runde, um Hash und Live-Ergebnis
+nachzutragen. **BELEG:** In der Sitzung vom 2026-08-13 ist genau das **siebenmal**
+passiert (GEMESSEN am Repo, 2026-08-14, `git log`).
+
 **Ausnahme:** Reine Doku-Commits laufen **einstufig** — ein Prompt, ein Diff,
 ein GO. Dort ist der Diff das Artefakt; ein Plan-Review prüfte dieselbe Sache
 zweimal. Zweistufig gilt für Bau-Scheiben.
@@ -205,6 +219,60 @@ sich auf zwei Schritte:
    auf Haken + einen Verweissatz kollabieren, den Detail-Archiv-Eintrag
    ergänzen, `docs/aktiver-stand.md` danach LÖSCHEN — nicht leer stehen
    lassen, eine leere Datei sähe aus wie eine Phase ohne Inhalt.
+
+### Die Standdatei — Entstehung und Fortschreiben
+
+Der Ablauf ab Phase 10 regelte bisher nur das **Ende** (Hebung, Archivierung,
+Löschen) und die **Abwesenheit** (Auftrag 0). Wie sie **entsteht**, stand
+nirgends.
+
+- **WANN:** zu Beginn einer neuen Phase, **sobald die erste Scheibe
+  zugeschnitten wird** — nicht später, nicht „wenn genug zusammengekommen ist".
+- **WER:** **CC legt sie an**, auf Anweisung der Chat-Instanz.
+- **WAS SIE SOFORT TRÄGT:** das Abschnitts-Verzeichnis im Kopf (s. den nächsten
+  Abschnitt), den Gegenstand der Phase, und den Hinweis, dass sie ab jetzt das
+  **Pflicht-Gate jedes Bau- und Aufklärungs-Prompts** ist.
+
+**DIE LÜCKE DAZWISCHEN, ausdrücklich:** Zwischen Archivierung und Neuanlage
+existiert **KEINE** Standdatei. Befunde, die in dieser Zeit anfallen, haben
+keinen Ort — sie gehören ins Delta oder in den Backlog, und wer sie nirgends
+unterbringt, verliert sie.
+
+**Das Auftrag-0-Gate bleibt unverändert** („FALLS sie existiert … frage nach"):
+Es regelt die Abwesenheit und wird durch diese Regel **ergänzt, nicht ersetzt**.
+
+**Fortschreiben während der Phase.** Zwischen Anlage und Archivierung ist die
+Standdatei das mitlaufende Protokoll der Phase.
+
+- **WANN geschrieben wird:** mit dem Abschluss-Vermerk einer Scheibe, nach dem
+  Live-Test, im selben Zug wie die Verdichtung des Zuschnitts — s. Kadenz oben,
+  hier nicht wiederholt.
+- **WAS SIE TRÄGT:** abgeschlossene Scheiben-Vermerke · Entscheidungen, die über
+  ihre Scheibe hinaus binden · den Vorrat (gemeldet, nicht gebaut) ·
+  Hebungs-Kandidaten.
+
+**DIE NUMMERN SIND STABIL UND WERDEN NIE NEU VERGEBEN.** Ein neuer Vermerk tritt
+**hinten** an, auch wenn er der jüngste ist. *Grund, teuer bezahlt:* Eine
+Nachnummerierung hat in Phase 11 lebende Verweise getötet, und die Reparatur
+kostete zwei Runden.
+
+**DIE LÜCKEN-REGEL.** Ein Vermerk **ohne** Commit-Nummer ist der jüngste, noch
+nicht committete. Es darf immer nur **EINE** Lücke geben — stehen zwei da, ist
+etwas liegengeblieben, und der Wegweiser zeigt auf die falsche Scheibe.
+
+**PROVENIENZ AN JEDER ANGABE:** GEMESSEN (am Repo oder live, mit Datum) oder
+GELESEN (mit Quelle). Als Ort steht der **Symbolname**, nie eine Zeilennummer —
+die altert mit dem nächsten Commit.
+
+### Standdateien — Vorgabe für den Kopf
+
+**Jede künftige Standdatei trägt im Kopf ein ABSCHNITTS-VERZEICHNIS.** *Grund:*
+Die letzte ist auf 2 800 Zeilen gewachsen, und jeder Prompt verlangte „lies sie
+vollständig". Mit Verzeichnis ist „lies Abschnitt X plus das Verzeichnis" eine
+belegbare Aussage über den Umfang statt einer Hoffnung.
+
+**AUSDRÜCKLICH: Das Pflicht-Gate bleibt.** Geändert wird, WIE VIEL gelesen
+werden muss, nicht OB.
 
 ### Aufklärung vor dem Eingriff
 
@@ -620,7 +688,87 @@ Ein Vorschlag, der eine davon bricht, ist kein Vorschlag.
   **Bildkontingent** der limitierende Faktor, nicht der Text — Screenshots
   lohnen nur, wo das Bild selbst die Aussage ist (UI-Zustände,
   DevTools-Panels). Jeder vermiedene Chatwechsel spart Kontext.
-- **Welche Dateien du dir hochladen lässt:** sofort nur die `CLAUDE.md`. Alles
-  andere gezielt bei Bedarf — `security-manifest-full.md` bei Manifest-Arbeit,
-  `future-roadmap.md` wenn eine Entscheidung eine spätere Richtung versperren
-  könnte, `docs/claude-history/phase-*.md` für das WARUM einer Regel.
+- **Was hochgeladen wird.** Die Chat-Instanz bekommt: `CLAUDE.md` ·
+  `docs/arbeitsweise.md` · das Delta. CC bekommt: `CLAUDE.md` (lädt jede Session
+  automatisch) · die Standdatei, sobald sie existiert. Alles andere gezielt bei
+  Bedarf — `security-manifest-full.md` bei Manifest-Arbeit, `future-roadmap.md`
+  wenn eine Entscheidung eine spätere Richtung versperren könnte,
+  `docs/claude-history/phase-*.md` für das WARUM einer Regel.
+
+### Die Übertragung
+
+Der konstante Teil der Übergabe ist dieses Dokument, der flüchtige das
+**Übergabe-Delta**. Was hier bisher fehlte: wann das Delta geschrieben wird, von
+wem, in welcher Form und mit welcher Gliederung. Folge: Jede Instanz musste auf
+die Form hingewiesen werden, weil sie sie nur aus dem vorigen Delta
+rekonstruieren konnte.
+
+**Wer schreibt es — und wofür.** Das Delta schreibt die **Chat-Instanz** (der
+Architekt). **CC bekommt es nie und schreibt es nie** — konsistent mit dem Kopf
+dieses Dokuments („CC bekommt dieses Dokument nicht."). Das Delta trägt den
+FLÜCHTIGEN Teil der Übergabe, dieses Dokument den konstanten. Seine Abschnitte
+beginnen bei **5**, weil 1–4 hier stehen — s. Kopf, „Die Abschnittsnummern sind
+bewusst lückenhaft".
+
+**Der Auslöser: ausschließlich ein expliziter Anstoß.** Die Chat-Instanz
+schreibt das Delta **nur, wenn Stefan es ausdrücklich verlangt.** Es gibt
+**keine** automatischen Auslöser mitten in der Sitzung. *Grund:* Wörter wie
+„gepusht", „morgen" oder „später" fallen in einer Sitzung dutzendfach. Eine
+Instanz, die daraufhin ungefragt ein Übergabe-Dokument vorlegt, unterbricht den
+Arbeitsfluss genau dort, wo gerade gedacht wird — und der Preis wäre höher als
+der Nutzen. **Ausdrücklich, damit es niemand für ein Versehen hält:** Das Delta
+ist eine ANGEFORDERTE Leistung, kein Automatismus. Eine Instanz, die es
+unaufgefordert schreibt, hat nicht sorgfältig gehandelt, sondern eine
+Entscheidung übergangen, die dem Owner gehört.
+
+**Eine einzige Erinnerung ist erlaubt, mehr nicht.** Zeigt sich ein klares
+Schluss-Signal (Stefan kündigt eine Unterbrechung an, eine Phase ist
+abgeschlossen, er fragt, ob noch etwas offen ist), darf die Instanz **einmal pro
+Sitzung mit EINEM Satz** daran erinnern, dass das Delta aussteht. Kein Dokument,
+kein Entwurf, keine zweite Erinnerung, kein Nachfassen — Stefan entscheidet.
+*Grund:* Der reale Ausfall ist nicht „vergessen und morgen nachgeholt", sondern
+Kontextgrenze, Absturz oder geschlossener Browser. Dann ist die Sitzung weg und
+das Delta mit ihr. Ein Satz kostet nichts und schließt genau diese Lücke.
+
+**Die Gliederung — zum ABSCHREIBEN, nicht zum Rekonstruieren.** Wer eine Form
+aus einer Beschreibung nachbaut, erfindet jedes Mal eine andere. Deshalb steht
+je Abschnitt, was hineingehört — und was nicht.
+
+**KOPF:** Stand-Datum · Arbeitssprache · was das Dokument ist · Verweis auf
+dieses Dokument für den konstanten Teil · die **FEHLERWEGE-LISTE** mit **zwei**
+Teilen:
+
+- **(a) Fehlerwege der Dokumentart:** ein Delta führt eine Frage, die nie
+  stand · reicht eine überholte Beschreibung weiter · kommt leer an · verweist
+  auf eigenen, unfertigen Text · wird vergessen.
+- **(b) Fehlerwege des ARCHITEKTEN in der letzten Sitzung:** welche Prämissen
+  eine Messung gekippt hat. Dieser Teil ist neu und hatte bisher keinen Ort; er
+  ist für die nächste Instanz die nützlichste Einzelaussage.
+
+**5. STAND** — mit zwei benannten Teilen: **was steht** (erledigt, bewiesen, mit
+Provenienz) und **SPERREN** (Zahlen oder Zustände, die den nächsten Schritt
+blockieren). Der zweite Teil fehlte bisher — eine Sperre liest sich im
+Stand-Abschnitt wie eine Beschreibung.
+*NICHT hinein:* Protokolle, Mutationsergebnisse, Diff-Zahlen.
+
+**6. NÄCHSTER SCHRITT** — je Punkt GETRENNT: was zu tun ist · welche AUFLAGE
+daran hängt · was ausdrücklich NICHT dazugehört. Wo eine Reihenfolge zwingend
+ist, steht der Grund dabei.
+*NICHT hinein:* Zuschnitte, Prompts, Entwürfe.
+
+**7. WAS AN ENTSCHEIDUNGEN NEU IST** — nur, was einen Zuschnitt blockieren oder
+still falsch machen kann. Je Entscheidung: die Entscheidung · ihr Grund · ihre
+GRENZE (worauf sie ruht und wann sie kippt).
+*NICHT hinein:* Entscheidungen ohne Folge für den nächsten Bau.
+
+**8. NEBENGLEIS** — was Aufmerksamkeit braucht, bevor jemand baut · was still
+ist und bleibt · was unverändert offen ist.
+*NICHT hinein:* alles, was einen Ort außerhalb des Deltas hat, ohne dass der
+Ort genannt wird.
+
+**Das Empfangs-Gate.** Die neue Instanz nennt in ihrer **ERSTEN** Antwort die
+Abschnitte, die sie vorgefunden hat — **je Datei, mit Überschrift**. Fehlt eine
+Datei oder ein Abschnitt, ist es sofort sichtbar statt nie. **Dieselbe Bauform
+wie das „Auftrag 0"-Gate für CC** (s. Abschnitt 3, „Prompt-Bauform für CC"):
+Das Gate im Empfänger ist der eigentliche Mechanismus, ein Hinweis im
+Absender-Dokument nur der sichtbare Verweis darauf.

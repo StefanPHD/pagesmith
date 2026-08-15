@@ -642,6 +642,23 @@ WAS DAMIT OFFEN IST UND HIER NICHT ENTSCHIEDEN WIRD: Der Titel-Zeiger in db-stan
 braucht die Titel weiterhin an einem auffindbaren Ort; ein Pfad-Zeiger auf diese Datei
 existiert nicht mehr.
 
+## Anbieter-Befunde der Fan-Out-Ziele — AUSGELAGERT nach docs/ziel-befunde.md
+Was über die Schnittstellen der Fan-Out-Ziele GEMESSEN und GELESEN ist (verlangte Felder,
+Statuscodes, Rumpfformen, stille Fehlzustände, taugliche Live-Test-Instrumente), steht je
+Ziel in docs/ziel-befunde.md. Diese Datei wird NICHT automatisch geladen.
+PFLICHT-STOPP, KEINE EMPFEHLUNG: Wer ein Fan-Out-Ziel zuschneidet, einen Adapter baut, beim
+Anbieter recherchiert oder eine Live-Test-Anleitung dafür schreibt, LÄDT
+docs/ziel-befunde.md ZUERST — vor dem Plan, nicht während des Baus. Ohne sie plant man
+gegen eine überholte Fassung: die LinkedIn-Befunde standen bis zum 2026-08-15 als GELESEN
+in der Roadmap-Zeile 11.1, und die Messung dieses Tages hat eine ihrer Angaben widerlegt.
+UND AUCH DANN IST SIE KEINE QUELLE: Ein Dokument beschreibt ein fremdes System, es belegt
+es nicht. Was gilt, steht am ENDPUNKT DES ANBIETERS — gemessen wird mit einem Aufruf gegen
+die Schnittstelle, nicht abgelesen. Ein Anbieter kann sein Verhalten zudem ändern, ohne
+dass hier irgendetwas rot wird.
+DER EINTRAG UNTER "## Aktive Dokumente" BLEIBT DANEBEN STEHEN und wird von diesem Abschnitt
+nicht ersetzt: dort steht, WAS die Datei ist, hier, WANN sie Pflicht wird — dieselbe
+Aufteilung wie bei docs/db-stand.md.
+
 ## Aktiver Stand — Verfahren ab Phase 10
 
 Ab Phase 10 wird der aktive Stand einer laufenden Phase NICHT mehr hier

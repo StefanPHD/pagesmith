@@ -472,6 +472,44 @@ kaputtgeht.
   (Phase 9): eine „anonyme" Zufalls-ID in einem First-Party-Cookie zur
   Besucher-Identifikation wäre ein fingerprint-artiges Merkmal und löst dieselbe Grenze
   aus — auch das keine Option ohne eine vorherige Entscheidung hier.
+  ENTSCHIEDEN AM 2026-08-15 (OWNER) — DREI DER VIER FRAGEN SIND BEANTWORTET. DER TEXT
+  DARÜBER BLEIBT UNVERÄNDERT STEHEN und wird von diesem Block NICHT ersetzt: Er nennt
+  Trigger und Bindungen, die weiter gelten — die 30-Tage-Retentionspflicht, die
+  Zwei-Ebenen-Trennung und das entschiedene Nein zum Fingerprinting.
+  PROVENIENZ: OWNER-ENTSCHEIDUNG (2026-08-15). KEINE Messung, KEINE Ableitung — eine
+  FESTLEGUNG.
+  DIE FESTLEGUNG: Es werden KEINE fremden Nutzer-Identitäten in der eigenen Datenbank
+  gespeichert — auch nicht als Pseudonym und auch nicht als Hash. Ein
+  Identitäts-Merkmal wird ausschliesslich DURCHGELEITET: im Arbeitsspeicher
+  entgegengenommen, an das Ziel weitergereicht, danach nicht behalten. events bleibt
+  damit identitätsfrei.
+  WAS DAMIT BEANTWORTET IST — die drei Fragen dieses Eintrags, je einzeln:
+  · WAS erfasst wird: ein Identitäts-Merkmal, flüchtig, ohne Ablage.
+  · WIE LANGE: gar nicht.
+  · WELCHER LÖSCHPFAD: keiner nötig, weil nichts abgelegt wird.
+  WAS OFFEN BLEIBT — DIE VIERTE FRAGE, DIE RECHTSGRUNDLAGE: Sie liegt beim KUNDEN als
+  Verantwortlichem, nicht bei diesem Produkt. ENTSCHIEDEN (Owner, 2026-08-15) und
+  konsistent mit der Haltung an der Roadmap-Zeile 11.5 ("Wir weisen hin, wir erzwingen
+  nicht"): Das System prüft NICHT nach, ob der Kunde eine Einwilligung eingeholt hat —
+  es verarbeitet das Signal, wie der Kunde es sendet. Die Pflicht wird VERTRAGLICH
+  zugewiesen und bindet damit an den bestehenden Tier-0-Blocker "SUBPROZESSOR-DPAs +
+  Kunden-DPA". AUSDRÜCKLICH KEIN BAU-AUFTRAG: die vertragliche Seite ist ein
+  juristisches Dokument und kein Code. HIER STEHT KEIN ZEITPUNKT.
+  DIE AUFLAGE, DIE DIE FESTLEGUNG TRÄGT — OHNE SIE GILT SIE NICHT: Das
+  Identitäts-Merkmal wird IM BROWSER gebildet. Eine KLARTEXT-Angabe darf den eigenen
+  Server NIE erreichen. GRUND, und er ist der eigentliche Punkt: Der Leck-Pfad ist
+  NICHT die Datenbank, sondern das LOG. Erreicht ein Klartextwert den Ingest, steht er
+  im Rumpf jedes Beacons, in jedem Fehlerpfad und in jedem weitergereichten
+  Fehler-Objekt — DIESELBE KLASSE, die im Sicherheits-Manifest bereits ZWEIMAL geführt
+  ist (das CAPI-Zugangsdatum als Server-Action-Argument, Tier 2; der zurückgespiegelte
+  Anbieter-Fehlertext, Tier 1). "Wir speichern nichts" wäre dann unwahr, obwohl keine
+  Zeile in die Datenbank geschrieben würde.
+  WAS DIESE ENTSCHEIDUNG NICHT IST: Sie sagt NICHT, dass keine Verarbeitung
+  personenbezogener Daten stattfindet. NICHT-SPEICHERN IST NICHT NICHT-VERARBEITEN. Wer
+  daraus "kein Datenschutz-Thema" liest, liest sie falsch.
+  WANN SIE NEU ZU BEWERTEN IST: wenn ein Ziel oder der Markt ein Persistierungs-Modell
+  verlangt. Dann ist SIE der Gegenstand einer NEUEN Owner-Entscheidung — der Eintrag
+  darüber geht dadurch NICHT wieder auf.
 - COOKIE-DOKU-SCHNIPSEL FÜR DIE KUNDEN-DATENSCHUTZERKLÄRUNG FEHLT NOCH
   (Trigger: vor dem öffentlichen Launch; Phase 9): Für das A/B-Test-Cookie
   (__Host-ps_v) stellt Pagesmith dem Kunden heute KEINEN fertigen

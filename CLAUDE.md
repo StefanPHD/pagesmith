@@ -117,14 +117,23 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       EREIGNISTYP, nicht je Projekt; OWNER-ENTSCHEIDUNG (2026-08-11): Zuordnung
       Ereignisname -> URN (Option B), damit Kunden auf Conversion-Typen optimieren
       können. Das berührt, WIE EIN EREIGNIS BESCHRIEBEN WIRD.
-      WEITERE ABWEICHUNGEN: Zeit in MILLISEKUNDEN (Meta: Sekunden) · Betrag als
-      Zeichenkette · Erfolg ist 201 · DREI Fehlerwege mit ZWEI Rumpfformen · ein
-      Versions-Header, dessen Wert ein Datum ist und der abgeschaltet wird · als
-      Identität nur die IP, NUR IPv4, kein User-Agent · kein Testmodus gefunden —
-      ein NICHT-TREFFER, KEIN Beweis der Abwesenheit.
-      PROVENIENZ: GELESEN an FREMDER Anbieter-Doku (2026-08-11) — NICHT gemessen,
-      NICHT live bestätigt. Dass TikTok als drittes Ziel live bewiesen ist, WERTET
-      DAS NICHT AUF; wer das verwechselt, plant einen Bau auf einer Doku-Lesung.
+      PROVENIENZ DIESER ERSTEN ANGABEN: GELESEN an FREMDER Anbieter-Doku
+      (2026-08-11) — NICHT gemessen, NICHT live bestätigt. Dass TikTok als drittes
+      Ziel live bewiesen ist, WERTET DAS NICHT AUF; wer das verwechselt, plant einen
+      Bau auf einer Doku-Lesung.
+      DIE ANBIETER-BEFUNDE ZU DIESEM ZIEL STEHEN NICHT MEHR HIER — AUSGEZOGEN AM
+      2026-08-15 NACH docs/ziel-befunde.md, ABSCHNITT "LinkedIn (Conversions API)",
+      WORTGLEICH UND SAMT PROVENIENZ: die Aufzählung WEITERE ABWEICHUNGEN (GELESEN
+      2026-08-11, sechs Punkte — Zeitformat, Betragsform, Erfolgs-Status,
+      Fehlerwege und Rumpfformen, Versions-Header, Testmodus) und das MESSPROTOKOLL
+      vom 2026-08-15 mit den Teilen (b), (c), (e), (f), (g), (h) sowie dem Detail zu
+      (a) und (d). HIER STEHEN NUR DIE THEMEN, NICHT DIE BEFUNDE: ein Zeiger, der
+      den Befund mitzitiert, veraltet unabhängig von ihm.
+      WER EINEN DIESER BEFUNDE HIER SUCHT, FINDET IHN DORT — er ist nicht
+      verschwunden und wird NICHT ein zweites Mal erhoben. GRUND DES UMZUGS: Diese
+      Datei wird JEDE Session geladen; ein Anbieter-Protokoll braucht nur, wer den
+      Adapter schreibt. WAS HIER BLEIBT, ist das, was einen Zuschnitt BLOCKIERT oder
+      ihn STILL FALSCH machen würde.
       ZWEI AUFLAGEN FÜR JEDES WEITERE ZIEL: "ein drittes Ziel erzwingt eine
       Entscheidung, keine Kopie" — und jedes Ziel bringt seine EIGENE
       Constraint-Erweiterung auf project_secrets mit (docs/db-stand.md, CHECK
@@ -145,6 +154,26 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
         (project_id, target) (0021_project_secrets.sql) —, während ein OAuth-Zugang
         MEHRERE Werte nebeneinander braucht: Token, Erneuerungs-Token,
         Ablaufzeitpunkt.
+      VORBEHALT ZU DIESER RICHTIGSTELLUNG (2026-08-15) — SIE WIRD WEDER
+      ZURÜCKGENOMMEN NOCH UMFORMULIERT, ABER IHR GELTUNGSBEREICH IST ENGER, ALS SIE
+      AUSSIEHT: Beide Hälften oben ruhen auf dem Zugangsdatum einer
+      ENTWICKLER-ANWENDUNG (Portal-Lesung 2026-08-14). ES GIBT EINEN ZWEITEN WEG ZU
+      EINEM ZUGANGSDATUM — GELESEN an der Werbe-Oberfläche des Anbieters
+      (2026-08-15), NICHT gemessen: Der Betreiber erzeugt es dort SELBST, gebunden
+      an sein Werbekonto, erneuerbar per Klick, als EIN Wert. GEMESSEN ist dazu, dass
+      die Conversions-Schnittstelle ein solches Zugangsdatum ANNIMMT — die sieben
+      Läufe vom 2026-08-15 sind genau damit gefahren worden.
+      FÜR DIESEN WEG IST DIE RICHTIGSTELLUNG UNGEPRÜFT UND MÖGLICHERWEISE FALSCH:
+      Ein EINZELNER Wert passt in eine Spalte, die einen Skalar je Zeile hält. Für
+      den Anwendungs-Weg gilt sie unverändert; welcher Weg gebaut wird, ist HIER
+      NICHT entschieden.
+      GRENZE, DIE MITMUSS — EINE ABWESENHEITS-BEOBACHTUNG OHNE POSITIVKONTROLLE: In
+      jener Oberfläche war KEIN Ablaufdatum ausgewiesen. UNGEPRÜFT ist, wie sie einen
+      Ablauf überhaupt anzeigen würde. DARAUS FOLGT NICHT, dass dieses Zugangsdatum
+      unbegrenzt gilt — das bleibt eine OFFENE FRAGE, keine Entwarnung. Sie ist NICHT
+      die Vorfrage darunter: diese hier betrifft einen BESCHAFFUNGSWEG, den die
+      Vorfrage gar nicht betrachtet (sie kennt nur den dreibeinigen und den
+      zweibeinigen OAuth-Fluss).
       OFFENE VORFRAGE, UND SIE ENTSCHEIDET DEN UMFANG: Ob die Conversions API auch
       ein APP-EIGENES Token annimmt (Anmeldung mit Anwendungs-Zugangsdaten, ohne
       Nutzer-Fluss). Betrachtet wurde bislang NUR ein dreibeiniger OAuth-Fluss; der
@@ -180,6 +209,45 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       ist die der drei Achsen und nicht mehr. FOLGE, unter demselben Vorbehalt:
       Eine Token-Erneuerung über alle Mandanten wäre eine
       Infrastruktur-ERSTANLAGE, kein Nebenbei-Schritt.
+      RICHTIGGESTELLT AM 2026-08-15, NICHT GESTEMPELT — DIE IDENTITÄTS-FORM.
+      WORTLAUT VORHER, er stand oben in der Aufzählung WEITERE ABWEICHUNGEN zwischen
+      dem Versions-Header und dem Nicht-Treffer zum Testmodus: "als Identität nur die
+      IP, NUR IPv4, kein User-Agent". DIESE ANGABE IST WIDERLEGT — GEMESSEN am
+      2026-08-15: es gibt kein IP-Feld, verlangt wird ein PAAR aus Kennungs-TYP und
+      Kennungs-WERT, BEIDE Pflicht. Der gemessene Befund im Wortlaut, samt der
+      Fehlermeldung der Schnittstelle: docs/ziel-befunde.md, Abschnitt "LinkedIn
+      (Conversions API)", Teil (a). DIE RICHTIGSTELLUNG SELBST BLEIBT HIER, WEIL DIE
+      FALSCHE ANGABE HIER STAND — auch hier gilt der Grund von oben: Diese Zeile ist
+      der Maßstab, gegen den ein späterer Bau misst, und ein Maßstab mit einer
+      falschen Angabe taugt nicht.
+      DER RÜCKKANAL FEHLT, UND DAS KIPPT EINE PRODUKTZUSAGE — DESHALB STEHT ER HIER
+      UND NICHT NUR IM PROTOKOLL: Die Erfolgsantwort trägt KEINE Ereignis-Kennung
+      (GEMESSEN 2026-08-15), also lässt sich die Deduplizierung dieses Produkts über
+      eine GETEILTE Ereignis-Kennung zwischen Browser und Server auf dieses Ziel
+      NICHT ausdehnen. Befund und Folgerung im Wortlaut: docs/ziel-befunde.md,
+      Abschnitt "LinkedIn (Conversions API)", Teil (d).
+      11.1 IST DAMIT EINE PII-SCHEIBE — DER SCHWERSTE PUNKT DIESER MESSUNG, UND ER
+      ÄNDERT DIE KLASSE DES VORHABENS, NICHT NUR SEINEN UMFANG: Aus der
+      Identitäts-Form oben und der gelesenen Typ-Liste (docs/ziel-befunde.md,
+      Abschnitt "LinkedIn (Conversions API)", Teil (b)) folgt, dass es KEINE
+      identitätsfreie Nutzlast gibt — die Schnittstelle verlangt ein
+      Kennungs-Paar als Pflicht, und JEDES bekannte zulässige Merkmal
+      ist personenbezogen (gehashte E-Mail-Adresse, anbietereigene Cookie-Kennung,
+      Partner-Kennung). FOLGERUNG aus einem GEMESSENEN Pflichtfeld und einer
+      GELESENEN Typ-Liste — nicht selbst gemessen; kippt die Liste, ist sie neu zu
+      prüfen.
+      BINDUNG: Der Eintrag "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE" unter
+      "## Offene Punkte" nennt als Trigger die erste Scheibe, die personenbezogene
+      Merkmale erfasst, und verlangt die Entscheidung DAVOR — WAS erfasst wird, auf
+      welcher Rechtsgrundlage, wie lange, mit welchem Löschpfad. 11.1 löst diesen
+      Trigger aus. HIER WIRD NICHTS ENTSCHIEDEN: die Entscheidung gehört dem Owner
+      und gehört an jenen Eintrag, nicht hierher.
+      UND ES FEHLT EIN DATENPFAD, DEN ES HEUTE NICHT GIBT: Eine Personen-Identität
+      wird derzeit nirgends erhoben, weitergereicht oder gespeichert. FOLGERUNG,
+      NICHT GEMESSEN: 11.1 braucht damit nicht nur einen Adapter, sondern eine
+      QUELLE für das Kennungs-Merkmal, einen WEG dorthin durch den Ingest-Pfad und
+      eine Entscheidung über die ABLAGE — Arbeit, die KEIN bestehendes Ziel je
+      gebraucht hat, weil alle drei ohne Personen-Identität auskommen.
 - [ ] Phase 11.2 — Google: EINE KONZEPT-RUNDE, KEINE SCHEIBE. Es sind ZWEI Ziele,
       nicht eins, und keines zugeschnitten: Google Ads Conversions und GA4 sind
       verschiedene Produkte mit verschiedenen Schnittstellen und Semantiken. Der
@@ -950,6 +1018,15 @@ nicht in jede Session geladen wird.
   "## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md".
   Fortgeschrieben wird sie ausschliesslich aus einer Messung (Probe:
   supabase/checks/db-stand.sql), nie aus den Migrationsdateien.
+- docs/ziel-befunde.md — die GEMESSENEN und GELESENEN Befunde über die
+  Schnittstellen der Fan-Out-Ziele (Felder, Statuscodes, Rumpfformen, stille
+  Fehlzustände, taugliche Live-Test-Instrumente), je Ziel ein Abschnitt, mit
+  Provenienz an jeder Angabe. Angelegt 2026-08-15. Sie trägt KEINE Regeln und
+  KEINE Entscheidungen — die stehen in docs/immer-beachten.md bzw. an der
+  Roadmap-Zeile. Sie wird NICHT automatisch geladen. AUSLÖSER: Wer an einem
+  Fan-Out-Ziel arbeitet — Zuschnitt, Adapter, Anbieter-Recherche oder
+  Live-Test-Anleitung —, lädt sie ZUERST. Sie gehört keiner Phase und wird NICHT
+  archiviert.
 
 ## Detail-Archiv (bei Bedarf lesen — NICHT automatisch geladen)
 Abgeschlossene Phasen-Historie + Vollbegründungen sind ausgelagert, damit CLAUDE.md unter

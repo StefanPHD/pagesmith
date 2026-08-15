@@ -1993,3 +1993,51 @@ dieser Runde.
   beide Teile sind noch am selben Tag aus der Roadmap-Zeile nach docs/ziel-befunde.md
   ausgezogen. Die Teil-Buchstaben sind dabei unverändert geblieben, damit dieser
   Verweis trifft.)
+
+## Nachtrag 2026-08-15, ZWEITER DES TAGES — KANDIDATEN aus der Datenklassen-Entscheidung (VORRAT, KEINE Regeln, KEIN Auftrag)
+Eigener Abschnitt nach der Konvention oben, obwohl am Dateiende bereits eine Sektion mit
+DEMSELBEN Datum steht: Jene trägt Kandidaten für docs/immer-beachten.md aus der
+LinkedIn-Messung, diese hier zwei Befunde aus der Owner-Entscheidung zur
+Datenklassen-Grenze. Das Datum ist gleich, die HERKUNFT nicht — und die Konvention
+trennt nach Herkunft, nicht nach Tag.
+BEIDE BETREFFEN EINEN BAU, DEN ES NICHT GIBT. Sie sind Vorrat für einen späteren
+Zuschnitt und ausdrücklich kein Auftrag; keiner von beiden ist ein Kandidat für
+docs/immer-beachten.md.
+DIE ENTSCHEIDUNG SELBST STEHT NICHT HIER, sondern an ihrem Ort: CLAUDE.md,
+"## Offene Punkte", Eintrag "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE", Block
+"ENTSCHIEDEN AM 2026-08-15 (OWNER)".
+
+- EIN IM BROWSER GEBILDETES IDENTITÄTS-MERKMAL STEHT VOR EINEM CONVERSION-BEACON — UND
+  DIE EINGEBAUTE HASH-SCHNITTSTELLE IST ASYNCHRON.
+  DER BEFUND: Damit entsteht auf dem Beacon-Pfad ein WARTEPUNKT, den er heute nicht hat.
+  Die keepalive-Pflicht (docs/immer-beachten.md, "BEACON-keepalive PFLICHT
+  (Conversion-/PageView-nahe Beacons)") schützt einen Request, der bereits ABGESCHICKT
+  IST — sie schützt NICHT davor, dass der Wert erst fertig wird, wenn die Seite schon
+  weg ist. Bei Formular-Absenden, Weiterleitung und Seitenwechsel ist genau das der
+  NORMALFALL und nicht der Ausreisser; es sind dieselben Situationen, für die die
+  keepalive-Regel überhaupt existiert.
+  WAS STILL KAPUTTGEHT: Das Ereignis geht verloren, ohne dass etwas fehlschlägt — kein
+  Fehler, keine Meldung, nur eine Conversion weniger. Dieselbe Fehlerklasse, gegen die
+  die keepalive-Regel geschrieben wurde, nur eine Stufe früher im Ablauf.
+  HIER STEHT AUSDRÜCKLICH KEINE LÖSUNG: Genannt worden sind DREI Kandidaten — das
+  Absenden aufhalten · früher bilden und zwischenhalten · eine synchrone
+  Implementierung. Jeder hat einen anderen Preis, und die Auswahl gehört in den
+  Zuschnitt, nicht in diesen Eintrag.
+  PROVENIENZ: aus der Owner-Runde vom 2026-08-15. Die Asynchronität der eingebauten
+  Schnittstelle ist hier VORAUSGESETZT — sie ist weder am eigenen Code noch an der
+  Anbieter-Doku belegt worden und gehört vor einem Zuschnitt geprüft.
+
+- EIN NEUES NUTZERKONTROLLIERTES FELD AUF DEM INGEST-PFAD IST EIN WEITERER KANDIDAT FÜR
+  DEN 204-CONTAINMENT-PUNKT.
+  DER BEFUND: Der Eintrag "DREI WEGE, AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN
+  KÖNNTE" (CLAUDE.md, "## Offene Punkte") führt drei Wege, auf denen ein Wurf die
+  garantierte leere 204 brechen könnte. Ein Identitäts-Feld, das eine
+  NICHT-ZEICHENKETTE trägt, wäre ein weiterer DERSELBEN Klasse — nutzerkontrolliert,
+  auf demselben Pfad, mit demselben möglichen Ausgang.
+  UNGEMESSEN, wie heute schon die anderen drei. Der Rang wird hier weder behauptet noch
+  ausgeschlossen.
+  DER EINTRAG UNTER "## Offene Punkte" WIRD DESHALB NICHT GEÄNDERT UND SEINE ZAHL NICHT
+  HOCHGEZÄHLT: Er handelt von Code, der EXISTIERT; dieser Kandidat von Code, den es
+  nicht gibt. Wird das Feld gebaut, gehört er DORT hinein — und dann wandert die Zahl
+  mit.
+  PROVENIENZ: aus der Owner-Runde vom 2026-08-15.

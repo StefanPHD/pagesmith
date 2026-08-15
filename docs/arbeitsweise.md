@@ -14,6 +14,14 @@ Stefan entscheidet. Grund: Jedes Neuschreiben ist eine Gelegenheit für stille
 Abschwächung, genau die Risikoklasse, die bei `CLAUDE.md`-Regeln ein
 Volltext-Review erzwingt.
 
+**Der wirksame Ort dieses Dokuments ist die PROJEKTANWEISUNG.** Sein Inhalt
+liegt seit dem 2026-08-15 doppelt: als `docs/arbeitsweise.md` im Repo und als
+Anweisung des Claude-Projekts. Erreichen tut eine Instanz nur die Anweisung.
+Wer die Repo-Datei ändert, ohne die Anweisung nachzuziehen, ändert **nichts** —
+während das Repo die Änderung behauptet, und **es fällt niemandem auf, weil
+nichts fehlt**. Jeder angenommene Änderungsantrag wird deshalb an BEIDEN Orten
+vollzogen, im selben Zug.
+
 **Die Abschnittsnummern sind bewusst lückenhaft** (1, 2, 2b, 3, 4, 9). Sie
 stammen aus dem ursprünglichen Übergabedokument; 5–8 stehen im Delta. Die
 Nummern bleiben, damit alle internen Querverweise weiter auflösen.
@@ -726,11 +734,31 @@ Ein Vorschlag, der eine davon bricht, ist kein Vorschlag.
   lohnen nur, wo das Bild selbst die Aussage ist (UI-Zustände,
   DevTools-Panels). Jeder vermiedene Chatwechsel spart Kontext.
 - **Was hochgeladen wird.** Die Chat-Instanz bekommt: `CLAUDE.md` ·
-  `docs/arbeitsweise.md` · das Delta. CC bekommt: `CLAUDE.md` (lädt jede Session
-  automatisch) · die Standdatei, sobald sie existiert. Alles andere gezielt bei
-  Bedarf — `security-manifest-full.md` bei Manifest-Arbeit, `future-roadmap.md`
-  wenn eine Entscheidung eine spätere Richtung versperren könnte,
-  `docs/claude-history/phase-*.md` für das WARUM einer Regel.
+  `docs/immer-beachten.md` · das Delta. Der Inhalt dieses Dokuments liegt als
+  PROJEKTANWEISUNG (s. Kopf) und wird nicht hochgeladen. CC bekommt:
+  `CLAUDE.md` (lädt jede Session automatisch) · die Standdatei, sobald sie
+  existiert. Alles andere gezielt bei Bedarf — `security-manifest-full.md` bei
+  Manifest-Arbeit, `docs/ziel-befunde.md` bei Arbeit an einem Fan-Out-Ziel,
+  `future-roadmap.md` wenn eine Entscheidung eine spätere Richtung versperren
+  könnte, `docs/claude-history/phase-*.md` für das WARUM einer Regel.
+  **`docs/immer-beachten.md` FEHLTE IN DIESER LISTE BIS ZUM 2026-08-15.** Sie
+  ist am 2026-08-14 aus der `CLAUDE.md` ausgelagert worden, und die Liste ist
+  nicht mitgezogen — ein Beleg dafür, wie eine Auslagerung eine Fundstelle
+  zurücklässt, ohne dass etwas fehlt. Sie ist UNBEDINGT geladen, nicht
+  bedarfsweise.
+  **DER AUSTAUSCH ERFOLGT BEIM CHATWECHSEL, am ANFANG des neuen Chats** — nicht
+  am Ende des alten: Die letzte Runde einer Sitzung pusht oft noch etwas, und
+  eine vorher hochgeladene Datei wäre schon wieder alt. Es gibt EINEN
+  Eintrittspunkt und viele Ausgänge. Ein Austausch bei jedem Push wäre
+  Fleissarbeit ohne Wirkung — die laufende Instanz hat den Kontext selbst
+  erarbeitet, und die neue Fassung erreicht sie ohnehin nicht mehr.
+  **IST DAS REPO ALS GITHUB-QUELLE IM PROJEKT HINTERLEGT, GILT DASSELBE FÜR DEN
+  SYNC:** Er läuft NICHT automatisch bei einem Push, sondern auf Klick. Eine
+  Quelle, die „verbunden" anzeigt, sagt etwas über die Verbindung und NICHTS
+  über die Aktualität des Inhalts — dieselbe Klasse untauglicher Sonde wie eine
+  Zählung, die aus anderen Gründen auf null steht. Das einzige Instrument dafür
+  ist die Prüfzahl im Delta: die Byte-Grösse der `CLAUDE.md` nach dem letzten
+  Commit der vorigen Sitzung.
 
 ### Die Übertragung
 

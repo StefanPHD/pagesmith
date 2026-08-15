@@ -1956,3 +1956,40 @@ Kandidatenliste. Gehoben wird er NICHT in dieser Runde.
   "Eine Messung, die die Erwartung trifft, wird nicht nachgeprüft" setzt eine MESSUNG
   voraus, der die Gegenprobe fehlte; hier gab es gar keine — an ihrer Stelle stand der
   Vorbehalt, der eine verlangt hätte.
+
+## Nachtrag 2026-08-15 — KANDIDAT aus der LinkedIn-Messung (noch KEINE Regel)
+Eigener Abschnitt nach der Konvention oben: Ein Anhängen ans Dateiende hätte den
+Eintrag sonst unter "Nachtrag 2026-08-14 — KANDIDATEN für docs/immer-beachten.md"
+einsortiert, und von dort stammt er nicht. Er hat heute keinen anderen Ort: Es
+existiert keine Standdatei, also auch keine Kandidatenliste. Gehoben wird er NICHT in
+dieser Runde.
+
+- EINE FREMDE SCHNITTSTELLE KANN DIE STRUKTUR EINER NUTZLAST PRÜFEN UND IHRE BEDEUTUNG
+  NICHT — WER AUS EINER ERFOLGSANTWORT SCHLIESST, DAS GESENDETE SEI BRAUCHBAR,
+  VERWECHSELT ZWEI PRÜFUNGEN.
+  DER GEMESSENE FALL (2026-08-15, sieben Läufe gegen die echte
+  LinkedIn-Conversions-Schnittstelle): Derselbe Endpunkt lehnte ein fehlendes
+  Pflichtfeld mit 422 ab — die Meldung nennt sogar den Pfad des beanstandeten Feldes —
+  und nahm einen FREI ERFUNDENEN Währungscode bei sonst gültiger Nutzlast mit 201
+  Created an. Weder eine Ablehnung noch eine Liste erlaubter Werte.
+  WAS STILL KAPUTTGEHT: Eine falsch konfigurierte Währung erzeugt eine
+  ERFOLGSQUITTUNG. Der Fehlzustand sitzt nicht bei der ANNAHME des Ereignisses, sondern
+  in dessen INHALT — und dort sieht ihn niemand, weil die Quittung einwandfrei
+  aussieht. Der Wert ist danach entweder unbrauchbar oder verfällt.
+  DIE ABLEITUNG, falls dies gehoben wird: Werte, deren Gültigkeit der Empfänger NICHT
+  prüft, müssen VOR dem Absenden geprüft werden — sonst gibt es für sie überhaupt keine
+  Prüfung. Für jeden Adapter gehört damit benannt, WELCHE Felder der Empfänger prüft
+  und welche nicht; die ungeprüften sind die Arbeit.
+  ABGRENZUNG ZUR BESTEHENDEN REGEL "(c) EINE ERFOLGSQUITTUNG KANN BLIND SEIN FÜR DAS,
+  WAS MAN MISST" (Teil von "BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN,
+  DASS DAS RICHTIGE GEMESSEN WIRD" in docs/immer-beachten.md): Jene handelt vom MESSEN
+  — sie verlangt eine Gegenprobe, damit eine fremde Quittung überhaupt als Beleg taugt.
+  Hier geht es um den PRODUKTIVEN Pfad: Dort ist die Quittung kein Messinstrument,
+  sondern das Einzige, was der Betreiber je zu sehen bekommt, und eine Gegenprobe gibt
+  es im laufenden Betrieb nicht.
+  FUNDSTELLE DER MESSWERTE: docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions
+  API)", Messprotokoll 2026-08-15, Teile (e) und (f). (NACHGEZOGEN AM 2026-08-15: Hier
+  stand "CLAUDE.md, Roadmap-Zeile 11.1, MESS-BLOCK 2026-08-15, Teile (e) und (f)" —
+  beide Teile sind noch am selben Tag aus der Roadmap-Zeile nach docs/ziel-befunde.md
+  ausgezogen. Die Teil-Buchstaben sind dabei unverändert geblieben, damit dieser
+  Verweis trifft.)

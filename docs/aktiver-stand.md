@@ -219,10 +219,17 @@ Test und nicht nach dem Commit allein. Er trägt seine stabile Nummer (s.
 Fortschreibungsregeln), was gebaut wurde, was gemessen wurde und die Commit-Nummer; der
 jüngste, noch nicht committete Vermerk darf sie als EINZIGER offen lassen.
 
-### 1 — Scheibe 11.1a: Zugangsdatum ablegen (Commit-Nummer offen)
+### 1 — Scheibe 11.1a: Zugangsdatum ablegen (Commit 0ca9a13)
 
-**DIE LÜCKE IST BEABSICHTIGT:** Dieser Vermerk trägt keine Commit-Nummer, weil er der
-jüngste und noch nicht committete ist. Es darf immer nur EINE solche Lücke geben.
+**DIE LÜCKE IST GESCHLOSSEN** (nachgetragen 2026-08-17). Hier stand „Commit-Nummer
+offen", und der Absatz darunter erklärte die Lücke — beides war richtig, solange der Bau
+nicht committet war, und beides ist mit dem Nachtrag hinfällig. Es gibt derzeit KEINE
+offene Lücke; die Regel erlaubt höchstens eine, nicht genau eine.
+**WELCHE NUMMER DAS IST, GEHÖRT DAZU:** `0ca9a13` ist der BAU-Commit
+(`feat(tracking): LinkedIn als viertes Ziel anlegen, ohne Sendepfad`) — NICHT der
+Doku-Commit, der diesen Vermerk trägt. Die beiden sind bewusst getrennt (docs-Commits
+bleiben von feat/fix-Commits getrennt), und ein Vermerk, der auf sich selbst zeigte,
+wäre für jede spätere Suche wertlos.
 
 **WAS GEBAUT WURDE.** `linkedin` ist ein `TrackingTarget` (`TRACKING_TARGETS` in
 `src/lib/settings.ts`) und steht ausdrücklich NICHT in `TARGETS_WITH_ADAPTER`

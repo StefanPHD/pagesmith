@@ -29,6 +29,7 @@ dann still nicht mehr erfüllt wird.
 - ## Fortschreibungsregeln
 - ## Gegenstand der Phase
 - ## Scheibe 11.1a — Zugangsdatum ablegen
+- ## Scheibe 11.1b — Die verwendeten Ereignisnamen
 - ## Entscheidungen, die über ihre Scheibe hinaus binden
 - ## Vorrat — gemeldet, nicht gebaut
 - ## Hebungs-Kandidaten
@@ -130,6 +131,105 @@ Mehrere KENNUNGEN je Ziel brechen den Schlüssel (project_id, target) NICHT; nur
 EMPFÄNGER desselben Typs je Projekt täten es. Die beiden Achsen sehen beim Lesen wie eine
 aus, und wer sie zusammenzieht, baut ein Schema um, dem nichts fehlt.
 
+## Scheibe 11.1b — Die verwendeten Ereignisnamen
+
+Die in einem Projekt VERWENDETEN Track-Ereignisnamen werden aus der KONFIGURATION
+ableitbar — als VEREINIGUNG über beide Varianten-Mengen. Ein geteiltes Prädikat in einer
+reinen Datei zieht die Namen aus EINER Mapping-Menge; die Ableitung ruft es zweimal auf und
+vereinigt. Sie speist die Oberfläche: der Betreiber sieht, welche Ereignisnamen sein
+Projekt verwendet.
+
+### Warum diese Scheibe VOR der URN-Ablage kommt
+
+Dieser Satz trägt den ganzen Schnitt: **Eine Zuordnung Ereignisname -> URN braucht einen
+SCHLÜSSELRAUM.** `TrackConfig.event` (`src/lib/mappings.ts`) ist ein FREIER Nutzer-String
+— GEMESSEN am Code (2026-08-17): der Typ ist `string` ohne Einschränkung; die Oberfläche
+bietet eine Vorschlagsliste (`META_STANDARD_EVENTS` in `src/lib/tracking/meta.ts`) plus
+einen Sentinel für einen frei getippten Namen, aber sie erzwingt nichts. Und es gibt heute
+KEINEN Ort, der die verwendeten Namen aus der Konfiguration ermittelt — GEMESSEN am Code
+(2026-08-17) als Nicht-Treffer über Sammel-Formen und über ALLE Leser von `config.event`;
+gefunden wurden ausschliesslich Einzel-Zugriffe (Formular-Seed, Anzeige einer Zeile,
+Erzeuger). Der Analytics-Lesepfad `getEventCounts` zählt nicht, weil er Laufzeitdaten
+aggregiert (s. Messbefund (3)).
+OHNE DIESE MENGE tippt der Betreiber ZWEI Zeichenketten, die zusammenpassen müssen — und
+nichts wird rot, wenn sie es nicht tun.
+
+### Die drei Messbefunde, die den Schnitt tragen
+
+Sie sind GEMESSEN am Repo (2026-08-12) und werden hier NICHT neu erhoben. Sinngemäss:
+
+1. **Der Nenner ist die VEREINIGUNG der Track-Ereignisse aus BEIDEN Varianten-Mappings.**
+   A und B laufen nachweislich auseinander, und KEINE Stelle im Produktivcode bildet ihre
+   Vereinigung. Ein Nenner, der nur A kennt, meldet vollständig, während beim halben
+   Traffic nichts ankommt.
+2. **Es braucht KEINE zusätzliche Datenbank-Runde** — beide Mengen reisen bereits in
+   derselben Projekt-Ladeantwort und liegen im Container.
+3. **„Unvollständig" ist aus der KONFIGURATION zu rechnen, NIE aus Laufzeitdaten.** Ein
+   nicht beliefertes Ziel hinterlässt in KEINEM persistierten Datensatz eine Spur — wer die
+   Antwort aus den Ereignissen ableiten wollte, leitete sie aus dem Nichts ab.
+
+**FUNDSTELLE, UND SIE IST NICHT WÖRTLICH AUFFINDBAR:** `docs/claude-history/backlog-polish.md`,
+AUFZÄHLUNGSPUNKT (keine Überschrift) mit dem Anfang **`VOLLSTAENDIGKEITS-ACHSE — WAS DANN
+SOFORT GILT`** — in ASCII-Umschrift, also **`VOLLSTAENDIGKEITS`**, nicht
+`VOLLSTÄNDIGKEITS`. Der Verweis in CLAUDE.md („## Offene Punkte") nennt ihn mit Umlaut und
+als Abschnitt; eine wörtliche Suche nach dem Verweistext findet ihn deshalb NICHT.
+GEFUNDEN wurde er nur, weil beide Schreibweisen probiert wurden. DAS IST EIN EIGENER
+BEFUND UND WIRD HIER NICHT REPARIERT — er steht als Doku-Punkt im Vorrat.
+
+### Die Auflage, ohne die die Ableitung lügt
+
+GEMESSEN am Code (2026-08-17): `publishPairs` (`src/components/CodeImporter.tsx`) liefert
+`pairB.mappings` als **leeres Array in ZWEI verschiedenen Zuständen** — wenn B keine
+Track-Mappings trägt, UND wenn es GAR KEINE Variante B gibt (`stashMappings ?? []`). Zwei
+Zustände, eine leere Menge, am Wert nicht unterscheidbar.
+Ob eine B existiert, wird GETRENNT abgeleitet: `hasVariantB` (dieselbe Datei) liest das
+HTML (`activeVariant === "b" || stashHtml !== null`) und NICHT die Mappings.
+**DIE ABLEITUNG LIEST `hasVariantB` MIT, UND DIE OBERFLÄCHE UNTERSCHEIDET DIE FÄLLE.** Sonst
+behauptet sie Vollständigkeit über eine Variante, die es nicht gibt.
+
+### Ein Prädikat, kein zweites Urteil
+
+Das Prädikat zieht die Namen aus EINER Menge; die Vereinigung ruft es ZWEIMAL auf. Zwei
+Instanzen derselben Frage laufen auseinander — in diesem Projekt bereits geschehen, und
+die Gegenmassnahme heisst dort geteiltes Prädikat statt zweiter Ausformulierung
+(`hasPixelId`/`hasSecret` in `src/lib/tracking/target-readiness.ts` als Vorbild).
+
+### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+
+- **KEINE URN, KEINE ABLAGE-ENTSCHEIDUNG.** Das ist 11.1c und schlüsselt dann gegen eine
+  Menge, die existiert.
+- **KEINE NORMALISIERUNG ÜBER TRIM HINAUS.** Der freie Nutzer-String ist eine tragende
+  Projektregel — `isForwardable` hängt daran (`docs/immer-beachten.md`). Ihn zum Schlüssel
+  zu härten ist eine EIGENE Entscheidung mit eigenem Nachweis. GEMESSEN am Code
+  (2026-08-17): GENAU EINE Stelle fasst den Wert vor der Ablage an, und sie trimmt nur
+  (`handleSubmit` in `src/components/ActionPanel.tsx`); `upsertMapping` legt unverändert
+  ab, `saveProject` schreibt das Literal ohne Prüfung.
+- **KEINE EINDEUTIGKEIT.** Zwei Elemente mit demselben Ereignisnamen sind ein REGULÄRER
+  Zustand: Der Modell-Schlüssel ist `(elementId, type)`, der Name kommt in KEINEM Schlüssel
+  vor (GEMESSEN am Code, 2026-08-17, an `upsertMapping`/`findMapping`/`removeMapping`/
+  `mappingsEqual` in `src/lib/mappings.ts`). Die Ableitung liefert eine MENGE; Duplikate
+  verschwinden dabei, und das ist richtig.
+- **KEIN RIEGEL GEGEN LEERE NAMEN.** Die Oberflächen-Schranke bleibt, wie sie ist. GEMESSEN
+  (2026-08-17): Sie IST eine Oberflächen-Schranke und KEINE Modell-Zusicherung — `valid`
+  in `ActionPanel.tsx` speist den `disabled`-Zustand und einen frühen Rücksprung, während
+  der Typ, `upsertMapping` und `saveProject` nichts prüfen.
+
+### Die tragende Invariante
+
+**Diese Scheibe ändert NICHTS am ausgelieferten Text und NICHTS am Ingest. Sie leitet ab
+und zeigt an.** Sie ist der Prüfstein jeder Änderung dieser Scheibe — wer sie bricht, hat
+nicht mehr diese Scheibe gebaut.
+
+### Zwei offene Fragen — FRAGEN, kein Befund
+
+Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
+
+1. **Wo liegt die Ableitung — im Container neben `publishPairs`, oder in derselben reinen
+   Datei wie das Prädikat?** Die Antwort hängt daran, ob ihre Eingänge ohnehin dort liegen.
+2. **Wo in der Oberfläche erscheint sie, ohne bestehende Abfragen mehrdeutig zu machen?**
+   Ein neuer Text kann Abfragen MEHRDEUTIG machen ODER eine Behauptung über die ABWESENHEIT
+   eines Textes kippen — beide Achsen einzeln durchgehen.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 - **GEBAUT WIRD AUF DIE KLARTEXT-IP ALS KENNUNG; li_fat_id IST EINE EIGENE FOLGE-SCHEIBE**
@@ -147,6 +247,24 @@ aus, und wer sie zusammenzieht, baut ein Schema um, dem nichts fehlt.
   FOLGE FÜR JEDE LIVE-TEST-ANLEITUNG DIESER PHASE: Ein Live-Test kann "ANGEKOMMEN" zeigen,
   NIE "HAT GEWIRKT". Wer die Zählung als Sonde nimmt, meldet einen Fehlschlag, der keiner
   ist.
+- **`consentTargets` IST VARIANTENBLIND, UND DAS IST KORREKT** (GEMESSEN am Code,
+  2026-08-17). Es liest `settings.pixels` — eine PROJEKTWEITE Spalte — und KEINE
+  Mapping-Menge; seine Abhängigkeitsliste führt weder `activeVariant` noch `mappings`
+  (`consentTargets` in `src/components/CodeImporter.tsx`, über `getPixelId` in
+  `src/lib/settings.ts`). Beide Varianten bekommen denselben Draht aus demselben Closure:
+  `buildDocumentFor` reicht dasselbe `consentTargets` an beide Aufrufe weiter, und der
+  Publish schreibt beide in EINEM atomaren Vorgang.
+  FOLGE: Der Fall „Kennung nur in EINER Variante gesetzt" ist am heutigen Modell NICHT
+  KONSTRUIERBAR — die Kennung existiert genau einmal je Projekt. Was je Variante
+  auseinanderlaufen kann, sind die MAPPINGS (welche Ereignisse feuern), nicht die Frage,
+  ob ein Ziel eine Kennung trägt. DIESE ENTWARNUNG IST DIE VORAUSSETZUNG DER SCHEIBE 11.1b:
+  Ohne sie wäre die Vereinigung der Ereignisnamen nicht die einzige Achse, auf der A und B
+  divergieren.
+  DIE GRENZE, DIE MITMUSS: Das gilt für den ZUSAMMENHANG IM CODE, nicht für einen bereits
+  PUBLIZIERTEN Text. Der Draht ist eine EINBAHNSTRASSE — eine Seite trägt den
+  Schlüsselstand ihres letzten Publish, und ein Kennungs-Wechsel ohne Re-Publish erreicht
+  sie nicht. Ob das für ein konkretes Projekt zutrifft, ist eine Frage an die DATENBANK
+  (`projects.published_content`), nicht ans Repo — und sie ist hier NICHT beantwortet.
 
 ## Vorrat — gemeldet, nicht gebaut
 
@@ -178,6 +296,27 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   Der Hinweis würde erst dann zutreffen, wenn jemand die CLI-Arbeitsweise einführte.
   Er steht hier, damit ihn niemand in einem halben Jahr neu herleitet und für einen Befund
   gegen die bestehende Reihenfolge-Regel hält. KEINE Empfehlung, KEINE Regel, kein Auftrag.
+
+- **ZWEI PRÄDIKATFREIE KENNUNGS-PRÜFUNGEN IM ERZEUGER-PFAD** (GEMESSEN am Code,
+  2026-08-17): `buildMetaRuntime` (`src/lib/tracking/meta.ts`) und `buildWiringScript`
+  (`src/lib/generate.ts`) entscheiden „trägt dieses Ziel eine Kennung?" per Vergleich gegen
+  `""` statt über `hasPixelId` — obwohl `src/lib/tracking/target-readiness.ts` wörtlich
+  davor warnt („wer hier `savedPixelId !== \"\"` schreibt, hat wieder zwei Wahrheiten").
+  HEUTE WERTGLEICH, weil `getPixelId` bereits trimmt; beide sind ausserdem heute
+  meta-spezifisch.
+  TRIGGER: sobald eine Kennung eine ANDERE FORM hat als einen getrimmten Skalar. Dann
+  entscheiden drei Stellen dieselbe Frage auf zwei Weisen.
+
+- **DIE FORM VON `settings.pixels.<ziel>` TRÄGT NUR `{ pixelId?: string }`** (GEMESSEN am
+  Code, 2026-08-17, an `ProjectSettings` in `src/lib/settings.ts`): Für ein Merkmal JE
+  EREIGNISTYP gibt es dort keinen Ort ausser einem weiteren Feld. BEOBACHTUNG, KEINE
+  EMPFEHLUNG — sie gehört in den Zuschnitt von 11.1c und wird hier nicht bewertet.
+
+- **DER ZEIGER IN CLAUDE.md AUF `docs/claude-history/backlog-polish.md` IST FÜR EINE
+  WÖRTLICHE SUCHE TOT** (GEMESSEN 2026-08-17): Er nennt „VOLLSTÄNDIGKEITS-ACHSE — WAS DANN
+  SOFORT GILT" mit Umlaut und als Abschnitt; im Ziel steht ein AUFZÄHLUNGSPUNKT in
+  ASCII-Umschrift (`VOLLSTAENDIGKEITS-ACHSE`). Gefunden nur, weil beide Schreibweisen
+  probiert wurden. Doku-Punkt, EIGENE Runde — hier ausdrücklich nicht repariert.
 
 ## Hebungs-Kandidaten
 

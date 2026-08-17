@@ -73,48 +73,28 @@ steht an der Roadmap-Zeile 11.1 in CLAUDE.md.
 Die erste Scheibe legt das Zugangsdatum ab und macht sonst nichts. Sie ist bewusst so
 geschnitten, dass sie am heissesten Pfad der Plattform NICHTS ändert.
 
-### Was drin ist
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-- **DIE MIGRATION:** Die CHECK-Bedingung `project_secrets_target_valid` auf
-  `public.project_secrets` wird um das vierte Ziel erweitert. GEMESSEN am Repo
-  (2026-08-17): Sie steht heute auf `check (target in ('meta', 'pinterest', 'tiktok'))`,
-  zuletzt gesetzt in `supabase/migrations/0023_project_secrets_tiktok.sql`; die höchste
-  vorhandene Migrationsnummer ist 0023. Die NUMMER der neuen Datei wird aus dem
-  Verzeichnis ABGELEITET, nicht aus dieser Zeile abgeschrieben — sie kann veraltet sein,
-  sobald irgendeine andere Migration dazukommt.
-  AUFLAGE, die den Schnitt trägt: Jedes Ziel bringt seine EIGENE Constraint-Erweiterung
-  mit (CLAUDE.md, Roadmap-Zeile 11.1). Ausführung im Supabase-SQL-Editor VOR dem
-  Code-Deploy, fail-closed — erst das Ziel erlauben, dann den Schreiber ausliefern; die
-  umgekehrte Reihenfolge liesse einen Betreiber beim Speichern in eine CHECK-Verletzung
-  laufen. Die Bauform (Katalog-Guard im DO-Block, Drop+Add in EINER Transaktion,
-  Protokoll-Eintrag als letzte Anweisung, Positivkontrolle nach dem Einspielen) steht in
-  0023 und wird übernommen, nicht neu erfunden.
-  PFLICHT VOR DEM PLAN: docs/db-stand.md und docs/db-regeln.md laden — das ist der
-  Pflicht-Stopp aus CLAUDE.md und keine Empfehlung.
-- **EIN SCHREIBPFAD FÜR DAS ZUGANGSDATUM,** nach dem Muster des bestehenden Token-Flows
-  (`setCapiToken` in `src/app/projects/actions.ts`, GEMESSEN am Repo 2026-08-17): reine
-  Funktion, Ownership-Prüfung DAVOR, Geschäftslogik DAHINTER — damit eine spätere
-  MCP-Schicht denselben geprüften Kern über einen anderen Eingang nutzen kann. WRITE-ONLY:
-  auch der Owner liest den Wert nie zurück; die Tabelle trägt keine SELECT-Policy, und das
-  ist die tragende Schicht, nicht die Grants.
-- **OBERFLÄCHE — DER BEDARF, NICHT DIE BAUFORM:** Der Betreiber braucht einen Ort, an dem
-  er das Zugangsdatum eingeben kann, und eine Anzeige *hinterlegt / nicht hinterlegt*.
-  OB das ein vierter Eintrag im bestehenden Karten-System ist oder etwas anderes, ist HIER
-  NICHT entschieden — es hängt an der offenen Frage (1). Anlass, GEMESSEN am Repo
-  (2026-08-17): `TARGET_CARDS` (`src/lib/tracking/target-adapters.ts`) trägt ein Merkmal
-  `hasAdapter` und ist im Kommentar derselben Datei ausdrücklich als TEILMENGE von
-  `TRACKING_TARGETS` beschrieben; ob ein Ziel OHNE Adapter dort überhaupt eine Karte
-  bekommt, ist damit NICHT beantwortet.
-  DIE GRENZE, die diesen Punkt hält: Ohne diesen Ort ist die Scheibe NICHT DEMOBAR — ein
-  Schreibpfad ohne Eingabe hat keinen Nachweis. Der Bedarf ist also Teil der Scheibe, die
-  Bauform ist es noch nicht.
-- **DER ZUSTAND WIRD AUS DER GEHEIMNIS-TABELLE ABGELEITET,** nicht aus dem
-  Einstellungs-Blob — aus DERSELBEN Zeile, die später auch der Forward-Pfad liest. Zwei
-  Wahrheiten werden damit zu einer. Der Blob ist CLIENT-besessen und wird beim Speichern
-  ganzheitlich ersetzt; ein daraus abgeleiteter Zustand überlebt nur, solange der Client
-  ihn zurückspiegelt.
+VERDICHTET AM 2026-08-17, nach dem bestätigten Live-Test. Hier standen die ANWEISUNGEN
+FÜR die Scheibe: die Migration samt Bauform und der Auflage, dass jedes Ziel seine EIGENE
+Constraint-Erweiterung mitbringt · der Schreibpfad nach dem Muster des Token-Flows · der
+BEDARF an einem Ort für die Eingabe, mit offen gelassener Bauform · die Ableitung des
+Zustands aus der Geheimnis-Tabelle statt aus dem Einstellungs-Blob. Sie sind mit dem
+Vollzug abgelaufen.
+WAS GEBAUT UND GEMESSEN WURDE, STEHT IN VERMERK 1 — und nur weil es dort steht, durfte es
+hier weg. Zwei Dinge daraus sind KEINE Anweisung mehr, sondern Tatsachen über den
+gebauten Code, und sie stehen deshalb dort: dass KEIN Schreibpfad entstehen musste
+(`setCapiToken` war bereits ziel-generisch), und dass die Karte ohne öffentliches Feld
+auskommt.
+DIE ZWEI PFLICHT-STOPPS DIESER SCHEIBE (docs/db-stand.md + docs/db-regeln.md vor einer
+Migration) waren keine Erfindung dieses Zuschnitts, sie stehen dauerhaft in CLAUDE.md und
+gelten unabhängig von dieser Datei weiter.
 
-### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+### Was ausdrücklich NICHT drin war, je mit seinem Grund — GILT WEITER, IST ABER KEIN ZUSCHNITT MEHR
+
+Die Ausschlüsse sind mit dem Vollzug NICHT erledigt; erledigt ist nur ihre Rolle als
+Zuschnitt DIESER Scheibe. Ihr Ort ist ab jetzt die Roadmap-Zeile 11.1 in CLAUDE.md bzw.
+der Zuschnitt von 11.1b.
 
 - **KEIN ADAPTER, KEIN FORWARD, KEIN EINTRAG IM FAN-OUT.** Ohne die
   Conversion-Regel-Kennung ist das Ziel nicht sendefähig — ein Adapter hätte nichts, wohin
@@ -123,32 +103,12 @@ geschnitten, dass sie am heissesten Pfad der Plattform NICHTS ändert.
   der Einstellungs-Blob ist CLIENT-besessen. Das ist Trigger (ii) der
   Primärschlüssel-Entscheidung (CLAUDE.md, "## Offene Punkte") und gehört in eine EIGENE
   Runde, nicht als Nebenzeile hierher.
-- **KEIN EINWILLIGUNGS-VERHALTEN — UND DAS IST NICHT DASSELBE WIE "KEIN EINTRAG".** Zwei
-  Dinge, die beim Lesen wie eines aussehen und auseinandergehören:
-  · AUSGESCHLOSSEN BLEIBT DAS VERHALTEN: Diese Scheibe baut und ändert KEIN
-    Einwilligungs-Verhalten. Kein Zweig wird umgeschrieben, keine Auswertung erweitert,
-    kein ausgelieferter Client-Code geändert.
-  · NICHT AUSGESCHLOSSEN IST EIN TYP-EINTRAG, weil er strukturell erzwungen sein kann:
-    Ein Eintrag in den totalen Zuordnungen `CONSENT_KEY_BY_TARGET` und
-    `LEGACY_CONSENT_ROLE` (`src/lib/tracking/consent-targets.ts`) ist ZULÄSSIG, WENN der
-    Compiler ihn verlangt. Er ist dann eine STRUKTURELLE PFLICHT, keine Entscheidung.
-    GEMESSEN am Repo (2026-08-17): Beide sind als `Record<TrackingTarget, …>` typisiert,
-    und ein Kommentar in derselben Datei behauptet, eine Erweiterung von
-    `TRACKING_TARGETS` erzeuge dort einen Typfehler. FOLGERUNG aus der gemessenen
-    Typform, NICHT selbst am Compiler geprüft: Ein `Record` über einer Vereinigung
-    verlangt alle Mitglieder. Der Kommentar ist ein Suchhinweis, kein Beleg — geprüft
-    wird im Plan.
-  · WELCHEN WERT DER EINTRAG TRÄGT, IST HIER NICHT ENTSCHIEDEN. Er wird im Plan
-    VORGELEGT, nicht im Bau gewählt.
-  · DIE FALLE, ohne die dieser Punkt harmlos aussieht: Ein heute FOLGENLOSER Eintrag wird
-    mit dem Adapter in 11.1b WIRKSAM — und zwar OHNE dass irgendwo etwas rot wird, weil
-    sich am Eintrag selbst nichts ändert. Trägt er eine Semantik, die bei fehlender Angabe
-    "erlaubt" bedeutet, entsteht in 11.1b ein Forward OHNE Einwilligung. Diese Figur ist
-    im Projekt schon einmal aufgetreten: eine Regel, deren BEGRÜNDUNG beim zweiten Ziel
-    nicht mehr trug, während ihr WORTLAUT korrekt blieb (docs/immer-beachten.md, "EINE
-    REGEL KANN RICHTIG SEIN UND NICHT SKALIEREN").
-  (Der Vorrats-Eintrag zu derselben Messung bleibt stehen — dort steht die Beobachtung,
-  hier ihre Abgrenzung für diese Scheibe.)
+- **KEIN EINWILLIGUNGS-VERHALTEN — UND DAS IST NICHT DASSELBE WIE "KEIN EINTRAG".**
+  Ausgeschlossen war das VERHALTEN; der TYP-EINTRAG war strukturell erzwungen und ist
+  gesetzt worden. VOLLZOGEN UND NACHZULESEN IN VERMERK 1, Punkt (a): welche Werte gesetzt
+  sind, warum `false` dort NICHT "strenger als die Doktrin" heisst, und die Falle — ein
+  heute folgenloser Eintrag wird in 11.1b wirksam, ohne dass sich an ihm etwas ändert und
+  ohne dass irgendwo etwas rot wird.
 - **KEINE BEHANDLUNG VON ABLAUF ODER WIDERRUF, KEIN BLEIBENDES SIGNAL.** Dass eine
   LinkedIn-Verbindung ohne Zutun des Kunden brechen kann, ist an der Roadmap-Zeile 11.1 als
   Befund festgehalten; OB und WIE das ein Signal bekommt, ist dort ausdrücklich nicht
@@ -169,32 +129,6 @@ Ein Zugangsdatum ist ein SKALAR je (Projekt, Ziel) — genau die Form, die die T
 Mehrere KENNUNGEN je Ziel brechen den Schlüssel (project_id, target) NICHT; nur mehrere
 EMPFÄNGER desselben Typs je Projekt täten es. Die beiden Achsen sehen beim Lesen wie eine
 aus, und wer sie zusammenzieht, baut ein Schema um, dem nichts fehlt.
-
-### Drei offene Fragen — FRAGEN, kein Befund
-
-Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
-
-1. **Wie ist der Zustand einer Ziel-Karte heute zusammengesetzt, und kennt sie einen
-   TEILZUSTAND ("Zugangsdatum ja, Kennung nein")?** Anlass für die Frage, GEMESSEN am Repo
-   (2026-08-17): Es gibt `TARGET_CARDS` mit einem Merkmal `hasAdapter`
-   (`src/lib/tracking/target-adapters.ts`), eine eigene Ableitung in
-   `src/lib/tracking/target-readiness.ts` und daneben `listConfiguredTargets`
-   (`src/app/projects/actions.ts`) — WELCHE davon den angezeigten Zustand bildet und ob
-   eine von ihnen einen Teilzustand überhaupt darstellen kann, ist damit NICHT beantwortet.
-2. **Wo überall steht die Menge der gültigen Ziele im Code** — einschliesslich der Stellen,
-   die ein UNBEKANNTES Mitglied VERWENDEN, statt über die Menge zu iterieren? Eine
-   Strukturprüfung findet nur die Iterierer. GEMESSEN ist bislang nur der Ausgangspunkt:
-   `TRACKING_TARGETS` in `src/lib/settings.ts` und die CHECK-Bedingung in der Datenbank.
-   AUSDRÜCKLICH KEINE ANTWORT: In `src/lib/tracking/target-adapters.ts` steht ein
-   Kommentar, der eine Liste solcher Stellen nennt. Ein Kommentar ist eine BEHAUPTUNG,
-   keine Eigenschaft — er ist ein Suchhinweis und wird geprüft, nicht abgeschrieben.
-3. **Fällt der Einwilligungs-Zweig für ein Ziel OHNE Adapter tatsächlich vorher heraus —
-   am Code, nicht laut Kommentar?**
-   AUFLAGE, die aus der Abgrenzung oben folgt: Die Frage lautet nicht mehr nur OB, sondern
-   zusätzlich WORAN der Zweig das entscheidet — am FEHLENDEN ADAPTER oder am
-   EINWILLIGUNGS-WERT. **Nur die erste Antwort trägt den Ausschluss über 11.1b hinaus.**
-   Entscheidet er am Wert, ist der heute folgenlose Eintrag genau die Falle, die oben
-   beschrieben ist, und die Antwort gehört in den Plan, bevor der Eintrag gesetzt wird.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -229,6 +163,21 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   die Scheibe einen Eintrag setzen MUSS — und ob ein Eintrag ohne Adapter überhaupt eine
   Wirkung hätte —, ist HIER NICHT entschieden; es berührt die offenen Fragen (2) und (3)
   und gehört in deren Beantwortung am Code.
+  **ERLEDIGT MIT SCHEIBE 11.1a** (2026-08-17): Beide Fragen sind beantwortet, der Eintrag
+  ist gesetzt. Der Wortlaut oben bleibt als Zeitdokument stehen; was daraus geworden ist,
+  steht in Vermerk 1, Punkt (a) — einschliesslich der Antwort, dass der
+  Einwilligungs-Zweig am WERT entscheidet.
+
+- **DIE SUPABASE-DOKU WARNT VOR SCHEMA-ÄNDERUNGEN ÜBER DEN SQL-EDITOR — DER HINWEIS
+  TRIFFT DIESES PROJEKT NICHT** (GELESEN 2026-08-17,
+  `supabase.com/docs/guides/deployment/database-migrations`): Dort steht, Schema-Änderungen
+  direkt an der entfernten Datenbank über den SQL-Editor oder den Table-Editor umgingen die
+  Migrations-Historie und liessen `supabase db push` mit Sync-Fehlern scheitern.
+  WARUM ER HIER TROTZDEM STEHT: Dieses Projekt hat KEINEN Migrations-Runner und soll keinen
+  haben; Migrationen laufen bewusst manuell im SQL-Editor, und `db push` kommt nicht vor.
+  Der Hinweis würde erst dann zutreffen, wenn jemand die CLI-Arbeitsweise einführte.
+  Er steht hier, damit ihn niemand in einem halben Jahr neu herleitet und für einen Befund
+  gegen die bestehende Reihenfolge-Regel hält. KEINE Empfehlung, KEINE Regel, kein Auftrag.
 
 ## Hebungs-Kandidaten
 
@@ -237,7 +186,31 @@ Sicherheits-Manifest oder in eine der Zustandsdateien VORGESCHLAGEN wird — ein
 erst durch die Hebung wirksam, nicht durch den Eintrag hier. Jeder Kandidat nennt, WO er
 hin soll und WELCHER Beleg ihn trägt.
 
-(noch leer)
+- **EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT — DER
+  ERSTE TREFFER IST SYSTEMATISCH DER FALSCHE.**
+  WOHIN: `docs/immer-beachten.md`, als Ergänzung an „WERKZEUG-REGEL: sed -i STRIPPT IN
+  DIESER UMGEBUNG STILL DAS CR". Jene Regel führt bereits die Gegenrichtung („EIN WERKZEUG
+  KANN AUCH EINEN BEFUND ERZEUGEN, DEN DER GEGENSTAND NICHT HERGIBT"); dies ist der
+  verwandte Fall auf derselben Achse — nicht das Werkzeug verfälscht das Ergebnis, sondern
+  der ANKER trifft eine andere Stelle als die gemeinte.
+  DER BEFUND (GEMESSEN am 2026-08-17, beim Verdichten genau dieser Datei): Eine Suche nach
+  dem Text einer `##`-Überschrift traf den gleichnamigen Eintrag im ABSCHNITTS-VERZEICHNIS
+  statt der Überschrift selbst. Die beiden Splice-Grenzen kehrten sich dadurch um, und die
+  halbe Datei stand zweimal da. Wiederhergestellt wurde aus der Versionsverwaltung, die
+  Änderung danach mit dem Editier-Werkzeug neu eingetragen.
+  DIE URSACHE IST STRUKTURELL UND KEIN FEHLGRIFF, und genau das trägt die Hebung: Seit
+  Standdateien ein Verzeichnis im Kopf tragen, steht JEDE Überschrift MINDESTENS ZWEIMAL in
+  der Datei — und das Verzeichnis steht VORN. Wer die erste Fundstelle nimmt, nimmt damit
+  systematisch die falsche, und zwar bei jeder Überschrift und in jeder solchen Datei.
+  DIE REICHWEITE: Das Verzeichnis ist eine VORGABE für jede künftige Standdatei, keine
+  Eigenart dieser einen. Dieselbe Struktur tragen `docs/immer-beachten.md` und
+  `docs/ziel-befunde.md` — die Regel, die das Verzeichnis fordert, erzeugt die Falle also
+  selbst.
+  WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT: eine Vorschrift, WIE stattdessen anzukern ist. Ob das
+  Verzeichnis eine unterscheidbare Form bekommt, ob nach der LETZTEN statt der ersten
+  Fundstelle gesucht wird oder ob es schlicht bei der Pflicht zum Editier-Werkzeug bleibt —
+  das ist eine EIGENE Entscheidung und wird hier NICHT getroffen. Ein Kandidat, der die
+  Lösung gleich mitliefert, nimmt sie der Hebung vorweg.
 
 ## Scheiben-Vermerke
 
@@ -246,4 +219,89 @@ Test und nicht nach dem Commit allein. Er trägt seine stabile Nummer (s.
 Fortschreibungsregeln), was gebaut wurde, was gemessen wurde und die Commit-Nummer; der
 jüngste, noch nicht committete Vermerk darf sie als EINZIGER offen lassen.
 
-(noch leer — es ist nichts gebaut)
+### 1 — Scheibe 11.1a: Zugangsdatum ablegen (Commit-Nummer offen)
+
+**DIE LÜCKE IST BEABSICHTIGT:** Dieser Vermerk trägt keine Commit-Nummer, weil er der
+jüngste und noch nicht committete ist. Es darf immer nur EINE solche Lücke geben.
+
+**WAS GEBAUT WURDE.** `linkedin` ist ein `TrackingTarget` (`TRACKING_TARGETS` in
+`src/lib/settings.ts`) und steht ausdrücklich NICHT in `TARGETS_WITH_ADAPTER`
+(`src/lib/tracking/target-adapters.ts`) — das ist der Riegel der Scheibe, und ein eigener
+Wächter (`src/lib/tracking/target-adapters.test.ts`) hält ihn. Migration 0024 erweitert
+die CHECK-Bedingung `project_secrets_target_valid` um das vierte Ziel. Die Karte
+(`TARGET_CARDS` in `src/components/TargetCard.tsx` — NICHT in `target-adapters.ts`, dort
+liegen `TARGETS_WITH_ADAPTER` und `hasAdapter`) kommt ohne öffentliches Feld aus: die drei
+`public*`-Felder sind optional geworden, und ihre ABWESENHEIT ist der Schalter. Auf einer
+solchen Karte ist die Zeile über die Auslieferung unterdrückt — sie nennt eine fehlende
+Kennung als Grund, während der wahre Grund der fehlende Empfänger ist.
+**KEIN SCHREIBPFAD IST ENTSTANDEN:** `setCapiToken` (`src/app/projects/actions.ts`) war
+seit Phase 11 Scheibe 6 bereits ziel-generisch. Der Zuschnitt hat etwas verlangt, das es
+gab — der einzige Punkt, an dem der Bau KLEINER ausfiel als der Plan.
+
+**WAS GEMESSEN IST (LIVE, 2026-08-17, vom Owner im SQL-Editor und im Browser):**
+- Die Constraint-Definition im Wortlaut: `CHECK ((target = ANY (ARRAY['meta'::text,
+  'pinterest'::text, 'tiktok'::text, 'linkedin'::text])))`.
+- Das Protokoll trägt alle vier Ziel-Migrationen mit gefülltem `applied_at`: 0021
+  (2026-08-05 06:41:30), 0022 (2026-08-07 10:14:37), 0023 (2026-08-11 15:58:43), 0024
+  (2026-08-17 13:59:53).
+- **DER CONSTRAINT WIRKT:** Ein Insert mit `'linkedn_falsch'` wurde mit **23514** unter dem
+  Namen `project_secrets_target_valid` abgewiesen, ein Insert mit `'linkedin'` angenommen.
+- **REGRESSION, DREIMAL GEFAHREN:** Meta-Ereignisse erscheinen im Events Manager als
+  „Empfangen von: Server" — mit und ohne hinterlegtes LinkedIn-Zugangsdatum. Die tragende
+  Invariante hält am lebenden System.
+- **OBERFLÄCHE:** „Zugangsdaten hinterlegt" plus „Auslieferung folgt — dieses Ziel sendet
+  noch nicht." KEINE Meldung über eine fehlende Kennung, KEIN öffentliches Feld.
+  Gegenprobe: Entfernen schaltet zurück auf „Nicht konfiguriert".
+
+**DIE EINSCHRÄNKUNG, OHNE DIE SICH DIESER VERMERK FALSCH LIEST — ER IST KEIN
+VORHER/NACHHER-BELEG:** Migration und Deploy waren zu Testbeginn BEREITS eingespielt. Der
+Schritt, der den Ausgangszustand VOR dem Lauf abliest, konnte deshalb nicht stattfinden.
+GEMESSEN ist damit, dass der Constraint HEUTE wirkt und nicht alles durchlässt — und das
+ist die wertvollere Hälfte, weil eine blosse Annahme bei einem Constraint, der alles
+durchliesse, identisch aussähe. NICHT GEMESSEN ist, dass 0024 den Übergang BEWIRKT hat;
+das ruht auf dem Protokoll-Eintrag und ist damit eine ABLEITUNG, kein Messwert.
+
+**ZWEI FEHLERKLASSEN, DIE IM PROTOKOLL GLEICH AUSSEHEN** (GEMESSEN am Repo, 2026-08-17):
+`project_secrets` trägt `primary key (project_id, target)` (0021), weshalb ein zweiter
+Insert mit demselben Paar an einer SCHLÜSSEL-KOLLISION scheitert (23505) und NICHT an der
+CHECK-Bedingung (23514) — wer die Bereinigung von Alt-Einträgen vor dem Lauf für einen
+Teil der Constraint-Prüfung hält, verwechselt die beiden. Über den Produktivpfad tritt
+23505 gar nicht auf, weil `setCapiToken` mit `onConflict: "project_id,target"` als Upsert
+schreibt.
+
+**ZWEI PUNKTE, DIE ÜBER DIESE SCHEIBE HINAUSREICHEN** — sie sind der Grund, warum dieser
+Vermerk nicht nur Vollzug meldet:
+
+**(a) DER EINWILLIGUNGS-EINTRAG IST HEUTE FOLGENLOS UND WIRD IN 11.1b WIRKSAM,** ohne dass
+sich an ihm etwas ändert und ohne dass irgendwo etwas rot wird. Gesetzt sind
+`CONSENT_KEY_BY_TARGET.linkedin = "linkedin"` und `LEGACY_CONSENT_ROLE.linkedin = false`
+(`src/lib/tracking/consent-targets.ts`); beide Einträge sind vom Typ erzwungen (totale
+Records über `TrackingTarget`) und zusätzlich von zwei Vollständigkeits-Wächtern in
+`consent-targets.test.ts`.
+DIE GRUNDLAGE DIESES PUNKTES IST DIE ANTWORT AUF DIE DRITTE OFFENE FRAGE, und sie fiel auf
+die schwächere Seite (GEMESSEN am Code, 2026-08-17): Der Einwilligungs-Zweig
+(`allowedTargets` in `src/lib/capi/ingest.ts`) entscheidet am **WERT**, nicht am fehlenden
+Adapter — er läuft VOR `dispatchForward`, und der Adapter-Riegel `if (!hasAdapter(target))
+return` liegt DAHINTER. Ein LinkedIn-Eintrag passiert das Gate also und fällt erst am
+Verteiler heraus. Für 11.1a ist das folgenlos; für 11.1b ist es die Falle.
+`false` HEISST DABEI NICHT „strenger als die Doktrin": Ohne Einwilligungs-Dialog wird der
+Draht MIT allen Schlüsseln auf `true` gefüllt (`__psConsentAll` in
+`src/lib/tracking/consent.ts`: `v === undefined` -> alle erlaubt), das Feld ist dann
+vorhanden und erlaubend, und dieser Zweig wird gar nicht erreicht. Er verteilt ein ERBE an
+Seiten, die älter sind als das Feld — und solche Seiten kann es für ein Ziel, das es erst
+seit heute gibt, nicht geben.
+
+**(b) DER AUSSCHLUSS „KEIN AUSGELIEFERTER CLIENT-CODE GEÄNDERT" HÄNGT AN VARIANTE C.**
+GEMESSEN am Code (2026-08-17): Das Memo `consentTargets`
+(`src/components/CodeImporter.tsx`) filtert auf eine gesetzte Kennung
+(`TRACKING_TARGETS.filter(t => hasPixelId(getPixelId(settings, t)))`). Die Karte hat kein
+Feld, um eine zu setzen -> LinkedIn erscheint in KEINEM ausgelieferten Text. Bekommt sie
+in 11.1b eines, erscheint das Ziel im ausgelieferten Code JEDER Seite, die es benutzt —
+und der Schlüssel ist eine EINBAHNSTRASSE: ein publizierter Text trägt ihn, ein
+Code-Deploy erreicht ihn nicht.
+HEUTE SICHERT DAS EIN KOMMENTAR AN DER RENDER-STELLE, UND EIN KOMMENTAR IST KEIN WÄCHTER.
+Das ist kein Versäumnis dieser Scheibe, sondern ein benannter offener Punkt für den
+Zuschnitt von 11.1b.
+
+**WAS DER LIVE-TEST NICHT ZEIGEN KONNTE UND AUCH NICHT SOLLTE:** ob bei LinkedIn etwas
+ankommt. Es geht nichts hin — das ist der Zweck der Scheibe.

@@ -45,6 +45,18 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
 
 - MIGRATIONSSTAND: 0001-0022. ZWEI PROVENIENZEN, hier bewusst GETRENNT gehalten — die
   Sektions-Provenienz oben (2026-08-05) deckt nur die erste ab:
+  RICHTIGGESTELLT AM 2026-08-17, NICHT GESTEMPELT: Die Zahl 0022 und die zwei Provenienzen
+  darunter bleiben lesbar — sie sind als Aussage über den 2026-08-07 richtig und tragen die
+  Herleitung, warum diese Zeile NIE aus dem Verzeichnis fortgeschrieben wird. DER HEUTIGE
+  STAND IST 0001-0024. LIVE ABGELESEN am 2026-08-17 (SQL-Editor, Owner, Probe:
+  supabase/checks/project-secrets-target-check.sql): schema_migrations trägt 0021
+  (applied_at 2026-08-05 06:41:30), 0022 (2026-08-07 10:14:37), 0023 (2026-08-11 15:58:43)
+  und 0024 (2026-08-17 13:59:53) — je ein VOLLZUGSNACHWEIS, KEINE erneute
+  Lückenlosigkeits-Rechnung. Die abgelesene Probe filterte auf Dateinamen mit
+  'project_secrets'; über Migrationen ausserhalb dieses Musters sagt sie NICHTS, und für
+  0001-0020 gilt weiterhin allein die Messung vom 2026-08-05.
+  0023 ist damit erstmals hier erfasst — sie fehlte in dieser Zeile, obwohl sie seit dem
+  2026-08-11 angewandt ist.
   · 0001-0021, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl = Spannweite+1),
     nicht nur an der Dateisortierung abgelesen. GEMESSEN am 2026-08-05: 21 Zeilen,
     Spannweite 0001-0021; applied_at gefüllt bei 0018, 0019, 0020 und 0021 — bei 0021 mit
@@ -124,6 +136,22 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   CONSTRAINT project_secrets_target_valid: CHECK ((target = ANY (ARRAY['meta'::text,
   'pinterest'::text]))) — Definition im WORTLAUT, LIVE ABGELESEN am 2026-08-07 und damit
   ABWEICHEND von der Sektions-Provenienz oben (nicht aus der Migrationsdatei übernommen).
+  RICHTIGGESTELLT AM 2026-08-17, NICHT GESTEMPELT — der Wortlaut darüber bleibt lesbar,
+  weil er als Aussage über den 2026-08-07 richtig ist und weil an ihm die Provenienz-Regel
+  dieser Datei hängt: er war LIVE abgelesen und nicht aus einer Migrationsdatei
+  übernommen. HEUTE GILT ER NICHT MEHR. LIVE ABGELESEN am 2026-08-17 (SQL-Editor, Owner,
+  im Live-Test der Scheibe 11.1a; Probe: supabase/checks/project-secrets-target-check.sql):
+  CHECK ((target = ANY (ARRAY['meta'::text, 'pinterest'::text, 'tiktok'::text,
+  'linkedin'::text]))) — VIER Zielwerte. Gesetzt haben ihn 0023 (drittes Ziel) und 0024
+  (viertes Ziel), jeweils per drop + add in EINER Transaktion.
+  MITGEMESSEN AM 2026-08-17, und es ist wie schon 2026-08-07 der wertvollere der beiden
+  Belege: ein Wegwerf-Insert mit 'linkedin' wurde ANGENOMMEN, einer mit 'linkedn_falsch'
+  mit 23514 (check_violation) unter dem Namen project_secrets_target_valid ABGEWIESEN. Die
+  Annahme allein sähe bei einem Constraint, der alles durchlässt, identisch aus.
+  DIE GRENZE DIESER MESSUNG GEHÖRT DAZU: Migration und Deploy waren zum Messzeitpunkt
+  BEREITS eingespielt, ein Ausgangswert VOR dem Lauf wurde also nicht abgelesen. Gemessen
+  ist, dass der Constraint HEUTE so lautet und wirkt — NICHT, dass 0024 den Übergang
+  bewirkt hat. Das ruht auf dem Protokoll-Eintrag und ist eine Ableitung.
   0021 legte den Constraint mit einem EINZIGEN Zielwert an; 0022 hat ihn ERSETZT (drop + add
   in EINER Transaktion). Der Zielwert bleibt eng gefasst, jedes weitere Ziel bringt seine
   EIGENE Constraint-Erweiterung mit — der beabsichtigte Preis: der sichtbare Moment, in dem

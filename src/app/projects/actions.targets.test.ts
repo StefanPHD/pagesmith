@@ -177,6 +177,25 @@ describe("Ein gueltiges zweites Ziel schreibt seine EIGENE Zeile", () => {
     await setCapiToken("proj-1", "meta", "META-SECRET");
     expect(adminTables).toEqual(["project_secrets", "project_tokens"]);
   });
+
+  // DAS VIERTE ZIEL (11.1a) — ES BRAUCHT KEINEN EIGENEN SCHREIBPFAD, und dieser Lauf
+  // ist der Beleg dafuer: setCapiToken ist seit der sechsten Scheibe ziel-generisch.
+  // WAS ER ZUSAETZLICH ZU DEN PINTEREST-LAEUFEN ZEIGT: dass die Generik auch fuer ein
+  // Ziel OHNE Empfaenger traegt. Die Ablage haengt nicht am Adapter — wer beides
+  // koppelte, koennte fuer dieses Ziel gar nichts hinterlegen.
+  it("LINKEDIN schreibt seine EIGENE Zeile und fasst die Alt-Tabelle NICHT an", async () => {
+    // ROT DURCH: ein Ziel-Vergleich im Schreibpfad, der nur bekannte ADAPTER
+    // durchliesse, oder ein bedingungsloser Doppelschreib in die Alt-Tabelle.
+    makeClient({ user: { id: "u1" } });
+    const result = await setCapiToken("proj-1", "linkedin", "  LI-SECRET  ");
+    expect(result).toEqual({ ok: true, trackingKey: expect.any(String) });
+    expect(adminUpsert.mock.calls[0][0]).toEqual({
+      project_id: "proj-1",
+      target: "linkedin",
+      secret: "LI-SECRET",
+    });
+    expect(adminTables).toEqual(["project_secrets"]);
+  });
 });
 
 describe("Der Loeschpfad trifft genau EIN Ziel", () => {

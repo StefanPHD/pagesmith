@@ -70,6 +70,18 @@ export const CONSENT_KEY_BY_TARGET: Record<TrackingTarget, string> = {
   // eine Kennung traegt, und ist damit eine EINBAHNSTRASSE — Herleitung und die
   // offene Konstanten-Frage stehen im Absatz ueber dieser Zuordnung.
   tiktok: "tiktok",
+  // LINKEDIN TRAEGT SEINEN WERT ALS LITERAL, aus demselben Grund wie die beiden
+  // darueber: keine Consent-Konstante in tracking/consent.ts, aus der er importiert
+  // werden koennte. Schreibweise nach derselben Regel — Namensraum
+  // settings.pixels.<platform>, snake_case, klein.
+  // DIESER EINTRAG IST HEUTE FOLGENLOS, UND DAS IST DER GEFAEHRLICHE TEIL: Der
+  // Schluessel erreicht den Draht erst, wenn das Ziel eine KENNUNG traegt (das Memo
+  // consentTargets in components/CodeImporter.tsx filtert darauf) — und diese Karte hat
+  // kein oeffentliches Feld, also gibt es keinen Weg, eine zu setzen. Mit dem Adapter in
+  // 11.1b wird er wirksam, OHNE dass sich an dieser Zeile etwas aendert und ohne dass
+  // irgendwo etwas rot wird. Wer dann hier etwas ueberprueft, prueft eine Zeile, die
+  // seit ihrem ersten Tag unveraendert dasteht.
+  linkedin: "linkedin",
 };
 
 /**
@@ -112,4 +124,17 @@ export const LEGACY_CONSENT_ROLE: Record<TrackingTarget, boolean> = {
   // auf keinem unserer Kanaele sichtbar: es gaebe keinen Fehler, nur einen Forward
   // zuviel.
   tiktok: false,
+  // FALSE — UND DIE BEGRUENDUNG STEHT HIER, WEIL SIE SONST BEIM FUENFTEN ZIEL NEU
+  // HERGELEITET WIRD, UND ZWAR FALSCH: `false` heisst NICHT "strenger als die Doktrin".
+  // Die Doktrin dieses Produkts lautet unveraendert, dass ohne Einwilligungs-Dialog ALLE
+  // Ziele beliefert werden (CLAUDE.md, Roadmap-Zeile 11.5). Sie bleibt gewahrt, weil ein
+  // nicht gesetzter Betreiber-Hook den Draht MIT allen Schluesseln auf true fuellt
+  // (__psConsentAll in tracking/consent.ts: `v === undefined` -> alle erlaubt) — das
+  // Feld ist dann VORHANDEN und erlaubend, dieser Zweig hier wird gar nicht erreicht.
+  // WAS DIESE ROLLE WIRKLICH VERTEILT, ist ein ERBE: Sie gilt nur fuer einen Draht OHNE
+  // Einwilligungs-Feld, also fuer Seiten, die VOR der Einfuehrung des Feldes publiziert
+  // wurden. Fuer LinkedIn kann es solche Seiten nicht geben — das Ziel existiert erst ab
+  // dieser Scheibe. Es ist also nichts zu erben, und `true` verschenkte die Ausnahme an
+  // ein Ziel, ueber das nie jemand gefragt wurde.
+  linkedin: false,
 };

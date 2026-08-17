@@ -318,7 +318,13 @@ describe("TargetCard — der Folgenlosigkeits-Hinweis haengt an hasAdapter", () 
   // Seit C2 kommt die Tatsache als PROP herein, der Zweig ist ohne jede Mutation
   // erreichbar (s. die zwei Tests darunter).
   // =====================================================================
-  it("KEIN Ziel traegt den Hinweis — und die Daten sagen dasselbe wie die Oberflaeche", () => {
+  // DER NAME DIESES LAUFS IST MIT 11.1a GEWECHSELT, und das ist keine Kosmetik: Er
+  // hiess "KEIN Ziel traegt den Hinweis" — eine Aussage ueber ALLE Ziele, die seit dem
+  // vierten schlicht FALSCH ist. Ein Testname ist eine Behauptung; haette ich nur den
+  // Rumpf angepasst, stuende die falsche Aussage weiter im Protokoll jedes gruenen
+  // Laufs. Was er MISST, ist unveraendert: dass Daten-Seite und Oberflaechen-Seite
+  // dasselbe sagen — jetzt fuer BEIDE Faelle statt fuer einen.
+  it("JEDES Ziel: Daten-Seite und Oberflaeche sagen dasselbe ueber die Auslieferung", () => {
     for (const target of TRACKING_TARGETS) {
       const { container, unmount } = renderCard({
         target,
@@ -327,19 +333,38 @@ describe("TargetCard — der Folgenlosigkeits-Hinweis haengt an hasAdapter", () 
         // rechnet MeasureView, und damit prueft dieser Lauf die Kette Quelle -> Karte
         // statt einer Annahme ueber sie.
         hasAdapter: hasAdapter(target),
+        // GESPEICHERTE KENNUNG LEER — fuer die Karte OHNE oeffentliches Feld ist das
+        // der einzig moegliche Zustand, und fuer die anderen erzwingt es die Zeile
+        // ueber die Auslieferung. So misst derselbe Lauf beide Faelle im selben Bild.
+        savedPixelId: "",
       });
 
       // POSITIVKONTROLLE, ohne die eine Abwesenheits-Behauptung wertlos waere: Ein
       // leerer Render und ein echter Nicht-Treffer saehen sonst gleich aus. Der
       // Statustext beweist, dass DIESE Karte wirklich gerendert wurde.
       expect(screen.getByText(STATUS_CONFIGURED)).toBeTruthy();
-      expect(container.textContent).toContain(TARGET_CARDS[target].publicLabel);
 
-      // Die DATEN-Seite und die OBERFLAECHEN-Seite derselben Aussage, getrennt
-      // geprueft. Die Daten-Seite fragt seit C2 die QUELLE, nicht mehr ein Feld an der
-      // Karten-Konfiguration.
-      expect(hasAdapter(target)).toBe(true);
-      expect(screen.queryByText(HINWEIS)).toBeNull();
+      if (hasAdapter(target)) {
+        expect(container.textContent).toContain(TARGET_CARDS[target].publicLabel);
+        expect(screen.queryByText(HINWEIS)).toBeNull();
+        // Die Zeile ueber die Auslieferung STEHT — die Kennung fehlt ja.
+        expect(
+          screen.queryByText(noDeliveryText(TARGET_CARDS[target].publicLabel!)),
+        ).not.toBeNull();
+      } else {
+        // KEIN EMPFAENGER: Der Hinweis steht, das oeffentliche Feld fehlt GANZ.
+        expect(screen.queryByText(HINWEIS)).not.toBeNull();
+        expect(TARGET_CARDS[target].publicLabel).toBeUndefined();
+
+        // DIE AUFLAGE DER SCHEIBE 11.1a, UND SIE IST DER GRUND FUER DIESEN ZWEIG:
+        // NEBEN dem Hinweis darf KEINE zweite Meldung stehen, die als Grund eine
+        // fehlende Kennung nennt. Sie waere eine falsche Diagnose — der Grund ist der
+        // fehlende Empfaenger, und der Betreiber suchte nach einem Feld, das diese
+        // Karte gar nicht hat.
+        // WIRD ROT, WENN: jemand die Unterdrueckung in TargetCard entfernt. Dann
+        // rendert die Zeile mit `undefined` im Text, und diese Zusicherung faellt.
+        expect(container.textContent).not.toContain("wird an dieses Ziel nichts");
+      }
 
       unmount();
     }
@@ -391,7 +416,11 @@ describe("TargetCard — der Folgenlosigkeits-Hinweis haengt an hasAdapter", () 
  * der Zahl der Karten abzuhaengen.
  */
 describe("TargetCard — die Zeile ueber die Auslieferung", () => {
-  const metaZeile = () => noDeliveryText(TARGET_CARDS.meta.publicLabel);
+  // DIE ZUSICHERUNG IST SEIT 11.1a NOETIG UND SIE IST HIER SICHER: Die drei
+  // public-Felder sind optional geworden, weil das VIERTE Ziel keines hat (s.
+  // TargetCardConfig). Diese Zeilen fragen ausschliesslich die META-Karte, und die
+  // fuehrt ihr Feld. Bricht das je, bricht der Test laut — nicht still.
+  const metaZeile = () => noDeliveryText(TARGET_CARDS.meta.publicLabel!);
 
   it("K1: Zugangsdaten hinterlegt UND gespeicherte Kennung leer -> die Zeile steht, der Statustext ist UNVERAENDERT", () => {
     // ZWEI ASSERTIONS, UND DIE ZWEITE IST DER EIGENTLICHE WAECHTER: Ohne sie ginge
@@ -462,8 +491,12 @@ describe("TargetCard — die Zeile ueber die Auslieferung", () => {
     renderCard({ configured: true, pixelId: "999", savedPixelId: "" });
     expect(screen.getByText(metaZeile())).toBeTruthy();
     expect(
-      (screen.getByPlaceholderText(TARGET_CARDS.meta.publicPlaceholder) as HTMLInputElement)
-        .value,
+      (
+        screen.getByPlaceholderText(
+          // Zusicherung wie oben: die Meta-Karte fuehrt ihr oeffentliches Feld.
+          TARGET_CARDS.meta.publicPlaceholder!,
+        ) as HTMLInputElement
+      ).value,
     ).toBe("999");
   });
 

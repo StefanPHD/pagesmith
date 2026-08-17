@@ -97,6 +97,11 @@ import { CONSENT_KEY_BY_TARGET } from "@/lib/tracking/consent-targets";
 // DIE ZIEL-LISTE, NICHT eine Handliste: Der Kreuzvergleich unten laeuft ueber sie,
 // damit ein VIERTES Ziel dort automatisch einen eigenen Lauf bekommt.
 import { TRACKING_TARGETS, type TrackingTarget } from "@/lib/settings";
+// DIE ECHTE ADAPTER-TATSACHE, NICHT EINE ZWEITE LISTE IM TEST (11.1a): Welche Ziele
+// einen Empfaenger haben, steht genau einmal (TARGETS_WITH_ADAPTER). Eine abgeschriebene
+// Aufzaehlung hier liefe beim naechsten Adapter still auseinander — und der Test maesse
+// dann eine Verdrahtung, die es nicht mehr gibt.
+import { hasAdapter } from "@/lib/tracking/target-adapters";
 
 // ===========================================================================
 // DER FAN-OUT (Phase 11, siebte Scheibe; um zwei ECHTE Empfaenger erweitert in der
@@ -750,6 +755,11 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
     meta: vi.fn<() => void>(),
     pinterest: vi.fn<() => void>(),
     tiktok: vi.fn<() => void>(),
+    // DER STOLPERDRAHT HAT AUSGELOEST (11.1a). Dieser Spion wird NIE verdrahtet und
+    // darf NIE feuern: 'linkedin' ist ein bekanntes Ziel OHNE Empfaenger. Er steht
+    // hier, weil die Form ihn verlangt — und genau seine Untaetigkeit ist die
+    // Zusicherung im Lauf darunter.
+    linkedin: vi.fn<() => void>(),
   };
 
   /**
@@ -811,26 +821,55 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
     };
   });
 
+  // DIE SCHLEIFE UNTERSCHEIDET SEIT 11.1a ZWEI FAELLE, und das ist keine Aufweichung
+  // der Zusicherung, sondern ihre Fortsetzung: Bis hierher trug JEDES bekannte Ziel
+  // einen Empfaenger, "erreicht genau seinen Adapter" war deshalb fuer alle richtig.
+  // Mit dem vierten Ziel gibt es einen bekannten Empfaenger-LOSEN Fall — fuer ihn
+  // lautet die richtige Zusicherung "erreicht GAR KEINEN Adapter". Wer beide Faelle in
+  // eine Erwartung zwingt, muesste eine der beiden falsch stellen.
   for (const target of TRACKING_TARGETS) {
-    it("W-" + target + ": das aufgeloeste Ziel erreicht GENAU seinen Adapter, die anderen NICHT", async () => {
-      // WIRD ROT, WENN: der Ziel-Zweig dieses Ziels fehlt (dann feuert kein Spion),
-      // wenn zwei Zweige vertauscht sind (dann feuert der falsche), oder wenn ein
-      // Zweig doppelt greift.
-      // DIE POSITIVKONTROLLE STECKT IM SELBEN LAUF und ist der Grund, warum die
-      // "nicht gerufen"-Haelfte hier nicht trivial wahr ist: Im selben Durchgang
-      // feuert nachweislich EIN Spion. Waere die Verdrahtung insgesamt tot, faende
-      // diese Zeile es sofort.
-      getCapiConfigByTrackingKey.mockResolvedValue(resolution([entryFor(target)]));
+    if (hasAdapter(target)) {
+      it("W-" + target + ": das aufgeloeste Ziel erreicht GENAU seinen Adapter, die anderen NICHT", async () => {
+        // WIRD ROT, WENN: der Ziel-Zweig dieses Ziels fehlt (dann feuert kein Spion),
+        // wenn zwei Zweige vertauscht sind (dann feuert der falsche), oder wenn ein
+        // Zweig doppelt greift.
+        // DIE POSITIVKONTROLLE STECKT IM SELBEN LAUF und ist der Grund, warum die
+        // "nicht gerufen"-Haelfte hier nicht trivial wahr ist: Im selben Durchgang
+        // feuert nachweislich EIN Spion. Waere die Verdrahtung insgesamt tot, faende
+        // diese Zeile es sofort.
+        getCapiConfigByTrackingKey.mockResolvedValue(resolution([entryFor(target)]));
 
-      const res = await handleIngest(requestWithConsentForAll());
+        const res = await handleIngest(requestWithConsentForAll());
 
-      expect(res.status).toBe(204);
-      expect(SPY_BY_TARGET[target]).toHaveBeenCalledTimes(1);
-      for (const other of TRACKING_TARGETS) {
-        if (other === target) continue;
-        expect(SPY_BY_TARGET[other]).not.toHaveBeenCalled();
-      }
-    });
+        expect(res.status).toBe(204);
+        expect(SPY_BY_TARGET[target]).toHaveBeenCalledTimes(1);
+        for (const other of TRACKING_TARGETS) {
+          if (other === target) continue;
+          expect(SPY_BY_TARGET[other]).not.toHaveBeenCalled();
+        }
+      });
+    } else {
+      it("W-" + target + ": bekanntes Ziel OHNE Empfaenger — es erreicht KEINEN Adapter, die 204 bleibt", async () => {
+        // DIE TRAGENDE INVARIANTE DER SCHEIBE 11.1a, am Ingest gemessen: Ein Projekt
+        // MIT hinterlegtem Zugangsdatum fuer dieses Ziel verhaelt sich exakt wie eines
+        // ohne — kein zusaetzlicher Empfaenger, und die garantierte leere 204 steht.
+        // WIRD ROT, WENN: jemand das Ziel in TARGETS_WITH_ADAPTER eintraegt UND einen
+        // Forwarder danebensetzt (dann feuert ein Spion), oder wenn der frueh
+        // zurueckkehrende Zweig in dispatchForward faellt.
+        // WAS ER NICHT ZEIGT, und der Satz gehoert dazu: Das Ziel PASSIERT das
+        // Einwilligungs-Gate und faellt erst am Verteiler heraus. Dieser Lauf
+        // unterscheidet die beiden Orte NICHT — er zeigt das Ergebnis, nicht die
+        // Stelle. Fuer die Stelle ist der Kontrollfluss zu lesen.
+        getCapiConfigByTrackingKey.mockResolvedValue(resolution([entryFor(target)]));
+
+        const res = await handleIngest(requestWithConsentForAll());
+
+        expect(res.status).toBe(204);
+        for (const spy of TRACKING_TARGETS) {
+          expect(SPY_BY_TARGET[spy]).not.toHaveBeenCalled();
+        }
+      });
+    }
   }
 
   // =====================================================================
@@ -839,14 +878,22 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
   //
   // GEMESSEN (2026-08-13): Ein unbekanntes Ziel erreicht den Verteiler GAR NICHT.
   // allowedTargets schlaegt seinen Consent-Schluessel in CONSENT_KEY_BY_TARGET nach,
-  // findet nichts und laesst es fallen — fail-closed, VOR dispatchForward. Fuer die
-  // drei bekannten Ziele wiederum existiert je ein Zweig. Es gibt damit heute KEINE
-  // Eingabe, die den Rest hinter den drei Zweigen erreicht.
-  // FOLGE, die dazugehoert: Die Zusage "ein unbekanntes Ziel sendet nichts" ist heute
-  // vom EINWILLIGUNGS-GATE getragen; der Erschoepfungs-Rest ist ihre zweite,
-  // unbeobachtbare Linie. Wer ihn aendert, wird von keinem Test gefangen — nicht weil
-  // dieser Block schwach waere, sondern weil die Zeile unerreichbar ist.
-  // DIESER TEST BEHAUPTET DESHALB, WAS ER WIRKLICH MISST, und nicht mehr.
+  // findet nichts und laesst es fallen — fail-closed, VOR dispatchForward.
+  // NACHGEZOGEN 11.1a, UND DER TEIL WAR AB HIER FALSCH: Es hiess weiter "Fuer die drei
+  // bekannten Ziele wiederum existiert je ein Zweig. Es gibt damit heute KEINE Eingabe,
+  // die den Rest hinter den drei Zweigen erreicht." Mit dem vierten Ziel gibt es sie:
+  // 'linkedin' ist BEKANNT (Consent-Eintrag vorhanden, es passiert das Gate) und hat
+  // KEINEN Zweig — es erreicht den Erschoepfungs-Rest und kehrt dort frueh zurueck.
+  // Der Lauf "W-linkedin" oben misst genau das.
+  // FOLGE, die dazugehoert und die UNVERAENDERT gilt: Die Zusage "ein UNBEKANNTES Ziel
+  // sendet nichts" ist vom EINWILLIGUNGS-GATE getragen, nicht vom Verteiler.
+  //
+  // DER PLATZHALTER DIESES TESTS MUSSTE GEWECHSELT WERDEN, und das ist der eigentliche
+  // Befund: Er stand auf "linkedin" — einem Wert, der seit 11.1a ein BEKANNTES Ziel
+  // ist. Der Test waere GRUEN GEBLIEBEN und haette etwas anderes gemessen als sein
+  // Name sagt (kein Adapter feuert ja auch fuer ein bekanntes Ziel ohne Empfaenger).
+  // Genau die Fehlerklasse "gruen aus einem anderen Grund". Der neue Wert ist bewusst
+  // KEIN Anbietername, der spaeter ein Ziel werden koennte.
   // =====================================================================
   it("W4: ein unbekanntes Ziel faellt schon am Einwilligungs-Gate — es erreicht den Verteiler nicht", async () => {
     // DIE POSITIVKONTROLLE FAEHRT IM SELBEN LAUF MIT: Neben dem unbekannten Ziel
@@ -856,7 +903,10 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
     getCapiConfigByTrackingKey.mockResolvedValue(
       resolution([
         entryFor("meta"),
-        { target: "linkedin", config: { pixelId: "PX-x", token: "SEC-x" } },
+        {
+          target: "__kein_bekanntes_ziel__",
+          config: { pixelId: "PX-x", token: "SEC-x" },
+        },
       ]),
     );
 

@@ -30,7 +30,19 @@
  * Gegenstand, weil sie zwei Vokabulare vereinigt (Consent-Schluessel und
  * Ziel-Wert der Geheimnis-Tabelle), die heute nur zufaellig gleich lauten.
  */
-export const TRACKING_TARGETS = ["meta", "pinterest", "tiktok"] as const;
+// PHASE 11.1a — DAS VIERTE MITGLIED IST DAS ERSTE OHNE EMPFAENGER. Bis hierher trug
+// jedes Mitglied dieser Liste auch einen Adapter; 'linkedin' tut es NICHT und steht
+// bewusst NICHT in TARGETS_WITH_ADAPTER (lib/tracking/target-adapters.ts). Das ist der
+// Riegel dieser Scheibe: Der Verteiler im Ingest-Pfad ist ueber TargetWithAdapter
+// geschluesselt und verlangt deshalb KEINEN Eintrag fuer dieses Ziel — ein Projekt mit
+// hinterlegtem LinkedIn-Zugangsdatum verhaelt sich am Ingest exakt wie eines ohne.
+// EIN TEST HAELT DEN RIEGEL, nicht dieser Kommentar: tracking/target-adapters.test.ts.
+export const TRACKING_TARGETS = [
+  "meta",
+  "pinterest",
+  "tiktok",
+  "linkedin",
+] as const;
 
 /** Ein bekanntes Tracking-Ziel. */
 export type TrackingTarget = (typeof TRACKING_TARGETS)[number];

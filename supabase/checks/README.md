@@ -60,3 +60,4 @@ Probe fährt, zieht das Datum nach.
 | `adblock-loss-gegenprobe.sql` | Rechnet `get_adblock_loss` richtig (unabhängiger zweiter Weg)? |
 | `db-stand.sql` | Wie sieht das `public`-Schema wirklich aus (Migrationen, Spalten, RLS, Indizes, Funktionen)? |
 | `restore-drill.sql` | Übersteht der Event-Trigger `ensure_rls` einen Supabase-Restore, oder muss er manuell nachgezogen werden? |
+| `project-secrets-target-check.sql` | Welche Zielwerte lässt `project_secrets` heute zu (Constraint im Wortlaut), und ist die zugehörige Migration protokolliert? |

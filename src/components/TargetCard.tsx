@@ -29,6 +29,9 @@ import { hasPixelId } from "@/lib/tracking/target-readiness";
  *   SCHON: Was sendet, ist der Ingest-Pfad; die Karte hinterlegt nur. Fuer ein Ziel
  *   ohne AUSLIEFERUNG sagt sie das weiterhin ausdruecklich (s. hasAdapter) — heute
  *   trifft das auf keines zu.
+ *   NACHGEZOGEN 11.1a, NICHT UMFORMULIERT: Der letzte Halbsatz ist ueberholt. Seit dem
+ *   vierten Ziel trifft es auf GENAU EINES zu ('linkedin' — in TRACKING_TARGETS, nicht
+ *   in TARGETS_WITH_ADAPTER). Die Aussage davor bleibt unveraendert richtig.
  * - SIE BEHAUPTET KEINE WIRKUNG. Der Statustext sagt, ob Zugangsdaten HINTERLEGT
  *   sind — nie, ob sie funktionieren. Eine Geheimnis-Zeile existiert auch bei
  *   widerrufenem Token; genau dieser Fall ist im Projekt schon einmal live
@@ -64,11 +67,33 @@ export type ConfiguredState = boolean | null;
  * DIESE KONFIGURATION BESCHREIBT SEITHER NUR NOCH BESCHRIFTUNGEN. Ueber Adapter
  * behauptet sie nichts mehr.
  */
+/**
+ * DIE DREI OEFFENTLICHEN FELDER SIND SEIT 11.1a OPTIONAL — UND IHRE ABWESENHEIT IST DER
+ * SCHALTER (Variante C des freigegebenen Plans).
+ *
+ * WARUM UEBERHAUPT: Das vierte Ziel hat kein oeffentliches Feld, das diese Scheibe
+ * anbieten duerfte. Seine Kennung ist eine Conversion-Regel-URN, die JE EREIGNISTYP
+ * gilt; wo sie abgelegt wird, ist ausdruecklich NICHT entschieden (Trigger (ii) der
+ * Primaerschluessel-Entscheidung, CLAUDE.md "## Offene Punkte"). Ein Eingabefeld
+ * anzubieten hiesse, die Ablage im CLIENT-besessenen Einstellungs-Blob faktisch zu
+ * entscheiden — durch die Hintertuer und ohne Beschluss.
+ *
+ * WARUM DIE ABWESENHEIT UND KEIN EIGENES FLAG: Ein Flag NEBEN den drei Feldern waere
+ * eine zweite Wahrheit ueber dieselbe Sache — es koennte "kein Feld" sagen, waehrend
+ * eine Beschriftung danebensteht. So gibt es nur eine Quelle.
+ *
+ * WAS DER TYP NICHT VERHINDERT, ausdruecklich benannt statt behauptet: Er verbietet
+ * eine HALB gefuellte Gruppe nicht (Label ohne Platzhalter). Die Alternative — die drei
+ * in ein verschachteltes Objekt zu ziehen — haette sechzehn bestehende Testzeilen
+ * umgeschrieben, darunter Waechter ueber ganz andere Entscheidungen. Der Preis dieser
+ * Wahl ist diese Luecke; die Komponente liest die drei ausschliesslich INNERHALB des
+ * einen Zweiges, der an `publicLabel` haengt.
+ */
 export type TargetCardConfig = {
   name: string;
-  publicLabel: string;
-  publicHint: string;
-  publicPlaceholder: string;
+  publicLabel?: string;
+  publicHint?: string;
+  publicPlaceholder?: string;
   secretLabel: string;
   secretPlaceholderNew: string;
   secretPlaceholderReplace: string;
@@ -132,6 +157,18 @@ export const TARGET_CARDS: Record<TrackingTarget, TargetCardConfig> = {
     publicHint: "Aus dem Events Manager, nicht im Seitenquelltext",
     publicPlaceholder: "z.B. CABCDE0123FGHIJKLMNO",
     secretLabel: "TikTok-Zugangsdaten",
+    secretPlaceholderNew: "Zugangsdaten einfügen",
+    secretPlaceholderReplace: "Neue Zugangsdaten eingeben zum Ersetzen",
+  },
+  // DAS VIERTE ZIEL — DIE ERSTE KARTE OHNE OEFFENTLICHES FELD (11.1a). Die drei
+  // public-Felder FEHLEN, und das ist der Schalter, nicht ein Versehen: s. die
+  // Begruendung am Typ. Die Karte legt hier ausschliesslich das Zugangsdatum ab.
+  // KEIN EIGENER HILFETEXT ZUM FEHLENDEN FELD: Die Karte sagt ueber die Auslieferung
+  // bereits eine Zeile ("Auslieferung folgt — dieses Ziel sendet noch nicht"), und eine
+  // zweite Erklaerung daneben waere die zweite Aussage ueber dieselbe Sache.
+  linkedin: {
+    name: "LinkedIn",
+    secretLabel: "LinkedIn-Zugangsdaten",
     secretPlaceholderNew: "Zugangsdaten einfügen",
     secretPlaceholderReplace: "Neue Zugangsdaten eingeben zum Ersetzen",
   },
@@ -344,11 +381,16 @@ export default function TargetCard({
           Sachen, deshalb zwei Zeilen und kein Zusatz im Statustext. Ein Zusatz
           dort haette den entschiedenen Wortlaut verhandelbar gemacht.
 
-          UNERREICHT IM BETRIEB, ABER SEIT SCHEIBE C2 BEWEISBAR — und das ist der
-          Unterschied, den diese Scheibe an dieser Stelle macht: Solange jedes
-          bekannte Ziel in TARGETS_WITH_ADAPTER steht, erreicht ihn kein Betrieb.
-          ERREICHEN kann ihn aber jetzt jeder Test, denn die Tatsache kommt als PROP
-          herein und nicht mehr aus einem Modul-Objekt.
+          SEIT 11.1a IM BETRIEB ERREICHT — NACHGEZOGEN, NICHT UMFORMULIERT: Hier stand
+          "UNERREICHT IM BETRIEB, ABER SEIT SCHEIBE C2 BEWEISBAR … Solange jedes
+          bekannte Ziel in TARGETS_WITH_ADAPTER steht, erreicht ihn kein Betrieb", und
+          weiter unten "heute trifft das auf keines zu". BEIDE ANGABEN SIND MIT DEM
+          VIERTEN ZIEL FALSCH GEWORDEN: 'linkedin' steht in TRACKING_TARGETS und NICHT
+          in TARGETS_WITH_ADAPTER, seine Karte zeigt diesen Hinweis, und das ist der
+          Zweck der Scheibe. Die AUSSAGE des Zweiges ist unveraendert; ueberholt war
+          eine Tatsachenbehauptung ueber den Code.
+          WAS BLEIBT: Er ist ausserdem jedem Test erreichbar, denn die Tatsache kommt
+          als PROP herein und nicht mehr aus einem Modul-Objekt.
           HIER STAND, ER SEI NUR UEBER DIE DATEN PRUEFBAR, und ein Test, der ihn ueber
           eine Laufzeit-Mutation von TARGET_CARDS erzwaenge, sei VERWORFEN (er
           koppelte sich an die Reihenfolge der Tests — die Klasse, die in der elften
@@ -394,29 +436,52 @@ export default function TargetCard({
           KEINE zweite Ausformulierung: Genau dieses Praedikat entscheidet seit
           Scheibe B1 auch im Aufloesungs-Pfad, ob ein Ziel eine Kennung traegt. Wer
           hier `savedPixelId !== ""` schreibt, hat wieder zwei Wahrheiten. */}
-      {configured === true && !hasPixelId(savedPixelId) && (
-        <p className="mb-2 text-xs text-gray-500">
-          {noDeliveryText(config.publicLabel)}
-        </p>
-      )}
+      {/* UNTERDRUECKT AUF EINER KARTE OHNE OEFFENTLICHES FELD (11.1a), und der Grund
+          ist eine FALSCHE DIAGNOSE, nicht Redundanz: Diese Zeile nennt als Grund eine
+          fehlende Kennung. Wo es gar kein Kennungs-Feld gibt, ist das nicht der Grund —
+          der Grund ist der fehlende Empfaenger, und den nennt bereits die Zeile
+          darueber. Stuenden beide da, waeren es zwei Meldungen, von denen eine in die
+          Irre fuehrt: der Betreiber suchte nach einem Feld, das die Karte nicht hat.
+          DIE BEDINGUNG LIEST DIESELBE QUELLE WIE DIE ANZEIGE DES FELDES (config.
+          publicLabel) — nicht ein zweites Merkmal, das danebenlaufen koennte. */}
+      {config.publicLabel !== undefined &&
+        configured === true &&
+        !hasPixelId(savedPixelId) && (
+          <p className="mb-2 text-xs text-gray-500">
+            {noDeliveryText(config.publicLabel)}
+          </p>
+        )}
 
       <div className="flex flex-col gap-3">
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="font-medium text-gray-700">
-            {config.publicLabel}
-            <span className="block text-xs font-normal text-gray-400">
-              {config.publicHint}
+        {/* DAS OEFFENTLICHE FELD ENTFAELLT GANZ, wenn die Karte keines fuehrt (11.1a).
+            NICHT nur die Beschriftung: Ein Eingabefeld ohne Bedeutung ist eine
+            Einladung, etwas Falsches hineinzuschreiben — und was hineingeschrieben
+            wuerde, landete im CLIENT-besessenen Einstellungs-Blob und entschiede damit
+            eine Ablage, die niemand beschlossen hat.
+            DIE FOLGE FUER DEN AUSGELIEFERTEN CODE gehoert hierher, weil sie an genau
+            dieser Zeile haengt: Das Memo consentTargets (components/CodeImporter.tsx)
+            filtert auf eine gesetzte Kennung. Ohne Feld gibt es keinen Weg, eine zu
+            setzen -> das Ziel erscheint in KEINEM ausgelieferten Text. Wer hier ein
+            Feld ergaenzt, aendert damit den ausgelieferten Code jeder Seite, die es
+            benutzt. */}
+        {config.publicLabel !== undefined && (
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="font-medium text-gray-700">
+              {config.publicLabel}
+              <span className="block text-xs font-normal text-gray-400">
+                {config.publicHint}
+              </span>
             </span>
-          </span>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={pixelId}
-            onChange={(e) => onPixelIdChange(e.target.value)}
-            placeholder={config.publicPlaceholder}
-            className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
-        </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={pixelId}
+              onChange={(e) => onPixelIdChange(e.target.value)}
+              placeholder={config.publicPlaceholder}
+              className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </label>
+        )}
 
         {/* Zugangsdaten: GEHEIM, write-only. Der echte Wert geht nur in die
             Server-Action und kommt NIE zurueck -> das Feld startet und bleibt

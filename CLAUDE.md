@@ -220,6 +220,23 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       FALSCHE ANGABE HIER STAND — auch hier gilt der Grund von oben: Diese Zeile ist
       der Maßstab, gegen den ein späterer Bau misst, und ein Maßstab mit einer
       falschen Angabe taugt nicht.
+      VORBEHALT ZU DIESER RICHTIGSTELLUNG (2026-08-17) — SIE WIRD WEDER
+      ZURÜCKGENOMMEN NOCH UMFORMULIERT, ABER SIE ERKLÄRT EINE ANGABE FÜR WIDERLEGT,
+      DIE ZWEI HÄLFTEN TRUG, UND NUR EINE DAVON IST ES: WIDERLEGT ist die FORM
+      ("nur die IP") — es ist ein Typ/Wert-Paar, GEMESSEN, s. docs/ziel-befunde.md,
+      Teil (a). DIE ZWEITE HÄLFTE, "NUR IPv4", TRIFFT ZU — GELESEN 2026-08-17 an
+      der Anbieter-Doku, für den Kennungs-Typ PLAINTEXT_IP_ADDRESS; sie ist damit
+      keine widerlegte Angabe, sondern eine gültige, s. Teil (i).
+      WARUM DAS NICHT KOSMETIK IST: Diese Hälfte ist inzwischen TRAGEND. Zusammen
+      mit Teil (j) — die Schnittstelle prüft die FORM des Kennungs-Werts NICHT und
+      quittiert einen syntaktisch unsinnigen Wert mit 201 — ist sie die EINZIGE
+      Stelle, an der eine IPv6-Adresse überhaupt auffallen könnte. Bleibt sie als
+      "widerlegt" stehen, verliert diese Auflage ihren Beleg, und niemand sucht ihn
+      noch, weil die Angabe ja als erledigt gilt.
+      DER REGELFALL DAZU IST BENANNT UND HIER EINGETRETEN: "WER EINE HÄLFTE EINER
+      AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR FALLE" (docs/immer-beachten.md).
+      HIER STEHT KEINE BAUAUFLAGE UND KEIN ZUSCHNITT: wie eine Prüfung im Adapter
+      aussähe, wird hier NICHT gesagt.
       DER RÜCKKANAL FEHLT, UND DAS KIPPT EINE PRODUKTZUSAGE — DESHALB STEHT ER HIER
       UND NICHT NUR IM PROTOKOLL: Die Erfolgsantwort trägt KEINE Ereignis-Kennung
       (GEMESSEN 2026-08-15), also lässt sich die Deduplizierung dieses Produkts über
@@ -242,12 +259,112 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       welcher Rechtsgrundlage, wie lange, mit welchem Löschpfad. 11.1 löst diesen
       Trigger aus. HIER WIRD NICHTS ENTSCHIEDEN: die Entscheidung gehört dem Owner
       und gehört an jenen Eintrag, nicht hierher.
+      RICHTIGGESTELLT AM 2026-08-17, NICHT GESTEMPELT — DIE TYP-LISTE IST GEKIPPT.
+      Der Block darüber nennt seine eigene Kipp-Bedingung ("kippt die Liste, ist sie
+      neu zu prüfen"); sie ist eingetreten. Sein Wortlaut bleibt UNVERÄNDERT stehen —
+      er sagt, was am 2026-08-15 galt —, die Richtigstellung tritt daneben.
+      WAS FÄLLT: die Folgerung, es gebe KEINE identitätsfreie Nutzlast UND jedes
+      bekannte zulässige Merkmal wäre ein NEUES Merkmal für dieses System. Die
+      Typ-Liste trägt FÜNF Symbole, nicht drei (GELESEN 2026-08-17, Anbieter-Doku),
+      und eines davon ist eine KLARTEXT-IP-ADRESSE, deren ANNAHME durch die
+      Schnittstelle GEMESSEN ist (2026-08-17: 201 Created, Empfangsanzeige bestätigt
+      den Eingang). Befund im Wortlaut samt Provenienz je Angabe:
+      docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions API)", Teil (i).
+      DIESES MERKMAL REICHT DER BESTAND BEREITS AN ALLE DREI ZIELE WEITER — GEMESSEN
+      am Code (2026-08-17): resolveClientIp (src/lib/capi/ingest.ts) ermittelt die
+      Adresse aus einem plattform-vertrauten Kopf, handleIngest (dieselbe Datei) liest
+      zusätzlich den User-Agent und reicht beides über dispatchForward an die
+      Adapter — forwardToMeta (src/lib/capi/meta-forward.ts, client_ip_address /
+      client_user_agent), forwardToTiktok (src/lib/capi/tiktok-forward.ts, user.ip /
+      user.user_agent), forwardToPinterest (src/lib/capi/pinterest-forward.ts,
+      client_ip_address / client_user_agent); bei den letzten beiden als PFLICHT-PAAR,
+      ohne das gar nicht erst gesendet wird.
+      FOLGE, ALS FOLGERUNG GEKENNZEICHNET: Für DIESES eine Merkmal wäre 11.1 keine
+      Erstanlage einer Datenklasse, sondern dieselbe Durchleitung, die der Bestand
+      schon fährt — unter der Datenklassen-Entscheidung vom 2026-08-15 (Durchleitung
+      ohne Persistenz). WELCHE Kennung gebaut wird, ist HIER NICHT entschieden.
+      WAS NICHT FÄLLT, und das gehört ausdrücklich dazu:
+      · EINE IP-ADRESSE IST PERSONENBEZOGEN. Weggefallen ist die NEUHEIT des
+        Merkmals, NICHT seine Klasse. Wer aus dieser Richtigstellung "kein
+        Datenschutz-Thema" liest, liest sie falsch — genau das untersagt der
+        Eintrag "DATENKLASSEN-GRENZE" unter "## Offene Punkte" ausdrücklich.
+      · DIE SCHNITTSTELLE VERLANGT WEITERHIN EIN KENNUNGS-PAAR ALS PFLICHT —
+        docs/ziel-befunde.md, Teil (a), ist UNBERÜHRT und bleibt gemessen.
+      · DIE BINDUNG AN "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE" BLEIBT
+        BESTEHEN. Was sich ändert: 11.1 löst dort keine UNBEANTWORTETE Frage mehr
+        aus — WAS/WIE LANGE/LÖSCHPFAD sind am 2026-08-15 entschieden, und die vierte
+        Frage (Rechtsgrundlage) ist dort ebenfalls verortet.
+      OFFEN UND HIER NICHT ENTSCHIEDEN — DIE AUFLAGE JENER ENTSCHEIDUNG TRIFFT DIESEN
+      WEG NICHT SO, WIE SIE FORMULIERT IST: Sie verlangt, dass das Identitäts-Merkmal
+      IM BROWSER gebildet wird und eine KLARTEXT-Angabe den eigenen Server NIE
+      erreicht. Eine Client-IP wird NICHT im Browser gebildet — sie steht am Server in
+      einem Kopf jedes Aufrufs und ist dort per se Klartext (GEMESSEN am Code:
+      resolveClientIp liest x-vercel-forwarded-for bzw. x-real-ip). Ob die Auflage
+      damit nur den Fall meint, den sie vor Augen hatte, oder für dieses Merkmal
+      anzupassen ist, ist eine OWNER-FRAGE und gehört an jenen Eintrag.
       UND ES FEHLT EIN DATENPFAD, DEN ES HEUTE NICHT GIBT: Eine Personen-Identität
       wird derzeit nirgends erhoben, weitergereicht oder gespeichert. FOLGERUNG,
       NICHT GEMESSEN: 11.1 braucht damit nicht nur einen Adapter, sondern eine
       QUELLE für das Kennungs-Merkmal, einen WEG dorthin durch den Ingest-Pfad und
       eine Entscheidung über die ABLAGE — Arbeit, die KEIN bestehendes Ziel je
       gebraucht hat, weil alle drei ohne Personen-Identität auskommen.
+      RICHTIGGESTELLT AM 2026-08-17, NICHT GESTEMPELT: Der Satz darüber trägt DREI
+      Behauptungen, und ZWEI davon sind falsch. Der Wortlaut bleibt UNVERÄNDERT
+      stehen, die Richtigstellung tritt daneben — er ist der Maßstab, gegen den ein
+      späterer Zuschnitt misst, und ein Maßstab mit falschen Angaben taugt nicht.
+      GEMESSEN AM CODE (2026-08-17):
+      · ERHOBEN wird eine Personen-Identität sehr wohl: resolveClientIp
+        (src/lib/capi/ingest.ts) ermittelt die Client-IP, handleIngest (dieselbe
+        Datei) liest den User-Agent aus der Kopfzeile.
+      · WEITERGEREICHT wird sie an ALLE DREI bestehenden Ziele — die Symbole und die
+        Zielfelder stehen in der Richtigstellung darüber. Meta erhält zusätzlich den
+        Wert des anbietereigenen Browser-Cookies _fbp: der ausgelieferte Emitter
+        liest ihn aus document.cookie (src/lib/tracking/meta.ts), forwardToMeta sendet
+        ihn als userData.fbp.
+      · GESPEICHERT wird nichts davon — DIESE dritte Behauptung HÄLT. events bleibt
+        identitätsfrei, und genau das ist die Datenklassen-Entscheidung vom
+        2026-08-15.
+      SIE WAR SCHON BEI IHRER NIEDERSCHRIFT UNZUTREFFEND, nicht erst seither —
+      GEMESSEN an der Versionsgeschichte (2026-08-17): resolveClientIp entstand am
+      2026-07-03 mit der ersten CAPI-Route (bf87545), der Pinterest-Adapter am
+      2026-08-10 (b82fa77), der TikTok-Adapter am 2026-08-11 (86e6911). Alle drei
+      Pfade standen vor dem 2026-08-15.
+      WAS VOM SATZ DARÜBER GILT, UND ZWAR UNVERMINDERT: Für eine Kennung, die dieses
+      System heute NICHT führt — die gehashte E-Mail-Adresse aus (b), die Klick-Kennung
+      aus (i) —, fehlen QUELLE und WEG weiterhin vollständig. Der Satz ist also nicht
+      als Ganzes hinfällig, sondern falsch für DAS Merkmal, das der Bestand bereits
+      führt, und richtig für jedes andere.
+      DAMIT DER BEFUND NICHT ORTLOS BLEIBT — EIN LESEN VON EINGABEFELD-WERTEN IST
+      FÜR DIESES ZIEL NICHT ERFORDERLICH, und der Code kann es heute auch nicht.
+      GEMESSEN AM CODE (2026-08-17), drei Achsen:
+      · Das Mapping-Modell kennt GENAU DREI Aktionstypen — redirect, text, track
+        (die Union Mapping in src/lib/mappings.ts); keiner trägt oder liest einen
+        Feldwert. Der Betrag in TrackConfig wird im Panel eingetippt, nicht von
+        einer Seite gelesen.
+      · Wert-tragende Eingabeelemente werden GAR NICHT ERKANNT und bekommen
+        deshalb auch keine dauerhafte Kennung: stabilizeDoc/stabilizeIds
+        (src/lib/detect.ts) ankert nur, was classify (dieselbe Datei) annimmt, und
+        die Selektoren dort kennen input NUR als Knopf (BUTTON_SELECTOR:
+        input[type=submit|button|image]). input[type=text] und Verwandte, textarea
+        und select stehen in KEINEM Selektor.
+      · Im ERZEUGTEN Client-Code steht kein Lesezugriff auf den Wert eines
+        Eingabeelements — geprüft an allen fünf Erzeugern: buildWiringScript
+        (src/lib/generate.ts), buildMetaRuntime (src/lib/tracking/meta.ts),
+        buildConsentRuntimes (src/lib/tracking/consent.ts), LISTENER_SCRIPT
+        (src/lib/detect.ts) und injectPageViewEmitter
+        (src/lib/analytics/pageview-emitter.ts).
+      DIE REICHWEITE DIESES NICHT-TREFFERS GEHÖRT DAZU, sonst ist die
+      Abwesenheits-Behauptung hohl: Abgesucht ist die Achse "Lesen von .value an
+      einem Element", und für sie ist die POSITIVKONTROLLE BESTANDEN — dieselbe
+      Suche findet input.value in classify (src/lib/detect.ts), wo der
+      KNOPF-BESCHRIFTUNGS-Wert gelesen wird und kein Formularwert. NICHT positiv
+      kontrolliert sind die Achsen FormData und Zugriff über .elements bzw.
+      [name=…]: beide Konstrukte kommen im gesamten src/ nirgends vor, ein
+      Nicht-Treffer auf ihnen ist daher unbelegt.
+      DIESER BEFUND IST EINE AUSSAGE ÜBER DEN CODE, nicht über dieses Ziel — er
+      sagt, was das Mapping-Modell HEUTE kann, und daraus folgt erst, dass 11.1 es
+      nicht braucht. Die Fähigkeit ist EIGENSTÄNDIG und hat keine eigene
+      Roadmap-Zeile; ihre Verortung ist offen und wird HIER NICHT entschieden.
 - [ ] Phase 11.2 — Google: EINE KONZEPT-RUNDE, KEINE SCHEIBE. Es sind ZWEI Ziele,
       nicht eins, und keines zugeschnitten: Google Ads Conversions und GA4 sind
       verschiedene Produkte mit verschiedenen Schnittstellen und Semantiken. Der

@@ -30,6 +30,22 @@ weggeräumt.
 nichts wird umsortiert, nichts neu nummeriert. Ein neuer Abschnitt bekommt eine Zeile im
 Verzeichnis darunter — wörtlich, nicht beschrieben.
 
+**FORTSCHREIBUNG, ZWEITER FALL — EIN WEITERES MESSPROTOKOLL IN EINEM BESTEHENDEN
+ZIEL-ABSCHNITT** (Konvention angewandt und niedergeschrieben am 2026-08-17, als das
+zweite LinkedIn-Protokoll dazukam): Wird zu einem Ziel ERNEUT gemessen, entsteht KEIN
+neuer Ziel-Abschnitt und kein zweiter Eintrag im Verzeichnis — das Verzeichnis führt
+Ziele, nicht Protokolle. Statt dessen kommt HINTEN im bestehenden Ziel-Abschnitt eine
+eigene, DATIERTE Unterüberschrift dazu, die ihre Herkunft (Instrument, Zahl der Läufe,
+Bedingungen des Laufs) im Kopf nennt.
+DIE BUCHSTABEN LAUFEN ÜBER ALLE PROTOKOLLE EINES ZIELS FORT UND BEGINNEN NIE NEU. GRUND,
+und er ist der ganze Punkt dieser Konvention: Auf die Buchstaben wird von AUSSEN verwiesen
+— aus CLAUDE.md und aus docs/claude-history/backlog-polish.md —, und diese Verweise nennen
+den Buchstaben, nicht das Datum. Ein zweites "(a)" im selben Ziel-Abschnitt macht jeden
+dieser Verweise mehrdeutig, ohne dass irgendwo etwas rot wird.
+EIN ÄLTERER TEIL WIRD DABEI NICHT UMGESCHRIEBEN: Widerlegt oder ergänzt ein neues
+Protokoll einen alten Teil, bleibt dessen Wortlaut stehen und bekommt einen VORBEHALT, der
+auf den neuen Buchstaben zeigt (Muster: der Vorbehalt an (b), der auf (i) zeigt).
+
 ## Verzeichnis der Abschnitte
 
 - ## LinkedIn (Conversions API)
@@ -85,6 +101,13 @@ darauf (aus CLAUDE.md und aus docs/claude-history/backlog-polish.md) treffen.
     NICHT ALS LISTE GEMESSEN: Der Lauf, der die erlaubten Werte über eine Fehlermeldung
     erzwingen sollte, ergab statt einer Liste eine Erfolgsantwort (s. (e)) —
     NICHT-TREFFER, KEIN Beweis der Abwesenheit einer Liste.
+    VORBEHALT (2026-08-17) — DIESE AUFZÄHLUNG IST UNVOLLSTÄNDIG: Eine erneute Lesung
+    derselben Anbieter-Doku nennt FÜNF Symbole; die drei oben sind darin enthalten, zwei
+    weitere fehlen hier — eine KLARTEXT-IP-ADRESSE und eine Klick-Kennung des Anbieters.
+    Die Klartext-IP ist seither auch GEMESSEN angenommen worden. Der Wortlaut oben wird
+    NICHT umformuliert und NICHT gekürzt: er sagt, was am 2026-08-15 gelesen wurde. Die
+    vollständige Liste, ihre Provenienz und der gemessene Anteil daran stehen unten unter
+    (i).
 
 (c) DIE KENNUNG DER CONVERSION-REGEL WIRD BEIM AUFRUF AUFGELÖST (GEMESSEN): Eine gültige
     Nutzlast mit einer NICHT existierenden Regel-Kennung ergibt 403 mit dem Rumpf
@@ -139,3 +162,73 @@ darauf (aus CLAUDE.md und aus docs/claude-history/backlog-polish.md) treffen.
     ihr prüft, meldet einen Fehlschlag, der keiner ist. TAUGLICH ist die Empfangsanzeige.
     Dieselbe Denkfigur wie beim ersten Ziel, wo die Verifikation über die NACHGELAGERTE
     WIRKUNG läuft und nicht über den Statuscode.
+
+### Messprotokoll 2026-08-17 — die Teile (i) bis (m)
+
+**HERKUNFT DER MESSUNG (2026-08-17):** vier Läufe gegen die echte
+Conversions-Schnittstelle des Anbieters, ausgeführt vom Owner im Terminal, mit dem
+Versions-Header 202601 und einem gültigen Zugangsdatum.
+
+DIE BUCHSTABENREIHE LÄUFT ÜBER BEIDE PROTOKOLLE FORTLAUFEND WEITER: (a) bis (h) gehören
+dem Protokoll vom 2026-08-15 und bleiben unverändert vergeben, damit die Verweise darauf
+treffen; hier beginnt die Reihe bei (i). Kein Buchstabe wird neu vergeben, nichts
+umsortiert.
+
+(i) DIE TYP-LISTE IST LÄNGER ALS IN (b).
+    GEMESSEN 2026-08-17 (drei Läufe, Terminal gegen die Schnittstelle): Eine
+    Positivkontrolle mit dem ERFUNDENEN Symbol "PLAINTEXT_IP_ADDRESS_X" ergab 422 mit der
+    Meldung 'ERROR :: /user/userIds/0/idType :: "PLAINTEXT_IP_ADDRESS_X" is not an enum
+    symbol'. DERSELBE Lauf meldete ZUSÄTZLICH einen zweiten Fehler in DERSELBEN Antwort
+    (falsches URN-Präfix, s. (l)) — der Validator SAMMELT, er bricht nicht beim ersten
+    Fehler ab. Im Folgelauf mit "PLAINTEXT_IP_ADDRESS" fehlte die idType-Zeile, die
+    URN-Zeile blieb stehen. Nach korrigierter URN: 201 Created, Content-Length 0, und die
+    Empfangsanzeige an der Conversion-Regel meldete den Eingang.
+    DIE NUTZLAST DABEI: userIds mit GENAU EINEM Eintrag — kein zweiter Identifier, kein
+    userInfo.
+    GELESEN 2026-08-17 (Anbieter-Doku, Microsoft Learn, "Conversions API Schema",
+    Doku-Stand 2026-05-15): FÜNF Symbole — SHA256_EMAIL,
+    LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID, ACXIOM_ID, PLAINTEXT_IP_ADDRESS, GOOGLE_AID.
+    Zu PLAINTEXT_IP_ADDRESS steht dort: Klartext, NUR IPv4, der Anbieter hasht selbst mit
+    Salt vor dem Abgleich. Zu LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID: die Klick-Kennung
+    li_fat_id, vom Anbieter an die Landing-URL angehängt, setzt eine Einstellung im
+    Campaign Manager voraus.
+    WAS DAVON GEMESSEN IST — GENAU ZWEI der fünf: SHA256_EMAIL (2026-08-15, s. (b)) und
+    PLAINTEXT_IP_ADDRESS (2026-08-17, hier). Die drei übrigen bleiben GELESEN und werden
+    durch diesen Lauf NICHT aufgewertet.
+    GRENZE, DIE MITMUSS: GEMESSEN ist die ANNAHME, NICHT die ZUORDNUNG. Ob eine
+    IP-Kennung zu einer Person aufgelöst wird, ist mit Testdaten prinzipiell nicht messbar
+    — s. (h). Das ist KEINE Entwarnung und KEINE Zusage über Match-Raten.
+
+(j) DIE FORM DES KENNUNGS-WERTS WIRD NICHT GEPRÜFT.
+    GEMESSEN 2026-08-17: Der idValue "999.999.999.999" bei sonst gültiger Nutzlast ergab
+    201 Created; die Empfangsanzeige zählte das Ereignis MIT.
+    GRENZE: Das ist eine ANDERE ACHSE als (e). Dort blieb die BEDEUTUNG ungeprüft (ein
+    erfundener Währungscode), hier die SYNTAX des Identitätswerts.
+    FOLGERUNG, NICHT GEMESSEN: Ein IPv6-Wert würde nach diesem Befund ebenfalls quittiert
+    und liefe ins Leere (die Doku-Lesung in (i) nennt IPv4). NICHT GEMESSEN — IPv6 ist
+    nicht probiert worden.
+
+(k) DIE EMPFANGSANZEIGE IST IN IHRER ZÄHLWEISE MEHRDEUTIG.
+    GEMESSEN als ANZEIGETEXT (Campaign Manager, Signalintegrität, 2026-08-17): "2 Events
+    (2 dedupliziert)". Der Owner hat geprüft: KEINE Legende in der Oberfläche, der Text
+    steht starr.
+    ZWEI LESARTEN, UND SIE SIND GEGENSÄTZLICH: zwei nach der Deduplizierung VERBLIEBENE
+    Ereignisse — ODER zwei als Dubletten VERWORFENE. In keinem der Läufe wurde ein
+    eventId gesendet.
+    KEINE FOLGERUNG UND KEINE AUSWAHL ZWISCHEN DEN LESARTEN: als OFFEN geführt.
+    DAS BERÜHRT (h): Dort ist die Empfangsanzeige als das taugliche Instrument benannt —
+    tauglich für das OB, UNGEKLÄRT in der Zählweise.
+
+(l) ZWEI FEHLERKLASSEN AN DER REGEL-KENNUNG, MIT GEGENSÄTZLICHER LESBARKEIT.
+    GEMESSEN 2026-08-17: Ein formFALSCHES Präfix ("urn:lla:llaConversionRule:<id>" statt
+    "urn:lla:llaPartnerConversion:<id>") ergibt 422 mit der präzisen Meldung "Invalid Urn
+    format. Invalid prefix."
+    ABGRENZUNG ZU (c), DAS UNANGETASTET BLEIBT: Eine formGÜLTIGE, aber nicht auflösbare
+    Kennung ergab 403 "No ad accounts found" — die irreführende. Zwei Fehlerklassen an
+    DERSELBEN Stelle; die eine zeigt zur Ursache, die andere von ihr weg.
+
+(m) DAS ZEITFENSTER DES ZEITSTEMPELS.
+    GELESEN 2026-08-17 an derselben Doku-Quelle wie (i): conversionHappenedAt muss
+    innerhalb der letzten 90 Tage liegen. NICHT GEMESSEN.
+    DER ANLASS GEHÖRT DAZU: In den ersten Läufen dieser Runde stand ein Zeitstempel von
+    2024. Er ist NICHT aufgefallen, weil ein anderer Fehler zuerst griff.

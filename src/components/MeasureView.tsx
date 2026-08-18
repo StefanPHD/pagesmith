@@ -61,6 +61,7 @@ export default function MeasureView({
   configuredTargets,
   onCredentialsSaved,
   onCredentialsRemoved,
+  usedEvents,
   eventCounts,
   adblockLoss,
   variantCounts,
@@ -88,6 +89,20 @@ export default function MeasureView({
     trackingKey: string,
   ) => void;
   onCredentialsRemoved: (forProjectId: string, target: TrackingTarget) => void;
+  // --- Verwendete Events (Scheibe 11.1b) ---
+  /**
+   * Die FERTIGE Ableitung aus dem Container: die Vereinigung der
+   * Track-Ereignisnamen ueber beide Varianten-Mengen, plus die AUSSAGE, ueber
+   * wie viele Varianten sie reicht.
+   *
+   * scope IST NICHT REDUNDANT ZU hasVariantB, auch wenn es so aussieht: Diese
+   * Ansicht bekommt hasVariantB ohnehin (fuer den Fehlerzweig der
+   * Varianten-Auswertung). Wuerde die Aussage HIER daraus neu gebildet, stuende
+   * dasselbe Urteil an ZWEI Stellen — und zwei Instanzen derselben Frage laufen
+   * auseinander, in diesem Projekt bereits geschehen (9b-1). Die Ableitung faellt
+   * das Urteil EINMAL, im Container; hier wird es nur gelesen.
+   */
+  usedEvents: { names: string[]; scope: "a-only" | "a-and-b" };
   // --- Statistik ---
   eventCounts: EventCount[];
   adblockLoss: AdblockLoss | null;
@@ -205,6 +220,62 @@ export default function MeasureView({
             onCredentialsRemoved={onCredentialsRemoved}
           />
         ))}
+      </div>
+
+      {/* VERWENDETE EVENTS (Phase 11.1b). Zwischen den Ziel-Karten und der
+          Statistik, und das ist eine Entscheidung: Die Karten daruber tragen die
+          ZIEL-Achse (Zugangsdaten je Plattform), die Statistik darunter die
+          LAUFZEIT-Achse (was tatsaechlich beobachtet wurde). Dieser Abschnitt
+          steht dazwischen, weil er die dritte Achse traegt — was das Projekt
+          KONFIGURIERT hat.
+
+          AUS DER KONFIGURATION, NIE AUS LAUFZEITDATEN: Ein Ereignis, das
+          eingerichtet ist und nie gefeuert hat, hinterlaesst in KEINEM
+          persistierten Datensatz eine Spur. Wer diese Liste aus den Ereignissen
+          ableiten wollte, leitete sie aus dem Nichts ab — und genau darum steht
+          sie neben der Statistik und nicht in ihr.
+
+          NICHT AN projectId GEGATET, anders als die beiden Abschnitte darunter:
+          Die Namen stammen aus dem Editor-Zustand, nicht aus der Datenbank. Sie
+          stehen auch fuer ein noch nicht gespeichertes Projekt zur Verfuegung,
+          und ein Gate haette hier nichts zu schuetzen (keine Abfrage, keine
+          Zeile, kein Geheimnis).
+
+          KEINE AUSSAGE DER FORM "VOLLSTAENDIG": Die Liste sagt, was
+          KONFIGURIERT ist. Ob dazu je ein Ereignis eintrifft, sagt sie nicht,
+          und ob ein Ziel es annimmt, erst recht nicht — dieselbe
+          Wortwahl-Disziplin wie "nur server-seitig erfasst".
+
+          scope STATT hasVariantB: s. die Begruendung an der Prop-Deklaration.
+          Ein zweites Urteil ueber dieselbe Frage waere hier eine Zeile Arbeit
+          und spaeter ein stiller Widerspruch. */}
+      <div className="mt-4 border-t border-gray-200 pt-4">
+        <h2 className="mb-1 text-sm font-medium text-gray-700">
+          Verwendete Events
+        </h2>
+        <p className="mb-3 text-xs text-gray-500">
+          Aus der Konfiguration dieses Projekts abgeleitet
+          {usedEvents.scope === "a-and-b"
+            ? " — über beide Varianten."
+            : "."}
+        </p>
+        {usedEvents.names.length === 0 ? (
+          /* EIGENER WORTLAUT, bewusst NICHT "Noch keine Events." — den traegt die
+             Statistik darunter, und er wird von einem Bestandstest woertlich
+             behauptet. Zwei gleichlautende Leer-Texte im selben Bereich waeren
+             ausserdem auf dem Bildschirm nicht auseinanderzuhalten. */
+          <p className="text-xs text-gray-500">
+            Noch keine Tracking-Events verknüpft.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-1">
+            {usedEvents.names.map((name) => (
+              <li key={name} className="text-sm text-gray-700">
+                {name}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Statistik (Phase 8 Scheibe 3): server-seitige Analytics-Counts des aktiven

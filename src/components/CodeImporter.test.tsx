@@ -3139,3 +3139,130 @@ describe("CodeImporter — Scheibe D1: das Consent-Memo, durch die Komponente be
     }
   });
 });
+
+// ===========================================================================
+// Phase 11.1b — VERWENDETE EVENTS. Der Abschnitt im Bereich MESSEN zeigt die
+// Track-Ereignisnamen, die dieses Projekt VERWENDET — als VEREINIGUNG ueber
+// beide Varianten-Mengen.
+//
+// WAS DIESE DREI TESTS SCHUETZEN, und warum jeder einzeln noetig ist:
+// T8 die VEREINIGUNG (ein Nenner, der nur A kennt, meldet vollstaendig,
+//    waehrend beim halben Traffic ein Name fehlt),
+// T9 die AUSSAGE (ohne Variante B darf keine Aussage ueber B fallen),
+// T10 den LEER-Zustand (er darf nicht wie ein Ladefehler und nicht wie ein
+//    leerer Kasten aussehen).
+//
+// T8 FAEHRT DIE PRODUKTIVE SCHRITTFOLGE, NICHT EINEN VORGESEEDETEN ENDZUSTAND:
+// anlegen -> Variante B erzeugen (sie startet als byte-genaue KOPIE, deshalb
+// tragen A und B zunaechst DENSELBEN Namenssatz) -> in B einen Namen aendern ->
+// speichern -> zurueckschalten. Ein geseedeter Endzustand liefe durch einen
+// Zustand, den das Produkt so gar nicht herstellt (die 9a-Lektion), und liesse
+// gerade den Weg aus, auf dem die Divergenz zwischen A und B real entsteht.
+//
+// DIE FIXTURE IST PFLICHT UND NICHT BELIEBIG: A und B tragen VERSCHIEDENE Namen
+// UND einen gemeinsamen (A = Lead, Purchase · B = Lead, Signup). Ohne den
+// gemeinsamen waere Vereinigung nicht von Konkatenation zu unterscheiden; ohne
+// die verschiedenen bliebe B-Blindheit unsichtbar.
+// ===========================================================================
+describe("CodeImporter — Scheibe 11.1b: verwendete Events", () => {
+  const EV_HTML =
+    '<!DOCTYPE html><html><head></head><body><button data-pagesmith-id="ps-aaaaaa">Anfragen</button><button data-pagesmith-id="ps-aaaaab">Kaufen</button></body></html>';
+  const EV_MAP_A = [
+    { elementId: "ps-aaaaaa", type: "track" as const, config: { event: "Lead" } },
+    {
+      elementId: "ps-aaaaab",
+      type: "track" as const,
+      config: { event: "Purchase" },
+    },
+  ];
+
+  const openSettings = () =>
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+  // ANKER IST DIE UEBERSCHRIFT, NICHT DER DOKUMENT-TEXT: eine body-weite
+  // Textsuche traefe auch die Statistik und die Varianten-Auswertung, und ein
+  // Ereignisname ist ein FREIER Nutzer-String, der dort ebenfalls stehen kann.
+  const section = () =>
+    screen.getByRole("heading", { name: "Verwendete Events" })
+      .parentElement as HTMLElement;
+
+  it("T8: vereinigt beide Varianten — erzeugt ueber die PRODUKTIVE Schrittfolge", async () => {
+    // createVariantB antwortet wie der echte Pfad: B ist die Kopie von A.
+    // `as never` wie bei den uebrigen Once-Ueberschreibungen dieser Datei: der
+    // gehoistete Spy ist auf seinen Default-Rueckgabetyp (mappings: never[])
+    // eingeengt, nicht auf die echte Action-Signatur.
+    createVariantB.mockResolvedValueOnce({
+      ok: true as const,
+      html: EV_HTML,
+      mappings: EV_MAP_A,
+    } as never);
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={EV_HTML}
+        initialMappings={EV_MAP_A}
+      />,
+    );
+    await screen.findByText("Kaufen");
+
+    // (1) Variante B anlegen.
+    fireEvent.click(screen.getByRole("button", { name: "+ Variante B" }));
+    await screen.findByRole("group", { name: "Variante" });
+
+    // (2) Auf B umschalten und dort GENAU EINEN Namen aendern: Purchase ->
+    // Signup, ueber den Custom-Zweig (der freie Nutzer-String ist der reale Weg
+    // zu einem Namen, den die Standard-Liste nicht kennt).
+    fireEvent.click(screen.getByRole("button", { name: "Variante B" }));
+    fireEvent.click(await screen.findByText("Kaufen"));
+    fireEvent.click(await screen.findByRole("button", { name: "Bearbeiten" }));
+    fireEvent.change(screen.getByLabelText("Standard-Event"), {
+      target: { value: "__custom__" },
+    });
+    fireEvent.change(screen.getByLabelText("Custom-Event-Name"), {
+      target: { value: "Signup" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Übernehmen" }));
+
+    // (3) B speichern, (4) zurueck auf A.
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+    fireEvent.click(screen.getByRole("button", { name: "Variante A" }));
+
+    openSettings();
+    const text = section().textContent ?? "";
+    expect(text).toContain("Lead");
+    expect(text).toContain("Purchase");
+    expect(text).toContain("Signup");
+    expect(text).toContain("über beide Varianten");
+    // DER GEMEINSAME NAME STEHT GENAU EINMAL. Ohne diese Zeile bewiese der Test
+    // nur Konkatenation: "Lead" stuende dann zweimal und toContain waere blind.
+    expect(section().querySelectorAll("li").length).toBe(3);
+  });
+
+  it("T9: ohne Variante B faellt KEINE Aussage ueber Varianten", async () => {
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={EV_HTML}
+        initialMappings={EV_MAP_A}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    openSettings();
+
+    const text = section().textContent ?? "";
+    expect(text).toContain("Lead");
+    expect(text).toContain("Purchase");
+    expect(text).not.toContain("über beide Varianten");
+  });
+
+  it("T10: ohne Track-Mappings der eigene Leer-Text — kein undefined, kein leerer Kasten", async () => {
+    render(<CodeImporter initialProjectId="proj-1" initialCode={EV_HTML} />);
+    await screen.findByText("Kaufen");
+    openSettings();
+
+    const text = section().textContent ?? "";
+    expect(text).toContain("Noch keine Tracking-Events verknüpft.");
+    expect(text).not.toContain("undefined");
+    expect(section().querySelectorAll("li").length).toBe(0);
+  });
+});

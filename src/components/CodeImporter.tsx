@@ -69,6 +69,10 @@ import { CONSENT_KEY_BY_TARGET } from "@/lib/tracking/consent-targets";
 // dadurch BREITER geworden, nicht schwaecher: Es galt einem Symbol, jetzt gilt es dem
 // Gegenstand.
 import { hasPixelId } from "@/lib/tracking/target-readiness";
+// Die Ableitung der verwendeten Ereignisnamen (Scheibe 11.1b). REIN, also von
+// hier wie vom Server erreichbar; der Aufruf steht hier, weil die Eingaenge hier
+// liegen — s. den Memo usedEvents unten.
+import { usedTrackEventNames } from "@/lib/tracking/event-names";
 import { getCapiProxyUrl } from "@/lib/capi/proxy";
 import { buildLiveUrl } from "@/lib/hosting/host";
 import {
@@ -891,6 +895,39 @@ export default function CodeImporter({
       pairB: activeVariant === "b" ? activePair : inactivePair,
     };
   }, [activeVariant, debouncedCode, mappings, stashHtml, stashMappings]);
+
+  // DIE VERWENDETEN TRACK-EREIGNISNAMEN (Scheibe 11.1b) — die VEREINIGUNG ueber
+  // beide Varianten-Mengen, nicht die aktive. A und B laufen nachweislich
+  // auseinander; ein Nenner, der nur A kennt, meldet vollstaendig, waehrend beim
+  // halben Traffic ein Name fehlt.
+  //
+  // KEINE ZUSAETZLICHE DB-RUNDE: beide Mengen reisen bereits in derselben
+  // Projekt-Ladeantwort und liegen als publishPairs bereit — dieselbe Quelle wie
+  // Publish-Handler und Publish-Button. Ein zweiter Rechenweg fuer "welche
+  // Variante traegt was" waere exakt die 9b-1-Konstellation.
+  //
+  // WARUM DER AUFRUF HIER STEHT UND NICHT IN DER ANSICHT: Die Regel laesst eine
+  // Ableitung nur dann wandern, wenn sie ausschliesslich von dort gelesen wird
+  // UND ihre Eingaenge mitwandern oder ohnehin Props sind. Die Eingaenge sind
+  // publishPairs und hasVariantB — beides Container-Ableitungen ueber fuenf
+  // States. Sie in die Ansicht zu ziehen hiesse, diese Kette mitzuziehen; die
+  // REGEL liegt deshalb in der reinen Datei, der AUFRUF hier.
+  //
+  // DAS null IST DIE TRAGENDE STELLE, KEINE ABKUERZUNG: publishPairs haelt
+  // "B existiert nicht" und "B ist leer" NICHT auseinander — pairB.mappings ist
+  // in beiden Faellen ein leeres Array (stashMappings ?? []). hasVariantB
+  // beantwortet die Frage getrennt (es liest das HTML, nicht die Mappings), und
+  // erst hier werden beide zusammengefuehrt. Wer das null durch pairB.mappings
+  // ersetzt, laesst die Oberflaeche Vollstaendigkeit ueber eine Variante
+  // behaupten, die es nicht gibt — und nichts wird rot.
+  const usedEvents = useMemo(
+    () =>
+      usedTrackEventNames(
+        publishPairs.pairA.mappings,
+        hasVariantB ? publishPairs.pairB.mappings : null
+      ),
+    [publishPairs, hasVariantB]
+  );
 
   // DER CLIENT-GUARD — DASSELBE Praedikat wie der Server-Riegel, aus der reinen
   // Datei. Er prueft das ROH-HTML, der Server das daraus gebaute functionalHtml;
@@ -2206,6 +2243,10 @@ export default function CodeImporter({
               configuredTargets={configuredTargets}
               onCredentialsSaved={handleCredentialsSaved}
               onCredentialsRemoved={handleCredentialsRemoved}
+              // Scheibe 11.1b: die fertige Ableitung, samt ihrer AUSSAGE
+              // (scope). Die Ansicht rechnet nichts nach — auch nicht aus dem
+              // hasVariantB-Prop, den sie ohnehin bekommt.
+              usedEvents={usedEvents}
               eventCounts={eventCounts}
               adblockLoss={adblockLoss}
               variantCounts={variantCounts}

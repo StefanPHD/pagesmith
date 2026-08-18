@@ -133,68 +133,70 @@ aus, und wer sie zusammenzieht, baut ein Schema um, dem nichts fehlt.
 
 ## Scheibe 11.1b — Die verwendeten Ereignisnamen
 
-Die in einem Projekt VERWENDETEN Track-Ereignisnamen werden aus der KONFIGURATION
-ableitbar — als VEREINIGUNG über beide Varianten-Mengen. Ein geteiltes Prädikat in einer
-reinen Datei zieht die Namen aus EINER Mapping-Menge; die Ableitung ruft es zweimal auf und
-vereinigt. Sie speist die Oberfläche: der Betreiber sieht, welche Ereignisnamen sein
-Projekt verwendet.
+Die in einem Projekt VERWENDETEN Track-Ereignisnamen sind aus der KONFIGURATION ableitbar
+— als VEREINIGUNG über beide Varianten-Mengen. GEBAUT, GEPUSHT UND LIVE BELEGT
+(2026-08-18); was entstanden ist und was gemessen wurde, steht in Vermerk 2.
 
-### Warum diese Scheibe VOR der URN-Ablage kommt
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-Dieser Satz trägt den ganzen Schnitt: **Eine Zuordnung Ereignisname -> URN braucht einen
-SCHLÜSSELRAUM.** `TrackConfig.event` (`src/lib/mappings.ts`) ist ein FREIER Nutzer-String
-— GEMESSEN am Code (2026-08-17): der Typ ist `string` ohne Einschränkung; die Oberfläche
-bietet eine Vorschlagsliste (`META_STANDARD_EVENTS` in `src/lib/tracking/meta.ts`) plus
-einen Sentinel für einen frei getippten Namen, aber sie erzwingt nichts. Und es gibt heute
-KEINEN Ort, der die verwendeten Namen aus der Konfiguration ermittelt — GEMESSEN am Code
-(2026-08-17) als Nicht-Treffer über Sammel-Formen und über ALLE Leser von `config.event`;
-gefunden wurden ausschliesslich Einzel-Zugriffe (Formular-Seed, Anzeige einer Zeile,
-Erzeuger). Der Analytics-Lesepfad `getEventCounts` zählt nicht, weil er Laufzeitdaten
-aggregiert (s. Messbefund (3)).
-OHNE DIESE MENGE tippt der Betreiber ZWEI Zeichenketten, die zusammenpassen müssen — und
-nichts wird rot, wenn sie es nicht tun.
+VERDICHTET AM 2026-08-18, nach dem bestätigten Live-Test. Hier standen die ANWEISUNGEN FÜR
+die Scheibe: die Herleitung, warum es KEINEN Ort gibt, der die verwendeten Namen aus der
+Konfiguration ermittelt · die drei Messbefunde vom 2026-08-12, die den Schnitt trugen (die
+Vereinigung als Nenner · KEINE zusätzliche Datenbank-Runde, weil beide Mengen ohnehin in
+derselben Projekt-Ladeantwort reisen · „unvollständig" ist aus der Konfiguration zu
+rechnen) · die Fundstelle jener Befunde in `docs/claude-history/backlog-polish.md` samt der
+Falle, dass ihr Anfang in ASCII-Umschrift geschrieben ist und eine wörtliche Suche sie
+deshalb NICHT findet. Sie sind mit dem Vollzug abgelaufen.
+EINE DIESER ANGABEN IST NICHT NUR ABGELAUFEN, SONDERN SEIT DEM VOLLZUG FALSCH — und das
+ist der Grund, warum sie GESTRICHEN und nicht bloss gekürzt ist: „es gibt heute KEINEN
+Ort, der die verwendeten Namen aus der Konfiguration ermittelt". Es gibt ihn seit dieser
+Scheibe (`usedTrackEventNames` in `src/lib/tracking/event-names.ts`). Stehengeblieben wäre
+sie eine TATSACHENBEHAUPTUNG ÜBER DEN CODE, die beim nächsten Zuschnitt einen zweiten
+Rechenweg rechtfertigt.
+DIE FUNDSTELLEN-FALLE IST NICHT VERLOREN: Sie steht als eigener Punkt im Vorrat („DER
+ZEIGER IN CLAUDE.md AUF `docs/claude-history/backlog-polish.md` IST FÜR EINE WÖRTLICHE
+SUCHE TOT") und wird dort weitergeführt.
+DIE ZWEI OFFENEN FRAGEN SIND BEANTWORTET (Owner-Entscheidung 2026-08-18) und laufen mit
+ab: die Ableitung liegt als REINE FUNKTION neben dem Prädikat, der AUFRUF im Container;
+die Oberfläche bekommt einen EIGENEN Abschnitt in `MeasureView` zwischen „Tracking-Pixel"
+und „Statistik". Was an den Antworten über die Scheibe hinausreicht, steht in Vermerk 2.
+WAS GEBAUT UND GEMESSEN WURDE, STEHT IN VERMERK 2 — und nur weil es dort steht, durfte es
+hier weg.
 
-### Die drei Messbefunde, die den Schnitt tragen
+### Was über diese Scheibe hinaus bindet
 
-Sie sind GEMESSEN am Repo (2026-08-12) und werden hier NICHT neu erhoben. Sinngemäss:
+- **EINE ZUORDNUNG EREIGNISNAME -> URN BRAUCHT EINEN SCHLÜSSELRAUM.** Der Satz hat den
+  Schnitt getragen, und er bindet 11.1c: dort wird gegen genau diese Menge geschlüsselt.
+  `TrackConfig.event` (`src/lib/mappings.ts`) ist ein FREIER Nutzer-String — GEMESSEN am
+  Code (2026-08-17): der Typ ist `string` ohne Einschränkung; die Oberfläche bietet eine
+  Vorschlagsliste (`META_STANDARD_EVENTS` in `src/lib/tracking/meta.ts`) plus einen
+  Sentinel für einen frei getippten Namen, aber sie erzwingt nichts. OHNE DIESE MENGE
+  tippt der Betreiber ZWEI Zeichenketten, die zusammenpassen müssen — und nichts wird rot,
+  wenn sie es nicht tun.
+- **„UNVOLLSTÄNDIG" IST AUS DER KONFIGURATION ZU RECHNEN, NIE AUS LAUFZEITDATEN** (GEMESSEN
+  am Repo, 2026-08-12): Ein nicht beliefertes Ziel hinterlässt in KEINEM persistierten
+  Datensatz eine Spur — wer die Antwort aus den Ereignissen ableiten wollte, leitete sie
+  aus dem Nichts ab. Der Analytics-Lesepfad `getEventCounts` beantwortet diese Frage NICHT;
+  er aggregiert Laufzeitdaten.
+- **EIN PRÄDIKAT, KEIN ZWEITES URTEIL.** Das Prädikat zieht die Namen aus EINER Menge, die
+  Vereinigung ruft es ZWEIMAL auf. Zwei Instanzen derselben Frage laufen auseinander — in
+  diesem Projekt bereits geschehen; die Gegenmassnahme heisst geteiltes Prädikat statt
+  zweiter Ausformulierung (`hasPixelId`/`hasSecret` in
+  `src/lib/tracking/target-readiness.ts` als Vorbild).
+- **DIE UNTERSCHEIDUNG „B EXISTIERT NICHT" GEGEN „B IST LEER" IST AM WERT NICHT MESSBAR.**
+  GEMESSEN am Code (2026-08-17): `publishPairs` (`src/components/CodeImporter.tsx`) liefert
+  `pairB.mappings` in BEIDEN Zuständen als leeres Array (`stashMappings ?? []`); ob eine B
+  existiert, wird GETRENNT abgeleitet — `hasVariantB` (dieselbe Datei) liest das HTML
+  (`activeVariant === "b" || stashHtml !== null`) und NICHT die Mappings. Die Vereinigung
+  mit der leeren Menge ist die IDENTITÄT, die Namen sind in beiden Fällen gleich; die
+  Wirkung liegt ALLEIN in der AUSSAGE. Wer sie für redundant hält und streicht, lässt die
+  Oberfläche Vollständigkeit über eine Variante behaupten, die es nicht gibt, ohne dass
+  irgendwo etwas rot wird. LIVE BELEGT — s. Vermerk 2, Schritte 4 und 5.
 
-1. **Der Nenner ist die VEREINIGUNG der Track-Ereignisse aus BEIDEN Varianten-Mappings.**
-   A und B laufen nachweislich auseinander, und KEINE Stelle im Produktivcode bildet ihre
-   Vereinigung. Ein Nenner, der nur A kennt, meldet vollständig, während beim halben
-   Traffic nichts ankommt.
-2. **Es braucht KEINE zusätzliche Datenbank-Runde** — beide Mengen reisen bereits in
-   derselben Projekt-Ladeantwort und liegen im Container.
-3. **„Unvollständig" ist aus der KONFIGURATION zu rechnen, NIE aus Laufzeitdaten.** Ein
-   nicht beliefertes Ziel hinterlässt in KEINEM persistierten Datensatz eine Spur — wer die
-   Antwort aus den Ereignissen ableiten wollte, leitete sie aus dem Nichts ab.
+### Was ausdrücklich NICHT drin war, je mit seinem Grund — GILT WEITER, IST ABER KEIN ZUSCHNITT MEHR
 
-**FUNDSTELLE, UND SIE IST NICHT WÖRTLICH AUFFINDBAR:** `docs/claude-history/backlog-polish.md`,
-AUFZÄHLUNGSPUNKT (keine Überschrift) mit dem Anfang **`VOLLSTAENDIGKEITS-ACHSE — WAS DANN
-SOFORT GILT`** — in ASCII-Umschrift, also **`VOLLSTAENDIGKEITS`**, nicht
-`VOLLSTÄNDIGKEITS`. Der Verweis in CLAUDE.md („## Offene Punkte") nennt ihn mit Umlaut und
-als Abschnitt; eine wörtliche Suche nach dem Verweistext findet ihn deshalb NICHT.
-GEFUNDEN wurde er nur, weil beide Schreibweisen probiert wurden. DAS IST EIN EIGENER
-BEFUND UND WIRD HIER NICHT REPARIERT — er steht als Doku-Punkt im Vorrat.
-
-### Die Auflage, ohne die die Ableitung lügt
-
-GEMESSEN am Code (2026-08-17): `publishPairs` (`src/components/CodeImporter.tsx`) liefert
-`pairB.mappings` als **leeres Array in ZWEI verschiedenen Zuständen** — wenn B keine
-Track-Mappings trägt, UND wenn es GAR KEINE Variante B gibt (`stashMappings ?? []`). Zwei
-Zustände, eine leere Menge, am Wert nicht unterscheidbar.
-Ob eine B existiert, wird GETRENNT abgeleitet: `hasVariantB` (dieselbe Datei) liest das
-HTML (`activeVariant === "b" || stashHtml !== null`) und NICHT die Mappings.
-**DIE ABLEITUNG LIEST `hasVariantB` MIT, UND DIE OBERFLÄCHE UNTERSCHEIDET DIE FÄLLE.** Sonst
-behauptet sie Vollständigkeit über eine Variante, die es nicht gibt.
-
-### Ein Prädikat, kein zweites Urteil
-
-Das Prädikat zieht die Namen aus EINER Menge; die Vereinigung ruft es ZWEIMAL auf. Zwei
-Instanzen derselben Frage laufen auseinander — in diesem Projekt bereits geschehen, und
-die Gegenmassnahme heisst dort geteiltes Prädikat statt zweiter Ausformulierung
-(`hasPixelId`/`hasSecret` in `src/lib/tracking/target-readiness.ts` als Vorbild).
-
-### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+Die Ausschlüsse sind mit dem Vollzug NICHT erledigt; erledigt ist nur ihre Rolle als
+Zuschnitt DIESER Scheibe.
 
 - **KEINE URN, KEINE ABLAGE-ENTSCHEIDUNG.** Das ist 11.1c und schlüsselt dann gegen eine
   Menge, die existiert.
@@ -219,16 +221,6 @@ die Gegenmassnahme heisst dort geteiltes Prädikat statt zweiter Ausformulierung
 **Diese Scheibe ändert NICHTS am ausgelieferten Text und NICHTS am Ingest. Sie leitet ab
 und zeigt an.** Sie ist der Prüfstein jeder Änderung dieser Scheibe — wer sie bricht, hat
 nicht mehr diese Scheibe gebaut.
-
-### Zwei offene Fragen — FRAGEN, kein Befund
-
-Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
-
-1. **Wo liegt die Ableitung — im Container neben `publishPairs`, oder in derselben reinen
-   Datei wie das Prädikat?** Die Antwort hängt daran, ob ihre Eingänge ohnehin dort liegen.
-2. **Wo in der Oberfläche erscheint sie, ohne bestehende Abfragen mehrdeutig zu machen?**
-   Ein neuer Text kann Abfragen MEHRDEUTIG machen ODER eine Behauptung über die ABWESENHEIT
-   eines Textes kippen — beide Achsen einzeln durchgehen.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -265,6 +257,26 @@ Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
   Schlüsselstand ihres letzten Publish, und ein Kennungs-Wechsel ohne Re-Publish erreicht
   sie nicht. Ob das für ein konkretes Projekt zutrifft, ist eine Frage an die DATENBANK
   (`projects.published_content`), nicht ans Repo — und sie ist hier NICHT beantwortet.
+- **DER PAGEVIEW-TOKEN IST AUS DEM SCHLÜSSELRAUM AUSGESCHLOSSEN — ALS NEGATIV-AUSSCHLUSS
+  GENAU EINES TOKENS, NIE ALS ALLOWLIST** (Owner-Entscheidung 2026-08-18, gebaut in
+  `trackEventNames`, `src/lib/tracking/event-names.ts`).
+  WARUM ÜBERHAUPT: Die Menge ist ein SCHLÜSSELRAUM für eine spätere Zuordnung
+  Ereignisname -> Conversion-Regel. `PAGEVIEW_EVENT` (`src/lib/analytics/events.ts`) ist
+  UNSER eigenes Analytics-Ereignis; er stünde sonst in der Oberfläche als Name, für den
+  der Betreiber eine Zuordnung eintragen soll, die es nie geben darf.
+  WARUM NEGATIV UND NIE POSITIV: Der Ereignisname ist ein FREIER Nutzer-String — eine
+  Positiv-Liste schnitte Custom-Conversions STILL aus dem Schlüsselraum, und niemand sähe
+  es. Dieselbe Figur und derselbe Grund wie bei `isForwardable`
+  (`docs/immer-beachten.md`, „isForwardable = NEGATIV-AUSSCHLUSS EINES RESERVIERTEN
+  TOKENS, NIE Allowlist").
+  WARUM DAS ÜBER DIE SCHEIBE HINAUS BINDET: 11.1c schlüsselt gegen genau diese Menge. Wer
+  den Ausschluss dort für überflüssig hält und streicht, bekommt einen Schlüssel ohne
+  zulässigen Wert; wer ihn zur Allowlist umbaut, verliert die Custom-Namen.
+  DIE GRENZE, DIE MITMUSS — ER IST KEIN RIEGEL AUF DEM MAPPING: Das Mapping bleibt
+  bestehen, wird unverändert ausgeliefert und steht weiterhin in der Element- und der
+  Orphan-Ansicht. AUSGESCHLOSSEN IST ES NUR AUS DEM SCHLÜSSELRAUM. Wer daraus liest, ein
+  so benanntes Ereignis werde unterdrückt, liest die Entscheidung falsch — der zugehörige
+  Bestandsbefund steht im Vorrat.
 
 ## Vorrat — gemeldet, nicht gebaut
 
@@ -317,6 +329,35 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   SOFORT GILT" mit Umlaut und als Abschnitt; im Ziel steht ein AUFZÄHLUNGSPUNKT in
   ASCII-Umschrift (`VOLLSTAENDIGKEITS-ACHSE`). Gefunden nur, weil beide Schreibweisen
   probiert wurden. Doku-Punkt, EIGENE Runde — hier ausdrücklich nicht repariert.
+
+- **EIN NUTZER KANN DEN PAGEVIEW-TOKEN ALS CUSTOM-EVENT ANLEGEN** (GEMESSEN am Code,
+  2026-08-18, auf vier Achsen): Das Eingabefeld des Custom-Zweigs (`TrackForm` in
+  `src/components/ActionPanel.tsx`) trägt weder `pattern` noch Blockliste; die einzige
+  Schranke ist `valid` (`event.trim() !== ""`); `upsertMapping` (`src/lib/mappings.ts`)
+  prüft nichts; `saveProject`/`saveVariantB` (`src/app/projects/actions.ts`) schreiben das
+  Literal ohne Prüfung. Ein so angelegtes Mapping wird AUSGELIEFERT (der Erzeuger filtert
+  Ereignisnamen nicht), am Ingest von `isForwardable` vom CAPI-Forward ausgeschlossen und
+  landet in `events` als `event_type` des Analytics-Tokens — von einem echten PageView
+  nicht unterscheidbar, mit Wirkung auf den Nenner der Varianten-Auswertung.
+  BEFUND ÜBER DEN BESTAND, UNABHÄNGIG VON DIESER SCHEIBE: Der Zustand ist älter als 11.1b;
+  die Scheibe erzeugt ihn nicht und behebt ihn nicht. Der Ausschluss aus dem Schlüsselraum
+  (s. „## Entscheidungen") wirkt auf die ANZEIGE, nicht auf das Mapping.
+  KEINE EMPFEHLUNG, KEINE BEWERTUNG DER WAHRSCHEINLICHKEIT — der Kommentar an
+  `PAGEVIEW_EVENT` nennt den Token „praktisch nicht versehentlich eintippbar"; das ist eine
+  Aussage über Wahrscheinlichkeit und keine Schranke, und sie wird hier weder bestätigt
+  noch bestritten.
+
+- **DER KOMMENTAR AN `mappingsEqual` NENNT DEN FALSCHEN SEPARATOR** (GEMESSEN am Repo,
+  2026-08-18): Er sagt „Leerzeichen-Separator ist kollisionsfrei, da ps-IDs nur `[a-z0-9-]`
+  sind (kein Leerzeichen)". Gebaut ist ein NUL-BYTE (`\x00`), kein Leerzeichen — gemessen
+  als Byte 6974 von 8179 in `src/lib/mappings.ts`.
+  DIE AUSSAGE ÜBER DIE KOLLISIONSFREIHEIT BLEIBT WAHR (ein NUL ist erst recht nicht in
+  einer ps-ID); FALSCH IST DIE BEGRÜNDUNG, weil sie ein anderes Zeichen nennt als das
+  gebaute. Genau dieses Byte ist ausserdem die gemessene Ursache der grep-Falle in jener
+  Datei („Binary file … matches" statt der Trefferzeilen) — die Regel dazu steht in
+  `docs/immer-beachten.md` unter „WERKZEUG-REGEL", Abschnitt zur Gegenrichtung.
+  KOMMENTAR-vs-CODE-BEFUND AN EINER KERN-DATEI, EIGENE RUNDE — hier ausdrücklich nicht
+  repariert.
 
 ## Hebungs-Kandidaten
 
@@ -451,3 +492,74 @@ Zuschnitt von 11.1b.
 
 **WAS DER LIVE-TEST NICHT ZEIGEN KONNTE UND AUCH NICHT SOLLTE:** ob bei LinkedIn etwas
 ankommt. Es geht nichts hin — das ist der Zweck der Scheibe.
+
+### 2 — Scheibe 11.1b: Die verwendeten Ereignisnamen (Commit ef277ae)
+
+**WELCHE NUMMER DAS IST, UND WARUM SIE HIER STEHT STATT „offen":** `ef277ae` ist der
+BAU-Commit (`feat(tracking): verwendete Ereignisnamen aus der Konfiguration ableiten`),
+gepusht am 2026-08-18 — NICHT der Doku-Commit, der diesen Vermerk trägt. Dieselbe
+Trennung wie in Vermerk 1: ein Vermerk, der auf sich selbst zeigte, wäre für jede spätere
+Suche wertlos. ES GIBT DAMIT DERZEIT KEINE OFFENE LÜCKE; die Regel erlaubt höchstens
+eine, nicht genau eine.
+
+**WAS GEBAUT WURDE.** Eine REINE Datei mit zwei Exporten
+(`src/lib/tracking/event-names.ts`): `trackEventNames` zieht die Namen aus EINER
+Mapping-Menge, `usedTrackEventNames` ruft es ZWEIMAL auf und vereinigt. Der AUFRUF steht
+im Container (`usedEvents` in `src/components/CodeImporter.tsx`), die Anzeige in einem
+eigenen Abschnitt („Verwendete Events") in `src/components/MeasureView.tsx` zwischen
+„Tracking-Pixel" und „Statistik".
+DER TYP-DISKRIMINATOR IST DER VOLLSTÄNDIGE FILTER: Von den drei Zweigen des
+Mapping-Modells trägt genau einer ein Ereignis-Feld; ein Zugriff auf `config.event` an
+einem anderen Zweig wäre ein TS-Fehler. Der PageView-Token wird ausgeschlossen — als
+NEGATIV-Ausschluss genau eines Tokens, nie als Allowlist (s. „## Entscheidungen").
+DIE ANSICHT LIEST `scope`, NICHT den `hasVariantB`-Prop, den sie ohnehin bekommt: sonst
+stünde dasselbe Urteil an ZWEI Stellen.
+
+**WAS GEMESSEN IST (LIVE, 2026-08-18, vom Owner im Browser):**
+- A trug `Purchase` und `Lead`, B trug `Purchase` und `Custom_Lead`. Angezeigt wurden
+  GENAU DREI Namen, jeder GENAU EINMAL, mit dem Vermerk „über beide Varianten".
+- OHNE Variante B: nur die Namen aus A, KEIN Varianten-Vermerk.
+- B existiert und trägt NULL Track-Mappings: DIESELBEN Namen wie in A, und der Vermerk
+  „über beide Varianten" BLEIBT stehen.
+- Leere Menge: „Noch keine Tracking-Events verknüpft." Kein `undefined`, kein visueller
+  Defekt.
+- INGEST-REGRESSION: Conversions kamen als „Empfangen von: Server" an.
+
+**DER STÄRKSTE BELEG GEHÖRT BENANNT, sonst liest sich das als vier gleichwertige
+Häkchen:** Die Schritte 4 und 5 zeigen DIESELBEN Namen — der Unterschied liegt ALLEIN im
+Vermerk. Das ist die Achse, an der die Ableitung sonst still falsch geworden wäre, und die
+EINZIGE, die sich am WERT nicht messen lässt: die Vereinigung mit der leeren Menge ist die
+Identität. Sie ist damit LIVE belegt, nicht nur unit-getestet — und genau deshalb steht
+sie auch oben unter „Was über diese Scheibe hinaus bindet".
+DAZU EIN ZWEITER BELEG, DER LEICHT ÜBERSEHEN WIRD: `Custom_Lead` liegt AUSSERHALB der
+Standard-Liste (`META_STANDARD_EVENTS`), kam also über den Custom-Zweig — den FREIEN
+Nutzer-String. Live belegt ist damit, dass der Schlüsselraum genau die Namen trägt, für die
+es später eine Zuordnung braucht, und nicht nur die vorgeschlagenen.
+
+**DIE EINSCHRÄNKUNG, DIE ZWINGEND MITMUSS — DIE TRAGENDE INVARIANTE IST NICHT DIREKT
+GEMESSEN:** Das Deployment war zu Testbeginn bereits aktiv. Der Vergleich des
+AUSGELIEFERTEN TEXTES vor und nach dem Deploy ist deshalb AUSGEFALLEN. Die Invariante
+„diese Scheibe ändert nichts am ausgelieferten Text" ruht damit auf ZWEI Stützen, und
+beide sind FOLGERUNGEN, kein Messwert:
+- die SCOPE-MESSUNG am Diff (GEMESSEN, 2026-08-18): fünf Dateien, rein additiv; kein
+  Erzeuger, kein Ingest-Pfad, keine Serve-Route berührt;
+- die bestandene INGEST-REGRESSION oben, die den zweiten Halbsatz der Invariante deckt
+  („und NICHTS am Ingest").
+Für den ausgelieferten TEXT gibt es damit keinen Vorher/Nachher-Beleg. Wer den Vermerk
+anders liest, hält eine Folgerung für eine Messung.
+
+**BEOBACHTUNG, KEINE REGEL UND KEINE VORSCHRIFT:** Das ist die ZWEITE Scheibe in Folge, in
+der ein VORHER-Schritt ausgefallen ist, weil der Zustand vor dem Deploy zum Testzeitpunkt
+nicht mehr herstellbar war — bei 11.1a war es der Constraint-Ausgangswert (s. Vermerk 1,
+„DIE EINSCHRÄNKUNG…"), hier der ausgelieferte Text. Hier steht AUSDRÜCKLICH nicht, wie
+eine Anleitung künftig zu bauen wäre; das ist eine eigene Runde.
+
+**WAS DIE UNIT-EBENE ZUSÄTZLICH TRÄGT, und warum es den Live-Test nicht ersetzt:** Zwei
+Mutationen, getrennt gefahren (2026-08-18). Die erste traf die VEREINIGUNG (zweiter Aufruf
+gestrichen): 2 von 1081 Tests fielen, die angesagten — und dass die Prädikat-Tests GRÜN
+blieben, ist der eigentliche Beleg, dass die Probe die Achse dieser Scheibe trifft. Die
+zweite traf die AUSSAGE (`scope` fest verdrahtet): 3 Tests fielen, einer davon vorab samt
+Fehlerklasse angesagt. Testzahl vorher/nachher GEMESSEN: 56 Dateien/1068 Tests -> 57
+Dateien/1081 Tests, alle grün; `tsc`, Lint und Build ebenfalls.
+EINE MUTATIONSPROBE SAGT NICHTS ÜBER DIE DEPLOYTE LAUFZEIT — deshalb steht sie hier
+NEBEN dem Live-Test und nicht an seiner Stelle.

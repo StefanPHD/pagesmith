@@ -330,7 +330,9 @@ Zuschnitt DIESER Scheibe.
 ## Scheibe 11.1d — Die Conversion-Regel-Kennung ablegen
 
 Eine Zuordnung **Ereignisname -> Conversion-Regel-URN** wird abgelegt, und LinkedIn wird
-dadurch **AUSLIEFERFÄHIG — noch nicht SENDEND.**
+dadurch **AUSLIEFERFÄHIG — noch nicht SENDEND. GEBAUT, GEPUSHT UND LIVE BELEGT
+(2026-08-18); was entstanden ist, was gemessen wurde und was AUSDRÜCKLICH NICHT gemessen
+ist, steht in Vermerk 4.**
 
 **DIE BAU-AUSSAGE, die dazugehört, weil ein Betreiber sie sonst falsch liest:** Nach dieser
 Scheibe zeigt die Karte ein VOLLSTÄNDIG KONFIGURIERTES Ziel, das erst mit dem Adapter
@@ -378,90 +380,43 @@ Begründung gehört in den Zuschnitt, weil sie sonst beim nächsten Aufräumen f
   (l)): Sie steht in der NUTZLAST des Aufrufs; eine nicht existierende Regel-Kennung ergibt
   403, ein formfalsches Präfix 422 mit einer Validator-Meldung auf das Nutzlast-Feld.
 
-### Was drin ist
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-- das Feld unter `settings.pixels.linkedin`, neben `pixelId`
-- ein eigener LESER für die Zuordnung
-- **`hasTargetPixelId` wird ZIEL-UNTERSCHEIDEND:** für die drei bestehenden Ziele der
-  Skalar, für LinkedIn eine nicht-leere Zuordnung. Genau dafür steht der zweite Parameter
-  seit 11.1c da — **und hier hört die Funktion auf, blind zu delegieren.**
-  **RICHTIGGESTELLT AM 2026-08-18, NICHT GESTEMPELT — der Wortlaut darüber bleibt lesbar,
-  die Richtigstellung tritt daneben; er ist der Maßstab, gegen den der Bau misst, und ein
-  Maßstab mit einer falschen Angabe taugt nicht:** DIESER SATZ HAT KEINEN GEGENSTAND.
-  GEMESSEN am Code (2026-08-18): Alle DREI Aufrufer schicken als ersten Parameter einen
-  SKALAR — `hasTargetPixelId(getPixelId(settings, t), t)` im Consent-Memo
-  (`consentTargets`, `src/components/CodeImporter.tsx`), `hasTargetPixelId(entry.pixelId,
-  entry.target)` im `withPixel`-Filter (`getCapiConfigByTrackingKey`,
-  `src/lib/capi/token.ts`) und `hasTargetPixelId(savedPixelId, target)` an der
-  Auslieferungs-Zeile der Karte (`TargetCard`, `src/components/TargetCard.tsx`). **Die
-  Zuordnung erreicht die Funktion damit NIE.** Der zweite Parameter ist NOTWENDIG, aber
-  NICHT HINREICHEND: Eine Fallunterscheidung über Ziele in ihrem Rumpf hätte nichts zu
-  befragen.
-  **ENTSCHIEDEN (Owner, 2026-08-18): K4 — EIN ZWEITES, ZIEL-GENERISCHES PRÄDIKAT NEBEN
-  `hasTargetPixelId`.** Jenes bleibt UNANGETASTET; der Resolver in `src/lib/capi/token.ts`
-  behält es.
-  **DIE BEGRÜNDUNG IST NICHT DER PREIS, SONDERN DIE FRAGE** — und sie steht hier wörtlich,
-  sonst liest die nächste Runde K4 als Verdopplung: Es sind ab 11.1d **ZWEI VERSCHIEDENE
-  FRAGEN**, die bisher zusammenfielen, weil ALLE Ziele eine Skalar-Kennung trugen.
-  · **„Kann ich für dieses Ziel eine `CapiConfig` bauen?"** — braucht einen SKALAR. Das ist
-    `hasTargetPixelId`. Der Resolver behält sie; zöge er LinkedIn in die Geheimnis-Abfrage,
-    wäre das zusätzliche Arbeit JE BEACON für ein Ziel ohne Adapter.
-  · **„Ist dieses Ziel auslieferfähig?"** — braucht IRGENDEINE Kennungsform.
-  **K4 IST DAMIT KEIN ZWEITES URTEIL ÜBER DIESELBE FRAGE, SONDERN EIN URTEIL JE FRAGE** —
-  genau das, was der Kopf von `src/lib/tracking/target-readiness.ts` verlangt.
-  **AUFLAGE, OHNE DIE DIE UNTERSCHEIDUNG VERLORENGEHT:** BEIDE Fundstellen sagen AN IHREM
-  ORT, WELCHE Frage sie beantworten. Ohne das sieht es wie eine Verdopplung aus und wird
-  beim nächsten Aufräumen zusammengelegt.
-  **WARUM DIE ANDEREN DREI BAUFORMEN FALLEN, je ein Satz** (sie sind in Stufe 1 am Code
-  geprüft worden und stehen hier, damit niemand sie ein zweites Mal erhebt):
-  · **K3** (form-tolerantes Prädikat, uniformer Wert): Der Parameter nähme ZWEI Gestalten
-    an — dieselbe Polymorphie, mit der DIESER Zuschnitt F2 verworfen hat. Den stillen
-    Ausfallpfad zur Bauform zu erheben, nachdem er das Hauptargument gegen F2 war, geht
-    nicht.
-  · **K2** (Fallunterscheidung in den Aufrufern): verlagert das Ziel-Literal in eine
-    KERN-Datei, die heute keines führt.
-  · **K1** (Fallunterscheidung in `settings.ts` plus geweitete Signatur): bricht zusätzlich
-    `src/lib/capi/token.ts`, eine geschützte Datei.
-  **DER NAME IST HIER NICHT FESTGELEGT** — er gehört in den Bau-Prompt. Vorgeschlagen und
-  begründet ist `hasDeliverableIdentity`: Er benennt die FRAGE („ist dieses Ziel
-  auslieferfähig?"), nicht ihre FORM und nicht einen ihrer LESER. Ein Name über den
-  Consent-Draht (etwa `hasTargetConsentConfig`) wird falsch, sobald ein zweiter Konsument
-  dazukommt — und die Karte ist bereits der zweite.
-  **DER NAME IST ENTSCHIEDEN (Owner, 2026-08-18): `isTargetDeliverable`.** Der Vorschlag
-  darüber bleibt lesbar, die Entscheidung tritt daneben — mit BEIDEN Begründungen, weil
-  die zweite sonst beim nächsten Ziel neu erhoben wird:
-  · **DAS PRINZIP GILT UNVERÄNDERT:** Der Name benennt die FRAGE, nicht ihre FORM und
-    nicht einen ihrer LESER. Deshalb fiel `hasTargetConsentConfig` — die Karte ist bereits
-    der zweite Konsument.
-  · **WARUM NICHT „Identity":** Das Wort ist in diesem Projekt für die PERSONEN-Identität
-    belegt — die Roadmap-Zeile 11.1 (`CLAUDE.md`) führt „Identitäts-Merkmal",
-    „Identitäts-Form" und „Personen-Identität" durchgehend für Klartext-IP, gehashte
-    E-Mail und Klick-Kennung; die Datenklassen-Entscheidung vom 2026-08-15 (`CLAUDE.md`,
-    „## Offene Punkte") sagt „Ein Identitäts-Merkmal wird ausschliesslich DURCHGELEITET".
-    In diesem Vokabular läse sich der Name als Frage nach dem Kennungs-Paar der NUTZLAST
-    statt nach der BETREIBER-Konfiguration — **die teuerste Verwechslung, die dieses Ziel
-    zu bieten hat.**
-  · **WARUM `is…` STATT `has…`:** Die `has…`-Familie fragt nach einem DING (`hasPixelId`,
-    `hasSecret`, `hasAdapter`, `hasVariantB`), die `is…`-Familie beurteilt eine
-    EIGENSCHAFT (`isTrackingTarget`, `isForwardable`, `isValidRedirectUrl`). Hier wird
-    kein Ding gesucht. Der Präfix macht die AUFLAGE schon am NAMEN sichtbar:
-    `isTargetDeliverable` und `hasTargetPixelId` sind auf den ersten Blick verschiedene
-    Fragen.
-- **`settingsEqual` MUSS DAS NEUE FELD MITVERGLEICHEN — SONST IST ES EIN STILLER VERLUST.**
-  GEMESSEN am Code (2026-08-18): `settingsEqual` (`src/lib/settings.ts`) vergleicht
-  AUSSCHLIESSLICH `getPixelId` über `TRACKING_TARGETS`
-  (`TRACKING_TARGETS.every((t) => getPixelId(a, t) === getPixelId(b, t))`), und `dirty`
-  (`src/components/CodeImporter.tsx`) hängt daran
-  (`code !== savedCode || !mappingsEqual(...) || !settingsEqual(...)`).
-  **OHNE ERWEITERUNG UM DAS NEUE FELD BLEIBT DER SPEICHERN-KNOPF NACH EINER URN-EINGABE
-  INAKTIV, und der Wert ist beim nächsten Projektwechsel weg** — ohne Warnung, ohne
-  Meldung. Das ist derselbe Schaden, den der Kommentar an `settingsEqual` für das ZWEITE
-  Ziel bereits beschreibt.
-  **ES STEHT ALS EIGENER PUNKT UND NICHT ALS NEBENZEILE, weil KEIN heutiger Test ihn
-  fängt:** Der Vergleich ist über die Kennungs-Achse geschrieben, und ein neues Feld
-  daneben lässt ihn unverändert grün.
-- eine Oberfläche, an der je Ereignisname aus dem Schlüsselraum von 11.1b eine URN
-  eingetragen wird
+VERDICHTET AM 2026-08-18, nach dem bestätigten Live-Test. Hier stand die Liste „Was drin
+ist" — die ANWEISUNGEN FÜR die Scheibe, und sie sind mit dem Vollzug abgelaufen: das Feld
+unter `settings.pixels.<ziel>` · ein eigener LESER für die Zuordnung · die Erweiterung von
+`settingsEqual` samt ihrer Begründung (ohne sie bliebe der Speichern-Knopf nach einer
+URN-Eingabe INAKTIV und der Wert wäre beim Projektwechsel weg, und KEIN heutiger Test
+fing das) · eine Oberfläche, an der je Ereignisname aus dem Schlüsselraum von 11.1b eine
+URN eingetragen wird.
+WAS GEBAUT UND GEMESSEN WURDE, STEHT IN VERMERK 4 — und nur weil es dort steht, durfte es
+hier weg. Die `settingsEqual`-Erweiterung ist dort zusätzlich LIVE belegt (der
+Speichern-Knopf wurde aktiv), nicht nur unit-getestet.
+
+**DIE BAUFORM-FRAGE IST ENTSCHIEDEN UND VOLLZOGEN.** Hier stand der Satz
+„`hasTargetPixelId` wird ZIEL-UNTERSCHEIDEND … hier hört die Funktion auf, blind zu
+delegieren", darunter seine Richtigstellung (er hatte KEINEN GEGENSTAND — alle drei
+Aufrufer schicken als ersten Parameter einen SKALAR, die Zuordnung erreicht die Funktion
+nie), die Owner-Entscheidung K4 samt den drei verworfenen Bauformen und die Namensfrage
+mit ihrer Entscheidung. GEBAUT IST `isTargetDeliverable` (`src/lib/settings.ts`), und
+`hasTargetPixelId` ist unangetastet geblieben.
+WAS DAVON WEITERREICHT, steht unten unter „Was über diese Scheibe hinaus bindet" und in
+Vermerk 4 — einschliesslich der drei verworfenen Bauformen und des Namens-Grundes. Die
+Begründung, WELCHE Frage jede der beiden Funktionen beantwortet, steht seit dem Bau an
+BEIDEN Fundstellen im Code selbst; das war die Auflage der Entscheidung und ist ihr
+haltbarster Ort.
+
+**DIE ZWEI OFFENEN FRAGEN SIND BEANTWORTET** und laufen mit ab:
+· **WO HÖRT `hasTargetPixelId` AUF ZU DELEGIEREN?** — GAR NICHT. Das Urteil über die
+  Auslieferfähigkeit ist ein ZWEITES, ziel-generisches Prädikat geworden (K4).
+· **WIE SIEHT DIE EINGABE AUS?** — ORT B (Owner-Entscheidung 2026-08-18): ein EIGENER
+  Abschnitt in `MeasureView`, benachbart zu „Verwendete Events", ein Eingabefeld je
+  Ereignisname aus `usedEvents.names`, mit übernommener `scope`-Aussage. `TargetCard`
+  bleibt unberührt und die Karten bleiben uniform.
+Beides ist in Vermerk 4 mit dem Gebauten und mit Messwerten belegt.
+
+### Was über diese Scheibe hinaus bindet
+
 - **DER VERWAISTE EINTRAG — ENTSCHIEDEN (Owner, 2026-08-18): BEHALTEN.** Die Zuordnung wird
   AN SICH SELBST gemessen: nicht-leer heisst nicht-leer, **OHNE Abgleich gegen den
   Schlüsselraum** aus 11.1b.
@@ -481,7 +436,36 @@ Begründung gehört in den Zuschnitt, weil sie sonst beim nächsten Aufräumen f
   SOLLEN. Sie anzuzeigen ist der bessere Endzustand und steht als eigener Punkt im Vorrat
   („VERWAISTE ZUORDNUNGEN ANZEIGEN"); ein zweiter Verwaisten-Begriff in der Oberfläche ist
   eine EIGENE Scheibe.
-
+  **DER ORT DIESER ENTSCHEIDUNG IM CODE** (GEBAUT 2026-08-18): der Begründungs-Absatz an
+  `hasConversionRules` (`src/lib/settings.ts`). Er sagt ausdrücklich, dass das Fehlen des
+  Abgleichs eine ENTSCHEIDUNG ist und kein Übersehen — sonst „repariert" ihn die nächste
+  Runde.
+- **ZWEI FRAGEN, ZWEI PRÄDIKATE — UND BEIDE FUNDSTELLEN SAGEN, WELCHE SIE BEANTWORTEN**
+  (Owner-Entscheidung K4, 2026-08-18; gebaut in `src/lib/settings.ts`). Sie fielen
+  zusammen, solange ALLE Ziele eine Skalar-Kennung trugen:
+  · **„Kann ich für dieses Ziel eine `CapiConfig` bauen?"** — braucht einen SKALAR. Das ist
+    `hasTargetPixelId`, und deshalb behält der Resolver
+    (`getCapiConfigByTrackingKey`, `src/lib/capi/token.ts`) genau sie. Zöge er ein Ziel
+    ohne Skalar in seine Geheimnis-Abfrage, wäre das zusätzliche Arbeit JE BEACON für ein
+    Ziel ohne Adapter.
+  · **„Ist dieses Ziel auslieferfähig?"** — braucht IRGENDEINE Kennungsform. Das ist
+    `isTargetDeliverable`, und daran hängt der Consent-Draht.
+  **DAS IST KEIN ZWEITES URTEIL ÜBER DIESELBE FRAGE, SONDERN EIN URTEIL JE FRAGE.** Wer sie
+  zusammenlegt, bekommt eines von beidem: eine dritte Runde je Beacon auf dem
+  meistgetroffenen Pfad — oder ein auslieferfähiges Ziel, das lautlos aus dem Draht fällt
+  und am Ingest fail-closed greift.
+  **DIE AUFLAGE IST GEBAUT UND NICHT NUR VERABREDET:** Der jeweilige Satz steht an BEIDEN
+  Fundstellen im Code. Ohne ihn sieht es wie eine Verdopplung aus und wird beim nächsten
+  Aufräumen zusammengelegt.
+- **`isTargetDeliverable` IST ZIEL-GENERISCH, UND DAS IST DIE ZUSAGE, NICHT EIN DETAIL:**
+  Sie fragt für JEDES Ziel dasselbe — ob EINE der beiden Kennungsformen belegt ist. Dass
+  heute nur ein Ziel die zweite Form füllt, ist ein ZUSTAND DER DATEN und keine Regel im
+  Code. **Deshalb ist sie KEINE ziel-geschlüsselte Stelle** (die Zählung im Kopf von
+  `src/lib/tracking/target-adapters.ts`). Ein Test nagelt das fest; wer eine
+  Fallunterscheidung über Ziele einzieht, macht sie zu einer.
+  **WAS DAMIT NICHT ENTSCHIEDEN IST und in Vermerk 4 als offener Punkt steht:** ob ein
+  Ziel, dessen Kennung JE EREIGNISTYP gilt, allein mit einem SKALAR als auslieferfähig
+  gelten soll. Heute liefert die ODER-Verknüpfung dort `true`.
 ### Die tragende Invariante — SIE IST DIESMAL ZWEISEITIG
 
 Und das ist der Unterschied zu 11.1c:
@@ -494,10 +478,22 @@ Und das ist der Unterschied zu 11.1c:
 **EINE SCHEIBE, DIE BEIDES ZUSAGT, BRAUCHT BEIDE NACHWEISE GETRENNT.** Wer nur (a) prüft,
 hat die Scheibe nicht gemessen; wer nur (b) prüft, hat die Regression nicht.
 
+**SIE BLEIBT STEHEN, WEIL SIE DER MASSSTAB FÜR 11.1e IST** — und sie ist eingelöst: BEIDE
+Seiten sind am 2026-08-18 live gemessen worden, (a) erstmals für Variante A UND B. Die
+Messwerte, die Instrumente und die DREI GRENZEN dieser Messung stehen in Vermerk 4; eine
+davon betrifft genau diese Invariante und ist dort ausdrücklich als NICHT bestandener
+Schritt geführt.
+
 ### Drei Dinge kippen an derselben Stelle
 
 Sie gehören zusammen in den Zuschnitt, weil sie alle drei am Wachsen von `consentTargets`
-(`src/components/CodeImporter.tsx`) hängen:
+(`src/components/CodeImporter.tsx`) hängen. **SIE BLEIBEN NACH DEM VOLLZUG STEHEN, und
+einer davon ist der Grund:** Kipppunkt 1 ist am 2026-08-18 NICHT gemessen worden — beide
+live beobachteten Zustände trugen mindestens ein Ziel im Draht, der Sprung aus dem
+Einzel-Pfad in den Sammel-Pfad wurde nicht vorgeführt. **Er ist damit kein bestandener
+Schritt, sondern ein offener** (s. Vermerk 4, „DREI GRENZEN"). Kipppunkt 2 ist eingelöst
+(das Neu-Veröffentlichen war Pflicht-Schritt und hat gewirkt), Kipppunkt 3 ist mit der
+Bauform K4 gegenstandslos geworden — das Objekt erreicht `hasTargetPixelId` gar nicht mehr.
 
 1. **DER STRUKTURELLE KIPPPUNKT** (GEMESSEN am Code, 2026-08-18): `const many =
    consentTargets.length > 0` (`src/lib/tracking/meta.ts`) steuert VIER Bau-Zeit-Zweige.
@@ -537,11 +533,21 @@ Sie gehören zusammen in den Zuschnitt, weil sie alle drei am Wachsen von `conse
    ZWEITES, ziel-generisches Prädikat um. **DER BEFUND SELBST IST UNBERÜHRT und bleibt
    der Grund für K4:** Ein Objekt an `hasTargetPixelId` liefert `false` ohne Wurf, ohne
    Typfehler, ohne Meldung — deshalb wird dort GAR KEIN Objekt hineingereicht. Wer nur
-   diesen Punkt liest, hält die Bauform noch für die alte; die Korrektur steht unter „Was
-   drin ist" (Regelfall: „WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR
-   FALLE", `docs/immer-beachten.md`).
+   diesen Punkt liest, hält die Bauform noch für die alte; die Korrektur steht unter
+   „Vollzogen" und „Was über diese Scheibe hinaus bindet" (Regelfall: „WER EINE HÄLFTE
+   EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR FALLE", `docs/immer-beachten.md`).
+   **ZEIGER NACHGEZOGEN AM 2026-08-18 (Verdichtung), UND ZWAR BEIDE NENNUNGEN IN DIESEM
+   PUNKT:** Der Satz oben und der Satz darüber nannten „Was drin ist"; jener Abschnitt ist
+   mit dem Vollzug abgelaufen. Gemeint sind ab jetzt „Vollzogen" und „Was über diese
+   Scheibe hinaus bindet". Die Zeiger wandern mit, statt ins Leere zu zeigen — der BEFUND
+   darüber ist unverändert.
 
-### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+### Was ausdrücklich NICHT drin war, je mit seinem Grund — GILT WEITER, IST ABER KEIN ZUSCHNITT MEHR
+
+Die Ausschlüsse sind mit dem Vollzug NICHT erledigt; erledigt ist nur ihre Rolle als
+Zuschnitt DIESER Scheibe. **ALLE FÜNF HABEN GEHALTEN — GEMESSEN am Diff (2026-08-18):**
+fünf Dateien, `src/lib/tracking/**` und `src/lib/capi/**` nicht darunter, keine Migration,
+kein `pixelId`- und kein `getPixelId`-Eingriff.
 
 - **KEIN ADAPTER, KEIN FORWARD, KEIN EINTRAG IN `TARGETS_WITH_ADAPTER`.** Der Riegel aus
   11.1a hält; sein Wächter (`src/lib/tracking/target-adapters.test.ts`) bleibt stehen und
@@ -552,38 +558,6 @@ Sie gehören zusammen in den Zuschnitt, weil sie alle drei am Wachsen von `conse
   hier mitzubauen bündelte zwei Achsen.
 - **KEINE NORMALISIERUNG DER EREIGNISNAMEN.** Der freie Nutzer-String bleibt, wie er ist —
   die Regel dazu steht in `docs/immer-beachten.md`.
-
-### Zwei offene Fragen — FRAGEN, kein Befund
-
-Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
-
-**NACHGEZOGEN AM 2026-08-18 — DER STUFE-1-PROMPT IST GELAUFEN, UND DAMIT IST DIESE
-ÜBERSCHRIFT NUR NOCH ZUR HÄLFTE WAHR. Der Wortlaut beider Fragen bleibt UNVERÄNDERT
-stehen** (er sagt, was am Tag des Zuschnitts offen war), **die Antworten treten daneben:**
-· **FRAGE 1 IST BEANTWORTET** — nicht mit einer der dort betrachteten Bauformen, sondern
-  mit K4: `hasTargetPixelId` hört gar nicht auf zu delegieren, das Urteil über die
-  Auslieferbarkeit zieht in ein zweites, ziel-generisches Prädikat um. Die Antwort samt
-  Messung und den drei verworfenen Bauformen steht unter „Was drin ist". **DIE
-  ACHT-ZÄHLUNG IN `src/lib/tracking/target-adapters.ts` IST DAMIT NICHT NACHZUZIEHEN:**
-  K4 trägt keinen Zielwert, keine Ziel-Liste und keinen Record über Ziele — sie ist keine
-  NEUNTE Stelle.
-· **VON FRAGE 2 IST DER ZWEITE TEIL BEANTWORTET** (was mit einer bereits eingetragenen URN
-  geschieht, wenn ihr Name verschwindet): BEHALTEN, s. den eigenen Punkt unter „Was drin
-  ist". **DER ERSTE TEIL BLEIBT OFFEN** — wie die Eingabe aussieht und wo sie sitzt.
-
-1. **WO HÖRT `hasTargetPixelId` AUF ZU DELEGIEREN?** Eine Fallunterscheidung über Ziele in
-   `src/lib/settings.ts` wäre eine ZIEL-GESCHLÜSSELTE Aussage — dann ist sie die NEUNTE
-   Stelle, und die ACHT-Zählung im Kopf von `src/lib/tracking/target-adapters.ts` ist
-   nachzuziehen (Vermerk 3 hält fest, dass genau dieser Zeitpunkt gemeint war). **Ob das
-   die einzige Bauform ist, ist offen.**
-2. **WIE SIEHT DIE EINGABE AUS?** Der Schlüsselraum ist eine MENGE von Namen (11.1b), die
-   URNs sind frei getippt. Ob das eine Zeile je Name ist oder etwas anderes — und was
-   geschieht, wenn ein Name nachträglich VERSCHWINDET, weil sein Mapping gelöscht wurde.
-   WAS DAZU BEREITS FESTSTEHT und die Frage NICHT beantwortet: Der Schlüsselraum ist eine
-   ABLEITUNG aus den Mappings (`usedTrackEventNames`, `src/lib/tracking/event-names.ts`) —
-   verschwindet ein Mapping, verschwindet der Name aus der Menge. Was mit einer bereits
-   eingetragenen URN geschieht, entscheidet die ABLAGE-Form, und die ist Gegenstand dieser
-   Frage.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -651,6 +625,28 @@ stehen** (er sagt, was am Tag des Zuschnitts offen war), **die Antworten treten 
   DAS BINDET 11.1d UND GEHÖRT DORT IN DIE LIVE-TEST-ANLEITUNG, nicht erst in den
   Support-Fall: Wer nach dem Eintragen der Kennung nicht neu veröffentlicht, misst ein
   korrektes fail-closed und schreibt es dem Adapter zu.
+  **EINGELÖST UND LIVE BELEGT (2026-08-18):** Das Neu-Veröffentlichen stand als
+  PFLICHT-SCHRITT in der Anleitung, und danach trug der ausgelieferte Text den
+  LinkedIn-Schlüssel an BEIDEN Stellen. Die Entscheidung bleibt stehen — sie bindet jedes
+  weitere Ziel und jede weitere Kennung, nicht nur diese Scheibe.
+- **EINE NEUNTE ZIEL-GESCHLÜSSELTE STELLE IST ENTSTANDEN: `RULES_TARGET`**
+  (`src/components/CodeImporter.tsx`, gebaut in 11.1d, GEMESSEN am Code 2026-08-18). Es ist
+  ein Ziel-LITERAL und damit dieselbe Art Fundstelle wie die ACHT, die der Kopf von
+  `src/lib/tracking/target-adapters.ts` führt.
+  **DIE ZÄHLUNG DORT IST NICHT NACHGEZOGEN** — jene Datei war in dieser Scheibe geschützt.
+  **EIGENE RUNDE.** Jener Kopf hat seine Zahl bereits ZWEIMAL falsch geführt (er korrigiert
+  eine alte SECHS selbst); wer das übersieht, hinterlässt die dritte.
+  **WARUM SIE UNVERMEIDBAR WAR** (aus dem Bau-Bericht, FOLGERUNG aus den geprüften
+  Alternativen — nicht gemessen): Die Zuordnung Ereignisname -> Regel-Kennung ist heute die
+  Kennungsform GENAU EINES Ziels, und irgendeine Stelle muss sagen, welches. Ein Record
+  über ALLE Ziele wäre eine ziel-geschlüsselte Aussage mit VIER Einträgen statt einem Wert;
+  eine Ableitung aus einer bestehenden Liste (etwa „hat keinen Adapter") koppelte die
+  Oberfläche an eine Tatsache, die etwas ANDERES bedeutet.
+  **WAS DAMIT NICHT PASSIERT IST, und das ist die tragende Hälfte:** `isTargetDeliverable`
+  (`src/lib/settings.ts`) ist NICHT betroffen — sie bleibt ziel-generisch. Und
+  `MeasureView` bleibt ZIELWERTFREI: die Ansicht bekommt das Ziel als PROP, genau wie sie
+  die Ziel-Liste schon als Prop bekommt. Der Zielwert steht an GENAU EINER Stelle, im
+  Container, mit seiner Begründung daneben.
 - **DER ZWEITE PARAMETER VON `hasTargetPixelId` IST DER ORT** (gebaut in
   `src/lib/settings.ts`, Scheibe 11.1c). Er tut heute nichts — die Funktion delegiert an
   `hasPixelId` und urteilt für kein Ziel anders. **WER IHN STREICHT, STREICHT DIE
@@ -674,7 +670,8 @@ stehen** (er sagt, was am Tag des Zuschnitts offen war), **die Antworten treten 
   SEIN ZEITPUNKT IST NICHT 11.1d; der Wortlaut oben bleibt vollständig lesbar, die
   Richtigstellung tritt daneben:** Jener Satz nennt „SOBALD 11.1d DEN PARAMETER BENUTZT".
   **UNTER DER BAUFORM K4 TUT 11.1d DAS NICHT** (Owner-Entscheidung 2026-08-18, s. den
-  Zuschnitt 11.1d unter „Was drin ist"): `hasTargetPixelId` bleibt unangetastet, der
+  Zuschnitt 11.1d unter „Vollzogen" — der Abschnitt hiess bis zur Verdichtung am
+  2026-08-18 „Was drin ist"): `hasTargetPixelId` bleibt unangetastet, der
   Parameter ungenutzt, **die Direktive bleibt stehen.**
   **DIE REGEL IST UNBERÜHRT** — überholt ist allein ihr ZEITPUNKT: Der Wächter schlägt an,
   sobald IRGENDEINE Scheibe den Parameter benutzt, nicht diese. **WER IN 11.1d KEINE
@@ -882,6 +879,33 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   Abgrenzung gegen den bestehenden, der auf ELEMENTE zeigt und nicht auf Ereignisnamen.
   **TRIGGER:** sobald ein Betreiber meldet, dass eine eingetragene URN unauffindbar ist —
   ODER mit einer Anzeige-Runde. GEMELDET, NICHT GEBAUT.
+
+- **DER AUSGELIEFERTE TEXT KANN NACH EINEM PUBLISH VERALTET IM BROWSER STEHEN** (GEMESSEN
+  am lebenden System, 2026-08-18, beim Live-Test der Scheibe 11.1d): Die Live-Seite zeigte
+  nach dem Publish den ALTEN Text — mit einer Pixel-Kennung, die der Editor-Stand nicht
+  mehr trug. **Ein Neuladen mit F5 half NICHT; erst ein Aufruf mit einem zusätzlichen
+  URL-Parameter zeigte den korrekten Stand.**
+  **WAS GEMESSEN IST — und die Gegenprobe ist der Grund, warum dieser Punkt hier steht und
+  nicht als Defekt der Scheibe:** In der Datenbank (SQL, 2026-08-18) trägt
+  `published_content` den LinkedIn-Schlüssel und NICHT mehr die alte Kennung, `updated_at`
+  liegt nach dem Publish. Der Publish hat also VOLLSTÄNDIG gegriffen — es war der
+  BROWSER-CACHE. Ohne diese zweite Prüfung wäre das als Fehlschlag der Scheibe
+  protokolliert worden.
+  **WAS NICHT GEMESSEN IST und ausdrücklich offen bleibt:** OB und WELCHE Cache-Header die
+  Serve-Route setzt und mit welcher Lebensdauer. Die Route war in dieser Phase durchgehend
+  geschützt und ist NICHT gelesen worden. Das ist keine Aussage über ihr Verhalten, sondern
+  die Aussage, dass es hier niemand geprüft hat.
+  **WARUM ES ZÄHLT:** Ein Kunde, der nach dem Publish auf seiner Seite nachsieht, macht
+  dieselbe Erfahrung — und schliesst, das Publish habe nicht gegriffen.
+  **ES IST EINE DRITTE EBENE, UND SIE GEHÖRT NEBEN DIE ZWEITE, NICHT IN SIE:** Der Eintrag
+  „NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST" (`CLAUDE.md`,
+  „## Offene Punkte") behandelt EDITOR gegen VERÖFFENTLICHT — dort ist der publizierte Text
+  wirklich alt, und die Lösung liegt im Produkt (Hinweis, Anzeige oder Riegel). HIER ist
+  der publizierte Text KORREKT und nur seine AUSLIEFERUNG veraltet: VERÖFFENTLICHT gegen
+  AUSGELIEFERT. **Verschiedene Ursachen, verschiedene Lösungen** — wer sie zusammenzieht,
+  sucht die eine an der Stelle der anderen.
+  **TRIGGER:** mit der Drift-Runde, die ohnehin ansteht — sie behandelt die Nachbar-Ebene.
+  GEMELDET, NICHT GEBAUT, KEINE Empfehlung zur Bauform.
 
 ## Hebungs-Kandidaten
 
@@ -1163,3 +1187,129 @@ belegt). Der Bau hielt an, die BAUFORM wurde entschieden (Owner: eine
 gestrichen. Die Direktive ist per Gegenprobe belegt: testweise entfernt, kam die Warnung
 wortgleich zurück. Was daran über die Scheibe hinaus bindet, steht unter
 „## Entscheidungen".
+
+### 4 — Scheibe 11.1d: Die Conversion-Regel-Kennung ablegen (Commit fb91f33)
+
+**WELCHE NUMMER DAS IST:** `fb91f33` ist der BAU-Commit (`feat(tracking):
+Conversion-Regel-Kennung ablegen, LinkedIn auslieferfaehig`), gepusht am 2026-08-18 —
+NICHT der Doku-Commit, der diesen Vermerk trägt. Dieselbe Trennung wie in den Vermerken 1
+bis 3. ES GIBT DAMIT DERZEIT KEINE OFFENE LÜCKE.
+
+**WAS GEBAUT WURDE.** Das Feld `conversionRules?: Record<string, string>` unter
+`settings.pixels.<ziel>`, NEBEN `pixelId` (Form F1). Dazu in `src/lib/settings.ts`: der
+Leser `getConversionRules` (liefert nie `undefined`), das Form-Prädikat
+`hasConversionRules` (nimmt `unknown`, mindestens EIN Eintrag mit nicht-leerem Wert), der
+Schreiber `setConversionRule` (immutabel, nest-erhaltend; ein leerer Wert ENTFERNT den
+Schlüssel und führt exakt auf den Ausgangs-Blob zurück) und das Urteil
+`isTargetDeliverable` (der Skalar ODER die Zuordnung). `settingsEqual` vergleicht das neue
+Feld mit — WERTgleich und reihenfolge-unabhängig über die nicht exportierte
+`conversionRulesEqual`. Im Container (`src/components/CodeImporter.tsx`) ruft das
+Consent-Memo `consentTargets` jetzt `isTargetDeliverable`; die Oberfläche ist ein EIGENER
+Abschnitt in `src/components/MeasureView.tsx` neben „Verwendete Events", ein Eingabefeld je
+Ereignisname, mit übernommener `scope`-Aussage.
+**`hasTargetPixelId` UND `getPixelId` SIND UNANGETASTET** — `getPixelId` sagt weiterhin
+IMMER eine Zeichenkette zu, und der Resolver (`src/lib/capi/token.ts`) wurde nicht berührt.
+**DER SCHREIBER WAR EIN VIERTES SYMBOL UND NICHT GEPLANT** (der Zuschnitt nannte drei): Die
+verschachtelte Form des Blobs ist Wissen der Einstellungs-Datei; schriebe die Komponente
+den Spread selbst, kennten ZWEI Stellen die Nest-Form.
+
+**WAS GEMESSEN IST (LIVE, 2026-08-18, vom Owner):**
+- **SEITE (a) DER INVARIANTE — REGRESSION:** Der ausgelieferte Text ist vor und nach dem
+  Deploy BYTE-IDENTISCH, für Variante A **UND** Variante B. **Erstmals sind BEIDE Varianten
+  belegt** — in 11.1c fehlte der B-Beleg, und der Vermerk 3 führt das als Grenze.
+- **INGEST-REGRESSION:** Eine Conversion kam server- UND browser-seitig an, mit DERSELBEN
+  Ereignis-Kennung — die Deduplizierung greift unverändert.
+- **SEITE (b):** Nach dem Eintragen einer Regel-Kennung und NEUEM Veröffentlichen trägt der
+  ausgelieferte Text an BEIDEN Stellen den LinkedIn-Schlüssel:
+  `__psConsentAll(["meta","linkedin"])` und `"cns": { "meta": …, "linkedin": … }`. Danach
+  kam eine Meta-Conversion erneut server- und browser-seitig an — **der zusätzliche
+  Schlüssel kippt den bestehenden Forward nicht.**
+- **DER SPEICHERN-KNOPF WURDE AKTIV.** Das ist der LIVE-Beleg für die
+  `settingsEqual`-Erweiterung; ohne sie wäre der Wert beim Projektwechsel verloren gewesen,
+  ohne Warnung und ohne Meldung.
+- **EINE ZUORDNUNG ALLEIN GENÜGT — und das ist MEHR als geplant:** In einem Projekt OHNE
+  jede Skalar-Kennung erzeugt der Erzeuger `__psConsentAll(["linkedin"])` und
+  `"cns": { "linkedin": … }`, mit der Warnung „Meta-Pixel nicht konfiguriert". Die Zusage
+  der Scheibe — IRGENDEINE Kennungsform genügt — ist damit LIVE belegt und nicht nur
+  unit-getestet.
+- **DER LEER-ZUSTAND HÄLT** (Schritt 9): Ein Projekt OHNE Track-Mappings zeigt in der neuen
+  Fläche saubere Hinweistexte — kein `undefined`, kein leerer Kasten, kein
+  Ladefehler-Eindruck.
+  **DASS DAS EINE EIGENE ACHSE IST, GEHÖRT DAZU:** Auf Unit-Ebene ist der Zweig gedeckt,
+  aber die Testumgebung wertet KEIN CSS aus — wie er AUSSIEHT, ist ausschliesslich live
+  prüfbar. Ein leerer Kasten wäre dort grün durchgelaufen.
+
+**DREI GRENZEN, DIE ZWINGEND MITMÜSSEN:**
+1. **DER STRUKTURELLE KIPPPUNKT IST NICHT GEMESSEN.** Beide beobachteten Zustände trugen
+   mindestens ein Ziel im Draht; der Sprung aus dem Einzel-Pfad (`many === false`) in den
+   Sammel-Pfad wurde NICHT vorgeführt. **Er bleibt offen — kein bestandener Schritt**, und
+   er steht als Kipppunkt 1 weiterhin im Zuschnitt.
+2. **DER BYTE-VERGLEICH LIEF AUF EXPORT-ARTEFAKTEN einer lokalen Instanz** (erkennbar an
+   der absoluten Ingest-URL und am fehlenden PageView-Emitter), nicht auf veröffentlichtem
+   Inhalt. **Für Seite (a) ist das tauglich** — beide Seiten desselben Erzeugers. **NICHT
+   belegt ist, dass die lokale Instanz beim Nachher-Zug bereits den neuen Code fuhr**; ohne
+   das wäre der Vergleich trivial wahr. Schritt 6 zeigt, dass der neue Code LIEF, aber
+   nicht, dass er in DERSELBEN Instanz lief.
+3. **ES IST NICHT GEMESSEN, DASS AN LINKEDIN ETWAS ANKOMMT.** Es geht nichts hin — kein
+   Adapter, das ist der Riegel aus 11.1a.
+
+**EIN BEFUND AUS DEM LIVE-TEST, DER KEINER DER SCHEIBE IST** — er gehört hierher, weil er
+den Test fast zum Fehlschlag gemacht hätte: Die Live-Seite zeigte nach dem Publish den
+ALTEN Text, mit einer Pixel-Kennung, die der Editor-Stand nicht mehr trug. **Ein Neuladen
+mit F5 half NICHT**; erst ein Aufruf mit einem zusätzlichen URL-Parameter zeigte den
+korrekten Stand. GEMESSEN in der Datenbank (SQL, 2026-08-18): `published_content` trägt den
+LinkedIn-Schlüssel und NICHT mehr die alte Kennung, `updated_at` liegt nach dem Publish —
+der Publish hat also VOLLSTÄNDIG gegriffen, es war der BROWSER-CACHE.
+**DASS ES ZWEI PRÜFUNGEN GEBRAUCHT HAT, IST DER EIGENTLICHE PUNKT:** Ohne die
+Datenbank-Gegenprobe wäre das als Defekt DIESER Scheibe protokolliert worden. Als eigener
+Punkt weitergeführt im Vorrat („DER AUSGELIEFERTE TEXT KANN NACH EINEM PUBLISH VERALTET IM
+BROWSER STEHEN").
+
+**WAS AUS DEM ZUSCHNITT HIERHER GEWANDERT IST, weil es mit dem Vollzug abgelaufen ist:**
+- **DIE BAUFORM K4 UND DIE DREI VERWORFENEN**, je in einem Satz, damit sie niemand ein
+  zweites Mal erhebt: **K3** (form-tolerantes Prädikat, uniformer Wert) hätte den Parameter
+  ZWEI Gestalten annehmen lassen — dieselbe Polymorphie, mit der derselbe Zuschnitt F2
+  verworfen hat. **K2** (Fallunterscheidung in den Aufrufern) hätte das Ziel-Literal in eine
+  KERN-Datei verlagert, die keines führt. **K1** (Fallunterscheidung plus geweitete
+  Signatur) hätte zusätzlich `src/lib/capi/token.ts` gebrochen — eine geschützte Datei.
+- **DER NAME `isTargetDeliverable` UND SEIN GRUND**, und der zweite Teil bindet über diese
+  Scheibe hinaus: Der zuerst vorgeschlagene Name trug das Wort „Identity", und das ist in
+  diesem Projekt für die PERSONEN-Identität belegt (Roadmap-Zeile 11.1 und die
+  Datenklassen-Entscheidung vom 2026-08-15, beide `CLAUDE.md`). Er hätte sich als Frage
+  nach dem Kennungs-Paar der NUTZLAST gelesen statt nach der BETREIBER-Konfiguration.
+  Das `is…`-Präfix trennt ihn ausserdem schon am Namen von `hasTargetPixelId`.
+
+**DIE UNIT-EBENE, AUSDRÜCKLICH NEBEN DEM LIVE-TEST UND NICHT AN SEINER STELLE:** Zwei
+Mutationen, GETRENNT gefahren (2026-08-18), je exakt die angesagten Treffer.
+- **SEITE (a)** — das Urteil liefert konstant `true`: **11 von 1103 Tests fielen**, neun
+  D-Tests (T1–T7, T9, T12) plus zwei Einheitstests. Fehlerklasse einheitlich („erwartet
+  ohne, tatsächlich mit `linkedin`", bei D-T4 in der `null`-Ausprägung). **D-T8 blieb grün
+  und wurde eigens einzeln nachgeprüft** — ohne `trackingKey` steht gar nichts im Text.
+- **SEITE (b)** — der ODER-Term fällt weg: **3 von 1103 fielen** (D-T11 plus zwei
+  Einheitstests). D-T1 bis D-T10 und D-T12 blieben grün, wie angesagt.
+Testzahl vorher/nachher GEMESSEN: 57 Dateien/1084 Tests -> 57 Dateien/1103 Tests, alle
+grün; `tsc`, Lint (0 Fehler; die eine Warnung ist vorbestehend und per `git stash`-Probe
+belegt) und Build ebenfalls. **DIE eslint-DIREKTIVE MELDETE SICH NICHT ALS ÜBERFLÜSSIG** —
+unter K4 bleibt der Parameter ungenutzt, und genau das ist im Zuschnitt vorher nachgezogen
+worden.
+EINE MUTATIONSPROBE SAGT NICHTS ÜBER DIE DEPLOYTE LAUFZEIT.
+
+**ZWEI TESTS SIND BEWUSST NICHT UMGESTELLT WORDEN, obwohl der Bau-Auftrag es verlangte** —
+beide hätten Abdeckung ENTFERNT statt hinzugefügt:
+- **`D-T10`** (`src/components/CodeImporter.test.tsx`) trägt die einzige Abdeckung des
+  Falls „LinkedIn mit SKALAR" und bleibt grün, weil der Skalar-Pfad weiter zählt. Statt ihn
+  umzustellen sind **D-T11** (LinkedIn NUR mit Zuordnung) und **D-T12** (leere Zuordnung ist
+  keine Kennung) danebengetreten; D-T11 nennt die Abgrenzung zu D-T10 in seinem Kommentar.
+- **DIE ZIEL-GENERIK-ZUSICHERUNG** (`src/lib/settings.targets.test.ts`) ist NICHT gefallen,
+  weil `hasTargetPixelId` unangetastet blieb. Sie ist jetzt der Wächter dafür, dass jene
+  Funktion ziel-generisch BLEIBT. Geändert wurde an ihr nur der KOMMENTAR — ihre Vorhersage
+  („11.1d hebt sie auf") ist nicht eingetreten.
+
+**EIN WIDERSPRUCH IM BAU-AUFTRAG, GEMELDET UND NICHT STILL AUFGELÖST:** Er verlangte
+gleichzeitig ein ziel-GENERISCHES Prädikat (K4) und dass LinkedIn mit gesetztem Skalar und
+ohne Zuordnung `false` ergibt. Beides zusammen ist nicht baubar — das zweite verlangt eine
+Fallunterscheidung über Ziele und damit genau die ziel-geschlüsselte Stelle, die K4
+vermeidet. **GEBAUT IST K4.** Die Frage, ob ein Ziel mit event-geschlüsselter Kennung
+allein mit einem Skalar als auslieferfähig gelten soll, ist damit OFFEN; heute liefert die
+ODER-Verknüpfung dort `true`. Sie ist folgenlos, solange die Karte kein öffentliches Feld
+für dieses Ziel führt (11.1a) — es gibt keinen Bedienweg zu einem solchen Skalar.

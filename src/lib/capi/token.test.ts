@@ -596,3 +596,272 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     });
   });
 });
+
+// ===========================================================================
+// SCHEIBE 11.1e — DER WEG ZUM EMPFAENGER.
+//
+// Ein Ziel, dessen Kennung JE EREIGNISTYP gilt (heute LinkedIn), wird zum
+// ResolvedTarget, OHNE dass etwas gesendet wird — der Adapter-Riegel in
+// dispatchForward (capi/ingest.ts) laesst es danach fallen.
+//
+// DER PRUEFLING IST DIE RUECKGABE DES RESOLVERS, NICHT DER HANDLER, und das ist die
+// tragende Entscheidung dieses Blocks: Am Handler ist ein entstandener Empfaenger
+// NICHT beobachtbar — er faellt am Adapter-Gate heraus, ohne Logzeile, ohne
+// Nutzlast, ohne Zaehlung. Ein Test ueber den Handler bliebe gruen, gleichgueltig ob
+// das Ziel aufgeloest wird oder nicht (GEMESSEN am Code, 2026-08-18: der
+// linkedin-Lauf in capi/fan-out.test.ts tut genau das und sichert die NICHT-Wirkung,
+// nicht das Entstehen).
+// ===========================================================================
+
+/** Ein projects-Ergebnis mit einer Zuordnung fuer LinkedIn und WAHLWEISE einem Skalar. */
+function projectWithRules(
+  id: string,
+  rules: Record<string, string>,
+  metaPixelId?: string,
+) {
+  return {
+    data: {
+      id,
+      settings: {
+        pixels: {
+          ...(metaPixelId ? { meta: { pixelId: metaPixelId } } : {}),
+          linkedin: { conversionRules: rules },
+        },
+      },
+    },
+    error: null,
+  };
+}
+
+const URN = "urn:lla:llaPartnerConversion:1234567";
+
+describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
+  it("E1: Zuordnung OHNE Skalar plus Geheimnis -> linkedin ist Empfaenger, die Zuordnung ist angekommen", async () => {
+    // DER KERN DER SCHEIBE. WIRD ROT, WENN der Filter die zweite Kennungsform nicht
+    // kennt, wenn der Fruehausstieg vorher greift, oder wenn die Zuordnung auf dem
+    // Weg zum Empfaenger verlorengeht.
+    // DIE LEERE KENNUNG IM config IST TEIL DER ZUSAGE, nicht ein Schoenheitsfehler:
+    // Das Ziel traegt keinen Skalar, und die Paarungsschleife baut deshalb eine
+    // CapiConfig mit pixelId "". Der Nachtrag am Typ CapiConfig haelt fest, dass KEIN
+    // Compiler-Riegel das faengt — dieser Test ist die einzige Stelle, die den
+    // Zustand ueberhaupt festnagelt.
+    mockAdmin({
+      projects: projectWithRules("proj-1", { Lead: URN }),
+      project_secrets: secretRows([{ target: "linkedin", secret: "LI-SECRET" }]),
+    });
+
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: false,
+      targets: [
+        {
+          target: "linkedin",
+          config: { pixelId: "", token: "LI-SECRET" },
+          conversionRules: { Lead: URN },
+        },
+      ],
+    });
+  });
+
+  it("E2: HALBES PAAR, Richtung A — Zuordnung ohne Geheimnis -> KEIN Empfaenger", async () => {
+    // Die Paarungsschleife ueberspringt mit `if (!token) continue`. WIRD ROT, WENN
+    // die zweite Kennungsform an der Paarung vorbeikaeme — dann liefe ein Ziel ohne
+    // Zugangsdatum als Empfaenger, und der Adapter braeuchte spaeter einen eigenen
+    // Riegel dafuer.
+    mockAdmin({
+      projects: projectWithRules("proj-1", { Lead: URN }),
+      project_secrets: secretRows([]),
+    });
+
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: false,
+      targets: [],
+    });
+  });
+
+  it("E3: HALBES PAAR, Richtung B — Geheimnis ohne Zuordnung und ohne Skalar -> KEIN Empfaenger", async () => {
+    // BEIDE RICHTUNGEN GETRENNT, weil sie VERSCHIEDEN scheitern (dieselbe Begruendung
+    // wie beim Paarungs-Test der Scheibe 7): Hier faellt das Ziel schon aus dem
+    // Filter und steht gar nicht erst im in-Filter der Geheimnis-Abfrage; in E2
+    // faellt es erst bei der Paarung heraus.
+    mockAdmin({
+      projects: {
+        data: { id: "proj-1", settings: { pixels: { linkedin: {} } } },
+        error: null,
+      },
+      project_secrets: secretRows([{ target: "linkedin", secret: "LI-SECRET" }]),
+    });
+
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: false,
+      targets: [],
+    });
+  });
+
+  it("E4: eine Zuordnung aus LEEREN Werten ist KEINE Kennung -> KEIN Empfaenger", async () => {
+    // Die Gegenprobe zu E1, und ohne sie waere jener trivial erfuellbar: Ein Filter,
+    // der schlicht die ANWESENHEIT des Feldes liest, bestuende E1 und faellt hier.
+    mockAdmin({
+      projects: projectWithRules("proj-1", { Lead: "", Purchase: "   " }),
+      project_secrets: secretRows([{ target: "linkedin", secret: "LI-SECRET" }]),
+    });
+
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: false,
+      targets: [],
+    });
+  });
+
+  it("E5: das LINKEDIN-ONLY-Projekt passiert den Fruehausstieg — die Geheimnis-Abfrage LAEUFT", async () => {
+    // DER FRUEHAUSSTIEG IST DIE ZWEITE HAELFTE DERSELBEN AENDERUNG: Bliebe er an der
+    // Skalar-Frage haengen, kehrte dieses Projekt VOR der Geheimnis-Abfrage zurueck,
+    // und das Ziel koennte NIE Empfaenger werden — E1 waere dann rot, aber aus einem
+    // ANDEREN Grund als dem, den E1 misst. Dieser Test trennt die beiden.
+    // GEMESSEN WIRD DIE ZAHL DER ABFRAGEN, nicht das Ergebnis: zwei statt einer.
+    const { from } = mockAdmin({
+      projects: projectWithRules("proj-1", { Lead: URN }),
+      project_secrets: secretRows([{ target: "linkedin", secret: "LI-SECRET" }]),
+    });
+
+    await getCapiConfigByTrackingKey("tk-abc");
+
+    expect(from).toHaveBeenCalledWith("projects");
+    expect(from).toHaveBeenCalledWith("project_secrets");
+    expect(from).toHaveBeenCalledTimes(2);
+  });
+
+  it("E6: ein Projekt OHNE jede Kennung bleibt beim Fruehausstieg — EINE Abfrage", async () => {
+    // DIE POSITIVKONTROLLE ZU E5. Ohne sie zeigte E5 nur, dass zwei Abfragen laufen —
+    // nicht, dass der Fruehausstieg ueberhaupt noch jemanden abfaengt. Faellt er weg,
+    // liefe die Geheimnis-Abfrage fuer JEDEN Beacon JEDES unkonfigurierten Projekts,
+    // auf dem meistgetroffenen Pfad der Plattform, und KEIN anderer Test saehe es.
+    const { from } = mockAdmin({
+      projects: { data: { id: "proj-1", settings: {} }, error: null },
+      project_secrets: secretRows([{ target: "meta", secret: "SECRET-TOKEN" }]),
+    });
+
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: false,
+      targets: [],
+    });
+    expect(from).toHaveBeenCalledTimes(1);
+  });
+
+  it("E7: das Feld ist UNDEFINIERT und NIE ein leeres Objekt, wenn ein Ziel keine Zuordnung traegt", async () => {
+    // WELCHE FEHLERKLASSE DIESER TEST ALLEIN FAENGT (Pflicht-Kommentar): Er ist der
+    // EINZIGE Waechter darueber, dass die Paarungsschleife "leere Zuordnung" in "Feld
+    // nicht gesetzt" UEBERSETZT. Faellt die Umformung weg, traegt JEDER Empfaenger
+    // ein conversionRules: {} — der Compiler schweigt, das Verhalten aendert sich
+    // nicht, und der Schaden zeigt sich ausschliesslich an ZWOELF
+    // Ganz-Objekt-Vergleichen weiter oben in dieser Datei, deren Ursache dann in
+    // einer ANDEREN Datei steht.
+    // GEMESSEN am 2026-08-18 (vitest 4.1.8): toEqual ignoriert einen Schluessel mit
+    // dem Wert undefined auf jeder Ebene, ein leeres Objekt dagegen NICHT. Genau
+    // diese Asymmetrie macht die Umformung noetig — und genau sie macht ihren Verlust
+    // an zwoelf fremden Stellen sichtbar statt hier.
+    // DESHALB PRUEFT ER DIE ANWESENHEIT DES SCHLUESSELS, nicht seinen Wert: ein
+    // toEqual auf das Objekt koennte den Unterschied gar nicht sehen.
+    mockAdmin({
+      projects: projectWithPixel("proj-1", "PIXEL-123"),
+      project_secrets: secretRows([{ target: "meta", secret: "SECRET-TOKEN" }]),
+    });
+
+    const res = await getCapiConfigByTrackingKey("tk-abc");
+    const meta = res?.targets[0];
+
+    expect(meta?.target).toBe("meta");
+    expect(meta?.conversionRules).toBeUndefined();
+    expect(
+      Object.prototype.hasOwnProperty.call(meta ?? {}, "conversionRules"),
+    ).toBe(false);
+  });
+
+  it("E8: ein Ziel MIT Skalar UND Zuordnung traegt beides", async () => {
+    // Die dritte Konstellation neben "nur Skalar" (Bestand) und "nur Zuordnung" (E1).
+    // Sie ist heute nicht bedienbar — die LinkedIn-Karte fuehrt kein oeffentliches
+    // Feld (11.1a) —, aber der Blob nimmt sie an, und der Resolver darf dabei weder
+    // die eine noch die andere Form verlieren.
+    mockAdmin({
+      projects: projectWithRules("proj-1", { Lead: URN }, "PIXEL-123"),
+      project_secrets: secretRows([
+        { target: "meta", secret: "SECRET-TOKEN" },
+        { target: "linkedin", secret: "LI-SECRET" },
+      ]),
+    });
+
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: false,
+      // Die Reihenfolge folgt TRACKING_TARGETS, nicht der Zeilenfolge der Datenbank.
+      targets: [
+        { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
+        {
+          target: "linkedin",
+          config: { pixelId: "", token: "LI-SECRET" },
+          conversionRules: { Lead: URN },
+        },
+      ],
+    });
+  });
+
+  it("E9: der in-Filter traegt linkedin NUR, wenn eine Zuordnung vorliegt", async () => {
+    // DIESELBE AUFZEICHNUNGS-TECHNIK WIE DER TIPPFEHLER-WAECHTER weiter oben, und
+    // bewusst als ZWEI Laeufe in EINEM Test: Der Preis dieser Scheibe ist, dass der
+    // in-Filter um ein Ziel waechst — die Zusage ist, dass er es NUR fuer Projekte
+    // tut, die LinkedIn konfiguriert haben. Ein Lauf allein zeigte immer nur eine
+    // Haelfte davon.
+    async function inFilterFor(projects: { data: unknown; error: unknown }) {
+      const ins: [string, unknown][] = [];
+      const from = vi.fn((table: string) => {
+        const builder: Record<string, unknown> = {};
+        const result = () =>
+          table === "projects"
+            ? projects
+            : {
+                data: [
+                  { target: "meta", secret: "SECRET-TOKEN" },
+                  { target: "linkedin", secret: "LI-SECRET" },
+                ],
+                error: null,
+              };
+        builder.select = vi.fn(() => builder);
+        builder.eq = vi.fn(() => builder);
+        builder.in = vi.fn((col: string, vals: unknown) => {
+          ins.push([col, vals]);
+          return builder;
+        });
+        builder.maybeSingle = vi.fn(async () => result());
+        builder.then = (
+          onOk: (v: unknown) => unknown,
+          onErr?: (e: unknown) => unknown,
+        ) => Promise.resolve(result()).then(onOk, onErr);
+        return builder;
+      });
+      createAdminClient.mockReturnValue({ from });
+      await getCapiConfigByTrackingKey("tk-abc");
+      return ins;
+    }
+
+    // MIT Zuordnung: das Ziel kommt mit.
+    expect(
+      await inFilterFor(projectWithRules("proj-1", { Lead: URN }, "PIXEL-123")),
+    ).toEqual([["target", ["meta", "linkedin"]]]);
+
+    // OHNE Zuordnung: der Filter ist zeichengleich mit dem von vor dieser Scheibe.
+    // DAS IST DIE TRAGENDE INVARIANTE, an der Stelle gemessen, an der sie brechen
+    // wuerde.
+    expect(await inFilterFor(projectWithPixel("proj-1", "PIXEL-123"))).toEqual([
+      ["target", ["meta"]],
+    ]);
+  });
+});

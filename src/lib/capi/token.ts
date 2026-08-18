@@ -1,7 +1,9 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
+  getConversionRules,
   getPixelId,
+  hasConversionRules,
   hasTargetPixelId,
   TRACKING_TARGETS,
   type ProjectSettings,
@@ -94,6 +96,26 @@ export type TrackingKeyResolution = {
 export type ResolvedTarget = {
   target: TrackingTarget;
   config: CapiConfig;
+  /**
+   * DIE ZUORDNUNG EREIGNISNAME -> REGEL-KENNUNG (Scheibe 11.1e), fuer Ziele, deren
+   * Kennung JE EREIGNISTYP gilt.
+   *
+   * EIN ZWEITES, OPTIONALES FELD NEBEN config — NICHT eine Union AN config, und
+   * nicht ein Feld an der Aufloesung daneben. Die beiden verworfenen Formen und ihr
+   * Preis stehen im Zuschnitt (docs/aktiver-stand.md, Scheibe 11.1e); der Grund in
+   * einem Satz: Eine Union machte DREI Uebergaben in dispatchForward (capi/ingest.ts)
+   * zu Typfehlern, ein Feld an der Aufloesung trennte die Zuordnung von ihrem
+   * EMPFAENGER. CapiConfig bleibt dadurch in Wortlaut UND Form unangetastet.
+   *
+   * UNDEFINIERT HEISST "TRAEGT KEINE" — UND ES IST NIE EIN LEERES OBJEKT. Der Grund
+   * steht an der Paarungsschleife, wo die Umformung geschieht; er ist eine gemessene
+   * Tatsache ueber das Pruefwerkzeug und keine Stilfrage.
+   *
+   * SIE WIRD HIER NUR GETRAGEN, NICHT GEDEUTET: Welche URN zu welchem Ereignis
+   * gehoert, entscheidet der Adapter (11.1f). Dieser Pfad reicht die GANZE Zuordnung
+   * weiter und normalisiert nichts.
+   */
+  conversionRules?: Record<string, string>;
 };
 
 /**
@@ -114,6 +136,22 @@ export const META_TARGET = "meta";
 export type CapiConfig = {
   // OEFFENTLICHE Meta-Pixel-ID (aus settings.pixels.meta.pixelId). Kein Secret,
   // aber serverseitig aufgeloest, damit der Client die pixelId NIE selbst sendet.
+  //
+  // NACHGETRAGEN 11.1e, NICHT GESTEMPELT — der Satz darueber bleibt lesbar und
+  // beschreibt weiterhin den Regelfall; die Ergaenzung tritt daneben:
+  // SEIT SCHEIBE 11.1e KANN DIESES FELD LEER SEIN. Ein Ziel, dessen Kennung JE
+  // EREIGNISTYP gilt (heute LinkedIn), wird zum Empfaenger, ohne einen Skalar zu
+  // tragen — die Paarungsschleife baut dann eine CapiConfig mit pixelId === "".
+  // KEIN COMPILER-RIEGEL FAENGT DAS: Der Typ sagt `string`, und "" ist einer.
+  //
+  // DAS IST DIESELBE KLASSE, MIT DER F2 IN 11.1d VERWORFEN WURDE — ein
+  // struktureller Wahrheitsverlust ohne Riegel. Dort ging es um ein polymorphes
+  // pixelId, hier um ein leeres; beide Male sieht der Wert gueltig aus und ist es
+  // fuer seinen Zweck nicht.
+  // WER EINE PRUEFUNG DARAUF BAUT, prueft sie im ADAPTER seines Ziels und nicht
+  // hier: Dieser Typ wird von drei Empfaengern gelesen, und fuer die drei Ziele MIT
+  // Skalar ist das Feld unveraendert gefuellt. Ein Riegel an dieser Stelle traefe
+  // sie mit.
   pixelId: string;
   // GEHEIMER Meta-CAPI-Token (aus project_secrets, RLS ohne jede Policy).
   // Verlaesst den Server NIE — weder in eine HTTP-Response noch in ein Log.
@@ -227,11 +265,42 @@ export async function getCapiConfigByTrackingKey(
   //    Lesungen samt Trim JE BEACON, gegen die /api/e-Schlankheitsregel.
   //  - DER FRUEHAUSSTIEG darunter samt der in-Liste der Geheimnis-Abfrage. Die Zahl
   //    der Datenbank-Runden ist unveraendert; diese Scheibe fasst sie nicht an.
+  // NACHGETRAGEN 11.1e — DIE ZWEITE KENNUNGSFORM REIST MIT, UND DER KOSTEN-ABSATZ
+  // DARUEBER GILT UNVERAENDERT: Die Zuordnung wird in DERSELBEN map EINMAL gelesen
+  // und im Zwischenobjekt mitgefuehrt. Das ist die ERSTE Lesung eines NEUEN Feldes,
+  // KEINE zweite Lesung eines bereits gelesenen — getPixelId wird weiterhin genau
+  // einmal je Ziel gerufen, und die Zahl der Datenbank-Runden ist unveraendert.
+  //
+  // WARUM DER FILTER isTargetDeliverable (lib/settings.ts) NICHT RUFT, obwohl jene
+  // Funktion exakt diese Frage beantwortet — DREI TEILE, und ohne den dritten legt
+  // die naechste Runde die beiden Stellen zusammen:
+  //  (1) DIE BEDINGUNG STEHT AB JETZT AN ZWEI STELLEN im Repo: im Consent-Memo
+  //      (consentTargets, components/CodeImporter.tsx, ueber isTargetDeliverable)
+  //      und hier, ausgeschrieben aus denselben zwei Praedikaten.
+  //  (2) DAS IST ERZWUNGEN UND NICHT GEWAEHLT: isTargetDeliverable traegt getPixelId
+  //      in ihrem ERSTEN Term; die map hat es fuer dasselbe Ziel bereits gerufen.
+  //      Ein Aufruf hier laese denselben Wert ein ZWEITES Mal, samt Trim, JE ZIEL
+  //      und JE BEACON — genau der Fall, den der Kosten-Absatz darueber als Grund
+  //      fuer die heutige Bauform benennt.
+  //  (3) WER SIE ZUSAMMENLEGT, FUEHRT DIE ZWEITE LESUNG JE BEACON WIEDER EIN. Das
+  //      ist der Satz, der sonst fehlt, wenn jemand die Doppelung beim Aufraeumen
+  //      bemerkt und fuer ein Versehen haelt.
+  // DIE IRONIE GEHOERT DAZU, weil sie BEIDE Entscheidungen schuetzt: Der
+  // Kosten-Absatz verwirft eine Signatur (settings, target) — und genau die hat
+  // isTargetDeliverable seit 11.1d, aus einem dort richtigen Grund (sie befragt ZWEI
+  // Felder, und ein Aufrufer koennte nicht wissen, welches fuer welches Ziel
+  // entscheidet). Beide sind je fuer sich richtig und passen an dieser einen Stelle
+  // nicht zusammen.
   const settings = (project.settings ?? {}) as ProjectSettings;
   const withPixel = TRACKING_TARGETS.map((target) => ({
     target,
     pixelId: getPixelId(settings, target),
-  })).filter((entry) => hasTargetPixelId(entry.pixelId, entry.target));
+    rules: getConversionRules(settings, target),
+  })).filter(
+    (entry) =>
+      hasTargetPixelId(entry.pixelId, entry.target) ||
+      hasConversionRules(entry.rules),
+  );
 
   if (withPixel.length === 0)
     return { projectId, blocked: false, abTestActive, targets: [] };
@@ -292,7 +361,26 @@ export async function getCapiConfigByTrackingKey(
   for (const entry of withPixel) {
     const token = secretByTarget.get(entry.target);
     if (!token) continue;
-    targets.push({ target: entry.target, config: { pixelId: entry.pixelId, token } });
+    // "LEERE ZUORDNUNG" WIRD IN "FELD NICHT GESETZT" UEBERSETZT (Scheibe 11.1e), und
+    // das ist KEINE Kosmetik — der Grund ist eine gemessene Tatsache ueber das
+    // PRUEFWERKZEUG und gehoert deshalb an diese Fundstelle:
+    // GEMESSEN am 2026-08-18 (Wegwerf-Probe, vitest 4.1.8): toEqual ignoriert einen
+    // Schluessel mit dem Wert `undefined` — auf jeder Ebene —, ein LEERES OBJEKT
+    // dagegen NICHT. Ein `conversionRules: {}` an JEDEM Empfaenger braeche damit die
+    // ZWOELF Ganz-Objekt-Vergleiche in capi/token.test.ts, die seit Scheibe 2b-i
+    // die vollstaendige Aufloesung behaupten.
+    // WARUM DIE UMFORMUNG UEBERHAUPT NOETIG IST: getConversionRules (lib/settings.ts)
+    // liefert bei Abwesenheit ein FRISCHES leeres Objekt, nicht `undefined` — das ist
+    // dort richtig (jeder Aufrufer bekaeme sonst denselben Rueckfall zu schreiben) und
+    // hier genau das Falsche.
+    // WER SIE STREICHT, sieht keinen Typfehler und keine Verhaltensaenderung — nur
+    // zwoelf rote Vergleiche, deren Ursache in einer anderen Datei steht.
+    const rules = hasConversionRules(entry.rules) ? entry.rules : undefined;
+    targets.push({
+      target: entry.target,
+      config: { pixelId: entry.pixelId, token },
+      ...(rules ? { conversionRules: rules } : {}),
+    });
   }
 
   return { projectId, blocked: false, abTestActive, targets };

@@ -30,6 +30,7 @@ dann still nicht mehr erfüllt wird.
 - ## Gegenstand der Phase
 - ## Scheibe 11.1a — Zugangsdatum ablegen
 - ## Scheibe 11.1b — Die verwendeten Ereignisnamen
+- ## Scheibe 11.1c — Ein Urteil über die Auslieferbarkeit
 - ## Entscheidungen, die über ihre Scheibe hinaus binden
 - ## Vorrat — gemeldet, nicht gebaut
 - ## Hebungs-Kandidaten
@@ -222,6 +223,116 @@ Zuschnitt DIESER Scheibe.
 und zeigt an.** Sie ist der Prüfstein jeder Änderung dieser Scheibe — wer sie bricht, hat
 nicht mehr diese Scheibe gebaut.
 
+## Scheibe 11.1c — Ein Urteil über die Auslieferbarkeit
+
+Die Frage **„trägt dieses Ziel eine Kennung?"** wird ZIEL-BEWUSST beantwortet — an EINER
+Stelle, von der aus die drei bestehenden Aufrufer sie lesen. **Für ALLE VIER Ziele liefert
+sie das HEUTIGE Ergebnis; für kein Ziel ändert sich etwas.**
+
+### Warum diese Scheibe VOR der Ablage kommt — die stille Fehlerkette
+
+Die LinkedIn-Kennung gilt JE EREIGNISTYP und ist KEIN Skalar. Legt man sie ab, ohne das
+Urteil vorzubereiten, liefert `getPixelId` `""` und `hasPixelId` `false` — und daran hängen
+DREI Aufrufer mit DREI verschiedenen Wirkungen (GEMESSEN am Code, 2026-08-18):
+
+- die Auslieferungs-Zeile der Karte (`TargetCard` in `src/components/TargetCard.tsx`),
+- das Consent-Memo (`consentTargets` in `src/components/CodeImporter.tsx`), **das den
+  AUSGELIEFERTEN Text speist**,
+- der Kennungs-Filter im Auflösungs-Pfad (`getCapiConfigByTrackingKey` in
+  `src/lib/capi/token.ts`).
+
+Ohne Schlüssel im Draht greift am Ingest fail-closed: **kein Forward.** Der Kunde hat
+Zugangsdaten, eine Zuordnung, eine grüne Karte — und es geht nichts hinaus, ohne dass
+irgendwo etwas rot wird. Der Draht ist eine EINBAHNSTRASSE; ein späterer Fix erreicht
+bereits publizierte Seiten NICHT.
+
+**ZWEI ACHSEN IN EINER SCHEIBE WÄREN NICHT AUSEINANDERZUHALTEN:** Ein Umbau am geteilten
+Urteil berührt den Resolver UND den ausgelieferten Text. Läge daneben eine
+Verhaltensänderung, wäre bei einem Live-Fehlschlag nicht erkennbar, WELCHE Achse gebrochen
+ist.
+
+### Der Ort — ENTSCHIEDEN (Owner, 2026-08-18): `src/lib/settings.ts`, neben `getPixelId`
+
+Die Begründung gehört in den Zuschnitt, weil sie sonst beim nächsten Aufräumen fehlt:
+
+- **NICHT `src/lib/tracking/target-readiness.ts`.** Ihr Kopf verbietet wörtlich „keine
+  Ziel-Liste, kein Record über Ziele, kein Vergleich gegen einen Zielwert", und
+  `src/lib/tracking/target-adapters.ts` ZITIERT dieses Verbot. Eine Signatur, die das Ziel
+  nur ENTGEGENNIMMT, verletzt den Wortlaut zwar nicht — jene Datei definiert sich aber als
+  eine, die Tatsachen ENTGEGENNIMMT. Eine Funktion, die selbst `getPixelId` ruft,
+  BESCHAFFT sich die Tatsache. **Das Verbot wird damit weder neu gefasst noch umgangen.**
+- **NICHT `src/lib/tracking/target-adapters.ts`.** Ihr Kopf bestimmt sich über
+  BUILD-Tatsachen: „Ob dieser Build einen Empfaenger mitbringt, setzt kein Betreiber — das
+  aendert sich nur mit einem Deploy." Eine Kennung setzt der Betreiber, und sie ändert sich
+  OHNE Deploy.
+- **NICHT `src/lib/tracking/consent-targets.ts`.** Dort liegt das CONSENT-Vokabular; der
+  Zweck jener Datei ist die TRENNUNG zweier Vokabulare, die zufällig gleich lauten.
+- **WARUM `settings.ts` TRÄGT — derselbe Satz von oben in der Gegenrichtung:** Der
+  Ausschlussgrund, den zwei Köpfe gegen diese Datei zitieren („dort haette es ausgesehen
+  wie etwas, das ein Betreiber setzt"), trifft eine KENNUNGS-Frage gerade NICHT — sie IST
+  etwas, das ein Betreiber setzt. Dazu liegen `getPixelId` und `TRACKING_TARGETS` bereits
+  dort; **Ziel und Kennung wohnen in dieser Datei schon zusammen.**
+
+### Die Acht-Zählung — sie gehört ausdrücklich hierher
+
+Der Kopf von `src/lib/tracking/target-adapters.ts` führt ACHT Stellen, die einen Zielwert
+oder eine ziel-geschlüsselte Aussage tragen. **DIESE SCHEIBE FÜGT KEINE NEUNTE HINZU** —
+die Funktion ist ziel-GENERISCH: sie nimmt ein Ziel entgegen und delegiert, sie trägt
+keinen Zielwert und urteilt für kein Ziel anders. **ERST 11.1d MACHT SIE
+ZIEL-UNTERSCHEIDEND, und DORT ist die Acht nachzuziehen.** Jener Kopf hat seine Zahl
+bereits ZWEIMAL falsch geführt (er korrigiert eine alte SECHS selbst); wer das übersieht,
+hinterlässt die dritte.
+
+### Die tragende Invariante — zugleich der einzige Nachweis
+
+**DER AUSGELIEFERTE TEXT IST VOR UND NACH DEM DEPLOY BYTE-IDENTISCH.** Er ist es, weil sich
+für kein Ziel die Antwort ändert; `consentTargets` ist der Draht, über den eine Änderung
+ihn erreichen würde. **Ein Unterschied ist kein Schönheitsfehler, sondern der Beweis, dass
+die Scheibe ihr Versprechen bricht.**
+
+**PFLICHT-STOPP FÜR DIE LIVE-ANLEITUNG, KEIN HINWEIS: Ist die Vorher-Kopie des
+ausgelieferten Textes nicht gesichert, wird NICHT deployt.** GRUND, gemessen: In den
+letzten ZWEI Scheiben ist ein Vorher-Schritt ausgefallen, weil der Zustand vor dem Deploy
+zum Testzeitpunkt nicht mehr herstellbar war (11.1a der Constraint-Ausgangswert, 11.1b der
+ausgelieferte Text — s. die beiden Vermerke). Hier gäbe es dann KEINEN Nachweis, und der
+Schritt würde als „geprüft" protokolliert, ohne stattgefunden zu haben.
+
+### Sie ist nicht demobar, und das ist entschieden
+
+ENTSCHIEDEN (Owner, 2026-08-18): Diese Scheibe ändert für keinen Nutzer etwas Sichtbares.
+Sie ist BEWEISBAR — der Byte-Vergleich plus die Ingest-Regression. Der Grundsatz „jeder
+Schritt demobar" tritt hier BEWUSST zurück, weil die Alternative wäre, zwei Achsen zu
+bündeln.
+
+### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+
+- **KEINE ABLAGE, KEINE URN, KEIN NEUES FELD in `settings`.** Das ist 11.1d, und erst dort
+  urteilt die Funktion je Ziel VERSCHIEDEN.
+- **KEINE ÄNDERUNG AN `src/lib/tracking/target-readiness.ts`.** `hasPixelId` bleibt im
+  Wortlaut, was es ist: ein SKALARES PRIMITIV ohne Zielkenntnis. Die neue Funktion RUFT es.
+- **KEINE BERÜHRUNG DER ZWEI PRÄDIKATFREIEN VERGLEICHE** in `src/lib/tracking/meta.ts`
+  (`buildMetaRuntime`) und `src/lib/generate.ts` (`buildWiringScript`). GEMESSEN am Code
+  (2026-08-18): Ihr Kennungs-Pfad ist META-SPEZIFISCH — `PS_PIXEL_ID`, Metas
+  Einwilligungsschlüssel, kein anderes Ziel kommt darin vor. Sie fragen „hat META einen
+  Pixel", und Metas Kennung ist ein Skalar und bleibt einer. Der Vorrats-Trigger dazu ist
+  ZU WEIT gefasst und wird in derselben Runde VERENGT (s. „## Vorrat").
+- **KEINE MIGRATION, KEIN SCHEMA.**
+
+### Eine offene Frage — FRAGE, kein Befund
+
+Sie wird im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
+
+**Kann die Prop, die heute die gespeicherte Kennung als STRING an die Karte reicht, ein
+BOOLEAN werden — oder müssen beide nebeneinander stehen?** `TargetCard`
+(`src/components/TargetCard.tsx`) bekommt `savedPixelId` als String und ruft darauf
+`hasPixelId`; `settings` liegt dort NICHT im Geltungsbereich, und der Kopf von
+`src/components/MeasureView.tsx` verbietet das ausdrücklich („nur Skalare herein").
+WAS DAZU BEREITS GEMESSEN IST (2026-08-18) und die Frage NICHT beantwortet: `savedPixelId`
+hat in `TargetCard` GENAU EINE Verwendung — den `hasPixelId`-Aufruf; `savedPixelIdFor` hat
+in `MeasureView` genau eine — das Durchreichen. OFFEN BLEIBT die ENTSCHEIDUNG: ein Boolean
+verlöre die Möglichkeit, den Wert dort je anders zu befragen, und eine Prop weniger ist
+kein Selbstzweck.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 - **GEBAUT WIRD AUF DIE KLARTEXT-IP ALS KENNUNG; li_fat_id IST EINE EIGENE FOLGE-SCHEIBE**
@@ -277,6 +388,17 @@ nicht mehr diese Scheibe gebaut.
   Orphan-Ansicht. AUSGESCHLOSSEN IST ES NUR AUS DEM SCHLÜSSELRAUM. Wer daraus liest, ein
   so benanntes Ereignis werde unterdrückt, liest die Entscheidung falsch — der zugehörige
   Bestandsbefund steht im Vorrat.
+- **SOBALD LINKEDIN EINE KENNUNG TRÄGT, ÄNDERT SICH DER AUSGELIEFERTE TEXT.**
+  `consentTargets` (`src/components/CodeImporter.tsx`) filtert auf eine gesetzte Kennung
+  und bildet über `CONSENT_KEY_BY_TARGET` ab; die Menge wächst damit um den
+  LinkedIn-Schlüssel, und der Erzeuger schreibt ihn an ZWEI Stellen in den ausgelieferten
+  Text (Ziehung und Draht-Feld des Beacons).
+  **BEREITS PUBLIZIERTE SEITEN TRAGEN IHN NICHT UND MÜSSEN NEU VERÖFFENTLICHT WERDEN.** Der
+  Draht ist eine EINBAHNSTRASSE — ein Code-Deploy erreicht einen publizierten Text nicht,
+  und ein fehlender Schlüssel heisst beim Leser fail-closed „nicht erlaubt".
+  DAS BINDET 11.1d UND GEHÖRT DORT IN DIE LIVE-TEST-ANLEITUNG, nicht erst in den
+  Support-Fall: Wer nach dem Eintragen der Kennung nicht neu veröffentlicht, misst ein
+  korrektes fail-closed und schreibt es dem Adapter zu.
 
 ## Vorrat — gemeldet, nicht gebaut
 
@@ -318,6 +440,21 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   meta-spezifisch.
   TRIGGER: sobald eine Kennung eine ANDERE FORM hat als einen getrimmten Skalar. Dann
   entscheiden drei Stellen dieselbe Frage auf zwei Weisen.
+  **DER TRIGGER IST AM 2026-08-18 VERENGT WORDEN — der Wortlaut darüber bleibt lesbar und
+  wird NICHT ersetzt, die Verengung tritt daneben:** Er lautet ab jetzt **„sobald METAS
+  Kennung eine andere Form hat als einen getrimmten Skalar"**.
+  GRUND, GEMESSEN am Code (2026-08-18): Der Kennungs-Pfad beider Stellen ist
+  META-SPEZIFISCH — `buildMetaRuntime` backt `PS_PIXEL_ID` und fragt Metas
+  Einwilligungsschlüssel ab, `buildWiringScript` reicht `metaPixelId` an genau diese beiden
+  Verbraucher weiter; kein anderes Ziel kommt in ihrem Kennungs-Zweig vor. Die alte Fassung
+  feuert damit auf eine Tatsache, die diese beiden Stellen NIE erreicht — etwa auf die
+  LinkedIn-Kennung, die je Ereignistyp gilt.
+  DIE REGEL DAHINTER: Eine Bedingung, die eine Arbeit an eine andere hängt, muss benennen,
+  was der GEGENSTAND braucht — nicht, was zur selben Zeit sonst noch aussteht. Ein Trigger,
+  der das nicht tut, schlägt entweder nie an oder zur falschen Zeit.
+  UNBERÜHRT BLEIBT der EINWILLIGUNGS-Pfad derselben beiden Funktionen: `consentTargets`
+  reist ziel-ÜBERGREIFEND durch sie hindurch. Meta-spezifisch ist die KENNUNG, nicht die
+  Einwilligung — wer das zusammenzieht, verengt zu weit.
 
 - **DIE FORM VON `settings.pixels.<ziel>` TRÄGT NUR `{ pixelId?: string }`** (GEMESSEN am
   Code, 2026-08-17, an `ProjectSettings` in `src/lib/settings.ts`): Für ein Merkmal JE
@@ -358,6 +495,22 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   `docs/immer-beachten.md` unter „WERKZEUG-REGEL", Abschnitt zur Gegenrichtung.
   KOMMENTAR-vs-CODE-BEFUND AN EINER KERN-DATEI, EIGENE RUNDE — hier ausdrücklich nicht
   repariert.
+
+- **EINE ANGABE IM KOPF VON `src/lib/tracking/target-adapters.ts` IST GEALTERT** (GEMESSEN
+  am Repo, 2026-08-18): Dort steht an `TARGETS_WITH_ADAPTER` „DIESE LISTE IST EINE
+  TEILMENGE VON TRACKING_TARGETS, KEINE ZWEITE FASSUNG DAVON. **Heute enthaelt sie alle
+  drei**; das ist ein Zustand, keine Regel."
+  `TRACKING_TARGETS` (`src/lib/settings.ts`) trägt seit Scheibe 11.1a VIER Mitglieder
+  (`meta`, `pinterest`, `tiktok`, `linkedin`), `TARGETS_WITH_ADAPTER` weiterhin DREI —
+  „alle drei" ist damit keine Aussage über „alle" mehr.
+  **DIE REGEL DARÜBER HÄLT UNVERÄNDERT**, und das ist der Grund, warum hier nichts zu
+  reparieren EILT: Der unmittelbar folgende Satz nimmt den Fall vorweg („Ein neues Ziel
+  gehoert hier NICHT hinein, solange es keinen Empfaenger hat"). Überholt ist ALLEIN der
+  BELEG — dieselbe Figur wie „EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG FALSCH
+  WIRD" (`docs/immer-beachten.md`).
+  EIGENE RUNDE, HIER NICHT REPARIERT. Wer sie anfasst, liest zuerst die Kopplung an
+  derselben Datei: ihr Kopf ZITIERT einen Absatz aus `src/lib/tracking/target-readiness.ts`
+  wörtlich, und jener Absatz ist deswegen als unangetastet markiert.
 
 ## Hebungs-Kandidaten
 

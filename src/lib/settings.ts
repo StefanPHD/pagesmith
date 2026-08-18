@@ -13,6 +13,14 @@
 // Begruendung stehen: Die Nest-Form wurde fuer genau diesen Moment gebaut, und sie
 // wird jetzt benutzt, statt ersetzt. Was sich aendert, ist die Zahl der Mitglieder,
 // NICHT die Form.
+//
+// DER ERSTE IMPORT DIESER DATEI (Scheibe 11.1c), und er geht in die UNGEFAEHRLICHE
+// Richtung: tracking/target-readiness.ts ist selbst importfrei und traegt keine
+// Direktive, es entsteht also weder ein Zyklus noch eine Client-/Server-Fessel. Die
+// beiden Dateien, die umgekehrt aus dieser hier lesen (tracking/target-adapters.ts,
+// tracking/consent-targets.ts), ziehen ausschliesslich den TYP TrackingTarget.
+
+import { hasPixelId } from "@/lib/tracking/target-readiness";
 
 /**
  * Die bekannten Tracking-Ziele. EINE Quelle fuer die Laufzeit-Pruefung in den
@@ -120,6 +128,72 @@ export function getPixelId(
   target: TrackingTarget
 ): string {
   return settings.pixels?.[target]?.pixelId?.trim() ?? "";
+}
+
+/**
+ * TRAEGT DIESES ZIEL EINE KENNUNG? — das ZIEL-BEWUSSTE Urteil (Scheibe 11.1c).
+ *
+ * Sie nimmt den WERT und das ZIEL entgegen und delegiert an das skalare Primitiv
+ * hasPixelId (tracking/target-readiness.ts). Sie wiederholt dessen Regel NICHT.
+ *
+ * WARUM NICHT IN tracking/target-readiness.ts — und das ist keine Geschmacksfrage:
+ * Jene Datei definiert sich woertlich als ZIEL-BLIND ("Hier steht keine Ziel-Liste,
+ * kein Record ueber Ziele, kein Vergleich gegen einen Zielwert"), und
+ * tracking/target-adapters.ts ZITIERT dieses Verbot als Begruendung fuer die eigene
+ * Existenz. Diese Funktion FUEHRT ein Ziel, ohne es zu bewerten — genau das ist dort
+ * ausgeschlossen. Das Verbot wird damit weder neu gefasst noch umgangen; es bleibt
+ * wortgleich stehen, und diese Funktion steht daneben statt darin.
+ *
+ * WARUM DER ZWEITE PARAMETER HEUTE NICHTS TUT UND TROTZDEM KEIN TOTES GEWICHT IST —
+ * der Absatz steht hier, weil die Zeile sonst beim naechsten Aufraeumen faellt:
+ * Er ist der GRUND, warum diese Funktion hier lebt und nicht in target-readiness.ts,
+ * und er ist die Stelle, an der 11.1c-Nachfolger ansetzen, OHNE dass ein einziger
+ * Aufrufer sich aendert. WER IHN STREICHT, STREICHT MIT IHM DEN ORT: ohne Ziel im
+ * Kopf ist diese Funktion vom Primitiv nicht mehr zu unterscheiden, und dann gibt
+ * es keinen Grund mehr, warum sie nicht dort drueben steht.
+ *
+ * WARUM SIE HEUTE ZIEL-GENERISCH IST: Sie urteilt fuer KEIN Ziel anders — derselbe
+ * Wert liefert fuer alle vier Ziele dasselbe Ergebnis, und ein Test nagelt das fest.
+ * SIE IST DESHALB KEINE NEUNTE ZIEL-GESCHLUESSELTE STELLE: Sie traegt keinen
+ * Zielwert, keine Ziel-Liste und keinen Record ueber Ziele. Erst wenn sie
+ * unterscheidend wird, ist die ACHT-Zaehlung im Kopf von tracking/target-adapters.ts
+ * nachzuziehen — jener Kopf hat seine Zahl bereits ZWEIMAL falsch gefuehrt (er
+ * korrigiert eine alte SECHS selbst), und wer das uebersieht, hinterlaesst die dritte.
+ *
+ * `unknown` beim Wert, GENAU WIE BEIM PRIMITIV: Die Quelle ist ein
+ * Einstellungs-Blob aus der Datenbank, also nicht typgesichert. Eine Verengung auf
+ * `string` hier waere eine Zusicherung, die diese Funktion nicht geben kann.
+ */
+export function hasTargetPixelId(
+  pixelId: unknown,
+  // DIE DIREKTIVE UNTERDRUECKT KEINEN FEHLER, SIE SCHUETZT EINEN ORT — drei Dinge
+  // gehoeren dazu, und ohne den dritten macht die naechste Runde das Falsche:
+  //
+  // (1) WARUM DER PARAMETER DASTEHT: Er ist der Grund, warum diese Funktion HIER
+  //     lebt und nicht in tracking/target-readiness.ts. Jene Datei definiert sich
+  //     woertlich als ZIEL-BLIND; ein Ziel ueberhaupt zu FUEHREN ist dort
+  //     ausgeschlossen. WER IHN STREICHT, STREICHT MIT IHM DEN ORT — die Funktion
+  //     waere danach vom Primitiv nicht mehr zu unterscheiden.
+  // (2) ER WIRD BENUTZT, sobald das Urteil je Ziel verschieden ausfaellt (11.1d) —
+  //     und zwar OHNE dass ein einziger Aufrufer sich aendert. Genau dafuer steht
+  //     er heute schon da.
+  // (3) DER WAECHTER, UND ER IST DER WICHTIGSTE SATZ HIER: Sobald (2) eintritt,
+  //     meldet ESLint DIESE DIREKTIVE selbst als ueberfluessig ("Unused
+  //     eslint-disable directive"). Sie ist damit KEIN stiller Kommentar, sondern
+  //     etwas, das anschlaegt — und sie gehoert DANN entfernt, nicht der
+  //     Parameter. Wer die Meldung als Fehler liest, dreht die Scheibe zurueck.
+  //
+  // ERSTE FUNDSTELLE DIESER ART IM REPO (GEMESSEN 2026-08-18: keine einzige
+  // eslint-disable-Zeile fuer no-unused-vars in src/). Das steht hier, damit die
+  // Form nicht als etablierte Gewohnheit gelesen und beim naechsten ungenutzten
+  // Parameter abgeschrieben wird.
+  // KEIN UNTERSTRICH-PRAEFIX: Er hilft hier nicht — die Konfiguration traegt kein
+  // argsIgnorePattern (GEMESSEN 2026-08-18, Probe mit `_target` gefahren, die
+  // Warnung blieb wortgleich stehen).
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  target: TrackingTarget
+): boolean {
+  return hasPixelId(pixelId);
 }
 
 // Immutabel + nest-erhaltend: schreibt pixels.<ziel>.pixelId, ohne die Zweige

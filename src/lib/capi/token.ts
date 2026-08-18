@@ -2,6 +2,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getPixelId,
+  hasTargetPixelId,
   TRACKING_TARGETS,
   type ProjectSettings,
   type TrackingTarget,
@@ -34,7 +35,11 @@ import {
 // "DIE ZUSAMMENSETZUNG WIRD GESTRICHEN"). Die Regel ist
 // dadurch BREITER geworden, nicht schwaecher — sie galt einem Symbol und gilt jetzt
 // dem Gegenstand.
-import { hasPixelId, hasSecret } from "@/lib/tracking/target-readiness";
+// NACHGEZOGEN 11.1c: Von den beiden Bedingungen kommt die KENNUNGS-Haelfte jetzt
+// ueber hasTargetPixelId (lib/settings.ts) herein — sie delegiert an dasselbe
+// Primitiv, das hier bis dahin direkt stand. Die GEHEIMNIS-Haelfte (hasSecret) ist
+// unveraendert und bleibt der einzige Grund fuer diesen Import.
+import { hasSecret } from "@/lib/tracking/target-readiness";
 
 /**
  * Aufloesung EINES trackingKeys (Phase 8 Scheibe 1, ADDITIV erweitert).
@@ -210,11 +215,23 @@ export async function getCapiConfigByTrackingKey(
   // hasPixelId STATT DES FRUEHEREN VERGLEICHS GEGEN "" (Scheibe B1): wertgleich, weil
   // getPixelId immer eine getrimmte Zeichenkette liefert — die Bedingung ist damit nur
   // noch an EINER Stelle im Repo ausgeschrieben, s. den Import-Block oben.
+  //
+  // NACHGEZOGEN 11.1c: Gerufen wird jetzt hasTargetPixelId (lib/settings.ts), das
+  // ZIEL-BEWUSSTE Urteil; es delegiert an dasselbe Primitiv. Die Aussage darueber
+  // bleibt damit wahr — die Bedingung steht weiterhin an EINER Stelle.
+  // ZWEI DINGE, DIE HIER AUSDRUECKLICH GLEICH BLEIBEN, weil dieser Pfad der
+  // meistgetroffene der Plattform ist:
+  //  - DIE RECHNUNG. Das Ziel reist im Zwischenobjekt bereits mit; der Filter liest
+  //    entry.pixelId und entry.target, ruft also KEIN zweites getPixelId. Eine
+  //    Signatur (settings, target) haette genau das getan — vier zusaetzliche
+  //    Lesungen samt Trim JE BEACON, gegen die /api/e-Schlankheitsregel.
+  //  - DER FRUEHAUSSTIEG darunter samt der in-Liste der Geheimnis-Abfrage. Die Zahl
+  //    der Datenbank-Runden ist unveraendert; diese Scheibe fasst sie nicht an.
   const settings = (project.settings ?? {}) as ProjectSettings;
   const withPixel = TRACKING_TARGETS.map((target) => ({
     target,
     pixelId: getPixelId(settings, target),
-  })).filter((entry) => hasPixelId(entry.pixelId));
+  })).filter((entry) => hasTargetPixelId(entry.pixelId, entry.target));
 
   if (withPixel.length === 0)
     return { projectId, blocked: false, abTestActive, targets: [] };

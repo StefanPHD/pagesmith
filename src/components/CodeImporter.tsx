@@ -47,6 +47,7 @@ import {
   getHostingLabel,
   getPixelId,
   getTrackingKey,
+  hasTargetPixelId,
   setCapiState,
   setHostingState,
   setPixelId,
@@ -68,7 +69,11 @@ import { CONSENT_KEY_BY_TARGET } from "@/lib/tracking/consent-targets";
 // "DIE ZUSAMMENSETZUNG WIRD GESTRICHEN"). Das Verbot ist
 // dadurch BREITER geworden, nicht schwaecher: Es galt einem Symbol, jetzt gilt es dem
 // Gegenstand.
-import { hasPixelId } from "@/lib/tracking/target-readiness";
+// NACHGEZOGEN 11.1c: Der Import steht nicht mehr hier, sondern im Block von
+// lib/settings.ts (hasTargetPixelId) — das Verbot ueber diesem Absatz gilt
+// UNVERAENDERT, denn jene Funktion delegiert an genau dieses Praedikat, statt es zu
+// einem Zustand zu erweitern. Der Absatz bleibt stehen, weil er den GEGENSTAND
+// verbietet und nicht ein Symbol; mit dem Import allein waere er verschwunden.
 // Die Ableitung der verwendeten Ereignisnamen (Scheibe 11.1b). REIN, also von
 // hier wie vom Server erreichbar; der Aufruf steht hier, weil die Eingaenge hier
 // liegen — s. den Memo usedEvents unten.
@@ -485,11 +490,22 @@ export default function CodeImporter({
   // dieses Memo beschreibt, was in DIESES Dokument hineingeht — und das Dokument
   // wird aus demselben laufenden Stand gebaut wie die Kennung daneben
   // (buildDocumentFor liest getPixelId(settings, "meta") im selben Ausdruck).
+  //
+  // NACHGEZOGEN 11.1c — DIE REGEL DARUEBER BLEIBT WOERTLICH WAHR, nur ihr Symbol
+  // hat sich geaendert: Das Memo ruft jetzt hasTargetPixelId (lib/settings.ts)
+  // statt hasPixelId direkt. DAS IST KEIN VERSTOSS GEGEN "NIE MEHR ALS DAS":
+  // hasTargetPixelId ist KEINE Zusammensetzung — sie fuegt dem Urteil nichts hinzu,
+  // sondern nimmt zusaetzlich das ZIEL entgegen und DELEGIERT an genau dasselbe
+  // Kennungs-Praedikat. Es bleibt EIN Urteil, an EINER Stelle ausgeschrieben.
+  // WORAUF DAS VERBOT WEITER ZEIGT: auf jeden ZUSAMMENGESETZTEN Zustand, der mehr
+  // verlangt als die blosse Anwesenheit einer Kennung — daran hat sich nichts
+  // geaendert, und der Absatz darueber gilt unveraendert fuer die naechste
+  // Zusammensetzung, die noch niemand gebaut hat.
   const consentTargets = useMemo(
     () =>
-      TRACKING_TARGETS.filter((t) => hasPixelId(getPixelId(settings, t))).map(
-        (t) => CONSENT_KEY_BY_TARGET[t]
-      ),
+      TRACKING_TARGETS.filter((t) =>
+        hasTargetPixelId(getPixelId(settings, t), t)
+      ).map((t) => CONSENT_KEY_BY_TARGET[t]),
     [settings]
   );
 

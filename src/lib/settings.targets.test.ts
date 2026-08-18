@@ -3,6 +3,7 @@ import {
   TRACKING_TARGETS,
   getMetaPixelId,
   getPixelId,
+  hasTargetPixelId,
   isTrackingTarget,
   setMetaPixelId,
   setPixelId,
@@ -136,5 +137,52 @@ describe("Die Ziel-Liste und ihre Laufzeit-Pruefung", () => {
 
   it("die Liste ist duplikatfrei", () => {
     expect(new Set(TRACKING_TARGETS).size).toBe(TRACKING_TARGETS.length);
+  });
+});
+
+// ===========================================================================
+// DAS ZIEL-BEWUSSTE URTEIL (Scheibe 11.1c).
+//
+// hasTargetPixelId nimmt Wert UND Ziel entgegen und delegiert an das skalare
+// Primitiv hasPixelId. GEPRUEFT WERDEN ZWEI ACHSEN, und die zweite ist die
+// eigentliche Zusage dieser Scheibe:
+//  (1) DIE WERT-ACHSE — dieselben Faelle wie beim Primitiv. Sie sichert, dass die
+//      Delegation nicht unterwegs etwas anderes tut.
+//  (2) DIE ZIEL-GENERIK — derselbe Wert liefert fuer ALLE VIER Ziele dasselbe
+//      Ergebnis. DIESE ZUSICHERUNG IST BEWUSST BEFRISTET: 11.1d hebt sie auf, und
+//      DANN muss sie fallen. Ein Test, der dort gruen bliebe, waere der Beweis,
+//      dass die Unterscheidung nicht greift.
+// ===========================================================================
+describe("hasTargetPixelId — das ziel-bewusste Urteil (Scheibe 11.1c)", () => {
+  it("WERT-ACHSE: leer, Leerraum, Nicht-String -> false; ein gesetzter Wert -> true", () => {
+    // BILDET DAS PRIMITIV AB, statt seine Regel zu wiederholen — die Faelle sind
+    // dieselben wie in tracking/target-readiness.test.ts. WIRD ROT, WENN die
+    // Delegation faellt oder unterwegs eine eigene Bedingung entsteht.
+    expect(hasTargetPixelId("", "meta")).toBe(false);
+    expect(hasTargetPixelId("   ", "meta")).toBe(false);
+    expect(hasTargetPixelId("\t\n ", "meta")).toBe(false);
+    expect(hasTargetPixelId(undefined, "meta")).toBe(false);
+    expect(hasTargetPixelId(null, "meta")).toBe(false);
+    expect(hasTargetPixelId(12345, "meta")).toBe(false);
+    expect(hasTargetPixelId("123456789012345", "meta")).toBe(true);
+    expect(hasTargetPixelId(" 123 ", "meta")).toBe(true);
+  });
+
+  it("ZIEL-GENERIK: derselbe Wert liefert fuer ALLE VIER Ziele dasselbe Ergebnis", () => {
+    // DIE ZUSAGE DER SCHEIBE, festgenagelt: Das Urteil ist heute ziel-BEWUSST und
+    // ziel-GENERISCH zugleich — es fuehrt ein Ziel, ohne es zu bewerten. Deshalb
+    // ist diese Funktion KEINE neunte ziel-geschluesselte Stelle.
+    // UEBER TRACKING_TARGETS GESCHLEIFT, NICHT ueber vier getippte Literale: ein
+    // fuenftes Ziel ist damit automatisch mitgeprueft, ohne dass jemand daran denkt.
+    // WIRD ROT, WENN ein Ziel je anders beurteilt wird — genau das ist 11.1d, und
+    // dann faellt dieser Test ABSICHTLICH.
+    for (const target of TRACKING_TARGETS) {
+      expect(hasTargetPixelId("", target)).toBe(false);
+      expect(hasTargetPixelId("   ", target)).toBe(false);
+      expect(hasTargetPixelId("123456789012345", target)).toBe(true);
+    }
+    // POSITIVKONTROLLE, ohne die die Schleife auch bei leerer Liste gruen waere:
+    // sie muss ueberhaupt vier Ziele gesehen haben.
+    expect(TRACKING_TARGETS.length).toBe(4);
   });
 });

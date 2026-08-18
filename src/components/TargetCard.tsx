@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { removeCapiToken, setCapiToken } from "@/app/projects/actions";
 import { actionThrew, safeAction } from "@/lib/safe-action";
-import type { TrackingTarget } from "@/lib/settings";
-import { hasPixelId } from "@/lib/tracking/target-readiness";
+import { hasTargetPixelId, type TrackingTarget } from "@/lib/settings";
 
 /**
  * DIE KARTE JE PLATTFORM (Phase 11, sechste Scheibe, zweite Haelfte).
@@ -435,7 +434,15 @@ export default function TargetCard({
           hasPixelId IST DIE GETEILTE BEDINGUNG (lib/tracking/target-readiness.ts),
           KEINE zweite Ausformulierung: Genau dieses Praedikat entscheidet seit
           Scheibe B1 auch im Aufloesungs-Pfad, ob ein Ziel eine Kennung traegt. Wer
-          hier `savedPixelId !== ""` schreibt, hat wieder zwei Wahrheiten. */}
+          hier `savedPixelId !== ""` schreibt, hat wieder zwei Wahrheiten.
+          NACHGEZOGEN 11.1c — DIE AUSSAGE DARUEBER GILT UNVERAENDERT, nur das Symbol
+          ist ein anderes: Gerufen wird hasTargetPixelId (lib/settings.ts), das ZIEL
+          und Wert entgegennimmt und an genau jenes Praedikat delegiert. Es bleibt
+          EINE Bedingung, und sie entscheidet weiterhin auch im Aufloesungs-Pfad.
+          DAS ZIEL WAR HIER SCHON DA — es ist eine Prop dieser Karte; deshalb kostet
+          die Umstellung an dieser Stelle keine einzige Aenderung an den Props, den
+          Fixtures oder der Aussage darueber, WELCHEN der beiden Kennungs-Werte die
+          Zeile liest (weiterhin den GESPEICHERTEN). */}
       {/* UNTERDRUECKT AUF EINER KARTE OHNE OEFFENTLICHES FELD (11.1a), und der Grund
           ist eine FALSCHE DIAGNOSE, nicht Redundanz: Diese Zeile nennt als Grund eine
           fehlende Kennung. Wo es gar kein Kennungs-Feld gibt, ist das nicht der Grund —
@@ -446,7 +453,7 @@ export default function TargetCard({
           publicLabel) — nicht ein zweites Merkmal, das danebenlaufen koennte. */}
       {config.publicLabel !== undefined &&
         configured === true &&
-        !hasPixelId(savedPixelId) && (
+        !hasTargetPixelId(savedPixelId, target) && (
           <p className="mb-2 text-xs text-gray-500">
             {noDeliveryText(config.publicLabel)}
           </p>

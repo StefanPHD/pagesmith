@@ -3138,6 +3138,50 @@ describe("CodeImporter — Scheibe D1: das Consent-Memo, durch die Komponente be
       delete (navigator as { clipboard?: unknown }).clipboard;
     }
   });
+
+  it("D-T10: ALLE VIER Ziele mit Kennung -> die vollstaendige FOLGE, in beiden Lesern", async () => {
+    // DIE EINZIGE STELLE IM REPO, DIE DAS VIERTE ZIEL AUF DIESER ACHSE PRUEFT.
+    // GEMESSEN am 2026-08-18: KEIN anderer Test setzt je eine linkedin-KENNUNG —
+    // die uebrigen linkedin-Fundstellen betreffen die Adapter-Liste, den
+    // Fan-Out-Riegel oder das Zugangsdatum. WER DIESEN TEST ENTFERNT, NIMMT DIE
+    // EINZIGE ABDECKUNG MIT, und zwar fuer genau das Ziel, dessen Unveraendertheit
+    // die Scheibe 11.1c zusagt.
+    // WARUM ER UEBER DEN BLOB GEHT UND NICHT UEBER DIE OBERFLAECHE: Die
+    // LinkedIn-Karte fuehrt (11.1a) kein oeffentliches Feld, es gibt also keinen
+    // Bedienweg zu einer Kennung. Der Einstellungs-Blob nimmt sie trotzdem an — der
+    // Typ ist Partial<Record<TrackingTarget, …>>, und genau diese Konstellation
+    // entstuende, sobald ein solches Feld existiert.
+    //
+    // DIE FOLGE, NICHT DIE MENGE: Die Reihenfolge stammt aus TRACKING_TARGETS und
+    // steht WOERTLICH im ausgelieferten Text — sie ist damit Teil der
+    // Einbahnstrasse, genau wie in D-T5 begruendet. toEqual auf ein Array prueft
+    // sie mit; ein Mengen-Vergleich liesse eine Umsortierung durch.
+    //
+    // BEIDE LESER, weil sie zwei verschiedene Stellen im Dokument abgreifen: die
+    // Ziehung (__psConsentAll) und das Draht-Feld des Beacons. Ein Test auf nur
+    // einem liesse offen, ob die andere Stelle dieselbe Quelle benutzt.
+    const doc = await exportDokument({
+      pixels: {
+        meta: { pixelId: "111" },
+        pinterest: { pixelId: "222" },
+        tiktok: { pixelId: "333" },
+        linkedin: { pixelId: "444" },
+      },
+      capi: D1_TK,
+    });
+    expect(gezogeneSchluessel(doc)).toEqual([
+      "meta",
+      "pinterest",
+      "tiktok",
+      "linkedin",
+    ]);
+    expect(verdrahteteSchluessel(doc)).toEqual([
+      "meta",
+      "pinterest",
+      "tiktok",
+      "linkedin",
+    ]);
+  });
 });
 
 // ===========================================================================

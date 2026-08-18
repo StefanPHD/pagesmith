@@ -556,6 +556,34 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   DER WORTLAUT FÜR DEN NACHTRAG IST BEREITS VORGELEGT UND ANGENOMMEN (2026-08-18); die
   Datei ist GESCHÜTZT, EIGENE RUNDE — hier ausdrücklich nicht eingebaut.
 
+- **ZWEI TABS ÜBERSCHREIBEN EINANDER LAUTLOS** (GEMESSEN am Code, 2026-08-18): `updated_at`
+  wird bei JEDEM Write gesetzt (`new Date().toISOString()`), aber an KEINER Stelle
+  VERGLICHEN — kein `.eq` auf `updated_at`, keine Versionsspalte, kein `If-Match`, keine
+  Sperre. Die einzigen Filter sind `.eq("id", projectId).eq("user_id", user.id)`, also
+  EIGENTÜMERSCHAFT und nicht Nebenläufigkeit. Der zweite Write ersetzt den Blob des ersten
+  VOLLSTÄNDIG. (`updated_at` dient allein der Sortierung der Projektliste.)
+  DASS DAS MUSTER IM REPO BEKANNT IST, zeigen DREI SERVER-seitige Read-Merges auf
+  `settings` — `setCapiToken`, `removeCapiToken` und `publishProject` (alle
+  `src/app/projects/actions.ts`) lesen die Zeile, mergen immutabel (`setCapiState`,
+  `setHostingState`) und schreiben den GANZEN Blob zurück. **Sie schützen sich damit
+  gegenseitig, aber nicht gegen den Client:** ein nachfolgendes `saveProject` ersetzt den
+  Blob ganzheitlich und kann jeden dieser Merges überschreiben.
+  DIE EINORDNUNG GEHÖRT DAZU, sonst wird der Punkt einer künftigen Scheibe angehängt, der
+  er nicht gehört: Das trifft `settings.pixels` HEUTE schon genauso. Eine Zuordnung je
+  Ereignistyp vergrösserte das VOLUMEN des Verlusts, nicht seine KLASSE.
+  TRIGGER: sobald ein Teilbaum des Blobs so gross wird, dass sein Verlust nicht in einer
+  Minute nachgetragen ist. GEMELDET, NICHT GEBAUT.
+
+- **DER BLOB HAT KEINE GEMESSENE GRÖSSENGRENZE** (GEMESSEN, 2026-08-18): Weder Code noch
+  Schema prüfen etwas — kein `length`/`size`/`byteLength` auf `settings` in `src/` (ohne
+  Testdateien, null Treffer), kein `CHECK` und keine Längenbeschränkung in
+  `supabase/migrations/*.sql` (null Treffer). Die Spalte ist `settings jsonb NOT NULL
+  DEFAULT '{}'` (GELESEN, `docs/db-stand.md`).
+  **DIE GRENZE DIESER AUSSAGE IST DER WICHTIGERE TEIL:** NICHT gemessen sind die
+  Postgres-eigene `jsonb`-Obergrenze und etwaige Limits von PostgREST bzw. Supabase auf
+  die Payload-Grösse. **Das ist KEINE Aussage über deren Nichtexistenz** — es ist die
+  Aussage, dass DIESES Repo nichts prüft und die Frage damit offen ist.
+
 ## Hebungs-Kandidaten
 
 Hier steht, was am Phasenende zur Aufnahme in docs/immer-beachten.md, ins

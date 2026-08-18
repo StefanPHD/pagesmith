@@ -728,6 +728,45 @@ kaputtgeht.
   der man der Zahl nichts ansieht.
   Herleitung: docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, "## 7.
   Beschlossen und verortet — NICHT in dieser Phase gebaut".
+- NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST (Trigger: BEREITS
+  EINGETRETEN — drei Ziele laufen live, und jedes kann nachträglich konfiguriert werden;
+  hier steht bewusst KEIN Zeitpunkt, ein erfundener liesse den Posten als terminiert
+  aussehen): GEMESSEN am Code (2026-08-18).
+  DER SACHVERHALT, vier Achsen:
+  · loadProject (src/app/projects/actions.ts) projiziert published_content NICHT — der
+    Client hält den veröffentlichten Stand gar nicht. Der Grund steht als Kommentar an
+    getVariantBPublished: der Blob bleibt BEWUSST ausserhalb des Ladepfades.
+  · Das Einzige, was aus dem publizierten Stand zurückkommt, ist ein BOOLEAN
+    (getVariantBPublished -> deliverableVariantB): trägt er eine lieferfähige Variante B?
+    KEIN Inhaltsvergleich, KEIN Zeitstempel, KEIN Hash.
+  · Der einzige Zustand, den der Editor kennt, ist dirty — Editor gegen GESPEICHERT, nie
+    gegen VERÖFFENTLICHT.
+  · Es gibt KEINEN Hinweis, KEINE Anzeige und KEINEN Riegel auf ein nötiges
+    Neu-Veröffentlichen — für KEINEN Anlass. ZWEI Fundstellen sehen so aus und sind es
+    nicht: die Knopfbeschriftung "Erneut veröffentlichen" (PublishView.tsx) sagt, dass
+    schon einmal publiziert wurde, und die Meldung über den veralteten Tab
+    (publishProject in actions.ts) betrifft Variante B beim Publish-VORGANG selbst.
+  WARUM ER BEISST — der Ablauf gehört hierher, sonst liest ihn jemand als Aufräumarbeit:
+  Ein Kunde fügt ein zweites Ziel hinzu und trägt Kennung und Zugangsdaten ein. Die Karte
+  meldet "Zugangsdaten hinterlegt". Veröffentlicht er NICHT neu, trägt die ausgelieferte
+  Seite den Einwilligungs-Schlüssel dieses Ziels nicht — am Ingest greift fail-closed, es
+  geht KEIN Forward hinaus. Keine Meldung, kein Fehler, nichts wird rot. Der Draht ist
+  eine EINBAHNSTRASSE: Der Schlüsselsatz entsteht zur ERZEUGUNGSZEIT, und ein
+  Code-Deploy erreicht einen publizierten Text nicht.
+  DIE ZWEI LESARTEN, UND SIE SIND DER KERN DIESES EINTRAGS: Derselbe Sachverhalt steht in
+  docs/immer-beachten.md bereits — aber als BELEG einer Regel über LIVE-TEST-ANLEITUNGEN
+  ("EIN LIVE-TEST-SCHRITT SETZT EINEN ZUSTAND DES PRÜFLINGS VORAUS"), im Wortlaut: "Ein
+  ausgelieferter Consent-Schlüssel entsteht zur ERZEUGUNGSZEIT; wer nach dem Eintragen
+  einer Kennung nicht neu veröffentlicht, misst ein fail-closed-Verhalten und schreibt es
+  dem Adapter zu." Als TESTDISZIPLIN gelesen ist das eine Fussnote; als PRODUKTAUSSAGE
+  gelesen ist es ein stiller Conversion-Verlust bei JEDEM Kunden, der ein Ziel hinzufügt.
+  JENE REGEL WIRD NICHT GEÄNDERT — sie ist als Testdisziplin richtig; dieser Eintrag
+  tritt DANEBEN und nennt die zweite Lesart.
+  Was still kaputtgeht: Conversion-Verluste SICHTBAR zu machen ist das Verkaufsargument
+  dieses Produkts — hier verliert der Kunde sie, ohne dass die Oberfläche etwas anderes
+  sagt als "konfiguriert".
+  WAS HIER NICHT ENTSCHIEDEN WIRD, ausdrücklich: ob die Lösung ein Hinweis, eine Anzeige
+  oder ein Riegel ist, und wo sie sitzt. Dieser Eintrag nennt den BEFUND, nicht den Bau.
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

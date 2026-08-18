@@ -85,6 +85,28 @@ export type ProjectSettings = {
         // Pixel-ID ist OEFFENTLICH (steht im ausgelieferten Snippet) -> kein
         // Secret, plain gespeichert. Der echte Secret liegt in project_secrets.
         pixelId?: string;
+        // DIE ZUORDNUNG EREIGNISNAME -> CONVERSION-REGEL-KENNUNG (Scheibe 11.1d,
+        // Form F1). Sie steht NEBEN pixelId, nicht darin: pixelId bleibt ein
+        // SKALAR und getPixelId sagt weiterhin IMMER eine Zeichenkette zu.
+        //
+        // WARUM EIN EIGENES FELD UND NICHT EIN POLYMORPHES pixelId (F2, verworfen):
+        // Fuenf Stellen setzen den Skalar voraus und traegen dafuer einen
+        // Compiler-Riegel — eine SECHSTE braucht ihn gar nicht erst, weil
+        // hasTargetPixelId `unknown` entgegennimmt und ein Objekt dort lautlos
+        // `false` liefert. Genau dieser Pfad OHNE Riegel war der Grund gegen F2.
+        //
+        // WARUM NICHT IN DIE GEHEIMNIS-TABELLE: Die Kennung ist KEIN Zugangsdatum
+        // — sie steht in der NUTZLAST des Aufrufs, der Betreiber muss sie SEHEN
+        // und AENDERN koennen. project_secrets traegt RLS aktiv und keine einzige
+        // Policy; sie ist bewusst unlesbar.
+        //
+        // DIE SCHLUESSEL SIND EREIGNISNAMEN, WOERTLICH: TrackConfig.event ist ein
+        // FREIER Nutzer-String, und er wird hier NICHT normalisiert (nicht
+        // getrimmt, nicht gekappt, nicht case-gefaltet). Wer das aendert, bricht
+        // die Deckungsgleichheit mit dem Schluesselraum aus 11.1b
+        // (trackEventNames, tracking/event-names.ts) — und zwar lautlos, weil
+        // beide Seiten fuer sich gueltig aussehen.
+        conversionRules?: Record<string, string>;
       }
     >
   >;
@@ -130,8 +152,103 @@ export function getPixelId(
   return settings.pixels?.[target]?.pixelId?.trim() ?? "";
 }
 
+// DIE ZUORDNUNG EREIGNISNAME -> REGEL-KENNUNG EINES ZIELS, oder ein leeres Objekt
+// (Scheibe 11.1d).
+//
+// SIE LIEFERT NIE undefined — dieselbe Zusicherungs-Form wie getPixelId, und aus
+// demselben Grund: Jeder Aufrufer muesste sonst denselben Rueckfall selbst
+// schreiben, und der eine, der es vergisst, wirft erst zur Laufzeit.
+//
+// KEIN TRIM AN DEN SCHLUESSELN, und das ist eine Auslage und kein Vergessen: Die
+// Schluessel sind Ereignisnamen, und der Schluesselraum aus 11.1b
+// (trackEventNames, tracking/event-names.ts) normalisiert sie ebenfalls nicht.
+// Zwei Seiten, die verschieden normalisieren, finden einander nicht mehr — und
+// nichts wird dabei rot.
+export function getConversionRules(
+  settings: ProjectSettings,
+  target: TrackingTarget
+): Record<string, string> {
+  return settings.pixels?.[target]?.conversionRules ?? {};
+}
+
+/**
+ * ZUORDNUNG VORHANDEN — das FORM-Praedikat zur Regel-Kennung (Scheibe 11.1d).
+ *
+ * NICHT-LEER HEISST: mindestens EIN Eintrag, dessen WERT eine nicht-leere
+ * Zeichenkette ist. Ein Objekt voller leerer Werte ist damit ABWESEND — dieselbe
+ * Bedingung wie beim Kennungs-Primitiv hasPixelId (tracking/target-readiness.ts),
+ * nur eine Ebene tiefer angewandt. Der Trim ist von dort uebernommen und nicht
+ * erfunden: eine Kennung aus reinem Leerraum gilt in diesem System als abwesend.
+ *
+ * SIE MISST DIE ZUORDNUNG AN SICH SELBST — KEIN ABGLEICH GEGEN DEN SCHLUESSELRAUM,
+ * und der Grund gehoert an diese Fundstelle, weil ihn sonst die naechste Runde als
+ * fehlende Sorgfalt liest und "nachbessert":
+ * Ein Abgleich gegen die verwendeten Ereignisnamen machte das Urteil und damit
+ * consentTargets (components/CodeImporter.tsx) erstmals MAPPING-abhaengig. Der
+ * ausgelieferte Text hinge dann davon ab, welche Variante gerade bearbeitet wird —
+ * und genau das bricht die Variantenblindheit, auf der Scheibe 11.1b aufbaut.
+ * FOLGE, die dazugehoert: Ein Eintrag, dessen Ereignisname nicht mehr verwendet
+ * wird, bleibt BESTEHEN und zaehlt weiter. Das ist entschieden (Owner 2026-08-18)
+ * und kein Uebersehen.
+ *
+ * `unknown` statt eines Record-Typs, GENAU WIE BEIM PRIMITIV: Die Quelle ist ein
+ * Einstellungs-Blob aus der Datenbank. Was dort steht, ist nicht typgesichert —
+ * ein Array, eine Zahl oder null kommen hier durch, und sie muessen `false`
+ * ergeben statt zu werfen.
+ */
+export function hasConversionRules(value: unknown): boolean {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+  return Object.values(value as Record<string, unknown>).some(
+    (rule) => typeof rule === "string" && rule.trim() !== ""
+  );
+}
+
+/**
+ * IST DIESES ZIEL AUSLIEFERFAEHIG? (Scheibe 11.1d)
+ *
+ * ES SIND ZWEI VERSCHIEDENE FRAGEN, DIE BISHER ZUSAMMENFIELEN, weil ALLE Ziele
+ * eine Skalar-Kennung trugen — und dieser Absatz ist der Kern der Scheibe:
+ *  - hasTargetPixelId (unten) beantwortet "KANN ICH FUER DIESES ZIEL EINE
+ *    CapiConfig BAUEN?". Das braucht einen SKALAR, und deshalb bleibt sie beim
+ *    Aufloesungs-Pfad (getCapiConfigByTrackingKey, capi/token.ts).
+ *  - DIESE hier beantwortet "IST DIESES ZIEL AUSLIEFERFAEHIG?". Das braucht
+ *    IRGENDEINE Kennungsform — heute den Skalar ODER die Zuordnung.
+ * DAS IST KEIN ZWEITES URTEIL UEBER DIESELBE FRAGE, SONDERN EIN URTEIL JE FRAGE.
+ * Ohne diesen Absatz sieht es wie eine Verdopplung aus und wird beim naechsten
+ * Aufraeumen zusammengelegt — und dann zieht entweder der Resolver ein Ziel ohne
+ * Skalar in seine Geheimnis-Abfrage (zusaetzliche Arbeit JE BEACON), oder ein
+ * auslieferfaehiges Ziel faellt aus dem Consent-Draht.
+ *
+ * SIE IST ZIEL-GENERISCH UND DAMIT KEINE NEUNTE ZIEL-GESCHLUESSELTE STELLE (die
+ * Zaehlung steht im Kopf von tracking/target-adapters.ts): Hier steht kein
+ * Zielwert, keine Ziel-Liste und kein Record ueber Ziele. Sie fragt fuer JEDES
+ * Ziel dasselbe — ob EINE der beiden Kennungsformen belegt ist. Dass heute nur
+ * ein Ziel die zweite Form fuellt, ist ein ZUSTAND der Daten, keine Regel im Code.
+ *
+ * SIE NIMMT DEN BLOB, NICHT EINEN WERT, und das ist der Unterschied zur Funktion
+ * darunter: Sie befragt ZWEI Felder, und ein Aufrufer koennte nicht wissen,
+ * welches davon fuer welches Ziel das entscheidende ist.
+ */
+export function isTargetDeliverable(
+  settings: ProjectSettings,
+  target: TrackingTarget
+): boolean {
+  return (
+    hasTargetPixelId(getPixelId(settings, target), target) ||
+    hasConversionRules(getConversionRules(settings, target))
+  );
+}
+
 /**
  * TRAEGT DIESES ZIEL EINE KENNUNG? — das ZIEL-BEWUSSTE Urteil (Scheibe 11.1c).
+ *
+ * WELCHE FRAGE SIE BEANTWORTET, UND DASS ES NICHT DIESELBE IST WIE OBEN (Scheibe
+ * 11.1d): Sie beantwortet "KANN ICH FUER DIESES ZIEL EINE CapiConfig BAUEN?" —
+ * die Frage nach dem SKALAR. Das Urteil ueber die AUSLIEFERFAEHIGKEIT steht in
+ * isTargetDeliverable darueber und kennt zusaetzlich die Zuordnungs-Form. WER DIE
+ * BEIDEN ZUSAMMENLEGT, legt zwei Fragen zusammen, die seit 11.1d auseinanderlaufen.
  *
  * Sie nimmt den WERT und das ZIEL entgegen und delegiert an das skalare Primitiv
  * hasPixelId (tracking/target-readiness.ts). Sie wiederholt dessen Regel NICHT.
@@ -177,6 +294,16 @@ export function hasTargetPixelId(
   // (2) ER WIRD BENUTZT, sobald das Urteil je Ziel verschieden ausfaellt (11.1d) —
   //     und zwar OHNE dass ein einziger Aufrufer sich aendert. Genau dafuer steht
   //     er heute schon da.
+  //     NACHGEZOGEN 11.1d, NICHT GESTEMPELT — der Wortlaut oben bleibt lesbar, die
+  //     Richtigstellung tritt daneben: 11.1d hat den Parameter NICHT benutzt. Das
+  //     Urteil ueber die Auslieferfaehigkeit ist ein ZWEITES, ziel-generisches
+  //     Praedikat geworden (isTargetDeliverable oben), weil die Zuordnung diese
+  //     Funktion gar nicht erreicht: alle drei Aufrufer schicken einen SKALAR.
+  //     DIE AUSSAGEN (1) UND (3) SIND UNBERUEHRT, nur der ZEITPUNKT in (2) ist ein
+  //     anderer — der Waechter schlaegt an, sobald IRGENDEINE Scheibe den Parameter
+  //     benutzt, nicht diese. WER HIER KEINE eslint-Meldung SIEHT und daraus
+  //     schliesst, die Direktive sei ueberfluessig, streicht sie zu frueh und mit
+  //     ihr den Ort dieser Funktion.
   // (3) DER WAECHTER, UND ER IST DER WICHTIGSTE SATZ HIER: Sobald (2) eintritt,
   //     meldet ESLint DIESE DIREKTIVE selbst als ueberfluessig ("Unused
   //     eslint-disable directive"). Sie ist damit KEIN stiller Kommentar, sondern
@@ -208,6 +335,48 @@ export function setPixelId(
     pixels: {
       ...settings.pixels,
       [target]: { ...settings.pixels?.[target], pixelId: pixelId.trim() },
+    },
+  };
+}
+
+// Immutabel + nest-erhaltend: schreibt EINEN Eintrag der Zuordnung
+// pixels.<ziel>.conversionRules, ohne die Zweige ANDERER Ziele, das Feld pixelId
+// oder die uebrigen Eintraege anzutasten (Scheibe 11.1d).
+//
+// SIE STEHT HIER UND NICHT IM CONTAINER, aus demselben Grund wie setPixelId
+// darueber: Die verschachtelte Form des Blobs ist Wissen DIESER Datei. Schriebe
+// die Komponente den Spread selbst, gaebe es zwei Stellen, die die Nest-Form
+// kennen — und die zweite vergaesse beim naechsten Feld einen Zweig.
+//
+// EIN LEERER WERT ENTFERNT DEN SCHLUESSEL, statt "" abzulegen, und das ist KEIN
+// stilles Aufraeumen: Es ist die Ruecknahme einer Eingabe, die der Betreiber
+// GERADE SELBST in einem sichtbaren Feld vorgenommen hat. Der Gewinn ist der
+// Dirty-Vergleich — tippen und wieder leeren fuehrt exakt auf den Ausgangs-Blob
+// zurueck, statt einen Unterschied zu hinterlassen, den settingsEqual meldet und
+// den niemand gewollt hat.
+// ABGRENZUNG, DIE MITMUSS: Das ist NICHT der verwaiste Eintrag. Ein Eintrag,
+// dessen EREIGNISNAME aus dem Schluesselraum verschwindet, wird BEHALTEN — s. die
+// Begruendung an hasConversionRules. Hier entfernt der Betreiber einen WERT, den
+// er sieht; dort verschwindet ein SCHLUESSEL, den er nicht angefasst hat.
+//
+// DER WERT WIRD GETRIMMT, DER SCHLUESSEL NIE. Der Trim am Wert spiegelt setPixelId
+// (dort ebenso, und getPixelId trimmt beim Lesen). Der Schluessel ist ein
+// Ereignisname und bleibt woertlich — s. den Absatz am Typ.
+export function setConversionRule(
+  settings: ProjectSettings,
+  target: TrackingTarget,
+  event: string,
+  rule: string
+): ProjectSettings {
+  const rules = { ...getConversionRules(settings, target) };
+  const trimmed = rule.trim();
+  if (trimmed === "") delete rules[event];
+  else rules[event] = trimmed;
+  return {
+    ...settings,
+    pixels: {
+      ...settings.pixels,
+      [target]: { ...settings.pixels?.[target], conversionRules: rules },
     },
   };
 }
@@ -283,6 +452,23 @@ export function setHostingState(
   };
 }
 
+// Wertgleichheit zweier Zuordnungen — REIHENFOLGE-UNABHAENGIG, wie mappingsEqual
+// (lib/mappings.ts) es fuer die Mapping-Menge tut: Ein Blob, der aus der Datenbank
+// zurueckkommt, muss seine Schluessel nicht in derselben Reihenfolge tragen wie der
+// im Speicher gebaute, und eine Umsortierung ist keine Aenderung.
+// NICHT EXPORTIERT: Sie hat genau einen Aufrufer, und ein zweiter Konsument
+// braeuchte zuerst eine Aussage darueber, WELCHE Frage er stellt.
+function conversionRulesEqual(
+  a: Record<string, string>,
+  b: Record<string, string>
+): boolean {
+  const keysA = Object.keys(a);
+  if (keysA.length !== Object.keys(b).length) return false;
+  return keysA.every(
+    (k) => Object.prototype.hasOwnProperty.call(b, k) && a[k] === b[k]
+  );
+}
+
 // Dirty-Vergleich. BEWUSST eng: nur die Pixel-IDs existieren als user-editierbare
 // Felder im grossen Speichern-Flow. capi.* ist HIER ABSICHTLICH AUSGENOMMEN: es wird
 // nicht ueber den Dirty-/Big-Save-Weg gepflegt, sondern von seiner eigenen
@@ -301,6 +487,18 @@ export function setHostingState(
 // naechsten Projektwechsel weg, ohne Warnung.
 // Bestandsverhalten unveraendert: Fuer ein Projekt ohne zweites Ziel liefern beide
 // Seiten dort "" und der Vergleich faellt aus wie zuvor.
+//
+// DIE ZUORDNUNG WIRD MITVERGLICHEN (Scheibe 11.1d), und der Grund ist derselbe wie
+// oben, nur eine Ebene tiefer: Ohne diesen Term meldete der Vergleich nach einer
+// URN-Eingabe "nicht dirty", der Speichern-Knopf bliebe INAKTIV — und der Wert
+// waere beim naechsten Projektwechsel weg, ohne Warnung und ohne Meldung.
+// WERTGLEICHHEIT, NICHT REFERENZGLEICHHEIT: Zwei geladene Kopien desselben Blobs
+// sind verschiedene Objekte; ein === auf die Records meldete IMMER dirty, und der
+// Speichern-Knopf staende dauerhaft scharf.
 export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
-  return TRACKING_TARGETS.every((t) => getPixelId(a, t) === getPixelId(b, t));
+  return TRACKING_TARGETS.every(
+    (t) =>
+      getPixelId(a, t) === getPixelId(b, t) &&
+      conversionRulesEqual(getConversionRules(a, t), getConversionRules(b, t))
+  );
 }

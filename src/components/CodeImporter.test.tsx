@@ -3182,6 +3182,61 @@ describe("CodeImporter — Scheibe D1: das Consent-Memo, durch die Komponente be
       "linkedin",
     ]);
   });
+
+  it("D-T11: LinkedIn traegt NUR eine ZUORDNUNG, keine Skalar-Kennung -> es steht trotzdem im Draht", async () => {
+    // DIE (b)-SEITE DER SCHEIBE 11.1d, UND SIE IST DIE EINZIGE STELLE, DIE SIE
+    // PRUEFT: Die zweite Kennungsform (Ereignisname -> Regel-Kennung) erreicht den
+    // ausgelieferten Text ueber isTargetDeliverable (lib/settings.ts). WIRD ROT,
+    // WENN das Consent-Memo wieder allein den Skalar befragt — dann faellt ein
+    // Ziel, dessen Kennung JE EREIGNISTYP gilt, lautlos aus dem Draht, am Ingest
+    // greift fail-closed, und auf keinem Kanal wird etwas rot.
+    //
+    // ABGRENZUNG ZU D-T10, damit keiner der beiden als redundant gestrichen wird:
+    // D-T10 setzt fuer LinkedIn einen SKALAR, dieser Test setzt AUSSCHLIESSLICH
+    // die Zuordnung — es sind ZWEI verschiedene Kennungsformen, und das Urteil
+    // verknuepft sie mit ODER. Faellt eine Haelfte weg, bleibt der jeweils andere
+    // Test gruen; nur beide zusammen decken die Verknuepfung.
+    //
+    // KEIN BEDIENWEG, DESHALB UEBER DEN BLOB: Die Zuordnung wird in der Oberflaeche
+    // je Ereignisname eingetragen (MeasureView); diese Fixture setzt den
+    // Endzustand direkt, weil hier der EXPORT geprueft wird und nicht die Eingabe.
+    const doc = await exportDokument({
+      pixels: {
+        meta: { pixelId: "111" },
+        pinterest: { pixelId: "222" },
+        tiktok: { pixelId: "333" },
+        linkedin: { conversionRules: { Lead: "urn:lla:llaPartnerConversion:1" } },
+      },
+      capi: D1_TK,
+    });
+    expect(gezogeneSchluessel(doc)).toEqual([
+      "meta",
+      "pinterest",
+      "tiktok",
+      "linkedin",
+    ]);
+    expect(verdrahteteSchluessel(doc)).toEqual([
+      "meta",
+      "pinterest",
+      "tiktok",
+      "linkedin",
+    ]);
+  });
+
+  it("D-T12: eine LEERE Zuordnung ist KEINE Kennung -> LinkedIn bleibt aus dem Draht", async () => {
+    // DIE GEGENPROBE ZU D-T11, und ohne sie waere jener trivial erfuellbar: Ein
+    // Memo, das schlicht die ANWESENHEIT des Feldes liest, bestuende D-T11 und
+    // faellt hier. Geprueft wird damit, dass das Form-Praedikat die WERTE ansieht.
+    const doc = await exportDokument({
+      pixels: {
+        meta: { pixelId: "111" },
+        linkedin: { conversionRules: { Lead: "" } },
+      },
+      capi: D1_TK,
+    });
+    expect(gezogeneSchluessel(doc)).toEqual(["meta"]);
+    expect(verdrahteteSchluessel(doc)).toEqual(["meta"]);
+  });
 });
 
 // ===========================================================================

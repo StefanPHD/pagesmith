@@ -44,11 +44,13 @@ import {
 } from "@/lib/mappings";
 import { editPreviewHtml, generateFunctional } from "@/lib/generate";
 import {
+  getConversionRules,
   getHostingLabel,
   getPixelId,
   getTrackingKey,
-  hasTargetPixelId,
+  isTargetDeliverable,
   setCapiState,
+  setConversionRule,
   setHostingState,
   setPixelId,
   settingsEqual,
@@ -101,6 +103,26 @@ import PublishView from "@/components/PublishView";
 // einer kurzen Tipp-Pause aktualisieren, damit grosse Landingpages die Eingabe
 // nicht ausbremsen.
 const DEBOUNCE_MS = 300;
+
+// DAS ZIEL, DESSEN KENNUNG JE EREIGNISTYP GILT (Scheibe 11.1d).
+//
+// GEMELDET, WEIL ES ZAEHLT: Das ist ein ZIELWERT im Code und damit eine WEITERE
+// ziel-geschluesselte Fundstelle neben den ACHT, die der Kopf von
+// lib/tracking/target-adapters.ts fuehrt. Die Zaehlung dort ist NICHT nachgezogen
+// worden — jene Datei ist in dieser Scheibe geschuetzt; der Befund gehoert in eine
+// eigene Doku-Runde und steht im Bericht dieser Scheibe.
+//
+// WARUM ER SICH NICHT VERMEIDEN LIESS: Die Zuordnung Ereignisname -> Regel-Kennung
+// ist heute die Kennungsform GENAU EINES Ziels. Irgendeine Stelle muss sagen,
+// welches — und die Alternativen waeren schlechter: ein Record ueber ALLE Ziele
+// waere eine ziel-geschluesselte Aussage MIT vier Eintraegen statt einem Wert, und
+// eine Ableitung aus einer bestehenden Liste (etwa "hat keinen Adapter") koppelte
+// die Oberflaeche an eine Tatsache, die etwas ANDERES bedeutet.
+//
+// WARUM HIER UND NICHT IN MeasureView: Die Ansicht bekommt die Ziele schon heute
+// als PROP (targets) und traegt selbst keinen Zielwert. Diese Trennung bleibt —
+// der Container weiss, WELCHES Ziel, die Ansicht nur, DASS eines gemeint ist.
+const RULES_TARGET: TrackingTarget = "linkedin";
 
 const typeStyles: Record<ElementType, string> = {
   button: "bg-blue-100 text-blue-800 border-blue-200",
@@ -501,11 +523,25 @@ export default function CodeImporter({
   // verlangt als die blosse Anwesenheit einer Kennung — daran hat sich nichts
   // geaendert, und der Absatz darueber gilt unveraendert fuer die naechste
   // Zusammensetzung, die noch niemand gebaut hat.
+  //
+  // NACHGEZOGEN 11.1d — DIE REGEL DARUEBER BLEIBT WOERTLICH WAHR, und wieder hat
+  // sich nur ihr Symbol geaendert: Das Memo ruft jetzt isTargetDeliverable
+  // (lib/settings.ts). DAS IST KEIN VERSTOSS GEGEN "NIE MEHR ALS DAS":
+  // isTargetDeliverable ist KEINE Zusammensetzung aus fremden Zustaenden — es ist
+  // DIESELBE Frage nach der blossen Anwesenheit einer Kennung, nur ueber ZWEI
+  // Kennungsformen (Skalar ODER Zuordnung). Es kommt nichts hinzu, was ueber die
+  // Anwesenheit hinausginge; kein Zugangsdatum, kein Adapter, kein Ladezustand.
+  // WARUM NICHT MEHR hasTargetPixelId: Jene beantwortet die ANDERE Frage — "kann
+  // der Resolver daraus eine CapiConfig bauen", und die verlangt einen Skalar. Ein
+  // Ziel, dessen Kennung JE EREIGNISTYP gilt, fiele dort lautlos heraus und
+  // bekaeme keinen Consent-Schluessel; am Ingest griffe fail-closed, ohne dass
+  // irgendwo etwas rot wird.
+  // DAS VERBOT ZEIGT UNVERAENDERT auf jeden ZUSAMMENGESETZTEN Zustand.
   const consentTargets = useMemo(
     () =>
-      TRACKING_TARGETS.filter((t) =>
-        hasTargetPixelId(getPixelId(settings, t), t)
-      ).map((t) => CONSENT_KEY_BY_TARGET[t]),
+      TRACKING_TARGETS.filter((t) => isTargetDeliverable(settings, t)).map(
+        (t) => CONSENT_KEY_BY_TARGET[t]
+      ),
     [settings]
   );
 
@@ -2263,6 +2299,21 @@ export default function CodeImporter({
               // (scope). Die Ansicht rechnet nichts nach — auch nicht aus dem
               // hasVariantB-Prop, den sie ohnehin bekommt.
               usedEvents={usedEvents}
+              // Scheibe 11.1d: die Zuordnung Ereignisname -> Regel-Kennung.
+              // DREI SCHMALE PROPS STATT DES BLOBS, wie bei den Kennungen darueber:
+              // Die Ansicht bekommt einen LESER je Ereignisname und einen
+              // Rueckruf — der Container bleibt der EINZIGE Schreiber von settings.
+              // DER ZIELNAME KOMMT AUS DEM CONTAINER, nicht aus der Ansicht (s. die
+              // Begruendung an RULES_TARGET oben).
+              rulesTarget={RULES_TARGET}
+              conversionRuleFor={(event) =>
+                getConversionRules(settings, RULES_TARGET)[event] ?? ""
+              }
+              onConversionRuleChange={(event, value) =>
+                setSettings((prev) =>
+                  setConversionRule(prev, RULES_TARGET, event, value)
+                )
+              }
               eventCounts={eventCounts}
               adblockLoss={adblockLoss}
               variantCounts={variantCounts}

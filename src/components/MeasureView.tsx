@@ -62,6 +62,9 @@ export default function MeasureView({
   onCredentialsSaved,
   onCredentialsRemoved,
   usedEvents,
+  rulesTarget,
+  conversionRuleFor,
+  onConversionRuleChange,
   eventCounts,
   adblockLoss,
   variantCounts,
@@ -103,6 +106,20 @@ export default function MeasureView({
    * das Urteil EINMAL, im Container; hier wird es nur gelesen.
    */
   usedEvents: { names: string[]; scope: "a-only" | "a-and-b" };
+  // --- Conversion-Regeln (Scheibe 11.1d) ---
+  /**
+   * DAS ZIEL, dessen Kennung JE EREIGNISTYP gilt. Es kommt als PROP herein und
+   * wird hier NICHT gewaehlt — dieselbe Trennung wie bei `targets` darueber: Der
+   * Container weiss, WELCHES Ziel gemeint ist, diese Ansicht nur, DASS eines
+   * gemeint ist. Ein Zielwert in dieser Datei waere eine ziel-geschluesselte
+   * Aussage in einer reinen Ansicht.
+   */
+  rulesTarget: TrackingTarget;
+  /** Die GESPEICHERTE bzw. laufende Regel-Kennung eines Ereignisnamens, "" wenn
+   *  keine hinterlegt ist. Skalar je Name, KEIN Record — dieselbe Bauform wie
+   *  `pixelIdFor`: die Ansicht bekommt Werte, keinen Blob. */
+  conversionRuleFor: (event: string) => string;
+  onConversionRuleChange: (event: string, value: string) => void;
   // --- Statistik ---
   eventCounts: EventCount[];
   adblockLoss: AdblockLoss | null;
@@ -272,6 +289,69 @@ export default function MeasureView({
             {usedEvents.names.map((name) => (
               <li key={name} className="text-sm text-gray-700">
                 {name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* CONVERSION-REGELN (Phase 11.1d). UNMITTELBAR NEBEN "Verwendete Events",
+          und das ist eine Entscheidung: Dieser Abschnitt SCHLUESSELT gegen genau
+          die Menge, die der Abschnitt darueber ANZEIGT. Stuende etwas dazwischen,
+          muesste der Betreiber sich die Namen merken, statt sie danebenliegen zu
+          haben.
+
+          DIE UEBERSCHRIFT NENNT DAS ZIEL AUS TARGET_CARDS, nicht aus einem eigenen
+          Text: Der Anzeigename je Ziel steht dort bereits genau einmal, und ein
+          zweiter hier liefe beim naechsten Umbenennen auseinander.
+
+          KEINE AUSSAGE DER FORM "VOLLSTAENDIG" und keine ueber die WIRKUNG: Die
+          Flaeche sagt, welche Zuordnung KONFIGURIERT ist. Ob das Ziel sie annimmt,
+          sagt sie nicht — dieselbe Wortwahl-Disziplin wie beim Abschnitt darueber.
+
+          scope WIRD UEBERNOMMEN, NICHT NEU GEBILDET: dieselbe Aussage aus derselben
+          Ableitung wie oben. Ein zweites Urteil ueber dieselbe Frage waere hier eine
+          Zeile Arbeit und spaeter ein stiller Widerspruch — die Flaeche behauptete
+          sonst Vollstaendigkeit ueber eine Variante, die es gar nicht gibt.
+
+          NICHT AN projectId GEGATET, wie der Abschnitt darueber und anders als die
+          beiden darunter: Die Namen stammen aus dem Editor-Zustand und die
+          Zuordnung aus dem Einstellungs-Blob — keine Abfrage, keine Zeile, kein
+          Geheimnis, das ein Gate zu schuetzen haette. */}
+      <div className="mt-4 border-t border-gray-200 pt-4">
+        <h2 className="mb-1 text-sm font-medium text-gray-700">
+          Conversion-Regeln ({TARGET_CARDS[rulesTarget].name})
+        </h2>
+        <p className="mb-3 text-xs text-gray-500">
+          Je verwendetem Event eine Regel-Kennung des Ziels
+          {usedEvents.scope === "a-and-b"
+            ? " — über beide Varianten."
+            : "."}
+        </p>
+        {usedEvents.names.length === 0 ? (
+          /* EIGENER WORTLAUT, bewusst NICHT der des Abschnitts darueber: Zwei
+             gleichlautende Leer-Texte unmittelbar uebereinander waeren auf dem
+             Bildschirm nicht auseinanderzuhalten, und ein Bestandstest behauptet
+             den oberen woertlich. Er nennt ausserdem die FOLGE ("nichts
+             zuzuordnen") statt nur den Zustand — sonst liest sich ein leerer
+             Kasten wie ein Ladefehler. */
+          <p className="text-xs text-gray-500">
+            Ohne verknüpfte Events gibt es nichts zuzuordnen.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {usedEvents.names.map((name) => (
+              <li key={name}>
+                <label className="flex flex-col gap-1 text-sm">
+                  <span className="font-medium text-gray-700">{name}</span>
+                  <input
+                    type="text"
+                    value={conversionRuleFor(name)}
+                    onChange={(e) => onConversionRuleChange(name, e.target.value)}
+                    placeholder="Regel-Kennung eintragen"
+                    className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </label>
               </li>
             ))}
           </ul>

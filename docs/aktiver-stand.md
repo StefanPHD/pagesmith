@@ -31,6 +31,7 @@ dann still nicht mehr erfüllt wird.
 - ## Scheibe 11.1a — Zugangsdatum ablegen
 - ## Scheibe 11.1b — Die verwendeten Ereignisnamen
 - ## Scheibe 11.1c — Ein Urteil über die Auslieferbarkeit
+- ## Scheibe 11.1d — Die Conversion-Regel-Kennung ablegen
 - ## Entscheidungen, die über ihre Scheibe hinaus binden
 - ## Vorrat — gemeldet, nicht gebaut
 - ## Hebungs-Kandidaten
@@ -326,6 +327,129 @@ Zuschnitt DIESER Scheibe.
   ZU WEIT gefasst und wird in derselben Runde VERENGT (s. „## Vorrat").
 - **KEINE MIGRATION, KEIN SCHEMA.**
 
+## Scheibe 11.1d — Die Conversion-Regel-Kennung ablegen
+
+Eine Zuordnung **Ereignisname -> Conversion-Regel-URN** wird abgelegt, und LinkedIn wird
+dadurch **AUSLIEFERFÄHIG — noch nicht SENDEND.**
+
+**DIE BAU-AUSSAGE, die dazugehört, weil ein Betreiber sie sonst falsch liest:** Nach dieser
+Scheibe zeigt die Karte ein VOLLSTÄNDIG KONFIGURIERTES Ziel, das erst mit dem Adapter
+(11.1e) liefert. Wer die Karte als Liefer-Zusage liest, wartet auf Conversions, die noch
+niemand sendet.
+
+### Die Form — ENTSCHIEDEN (Owner, 2026-08-18): F1
+
+Ein EIGENES Feld unter `settings.pixels.linkedin`, **NEBEN** `pixelId`, nicht darin. Die
+Begründung gehört in den Zuschnitt, weil sie sonst beim nächsten Aufräumen fehlt:
+
+- **GEGEN F2 (`pixelId` wird polymorph).** `getPixelId` (`src/lib/settings.ts`) sagt heute
+  IMMER eine Zeichenkette zu (`settings.pixels?.[target]?.pixelId?.trim() ?? ""`), und FÜNF
+  Stellen setzen einen Skalar voraus (GEMESSEN am Code, 2026-08-18): `settingsEqual`
+  (`src/lib/settings.ts`) · `forwardToMeta` (`src/lib/capi/meta-forward.ts`) ·
+  `forwardToTiktok` (`src/lib/capi/tiktok-forward.ts`) · die Übergabe an
+  `forwardToPinterest` (`dispatchForward` in `src/lib/capi/ingest.ts`) · das Eingabefeld der
+  Karte (`value={pixelId}` in `src/components/TargetCard.tsx`).
+  **ALLE FÜNF TRAGEN EINEN COMPILER-RIEGEL** — `ProjectSettings.pixels.<ziel>.pixelId?:
+  string`, `CapiConfig.pixelId: string`, `PinterestConfig.adAccountId: string` und der
+  Prop-Typ der Karte. Solange die Typen `string` bleiben, bricht F2 dort LAUT.
+  **GENAU DAS IST ABER DER PUNKT:** F2 müsste als ERSTES diese Typen weiten — und danach
+  sind mehrere still. `forwardToMeta` interpoliert dann `[object Object]` in den
+  Endpunkt-Pfad, die Übergabe an Pinterest reicht es durch `encodeURIComponent`, die Karte
+  zeigt es im Eingabefeld.
+  **UND EINE SECHSTE STELLE BRAUCHT DIE WEITUNG GAR NICHT ERST — sie ist von Anfang an
+  still, und sie ist der eigentliche Grund gegen F2:** `hasTargetPixelId`
+  (`src/lib/settings.ts`) nimmt `unknown` entgegen und delegiert an `hasPixelId`, das auf
+  `typeof === "string"` prüft. Ein Objekt liefert dort `false`, **ohne Wurf, ohne
+  Typfehler, ohne Meldung** — das Ziel fiele lautlos aus der Auslieferung. Ausgerechnet die
+  Funktion aus 11.1c wäre der einzige Pfad ohne jeden Riegel.
+- **GEGEN F3 (eigene Tabelle oder eigene Spalte), zwei getrennte Gründe.**
+  Eine EIGENE TABELLE kann nicht in die bestehende Abfrage einziehen: Der Filter der
+  zweiten Abfrage in `getCapiConfigByTrackingKey` (`src/lib/capi/token.ts`) lautet
+  `.in("target", withPixel.map((entry) => entry.target))` und entsteht ERST aus dem Ergebnis
+  der ersten (GEMESSEN am Code, 2026-08-18). Es wäre also eine DRITTE Runde je Beacon —
+  gegen die `/api/e`-Schlankheitsregel, auf dem meistgetroffenen Pfad der Plattform.
+  Eine SPALTE AUF `project_secrets` käme ohne Zusatzrunde aus und scheitert am ANDEREN:
+  Jene Tabelle trägt RLS aktiv und **KEINE einzige Policy** (GELESEN, `docs/db-stand.md`) —
+  sie ist bewusst unlesbar, und genau daran hängt der Schutz des Zugangsdatums. **Eine URN
+  muss der Betreiber sehen und ändern können; ein Geheimnis nie.**
+- **FÜR F1.** Die Achse liegt im Projekt bereits: KENNUNG im Einstellungs-Blob,
+  ZUGANGSDATUM in der Geheimnis-Tabelle. **Die URN ist eine KENNUNG** — GEMESSEN
+  2026-08-17 (`docs/ziel-befunde.md`, Abschnitt „LinkedIn (Conversions API)", Teile (c) und
+  (l)): Sie steht in der NUTZLAST des Aufrufs; eine nicht existierende Regel-Kennung ergibt
+  403, ein formfalsches Präfix 422 mit einer Validator-Meldung auf das Nutzlast-Feld.
+
+### Was drin ist
+
+- das Feld unter `settings.pixels.linkedin`, neben `pixelId`
+- ein eigener LESER für die Zuordnung
+- **`hasTargetPixelId` wird ZIEL-UNTERSCHEIDEND:** für die drei bestehenden Ziele der
+  Skalar, für LinkedIn eine nicht-leere Zuordnung. Genau dafür steht der zweite Parameter
+  seit 11.1c da — **und hier hört die Funktion auf, blind zu delegieren.**
+- eine Oberfläche, an der je Ereignisname aus dem Schlüsselraum von 11.1b eine URN
+  eingetragen wird
+
+### Die tragende Invariante — SIE IST DIESMAL ZWEISEITIG
+
+Und das ist der Unterschied zu 11.1c:
+
+- **(a) Für die DREI bestehenden Ziele ändert sich am ausgelieferten Text NICHTS.** Ein
+  Projekt OHNE LinkedIn-Zuordnung bleibt byte-identisch — das ist der Regressionsnachweis.
+- **(b) Für LinkedIn ändert er sich, und zwar GEWOLLT**, sobald eine Zuordnung eingetragen
+  ist.
+
+**EINE SCHEIBE, DIE BEIDES ZUSAGT, BRAUCHT BEIDE NACHWEISE GETRENNT.** Wer nur (a) prüft,
+hat die Scheibe nicht gemessen; wer nur (b) prüft, hat die Regression nicht.
+
+### Drei Dinge kippen an derselben Stelle
+
+Sie gehören zusammen in den Zuschnitt, weil sie alle drei am Wachsen von `consentTargets`
+(`src/components/CodeImporter.tsx`) hängen:
+
+1. **DER STRUKTURELLE KIPPPUNKT** (GEMESSEN am Code, 2026-08-18): `const many =
+   consentTargets.length > 0` (`src/lib/tracking/meta.ts`) steuert VIER Bau-Zeit-Zweige.
+   Ein Projekt ohne JEDE Kennung, das LinkedIn als ERSTES bekommt, kippt vom Einzel- in den
+   Sammel-Pfad — **eine andere BAUFORM des Dokuments, nicht ein zusätzlicher Eintrag.** Das
+   ist ein EIGENER Live-Test-Fall.
+2. **DIE EINBAHNSTRASSE WIRD SCHARF:** Bereits publizierte Seiten tragen den neuen
+   Schlüssel NICHT und müssen NEU VERÖFFENTLICHT werden. Der Kunde trägt eine URN ein,
+   sieht eine konfigurierte Karte — und die Live-Seite beliefert nichts. Das ist genau der
+   Defekt, der seit dem 2026-08-18 in `CLAUDE.md`, „## Offene Punkte", als eigener Eintrag
+   steht („NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST"); **DIESE
+   Scheibe löst ihn aus.** IN DIE LIVE-ANLEITUNG GEHÖRT ER ALS PFLICHT-SCHRITT, nicht als
+   Hinweis.
+3. **DER STILLE AUSFALLPFAD**, s. oben bei F2 — er ist der Grund, warum `hasTargetPixelId`
+   hier ziel-unterscheidend wird und nicht bloss einen weiteren Wert entgegennimmt.
+
+### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+
+- **KEIN ADAPTER, KEIN FORWARD, KEIN EINTRAG IN `TARGETS_WITH_ADAPTER`.** Der Riegel aus
+  11.1a hält; sein Wächter (`src/lib/tracking/target-adapters.test.ts`) bleibt stehen und
+  fällt erst in 11.1e.
+- **KEINE ÄNDERUNG AN `pixelId` ODER `getPixelId`.** F2 ist verworfen.
+- **KEINE MIGRATION, KEIN SCHEMA.** Der Blob nimmt es auf.
+- **KEIN DRIFT-INDIKATOR.** Er ist die nächste Zeile und schützt dann ALLE VIER Ziele; ihn
+  hier mitzubauen bündelte zwei Achsen.
+- **KEINE NORMALISIERUNG DER EREIGNISNAMEN.** Der freie Nutzer-String bleibt, wie er ist —
+  die Regel dazu steht in `docs/immer-beachten.md`.
+
+### Zwei offene Fragen — FRAGEN, kein Befund
+
+Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
+
+1. **WO HÖRT `hasTargetPixelId` AUF ZU DELEGIEREN?** Eine Fallunterscheidung über Ziele in
+   `src/lib/settings.ts` wäre eine ZIEL-GESCHLÜSSELTE Aussage — dann ist sie die NEUNTE
+   Stelle, und die ACHT-Zählung im Kopf von `src/lib/tracking/target-adapters.ts` ist
+   nachzuziehen (Vermerk 3 hält fest, dass genau dieser Zeitpunkt gemeint war). **Ob das
+   die einzige Bauform ist, ist offen.**
+2. **WIE SIEHT DIE EINGABE AUS?** Der Schlüsselraum ist eine MENGE von Namen (11.1b), die
+   URNs sind frei getippt. Ob das eine Zeile je Name ist oder etwas anderes — und was
+   geschieht, wenn ein Name nachträglich VERSCHWINDET, weil sein Mapping gelöscht wurde.
+   WAS DAZU BEREITS FESTSTEHT und die Frage NICHT beantwortet: Der Schlüsselraum ist eine
+   ABLEITUNG aus den Mappings (`usedTrackEventNames`, `src/lib/tracking/event-names.ts`) —
+   verschwindet ein Mapping, verschwindet der Name aus der Menge. Was mit einer bereits
+   eingetragenen URN geschieht, entscheidet die ABLAGE-Form, und die ist Gegenstand dieser
+   Frage.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 - **GEBAUT WIRD AUF DIE KLARTEXT-IP ALS KENNUNG; li_fat_id IST EINE EIGENE FOLGE-SCHEIBE**
@@ -411,6 +535,20 @@ Zuschnitt DIESER Scheibe.
   DIESER ART IM REPO (GEMESSEN 2026-08-18: keine einzige `eslint-disable`-Zeile für
   `no-unused-vars` in `src/` davor); sie ist deshalb ausdrücklich begründet und NICHT als
   Gewohnheit gedacht, die man beim nächsten ungenutzten Parameter abschreibt.
+- **DIE FORM DER KENNUNGS-ABLAGE IST ENTSCHIEDEN: F1** — ein EIGENES Feld im
+  Einstellungs-Blob, neben der bestehenden Kennung, NICHT in ihr (Owner-Entscheidung,
+  2026-08-18). Die drei Begründungen stehen im Zuschnitt von 11.1d; sie binden ÜBER 11.1d
+  HINAUS, und deshalb steht die Entscheidung hier und nicht nur dort.
+  **WAS SIE FÜR EIN FÜNFTES ZIEL BEDEUTET:** Ein Ziel mit MEHRWERTIGER Kennung folgt
+  DERSELBEN Achse — eigenes Feld im Blob, nicht Polymorphie am bestehenden Skalar und
+  nicht eine eigene Tabelle. Die beiden Gegen-Gründe gelten unverändert: Polymorphie
+  erzeugt einen Pfad OHNE Compiler-Riegel (`hasTargetPixelId` nimmt `unknown`), und eine
+  eigene Tabelle kostet eine dritte Runde auf dem meistgetroffenen Pfad.
+  **DIE GRENZE, DIE DIE ENTSCHEIDUNG TRÄGT:** Sie ruht darauf, dass die URN eine KENNUNG
+  ist und KEIN Zugangsdatum — GEMESSEN 2026-08-17 (`docs/ziel-befunde.md`, Teile (c) und
+  (l)): sie steht in der NUTZLAST des Aufrufs. **KIPPT DIESE EINORDNUNG, IST DIE
+  ENTSCHEIDUNG NEU ZU TREFFEN** — ein Geheimnis gehört nicht in einen Blob, den der Client
+  ganzheitlich zurückschreibt und den die Oberfläche anzeigt.
 
 ## Vorrat — gemeldet, nicht gebaut
 

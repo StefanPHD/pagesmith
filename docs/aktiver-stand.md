@@ -385,8 +385,102 @@ Begründung gehört in den Zuschnitt, weil sie sonst beim nächsten Aufräumen f
 - **`hasTargetPixelId` wird ZIEL-UNTERSCHEIDEND:** für die drei bestehenden Ziele der
   Skalar, für LinkedIn eine nicht-leere Zuordnung. Genau dafür steht der zweite Parameter
   seit 11.1c da — **und hier hört die Funktion auf, blind zu delegieren.**
+  **RICHTIGGESTELLT AM 2026-08-18, NICHT GESTEMPELT — der Wortlaut darüber bleibt lesbar,
+  die Richtigstellung tritt daneben; er ist der Maßstab, gegen den der Bau misst, und ein
+  Maßstab mit einer falschen Angabe taugt nicht:** DIESER SATZ HAT KEINEN GEGENSTAND.
+  GEMESSEN am Code (2026-08-18): Alle DREI Aufrufer schicken als ersten Parameter einen
+  SKALAR — `hasTargetPixelId(getPixelId(settings, t), t)` im Consent-Memo
+  (`consentTargets`, `src/components/CodeImporter.tsx`), `hasTargetPixelId(entry.pixelId,
+  entry.target)` im `withPixel`-Filter (`getCapiConfigByTrackingKey`,
+  `src/lib/capi/token.ts`) und `hasTargetPixelId(savedPixelId, target)` an der
+  Auslieferungs-Zeile der Karte (`TargetCard`, `src/components/TargetCard.tsx`). **Die
+  Zuordnung erreicht die Funktion damit NIE.** Der zweite Parameter ist NOTWENDIG, aber
+  NICHT HINREICHEND: Eine Fallunterscheidung über Ziele in ihrem Rumpf hätte nichts zu
+  befragen.
+  **ENTSCHIEDEN (Owner, 2026-08-18): K4 — EIN ZWEITES, ZIEL-GENERISCHES PRÄDIKAT NEBEN
+  `hasTargetPixelId`.** Jenes bleibt UNANGETASTET; der Resolver in `src/lib/capi/token.ts`
+  behält es.
+  **DIE BEGRÜNDUNG IST NICHT DER PREIS, SONDERN DIE FRAGE** — und sie steht hier wörtlich,
+  sonst liest die nächste Runde K4 als Verdopplung: Es sind ab 11.1d **ZWEI VERSCHIEDENE
+  FRAGEN**, die bisher zusammenfielen, weil ALLE Ziele eine Skalar-Kennung trugen.
+  · **„Kann ich für dieses Ziel eine `CapiConfig` bauen?"** — braucht einen SKALAR. Das ist
+    `hasTargetPixelId`. Der Resolver behält sie; zöge er LinkedIn in die Geheimnis-Abfrage,
+    wäre das zusätzliche Arbeit JE BEACON für ein Ziel ohne Adapter.
+  · **„Ist dieses Ziel auslieferfähig?"** — braucht IRGENDEINE Kennungsform.
+  **K4 IST DAMIT KEIN ZWEITES URTEIL ÜBER DIESELBE FRAGE, SONDERN EIN URTEIL JE FRAGE** —
+  genau das, was der Kopf von `src/lib/tracking/target-readiness.ts` verlangt.
+  **AUFLAGE, OHNE DIE DIE UNTERSCHEIDUNG VERLORENGEHT:** BEIDE Fundstellen sagen AN IHREM
+  ORT, WELCHE Frage sie beantworten. Ohne das sieht es wie eine Verdopplung aus und wird
+  beim nächsten Aufräumen zusammengelegt.
+  **WARUM DIE ANDEREN DREI BAUFORMEN FALLEN, je ein Satz** (sie sind in Stufe 1 am Code
+  geprüft worden und stehen hier, damit niemand sie ein zweites Mal erhebt):
+  · **K3** (form-tolerantes Prädikat, uniformer Wert): Der Parameter nähme ZWEI Gestalten
+    an — dieselbe Polymorphie, mit der DIESER Zuschnitt F2 verworfen hat. Den stillen
+    Ausfallpfad zur Bauform zu erheben, nachdem er das Hauptargument gegen F2 war, geht
+    nicht.
+  · **K2** (Fallunterscheidung in den Aufrufern): verlagert das Ziel-Literal in eine
+    KERN-Datei, die heute keines führt.
+  · **K1** (Fallunterscheidung in `settings.ts` plus geweitete Signatur): bricht zusätzlich
+    `src/lib/capi/token.ts`, eine geschützte Datei.
+  **DER NAME IST HIER NICHT FESTGELEGT** — er gehört in den Bau-Prompt. Vorgeschlagen und
+  begründet ist `hasDeliverableIdentity`: Er benennt die FRAGE („ist dieses Ziel
+  auslieferfähig?"), nicht ihre FORM und nicht einen ihrer LESER. Ein Name über den
+  Consent-Draht (etwa `hasTargetConsentConfig`) wird falsch, sobald ein zweiter Konsument
+  dazukommt — und die Karte ist bereits der zweite.
+  **DER NAME IST ENTSCHIEDEN (Owner, 2026-08-18): `isTargetDeliverable`.** Der Vorschlag
+  darüber bleibt lesbar, die Entscheidung tritt daneben — mit BEIDEN Begründungen, weil
+  die zweite sonst beim nächsten Ziel neu erhoben wird:
+  · **DAS PRINZIP GILT UNVERÄNDERT:** Der Name benennt die FRAGE, nicht ihre FORM und
+    nicht einen ihrer LESER. Deshalb fiel `hasTargetConsentConfig` — die Karte ist bereits
+    der zweite Konsument.
+  · **WARUM NICHT „Identity":** Das Wort ist in diesem Projekt für die PERSONEN-Identität
+    belegt — die Roadmap-Zeile 11.1 (`CLAUDE.md`) führt „Identitäts-Merkmal",
+    „Identitäts-Form" und „Personen-Identität" durchgehend für Klartext-IP, gehashte
+    E-Mail und Klick-Kennung; die Datenklassen-Entscheidung vom 2026-08-15 (`CLAUDE.md`,
+    „## Offene Punkte") sagt „Ein Identitäts-Merkmal wird ausschliesslich DURCHGELEITET".
+    In diesem Vokabular läse sich der Name als Frage nach dem Kennungs-Paar der NUTZLAST
+    statt nach der BETREIBER-Konfiguration — **die teuerste Verwechslung, die dieses Ziel
+    zu bieten hat.**
+  · **WARUM `is…` STATT `has…`:** Die `has…`-Familie fragt nach einem DING (`hasPixelId`,
+    `hasSecret`, `hasAdapter`, `hasVariantB`), die `is…`-Familie beurteilt eine
+    EIGENSCHAFT (`isTrackingTarget`, `isForwardable`, `isValidRedirectUrl`). Hier wird
+    kein Ding gesucht. Der Präfix macht die AUFLAGE schon am NAMEN sichtbar:
+    `isTargetDeliverable` und `hasTargetPixelId` sind auf den ersten Blick verschiedene
+    Fragen.
+- **`settingsEqual` MUSS DAS NEUE FELD MITVERGLEICHEN — SONST IST ES EIN STILLER VERLUST.**
+  GEMESSEN am Code (2026-08-18): `settingsEqual` (`src/lib/settings.ts`) vergleicht
+  AUSSCHLIESSLICH `getPixelId` über `TRACKING_TARGETS`
+  (`TRACKING_TARGETS.every((t) => getPixelId(a, t) === getPixelId(b, t))`), und `dirty`
+  (`src/components/CodeImporter.tsx`) hängt daran
+  (`code !== savedCode || !mappingsEqual(...) || !settingsEqual(...)`).
+  **OHNE ERWEITERUNG UM DAS NEUE FELD BLEIBT DER SPEICHERN-KNOPF NACH EINER URN-EINGABE
+  INAKTIV, und der Wert ist beim nächsten Projektwechsel weg** — ohne Warnung, ohne
+  Meldung. Das ist derselbe Schaden, den der Kommentar an `settingsEqual` für das ZWEITE
+  Ziel bereits beschreibt.
+  **ES STEHT ALS EIGENER PUNKT UND NICHT ALS NEBENZEILE, weil KEIN heutiger Test ihn
+  fängt:** Der Vergleich ist über die Kennungs-Achse geschrieben, und ein neues Feld
+  daneben lässt ihn unverändert grün.
 - eine Oberfläche, an der je Ereignisname aus dem Schlüsselraum von 11.1b eine URN
   eingetragen wird
+- **DER VERWAISTE EINTRAG — ENTSCHIEDEN (Owner, 2026-08-18): BEHALTEN.** Die Zuordnung wird
+  AN SICH SELBST gemessen: nicht-leer heisst nicht-leer, **OHNE Abgleich gegen den
+  Schlüsselraum** aus 11.1b.
+  **DER GRUND IST DIE ALTERNATIVE, nicht die Bequemlichkeit:** Ein Abgleich machte
+  `consentTargets` erstmals MAPPING-abhängig, und der ausgelieferte Text hinge davon ab,
+  welche Variante gerade bearbeitet wird. Das bricht die bindende Entscheidung
+  „`consentTargets` IST VARIANTENBLIND, UND DAS IST KORREKT" (s. „## Entscheidungen") IM
+  WORTLAUT — und 11.1b baut darauf auf.
+  **WAS DEN FALL ENTSCHÄRFT** (GEMESSEN am Code, 2026-08-18): Ein VERWAISTES MAPPING
+  liefert seinen Ereignisnamen WEITERHIN an den Schlüsselraum — `trackEventNames`
+  (`src/lib/tracking/event-names.ts`) iteriert über ALLE Mappings und kennt `findOrphans`
+  (`src/lib/mappings.ts`) nicht. Der Fall tritt also NUR ein, wenn jemand ein Mapping
+  LÖSCHT oder seinen Namen ÄNDERT — nicht, wenn ein ELEMENT aus dem Code verschwindet.
+  **UND DASS EINE URN WIEDERAUFLEBT, IST DANN KEIN FEHLER:** gleicher Ereignisname, gleiche
+  Conversion-Regel.
+  **WAS DAMIT NICHT ENTSCHIEDEN IST:** dass verwaiste Zuordnungen unsichtbar bleiben
+  SOLLEN. Sie anzuzeigen ist der bessere Endzustand und steht als eigener Punkt im Vorrat
+  („VERWAISTE ZUORDNUNGEN ANZEIGEN"); ein zweiter Verwaisten-Begriff in der Oberfläche ist
+  eine EIGENE Scheibe.
 
 ### Die tragende Invariante — SIE IST DIESMAL ZWEISEITIG
 
@@ -410,6 +504,24 @@ Sie gehören zusammen in den Zuschnitt, weil sie alle drei am Wachsen von `conse
    Ein Projekt ohne JEDE Kennung, das LinkedIn als ERSTES bekommt, kippt vom Einzel- in den
    Sammel-Pfad — **eine andere BAUFORM des Dokuments, nicht ein zusätzlicher Eintrag.** Das
    ist ein EIGENER Live-Test-Fall.
+   **RICHTIGGESTELLT AM 2026-08-18, NICHT GESTEMPELT — die Zahl VIER ist zu niedrig; der
+   Wortlaut darüber bleibt lesbar, die Richtigstellung tritt daneben.** GEMESSEN am Code
+   (2026-08-18): `many` wird in `buildMetaRuntime` an **SIEBEN** Stellen GELESEN (der Kopf
+   von `__psMetaInit` über `initParam` und `initJudgement`, der Aufruf `initCallStmt`, die
+   fbq-Zeilen `fbqStmt`, die Bestätigung `confirmCallStmt`, der Kopf von `__psMetaFire`
+   über `fireHead` und die Endmontage `if (many)`), plus eine **ACHTE** in
+   `buildCapiBeaconStatement` — einer ANDEREN Funktion an DERSELBEN Bedingung
+   (`consentTargets.length > 0`).
+   **HERKUNFT DER FALSCHEN ZAHL, und sie gehört dazu:** Sie stammt aus dem
+   Quell-Kommentar an der Deklaration von `many`, wo sie die vier benannten WACHEN meint.
+   Sie ist beim Schreiben dieses Zuschnitts als GESAMTZAHL gehoben worden.
+   **DIE FOLGE FÜR DIE LIVE-ANLEITUNG, und das ist der Punkt dieser Korrektur:** Der
+   Unterschied zwischen Einzel- und Sammel-Pfad ist GRÖSSER als vier Zweige — er betrifft
+   auch die ENDMONTAGE (im Sammel-Pfad steht die Kennung `var eid` VOR dem
+   `__psMetaInit`-Aufruf, im Einzel-Pfad DAHINTER) und die FORM des `cns`-Objekts im
+   Beacon (`__c === true` gegen `__c["<schlüssel>"] === true`, also Boolean gegen Objekt).
+   **DIE ANLEITUNG NENNT WIEDERERKENNUNGS-MERKMALE, KEINE ZAHL** — eine Zahl lädt dazu
+   ein, nach genau so vielen Unterschieden zu suchen und beim vierten aufzuhören.
 2. **DIE EINBAHNSTRASSE WIRD SCHARF:** Bereits publizierte Seiten tragen den neuen
    Schlüssel NICHT und müssen NEU VERÖFFENTLICHT werden. Der Kunde trägt eine URN ein,
    sieht eine konfigurierte Karte — und die Live-Seite beliefert nichts. Das ist genau der
@@ -419,6 +531,15 @@ Sie gehören zusammen in den Zuschnitt, weil sie alle drei am Wachsen von `conse
    Hinweis.
 3. **DER STILLE AUSFALLPFAD**, s. oben bei F2 — er ist der Grund, warum `hasTargetPixelId`
    hier ziel-unterscheidend wird und nicht bloss einen weiteren Wert entgegennimmt.
+   **NACHGEZOGEN AM 2026-08-18:** Der zweite Halbsatz trägt dieselbe Annahme wie der
+   richtiggestellte Satz unter „Was drin ist" und fällt mit ihm — `hasTargetPixelId` wird
+   NICHT ziel-unterscheidend, das Urteil über die Auslieferbarkeit zieht unter K4 in ein
+   ZWEITES, ziel-generisches Prädikat um. **DER BEFUND SELBST IST UNBERÜHRT und bleibt
+   der Grund für K4:** Ein Objekt an `hasTargetPixelId` liefert `false` ohne Wurf, ohne
+   Typfehler, ohne Meldung — deshalb wird dort GAR KEIN Objekt hineingereicht. Wer nur
+   diesen Punkt liest, hält die Bauform noch für die alte; die Korrektur steht unter „Was
+   drin ist" (Regelfall: „WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR
+   FALLE", `docs/immer-beachten.md`).
 
 ### Was ausdrücklich NICHT drin ist, je mit seinem Grund
 
@@ -435,6 +556,20 @@ Sie gehören zusammen in den Zuschnitt, weil sie alle drei am Wachsen von `conse
 ### Zwei offene Fragen — FRAGEN, kein Befund
 
 Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
+
+**NACHGEZOGEN AM 2026-08-18 — DER STUFE-1-PROMPT IST GELAUFEN, UND DAMIT IST DIESE
+ÜBERSCHRIFT NUR NOCH ZUR HÄLFTE WAHR. Der Wortlaut beider Fragen bleibt UNVERÄNDERT
+stehen** (er sagt, was am Tag des Zuschnitts offen war), **die Antworten treten daneben:**
+· **FRAGE 1 IST BEANTWORTET** — nicht mit einer der dort betrachteten Bauformen, sondern
+  mit K4: `hasTargetPixelId` hört gar nicht auf zu delegieren, das Urteil über die
+  Auslieferbarkeit zieht in ein zweites, ziel-generisches Prädikat um. Die Antwort samt
+  Messung und den drei verworfenen Bauformen steht unter „Was drin ist". **DIE
+  ACHT-ZÄHLUNG IN `src/lib/tracking/target-adapters.ts` IST DAMIT NICHT NACHZUZIEHEN:**
+  K4 trägt keinen Zielwert, keine Ziel-Liste und keinen Record über Ziele — sie ist keine
+  NEUNTE Stelle.
+· **VON FRAGE 2 IST DER ZWEITE TEIL BEANTWORTET** (was mit einer bereits eingetragenen URN
+  geschieht, wenn ihr Name verschwindet): BEHALTEN, s. den eigenen Punkt unter „Was drin
+  ist". **DER ERSTE TEIL BLEIBT OFFEN** — wie die Eingabe aussieht und wo sie sitzt.
 
 1. **WO HÖRT `hasTargetPixelId` AUF ZU DELEGIEREN?** Eine Fallunterscheidung über Ziele in
    `src/lib/settings.ts` wäre eine ZIEL-GESCHLÜSSELTE Aussage — dann ist sie die NEUNTE
@@ -535,6 +670,16 @@ Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
   DIESER ART IM REPO (GEMESSEN 2026-08-18: keine einzige `eslint-disable`-Zeile für
   `no-unused-vars` in `src/` davor); sie ist deshalb ausdrücklich begründet und NICHT als
   Gewohnheit gedacht, die man beim nächsten ungenutzten Parameter abschreibt.
+  **RICHTIGGESTELLT AM 2026-08-18, NICHT GESTEMPELT — DER WÄCHTER GILT UNVERÄNDERT, NUR
+  SEIN ZEITPUNKT IST NICHT 11.1d; der Wortlaut oben bleibt vollständig lesbar, die
+  Richtigstellung tritt daneben:** Jener Satz nennt „SOBALD 11.1d DEN PARAMETER BENUTZT".
+  **UNTER DER BAUFORM K4 TUT 11.1d DAS NICHT** (Owner-Entscheidung 2026-08-18, s. den
+  Zuschnitt 11.1d unter „Was drin ist"): `hasTargetPixelId` bleibt unangetastet, der
+  Parameter ungenutzt, **die Direktive bleibt stehen.**
+  **DIE REGEL IST UNBERÜHRT** — überholt ist allein ihr ZEITPUNKT: Der Wächter schlägt an,
+  sobald IRGENDEINE Scheibe den Parameter benutzt, nicht diese. **WER IN 11.1d KEINE
+  Meldung sieht und daraus schliesst, die Direktive sei überflüssig geworden, streicht sie
+  zu früh und mit ihr den Ort der Funktion.**
 - **DIE FORM DER KENNUNGS-ABLAGE IST ENTSCHIEDEN: F1** — ein EIGENES Feld im
   Einstellungs-Blob, neben der bestehenden Kennung, NICHT in ihr (Owner-Entscheidung,
   2026-08-18). Die drei Begründungen stehen im Zuschnitt von 11.1d; sie binden ÜBER 11.1d
@@ -721,6 +866,22 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   Postgres-eigene `jsonb`-Obergrenze und etwaige Limits von PostgREST bzw. Supabase auf
   die Payload-Grösse. **Das ist KEINE Aussage über deren Nichtexistenz** — es ist die
   Aussage, dass DIESES Repo nichts prüft und die Frage damit offen ist.
+
+- **VERWAISTE ZUORDNUNGEN ANZEIGEN** (aus dem Zuschnitt 11.1d hierher, 2026-08-18 — dort
+  ist BEHALTEN entschieden, und dieser Punkt nimmt das nicht zurück): Eine URN, deren
+  Ereignisname nicht mehr im Schlüsselraum steht, ist heute unsichtbar und nur über einen
+  Umweg wieder erreichbar — die Oberfläche zeigt ausschliesslich Namen aus dem
+  Schlüsselraum.
+  **DER BESSERE ENDZUSTAND IST DIE WEG-C-HALTUNG DES REPOS, und sie ist gebaut und
+  bewährt** (GEMESSEN am Code, 2026-08-18, an `findOrphans` in `src/lib/mappings.ts` und
+  der Sektion „⚠ Verwaiste Verknüpfungen" in `src/components/CodeImporter.tsx`): nichts
+  still löschen, nichts raten, der Mensch entscheidet — Status ABGELEITET, nie
+  gespeichert; Löschen nur nach Bestätigung; Neu-Verknüpfen nur nach expliziter Wahl.
+  **WARUM NICHT IN 11.1d:** Ein ZWEITER Verwaisten-Begriff in der Oberfläche ist eine
+  EIGENE Scheibe — er braucht seinen eigenen Ort, seinen eigenen Wortlaut und die
+  Abgrenzung gegen den bestehenden, der auf ELEMENTE zeigt und nicht auf Ereignisnamen.
+  **TRIGGER:** sobald ein Betreiber meldet, dass eine eingetragene URN unauffindbar ist —
+  ODER mit einer Anzeige-Runde. GEMELDET, NICHT GEBAUT.
 
 ## Hebungs-Kandidaten
 

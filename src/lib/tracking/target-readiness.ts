@@ -59,6 +59,37 @@
 // beiden Seiten erreichbar sein, und das ist seit den Scheiben B1/B2/D2 keine Absicht
 // mehr, sondern Betrieb: hasPixelId wird aus zwei Client-Komponenten UND aus dem
 // server-only-Aufloesungs-Pfad gerufen.
+//
+// NACHGEZOGEN 11.1c, NICHT UMFORMULIERT — DER TEXT OBEN BLEIBT VOLLSTAENDIG LESBAR
+// UND IST KEIN WORT GEAENDERT. Ueberholt ist allein sein BELEG, also eine
+// TATSACHENBEHAUPTUNG UEBER DEN CODE; die REGELN dieses Kopfes sind unberuehrt.
+// DREI ANGABEN SIND SEIT 11.1c FALSCH (GEMESSEN am Repo, 2026-08-18, ueber alle
+// Fundstellen in src/, Testdateien getrennt gezaehlt):
+//
+//  (1) "hasPixelId hat DREI [Aufrufstellen]". Es ist GENAU EINE: hasTargetPixelId
+//      (lib/settings.ts). Die drei genannten Stellen — die Auslieferungs-Zeile der
+//      Karte, der Kennungs-Filter im Aufloesungs-Pfad und das Consent-Memo — rufen
+//      seither JENE Funktion; sie delegiert hierher, statt die Regel zu wiederholen.
+//      Jede weitere Fundstelle von "hasPixelId" im Produktivcode ist ein KOMMENTAR.
+//  (2) "hasPixelId wird aus zwei Client-Komponenten UND aus dem
+//      server-only-Aufloesungs-Pfad gerufen". Der Aufruf kommt nur noch aus EINER
+//      REINEN Datei: lib/settings.ts traegt keine Direktive (gemessen: null Treffer
+//      auf server-only/"use client"/"use server") und liest ihrerseits nichts als
+//      diese Datei hier.
+//      DIE BEGRUENDUNG DER BAUFORM IST DAVON UNBERUEHRT und bleibt die alte: Diese
+//      Datei MUSS von beiden Seiten erreichbar sein. Sie ist es weiterhin — der Weg
+//      laeuft jetzt ueber einen Zwischenschritt, der selbst rein ist. Waere er es
+//      nicht, waere die Erreichbarkeit gebrochen; genau deshalb steht sie hier.
+//  (3) DIE SUMME IM ERSTEN SATZ, "vier Produktiv-Aufrufstellen". Es sind ZWEI —
+//      eine je Praedikat. hasSecret ist UNVERAENDERT bei EINER (die Geheimnis-
+//      Schleife in getCapiConfigByTrackingKey, capi/token.ts); veraendert hat sich
+//      allein die Zahl bei hasPixelId. Diese dritte Angabe stand nicht im
+//      urspruenglichen Befund und ist beim Nachmessen aufgefallen: eine Summe altert
+//      mit jedem ihrer Summanden, ohne dass jemand sie anfasst.
+//
+// WAS SICH AM VERHALTEN GEAENDERT HAT: NICHTS. Beide Praedikate sind wortgleich, und
+// die Scheibe, die diesen Nachtrag ausgeloest hat, war ein Refactor ohne
+// Verhaltensaenderung (live per Byte-Vergleich des ausgelieferten Textes belegt).
 
 /**
  * KENNUNG VORHANDEN — die oeffentliche Kennung des Ziels.

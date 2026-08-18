@@ -32,6 +32,7 @@ dann still nicht mehr erfüllt wird.
 - ## Scheibe 11.1b — Die verwendeten Ereignisnamen
 - ## Scheibe 11.1c — Ein Urteil über die Auslieferbarkeit
 - ## Scheibe 11.1d — Die Conversion-Regel-Kennung ablegen
+- ## Scheibe 11.1e — Der Weg zum Empfänger
 - ## Entscheidungen, die über ihre Scheibe hinaus binden
 - ## Vorrat — gemeldet, nicht gebaut
 - ## Hebungs-Kandidaten
@@ -559,6 +560,114 @@ kein `pixelId`- und kein `getPixelId`-Eingriff.
 - **KEINE NORMALISIERUNG DER EREIGNISNAMEN.** Der freie Nutzer-String bleibt, wie er ist —
   die Regel dazu steht in `docs/immer-beachten.md`.
 
+## Scheibe 11.1e — Der Weg zum Empfänger
+
+**LinkedIn wird zum `ResolvedTarget`, OHNE dass etwas gesendet wird.** Die zweite
+Kennungsform reist bis dorthin, wo ein Adapter sie später abholt — und fällt am
+Adapter-Gate heraus.
+
+### Der Befund, der die Scheibe auslöst
+
+GEMESSEN am Code (2026-08-18): Ohne Skalar-Kennung fällt LinkedIn aus `withPixel`
+(`getCapiConfigByTrackingKey`, `src/lib/capi/token.ts`) heraus. Der Ausdruck lautet
+`.filter((entry) => hasTargetPixelId(entry.pixelId, entry.target))`.
+**FOLGE, dieselbe Messung, vier Glieder:** Das Ziel steht nicht im `in`-Filter der
+Geheimnis-Abfrage · sein Zugangsdatum wird nie gelesen · es entsteht kein
+`ResolvedTarget` · `dispatchForward` wird für dieses Ziel nie gerufen.
+
+**DAS IST KEIN FEHLER DES RESOLVERS, und dieser Satz gehört dazu:** `hasTargetPixelId`
+beantwortet „kann ich für dieses Ziel eine `CapiConfig` bauen?", und die Antwort für
+LinkedIn ist NEIN — seine Kennung ist kein Skalar. Die Trennung der beiden Fragen aus
+11.1c war richtig; **was fehlt, ist der WEG, auf dem eine zweite Kennungsform bis zum
+Adapter kommt.**
+
+**WARUM ES HEUTE FOLGENLOS IST UND MORGEN NICHT:** Das Ziel ist seit 11.1d
+AUSLIEFERFÄHIG — sein Schlüssel steht im Draht, der Besucher wird nach Einwilligung
+gefragt, der Beacon trägt sie. Ohne Adapter bleibt das ohne Folge; MIT Adapter wäre es
+der stille Ausfall, gegen den diese Phase seit vier Scheiben baut.
+
+### Warum der Weg VOR dem Adapter kommt
+
+- **DIE TYPERWEITERUNG BERÜHRT DEN HEISSESTEN PFAD UND DIE HALBE TESTBASIS.**
+  `CapiConfig` wird an **VIER** Produktivstellen als TYP geführt (GEMESSEN 2026-08-18:
+  die Definition und `ResolvedTarget.config` in `src/lib/capi/token.ts`, der Parameter
+  von `forwardToMeta` in `src/lib/capi/meta-forward.ts`, der Parameter von
+  `forwardToTiktok` in `src/lib/capi/tiktok-forward.ts`). **ZWÖLF Testdateien NENNEN
+  ihn, ZEHN davon bilden eine `{ pixelId, … }`-Form nach** (GEMESSEN 2026-08-18; die
+  beiden übrigen — `src/lib/tracking/target-readiness.test.ts` und
+  `src/app/api/ingest-parity.test.ts` — nennen ihn nur). Zusammen mit einem Adapter
+  gebaut wäre bei einem Live-Fehlschlag nicht erkennbar, WELCHE Achse gebrochen ist.
+- **DIE SCHEIBE IST PRÜFBAR OHNE ZU SENDEN.** Ein Ziel, das zum Empfänger wird und am
+  Adapter-Riegel herausfällt, ist genau der Zweig, den `dispatchForward`
+  (`src/lib/capi/ingest.ts`) seit 11.1a bereithält: `if (!hasAdapter(target)) return
+  Promise.resolve();`.
+  **DIE ABDECKUNG DAFÜR STEHT SCHON, und das ist mehr, als der Zuschnitt annimmt**
+  (GEMESSEN am Repo, 2026-08-18): `src/lib/capi/fan-out.test.ts` führt einen Lauf über
+  ALLE Ziele, dessen Fixture `entryFor(target)` für JEDES Ziel — auch für `linkedin` —
+  ein vollständiges `ResolvedTarget` mit Kennung und Zugangsdatum baut und zusichert,
+  dass der LinkedIn-Spion **NIE** feuert. Die Zusicherung dieser Scheibe ist damit auf
+  Unit-Ebene bereits formuliert; was fehlt, ist der Weg, auf dem ein solcher Eintrag im
+  ECHTEN Resolver entsteht.
+
+### Die Form — ENTSCHIEDEN (Owner, 2026-08-18): eine EIGENE Config-Form
+
+Nach dem Muster von `PinterestConfig` (`src/lib/capi/pinterest-forward.ts`). **GRUND:**
+`CapiConfig` bleibt damit unangetastet, und die zehn nachbildenden Testdateien werden
+nicht angefasst.
+**GRENZE, DIE DIE ENTSCHEIDUNG TRÄGT:** Sie nennt die RICHTUNG, nicht die Bauform. **Ob
+die Form am Code so trägt, ist im Stufe-1-Prompt zu prüfen** — s. die erste offene Frage.
+
+### Die tragende Invariante
+
+**Am Ingest ändert sich für die DREI bestehenden Ziele NICHTS** — nicht die Zahl der
+Abfragen, nicht ihre Filter, nicht die garantierte leere 204. LinkedIn wird ZUSÄTZLICH
+aufgelöst und fällt am Adapter-Gate heraus.
+
+**DER PREIS, BENANNT STATT VERSTECKT:** Der `in`-Filter der Geheimnis-Abfrage wächst um
+ein Ziel. Dieselbe Runde, ein anderer Filter — **aber eine Verhaltensänderung auf dem
+Pfad, den JEDER Besucher JEDER Kundenseite trifft.**
+
+### Fehlende Daten — ENTSCHIEDEN (Owner, 2026-08-18): LEISE ÜBERSPRINGEN
+
+Wie bei den anderen Zielen: Liegt nur die Zuordnung oder nur das Zugangsdatum vor,
+entsteht kein `ResolvedTarget`, und es passiert nichts.
+
+**DIE AUFLAGE, DIE DAZUGEHÖRT:** Das ist ein STILLER Ausfallpfad, und diese Sitzung hat
+bereits zwei davon gefunden und protokolliert. **Ein dritter, der nirgends steht, wäre
+der Fehler.** Er geht als eigener Punkt in den Vorrat („EIN UNVOLLSTÄNDIG
+KONFIGURIERTES ZIEL FÄLLT STILL AUS"), mit dem Trigger auf eine UI-Warnung.
+
+### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+
+- **KEIN ADAPTER, KEIN FORWARD, KEIN EINTRAG IN `TARGETS_WITH_ADAPTER`.** Der Riegel aus
+  11.1a hält; sein Wächter (`src/lib/tracking/target-adapters.test.ts`) bleibt stehen.
+- **KEIN IPv4-RIEGEL.** Er gehört zum Adapter — dort wird die Identität gebaut, nicht
+  hier. Die Annahme, die ihn später trägt, steht unter „## Entscheidungen".
+- **KEINE EREIGNIS-AUFLÖSUNG.** Welche URN zu welchem Ereignis gehört, entscheidet der
+  Adapter; hier reist die GANZE Zuordnung mit.
+- **KEINE DEDUP-ZUSAGE UND KEINE KORREKTUR AN IHR.** Die Formulierung in `CLAUDE.md`,
+  „## Offene Punkte" (Betreiber-Dokumentation, Punkt 2), ist bereits als Befund geführt.
+- **KEINE UI-WARNUNG für unvollständige Konfiguration.** Steht im Vorrat.
+
+### Zwei offene Fragen — FRAGEN, kein Befund
+
+Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
+
+1. **TRÄGT LINKEDIN EINE EIGENE CONFIG-FORM, UND WAS KOSTET SIE?** `PinterestConfig` ist
+   der Präzedenzfall, `forwardToTiktok` nimmt `CapiConfig` unverändert.
+   **WAS DAZU BEREITS GEMESSEN IST und die Frage NICHT beantwortet (2026-08-18):**
+   `PinterestConfig` lebt AUSSCHLIESSLICH an der Adapter-Grenze — der Resolver erzeugt
+   auch für Pinterest ein `ResolvedTarget` mit `config: CapiConfig`, und erst
+   `dispatchForward` projiziert um (`{ adAccountId: entry.config.pixelId, token:
+   entry.config.token }`). `ResolvedTarget.config` ist als `CapiConfig` typisiert. **Ob
+   das Muster damit für den RESOLVER trägt und was `ResolvedTarget` dafür braucht, ist
+   offen** — hier wird es NICHT entschieden.
+2. **WIE KOMMT DIE ZUORDNUNG IN DEN RESOLVER?** Er liest den Blob heute LOKAL
+   (`const settings = (project.settings ?? {}) as ProjectSettings` in
+   `getCapiConfigByTrackingKey`) und gibt ihn NICHT zurück; die Auflösung liefert
+   `{ projectId, blocked, abTestActive, targets }` (GEMESSEN 2026-08-18). Ob ein zweiter
+   Leser neben `getPixelId` tritt oder etwas anderes, ist offen.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 - **GEBAUT WIRD AUF DIE KLARTEXT-IP ALS KENNUNG; li_fat_id IST EINE EIGENE FOLGE-SCHEIBE**
@@ -691,6 +800,28 @@ kein `pixelId`- und kein `getPixelId`-Eingriff.
   (l)): sie steht in der NUTZLAST des Aufrufs. **KIPPT DIESE EINORDNUNG, IST DIE
   ENTSCHEIDUNG NEU ZU TREFFEN** — ein Geheimnis gehört nicht in einen Blob, den der Client
   ganzheitlich zurückschreibt und den die Oberfläche anzeigt.
+- **DIE IPv6-ANNAHME — UND SIE IST AUSDRÜCKLICH EINE ANNAHME, KEINE MESSUNG** (Owner,
+  2026-08-18): Es wird ANGENOMMEN, dass IPv6-Adressen in Produktion vorkommen.
+  **PROVENIENZ: ANNAHME.** Das ist eine eigene Klasse neben GEMESSEN und GELESEN, und sie
+  wird nie in eine der beiden gehoben, solange sie nicht gemessen ist.
+  **GRUND, WARUM ÜBERHAUPT ANGENOMMEN WIRD:** Am Code ist es NICHT entscheidbar (GEMESSEN
+  2026-08-18: `resolveClientIp` in `src/lib/capi/ingest.ts` liest einen Kopf —
+  `x-vercel-forwarded-for`, ersatzweise `x-real-ip` — und trifft KEINE Annahme über
+  dessen Inhalt; die einzige inhaltliche Prüfung im Repo ist `isLoopbackOrEmpty`, eine
+  Loopback-Erkennung und KEINE Familien-Unterscheidung). Und eine Messung an der
+  DEPLOYTEN Laufzeit ist heute nicht möglich: es gibt ausser dem Owner keine
+  Live-Kunden, also keinen Traffic in den Logs.
+  **WARUM DIE ANNAHME KONSERVATIV IST:** Sie führt zu einem Riegel, der bei reinem
+  IPv4-Traffic überflüssig wäre und nichts kaputtmacht. Die Gegenannahme wäre teurer —
+  sie liesse einen Fall ungeschützt, der laut `docs/ziel-befunde.md`, Teil (j), mit 201
+  quittiert würde und ins Leere liefe.
+  **DIE PROVENIENZ-KETTE GEHÖRT DAZU, DREI GLIEDER, KEINES GEMESSEN:** dass
+  `PLAINTEXT_IP_ADDRESS` nur IPv4 meint, ist GELESEN (`docs/ziel-befunde.md`, Teil (i),
+  Anbieter-Doku 2026-08-17) · dass ein IPv6-Wert quittiert würde, ist FOLGERUNG (Teil
+  (j), dort ausdrücklich als nicht gemessen bezeichnet — IPv6 ist nicht probiert worden)
+  · dass IPv6 überhaupt vorkommt, ist ANNAHME.
+  **SIE BINDET DEN ADAPTER-ZUSCHNITT (11.1f), NICHT DIE SCHEIBE 11.1e** — dort wird die
+  Identität gebaut. **NEU ZU BEWERTEN, sobald echter Traffic messbar ist.**
 
 ## Vorrat — gemeldet, nicht gebaut
 
@@ -906,6 +1037,31 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   sucht die eine an der Stelle der anderen.
   **TRIGGER:** mit der Drift-Runde, die ohnehin ansteht — sie behandelt die Nachbar-Ebene.
   GEMELDET, NICHT GEBAUT, KEINE Empfehlung zur Bauform.
+
+- **EIN UNVOLLSTÄNDIG KONFIGURIERTES ZIEL FÄLLT STILL AUS.** Liegt nur die Kennung oder
+  nur das Zugangsdatum vor, entsteht kein Empfänger und es geht nichts hinaus — ohne
+  Meldung, auf keinem Kanal.
+  **GEMESSEN am Code (2026-08-18):** Die Paarungsschleife in
+  `getCapiConfigByTrackingKey` (`src/lib/capi/token.ts`) überspringt mit
+  `if (!token) continue;`; die Gegenrichtung fällt schon vorher heraus, weil ein Ziel
+  ohne Kennung gar nicht erst in den `in`-Filter der Geheimnis-Abfrage kommt.
+  **DAS TRIFFT ALLE VIER ZIELE, nicht nur LinkedIn** — es ist ein Zustand des BESTANDS,
+  den die Scheibe 11.1e übernimmt und NICHT erzeugt.
+  **WAS DIE OBERFLÄCHE HEUTE SAGT, und das ist der Punkt:** Die Karte meldet
+  „Zugangsdaten hinterlegt", sobald eine Geheimnis-Zeile existiert
+  (`listConfiguredTargets`, `src/app/projects/actions.ts` — sie liest den Wert nie); über
+  die KENNUNG sagt sie an dieser Stelle nichts. **OB und WIE eine Warnung entsteht, ist
+  HIER NICHT entschieden.**
+  **TRIGGER:** die UI-Warnung für unvollständige Ziel-Konfiguration (Owner-Absicht,
+  2026-08-18), oder spätestens vor echtem Ad-Traffic.
+  **ES IST DER DRITTE STILLE AUSFALLPFAD DIESER SITZUNG, und die beiden anderen gehören
+  danebengestellt, damit niemand sie zusammenzieht:** der PUBLISH-DRIFT (`CLAUDE.md`,
+  „## Offene Punkte", „NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN
+  IST") — dort ist der ausgelieferte Text alt, weil niemand neu veröffentlicht hat; der
+  AUSLIEFERUNGS-CACHE (dieser Vorrat, der Punkt darüber) — dort ist der veröffentlichte
+  Text korrekt und nur seine Auslieferung veraltet; und DIESER hier — dort ist die
+  Konfiguration selbst unvollständig, und es entsteht gar kein Empfänger.
+  **DREI VERSCHIEDENE URSACHEN, DREI VERSCHIEDENE LÖSUNGEN.**
 
 ## Hebungs-Kandidaten
 

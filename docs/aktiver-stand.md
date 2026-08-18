@@ -226,30 +226,35 @@ nicht mehr diese Scheibe gebaut.
 ## Scheibe 11.1c — Ein Urteil über die Auslieferbarkeit
 
 Die Frage **„trägt dieses Ziel eine Kennung?"** wird ZIEL-BEWUSST beantwortet — an EINER
-Stelle, von der aus die drei bestehenden Aufrufer sie lesen. **Für ALLE VIER Ziele liefert
-sie das HEUTIGE Ergebnis; für kein Ziel ändert sich etwas.**
+Stelle, von der aus die drei bestehenden Aufrufer sie lesen. **GEBAUT, GEPUSHT UND LIVE
+BELEGT (2026-08-18); was entstanden ist und was gemessen wurde, steht in Vermerk 3.**
 
-### Warum diese Scheibe VOR der Ablage kommt — die stille Fehlerkette
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-Die LinkedIn-Kennung gilt JE EREIGNISTYP und ist KEIN Skalar. Legt man sie ab, ohne das
-Urteil vorzubereiten, liefert `getPixelId` `""` und `hasPixelId` `false` — und daran hängen
-DREI Aufrufer mit DREI verschiedenen Wirkungen (GEMESSEN am Code, 2026-08-18):
+VERDICHTET AM 2026-08-18, nach dem bestätigten Live-Test. Hier standen die ANWEISUNGEN FÜR
+die Scheibe, und sie sind mit dem Vollzug abgelaufen:
 
-- die Auslieferungs-Zeile der Karte (`TargetCard` in `src/components/TargetCard.tsx`),
-- das Consent-Memo (`consentTargets` in `src/components/CodeImporter.tsx`), **das den
-  AUSGELIEFERTEN Text speist**,
-- der Kennungs-Filter im Auflösungs-Pfad (`getCapiConfigByTrackingKey` in
-  `src/lib/capi/token.ts`).
+- **DIE STILLE FEHLERKETTE**, die den Schnitt trug: Die LinkedIn-Kennung gilt JE
+  EREIGNISTYP und ist KEIN Skalar; ohne vorbereitetes Urteil lieferte das Prädikat `false`,
+  und daran hingen die drei Aufrufer mit drei Wirkungen — darunter das Consent-Memo, das
+  den AUSGELIEFERTEN Text speist. Ohne Schlüssel im Draht greift am Ingest fail-closed.
+  **DIE FOLGE DAVON IST NICHT WEG, sie steht als bindende Entscheidung unter
+  „## Entscheidungen" („SOBALD LINKEDIN EINE KENNUNG TRÄGT …") und gilt 11.1d.**
+- **DIE BEGRÜNDUNG, WARUM ZWEI SCHEIBEN STATT EINER:** Ein Umbau am geteilten Urteil
+  berührt Resolver UND ausgelieferten Text; läge daneben eine Verhaltensänderung, wäre bei
+  einem Live-Fehlschlag nicht erkennbar, WELCHE Achse gebrochen ist. Eingelöst — der
+  Byte-Vergleich hat genau diese Trennung ausgenutzt.
+- **DER PFLICHT-STOPP FÜR DIE LIVE-ANLEITUNG** („ohne gesicherte Vorher-Kopie kein
+  Deploy"). Er hat gewirkt, und WAS DARAUS GEWORDEN IST, steht in Vermerk 3 — als
+  BEOBACHTUNG, nicht als Regel für künftige Anleitungen.
+- **DIE FESTSTELLUNG, DASS DIE SCHEIBE NICHT DEMOBAR IST** (Owner 2026-08-18), sondern
+  BEWEISBAR. Sie war eine Aussage über DIESE Scheibe und ist mit ihrem Nachweis erledigt.
 
-Ohne Schlüssel im Draht greift am Ingest fail-closed: **kein Forward.** Der Kunde hat
-Zugangsdaten, eine Zuordnung, eine grüne Karte — und es geht nichts hinaus, ohne dass
-irgendwo etwas rot wird. Der Draht ist eine EINBAHNSTRASSE; ein späterer Fix erreicht
-bereits publizierte Seiten NICHT.
-
-**ZWEI ACHSEN IN EINER SCHEIBE WÄREN NICHT AUSEINANDERZUHALTEN:** Ein Umbau am geteilten
-Urteil berührt den Resolver UND den ausgelieferten Text. Läge daneben eine
-Verhaltensänderung, wäre bei einem Live-Fehlschlag nicht erkennbar, WELCHE Achse gebrochen
-ist.
+**DIE OFFENE FRAGE ZUR PROP IST NICHT BEANTWORTET WORDEN — sie ist GEGENSTANDSLOS
+GEWORDEN**, und der Unterschied trägt: Mit der gebauten Signatur (Wert + Ziel) ist `target`
+in der Karte bereits eine Prop, die Umstellung kostete dort keine Prop-Änderung. **Die
+Frage selbst besteht weiter und ist in den Vorrat gewandert** („KANN DIE GESPEICHERTE
+KENNUNG AN DER KARTE EIN BOOLEAN WERDEN?"); sie gehört keiner Scheibe.
 
 ### Der Ort — ENTSCHIEDEN (Owner, 2026-08-18): `src/lib/settings.ts`, neben `getPixelId`
 
@@ -261,6 +266,18 @@ Die Begründung gehört in den Zuschnitt, weil sie sonst beim nächsten Aufräum
   nur ENTGEGENNIMMT, verletzt den Wortlaut zwar nicht — jene Datei definiert sich aber als
   eine, die Tatsachen ENTGEGENNIMMT. Eine Funktion, die selbst `getPixelId` ruft,
   BESCHAFFT sich die Tatsache. **Das Verbot wird damit weder neu gefasst noch umgangen.**
+  **RICHTIGGESTELLT AM 2026-08-18, NICHT GESTEMPELT — der Wortlaut darüber bleibt lesbar,
+  die Richtigstellung tritt daneben:** Der Satz „eine Funktion, die selbst `getPixelId`
+  ruft, BESCHAFFT sich die Tatsache" SETZT DIE VERWORFENE SIGNATUR VORAUS. Gebaut ist
+  `hasTargetPixelId(pixelId, target)` (GEMESSEN am Code, 2026-08-18) — sie ruft `getPixelId`
+  NICHT, sondern nimmt den Wert entgegen, genau wie das Primitiv.
+  **DIE TRAGENDE FASSUNG LAUTET DESHALB:** Jene Datei definiert sich als ZIEL-BLIND, und ein
+  Ziel überhaupt zu FÜHREN ist dort ausgeschlossen — UNABHÄNGIG davon, ob es bewertet wird.
+  Diese Fassung trägt die gebaute Signatur, die alte nicht.
+  **WARUM DAS KEINE KOSMETIK IST:** Der Zuschnitt hat den ORT entschieden, BEVOR die
+  SIGNATUR vorlag, und seine Begründung setzte stillschweigend eine bestimmte voraus. Ein
+  Maßstab, dessen Begründung auf das Gebaute nicht passt, taugt beim nächsten Zuschnitt
+  nicht — und der nächste ist 11.1d, der genau hier ansetzt.
 - **NICHT `src/lib/tracking/target-adapters.ts`.** Ihr Kopf bestimmt sich über
   BUILD-Tatsachen: „Ob dieser Build einen Empfaenger mitbringt, setzt kein Betreiber — das
   aendert sich nur mit einem Deploy." Eine Kennung setzt der Betreiber, und sie ändert sich
@@ -283,28 +300,19 @@ ZIEL-UNTERSCHEIDEND, und DORT ist die Acht nachzuziehen.** Jener Kopf hat seine 
 bereits ZWEIMAL falsch geführt (er korrigiert eine alte SECHS selbst); wer das übersieht,
 hinterlässt die dritte.
 
-### Die tragende Invariante — zugleich der einzige Nachweis
+### Die tragende Invariante
 
 **DER AUSGELIEFERTE TEXT IST VOR UND NACH DEM DEPLOY BYTE-IDENTISCH.** Er ist es, weil sich
 für kein Ziel die Antwort ändert; `consentTargets` ist der Draht, über den eine Änderung
 ihn erreichen würde. **Ein Unterschied ist kein Schönheitsfehler, sondern der Beweis, dass
-die Scheibe ihr Versprechen bricht.**
+die Scheibe ihr Versprechen bricht.** Sie ist der Prüfstein jeder Änderung dieser Scheibe —
+wer sie bricht, hat nicht mehr diese Scheibe gebaut. GEFAHREN UND GEHALTEN, mit ihrer
+Reichweite: s. Vermerk 3.
 
-**PFLICHT-STOPP FÜR DIE LIVE-ANLEITUNG, KEIN HINWEIS: Ist die Vorher-Kopie des
-ausgelieferten Textes nicht gesichert, wird NICHT deployt.** GRUND, gemessen: In den
-letzten ZWEI Scheiben ist ein Vorher-Schritt ausgefallen, weil der Zustand vor dem Deploy
-zum Testzeitpunkt nicht mehr herstellbar war (11.1a der Constraint-Ausgangswert, 11.1b der
-ausgelieferte Text — s. die beiden Vermerke). Hier gäbe es dann KEINEN Nachweis, und der
-Schritt würde als „geprüft" protokolliert, ohne stattgefunden zu haben.
+### Was ausdrücklich NICHT drin war, je mit seinem Grund — GILT WEITER, IST ABER KEIN ZUSCHNITT MEHR
 
-### Sie ist nicht demobar, und das ist entschieden
-
-ENTSCHIEDEN (Owner, 2026-08-18): Diese Scheibe ändert für keinen Nutzer etwas Sichtbares.
-Sie ist BEWEISBAR — der Byte-Vergleich plus die Ingest-Regression. Der Grundsatz „jeder
-Schritt demobar" tritt hier BEWUSST zurück, weil die Alternative wäre, zwei Achsen zu
-bündeln.
-
-### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+Die Ausschlüsse sind mit dem Vollzug NICHT erledigt; erledigt ist nur ihre Rolle als
+Zuschnitt DIESER Scheibe.
 
 - **KEINE ABLAGE, KEINE URN, KEIN NEUES FELD in `settings`.** Das ist 11.1d, und erst dort
   urteilt die Funktion je Ziel VERSCHIEDEN.
@@ -317,21 +325,6 @@ bündeln.
   Pixel", und Metas Kennung ist ein Skalar und bleibt einer. Der Vorrats-Trigger dazu ist
   ZU WEIT gefasst und wird in derselben Runde VERENGT (s. „## Vorrat").
 - **KEINE MIGRATION, KEIN SCHEMA.**
-
-### Eine offene Frage — FRAGE, kein Befund
-
-Sie wird im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
-
-**Kann die Prop, die heute die gespeicherte Kennung als STRING an die Karte reicht, ein
-BOOLEAN werden — oder müssen beide nebeneinander stehen?** `TargetCard`
-(`src/components/TargetCard.tsx`) bekommt `savedPixelId` als String und ruft darauf
-`hasPixelId`; `settings` liegt dort NICHT im Geltungsbereich, und der Kopf von
-`src/components/MeasureView.tsx` verbietet das ausdrücklich („nur Skalare herein").
-WAS DAZU BEREITS GEMESSEN IST (2026-08-18) und die Frage NICHT beantwortet: `savedPixelId`
-hat in `TargetCard` GENAU EINE Verwendung — den `hasPixelId`-Aufruf; `savedPixelIdFor` hat
-in `MeasureView` genau eine — das Durchreichen. OFFEN BLEIBT die ENTSCHEIDUNG: ein Boolean
-verlöre die Möglichkeit, den Wert dort je anders zu befragen, und eine Prop weniger ist
-kein Selbstzweck.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -399,6 +392,25 @@ kein Selbstzweck.
   DAS BINDET 11.1d UND GEHÖRT DORT IN DIE LIVE-TEST-ANLEITUNG, nicht erst in den
   Support-Fall: Wer nach dem Eintragen der Kennung nicht neu veröffentlicht, misst ein
   korrektes fail-closed und schreibt es dem Adapter zu.
+- **DER ZWEITE PARAMETER VON `hasTargetPixelId` IST DER ORT** (gebaut in
+  `src/lib/settings.ts`, Scheibe 11.1c). Er tut heute nichts — die Funktion delegiert an
+  `hasPixelId` und urteilt für kein Ziel anders. **WER IHN STREICHT, STREICHT DIE
+  BEGRÜNDUNG, warum die Funktion nicht in `src/lib/tracking/target-readiness.ts` lebt:**
+  jene Datei ist ZIEL-BLIND, und ein Ziel überhaupt zu FÜHREN ist dort ausgeschlossen. Ohne
+  den Parameter ist diese Funktion vom Primitiv nicht mehr zu unterscheiden, und der Ort
+  fällt mit ihm.
+  **SEIN WÄCHTER IST DIE eslint-DIREKTIVE, und das ist der Punkt, an dem die nächste Runde
+  das Falsche tun kann:** Der Linter meldet den ungenutzten Parameter (GEMESSEN 2026-08-18;
+  der Unterstrich-Präfix hilft NICHT, die Konfiguration trägt kein `argsIgnorePattern`).
+  Eine `eslint-disable-next-line`-Direktive an der Signatur unterdrückt ihn und trägt ihre
+  Begründung mit. **SOBALD 11.1d DEN PARAMETER BENUTZT, MELDET ESLINT DIE DIREKTIVE SELBST
+  ALS ÜBERFLÜSSIG — dann gehört SIE entfernt, NICHT der Parameter.** Wer die Meldung als
+  Fehler liest, dreht die Scheibe zurück.
+  **WARUM DAS EINE ENTSCHEIDUNG UND KEINE NOTIZ IST:** Ein Kommentar wäre kein Wächter — er
+  schweigt, wenn jemand mit `--fix` durchgeht. Die Direktive schlägt an. ERSTE FUNDSTELLE
+  DIESER ART IM REPO (GEMESSEN 2026-08-18: keine einzige `eslint-disable`-Zeile für
+  `no-unused-vars` in `src/` davor); sie ist deshalb ausdrücklich begründet und NICHT als
+  Gewohnheit gedacht, die man beim nächsten ungenutzten Parameter abschreibt.
 
 ## Vorrat — gemeldet, nicht gebaut
 
@@ -496,6 +508,23 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   KOMMENTAR-vs-CODE-BEFUND AN EINER KERN-DATEI, EIGENE RUNDE — hier ausdrücklich nicht
   repariert.
 
+- **KANN DIE GESPEICHERTE KENNUNG AN DER KARTE EIN BOOLEAN WERDEN?** (aus dem Zuschnitt
+  11.1c hierher gewandert, 2026-08-18 — dort GEGENSTANDSLOS geworden, NICHT beantwortet):
+  `TargetCard` (`src/components/TargetCard.tsx`) bekommt `savedPixelId` als STRING;
+  `settings` liegt dort nicht im Geltungsbereich, und der Kopf von
+  `src/components/MeasureView.tsx` gibt „nur Skalare herein" vor.
+  WARUM SIE 11.1c NICHT MEHR BETRAF: Die gebaute Signatur nimmt Wert UND Ziel entgegen, und
+  `target` ist an der Karte bereits eine Prop — die Umstellung kostete dort keine
+  Prop-Änderung.
+  WAS DAZU GEMESSEN IST (2026-08-18): `savedPixelId` hat in `TargetCard` GENAU EINE
+  Verwendung (den Prädikat-Aufruf), `savedPixelIdFor` in `MeasureView` genau eine (das
+  Durchreichen). Ein Boolean wäre also ausdrückbar.
+  WAS DAGEGEN STEHT und die Frage offen hält: Das URTEIL wanderte damit aus der Karte in
+  den Container — und die Prop-Doku in `MeasureView` sagt ausdrücklich „das Urteil faellt
+  in der Karte". Dazu kosteten es 14 Fixture-Stellen in `TargetCard.test.tsx` samt der dort
+  gemessenen M6-Notiz. BEOBACHTUNG, KEINE EMPFEHLUNG — die Entscheidung ist offen und
+  gehört keiner Scheibe.
+
 - **EINE ANGABE IM KOPF VON `src/lib/tracking/target-adapters.ts` IST GEALTERT** (GEMESSEN
   am Repo, 2026-08-18): Dort steht an `TARGETS_WITH_ADAPTER` „DIESE LISTE IST EINE
   TEILMENGE VON TRACKING_TARGETS, KEINE ZWEITE FASSUNG DAVON. **Heute enthaelt sie alle
@@ -511,6 +540,21 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   EIGENE RUNDE, HIER NICHT REPARIERT. Wer sie anfasst, liest zuerst die Kopplung an
   derselben Datei: ihr Kopf ZITIERT einen Absatz aus `src/lib/tracking/target-readiness.ts`
   wörtlich, und jener Absatz ist deswegen als unangetastet markiert.
+
+- **DER KOPF VON `src/lib/tracking/target-readiness.ts` TRÄGT ZWEI SÄTZE, DIE SEIT 11.1c
+  FALSCH SIND** (GEMESSEN am Code, 2026-08-18): die ZÄHLUNG „hasPixelId hat DREI
+  [Aufrufstellen] — die Auslieferungs-Zeile der Karte, den Kennungs-Filter im
+  Aufloesungs-Pfad und das Consent-Memo", und die ART-AUSSAGE „hasPixelId wird aus zwei
+  Client-Komponenten UND aus dem server-only-Aufloesungs-Pfad gerufen".
+  SEIT 11.1c HAT `hasPixelId` GENAU EINEN PRODUKTIV-AUFRUFER: `hasTargetPixelId` in
+  `src/lib/settings.ts`. Die drei Stellen rufen jetzt jene Funktion; sie delegiert hierher.
+  Der Aufruf kommt damit auch nicht mehr aus zwei Client-Komponenten, sondern aus EINER
+  reinen Datei.
+  **DIE REGEL DARÜBER IST UNBERÜHRT** — das Primitiv ist wortgleich geblieben, und die
+  Erreichbarkeit aus beiden Welten ist weiterhin die Begründung seiner Bauform; sie läuft
+  nur über einen Zwischenschritt. ÜBERHOLT IST ALLEIN DER BELEG.
+  DER WORTLAUT FÜR DEN NACHTRAG IST BEREITS VORGELEGT UND ANGENOMMEN (2026-08-18); die
+  Datei ist GESCHÜTZT, EIGENE RUNDE — hier ausdrücklich nicht eingebaut.
 
 ## Hebungs-Kandidaten
 
@@ -716,3 +760,79 @@ Fehlerklasse angesagt. Testzahl vorher/nachher GEMESSEN: 56 Dateien/1068 Tests -
 Dateien/1081 Tests, alle grün; `tsc`, Lint und Build ebenfalls.
 EINE MUTATIONSPROBE SAGT NICHTS ÜBER DIE DEPLOYTE LAUFZEIT — deshalb steht sie hier
 NEBEN dem Live-Test und nicht an seiner Stelle.
+
+### 3 — Scheibe 11.1c: Ein Urteil über die Auslieferbarkeit (Commit 4a06586)
+
+**WELCHE NUMMER DAS IST:** `4a06586` ist der BAU-Commit (`refactor(tracking):
+ziel-bewusstes Urteil ueber die Auslieferbarkeit`), gepusht am 2026-08-18 — NICHT der
+Doku-Commit, der diesen Vermerk trägt. Dieselbe Trennung wie in den Vermerken 1 und 2.
+Der Typ ist `refactor` und nicht `feat`, weil die Scheibe kein Verhalten ändert. ES GIBT
+DAMIT DERZEIT KEINE OFFENE LÜCKE.
+
+**WAS GEBAUT WURDE.** `hasTargetPixelId(pixelId: unknown, target: TrackingTarget): boolean`
+in `src/lib/settings.ts`, unmittelbar nach `getPixelId`. Sie nimmt Wert UND Ziel entgegen
+und DELEGIERT an `hasPixelId` (`src/lib/tracking/target-readiness.ts`) — sie wiederholt
+dessen Regel nicht. Drei Aufrufer sind umgestellt: das Consent-Memo (`consentTargets` in
+`src/components/CodeImporter.tsx`), der `withPixel`-Filter in `getCapiConfigByTrackingKey`
+(`src/lib/capi/token.ts`) und die Auslieferungs-Zeile der Karte (`TargetCard`).
+`hasPixelId` ist WORTGLEICH geblieben; die Prop `savedPixelId` bleibt ein STRING, und
+KEINE bestehende Fixture und KEINE bestehende Assertion wurde angefasst.
+DAS ZIEL WURDE AN KEINER STELLE NEU BESCHAFFT: An der Karte ist es bereits eine Prop, im
+Resolver reist es im Zwischenobjekt mit — deshalb ruft der Filter dort KEIN zweites
+`getPixelId`, und die Rechnung je Beacon ist unverändert.
+
+**WAS GEMESSEN IST (LIVE, 2026-08-18, vom Owner):**
+- **DER BYTE-VERGLEICH IST GEFAHREN UND HAT GEHALTEN:** Der ausgelieferte Text für Variante
+  A ist vor und nach dem Deploy BYTE-IDENTISCH — `git diff --no-index`, leere Ausgabe.
+- **INGEST-REGRESSION:** Conversions kamen als „Empfangen von: Server" an.
+- **KARTE, BEIDE RICHTUNGEN:** Bei einem Ziel mit gespeicherter Kennung FEHLT die
+  Auslieferungs-Zeile; bei Zielen ohne STEHT der Hinweis. Die Kennung im Feld geleert OHNE
+  zu speichern: die Anzeige ändert sich NICHT — das Urteil liest weiterhin den
+  GESPEICHERTEN Wert.
+- **DAS VIERTE ZIEL:** LinkedIn unverändert „Auslieferung folgt — dieses Ziel sendet noch
+  nicht.", KEINE Meldung über eine fehlende Kennung.
+
+**DIE GRENZE, DIE MITMUSS — DER BYTE-BELEG DECKT EINE VARIANTE, NICHT BEIDE:** Gemessen ist
+VARIANTE A. Ob das Prüfprojekt überhaupt eine Variante B trug, ist NICHT berichtet; für B
+liegt damit KEIN Byte-Beleg vor. **Die tragende Invariante ist für die GEMESSENE Variante
+belegt, nicht für beide.** Hier wird über B nichts behauptet — weder dass sie unverändert
+blieb noch dass es sie gab.
+
+**DER PUNKT, DER ÜBER DIE MESSWERTE HINAUSGEHT — DIES IST DIE ERSTE DER DREI SCHEIBEN, IN
+DER DER VORHER-SCHRITT TATSÄCHLICH STATTGEFUNDEN HAT.** In 11.1a fiel der
+Constraint-Ausgangswert aus, in 11.1b der ausgelieferte Text; beide, weil das Deployment
+zum Testzeitpunkt schon lief (s. die Vermerke 1 und 2). Hier war der Byte-Vergleich der
+EINZIGE Nachweis der tragenden Invariante — und ein PFLICHT-STOPP in der Anleitung („ohne
+gesicherte Vorher-Kopie kein Deploy") hat ihn hergestellt.
+**BEOBACHTUNG, KEINE REGEL:** Ob daraus eine Vorschrift für künftige Anleitungen wird, ist
+HIER NICHT entschieden.
+
+**DIE UNIT-EBENE, AUSDRÜCKLICH NEBEN DEM LIVE-TEST UND NICHT AN SEINER STELLE:** Die
+Pflicht-Mutation (`hasTargetPixelId` gibt konstant `false` zurück) hat JE AUFRUFER belegt,
+dass der neue Pfad lebt — **KEIN Aufrufer-Block blieb grün**, 20 von 1084 Tests fielen über
+vier Testdateien. An der Karte fielen exakt die zwei angesagten (K2, K6), im Resolver die
+Tests mit erwartetem Empfänger, dazu die beiden neuen Einheitstests direkt.
+**BEIM CONSENT-MEMO FIELEN ACHT STATT DER VIER ANGESAGTEN.** Die vier zusätzlichen melden
+DIESELBE Fehlerklasse — jeder von ihnen behauptet, dass ein Ziel mit gesetzter Kennung im
+Draht erscheint, und bei konstant falschem Urteil ist die Liste in allen leer. **Also
+Abdeckung und keine Kaskade.** DIE ZU NIEDRIGE ANSAGE KAM AUS DEM AUFTRAG: Er nannte
+Testnamen, statt den Block auf die Achse durchzuzählen — eine Zählung entlang EINER Achse
+ist bei einem Umbau systematisch zu niedrig.
+Testzahl vorher/nachher GEMESSEN: 57 Dateien/1081 Tests -> 57 Dateien/1084 Tests, alle
+grün; `tsc`, Lint und Build ebenfalls. EINE MUTATIONSPROBE SAGT NICHTS ÜBER DIE DEPLOYTE
+LAUFZEIT.
+
+**WAS DIE SCHEIBE AN NEUER ABDECKUNG HINTERLÄSST:** ein Test, der ERSTMALS das vierte Ziel
+auf dieser Achse prüft (`D-T10` in `src/components/CodeImporter.test.tsx`, alle vier Ziele
+mit Kennung, verglichen auf die FOLGE in beiden Lesern). GEMESSEN 2026-08-18: kein anderer
+Test im Repo setzt je eine LinkedIn-KENNUNG. Wer ihn entfernt, nimmt die einzige Abdeckung
+mit.
+
+**EIN GATE HAT UNTERWEGS ANGESCHLAGEN, und der Vollzug fiel deshalb zweistufig aus:** Der
+Linter meldete den ungenutzten zweiten Parameter (GEMESSEN 2026-08-18; der
+Unterstrich-Präfix half NICHT — die Konfiguration trägt kein `argsIgnorePattern`, per Probe
+belegt). Der Bau hielt an, die BAUFORM wurde entschieden (Owner: eine
+`eslint-disable-next-line`-Direktive mit Begründung an der Signatur), NICHT der Parameter
+gestrichen. Die Direktive ist per Gegenprobe belegt: testweise entfernt, kam die Warnung
+wortgleich zurück. Was daran über die Scheibe hinaus bindet, steht unter
+„## Entscheidungen".

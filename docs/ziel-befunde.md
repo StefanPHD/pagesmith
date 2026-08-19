@@ -346,6 +346,15 @@ Kein Buchstabe wird neu vergeben, nichts umsortiert.
     worden.
     OHNE DEN KONTROLL-LAUF WÄRE "die Zahl steigt nicht" ALS DEDUPLIZIERUNG PROTOKOLLIERT
     WORDEN. Das ist der Grund, warum dieser Lauf hier eigens steht.
+    VORBEHALT (2026-08-19) — DIE FOLGERUNG IST WIDERLEGT, DER MESSWERT NICHT: Eine ZWEITE
+    Ablesung DESSELBEN Instruments, mehrere Stunden nach denselben Läufen, zeigt "9 Events
+    / 9 dedupliziert" gegenüber den "4" oben. Die Zahlen reagieren also sehr wohl — nur
+    mit Verzögerung; der Kontroll-Lauf war richtig gefahren und ZU FRÜH abgelesen. Was
+    oben gemessen ist, bleibt gemessen: dass die Zahl UNMITTELBAR nach einem Lauf steht.
+    Was fällt, ist allein die Deutung "sie reagiert nicht" und die daraus gezogene
+    Unmessbarkeit der Dedup-Wirkung. Der Wortlaut oben wird NICHT umformuliert und NICHT
+    gekürzt: er sagt, was am Tag der Läufe abgelesen wurde. Die zweite Ablesung, ihre
+    Grenze und die Basislinie für eine künftige Messung stehen unten unter (t).
 
 (r) DER VERSIONS-HEADER IST PFLICHT — UND SEIN FEHLER HAT EINE EIGENE RUMPFFORM.
     GEMESSEN 2026-08-19, LAUF G: Ohne den Header ergibt DERSELBE Aufruf 400 mit dem Rumpf

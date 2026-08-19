@@ -108,6 +108,10 @@ darauf (aus CLAUDE.md und aus docs/claude-history/backlog-polish.md) treffen.
     NICHT umformuliert und NICHT gekürzt: er sagt, was am 2026-08-15 gelesen wurde. Die
     vollständige Liste, ihre Provenienz und der gemessene Anteil daran stehen unten unter
     (i).
+    VORBEHALT (2026-08-19) — DIE TYP-LISTE IST UNBERÜHRT, DIE UMGEBENDE NUTZLAST NICHT:
+    Die FORM, in der das Kennungs-Paar reist, und die übrigen Felder desselben Aufrufs
+    sind erst am 2026-08-19 erhoben worden; s. unten (n). An der Liste der Symbole und
+    an ihrer Provenienz ändert das nichts.
 
 (c) DIE KENNUNG DER CONVERSION-REGEL WIRD BEIM AUFRUF AUFGELÖST (GEMESSEN): Eine gültige
     Nutzlast mit einer NICHT existierenden Regel-Kennung ergibt 403 mit dem Rumpf
@@ -127,6 +131,13 @@ darauf (aus CLAUDE.md und aus docs/claude-history/backlog-polish.md) treffen.
     ausdehnen.
     DASS DAS EINE PRODUKTZUSAGE KIPPT, steht als EIN Satz an der Roadmap-Zeile 11.1 —
     hier steht der Befund, dort seine Folge für den Zuschnitt.
+    VORBEHALT (2026-08-19) — DER GEMESSENE TEIL HÄLT, DIE FOLGERUNG NICHT: Der Befund
+    oben (201, leerer Rumpf, keine Ereignis-Kennung in der Antwort) ist UNBERÜHRT und
+    bleibt gemessen. Die FOLGERUNG darunter ruht darauf, dass eine Deduplizierung einen
+    RÜCKKANAL braucht — und die SENDESEITE ist seit dem 2026-08-19 gemessen: das Feld
+    für eine mitgegebene Ereignis-Kennung EXISTIERT und wird angenommen, s. unten (p).
+    Der Wortlaut oben wird NICHT umformuliert; was von der Folgerung bleibt und was
+    fällt, steht bei (p).
 
 (e) DIE NUTZLAST-SEMANTIK WIRD NICHT GEPRÜFT, DIE STRUKTUR SCHON (GEMESSEN): Ein
     erfundener Währungscode bei sonst gültiger Nutzlast ergibt 201 Created — es kommt
@@ -146,6 +157,12 @@ darauf (aus CLAUDE.md und aus docs/claude-history/backlog-polish.md) treffen.
     nicht auflösbare Regel-Kennung -> 403 mit denselben zwei Feldern. Der Pflichtfeld-
     Fehler ist EINZELN gemessen: fehlt der Zeitstempel, nennt die Meldung genau diesen
     Pfad.
+    VORBEHALT (2026-08-19) — DIE ZAHLEN WAREN FÜR DEN DAMALIGEN STAND RICHTIG UND SIND
+    ES ALS AUSSAGE ÜBER JENE SIEBEN LÄUFE WEITERHIN: Gemessen sind inzwischen MEHR Wege
+    und mindestens eine weitere Rumpfform — zwei Wege mit Status 400, einer davon mit
+    einem Feld, das in keiner der drei Formen oben vorkommt. Die Aufstellung samt der
+    Frage, nach welchem Kriterium hier gezählt wird, steht unten unter (s). Der Wortlaut
+    oben wird NICHT umformuliert.
 
 (g) KEIN ZUGANGSDATUM IM ANTWORTRUMPF (GEMESSEN, NICHT-TREFFER): In keinem der sieben
     Läufe wurde ein gesendetes Zugangsdatum zurückgespiegelt; geprüft wurde mit einem
@@ -218,6 +235,12 @@ umsortiert.
     KEINE FOLGERUNG UND KEINE AUSWAHL ZWISCHEN DEN LESARTEN: als OFFEN geführt.
     DAS BERÜHRT (h): Dort ist die Empfangsanzeige als das taugliche Instrument benannt —
     tauglich für das OB, UNGEKLÄRT in der Zählweise.
+    VORBEHALT (2026-08-19) — DIE OFFENHEIT BLEIBT, IHR GRUND IST JETZT SCHÄRFER: Ein
+    Kontroll-Lauf mit einer NEUEN Ereignis-Kennung hat die Zahl EBENFALLS nicht bewegt.
+    Der Zähler reagiert damit auf Testdaten überhaupt nicht — weder auf Dubletten noch
+    auf neue Ereignisse —, und die beiden Lesarten oben sind an ihm nicht zu
+    unterscheiden. Was am Instrument REAGIERT, ist der Zeitstempel; s. unten (q). Der
+    Wortlaut oben wird NICHT umformuliert.
 
 (l) ZWEI FEHLERKLASSEN AN DER REGEL-KENNUNG, MIT GEGENSÄTZLICHER LESBARKEIT.
     GEMESSEN 2026-08-17: Ein formFALSCHES Präfix ("urn:lla:llaConversionRule:<id>" statt
@@ -232,3 +255,132 @@ umsortiert.
     innerhalb der letzten 90 Tage liegen. NICHT GEMESSEN.
     DER ANLASS GEHÖRT DAZU: In den ersten Läufen dieser Runde stand ein Zeitstempel von
     2024. Er ist NICHT aufgefallen, weil ein anderer Fehler zuerst griff.
+    VORBEHALT (2026-08-19) — DIESE ANGABE IST NICHT MEHR NUR GELESEN: Das Fenster ist am
+    2026-08-19 gemessen worden, und der Weg, auf dem die Schnittstelle es durchsetzt,
+    steht unten unter (s). Der Wortlaut oben wird NICHT umformuliert — er sagt, was am
+    2026-08-17 galt.
+
+### Messprotokoll 2026-08-19 — die Teile (n) bis (s)
+
+**HERKUNFT DER MESSUNG (2026-08-19):** NEUN Läufe gegen die echte
+Conversions-Schnittstelle des Anbieters, ausgeführt vom Owner im Terminal, mit dem
+Versions-Header 202601 und einem gültigen Zugangsdatum — SIEBEN Sonden (A bis G) und
+ZWEI Kontroll-Läufe. Die Läufe sind unten je Teil mit ihrem Buchstaben genannt, damit
+eine Angabe zu ihrem Lauf zurückverfolgbar bleibt.
+
+DIE BUCHSTABENREIHE LÄUFT ÜBER ALLE PROTOKOLLE DIESES ZIELS FORTLAUFEND WEITER: (a) bis
+(h) gehören dem Protokoll vom 2026-08-15, (i) bis (m) dem vom 2026-08-17; beide bleiben
+unverändert vergeben, damit die Verweise darauf treffen. Hier beginnt die Reihe bei (n).
+Kein Buchstabe wird neu vergeben, nichts umsortiert.
+
+(n) DIE NUTZLAST-FORM IST ERHOBEN — SIE STAND VORHER NIRGENDS.
+    DER GRUND GEHÖRT AN DEN ANFANG, sonst liest sich das wie eine Nachlässigkeit: Diese
+    Datei ist ein PROTOKOLL VON LÄUFEN und war kein Schema. Bis zu diesem Tag fehlten
+    hier der JSON-Schlüssel der Regel-Kennung, die Hüllenstruktur des Aufrufs und die
+    Schlüssel für Betrag und Währung — sie sind in den beiden Protokollen davor nie
+    erhoben worden.
+    GEMESSEN 2026-08-19, LAUF A: Eine Nutzlast aus `conversion` (die Regel-URN),
+    `conversionHappenedAt` (Millisekunden) und `user.userIds[]` mit GENAU EINEM Eintrag
+    aus `idType` und `idValue` ergibt 201 Created mit Content-Length 0.
+    GEMESSEN 2026-08-19, LAUF D: Der Wert reist in `conversionValue` mit den beiden
+    Feldern `currencyCode` und `amount`; mit `amount` als ZEICHENKETTE ergibt der Aufruf
+    201.
+    WAS DAMIT BESTÄTIGT IST UND WAS NEU: Die Einer-Liste unter `userIds` deckt sich mit
+    (i), wo derselbe Aufbau gemessen wurde; NEU sind die drei Schlüssel `conversion`,
+    `conversionValue.currencyCode` und `conversionValue.amount` sowie die Zuordnung
+    Betrag -> Zeichenkette, die bis hierher nur GELESEN war (2026-08-11).
+    GRENZE: Gemessen ist eine ANGENOMMENE Nutzlast, KEIN Schema. Welche weiteren Felder
+    die Schnittstelle kennt, sagt ein 201 nicht — das ist derselbe Nicht-Treffer-Vorbehalt
+    wie in (b) und (e).
+
+(o) DIE SCHNITTSTELLE PRÜFT TYPEN — UND DAS IST DIE GRENZE ZU (e), NICHT SEIN
+    WIDERSPRUCH.
+    GEMESSEN 2026-08-19, LAUF E: DERSELBE Betrag als ZAHL ergibt 422 mit der Meldung
+    'ERROR :: /conversionValue/amount :: 19.9 cannot be coerced to String'.
+    WAS DAS AN (e) PRÄZISIERT: Dort ist gemessen, dass die BEDEUTUNG ungeprüft bleibt —
+    ein erfundener Währungscode wird mit 201 quittiert. Hier ist gemessen, dass der TYP
+    geprüft wird. DIE GRENZE VERLÄUFT DAMIT ZWISCHEN TYP UND WERTEBEREICH, nicht zwischen
+    "prüft" und "prüft nicht". (e) ist unberührt und bleibt gemessen.
+    DIE PAARUNG MIT LAUF D IST DER BELEG, nicht der einzelne Lauf: Nur weil derselbe
+    Betrag in D als Zeichenkette durchging und in E als Zahl fiel, ist der Unterschied dem
+    TYP zuzuschreiben und nicht dem Wert.
+
+(p) EIN FELD FÜR DIE EREIGNIS-KENNUNG EXISTIERT — UND DAS KIPPT EINE BEGRÜNDUNG.
+    GEMESSEN 2026-08-19, LÄUFE B UND C, UND DIE REIHENFOLGE IST DER BELEG: Lauf B sendete
+    ein ERFUNDENES Feld bei sonst gültiger Nutzlast und ergab 422 mit
+    'ERROR :: /quatschFeldXyz :: unrecognized field found but not allowed'. ERST DAMIT
+    sagt der Ausgang von Lauf C etwas: dasselbe Muster mit dem Feld `eventId` ergab 201.
+    OHNE DIESE POSITIVKONTROLLE wäre die 201 aus C von "das Feld wird gar nicht geprüft"
+    nicht zu unterscheiden gewesen — dieselbe Denkfigur wie der Mitläufer in (a).
+    WAS DAS AN (d) KIPPT — DIE BEGRÜNDUNG, NICHT DEN MESSWERT: (d) folgert aus dem
+    fehlenden RÜCKKANAL, die Deduplizierung dieses Produkts lasse sich auf dieses Ziel
+    nicht ausdehnen. FOLGERUNG, NICHT GEMESSEN: Ein Rückkanal ist dafür nicht nötig —
+    dedupliziert wird beim EMPFÄNGER, über die MITGESENDETE Kennung, und die Sendeseite
+    steht damit offen. Der gemessene Teil von (d) — 201 mit leerem Rumpf, keine Kennung
+    in der Antwort — ist UNBERÜHRT.
+    EINE STÜTZE DIESER FOLGERUNG IST AM EIGENEN CODE GEMESSEN (2026-08-19),
+    NICHT AM ANBIETER: `forwardToMeta` (`src/lib/capi/meta-forward.ts`) liest aus der
+    ERFOLGSANTWORT des ersten Ziels NICHTS — es wird nur im Fehlerfall gelesen; die
+    Deduplizierung dort ruht allein auf der mitgesendeten `event_id`. OB Metas Antwort
+    eine Kennung enthielte, ist HIER NICHT GEMESSEN und für die Folgerung auch nicht
+    nötig.
+    GEMESSEN IST DIE SENDESEITE, NICHT DIE WIRKUNG: Dass das Feld ANGENOMMEN wird, ist
+    belegt. Dass der Anbieter damit DEDUPLIZIERT, ist NICHT gemessen — und mit den
+    heutigen Instrumenten auch nicht messbar, s. (q).
+
+(q) DIE ANZEIGE-ZAHLEN SIND FÜR TESTDATEN KEINE SONDE — DER KONTROLL-LAUF HAT DIE DEUTUNG
+    GEKIPPT.
+    GEMESSEN 2026-08-19: Nach einem zweiten Lauf mit DERSELBEN `eventId` blieb die
+    Signalintegritäts-Anzeige bei "4 Events / 4 dedupliziert" stehen, während der
+    Zeitstempel auf "Vor 15 Sek." sprang. DAS SAH NACH DEDUPLIZIERUNG AUS.
+    DER KONTROLL-LAUF, GEMESSEN AM SELBEN TAG: Ein weiterer Lauf mit einer NEUEN
+    `eventId` liess die Zahl EBENFALLS bei 4. Der Zähler reagiert also auf ein NEUES
+    Ereignis genauso wenig wie auf ein wiederholtes. Das Stehenbleiben beim Dublett-Lauf
+    war damit KEIN Dedup-Beleg, sondern dieselbe Ursache.
+    WAS DAS INSTRUMENT TAUGT: Der ZEITSTEMPEL reagiert auf Testdaten und zeigt EMPFANG.
+    DIE ZAHLEN tun es nicht — weder für Deduplizierung noch für Zählung.
+    DAS SCHÄRFT (h) UND (k): (h) hat dieselbe Denkfigur an der Conversions-Zählung
+    gemessen; die Signalintegritäts-Anzeige verhält sich ebenso. Die Zählweise der Klammer
+    aus (k) bleibt OFFEN — sie stand bei jedem beobachteten Stand gleich der Zahl davor,
+    und ein Stand, an dem die beiden Lesarten auseinandergingen, ist nicht beobachtet
+    worden.
+    OHNE DEN KONTROLL-LAUF WÄRE "die Zahl steigt nicht" ALS DEDUPLIZIERUNG PROTOKOLLIERT
+    WORDEN. Das ist der Grund, warum dieser Lauf hier eigens steht.
+
+(r) DER VERSIONS-HEADER IST PFLICHT — UND SEIN FEHLER HAT EINE EIGENE RUMPFFORM.
+    GEMESSEN 2026-08-19, LAUF G: Ohne den Header ergibt DERSELBE Aufruf 400 mit dem Rumpf
+    {"status":400,"code":"VERSION_MISSING","message":"A version must be present. Please
+    specify a version by adding the LinkedIn-Version header."}, dazu die Kopfzeile
+    X-Restli-Gateway-Error.
+    WAS NEU IST: Der Header war bis hierher NUR GELESEN (2026-08-11, "ein Versions-Header,
+    dessen Wert ein Datum ist und der abgeschaltet wird"); OB er Pflicht ist, war
+    unerhoben. Und der Rumpf trägt ein Feld `code`, das in keiner der bis dahin gemessenen
+    Formen vorkommt.
+    GRENZE: Gemessen ist das FEHLEN des Headers. Über einen FALSCHEN oder veralteten Wert
+    sagt dieser Lauf nichts — und die gelesene Angabe, dass Versionen abgeschaltet werden,
+    bleibt GELESEN.
+
+(s) DAS 90-TAGE-FENSTER IST DURCHGESETZT — MIT 400 STATT 422 UND EINER WEITEREN RUMPFFORM.
+    GEMESSEN 2026-08-19, LAUF F: Ein Zeitstempel 100 Tage in der Vergangenheit ergibt 400
+    mit dem Rumpf {"message":"Conversion time should be within 90 days and not exceed
+    current time, indices [0] (0-indexed).","status":400}.
+    ZWEI DINGE DARAN SIND NEU: Das Fenster war bis hierher NUR GELESEN (m) — jetzt ist es
+    gemessen, samt dem Weg, auf dem es durchgesetzt wird. Und die Meldung trägt eine
+    BATCH-SEMANTIK ("indices [0]"), obwohl ein EINZELNES Ereignis gesendet wurde.
+    FOLGERUNG, NICHT GEMESSEN: Die Schnittstelle behandelt den Aufruf intern als Liste.
+    Ein Aufruf mit MEHREREN Ereignissen ist nicht gefahren worden — über sein Verhalten
+    sagt dieser Lauf nichts.
+    WAS DAS AN (f) ERWEITERT: Dort stehen "DREI Fehlerwege, ZWEI Rumpfformen". GEMESSEN
+    sind jetzt FÜNF Wege — 401 (ungültiges Zugangsdatum) · 422 (fehlendes Pflichtfeld,
+    unbekanntes Feld, unbekanntes Enum-Symbol, formfalsches URN-Präfix, Typfehler) · 403
+    (nicht auflösbare Regel-Kennung) · 400 mit `code` (fehlender Versions-Header, Gateway)
+    · 400 mit `indices` (Zeitfenster, Validierung).
+    WIE VIELE RUMPFFORMEN DAS SIND, HÄNGT AM KRITERIUM — und weil (f) nach FELDERN zählt,
+    steht das hier ausdrücklich: Nach der FELDMENGE sind es DREI (vier Felder bei 401 ·
+    zwei Felder bei 422/403/400-indices · drei Felder bei 400-code). Nach der FORM DER
+    MELDUNG sind es VIER, weil die 400-indices-Meldung eine Batch-Semantik trägt, die
+    keine der übrigen kennt. HIER WIRD KEINE DER BEIDEN ZÄHLWEISEN ZUR GÜLTIGEN ERKLÄRT —
+    sie sind auseinandergehalten, damit eine spätere Zahl nicht ohne ihr Kriterium
+    zitiert wird.
+    (f) BLEIBT UNVERÄNDERT STEHEN und trägt einen Vorbehalt, der hierher zeigt; seine
+    Zahlen waren für die sieben Läufe vom 2026-08-15 richtig.

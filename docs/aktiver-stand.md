@@ -1131,6 +1131,28 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   **TRIGGER:** mit der nächsten Runde, die `src/lib/capi/token.ts` ohnehin anfasst.
   GEMELDET, NICHT GEBAUT — und ausdrücklich KEIN Namensvorschlag.
 
+- **DIE DEDUP-FRAGE IST MIT DEN VORHANDENEN INSTRUMENTEN NICHT ENTSCHEIDBAR** (Messung
+  2026-08-19, neun Läufe gegen die Schnittstelle des Anbieters; die Befunde stehen in
+  `docs/ziel-befunde.md`, Abschnitt „LinkedIn (Conversions API)", Teile (n) bis (s)).
+  **GEMESSEN ist die SENDESEITE:** Das Feld für eine mitgegebene Ereignis-Kennung
+  existiert und wird angenommen — belegt durch eine Positivkontrolle im selben Lauf, die
+  ein erfundenes Feld mit 422 abweisen liess (Teil (p)).
+  **NICHT GEMESSEN IST DIE WIRKUNG**, und sie ist mit den heutigen Instrumenten auch
+  nicht messbar: Die Anzeige-Zahlen des Anbieters reagieren auf Testdaten überhaupt
+  nicht — ein Kontroll-Lauf mit einer NEUEN Kennung bewegte sie so wenig wie ein
+  wiederholter (Teil (q)); und eine Zuordnung zu einer echten Person tritt bei Testdaten
+  prinzipiell nicht ein (Teil (h), festgehalten auch unter „## Entscheidungen").
+  **FOLGE FÜR DEN ZUSCHNITT VON 11.1f, und das ist der Grund, warum dieser Punkt hier
+  steht:** Der Adapter KANN die Kennung mitschicken; eine ZUSAGE an den Kunden wird
+  daraus nicht. Die beiden Sätze sind nicht dasselbe, und nur der erste ist gedeckt.
+  **WAS DAS AN DER BETREIBER-DOKUMENTATION BERÜHRT — GEMESSEN am Wortlaut (2026-08-19),
+  NICHT geändert:** Die Dedup-Zusage in `CLAUDE.md`, „## Offene Punkte", Punkt (2), ist
+  über die HERKUNFT der Ereignisse formuliert („gilt für Ereignisse AUS DIESEM BUILDER")
+  und NICHT über das Ziel. Für dieses Ziel wäre sie dem Wortlaut nach ANWENDBAR und
+  trotzdem UNBELEGT. Ob und wie das dort nachgezogen wird, ist HIER NICHT entschieden.
+  **TRIGGER:** sobald echter Traffic eine Zuordnung zu einer echten Person erzeugt.
+  GEMELDET, NICHT GEBAUT.
+
 ## Hebungs-Kandidaten
 
 Hier steht, was am Phasenende zur Aufnahme in docs/immer-beachten.md, ins

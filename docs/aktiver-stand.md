@@ -714,52 +714,50 @@ Adapter-Dateien und jede Komponente sind NICHT darunter.
 
 **DAS ZIEL SENDET.** Ein Adapter nach dem Muster der beiden jüngsten; `linkedin` kommt in
 `TARGETS_WITH_ADAPTER` (`src/lib/tracking/target-adapters.ts`), und der Riegel aus 11.1a
-fällt.
+fällt. **GEBAUT, GEPUSHT UND LIVE BELEGT (2026-08-19); was entstanden ist, was gemessen
+wurde und was AUSDRÜCKLICH NICHT gemessen ist, steht in Vermerk 6.**
 
-### Die Nutzlast — GEMESSEN, mit der Grenze an jeder Angabe
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-Alle Angaben aus `docs/ziel-befunde.md`, Abschnitt „LinkedIn (Conversions API)", Teile (n)
-bis (s), Messung vom 2026-08-19. **DIE PROVENIENZ STEHT JE FELD, weil bei diesem Ziel die
-Hälfte des Wissens GELESEN ist und ein Zuschnitt beides nicht gleich behandeln darf:**
+VERDICHTET AM 2026-08-19, nach dem bestätigten Live-Test. Hier standen die ANWEISUNGEN FÜR
+die Scheibe, und sie sind mit dem Vollzug abgelaufen:
 
-- **`conversion`** — die Regel-URN, Präfix `urn:lla:llaPartnerConversion:`. Schlüssel und
-  Annahme **GEMESSEN** (n); dass ein anderes Präfix mit 422 fällt und eine nicht
-  auflösbare Kennung mit 403, ebenfalls **GEMESSEN** ((l), (c)).
-- **`conversionHappenedAt`** — Millisekunden, innerhalb der letzten 90 Tage. **GEMESSEN
-  IST, DASS EINE NUTZLAST MIT MILLISEKUNDEN ANGENOMMEN WIRD** (n) und dass ein Wert 100
-  Tage in der Vergangenheit mit 400 fällt (s). **NICHT GEMESSEN:** dass Sekunden abgelehnt
-  würden — die Einheit selbst ist **GELESEN** (2026-08-11).
-- **`user.userIds[]`** — das Paar aus `idType` und `idValue`, BEIDE Pflicht, im gemessenen
-  Aufruf mit GENAU EINEM Eintrag. **GEMESSEN** ((a), (i), (n)).
-- **`conversionValue`** — optional, mit `currencyCode` und `amount`; **`amount` MUSS eine
-  ZEICHENKETTE sein**. **GEMESSEN in beide Richtungen** (n)/(o): als Zeichenkette 201, als
-  Zahl 422 mit `'ERROR :: /conversionValue/amount :: 19.9 cannot be coerced to String'`.
-- **DER VERSIONS-HEADER IST PFLICHT** — ohne ihn 400 mit `VERSION_MISSING`. **GEMESSEN**
-  (r). Dass Versionen abgeschaltet werden, bleibt **GELESEN** (2026-08-11).
+- **DIE NUTZLAST, FELD FÜR FELD, mit der Provenienz an jeder Angabe** — die Regel-URN samt
+  Präfix, der Zeitstempel in Millisekunden im 90-Tage-Fenster, das Kennungs-Paar, der
+  optionale Betrag als ZEICHENKETTE, der Pflicht-Versions-Header; dazu die Grenze, dass
+  eine ANGENOMMENE Nutzlast kein Schema ist, und die Aufzählung der FÜNF gemessenen
+  Fehlerwege.
+  **SIE IST NICHT VERLOREN, SIE HAT JETZT ZWEI BESSERE ORTE:** die Befunde stehen in
+  `docs/ziel-befunde.md`, Teile (n) bis (s) — dort, wo sie gemessen wurden —, und der
+  gebaute Adapter (`src/lib/capi/linkedin-forward.ts`) trägt sie an seinen Fundstellen,
+  je mit GEMESSEN oder GELESEN. Eine dritte Fassung im Zuschnitt wäre eine Kopie, die
+  unabhängig von beiden altert.
+- **DER WEG DER ZUORDNUNG ZUM ADAPTER** — die Messung, dass `dispatchForward` nur
+  `entry.config` weiterreicht, und der Befund, dass der `Forwarder`-Typ den GANZEN `entry`
+  übergibt. **Eine Angabe daraus ist seit dem Vollzug ÜBERHOLT und deshalb GESTRICHEN
+  statt gekürzt:** „`entry.conversionRules` erreicht damit keinen Adapter." Seit dieser
+  Scheibe erreicht sie einen — der Eintrag in `FORWARDER_BY_TARGET` projiziert sie in die
+  eigene Config-Form. Stehengeblieben wäre das eine TATSACHENBEHAUPTUNG ÜBER DEN CODE, die
+  beim nächsten Zuschnitt einen Weg noch einmal bauen liesse, den es gibt.
 
-**GRENZE, DIE MITMUSS:** Gemessen ist eine ANGENOMMENE Nutzlast, KEIN Schema — welche
-weiteren Felder die Schnittstelle kennt, sagt ein 201 nicht (n). Und die Schnittstelle
-prüft die BEDEUTUNG nicht: ein erfundener Währungscode wird mit 201 quittiert (e).
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WORDEN IST, je mit seinem Grund** — im Zweifel
+stehengelassen:
+· **„Drei Riegel, je mit ihrem Grund"** trägt zwei Befunde, die über die Scheibe
+  hinausreichen und sonst nirgends stehen: die Kette aus GELESEN, FOLGERUNG und ANNAHME
+  zum IPv4-Riegel, und die Feststellung, dass eine Bedingung ÜBER DIE PAARUNG aus Ereignis
+  und Ziel im Bestand NEU ist.
+· **„Die vier Bau-Entscheidungen"** bleibt, weil ein Code-Kommentar wörtlich darauf zeigt:
+  `src/lib/capi/linkedin-forward.ts` verweist für die Auflage an der Bauform F1 „im
+  Zuschnitt" dorthin. Eine Streichung machte den Zeiger stumpf — dieselbe Falle wie in
+  11.1e.
+· **„Die tragende Invariante"** und **„Was ausdrücklich NICHT drin war"** bleiben als
+  Prüfstein bzw. als weitergeltende Ausschlüsse.
+· **DIE ANTWORT AUF DIE ZWEITE OFFENE FRAGE** bleibt vollständig stehen — sie bindet jede
+  spätere Runde an diesem Ziel und ist durch den Live-Test nicht überholt, sondern
+  PRÄZISIERT worden (s. den Nachtrag dort).
 
-**FÜNF GEMESSENE FEHLERWEGE, UND DER ADAPTER MUSS SIE UNTERSCHEIDEN KÖNNEN:** 401
-(Zugangsdatum) · 422 (mehrzeilig, mit Feldpfaden; der Validator SAMMELT und bricht nicht
-beim ersten Fehler ab) · 403 (**irreführend** — „No ad accounts found" bei falscher
-Kennung, s. Teil (c)) · 400 mit `code` (Gateway, fehlender Versions-Header) · 400 mit
-`indices` (Validierung, Zeitfenster). **Die Rumpfformen und die Frage, nach welchem
-KRITERIUM sie gezählt werden, stehen in Teil (s) — hier wird keine Zahl wiederholt, damit
-sie nicht ohne ihr Kriterium zitiert wird.**
-
-### Der Weg der Zuordnung zum Adapter
-
-**GEMESSEN am Code (2026-08-19):** `dispatchForward` (`src/lib/capi/ingest.ts`) reicht
-heute an jeden der drei Empfänger nur `entry.config` weiter — Meta und TikTok unverändert,
-Pinterest als Projektion (`{ adAccountId: entry.config.pixelId, token: entry.config.token }`).
-`entry.conversionRules` erreicht damit keinen Adapter.
-**WAS DAZU EBENFALLS GEMESSEN IST und die Frage verkleinert:** Der Typ `Forwarder`
-(dieselbe Datei) übergibt jedem Eintrag den GANZEN `entry: ResolvedTarget`, nicht nur die
-Config — die Projektion geschieht erst IM Eintrag. **Ein neuer Eintrag kann `entry`
-also lesen, ohne dass an den drei bestehenden etwas zu ändern wäre.** Offen bleibt die
-SIGNATUR des neuen Adapters; das ist die erste Frage unten.
+WAS GEBAUT UND GEMESSEN WURDE, STEHT IN VERMERK 6 — und nur weil es dort steht, durfte es
+hier weg.
 
 ### Drei Riegel, je mit ihrem Grund
 
@@ -818,25 +816,28 @@ bleibt im Wortlaut stehen und trägt ihre Antwort daneben.**
 
 ### Was der Adapter-Eintrag an Tests mitzieht — VIER BEFUNDE
 
-**GEMESSEN am Repo (2026-08-19).** Sie gehören in den Zuschnitt, weil einer von ihnen KEIN
-Testfehler ist, sondern ein Befund über die Karten-Logik.
+**GEMESSEN am Repo (2026-08-19), VOLLZOGEN am selben Tag.** Sie gehören in den Zuschnitt,
+weil einer von ihnen KEIN Testfehler ist, sondern ein Befund über die Karten-Logik — und
+genau dieser bleibt hier stehen.
 
-- **`src/lib/tracking/target-adapters.test.ts` FÄLLT UND WIRD ENTFERNT, NICHT ANGEPASST.**
-  Sein eigener Kommentar verlangt das ausdrücklich („Wer ihn dort ‚repariert', statt ihn zu
-  loeschen, dreht die Aussage um"). **WAS AN SEINE STELLE TRITT, ENTSCHEIDET DER BAU** —
-  der Kommentar nennt keinen Nachfolger.
-- **DER `linkedin`-LAUF IN `src/lib/capi/fan-out.test.ts` WECHSELT DIE SEITE.** Die Schleife
-  verzweigt zur DEFINITIONSZEIT über `hasAdapter(target)`: Er sichert heute „feuert NICHT"
-  und muss danach „feuert" sichern. **Er braucht einen MODUL-MOCK für das neue
-  Adapter-Modul und eine VERDRAHTUNG des Spions** (der Spion `linkedin` existiert bereits,
-  wird aber im `beforeEach` nicht gesetzt) — **sonst liefe im Testlauf die ECHTE
-  Implementierung samt `fetch`.**
+**DREI DER VIER SIND MIT DEM BAU ERLEDIGT und stehen im Wortlaut in Vermerk 6:** der
+Wächter in `src/lib/tracking/target-adapters.test.ts` ist ENTFERNT worden, nicht angepasst
+(sein eigener Kommentar verlangte das) · der `linkedin`-Lauf in
+`src/lib/capi/fan-out.test.ts` hat die SEITE gewechselt und dafür Modul-Mock und
+Spion-Verdrahtung bekommen · `src/lib/capi/token.test.ts` ist unberührt geblieben, weil
+der Resolver `hasAdapter` nicht kennt.
+
 - **DER LAUF IN `src/components/TargetCard.test.tsx` FÄLLT, UND DAS IST KEIN TESTFEHLER.**
   Er setzt „hat Adapter" mit „hat ein öffentliches Feld" gleich (er erwartet im
   Adapter-Zweig `TARGET_CARDS[target].publicLabel`). **Für ein Ziel, dessen Kennung JE
   EREIGNISTYP gilt und nicht auf der Karte lebt, trägt diese Kopplung nicht.** BEFUND ÜBER
   DIE KARTEN-LOGIK, nicht über den Test.
-- **`src/lib/capi/token.test.ts` IST UNBERÜHRT** — der Resolver kennt `hasAdapter` nicht.
+  **VOLLZOGEN, UND DER BEFUND IST DABEI BESTÄTIGT WORDEN (GEMESSEN am Compiler und am
+  Code, 2026-08-19):** Der Test hat einen DRITTEN Fall bekommen (Empfänger ja, öffentliches
+  Feld nein); die Komponente ist UNVERÄNDERT geblieben und rendert die Kombination korrekt.
+  Es war die Annahme des Tests, die nicht mehr trug, nicht das Verhalten der Karte.
+  **WAS DAMIT NICHT ENTSCHIEDEN IST:** ob die Karte für ein Ziel ohne öffentliches Feld
+  etwas anderes zeigen SOLL als heute. Sie zeigt nichts Falsches — sie zeigt auch nichts.
 
 ### Die tragende Invariante — sie ist zweiseitig
 
@@ -853,7 +854,13 @@ Testfehler ist, sondern ein Befund über die Karten-Logik.
 **BEIDE HÄLFTEN BRAUCHEN GETRENNTE NACHWEISE** — wer nur (a) prüft, hat die Regression;
 wer nur (b) prüft, hat sie nicht.
 
-### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+### Was ausdrücklich NICHT drin war, je mit seinem Grund — GILT WEITER, IST ABER KEIN ZUSCHNITT MEHR
+
+Die Ausschlüsse sind mit dem Vollzug NICHT erledigt; erledigt ist nur ihre Rolle als
+Zuschnitt DIESER Scheibe. **ALLE VIER HABEN GEHALTEN — GEMESSEN am Diff (2026-08-19, an
+Commit `a4e680c`):** sieben Dateien, davon zwei neue; kein Signal, keine Anzeige, keine
+Wiederholung, kein Zähler, keine Übersetzungstabelle für Ereignisnamen — und in keiner
+Zeile des Commits, des Codes oder seiner Kommentare eine Dedup-Zusage.
 
 - **KEINE DEDUP-ZUSAGE.** Dass das Feld für eine mitgegebene Ereignis-Kennung angenommen
   wird, ist **GEMESSEN** (p); dass der Anbieter damit DEDUPLIZIERT, ist **NICHT** gemessen
@@ -914,6 +921,17 @@ Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
    trägt live WENIGER als jede ihrer Vorgängerinnen.** Der Beweis, dass die RICHTIGE
    Nutzlast entsteht, liegt auf der UNIT-Ebene — nicht, weil der Live-Test schlecht
    geschnitten wäre, sondern weil es an unserer Seite nichts zu beobachten gibt.
+   **PRÄZISIERT AM 2026-08-19 NACH DEM LIVE-TEST — DIE AUSSAGE OBEN BLEIBT WÖRTLICH
+   STEHEN UND GILT, SIE HAT NUR EINE HÄLFTE, DIE SIE NICHT NENNT:** Was an unserer Seite
+   nicht beobachtbar ist, ist der **ERFOLG**. Ein **FEHLSCHLAG** ist es sehr wohl — und
+   das ist LIVE belegt: Der Riegel „kein Eintrag" und eine echte 422-Ablehnung des
+   Anbieters standen beide als Logzeile in der Laufzeit-Ausgabe, unterscheidbar an ihrem
+   Grund. **DAS IST DIE FOLGE DER LOG-ENTSCHEIDUNG DIESER SCHEIBE**, und ohne sie wäre
+   auch diese Hälfte leer gewesen.
+   **WAS UNVERÄNDERT GILT UND JEDE SPÄTERE RUNDE BINDET:** Ein GELUNGENER Forward
+   hinterlässt an unserer Seite weiterhin NICHTS — kein Log, keine Zeile in `events`, kein
+   Rückgabewert. Wer einen Erfolg belegen will, braucht das Instrument des Anbieters, und
+   von diesem reagiert nur der Zeitstempel.
 
 ### Die drei Riegel loggen — ENTSCHIEDEN (Owner, 2026-08-19)
 
@@ -1438,6 +1456,30 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   **TRIGGER:** die nächste Runde, die eine Forward-Datei ohnehin anfasst. GEMELDET, NICHT
   GEBAUT.
 
+- **DIE REGEL-KENNUNG BRAUCHT IHR PRÄFIX, UND DER KUNDE HAT ES NICHT** (GEMESSEN live,
+  2026-08-19; Sachverhalt im Wortlaut in Vermerk 6, Befund (a)). Der Adapter reicht den
+  eingetragenen Wert unverändert durch und baut das Präfix NICHT; der Campaign Manager
+  zeigt in seiner Oberfläche NUR die Ziffernfolge. **Wer sie kopiert, trägt einen Wert ein,
+  der syntaktisch nicht trägt — und bekommt 422 mit „Invalid Urn format. Invalid prefix."**
+  **WARUM DAS EIN EIGENER FALL IST:** Der Riegel „kein Eintrag" greift NICHT, weil eine
+  Kennung DA ist. Es ist der VIERTE Fehlerweg neben den drei Riegeln — **der einzige, bei
+  dem tatsächlich eine Anfrage hinausgeht.**
+  **ZWEI RICHTUNGEN, KEINE EMPFEHLUNG, je mit der Grenze, die dazugehört:**
+  · **Das Präfix serverseitig ERGÄNZEN.** GRENZE: Das trifft eine Entscheidung über die
+    Form eines FREMDEN Werts, und diese Form ist nur GELESEN — gemessen ist allein, dass
+    ein falsches Präfix mit 422 fällt (Teil (l)). Wer ergänzt, baut eine Annahme in den
+    heissesten Pfad.
+  · **Die Form PRÜFEN und mit eigenem Grund ABWEISEN.** GRENZE: Das macht aus dem heute
+    LAUTEN Fehler (422 im Log) einen STILLEN (kein Forward) — **eine Verschiebung, keine
+    Behebung**, solange der Betreiber weder das eine noch das andere sieht.
+  **TRIGGER: EINGETRETEN.** Jeder Betreiber, der dieses Ziel konfiguriert, läuft hinein.
+  GEMELDET, NICHT GEBAUT.
+  **VERWEIS, UND DIE BEIDEN WERDEN NICHT ZUSAMMENGEZOGEN:** Dieser Punkt hängt an der
+  bereits geführten „SICHTBAREN WARNUNG FÜR EIN ZIEL, DAS KONFIGURIERT IST UND TROTZDEM
+  NICHT SENDET" (oben im Vorrat) — beide enden für den Betreiber im selben Nichts, aber
+  **der eine betrifft einen FALSCHEN Wert, der andere einen FEHLENDEN.** Wer sie
+  zusammenlegt, baut eine Anzeige, die zwei verschiedene Ursachen gleich benennt.
+
 ## Hebungs-Kandidaten
 
 Hier steht, was am Phasenende zur Aufnahme in docs/immer-beachten.md, ins
@@ -1932,3 +1974,131 @@ Geltungsbereich.
 wiederholt: der Kommentar an `ResolvedTarget.conversionRules` VERWEIST dorthin
 (`docs/aktiver-stand.md`, Scheibe 11.1e), und deshalb ist jener Abschnitt bei der
 Verdichtung ausdrücklich stehengeblieben.
+
+### 6 — Scheibe 11.1f: Der Adapter (Commit a4e680c)
+
+**WELCHE NUMMER DAS IST:** `a4e680c` ist der BAU-Commit (`feat(capi): LinkedIn-Adapter —
+das vierte Ziel sendet`), gepusht am 2026-08-19 — NICHT der Doku-Commit, der diesen Vermerk
+trägt. Dieselbe Trennung wie in den Vermerken 1 bis 5. ES GIBT DAMIT DERZEIT KEINE OFFENE
+LÜCKE.
+
+**WAS GEBAUT WURDE.** Der Adapter `src/lib/capi/linkedin-forward.ts` mit der eigenen
+Config-Form `LinkedinConfig` (Bauform F1: der EINTRAG projiziert, der ADAPTER kennt weder
+`ResolvedTarget` noch `CapiConfig`), dazu der Eintrag in `TARGETS_WITH_ADAPTER`
+(`src/lib/tracking/target-adapters.ts`) und in `FORWARDER_BY_TARGET`
+(`src/lib/capi/ingest.ts`). Im Adapter: DREI Riegel mit je eigener Logzeile
+(`missing identity` · `identity is not IPv4` · `no conversion rule for event`), der
+Nachschlag `resolveRuleUrn` MIT Typprüfung, der Betrags-Riegel `normalizeAmount` samt
+Dezimalkomma-Behandlung, und `describeLinkedinError` über VIER gemessene Klassen plus
+Rest-Zweig.
+**DER EINTRAG REICHT EIN ARGUMENT WENIGER WEITER:** `userAgent` wird nicht übergeben — die
+Nutzlast dieses Anbieters kennt kein Feld dafür, und ein Gate darauf wäre ein
+selbstgemachter Verlust gewesen.
+**GEMESSEN am Diff:** sieben Dateien, 1 094 Einfügungen, 35 Löschungen. Testzahl
+vorher/nachher: **57 Dateien/1112 -> 58 Dateien/1137**; `tsc`, Lint (0 Fehler, die eine
+Warnung vorbestehend) und Build grün.
+
+**WAS GEMESSEN IST (LIVE, 2026-08-19, vom Owner):**
+- **REGRESSION IN DREI AUFBAUTEN:** ein Ziel · zwei Ziele (Meta + TikTok) · Meta plus
+  LinkedIn. In ALLEN Fällen empfangen die bestehenden Ziele unverändert, server- UND
+  browser-seitig mit geteilter Ereignis-Kennung.
+- **DER FORWARD GEHT HINAUS UND KOMMT AN:** Nach Eintragen der VOLLSTÄNDIGEN URN springt
+  der Zeitstempel der Empfangsanzeige beim Anbieter.
+- **DER RIEGEL „KEIN EINTRAG" IST LIVE BELEGT — MIT POSITIVKONTROLLE.** Bei einem Ereignis
+  ohne Regel-Kennung (Lead trug eine, Purchase nicht) kamen Meta und TikTok an, der
+  Zeitstempel bei LinkedIn sprang NICHT, und im Log stand
+  `[capi] LinkedIn forward skipped: no conversion rule for event` — ohne „rejected", mit
+  eigenem Grund.
+  **DIE POSITIVKONTROLLE GEHÖRT DAZU, sonst wäre die fehlende Zeile von einer untauglichen
+  Sonde nicht zu unterscheiden:** Die Suche im Log nach `[capi]` findet nachweislich die
+  bekannten Ablehnungen desselben Fensters. Das AUSBLEIBEN einer Zeile ist damit ein
+  Befund und kein Sondenfehler.
+- **DIE FEHLERDEUTUNG ARBEITET LIVE:** `[capi] LinkedIn forward rejected: HTTP 422
+  reason=payload-rejected msg=ERROR :: /conversion :: Invalid Urn format. Invalid prefix.`
+  — Statuscode, EIGENE Klasse und Anbieter-Meldung in einer lesbaren Zeile.
+- **DAS 204-CONTAINMENT HÄLT UNTER EINER ECHTEN ABLEHNUNG:** Ein fremder Endpunkt antwortet
+  mitten im Vorgang mit 422, und `/api/e` liefert ausnahmslos leere 204 — auch bei drei
+  aktiven Zielen parallel. **Das ist ein stärkerer Beleg als jede Mutationsprobe**, weil
+  hier ein fremdes System den Fehlerfall erzeugt und nicht wir.
+
+**DIE LOG-ENTSCHEIDUNG HAT SICH UNMITTELBAR AUSGEZAHLT, und das gehört benannt, weil es die
+einzige Abweichung vom Bestand war:** Ohne sie stünde als Testergebnis „bei LinkedIn kommt
+nichts an", und niemand wüsste, ob der Riegel GRIFF oder das Ziel STILL ausfiel — genau der
+vierte stille Ausfallpfad, den der Zuschnitt vermeiden wollte. Die Zeile hat die
+Unterscheidung im ersten Testlauf geliefert.
+
+**DREI GRENZEN, DIE ZWINGEND MITMÜSSEN:**
+1. **DER IPv4-RIEGEL IST NICHT GEMESSEN.** Der Versuch über Mobilfunk lief unter einer
+   IPv4-Adresse (`213.225.3.47`, vom Owner an einer externen Anzeige abgelesen) — dass
+   LinkedIn dabei ankam, ist KORREKTES Verhalten und sagt über den Riegel NICHTS. Er
+   bleibt unit-belegt. **Nachträglich ist es nicht zu klären: Die Adresse wird bewusst
+   nicht geloggt** — und das ist dieselbe Auflage, die die Logzeilen frei von
+   Konfigurationswerten hält.
+2. **DER RIEGEL „KEINE IDENTITÄT" IST NICHT GEMESSEN** — die Konstellation war nicht
+   herstellbar.
+3. **DIE DEDUPLIZIERUNG BLEIBT UNMESSBAR.** Die Anzeige stand über den ganzen Test bei
+   „4 Events / 4 dedupliziert"; nur der Zeitstempel reagierte. Das deckt sich mit Teil (q)
+   der Anbieter-Befunde und ist KEINE Aussage über das Verhalten des Anbieters.
+
+**ZWEI BEFUNDE AUS DEM LIVE-TEST, DIE KEINE DER SCHEIBE SIND:**
+
+**(a) DIE NACKTE REGEL-KENNUNG FÜHRT ZU 422.** Der Adapter reicht den Wert unverändert
+durch und baut das Präfix NICHT (gemessen an der Fehlermeldung oben). Der Campaign Manager
+zeigt in seiner Oberfläche NUR die Ziffernfolge — wer sie kopiert, hat einen Wert, der
+syntaktisch nicht trägt.
+**WAS DARAN ZÄHLT:** Der Riegel greift NICHT, weil eine Kennung DA ist; sie hat nur die
+falsche Form. Es ist ein **VIERTER Fehlerweg neben den drei Riegeln — der einzige, bei dem
+tatsächlich eine Anfrage hinausgeht** —, und der naheliegendste Bedienweg des Kunden führt
+hinein.
+**HIER WIRD NICHTS ENTSCHIEDEN:** ob das Präfix serverseitig ergänzt oder die Form geprüft
+und mit eigenem Grund abgewiesen wird, ist eine eigene Scheibe. S. „## Vorrat".
+
+**(b) ZWEI KONSTELLATIONEN SEHEN AN DER OBERFLÄCHE GLEICH AUS.** „Nichts kommt bei LinkedIn
+an" hat ZWEI verschiedene Ursachen: Trägt das Projekt GAR KEINE Zuordnung, ist das Ziel
+nicht auslieferfähig, es entsteht kein Empfänger, der Adapter läuft NIE — **KEINE Logzeile**,
+und das ist der Pfad aus 11.1e. Trägt es eine Zuordnung, aber nicht für DIESES Ereignis,
+greift der Riegel aus 11.1f — **MIT Logzeile**.
+**DER ERSTE TESTVERSUCH IST GENAU DARAN VORBEIGEGANGEN:** Die Zuordnung war gelöscht, es
+fehlte die Zeile, und das sah wie ein Defekt aus. **Wer den Riegel prüfen will, muss die
+Zuordnung STEHEN LASSEN und ein ANDERES Ereignis auslösen.**
+
+**ZWEI FEHLER DES ARCHITEKTEN, BEIDE VOR DEM COMMIT GEFANGEN — sie stehen hier, weil sie
+für die nächste Instanz nützlicher sind als jeder bestandene Schritt:**
+- **DREIMAL IN FOLGE derselbe falsche Satz in einer Commit-Nachricht:** dass der Bestand
+  seinen Timeout-Timer nicht aufräume. **Alle drei Adapter tun es** — je ein `finally` mit
+  `clearTimeout`, gemessen. Die Behauptung stammte aus einem Chat-Satz, nie aus einer
+  Messung, und widersprach einem Vorrats-Punkt, den der Architekt selbst freigegeben hatte.
+  **EINE COMMIT-NACHRICHT IST DIE STELLE, AN DER DAS DAUERHAFT SCHADET:** Den Bau-Prompt
+  prüft die Instanz am Code, die Nachricht prüft danach niemand mehr.
+- **EINE DEDUP-ZUSAGE IM NEBENSATZ** („die Ereignis-Kennung für die anbieterseitige
+  Deduplizierung"), zurückgenommen im Folgesatz. **Eine Nachricht, die beide Aussagen
+  trägt, wird mit der ERSTEN zitiert.**
+**BEIDE SIND VOR DEM COMMIT KORRIGIERT WORDEN; der Commit trägt die belegbare Fassung** —
+nachprüfbar an `a4e680c`.
+
+**WAS AUS DEM ZUSCHNITT HIERHER GEWANDERT IST, weil es mit dem Vollzug abgelaufen ist:**
+- **DIE ANTWORT AUF DIE ERSTE OFFENE FRAGE** („wie erreicht die Zuordnung den Adapter?"):
+  über den EINTRAG, der aus `entry.config.token` und `entry.conversionRules` die eigene
+  Form baut. **Was daran über die Scheibe hinausreicht:** Der `Forwarder`-Typ übergibt
+  jedem Eintrag den GANZEN `entry` — ein fünftes Ziel braucht dafür weder eine
+  Typänderung noch einen Eingriff an den bestehenden vier.
+- **DREI DER VIER TEST-BEFUNDE:** der Wächter aus 11.1a ist ENTFERNT (nicht angepasst), der
+  `linkedin`-Lauf in `fan-out.test.ts` hat die Seite gewechselt und dafür Modul-Mock und
+  Spion-Verdrahtung bekommen, `token.test.ts` blieb unberührt. **Der vierte — der Befund
+  über die Karten-Logik — steht weiterhin im Zuschnitt**, weil er nicht der Test war,
+  sondern die Kopplung „hat Adapter ⇒ hat ein öffentliches Feld".
+
+**DIE UNIT-EBENE, AUSDRÜCKLICH NEBEN DEM LIVE-TEST UND NICHT AN SEINER STELLE:** Drei
+Mutationen, GETRENNT gefahren (2026-08-19), je exakt die angesagten Treffer.
+- **M-a (Zeitstempel in Sekunden):** 1 von 27 gefallen, `T1-a` — die Probe zeigt, dass die
+  NUTZLAST geprüft wird und nicht nur der Aufruf.
+- **M-b (der Eintrag zeigt auf `forwardToMeta`):** 1 von 251 gefallen, `W-linkedin`; die
+  drei bestehenden Ziel-Läufe und die Adapter-Testdatei blieben GRÜN — die Trennung
+  „Zuordnung kaputt" gegen „Adapter kaputt" hält.
+- **M-c (synchroner Wurf VOR dem `try`):** alle 56 Containment-Läufe GRÜN, während alle 27
+  Adapter-Tests fielen (Positivkontrolle: die Mutation war scharf).
+  **DIE GRENZE VON M-c GEHÖRT DAZU:** Kein Handler-Test löst ein LinkedIn-Ziel mit dem
+  ECHTEN Adapter auf; das Grün ist verträglich mit der Zusage, aber keine direkte Messung
+  eines echten Adapter-Wurfs durch den Handler. **Der Live-Test hat diese Lücke geschlossen
+  — an einer echten 422 des Anbieters, s. oben.**
+EINE MUTATIONSPROBE SAGT NICHTS ÜBER DIE DEPLOYTE LAUFZEIT.

@@ -102,7 +102,8 @@ export type ResolvedTarget = {
    *
    * EIN ZWEITES, OPTIONALES FELD NEBEN config — NICHT eine Union AN config, und
    * nicht ein Feld an der Aufloesung daneben. Die beiden verworfenen Formen und ihr
-   * Preis stehen im Zuschnitt (docs/aktiver-stand.md, Scheibe 11.1e); der Grund in
+   * Preis stehen im Zuschnitt (docs/claude-history/phase-11.1-linkedin.md, Scheibe
+   * 11.1e); der Grund in
    * einem Satz: Eine Union machte DREI Uebergaben in dispatchForward (capi/ingest.ts)
    * zu Typfehlern, ein Feld an der Aufloesung trennte die Zuordnung von ihrem
    * EMPFAENGER. CapiConfig bleibt dadurch in Wortlaut UND Form unangetastet.

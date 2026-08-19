@@ -2172,3 +2172,20 @@ ist (CLAUDE.md, docs/immer-beachten.md), steht hier NICHT noch einmal.
   niemand ihn ein zweites Mal aus der Standdatei holt.
   KEIN eigener Trigger — es gilt der dort genannte: die nächste Runde, die eine
   Forward-Datei ohnehin anfasst.
+
+- EIN CODE-ZEIGER AUF EINEN ABSCHNITT DER ARCHIVIERTEN PHASE-11-STANDDATEI IST STUMPF
+  GEMESSEN (2026-08-19): `src/components/MeasureView.tsx`, im Kommentar an der
+  Adblocker-Kachel, verweist auf „Vorrat/Abschnitt 8 der Standdatei". EINEN ABSCHNITT
+  DIESER NUMMER GIBT ES NUR IN DER BEREITS ARCHIVIERTEN
+  `docs/claude-history/phase-11-multi-tracking-aktiver-stand.md` (dort „## 8. Die Hebung");
+  seit deren Archivierung zeigt der Verweis ins Leere — die heutige Standdatei nummeriert
+  ihre Abschnitte nicht.
+  DIE ABGRENZUNG GEHÖRT DAZU, sonst wird beim Aufräumen das Falsche mitgenommen: Der
+  ZWEITE Verweis auf dieselbe Datei — `src/lib/capi/pinterest-forward.ts`, Kopf („Sie
+  standen seit dem 2026-08-05 in der Standdatei der Phase MIT DER ANGABE, sie seien hier
+  aufgezaehlt") — ist KEIN Fall. Er trägt eine historische Aussage über die Phase 11 und
+  ist als Zeitdokument richtig.
+  WARUM NICHT MIT DER ARCHIVIERUNG DER PHASE 11.1 REPARIERT: Er ist kein Nebenprodukt jener
+  Umbenennung, sondern ein Altbefund. Ihn dort mitzunehmen legte zwei Ursachen in einen
+  Diff.
+  KEIN TRIGGER, KEINE EMPFEHLUNG. GEMELDET, NICHT GEBAUT.

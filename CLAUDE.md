@@ -856,10 +856,9 @@ kaputtgeht.
   DER ERSTE SCHRITT IST EINE AUFKLÄRUNG, KEIN BAU — das steht hier ausdrücklich, damit
   niemand diesen Eintrag als Bauauftrag liest.
   DER QUERVERWEIS, und er ist der Grund, warum der Eintrag mehr ist als eine Ablage: Die
-  offene Frage ist DIESELBE, die seit dem 2026-08-19 im Vorrat der Standdatei steht — dort
-  unter "DER AUSGELIEFERTE TEXT KANN NACH EINEM PUBLISH VERALTET IM BROWSER STEHEN"
-  (docs/aktiver-stand.md; F5 half nicht, ein zusätzlicher URL-Parameter schon, die
-  Datenbank war korrekt). EINE Aufklärung beantwortet BEIDE: Was der Cache heute tut,
+  offene Frage ist DIESELBE, die am Publish-Drift-Eintrag weiter oben als dritte Ebene
+  steht (VERÖFFENTLICHT gegen AUSGELIEFERT; F5 half nicht, ein zusätzlicher URL-Parameter
+  schon, die Datenbank war korrekt). EINE Aufklärung beantwortet BEIDE: Was der Cache heute tut,
   entscheidet DORT, ob der Betreiber einen veralteten Stand sieht — und HIER, ob ein
   Datenbankausfall die Kundenseiten überhaupt erreicht.
   DIE BEIDEN WERDEN NICHT ZUSAMMENGEZOGEN: verschiedene Folgen, dieselbe Messung. Der eine

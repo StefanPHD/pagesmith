@@ -14,7 +14,8 @@ import { redactOpaque } from "@/lib/redact";
  * damit niemand abschreibt, was nicht passt:
  *  1. DIE KENNUNG GILT JE EREIGNISTYP. Die anderen drei tragen einen SKALAR; hier ist
  *     es eine Zuordnung Ereignisname -> Conversion-Regel-URN, und der Nachschlag
- *     geschieht IN DIESER DATEI (s. die Auflage an der Bauform F1 im Zuschnitt).
+ *     geschieht IN DIESER DATEI (s. die Auflage an der Bauform F1 im Zuschnitt:
+ *     docs/claude-history/phase-11.1-linkedin.md, Scheibe 11.1f).
  *  2. ES GIBT KEIN FELD FUER DEN USER-AGENT. Deshalb nimmt diese Funktion ihn gar
  *     nicht erst entgegen — s. den Absatz an der Signatur.
  *  3. DER BETRAG REIST ALS ZEICHENKETTE, UND DER TYP WIRD GEPRUEFT (GEMESSEN, Teil
@@ -73,8 +74,8 @@ export type LinkedinConfig = {
 // Striktes Timeout (A-Regel "defensive Timeouts"). VIERTE unabhaengige Zahl fuer
 // dieselbe Frage — mit demselben bekannten Preis wie die zweite und dritte: Keine
 // Stelle im Repo sieht zwei davon nebeneinander, eine Divergenz faellt beim Lesen
-// nicht auf. GEMELDET, NICHT HIER GELOEST: docs/aktiver-stand.md, "## Vorrat",
-// "MIT 11.1f ENTSTEHT DIE VIERTE UNABHAENGIGE DECKEL-KONSTANTE".
+// nicht auf. GEMELDET, NICHT HIER GELOEST: docs/claude-history/backlog-polish.md,
+// Eintrag "DER DECKELWERT IST MODUL-PRIVAT UND VON AUSSEN NICHT LESBAR".
 const LINKEDIN_FORWARD_TIMEOUT_MS = 3_000;
 
 // Deckel fuer den FREIEN Text des Anbieters (message).

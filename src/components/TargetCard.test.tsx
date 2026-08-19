@@ -346,7 +346,8 @@ describe("TargetCard — der Folgenlosigkeits-Hinweis haengt an hasAdapter", () 
 
       // DIE VERZWEIGUNG HAT MIT 11.1f EINEN DRITTEN FALL BEKOMMEN, und das ist KEIN
       // Testfehler, den jemand hier repariert — es ist ein BEFUND ueber die
-      // Karten-Logik, festgehalten im Zuschnitt der Scheibe:
+      // Karten-Logik, festgehalten im Zuschnitt der Scheibe
+      // (docs/claude-history/phase-11.1-linkedin.md, Scheibe 11.1f):
       // BIS HIERHER SETZTE DIESER LAUF "hat Adapter" MIT "hat ein oeffentliches Feld"
       // GLEICH. Das war fuer drei Ziele wahr und ist mit dem vierten falsch geworden:
       // LinkedIn HAT seit 11.1f einen Empfaenger und hat trotzdem KEIN oeffentliches

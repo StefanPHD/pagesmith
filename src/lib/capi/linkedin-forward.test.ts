@@ -12,7 +12,8 @@ import { forwardToLinkedin } from "./linkedin-forward";
 // entsteht und WANN gar keine entsteht — sie prueft NICHT, ob der Anbieter sie
 // annimmt. Das ist hier mehr als eine Formalie, denn AN UNSERER SEITE IST EIN
 // HINAUSGEGANGENER FORWARD NICHT BEOBACHTBAR (GEMESSEN 2026-08-19, s.
-// docs/aktiver-stand.md, Scheibe 11.1f): kein Erfolgs-Log, keine Ziel-Dimension in
+// docs/claude-history/phase-11.1-linkedin.md, Scheibe 11.1f): kein Erfolgs-Log,
+// keine Ziel-Dimension in
 // events, kein Rueckgabewert. Der Beweis, dass die RICHTIGE Nutzlast entsteht, liegt
 // deshalb HIER und nur hier.
 //

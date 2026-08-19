@@ -2189,3 +2189,38 @@ ist (CLAUDE.md, docs/immer-beachten.md), steht hier NICHT noch einmal.
   Umbenennung, sondern ein Altbefund. Ihn dort mitzunehmen legte zwei Ursachen in einen
   Diff.
   KEIN TRIGGER, KEINE EMPFEHLUNG. GEMELDET, NICHT GEBAUT.
+
+- DER CODE KANN KEINEN WERT AUS EINEM EINGABEFELD LESEN — UND FÜR LINKEDIN BRAUCHTE ER ES
+  NICHT
+  HERKUNFT: Roadmap-Zeile 11.1 (CLAUDE.md), Wortlaut dort. Der Befund steht am 2026-08-19
+  hierher KOPIERT, nicht verschoben — die Roadmap-Zeile ist unverändert; erst ihr Kollaps
+  entfernt ihn dort.
+  DER SATZ, DER IHN HIERHER BRINGT, STEHT IN IHM SELBST: "Die Fähigkeit ist EIGENSTÄNDIG
+  und hat keine eigene Roadmap-Zeile; ihre Verortung ist offen." Ein Befund, der seine
+  eigene Ortlosigkeit protokolliert, verlöre mit dem Kollaps auch den letzten Ort.
+  GEMESSEN AM CODE (2026-08-17), DREI ACHSEN:
+  · Das Mapping-Modell kennt GENAU DREI Aktionstypen — redirect, text, track (die Union
+    `Mapping` in `src/lib/mappings.ts`); keiner trägt oder liest einen Feldwert. Der
+    Betrag in `TrackConfig` wird im Panel eingetippt, nicht von einer Seite gelesen.
+  · Wert-tragende Eingabeelemente werden GAR NICHT ERKANNT und bekommen deshalb auch keine
+    dauerhafte Kennung: `stabilizeDoc`/`stabilizeIds` (`src/lib/detect.ts`) ankert nur, was
+    `classify` (dieselbe Datei) annimmt, und die Selektoren dort kennen `input` NUR als
+    Knopf (`BUTTON_SELECTOR`: `input[type=submit|button|image]`). `input[type=text]` und
+    Verwandte, `textarea` und `select` stehen in KEINEM Selektor.
+  · Im ERZEUGTEN Client-Code steht kein Lesezugriff auf den Wert eines Eingabeelements —
+    geprüft an allen fünf Erzeugern: `buildWiringScript` (`src/lib/generate.ts`),
+    `buildMetaRuntime` (`src/lib/tracking/meta.ts`), `buildConsentRuntimes`
+    (`src/lib/tracking/consent.ts`), `LISTENER_SCRIPT` (`src/lib/detect.ts`) und
+    `injectPageViewEmitter` (`src/lib/analytics/pageview-emitter.ts`).
+  DIE REICHWEITE DIESES NICHT-TREFFERS GEHÖRT DAZU, sonst ist die Abwesenheits-Behauptung
+  hohl: Abgesucht ist die Achse "Lesen von .value an einem Element", und für sie ist die
+  POSITIVKONTROLLE BESTANDEN — dieselbe Suche findet `input.value` in `classify`
+  (`src/lib/detect.ts`), wo der KNOPF-BESCHRIFTUNGS-Wert gelesen wird und kein
+  Formularwert. NICHT positiv kontrolliert sind die Achsen `FormData` und Zugriff über
+  `.elements` bzw. `[name=…]`: beide Konstrukte kommen im gesamten `src/` nirgends vor, ein
+  Nicht-Treffer auf ihnen ist daher unbelegt.
+  DIESER BEFUND IST EINE AUSSAGE ÜBER DEN CODE, nicht über ein Ziel — er sagt, was das
+  Mapping-Modell HEUTE kann, und daraus folgte erst, dass 11.1 es nicht brauchte.
+  TRIGGER: sobald eine Kennungsform gebraucht wird, die einen Wert aus einem Eingabefeld
+  liest — bei LinkedIn wäre das die gehashte E-Mail-Adresse (docs/ziel-befunde.md, Teil
+  (b)/(i)). KEINE Empfehlung, ob und wie gebaut wird.

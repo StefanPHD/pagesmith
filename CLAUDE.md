@@ -627,6 +627,41 @@ kaputtgeht.
   WANN SIE NEU ZU BEWERTEN IST: wenn ein Ziel oder der Markt ein Persistierungs-Modell
   verlangt. Dann ist SIE der Gegenstand einer NEUEN Owner-Entscheidung — der Eintrag
   darüber geht dadurch NICHT wieder auf.
+  DIE AUFLAGE, DIE DIE FESTLEGUNG TRÄGT, IST AM 2026-08-19 PRÄZISIERT WORDEN — OWNER-
+  ENTSCHEIDUNG, KEINE MESSUNG UND KEINE ABLEITUNG. Der Text darüber bleibt unverändert;
+  was er verlangte („das Identitäts-Merkmal wird IM BROWSER gebildet, eine KLARTEXT-Angabe
+  darf den eigenen Server NIE erreichen"), traf einen Fall, den er vor Augen hatte, und
+  liess einen zweiten ungeregelt. DIE ACHSE IST AB JETZT: NUTZER-EINGABEN gegen
+  INFRASTRUKTUR-DATEN.
+  · NUTZER-EINGABEN — AUSDRÜCKLICH E-MAIL UND TELEFON: im Browser gehasht (SHA-256), der
+    eigene Server sieht KEINEN Klartext. Das ist die Auflage von oben, unverändert, und
+    für diese beiden Merkmale gilt sie wörtlich weiter.
+    DIE GRENZE DIESER AUFLAGE GEHÖRT DAZU, sonst wird sie zur Generalerlaubnis: Für ANDERE
+    Nutzer-Eingaben ist sie NICHT getroffen. Bei einem Merkmal, das ein Ziel im KLARTEXT
+    zur Zuordnung erwartet — etwa ein Name —, wäre die Konsequenz nicht „hashen", sondern
+    „gar nicht erst erheben". Das ist eine ANDERE Entscheidung und hier NICHT getroffen.
+  · INFRASTRUKTUR-DATEN — IP-ADRESSE UND USER-AGENT: Der Server DARF sie als TRANSIT-Wert
+    in eine CAPI-Nutzlast durchreichen, um die Zuordnungsrate zu sichern.
+    EINSCHRÄNKUNG, UND SIE IST DER TRAGENDE TEIL: Die IP wird vom eigenen Server NIEMALS
+    in der Datenbank gespeichert, persistiert oder in ein Log geschrieben.
+  ZWEI BELEGE, BEIDE AM REPO GEPRÜFT (2026-08-19):
+  (a) DIE LOG-EINSCHRÄNKUNG IST GELEBTER STAND, keine Absichtserklärung. GEMESSEN am Code:
+      Die drei Riegel-Zeilen des LinkedIn-Adapters (`src/lib/capi/linkedin-forward.ts`)
+      schreiben FESTE Zeichenketten und nennen den GRUND, nicht die Adresse — „missing
+      identity", „identity is not IPv4", „no conversion rule for event". Und eine formale
+      Suche über `src/` (ohne Testdateien) findet KEINE Logzeile, die eine IP oder einen
+      User-Agent ausgibt. DIE REICHWEITE DIESES NICHT-TREFFERS GEHÖRT DAZU: Abgesucht ist
+      die Achse „console.* mit ip/user-agent im Argument"; das ist ein Nicht-Treffer auf
+      DIESER Achse und kein Beweis für alle Pfade. Die dauerhafte Regel dahinter steht in
+      docs/immer-beachten.md unter „SCHWÄRZUNG — VIER TEILE, DIE NUR ZUSAMMEN TRAGEN".
+  (b) DIE DURCHLEITUNG IST NICHT NEU — DIE AUFLAGE ÄNDERT NICHTS, SIE BENENNT, WAS LÄUFT.
+      GEMESSEN an der Versionsgeschichte (2026-08-19): Die Client-IP wird seit dem
+      2026-07-03 an ein Ziel weitergereicht (`bf87545`, die erste CAPI-Route), seit dem
+      2026-08-19 an alle VIER (`a4e680c`, der LinkedIn-Adapter). Wer diesen Absatz für eine
+      NEUE Erlaubnis hält, liest ihn falsch.
+  WAS DIE AUFLAGE NICHT TUT: Sie beantwortet NICHT, ob eine IP personenbezogen ist — sie
+  IST es. Sie regelt, wie mit ihr umgegangen wird. Der Satz „NICHT-SPEICHERN IST NICHT
+  NICHT-VERARBEITEN" oben gilt für sie unverändert mit.
 - COOKIE-DOKU-SCHNIPSEL FÜR DIE KUNDEN-DATENSCHUTZERKLÄRUNG FEHLT NOCH
   (Trigger: vor dem öffentlichen Launch; Phase 9): Für das A/B-Test-Cookie
   (__Host-ps_v) stellt Pagesmith dem Kunden heute KEINEN fertigen
@@ -908,6 +943,29 @@ kaputtgeht.
       Meldung, sondern eine GRÖSSE — wer ihn als Fehlermeldung baut, hängt eine Anzeige an
       ein Ereignis, das PRO BESUCHER eintreten kann. Eine Anzeige braucht zudem einen Weg
       vom SERVER-Ereignis in die Oberfläche, den es heute nicht gibt.
+  (4) DER ZUGANG BRICHT OHNE ZUTUN DES KUNDEN — ABLAUF ODER WIDERRUF. TRIGGER: mit dem
+      ersten Ziel, dessen Zugangsdatum ablaufen kann; für LinkedIn ist er EINGETRETEN,
+      seit das Ziel am 2026-08-19 sendet. Die bestehenden Ziele tragen ein STATISCHES
+      Geheimnis; läuft ein Zugang still ab oder widerruft der Betreiber ihn beim
+      Anbieter, hört das Weiterleiten auf, ohne dass es jemand bemerkt.
+      WAS SIE VON DEN DREI ANDEREN UNTERSCHEIDET, und das ist der Grund, warum sie eigens
+      dasteht: Die drei oben entstehen durch etwas, das der Betreiber TUT oder UNTERLÄSST
+      — einen falschen Wert eintragen, eine Hälfte der Konfiguration weglassen, eine
+      Logzeile nie sehen. DIESE entsteht, WÄHREND ER NICHTS TUT. Ein Zustand, der ohne
+      Handlung kippt, wird von keiner Prüfliste gefunden.
+      DER ZUSTAND HAT SICH GEÄNDERT, und deshalb steht sie jetzt hier: Der Befund stand
+      an der Roadmap-Zeile 11.1 als Vorbehalt für ein Ziel, das NOCH NICHT sendete —
+      dort war er folgenlos. Seit dem 2026-08-19 sendet es.
+      WAS DER ADAPTER HEUTE TUT (GEMESSEN am Code, 2026-08-19): Er deutet die
+      401-Antwort als eigene Fehlerklasse („reason=invalid-token") und schreibt sie ins
+      Laufzeit-Log. Das ist alles — es erreicht den Betreiber nicht, s. Ursache (3).
+      KEINE EMPFEHLUNG, wie man es bemerkbar macht.
+      DIE ZAHL „DREI" AN DREI STELLEN DIESES EINTRAGS WIRD NICHT ÜBERSCHRIEBEN — im
+      Titel, im Absatz darüber und im Satz darunter. Sie ist als Aussage über den Stand
+      vom 2026-08-19 (Hebung Runde 2) richtig; mit dieser vierten sind es VIER. Wer eine
+      dieser Zahlen als heutige Liste liest, zählt falsch. Dieselbe Bauform wie an der
+      Phase-8-Roadmap-Zeile: eine Zahl, die einen Tag beschreibt, wird nicht rückwirkend
+      angepasst.
   WAS HIER NICHT ENTSCHIEDEN WIRD: welche der drei zuerst angefasst wird, ob das Präfix
   ergänzt oder geprüft wird, und wie eine Warnung aussieht.
   Was still kaputtgeht: Conversion-Verluste SICHTBAR zu machen ist das Verkaufsargument

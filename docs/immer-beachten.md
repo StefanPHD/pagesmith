@@ -38,7 +38,7 @@ docs/claude-history/. Wer hier einen Messwert sucht, sucht am falschen Ort —
 und wer hier einen einträgt, macht aus einer Regel eine Zustandsbeschreibung,
 die still veraltet.
 
-## Verzeichnis — 83 Regeln in Dateireihenfolge
+## Verzeichnis — 84 Regeln in Dateireihenfolge
 
 Jeder Eintrag ist der WÖRTLICHE Anfang seiner Regel, auf feste Breite
 geschnitten und mit "..." gekappt — KEINE Beschreibung. GRUND: Eine
@@ -134,6 +134,7 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS ...
 - EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY (Phase 11.1, als ...
 - EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS ...
+- JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE CONSTRAINT-ERWEITERUNG ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -1245,3 +1246,33 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   wäre aber herstellbar. Diese hier greift auf der HERSTELLBARKEITS-Achse: genannt oder
   nicht, nach dem Deploy geht sie nicht mehr. Drei Achsen, dieselbe falsche Entwarnung als
   Ergebnis.
+- JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE CONSTRAINT-ERWEITERUNG MIT — UND EIN
+  DRITTES ZIEL ERZWINGT EINE ENTSCHEIDUNG, KEINE KOPIE (Phase 11.1, als Auflage für jedes
+  weitere Ziel): Wer ein Fan-Out-Ziel hinzufügt, plant von Anfang an eine EIGENE Migration
+  auf `project_secrets` ein — der CHECK `project_secrets_target_valid` zählt die erlaubten
+  Ziele auf, und ein Ziel, das dort fehlt, kann kein Zugangsdatum ablegen.
+  DIE ERSTE HÄLFTE IST EINE MECHANIK, DIE ZWEITE EINE HALTUNG, und beide gehören
+  zusammen: Ein neues Ziel ist NICHT die Kopie des vorigen Adapters mit anderen
+  Feldnamen. Jedes bringt eine eigene Kennungsform, eine eigene Nutzlast und eine eigene
+  Fehlersprache mit; wer kopiert, erbt Annahmen, die für das neue Ziel nie geprüft
+  wurden.
+  DER PREIS, DER GRÖSSER IST ALS DAS EINZELNE ZIEL: Ein nicht abbildbares Ereignis hat
+  heute keinen Rückkanal — und einen zu bauen berührt ALLE VIER Adapter, nicht nur den
+  neuen. Der Kandidat dazu steht in docs/claude-history/backlog-polish.md, "EIN ADAPTER
+  KANN HEUTE KEIN EREIGNIS ABLEHNEN".
+  NACHGEZOGEN BEI DER HEBUNG (2026-08-19): Die Vorlage dieser Regel sprach von DREI
+  Adaptern. Es sind seit Scheibe 11.1f VIER — meta, pinterest, tiktok, linkedin.
+  DER BELEG (GEMESSEN am Repo, 2026-08-19): Vier Ziele, vier Migrationen — 0021 legt
+  `project_secrets` an mit `check (target in ('meta'))`, 0022 erweitert auf
+  `('meta', 'pinterest')`, 0023 auf `('meta', 'pinterest', 'tiktok')`, 0024 auf
+  `('meta', 'pinterest', 'tiktok', 'linkedin')`. KEIN Ziel ist ohne eigene Migration
+  hinzugekommen; die Regel beschreibt damit einen vierfach gelebten Ablauf und keine
+  Absicht.
+  WARUM SIE EINE REGEL IST UND KEIN OFFENER PUNKT: Sie sagt, was ZU TUN ist, wenn ein
+  Ziel dazukommt — nicht, was heute fehlt. Ein offener Punkt wartet auf einen Trigger;
+  diese hier wartet auf eine Arbeit.
+  ABGRENZUNG ZU "OB EINE MIGRATION IN DER LAUFENDEN DB ANGEWANDT IST, IST AM REPO NICHT
+  ENTSCHEIDBAR": Jene Regel betrifft den ZUSTAND der Datenbank — eine geschriebene
+  Migration ist kein Vollzug. Diese hier betrifft den ZUSCHNITT — sie sagt, dass die
+  Migration überhaupt eingeplant werden muss. Beide zusammen: einplanen, schreiben, und
+  den Vollzug eigens messen.

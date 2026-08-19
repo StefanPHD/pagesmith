@@ -1,0 +1,75 @@
+# GEPLANTE VERSION-UPDATES — die zweite Haelfte von Dependabot
+#
+# WAS DIESE DATEI IST: die Konfiguration fuer geplante VERSION-Updates. Ohne sie laufen
+# nur SECURITY-Updates ueber den Dashboard-Toggle (aktiv seit 2026-07-24), und die
+# reagieren ausschliesslich auf Advisories. Gemessen am 2026-08-19 meldete
+# "npm outdated" fuenfzehn veraltete Pakete, fuer die kein einziger PR existierte.
+#
+# WAS SIE NICHT IST: Sie aktualisiert nichts. Sie aendert nur, was kuenftig
+# VORGESCHLAGEN wird — der heutige Bestand in package.json und package-lock.json
+# bleibt unberuehrt, bis jemand einen PR merged.
+#
+# EIN OEKOSYSTEM, EIN MANIFEST: Es gibt genau ein package.json und ein
+# package-lock.json im Baum, kein Workspaces-Feld (gemessen 2026-08-19). Die
+# GitHub-Actions in .github/workflows/ci.yml sind ein EIGENES Oekosystem und hier
+# bewusst NICHT aufgenommen — das waere eine eigene Entscheidung.
+
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+    open-pull-requests-limit: 10
+
+    # KEINE GRUPPIERUNG — und das ist der Grund, warum hier kein "groups" steht:
+    # Ein gebuendelter PR macht bei einem Bruch nicht erkennbar, WELCHES Paket ihn
+    # verursacht hat. Genau daran ist der postcss-PR gescheitert: er zog next und
+    # sharp mit, und was er eigentlich beheben sollte, ging darin unter. Ohne
+    # "groups" oeffnet Dependabot einen PR JE PAKET — das ist das gewuenschte
+    # Verhalten, nicht das Fehlen einer Einstellung.
+
+    ignore:
+      # MAJOR IST NIE EIN DEPENDABOT-PR — fuer ALLE Pakete, ohne Ausnahme.
+      # Ein Major-Sprung ist ein eigener Zuschnitt mit eigenem Live-Test, keine
+      # Zeile im Lockfile, die man nebenbei durchwinkt. Er kommt bewusst und
+      # geplant, nicht als woechentlicher Vorschlag.
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+
+      # VIER PAKETE GANZ AUSGENOMMEN — next, react, react-dom, eslint-config-next.
+      # GRUND: Sie stehen in package.json OHNE Caret gepinnt (gemessen 2026-08-19:
+      # "next": "16.2.12" / "react": "19.2.4" / "react-dom": "19.2.4" /
+      # "eslint-config-next": "16.2.9"). Die Pinnung ist eine ENTSCHEIDUNG. Ein
+      # woechentlicher PR stellte sie jedes Mal neu in Frage, und die Antwort waere
+      # jedes Mal dieselbe.
+      # WARUM ALLE DREI STUFEN AUSGESCHRIEBEN STEHEN und nicht nur der Paketname:
+      # Ob ein "ignore"-Eintrag mit BLOSSEM dependency-name saemtliche Updates
+      # unterdrueckt, war am Schema nicht zu belegen. Die ausgeschriebene Form ist
+      # eindeutig — die drei Symbole sind am Schema geprueft.
+      - dependency-name: "next"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+
+      - dependency-name: "react"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+
+      - dependency-name: "react-dom"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+
+      - dependency-name: "eslint-config-next"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"

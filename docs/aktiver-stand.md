@@ -33,6 +33,7 @@ dann still nicht mehr erfüllt wird.
 - ## Scheibe 11.1c — Ein Urteil über die Auslieferbarkeit
 - ## Scheibe 11.1d — Die Conversion-Regel-Kennung ablegen
 - ## Scheibe 11.1e — Der Weg zum Empfänger
+- ## Scheibe 11.1f — Der Adapter
 - ## Entscheidungen, die über ihre Scheibe hinaus binden
 - ## Vorrat — gemeldet, nicht gebaut
 - ## Hebungs-Kandidaten
@@ -709,6 +710,165 @@ Adapter-Dateien und jede Komponente sind NICHT darunter.
   „## Offene Punkte" (Betreiber-Dokumentation, Punkt 2), ist bereits als Befund geführt.
 - **KEINE UI-WARNUNG für unvollständige Konfiguration.** Steht im Vorrat.
 
+## Scheibe 11.1f — Der Adapter
+
+**DAS ZIEL SENDET.** Ein Adapter nach dem Muster der beiden jüngsten; `linkedin` kommt in
+`TARGETS_WITH_ADAPTER` (`src/lib/tracking/target-adapters.ts`), und der Riegel aus 11.1a
+fällt.
+
+### Die Nutzlast — GEMESSEN, mit der Grenze an jeder Angabe
+
+Alle Angaben aus `docs/ziel-befunde.md`, Abschnitt „LinkedIn (Conversions API)", Teile (n)
+bis (s), Messung vom 2026-08-19. **DIE PROVENIENZ STEHT JE FELD, weil bei diesem Ziel die
+Hälfte des Wissens GELESEN ist und ein Zuschnitt beides nicht gleich behandeln darf:**
+
+- **`conversion`** — die Regel-URN, Präfix `urn:lla:llaPartnerConversion:`. Schlüssel und
+  Annahme **GEMESSEN** (n); dass ein anderes Präfix mit 422 fällt und eine nicht
+  auflösbare Kennung mit 403, ebenfalls **GEMESSEN** ((l), (c)).
+- **`conversionHappenedAt`** — Millisekunden, innerhalb der letzten 90 Tage. **GEMESSEN
+  IST, DASS EINE NUTZLAST MIT MILLISEKUNDEN ANGENOMMEN WIRD** (n) und dass ein Wert 100
+  Tage in der Vergangenheit mit 400 fällt (s). **NICHT GEMESSEN:** dass Sekunden abgelehnt
+  würden — die Einheit selbst ist **GELESEN** (2026-08-11).
+- **`user.userIds[]`** — das Paar aus `idType` und `idValue`, BEIDE Pflicht, im gemessenen
+  Aufruf mit GENAU EINEM Eintrag. **GEMESSEN** ((a), (i), (n)).
+- **`conversionValue`** — optional, mit `currencyCode` und `amount`; **`amount` MUSS eine
+  ZEICHENKETTE sein**. **GEMESSEN in beide Richtungen** (n)/(o): als Zeichenkette 201, als
+  Zahl 422 mit `'ERROR :: /conversionValue/amount :: 19.9 cannot be coerced to String'`.
+- **DER VERSIONS-HEADER IST PFLICHT** — ohne ihn 400 mit `VERSION_MISSING`. **GEMESSEN**
+  (r). Dass Versionen abgeschaltet werden, bleibt **GELESEN** (2026-08-11).
+
+**GRENZE, DIE MITMUSS:** Gemessen ist eine ANGENOMMENE Nutzlast, KEIN Schema — welche
+weiteren Felder die Schnittstelle kennt, sagt ein 201 nicht (n). Und die Schnittstelle
+prüft die BEDEUTUNG nicht: ein erfundener Währungscode wird mit 201 quittiert (e).
+
+**FÜNF GEMESSENE FEHLERWEGE, UND DER ADAPTER MUSS SIE UNTERSCHEIDEN KÖNNEN:** 401
+(Zugangsdatum) · 422 (mehrzeilig, mit Feldpfaden; der Validator SAMMELT und bricht nicht
+beim ersten Fehler ab) · 403 (**irreführend** — „No ad accounts found" bei falscher
+Kennung, s. Teil (c)) · 400 mit `code` (Gateway, fehlender Versions-Header) · 400 mit
+`indices` (Validierung, Zeitfenster). **Die Rumpfformen und die Frage, nach welchem
+KRITERIUM sie gezählt werden, stehen in Teil (s) — hier wird keine Zahl wiederholt, damit
+sie nicht ohne ihr Kriterium zitiert wird.**
+
+### Der Weg der Zuordnung zum Adapter
+
+**GEMESSEN am Code (2026-08-19):** `dispatchForward` (`src/lib/capi/ingest.ts`) reicht
+heute an jeden der drei Empfänger nur `entry.config` weiter — Meta und TikTok unverändert,
+Pinterest als Projektion (`{ adAccountId: entry.config.pixelId, token: entry.config.token }`).
+`entry.conversionRules` erreicht damit keinen Adapter.
+**WAS DAZU EBENFALLS GEMESSEN IST und die Frage verkleinert:** Der Typ `Forwarder`
+(dieselbe Datei) übergibt jedem Eintrag den GANZEN `entry: ResolvedTarget`, nicht nur die
+Config — die Projektion geschieht erst IM Eintrag. **Ein neuer Eintrag kann `entry`
+also lesen, ohne dass an den drei bestehenden etwas zu ändern wäre.** Offen bleibt die
+SIGNATUR des neuen Adapters; das ist die erste Frage unten.
+
+### Drei Riegel, je mit ihrem Grund
+
+- **IPv4.** Die Schnittstelle nimmt für `PLAINTEXT_IP_ADDRESS` nur IPv4 — **GELESEN**
+  (i) — und prüft die FORM des Kennungs-Werts NICHT: ein syntaktisch unsinniger Wert
+  bekam 201, und die Empfangsanzeige zählte ihn mit — **GEMESSEN** (j). **UNSERE PRÜFUNG
+  IST DAMIT DIE EINZIGE STELLE, AN DER EINE IPv6-ADRESSE ÜBERHAUPT AUFFALLEN KANN.**
+  **DASS IPv6 VORKOMMT, IST EINE ANNAHME** und bleibt eine — sie steht unter
+  „## Entscheidungen" („DIE IPv6-ANNAHME"), mit ihrer Provenienz-Kette aus GELESEN,
+  FOLGERUNG und ANNAHME. **GEMESSEN am Code (2026-08-19): Es gibt im gesamten `src/`
+  KEINE Prüfung der Adressfamilie** — die einzige inhaltliche Prüfung auf diesem Pfad ist
+  `isLoopbackOrEmpty` (`src/lib/capi/ingest.ts`), und sie erkennt Loopback, keine Familie.
+- **KEIN EINTRAG FÜR DIESES EREIGNIS.** Ohne URN gibt es kein Ziel, an das gesendet werden
+  könnte. **DAS IST EINE NEUE KLASSE IM BESTAND — GEMESSEN am Code (2026-08-19):** Kein
+  heutiger Adapter kann für MANCHE Ereignisse nichts senden. `isForwardable`
+  (`src/lib/capi/ingest.ts`) schliesst ein Ereignis für ALLE Ziele aus, `hasAdapter`
+  (`src/lib/tracking/target-adapters.ts`) ein Ziel für ALLE Ereignisse. Eine Bedingung ÜBER
+  DIE PAARUNG aus Ereignis und Ziel gibt es nicht.
+- **KEINE IDENTITÄT.** Wie bei Pinterest und aus demselben Grund: ohne Kennungs-Paar wäre
+  das Pflichtfeld leer. **GEMESSEN** (a): Typ und Wert sind BEIDE Pflicht.
+
+### Die tragende Invariante — sie ist zweiseitig
+
+- **(a) FÜR DIE DREI BESTEHENDEN ZIELE ÄNDERT SICH NICHTS** — nicht am Ingest, nicht an
+  ihren Nutzlasten, nicht an der garantierten leeren 204.
+- **(b) EIN WURF IM NEUEN ADAPTER DARF DAS CONTAINMENT NICHT BRECHEN.** **DIE GRENZE IST
+  GEMESSEN (2026-08-19):** Alle drei Adapter sind `async` und werfen deshalb NIE synchron
+  — ihr GANZER Rumpf ist gegenüber `Promise.allSettled` gedeckt, **auch was VOR ihrem
+  `try` steht** (bei `forwardToMeta` liegen Nutzlast-Bau und URL-Bildung dort).
+  `dispatchForward` ist dagegen **NICHT** `async`; was in ihm und in den Rückrufen von
+  `FORWARDER_BY_TARGET` synchron läuft, liegt AUSSERHALB des Containments — ebenso wie das
+  `await` auf `getCapiConfigByTrackingKey` in `handleIngest`, das in keinem `try` steht.
+
+**BEIDE HÄLFTEN BRAUCHEN GETRENNTE NACHWEISE** — wer nur (a) prüft, hat die Regression;
+wer nur (b) prüft, hat sie nicht.
+
+### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+
+- **KEINE DEDUP-ZUSAGE.** Dass das Feld für eine mitgegebene Ereignis-Kennung angenommen
+  wird, ist **GEMESSEN** (p); dass der Anbieter damit DEDUPLIZIERT, ist **NICHT** gemessen
+  — und mit den heutigen Instrumenten nicht messbar (q). **OB `eventId` mitgeschickt wird,
+  entscheidet der Plan; eine ZUSAGE an den Kunden wird daraus nicht.** Der Vorrats-Punkt
+  „DIE DEDUP-FRAGE IST MIT DEN VORHANDENEN INSTRUMENTEN NICHT ENTSCHEIDBAR" bindet hier.
+- **KEINE EREIGNISNAMEN-ÜBERSETZUNG.** Bei diesem Ziel ist der Name der **SCHLÜSSEL** in
+  die Zuordnung und nicht der gesendete Wert — eine andere Rolle als bei den beiden
+  Vorgängern. **PRÄZISE, weil „die anderen Adapter" hier zu grob wäre — GEMESSEN am Code
+  (2026-08-19):** `pinterestEventName` und `tiktokEventName` bilden über eine Map ab und
+  reichen Unbekanntes durch (`EVENT_MAP.get(event) ?? event`); `forwardToMeta` bildet
+  ÜBERHAUPT NICHT ab und sendet den Namen roh. Es sind also ZWEI von drei, die abbilden.
+- **KEIN BLEIBENDES SIGNAL, KEINE UI-WARNUNG, KEIN RETRY, KEINE ZÄHLUNG.** **GEMESSEN am
+  Code (2026-08-19):** Kein Adapter im Bestand hat davon etwas — je ein `fetch`, keine
+  Wiederholung, kein Zähler, nur `console.error`.
+
+### Zwei offene Fragen — FRAGEN, kein Befund
+
+Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
+
+1. **WIE ERREICHT DIE ZUORDNUNG DEN ADAPTER, ohne eine Typänderung an den drei bestehenden
+   Übergaben in `dispatchForward` zu erzwingen?** Was dazu bereits gemessen ist, steht oben
+   unter „Der Weg der Zuordnung zum Adapter" — der `Forwarder`-Typ übergibt den ganzen
+   `entry`. **OFFEN IST DIE SIGNATUR DES NEUEN ADAPTERS:** eine eigene Config-Form nach dem
+   Muster von `PinterestConfig`, ein zusätzlicher Parameter, oder der `entry` selbst. Hier
+   wird das NICHT entschieden.
+2. **WIE SIEHT DER LIVE-NACHWEIS AUS?** Die EMPFANGSANZEIGE an der Conversion-Regel ist das
+   einzige Instrument, das auf Testdaten reagiert — **und auch nur ihr ZEITSTEMPEL; die
+   Zahlen tun es nicht** (**GEMESSEN**, (q)). Die Conversions-Zählung scheidet aus
+   (**GEMESSEN**, (h)). **DAZU EINE HÜRDE, DIE KEINE FRÜHERE SCHEIBE HATTE:** Der Nachweis
+   braucht eine ECHTE Regel-Kennung und ein ECHTES Zugangsdatum gegen den Produktivendpunkt
+   eines FREMDEN Anbieters — die bisherigen Läufe dieser Phase liefen mit erfundenen Werten
+   (so protokolliert in (c) und (j)).
+
+### Die drei Riegel loggen — ENTSCHIEDEN (Owner, 2026-08-19)
+
+**Die Entscheidung gehört in den Zuschnitt, weil sie vom Bestand ABWEICHT.** Alle drei
+Riegel schreiben eine Logzeile mit dem GENAUEN Grund — kein Wurf nach aussen, kein
+Absturz. Der Grund ist unterscheidbar zu benennen („missing IPv4", „missing URN for
+event", „missing identity" oder gleichwertig).
+
+**WARUM ABWEICHEND, und dieser Satz trägt die Entscheidung:** Pinterest und TikTok haben an
+derselben Stelle einen STILLEN `return` — **GEMESSEN am Code (2026-08-19):**
+`if (!clientIp || !userAgent) return;`, ohne Logzeile, als erste Anweisung im `try`. **Ihr
+Riegel greift, wenn die Anfrage keine Identität hergibt.** Die ersten beiden hier greifen
+dagegen bei **VOLLSTÄNDIGER Konfiguration**: Der Betreiber hat Zugangsdaten, URN und
+Einwilligung hinterlegt, und es geht trotzdem nichts hinaus. Ein stiller `return` wäre dort
+der VIERTE stille Ausfallpfad dieser Phase.
+
+**DIE PRÄZISION, DIE DAZUGEHÖRT — SIE SCHWÄCHT DIE ENTSCHEIDUNG NICHT, SIE VERORTET SIE:**
+Dieses Argument trägt für die ersten beiden Riegel. Der DRITTE (keine Identität) ist
+dieselbe Klasse wie bei Pinterest und TikTok; dass er hier ebenfalls loggt, folgt aus der
+EINHEITLICHKEIT innerhalb dieses einen Adapters, nicht aus dem Argument darüber. Wer das
+zusammenzieht, hält die Abweichung für breiter begründet, als sie ist.
+
+**DIE DREI ANDEREN STILLEN AUSFALLPFADE GEHÖREN DANEBENGESTELLT, damit niemand sie
+zusammenzieht — VIER VERSCHIEDENE URSACHEN:** der PUBLISH-DRIFT (`CLAUDE.md`, „## Offene
+Punkte", „NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST") · der
+AUSLIEFERUNGS-CACHE (Vorrat) · die UNVOLLSTÄNDIGE ZIEL-KONFIGURATION (Vorrat) · und dieser
+hier, bei dem die Konfiguration VOLLSTÄNDIG ist und die einzelne Nutzlast nicht baubar.
+
+**DIE AUFLAGE, OHNE DIE DIE LOGZEILE SELBST ZUM RISIKO WIRD:** Sie schreibt eine FESTE
+Zeichenkette und NIE einen Wert aus der Konfiguration — kein Zugangsdatum, keine URN, keine
+IP-Adresse. **DER GRUNDSATZ STEHT MEHRFACH IM REPO** (GEMESSEN am Code, 2026-08-19): Die
+drei Adapter loggen im Fehlerpfad ausschliesslich über `errorName(err)` (`src/lib/errors.ts`),
+nie die Message und nie ein weitergereichtes Fehler-Objekt — weil am CAPI-Pfad das
+Zugangsdatum im Closure liegt. **Für diese drei Riegel ist das unkritisch; die Auflage
+gehört trotzdem AN DIE FUNDSTELLE**, sonst hängt beim nächsten Fall jemand den Wert an.
+
+**WAS DAMIT NICHT ENTSCHIEDEN IST:** Die Logzeile ist für den BETREIBER unsichtbar. Sie
+sichtbar zu machen ist eine EIGENE Scheibe und steht als eigener Punkt im Vorrat.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 - **GEBAUT WIRD AUF DIE KLARTEXT-IP ALS KENNUNG; li_fat_id IST EINE EIGENE FOLGE-SCHEIBE**
@@ -1152,6 +1312,19 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   trotzdem UNBELEGT. Ob und wie das dort nachgezogen wird, ist HIER NICHT entschieden.
   **TRIGGER:** sobald echter Traffic eine Zuordnung zu einer echten Person erzeugt.
   GEMELDET, NICHT GEBAUT.
+
+- **EINE SICHTBARE WARNUNG FÜR EIN ZIEL, DAS KONFIGURIERT IST UND TROTZDEM NICHT SENDET**
+  (Owner-Absicht, 2026-08-19). Ab 11.1f schreibt der Adapter den Grund in eine Logzeile —
+  **aber eine Logzeile erreicht den Betreiber nicht.** Die drei Fälle: kein IPv4 · kein
+  Eintrag für dieses Ereignis · keine Identität.
+  **WARUM NICHT IN 11.1f:** Eine Anzeige braucht einen Weg vom SERVER-Ereignis in die
+  Oberfläche, den es heute nicht gibt. Und die Bauform ist nicht frei: Der server-seitige
+  Ziel-Fehlschlag ist laut `docs/immer-beachten.md` („WELCHE REGEL WANN GREIFT") **keine
+  Meldung, sondern eine GRÖSSE** — wer ihn als Fehlermeldung baut, hängt eine Anzeige an
+  ein Ereignis, das PRO BESUCHER eintreten kann. Das ist eine eigene Scheibe mit eigenem
+  Zuschnitt.
+  **TRIGGER:** eine Frontend-Runde, ODER ein Support-Fall, in dem ein Betreiber meldet,
+  dass nichts ankommt. GEMELDET, NICHT GEBAUT — und ausdrücklich KEINE Bauform-Empfehlung.
 
 ## Hebungs-Kandidaten
 

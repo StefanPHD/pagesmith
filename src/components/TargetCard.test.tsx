@@ -344,17 +344,52 @@ describe("TargetCard — der Folgenlosigkeits-Hinweis haengt an hasAdapter", () 
       // Statustext beweist, dass DIESE Karte wirklich gerendert wurde.
       expect(screen.getByText(STATUS_CONFIGURED)).toBeTruthy();
 
-      if (hasAdapter(target)) {
+      // DIE VERZWEIGUNG HAT MIT 11.1f EINEN DRITTEN FALL BEKOMMEN, und das ist KEIN
+      // Testfehler, den jemand hier repariert — es ist ein BEFUND ueber die
+      // Karten-Logik, festgehalten im Zuschnitt der Scheibe:
+      // BIS HIERHER SETZTE DIESER LAUF "hat Adapter" MIT "hat ein oeffentliches Feld"
+      // GLEICH. Das war fuer drei Ziele wahr und ist mit dem vierten falsch geworden:
+      // LinkedIn HAT seit 11.1f einen Empfaenger und hat trotzdem KEIN oeffentliches
+      // Feld — seine Kennung gilt je Ereignistyp und lebt in MeasureView, nicht auf
+      // der Karte. Die beiden Tatsachen sind unabhaengig, und der Test bildet das
+      // jetzt ab.
+      // DIE KOMPONENTE IST DABEI UNVERAENDERT GEBLIEBEN und rendert die Kombination
+      // korrekt: Der Hinweis haengt an hasAdapter, die Auslieferungs-Zeile an
+      // config.publicLabel !== undefined. Es war die ANNAHME des Tests, die nicht mehr
+      // traegt, nicht das Verhalten der Karte.
+      // DIE KARTE WIRD VOR DER VERZWEIGUNG GEGRIFFEN, UND DAS IST KEINE STILFRAGE —
+      // GEMESSEN am Compiler (2026-08-19): hasAdapter ist ein TYP-PRAEDIKAT
+      // (`target is TargetWithAdapter`), und seit 11.1f deckt sich diese Union mit
+      // TrackingTarget. Im else-Zweig verengt TypeScript `target` deshalb auf `never`,
+      // und ein TARGET_CARDS[target] DORT ist ein Typfehler.
+      // DAS IST EIN BEFUND, KEIN HINDERNIS: Der Compiler sagt damit, dass heute jedes
+      // bekannte Ziel einen Empfaenger hat — ein ZUSTAND, keine Regel. Der else-Zweig
+      // bleibt trotzdem stehen, weil er die Zusicherung fuer das naechste Ziel OHNE
+      // Empfaenger ist; er greift dann wieder.
+      const card = TARGET_CARDS[target];
+      const hatFeld = card.publicLabel !== undefined;
+
+      if (hasAdapter(target) && hatFeld) {
         expect(container.textContent).toContain(TARGET_CARDS[target].publicLabel);
         expect(screen.queryByText(HINWEIS)).toBeNull();
         // Die Zeile ueber die Auslieferung STEHT — die Kennung fehlt ja.
         expect(
           screen.queryByText(noDeliveryText(TARGET_CARDS[target].publicLabel!)),
         ).not.toBeNull();
+      } else if (hasAdapter(target)) {
+        // DER DRITTE FALL (seit 11.1f): EMPFAENGER JA, OEFFENTLICHES FELD NEIN.
+        // Was die Karte hier sagen MUSS: nichts Falsches. Der Folgenlosigkeits-Hinweis
+        // waere gelogen (das Ziel sendet), und die Auslieferungs-Zeile nennt als Grund
+        // eine fehlende Kennung, die es auf dieser Karte gar nicht gibt.
+        // WIRD ROT, WENN: jemand eine der beiden Unterdrueckungen entfernt. Dann
+        // stuende auf der Karte eines Sendenden "Auslieferung folgt" — oder eine Zeile
+        // mit `undefined` im Text.
+        expect(screen.queryByText(HINWEIS)).toBeNull();
+        expect(container.textContent).not.toContain("wird an dieses Ziel nichts");
       } else {
         // KEIN EMPFAENGER: Der Hinweis steht, das oeffentliche Feld fehlt GANZ.
         expect(screen.queryByText(HINWEIS)).not.toBeNull();
-        expect(TARGET_CARDS[target].publicLabel).toBeUndefined();
+        expect(card.publicLabel).toBeUndefined();
 
         // DIE AUFLAGE DER SCHEIBE 11.1a, UND SIE IST DER GRUND FUER DIESEN ZWEIG:
         // NEBEN dem Hinweis darf KEINE zweite Meldung stehen, die als Grund eine

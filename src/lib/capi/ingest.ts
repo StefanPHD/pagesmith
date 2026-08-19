@@ -14,6 +14,7 @@ import { META_TEST_EVENT_CODE } from "@/lib/capi/config";
 import { forwardToMeta } from "@/lib/capi/meta-forward";
 import { forwardToPinterest } from "@/lib/capi/pinterest-forward";
 import { forwardToTiktok } from "@/lib/capi/tiktok-forward";
+import { forwardToLinkedin } from "@/lib/capi/linkedin-forward";
 // HIER STAND EIN TYP-IMPORT VON TrackingTarget ("NUR DER TYP … er traegt den Waechter
 // fuer die Ziel-Konstante unten"). Mit Scheibe C2 sind die beiden lokalen
 // Ziel-Konstanten entfallen, und damit sein einziger Verwender. Die Zusage, dass
@@ -293,6 +294,37 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
   // ein Duplikat ohne Aussage.
   tiktok: (entry, event, eventID, body, clientIp, userAgent) =>
     forwardToTiktok(entry.config, event, eventID, body, clientIp, userAgent),
+
+  // DAS VIERTE ZIEL (Scheibe 11.1f) — UND ES PROJIZIERT AM STAERKSTEN VON ALLEN.
+  //
+  // ZWEI DINGE SIND HIER ANDERS, und beide sind Entscheidungen mit Grund:
+  //  (1) DIE EIGENE FORM (Bauform F1) nimmt das Zugangsdatum UND die Zuordnung —
+  //      NICHT die aufgeloeste CapiConfig. Deren pixelId ist fuer dieses Ziel
+  //      nachweislich LEER (seit 11.1e, s. den Kommentar an CapiConfig); ein Feld,
+  //      das fuer den Empfaenger bedeutungslos und leer ist, gehoert nicht in seine
+  //      Signatur. Der Adapter kennt damit weder ResolvedTarget noch CapiConfig.
+  //  (2) EIN ARGUMENT WENIGER: userAgent wird NICHT weitergereicht. Die Nutzlast
+  //      dieses Anbieters kennt kein Feld dafuer (gemessen); ihn zu verlangen waere
+  //      ein selbstgemachter Verlust. TypeScript deckt das — eine Funktion mit
+  //      weniger Parametern erfuellt die laengere Signatur.
+  //
+  // DER SCHLUESSELZUGRIFF rules[event] STEHT AUSDRUECKLICH NICHT HIER, sondern im
+  // Adapter: Diese Zeile laeuft SYNCHRON (dispatchForward ist keine async-Funktion),
+  // und alles, was hier stuende, laege AUSSERHALB des 204-Containments. Was hier
+  // steht, sind reine Eigenschafts-Lesungen und ein Objektliteral — sie koennen
+  // nicht werfen.
+  // `?? {}` FAENGT KEINEN GEMESSENEN FALL, sondern den TYP: conversionRules ist an
+  // ResolvedTarget optional (11.1e uebersetzt "leere Zuordnung" in "Feld nicht
+  // gesetzt"). Fuer ein Ziel OHNE Zuordnung entstuende hier sonst undefined — und
+  // der Riegel im Adapter faende nichts vor, was er lesen koennte.
+  linkedin: (entry, event, eventID, body, clientIp) =>
+    forwardToLinkedin(
+      { token: entry.config.token, conversionRules: entry.conversionRules ?? {} },
+      event,
+      eventID,
+      body,
+      clientIp,
+    ),
 };
 
 /**

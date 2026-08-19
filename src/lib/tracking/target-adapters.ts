@@ -92,11 +92,26 @@ import type { TrackingTarget } from "@/lib/settings";
  * gehoert hier NICHT hinein, solange es keinen Empfaenger hat — dann sagt die Karte
  * von selbst, dass an dieses Ziel nichts gesendet wird, und der Handler ueberspringt
  * es.
+ *
+ * NACHGEZOGEN 11.1f — DIE REGEL DARUEBER IST UNBERUEHRT, IHR BELEG WAR ES NICHT:
+ * "Heute enthaelt sie alle drei" war eine Aussage ueber einen Zustand mit DREI
+ * Zielen; seit 11.1a kennt TRACKING_TARGETS VIER, und seit dieser Scheibe traegt
+ * diese Liste ebenfalls vier. Der Satz bleibt im Wortlaut stehen — er sagt, was zu
+ * seiner Zeit galt —, und die Regel, die er illustriert, gilt unveraendert weiter:
+ * Ein Ziel gehoert erst hier hinein, wenn es einen Empfaenger HAT.
+ * DASS HEUTE WIEDER ALLE BEKANNTEN ZIELE DRINSTEHEN, IST ERNEUT EIN ZUSTAND UND
+ * KEINE REGEL. Wer daraus schliesst, die beiden Listen seien dasselbe, nimmt dem
+ * naechsten Ziel ohne Empfaenger seinen Zwischenzustand — und der Karten-Hinweis
+ * "Auslieferung folgt" haette wieder keinen Fall, den er beschreiben koennte.
  */
 export const TARGETS_WITH_ADAPTER = [
   "meta",
   "pinterest",
   "tiktok",
+  // DAS VIERTE ZIEL (Scheibe 11.1f). Ab hier ist es Empfaenger: der Riegel aus 11.1a
+  // faellt, und der Waechter, der ihn hielt, ist in derselben Scheibe ENTFERNT worden
+  // — so, wie sein eigener Kommentar es verlangt hat.
+  "linkedin",
 ] as const satisfies readonly TrackingTarget[];
 
 /**

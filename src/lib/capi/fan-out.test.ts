@@ -73,6 +73,25 @@ vi.mock("@/lib/capi/tiktok-forward", async (importActual) => {
   };
 });
 
+// DASSELBE MUSTER EIN VIERTES MAL, FUER DEN VIERTEN ADAPTER (Scheibe 11.1f).
+// ER IST NEU HINZUGEKOMMEN, UND OHNE IHN MISST DIESE DATEI ETWAS ANDERES, ALS SIE
+// BEHAUPTET: Bis 11.1e war 'linkedin' ein Ziel OHNE Empfaenger, der Verteiler
+// uebersprang es, und kein Mock war noetig. Seit dem Adapter-Eintrag laeuft im
+// Kreuzvergleich sonst die ECHTE Implementierung — samt fetch gegen einen fremden
+// Endpunkt, aus einem Unit-Test heraus.
+const { linkOverride } = vi.hoisted(() => ({
+  linkOverride: { fn: null as null | (() => Promise<void>) },
+}));
+vi.mock("@/lib/capi/linkedin-forward", async (importActual) => {
+  const actual =
+    await importActual<typeof import("@/lib/capi/linkedin-forward")>();
+  return {
+    forwardToLinkedin: (
+      ...args: Parameters<typeof actual.forwardToLinkedin>
+    ) => (linkOverride.fn ? linkOverride.fn() : actual.forwardToLinkedin(...args)),
+  };
+});
+
 const { after, scheduled } = vi.hoisted(() => {
   const scheduled: Array<() => Promise<void> | void> = [];
   return {
@@ -759,6 +778,11 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
     // darf NIE feuern: 'linkedin' ist ein bekanntes Ziel OHNE Empfaenger. Er steht
     // hier, weil die Form ihn verlangt — und genau seine Untaetigkeit ist die
     // Zusicherung im Lauf darunter.
+    // NACHGEZOGEN 11.1f — DER ABSATZ DARUEBER BLEIBT LESBAR, WEIL ER DEN GRUND
+    // FESTHAELT, AUS DEM DIESER SPION UEBERHAUPT ENTSTAND; SEIN ZUSTAND IST ABER
+    // UMGEKEHRT: Das Ziel hat seit dieser Scheibe einen Empfaenger. Der Spion IST
+    // jetzt verdrahtet (s. beforeEach) und MUSS feuern — der Lauf darunter hat die
+    // Seite gewechselt, aus "erreicht KEINEN Adapter" wurde "erreicht GENAU seinen".
     linkedin: vi.fn<() => void>(),
   };
 
@@ -819,6 +843,14 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
     tikOverride.fn = async () => {
       SPY_BY_TARGET.tiktok();
     };
+    // DER VIERTE, SEIT 11.1f. Ohne diese Zeile liefe die echte Implementierung: Sie
+    // faende in der Fixture keine Zuordnung, ginge an ihrem eigenen Riegel heraus —
+    // und der Lauf unten meldete "der Adapter wurde nicht gerufen", obwohl der
+    // Verteiler richtig verdrahtet ist. Ein Fehlschlag, dessen Ursache zwei Dateien
+    // entfernt liegt.
+    linkOverride.fn = async () => {
+      SPY_BY_TARGET.linkedin();
+    };
   });
 
   // DIE SCHLEIFE UNTERSCHEIDET SEIT 11.1a ZWEI FAELLE, und das ist keine Aufweichung
@@ -827,6 +859,20 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
   // Mit dem vierten Ziel gibt es einen bekannten Empfaenger-LOSEN Fall — fuer ihn
   // lautet die richtige Zusicherung "erreicht GAR KEINEN Adapter". Wer beide Faelle in
   // eine Erwartung zwingt, muesste eine der beiden falsch stellen.
+  //
+  // DER LINKEDIN-LAUF HAT MIT 11.1f DIE SEITE GEWECHSELT, und das gehoert hierher,
+  // weil es an der Schleife selbst nicht zu sehen ist: Sie verzweigt zur
+  // DEFINITIONSZEIT ueber hasAdapter. Bis 11.1e erzeugte sie fuer 'linkedin' den
+  // else-Zweig ("erreicht KEINEN Adapter"), seit dem Adapter-Eintrag den if-Zweig
+  // ("erreicht GENAU seinen"). ES IST DERSELBE CODE MIT DER UMGEKEHRTEN AUSSAGE —
+  // niemand hat den Test umgeschrieben, die Tatsache darunter hat sich geaendert.
+  // WAS DAZU NOETIG WAR, steht zwei Stellen weiter oben: ein Modul-Mock fuer den
+  // neuen Adapter und die Verdrahtung seines Spions im beforeEach. Ohne beides waere
+  // dieser Zweig gruen oder rot aus Gruenden, die mit der Zuordnung nichts zu tun
+  // haben.
+  // DER else-ZWEIG BLEIBT STEHEN, obwohl ihn heute KEIN Ziel mehr erreicht: Er ist
+  // die Zusicherung fuer das naechste Ziel ohne Empfaenger — und genau dafuer ist die
+  // Teilmengen-Eigenschaft von TARGETS_WITH_ADAPTER da.
   for (const target of TRACKING_TARGETS) {
     if (hasAdapter(target)) {
       it("W-" + target + ": das aufgeloeste Ziel erreicht GENAU seinen Adapter, die anderen NICHT", async () => {

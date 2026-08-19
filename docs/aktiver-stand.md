@@ -564,63 +564,44 @@ kein `pixelId`- und kein `getPixelId`-Eingriff.
 
 **LinkedIn wird zum `ResolvedTarget`, OHNE dass etwas gesendet wird.** Die zweite
 Kennungsform reist bis dorthin, wo ein Adapter sie später abholt — und fällt am
-Adapter-Gate heraus.
+Adapter-Gate heraus. **GEBAUT, GEPUSHT UND LIVE BELEGT (2026-08-18); was entstanden ist,
+was gemessen wurde und was AUSDRÜCKLICH NICHT gemessen ist, steht in Vermerk 5.**
 
-### Der Befund, der die Scheibe auslöst
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-GEMESSEN am Code (2026-08-18): Ohne Skalar-Kennung fällt LinkedIn aus `withPixel`
-(`getCapiConfigByTrackingKey`, `src/lib/capi/token.ts`) heraus. Der Ausdruck lautet
-`.filter((entry) => hasTargetPixelId(entry.pixelId, entry.target))`.
-**FOLGE, dieselbe Messung, vier Glieder:** Das Ziel steht nicht im `in`-Filter der
-Geheimnis-Abfrage · sein Zugangsdatum wird nie gelesen · es entsteht kein
-`ResolvedTarget` · `dispatchForward` wird für dieses Ziel nie gerufen.
+VERDICHTET AM 2026-08-19, nach dem bestätigten Live-Test. Hier standen die ANWEISUNGEN FÜR
+die Scheibe, und sie sind mit dem Vollzug abgelaufen:
 
-**DAS IST KEIN FEHLER DES RESOLVERS, und dieser Satz gehört dazu:** `hasTargetPixelId`
-beantwortet „kann ich für dieses Ziel eine `CapiConfig` bauen?", und die Antwort für
-LinkedIn ist NEIN — seine Kennung ist kein Skalar. Die Trennung der beiden Fragen aus
-11.1c war richtig; **was fehlt, ist der WEG, auf dem eine zweite Kennungsform bis zum
-Adapter kommt.**
+- **DER BEFUND, DER DIE SCHEIBE AUSLÖSTE**, mit seinen vier Gliedern (kein Eintrag im
+  `in`-Filter · Zugangsdatum nie gelesen · kein `ResolvedTarget` · `dispatchForward` für
+  dieses Ziel nie gerufen) und dem Satz, dass das KEIN Fehler des Resolvers war, sondern
+  ein FEHLENDER WEG.
+  **EINE SEINER ANGABEN IST NICHT NUR ABGELAUFEN, SONDERN SEIT DEM VOLLZUG FALSCH — und
+  das ist der Grund, warum sie GESTRICHEN und nicht bloss gekürzt ist:** „Ohne
+  Skalar-Kennung fällt LinkedIn aus `withPixel` heraus", samt dem zitierten
+  Filter-Ausdruck. Der Filter urteilt seit dieser Scheibe über BEIDE Kennungsformen
+  (Vermerk 5). Stehengeblieben wäre das eine TATSACHENBEHAUPTUNG ÜBER DEN CODE, die beim
+  nächsten Zuschnitt einen Weg noch einmal bauen liesse, den es gibt.
+- **DIE BEGRÜNDUNG, WARUM DER WEG VOR DEM ADAPTER KOMMT** — die Typerweiterung berührt den
+  heissesten Pfad und die halbe Testbasis (`CapiConfig` an VIER Produktivstellen, ZWÖLF
+  Testdateien nennen ihn, ZEHN bilden seine Form nach), und die Scheibe ist prüfbar, OHNE
+  zu senden. Sie ist eingelöst: der Bau hat genau zwei Dateien angefasst.
+- **DIE FESTSTELLUNG ZUR BESTEHENDEN ABDECKUNG samt ihrer Richtigstellung** — dass
+  `src/lib/capi/fan-out.test.ts` die ANDERE Hälfte deckt („LinkedIn feuert NICHT", heute
+  schon wahr), und die zwei Gründe, warum er unter dieser Scheibe nicht anschlägt
+  (untypisierter Resolver-Mock · `hasAdapter` greift vorher).
+  **IHRE FOLGE FÜR DEN BAU IST VOLLZOGEN, NICHT WEGGEFALLEN:** Der Nachweis des ENTSTEHENS
+  musste NEU und an der RÜCKGABE des Resolvers entstehen — das ist Mutation 1 in Vermerk 5,
+  und die Begründung dafür steht dort.
+- **DIE DREI OFFENEN FRAGEN SIND BEANTWORTET** (Owner-Entscheidungen bzw. am Code, jeweils
+  2026-08-18) und laufen mit ab: die FORM (K-B, s. den Abschnitt darunter — er bleibt
+  stehen) · der LESER der Zuordnung (in DERSELBEN `map`, kein zweiter Lauf) · ob der Filter
+  `isTargetDeliverable` rufen kann (NEIN, an der Kosten-Achse).
+  **WAS AN DEN ANTWORTEN ÜBER DIE SCHEIBE HINAUSREICHT, STEHT IN VERMERK 5** — namentlich
+  die dritte, die eine Bedingung dauerhaft an ZWEI Stellen stellt.
 
-**WARUM ES HEUTE FOLGENLOS IST UND MORGEN NICHT:** Das Ziel ist seit 11.1d
-AUSLIEFERFÄHIG — sein Schlüssel steht im Draht, der Besucher wird nach Einwilligung
-gefragt, der Beacon trägt sie. Ohne Adapter bleibt das ohne Folge; MIT Adapter wäre es
-der stille Ausfall, gegen den diese Phase seit vier Scheiben baut.
-
-### Warum der Weg VOR dem Adapter kommt
-
-- **DIE TYPERWEITERUNG BERÜHRT DEN HEISSESTEN PFAD UND DIE HALBE TESTBASIS.**
-  `CapiConfig` wird an **VIER** Produktivstellen als TYP geführt (GEMESSEN 2026-08-18:
-  die Definition und `ResolvedTarget.config` in `src/lib/capi/token.ts`, der Parameter
-  von `forwardToMeta` in `src/lib/capi/meta-forward.ts`, der Parameter von
-  `forwardToTiktok` in `src/lib/capi/tiktok-forward.ts`). **ZWÖLF Testdateien NENNEN
-  ihn, ZEHN davon bilden eine `{ pixelId, … }`-Form nach** (GEMESSEN 2026-08-18; die
-  beiden übrigen — `src/lib/tracking/target-readiness.test.ts` und
-  `src/app/api/ingest-parity.test.ts` — nennen ihn nur). Zusammen mit einem Adapter
-  gebaut wäre bei einem Live-Fehlschlag nicht erkennbar, WELCHE Achse gebrochen ist.
-- **DIE SCHEIBE IST PRÜFBAR OHNE ZU SENDEN.** Ein Ziel, das zum Empfänger wird und am
-  Adapter-Riegel herausfällt, ist genau der Zweig, den `dispatchForward`
-  (`src/lib/capi/ingest.ts`) seit 11.1a bereithält: `if (!hasAdapter(target)) return
-  Promise.resolve();`.
-  **DIE ABDECKUNG DAFÜR STEHT SCHON, und das ist mehr, als der Zuschnitt annimmt**
-  (GEMESSEN am Repo, 2026-08-18): `src/lib/capi/fan-out.test.ts` führt einen Lauf über
-  ALLE Ziele, dessen Fixture `entryFor(target)` für JEDES Ziel — auch für `linkedin` —
-  ein vollständiges `ResolvedTarget` mit Kennung und Zugangsdatum baut und zusichert,
-  dass der LinkedIn-Spion **NIE** feuert. Die Zusicherung dieser Scheibe ist damit auf
-  Unit-Ebene bereits formuliert; was fehlt, ist der Weg, auf dem ein solcher Eintrag im
-  ECHTEN Resolver entsteht.
-  **RICHTIGGESTELLT AM 2026-08-18, NICHT GESTEMPELT — der Wortlaut darüber bleibt lesbar,
-  die Richtigstellung tritt daneben: JENE ABDECKUNG DECKT DIE ANDERE HÄLFTE.** Der Test
-  sichert „LinkedIn feuert NICHT" — und das ist **HEUTE SCHON WAHR, ohne jede Änderung
-  dieser Scheibe.** Er ist damit ein Wächter für die Invarianten „kein Eintrag in
-  `TARGETS_WITH_ADAPTER`" und „kein Adapter, kein Forward", **NICHT der Nachweis dafür,
-  dass ein Empfänger ENTSTEHT.**
-  **ZWEI GRÜNDE, warum er unter dieser Scheibe nicht anschlägt** (GEMESSEN am Repo,
-  2026-08-18): Der Resolver ist dort mit einem **untypisierten `vi.fn()`** gemockt
-  (`vi.hoisted(() => ({ getCapiConfigByTrackingKey: vi.fn() }))`) — eine Typänderung
-  erreicht ihn nicht; und der Produktivcode liest für LinkedIn **kein** Config-Feld, weil
-  `hasAdapter` in `dispatchForward` vorher greift.
-  **FOLGE FÜR DEN BAU:** Der Nachweis des ENTSTEHENS muss NEU entstehen, und zwar **an der
-  RÜCKGABE des Resolvers** — nicht über den Handler, der davon nichts sieht.
+WAS GEBAUT UND GEMESSEN WURDE, STEHT IN VERMERK 5 — und nur weil es dort steht, durfte es
+hier weg.
 
 ### Die Form — ENTSCHIEDEN (Owner, 2026-08-18): eine EIGENE Config-Form
 
@@ -629,6 +610,10 @@ Nach dem Muster von `PinterestConfig` (`src/lib/capi/pinterest-forward.ts`). **G
 nicht angefasst.
 **GRENZE, DIE DIE ENTSCHEIDUNG TRÄGT:** Sie nennt die RICHTUNG, nicht die Bauform. **Ob
 die Form am Code so trägt, ist im Stufe-1-Prompt zu prüfen** — s. die erste offene Frage.
+**ZEIGER NACHGEZOGEN AM 2026-08-19 (Verdichtung):** Der Abschnitt „Zwei offene Fragen" ist
+mit dem Vollzug abgelaufen; die Frage IST am Code beantwortet worden, und das Ergebnis ist
+die Entscheidung K-B darunter. Der Satz bleibt im Wortlaut stehen — er hält fest, dass die
+Bauform damals NICHT entschieden war.
 
 **RICHTIGGESTELLT AM 2026-08-18, NICHT GESTEMPELT — EINE TESTDATEI IST DOCH BETROFFEN.**
 Der Satz oben sagt, „die zehn nachbildenden Testdateien werden nicht angefasst". GEMESSEN
@@ -706,7 +691,13 @@ bereits zwei davon gefunden und protokolliert. **Ein dritter, der nirgends steht
 der Fehler.** Er geht als eigener Punkt in den Vorrat („EIN UNVOLLSTÄNDIG
 KONFIGURIERTES ZIEL FÄLLT STILL AUS"), mit dem Trigger auf eine UI-Warnung.
 
-### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+### Was ausdrücklich NICHT drin war, je mit seinem Grund — GILT WEITER, IST ABER KEIN ZUSCHNITT MEHR
+
+Die Ausschlüsse sind mit dem Vollzug NICHT erledigt; erledigt ist nur ihre Rolle als
+Zuschnitt DIESER Scheibe. **ALLE FÜNF HABEN GEHALTEN — GEMESSEN am Diff (2026-08-19, an
+Commit `5b6dc23`):** genau ZWEI Dateien (`src/lib/capi/token.ts`,
+`src/lib/capi/token.test.ts`); `src/lib/tracking/**`, `src/lib/capi/ingest.ts`, die drei
+Adapter-Dateien und jede Komponente sind NICHT darunter.
 
 - **KEIN ADAPTER, KEIN FORWARD, KEIN EINTRAG IN `TARGETS_WITH_ADAPTER`.** Der Riegel aus
   11.1a hält; sein Wächter (`src/lib/tracking/target-adapters.test.ts`) bleibt stehen.
@@ -717,40 +708,6 @@ KONFIGURIERTES ZIEL FÄLLT STILL AUS"), mit dem Trigger auf eine UI-Warnung.
 - **KEINE DEDUP-ZUSAGE UND KEINE KORREKTUR AN IHR.** Die Formulierung in `CLAUDE.md`,
   „## Offene Punkte" (Betreiber-Dokumentation, Punkt 2), ist bereits als Befund geführt.
 - **KEINE UI-WARNUNG für unvollständige Konfiguration.** Steht im Vorrat.
-
-### Zwei offene Fragen — FRAGEN, kein Befund
-
-Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
-
-1. **TRÄGT LINKEDIN EINE EIGENE CONFIG-FORM, UND WAS KOSTET SIE?** `PinterestConfig` ist
-   der Präzedenzfall, `forwardToTiktok` nimmt `CapiConfig` unverändert.
-   **WAS DAZU BEREITS GEMESSEN IST und die Frage NICHT beantwortet (2026-08-18):**
-   `PinterestConfig` lebt AUSSCHLIESSLICH an der Adapter-Grenze — der Resolver erzeugt
-   auch für Pinterest ein `ResolvedTarget` mit `config: CapiConfig`, und erst
-   `dispatchForward` projiziert um (`{ adAccountId: entry.config.pixelId, token:
-   entry.config.token }`). `ResolvedTarget.config` ist als `CapiConfig` typisiert. **Ob
-   das Muster damit für den RESOLVER trägt und was `ResolvedTarget` dafür braucht, ist
-   offen** — hier wird es NICHT entschieden.
-2. **WIE KOMMT DIE ZUORDNUNG IN DEN RESOLVER?** Er liest den Blob heute LOKAL
-   (`const settings = (project.settings ?? {}) as ProjectSettings` in
-   `getCapiConfigByTrackingKey`) und gibt ihn NICHT zurück; die Auflösung liefert
-   `{ projectId, blocked, abTestActive, targets }` (GEMESSEN 2026-08-18). Ob ein zweiter
-   Leser neben `getPixelId` tritt oder etwas anderes, ist offen.
-3. **KANN DER FILTER `isTargetDeliverable` RUFEN?** (nachgetragen am 2026-08-18 — **die
-   Überschrift dieses Abschnitts sagt „Zwei" und ist damit überholt; sie wird NICHT
-   umgeschrieben, weil sie den Stand des Zuschnitts festhält, und diese Zeile ist ihre
-   Richtigstellung.**)
-   Jene Funktion (`src/lib/settings.ts`, gebaut in 11.1d) beantwortet **exakt** die Frage,
-   die der Filter ab jetzt stellt — „trägt dieses Ziel eine Kennung IRGENDEINER Form?" —,
-   ist rein und nimmt `settings` plus Ziel entgegen. **Dann entstünde KEIN zweiter Leser,
-   sondern der BESTEHENDE an einer zweiten Stelle** — und die Frage 2 darüber wäre damit
-   mitbeantwortet.
-   **WAS DAGEGEN SPRECHEN KÖNNTE UND UNGEPRÜFT IST:** Der Filter arbeitet heute auf dem
-   ZWISCHENOBJEKT (`{ target, pixelId }`), nicht auf `settings`. **Ob `settings` an jener
-   Stelle im Geltungsbereich liegt, ist NICHT geprüft.** Ebenso ungeprüft: ob ein Aufruf
-   dort gegen die Auflage im Kommentar an dieser Stelle verstösst, die eine zweite Lesung
-   je Beacon ausdrücklich ausschliesst.
-   **Am Code zu beantworten, nicht hier.**
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -1146,6 +1103,33 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   Text korrekt und nur seine Auslieferung veraltet; und DIESER hier — dort ist die
   Konfiguration selbst unvollständig, und es entsteht gar kein Empfänger.
   **DREI VERSCHIEDENE URSACHEN, DREI VERSCHIEDENE LÖSUNGEN.**
+
+- **`withPixel` HEISST NICHT MEHR, WAS ER ENTHÄLT.** Seit Scheibe 11.1e trägt die Liste
+  Ziele, die KEINEN Pixel führen — der Filter urteilt über beide Kennungsformen. **Der
+  Name behauptet damit das Gegenteil seines Inhalts.**
+  **GEMESSEN am Repo (2026-08-19), und die Zahl steht hier anders, als sie gemeldet
+  wurde:** Der Bezeichner steht **VIERMAL** im Rumpf von `getCapiConfigByTrackingKey`
+  (`src/lib/capi/token.ts`) — die Bindung, der Frühausstieg, die `map` auf die `in`-Liste
+  der Geheimnis-Abfrage und der Kopf der Paarungsschleife. **Gemeldet waren SECHS**; die
+  Suche findet vier, case-insensitiv und über die ganze Datei.
+  **DIE ZWEITE HÄLFTE DER MELDUNG TRIFFT AN DIESER STELLE EBENFALLS NICHT ZU, und sie ist
+  die wichtigere:** Die Kommentare an derselben Stelle nennen den Bezeichner NICHT — sie
+  umschreiben ihn („DER FILTER", „der Kosten-Absatz"). **Genannt wird er in Kommentaren
+  ANDERSWO:** einmal in `src/lib/tracking/target-readiness.ts` („der `withPixel`-Filter
+  in …") und zweimal in `src/lib/tracking/target-readiness.test.ts` (GEMESSEN 2026-08-19,
+  case-insensitive Suche über `src/`; die Treffer auf `projectWithPixel` in
+  `src/lib/capi/token.test.ts` sind eine FIXTURE und nicht dieser Bezeichner).
+  **DAS VERSCHIEBT DEN PREIS, ES SENKT IHN NICHT:** Eine Umbenennung zieht KEINE
+  Entscheidungs-Prosa an der Fundstelle mit, dafür aber drei Nennungen in ZWEI ANDEREN
+  Dateien — darunter `src/lib/tracking/target-readiness.ts`, deren Kopf-Absatz als
+  unangetastet markiert ist und von `src/lib/tracking/target-adapters.ts` wörtlich zitiert
+  wird.
+  **WARUM NICHT IN 11.1e:** Eine Umbenennung fiele in denselben Diff wie eine
+  Verhaltensänderung auf dem heissesten Pfad — dann wäre bei einem Fehlschlag nicht zu
+  trennen, welche Achse gebrochen ist. Dieselbe Begründung, mit der der Zuschnitt den
+  Adapter von diesem Weg getrennt hat.
+  **TRIGGER:** mit der nächsten Runde, die `src/lib/capi/token.ts` ohnehin anfasst.
+  GEMELDET, NICHT GEBAUT — und ausdrücklich KEIN Namensvorschlag.
 
 ## Hebungs-Kandidaten
 
@@ -1553,3 +1537,91 @@ vermeidet. **GEBAUT IST K4.** Die Frage, ob ein Ziel mit event-geschlüsselter K
 allein mit einem Skalar als auslieferfähig gelten soll, ist damit OFFEN; heute liefert die
 ODER-Verknüpfung dort `true`. Sie ist folgenlos, solange die Karte kein öffentliches Feld
 für dieses Ziel führt (11.1a) — es gibt keinen Bedienweg zu einem solchen Skalar.
+
+### 5 — Scheibe 11.1e: Der Weg zum Empfänger (Commit 5b6dc23)
+
+**WELCHE NUMMER DAS IST:** `5b6dc23` ist der BAU-Commit (`feat(capi): LinkedIn wird
+Empfaenger, ohne dass etwas gesendet wird`) — NICHT der Doku-Commit, der diesen Vermerk
+trägt. Dieselbe Trennung wie in den Vermerken 1 bis 4. GEMESSEN am Repo (2026-08-19): Der
+Commit trägt das Datum 2026-08-18 und steht auf `origin/main`. ES GIBT DAMIT DERZEIT KEINE
+OFFENE LÜCKE.
+
+**WAS GEBAUT WURDE.** Ein ZWEITES, OPTIONALES Feld an `ResolvedTarget`
+(`conversionRules?: Record<string, string>`, `src/lib/capi/token.ts`) — die Form K-B. Die
+Zuordnung reist in DERSELBEN `map` mit, die schon die Kennung liest (`rules:
+getConversionRules(settings, target)` im Zwischenobjekt); der `withPixel`-Filter urteilt
+über BEIDE Kennungsformen (`hasTargetPixelId(…) || hasConversionRules(…)`); die
+Paarungsschleife übersetzt „leere Zuordnung" in „Feld nicht gesetzt".
+**`CapiConfig`, `dispatchForward` UND DIE DREI ADAPTER SIND UNANGETASTET** — GEMESSEN am
+Diff (2026-08-19): genau ZWEI Dateien, `src/lib/capi/token.ts` (90+/2-) und
+`src/lib/capi/token.test.ts` (269+/0-). **PRÄZISE, weil der Satz sonst zu weit gelesen
+wird:** An `CapiConfig` ist die FELDMENGE unberührt; ergänzt wurde ein KOMMENTAR an
+`pixelId`, der festhält, dass dieses Feld seit dieser Scheibe LEER sein kann und KEIN
+Compiler-Riegel das fängt — die Auflage, die zur Form K-B gehört.
+
+**WAS GEMESSEN IST (LIVE, 2026-08-18, vom Owner):**
+- **REGRESSION, PROJEKT OHNE LINKEDIN:** Meta empfängt server- und browser-seitig
+  unverändert.
+- **REGRESSION, MEHRERE ZIELE (Meta + TikTok):** Der Fan-Out läuft stabil; Meta
+  dedupliziert über die geteilte Ereignis-Kennung, TikTok empfängt das Server-Event mit
+  vollen Client-Parametern.
+- **GEMISCHTES PROJEKT (Meta + LinkedIn, echtes Zugangsdatum, erfundene URN):** Meta und
+  TikTok empfangen unverändert. **Ein VIERTER aufgelöster Empfänger kippt den bestehenden
+  Forward NICHT.**
+- **DER NEUE PFAD — LinkedIn-ONLY** (kein Skalar, nur Zuordnung plus Zugangsdatum):
+  `/api/e` antwortet mit HTTP 204, leerem Rumpf, ohne Verzögerung und ohne 500. **Das
+  Containment hält auf einem Pfad, den es vorher nicht gab** — genau der zweite Preis, der
+  im Zuschnitt benannt und akzeptiert ist.
+- **DER CONSENT-DRAHT TRÄGT DAS ZIEL:** `cns: { linkedin: true }` wurde korrekt aufgelöst
+  und mitgeführt. **Damit ist die Kette aus 11.1d und 11.1e durchgehend belegt** —
+  Einwilligung für ein Ziel OHNE Skalar-Kennung.
+
+**DIE GRENZE, DIE ZWINGEND MITMUSS — EIN ENTSTANDENER EMPFÄNGER IST IM PRODUKT NICHT LIVE
+ERKENNBAR.** Er fällt in `dispatchForward` (`src/lib/capi/ingest.ts`) am Adapter-Gate
+heraus: ohne Logzeile, ohne Zählung, ohne Nutzlast. Nach aussen ist er von „nicht
+entstanden" NICHT unterscheidbar — **und das ist das 204-Containment und kein Mangel.**
+**FOLGE, und sie ist der Punkt dieser Grenze:** Der Live-Test zeigt, dass der neue Pfad
+NICHTS KIPPT — **nicht, dass der Empfänger ENTSTEHT.** Das deckt allein die Unit-Ebene.
+**KEIN BYTE-VERGLEICH:** Die Scheibe berührt den Erzeuger nicht.
+
+**DIE UNIT-EBENE, AUSDRÜCKLICH NEBEN DEM LIVE-TEST UND NICHT AN SEINER STELLE:**
+- **G0 — EINE GEMESSENE TATSACHE ÜBER DAS PRÜFWERKZEUG, DIE DEN BAU GEFORMT HAT:** `toEqual`
+  ignoriert einen Schlüssel mit dem Wert `undefined`, auf JEDER Ebene — ein LEERES OBJEKT
+  dagegen nicht. Daraus folgte die Umformung in der Paarungsschleife. **OHNE diese Messung
+  wäre ein `conversionRules: {}` an JEDEM Empfänger gelandet und hätte Bestandstests
+  gebrochen, deren Ursache in einer ANDEREN Datei steht.**
+- **MUTATION 3 HAT DAS AM LEBENDEN BESTAND BESTÄTIGT:** `{}` statt `undefined` bringt
+  **SIEBEN** Bestandstests zu Fall — genau die, deren Erwartung eine NICHT-LEERE
+  Empfängermenge trägt. **Die Umformung ist damit nachweislich nicht kosmetisch.**
+- **MUTATION 2 HAT DEN BESTEHENDEN TIPPFEHLER-WÄCHTER ZU FALL GEBRACHT:** Er ist der
+  Nachweis, dass für Projekte OHNE diese Konfiguration nichts anders wird. Der Überschuss
+  von drei Tests war EINE Ursache mit DREI Anzeigeflächen (zu grosse `in`-Liste,
+  unerwarteter Empfänger, ausbleibender Frühausstieg) — **also Abdeckung und keine
+  Kaskade.**
+- **MUTATION 1 HAT DAS ENTSTEHEN AN DER RÜCKGABE DES RESOLVERS GEPRÜFT** — der einzige
+  taugliche Prüfling, weil über den Handler nichts sichtbar wird (s. die Grenze darüber).
+- **TESTZAHL GEMESSEN:** 57 Dateien/1103 -> 57 Dateien/1112. **KEINE bestehende Assertion
+  und KEINE bestehende Fixture wurde geändert** — GEMESSEN am Diff (2026-08-19):
+  `src/lib/capi/token.test.ts` ist mit 269 Zeilen rein additiv, NULL Löschungen.
+EINE MUTATIONSPROBE SAGT NICHTS ÜBER DIE DEPLOYTE LAUFZEIT.
+
+**DIE ENTSCHEIDUNG, DIE ÜBER DIE SCHEIBE HINAUS BINDET — DIE BEDINGUNG STEHT AB JETZT AN
+ZWEI STELLEN:** „Trägt dieses Ziel eine Kennung IRGENDEINER Form?" wird im Consent-Memo
+über `isTargetDeliverable` (`consentTargets`, `src/components/CodeImporter.tsx`) und im
+Resolver AUSGESCHRIEBEN beantwortet (`getCapiConfigByTrackingKey`,
+`src/lib/capi/token.ts`).
+**DAS IST ERZWUNGEN UND NICHT GEWÄHLT** (GEMESSEN am Code, 2026-08-19):
+`isTargetDeliverable` (`src/lib/settings.ts`) trägt `getPixelId` in ihrem ERSTEN Term, und
+die `map` hat es für dasselbe Ziel bereits gerufen; ein Aufruf im Filter läse denselben
+Wert ein ZWEITES Mal — JE ZIEL und JE BEACON, auf dem meistgetroffenen Pfad der Plattform.
+**DER KOMMENTAR AN DER FILTER-STELLE TRÄGT DIE BEGRÜNDUNG SAMT DEM SATZ, DASS EIN
+ZUSAMMENLEGEN DIE ZWEITE LESUNG WIEDER EINFÜHRT** — ohne ihn sieht die Doppelung wie ein
+Versehen aus und wird beim nächsten Aufräumen beseitigt.
+**DAS IST DIE ANTWORT AUF DIE DRITTE OFFENE FRAGE DES ZUSCHNITTS** („Kann der Filter
+`isTargetDeliverable` rufen?"), und sie lautet NEIN — an der Kosten-Achse, nicht am
+Geltungsbereich.
+
+**DIE FORM K-B UND DIE ZWEI VERWORFENEN** stehen im Zuschnitt oben und werden hier NICHT
+wiederholt: der Kommentar an `ResolvedTarget.conversionRules` VERWEIST dorthin
+(`docs/aktiver-stand.md`, Scheibe 11.1e), und deshalb ist jener Abschnitt bei der
+Verdichtung ausdrücklich stehengeblieben.

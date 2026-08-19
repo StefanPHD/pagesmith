@@ -1466,6 +1466,25 @@ miterledigen, sondern gebündelt abarbeiten.
   heisst das ZUERST "einer der beiden Deckel hat sich bewegt".
   ES IST DIESELBE KLASSE wie das `asString`-Duplikat, nur eine Ebene gefährlicher:
   Ein divergenter TEXT fällt beim Lesen auf, eine divergente ZAHL nicht.
+  NACHGEZOGEN 2026-08-19 (Hebung Phase 11.1) — DIE ZAHL WAR AUF ZWEI STEHENGEBLIEBEN, DER
+  TEXT DARÜBER BLEIBT UNVERÄNDERT: Es sind inzwischen VIER. GEMESSEN am Code (2026-08-19):
+  `META_FORWARD_TIMEOUT_MS` (`meta-forward.ts`), `PINTEREST_FORWARD_TIMEOUT_MS`
+  (`pinterest-forward.ts`), `TIKTOK_FORWARD_TIMEOUT_MS` (`tiktok-forward.ts`) und seit
+  Scheibe 11.1f `LINKEDIN_FORWARD_TIMEOUT_MS` (`linkedin-forward.ts`) — alle vier auf
+  `3_000`, alle vier modul-privat, und KEINE Stelle im Repo sieht zwei davon nebeneinander.
+  WAS DAS NICHT IST, und das gehört ausdrücklich dazu: KEIN Defekt am Aufräumen. Alle vier
+  Adapter deckeln über `AbortController` plus `setTimeout` und löschen den Timer je in
+  einem `finally` (`clearTimeout(timer)`); `Promise.race` kommt in `src/` NIRGENDS vor, der
+  Verteiler verbietet es sogar ausdrücklich. Wer hier einen liegengebliebenen Timer sucht,
+  sucht etwas, das es nicht gibt — die Gefahr ist die DIVERGENZ der Zahlen, nicht ihr
+  Verhalten.
+  DER SATZ „DER KANDIDAT WAR EINE VORHERSAGE UND IST JETZT EIN ZUSTAND" GILT DAMIT
+  VERSCHÄRFT: Mit dem vierten Empfänger ist die Zahl nicht mehr zu zweit falsch zu machen,
+  sondern zu viert.
+  WARUM NICHT MIT 11.1f ZUSAMMENGEFÜHRT: Eine Zusammenführung fasst DREI bestehende
+  Adapter-Dateien an — im selben Diff wie ein neuer Adapter wären bei einem Fehlschlag zwei
+  Achsen nicht zu trennen. TRIGGER: die nächste Runde, die eine Forward-Datei ohnehin
+  anfasst.
 
 - DAS ZIEL-VOKABULAR HAT MEHRERE UNABHÄNGIGE KOPIEN, EINE DAVON AUSSERHALB JEDER
   PRÜFUNG
@@ -2041,3 +2060,115 @@ DIE ENTSCHEIDUNG SELBST STEHT NICHT HIER, sondern an ihrem Ort: CLAUDE.md,
   nicht gibt. Wird das Feld gebaut, gehört er DORT hinein — und dann wandert die Zahl
   mit.
   PROVENIENZ: aus der Owner-Runde vom 2026-08-15.
+
+## Aus Phase 11.1 gehoben (2026-08-19) — Vorrats-Punkte aus docs/aktiver-stand.md
+
+Übernommen im Zug der Hebung am Phasenende, zweite Runde. **Jeder Punkt trägt seinen
+Messbefund aus der Standdatei UNVERÄNDERT** — nichts ist hier neu erhoben worden; wo eine
+Angabe ein Datum trägt, ist es das der ursprünglichen Messung. Was an anderen Orten gelandet
+ist (CLAUDE.md, docs/immer-beachten.md), steht hier NICHT noch einmal.
+
+- ZWEI PRÄDIKATFREIE KENNUNGS-PRÜFUNGEN IM ERZEUGER-PFAD
+  GEMESSEN (2026-08-17): `buildMetaRuntime` (`src/lib/tracking/meta.ts`) und
+  `buildWiringScript` (`src/lib/generate.ts`) entscheiden „trägt dieses Ziel eine Kennung?"
+  per Vergleich gegen `""` statt über `hasPixelId` — obwohl
+  `src/lib/tracking/target-readiness.ts` wörtlich davor warnt („wer hier
+  `savedPixelId !== \"\"` schreibt, hat wieder zwei Wahrheiten"). HEUTE WERTGLEICH, weil
+  `getPixelId` bereits trimmt.
+  TRIGGER, AM 2026-08-18 VERENGT (der frühere lautete „sobald EINE Kennung eine andere Form
+  hat"): „sobald METAS Kennung eine andere Form hat als einen getrimmten Skalar". GRUND,
+  GEMESSEN (2026-08-18): Der Kennungs-Pfad beider Stellen ist META-SPEZIFISCH — kein anderes
+  Ziel kommt darin vor; die alte Fassung feuerte auf eine Tatsache, die diese Stellen NIE
+  erreicht.
+  UNBERÜHRT BLEIBT der EINWILLIGUNGS-Pfad derselben Funktionen: `consentTargets` reist
+  ziel-ÜBERGREIFEND durch sie hindurch. Meta-spezifisch ist die KENNUNG, nicht die
+  Einwilligung.
+
+- DER ZEIGER IN CLAUDE.md AUF `docs/claude-history/backlog-polish.md` IST FÜR EINE WÖRTLICHE
+  SUCHE TOT
+  GEMESSEN (2026-08-17): Er nennt „VOLLSTÄNDIGKEITS-ACHSE — WAS DANN SOFORT GILT" mit Umlaut
+  und als Abschnitt; im Ziel steht ein AUFZÄHLUNGSPUNKT in ASCII-Umschrift
+  (`VOLLSTAENDIGKEITS-ACHSE`). Gefunden nur, weil beide Schreibweisen probiert wurden.
+  DOKU-PUNKT, EIGENE RUNDE — hier ausdrücklich nicht repariert. Ein Ort-Vorschlag steht nur
+  für die zu ändernde Stelle (CLAUDE.md), nicht für eine Zielform.
+
+- DER KOMMENTAR AN `mappingsEqual` NENNT DEN FALSCHEN SEPARATOR
+  GEMESSEN am Repo (2026-08-18): Er sagt „Leerzeichen-Separator ist kollisionsfrei, da
+  ps-IDs nur `[a-z0-9-]` sind (kein Leerzeichen)". Gebaut ist ein NUL-BYTE (`\x00`), kein
+  Leerzeichen — gemessen als Byte 6974 von 8179 in `src/lib/mappings.ts`.
+  DIE AUSSAGE ÜBER DIE KOLLISIONSFREIHEIT BLEIBT WAHR (ein NUL ist erst recht nicht in einer
+  ps-ID); FALSCH IST DIE BEGRÜNDUNG, weil sie ein anderes Zeichen nennt als das gebaute.
+  Genau dieses Byte ist ausserdem die gemessene Ursache der grep-Falle in jener Datei
+  („Binary file … matches" statt der Trefferzeilen) — die Regel dazu steht in
+  `docs/immer-beachten.md` unter „WERKZEUG-REGEL", Abschnitt zur Gegenrichtung.
+  KOMMENTAR-vs-CODE-BEFUND AN EINER KERN-DATEI, EIGENE RUNDE. Kein Trigger benannt.
+
+- ZWEI TABS ÜBERSCHREIBEN EINANDER LAUTLOS
+  GEMESSEN am Code (2026-08-18): `updated_at` wird bei JEDEM Write gesetzt
+  (`new Date().toISOString()`), aber an KEINER Stelle VERGLICHEN — kein `.eq` auf
+  `updated_at`, keine Versionsspalte, kein `If-Match`, keine Sperre. Die einzigen Filter
+  sind `.eq("id", projectId).eq("user_id", user.id)`, also EIGENTÜMERSCHAFT und nicht
+  Nebenläufigkeit. Der zweite Write ersetzt den Blob des ersten VOLLSTÄNDIG.
+  DASS DAS MUSTER IM REPO BEKANNT IST, zeigen DREI SERVER-seitige Read-Merges auf
+  `settings` — `setCapiToken`, `removeCapiToken` und `publishProject` (alle
+  `src/app/projects/actions.ts`). Sie schützen sich gegenseitig, aber NICHT gegen den
+  Client: ein nachfolgendes `saveProject` ersetzt den Blob ganzheitlich.
+  DIE EINORDNUNG GEHÖRT DAZU: Das trifft `settings.pixels` HEUTE schon genauso. Eine
+  Zuordnung je Ereignistyp vergrössert das VOLUMEN des Verlusts, nicht seine KLASSE.
+  TRIGGER: sobald ein Teilbaum des Blobs so gross wird, dass sein Verlust nicht in einer
+  Minute nachgetragen ist.
+
+- DER BLOB HAT KEINE GEMESSENE GRÖSSENGRENZE
+  GEMESSEN (2026-08-18): Weder Code noch Schema prüfen etwas — kein
+  `length`/`size`/`byteLength` auf `settings` in `src/` (ohne Testdateien, null Treffer),
+  kein `CHECK` und keine Längenbeschränkung in `supabase/migrations/*.sql` (null Treffer).
+  Die Spalte ist `settings jsonb NOT NULL DEFAULT '{}'` (GELESEN, `docs/db-stand.md`).
+  DIE GRENZE DIESER AUSSAGE IST DER WICHTIGERE TEIL: NICHT gemessen sind die
+  Postgres-eigene `jsonb`-Obergrenze und etwaige Limits von PostgREST bzw. Supabase auf die
+  Payload-Grösse. Das ist KEINE Aussage über deren Nichtexistenz — es ist die Aussage, dass
+  DIESES Repo nichts prüft. Kein Trigger benannt.
+
+- VERWAISTE ZUORDNUNGEN ANZEIGEN
+  Eine URN, deren Ereignisname nicht mehr im Schlüsselraum steht, ist heute unsichtbar und
+  nur über einen Umweg wieder erreichbar — die Oberfläche zeigt ausschliesslich Namen aus
+  dem Schlüsselraum. (Aus dem Zuschnitt 11.1d; dort ist BEHALTEN entschieden, und dieser
+  Punkt nimmt das nicht zurück.)
+  DER BESSERE ENDZUSTAND IST DIE WEG-C-HALTUNG DES REPOS, und sie ist gebaut und bewährt
+  (GEMESSEN am Code, 2026-08-18, an `findOrphans` in `src/lib/mappings.ts` und der Sektion
+  „⚠ Verwaiste Verknüpfungen" in `src/components/CodeImporter.tsx`): nichts still löschen,
+  nichts raten, der Mensch entscheidet — Status ABGELEITET, nie gespeichert; Löschen nur
+  nach Bestätigung; Neu-Verknüpfen nur nach expliziter Wahl.
+  WARUM EIGENE SCHEIBE: Ein ZWEITER Verwaisten-Begriff in der Oberfläche braucht seinen
+  eigenen Ort, seinen eigenen Wortlaut und die Abgrenzung gegen den bestehenden, der auf
+  ELEMENTE zeigt und nicht auf Ereignisnamen.
+  TRIGGER: sobald ein Betreiber meldet, dass eine eingetragene URN unauffindbar ist — ODER
+  mit einer Anzeige-Runde.
+
+- `withPixel` HEISST NICHT MEHR, WAS ER ENTHÄLT
+  Seit Scheibe 11.1e trägt die Liste Ziele, die KEINEN Pixel führen — der Filter urteilt
+  über beide Kennungsformen. Der Name behauptet damit das Gegenteil seines Inhalts.
+  GEMESSEN am Repo (2026-08-19), UND DIESE FASSUNG ERSETZT EINE FRÜHERE ZÄHLUNG: Der
+  Bezeichner steht VIERMAL im Rumpf von `getCapiConfigByTrackingKey`
+  (`src/lib/capi/token.ts`) — die Bindung, der Frühausstieg, die `map` auf die `in`-Liste
+  der Geheimnis-Abfrage und der Kopf der Paarungsschleife. Gemeldet waren SECHS.
+  DIE ZWEITE HÄLFTE DER FRÜHEREN MELDUNG TRIFFT EBENFALLS NICHT ZU, und sie ist die
+  wichtigere: Die Kommentare an derselben Stelle nennen den Bezeichner NICHT — sie
+  umschreiben ihn („DER FILTER", „der Kosten-Absatz"). Genannt wird er in Kommentaren
+  ANDERSWO: einmal in `src/lib/tracking/target-readiness.ts` und zweimal in
+  `src/lib/tracking/target-readiness.test.ts` (die Treffer auf `projectWithPixel` in
+  `src/lib/capi/token.test.ts` sind eine FIXTURE und nicht dieser Bezeichner).
+  DAS VERSCHIEBT DEN PREIS, ES SENKT IHN NICHT: Eine Umbenennung zieht KEINE
+  Entscheidungs-Prosa an der Fundstelle mit, dafür aber drei Nennungen in ZWEI ANDEREN
+  Dateien — darunter `src/lib/tracking/target-readiness.ts`, deren Kopf-Absatz als
+  unangetastet markiert ist und von `src/lib/tracking/target-adapters.ts` wörtlich zitiert
+  wird.
+  TRIGGER: mit der nächsten Runde, die `src/lib/capi/token.ts` ohnehin anfasst.
+  Ausdrücklich KEIN Namensvorschlag.
+
+- MIT 11.1f IST DIE VIERTE UNABHÄNGIGE DECKEL-KONSTANTE ENTSTANDEN
+  Der Punkt ist NICHT neu: Er steht als „DER DECKELWERT IST MODUL-PRIVAT UND VON AUSSEN
+  NICHT LESBAR" weiter oben in dieser Datei und ist dort am 2026-08-19 auf VIER nachgezogen
+  worden. Dieser Eintrag steht hier nur, damit die Hebung der Phase 11.1 vollständig ist und
+  niemand ihn ein zweites Mal aus der Standdatei holt.
+  KEIN eigener Trigger — es gilt der dort genannte: die nächste Runde, die eine
+  Forward-Datei ohnehin anfasst.

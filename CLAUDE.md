@@ -686,6 +686,24 @@ kaputtgeht.
   AUSDRÜCKLICH NICHT "zu 100 % Konfigurationsfehler" — eine Absolutheits-Aussage wird vom
   ersten Gegenbeispiel widerlegt, und dann fällt die ganze Argumentation. Was still
   kaputtgeht: der Betreiber erfährt beides erst, wenn es ihn trifft.
+  ERGÄNZT AM 2026-08-19 (Hebung Phase 11.1) — PUNKT (2) IST SEIT 11.1f NICHT MEHR NUR
+  THEORETISCH BERÜHRT, und der Text darüber bleibt unverändert: Das VIERTE Ziel sendet seit
+  dem 2026-08-19. Die Zusage oben ist über die HERKUNFT der Ereignisse formuliert („gilt für
+  Ereignisse AUS DIESEM BUILDER") und NICHT über das Ziel — für dieses Ziel wäre sie dem
+  Wortlaut nach ANWENDBAR und trotzdem UNBELEGT.
+  WAS GEMESSEN IST (docs/ziel-befunde.md, Teil (p), 2026-08-19): Das Feld für eine
+  mitgegebene Ereignis-Kennung EXISTIERT und wird angenommen — belegt durch eine
+  Positivkontrolle im selben Lauf, in der ein ERFUNDENES Feld mit 422 abgewiesen wurde.
+  WAS NICHT GEMESSEN IST UND MIT DEN HEUTIGEN INSTRUMENTEN AUCH NICHT MESSBAR IST (Teile (q)
+  und (h)): dass der Anbieter damit DEDUPLIZIERT. Die Anzeige-Zahlen reagieren auf Testdaten
+  überhaupt nicht — ein Kontroll-Lauf mit einer NEUEN Kennung bewegte sie so wenig wie ein
+  wiederholter —, und eine Zuordnung zu einer echten Person tritt bei Testdaten prinzipiell
+  nicht ein.
+  FOLGE FÜR DIE DOKUMENTATION, und sie ist der Grund dieser Ergänzung: Der Adapter KANN die
+  Kennung mitschicken und tut es; eine ZUSAGE an den Kunden wird daraus nicht. Die beiden
+  Sätze sind nicht dasselbe, und nur der erste ist gedeckt.
+  TRIGGER FÜR DIE KLÄRUNG: sobald echter Traffic eine Zuordnung zu einer echten Person
+  erzeugt. HIER WIRD NICHT ENTSCHIEDEN, ob und wie die Formulierung oben nachgezogen wird.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
   Grund: kein realer Konsument, kein Ziel trägt heute eine Kennung je Ereignistyp. TRIGGER,
   wörtlich und ausdrücklich nicht "falls es je nötig wird": sobald ein Ziel eine Kennung JE
@@ -767,6 +785,30 @@ kaputtgeht.
   sagt als "konfiguriert".
   WAS HIER NICHT ENTSCHIEDEN WIRD, ausdrücklich: ob die Lösung ein Hinweis, eine Anzeige
   oder ein Riegel ist, und wo sie sitzt. Dieser Eintrag nennt den BEFUND, nicht den Bau.
+  ERGÄNZT AM 2026-08-19 (Hebung Phase 11.1) — EINE DRITTE EBENE, UND SIE TRITT NEBEN DEN
+  TEXT DARÜBER, ohne ihn zu ändern: Der Eintrag oben behandelt EDITOR gegen VERÖFFENTLICHT
+  — dort ist der publizierte Text wirklich alt. DANEBEN steht VERÖFFENTLICHT gegen
+  AUSGELIEFERT: der publizierte Text ist KORREKT, und nur seine Auslieferung ist veraltet.
+  GEMESSEN am lebenden System (2026-08-18, beim Live-Test der Scheibe 11.1d): Die Live-Seite
+  zeigte nach dem Publish den ALTEN Text, mit einer Pixel-Kennung, die der Editor-Stand
+  nicht mehr trug. Ein Neuladen mit F5 half NICHT; erst ein Aufruf mit einem zusätzlichen
+  URL-Parameter zeigte den korrekten Stand. DIE GEGENPROBE IST DER GRUND, WARUM DAS HIER
+  STEHT und nicht als Defekt jener Scheibe: In der Datenbank (SQL, 2026-08-18) trug
+  `published_content` den neuen Schlüssel und NICHT mehr die alte Kennung, `updated_at` lag
+  nach dem Publish. Der Publish hatte vollständig gegriffen — es war der BROWSER-CACHE.
+  Ohne diese zweite Prüfung wäre es als Fehlschlag protokolliert worden.
+  WAS NICHT GEMESSEN IST und offen bleibt: OB und WELCHE Cache-Header die Serve-Route setzt
+  und mit welcher Lebensdauer. Die Route war in jener Phase durchgehend geschützt und ist
+  NICHT gelesen worden.
+  DIE BEIDEN EBENEN WERDEN NICHT ZUSAMMENGEZOGEN — verschiedene Ursachen, verschiedene
+  Lösungen: oben liegt die Lösung im Produkt (Hinweis, Anzeige oder Riegel), hier in den
+  Auslieferungs-Kopfzeilen. Wer sie zusammenzieht, sucht die eine an der Stelle der anderen.
+  DIESELBE MESSUNG BEANTWORTET EINE DRITTE FRAGE, und deshalb steht der Zeiger hier: Was der
+  Cache heute tut, entscheidet auch, ob ein Datenbankausfall die Kundenseiten überhaupt
+  erreicht — s. den Eintrag „JEDE STÖRUNG DER DATENBANK IST EIN TOTALAUSFALL ALLER
+  KUNDENSEITEN" weiter unten. EINE Aufklärung, drei Antworten.
+  Was still kaputtgeht: Ein Kunde, der nach dem Publish auf seiner Seite nachsieht, macht
+  dieselbe Erfahrung — und schliesst, das Publish habe nicht gegriffen.
 - JEDE STÖRUNG DER DATENBANK IST EIN TOTALAUSFALL ALLER KUNDENSEITEN (Trigger: der erste
   echte Kunden-Traffic. HEUTE IST NICHTS ZU TUN, und der Grund gehört in den Eintrag: Bis
   der Owner das Produkt selbst vollständig geprüft hat, sieht es kein Kunde; ein Ausfall
@@ -827,6 +869,69 @@ kaputtgeht.
   Was still kaputtgeht: Der Betreiber erfährt von einem Ausfall zuerst durch seine Kunden —
   und der Conversion-Verlust währenddessen ist auf KEINEM Kanal sichtbar, weil die leere
   204 nach aussen wie ein Erfolg aussieht.
+- EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN — DREI URSACHEN, DIE GETRENNT
+  BLEIBEN (gehoben am 2026-08-19 aus dem Vorrat der Phase 11.1): Die Karte meldet
+  „Zugangsdaten hinterlegt", der Betreiber hält das Ziel für eingerichtet, und es geht
+  nichts hinaus. DREI VERSCHIEDENE URSACHEN führen dorthin, und sie werden hier ausdrücklich
+  NICHT zusammengezogen — der Grund steht in (1): die eine betrifft einen FALSCHEN Wert, die
+  andere einen FEHLENDEN. Wer sie zusammenlegt, baut eine Anzeige, die zwei verschiedene
+  Ursachen gleich benennt.
+  (1) DIE REGEL-KENNUNG BRAUCHT IHR PRÄFIX, UND DER KUNDE HAT ES NICHT. TRIGGER:
+      EINGETRETEN — jeder Betreiber, der dieses Ziel konfiguriert, läuft hinein. GEMESSEN
+      live (2026-08-19): Der Adapter reicht den eingetragenen Wert unverändert durch und
+      baut das Präfix NICHT; die Oberfläche des Anbieters zeigt NUR die Ziffernfolge. Wer
+      sie kopiert, trägt einen Wert ein, der syntaktisch nicht trägt, und bekommt 422 mit
+      „Invalid Urn format. Invalid prefix." DER RIEGEL GREIFT NICHT, weil eine Kennung DA
+      ist — es ist der einzige Fehlerweg, bei dem tatsächlich eine Anfrage hinausgeht.
+      ZWEI RICHTUNGEN, KEINE GEWÄHLT, je mit ihrer Grenze: Das Präfix serverseitig
+      ERGÄNZEN — GRENZE: das trifft eine Entscheidung über die Form eines FREMDEN Werts,
+      und diese Form ist nur GELESEN; gemessen ist allein, dass ein falsches Präfix mit 422
+      fällt. Oder die Form PRÜFEN und mit eigenem Grund ABWEISEN — GRENZE: das macht aus
+      dem heute LAUTEN Fehler (422 im Log) einen STILLEN (kein Forward), also eine
+      Verschiebung und keine Behebung, solange der Betreiber weder das eine noch das andere
+      sieht.
+  (2) EIN UNVOLLSTÄNDIG KONFIGURIERTES ZIEL FÄLLT STILL AUS. TRIGGER: die UI-Warnung
+      (Owner-Absicht, 2026-08-18), spätestens vor echtem Ad-Traffic. GEMESSEN am Code
+      (2026-08-18): Liegt nur die Kennung oder nur das Zugangsdatum vor, entsteht kein
+      Empfänger und es geht nichts hinaus — die Paarungsschleife in
+      `getCapiConfigByTrackingKey` (`src/lib/capi/token.ts`) überspringt mit
+      `if (!token) continue;`, die Gegenrichtung fällt schon vorher aus dem `in`-Filter der
+      Geheimnis-Abfrage. DAS TRIFFT ALLE VIER ZIELE — ein Zustand des BESTANDS, den keine
+      Scheibe erzeugt hat. Die Karte meldet „Zugangsdaten hinterlegt", sobald eine
+      Geheimnis-Zeile existiert (`listConfiguredTargets`, `src/app/projects/actions.ts` —
+      sie liest den Wert nie); über die KENNUNG sagt sie an dieser Stelle nichts.
+  (3) EINE SICHTBARE WARNUNG FEHLT. TRIGGER: eine Frontend-Runde, ODER ein Support-Fall, in
+      dem ein Betreiber meldet, dass nichts ankommt. Seit 11.1f loggt der Adapter den Grund
+      unterscheidbar (`missing identity` · `identity is not IPv4` · `no conversion rule for
+      event`) — ABER EINE LOGZEILE ERREICHT DEN BETREIBER NICHT.
+      DIE GRENZE, DIE MITMUSS und die Bauform nicht freilässt: Ein server-seitiger
+      Ziel-Fehlschlag ist laut docs/immer-beachten.md („WELCHE REGEL WANN GREIFT") KEINE
+      Meldung, sondern eine GRÖSSE — wer ihn als Fehlermeldung baut, hängt eine Anzeige an
+      ein Ereignis, das PRO BESUCHER eintreten kann. Eine Anzeige braucht zudem einen Weg
+      vom SERVER-Ereignis in die Oberfläche, den es heute nicht gibt.
+  WAS HIER NICHT ENTSCHIEDEN WIRD: welche der drei zuerst angefasst wird, ob das Präfix
+  ergänzt oder geprüft wird, und wie eine Warnung aussieht.
+  Was still kaputtgeht: Conversion-Verluste SICHTBAR zu machen ist das Verkaufsargument
+  dieses Produkts — hier verliert der Kunde sie, während die Oberfläche „konfiguriert"
+  sagt.
+- DER PAGEVIEW-TOKEN IST ALS CUSTOM-EVENT EINTIPPBAR (Trigger: vor echtem Ad-Traffic;
+  gehoben am 2026-08-19 aus dem Vorrat der Phase 11.1): GEMESSEN am Code (2026-08-18), auf
+  VIER Achsen ohne Schranke — das Eingabefeld des Custom-Zweigs (`TrackForm` in
+  `src/components/ActionPanel.tsx`) trägt weder `pattern` noch Blockliste; die einzige
+  Schranke ist `valid` (`event.trim() !== ""`); `upsertMapping` (`src/lib/mappings.ts`)
+  prüft nichts; `saveProject`/`saveVariantB` (`src/app/projects/actions.ts`) schreiben das
+  Literal ohne Prüfung.
+  WOHIN SO EIN MAPPING LÄUFT: Es wird AUSGELIEFERT (der Erzeuger filtert Ereignisnamen
+  nicht), am Ingest von `isForwardable` vom CAPI-Forward ausgeschlossen — und landet in
+  `events` als `event_type` des Analytics-Tokens, von einem echten PageView NICHT
+  unterscheidbar.
+  BEFUND ÜBER DEN BESTAND: Der Zustand ist älter als Phase 11.1; keine Scheibe erzeugt ihn
+  und keine behebt ihn. KEINE BEWERTUNG DER WAHRSCHEINLICHKEIT — der Kommentar an
+  `PAGEVIEW_EVENT` (`src/lib/analytics/events.ts`) nennt den Token „praktisch nicht
+  versehentlich eintippbar"; das ist eine Aussage über Wahrscheinlichkeit und keine
+  Schranke, und sie wird hier weder bestätigt noch bestritten.
+  Was still kaputtgeht: Es verfälscht den NENNER der Adblocker-Verlustrate — und die ist
+  die Marquee-Metrik dieses Produkts, an der man der Zahl nichts ansieht.
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

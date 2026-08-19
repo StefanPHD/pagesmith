@@ -830,6 +830,23 @@ GRENZE (worauf sie ruht und wann sie kippt).
 ist und bleibt · was unverändert offen ist.
 *NICHT hinein:* alles, was einen Ort außerhalb des Deltas hat, ohne dass der
 Ort genannt wird.
+*UND SCHÄRFER, seit 2026-08-19 — die NICHT-Zeile darüber bleibt gültig und wird
+nur VERSCHÄRFT, nicht ersetzt:* **Abschnitt 8 nennt KEINEN Punkt, der nicht
+anderswo einen Ort hat.** Je Punkt steht die **Datei und der Eintrag** dabei.
+Ein Punkt ohne Ort wird **erst verortet, dann genannt** — oder er wird nicht
+genannt. *Die Lücke, die das schliesst:* Die Zeile darüber verlangt, den Ort zu
+NENNEN, wenn es einen gibt; sie verlangt nicht, dass es einen GIBT.
+*Was das ändert:* Das Nebengleis ist damit ein **REGISTER, keine Ablage**. Beim
+Schreiben fällt sofort auf, welcher Punkt keinen Ort hat — er hat keine
+Fundstelle, die man hinschreiben könnte.
+*Beleg — OWNER-BEFUND beim Schreiben des Übergabe-Deltas (2026-08-19), NICHT am
+Repo geprüft:* Fünf Punkte aus dem Nebengleis der Vorgänger-Fassung wären
+beinahe verlorengegangen — sie wurden abgeschrieben statt geprüft. Einer trug
+den Vermerk „gehört in eine Hebungsrunde am Phasenende"; die Hebungsrunde am
+2026-08-19 hat ihn NICHT mitgenommen, weil er nur im Delta stand und die Hebung
+den VORRAT abarbeitet. Ein Punkt, der nur im Delta lebt, wird bei jeder
+Übergabe abgeschrieben, und jedes Abschreiben ist eine Gelegenheit, ihn zu
+verlieren — es fällt niemandem auf, weil nichts fehlt.
 
 **Das Empfangs-Gate.** Die neue Instanz nennt in ihrer **ERSTEN** Antwort die
 Abschnitte, die sie vorgefunden hat — **je Datei, mit Überschrift**. Fehlt eine

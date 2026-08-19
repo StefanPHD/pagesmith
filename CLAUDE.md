@@ -1466,6 +1466,17 @@ KEIN @-Import. Bei Arbeit an einem Thema die passende Datei gezielt lesen:
   "additive Fan-Out-Ziele", der ACHT TAGE unbeachtet blieb. Beide standen NUR hier. Das
   ist ein Befund über das KURATIONS-KRITERIUM, nicht über diese Datei — wer eine Phase
   kuriert, prüft, ob das Weggelassene irgendwo eine Entscheidung getragen hätte.
+- docs/claude-history/phase-11.1-linkedin.md — GESAMTE gebaute Phase 11.1 (LinkedIn als
+  VIERTES Fan-Out-Ziel, 2026-08-17 bis 2026-08-19): sechs Scheiben-Zuschnitte (11.1a bis
+  11.1f) mit ihren Invarianten und Ausschlüssen, sechs Vermerke mit Bau-Commit und
+  Live-Nachweis, der verbliebene Vorrat und die Entscheidungen. Sie ist ZUGLEICH der
+  steuernde Stand und die Historie — anders als bei Phase 11 gibt es keine zweite,
+  kuratierte Fassung daneben; sie hiess bis zum Phasenende docs/aktiver-stand.md.
+  HIER NACHSEHEN, WER AN EINEM FÜNFTEN ZIEL ARBEITET: Der Abschnitt "## Entscheidungen,
+  die über ihre Scheibe hinaus binden" trägt NEUN Stück, die am Phasenende NICHT gehoben
+  worden sind — darunter die Form der Kennungs-Ablage, die IPv6-Annahme und die
+  Klartext-IP als Kennung. Die Anbieter-Befunde selbst stehen NICHT hier, sondern in
+  docs/ziel-befunde.md.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),

@@ -1,3 +1,43 @@
+# Phase 11.1 — LinkedIn als viertes Fan-Out-Ziel: DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der aktive Stand der LAUFENDEN Phase 11.1 — das, was jeweils
+galt, nicht das, was geworden ist. Sie hiess bis zum Phasenende `docs/aktiver-stand.md`
+und war die Datei, die **GESTEUERT hat**: Jede Session, die an der Phase arbeitete, las
+sie ZUERST ("Auftrag 0"), und wo sie einer anderen Fassung widersprach, galt sie.
+
+**ZEITRAUM:** angelegt am 2026-08-17, VOR der ersten Scheibe; archiviert am 2026-08-19
+mit dem Abschluss der Phase. Sechs Scheiben (11.1a bis 11.1f), je mit eigenem Vermerk und
+eigenem Live-Nachweis.
+
+**SIE WIRD NICHT MEHR FORTGESCHRIEBEN.** Was aus ihr gehoben wurde, und wohin:
+- **IHR HEBUNGS-KANDIDAT IST EINE REGEL GEWORDEN** — "EIN ANKER, DER EINDEUTIG AUSSIEHT,
+  IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" steht in `docs/immer-beachten.md`, als
+  eigene Regel und nicht als Ergänzung an der WERKZEUG-REGEL.
+- **IHR VORRAT IST VERTEILT** (2026-08-19): vier Punkte stehen in `CLAUDE.md`,
+  "## Offene Punkte" — zwei als eigene Einträge, zwei als Ergänzung an bestehenden;
+  acht stehen in `docs/claude-history/backlog-polish.md`, Abschnitt "Aus Phase 11.1
+  gehoben (2026-08-19)"; zwei waren im Code bereits erledigt und sind entfallen. VIER
+  Punkte sind BEWUSST stehengeblieben — sie sind gegenstandslos oder überholt und damit
+  Zeitdokumente wie der Rest dieser Datei.
+- **IHRE ENTSCHEIDUNGEN SIND NICHT GEHOBEN WORDEN.** Der Abschnitt "## Entscheidungen,
+  die über ihre Scheibe hinaus binden" steht unverändert hier — er trägt neun Stück, und
+  ihre Verortung ist am Phasenende NICHT entschieden worden. Wer an einem fünften Ziel
+  oder an der Autorisierungsschicht arbeitet, liest ihn HIER.
+
+**IHR ABSCHNITTS-VERZEICHNIS BLEIBT STEHEN, obwohl keine andere Datei unter
+`docs/claude-history/` eines führt** (GEMESSEN 2026-08-19). Es zu entfernen wäre eine
+inhaltliche Änderung an einer archivierten Datei; es zu behalten kostet nichts. Wer darin
+sucht, beachte die Regel, die aus genau dieser Datei gehoben wurde: **jede Überschrift
+steht hier zweimal, und die erste Fundstelle ist das Verzeichnis.**
+
+**IHRE VERWEISE SIND AB HIER ZEITDOKUMENTE.** Sie zeigen auf Abschnitte, Einträge und
+Codezustände, wie sie am Tag ihrer Entstehung waren; was heute gilt, steht im Repo. Das
+betrifft insbesondere ihre Zeiger in `CLAUDE.md` und in den Vorrat — mehreres davon ist
+mit der Hebung umgezogen. **Sie ist keine Quelle für Codezustände** — sie nennt Orte, an
+denen zu messen ist.
+
+---
+
 # AKTIVER STAND — Phase 11.1 (LinkedIn als viertes Fan-Out-Ziel)
 
 **WAS DIESE DATEI IST:** Der steuernde Stand der LAUFENDEN Phase 11.1. Sie trägt den

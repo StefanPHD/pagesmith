@@ -38,7 +38,7 @@ docs/claude-history/. Wer hier einen Messwert sucht, sucht am falschen Ort —
 und wer hier einen einträgt, macht aus einer Regel eine Zustandsbeschreibung,
 die still veraltet.
 
-## Verzeichnis — 80 Regeln in Dateireihenfolge
+## Verzeichnis — 83 Regeln in Dateireihenfolge
 
 Jeder Eintrag ist der WÖRTLICHE Anfang seiner Regel, auf feste Breite
 geschnitten und mit "..." gekappt — KEINE Beschreibung. GRUND: Eine
@@ -131,6 +131,9 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS RICHTIGE ...
 - MEHRERE KENNUNGEN JE ZIEL BRECHEN EINEN SCHLÜSSEL (PROJEKT, ZIEL) NICHT — ...
 - WER EINE STREICHUNG PLANT, ZÄHLT NICHT NUR DIE IMPORTE, SONDERN AUCH DIE ...
+- EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS ...
+- EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY (Phase 11.1, als ...
+- EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -1147,3 +1150,98 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Kommentar, der ein totes Symbol verbietet, kompiliert einwandfrei und sieht wie eine
   geltende Regel aus. BELEG: nach vier grünen Gates trugen drei Kommentare den Namen einer
   gestrichenen Zusammensetzung weiter; die Streichung war da noch nicht fertig.
+- EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT — DER
+  ERSTE TREFFER IST SYSTEMATISCH DER FALSCHE (Phase 11.1): Wer in einer Datei mit
+  Abschnitts-Verzeichnis auf eine ÜBERSCHRIFT ankert, trifft den gleichnamigen Eintrag im
+  VERZEICHNIS, nicht die Überschrift selbst — das Verzeichnis steht vorn.
+  DIE URSACHE IST STRUKTURELL UND KEIN FEHLGRIFF, und genau das trägt diese Regel: Seit
+  Standdateien ein Verzeichnis im Kopf tragen, steht JEDE Überschrift MINDESTENS ZWEIMAL in
+  der Datei. Wer die erste Fundstelle nimmt, nimmt damit systematisch die falsche — bei
+  jeder Überschrift und in jeder solchen Datei.
+  DER SCHADEN IST STILL UND GROSS: Kehren sich dadurch zwei Schnittgrenzen um, steht die
+  halbe Datei zweimal da; kein Werkzeug meldet etwas, sichtbar wird es ausschliesslich im
+  DIFF.
+  BELEG (GEMESSEN am 2026-08-17, beim Verdichten von docs/aktiver-stand.md; protokolliert
+  als Hebungs-Kandidat ebendort): Eine Suche nach dem Text einer `##`-Überschrift traf den
+  Verzeichnis-Eintrag statt der Überschrift, die beiden Splice-Grenzen kehrten sich um, und
+  die halbe Datei stand zweimal da. Wiederhergestellt wurde aus der Versionsverwaltung, die
+  Änderung danach mit dem Editier-Werkzeug neu eingetragen.
+  DIE REICHWEITE (GEMESSEN am Repo, 2026-08-19): DREI Dateien tragen heute ein
+  Abschnitts-Verzeichnis — docs/aktiver-stand.md, docs/immer-beachten.md und
+  docs/ziel-befunde.md. Das Verzeichnis ist eine VORGABE für jede künftige Standdatei, keine
+  Eigenart einer einzelnen: Die Regel, die das Verzeichnis fordert, erzeugt diese Falle
+  selbst.
+  WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT: eine Vorschrift, WIE stattdessen anzukern ist. Ob das
+  Verzeichnis eine unterscheidbare Form bekommt, ob nach der LETZTEN statt der ersten
+  Fundstelle gesucht wird oder ob es schlicht bei der Pflicht zum Editier-Werkzeug bleibt,
+  ist eine EIGENE Entscheidung und hier NICHT getroffen.
+  ABGRENZUNG ZU "WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG STILL DAS CR": Dort
+  verfälscht das WERKZEUG den Gegenstand oder den Befund; hier arbeitet das Werkzeug
+  tadellos, und der ANKER trifft eine andere Stelle als die gemeinte. Der SCHADEN ist
+  derselbe (stille Ganz-Datei-Verfälschung, nur im Diff sichtbar), der GEGENSTAND ist ein
+  anderer — deshalb steht sie eigenständig und nicht als Absatz dort.
+  ABGRENZUNG ZU "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER": Jene
+  Regel betrifft den VERWEIS-Anker in Doku, Kommentar und Backlog — worauf man ZEIGT. Diese
+  hier betrifft den SUCH-Anker beim Bearbeiten — was man TRIFFT. Zwei verschiedene Achsen,
+  dasselbe Wort.
+- EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY (Phase 11.1, als Prinzip
+  formuliert; die Ausprägungen sind älter): Was ein Erzeuger EINMAL geschrieben hat, trägt
+  den Stand SEINER Erzeugungszeit — dauerhaft. Ein Code-Deploy erreicht es nicht. Wer an
+  einem erzeugten Artefakt etwas ändert, FRAGT deshalb bei jeder Änderung, was mit den
+  BEREITS ausgelieferten geschieht; und wo die Änderung ein Neu-Erzeugen verlangt, gehört
+  dieser Schritt als PFLICHT-SCHRITT in die Live-Anleitung und nicht in den Support-Fall.
+  DIE BEGRÜNDUNG, ohne die die Frage beim nächsten Umbau entfällt: Der Bruch ist IMMER
+  still. Ein Alt-Artefakt wirft keinen Fehler — es sendet weiter an eine Adresse, die es
+  nicht mehr gibt, oder es trägt einen Schlüssel nicht, den der Leser fail-closed als
+  "nicht erlaubt" deutet. Niemand sieht etwas; es verschwinden nur Conversions.
+  DIE GRENZE, DIE MITMUSS: Diese Regel sagt NICHT, dass Abwärtskompatibilität immer zu
+  wahren ist. Sie sagt, dass die FRAGE zu stellen ist — die Antwort kann auch "wir brechen
+  es bewusst, und hier ist der Weg zurück" lauten.
+  BELEG 1, DIE SCHÄRFERE AUSPRÄGUNG MIT KONKRETEM VERBOT — sie steht als eigene Regel oben
+  und bleibt unverändert: "PERMANENTER Alias /api/capi darf NIE entfernt werden (Phase 7b):
+  bereits in freier Wildbahn ausgelieferte Alt-Exporte tragen die absolute /api/capi-URL
+  fest eingebacken und beaconen weiter dorthin." Jene Regel ist auf EINE Route formuliert;
+  diese hier ist das Prinzip darüber und ERSETZT sie nicht.
+  BELEG 2, DER CONSENT-DRAHT (Phase 11, Scheiben 11.1c/11.1d): Ein publizierter Text trägt
+  den Schlüsselstand seines letzten Publish. Wächst die Schlüsselmenge, weil ein Ziel eine
+  Kennung bekommt, tragen bereits publizierte Seiten den neuen Schlüssel NICHT und müssen
+  NEU VERÖFFENTLICHT werden — ein Code-Deploy erreicht sie nicht.
+  BELEG 3, DIE DRITTE AUSPRÄGUNG, und sie zeigt zugleich die Trennlinie: "NEXT_PUBLIC_-
+  REDEPLOY-PFLICHT" (eigene Regel oben) beschreibt dasselbe Einfrieren zur BUILD-ZEIT —
+  dort genügt aber EIN Redeploy, weil es EIN Bundle gibt. Beim veröffentlichten Kundentext
+  genügt er NICHT: Jede Seite trägt ihren eigenen Stand, und das Neu-Erzeugen geschieht JE
+  PROJEKT durch den Betreiber. Wer die beiden zusammenzieht, hält einen Deploy für die
+  Reparatur.
+  DIE VERBREITUNG IST GEMESSEN, DIE REGEL WAR ES NICHT (GEMESSEN am Repo, 2026-08-19, Suche
+  über "bereits ausgeliefert", "in freier Wildbahn", "ERZEUGUNGSZEIT", "neu veröffentlichen",
+  "Code-Deploy erreicht", "EINBAHNSTRASSE"): Der Mechanismus ist in SIEBEN Produktiv- und
+  Doku-Dateien beschrieben und zusätzlich in DREI Testdateien — und war bis zu dieser
+  Hebung nirgends als Regel formuliert. Genau das ist der Grund für sie: Ein Mechanismus,
+  den zehn Stellen einzeln erklären, ist ein Prinzip, das keine davon benennt.
+- EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS NICHT MEHR
+  HERSTELLBAR (Phase 11.1): Verlangt ein Nachweis einen Zustand VOR einer Änderung — einen
+  Ausgangswert, eine Kopie des ausgelieferten Textes, einen Constraint-Stand —, gehört
+  seine Sicherung als PFLICHT-STOPP in die Anleitung, nicht als Hinweis. Nach dem Deploy
+  ist er nicht mehr zu beschaffen.
+  DIE BEGRÜNDUNG, und sie ist der Unterschied zu einem bloss unbequemen Ablauf: Ein
+  Schritt, dessen Voraussetzung nicht mehr herstellbar ist, FÄLLT NICHT AUF. Er wird
+  hinterher als "geprüft" protokolliert, ohne stattgefunden zu haben — und der Nachweis,
+  den er tragen sollte, fehlt still. Ein Vermerk liest sich dann wie ein Vorher/Nachher-
+  Beleg und ist keiner.
+  DIE GRENZE: Sie gilt für NACHWEISE, nicht für jeden Live-Schritt. Wo sich der Nachweis
+  auch nachträglich führen lässt, greift sie nicht.
+  BELEG, DREIMAL IN FOLGE AN DERSELBEN PHASE (GEMESSEN, Vermerke 1 bis 3 in der Standdatei
+  der Phase 11.1): In 11.1a (2026-08-17) fiel der Constraint-Ausgangswert aus, in 11.1b
+  (2026-08-18) der Vergleich des ausgelieferten Textes — beide, weil das Deployment zum
+  Testzeitpunkt schon lief. In 11.1c (2026-08-18) hat ein PFLICHT-STOPP in der Anleitung
+  ("ohne gesicherte Vorher-Kopie kein Deploy") den Schritt hergestellt, und dort war der
+  Byte-Vergleich der EINZIGE Nachweis der tragenden Invariante.
+  ABGRENZUNG ZU "EIN LIVE-TEST-SCHRITT SETZT EINEN ZUSTAND DES PRÜFLINGS VORAUS": Jene
+  Regel greift INHALTLICH — sie fragt, ob im ausgelieferten Artefakt etwas die geprüfte
+  Wirkung schon vorher abfängt. Diese hier greift ZEITLICH: der Wert existiert nur bis zum
+  Deploy. Ein Prüfling kann in tadellosem Zustand sein und der Vorher-Wert trotzdem weg.
+  ABGRENZUNG ZU "EINE ANLEITUNG, DIE EINE VORAUSSETZUNG NICHT NENNT, ERZEUGT EINE FALSCHE
+  ENTWARNUNG": Jene greift auf der ANLEITUNGS-Achse — die Voraussetzung wird nicht genannt,
+  wäre aber herstellbar. Diese hier greift auf der HERSTELLBARKEITS-Achse: genannt oder
+  nicht, nach dem Deploy geht sie nicht mehr. Drei Achsen, dieselbe falsche Entwarnung als
+  Ergebnis.

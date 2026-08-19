@@ -2224,3 +2224,46 @@ ist (CLAUDE.md, docs/immer-beachten.md), steht hier NICHT noch einmal.
   TRIGGER: sobald eine Kennungsform gebraucht wird, die einen Wert aus einem Eingabefeld
   liest — bei LinkedIn wäre das die gehashte E-Mail-Adresse (docs/ziel-befunde.md, Teil
   (b)/(i)). KEINE Empfehlung, ob und wie gebaut wird.
+
+- DER ZEIGER AM TEIL (a) IN `docs/ziel-befunde.md` IST STUMPF
+  FUNDSTELLE: `docs/ziel-befunde.md`, Abschnitt „LinkedIn (Conversions API)",
+  Messprotokoll 2026-08-15, Teil (a) — Ankersatz „DIE RICHTIGSTELLUNG DAZU STEHT NICHT
+  HIER".
+  WAS ER HEUTE SAGT, im Wortlaut: „DIE RICHTIGSTELLUNG DAZU STEHT NICHT HIER, sondern an
+  der Roadmap-Zeile 11.1: dort stand die widerlegte Angabe, und dort sucht sie, wer den
+  alten Satz kennt."
+  WARUM ER STUMPF IST: Er steht im PRÄSENS und nennt einen Ort, der den Inhalt nicht mehr
+  trägt. Die Roadmap-Zeile 11.1 ist am 2026-08-19 kollabiert (Commit `3523c0a`); die
+  Richtigstellung stand in ihrem Rumpf und ist mit ihm entfallen.
+  WO DIE SUBSTANZ LEBT: in DERSELBEN Datei — Teil (a) und Teil (i) —, dazu der
+  `isIpv4`-Riegel in `src/lib/capi/linkedin-forward.ts`. Der Zeiger nennt also nur EINEN
+  Ort, der sie nicht mehr trägt; verloren ist nichts.
+  KEIN TRIGGER, KEINE EMPFEHLUNG. GEMELDET, NICHT GEBAUT.
+
+- DER ZEIGER AM TEIL (d) IN `docs/ziel-befunde.md` IST STUMPF
+  FUNDSTELLE: `docs/ziel-befunde.md`, Abschnitt „LinkedIn (Conversions API)",
+  Messprotokoll 2026-08-15, Teil (d) — Ankersatz „DASS DAS EINE PRODUKTZUSAGE KIPPT".
+  WAS ER HEUTE SAGT, im Wortlaut: „DASS DAS EINE PRODUKTZUSAGE KIPPT, steht als EIN Satz
+  an der Roadmap-Zeile 11.1 — hier steht der Befund, dort seine Folge für den Zuschnitt."
+  WARUM ER STUMPF IST: Dieselbe Ursache wie beim Zeiger davor — Präsens auf den Rumpf
+  einer kollabierten Zeile.
+  WO DIE SUBSTANZ LEBT: `CLAUDE.md`, „## Offene Punkte", Eintrag „BETREIBER-DOKUMENTATION
+  FEHLT — ZWEI PUNKTE", dort der Absatz „ERGÄNZT AM 2026-08-19 (Hebung Phase 11.1) —
+  PUNKT (2) IST SEIT 11.1f NICHT MEHR NUR THEORETISCH BERÜHRT". Die Folge für das Produkt
+  ist damit verortet, nur nicht mehr dort, wohin der Zeiger weist.
+  KEIN TRIGGER, KEINE EMPFEHLUNG. GEMELDET, NICHT GEBAUT.
+
+- DIE PHASE-11-ROADMAP-ZEILE FÜHRT 11.1 NOCH ALS NICHT GEBAUT
+  FUNDSTELLE: `CLAUDE.md`, Roadmap-Zeile „Phase 11 — Multi-Tracking (Server-Side
+  Fan-Out)", letzter Absatz.
+  WAS SIE HEUTE SAGT, im Wortlaut: „DER HAKEN GILT DEM GEBAUTEN TEIL. Was NICHT gebaut
+  wurde, steht als eigene Zeile darunter (11.1–11.4 und 11.6) — NICHT als Sammelposten,
+  weil die offenen Ziele KEINE Klasse sind."
+  WARUM SIE FALSCH GEWORDEN IST: 11.1 ist gebaut, live bewiesen und am 2026-08-19
+  kollabiert; die Aufzählung nennt sie weiterhin unter dem, was NICHT gebaut wurde. Der
+  Satz davor und der Grundsatz dahinter („KEINE Klasse") sind unberührt — falsch ist
+  allein die Aufzählung.
+  WO DIE SUBSTANZ LEBT: Der gebaute Stand steht in der kollabierten Zeile 11.1 selbst und
+  in `docs/claude-history/phase-11.1-linkedin.md`. Hier fehlt nichts, hier steht etwas zu
+  viel.
+  KEIN TRIGGER, KEINE EMPFEHLUNG. GEMELDET, NICHT GEBAUT.

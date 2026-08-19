@@ -384,3 +384,59 @@ Kein Buchstabe wird neu vergeben, nichts umsortiert.
     zitiert wird.
     (f) BLEIBT UNVERÄNDERT STEHEN und trägt einen Vorbehalt, der hierher zeigt; seine
     Zahlen waren für die sieben Läufe vom 2026-08-15 richtig.
+
+### Nachtrag 2026-08-19, SPÄTERE ABLESUNG DESSELBEN INSTRUMENTS — der Teil (t)
+
+**HERKUNFT (2026-08-19):** KEIN neuer Lauf gegen die Schnittstelle. Eine ZWEITE Ablesung
+der Signalintegritäts-Anzeige im Campaign Manager durch den Owner, mehrere Stunden nach
+den neun Läufen des Protokolls darüber. Instrument und Ereignisse sind dieselben — neu ist
+allein der ZEITPUNKT DER ABLESUNG. Deshalb steht das hier als Nachtrag und nicht als
+weiteres Messprotokoll.
+
+DIE BUCHSTABENREIHE LÄUFT FORT: hier (t). (q) bleibt UNVERÄNDERT stehen; dieser Teil tritt
+DANEBEN und schreibt ihn nicht um.
+
+(t) DIE ANZEIGE-ZAHLEN REAGIEREN DOCH — MIT STUNDEN VERZÖGERUNG. DAS KIPPT DIE FOLGERUNG
+    AUS (q), NICHT SEINEN MESSWERT.
+    GEMESSEN 2026-08-19 (Ablesung durch den Owner, mehrere Stunden nach den Läufen): Die
+    Signalintegritäts-Anzeige steht auf "9 Events / 9 dedupliziert". Vor der Messreihe
+    stand sie auf "4 Events / 4 dedupliziert" — dieser Vorher-Wert ist in (q)
+    protokolliert.
+    WAS DAS AN (q) KIPPT: Dort steht, der Zähler reagiere auf ein NEUES Ereignis genauso
+    wenig wie auf ein wiederholtes, und die Zahlen taugten "weder für Deduplizierung noch
+    für Zählung". Der Kontroll-Lauf war RICHTIG GEFAHREN — er wurde ZU FRÜH ABGELESEN. Die
+    Folgerung war ein Fehler des ABLESE-ZEITPUNKTS und kein Befund über den Anbieter.
+    WAS VON (q) UNVERÄNDERT GILT: dass die Zahl UNMITTELBAR nach einem Lauf stehen bleibt.
+    Das ist gemessen und bleibt es; nur die Deutung "sie reagiert nicht" fällt.
+    WAS DAS INSTRUMENT DAMIT TAUGT — die Trennung ist der praktische Kern: Der ZEITSTEMPEL
+    zeigt EMPFANG sofort. Die ZAHLEN zeigen etwas, aber erst nach Stunden. EINE ABLESUNG
+    UNMITTELBAR NACH EINEM LAUF IST FÜR DIE ZAHLEN KEINE SONDE — für den Zeitstempel ist
+    sie eine.
+    EINE ZWEITE, UNABHÄNGIGE STÜTZE STAND SCHON IN DIESER DATEI, ohne dass sie jemandem
+    auffiel: (k) protokolliert am 2026-08-17 den Stand "2 Events (2 dedupliziert)", (q) am
+    2026-08-19 VOR der Messreihe "4 Events / 4 dedupliziert". Die Zahl hat sich zwischen
+    diesen beiden Ablesungen bereits bewegt. FOLGERUNG, NICHT GEMESSEN — welche Läufe
+    diese Bewegung erzeugt haben, ist nicht erhoben.
+    EINE REKONSTRUKTION, AUSDRÜCKLICH KEINE MESSUNG: Von den neun Läufen des 2026-08-19
+    sind DREI mit Statuscode 201 protokolliert — A und D in (n), C in (p). Die beiden
+    Kontroll-Läufe aus (q) — die Wiederholung mit DERSELBEN Kennung und der Lauf mit einer
+    NEUEN — tragen KEINEN notierten Statuscode; dass sie angenommen wurden, ist eine
+    ANNAHME. Wären es fünf, ginge 4 + 5 = 9 auf.
+    WAS DARAUS FOLGTE, WENN DIE ZUORDNUNG AUFGINGE: Dann wäre auch die exakte Dublette
+    MITGEZÄHLT worden — und dann dedupliziert der Anbieter über dieses Feld NICHT, oder
+    die Klammer bedeutet etwas anderes als "verworfen" (die zwei gegensätzlichen Lesarten
+    stehen in (k) und bleiben dort offen).
+    WARUM DAS KEINE MESSUNG IST, und der Satz muss mit: Es ist NICHT bekannt, ob in der
+    Zwischenzeit weitere Läufe eingegangen sind, und die Aggregations-Regel des Anbieters
+    ist UNGELESEN. Die Übereinstimmung ist AUFFÄLLIG, NICHT BEWEISEND. Wer sie als Beleg
+    zitiert, macht aus einer Rekonstruktion einen Messwert.
+    WAS SICH FÜR DIE DEDUP-FRAGE ÄNDERT — die eigentliche Folge dieses Teils: (p) bleibt
+    unverändert, dass das Feld ANGENOMMEN wird, ist gemessen. Die WIRKUNG bleibt offen,
+    aber sie ist jetzt MESSBAR: ein Lauf mit doppelter Ereignis-Kennung und eine Ablesung
+    am FOLGETAG entscheiden sie. In (q) galt sie als mit den vorhandenen Instrumenten
+    prinzipiell unmessbar — genau das trifft nicht mehr zu.
+    DIE BASISLINIE FÜR DIESE MESSUNG GEHÖRT DAZU, sonst ist der nächste Stand nicht
+    einzuordnen: "9 Events / 9 dedupliziert", abgelesen am 2026-08-19.
+    GRENZE: "mehrere Stunden" ist die Angabe des Owners, KEINE gemessene Latenz. Wie lange
+    die Anzeige tatsächlich braucht und ob sie in Stufen oder stetig nachzieht, ist
+    unerhoben.

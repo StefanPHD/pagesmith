@@ -781,6 +781,63 @@ SIGNATUR des neuen Adapters; das ist die erste Frage unten.
 - **KEINE IDENTITÄT.** Wie bei Pinterest und aus demselben Grund: ohne Kennungs-Paar wäre
   das Pflichtfeld leer. **GEMESSEN** (a): Typ und Wert sind BEIDE Pflicht.
 
+### Die vier Bau-Entscheidungen — ENTSCHIEDEN (Owner, 2026-08-19)
+
+Sie beantworten unter anderem die erste der beiden offenen Fragen weiter unten; **jene
+bleibt im Wortlaut stehen und trägt ihre Antwort daneben.**
+
+- **SIGNATUR F1 — EINE EIGENE CONFIG-FORM** nach dem Muster von `PinterestConfig`
+  (`src/lib/capi/pinterest-forward.ts`).
+  **GRUND:** Sie hält die Grenze, die jener Präzedenzfall zieht — **der EINTRAG in
+  `FORWARDER_BY_TARGET` (`src/lib/capi/ingest.ts`) projiziert, der ADAPTER kennt nur seine
+  eigene Form.** Die beiden Alternativen brechen je eine Seite davon: ein zusätzlicher
+  Parameter neben `CapiConfig` reichte dem Adapter ein Feld, das für dieses Ziel
+  nachweislich leer ist (`pixelId === ""` seit 11.1e), und der `entry` selbst machte den
+  Adapter ziel-bewusst — er kennte dann die Form des Resolvers, was kein anderer tut.
+  **AUFLAGE: Die Zuordnung reist als GANZES hinein; der Schlüsselzugriff
+  (`rules[event]`) gehört in den ADAPTER, nicht in den Eintrag.** Der Grund ist das
+  Containment: Der Eintrag läuft SYNCHRON (GEMESSEN 2026-08-19: `dispatchForward` ist keine
+  `async`-Funktion), und jede Normalisierung, die dem Nachschlag folgt, würde dort später
+  nachgezogen.
+- **BETRAG B2 — MIT RIEGEL.** Gesendet wird nur eine ENDLICHE Zahl oder eine NICHT-LEERE
+  Zeichenkette; alles andere lässt `conversionValue` **WEG**.
+  **GRUND, GEMESSEN:** `String(v)` erzeugt aus einem Objekt `"[object Object]"` und aus
+  `NaN` die Zeichenkette `"NaN"` — und die Schnittstelle prüft den WERTEBEREICH nicht
+  ((e), (j)): Beides käme als 201 zurück und stünde falsch im Konto des Betreibers. **Das
+  Feld ist optional; ein FEHLENDER Betrag ist besser als ein falscher.**
+- **FEHLERDEUTUNG D2 — VIER GEMESSENE KLASSEN**, alles andere in einen Rest-Zweig: 401
+  (Zugangsdatum) · 403 (**irreführend**, s. Teil (c)) · 400 mit `code` (Gateway) · 422 mit
+  Feldpfad. **Eine fünfte Form aus dem Gedächtnis wäre eine Behauptung ohne Quelle.**
+  **AUFLAGE: Fremdtext wird GESCHWÄRZT, DANN GEKAPPT — in dieser Reihenfolge**, nach dem
+  Muster des Bestands (`redactOpaque` in `src/lib/redact.ts`, davor je eine Normalisierung,
+  die immer eine Zeichenkette liefert).
+- **`eventId` WIRD MITGESCHICKT.** Es ist **GEMESSEN angenommen** (Teil (p), belegt durch
+  die Positivkontrolle im selben Lauf) und kostet nichts.
+  **KEINE ZUSAGE — an keiner Stelle, in keinem Kommentar.** Dass der Anbieter damit
+  dedupliziert, ist NICHT gemessen und mit den heutigen Instrumenten nicht messbar (q).
+
+### Was der Adapter-Eintrag an Tests mitzieht — VIER BEFUNDE
+
+**GEMESSEN am Repo (2026-08-19).** Sie gehören in den Zuschnitt, weil einer von ihnen KEIN
+Testfehler ist, sondern ein Befund über die Karten-Logik.
+
+- **`src/lib/tracking/target-adapters.test.ts` FÄLLT UND WIRD ENTFERNT, NICHT ANGEPASST.**
+  Sein eigener Kommentar verlangt das ausdrücklich („Wer ihn dort ‚repariert', statt ihn zu
+  loeschen, dreht die Aussage um"). **WAS AN SEINE STELLE TRITT, ENTSCHEIDET DER BAU** —
+  der Kommentar nennt keinen Nachfolger.
+- **DER `linkedin`-LAUF IN `src/lib/capi/fan-out.test.ts` WECHSELT DIE SEITE.** Die Schleife
+  verzweigt zur DEFINITIONSZEIT über `hasAdapter(target)`: Er sichert heute „feuert NICHT"
+  und muss danach „feuert" sichern. **Er braucht einen MODUL-MOCK für das neue
+  Adapter-Modul und eine VERDRAHTUNG des Spions** (der Spion `linkedin` existiert bereits,
+  wird aber im `beforeEach` nicht gesetzt) — **sonst liefe im Testlauf die ECHTE
+  Implementierung samt `fetch`.**
+- **DER LAUF IN `src/components/TargetCard.test.tsx` FÄLLT, UND DAS IST KEIN TESTFEHLER.**
+  Er setzt „hat Adapter" mit „hat ein öffentliches Feld" gleich (er erwartet im
+  Adapter-Zweig `TARGET_CARDS[target].publicLabel`). **Für ein Ziel, dessen Kennung JE
+  EREIGNISTYP gilt und nicht auf der Karte lebt, trägt diese Kopplung nicht.** BEFUND ÜBER
+  DIE KARTEN-LOGIK, nicht über den Test.
+- **`src/lib/capi/token.test.ts` IST UNBERÜHRT** — der Resolver kennt `hasAdapter` nicht.
+
 ### Die tragende Invariante — sie ist zweiseitig
 
 - **(a) FÜR DIE DREI BESTEHENDEN ZIELE ÄNDERT SICH NICHTS** — nicht am Ingest, nicht an
@@ -823,6 +880,10 @@ Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
    `entry`. **OFFEN IST DIE SIGNATUR DES NEUEN ADAPTERS:** eine eigene Config-Form nach dem
    Muster von `PinterestConfig`, ein zusätzlicher Parameter, oder der `entry` selbst. Hier
    wird das NICHT entschieden.
+   **BEANTWORTET AM 2026-08-19 (Owner): F1, die eigene Config-Form** — samt Grund und
+   Auflage im Abschnitt „Die vier Bau-Entscheidungen" oben. **Die Frage bleibt im Wortlaut
+   stehen**, weil sie den Stand des Zuschnitts festhält; der Satz „Hier wird das NICHT
+   entschieden" gilt für die Runde, in der er geschrieben wurde.
 2. **WIE SIEHT DER LIVE-NACHWEIS AUS?** Die EMPFANGSANZEIGE an der Conversion-Regel ist das
    einzige Instrument, das auf Testdaten reagiert — **und auch nur ihr ZEITSTEMPEL; die
    Zahlen tun es nicht** (**GEMESSEN**, (q)). Die Conversions-Zählung scheidet aus
@@ -830,6 +891,29 @@ Sie werden im Stufe-1-Prompt AM CODE beantwortet, nicht hier.
    braucht eine ECHTE Regel-Kennung und ein ECHTES Zugangsdatum gegen den Produktivendpunkt
    eines FREMDEN Anbieters — die bisherigen Läufe dieser Phase liefen mit erfundenen Werten
    (so protokolliert in (c) und (j)).
+   **BEANTWORTET AM 2026-08-19, UND DIE ANTWORT IST SCHWÄCHER ALS DIE FRAGE ANNIMMT — SIE
+   STEHT DESHALB HIER, VOR DEM BAU, UND NICHT ERST IM VERMERK:**
+   **AN UNSERER SEITE IST EIN HINAUSGEGANGENER FORWARD NICHT BEOBACHTBAR — GEMESSEN am
+   Code (2026-08-19), drei Achsen:**
+   · **KEIN ADAPTER LOGGT IM ERFOLGSFALL.** In `src/lib/capi/*.ts` steht kein einziges
+     `console.log`/`console.info`/`console.warn`, ausschliesslich `console.error`;
+     `forwardToMeta` loggt nur bei `!res.ok`, `forwardToTiktok` kehrt beim Erfolgs-Code
+     stumm zurück, `forwardToPinterest` loggt im Erfolgszweig nur, wenn der Rumpf den
+     Erfolg NICHT bestätigt.
+   · **`events` TRÄGT KEINE ZIEL-DIMENSION, und der Analytics-Schreibpfad läuft unabhängig
+     vom Fan-Out.** `persistEvent` (`src/lib/analytics/persist.ts`) schreibt `project_id`,
+     `event_type`, `event_id`, `source`, `variant` — mehr nicht (GEMESSEN am Code; die
+     Spaltenliste zusätzlich GELESEN in `docs/db-stand.md`). Eine Zeile je Beacon, gleich
+     wie viele Ziele beliefert wurden.
+   · **`Promise.allSettled` VERWIRFT JEDES ERGEBNIS.** Die Adapter geben `Promise<void>`
+     zurück; es verlässt sie nichts, was der Handler auswerten könnte.
+   **WAS BLEIBT:** die REGRESSION (die drei bestehenden Ziele empfangen unverändert) plus
+   der **ZEITSTEMPEL** der Empfangsanzeige beim Anbieter — er zeigt EMPFANG, und er ist das
+   einzige Instrument, das auf Testdaten überhaupt reagiert (Teil (q)).
+   **WAS DAS HEISST, und es ist hinnehmbar, aber es gehört VOR den Bau:** **Diese Scheibe
+   trägt live WENIGER als jede ihrer Vorgängerinnen.** Der Beweis, dass die RICHTIGE
+   Nutzlast entsteht, liegt auf der UNIT-Ebene — nicht, weil der Live-Test schlecht
+   geschnitten wäre, sondern weil es an unserer Seite nichts zu beobachten gibt.
 
 ### Die drei Riegel loggen — ENTSCHIEDEN (Owner, 2026-08-19)
 
@@ -1325,6 +1409,34 @@ Regel — und ausdrücklich nichts, was stillschweigend mitgebaut wird.
   Zuschnitt.
   **TRIGGER:** eine Frontend-Runde, ODER ein Support-Fall, in dem ein Betreiber meldet,
   dass nichts ankommt. GEMELDET, NICHT GEBAUT — und ausdrücklich KEINE Bauform-Empfehlung.
+
+- **MIT 11.1f ENTSTEHT DIE VIERTE UNABHÄNGIGE DECKEL-KONSTANTE FÜR DIESELBE FRAGE**
+  (GEMESSEN am Code, 2026-08-19): `META_FORWARD_TIMEOUT_MS` (`src/lib/capi/meta-forward.ts`),
+  `PINTEREST_FORWARD_TIMEOUT_MS` (`src/lib/capi/pinterest-forward.ts`) und
+  `TIKTOK_FORWARD_TIMEOUT_MS` (`src/lib/capi/tiktok-forward.ts`) stehen ALLE DREI auf
+  `3_000` und sind ALLE DREI modul-privat — kein `export`, und **keine Stelle im Repo sieht
+  je zwei davon nebeneinander.** Der neue Adapter bringt eine vierte mit.
+  **WAS DAS IST UND WAS ES AUSDRÜCKLICH NICHT IST:** Es ist eine DIVERGENZ-GEFAHR, kein
+  Defekt am Aufräumen. **Der Deckel selbst arbeitet korrekt** — alle drei Adapter deckeln
+  über `AbortController` plus `setTimeout` und löschen den Timer je in einem `finally`
+  (`clearTimeout(timer)`); `Promise.race` kommt in `src/` NIRGENDS vor, der Verteiler
+  verbietet es sogar ausdrücklich. Wer hier einen liegengebliebenen Timer sucht, sucht
+  etwas, das es nicht gibt.
+  **WARUM ES TROTZDEM ZÄHLT:** Eine divergente ZAHL fällt beim Lesen nicht auf — anders als
+  ein divergenter Text. Zwei Tests in `src/lib/capi/fan-out.test.ts` unterstellen die
+  Gleichheit bereits faktisch und sind dort entsprechend beschriftet.
+  **DER PUNKT IST NICHT NEU — ER WIRD HIER NUR AUF DEN HEUTIGEN STAND GEBRACHT:** Er steht
+  als Kandidat „DER DECKELWERT IST MODUL-PRIVAT UND VON AUSSEN NICHT LESBAR" in
+  `docs/claude-history/backlog-polish.md`. **Jener Eintrag führt ZWEI Konstanten** („Der
+  zweite Empfänger existiert") und ist damit hinter dem Stand — die dritte gibt es seit
+  Phase 11, die vierte kommt mit dieser Scheibe. **HIER NICHT REPARIERT:** jene Datei ist
+  Archiv und in dieser Runde geschützt.
+  **WARUM NICHT IN 11.1f:** Eine Zusammenführung ist eine Änderung an DREI bestehenden
+  Adapter-Dateien — im selben Diff wie ein neuer Adapter wären bei einem Fehlschlag zwei
+  Achsen nicht zu trennen. **Der neue Adapter bekommt seinen eigenen Deckel nach dem Muster
+  des Bestands**, inklusive `clearTimeout` im `finally`.
+  **TRIGGER:** die nächste Runde, die eine Forward-Datei ohnehin anfasst. GEMELDET, NICHT
+  GEBAUT.
 
 ## Hebungs-Kandidaten
 

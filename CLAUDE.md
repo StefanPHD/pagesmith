@@ -767,6 +767,66 @@ kaputtgeht.
   sagt als "konfiguriert".
   WAS HIER NICHT ENTSCHIEDEN WIRD, ausdrücklich: ob die Lösung ein Hinweis, eine Anzeige
   oder ein Riegel ist, und wo sie sitzt. Dieser Eintrag nennt den BEFUND, nicht den Bau.
+- JEDE STÖRUNG DER DATENBANK IST EIN TOTALAUSFALL ALLER KUNDENSEITEN (Trigger: der erste
+  echte Kunden-Traffic. HEUTE IST NICHTS ZU TUN, und der Grund gehört in den Eintrag: Bis
+  der Owner das Produkt selbst vollständig geprüft hat, sieht es kein Kunde; ein Ausfall
+  kostet derzeit NULL. Alles davor wäre gebaute Vorsorge gegen ein Risiko, das nicht
+  existiert — "Erst der nutzbare Kern, dann Infrastruktur"): Solange jeder Aufruf einer
+  veröffentlichten Kundenseite ZUR LAUFZEIT durch die Datenbank läuft, trifft jede Störung
+  dort — geplant wie ungeplant — nicht nur den Editor, sondern die Landing-Pages FREMDER
+  Kunden mitten in laufenden Kampagnen. Ein Postgres-Upgrade, ein Wartungsfenster oder ein
+  Ausfall beim Anbieter genügt.
+  DREI EBENEN, SEHR UNGLEICH SCHWER — sie bleiben GETRENNT. Wer sie zusammenzieht, hält den
+  Editor-Fall für lösbar oder den Kundenseiten-Fall für Infrastruktur:
+  · KUNDENSEITEN — die schwerste. Das veröffentlichte HTML ist ein FERTIGER Text, der sich
+    zwischen zwei Veröffentlichungen NICHT ändert; er müsste nicht bei jedem Aufruf neu
+    geholt werden. Das ist die Ebene, auf der ein Ausfall unbemerkt bleiben KÖNNTE.
+  · INGEST — teilweise lösbar. Ein Conversion-Ereignis lässt sich nicht aus einem
+    Zwischenspeicher beantworten, es muss irgendwo hin. Puffern statt verwerfen ginge,
+    braucht aber eine Hintergrundausführung.
+  · EDITOR — nicht lösbar und soll es nicht sein. Er schreibt in die Datenbank; steht sie,
+    kann er nicht schreiben. Die ehrliche Lösung ist eine SICHTBARE Meldung, kein stiller
+    Fehlschlag.
+  WAS DEN AUSFALL BESONDERS TEUER MACHT: Der Ingest antwortet in JEDEM Pfad mit einer
+  leeren 204 — das ist Absicht und richtig, sonst verriete er den Gültigkeitszustand eines
+  Tracking-Keys (s. "INGEST-204-CONTAINMENT" in docs/immer-beachten.md). Die Folge im
+  Störungsfall ist aber, dass der Browser des Besuchers eine KORREKTE Antwort bekommt und
+  NIEMAND erfährt, dass die Conversion nirgends angekommen ist.
+  WAS GEMESSEN IST UND WAS NICHT:
+  · GEMESSEN (Caching-Gate, Phase 9; 2026-07-27, curl gegen eine veröffentlichte Seite):
+    Die Serve-Route läuft bei JEDEM Besucher-Request, das CDN fängt nichts ab —
+    X-Vercel-Cache: MISS bei allen Aufrufen. Herleitung:
+    docs/claude-history/phase-9-ab-testing.md, "CACHING-GATE".
+  · GEMESSEN (2026-08-14, drei Achsen): keine geplante Hintergrundausführung im Repo —
+    keine vercel.json, kein schedule/cron in .github/workflows/ci.yml, kein pg_cron-Aufruf
+    unter supabase/. Eine solche wäre eine Infrastruktur-ERSTANLAGE. DREI NICHT-TREFFER,
+    KEIN Beweis der Abwesenheit; die Reichweite ist die der drei Achsen.
+  · NICHT GEMESSEN: was auf PLATTFORM-Ebene an Zwischenspeicherung greift — im Vercel Data
+    Cache oder beim Datenbank-Anbieter —, und wie sich der Serve-Pfad bei einer echten
+    Störung tatsächlich verhält.
+  DIE DRITTE ANGABE STAND IM AUFTRAG WEITER GEFASST ("ob die Serve-Route dabei jedes Mal
+  die Datenbank anfasst"), UND DIESE HÄLFTE IST AM CODE ENTSCHEIDBAR — GEMESSEN 2026-08-19:
+  Sie tut es, mit ZWEI Abfragen je Aufruf (resolvePublished in src/lib/hosting/resolve.ts
+  liest erst domains, dann projects über createAdminClient), und im gesamten Serve-Pfad
+  liegt KEIN Cache-Wrapper (kein unstable_cache, kein cache()). Die Angabe steht deshalb
+  oben nur noch für den Teil, der wirklich offen ist. WER SIE IN DER WEITEREN FASSUNG
+  ZITIERT, plant eine Aufklärung für etwas, das schon dasteht.
+  DER ERSTE SCHRITT IST EINE AUFKLÄRUNG, KEIN BAU — das steht hier ausdrücklich, damit
+  niemand diesen Eintrag als Bauauftrag liest.
+  DER QUERVERWEIS, und er ist der Grund, warum der Eintrag mehr ist als eine Ablage: Die
+  offene Frage ist DIESELBE, die seit dem 2026-08-19 im Vorrat der Standdatei steht — dort
+  unter "DER AUSGELIEFERTE TEXT KANN NACH EINEM PUBLISH VERALTET IM BROWSER STEHEN"
+  (docs/aktiver-stand.md; F5 half nicht, ein zusätzlicher URL-Parameter schon, die
+  Datenbank war korrekt). EINE Aufklärung beantwortet BEIDE: Was der Cache heute tut,
+  entscheidet DORT, ob der Betreiber einen veralteten Stand sieht — und HIER, ob ein
+  Datenbankausfall die Kundenseiten überhaupt erreicht.
+  DIE BEIDEN WERDEN NICHT ZUSAMMENGEZOGEN: verschiedene Folgen, dieselbe Messung. Der eine
+  ist ein Betreiber-Ärgernis, der andere ein Ausfall fremder Kampagnen.
+  WAS HIER NICHT ENTSCHIEDEN WIRD: ob und wie zwischengespeichert wird, ob der Ingest
+  puffert, und welche der drei Ebenen zuerst angefasst wird.
+  Was still kaputtgeht: Der Betreiber erfährt von einem Ausfall zuerst durch seine Kunden —
+  und der Conversion-Verlust währenddessen ist auf KEINEM Kanal sichtbar, weil die leere
+  204 nach aussen wie ein Erfolg aussieht.
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

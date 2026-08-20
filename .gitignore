@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+# Ablage des Browser-Werkzeugs (Playwright-MCP). Entsteht UNGEFRAGT im
+# Arbeitsverzeichnis beim ersten Aufruf — Seiten-Snapshots und Konsolen-Logs.
+.playwright-mcp/
 
 # debug
 npm-debug.log*

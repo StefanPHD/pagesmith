@@ -339,6 +339,54 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       Befunde mit ihrem Rang, die vier Owner-Entscheidungen und die Verortung:
       docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, "## 7. Beschlossen
       und verortet — NICHT in dieser Phase gebaut".
+- [ ] Phase 11.7 — Anbieter-Befunde nachziehen: die VIER GEBAUTEN ZIELE.
+      DIE NUMMER IST DIE NÄCHSTE FREIE (Präzedenz: 4.5, 10.5, 11.1 bis 11.6) und
+      trägt KEINE Reihenfolge-Aussage — sie steht hinter 11.5, weil davor nichts
+      mehr frei war, nicht weil dieses Vorhaben später käme. KEINE bestehende
+      Nummer wird verschoben.
+      GEGENSTAND: Für die vier BEREITS GEBAUTEN Ziele sind Fragen des Katalogs
+      unbeantwortet, die beim Bau NIE GESTELLT wurden. Sie betreffen LAUFENDE
+      Adapter. VIER PUNKTE, EINZELN AUFGEFÜHRT — eine Sammelzeile ist in zwei
+      Wochen nicht mehr abarbeitbar:
+      · TIKTOK, DEDUPLIZIERUNG (Katalog H2): NIE GESTELLT. Der Adapter sendet eine
+        Ereignis-Kennung; was der Anbieter damit tut, steht nirgends. DIE BEIDEN
+        NACHBARN ZEIGEN, DASS DIE ANTWORT IN BEIDE RICHTUNGEN AUSFALLEN KANN: Bei
+        LinkedIn hat dieselbe Lücke ergeben, dass die Zusage NICHT zutrifft
+        (docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions API)", Teil (y));
+        bei Pinterest, dass sie ZUTRIFFT (ebenda, Abschnitt "Pinterest (Conversions
+        API)", Teil (d)). Für TikTok ist es UNENTSCHIEDEN.
+        Matrix: docs/ziel-fragenkatalog.md, "## Die Matrix — Stand 2026-08-20",
+        Zeile H2.
+      · META, VERSIONSANGABE (Katalog B2): Der Adapter sendet eine Version aus der
+        Umgebung mit einem festen Vorgabewert (META_GRAPH_VERSION in
+        src/lib/capi/config.ts). OB DER ANBIETER DIESE VERSION NOCH BEDIENT, STEHT
+        NIRGENDS. Matrix: docs/ziel-fragenkatalog.md, Zeile B2.
+      · RATE-LIMITS (Katalog H3) FÜR META, TIKTOK UND LINKEDIN: NIE GESTELLT bei
+        allen dreien. Für Pinterest am 2026-08-20 beantwortet
+        (docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", Teil (e)).
+        NICHT ZU VERWECHSELN mit dem Per-Tenant-Rate-Limiting auf /api/e und
+        /api/capi (Phase 14 und Sicherheits-Manifest Tier 1): jenes begrenzt, was
+        ZU UNS hereinkommt, dieses betrifft, was der ANBIETER von uns annimmt.
+        Zwei entgegengesetzte Richtungen, gleicher Name.
+        Matrix: docs/ziel-fragenkatalog.md, Zeile H3.
+      · PINTEREST, ERFOLGSRUMPF (Katalog G1): NIE GEMESSEN — und die Auswertung
+        hängt daran: evaluateSuccessBody (src/lib/capi/pinterest-forward.ts)
+        entscheidet auf dieser Grundlage über Erfolg oder Fehlschlag.
+        DAS IST DIE EINZIGE DER VIER, DIE EINE MESSUNG VERLANGT; die übrigen drei
+        sind aus der Anbieter-Dokumentation beantwortbar.
+        Matrix: docs/ziel-fragenkatalog.md, Zeile G1.
+      DIE KLAMMER, UND SIE IST DER GRUND FÜR DIE POSITION DIESER ZEILE
+      (OWNER-ENTSCHEIDUNG, 2026-08-20): Das TRACKING WIRD ABGESCHLOSSEN, bevor die
+      nächste Phase beginnt. Ein halb geprüftes Tracking mitzunehmen heisst, jeden
+      späteren Fehler zwischen zwei Phasen suchen zu müssen.
+      AUSGENOMMEN von "abgeschlossen" ist ausdrücklich ALLES, WAS AN DER RECHTSFORM
+      HÄNGT — s. "## Modus", Absatz vom 2026-08-20: bauen und mit eigenen Konten
+      messen geht ohne, fremde Kundenkonten anbinden nicht. Das ist KEINE offene
+      Arbeit, sondern eine REIHENFOLGE.
+      WAS DIESE ZEILE NICHT IST: KEIN Defekt-Befund. ALLE VIER ADAPTER SENDEN.
+      Und KEINE Empfehlung zur Reihenfolge innerhalb der Zeile.
+      PROVENIENZ: die vier Punkte sind GELESEN an der Matrix (Stand 2026-08-20);
+      die Klammer ist OWNER-ENTSCHEIDUNG (2026-08-20). KEINE Messung.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

@@ -38,7 +38,7 @@ docs/claude-history/. Wer hier einen Messwert sucht, sucht am falschen Ort —
 und wer hier einen einträgt, macht aus einer Regel eine Zustandsbeschreibung,
 die still veraltet.
 
-## Verzeichnis — 85 Regeln in Dateireihenfolge
+## Verzeichnis — 86 Regeln in Dateireihenfolge
 
 Jeder Eintrag ist der WÖRTLICHE Anfang seiner Regel, auf feste Breite
 geschnitten und mit "..." gekappt — KEINE Beschreibung. GRUND: Eine
@@ -136,6 +136,7 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS ...
 - JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE CONSTRAINT-ERWEITERUNG ...
 - ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN, NICHT SEITENWEISE ...
+- EIN NEUER ANBIETER WIRD ERST ANGEBUNDEN, NACHDEM SEINE DOKUMENTATION ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -1311,3 +1312,37 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Blockade nicht von Absturz trennt. DIESE betrifft die RECHERCHE an einem fremden
   Dokument. Gemeinsam ist beiden nur die Denkfigur, dass eine Abwesenheit ohne benannte
   Reichweite nichts belegt; der Gegenstand ist ein anderer.
+- EIN NEUER ANBIETER WIRD ERST ANGEBUNDEN, NACHDEM SEINE DOKUMENTATION ABSCHNITTSWEISE
+  GELESEN UND DIE BEFUNDE VERORTET SIND — UND DAS GILT FÜR JEDE ANBIETER-KLASSE, NICHT NUR
+  FÜR FAN-OUT-ZIELE (2026-08-20, nach dem ersten Lauf dieser Art):
+  DIE UNTERSCHEIDUNG, OHNE DIE DIE REGEL FALSCH ANGEWANDT WIRD — sie ist der eigentliche
+  Inhalt und nicht ein Zusatz:
+  · DIE METHODE IST ÜBERTRAGBAR. Den VOLLSTÄNDIGEN Abschnitt zum betroffenen Produkt lesen,
+    statt Seiten nach der eigenen Frage auszuwählen · die Fragen VORHER festlegen ·
+    Provenienz an jede Antwort, mit Quelle und Datum · einen Nicht-Treffer nur mit BENANNTER
+    REICHWEITE · eine Doku-Aussage ABLEGEN, aber NIE als Messung zählen.
+    DAS WIE STEHT NICHT HIER, sondern in der Regel darüber ("ANBIETER-DOKUMENTATION WIRD
+    ABSCHNITTSWEISE GELESEN, NICHT SEITENWEISE AUSGEWÄHLT — UND DER GELESENE UMFANG WIRD
+    FESTGEHALTEN"). Zwei Fassungen desselben Verfahrens liefen auseinander.
+  · DER FRAGENKATALOG IST NICHT ÜBERTRAGBAR. docs/ziel-fragenkatalog.md ist aus VIER
+    Fan-Out-Adaptern abgeleitet und fragt nach Nutzlast, Ziel-Kennung und
+    Conversion-Ereignissen. Auf einen Zahlungsanbieter, einen Versanddienst oder eine andere
+    Anbindung angewandt liefert er überwiegend "nicht anwendbar" — UND EIN KATALOG, DER
+    NICHTS TRIFFT, WIRD ZU RECHT IGNORIERT. Das ist der Grund, warum diese Regel die beiden
+    Hälften trennt: Wer die Methode mitnimmt und den Katalog stehen lässt, gewinnt; wer
+    beides mitnimmt, verliert auch die Methode.
+  · FOLGE: Eine neue Anbieter-KLASSE bekommt einen EIGENEN Katalog, abgeleitet auf DEMSELBEN
+    Weg wie dieser — aus dem, was eine bereits gebaute Anbindung DERSELBEN Klasse
+    tatsächlich gebraucht hat. Gibt es keine, wird er aus dem ZUSCHNITT abgeleitet und als
+    VORLÄUFIG gekennzeichnet.
+  ES LÄUFT NICHTS AUTOMATISCH, und das gehört ausdrücklich hinein: Es gibt KEINEN Zeitplan
+  und KEINEN Hintergrundlauf. Die Regel ist eine PFLICHT, die die INSTANZ auslöst, die die
+  Anbindung zuschneidet. WER AUF EINE AUTOMATIK WARTET, WARTET VERGEBENS.
+  BELEG (2026-08-20): Der erste Lauf nach dieser Methode hat an EINEM Anbieter NEUN offene
+  Fragen beantwortet und ZWEI Angaben im eigenen Bestand als ZU ENG erwiesen. Fundstelle:
+  docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)".
+  ABGRENZUNG ZUR REGEL DARÜBER, und sie ist scharf: Jene sagt, WIE gelesen wird — den
+  Abschnitt statt ausgewählter Seiten, und den Umfang festhalten. DIESE sagt, WANN das
+  Pflicht ist (vor der Anbindung, nicht während) und WAS davon übertragbar ist (die Methode,
+  nicht der Katalog). Kein Widerspruch: die eine ist das Verfahren, die andere sein
+  Geltungsbereich.

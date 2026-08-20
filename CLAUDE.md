@@ -159,6 +159,68 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       PROVENIENZ: GELESEN an FREMDER Anbieter-Doku (2026-08-11) — NICHT gemessen,
       NICHT live bestätigt; der Live-Beweis des dritten Ziels wertet sie NICHT auf.
       DIE ZWEI AUFLAGEN AUS 11.1 GELTEN HIER WÖRTLICH MIT.
+      RICHTIGGESTELLT AM 2026-08-20 — NICHT GESTEMPELT, und der Grund ist der Rang dieser
+      Zeile: Sie ist der MASSSTAB, an dem der nächste Zuschnitt misst, und ein Maßstab mit
+      überholten Angaben taugt nicht als Maßstab. DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN
+      und wird NICHT gekürzt; dieser Block tritt DANEBEN und nennt, was überholt ist.
+      ZWEI ANGABEN, JE EINZELN:
+      · ZU GROB: "der Nachfolger ist für den relevanten Fall allowlist-only und verlangt
+        einen OAuth-Fluss mit Verifizierung". Beides trifft zu, aber an VERSCHIEDENEN
+        Achsen — die FREISCHALTUNG hängt an der GESTALT (nur an einer von zweien), die
+        VERIFIZIERUNG am NUTZER-KONTO-Weg. Wer den Satz als EINE Bedingung liest, hält
+        einen Weg für versperrt, der offensteht, oder eine Hürde für erledigt, die bleibt.
+      · RICHTIG, ABER OHNE GRUND: "Es sind ZWEI Ziele, nicht eins". Die Aussage BLEIBT und
+        wird nicht angetastet; ihr Grund ist jetzt benannt — es sind zwei ADAPTER mit
+        VERSCHIEDENEN ZUGANGSMODELLEN, nicht zwei Varianten eines. Der eine braucht die
+        Autorisierungsschicht, der andere kommt mit zwei Skalaren aus.
+      DIE EINZELBEFUNDE STEHEN HIER NICHT, sondern in docs/ziel-befunde.md, Abschnitt
+      "Google (Google Ads Conversions · GA4)", Teile (a) bis (f). Sie werden hier
+      AUSDRÜCKLICH NICHT wiederholt — zweimal geschrieben laufen sie auseinander, und dann
+      ist nicht mehr entscheidbar, welche Fassung gilt.
+      PROVENIENZ DIESER RICHTIGSTELLUNG: GELESEN an Anbieter-Doku und Fachpresse
+      (2026-08-20). KEINE Messung — es ist KEIN Aufruf gegen eine Google-Schnittstelle
+      gefahren worden.
+      ENTSCHIEDEN AM 2026-08-20 (OWNER) — DIE GESTALT FÜR GOOGLE ADS IST DIE ZUSÄTZLICHE
+      DATENQUELLE ZUR TAG-CONVERSION, nicht der Offline-Import über die Klick-Kennung.
+      PROVENIENZ: OWNER-ENTSCHEIDUNG (2026-08-20). KEINE Messung, KEINE Ableitung — eine
+      FESTLEGUNG.
+      BEGRÜNDUNG: Die Klick-Kennung rettet nichts, was bereits verloren ging; das
+      Produktversprechen ruht auf dem Abgleich GEHASHTER NUTZERDATEN.
+      DIE GRENZE, UND SIE TRÄGT DIE ENTSCHEIDUNG: Sie steht unter dem VORBEHALT DER
+      FREISCHALTUNG — ob sie für ein Konto unserer Grössenordnung erreichbar ist, steht in
+      keiner Dokumentation und ist nur über einen Antrag zu erfahren (offen geführt in
+      docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)"). FÄLLT DIE
+      FREISCHALTUNG AUS, IST SIE DER GEGENSTAND EINER NEUEN ENTSCHEIDUNG — der
+      Offline-Import ist dann NICHT automatisch der Rückfall.
+      DER ZWEITE VORBEHALT, UND ER IST VON DER FREISCHALTUNG UNABHÄNGIG: Die gewählte
+      Gestalt ist ausdrücklich eine ZUSÄTZLICHE Datenquelle zu einer BESTEHENDEN
+      Tag-Conversion — sie SETZT diese VORAUS (GELESEN 2026-08-20, Merkmalsbeschreibung
+      des Anbieters; s. docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions ·
+      GA4)", Teil (e)). Pagesmith liefert heute KEIN Google-Tag aus — GEMESSEN am Repo
+      (2026-08-20, formale Suche über src/ nach gtag · googletagmanager · google-analytics
+      · googleads · measurement_id; einziger Treffer ist ein Kommentar in einer Testdatei,
+      kein Erzeuger. NICHT-TREFFER AUF DIESER ACHSE, kein Beweis für alle Pfade). EXISTIERT
+      IM KUNDENKONTO KEINE TAG-CONVERSION, HAT DIE GESTALT NICHTS, WORAN SIE ANDOCKT — und
+      zwar auch dann nicht, wenn die Freischaltung erteilt würde.
+      DIE ABGRENZUNG ZUM ABSATZ WEITER UNTEN GEHÖRT DAZU, sonst werden die beiden
+      verschmolzen: Jener fragt, WESSEN Tag es ist (Kunde oder Pagesmith) und ob dadurch
+      die Ausschluss-Zusage an 11.5 berührt wird. DIESER fragt, OB ÜBERHAUPT EINES
+      EXISTIERT. Zwei verschiedene Achsen — und diese hier ist die VORGELAGERTE: ohne ein
+      Tag stellt sich die Frage nach seinem Eigentümer gar nicht.
+      WAS AUSDRÜCKLICH OFFEN BLEIBT UND HIER NICHT NEBENBEI ENTSCHIEDEN WIRD: ob ein Kunde
+      auf einer von Pagesmith ausgelieferten Seite ein eigenes Google-Tag unterbringen
+      kann, und ob Pagesmith eines ausliefern müsste. KEINE EMPFEHLUNG. Als offener Punkt
+      geführt in docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)".
+      WAS HIER NICHT ENTSCHIEDEN IST, und der Satz muss mit, weil die Berührung sonst
+      unbemerkt bleibt: Die gewählte Gestalt ist beim Anbieter die ENTSPRECHUNG ZUM
+      META-MODELL, und die Roadmap-Zeile 11.5 nimmt den "Hybrid-Schalter je Kanal"
+      ausdrücklich aus ("die Architektur bleibt für den Launch unverändert — EIN Ziel als
+      Hybrid aus Browser-Tag und Server-Forward, die übrigen als reiner Server-Fan-Out").
+      OB BEIDES KOLLIDIERT, HÄNGT AN EINER UNBEANTWORTETEN FRAGE: wessen Tag die
+      "bestehende Tag-Conversion" ist. Liefert Pagesmith weiterhin rein server-seitig und
+      gehört das Tag dem KUNDEN, ist jene Zusage unberührt; müsste Pagesmith selbst ein
+      Google-Tag ausliefern, wäre Google ein ZWEITES Hybrid-Ziel und die Zusage berührt.
+      DIESE FRAGE IST HIER NICHT ENTSCHIEDEN und wird auch nicht nebenbei entschieden.
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code): klein und
       eigenständig, damit ein Kunde seine Einrichtung prüfen kann, ohne echte
       Conversions zu erzeugen. Kontext: docs/claude-history/future-roadmap.md,
@@ -861,6 +923,26 @@ kaputtgeht.
   und jedes weitere Ziel unverändert wahr. Beantwortet ist die Vorfrage NUR für dieses eine
   Ziel; wer daraus liest, die Schicht sei jetzt zuschneidbar, macht genau den Fehler, den
   jene Zeile beschreibt.
+  ENTSCHIEDEN AM 2026-08-20 (OWNER) — DIE AUTORISIERUNGSSCHICHT BLEIBT GEMEINSAMES
+  FUNDAMENT VON 11.1 UND 11.2. Der Absatz "DIE AUTORISIERUNGSSCHICHT GEHÖRT KEINER ZEILE
+  ALLEIN" darüber bleibt wörtlich stehen; er war bisher eine FOLGERUNG aus dem
+  Schema-Risiko — jetzt ist es zusätzlich eine ENTSCHEIDUNG, und das ist der Unterschied:
+  eine Folgerung kippt mit ihrer Prämisse, eine Entscheidung wird zurückgenommen.
+  PROVENIENZ: OWNER-ENTSCHEIDUNG (2026-08-20). KEINE Messung.
+  BEGRÜNDUNG DES OWNERS: Ein zentrales Dienstkonto, das Kunden in ihre Werbekonten
+  einladen, ist als VIELMANDANTEN-Bauform nicht tragfähig — bei hunderten Konten ist mit
+  einer Einstufung als missbräuchlich zu rechnen. Ein legitimes Drittanbieter-Werkzeug
+  tritt über einen NUTZER-FLUSS auf.
+  DIE GRENZE, DIE DAZUGEHÖRT und ohne die die Begründung stärker aussieht als sie ist:
+  Das ist eine EINSCHÄTZUNG — keine Anbieter-Aussage und keine Messung. Sie deckt sich
+  damit, dass Google für genau diese Gestalt den Data-Partner-Weg vorsieht (GELESEN
+  2026-08-20; Befund in docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions ·
+  GA4)", Teil (d)). DIESER WEG IST EIN INDIZ, KEIN BEWEIS der Einschätzung.
+  WAS DAMIT ZUSAMMENFÄLLT UND WAS NICHT: Der PREIS der Schicht steht für BEIDE Zeilen auf
+  Nutzer-Fluss — für 11.1 aus der Lesung vom 2026-08-20 (Block darüber), für 11.2 aus
+  dieser Entscheidung. Das macht die Schicht NICHT zuschneidbar: die offenen Punkte des
+  Google-Wegs (Freischaltung, Entwickler-Token, Nutzlast-Felder, Advertiser gegen Data
+  Partner) stehen unverändert offen und stehen in docs/ziel-befunde.md.
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

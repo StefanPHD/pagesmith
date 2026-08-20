@@ -46,9 +46,26 @@ EIN ÄLTERER TEIL WIRD DABEI NICHT UMGESCHRIEBEN: Widerlegt oder ergänzt ein ne
 Protokoll einen alten Teil, bleibt dessen Wortlaut stehen und bekommt einen VORBEHALT, der
 auf den neuen Buchstaben zeigt (Muster: der Vorbehalt an (b), der auf (i) zeigt).
 
+**EIN VERWEIS VON AUSSEN NENNT ABSCHNITT UND BUCHSTABEN — NIE DEN BUCHSTABEN ALLEIN**
+(Konvention niedergeschrieben am 2026-08-20, als der zweite Ziel-Abschnitt dazukam). SIE
+ERWEITERT DIE KONVENTION DARÜBER UND ERSETZT SIE NICHT: Jene bindet die Eindeutigkeit der
+Buchstaben an den ZIEL-ABSCHNITT ("Ein zweites (a) im selben Ziel-Abschnitt macht jeden
+dieser Verweise mehrdeutig") — über Ziel-Abschnitte hinweg dürfen sie sich also
+wiederholen, und ein neuer Ziel-Abschnitt beginnt wieder bei (a).
+DER GRUND, und er ist seit dem 2026-08-20 nicht mehr theoretisch: Es gibt dieselben
+Buchstaben MEHRFACH in dieser Datei. Ein Verweis, der nur "(b)" nennt, zeigt damit auf
+mehr als eine Stelle.
+DIE FOLGE: Jeder Verweis von aussen — aus CLAUDE.md, aus docs/claude-history/* — nennt den
+ABSCHNITT und den Buchstaben.
+DIE GRENZE, DIE MITMUSS: Diese Konvention gilt für KÜNFTIGE Verweise. Die bestehenden sind
+am 2026-08-20 NICHT nachgezogen worden; ob und wann das geschieht, ist hier nicht
+entschieden. Was still kaputtgeht, wenn es unterbleibt: Ein alter Verweis wird mehrdeutig,
+sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug meldet das.
+
 ## Verzeichnis der Abschnitte
 
 - ## LinkedIn (Conversions API)
+- ## Google (Google Ads Conversions · GA4)
 
 ## LinkedIn (Conversions API)
 
@@ -449,3 +466,121 @@ DANEBEN und schreibt ihn nicht um.
     GRENZE: "mehrere Stunden" ist die Angabe des Owners, KEINE gemessene Latenz. Wie lange
     die Anzeige tatsächlich braucht und ob sie in Stufen oder stetig nachzieht, ist
     unerhoben.
+
+## Google (Google Ads Conversions · GA4)
+
+**HERKUNFT — ALLES IN DIESEM ABSCHNITT IST GELESEN, NICHTS IST GEMESSEN (2026-08-20):** Es
+ist KEIN Aufruf gegen eine Google-Schnittstelle gefahren worden — kein Token beschafft,
+kein Endpunkt angesprochen, keine Fehlerform erhoben. Jeder Teil nennt seine Quelle und
+sein Datum. Was hier steht, ist der Stand einer ANBIETER-RECHERCHE; er wird durch die
+Live-Beweise der vier bestehenden Ziele NICHT aufgewertet.
+
+**DIESER ABSCHNITT TRÄGT ZWEI ZIELE, und das ist Absicht:** Google Ads Conversions und GA4
+sind verschiedene Produkte mit verschiedenen Schnittstellen — die Roadmap-Zeile 11.2 sagt
+das und bleibt davon unberührt. Sie stehen hier trotzdem in EINEM Abschnitt, weil die
+Befunde ineinandergreifen: Dieselbe Nachfolge-Schnittstelle (Data Manager API) betrifft
+beide, und der Umstiegspfad ist genau die Naht zwischen ihnen. Wer nur GA4 sucht, findet es
+unter (f). DAS IST EINE GLIEDERUNGS-FRAGE DIESER DATEI UND KEINE PRODUKT-AUSSAGE: Aus einem
+gemeinsamen Abschnitt folgt NICHT, dass es ein Ziel oder ein Adapter wäre.
+
+**DIE BUCHSTABEN BEGINNEN HIER BEI (a).** Die Konvention im Kopf dieser Datei bindet die
+Eindeutigkeit an den ZIEL-ABSCHNITT ("Ein zweites (a) im selben Ziel-Abschnitt macht jeden
+dieser Verweise mehrdeutig") — über Ziel-Abschnitte hinweg dürfen sich Buchstaben also
+wiederholen. WAS DAS FÜR VERWEISE VON AUSSEN BEDEUTET, STEHT NICHT HIER, SONDERN IM KOPF
+DIESER DATEI: der Absatz "EIN VERWEIS VON AUSSEN NENNT ABSCHNITT UND BUCHSTABEN — NIE DEN
+BUCHSTABEN ALLEIN". Er gilt für die GANZE Datei und ist deshalb dorthin gezogen; hier
+stünde er an einem Ort, den nur liest, wer ohnehin bei Google ist.
+
+### Anbieter-Befunde, GELESEN an der Anbieter-Doku (2026-08-20) — die Teile (a) bis (f)
+
+(a) DER PROGRAMMATISCHE ALT-WEG IST FÜR UNS ZU — UND ES GIBT KEINEN ANTRAG, DER DAS HEILT.
+    GELESEN 2026-08-20 an developers.google.com/google-ads/api/docs/conversions/upload-offline
+    und support.google.com/google-ads/answer/2998031: Seit dem 15.06.2026 schlagen
+    UploadClickConversion-Anfragen der Google Ads API (ConversionUploadService) fehl, wenn
+    das Entwickler-Token nicht ZUVOR solche Anfragen gesendet hat; der Fehler heisst
+    CUSTOMER_NOT_ALLOWLISTED_FOR_THIS_FEATURE. Das Qualifikationsfenster lag zwischen
+    Dezember 2025 und Mai 2026 und ist verstrichen.
+    WARUM DAS UNS TRIFFT UND NICHT NUR ALLGEMEIN GILT: Pagesmith hat NIE ein
+    Entwickler-Token benutzt. Die Qualifikation ist damit nicht nachholbar — es ist kein
+    Antragsverfahren, sondern ein abgelaufenes Zeitfenster.
+
+(b) DIE REICHWEITE DER SPERRE IST DIE UMGEKEHRTE ZUR NAHELIEGENDEN LESART.
+    GELESEN 2026-08-20 an FACHPRESSE (farsiight.com, searchengineland.com) — AUSDRÜCKLICH
+    SEKUNDÄRQUELLEN, nicht die Anbieter-Doku, und das gehört an die Angabe: Getroffen sind
+    EIGENINTEGRATIONEN. Tag-basierte Aufbauten und Standard-Konnektoren sind von dieser
+    Frist NICHT betroffen; die übrigen Operationen der Ads API laufen weiter.
+    WARUM DIESER TEIL EIGENS DASTEHT: Die naheliegende Lesart ist die umgekehrte — "die
+    Ads API ist zu". Sie ist falsch, und die Fehlannahme ist in diesem Projekt schon
+    einmal aufgetreten. Wer sie übernimmt, verwirft einen Weg, der offensteht.
+
+(c) DAS FACHLICH GESUCHTE MERKMAL IST MITGESPERRT.
+    GELESEN 2026-08-20 an support.google.com/google-ads/answer/15713840: Enhanced
+    Conversions for Leads — die Fassung, die GEHASHTE NUTZERDATEN zur Ergänzung nutzt —
+    fällt unter dieselbe Sperre wie (a).
+    WARUM DAS KEIN NEBENFALL IST: Genau dieses Merkmal trägt das Produktversprechen dieses
+    Projekts. Die Sperre trifft damit nicht einen Randweg, sondern den Hauptweg.
+
+(d) DER NACHFOLGER: DIE DATA MANAGER API — ZWEI ZUGANGSMODELLE, EIN SENSIBLER BEREICH.
+    GELESEN 2026-08-20 an
+    developers.google.com/data-manager/api/devguides/quickstart/set-up-access: Die Data
+    Manager API (datamanager.googleapis.com) ist seit Dezember 2025 allgemein verfügbar.
+    Sie kennt ZWEI Zugangsmodelle — ADVERTISER (die anmeldende Identität ist Nutzer im
+    Werbekonto des Kunden) und DATA PARTNER (Partner-Konto, nur nach Freigabeverfahren,
+    mit einem Partner-Link je Werbetreibendem).
+    DER BEREICH IST https://www.googleapis.com/auth/datamanager und als SENSIBEL
+    eingestuft; jede Cloud-Anwendung, die darüber NUTZER-Zugangsdaten beschafft, muss durch
+    Googles OAuth-Verifizierung.
+    GRENZE: Gelesen ist, WAS die Modelle sind und dass der Bereich sensibel ist. NICHT
+    gelesen und NICHT gemessen ist, welche Anforderungen die Verifizierung im Einzelnen
+    stellt und wie lange sie dauert.
+
+(e) ZWEI GESTALTEN FÜR GOOGLE ADS, UND SIE UNTERSCHEIDEN SICH IM GATE WIE IM ERGEBNIS.
+    GELESEN 2026-08-20 an developers.google.com/data-manager/api/devguides/events:
+    (a-Gestalt) OFFLINE-IMPORT ÜBER DIE KLICK-KENNUNG: ohne Freischaltungs-Gate, erzeugt
+    aber eine EIGENE Conversion-Aktion NEBEN der Tag-Conversion des Kunden.
+    (b-Gestalt) SERVER-SEITIGE LIEFERUNG ALS ZUSÄTZLICHE DATENQUELLE zur BESTEHENDEN
+    Tag-Conversion — die Entsprechung zum Meta-Modell —, NUR für freigeschaltete Konten;
+    Daten aus dieser Quelle fliessen 14 TAGE LANG NICHT in die Gebotsoptimierung.
+    DIE BEZEICHNER (a-Gestalt)/(b-Gestalt) SIND NICHT DIE TEILE (a)/(b) DIESES ABSCHNITTS:
+    Sie stehen hier ausgeschrieben, damit ein späterer Verweis sie nicht verwechselt.
+    WELCHE GEWÄHLT IST, STEHT NICHT HIER, sondern als Owner-Entscheidung an der
+    Roadmap-Zeile 11.2 in CLAUDE.md — diese Datei trägt keine Entscheidungen.
+
+(f) GA4 IST EIN ANDERER ADAPTER, KEIN ZWEITER EMPFÄNGER DESSELBEN.
+    GELESEN 2026-08-20: Das Measurement Protocol verlangt KEIN OAuth, sondern ZWEI SKALARE
+    — api_secret und measurement_id. Es kommt damit ohne die Autorisierungsschicht aus, die
+    (d) für den Ads-Weg verlangt.
+    DIE GRENZE, DIE MITMUSS — DAS IST KEIN DAUERZUSTAND: Google führt einen UMSTIEGSPFAD
+    vom Measurement Protocol zur Data Manager API und nimmt GA4-Ereignisse dort entgegen;
+    für Analytics-Properties ist dieser Weg freischaltungspflichtig, für
+    Google-Ads-Konten nicht. Das Measurement Protocol ist HEUTE gangbar und ein KANDIDAT
+    für dieselbe Behandlung wie der Ads-Weg.
+    TRIGGER, WÖRTLICH: eine Ankündigung, die das Measurement Protocol beschränkt oder
+    abkündigt.
+    PROVENIENZ: GELESEN 2026-08-20 an developers.google.com/data-manager/api (Umstiegspfad)
+    und an FACHPRESSE (SEKUNDÄRQUELLE).
+
+**WAS AUSDRÜCKLICH OFFEN BLEIBT (2026-08-20)** — vier Punkte, jeder als OFFEN benannt und
+keiner beantwortet; sie stehen hier, damit niemand sie aus dem Vorhandenen erschliesst:
+· OB DIE FREISCHALTUNG FÜR DIE (b-)GESTALT FÜR EIN KONTO UNSERER GRÖSSENORDNUNG
+  ERREICHBAR IST. Das steht in KEINER Dokumentation und ist nur über einen Antrag zu
+  erfahren.
+· OB WIR EIN ENTWICKLER-TOKEN BRAUCHEN. Die Data Manager API verlangt keines. DARAUS FOLGT
+  NICHT, DASS KEINES NÖTIG IST: Dieselbe Seite bietet an, den Ads-API-Bereich
+  mitzuautorisieren, und das Nachschlagen einer Conversion-Aktion läuft heute über die Ads
+  API. UNGEPRÜFT.
+· WELCHE NUTZLAST-FELDER VERLANGT WERDEN und ob sie mit der Datenklassen-Entscheidung
+  dieses Projekts zusammengehen (gehashte E-Mail im Browser gebildet, IP nur als
+  Transit-Wert). Die Entscheidung selbst steht in CLAUDE.md, "## Offene Punkte" —
+  hier steht nur, dass die Passung unerhoben ist.
+· OB DIE KLASSIFIZIERUNG ALS ADVERTISER ODER ALS DATA PARTNER DIE RICHTIGE IST.
+· OB EINE BESTEHENDE TAG-CONVERSION IM KUNDENKONTO VORAUSGESETZT IST UND WIE SIE DORTHIN
+  KOMMT. Die (b-)Gestalt aus (e) ist ausdrücklich eine ZUSÄTZLICHE Datenquelle zu einer
+  BESTEHENDEN Tag-Conversion — GELESEN 2026-08-20. UNGEPRÜFT ist, ob sie ohne eine solche
+  überhaupt etwas hat, woran sie andockt, ob ein Kunde auf einer von Pagesmith
+  ausgelieferten Seite ein eigenes Google-Tag unterbringen kann, und ob Pagesmith eines
+  ausliefern müsste. KEINE EMPFEHLUNG, KEINE ANTWORT.
+DIE ZAHL "VIER" IM KOPF DIESES BLOCKS WIRD NICHT ÜBERSCHRIEBEN — sie ist als Aussage über
+den Stand bei seiner Niederschrift richtig; mit diesem fünften sind es FÜNF. Dieselbe
+Bauform wie an den Zähl-Angaben in CLAUDE.md: eine Zahl, die einen Stand beschreibt, wird
+nicht rückwirkend angepasst. Wer sie als heutige Liste liest, zählt falsch.

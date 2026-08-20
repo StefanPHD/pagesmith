@@ -19,6 +19,16 @@ Adapter baut oder beim Anbieter recherchiert, liest sie ZUERST — zusammen mit
 docs/ziel-befunde.md. Ohne sie stellt man die Fragen neu, die schon einmal jemand gestellt
 hat, und übersieht die, die noch nie jemand gestellt hat.
 
+**SIE GILT FÜR FAN-OUT-ZIELE UND FÜR KEINE ANDERE ANBIETER-KLASSE.** Ein Zahlungsanbieter,
+ein Versanddienst oder eine andere Anbindung bekommt einen EIGENEN Katalog; die METHODE ist
+übertragbar, dieser Katalog nicht. Das Warum steht in docs/immer-beachten.md, Regel "EIN
+NEUER ANBIETER WIRD ERST ANGEBUNDEN, NACHDEM SEINE DOKUMENTATION ABSCHNITTSWEISE GELESEN UND
+DIE BEFUNDE VERORTET SIND".
+
+**ES GIBT KEINE AUTOMATIK.** Diese Datei wird von einer INSTANZ gelesen und angewandt, nicht
+von einem Vorgang — kein Zeitplan, kein Hintergrundlauf, keine Prüfung, die von selbst
+anschlägt.
+
 **DIE ZWEI TEILE HABEN VERSCHIEDENE HALTBARKEIT, UND DAS IST DER GRUND FÜR DIESEN KOPF:**
 - **DER KATALOG IST DAUERHAFT.** Eine Frage altert nicht. Ein Anbieter kann sein Verhalten
   ändern — die Frage danach bleibt dieselbe. Er wird ERWEITERT, wenn ein Bau eine Frage

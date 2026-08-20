@@ -502,6 +502,124 @@ DIE BUCHSTABENREIHE LÄUFT FORT: hier (u). (a) bis (t) bleiben unverändert verg
     WAS HIER BEWUSST NICHT STEHT: die Client-ID der Anwendung. Sie ist kein Geheimnis und
     gehört trotzdem nicht in ein Dokument.
 
+### Abschnitts-Lesung 2026-08-20 der Anbieter-Dokumentation — die Teile (v) bis (z)
+
+**HERKUNFT (2026-08-20):** Gemischt, und das steht hier im Kopf, weil die Teile darunter
+NICHT dieselbe Stärke haben. Drei Quellen: (1) BEOBACHTET durch den Owner an den eigenen
+Oberflächen des Anbieters (Token-Inspector-Werkzeug, Auth-Seite der eigenen App,
+Generator-Ausgabe); (2) GEMESSEN durch den Owner mit einem Aufruf gegen einen
+Anbieter-Endpunkt — genau EINE Sonde plus Positivkontrolle, s. (x); (3) GELESEN an der
+Anbieter-Dokumentation. Jeder Teil nennt seine Stufe einzeln. KEIN Lauf gegen die
+Conversions-Schnittstelle selbst.
+
+DIE BUCHSTABENREIHE LÄUFT FORT: hier (v) bis (z). (a) bis (u) bleiben unverändert
+vergeben. MIT (z) IST DIE REIHE AUSGESCHÖPFT — wie danach vergeben wird, ist hier NICHT
+entschieden; die Konvention im Kopf dieser Datei regelt den Fall nicht.
+
+(v) ES SIND ZWEI VERSCHIEDENE ARTEFAKTE, NICHT ZWEI WEGE ZUM SELBEN.
+    BEOBACHTET 2026-08-20 (Owner, Token-Inspector-Werkzeug im Entwicklerportal,
+    linkedin.com/developers/tools/oauth/token-inspector): Das über den OAuth-Generator
+    erzeugte Zugangsdatum wird vollständig ausgelesen — erstellt, zuletzt autorisiert,
+    "Expires: in about 2 months", "Authentication type: 3-legged", "Permissions:
+    rw_conversions", Status aktiv. DASSELBE Werkzeug weist das über den Campaign Manager
+    erzeugte Zugangsdatum als UNGÜLTIG zurück. Der Campaign-Manager-Wert ist zudem
+    deutlich LÄNGER.
+    WARUM DAS EIN BEFUND IST UND KEIN FEHLSCHLAG: Der erfolgreiche Lauf ist die
+    POSITIVKONTROLLE. Ohne sie wären "gehört nicht zu dieser Anwendung" und "Werkzeug
+    funktioniert nicht" am Ergebnis nicht zu unterscheiden gewesen — dieselbe Denkfigur
+    wie der Mitläufer in (a).
+    FOLGE: Das LIVE VERWENDETE Zugangsdatum ist KEIN OAuth-Zugangsdatum dieser Anwendung.
+    Die Anbieter-Doku sagt für den Campaign-Manager-Weg, die dort erzeugten Zugangsdaten
+    liefen nicht ab (GELESEN 2026-08-20,
+    learn.microsoft.com/en-us/linkedin/marketing/conversions/getting-access-conversions).
+    DIE RESTGRENZE, DIE MITMUSS: BELEGT ist die VERSCHIEDENHEIT der Artefakte. "Läuft nie
+    ab" bleibt eine DOKU-AUSSAGE. Endgültig belegt wäre sie erst dadurch, dass das Ziel
+    Mitte Oktober 2026 weiterhin sendet — s. den offenen Punkt am Ende dieses Abschnitts.
+
+(w) DER APP-WEG: FRIST UND ERNEUERUNG.
+    BEOBACHTET 2026-08-20 (Owner, Auth-Seite der eigenen Anwendung und Ausgabe des
+    Generators): "Token time to live duration — Access token: 2 months (5184000 seconds)";
+    das erzeugte Zugangsdatum weist "Expires: in 2 months" aus, Typ 3-legged. ZUSÄTZLICH
+    wurde ein REFRESH-TOKEN mit 12 Monaten Laufzeit ausgegeben.
+    DAS WIDERLEGT EINE FRÜHERE ANNAHME DIESES PROJEKTS, und das gehört hierher, weil sie
+    sonst weiterwirkt: Angenommen worden war, eine programmatische Erneuerung sei
+    ausschliesslich zugelassenen Partnern vorbehalten und für uns unmöglich. Die eigene
+    Anwendung hat eines bekommen.
+    DIE MECHANIK (GELESEN 2026-08-20,
+    learn.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens):
+    Erneuerung per grant_type=refresh_token gegen den Token-Endpunkt mit Client-ID und
+    Client-Secret; das neue Zugangsdatum bekommt wieder 60 Tage, das Refresh-Token BEHÄLT
+    seine Restlaufzeit von ursprünglich 365 Tagen. Danach muss das Mitglied erneut
+    zustimmen. Der Anbieter behält sich ausdrücklich vor, Token JEDERZEIT zu widerrufen;
+    ein Produkt muss dann auf den Anmeldefluss zurückfallen.
+    UNGEPRÜFT: dass die Erneuerung mit diesem Refresh-Token tatsächlich durchgeht.
+    AUSGEGEBEN IST NICHT EINGELÖST.
+
+(x) DER ENDPUNKT-WEG IST GESCHEITERT; DAS TAUGLICHE WERKZEUG IST DIE OBERFLÄCHE.
+    GEMESSEN 2026-08-20 (Owner, PowerShell gegen www.linkedin.com/oauth/v2/introspectToken):
+    Sowohl ein Zugangsdatum, das NACHWEISLICH zu dieser Anwendung gehört, als auch eine
+    ERFUNDENE Zeichenfolge ergaben 400. Das Instrument unterscheidet die beiden Fälle
+    nicht und ist als Sonde UNTAUGLICH.
+    DIE STATUSCODES DES ANBIETERS (GELESEN 2026-08-20,
+    learn.microsoft.com/en-us/linkedin/shared/authentication/token-introspection): 400 =
+    ungültige Client-ID oder ungültiges Token · 401 = ungültiges Client-Secret · gültige
+    Zugangsdaten, die NICHT zum Token passen = 200 mit "active": false.
+    DER BEOBACHTETE 400 PASST ZU KEINEM DER GEDEUTETEN FÄLLE; die Ursache ist UNGEKLÄRT,
+    der Verdacht liegt bei der Client-ID. HIER WIRD SIE NICHT GEKLÄRT.
+    DIE ANWEISUNG, DIE DARAUS FOLGT und die der eigentliche Wert dieses Teils ist: Wer die
+    Laufzeit eines Zugangsdatums prüfen will, nimmt das OBERFLÄCHEN-WERKZEUG (s. (v)). DER
+    ENDPUNKT WIRD NICHT ERNEUT VERSUCHT, solange die 400-Ursache ungeklärt ist.
+
+(y) DIE DEDUPLIZIERUNG DES ANBIETERS SETZT ZWEI DINGE VORAUS, DIE WIR NICHT LIEFERN.
+    GELESEN 2026-08-20 an
+    learn.microsoft.com/en-us/linkedin/marketing/conversions/deduplication:
+    (i) JE DATENQUELLE EINE EIGENE CONVERSION-REGEL — eine für den Browser, eine für den
+    Server.
+    (ii) DIE EREIGNIS-KENNUNG STAMMT AUS DEM BROWSER und wird mit dem Server-Ereignis
+    mitgeschickt; browser-seitig über window._linkedin_event_id vor dem Insight Tag oder
+    über event_id im lintrk-Aufruf. Treffen beide mit DERSELBEN Kennung ein, wird das
+    SERVER-Ereignis verworfen und das des Insight Tags gezählt.
+    WAS DAS FÜR UNS HEISST: Pagesmith liefert KEINEN LinkedIn Insight Tag aus und kann die
+    Kennung an keine Browser-Regel übergeben.
+    DIE KEHRSEITE, UND SIE IST DIE TEURERE: Hat ein Kunde ein EIGENES Insight Tag mit
+    eigener Conversion-Regel, zählt der Anbieter ohne gemeinsame Kennung BEIDE Ereignisse
+    — dieselbe Conversion erscheint DOPPELT in zwei Aufschlüsselungen.
+    WAS DAS AUSDRÜCKLICH NICHT BERÜHRT: die eigene Adblocker-Verlustrate. Sie rechnet aus
+    der eigenen events-Tabelle (Server gegen Browser-Bestätigung) und hat mit der Zählung
+    des Anbieters nichts zu tun. Wer die beiden zusammenzieht, sucht einen Fehler in der
+    eigenen Kachel, der beim Anbieter sitzt.
+    DAS BERÜHRT (p) UND (d), OHNE SIE ZU ÄNDERN: (p) misst, dass das Feld für eine
+    mitgegebene Ereignis-Kennung EXISTIERT und angenommen wird — das bleibt gemessen.
+    Dieser Teil sagt, WAS AUSSERDEM nötig wäre, damit daraus eine Deduplizierung wird.
+
+(z) DIE VERSIONSANGABE DES ADAPTERS UND EINE ABGEKÜNDIGTE VERSION.
+    GEMESSEN AM REPO 2026-08-20 (read-only): Der Adapter setzt die Kopfzeile
+    "LinkedIn-Version" auf den Wert "202601". Der Wert ist ein FEST EINGETRAGENES LITERAL
+    in einer modul-lokalen Konstante — `LINKEDIN_VERSION` in
+    `src/lib/capi/linkedin-forward.ts`; er wird NICHT aus einer Umgebungsvariable
+    abgeleitet und nicht berechnet. Ein Test hält ihn fest: `linkedin-forward.test.ts`,
+    Fall "T1-c: Versions-Header und Autorisierung stehen in den Kopfzeilen".
+    DIE ANBIETER-ANGABE (GELESEN 2026-08-20, Abkündigungs-Hinweis im Kopf der
+    Dedup-Seite): Die MARKETING-VERSION 202508 ist am 2026-08-17 ABGESCHALTET worden.
+    DIE GEGENÜBERSTELLUNG, UND SIE IST DER GANZE INHALT DIESES TEILS: Der Adapter sendet
+    NICHT 202508. Er sendet 202601 — denselben Wert, mit dem die Messprotokolle vom
+    2026-08-17 und vom 2026-08-19 gefahren wurden und 201 bekamen.
+    WAS DARAUS NICHT FOLGT: dass 202601 dauerhaft trägt. Der Anbieter schaltet Versionen
+    ab; wann diese fällt, ist UNGELESEN. KEINE EMPFEHLUNG, ob und wie der Wert zu ändern
+    ist — der Kommentar an der Konstante nennt bereits den Preis einer Änderung (gegen
+    eine ungemessene Version zu senden).
+
+**WAS AUSDRÜCKLICH OFFEN BLEIBT (2026-08-20)** — dieser Block ist mit der Lesung vom
+2026-08-20 NEU; der LinkedIn-Abschnitt führte offene Punkte bis dahin innerhalb der
+einzelnen Teile. Er sammelt, was KEINEM Teil allein gehört:
+· OB DAS LIVE VERWENDETE ZUGANGSDATUM ABLÄUFT. Nach (v) stammt es aus dem
+  Campaign-Manager-Weg, und die Doku sagt für diesen Weg "läuft nicht ab" — GELESEN, nicht
+  belegt. BEOBACHTUNGSPUNKT: Die Direct-API-Seite im Campaign Manager zeigt "Status" und
+  "Data last received". Bleibt der Empfangs-Zeitstempel stehen oder kippt der Status, ist
+  es abgelaufen. FRÜHESTER AUSSAGEKRÄFTIGER ZEITPUNKT: Mitte Oktober 2026 — rund sechzig
+  Tage nach dem 2026-08-19, an dem das Ziel nachweislich sendete. KEINE HANDLUNG NÖTIG;
+  die Beobachtung läuft von selbst.
+
 ## Google (Google Ads Conversions · GA4)
 
 **HERKUNFT — ALLES IN DIESEM ABSCHNITT IST GELESEN, NICHTS IST GEMESSEN (2026-08-20):** Es

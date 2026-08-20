@@ -605,3 +605,96 @@ LinkedIn (B1).
   der Doku-Lesung vom 2026-08-10 stammen und GEMESSEN allein der Fehler-Rumpf bei ungültigem
   Geheimnis ist (Handmessung 2026-08-07). Berührt die Auflage im Offenen Punkt
   "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE" (Infrastruktur-Daten als Transit-Wert).
+
+## Fortschreibung der Matrix — 2026-08-20 (nachmittags), Ziel PINTEREST
+
+**DIE FORM, und sie ist hier zum ersten Mal angewandt:** Der Kopf dieser Datei verlangt,
+dass eine Fortschreibung DATIERT wird und der alte Stand ERKENNBAR bleibt; eine konkrete
+Bauform legt er nicht fest. GEWÄHLT IST DIESE: Die Zeilen im Abschnitt "## Die Matrix —
+Stand 2026-08-20" werden NICHT überschrieben. Jede Änderung steht HIER, nennt den BISHERIGEN
+Zustand und den NEUEN, und die Fundstelle der Antwort. GRUND: Ein überschriebener
+Matrix-Eintrag löscht den Befund, den er ersetzt — und genau dessen Zustand ("nie gestellt"
+gegen "nicht gefunden") ist der Gegenstand dieser Datei. Wer die Zeile überschreibt, macht
+aus einem Verlauf einen Zustand.
+
+**WAS SICH NICHT ÄNDERT:** Der KATALOG ist unberührt — keine Frage neu, keine gestrichen,
+keine umformuliert. Es sind 41 Fragen in 9 Gruppen wie am Vormittag.
+
+**HERKUNFT DIESER FORTSCHREIBUNG:** eine Abschnitts-Lesung der Anbieter-Dokumentation mit
+dem Browser-Werkzeug (dreizehn Seiten, 2026-08-20) plus Ablesungen des Owners an eigenen
+Konto-Oberflächen desselben Tages. **DIE ANTWORTEN STEHEN NICHT HIER, SONDERN IN
+docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)"** — diese Datei trägt keine
+Antworten auf Anbieter-Fragen.
+
+**NEUN ZELLEN WERDEN BEANTWORTET:**
+- **A1** pinterest: bisher NICHT GEFUNDEN → **BEANTWORTET** (gel, 2026-08-20) — zwei
+  alternative Wege; Fundstelle: Abschnitt "Pinterest (Conversions API)", Teil (a).
+- **A3** pinterest: bisher NICHT GEFUNDEN → **TEILS BEANTWORTET** (gel, 2026-08-20) — für
+  den OAuth-Weg belegt, für den Weg über die Werbe-Oberfläche weiterhin NICHT GEFUNDEN;
+  Fundstelle: Teile (b) und (r).
+- **A4** pinterest: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-08-20) — Teil (c).
+- **H2** pinterest: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-08-20) — Teil (d).
+- **H3** pinterest: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-08-20), das
+  Wiederholungsverhalten bleibt NICHT GEFUNDEN — Teil (e).
+- **I1** pinterest: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-08-20) — Teil (f).
+- **I2** pinterest: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-08-20) — Teil (g).
+- **I3** pinterest: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-08-20) — Teil (h).
+- **I4** pinterest: bisher NIE GESTELLT → **NICHT GEFUNDEN** (2026-08-20) — die Frage ist
+  jetzt GESTELLT und an dreizehn Seiten ohne Treffer geblieben; die abgesuchte Achse steht
+  in Teil (i). DER ZUSTANDSWECHSEL IST HIER DER EIGENTLICHE ERTRAG: aus einer Lücke im
+  DENKEN ist eine Lücke im WISSEN geworden.
+
+**FÜNF ZELLEN BEKOMMEN EIN INSTRUMENT, KEINE ANTWORT** — der Zustand ändert sich dadurch
+NICHT; was dazukommt, ist der Weg zu einer Messung:
+- **D6** (bisher NICHT GEFUNDEN) — Instrument in Teil (j).
+- **F2** (bisher NICHT GEFUNDEN) — Instrument in Teil (k).
+- **H4** (bisher NICHT GEFUNDEN) — Instrument in Teil (l).
+- **H5** (bisher NICHT GEFUNDEN) — Instrument in Teil (m), und dazu die Beobachtung in Teil
+  (t): ein taugliches Instrument EXISTIERT, ist aber am 2026-08-20 an einem LEEREN Prüfling
+  abgelesen worden und trägt deshalb kein Ergebnis.
+- **I5** (bisher NIE GESTELLT) — Instrument in Teil (n). Auch hier ist die Frage jetzt
+  GESTELLT und ohne Treffer geblieben.
+
+**ZWEI ZELLEN BLEIBEN STEHEN UND BEKOMMEN EINEN VERMERK — NICHT ÜBERSCHRIEBEN:**
+- **E1** pinterest ("BEANTWORTET (`em`, `hashed_maids` oder das Paar IP/UA, gel)") —
+  VERMERK 2026-08-20: Die Zelle beantwortet die MINDESTBEDINGUNG des Anbieters, NICHT die
+  gestellte Frage nach der vollständigen Liste. Die Merkmalsliste ist weit länger; sie steht
+  in docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", Teil (o). Der Wortlaut
+  der Zelle ist nicht falsch — er ist zu eng, und wer ihn als Liste liest, hält elf weitere
+  Merkmale für nicht vorhanden.
+- **E2** pinterest ("BEANTWORTET (roh, gel)") — VERMERK 2026-08-20: Dasselbe Muster. "Roh"
+  gilt für die ZWEI Merkmale, die der Adapter sendet. Bei diesem Anbieter ist die MEHRHEIT
+  der Identitäts-Merkmale SHA-256-gehasht; s. Teil (o).
+- **KEINE DER BEIDEN ABWEICHUNGEN BETRIFFT ETWAS, DAS DER ADAPTER HEUTE SENDET.**
+
+**VIER KONTROLLFRAGEN SIND BESTÄTIGT WORDEN** — B3, C1, D4, F3: deckungsgleich mit dem
+Stand vom Vormittag; die Gegenüberstellung steht in Teil (o).
+**IHRE GRENZE GEHÖRT DAZU UND STEHT AUCH DORT:** Es war KEINE Blindprüfung — der Adapter war
+in derselben Sitzung bereits gelesen.
+
+## Befunde am Verfahren (2026-08-20)
+
+**WAS DIESER ABSCHNITT IST:** Drei Korrekturen am AUFTRAGS-Zuschnitt für den nächsten
+Anbieter-Lauf — nicht am Inhalt. Sie stammen aus dem ersten Pilotlauf (Pinterest,
+2026-08-20). PROVENIENZ je Punkt einzeln genannt.
+
+- **DIE WERKZEUG-ABLAGE MUSS VOR DEM LAUF GEREGELT SEIN.** PROVENIENZ: Befund des
+  Pilotlaufs. Das Browser-Werkzeug legt beim ERSTEN Aufruf ungefragt ein Verzeichnis im
+  Arbeitsverzeichnis an (Seiten-Snapshots, Konsolen-Logs). Die Auflage "keine Datei
+  angelegt" war damit ohne Zutun des Ausführenden verletzt, bevor die erste Seite gelesen
+  war. ERLEDIGT am 2026-08-20 durch einen Eintrag in `.gitignore`.
+- **DIE BLIND-KLAUSEL WIRKT NUR, WENN DER ADAPTER IN DERSELBEN SITZUNG NOCH NICHT GELESEN
+  WURDE.** PROVENIENZ: Befund des Pilotlaufs. Der Auftrag verbot, die Adapter-Datei vor der
+  Lesung zu öffnen — sie war zwei Runden zuvor in derselben Sitzung bereits vollständig
+  gelesen. Die Klausel gehört an den SITZUNGSANFANG oder in eine EIGENE Sitzung. Sonst
+  behauptet der Bericht eine Unabhängigkeit, die es nicht gibt.
+- **"BEI MESSUNG NÖTIG KEINE INHALTLICHE ANTWORT" WAR ZU GROB UND WIRD GEÄNDERT.**
+  PROVENIENZ: ENTSCHEIDUNG DES ARCHITEKTEN (2026-08-20). NEUE FASSUNG: Eine Doku-Aussage
+  wird ABGELEGT — mit dem Vermerk, dass sie die Messung NICHT ersetzt. DIE TRENNLINIE
+  VERLÄUFT ZWISCHEN ABLEGEN UND ALS-ERLEDIGT-ZÄHLEN, nicht zwischen Aufschreiben und
+  Nicht-Aufschreiben. BELEG: Die alte Fassung hat im Pilotlauf ZWEIMAL eine zitierfähige
+  Angabe verworfen — bei F2 und bei H4; beide Stellen sind in docs/ziel-befunde.md,
+  Abschnitt "Pinterest (Conversions API)", Teile (k) und (l) als vorhanden, aber nicht
+  wiedergegeben vermerkt.
+  DIE ALTE FASSUNG BLEIBT LESBAR: Für die Lesung vom 2026-08-20 galt sie noch, und die
+  beiden Auslassungen sind ihr Ergebnis, kein Versäumnis des Ausführenden.

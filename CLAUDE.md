@@ -943,6 +943,48 @@ kaputtgeht.
   dieser Entscheidung. Das macht die Schicht NICHT zuschneidbar: die offenen Punkte des
   Google-Wegs (Freischaltung, Entwickler-Token, Nutzlast-Felder, Advertiser gegen Data
   Partner) stehen unverändert offen und stehen in docs/ziel-befunde.md.
+  DIE VORFRAGE ZUM UMFANG DER SCHICHT (Owner, 2026-08-20) — OFFEN, UND SIE WIRD HIER NICHT
+  BEANTWORTET: Erzeugen die KUNDEN ihr Zugangsdatum selbst in ihrem eigenen Werbekonto —
+  oder tut der Betreiber es für sie? PROVENIENZ: OWNER-VORFRAGE (2026-08-20),
+  unbeantwortet. KEINE Messung.
+  WARUM SIE VOR DEN GOOGLE-FRAGEN STEHT, und das ist ihr ganzer Punkt: Jene klären, ob
+  Google ANSPRUCHSBERECHTIGTER der Schicht ist. DIESE klärt, ob im Negativfall überhaupt
+  noch einer übrig bleibt. Google BRAUCHT die Schicht — ohne sie geht dort nichts.
+  LinkedIn dagegen SENDET BEREITS; dort löste sie nur die ERNEUERUNG eines Zugangsdatums,
+  das nach rund sechzig Tagen abläuft.
+  DIE ZWEI ZWEIGE, je mit ihrer Folge:
+  · BETREIBER, EIN KONTO: Eine Erneuerung alle zwei Monate wäre eine Kalendererinnerung,
+    kein Bau.
+  · KUNDEN MIT EIGENEN KONTEN: Eine Kalendererinnerung JE KUNDE ist unzumutbar — dann
+    trägt LinkedIn die Schicht mit.
+  EINE UNGEPRÜFTE ABLEITUNG, AUSDRÜCKLICH KEIN BEFUND — sie ist der eigentliche Grund
+  dieses Eintrags: Der Zweig "Betreiber, ein Konto" könnte gar keine Wahl sein. Ein
+  Zugangsdatum autorisiert den Zugriff auf ein BESTIMMTES Werbekonto, und die
+  Conversion-Regel gehört dem Konto des KUNDEN. Trifft das zu, hiesse "Betreiber, ein
+  Konto" nicht "ein Zugangsdatum für alles", sondern: die Betreiber-Identität sitzt als
+  NUTZER in JEDEM Kundenkonto — strukturell DIESELBE Vielmandanten-Gestalt, die die
+  Owner-Entscheidung vom 2026-08-20 (Block darüber) für den Google-Weg ausdrücklich
+  verworfen hat.
+  FOLGE, WENN ES ZUTRIFFT: Der Zweig trägt nur, solange der Betreiber der einzige
+  Werbetreibende ist — also heute. Mit dem ersten echten Kunden fällt er weg, und LinkedIn
+  trägt die Schicht mit, UNABHÄNGIG davon, wie die Google-Frage ausgeht.
+  DIE PRÜFUNG STEHT AUS — GEPRÜFT AM VORHANDENEN MATERIAL AM 2026-08-20, MIT NEGATIVEM
+  ERGEBNIS: docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions API)", trägt KEINE
+  Angabe darüber, ob die Conversion-Regel-Kennung an ein Werbekonto gebunden ist und ob
+  das Zugangsdatum je Werbekonto gilt. Am nächsten kommt der Achse der Teil (c)
+  DESSELBEN Abschnitts: eine nicht auflösbare Regel-Kennung ergibt 403 mit dem Rumpf
+  {"message":"No ad accounts found","status":403}, und die Folgerung dort nennt die
+  Meldung MEHRDEUTIG, "weil derselbe Status auch bei nicht vergebenen Berechtigungen
+  auftritt". DAS BERÜHRT DIE ACHSE UND ENTSCHEIDET SIE NICHT: Die Ableitung ist damit
+  WEDER BELEGT NOCH WIDERLEGT. Wer (c) als Stütze zitiert, macht aus einer Mehrdeutigkeit
+  einen Befund.
+  DER ZUSATZ ZUM ZWEIG "BETREIBER, EIN KONTO", falls er doch trägt: Eine
+  Kalendererinnerung ist nur so gut, wie ihr AUSBLEIBEN auffällt. Läuft das Zugangsdatum
+  ab, hört das Weiterleiten auf, ohne dass etwas rot wird — s. Ursache (4) am Eintrag "EIN
+  ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN". "KEIN BAU" HEISST NICHT
+  "FOLGENLOS".
+  WAS HIER NICHT ENTSCHIEDEN WIRD: welcher Zweig gilt, ob die Schicht gebaut wird und in
+  welchem Umfang. KEINE EMPFEHLUNG.
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

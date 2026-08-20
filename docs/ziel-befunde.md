@@ -467,6 +467,41 @@ DANEBEN und schreibt ihn nicht um.
     die Anzeige tatsächlich braucht und ob sie in Stufen oder stetig nachzieht, ist
     unerhoben.
 
+### Beobachtung 2026-08-20 am Token-Generator der Anbieter-Oberfläche — der Teil (u)
+
+**HERKUNFT (2026-08-20):** KEIN Lauf gegen die Schnittstelle und keine Ablesung einer
+Anzeige. Der Owner hat den Token-Generator im Entwicklerportal des Anbieters aufgerufen,
+und zwar für die EIGENE Anwendung dieses Projekts, und dort abgelesen, welche
+Zugangs-Formen wählbar sind. Deshalb steht das hier als Beobachtung und nicht als
+Messprotokoll.
+
+DIE BUCHSTABENREIHE LÄUFT FORT: hier (u). (a) bis (t) bleiben unverändert vergeben.
+
+(u) DER ZWEIBEINIGE WEG IST AN DER EIGENEN ANWENDUNG NICHT WÄHLBAR.
+    BEOBACHTET 2026-08-20 (Owner, eigene App-Oberfläche des Anbieters, Token-Generator für
+    die Anwendung DIESES Projekts): Die Form "Client credential (2-legged)" ist AUSGEGRAUT
+    und nicht wählbar; wählbar ist ausschliesslich "Member authorization code (3-legged)".
+    Der Bereich rw_conversions steht dort zur Auswahl.
+    DIE DREI STUFEN GEHÖREN AUSEINANDERGEHALTEN, sonst wird dieser Teil beim Zitieren
+    entweder zu stark oder zu schwach:
+    · GELESEN wäre eine Aussage in fremder Anbieter-Doku — allgemein, über irgendeine
+      Anwendung.
+    · BEOBACHTET ist dies hier — die Oberfläche zeigt die Sperre für UNSERE Anwendung.
+      Das ist der STÄRKERE Beleg, weil er nicht mehr auf die Übertragung einer allgemeinen
+      Aussage auf unseren Fall angewiesen ist.
+    · GEMESSEN wäre erst ein Aufruf mit grant_type=client_credentials gegen den
+      Token-Endpunkt, der die Ablehnung zeigt. DER IST NICHT GEFAHREN.
+    DIE GRENZE, DIE MITMUSS: Eine ausgegraute Schaltfläche ist eine Aussage der
+    OBERFLÄCHE über die Schnittstelle — nicht die Schnittstelle selbst. Sie kann irren,
+    veralten oder an einer Voraussetzung hängen, die anderswo gesetzt wird; nichts davon
+    ist hier geprüft.
+    WOFÜR ER ZÄHLT: Er stützt den Block vom 2026-08-20 im Offenen Punkt "EIN OAUTH-ZUGANG
+    PASST NICHT IN DIE SKALAR-SPALTE DER GEHEIMNIS-TABELLE" (CLAUDE.md, "## Offene
+    Punkte"). Dessen Befund wird hier NICHT wiederholt — er steht dort, und zwei Fassungen
+    liefen auseinander.
+    WAS HIER BEWUSST NICHT STEHT: die Client-ID der Anwendung. Sie ist kein Geheimnis und
+    gehört trotzdem nicht in ein Dokument.
+
 ## Google (Google Ads Conversions · GA4)
 
 **HERKUNFT — ALLES IN DIESEM ABSCHNITT IST GELESEN, NICHTS IST GEMESSEN (2026-08-20):** Es

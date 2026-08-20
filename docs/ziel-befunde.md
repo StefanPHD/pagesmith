@@ -66,6 +66,7 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
 
 - ## LinkedIn (Conversions API)
 - ## Google (Google Ads Conversions · GA4)
+- ## Pinterest (Conversions API)
 
 ## LinkedIn (Conversions API)
 
@@ -737,3 +738,358 @@ DIE ZAHL "VIER" IM KOPF DIESES BLOCKS WIRD NICHT ÜBERSCHRIEBEN — sie ist als 
 den Stand bei seiner Niederschrift richtig; mit diesem fünften sind es FÜNF. Dieselbe
 Bauform wie an den Zähl-Angaben in CLAUDE.md: eine Zahl, die einen Stand beschreibt, wird
 nicht rückwirkend angepasst. Wer sie als heutige Liste liest, zählt falsch.
+
+## Pinterest (Conversions API)
+
+**DIE BUCHSTABEN BEGINNEN HIER BEI (a)** — die Konvention im Kopf dieser Datei bindet die
+Eindeutigkeit an den ZIEL-ABSCHNITT. Was das für Verweise von aussen bedeutet, steht im
+Kopf unter "EIN VERWEIS VON AUSSEN NENNT ABSCHNITT UND BUCHSTABEN — NIE DEN BUCHSTABEN
+ALLEIN".
+
+### Abschnitts-Lesung 2026-08-20 der Anbieter-Dokumentation — die Teile (a) bis (r)
+
+**HERKUNFT (2026-08-20):** Eine ABSCHNITTS-LESUNG der Anbieter-Dokumentation mit dem
+Browser-Werkzeug, nach der Regel "ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN"
+(docs/immer-beachten.md). GELESEN wurden DREIZEHN Seiten — der Abschnitt "Conversions
+nachverfolgen" VOLLSTÄNDIG plus benannte Nachbarn; die Liste steht am Ende dieses
+Abschnitts unter "Der gelesene Umfang". KEIN Aufruf gegen die Schnittstelle, KEINE
+Anmeldung, KEINE Eingabe auf einer fremden Seite. Wo unten BEOBACHTET steht, hat der Owner
+am selben Tag eine eigene Konto-Oberfläche abgelesen.
+**KEINE SEITE HAT VERSUCHT, DEN LESENDEN ANZUWEISEN** — geprüft und ausdrücklich vermerkt.
+
+### Die Antworten aus der Doku-Lesung — Teile (a) bis (i)
+
+(a) DER ZUGANGSWEG — ES SIND ZWEI, UND SIE SIND ALTERNATIV (Katalog-Frage A1).
+    GELESEN 2026-08-20,
+    https://developers.pinterest.com/docs/track-conversions/track-conversions-in-the-api/,
+    Abschnitte "Before you start sending conversion events" und "Generate a conversion
+    token": ein CONVERSION-TOKEN aus der Werbe-Oberfläche — "Go to Ads Manager, and select
+    Ad Account Overview > Conversions > Conversions API > Set up API. Select Conversion
+    access token, and click Generate new token. Copy your newly generated token, which is
+    displayed with your ad account ID." — ODER ein OAUTH-TOKEN mit mindestens `ads:write`.
+    Der Anbieter formuliert es als Entweder-oder: "Conversion token if you only want to
+    access the Conversions API endpoint or OAuth token with at least `ads:write` scopes".
+
+(b) DIE FRIST — NUR FÜR EINEN DER BEIDEN WEGE BELEGT (Katalog-Frage A3).
+    GELESEN 2026-08-20,
+    https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/,
+    Abschnitte "Step 3: Get the access token", "Refresh a token", "Replace an invalid
+    token", "Token security considerations: Github secret scanner program".
+    OAUTH-WEG: Access-Token `expires_in: 2592000` (30 Tage) — "Refresh your access token
+    before it expires-–within 30 days (2592000 seconds) after it is issued". Refresh-Token:
+    "Pinterest only supports the continuous refresh token (60-day expiration, refreshable
+    indefinitely) and no longer supports the legacy refresh token (365-day expiration, hard
+    limit)."
+    UNABHÄNGIG VON DER FRIST: "Tokens may become invalid for a number of reasons, and
+    Pinterest does not always notify you" — genannt sind ein Passwort-/Namenswechsel des
+    Kontos und der GitHub-Secret-Scanner ("The exposed token's access is revoked within 24
+    hours").
+    CONVERSION-TOKEN-WEG: NICHT GEFUNDEN. Auf keiner der dreizehn Seiten steht eine
+    Lebensdauer, ein Ablauf oder eine Erneuerung dafür. ABGESUCHTE ACHSE: die
+    Conversions-Seite, die Auth-Seite, die Rate-Limit-Seite, die FAQ — Begriffe `expire`,
+    `expires_in`, `conversion token`, `refresh`. NICHT-TREFFER auf DIESER Achse, KEIN
+    Beweis der Abwesenheit.
+
+(c) DER ERNEUERUNGSWEG — UND EIN ZWEIBEINIGER FLUSS EXISTIERT (Katalog-Frage A4).
+    GELESEN 2026-08-20, dieselbe Auth-Seite, Abschnitte "Refresh a token" und "Step 3":
+    `POST https://api.pinterest.com/v5/oauth/token` mit `grant_type=refresh_token`,
+    HTTP-Basic aus Client-Kennung und Client-Geheimnis; die Antwort trägt zusätzlich
+    `refresh_token_expires_at`. "Repeat these steps before 60 days in order to keep the
+    continuous refresh token valid. Once the refresh token has expired, you will need to
+    explicitly request access again by repeating the Authorization Code flow."
+    EIN FREIGABEVERFAHREN FÜR DIE ERNEUERUNG WIRD NICHT GENANNT.
+    UND: Der Anbieter kennt einen CLIENT-CREDENTIALS-GRANT (`grant_type=client_credentials`,
+    Token-Präfix `pinc`, `expires_in: 2592000`), in der Beispielantwort OHNE Refresh-Token.
+    ABGRENZUNG, DIE MITMUSS: Das ist ein Befund über DIESEN Anbieter. Er sagt NICHTS über
+    einen anderen — beim vierten Ziel ist derselbe Weg für die Marketing-Schnittstellen
+    ausgeschlossen (Abschnitt "LinkedIn (Conversions API)", Teile (u) und (v)).
+
+(d) DIE DEDUPLIZIERUNG — ZWEI FELDER IN BEIDEN QUELLEN, KEINE ZWEITE REGEL (Katalog-Frage
+    H2).
+    GELESEN 2026-08-20, Conversions-Seite, Abschnitte "Use event IDs effectively",
+    "Prevent event duplication", "Format server event parameters"; sowie
+    https://developers.pinterest.com/docs/track-conversions/understand-conversions-and-how-to-track-them/,
+    Abschnitte "How Conversions API and Pinterest Tag work" und "Preventing duplication".
+    "For deduplication, the `eventID` from a browser or app event must match the `event_id`
+    in the corresponding server event." · "Pass the `event_id` and `event_name` parameter in
+    all the sources you use, making sure that the `event_id` is identical for each redundant
+    event." · "In the case of redundant events, Pinterest retains the first event captured
+    and removes duplicates within 48 hours."
+    `event_id` ist als Required geführt und ausdrücklich "used also for deduplicating events
+    ingested through the conversion API and Pinterest tracking".
+    WAS DIESER ANBIETER NICHT VERLANGT: eine eigene Conversion-Regel je Datenquelle — "You
+    can use either ingestion method independently of the other; however, we recommend that
+    you use both". DAS IST DER UNTERSCHIED ZUM VIERTEN ZIEL, wo genau das verlangt wird
+    (Abschnitt "LinkedIn (Conversions API)", Teil (y)).
+
+(e) DIE MENGENBESCHRÄNKUNG — UND DER TRÄGER DES ZUGANGSDATUMS ENTSCHEIDET MIT
+    (Katalog-Frage H3).
+    GELESEN 2026-08-20, https://developers.pinterest.com/docs/reference/rate-limits/,
+    Abschnitte "Rate limits", "Rate limit categories", "Manage rate limits".
+    Universell: "Trial access: 1000 requests per day for all API requests" · "Standard
+    access: 100 requests per second per user per app for all API requests".
+    Kategorie `ads_conversions` — "Sending batches of conversion events for an ad account.
+    This category applies to requests authenticated with a token acquired through the
+    standard OAuth flow." Trial: 1 000 Anfragen pro Tag je Werbekonto je App. Standard:
+    120 000 Anfragen pro Minute je Werbekonto je App.
+    DER TRAGENDE SATZ: "It is recommended that you use the conversion access token, which
+    enables you to send unlimited conversion-tracking events."
+    Testanfragen: "Test requests have a rate limit of 10 per app per second."
+    Beobachtbarkeit: die Kopfzeilen `x-ratelimit-limit`, `x-ratelimit-remaining`,
+    `x-ratelimit-reset`. Änderungen per Support-Ticket. "All rate limits are subject to
+    change without notice."
+    ZUM WIEDERHOLUNGSVERHALTEN: NICHT GEFUNDEN — kein Statuscode für Überschreitung, keine
+    Wartezeit, kein Verfahren. ABGESUCHTE ACHSE: Rate-Limit-Seite vollständig,
+    Conversions-Seite, FAQ — Begriffe `429`, `retry`, `back off`, `too many`.
+
+(f) DIE PRODUKT-FREIGABE — ZWEISTUFIG, MIT ECHTER PRÜFUNG (Katalog-Frage I1).
+    GELESEN 2026-08-20, https://developers.pinterest.com/docs/getting-started/connect-app/,
+    Abschnitt "Register your app details to get your app ID and secret key": "Submit your
+    request for trial access. Application requests are reviewed each business day. As soon
+    as your app has been reviewed you will receive an email notification letting you know if
+    your app has been approved or denied access."
+    Danach optional die Höherstufung — https://developers.pinterest.com/docs/key-concepts/access-tiers/,
+    Abschnitt "Upgrade your app to Standard access": "Standard upgrade requests are reviewed
+    regularly."
+    ZUSÄTZLICHE VORBEDINGUNG der Conversions API (Conversions-Seite): ein Pinterest-
+    Werbekonto — "The Conversions API endpoint requires a unique identifier associated with
+    the ad account that is sending events."
+
+(g) DIE VERTRAGS-BEDINGUNGEN — MINDESTENS DREI BENANNTE DOKUMENTE (Katalog-Frage I2).
+    GELESEN 2026-08-20. Bei der App-Anlage (connect-app): "Go to My apps and click through
+    to accept our Developer Terms of Service." Für die Freigabe (access-tiers, "Why requests
+    may get denied"): "All applications must comply with our Developer Guidelines and
+    Developer and API Terms of Service."
+    Für Werbedaten ein eigener Vertrag —
+    https://developers.pinterest.com/docs/track-conversions/use-limited-data-processing-flag/:
+    die "Pinterest Advertising Services Agreement" mit den "U.S. State-Specific Data Terms
+    attached as Exhibit C". Dort auch die Pflichtenzuweisung: "Advertisers are responsible
+    for complying with user opt-outs, as well as identifying the user's state of residency
+    when implementing the Limited Data Processing flag."
+    Und die Conversions API selbst nennt als Grenze (understand-conversions): "Requires
+    backend integration and data privacy compliance, such as hashing and user consent."
+
+(h) DIE FREISCHALTUNG — DIE SCHNITTSTELLE SELBST IST NICHT ALLOWLIST-PFLICHTIG, EIN
+    NACHBAR-MERKMAL SCHON (Katalog-Frage I3).
+    GELESEN 2026-08-20, access-tiers, Abschnitte "access tiers table" und "Upgrade your app
+    to Standard access": Die Stufen-Tabelle führt kein Conversions-Merkmal als gesperrt; der
+    Unterschied für unseren Fall sind die Grenzwerte. Der Antragsweg verlangt "a video
+    recording of your app completing an action using the Pinterest API. We will review to
+    verify that you are sending users through the OAuth flow appropriately and not storing
+    any sensitive information" — und ausdrücklich auch für Einzelnutzer: "If you are the
+    only intended user of the Pinterest API, we will still require a video recording of the
+    OAuth flow." Ablehnungsgründe sind einzeln aufgeführt.
+    DAS ALLOWLIST-GESPERRTE NACHBAR-MERKMAL: Die Endpunkte zum Entfernen von Nutzern aus
+    Conversion-Daten sind mit "Geschlossene Beta" ausgezeichnet —
+    https://developers.pinterest.com/docs/track-conversions/remove-users-from-events/.
+
+(i) DIE ROLLE DER ANMELDENDEN IDENTITÄT — NICHT GEFUNDEN (Katalog-Frage I4).
+    Was es gibt, ist eine SCOPE-Ebene, keine Rollen-Ebene: `ads:read` / `ads:write` und ein
+    eigener Scope `biz_access` ("See all business access data") — GELESEN 2026-08-20,
+    Auth-Seite, Abschnitt "Available scopes". Die Voraussetzung wird als ZUGRIFF formuliert,
+    nicht als Rolle: "for any ad accounts that you have access to"
+    (https://developers.pinterest.com/docs/track-conversions/get-event-quality-score/). Die
+    FAQ erklärt Fehlschläge ebenfalls über Scopes: "Each API endpoint has associated scopes,
+    which define its required user permissions."
+    ABGESUCHTE ACHSE: die dreizehn gelesenen Seiten, Begriffe `role`, `Role`, `admin`,
+    `Admin`, `business access`, `Business Access`, `permission`, `owner`. NICHT-TREFFER auf
+    DIESER Achse — die Rollen dürften in der Business-Hilfe ausserhalb der
+    Entwicklerdokumentation stehen, und dorthin ist nicht gegangen worden.
+
+### Fünf Fragen, die eine MESSUNG verlangen — hier steht NUR das Instrument
+
+**WARUM NUR DAS INSTRUMENT:** Diese fünf tragen im Fragenkatalog "Messung nötig". Eine
+GELESENE Antwort darauf sieht wie ein Befund aus und ist keiner. Wo die Doku etwas sagt,
+ist es hier bewusst NICHT wiedergegeben — der Auftrag dieser Lesung hat das ausdrücklich
+verlangt. (Dass diese Trennlinie zu grob gezogen war, ist eine ARCHITEKTEN-ENTSCHEIDUNG vom
+2026-08-20 und in docs/ziel-fragenkatalog.md unter "Befunde am Verfahren" festgehalten; für
+DIESE Lesung galt sie noch.)
+
+(j) INSTRUMENT ZU D6 (prüft die Schnittstelle die BEDEUTUNG der Werte?): ein Aufruf gegen
+    `POST /v5/ad_accounts/{id}/events` mit einem erfundenen Währungscode bzw. einem
+    Grenzwert, gefahren im Testmodus, und die Ablesung der Rumpf-Felder `status`,
+    `error_message`, `warning_message`. Dazu die Test-Ereignis-Ansicht im Werbekonto.
+
+(k) INSTRUMENT ZU F2 (Registrierungspflicht und Deckel je Konto): die Endpunkte unter
+    `POST /v5/ad_accounts/{id}/advertiser_defined_events` gegen das EIGENE Konto, plus die
+    Ansicht der definierten Ereignisse im Werbekonto. Fundstelle der Seite:
+    https://developers.pinterest.com/docs/track-conversions/define-your-own-event-types/.
+    DIE SEITE TRÄGT EINE AUSSAGE ZU DIESER FRAGE; sie ist hier auftragsgemäss nicht
+    wiedergegeben.
+
+(l) INSTRUMENT ZU H4 (mehrere Ereignisse je Aufruf): ein Aufruf mit mehr als einem Eintrag
+    im `data`-Array gegen den Testmodus und die Ablesung von `num_events_received`,
+    `num_events_processed` und `events[]`. AUCH HIER trägt die Doku eine Aussage, die hier
+    nicht wiedergegeben ist.
+
+(m) INSTRUMENT ZU H5 (taugliches Live-Test-Instrument): drei Kandidaten, keiner geprüft —
+    (1) die Test-Ereignis-Ansicht im Werbekonto, gespeist über den Testmodus-Parameter; die
+    Doku nennt dafür eine Sandbox: "Test event data is sent to a sandbox environment…
+    test data is not processed for reporting or optimization." (2) die
+    Conversions-Health-Ansicht im Werbekonto. (3) der API-Weg
+    `GET /v5/ad_accounts/{id}/conversion_eqs` (Event Quality Score; braucht ein OAuth-Token
+    mit `ads:read`, Parameter `lookback_period` `1d` oder `14d`, Filter
+    `ingestion_source=CONVERSIONS_API`).
+    ZU (2) IST AM 2026-08-20 EINE BEOBACHTUNG DAZUGEKOMMEN — s. unten (r).
+
+(n) INSTRUMENT ZU I5 (Freigabe der ausliefernden Domain): die Konto-Oberfläche
+    (Conversion Tag Manager, laut Doku hinter einer Anmeldeschranke) und, für die Wirkung,
+    eine der Anzeigen aus (m).
+    AUF KEINER DER DREIZEHN SEITEN IST EINE DOMAIN-ALLOWLIST FÜR DIESEN ANBIETER GEFUNDEN
+    WORDEN. ABGESUCHTE ACHSE: die dreizehn Seiten, Begriffe `traffic permission`,
+    `allowlist`, `allowed domain`, `domain`. NICHT-TREFFER auf DIESER Achse, kein
+    Abwesenheitsbeweis.
+
+### Die Gegenüberstellung mit dem bestehenden Matrix-Stand — Teil (o)
+
+(o) SECHS KONTROLLFRAGEN, VIER DECKUNGSGLEICH, ZWEI ABWEICHUNGEN.
+    **DIE GRENZE ZUERST, WEIL SIE DAS ERGEBNIS EINFÄRBT: DAS IST KEINE BLINDPRÜFUNG.** Die
+    Auflage lautete, `src/lib/capi/pinterest-forward.ts` erst NACH der Lesung zu öffnen —
+    die Datei war in DERSELBEN Sitzung aber bereits zwei Runden zuvor vollständig gelesen
+    worden. Ihre Kommentare standen im Kontext, als die Suche begann. Was folgt, ist eine
+    WIEDERAUFFINDUNGS-Prüfung, keine unabhängige.
+    · B3 (Träger des Geheimnisses) — Matrix: Bearer, gel. Doku: "--header 'Authorization:
+      Bearer pina_ABCD1234...'", Token-Typ `bearer`. DECKUNGSGLEICH.
+    · C1 (Form der Kennung) — Matrix: `ad_account_id`, Stellenzahl UNGEPRÜFT. Doku: Kennung
+      im Pfad, KEINE Formatregel; die Beispiele sind untereinander uneinheitlich (zwölf und
+      achtzehn Stellen). DECKUNGSGLEICH, und die Uneinheitlichkeit stützt das "ungeprüft".
+    · D4 (Typ des Werts) — Matrix: Zeichenkette, gel. Doku: "Accepted as a string in the
+      request and parsed into a double." DECKUNGSGLEICH.
+    · F3 (Standard-Namen) — Matrix: zwei Namen weichen ab. Doku: `checkout` = "Track people
+      who complete transactions", `signup` = "Track people who sign up for your product or
+      service"; die übrigen sechs Namen unserer Tabelle stehen unverändert im Enum.
+      DECKUNGSGLEICH.
+    · E1 (Liste der Identitäts-Merkmale) — **ABWEICHUNG (UNVOLLSTÄNDIGKEIT).** Die
+      Mindestregel deckt sich wörtlich: `user_data` "must include at least one of the
+      following: `em` / `hashed_maids` / Pairing of `client_ip_address` and
+      `client_user_agent`". Die MERKMALSLISTE ist aber weit länger: `external_id`,
+      `click_id`, `client_ip_address`, `client_user_agent`, `country`, `ct`, `db`, `em`,
+      `ge`, `ln`, `ph`, `st`, `zp`, `hashed_maids`, `partner_id`. UNSERE ZELLE BEANTWORTET
+      DIE MINDESTBEDINGUNG, NICHT DIE GESTELLTE FRAGE.
+    · E2 (roh oder gehasht) — **ABWEICHUNG (UNVOLLSTÄNDIGKEIT).** Roh sind IP ("Valid IPv4
+      or IPv6. No pure zero (0.0.0.0) addresses.") und User-Agent. Die MEHRHEIT der übrigen
+      Merkmale ist SHA-256: `em`, `ph`, `ct`, `db`, `ge`, `ln`, `st`, `zp`, `country`,
+      `external_id`, `hashed_maids`. Unsere Zelle gilt für die zwei Merkmale, die der
+      Adapter sendet — als Antwort auf "mit welchem Verfahren?" ist sie unvollständig.
+    KEINE DER BEIDEN ABWEICHUNGEN BETRIFFT ETWAS, DAS DER ADAPTER HEUTE SENDET.
+
+### Zwei Beobachtungen, die keine Katalog-Frage beantworten — Teil (p)
+
+(p) ZWEI SPANNUNGEN IN DER DOKU SELBST. GELESEN 2026-08-20. Ohne Bewertung.
+    (1) DER TESTMODUS-PARAMETER TRÄGT ZWEI NAMEN. Die Conversions-Seite: "Send an event
+        with the query parameter `test` set to `true`", Beispiel `…/events?test=true`. Die
+        Rate-Limit-Seite für denselben Endpunkt: "You can make test requests to the POST
+        Send conversions endpoint by setting the `is_test` parameter to `TRUE`."
+    (2) DER FREI GEWÄHLTE EREIGNISNAME IST IN DERSELBEN SEITE ERLAUBT UND ABGEWIESEN. Die
+        Ereignis-Tabelle führt "Custom event that you name" als zulässig; die
+        Beispiel-Antwort auf derselben Seite zeigt einen frei gewählten Namen als
+        abgewiesen: `"status": "failed", "error_message": "Invalid event_name: subscription.
+        Use a supported conversion event_name (for example subscribe, checkout)."`
+
+### Die zweite Gegenüberstellung: Doku gegen den gebauten Adapter — Teil (q)
+
+(q) DER ADAPTER IST VON DER HEUTIGEN DOKU GEDECKT; EINE ANGABE IST PRÄZISER GEWORDEN, EINE
+    LÜCKE BLEIBT.
+    **AUSDRÜCKLICH ALS ZWEITE GEGENÜBERSTELLUNG GEKENNZEICHNET**, mit demselben Vorbehalt
+    wie in (o): die Datei war bereits gelesen. Nichts am Code geändert.
+    GEDECKT: `action_source: "web"` (im Enum) · `partner_name: "direct"` (wörtlich: "For
+    direct integration, use value `direct`") · der Wert als Zeichenkette · der Riegel
+    "beide oder keiner" für IP und User-Agent (durch die Mindestregel an `user_data`) ·
+    alle acht Zuordnungen der Übersetzungstabelle · der Testmodus als Query-Parameter
+    (mit dem Vorbehalt aus (p)(1)).
+    PRÄZISER GEWORDEN: Der Kommentar an `custom_data` in
+    `src/lib/capi/pinterest-forward.ts` sagt, ein NEGATIVER Wert gehe durch und die Doku
+    rate davon ab, ohne es zu verbieten. Die heutige Fassung rät weiterhin nur ab —
+    "Should not contain unusually high values or contain invalid values such as negative
+    number or zero." —, nennt aber ZWEI weitere Fälle, die der Kommentar nicht führt: NULL
+    und UNGEWÖHNLICH HOHE Werte.
+    DIE LÜCKE, UND SIE IST EINE LÜCKE DES LESENS, NICHT DES CODES: Das Parameter-Verzeichnis
+    sagt ausdrücklich, dass es die Pflichtfelder NICHT benennt — "These parameter tables do
+    not indicate whether parameters are required for the API request to be successful. See
+    POST Send conversions to find out which parameters are required." DIESE
+    ENDPUNKT-REFERENZ IST NICHT GEÖFFNET WORDEN.
+
+### Beobachtungen an der eigenen Konto-Oberfläche (2026-08-20) — die Teile (r) bis (t)
+
+**HERKUNFT:** KEIN Aufruf gegen die Schnittstelle und keine Doku-Lesung. Der Owner hat am
+2026-08-20 die eigenen Oberflächen des Anbieters abgelesen. Deshalb steht das hier als
+eigene Unterüberschrift und nicht als Teil der Doku-Lesung.
+
+(r) ZWEI ZUGANGSDATEN FÜR DENSELBEN ENDPUNKT — UND DAS PRÄFIX TRENNT SIE NICHT.
+    Der Anbieter kennt das Conversion-Token aus der Werbe-Oberfläche (s. (a)) und das
+    Zugangsdatum aus dem OAuth-Fluss. BEOBACHTET 2026-08-20: BEIDE tragen das Präfix
+    `pina_`. Es bezeichnet die ART des Werts, NICHT seine HERKUNFT.
+    DER ARCHITEKT HAT DAS PRÄFIX ALS UNTERSCHEIDUNGSTEST AUSGEGEBEN — DAS WAR FALSCH, und
+    es steht hier eigens, damit es niemand ein zweites Mal versucht. EIN TAUGLICHER TEST IST
+    NICHT BEKANNT.
+    WAS GILT: Die 30-Tage-Frist ist für den OAUTH-Weg belegt (s. (b), GELESEN). Der Owner
+    hat den Weg über die WERBE-Oberfläche genommen (BEOBACHTET 2026-08-20, Ansicht
+    "Conversion API einrichten"). OB DIESES Zugangsdatum abläuft, steht auf keiner der
+    dreizehn Seiten und auf der Oberfläche nicht — NICHT-TREFFER, KEINE ENTWARNUNG.
+
+(s) DAS ZUGANGSDATUM AUS DER WERBE-OBERFLÄCHE GILT ÜBER MEHRERE WERBEKONTEN.
+    BEOBACHTET 2026-08-20, Wortlaut der Oberfläche: es "kann für mehrere Anzeigenkonten
+    unter einer Nutzer-ID verwendet werden".
+    WARUM DAS EIGENS DASTEHT: Es berührt die VIELMANDANTEN-Achse, die bei Google und an der
+    Autorisierungsschicht geführt wird (CLAUDE.md, "## Offene Punkte", Eintrag "EIN
+    OAUTH-ZUGANG PASST NICHT IN DIE SKALAR-SPALTE DER GEHEIMNIS-TABELLE").
+    KEINE BEWERTUNG UND KEINE ÜBERTRAGUNG AUF EIN ANDERES ZIEL.
+
+(t) DIE QUALITÄTS-ANSICHT IST EIN INSTRUMENT — UND HEUTE KEIN MESSERGEBNIS.
+    BEOBACHTET 2026-08-20: Die Ansicht im Werbekonto führt je Ereignis und je Parameter eine
+    Abdeckung; für Checkout und Page Visit steht durchgehend 0 %, mit "nicht eingerichtet"
+    bei E-Mail, External ID, Product ID und weiteren.
+    DIE ZAHLEN SAGEN HEUTE NICHTS ÜBER UNSEREN ADAPTER, und das ist der tragende Satz: Der
+    Owner hatte Pinterest in der App NICHT eingerichtet (OWNER-ANGABE, 2026-08-20). EIN
+    LEERER PRÜFLING UND EIN SCHLECHTES ERGEBNIS SEHEN AN DIESER ANZEIGE IDENTISCH AUS — s.
+    die Regel "BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS RICHTIGE
+    GEMESSEN WIRD" in docs/immer-beachten.md.
+    WAS SIE BEANTWORTET: Katalog-Frage H5 — ein taugliches Instrument EXISTIERT. Sie wird zum
+    MESSERGEBNIS, sobald Pinterest im Testprojekt eingerichtet ist und eine Conversion
+    gelaufen ist.
+    EIN BEFUND ÜBER DEN BESTAND, UNBEWERTET: Der Adapter sendet IP und User-Agent. Die als
+    "nicht eingerichtet" geführten Merkmale kann er nicht liefern; bei der E-Mail ist das
+    die Folge der Datenklassen-Entscheidung (im Browser gehasht, die Erhebung ist nicht
+    gebaut — CLAUDE.md, "## Offene Punkte", Eintrag "DATENKLASSEN-GRENZE VOR DER ERSTEN
+    PII-SCHEIBE"). KEINE EMPFEHLUNG.
+
+### Der gelesene Umfang (2026-08-20)
+
+**OHNE DIESE LISTE HAT JEDES "STEHT DORT NICHT" OBEN KEINE REICHWEITE.** Dreizehn Seiten,
+alle am 2026-08-20 abgerufen; der Abschnitt "Conversions nachverfolgen" ist VOLLSTÄNDIG.
+
+1. /docs/track-conversions/track-conversions-in-the-api/ — "Track conversion events in the
+   API" (Einstieg über /docs/api-features/conversion-overview/, das hierher umleitet)
+2. /docs/track-conversions/understand-conversions-and-how-to-track-them/ — "Understand
+   conversions and how to track them"
+3. /docs/track-conversions/define-your-own-event-types/ — "Define custom events"
+4. /docs/track-conversions/remove-users-from-events/ — "Remove users from conversion event
+   data"
+5. /docs/track-conversions/get-event-quality-score/ — "Get event quality scores for
+   conversions"
+6. /docs/track-conversions/pinterest-tag/ — "Pinterest Tag"
+7. /docs/track-conversions/integrate-third-party-tracking-tools/ — "Integrate third-party
+   tracking tools"
+8. /docs/track-conversions/use-limited-data-processing-flag/ — "Use Limited Data Processing
+   flag"
+9. /docs/getting-started/connect-app/ — "Connect app"
+10. /docs/getting-started/set-up-authentication-and-authorization/ — "Set up authentication
+    and authorization"
+11. /docs/key-concepts/access-tiers/ — "Understanding our access tiers"
+12. /docs/reference/rate-limits/ — "Rate limits"
+13. /docs/faqs/faqs/ — "API FAQs"
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· **"POST Send conversions" (Endpunkt-Referenz) — DIE BENANNTE LÜCKE DIESER LESUNG.** Genau
+  dort stehen laut Anbieter die PFLICHTFELDER (s. (q)). Nicht geöffnet, weil die
+  API-Referenz ein eigener Baum ist und die Lesung den Doku-ABSCHNITT zum Gegenstand hatte.
+· /docs/getting-started/make-an-api-call/, /docs/overview/welcome/,
+  /docs/changelog/changelog/ — Nachbarn ohne Katalog-Bezug.
+· "Wichtige Konzepte" (übrige), "Mit Anzeigen arbeiten", "Mit Analytics und Berichten
+  arbeiten", "Mit Katalogen arbeiten", "Mit Zielen und Zielgruppen arbeiten",
+  "Entwicklertools", "Referenz" (übrige), "Web-Funktionen" — andere Produkte.
+· HINTER EINER ANMELDESCHRANKE, NICHT BETRETEN: Ads Manager (Conversion-Token-Erzeugung,
+  Test-Ereignisse, Conversions Health), Conversion Tag Manager ("link requires login"),
+  "My apps", Token Debugger, Postman-Sammlung, Help-Center-Tickets.
+· Nicht-Pinterest-Ziele (Google-Dokumentation, OAuth-RFC, OWASP) — ausserhalb des
+  Gegenstands.

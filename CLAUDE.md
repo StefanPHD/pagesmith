@@ -198,6 +198,11 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       NEBENEINANDER. FOLGE: Die AUTORISIERUNGSSCHICHT ist BEIDEN Zeilen gemeinsames
       Fundament und gehört keiner von beiden allein — wer sie für eine der beiden
       allein zuschneidet, baut sie überangepasst und ein zweites Mal.
+      ZEIGER 2026-08-20 — DIE ANGABE "Dort ist das Zugangsdatum als ABLAUFEND erkannt
+      worden" IST NUR NOCH TEILWEISE GÜLTIG. Die Richtigstellung steht im Offenen Punkt
+      "EIN OAUTH-ZUGANG PASST NICHT IN DIE SKALAR-SPALTE DER GEHEIMNIS-TABELLE", Block
+      "RICHTIGGESTELLT AM 2026-08-20 (zweite Runde)", Punkt (3). SIE WIRD HIER NICHT
+      WIEDERHOLT — zwei Fassungen liefen auseinander. Der Satz darüber bleibt unverändert.
       PROVENIENZ: GELESEN an FREMDER Anbieter-Doku (2026-08-11) — NICHT gemessen,
       NICHT live bestätigt; der Live-Beweis des dritten Ziels wertet sie NICHT auf.
       DIE ZWEI AUFLAGEN AUS 11.1 GELTEN HIER WÖRTLICH MIT.
@@ -1110,6 +1115,51 @@ kaputtgeht.
   WAS UNBERÜHRT BLEIBT, ausdrücklich: die OWNER-ENTSCHEIDUNG VOM 2026-08-20 zur gemeinsamen
   Autorisierungsschicht (Block darüber). Sie ruht auf der VIELMANDANTEN-Begründung, nicht
   auf der Ablauf-Frage. Sie wird von dieser Richtigstellung NICHT angetastet.
+  RICHTIGGESTELLT AM 2026-08-20 (zweite Runde) — VIER STELLEN DIESES EINTRAGS, NAMENTLICH.
+  Der Text darüber bleibt WÖRTLICH stehen; nichts wird gestrichen oder umformuliert.
+  WARUM NAMENTLICH UND NICHT GENERISCH, und das ist der Grund für diesen Block: Die
+  Richtigstellung darüber markiert den Vorfrage-Teil nur ALS GANZES ("sein Gegenstand ist
+  ein anderer als angenommen"). Wer bis dorthin liest und dann aufhört, nimmt die alte
+  Angabe MIT. Eine generische Markierung wirkt nicht; deshalb steht hier je Stelle der Satz,
+  den sie qualifiziert.
+  (1) "gebunden an sein Werbekonto" (Block "DER VORBEHALT VOM 2026-08-15") — WIDERLEGT.
+      BEOBACHTET 2026-08-20 (docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions API)",
+      Teil (s)): Das Zugangsdatum aus der Werbe-Oberfläche "kann für mehrere Anzeigenkonten
+      unter einer Nutzer-ID verwendet werden".
+      WAS NICHT FÄLLT: die WERTFORM. Es bleibt EIN Wert — und damit bleibt auch die
+      Wertform-Hälfte des Vorbehalts richtig, die weiter unten eigens bestätigt ist.
+  (2) "Ein Zugangsdatum autorisiert den Zugriff auf ein BESTIMMTES Werbekonto" (Block "EINE
+      UNGEPRÜFTE ABLEITUNG") — DIE BEGRÜNDUNG IST WIDERLEGT, DER SCHLUSS NICHT.
+      Fundstelle wie (1): derselbe Teil (s), BEOBACHTET 2026-08-20.
+      DIE PRÄZISIERUNG GEHÖRT DAZU, sonst kippt zu viel: "mehrere Anzeigenkonten unter EINER
+      Nutzer-ID" heisst weiterhin, dass die BETREIBER-IDENTITÄT in JEDEM Kundenkonto Nutzer
+      sein muss. Der Schluss der Ableitung — dass der Zweig "Betreiber, ein Konto" mit dem
+      ersten echten Kunden wegfällt — BLEIBT MÖGLICH. Widerlegt ist allein die im Text
+      stehende Begründung dafür.
+      UND EINE FOLGE FÜR DEN BLOCK DARUNTER: Der Satz "DIE ABLEITUNG IST DAMIT WEDER BELEGT
+      NOCH WIDERLEGT" in "DIE PRÜFUNG STEHT AUS" ist damit ZU SCHWACH — es gibt seit dem
+      2026-08-20 einen BEOBACHTETEN Befund auf genau dieser Achse. DER ALTE SATZ WIRD NICHT
+      GEÄNDERT: er beschreibt richtig, was das damals vorhandene Material hergab.
+  (3) "das nach rund sechzig Tagen abläuft" (Block "WARUM SIE VOR DEN GOOGLE-FRAGEN STEHT")
+      — NUR NOCH TEILWEISE GÜLTIG.
+      WAHR für das Zugangsdatum der ANWENDUNG: BEOBACHTET 2026-08-20 (ebenda, Teil (w)) —
+      "Access token: 2 months (5184000 seconds)".
+      FALSCH als Aussage über das LIVE VERWENDETE: Das stammt aus einem anderen
+      Beschaffungsweg (ebenda, Teil (v), BEOBACHTET 2026-08-20), und ob es abläuft, ist ein
+      NICHT-TREFFER auf dreizehn Seiten und an der Oberfläche (ebenda, Teil (r)).
+  (4) EINE SPANNUNG, DIE HIER BENANNT UND NICHT AUFGELÖST WIRD: "Der Anbieter gibt keine
+      Mitglieds-Token mit mehr als SECHZIG TAGEN Lebensdauer aus" (Block "WAS AM VORBEHALT
+      VOM 2026-08-15 STEHEN BLEIBT UND WAS NICHT", GELESEN 2026-08-20) steht gegen die
+      Angabe, die dort erzeugten Zugangsdaten liefen NICHT ab (ebenda, Teil (v), GELESEN
+      2026-08-20, Anbieter-Doku zum Campaign-Manager-Weg).
+      KEIN WIDERSPRUCH, WENN das Campaign-Manager-Zugangsdatum kein Mitglieds-Token ist —
+      UND GENAU DAS IST UNGEKLÄRT: "EIN TAUGLICHER TEST IST NICHT BEKANNT" (ebenda,
+      Teil (r)). AM TEXT NICHT ENTSCHEIDBAR. Wer die eine Angabe gegen die andere ausspielt,
+      entscheidet eine Frage, die niemand beantwortet hat.
+  WAS VON KEINER DER VIER BERÜHRT WIRD, ausdrücklich und zum zweiten Mal: die
+  OWNER-ENTSCHEIDUNG VOM 2026-08-20 zur gemeinsamen Autorisierungsschicht. Sie ruht auf der
+  VIELMANDANTEN-Begründung, nicht auf der Ablauf-Frage und nicht auf der Werbekonto-Bindung.
+  KEINE der vier Richtigstellungen rührt an sie.
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

@@ -38,7 +38,7 @@ docs/claude-history/. Wer hier einen Messwert sucht, sucht am falschen Ort —
 und wer hier einen einträgt, macht aus einer Regel eine Zustandsbeschreibung,
 die still veraltet.
 
-## Verzeichnis — 84 Regeln in Dateireihenfolge
+## Verzeichnis — 85 Regeln in Dateireihenfolge
 
 Jeder Eintrag ist der WÖRTLICHE Anfang seiner Regel, auf feste Breite
 geschnitten und mit "..." gekappt — KEINE Beschreibung. GRUND: Eine
@@ -135,6 +135,7 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY (Phase 11.1, als ...
 - EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS ...
 - JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE CONSTRAINT-ERWEITERUNG ...
+- ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN, NICHT SEITENWEISE ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -1276,3 +1277,37 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Migration ist kein Vollzug. Diese hier betrifft den ZUSCHNITT — sie sagt, dass die
   Migration überhaupt eingeplant werden muss. Beide zusammen: einplanen, schreiben, und
   den Vollzug eigens messen.
+- ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN, NICHT SEITENWEISE AUSGEWÄHLT — UND
+  DER GELESENE UMFANG WIRD FESTGEHALTEN (Phase 11.1-Nachlauf, an einem realen Fall
+  erhoben): Wer beim Anbieter recherchiert, liest den VOLLSTÄNDIGEN Abschnitt zum
+  betroffenen Produkt — nicht die Seiten, die zur eigenen Frage zu passen scheinen.
+  DIE BEGRÜNDUNG, ohne die die Regel beim nächsten Mal als Fleissarbeit gestrichen wird:
+  Wer Seiten nach der eigenen Frage AUSWÄHLT, findet nur Antworten auf Fragen, die er
+  schon richtig gestellt hat. DIE TEUERSTEN BEFUNDE WIDERLEGEN DIE FRAGE, NICHT DIE
+  ANTWORT — und sie stehen auf genau den Seiten, die man nicht ausgewählt hätte.
+  BELEG (OWNER-BEFUND, 2026-08-20, an DIESEM Fall erhoben): An EINEM Tag haben vom Owner
+  nach Gefühl herausgesuchte Seiten DESSELBEN Anbieter-Abschnitts FÜNF Befunde geliefert,
+  die keine gezielte Suche gebracht hatte — ein Oberflächen-Werkzeug, das eine zuvor
+  gescheiterte Messung ersetzte; eine Statuscode-Tabelle, die ein Fehlbild erklärte; ein
+  Refresh-Token, das eine bereits getroffene Architektur-Annahme widerlegte; eine
+  Deduplizierungs-Voraussetzung, die eine Produktzusage berührt; und eine abgekündigte
+  Versionsangabe. Fundstellen: docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions
+  API)", Teile (v) bis (z).
+  DIE ZWEITE HÄLFTE, UND SIE IST DER OPERATIVE TEIL: DER GELESENE UMFANG WIRD
+  FESTGEHALTEN — welche Seiten, welcher Abschnitt, welches Datum. Ohne diese Angabe hat
+  jede spätere Aussage "das steht dort nicht" KEINE REICHWEITE, und ein Nicht-Treffer ist
+  von "an der falschen Stelle gesucht" nicht zu unterscheiden. Es ist dieselbe Disziplin
+  wie die benannte ACHSE bei einer formalen Code-Suche, nur am fremden Dokument.
+  DIE GRENZE, DIE DIE REGEL BEFOLGBAR HÄLT: "Alles lesen" ist bei einem Anbieter-Baum
+  keine Anweisung und wäre eine, die niemand einhält. Gemeint ist der VOLLSTÄNDIGE
+  Abschnitt zum betroffenen Produkt — nicht der ganze Baum.
+  ABGRENZUNG ZUM PFLICHT-STOPP FÜR docs/ziel-befunde.md (CLAUDE.md): Jener sagt, WANN die
+  eigene Befund-Datei zu laden ist — vor Zuschnitt, Adapter, Recherche oder
+  Live-Test-Anleitung. DIESE Regel sagt, WIE beim ANBIETER gelesen wird. Zwei
+  verschiedene Gegenstände: die eigene Ablage gegen die fremde Quelle. Sie greifen
+  ineinander — was hier gelesen wird, wird dort abgelegt —, aber keine ersetzt die andere.
+  ABGRENZUNG ZU "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL": Jene betrifft
+  TESTS — einen Wächter, dessen Gegenstand verschwindet, der trivial wahr ist oder der
+  Blockade nicht von Absturz trennt. DIESE betrifft die RECHERCHE an einem fremden
+  Dokument. Gemeinsam ist beiden nur die Denkfigur, dass eine Abwesenheit ohne benannte
+  Reichweite nichts belegt; der Gegenstand ist ein anderer.

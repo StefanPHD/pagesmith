@@ -125,9 +125,15 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
       (docs/immer-beachten.md). Wer von 11.2 hierher geschickt wird, liest sie DORT.
       DIE RICHTIGSTELLUNG ZUM ABLAUFENDEN ZUGANGSDATUM STEHT NICHT MEHR HIER: sie ist
       am 2026-08-19 nach "## Offene Punkte" gezogen, Eintrag "EIN OAUTH-ZUGANG PASST
-      NICHT IN DIE SKALAR-SPALTE DER GEHEIMNIS-TABELLE" — mit der offenen Vorfrage
+      NICHT IN DIE SKALAR-SPALTE DER GEHEIMNIS-TABELLE" — mit der Vorfrage
       (zwei- oder dreibeiniger OAuth-Fluss), dem zweiten Beschaffungsweg und der
-      Abwesenheits-Beobachtung ohne Positivkontrolle. DIESER ZEIGER STEHT HIER
+      Abwesenheits-Beobachtung ohne Positivkontrolle.
+      VOR DER VORFRAGE STAND HIER DAS WORT „OFFENEN"; ES IST AM 2026-08-20 GESTRICHEN,
+      weil sie im Ziel-Eintrag seit diesem Tag BEANTWORTET ist (GELESEN, nicht gemessen).
+      DIE BEIDEN ANDEREN ANGABEN DIESES SATZES SIND UNBERÜHRT und stehen im Ziel-Eintrag
+      wörtlich unverändert — der zweite Beschaffungsweg und die Abwesenheits-Beobachtung
+      ohne Positivkontrolle. DAS GEHÖRT DAZU, weil nach einer Teilkorrektur an einem Satz
+      mit mehreren Angaben sonst niemand den Rest nachliest. DIESER ZEIGER STEHT HIER
       AUSDRÜCKLICH FÜR 11.2: dessen Satz "Richtigstellung an jener Zeile" meint
       DIESE Zeile und findet den Inhalt sonst nirgends.
 - [ ] Phase 11.2 — Google: EINE KONZEPT-RUNDE, KEINE SCHEIBE. Es sind ZWEI Ziele,
@@ -799,6 +805,62 @@ kaputtgeht.
   klären, entscheidet ihren Umfang unbemerkt mit — ein Nutzer-Fluss und eine
   server-seitige Erneuerung sind zwei verschiedene Vorhaben, und die Wahl zwischen ihnen
   fiele dann nicht durch eine Entscheidung, sondern durch eine Annahme.
+  ERGÄNZT AM 2026-08-20 — DIE OFFENE VORFRAGE IST BEANTWORTET, UND ZWAR NEGATIV. Der Text
+  darüber bleibt unverändert; er wird NICHT gekürzt und NICHT umformuliert, weil er den
+  Weg zu dieser Antwort trägt und weil seine Grenzen weitergelten. Dieser Block tritt
+  DANEBEN.
+  · DER ZWEIBEINIGE WEG STEHT FÜR DIESES ZIEL NICHT OFFEN. Die Anmeldung mit
+    Anwendungs-Zugangsdaten ist für die MARKETING-APIs des Anbieters ausgeschlossen, und
+    die Conversions API ist eine davon; die Seite des Anbieters zum
+    Client-Credentials-Fluss trägt diesen Ausschluss ausdrücklich. PROVENIENZ: GELESEN an
+    learn.microsoft.com/en-us/linkedin/shared/authentication/client-credentials-flow
+    (2026-08-20). NICHT GEMESSEN — es ist KEIN Aufruf gegen den Token-Endpunkt gefahren
+    worden.
+  · DIE VERKNÜPFUNG BEKOMMT IHREN EIGENEN BELEG, WEIL DER BEFUND AN IHR HÄNGT: Der
+    Ausschluss gilt den MARKETING-APIs — gehörte die Conversions API nicht dazu, trüge
+    nichts davon. DIE ZUORDNUNG IST GELESEN an der Anbieter-Dokumentation (2026-08-20):
+    Die Conversions API wird dort unter dem MARKETING-Zweig geführt
+    (learn.microsoft.com/en-us/linkedin/marketing/conversions/...).
+    DIE GRENZE GEHÖRT DAZU, sonst liest sich der Beleg stärker, als er ist: Das ist eine
+    Zuordnung nach dem ABLAGEORT der Dokumentation — NICHT nach einer Aussage des
+    Anbieters, die die Conversions API ausdrücklich als Marketing-API benennt. KIPPT SIE,
+    IST DER BEFUND NEU ZU TREFFEN.
+  · AUF ANDERER ACHSE, UND SIE ENTWERTET DEN ZWEIBEINIGEN WEG AUCH DORT, WO ER OFFENSTÜNDE:
+    Ein solches Anwendungs-Token lebt DREISSIG MINUTEN. Ein Wert mit dieser Lebensdauer ist
+    kein Spalteneintrag, sondern eine ERNEUERUNGS-MECHANIK — die Frage der Wertform stellt
+    sich für ihn gar nicht mehr. PROVENIENZ: dieselbe Quelle, dasselbe Datum, GELESEN.
+  WAS AM VORBEHALT VOM 2026-08-15 STEHEN BLEIBT UND WAS NICHT — beide Hälften einzeln,
+  damit nicht die eine die andere mitreisst:
+  · SEINE WERTFORM-HÄLFTE BLEIBT RICHTIG: Der zweite Beschaffungsweg liefert EINEN Wert,
+    und der passt in eine Spalte, die einen Skalar je Zeile hält.
+  · WIDERLEGT IST ALLEIN DIE MÖGLICHE LESART, DIESER WERT SEI ABLAUFFREI: Der Anbieter gibt
+    keine Mitglieds-Token mit mehr als SECHZIG TAGEN Lebensdauer aus; eine programmatische
+    Erneuerung ist auf zugelassene Partner beschränkt, das Erneuerungs-Token gilt EIN JAHR,
+    danach muss das Mitglied erneut autorisieren. PROVENIENZ: GELESEN an
+    developer.linkedin.com/support/faq und
+    learn.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens
+    (2026-08-20). NICHT GEMESSEN.
+  DIE ABWESENHEITS-BEOBACHTUNG IST DAMIT NICHT ENTWARNT, SONDERN GEGENLÄUFIG BELEGT: Der
+  Eintrag führt oben, dass in der Werbe-Oberfläche KEIN Ablaufdatum ausgewiesen war, und
+  nennt das ausdrücklich keine Entwarnung. Die Lesung vom 2026-08-20 bestätigt diese
+  Vorsicht — sie war richtig, nicht übervorsichtig.
+  DIE FOLGE, UND SIE IST DER GRUND DIESER ERGÄNZUNG: Für DIESES Ziel steht der PREIS der
+  Autorisierungsschicht fest — NUTZER-FLUSS, nicht reine server-seitige Erneuerung.
+  DIE GRENZE, OHNE DIE DIESER BEFUND SCHADET — drei Teile, und der dritte hält ihn offen:
+  (a) ÜBER GOOGLE SAGT ER NICHTS. Anderer Anbieter, andere Schnittstelle. Wer ihn auf
+      Phase 11.2 überträgt, überträgt eine Lesung über ein fremdes System auf ein ZWEITES
+      fremdes System.
+  (b) DIE SCHICHT BLEIBT GEMEINSAMES FUNDAMENT von 11.1 und 11.2 und wird NICHT auf dieser
+      einen Hälfte zugeschnitten. Der Satz darüber („gehört keiner Zeile allein") gilt
+      unverändert weiter — eine beantwortete Vorfrage an EINEM Ziel schneidet die Schicht
+      nicht zu.
+  (c) ZWEI DINGE BLEIBEN OFFEN, und sie werden hier als offen benannt: die MESSUNG selbst
+      (ein Aufruf mit Anwendungs-Zugangsdaten, der die Ablehnung zeigt) und das KONKRETE
+      ABLAUFDATUM des heute live verwendeten Zugangsdatums.
+  DIE ZEILE „Was still kaputtgeht" DARÜBER BLEIBT STEHEN UND GILT WEITER: Sie ist für 11.2
+  und jedes weitere Ziel unverändert wahr. Beantwortet ist die Vorfrage NUR für dieses eine
+  Ziel; wer daraus liest, die Schicht sei jetzt zuschneidbar, macht genau den Fehler, den
+  jene Zeile beschreibt.
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

@@ -1491,6 +1491,22 @@ nicht in jede Session geladen wird.
   Fan-Out-Ziel arbeitet — Zuschnitt, Adapter, Anbieter-Recherche oder
   Live-Test-Anleitung —, lädt sie ZUERST. Sie gehört keiner Phase und wird NICHT
   archiviert.
+- docs/ziel-fragenkatalog.md — die FRAGEN, die an JEDEM Fan-Out-Ziel zu beantworten
+  sind (41 in 9 Gruppen, abgeleitet aus dem, was die vier gebauten Ziele gebraucht
+  haben), und ein DATIERTER Befund darüber, welche Frage je Ziel beantwortet ist,
+  welche gestellt und unbeantwortet blieb und welche NIE GESTELLT wurde. Angelegt
+  2026-08-20. Sie trägt KEINE Antworten auf Anbieter-Fragen und KEINE
+  Entscheidungen. Sie wird NICHT automatisch geladen. AUSLÖSER: derselbe wie bei
+  docs/ziel-befunde.md — wer ein Fan-Out-Ziel zuschneidet, einen Adapter baut oder
+  beim Anbieter recherchiert, liest BEIDE zuerst.
+  DIE ABGRENZUNG ZU docs/ziel-befunde.md IST DER GRUND FÜR ZWEI DATEIEN: Jene trägt
+  die ANTWORTEN, je Ziel und mit Provenienz. Diese trägt die FRAGEN und den STAND
+  ihrer Beantwortung. Wer eine Antwort hierher schreibt, baut eine zweite Wahrheit,
+  die neben dem Befund altert.
+  IHRE ZWEI TEILE HABEN VERSCHIEDENE HALTBARKEIT, und das steht in ihrem Kopf
+  ausführlich: Der KATALOG ist dauerhaft — eine Frage altert nicht. Die MATRIX ist
+  eine MOMENTAUFNAHME vom 2026-08-20 und wird nicht stillschweigend
+  fortgeschrieben; wer sie fortschreibt, DATIERT die Fortschreibung.
 
 ## Detail-Archiv (bei Bedarf lesen — NICHT automatisch geladen)
 Abgeschlossene Phasen-Historie + Vollbegründungen sind ausgelagert, damit CLAUDE.md unter

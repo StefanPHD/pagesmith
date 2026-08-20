@@ -17,6 +17,48 @@ Solo-Entwickler, "Build in Public" auf GitHub. Passion-Projekt in freien Stunden
 Lean MVP: kleinste nutzbare Schritte, Infrastruktur so spät wie möglich.
 Jeder Schritt soll demobar / screenshot-tauglich sein.
 
+ES GIBT KEINE FIRMA, KEINE KUNDEN UND KEINEN FREMDEN TRAFFIC (OWNER-ANGABE, 2026-08-20;
+KEINE Messung). Die Gründung steht aus. Es gibt keine Einnahmen. Der Owner baut und testet
+mit EIGENEN Konten; das Produkt hat noch nie jemand ausser ihm benutzt.
+WARUM DAS ALS VERNEINUNG DASTEHT und nicht aus "Passion-Projekt" erschlossen wird: Vier
+live sendende Adapter, ein Sicherheits-Manifest und eine Roadmap über achtzehn Phasen lesen
+sich wie ein laufender Betrieb. MEHRERE INSTANZEN HABEN DARAUS BEREITS GESCHLOSSEN, es gebe
+Kunden oder eine Firma. Beides trifft nicht zu.
+DREI TRIGGER, EINZELN ZU PRÜFEN — sie treten NICHT gleichzeitig ein, und dieser Absatz ist
+bei jedem einzeln neu zu bewerten:
+· die Gründung ist vollzogen
+· das erste FREMDE Nutzerkonto legt ein Projekt an
+· der erste echte Ad-Traffic läuft auf eine gehostete Seite
+WAS AN DIESEM ZUSTAND HÄNGT — und das ist der eigentliche Grund für diesen Absatz: Mehrere
+Einträge im Repo ruhen darauf, OHNE IHN ZU BENENNEN. Sie kippen ALLE, wenn er kippt. Jede
+der folgenden ist am Text geprüft (2026-08-20):
+· "JEDE STÖRUNG DER DATENBANK IST EIN TOTALAUSFALL ALLER KUNDENSEITEN" ("## Offene
+  Punkte") — dort steht ausdrücklich, ein Ausfall koste derzeit NULL, weil das Produkt
+  noch kein Kunde sieht.
+· "Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)" — sie bleibt an ihrer Stelle, weil
+  "echter Ad-Traffic ist noch nicht terminiert, kein Grund zum Vorziehen".
+· "Phase 15 — Public-Launch-Restarbeit (Tier 0)" — "Kein Termin — App bleibt im privaten
+  Test-/Beta-Betrieb."
+· "HOBBY-50-DOMAIN-DECKE (Trigger: echte Skalierung)" — die geteilte Decke beisst erst bei
+  fremden Kunden.
+· "Phase 11.5 — Einwilligungs-Dialog" — terminiert "NACH Phase 11 und VOR einem
+  Beta-Launch mit fremden Nutzern".
+· Sicherheits-Manifest Tier 1: "SAFE-BROWSING" (BINDET-AN: Fremd-Content live) und
+  "SHARED-REPUTATION publayer.net" (BINDET-AN: Multi-Tenant-Serving live).
+· Sicherheits-Manifest Tier 2: "BACKUPS + Restore-Drill" — "erster Drill vor echten
+  Kundendaten".
+AUSDRÜCKLICH NICHT AUFGEFÜHRT, obwohl es danach aussieht: "DATA-RETENTION" (Tier 2) ruht
+NICHT hierauf, sondern darauf, dass heute KEINE IP/UA persistiert werden; und der
+"KOSTEN-CIRCUIT-BREAKER" ruht auf dem Vercel-HOBBY-Plan, nicht auf der Kundenzahl. Wer sie
+mitzählt, hängt sie an den falschen Trigger.
+EINE FOLGE, DIE HINEINGEHÖRT: Die KOMMERZIELLE Stufe hängt bei JEDEM Fan-Out-Ziel an der
+Rechtsform, nicht nur bei Google. Pinterest verlangt für die höhere Zugriffsstufe eine
+Vertragsannahme und ein Prüfverfahren; Google für die gewählte Gestalt ein
+Partnerverfahren. BAUEN UND MIT EIGENEN KONTEN MESSEN GEHT OHNE; FREMDE KUNDENKONTEN
+ANBINDEN NICHT. BELEG: docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", die
+Antworten zu I1, I2 und I3; und Abschnitt "Google (Google Ads Conversions · GA4)",
+Teil (d).
+
 ## Tech-Stack
 - Next.js (App Router) + TypeScript + Turbopack. Lokal: Node v24.16.0.
 - Tailwind CSS

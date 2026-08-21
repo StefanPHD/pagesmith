@@ -53,6 +53,16 @@ ausserhalb jeder Versionsverwaltung und jedes Reviews; das /memory-Menü bietet 
 Ansicht an. NICHT GEMESSEN: ob und wie sie abschaltbar ist. KEINE EMPFEHLUNG, was damit zu
 tun ist.
 
+EINE ABLAGE, DIE NICHT LÄDT — .claude/rules/ MIT paths:-FRONTMATTER (GEMESSEN 2026-08-21,
+Claude Code v2.1.238): Eine Regeldatei dort lädt auf dieser Maschine NICHT, sobald sie
+paths: trägt — vier Glob-Varianten geprüft ("supabase/migrations/**",
+"supabase/migrations/*.sql", "**/*.sql", Inline-Liste), über zwei Kanäle (/context und
+Selbstauskunft mit Negativkontrolle), kein Treffer auf keiner Variante. OHNE paths: lädt
+dieselbe Ablage sehr wohl — auch bei 108 KB, vollständig bis zur letzten Zeile, und sie
+übersteht /compact. FOLGE: Eine Aufteilung der Regeln nach ORTSBEZUG hat auf dieser
+Maschine keinen Träger. Wer sie plant, misst zuerst nach — es kann sich mit einer neuen
+Version geändert haben. KEINE EMPFEHLUNG, was daraus zu tun ist.
+
 **DIE GRENZE — WAS HIER NICHT STEHT:** Diese Datei trägt REGELN. Der GEMESSENE
 ZUSTAND steht in docs/db-stand.md und wird ausschliesslich aus einer Messung
 fortgeschrieben. Das WARUM abgeschlossener Phasen steht in

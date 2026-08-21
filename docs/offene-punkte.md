@@ -727,3 +727,35 @@ aufeinander; sie liegen alle hier und finden einander.
   OWNER-ENTSCHEIDUNG VOM 2026-08-20 zur gemeinsamen Autorisierungsschicht. Sie ruht auf der
   VIELMANDANTEN-Begründung, nicht auf der Ablauf-Frage und nicht auf der Werbekonto-Bindung.
   KEINE der vier Richtigstellungen rührt an sie.
+- DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT (Trigger: die erste
+  nicht-additive Migration): In diesem Fenster läuft der ALTE Code gegen das NEUE
+  Schema. Beim Anlegen einer Spalte ist das folgenlos; beim Umbenennen, beim Löschen
+  oder beim Verengen eines Constraints nicht. NIRGENDS STEHT, WELCHE MIGRATIONSARTEN
+  ES GEFÄHRLICH MACHEN — die REIHENFOLGE ist geregelt (docs/db-regeln.md, "MIGRATION
+  IMMER VOR CODE-DEPLOY"), das FENSTER dazwischen nicht.
+  DER ZWEITE TEIL DESSELBEN BEFUNDS, und er ist die teurere Hälfte: Ein Deploy, der
+  den Ingest bricht, verwirft Conversions STILL. Die leere 204 ist Absicht (s.
+  "INGEST-204-CONTAINMENT" in docs/immer-beachten.md); die Folge ist, dass der Browser
+  des Besuchers eine KORREKTE Antwort bekommt und NIEMAND erfährt, dass nichts
+  angekommen ist. Einen Rollback gibt es nicht.
+  DIE VORFRAGE, als benannte Vorfrage und AUSDRÜCKLICH NICHT NEBENBEI ZU BEANTWORTEN:
+  Welche Deploys sind überhaupt gefährlich? Eine brauchbare Antwort trennt sie an
+  einem Merkmal, das sich VOR dem Deploy erkennen lässt — nicht an einem, das man
+  erst hinterher sieht.
+  PROVENIENZ: OWNER-BEFUND (2026-08-17). Zwischen dem 2026-08-19 und dem 2026-08-21
+  VIERMAL vertagt; am 2026-08-21 verortet.
+  Was still kaputtgeht: Beide Teile sind lautlos — im ersten Fall bricht ein laufender
+  Request gegen ein Schema, das er nicht kennt; im zweiten verschwindet eine
+  Conversion ohne Fehler.
+- DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT (Trigger: EINGETRETEN —
+  Supabase bietet es an; das Fenster schliesst sich mit dem ersten echten
+  Kunden-Traffic): Angeboten wird 17.6.1.127 -> 17.6.1.155.
+  WARUM ES EIN OFFENER PUNKT IST UND KEINE AUFRÄUMARBEIT: Es trifft den Eintrag "JEDE
+  STÖRUNG DER DATENBANK IST EIN TOTALAUSFALL ALLER KUNDENSEITEN" — ein Upgrade IST ein
+  Wartungsfenster und damit genau die Klasse Störung, die jener Eintrag beschreibt.
+  Heute kostet es NULL, weil kein Kunde da ist; mit dem ersten echten Traffic kostet
+  es laufende Kampagnen.
+  WAS NICHT DAZUGEHÖRT: die Zwischenspeicherungs-Frage aus jenem Eintrag. Sie ist eine
+  AUFKLÄRUNG und kein Bau, und sie wird durch dieses Upgrade weder beantwortet noch
+  dringlicher.
+  PROVENIENZ: Stand 2026-08-20, am 2026-08-21 verortet.

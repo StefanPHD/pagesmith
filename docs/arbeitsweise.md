@@ -979,6 +979,20 @@ Stand-Abschnitt wie eine Beschreibung.
 daran hängt · was ausdrücklich NICHT dazugehört. Wo eine Reihenfolge zwingend
 ist, steht der Grund dabei.
 *NICHT hinein:* Zuschnitte, Prompts, Entwürfe.
+**NICHT hinein gehört auch, WAS EINEN TRIGGER TRÄGT.** Ein Punkt, der auf ein
+EREIGNIS wartet statt auf die nächste Sitzung, ist ein offener Punkt und gehört
+nach `docs/offene-punkte.md`, mit Titel und Trigger als Stub-Zeile in
+`CLAUDE.md` (A-5, Weg 3).
+*Grund:* Abschnitt 6 lebt **ausschliesslich im Delta**, und das alte Delta wird
+beim Wechsel **ERSETZT** — niemand kann prüfen, ob ein Punkt fehlt, weil das
+Vergleichsdokument weg ist. Ein Punkt mit Trigger, der dort steht statt hier,
+verschwindet beim ersten unaufmerksamen Abschreiben, und **es fällt nicht auf,
+weil nichts fehlt**.
+*BELEG:* „DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY" ist zwischen dem
+2026-08-19 und dem 2026-08-21 **VIERMAL** vertagt worden, ohne je einen Ort zu
+bekommen.
+**WAS IN ABSCHNITT 6 BLEIBT:** was in der NÄCHSTEN Sitzung dran ist — und
+Befunde ohne Ort, bis sie einen haben.
 
 **7. WAS AN ENTSCHEIDUNGEN NEU IST** — nur, was einen Zuschnitt blockieren oder
 still falsch machen kann. Je Entscheidung: die Entscheidung · ihr Grund · ihre

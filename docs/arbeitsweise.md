@@ -26,7 +26,8 @@ vollzogen, im selben Zug.
 stammen aus dem ursprünglichen Übergabedokument; 5–8 stehen im Delta. Die
 Nummern bleiben, damit alle internen Querverweise weiter auflösen.
 
-**CC bekommt dieses Dokument nicht.** Er arbeitet mit der `CLAUDE.md` plus
+**CC bekommt dieses Dokument nicht.** Er arbeitet mit der `CLAUDE.md` und
+`docs/immer-beachten.md` — beide laden mechanisch beim Sitzungsstart — plus
 Prompt.
 
 ---
@@ -76,7 +77,9 @@ möglich, jeder Schritt demobar.
   gewinnt gegen bequem, schnell oder gefällig.
 - **Claude Code (CC) = Implementierung.** Hat Zugriff auf das lokale Repo und
   beschafft sich alle Befunde selbst. CC bekommt dieses Dokument **nicht** — er
-  arbeitet mit der `CLAUDE.md` (lädt jede Session automatisch) plus deinem Prompt.
+  arbeitet mit der `CLAUDE.md` UND `docs/immer-beachten.md` plus deinem Prompt.
+  Beide laden MECHANISCH beim Sitzungsstart, die zweite per `@`-Import seit
+  `e9eb0b2`.
 - **Stefan (Nutzer) = Relais und Live-Tester.** Der Einzige mit Browser,
   Terminal, SQL-Editor und Vercel-Zugang. Er kopiert Prompts zu CC, paste
   CC-Ausgaben, Screenshots und Messergebnisse zurück, führt Migrationen manuell
@@ -219,8 +222,12 @@ vollständig — die aktive Datei IST bereits eigenständig. Der Ablauf verkürz
 sich auf zwei Schritte:
 
 1. **Hebung (Ermessen wie bisher):** dauerhaft gültige Regeln aus
-   `docs/aktiver-stand.md` nach `docs/immer-beachten.md` / `CLAUDE.md`,
-   "## Offene Punkte" heben, eigener Commit.
+   `docs/aktiver-stand.md` nach `docs/immer-beachten.md` heben, offene Punkte
+   nach `docs/offene-punkte.md`; wandert etwas dorthin, kommt die Stub-Zeile in
+   `CLAUDE.md` im SELBEN Zug dazu. Eigener Commit.
+   *Schritt 2 ist mit A-2 auf diese Bauform gebracht worden, Schritt 1 dabei
+   stehengeblieben* — dieselbe Falle wie in „WER EINE HÄLFTE EINER AUSSAGE
+   KORRIGIERT". **Beide Schritte werden ab jetzt zusammen gelesen.**
 2. **Archivierung (mechanisch, KEIN Anker nötig):** Kopf im Muster der
    bestehenden Historien-Dateien voranstellen, die Datei nach
    `docs/claude-history/phase-N-<thema>.md` umbenennen, den Roadmap-Eintrag in
@@ -386,7 +393,7 @@ History, eine Zahl ohne Messung.
 
 ```
 AUFKLÄRUNG — READ-ONLY. KEINE Änderung, KEIN Commit.
-== AUFTRAG 0 ==   PFLICHT-GATE, BEIDE Dateien — s. „Prompt-Bauform für CC".
+== AUFTRAG 0 ==   PFLICHT-GATE, STANDDATEI — s. „Prompt-Bauform für CC".
 == AUFTRAG 1..n ==   (je eine präzise Frage, am Code zu beantworten)
 == INVARIANTEN ==
 (i) READ-ONLY. (ii) Jede Aussage mit Datei:Zeile, keine Vermutung als Befund.
@@ -462,7 +469,8 @@ Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
   ist keines. Das ist die **einzige** Stelle dieser Regel, an der **kein**
   Mechanismus greift — sie hängt allein an der Aufmerksamkeit des Lesers, und
   genau deshalb steht sie hier ausdrücklich.
-- **KONTEXT:** was, warum, Verweis auf die verbindliche `CLAUDE.md`-Sektion.
+- **KONTEXT:** was, warum, Verweis auf die verbindliche Fundstelle — sie liegt
+  seit dem Doku-Umbau nicht mehr zwingend in der `CLAUDE.md`.
 - **HARTER SCOPE-WÄCHTER:** welche Dateien geändert werden — und **explizit
   welche nicht** („ingest.ts / resolve.ts / proxy.ts unberührt"). Der
   Zusatz „auch nicht nur schnell" gehört dazu, er wirkt.
@@ -533,7 +541,7 @@ zweimal eine zitierfähige Angabe vernichtet.
 **Was NICHT in den Prompt gehört:** ausformulierte Inhalte. Liefere **Befund und
 Grenze**, die Formulierung macht CC — sonst wird jede Ungenauigkeit deiner
 Fassung zur Korrekturrunde. Ebenso wenig hinein gehören Erklärungen zu Regeln,
-die ohnehin in der `CLAUDE.md` stehen (CC lädt sie jede Session), oder zu
+die ohnehin geladen sind — `CLAUDE.md` und `docs/immer-beachten.md` —, oder zu
 Zusammenhängen, die CC am Code selbst erschließt.
 **Fragen und Grenzen dürfen lang sein, Formulierungen nicht.**
 
@@ -702,8 +710,8 @@ Ein Vorschlag, der eine davon bricht, ist kein Vorschlag.
 > **Provenienz:** Das hier ist eine **Landkarte zur Orientierung**, verdichtet
 > aus der `CLAUDE.md` und — für einzelne Punkte, die dort nicht stehen — aus den
 > Phasen-Historien unter `docs/claude-history/`. Die verbindliche Fassung mit
-> vollem Wortlaut steht in `docs/immer-beachten.md` und in den
-> Phasen-Sektionen der `CLAUDE.md`. Findest du eine Aussage von hier dort nicht wieder, liegt sie
+> vollem Wortlaut steht in `docs/immer-beachten.md` und in
+> `docs/roadmap.md`. Findest du eine Aussage von hier dort nicht wieder, liegt sie
 > in der History — **nicht** annehmen, sie sei überholt. Bei einem Eingriff gilt
 > **Code-first**: erst den echten Code lesen, dann gezielt das WARUM.
 > Die Begründungen sind der wertvollste Teil: Ohne sie wird eine Regel beim
@@ -883,7 +891,8 @@ Ein Vorschlag, der eine davon bricht, ist kein Vorschlag.
 - **Was hochgeladen wird.** Die Chat-Instanz bekommt: `CLAUDE.md` ·
   `docs/immer-beachten.md` · das Delta. Der Inhalt dieses Dokuments liegt als
   PROJEKTANWEISUNG (s. Kopf) und wird nicht hochgeladen. CC bekommt:
-  `CLAUDE.md` (lädt jede Session automatisch) · die Standdatei, sobald sie
+  `CLAUDE.md` und `docs/immer-beachten.md` — beide MECHANISCH beim
+  Sitzungsstart, nicht per Upload — plus die Standdatei, sobald sie
   existiert. Alles andere gezielt bei Bedarf — `security-manifest-full.md` bei
   Manifest-Arbeit, `docs/ziel-befunde.md` bei Arbeit an einem Fan-Out-Ziel,
   `docs/roadmap.md` (auslöser-geladen) bei Arbeit an einer Phase — Zuschnitt,
@@ -1003,4 +1012,7 @@ Abschnitte, die sie vorgefunden hat — **je Datei, mit Überschrift**. Fehlt ei
 Datei oder ein Abschnitt, ist es sofort sichtbar statt nie. **Dieselbe Bauform
 wie das „Auftrag 0"-Gate für CC** (s. Abschnitt 3, „Prompt-Bauform für CC"):
 Das Gate im Empfänger ist der eigentliche Mechanismus, ein Hinweis im
-Absender-Dokument nur der sichtbare Verweis darauf.
+Absender-Dokument nur der sichtbare Verweis darauf. **Der Grundsatz gilt, WO
+KEIN MECHANISMUS ZUR VERFÜGUNG STEHT** — für Chat-Instanzen gibt es keinen
+Import. Wo einer existiert, schlägt er beide, Gate wie Hinweis; deshalb ruht der
+Auftrag-0-Bullet für `docs/immer-beachten.md` seit `e9eb0b2`.

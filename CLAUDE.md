@@ -819,7 +819,24 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),
   Phase 18 (MCP), Funnel-Architektur, Owned-Traffic-Module, Smart-Tracking, Advanced
   Features.
-- docs/claude-history/backlog-polish.md — aufgeschobene Aufräumarbeiten (Polish-Liste).
+- docs/claude-history/backlog-polish.md — aufgeschobene Aufräumarbeiten.
+  GEMESSEN 2026-08-21: 123 Einträge, 163 KB, sieben Abschnitte — "Merksätze und
+  Nicht-Vorhaben" (3) · "Polish-Liste" (72) · "Aus Phase 11 gehoben (2026-08-13)"
+  (27) · "Nachtrag 2026-08-14 — KANDIDATEN für docs/immer-beachten.md" (5) ·
+  "Nachtrag 2026-08-15 — KANDIDAT aus der LinkedIn-Messung" (1) · "Nachtrag
+  2026-08-15, ZWEITER DES TAGES — KANDIDATEN aus der Datenklassen-Entscheidung"
+  (2) · "Aus Phase 11.1 gehoben (2026-08-19)" (13).
+  DIESER STUB SAGT, WAS EXISTIERT, NICHT WAS OFFEN IST. Der Status je Eintrag ist
+  NICHT erhoben; GEMESSEN 2026-08-21 ist er bei rund der Hälfte am Material jener
+  Datei nicht entscheidbar — bei einigen steht er im Sicherheits-Manifest. Wer
+  einen einzelnen Punkt braucht, liest die Datei; wer wissen will, ob er noch
+  aussteht, prüft es dort, wo sein Status geführt wird.
+  AUSLÖSER: Wer eine Aufräumarbeit plant, eine Phase abschliesst oder einen
+  Vorrats-Punkt sucht, lädt sie.
+  IHRE FORTSCHREIBUNGSREGEL: neue Einträge ans DATEIENDE, unter eine EIGENE
+  datierte Überschrift — sonst rutscht ein Eintrag unter eine fremde Herkunft;
+  das erklärt die vier Nachtrags-Abschnitte. Wer einen fünften anlegt, zieht
+  diesen Stub im SELBEN Zug nach.
 - supabase/checks/ — versionierte, NUR LESENDE Messproben für Live-Tests und Gegenproben.
   KEIN Migrationsverzeichnis, wird nie automatisch angewandt. VOR jeder handgetippten
   Prüf-Query dort nachsehen (dort steht auch, welche Fallen eine Probe hat — z.B. der

@@ -668,6 +668,20 @@ fehlen achtzig Regeln genau dann, wenn niemand einen Auslöser erkannt hat.
 Aktiv und konstant gepflegt — im Unterschied zum Detail-Archiv darunter, das
 ABGESCHLOSSENE Historie trägt. Hier steht, was fortlaufend gilt, aber bewusst
 nicht in jede Session geladen wird.
+
+WOHIN EIN NEUER SATZ GEHÖRT — IM ZWEIFEL RAUS, NICHT IN DIESE DATEI. Acht Wege,
+die erste passende Antwort gewinnt: (1) dauerhaft und projektweit ->
+docs/immer-beachten.md, HINTEN anfügen · (2) laufender Phasenschnitt ->
+docs/aktiver-stand.md · (3) Zustand, der später kippt (TODO mit Trigger) ->
+docs/offene-punkte.md, Titel + Trigger als Stub-Zeile hier · (4) Phasenplanung
+oder -stand -> docs/roadmap.md, Marker im Stub hier · (5) Anbieter-BEFUND ->
+docs/ziel-befunde.md, offene FRAGE -> docs/ziel-fragenkatalog.md · (6) Schema,
+Policies, Analytics-Lesepfad -> docs/db-stand.md (Zustand) bzw. docs/db-regeln.md
+(Regeln) · (7) Regel über die ARBEITSWEISE selbst -> docs/arbeitsweise.md, als
+ÄNDERUNGSANTRAG · (8) keins davon -> NACHFRAGEN. KEINE NEUE DATEI OHNE
+OWNER-ENTSCHEIDUNG — VERBOT, keine Empfehlung; genau eine Ausnahme ist die
+Standdatei, die nach Verfahren entsteht. Weg 1 führt aus DIESER Datei heraus,
+NICHT aus dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
 - docs/arbeitsweise.md — Arbeits- und Prompt-Disziplin (Kadenz, Stufen,
   Nachweisführung, Phasenende-Ablauf). VOM ARCHITEKTEN GEPFLEGT und NICHT Teil
   des CC-Kontexts: CC bekommt sie nicht automatisch und soll sie nicht lesen; sie

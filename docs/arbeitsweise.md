@@ -223,10 +223,14 @@ sich auf zwei Schritte:
    "## Offene Punkte" heben, eigener Commit.
 2. **Archivierung (mechanisch, KEIN Anker nötig):** Kopf im Muster der
    bestehenden Historien-Dateien voranstellen, die Datei nach
-   `docs/claude-history/phase-N-<thema>.md` umbenennen, den Roadmap-Eintrag
-   auf Haken + einen Verweissatz kollabieren, den Detail-Archiv-Eintrag
-   ergänzen, `docs/aktiver-stand.md` danach LÖSCHEN — nicht leer stehen
-   lassen, eine leere Datei sähe aus wie eine Phase ohne Inhalt.
+   `docs/claude-history/phase-N-<thema>.md` umbenennen, den Roadmap-Eintrag in
+   `docs/roadmap.md` auf Haken + einen Verweissatz kollabieren UND den Marker
+   der zugehörigen Stub-Zeile in `CLAUDE.md` nachziehen, den
+   Detail-Archiv-Eintrag ergänzen, `docs/aktiver-stand.md` danach LÖSCHEN —
+   nicht leer stehen lassen, eine leere Datei sähe aus wie eine Phase ohne
+   Inhalt.
+   **Zwei Dateien, EIN Zug.** Wer nur eine anfasst, erzeugt zwei ungekoppelte
+   Wahrheiten (s. die `domains`-Regel).
 
 ### Die Standdatei — Entstehung und Fortschreiben
 
@@ -234,8 +238,24 @@ Der Ablauf ab Phase 10 regelte bisher nur das **Ende** (Hebung, Archivierung,
 Löschen) und die **Abwesenheit** (Auftrag 0). Wie sie **entsteht**, stand
 nirgends.
 
-- **WANN:** zu Beginn einer neuen Phase, **sobald die erste Scheibe
-  zugeschnitten wird** — nicht später, nicht „wenn genug zusammengekommen ist".
+- **WANN:** bei der ERSTEN HANDLUNG der Phase — vor der ersten Aufklärung, vor
+  der ersten Konzept-Runde, vor der ersten Bau-Freigabe. Sie trägt dann nur
+  Überschrift, Abschnitts-Verzeichnis und den Gegenstand der Phase; der
+  Phasenschnitt ist ihr erster Eintrag und entsteht ohnehin zuerst.
+  **WARUM NICHT „sobald die erste Scheibe zugeschnitten wird":** Eine Phase kann
+  mit einer Konzept- oder Aufklärungs-Runde beginnen, die KEINE Scheibe
+  hervorbringt. In diesem Fenster fallen Befunde an, die keinen Ort haben — und
+  sie landen dort, wo Platz ist. BELEG, GEMESSEN am Repo (2026-08-21): Phase 11.2
+  hatte eine Konzept-Runde und nie eine Scheibe; ihre Roadmap-Zeile ist mit 90
+  Zeilen die längste aller 28 Phasen.
+  **DAS SIGNAL WIRD DAMIT SCHARF:** Die Standdatei existiert GENAU DANN, wenn
+  eine Phase läuft. Ohne Ausnahme — das Auftrag-0-Gate („existiert sie nicht,
+  läuft keine Phase") ist ab jetzt eine Aussage, keine Näherung.
+  **DER LEBENSZYKLUS FOLGT DEM MARKER:** geplant → `docs/roadmap.md`, `[ ]` ·
+  laufend → Standdatei · abgeschlossen → `docs/claude-history/`, `[x]`.
+  **NICHTS ÜBER EINE LAUFENDE PHASE GEHT JE IN `CLAUDE.md`.** Was dort steht, ist
+  die Stub-Zeile mit ihrem Marker — und der wird ÜBERSCHRIEBEN, nie angefügt.
+  Ohne diesen Halbsatz entsteht dort über achtzehn Phasen ein Protokoll.
 - **WER:** **CC legt sie an**, auf Anweisung der Chat-Instanz.
 - **WAS SIE SOFORT TRÄGT:** das Abschnitts-Verzeichnis im Kopf (s. den nächsten
   Abschnitt), den Gegenstand der Phase, und den Hinweis, dass sie ab jetzt das
@@ -271,6 +291,35 @@ etwas liegengeblieben, und der Wegweiser zeigt auf die falsche Scheibe.
 **PROVENIENZ AN JEDER ANGABE:** GEMESSEN (am Repo oder live, mit Datum) oder
 GELESEN (mit Quelle). Als Ort steht der **Symbolname**, nie eine Zeilennummer —
 die altert mit dem nächsten Commit.
+
+### Wohin ein neuer Satz gehört
+
+**DIE VERMUTUNG IST UMGEKEHRT.** Bis zum 2026-08-21 galt faktisch „im Zweifel in
+die geladene Datei" — so ist `CLAUDE.md` auf 132 KB gewachsen. **Ab jetzt gilt
+„im Zweifel raus".**
+
+**ACHT WEGE, die erste passende Antwort gewinnt:**
+
+1. **Dauerhaft und projektweit** → `docs/immer-beachten.md`, **HINTEN** anfügen,
+   in Datei wie Verzeichnis.
+2. **Laufender Phasenschnitt** → Standdatei.
+3. **Zustand, der später kippt** (TODO mit Trigger) → `docs/offene-punkte.md`;
+   Titel und Trigger als Stub-Zeile in `CLAUDE.md`.
+4. **Phasenplanung oder -stand** → `docs/roadmap.md`, Marker im Stub.
+5. **Anbieter-BEFUND** → `docs/ziel-befunde.md` · **offene FRAGE an einen
+   Anbieter** → `docs/ziel-fragenkatalog.md`.
+6. **Schema, Policies, Analytics-Lesepfad** → `docs/db-stand.md` (Zustand) bzw.
+   `docs/db-regeln.md` (Regeln).
+7. **Regel über die ARBEITSWEISE selbst** → dieses Dokument, als
+   **ÄNDERUNGSANTRAG**, an BEIDEN Orten vollzogen.
+8. **Keins davon** → **NACHFRAGEN. KEINE NEUE DATEI OHNE OWNER-ENTSCHEIDUNG.**
+   VERBOT, keine Empfehlung. Genau eine Ausnahme: die Standdatei, die nach
+   Verfahren entsteht.
+
+**Punkt 1 führt aus `CLAUDE.md` heraus, aber NICHT aus dem Startkontext** —
+`docs/immer-beachten.md` lädt seit dem 2026-08-21 unbedingt. Wer die Liste als
+Mittel liest, den KONTEXT klein zu halten, liest sie falsch: sie hält
+`CLAUDE.md` klein und sortiert richtig.
 
 ### Standdateien — Vorgabe für den Kopf
 
@@ -343,6 +392,20 @@ Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
   achtzig Regeln gearbeitet. Dann wird **NICHT** nachgefragt und **NICHT**
   weitergearbeitet — **ANHALTEN und melden**, bevor irgendetwas anderes
   passiert.
+
+  **GESTEMPELT AM 2026-08-21 — DIESER BULLET RUHT.** Seit dem Commit `e9eb0b2`
+  trägt `CLAUDE.md` die Zeile `@docs/immer-beachten.md`; die Datei lädt damit beim
+  Sitzungsstart MECHANISCH und vollständig (GEMESSEN 2026-08-21 per /context, mit
+  Negativkontrolle; auch bei 108 KB bis zur letzten Zeile, und sie übersteht ein
+  /compact). Das Gate im Prompt entfällt: es simulierte eine Garantie, die es
+  jetzt gibt. **WAS AN DIE STELLE DER PRÜFUNG TRITT:** /context — ein
+  NUTZER-Befehl. Die Prüfung liegt damit beim Owner und ist von der Instanz aus
+  nicht mehr zu erbringen. **DAS VERFALLSDATUM:** Dieser Bullet GILT WIEDER,
+  sobald der @-Import entfernt wird oder nicht mehr trägt.
+  **AUSDRÜCKLICH UNBERÜHRT:** das Auftrag-0-Gate für die STANDDATEI. Sie lädt
+  weiterhin nicht automatisch, und ihr Fehlen ist ein legitimer Zustand, der
+  ausgesprochen werden muss. Wer „alle Auftrag-0-Gates" streicht, streicht das
+  falsche.
 
   **DAS GATE GILT IN JEDEM Bau- UND Aufklärungs-Prompt, nicht nur im ersten der
   Sitzung.** *Grund:* Eine Sitzung läuft lang, Kontext wird unterwegs
@@ -542,6 +605,14 @@ die für die nächste Scheibe fehlen (s. Abschnitt 2b).
   (dort ist das Risiko nicht „mechanisch falsch", sondern „leise abgeschwächt",
   und das verschluckt jede Zusammenfassung). Alles andere: Zusammenfassung.
 - **Der Live-Test ist der Korrektheitsbeweis, nicht das Diff-Lesen.**
+- **LISTE SCHLÄGT ZAHL.** Nennt ein Bericht dieselbe Menge zweimal — einmal als
+  Zahl, einmal als Liste —, ist die LISTE maßgeblich. Weicht die Zahl ab, wird
+  sie GEMELDET, nicht angeglichen: eine falsche Zahl neben einer richtigen Liste
+  ist ein Befund über die Sorgfalt des Berichts, kein Rechenfehler. BELEG
+  (2026-08-21): zweimal in EINER Antwort — 29 gegen 28 Phasenzeilen, elf gegen
+  zehn aufgezählte Zeilen. Beide Male war die Zahl falsch, die Liste richtig, und
+  beide Male fiel es dem Verfasser nicht auf. Gefangen hat es allein ein
+  Quervergleich zwischen zwei Runden — das ist kein Mechanismus.
 
 ---
 
@@ -770,6 +841,9 @@ Ein Vorschlag, der eine davon bricht, ist kein Vorschlag.
   `CLAUDE.md` (lädt jede Session automatisch) · die Standdatei, sobald sie
   existiert. Alles andere gezielt bei Bedarf — `security-manifest-full.md` bei
   Manifest-Arbeit, `docs/ziel-befunde.md` bei Arbeit an einem Fan-Out-Ziel,
+  `docs/roadmap.md` (auslöser-geladen) bei Arbeit an einer Phase — Zuschnitt,
+  Abhaken, Standänderung —, `docs/offene-punkte.md` (auslöser-geladen) bei
+  Arbeit an einem offenen Punkt oder seinem Trigger,
   `future-roadmap.md` wenn eine Entscheidung eine spätere Richtung versperren
   könnte, `docs/claude-history/phase-*.md` für das WARUM einer Regel.
   **`docs/immer-beachten.md` FEHLTE IN DIESER LISTE BIS ZUM 2026-08-15.** Sie

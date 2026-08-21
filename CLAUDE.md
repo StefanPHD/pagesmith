@@ -171,7 +171,8 @@ gehen von hier eine Station weiter.
   — mit einem Einwilligungs-Dialog wird der Defekt real; HEUTE FÄLLT ER NICHT AUF, weil
   ohne Dialog nie etwas abgelehnt wird)
 - NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST (Trigger: BEREITS
-  EINGETRETEN — drei Ziele laufen live, und jedes kann nachträglich konfiguriert werden;
+  EINGETRETEN — vier Ziele laufen live (GEMESSEN am Code, 2026-08-21: meta · pinterest ·
+  tiktok · linkedin), und jedes kann nachträglich konfiguriert werden;
   hier steht bewusst KEIN Zeitpunkt, ein erfundener liesse den Posten als terminiert
   aussehen)
 - JEDE STÖRUNG DER DATENBANK IST EIN TOTALAUSFALL ALLER KUNDENSEITEN (Trigger: der erste

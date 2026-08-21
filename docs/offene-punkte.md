@@ -294,7 +294,8 @@ aufeinander; sie liegen alle hier und finden einander.
   Herleitung: docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, "## 7.
   Beschlossen und verortet — NICHT in dieser Phase gebaut".
 - NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST (Trigger: BEREITS
-  EINGETRETEN — drei Ziele laufen live, und jedes kann nachträglich konfiguriert werden;
+  EINGETRETEN — vier Ziele laufen live (GEMESSEN am Code, 2026-08-21: meta · pinterest ·
+  tiktok · linkedin), und jedes kann nachträglich konfiguriert werden;
   hier steht bewusst KEIN Zeitpunkt, ein erfundener liesse den Posten als terminiert
   aussehen): GEMESSEN am Code (2026-08-18).
   DER SACHVERHALT, vier Achsen:

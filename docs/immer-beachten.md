@@ -31,6 +31,28 @@ Pflicht eine bedingte:
   auslöser-geladene Datei fehlt nur dort, wo jemand den Auslöser übersehen hat;
   diese hier fehlte überall.
 
+GESTEMPELT AM 2026-08-21 — DER SATZ "DIESE DATEI WIRD IMMER GELADEN" BLEIBT WÖRTLICH
+STEHEN. Er ist seit diesem Tag WAHR, aber aus einem ANDEREN Grund, als dort steht:
+- DER MECHANISMUS: CLAUDE.md trägt seit dem 2026-08-21 unter "## Immer beachten —
+  AUSGELAGERT nach docs/immer-beachten.md" die Zeile @docs/immer-beachten.md. Sie lädt
+  diese Datei beim Sitzungsstart VOLLSTÄNDIG. GEMESSEN 2026-08-21 per /context in
+  Wegwerf-Sitzungen, mit Negativkontrolle; ein /compact übersteht sie unverändert.
+- WAS DER SATZ BIS DAHIN WAR: eine ABSICHT, keine Beschreibung. Kein Mechanismus trug die
+  Ladung — sie hing allein am Prompt-Gate "Auftrag 0" und damit an der Aufmerksamkeit
+  dessen, der den Prompt schreibt.
+- DAS VERFALLSDATUM: Die Absicht fällt auf sich selbst zurück, sobald der @-Import
+  entfernt wird oder nicht mehr trägt. Bis dahin ist sie eingelöst.
+- DIE ZEILE IB-GELADEN IN ZEILE 1 BLEIBT ALS MARKE STEHEN. Ihre GATE-Funktion RUHT — sie
+  ist ab jetzt eine Marke und keine Prüfung mehr.
+
+EINE FÜNFTE LADEKLASSE NEBEN DEN BEIDEN OBEN, DIE IN KEINEM DOKUMENT DES REPOS STAND
+(GEMESSEN 2026-08-21, /memory und /context): AUTO-MEMORY ist eingeschaltet ("Auto-memory:
+on"). Die Datei liegt unter ~/.claude/projects/<projekt>/memory/MEMORY.md, wird bei JEDEM
+Start geladen und trug an diesem Tag 73 Token. Sie liegt AUSSERHALB des Repos und damit
+ausserhalb jeder Versionsverwaltung und jedes Reviews; das /memory-Menü bietet sie zur
+Ansicht an. NICHT GEMESSEN: ob und wie sie abschaltbar ist. KEINE EMPFEHLUNG, was damit zu
+tun ist.
+
 **DIE GRENZE — WAS HIER NICHT STEHT:** Diese Datei trägt REGELN. Der GEMESSENE
 ZUSTAND steht in docs/db-stand.md und wird ausschliesslich aus einer Messung
 fortgeschrieben. Das WARUM abgeschlossener Phasen steht in

@@ -1253,6 +1253,18 @@ PFLICHT, KEINE EMPFEHLUNG — UND AUSDRÜCKLICH KEIN AUSLÖSER: docs/immer-beach
 IN JEDER SITZUNG GELADEN, unbedingt, genau wie diese Datei hier. Wer ohne sie arbeitet,
 arbeitet ohne rund achtzig Regeln — und merkt es nicht, weil nichts fehlt, wonach man
 suchen würde.
+DIE FOLGENDE ZEILE IST EIN LADEBEFEHL, KEIN VERWEIS — WIRD SIE ENTFERNT, LADEN DIE RUND
+ACHTZIG REGELN NICHT MEHR, UND NICHTS MELDET DAS: Sie lädt docs/immer-beachten.md beim
+Sitzungsstart, vollständig. Ohne sie hängt die Ladung wieder allein an der Aufmerksamkeit
+dessen, der den Prompt schreibt.
+SIE IST AUSDRÜCKLICH KEIN VERSTOSS GEGEN "Reine Pfad-Verweise, KEIN @-Import" unter
+"## Detail-Archiv": jener Grundsatz gilt dem ARCHIV, wo gerade NICHT geladen werden soll.
+HIER IST LADEN DER ZWECK. DAS SCHILD STEHT HIER, WEIL EIN EINZELNER IMPORT IN EINER DATEI,
+DIE ANDERSWO DAS GEGENTEIL ALS GRUNDSATZ FÜHRT, SONST EIN KANDIDAT FÜR DIE NÄCHSTE
+AUFRÄUMRUNDE IST.
+
+@docs/immer-beachten.md
+
 DAS GATE, und ohne es ist der Satz darüber ein Ehrenwort: Jene Datei trägt in ihrer
 ERSTEN Zeile die Marke IB-GELADEN. Die Instanz nennt in ihrer Umfangs-Ansage DIESE MARKE
 UND DIE ÜBERSCHRIFT DER LETZTEN REGEL der Datei. Fehlt eines von beidem, ist die Datei
@@ -1262,6 +1274,18 @@ Stub und liesse sich von hier abschreiben, ohne die Datei je zu öffnen — das 
 trivial wahr. DIESER STUB NENNT DIE LETZTE REGELÜBERSCHRIFT DESHALB NICHT. Sie steht
 ausschliesslich am ENDE jener Datei, sie ändert sich mit jeder angefügten Regel, und sie
 ist nur zu beantworten, wenn man dort war.
+GESTEMPELT AM 2026-08-21 — DER GATE-APPARAT DARÜBER BLEIBT WÖRTLICH STEHEN UND RUHT. Er
+wird NICHT gestrichen; er tritt nur ausser Betrieb, solange der Ladebefehl trägt:
+· SEIT DEM 2026-08-21 IST DIE LADUNG MECHANISCH GARANTIERT — der @-Import weiter oben lädt
+  die Datei beim Sitzungsstart vollständig. Das Gate im Prompt entfällt damit: es
+  simulierte eine Garantie, die es jetzt gibt.
+· WAS AN DIE STELLE DER PRÜFUNG TRITT: /context zeigt, was tatsächlich geladen ist. Das ist
+  ein NUTZER-Befehl; CC kann ihn NICHT ausführen — die Prüfung wandert damit von der
+  Instanz zum Owner und ist von der Instanz aus nicht mehr zu erbringen.
+· DAS VERFALLSDATUM, und ohne es ist in einem Jahr nicht entscheidbar, ob dieser Apparat
+  historisch oder schlafend ist: ER GILT WIEDER, sobald der @-Import entfernt wird oder
+  nicht mehr trägt. Bis dahin ruht er.
+· PROVENIENZ: GEMESSEN 2026-08-21 per /context in Wegwerf-Sitzungen, mit Negativkontrolle.
 ABGRENZUNG ZU DEN AUSLÖSER-GELADENEN DATEIEN, damit niemand die Klassen zusammenzieht:
 docs/db-stand.md und docs/db-regeln.md laden bei einer Migration oder einem Eingriff in
 Schema, Policies, RPCs oder den Analytics-Lesepfad; docs/claude-history/security-manifest-full.md
@@ -1329,6 +1353,13 @@ nicht in jede Session geladen wird.
 Abgeschlossene Phasen-Historie + Vollbegründungen sind ausgelagert, damit CLAUDE.md unter
 dem 150k-Ladelimit bleibt (jede Session lädt nur diese Root-Datei). Reine Pfad-Verweise,
 KEIN @-Import. Bei Arbeit an einem Thema die passende Datei gezielt lesen:
+ZUSATZ 2026-08-21 — DER SATZ DARÜBER BLEIBT WÖRTLICH STEHEN, DIE LISTE DARUNTER IST
+UNVERÄNDERT: Der Grundsatz "KEIN @-Import" gilt DIESEM Abschnitt — das ARCHIV soll gerade
+NICHT geladen werden. Seit dem 2026-08-21 gibt es GENAU EINEN @-Import im Repo, unter
+"## Immer beachten — AUSGELAGERT nach docs/immer-beachten.md", und der ist ABSICHT: dort
+ist Laden der Zweck. GRUND FÜR DIESEN ZUSATZ: Ohne ihn liest jemand den Satz darüber beim
+nächsten Refactor als gebrochene Regel und entfernt den Import — und dann laden die rund
+achtzig Regeln nicht mehr, ohne dass etwas rot wird.
 - docs/claude-history/phase-2-3-foundation.md — Phase 2 (Click & Connect) + Phase 3
   (Persistenz/Auth, stabile ps-IDs, Multi-Projekt, DB-Härtung 0003).
 - docs/claude-history/phase-4-mapping-codegen-export.md — Mapping-/Action-Zuweisung +

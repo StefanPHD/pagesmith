@@ -321,6 +321,51 @@ die geladene Datei" — so ist `CLAUDE.md` auf 132 KB gewachsen. **Ab jetzt gilt
 Mittel liest, den KONTEXT klein zu halten, liest sie falsch: sie hält
 `CLAUDE.md` klein und sortiert richtig.
 
+**WAS MIT EINEM FALSCHEN SATZ GESCHIEHT — EINE RICHTIGSTELLUNG ERSETZT IHN.** Sie
+tritt **nicht daneben**. Der Eintrag wird auf den heutigen Stand gebracht, der
+überholte Wortlaut verschwindet. *Die Liste darüber und dieser Absatz sind
+Geschwister:* jene regelt, wohin ein NEUER Satz geht, dieser, was mit einem
+FALSCHEN geschieht.
+**GELTUNGSBEREICH:** alle gepflegten Dokumente — `CLAUDE.md`,
+`docs/immer-beachten.md`, dieses Dokument, `docs/roadmap.md`,
+`docs/offene-punkte.md` und die Standdatei. **NICHT** die Abschluss-Archive unter
+`docs/claude-history/`: das sind Zeitdokumente und werden nicht fortgeschrieben.
+**NICHT rückwirkend** — bestehende Stempel bleiben, wo sie stehen.
+**DIE AUSNAHME, und sie ist eng: GESTEMPELT WIRD NUR BEI EINEM
+MECHANISMUSWECHSEL** — wenn der überholte Text seine Begründung mitträgt und die
+beim nächsten Wechsel wieder gebraucht wird. Wer stempelt, schreibt dazu, **UNTER
+WELCHER BEDINGUNG der alte Text wieder gilt**; ohne diese Angabe ist ein Stempel
+nach einem Jahr von Geschichte nicht mehr zu unterscheiden. Bei einer
+SACHKORREKTUR — eine Zahl, ein Name, ein Zustand — wird ERSETZT.
+**DIE AUFLAGE, DIE DIE REGEL TRÄGT — ohne sie kippt sie in ihr Gegenteil: DIESE
+REGEL DARF NICHT MIT „STEHT JA IN GIT" BEGRÜNDET WERDEN. GIT LÄDT NICHT.** Eine
+Instanz liest die Dateien, nicht die Historie — derselbe zirkuläre Auslöser, der
+`docs/claude-history/backlog-polish.md` heute unerreichbar macht. Wer eine
+Fassung ersetzt, deren HERLEITUNG noch gebraucht wird, verliert sie faktisch. Der
+Test dafür ist derselbe wie oben: Ist die Herleitung tragend, ist es ein
+Mechanismuswechsel und wird gestempelt; ist sie es nicht, war sie auch im Text
+keinen Platz wert. **EIN DRITTER ORT WIRD AUSDRÜCKLICH NICHT EINGEFÜHRT** — eine
+eigene Ablage für ersetzte Fassungen wäre eine neue Datei und fiele unter das
+Verbot in Punkt 8 darüber.
+**DIE BEGRÜNDUNG, GEMESSEN am Repo (2026-08-21, Werkzeug `wc` über `git show`):**
+`docs/immer-beachten.md` ist zwischen dem 2026-08-14 (`3d79e35`) und dem
+2026-08-20 (`ccaaa9c`) von **80 auf 86 Regeln** gewachsen — ihr Regelabschnitt
+von 81 269 auf 98 778 Bytes, die ganze Datei von 90 359 auf 108 330 Bytes, auf
+beiden Achsen rund **+17,5 KB in sechs Tagen**. Legt man den Zuwachs auf die
+sechs neuen Regeln um, sind das rund 2,9 KB je Regel — *diese Umlegung ist
+GERECHNET, nicht gemessen, und sie überschätzt die neuen Regeln*: ein Teil des
+Zuwachses ist Fortschreibung an BESTEHENDEN Regeln, und wie groß dieser Teil ist,
+ist NICHT erhoben. Dieses Dokument steht am selben Tag bei **961 Zeilen und
+55 573 Bytes** (Stand `0a03153`).
+**VOLLZUGSAUFLAGE FÜR `docs/immer-beachten.md`:** Ihr Verzeichnis führt je Regel
+deren WÖRTLICHEN Anfang. Wer nach dieser Regel die ERSTE ZEILE einer Regel
+ersetzt, zieht den Verzeichnis-Eintrag im SELBEN Zug nach — sonst läuft er still
+auseinander, und das Verzeichnis wird zu genau der zweiten Wahrheit, die es
+vermeiden soll. Dieselbe Bauform wie bei Roadmap-Marker und Volltext: zwei Orte,
+EIN Zug. *(Befund aus der Kollisionsprüfung zu A-8, 2026-08-21.)*
+*Die Ironie gehört dazu:* Dieser Absatz lässt die Datei, deren Wachstum er
+begrenzen soll, selbst wachsen. Er ist der letzte, der das darf.
+
 ### Standdateien — Vorgabe für den Kopf
 
 **Jede künftige Standdatei trägt im Kopf ein ABSCHNITTS-VERZEICHNIS.** *Grund:*

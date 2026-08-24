@@ -69,6 +69,8 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
   - ### Abschnitts-Lesung 2026-08-24 der Data-Manager-Dokumentation, LAUF 1 (Leitfaden und
     Betrieb) — die Teile (g) bis (s)
   - ### Acht Fragen ohne Katalog-Ort (2026-08-24)
+  - ### Abschnitts-Lesung 2026-08-24 der Data-Manager-Dokumentation, LAUF 2 (die Referenz)
+    — die Teile (t) bis (z)
 - ## Pinterest (Conversions API)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
@@ -989,8 +991,8 @@ abgesucht, obwohl sie es nie war.
 
 (j) GRUPPE B — ADRESSIERUNG (Katalog-Fragen B1 bis B4).
 
-    B1 · WIE LAUTET DIE ENDPUNKT-ADRESSE — VERTAGT AUF LAUF 2, erwartet auf
-    /reference/rest/v1/events/ingest.
+    B1 · WIE LAUTET DIE ENDPUNKT-ADRESSE — BEANTWORTET; die vollständige URL ist in LAUF 2
+    an /reference/rest/v1/events/ingest GELESEN worden, s. Teil (u).
     GELESEN 2026-08-24, /data-manager/api (Startseite, kein Doku-Stand ausgewiesen):
     Wirtsname und Versions-Segment stehen fest. Die Seite zeigt EINEN rohen Aufruf, aber
     für die FALSCHE Methode:
@@ -998,8 +1000,9 @@ abgesucht, obwohl sie es nie war.
     Das ist der ZIELGRUPPEN-Aufruf. DIE VOLLSTÄNDIGE URL DES EREIGNIS-AUFRUFS STEHT AUF
     KEINER DER SIEBZEHN SEITEN. Der Dienst heisst IngestionService, die Anfrage
     IngestEventsRequest.
-    ABLEITUNG, AUSDRÜCKLICH ALS SOLCHE GEKENNZEICHNET UND KEIN BEFUND: nach dem Muster
-    wäre ".../v1/events:ingest" zu erwarten. GELESEN ist das NICHT.
+    DIE VOLLSTÄNDIGE URL LAUTET POST https://datamanager.googleapis.com/v1/events:ingest —
+    GELESEN 2026-08-24 an /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28), s. Teil
+    (u).
 
     B2 · VERLANGT DER ANBIETER EINE VERSIONSANGABE, UND SCHALTET ER VERSIONEN AB —
     BEANTWORTET.
@@ -1507,7 +1510,8 @@ abgesucht, obwohl sie es nie war.
     /devguides/events/send-events (Stand 2026-08-18) und /devguides/events (Stand
     2026-07-30).
     TAUGLICH NENNT DIE DOKU GENAU EINES: RetrieveRequestStatus mit der requestId. Es liefert
-    JE DESTINATION: requestStatus aus { PROCESSING, SUCCESS, PARTIAL_SUCCESS, FAILURE } ·
+    JE DESTINATION: requestStatus aus { REQUEST_STATUS_UNKNOWN, SUCCESS, PROCESSING, FAILED,
+    PARTIAL_SUCCESS } ·
     eventsIngestionStatus.recordCount ("includes both successful and failed records") ·
     warningInfo[] (je Eintrag reason + recordCount) · errorInfo[] (je Eintrag reason +
     recordCount).
@@ -1787,6 +1791,604 @@ Buchstaben dort, wo sie beantwortet werden.
 NICHT AUFGEFÜHRT, WEIL BEREITS VERGEBEN: der Unterschied zwischen events.ingest und
 adEvents.ingest. Er ist vom Architekten als Katalog-Frage der Gruppe B für LAUF 2 gesetzt
 worden.
+
+### Abschnitts-Lesung 2026-08-24 der Data-Manager-Dokumentation, LAUF 2 (die Referenz) — die Teile (t) bis (z)
+
+**HERKUNFT — GELESEN, NICHTS GEMESSEN (2026-08-24):** Wie in LAUF 1 ist KEIN Aufruf gegen
+eine Google-Schnittstelle gefahren worden. Basis aller Pfade, wo nichts anderes steht:
+developers.google.com/data-manager/api. Jede Angabe nennt Seitenpfad und den Doku-Stand,
+den die Seite selbst ausweist.
+
+**DIES IST LAUF 2 VON ZWEI, UND DAMIT IST DER CRAWL ABGESCHLOSSEN.** Die Einstufung
+"VERTAGT AUF LAUF 2" aus dem LAUF-1-Unterabschnitt entfällt: Was nach diesem Lauf offen
+ist, ist NICHT-TREFFER oder ABGELEGT, nicht vertagt.
+
+**WAS HIER NICHT STEHT — und das ist die Bauregel dieses Unterabschnitts:** Er wiederholt
+NICHT, was in den Teilen (g) bis (s) schon steht. Wo die Referenz nur bestätigt, steht ein
+SATZ. Ausführlich steht nur, was NEU oder ABWEICHEND ist.
+
+**ZWEI EINSTUFUNGEN SIND DURCH DIESEN LAUF GEWANDERT, UND SIE WERDEN HIER GENANNT UND NICHT
+IM ALTEN TEXT NACHGETRAGEN** — sonst laufen zwei Fassungen derselben Frage nebeneinander:
+H3 (von ABGELEGT auf BEANTWORTET, s. (x)) und I4 (von NICHT-TREFFER auf ABGELEGT, s. (x)).
+Dasselbe gilt für die Fenster-Hälfte von D3 (s. (w)).
+
+(t) DER GELESENE UMFANG VON LAUF 2 — SECHZEHN SEITEN, ALLE ZUGEWIESEN, KEINE AUSWEITUNG.
+    Alle am 2026-08-24 abgerufen, alle HTTP 200. Werkzeug wie in LAUF 1: textbasierter
+    HTTP-Abruf mit eigener HTML-nach-Text-Extraktion; Playwright-MCP NICHT benutzt.
+
+    BAUM 6 — DIE NUTZLAST-QUELLE (eine Seite):
+     1. /reference/rpc/google.ads.datamanager.v1 — "Package google.ads.datamanager.v1" —
+        2026-08-06
+
+    BAUM 5 — DIE DREIZEHN ZUGEWIESENEN:
+     2. /reference/rest/v1/events — "REST Resource: events" — 2025-06-24
+     3. /reference/rest/v1/events/ingest — "Method: events.ingest" — 2026-07-28
+     4. /reference/rest/v1/adEvents/ingest — "Method: adEvents.ingest" — 2026-07-28
+     5. /reference/rest/v1/Destination — "Destination" — 2026-02-17
+     6. /reference/rest/v1/Consent — "Consent" — 2025-03-06
+     7. /reference/rest/v1/UserData — "UserData" — 2026-07-28
+     8. /reference/rest/v1/Encoding — "Encoding" — 2025-03-06
+     9. /reference/rest/v1/EncryptionInfo — "EncryptionInfo" — 2026-07-28
+    10. /reference/rest/v1/Status — "Status" — 2025-12-12
+    11. /reference/rest/v1/ErrorInfo — "ErrorInfo" — 2026-07-28
+    12. /reference/rest/v1/ErrorReason — "ErrorReason" — 2026-07-28
+    13. /reference/rest/v1/Code — "Code" — 2025-12-12
+    14. /reference/rest/v1/requestStatus/retrieve — "Method: requestStatus.retrieve" —
+        2026-07-28
+
+    AUS LÜCKE A DES ERSTEN LAUFS (zwei Seiten) — BEIDE ÜBER DIE GENANNTEN PFADE ERREICHBAR,
+    HTTP 200:
+    15. /devguides/limits — "Limits and quotas" — 2026-07-30
+    16. /devguides/terms — "Terms of service" — KEIN "Last updated"; die Seite trägt
+        stattdessen "Last modified: November 9, 2021"
+    DER LAUF-1-BEFUND WAR RICHTIG: Es gibt sie, sie stehen nur nicht im Navigationsbaum.
+
+    NACHRANGIGE SEITEN: KEINE GEÖFFNET. DeviceInfo, BadRequest, FieldWarning, Help und
+    RequestInfo blieben zu, weil keine Katalog-Frage sie noch gebraucht hat — die
+    DeviceInfo-Felder stehen vollständig auf der bereits zugewiesenen RPC-Sammelseite
+    (s. (w)/E1), die vier übrigen sind durch die gelesenen REST-Seiten derselben Typen
+    gedeckt.
+
+    GESEHEN, NICHT GEÖFFNET — mit Grund:
+    · /reference/rpc/google.rpc — ZWEITE RPC-Sammelseite, von der zugewiesenen verlinkt.
+      Trägt die Standard-Google-Typen (Status, Code, ErrorInfo, BadRequest, Help,
+      RequestInfo, LocalizedMessage). Nicht zugewiesen und durch die fünf gelesenen
+      REST-Seiten derselben Typen gedeckt.
+    · /reference/rest/v1/adEvents und /reference/rest/v1/requestStatus — die
+      Ressourcen-Übersichtsseiten zu den zwei Methoden. Nicht zugewiesen; die Methoden
+      selbst sind gelesen.
+    · Alles zu userList*, audienceMembers* und accountTypes.accounts.* (rund fünfundvierzig
+      Seiten) — vom Auftrag ausgeschlossen, Zielgruppen-Verwaltung.
+    · /support/contact · GA4 und Measurement Protocol · alle Leitfaden-Bäume aus LAUF 1 —
+      vom Auftrag ausgeschlossen.
+    · Die ?apix=true-Adressen sind KEINE eigenen Seiten, sondern der API-Explorer auf
+      derselben Seite.
+
+    KARTEN-KONTROLLE — ZERFÄLLT DIE REFERENZ IN MEHR SEITEN ALS ZUGEWIESEN? NEIN. Ein
+    formaler Abgleich aller Verweise der gelesenen Seiten gegen die Zuweisung ergibt GENAU
+    EINE Seite ausserhalb, und sie ist ausgeschlossen: /reference/analytics/
+    recommended-events (GA4).
+
+    DIE ZWEI VERFAHRENS-BEFUNDE AUS LAUF 1, NACHGEPRÜFT:
+    · FLIESSTEXT GEGEN NAVIGATION: Innerhalb der Referenz KEINE weitere Seite gefunden, die
+      nur über Fliesstext erreichbar wäre. Die drei Fälle aus LAUF 1 lagen sämtlich im
+      Leitfaden-Baum; zwei sind mit diesem Lauf gelesen, die dritte ist ausgeschlossen.
+    · TABELLEN MIT SYMBOL-INHALT: Die einzige Tabelle im Umfang steht auf /devguides/limits.
+      Gegenprobe am Rohmarkup: KEIN Inhalt verloren — die Zellen tragen Text, keine Symbole.
+      Der Symbolverlust aus LAUF 1 wiederholt sich hier nicht.
+
+    AUF FREMDEN SEITEN NICHT GETAN: keine Anmeldung, keine Eingabe, kein Download, kein
+    Klick auf "Try it!" oder den API-Explorer. KEINE Seite verlangte eine Anmeldung, um
+    ihren Text zu lesen. EINE Aufforderung stand auf /devguides/terms und wird GEMELDET,
+    NICHT BEFOLGT: "By using this API, you consent to be bound by the Google APIs Terms of
+    Service."
+
+(u) DIE FÜNF BENANNTEN FRAGEN AUS LAUF 1 — IHR ERGEBNIS.
+
+    FRAGE 1 · B1, DIE VOLLSTÄNDIGE URL DES EREIGNIS-AUFRUFS — BEANTWORTET. DIE ABLEITUNG
+    AUS LAUF 1 WAR RICHTIG UND IST JETZT GELESEN.
+    GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28), Abschnitt
+    "HTTP request":
+      POST https://datamanager.googleapis.com/v1/events:ingest
+    Dazu wörtlich: "The URL uses gRPC Transcoding syntax."
+    FOLGE FÜR DEN LAUF-1-TEXT: Die Kennzeichnung als ABLEITUNG in (j)/B1 ist im selben Zug
+    ENTFALLEN — der Wert ist GELESEN, nicht mehr geschlossen.
+
+    FRAGE 2 · B3, DER TRÄGER DES ZUGANGSDATUMS — NICHT-TREFFER. DIE REFERENZ NENNT DEN
+    BEREICH, NICHT DEN TRÄGER.
+    GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28), Abschnitt
+    "Authorization scopes", vollständig: "Requires the following OAuth scope:
+    https://www.googleapis.com/auth/datamanager". Das ist alles — KEINE Kopfzeile, KEIN
+    Präfix, KEINE Schreibweise.
+    ABGESUCHTE ACHSE: alle SECHZEHN Seiten aus (t), Begriffe `Authorization: `, `Bearer `,
+    `access_token=`, `X-Goog-`. NULL Treffer auf keiner einzigen Seite — auch nicht auf
+    adEvents/ingest, requestStatus/retrieve oder der RPC-Sammelseite.
+    DAS IST KEINE ENTWARNUNG. Der Träger existiert; er steht in Googles allgemeiner
+    Authentifizierungs-Doku, die AUSSERHALB dieses Baums liegt. ZWEI LÄUFE ÜBER DEN
+    VOLLSTÄNDIGEN BAUM HABEN DIE FRAGE NICHT BEANTWORTET — das ist selbst der Befund.
+    Was die Referenz stattdessen bietet: einen API-Explorer ("Try it!", ?apix=true), in dem
+    die Oberfläche das Token selbst setzt.
+
+    FRAGE 3 · WIDERSPRUCH 1, IST eventDeviceInfo.ipAddress ALLEIN EINE GÜLTIGE KENNUNG —
+    DIE REFERENZ VERSCHÄRFT DEN WIDERSPRUCH. Sie schweigt nicht und löst nicht auf.
+    NEUE AUSSAGE A — DIE FELD-ANNOTATION. GELESEN 2026-08-24,
+    /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28) und
+    /reference/rpc/google.ads.datamanager.v1 (Doku-Stand 2026-08-06): Im Event ist JEDES
+    Identitätsfeld als "Optional" markiert — userData, adIdentifiers, eventDeviceInfo. UND
+    ES GIBT IN DER GESAMTEN REFERENZ KEINE "at least one"-REGEL FÜR DAS Event. Abgesuchte
+    Achse: events/ingest und die RPC-Sammelseite, Begriffe `at least one`, `exactly one`,
+    `one of the following`, `must be set`, `mutually exclusive`. Die einzigen Treffer
+    betreffen ANDERE Objekte — UserData ("At least one identifier is required"),
+    CompositeData, MobileData, PairData —, NICHT das Event.
+    NEUE AUSSAGE B — UND SIE IST DIE HÄRTERE. GELESEN 2026-08-24,
+    /reference/rest/v1/ErrorReason (Doku-Stand 2026-07-28): NO_IDENTIFIERS_PROVIDED —
+    "Events data contains no user identifiers or ad identifiers. For Floodlight Event
+    ingestion this error indicates requests contains no ad identifiers." DAS BENENNT ZWEI
+    KATEGORIEN, NICHT FÜNF; eventDeviceInfo kommt nicht vor.
+    DER STAND NACH LAUF 2 — VIER STELLEN, DREI AUSSAGEN, HIER NICHT AUFGELÖST:
+    · /devguides/events/send-events (2026-08-18), Tabelle "Convert the data to Event
+      objects", Zeile "Multi-source conversions": FÜNF Alternativen, darunter
+      eventDeviceInfo.ipAddress.
+    · /devguides/diagnostics (2026-07-30): ZWEI — "at least one of ad_identifiers or
+      user_data".
+    · /reference/rest/v1/ErrorReason (2026-07-28), NO_IDENTIFIERS_PROVIDED: ZWEI.
+    · /reference/rest/v1/events/ingest (2026-07-28) und die RPC-Seite (2026-08-06): KEINE
+      ist Pflicht.
+    ES STEHT ZWEI GEGEN EINS GEGEN DIE FÜNFER-LISTE, plus eine vierte Stelle, die gar keine
+    Pflicht kennt. DER WIDERSPRUCH IST NACH LAUF 2 GRÖSSER ALS VORHER.
+
+    FRAGE 4 · WIDERSPRUCH 2, camelCase ODER snake_case — DIE REFERENZ ENTSCHEIDET ES NICHT.
+    WAS SIE ZEIGT: Dieselbe Event-Nachricht in beiden Schreibweisen, systematisch.
+    /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28), "JSON representation":
+    destinationReferences, transactionId, eventTimestamp, lastUpdatedTimestamp, userData,
+    adIdentifiers, eventSource, eventDeviceInfo, cartData, customVariables,
+    experimentalFields, userProperties, additionalEventParameters, thirdPartyUserData,
+    eventLocation, appInstanceId, conversionValue, conversionCount — durchgehend CAMELCASE.
+    /reference/rpc/google.ads.datamanager.v1 (Doku-Stand 2026-08-06), Message Event:
+    destination_references[], transaction_id, event_timestamp, last_updated_timestamp,
+    user_data, ad_identifiers, event_source, event_device_info, cart_data,
+    custom_variables[], experimental_fields[], user_properties — durchgehend SNAKE_CASE.
+    WAS SIE NICHT SAGT: ob beide Schreibweisen im Rumpf des REST-Aufrufs ZULÄSSIG sind.
+    ABGESUCHTE ACHSE: alle sechzehn Seiten, Begriffe `camel`, `snake`, `lowerCamel`,
+    `field name`, `proto3 JSON`, `JSON mapping`, `both.*accepted`.
+    DIE SUCHE LIEFERT GENAU EINEN EINSCHLÄGIGEN TREFFER, UND ER BETRIFFT EINE ANDERE SACHE:
+    Die RPC-Seite sagt an fünf Stellen, alle zu FILTER-ZEICHENKETTEN von Listen-Aufrufen
+    (userLists, partnerLinks, userListDirectLicenses): "Fields must be specified using
+    either all camel case or all snake case. Don't use a combination of camel case and
+    snake case." DAS IST EINE REGEL FÜR FILTER-AUSDRÜCKE IN RESSOURCEN-ABFRAGEN, NICHT FÜR
+    DEN RUMPF DES EINLIEFERUNGS-AUFRUFS. Sie auf events:ingest zu übertragen wäre eine
+    ABLEITUNG, und sie wird hier NICHT gemacht.
+    AN DER DOKU NICHT ENTSCHEIDBAR. Die zwei Bäume sind erkennbar die Protobuf- und die
+    JSON-Sicht DERSELBEN Schnittstelle; dass beide Schreibweisen im REST-Rumpf angenommen
+    werden, folgt daraus aber nicht aus dem TEXT.
+
+    FRAGE 5 · adEvents/ingest GEGEN events/ingest — BEANTWORTET, UND EINDEUTIG.
+    GELESEN 2026-08-24, /reference/rest/v1/adEvents/ingest (Doku-Stand 2026-07-28), erster
+    Satz: "Uploads a list of AdEvent resources TO GOOGLE ANALYTICS. This feature is only
+    available to accounts on an allowlist."
+    adEvents:ingest GEHT AN GOOGLE ANALYTICS, NICHT AN GOOGLE ADS. Für Google Ads gilt
+    events:ingest. Am Text entschieden, nicht aus der Leitfaden-Sicht erraten.
+    VIER WEITERE UNTERSCHIEDE, die den Befund stützen und keine Vermutung sind:
+    · URL: POST .../v1/adEvents:ingest gegen POST .../v1/events:ingest.
+    · destinations: bei adEvents GAR NICHT VORHANDEN — kein Destination im Rumpf; das Ziel
+      steckt in AdEvent.advertiserId. Bei events:ingest ist es Required.
+    · encryptionInfo: bei adEvents REQUIRED, bei events:ingest Optional.
+    · validateOnly: bei adEvents als "(deprecated)" markiert.
+    DIE FOLGENREICHSTE ZEILE: "If successful, the response body is EMPTY." adEvents:ingest
+    gibt KEINE requestId zurück und ist damit an die Diagnostik über RetrieveRequestStatus
+    gar nicht angeschlossen.
+    UND DER INHALT BESTÄTIGT ES FACHLICH: AdEvent trägt eventType, adType, adFormat,
+    adPlacement, targetingType, platformType und viewabilityInfo mit viewType und
+    mediaQuartile — Anzeigen-Ausspielungs- und Sichtbarkeitsdaten, keine Conversions.
+
+(v) NEU ODER ABWEICHEND — GRUPPEN A BIS C.
+
+    GRUPPE A (A1 bis A5) — BESTÄTIGT, NICHTS NEUES. Die Referenz nennt an drei Stellen den
+    Bereich https://www.googleapis.com/auth/datamanager und sonst nichts zum Zugang;
+    Beschaffung, Form, Frist, Erneuerung und Prüfinstrument stehen dort nicht. Die
+    Einstufungen aus LAUF 1 bleiben unverändert.
+
+    B1 — s. (u), Frage 1. BEANTWORTET.
+    B3 — s. (u), Frage 2. NICHT-TREFFER mit Reichweite; KEINE ENTWARNUNG.
+
+    B2 · NEU, UND ES ERWEITERT DIE REICHWEITE DER LAUF-1-ANGABE — BEANTWORTET.
+    GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28) und
+    /reference/rest/v1/adEvents/ingest (Doku-Stand 2026-07-28): Beide Ingest-Seiten tragen
+    den Zusatz "The URL uses gRPC Transcoding syntax." DIE REST-ADRESSE IST EINE ABBILDUNG
+    DES gRPC-DIENSTES, KEINE EIGENSTÄNDIGE SCHNITTSTELLE. Das erklärt die Doppelgestalt aus
+    Widerspruch 2, OHNE sie zu entscheiden.
+
+    B4 · BESTÄTIGT DURCH SCHWEIGEN, und das ist hier eine eigene Aussage — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28): Die Seite
+    führt KEINEN Abschnitt "Request headers" — anders als die Ressourcen-Verwaltungs-
+    Methoden. Deckt sich mit dem LAUF-1-Befund, dass Kopfzeilen beim Einliefern ignoriert
+    werden. ERSETZT KEINE MESSUNG.
+
+    C1 · NEU, ABER SCHWÄCHER ALS DER LEITFADEN — BEANTWORTET (der Leitfaden trägt die
+    Antwort).
+    GELESEN 2026-08-24, /reference/rest/v1/Destination (Doku-Stand 2026-02-17):
+    productDestinationId ist dort nur allgemein beschrieben — "Required. The object within
+    the product account to ingest into. For example, a Google Ads audience ID, a
+    Display & Video 360 audience ID or a Google Ads conversion action ID." DER
+    CONVERSION-ACTION-TYP (WEBPAGE / UPLOAD_CLICKS / STORE_SALES) STEHT IN DER REFERENZ
+    NICHT. Wer nur die Referenz liest, erfährt die entscheidende Unterscheidung nicht.
+
+    C2 · BESTÄTIGT. Im Rumpf, destinations[].productDestinationId.
+
+    C3 · NEU UND HART — BEANTWORTET.
+    GELESEN 2026-08-24, /reference/rest/v1/Destination (Doku-Stand 2026-02-17):
+    Destination.reference ist "Optional. ID for this Destination resource, UNIQUE WITHIN THE
+    REQUEST." Dazu GELESEN an /reference/rest/v1/ErrorReason (Doku-Stand 2026-07-28):
+    DUPLICATE_DESTINATION_REFERENCE — "Two or more destinations in the request have the same
+    reference." Die Eindeutigkeit ist also erzwungen, nicht empfohlen.
+
+    C4 · NICHT-TREFFER, UNVERÄNDERT.
+    Auch die Referenz stuft productDestinationId und accountId NIRGENDS als vertraulich ein.
+    ABGESUCHTE ACHSE, jetzt erweitert: die SECHZEHN Seiten aus (t) zusätzlich zu den
+    SIEBZEHN aus (h), Begriffe `secret`, `confidential`, `sensitive`, `private`, `public`.
+    DAS IST KEINE ENTWARNUNG — nach zwei Läufen über den vollständigen Baum sagt die Doku
+    zur Vertraulichkeit der Ziel-Kennung schlicht nichts.
+
+(w) NEU ODER ABWEICHEND — GRUPPEN D BIS F.
+
+    D1 · NEU, DIE HÜLLE IST JETZT MIT PFLICHT-ANNOTATIONEN BELEGT — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28):
+    IngestEventsRequest — destinations[] REQUIRED · events[] REQUIRED · consent Optional ·
+    validateOnly Optional · encoding Optional · encryptionInfo Optional.
+    NEU GEGENÜBER LAUF 1: encoding ist "Required for UserData uploads … For non UserData
+    uploads, this field is ignored", und dasselbe gilt für encryptionInfo.
+    ERSETZT KEINE MESSUNG.
+
+    D2 · NEU, ZWEI FELDER, DIE LAUF 1 NICHT HATTE — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28):
+    lastUpdatedTimestamp ("Optional. The last time the event was updated.") und
+    customVariables[] auf EVENT-Ebene ("Additional key/value pair information to send to the
+    conversion containers (conversion action or FL activity)") — LAUF 1 kannte
+    customVariables nur auf Item-Ebene.
+    UND DIE PFLICHT-ANNOTATION ZU transactionId STEHT JETZT IN DER REFERENZ SELBST:
+    "Optional. The unique identifier for this event. REQUIRED FOR EVENTS SENT AS AN
+    ADDITIONAL DATA SOURCE FOR TAG CONVERSIONS." Das bestätigt den Kern des LAUF-1-Befunds
+    an einer zweiten, unabhängigen Stelle. ERSETZT KEINE MESSUNG.
+
+    D3 · NEU UND WICHTIG — DIE ZEITFENSTER-LÜCKE AUS LAUF 1 IST HALB GESCHLOSSEN.
+    EINHEIT — BEANTWORTET, mit ausdrücklicher Toleranz. GELESEN 2026-08-24,
+    /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28): eventTimestamp ist REQUIRED,
+    RFC 3339, "generated output will always be Z-normalized and use 0, 3, 6 or 9 fractional
+    digits. OFFSETS OTHER THAN "Z" ARE ALSO ACCEPTED." Beispiele: "2014-10-02T15:01:23Z",
+    "2014-10-02T15:01:23.045123456Z", "2014-10-02T15:01:23+05:30".
+    FENSTER — DASS EINES EXISTIERT, IST JETZT DREIFACH BELEGT:
+    · /reference/rest/v1/ErrorReason (2026-07-28): EVENT_TIME_INVALID — "Event did not occur
+      within the acceptable time window."
+    · /reference/rest/v1/requestStatus/retrieve (2026-07-28):
+      PROCESSING_ERROR_REASON_EVENT_TOO_OLD — "The conversion is older than max supported
+      age."
+    · ebenda: PROCESSING_ERROR_REASON_CONVERSION_PRECEDES_CLICK — "The event timestamp on
+      the event was earlier than the associated click." Eine UNTERE Schranke, relativ zum
+      Klick.
+    DIE LÄNGE DES FENSTERS STEHT AUF KEINER DER INSGESAMT DREIUNDDREISSIG GELESENEN SEITEN.
+    EINSTUFUNG DES FENSTER-TEILS: NICHT-TREFFER. ABGESUCHTE ACHSE: die sechzehn Seiten aus
+    (t), Begriffe `time window`, `max supported age`, `days`, `hours`, `older than`. KEINE
+    ENTWARNUNG. Lücke D aus (s) bleibt als ZAHL offen und ist als TATSACHE nun belegt.
+
+    D4 · NEU, DIE TYPEN SIND JETZT FORMAL AUSGEWIESEN — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28) und
+    /reference/rest/v1/requestStatus/retrieve (Doku-Stand 2026-07-28): conversionValue
+    NUMBER · conversionCount NUMBER · currency STRING · Item.quantity INTEGER · entityId
+    "string (int64 format)" · recordCount "string (int64 format)".
+    DAS LETZTE IST EINE FALLE: In den Diagnostik-Antworten reisen 64-Bit-Zahlen als
+    ZEICHENKETTE, nicht als Zahl. ERSETZT KEINE MESSUNG.
+
+    D5 · NEU, UND ES WIDERSPRICHT DEM LEITFADEN — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28): KEIN
+    einziges Identitätsfeld ist Pflicht (s. (u), Frage 3). Pflicht sind dort nur
+    destinations[], events[], eventTimestamp, Destination.operatingAccount,
+    Destination.productDestinationId, UserData.userIdentifiers[] — sowie in AddressInfo vier
+    Felder.
+    AddressInfo IST DER SCHÄRFSTE NEUE EINZELBEFUND DIESER GRUPPE. GELESEN 2026-08-24,
+    /reference/rest/v1/UserData (Doku-Stand 2026-07-28): givenName, familyName, regionCode
+    und postalCode sind ALLE VIER "Required". WER EINE ADRESSE ALS KENNUNG SCHICKT, MUSS
+    ALLE VIER LIEFERN. LAUF 1 hatte die Felder aus dem Formatier-Leitfaden, aber OHNE
+    Pflicht-Annotation. ERSETZT KEINE MESSUNG.
+
+    D6 · NEU, DIE PRÜFUNG IST JETZT VOLLSTÄNDIG AUFGEZÄHLT — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/ErrorReason (Doku-Stand 2026-07-28): die Seite
+    führt 125 ENUM-WERTE. LAUF 1 kannte neun. Die ereignisnahen:
+    INVALID_CURRENCY_CODE ("The currency code is not supported.") · INVALID_CONVERSION_ACTION_ID
+    · INVALID_CONVERSION_ACTION_TYPE ("The conversion action type is not valid.") ·
+    INVALID_EVENT · INVALID_EVENT_NAME ("The event name is not supported.") ·
+    RESERVED_NAME_USED · EVENT_TIME_INVALID · EVENT_SOURCE_AND_DESTINATION_MISMATCH ("The
+    event source type does not match the destination type.") · DESTINATION_ACCOUNT_TYPE_MISMATCH
+    · INVALID_DESTINATION · DUPLICATE_DESTINATION_REFERENCE · TOO_MANY_DESTINATIONS ·
+    TOO_MANY_EVENTS · TOO_MANY_USER_IDENTIFIERS · NO_IDENTIFIERS_PROVIDED ·
+    REQUIRED_FIELD_MISSING · INVALID_HEX_ENCODING · INVALID_BASE64_ENCODING ·
+    INVALID_SHA256_FORMAT · INVALID_NUMBER_FORMAT · NOT_ALLOWLISTED ·
+    TERMS_AND_CONDITIONS_NOT_SIGNED · REQUIRED_PREREQUISITE_LINK_MISSING ·
+    EU_POLITICAL_ADVERTISING_DECLARATION_REQUIRED ·
+    DESTINATION_ACCOUNT_ENHANCED_CONVERSIONS_TERMS_NOT_SIGNED ·
+    DESTINATION_ACCOUNT_NOT_ENABLED_ENHANCED_CONVERSIONS_FOR_LEADS ·
+    DESTINATION_ACCOUNT_DATA_POLICY_PROHIBITS_ENHANCED_CONVERSIONS.
+    EIN WERTEBEREICH FÜR conversionValue STEHT WEITERHIN NIRGENDS. ERSETZT KEINE MESSUNG.
+
+    E1 · NEU — DIE LISTE IST JETZT ABSCHLIESSEND UND LÄNGER ALS IN LAUF 1 — BEANTWORTET.
+    Die Grenze aus (m)/E1 ("nicht als abschliessend belegt") fällt.
+    GELESEN 2026-08-24, /reference/rest/v1/UserData (Doku-Stand 2026-07-28),
+    /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28) und
+    /reference/rpc/google.ads.datamanager.v1 (Doku-Stand 2026-08-06):
+    · UserData.userIdentifiers[] — "Union field identifier. EXACTLY ONE MUST BE SPECIFIED":
+      emailAddress · phoneNumber · address. HÖCHSTENS ZEHN je Event: "At most 10
+      userIdentifiers can be provided in a single AudienceMember or Event."
+    · AddressInfo — sieben Felder, davon vier Pflicht (s. D5); addressLine, city und
+      administrativeArea "Used only for Google Analytics".
+    · AdIdentifiers — ZEHN Felder, alle Optional: sessionAttributes · gclid · gbraid ·
+      wbraid · landingPageDeviceInfo · mobileDeviceId · dclid · impressionId · matchId ·
+      encryptedUserIds[].
+    · DeviceInfo — NEU: ES SIND VIER FELDER, NICHT ZWEI. Zu ipAddress und userAgent treten
+      category ("The category of device. For example, 'desktop', 'tablet', 'mobile', 'smart
+      TV'") und language_code ("The language the device uses in ISO 639-1 format"). Dazu
+      eine Annotation, die es in sich hat: ip_address ist "Optional. … REQUIRED WHEN USED IN
+      AN AdEvent" — also Pflicht nur im Google-Analytics-Aufruf, nicht im
+      Conversion-Aufruf.
+    · EncryptedUserId — vier Felder, ALLE VIER Required: "All fields are required if this is
+      used."
+
+    E2 · BESTÄTIGT und an einer Stelle geschärft — BEANTWORTET.
+    GELESEN 2026-08-24, /reference/rest/v1/Encoding (Doku-Stand 2025-03-06): Das Enum kennt
+    genau zwei brauchbare Werte, HEX und BASE64, plus ENCODING_UNSPECIFIED — "Should never
+    be used".
+
+    E3 · NEU UND ABWEICHEND — ABGELEGT. S. (u), Frage 3: Die Referenz sagt "alle Optional"
+    und kennt zugleich NO_IDENTIFIERS_PROVIDED. ERSETZT KEINE MESSUNG.
+
+    E4 · BESTÄTIGT — ABGELEGT. Zwei User-Agent-Felder an zwei Orten, wie in (m)/E4.
+    ERSETZT KEINE MESSUNG.
+
+    F1 · BESTÄTIGT, mit schärferer Formulierung — BEANTWORTET.
+    GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28): eventName
+    ist "Optional. The name of the event. REQUIRED FOR GA4 EVENTS." Die Referenz sagt "GA4",
+    der Leitfaden sagte "Google Analytics" — dieselbe Sache. Für Google Ads bleibt eventName
+    optional.
+
+    F2 · NEU, ABER NUR INDIREKT — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/ErrorReason (Doku-Stand 2026-07-28): Die Referenz
+    kennt RESERVED_NAME_USED und INVALID_EVENT_NAME, nennt aber KEINEN DECKEL JE KONTO.
+    ABGESUCHTE ACHSE: die sechzehn Seiten aus (t), Begriffe `limit`, `maximum`,
+    `per account`, `quota` — die Treffer betreffen sämtlich Mengen JE ANFRAGE oder JE
+    PROJEKT, nie eine Zahl von Ereignisnamen oder Conversion-Actions. ERSETZT KEINE MESSUNG.
+
+    F3 · NEU IN EINEM PUNKT — das EventSource-Enum ist vollständig gelesen.
+    GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28): FÜNF
+    brauchbare Werte, und LAUF 1 kannte nur zwei — WEB · APP · IN_STORE · PHONE · MESSAGE,
+    plus EVENT_SOURCE_UNSPECIFIED ("Should never be used"). Eine Namensliste für Google Ads
+    führt die Referenz weiterhin nicht.
+
+(x) NEU ODER ABWEICHEND — GRUPPEN G BIS I.
+
+    G1 · BESTÄTIGT und um eine Zusicherung erweitert — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28): Der
+    Erfolgsrumpf ist { requestId, fieldWarnings[] }; fieldWarnings sind "Detailed row-level
+    warnings with field paths". NEU ist die validateOnly-Zusage: "If true, the request is
+    validated but not executed. ONLY ERRORS ARE RETURNED, NOT RESULTS." ERSETZT KEINE
+    MESSUNG.
+
+    G2 · BESTÄTIGT und formal belegt — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/Status (Doku-Stand 2025-12-12): code (integer),
+    message, details[] als "An object containing fields of an arbitrary type. An additional
+    field "@type" contains a URI identifying the type." ERSETZT KEINE MESSUNG.
+
+    G3 · NEU — DIE GROBE STUFE IST JETZT VOLLSTÄNDIG MIT HTTP-ABBILDUNG — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/Code (Doku-Stand 2025-12-12): INVALID_ARGUMENT →
+    400 · UNAUTHENTICATED → 401 · PERMISSION_DENIED → 403 · NOT_FOUND → 404 ·
+    ALREADY_EXISTS/ABORTED → 409 · RESOURCE_EXHAUSTED → 429 · INTERNAL/UNKNOWN → 500 ·
+    UNIMPLEMENTED → 501 · UNAVAILABLE → 503 · DEADLINE_EXCEEDED → 504.
+    EINE ZEILE DARAUS GEHÖRT EIGENS HERVORGEHOBEN, WEIL SIE EIN FEHLBILD ERZEUGEN KANN: Zu
+    NOT_FOUND steht "if a request is denied for an entire class of users, such as gradual
+    feature rollout or UNDOCUMENTED ALLOWLIST, NOT_FOUND may be used." EIN 404 KANN ALSO
+    EINE FREISCHALTUNGS-SPERRE SEIN, KEIN FEHLENDES OBJEKT. ERSETZT KEINE MESSUNG.
+
+    G4 · NEU, UND ES ERWEITERT DIE ECHO-ACHSE UM EINE VIERTE FORM — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/requestStatus/retrieve (Doku-Stand 2026-07-28):
+    RequestStatusPerDestination SPIEGELT DAS VOLLSTÄNDIGE Destination-OBJEKT ZURÜCK —
+    "destination object (Destination) — A destination within a DM API request." Die
+    Diagnostik-Antwort trägt also operatingAccount.accountId, loginAccount, linkedAccount
+    und productDestinationId erneut aus.
+    Dazu GELESEN an /reference/rest/v1/ErrorInfo (Doku-Stand 2026-07-28) die formale
+    Bestimmung von metadata: "map (key: string, value: string) … Keys must match a regular
+    expression of [a-z][a-zA-Z0-9-_]+ but should ideally be lowerCamelCase." ÜBER DIE WERTE
+    SAGT DIE REFERENZ NICHTS — keine Schwärzungs-, Längen- oder Inhaltszusage. Ob je ein
+    Nutzlast-Wert dort landet, ist an der Doku weiterhin NICHT ENTSCHEIDBAR. ERSETZT KEINE
+    MESSUNG.
+
+    G5 · NEU, UND ES BEGRENZT DEN RÜCKKANAL SCHÄRFER ALS LAUF 1 ANNAHM — ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/requestStatus/retrieve (Doku-Stand 2026-07-28):
+    Der Abruf ist GET https://datamanager.googleapis.com/v1/requestStatus:retrieve mit
+    Query-Parameter requestId (Required) und leerem Rumpf.
+    DIE AUFLÖSUNG IST GRÖBER ALS ERWARTET: IngestEventsStatus hat GENAU EIN FELD —
+    recordCount, "The total count of events sent in the upload request. INCLUDES ALL EVENTS
+    IN THE REQUEST, REGARDLESS OF WHETHER THEY WERE SUCCESSFULLY INGESTED OR NOT." ES GIBT
+    KEINEN ERFOLGS-ZÄHLER. Was ankam, ergibt sich nur indirekt aus errorInfo/warningInfo,
+    und die zählen JE GRUND, nicht je Ereignis (ErrorCount { recordCount, reason },
+    WarningCount { recordCount, reason }).
+    ZWEI WEITERE PRÄZISIERUNGEN: errorInfo ist "Only populated if the requestStatus is
+    FAILED or PARTIAL_SUCCESS"; beide Felder sind "not populated while the request has
+    requestStatus of PROCESSING" — das bestätigt die Warnung aus (p)/H5, dass ein leeres
+    errorInfo "noch nicht bekannt" heissen kann.
+    UND EINE NAMENSABWEICHUNG, DIE IN EINER ANLEITUNG TEUER WÄRE: Das Enum heisst FAILED,
+    nicht FAILURE, und es hat FÜNF Werte, nicht vier — REQUEST_STATUS_UNKNOWN, SUCCESS,
+    PROCESSING, FAILED, PARTIAL_SUCCESS. Die Angabe in (p)/H5 ist im selben Zug BERICHTIGT
+    worden. ERSETZT KEINE MESSUNG.
+
+    H1 · BESTÄTIGT und um zwei Zusatzangaben erweitert — BEANTWORTET.
+    GELESEN 2026-08-24: die validateOnly-Zusage aus G1, und — bemerkenswert — dass dasselbe
+    Feld auf /reference/rest/v1/adEvents/ingest (Doku-Stand 2026-07-28) als "(deprecated)"
+    markiert ist.
+
+    H2 · NEU, UND ES ÄNDERT DAS BILD — BEANTWORTET (Voraussetzungen; die Wirkung bleibt
+    Messung).
+    LAUF 1 kannte aus dem Leitfaden drei Dedup-Ausgänge. DIE REFERENZ KENNT EINEN VIERTEN,
+    DEN DER LEITFADEN NICHT NENNT: EINEN FEHLER. GELESEN 2026-08-24,
+    /reference/rest/v1/requestStatus/retrieve (Doku-Stand 2026-07-28):
+    · PROCESSING_ERROR_REASON_DUPLICATE_TRANSACTION_ID — "A conversion with the same order
+      id and conversion action combination was already uploaded."
+    · PROCESSING_ERROR_REASON_DUPLICATE_GCLID — "A conversion with the same GCLID and
+      conversion time already exists in the system."
+    EINE DOPPELUNG KANN ALSO ALS VERARBEITUNGSFEHLER GEZÄHLT WERDEN STATT ALS STILLE
+    ZUSAMMENFÜHRUNG. Wie sich das zur Überschreib-Regel des Leitfadens verhält, sagt keine
+    der dreiunddreissig Seiten — s. (y), Widerspruch 4.
+
+    H3 · VOLLSTÄNDIG BEANTWORTET — DIE EINSTUFUNG WANDERT VON ABGELEGT AUF BEANTWORTET, UND
+    LÜCKE A AUS (s) IST GESCHLOSSEN.
+    GELESEN 2026-08-24, /devguides/limits (Doku-Stand 2026-07-30), Abschnitt "Project
+    limits": IngestionService 100.000 Anfragen je Tag und 300 je Minute; alle übrigen
+    Dienste zusammen 50.000 je Tag und 300 je Minute. "Requests that exceed the limits are
+    rejected with the error RESOURCE_EXHAUSTED and HTTP status 429 Too Many Requests."
+    DAMIT IST AUCH DER LAUF-1-NICHT-TREFFER ZUM 429 AUFGELÖST — er existiert, er stand nur
+    auf der nicht kartierten Seite.
+    DIE GRENZEN SIND JE GOOGLE-CLOUD-PROJEKT, NICHT JE KUNDE.
+
+    H4 · BEANTWORTET, ABER MIT EINEM WIDERSPRUCH IN DER ZAHL.
+    GELESEN 2026-08-24, /devguides/limits (Doku-Stand 2026-07-30), Abschnitt "Request
+    limits": IngestEventsRequest — 2.000 Event-Ressourcen, 10 Destination-Ressourcen, 10
+    Nutzer-Kennungen in der UserData je Event. Dieselbe Zahl 2.000 steht auf
+    /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28). EINE DRITTE STELLE NENNT
+    10.000 — s. (y), Widerspruch 3. Unstrittig sind die 10 Destinations und die 10
+    Kennungen.
+
+    H5 · NEU — EINE FÜNFTE TÄUSCHUNG TRITT ZU DEN VIEREN AUS (p)/H5 — ABGELEGT.
+    recordCount IST KEINE ERFOLGSZAHL (s. G5). Wer ihn als "so viele sind angekommen" liest,
+    liest falsch — er zählt das Gesendete. ERSETZT KEINE MESSUNG.
+
+    I1 · BESTÄTIGT und um einen Fehlergrund ergänzt — BEANTWORTET.
+    GELESEN 2026-08-24, /reference/rest/v1/ErrorReason (Doku-Stand 2026-07-28):
+    NOT_ALLOWLISTED — "The account is not allowlisted for the given feature." Die Sperre ist
+    damit auch maschinell sichtbar.
+
+    I2 · NEU, UND DER LAUF-1-STATUS "NICHT ABGESUCHT" IST AUFGEHOBEN — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/terms ("Terms of service", kein Doku-Stand; die Seite
+    trägt "Last modified: November 9, 2021"). Sie ist VOLLSTÄNDIG und lautet im Kern: "By
+    using this API, you consent to be bound by the Google APIs Terms of Service ("API
+    ToS")." und "You must comply with applicable advertising policies including but not
+    limited to the Customer Match policy and the Customer data policies."
+    DIE ANNAHME GESCHIEHT DURCH NUTZUNG, NICHT DURCH EINE ZUSTIMMUNG IM KONTO. Für die API
+    selbst gibt es also keinen Häkchen-Vorgang.
+    AUF KONTO-EBENE SIEHT ES ANDERS AUS, und die Referenz benennt es. GELESEN 2026-08-24,
+    /reference/rest/v1/ErrorReason (Doku-Stand 2026-07-28): TERMS_AND_CONDITIONS_NOT_SIGNED
+    ("Required terms and conditions are not accepted.") ·
+    DESTINATION_ACCOUNT_ENHANCED_CONVERSIONS_TERMS_NOT_SIGNED ("The destination account
+    hasn't agreed to the terms for enhanced conversions.") ·
+    EU_POLITICAL_ADVERTISING_DECLARATION_REQUIRED ·
+    DESTINATION_ACCOUNT_DATA_POLICY_PROHIBITS_ENHANCED_CONVERSIONS. ES GIBT ALSO
+    VERTRAGSANNAHMEN IM KUNDEN-KONTO, DIE DEN AUFRUF SCHEITERN LASSEN KÖNNEN.
+    ZUR EINWILLIGUNG IST DIE FELDSTRUKTUR JETZT GELESEN, UND SIE IST ENGER, ALS "Consent"
+    VERMUTEN LÄSST. GELESEN 2026-08-24, /reference/rest/v1/Consent (Doku-Stand 2025-03-06):
+    GENAU ZWEI Felder, beide Optional — adUserData und adPersonalization, je ein
+    ConsentStatus aus CONSENT_STATUS_UNSPECIFIED · CONSENT_GRANTED · CONSENT_DENIED. Die
+    Überschrift lautet "DIGITAL MARKETS ACT (DMA) CONSENT SETTINGS for the user" — es ist
+    ein DMA-Objekt, kein allgemeiner Einwilligungs-Träger.
+    UND DIE EINWILLIGUNG KANN DATENSÄTZE VERWERFEN. GELESEN 2026-08-24,
+    /reference/rest/v1/requestStatus/retrieve (Doku-Stand 2026-07-28):
+    PROCESSING_ERROR_REASON_DENIED_CONSENT ("The ad user data is denied, either by the user
+    or in the advertiser default settings") · PROCESSING_ERROR_REASON_NO_CONSENT
+    ("Advertiser did not give 3P consent for the Ads core platform services") ·
+    PROCESSING_ERROR_REASON_UNKNOWN_CONSENT ("The overall consent (determined from ROW LEVEL
+    CONSENT, REQUEST LEVEL CONSENT, AND ACCOUNT SETTINGS) could not be determined for this
+    user"). DIE LETZTE BESCHREIBUNG NENNT EINE DRITTE QUELLE, DIE LAUF 1 NICHT KANNTE: DIE
+    KONTO-EINSTELLUNGEN.
+    ERSETZT KEINE MESSUNG: Die Vertragsbedingungen sind gelesen; ob und welche im konkreten
+    Kundenkonto fehlen, ist nur am Konto feststellbar.
+
+    I3 · BESTÄTIGT — BEANTWORTET. NOT_ALLOWLISTED s. I1; einen Antragsweg nennt auch die
+    Referenz nicht.
+
+    I4 · NEU — DIE EINSTUFUNG WANDERT VON NICHT-TREFFER AUF ABGELEGT.
+    GELESEN 2026-08-24, /reference/rest/v1/Destination (Doku-Stand 2026-02-17): "loginAccount
+    … To add or remove data from the operatingAccount, this loginAccount must have WRITE
+    ACCESS to the operatingAccount. For example, a manager account of the operatingAccount,
+    or an account with an established link to the operatingAccount."
+    DAS IST EINE BERECHTIGUNGSSTUFE: SCHREIBZUGRIFF. Sie ist keine benannte
+    Google-Ads-Rolle, aber sie ist mehr als das blosse "steht in der Nutzerliste" aus
+    (q)/I4.
+    ERSETZT KEINE MESSUNG: Welche konkrete Google-Ads-Rollenstufe "write access" erfüllt,
+    steht weiterhin auf keiner der dreiunddreissig Seiten. ABGESUCHTE ACHSE für den
+    verbleibenden Teil: die sechzehn Seiten aus (t), Begriffe `role`, `permission`, `access
+    level`, `admin`, `standard`, `read-only`. KEINE ENTWARNUNG.
+
+    I5 · NICHT-TREFFER, UNVERÄNDERT.
+    Auch in der Referenz keine Domain-Freigabe, keine Herkunfts-Prüfung, keine
+    Traffic-Permission-Liste. ABGESUCHTE ACHSE: die sechzehn Seiten aus (t), Begriffe
+    `domain`, `origin`, `allowlist`, `permission`, `referrer`. KEINE ENTWARNUNG — die Frage
+    betrifft laut Fragenkatalog den BROWSER-Pfad, und der liegt bei dieser Gestalt bei einem
+    anderen System.
+
+(y) DIE VIER WIDERSPRÜCHE — KEINER AUFGELÖST.
+
+    WIDERSPRUCH 1 (aus (r)) · DIE PFLICHT-KENNUNG — VERSCHÄRFT, NICHT AUFGELÖST.
+    Vier Stellen, drei Aussagen. Volltext s. (u), Frage 3. NICHT AUFGELÖST.
+
+    WIDERSPRUCH 2 (aus (r)) · camelCase GEGEN snake_case — NICHT ENTSCHIEDEN.
+    Die Referenz zeigt beide Schreibweisen in zwei Bäumen und sagt zur Gleichwertigkeit im
+    Ingest-Rumpf nichts. Volltext s. (u), Frage 4. NICHT AUFGELÖST.
+
+    WIDERSPRUCH 3 · NEU IN LAUF 2 — DIE HÖCHSTZAHL DER EREIGNISSE JE ANFRAGE. FAKTOR FÜNF.
+    · STELLE A: /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28), Feld events[] —
+      "At most 2000 Event resources can be sent in a single request."
+    · STELLE B: /devguides/limits (Doku-Stand 2026-07-30), "Request limits" —
+      "IngestEventsRequest: 2,000 Event resources in the events list."
+    · STELLE C: /reference/rest/v1/ErrorReason (Doku-Stand 2026-07-28), Enum
+      TOO_MANY_EVENTS — "Maximum number of events allowed per request is 10,000."
+    ZWEI STELLEN SAGEN 2.000, EINE SAGT 10.000 — und ausgerechnet die abweichende ist die,
+    die im FEHLERFALL ausgeliefert wird.
+    ZUSATZBEOBACHTUNG, DIE DIE SACHE NICHT AUFLÖST, ABER ERKLÄRT, WO 10.000 HERKOMMEN
+    KÖNNTE: Dieselbe Limits-Seite nennt 10.000 als Höchstzahl für AudienceMember-Ressourcen.
+    Ob TOO_MANY_EVENTS versehentlich die Zielgruppen-Zahl trägt, ist an der Doku NICHT
+    ENTSCHEIDBAR. BEIDE STELLEN GEMELDET, NICHT AUFGELÖST.
+
+    WIDERSPRUCH 4 · NEU IN LAUF 2 — WAS BEI EINEM DOPPELTEN transactionId GESCHIEHT.
+    · STELLE A: /devguides/events/send-events (Doku-Stand 2026-08-18), "How Google handles
+      multi-source data" — ein treffender transactionId führt zur ZUSAMMENFÜHRUNG:
+      conversionValue überschreibt, alle anderen Felder werden ignoriert. Von einem Fehler
+      ist keine Rede.
+    · STELLE B: /reference/rest/v1/requestStatus/retrieve (Doku-Stand 2026-07-28),
+      ProcessingErrorReason — PROCESSING_ERROR_REASON_DUPLICATE_TRANSACTION_ID, "A conversion
+      with the same order id and conversion action combination was already uploaded." Das
+      steht unter ERROR, nicht unter Warning, und ein Error heisst laut derselben Doku, dass
+      der Datensatz vollständig verworfen wurde.
+    NACH A WIRD ZUSAMMENGEFÜHRT, NACH B VERWORFEN. Ob die Unterscheidung an der QUELLE hängt
+    (Tag-Ereignis gegen zweite API-Lieferung), sagt keine der dreiunddreissig Seiten. BEIDE
+    STELLEN GEMELDET, NICHT AUFGELÖST.
+
+(z) LÜCKEN NACH ZWEI LÄUFEN — WAS GESCHLOSSEN IST UND WAS BLEIBT.
+
+    GESCHLOSSEN:
+    · LÜCKE A aus (s) — die drei nicht kartierten Seiten. /devguides/limits und
+      /devguides/terms sind gelesen (s. (x)/H3 und (x)/I2); /support/contact ist vom Auftrag
+      ausgeschlossen.
+    · LÜCKE E aus (s) — kein roher HTTP-Aufruf. B1 und der requestStatus-Aufruf sind jetzt
+      gelesen (s. (u), Frage 1, und (x)/G5).
+
+    OFFEN GEBLIEBEN, MIT BENANNTER REICHWEITE:
+    · B3, DER TRÄGER DES ZUGANGSDATUMS. Nach dreiunddreissig Seiten über zwei Läufe steht
+      nirgends, in welcher Kopfzeile und mit welchem Präfix das Token reist. DAS IST DIE
+      AUFFÄLLIGSTE LÜCKE DIESES DOKU-BAUMS. NICHT-TREFFER, keine Entwarnung.
+    · DIE LÄNGE DES ZEITFENSTERS (LÜCKE D aus (s)). Dass eines existiert, ist jetzt dreifach
+      belegt; die Zahl fehlt. NICHT-TREFFER, keine Entwarnung.
+    · DIE ROLLENSTUFE (I4). "Write access" ist benannt, die konkrete Google-Ads-Rolle nicht.
+    · DIE VERTRAULICHKEIT DER ZIEL-KENNUNG (C4). Nach zwei Läufen keine Aussage in beide
+      Richtungen.
+    · DIE DOMAIN-FREIGABE (I5). Liegt ausserhalb dieses Baums.
+    · DER DECKEL JE KONTO (F2). Nur Mengen je Anfrage und je Projekt, nie je Konto.
+
+    AN DER DOKU NICHT ENTSCHEIDBAR — VIER PUNKTE, ausdrücklich als solche gemeldet:
+    (1) Ob ErrorInfo.metadata je einen NUTZLAST-Wert trägt. Die Referenz bestimmt
+        Schlüssel-Form und Typ, über die Werte sagt sie nichts.
+    (2) Ob snake_case im REST-Rumpf gleichwertig zulässig ist (Widerspruch 2).
+    (3) Ob TOO_MANY_EVENTS mit 10.000 die Zielgruppen-Zahl trägt (Widerspruch 3).
+    (4) Ob ein doppelter transactionId zusammenführt oder verwirft (Widerspruch 4).
+
+    EINE BEOBACHTUNG ZUM DOKU-BESTAND, DIE HIER NICHT GEDEUTET WIRD: Die Doku-Stände der
+    sechzehn Seiten streuen über SIEBZEHN MONATE — von /reference/rest/v1/Consent und
+    /reference/rest/v1/Encoding (2025-03-06) über /reference/rest/v1/events (2025-06-24) bis
+    zur RPC-Sammelseite (2026-08-06). Die beiden ältesten sind ausgerechnet die Einwilligungs-
+    und die Kodierungs-Seite.
 
 ## Pinterest (Conversions API)
 

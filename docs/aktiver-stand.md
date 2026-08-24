@@ -167,7 +167,35 @@ stehen an den genannten Orten und werden hier bewusst nicht verdoppelt.
 
 ## Abgeschlossene Scheiben-Vermerke
 
-(noch keiner)
+### VERMERK 1 (Commit 2d0b59e) — DIE GESTALT-ENTSCHEIDUNG UND DIE MESSUNG DER KLICK-KENNUNG
+
+**WAS ENTSCHIEDEN WURDE:** Die Gestalt für Google Ads ist der OFFLINE CONVERSION
+IMPORT auf Basis der Klick-Kennungen, nicht die zusätzliche Datenquelle zur
+Tag-Conversion (Multi-Source). Vollzogen an DREI Orten — docs/roadmap.md
+(Eintrag 11.2), diese Datei (Abschnitt "### (3)") und CLAUDE.md (Abschnitt
+"## Modus"). PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-24.
+DIE BEGRÜNDUNG WIRD HIER NICHT WIEDERHOLT — sie steht im Commit 2d0b59e und im
+Roadmap-Eintrag. Zweimal geschrieben liefe sie auseinander.
+
+**DER MESSWERT — GEMESSEN 2026-08-24 vom OWNER, LIVE an einer veröffentlichten
+Seite:** Aufruf der Seite mit `?gclid=<Testwert>`, Conversion ausgelöst, die
+Nutzlast des POST auf /api/e gelesen. **eventSourceUrl trug die VOLLSTÄNDIGE URL
+einschliesslich des Testwerts.** Die Adresszeile hat sich zwischen Aufruf und
+Conversion nicht verändert.
+**FOLGE:** Die Klick-Kennung erreicht den Server HEUTE SCHON — ohne Änderung am
+Emitter, an der Serve-Route oder an einer Cookie-Architektur.
+
+**WAS DIE MESSUNG NICHT ZEIGT, und dieser Teil gehört zwingend dazu:**
+- Dass eine ECHTE gclid von Google denselben Weg nimmt. NICHT GEPRÜFT — sie reist
+  im selben Query-String, aber das ist eine Ableitung und kein Messwert.
+- Ob die Kennung auf einer Seite mit MEHREREN SCHRITTEN überlebt. GEMESSEN ist
+  ein EIN-SEITEN-FALL.
+
+**DIE GRENZE DES TRANSPORTS — GEMESSEN am Code, 2026-08-24:** eventSourceUrl wird
+NICHT PERSISTIERT. persistEvent (src/lib/analytics/persist.ts) schreibt fünf
+Werte, und keiner davon stammt aus den optionalen Rumpf-Feldern; die URL wird
+ausschliesslich an die Adapter weitergereicht. **Die Kennung existiert für die
+Dauer EINES Forwards.**
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -175,7 +203,25 @@ stehen an den genannten Orten und werden hier bewusst nicht verdoppelt.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
-(noch leer)
+Drei Befunde, alle GEMELDET am 2026-08-24, alle NICHT gebaut und NICHT
+entschieden. KEINE EMPFEHLUNG zu keinem von ihnen.
+
+1. **DER EINWILLIGUNGS-DRAHT FÜHRT KEINEN GOOGLE-SCHLÜSSEL.** Das Feld `cns`
+   trägt heute `meta`, `tiktok` und `linkedin` — KEIN `google`. ZWEI QUELLEN,
+   GETRENNT GENANNT, weil sie zwar dasselbe sagen, aber verschieden gewonnen
+   sind: GEMESSEN AM CODE (CC, 2026-08-24) — der Beacon-Bau in
+   src/lib/tracking/meta.ts setzt genau diese drei Schlüssel; und GEMESSEN AN DER
+   LIVE-NUTZLAST (OWNER, 2026-08-24) — im beobachteten Beacon trug `cns` diese
+   drei. Was `consentAllows` für ein Ziel OHNE Schlüssel tut, ist NICHT GEPRÜFT.
+2. **KEINE STELLE IM REPO ZERLEGT EINEN QUERY-STRING.** GEMESSEN in der
+   Aufklärung vom 2026-08-24 (Achse: src/**/*.ts und *.tsx ohne Testdateien,
+   Begriffe `URLSearchParams`, `location.search`, `searchParams`): kein Treffer.
+   Ein Google-Adapter bräuchte das, um die Klick-Kennung aus der URL zu lösen.
+3. **EIN ADAPTER HAT KEINEN RÜCKKANAL.** GEMESSEN am Code, 2026-08-24: Der Typ
+   `Forwarder` (src/lib/capi/ingest.ts, Zeilen 220–227) gibt `Promise<void>`
+   zurück. Ein Adapter, der ein Ereignis verwirft, kann das nicht melden. Für ein
+   Ziel, das OHNE Klick-Kennung nichts senden kann, wäre die Verwerfung
+   UNSICHTBAR.
 
 ## Hebungs-Kandidaten
 

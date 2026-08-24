@@ -52,44 +52,78 @@ ZUGESCHNITTEN. DER ZUSCHNITT IST DAS ZIEL DIESER PHASE, NICHT DER BAU.
 
 PROVENIENZ: ARCHITEKTEN-FESTLEGUNG 2026-08-24. Keine Messung.
 
+STAND DER DREI ARBEITEN (2026-08-24) — der Satz darüber beschreibt die GANZE
+Phase und bleibt wörtlich; hier steht, wie weit sie ist:
+- **ERLEDIGT — die abschnittsweise Lesung.** Zwei Läufe, 33 Seiten: LAUF 1
+  (Leitfaden und Betrieb, 17 Seiten) und LAUF 2 (die Referenz, 16 Seiten).
+- **ERLEDIGT — die Verortung der Befunde.** docs/ziel-befunde.md, Google-
+  Abschnitt, Teile (g) bis (z); committet als a324f67 und eeeef6f.
+- **OFFEN — der Zuschnitt.** Er ist die einzige der drei Arbeiten, die aussteht.
+
 OB NACH DEM CRAWL EINE BAUBARE SCHEIBE ÜBRIGBLEIBT, IST NICHT ENTSCHIEDEN und
 wird in dieser Datei auch nicht nebenbei entschieden. KEINE EMPFEHLUNG.
+
+DIESER SATZ GILT WEITER, SEINE BEGRÜNDUNG IST EINE ANDERE GEWORDEN — und das
+gehört dazu, weil ein unveränderter Satz sonst mit einem überholten Grund
+gelesen wird: Er ruhte auf der Frage nach dem Allowlist-Gate. Die ist mit der
+Entscheidung vom 2026-08-24 beantwortet (der Offline-Weg trägt keines). Was ihn
+jetzt trägt, sind VIER unaufgelöste Widersprüche und SECHS offene Fragen aus
+docs/ziel-befunde.md, Google-Abschnitt, Teil (z) — darunter der TRÄGER DES
+ZUGANGSDATUMS, den zwei Läufe über den vollständigen Doku-Baum nicht gefunden
+haben.
+
+WORAUF DER ZUSCHNITT WARTET, UND ES IST EINE EINZIGE SACHE: EINE MESSUNG — ob
+die Klick-Kennung bis zum Conversion-Beacon ÜBERLEBT. BIS SIE VORLIEGT, WIRD
+NICHT ZUGESCHNITTEN. Das ist der nächste Schritt dieser Phase, und er ist kein
+Bau.
 
 ### (2) Die Herkunft — als Zeiger, nicht als Kopie
 
 docs/roadmap.md, Eintrag 11.2 ("Google"), Marker `[ ]`. Dort steht der Volltext
-mit Auflagen, Richtigstellungen, zwei Vorbehalten und einer Owner-Entscheidung.
+mit Auflagen, Richtigstellungen, einem Vorbehalt und einer Owner-Entscheidung.
 
 DIE AUFLAGE, UND SIE IST DER ZWECK DIESES ZEIGERS: Wer den Eintrag liest, liest
 den KOPF NIE OHNE den Richtigstellungs-Block darunter. Der Kopf trägt zwei
 Angaben, die dort ausdrücklich als überholt bzw. als unvollständig begründet
 eingestuft sind.
 
-### (3) Die zwei Vorbehalte der Owner-Entscheidung zur Gestalt
+### (3) Der Vorbehalt der Owner-Entscheidung zur Gestalt, und was die Gestalt mitbringt
 
 WORAUF SICH "DIE GEWÄHLTE GESTALT" UNTEN BEZIEHT: Für Google Ads ist die gewählte
-Gestalt die ZUSÄTZLICHE DATENQUELLE ZUR TAG-CONVERSION — NICHT der Offline-Import
-über die Klick-Kennung. PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-20; keine Messung,
-keine Ableitung, eine Festlegung. IHRE BEGRÜNDUNG STEHT HIER NICHT, sondern in
-docs/roadmap.md, Eintrag 11.2. UND DER SATZ, DER DIE ZWEI VORBEHALTE ERST
-TRAGFÄHIG MACHT: Fällt die Freischaltung aus, ist die Gestalt Gegenstand einer
-NEUEN Entscheidung, und der Offline-Import tritt dann NICHT automatisch an ihre
-Stelle. Ohne diesen Satz liest jemand die gesperrte Gestalt und greift zur
-nächstliegenden Alternative, die ausdrücklich keine ist.
+Gestalt der OFFLINE CONVERSION IMPORT auf Basis der KLICK-KENNUNGEN (gclid,
+gbraid, wbraid); die Conversion-Action im Kundenkonto ist vom Typ UPLOAD_CLICKS.
+NICHT gewählt ist die zusätzliche Datenquelle zur Tag-Conversion (Multi-Source).
+AUSDRÜCKLICH AUSGESCHLOSSEN IST AUCH "ENHANCED CONVERSIONS FOR LEADS" — der
+Anbieter führt sie auf derselben Seite und über denselben Weg; sie ist der
+PII-Zweig und bleibt ausgeschlossen, solange die DATENKLASSEN-GRENZE steht. KEINE
+gehashten Nutzerdaten, KEIN von Pagesmith ausgeliefertes Google-Tag.
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-24; keine Messung, keine Ableitung, eine
+Festlegung. IHRE VOLLE BEGRÜNDUNG STEHT HIER NICHT, sondern in docs/roadmap.md,
+Eintrag 11.2 — knapp: Multi-Source verlangt transactionId als PFLICHT und setzt
+ein Google-Tag voraus, das denselben Wert gesetzt hat (GELESEN 2026-08-24,
+/reference/rest/v1/events/ingest), und Pagesmith liefert keines aus; der
+Offline-Weg trägt zudem als einzige der vier Google-Zeilen KEINEN
+Allowlist-Vorbehalt (GELESEN 2026-08-24, /devguides/events).
 
-Zeiger mit je einem Satz, was sie sperren — KEIN Volltext, KEINE Wiedergabe der
-Begründungen.
+Zeiger mit je einem Satz, was sie sperren bzw. was sie bedeuten — KEIN Volltext,
+KEINE Wiedergabe der Begründungen.
 
-- **VORBEHALT DER FREISCHALTUNG:** Ob die gewählte Gestalt für ein Konto unserer
-  Grössenordnung erreichbar ist, steht in keiner Dokumentation und ist nur über
-  einen Antrag zu erfahren — EIN CRAWL KANN IHN NICHT AUFLÖSEN.
-- **VORBEHALT DER BESTEHENDEN TAG-CONVERSION:** Die gewählte Gestalt SETZT eine
-  bestehende Tag-Conversion voraus, und Pagesmith liefert heute kein Google-Tag
-  aus (GEMESSEN am Repo, 2026-08-20); ob es eines ausliefern müsste, ist offen —
-  KEINE EMPFEHLUNG.
+- **VORBEHALT DER UPLOAD_CLICKS-ACTION:** Im Kundenkonto muss eine
+  Conversion-Action vom Typ UPLOAD_CLICKS existieren; ohne sie gibt es keine
+  productDestinationId, an die geliefert werden könnte. Der Vorbehalt ist nicht
+  verschwunden, er hat den TYP gewechselt — vorausgesetzt wird nicht mehr eine
+  WEBPAGE-Action aus einem Browser-Tag.
+- **KEINE KLICK-KENNUNG, KEINE CONVERSION — EIGENSCHAFT, KEIN FEHLER:**
+  Organischer Traffic, Direktaufrufe und Traffic anderer Kanäle erzeugen bei
+  diesem Ziel NICHTS. Wer die Zahlen gegen die eigene Auswertung hält, findet
+  eine Lücke und sucht einen Defekt, den es nicht gibt.
+- **ZWEI RANG-WECHSEL GEGENÜBER DER NICHT GEWÄHLTEN GESTALT:** eventSource ist
+  hier PFLICHT (bei Multi-Source optional), transactionId dagegen OPTIONAL (dort
+  Pflicht). Wer den einen Zuschnitt aus dem anderen ableitet, erbt genau die
+  falsche Hälfte.
 
-ORT BEIDER IM VOLLTEXT: docs/roadmap.md, Eintrag 11.2, und docs/ziel-befunde.md,
-Abschnitt "Google (Google Ads Conversions · GA4)".
+ORT ALLER DREI IM VOLLTEXT: docs/roadmap.md, Eintrag 11.2, und
+docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)".
 
 ## Was den Zuschnitt bindet
 

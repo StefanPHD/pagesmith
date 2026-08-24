@@ -172,37 +172,59 @@ liegen beide hier und finden einander.
       PROVENIENZ DIESER RICHTIGSTELLUNG: GELESEN an Anbieter-Doku und Fachpresse
       (2026-08-20). KEINE Messung — es ist KEIN Aufruf gegen eine Google-Schnittstelle
       gefahren worden.
-      ENTSCHIEDEN AM 2026-08-20 (OWNER) — DIE GESTALT FÜR GOOGLE ADS IST DIE ZUSÄTZLICHE
-      DATENQUELLE ZUR TAG-CONVERSION, nicht der Offline-Import über die Klick-Kennung.
-      PROVENIENZ: OWNER-ENTSCHEIDUNG (2026-08-20). KEINE Messung, KEINE Ableitung — eine
+      ENTSCHIEDEN AM 2026-08-24 (OWNER) — DIE GESTALT FÜR GOOGLE ADS IST DER OFFLINE
+      CONVERSION IMPORT AUF BASIS DER KLICK-KENNUNGEN (gclid, gbraid, wbraid). Die
+      Conversion-Action im Kundenkonto ist vom Typ UPLOAD_CLICKS.
+      NICHT GEWÄHLT IST DIE ZUSÄTZLICHE DATENQUELLE ZUR TAG-CONVERSION (Multi-Source).
+      AUSDRÜCKLICH AUSGESCHLOSSEN IST AUCH "ENHANCED CONVERSIONS FOR LEADS", und der Satz
+      gehört hierher, weil der Anbieter beide auf DERSELBEN Seite und über DENSELBEN Weg
+      führt: Sie ist der PII-ZWEIG und bleibt ausgeschlossen, solange die
+      DATENKLASSEN-GRENZE steht (s. "## Offene Punkte" in CLAUDE.md). Wer den
+      Offline-Import wählt und die Nachbar-Zeile mitnimmt, hat die Grenze überschritten,
+      ohne eine Entscheidung dazu getroffen zu haben.
+      KEINE GEHASHTEN NUTZERDATEN. KEIN VON PAGESMITH AUSGELIEFERTES GOOGLE-TAG.
+      PROVENIENZ: OWNER-ENTSCHEIDUNG (2026-08-24). KEINE Messung, KEINE Ableitung — eine
       FESTLEGUNG.
-      BEGRÜNDUNG: Die Klick-Kennung rettet nichts, was bereits verloren ging; das
-      Produktversprechen ruht auf dem Abgleich GEHASHTER NUTZERDATEN.
-      DIE GRENZE, UND SIE TRÄGT DIE ENTSCHEIDUNG: Sie steht unter dem VORBEHALT DER
-      FREISCHALTUNG — ob sie für ein Konto unserer Grössenordnung erreichbar ist, steht in
-      keiner Dokumentation und ist nur über einen Antrag zu erfahren (offen geführt in
-      docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)"). FÄLLT DIE
-      FREISCHALTUNG AUS, IST SIE DER GEGENSTAND EINER NEUEN ENTSCHEIDUNG — der
-      Offline-Import ist dann NICHT automatisch der Rückfall.
-      DER ZWEITE VORBEHALT, UND ER IST VON DER FREISCHALTUNG UNABHÄNGIG: Die gewählte
-      Gestalt ist ausdrücklich eine ZUSÄTZLICHE Datenquelle zu einer BESTEHENDEN
-      Tag-Conversion — sie SETZT diese VORAUS (GELESEN 2026-08-20, Merkmalsbeschreibung
-      des Anbieters; s. docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions ·
-      GA4)", Teil (e)). Pagesmith liefert heute KEIN Google-Tag aus — GEMESSEN am Repo
-      (2026-08-20, formale Suche über src/ nach gtag · googletagmanager · google-analytics
-      · googleads · measurement_id; einziger Treffer ist ein Kommentar in einer Testdatei,
-      kein Erzeuger. NICHT-TREFFER AUF DIESER ACHSE, kein Beweis für alle Pfade). EXISTIERT
-      IM KUNDENKONTO KEINE TAG-CONVERSION, HAT DIE GESTALT NICHTS, WORAN SIE ANDOCKT — und
-      zwar auch dann nicht, wenn die Freischaltung erteilt würde.
-      DIE ABGRENZUNG ZUM ABSATZ WEITER UNTEN GEHÖRT DAZU, sonst werden die beiden
-      verschmolzen: Jener fragt, WESSEN Tag es ist (Kunde oder Pagesmith) und ob dadurch
-      die Ausschluss-Zusage an 11.5 berührt wird. DIESER fragt, OB ÜBERHAUPT EINES
-      EXISTIERT. Zwei verschiedene Achsen — und diese hier ist die VORGELAGERTE: ohne ein
-      Tag stellt sich die Frage nach seinem Eigentümer gar nicht.
-      WAS AUSDRÜCKLICH OFFEN BLEIBT UND HIER NICHT NEBENBEI ENTSCHIEDEN WIRD: ob ein Kunde
-      auf einer von Pagesmith ausgelieferten Seite ein eigenes Google-Tag unterbringen
-      kann, und ob Pagesmith eines ausliefern müsste. KEINE EMPFEHLUNG. Als offener Punkt
-      geführt in docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)".
+      BEGRÜNDUNG, ZWEI GRÜNDE: (1) Multi-Source verlangt transactionId als PFLICHT und
+      setzt voraus, dass ein Google-Tag im Browser denselben Wert gesetzt hat (GELESEN
+      2026-08-24, /reference/rest/v1/events/ingest) — Pagesmith liefert kein Google-Tag
+      aus. (2) Der Offline-Weg trägt als EINZIGE der vier Google-Zeilen KEINEN
+      Allowlist-Vorbehalt (GELESEN 2026-08-24, /devguides/events).
+      DER VORBEHALT, UND ES IST NUR NOCH EINER: Im Kundenkonto muss eine
+      Conversion-Action vom Typ UPLOAD_CLICKS EXISTIEREN. Ohne sie gibt es keine
+      productDestinationId, an die geliefert werden könnte. Der Vorbehalt ist damit nicht
+      verschwunden, sondern hat den TYP gewechselt — vorausgesetzt wird nicht mehr eine
+      WEBPAGE-Action aus einem Browser-Tag, sondern eine UPLOAD_CLICKS-Action.
+      EINE EIGENSCHAFT DER GESTALT, DIE KEIN FEHLER IST UND DIE MITMUSS: KEINE
+      KLICK-KENNUNG, KEINE CONVERSION. Organischer Traffic, Direktaufrufe und Traffic
+      anderer Kanäle erzeugen bei diesem Ziel NICHTS. Wer die Zahlen später gegen die
+      eigene Auswertung hält, findet eine Lücke und sucht einen Defekt, den es nicht gibt.
+      ZWEI RANG-WECHSEL GEGENÜBER DER NICHT GEWÄHLTEN GESTALT, und sie sind die
+      häufigste Verwechslung beim Zuschnitt: eventSource ist hier PFLICHT (bei
+      Multi-Source optional), transactionId dagegen OPTIONAL (dort Pflicht). Wer den
+      einen Zuschnitt aus dem anderen ableitet, erbt genau die falsche Hälfte.
+      DIE TAG-ACHSE IST DAMIT WEITGEHEND ERLEDIGT, UND ES BLEIBT GENAU EINE FRAGE ÜBRIG.
+      Die frühere Abgrenzung "fragt dieser Absatz, OB ÜBERHAUPT EIN TAG EXISTIERT?" ist
+      GEGENSTANDSLOS: Der Vorbehalt fragt nach einer UPLOAD_CLICKS-ACTION im Kundenkonto,
+      nicht nach einem Tag. Und die Frage, ob PAGESMITH ein eigenes Google-Tag ausliefern
+      müsste, ist BEANTWORTET — nein, mit der Entscheidung oben ausdrücklich
+      ausgeschlossen.
+      WAS OFFEN BLEIBT, ALS EINZIGES DIESER ACHSE: ob ein KUNDE auf einer von Pagesmith
+      ausgelieferten Seite ein eigenes Google-Tag unterbringen kann. Das betrifft die
+      KUNDENSEITE, nicht Pagesmith — und es ist eine andere Frage als die beantwortete.
+      KEINE EMPFEHLUNG. Als offener Punkt geführt in docs/ziel-befunde.md, Abschnitt
+      "Google (Google Ads Conversions · GA4)".
+      DER BLOCK DARUNTER STEHT WÖRTLICH DA UND IST NICHT MEHR IN SEINER PRÄMISSE GEDECKT —
+      DIESER VERMERK IST EIN ZEIGER AUF EINE AUSSTEHENDE ENTSCHEIDUNG, KEINE
+      RICHTIGSTELLUNG. Er beschreibt die MULTI-SOURCE-Gestalt ("ENTSPRECHUNG ZUM
+      META-MODELL"), und die ist seit dem 2026-08-24 nicht gewählt; der Offline-Weg
+      braucht kein Tag, womit die dort gestellte Frage nach dem Eigentümer der
+      "bestehenden Tag-Conversion" keinen Gegenstand mehr hat.
+      ER BLEIBT TROTZDEM STEHEN, und der Grund gehört dazu: Er ist der EINZIGE Ort im
+      Repo, an dem die Berührung zwischen dieser Zeile und der Ausschluss-Zusage in
+      Eintrag 11.5 überhaupt festgehalten ist. OB JENE ZUSAGE JETZT UNBERÜHRT IST, IST
+      EINE ENTSCHEIDUNG ÜBER 11.5 UND WIRD HIER NICHT GETROFFEN. Wer den Block streicht,
+      trifft sie stillschweigend.
       WAS HIER NICHT ENTSCHIEDEN IST, und der Satz muss mit, weil die Berührung sonst
       unbemerkt bleibt: Die gewählte Gestalt ist beim Anbieter die ENTSPRECHUNG ZUM
       META-MODELL, und die Roadmap-Zeile 11.5 nimmt den "Hybrid-Schalter je Kanal"

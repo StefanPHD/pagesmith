@@ -53,11 +53,21 @@ NICHT hierauf, sondern darauf, dass heute KEINE IP/UA persistiert werden; und de
 mitzählt, hängt sie an den falschen Trigger.
 EINE FOLGE, DIE HINEINGEHÖRT: Die KOMMERZIELLE Stufe hängt bei JEDEM Fan-Out-Ziel an der
 Rechtsform, nicht nur bei Google. Pinterest verlangt für die höhere Zugriffsstufe eine
-Vertragsannahme und ein Prüfverfahren; Google für die gewählte Gestalt ein
-Partnerverfahren. BAUEN UND MIT EIGENEN KONTEN MESSEN GEHT OHNE; FREMDE KUNDENKONTEN
-ANBINDEN NICHT. BELEG: docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", die
+Vertragsannahme und ein Prüfverfahren; bei Google trägt die Stufe seit dem 2026-08-24 ein
+ANDERER GRUND. Die gewählte Gestalt — der OFFLINE CONVERSION IMPORT — trägt KEINEN
+Allowlist-Vorbehalt (GELESEN 2026-08-24, /devguides/events). Was dort stattdessen steht und
+die Aussage weiterhin trägt: ein GOOGLE-CLOUD-PROJEKT MIT AKTIVIERTER API, ein als SENSIBEL
+eingestufter Zugriffsbereich, und für NUTZER-Zugangsdaten eine OAUTH-VERIFIZIERUNG — bei
+DIENSTKONTEN ausdrücklich nicht. EIN FREIGABEVERFAHREN GIBT ES BEI GOOGLE WEITERHIN, ABER
+AM ZUGANGSMODELL STATT AN DER GESTALT — der gestrichene Satz hat beide Achsen
+zusammengezogen; WELCHES Modell gewählt wird (ADVERTISER oder DATA PARTNER), ist OFFEN und
+im Offen-Block des Google-Abschnitts geführt, und WIRD ES DATA PARTNER, KOMMT DAS
+VERFAHREN ZURÜCK. BAUEN UND MIT EIGENEN KONTEN MESSEN GEHT OHNE; FREMDE
+KUNDENKONTEN ANBINDEN NICHT — BEI GOOGLE ALSO AUS EINEM ANDEREN GRUND ALS BEI PINTEREST.
+BELEG: docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", die
 Antworten zu I1, I2 und I3; und Abschnitt "Google (Google Ads Conversions · GA4)",
-Teil (d).
+Teil (d) sowie Teil (q), Katalog-Frage I1 — dort stehen Cloud-Projekt,
+Dienstkonto-Ausnahme und der fehlende Allowlist-Vorbehalt.
 
 ## Tech-Stack
 - Next.js (App Router) + TypeScript + Turbopack. Lokal: Node v24.16.0.

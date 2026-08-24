@@ -210,6 +210,15 @@ gehen von hier eine Station weiter.
 - DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT (Trigger: EINGETRETEN —
   Supabase bietet es an; das Fenster schliesst sich mit dem ersten echten
   Kunden-Traffic)
+- DIE SOLL-HÄLFTE VON "/API/E-SCHLANKHEIT" IST ZU VERDICHTEN (Trigger: die nächste Arbeit
+  an CLAUDE.md, die diesen Abschnitt ohnehin berührt)
+- EIN INDIKATOR FÜR ABSCHNITT 2b FEHLT (Trigger: die nächste Änderung an
+  docs/arbeitsweise.md — dann geht er beiläufig hinein und kostet keinen zweiten Vollzug in
+  der Projektanweisung)
+- DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN TRIGGER UND SIND NICHT GESICHTET
+  (Trigger: die nächste Runde, die docs/offene-punkte.md ohnehin öffnet)
+- DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT (Trigger: die nächste
+  Arbeit an db-stand.sql oder am DB-Doku-Stand)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

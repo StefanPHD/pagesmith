@@ -759,3 +759,51 @@ aufeinander; sie liegen alle hier und finden einander.
   AUFKLÄRUNG und kein Bau, und sie wird durch dieses Upgrade weder beantwortet noch
   dringlicher.
   PROVENIENZ: Stand 2026-08-20, am 2026-08-21 verortet.
+- DIE SOLL-HÄLFTE VON "/API/E-SCHLANKHEIT" IST ZU VERDICHTEN (Trigger: die nächste Arbeit
+  an CLAUDE.md, die diesen Abschnitt ohnehin berührt): Der Eintrag steht in CLAUDE.md,
+  "### A) Heute verbindlich", und misst GEMESSEN am 2026-08-24 120 Zeilen / 9 429 Bytes —
+  der grösste zusammenhängende Einzelblock einer unbedingt geladenen Datei. Er stellt über
+  sich selbst zwei Dinge fest, die am 2026-08-24 unverändert dastehen: auf die SOLL-Hälfte
+  beruft sich im Produktivcode KEINE Stelle, und ihr Trigger ("eine GEMESSENE Grenze unter
+  echtem Traffic") hat niemanden, der misst — es gibt kein Monitoring auf
+  Concurrency-Slots.
+  ZU TUN: die SOLL-Hälfte auf wenige Zeilen verdichten und ihren Volltext hierher ziehen.
+  WAS NICHT DAZUGEHÖRT: die MUSS-Hälfte ("der CAPI-Call muss zuverlässig zugestellt
+  werden"). Sie gilt UNBEDINGT, bleibt wörtlich in CLAUDE.md und wird nicht angefasst.
+  Ebenso wenig gehört eine eigene Runde dazu — der Trigger ist ausdrücklich eine Arbeit,
+  die den Abschnitt ohnehin öffnet.
+- EIN INDIKATOR FÜR ABSCHNITT 2b FEHLT (Trigger: die nächste Änderung an
+  docs/arbeitsweise.md — dann geht er beiläufig hinein und kostet keinen zweiten Vollzug in
+  der Projektanweisung): Abschnitt "## 2b. PROPORTION — WIE TIEF GEPRÜFT WIRD" trägt vier
+  Abbruchkriterien und KEINE Messgrösse (GEMESSEN am 2026-08-24: 47 Zeilen, vier Bullets
+  unter "Abbruchkriterien", kein Treffer auf Messgrösse/Indikator/Kennzahl/Verhältnis).
+  Alle vier Kriterien verlangen ein Urteil; keines lässt sich erheben.
+  DER VORSCHLAG, UND ER IST NICHT BESCHLOSSEN: das Verhältnis von docs-Volumen zu
+  Code-Volumen je Phase, per git log erhoben und im Abschluss-Vermerk der Phase genannt;
+  steigt es zwei Phasen in Folge, ist das ein Befund für den Owner.
+  WAS NICHT DAZUGEHÖRT: ihn als beschlossen zu behandeln. Er ist ein VORSCHLAG — wer ihn
+  einträgt, holt vorher die Entscheidung ein. Und er ersetzt die vier Abbruchkriterien
+  nicht, sondern tritt daneben.
+- DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN TRIGGER UND SIND NICHT GESICHTET
+  (Trigger: die nächste Runde, die docs/offene-punkte.md ohnehin öffnet): GEMESSEN am
+  2026-08-24 tragen DREI Einträge das Wort EINGETRETEN — "NICHTS ZEIGT AN, DASS DER
+  VERÖFFENTLICHTE STAND NACHZUZIEHEN IST" · "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM
+  NICHT SENDEN" (dort zwei seiner vier Trigger, Ursache (1) und Ursache (4)) · "DAS
+  POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT".
+  DIE FRAGE, DIE DIESER EINTRAG OFFENHÄLT: Ein Trigger ist per Definition dieser Liste die
+  Bedingung, unter der ein Punkt herausgeht. Ein eingetretener Trigger macht den Punkt
+  FÄLLIG, nicht erledigt — und niemand hat entschieden, was mit einem fälligen Punkt
+  geschieht, der nicht abgearbeitet wird.
+  WAS NICHT DAZUGEHÖRT: die drei Punkte jetzt zu sichten oder abzuarbeiten. Dieser Eintrag
+  hält fest, DASS eine Sichtung fällig ist, und trifft keine Aussage über ihr Ergebnis.
+  Die Zahl DREI ist eine Momentaufnahme vom 2026-08-24 und wird nicht stillschweigend
+  fortgeschrieben.
+- DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT (Trigger: die nächste
+  Arbeit an db-stand.sql oder am DB-Doku-Stand): CLAUDE.md hält im Abschnitt "## Aktueller
+  DB-/Analytics-Stand" fest, jener Titel-Zeiger brauche die Regeltitel weiterhin an einem
+  auffindbaren Ort, und ein Pfad-Zeiger auf CLAUDE.md existiere nicht mehr. Ob der Zeiger
+  heute noch trägt, hat niemand geprüft. Die Datei existiert (GEMESSEN am 2026-08-24, nur
+  Existenz).
+  WAS NICHT DAZUGEHÖRT: die Datei jetzt zu öffnen oder den Zeiger zu beurteilen. Beides
+  gehört in die Runde, die der Trigger auslöst — diese Zeile hält nur fest, dass die
+  Prüfung aussteht.

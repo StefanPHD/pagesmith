@@ -370,8 +370,29 @@ ersetzt, zieht den Verzeichnis-Eintrag im SELBEN Zug nach — sonst läuft er st
 auseinander, und das Verzeichnis wird zu genau der zweiten Wahrheit, die es
 vermeiden soll. Dieselbe Bauform wie bei Roadmap-Marker und Volltext: zwei Orte,
 EIN Zug. *(Befund aus der Kollisionsprüfung zu A-8, 2026-08-21.)*
-*Die Ironie gehört dazu:* Dieser Absatz lässt die Datei, deren Wachstum er
-begrenzen soll, selbst wachsen. Er ist der letzte, der das darf.
+
+### Wie ein Satz wieder herausgeht
+
+**DIE ACHT WEGE OBEN REGELN DEN EINGANG. DIESER REGELT DEN AUSGANG.** Ohne ihn
+wächst die Regelmenge monoton. GEMESSEN am Repo (2026-08-24, CC-Aufklärung
+über alle 542 Commits): kein einziger Rückgang, drei bis sechsundachtzig
+Regeln, genau EINE ersatzlose Streichung — und die nur, weil der Gegenstand
+der Regel im selben Commit gelöscht wurde.
+
+**EINE NEUE DAUERREGEL TRÄGT DIE BEDINGUNG IHRES ENTFALLENS.** Wo keine
+formulierbar ist, ist es keine Dauerregel, sondern ein Vermerk, und gehört in
+die Standdatei. GEMESSEN an einer Stichprobe von 13 der 86 Regeln: KEINE
+trägt heute eine solche Bedingung.
+
+**EINE REGEL GEHT HERAUS, WENN IHRE BEDINGUNG EINGETRETEN IST** — geprüft am
+Repo, nicht vermutet. Sie wird ERSETZT, nicht gestempelt; gestempelt wird nur
+bei einem Mechanismuswechsel (s. „WAS MIT EINEM FALSCHEN SATZ GESCHIEHT",
+unverändert gültig).
+
+**DER AUSGANG WIRD NICHT NACHGEHOLT.** Es gibt KEINE Streichungsrunde. Wer
+eine Regel ohnehin anfasst, prüft im selben Zug, ob ihre Bedingung eingetreten
+ist. Sonst wird der Ausgang zu dem, was der Eingang nie war: eine eigene
+Doku-Runde — und die ist genau das Problem, das diese Regel adressiert.
 
 ### Standdateien — Vorgabe für den Kopf
 

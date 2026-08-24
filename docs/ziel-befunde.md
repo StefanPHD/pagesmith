@@ -688,7 +688,8 @@ stünde er an einem Ort, den nur liest, wer ohnehin bei Google ist.
 (d) DER NACHFOLGER: DIE DATA MANAGER API — ZWEI ZUGANGSMODELLE, EIN SENSIBLER BEREICH.
     GELESEN 2026-08-20 an
     developers.google.com/data-manager/api/devguides/quickstart/set-up-access: Die Data
-    Manager API (datamanager.googleapis.com) ist seit Dezember 2025 allgemein verfügbar.
+    Manager API (datamanager.googleapis.com) ist allgemein verfügbar seit v1.3, datiert
+    2025-10-06 (GELESEN 2026-08-24 an /reference, "Release notes").
     Sie kennt ZWEI Zugangsmodelle — ADVERTISER (die anmeldende Identität ist Nutzer im
     Werbekonto des Kunden) und DATA PARTNER (Partner-Konto, nur nach Freigabeverfahren,
     mit einem Partner-Link je Werbetreibendem).
@@ -717,8 +718,11 @@ stünde er an einem Ort, den nur liest, wer ohnehin bei Google ist.
     (d) für den Ads-Weg verlangt.
     DIE GRENZE, DIE MITMUSS — DAS IST KEIN DAUERZUSTAND: Google führt einen UMSTIEGSPFAD
     vom Measurement Protocol zur Data Manager API und nimmt GA4-Ereignisse dort entgegen;
-    für Analytics-Properties ist dieser Weg freischaltungspflichtig, für
-    Google-Ads-Konten nicht. Das Measurement Protocol ist HEUTE gangbar und ein KANDIDAT
+    BEIDE Multi-Source-Wege tragen einen Allowlist-Vorbehalt — Google Analytics ("only
+    available to Google Analytics properties on an allowlist", mit Formular) UND Google Ads
+    ("allowlist-only feature"); GELESEN 2026-08-24 an /devguides/events (Doku-Stand
+    2026-07-30), dieselbe Seite, dieselbe Aufzählung. Das Measurement Protocol ist HEUTE
+    gangbar und ein KANDIDAT
     für dieselbe Behandlung wie der Ads-Weg.
     TRIGGER, WÖRTLICH: eine Ankündigung, die das Measurement Protocol beschränkt oder
     abkündigt.

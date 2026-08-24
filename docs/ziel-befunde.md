@@ -66,7 +66,18 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
 
 - ## LinkedIn (Conversions API)
 - ## Google (Google Ads Conversions · GA4)
+  - ### Abschnitts-Lesung 2026-08-24 der Data-Manager-Dokumentation, LAUF 1 (Leitfaden und
+    Betrieb) — die Teile (g) bis (s)
+  - ### Acht Fragen ohne Katalog-Ort (2026-08-24)
 - ## Pinterest (Conversions API)
+
+**EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
+STATT AUFGELÖST WIRD:** Dieses Verzeichnis führte bis dahin AUSSCHLIESSLICH die drei
+`##`-Ziel-Abschnitte. Die beiden `###`-Zeilen darüber sind die ERSTEN Unterabschnitte
+darin — die rund fünfzehn übrigen (Messprotokolle, Nachträge, Abschnitts-Lesungen bei
+LinkedIn und Pinterest) stehen NICHT hier. Wer das Verzeichnis als vollständige Liste der
+Unterabschnitte liest, liest falsch. OB DIE ÜBRIGEN NACHGEZOGEN WERDEN, IST HIER NICHT
+ENTSCHIEDEN und war nicht Gegenstand des Eingriffs.
 
 ## LinkedIn (Conversions API)
 
@@ -738,6 +749,1040 @@ DIE ZAHL "VIER" IM KOPF DIESES BLOCKS WIRD NICHT ÜBERSCHRIEBEN — sie ist als 
 den Stand bei seiner Niederschrift richtig; mit diesem fünften sind es FÜNF. Dieselbe
 Bauform wie an den Zähl-Angaben in CLAUDE.md: eine Zahl, die einen Stand beschreibt, wird
 nicht rückwirkend angepasst. Wer sie als heutige Liste liest, zählt falsch.
+
+### Abschnitts-Lesung 2026-08-24 der Data-Manager-Dokumentation, LAUF 1 (Leitfaden und Betrieb) — die Teile (g) bis (s)
+
+**HERKUNFT — GELESEN, NICHTS GEMESSEN (2026-08-24):** Es ist KEIN Aufruf gegen eine
+Google-Schnittstelle gefahren worden — kein Zugangsdatum beschafft, kein Endpunkt
+angesprochen, keine Fehlerform erhoben, kein Konto angelegt. Alle Angaben unten sind an
+der Anbieter-Dokumentation GELESEN; jede nennt ihren Seitenpfad und den Doku-Stand, den
+die Seite selbst ausweist ("Last updated"). Basis aller Pfade, wo nichts anderes steht:
+developers.google.com/data-manager/api
+
+**DER GEGENSTAND WAR ENG UND IST ES GEBLIEBEN:** die Google Data Manager API, und darin
+der Weg, auf dem Conversion-Ereignisse SERVERSEITIG eingeliefert werden. GA4 und das
+Measurement Protocol waren AUSDRÜCKLICH AUSGESCHLOSSEN — anderer Adapter, anderes
+Zugangsmodell; ein Doppel-Crawl macht aus einem Lauf zwei halbe. Diese Lesung sagt über
+GA4 deshalb NICHTS und wertet den bestehenden Teil (f) weder auf noch ab.
+
+**DIES IST LAUF 1 VON ZWEI.** LAUF 2 — die Endpunkt- und Typ-Referenz (reference/rpc,
+reference/rest/v1) — ist am 2026-08-24 NICHT gefahren. Fragen, deren Antwort dort zu
+erwarten ist, tragen unten die Einstufung VERTAGT AUF LAUF 2 und AUSDRÜCKLICH NICHT die
+Einstufung NICHT-TREFFER. GRUND, und er ist der Zweck dieser Unterscheidung: Ein
+NICHT-TREFFER ist eine Aussage über den GELESENEN Umfang. Auf einen ungelesenen Baum
+angewandt behauptet er eine Reichweite, die er nicht hat — und die Frage gälte später als
+abgesucht, obwohl sie es nie war.
+
+**DIE VIER EINSTUFUNGEN, UND SIE REISEN AN JEDEM BEFUND MIT — NIE NUR HIER OBEN:**
+· BEANTWORTET — die Doku genügt für diese Frage, und der Fragenkatalog vermerkt für sie
+  auch nur "Doku genügt".
+· ABGELEGT — die Doku sagt etwas, der Fragenkatalog verlangt aber eine MESSUNG. Der Satz
+  "ERSETZT KEINE MESSUNG" steht an jedem einzelnen dieser Befunde, nicht bloss hier.
+  EIN ABGELEGTER BEFUND WIRD NIE ALS BEANTWORTET GEFÜHRT, auch wenn die Doku-Aussage
+  eindeutig klingt.
+· NICHT-TREFFER — steht auf keiner gelesenen Seite. Trägt seine REICHWEITE (welche
+  Seiten, welche Suchbegriffe) und den Satz, dass er KEINE Entwarnung ist.
+· VERTAGT AUF LAUF 2 — mit der Seite, auf der die Antwort erwartet wird.
+
+(g) DIESE LESUNG IST NICHT UNABHÄNGIG — VIER KANÄLE TRUGEN GOOGLE-ANGABEN VORAB.
+    DER VERMERK STEHT AN ERSTER STELLE, WEIL OHNE IHN DER BEFUND UNTER (q) FALSCH GELESEN
+    WIRD: Der Allowlist-Vorbehalt für die gewählte Gestalt ist unten am Anbieter-Text
+    BESTÄTIGT worden — er ist NICHT unabhängig entdeckt. Die ausführende Instanz wusste
+    vorher, dass dort etwas ist, und hat nachgesehen. Das mindert den Befund nicht, aber es
+    ändert seinen Rang.
+    DIE VIER KANÄLE, alle vor der ersten geöffneten Anbieter-Seite:
+    (1) docs/aktiver-stand.md — Pflicht-Gate, unvermeidbar. Sie nennt die gewählte Gestalt,
+        den VORBEHALT DER FREISCHALTUNG und den VORBEHALT DER BESTEHENDEN TAG-CONVERSION.
+    (2) CLAUDE.md — unbedingt geladen. Der Abschnitt "## Modus" trägt selbst eine
+        Google-Angabe: "Google für die gewählte Gestalt ein Partnerverfahren".
+    (3) docs/ziel-fragenkatalog.md — DER SCHÄRFSTE PUNKT, UND DIE BLIND-KLAUSEL HAT IHN
+        NICHT VORHERGESEHEN: Die (b)-GRÜNDE der Katalog-Fragen I1, I3 und I4 ZITIEREN
+        WÖRTLICH aus genau diesem Google-Abschnitt — aus den Teilen (a), (c), (d) und (e).
+        Der Auftrag verlangte, den Katalog zu lesen und den Google-Abschnitt nicht zu
+        öffnen. Beides zugleich ist nicht möglich: Der Katalog trägt fünf Google-Vorbefunde
+        im Text seiner eigenen Fragen.
+    (4) Eine bewusste Abweichung: Der Abschnitt "Befunde am Verfahren (2026-08-20)" in
+        docs/ziel-fragenkatalog.md wurde gelesen, weil docs/aktiver-stand.md ihn als DAS
+        VERFAHREN FÜR DEN CRAWL bindet. Er trägt Verfahrens-Korrekturen und KEINE
+        Ziel-Befunde.
+    WAS NACHWEISLICH NICHT GEÖFFNET WURDE: dieser Google-Abschnitt selbst (keine Zeile),
+    docs/ziel-befunde.md insgesamt (keine Zeile), docs/roadmap.md (kein Eintrag, auch nicht
+    11.2), docs/claude-history/* (keine Datei), die Matrix und die Fortschreibungs-
+    Abschnitte des Fragenkatalogs.
+
+(h) DER GELESENE UMFANG — OHNE DIESE LISTE HAT JEDES "STEHT DORT NICHT" UNTEN KEINE
+    REICHWEITE.
+    SIEBZEHN Seiten, alle am 2026-08-24 abgerufen: fünfzehn zugewiesene und zwei, die im
+    Kartier-Schritt geöffnet wurden, BEVOR der Umfang feststand. Die zwei sind eigens
+    ausgewiesen, statt sie unter die fünfzehn zu mischen.
+    WERKZEUG: Textbasiertes Lesen per HTTP-Abruf mit eigener HTML-nach-Text-Extraktion.
+    Playwright-MCP wurde NICHT benutzt und war nicht nötig — die Seiten liefern ihren
+    Inhalt serverseitig gerendert aus.
+    EIN VERFAHRENS-BEFUND ZUM TEXTBASIERTEN LESEN, DER IN KEINER REGEL STEHT: Eine
+    Vergleichstabelle auf /devguides/concepts/encryption trägt ihre Aussage in
+    HÄKCHEN-SYMBOLEN, die in der Text-Extraktion als LEERE ZELLEN erscheinen. Wer nur den
+    Text liest, sieht eine Tabelle mit Zeilen und ohne Inhalt und merkt NICHT, dass er die
+    Aussage verloren hat. Zurückgewonnen wurde sie über die CSS-Klassennamen
+    (compare-yes / compare-no) im Rohmarkup. Textbasiertes Lesen ist billiger und an
+    dieser Stelle STILL lückenhaft.
+
+    GEÖFFNET — die fünfzehn zugewiesenen Seiten, je mit Pfad, Titel und Doku-Stand:
+     1. /devguides/events — "Events overview" — 2026-07-30
+     2. /devguides/events/send-events — "Send events" — 2026-08-18
+     3. /devguides/events/google-ads/online — "Google Ads multi-source conversions" —
+        2026-07-30
+     4. /devguides/events/google-ads/offline — "Google Ads offline conversions" —
+        2026-07-30
+     5. /devguides/concepts/destinations — "Configure destinations and headers" —
+        2026-08-20
+     6. /devguides/concepts/formatting — "Format user data" — 2026-07-30
+     7. /devguides/concepts/understand-errors — "Understand API errors" — 2026-07-30
+     8. /devguides/concepts/best-practices — "Best practices" — 2026-07-30
+     9. /devguides/concepts/encryption — "Encrypt user data" — 2026-07-30
+    10. /devguides/quickstart/set-up-access — "Set up API access" — 2026-08-14
+    11. /devguides/accounts/partner-links — "Partner links overview" — 2026-08-07
+    12. /devguides/accounts/partner-links/create-partner-link — "Create or delete a partner
+        link" — 2026-08-07
+    13. /devguides/accounts/partner-links/retrieve-partner-links — "Retrieve partner links"
+        — 2026-07-30
+    14. /devguides/diagnostics — "Diagnostics" — 2026-07-30
+    15. /reference/ecapi — "ECAPI specification mapping" — 2026-07-30
+
+    GEÖFFNET, ABER NICHT ZUGEWIESEN — zwei Seiten aus dem Kartier-Schritt. Beide wurden
+    geöffnet, BEVOR der Umfang von Lauf 1 feststand, im Zuge der Karte, die zur
+    Stopp-Bedingung vorzulegen war. Sie stehen hier, statt verschwiegen zu werden:
+    16. /data-manager/api — "Data Manager API" (Startseite) — KEIN Doku-Stand ausgewiesen.
+        Trägt den EINZIGEN rohen HTTP-Aufruf im gesamten gelesenen Umfang.
+    17. /reference — "Release notes" — 2026-07-30. Ist NICHT die Referenz-Landeseite,
+        sondern die Versionshistorie.
+    OHNE DIESE ZWEI WÄRE (j)/B2 EIN NICHT-TREFFER. Das ist der Grund, sie eigens
+    auszuweisen und nicht stillschweigend mitzuzählen.
+
+    BEFUND ZU /reference/ecapi, WEIL DER AUFTRAG IHN VERLANGT HAT: Die Seite ist KEIN Tor
+    zu einem weiteren Baum. Sie ist eine Zuordnungstabelle vom IAB-ECAPI-Standard auf die
+    Data-Manager-Felder und verweist ausschliesslich auf bereits kartierte Seiten. Sie war
+    die Öffnung wert: Sie trägt das EINZIGE vollständige IngestEventsRequest-Beispiel für
+    ein GOOGLE-ADS-Ziel im gesamten gelesenen Umfang und die einzige Aussage zur
+    Einwilligungs-Mechanik.
+
+    GESEHEN, NICHT GEÖFFNET — mit Grund:
+    · /devguides/events/google-ads/store-sales und /store-sales/upgrade/{steps,
+      field-mappings} — vom Auftrag ausgeschlossen.
+    · ALLE upgrade/-Unterbäume: google-ads/offline/upgrade/{steps,field-mappings},
+      cm360/offline/upgrade/{steps,field-mappings}, analytics/measurement-protocol/
+      upgrade/{,steps,field-mappings}, accounts/partner-links/google-ads/upgrade/{steps,
+      field-mappings}, audiences/*/customer-match/upgrade/* — vom Auftrag ausgeschlossen.
+      Sie tragen Feld-Zuordnungen zu den Alt-Schnittstellen.
+    · /devguides/events/cm360/online, /devguides/events/cm360/offline — vom Auftrag
+      ausgeschlossen; anderes Produkt (Floodlight / Google Marketing Platform).
+    · /devguides/events/analytics/online, /devguides/events/analytics/
+      recommended-custom-events, /reference/analytics/recommended-events — GA4 /
+      Measurement Protocol, per Gegenstand ausgeschlossen.
+    · /devguides/audiences/** — siebzehn Seiten (send-audience-members,
+      google-ads/customer-match/*, display-video/customer-match/*): Zielgruppendaten
+      (Customer Match, PAIR), keine Konversion.
+    · /devguides/quickstart/install-library, /devguides/quickstart/agent-skills — vom
+      Auftrag ausgeschlossen.
+    · Die verbliebenen rund siebenunddreissig Seiten unter /reference/rest/v1
+      (userList*, audienceMembers*, accountTypes.accounts.*) — Zielgruppen-Verwaltung, kein
+      Konversions-Bezug.
+    · FÜR LAUF 2 VORGESEHEN, deshalb hier nicht geöffnet: /reference/rpc/
+      google.ads.datamanager.v1 sowie /reference/rest/v1/{events, events/ingest,
+      adEvents/ingest, Destination, Consent, UserData, Encoding, EncryptionInfo, Status,
+      ErrorInfo, ErrorReason, Code, requestStatus/retrieve} und nachrangig
+      {DeviceInfo, BadRequest, FieldWarning, Help, RequestInfo}.
+
+    NICHT KARTIERT — DREI SEITEN, DIE ES GIBT UND DIE IN KEINER KARTE STANDEN. Sie sind
+    deshalb weder zugewiesen noch geöffnet worden:
+    · /devguides/limits — "Limits and quotas". Daran hängen die ZAHLEN zu Katalog-Frage H3
+      und die Höchstzahl der Ziele je Anfrage zu H4.
+    · /devguides/terms — "Terms of service". Daran hängt Katalog-Frage I2
+      (Vertragsbedingungen).
+    · /support/contact — Support-Kontakt.
+    DER GRUND, WARUM SIE FEHLTEN, UND ER IST DER EIGENTLICHE BEFUND: Die Karte stammt aus
+    dem NAVIGATIONSBAUM, den die Seiten im Markup mitliefern. DIESE DREI SEITEN STEHEN IM
+    NAVIGATIONSBAUM NICHT. Sichtbar wurden sie erst über Verweise im FLIESSTEXT — "up to
+    the per-request limits", "Terms of service", "contact support".
+    FOLGE: Wer den Umfang eines Doku-Abschnitts aus der Navigation ableitet, unterschätzt
+    ihn — und zwar ohne dass etwas rot wird. Die betroffenen Katalog-Fragen H3 und I2 sind
+    unten als ABGELEGT geführt und AUSDRÜCKLICH NICHT als NICHT-TREFFER: Sie sind nicht
+    abgesucht worden.
+
+(i) GRUPPE A — ZUGANG (Katalog-Fragen A1 bis A5).
+
+    A1 · AUF WELCHEM WEG BESCHAFFT DER BETREIBER DAS ZUGANGSDATUM — BEANTWORTET.
+    GELESEN 2026-08-24, /devguides/quickstart/set-up-access (Stand 2026-08-14) und
+    /devguides/accounts/partner-links (Stand 2026-08-07). Es sind DREI Wege auf ZWEI
+    ACHSEN, und sie sind nicht austauschbar.
+    ACHSE 1, DIE ANMELDEDATEN SELBST: Beides läuft über OAuth 2.0 mit einem
+    GOOGLE-CLOUD-PROJEKT, in dem die Data Manager API aktiviert ist. API-Schlüssel sind
+    ausdrücklich ausgeschlossen — "You can use any of the Authentication methods at Google
+    besides API keys".
+    (1) NUTZERKONTO: Desktop-OAuth2-Client anlegen, Client-Konfiguration als JSON
+        herunterladen, dann `gcloud auth application-default login --scopes=".../auth/
+        datamanager,.../auth/cloud-platform" --client-id-file="..."`.
+    (2) DIENSTKONTO MIT IDENTITÄTSÜBERNAHME — ausdrücklich statt Dienstkonto-Schlüsseln,
+        "because service account keys can become a security risk if not managed carefully".
+    ACHSE 2, DER ZUGRIFFSPFAD ZUM KUNDENKONTO:
+    (3a) DIREKTER ZUGRIFF (ADVERTISER): Anmeldedaten eines Google-Kontos, das Nutzer im
+         Werbekonto des Kunden ist. "Requires separate credentials for every advertiser
+         account", und diese Anmeldedaten sind LANGLEBIG und je Kunde aufzubewahren.
+    (3b) DATA PARTNER: Anmeldedaten des EIGENEN Partner-Kontos für ALLE Kunden. "Once you
+         create a partner link in an advertiser account, all subsequent requests use a
+         single set of credentials." Die Kundendaten braucht man nur EINMAL, zum Anlegen
+         des Links.
+    ZWEI GETRENNTE ZUGRIFFSBEREICHE: https://www.googleapis.com/auth/datamanager
+    ("required for all services in the Data Manager API") und der eng geschnittene
+    https://www.googleapis.com/auth/datamanager.partnerlink, der AUSSCHLIESSLICH das
+    Anlegen und Löschen eines Partner-Links erlaubt.
+    WAS OFFEN BLEIBT — die Katalog-Hälfte, die Beobachtung verlangt: welcher Weg das
+    Artefakt liefert, das live benutzt wird.
+
+    A2 · WELCHE FORM HAT DAS ZUGANGSDATUM — SKALAR ODER MEHRERE WERTE — BEANTWORTET.
+    GELESEN 2026-08-24, /devguides/quickstart/set-up-access (Stand 2026-08-14) und
+    /devguides/concepts/destinations (Stand 2026-08-20). KEIN SKALAR, auf keinem Weg:
+    · Der Nutzerweg erzeugt eine heruntergeladene CLIENT-KONFIGURATIONSDATEI plus eine
+      lokal erzeugte ADC-Datei.
+    · Der Dienstkonto-Weg ist eine BERECHTIGUNGSKETTE (Dienstkonto-Adresse plus drei
+      IAM-Bindungen), kein Wert.
+    · Unabhängig davon reist bei JEDEM Aufruf die KONTO-ADRESSIERUNG im Rumpf mit:
+      operatingAccount{accountType,accountId} · loginAccount{accountType,accountId} ·
+      optional linkedAccount{accountType,accountId} · productDestinationId. Bis zu sieben
+      Werte, die weder Kennung im bisherigen Sinn noch Geheimnis sind.
+    GRENZE: Die Felder INNERHALB der Client-Konfiguration bzw. der ADC-Datei zählt keine
+    der gelesenen Seiten auf. DASS es mehrere sind, ist belegt; WELCHE genau, nicht.
+
+    A3 · LÄUFT ES AB, UND NACH WELCHER FRIST — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/accounts/partner-links (Stand 2026-08-07): Die Doku
+    stellt die beiden Wege ausdrücklich gegenüber — die Anmeldedaten des Werbekontos sind
+    auf dem Partner-Weg "short-lived. You can discard them once you've used them to create
+    a partner link", auf dem Direktweg "long-lived. You must securely store the credentials
+    for every advertiser".
+    EINE FRIST NENNT KEINE DER SIEBZEHN SEITEN — keine Zahl, keine Einheit.
+    ERSETZT KEINE MESSUNG.
+
+    A4 · GIBT ES EINEN ERNEUERUNGSWEG, UND WER DARF IHN NUTZEN — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/quickstart/set-up-access (Stand 2026-08-14): Genannt ist
+    der MECHANISMUS, nicht der Vorgang — Application Default Credentials "automatically
+    find credentials from the environment so you don't have to change the client code to
+    authenticate"; bei Identitätsübernahme erzeugt die Kette kurzlebige Token.
+    EIN ERNEUERUNGS-ENDPUNKT, EINE AUFFRISCHUNGS-KENNUNG ODER EINE AUSSAGE DARÜBER, WAS BEI
+    ABLAUF GESCHIEHT, STEHT AUF KEINER DER SIEBZEHN SEITEN. Die Doku verweist an dieser
+    Stelle nach AUSSEN ("Authentication methods at Google", "How Application Default
+    Credentials works") — beides nicht geöffnet, beides ausserhalb des
+    Data-Manager-Baums.
+    ERSETZT KEINE MESSUNG.
+
+    A5 · INSTRUMENT FÜR GÜLTIGKEIT ODER RESTLAUFZEIT — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/quickstart/set-up-access (Stand 2026-08-14): Genannt ist
+    EIN Instrument, und es prüft nur die EINRICHTUNG —
+    `gcloud auth application-default print-access-token --scopes="https://
+    www.googleapis.com/auth/datamanager"`, "If successful, the command prints an access
+    token to the console".
+    DAS IST EINE JA/NEIN-AUSKUNFT, KEINE RESTLAUFZEIT, und es ist ein Kommandozeilen-
+    Werkzeug, keine Schnittstelle. Eine API-Sonde für Gültigkeit nennt keine gelesene Seite.
+    ERSETZT KEINE MESSUNG.
+
+(j) GRUPPE B — ADRESSIERUNG (Katalog-Fragen B1 bis B4).
+
+    B1 · WIE LAUTET DIE ENDPUNKT-ADRESSE — VERTAGT AUF LAUF 2, erwartet auf
+    /reference/rest/v1/events/ingest.
+    GELESEN 2026-08-24, /data-manager/api (Startseite, kein Doku-Stand ausgewiesen):
+    Wirtsname und Versions-Segment stehen fest. Die Seite zeigt EINEN rohen Aufruf, aber
+    für die FALSCHE Methode:
+      POST https://datamanager.googleapis.com/v1/audiencemembers:ingest
+    Das ist der ZIELGRUPPEN-Aufruf. DIE VOLLSTÄNDIGE URL DES EREIGNIS-AUFRUFS STEHT AUF
+    KEINER DER SIEBZEHN SEITEN. Der Dienst heisst IngestionService, die Anfrage
+    IngestEventsRequest.
+    ABLEITUNG, AUSDRÜCKLICH ALS SOLCHE GEKENNZEICHNET UND KEIN BEFUND: nach dem Muster
+    wäre ".../v1/events:ingest" zu erwarten. GELESEN ist das NICHT.
+
+    B2 · VERLANGT DER ANBIETER EINE VERSIONSANGABE, UND SCHALTET ER VERSIONEN AB —
+    BEANTWORTET.
+    GELESEN 2026-08-24, /data-manager/api (Startseite) und /reference ("Release notes",
+    Stand 2026-07-30) — beide aus dem Kartier-Schritt, s. (h).
+    IM PFAD, als Segment /v1/ — nicht in einer Kopfzeile, nicht im Rumpf. Die Release-Notes
+    führen NEUN Stände unter DEMSELBEN Pfad-Segment: v1.0 (2025-04-02) · v1.1 (2025-06-25)
+    · v1.2 (2025-08-06) · v1.3 (2025-10-06) · v1.4 (2025-11-05) · v1.5 (2026-02-17) · v1.6
+    (2026-05-07) · v1.7 (2026-05-28) · v1.8 (2026-07-30, aktuell). Die Nebenstände sind
+    MERKMALS-Stände, keine eigenen Adressen — es gibt keinen Weg, eine bestimmte
+    Nebenversion anzufordern.
+    "The Data Manager API is now generally available" seit v1.3 (2025-10-06).
+    ABSCHALTUNG: auf FELD-Ebene ja — mit v1.3 wurden "the product field" und Werte des
+    Product-Enums abgekündigt. Die Abschaltung eines ganzen Versionsstands nennt keine
+    gelesene Seite; es gibt kein Ablaufdatum je Version.
+    ZWEI MERKMALE, AUF DENEN DIE GEWÄHLTE GESTALT RUHT, SIND JUNG: IngestEvents kam mit
+    v1.1 (2025-06-25), RetrieveRequestStatus — der einzige Weg zur Diagnostik — erst mit
+    v1.3 (2025-10-06).
+
+    B3 · IN WELCHEM TRÄGER REIST DAS GEHEIMNIS — VERTAGT AUF LAUF 2, erwartet auf
+    /reference/rest/v1/events/ingest.
+    KEINE DER SIEBZEHN SEITEN ZEIGT EINE AUTHORIZATION-KOPFZEILE. Der Leitfaden führt
+    ausschliesslich über den API-Explorer im Browser ("complete the authorization prompts")
+    und über Client-Bibliotheken, die das Token selbst setzen. Dass ein
+    OAuth-2.0-Zugriffstoken erzeugt wird, ist belegt (A5); WIE es an der Schnittstelle
+    ankommt, steht dort nicht.
+    AUSDRÜCKLICH KEINE ENTWARNUNG — die Frage ist nicht abgesucht, sie ist verschoben.
+
+    B4 · WELCHE WEITEREN KOPFZEILEN SIND PFLICHT — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/concepts/destinations (Stand 2026-08-20). Die Doku
+    trifft hier eine NEGATIVE Aussage von ungewöhnlicher Schärfe, und sie ist der
+    wichtigste Befund dieser Gruppe:
+      "Don't set request headers in an IngestionService request. The Data Manager API
+       ignores headers in an ingestion request."
+    Die Kopfzeilen `login-account` und `linked-account` EXISTIEREN, gelten aber
+    AUSSCHLIESSLICH für Ressourcen-Verwaltungs-Aufrufe (Insights, PartnerLink, UserList,
+    UserListDirectLicense, UserListGlobalLicense, UserListGlobalLicenseCustomerInfo). BEIM
+    EINLIEFERN REIST DER ZUGRIFFSPFAD IM RUMPF, als loginAccount und linkedAccount des
+    Destination.
+    WARUM DAS LEICHT FALSCH HERUM GEBAUT WIRD: derselbe Sachverhalt einmal als Kopfzeile,
+    einmal als Rumpf-Feld, je nach Aufrufart — und die falsche Wahl wird IGNORIERT, nicht
+    abgewiesen.
+    ERSETZT KEINE MESSUNG.
+
+(k) GRUPPE C — KENNUNG DES ZIELS (Katalog-Fragen C1 bis C4).
+
+    C1 · WIE HEISST DIE KENNUNG, UND WELCHE FORM HAT SIE — BEANTWORTET (Form; die Ablehnung
+    bei falschem Präfix bleibt Messung).
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18) und
+    /devguides/concepts/destinations (Stand 2026-08-20). Die Kennung heisst
+    productDestinationId und ist JE GESTALT EINE ANDERE SACHE:
+    · MULTI-SOURCE CONVERSIONS: ID einer Conversion-Action vom Typ WEBPAGE. In der
+      Google-Ads-Oberfläche ist die Conversion source dafür "Website".
+    · OFFLINE CONVERSIONS / ENHANCED CONVERSIONS FOR LEADS: ID einer Conversion-Action vom
+      Typ UPLOAD_CLICKS. Oberfläche: "Website (Import from clicks)".
+    · STORE SALES: ID einer Conversion-Action vom Typ STORE_SALES. Oberfläche: "Store
+      sales".
+    SIE IST KEINE KONTO-KENNUNG, sondern die Kennung eines OBJEKTS IM KONTO, das vorher
+    existieren muss. Die Google-Ads-Kundennummer reist getrennt als
+    operatingAccount.accountId mit accountType "GOOGLE_ADS".
+    FORM: reine Ziffernfolge, kein Präfix. Belegt indirekt über die Fehlermeldung "String
+    is not a valid number." mit Grund INVALID_NUMBER_FORMAT auf
+    destinations[0].login_account.account_id, und über alle Beispiele (123456789,
+    777111122, 1234567890). EIN ZEICHENVORRAT ODER EINE LÄNGENANGABE STEHT AUF KEINER
+    GELESENEN SEITE.
+    BESCHAFFUNG: Google-Ads-Oberfläche unter Conversions > Conversion-Action > Reiter
+    Details > "Conversion type ID" — ODER über die GOOGLE ADS API (nicht die Data Manager
+    API) mit "SELECT conversion_action.id, conversion_action.name FROM conversion_action
+    WHERE conversion_action.name = '...'".
+
+    C2 · WO REIST DIE KENNUNG — PFAD, RUMPF ODER KOPFZEILE — BEANTWORTET.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18) und
+    /devguides/concepts/destinations (Stand 2026-08-20): IM RUMPF, als
+    destinations[].productDestinationId. Nicht im Pfad, nicht in einer Kopfzeile —
+    Kopfzeilen werden beim Einliefern ignoriert (s. B4). Dasselbe gilt für die
+    Konto-Kennung (destinations[].operatingAccount.accountId). EINE KODIERUNG FÜR DEN PFAD
+    ENTFÄLLT DAMIT.
+
+    C3 · GILT EINE KENNUNG JE PROJEKT ODER JE EREIGNISTYP — BEANTWORTET.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18). JE
+    CONVERSION-ACTION, und damit faktisch je Ereignistyp, nicht je Projekt. Zwei Belege,
+    die zusammengehören:
+    · Die Deduplizierung greift ausdrücklich "Within the same conversion action".
+    · Für mehrere Ziele in EINER Anfrage gibt es einen eigenen Mechanismus: jedes
+      Destination bekommt ein frei wählbares `reference` (einzige Auflage: Eindeutigkeit),
+      jedes Event eine Liste destinationReferences[]. OHNE destinationReferences GEHT EIN
+      EREIGNIS AN ALLE DESTINATIONS DER ANFRAGE — das ist die Vorgabe, kein Fehler.
+    FOLGE, GELESEN UND NICHT GEDEUTET: Wer zwei verschiedene Konversionen unterscheiden
+    will, braucht ZWEI Conversion-Actions und ZWEI Destinations, nicht ein Feld im Rumpf.
+    Der Anbieter erzwingt die Trennung auf der ZIEL-Achse.
+
+    C4 · IST DIE KENNUNG ÖFFENTLICH ODER SELBST EIN GEHEIMNIS — NICHT-TREFFER.
+    Auf KEINER der siebzehn gelesenen Seiten wird productDestinationId, die
+    Conversion-Action-ID oder die Google-Ads-Kundennummer als vertraulich, geheim oder
+    schützenswert eingestuft — weder positiv noch negativ. Die Anleitung lässt sie in der
+    Oberfläche ablesen; das ist eine Aussage über die BESCHAFFUNG, nicht über die
+    Vertraulichkeit, und sie wird hier ausdrücklich nicht als solche gelesen.
+    ABGESUCHTE ACHSE: die siebzehn Seiten aus (h), Begriffe `secret`, `confidential`,
+    `sensitive`, `private`, `public`. Ein Treffer auf `sensitive` existiert, betrifft aber
+    den OAuth-Zugriffsbereich (s. (q)/I1), nicht die Kennung.
+    DAS IST KEINE ENTWARNUNG.
+
+(l) GRUPPE D — NUTZLAST (Katalog-Fragen D1 bis D6).
+
+    D1 · WIE IST DIE HÜLLE AUFGEBAUT — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18) und
+    /reference/ecapi (Stand 2026-07-30): ZWEI PARALLELE ARRAYS AUF DER WURZELEBENE,
+    verbunden über benannte Verweise:
+      { "destinations": [ {...} ], "events": [ {...} ], "encoding": "HEX",
+        "consent": {...}, "encryptionInfo": {...}, "validateOnly": true }
+    Kein Wurzelschlüssel `data`, kein Einzelobjekt. DIE EMPFÄNGER STEHEN NEBEN DEN
+    EREIGNISSEN, NICHT IN IHNEN — das ist die eigentliche Bauform-Aussage. consent,
+    encryptionInfo, encoding und validateOnly gelten für die GANZE Anfrage; consent ist
+    zusätzlich je Ereignis übersteuerbar.
+    ERSETZT KEINE MESSUNG.
+
+    D2 · WIE HEISSEN DIE KERNFELDER — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18), /reference/ecapi
+    (Stand 2026-07-30) und /reference ("Release notes", Stand 2026-07-30):
+    · EREIGNIS-KENNUNG: transactionId — zugleich der Dedup-Schlüssel, s. (p)/H2.
+    · ZEITSTEMPEL: eventTimestamp — RFC-3339-Zeichenkette, s. D3.
+    · EREIGNISNAME: eventName — Pflicht NUR für Google-Analytics-Ziele; in der
+      Google-Ads-Multi-Source-Zeile taucht es nicht auf.
+    · HERKUNFT: eventSource — Enum; für Multi-Source optional, wenn gesetzt dann WEB.
+    · WERT/WÄHRUNG: conversionValue, currency.
+    · IDENTITÄT: userData, adIdentifiers, eventDeviceInfo — s. (m).
+    · WEITERES: cartData, userProperties, destinationReferences, additionalEventParameters,
+      experimentalFields, eventLocation, conversionCount, thirdPartyUserData.
+    conversionCount kam mit v1.7 hinzu ("to support tracking conversion quantities").
+    thirdPartyUserData ist NUR zulässig, wenn loginAccount.accountType gleich DATA_PARTNER
+    ist.
+    ERSETZT KEINE MESSUNG.
+
+    D3 · WELCHE ZEITEINHEIT, UND GIBT ES EIN ZEITFENSTER — BEANTWORTET (Einheit); das
+    FENSTER für Google Ads ist ungedeckt, s. unten und (s)/Lücke D.
+    GELESEN 2026-08-24, /devguides/concepts/formatting (Stand 2026-07-30),
+    /devguides/events/send-events (Stand 2026-08-18) und /reference/ecapi (Stand
+    2026-07-30).
+    EINHEIT — UND SIE WEICHT VON ALLEN BISHER GEBAUTEN ZIELEN AB: Bei JSON ist
+    eventTimestamp eine RFC-3339-ZEICHENKETTE, keine Zahl. Beispiele der Doku:
+    "2025-08-08T17:18:44.291Z", "2025-06-10T23:42:33-05:00", "2025-08-08T22:18:44.291+09:00".
+    Weder Sekunden noch Millisekunden seit der Epoche. Bei Protobuf: seconds plus optional
+    nanos. Die ECAPI-Zuordnung sagt es ausdrücklich: "ECAPI uses the Unix epoch format
+    (integer) for timestamps. When mapping to the Data Manager API, the event_timestamp
+    field must be converted."
+    FENSTER — HIER TRENNT SICH DIE DOKU: Für Google Analytics steht es scharf da (72
+    Stunden für den Zeitstempel; 48 Stunden für Ereignisse, die mit clientseitig erfassten
+    zusammengeführt werden sollen). FÜR GOOGLE ADS MULTI-SOURCE NENNT KEINE DER SIEBZEHN
+    GELESENEN SEITEN EIN FENSTER — weder eine Obergrenze noch eine Untergrenze noch ein
+    Verbot künftiger Zeitstempel.
+
+    D4 · IN WELCHEM TYP REIST DER WERT, UND PRÜFT DIE SCHNITTSTELLE DEN TYP — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18), /reference/ecapi
+    (Stand 2026-07-30) und /devguides/concepts/understand-errors (Stand 2026-07-30).
+    DER TYP WECHSELT INNERHALB DERSELBEN NUTZLAST, und das ist der Befund:
+    · conversionValue — ZAHL (30.03, 42.02, 450.0); ECAPI: "as a double or float".
+    · currency — Zeichenkette, drei Buchstaben GROSS. Die Eingabe "usd"/"eur" wird im
+      Formatier-Schritt zu "USD"/"EUR".
+    · items[].quantity — GANZZAHL (int64); ECAPI: "Convert the float value to an integer
+      (int64)".
+    · items[].unitPrice — Zahl.
+    · additionalEventParameters[].value, additionalItemParameters[].value,
+      experimentalFields[].value — ZEICHENKETTE, AUCH BEI ZAHLINHALT
+      ({"parameterName":"discount","value":"2.22"}, {"field":"gad_campaignid",
+      "value":"21288051566"}).
+    · accountId, productDestinationId — Zeichenkette mit Ziffern, in Anführungszeichen.
+    Also: dieselbe Zahl reist als ZAHL, wenn sie ein benanntes Feld hat, und als
+    ZEICHENKETTE, wenn sie über den Zusatzparameter-Weg geht.
+    PRÜFUNG: Der Fehlergrund INVALID_NUMBER_FORMAT ist mit Beispielantwort belegt.
+    ERSETZT KEINE MESSUNG.
+
+    D5 · WELCHE FELDER SIND PFLICHT, WELCHE OPTIONAL — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18), Tabelle "Convert
+    the data to Event objects", Reiter Google Ads; dazu
+    /devguides/concepts/understand-errors (Stand 2026-07-30) und
+    /devguides/concepts/destinations (Stand 2026-08-20).
+    DER KONTRAST ZWISCHEN DEN BEIDEN GELESENEN GESTALTEN IST DER BEFUND:
+                              MULTI-SOURCE          OFFLINE / ECL
+      Kennung                 PFLICHT (1 aus 5)     PFLICHT (dieselben 5)
+      transactionId           PFLICHT                OPTIONAL
+      eventSource             optional; wenn         PFLICHT (ein Wert des
+                              gesetzt, dann WEB      EventSource-Enums)
+    transactionId UND eventSource TAUSCHEN IHREN RANG ZWISCHEN DEN BEIDEN GESTALTEN. Wer
+    den einen Adapter aus dem anderen ableitet, erbt genau die falsche Hälfte.
+    DAS IST EINE FESTSTELLUNG AM TEXT UND KEINE AUSSAGE DARÜBER, WELCHE GESTALT ZU WÄHLEN
+    IST.
+    DIE FÜNFER-LISTE DER KENNUNGEN, für BEIDE Gestalten identisch — mindestens eines davon:
+    (1) adIdentifiers mit mindestens einem aus gclid, gbraid, wbraid · (2)
+    adIdentifiers.landingPageDeviceInfo.ipAddress · (3) Session-Attribute · (4) userData ·
+    (5) eventDeviceInfo.ipAddress.
+    AUF ANFRAGE-EBENE: destinations PFLICHT · operatingAccount PFLICHT ·
+    productDestinationId PFLICHT · loginAccount optional (Vorgabe: gleich
+    operatingAccount) · linkedAccount nur im Data-Partner-Fall. In cartData: items PFLICHT
+    mit mindestens einem Eintrag, sobald cartData überhaupt gesetzt ist.
+    DAS FEHLSCHLAG-MODELL GEHÖRT ZWINGEND ZU DIESER FRAGE — FAST-FAIL, vom Anbieter
+    ausdrücklich gegen das Teilfehler-Modell der Google Ads API und der Campaign Manager
+    360 API abgegrenzt: "If a request contains structural errors or if any record fails
+    validation for a required field, the entire request fails, and the API does not process
+    any of the data in that request." EIN EINZIGER PFLICHTFELD-FEHLER IN EINEM STAPEL
+    VERWIRFT DEN GANZEN STAPEL. Fehlerhafte OPTIONALE Felder erzeugen dagegen nur eine
+    Warnung.
+    ERSETZT KEINE MESSUNG.
+
+    D6 · PRÜFT DIE SCHNITTSTELLE DIE BEDEUTUNG DER WERTE — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/concepts/understand-errors (Stand 2026-07-30),
+    /devguides/events/send-events (Stand 2026-08-18) und /reference ("Release notes", Stand
+    2026-07-30).
+    JA, FÜR DEN WÄHRUNGSCODE AUSDRÜCKLICH: INVALID_CURRENCY_CODE ist als
+    ErrorReason-Wert namentlich genannt. Weitere belegte Bedeutungs-Prüfungen:
+    INVALID_HEX_ENCODING · INVALID_SHA256_FORMAT · INVALID_NUMBER_FORMAT ·
+    INVALID_EVENT_NAME · FIELD_VALUE_TOO_SHORT · TOO_FEW_ELEMENTS ·
+    MULTIPLE_DESTINATIONS_FOR_GOOGLE_ANALYTICS_EVENT · REQUIRED_PREREQUISITE_LINK_MISSING ·
+    INVALID_REMOVE_AS_OF_TIME.
+    EIN WERTEBEREICH FÜR conversionValue STEHT AUF KEINER GELESENEN SEITE — keine Ober-
+    oder Untergrenze, keine Aussage zu Null oder negativen Werten.
+    ERSETZT KEINE MESSUNG.
+
+(m) GRUPPE E — IDENTITÄT DES BESUCHERS (Katalog-Fragen E1 bis E4).
+
+    E1 · VOLLSTÄNDIGE LISTE DER IDENTITÄTS-MERKMALE — BEANTWORTET (Liste; je Symbol bleibt
+    Messung).
+    GELESEN 2026-08-24, /devguides/concepts/formatting (Stand 2026-07-30),
+    /devguides/events/send-events (Stand 2026-08-18) und /reference/ecapi (Stand
+    2026-07-30). Die Merkmale liegen an DREI VERSCHIEDENEN ORTEN der Nutzlast, und das ist
+    wesentlicher als die Liste selbst.
+    DIE ORTE HEISSEN HIER "ORT 1/2/3" UND NICHT (a)/(b)/(c) — GENAU AUS DEM GRUND, DEN DER
+    BESTEHENDE TEIL (e) DIESES ABSCHNITTS FÜR DIE BEZEICHNER (a-Gestalt)/(b-Gestalt)
+    NENNT: Ein bloss geklammerter Kleinbuchstabe wäre von den TEILEN (a) bis (f) dieses
+    Abschnitts nicht zu unterscheiden, und ein späterer Verweis würde mehrdeutig.
+    ORT 1 · userData.userIdentifiers[] — je Eintrag GENAU EIN Merkmal ("Each UserIdentifier has
+        exactly one of the attributes"): emailAddress · phoneNumber · address (AddressInfo:
+        givenName, familyName, regionCode, postalCode, addressLine, city,
+        administrativeArea). addressLine, city und administrativeArea sind ausdrücklich
+        "Used only for Google Analytics" — für Google Ads also nicht. Mehrfachnennung ist
+        erwünscht: "if you have multiple email addresses for a user, include a separate
+        UserIdentifier for each".
+    ORT 2 · adIdentifiers — Klick- und Sitzungsmerkmale, NICHT in userData: gclid · gbraid ·
+        wbraid · dclid · matchId · impressionId · mobileDeviceId · encryptedUserIds[] ·
+        sessionAttributes · landingPageDeviceInfo (ipAddress, userAgent). FÜR GOOGLE ADS
+        MULTI-SOURCE taugen laut Pflicht-Tabelle nur gclid, gbraid, wbraid und
+        landingPageDeviceInfo.ipAddress; dclid, matchId, impressionId und encryptedUserIds
+        stehen dort in der FLOODLIGHT-Zeile.
+    ORT 3 · eventDeviceInfo — auf Event-Ebene, weder in userData noch in adIdentifiers:
+        ipAddress, userAgent.
+    Dazu, ausschliesslich für Google-Analytics-Ziele: clientId, userId, appInstanceId.
+    GRENZE: Die ABSCHLIESSENDE Feldliste steht in der Referenz (UserData, AdIdentifiers,
+    DeviceInfo) und damit in Lauf 2. Die obige Liste ist aus den Leitfäden zusammengetragen
+    und NICHT als abschliessend belegt.
+
+    E2 · ROH ODER GEHASHT, UND MIT WELCHEM VERFAHREN — BEANTWORTET.
+    GELESEN 2026-08-24, /devguides/concepts/formatting (Stand 2026-07-30) und
+    /devguides/concepts/encryption (Stand 2026-07-30). GEMISCHT, FELDWEISE FESTGELEGT — es
+    gibt keine einheitliche Regel, und die Trennlinie läuft MITTEN DURCH das Adressobjekt.
+    SHA-256 GEHASHT, danach hex- oder Base64-kodiert: emailAddress · phoneNumber ·
+    givenName · familyName · addressLine.
+    NICHT HASHEN, ausdrücklich: regionCode · postalCode · city · administrativeArea ·
+    ipAddress · mobileIds.
+    NORMALISIERUNG VOR DEM HASHEN, UND SIE IST DOMÄNENABHÄNGIG:
+    · E-Mail kleinschreiben. BEI gmail.com UND googlemail.com: alle Punkte vor dem @
+      entfernen UND das Pluszeichen samt allem danach streichen
+      (cloudy.sanfrancisco+shopping@gmail.com -> cloudysanfrancisco@gmail.com). BEI JEDER
+      ANDEREN DOMÄNE: NICHT (user.name+NYC@Example.com -> user.name+nyc@example.com).
+      Leerraum wird bei E-Mail auch INNEN getrimmt, bei allen anderen Feldern nur vorn und
+      hinten.
+    · Telefon: E.164, führendes +, danach nur Ziffern ((800)555-0100 -> +18005550100).
+    · Namen: kleinschreiben, keine Anreden ("Mrs."), keine Suffixe ("Jr.").
+    · regionCode: ISO-3166-1 alpha-2, zwei Zeichen. postalCode: US fünf Ziffern oder fünf
+      plus vier; ausserhalb der USA KEINE Erweiterung.
+    KODIERUNG — EINE FALLE, DIE AUSDRÜCKLICH BENANNT IST: Bei HEX ist die
+    Gross-/Kleinschreibung egal, bei BASE64 NICHT.
+    OPTIONAL DARÜBER — VERSCHLÜSSELUNG ("confidential matching"): Reihenfolge zwingend —
+    formatieren, SHA-256, BASE64 kodieren, mit dem DEK verschlüsseln, hex oder Base64
+    kodieren; dazu encryptionInfo und encoding auf der Anfrage. Ausdrücklich: "Don't
+    encrypt unhashed values", also nicht regionCode, postalCode, city, administrativeArea.
+    Unterstützt sind Google Cloud KMS und AWS KMS — für GOOGLE ADS MULTI-SOURCE BEIDE, für
+    Offline-Conversions und Store-Sales NUR Google Cloud KMS. (Diese Tabelle war nur über
+    die CSS-Klassennamen lesbar, s. (h).) KOSTENHINWEIS DER DOKU: die
+    Entschlüsselungs-Aufrufe des Anbieters verbrauchen Kontingent IM KMS-PROJEKT DES
+    BETREIBERS.
+
+    E3 · IST MINDESTENS EIN IDENTITÄTS-MERKMAL PFLICHT — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18) und
+    /devguides/diagnostics (Stand 2026-07-30). JA — mindestens eines aus der Fünfer-Liste
+    unter D5.
+    ZWEI DOKU-STELLEN SAGEN DAS UND WIDERSPRECHEN SICH IN DER ZUSAMMENSETZUNG DER LISTE —
+    s. (r), Widerspruch 1.
+    BEMERKENSWERT DANEBEN: landingPageDeviceInfo.ipAddress und eventDeviceInfo.ipAddress
+    reisen laut Formatier-Leitfaden UNGEHASHT und zählen dennoch als hinreichende Kennung.
+    ERSETZT KEINE MESSUNG.
+
+    E4 · GIBT ES EIN FELD FÜR DEN USER-AGENT — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18) und
+    /reference/ecapi (Stand 2026-07-30). JA, UND ZWAR ZWEI AN VERSCHIEDENEN ORTEN MIT
+    VERSCHIEDENER BEDEUTUNG:
+    · eventDeviceInfo.userAgent — der User-Agent zum Zeitpunkt des EREIGNISSES.
+    · adIdentifiers.landingPageDeviceInfo.userAgent — der User-Agent auf der LANDESEITE.
+    Der zweite ist im Alternativweg der Session-Attribute AUSDRÜCKLICH PFLICHT: "Required:
+    Include the landing page user agent in the userAgent field of
+    adIdentifiers.landingPageDeviceInfo." Beide sind je mit einer ipAddress gepaart.
+    DER ANBIETER UNTERSCHEIDET ALSO LANDESEITE VON EREIGNISZEITPUNKT — zwei Momente, zwei
+    Feldpaare.
+    ERSETZT KEINE MESSUNG.
+
+(n) GRUPPE F — EREIGNIS-VOKABULAR (Katalog-Fragen F1 bis F3).
+
+    F1 · IST DER EREIGNISNAME FREI ODER EIN ENUM — BEANTWORTET.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18). FÜR GOOGLE ADS
+    MULTI-SOURCE STELLT SICH DIE FRAGE NICHT SO, WIE SIE GESTELLT IST — und das ist der
+    Befund. eventName ist ausdrücklich "Required" für GOOGLE-ANALYTICS-Ziele; in der
+    Pflicht-Tabelle für Google Ads Multi-Source KOMMT eventName NICHT VOR. Was das Ereignis
+    bestimmt, ist die productDestinationId — die Conversion-Action, die im
+    Google-Ads-Konto angelegt sein muss.
+    DIE FALLUNTERSCHEIDUNG WANDERT DAMIT VON EINEM FELD IM RUMPF IN DIE ZIEL-ADRESSIERUNG.
+    Wo eventName gilt (Google Analytics): FREI MIT AUSNAHMEN — empfohlene oder eigene
+    Namen, aber reservierte Namen werden mit INVALID_EVENT_NAME abgewiesen.
+
+    F2 · MÜSSEN EIGENE NAMEN REGISTRIERT WERDEN, UND GIBT ES EINEN DECKEL JE KONTO —
+    ABGELEGT.
+    GELESEN 2026-08-24, /devguides/concepts/destinations (Stand 2026-08-20) und
+    /devguides/events/send-events (Stand 2026-08-18). Die Entsprechung zur Registrierung
+    ist bei Google Ads das ANLEGEN EINER CONVERSION-ACTION — sie muss existieren und für
+    Multi-Source vom Typ WEBPAGE sein. Das ist strenger als eine Registrierung: ohne sie
+    gibt es keine Kennung, an die man senden könnte.
+    EIN DECKEL JE KONTO STEHT AUF KEINER DER SIEBZEHN GELESENEN SEITEN — weder für
+    Conversion-Actions noch für Ereignisnamen.
+    ERSETZT KEINE MESSUNG.
+
+    F3 · WIE HEISSEN DIE STANDARD-NAMEN, UND WEICHT DIE BENENNUNG AB — ABGELEGT.
+    GELESEN 2026-08-24, /reference/ecapi (Stand 2026-07-30). Für Google Ads gibt es KEINE
+    Namensliste (s. F1). Die einzige Namensabweichung im gelesenen Umfang betrifft ECAPI
+    gegen Google Analytics: die meisten Namen stimmen überein (purchase, add_to_cart,
+    begin_checkout, search, refund), drei weichen im Tempus ab — viewed_item -> view_item,
+    viewed_item_list -> view_item_list, viewed_cart -> view_cart. Die Namensregeln selbst
+    ("Event naming rules", "recommended events") liegen im ausgeschlossenen GA4-Teilbaum.
+    ERSETZT KEINE MESSUNG.
+
+(o) GRUPPE G — ANTWORT UND FEHLER (Katalog-Fragen G1 bis G5).
+
+    G1 · ERFOLGS-STATUSCODE, UND GENÜGT DER STATUS — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18),
+    /devguides/concepts/understand-errors (Stand 2026-07-30) und /devguides/diagnostics
+    (Stand 2026-07-30). Erfolg ist HTTP 200 bzw. gRPC-Code 0 (OK), Rumpf mit requestId.
+    DER STATUS GENÜGT AUSDRÜCKLICH NICHT, UND ZWAR AUF ZWEI GETRENNTEN ACHSEN:
+    (1) WARNUNGEN REISEN MIT DER 200: "Ingestion warnings won't cause the request to fail.
+        You must check the response for field_warnings to understand if all of the data you
+        sent was accepted."
+    (2) DIE EIGENTLICHE VERARBEITUNG IST ASYNCHRON: "The Data Manager API also performs
+        more complex validations asynchronously during processing, and reports any warnings
+        or errors in diagnostics." Ob ein Datensatz angenommen wurde, steht erst in der
+        Diagnostik — frühestens 30 Minuten, bis zu 24 Stunden später.
+    EINE 200 HEISST ALSO "ENTGEGENGENOMMEN UND STRUKTURELL IN ORDNUNG", nicht "verarbeitet"
+    und schon gar nicht "gezählt".
+    ERSETZT KEINE MESSUNG.
+
+    G2 · WELCHE RUMPFFORMEN KENNT DIE FEHLERANTWORT — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/concepts/understand-errors (Stand 2026-07-30) und
+    /devguides/events/send-events (Stand 2026-08-18). Ein error-Objekt mit code
+    (HTTP-Zahl), message, status (kanonischer Name) und details[] — einer Liste
+    TYPISIERTER Nutzlasten, jede mit @type:
+    · google.rpc.ErrorInfo — reason, domain ("datamanager.googleapis.com"), metadata
+      (offene Karte, enthält u.a. requestId)
+    · google.rpc.RequestInfo — requestId
+    · google.rpc.BadRequest — fieldViolations[] mit field, description, reason
+    · google.rpc.Help — links[] mit description, url
+    · google.rpc.LocalizedMessage — locale, message
+    MEHRERE NUTZLASTEN JE FEHLER SIND AUSDRÜCKLICH MÖGLICH. Das field in fieldViolations
+    ist ein PFAD IN SNAKE_CASE MIT INDEX IN ECKIGEN KLAMMERN —
+    "events.events[0].user_data.user_identifiers[1]",
+    "destinations[0].login_account.account_id".
+    ERSETZT KEINE MESSUNG.
+
+    G3 · TRENNT DER STATUSCODE DIE FEHLERKLASSEN — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/concepts/understand-errors (Stand 2026-07-30).
+    ZWEISTUFIG, UND DIE GROBE STUFE GENÜGT NICHT:
+    · GROB, in error.status: die kanonischen gRPC-Namen. Die Doku teilt sie selbst ein —
+      CLIENT-Fehler (INVALID_ARGUMENT, NOT_FOUND, PERMISSION_DENIED, FAILED_PRECONDITION,
+      UNAUTHENTICATED; "Don't retry the request without addressing the issue") gegen
+      SERVER-Fehler (UNAVAILABLE, INTERNAL, DEADLINE_EXCEEDED, UNKNOWN; wiederholbar, dazu
+      ABORTED).
+    · FEIN, NUR in details[].reason: das ErrorReason-Enum, s. D6.
+    EIN 400 ALLEIN SAGT ALSO "IRGENDETWAS AN DER ANFRAGE"; die Ursache steht ausschliesslich
+    in details.
+    ERSETZT KEINE MESSUNG.
+
+    G4 · SPIEGELT DIE ANTWORT EIGENE EINGABEN ZURÜCK (ECHO-ACHSE) — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/concepts/understand-errors (Stand 2026-07-30) und
+    /devguides/events/send-events (Stand 2026-08-18). JA, UND DIE FORMEN SIND UNGLEICH
+    RISKANT:
+    (1) FELD-PFADE WERDEN GESPIEGELT, WERTE IN DEN GEZEIGTEN BEISPIELEN NICHT.
+        fieldViolations[].field nennt die Stelle mit Index; description beschreibt den
+        Mangel, OHNE den Wert zu zitieren: "The HEX encoded value is malformed.", "String is
+        not a valid number.", "Email is not hex encoded." KEIN EINZIGES BEISPIEL IM
+        GELESENEN UMFANG ZITIERT EINEN EINGESANDTEN WERT.
+    (2) EINE EIGENE EINGABE WIRD SEHR WOHL GESPIEGELT, MEHRFACH IN DERSELBEN ANTWORT: die
+        PROJEKTNUMMER des aufrufenden Cloud-Projekts. Sie erscheint bei PERMISSION_DENIED in
+        error.message, in LocalizedMessage.message, in metadata.consumer, in
+        metadata.containerInfo und in einer Help-URL — fünf Stellen in einer Antwort.
+    (3) ErrorInfo.metadata IST EINE OFFENE KARTE. Die Doku beschreibt sie als "a metadata
+        map with information about the error" und zeigt EINEN Fall. WAS SIE IN ANDEREN
+        FÄLLEN TRÄGT, IST AN DER DOKU NICHT ENTSCHEIDBAR — und damit ist auch nicht
+        entscheidbar, ob je ein Nutzlast-Wert dort landet.
+    DASS DIE BEISPIELE KEINE WERTE SPIEGELN, IST KEINE ZUSICHERUNG; es sind fünf Beispiele.
+    ERSETZT KEINE MESSUNG.
+
+    G5 · TRÄGT DIE ERFOLGSANTWORT EINEN RÜCKKANAL — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18),
+    /devguides/diagnostics (Stand 2026-07-30), /devguides/concepts/best-practices (Stand
+    2026-07-30) und /devguides/concepts/understand-errors (Stand 2026-07-30).
+    JA — requestId, UND ER IST HIER MEHR ALS EIN SUPPORT-BEZEICHNER: er ist der EINZIGE
+    Schlüssel zur Verarbeitungs-Auskunft. { "requestId":
+    "126365e1-16d0-4c81-9de9-f362711e250a" }. RetrieveRequestStatus nimmt GENAU EINE
+    requestId. Ohne sie ist nicht feststellbar, ob die Daten verarbeitet wurden. Die Doku
+    macht daraus eine Auflage: "Record the requestId returned" und "Capture and collect the
+    request_id from each ... response".
+    ZWEI EINSCHRÄNKUNGEN: "You can only retrieve diagnostics for requests that succeed and
+    don't have validateOnly set to true."
+    EINE FORMBEOBACHTUNG, DIE HIER AUSDRÜCKLICH NICHT GEDEUTET WIRD: Die Bezeichner in den
+    FEHLER-Beispielen tragen ein Präfix "t-" (t-a8896317-069f-4198-afed-182a3872a660), die
+    im ERFOLGS-Beispiel nicht (126365e1-...). KEINE GELESENE SEITE ERKLÄRT DEN UNTERSCHIED.
+    Bei Fehlern trägt RequestInfo.requestId denselben Zweck: "When logging errors or
+    contacting support, make sure to include the request ID."
+    ERSETZT KEINE MESSUNG.
+
+(p) GRUPPE H — BETRIEB (Katalog-Fragen H1 bis H5).
+
+    H1 · GIBT ES EINEN TESTMODUS, UND WECHSELT SEIN WERT — BEANTWORTET (Träger).
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18) und
+    /devguides/diagnostics (Stand 2026-07-30). JA: validateOnly, EIN BOOLEAN AUF DER
+    WURZELEBENE DER ANFRAGE. "Set validateOnly to true to validate the request without
+    applying the changes. When you're ready to apply the changes, set validateOnly to
+    false."
+    DIE ZWEITE HÄLFTE DER KATALOG-FRAGE ENTFÄLLT GEGENSTANDSLOS: Es ist ein SCHALTER, kein
+    wechselnder Code. Es gibt nichts, was pro Sitzung neu zu beschaffen wäre. Der
+    Katalog-Vermerk "Messung nötig für 'wechselt pro Sitzung'" ist damit nicht offen,
+    sondern HINFÄLLIG.
+    DER PREIS STEHT AUSDRÜCKLICH DABEI: mit validateOnly=true ist KEINE DIAGNOSTIK
+    ABRUFBAR. Der Testmodus prüft die Anfrage-Struktur und schneidet dabei genau den Kanal
+    ab, der die Verarbeitung belegt.
+
+    H2 · WIE DEDUPLIZIERT DER ANBIETER, UND WAS SETZT ER VORAUS — BEANTWORTET
+    (Voraussetzungen; die WIRKUNG bleibt Messung).
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18), Abschnitt "How
+    Google handles multi-source data"; dazu /devguides/events (Stand 2026-07-30) und
+    /devguides/events/google-ads/online (Stand 2026-07-30).
+    ÜBER transactionId, INNERHALB DERSELBEN CONVERSION-ACTION — und die Regel ist FELDWEISE
+    VERSCHIEDEN, was sie von jeder einfachen Dedup-Zusage unterscheidet:
+    · transactionId TRIFFT ein bestehendes Tag-Ereignis, Feld conversionValue (mit
+      currency): ÜBERSCHREIBT den vom Tag erfassten Wert.
+    · transactionId TRIFFT ein bestehendes Tag-Ereignis, alle übrigen Felder — ausdrücklich
+      auch adIdentifiers.gclid: IGNORIERT. "won't overwrite the field values originally
+      recorded by your Google tag".
+    · transactionId TRIFFT NICHTS: NEUES Conversion-Ereignis; Google versucht die Zuordnung
+      selbst über die mitgegebenen Kennungen.
+    GOOGLE ANALYTICS MACHT ES GENAU UMGEKEHRT: dort gewinnt "the information from the first
+    instance of the same event that it received" — keine Überschreibung. FLOODLIGHT
+    dedupliziert über Floodlight-Aktivitäts-ID PLUS transactionId.
+    DIE VORAUSSETZUNG, DIE ALLES TRÄGT: Der gesendete transactionId muss DERSELBE sein, den
+    das Google-Tag gesetzt hat. Es gibt keine andere Verbindung zwischen den beiden Quellen.
+    TRIFFT ER NICHT, ENTSTEHT NICHT ETWA NICHTS — ES ENTSTEHT EIN ZUSÄTZLICHES EREIGNIS.
+    EINE FRIST, DIE KEIN FEHLER IST UND DIE DREIMAL WORTGLEICH DASTEHT: In den ersten
+    14 TAGEN je Conversion-Action fliessen die per API gelieferten Multi-Source-Daten NICHT
+    in die Gebotssteuerung, und WERT-ÜBERSCHREIBUNGEN SIND ABGESCHALTET ("value updates are
+    disabled. The tag's value won't be overridden in Google Ads reporting until the trial
+    period ends"). Für die bestehende Tag-Datenquelle gilt das nicht. Nach Ablauf werden
+    die Ereignisse automatisch gebotsfähig.
+
+    H3 · MENGENBESCHRÄNKUNGEN, 429, WIEDERHOLUNGSVERHALTEN — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/concepts/best-practices (Stand 2026-07-30) und
+    /devguides/concepts/understand-errors (Stand 2026-07-30).
+    DAS VERHALTEN IST BELEGT, DIE ZAHLEN STEHEN AUF EINER NICHT KARTIERTEN UND DESHALB
+    NICHT GEÖFFNETEN SEITE (/devguides/limits, s. (h) und (s)/Lücke A).
+    BELEGT IST:
+    · GLEICHZEITIGKEIT: "We recommend sending up to 10 requests concurrently to reduce the
+      likelihood of exceeding the requests per minute limit." Ausdrücklich erlaubt auch bei
+      identischen destinations.
+    · STAPELBILDUNG: "batch as many items as possible in each request, up to the
+      per-request limits" — um "daily request limits" zu unterlaufen.
+    · ES EXISTIEREN ALSO MINDESTENS DREI GRENZEN: je Anfrage, je Minute, je Tag.
+    · WIEDERHOLUNG: exponentielles Zurückweichen MIT JITTER, ausschliesslich bei
+      UNAVAILABLE, DEADLINE_EXCEEDED, INTERNAL, UNKNOWN, ABORTED. Beispiel der Doku: 1 s,
+      2 s, 4 s. Bei Client-Fehlern NICHT wiederholen.
+    · EIN 429 ODER RESOURCE_EXHAUSTED WIRD AUF KEINER DER SIEBZEHN GELESENEN SEITEN
+      GENANNT — auch nicht in der Client-/Server-Einteilung.
+    ERSETZT KEINE MESSUNG. UND: DIESE FRAGE IST NICHT ABGESUCHT — s. (s)/Lücke A.
+
+    H4 · NIMMT DER ENDPUNKT MEHRERE EREIGNISSE JE AUFRUF AN — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/events/send-events (Stand 2026-08-18) und
+    /devguides/concepts/understand-errors (Stand 2026-07-30). JA, AUSDRÜCKLICH UND IN ZWEI
+    DIMENSIONEN:
+    · MEHRERE EREIGNISSE: events ist ein Array; der Leitfaden führt drei Ereignisse in
+      einer Anfrage vor.
+    · MEHRERE ZIELE IN DERSELBEN ANFRAGE: destinations[].reference (frei wählbar, nur
+      Eindeutigkeit gefordert) plus event.destinationReferences[]. OHNE
+      destinationReferences GEHT JEDES EREIGNIS AN ALLE DESTINATIONS. Bei mehreren Zielen
+      sendet der Anbieter je Ziel nur die passenden Felder.
+    · HÖCHSTZAHL: "See Limits and quotas for the maximum number of destinations per
+      request" — nicht geöffnet, s. H3.
+    WAS ZWINGEND DAZUGEHÖRT UND DIE STAPELBILDUNG TEUER MACHT: Wegen FAST-FAIL (s. D5)
+    verwirft EIN EINZIGES strukturell fehlerhaftes Ereignis die GESAMTE Anfrage samt aller
+    übrigen Ereignisse. Stapel und Fehlertoleranz stehen hier gegeneinander.
+    ERSETZT KEINE MESSUNG.
+
+    H5 · WELCHES INSTRUMENT TAUGT FÜR EINEN LIVE-TEST, UND WELCHES TÄUSCHT — ABGELEGT.
+    GELESEN 2026-08-24, /devguides/diagnostics (Stand 2026-07-30),
+    /devguides/events/send-events (Stand 2026-08-18) und /devguides/events (Stand
+    2026-07-30).
+    TAUGLICH NENNT DIE DOKU GENAU EINES: RetrieveRequestStatus mit der requestId. Es liefert
+    JE DESTINATION: requestStatus aus { PROCESSING, SUCCESS, PARTIAL_SUCCESS, FAILURE } ·
+    eventsIngestionStatus.recordCount ("includes both successful and failed records") ·
+    warningInfo[] (je Eintrag reason + recordCount) · errorInfo[] (je Eintrag reason +
+    recordCount).
+    Die Trennung ist scharf definiert: "An error indicates that the API completely rejected
+    the record. A warning indicates that the API didn't reject the record, but it had to
+    ignore portions of the record's data."
+    VIER INSTRUMENTE TÄUSCHEN, UND DREI DAVON SEHEN WIE ERFOLG AUS:
+    (1) DER HTTP-STATUS ALLEIN — 200 heisst entgegengenommen, nicht verarbeitet (s. G1).
+    (2) validateOnly=true — danach ist GAR KEINE Diagnostik abrufbar; der Testmodus
+        schneidet den einzigen tauglichen Kanal ab.
+    (3) EIN BLICK VOR ABLAUF DER WARTEZEIT — bei PROCESSING sind warnings und errors
+        ausdrücklich NOCH NICHT BEFÜLLT. Ein leeres errorInfo heisst dann "noch nicht
+        bekannt", nicht "keine Fehler" — und die beiden sind am Feld nicht zu
+        unterscheiden.
+    (4) DER BLICK IN DIE GOOGLE-ADS-OBERFLÄCHE INNERHALB DER 14 TAGE — die Ereignisse
+        erscheinen in der Berichterstattung, wirken aber nicht auf die Gebote, und
+        Wert-Überschreibungen sind abgeschaltet (s. H2).
+    DIE ZEITACHSE IST TEIL DES BEFUNDS: 30 Minuten warten, dann abfragen;
+    Rückfallmultiplikator 1,3; Deckel 60 Minuten; Gesamtdauer BIS 24 STUNDEN — die Doku
+    führt eine Tabelle mit 25 Versuchen über 23:59 Stunden vor.
+    ERSETZT KEINE MESSUNG.
+
+(q) GRUPPE I — VORAUSSETZUNGEN BEIM ANBIETER, DIE KEIN AUFRUF SIND (Katalog-Fragen I1 bis
+    I5).
+
+    I1 · MUSS BEIM ANBIETER EIN PRODUKT FREIGEGEBEN ODER BEANTRAGT WERDEN — BEANTWORTET
+    (Existenz des Verfahrens; der AUSGANG bleibt ein Antrag).
+    GELESEN 2026-08-24, /devguides/events (Stand 2026-07-30),
+    /devguides/quickstart/set-up-access (Stand 2026-08-14),
+    /devguides/concepts/understand-errors (Stand 2026-07-30) und
+    /devguides/accounts/partner-links (Stand 2026-08-07).
+    JA — VIERFACH GESTAFFELT, UND DIE STUFEN SIND UNABHÄNGIG VONEINANDER. Sie heissen hier
+    "STUFE 1" bis "STUFE 4" und NICHT (a) bis (d), damit sie nicht mit den TEILEN (a) bis
+    (f) dieses Abschnitts verwechselt werden:
+    STUFE 1 · GOOGLE-CLOUD-PROJEKT MIT AKTIVIERTER API. Ohne Aktivierung antwortet die
+        Schnittstelle mit HTTP 403 PERMISSION_DENIED, reason "SERVICE_DISABLED". Das Konto,
+        das aktiviert, braucht serviceusage.services.enable.
+    STUFE 2 · DER ZUGRIFFSBEREICH IST SENSIBEL. "Since the Data Manager API scope is a sensitive
+        scope" — Bereich hinzufügen, Veröffentlichungsstatus und Nutzertyp setzen. Und:
+        "Any Google Cloud app used to obtain user credentials for the Data Manager API
+        scope must undergo Google OAuth verification to avoid an unverified UI screen for
+        its users. Google OAuth verification isn't required for service accounts."
+    STUFE 3 · DER BEFUND, DER DIESE PHASE BETRIFFT — WÖRTLICH von /devguides/events (Stand
+        2026-07-30): "Sending conversion events via the API as an additional data source
+        for Google Ads tag conversions is an ALLOWLIST-ONLY FEATURE that can improve ad
+        interaction signals and performance."
+    STUFE 4 · EIN DATA-PARTNER-KONTO wird "only after going through the approval process"
+        ausgegeben; Einstieg ist ein Interessenten-Formular (NICHT ausgefüllt, s. unten).
+    DER KONTRAST, AUF DERSELBEN ÜBERSICHTSSEITE UND IN DERSELBEN AUFZÄHLUNG — und er fällt
+    eindeutig aus:
+    · Google Ads MULTI-SOURCE (zusätzliche Datenquelle zur Tag-Conversion): JA,
+      "allowlist-only feature".
+    · Google Ads OFFLINE CONVERSIONS / ENHANCED CONVERSIONS FOR LEADS: NEIN — kein
+      Vorbehalt genannt.
+    · Google Ads STORE SALES: JA, "only available to Google Ads accounts on an allowlist".
+    · Google ANALYTICS Multi-Source: JA, "only available to Google Analytics properties on
+      an allowlist", mit Formular.
+    DIE FREISCHALTUNG HÄNGT ALSO AN DER GESTALT UND NICHT AM PRODUKT, UND VON DEN BEIDEN
+    GELESENEN GOOGLE-ADS-GESTALTEN TRÄGT GENAU EINE DEN VORBEHALT.
+    HIER WIRD NICHT GEDEUTET, WELCHE GESTALT ZU WÄHLEN IST — diese Datei trägt keine
+    Entscheidungen.
+    UND DER VERMERK AUS TEIL (g) GEHÖRT AN DIESEN BEFUND: Er ist BESTÄTIGT, nicht unabhängig
+    entdeckt.
+    EIN NICHT-TREFFER INNERHALB DIESER BEANTWORTETEN FRAGE, DER BENANNT GEHÖRT: Für den
+    Google-Analytics-Weg nennt die Doku ein Formular. FÜR DEN GOOGLE-ADS-MULTI-SOURCE-WEG
+    NENNT KEINE DER SIEBZEHN GELESENEN SEITEN EINEN ANTRAGSWEG — kein Formular, kein
+    Verfahren, keine Anlaufstelle. Es steht dort, DASS eine Liste existiert, und nicht, WIE
+    man darauf kommt.
+    WAS AUF FREMDEN SEITEN NICHT GETAN WURDE: Vier Aufforderungen standen auf den gelesenen
+    Seiten und wurden GEMELDET statt befolgt — "fill out the interest form" (zweimal),
+    "Enable the Data Manager API", "Create OAuth2 client" / "Create service account", "Fill
+    out the form if you're interested in adding your Google Analytics property to the
+    allowlist". Keine Seite verlangte eine Anmeldung, um ihren Text zu lesen.
+
+    I2 · VERLANGT DER ANBIETER DIE ANNAHME VON VERTRAGS- ODER EINWILLIGUNGS-BEDINGUNGEN —
+    ABGELEGT.
+    GELESEN 2026-08-24, /reference/ecapi (Stand 2026-07-30). ZUR EINWILLIGUNG GIBT ES EINEN
+    BELEGTEN MECHANISMUS:
+    · Ein Consent-OBJEKT, auf ZWEI EBENEN setzbar: auf Anfrage-Ebene (gilt für alle
+      Ereignisse) ODER je Ereignis ("which lets you specify different consent settings for
+      individual events").
+    · AUSDRÜCKLICH NICHT UNTERSTÜTZT: "Data Manager API does not accept or parse Global
+      Privacy Platform (GPP) consent strings." Die ECAPI-Felder gpp_string und gpp_sid
+      haben "No equivalent"; die Einwilligung muss in das Consent-Objekt übersetzt werden.
+    · DIE FELDSTRUKTUR VON Consent STEHT AUF KEINER DER SIEBZEHN GELESENEN SEITEN —
+      Referenz, Lauf 2.
+    ZU DEN VERTRAGSBEDINGUNGEN: NICHT ABGESUCHT, UND DER GRUND STEHT DABEI. Eine Seite
+    "Terms of service" existiert unter /devguides/terms. Sie war NICHT KARTIERT, deshalb
+    nicht zugewiesen und nicht geöffnet (s. (h) und (s)/Lücke A). DIESE FRAGE IST NICHT ALS
+    ABGESUCHT ZU FÜHREN.
+    ERSETZT KEINE MESSUNG.
+
+    I3 · IST DAS MERKMAL FREIGESCHALTET ODER NUR EINER ALLOWLIST ZUGÄNGLICH — BEANTWORTET
+    (Bedingung; die ERREICHBARKEIT bleibt ein Antrag).
+    GELESEN 2026-08-24, /devguides/events (Stand 2026-07-30): ALLOWLIST-ONLY für die
+    Multi-Source-Gestalt, wörtlich zitiert unter I1, STUFE 3. Der zweite Teil der Frage ("wie
+    beantragt man das") ist für den Google-Ads-Weg NICHT beantwortet, s. den Nicht-Treffer
+    unter I1. Der AUSGANG eines Antrags steht per Fragenkatalog ohnehin in keiner
+    Dokumentation.
+
+    I4 · WELCHE ROLLE MUSS DIE ANMELDENDE IDENTITÄT IM KONTO DES KUNDEN HABEN —
+    NICHT-TREFFER.
+    GELESEN 2026-08-24, /devguides/concepts/destinations (Stand 2026-08-20), Abschnitt
+    "Determine where credentials have access", und /devguides/quickstart/set-up-access
+    (Stand 2026-08-14). FÜR GOOGLE ADS NENNT DIE DOKU KEINE ROLLENSTUFE — und der KONTRAST
+    zu den anderen Produkten ist das, was diesen Nicht-Treffer scharf macht:
+    · GOOGLE ADS: nur, dass das Konto in der Nutzerliste unter "Access and security" >
+      "Users" steht. KEINE ROLLE GENANNT.
+    · DISPLAY & VIDEO 360: Nutzer auf dem loginAccount.
+    · GOOGLE ANALYTICS: "Editor or Administrator role" auf der Property.
+    · CAMPAIGN MANAGER 360: Nutzerprofil mit der Berechtigung "Insert offline conversions".
+    Zwei von vier Produkten bekommen eine ausdrückliche Stufe, Google Ads nicht. Auch die
+    Einrichtungsseite sagt nur "add the email of the user to the Google Ads account or a
+    parent Google Ads manager account" bzw. "Complete Account access setup", ohne Stufe.
+    ABGESUCHTE ACHSE: die siebzehn Seiten aus (h), Begriffe `role`, `permission`, `access
+    level`, `admin`, `standard`, `read-only`.
+    DAS IST KEINE ENTWARNUNG — es kann sein, dass jede Nutzerstufe genügt, und es kann
+    sein, dass die Stufe in der Google-Ads-Doku steht, die AUSSERHALB dieses Baums liegt.
+    An den gelesenen Seiten ist es nicht entscheidbar.
+    AUSDRÜCKLICH NICHT DIESELBE ACHSE, DESHALB GETRENNT GEFÜHRT: Auf der CLOUD-Seite sind
+    Rollen sehr wohl benannt — roles/owner oder roles/serviceusage.serviceUsageAdmin
+    (Aktivierung), roles/serviceusage.serviceUsageConsumer (für das Dienstkonto),
+    roles/iam.serviceAccountTokenCreator (für das eigene Konto auf dem Dienstkonto,
+    "required even when your Google Account is an owner of the project"). DAS SIND ROLLEN
+    IM EIGENEN PROJEKT DES BETREIBERS, NICHT IM KONTO DES KUNDEN. Die Katalog-Frage zielt
+    auf das Kundenkonto.
+
+    I5 · VERLANGT DER ANBIETER, DASS DIE AUSLIEFERNDE DOMAIN FREIGEGEBEN IST — NICHT-TREFFER.
+    KEINE DER SIEBZEHN GELESENEN SEITEN ERWÄHNT eine Domain-Freigabe, eine
+    Traffic-Permission-Liste, eine Herkunfts-Prüfung, eine erlaubte Absender-Domäne oder
+    eine Verknüpfung zwischen der ausliefernden Seite und dem Werbekonto.
+    ABGESUCHTE ACHSE: die siebzehn Seiten aus (h), Begriffe `domain`, `origin`, `allow
+    list`/`allowlist`, `permission`, `referrer`. Der Treffer auf `allowlist` betrifft das
+    MERKMAL (s. I1), nicht die Domain; der Treffer auf `permission` betrifft IAM und
+    Campaign Manager 360; der Treffer auf `referrer` betrifft das optionale
+    Session-Attribut landing_page_referrer.
+    DAS IST KEINE ENTWARNUNG, UND DER GRUND IST HIER BESONDERS SCHARF: Der Fragenkatalog
+    vermerkt, dass diese Frage den BROWSER-Pfad betrifft und für ein reines Server-Ziel
+    folgenlos sein kann. Die Multi-Source-Gestalt ist aber gerade KEIN reines Server-Ziel —
+    sie setzt laut Doku eine bestehende Tag-Conversion voraus, also einen Browser-Pfad, den
+    ein anderes System bedient. Ob für dieses Google-Tag eine Domain-Freigabe verlangt
+    wird, gehört in die Google-Tag- bzw. Google-Ads-Dokumentation und liegt damit
+    AUSSERHALB des Data-Manager-Baums. DIE FRAGE IST AN DIESER STELLE NICHT ABSUCHBAR,
+    NICHT NEGATIV BEANTWORTET.
+
+(r) ZWEI WIDERSPRÜCHE IN DER ANBIETER-DOKU — BEIDE STELLEN GEMELDET, KEINER AUFGELÖST.
+
+    WIDERSPRUCH 1 — DIE PFLICHT-KENNUNG. DER ERNSTERE VON BEIDEN.
+    STELLE A: /devguides/events/send-events (Stand 2026-08-18), Tabelle "Convert the data to
+    Event objects", Zeile "Multi-source conversions" — FÜNF Alternativen, mindestens eine
+    davon: adIdentifiers mit gclid/gbraid/wbraid · adIdentifiers.landingPageDeviceInfo
+    .ipAddress · Session-Attribute · userData · eventDeviceInfo.ipAddress.
+    STELLE B: /devguides/diagnostics (Stand 2026-07-30), Abschnitt "Check warnings and
+    errors" — ZWEI: "because a valid Event must have at least one of ad_identifiers or
+    user_data".
+    eventDeviceInfo IST WEDER adIdentifiers NOCH userData — es ist ein eigenes Feld auf
+    Event-Ebene, bestätigt durch die ECAPI-Zuordnung (/reference/ecapi, Stand 2026-07-30):
+    event_ip_address -> event_device_info.ip_address, GETRENNT von landing_ip_address ->
+    ad_identifiers.landing_page_device_info.ip_address.
+    NACH STELLE A GENÜGT ES ALLEIN, NACH STELLE B NICHT.
+    WARUM DAS NICHT AKADEMISCH IST: Ein Server-Aufruf ohne Klick-Kennung hätte
+    typischerweise genau das — die IP des Ereignisses. Ob das eine gültige Nutzlast ist,
+    entscheidet sich an diesen zwei Sätzen, und sie sagen Verschiedenes.
+    HIER NICHT AUFGELÖST.
+
+    WIDERSPRUCH 2 — DIE SCHREIBWEISE DER FELDNAMEN IM REST-RUMPF.
+    STELLE A: /devguides/events/send-events (Stand 2026-08-18) und /data-manager/api
+    (Startseite) verwenden durchgehend CAMELCASE — transactionId, conversionValue,
+    operatingAccount, productDestinationId, eventTimestamp.
+    STELLE B: /reference/ecapi (Stand 2026-07-30) zeigt ein vollständiges, als gültig
+    bezeichnetes IngestEventsRequest durchgehend in SNAKE_CASE — transaction_id,
+    conversion_value, operating_account, product_destination_id, event_timestamp,
+    event_device_info.
+    Beides steht als Beispiel für DIESELBE REST-Schnittstelle. KEINE DER SIEBZEHN SEITEN
+    SAGT, OB BEIDE SCHREIBWEISEN ZULÄSSIG SIND oder ob eine der Seiten veraltet ist.
+    EIN NEBENBEFUND, DER DAZUGEHÖRT: In den FEHLERANTWORTEN sind die Feldpfade durchgängig
+    snake_case ("events.events[0].user_data.user_identifiers[1]") — auch dann, wenn die
+    Anfrage camelCase war.
+    HIER NICHT AUFGELÖST.
+
+(s) DIE LÜCKEN DIESER LESUNG — SECHS, A BIS F.
+
+    LÜCKE A — DIE KARTE WAR UNVOLLSTÄNDIG. DREI SEITEN DES ABSCHNITTS FEHLTEN DARIN.
+    /devguides/limits ("Limits and quotas") · /devguides/terms ("Terms of service") ·
+    /support/contact. Sie stehen NICHT im Navigationsbaum, den die Seiten im Markup
+    mitliefern, und wurden erst über Verweise im FLIESSTEXT sichtbar. Sie sind NICHT
+    geöffnet worden.
+    DARAN HÄNGEN: H3 (alle Zahlen), H4 (Höchstzahl der Ziele je Anfrage), I2
+    (Vertragsbedingungen). Diese Fragen stehen oben als ABGELEGT und AUSDRÜCKLICH NICHT als
+    NICHT-TREFFER.
+    DIE ÜBERTRAGBARE LEHRE: Wer den Umfang eines Doku-Abschnitts aus der NAVIGATION
+    ableitet, unterschätzt ihn — und zwar ohne dass etwas rot wird.
+
+    LÜCKE B — EIN ZÄHLFEHLER IN DER KARTE HAT DEN AUFTRAG GEPRÄGT.
+    In der vorgelegten Karte stand "partner-links (4 Seiten)". ES SIND FÜNF: partner-links ·
+    create-partner-link · retrieve-partner-links · google-ads/upgrade/steps ·
+    google-ads/upgrade/field-mappings. Der Auftrag schrieb daraufhin "partner-links (alle
+    vier)" und schloss zugleich "alle upgrade/-Unterbäume" aus. BEIDES ZUGLEICH IST NICHT
+    ERFÜLLBAR. Gelesen wurden die DREI Seiten ausserhalb des upgrade/-Unterbaums; die zwei
+    darin sind NICHT geöffnet — die ausdrückliche Ausschluss-Regel schlägt die aus einem
+    Zählfehler abgeleitete Stückzahl. DAS IST HIER OFFENGELEGT UND NICHT STILLSCHWEIGEND
+    AUFGELÖST.
+
+    LÜCKE C — EIN TOTER VERWEIS IN DER ANBIETER-DOKU, GENAU AN DER EINWILLIGUNG.
+    Auf /reference/ecapi (Stand 2026-07-30) steht ZWEIMAL der Verweistext "Privacy and
+    consent overview". BEIDE zeigen auf href="#overview" — einen Anker auf DERSELBEN Seite,
+    nicht auf einen Einwilligungs-Leitfaden. EIN SOLCHER LEITFADEN IST ÜBER DIE SIEBZEHN
+    GELESENEN SEITEN NICHT ERREICHBAR. Folge: Die einzige inhaltliche Aussage zur
+    Einwilligung im gesamten gelesenen Umfang ist die ECAPI-Zeile (s. I2).
+
+    LÜCKE D — KEIN ZEITFENSTER FÜR GOOGLE ADS.
+    Für Google Analytics stehen 72 Stunden und 48 Stunden ausdrücklich da. FÜR GOOGLE ADS
+    MULTI-SOURCE NENNT KEINE DER SIEBZEHN GELESENEN SEITEN EIN FENSTER. Bei einer Gestalt,
+    die auf die Übereinstimmung mit einem Tag-Ereignis angewiesen ist, ist die Abwesenheit
+    dieser Angabe bemerkenswert; SIE IST KEINE AUSSAGE, DASS ES KEIN FENSTER GIBT.
+
+    LÜCKE E — KEIN ROHER HTTP-AUFRUF FÜR DIE EREIGNIS-EINLIEFERUNG.
+    Keine der siebzehn Seiten zeigt Methode, vollständige URL oder Authorization-Kopfzeile
+    für IngestEvents. Der Leitfaden führt ausschliesslich über den API-Explorer im Browser
+    und über Client-Bibliotheken in sechs Sprachen. Der einzige rohe Aufruf im gelesenen
+    Umfang steht auf der Startseite und betrifft audiencemembers:ingest. B1 UND B3 SIND
+    DESHALB VERTAGT, NICHT ALS NICHT-TREFFER GEFÜHRT.
+
+    LÜCKE F — AN DER DOKU NICHT ENTSCHEIDBAR. Vier Punkte, ausdrücklich als unentscheidbar
+    gemeldet statt gefüllt:
+    · Ob ErrorInfo.metadata je einen NUTZLAST-Wert trägt (G4). Die Karte ist offen, fünf
+      Beispiele sind keine Zusicherung.
+    · Ob productDestinationId oder die Kundennummer als vertraulich gelten (C4).
+    · Welche Rollenstufe ein Google-Ads-Konto verlangt (I4).
+    · Ob die snake_case-Fassung aus /reference/ecapi gleichwertig gültig ist (r,
+      Widerspruch 2).
+
+### Acht Fragen ohne Katalog-Ort (2026-08-24) — UNBEANTWORTET, UND SIE STEHEN NICHT IM KATALOG
+
+**WAS DIESER ABSCHNITT IST UND WAS ER AUSDRÜCKLICH NICHT IST:** Acht Fragen, die beim
+Lesen der Anbieter-Doku aufgefallen sind und für die der Fragenkatalog
+(docs/ziel-fragenkatalog.md) KEINEN Ort hat. Sie sind hier GESAMMELT und NICHT
+BEANTWORTET. SIE SIND NICHT IN DEN KATALOG EINGETRAGEN WORDEN — ob der Katalog wächst, ist
+eine Entscheidung, die hier nicht fällt und in dieser Datei auch nicht fallen kann: Diese
+Datei trägt Befunde, keine Entscheidungen.
+
+**SIE TRAGEN BEWUSST KEINE BUCHSTABEN.** Ein Buchstabe machte sie von aussen als BEFUND
+zitierbar, und sie sind keiner — sie sind Fragen. Wer sie später aufnimmt, vergibt die
+Buchstaben dort, wo sie beantwortet werden.
+
+1. WIE GELANGT DERSELBE transactionId IN BEIDE QUELLEN? Die Dedup-Zusage setzt voraus, dass
+   das Google-Tag und der Server-Aufruf denselben Wert tragen. Der Katalog fragt (H2), WIE
+   der Anbieter dedupliziert — nicht, wer die gemeinsame Kennung erzeugt und wie sie
+   zwischen zwei Systemen synchron bleibt.
+2. WAS GESCHIEHT BEI EINEM TYP-FEHLGRIFF DER CONVERSION-ACTION? Multi-Source verlangt Typ
+   WEBPAGE, offline verlangt UPLOAD_CLICKS. Der Katalog fragt nach der FORM der Kennung
+   (C1), nicht nach dem Verhalten, wenn die Kennung formal gültig ist und auf ein Objekt
+   des falschen Typs zeigt.
+3. WESSEN KONTINGENT VERBRAUCHT DIE VERSCHLÜSSELUNG? Die Doku sagt, die
+   Entschlüsselungs-Aufrufe des Anbieters verbrauchen Kontingent im KMS-Projekt des
+   BETREIBERS. Der Katalog kennt keine Frage nach Kosten oder Kontingenten, die beim
+   EIGENEN Konto anfallen, weil ein Anbieter etwas tut.
+4. WIE VERTRÄGT SICH FAST-FAIL MIT EREIGNISSEN AUS VERSCHIEDENEN QUELLEN? Der Katalog
+   fragt, ob mehrere Ereignisse je Aufruf gehen (H4). Er fragt nicht, was ein
+   Alles-oder-nichts-Modell für einen Stapel bedeutet, dessen Einzelteile von verschiedenen
+   Besuchern stammen.
+5. LÄSST SICH EIN requestId EINEM EINZELNEN EREIGNIS ZUORDNEN? Die Diagnostik antwortet je
+   Anfrage und je Ziel, mit Zählern je Grund. Ob ein BESTIMMTES Ereignis angekommen ist,
+   scheint daraus nicht ableitbar — der Katalog hat für diese Auflösungs-Achse keine Frage.
+6. IST DER 14-TAGE-ZEITRAUM JE CONVERSION-ACTION ODER JE KONTO, UND WODURCH BEGINNT ER? Der
+   Katalog kennt keine Frage nach einer Einführungsphase, in der ein Ziel Daten annimmt,
+   aber anders verarbeitet.
+7. EIN CLOUD-PROJEKT JE KUNDE ODER EINES FÜR ALLE? Der Zugang hängt an einem
+   Google-Cloud-Projekt mit aktivierter API. Der Katalog fragt nach dem Weg zum
+   Zugangsdatum (A1), nicht nach der Vervielfältigung der darunterliegenden Infrastruktur
+   bei mehreren Kunden.
+8. WIE VERHÄLT SICH RetrieveRequestStatus ZU DEN MENGENGRENZEN? Die empfohlene Abfolge
+   erzeugt bis zu 25 zusätzliche Aufrufe je Einlieferung über 24 Stunden. Der Katalog fragt
+   nach Grenzen für die EINLIEFERUNG (H3), nicht danach, ob der Diagnostik-Kanal gegen
+   dieselben Grenzen läuft.
+
+NICHT AUFGEFÜHRT, WEIL BEREITS VERGEBEN: der Unterschied zwischen events.ingest und
+adEvents.ingest. Er ist vom Architekten als Katalog-Frage der Gruppe B für LAUF 2 gesetzt
+worden.
 
 ## Pinterest (Conversions API)
 

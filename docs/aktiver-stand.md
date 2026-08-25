@@ -241,20 +241,40 @@ ist bewusst so geschnitten, dass am heissesten Pfad der Plattform NICHTS geschie
 kein Empfänger, kein Netzaufruf, keine Abfrage, keine Änderung an der garantierten
 leeren 204.
 
-### Der Gegenstand — zwei reine Dateien, keine Verdrahtung
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-- **src/lib/capi/google-click-ids.ts** — die Klick-Kennungen aus einer
-  URL-Zeichenkette lösen: gclid, gbraid, wbraid. MEHRERE GLEICHZEITIG SIND MÖGLICH
-  UND WERDEN ALLE ZURÜCKGEGEBEN; die Funktion wählt nicht aus und ordnet nicht nach
-  Rang.
-- **src/lib/capi/google-payload.ts** — der Bau der IngestEventsRequest-Nutzlast für
-  events:ingest, in zwei getrennten Ebenen (ein Event-Objekt; die umgebende Anfrage
-  mit destinations[] und events[]).
+VERDICHTET AM 2026-08-25, nach dem Bau-Commit 6653f37. Hier standen die ANWEISUNGEN
+FÜR die Scheibe; sie sind mit dem Vollzug abgelaufen. DREI Unterabschnitte sind
+entfallen, und was sie trugen, steht in VERMERK 2 — nur weil es dort steht, durfte es
+hier weg:
+- **"Der Gegenstand — zwei reine Dateien, keine Verdrahtung"** nannte die zwei zu
+  bauenden Dateien samt ihrem Zuschnitt. Gebaut sind sie; der Code sagt es jetzt
+  selbst. Ihr einziger fortwirkender Satz — die Nutzlast-Form ist GELESEN und nie
+  gemessen — steht unverändert unten in "Die Grenze dieses Zuschnitts".
+- **"Sie ist NICHT live demobar, und das ist der Zuschnitt, kein Mangel"** trug den
+  Beweis-Grund und die Schuld der nächsten Scheibe. BEIDES STEHT JETZT IN VERMERK 2,
+  und zwar vollständig; zweimal geschrieben liefe es auseinander.
+- **"Warum der Schnitt nichts verbaut"** beantwortete einen Einwand gegen den
+  SCHNITT. Der Einwand ist mit dem Vollzug erledigt; die eine fortwirkende Aussage
+  daraus — ein weiteres Identitätsmerkmal ist ein FELD und kein Umbau — ist eine
+  Tatsache über den gebauten Typ und steht am Typ GoogleEventInput.
 
-DIE FORM DER NUTZLAST IST GELESEN, NICHT GEMESSEN: docs/ziel-befunde.md, Abschnitt
-"Google (Google Ads Conversions · GA4)", Teile (l)/D1 bis D6, (m)/E1 bis E4 und
-(w)/D1 bis F3. Es ist KEIN Aufruf gegen eine Google-Schnittstelle gefahren worden.
-Jede Feldangabe dieser Scheibe steht damit unter dem Vorbehalt der ersten Messung.
+WAS BEWUSST NICHT VERDICHTET WORDEN IST, je mit seinem Grund — im Zweifel
+stehengelassen:
+- **"Die Ablage-Entscheidung"** und **"Die Auflage aus der Messlücke"** bleiben
+  ZEICHENGLEICH: Beide Quelldateien zitieren sie wörtlich UND nennen ihren Fundort mit
+  Unterabschnitts-Titel. Eine Verdichtung machte vier Kommentarköpfe zu toten Zeigern,
+  und heilen liesse sich das nur mit einer Quelldatei-Änderung — also einem
+  feat-Commit für einen Doku-Vorgang.
+- **"Die Grenze dieses Zuschnitts"** bleibt aus DEMSELBEN Grund, und der ist GEMESSEN
+  am Repo (CC, 2026-08-25): google-payload.ts zitiert ihren Titel wörtlich mit
+  ###-Marke. DAS GEHÖRT AUSDRÜCKLICH FESTGEHALTEN, weil die Auflage der Bau-Runde nur
+  ZWEI zitierte Unterabschnitte kannte — es sind DREI. Wer die Liste für abschliessend
+  hält, streicht einen Zeiger weg.
+- **"Was ausdrücklich NICHT drin war"** und **"Die tragende Invariante"** bleiben als
+  weitergeltende Ausschlüsse bzw. als Prüfstein — dieselbe Entscheidung wie bei der
+  Verdichtung der Phase 11.1 (docs/claude-history/phase-11.1-linkedin.md). Auf die
+  Invariante zeigt zusätzlich der Kopf von google-click-ids.ts bei Namen.
 
 ### Die Ablage-Entscheidung — sie steht als Kopfsatz in BEIDEN Dateien
 
@@ -289,7 +309,12 @@ eine Conversion, die nicht ankommt.
 DIE PROBE, DIE DIESE AUFLAGE TRÄGT: Ein Test setzt einen Wert ein, der einer echten
 Kennung UNÄHNLICH ist, und verlangt, dass er unverändert herauskommt.
 
-### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+### Was ausdrücklich NICHT drin war, je mit seinem Grund — GILT WEITER, IST ABER KEIN ZUSCHNITT MEHR
+
+Die Ausschlüsse sind mit dem Vollzug NICHT erledigt; erledigt ist nur ihre Rolle als
+Zuschnitt DIESER Scheibe. Sie binden ab jetzt die TRANSPORT-Scheibe — wer sie nicht
+liest, baut die Autorisierungsschicht überangepasst oder legt ein Ziel an, für das es
+keinen Ort gibt.
 
 - **KEIN EINGRIFF IN ingest.ts, FORWARDER_BY_TARGET, TRACKING_TARGETS,
   CONSENT_KEY_BY_TARGET ODER target-adapters.ts.** Diese Scheibe fügt kein Ziel
@@ -316,26 +341,6 @@ Kennung UNÄHNLICH ist, und verlangt, dass er unverändert herauskommt.
 für jedes Projekt.** Die zwei Dateien haben im Produktivcode KEINEN Aufrufer; nur
 ihre Tests rufen sie. Sie ist der Prüfstein jeder Änderung dieser Scheibe: Wer einen
 Aufrufer hinzufügt, hat nicht mehr diese Scheibe gebaut.
-
-### Sie ist NICHT live demobar, und das ist der Zuschnitt, kein Mangel
-
-Der Beweis dieser Scheibe sind TESTS. Ein Live-Test ist nicht möglich, weil nichts
-gesendet wird — und gesendet wird nichts, weil die Zugangsdaten keinen Ort haben
-(s. den Ausschluss oben).
-DAS IST EINE AUSNAHME VON EINER DAUERHAFTEN REGEL UND WIRD DESHALB HIER BENANNT:
-"Jede Bau-Freigabe an CC endet mit einer expliziten Live-Test-Anweisung"
-(docs/immer-beachten.md). Sie gilt unverändert weiter; sie hat an dieser Scheibe nur
-keinen Gegenstand. WER DIE NÄCHSTE SCHEIBE ZUSCHNEIDET, SCHULDET DEN LIVE-TEST
-NACH — für diese hier UND für die eigene.
-
-### Warum der Schnitt nichts verbaut
-
-Beide Funktionen sind REIN und haben keinen Zustand. Die Extraktion nimmt eine
-Zeichenkette und gibt eine Menge zurück; der Nutzlast-Bau nimmt eine MENGE von
-Identitätsmerkmalen entgegen, nicht eine einzelne Klick-Kennung. Kommt später ein
-weiteres Merkmal hinzu, ist das ein FELD und kein Umbau. Und weil keine der beiden
-einen Aufrufer hat, kann eine spätere Korrektur an der Wire-Form sie ersetzen, ohne
-irgendetwas anderes zu berühren.
 
 ### Die Grenze dieses Zuschnitts — warum trotz ungemessener Wire-Form gebaut wird
 
@@ -395,6 +400,66 @@ NICHT PERSISTIERT. persistEvent (src/lib/analytics/persist.ts) schreibt fünf
 Werte, und keiner davon stammt aus den optionalen Rumpf-Feldern; die URL wird
 ausschliesslich an die Adapter weitergereicht. **Die Kennung existiert für die
 Dauer EINES Forwards.**
+
+### VERMERK 2 (Commit 6653f37) — SCHEIBE 11.2a IST GEBAUT
+
+**WAS GEBAUT WURDE — GEMESSEN am Repo (CC, 2026-08-25):** VIER neue Dateien, keine
+bestehende angefasst. Zwei reine Quelldateien — extractGoogleClickIds
+(src/lib/capi/google-click-ids.ts) und buildGoogleEvent plus
+buildIngestEventsRequest (src/lib/capi/google-payload.ts) — und zwei Testdateien
+daneben, zusammen 21 Tests. Die Suite steht damit bei 60 Dateien und 1158 Tests, kein
+Bestandstest ist gefallen oder verändert worden.
+**KEIN AUFRUFER IM PRODUKTIVCODE**, und das ist der Zuschnitt und kein Versehen: nur
+die Tests rufen die beiden. Der Bau-Commit ist 6653f37; alle vier Gates waren vor ihm
+grün (tsc, eslint, vitest, next build).
+
+**DER BEWEIS UND SEINE GRENZE, und beides gehört zusammen:** Der Beweis dieser Scheibe
+sind TESTS. **EINEN LIVE-TEST GIBT ES NICHT**, weil nichts gesendet wird — und
+gesendet wird nichts, weil die Zugangsdaten keinen Ort haben (s. den Ausschluss "KEINE
+MIGRATION, KEINE ZUGANGSDATEN-ABLAGE" im Zuschnitt).
+DAS IST EINE AUSNAHME VON EINER DAUERHAFTEN REGEL UND WIRD DESHALB HIER BENANNT:
+"Jede Bau-Freigabe an CC endet mit einer expliziten Live-Test-Anweisung"
+(docs/immer-beachten.md). SIE GILT UNVERÄNDERT WEITER und hat an dieser Scheibe nur
+keinen Gegenstand. **DIE NÄCHSTE SCHEIBE SCHULDET IHN NACH — für diese hier UND für
+die eigene.** Wer das übersieht, hat eine Scheibe ohne Live-Nachweis im Rücken und
+merkt es nicht, weil an ihr nichts rot ist.
+
+**DIE DREI MUTATIONSPROBEN — GEMESSEN am 2026-08-25, je mit Vorhersage VOR dem Lauf,
+danach zurückgenommen; keine ist im Bau-Commit:**
+- **Zeitstempel auf Epochen-Millisekunden.** Vorhergesagt: die Klasse "Zusicherungen
+  über die Gestalt des Zeitstempels". Gefallen ist GENAU der gepinnte
+  Zeitstempel-Test. Kein Überschuss.
+- **Ein Schlüsselname auf snake_case (conversionValue).** Vorhergesagt: die Klasse
+  "ein Schlüssel steht nicht unter dem erwarteten Namen". Gefallen sind ZWEI Tests —
+  **UND DER ÜBERSCHUSS IST GEPRÜFT WORDEN, NICHT VERBUCHT:** Beide melden DIESELBE
+  Fehlerklasse, einmal als Mengenbruch der Schlüsselliste, einmal als fehlender Wert
+  am erwarteten Namen. Das ist eine ZWEITE BEOBACHTUNG DESSELBEN BRUCHS und damit
+  Deckung — KEINE Kaskade. Die Unterscheidung ist die Auflage aus Lektion (g) an
+  "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE" (docs/immer-beachten.md), und sie ist
+  hier ausdrücklich vollzogen worden.
+- **Der Verwerfungs-Zweig entfernt.** Vorhergesagt: die Klasse "es entsteht eine
+  Nutzlast, wo keine entstehen darf". Gefallen sind ZWEI Tests, beide mit derselben
+  Meldung und derselben Ursache.
+KEINE Mutation blieb grün; die Unterscheidung "hohler Test gegen schlechtes
+Mutationsmodell" war deshalb nicht zu treffen.
+
+**EIN NACHTRÄGLICH GESCHLOSSENER WÄCHTER, weil er sonst als gebaut gilt:** Die
+schreibungssensitive Wahl der Parameternamen stand nach dem ersten Bau OHNE Test da —
+gemeldet, nicht stillschweigend hingenommen. Der Test ist vor dem Commit ergänzt
+worden und trägt seine Gegenprobe im selben Lauf; er bewacht NICHT, dass die Wahl
+richtig ist (sie ruht auf nichts Gelesenem), sondern dass ihre Änderung SICHTBAR wird.
+
+**WAS DIESER VERMERK AUS DEM VERDICHTETEN ZUSCHNITT AUFNIMMT** — die drei entfallenen
+Unterabschnitte sind oben im Abschnitt "### Vollzogen" einzeln benannt; ihr Inhalt
+steht hier: der Gegenstand (zwei Dateien, ihre Symbolnamen, kein Aufrufer) im ersten
+Absatz, der Beweis-Grund samt der Schuld der nächsten Scheibe im zweiten. Die eine
+fortwirkende Aussage aus "Warum der Schnitt nichts verbaut" ist NICHT hierher gewandert,
+sondern an den Typ GoogleEventInput — sie ist eine Tatsache über den gebauten Code und
+gehört an den Code.
+
+**PROVENIENZ:** Umfang, Testzahl und Gate-Ergebnisse GEMESSEN am Repo bzw. an den
+Läufen vom 2026-08-25. Die Mutationsergebnisse GEMESSEN am selben Tag. Der Satz über
+den fehlenden Live-Test ist eine FOLGE aus dem Zuschnitt, keine Messung.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -553,22 +618,31 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig. DIE ZÄ
    Ziel-Liste — und hält eine dynamische Ableitung für ein Literal.
    WAS consentAllows FÜR EIN ZIEL OHNE SCHLÜSSEL TUT, IST JETZT GEPRÜFT: s. die
    bindende Entscheidung (4).
-2. **KEINE STELLE IM REPO ZERLEGT EINEN QUERY-STRING.** GEMESSEN am Repo (CC,
-   2026-08-25) auf einer WEITEREN Achse als am 2026-08-24: src/** einschliesslich
-   Testdateien, binärsicher gelesen, Begriffe URLSearchParams, location.search,
-   searchParams UND zusätzlich "new URL(".
-   DIE BINÄRSICHERHEIT IST KEINE FORMALIE: src/lib/mappings.ts trägt ein NUL-Byte,
-   weshalb eine gewöhnliche Suche dort "Binary file … matches" meldet STATT der
-   Trefferzeilen — die Datei fiele sonst still aus jeder Achse heraus.
-   ERGEBNIS UNVERÄNDERT, ABER BESSER BELEGT: Auf die ersten drei Begriffe gibt es
-   NULL Treffer, auch in Tests. Im Produktivcode existiert GENAU EIN URL-Konstruktor —
-   isValidRedirectUrl in src/lib/mappings.ts —, und er liest ausschliesslich das
-   PROTOKOLL. Die übrigen Vorkommen liegen in Testdateien (proxy.test.ts,
-   supabase/middleware.test.ts) und dienen dem BAUEN einer Anfrage bzw. dem Lesen von
-   pathname. ZERLEGT WIRD NIRGENDS EIN QUERY-STRING.
-   FORTSCHREIBUNGS-PFLICHT, DIE DAZUGEHÖRT: Mit Scheibe 11.2a entsteht der ZWEITE
-   URL-Konstruktor im Produktivcode. Wer die Scheibe vollzieht, zieht diesen Eintrag
-   nach — sonst behauptet er weiter eine Abwesenheit, die er selbst aufgehoben hat.
+2. **GENAU EINE STELLE IM REPO ZERLEGT EINEN QUERY-STRING, UND ES IST DIE EIGENE.**
+   DIE FRÜHERE FASSUNG DIESES EINTRAGS BEHAUPTETE, ES ZERLEGE KEINE — DAS IST SEIT DEM
+   COMMIT 6653f37 FALSCH UND WIRD NICHT GERETTET. Der Eintrag ist ERSETZT.
+   WAS VON IHM BLEIBT, IST EIN BEFUND ÜBER DEN BESTAND VORHER, und der ist als
+   ZEITANGABE weiterhin richtig: Bis zum 6653f37 zerlegte KEINE Stelle im Repo einen
+   Query-String — GEMESSEN am 2026-08-24 und am 2026-08-25 erneut, auf der breiteren
+   Achse unten. Aufgehoben hat ihn genau dieser Commit.
+   DER STAND HEUTE — GEMESSEN am Repo (CC, 2026-08-25). ACHSE: src/** über *.ts und
+   *.tsx, EINSCHLIESSLICH Testdateien, binärsicher gelesen, Begriffe URLSearchParams ·
+   location.search · searchParams · "new URL(" · decodeURIComponent · split("&"):
+   · ZERLEGT WIRD AN GENAU EINER STELLE: extractGoogleClickIds
+     (src/lib/capi/google-click-ids.ts) über URL.searchParams.
+   · ZWEI URL-KONSTRUKTOREN IM PRODUKTIVCODE, und der Unterschied zwischen ihnen ist
+     der Punkt: isValidRedirectUrl (src/lib/mappings.ts) baut zwar eine URL, liest
+     aber AUSSCHLIESSLICH das Protokoll und rührt searchParams nicht an. Einen
+     Konstruktor zu zählen ist deshalb etwas anderes, als eine Zerlegung zu zählen.
+   · Alle übrigen Treffer liegen in Testdateien (proxy.test.ts,
+     supabase/middleware.test.ts) und dienen dem BAUEN einer Anfrage bzw. dem Lesen
+     von pathname. Auf decodeURIComponent und split("&") gibt es ausserhalb eines
+     Testkommentars KEINEN Treffer.
+   DIE BINÄRSICHERHEIT IST KEINE FORMALIE, UND SIE IST JETZT GEMESSEN: src/lib/mappings.ts
+   trägt GENAU EIN NUL-Byte. Eine gewöhnliche Suche meldet dort "Binary file … matches"
+   STATT der Trefferzeile, und ein Datei-Suchwerkzeug übergeht sie stillschweigend —
+   die Datei fällt still aus jeder Achse heraus, und wer ohne diese Vorkehrung sucht,
+   ÜBERSIEHT AUSGERECHNET DEN ZWEITEN KONSTRUKTOR.
 3. **EIN ADAPTER HAT KEINEN RÜCKKANAL — AUF ZWEI EBENEN, NICHT AUF EINER.** GEMESSEN
    am Code (CC, 2026-08-25):
    · EBENE 1, DAS MELDEN: Der Typ Forwarder (src/lib/capi/ingest.ts) gibt

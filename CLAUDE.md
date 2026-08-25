@@ -60,9 +60,25 @@ die Aussage weiterhin trägt: ein GOOGLE-CLOUD-PROJEKT MIT AKTIVIERTER API, ein 
 eingestufter Zugriffsbereich, und für NUTZER-Zugangsdaten eine OAUTH-VERIFIZIERUNG — bei
 DIENSTKONTEN ausdrücklich nicht. EIN FREIGABEVERFAHREN GIBT ES BEI GOOGLE WEITERHIN, ABER
 AM ZUGANGSMODELL STATT AN DER GESTALT — der gestrichene Satz hat beide Achsen
-zusammengezogen; WELCHES Modell gewählt wird (ADVERTISER oder DATA PARTNER), ist OFFEN und
-im Offen-Block des Google-Abschnitts geführt, und WIRD ES DATA PARTNER, KOMMT DAS
-VERFAHREN ZURÜCK. BAUEN UND MIT EIGENEN KONTEN MESSEN GEHT OHNE; FREMDE
+zusammengezogen. ENTSCHIEDEN AM 2026-08-25 (OWNER) — DAS ZUGANGSMODELL IST ADVERTISER MIT
+KUNDENEIGENEM OAUTH: Jeder Kunde autorisiert die Pagesmith-Anwendung für sein EIGENES
+Werbekonto, je Kunde ein eigenes langlebiges Zugangsdatum, und UNSERE IDENTITÄT STEHT NICHT
+IN DER NUTZERLISTE DES KUNDEN. DATA PARTNER IST VERTAGT UND NICHT AUSGESCHLOSSEN.
+FÜR DEN HEUTIGEN EIGENBETRIEB IST KEINE VERIFIZIERUNG NÖTIG — MIT DREI NEBENBEDINGUNGEN,
+ohne die der Satz stärker ist als seine Quelle: (i) die Freistellung ruht auf einer
+BENANNTEN Ausnahme ("Personal use" bzw. "Development, Testing, or Staging"), nicht auf
+einer allgemeinen Regel; (ii) sie zieht eine NUTZER-OBERGRENZE nach sich, die der Anbieter
+NICHT beziffert — WER HIER EINE ZAHL EINSETZT, ERFINDET SIE, und die naheliegende 100 zählt
+ERNEUERUNGS-TOKEN je Konto je Client-ID, NICHT Nutzer; (iii) im Testing-Zustand lebt ein
+Erneuerungs-Token SIEBEN TAGE. MIT DEM ERSTEN FREMDEN KUNDEN GREIFT DIE
+VERIFIZIERUNGSPFLICHT — dort sind es NUTZER-Zugangsdaten, und für die verlangt der Anbieter
+sie ausdrücklich. DIE AUFLAGEN AUS DIESER WAHL STEHEN NICHT HIER, sondern an der
+Roadmap-Zeile 11.8 (docs/roadmap.md) — zweimal geschrieben liefen sie auseinander.
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-25 auf GELESENER Grundlage (docs/ziel-befunde.md,
+Google-Abschnitt, Teile (ab), (ac), (af) und (an)); dass im Repo KEINE Zahl zur
+Nutzer-Obergrenze steht, ist GEMESSEN (CC, 2026-08-25). KEINE Messung an einer
+Google-Schnittstelle.
+BAUEN UND MIT EIGENEN KONTEN MESSEN GEHT OHNE; FREMDE
 KUNDENKONTEN ANBINDEN NICHT — BEI GOOGLE ALSO AUS EINEM ANDEREN GRUND ALS BEI PINTEREST.
 BELEG: docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", die
 Antworten zu I1, I2 und I3; und Abschnitt "Google (Google Ads Conversions · GA4)",

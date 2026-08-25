@@ -795,6 +795,23 @@ den Stand bei seiner Niederschrift richtig; mit diesem fünften sind es FÜNF. D
 Bauform wie an den Zähl-Angaben in CLAUDE.md: eine Zahl, die einen Stand beschreibt, wird
 nicht rückwirkend angepasst. Wer sie als heutige Liste liest, zählt falsch.
 
+**ZEIGER 2026-08-25 — EIN PUNKT DIESES BLOCKS IST ERLEDIGT.** Der Block selbst wird NICHT
+umgeschrieben: Er ist das Zeitdokument einer Lesung vom 2026-08-20 und war für seinen Tag
+richtig.
+DER PUNKT "OB DIE KLASSIFIZIERUNG ALS ADVERTISER ODER ALS DATA PARTNER DIE RICHTIGE IST"
+IST AM 2026-08-25 DURCH EINE OWNER-ENTSCHEIDUNG ERLEDIGT.
+WO SIE STEHT: docs/roadmap.md, Eintrag "Phase 11.8 — Autorisierungsschicht", Block vom
+2026-08-25 — und CLAUDE.md, "## Modus". **WAS SIE SAGT, STEHT HIER NICHT:** Diese Datei
+trägt KEINE Entscheidungen (s. ihren Kopf). Wer den Inhalt braucht, liest ihn dort.
+DIE BAUFORM IST NICHT NEU, und das gehört dazu, damit dieser Zeiger nicht als Ausnahme
+gelesen wird: Der DRITTE Punkt dieses Blocks verfährt seit dem 2026-08-20 ebenso — "Die
+Entscheidung selbst steht in CLAUDE.md, '## Offene Punkte' — hier steht nur, dass die
+Passung unerhoben ist."
+DIE ÜBRIGEN VIER PUNKTE DIESES BLOCKS SIND VON DIESEM ZEIGER UNBERÜHRT und bleiben offen.
+PROVENIENZ: Dass die Entscheidung getroffen ist und wo sie steht, ist GEMESSEN am Repo
+(CC, 2026-08-25). Die Entscheidung selbst ist eine OWNER-ENTSCHEIDUNG vom 2026-08-25 und
+wird hier nur NACHGEWIESEN, nicht wiedergegeben.
+
 ### Abschnitts-Lesung 2026-08-24 der Data-Manager-Dokumentation, LAUF 1 (Leitfaden und Betrieb) — die Teile (g) bis (s)
 
 **HERKUNFT — GELESEN, NICHTS GEMESSEN (2026-08-24):** Es ist KEIN Aufruf gegen eine

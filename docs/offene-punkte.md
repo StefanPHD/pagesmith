@@ -762,6 +762,55 @@ aufeinander; sie liegen alle hier und finden einander.
   Achse: die drei genannten Fundstellen plus eine Suche über *.md nach ADVERTISER,
   DATA PARTNER und Zugangsmodell). Die Phasennummer ist eine OWNER-ENTSCHEIDUNG vom
   2026-08-25. KEINE dieser Angaben ist eine Antwort auf die Vorfrage.
+  VERMERK 2026-08-25, ZWEITER DES TAGES — DIE VORFRAGE ZUM UMFANG DER SCHICHT IST
+  BEANTWORTET. Der gesamte Text darüber bleibt WÖRTLICH stehen; dieser Block tritt DANEBEN
+  und nimmt keinen Befund zurück.
+  ES GILT DER ZWEIG "KUNDEN MIT EIGENEN KONTEN". Er folgt aus der Owner-Entscheidung
+  desselben Tages zum Google-Zugangsmodell: ADVERTISER MIT KUNDENEIGENEM OAUTH — jeder
+  Kunde autorisiert die Pagesmith-Anwendung für sein eigenes Werbekonto, je Kunde ein
+  eigenes langlebiges Zugangsdatum, und die Betreiber-Identität steht NICHT in der
+  Nutzerliste des Kunden.
+  DER VERMERK VOM 2026-08-25 DARÜBER ("DIE VORFRAGE ZUM UMFANG DER SCHICHT BLEIBT OFFEN")
+  IST DAMIT ABGELÖST — UND ZWAR DURCH EINE ENTSCHEIDUNG, NICHT DURCH EINEN BEFUND. Der
+  Unterschied gehört hierher: Ein Befund hätte die Vorfrage AUFGEKLÄRT, eine Entscheidung
+  SCHLIESST sie. Kippt die Entscheidung, ist die Vorfrage wieder offen und der abgelöste
+  Vermerk gilt wieder.
+  DIE FOLGE STEHT SCHON OBEN IN DIESEM EINTRAG UND WIRD JETZT SCHARF: "KUNDEN MIT EIGENEN
+  KONTEN: Eine Kalendererinnerung JE KUNDE ist unzumutbar — dann trägt LinkedIn die Schicht
+  mit." DIE SCHICHT IST DAMIT FÜR BEIDE ZEILEN GEBRAUCHT, nicht nur für Google. Sie bleibt
+  gemeinsames Fundament von 11.1 und 11.2 — aber aus einem ANDEREN Grund als am
+  2026-08-20: nicht mehr aus der VIELMANDANTEN-Begründung (die trifft den Advertiser-Weg
+  mit kundeneigenem OAuth nicht, s. docs/roadmap.md, Eintrag "Phase 11.8 —
+  Autorisierungsschicht", Nachtrag 2026-08-25), sondern aus der Unzumutbarkeit einer
+  Erneuerung je Kunde.
+  DIE UNGEPRÜFTE ABLEITUNG IST GEGENSTANDSLOS, IHR TEXT BLEIBT STEHEN: Der Block "EINE
+  UNGEPRÜFTE ABLEITUNG, AUSDRÜCKLICH KEIN BEFUND" fragt, ob der Zweig "Betreiber, ein
+  Konto" gar keine Wahl sein könnte. Dieser Zweig gilt nicht — die Frage hat keinen
+  Gegenstand mehr. SIE WIRD TROTZDEM NICHT GESTRICHEN: Kippt die Entscheidung, wird sie
+  wieder gebraucht, und sie ist aus dem Material nicht wiederherstellbar, wenn sie einmal
+  weg ist.
+  ZWEI ZEIGER DIESES EINTRAGS WERDEN HIERMIT NAMENTLICH ABGELÖST — sonst stehen sie daneben
+  und widersprechen:
+  · DER ZEIGER "Das Zugangsmodell ist an DREI Stellen ausdrücklich als offen geführt …
+    AN KEINER DER DREI IST ETWAS GEÄNDERT WORDEN" IST SEIT DEM 2026-08-25 FALSCH. An allen
+    dreien hat sich etwas geändert: In CLAUDE.md, "## Modus", ist die ZUSTANDSAUSSAGE
+    ERSETZT; die Stelle in DIESEM Eintrag ist durch den vorliegenden Block abgelöst; und
+    docs/ziel-befunde.md trägt im Block "WAS AUSDRÜCKLICH OFFEN BLEIBT (2026-08-20)" des
+    Google-Abschnitts jetzt einen ZEIGER auf die Entscheidung.
+  · DER ZEIGER "Die Trennung der zwei Achsen ist GELESEN an CLAUDE.md, '## Modus'
+    (Stand 2026-08-24)" BLEIBT TRAGFÄHIG, und das wird hier ausdrücklich gesagt statt offen
+    gelassen. Was er zitiert, ist die ACHSEN-TRENNUNG — "EIN FREIGABEVERFAHREN GIBT ES BEI
+    GOOGLE WEITERHIN, ABER AM ZUGANGSMODELL STATT AN DER GESTALT" —, und die steht dort
+    Zeichen für Zeichen unverändert; ersetzt ist allein die Zustandsaussage DAHINTER. Die
+    Datierung bleibt richtig. WER NUR SIEHT, DASS AM ABSATZ ETWAS ERSETZT WURDE, hält auch
+    diesen Zeiger für überholt und zieht eine Provenienz zurück, die trägt.
+  WAS OFFEN BLEIBT, UND ES IST NICHT WENIG: die MESSUNG des Client-Credentials-Ausschlusses
+  und das KONKRETE ABLAUFDATUM des live verwendeten LinkedIn-Zugangsdatums. Beide sind von
+  dieser Entscheidung UNBERÜHRT — sie beantwortet, WER das Zugangsdatum erzeugt, nicht, wie
+  lange es lebt und woran sein Ablauf bemerkt wird.
+  PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-25 (der Zweig und das Zugangsmodell). Dass die zwei
+  Zeiger oben so lauten, wie hier zitiert, ist GEMESSEN am Dateitext (CC, 2026-08-25). KEINE
+  Messung an einer Anbieter-Schnittstelle.
 - DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT (Trigger: die erste
   nicht-additive Migration): In diesem Fenster läuft der ALTE Code gegen das NEUE
   Schema. Beim Anlegen einer Spalte ist das folgenlos; beim Umbenennen, beim Löschen

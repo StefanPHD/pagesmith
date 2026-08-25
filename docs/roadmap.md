@@ -412,6 +412,63 @@ liegen beide hier und finden einander.
       · **DIE GRENZE, DIE BLEIBT:** Das Beispiel gilt audienceMembers:ingest. Für
         events:ingest liegt weiterhin KEIN Kopfzeilen-Beispiel vor, und **gemessen ist
         nichts.** Der Blocker ist damit KLEINER geworden und NICHT erledigt.
+
+      **ENTSCHIEDEN AM 2026-08-25 (OWNER) — DAS ZUGANGSMODELL, UND WAS DAS FÜR DIE AUFLAGE
+      DIESES EINTRAGS BEDEUTET.** Der Text darüber bleibt Zeichen für Zeichen stehen; dieser
+      Block tritt DANEBEN.
+      **DIE ENTSCHEIDUNG: ADVERTISER MIT KUNDENEIGENEM OAUTH.** Jeder Kunde autorisiert die
+      Pagesmith-Anwendung für sein eigenes Werbekonto; je Kunde ein eigenes, langlebiges
+      Zugangsdatum. Unsere Identität steht NICHT in der Nutzerliste des Kunden.
+      **DATA PARTNER IST NICHT GEWÄHLT UND NICHT AUSGESCHLOSSEN.** Die Owner-Begründung,
+      wörtlich zu vermerken: Pagesmith ist keine Agentur und verwaltet keine Konten; die
+      Kunden führen ihre Werbung selbst, wir liefern Anbindung und Auswertung.
+      **DER GEGENEINWAND GEHÖRT DANEBEN, WEIL ER DIE BEGRÜNDUNG BEGRENZT** (ARCHITEKT,
+      2026-08-25): Die Doku definiert die Partner-Rolle als "a third-party app analytics
+      provider or data partner", der "conversions" hochlädt — das beschreibt KEINE Agentur,
+      sondern eine DATENLEITUNG. Der reale Unterschied zwischen den Modellen ist nicht der
+      STATUS, sondern die GEHEIMNIS-VERWAHRUNG: Advertiser verlangt ein langlebiges
+      Zugangsdatum JE KUNDE; beim Partner-Weg sind die Kundendaten "short-lived" und nach
+      dem Anlegen des Links verwerfbar. WAS SICH NICHT UNTERSCHEIDET: die Kontingent-Decke —
+      sie hängt am Cloud-Projekt, in BEIDEN Modellen.
+      **DIE AUFLAGE OBEN BLEIBT WÖRTLICH STEHEN, IHR RANG ÄNDERT SICH.** Gemeint ist "DIE
+      ABLAGE DARF NICHT ANNEHMEN, DASS EIN ZUGANGSDATUM IMMER EINEM PROJEKT GEHÖRT".
+      · BISHER: "die EINZIG ZULÄSSIGE BAUFORM, weil beide Modelle möglich sind".
+      · AB JETZT: eine benannte, BILLIGE ABSICHERUNG. Advertiser ist gewählt; die
+        Eigentums-Achse bleibt trotzdem offen, weil sie heute fast nichts kostet und
+        später teuer ist.
+      · **IHRE BEDINGUNG DES ENTFALLENS, UND SIE IST PRÜFBAR: SIE ENTFÄLLT MIT EINER
+        ENTSCHEIDUNG, NICHT VON SELBST.** Fällig ist diese Entscheidung, BEVOR der erste
+        FREMDE Kunde ein Zugangsdatum ablegt — danach kostet ein Wechsel der Achse eine
+        Migration auf ECHTEN GEHEIMNISSEN.
+      **DIE FOLGE FÜR LINKEDIN:** Mit dem Zweig "KUNDEN MIT EIGENEN KONTEN" ist eine
+      Kalendererinnerung je Kunde unzumutbar — LinkedIn trägt die Schicht MIT. Sie bleibt
+      gemeinsames Fundament von 11.1 und 11.2, aber aus einem ANDEREN Grund als am
+      2026-08-20: nicht mehr aus der VIELMANDANTEN-Begründung, sondern aus dieser
+      Unzumutbarkeit. Volltext am Offenen Punkt "EIN OAUTH-ZUGANG PASST NICHT IN DIE
+      SKALAR-SPALTE DER GEHEIMNIS-TABELLE", Block vom 2026-08-25; hier NICHT verdoppelt.
+      **DIESER BLOCK LÖST EINEN PUNKT DES NACHTRAGS VOM 2026-08-25 AB, und das wird
+      ausdrücklich gesagt, statt zwei Stellen widersprechen zu lassen:** Jener Nachtrag
+      nennt unter "WAS OFFEN BLEIBT" vier Dinge, darunter "das Zugangsmodell". DIESER PUNKT
+      IST ERLEDIGT. Die drei übrigen — der Träger des Zugangsdatums für events:ingest, ob
+      x-goog-user-project Pflicht ist, 2.000 gegen 10.000 — bleiben offen. Der Satz jenes
+      Nachtrags "DIE ENTSCHEIDUNG ZWISCHEN ADVERTISER UND DATA PARTNER WIRD HIER NICHT
+      GETROFFEN" bleibt als Zeitdokument stehen und ist weiterhin wahr: getroffen ist sie
+      nicht DORT, sondern vom Owner.
+      **DER VERIFIZIERUNGS-BEFUND, UND ER VERSCHÄRFT DEN ZWEITEN BLOCKER, STATT IHN ZU
+      ENTSCHÄRFEN:** Für den heutigen Eigenbetrieb ist keine Verifizierung nötig — aber die
+      Freistellung ruht auf einer BENANNTEN Ausnahme, zieht eine unbezifferte
+      NUTZER-OBERGRENZE nach sich, und IM TESTING-ZUSTAND LEBT EIN ERNEUERUNGS-TOKEN SIEBEN
+      TAGE (GELESEN 2026-08-25, docs/ziel-befunde.md, Google-Abschnitt, Teil (af)). **DER
+      BAU FINDET DAMIT UNTER KÜRZEREN FRISTEN STATT ALS DER SPÄTERE BETRIEB.**
+      DAS GEHÖRT IN JEDE LIVE-TEST-ANLEITUNG DIESER PHASE, als PFLICHT-HINWEIS und nicht als
+      Fussnote: Sonst wird ein nach sieben Tagen abgelaufenes Zugangsdatum als DEFEKT
+      gejagt, und die Suche beginnt am falschen Ende. Der Blocker "DIE ABLAUF-ÜBERWACHUNG
+      BEI LINKEDIN IST STRUKTURELL NICHT MÖGLICH" oben wird davon NICHT kleiner.
+      PROVENIENZ: Das Zugangsmodell und die Data-Partner-Vertagung sind OWNER-ENTSCHEIDUNG
+      2026-08-25; der Gegeneinwand ist eine ARCHITEKTEN-EINORDNUNG (2026-08-25); die
+      Doku-Angaben sind GELESEN 2026-08-25 (docs/ziel-befunde.md, Google-Abschnitt, Teile
+      (ab), (ac), (af) und (an)). **KEINE MESSUNG** — es ist kein Aufruf gegen eine
+      Google-Schnittstelle gefahren worden.
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code): klein und
       eigenständig, damit ein Kunde seine Einrichtung prüfen kann, ohne echte
       Conversions zu erzeugen. Kontext: docs/claude-history/future-roadmap.md,

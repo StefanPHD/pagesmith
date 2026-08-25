@@ -505,7 +505,9 @@ aufeinander; sie liegen alle hier und finden einander.
 - EIN OAUTH-ZUGANG PASST NICHT IN DIE SKALAR-SPALTE DER GEHEIMNIS-TABELLE (Trigger: die
   erste AUTORISIERUNGSSCHICHT — Phase 11.2 oder ein späteres Ziel, dessen Zugang nicht als
   Skalar abzulegen ist; kopiert am 2026-08-19 aus der Roadmap-Zeile 11.1, deren Wortlaut
-  bis zu ihrem Kollaps unverändert stehen bleibt):
+  bis zu ihrem Kollaps unverändert stehen bleibt; DIE SCHICHT TRÄGT SEIT DEM 2026-08-25
+  DIE PHASENNUMMER 11.8 — der Wortlaut davor bleibt unverändert, eine Nummer ist ein Ort
+  und keine Antwort):
   DIE RICHTIGSTELLUNG VOM 2026-08-14, in ihren zwei Hälften:
   · DAS ZUGANGS-TOKEN LÄUFT NACH 60 TAGEN AB. PROVENIENZ: GELESEN an der EIGENEN
     App-Oberfläche im Entwicklerportal des Anbieters (2026-08-14) — NICHT gemessen, es ist
@@ -727,6 +729,39 @@ aufeinander; sie liegen alle hier und finden einander.
   OWNER-ENTSCHEIDUNG VOM 2026-08-20 zur gemeinsamen Autorisierungsschicht. Sie ruht auf der
   VIELMANDANTEN-Begründung, nicht auf der Ablauf-Frage und nicht auf der Werbekonto-Bindung.
   KEINE der vier Richtigstellungen rührt an sie.
+  VERMERK 2026-08-25 — DIE VORFRAGE ZUM UMFANG DER SCHICHT BLEIBT OFFEN. Der Text darüber
+  bleibt WÖRTLICH stehen; dieser Vermerk tritt DANEBEN und nimmt nichts zurück.
+  SIE WIRD VON DER GESTALT-ENTSCHEIDUNG VOM 2026-08-24 NICHT BERÜHRT: Jene wählt die
+  GESTALT für Google Ads (den Offline Conversion Import auf Basis der Klick-Kennungen),
+  NICHT das ZUGANGSMODELL. Die zwei Achsen werden getrennt geführt — s. CLAUDE.md,
+  "## Modus", wo ausdrücklich steht, dass das Freigabeverfahren bei Google AM
+  ZUGANGSMODELL hängt und nicht an der Gestalt.
+  WARUM DIESER VERMERK HIER STEHT, OBWOHL SICH NICHTS GEÄNDERT HAT — das ist sein
+  EINZIGER Zweck und zugleich seine ganze Rechtfertigung: Die zwei Zweige dieser Vorfrage
+  ("Betreiber, ein Konto" gegen "Kunden mit eigenen Konten") liegen auf DERSELBEN Achse
+  wie ADVERTISER gegen DATA PARTNER im Google-Abschnitt. WER EINE DER BEIDEN FÜR
+  ENTSCHIEDEN HÄLT, HÄLT AUCH DIE ANDERE FÜR ENTSCHIEDEN — und genau das ist am
+  2026-08-25 einmal passiert, an einem Auftrag, der die Gestalt-Entscheidung für eine
+  Zugangsmodell-Entscheidung nahm.
+  GEPRÜFT AM REPO (CC, 2026-08-25): BEIDE SIND OFFEN. Das Zugangsmodell ist an DREI
+  Stellen ausdrücklich als offen geführt — docs/ziel-befunde.md, Google-Abschnitt, Block
+  "WAS AUSDRÜCKLICH OFFEN BLEIBT" ("OB DIE KLASSIFIZIERUNG ALS ADVERTISER ODER ALS DATA
+  PARTNER DIE RICHTIGE IST") · CLAUDE.md, "## Modus" · und dieser Eintrag selbst, im
+  Block über der Vorfrage ("Advertiser gegen Data Partner ... stehen unverändert offen").
+  AN KEINER DER DREI IST ETWAS GEÄNDERT WORDEN.
+  DIE SCHICHT HAT SEIT DEM 2026-08-25 EINE PHASENNUMMER: 11.8 (docs/roadmap.md, "Phase
+  11.8 — Autorisierungsschicht"). DAS ÄNDERT AN DER VORFRAGE NICHTS — eine Nummer ist ein
+  ORT, keine Antwort. Wer aus der Nummer schliesst, die Schicht sei zuschneidbar, hat
+  genau die Verwechslung ein zweites Mal gemacht.
+  WAS UNVERÄNDERT WEITER GILT: alles darüber, insbesondere der Satz, was still kaputtgeht,
+  wenn ein Zugangsdatum abläuft. Offen bleiben ausserdem die Messung des
+  Client-Credentials-Ausschlusses und das konkrete Ablaufdatum des LIVE verwendeten
+  Zugangsdatums.
+  PROVENIENZ, JE TEIL: Die Trennung der zwei Achsen ist GELESEN an CLAUDE.md, "## Modus"
+  (Stand 2026-08-24). Dass beide Achsen offen sind, ist GEMESSEN am Repo (CC, 2026-08-25,
+  Achse: die drei genannten Fundstellen plus eine Suche über *.md nach ADVERTISER,
+  DATA PARTNER und Zugangsmodell). Die Phasennummer ist eine OWNER-ENTSCHEIDUNG vom
+  2026-08-25. KEINE dieser Angaben ist eine Antwort auf die Vorfrage.
 - DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT (Trigger: die erste
   nicht-additive Migration): In diesem Fenster läuft der ALTE Code gegen das NEUE
   Schema. Beim Anlegen einer Spalte ist das folgenlos; beim Umbenennen, beim Löschen

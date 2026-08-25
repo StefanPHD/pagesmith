@@ -113,6 +113,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11 — Multi-Tracking (Server-Side Fan-Out)
 - [x] Phase 11.1 — LinkedIn als viertes Fan-Out-Ziel
 - [ ] Phase 11.2 — Google
+- [ ] Phase 11.8 — Autorisierungsschicht
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code)
 - [ ] Phase 11.4 — Der Testknopf
 - [ ] Phase 11.6 — Custom-Pixel
@@ -204,7 +205,9 @@ gehen von hier eine Station weiter.
 - EIN OAUTH-ZUGANG PASST NICHT IN DIE SKALAR-SPALTE DER GEHEIMNIS-TABELLE (Trigger: die
   erste AUTORISIERUNGSSCHICHT — Phase 11.2 oder ein späteres Ziel, dessen Zugang nicht als
   Skalar abzulegen ist; kopiert am 2026-08-19 aus der Roadmap-Zeile 11.1, deren Wortlaut
-  bis zu ihrem Kollaps unverändert stehen bleibt)
+  bis zu ihrem Kollaps unverändert stehen bleibt; DIE SCHICHT TRÄGT SEIT DEM 2026-08-25
+  DIE PHASENNUMMER 11.8 — der Wortlaut davor bleibt unverändert, eine Nummer ist ein Ort
+  und keine Antwort)
 - DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT (Trigger: die erste
   nicht-additive Migration)
 - DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT (Trigger: EINGETRETEN —

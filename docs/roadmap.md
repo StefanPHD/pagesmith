@@ -275,6 +275,53 @@ liegen beide hier und finden einander.
       PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-25 auf der GEMESSENEN Grundlage von
       Vermerk 1. Der Messwert ist gemessen; die Folge für den Zuschnitt ist eine
       FESTLEGUNG, keine Ableitung.
+- [ ] Phase 11.8 — Autorisierungsschicht: die Ablage und die Erneuerung MEHRWERTIGER
+      Zugangsdaten.
+      ZUR NUMMER UND ZU IHREM PLATZ: Dass eine Phasennummer KEINE Reihenfolge trägt,
+      steht bereits an den Einträgen 11.6 und 11.7 und wird hier NICHT ein viertes Mal
+      ausformuliert — vier Fassungen derselben Regel liefen auseinander. 11.8 war die
+      nächste freie Nummer (Präzedenz: 4.5, 10.5, 11.1 bis 11.7); KEINE bestehende Nummer
+      ist verschoben worden. WARUM DER EINTRAG TROTZDEM HIER STEHT und nicht am Ende: Er
+      gehört sachlich zu 11.1 und 11.2, und wer die beiden liest, muss ihn sehen.
+      WAS SIE IST — GEMEINSAMES FUNDAMENT VON 11.1 UND 11.2, und das ist seit dem
+      2026-08-20 eine ENTSCHEIDUNG und keine Folgerung mehr: Wer sie für eine der beiden
+      Zeilen allein zuschneidet, baut sie überangepasst und ein zweites Mal.
+      PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-20, geführt am Offenen Punkt "EIN
+      OAUTH-ZUGANG PASST NICHT IN DIE SKALAR-SPALTE DER GEHEIMNIS-TABELLE" (s. "## Offene
+      Punkte"). Sie ruht auf der VIELMANDANTEN-Begründung.
+      DAS SCHEMA-RISIKO, MIT DEM GEMESSENEN STAND — GEMESSEN am Migrations-SQL (CC,
+      2026-08-25): 0021_project_secrets.sql legt die Tabelle an mit `target text not null`
+      und `secret text not null` — also JE EINEM SKALAR —, dazu `primary key (project_id,
+      target)` und `check (target in ('meta'))`. Die drei Folgemigrationen berühren
+      AUSSCHLIESSLICH diesen CHECK: 0022 auf ('meta','pinterest'), 0023 zusätzlich
+      'tiktok', 0024 zusätzlich 'linkedin'. KEINE MIGRATION HAT JE EINE ZWEITE
+      GEHEIMNIS-SPALTE ANGELEGT. Ein OAuth-Zugang braucht Token, Erneuerungs-Token und
+      Ablaufzeitpunkt NEBENEINANDER — das passt heute nicht hinein.
+      DER ZWEIG IST OFFEN, DER UMFANG AUCH. Erzeugen die Kunden ihr Zugangsdatum selbst
+      oder tut der Betreiber es für sie — unbeantwortet. DER VOLLTEXT STEHT NICHT HIER,
+      sondern am genannten Offenen Punkt; zwei Fassungen liefen auseinander.
+      DIE AUFLAGE, DIE EINEN SPÄTEREN NEUBAU VERHINDERT — SIE IST DIE TRAGENDE AUSSAGE
+      DIESES EINTRAGS: DIE ABLAGE DARF NICHT ANNEHMEN, DASS EIN ZUGANGSDATUM IMMER EINEM
+      PROJEKT GEHÖRT. Solange ADVERTISER gegen DATA PARTNER offen ist, ist das KEINE
+      Vorsorge gegen einen unwahrscheinlichen Fall, sondern die EINZIG ZULÄSSIGE BAUFORM
+      — beide Modelle sind möglich. Im ADVERTISER-Modus gehört ein Zugangsdatum einem
+      Kundenkonto; im DATA-PARTNER-Modus gehört EIN EINZIGER SATZ Anmeldedaten dem
+      BETREIBER und gilt für ALLE Kunden.
+      DAS IST EINE EBENE UNTER DEM SCHEMA-RISIKO UND WIRD DORT NICHT GENANNT: Jenes fragt,
+      wie VIELE Werte eine Zeile trägt. Diese Auflage fragt, WEM die Zeile gehört. Wer nur
+      das Schema-Risiko löst, baut eine mehrspaltige Ablage je (Projekt, Ziel) — und die
+      ist im Data-Partner-Modus vom ersten Tag an falsch.
+      ZWEI BLOCKER STEHEN VOR EINEM ZUSCHNITT, je mit ihrem Ort und ohne Volltext:
+      · DER TRÄGER DES ZUGANGSDATUMS BEI GOOGLE — in welcher Kopfzeile und mit welchem
+        Präfix das Token reist, steht auf 33 gelesenen Seiten NICHT. Er muss ausserhalb
+        dieses Doku-Baums gesucht oder gemessen werden. Fundstelle: docs/ziel-befunde.md,
+        Google-Abschnitt, Teil (u)/Frage 2 und Teil (z).
+      · DIE ABLAUF-ÜBERWACHUNG BEI LINKEDIN IST STRUKTURELL NICHT MÖGLICH für
+        Zugangsdaten aus dem zweiten Beschaffungsweg — das eigene Werkzeug liest sie nicht
+        aus. Das ist keine fehlende Arbeit, sondern eine fehlende Handhabe. Fundstelle:
+        der Offene Punkt oben, Richtigstellung vom 2026-08-20.
+      WAS HIER NICHT ENTSCHIEDEN IST: ob und wann die Schicht gebaut wird, welches
+      Zugangsmodell gilt und welcher Zweig gilt. KEINE EMPFEHLUNG.
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code): klein und
       eigenständig, damit ein Kunde seine Einrichtung prüfen kann, ohne echte
       Conversions zu erzeugen. Kontext: docs/claude-history/future-roadmap.md,

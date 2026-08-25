@@ -238,6 +238,11 @@ gehen von hier eine Station weiter.
   (Trigger: die nächste Runde, die docs/offene-punkte.md ohnehin öffnet)
 - DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT (Trigger: die nächste
   Arbeit an db-stand.sql oder am DB-Doku-Stand)
+- DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026 (Trigger: das Anlegen einer NEUEN
+  Tabelle in public ab dem 30.10.2026 — insbesondere der Geheimnis-Speicher der
+  Autorisierungsschicht, falls er danach entsteht)
+- DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER PROJEKTREGEL AB (Trigger: die
+  nächste neue DB-Funktion oder RPC)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
@@ -577,6 +582,23 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
 - ENCRYPTION-AT-REST CAPI-Token: tragend bleibt Isolation + RLS-SELECT-Sperre +
   service_role-only (Token physisch write-only); Verschlüsselung nur Defense-in-Depth
   (In-DB-Key = Theater, echtes Envelope braucht KMS). BINDET-AN: Härtung nach Launch.
+  ZUSATZ 2026-08-25 — DER SATZ DARÜBER BLEIBT WÖRTLICH, DER STATUS BLEIBT OFFEN, BINDET-AN
+  BLEIBT UNVERÄNDERT. Eine Anbieter-Lesung prüft seine zwei Hälften und trennt sie:
+  · ERSTE HÄLFTE ("In-DB-Key = Theater") — WÖRTLICH BESTÄTIGT. Der Anbieter formuliert
+    dieselbe Aussage mit demselben Bild ("like locking your front door but leaving the key
+    in the lock"). Zwei unabhängige Quellen, dieselbe Aussage.
+  · ZWEITE HÄLFTE ("echtes Envelope braucht KMS") — SCHWEIGEN MIT BENANNTER ACHSE. Die
+    Begriffe KMS, envelope und key management service kommen auf beiden im VOLLTEXT
+    gelesenen Seiten NICHT vor. Weder bestätigt noch widerlegt.
+  · DIE FOLGE, DIE MAN SONST ÜBERSIEHT: Der Wurzelschlüssel des Anbieters liegt NICHT in
+    unserem Postgres. Der Satz trifft damit eine Ablage MIT Schlüssel IN der Datenbank —
+    er trifft NICHT jedes Verfahren, das der Anbieter anbietet.
+  · Dass der Anbieter Projekte ohnehin at rest verschlüsselt und das "likely" für
+    Compliance-Bedarf genügen lässt, ist ABGELEGT und zählt NICHT als Antwort auf die
+    Google-Auflage.
+  FUNDSTELLEN UND VOLLE BEGRÜNDUNG STEHEN NICHT HIER: docs/plattform-befunde.md, Abschnitt
+  "Supabase (Postgres · Auth · RLS · Vault · Backups)", Teile (q) und (r) — und in der
+  VOLLFASSUNG dieses Manifests, die im selben Zug geändert worden ist.
 - VERCEL-TOKEN scoped + Domain-Mutations-AUDIT-LOG: Token minimal scopen + jede
   Domain-Mutation mit Actor + Zeit protokollieren. BINDET-AN: 7c-2.
 - META-FEHLERLOG SPIEGELT DAS ZUGANGSDATUM ZURÜCK (eingestuft 2026-08-10, zuvor ohne Stufe;
@@ -717,8 +739,10 @@ die erste passende Antwort gewinnt: (1) dauerhaft und projektweit ->
 docs/immer-beachten.md, HINTEN anfügen · (2) laufender Phasenschnitt ->
 docs/aktiver-stand.md · (3) Zustand, der später kippt (TODO mit Trigger) ->
 docs/offene-punkte.md, Titel + Trigger als Stub-Zeile hier · (4) Phasenplanung
-oder -stand -> docs/roadmap.md, Marker im Stub hier · (5) Anbieter-BEFUND ->
-docs/ziel-befunde.md, offene FRAGE -> docs/ziel-fragenkatalog.md · (6) Schema,
+oder -stand -> docs/roadmap.md, Marker im Stub hier · (5) Befund über ein
+FAN-OUT-ZIEL -> docs/ziel-befunde.md, offene FRAGE dazu ->
+docs/ziel-fragenkatalog.md; Befund über einen PLATTFORM-ANBIETER ->
+docs/plattform-befunde.md · (6) Schema,
 Policies, Analytics-Lesepfad -> docs/db-stand.md (Zustand) bzw. docs/db-regeln.md
 (Regeln) · (7) Regel über die ARBEITSWEISE selbst -> docs/arbeitsweise.md, als
 ÄNDERUNGSANTRAG · (8) keins davon -> NACHFRAGEN. KEINE NEUE DATEI OHNE
@@ -727,9 +751,17 @@ Standdatei, die nach Verfahren entsteht. Weg 1 führt aus DIESER Datei heraus,
 NICHT aus dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
 - docs/arbeitsweise.md — Arbeits- und Prompt-Disziplin (Kadenz, Stufen,
   Nachweisführung, Phasenende-Ablauf). VOM ARCHITEKTEN GEPFLEGT und NICHT Teil
-  des CC-Kontexts: CC bekommt sie nicht automatisch und soll sie nicht lesen; sie
-  beschreibt, WIE Aufträge entstehen, nicht was gebaut wird. Die CLAUDE.md
-  verweist an einer Stelle auf sie ("## Aktiver Stand — Verfahren ab Phase 10").
+  des CC-Kontexts — und das meint das LADEN, nicht das Bearbeiten: Sie lädt nicht
+  mechanisch, und CC zieht sie nicht als Arbeitsgrundlage heran. Sie beschreibt,
+  WIE Aufträge ENTSTEHEN — die Arbeitsweise der Chat-Instanz, nicht die
+  Bauanleitung.
+  EDITIEREN AUF ANWEISUNG IST DAVON NICHT BERÜHRT: Ist ein Änderungsantrag
+  angenommen, pflegt CC die Datei redaktionell — dann stimmen Formatierung und
+  Bauform. WEG 7 BLEIBT UNBERÜHRT: Der INHALT wird als ÄNDERUNGSANTRAG
+  entschieden, nicht von CC. Geklärt ist der VOLLZUG, nicht die Entscheidung.
+  Die CLAUDE.md verweist an MEHREREN Stellen auf sie — unter anderem
+  "## Aktiver Stand — Verfahren ab Phase 10" und Weg 7 in diesem Abschnitt. Hier
+  steht bewusst KEINE Zahl: Querverweise wachsen, und eine Zahl verrottete erneut.
 - docs/db-stand.md — der gemessene Ist-Zustand von DB und Analytics-Lesepfad
   (Migrationsstand, Tabellen, Policies, Grants, Spalten, Constraints, Indizes,
   Funktionen, Event-Trigger, Backups). Am 2026-08-11 aus dieser Datei ausgelagert,
@@ -775,6 +807,24 @@ NICHT aus dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
   Sie gehört KEINER Phase und wird NICHT archiviert — anders als die
   Phasen-Historien im Detail-Archiv trägt sie auch die noch OFFENEN Phasen und
   bleibt damit ein aktives Dokument, solange es eine Roadmap gibt.
+- docs/plattform-befunde.md — die GEMESSENEN und GELESENEN Befunde über die
+  PLATTFORM-Anbieter, auf denen Pagesmith läuft (Persistenz, Auth, Hosting,
+  Ausspielung, Deploy), je Anbieter ein Abschnitt, mit Provenienz an jeder
+  Angabe. Angelegt 2026-08-25 per OWNER-ENTSCHEIDUNG — die benannte Ausnahme von
+  "KEINE NEUE DATEI OHNE OWNER-ENTSCHEIDUNG" oben. Sie trägt KEINE Regeln, KEINE
+  Entscheidungen und KEINEN Zustand unserer Datenbank. Sie wird NICHT automatisch
+  geladen. AUSLÖSER: Wer an Schema, Policies, Migrationen, dem Geheimnis-Speicher,
+  an Backup/Restore oder am Deploy-Weg arbeitet, lädt sie ZUERST — wo es um die
+  Datenbank geht, ZUSAMMEN mit docs/db-regeln.md und docs/db-stand.md.
+  DIE ABGRENZUNG ZU docs/ziel-befunde.md IST DER GRUND FÜR ZWEI DATEIEN: Jene
+  trägt Befunde über die FAN-OUT-ZIELE (Empfänger von Conversion-Ereignissen),
+  diese über die Anbieter der INFRASTRUKTUR. Die Auslöser zeigen in verschiedene
+  Richtungen; in EINER Datei lüde jeder beides und fände seins nicht.
+  SEIT DEM 2026-08-25 FÜHREN ZWEI BEFUND-DATEIEN BUCHSTABEN: Ein Verweis der Form
+  "Teil (a)" ist ab da mehrdeutig und nennt DATEI, ABSCHNITT und Buchstaben. Die
+  bestehenden Verweise sind NICHT nachgezogen worden; die, die docs/ziel-befunde.md
+  ausdrücklich nennen, bleiben eindeutig.
+  Sie gehört KEINER Phase und wird NICHT archiviert.
 
 ## Detail-Archiv (bei Bedarf lesen — NICHT automatisch geladen)
 Abgeschlossene Phasen-Historie + Vollbegründungen sind ausgelagert, damit CLAUDE.md unter

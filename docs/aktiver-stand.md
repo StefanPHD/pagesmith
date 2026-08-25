@@ -759,3 +759,41 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig. DIE ZÄ
    NICHT ENTSCHIEDEN: ob das eine eigene Regel wird oder ein Absatz an der bestehenden, und
    ob daraus eine Auflage folgt (etwa: die Ausschluss-Liste gegen die offenen Fragen
    halten, bevor ein Lauf beginnt). KEINE EMPFEHLUNG.
+
+   ZUSATZ 2026-08-25 — DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN. Zwei Beobachtungen aus
+   dem Supabase-Doku-Lauf desselben Tages treten daneben; die erste bestätigt den
+   Kandidaten, die zweite zeigt ihn in einer Gestalt, die er bisher nicht kannte.
+   · **DER KANDIDAT HAT SICH BEIM ERSTEN GEBRAUCH BEWÄHRT — und das ist selbst ein
+     Befund, kein Selbstlob:** Die Seite
+     supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore stand
+     zunächst auf der Liste "GESEHEN, NICHT GEÖFFNET", mit einem plausiblen Grund
+     ("verlinkt von der Backup-Seite, betrifft die CLI-Migration"). Sie trägt die
+     EINZIGE verbindliche Aussage der ganzen Lesung zu Backup und Restore verschlüsselter
+     Werte. Geöffnet worden ist sie AUSSCHLIESSLICH deshalb, weil dieser Kandidat hier
+     stand — ohne ihn wäre der Ausschluss zum dritten Mal so richtig ausgesehen wie beim
+     ersten Mal.
+   · **EINE ZWEITE GESTALT DERSELBEN SACHE, NEU: DER NICHT VORAUSGEWÄHLTE REITER.** Auf
+     jener Seite trägt Schritt 5 eine Reiter-Gruppe aus zwei Reitern. Der vorausgewählte
+     zeigt den Normalfall; der zweite trägt VIER Sätze, die in keinem anderen der
+     achtzehn gelesenen Dokumente stehen. Im Fliesstext der Seite war davon NICHTS zu
+     sehen — der Reiter musste angeklickt werden.
+     DAS IST DIE REITER-VARIANTE DER SYMBOL-TABELLE: eine Aussage, die im Text nicht
+     steht und trotzdem nicht als leer behandelt werden darf. Die bestehende Auflage
+     ("Triffst du auf eine Tabelle, deren Aussage in SYMBOLEN steht: melden, nicht als
+     leer behandeln") deckt sie NICHT, weil kein Symbol beteiligt ist.
+     WARUM DAS SCHLIMMER IST ALS EIN AUSSCHLUSS: Ein Ausschluss steht wenigstens auf
+     einer Liste und ist damit nachprüfbar. Ein nicht ausgewählter Reiter erzeugt
+     überhaupt keinen Eintrag — die Seite gilt als GEÖFFNET und VOLLSTÄNDIG GELESEN,
+     und der Umfangs-Bericht sagt das auch. Es gibt keine Stelle, an der die Lücke
+     sichtbar würde.
+   BEIDE BEOBACHTUNGEN BETREFFEN DAS CRAWL-VERFAHREN, NICHT SUPABASE. Sie stehen deshalb
+   hier beim Kandidaten und nicht bei den Anbieter-Befunden; der Anbieter ist der Anlass,
+   nicht der Gegenstand. Der Befund über Backup und Restore selbst ist hier AUSDRÜCKLICH
+   NICHT wiedergegeben — sein Ort ist am 2026-08-25 offen und liegt beim Owner.
+   NICHT ENTSCHIEDEN, ob daraus eine Regel wird, ob der Kandidat um die Reiter-Gestalt
+   erweitert wird oder ob beides ein Absatz an einer bestehenden Regel bleibt. KEINE
+   EMPFEHLUNG.
+   PROVENIENZ: GEMESSEN am eigenen Lauf (CC, 2026-08-25) — der Ausschluss, das Öffnen und
+   der verdeckte Reiter sind Beobachtungen an der eigenen Arbeit, nicht an einem fremden
+   System. Der Inhalt der vier Sätze ist GELESEN an der genannten Seite, ebenfalls
+   2026-08-25.

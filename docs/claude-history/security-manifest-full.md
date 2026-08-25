@@ -156,6 +156,50 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   der DB (KMS). Bis dahin nicht so tun, als schütze ein In-DB-Key.
   BINDET-AN: Härtung nach Launch; kein harter Blocker, solange Isolation steht.
   (Ersetzt den Polish-Listen-Eintrag.)
+  ZUSATZ 2026-08-25 — KEINE UMSTUFUNG. Die vier Felder darüber bleiben WÖRTLICH, der Status
+  bleibt OFFEN, BINDET-AN bleibt unverändert. Was hier dazutritt, ist eine PRÜFUNG des
+  Feldes EHRLICHE EINORDNUNG an der Anbieter-Doku — und sie fällt für die zwei Hälften
+  jenes Satzes verschieden aus:
+  ZUR ERSTEN HÄLFTE ("pgcrypto mit dem Key NEBEN dem Ciphertext ist Theater"): WÖRTLICH
+  BESTÄTIGT. Der Anbieter schreibt zum selben Sachverhalt: "there is little value in
+  storing the encryption key in the database itself as this would be like locking your
+  front door but leaving the key in the lock! Storing the key outside the database fixes
+  this issue." Zwei unabhängig entstandene Quellen, dieselbe Aussage, dasselbe Bild.
+  ZUR ZWEITEN HÄLFTE ("Echtes Envelope braucht den KEK AUSSERHALB der DB (KMS)"): SCHWEIGEN
+  MIT BENANNTER ACHSE. Die Begriffe KMS, envelope und key management service kommen auf den
+  beiden im VOLLTEXT gelesenen Anbieter-Seiten NICHT vor; der Anbieter beschreibt "our
+  secured backend systems" plus einen Abruf über die Management-API und benennt das
+  Verfahren nicht. WEDER BESTÄTIGT NOCH WIDERLEGT — und ausdrücklich NICHT als Bestätigung
+  gebucht, weil ein passendes Verfahren und ein benanntes Verfahren zweierlei sind.
+  DIE FOLGE FÜR DIE REICHWEITE DES SATZES, und sie ist der eigentliche Zugewinn dieses
+  Zusatzes: Der Wurzelschlüssel des Anbieters liegt NICHT in unserem Postgres. Der Satz
+  trifft damit eine Ablage MIT Schlüssel IN der Datenbank — er trifft NICHT jedes
+  Verfahren, das der Anbieter anbietet. Wer ihn als pauschales Urteil über
+  Anbieter-Verfahren liest, liest ihn zu weit.
+  WAS ABGELEGT UND NICHT VERRECHNET WIRD: Der Anbieter hält fest, Projekte seien ohnehin at
+  rest verschlüsselt und das genüge "likely" für Compliance-Bedarf (SOC2, HIPAA). Das ist
+  GELESEN und zählt NICHT als Antwort auf die Verschlüsselungs-Auflage des Google-Ziels —
+  jene ist eine Auslegungsfrage und wird an anderer Stelle entschieden.
+  WARUM DREI STELLEN, DIE DENSELBEN SATZ ZITIEREN, UNBERÜHRT BLEIBEN — der Absatz steht
+  hier, damit die nächste Runde es nicht als Versäumnis liest:
+  · supabase/migrations/0021_project_secrets.sql und 0005_project_tokens.sql tragen den
+    Gedanken als Kommentar. ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH UMGESCHRIEBEN,
+    auch kein Kommentar (docs/immer-beachten.md). Und sie brauchen es nicht: Beide
+    beschreiben genau den Fall, den der Satz trifft — eine Ablage MIT Schlüssel in der
+    Datenbank. Ihre Aussage ist unverändert richtig.
+  · docs/claude-history/future-roadmap.md zitiert ihn und nennt ihn "heute korrekt". Was
+    unter docs/claude-history/ liegt, ist ein Zeitdokument und wird nicht rückwirkend
+    korrigiert.
+  · DIESE DATEI IST DIE BENANNTE AUSNAHME, aus zwei Gründen: Sie ist laut eigenem Kopf ein
+    AKTIVES Dokument ("ABLAGEORT SAGT NICHTS ÜBER DEN STATUS"), und CLAUDE.md verlangt
+    ausdrücklich, beide Manifest-Fassungen IMMER im selben Commit zu ändern. Die
+    Kurzfassung trägt denselben Zusatz in ihrer Bauform — knapper, ohne die vier Felder.
+  PROVENIENZ: GELESEN am 2026-08-25 an supabase.com/docs/guides/database/vault (Abschnitt
+  "Encryption key location") und supabase.com/docs/guides/database/extensions/pgsodium,
+  beide im Volltext; die Abwesenheit der drei Begriffe ist GEMESSEN am Seitentext (CC,
+  2026-08-25). KEINE Messung an dieser Datenbank. Volle Fundstellen und der gelesene
+  Umfang: docs/plattform-befunde.md, Abschnitt "Supabase (Postgres · Auth · RLS · Vault ·
+  Backups)", Teile (q) und (r).
 - VERCEL-TOKEN maximal scoped + Domain-Mutations-AUDIT-LOG:
   RISIKO: der server-only Vercel-API-Token kann Domains am Projekt hinzufügen/löschen;
   Missbrauch/Leak ohne Spur.

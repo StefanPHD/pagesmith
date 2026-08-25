@@ -294,8 +294,9 @@ gewinnt:
 3. **Zustand, der später kippt** (TODO mit Trigger) → `docs/offene-punkte.md`;
    Titel und Trigger als Stub-Zeile in `CLAUDE.md`.
 4. **Phasenplanung oder -stand** → `docs/roadmap.md`, Marker im Stub.
-5. **Anbieter-Befund** → `docs/ziel-befunde.md` · **offene Frage an einen
-   Anbieter** → `docs/ziel-fragenkatalog.md`.
+5. **Befund über ein FAN-OUT-ZIEL** → `docs/ziel-befunde.md` · **offene Frage an
+   ein Fan-Out-Ziel** → `docs/ziel-fragenkatalog.md` · **Befund über einen
+   PLATTFORM-ANBIETER** (Supabase, Vercel) → `docs/plattform-befunde.md`.
 6. **Schema, Policies, Analytics-Lesepfad** → `docs/db-stand.md` (Zustand) bzw.
    `docs/db-regeln.md` (Regeln).
 7. **Regel über die Arbeitsweise selbst** → dieses Dokument, als
@@ -808,6 +809,8 @@ existiert.
 `docs/offene-punkte.md` bei einem offenen Punkt oder seinem Trigger ·
 `docs/ziel-befunde.md` und `docs/ziel-fragenkatalog.md` bei einem Fan-Out-Ziel
 (beide zusammen) · `docs/db-stand.md` und `docs/db-regeln.md` bei Migrationen ·
+`docs/plattform-befunde.md` bei Migrationen und bei Arbeit am
+Geheimnis-Speicher, zusammen mit den beiden davor ·
 `docs/claude-history/security-manifest-full.md` bei Manifest-Arbeit ·
 `future-roadmap.md`, wenn eine Entscheidung eine spätere Richtung versperren
 könnte · `docs/claude-history/phase-*.md` für das Warum einer Regel.

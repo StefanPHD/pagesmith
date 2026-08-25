@@ -891,3 +891,90 @@ aufeinander; sie liegen alle hier und finden einander.
   WAS NICHT DAZUGEHÖRT: die Datei jetzt zu öffnen oder den Zeiger zu beurteilen. Beides
   gehört in die Runde, die der Trigger auslöst — diese Zeile hält nur fest, dass die
   Prüfung aussteht.
+- DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026 (Trigger: das Anlegen einer NEUEN
+  Tabelle in public ab dem 30.10.2026 — insbesondere der Geheimnis-Speicher der
+  Autorisierungsschicht, falls er danach entsteht): Der Anbieter kündigt an, dass neu
+  angelegte Tabellen in public die automatischen DML-Grants an anon, authenticated und
+  service_role NICHT mehr bekommen. Sie brauchen dann ein AUSDRÜCKLICHES GRANT, bevor der
+  Daten-API-Weg sie überhaupt sieht; bestehende Tabellen bleiben unberührt.
+  WÖRTLICH — ZWEI SÄTZE, UND DER ZWEITE GEHÖRT ZWINGEND ZUM ERSTEN, weil der erste allein
+  nach einem Bruch am Bestand klingt: "On October 30, 2026 the setting will be applied it
+  to all existing projects." · "Once the change is rolled out to your project, new tables
+  you create in public schema require an explicit opt-in (via a Postgres grant) before the
+  Data API can see them. Existing tables are not affected in your project, they keep their
+  current grants and stay reachable." (Der Bruch "applied it" steht so im Original und ist
+  KEIN Übertragungsfehler — wer ihn glättet, macht aus einem Zitat eine Wiedergabe.)
+  WAS DABEI NICHT KIPPT, UND DAS IST DER GRUND FÜR DIESEN EINTRAG: Die Regel "GRANTS
+  SCHÜTZEN NICHTS — RLS IST DIE EINZIGE TRAGENDE SCHICHT" (docs/immer-beachten.md) bleibt
+  unverändert richtig. Was sich ändert, ist der AUSGANGSZUSTAND, gegen den sie schützt —
+  nicht die Schicht, die trägt.
+  WER DIE ANKÜNDIGUNG FÜR EINE ENTWARNUNG HÄLT, HAT SIE FALSCH GELESEN: Eine neue Tabelle
+  ohne "enable row level security" ist danach nicht sicher, sondern nur vorübergehend
+  unerreichbar. Ein einziges GRANT, das jemand nachträglich ergänzt, damit die Anwendung
+  wieder läuft, stellt den alten Zustand vollständig her — und dann trägt wieder allein
+  die RLS. Die Umstellung verschiebt den Zeitpunkt, zu dem die Lücke entsteht, sie
+  schliesst sie nicht.
+  WAS AUSDRÜCKLICH OFFEN BLEIBT: Der Lesepfad des heutigen Geheimnis-Speichers läuft über
+  service_role. Ob dessen Grant von der Umstellung berührt ist, sagt die gelesene Stelle
+  NICHT — sie nennt anon, authenticated und service_role in EINER Aufzählung, ohne den
+  Fall der Server-Action zu behandeln. Hier wird das NICHT abgeleitet.
+  GRENZE: GELESEN am 2026-08-25, NICHT gemessen. Ob und wann die Änderung dieses Projekt
+  erreicht, ist am Repo nicht entscheidbar — dieselbe Denkfigur wie bei "OB EINE MIGRATION
+  IN DER LAUFENDEN DB ANGEWANDT IST" (docs/immer-beachten.md). Die drei Daten der Quelle
+  (28.04.2026 · 30.05.2026 · 30.10.2026) sind ANKÜNDIGUNGEN des Anbieters, keine
+  Beobachtungen an diesem Projekt. Der gemessene Ist-Zustand (docs/db-stand.md,
+  ROLLEN-GRANTS, gemessen 2026-08-05) wird davon NICHT berührt und ist NICHT angeglichen
+  worden.
+  PROVENIENZ: GELESEN 2026-08-25 am Changelog-Eintrag "Breaking Change: Tables not exposed
+  to Data and GraphQL API automatically", datiert "Apr 28, 2026", unter
+  supabase.com/changelog/45329-breaking-change-tables-not-exposed-to-data-and-graphql-api-automatically
+  — dieselbe Ankündigung steht als Fliesstext in supabase.com/docs/guides/api/securing-your-api,
+  Abschnitt "Default privileges" ("Supabase is changing the platform default to revoke
+  these automatic grants so that exposure becomes opt-in"). KEINE Messung.
+  WO DER LAUF STEHT, AUS DEM DIESER PUNKT STAMMT: docs/plattform-befunde.md, Abschnitt
+  "Supabase (Postgres · Auth · RLS · Vault · Backups)", Teil (z) — dort steht er als
+  EINZEILER mit Verweis hierher, damit der Befund nicht in zwei Fassungen lebt. Die
+  wörtlichen Zitate stehen HIER und nur hier.
+- DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER PROJEKTREGEL AB (Trigger: die
+  nächste neue DB-Funktion oder RPC): Beide Seiten verlangen einen FIXIERTEN Pfad. Sie
+  empfehlen verschiedene WERTE, und dieser Eintrag legt beide vor, ohne zu entscheiden.
+  PROJEKTSEITE — docs/db-regeln.md, Regel "DB-FUNKTIONEN + SEARCH_PATH": SECURITY INVOKER
+  bekommt `set search_path = public` und einen voll qualifizierten Rumpf; SECURITY DEFINER
+  bekommt `set search_path = pg_catalog`, ausdrücklich NICHT public, weil eine
+  DEFINER-Funktion mit Owner-Rechten läuft und ein in public angelegtes Objekt die
+  Namensauflösung kapern könnte. PROVENIENZ: präzisiert nach EIGENER MESSUNG am
+  2026-07-28; dieselbe Regel führt rls_auto_enable mit search_path=pg_catalog als
+  gemessenen Ist-Zustand und verbietet ausdrücklich, ihn zu "korrigieren".
+  ANBIETERSEITE — GELESEN am 2026-08-25 an zwei Stellen: supabase.com/docs/guides/database/functions,
+  Abschnitt "Suggestions › Security definer vs invoker" ("It is best practice to use
+  `security invoker` (which is also the default). If you ever use `security definer`, you
+  must set the `search_path`." · "If you use an empty search path (`search_path = ''`), you
+  must explicitly state the schema for every relation in the function body"), und
+  supabase.com/docs/guides/database/database-advisors, Lint 0011_function_search_path_mutable
+  ("We recommend pinning functions' `search_path` to an empty string, `search_path = ''`,
+  which forces all references within the function's body to be fully qualified").
+  DIE ABGRENZUNG, DIE DEN WIDERSPRUCH AUF SEINE ECHTE GRÖSSE BRINGT — ohne sie liest sich
+  der Eintrag als Regelbruch, und das ist er nicht: Einig sind sich beide Seiten darin,
+  DASS der Pfad fixiert gehört; der Advisor-Lint ist mit public, mit pg_catalog und mit
+  dem leeren Pfad gleichermassen erfüllt, denn er beanstandet einen MUTABLEN Pfad. Nicht
+  einig sind sie sich im empfohlenen WERT.
+  ZU pg_catalog SCHWEIGT DER ANBIETER — NICHT-TREFFER MIT BENANNTER REICHWEITE: Auf den
+  beiden oben genannten Seiten kommt pg_catalog nicht vor. Es ist damit NICHT belegt, dass
+  der Anbieter den Projektwert für schlechter hält; belegt ist nur, dass er ihn nicht
+  nennt. Der Unterschied ist der zwischen "abgesucht und verworfen" und "nicht erwähnt".
+  WAS HIER NICHT GESCHIEHT, UND ZWAR AUS EINEM BENANNTEN GRUND: docs/db-regeln.md wird
+  NICHT angefasst. Jene Regel ruht auf einer Messung an DIESER Datenbank, und ihre vierte
+  Regel verbietet die stille Angleichung an eine Anbieter-Doku ausdrücklich ("WIDERSPRICHT
+  EIN DOKU-BEFUND EINER DER DREI REGELN OBEN, WIRD DIE REGEL NICHT GEÄNDERT ... Der
+  Widerspruch wird VORGELEGT (beide Seiten, Datum, Fundstelle), der Owner entscheidet").
+  Dieser Eintrag IST diese Vorlage.
+  WAS NICHT DAZUGEHÖRT: die Frage zu beantworten, welcher Wert der bessere ist. Sie
+  verlangt eine Abwägung zwischen einem gemessenen Ist-Zustand und einer Anbieter-
+  Empfehlung, und diese Abwägung trifft der Owner — bei der nächsten Funktion, nicht hier.
+  PROVENIENZ: die Projektseite GEMESSEN am 2026-07-28 (übernommen aus docs/db-regeln.md,
+  nicht neu erhoben); die Anbieterseite GELESEN am 2026-08-25 an den zwei genannten Seiten.
+  KEINE Messung an dieser Datenbank in dieser Runde.
+  WO DER LAUF STEHT, AUS DEM DIESER PUNKT STAMMT: docs/plattform-befunde.md, Abschnitt
+  "Supabase (Postgres · Auth · RLS · Vault · Backups)", Teil (z) — dort steht er als
+  EINZEILER mit Verweis hierher, damit der Befund nicht in zwei Fassungen lebt. Die
+  wörtlichen Zitate beider Seiten stehen HIER und nur hier.

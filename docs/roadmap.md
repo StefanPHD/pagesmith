@@ -235,6 +235,46 @@ liegen beide hier und finden einander.
       gehört das Tag dem KUNDEN, ist jene Zusage unberührt; müsste Pagesmith selbst ein
       Google-Tag ausliefern, wäre Google ein ZWEITES Hybrid-Ziel und die Zusage berührt.
       DIESE FRAGE IST HIER NICHT ENTSCHIEDEN und wird auch nicht nebenbei entschieden.
+      GESTEMPELT AM 2026-08-25 — "EINE KONZEPT-RUNDE, KEINE SCHEIBE" GILT NICHT MEHR
+      UNBEDINGT. Der Kopfsatz bleibt Zeichen für Zeichen stehen und wird NICHT gekürzt;
+      dieser Block tritt DANEBEN und sagt, was ihn ablöst und was ihn zurückbringt.
+      WO DIESER STEMPEL STEHT UND WARUM NICHT WEITER OBEN — der Absatz gehört zwingend
+      dazu, sonst hält ihn die nächste Runde für verlegt und schiebt ihn in den
+      Richtigstellungs-Block: ER BETRIFFT DIE DRITTE ÜBERHOLTE ANGABE DES KOPFSATZES und
+      steht BEWUSST HIER, am Ende des Eintrags, statt bei den zwei anderen.
+      DER GRUND IST SACHLICH UND NICHT MECHANISCH: Jener Block oben führt
+      SACHKORREKTUREN — eine Angabe war ZU GROB, eine RICHTIG ABER OHNE GRUND. Dieser
+      hier ist ein MECHANISMUSWECHSEL: der Satz war RICHTIG, er ist AUSGESETZT, und er
+      trägt eine BEDINGUNG SEINER RÜCKKEHR. Die beiden Klassen werden getrennt geführt.
+      Sie zusammenzuziehen nähme dem Stempel die Rückkehr-Bedingung — eine Sachkorrektur
+      kennt keine — und der Aufzählung oben ihre Geschlossenheit.
+      DIE WARNUNG AN DEN LESER, UND SIE IST DER ZWECK DIESES ABSATZES: WER NUR DEN
+      RICHTIGSTELLUNGS-BLOCK LIEST, HAT DEN KOPF NICHT VOLLSTÄNDIG GEPRÜFT. Die
+      Aufzählung "ZWEI ANGABEN, JE EINZELN:" bleibt über ihren EIGENEN Block wahr; sie
+      ist nur nicht mehr die einzige Adresse.
+      · ER WAR RICHTIG, SOLANGE DIE MESSUNG FEHLTE. Zum Zeitpunkt seiner Niederschrift
+        war nicht bekannt, ob eine Klick-Kennung den eigenen Server überhaupt erreicht.
+        Ohne diese Auskunft war jeder Zuschnitt eine Wette, und "keine Scheibe" die
+        einzige ehrliche Aussage.
+      · VERMERK 1 HAT SIE ERBRACHT, SOWEIT EINE REINE SCHEIBE SIE BRAUCHT. GEMESSEN
+        2026-08-24 vom Owner, live an einer veröffentlichten Seite: die Kennung erreicht
+        den Server heute schon, ohne Änderung am Emitter, an der Serve-Route oder an
+        einer Cookie-Architektur. Der Vermerk steht in docs/aktiver-stand.md; er wird
+        hier NICHT wiederholt, zweimal geschrieben liefe er auseinander.
+      · DIE BEDINGUNG, UNTER DER DER SATZ WIEDER GILT — und sie ist der eigentliche
+        Inhalt dieses Blocks: JEDE SCHEIBE DIESER PHASE, DIE DEN TRANSPORT BERÜHRT,
+        FÄLLT ERNEUT UNTER IHN, bis die Restlücke aus Vermerk 1 gemessen ist. Diese
+        Restlücke ist ZWEITEILIG und wird nicht als eine gelesen: (1) dass eine ECHTE
+        gclid von Google denselben Weg nimmt — nicht geprüft, eine Ableitung und kein
+        Messwert; (2) ob die Kennung auf einer Seite mit MEHREREN SCHRITTEN überlebt —
+        gemessen ist ein EIN-SEITEN-FALL.
+      · WAS DER STEMPEL DAMIT FREIGIBT UND WAS NICHT: Frei ist der Zuschnitt und der
+        Bau von Scheiben, die NICHTS senden. Nicht frei ist der Transport. Wer den
+        Unterschied einebnet, hat den Stempel als Generalfreigabe gelesen, und das ist
+        er ausdrücklich nicht.
+      PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-25 auf der GEMESSENEN Grundlage von
+      Vermerk 1. Der Messwert ist gemessen; die Folge für den Zuschnitt ist eine
+      FESTLEGUNG, keine Ableitung.
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code): klein und
       eigenständig, damit ein Kunde seine Einrichtung prüfen kann, ohne echte
       Conversions zu erzeugen. Kontext: docs/claude-history/future-roadmap.md,

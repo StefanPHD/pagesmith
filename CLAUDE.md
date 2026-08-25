@@ -243,6 +243,8 @@ gehen von hier eine Station weiter.
   Autorisierungsschicht, falls er danach entsteht)
 - DIE search_path-EMPFEHLUNG DES ANBIETERS WEICHT VON DER PROJEKTREGEL AB (Trigger: die
   nächste neue DB-Funktion oder RPC)
+- DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT (Trigger: bevor der erste FREMDE
+  Kunde ein Zugangsdatum ablegt)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

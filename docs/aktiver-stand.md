@@ -4,6 +4,50 @@
 angelegt am 2026-08-24. Existiert sie, läuft eine Phase; wird sie am Phasenende
 gehoben und archiviert, verschwindet sie wieder. Verfahren: docs/arbeitsweise.md.
 
+> **WEITERLEITUNG 2026-08-25 — LIES DIESEN VERMERK, BEVOR DU WEITERLIEST. DER
+> KOPFSATZ DARÜBER BLEIBT WÖRTLICH STEHEN UND BESCHREIBT EINE PAUSIERTE PHASE.**
+>
+> **PHASE 11.2 PAUSIERT SEIT DEM 2026-08-25.** Sie ist NICHT abgeschlossen und NICHT
+> archiviert. Ihr Stand in dieser Datei bleibt GÜLTIG und wird bei der Rückkehr
+> weitergeführt — hier ist nichts überholt, es ruht nur.
+>
+> **ES LÄUFT PHASE 11.8 (Autorisierungsschicht). IHR STEUERNDER STAND STEHT IN
+> `docs/aktiver-stand-11.8.md`.** WER AN 11.8 ARBEITET, LIEST JENE DATEI — diese hier
+> nur bis zu diesem Vermerk.
+>
+> **WARUM DIESER VERMERK ÜBERHAUPT EXISTIERT, und der Grund ist mechanisch:** Das
+> Pflicht-Gate in CLAUDE.md ("## Aktiver Stand — Verfahren ab Phase 10") nennt einen
+> DATEINAMEN, und zwar diesen. Ohne diesen Vermerk liest eine frische Sitzung weiter
+> diese Datei und arbeitet an 11.8 mit dem Stand von 11.2 — **ohne dass irgendwo etwas
+> rot wird.** Kein Werkzeug meldet das, kein Test fällt, der Prompt sieht korrekt aus.
+>
+> **WARUM 11.8 UND NICHT 11.2:** Die Autorisierungsschicht ist Voraussetzung der
+> Transport-Scheibe von 11.2 UND von 11.1. Sie zu bauen ist kein Themenwechsel, sondern
+> das Wegräumen des Blockers, an dem 11.2 steht.
+>
+> **WARUM DER NAME DIESER DATEI BLEIBT UND NICHT AN 11.8 GEHT:** Quelldateien zitieren
+> `docs/aktiver-stand.md` wörtlich im Kommentarkopf — mit Abschnitts- und
+> Eintrags-Angabe. Ein Umbenennen machte diese Zeiger tot, und heilbar wäre das nur mit
+> einer Quelldatei-Änderung, also einem feat-Commit für einen Doku-Vorgang. Die
+> gemessene Zahl der Zeiger steht in `docs/aktiver-stand-11.8.md`; sie wird hier NICHT
+> verdoppelt.
+>
+> **EINE MEHRDEUTIGKEIT, DIE MIT DER ZWEITEN STANDDATEI ENTSTEHT UND HIER BENANNT STATT
+> AUFGELÖST WIRD:** Ein Verweis der Form "Vorrat, Eintrag 3" ist ab dem 2026-08-25 nicht
+> mehr eindeutig — es gibt zwei Standdateien mit je einem Vorrat. Bestehende Zeiger im
+> Quellcode nennen den DATEINAMEN mit und bleiben damit eindeutig; künftige Verweise
+> nennen ihn ebenfalls. Nachgezogen worden ist nichts.
+>
+> **DER RÜCKBAU — ohne ihn steht dieser Vermerk in einem Jahr als Zustand da, den
+> niemand mehr prüft:** ER WIRD ENTFERNT, sobald Phase 11.8 archiviert ist und die
+> Arbeit zu 11.2 zurückkehrt. Das ist seine Bedingung, und sie ist prüfbar: Existiert
+> `docs/aktiver-stand-11.8.md` nicht mehr, gehört dieser Vermerk weg.
+>
+> **PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-08-25. Keine Messung. **AUSDRÜCKLICH NICHT
+> ENTSCHIEDEN:** der allgemeine Fall zweier paralleler Phasen. Dieser Vermerk ist ein
+> ZUSTAND MIT ENDE, KEINE REGEL — wer aus ihm ein Verfahren ableitet, leitet aus einem
+> Einzelfall ab.
+
 ## Verzeichnis der Abschnitte
 
 Die Einträge dieses Verzeichnisses tragen bewusst KEINE `##`-Marke, damit eine

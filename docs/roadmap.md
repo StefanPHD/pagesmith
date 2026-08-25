@@ -469,6 +469,86 @@ liegen beide hier und finden einander.
       Doku-Angaben sind GELESEN 2026-08-25 (docs/ziel-befunde.md, Google-Abschnitt, Teile
       (ab), (ac), (af) und (an)). **KEINE MESSUNG** — es ist kein Aufruf gegen eine
       Google-Schnittstelle gefahren worden.
+
+      **ENTSCHIEDEN AM 2026-08-25 (OWNER) — DREI ENTSCHEIDUNGEN ZUM GEHEIMNIS-SPEICHER.**
+      Der Text darüber bleibt Zeichen für Zeichen stehen; dieser Block tritt DANEBEN. Er
+      trägt die Entscheidungen und ihre Begründung — die Anbieter-Befunde selbst stehen in
+      docs/plattform-befunde.md, Abschnitt "Supabase (Postgres · Auth · RLS · Vault ·
+      Backups)", und werden hier NICHT verdoppelt, sondern über ihre Teil-Marken benannt.
+
+      **(1) VERSCHLÜSSELT WIRD IM ANWENDUNGSCODE, NICHT MIT SUPABASE VAULT.** Das Chiffrat
+      steht in der Spalte, der Schlüssel liegt in der Vercel-Umgebung — also AUSSERHALB der
+      Datenbank.
+      **DER TRAGENDE GRUND IST EINE ANGRIFFSFLÄCHE, NICHT DER AUFWAND**, und ohne diesen
+      Satz liest die nächste Runde die Entscheidung als Bequemlichkeit: Ob Vault über den
+      JS-Client erreichbar ist, ist UNDOKUMENTIERT (Teil (k) — Nicht-Treffer mit benannter
+      Reichweite, nicht etwa eine Verneinung). Fiele die Messung negativ aus, bliebe als
+      Weg eine security-definer-RPC in public, die aus vault.decrypted_secrets liest — eine
+      Funktion, die per Bauart die RLS umgeht, Geheimnisse zurückgibt und über die Daten-API
+      erreichbar ist. **HEUTE IST DIE GEHEIMNIS-TABELLE FÜR anon SCHLICHT NICHT
+      ERREICHBAR** (RLS aktiv, KEINE Policy — s. docs/db-stand.md). Wir würden die am
+      stärksten geschützte Stelle des Systems mit einem Weg versehen, den es vorher nicht
+      gab, um sie besser zu schützen.
+      **DREI WEITERE PREISE, alle in docs/plattform-befunde.md belegt:** der
+      Restore-Sprengsatz beim manuellen Dump (Teile (t) und (u)) — und zwar genau an dem
+      OPS-WEG, den die eigene Backup-Regel für das Fenster zwischen Migration und Snapshot
+      vorschreibt · ein Status, den die Doku NICHT nennt, während das Anbieter-Repo "Beta"
+      sagt (Teil (j)) · ein Textwert je Zeile (Teil (w)), also Serialisierung ohnehin.
+      **DIE GRENZE, UND SIE IST ECHT UND WIRD NICHT KLEINGEREDET:** Der Schlüssel liegt bei
+      uns. Geht er verloren, sind ALLE Kundenzugänge unlesbar und jeder Kunde muss neu
+      autorisieren. Das ist wiederherstellbar, aber teuer — bei Vault trüge der Anbieter
+      diese Last. Der offene Punkt dazu heisst "DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST
+      UNGEREGELT" (s. "## Offene Punkte").
+      **WAS DIE ENTSCHEIDUNG NICHT LÖST:** Der Klartext existiert im Node-Prozess, solange
+      das Ereignis weitergereicht wird. Das ist unvermeidlich — das Ziel braucht den Token.
+      Kein Verfahren dieser Klasse ändert daran etwas, und wer das erwartet, misst die
+      Entscheidung an einem Versprechen, das sie nie gegeben hat.
+
+      **(2) DER BESTEHENDE GEHEIMNIS-SPEICHER WIRD ERWEITERT, NICHT GEFORKT.**
+      **DER ERSTE REFLEX WÄRE EINE ZWEITE TABELLE für die "komplexen" Ziele, und er trügt:**
+      LinkedIn trägt bereits Erneuerungs-Token und Ablauf — zwölf Monate für das
+      Refresh-Token, zwei Monate für das Zugangsdatum (GELESEN, docs/ziel-befunde.md,
+      Abschnitt "LinkedIn (Conversions API)", Teil (w)) —, und die Schicht trägt LinkedIn
+      seit dem 2026-08-25 ausdrücklich MIT. Es sind also mindestens ZWEI mehrwertige Ziele
+      und ein Rest, der nachzieht; die Trennlinie "einfach gegen komplex" verläuft nicht
+      dort, wo sie beim ersten Hinsehen zu verlaufen scheint.
+      **ZWEI GEHEIMNIS-SPEICHER WÄREN ZWEI UNGEKOPPELTE WAHRHEITEN** über die Frage "wo
+      liegt der Zugang für dieses Projekt und dieses Ziel" — dieselbe Fehlerklasse wie die
+      domains-Zeile gegen settings.hosting (s. docs/immer-beachten.md, "DIE domains-ZEILE
+      IST DIE ALLEINIGE WAHRHEIT").
+      **DIE FORM BLEIBT ADDITIV:** eine neue nullable Spalte für die verschlüsselte Nutzlast
+      NEBEN dem bestehenden Skalar, dazu ein CHECK, dass GENAU EINES von beiden gesetzt ist.
+      Damit ist der Übergangszustand STRUKTURELL SICHTBAR statt stillschweigend, jedes Ziel
+      wandert einzeln, und kein Schritt fasst ein laufendes Geheimnis an, das er nicht
+      wandern lässt.
+
+      **(3) DIE EIGENTUMS-ACHSE BLEIBT OFFEN — UND KOSTET EINEN KÜNSTLICHEN SCHLÜSSEL.**
+      Der heutige Primärschlüssel ist das PAAR (project_id, target), und project_id ist NOT
+      NULL; Schlüsselspalten sind es ohnehin. Ein BETREIBERWEITES Zugangsdatum — eines ohne
+      Projekt — passt da nicht hindurch.
+      **DIE ACHSE OFFENZUHALTEN HEISST DAHER KONKRET:** ein künstlicher Schlüssel, project_id
+      nullbar, und ein eindeutiger Index, der BEIDE Fälle abdeckt (je Projekt und Ziel,
+      sowie das projektlose Zugangsdatum je Ziel).
+      **DAS IST DIE BILLIGE FORM, VON DER DIE AUFLAGE DIESES EINTRAGS SPRICHT** — jene
+      Auflage steht oben wörtlich ("DIE ABLAGE DARF NICHT ANNEHMEN, DASS EIN ZUGANGSDATUM
+      IMMER EINEM PROJEKT GEHÖRT") und ist am 2026-08-25 von "einzig zulässige Bauform" auf
+      "benannte, billige Absicherung" abgestuft worden. Sie fällt mit einer ENTSCHEIDUNG weg,
+      nicht von selbst, und die ist fällig, BEVOR der erste FREMDE Kunde ein Zugangsdatum
+      ablegt.
+      **DER PRIMÄRSCHLÜSSEL IST FÜR DIESE ENTSCHEIDUNG ERNEUT AM MIGRATIONS-SQL GEPRÜFT
+      WORDEN (CC, 2026-08-25) und lautet unverändert so, wie der Block "DAS SCHEMA-RISIKO,
+      MIT DEM GEMESSENEN STAND" oben ihn führt.** Die Messung wird hier NICHT ein zweites
+      Mal ausgeschrieben — zwei Fassungen desselben Messwerts liefen auseinander. Neu ist
+      allein die Gegenprobe, dass auch KEINE der drei Folgemigrationen den Schlüssel
+      anfasst: 0022, 0023 und 0024 setzen ausschliesslich den target-CHECK neu.
+
+      **PROVENIENZ DIESES BLOCKS, je Teil:** Die drei Entscheidungen sind
+      OWNER-ENTSCHEIDUNGEN vom 2026-08-25 auf GELESENER Grundlage. Ihre Begründungen sind
+      ARCHITEKTEN-EINORDNUNGEN (2026-08-25). Die Anbieter-Angaben sind GELESEN am
+      2026-08-25 und über ihre Teil-Marken in docs/plattform-befunde.md bzw.
+      docs/ziel-befunde.md benannt. **GEMESSEN ist in diesem Block GENAU EINE Angabe** — der
+      Primärschlüssel am Migrations-SQL. Es ist KEIN Aufruf gegen eine Supabase-Schnittstelle
+      gefahren worden und NICHTS an der laufenden Datenbank gemessen.
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code): klein und
       eigenständig, damit ein Kunde seine Einrichtung prüfen kann, ohne echte
       Conversions zu erzeugen. Kontext: docs/claude-history/future-roadmap.md,

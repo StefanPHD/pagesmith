@@ -978,3 +978,29 @@ aufeinander; sie liegen alle hier und finden einander.
   "Supabase (Postgres · Auth · RLS · Vault · Backups)", Teil (z) — dort steht er als
   EINZEILER mit Verweis hierher, damit der Befund nicht in zwei Fassungen lebt. Die
   wörtlichen Zitate beider Seiten stehen HIER und nur hier.
+- DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT (Trigger: bevor der erste FREMDE
+  Kunde ein Zugangsdatum ablegt): Mit der Entscheidung, im Anwendungscode zu chiffrieren
+  und den Schlüssel in der Vercel-Umgebung zu halten (docs/roadmap.md, Eintrag 11.8, Block
+  vom 2026-08-25, Entscheidung (1)), entsteht ein Wert, dessen Verlust ALLE Kundenzugänge
+  unlesbar macht. Der Preis ist dort benannt und wird hier NICHT verdoppelt; offen ist das
+  VERFAHREN.
+  DREI DINGE SIND UNGEKLÄRT, UND KEINES WIRD HIER ENTSCHIEDEN:
+  (1) WIE DER SCHLÜSSEL GESICHERT WIRD. Eine Umgebungsvariable ist keine Verwahrung — sie
+      existiert genau einmal, an einem Ort, den niemand sichert.
+  (2) WIE ER GEWECHSELT WIRD, OHNE DASS ALTE CHIFFRATE UNLESBAR WERDEN. Ein Wechsel ohne
+      Übergang macht jedes bestehende Zugangsdatum in derselben Sekunde wertlos; ein
+      Wechsel MIT Übergang verlangt, dass ein Chiffrat sagen kann, unter welchem Schlüssel
+      es entstanden ist — und das ist eine Entscheidung über die FORM der Nutzlast, nicht
+      über den Betrieb.
+  (3) WAS GESCHIEHT, WENN ER KOMPROMITTIERT IST. Dann sind nicht die Chiffrate das
+      Problem, sondern die Zugangsdaten dahinter: sie müssten bei JEDEM Ziel widerrufen
+      und neu beschafft werden, und das geht nur über die Kunden.
+  WARUM ES EIN OFFENER PUNKT IST UND KEINE AUFLAGE — der Satz gehört dazu, sonst wird das
+  Verfahren in die erste Bau-Scheibe gezogen und kostet dort Zeit ohne Gegenwert: Für Bau
+  und Test mit dem EIGENEN Konto genügt ein Schlüssel in der Umgebung. Fällig wird das
+  Verfahren mit dem ersten FREMDEN Zugangsdatum — vorher gibt es nichts zu verlieren, weil
+  jedes Chiffrat einen Zugang schützt, den der Owner selbst jederzeit neu erzeugen kann.
+  WAS NICHT DAZUGEHÖRT: die Frage, OB im Anwendungscode chiffriert wird. Die ist am
+  2026-08-25 entschieden; dieser Punkt trägt ausschliesslich die Folge daraus.
+  PROVENIENZ: die Entscheidung ist OWNER (2026-08-25), die Einordnung der drei offenen
+  Dinge ist ARCHITEKT (2026-08-25). KEINE Messung.

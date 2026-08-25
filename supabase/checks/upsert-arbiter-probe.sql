@@ -71,9 +71,36 @@
 --                  einordnen kann — und sie traegt RLS ohne Policy, sieht also fuer
 --                  jeden Advisor-Lauf aus wie ein vergessener Geheimnis-Speicher.
 --
--- VERIFIZIERT: NIE GEFAHREN. Angelegt am 2026-08-25; bis zum ersten Lauf ist jede
---              Aussage dieser Datei ueber das VERHALTEN eine Frage, keine Angabe. Wer
---              sie faehrt, traegt hier das Datum und den Ausgang je Messung nach.
+-- VERIFIZIERT: 2026-08-25, EINMAL GEFAHREN (Owner). Ab hier ist diese Datei das
+--              PROTOKOLL eines Laufs und nicht mehr nur eine Anleitung; die Messungen
+--              unten stehen woertlich wie vor dem Lauf.
+--              VORBEDINGUNG (1e) ERFUELLT: rls_aktiv = true, anzahl_policies = 0, und
+--              die Constraint-Definition trug woertlich
+--              "UNIQUE NULLS NOT DISTINCT (project_id, target)". M-B hat damit
+--              PostgREST gemessen und nicht die Abwesenheit der Variante.
+--              CACHE-BELEG (TEIL 2, Vorbereitung 3): das leere Lesen lieferte SOFORT
+--              [] — KEIN manuelles Nachladen noetig. Der Nebenbefund faellt damit aus:
+--              es gab nichts zu protokollieren.
+--              M-A: SEITE A ist eingetreten. EINE Zeile, secret_enc traegt den ZWEITEN
+--                   Wert — der zweite Aufruf hat AKTUALISIERT, OHNE den kuenstlichen
+--                   Schluessel im Rumpf. NICHT BERICHTET ist, ob die id zwischen den
+--                   beiden Aufrufen gleich geblieben ist; jene Teilangabe des Ausgangs
+--                   bleibt damit offen.
+--              M-B: DIE NULL-ZEILEN KOLLIDIEREN. EINE Zeile, project_id null,
+--                   secret_enc traegt den ZWEITEN Wert.
+--              M-C: KEINER der drei aufgefuehrten Ausgaenge ist so eingetreten, wie er
+--                   formuliert war — und das ist selbst ein Befund, kein Schoenheits-
+--                   fehler. GEMESSENER ZUSTAND: EINE Zeile, secret_enc traegt den
+--                   ERSTEN Wert; der zweite Aufruf hat NICHT GESCHRIEBEN. Das
+--                   Bestandsbild deckt sich mit AUSGANG 2 (der Constraint greift, ohne
+--                   dass ein Arbiter benannt war), ABER: OB der zweite Aufruf mit einem
+--                   FEHLER endete, ist NICHT BERICHTET. Ausgang 2 gilt deshalb NICHT
+--                   als bestaetigt. Hier steht der ZUSTAND, nicht die Deutung.
+--              TEIL 3 (unabhaengige Sicht ohne PostgREST): drei Zeilen, deckungsgleich
+--                   mit dem, was ueber den REST-Endpunkt zu lesen war.
+--              TEIL 4: der drop ist gelaufen, tabelle_noch_da = 0.
+--              PROVENIENZ: GEMESSEN vom Owner am 2026-08-25. KEINE Angabe hier ist aus
+--              einem Statuscode abgeleitet; berichtet ist der Bestand.
 --
 -- HERKUNFT DER SQL-BAUFORM: restore-drill.sql (Wegwerf-Tabelle, Kopf-Felder,
 --              abgesetzte TEIL-Baender, Pflicht-Aufraeumzeile) und

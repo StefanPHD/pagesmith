@@ -27,6 +27,7 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
 · Was den Zuschnitt bindet
 · Fortschreibungs-Regeln
 · Scheibe 11.8a — Chiffrieren und Dechiffrieren als reine Datei
+· Scheibe 11.8b — Das Schema der Geheimnis-Tabelle, in EINEM Zug
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -201,6 +202,126 @@ jedes Projekt.** Die Datei hat im Produktivcode KEINEN Aufrufer; nur ihre Tests 
 sie. Das ist der Prüfstein jeder Änderung dieser Scheibe: Wer einen Aufrufer hinzufügt,
 hat nicht mehr diese Scheibe gebaut.
 
+## Scheibe 11.8b — Das Schema der Geheimnis-Tabelle, in EINEM Zug
+
+### Der Gegenstand
+
+**EINE Migration auf `public.project_secrets`, in EINEM Zug — fünf Achsen:** eine
+NULLBARE Spalte für die verschlüsselte Nutzlast · die NOT-NULL-Bedingung von `secret`
+lösen · ein CHECK auf GENAU EINES der beiden · den zusammengesetzten Primärschlüssel
+durch einen KÜNSTLICHEN ersetzen und `project_id` nullbar machen · die EINDEUTIGKEIT auf
+(project_id, target) als EIGENEN Constraint, als **UNIQUE NULLS NOT DISTINCT**, angelegt
+per `alter table ... add constraint`.
+
+**KEIN Code, KEIN neues Ziel im target-CHECK, KEIN Aufrufer der Chiffrier-Datei.**
+
+**WARUM DIE EINDEUTIGKEIT ALS CONSTRAINT UND NICHT ALS INDEX** — der Grund ist GELESEN
+(2026-08-25, PostgREST 14, "Schema Cache", Abschnitt Finer-Grained Event Trigger): die
+Befehlsmarken-Liste des Event-Triggers, der den PostgREST-Schema-Cache nachlädt, führt
+`ALTER TABLE` und führt `CREATE INDEX` NICHT. Ein als Index angelegter Constraint löste
+nach diesem Text kein Nachladen aus.
+
+### Die tragende Invariante
+
+**DIE EINDEUTIGKEIT AUF (project_id, target) DARF DIESE MIGRATION NICHT VERLIEREN.**
+`setCapiToken` schreibt mit `onConflict: "project_id,target"` — einem STRING-LITERAL, das
+NICHTS im Code ans Schema bindet. Kein Typ, kein Test, kein Kommentar. **Ein Bruch fiele
+erst beim Speichern eines echten Geheimnisses auf.**
+
+### Warum EIN Zug und nicht zwei
+
+**Jede Migration öffnet ein Fenster, in dem das automatische Backup nicht mehr
+code-kompatibel ist** (docs/db-regeln.md, "BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN").
+Zwei Migrationen an der Tabelle mit den Geheimnissen heissen zwei Fenster. Bei SIEBEN
+Zeilen gibt es dafür keinen Grund.
+
+### Warum jetzt und nicht später
+
+**SIEBEN Zeilen, alle aus Testprojekten, alle nach Owner-Angabe entbehrlich** (GEMESSEN,
+Owner, 2026-08-25: linkedin 2 · meta 4 · tiktok 1 · pinterest 0). **Dieselbe Umstellung
+auf FREMDEN Kundengeheimnissen wäre eine Migration mit Wiederaufsetzpunkt und
+Backup-Vorlauf.** Der billige Moment ist jetzt, und er endet mit dem ersten fremden
+Kunden.
+
+**EINE MITGEMESSENE VORBEDINGUNG, die der Plan nicht übersehen darf:** Alle sieben Zeilen
+tragen heute `secret` gesetzt und keine verschlüsselte Nutzlast. Der neue CHECK ist damit
+vom Bestand im Moment seines Anlegens erfüllbar — wäre er es nicht, bräche die Migration.
+
+### Was die Probe trägt und was NICHT
+
+**GEMESSEN IST POSTGREST** (supabase/checks/upsert-arbiter-probe.sql, Lauf vom
+2026-08-25): Ein upsert mit `on_conflict` auf zwei Spalten aktualisiert, OHNE dass der
+künstliche Schlüssel im Rumpf steht (M-A); und zwei Zeilen mit NULL in `project_id`
+kollidieren unter `UNIQUE NULLS NOT DISTINCT` (M-B).
+
+**NICHT GEMESSEN IST supabase-js.** Ob der Client bei `onConflict: "project_id,target"`
+genau diese Parameter erzeugt und ob er `id` ungefragt mitsendet, steht in keiner Messung.
+**DIESE ACHSE SCHLIESST DER LIVE-TEST, NICHT EINE ZWEITE PROBE** — eine Probe misst
+wieder PostgREST und käme an der Frage vorbei.
+
+### Was der Plan entscheiden muss und dieser Zuschnitt NICHT entscheidet
+
+**WAS AUS DEM LÖSCHPFAD WIRD, WENN `project_id` NULLBAR IST.** 0021 hält fest, dass
+`project_secrets` keinen eigenen `user_id`-Bezug braucht, weil die Kette
+`auth.users -> projects -> project_secrets` über `on delete cascade` trägt. **Eine Zeile
+OHNE Projekt hängt an dieser Kette nicht mehr** — sie wird von keiner Nutzer- und keiner
+Projektlöschung erfasst. Das ist die Kehrseite der offengehaltenen Eigentums-Achse und
+kein Versehen; **entschieden ist hier nur, dass der Plan es benennen muss**, nicht wie.
+
+### Der Beweis: der LIVE-TEST — und er ist der erste dieser Phase
+
+**Ein Geheimnis über `setCapiToken` speichern, ZWEIMAL für dasselbe Paar, und AM BESTAND
+ablesen, dass EINE Zeile entsteht und der ZWEITE Wert drinsteht.** Nicht am Statuscode,
+nicht an der Oberfläche.
+
+**DAS LÖST EINE SCHULD EIN, UND ES IST GENAU EINE:** die von 11.8a — "DIE ERSTE SCHEIBE
+MIT EINEM DATENPFAD SCHULDET IHN NACH". **NICHT eingelöst wird die Schuld von 11.2a**;
+jene gehört der Transport-Scheibe von 11.2 und wandert nicht hierher. Wer beide
+zusammenzieht, hält eine für erledigt, sobald die andere eingelöst ist.
+
+### Der Rückfallplan — er entschärft die Migration und ist KEINE Erlaubnis
+
+**Die sieben Zeilen sind nach Owner-Angabe entbehrlich.** Geht etwas schief, heisst die
+Wiederherstellung **"leeren und neu eintragen"**, nicht Restore. Das gehört in die
+Live-Test-Anleitung.
+
+**UND ES IST AUSDRÜCKLICH KEINE ERLAUBNIS, DIE ZEILEN VORHER ZU LÖSCHEN:** Sie sind der
+einzige Testdatensatz, den diese Migration je haben wird. Eine leere Tabelle liesse jede
+Prüfung ihre Erwartung treffen, weil nichts da war — dieselbe Falle, die Probe 0 in
+supabase/checks/project-secrets-umstellung.sql eigens abfängt.
+
+### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+
+- **DER AUFRUFER DER CHIFFRIER-DATEI.** Er machte aus einer reinen Datei einen Pfad, und
+  der Pfad wäre der Ingest. Die tragende Invariante von 11.8a gilt unverändert weiter.
+- **DIE WANDERUNG DER VIER BESTEHENDEN ZIELE.** Sie steht im Vorrat, ist nicht
+  zugeschnitten und nicht terminiert. Diese Scheibe schafft den PLATZ, sie füllt ihn nicht.
+- **'google' IM target-CHECK.** Jedes Ziel bringt seine eigene Constraint-Erweiterung mit,
+  und der sichtbare Moment, in dem ein Ziel real wird, ist der beabsichtigte Preis. Ihn
+  hier mitzunehmen bündelte zwei Wirkungen in einer Migration.
+- **JEDE ÄNDERUNG AN `setCapiToken`.** Sie ist der Prüfling des Live-Tests. Wer sie im
+  selben Zug ändert, kann einen Fehlschlag nicht mehr zwischen Schema und Code zuordnen.
+
+### Was diese Migration an docs/db-stand.md veraltet
+
+**KEINE KOLLISION, aber eine Folge, und sie gehört benannt, damit sie niemand für einen
+Widerspruch hält:** docs/db-stand.md führt GEMESSEN, dass der Primärschlüssel das PAAR
+(project_id, target) ist, dass `secret` NOT NULL trägt und dass die Tabelle AUSSER dem PK
+KEINEN Index hat. **Alle drei Angaben sind nach dieser Migration überholt.** Sie werden
+NICHT aus dieser Scheibe fortgeschrieben, sondern ausschliesslich aus einer MESSUNG nach
+dem Lauf — so verlangt es jene Datei selbst.
+
+**EINE DIESER DREI IST MEHR ALS EINE ZUSTANDSANGABE:** "Wer hier später einen Index
+ergänzt, sollte vorher einen Zugriff nennen können, der ihn braucht." **Der Zugriff ist
+nennbar** — der Arbiter des upsert (`on_conflict` auf beide Spalten, GEMESSEN 2026-08-25)
+und die Gleichheit auf beiden Spalten im Lesepfad (`getCapiConfigByTrackingKey`).
+
+**PROVENIENZ DIESES ZUSCHNITTS:** Die Messergebnisse sind GEMESSEN (Owner, 2026-08-25) —
+der Probenlauf und die sieben Zeilen je Ziel. Die Anbieter-Angaben sind GELESEN
+(2026-08-25, PostgREST 14). Der Zuschnitt selbst, seine Reihenfolge und seine Ausschlüsse
+sind ARCHITEKTEN-ENTSCHEIDUNG (2026-08-25). **KEINE Messung an dieser Datenbank in dieser
+Runde.**
+
 ## Abgeschlossene Scheiben-Vermerke
 
 ### Vermerk 1 — Scheibe 11.8a, Commit 4b2ec09 (2026-08-25)
@@ -340,6 +461,22 @@ HIER entschieden worden.
    PROVENIENZ: der Klartext-Zustand GEMESSEN am Migrations-SQL (2026-08-25); die Folge
    aus den Entscheidungen ist eine ABLEITUNG aus docs/roadmap.md, Eintrag 11.8, Block vom
    2026-08-25 — keine Messung.
+
+2. **`pinterest` STEHT IM target-CHECK UND TRÄGT NULL ZEILEN.** GEMESSEN (Owner,
+   2026-08-25, im Zuge der Zeilenzählung für den Zuschnitt der Scheibe 11.8b): linkedin 2
+   · meta 4 · tiktok 1 · **pinterest 0**.
+   **WAS AM REPO NICHT ENTSCHEIDBAR IST:** ob das Ziel NIE konfiguriert war oder ob eine
+   Zeile wieder entfernt wurde. Beide Zustände sehen heute identisch aus — die Tabelle
+   führt kein Protokoll, und `removeCapiToken` löscht die Zeile ersatzlos.
+   **FALLS ERSTERES:** Dann hätte der Pinterest-Adapter **nie live gesendet** und trüge
+   eine offene LIVE-TEST-SCHULD — an einem Ziel, das im CHECK steht und damit
+   konfigurierbar aussieht.
+   **GEMELDET, NICHT GEPRÜFT.** Es ist keine Scheibe, kein Plan und kein Termin; die
+   Prüfung wäre eine eigene Arbeit (Anbieter-Oberfläche oder Ereignis-Protokoll), und ich
+   habe sie nicht gefahren. **KEINE EMPFEHLUNG**, weder zum Zeitpunkt noch dazu, was aus
+   dem Befund folgen sollte.
+   PROVENIENZ: die Zeilenzahlen GEMESSEN (Owner, 2026-08-25); die Folgerung "dann nie live
+   gesendet" ist eine ABLEITUNG und ausdrücklich keine Messung.
 
 ## Hebungs-Kandidaten
 

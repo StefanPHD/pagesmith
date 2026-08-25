@@ -932,7 +932,9 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   datierte Überschrift — sonst rutscht ein Eintrag unter eine fremde Herkunft;
   das erklärt die vier Nachtrags-Abschnitte. Wer einen fünften anlegt, zieht
   diesen Stub im SELBEN Zug nach.
-- supabase/checks/ — versionierte, NUR LESENDE Messproben für Live-Tests und Gegenproben.
+- supabase/checks/ — versionierte Messproben für Live-Tests und Gegenproben. KEINE Probe
+  fasst ECHTE Daten an; welche Bauformen das zulässt und was eine Datei dann in ihrem Kopf
+  sagen muss, steht im README des Ordners — hier der Zeiger, dort die Regel.
   KEIN Migrationsverzeichnis, wird nie automatisch angewandt. VOR jeder handgetippten
   Prüf-Query dort nachsehen (dort steht auch, welche Fallen eine Probe hat — z.B. der
   custom_host-Filter bei der Domain-Divergenz). Details: README im Ordner.

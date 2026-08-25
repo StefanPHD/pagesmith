@@ -22,9 +22,10 @@
 --              ausschliesslich, gegen welches Projekt der SQL-Editor gerade
 --              verbunden ist — keine Abfrage hier nimmt einen Projekt-Parameter.
 -- PLATZHALTER: keine.
--- FALLE:       (1) TEIL C ist NICHT rein lesend — die einzige Ausnahme im
---              gesamten supabase/checks/-Ordner (eine Wegwerf-Tabelle wird
---              angelegt und im selben Skript wieder gedroppt). Nur auf dem
+-- FALLE:       (1) TEIL C ist NICHT rein lesend: er gehoert zu den Dateien
+--              dieses Ordners, die ein WEGWERF-OBJEKT anlegen und im selben
+--              Skript selbst wieder entfernen. Der README des Ordners fuehrt
+--              diese Bauform als eine der zwei zulaessigen. Nur auf dem
 --              RESTAURIERTEN/TEMPORAEREN Projekt ausfuehren, NIEMALS auf der
 --              echten Produktions-DB.
 --              (2) TEIL B ALLEIN GENUEGT NICHT: pg_event_trigger zeigt nur, OB
@@ -124,8 +125,10 @@ order by p.proname;
 -- beweist die tatsaechliche WIRKUNG statt der blossen Anwesenheit.
 -- ============================================================================
 
--- ACHTUNG: Diese Anweisung ist NICHT lesend — die einzige Ausnahme im gesamten
--- supabase/checks/-Ordner. NUR auf dem RESTAURIERTEN/TEMPORAEREN Projekt.
+-- ACHTUNG: Diese Anweisung ist NICHT lesend. Sie legt ein WEGWERF-OBJEKT an, das
+-- die Aufraeumzeile unten selbst wieder entfernt — die zweite der zwei Bauformen,
+-- die der README dieses Ordners zulaesst. NUR auf dem RESTAURIERTEN/TEMPORAEREN
+-- Projekt.
 create table public._restore_drill_probe (id int);
 
 -- ERWARTUNG: true = ensure_rls hat den Restore ueberlebt, KEIN manueller

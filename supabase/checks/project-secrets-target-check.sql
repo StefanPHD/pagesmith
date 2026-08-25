@@ -20,8 +20,12 @@
 --                  zeigen, dass der Constraint WIRKT. Ein Constraint, der alles
 --                  durchlaesst, saehe hier identisch aus.
 --              (2) DIE VERHALTENS-POSITIVKONTROLLE STEHT DESHALB HIER ALS ANLEITUNG UND
---                  IST NICHT TEIL DIESER DATEI. Sie ist ein SCHREIBVORGANG, und dieser
---                  Ordner darf ausschliesslich lesen (harte Regel im README). Von Hand,
+--                  IST NICHT TEIL DIESER DATEI. Sie ist ein SCHREIBVORGANG AN EINER
+--                  ECHTEN TABELLE. Der Ordner laesst einen Schreibvorgang nur an einem
+--                  WEGWERF-OBJEKT zu, das die Datei selbst wieder entfernt (harte Regel
+--                  im README) — eine echte Tabelle ist keines. Der Zweck der Regel
+--                  trifft diesen Fall damit unveraendert: die praezisierte Fassung macht
+--                  den Verzicht hier NICHT hinfaellig. Von Hand,
 --                  einzeln, auf einem TESTPROJEKT — nie auf einem Kundenprojekt:
 --                    insert into public.project_secrets (project_id, target, secret)
 --                    values ('<PROJEKT_UUID>', '<ZIELWERT>', '__probe__');

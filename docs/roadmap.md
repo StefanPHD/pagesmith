@@ -322,6 +322,96 @@ liegen beide hier und finden einander.
         der Offene Punkt oben, Richtigstellung vom 2026-08-20.
       WAS HIER NICHT ENTSCHIEDEN IST: ob und wann die Schicht gebaut wird, welches
       Zugangsmodell gilt und welcher Zweig gilt. KEINE EMPFEHLUNG.
+
+      **NACHTRAG 2026-08-25 — WAS ZWEI DOKU-LÄUFE AN DIESEM EINTRAG ÄNDERN.** Der Text
+      darüber bleibt Zeichen für Zeichen stehen; dieser Block tritt DANEBEN. Er trägt NUR,
+      was einen Zuschnitt bindet — die Befunde selbst stehen in docs/ziel-befunde.md,
+      Abschnitt "Google (Google Ads Conversions · GA4)", Teile (aa) bis (as), und werden
+      hier NICHT verdoppelt.
+      HERKUNFT ALLER FÜNF PUNKTE: GELESEN am 2026-08-25 an der Anbieter-Doku (LAUF 3, 31
+      Seiten OAuth- und Ads-Politik; LAUF 4, 13 Seiten Data-Manager-Politik). **KEINE
+      MESSUNG** — es ist kein Aufruf gegen eine Google-Schnittstelle gefahren worden.
+
+      · **DIE POLITIK DER GOOGLE ADS API IST NACH DEM GELESENEN TEXT NICHT ÜBERTRAGBAR.**
+        Kein Entwickler-Token, keine Zugriffsstufen (Test/Explorer/Basic/Standard), keine
+        Required Minimum Functionality, kein Demo-Zugang für eine Werkzeug-Prüfung. Die
+        Data-Manager-Doku verweist viermal nach google-ads — dreimal operativ
+        (Kontozugang, Feldwert, Migration) und einmal, um sich AUSDRÜCKLICH ABZUGRENZEN
+        ("The fast-fail model differs from the partial failure model in some other Google
+        APIs, such as the Google Ads API"). Fundstelle: Teil (ak), dazu (al) und (an).
+        **DIE GRENZE, UND SIE IST TRAGEND: Das ist eine Aussage über die DOKU, keine über
+        das Verhalten des Endpunkts.** Ein Schweigen ist keine Verneinung.
+
+      · **DER ADVERTISER-WEG TRÄGT KUNDENEIGENES OAUTH.** Der Vorgang heisst beim Anbieter
+        "multi-user authentication" (Teil (ab)), und der Bereich
+        https://www.googleapis.com/auth/datamanager steht auf Googles nutzergewährbarer
+        Scope-Liste (Teil (ac)).
+        **DIE NAHT MUSS MITGELESEN WERDEN, sonst wird der Punkt überdehnt:** Der NAME und
+        die Szenario-Tabelle stammen aus der GOOGLE-ADS-Doku und gelten dort dem
+        adwords-Bereich; die Data-Manager-Doku benutzt den Ausdruck NIRGENDS (Nicht-Treffer
+        über 13 Seiten). **DER SCHLUSS RUHT AUF DEM SCOPE, DIE BENENNUNG IST GELIEHEN.**
+        FOLGE FÜR DIE PLANUNG: Ein Data-Partner-Status ist für kundeneigenes OAuth nach dem
+        gelesenen Text NICHT nötig. Die VIELMANDANTEN-Begründung der Owner-Entscheidung vom
+        2026-08-20 (s. oben und der Offene Punkt "EIN OAUTH-ZUGANG PASST NICHT IN DIE
+        SKALAR-SPALTE DER GEHEIMNIS-TABELLE") trifft diesen Weg NICHT: Sie richtet sich
+        gegen ein zentrales Dienstkonto, das in die Nutzerlisten der Kunden eingetragen
+        wird — im Advertiser-Weg mit kundeneigenem OAuth steht unsere Identität dort NICHT.
+        WAS DIE BEGRÜNDUNG DABEI GEWINNT statt zu verlieren: Ihr Satz "Ein legitimes
+        Drittanbieter-Werkzeug tritt über einen NUTZER-FLUSS auf" war eine EINSCHÄTZUNG;
+        der Anbieter benennt diesen Fluss jetzt nachweislich und empfiehlt ihn für genau
+        diesen Fall. Und die Grenze "20 Google Ads accounts … with a single email address"
+        (Teil (ae)) stützt die Sorge "bei hunderten Konten" mit einer Anbieter-Zahl.
+        **DIE ENTSCHEIDUNG ZWISCHEN ADVERTISER UND DATA PARTNER WIRD HIER NICHT GETROFFEN;
+        sie bleibt offen, wo sie geführt ist.**
+
+      · **DIE KONTINGENT-DECKE IST EINE ARCHITEKTUR-GRENZE — UND SIE IST DIE TRAGENDE
+        NEUIGKEIT DIESES BLOCKS.** GELESEN, Teil (ao): 100.000 Anfragen je Tag und 300 je
+        Minute für den IngestionService, **JE GOOGLE-CLOUD-PROJEKT**. NICHT je Kunde und
+        NICHT je Werbekonto. Überschreitung: RESOURCE_EXHAUSTED und HTTP 429.
+        **WARUM DAS STRUKTURELL ANDERS IST ALS BEI DEN VIER GEBAUTEN ZIELEN:** Dort gehört
+        das Zugangsdatum dem Kunden, und jeder Kunde bringt sein eigenes Kontingent mit. Bei
+        Google teilen sich ALLE Kunden UNSERE Decke.
+        **DIE KOLLISION MIT DEM HEUTIGEN PFAD:** Der Ingest schickt eine Anfrage je
+        Conversion, sofort, ohne Puffer. Der Anbieter dagegen empfiehlt zu bündeln, und die
+        Anfrage-Grenze liegt bei 2.000 Ereignissen. **DIESE ZWEI ANGABEN STEHEN AUF ZWEI
+        SEITEN und ergeben zusammen kein Anbieter-Zitat:** Die Empfehlung
+        (/devguides/concepts/best-practices) nennt KEINE Zahl und sagt "up to the
+        per-request limits"; die Zahl steht auf /devguides/limits. Wer den Google-Transport
+        wie Meta baut, baut die Decke ein, ohne sie zu sehen.
+        **AUSDRÜCKLICH KEIN BAUAUFTRAG:** Eine Warteschlange wäre ein ZWEITER
+        Async-Anwendungsfall, und dessen Trigger steht in CLAUDE.md, Abschnitt "B)
+        Skalierungs-Leitplanken für SPÄTER". Hier wird die Grenze BENANNT, nicht
+        beantwortet.
+
+      · **ALS KANDIDAT, AUSDRÜCKLICH NICHT ENTSCHIEDEN (ARCHITEKT, 2026-08-25): den
+        adwords-Bereich NICHT anfordern.** GRUND: Von Google Ads brauchen wir eine einzige
+        Angabe, die productDestinationId — und die Doku nennt die Oberfläche als
+        gleichwertigen Weg ("Retrieve this ID using the Google Ads UI or the Google Ads
+        API", Teil (ak), Verweis 2). Bleibt der Bereich draussen, ist die offene Frage
+        gegenstandslos, ob die Ads-Politik an einem geteilten Cloud-Projekt hängt (Teil
+        (as), Punkt 4). **KEINE EMPFEHLUNG ZUR ENTSCHEIDUNG — der Owner entscheidet.**
+
+      · **WAS OFFEN BLEIBT:** der Träger des Zugangsdatums für events:ingest (das gefundene
+        Beispiel gilt der Schwester-Methode) · ob x-goog-user-project Pflicht ist · 2.000
+        gegen 10.000 · das Zugangsmodell.
+
+      **VORBEHALT 2026-08-25 AN DEN ERSTEN DER "ZWEI BLOCKER" OBEN — DER TRÄGER DES
+      ZUGANGSDATUMS.** Der Wortlaut jenes Punktes bleibt unverändert stehen; hier steht, was
+      an ihm heute noch trägt und was nicht.
+      · **WAHR BLEIBT:** "steht auf 33 gelesenen Seiten NICHT". Die Seite, die ihn trägt,
+        war nicht unter den 33.
+      · **ÜBERHOLT IST:** "Er muss ausserhalb dieses Doku-Baums gesucht oder gemessen
+        werden." Er lag INNERHALB des Baums — auf
+        /data-manager/api/devguides/quickstart/install-library (Doku-Stand 2026-08-14), im
+        REST-Beispiel: `--header "Authorization: Bearer ${DATA_MANAGER_ACCESS_TOKEN}"`.
+        Fundstelle: docs/ziel-befunde.md, Google-Abschnitt, Teil (al).
+      · **DER GRUND, WARUM ER NICHT GEFUNDEN WURDE, IST DER EIGENTLICHE ERTRAG:** Die Seite
+        stand in BEIDEN Vorläufen unter "GESEHEN, NICHT GEÖFFNET". **Sie war nicht
+        übersehen, sie war AUSGESCHLOSSEN worden** — mit einem Grund, der zum damaligen
+        Zuschnitt passte.
+      · **DIE GRENZE, DIE BLEIBT:** Das Beispiel gilt audienceMembers:ingest. Für
+        events:ingest liegt weiterhin KEIN Kopfzeilen-Beispiel vor, und **gemessen ist
+        nichts.** Der Blocker ist damit KLEINER geworden und NICHT erledigt.
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code): klein und
       eigenständig, damit ein Kunde seine Einrichtung prüfen kann, ohne echte
       Conversions zu erzeugen. Kontext: docs/claude-history/future-roadmap.md,

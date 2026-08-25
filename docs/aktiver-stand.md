@@ -506,6 +506,30 @@ Wert nennt. Der Unterschied ist der zwischen "abgesucht und nicht gefunden" und
 verlangt hier die schwächere Formulierung.
 PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-25 auf GELESENER Grundlage. KEINE Messung.
 
+ZUSATZ 2026-08-25 — DER ABSATZ DARÜBER BLEIBT WÖRTLICH STEHEN, UND SEINE AUSSAGE IST
+ÜBERHOLT. Er sagt, für die Frage "welcher EventSource-Wert gilt beim Offline-Import"
+liege KEIN Nicht-Treffer mit benannter Reichweite vor. Das war am 2026-08-25 richtig
+und ist es seit dem Doku-Lauf desselben Tages nicht mehr.
+DER BEFUND — GELESEN 2026-08-25 an der Anbieter-Doku, docs/ziel-befunde.md,
+Google-Abschnitt, Teil (aj) und Teil (ap) (Quelle: /devguides/events/send-events,
+Doku-Stand 2026-08-18): Die Anforderungstabelle jener Seite führt ZWEI Zeilen
+nebeneinander. Für die MULTI-SOURCE-Gestalt nennt sie einen konkreten Wert —
+eventSource "Optional. If set, must be WEB." Für die OFFLINE-Gestalt, also unsere,
+nennt sie KEINEN — dort steht nur "Required. Set to one of the enum values for
+EventSource."
+WAS SICH DAMIT ÄNDERT, UND ES IST NUR DIES: Die Abwesenheit ist jetzt BELEGT statt
+bloss unbemerkt. Es ist an einer benannten Stelle nachgewiesen, dass der Anbieter für
+die Nachbarzeile einen Wert nennt und für unsere nicht — das ist ein NICHT-TREFFER MIT
+BENANNTER REICHWEITE, und die Regel "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN
+HOHL" verlangt die schwächere Formulierung hier nicht mehr.
+WAS SICH NICHT ÄNDERT: **DER WERT SELBST IST WEITERHIN NICHT BENANNT.** Die bindende
+Entscheidung (2) gilt UNVERÄNDERT — eventSource wird vom Aufrufer geliefert und nie in
+der Funktion gewählt. Auch ihre zweiteilige GRENZE bleibt: Die Entscheidung entfällt,
+sobald der Wert GEMESSEN ist, und validateOnly=true beantwortet "wird die Anfrage
+angenommen", nicht "ist der Wert der fachlich richtige".
+PROVENIENZ: GELESEN 2026-08-25 an /devguides/events/send-events (Doku-Stand 2026-08-18).
+KEINE Messung.
+
 **(3) KEINE NUTZLAST OHNE KLICK-KENNUNG.**
 ENTSCHEIDUNG: Kann keine Klick-Kennung gebildet werden, entsteht KEINE Nutzlast —
 buildGoogleEvent gibt einen Verwerfungsgrund zurück. DIE ENTSCHEIDUNG IST EINE
@@ -708,3 +732,30 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig. DIE ZÄ
    Deploy das nicht heilt.
    NICHT ENTSCHIEDEN: ob das eine eigene Regel wird oder ein Absatz an der
    bestehenden. KEINE EMPFEHLUNG.
+
+2. **DIE LISTE "GESEHEN, NICHT GEÖFFNET" IST DER ORT, AN DEM SICH EIN BEFUND VERSTECKT**
+   (angetreten 2026-08-25, nach den Doku-Läufen 3 und 4).
+   DER BEFUND — GEMESSEN am eigenen Verfahren (CC, 2026-08-25): ZWEIMAL ist eine Seite in
+   der Liste "GESEHEN, NICHT GEÖFFNET" mit einem plausiblen Grund ausgeschlossen worden,
+   und sie trug die Antwort auf eine Frage, die derselbe Bestand als OFFEN führte.
+   /data-manager/api/devguides/quickstart/install-library stand in LAUF 1 und in LAUF 2
+   unter diesem Punkt ("vom Auftrag ausgeschlossen") und trägt das REST-Beispiel mit der
+   Kopfzeile `Authorization: Bearer …` — also genau den TRÄGER DES ZUGANGSDATUMS, den die
+   Roadmap-Zeile 11.8 als Blocker führt und für dessen Suche sie ausdrücklich AUS dem
+   Doku-Baum HERAUS verweist.
+   **DIE SEITE WAR NICHT ÜBERSEHEN, SIE WAR AUSGESCHLOSSEN WORDEN.** Das ist der Punkt:
+   Ein Übersehen fällt bei der nächsten Durchsicht auf, ein begründeter Ausschluss nicht —
+   er sieht bei jeder Wiederholung genauso richtig aus wie beim ersten Mal.
+   WARUM KANDIDAT: Das ist KEIN Google-Sonderfall, sondern eine Eigenschaft des
+   CRAWL-VERFAHRENS. Es steht neben dem bereits festgehaltenen Befund, dass ein
+   Navigationsbaum nicht alle Seiten eines Abschnitts führt (LAUF 1: drei Seiten fehlten,
+   sichtbar nur über Fliesstext-Verweise) — beide beschreiben, wie eine Seite aus dem
+   Blickfeld gerät, und beide betreffen jede künftige Anbieter-Recherche.
+   DIE ABGRENZUNG, DIE MITMUSS: Die Liste selbst ist RICHTIG und wird von diesem Kandidaten
+   nicht in Frage gestellt — ohne sie hätte ein "steht dort nicht" keine Reichweite (Regel
+   "ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN …", docs/immer-beachten.md). Der
+   Kandidat sagt nicht, dass weniger ausgeschlossen werden soll, sondern dass der
+   AUSSCHLUSS eine eigene Fehlerquelle ist.
+   NICHT ENTSCHIEDEN: ob das eine eigene Regel wird oder ein Absatz an der bestehenden, und
+   ob daraus eine Auflage folgt (etwa: die Ausschluss-Liste gegen die offenen Fragen
+   halten, bevor ein Lauf beginnt). KEINE EMPFEHLUNG.

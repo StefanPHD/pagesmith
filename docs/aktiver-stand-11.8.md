@@ -356,30 +356,76 @@ am 2026-08-26 im Live-Test bestätigt) und die Gleichheit auf beiden Spalten im 
 
 ## Scheibe 11.8c — Die Form der mehrwertigen Nutzlast, als eigener Ort
 
-### Der Gegenstand — eine reine Datei für die Form
+**VOLLZOGEN AM 2026-08-26, Commit 8532e59. DER ZUSCHNITT IST AB HIER VERDICHTET** — was
+mit dem Vollzug abgelaufen ist, steht nicht mehr hier. Der Maßstab, gegen den er misst,
+ist Vermerk 3 weiter unten.
 
-**EINE reine Datei, die eine MEHRWERTIGE Nutzlast in EINE Zeichenkette schreibt und aus
-einer Zeichenkette zurückliest.** Kein Chiffrieren, keine Datenbank, kein Aufrufer, kein
-OAuth-Fluss, kein Netz. **Bewiesen durch Tests.**
+**DIE ZITAT-PRÜFUNG VOR DER VERDICHTUNG, UND SIE FÄLLT ANDERS AUS ALS BEI 11.8a UND
+11.8b — DESHALB BLEIBT HIER MEHR STEHEN.** GEMESSEN am ganzen Repo (CC, 2026-08-26;
+Achse: alle Dateien ausser .git, node_modules, .next, .playwright-mcp; gesucht nach dem
+Dateinamen dieser Standdatei, nach jedem der SIEBEN Unterabschnitts-Titel dieses
+Zuschnitts und nach den Auflagen-Nummern):
 
-**DIE ENTSCHEIDUNG (OWNER, 2026-08-26): DIE FORM BEKOMMT EINEN EIGENEN ORT.** Die
-Begründung des Owners, wörtlich zu vermerken: **Sie wahrt die Isolation — Krypto bleibt
-BLIND für Domänenstrukturen — und verhindert zugleich, dass Aufrufer unkontrolliert
-Formate in die verschlüsselte Spalte schreiben.**
+- **KEIN Unterabschnitts-TITEL wird von aussen zitiert** — sieben Titel, null Treffer.
+- **ABER DIE AUFLAGEN WERDEN ES, UND ZWAR ÜBER IHRE NUMMER:** `oauth-payload.ts` und
+  `oauth-payload.test.ts` berufen sich NEUNMAL auf "Auflage (1)" bzw. "Auflage (3)" —
+  unter anderem in zwei `describe`-Namen der Testdatei. **Eine Nummer ist ein Zeiger wie
+  ein Titel; sie ist nur schlechter zu suchen.**
+- **DIE RICHTUNG, und sie ist hier die entscheidende Messung:** `oauth-payload.ts:20-21`
+  sagt wörtlich, die drei Auflagen stünden dort "**und nicht nur in
+  docs/aktiver-stand-11.8.md**". **Der Code behauptet also die Existenz dieser Kopie.**
+  Wer sie streicht, macht einen Satz im Produktivcode falsch — und zwar still, weil kein
+  Gate einen Kommentar prüft.
+- **ZUM VERGLEICH DIE GEGENRICHTUNG, die bei 11.8b zweimal auftrat:** Der Zuschnitt
+  zitiert seinerseits `0021_project_secrets.sql` und `docs/ziel-befunde.md`. Diese Zeiger
+  sterben durch eine Streichung HIER nicht — sie zeigen nach draussen.
 
-**ZWEI ALTERNATIVEN SIND VERWORFEN, je mit ihrem Preis:**
-- **DIE FORM INNEN**, also in der Chiffrier-Datei. Preis: Sie kennte dann die Gestalt
-  eines OAuth-Zugangs, während die vier bestehenden Ziele einen SKALAR tragen — zwei
-  Formen in einer Funktion.
-- **DIE FORM AUSSEN**, also bei jedem Aufrufer. Preis: Jeder entscheidet sie neu, und die
-  zweite Stelle macht es anders als die erste.
+**FOLGE: "### Die drei Auflagen aus der Entscheidung" BLEIBT STEHEN** und ist der einzige
+Unterabschnitt dieser Scheibe, dessen Überleben von AUSSEN erzwungen wird.
 
-**DER GEGENEINWAND GEHÖRT DANEBEN, und er ist nicht ausgeräumt, sondern abgewogen**
-(ARCHITEKT, 2026-08-26): Bei A/B ist entschieden worden, dass bei EXAKT ZWEI Fällen ein
-benanntes Duplikat billiger und ehrlicher ist als eine Abstraktion auf Verdacht. **HEUTE
-GIBT ES EINEN FALL — Google. LinkedIn kommt, ist aber nicht da.** Die Entscheidung fiel
-trotzdem für den eigenen Ort, **weil hier nicht ABSTRAHIERT, sondern GETRENNT wird: zwei
-Dinge, die verschieden altern — die Verschlüsselung nie, die Form mit jedem Anbieter.**
+**WAS ABGELAUFEN IST, damit die Streichung erkennbar bleibt und nicht als Versehen:**
+"### Der Gegenstand — eine reine Datei für die Form" ·
+"### Die drei Fragen, die der Plan entscheidet und dieser Zuschnitt nicht" ·
+"### Die tragende Invariante von 11.8c" ·
+"### Der Beweis von 11.8c — Tests, und warum kein Live-Test" ·
+"### Was 11.8c ausdrücklich ausschliesst, je mit Grund" ·
+"### Der Pflicht-Hinweis der Phase — hier ohne Gegenstand" · und die Provenienz-Zeile
+des Zuschnitts.
+
+**WO IHRE BINDENDEN RESTE LIEGEN:**
+- **Die Entscheidung für den eigenen Ort, ihre Begründung und die zwei verworfenen
+  Alternativen** stehen im KOPF von `src/lib/secrets/oauth-payload.ts`, ausführlicher als
+  hier — dazu die Fassungsmarken, der absolute Zeitpunkt, die Ablehnung unbekannter
+  Felder und die Fehlerform, je mit Grund.
+- **Der Gegeneinwand aus dem A/B-Präzedenzfall** steht in Vermerk 3; er ist die einzige
+  Angabe des Zuschnitts, die im Code KEINEN Ort hat.
+- **Die tragende Invariante** ist mit dem Vollzug zur MESSUNG geworden und steht als
+  solche in Vermerk 3 (kein Aufrufer im Produktivcode, GEMESSEN).
+- **Der Beweis und seine Grenze** stehen in Vermerk 3, samt der Schuld-Zuordnung.
+- **Die Ausschlüsse** waren Auflagen an DIESEN Bau und sind mit ihm abgelaufen; der
+  Aufrufer-Riegel lebt in der Invariante weiter.
+- **Der Pflicht-Hinweis zur Sieben-Tage-Frist** gehört der PHASE, nicht dieser Scheibe —
+  er steht unverändert an docs/roadmap.md, Eintrag 11.8, und greift bei der ersten
+  Scheibe mit einer Live-Anleitung.
+
+### Die drei Fragen des Zuschnitts — BEANTWORTET, und hier steht WO
+
+Der Zuschnitt führte drei Fragen ausdrücklich als offen. **Alle drei sind am 2026-08-26
+im Plan entschieden und im Bau umgesetzt worden**; keine steht mehr offen, und keine wird
+hier verdoppelt:
+
+- **WELCHE FELDER DIE NUTZLAST TRÄGT** → **VIER**, fester Satz. Die Felder selbst stehen
+  am Typ `OAuthPayload` in `src/lib/secrets/oauth-payload.ts`, die Begründung für das
+  vierte (die Zwei-Uhren-Lage) im Kommentar darüber, die Belege in docs/ziel-befunde.md.
+  **Kurzfassung samt der Entscheidung gegen den Zugriffsbereich: Vermerk 3.**
+- **OB DIE FORM IHRE EIGENE FASSUNGSMARKE TRÄGT** → **JA, zwei Marken auf zwei Achsen.**
+  Begründung im Dateikopf unter "WARUM ZWEI FASSUNGSMARKEN". **Was daran über die Scheibe
+  hinaus bindet, steht als Entscheidung (2) unter "## Entscheidungen, die über ihre
+  Scheibe hinaus binden".**
+- **WAS BEIM LESEN EINER UNBEKANNTEN ODER KAPUTTEN FORM GESCHIEHT** → **ein
+  diskriminiertes Ergebnis, kein Wurf**, mit `unknown_version` und `bad_format` als
+  getrennten Ausgängen. Begründung im Dateikopf unter "WIRFT NIE"; die harte Auflage
+  liegt auf der Lese-Seite (Ingest-204-Containment).
 
 ### Die drei Auflagen aus der Entscheidung
 
@@ -401,84 +447,6 @@ Erschliessung:
    erzeugt, muss ein gültiger Klartext sein. Diese Auflage ist die einzige der drei, die
    eine Eigenschaft an einem FREMDEN Stück Code prüft; sie gehört deshalb in die Tests
    dieser Scheibe und nicht in ein Kommentarversprechen.
-
-### Die drei Fragen, die der Plan entscheidet und dieser Zuschnitt nicht
-
-Benannt, nicht beantwortet. Wer eine davon hier beantwortet findet, liest etwas hinein.
-
-- **WELCHE FELDER DIE NUTZLAST TRÄGT.** Für Google sind Zugangsdatum, Erneuerungs-Token
-  und Ablaufzeitpunkt naheliegend; **ob der Zugriffsbereich dazugehört und ob LinkedIn
-  dieselben Felder braucht, ist NICHT entschieden.**
-- **OB DIE FORM IHRE EIGENE FASSUNG MITTRÄGT.** Die Chiffrier-Datei führt eine
-  Fassungsmarke im Kopf ihrer Zeichenkette; **ob die Nutzlast eine ZWEITE braucht, ist eine
-  eigene Frage.** Sie ist dieselbe Klasse wie die Kennungs-Regel aus 11.8a: Was sich ändern
-  kann, muss sagen können, in welcher Fassung es entstanden ist.
-- **WAS BEIM LESEN EINER UNBEKANNTEN ODER KAPUTTEN FORM GESCHIEHT.** Die Chiffrier-Datei
-  wirft nie und gibt ein diskriminiertes Ergebnis zurück; **ob das hier ebenso gilt,
-  entscheidet der Plan am späteren Aufrufort** — die Frage hängt daran, wer das Ergebnis
-  liest, und den gibt es in dieser Scheibe nicht.
-
-### Die tragende Invariante von 11.8c
-
-**Nach dieser Scheibe verhält sich die Anwendung EXAKT wie vorher — an jedem Pfad, für
-jedes Projekt.** Die Datei hat im Produktivcode KEINEN Aufrufer; nur ihre Tests rufen sie.
-**Das ist der Prüfstein jeder Änderung dieser Scheibe: Wer einen Aufrufer hinzufügt, hat
-nicht mehr diese Scheibe gebaut.**
-
-**SIE IST WORTGLEICH MIT DER INVARIANTE VON 11.8a, UND DAS IST KEIN VERSEHEN:** Beide
-Scheiben bauen eine reine Datei ohne Aufrufer. Der Unterschied liegt im GEGENSTAND, nicht
-in der Invariante — und der Titel trägt deshalb die Scheiben-Nummer, damit ein Anker die
-beiden trennen kann (s. "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT
-VERZEICHNIS NICHT" in docs/immer-beachten.md). Die Invariante von 11.8a gilt daneben
-unverändert weiter: `src/lib/secrets/cipher.ts` hat bis heute keinen Aufrufer.
-
-### Der Beweis von 11.8c — Tests, und warum kein Live-Test
-
-**Der Beweis dieser Scheibe sind TESTS. EINEN LIVE-TEST GIBT ES NICHT**, weil nichts
-gesendet und nichts gespeichert wird.
-
-**DAS IST EINE AUSNAHME VON EINER DAUERHAFTEN REGEL UND WIRD DESHALB HIER BENANNT:** "Jede
-Bau-Freigabe an CC endet mit einer expliziten Live-Test-Anweisung"
-(docs/immer-beachten.md). Sie gilt unverändert weiter und hat an dieser Scheibe keinen
-Gegenstand.
-
-**DIE SCHULD IST NICHT OFFEN — und dieser Satz ist der Grund, warum der Absatz nicht bei
-11.8a abgeschrieben werden darf:** 11.8a schuldete den Live-Test nach ("DIE ERSTE SCHEIBE
-MIT EINEM DATENPFAD SCHULDET IHN NACH"), und **Scheibe 11.8b hat ihn am 2026-08-26
-eingelöst** (Vermerk 2). **Wer sie hier erneut aufmacht, verdoppelt sie.** Die Schuld von
-11.2a gehört weiterhin der Transport-Scheibe von 11.2 und wandert nicht hierher.
-
-### Was 11.8c ausdrücklich ausschliesst, je mit Grund
-
-- **DER OAUTH-FLUSS.** Er ist der Gegenstand einer eigenen Scheibe und bringt Netz,
-  fremde Endpunkte und einen Zeitbezug mit. Diese Scheibe hat keinen davon.
-- **JEDER AUFRUFER.** Er machte aus einer reinen Datei einen Pfad — s. die tragende
-  Invariante oben.
-- **DAS SCHREIBEN IN DIE SPALTE.** `secret_enc` steht seit 0025 bereit und ist in allen
-  sieben Zeilen leer (GEMESSEN, Vermerk 2). Diese Scheibe erzeugt eine Zeichenkette; sie
-  legt keine ab.
-- **JEDE ÄNDERUNG AN DER CHIFFRIER-DATEI.** Sie ist der Maßstab, an dem Auflage 3 misst.
-  Wer sie im selben Zug ändert, kann einen Fehlschlag nicht mehr zwischen Form und
-  Verfahren zuordnen.
-- **DER AUFRUF GEGEN events:ingest.** Für ihn ist der TRÄGER des Zugangsdatums weiterhin
-  UNGEMESSEN — der Vorbehalt vom 2026-08-25 steht an docs/roadmap.md, Eintrag 11.8, und
-  wird hier nicht verdoppelt.
-
-### Der Pflicht-Hinweis der Phase — hier ohne Gegenstand
-
-**Die SIEBEN-TAGE-FRIST des Testing-Zustands** (docs/roadmap.md, Eintrag 11.8) gehört als
-Pflicht-Hinweis in jede Live-Anleitung dieser Phase, damit ein abgelaufenes Zugangsdatum
-nicht als Defekt gejagt wird. **DIESE SCHEIBE HAT KEINE ANLEITUNG** — sie legt kein
-Zugangsdatum an und liest keines. **Der Hinweis steht hier, damit die nächste Anleitung ihn
-nicht neu erfinden muss**, und ausdrücklich NICHT, weil er hier greift.
-
-**PROVENIENZ DIESES ZUSCHNITTS:** Die Entscheidung für den eigenen Ort und ihre Begründung
-sind **OWNER-ENTSCHEIDUNG (2026-08-26)**. Der Gegeneinwand aus dem A/B-Präzedenzfall ist
-**ARCHITEKT (2026-08-26)**. Die Angaben über den heutigen Code — kein Aufrufer von
-`cipher.ts`, `secret_enc` leer, die Zahl der Ladeklassen — sind **GEMESSEN am Repo (CC,
-2026-08-26)**. Der Zuschnitt selbst, seine Auflagen und seine Ausschlüsse sind
-**ARCHITEKTEN-ENTSCHEIDUNG (2026-08-26)**. **KEINE Messung an dieser Datenbank und kein
-Aufruf gegen eine fremde Schnittstelle in dieser Runde.**
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -554,6 +522,29 @@ geschriebenen Dateien; behoben ist es durch die Escape-Form, und die Byte-Kontro
 zeigt NUL 0, CR 0, UTF-8 gültig. SELBST GEFUNDEN UND GEMELDET, nicht von einem Gate.
 GEMESSEN am eigenen Lauf (CC, 2026-08-25). Die Verallgemeinerung steht NICHT hier, sondern
 als Hebungs-Kandidat (1) weiter unten.
+
+**ZUSATZ VOM 2026-08-26 — DER ABSATZ DARÜBER BLEIBT WÖRTLICH UND WIRD NICHT ERSETZT.** Er
+ist das Protokoll seines Tages, und an jenem Tag hat die Escape-Form die Datei
+tatsächlich sauber bekommen; die Byte-Kontrolle danach zeigte NUL 0. **WAS DER ZUSATZ
+HINZUFÜGT, IST EINE MESSUNG VON EINEM ANDEREN TAG, KEINE KORREKTUR VON JENEM.**
+
+**BEIM ZWEITEN ANLAUF HAT DIE ESCAPE-FORM NICHT GETRAGEN.** In Scheibe 11.8c ist dieselbe
+Fehlerklasse erneut aufgetreten (fünf NUL-Bytes in `oauth-payload.test.ts`, alle vier
+Gates grün). **Der Reparaturversuch nach genau diesem Rezept — die Escape-Form — wurde auf
+demselben Schreibweg INTERPRETIERT:** Auf der Platte standen danach wieder echte
+Leerzeichen und echte NUL-Bytes. **AUF DIESEM WEG ÜBERLEBT WEDER DAS LITERALE
+SONDERZEICHEN NOCH SEIN ESCAPE.** GEMESSEN am eigenen Lauf (CC, 2026-08-26), zweimal
+hintereinander.
+
+**WAS TRÄGT: das Zeichen im Code BAUEN statt es hinzuschreiben** — `String.fromCharCode`.
+Reines ASCII, an dem kein Werkzeug etwas umdeuten kann, weil es nichts zu deuten gibt. Die
+Fundstelle steht in `src/lib/secrets/oauth-payload.test.ts`, samt der Geschichte beider
+Anläufe.
+
+**WARUM DAS HIER STEHT UND NICHT NUR AM KANDIDATEN:** Wer den Absatz darüber liest, hält
+die Escape-Form für das Rezept — er hat ja gerade gelesen, dass sie funktioniert hat. Der
+Zusatz muss dort stehen, wo der falsche Schluss entsteht, nicht nur dort, wo die Lehre
+abgelegt ist.
 
 **DIE ZAHLKORREKTUR AUS STUFE 1.** Der Plan zu dieser Scheibe nannte "`import
 \"server-only\"` — 32 Dateien" und führte `capi/google-payload.ts` als Beleg. **Beides war
@@ -675,6 +666,127 @@ Deutung des `created_at`-Befundes als "Bestandsdatensatz aus der Zeit vor der Mi
 ist eine **ABLEITUNG** aus dem gemessenen Datum, keine eigene Messung. **KEIN Aufruf gegen
 eine fremde Schnittstelle durch CC** — der Anbieter-Abgleich im Lesepfad lief beim Owner.
 
+### Vermerk 3 — Scheibe 11.8c, Commit 8532e59 (2026-08-26)
+
+**WAS GEBAUT WURDE:** ZWEI neue Dateien — `src/lib/secrets/oauth-payload.ts` (383 Zeilen)
+mit `formatOAuthPayload` und `parseOAuthPayload`, dazu `oauth-payload.test.ts` (488
+Zeilen) mit **43 Tests**. **KEIN AUFRUFER IM PRODUKTIVCODE** — GEMESSEN (CC, 2026-08-26;
+Achse: `src/` über *.ts und *.tsx, gesucht nach dem Modulpfad und nach beiden
+Funktionsnamen ausserhalb der zwei neuen Dateien): kein Treffer. Keine bestehende Datei
+geändert (`git diff --stat` leer), `package.json` unberührt, keine Migration, kein OAuth,
+kein Netz.
+
+**DIE VIER GATES, alle grün:** `tsc --noEmit` (Exit 0) · `lint` (0 Fehler; die eine
+Warnung liegt vorbestehend in `tracking/consent.test.ts`) · `vitest run` · `build` (Exit
+0, dieselben sechs Routen). **Testzahl vorher/nachher, GEMESSEN: 61 Dateien / 1179 Tests
+-> 62 Dateien / 1222 Tests.** Kein Bestandstest ist geändert worden, keiner wurde rot.
+
+**DIE DREI FRAGEN DES ZUSCHNITTS, ENTSCHIEDEN — kurz; die Begründungen stehen im Kopf von
+`oauth-payload.ts` und werden hier NICHT verdoppelt:**
+
+- **DER FELDSATZ IST FEST, mit VIER Feldern** — Zugangsdatum, sein Ablauf,
+  Erneuerungs-Token, dessen Ablauf. **Das vierte war im Zuschnitt nicht vorgesehen** und
+  kam aus dem Plan: Die Zwei-Uhren-Lage ist bei BEIDEN gelesenen Anbietern belegt (Google
+  eine Stunde gegen sieben Tage im Testing, LinkedIn zwei Monate gegen zwölf). Ein
+  einzelnes Ablauf-Feld könnte "abgelaufen, aber erneuerbar" nicht von "endgültig weg"
+  trennen. **Der Zugriffsbereich gehört NICHT dazu** — er wird zum Senden nicht gebraucht
+  und ist je Ziel im Code festgelegt, nicht je Zeile. **UNBEKANNTE FELDER WERDEN ZUR
+  LAUFZEIT ABGEWIESEN**, weil TypeScript überzählige Eigenschaften nur an
+  Objekt-Literalen prüft.
+- **ZWEI FASSUNGSMARKEN AUF ZWEI ACHSEN** — `p1` in der Nutzlast, `v1` im Chiffrat. Was
+  daran über diese Scheibe hinaus bindet, steht als Entscheidung (2) weiter unten.
+- **DISKRIMINIERTES ERGEBNIS, KEIN WURF**, in beiden Richtungen; `unknown_version` und
+  `bad_format` sind getrennte Ausgänge. Die harte Auflage liegt auf der LESE-Seite: der
+  spätere Lesepfad ist der Ingest, und dort gilt das 204-Containment.
+
+**DIE LADEKLASSE IST `server-only`, UND DER TRAGENDE GRUND IST DER ZWEITE:** Die
+Zweck-Achse allein (`redact.ts` entfernt Geheimnisse und ist rein — diese Datei macht sie
+haltbar) lädt zu der Gegenrede ein, die Datei sehe ja nur Zeichenketten. **DIE KLASSE IST
+EINE UNTERGRENZE: sie einzusetzen, wo rein gereicht hätte, ist NIE ein Verstoss —
+umgekehrt schon.** Bei einer Datei, die Zugangsdaten formt, ist das die richtige Richtung
+des Irrtums. **Dieser Satz ist das, was die Klasse gegen eine spätere Aufräumrunde hält**;
+ohne ihn liest sie jemand als zu streng und entfernt sie. Ein Test (T14) bewacht die
+Marke, weil ihr Entfernen durch kein Gate fiele.
+
+**DIE FÜNF MUTATIONSPROBEN.** Jede wurde VOR dem Lauf angesagt, gefahren und
+zurückgenommen; der Commit trägt keine. GEMESSEN am eigenen Lauf (CC, 2026-08-26). **Die
+Rücknahme ist INHALTLICH nachgewiesen — die Dateien waren untracked, `git status` hätte
+nur "neu" gemeldet** (das ist Hebungs-Kandidat 2 in der Anwendung): Prüfsumme identisch
+zur Sicherung vor der ersten Mutation, null Vorkommen der Marker.
+
+- **M5 — die Ablehnung unbekannter Felder entfernt.** VORHERSAGE: T15 und T15c, T15b
+  bleibt grün. ERGEBNIS: 2 von 43 rot, genau diese. Deckungsgleich. **Das ist die
+  Pflicht-Probe: die Auflage, an der die Owner-Entscheidung hängt, hat damit einen
+  Wächter und ist kein Kommentar.**
+- **M2 — Fassungsprüfung beim Lesen ignoriert.** VORHERSAGE: T10 und T10c, T10b grün.
+  ERGEBNIS: 2 rot, genau diese. Deckungsgleich.
+- **M4 — "unbekannt" auf denselben Ausgang wie ein fehlender Wert.** VORHERSAGE: nur T2.
+  ERGEBNIS: 1 rot, genau dieser. Deckungsgleich.
+- **M1 — die Feld-Neutralisierung entfernt (base64url als Durchreiche).** VORHERSAGE: nur
+  die Trennzeichen-Klasse, also T6 und T3b. **ERGEBNIS: DREI rot — T6, T7 und T3b, also
+  EINER MEHR als vorhergesagt.**
+  **GEPRÜFT STATT VERBUCHT, wie es die Regel verlangt:** Melden alle drei dieselbe
+  Fehlerklasse? Ja. Die Mutation entfernt EINE Schutzmassnahme, die ZWEI Eigenschaften
+  trägt — Trennzeichen-Sicherheit UND ASCII-Sicherheit. T6 scheitert an der Teilezahl, T7
+  am Zeichenvorrat, T3b an beidem; alle drei enden in `bad_format`. **Das ist Deckung,
+  keine Kaskade.**
+  **DIE VORHERSAGE WAR ZU ENG, und das ist der Befund:** Es war nur die Separator-Achse
+  benannt und übersehen, dass base64url zugleich die ASCII-Sicherheit trägt, die Auflage
+  (3) verlangt. **UNERWARTETES ROT IST GENAUSO EIN BEFUND WIE UNERWARTETES GRÜN** — es
+  fällt nur seltener auf, weil Rot nach Erfolg aussieht.
+- **M3 — die Teilezahl-Prüfung beim Lesen entfernt.** VORHERSAGE: die `bad_format`-Klasse,
+  ausdrücklich als Klasse und nicht als Zahl. **ERGEBNIS: DREI der VIER T4-Fälle rot —
+  "zu viele Teile" BLIEB GRÜN. Das war der eigentliche Fund dieser Runde.**
+  **DIE URSACHE WURDE UNTERSCHIEDEN, BEVOR ETWAS VERSTÄRKT WURDE:** Es waren KEINE anderen
+  Tests rot als die gemeinten — also kein Zeichen für ein schlechtes Mutationsmodell. Der
+  Test prüfte schlicht nichts Relevantes: Sein Eingabewert `p1.aaa.bbb.ccc.ddd.eee`
+  scheitert ohnehin am unbrauchbaren Ablauf im dritten Teil. **Die Teilezahl war nie sein
+  Prüfgegenstand.**
+  **REPARIERT IST DIE WURZEL — DER EINGABEWERT — UND NICHT DIE ZUSICHERUNG.** T4b hängt
+  jetzt einen sechsten Teil an einen GÜLTIGEN Fünfteiler; unter derselben, noch gesetzten
+  Mutation fiel er sofort. **Wer stattdessen die Zusicherung anpasst, macht den Test zur
+  gebauten Lösung passend und bucht eine Tautologie.** **Ohne diese Probe wäre eine
+  angehängte Nutzlast still ignoriert worden.**
+
+**ZWEI TESTS SIND GEGENÜBER DEM PLAN DAZUGEKOMMEN, und der Grund gehört dazu:** T6 und T7
+stehen als EIGENE, REINE Wächter da. Im Plan hing die Trennzeichen-Klasse nur an T3b —
+einem Test, der durch `cipher.ts` läuft. **Bräche die, fiele T3b aus dem FALSCHEN Grund.**
+Ein Test, der nur über einen Dritten prüft, prüft den Dritten mit.
+
+**DER BEWEIS UND SEINE GRENZE:** Der Beweis dieser Scheibe sind TESTS. **EINEN LIVE-TEST
+GIBT ES NICHT**, weil nichts gesendet und nichts gespeichert wird. Die Regel "Jede
+Bau-Freigabe an CC endet mit einer expliziten Live-Test-Anweisung"
+(docs/immer-beachten.md) gilt unverändert weiter und hat an dieser Scheibe keinen
+Gegenstand. **DIE SCHULD IST NICHT OFFEN: Sie ist mit Scheibe 11.8b am 2026-08-26
+eingelöst worden (Vermerk 2). Wer sie hier erneut aufmacht, verdoppelt sie.** Die Schuld
+von 11.2a gehört weiterhin der Transport-Scheibe von 11.2.
+
+**DIE GEGENPROBE AM COMMITTETEN BLOB — und sie ist neu in diesem Projekt:** NUL und CR
+sind nicht nur am Arbeitsbaum geprüft worden, sondern an den Objekten selbst
+(`git show HEAD:<pfad>`): beide Dateien NUL 0, CR 0, Bytezahl identisch zum Arbeitsbaum
+(17 557 und 21 949). **BEI EINER FEHLERKLASSE, DIE IN DIESER PHASE DREIMAL DURCH ALLE VIER
+GATES GERUTSCHT IST, BEWEIST DER ARBEITSBAUM NUR, WAS AUF DER PLATTE LIEGT — NICHT, WAS
+GEPACKT WURDE.** Die zwei Wege können auseinanderlaufen (Zeilenende-Filter, Attribute),
+und genau dann ist der Arbeitsbaum die falsche Sicht.
+
+**DER GEGENEINWAND ZUM ZUSCHNITT, hier festgehalten, weil er im Code keinen Ort hat**
+(ARCHITEKT, 2026-08-26): Bei A/B ist entschieden worden, dass bei EXAKT ZWEI Fällen ein
+benanntes Duplikat billiger und ehrlicher ist als eine Abstraktion auf Verdacht — und
+heute gibt es EINEN Fall (Google; LinkedIn kommt, ist aber nicht da). Die Entscheidung
+fiel trotzdem für den eigenen Ort, **weil hier nicht ABSTRAHIERT, sondern GETRENNT wird:
+zwei Dinge, die verschieden altern — die Verschlüsselung nie, die Form mit jedem
+Anbieter.** Er ist NICHT ausgeräumt, sondern abgewogen.
+
+**PROVENIENZ DIESES VERMERKS, je Angabe:** Commit-Nummer, Dateizahl, Zeilenzahlen,
+Testzahlen, Gate-Ergebnisse, die fünf Mutationsergebnisse, der Nicht-Treffer bei der
+Aufrufer-Suche, die Zitat-Prüfung und die Blob-Gegenprobe sind **GEMESSEN am eigenen Lauf
+(CC, 2026-08-26)**. Die Entscheidung für den eigenen Ort ist **OWNER (2026-08-26)**, die
+Wahl der Ladeklasse und der Gegeneinwand sind **OWNER/ARCHITEKT (2026-08-26)**. Die
+Anbieter-Angaben zu den Fristen sind **GELESEN** (docs/ziel-befunde.md, Google-Teil (ab)
+und (an), LinkedIn-Teil (w)) und ausdrücklich NICHT gemessen. **KEINE Messung an einer
+laufenden Datenbank und kein Aufruf gegen eine fremde Schnittstelle** — diese Scheibe
+berührt beides nicht.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 Die drei bindenden Entscheidungen zum Geheimnis-Speicher stehen an docs/roadmap.md,
@@ -705,6 +817,39 @@ HIER entschieden worden.
    PROVENIENZ: OWNER/ARCHITEKT-ENTSCHEIDUNG 2026-08-25. Dass der Code die
    Zeit-Achse nicht sehen kann, ist GEMESSEN am gebauten Stand (CC, 2026-08-25, Commit
    4b2ec09).
+
+2. **EINE FASSUNGSMARKE DER NUTZLAST WIRD NIE FÜR EINE ANDERE FELDMENGE WIEDERVERWENDET.**
+   Ändert sich der Feldsatz, bekommt die Form eine NEUE Marke; `p1` bleibt für immer die
+   Feldmenge vom 2026-08-26.
+   **WARUM DAS HIER STEHT UND NICHT NUR IM DATEIKOPF:** Der Kopf von
+   `src/lib/secrets/oauth-payload.ts` erklärt ausführlich, WARUM es zwei Marken gibt —
+   `p1` in der Nutzlast, `v1` im Chiffrat, auf zwei Achsen, die sich unabhängig bewegen.
+   **Das ist im Code nachzulesen und braucht keinen zweiten Ort.** Was der Code NICHT
+   sagen kann, ist die Aussage über die ZEIT: Er weist eine unbekannte Marke ab
+   (`unknown_version`), aber er kann nicht sehen, dass `p1` GESTERN eine andere Feldmenge
+   bezeichnet hat. **Ein unter derselben Marke geänderter Feldsatz wird nicht abgewiesen —
+   er wird falsch gedeutet, und der Leser bekommt ein einwandfreies "ok".**
+   **DER PRÜFSTEIN, an dem dieser Eintrag hängt und die zwei anderen Entscheidungen der
+   Scheibe nicht:** Muss eine spätere Runde ihn kennen, um nichts kaputtzumachen? Ja — und
+   zwar in einem Moment, den der Code nicht bewachen kann.
+   **WEN SIE BINDET:** jede spätere Runde, die ein Feld hinzufügt, entfernt oder umdeutet;
+   und ausdrücklich auch die, die eine DRITTE Marke einführen oder eine der zwei entfernen
+   will — sie muss vorher wissen, dass die zwei auf VERSCHIEDENEN Achsen sitzen und nicht
+   redundant sind.
+   **ES IST DIESELBE DENKFIGUR WIE ENTSCHEIDUNG (1) DARÜBER, nur an der anderen Marke:**
+   dort der Schlüssel, hier die Feldmenge. Beide Male ist es eine Aussage über die Zeit,
+   und beide Male fällt sie auf einen ununterscheidbaren Ausgang zurück, wenn man sie
+   bricht.
+   PROVENIENZ: die zwei Marken sind OWNER-ENTSCHEIDUNG (2026-08-26) und im Bau umgesetzt
+   (Commit 8532e59); dass der Code die Zeit-Achse nicht sehen kann, ist GEMESSEN am
+   gebauten Stand (CC, 2026-08-26). Die Erhebung ZU EINER BINDENDEN ENTSCHEIDUNG ist
+   ARCHITEKT (2026-08-26).
+   **WAS AUSDRÜCKLICH NICHT HIERHER GEHOBEN WURDE, und der Satz gehört dazu, damit die
+   Auswahl nachvollziehbar bleibt:** Die zwei anderen Entscheidungen dieser Scheibe — der
+   FESTE FELDSATZ mit der Ablehnung unbekannter Felder und das DISKRIMINIERTE ERGEBNIS —
+   binden ebenfalls über die Scheibe hinaus, stehen aber bereits an zwei dauerhaften Orten:
+   im Kopf von `oauth-payload.ts` UND als Auflagen (2) und (3) im Zuschnitt, der nicht
+   abgelaufen ist. Ein dritter Ort wäre eine zweite Wahrheit, die neben den beiden altert.
 
 ## Vorrat (gemeldet, nicht gebaut)
 
@@ -758,6 +903,33 @@ HIER entschieden worden.
    erste Scheibe jeder Phase erzeugt welche.
    **NICHT ENTSCHIEDEN:** ob das ein Zusatz zur bestehenden Regel wird oder eine eigene ·
    ob die Byte-Kontrolle eine Auflage an jede neue Datei wird · welchen Umfang sie hätte.
+   KEINE EMPFEHLUNG.
+
+   **FORTGESCHRIEBEN AM 2026-08-26 — DER KANDIDAT IST ZUM ZWEITEN MAL EINGETRETEN UND HAT
+   SICH VERSCHÄRFT. Der Text darüber bleibt unverändert; hier steht, was dazugekommen
+   ist.** In Scheibe 11.8c sind beim Schreiben von `oauth-payload.test.ts` FÜNF NUL-Bytes
+   entstanden — wieder aus Zeichen, die niemand als Sonderzeichen geschrieben hatte, und
+   wieder mit allen VIER Gates grün. GEMESSEN am eigenen Lauf (CC, 2026-08-26).
+
+   **ERSTE VERSCHÄRFUNG — DIE NAHELIEGENDE BEHEBUNG TRÄGT NICHT.** Der Kandidat beschrieb
+   bisher eine FEHLERKLASSE. Jetzt beschreibt er zusätzlich, dass das Mittel, das Vermerk 1
+   als Behebung protokolliert — die ESCAPE-FORM —, auf demselben Schreibweg INTERPRETIERT
+   wird: Der Reparaturversuch setzte die Zeichen erneut ein, Leerzeichen wie NUL-Bytes.
+   **AUF DIESEM WEG ÜBERLEBT WEDER DAS LITERALE SONDERZEICHEN NOCH SEIN ESCAPE.** Was
+   trägt, ist das Zeichen im Code zu BAUEN statt es hinzuschreiben (`String.fromCharCode`).
+   **EIN BEFUND ÜBER DIE BEHEBUNG WIEGT SCHWERER ALS EINER ÜBER DIE FEHLERKLASSE:** Wer die
+   Klasse kennt und zum falschen Mittel greift, hält den Fall für erledigt — und hat dann
+   eine Datei, die zweimal geprüft und zweimal falsch ist. Der datierte Zusatz an Vermerk 1
+   sagt dasselbe an der Stelle, an der der falsche Schluss entsteht.
+
+   **ZWEITE VERSCHÄRFUNG — DIE KONTROLLE AM ARBEITSBAUM GENÜGT NICHT ALS NACHWEIS.** Sie
+   belegt, was auf der Platte liegt, nicht, was in die Objektdatenbank gepackt wurde; die
+   zwei Wege können auseinanderlaufen. Der Nachweis gehört ans COMMITTETE OBJEKT
+   (`git show HEAD:<pfad>`), und genau so ist er in Vermerk 3 geführt.
+
+   **WAS DAMIT WEITERHIN NICHT ENTSCHIEDEN IST** — die drei Punkte oben gelten unverändert,
+   und ZWEI kommen dazu: ob die Auflage das MITTEL vorschreibt (bauen statt schreiben) oder
+   nur die KONTROLLE · und ob die Kontrolle am Arbeitsbaum oder am Objekt zu führen ist.
    KEINE EMPFEHLUNG.
 
 2. **DER RÜCKNAHME-NACHWEIS EINER MUTATION SETZT EINE VERFOLGTE DATEI VORAUS.**
@@ -857,3 +1029,27 @@ HIER entschieden worden.
    dieser den ORT der Messung. Drei Achsen mit demselben Ausgang — ein Ergebnis, das wie
    eine Antwort aussieht und keine ist.
    **NICHT ENTSCHIEDEN:** eigene Regel oder Absatz an der bestehenden. KEINE EMPFEHLUNG.
+
+6. **EIN WÄCHTER ÜBER QUELLTEXT MUSS SAGEN, WAS ER NICHT TRENNEN KANN.**
+   BEFUND: Die erste Fassung des Import-Wächters aus Scheibe 11.8c prüfte den ROHTEXT der
+   Produktivdatei und wurde rot — an einer PROSA-Erwähnung im eigenen Kommentar. Der Kopf
+   von `oauth-payload.ts` NENNT `encryptSecret`; er muss es, weil Auflage (3) ohne den
+   Namen nicht erklärbar ist. GEMESSEN am eigenen Lauf (CC, 2026-08-26).
+   WAS DER FEHLER WAR: **Auflage (1) ist eine Aussage über den IMPORT-GRAPHEN, nicht über
+   das VOKABULAR.** Ein Textwächter kann BEDEUTUNG nicht von ERWÄHNUNG trennen — er sieht
+   nur Zeichen. Der Wächter filtert jetzt reine Kommentarzeilen und prüft zusätzlich die
+   `require`-Form; die GRENZE dieser Filterung steht an ihm selbst.
+   WARUM ES EIN KANDIDAT IST: Das trifft jeden Wächter, der Quelltext durchsucht statt
+   einen Graphen zu befragen — und davon gibt es in diesem Projekt mehrere (die
+   Abwesenheits-Wächter auf Migrations-SQL, die Wortlaut-Prüfungen an erzeugten
+   Artefakten). **ER MUSS IN DIE STRENGE RICHTUNG IRREN:** lieber ein Fehlalarm, den
+   jemand prüft, als ein Durchlassen, das niemand sieht. Und **seine Grenze gehört an ihn
+   selbst**, sonst hält die nächste Runde einen Fehlalarm für einen Befund — oder, teurer,
+   baut ihn stillschweigend weicher, bis er nichts mehr fängt.
+   ABGRENZUNG ZU KANDIDAT (3): Jener betrifft einen Guard, dessen ANKER den Vorher- vom
+   Nachher-Zustand nicht trennt. Dieser betrifft einen Wächter, dessen MEDIUM Bedeutung
+   von Erwähnung nicht trennt. Zwei verschiedene Blindheiten, derselbe Ausgang — eine
+   Prüfung, die etwas anderes misst, als sie behauptet.
+   **NICHT ENTSCHIEDEN:** eigene Regel oder Absatz an einer bestehenden · ob daraus eine
+   Auflage an jeden künftigen Textwächter folgt, seine Grenze mitzuschreiben. KEINE
+   EMPFEHLUNG.

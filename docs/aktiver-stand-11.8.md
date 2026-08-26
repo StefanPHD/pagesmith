@@ -28,6 +28,7 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
 · Fortschreibungs-Regeln
 · Scheibe 11.8a — Chiffrieren und Dechiffrieren als reine Datei
 · Scheibe 11.8b — Das Schema der Geheimnis-Tabelle, in EINEM Zug
+· Scheibe 11.8c — Die Form der mehrwertigen Nutzlast, als eigener Ort
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -352,6 +353,132 @@ ergänzt, sollte vorher einen Zugriff nennen können, der ihn braucht." **Der Zu
 nennbar** — der Arbiter des upsert (`on_conflict` auf beide Spalten, GEMESSEN 2026-08-25,
 am 2026-08-26 im Live-Test bestätigt) und die Gleichheit auf beiden Spalten im Lesepfad
 (`getCapiConfigByTrackingKey`).
+
+## Scheibe 11.8c — Die Form der mehrwertigen Nutzlast, als eigener Ort
+
+### Der Gegenstand — eine reine Datei für die Form
+
+**EINE reine Datei, die eine MEHRWERTIGE Nutzlast in EINE Zeichenkette schreibt und aus
+einer Zeichenkette zurückliest.** Kein Chiffrieren, keine Datenbank, kein Aufrufer, kein
+OAuth-Fluss, kein Netz. **Bewiesen durch Tests.**
+
+**DIE ENTSCHEIDUNG (OWNER, 2026-08-26): DIE FORM BEKOMMT EINEN EIGENEN ORT.** Die
+Begründung des Owners, wörtlich zu vermerken: **Sie wahrt die Isolation — Krypto bleibt
+BLIND für Domänenstrukturen — und verhindert zugleich, dass Aufrufer unkontrolliert
+Formate in die verschlüsselte Spalte schreiben.**
+
+**ZWEI ALTERNATIVEN SIND VERWORFEN, je mit ihrem Preis:**
+- **DIE FORM INNEN**, also in der Chiffrier-Datei. Preis: Sie kennte dann die Gestalt
+  eines OAuth-Zugangs, während die vier bestehenden Ziele einen SKALAR tragen — zwei
+  Formen in einer Funktion.
+- **DIE FORM AUSSEN**, also bei jedem Aufrufer. Preis: Jeder entscheidet sie neu, und die
+  zweite Stelle macht es anders als die erste.
+
+**DER GEGENEINWAND GEHÖRT DANEBEN, und er ist nicht ausgeräumt, sondern abgewogen**
+(ARCHITEKT, 2026-08-26): Bei A/B ist entschieden worden, dass bei EXAKT ZWEI Fällen ein
+benanntes Duplikat billiger und ehrlicher ist als eine Abstraktion auf Verdacht. **HEUTE
+GIBT ES EINEN FALL — Google. LinkedIn kommt, ist aber nicht da.** Die Entscheidung fiel
+trotzdem für den eigenen Ort, **weil hier nicht ABSTRAHIERT, sondern GETRENNT wird: zwei
+Dinge, die verschieden altern — die Verschlüsselung nie, die Form mit jedem Anbieter.**
+
+### Die drei Auflagen aus der Entscheidung
+
+Sie folgen aus der Begründung oben und stehen deshalb wörtlich hier, nicht als
+Erschliessung:
+
+1. **SIE WEISS NICHTS VON CHIFFRIERUNG.** Sie importiert die Chiffrier-Datei NICHT und
+   wird von ihr NICHT importiert. Die beiden treffen sich erst bei einem späteren
+   Aufrufer. **Das ist die Isolation, um derentwillen es diesen Ort überhaupt gibt** — wer
+   einen der beiden Importe legt, hat die Entscheidung rückgängig gemacht, ohne sie
+   anzufassen.
+2. **SIE IST DER EINZIGE ORT, AN DEM DIE FORM FESTGELEGT WIRD.** Wer später einen ZWEITEN
+   Weg baut, der Felder in die Spalte schreibt, hat die Entscheidung gebrochen — **und das
+   ist der Prüfstein dieser Scheibe.** Nicht "die Datei existiert", sondern "sie ist die
+   einzige".
+3. **DIE ZEICHENKETTE MUSS DURCH DIE CHIFFRIER-DATEI PASSEN.** Deren Rundlauf ist gegen
+   einen Klartext in der Grössenordnung einer OAuth-Nutzlast gemessen (Vermerk 1). **Der
+   Zeichenvorrat der AUSGABE ist dort geregelt, der der EINGABE nicht** — was die Form
+   erzeugt, muss ein gültiger Klartext sein. Diese Auflage ist die einzige der drei, die
+   eine Eigenschaft an einem FREMDEN Stück Code prüft; sie gehört deshalb in die Tests
+   dieser Scheibe und nicht in ein Kommentarversprechen.
+
+### Die drei Fragen, die der Plan entscheidet und dieser Zuschnitt nicht
+
+Benannt, nicht beantwortet. Wer eine davon hier beantwortet findet, liest etwas hinein.
+
+- **WELCHE FELDER DIE NUTZLAST TRÄGT.** Für Google sind Zugangsdatum, Erneuerungs-Token
+  und Ablaufzeitpunkt naheliegend; **ob der Zugriffsbereich dazugehört und ob LinkedIn
+  dieselben Felder braucht, ist NICHT entschieden.**
+- **OB DIE FORM IHRE EIGENE FASSUNG MITTRÄGT.** Die Chiffrier-Datei führt eine
+  Fassungsmarke im Kopf ihrer Zeichenkette; **ob die Nutzlast eine ZWEITE braucht, ist eine
+  eigene Frage.** Sie ist dieselbe Klasse wie die Kennungs-Regel aus 11.8a: Was sich ändern
+  kann, muss sagen können, in welcher Fassung es entstanden ist.
+- **WAS BEIM LESEN EINER UNBEKANNTEN ODER KAPUTTEN FORM GESCHIEHT.** Die Chiffrier-Datei
+  wirft nie und gibt ein diskriminiertes Ergebnis zurück; **ob das hier ebenso gilt,
+  entscheidet der Plan am späteren Aufrufort** — die Frage hängt daran, wer das Ergebnis
+  liest, und den gibt es in dieser Scheibe nicht.
+
+### Die tragende Invariante von 11.8c
+
+**Nach dieser Scheibe verhält sich die Anwendung EXAKT wie vorher — an jedem Pfad, für
+jedes Projekt.** Die Datei hat im Produktivcode KEINEN Aufrufer; nur ihre Tests rufen sie.
+**Das ist der Prüfstein jeder Änderung dieser Scheibe: Wer einen Aufrufer hinzufügt, hat
+nicht mehr diese Scheibe gebaut.**
+
+**SIE IST WORTGLEICH MIT DER INVARIANTE VON 11.8a, UND DAS IST KEIN VERSEHEN:** Beide
+Scheiben bauen eine reine Datei ohne Aufrufer. Der Unterschied liegt im GEGENSTAND, nicht
+in der Invariante — und der Titel trägt deshalb die Scheiben-Nummer, damit ein Anker die
+beiden trennen kann (s. "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT
+VERZEICHNIS NICHT" in docs/immer-beachten.md). Die Invariante von 11.8a gilt daneben
+unverändert weiter: `src/lib/secrets/cipher.ts` hat bis heute keinen Aufrufer.
+
+### Der Beweis von 11.8c — Tests, und warum kein Live-Test
+
+**Der Beweis dieser Scheibe sind TESTS. EINEN LIVE-TEST GIBT ES NICHT**, weil nichts
+gesendet und nichts gespeichert wird.
+
+**DAS IST EINE AUSNAHME VON EINER DAUERHAFTEN REGEL UND WIRD DESHALB HIER BENANNT:** "Jede
+Bau-Freigabe an CC endet mit einer expliziten Live-Test-Anweisung"
+(docs/immer-beachten.md). Sie gilt unverändert weiter und hat an dieser Scheibe keinen
+Gegenstand.
+
+**DIE SCHULD IST NICHT OFFEN — und dieser Satz ist der Grund, warum der Absatz nicht bei
+11.8a abgeschrieben werden darf:** 11.8a schuldete den Live-Test nach ("DIE ERSTE SCHEIBE
+MIT EINEM DATENPFAD SCHULDET IHN NACH"), und **Scheibe 11.8b hat ihn am 2026-08-26
+eingelöst** (Vermerk 2). **Wer sie hier erneut aufmacht, verdoppelt sie.** Die Schuld von
+11.2a gehört weiterhin der Transport-Scheibe von 11.2 und wandert nicht hierher.
+
+### Was 11.8c ausdrücklich ausschliesst, je mit Grund
+
+- **DER OAUTH-FLUSS.** Er ist der Gegenstand einer eigenen Scheibe und bringt Netz,
+  fremde Endpunkte und einen Zeitbezug mit. Diese Scheibe hat keinen davon.
+- **JEDER AUFRUFER.** Er machte aus einer reinen Datei einen Pfad — s. die tragende
+  Invariante oben.
+- **DAS SCHREIBEN IN DIE SPALTE.** `secret_enc` steht seit 0025 bereit und ist in allen
+  sieben Zeilen leer (GEMESSEN, Vermerk 2). Diese Scheibe erzeugt eine Zeichenkette; sie
+  legt keine ab.
+- **JEDE ÄNDERUNG AN DER CHIFFRIER-DATEI.** Sie ist der Maßstab, an dem Auflage 3 misst.
+  Wer sie im selben Zug ändert, kann einen Fehlschlag nicht mehr zwischen Form und
+  Verfahren zuordnen.
+- **DER AUFRUF GEGEN events:ingest.** Für ihn ist der TRÄGER des Zugangsdatums weiterhin
+  UNGEMESSEN — der Vorbehalt vom 2026-08-25 steht an docs/roadmap.md, Eintrag 11.8, und
+  wird hier nicht verdoppelt.
+
+### Der Pflicht-Hinweis der Phase — hier ohne Gegenstand
+
+**Die SIEBEN-TAGE-FRIST des Testing-Zustands** (docs/roadmap.md, Eintrag 11.8) gehört als
+Pflicht-Hinweis in jede Live-Anleitung dieser Phase, damit ein abgelaufenes Zugangsdatum
+nicht als Defekt gejagt wird. **DIESE SCHEIBE HAT KEINE ANLEITUNG** — sie legt kein
+Zugangsdatum an und liest keines. **Der Hinweis steht hier, damit die nächste Anleitung ihn
+nicht neu erfinden muss**, und ausdrücklich NICHT, weil er hier greift.
+
+**PROVENIENZ DIESES ZUSCHNITTS:** Die Entscheidung für den eigenen Ort und ihre Begründung
+sind **OWNER-ENTSCHEIDUNG (2026-08-26)**. Der Gegeneinwand aus dem A/B-Präzedenzfall ist
+**ARCHITEKT (2026-08-26)**. Die Angaben über den heutigen Code — kein Aufrufer von
+`cipher.ts`, `secret_enc` leer, die Zahl der Ladeklassen — sind **GEMESSEN am Repo (CC,
+2026-08-26)**. Der Zuschnitt selbst, seine Auflagen und seine Ausschlüsse sind
+**ARCHITEKTEN-ENTSCHEIDUNG (2026-08-26)**. **KEINE Messung an dieser Datenbank und kein
+Aufruf gegen eine fremde Schnittstelle in dieser Runde.**
 
 ## Abgeschlossene Scheiben-Vermerke
 

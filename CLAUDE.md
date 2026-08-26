@@ -245,6 +245,9 @@ gehen von hier eine Station weiter.
   nächste neue DB-Funktion oder RPC)
 - DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT (Trigger: bevor der erste FREMDE
   Kunde ein Zugangsdatum ablegt)
+- EINE ZEILE OHNE PROJEKT LIEGT AUSSERHALB JEDER KASKADE (Trigger: die erste Zeile mit
+  project_id IS NULL — also der erste Schreibpfad, der die Eigentums-Achse BENUTZT, statt
+  sie offenzuhalten)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

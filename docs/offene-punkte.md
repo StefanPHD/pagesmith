@@ -1004,3 +1004,59 @@ aufeinander; sie liegen alle hier und finden einander.
   2026-08-25 entschieden; dieser Punkt trägt ausschliesslich die Folge daraus.
   PROVENIENZ: die Entscheidung ist OWNER (2026-08-25), die Einordnung der drei offenen
   Dinge ist ARCHITEKT (2026-08-25). KEINE Messung.
+- EINE ZEILE OHNE PROJEKT LIEGT AUSSERHALB JEDER KASKADE (Trigger: die erste Zeile mit
+  project_id IS NULL — also der erste Schreibpfad, der die Eigentums-Achse BENUTZT, statt
+  sie offenzuhalten): Mit der Migration 0025 (Scheibe 11.8b) ist project_secrets.project_id
+  NULLBAR. 0021 hält im Kopf ausdrücklich fest, dass diese Tabelle KEINE eigene
+  user_id-Spalte braucht, weil die Kette auth.users -> projects -> project_secrets über
+  "on delete cascade" trägt — und dass, wer die Kaskade an projects je entfernt, dieser
+  Tabelle ihren Löschpfad mitnimmt. DIE NULLBARKEIT ENTFERNT DIE KASKADE NICHT, ABER SIE
+  SCHAFFT EINEN ZUSTAND, DEN DIE KETTE NICHT ERREICHT.
+  DREI ANTWORTEN, und sie gehören zusammen:
+  (1) BEI EINER PROJEKTLÖSCHUNG: nichts. Die Kaskade greift über project_id; ein leerer
+      Wert zeigt auf kein Projekt und wird von keinem "on delete cascade" erfasst.
+  (2) BEI EINER NUTZERLÖSCHUNG: ebenfalls nichts, und das ist die schärfere Folge. Die
+      Kette hängt VOLLSTÄNDIG an derselben Spalte. EIN GEHEIMNIS OHNE PROJEKT ÜBERLEBT
+      DAMIT DIE LÖSCHUNG DES KONTOS, ZU DEM ES GEHÖRTE.
+  (3) WER SIE JE WIEDER ENTFERNEN KÖNNTE: KEINER DER VIER PFADE DER ANWENDUNG. Alle vier
+      filtern auf project_id, und ihr projectId stammt immer aus einem Ownership-Gate —
+      eine Zeile ohne Projekt ist für sie nicht lesbar, nicht auflistbar, nicht löschbar.
+      Sie wäre für die gesamte Anwendung UNSICHTBAR und läge trotzdem in der
+      Geheimnis-Tabelle. Entfernbar nur von Hand.
+  DIE GEMESSENE ACHSE MIT IHREN VIER FUNDSTELLEN (GEMESSEN am Repo, CC, 2026-08-26; Achse:
+  src/ über *.ts und *.tsx, gesucht nach jedem Zugriff auf project_secrets im
+  Produktivcode; Testdateien ausgenommen): es gibt GENAU VIER —
+  src/app/projects/actions.ts:625-628 (setCapiToken, der EINZIGE Schreibpfad; er setzt
+  project_id unbedingt, und der Wert stammt aus der Zeile, die das Ownership-Gate
+  darüber, actions.ts:600-606, als dem Nutzer gehörend bestätigt hat) ·
+  src/app/projects/actions.ts:766-769 (removeCapiToken, delete mit eq(project_id) +
+  eq(target)) · src/app/projects/actions.ts:857-859 (listConfiguredTargets, select mit
+  eq(project_id)) · src/lib/capi/token.ts:323-328 (getCapiConfigByTrackingKey, select mit
+  eq(project_id) + in(target)).
+  DARAUS: HEUTE KANN ES KEINE SOLCHE ZEILE GEBEN. Kein Pfad schreibt sie, und 0025 ändert
+  daran nichts — die Nullbarkeit ist eine Möglichkeit des SCHEMAS, nicht des CODES.
+  Entstehen könnte sie allein von Hand: im SQL-Editor oder über einen Aufruf mit dem
+  service_role-Schlüssel.
+  WARUM VERTAGT UND NICHT OFFEN — die Unterscheidung ist der Grund für diesen Eintrag:
+  VERTAGT heisst, es gibt einen benennbaren Auslöser; OFFEN heisst, niemand merkt es. Der
+  Auslöser ist benennbar und steht oben, und er ist ausdrücklich KEIN "falls es je nötig
+  wird": die erste Zeile mit project_id IS NULL, also der erste Schreibpfad, der die
+  Eigentums-Achse tatsächlich benutzt. Scheibe 11.8b schafft den PLATZ, sie füllt ihn
+  nicht.
+  DIE EINSCHRÄNKUNG, OHNE DIE DIESER EINTRAG EINE FALSCHE BERUHIGUNG WÄRE: HEUTE MELDET
+  NICHTS DEN EINTRITT. Kein Constraint verbietet den Zustand, kein Test kann ihn fangen
+  (es gibt keinen Codepfad, den ein Wächter bewachen könnte), und die vier Zugriffe oben
+  würden eine solche Zeile stumm übersehen. Der Aufschub ist damit der Sache nach vertagt
+  und der BEOBACHTUNG nach offen. DIESER EINTRAG IST DIE ANZEIGE — er ist das Einzige,
+  was den Zustand trägt, zusammen mit dem Spaltenkommentar in der Datenbank (0025, Schritt
+  S6b), der dieselbe Aussage kurz fasst und einen Rebuild überlebt.
+  WAS AUSDRÜCKLICH NICHT HIER ENTSCHIEDEN IST: wie der Löschpfad aussehen soll. Vier
+  weitere Kandidaten sind am 2026-08-26 vorgelegt und NICHT gewählt worden — eine lesende
+  Probe in supabase/checks/, eine nullbare user_id mit eigener Kaskade und einem CHECK auf
+  genau eines von beidem, die Bindung des Auslösers an die Transport-Scheibe, und der
+  Verzicht auf die Nullbarkeit. Wer das später aufgreift, greift eine ENTSCHEIDUNG auf,
+  keine Lücke. KEINE EMPFEHLUNG.
+  PROVENIENZ: die vier Fundstellen und der Nicht-Treffer sind GEMESSEN am Repo (CC,
+  2026-08-26). Die Kaskaden-Aussage ist GELESEN an supabase/migrations/0021_project_secrets.sql
+  (Kopf, Abschnitt LOESCHPFAD, und Zeile 65). Die Wahl von K1 und K3 ist
+  OWNER-ENTSCHEIDUNG (2026-08-26). KEINE Messung an dieser Datenbank.

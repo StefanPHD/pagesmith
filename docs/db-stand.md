@@ -57,6 +57,18 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   0001-0020 gilt weiterhin allein die Messung vom 2026-08-05.
   0023 ist damit erstmals hier erfasst — sie fehlte in dieser Zeile, obwohl sie seit dem
   2026-08-11 angewandt ist.
+  NACHGEZOGEN AM 2026-08-26, UND DIESMAL AUS DER VOLLEN PROBE STATT AUS EINER GEFILTERTEN:
+  DER HEUTIGE STAND IST 0001-0025. GEMESSEN am 2026-08-26 (SQL-Editor, Owner, Proben 1 und
+  1b aus supabase/checks/db-stand.sql): 25 Zeilen, niedrigste 0001, höchste 0025, erwartete
+  Anzahl 25, luecke = false. Die LÜCKENLOSIGKEIT ist damit erstmals seit dem 2026-08-05
+  wieder ARITHMETISCH bewiesen und nicht nur je Migration als Vollzug abgelesen.
+  DIE APPLIED_AT-REGEL, ebenfalls gemessen und nicht abgeleitet: NULL bei 0001-0017 (der
+  BACKFILL aus 0018, kein Vollzugsnachweis), GEFÜLLT ab 0018 durchgehend. 0025 trägt
+  applied_at 2026-08-26 07:18:41.742605+00.
+  WAS DIESE MESSUNG GEGENÜBER DER VOM 2026-08-17 KANN: Jene filterte auf Dateinamen mit
+  'project_secrets' und sagte über Migrationen ausserhalb dieses Musters ausdrücklich
+  NICHTS. Probe 1 filtert nicht — die Einschränkung im Absatz darüber gilt für JENE
+  Messung und ist für den heutigen Stand aufgehoben.
   · 0001-0021, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl = Spannweite+1),
     nicht nur an der Dateisortierung abgelesen. GEMESSEN am 2026-08-05: 21 Zeilen,
     Spannweite 0001-0021; applied_at gefüllt bei 0018, 0019, 0020 und 0021 — bei 0021 mit
@@ -129,10 +141,43 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   (CLIENT-autoritativ, wird von saveProject ganzheitlich ersetzt).
   CONSTRAINTS: projects_variant_b_pair ((html_b IS NULL) = (mappings_b IS NULL));
   projects_ab_test_needs_variant_b (NOT ab_test_active OR html_b IS NOT NULL).
-- TABELLE public.project_secrets (0021, Phase 11 Scheibe 1): project_id uuid; target text;
-  secret text; created_at timestamptz; updated_at timestamptz. PRIMÄRSCHLÜSSEL ist das PAAR
-  (project_id, target) — kein einspaltiger Schlüssel, s. die Footgun-Zeile darunter.
-  FK project_id -> projects(id) ON DELETE CASCADE. KEINE user_id-Spalte.
+- TABELLE public.project_secrets (0021, Phase 11 Scheibe 1; umgebaut durch 0025, Phase 11.8
+  Scheibe 11.8b). SPALTEN IN DER GEMESSENEN REIHENFOLGE (GEMESSEN 2026-08-26, SQL-Editor,
+  Owner, Probe 2 aus supabase/checks/db-stand.sql): project_id uuid NULLABLE; target text
+  NOT NULL; secret text NULLABLE; created_at timestamptz NOT NULL DEFAULT now();
+  updated_at timestamptz NOT NULL DEFAULT now(); secret_enc text NULLABLE; id uuid NOT NULL
+  DEFAULT gen_random_uuid().
+  DIE REIHENFOLGE IST DIE GEMESSENE UND NICHT DIE LOGISCHE — sie steht so da, weil die
+  Probe nach ordinal_position sortiert und ein zeilenweiser Abgleich sonst stolpert. Dass
+  der Schlüssel HINTEN steht, ist kein Entwurfsfehler: "alter table ... add column" hängt
+  an, und secret_enc und id sind die beiden Spalten, die 0025 angefügt hat. Eine
+  Spaltenreihenfolge ist ein ABLAGERUNGSPROFIL, kein Entwurf.
+  PRIMÄRSCHLÜSSEL ist die EINSPALTIGE id (project_secrets_pkey) — GEMESSEN 2026-08-26
+  (Probe 3, pg_get_constraintdef). Bis 0025 war es das PAAR (project_id, target); die
+  Footgun-Zeile darunter führt project_secrets deshalb NICHT mehr.
+  DIE EINDEUTIGKEIT AUF (project_id, target) IST DAMIT NICHT WEG, sondern UMGEZOGEN:
+  project_secrets_project_id_target_key, UNIQUE NULLS NOT DISTINCT (project_id, target) —
+  Definition im WORTLAUT, GEMESSEN 2026-08-26 (Probe 3). Der Wortlaut NULLS NOT DISTINCT
+  gehört zwingend dazu: ohne ihn wären zwei Zeilen mit project_id IS NULL und demselben
+  Ziel BEIDE erlaubt, und die Eindeutigkeit trüge genau den Fall nicht, für den
+  project_id nullbar gemacht wurde.
+  secret text ist seit 0025 NULLABLE, und das ist keine Aufweichung, sondern die eine
+  Hälfte eines Paares: CONSTRAINT project_secrets_secret_genau_eines CHECK (((secret IS
+  NULL) <> (secret_enc IS NULL))) — GEMESSEN 2026-08-26 (Probe 3). GENAU EINES der beiden
+  Felder trägt einen Wert; die frühere NOT-NULL-Bedingung auf secret ist durch diesen
+  CHECK ERSETZT, nicht ersatzlos gefallen. Wer nur "secret ist jetzt nullbar" liest, hält
+  eine Zeile ohne jedes Geheimnis für möglich — sie ist es nicht.
+  FK project_id -> projects(id) ON DELETE CASCADE; er heisst project_secrets_project_id_fkey
+  (GEMESSEN 2026-08-26, Probe 3 — bis dahin stand er hier ohne Namen, weil 0021 ihn inline
+  deklariert). KEINE user_id-Spalte.
+  DER SATZ DARÜBER BLEIBT WAHR, SEINE BEGRÜNDUNG IST SEIT 0025 BEDINGT — und NICHTS an
+  dieser Zeile wird dadurch rot, was genau der Grund ist, warum der Zusatz hier stehen
+  muss: Das Fehlen der user_id-Spalte ruhte darauf, dass die Kette
+  auth.users -> projects -> project_secrets über project_id trägt (0021 sagt es im Kopf
+  ausdrücklich). Seit project_id NULLBAR ist, hängt eine Zeile OHNE Projekt an dieser
+  Kette NICHT mehr — weder eine Projekt- noch eine Nutzerlöschung erfasst sie. Volltext,
+  Trigger und die vier nicht gewählten Kandidaten: docs/offene-punkte.md, Eintrag "EINE
+  ZEILE OHNE PROJEKT LIEGT AUSSERHALB JEDER KASKADE".
   CONSTRAINT project_secrets_target_valid: CHECK ((target = ANY (ARRAY['meta'::text,
   'pinterest'::text]))) — Definition im WORTLAUT, LIVE ABGELESEN am 2026-08-07 und damit
   ABWEICHEND von der Sektions-Provenienz oben (nicht aus der Migrationsdatei übernommen).
@@ -162,9 +207,43 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   durchlässt, identisch aus — erst die Abweisung zeigt, dass der Schutz noch da ist.
   TRIGGER project_secrets_set_updated_at, gebunden an DIESELBE Funktion set_updated_at wie
   projects und project_tokens — KEINE zweite Implementierung.
+  DIESE ZEILE IST SEIT DEM 2026-08-26 GEMESSEN, VORHER WAR SIE EINE BEHAUPTUNG — und der
+  Unterschied gehört in eine Datei, die sich ausschliesslich aus Messungen fortschreibt:
+  Sie stand hier seit dem 2026-08-05, ohne dass irgendeine Probe sie trug. Probe 8 misst
+  die FUNKTION, Probe 9 misst EVENT-Trigger — die BINDUNG einer Funktion an eine Tabelle
+  maß keine von beiden. Die Lücke ist ÄLTER als 0025 und ist mit Probe 10 (angelegt
+  2026-08-26, supabase/checks/db-stand.sql) geschlossen.
+  GEMESSEN 2026-08-26 (SQL-Editor, Owner, Probe 10; pg_trigger mit not tgisinternal, join
+  auf pg_proc): DREI Row-Trigger in public — project_secrets_set_updated_at,
+  project_tokens_set_updated_at, projects_set_updated_at. ALLE DREI an set_updated_at
+  gebunden; die Aussage "KEINE zweite Implementierung" ist damit belegt und nicht mehr
+  behauptet.
+  ALLE DREI TRAGEN tgenabled = 'O', also aktiv. Das ist mitgemessen und kein Beifang: ein
+  Trigger kann DASTEHEN und NICHT FEUERN ('D' für disabled). Wer nur die Anwesenheit der
+  Zeile prüft, sieht diesen stillen Fehlzustand nicht — updated_at bliebe dann einfach
+  stehen, ohne dass irgendwo ein Fehler entstünde.
+  UND EINE ABWESENHEIT MIT BENANNTER REICHWEITE, die erst dieser Lauf sichtbar gemacht
+  hat: Es gibt in public KEINE weiteren Row-Trigger — die Plattform legt keine an. Die
+  Reichweite ist genau die der Probe: alle Objekte im Schema public, ohne Filter auf
+  Tabellen, unter Ausschluss der system-erzeugten Constraint-Trigger. Über andere Schemata
+  sagt sie NICHTS.
 - PRIMÄRSCHLÜSSEL, DIE NICHT "id" HEISSEN (Footgun, real aufgetreten): domains -> label;
-  project_tokens -> project_id; schema_migrations -> version; project_secrets -> das PAAR
-  (project_id, target). Vor der Nutzung eines Feldnamens die Migration nachsehen.
+  project_tokens -> project_id; schema_migrations -> version. Vor der Nutzung eines
+  Feldnamens die Migration nachsehen.
+  ALLE DREI SIND AM 2026-08-26 NACHGEMESSEN UND BESTÄTIGT (SQL-Editor, Owner, Probe 3 aus
+  supabase/checks/db-stand.sql; pg_get_constraintdef): domains_pkey PRIMARY KEY (label),
+  project_tokens_pkey PRIMARY KEY (project_id), schema_migrations_pkey PRIMARY KEY
+  (version).
+  WARUM DIE VERBLEIBENDEN EIGENS GEMESSEN WURDEN, statt sie einfach stehenzulassen:
+  project_secrets ist am 2026-08-26 aus dieser Liste ENTFERNT worden (0025 gab der Tabelle
+  einen einspaltigen Schlüssel id). Eine Mengen-Aussage wird aber nicht dadurch richtig,
+  dass man ein falsches Mitglied entfernt — wer korrigiert, prüft die VERBLEIBENDEN, sonst
+  wird sie präziser statt wahr (s. docs/immer-beachten.md, "MENGEN — ZWEI REGELN, DIE
+  ZUSAMMENGEHÖREN"). Die drei standen seit dem 2026-08-05 ungeprüft da.
+  DER EINTRAG WURDE ENTFERNT UND NICHT KORRIGIERT, und das ist der teuerste Punkt dieser
+  Zeile: Eine WARNLISTE mit einem falschen Mitglied erzeugt genau den Fehler, vor dem sie
+  warnt — jemand schlägt hier nach, liest "das PAAR" und baut eine Query auf einen
+  Schlüssel, den es nicht mehr gibt.
 - INDIZES (gemessen per indexdef):
   events: events_pkey (id); events_project_id_idx (project_id — trägt den äußeren Scan UND die
     Policy); events_project_event_idx (project_id, event_id — 0015, trägt den korrelierten
@@ -177,10 +256,26 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   domains: domains_pkey (label); domains_custom_host_key UNIQUE (custom_host) WHERE custom_host
     IS NOT NULL; domains_project_id_idx (project_id).
   (projects_blocked_idx und domains_project_id_idx waren bisher in KEINER Doku-Zeile erfasst.)
-  project_secrets: AUSSER dem PK KEIN Index. Das ist eine ENTSCHEIDUNG, keine Auslassung: der
-    PK (project_id, target) trägt genau den Zugriff des Lesepfads — eine Gleichheit auf BEIDEN
-    Spalten. Wer hier später einen Index ergänzt, sollte vorher einen Zugriff nennen können,
-    der ihn braucht.
+  project_secrets: ZWEI Indizes, beide von 0025 benannt (GEMESSEN 2026-08-26, SQL-Editor,
+    Owner, Probe 7 per indexdef): project_secrets_pkey auf (id); und
+    project_secrets_project_id_target_key auf (project_id, target), dessen indexdef den
+    Wortlaut NULLS NOT DISTINCT trägt.
+    DIE AUFLAGE GILT WÖRTLICH WEITER: Wer hier später einen Index ergänzt, sollte vorher
+    einen Zugriff nennen können, der ihn braucht.
+    WAS SICH GEÄNDERT HAT, IST IHR TRÄGER UND NICHT SIE SELBST: Bis 0025 trug der
+    PRIMÄRSCHLÜSSEL den Zugriff des Lesepfads — eine Gleichheit auf BEIDEN Spalten. Seit
+    0025 liegt der PK auf id und trägt ihn NICHT mehr; getragen wird er jetzt vom
+    UNIQUE-Constraint. Die frühere Fassung dieser Zeile ("AUSSER dem PK KEIN Index") ist
+    damit überholt, ihre Begründung ist es MIT — wer nur die Zahl nachzieht und den Satz
+    stehen lässt, hängt die Auflage an ein Objekt, das sie nicht mehr trägt.
+    DER ZWEITE INDEX ERFÜLLT DIE AUFLAGE BEREITS, und der Satz gehört hierher, sonst liest
+    der nächste Leser ihn als genau den Verstoss, vor dem sie warnt: Sein Zugriff ist
+    ZWEIFACH nennbar — der Arbiter des upsert (on_conflict auf beide Spalten; GEMESSEN
+    2026-08-25 an der Probe, im Live-Test am 2026-08-26 am laufenden Schreibpfad
+    bestätigt) und die Gleichheit auf beiden Spalten im Lesepfad
+    (getCapiConfigByTrackingKey).
+    WER EINEN DRITTEN EINTRAG SIEHT, hat deshalb keinen automatischen Befund, sondern eine
+    FRAGE: Lässt sich sein Zugriff nennen? Wenn nein, ist es einer.
 - FUNKTIONEN in public: FÜNF (2026-08-05 erneut gemessen: unverändert) — gemessen, nicht
   nachgetragen.
   get_event_counts(p_project_id) -> TABLE(event_type, count), gefiltert auf source='server'

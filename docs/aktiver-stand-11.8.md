@@ -204,123 +204,154 @@ hat nicht mehr diese Scheibe gebaut.
 
 ## Scheibe 11.8b — Das Schema der Geheimnis-Tabelle, in EINEM Zug
 
-### Der Gegenstand
+**VOLLZOGEN AM 2026-08-26, Commits a8435e1 (Bau) und 00b6ade (Doku). DIE MIGRATION IST
+GEFAHREN, DER LIVE-TEST IST BESTANDEN. DER ZUSCHNITT IST AB HIER VERDICHTET** — was mit
+dem Vollzug abgelaufen ist, steht nicht mehr hier. Der Maßstab, gegen den er misst, ist
+Vermerk 2 weiter unten.
 
-**EINE Migration auf `public.project_secrets`, in EINEM Zug — fünf Achsen:** eine
-NULLBARE Spalte für die verschlüsselte Nutzlast · die NOT-NULL-Bedingung von `secret`
-lösen · ein CHECK auf GENAU EINES der beiden · den zusammengesetzten Primärschlüssel
-durch einen KÜNSTLICHEN ersetzen und `project_id` nullbar machen · die EINDEUTIGKEIT auf
-(project_id, target) als EIGENEN Constraint, als **UNIQUE NULLS NOT DISTINCT**, angelegt
-per `alter table ... add constraint`.
+**DIE ZITAT-PRÜFUNG VOR DER VERDICHTUNG, und sie fällt ANDERS AUS ALS BEI 11.8a:**
+GEMESSEN am ganzen Repo (CC, 2026-08-26; Achse: alle Dateien ausser .git, node_modules,
+.next, .playwright-mcp; gesucht wurde nach dem Dateinamen dieser Standdatei, nach jedem
+der ZEHN Unterabschnitts-Titel dieses Zuschnitts und nach je einem markanten Satz daraus):
+**KEIN EINZIGER Unterabschnitt dieses Zuschnitts wird von aussen zitiert.** Insbesondere
+nennt der Kopf von `supabase/migrations/0025_project_secrets_schema.sql` WEDER diese Datei
+NOCH einen ihrer Titel — er trägt seine Begründungen SELBST.
+**DER UNTERSCHIED ZU 11.8a GEHÖRT DAZU, sonst liest jemand die Streichung als
+Nachlässigkeit:** Dort ZEIGT `src/lib/secrets/cipher.ts` auf zwei Unterabschnitte, und
+genau deshalb bleiben die zeichengleich stehen. Hier ist die Begründung IN das Artefakt
+gewandert, statt aus ihm heraus zu zeigen — es gibt nichts, was durch eine Streichung tot
+würde.
+**ZWEI FUNDSTELLEN SEHEN WIE ZITATE AUS UND SIND KEINE, weil sie in die ANDERE Richtung
+zeigen:** `supabase/migrations/0021_project_secrets.sql` trägt "der sichtbare Moment, in
+dem ein Ziel real wird" und `docs/db-stand.md` trägt "Wer hier später einen Index
+ergänzt" — **der Zuschnitt zitierte SIE**, nicht umgekehrt. Wer die Richtung nicht prüft,
+hält eine eigene Anleihe für eine fremde Abhängigkeit und streicht nie etwas.
 
-**KEIN Code, KEIN neues Ziel im target-CHECK, KEIN Aufrufer der Chiffrier-Datei.**
+**WAS ABGELAUFEN IST, damit die Streichung erkennbar bleibt und nicht als Versehen:**
+"### Der Gegenstand" · "### Die tragende Invariante" · "### Warum EIN Zug und nicht zwei" ·
+"### Warum jetzt und nicht später" · "### Was die Probe trägt und was NICHT" ·
+"### Was der Plan entscheiden muss und dieser Zuschnitt NICHT entscheidet" ·
+"### Der Beweis: der LIVE-TEST — und er ist der erste dieser Phase" ·
+"### Der Rückfallplan — er entschärft die Migration und ist KEINE Erlaubnis" · dazu DREI
+der vier Punkte aus "### Was ausdrücklich NICHT drin ist" und die Provenienz-Zeile des
+Zuschnitts.
 
-**WARUM DIE EINDEUTIGKEIT ALS CONSTRAINT UND NICHT ALS INDEX** — der Grund ist GELESEN
-(2026-08-25, PostgREST 14, "Schema Cache", Abschnitt Finer-Grained Event Trigger): die
-Befehlsmarken-Liste des Event-Triggers, der den PostgREST-Schema-Cache nachlädt, führt
-`ALTER TABLE` und führt `CREATE INDEX` NICHT. Ein als Index angelegter Constraint löste
-nach diesem Text kein Nachladen aus.
+**WO IHRE BINDENDEN RESTE LIEGEN — hier steht, wo, damit die Streichung nichts mitnimmt:**
+- **Die fünf Achsen, ihre Reihenfolge, ihre SECHS Zwänge, das
+  Constraint-statt-Index-Argument samt GELESEN-Provenienz UND seiner Grenze, die
+  Idempotenz je Achse, das Abbruch-Verhalten, das lock_timeout und die Vor- und
+  Nachprüfungen** stehen im KOPF von `supabase/migrations/0025_project_secrets_schema.sql`
+  — ausführlicher, als sie je hier standen.
+- **Die tragende Invariante** steht dort ebenfalls, und schärfer: "ZU KEINEM ZEITPUNKT",
+  mit Z6 als benanntem Grund für die Reihenfolge.
+- **Die Vorher-Werte, die Nachher-Werte und der Live-Test** stehen in Vermerk 2.
+- **Die Backup-Fenster-Begründung** ist eine REGEL und steht in docs/db-regeln.md,
+  "BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN" — sie war hier nur angewandt.
+- **Die sieben Zeilen je Ziel** stehen unverändert im Vorrat, Eintrag 2.
+- **Der Rückfallplan** steht im Kopf von 0025 und in der Owner-Anleitung; sein Verbot
+  ("keine Erlaubnis, die Zeilen vorher zu löschen") war eine Auflage an DIESEN Lauf und
+  ist mit ihm abgelaufen. Die Falle dahinter fängt Probe 0 in
+  supabase/checks/project-secrets-umstellung.sql unverändert weiter ab.
 
-### Die tragende Invariante
+### Die offene Frage des Zuschnitts — VERORTET, NICHT BEANTWORTET
 
-**DIE EINDEUTIGKEIT AUF (project_id, target) DARF DIESE MIGRATION NICHT VERLIEREN.**
-`setCapiToken` schreibt mit `onConflict: "project_id,target"` — einem STRING-LITERAL, das
-NICHTS im Code ans Schema bindet. Kein Typ, kein Test, kein Kommentar. **Ein Bruch fiele
-erst beim Speichern eines echten Geheimnisses auf.**
+Der Zuschnitt führte GENAU EINE offene Frage: **was aus dem Löschpfad wird, wenn
+`project_id` nullbar ist.** Sie ist **NICHT beantwortet** — wie der Löschpfad aussehen
+soll, ist weiterhin nicht entschieden. Sie ist **VERORTET**, und hier steht, wo, damit sie
+nicht als heimatlos offen stehenbleibt:
 
-### Warum EIN Zug und nicht zwei
+- **docs/offene-punkte.md, Eintrag "EINE ZEILE OHNE PROJEKT LIEGT AUSSERHALB JEDER
+  KASKADE"** — der Volltext: die drei Antworten (Projektlöschung · Nutzerlöschung · wer sie
+  je entfernen könnte), die vier gemessenen Fundstellen im Produktivcode, die
+  Unterscheidung vertagt-gegen-offen und die vier NICHT gewählten Kandidaten.
+- **CLAUDE.md, "## Offene Punkte"** — Titel und Trigger als Stub-Zeile.
+- **Die Datenbank selbst** — als Spaltenkommentar auf `project_secrets.project_id`
+  (0025, Schritt S6b). Er überlebt einen Rebuild, den ein Repo-Kommentar nicht überlebt.
 
-**Jede Migration öffnet ein Fenster, in dem das automatische Backup nicht mehr
-code-kompatibel ist** (docs/db-regeln.md, "BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN").
-Zwei Migrationen an der Tabelle mit den Geheimnissen heissen zwei Fenster. Bei SIEBEN
-Zeilen gibt es dafür keinen Grund.
+**DER TRIGGER, wörtlich:** die erste Zeile mit `project_id IS NULL` — also der erste
+Schreibpfad, der die Eigentums-Achse BENUTZT, statt sie offenzuhalten.
+**WAS DER EINTRAG AUSDRÜCKLICH SAGT und was hier nicht verschwiegen wird:** Heute meldet
+NICHTS den Eintritt. Der Zustand ist der Sache nach vertagt und der Beobachtung nach
+offen; der Eintrag IST die Anzeige.
 
-### Warum jetzt und nicht später
+### Was 11.8b ausdrücklich NICHT enthielt — der EINE Punkt, der weiter bindet
 
-**SIEBEN Zeilen, alle aus Testprojekten, alle nach Owner-Angabe entbehrlich** (GEMESSEN,
-Owner, 2026-08-25: linkedin 2 · meta 4 · tiktok 1 · pinterest 0). **Dieselbe Umstellung
-auf FREMDEN Kundengeheimnissen wäre eine Migration mit Wiederaufsetzpunkt und
-Backup-Vorlauf.** Der billige Moment ist jetzt, und er endet mit dem ersten fremden
-Kunden.
-
-**EINE MITGEMESSENE VORBEDINGUNG, die der Plan nicht übersehen darf:** Alle sieben Zeilen
-tragen heute `secret` gesetzt und keine verschlüsselte Nutzlast. Der neue CHECK ist damit
-vom Bestand im Moment seines Anlegens erfüllbar — wäre er es nicht, bräche die Migration.
-
-### Was die Probe trägt und was NICHT
-
-**GEMESSEN IST POSTGREST** (supabase/checks/upsert-arbiter-probe.sql, Lauf vom
-2026-08-25): Ein upsert mit `on_conflict` auf zwei Spalten aktualisiert, OHNE dass der
-künstliche Schlüssel im Rumpf steht (M-A); und zwei Zeilen mit NULL in `project_id`
-kollidieren unter `UNIQUE NULLS NOT DISTINCT` (M-B).
-
-**NICHT GEMESSEN IST supabase-js.** Ob der Client bei `onConflict: "project_id,target"`
-genau diese Parameter erzeugt und ob er `id` ungefragt mitsendet, steht in keiner Messung.
-**DIESE ACHSE SCHLIESST DER LIVE-TEST, NICHT EINE ZWEITE PROBE** — eine Probe misst
-wieder PostgREST und käme an der Frage vorbei.
-
-### Was der Plan entscheiden muss und dieser Zuschnitt NICHT entscheidet
-
-**WAS AUS DEM LÖSCHPFAD WIRD, WENN `project_id` NULLBAR IST.** 0021 hält fest, dass
-`project_secrets` keinen eigenen `user_id`-Bezug braucht, weil die Kette
-`auth.users -> projects -> project_secrets` über `on delete cascade` trägt. **Eine Zeile
-OHNE Projekt hängt an dieser Kette nicht mehr** — sie wird von keiner Nutzer- und keiner
-Projektlöschung erfasst. Das ist die Kehrseite der offengehaltenen Eigentums-Achse und
-kein Versehen; **entschieden ist hier nur, dass der Plan es benennen muss**, nicht wie.
-
-### Der Beweis: der LIVE-TEST — und er ist der erste dieser Phase
-
-**Ein Geheimnis über `setCapiToken` speichern, ZWEIMAL für dasselbe Paar, und AM BESTAND
-ablesen, dass EINE Zeile entsteht und der ZWEITE Wert drinsteht.** Nicht am Statuscode,
-nicht an der Oberfläche.
-
-**DAS LÖST EINE SCHULD EIN, UND ES IST GENAU EINE:** die von 11.8a — "DIE ERSTE SCHEIBE
-MIT EINEM DATENPFAD SCHULDET IHN NACH". **NICHT eingelöst wird die Schuld von 11.2a**;
-jene gehört der Transport-Scheibe von 11.2 und wandert nicht hierher. Wer beide
-zusammenzieht, hält eine für erledigt, sobald die andere eingelöst ist.
-
-### Der Rückfallplan — er entschärft die Migration und ist KEINE Erlaubnis
-
-**Die sieben Zeilen sind nach Owner-Angabe entbehrlich.** Geht etwas schief, heisst die
-Wiederherstellung **"leeren und neu eintragen"**, nicht Restore. Das gehört in die
-Live-Test-Anleitung.
-
-**UND ES IST AUSDRÜCKLICH KEINE ERLAUBNIS, DIE ZEILEN VORHER ZU LÖSCHEN:** Sie sind der
-einzige Testdatensatz, den diese Migration je haben wird. Eine leere Tabelle liesse jede
-Prüfung ihre Erwartung treffen, weil nichts da war — dieselbe Falle, die Probe 0 in
-supabase/checks/project-secrets-umstellung.sql eigens abfängt.
-
-### Was ausdrücklich NICHT drin ist, je mit seinem Grund
+**DER TITEL IST BEWUSST ANDERS FORMULIERT ALS DER GLEICHNAMIGE BEI 11.8a**, obwohl beide
+dasselbe tun: Stünden sie zeichengleich da, träfe eine Suche nach dem Text zwei
+Überschriften, und die erste wäre systematisch die falsche (s. "EIN ANKER, DER EINDEUTIG
+AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md). Zeile
+137 dieser Datei zitiert den Titel von 11.8a wörtlich.
 
 - **DER AUFRUFER DER CHIFFRIER-DATEI.** Er machte aus einer reinen Datei einen Pfad, und
   der Pfad wäre der Ingest. Die tragende Invariante von 11.8a gilt unverändert weiter.
-- **DIE WANDERUNG DER VIER BESTEHENDEN ZIELE.** Sie steht im Vorrat, ist nicht
-  zugeschnitten und nicht terminiert. Diese Scheibe schafft den PLATZ, sie füllt ihn nicht.
-- **'google' IM target-CHECK.** Jedes Ziel bringt seine eigene Constraint-Erweiterung mit,
-  und der sichtbare Moment, in dem ein Ziel real wird, ist der beabsichtigte Preis. Ihn
-  hier mitzunehmen bündelte zwei Wirkungen in einer Migration.
-- **JEDE ÄNDERUNG AN `setCapiToken`.** Sie ist der Prüfling des Live-Tests. Wer sie im
-  selben Zug ändert, kann einen Fehlschlag nicht mehr zwischen Schema und Code zuordnen.
+  **DIESER PUNKT BINDET ALS EINZIGER ÜBER DIE SCHEIBE HINAUS, und er bindet genau die
+  NÄCHSTE:** `src/lib/secrets/cipher.ts` hat im Produktivcode bis heute keinen Aufrufer.
+  0025 hat den PLATZ für die Nutzlast geschaffen und ihn NICHT gefüllt — `secret_enc` ist
+  in allen sieben Zeilen leer (GEMESSEN, s. Vermerk 2, `mit_chiffrat = 0`). Die
+  Transport-Scheibe ist die, die beides zusammenführt; wer sie zuschneidet, bricht diese
+  Invariante ABSICHTLICH und schreibt das hin.
+
+**DIE DREI ÜBRIGEN PUNKTE SIND MIT DEM VOLLZUG ABGELAUFEN** — DIE WANDERUNG DER VIER
+BESTEHENDEN ZIELE · 'google' IM target-CHECK · JEDE ÄNDERUNG AN `setCapiToken`. Sie
+sagten, was NICHT in DIESE Scheibe gehört, und die Scheibe ist gebaut. **IHRE BINDENDEN
+RESTE SIND NICHT VERLORENGEGANGEN, sondern stehen anderswo — hier steht, wo:** die
+Wanderung als Vorrat, Eintrag 1 · die Constraint-Erweiterung je Ziel als dauerhafte Regel
+in docs/immer-beachten.md, "JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE
+CONSTRAINT-ERWEITERUNG MIT" · der Riegel um `setCapiToken` war eine Auflage an den
+Live-Test dieser Scheibe und ist mit seinem Bestehen erledigt.
 
 ### Was diese Migration an docs/db-stand.md veraltet
 
+**DIESER ABSCHNITT WIRD ALS EINZIGER NICHT VERDICHTET, UND DAS IST DER GRUND: er ist keine
+abgelaufene Zuschnitt-Begründung, sondern eine NOCH NICHT ERLEDIGTE NACHZIEH-PFLICHT.**
+Läuft er ab, verschwindet die einzige Stelle, die sagt, WAS in docs/db-stand.md überholt
+ist. Er bleibt stehen, bis jene Datei fortgeschrieben ist.
+
 **KEINE KOLLISION, aber eine Folge, und sie gehört benannt, damit sie niemand für einen
-Widerspruch hält:** docs/db-stand.md führt GEMESSEN, dass der Primärschlüssel das PAAR
-(project_id, target) ist, dass `secret` NOT NULL trägt und dass die Tabelle AUSSER dem PK
-KEINEN Index hat. **Alle drei Angaben sind nach dieser Migration überholt.** Sie werden
-NICHT aus dieser Scheibe fortgeschrieben, sondern ausschliesslich aus einer MESSUNG nach
-dem Lauf — so verlangt es jene Datei selbst.
+Widerspruch hält:** docs/db-stand.md trägt **FÜNF** Angaben, die nach dieser Migration
+überholt sind. **Sie stehen hier als abzählbare Liste, weil dieser Abschnitt eine
+NACHZIEH-PFLICHT ist und jemand sie abarbeiten wird** — wer eine Liste abarbeitet, die eine
+falsche Zahl nennt, hört bei dieser Zahl auf:
 
-**EINE DIESER DREI IST MEHR ALS EINE ZUSTANDSANGABE:** "Wer hier später einen Index
+1. **DIE ZEILE "TABELLE public.project_secrets"** führt den Primärschlüssel als das PAAR
+   (project_id, target) — er liegt jetzt auf `id`.
+2. **DIESELBE ZEILE** führt `secret` als NOT NULL — die Bedingung ist gelöst.
+3. **DIE INDEX-ZEILE** sagt "AUSSER dem PK KEIN Index" — es sind jetzt ZWEI. Und der Satz
+   daneben, der PK trage "genau den Zugriff des Lesepfads", gilt ab jetzt dem
+   UNIQUE-Constraint, nicht dem Primärschlüssel.
+4. **DIE FOOTGUN-ZEILE "PRIMÄRSCHLÜSSEL, DIE NICHT 'id' HEISSEN"** führt `project_secrets`
+   mit dem PAAR. **DIESE IST DIE TEUERSTE DER FÜNF:** Eine Warnliste, die einen falschen
+   Eintrag trägt, erzeugt genau den Fehler, vor dem sie warnt. Der Eintrag gehört RAUS,
+   nicht korrigiert — die Tabelle heisst ab jetzt nicht mehr dazu.
+5. **DIE ZEILE "MIGRATIONSSTAND"** endet bei 0024; 0025 ist seit dem 2026-08-26 angewandt
+   und protokolliert.
+
+**DAZU, und ausdrücklich NICHT als sechster Punkt gezählt:** Die Spaltenaufzählung in
+Punkt 1 führt FÜNF Spalten — es sind jetzt SIEBEN (`id`, `secret_enc`). Ob das eine eigene
+Angabe ist oder ein Teil der ersten, ist Geschmack und wird hier nicht entschieden; wer
+Punkt 1 abarbeitet, sieht es ohnehin.
+
+**KEINE DIESER FÜNF WIRD AUS DIESER SCHEIBE FORTGESCHRIEBEN**, sondern ausschliesslich aus
+einer MESSUNG nach dem Lauf — so verlangt es jene Datei selbst.
+
+**DIE MESSUNG LIEGT SEIT DEM 2026-08-26 VOR** (Owner; die Werte stehen in Vermerk 2). Das
+Nachziehen von docs/db-stand.md ist damit MÖGLICH und in dieser Runde bewusst NICHT
+geschehen — es ist ein eigener Vorgang an einer eigenen Datei.
+
+**DIESE LISTE NANNTE BIS ZUM 2026-08-26 NUR DREI ANGABEN, und dass sie unvollständig WAR,
+ist selbst der Befund** (GEMESSEN am Text von docs/db-stand.md, CC, 2026-08-26). Sie ist
+am selben Tag auf FÜNF **ERSETZT** worden und ausdrücklich NICHT gestempelt. **DER GRUND
+LIEGT IM CHARAKTER DES ABSCHNITTS, nicht in der Grösse des Fehlers:** Eine
+Zustandsbeschreibung darf mit einem Stempel danebenstehen und altern — eine ABZUARBEITENDE
+LISTE nicht, weil ihre Zahl das Abbruchkriterium dessen ist, der sie abarbeitet. Wer die
+alte Fassung mit "drei" gelesen hätte, hätte bei Punkt 3 aufgehört und die Footgun-Zeile
+stehen lassen, also ausgerechnet die teuerste.
+
+**EINE DIESER ANGABEN IST MEHR ALS EINE ZUSTANDSANGABE:** "Wer hier später einen Index
 ergänzt, sollte vorher einen Zugriff nennen können, der ihn braucht." **Der Zugriff ist
-nennbar** — der Arbiter des upsert (`on_conflict` auf beide Spalten, GEMESSEN 2026-08-25)
-und die Gleichheit auf beiden Spalten im Lesepfad (`getCapiConfigByTrackingKey`).
-
-**PROVENIENZ DIESES ZUSCHNITTS:** Die Messergebnisse sind GEMESSEN (Owner, 2026-08-25) —
-der Probenlauf und die sieben Zeilen je Ziel. Die Anbieter-Angaben sind GELESEN
-(2026-08-25, PostgREST 14). Der Zuschnitt selbst, seine Reihenfolge und seine Ausschlüsse
-sind ARCHITEKTEN-ENTSCHEIDUNG (2026-08-25). **KEINE Messung an dieser Datenbank in dieser
-Runde.**
+nennbar** — der Arbiter des upsert (`on_conflict` auf beide Spalten, GEMESSEN 2026-08-25,
+am 2026-08-26 im Live-Test bestätigt) und die Gleichheit auf beiden Spalten im Lesepfad
+(`getCapiConfigByTrackingKey`).
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -412,6 +443,110 @@ NUL-Byte und die Zahlkorrektur sind **GEMESSEN am eigenen Lauf (CC, 2026-08-25)*
 Wahl von K2 und T2 ist **OWNER/ARCHITEKT-ENTSCHEIDUNG (2026-08-25)**. **KEINE Messung an
 einer laufenden Datenbank und kein Aufruf gegen eine fremde Schnittstelle** — diese
 Scheibe berührt beides nicht.
+
+### Vermerk 2 — Scheibe 11.8b, Commits a8435e1 und 00b6ade (2026-08-26)
+
+**WAS GEBAUT WURDE:** EINE Migration, `supabase/migrations/0025_project_secrets_schema.sql`
+(460 Zeilen), die fünf Achsen an `public.project_secrets` in EINEM `do`-Block setzt, mit
+einem `lock_timeout` davor und dem Protokoll-Insert als letzter Anweisung. **ZWEI COMMITS,
+GETRENNT NACH DER COMMIT-KONVENTION und nicht aus Ordnungsliebe:** `a8435e1` (feat(db),
+nur die Migration) und `00b6ade` (docs(claude), CLAUDE.md +3 und docs/offene-punkte.md
++56). Beide gepusht. Die Trennung folgt "docs(claude)-Commits bleiben GETRENNT von
+feat/fix-Commits" — eine Doku-Änderung im Feature-Commit ist später nicht mehr auffindbar.
+
+**KEIN CODE, KEINE TESTDATEI, KEINE BESTEHENDE MIGRATION BERÜHRT** — GEMESSEN am Diff
+(CC, 2026-08-26): drei Dateien im Vorgang, `git status --porcelain` ohne Treffer auf
+`src/`, auf `*.test.*` oder auf `supabase/migrations/002[1-4]`. **Die vier Gates waren
+grün** (`tsc --noEmit` · `lint`, 0 Fehler, die eine Warnung liegt vorbestehend in
+`tracking/consent.test.ts` · `vitest run` · `build`), und **die Testzahl ist mit 61
+Dateien / 1179 Tests exakt der Stand aus Vermerk 1** — das ist der eigentliche Beleg des
+Absatzes: an Tests und Code hat diese Scheibe nichts getan.
+
+**DIE MIGRATION IST GEFAHREN. Sie lief DURCH — kein Abbruch, keine
+Sperr-Zeitüberschreitung.** GEMESSEN (Owner, 2026-08-26).
+
+**DIE VORHER-WERTE, vor dem Lauf erhoben, weil sie danach nicht mehr herstellbar sind:**
+V0 — `0024` vom 2026-08-17 vorhanden, `0025` nicht. V1 — `zeilen 7`, `ohne_secret 0`,
+Fingerabdruck `459685c7…`; je Ziel meta 4 · linkedin 2 · tiktok 1. V2 — Primärschlüssel
+auf dem PAAR (project_id, target), `secret` NOT NULL, KEINE Spalte `id`, KEINE Spalte
+`secret_enc`. V3 — PostgreSQL **17.6**.
+
+**DIE NACHHER-WERTE, alle fünf Achsen EINZELN abgelesen:**
+- **N1 (Achsen 1, 2, 4a, 4b):** `secret_enc text` YES · `secret text` YES · `project_id
+  uuid` YES · `id uuid` NO mit `gen_random_uuid()` als Default.
+- **N2 (Achsen 3, 4a, 5):** `project_secrets_pkey` als PRIMARY KEY (id), und **genau ein**
+  Constraint mit `contype = 'p'` · `project_secrets_project_id_target_key` als **UNIQUE
+  NULLS NOT DISTINCT (project_id, target)** — **der Wortlaut steht da**, und er war die
+  benannte Falle: ohne ihn wäre die Eigentums-Achse nicht offen, sondern nur nullbar ·
+  `project_secrets_secret_genau_eines` als CHECK · `project_secrets_target_valid` und der
+  Fremdschlüssel unverändert.
+- **N3:** genau ZWEI Indizes. **Und schärfer als verlangt:** der Unique-Index trägt
+  `NULLS NOT DISTINCT` auch im Definitionstext, nicht nur am Constraint — damit ist die
+  Achse auf zwei unabhängigen Sichten belegt statt auf einer.
+- **N4:** `zeilen 7` · `ohne_secret 0` · `mit_chiffrat 0` · `ohne_projekt 0` ·
+  `verschiedene_ids 7` · **Fingerabdruck IDENTISCH zu V1**.
+- **N5:** `0025` protokolliert, `applied_at 2026-08-26 07:18:41`.
+
+**DIE EINZIGE POSTGRES-ANNAHME DIESER MIGRATION IST NACHGEMESSEN STATT GEGLAUBT.** Der
+Kopf der Datei führte sie ausdrücklich als "NICHT gemessen und NICHT gelesen": dass ein
+`add column ... not null default gen_random_uuid()` die Bestandszeilen mit VERSCHIEDENEN
+Werten füllt. **`verschiedene_ids = 7`** — der Default hat jede der sieben Zeilen mit
+einem eigenen Wert versehen. Die Annahme ist damit keine mehr. **Das ist der Grund, warum
+sie überhaupt in der Datei stand**: eine benannte Annahme bekommt eine Nachmessung, eine
+unbenannte bekommt keine.
+
+**DER FINGERABDRUCK IST IDENTISCH — die sieben Geheimnisse haben den Lauf UNVERÄNDERT
+überstanden, belegt und nicht angenommen.** Die Gegenprobe trägt aus einem benannten
+Grund ZWEI Zahlen nebeneinander: Verlöre eine Zeile ihr `secret`, entfiele `md5(NULL)`
+lautlos aus dem `string_agg` — der Fingerabdruck änderte sich, während `zeilen` weiterhin
+7 zeigte. Erst `ohne_secret = 0` daneben trennt "ein Wert hat sich geändert" von "ein Wert
+ist verschwunden". Beide trafen ihre Erwartung.
+
+**EIN NEBENBEFUND SCHLIESST EINE ANGABE, DIE DER PLAN ALS OFFEN FÜHRTE:** Der
+Fremdschlüssel heisst **`project_secrets_project_id_fkey`**. Der Plan führte den Namen als
+am Repo NICHT entscheidbar — 0021 deklariert ihn inline über `references`, und
+docs/db-stand.md nennt ihn ohne Namen. Jetzt ist er **GEMESSEN** (Owner, 2026-08-26). Die
+Migration hat ihn nicht angefasst; die Angabe fiel bei N2 ab.
+
+#### Der LIVE-TEST — er schliesst die Achse, die keine Probe schliessen konnte
+
+**GEMESSEN vom Owner am 2026-08-26.**
+
+**DIE REGRESSION:** Zweimal für dasselbe Paar gespeichert. Ergebnis: **EINE Zeile**, `id`
+**a2b63840 unverändert**, Länge **14 → 28**, `updated_at` gewandert, `created_at`
+unverändert. Damit sind vier Dinge einzeln belegt: der Arbiter greift (eine Zeile statt
+zwei) · es war ein UPDATE und kein Löschen-und-Neu (die `id` bleibt) · der zweite Wert
+steht drin (die Länge) · der Trigger `project_secrets_set_updated_at` lebt weiter.
+
+**DER TRAGENDE TEIL, und er ist STÄRKER ALS GEPLANT:** `created_at` trägt den
+**2026-08-13**. Die aktualisierte Zeile ist ein **BESTANDSDATENSATZ AUS DER ZEIT VOR DER
+MIGRATION** — kein frisch angelegter, an dem ein Insert dasselbe Bild ergäbe. Der Upsert
+hat sie AKTUALISIERT, obwohl `setCapiToken` den künstlichen Schlüssel nicht kennt und
+nicht mitsendet. **Der Zuschnitt hatte nur "eine Zeile, zweiter Wert drin" verlangt; was
+tatsächlich gemessen wurde, deckt zusätzlich den Übergang vom alten in den neuen
+Schlüssel.**
+
+**DIE FOLGE:** supabase-js erzeugt den Arbiter genau so, wie PostgREST ihn braucht. Die
+Supabase-JS-Aussage "Primary keys must be included in values to use upsert" trifft diesen
+Fall NICHT. **Das war die Achse, von der der Zuschnitt sagte, nur der Live-Test könne sie
+schliessen** — eine zweite Probe hätte wieder PostgREST gemessen und wäre an der Frage
+vorbeigelaufen.
+
+**DER LESEPFAD:** Conversion am 2026-08-26 um 09:51:55 ausgelöst; Server- und
+Browser-Ereignis kommen an und werden über die geteilte eventID dedupliziert.
+
+**DAMIT IST DIE SCHULD AUS 11.8a EINGELÖST** — "DIE ERSTE SCHEIBE MIT EINEM DATENPFAD
+SCHULDET IHN NACH". **NICHT eingelöst ist die von 11.2a**; jene gehört der
+Transport-Scheibe von 11.2 und wandert nicht hierher. Wer beide zusammenzieht, hält eine
+für erledigt, sobald die andere eingelöst ist.
+
+**PROVENIENZ DIESES VERMERKS, je Angabe:** Die Vorher- und Nachher-Werte, der Durchlauf
+ohne Abbruch, der gesamte Live-Test und der Name des Fremdschlüssels sind **GEMESSEN
+(Owner, 2026-08-26)**. Die Commit-Nummern, die Dateizahl, der Diff-Umfang, die
+Gate-Ergebnisse und die Testzahl sind **GEMESSEN am eigenen Lauf (CC, 2026-08-26)**. Die
+Deutung des `created_at`-Befundes als "Bestandsdatensatz aus der Zeit vor der Migration"
+ist eine **ABLEITUNG** aus dem gemessenen Datum, keine eigene Messung. **KEIN Aufruf gegen
+eine fremde Schnittstelle durch CC** — der Anbieter-Abgleich im Lesepfad lief beim Owner.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -517,3 +652,81 @@ HIER entschieden worden.
    Nachweis eine eigene Auflage bekommt · ob ein `git add -N` vor der Mutationsrunde der
    bessere Weg wäre (er machte die Datei verfolgt, ohne sie zu committen) — das ist
    GENANNT, NICHT empfohlen und NICHT gemessen.
+
+3. **EIN GUARD, DER AUF EINEN NAMEN PRÜFT, DEN ES NACH DEM LAUF WIEDER GIBT, IST KEIN
+   GUARD, SONDERN EINE FALLE.**
+   BEFUND: Der freigegebene Plan zu 11.8b sah für den Drop des alten Primärschlüssels
+   einen Katalog-Guard auf `conname = 'project_secrets_pkey'` vor — die Bauform, die 0016,
+   0022, 0023 und 0024 an dieser Stelle alle tragen. Nach der Migration existiert wieder
+   ein Constraint DIESES Namens, nur eben auf `id`. **Ein zweiter Lauf hätte den NEUEN
+   Primärschlüssel gedroppt und die Tabelle ohne Schlüssel zurückgelassen, und zwar
+   STILL:** ein `drop constraint` mit passendem Namen scheitert nicht, er tut genau das,
+   was dasteht. Gefallen beim Bauen, VOR dem Lauf (GEMESSEN am eigenen Lauf, CC,
+   2026-08-26).
+   WAS STATTDESSEN TRÄGT: auf die SACHE prüfen statt auf den Namen — hier ein
+   Primärschlüssel, der die Spalte `project_id` ENTHÄLT; den gibt es genau solange, wie
+   der alte steht. ZWEITER GEWINN, der ohne die Korrektur nicht entstanden wäre: der Name
+   des alten Schlüssels wird jetzt ABGELESEN statt angenommen — 0021 deklariert ihn inline
+   und benennt ihn nirgends, "project_secrets_pkey" war Konvention und keine Messung.
+   WARUM ES EIN KANDIDAT IST UND KEIN SONDERFALL: Das hat mit dieser Migration nichts zu
+   tun. Es trifft JEDEN Guard, dessen Gegenstand nach dem Lauf unter DEMSELBEN Namen
+   wieder existiert — also genau die Umkehrung dessen, wofür Guards da sind. Die
+   bestehende Idempotenz-Auflage des Projekts kennt den Katalog-Guard, aber nicht die
+   Frage, ob sein Anker den Vorher- vom Nachher-Zustand überhaupt TRENNT.
+   ABGRENZUNG, die dazugehört: Die Regel "EINE VORBEDINGUNG, DIE AUCH DER ALTE ZUSTAND
+   ERFÜLLT, IST KEINE VORBEDINGUNG" (docs/immer-beachten.md) beschreibt dieselbe Denkfigur
+   am TEST-Anker. Hier steht sie am MIGRATIONS-Guard, und die Richtung ist umgekehrt: dort
+   erfüllt der ALTE Zustand die Bedingung mit, hier der NEUE.
+   **NICHT ENTSCHIEDEN:** ob das eine eigene Regel wird oder ein Absatz an der bestehenden
+   Idempotenz-Auflage · ob daraus eine Auflage an jeden künftigen Katalog-Guard folgt.
+   KEINE EMPFEHLUNG.
+
+4. **EIN REGRESSIONSSCHRITT DARF DIE VORAUSSETZUNG DES SCHRITTS DANACH NICHT ZERSTÖREN.**
+   BEFUND: Die Live-Test-Anleitung zu 11.8b verlangte in Schritt 3, an einem
+   KONFIGURIERTEN Ziel zweimal ein Geheimnis zu speichern, und in Schritt 6, dass
+   DASSELBE Ziel weiter sendet. Nach Schritt 3 trug es einen Testwert; der Anbieter lehnte
+   ab, und der Server-Forward kam nicht an. GEMESSEN am eigenen Lauf (Owner, 2026-08-26).
+   WARUM DAS SCHLIMMER IST ALS EIN AUSGEFALLENER SCHRITT: **"Nichts kommt vom Server an"
+   sieht bei einem kaputten Lesepfad EXAKT so aus wie bei einem ungültigen Zugangsdatum.**
+   Die Beobachtung trennt die beiden nicht. Der Schritt hätte als Fehlschlag gelten können,
+   ohne etwas gezeigt zu haben — und die Suche hätte am falschen Ende begonnen.
+   DIE REPARATUR IST EINE ZEILE und hat im Nachlauf getragen: **der ZWEITE Wert ist der
+   ECHTE.** Dann prüft der Regressionsschritt dieselbe Sache wie zuvor, und der Bestand ist
+   hinterher intakt.
+   **DER FEHLER LAG IN DER ANLEITUNG, NICHT IN DER AUSFÜHRUNG** (ARCHITEKT, 2026-08-26).
+   WARUM ES EIN KANDIDAT IST: Es ist dieselbe Klasse wie die bestehende Lektion (c) an
+   "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE" (docs/immer-beachten.md) — ein Schritt
+   reisst die Voraussetzung dessen mit, was er prüfen soll —, aber an einer anderen Achse:
+   dort tut es das INSTRUMENT, hier die REIHENFOLGE zweier Schritte. Eine Anleitung kann
+   aus lauter tauglichen Schritten bestehen und trotzdem in der falschen Reihenfolge
+   stehen.
+   **NICHT ENTSCHIEDEN:** ob das eine eigene Regel wird oder ein Absatz an jener Lektion ·
+   ob daraus eine Auflage an jede Live-Anleitung folgt, die einen Schreibschritt vor einen
+   Wirkungsschritt stellt. KEINE EMPFEHLUNG.
+
+5. **EINE PROBE GEGEN DIESELBE SCHICHT KANN EINE FRAGE ÜBER EINE ANDERE SCHICHT NICHT
+   SCHLIESSEN.**
+   BEFUND, zweimal in dieser Phase eingetreten: Die Probe vom 2026-08-25
+   (supabase/checks/upsert-arbiter-probe.sql) hat gegen den REST-Endpunkt gemessen und
+   damit **PostgREST**. Offen blieb, ob **supabase-js** denselben Arbiter erzeugt — und
+   eine ZWEITE Probe hätte wieder PostgREST gemessen und wäre an der Frage vorbeigelaufen.
+   Geschlossen hat sie erst der LIVE-TEST am 2026-08-26, weil dort **der Client selbst den
+   Aufruf baut**.
+   **DAS UMGEKEHRTE GILT AUCH, und es gehört dazu, sonst liest sich die Regel als "immer
+   möglichst weit aussen messen":** Wer die PostgREST-Frage im SQL-Editor misst,
+   beantwortet ebenfalls eine andere — er misst dann Postgres. Genau deshalb lief jene
+   Probe gegen den Endpunkt und NICHT im Editor. Die Regel sagt nicht "weiter aussen",
+   sondern "an der Schicht, über die die Frage gestellt ist".
+   WARUM ES EIN KANDIDAT IST: Es ist kein Supabase-Sonderfall. Zwischen unserem Code und
+   jeder fremden Wirkung liegen mehrere Schichten — Client, Protokoll-Schicht, Datenbank,
+   Anbieter —, und ein Instrument misst immer nur die, gegen die es spricht. Ein Ergebnis
+   von der falschen Schicht sieht dabei aus wie eine Antwort.
+   ABGRENZUNG ZUR BESTEHENDEN REGEL: Lektion (c) an "MUTATIONSPROBEN UND
+   LIVE-TEST-INSTRUMENTE" (docs/immer-beachten.md) fragt, ob ein Mittel zu GROB ist und die
+   Voraussetzung des Geprüften mitreisst. Diese hier fragt, ob es an der RICHTIGEN SCHICHT
+   ansetzt. Ein Instrument kann fein sein, sauber greifen, ein klares Ergebnis liefern —
+   und trotzdem etwas anderes gemessen haben, als gefragt war.
+   ABGRENZUNG ZU KANDIDAT (4) darüber: Jener betrifft die REIHENFOLGE zweier Schritte,
+   dieser den ORT der Messung. Drei Achsen mit demselben Ausgang — ein Ergebnis, das wie
+   eine Antwort aussieht und keine ist.
+   **NICHT ENTSCHIEDEN:** eigene Regel oder Absatz an der bestehenden. KEINE EMPFEHLUNG.

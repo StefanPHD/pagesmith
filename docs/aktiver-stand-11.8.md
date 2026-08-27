@@ -659,6 +659,104 @@ Eigentums-Wahl ist **OWNER-ENTSCHEIDUNG vom 2026-08-27**. Die Sieben-Tage-Frist 
 **NICHTS ist gebaut, NICHTS ist gegen eine Google-Schnittstelle gemessen, und an der
 laufenden Datenbank ist für diesen Zuschnitt nichts erhoben.**
 
+### Nachtrag 2026-08-27 — sechs Ergänzungen aus zwei Doku-Läufen und aus 11.8f
+
+**WARUM ER ANGEFÜGT UND NICHT EINGEARBEITET IST:** Der Zuschnitt darüber ist am 2026-08-27
+geschrieben worden — VOR den Doku-Läufen 5 und 6 und VOR dem Vollzug von 11.8f. **Er ist
+richtig geblieben; er wusste sechs Dinge noch nicht.** Kein Satz von ihm ist umformuliert
+worden. Wer wissen will, was der Zuschnitt am Tag seiner Entstehung sagte, liest ihn
+oben; was seither dazugekommen ist, steht hier.
+
+**E1 — DIE ERSTE SPERRE IST GEFALLEN, UND SIE STAND NIE IN DIESEM ZUSCHNITT.**
+Die Aufklärungsrunde zu 11.8e hatte an Gate G1 gemessen, dass `'google'` im CHECK
+`project_secrets_target_valid` FEHLT — 11.8e war damit blockiert, denn ohne den Zielwert
+kann keine Zeile abgelegt werden. **Vollzogen ist das NICHT hier, sondern in einer eigenen
+Scheibe: 11.8f, Migration `0026_project_secrets_google.sql`, Commit 9133bcc, gefahren und
+gegengeprobt am 2026-08-27 (Vermerk 5).**
+**DER SATZ STEHT HIER, WEIL DIE SPERRE HIER GESUCHT WIRD:** Sie ist in der Aufklärung zu
+DIESER Scheibe aufgedeckt worden, und der Zuschnitt darüber führt sie mit keinem Wort. Wer
+sie im 11.8e-Text sucht, findet nichts und hält sie für offen. **Die Vorbedingung ist
+erfüllt; hier ist nichts mehr zu tun.**
+
+**E2 — DIE UMRECHNUNG DES ABLAUFS, UND DER BEZUGSPUNKT IST EINE ENTSCHEIDUNG UND KEINE
+LESUNG.**
+`expires_in` ist eine **RESTDAUER IN SEKUNDEN**, kein Zeitpunkt — GELESEN 2026-08-27
+(docs/ziel-befunde.md, Google-Abschnitt, Lauf 6, Teil (ba)). `OAuthPayload.accessTokenExpiresAt`
+verlangt einen **ABSOLUTEN** Wert; die Umrechnung liegt beim AUFRUFER, und der Kopf von
+`src/lib/secrets/oauth-payload.ts` sieht sie ausdrücklich dort vor. **Der Aufrufer ist ab
+11.8e die Callback-Route.**
+**ENTSCHEIDUNG (ARCHITEKT, 2026-08-27): GERECHNET WIRD AB EMPFANG DER ANTWORT**, nicht ab
+einem angenommenen Ausstellungszeitpunkt.
+**DER GRUND GEHÖRT DAZU, sonst sieht die Wahl beliebig aus: DER BEZUGSPUNKT DER RESTDAUER
+IST NICHT GELESEN.** Ob sie ab Ausstellung oder ab Empfang zählt, sagt keine gelesene
+Seite (Lauf 6 weist es als Lücke 1 aus). Ab Empfang zu rechnen ist die **konservative**
+Richtung: Der Zugang gilt dann eher zu früh als zu spät als abgelaufen. **Die Abweichung
+ist die Laufzeit des Aufrufs** — und ein zu früh erneuerter Zugang kostet einen Aufruf, ein
+zu spät erneuerter kostet einen fehlgeschlagenen Forward.
+
+**E3 — EIN AUSGANG, DEN DER ZUSCHNITT NICHT KENNT: EINE ANTWORT OHNE `refresh_token`.**
+GELESEN 2026-08-27 (Lauf 6, Teil (bb)): Das Feld kommt **NUR** bei `access_type=offline`,
+und der Anbieter sagt es an drei Stellen. **11.8d SETZT den Parameter — damit ist die
+Antwort aber nicht GARANTIERT**, und `p1` VERLANGT das Feld (`refreshToken` ist Pflicht und
+darf nicht leer sein).
+**DIE AUFLAGE AN DEN PLAN: Dieser Ausgang wird behandelt, und er darf NICHT als Erfolg
+abgelegt werden.**
+**WARUM DAS SCHÄRFER IST ALS EIN GEWÖHNLICHER FEHLERFALL:** Ein Zugang ohne
+Erneuerungs-Token ist nach dem Ablauf des Zugangsdatums **tot**, und **niemand merkt es**,
+bis irgendwann ein Forward scheitert. Als Erfolg abgelegt sähe die Zeile in der Oberfläche
+aus wie jede andere konfigurierte — das ist genau die Klasse "konfiguriert und sendet
+trotzdem nicht", die docs/offene-punkte.md bereits als eigenen Eintrag führt.
+**WAS DER PLAN ENTSCHEIDET UND DIESER NACHTRAG NICHT:** was der Betreiber in diesem Fall
+sieht, und ob überhaupt etwas abgelegt wird.
+
+**E4 — DIE VERWEIGERUNG DURCH DEN NUTZER IST DER NORMALFALL, NICHT DER RAND.**
+GELESEN 2026-08-27 (Lauf 6, Teil (be)): Lehnt der Nutzer ab, kehrt Google mit einem
+**`error`-Parameter** an die Weiterleitungs-Adresse zurück. Der gelesene Wert ist
+`access_denied` — **und die Seite schreibt selbst "e.g."**, es ist also ein BEISPIEL und
+keine abschliessende Werteliste.
+**FOLGE: Der Plan behandelt JEDEN `error`-Wert, nicht nur den einen.** Wer gegen
+`access_denied` vergleicht, prüft gegen ein Beispiel — und jeder andere Wert fiele in den
+Erfolgszweig.
+
+**E5 — DIE REIHENFOLGE DER PRÜFUNGEN: `error` ZUERST, DANN `state`.**
+**WAS ZURÜCKGENOMMEN WIRD (ARCHITEKT, 2026-08-27):** Der Plan-Prompt vom 2026-08-27 gab als
+Prüfstein vor, der `state` werde geprüft, BEVOR die Route irgendetwas anderes tut. **Diese
+Vorgabe gilt nicht mehr.** Es ist eine Sachkorrektur, kein Mechanismuswechsel.
+**DER GRUND: OB GOOGLE BEI EINER VERWEIGERUNG DEN `state` MITSCHICKT, IST NICHT GELESEN** —
+Lauf 6 weist es ausdrücklich als Lücke 3 aus; die Beispiel-URL der Anbieter-Seite zeigt ihn
+nicht, und keine Zeile sagt es. **Prüft die Route `state` zuerst, weist sie eine ganz
+normale Ablehnung als Sitzungsfehler ab:** Der Nutzer klickt "Nein" und bekommt eine
+Meldung über einen Manipulationsverdacht.
+**DIE NEUE REIHENFOLGE: `error` — dann `state` — dann alles Weitere.**
+**WAS SICH DABEI NICHT ÄNDERT, UND DER SATZ MUSS DASTEHEN: VOR DEM CODE-TAUSCH STEHT DIE
+`state`-PRÜFUNG WEITERHIN.** Das ist die Stelle, an der sie zählt. Ein `error`-Zweig holt
+kein Token, tauscht nichts und schreibt nichts — **die Sicherheitsaussage der Scheibe
+bleibt unberührt**, und die Entscheidung (1) an 11.8d (die Projekt-Kennung reist nie über
+Google) ist von dieser Umstellung nicht berührt.
+**DIE PFLICHT SELBST IST BEIM ANBIETER GELESEN** (Lauf 6, Teil (be), wörtlich): "Before
+handling the OAuth 2.0 response on the server, you should confirm that the state received
+from Google matches the state sent in the authorization request."
+
+**E6 — EINE AUFLAGE, DIE IM BESTAND NIRGENDS STEHT: KEINE ANTWORTPARAMETER IN DER
+ADRESSZEILE STEHEN LASSEN.**
+GELESEN 2026-08-27 (Lauf 6, Teil (be)): Der Anbieter verlangt, der Server solle die Anfrage
+zuerst verarbeiten und **dann auf eine URL OHNE die Antwortparameter weiterleiten**. Der
+Grund, den er nennt: Skripte auf einer gerenderten Seite können die URL lesen, und der
+**`Referer`-Header** kann den Autorisierungs-Code an fremde Ressourcen weitergeben.
+**DAS GILT FÜR JEDEN AUSGANG DER ROUTE, AUCH DIE FEHLERAUSGÄNGE** — auch ein `error`-Wert
+soll nicht in der Adresszeile stehenbleiben.
+**DASS DIE AUFLAGE IM BESTAND FEHLT, IST GEMESSEN** (CC, 2026-08-27; Achse: die
+Zeichenketten `Referer`, `Referrer` und "redirect to another URL" im Google-Abschnitt von
+docs/ziel-befunde.md): NULL Treffer vor Lauf 6. **Sie ist neu, nicht übersehen.**
+
+PROVENIENZ DIESES NACHTRAGS, je Angabe: **E1** ist **GEMESSEN** (Gate G1 der Aufklärung, CC,
+2026-08-27) und **VOLLZOGEN** (Owner, 2026-08-27, SQL-Editor; s. Vermerk 5). Die
+Anbieter-Angaben in **E2 bis E6** sind **GELESEN am 2026-08-27** (docs/ziel-befunde.md,
+Google-Abschnitt, Lauf 6, Teile (ba), (bb) und (be)) und ausdrücklich **NICHT gemessen** —
+es ist kein Aufruf gegen eine Google-Schnittstelle gefahren. Der Bezugspunkt in **E2** und
+die Reihenfolge in **E5** sind **ARCHITEKTEN-ENTSCHEIDUNGEN vom 2026-08-27**. Der
+Nicht-Treffer in **E6** ist **GEMESSEN am Repo (CC, 2026-08-27)**. **NICHTS ist gebaut.**
+
 ## Scheibe 11.8f — Der fünfte Zielwert im CHECK
 
 **VOLLZOGEN AM 2026-08-27, Commit 9133bcc. DIE MIGRATION IST GEFAHREN, DIE GEGENPROBE IST
@@ -1421,6 +1519,32 @@ HIER entschieden worden.
    PROVENIENZ: die fehlende Spalte und der Feldsatz der Nutzlast sind **GEMESSEN am Repo
    (CC, 2026-08-27)**, erhoben als Gate G9 der Aufklärungsrunde zu 11.8e. Die Folge für
    eine Überwachung ist eine **ABLEITUNG** daraus und keine Messung.
+
+4. **EINE ANGABE OHNE AUFFINDBARE PROVENIENZ — "eine Stunde".** Der Kommentar über
+   `OAuthPayload` in `src/lib/secrets/oauth-payload.ts` begründet den vierten Feldplatz mit
+   der Zwei-Uhren-Lage und sagt dabei, **Google gebe dem Zugangsdatum "eine Stunde"**.
+   **IM BESTAND IST DAFÜR KEINE QUELLE AUFFINDBAR** — GEMESSEN (CC, 2026-08-27; Achse: der
+   Google-Abschnitt von docs/ziel-befunde.md, gesucht nach `Stunde`, `3600`, `one hour`,
+   `60 Minuten`): kein Treffer, der die Lebensdauer des ZUGANGS-Tokens beträfe; die Treffer
+   liegen sämtlich bei anderem (Rückfallfenster, Diagnostik-Verzögerung, GA-Fristen). Die
+   einzige Zahl auf der in Lauf 6 gelesenen Seite ist **ein Beispielwert von 3920 Sekunden**,
+   und das ist keine Stunde.
+   **AUSDRÜCKLICH: SIE IST NICHT WIDERLEGT.** Sie kann aus einer Quelle stammen, die niemand
+   in diese Datei geschrieben hat. Der Befund ist eine fehlende PROVENIENZ, kein falscher
+   Satz — und die Unterscheidung ist der ganze Grund, warum dieser Eintrag im Vorrat steht
+   und nicht als Richtigstellung gefahren wurde.
+   **SIE TRÄGT AUCH NICHTS:** Die Zwei-Uhren-Lage ist über LinkedIn unabhängig belegt (zwei
+   Monate gegen zwölf), und die Zahl wird an keiner Stelle verrechnet — kein Code liest sie,
+   keine Entscheidung ruht auf ihr.
+   **DER PRÜFPUNKT, und er ist der Grund, warum hier kein Trigger erfunden wird:** 11.8e
+   rechnet den realen Ablauf aus `expires_in` (s. E2 im Nachtrag zu 11.8e). **Wer das baut,
+   sieht den echten Wert** — und in diesem Moment bekommt die Angabe entweder eine Quelle
+   oder sie verschwindet. Es braucht dafür keine eigene Arbeit.
+   **KEINE EMPFEHLUNG**, was mit dem Satz zu geschehen hat; die Datei ist in der Runde, die
+   diesen Eintrag erzeugt hat, ausdrücklich nicht angefasst worden.
+   PROVENIENZ: der Nicht-Treffer ist **GEMESSEN am Repo (CC, 2026-08-27)** mit der Achse
+   oben; dass die Angabe nichts trägt, ist eine **ABLEITUNG** (kein Aufrufer, keine
+   Verrechnung) und keine Messung.
 
 ## Hebungs-Kandidaten
 

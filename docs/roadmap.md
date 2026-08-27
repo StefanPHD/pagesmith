@@ -549,6 +549,156 @@ liegen beide hier und finden einander.
       docs/ziel-befunde.md benannt. **GEMESSEN ist in diesem Block GENAU EINE Angabe** — der
       Primärschlüssel am Migrations-SQL. Es ist KEIN Aufruf gegen eine Supabase-Schnittstelle
       gefahren worden und NICHTS an der laufenden Datenbank gemessen.
+
+      **NACHGETRAGEN AM 2026-08-27 — DIE OAUTH-EINRICHTUNG BEIM ANBIETER IST VOLLZOGEN UND
+      STAND BIS HEUTE AN KEINER STELLE IM REPO.** Der Text darüber bleibt Zeichen für
+      Zeichen stehen; dieser Block tritt DANEBEN. Er trägt die Einrichtung selbst, zwei
+      Entscheidungen dazu und die Auflage, die aus beidem folgt.
+      **DASS SIE NIRGENDS STAND, IST GEMESSEN** (CC, 2026-08-27; Achse: docs/, CLAUDE.md,
+      .env.local.example, .env.local und src/, case-insensitiv nach redirect, oauth,
+      callback und datamanager): Über Weiterleitungs-Adressen, über einen OAuth-Rückkehrpfad
+      und über UNSER Cloud-Projekt sagte das Repo bis zu diesem Block NICHTS.
+      **WAS DABEI WIE EIN TREFFER AUSSIEHT UND KEINER IST:** Die Stellen in
+      docs/ziel-befunde.md und weiter oben in diesem Eintrag, die ein "Google-Cloud-Projekt"
+      nennen, sind GELESENE Anbieter-Politik — Zugangsvoraussetzung und Kontingent-Decke.
+      Sie benennen KEIN eingerichtetes Projekt. In einer Volltextsuche sehen die beiden
+      gleich aus, und wer sie zusammenzieht, hält die Einrichtung für dokumentiert.
+
+      **DIE EINRICHTUNG — IN DER KONSOLE GESEHEN** (OWNER, 2026-08-26): ein Cloud-Projekt
+      namens `Tracking-OAuth-Dev`, darin die **Data Manager API aktiviert**, dazu ein
+      OAuth-Client vom Typ **WEBANWENDUNG**.
+      **NICHT DESKTOP — UND DIESE HÄLFTE IST GELESEN, NICHT GESEHEN:** Den Desktop-Typ
+      empfiehlt die Anbieter-Doku für den gcloud-SCHNELLEINSTIEG — also für einen Menschen
+      an einer Kommandozeile. Für unseren Fluss empfiehlt sie ihn nicht. Die Fundstelle
+      liegt im eigenen Bestand: docs/ziel-befunde.md, Google-Abschnitt, Weg (1)
+      NUTZERKONTO — "Desktop-OAuth2-Client anlegen … dann `gcloud auth
+      application-default login`" (GELESEN 2026-08-24, /devguides/quickstart/set-up-access,
+      Doku-Stand 2026-08-14).
+      **DIE TRENNUNG IST KEINE FORMSACHE:** DASS der Client vom Typ WEBANWENDUNG ist, ist
+      eine Beobachtung an der Konsole. WARUM nicht Desktop, ist eine GELESENE
+      Anbieter-Aussage. Wer beides als Konsolen-Befund liest, hält die Begründung für
+      geprüft — sie ruht auf einer Doku, die sich ändern kann, und niemand hat den
+      Desktop-Typ gegen unseren Fluss probiert.
+
+      **DIE ZWEI REGISTRIERTEN WEITERLEITUNGS-ADRESSEN, ZEICHENGENAU** (OWNER-ANGABE,
+      2026-08-26):
+      · http://localhost:3000/api/oauth/google/callback
+      · https://pagesmith-delta.vercel.app/api/oauth/google/callback
+      **ZEICHENGENAU HEISST: das Schema wörtlich (die eine ist http, die andere https), der
+      Pfad wörtlich, KEIN abschliessender Schrägstrich.** Eine Adresse mit Schrägstrich ist
+      eine ANDERE Adresse.
+      **DER PFAD HAT HEUTE KEINE ROUTE** — GEMESSEN (CC, 2026-08-27): `src/app/api/oauth/`
+      existiert nicht, src/app/api trägt ausschliesslich `capi/` und `e/`. Die Registrierung
+      geht dem Code voraus; das ist kein Defekt, sondern die Reihenfolge dieser Phase.
+
+      **ZWEI ENTSCHEIDUNGEN DAZU** (ARCHITEKT, 2026-08-26):
+
+      **(1) DIE WEITERLEITUNGS-ADRESSE WIRD FEST GESETZT, NICHT AUS DEM ANFRAGE-HOST
+      ABGELEITET.** Das ist eine BEWUSSTE ABWEICHUNG von "ABLEITEN STATT HARDCODEN"
+      (docs/immer-beachten.md), und sie steht hier mit ihrem Grund, weil eine
+      unbegründete Abweichung bei der nächsten Aufräumrunde als Versehen eingesammelt wird.
+      **DER TRAGENDE GRUND IST DIE HOST-INVERSION: Diese Anwendung antwortet unter ZWEI
+      KLASSEN VON HOSTS** — dem App-Host und den Serving-Hosts der Kundenseiten. Eine aus
+      dem Anfrage-Host ABGELEITETE Weiterleitungs-Adresse entstünde im Serving-Fall unter
+      publayer.net. Dort ist sie bei Google NIE REGISTRIERT, und der Anbieter gleicht
+      zeichengenau ab.
+      **WAS DER GRUND AUSDRÜCKLICH NICHT IST — UND DIESER SATZ IST DER WICHTIGERE VON
+      BEIDEN: KEIN MISSTRAUEN GEGEN `x-forwarded-host`.** Der Wert ist auf DIESER Plattform
+      BELEGT vertrauenswürdig: Vercels Edge überschreibt einen client-gelieferten
+      `x-forwarded-host` mit dem echten Host — GEMESSEN auf einem echten Vercel-Preview mit
+      einer curl-Matrix, in der ZWEI gefälschte Werte beide überschrieben wurden
+      (docs/claude-history/phase-7-hosting.md, "### 7c-2-GATE — Ergebnis:
+      XFH-Trust-Boundary in Prod BEWIESEN (GO)"); daraus die Regel "HOST-QUELLE FÜR
+      APP-vs-SERVING-BRANCHING" in docs/immer-beachten.md. **Auf genau diesem Beweis ruht
+      die Host-Inversion selbst.** Wer die Abweichung hier als Beleg GEGEN XFH liest,
+      misstraut einem Mechanismus, der trägt — und die Ableitung wäre auch mit einem
+      vollständig vertrauenswürdigen Host falsch, weil der Host dann eben KORREKT der
+      Kundenseite gehörte.
+
+      **(2) KEINE UMGEBUNGSVARIABLE DIESER SCHICHT TRÄGT EIN `NEXT_PUBLIC_`-PRÄFIX** —
+      keine der drei, die weiter unten vergeben sind, und keine, die später dazukommt. Der
+      Server baut die Autorisierungs-URL und braucht den Wert beim Tausch des Codes gegen
+      das Zugangsdatum ohnehin serverseitig.
+
+      **ZWEI EIGENSCHAFTEN, DIE BISHER NIRGENDS STEHEN — BEIDE SIND ARCHITEKTEN-ABLEITUNGEN
+      AUS EINER OWNER-ANGABE, KEINE BEOBACHTUNGEN:**
+      · **VORSCHAU-DEPLOYMENTS FUNKTIONIEREN NICHT.** Vercel vergibt je Deployment eine
+        eigene Adresse; **registriert ist allein die stabile** — DAS ist die OWNER-ANGABE
+        (2026-08-26). Dass daraus ein Fehlschlag folgt, ist ABGELEITET: aus der eigenen
+        Adresse je Deployment, aus der Registrierung nur der stabilen und daraus, dass der
+        Anbieter zeichengenau abgleicht. **NIEMAND HAT EIN VORSCHAU-DEPLOYMENT GEGEN DEN
+        FLUSS PROBIERT.** Der Satz gehört ausdrücklich dazu: ohne ihn liest sich der Punkt
+        in einem Jahr wie ein Versuchsergebnis.
+      · **DIE BRAND-DOMAIN ZIEHT EINE DRITTE ZEILE NACH.** **`pagesmith.app` ist
+        Platzhalter** — DAS ist die OWNER-ANGABE (2026-08-26). Kommt sie, muss sie in der
+        Cloud-Konsole REGISTRIERT und die Umgebungsvariable UMGESTELLT werden — zwei
+        Handgriffe, nicht einer. **DIE ZWEI HANDGRIFFE SIND ABGELEITET, NICHT BERICHTET:**
+        sie folgen aus der Registrierungs-Pflicht und aus Entscheidung (2).
+
+      **DIE AUFLAGE, UND SIE IST DER GRUND, WARUM DIESER BLOCK ÜBERHAUPT EXISTIERT: DAS IST
+      EIN EXTERNER ZUSTAND, DEN NICHTS IM CODE BINDET.** Was registriert ist, steht in der
+      Cloud-Konsole, nicht im Repo. Läuft die Konsole vom Repo weg, wird NICHTS rot — kein
+      Gate, kein Test, kein Build meldet etwas. Der Anbieter gleicht die Adresse
+      ZEICHENGENAU ab.
+      **ES IST DIESELBE KLASSE WIE DAS `onConflict`-LITERAL UND DIE `domains`-ZEILE:** ein
+      Wert, dessen Gegenstück ausserhalb des Codes liegt und den kein Gate abgleicht.
+
+      **DIE DREI UMGEBUNGSVARIABLEN — VERGEBEN AM 2026-08-27** (ARCHITEKT), zeichengenau:
+      `GOOGLE_OAUTH_CLIENT_ID` · `GOOGLE_OAUTH_CLIENT_SECRET` · `GOOGLE_OAUTH_REDIRECT_URI`.
+      **DASS BIS ZU DIESEM BLOCK KEIN SOLCHER NAME IM REPO EXISTIERTE, IST GEMESSEN** (CC,
+      2026-08-27; Achse: `.env.local.example`, `.env.local`, alle `process.env`-Zugriffe in
+      src/ sowie docs/, case-insensitiv nach redirect, oauth, callback, datamanager): **kein
+      Treffer.** `.env.local.example` führte acht Namen — NEXT_PUBLIC_SUPABASE_URL,
+      NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_APP_URL,
+      NEXT_PUBLIC_HOSTING_DOMAIN, NEXT_PUBLIC_ABUSE_CONTACT, SECRET_ENC_KEYS und
+      SECRET_ENC_ACTIVE_KEY_ID —, keiner davon trug eine Weiterleitungs-Adresse. **DIE
+      MESSUNG BLEIBT STEHEN, WEIL SIE DER BELEG IST, DASS DIE DREI NAMEN NICHTS
+      ÜBERSCHRIEBEN HABEN** — ein neuer Name, der still einen bestehenden verdrängt, fällt
+      sonst niemandem auf.
+
+      **KEINER DER DREI TRÄGT `NEXT_PUBLIC_` — AUCH DIE CLIENT_ID NICHT, OBWOHL SIE KEIN
+      GEHEIMNIS IST** (Entscheidung (2) oben). Der Server baut die Autorisierungs-URL
+      ohnehin, im Client wird der Wert nie gebraucht. Und
+      ein `NEXT_PUBLIC_`-Wert wird zur BUILD-ZEIT ins Bundle inlined — jede Änderung
+      erzwingt dann einen REDEPLOY (docs/immer-beachten.md, "NEXT_PUBLIC_-REDEPLOY-PFLICHT").
+      Das wäre ein Preis ohne Gegenleistung.
+
+      **`GOOGLE_OAUTH_` UND NICHT `GOOGLE_DATAMANAGER_`, WEIL DER OAUTH-CLIENT AM
+      CLOUD-PROJEKT HÄNGT UND NICHT AN DER API.** Dasselbe Client-Paar autorisiert, was in
+      `Tracking-OAuth-Dev` liegt; ein API-Name behauptete eine Bindung, die es nicht gibt.
+      **DIE GRENZE GEHÖRT DAZU, sonst altert der Name still:** Bekommt ein späteres Vorhaben
+      ein EIGENES Cloud-Projekt, ist `GOOGLE_OAUTH_` zu unspezifisch und ist umzubenennen.
+      Das ist kein Auftrag und keine Vorsorge, sondern die benannte Bedingung, unter der der
+      Name aufhört zu passen.
+
+      **`GOOGLE_OAUTH_CLIENT_SECRET` IST EIN ANWENDUNGS-GEHEIMNIS — EINES FÜR ALLE KUNDEN,
+      KLASSE `SUPABASE_SERVICE_ROLE_KEY`.** Es gehört ausdrücklich NICHT nach
+      `project_secrets` und wird NICHT über `src/lib/secrets/cipher.ts` abgelegt: Dort
+      liegen KUNDEN-Zugangsdaten, und der Chiffrier-Schlüssel läge daneben — das Geheimnis,
+      das die Anwendung ausmacht, im selben Speicher wie das, was sie für andere verwahrt.
+
+      **`GOOGLE_OAUTH_REDIRECT_URI` TRÄGT JE UMGEBUNG EINEN ANDEREN WERT:** lokal die
+      localhost-Zeile, in Vercel die pagesmith-delta-Zeile; beide stehen oben zeichengenau.
+      **DAMIT IST DER WERT IN VERCEL EIN ZWEITER EXTERNER ZUSTAND NEBEN DER CLOUD-KONSOLE.**
+      Auch ihn bindet nichts im Code, und die Auflage darüber gilt ihm unverändert: Läuft er
+      vom Repo weg, wird nichts rot.
+
+      **PROVENIENZ DIESES BLOCKS, je Teil:** **OWNER-ANGABE vom 2026-08-26** sind: das
+      Cloud-Projekt samt aktivierter API und dem Client-Typ WEBANWENDUNG (in der Konsole
+      gesehen) · die zwei Adressen · dass allein die stabile Adresse registriert ist · dass
+      `pagesmith.app` Platzhalter ist. **GELESEN** ist die Anbieter-Empfehlung, die den
+      Desktop-Typ dem gcloud-Schnelleinstieg zuordnet — sie ist NICHT in der Konsole
+      beobachtet; ihre Fundstelle steht oben. **ARCHITEKTEN-ABLEITUNG** sind die zwei
+      Eigenschaften — dass Vorschau-Deployments nicht funktionieren und dass die
+      Brand-Domain zwei Handgriffe nach sich zieht. **KEINE DER BEIDEN IST PROBIERT
+      WORDEN.** Die zwei Entscheidungen sind
+      **ARCHITEKTEN-ENTSCHEIDUNG vom 2026-08-26**. Die Auflage und ihre Einordnung in die
+      Klasse der extern gehaltenen Zustände sind **ARCHITEKTEN-EINORDNUNG**, in dieser Runde
+      niedergeschrieben. Die drei Nicht-Treffer — keine Angabe im Repo, keine Route unter
+      `src/app/api/oauth/`, und BIS ZU DIESEM BLOCK keine Umgebungsvariable dieser Art —
+      sind **GEMESSEN am Repo (CC, 2026-08-27)**. **KEINE MESSUNG an einer
+      Google-Schnittstelle**, weder durch CC noch in diesem Block behauptet; es ist kein
+      Aufruf gefahren worden.
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code): klein und
       eigenständig, damit ein Kunde seine Einrichtung prüfen kann, ohne echte
       Conversions zu erzeugen. Kontext: docs/claude-history/future-roadmap.md,

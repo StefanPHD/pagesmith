@@ -129,7 +129,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11 — Multi-Tracking (Server-Side Fan-Out)
 - [x] Phase 11.1 — LinkedIn als viertes Fan-Out-Ziel
 - [ ] Phase 11.2 — Google
-- [ ] Phase 11.8 — Autorisierungsschicht
+- [x] Phase 11.8 — Autorisierungsschicht
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code)
 - [ ] Phase 11.4 — Der Testknopf
 - [ ] Phase 11.6 — Custom-Pixel
@@ -242,6 +242,11 @@ gehen von hier eine Station weiter.
 - EINE ZEILE OHNE PROJEKT LIEGT AUSSERHALB JEDER KASKADE (Trigger: die erste Zeile mit
   project_id IS NULL — also der erste Schreibpfad, der die Eigentums-Achse BENUTZT, statt
   sie offenzuhalten)
+- DIE ZWEI REGISTRIERTEN WEITERLEITUNGS-ADRESSEN LIEGEN AUSSERHALB DES REPOS (Trigger: eine
+  DRITTE Umgebung, ein Wechsel der Vercel-Adresse oder die Brand-Domain)
+- DER PRÄFIX GOOGLE_OAUTH_ HÖRT AUF ZU PASSEN, SOBALD EIN ZWEITES VORHABEN EIN EIGENES
+  CLOUD-PROJEKT BEKOMMT (Trigger: genau das — ein zweites Vorhaben mit eigenem
+  Google-Cloud-Projekt)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
@@ -906,6 +911,21 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   worden sind — darunter die Form der Kennungs-Ablage, die IPv6-Annahme und die
   Klartext-IP als Kennung. Die Anbieter-Befunde selbst stehen NICHT hier, sondern in
   docs/ziel-befunde.md.
+- docs/aktiver-stand-11.8.md — GESAMTE gebaute Phase 11.8 (Autorisierungsschicht,
+  2026-08-25 bis 2026-08-27): sechs Scheiben-Zuschnitte (11.8a bis 11.8f) mit ihren
+  Invarianten und Ausschlüssen, sechs Vermerke mit Bau-Commit und Live-Nachweis, die
+  Entscheidungen, der Vorrat und die Hebungs-Kandidaten.
+  ACHTUNG, SIE LIEGT ALS EINZIGE ARCHIVIERTE PHASE NICHT IN docs/claude-history/ — das ist
+  eine ENTSCHEIDUNG (ARCHITEKT, 2026-08-27) mit gemessenem Grund: SECHS Quelldateien
+  zitieren den Pfad docs/aktiver-stand-11.8.md in ihrem Kommentarkopf, und ein Umbenennen
+  machte alle sechs tot. Dieselbe Lage und dieselbe Antwort wie bei docs/aktiver-stand.md.
+  Sie wandert nach docs/claude-history/, sobald KEIN Produktivcode den Pfad mehr zitiert;
+  der Volltext dieser Bedingung steht in ihrem Kopf.
+  HIER NACHSEHEN, WER AN EINEM OAUTH-FLUSS, AM GEHEIMNIS-SPEICHER ODER AN DER CHIFFRIERUNG
+  ARBEITET: Der Abschnitt "## Entscheidungen, die über ihre Scheibe hinaus binden" ist am
+  Phasenende NICHT gehoben worden, ebenso wenig der Vorrat (sieben Einträge) und zwei
+  Hebungs-Kandidaten, die keine formulierbare Bedingung des Entfallens haben. Die
+  Anbieter-Befunde selbst stehen NICHT hier, sondern in docs/ziel-befunde.md.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),

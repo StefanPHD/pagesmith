@@ -1120,3 +1120,57 @@ aufeinander; sie liegen alle hier und finden einander.
   2026-08-26). Die Kaskaden-Aussage ist GELESEN an supabase/migrations/0021_project_secrets.sql
   (Kopf, Abschnitt LOESCHPFAD, und Zeile 65). Die Wahl von K1 und K3 ist
   OWNER-ENTSCHEIDUNG (2026-08-26). KEINE Messung an dieser Datenbank.
+- DIE ZWEI REGISTRIERTEN WEITERLEITUNGS-ADRESSEN LIEGEN AUSSERHALB DES REPOS (Trigger: eine
+  DRITTE Umgebung, ein Wechsel der Vercel-Adresse oder die Brand-Domain): Der
+  OAuth-Fluss für Google kehrt an eine Adresse zurück, die in der GOOGLE-CLOUD-KONSOLE
+  registriert ist. Registriert sind ZWEI, zeichengenau (OWNER-ANGABE, 2026-08-26):
+  · http://localhost:3000/api/oauth/google/callback
+  · https://pagesmith-delta.vercel.app/api/oauth/google/callback
+  ZEICHENGENAU HEISST: das Schema wörtlich (die eine ist http, die andere https), der Pfad
+  wörtlich, KEIN abschliessender Schrägstrich. Eine Adresse mit Schrägstrich ist eine
+  ANDERE Adresse — der Anbieter gleicht sie als ZEICHENKETTE ab (GELESEN, docs/ziel-befunde.md,
+  Google-Abschnitt, Teil (au): "Note that the http or https scheme, case, and trailing
+  slash ('/') must all match").
+  WAS STILL KAPUTTGEHT UND DER GRUND FÜR DIESEN EINTRAG: NICHTS IM CODE BINDET DIESE WERTE.
+  Die Anwendung liest GOOGLE_OAUTH_REDIRECT_URI aus der Umgebung und reicht den Wert
+  unverändert durch; das Gegenstück liegt in der Konsole. Läuft die Konsole vom Repo weg,
+  wird NICHTS rot — kein Gate, kein Test, kein Build meldet etwas. Der Nutzer bekommt ein
+  redirect_uri_mismatch, und die Suche beginnt bei Google statt in der Konfiguration.
+  ES IST DIESELBE KLASSE WIE DAS onConflict-LITERAL UND DIE domains-ZEILE: ein Wert, dessen
+  Gegenstück ausserhalb des Codes liegt und den kein Gate abgleicht.
+  WAS BEIM TRIGGER ZU TUN IST: Die neue Adresse wird in der Cloud-Konsole registriert UND
+  GOOGLE_OAUTH_REDIRECT_URI in jener Umgebung gesetzt — beides, sonst greift der eine oder
+  der andere Halb-Zustand. Bei der Brand-Domain kommt der Eintrag "isAppHost-PLATZHALTER"
+  oben dazu; die zwei Trigger fallen dann zusammen, sind aber verschiedene Arbeiten.
+  HERKUNFT DIESES EINTRAGS: Er stand bis zum 2026-08-27 im Roadmap-Eintrag 11.8 und ist mit
+  dessen Kollaps hierher verortet worden (ARCHITEKT, 2026-08-27). Er gehört NICHT nach
+  docs/plattform-befunde.md — das ist kein Befund über einen Anbieter, sondern ein EXTERNER
+  ZUSTAND MIT TRIGGER, also die Klasse dieser Datei.
+  PROVENIENZ: die zwei Adressen sind OWNER-ANGABE (2026-08-26), NICHT gemessen — es ist
+  kein Blick in die Cloud-Konsole durch CC erfolgt. Die Abgleich-Regel des Anbieters ist
+  GELESEN (2026-08-27). Dass nichts im Code sie bindet, ist GEMESSEN am Repo (CC,
+  2026-08-27).
+- DER PRÄFIX GOOGLE_OAUTH_ HÖRT AUF ZU PASSEN, SOBALD EIN ZWEITES VORHABEN EIN EIGENES
+  CLOUD-PROJEKT BEKOMMT (Trigger: genau das — ein zweites Vorhaben mit eigenem
+  Google-Cloud-Projekt): Die drei Umgebungsvariablen der Autorisierungsschicht heissen
+  GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET und GOOGLE_OAUTH_REDIRECT_URI
+  (vergeben am 2026-08-27). Der Präfix ist GOOGLE_OAUTH_ und nicht GOOGLE_DATAMANAGER_,
+  WEIL DER OAUTH-CLIENT AM CLOUD-PROJEKT HÄNGT UND NICHT AN DER API: Dasselbe Client-Paar
+  autorisiert alles, was in jenem Projekt liegt; ein API-Name behauptete eine Bindung, die
+  es nicht gibt.
+  WAS STILL KAPUTTGEHT: Bekommt ein späteres Vorhaben ein EIGENES Cloud-Projekt, ist
+  GOOGLE_OAUTH_ zu unspezifisch — zwei Client-Paare aus zwei Projekten drängen sich dann
+  unter EINEN Namensraum, und welcher Wert zu welchem Projekt gehört, steht nirgends. Der
+  Name wird dabei nicht falsch, er wird MEHRDEUTIG, und das meldet kein Werkzeug.
+  WAS BEIM TRIGGER ZU TUN IST: umbenennen, in der Umgebung UND im Code — die Namen stehen
+  in src/lib/oauth/google-authorize.ts und src/lib/oauth/google-token.ts. Die
+  NEXT_PUBLIC_-REDEPLOY-PFLICHT greift dabei NICHT: keiner der drei trägt dieses Präfix,
+  und das ist Absicht (der Server baut die Autorisierungs-Adresse ohnehin selbst).
+  DAS IST KEIN AUFTRAG UND KEINE VORSORGE, sondern die benannte Bedingung, unter der der
+  Name aufhört zu passen. Heute passt er.
+  HERKUNFT DIESES EINTRAGS: Er stand bis zum 2026-08-27 im Roadmap-Eintrag 11.8 und ist mit
+  dessen Kollaps hierher verortet worden (ARCHITEKT, 2026-08-27). Die NAMEN selbst sind
+  NICHT mitgezogen — sie stehen selbstdokumentierend im Code; verortet ist allein die
+  Bedingung, die nirgends sonst einen Ort hätte.
+  PROVENIENZ: die Namensvergabe und ihre Begründung sind ARCHITEKTEN-ENTSCHEIDUNG
+  (2026-08-27). KEINE Messung.

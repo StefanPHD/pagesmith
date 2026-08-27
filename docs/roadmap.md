@@ -275,8 +275,125 @@ liegen beide hier und finden einander.
       PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-25 auf der GEMESSENEN Grundlage von
       Vermerk 1. Der Messwert ist gemessen; die Folge für den Zuschnitt ist eine
       FESTLEGUNG, keine Ableitung.
-- [ ] Phase 11.8 — Autorisierungsschicht: die Ablage und die Erneuerung MEHRWERTIGER
+
+      ÜBERNOMMEN AM 2026-08-27 AUS DEM EINTRAG 11.8 — ZWEI ANGABEN, DIE JENE PHASE
+      ÜBERDAUERN, WEIL SIE DIESE HIER BETREFFEN. Sie sind übernommen worden, WEIL SIE
+      11.2 BINDEN, und NICHT, weil jener Eintrag verschwände: Er ist am 2026-08-27
+      abgeschlossen worden, sein Rumpf steht aber weiterhin vollständig da (der Grund
+      steht in seinem Kopf-Block). DORT STEHEN SIE DAMIT WEITERHIN IM WORTLAUT;
+      MASSGEBLICH IST AB JETZT DIESER ORT.
+
+      DIE SIEBEN-TAGE-FRIST DES ERNEUERUNGS-TOKENS — PFLICHT-HINWEIS FÜR JEDE
+      LIVE-TEST-ANLEITUNG MIT GOOGLE, nicht als Fussnote: IM PUBLISHING-STATUS
+      "TESTING" LEBT EIN ERNEUERUNGS-TOKEN SIEBEN TAGE. Wer das nicht weiss, jagt ein
+      abgelaufenes Token als Defekt und beginnt die Suche am falschen Ende. DER BAU
+      FINDET DAMIT UNTER KÜRZEREN FRISTEN STATT ALS DER SPÄTERE BETRIEB.
+      PROVENIENZ: GELESEN (docs/ziel-befunde.md, Google-Abschnitt) — ausdrücklich NICHT
+      gemessen. Es ist kein Token bis zu seinem Ablauf beobachtet worden.
+
+      DER AUFRUF GEGEN events:ingest IST WEITERHIN EIN OFFENER BLOCKER — er ist mit
+      Phase 11.8 KLEINER GEWORDEN UND NICHT ERLEDIGT: Der TRÄGER des Zugangsdatums für
+      diesen Endpunkt ist NICHT GEMESSEN, und gegen eine ungemessene Methode wird nicht
+      geplant. Scheibe 11.8e hat den Aufruf deshalb ausdrücklich AUSGESCHLOSSEN; sie
+      beschafft ein Zugangsdatum, chiffriert es und legt es ab — mehr nicht.
+      WAS DAS FÜR DIESE PHASE HEISST: Der Zugang ist da, der Weg zum Endpunkt nicht.
+      Wer 11.2 zuschneidet, plant die Messung dieses Trägers als ERSTEN Schritt ein.
+      DIE VOLLE HERLEITUNG STEHT IN docs/aktiver-stand-11.8.md — die Datei liegt nach
+      dem Phasenende weiterhin unter docs/ und ist NICHT nach docs/claude-history/
+      verschoben worden (der Grund steht in ihrem Kopf).
+- [x] Phase 11.8 — Autorisierungsschicht: die Ablage und die Erneuerung MEHRWERTIGER
       Zugangsdaten.
+
+      ABGESCHLOSSEN AM 2026-08-27. Sechs Scheiben (11.8a bis 11.8f), je mit eigenem
+      Vermerk und eigenem Nachweis. DER STAND LIEGT IN docs/aktiver-stand-11.8.md — die
+      Datei ist NICHT nach docs/claude-history/ verschoben worden, weil sechs Quelldateien
+      ihren Pfad im Kommentarkopf zitieren; der Grund und die Bedingung, unter der sie
+      doch wandert, stehen in ihrem Kopf.
+
+      DIESER RUMPF IST NICHT KOLLABIERT, UND DAS IST EINE ENTSCHEIDUNG MIT GEMESSENEM
+      GRUND (ARCHITEKT, 2026-08-27) — die übliche Bauform "auf Haken plus Verweissatz
+      kollabieren" ist hier ABSICHTLICH nicht angewandt.
+      GEMESSEN am Repo (CC, 2026-08-27; Achse: "Eintrag 11.8" und "Roadmap-Zeile 11.8"
+      über docs/, src/, supabase/ und CLAUDE.md): VIERZEHN Zeiger auf diesen Eintrag.
+      Neun zeigen auf die PHASE als Ganzes und überlebten einen Kollaps. FÜNF zeigen auf
+      INHALT, der dann verschwunden wäre — einer davon aus dem PRODUKTIVCODE:
+      · K1 — DIE DREI ENTSCHEIDUNGEN ZUM GEHEIMNIS-SPEICHER (Block vom 2026-08-25).
+        Zeiger: docs/aktiver-stand-11.8.md, zweimal, ausdrücklich mit "HIER STEHT NUR DER
+        ZEIGER" bzw. "werden hier NICHT verdoppelt".
+      · K2 — DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS. Zeiger: docs/offene-punkte.md,
+        Eintrag "DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT", wörtlich: "Der
+        Preis ist dort benannt und wird hier NICHT verdoppelt."
+      · K3 — DER adwords-BEREICH ALS KANDIDAT UND NICHT ALS ENTSCHEIDUNG. Zeiger:
+        src/lib/oauth/google-authorize.ts (PRODUKTIVCODE) und docs/ziel-befunde.md.
+      · K4 — DIE AUFLAGEN AUS DEM ZUGANGSMODELL. Zeiger: CLAUDE.md, wörtlich: "DIE
+        AUFLAGEN AUS DIESER WAHL STEHEN NICHT HIER, sondern an der Roadmap-Zeile 11.8".
+        DAS WÄRE DER TEUERSTE GEWESEN — ein Zeiger ins Leere in der Datei, die jede
+        Sitzung lädt.
+      · K5 — DIE BEGRÜNDUNG DER FESTEN WEITERLEITUNGS-ADRESSE (Block vom 2026-08-27).
+        Zeiger: docs/aktiver-stand-11.8.md, Zuschnitt 11.8d, Entscheidung (5), wörtlich:
+        "Die Begründung steht in docs/roadmap.md, Eintrag 11.8 … und wird hier NICHT
+        verdoppelt."
+      DIE REGEL, DIE HIER NICHT PASST, UND WARUM: "Auf Haken plus Verweissatz
+      kollabieren" ist für einen Eintrag geschrieben, der als GANZES auf eine Phase zeigt.
+      Dieser trägt ENTSCHEIDUNGEN, auf die andere Dokumente ausdrücklich verweisen, WEIL
+      sie nicht verdoppelt werden sollten. Ein Kollaps bestrafte genau die Disziplin, die
+      die Verdopplung vermieden hat.
+
+      WAS MIT DEM VOLLZUG ABGELAUFEN IST — BENANNT STATT GESTRICHEN, damit die Zeiger
+      halten (Titel-Zitate ohne Marke):
+      · "ZUR NUMMER UND ZU IHREM PLATZ" — die Begründung der Nummernwahl und des Platzes
+        im Verzeichnis. Sie hat ihren Gegenstand mit der Vergabe verloren.
+      · "WAS HIER NICHT ENTSCHIEDEN IST: ob und wann die Schicht gebaut wird" — sie ist
+        gebaut, das Zugangsmodell steht, der Zweig ist offen geblieben (s. WEITERBINDEND).
+      · Jede Formulierung dieses Eintrags, die die Schicht als UNGEBAUT beschreibt, ist ab
+        dem 2026-08-27 ein ZEITDOKUMENT. Sie bleibt lesbar, weil sie die Herleitung trägt,
+        und ist als Aussage über den heutigen Stand FALSCH.
+      DREI ABSCHNITTE SIND GEPRÜFT UND AUSDRÜCKLICH NICHT ALS ABGELAUFEN MARKIERT, weil
+      die Markierung eine Aussage falsch machte, auf die gezeigt wird:
+      · "ZWEI BLOCKER STEHEN VOR EINEM ZUSCHNITT" — der ERSTE (der Träger des
+        Zugangsdatums bei Google) ist NICHT erledigt, sondern KLEINER GEWORDEN und steht
+        seit dem 2026-08-27 zusätzlich am Eintrag 11.2.
+      · "DAS SCHEMA-RISIKO, MIT DEM GEMESSENEN STAND" — die Messung ist ein Zeitdokument,
+        aber der Abschnitt wird als ABLEITUNGS-Grundlage zitiert.
+      · "DIE AUFLAGE, DIE EINEN SPÄTEREN NEUBAU VERHINDERT — DIE ABLAGE DARF NICHT
+        ANNEHMEN, DASS EIN ZUGANGSDATUM IMMER EINEM PROJEKT GEHÖRT" — sie ist mit der
+        nullbaren project_id EINGELÖST, aber die NUTZER-Achse ist VERTAGT, nicht
+        entschieden.
+
+      WAS ÜBER DIE PHASE HINAUS WEITERBINDET — die fünf Zeiger-Ziele oben, in einem Satz
+      je: die DREI ENTSCHEIDUNGEN zum Geheimnis-Speicher (Verfahren, Tabelle,
+      Eigentums-Achse) · die VERWAHRUNG des Chiffrier-Schlüssels und ihr Preis · der
+      adwords-BEREICH als Kandidat und nicht als Entscheidung · die AUFLAGEN aus dem
+      Zugangsmodell (Advertiser mit kundeneigenem OAuth) · die BEGRÜNDUNG, warum die
+      Weiterleitungs-Adresse fest gesetzt und nicht aus dem Anfrage-Host abgeleitet wird.
+
+      VIER ANGABEN SIND AM 2026-08-27 VERORTET WORDEN, WEIL SIE NICHT MIT DIESER PHASE
+      ABLAUFEN. Sie stehen unten weiterhin im Wortlaut; MASSGEBLICH IST AB JETZT DER NEUE
+      ORT, und wer sie ändert, ändert sie dort:
+      · DIE ZWEI REGISTRIERTEN WEITERLEITUNGS-ADRESSEN → docs/offene-punkte.md, Eintrag
+        "DIE ZWEI REGISTRIERTEN WEITERLEITUNGS-ADRESSEN LIEGEN AUSSERHALB DES REPOS"
+        (Trigger: eine dritte Umgebung, ein Wechsel der Vercel-Adresse oder die
+        Brand-Domain).
+      · DIE UMBENENNUNGS-BEDINGUNG DES PRÄFIXES GOOGLE_OAUTH_ → docs/offene-punkte.md,
+        Eintrag "DER PRÄFIX GOOGLE_OAUTH_ HÖRT AUF ZU PASSEN …". Die NAMEN selbst sind
+        NICHT verortet — sie stehen selbstdokumentierend im Code.
+      · DIE SIEBEN-TAGE-FRIST DES ERNEUERUNGS-TOKENS → Eintrag 11.2, als Pflicht-Hinweis
+        für jede Live-Test-Anleitung mit Google.
+      · DER AUFRUF GEGEN events:ingest UND SEIN UNGEMESSENER TRÄGER → Eintrag 11.2, als
+        offener Blocker.
+
+      DIE BEDINGUNG, UNTER DER DIESER RUMPF DOCH KOLLABIERT, und ohne sie stünde die
+      Entscheidung als Dauerzustand da: Sobald KEIN Dokument und KEIN Produktivcode mehr
+      auf seinen INHALT zeigt — also die fünf Ziele K1 bis K5 verortet oder gegenstandslos
+      sind. Das ist prüfbar mit derselben Suche, die die vierzehn Zeiger gefunden hat.
+
+      PROVENIENZ DIESES BLOCKS: die Zeiger-Zählung ist GEMESSEN am Repo (CC, 2026-08-27);
+      die Nicht-Kollaps-Entscheidung, die Verortung der vier Angaben und die
+      Abgelaufen-Markierung sind ARCHITEKTEN-ENTSCHEIDUNG vom 2026-08-27. KEINE Messung an
+      einer Google-Schnittstelle und keine an der Datenbank.
+
+      ABGELAUFEN AM 2026-08-27 — der folgende Absatz bleibt WÖRTLICH stehen und ist ein
+      ZEITDOKUMENT; s. den Block am Kopf dieses Eintrags.
       ZUR NUMMER UND ZU IHREM PLATZ: Dass eine Phasennummer KEINE Reihenfolge trägt,
       steht bereits an den Einträgen 11.6 und 11.7 und wird hier NICHT ein viertes Mal
       ausformuliert — vier Fassungen derselben Regel liefen auseinander. 11.8 war die
@@ -320,6 +437,10 @@ liegen beide hier und finden einander.
         Zugangsdaten aus dem zweiten Beschaffungsweg — das eigene Werkzeug liest sie nicht
         aus. Das ist keine fehlende Arbeit, sondern eine fehlende Handhabe. Fundstelle:
         der Offene Punkt oben, Richtigstellung vom 2026-08-20.
+      ABGELAUFEN AM 2026-08-27 — der folgende Satz bleibt WÖRTLICH stehen und ist ein
+      ZEITDOKUMENT: Die Schicht IST gebaut (11.8a bis 11.8f), und das Zugangsmodell steht
+      seit dem 2026-08-25. OFFEN GEBLIEBEN IST ALLEIN DER ZWEIG — erzeugen die Kunden ihr
+      Zugangsdatum selbst oder der Betreiber? S. den Block am Kopf dieses Eintrags.
       WAS HIER NICHT ENTSCHIEDEN IST: ob und wann die Schicht gebaut wird, welches
       Zugangsmodell gilt und welcher Zweig gilt. KEINE EMPFEHLUNG.
 

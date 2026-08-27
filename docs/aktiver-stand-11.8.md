@@ -1,8 +1,81 @@
-# AKTIVER STAND — PHASE 11.8 (AUTORISIERUNGSSCHICHT)
+# Phase 11.8 — Autorisierungsschicht: DER AKTIVE STAND, ARCHIVIERT
 
-**WAS DIESE DATEI IST:** Der steuernde Stand der LAUFENDEN Phase 11.8. Sie ist
-angelegt am 2026-08-25. Existiert sie, läuft diese Phase; wird sie am Phasenende
-gehoben und archiviert, verschwindet sie wieder. Verfahren: docs/arbeitsweise.md.
+**WAS DIESE DATEI WAR:** der aktive Stand der LAUFENDEN Phase 11.8 — das, was jeweils
+galt, nicht das, was geworden ist. Sie war die Datei, die **GESTEUERT hat**: Jede Session,
+die an der Phase arbeitete, las sie ZUERST ("Auftrag 0"), und wo sie einer anderen Fassung
+widersprach, galt sie.
+
+**ZEITRAUM:** angelegt am 2026-08-25, VOR der ersten Scheibe; archiviert am 2026-08-27 mit
+dem Abschluss der Phase. Sechs Scheiben (11.8a bis 11.8f), je mit eigenem Vermerk; **die
+Reihenfolge der Vermerke ist NICHT die der Buchstaben** — 11.8f ist VOR 11.8e gelaufen und
+trägt deshalb Vermerk 5, 11.8e trägt Vermerk 6.
+
+**SIE LIEGT NICHT IN `docs/claude-history/`, UND DAS IST EINE ENTSCHEIDUNG MIT GEMESSENEM
+GRUND — KEINE VERGESSENE VERSCHIEBUNG.** (ARCHITEKT, 2026-08-27.)
+**SECHS QUELLDATEIEN ZITIEREN DEN PFAD `docs/aktiver-stand-11.8.md` IN IHREM
+KOMMENTARKOPF** — GEMESSEN am Repo (CC, 2026-08-27):
+`src/app/api/oauth/google/callback/route.ts` · `src/app/api/oauth/google/start/route.ts` ·
+`src/lib/oauth/google-authorize.ts` · `src/lib/oauth/google-token.ts` ·
+`src/lib/secrets/cipher.ts` · `src/lib/secrets/oauth-payload.ts`.
+Ein Umbenennen machte alle sechs tot, und heilbar wäre das nur mit einer
+Quelldatei-Änderung — also einem `feat`-Commit für einen reinen Doku-Vorgang.
+**DAS IST DIESELBE LAGE UND DIESELBE ANTWORT WIE BEI `docs/aktiver-stand.md` AM
+2026-08-25**, wo der Name aus genau diesem Grund blieb.
+**DIE BEDINGUNG, UNTER DER SIE DOCH WANDERT, und ohne sie stünde die Entscheidung als
+Dauerzustand da:** Sobald **kein Produktivcode** diesen Pfad mehr zitiert, gehört sie nach
+`docs/claude-history/`. Das ist prüfbar — eine Suche über `src/` nach dem Dateinamen.
+
+**SIE WIRD NICHT MEHR FORTGESCHRIEBEN.** Was aus ihr gehoben wurde, und wohin:
+- **VIER IHRER ACHT HEBUNGS-KANDIDATEN SIND DAUERREGELN GEWORDEN** (2026-08-27, Commit
+  `dec9f53`): "EIN NACHWEIS AN EINER NEUEN DATEI IST BLIND …" (aus den Kandidaten 1 UND 2,
+  zu EINER Regel zusammengezogen) · "EIN GUARD AUF EINEN NAMEN, DEN ES NACH DEM LAUF WIEDER
+  GIBT …" · "EIN WÄCHTER ÜBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG …" · "EINE
+  ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN …". Alle vier in `docs/immer-beachten.md`,
+  je mit ihrer Bedingung des Entfallens.
+- **KANDIDAT 8 IST KEINE EIGENE REGEL GEWORDEN, sondern ein Zusatz** an "EIN ANKER, DER
+  EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" — die Vorschrift lautet
+  jetzt, Titel-Zitate OHNE `###`-Marke zu schreiben. Grund: Das lässt die Kollision gar
+  nicht erst entstehen, statt zu verlangen, dreimal statt zweimal zu suchen.
+- **ZWEI BESTEHENDE REGELN SIND AUS DIESER PHASE RICHTIGGESTELLT WORDEN**, beide im Rumpf
+  statt am Titel (die Titel werden von aussen zitiert): "JEDES WEITERE FAN-OUT-ZIEL BRINGT
+  SEINE EIGENE CONSTRAINT-ERWEITERUNG MIT" (Beleg auf FÜNF Migrationen, **und die Reichweite
+  auf JEDEN neuen Zielwert im CHECK erweitert**) und "MEHRERE KENNUNGEN JE ZIEL BRECHEN
+  EINEN SCHLÜSSEL (PROJEKT, ZIEL) NICHT" (der Schlüssel liegt seit 0025 in einem
+  UNIQUE-Constraint, nicht im Primärschlüssel).
+- **ZWEI KANDIDATEN SIND NICHT GEHOBEN WORDEN, und der Grund gehört dazu:** Kandidat 4 (ein
+  Regressionsschritt zerstört die Voraussetzung des Schritts danach) und Kandidat 5 (eine
+  Probe gegen dieselbe Schicht kann eine Frage über eine andere Schicht nicht schliessen)
+  haben **KEINE formulierbare Bedingung des Entfallens** — sie gälten, solange es
+  Live-Anleitungen und Schichten gibt. Sie stehen unverändert HIER.
+- **EIN OFFENER PUNKT IST GESCHLOSSEN WORDEN:** "EIN OAUTH-ZUGANG PASST NICHT IN DIE
+  SKALAR-SPALTE DER GEHEIMNIS-TABELLE" (`docs/offene-punkte.md`) — Trigger eingetreten,
+  Sache gebaut. **Geschlossen, nicht gestrichen:** fünf externe Verweise zeigen darauf.
+- **IHR VORRAT IST NICHT VERTEILT WORDEN.** Die sieben Einträge stehen unverändert hier.
+  Zwei davon (5 und 6) tragen benennbare Trigger und sind Kandidaten für
+  `docs/offene-punkte.md`; Eintrag 7 trägt keinen und bleibt Vorrat. **Am Phasenende ist
+  darüber nicht entschieden worden.**
+- **IHRE ENTSCHEIDUNGEN SIND NICHT GEHOBEN WORDEN.** Der Abschnitt "## Entscheidungen, die
+  über ihre Scheibe hinaus binden" steht unverändert hier. Wer an der Chiffrierung, am
+  Geheimnis-Speicher oder an einem OAuth-Fluss arbeitet, liest ihn HIER.
+
+**DER ROADMAP-EINTRAG 11.8 TRÄGT SEIT DEM 2026-08-27 `[x]` UND IST NICHT KOLLABIERT** —
+anders als bei jeder bisher abgeschlossenen Phase steht sein RUMPF vollständig da
+(ARCHITEKT, 2026-08-27; der gemessene Grund und die Bedingung für einen späteren Kollaps
+stehen in seinem Kopf-Block).
+**WER DIE BINDENDEN ENTSCHEIDUNGEN DER PHASE SUCHT, FINDET SIE DORT UND NICHT HIER** — die
+drei Entscheidungen zum Geheimnis-Speicher, die Auflagen aus dem Zugangsmodell, die
+Begründung der festen Weiterleitungs-Adresse und der `adwords`-Bereich als Kandidat. Diese
+Datei ZEIGT an mehreren Stellen ausdrücklich dorthin und verdoppelt sie nicht; genau diese
+Zeiger sind einer der Gründe, warum jener Rumpf stehen bleibt.
+
+**IHRE VERWEISE SIND AB HIER ZEITDOKUMENTE.** Sie zeigen auf Abschnitte, Einträge und
+Codezustände, wie sie am Tag ihrer Entstehung waren; was heute gilt, steht im Repo. **Sie
+ist keine Quelle für Codezustände** — sie nennt Orte, an denen zu messen ist.
+**EINE AUSNAHME, DIE DAZUGEHÖRT:** Die Zeiger AUS dem Produktivcode HIERHER sind KEINE
+Zeitdokumente. Sie zeigen weiterhin richtig, und sechs von ihnen sind der Grund, warum
+diese Datei liegen bleibt.
+
+---
 
 **WARUM SIE EINEN ZUSATZ IM NAMEN TRÄGT UND docs/aktiver-stand.md NICHT:** Jene Datei
 gehört Phase 11.2 und behält ihren Namen, weil acht Zeiger im Quellcode ihn wörtlich
@@ -240,6 +313,20 @@ hält eine eigene Anleihe für eine fremde Abhängigkeit und streicht nie etwas.
 der vier Punkte aus "### Was ausdrücklich NICHT drin ist" und die Provenienz-Zeile des
 Zuschnitts.
 
+**NACHGETRAGEN AM 2026-08-27 — EIN NEUNTER UNTERABSCHNITT IST ABGELAUFEN, UND ZWAR DURCH
+DIE ERFÜLLUNG SEINER EIGENEN BEDINGUNG:** "Was diese Migration an docs/db-stand.md
+veraltet" (Titel-Zitat ohne `###`-Marke, s. den Zusatz an "EIN ANKER, DER EINDEUTIG
+AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md). Er trug
+seinen Ablauf selbst: "Er bleibt stehen, bis jene Datei fortgeschrieben ist."
+**SIE IST FORTGESCHRIEBEN** — GEMESSEN an docs/db-stand.md (CC, 2026-08-27): Der
+Primärschlüssel steht auf `id`, `secret` ist nullbar mit dem CHECK, die Index-Zeile führt
+zwei Indizes, die Footgun-Zeile führt `project_secrets` NICHT mehr, und der Migrationsstand
+ist bis **0026** nachgezogen. **ALLE FÜNF ANGABEN SEINER LISTE SIND ERLEDIGT.**
+**WARUM ER ERST JETZT GESTRICHEN WIRD UND NICHT BEI DER VERDICHTUNG VON 11.8b:** Damals war
+seine Bedingung noch nicht eingetreten — die Messung lag vor, das Nachziehen nicht. Er ist
+der einzige Abschnitt dieser Datei, dessen Ablauf an einem BELEG hing statt am Vollzug
+seiner Scheibe.
+
 **WO IHRE BINDENDEN RESTE LIEGEN — hier steht, wo, damit die Streichung nichts mitnimmt:**
 - **Die fünf Achsen, ihre Reihenfolge, ihre SECHS Zwänge, das
   Constraint-statt-Index-Argument samt GELESEN-Provenienz UND seiner Grenze, die
@@ -303,59 +390,6 @@ Wanderung als Vorrat, Eintrag 1 · die Constraint-Erweiterung je Ziel als dauerh
 in docs/immer-beachten.md, "JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE
 CONSTRAINT-ERWEITERUNG MIT" · der Riegel um `setCapiToken` war eine Auflage an den
 Live-Test dieser Scheibe und ist mit seinem Bestehen erledigt.
-
-### Was diese Migration an docs/db-stand.md veraltet
-
-**DIESER ABSCHNITT WIRD ALS EINZIGER NICHT VERDICHTET, UND DAS IST DER GRUND: er ist keine
-abgelaufene Zuschnitt-Begründung, sondern eine NOCH NICHT ERLEDIGTE NACHZIEH-PFLICHT.**
-Läuft er ab, verschwindet die einzige Stelle, die sagt, WAS in docs/db-stand.md überholt
-ist. Er bleibt stehen, bis jene Datei fortgeschrieben ist.
-
-**KEINE KOLLISION, aber eine Folge, und sie gehört benannt, damit sie niemand für einen
-Widerspruch hält:** docs/db-stand.md trägt **FÜNF** Angaben, die nach dieser Migration
-überholt sind. **Sie stehen hier als abzählbare Liste, weil dieser Abschnitt eine
-NACHZIEH-PFLICHT ist und jemand sie abarbeiten wird** — wer eine Liste abarbeitet, die eine
-falsche Zahl nennt, hört bei dieser Zahl auf:
-
-1. **DIE ZEILE "TABELLE public.project_secrets"** führt den Primärschlüssel als das PAAR
-   (project_id, target) — er liegt jetzt auf `id`.
-2. **DIESELBE ZEILE** führt `secret` als NOT NULL — die Bedingung ist gelöst.
-3. **DIE INDEX-ZEILE** sagt "AUSSER dem PK KEIN Index" — es sind jetzt ZWEI. Und der Satz
-   daneben, der PK trage "genau den Zugriff des Lesepfads", gilt ab jetzt dem
-   UNIQUE-Constraint, nicht dem Primärschlüssel.
-4. **DIE FOOTGUN-ZEILE "PRIMÄRSCHLÜSSEL, DIE NICHT 'id' HEISSEN"** führt `project_secrets`
-   mit dem PAAR. **DIESE IST DIE TEUERSTE DER FÜNF:** Eine Warnliste, die einen falschen
-   Eintrag trägt, erzeugt genau den Fehler, vor dem sie warnt. Der Eintrag gehört RAUS,
-   nicht korrigiert — die Tabelle heisst ab jetzt nicht mehr dazu.
-5. **DIE ZEILE "MIGRATIONSSTAND"** endet bei 0024; 0025 ist seit dem 2026-08-26 angewandt
-   und protokolliert.
-
-**DAZU, und ausdrücklich NICHT als sechster Punkt gezählt:** Die Spaltenaufzählung in
-Punkt 1 führt FÜNF Spalten — es sind jetzt SIEBEN (`id`, `secret_enc`). Ob das eine eigene
-Angabe ist oder ein Teil der ersten, ist Geschmack und wird hier nicht entschieden; wer
-Punkt 1 abarbeitet, sieht es ohnehin.
-
-**KEINE DIESER FÜNF WIRD AUS DIESER SCHEIBE FORTGESCHRIEBEN**, sondern ausschliesslich aus
-einer MESSUNG nach dem Lauf — so verlangt es jene Datei selbst.
-
-**DIE MESSUNG LIEGT SEIT DEM 2026-08-26 VOR** (Owner; die Werte stehen in Vermerk 2). Das
-Nachziehen von docs/db-stand.md ist damit MÖGLICH und in dieser Runde bewusst NICHT
-geschehen — es ist ein eigener Vorgang an einer eigenen Datei.
-
-**DIESE LISTE NANNTE BIS ZUM 2026-08-26 NUR DREI ANGABEN, und dass sie unvollständig WAR,
-ist selbst der Befund** (GEMESSEN am Text von docs/db-stand.md, CC, 2026-08-26). Sie ist
-am selben Tag auf FÜNF **ERSETZT** worden und ausdrücklich NICHT gestempelt. **DER GRUND
-LIEGT IM CHARAKTER DES ABSCHNITTS, nicht in der Grösse des Fehlers:** Eine
-Zustandsbeschreibung darf mit einem Stempel danebenstehen und altern — eine ABZUARBEITENDE
-LISTE nicht, weil ihre Zahl das Abbruchkriterium dessen ist, der sie abarbeitet. Wer die
-alte Fassung mit "drei" gelesen hätte, hätte bei Punkt 3 aufgehört und die Footgun-Zeile
-stehen lassen, also ausgerechnet die teuerste.
-
-**EINE DIESER ANGABEN IST MEHR ALS EINE ZUSTANDSANGABE:** "Wer hier später einen Index
-ergänzt, sollte vorher einen Zugriff nennen können, der ihn braucht." **Der Zugriff ist
-nennbar** — der Arbiter des upsert (`on_conflict` auf beide Spalten, GEMESSEN 2026-08-25,
-am 2026-08-26 im Live-Test bestätigt) und die Gleichheit auf beiden Spalten im Lesepfad
-(`getCapiConfigByTrackingKey`).
 
 ## Scheibe 11.8c — Die Form der mehrwertigen Nutzlast, als eigener Ort
 

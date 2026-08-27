@@ -26,15 +26,52 @@
 --                  im README) — eine echte Tabelle ist keines. Der Zweck der Regel
 --                  trifft diesen Fall damit unveraendert: die praezisierte Fassung macht
 --                  den Verzicht hier NICHT hinfaellig. Von Hand,
---                  einzeln, auf einem TESTPROJEKT — nie auf einem Kundenprojekt:
---                    insert into public.project_secrets (project_id, target, secret)
---                    values ('<PROJEKT_UUID>', '<ZIELWERT>', '__probe__');
---                      -> ERWARTUNG: ANGENOMMEN.
+--                  auf einem TESTPROJEKT — nie auf einem Kundenprojekt.
+--
+--                  ZWEI GETRENNTE TRANSAKTIONEN, JE begin … rollback. ERST DER
+--                  FEHLSCHLAG, DANN DER ERFOLG:
+--
+--                    -- (b) DIE ABWEISUNG — der wertvollere der beiden Belege.
+--                    begin;
 --                    insert into public.project_secrets (project_id, target, secret)
 --                    values ('<PROJEKT_UUID>', '<ZIELWERT_MIT_TIPPFEHLER>', '__probe__');
---                      -> ERWARTUNG: ABGEWIESEN mit 23514 (check_violation).
---                    delete from public.project_secrets
---                    where project_id = '<PROJEKT_UUID>' and secret = '__probe__';
+--                    rollback;
+--                      -> ERWARTUNG: ABGEWIESEN mit SQLSTATE 23514 (check_violation).
+--
+--                    -- (a) DIE ANNAHME.
+--                    begin;
+--                    insert into public.project_secrets (project_id, target, secret)
+--                    values ('<PROJEKT_UUID>', '<ZIELWERT>', '__probe__');
+--                    rollback;
+--                      -> ERWARTUNG: ANGENOMMEN (1 Zeile), danach durch das rollback WEG.
+--
+--                  WARUM DIE ERWARTUNG NUR DIE ZAHL 23514 NENNT UND NICHT DEN
+--                  CONSTRAINT-NAMEN: OB DER SQL-EDITOR DEN NAMEN IN DER FEHLERMELDUNG
+--                  ZEIGT, IST NICHT GEMESSEN. docs/db-stand.md nennt ihn beim Lauf vom
+--                  2026-08-17 — ob er dort abgelesen oder zugeordnet wurde, steht nicht
+--                  dabei. Die Erwartung ist deshalb so formuliert, dass sie OHNE den
+--                  Namen pruefbar bleibt; zeigt der Editor ihn, ist das ein Zugewinn und
+--                  keine Bedingung.
+--
+--                  WARUM TRANSAKTION UND NICHT insert/insert/delete — die Form bis
+--                  2026-08-27 und bei 0022 bis 0024 gefahren:
+--                    · DIE ZEILE ENTSTEHT GAR NICHT. Ein rollback ist keine ZWEITE
+--                      Handlung, die man vergessen kann; schliesst jemand das Fenster,
+--                      rollt die Sitzung ohnehin zurueck. Beim alten Weg blieb die Zeile
+--                      stehen, wenn der delete ausfiel — in der GEHEIMNIS-Tabelle.
+--                    · KEIN delete AUF project_secrets MEHR. Damit gibt es keine
+--                      where-Klausel, die zu weit sein koennte. Der gefaehrlichste Teil
+--                      der alten Anleitung entfaellt ganz.
+--                    · ZWEI TRANSAKTIONEN UND NICHT EINE MIT savepoint: Ein
+--                      fehlschlagender Insert bricht in Postgres die GANZE Transaktion
+--                      ab — danach nimmt sie bis zum rollback nichts mehr an. Getrennt
+--                      ist jede Richtung eine eigene, klar ablesbare Beobachtung.
+--                  DIE FORM IST GEMESSEN, NICHT ANGENOMMEN: begin … rollback laeuft im
+--                  Supabase-SQL-Editor in EINEM Ausfuehrungsblock (GEMESSEN, Owner,
+--                  2026-08-27). Der Nachweis lief nicht ueber select 1 allein, sondern
+--                  ueber eine temporaere Tabelle, die nach dem rollback nicht mehr
+--                  existierte (to_regclass lieferte NULL).
+--
 --                  DIE ABWEISUNG IST DER WERTVOLLERE DER BEIDEN BELEGE: Die Annahme
 --                  allein saehe bei einem Constraint, der alles durchlaesst, identisch
 --                  aus. Erst die Abweisung zeigt, dass der Schutz noch da ist.
@@ -48,9 +85,23 @@
 --              (4) schema_migrations existiert DREIMAL im Cluster (public / auth /
 --                  realtime). Probe 2 filtert deshalb auf das Schema public — ohne den
 --                  Filter liefert sie mehrere Zeilen und sieht wie ein Befund aus.
--- VERIFIZIERT: NOCH NIE gegen echte Daten gelaufen (angelegt 2026-08-17, Scheibe 11.1a).
---              Wer sie zuerst faehrt, zieht dieses Datum nach — eine ungefahrene Probe
---              ist eine Vermutung ueber ihr eigenes Ergebnis.
+-- VERIFIZIERT: UNGEKLAERT, und das steht hier so, statt rekonstruiert zu werden.
+--              ZWEI STELLEN WIDERSPRECHEN SICH (aufgefallen CC, 2026-08-27):
+--                · DIESER KOPF sagte bis heute "NOCH NIE gegen echte Daten gelaufen
+--                  (angelegt 2026-08-17, Scheibe 11.1a)".
+--                · docs/db-stand.md sagt, sie SEI gelaufen — "LIVE ABGELESEN am
+--                  2026-08-17 (SQL-Editor, Owner, im Live-Test der Scheibe 11.1a; Probe:
+--                  supabase/checks/project-secrets-target-check.sql)".
+--              AM REPO IST NICHT ENTSCHEIDBAR, welche Stelle recht hat. Die naheliegende
+--              Erklaerung — sie lief, und die Nachzieh-Auflage in diesem Kopf wurde nicht
+--              befolgt — ist eine VERMUTUNG und wird hier nicht als Befund eingetragen.
+--              NICHTS WIRD ANGEGLICHEN: Eine stille Entscheidung fuer eine der beiden
+--              Stellen loeschte den Widerspruch, ohne ihn aufzuloesen.
+--              DER NAECHSTE LAUF SCHLIESST DIE LUECKE — er ist der Lauf der Scheibe
+--              11.8f. Wer ihn faehrt, traegt sein Datum HIER ein; ab da ist die Zeile
+--              wieder eine Aussage und keine offene Frage.
+--              ZUM STAND DIESER FASSUNG (2026-08-27): DER LAUF VON 11.8f HAT NOCH NICHT
+--              STATTGEFUNDEN. Diese Datei ist umgestellt, aber nicht gefahren.
 
 -- PROBE 1 — DIE CONSTRAINT-DEFINITION IM WORTLAUT
 -- ERWARTUNG: GENAU EINE Zeile. Die Definition nennt ALLE erlaubten Zielwerte.

@@ -45,13 +45,20 @@
 --                    rollback;
 --                      -> ERWARTUNG: ANGENOMMEN (1 Zeile), danach durch das rollback WEG.
 --
---                  WARUM DIE ERWARTUNG NUR DIE ZAHL 23514 NENNT UND NICHT DEN
---                  CONSTRAINT-NAMEN: OB DER SQL-EDITOR DEN NAMEN IN DER FEHLERMELDUNG
---                  ZEIGT, IST NICHT GEMESSEN. docs/db-stand.md nennt ihn beim Lauf vom
---                  2026-08-17 — ob er dort abgelesen oder zugeordnet wurde, steht nicht
---                  dabei. Die Erwartung ist deshalb so formuliert, dass sie OHNE den
---                  Namen pruefbar bleibt; zeigt der Editor ihn, ist das ein Zugewinn und
---                  keine Bedingung.
+--                  DER SQL-EDITOR ZEIGT DEN CONSTRAINT-NAMEN IN DER FEHLERMELDUNG —
+--                  GEMESSEN (Owner, 2026-08-27, im Lauf der Scheibe 11.8f): die Meldung
+--                  nannte project_secrets_target_valid.
+--                  DIESE ZEILE SAGTE BIS ZUM 2026-08-27 DAS GEGENTEIL ("ist nicht
+--                  gemessen"). Sie ist ERSETZT und nicht gestempelt: Eine Erwartung, die
+--                  eine Angabe als ungemessen fuehrt, obwohl sie gemessen ist, laesst
+--                  einen Pruefer weniger verlangen als er koennte.
+--                  DIE GRENZE GEHOERT DAZU: Gemessen ist es im SUPABASE-SQL-EDITOR, nicht
+--                  ueber andere Zugaenge hinweg — ueber psql, den JS-Client oder ein
+--                  anderes Werkzeug sagt der Befund NICHTS.
+--                  DIE ERWARTUNG BLEIBT TROTZDEM AUF DIE ZAHL 23514 GESTUETZT, und das
+--                  ist Absicht: Sie soll auch dann pruefbar sein, wenn jemand die Probe
+--                  ueber einen anderen Zugang faehrt. Der Name ist ab jetzt ein
+--                  ERWARTETER Zugewinn im Editor — keine Bedingung des Bestehens.
 --
 --                  WARUM TRANSAKTION UND NICHT insert/insert/delete — die Form bis
 --                  2026-08-27 und bei 0022 bis 0024 gefahren:
@@ -97,11 +104,17 @@
 --              befolgt — ist eine VERMUTUNG und wird hier nicht als Befund eingetragen.
 --              NICHTS WIRD ANGEGLICHEN: Eine stille Entscheidung fuer eine der beiden
 --              Stellen loeschte den Widerspruch, ohne ihn aufzuloesen.
---              DER NAECHSTE LAUF SCHLIESST DIE LUECKE — er ist der Lauf der Scheibe
---              11.8f. Wer ihn faehrt, traegt sein Datum HIER ein; ab da ist die Zeile
---              wieder eine Aussage und keine offene Frage.
---              ZUM STAND DIESER FASSUNG (2026-08-27): DER LAUF VON 11.8f HAT NOCH NICHT
---              STATTGEFUNDEN. Diese Datei ist umgestellt, aber nicht gefahren.
+--              GEFAHREN AM 2026-08-27 (Owner, Supabase-SQL-Editor, im Lauf der Scheibe
+--              11.8f, Migration 0026): alle drei Proben, ZWEIMAL — Probe 1 vor dem Lauf
+--              (VIER Werte) und nach dem Lauf (FUENF Werte, je GENAU EINE Zeile), dazu
+--              Probe 2 (0026 protokolliert) und Probe 3 (keine bleibende 'google'-Zeile).
+--              Die Verhaltens-Positivkontrolle aus FALLE (2) lief in der
+--              Transaktions-Form und bestand in BEIDEN Richtungen.
+--              DER WIDERSPRUCH OBEN IST DAMIT NICHT GEKLAERT, und das gehoert
+--              ausdruecklich hierher: Ein neuer Lauf sagt nichts darueber, was am
+--              2026-08-17 geschah. Er schliesst die Luecke nach VORN — die Datei sagt
+--              wieder, wann sie zuletzt gegen echte Daten lief — und laesst die Frage
+--              nach dem alten Lauf offen, wo sie steht.
 
 -- PROBE 1 — DIE CONSTRAINT-DEFINITION IM WORTLAUT
 -- ERWARTUNG: GENAU EINE Zeile. Die Definition nennt ALLE erlaubten Zielwerte.

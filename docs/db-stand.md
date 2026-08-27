@@ -69,6 +69,17 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   'project_secrets' und sagte über Migrationen ausserhalb dieses Musters ausdrücklich
   NICHTS. Probe 1 filtert nicht — die Einschränkung im Absatz darüber gilt für JENE
   Messung und ist für den heutigen Stand aufgehoben.
+  NACHGEZOGEN AM 2026-08-27: DER HEUTIGE STAND IST 0001-0026. LIVE ABGELESEN am 2026-08-27
+  (SQL-Editor, Owner, im Lauf der Scheibe 11.8f; Probe 2 aus
+  supabase/checks/project-secrets-target-check.sql): 0026 steht als JÜNGSTER Eintrag im
+  Protokoll, mit gefülltem applied_at.
+  DIE GRENZE DIESER MESSUNG GEHÖRT DAZU, und sie ist dieselbe wie am 2026-08-17: Probe 2
+  filtert auf Dateinamen mit 'project_secrets'. Über Migrationen ausserhalb dieses Musters
+  sagt sie NICHTS — die arithmetische LÜCKENLOSIGKEIT ist damit für 0026 NICHT erneut
+  bewiesen, sondern nur der VOLLZUG dieser einen Migration. Für 0001-0025 gilt weiterhin
+  die Messung vom 2026-08-26.
+  WER DIE LÜCKENLOSIGKEIT WIEDER ARITHMETISCH WILL, fährt Probe 1 und 1b aus
+  supabase/checks/db-stand.sql — sie filtern nicht. Das ist in diesem Lauf NICHT geschehen.
   · 0001-0021, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl = Spannweite+1),
     nicht nur an der Dateisortierung abgelesen. GEMESSEN am 2026-08-05: 21 Zeilen,
     Spannweite 0001-0021; applied_at gefüllt bei 0018, 0019, 0020 und 0021 — bei 0021 mit
@@ -197,6 +208,28 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   BEREITS eingespielt, ein Ausgangswert VOR dem Lauf wurde also nicht abgelesen. Gemessen
   ist, dass der Constraint HEUTE so lautet und wirkt — NICHT, dass 0024 den Übergang
   bewirkt hat. Das ruht auf dem Protokoll-Eintrag und ist eine Ableitung.
+  RICHTIGGESTELLT AM 2026-08-27, NICHT GESTEMPELT — der Wortlaut darüber bleibt lesbar,
+  weil er als Aussage über den 2026-08-17 richtig ist. HEUTE GILT ER NICHT MEHR.
+  LIVE ABGELESEN am 2026-08-27 (SQL-Editor, Owner, im Lauf der Scheibe 11.8f; Probe 1 aus
+  supabase/checks/project-secrets-target-check.sql), im Wortlaut:
+  CHECK ((target = ANY (ARRAY['meta'::text, 'pinterest'::text, 'tiktok'::text,
+  'linkedin'::text, 'google'::text]))) — FÜNF Zielwerte. Gesetzt hat ihn 0026 (fünftes
+  Ziel), per drop + add in EINER Transaktion.
+  DIE ZEILENZAHL IST MITGEMESSEN UND KEIN BEIFANG: GENAU EINE Zeile. Zwei wären der
+  Doppel-Constraint-Fall — der Katalog-Guard hätte bei einem falschen Namen nicht
+  gegriffen, das add legte einen ZWEITEN Constraint an, und der alte wiese 'google'
+  weiterhin ab, WÄHREND DER LAUF ERFOLG MELDET. Wer nur den Wortlaut liest, sieht diesen
+  stillen Fehlzustand nicht.
+  MITGEMESSEN AM 2026-08-27, wie schon 2026-08-07 und 2026-08-17 der wertvollere der
+  beiden Belege: ein Wegwerf-Insert mit 'google' wurde ANGENOMMEN, einer mit 'googel' mit
+  23514 (check_violation) unter dem Namen project_secrets_target_valid ABGEWIESEN.
+  DIE GRENZE VON 2026-08-17 GILT FÜR DIESE MESSUNG NICHT — und das ist der eigentliche
+  Zugewinn: Probe 1 lief VOR dem Lauf (VIER Werte) UND danach (FÜNF Werte). Der ÜBERGANG
+  ist damit GEMESSEN und nicht aus dem Protokoll-Eintrag abgeleitet.
+  UND EINE ZWEITE ABWEICHUNG ZUM 2026-08-17: Beide Wegwerf-Inserts liefen in je einer
+  eigenen Transaktion mit rollback statt als insert/insert/delete. Es ist KEINE Zeile
+  entstanden, die wieder zu entfernen gewesen wäre; Probe 3 danach zeigt weiterhin keinen
+  'google'-Eintrag.
   0021 legte den Constraint mit einem EINZIGEN Zielwert an; 0022 hat ihn ERSETZT (drop + add
   in EINER Transaktion). Der Zielwert bleibt eng gefasst, jedes weitere Ziel bringt seine
   EIGENE Constraint-Erweiterung mit — der beabsichtigte Preis: der sichtbare Moment, in dem

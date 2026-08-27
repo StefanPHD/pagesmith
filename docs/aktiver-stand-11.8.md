@@ -661,26 +661,54 @@ laufenden Datenbank ist für diesen Zuschnitt nichts erhoben.**
 
 ## Scheibe 11.8f — Der fünfte Zielwert im CHECK
 
-**ZUGESCHNITTEN AM 2026-08-27, NICHT GEBAUT.** Es gibt keinen Vermerk, kein Ergebnis und
-keine Messung zu dieser Scheibe — sie ist ein Plan, und dieser Abschnitt ist der Maßstab,
-gegen den ihr späterer Vermerk misst. **Die Migration ist NICHT geschrieben und NICHT
-gefahren.**
+**VOLLZOGEN AM 2026-08-27, Commit 9133bcc. DIE MIGRATION IST GEFAHREN, DIE GEGENPROBE IST
+BESTANDEN. DER ZUSCHNITT IST AB HIER VERDICHTET** — was mit dem Vollzug abgelaufen ist,
+steht nicht mehr hier. Der Maßstab, gegen den er misst, ist Vermerk 5 weiter unten.
 
-**SIE STEHT HINTER 11.8e UND LÄUFT VOR IHR — und dieser Satz muss hier stehen, weil die
+**SIE STEHT HINTER 11.8e UND IST VOR IHR GELAUFEN — und dieser Satz bleibt stehen, weil die
 Reihenfolge in dieser Datei sonst als Ablauf gelesen wird.** Die Position ist NUMERISCH
-(a, b, c, d, e, f) und sagt über den Zeitpunkt nichts; **der Ablauf ist 11.8f, dann 11.8e.**
-Wer die Datei von oben nach unten als Fahrplan liest, dreht die beiden um — und genau diese
-Umkehrung wäre fail-open (s. "### Die Reihenfolge, als Auflage").
+(a, b, c, d, e, f) und sagt über den Zeitpunkt nichts. **Seit dem 2026-08-27 ist der
+Unterschied kein Plan mehr, sondern ein Zustand: 11.8f IST vollzogen, 11.8e ist es NICHT.**
+Wer die Datei von oben nach unten als Fahrplan liest, hält 11.8e für die nächste offene
+Scheibe und 11.8f für die übernächste — und beides ist falsch herum. **DER SATZ BLEIBT,
+SOLANGE 11.8e UNGEBAUT IST.**
 
-**HERKUNFT DIESER SCHEIBE:** Sie ist aus einer Aufklärung zu 11.8e entstanden, nicht
-geplant gewesen. Gate G1 jener Runde (CC, 2026-08-27) hat gemessen, dass der Zielwert
-fehlt; damit war 11.8e **blockiert**, und die Aufteilung ist die Antwort darauf.
-**ARCHITEKTEN-ENTSCHEIDUNG vom 2026-08-27.**
+**HERKUNFT DIESER SCHEIBE, und sie bleibt stehen, weil sie erklärt, warum es sie gibt:**
+Sie ist aus einer Aufklärung zu 11.8e entstanden, nicht geplant gewesen. Gate G1 jener
+Runde (CC, 2026-08-27) hat gemessen, dass der Zielwert fehlt; damit war 11.8e **blockiert**,
+und die Aufteilung ist die Antwort darauf. **ARCHITEKTEN-ENTSCHEIDUNG vom 2026-08-27.**
 
-### Der Gegenstand von 11.8f
+**DIE ZITAT-PRÜFUNG VOR DER VERDICHTUNG.** GEMESSEN am ganzen Repo (CC, 2026-08-27; Achse:
+alle Dateien ausser .git, node_modules, .next, .playwright-mcp; gesucht nach jedem der NEUN
+Unterabschnitts-Titel dieses Zuschnitts): **KEIN EINZIGER wird von aussen zitiert** — alle
+neun haben ihren einzigen Treffer in dieser Datei. `0026_project_secrets_google.sql` und
+die Probe nennen die Scheibe **11.8f** als Namen, nicht einen ihrer Unterabschnitte.
+**EINE STELLE WÄRE DURCH DIE VERDICHTUNG DOCH TOT GEWORDEN, und sie ist im selben Zug
+behoben:** Der Warnsatz oben verwies auf einen Titel, der jetzt abläuft. Der Verweis ist
+entfernt, statt auf eine gestrichene Überschrift zu zeigen.
 
-**Migration 0026: Der CHECK `project_secrets_target_valid` auf `project_secrets.target`
-wird von VIER auf FÜNF Werte erweitert — `'google'` kommt dazu. Sonst nichts.**
+**WAS ABGELAUFEN IST, damit die Streichung erkennbar bleibt und nicht als Versehen** — acht
+Unterabschnitte, hier ohne die Marke `###` aufgezählt, damit eine Suche nach einer
+Überschrift nicht zuerst in dieser Liste landet (Hebungs-Kandidat 8, in eigener Sache
+angewandt): Der Gegenstand von 11.8f · Die Bauform, dreimal gelebt · Der Befund und seine
+Provenienz · Was ohne sie passiert · Die Einordnung als vorhergesagter Fall · Was 11.8f
+ausdrücklich ausschliesst · Die Reihenfolge als Auflage · Der Beweis in zwei Richtungen ·
+dazu die Provenienz-Zeile des Zuschnitts.
+
+**WO IHRE BINDENDEN RESTE LIEGEN — hier steht, wo, damit die Streichung nichts mitnimmt:**
+- **Der Gegenstand, die Bauform, die Reihenfolge-Auflage und die Einordnung** stehen im KOPF
+  von `supabase/migrations/0026_project_secrets_google.sql`, ausführlicher als sie je hier
+  standen — einschliesslich des Punktes, den keine der vier Vorgänger-Dateien trägt: **was
+  der Katalog-Guard NICHT leistet.** Eine angewandte Migration wird nicht umgeschrieben; der
+  Kopf ist damit der haltbarere Ort.
+- **Der Befund** — dass `'google'` fehlte — ist mit dem Lauf **erledigt**. Vorher- und
+  Nachher-Wortlaut stehen in Vermerk 5, den heutigen Stand trägt `docs/db-stand.md`.
+- **Was ohne sie passiert wäre** ist gegenstandslos: sie ist gelaufen.
+- **Der Beweis in zwei Richtungen** steht in Vermerk 5, samt dem, was jede Richtung
+  ausschliesst — und samt der offenen Angabe, die dabei geschlossen wurde.
+- **Die Anleitung zur Gegenprobe** lebt in `supabase/checks/project-secrets-target-check.sql`
+  weiter, FALLE (2), in der Transaktions-Form. Sie ist wiederverwendbar; ein sechstes Ziel
+  braucht sie unverändert.
 
 ### Warum eine EIGENE Scheibe und nicht der erste Schritt von 11.8e
 
@@ -698,103 +726,15 @@ ist er also **gefahrlos**. Die umgekehrte Reihenfolge — Code zuerst — wäre 
 Der Schreibpfad liefe gegen eine Datenbank, die den Wert nicht kennt, und scheiterte im
 laufenden Betrieb statt im Editor.
 
-### Die Bauform — dreimal gelebt, nicht erfunden
+**WAS DIESER ABSCHNITT ÜBER 11.8f HINAUS BINDET, und deshalb steht er als einziger noch
+hier:** Die zwei Gründe gelten JEDER künftigen Scheibe, die eine Migration und den Code
+dazu trägt — nicht nur dieser. Sie sind am 2026-08-27 zum ersten Mal ausgeschrieben worden;
+0022 bis 0024 sind ihnen gefolgt, ohne dass jemand sie benannt hatte.
 
-**`drop constraint` + `add constraint` in EINER Transaktion, der Protokoll-Insert als
-LETZTE Anweisung.** Präzedenz, und es sind drei:
-- `supabase/migrations/0022_project_secrets_targets.sql` — zweiter Zielwert.
-- `supabase/migrations/0023_project_secrets_tiktok.sql` — dritter Zielwert.
-- `supabase/migrations/0024_project_secrets_linkedin.sql` — vierter Zielwert.
-
-**DER PROTOKOLL-INSERT STEHT AM ENDE UND NICHT AM ANFANG**, und das ist keine
-Formatierungsfrage: Bricht die Migration vorher ab, gibt es keine Zeile, die einen nie
-vollzogenen Lauf behauptet (docs/db-regeln.md, "MIGRATION IMMER VOR CODE-DEPLOY",
-PROTOKOLL-PFLICHT ab 0018).
-
-### Der Befund und seine Provenienz — ZWEI unabhängige Quellen, die übereinstimmen
-
-**`'google'` fehlt heute im CHECK. GEMESSEN, und zwar zweifach:**
-- **Aus den Migrationsdateien** (CC, 2026-08-27): `0024_project_secrets_linkedin.sql`
-  trägt `check (target in ('meta', 'pinterest', 'tiktok', 'linkedin'))` — VIER Werte. Eine
-  Suche nach `'google'` über `supabase/migrations/` liefert **KEINEN Treffer**.
-  `0025_project_secrets_schema.sql` liest den CHECK ausdrücklich als **unverändert** mit.
-- **Aus docs/db-stand.md**: dieselbe Aussage, **LIVE ABGELESEN** am 2026-08-17 im
-  SQL-Editor (Owner, Probe `supabase/checks/project-secrets-target-check.sql`).
-
-**KEIN DRIFT ZWISCHEN REPO UND DATENBANK — und dass das eigens dasteht, ist der Punkt:**
-Bei einer Aussage über ein Schema ist die Übereinstimmung zweier unabhängiger Quellen
-selbst der Befund. Hätten sie auseinandergelegen, wäre nicht die Migration die erste
-Arbeit, sondern die Klärung.
-
-### Was ohne sie passiert
-
-**Der Insert von 11.8e wird von der Datenbank mit `23514` (check_violation) unter dem
-Namen `project_secrets_target_valid` abgewiesen.**
-
-**DAS IST AM BESTAND BELEGT UND NICHT HERGELEITET:** Die Messung vom 2026-08-17 hat genau
-diese Abweisung an einem Wegwerf-Insert beobachtet — ein Wert ausserhalb der Menge wurde
-mit 23514 unter diesem Constraint-Namen zurückgewiesen, während ein gültiger angenommen
-wurde. **Die Annahme allein sähe bei einem Constraint, der alles durchlässt, identisch
-aus**; erst die Abweisung zeigt, dass der Schutz wirkt.
-
-### Die Einordnung — ein vorhergesagter Fall, kein Sonderfall
-
-Das ist genau der Fall, den die Dauerregel **"JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE
-EIGENE CONSTRAINT-ERWEITERUNG MIT"** (docs/immer-beachten.md) vorhersagt. **Vier Ziele,
-vier Migrationen** — 0021 legte den CHECK mit einem Wert an, 0022, 0023 und 0024
-erweiterten ihn je um einen. **Google ist das fünfte.**
-**DER PREIS IST BEABSICHTIGT**, und die Migration 0021 nennt ihn selbst: der sichtbare
-Moment, in dem ein Ziel real wird. Eine Scheibe, die ihn überspringt, hat den Zielwert
-still eingeführt.
-
-### Was 11.8f ausdrücklich ausschliesst
-
-Keine neue Spalte · kein Ablauf-Feld · keine Policy · keine Änderung am
-UNIQUE-Constraint, am Primärschlüssel oder am CHECK `project_secrets_secret_genau_eines` ·
-kein Code · **keine Zeile in `project_secrets`**.
-
-**DER LETZTE PUNKT IST DER SCHÄRFSTE:** Diese Scheibe schreibt kein Geheimnis und legt
-keine Zeile an. Sie erlaubt einen Wert, den bis 11.8e niemand benutzt.
-
-### Die Reihenfolge, als Auflage
-
-**DIE MIGRATION LÄUFT IM SQL-EDITOR VOR JEDEM DEPLOY** (docs/db-regeln.md, "MIGRATION
-IMMER VOR CODE-DEPLOY"). Ohne Code, der `'google'` schreibt, ist sie ein **No-op** —
-deshalb ist sie **jetzt gefahrlos** und in der umgekehrten Reihenfolge **fail-open**.
-
-**WAS NACH IHREM LAUF GILT UND LEICHT ÜBERSEHEN WIRD:** Das automatische Tages-Backup ist
-bis zum nächsten Snapshot **nicht mehr code-kompatibel** — ein Restore in diesem Fenster
-brauchte ein manuelles Nachziehen der Migration (docs/db-regeln.md,
-"BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN, NICHT AM KALENDER"). Bei einer additiven
-CHECK-Erweiterung ist das Fenster billig; **es ist trotzdem eines.**
-
-### Der Beweis von 11.8f — eine Gegenprobe in ZWEI Richtungen
-
-**Der Beweis ist eine Gegenprobe im SQL-Editor, und sie muss BEIDE Richtungen zeigen:**
-1. **`'google'` geht jetzt durch.**
-2. **Ein unbekannter Wert wird weiterhin abgewiesen** (23514, `project_secrets_target_valid`).
-
-**NUR DIE ZWEITE RICHTUNG BELEGT, DASS DER CHECK NOCH WIRKT.** Ein `drop` ohne `add` —
-oder ein `add` mit einer zu weiten Bedingung — sähe an Richtung 1 **identisch** aus:
-`'google'` ginge durch, und zwar deshalb, weil gar nichts mehr prüft. Eine Probe, die nur
-den Erfolg misst, kann einen entfernten Schutz nicht von einem erweiterten unterscheiden.
-**Das ist dieselbe Denkfigur wie die Positivkontrolle bei einem Abwesenheits-Wächter**
-(docs/immer-beachten.md, "MUTATIONSPROBEN", Lektion (d)) — hier an einem Constraint statt
-an einem Test.
-
-**DIE GENAUE PROBE ENTSCHEIDET DER PLAN.** Hier steht keine, und eine eingesetzte sähe wie
-eine entschiedene aus. **Was der Plan dabei mitbedenken muss und dieser Zuschnitt nur
-benennt:** Ein Wegwerf-Insert braucht eine gültige `project_id` (Fremdschlüssel) und muss
-genau eines von `secret`/`secret_enc` tragen; und er hinterlässt eine Zeile, die wieder
-verschwinden muss.
-
-PROVENIENZ DIESES ZUSCHNITTS: Die Aufteilung in eine eigene Scheibe und ihre zwei Gründe
-sind **ARCHITEKTEN-ENTSCHEIDUNG vom 2026-08-27**. Dass `'google'` heute fehlt, ist
-**GEMESSEN am Repo (CC, 2026-08-27)** und deckungsgleich mit der **LIVE-ABLESUNG vom
-2026-08-17 (Owner, SQL-Editor)**, die in docs/db-stand.md steht. Die Bauform und die drei
-Präzedenzfälle sind **am Migrations-SQL gemessen (CC, 2026-08-27)**. **NICHTS ist gebaut,
-KEINE Migration geschrieben, NICHTS an der laufenden Datenbank erhoben, und es ist KEIN
-Aufruf gegen eine fremde Schnittstelle gefahren worden.**
+PROVENIENZ DES VERBLIEBENEN ZUSCHNITTS: Die Aufteilung in eine eigene Scheibe und ihre
+zwei Gründe sind **ARCHITEKTEN-ENTSCHEIDUNG vom 2026-08-27**. Die Zitat-Prüfung ist
+**GEMESSEN am Repo (CC, 2026-08-27)**. Der Vollzug selbst — der Lauf, die Gegenprobe und
+alle Messwerte — steht in Vermerk 5 und ist **GEMESSEN (Owner, 2026-08-27, SQL-Editor)**.
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -1263,6 +1203,103 @@ Lauf (CC, 2026-08-27)**. Die Setzung von `prompt=consent` und das Weglassen von
 Anbieter-Angaben sind **GELESEN** (docs/ziel-befunde.md, Google-Abschnitt, Teile (at) bis
 (ay)) und ausdrücklich NICHT gemessen. **KEINE Messung an einer laufenden Datenbank; der
 einzige Aufruf gegen eine fremde Schnittstelle lief beim Owner im Browser, nicht durch CC.**
+
+### Vermerk 5 — Scheibe 11.8f, Commit 9133bcc (2026-08-27)
+
+**WAS GEBAUT WURDE:** EINE neue Migration,
+`supabase/migrations/0026_project_secrets_google.sql`, die den CHECK
+`project_secrets_target_valid` von VIER auf FÜNF Zielwerte setzt — Katalog-Guard auf
+`conname` UND `conrelid`, `drop` + `add` in EINEM `do`-Block, Protokoll-Insert als letzte
+Anweisung ausserhalb des Blocks. Dazu die Umstellung der Anleitung in
+`supabase/checks/project-secrets-target-check.sql`. **ZWEI Dateien, kein Code, keine
+Testdatei** — GEMESSEN am Diff (CC, 2026-08-27): zwei Einträge in
+`git status --porcelain --untracked-files=all`, kein dritter.
+
+**KEINE PIPELINE-GATES — und das ist kein Versäumnis, sondern gegenstandslos:** Diese
+Scheibe berührt kein TypeScript und keinen Test. `tsc`, `lint`, `vitest` und `build`
+wurden nicht gefahren und hätten nichts gemessen.
+
+**DIE DREI LESE-ABFRAGEN DER PROBE SIND UNVERÄNDERT** — GEMESSEN am Diff: jede `+`- und
+`-`-Zeile beginnt mit `--`, es ist ausschliesslich Kommentar geändert worden.
+
+#### Der LAUF — sieben Schritte, alle bestanden
+
+**GEMESSEN vom OWNER am 2026-08-27 im Supabase-SQL-Editor.**
+
+1. **Probe 1 VOR dem Lauf: GENAU EINE Zeile, VIER Werte** (`meta`, `pinterest`, `tiktok`,
+   `linkedin`).
+2. **0026 lief fehlerfrei durch** — "Success. No rows returned".
+3. **Probe 1 NACH dem Lauf: GENAU EINE Zeile, FÜNF Werte**, `'google'` im Wortlaut.
+4. **(b)** `'googel'` **abgewiesen mit 23514 (check_violation) unter
+   `project_secrets_target_valid`.** **(a)** `'google'` **angenommen**, per `rollback`
+   wieder weg.
+5. **Probe 2:** 0026 als jüngster Eintrag im Protokoll.
+6. **Probe 3:** keine bleibende Zeile mit `'google'`.
+
+**WAS SCHRITT 3 BEWEIST UND LEICHT ALS FORMSACHE GELESEN WIRD — es ist die ZEILENZAHL,
+nicht der Wortlaut:** Sie schliesst den DOPPEL-CONSTRAINT-FALL aus. Das ist der eine
+Fehlzustand, bei dem **der Lauf Erfolg meldet, der Protokoll-Eintrag entsteht, nichts rot
+wird — und `'google'` trotzdem abgewiesen bliebe**, weil der Katalog-Guard bei einem
+falschen Namen nicht gegriffen hätte und der alte Constraint danebenstünde. **Er ist damit
+GEMESSEN ausgeschlossen und nicht erschlossen.** Der Kopf von 0026 beschreibt ihn; erst
+diese eine Zahl entkräftet ihn.
+
+**WAS SCHRITT 4b BEWEIST:** Nur die ABWEISUNGSRICHTUNG zeigt, dass der Constraint WIRKT.
+**Ein `drop` ohne `add` hätte an Schritt 3 identisch ausgesehen** — `'google'` ginge durch,
+und zwar deshalb, weil gar nichts mehr prüfte. Eine Probe, die nur den Erfolg misst, kann
+einen entfernten Schutz nicht von einem erweiterten unterscheiden.
+
+**DER ÜBERGANG IST DIESMAL GEMESSEN, NICHT ABGELEITET — und das ist der Unterschied zum
+Lauf vom 2026-08-17.** Jene Messung trug eine ausdrückliche Grenze: *„Migration und Deploy
+waren zum Messzeitpunkt BEREITS eingespielt, ein Ausgangswert VOR dem Lauf wurde also nicht
+abgelesen. Gemessen ist, dass der Constraint HEUTE so lautet und wirkt — NICHT, dass 0024
+den Übergang bewirkt hat."* **Hier wurde Probe 1 VOR und NACH dem Lauf gefahren** (Schritte
+1 und 3), vier Werte gegen fünf. **Die Grenze, die dort galt, gilt für 0026 NICHT** — der
+Übergang selbst ist belegt.
+
+#### Eine offene Angabe ist geschlossen worden
+
+**DER SUPABASE-SQL-EDITOR ZEIGT DEN CONSTRAINT-NAMEN IN DER FEHLERMELDUNG.**
+
+Die Probe führte das ausdrücklich als **NICHT GEMESSEN** — *„ob der Editor den Namen zeigt,
+ist nicht gemessen"* —, und die Erwartung war deshalb so formuliert, dass sie **ohne** den
+Namen prüfbar blieb: `23514` genügte. **Seit Schritt 4b ist es GEMESSEN (Owner,
+2026-08-27):** Die Meldung nannte `project_secrets_target_valid`.
+
+**DASS DAS HIER STEHT, IST DER PUNKT — es ist dieselbe Figur wie bei der Cookie-Annahme in
+Vermerk 4:** Eine Angabe, die als ungemessen ausgewiesen war und still zur Tatsache wird,
+ist von einer vergessenen nicht zu unterscheiden. Die Probe ist im selben Zug nachgezogen.
+
+**IHRE GRENZE GEHÖRT DAZU:** Gemessen ist es **im Supabase-SQL-Editor**, nicht über andere
+Zugänge hinweg. Über `psql`, den JS-Client oder ein anderes Werkzeug sagt der Befund
+NICHTS.
+
+#### Was mit diesem Lauf sonst noch gilt
+
+**DAS AUTOMATISCHE TAGES-BACKUP IST BIS ZUM NÄCHSTEN SNAPSHOT NICHT MEHR CODE-KOMPATIBEL**
+— ein Restore in diesem Fenster brauchte ein manuelles Nachziehen von 0026
+(docs/db-regeln.md, "BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN, NICHT AM KALENDER"). Bei
+einer additiven CHECK-Erweiterung ist das Fenster billig; **es ist trotzdem eines**, und es
+steht hier, weil es sonst nirgends stünde.
+
+#### Was der Lauf NICHT zeigt — ausdrücklich
+
+- **OB 11.8e FUNKTIONIERT.** Diese Scheibe erlaubt einen Wert, den bis dahin **niemand
+  schreibt**. Es gibt keinen Code, der `'google'` in `project_secrets` ablegt.
+- **SIE RÄUMT DIE ANDERE BLOCKADE NICHT AUS.** Die Antwortfelder des Token-Tauschs sind
+  weiterhin **ungemessen** (Gate G7 der Aufklärung zu 11.8e; docs/ziel-befunde.md,
+  Google-Abschnitt, Teil (ay) nennt die Anfrage, nicht die Antwort). **11.8e bleibt
+  blockiert**, und wer 0026 für die Freigabe hält, hat eine von zwei Sperren gelöst.
+
+**PROVENIENZ DIESES VERMERKS, je Angabe:** Der gesamte Lauf — die sieben Schritte, die
+Vorher- und Nachher-Werte, die Zeilenzahl, die Abweisung mit 23514 und der Constraint-Name
+in der Fehlermeldung — ist **GEMESSEN (Owner, 2026-08-27, Supabase-SQL-Editor)**. Die
+Commit-Nummer, der Diff-Umfang, die Zitat-Prüfung und der Nachweis, dass nur Kommentare der
+Probe geändert wurden, sind **GEMESSEN am eigenen Lauf (CC, 2026-08-27)**. Die Aufteilung
+in eine eigene Scheibe ist **ARCHITEKTEN-ENTSCHEIDUNG (2026-08-27)**. Die Backup-Folge ist
+eine **ABLEITUNG** aus der Regel in docs/db-regeln.md und keine Messung. **KEIN Aufruf
+gegen eine fremde Schnittstelle; CC hat die Datenbank zu keinem Zeitpunkt berührt — der
+gesamte Lauf fand beim Owner statt.**
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 

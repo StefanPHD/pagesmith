@@ -70,7 +70,7 @@ docs/claude-history/. Wer hier einen Messwert sucht, sucht am falschen Ort —
 und wer hier einen einträgt, macht aus einer Regel eine Zustandsbeschreibung,
 die still veraltet.
 
-## Verzeichnis — 86 Regeln in Dateireihenfolge
+## Verzeichnis — 90 Regeln in Dateireihenfolge
 
 Jeder Eintrag ist der WÖRTLICHE Anfang seiner Regel, auf feste Breite
 geschnitten und mit "..." gekappt — KEINE Beschreibung. GRUND: Eine
@@ -169,6 +169,10 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE CONSTRAINT-ERWEITERUNG ...
 - ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN, NICHT SEITENWEISE ...
 - EIN NEUER ANBIETER WIRD ERST ANGEBUNDEN, NACHDEM SEINE DOKUMENTATION ...
+- EIN NACHWEIS AN EINER NEUEN DATEI IST BLIND — BYTE-KONTROLLE UND `git ...
+- EIN GUARD AUF EINEN NAMEN, DEN ES NACH DEM LAUF WIEDER GIBT, TRENNT ...
+- EIN WÄCHTER ÜBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG — ER MUSS ...
+- EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -1180,6 +1184,18 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   eine Kennung braucht, und baut ein Schema um, dem nichts fehlt. BELEG: Kennung im
   Einstellungs-Blob (ProjectSettings.pixels), Zugangsdatum in der Geheimnis-Tabelle mit
   einer Zeile je Ziel — die Trennung lag im Code, bevor sie jemand als Prinzip benannte.
+  PRÄZISIERT AM 2026-08-27, WEIL DAS WORT "SCHLÜSSEL" SEIT MIGRATION 0025 MISSVERSTÄNDLICH
+  IST — DER BELEG BLEIBT WAHR, DIE REGEL BLEIBT GÜLTIG, NUR IHR GEGENSTAND HAT SEINEN ORT
+  GEWECHSELT: Die Eindeutigkeit auf `(project_id, target)` besteht unverändert weiter, liegt
+  aber seit 0025 in einem **UNIQUE-CONSTRAINT** — `project_secrets_project_id_target_key`,
+  UNIQUE NULLS NOT DISTINCT (project_id, target). **DER PRIMÄRSCHLÜSSEL LIEGT SEITHER AUF
+  `id`** (GEMESSEN am Schema, s. docs/db-stand.md).
+  **WER "SCHLÜSSEL" IM TITEL ALS PRIMÄRSCHLÜSSEL LIEST, LIEST SEIT 0025 FALSCH** — und käme
+  beim Nachsehen zu dem Schluss, die Regel beschreibe einen Zustand, den es nicht mehr gibt.
+  GEMEINT IST UND WAR DIE EINDEUTIGKEIT, nicht die Constraint-Art, die sie trägt.
+  DER TITEL BLEIBT WÖRTLICH: Er wird von aussen ZITIERT (GEMESSEN am Repo, CC, 2026-08-27:
+  docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, zweimal). Eine Umformulierung
+  machte beide Zeiger tot.
 - WER EINE STREICHUNG PLANT, ZÄHLT NICHT NUR DIE IMPORTE, SONDERN AUCH DIE SÄTZE, DIE DEN
   GELÖSCHTEN NAMEN TRAGEN (Phase 11): tsc und build fangen die Importe — und nur die. Ein
   Kommentar, der ein totes Symbol verbietet, kompiliert einwandfrei und sieht wie eine
@@ -1219,6 +1235,29 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Regel betrifft den VERWEIS-Anker in Doku, Kommentar und Backlog — worauf man ZEIGT. Diese
   hier betrifft den SUCH-Anker beim Bearbeiten — was man TRIFFT. Zwei verschiedene Achsen,
   dasselbe Wort.
+  ZUSATZ 2026-08-27 — EINE ZWEITE QUELLE DES ZWEITEN VORKOMMENS, DIE DIESE REGEL BISHER
+  NICHT KENNT: DIE VERDICHTUNGS-LISTE. Der Absatz oben nennt das VERZEICHNIS als Quelle.
+  Seit die Zuschnitte abgeschlossener Scheiben VERDICHTET werden, gibt es eine zweite: Die
+  Liste "WAS ABGELAUFEN IST" jeder verdichteten Scheibe ZITIERT die Titel, die sie streicht
+  — sie ist die Spur der Streichung und darf nicht verschwinden.
+  DER BEFUND, GEMESSEN am Repo (CC, 2026-08-27): Beim Auflösen zweier zeichengleicher
+  `###`-Titel fand eine Volltitel-Suche je DREI Fundstellen, nicht zwei — die zwei
+  Überschriften PLUS ein bis zwei Zitate in Verdichtungs-Listen.
+  WAS DARAUS FOLGT UND WARUM DIE NAHELIEGENDE REPARATUR NICHT REICHT: Hätte man je EINE
+  Überschrift umbenannt — die minimale Lösung —, träfe eine Suche nach dem Titel WEITERHIN
+  zuerst das Zitat. Die Kollision wäre kleiner, nicht weg. **EIN ZITAT EINES ABGELAUFENEN
+  TITELS BLEIBT FÜR IMMER STEHEN und kollidiert dauerhaft mit jeder künftigen Überschrift
+  desselben Wortlauts. Je mehr Scheiben verdichtet werden, desto mehr solcher Zitate gibt
+  es.**
+  DIE VORSCHRIFT, UND SIE IST STÄRKER ALS EINE SUCH-AUFLAGE: **TITEL-ZITATE WERDEN OHNE
+  `###`-MARKE GESCHRIEBEN.** Dann trifft eine Überschriften-Suche sie gar nicht, und die
+  Kollision entsteht nicht. Das war bis zum 2026-08-27 GEWOHNHEIT (so gehandhabt in den
+  Verdichtungen von 11.8d, 11.8e und 11.8f); mit diesem Zusatz ist es Vorschrift.
+  **WARUM DAS HIER STEHT UND NICHT ALS EIGENE REGEL:** Weil seine Bedingung des Entfallens
+  bereits ERFÜLLBAR ist. Eine eigene Regel müsste verlangen, dreimal statt zweimal zu
+  suchen — eine Auflage an jede Umbenennung, für immer. Die Marke wegzulassen kostet nichts
+  und lässt das Problem gar nicht erst entstehen. **Eine Regel, die eine Falle vermeidbar
+  macht, ist besser als eine, die zu ihrer Umgehung anleitet.**
 - EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY (Phase 11.1, als Prinzip
   formuliert; die Ausprägungen sind älter): Was ein Erzeuger EINMAL geschrieben hat, trägt
   den Stand SEINER Erzeugungszeit — dauerhaft. Ein Code-Deploy erreicht es nicht. Wer an
@@ -1296,12 +1335,31 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   KANN HEUTE KEIN EREIGNIS ABLEHNEN".
   NACHGEZOGEN BEI DER HEBUNG (2026-08-19): Die Vorlage dieser Regel sprach von DREI
   Adaptern. Es sind seit Scheibe 11.1f VIER — meta, pinterest, tiktok, linkedin.
-  DER BELEG (GEMESSEN am Repo, 2026-08-19): Vier Ziele, vier Migrationen — 0021 legt
+  DER BELEG (GEMESSEN am Repo, 2026-08-27, RICHTIGGESTELLT und NICHT gestempelt — die
+  frühere Fassung nannte an beiden Stellen VIER und war als Aussage über den 2026-08-19
+  richtig; HEUTE GILT SIE NICHT MEHR): FÜNF Zielwerte, fünf Migrationen — 0021 legt
   `project_secrets` an mit `check (target in ('meta'))`, 0022 erweitert auf
   `('meta', 'pinterest')`, 0023 auf `('meta', 'pinterest', 'tiktok')`, 0024 auf
-  `('meta', 'pinterest', 'tiktok', 'linkedin')`. KEIN Ziel ist ohne eigene Migration
-  hinzugekommen; die Regel beschreibt damit einen vierfach gelebten Ablauf und keine
-  Absicht.
+  `('meta', 'pinterest', 'tiktok', 'linkedin')`, 0026 auf dieselben vier plus `'google'`.
+  KEIN Zielwert ist ohne eigene Migration hinzugekommen; die Regel beschreibt damit einen
+  fünffach gelebten Ablauf und keine Absicht.
+  DIE REICHWEITE IST AM 2026-08-27 ERWEITERT WORDEN, UND DAS IST DER WICHTIGERE TEIL DIESER
+  RICHTIGSTELLUNG: Der Wortlaut oben sagt "wer ein FAN-OUT-ZIEL hinzufügt". `'google'` ist
+  seit 0026 im CHECK und ist **KEIN Fan-Out-Ziel** — kein Adapter, nicht in
+  `TRACKING_TARGETS`, kein Empfänger (GEMESSEN am Repo, CC, 2026-08-27). **DEM WORTLAUT NACH
+  HÄTTE DIE REGEL DEN VORGANG ALSO NICHT GEDECKT, DEN SIE VIERMAL BESCHRIEBEN HAT.**
+  SIE GILT AB JETZT FÜR **JEDEN NEUEN ZIELWERT IM CHECK**, gleich ob ein Adapter
+  dahintersteht. **DER GRUND GEHÖRT DAZU, sonst wird die Erweiterung beim nächsten Aufräumen
+  als überflüssig gestrichen: GENAU DER FALL OHNE ADAPTER IST DER, BEI DEM NIEMAND AN DIE
+  MIGRATION DENKT.** Wer ein Ziel mit Adapter baut, stösst beim Bauen auf die Ablage; wer nur
+  einen Wert im CHECK braucht — für einen Autorisierungs-Fluss, eine Vorbereitung, einen
+  Zwischenzustand —, hat keinen Bauschritt, der ihn daran erinnert.
+  DIE ZWEITE HÄLFTE DES TITELS BLEIBT UNBERÜHRT: "ein DRITTES ZIEL ERZWINGT EINE
+  ENTSCHEIDUNG, KEINE KOPIE" gilt weiterhin dem ADAPTER — ein Zielwert ohne Adapter hat
+  keinen zu kopieren.
+  WARUM DER TITEL TROTZDEM NICHT GEÄNDERT IST: Er wird von aussen ZITIERT — GEMESSEN am Repo
+  (CC, 2026-08-27): docs/roadmap.md und docs/aktiver-stand-11.8.md nennen ihn wörtlich. Eine
+  Umformulierung machte beide Zeiger tot, und ein toter Zeiger fällt an keinem Gate auf.
   WARUM SIE EINE REGEL IST UND KEIN OFFENER PUNKT: Sie sagt, was ZU TUN ist, wenn ein
   Ziel dazukommt — nicht, was heute fehlt. Ein offener Punkt wartet auf einen Trigger;
   diese hier wartet auf eine Arbeit.
@@ -1417,3 +1475,121 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Fan-Out-Zielen gelesen. Wer einen Zahlungsanbieter anbindet, liest sie nicht und stolpert
   über dieselben Sachen erneut. DIE KORREKTUREN WERDEN HIER NICHT WIEDERHOLT — zwei
   Fassungen liefen auseinander.
+- EIN NACHWEIS AN EINER NEUEN DATEI IST BLIND — BYTE-KONTROLLE UND `git status` TAUGEN DORT
+  NICHT (Phase 11.8, dreimal eingetreten): Die zwei vorgeschriebenen Nachweise dieses
+  Projekts setzen beide eine VERFOLGTE Datei mit einer VORGESCHICHTE voraus. Bei einer NEU
+  angelegten Datei gibt es weder das eine noch das andere, und beide melden Erfolg, ohne
+  etwas geprüft zu haben.
+  DIE ERSTE HÄLFTE — SONDERBYTES ÜBERLEBEN ALLE GATES. Beim Schreiben einer neuen Testdatei
+  ist ein literales NUL-BYTE entstanden; `tsc`, `lint`, `vitest` und `build` waren GRÜN.
+  Sichtbar wurde es allein bei einer Byte-Kontrolle. GEMESSEN am eigenen Lauf (CC,
+  2026-08-25, `src/lib/secrets/cipher.test.ts`; erneut 2026-08-26 mit FÜNF NUL-Bytes in
+  `src/lib/secrets/oauth-payload.test.ts`).
+  DIE NAHELIEGENDE BEHEBUNG TRÄGT NICHT, UND DAS IST DER TEURERE TEIL DES BEFUNDS: Die
+  ESCAPE-FORM wird auf demselben Schreibweg INTERPRETIERT — auf der Platte standen danach
+  wieder echte NUL-Bytes. AUF DIESEM WEG ÜBERLEBT WEDER DAS LITERALE SONDERZEICHEN NOCH
+  SEIN ESCAPE (GEMESSEN, zweimal hintereinander, CC, 2026-08-26). WAS TRÄGT: das Zeichen im
+  Code BAUEN statt es hinzuschreiben (`String.fromCharCode`) — reines ASCII, an dem kein
+  Werkzeug etwas umdeuten kann, weil es nichts zu deuten gibt.
+  WER DIE FEHLERKLASSE KENNT UND ZUM FALSCHEN MITTEL GREIFT, HÄLT DEN FALL FÜR ERLEDIGT und
+  hat dann eine Datei, die zweimal geprüft und zweimal falsch ist.
+  DIE KONTROLLE AM ARBEITSBAUM GENÜGT NICHT ALS NACHWEIS: Sie belegt, was auf der Platte
+  liegt, nicht, was in die Objektdatenbank gepackt wurde; die zwei Wege können
+  auseinanderlaufen. Der Nachweis gehört ans COMMITTETE OBJEKT — `git show HEAD:<pfad>`.
+  DIE ZWEITE HÄLFTE — DER RÜCKNAHME-NACHWEIS EINER MUTATION SETZT EINE VERFOLGTE DATEI
+  VORAUS. Auf einer UNTRACKED Datei zeigen `git status` und `git diff --numstat` eine
+  gesetzte oder zurückgenommene Mutation NICHT; sie melden nur "diese Datei ist neu".
+  GEMESSEN am eigenen Lauf (CC, 2026-08-25). WAS STATTDESSEN TRÄGT: ein INHALTLICHER
+  Nachweis — Suche nach dem Mutations-Marker plus Byte-Kontrolle auf CR, NUL und Kodierung.
+  WARUM BEIDE HÄLFTEN EINE REGEL SIND UND NICHT ZWEI: Sie haben dieselbe Ursache. Jede
+  erste Scheibe einer Phase baut NEUE Dateien — und genau dort sind beide vorgesehenen
+  Nachweise blind. Wer sie trennt, behebt die eine und lässt die andere stehen.
+  DIE BEDINGUNG DES ENTFALLENS, je Hälfte: Die erste entfällt, sobald ein GATE NUL-Bytes im
+  Diff rot macht (eine Lint-Regel, ein CI-Schritt, ein pre-commit-Hook) — dann ist die
+  manuelle Kontrolle redundant. Die zweite entfällt, sobald Mutationsproben grundsätzlich
+  gegen VERFOLGTE Dateien laufen (etwa nach einem `git add -N` vor der Runde — GENANNT,
+  nicht empfohlen und nicht gemessen).
+  SIE ENTFÄLLT NICHT DADURCH, DASS SIE MEHRMALS NICHTS FINDET. Das wäre eine
+  Abwesenheits-Behauptung, und die trägt hier so wenig wie an einem Test.
+  ABGRENZUNG ZU "WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG STILL DAS CR": Jene
+  deckt BEARBEITETE Dateien und verlangt nach dem Schreiben `git status` plus den Ausschluss
+  leerer Diffs. Bei einer NEUEN Datei sagt beides nichts — dieselbe Fehlerklasse, ein Ort,
+  den jener Wortlaut nicht adressiert.
+- EIN GUARD AUF EINEN NAMEN, DEN ES NACH DEM LAUF WIEDER GIBT, TRENNT VORHER NICHT VON
+  NACHHER (Phase 11.8, beim Bauen gefallen): Ein Katalog-Guard soll verhindern, dass eine
+  Migration beim zweiten Lauf etwas anrichtet. Prüft er auf einen NAMEN, den es nach dem
+  Lauf wieder gibt, tut er das Gegenteil — er lässt den zweiten Lauf durch, und der trifft
+  dann das NEUE Ding.
+  DER BELEG: Der freigegebene Plan sah für den Drop des alten Primärschlüssels einen Guard
+  auf `conname = 'project_secrets_pkey'` vor — die Bauform, die 0016, 0022, 0023 und 0024
+  an dieser Stelle alle tragen. Nach der Migration existiert wieder ein Constraint DIESES
+  Namens, nur eben auf `id`. EIN ZWEITER LAUF HÄTTE DEN NEUEN PRIMÄRSCHLÜSSEL GEDROPPT UND
+  DIE TABELLE OHNE SCHLÜSSEL ZURÜCKGELASSEN, UND ZWAR STILL: ein `drop constraint` mit
+  passendem Namen scheitert nicht, er tut genau das, was dasteht. GEMESSEN am eigenen Lauf
+  (CC, 2026-08-26), VOR dem Lauf gefunden.
+  WAS TRÄGT — ZWEI DINGE: (1) auf die SACHE prüfen statt auf den Namen; hier ein
+  Primärschlüssel, der die Spalte `project_id` ENTHÄLT — den gibt es genau solange, wie der
+  alte steht. (2) DEN ALTEN NAMEN ABLESEN STATT ANNEHMEN: 0021 deklariert ihn inline und
+  benennt ihn nirgends; "project_secrets_pkey" war Konvention und keine Messung.
+  DIE PRÜFFRAGE AN JEDEN KÜNFTIGEN KATALOG-GUARD, in einem Satz: TRENNT MEIN ANKER DEN
+  ZUSTAND VOR DEM LAUF VOM ZUSTAND DANACH? Trifft er beide, ist er kein Guard.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND TRITT PRAKTISCH NICHT EIN, UND BEIDES
+  GEHÖRT HIN: Sie entfiele mit einem MIGRATIONS-RUNNER, der Idempotenz strukturell
+  garantiert. EINEN SOLCHEN GIBT ES IN DIESEM PROJEKT NICHT, UND ES SOLL IHN NICHT GEBEN
+  (s. "OB EINE MIGRATION IN DER LAUFENDEN DB ANGEWANDT IST, IST AM REPO NICHT ENTSCHEIDBAR":
+  "Es gibt keinen Migrations-Runner und soll keinen geben"). Ohne diesen Absatz sucht jemand
+  in einem Jahr nach einer Bedingung, die per Entscheidung ausgeschlossen ist.
+  ABGRENZUNG ZU "EINE VORBEDINGUNG, DIE AUCH DER ALTE ZUSTAND ERFÜLLT, IST KEINE
+  VORBEDINGUNG": Dieselbe Denkfigur, UMGEKEHRTE RICHTUNG. Dort erfüllt der ALTE Zustand die
+  Bedingung mit, und ein Test ist grün aus dem falschen Grund; hier erfüllt der NEUE sie
+  mit, und ein Guard lässt durch, was er sperren soll. Jene steht am TEST-Anker, diese am
+  MIGRATIONS-Guard.
+- EIN WÄCHTER ÜBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG — ER MUSS STRENG IRREN UND
+  SEINE GRENZE AN SICH SELBST TRAGEN (Phase 11.8): Ein Wächter, der Quelltext DURCHSUCHT,
+  kann eine BEDEUTUNG nicht von einer ERWÄHNUNG trennen. Wer ihm eine Aussage über den
+  IMPORT-GRAPHEN aufträgt, gibt ihm eine Aufgabe, die sein Medium nicht hergibt.
+  DER BELEG: Die erste Fassung des Import-Wächters aus Scheibe 11.8c prüfte den ROHTEXT der
+  Produktivdatei und wurde rot — an einer PROSA-Erwähnung im eigenen Kommentar. Der Kopf von
+  `src/lib/secrets/oauth-payload.ts` NENNT `encryptSecret`; er MUSS es, weil die Auflage
+  ohne den Namen nicht erklärbar ist. GEMESSEN am eigenen Lauf (CC, 2026-08-26).
+  ER MUSS IN DIE STRENGE RICHTUNG IRREN: lieber ein Fehlalarm, den jemand prüft, als ein
+  Durchlassen, das niemand sieht.
+  UND SEINE GRENZE GEHÖRT AN IHN SELBST — das ist die Hälfte, die sonst wegfällt: Steht sie
+  nicht dort, hält die nächste Runde einen Fehlalarm für einen Befund. ODER, TEURER, SIE
+  MACHT DEN WÄCHTER STILLSCHWEIGEND WEICHER, BIS ER NICHTS MEHR FÄNGT — und niemand merkt,
+  wann er aufgehört hat zu schützen.
+  DIE BEDINGUNG DES ENTFALLENS, und sie gilt nur zur Hälfte: Für jeden Fall, in dem der
+  Wächter den IMPORT-GRAPHEN befragen kann statt den Text (etwa eine Lint-Regel über
+  Importpfade), entfällt sie — dort gibt es die Blindheit nicht. FÜR ERZEUGTE ARTEFAKTE,
+  MIGRATIONS-SQL UND WORTLAUT-PRÜFUNGEN BLEIBT SIE: Dort gibt es keinen Graphen, den man
+  befragen könnte.
+  ABGRENZUNG ZU "NUR EIN TEST IST EIN WÄCHTER — EIN KOMMENTAR ODER EIN NEBENEFFEKT IST
+  KEINER": Jene sagt, DASS es einen Test braucht. Diese sagt, was der Test über sein
+  eigenes MEDIUM wissen und aufschreiben muss.
+- EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND (Phase 11.8): Ein
+  Werkzeug, das einen AUSSCHNITT liefert, wo man den Gegenstand vermutet, erzeugt
+  NICHT-TREFFER, die der Gegenstand nicht hergibt. Wo ein Messergebnis eine ABWESENHEIT ist,
+  wird das Werkzeug GEWECHSELT, bevor die Abwesenheit als Befund gilt.
+  DER BELEG (GEMESSEN am eigenen Lauf, CC, 2026-08-27): Beim Anbieter-Crawl lieferte
+  `innerText` den HTTP/REST-Reiter der gelesenen Seite NICHT — die Sprach-Reiter halten den
+  nicht aktiven Inhalt ausserhalb des sichtbaren Textes. Die Suche nach dem Token-Endpunkt
+  ergab NULL TREFFER. Erst `textContent` förderte ihn zutage: 115 157 gegen 40 271 Zeichen.
+  WARUM ES TEUER GEWESEN WÄRE: Ohne den zweiten Griff wäre "steht dort nicht" als Befund
+  protokolliert worden — MIT BENANNTER REICHWEITE, SAUBER AUSGEWIESEN, UND TROTZDEM FALSCH.
+  DIE REICHWEITENANGABE HÄTTE DEN FEHLER NICHT GEFANGEN, SONDERN IHM AUTORITÄT GEGEBEN. Das
+  ist der Grund für diese Regel: Die Disziplin, die sonst vor einer hohlen
+  Abwesenheits-Aussage schützt, verschärft hier den Schaden.
+  DIE BEDINGUNG DES ENTFALLENS IST NUR TEILWEISE FORMULIERBAR, UND BEIDES STEHT HIER: Für
+  den ANBIETER-CRAWL entfällt sie, sobald `textContent` verbindlich vorgeschrieben ist —
+  dann ist der Werkzeug-Wechsel schon geschehen. FÜR DEN ALLGEMEINEN FALL IST KEINE
+  FORMULIERBAR: Jede Oberflächen-Abfrage, jeder Reiter, jedes gefilterte Log und jedes
+  `grep` über eine Datei mit Sonderbytes kann denselben Ausschnitt-Fehler erzeugen, und eine
+  Bedingung, unter der es keine Ausschnitte mehr gibt, gibt es nicht.
+  ABGRENZUNG ZUR GEGENRICHTUNG IN "WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG STILL
+  DAS CR" (dort der Absatz "EIN WERKZEUG KANN AUCH EINEN BEFUND ERZEUGEN, DEN DER GEGENSTAND
+  NICHT HERGIBT"): Dort ein TREFFER, den es nicht gibt — hier ein NICHT-TREFFER, den es
+  nicht gibt. Dieselbe Achse, entgegengesetzte Richtung.
+  ABGRENZUNG ZU LEKTION (d) AN "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE": Jene verlangt
+  für einen Abwesenheits-WÄCHTER eine POSITIVKONTROLLE, damit ein echter Nicht-Treffer von
+  einem kaputten Wächter zu unterscheiden ist. HIER IST DER WÄCHTER IN ORDNUNG — das
+  INSTRUMENT erzeugt die Abwesenheit. Verwandte Denkfigur, andere Achse.

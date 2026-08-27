@@ -218,12 +218,6 @@ gehen von hier eine Station weiter.
       EINGETRETEN, seit das Ziel am 2026-08-19 sendet.
 - DER PAGEVIEW-TOKEN IST ALS CUSTOM-EVENT EINTIPPBAR (Trigger: vor echtem Ad-Traffic;
   gehoben am 2026-08-19 aus dem Vorrat der Phase 11.1)
-- EIN OAUTH-ZUGANG PASST NICHT IN DIE SKALAR-SPALTE DER GEHEIMNIS-TABELLE (Trigger: die
-  erste AUTORISIERUNGSSCHICHT — Phase 11.2 oder ein späteres Ziel, dessen Zugang nicht als
-  Skalar abzulegen ist; kopiert am 2026-08-19 aus der Roadmap-Zeile 11.1, deren Wortlaut
-  bis zu ihrem Kollaps unverändert stehen bleibt; DIE SCHICHT TRÄGT SEIT DEM 2026-08-25
-  DIE PHASENNUMMER 11.8 — der Wortlaut davor bleibt unverändert, eine Nummer ist ein Ort
-  und keine Antwort)
 - DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT (Trigger: die erste
   nicht-additive Migration)
 - DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT (Trigger: EINGETRETEN —

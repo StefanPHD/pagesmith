@@ -508,6 +508,39 @@ aufeinander; sie liegen alle hier und finden einander.
   bis zu ihrem Kollaps unverändert stehen bleibt; DIE SCHICHT TRÄGT SEIT DEM 2026-08-25
   DIE PHASENNUMMER 11.8 — der Wortlaut davor bleibt unverändert, eine Nummer ist ein Ort
   und keine Antwort):
+  **GESCHLOSSEN AM 2026-08-27. DER TRIGGER IST EINGETRETEN UND DIE SACHE IST GEBAUT.**
+  Der gesamte Text unterhalb dieses Blocks bleibt WÖRTLICH stehen und wird NICHT gekürzt:
+  er trägt die Beweisführung, die den Zuschnitt der Phase 11.8 bestimmt hat, und mehrere
+  seiner Grenzen gelten weiter. **Geschlossen ist der PUNKT, nicht sein Befund.**
+  WAS IHN SCHLIESST — DREI SCHEIBEN, je mit Vollzug: Migration **0025** hat die Spalte
+  `secret_enc` neben dem Skalar angelegt, mit dem CHECK `project_secrets_secret_genau_eines`
+  (Scheibe 11.8b, Commit a8435e1, gefahren 2026-08-26) · **`src/lib/secrets/oauth-payload.ts`**
+  trägt die mehrwertige Form mit vier Feldern und der Fassungsmarke `p1` (Scheibe 11.8c,
+  Commit 8532e59) · **die Callback-Route** legt sie chiffriert ab (Scheibe 11.8e, Commit
+  1f50c9a, Live-Test bestanden 2026-08-27). **EIN OAUTH-ZUGANG PASST JETZT.**
+  SEIN BELEG WAR ZULETZT DOPPELT ÜBERHOLT, und das gehört als Teil der Schliessung
+  festgehalten, damit niemand den Text unten für den heutigen Stand hält: Er sagt weiter
+  unten, die Spalte sei `secret text not null` und der Schlüssel `(project_id, target)`
+  (0021). **BEIDES GILT SEIT 0025 NICHT MEHR** — `secret` ist NULLABLE (die
+  NOT-NULL-Bedingung ist durch den CHECK ERSETZT), und der Primärschlüssel liegt auf `id`;
+  die Eindeutigkeit auf dem Paar liegt in
+  `project_secrets_project_id_target_key` (UNIQUE NULLS NOT DISTINCT). Der heutige Stand
+  steht in docs/db-stand.md und wird hier NICHT verdoppelt.
+  **WAS DIE SCHLIESSUNG NICHT MITSCHLIESST — drei Dinge, die unten stehen und weitergelten:**
+  die OWNER-ENTSCHEIDUNG vom 2026-08-20, dass die Schicht gemeinsames Fundament von 11.1 und
+  11.2 bleibt · die offene VORFRAGE ZUM UMFANG (erzeugen die Kunden ihr Zugangsdatum selbst
+  oder der Betreiber?) · die zwei ausdrücklich offen benannten Messungen zu LinkedIn. **Sie
+  hängen NICHT an der Wertform der Spalte, sondern an der Gestalt der Schicht** — wer sie mit
+  diesem Punkt für erledigt hält, schliesst drei Fragen, die niemand beantwortet hat.
+  **EINE FOLGE FÜR DIE FORM DIESER DATEI, GEMELDET UND NICHT BEHOBEN:** Ihr Kopf sagt, sie
+  sei der Volltext des Stubs in CLAUDE.md, Titel und Trigger dort, Beweisführung hier. Mit
+  dieser Schliessung wird die Stub-Zeile in CLAUDE.md ENTFERNT (jener Abschnitt führt
+  ausdrücklich "aktive TODOs mit Trigger — nicht in ein Abschluss-Archiv"), und damit steht
+  hier **zum ersten Mal ein Eintrag ohne Stub**. **EIN VERFAHREN FÜRS SCHLIESSEN GIBT ES IN
+  DIESER DATEI NICHT** — GEMESSEN am Text (CC, 2026-08-27: kein Eintrag trägt eine
+  Erledigt-Marke, 27 Einträge stehen 27 Stub-Zeilen gegenüber). Gewählt ist der
+  konservative Weg — schliessen statt streichen —, weil ein Streichen die Beweisführung
+  vernichtet hätte. **OB DAS DAS VERFAHREN WIRD, IST HIER NICHT ENTSCHIEDEN.**
   DIE RICHTIGSTELLUNG VOM 2026-08-14, in ihren zwei Hälften:
   · DAS ZUGANGS-TOKEN LÄUFT NACH 60 TAGEN AB. PROVENIENZ: GELESEN an der EIGENEN
     App-Oberfläche im Entwicklerportal des Anbieters (2026-08-14) — NICHT gemessen, es ist
@@ -831,6 +864,33 @@ aufeinander; sie liegen alle hier und finden einander.
   Was still kaputtgeht: Beide Teile sind lautlos — im ersten Fall bricht ein laufender
   Request gegen ein Schema, das er nicht kennt; im zweiten verschwindet eine
   Conversion ohne Fehler.
+  ERGÄNZT AM 2026-08-27 — DER TRIGGER IST DEM WORTLAUT NACH EINGETRETEN, DER SCHADEN IST
+  AUSGEBLIEBEN, UND DER PUNKT BLEIBT OFFEN. Der Text darüber ist unverändert; dieser Block
+  tritt DANEBEN. **DER TRIGGER WIRD AUSDRÜCKLICH NICHT AUF ERLEDIGT GESETZT.**
+  WAS EINGETRETEN IST: Migration **0025** (Scheibe 11.8b, gefahren 2026-08-26) hat einen
+  CONSTRAINT GEDROPPT — den alten Primärschlüssel auf `(project_id, target)` — und eine
+  NOT-NULL-BEDINGUNG auf `secret` GELÖST. Nach dem Wortlaut oben ("beim Umbenennen, beim
+  Löschen oder beim Verengen eines Constraints") ist das eine nicht-additive Migration.
+  **WARUM NICHTS PASSIERT IST — UND DAS IST DER EIGENTLICHE INHALT DIESER ERGÄNZUNG: ES WAR
+  DER ZUSCHNITT, NICHT DAS GLÜCK.** 0025 legte den UNIQUE-Constraint auf
+  `(project_id, target)` **VOR** dem Drop des alten Primärschlüssels an, damit der im
+  Fenster laufende ALTE Code seinen `onConflict`-Arbiter behält — ein Upsert mit
+  `on_conflict=project_id,target` braucht einen passenden Constraint, und für die Dauer
+  eines Schrittes war das Paar doppelt gesichert. Fundstelle:
+  `supabase/migrations/0025_project_secrets_schema.sql`, Schritte S4 und S5, im Kopf als
+  Zwang **Z6** benannt.
+  **DIE REGEL, DIE DAS ERZWINGT, STEHT NIRGENDS.** Es war eine EINZELFALL-ÜBERLEGUNG beim
+  Zuschnitt jener Scheibe — kein Verfahren, keine Auflage, keine Checkliste. Die nächste
+  nicht-additive Migration hat nichts, woran sie sich halten könnte, ausser dass jemand
+  dieselbe Überlegung ein zweites Mal anstellt.
+  **DIE VORFRAGE OBEN IST DAMIT NICHT BEANTWORTET, SONDERN BESTÄTIGT:** Der Fall zeigt, dass
+  die Trennung möglich ist ("erkennt man VOR dem Deploy, dass der alte Code einen Constraint
+  braucht?"), und er zeigt zugleich, dass sie heute von der Aufmerksamkeit eines einzelnen
+  Zuschnitts abhängt.
+  PROVENIENZ: der Vollzug von 0025 ist **GEMESSEN (Owner, 2026-08-26, SQL-Editor;**
+  s. docs/aktiver-stand-11.8.md, Vermerk 2**)**; die Zuordnung "nicht-additiv" ist eine
+  ABLEITUNG aus dem Wortlaut dieses Eintrags und **keine Entscheidung** — der Eintrag
+  definiert den Begriff selbst nicht.
 - DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT (Trigger: EINGETRETEN —
   Supabase bietet es an; das Fenster schliesst sich mit dem ersten echten
   Kunden-Traffic): Angeboten wird 17.6.1.127 -> 17.6.1.155.

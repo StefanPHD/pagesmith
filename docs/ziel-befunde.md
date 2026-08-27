@@ -112,6 +112,8 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
     bis (as)
   - ### Abschnitts-Lesung 2026-08-27 der OAuth-2.0-Dokumentation für
     Webserver-Anwendungen, LAUF 5 — die Teile (at) bis (ay)
+  - ### Abschnitts-Lesung 2026-08-27 der OAuth-2.0-Dokumentation, LAUF 6 (die ANTWORTSEITE
+    des Token-Tauschs) — die Teile (az) bis (bg)
 - ## Pinterest (Conversions API)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
@@ -3513,6 +3515,324 @@ sie führte in einen echten Zustimmungsbildschirm.
      `events:ingest` bleibt ungemessen (s. (al) und den Vorbehalt an docs/roadmap.md). Diese
      Seite beschreibt, wie man ein Token BEKOMMT — nicht, wie es zum Data-Manager-Endpunkt
      REIST.
+
+### Abschnitts-Lesung 2026-08-27 der OAuth-2.0-Dokumentation, LAUF 6 (die ANTWORTSEITE des Token-Tauschs) — die Teile (az) bis (bg)
+
+**WARUM DIESER LAUF UND WAS ER NICHT IST:** Lauf 5 hat die ANFRAGE des Token-Tauschs
+zeichengenau abgelegt ((ay)) und die ANTWORT nicht. Ohne die Antwortfelder lässt sich
+`OAuthPayload` (`src/lib/secrets/oauth-payload.ts`) nicht befüllen — drei seiner vier
+Felder kommen aus dieser Antwort. Dieser Lauf holt die Antwortseite. **Er berührt keinen
+Data-Manager-Befund und stellt keinen davon richtig; er ERGÄNZT (ay) und ERSETZT ihn
+nicht.**
+
+**HERKUNFT, für ALLE Teile dieses Laufs: GELESEN am 2026-08-27. NICHTS ist gemessen** — es
+ist kein Aufruf gegen eine Google-Schnittstelle gefahren, kein Zustimmungsbildschirm
+geöffnet, keine Cloud-Konsole betreten, keine Anmeldung vorgenommen, kein Code getauscht.
+
+**DER GELESENE UMFANG — EINE SEITE, VOLLSTÄNDIG:**
+1. `https://developers.google.com/identity/protocols/oauth2/web-server?hl=en` — "Using
+   OAuth 2.0 for Web Server Applications", **Doku-Stand laut Seitenfuss: 2026-08-07 UTC**.
+   Vollständig gelesen über `textContent`, **142 774 Zeichen**. Gelesen wurden die
+   Abschnitte "Step 4: Handle the OAuth 2.0 server response", "Step 5: Exchange
+   authorization code for refresh and access tokens" (einschliesslich seiner
+   Fehler-Aufzählung, seiner DPoP-Teile und der Antwortfeld-Tabelle), "Refreshing an access
+   token", "Token revocation" und "Time-based access".
+
+**DER WERKZEUG-GRIFF, UND ER IST DER GRUND, WARUM DIESER LAUF ÜBERHAUPT ETWAS FINDET:** Der
+Reiter "HTTP/REST" ist über `innerText` UNSICHTBAR — Lauf 5 hat das am 2026-08-27 gemessen
+(40 271 gegen 115 157 Zeichen). Dieser Lauf hat `textContent` **von Anfang an** benutzt.
+**JEDER NICHT-TREFFER UNTEN IST ÜBER `textContent` ERHOBEN**, nicht über `innerText`; ein
+Nicht-Treffer aus dem schwächeren Instrument wäre kein Befund, sondern ein Werkzeug-Artefakt.
+
+**DIE ZEICHENZAHL IST GEGENÜBER LAUF 5 GEWACHSEN — 142 774 statt 115 157, am SELBEN Tag,
+über dasselbe Instrument.** Das ist GEMELDET und NICHT erklärt: Es kann an einem
+Doku-Update, an nachgeladenen Reitern oder an einer anderen Ausspielung liegen. Der
+Seitenfuss nennt in BEIDEN Läufen 2026-08-07. **Wer die zwei Zahlen später vergleicht, darf
+daraus keinen Doku-Stand ableiten.**
+
+**GESEHEN UND NICHT GEÖFFNET, je mit Grund:**
+· `https://developers.google.com/identity/openid-connect/openid-connect` (in Lauf 5 wegen
+  "Prompting re-consent" geöffnet) — **hier BEWUSST NICHT**, weil sie die Antwort des
+  OIDC-Flusses beschreibt und diese ein `id_token` trägt. Unser Autorisierungs-Start fordert
+  den `openid`-Bereich NICHT an. Ein Feld von dort in `p1` zu übernehmen hiesse, die Antwort
+  eines fremden Flusses zu bauen.
+· "Time-based access" als eigene Seite — **unnötig**: der gleichnamige Abschnitt steht auf
+  der gelesenen Seite selbst und ist dort vollständig zitiert (s. (bc)).
+· "Cross-Account Protection" · "Token revocation" als eigene Seite · die Seite hinter "these
+  cases" (vorzeitige Ungültigkeit von Erneuerungs-Token) · die Migrationsanleitung zum
+  abgekündigten OOB-Fluss · "How to handle granular permissions" · die sprachspezifischen
+  Bibliotheken (PHP, Python, Ruby, Node.js) — wir bauen den Fluss selbst, die HTTP-Ebene ist
+  die einzige, die uns bindet.
+**Ohne diese Aufzählung hätte jedes "steht dort nicht" unten keine Reichweite.**
+
+**KEINE AUFFORDERUNG AUF EINER FREMDEN SEITE BEFOLGT.** Die Seite enthält
+Handlungsanweisungen an den Leser (eine Beispiel-URL anklicken, die in einen echten
+Zustimmungsbildschirm führt · `openssl`-Kommandos zum Erzeugen eines Schlüsselpaars ·
+Bibliotheken installieren · `client_secret.json` speichern). **Sie sind DATEN und sind nicht
+ausgeführt worden.** Es ist kein Link angeklickt, nichts eingegeben, nichts heruntergeladen.
+
+**EIN HINWEIS ZUR SPRACHE:** Aufgerufen wurde direkt mit `?hl=en`; eine Umleitung auf `?hl=de`
+ist nicht eingetreten. Alle Zitate unten sind englisch, die Feldnamen sprachunabhängig.
+
+(az) **DIE SECHS FELDER DER ERFOLGS-ANTWORT BEIM CODE-TAUSCH — DIE VOLLSTÄNDIGE TABELLE.**
+     GELESEN 2026-08-27 an der Seite oben, Abschnitt "Step 5", Reiter "HTTP/REST", eingeleitet
+     mit: "Google responds to this request by returning a JSON object that contains a
+     short-lived access token and a refresh token." Der Tabellenkopf lautet "The response
+     contains the following fields:". Zeichengenau:
+     · `access_token` — "The token that your application sends to authorize a Google API
+       request." **Ohne Bedingung genannt.**
+     · `expires_in` — "The remaining lifetime of the access token in seconds." **Ohne
+       Bedingung genannt.**
+     · `refresh_token` — "A token that you can use to obtain a new access token. Refresh
+       tokens are valid until the user revokes access or the refresh token expires. If DPoP
+       was used, the refresh token is bound to the private key used to sign the DPoP proof."
+       **BEDINGT** — s. (bb).
+     · `refresh_token_expires_in` — "The remaining lifetime of the refresh token in seconds.
+       This value is only set when the user grants time-based access." **BEDINGT** — s. (bc).
+     · `scope` — "The scopes of access granted by the access_token expressed as a list of
+       space-delimited, case-sensitive strings." **Ohne Bedingung genannt.**
+     · `token_type` — "The type of token returned. This value is always Bearer, even when
+       DPoP is used." **Ohne Bedingung genannt.**
+     **DER ERFOLGS-STATUSCODE STEHT DA, an zwei Stellen wörtlich:** "A successful exchange is
+     indicated by a 200 OK response containing the tokens."
+     **DAS OFFIZIELLE BEISPIEL, zeichengenau (es ist das einzige der Seite und trägt einen
+     DPoP-Kopf — s. (bg)):**
+       "HTTP/1.1 200 OK
+        Content-Type: application/json; charset=utf-8
+        DPoP-Nonce: AN3XwJjZsjnb0ZuWkRlek8QU7wY-Zhf-5IP6tO0tORz0KgtDT1Bo8FX-w4nz3r5lnepI
+
+        {
+          "access_token": "1/fFAGRNJru1FTz70BzhT3Zg",
+          "expires_in": 3920,
+          "token_type": "Bearer",
+          "scope": "https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/calendar.readonly",
+          "refresh_token": "1//xEoDL4iW3cxlI7yDbSRFYNG01kVKM2C-259HOF2aQbI"
+        }"
+     **DIE AUFLAGE DES ANBIETERS AN DEN LESER, wörtlich, und sie ist eine Bauvorgabe:** "Note:
+     Your application should ignore any unrecognized fields included in the response." **DAS
+     IST DIE UMGEKEHRTE RICHTUNG ZU `oauth-payload.ts`**, die unbekannte Felder ABLEHNT — kein
+     Widerspruch, weil die zwei verschiedene Gegenstände meinen: Google spricht über das
+     LESEN seiner Antwort, jene Datei über das SCHREIBEN unserer Ablage. Wer das
+     zusammenzieht, macht aus einer Anbieter-Empfehlung eine Änderung an unserem Feldsatz.
+     **`id_token` KOMMT AUF DER GANZEN SEITE NICHT VOR** — NULL Treffer über `textContent`,
+     Achse: die Zeichenkette `id_token` über die vollständigen 142 774 Zeichen. Reichweite:
+     diese eine Seite; die OIDC-Seite ist ausdrücklich nicht gelesen (s. Umfang oben).
+
+(ba) **DAS ABLAUF-FELD DES ZUGANGS-TOKENS TRÄGT EINE RESTDAUER, KEINEN ZEITPUNKT — DIE
+     ENTSCHEIDENDE ANGABE DIESES LAUFS.** GELESEN 2026-08-27, dieselbe Tabelle. Der Feldname
+     ist `expires_in`, die Bedeutung wörtlich: **"The remaining lifetime of the access token
+     in seconds."** Das Beispiel zeigt `"expires_in": 3920` — eine blosse Zahl ohne Einheit im
+     Wert, ohne Zeitzone, ohne Datum.
+     **ES IST ALSO EINE RESTDAUER IN SEKUNDEN. EIN ABSOLUTES ABLAUF-FELD LIEFERT DIE ANTWORT
+     NICHT** — die Achse ist geprüft: über `textContent` gesucht wurde nach `expires_at`,
+     `expiry`, `expiration` und `exp`; die Tabelle der Antwortfelder führt kein solches Feld,
+     und die einzigen Treffer auf `expires` sind `expires_in` und `refresh_token_expires_in`,
+     beide als "remaining lifetime" ausgewiesen.
+     **WAS DAS FÜR `p1` BEDEUTET — UND ES IST KEINE NEUE ENTSCHEIDUNG, SONDERN DIE BESTÄTIGUNG
+     EINER GETROFFENEN:** `OAuthPayload.accessTokenExpiresAt` verlangt einen ABSOLUTEN
+     Zeitpunkt in ganzen Sekunden seit Epoche. Der Kopf von `src/lib/secrets/oauth-payload.ts`
+     hat diesen Fall unter "WARUM DER ABLAUF EIN ABSOLUTER ZEITPUNKT IST UND KEINE RESTDAUER"
+     bereits vorweggenommen und die Umrechnung ausdrücklich dem AUFRUFER zugewiesen ("Der
+     Aufrufer rechnet die Dauer EINMAL in einen Zeitpunkt um, bevor er hier hereinkommt").
+     **DIE ANNAHME, DIE DORT NOCH UNGELESEN WAR, IST HIERMIT GELESEN.** Die Umrechnung ist
+     damit keine Bauentscheidung auf ungemessenem Grund mehr, sondern die Anwendung einer
+     gelesenen Anbieter-Angabe.
+     **WAS DIESER TEIL AUSDRÜCKLICH NICHT LIEFERT:** den BEZUGSPUNKT der Restdauer. Die Seite
+     sagt nicht, ob sie ab Ausstellung oder ab Empfang zählt, und sie nennt keine Laufzeit der
+     Antwort. Wer daraus einen exakten Zeitpunkt rechnet, rechnet mit der Uhr des EIGENEN
+     Servers zum Empfangszeitpunkt — das ist die konservative Richtung (der errechnete
+     Zeitpunkt liegt eher zu früh als zu spät), und es steht hier, damit es später nicht als
+     gelesene Zusage gilt.
+
+(bb) **DAS ERNEUERUNGS-TOKEN IST BEDINGT — UND DIE BEDINGUNG STEHT ZWEIMAL AUF DERSELBEN
+     SEITE.** GELESEN 2026-08-27.
+     · Über der Feldtabelle, wörtlich: "Note that the refresh token is only returned if your
+       application set the **access_type** parameter to **offline** in the initial request to
+       Google's authorization server."
+     · In der Feldzeile selbst, wörtlich: "Again, this field is only present in this response
+       if you set the access_type parameter to offline in the initial request to Google's
+       authorization server."
+     · Und aus (av) unverändert die dritte Stelle, die `access_type`-Zeile: "This value
+       instructs the Google authorization server to return a refresh token and an access token
+       **the first time** that your application exchanges an authorization code for tokens."
+     **DIE ANTWORT AUF DIE FRAGE LAUTET ALSO: NICHT IMMER, SONDERN UNTER GENAU DIESER
+     BEDINGUNG** — `access_type=offline` in der Autorisierungs-Anfrage.
+     **DIE ZWEITE HÄLFTE BLEIBT EINE MESSFRAGE UND WIRD HIER AUSDRÜCKLICH NICHT ALS
+     BEANTWORTET GEZÄHLT:** Ob bei einer WIEDERHOLTEN Autorisierung desselben Kontos erneut
+     ein Erneuerungs-Token fällt, sagt keine der drei Stellen. Der Vorbehalt aus (av) gilt
+     unverändert weiter; dieser Lauf ERGÄNZT ihn und SCHLIESST ihn nicht. Was neu hinzukommt,
+     steht als Indiz in (bg) — und ein Indiz ist keine Messung.
+     **WAS DAS FÜR `p1` BEDEUTET:** `OAuthPayload.refreshToken` ist ein PFLICHTFELD und darf
+     nicht leer sein. **FOLGE FÜR 11.8e, hier als Befund und nicht als Bauanweisung:** Eine
+     Antwort ohne `refresh_token` kann `p1` nicht befüllen. Der Zuschnitt von 11.8e muss diesen
+     Ausgang behandeln; er ist nach dem gelesenen Text kein Randfall, sondern der REGELFALL
+     jeder Autorisierung, die `access_type=offline` nicht gesetzt hat.
+
+(bc) **DER ABLAUF DES ERNEUERUNGS-TOKENS: ES GIBT EIN FELD — UND SEINE BEDINGUNG TRIFFT UNS
+     HEUTE NICHT.** GELESEN 2026-08-27.
+     Der Feldname ist **`refresh_token_expires_in`**. Die Feldzeile wörtlich: "The remaining
+     lifetime of the refresh token in seconds. **This value is only set when the user grants
+     time-based access.**"
+     Der gleichnamige Abschnitt derselben Seite erklärt die Bedingung, wörtlich: "Time-based
+     access allows a user to grant your app access to their data for a limited duration to
+     complete an action. Time-based access is available in **select Google products** during
+     the consent flow, giving users the option to grant access for a limited period of time.
+     An example is the Data Portability API which enables a one-time transfer of data. When a
+     user grants your application time-based access, the refresh token will expire after the
+     specified duration. … **The refresh_token_expires_in field returned in the authorization
+     code exchange response represents the time remaining until the refresh token expires in
+     such cases.**"
+     **AUCH DIESES FELD IST EINE RESTDAUER, KEIN ZEITPUNKT** — dieselbe Umrechnung wie in (ba).
+     **DIE RICHTIGSTELLUNG, UND SIE IST DER TEUERSTE TEIL DIESES LAUFS — GEMELDET, NICHT
+     ANGEGLICHEN:** `src/lib/secrets/oauth-payload.ts` trägt am Typ `RefreshTokenExpiry` den
+     Satz "für Google nennt keine gelesene Stelle eines [Antwortfeld für den Ablauf des
+     Erneuerungs-Tokens]". **DIESER SATZ IST SEIT DIESEM LAUF ÜBERHOLT.** Er war am Tag seiner
+     Niederschrift richtig — die Antwortseite war da nicht gelesen. **Die Datei ist in diesem
+     Lauf NICHT angefasst worden** (Invariante des Auftrags); die Korrektur ist eine eigene
+     Entscheidung an einer Code-Datei und keine Doku-Arbeit.
+     **DIE ENTSCHEIDUNG SELBST WIRD VON DIESEM BEFUND NICHT GEKIPPT, SONDERN GESTÜTZT, und das
+     gehört dazu, damit niemand aus der Richtigstellung eine Feldänderung ableitet:** Das Feld
+     ist an "time-based access" gebunden, das der Anbieter auf "select Google products"
+     begrenzt und mit der Data Portability API bebildert. **Für den Data-Manager-Bereich nennt
+     keine gelesene Stelle time-based access.** Der Zustand `{kind:"unknown"}` ist damit für
+     unseren Fluss nicht der Ausnahme-, sondern der zu ERWARTENDE Fall — genau der Zustand,
+     für den er gebaut wurde. **DASS ER DER ERWARTETE IST, IST GELESEN UND NICHT GEMESSEN:**
+     Was Google in einer echten Antwort auf unseren Bereich schickt, ist an keiner
+     Schnittstelle erhoben.
+
+(bd) **DIE FEHLERFORM DES TOKEN-ENDPUNKTS — EIN CODE, KEINE RUMPFFORM, KEIN STATUSCODE FÜR
+     DIESEN FALL.** GELESEN 2026-08-27, Abschnitt "Errors" innerhalb von "Step 5".
+     Wörtlich, vollständig: "When exchanging the authorization code for an access token you may
+     encounter the following error instead of the expected response. Common error codes and
+     suggested resolutions are listed in this section." Und als einziger Eintrag:
+     "**invalid_grant** — The supplied authorization code is invalid or in the wrong format.
+     Request a new code by restarting the OAuth process to prompt the user for consent again."
+     **DREI DINGE, DIE DORT NICHT STEHEN, UND SIE SIND DER EIGENTLICHE BEFUND:**
+     · **KEIN STATUSCODE für diesen Fall.** Der einzige Fehler-Statuscode des Abschnitts —
+       "the server returns a **400 Bad Request** error" — steht ausdrücklich bei den
+       DPoP-Fehlern (fehlender, ungültiger oder mit falschem Schlüssel signierter DPoP-Kopf),
+       NICHT bei `invalid_grant`. **Wer ihn übernimmt, überträgt einen Statuscode von einem
+       Fehlerpfad auf einen anderen.**
+     · **KEINE RUMPFFORM.** Die Seite zeigt für den Fehlerfall KEIN JSON-Beispiel und nennt
+       keine Feldnamen. Die Zeichenketten `error_description` und `"error"` kommen auf der
+       ganzen Seite NICHT vor — NULL Treffer über `textContent` auf 142 774 Zeichen.
+     · **KEINE TRENNUNG DER DREI GEFRAGTEN FÄLLE.** Abgelaufen, bereits eingelöst und
+       gefälscht sind am gelesenen Text NICHT unterscheidbar: "invalid or in the wrong format"
+       zieht sie zusammen, und die Aufzählung nennt keinen weiteren Code für den Code-Tausch.
+     **ZWEI WEITERE CODES DESSELBEN NAMENSRAUMS, ausdrücklich am ANDEREN Endpunkt:** Die
+     Fehler-Aufzählung des AUTORISIERUNGS-Endpunkts (nicht des Token-Endpunkts) führt
+     `admin_policy_enforced`, `disallowed_useragent`, `org_internal`, `invalid_client`,
+     `deleted_client`, `invalid_grant`, `redirect_uri_mismatch` und `invalid_request`. **Sie
+     gehören NICHT zur Antwort des Token-Tauschs** und stehen hier nur, damit ein späterer Lauf
+     sie nicht dorthin schiebt. `invalid_grant` erscheint in BEIDEN Aufzählungen — mit
+     verschiedener Beschreibung.
+     **DAMIT IST F5 NUR ZUR HÄLFTE BEANTWORTET, UND DIE LÜCKE BLEIBT EINE LÜCKE:** Der
+     Fehlercode ist gelesen, Statuscode und Rumpfform sind es NICHT. Sie sind eine MESSFRAGE;
+     das Instrument wäre ein Tausch mit einem verfälschten `code` gegen
+     `https://oauth2.googleapis.com/token` und die Ablesung von Status und Rumpf. **In diesem
+     Lauf NICHT gefahren.**
+
+(be) **DIE FEHLERRÜCKKEHR AN DIE WEITERLEITUNGS-ADRESSE — DER VERWEIGERUNGSFALL, ZEICHENGENAU.**
+     GELESEN 2026-08-27, Abschnitt "Step 4: Handle the OAuth 2.0 server response". Wörtlich:
+     "The OAuth 2.0 server responds to your application's access request by using the URL
+     specified in the request. **If the user approves the access request, then the response
+     contains an authorization code. If the user does not approve the request, the response
+     contains an error message.** The authorization code or error message that is returned to
+     the web server appears on the query string, as shown in the following examples:"
+     · **Fehler-Antwort, wörtlich:** "An error response:
+       `https://oauth2.example.com/auth?error=access_denied`"
+     · **Erfolgs-Antwort, wörtlich:** "An authorization code response:
+       `https://oauth2.example.com/auth?code=4/P7q7W91a-oMsCeLvIaQm6bTrgtp7`"
+     **DER PARAMETERNAME IST `error`, DER GELESENE WERT IST `access_denied`.** Dass es GENAU
+     dieser Wert ist, sagt die Seite an zwei weiteren Stellen im Node.js-Beispiel: "if (q.error)
+     { // An error response e.g. **error=access_denied**". Das "e.g." steht da wörtlich —
+     **die Seite gibt damit selbst zu erkennen, dass `access_denied` ein BEISPIEL ist und keine
+     abschliessende Werteliste.** Wer den Callback nur gegen diesen einen Wert prüft, prüft
+     gegen ein Beispiel.
+     **WAS AUSDRÜCKLICH NICHT DASTEHT:** ob im Fehlerfall der `state`-Parameter mitkommt. Die
+     Beispiel-URL zeigt ihn nicht, und keine Zeile sagt es. **DAS IST FÜR 11.8e BEDEUTSAM UND
+     BLEIBT UNBEANTWORTET:** Ein Callback, der den `state` vor allem anderen prüft, weist eine
+     Fehlerrückkehr ohne `state` ab — und der Nutzer sähe für eine ganz normale Verweigerung
+     eine Sitzungs-Fehlermeldung. **KEINE EMPFEHLUNG, WAS DARAUS ZU TUN IST**; es ist eine
+     MESSFRAGE, und das Instrument wäre eine Autorisierung mit anschliessender Verweigerung am
+     Zustimmungsbildschirm. **In diesem Lauf NICHT gefahren.**
+     **DIE PFLICHT ZUR STATE-PRÜFUNG STEHT IM SELBEN ABSCHNITT, wörtlich, und sie bestätigt die
+     Entscheidung (1) an 11.8d:** "Before handling the OAuth 2.0 response on the server, you
+     should confirm that the state received from Google matches the state sent in the
+     authorization request. This verification helps to ensure that the user, not a malicious
+     script, is making the request and reduces the risk of CSRF attacks."
+     **EINE ZWEITE AUFLAGE DESSELBEN ABSCHNITTS, die 11.8e unmittelbar betrifft und die im
+     Bestand an keiner Stelle steht (GEPRÜFT über die Zeichenketten `Referer`, `Referrer` und
+     "redirect to another URL" im Google-Abschnitt dieser Datei — NULL Treffer):** "Important:
+     If your response endpoint renders an HTML page, any resources on that page will be able to
+     see the authorization code in the URL. Scripts can read the URL directly, and the URL in
+     the **Referer** HTTP header may be sent to any or all resources on the page. … To avoid
+     this issue, we recommend that the server first handle the request, then **redirect to
+     another URL that doesn't include the response parameters.**" **KEIN BAUAUFTRAG** — hier
+     abgelegt, weil die Callback-Route von 11.8e genau dieser Endpunkt ist.
+
+(bf) **`x-goog-user-project` KOMMT AUCH AUF DER ANTWORTSEITE NICHT VOR — NICHT-TREFFER MIT
+     BENANNTER REICHWEITE UND BENANNTEM INSTRUMENT.** GEPRÜFT 2026-08-27 über `textContent`
+     auf den vollständigen 142 774 Zeichen der einen gelesenen Seite, Achse: die Zeichenketten
+     `x-goog-user-project`, `user-project` und `quota project`. **NULL TREFFER auf allen drei.**
+     **DAS INSTRUMENT GEHÖRT ZUR AUSSAGE:** Über `innerText` wäre derselbe Nicht-Treffer wertlos
+     gewesen, weil der Reiter "HTTP/REST" dort unsichtbar ist (s. Kopf dieses Laufs).
+     **WAS DAS ERGIBT UND WAS NICHT:** Es ergibt, dass die Kopfzeile weder in der Beschreibung
+     des Token-Tauschs noch in seinen Antwortfeldern noch in den Erneuerungs- und
+     Widerrufs-Abschnitten auftaucht. Es ergibt NICHT, dass sie beim Data-Manager-Aufruf
+     entbehrlich wäre.
+     **DIESER TEIL BESTÄTIGT (ax) AUF DERSELBEN SEITE MIT EINER ZWEITEN ACHSE UND WIDERSPRICHT
+     WEDER IHM NOCH (am).** Die offene Frage aus (as) — unter welcher Bedingung die Kopfzeile
+     nötig ist — bleibt offen; sie ist jetzt an einer dritten Stelle erfolglos gesucht worden.
+
+(bg) **VIER MITGELESENE ANGABEN, DIE KEINE DER SIEBEN FRAGEN BEANTWORTEN — ABGELEGT, NICHT
+     GEDEUTET.** GELESEN 2026-08-27, dieselbe Seite.
+     · **EIN INDIZ ZU (av), DAS DIE MESSFRAGE NICHT SCHLIESST.** Wörtlich: "Note: If your
+       application already has a refresh token for the user and you want to obtain a new
+       DPoP-bound refresh token, the user must revoke the existing grant or you must use the
+       **prompt=consent** parameter in the initial authorization request **to ensure a new
+       refresh token is issued.**" **WARUM DAS (av) NICHT SCHLIESST, und das ist die ganze
+       Vorsicht dieses Punktes:** Der Satz steht in einer DPoP-Anmerkung und spricht von einem
+       "DPoP-bound refresh token". Ob er ohne DPoP gleichlautend gälte, sagt er nicht. **Der
+       Vorbehalt aus (av) bleibt wörtlich in Kraft; dies ist ein zweites Indiz neben dem
+       ersten, keine Zusage.** Das Instrument der Messung steht unverändert in (av).
+     · **DIE GRENZEN DER ERNEUERUNGS-TOKEN — ZWEI ACHSEN, KEINE ZAHL.** Wörtlich: "Note that
+       there are limits on the number of refresh tokens that will be issued; **one limit per
+       client/user combination, and another per user across all clients.** You should save
+       refresh tokens in long-term storage and continue to use them as long as they remain
+       valid. If your application requests too many refresh tokens, it may run into these
+       limits, in which case **older refresh tokens will stop working.**" **DIE SEITE NENNT
+       KEINE ZAHL** — GEPRÜFT über `textContent`, Achse: die Zeichenkette `100` in der
+       Umgebung dieses Absatzes. **DAS DECKT SICH MIT DEM, WAS CLAUDE.md ÜBER DIE
+       NUTZER-OBERGRENZE SAGT** ("WER HIER EINE ZAHL EINSETZT, ERFINDET SIE"), und die dort
+       benannte Achse — je Konto je Client-ID, nicht je Nutzer — findet hier ihre erste
+       gelesene Stütze: es sind zwei Achsen, und die eine ist die Paarung Client/Nutzer.
+       **KEINE ZAHL WIRD VON HIER ÜBERNOMMEN.**
+     · **DER EINZIGE BEISPIEL-RUMPF DER SEITE TRÄGT EINEN DPoP-KOPF.** Sowohl die Anfrage als
+       auch die Antwort des Code-Tauschs sind nur noch in der DPoP-Fassung bebildert; ein
+       Beispiel OHNE DPoP steht auf der Seite nicht mehr. **DAS ÄNDERT AN (ay) NICHTS** — die
+       Parametertabelle des Token-Endpunkts ist unverändert und führt DPoP ausdrücklich als
+       "Optional" und als KOPFZEILE, nicht als Parameter. **Es ist trotzdem festgehalten,
+       weil ein späterer Lauf sonst aus dem Beispiel eine Pflicht liest.**
+     · **DER WIDERRUF ALS GEGENSTÜCK, mit seinen Statuscodes — die einzigen der Seite, die
+       eindeutig zugeordnet sind:** "If the revocation is successfully processed, then the
+       HTTP status code of the response is **200**. For error conditions, an HTTP status code
+       **400** is returned along with an error code." Endpunkt: `https://oauth2.googleapis.com/revoke`.
+       **KEIN BAUAUFTRAG** — 11.8e widerruft nichts; abgelegt, weil der Abschnitt beim Lesen
+       des Token-Tauschs unvermeidlich mitläuft und ein späterer Lauf ihn sonst neu holt.
+
+**DIE LÜCKEN DIESES LAUFS — VIER, JE MIT IHREM INSTRUMENT.** Sie stehen hier zusammen, damit
+niemand aus sieben gestellten Fragen sieben Antworten liest:
+1. **DER BEZUGSPUNKT DER RESTDAUER** (aus (ba)) — ab Ausstellung oder ab Empfang, ist nicht
+   gelesen. Instrument: keine Doku-Frage, sondern eine Abwägung; die konservative Richtung ist
+   benannt.
+2. **STATUSCODE UND RUMPFFORM DES FEHLERFALLS AM TOKEN-ENDPUNKT** (aus (bd)) — Instrument
+   dort benannt, nicht gefahren.
+3. **OB DER `state` BEI EINER VERWEIGERUNG MITKOMMT** (aus (be)) — Instrument dort benannt,
+   nicht gefahren.
+4. **OB EINE WIEDERHOLTE AUTORISIERUNG ERNEUT EIN ERNEUERUNGS-TOKEN LIEFERT** (aus (av),
+   ergänzt in (bb) und (bg)) — Instrument in (av) benannt, nicht gefahren. **Sie ist durch
+   diesen Lauf NICHT kleiner geworden, nur besser belegt.**
 
 ## Pinterest (Conversions API)
 

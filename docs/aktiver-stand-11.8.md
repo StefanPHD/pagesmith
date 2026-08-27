@@ -31,6 +31,7 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
 · Scheibe 11.8c — Die Form der mehrwertigen Nutzlast, als eigener Ort
 · Scheibe 11.8d — Der Autorisierungs-Start
 · Scheibe 11.8e — Rückkehr und Ablage
+· Scheibe 11.8f — Der fünfte Zielwert im CHECK
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -658,6 +659,143 @@ Eigentums-Wahl ist **OWNER-ENTSCHEIDUNG vom 2026-08-27**. Die Sieben-Tage-Frist 
 **NICHTS ist gebaut, NICHTS ist gegen eine Google-Schnittstelle gemessen, und an der
 laufenden Datenbank ist für diesen Zuschnitt nichts erhoben.**
 
+## Scheibe 11.8f — Der fünfte Zielwert im CHECK
+
+**ZUGESCHNITTEN AM 2026-08-27, NICHT GEBAUT.** Es gibt keinen Vermerk, kein Ergebnis und
+keine Messung zu dieser Scheibe — sie ist ein Plan, und dieser Abschnitt ist der Maßstab,
+gegen den ihr späterer Vermerk misst. **Die Migration ist NICHT geschrieben und NICHT
+gefahren.**
+
+**SIE STEHT HINTER 11.8e UND LÄUFT VOR IHR — und dieser Satz muss hier stehen, weil die
+Reihenfolge in dieser Datei sonst als Ablauf gelesen wird.** Die Position ist NUMERISCH
+(a, b, c, d, e, f) und sagt über den Zeitpunkt nichts; **der Ablauf ist 11.8f, dann 11.8e.**
+Wer die Datei von oben nach unten als Fahrplan liest, dreht die beiden um — und genau diese
+Umkehrung wäre fail-open (s. "### Die Reihenfolge, als Auflage").
+
+**HERKUNFT DIESER SCHEIBE:** Sie ist aus einer Aufklärung zu 11.8e entstanden, nicht
+geplant gewesen. Gate G1 jener Runde (CC, 2026-08-27) hat gemessen, dass der Zielwert
+fehlt; damit war 11.8e **blockiert**, und die Aufteilung ist die Antwort darauf.
+**ARCHITEKTEN-ENTSCHEIDUNG vom 2026-08-27.**
+
+### Der Gegenstand von 11.8f
+
+**Migration 0026: Der CHECK `project_secrets_target_valid` auf `project_secrets.target`
+wird von VIER auf FÜNF Werte erweitert — `'google'` kommt dazu. Sonst nichts.**
+
+### Warum eine EIGENE Scheibe und nicht der erste Schritt von 11.8e
+
+**DER ERSTE GRUND IST DIE ZWEIDEUTIGKEIT EINES GO.** Eine Migration wird im SQL-Editor
+gefahren, ein Code-Stand wird gepusht — zwei Vorgänge, zwei Zeitpunkte, zwei Hände. Steckt
+beides in EINER Scheibe, hängt an einem einzigen GO zweierlei, und **geht dazwischen etwas
+schief, ist der Stand nicht mehr eindeutig**: Migration gelaufen und Code nicht? Umgekehrt?
+Als eigene Scheibe hat sie ihren **eigenen Vermerk** und ihren **eigenen Beweis**, und der
+Stand ist an beiden ablesbar. **0022, 0023 und 0024 sind genau so gelaufen** — jede eine
+eigene Migration mit eigenem Vollzug.
+
+**DER ZWEITE GRUND IST DIE RICHTUNG DES SCHADENS.** Der erweiterte CHECK ist **ohne Code,
+der ihn nutzt, ein NO-OP** — er erlaubt einen Wert, den niemand schreibt. Jetzt gefahren
+ist er also **gefahrlos**. Die umgekehrte Reihenfolge — Code zuerst — wäre **FAIL-OPEN**:
+Der Schreibpfad liefe gegen eine Datenbank, die den Wert nicht kennt, und scheiterte im
+laufenden Betrieb statt im Editor.
+
+### Die Bauform — dreimal gelebt, nicht erfunden
+
+**`drop constraint` + `add constraint` in EINER Transaktion, der Protokoll-Insert als
+LETZTE Anweisung.** Präzedenz, und es sind drei:
+- `supabase/migrations/0022_project_secrets_targets.sql` — zweiter Zielwert.
+- `supabase/migrations/0023_project_secrets_tiktok.sql` — dritter Zielwert.
+- `supabase/migrations/0024_project_secrets_linkedin.sql` — vierter Zielwert.
+
+**DER PROTOKOLL-INSERT STEHT AM ENDE UND NICHT AM ANFANG**, und das ist keine
+Formatierungsfrage: Bricht die Migration vorher ab, gibt es keine Zeile, die einen nie
+vollzogenen Lauf behauptet (docs/db-regeln.md, "MIGRATION IMMER VOR CODE-DEPLOY",
+PROTOKOLL-PFLICHT ab 0018).
+
+### Der Befund und seine Provenienz — ZWEI unabhängige Quellen, die übereinstimmen
+
+**`'google'` fehlt heute im CHECK. GEMESSEN, und zwar zweifach:**
+- **Aus den Migrationsdateien** (CC, 2026-08-27): `0024_project_secrets_linkedin.sql`
+  trägt `check (target in ('meta', 'pinterest', 'tiktok', 'linkedin'))` — VIER Werte. Eine
+  Suche nach `'google'` über `supabase/migrations/` liefert **KEINEN Treffer**.
+  `0025_project_secrets_schema.sql` liest den CHECK ausdrücklich als **unverändert** mit.
+- **Aus docs/db-stand.md**: dieselbe Aussage, **LIVE ABGELESEN** am 2026-08-17 im
+  SQL-Editor (Owner, Probe `supabase/checks/project-secrets-target-check.sql`).
+
+**KEIN DRIFT ZWISCHEN REPO UND DATENBANK — und dass das eigens dasteht, ist der Punkt:**
+Bei einer Aussage über ein Schema ist die Übereinstimmung zweier unabhängiger Quellen
+selbst der Befund. Hätten sie auseinandergelegen, wäre nicht die Migration die erste
+Arbeit, sondern die Klärung.
+
+### Was ohne sie passiert
+
+**Der Insert von 11.8e wird von der Datenbank mit `23514` (check_violation) unter dem
+Namen `project_secrets_target_valid` abgewiesen.**
+
+**DAS IST AM BESTAND BELEGT UND NICHT HERGELEITET:** Die Messung vom 2026-08-17 hat genau
+diese Abweisung an einem Wegwerf-Insert beobachtet — ein Wert ausserhalb der Menge wurde
+mit 23514 unter diesem Constraint-Namen zurückgewiesen, während ein gültiger angenommen
+wurde. **Die Annahme allein sähe bei einem Constraint, der alles durchlässt, identisch
+aus**; erst die Abweisung zeigt, dass der Schutz wirkt.
+
+### Die Einordnung — ein vorhergesagter Fall, kein Sonderfall
+
+Das ist genau der Fall, den die Dauerregel **"JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE
+EIGENE CONSTRAINT-ERWEITERUNG MIT"** (docs/immer-beachten.md) vorhersagt. **Vier Ziele,
+vier Migrationen** — 0021 legte den CHECK mit einem Wert an, 0022, 0023 und 0024
+erweiterten ihn je um einen. **Google ist das fünfte.**
+**DER PREIS IST BEABSICHTIGT**, und die Migration 0021 nennt ihn selbst: der sichtbare
+Moment, in dem ein Ziel real wird. Eine Scheibe, die ihn überspringt, hat den Zielwert
+still eingeführt.
+
+### Was 11.8f ausdrücklich ausschliesst
+
+Keine neue Spalte · kein Ablauf-Feld · keine Policy · keine Änderung am
+UNIQUE-Constraint, am Primärschlüssel oder am CHECK `project_secrets_secret_genau_eines` ·
+kein Code · **keine Zeile in `project_secrets`**.
+
+**DER LETZTE PUNKT IST DER SCHÄRFSTE:** Diese Scheibe schreibt kein Geheimnis und legt
+keine Zeile an. Sie erlaubt einen Wert, den bis 11.8e niemand benutzt.
+
+### Die Reihenfolge, als Auflage
+
+**DIE MIGRATION LÄUFT IM SQL-EDITOR VOR JEDEM DEPLOY** (docs/db-regeln.md, "MIGRATION
+IMMER VOR CODE-DEPLOY"). Ohne Code, der `'google'` schreibt, ist sie ein **No-op** —
+deshalb ist sie **jetzt gefahrlos** und in der umgekehrten Reihenfolge **fail-open**.
+
+**WAS NACH IHREM LAUF GILT UND LEICHT ÜBERSEHEN WIRD:** Das automatische Tages-Backup ist
+bis zum nächsten Snapshot **nicht mehr code-kompatibel** — ein Restore in diesem Fenster
+brauchte ein manuelles Nachziehen der Migration (docs/db-regeln.md,
+"BACKUP-WIEDERVORLAGE HÄNGT AN MIGRATIONEN, NICHT AM KALENDER"). Bei einer additiven
+CHECK-Erweiterung ist das Fenster billig; **es ist trotzdem eines.**
+
+### Der Beweis von 11.8f — eine Gegenprobe in ZWEI Richtungen
+
+**Der Beweis ist eine Gegenprobe im SQL-Editor, und sie muss BEIDE Richtungen zeigen:**
+1. **`'google'` geht jetzt durch.**
+2. **Ein unbekannter Wert wird weiterhin abgewiesen** (23514, `project_secrets_target_valid`).
+
+**NUR DIE ZWEITE RICHTUNG BELEGT, DASS DER CHECK NOCH WIRKT.** Ein `drop` ohne `add` —
+oder ein `add` mit einer zu weiten Bedingung — sähe an Richtung 1 **identisch** aus:
+`'google'` ginge durch, und zwar deshalb, weil gar nichts mehr prüft. Eine Probe, die nur
+den Erfolg misst, kann einen entfernten Schutz nicht von einem erweiterten unterscheiden.
+**Das ist dieselbe Denkfigur wie die Positivkontrolle bei einem Abwesenheits-Wächter**
+(docs/immer-beachten.md, "MUTATIONSPROBEN", Lektion (d)) — hier an einem Constraint statt
+an einem Test.
+
+**DIE GENAUE PROBE ENTSCHEIDET DER PLAN.** Hier steht keine, und eine eingesetzte sähe wie
+eine entschiedene aus. **Was der Plan dabei mitbedenken muss und dieser Zuschnitt nur
+benennt:** Ein Wegwerf-Insert braucht eine gültige `project_id` (Fremdschlüssel) und muss
+genau eines von `secret`/`secret_enc` tragen; und er hinterlässt eine Zeile, die wieder
+verschwinden muss.
+
+PROVENIENZ DIESES ZUSCHNITTS: Die Aufteilung in eine eigene Scheibe und ihre zwei Gründe
+sind **ARCHITEKTEN-ENTSCHEIDUNG vom 2026-08-27**. Dass `'google'` heute fehlt, ist
+**GEMESSEN am Repo (CC, 2026-08-27)** und deckungsgleich mit der **LIVE-ABLESUNG vom
+2026-08-17 (Owner, SQL-Editor)**, die in docs/db-stand.md steht. Die Bauform und die drei
+Präzedenzfälle sind **am Migrations-SQL gemessen (CC, 2026-08-27)**. **NICHTS ist gebaut,
+KEINE Migration geschrieben, NICHTS an der laufenden Datenbank erhoben, und es ist KEIN
+Aufruf gegen eine fremde Schnittstelle gefahren worden.**
+
 ## Abgeschlossene Scheiben-Vermerke
 
 ### Vermerk 1 — Scheibe 11.8a, Commit 4b2ec09 (2026-08-25)
@@ -1223,6 +1361,29 @@ HIER entschieden worden.
    dem Befund folgen sollte.
    PROVENIENZ: die Zeilenzahlen GEMESSEN (Owner, 2026-08-25); die Folgerung "dann nie live
    gesendet" ist eine ABLEITUNG und ausdrücklich keine Messung.
+
+3. **BEIDE ABLAUFZEITPUNKTE STECKEN IM CHIFFRAT.** Die Nutzlast trägt sie als Felder
+   (`accessTokenExpiresAt` und `refreshTokenExpiresAt` in `src/lib/secrets/oauth-payload.ts`),
+   und die Nutzlast geht verschlüsselt in `project_secrets.secret_enc`.
+   **`project_secrets` TRÄGT KEINE ABLAUF-SPALTE** — GEMESSEN (CC, 2026-08-27): die sieben
+   Spalten sind `project_id`, `target`, `secret`, `created_at`, `updated_at`, `secret_enc`,
+   `id`; eine Suche über `0021_project_secrets.sql` und `0025_project_secrets_schema.sql`
+   nach einer Ablauf-Spalte liefert keinen Treffer.
+   **DIE FOLGE, und sie ist der ganze Eintrag:** Eine Überwachung, die wissen will, WELCHE
+   Zugänge demnächst ablaufen, müsste **JEDE Zeile entschlüsseln**. Es gibt keine Spalte,
+   über die sich das filtern oder sortieren liesse.
+   **DAS IST KEIN ENTWURFSFEHLER, SONDERN DIE ANDERE SEITE EINER ENTSCHEIDUNG:** Der
+   Ablauf steht in der Nutzlast, weil sie der eine Ort der Form ist; eine zweite,
+   unverschlüsselte Kopie in einer Spalte wäre eine zweite Wahrheit, die neben dem Chiffrat
+   altert.
+   **HEUTE KEIN PROBLEM, UND AUSDRÜCKLICH KEIN BAUAUFTRAG.** Es gibt keine Überwachung, die
+   das bräuchte, und keine Zeile mit einem Chiffrat.
+   **WARUM DAS HIER STEHT UND NICHT ALS OFFENER PUNKT:** Ein offener Punkt braucht einen
+   TRIGGER, und für diesen ist keiner benennbar, der nicht erfunden wäre. "Falls es je
+   nötig wird" ist genau die Formulierung, die docs/offene-punkte.md nicht zulässt.
+   PROVENIENZ: die fehlende Spalte und der Feldsatz der Nutzlast sind **GEMESSEN am Repo
+   (CC, 2026-08-27)**, erhoben als Gate G9 der Aufklärungsrunde zu 11.8e. Die Folge für
+   eine Überwachung ist eine **ABLEITUNG** daraus und keine Messung.
 
 ## Hebungs-Kandidaten
 

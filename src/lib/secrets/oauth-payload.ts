@@ -188,9 +188,36 @@ const ALLOWED_FIELDS = [
  * "unknown" IST EIN EIGENER ZUSTAND UND KEIN FEHLENDES FELD. Grund: Ob die Anbieter
  * diesen Ablauf ueberhaupt mitliefern, ist NICHT belegt (docs/ziel-befunde.md fuehrt
  * LinkedIns zwoelf Monate als BEOBACHTUNG an der Oberflaeche des Generators, nicht als
- * gemessenes Antwortfeld; fuer Google nennt keine gelesene Stelle eines). Ein
- * fehlendes Feld waere von einer kaputten Zeichenkette nicht zu unterscheiden — ein
- * benannter Zustand ist es.
+ * gemessenes Antwortfeld; fuer Google s. die Richtigstellung darunter). Ein fehlendes
+ * Feld waere von einer kaputten Zeichenkette nicht zu unterscheiden — ein benannter
+ * Zustand ist es.
+ *
+ * RICHTIGGESTELLT AM 2026-08-27 — ERSETZT UND NICHT GESTEMPELT, weil es eine
+ * SACHKORREKTUR AN EINER LESUNG ist und kein Mechanismuswechsel. Bis zu diesem Tag stand
+ * an der Stelle oben: "fuer Google nennt keine gelesene Stelle eines". DAS WAR FALSCH.
+ *
+ *   DAS FELD EXISTIERT. Es heisst refresh_token_expires_in und traegt eine RESTDAUER in
+ *   Sekunden, keinen Zeitpunkt. GELESEN 2026-08-27 (docs/ziel-befunde.md,
+ *   Google-Abschnitt, Lauf 6, Teil (bc)).
+ *
+ *   ES TRIFFT UNS NICHT. Der Anbieter setzt es AUSSCHLIESSLICH, wenn der Nutzer
+ *   "time-based access" gewaehrt, und das gibt es nur bei ausgewaehlten
+ *   Google-Produkten. Fuer den Data-Manager-Bereich nennt keine gelesene Stelle es.
+ *
+ *   FOLGE FUER DIE ENTSCHEIDUNG — SIE KIPPT NICHT, SIE WIRD GESTUETZT: "unknown" ist
+ *   fuer unseren Fluss damit der ZU ERWARTENDE Fall und nicht der Randfall. Genau
+ *   dafuer ist der benannte Zustand gebaut.
+ *
+ *   DIE PROVENIENZ GEHOERT ZUM SATZ: Das ist GELESEN, nicht GEMESSEN. Was Google in
+ *   einer echten Antwort auf UNSEREN Bereich schickt, ist an keiner Schnittstelle
+ *   erhoben.
+ *
+ * WARUM DIE KORREKTUR DIE AUSSAGE SCHAERFER MACHT STATT SCHWAECHER — und ohne diesen
+ * Satz liest die naechste Runde sie als Rueckzug: Der alte Wortlaut behauptete, es gebe
+ * KEIN solches Feld. Der neue sagt, es gebe eines und es treffe uns nicht. Das ist die
+ * staerkere Aussage, weil sie den Fall BENENNT, in dem es uns doch traefe — ein Produkt
+ * mit time-based access. Der alte Wortlaut kannte diesen Fall nicht und haette ihn
+ * darum auch nicht erkannt.
  */
 export type RefreshTokenExpiry =
   | { kind: "at"; epochSeconds: number }

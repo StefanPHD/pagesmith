@@ -110,6 +110,8 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
     LAUF 3 — die Teile (aa) bis (ai)
   - ### Abschnitts-Lesung 2026-08-25 der Data-Manager-Politik, LAUF 4 — die Teile (aj)
     bis (as)
+  - ### Abschnitts-Lesung 2026-08-27 der OAuth-2.0-Dokumentation für
+    Webserver-Anwendungen, LAUF 5 — die Teile (at) bis (ay)
 - ## Pinterest (Conversions API)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
@@ -3344,6 +3346,173 @@ die (h) und (t) schon führen, und markiert jede als NEU oder WIEDERGELESEN.
      6. OB 2.000 ODER 10.000 GILT. Acht Stellen, fünf zu drei (s. (ap)). GRUND: es ist eine
         MESSFRAGE. Das Instrument wäre validateOnly=true mit einer Nutzlast zwischen den
         beiden Werten; es ist in diesem Lauf ausdrücklich NICHT benutzt worden.
+
+### Abschnitts-Lesung 2026-08-27 der OAuth-2.0-Dokumentation für Webserver-Anwendungen, LAUF 5 — die Teile (at) bis (ay)
+
+**WARUM DIESER LAUF UND WAS ER NICHT IST:** Die vier Vorläufe lasen die DATA-MANAGER- und
+die GOOGLE-ADS-Doku — also das, was mit einem fertigen Zugangsdatum geschieht. Dieser Lauf
+liest, WIE das Zugangsdatum entsteht: den Webserver-Fluss. **Er berührt keinen einzigen
+Data-Manager-Befund und stellt keinen davon richtig.**
+
+**HERKUNFT, für ALLE Teile dieses Laufs: GELESEN am 2026-08-27. NICHTS ist gemessen** — es
+ist kein Aufruf gegen eine Google-Schnittstelle gefahren, kein Zustimmungsbildschirm
+geöffnet, keine Cloud-Konsole betreten, keine Anmeldung vorgenommen.
+
+**DER GELESENE UMFANG — ZWEI SEITEN, VOLLSTÄNDIG:**
+1. `https://developers.google.com/identity/protocols/oauth2/web-server` — "Using OAuth 2.0
+   for Web Server Applications", **Doku-Stand laut Seitenfuss: 2026-08-07**. Vollständig
+   gelesen (40 271 Zeichen sichtbarer Text; zusätzlich der Text der nicht aktiven
+   Sprach-Reiter über `textContent`, weil der HTTP/REST-Reiter sonst unsichtbar bleibt —
+   ohne diesen Griff wäre (ay) nicht gefunden worden).
+2. `https://developers.google.com/identity/openid-connect/openid-connect` — "OpenID
+   Connect", **Doku-Stand laut Seitenfuss: 2026-06-15**. Geöffnet AUSSCHLIESSLICH wegen des
+   Abschnitts "Prompting re-consent", auf den Seite 1 aus der `prompt`-Zeile ihrer
+   Parameter-Tabelle verweist.
+
+**EIN HINWEIS ZUR SPRACHE, damit ein späterer Lauf nicht andere Zeichenketten findet:** Der
+erste Aufruf ohne Parameter wurde auf `?hl=de` umgeleitet. Alle Zitate unten stammen aus
+`?hl=en`; die Parameternamen selbst sind sprachunabhängig.
+
+**GESEHEN UND NICHT GEÖFFNET, je mit Grund:** die sprachspezifischen Client-Bibliotheken
+(Go, Java, .NET, Node.js, Dart, PHP, Python, Ruby) — wir bauen den Fluss selbst, die
+HTTP-Ebene ist die einzige, die uns bindet · "Cross-Account Protection" · "Time-based
+access" · "Token revocation" · die Migrationsanleitung für den abgekündigten
+OOB-Fluss · "OAuth 2.0 Scopes for Google APIs" (der Scope steht bereits als (ak) im
+Bestand). **Ohne diese Aufzählung hätte jedes "steht dort nicht" unten keine Reichweite.**
+
+**KEINE AUFFORDERUNG AUF EINER FREMDEN SEITE BEFOLGT.** Beide Seiten enthalten
+Handlungsanweisungen an den Leser (Bibliothek installieren, Anmeldedaten herunterladen, eine
+Beispiel-URL anklicken, `client_secret.json` speichern). **Sie sind DATEN und sind nicht
+ausgeführt worden.** Insbesondere ist die Beispiel-URL aus (at) NICHT angeklickt worden —
+sie führte in einen echten Zustimmungsbildschirm.
+
+(at) **DIE AUTORISIERUNGS-ADRESSE DES WEBSERVER-FLUSSES.** GELESEN 2026-08-27 an Seite 1,
+     Abschnitt "Sample OAuth 2.0 server response". Der Endpunkt, zeichengenau:
+     `https://accounts.google.com/o/oauth2/v2/auth`
+     Das offizielle Beispiel im Wortlaut, mit den Zeilenumbrüchen der Quelle:
+       "https://accounts.google.com/o/oauth2/v2/auth?
+        scope=https%3A//www.googleapis.com/auth/drive.metadata.readonly%20https%3A//www.googleapis.com/auth/calendar.readonly&
+        access_type=offline&
+        include_granted_scopes=true&
+        response_type=code&
+        state=state_parameter_passthrough_value&
+        redirect_uri=https%3A//developers.google.com/oauthplayground&
+        client_id=client_id"
+     **DIE GRENZE: Das ist ein BEISPIEL, keine Normvorschrift.** Die verbindliche Aufzählung
+     der Parameter ist die Tabelle in (au), nicht diese URL. Das Beispiel zeigt Drive- und
+     Kalender-Bereiche, weil es aus dem allgemeinen Leitfaden stammt — **es sagt NICHTS über
+     die Data Manager API.**
+
+(au) **DIE VOLLSTÄNDIGE PARAMETERLISTE DER WEITERLEITUNG, mit der Einstufung des Anbieters.**
+     GELESEN 2026-08-27 an Seite 1, Reiter "HTTP/REST", eingeleitet mit: "The Google
+     authorization server supports the following query string parameters for web server
+     applications."
+     · `client_id` — **Required.** "The client ID for your application."
+     · `redirect_uri` — **Required.** "The value must exactly match one of the authorized
+       redirect URIs for the OAuth 2.0 client, which you configured in your client's Cloud
+       Console Clients page. If this value doesn't match an authorized redirect URI for the
+       provided client_id you will get a redirect_uri_mismatch error." Und der Satz, der die
+       Auflage dieses Projekts wörtlich bestätigt: **"Note that the http or https scheme,
+       case, and trailing slash ('/') must all match."**
+     · `response_type` — **Required.** "Set the parameter value to code for web server
+       applications."
+     · `scope` — **Required.** "A space-delimited list of scopes …"
+     · `access_type` — **Recommended.** S. (av).
+     · `state` — **Recommended.** "Specifies any string value that your application uses to
+       maintain state between your authorization request and the authorization server's
+       response. The server returns the exact value that you send as a name=value pair in
+       the URL query component (?) of the redirect_uri …"
+     · `include_granted_scopes` — Optional (schrittweise Autorisierung).
+     · `enable_granular_consent` — Optional.
+     · `login_hint` — Optional.
+     · `prompt` — Optional. S. (av).
+     **WAS DIESE TABELLE FÜR DEN EIGENEN BAU BEDEUTET UND WAS NICHT:** Sie ist die
+     ABSCHLIESSENDE Liste dessen, was der Anbieter für diesen Fluss annimmt. Sie sagt NICHT,
+     dass alle nötig wären — vier sind Pflicht, zwei empfohlen, vier optional.
+
+(av) **OFFLINE-ZUGRIFF UND ERNEUTE ZUSTIMMUNG — ZWEI PARAMETER, UND DIE ZWEITE HÄLFTE IST
+     EINE MESSFRAGE.** GELESEN 2026-08-27 an Seite 1 bzw. Seite 2.
+     · **`access_type`** — Seite 1, wörtlich: "Indicates whether your application can refresh
+       access tokens when the user is not present at the browser. **Valid parameter values
+       are online, which is the default value, and offline.** Set the value to offline if
+       your application needs to refresh access tokens when the user is not present at the
+       browser. … This value instructs the Google authorization server to return **a refresh
+       token and an access token the first time that your application exchanges an
+       authorization code for tokens.**"
+     · **`prompt`** — Seite 1, wörtlich: "A space-delimited, case-sensitive list of prompts to
+       present the user. **If you don't specify this parameter, the user will be prompted only
+       the first time your project requests access.**" Zulässige Werte, wörtlich: `none`
+       ("Don't display any authentication or consent screens. Must not be specified with other
+       values."), `consent` ("Prompt the user for consent."), `select_account` ("Prompt the
+       user to select an account.").
+     · **Seite 2, Abschnitt "Prompting re-consent", wörtlich:** "You can prompt the user to
+       re-authorize your app by setting the prompt parameter to consent in your authentication
+       request. **When prompt=consent is included, the consent screen is displayed every time
+       your app requests authorization of scopes of access, even if all scopes were previously
+       granted** to your Google APIs project. For this reason, include prompt=consent only
+       when necessary."
+     **DIE FRAGE DAHINTER IST NICHT BEANTWORTET, UND SIE WIRD HIER AUSDRÜCKLICH NICHT ALS
+     BEANTWORTET GEZÄHLT:** Bekommt ein Nutzer, der schon einmal zugestimmt hat, beim zweiten
+     Mal WIEDER ein Erneuerungs-Token? **Die zwei Zitate ergeben zusammen nur ein starkes
+     Indiz, keine Zusage.** Der erste sagt "the first time"; der zweite sagt, dass
+     `prompt=consent` den BILDSCHIRM erneut zeigt — **er sagt NICHT, dass dabei ein neues
+     Erneuerungs-Token ausgegeben wird.** Keine der beiden Seiten stellt diese Verbindung her.
+     **DAS IST EINE MESSFRAGE**, und das Instrument wäre eine zweite Autorisierung desselben
+     Kontos mit `access_type=offline&prompt=consent` und die Prüfung, ob die Antwort des
+     Token-Endpunkts ein `refresh_token`-Feld trägt. **Sie ist in diesem Lauf NICHT gefahren.**
+
+(aw) **MEHRERE BEREICHE IN EINEM PARAMETER — TRENNZEICHEN UND KODIERUNG.** GELESEN
+     2026-08-27. Seite 1, `scope`-Zeile: "**A space-delimited list of scopes** …" Seite 2,
+     `scope`-Zeile, schärfer: "**All scope values must be space-separated.**" Die Kodierung
+     zeigt das Beispiel in (at): das Leerzeichen erscheint dort als `%20`, die Doppelpunkte
+     als `%3A` — **also prozentkodiert wie jeder Query-Wert.**
+     **FÜR UNSEREN FALL IST DAS HEUTE OHNE WIRKUNG und steht trotzdem hier:** Wir fordern
+     EINEN Bereich an (s. (ak)). Die Angabe wird erst fällig, wenn der `adwords`-Bereich
+     dazukommt — der Kandidat dazu steht an docs/roadmap.md, Eintrag 11.8, als ausdrücklich
+     NICHT entschieden.
+
+(ax) **`x-goog-user-project` KOMMT IM AUTORISIERUNGS-FLUSS NICHT VOR — NICHT-TREFFER MIT
+     BENANNTER REICHWEITE.** GEPRÜFT 2026-08-27 auf BEIDEN Seiten dieses Laufs, über den
+     vollständigen Text einschliesslich der nicht aktiven Reiter, Achse: die Zeichenketten
+     `x-goog-user-project`, `user-project` und `quota project`. **NULL TREFFER auf beiden
+     Seiten.**
+     **WAS DAS ERGIBT UND WAS NICHT:** Es ergibt, dass die Kopfzeile in der Beschreibung des
+     Webserver-Flusses **nicht als Autorisierungs-Parameter auftaucht** — weder als Pflicht
+     noch als Option. Es ergibt NICHT, dass sie beim API-Aufruf entbehrlich wäre; dazu sagen
+     diese zwei Seiten nichts, und dafür sind sie auch nicht zuständig.
+     **DIESER TEIL ERWEITERT (am) UM EINE ACHSE UND WIDERSPRICHT IHM NICHT.** Jener stellte
+     fest, dass die Kopfzeile im Data-Manager-Beispiel MITREIST und dass keine
+     Data-Manager-Seite ihre Bedingung nennt. Hier kommt hinzu: **auch die OAuth-Seiten
+     nennen sie nicht.** Die offene Frage aus (as) bleibt damit offen; sie ist nur an einer
+     weiteren Stelle erfolglos gesucht worden.
+
+(ay) **DER TOKEN-ENDPUNKT UND SEINE PARAMETER — MITGELESEN, GEHÖRT ABER NICHT ZU 11.8d.**
+     GELESEN 2026-08-27 an Seite 1, Reiter "HTTP/REST" (nur über `textContent` sichtbar).
+     **WARUM ER HIER STEHT, obwohl der Code-Tausch eine spätere Scheibe ist:** Er steht im
+     SELBEN Abschnitt, und ein zweiter Lauf für eine Seite, die schon offen war, wäre teurer
+     als die drei Zeilen.
+     Wörtlich: "To exchange an authorization code for an access token, call the
+     **https://oauth2.googleapis.com/token** endpoint and set the following parameters:"
+     · `client_id` — "The client ID obtained from the Cloud Console Clients page."
+     · `client_secret` — **"Optional** The client secret obtained from the Cloud Console
+       Clients page." **DIE EINSTUFUNG "Optional" STEHT SO DA UND WIRD HIER NICHT GEDEUTET** —
+       unter welcher Bedingung sie gilt, sagt die Zeile nicht.
+     · `code` — "The authorization code returned from the initial request."
+     · `grant_type` — "As defined in the OAuth 2.0 specification, this field's value must be
+       set to `authorization_code`."
+     · `redirect_uri` — "One of the redirect URIs listed for your project …"
+     Die Erneuerung zeigt dieselbe Seite als Beispiel-Rumpf: `client_id=…&refresh_token=…&
+     grant_type=refresh_token` gegen `POST /token HTTP/1.1`, `Host: oauth2.googleapis.com`,
+     `Content-Type: application/x-www-form-urlencoded`.
+     **EINE ANGABE, DIE NEU IST UND HIER NUR ABGELEGT WIRD:** Die Seite beschreibt eine
+     optionale Kopfzeile `DPoP` (ein JWT, das den Besitz eines privaten Schlüssels beweist;
+     "If provided, the returned tokens are bound to this key"). **KEIN BAUAUFTRAG, KEINE
+     EMPFEHLUNG** — sie ist als Optional ausgewiesen und wird hier nur festgehalten, damit
+     ein späterer Lauf sie nicht für neu hält.
+     **DIE SCHULD, DIE DAMIT NICHT GETILGT IST:** Der TRÄGER des Zugangsdatums für
+     `events:ingest` bleibt ungemessen (s. (al) und den Vorbehalt an docs/roadmap.md). Diese
+     Seite beschreibt, wie man ein Token BEKOMMT — nicht, wie es zum Data-Manager-Endpunkt
+     REIST.
 
 ## Pinterest (Conversions API)
 

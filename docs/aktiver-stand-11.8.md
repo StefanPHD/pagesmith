@@ -452,27 +452,51 @@ Erschliessung:
 
 ## Scheibe 11.8d — Der Autorisierungs-Start
 
-**ZUGESCHNITTEN AM 2026-08-27, NICHT GEBAUT.** Es gibt keinen Vermerk, kein Ergebnis und
-keine Messung zu dieser Scheibe — sie ist ein Plan, und dieser Abschnitt ist der Maßstab,
-gegen den ihr späterer Vermerk misst.
+**VOLLZOGEN AM 2026-08-27, Commit c70bc07. DER LIVE-TEST IST BESTANDEN. DER ZUSCHNITT IST
+AB HIER VERDICHTET** — was mit dem Vollzug abgelaufen ist, steht nicht mehr hier. Der
+Maßstab, gegen den er misst, ist Vermerk 4 weiter unten.
 
 **DER OAUTH-FLUSS WAR ALS EINE SCHEIBE GEFÜHRT UND IST IN ZWEI GETEILT** (ARCHITEKT,
-2026-08-27): 11.8d endet, BEVOR Google zurückkehrt; 11.8e beginnt dort.
+2026-08-27): 11.8d endet, BEVOR Google zurückkehrt; 11.8e beginnt dort. **Dieser Satz
+bleibt stehen, weil er die Herkunft von 11.8e ist** — ohne ihn steht jene Scheibe ohne
+Grund da.
 
-### Der Gegenstand von 11.8d
+**DIE ZITAT-PRÜFUNG VOR DER VERDICHTUNG.** GEMESSEN am ganzen Repo (CC, 2026-08-27; Achse:
+alle Dateien ausser .git, node_modules, .next, .playwright-mcp; gesucht nach jedem der ACHT
+Unterabschnitts-Titel dieses Zuschnitts und nach dem Dateinamen dieser Standdatei):
+- **GENAU EIN Titel wird von aussen zitiert** — "### Die drei Invarianten, die 11.8d
+  unberührt lässt", zitiert vom Zuschnitt 11.8e. Er bleibt deshalb stehen; das Zitat wäre
+  sonst tot.
+- **DER PRODUKTIVCODE ZITIERT NUR DIE `##`-ÜBERSCHRIFTEN**, nicht die Unterabschnitte:
+  `src/lib/oauth/google-authorize.ts` nennt die Datei, `src/app/api/oauth/google/start/route.ts`
+  nennt "## Scheibe 11.8d" und "## Scheibe 11.8e". Beide überleben die Verdichtung.
+- Die übrigen SIEBEN Titel haben **null** Treffer von aussen.
 
-EINE Route, die für ein Projekt die Google-Autorisierungs-URL baut, ein State-Cookie setzt
-und weiterleitet. **Mehr nicht.**
+**WAS ABGELAUFEN IST, damit die Streichung erkennbar bleibt und nicht als Versehen:**
+"### Der Gegenstand von 11.8d" · "### Wo der Schnitt liegt" ·
+"### Was 11.8d ausdrücklich ausschliesst" ·
+"### Der Beweis — der Live-Test und seine EINE Achse" ·
+"### Eine ungemessene Annahme, die als solche stehen bleibt" ·
+"### Was der Plan entscheidet und dieser Zuschnitt NICHT" · und die Provenienz-Zeile des
+Zuschnitts.
 
-### Wo der Schnitt liegt
-
-Der Schnitt ist an zwei Eigenschaften erkennbar, und beide liegen in dieser Scheibe
-NICHT vor: **11.8d fasst kein Geheimnis an und schreibt keine Zeile.** Sie baut eine URL,
-setzt ein Cookie und leitet weiter — der erste Schreibpfad in `project_secrets.secret_enc`
-und die erste Berührung der zwei reinen Dateien gehören 11.8e.
-**DIE FOLGE FÜR DIE REIHENFOLGE:** 11.8d ist einzeln beweisbar, ohne dass irgendwo ein
-Chiffrat entsteht. Wer beides in einem Zug baut, hat bei einem Fehlschlag zwei Kandidaten
-statt einem — den Fluss und die Ablage.
+**WO IHRE BINDENDEN RESTE LIEGEN — hier steht, wo, damit die Streichung nichts mitnimmt:**
+- **Der Gegenstand und der Schnittgrund** stehen im Kopf von
+  `src/app/api/oauth/google/start/route.ts` ("WAS DIESE ROUTE TUT — und mehr nicht", "WAS
+  SIE AUSDRÜCKLICH NICHT TUT"), ausführlicher als hier.
+- **Die Ausschlüsse** waren Auflagen an DIESEN Bau und sind mit ihm abgelaufen; ihr
+  bleibender Teil ist der Aufrufer-Riegel, und der lebt unverändert unter "### Die drei
+  Invarianten" weiter — bewacht von den Tests T24 bis T26.
+- **Der Beweis und seine EINE Achse** stehen in Vermerk 4, samt dem, was ein Erfolg dort
+  belegt und was er ausdrücklich nicht belegt.
+- **DIE UNGEMESSENE ANNAHME IST GEFALLEN** — der Browser nimmt das `__Host-`-Cookie auf
+  `http://localhost` an. Sie ist damit keine Annahme mehr, sondern eine MESSUNG, und steht
+  als solche in Vermerk 4, samt ihrer Grenze. **Genau deshalb steht sie hier nicht mehr:
+  eine Annahme, die still zur Tatsache wird, ist von einer vergessenen nicht zu
+  unterscheiden.**
+- **Was der Plan entschied** — der Pfad der Route, der Scope-String, Name, Lebensdauer und
+  Form des State-Cookies — steht jetzt IM CODE, mit Begründung an jeder Konstanten
+  (`src/lib/oauth/google-authorize.ts`). Ein zweiter Ort wäre eine zweite Wahrheit.
 
 ### Die fünf Entscheidungen, die über die Scheibe hinaus binden
 
@@ -542,51 +566,12 @@ Import-Riegel anzutasten.
 **DER PRÜFSTEIN DIESER SCHEIBE BLEIBT DERSELBE:** Wer einen der beiden Importe legt, hat
 nicht mehr 11.8d gebaut.
 
-### Was 11.8d ausdrücklich ausschliesst
-
-Kein Callback · kein Code-Tausch · keine Chiffrierung · kein Schreibpfad in
-`project_secrets` · kein UI-Knopf.
-
-### Der Beweis — der Live-Test und seine EINE Achse
-
-**DIE ACHSE, und es ist genau eine: Wird Googles Zustimmungsbildschirm erreicht?**
-**EIN ERFOLG BESTÄTIGT DREI EXTERN GEHALTENE WERTE AUF EINMAL, die kein Gate im Repo
-abgleicht** — Client-ID, Scope-String und die zeichengenaue Weiterleitungs-Adresse. Ein
-`redirect_uri_mismatch` weist auf den dritten.
-**DIE RÜCKKEHR LÄUFT INS LEERE, UND DAS IST ABSICHT:** Der Pfad hat noch keine Route, der
-Autorisierungs-Code wird nicht eingelöst und verfällt. Wer das als Fehlschlag
-protokolliert, hat die Scheibengrenze für einen Defekt gehalten.
-**AUFLAGE AN DIE ANLEITUNG, als PFLICHT-STOPP und nicht als Hinweis: Der Dev-Server wird
-über `localhost` aufgerufen, NICHT über `127.0.0.1`.** Registriert ist die
-localhost-Adresse; von `127.0.0.1` aus setzte der Browser das Cookie auf einer ANDEREN
-Herkunft als der, zu der Google zurückkehrt.
-
-### Eine ungemessene Annahme, die als solche stehen bleibt
-
-**`__Host-` SETZT `Secure` VORAUS.** Dass der Browser `http://localhost` als sicheren
-Kontext behandelt und das Cookie annimmt, ist **ANGENOMMEN** (ARCHITEKT und OWNER,
-2026-08-27) und **NICHT GEMESSEN**. Der Live-Test zeigt es; hält die Annahme nicht, läuft
-der Test gegen den deployten Stand.
-**DIESELBE ANNAHME STEHT BEREITS EINMAL IM REPO — als KOMMENTAR, nicht als Messung:** am
-Symbol `VARIANT_COOKIE_NAME` in `src/lib/hosting/variant.ts` ("Lokales A/B-Testen laeuft
-ueber localhost … Secure UND __Host- funktionieren dort"). **Das macht sie nicht wahrer.**
-Ein Kommentar ist eine Behauptung, keine Eigenschaft — und dass er sie ein zweites Mal
-trägt, ist genau der Vermehrungs-Fall aus docs/immer-beachten.md. **Wer sie hier als
-belegt verbucht, weil sie dort schon steht, hat zwei Behauptungen und keine Messung.**
-
-### Was der Plan entscheidet und dieser Zuschnitt NICHT
-
-Der PFAD der Start-Route · der genaue SCOPE-STRING · Name, Lebensdauer und Form des
-State-Cookies · die Fehlerform, wenn die Ownership-Prüfung scheitert oder die
-Umgebungsvariablen fehlen. **Hier steht keiner dieser Werte, und ein eingesetzter sähe wie
-ein entschiedener aus.**
-
-PROVENIENZ DIESES ZUSCHNITTS: Der Gegenstand, die Teilung in zwei Scheiben, die fünf
-Entscheidungen, die Ausschlüsse, die Live-Test-Achse und die Auflage an die Anleitung sind
-**ARCHITEKTEN-VORGABE vom 2026-08-27**. Die Annahme zum sicheren Kontext ist **ARCHITEKT
-und OWNER (2026-08-27), ausdrücklich UNGEMESSEN**. Dass `VARIANT_COOKIE_NAME` existiert
-und die genannte Bauform samt der localhost-Aussage trägt, ist **GEMESSEN am Repo (CC,
-2026-08-27)**. **NICHTS ist gebaut, NICHTS ist gegen eine Google-Schnittstelle gemessen.**
+PROVENIENZ DES VERBLIEBENEN ZUSCHNITTS: Die Teilung in zwei Scheiben, die fünf
+Entscheidungen und die Benennung der drei Invarianten sind **ARCHITEKTEN-VORGABE vom
+2026-08-27**. Die Zitat-Prüfung ist **GEMESSEN am Repo (CC, 2026-08-27)**. Die
+Anbieter-Angaben, auf die die Entscheidungen sich stützen, sind **GELESEN**
+(docs/ziel-befunde.md, Google-Abschnitt, Teile (at) bis (ay)) und ausdrücklich NICHT
+gemessen.
 
 ## Scheibe 11.8e — Rückkehr und Ablage
 
@@ -1012,6 +997,135 @@ und (an), LinkedIn-Teil (w)) und ausdrücklich NICHT gemessen. **KEINE Messung a
 laufenden Datenbank und kein Aufruf gegen eine fremde Schnittstelle** — diese Scheibe
 berührt beides nicht.
 
+### Vermerk 4 — Scheibe 11.8d, Commit c70bc07 (2026-08-27)
+
+**WAS GEBAUT WURDE:** DREI neue Dateien, **800 Zeilen** — `src/lib/oauth/google-authorize.ts`
+(die reine Hälfte: Adresse, Zufallswert, Cookie, Umgebungslesung),
+`src/app/api/oauth/google/start/route.ts` (die dünne Route) und
+`src/lib/oauth/google-authorize.test.ts` mit **30 Tests**. **KEINE BESTEHENDE DATEI
+BERÜHRT** — GEMESSEN (CC, 2026-08-27): `git diff --stat` vor dem Commit leer, drei
+Einträge in `git status --porcelain --untracked-files=all`, kein vierter.
+
+**DIE VIER GATES, alle grün, VOR dem Diff gefahren:** `tsc --noEmit` (Exit 0) · `lint`
+(0 Fehler; die eine Warnung liegt vorbestehend in `tracking/consent.test.ts` und wurde
+nicht angefasst) · `vitest run` · `build` (Exit 0, jetzt SIEBEN Routen statt sechs — neu
+`ƒ /api/oauth/google/start`). **Testzahl vorher/nachher, GEMESSEN: 62 Dateien / 1222 Tests
+-> 63 Dateien / 1252 Tests.** Kein Bestandstest ist geändert worden, keiner wurde rot.
+
+#### Der LIVE-TEST — sieben Schritte, alle bestanden
+
+**GEMESSEN vom OWNER am 2026-08-27.**
+
+1. **REGRESSION ZUERST:** eine bestehende Seite lädt, `/api/e` meldet **204**. Nichts an
+   der Auslieferung hat sich geändert.
+2. **Googles Zustimmungsbildschirm wird erreicht.**
+3. **`access_type=offline` und `prompt=consent` stehen in der Adresse,
+   `include_granted_scopes` fehlt.**
+4. **`__Host-ps_oauth` ist gesetzt** — HttpOnly, Secure, `SameSite=Lax`, die
+   Projekt-Kennung im Wert.
+5. **Die Projekt-Kennung steht weder in der Adresse noch im `state`.**
+6. **Fremde UND ungültige Kennung liefern BEIDE HTTP 404 "Projekt nicht gefunden."** —
+   von aussen nicht unterscheidbar, wie vorgesehen.
+7. **Fehlende Client-Kennung: HTTP 500**, dazu eine Log-Zeile mit dem **NAMEN**
+   `GOOGLE_OAUTH_CLIENT_ID` — **ohne Wert**.
+
+**WAS SCHRITT 2 BEWEIST, und es ist mehr als ein bestandener Schritt: DREI EXTERN
+GEHALTENE WERTE SIND AUF EINMAL BESTÄTIGT, die kein Gate im Repo abgleicht** — die
+Client-Kennung, der Scope-String und die zeichengenaue Weiterleitungs-Adresse. Kein Test
+und kein Build kann eine dieser drei prüfen; sie leben in der Cloud-Konsole und in der
+Umgebung. **Das ist der Grund, warum diese Scheibe überhaupt einen Live-Test hat.**
+
+**SCHRITT 5 IST DIE LIVE-SEITE DER TRAGENDEN ZUSICHERUNG.** Die Testseite ist
+Mutationsprobe M2 (s. unten); erst beide zusammen decken sie — der Test beweist, dass der
+Code sie hält, der Live-Schritt, dass sie beim echten Anbieter ankommt.
+
+#### Die ungemessene Annahme des Zuschnitts IST GEFALLEN
+
+**DER BROWSER NIMMT DAS `__Host-`-COOKIE AUF `http://localhost` AN.** Der Zuschnitt führte
+das als **ANGENOMMEN und ausdrücklich NICHT GEMESSEN** (Architekt und Owner, 2026-08-27);
+seit Schritt 4 ist es **GEMESSEN (Owner, 2026-08-27)**.
+
+**DASS DAS HIER AUSDRÜCKLICH STEHT, IST DER PUNKT: Eine Annahme, die still zur Tatsache
+wird, ist von einer vergessenen nicht zu unterscheiden.** Wer den Zuschnitt nach der
+Verdichtung liest, findet sie dort nicht mehr — er muss hier sehen, dass sie eingelöst und
+nicht übergangen wurde.
+
+**IHRE GRENZE GEHÖRT DAZU UND WIRD NICHT KLEINGEREDET:** Gemessen ist sie **im Browser des
+Owners**, nicht über Browser-Familien hinweg. Sie ist damit für DIESEN Testweg belegt und
+nicht als allgemeine Eigenschaft.
+
+**WAS DAMIT AUCH ERLEDIGT IST:** Die Kommentar-Fundstelle am Symbol `VARIANT_COOKIE_NAME`
+in `src/lib/hosting/variant.ts`, die dieselbe Annahme trägt, ist nicht mehr die einzige
+Stütze. Sie bleibt, was sie war — eine Behauptung; die Messung steht jetzt daneben.
+
+#### Die zwei Pflicht-Mutationen und die zwei Verifikations-Mutationen
+
+Jede wurde VOR dem Lauf angesagt, gefahren und zurückgenommen; der Commit trägt keine.
+GEMESSEN am eigenen Lauf (CC, 2026-08-27). **Die Rücknahme ist INHALTLICH nachgewiesen —
+die Dateien waren untracked, `git status` hätte nur "neu" gemeldet** (das ist
+Hebungs-Kandidat 2 in der Anwendung): `sha256sum -c` gegen die vor der ersten Mutation
+gesicherten Prüfsummen, dreimal OK, plus die Suche nach den Mutations-Markern.
+
+- **M2 — die Projekt-Kennung reist zusätzlich in der URL** (umgesetzt als der realistische
+  Fehlgriff: der Cookie-WERT als `state`). VORHERSAGE: genau ZWEI — T4 und T4b, beide
+  derselben Fehlerklasse. ERGEBNIS: **2 von 30 rot, exakt diese zwei.** Deckungsgleich.
+  **DAS IST DIE TRAGENDE PROBE:** An ihr hängt Entscheidung (1) des Zuschnitts, und sie
+  ist damit ein Wächter statt eines Kommentars.
+- **M3 — `SameSite=Lax` auf `Strict`.** VORHERSAGE: genau EINER, T12. ERGEBNIS: **1 von 30
+  rot, genau dieser.** Damit ist T12 als Einzelstück belegt.
+- **V-E1 — `prompt=consent` entfernt.** VORHERSAGE: genau T7. ERGEBNIS: **1 rot, genau
+  dieser.**
+- **V-E2 — `include_granted_scopes=true` hinzugefügt.** VORHERSAGE: genau T8. ERGEBNIS:
+  **1 rot, genau dieser.** **Diese Probe hat einen eigenen Zweck:** Sie beweist, dass der
+  Abwesenheits-Test T8 **NICHT trivial wahr** ist — er prüft gegen die tatsächlich gebaute
+  Adresse, nicht gegen eine Liste, in der der Name gar nicht vorkommen könnte.
+
+#### Ein hohler Test, VOR der Mutation selbst gefunden — und die Wurzel repariert
+
+**T4 WAR TRIVIAL WAHR.** Er behauptete "die Projekt-Kennung kommt in der Adresse nirgends
+vor" — aber `buildAuthorizeUrl` **nahm die Kennung gar nicht entgegen**. Es gab nichts, was
+hätte durchsickern können; der Test konnte nicht fallen. Das ist Fall (2) aus "EINE
+ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL" (docs/immer-beachten.md).
+
+**REPARIERT IST DIE WURZEL, NICHT DIE ZUSICHERUNG.** Die reine Datei hat eine
+Zusammensetzungs-Funktion `buildAuthorizeStart` bekommen: Sie erzeugt den Zufallswert
+selbst, baut die Adresse NUR damit und das Cookie mit Zufall UND Kennung. **Damit ist die
+Kennung am Ort des URL-Baus im Scope, und die Abwesenheit wird eine ECHTE Aussage.**
+**DER ZWEITE GEWINN, und er ist der grössere:** Die Route sieht den Zufallswert gar nicht
+mehr und kann den bequemen Fehlgriff nicht machen.
+
+**OHNE DIESEN FUND WÄRE M2 GRÜN GEBLIEBEN**, und es wäre eine Deckung protokolliert
+worden, die es nicht gibt. Der Befund fiel beim Nachlesen des eigenen Tests an, nicht durch
+ein Gate.
+
+#### Was der Live-Test NICHT zeigt — ausdrücklich
+
+- **OB EINE WIEDERHOLTE AUTORISIERUNG EIN ERNEUERUNGS-TOKEN LIEFERT.** `prompt=consent`
+  macht die Frage für den Bau UNSCHÄDLICH, beantwortet sie aber NICHT. Sie bleibt eine
+  MESSFRAGE (docs/ziel-befunde.md, Google-Abschnitt, Teil (av)); das Instrument steht dort.
+- **OB DER CODE-TAUSCH FUNKTIONIERT.** Die Rückkehr lief ins Leere, wie vorgesehen — der
+  Autorisierungs-Code wurde nicht eingelöst.
+- **OB EIN CHIFFRAT ENTSTEHT.** Diese Scheibe schreibt keine Zeile.
+
+**ALLE DREI GEHÖREN 11.8e.** Wer eines davon diesem Vermerk zurechnet, hält die
+Scheibengrenze für eine Lücke.
+
+**DIE GEGENPROBE AM COMMITTETEN BLOB:** NUL und CR sind nicht nur am Arbeitsbaum geprüft
+worden, sondern an den Objekten selbst (`git show HEAD:<pfad>`): alle drei Dateien NUL 0,
+CR 0, UTF-8 gültig, Bytezahl identisch zum Arbeitsbaum (14 040 · 6 313 · 15 101). Bei einer
+Fehlerklasse, die in dieser Phase dreimal durch alle vier Gates gerutscht ist, beweist der
+Arbeitsbaum nur, was auf der Platte liegt — nicht, was gepackt wurde.
+
+**PROVENIENZ DIESES VERMERKS, je Angabe:** Der gesamte Live-Test einschliesslich der
+Cookie-Annahme auf `http://localhost` ist **GEMESSEN (Owner, 2026-08-27)**. Die
+Commit-Nummer, die Dateizahl, die Zeilenzahl, die Testzahlen, die Gate-Ergebnisse, die vier
+Mutationsergebnisse, die Zitat-Prüfung und die Blob-Gegenprobe sind **GEMESSEN am eigenen
+Lauf (CC, 2026-08-27)**. Die Setzung von `prompt=consent` und das Weglassen von
+`include_granted_scopes` sind **ARCHITEKTEN-ENTSCHEIDUNG (2026-08-27)**. Die
+Anbieter-Angaben sind **GELESEN** (docs/ziel-befunde.md, Google-Abschnitt, Teile (at) bis
+(ay)) und ausdrücklich NICHT gemessen. **KEINE Messung an einer laufenden Datenbank; der
+einzige Aufruf gegen eine fremde Schnittstelle lief beim Owner im Browser, nicht durch CC.**
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 Die drei bindenden Entscheidungen zum Geheimnis-Speicher stehen an docs/roadmap.md,
@@ -1278,3 +1392,50 @@ HIER entschieden worden.
    **NICHT ENTSCHIEDEN:** eigene Regel oder Absatz an einer bestehenden · ob daraus eine
    Auflage an jeden künftigen Textwächter folgt, seine Grenze mitzuschreiben. KEINE
    EMPFEHLUNG.
+
+7. **EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND.**
+   BEFUND: Beim Anbieter-Crawl vom 2026-08-27 lieferte `innerText` den HTTP/REST-Reiter der
+   gelesenen Seite NICHT — die Sprach-Reiter halten den nicht aktiven Inhalt ausserhalb des
+   sichtbaren Textes. Die Suche nach dem Token-Endpunkt ergab **null Treffer**. Erst
+   `textContent` (**115 157 statt 40 271 Zeichen**) förderte ihn zutage. GEMESSEN am eigenen
+   Lauf (CC, 2026-08-27).
+   WARUM ES TEUER GEWESEN WÄRE: Ohne den zweiten Griff wäre "steht dort nicht" als Befund
+   protokolliert worden — **mit benannter Reichweite, sauber ausgewiesen, und trotzdem
+   falsch.** Die Reichweitenangabe hätte den Fehler nicht gefangen, sondern ihm Autorität
+   gegeben.
+   ABGRENZUNG ZUR BESTEHENDEN LEKTION (d) AN "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE"
+   (docs/immer-beachten.md): Jene verlangt für einen Abwesenheits-WÄCHTER eine
+   POSITIVKONTROLLE, damit ein echter Nicht-Treffer von einem kaputten Wächter zu
+   unterscheiden ist. Hier ist der Wächter in Ordnung — **das INSTRUMENT erzeugt die
+   Abwesenheit.** Verwandte Denkfigur, andere Achse.
+   VERWANDT AUCH MIT DER GEGENRICHTUNG IN "WERKZEUG-REGEL: sed -i STRIPPT ... STILL DAS CR"
+   ("EIN WERKZEUG KANN AUCH EINEN BEFUND ERZEUGEN, DEN DER GEGENSTAND NICHT HERGIBT"):
+   dort ein Treffer, den es nicht gibt — hier ein Nicht-Treffer, den es nicht gibt.
+   WARUM ES EIN KANDIDAT IST UND KEIN CRAWL-SONDERFALL: Es trifft jedes Werkzeug, das einen
+   AUSSCHNITT liefert, wo man den Gegenstand vermutet — eine Oberflächen-Abfrage, ein
+   Reiter, ein gefilterter Log, ein `grep` über eine Datei mit Sonderbytes.
+   **NICHT ENTSCHIEDEN:** ob daraus eine Auflage an jede Abwesenheits-Aussage folgt, das
+   Instrument zu wechseln, bevor sie gilt · ob die bestehende Werkzeug-Regel den Absatz
+   bekommt oder es eine eigene wird. KEINE EMPFEHLUNG.
+
+8. **EINE TITEL-KOLLISION WIRD AUCH GEGEN ZITATE GEPRÜFT, NICHT NUR GEGEN LEBENDE
+   ÜBERSCHRIFTEN.**
+   BEFUND: Beim Auflösen der zwei zeichengleichen `###`-Titel am 2026-08-27 fand eine
+   Volltitel-Suche je **DREI** Fundstellen, nicht zwei: die zwei Überschriften **plus ein
+   bis zwei ZITATE** in den Verdichtungs-Listen abgeschlossener Scheiben. GEMESSEN am Repo
+   (CC, 2026-08-27).
+   WAS DARAUS FOLGT: Hätte man je EINE Überschrift umbenannt — die naheliegende, minimale
+   Reparatur —, träfe eine Suche nach dem Titel **weiterhin zuerst das Zitat**. Die
+   Kollision wäre kleiner, aber nicht weg.
+   WARUM ZITATE SICH ANDERS VERHALTEN ALS ÜBERSCHRIFTEN: Ein Zitat eines ABGELAUFENEN
+   Titels bleibt für immer stehen — es ist die Spur der Streichung und darf nicht
+   verschwinden. Es kollidiert also dauerhaft mit jeder künftigen Überschrift desselben
+   Wortlauts. **Je mehr Scheiben verdichtet werden, desto mehr solcher Zitate gibt es.**
+   ABGRENZUNG ZUR BESTEHENDEN REGEL "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER
+   DATEI MIT VERZEICHNIS NICHT" (docs/immer-beachten.md): Jene nennt das VERZEICHNIS als
+   Quelle des zweiten Vorkommens. Hier ist die Quelle die VERDICHTUNGS-LISTE — ein
+   Mechanismus, den jene Regel nicht kennt, weil er erst mit der Verdichtungs-Praxis
+   entstanden ist.
+   **NICHT ENTSCHIEDEN:** ob das ein Absatz an jener Regel wird oder eine eigene · ob die
+   Prüfung "gegen Zitate, nicht nur gegen Überschriften" eine Auflage an jede Umbenennung
+   wird. KEINE EMPFEHLUNG.

@@ -29,6 +29,8 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
 · Scheibe 11.8a — Chiffrieren und Dechiffrieren als reine Datei
 · Scheibe 11.8b — Das Schema der Geheimnis-Tabelle, in EINEM Zug
 · Scheibe 11.8c — Die Form der mehrwertigen Nutzlast, als eigener Ort
+· Scheibe 11.8d — Der Autorisierungs-Start
+· Scheibe 11.8e — Rückkehr und Ablage
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -280,8 +282,8 @@ offen; der Eintrag IST die Anzeige.
 **DER TITEL IST BEWUSST ANDERS FORMULIERT ALS DER GLEICHNAMIGE BEI 11.8a**, obwohl beide
 dasselbe tun: Stünden sie zeichengleich da, träfe eine Suche nach dem Text zwei
 Überschriften, und die erste wäre systematisch die falsche (s. "EIN ANKER, DER EINDEUTIG
-AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md). Zeile
-137 dieser Datei zitiert den Titel von 11.8a wörtlich.
+AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md). Der
+Absatz "WAS ABGELAUFEN IST" unter "## Scheibe 11.8a" zitiert den Titel von 11.8a wörtlich.
 
 - **DER AUFRUFER DER CHIFFRIER-DATEI.** Er machte aus einer reinen Datei einen Pfad, und
   der Pfad wäre der Ingest. Die tragende Invariante von 11.8a gilt unverändert weiter.
@@ -447,6 +449,229 @@ Erschliessung:
    erzeugt, muss ein gültiger Klartext sein. Diese Auflage ist die einzige der drei, die
    eine Eigenschaft an einem FREMDEN Stück Code prüft; sie gehört deshalb in die Tests
    dieser Scheibe und nicht in ein Kommentarversprechen.
+
+## Scheibe 11.8d — Der Autorisierungs-Start
+
+**ZUGESCHNITTEN AM 2026-08-27, NICHT GEBAUT.** Es gibt keinen Vermerk, kein Ergebnis und
+keine Messung zu dieser Scheibe — sie ist ein Plan, und dieser Abschnitt ist der Maßstab,
+gegen den ihr späterer Vermerk misst.
+
+**DER OAUTH-FLUSS WAR ALS EINE SCHEIBE GEFÜHRT UND IST IN ZWEI GETEILT** (ARCHITEKT,
+2026-08-27): 11.8d endet, BEVOR Google zurückkehrt; 11.8e beginnt dort.
+
+### Der Gegenstand von 11.8d
+
+EINE Route, die für ein Projekt die Google-Autorisierungs-URL baut, ein State-Cookie setzt
+und weiterleitet. **Mehr nicht.**
+
+### Wo der Schnitt liegt
+
+Der Schnitt ist an zwei Eigenschaften erkennbar, und beide liegen in dieser Scheibe
+NICHT vor: **11.8d fasst kein Geheimnis an und schreibt keine Zeile.** Sie baut eine URL,
+setzt ein Cookie und leitet weiter — der erste Schreibpfad in `project_secrets.secret_enc`
+und die erste Berührung der zwei reinen Dateien gehören 11.8e.
+**DIE FOLGE FÜR DIE REIHENFOLGE:** 11.8d ist einzeln beweisbar, ohne dass irgendwo ein
+Chiffrat entsteht. Wer beides in einem Zug baut, hat bei einem Fehlschlag zwei Kandidaten
+statt einem — den Fluss und die Ablage.
+
+### Die fünf Entscheidungen, die über die Scheibe hinaus binden
+
+1. **DAS STATE-COOKIE TRÄGT ZWEI DINGE — den Zufallswert UND die Projekt-Kennung. Der
+   `state`-Parameter in der URL trägt NUR den Zufallswert.**
+   **DER GRUND:** Was durch eine FREMDE Weiterleitung reist, ist manipulierbar. Die
+   Projekt-Kennung darf nie über Google laufen — sonst entscheidet der Rückkehrer, an
+   welches Projekt das Zugangsdatum gebunden wird.
+2. **`SameSite=Lax`, NICHT `Strict` — und der Grund gehört dazu, weil `Strict` wie die
+   sicherere Wahl aussieht:** Die Rückkehr von Google ist eine TOP-LEVEL-NAVIGATION VON
+   EINER FREMDEN SEITE. Bei `Strict` sendet der Browser das Cookie nicht mit, und der
+   Callback wiese eine KORREKTE Autorisierung ab. **Die strengere Einstellung erzeugt hier
+   also einen Fehlschlag, der wie ein Angriff aussieht.**
+3. **`__Host-`-PRÄFIX, HOST-ONLY, `HttpOnly`, KURZLEBIG.**
+   **DER PRÄFIX IST EINE DURCHSETZUNG, KEINE ZUSAGE:** `__Host-` erzwingt host-only, Pfad
+   `/` und `Secure` — der BROWSER verwirft das Cookie, wenn eines der drei fehlt. Ein
+   Server, der dasselbe verspricht, verspricht es nur.
+   **WAS ES SCHÜTZT:** Der State ist das EINZIGE, was den Callback an genau DIESE
+   Autorisierung bindet. Ohne host-only könnte ein auf einer SUBDOMAIN des App-Hosts
+   gesetztes Cookie den State auf dem App-Host überschreiben — der Callback prüfte dann
+   gegen einen untergeschobenen Wert. **Das ist Schutz gegen SITZUNGS-UNTERSCHIEBUNG im
+   OAuth-Fluss, NICHT gegen Mandanten-Kopplung.**
+   **DIE ABGRENZUNG, UND SIE IST DER WICHTIGERE TEIL: ES IST NICHT DIESELBE BEGRÜNDUNG WIE
+   BEI `__Host-ps_v`.** Die Regel "HOST-ONLY-COOKIES AUF GETEILTEN WILDCARD-DOMAINS"
+   (docs/immer-beachten.md) ruht AUSSCHLIESSLICH darauf, dass publayer.net als Wildcard
+   alle Kundenprojekte trägt; ihr Schaden ist CROSS-TENANT, ihr Schutzgut die MESSUNG. Auf
+   dem App-Host gibt es kein Projekt Y. **GLEICHE BAUFORM, ANDERER GRUND — wer sie
+   zusammenzieht, streicht die eine, wenn die andere entfällt.**
+   **DASS IM REPO KEINE FUNDSTELLE `__Host-` AUF DEM APP-HOST BEGRÜNDET, IST GEMESSEN**
+   (CC, 2026-08-27; Achse: ganzes Repo ausser .git, node_modules, .next, .playwright-mcp,
+   gesucht nach `__Host-`, host-only, hostonly, Domain-Attribut, nach den Cookie-Setzern im
+   Produktivcode und nach "App-Host" zusammen mit "Cookie"): Alle sieben Fundstellen von
+   `__Host-` meinen das Varianten-Cookie der SERVING-Domain; die Session-Cookies des
+   App-Hosts reichen ihre Attribute unverändert aus `@supabase/ssr` durch (`setAll` in
+   `src/lib/supabase/middleware.ts` und `src/lib/supabase/server.ts`), ohne ein Wort zu
+   Domain-Attribut oder Präfix. **DIE REICHWEITE DIESES NICHT-TREFFERS GEHÖRT DAZU: Er
+   sagt NICHT, dass es keinen Grund gäbe — er sagt, dass im Repo keiner aufgeschrieben
+   ist.** Der Grund oben ist damit der erste.
+4. **DIE OWNERSHIP DES PROJEKTS WIRD VOR DEM START GEPRÜFT, nicht erst bei der Ablage.**
+   Sonst bindet ein angemeldeter Nutzer ein Zugangsdatum an ein FREMDES Projekt — und die
+   Prüfung käme erst, wenn der Zugang schon beschafft ist.
+5. **`GOOGLE_OAUTH_REDIRECT_URI` WIRD GELESEN, NIE AUS DEM ANFRAGE-HOST ABGELEITET.** Die
+   Begründung steht in docs/roadmap.md, Eintrag 11.8, Block vom 2026-08-27, und wird hier
+   **NICHT verdoppelt**.
+
+### Die drei Invarianten, die 11.8d unberührt lässt
+
+**ES SIND DREI AUSSAGEN, NICHT EINE — und sie sehen beim Lesen wie eine aus.** Sie bekommen
+hier je einen NAMEN, damit beim späteren Vermerk prüfbar ist, WELCHE gefallen ist:
+
+- **AUFRUFER-RIEGEL CIPHER** — `src/lib/secrets/cipher.ts` hat im PRODUKTIVCODE keinen
+  Aufrufer; nur ihre Tests rufen sie. Wortlaut: `## Scheibe 11.8a` →
+  `### Die tragende Invariante` (dort die tragende Invariante jener Scheibe).
+- **AUFRUFER-RIEGEL FORM** — `src/lib/secrets/oauth-payload.ts` hat im PRODUKTIVCODE keinen
+  Aufrufer. Wortlaut: `## Scheibe 11.8c`, Abschnitt "WO IHRE BINDENDEN RESTE LIEGEN"
+  ("Die tragende Invariante ist mit dem Vollzug zur MESSUNG geworden"), ausgeschrieben in
+  Vermerk 3.
+- **IMPORT-RIEGEL** — die zwei Dateien importieren einander NICHT. Wortlaut:
+  `## Scheibe 11.8c` → `### Die drei Auflagen aus der Entscheidung`, Punkt 1 ("Sie
+  importiert die Chiffrier-Datei NICHT und wird von ihr NICHT importiert").
+
+**IN 11.8d BLEIBEN ALLE DREI UNBERÜHRT.** Sie fallen erst in 11.8e, und dort mit Ansage.
+**WARUM DIE TRENNUNG NICHT PEDANTERIE IST:** "Keinen Aufrufer haben" ist eine Aussage über
+den ÜBRIGEN Produktivcode, "einander nicht importieren" eine über die BEZIEHUNG der zwei
+Dateien. Sie können einzeln fallen — ein dritter Aufrufer bräche die zwei Riegel, ohne den
+Import-Riegel anzutasten.
+**DER PRÜFSTEIN DIESER SCHEIBE BLEIBT DERSELBE:** Wer einen der beiden Importe legt, hat
+nicht mehr 11.8d gebaut.
+
+### Was 11.8d ausdrücklich ausschliesst
+
+Kein Callback · kein Code-Tausch · keine Chiffrierung · kein Schreibpfad in
+`project_secrets` · kein UI-Knopf.
+
+### Der Beweis — der Live-Test und seine EINE Achse
+
+**DIE ACHSE, und es ist genau eine: Wird Googles Zustimmungsbildschirm erreicht?**
+**EIN ERFOLG BESTÄTIGT DREI EXTERN GEHALTENE WERTE AUF EINMAL, die kein Gate im Repo
+abgleicht** — Client-ID, Scope-String und die zeichengenaue Weiterleitungs-Adresse. Ein
+`redirect_uri_mismatch` weist auf den dritten.
+**DIE RÜCKKEHR LÄUFT INS LEERE, UND DAS IST ABSICHT:** Der Pfad hat noch keine Route, der
+Autorisierungs-Code wird nicht eingelöst und verfällt. Wer das als Fehlschlag
+protokolliert, hat die Scheibengrenze für einen Defekt gehalten.
+**AUFLAGE AN DIE ANLEITUNG, als PFLICHT-STOPP und nicht als Hinweis: Der Dev-Server wird
+über `localhost` aufgerufen, NICHT über `127.0.0.1`.** Registriert ist die
+localhost-Adresse; von `127.0.0.1` aus setzte der Browser das Cookie auf einer ANDEREN
+Herkunft als der, zu der Google zurückkehrt.
+
+### Eine ungemessene Annahme, die als solche stehen bleibt
+
+**`__Host-` SETZT `Secure` VORAUS.** Dass der Browser `http://localhost` als sicheren
+Kontext behandelt und das Cookie annimmt, ist **ANGENOMMEN** (ARCHITEKT und OWNER,
+2026-08-27) und **NICHT GEMESSEN**. Der Live-Test zeigt es; hält die Annahme nicht, läuft
+der Test gegen den deployten Stand.
+**DIESELBE ANNAHME STEHT BEREITS EINMAL IM REPO — als KOMMENTAR, nicht als Messung:** am
+Symbol `VARIANT_COOKIE_NAME` in `src/lib/hosting/variant.ts` ("Lokales A/B-Testen laeuft
+ueber localhost … Secure UND __Host- funktionieren dort"). **Das macht sie nicht wahrer.**
+Ein Kommentar ist eine Behauptung, keine Eigenschaft — und dass er sie ein zweites Mal
+trägt, ist genau der Vermehrungs-Fall aus docs/immer-beachten.md. **Wer sie hier als
+belegt verbucht, weil sie dort schon steht, hat zwei Behauptungen und keine Messung.**
+
+### Was der Plan entscheidet und dieser Zuschnitt NICHT
+
+Der PFAD der Start-Route · der genaue SCOPE-STRING · Name, Lebensdauer und Form des
+State-Cookies · die Fehlerform, wenn die Ownership-Prüfung scheitert oder die
+Umgebungsvariablen fehlen. **Hier steht keiner dieser Werte, und ein eingesetzter sähe wie
+ein entschiedener aus.**
+
+PROVENIENZ DIESES ZUSCHNITTS: Der Gegenstand, die Teilung in zwei Scheiben, die fünf
+Entscheidungen, die Ausschlüsse, die Live-Test-Achse und die Auflage an die Anleitung sind
+**ARCHITEKTEN-VORGABE vom 2026-08-27**. Die Annahme zum sicheren Kontext ist **ARCHITEKT
+und OWNER (2026-08-27), ausdrücklich UNGEMESSEN**. Dass `VARIANT_COOKIE_NAME` existiert
+und die genannte Bauform samt der localhost-Aussage trägt, ist **GEMESSEN am Repo (CC,
+2026-08-27)**. **NICHTS ist gebaut, NICHTS ist gegen eine Google-Schnittstelle gemessen.**
+
+## Scheibe 11.8e — Rückkehr und Ablage
+
+**ZUGESCHNITTEN AM 2026-08-27, NICHT GEBAUT.** Auch hier gibt es keinen Vermerk, kein
+Ergebnis und keine Messung.
+
+### Der Gegenstand von 11.8e
+
+Die Callback-Route: Prüfung des `state` gegen das Cookie · Tausch des Codes gegen
+Zugangs- und Erneuerungs-Token · Nutzlast über `oauth-payload` · Chiffrat über `cipher` ·
+Ablage in `project_secrets.secret_enc`.
+
+### Die Auflage, die diese Scheibe definiert
+
+**HIER TREFFEN SICH DIE ZWEI REINEN DATEIEN ZUM ERSTEN MAL IM PRODUKTIVCODE.** Dass bis
+heute keine die andere importiert, ist **NICHT die tragende Invariante von 11.8c**, sondern
+deren **Auflage (1)** — der IMPORT-RIEGEL. Die drei Namen und ihre Fundstellen stehen an
+11.8d unter "### Die drei Invarianten, die 11.8d unberührt lässt" und werden hier NICHT
+verdoppelt.
+
+**11.8e BRICHT ALLE DREI: AUFRUFER-RIEGEL CIPHER, AUFRUFER-RIEGEL FORM UND IMPORT-RIEGEL.**
+Die Callback-Route ruft beide Dateien auf, und die Nutzlast geht durch die Chiffrierung —
+damit hat jede der zwei einen Aufrufer im Produktivcode, und die Isolation der beiden
+voneinander endet.
+**EIN BRUCH MIT ANSAGE IST ETWAS ANDERES ALS EIN BEILÄUFIGER, DESHALB STEHT ER HIER.**
+
+**DIE ANSAGE WAR BISHER UNVOLLSTÄNDIG, UND DAS IST DER TEIL, DER SONST ÜBERSEHEN WIRD:**
+Der Satz im Zuschnitt von 11.8b ("wer sie zuschneidet, bricht diese Invariante ABSICHTLICH
+und schreibt das hin") kündigt **GENAU EINEN** der drei Brüche an — den AUFRUFER-RIEGEL
+CIPHER. Am Text ist das entscheidbar: Jener Absatz benennt "die tragende Invariante von
+11.8a", schreibt sie als "`cipher.ts` hat im Produktivcode bis heute keinen Aufrufer" aus
+und nennt `oauth-payload.ts` mit keinem Wort. **FÜR DIE ZWEI ANDEREN ERGING NIE EINE
+ANSAGE. SIE ERGEHT HIERMIT.** Ohne diesen Satz sieht der Bruch später vollständig
+vorweggenommen aus, und niemand prüft, ob zwei davon unbemerkt geschahen.
+
+**ZUM AUSDRUCK "TRANSPORT-SCHEIBE" IN JENEM SATZ — UNGEKLÄRT, UND ER BLEIBT ES:** Der
+BESCHREIBUNG nach passt er auf 11.8e ("die beides zusammenführt" — die Chiffrier-Datei und
+den von 0025 geschaffenen, leeren Platz `project_secrets.secret_enc`). Dem NAMEN nach ist
+er MEHRDEUTIG: dieselbe Datei meint an VIER anderen Stellen ausdrücklich die
+"Transport-Scheibe **von 11.2**", also die Scheibe, die den Live-Nachweis von 11.2a
+nachschuldet. **11.8e stützt sich auf die BESCHREIBUNG, nicht auf den NAMEN.** Die vier
+Stellen werden NICHT angefasst; die Mehrdeutigkeit ist GEMELDET, nicht behoben.
+
+### Das Eigentum — OWNER-ENTSCHEIDUNG, 2026-08-27
+
+**DAS ZUGANGSDATUM WIRD MIT GESETZTER `project_id` ABGELEGT.**
+**DER GRUND:** Eine Zeile mit `project_id IS NULL` läge AUSSERHALB JEDER KASKADE — weder
+Projekt- noch Nutzerlöschung erfasst sie, und kein Pfad der Anwendung kann sie lesen oder
+löschen (docs/offene-punkte.md, "EINE ZEILE OHNE PROJEKT LIEGT AUSSERHALB JEDER KASKADE").
+**DER DORTIGE TRIGGER TRITT MIT DIESER WAHL AUSDRÜCKLICH NICHT EIN** — er lautet "die
+erste Zeile mit `project_id IS NULL`", und diese Scheibe erzeugt keine.
+**DIE GRENZE, und sie ist der Teil, der sonst übersehen wird:** Damit ist die Entscheidung
+über eine NUTZER-Achse NICHT getroffen, sondern VERTAGT. Die nullbare Spalte bleibt als
+benannte billige Absicherung stehen. **Fällig wird die Entscheidung, BEVOR der erste
+FREMDE Kunde ein Zugangsdatum ablegt.** Ein Kunde mit mehreren Projekten autorisiert bis
+dahin JE PROJEKT.
+
+### Zwei Vorbedingungen, ohne die der Live-Test scheitert
+
+· **`SECRET_ENC_KEYS` UND `SECRET_ENC_ACTIVE_KEY_ID` MÜSSEN GESETZT SEIN — lokal UND in
+  Vercel. SIE SIND SELBST ZU ERZEUGEN; kein Anbieter liefert sie.**
+  **DIE GENAUE FORM — Länge, Kodierung, Trennung zweier Schlüssel in einem Wert — IST AN
+  `src/lib/secrets/cipher.ts` ZU MESSEN, NICHT ANZUNEHMEN.** Sie steht in keinem Dokument,
+  und **hier steht sie bewusst auch nicht**: eine abgeschriebene Form wäre eine zweite
+  Wahrheit neben dem Code, der sie durchsetzt.
+  **WAS LOKAL CHIFFRIERT WURDE, IST IN PRODUKTION NICHT LESBAR:** Der Wert, unter dem
+  autorisiert wird, muss der sein, unter dem gelesen wird.
+· **IM PUBLISHING-STATUS "TESTING" LEBEN ERNEUERUNGS-TOKEN SIEBEN TAGE.** Das gehört in
+  JEDE Live-Test-Anleitung dieser Phase — sonst wird ein abgelaufenes Token als Fehler
+  gejagt und die Suche beginnt am falschen Ende. Der Pflicht-Hinweis der Phase steht an
+  docs/roadmap.md, Eintrag 11.8; **11.8e ist die erste Scheibe, an der er einen Gegenstand
+  hat.**
+
+### Was 11.8e ausdrücklich ausschliesst
+
+**DER AUFRUF GEGEN `events:ingest`.** Der TRÄGER des Zugangsdatums für diesen Endpunkt ist
+**NICHT GEMESSEN** — gegen eine ungemessene Methode wird nicht geplant. Der Blocker ist an
+docs/roadmap.md, Eintrag 11.8, als KLEINER GEWORDEN und NICHT ERLEDIGT vermerkt.
+
+PROVENIENZ DIESES ZUSCHNITTS: Der Gegenstand, die Auflage zur Invariante, die zwei
+Vorbedingungen und der Ausschluss sind **ARCHITEKTEN-VORGABE vom 2026-08-27**. Die
+Eigentums-Wahl ist **OWNER-ENTSCHEIDUNG vom 2026-08-27**. Die Sieben-Tage-Frist ist
+**GELESEN** (docs/ziel-befunde.md, Google-Abschnitt) und ausdrücklich NICHT gemessen.
+**NICHTS ist gebaut, NICHTS ist gegen eine Google-Schnittstelle gemessen, und an der
+laufenden Datenbank ist für diesen Zuschnitt nichts erhoben.**
 
 ## Abgeschlossene Scheiben-Vermerke
 

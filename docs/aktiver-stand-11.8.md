@@ -576,45 +576,64 @@ gemessen.
 
 ## Scheibe 11.8e — Rückkehr und Ablage
 
-**ZUGESCHNITTEN AM 2026-08-27, NICHT GEBAUT.** Auch hier gibt es keinen Vermerk, kein
-Ergebnis und keine Messung.
+**VOLLZOGEN AM 2026-08-27, Commit 1f50c9a. DER LIVE-TEST IST BESTANDEN. DER ZUSCHNITT IST
+AB HIER VERDICHTET** — was mit dem Vollzug abgelaufen ist, steht nicht mehr hier. Der
+Maßstab, gegen den er misst, ist Vermerk 6 weiter unten.
 
-### Der Gegenstand von 11.8e
+**DIE ZITAT-PRÜFUNG VOR DER VERDICHTUNG, UND SIE FÄLLT AUS WIE BEI 11.8c UND NICHT WIE BEI
+11.8d.** GEMESSEN am ganzen Repo (CC, 2026-08-27; Achse: alle Dateien ausser .git,
+node_modules, .next, .playwright-mcp; gesucht nach jedem der SECHS Unterabschnitts-Titel
+dieses Zuschnitts, nach dem Dateinamen dieser Standdatei und nach den Marken `Nachtrag E1`
+bis `Nachtrag E6`):
 
-Die Callback-Route: Prüfung des `state` gegen das Cookie · Tausch des Codes gegen
-Zugangs- und Erneuerungs-Token · Nutzlast über `oauth-payload` · Chiffrat über `cipher` ·
-Ablage in `project_secrets.secret_enc`.
+- **KEIN Unterabschnitts-TITEL wird von aussen zitiert** — sechs Titel, null Treffer.
+- **ABER ZWEI ERGÄNZUNGEN WERDEN ES, UND ZWAR ÜBER IHRE MARKE:** `src/lib/oauth/google-token.ts`
+  beruft sich an zwei Stellen auf **"Nachtrag E3"** und **"Nachtrag E2"**. **Eine Marke ist
+  ein Zeiger wie ein Titel; sie ist nur schlechter zu suchen.** Genau dieselbe Lage wie bei
+  den Auflagen-Nummern der Scheibe 11.8c.
+- **DIE `##`-ÜBERSCHRIFT WIRD VOM PRODUKTIVCODE ZITIERT** (`start/route.ts` nennt "## Scheibe
+  11.8e"); sie überlebt die Verdichtung ohnehin.
 
-### Die Auflage, die diese Scheibe definiert
+**FOLGE: E2 UND E3 BLEIBEN WÖRTLICH STEHEN** — wer sie kürzt, macht zwei Sätze im
+Produktivcode falsch, und zwar still, weil kein Gate einen Kommentar prüft. E1, E4, E5 und
+E6 laufen ab.
 
-**HIER TREFFEN SICH DIE ZWEI REINEN DATEIEN ZUM ERSTEN MAL IM PRODUKTIVCODE.** Dass bis
-heute keine die andere importiert, ist **NICHT die tragende Invariante von 11.8c**, sondern
-deren **Auflage (1)** — der IMPORT-RIEGEL. Die drei Namen und ihre Fundstellen stehen an
-11.8d unter "### Die drei Invarianten, die 11.8d unberührt lässt" und werden hier NICHT
-verdoppelt.
+**WAS ABGELAUFEN IST, damit die Streichung erkennbar bleibt und nicht als Versehen** — hier
+ohne die Marke `###` aufgezählt, damit eine Suche nach einer Überschrift nicht zuerst in
+dieser Liste landet: Der Gegenstand von 11.8e · Die Auflage, die diese Scheibe definiert ·
+Zwei Vorbedingungen, ohne die der Live-Test scheitert · Was 11.8e ausdrücklich ausschliesst ·
+dazu die Ergänzungen E1, E4, E5 und E6 des Nachtrags und beide Provenienz-Zeilen.
 
-**11.8e BRICHT ALLE DREI: AUFRUFER-RIEGEL CIPHER, AUFRUFER-RIEGEL FORM UND IMPORT-RIEGEL.**
-Die Callback-Route ruft beide Dateien auf, und die Nutzlast geht durch die Chiffrierung —
-damit hat jede der zwei einen Aufrufer im Produktivcode, und die Isolation der beiden
-voneinander endet.
-**EIN BRUCH MIT ANSAGE IST ETWAS ANDERES ALS EIN BEILÄUFIGER, DESHALB STEHT ER HIER.**
+**WO IHRE BINDENDEN RESTE LIEGEN — hier steht, wo, damit die Streichung nichts mitnimmt:**
+- **Der Gegenstand** steht im Kopf von `src/app/api/oauth/google/callback/route.ts` ("WAS
+  DIESE ROUTE TUT", "WAS SIE AUSDRUECKLICH NICHT TUT"), ausführlicher als er je hier stand.
+- **Der Bruch der drei Riegel** ist VOLLZOGEN und steht als Ergebnis in Vermerk 6 — samt dem
+  Satz, warum T24 bis T27 grün geblieben sind. Die Ansage selbst steht im Kopf jener Route.
+- **E1 (die erste Sperre)** ist mit 11.8f erledigt; Vorher- und Nachher-Wortlaut stehen in
+  Vermerk 5.
+- **E4 und E5** sind gebaut und an den Konstanten und Zweigen der Route begründet; bewacht
+  von den Tests R1, R2, R3 und R4. Was die Reihenfolge im Live-Test ergeben hat und was
+  ausdrücklich NICHT, steht in Vermerk 6 unter "Lücke 3 ist TEILWEISE geschlossen".
+- **E6 (keine Antwortparameter in der Adresszeile)** lebt im Kommentar von `redirectOut`
+  weiter, bewacht von R9; die Anbieter-Fundstelle ist docs/ziel-befunde.md, Teil (be).
+- **Die zwei Vorbedingungen** haben ihren Gegenstand verloren: Die Schlüssel sind gesetzt
+  (Owner, 2026-08-27), ihre Form ist unverändert an `src/lib/secrets/cipher.ts` zu MESSEN,
+  und der Pflicht-Hinweis zur SIEBEN-TAGE-FRIST gehört der PHASE und steht an
+  docs/roadmap.md, Eintrag 11.8 — er gilt für JEDE weitere Live-Anleitung dieser Phase
+  unverändert.
+- **Der Ausschluss des `events:ingest`-Aufrufs** steht an docs/roadmap.md, Eintrag 11.8, als
+  KLEINER GEWORDEN und NICHT ERLEDIGT; dass der Live-Test ihn nicht berührt hat, steht in
+  Vermerk 6 unter "Was der Live-Test NICHT zeigt".
 
-**DIE ANSAGE WAR BISHER UNVOLLSTÄNDIG, UND DAS IST DER TEIL, DER SONST ÜBERSEHEN WIRD:**
-Der Satz im Zuschnitt von 11.8b ("wer sie zuschneidet, bricht diese Invariante ABSICHTLICH
-und schreibt das hin") kündigt **GENAU EINEN** der drei Brüche an — den AUFRUFER-RIEGEL
-CIPHER. Am Text ist das entscheidbar: Jener Absatz benennt "die tragende Invariante von
-11.8a", schreibt sie als "`cipher.ts` hat im Produktivcode bis heute keinen Aufrufer" aus
-und nennt `oauth-payload.ts` mit keinem Wort. **FÜR DIE ZWEI ANDEREN ERGING NIE EINE
-ANSAGE. SIE ERGEHT HIERMIT.** Ohne diesen Satz sieht der Bruch später vollständig
-vorweggenommen aus, und niemand prüft, ob zwei davon unbemerkt geschahen.
-
-**ZUM AUSDRUCK "TRANSPORT-SCHEIBE" IN JENEM SATZ — UNGEKLÄRT, UND ER BLEIBT ES:** Der
-BESCHREIBUNG nach passt er auf 11.8e ("die beides zusammenführt" — die Chiffrier-Datei und
-den von 0025 geschaffenen, leeren Platz `project_secrets.secret_enc`). Dem NAMEN nach ist
-er MEHRDEUTIG: dieselbe Datei meint an VIER anderen Stellen ausdrücklich die
-"Transport-Scheibe **von 11.2**", also die Scheibe, die den Live-Nachweis von 11.2a
-nachschuldet. **11.8e stützt sich auf die BESCHREIBUNG, nicht auf den NAMEN.** Die vier
-Stellen werden NICHT angefasst; die Mehrdeutigkeit ist GEMELDET, nicht behoben.
+**EINE MELDUNG BLEIBT STEHEN, WEIL SIE NICHT ABLÄUFT — DER AUSDRUCK "TRANSPORT-SCHEIBE" IST
+UNGEKLÄRT UND BLEIBT ES:** Der BESCHREIBUNG nach passte er auf 11.8e ("die beides
+zusammenführt" — die Chiffrier-Datei und den von 0025 geschaffenen, leeren Platz
+`project_secrets.secret_enc`). Dem NAMEN nach ist er MEHRDEUTIG: dieselbe Datei meint an
+VIER anderen Stellen ausdrücklich die "Transport-Scheibe **von 11.2**", also die Scheibe,
+die den Live-Nachweis von 11.2a nachschuldet. Die vier Stellen sind NICHT angefasst worden;
+die Mehrdeutigkeit ist GEMELDET, nicht behoben. **SIE IST MIT DEM VOLLZUG VON 11.8e NICHT
+KLEINER GEWORDEN, SONDERN GRÖSSER:** Ab jetzt gibt es eine gebaute Scheibe, auf die die
+Beschreibung passt, und eine ungebaute, die den Namen trägt.
 
 ### Das Eigentum — OWNER-ENTSCHEIDUNG, 2026-08-27
 
@@ -630,53 +649,42 @@ benannte billige Absicherung stehen. **Fällig wird die Entscheidung, BEVOR der 
 FREMDE Kunde ein Zugangsdatum ablegt.** Ein Kunde mit mehreren Projekten autorisiert bis
 dahin JE PROJEKT.
 
-### Zwei Vorbedingungen, ohne die der Live-Test scheitert
+### Die Entscheidung S — `'google'` bleibt routen-lokal
 
-· **`SECRET_ENC_KEYS` UND `SECRET_ENC_ACTIVE_KEY_ID` MÜSSEN GESETZT SEIN — lokal UND in
-  Vercel. SIE SIND SELBST ZU ERZEUGEN; kein Anbieter liefert sie.**
-  **DIE GENAUE FORM — Länge, Kodierung, Trennung zweier Schlüssel in einem Wert — IST AN
-  `src/lib/secrets/cipher.ts` ZU MESSEN, NICHT ANZUNEHMEN.** Sie steht in keinem Dokument,
-  und **hier steht sie bewusst auch nicht**: eine abgeschriebene Form wäre eine zweite
-  Wahrheit neben dem Code, der sie durchsetzt.
-  **WAS LOKAL CHIFFRIERT WURDE, IST IN PRODUKTION NICHT LESBAR:** Der Wert, unter dem
-  autorisiert wird, muss der sein, unter dem gelesen wird.
-· **IM PUBLISHING-STATUS "TESTING" LEBEN ERNEUERUNGS-TOKEN SIEBEN TAGE.** Das gehört in
-  JEDE Live-Test-Anleitung dieser Phase — sonst wird ein abgelaufenes Token als Fehler
-  gejagt und die Suche beginnt am falschen Ende. Der Pflicht-Hinweis der Phase steht an
-  docs/roadmap.md, Eintrag 11.8; **11.8e ist die erste Scheibe, an der er einen Gegenstand
-  hat.**
+**OWNER/ARCHITEKT, 2026-08-27. SIE BLEIBT STEHEN, WEIL SIE NICHT ABLÄUFT:** Sie beschreibt
+einen ZUSTAND des Systems, keine Anweisung an einen Bau, und die nächste Scheibe misst
+gegen sie.
 
-### Was 11.8e ausdrücklich ausschliesst
+**`'google'` STEHT ALS ROUTEN-LOKALE KONSTANTE IN DER CALLBACK-ROUTE UND NICHT IN
+`TRACKING_TARGETS`** (`src/lib/settings.ts` ist unberührt). Die Datenbank nimmt den Wert
+seit Migration 0026 an; die TypeScript-Seite kennt ihn nicht.
 
-**DER AUFRUF GEGEN `events:ingest`.** Der TRÄGER des Zugangsdatums für diesen Endpunkt ist
-**NICHT GEMESSEN** — gegen eine ungemessene Methode wird nicht geplant. Der Blocker ist an
-docs/roadmap.md, Eintrag 11.8, als KLEINER GEWORDEN und NICHT ERLEDIGT vermerkt.
+**DREI KOSTEN, benannt und nicht in Kauf genommen, sondern GEWÄHLT:**
+1. **Die Oberfläche sieht die Zeile NICHT.** Karten und Listen iterieren über
+   `TRACKING_TARGETS`.
+2. **Die Zeile ist über die Anwendung nicht entfernbar.** `removeCapiToken` weist `'google'`
+   an `isTrackingTarget` ab; löschen geht nur im SQL-Editor.
+3. **Die Aufnahme ist eine EIGENE Scheibe, keine Zeile.** Sie zieht `CONSENT_KEY_BY_TARGET`
+   (eine TOTALE Zuordnung über alle Ziele), `TARGETS_WITH_ADAPTER`, die Karten-Oberfläche
+   und mehrere Testdateien nach — **FÜNFZEHN Fundstellen ausserhalb von `settings.ts`,
+   GEMESSEN am Repo (CC, 2026-08-27).** Das ist der Zuschnitt von 11.1a für LinkedIn.
 
-PROVENIENZ DIESES ZUSCHNITTS: Der Gegenstand, die Auflage zur Invariante, die zwei
-Vorbedingungen und der Ausschluss sind **ARCHITEKTEN-VORGABE vom 2026-08-27**. Die
-Eigentums-Wahl ist **OWNER-ENTSCHEIDUNG vom 2026-08-27**. Die Sieben-Tage-Frist ist
-**GELESEN** (docs/ziel-befunde.md, Google-Abschnitt) und ausdrücklich NICHT gemessen.
-**NICHTS ist gebaut, NICHTS ist gegen eine Google-Schnittstelle gemessen, und an der
-laufenden Datenbank ist für diesen Zuschnitt nichts erhoben.**
+**WAS DIE LAGE ENTSCHÄRFT, und ohne diesen Satz sieht sie schlimmer aus, als sie ist**
+(OWNER, 2026-08-27): Die Zeile hängt am Fremdschlüssel `project_secrets_project_id_fkey`
+mit **ON DELETE CASCADE**. Eine Projektlöschung räumt sie mit ab. **Es entsteht KEINE
+Waise**, und der Trigger des offenen Punktes "EINE ZEILE OHNE PROJEKT LIEGT AUSSERHALB
+JEDER KASKADE" bleibt unberührt.
 
-### Nachtrag 2026-08-27 — sechs Ergänzungen aus zwei Doku-Läufen und aus 11.8f
+**DIE GRENZE:** Die Kosten (1) und (2) gelten, solange die Aufnahme aussteht. Sie sind im
+Vorrat als eigener Eintrag geführt, damit sie nicht mit dieser Entscheidung verschwinden.
 
-**WARUM ER ANGEFÜGT UND NICHT EINGEARBEITET IST:** Der Zuschnitt darüber ist am 2026-08-27
-geschrieben worden — VOR den Doku-Läufen 5 und 6 und VOR dem Vollzug von 11.8f. **Er ist
-richtig geblieben; er wusste sechs Dinge noch nicht.** Kein Satz von ihm ist umformuliert
-worden. Wer wissen will, was der Zuschnitt am Tag seiner Entstehung sagte, liest ihn
-oben; was seither dazugekommen ist, steht hier.
+### Zwei Ergänzungen, die der Produktivcode über ihre Marke zitiert
 
-**E1 — DIE ERSTE SPERRE IST GEFALLEN, UND SIE STAND NIE IN DIESEM ZUSCHNITT.**
-Die Aufklärungsrunde zu 11.8e hatte an Gate G1 gemessen, dass `'google'` im CHECK
-`project_secrets_target_valid` FEHLT — 11.8e war damit blockiert, denn ohne den Zielwert
-kann keine Zeile abgelegt werden. **Vollzogen ist das NICHT hier, sondern in einer eigenen
-Scheibe: 11.8f, Migration `0026_project_secrets_google.sql`, Commit 9133bcc, gefahren und
-gegengeprobt am 2026-08-27 (Vermerk 5).**
-**DER SATZ STEHT HIER, WEIL DIE SPERRE HIER GESUCHT WIRD:** Sie ist in der Aufklärung zu
-DIESER Scheibe aufgedeckt worden, und der Zuschnitt darüber führt sie mit keinem Wort. Wer
-sie im 11.8e-Text sucht, findet nichts und hält sie für offen. **Die Vorbedingung ist
-erfüllt; hier ist nichts mehr zu tun.**
+**SIE STEHEN WÖRTLICH, WEIL ZWEI KOMMENTARE IN `src/lib/oauth/google-token.ts` SIE BEIM
+NAMEN NENNEN** ("Nachtrag E3", "Nachtrag E2" — GEMESSEN am Repo, CC, 2026-08-27). Wer sie
+streicht oder umformuliert, macht zwei Sätze im Produktivcode falsch, und zwar STILL: kein
+Gate prüft einen Kommentar. Die übrigen vier Ergänzungen des Nachtrags (E1, E4, E5, E6)
+sind mit dem Vollzug abgelaufen; wo ihre Reste liegen, steht oben.
 
 **E2 — DIE UMRECHNUNG DES ABLAUFS, UND DER BEZUGSPUNKT IST EINE ENTSCHEIDUNG UND KEINE
 LESUNG.**
@@ -709,53 +717,14 @@ trotzdem nicht", die docs/offene-punkte.md bereits als eigenen Eintrag führt.
 **WAS DER PLAN ENTSCHEIDET UND DIESER NACHTRAG NICHT:** was der Betreiber in diesem Fall
 sieht, und ob überhaupt etwas abgelegt wird.
 
-**E4 — DIE VERWEIGERUNG DURCH DEN NUTZER IST DER NORMALFALL, NICHT DER RAND.**
-GELESEN 2026-08-27 (Lauf 6, Teil (be)): Lehnt der Nutzer ab, kehrt Google mit einem
-**`error`-Parameter** an die Weiterleitungs-Adresse zurück. Der gelesene Wert ist
-`access_denied` — **und die Seite schreibt selbst "e.g."**, es ist also ein BEISPIEL und
-keine abschliessende Werteliste.
-**FOLGE: Der Plan behandelt JEDEN `error`-Wert, nicht nur den einen.** Wer gegen
-`access_denied` vergleicht, prüft gegen ein Beispiel — und jeder andere Wert fiele in den
-Erfolgszweig.
-
-**E5 — DIE REIHENFOLGE DER PRÜFUNGEN: `error` ZUERST, DANN `state`.**
-**WAS ZURÜCKGENOMMEN WIRD (ARCHITEKT, 2026-08-27):** Der Plan-Prompt vom 2026-08-27 gab als
-Prüfstein vor, der `state` werde geprüft, BEVOR die Route irgendetwas anderes tut. **Diese
-Vorgabe gilt nicht mehr.** Es ist eine Sachkorrektur, kein Mechanismuswechsel.
-**DER GRUND: OB GOOGLE BEI EINER VERWEIGERUNG DEN `state` MITSCHICKT, IST NICHT GELESEN** —
-Lauf 6 weist es ausdrücklich als Lücke 3 aus; die Beispiel-URL der Anbieter-Seite zeigt ihn
-nicht, und keine Zeile sagt es. **Prüft die Route `state` zuerst, weist sie eine ganz
-normale Ablehnung als Sitzungsfehler ab:** Der Nutzer klickt "Nein" und bekommt eine
-Meldung über einen Manipulationsverdacht.
-**DIE NEUE REIHENFOLGE: `error` — dann `state` — dann alles Weitere.**
-**WAS SICH DABEI NICHT ÄNDERT, UND DER SATZ MUSS DASTEHEN: VOR DEM CODE-TAUSCH STEHT DIE
-`state`-PRÜFUNG WEITERHIN.** Das ist die Stelle, an der sie zählt. Ein `error`-Zweig holt
-kein Token, tauscht nichts und schreibt nichts — **die Sicherheitsaussage der Scheibe
-bleibt unberührt**, und die Entscheidung (1) an 11.8d (die Projekt-Kennung reist nie über
-Google) ist von dieser Umstellung nicht berührt.
-**DIE PFLICHT SELBST IST BEIM ANBIETER GELESEN** (Lauf 6, Teil (be), wörtlich): "Before
-handling the OAuth 2.0 response on the server, you should confirm that the state received
-from Google matches the state sent in the authorization request."
-
-**E6 — EINE AUFLAGE, DIE IM BESTAND NIRGENDS STEHT: KEINE ANTWORTPARAMETER IN DER
-ADRESSZEILE STEHEN LASSEN.**
-GELESEN 2026-08-27 (Lauf 6, Teil (be)): Der Anbieter verlangt, der Server solle die Anfrage
-zuerst verarbeiten und **dann auf eine URL OHNE die Antwortparameter weiterleiten**. Der
-Grund, den er nennt: Skripte auf einer gerenderten Seite können die URL lesen, und der
-**`Referer`-Header** kann den Autorisierungs-Code an fremde Ressourcen weitergeben.
-**DAS GILT FÜR JEDEN AUSGANG DER ROUTE, AUCH DIE FEHLERAUSGÄNGE** — auch ein `error`-Wert
-soll nicht in der Adresszeile stehenbleiben.
-**DASS DIE AUFLAGE IM BESTAND FEHLT, IST GEMESSEN** (CC, 2026-08-27; Achse: die
-Zeichenketten `Referer`, `Referrer` und "redirect to another URL" im Google-Abschnitt von
-docs/ziel-befunde.md): NULL Treffer vor Lauf 6. **Sie ist neu, nicht übersehen.**
-
-PROVENIENZ DIESES NACHTRAGS, je Angabe: **E1** ist **GEMESSEN** (Gate G1 der Aufklärung, CC,
-2026-08-27) und **VOLLZOGEN** (Owner, 2026-08-27, SQL-Editor; s. Vermerk 5). Die
-Anbieter-Angaben in **E2 bis E6** sind **GELESEN am 2026-08-27** (docs/ziel-befunde.md,
-Google-Abschnitt, Lauf 6, Teile (ba), (bb) und (be)) und ausdrücklich **NICHT gemessen** —
-es ist kein Aufruf gegen eine Google-Schnittstelle gefahren. Der Bezugspunkt in **E2** und
-die Reihenfolge in **E5** sind **ARCHITEKTEN-ENTSCHEIDUNGEN vom 2026-08-27**. Der
-Nicht-Treffer in **E6** ist **GEMESSEN am Repo (CC, 2026-08-27)**. **NICHTS ist gebaut.**
+PROVENIENZ DES VERBLIEBENEN ZUSCHNITTS: Die Eigentums-Wahl und die Entscheidung S sind
+**OWNER-ENTSCHEIDUNGEN vom 2026-08-27**; der Bezugspunkt in E2 ist eine
+**ARCHITEKTEN-ENTSCHEIDUNG** desselben Tages. Die Anbieter-Angaben in E2 und E3 sind
+**GELESEN am 2026-08-27** (docs/ziel-befunde.md, Google-Abschnitt, Lauf 6, Teile (ba),
+(bb) und (bc)) und ausdrücklich NICHT gemessen. Die Zitat-Prüfung, die Fundstellen-Zahl
+FÜNFZEHN und der Fremdschlüssel mit ON DELETE CASCADE sind **GEMESSEN am Repo bzw. am
+Schema (CC, 2026-08-27)**. **DER VOLLZUG SELBST — Bau, Gates, Mutationen und Live-Test —
+STEHT IN VERMERK 6 UND NICHT HIER.**
 
 ## Scheibe 11.8f — Der fünfte Zielwert im CHECK
 
@@ -1399,6 +1368,160 @@ eine **ABLEITUNG** aus der Regel in docs/db-regeln.md und keine Messung. **KEIN 
 gegen eine fremde Schnittstelle; CC hat die Datenbank zu keinem Zeitpunkt berührt — der
 gesamte Lauf fand beim Owner statt.**
 
+### Vermerk 6 — Scheibe 11.8e, Commit 1f50c9a (2026-08-27)
+
+**WAS GEBAUT WURDE:** Die Callback-Route `src/app/api/oauth/google/callback/route.ts`
+(371 Zeilen) und die zweite reine Datei `src/lib/oauth/google-token.ts` (338 Zeilen), dazu
+zwei neue Testdateien und die ADDITIVE Lese-Seite in `src/lib/oauth/google-authorize.ts`
+(`parseStateCookie`, `serializeClearedStateCookie`, `statesMatch`). **SECHS Dateien im
+Vorgang** — GEMESSEN am Diff (CC, 2026-08-27): 1925 Zeilen hinzu, **EINE entfernt**.
+
+**DIE EINE ENTFERNTE ZEILE IST DIE EINZIGE ÄNDERUNG AN BESTEHENDEM CODE** und war
+ausdrücklich freigegeben (ARCHITEKT, 2026-08-27): `import { randomBytes } from
+"node:crypto"` wurde zu `import { randomBytes, timingSafeEqual } from "node:crypto"`. Alles
+Weitere in jener Datei steht HINTER ihrem bestehenden Code. **GEMESSEN**: `git diff -U3`
+zeigt genau zwei Hunks, der zweite beginnt hinter der letzten Zeile von
+`buildAuthorizeStart`.
+
+**KEINE GESCHÜTZTE DATEI BERÜHRT** — GEMESSEN (CC, 2026-08-27; Achse:
+`git status --porcelain --untracked-files=all`, gefiltert auf `src/lib/capi/`,
+`src/proxy.ts`, `src/lib/supabase/`, `app-serve`, `src/lib/secrets/`,
+`supabase/migrations/`, `docs/`, `src/lib/settings.ts`, `start/route.ts`): **kein
+Treffer.** `TRACKING_TARGETS` ist unverändert.
+
+**DIE VIER GATES, alle grün, VOR dem Diff gefahren:** `tsc --noEmit` (Exit 0) · `lint`
+(Exit 0, 0 Fehler; die eine Warnung liegt vorbestehend in `tracking/consent.test.ts`) ·
+`vitest run` · `build` (Exit 0, **ACHT** Routen — `/api/oauth/google/callback` neu dabei).
+**Testzahl vorher/nachher, GEMESSEN: 63 Dateien / 1252 Tests -> 65 Dateien / 1317 Tests.**
+**65 neue Tests, kein Bestandstest geändert, keiner rot.**
+
+**EIN ZWISCHENFALL, SELBST GEFUNDEN UND HIER PROTOKOLLIERT:** Der erste `tsc`-Lauf fiel mit
+**TS7006** (impliziter `any` in einer `.map`-Rückrufsignatur) in der neuen Route-Testdatei.
+Behoben durch eine explizite `unknown[]`-Annotation; danach Exit 0. **Kein Produktivcode
+betroffen.** Er steht hier, weil ein Vermerk, der nur die grünen Läufe nennt, den Eindruck
+erweckt, es sei beim ersten Anlauf alles durchgelaufen.
+
+#### Der LIVE-TEST — sechs Schritte, alle bestanden
+
+**GEMESSEN vom OWNER am 2026-08-27.** CC hat weder den Browser bedient noch die Datenbank
+berührt.
+
+1. **REGRESSION ZUERST:** Der Autorisierungs-Start leitet zum Zustimmungsbildschirm,
+   `__Host-ps_oauth` ist gesetzt. **11.8d ist unverändert.**
+2. **VERWEIGERUNG:** Google liefert `error=access_denied`; die Rückkehr landet auf
+   `/?google=denied`; **das Cookie ist danach weg.**
+3. **ERFOLG:** Rückkehr auf `/?google=ok`, Cookie per `Max-Age=0` entwertet.
+4. **GEGENPROBE IM SQL-EDITOR:** **GENAU EINE Zeile** mit `target='google'`, `secret` NULL,
+   `secret_enc` gefüllt, `project_id` gesetzt. **DER INHALT DES CHIFFRATS IST NICHT
+   AUSGEGEBEN WORDEN** — geprüft wurde `secret_enc is not null`, nicht sein Wert. Das ist
+   keine Nachlässigkeit der Messung, sondern ihre Bauform.
+5. **KEINE OBERFLÄCHEN-MELDUNG, KEINE KARTE** — wie in L1 und in der Entscheidung S
+   vorgegeben. **Das ist ein bestandener Schritt und kein fehlender.**
+6. **AUFRÄUMEN:** Die Testzeile ist im SQL-Editor entfernt worden, mit BEIDEN Bedingungen
+   (`project_id` UND `target='google'`).
+
+#### Lücke 3 ist TEILWEISE geschlossen — und die Reichweite entscheidet, wie viel
+
+**WAS GEMESSEN IST UND WENIG SAGT:** Der `state` stand NICHT in der finalen Ziel-URL
+(`/?google=denied`). **Das ist erwartbar und beweist fast nichts** — diese URL baut UNSERE
+Route, und sie schreibt Googles Parameter grundsätzlich nicht hinein (Auflage aus Teil
+(be)). **Zwischen Googles Rückkehr und dieser Adresse liegt unsere eigene Weiterleitung.**
+
+**OB GOOGLE DEN `state` AN DEN CALLBACK MITGESCHICKT HAT, IST DAMIT NICHT ENTSCHIEDEN.**
+Die Frage bleibt offen und bleibt eine MESSFRAGE.
+
+**WAS STATTDESSEN GEMESSEN IST, und es ist die wichtigere Aussage: DER DURCHLAUF ENDETE AUF
+`denied` UND NICHT AUF `state_mismatch`.** Der Verweigerungsfall läuft sauber durch.
+
+**DIE FOLGE FÜR DIE REIHENFOLGE-ENTSCHEIDUNG, und sie ist stärker als die offene Frage:**
+`error` vor `state` zu prüfen hat sich als richtig erwiesen — **UNABHÄNGIG davon, wie die
+offene Frage ausgeht.** Kommt der `state` mit, ist der Fall ohnehin sauber; kommt er nicht
+mit, wäre er ohne diese Reihenfolge als Manipulationsverdacht abgewiesen worden. **Eine
+Entscheidung, die in BEIDEN Ausgängen richtig ist, braucht die Messung nicht — und genau
+deshalb wird die Messung hier trotzdem NICHT als erledigt verbucht.**
+
+#### Die drei Riegel sind GEFALLEN — und T24 bis T27 sind GRÜN GEBLIEBEN
+
+**ALLE DREI SIND GEFALLEN, mit Ansage, an den drei vorher benannten Zeilen** (die Ansage
+steht im Kopf von `src/app/api/oauth/google/callback/route.ts`):
+
+- **AUFRUFER-RIEGEL CIPHER** — an der Import-Zeile von `encryptSecret`. `secrets/cipher.ts`
+  hat ihren ersten Aufrufer im Produktivcode.
+- **AUFRUFER-RIEGEL FORM** — an der Import-Zeile von `formatOAuthPayload`.
+  `secrets/oauth-payload.ts` hat ihren ersten Aufrufer im Produktivcode.
+- **IMPORT-RIEGEL** — an BEIDEN Zeilen ZUSAMMEN, an keiner allein. Die zwei reinen Dateien
+  treffen sich zum ersten Mal in EINEM Produktiv-Modul.
+
+**UND GENAU DESHALB MUSS DER NÄCHSTE SATZ HIER STEHEN: DIE WÄCHTER T24, T25, T26 UND T27
+SIND GRÜN GEBLIEBEN. DAS IST KEIN WIDERSPRUCH UND KEIN VERSEHEN.** Sie messen
+`src/lib/oauth/google-authorize.ts` und `src/app/api/oauth/google/start/route.ts` — **zwei
+Dateien, die diese Scheibe nicht anfasst.** Der Bruch findet in der Callback-Route statt,
+die von keinem der vier Wächter gelesen wird.
+
+**OHNE DIESEN ABSATZ LIEST JEMAND SPÄTER "T24 BIS T26 GRÜN" ALS "DIE RIEGEL STEHEN NOCH"**
+und hält eine gefallene Invariante für intakt. Das ist der einzige Grund, warum ein grünes
+Testergebnis in einem Vermerk erklärt wird.
+
+**EINE VIERTE FUNDSTELLE, GEMELDET UND NICHT VERSCHWIEGEN:** `google-token.ts` trägt einen
+**`import type`** aus `secrets/oauth-payload`. Er wird zur Laufzeit GELÖSCHT und ist KEIN
+Aufruf; die Riegel fallen deshalb nicht dort. **Die Alternative wäre ein eigener Feldsatz
+gewesen — also eine ZWEITE Stelle, die die vier Felder kennt, und genau das verbietet
+Auflage (2) der Scheibe 11.8c.** Die Ansage steht im Kopf jener Datei.
+
+#### Die drei Pflicht-Mutationen — Vorhersage und Ergebnis
+
+Jede wurde VOR dem Lauf angesagt, gefahren und mit dem Editier-Werkzeug zurückgenommen; der
+Commit trägt keine. GEMESSEN am eigenen Lauf (CC, 2026-08-27); nach jeder Rücknahme
+`git status` plus `git diff --numstat` ohne leeren Diff.
+
+- **(a) DIE `state`-PRÜFUNG AUSGEBAUT.** VORHERSAGE: die State-Achse, **ZWEI** Tests (R4,
+  R4b); R3 bleibt grün, weil dort schon der `error`-Zweig greift. ERGEBNIS: **2 von 95 rot,
+  genau diese zwei.** Deckungsgleich, kein Überschuss, keine Kaskade.
+- **(b) KLARTEXT STATT CHIFFRAT GESCHRIEBEN.** **HIER IST DIE VORHERSAGE SELBST DER
+  EIGENTLICHE VORGANG, und deshalb steht sie ausführlich da:** Der PLAN hatte **ZWEI** rote
+  Tests angesagt (R10 und R11). **CC hat die Vorhersage VOR dem Lauf auf EINEN korrigiert**
+  — R10 prüft den SPALTENNAMEN und `secret: null`, nicht den INHALT, und ein Klartext ist
+  eine nichtleere Zeichenkette wie ein Chiffrat auch. ERGEBNIS: **1 von 95 rot, genau R11.**
+  **DIE KORREKTUR DER VORHERSAGE IST DER RICHTIGE WEG UND NICHT DIE NACHTRÄGLICHE ERKLÄRUNG
+  DES ERGEBNISSES** — wer erst hinterher begründet, warum ein Test grün blieb, kann eine
+  echte Lücke nicht mehr von einer erwarteten unterscheiden.
+- **(c) DEN `error`-ZWEIG ENTFERNT.** VORHERSAGE: **DREI** Tests (R1, R2, R3); **R3b bleibt
+  grün**, weil es eine Abwesenheit im Log prüft und der Wert ohne den Zweig gar nicht erst
+  in ein Log kommt. ERGEBNIS: **3 von 95 rot, genau diese drei.**
+  **DIE VORAB BENANNTE FALLE IST BESTÄTIGT, und der Assertion-Text ist der Beleg:**
+  `expected 'state_mismatch' to be 'denied'`. Der Ablauf fällt ohne den Zweig auf einen
+  ANDEREN Ausgang durch. **Ein Test auf "nicht Erfolg" wäre grün gewesen — aus dem falschen
+  Grund.** Er prüft auf `denied` und fällt deshalb.
+
+**KEINE MUTATION BLIEB GRÜN. KEIN TEST WURDE VERSTÄRKT.**
+
+#### Was der Live-Test NICHT zeigt — ausdrücklich
+
+**Vier Dinge, und keines davon ist durch einen bestandenen Durchlauf mitbewiesen:**
+
+1. **OB DAS ZUGANGSDATUM FUNKTIONIERT.** Es ist geholt, chiffriert und abgelegt. **Es ist
+   KEIN Aufruf gegen `events:ingest` gefahren**, und der TRÄGER des Zugangsdatums für jenen
+   Endpunkt ist weiterhin **ungemessen**.
+2. **OB DAS CHIFFRAT LESBAR IST.** Kein Pfad entschlüsselt es heute; `decryptSecret` hat im
+   Produktivcode **weiterhin keinen Aufrufer**. Der Rundlauf ist in den TESTS bewiesen
+   (R11), nicht an der abgelegten Zeile.
+3. **OB EINE WIEDERHOLTE AUTORISIERUNG EIN ERNEUERUNGS-TOKEN LIEFERT.** Offene MESSFRAGE
+   (docs/ziel-befunde.md, Teil (av)). Sie ist von `prompt=consent` **UNSCHÄDLICH GEMACHT,
+   NICHT BEANTWORTET.**
+4. **DIE FEHLERFORM DES TOKEN-ENDPUNKTS.** Nicht gelesen (Teil (bd)) und im Live-Test nicht
+   ausgelöst. `exchange` als Ausgang ist gebaut und von Tests gedeckt, aber nie gegen den
+   echten Anbieter gesehen.
+
+**PROVENIENZ DIESES VERMERKS, je Angabe:** Der gesamte Live-Test einschliesslich der
+SQL-Gegenprobe ist **GEMESSEN vom OWNER (2026-08-27)**. Commit-Nummer, Dateizahl,
+Zeilenzahlen, Testzahlen, Gate-Ergebnisse, der Scope-Nachweis, die Byte-Kontrolle, die drei
+Mutationsergebnisse und der `tsc`-Zwischenfall sind **GEMESSEN am eigenen Lauf (CC,
+2026-08-27)**. Die Reihenfolge-Entscheidung, die Bezugspunkt-Wahl und die Entscheidung S
+sind **ARCHITEKTEN-/OWNER-ENTSCHEIDUNGEN vom 2026-08-27**. Die Anbieter-Angaben sind
+**GELESEN** (docs/ziel-befunde.md, Google-Abschnitt, Läufe 5 und 6) und ausdrücklich NICHT
+gemessen. **KEIN Aufruf gegen eine Google-Schnittstelle durch CC; die Datenbank hat CC zu
+keinem Zeitpunkt berührt.**
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 Die drei bindenden Entscheidungen zum Geheimnis-Speicher stehen an docs/roadmap.md,
@@ -1545,6 +1668,58 @@ HIER entschieden worden.
    PROVENIENZ: der Nicht-Treffer ist **GEMESSEN am Repo (CC, 2026-08-27)** mit der Achse
    oben; dass die Angabe nichts trägt, ist eine **ABLEITUNG** (kein Aufrufer, keine
    Verrechnung) und keine Messung.
+
+5. **`'google'` FEHLT IN `TRACKING_TARGETS` — DIE ZEILE IST UNSICHTBAR UND NUR IM
+   SQL-EDITOR ENTFERNBAR.** Seit dem Vollzug von 11.8e (Commit 1f50c9a) kann eine
+   `project_secrets`-Zeile mit `target='google'` entstehen; `src/lib/settings.ts` führt den
+   Wert aber NICHT (GEMESSEN am Code, CC, 2026-08-27: die Liste trägt `meta`, `pinterest`,
+   `tiktok`, `linkedin`).
+   **ZWEI FOLGEN, beide still:** Karten und Listen iterieren über `TRACKING_TARGETS` und
+   zeigen die Zeile nicht · `removeCapiToken` weist `'google'` an `isTrackingTarget` ab, die
+   Zeile ist über die Anwendung nicht löschbar.
+   **DIE AUFNAHME IST EINE EIGENE SCHEIBE UND KEINE ZEILE:** Sie zieht
+   `CONSENT_KEY_BY_TARGET` (eine TOTALE Zuordnung), `TARGETS_WITH_ADAPTER`, die
+   Karten-Oberfläche und mehrere Testdateien nach — **FÜNFZEHN Fundstellen ausserhalb von
+   `settings.ts`, GEMESSEN am Repo (CC, 2026-08-27)**. Das ist der Zuschnitt von 11.1a für
+   LinkedIn.
+   **ENTSCHÄRFT, UND DER SATZ GEHÖRT DAZU:** Die Zeile hängt am Fremdschlüssel mit ON DELETE
+   CASCADE — eine Projektlöschung räumt sie mit ab, es entsteht KEINE Waise.
+   **GEMELDET, NICHT GEPLANT.** Keine Scheibe, kein Termin, **KEINE EMPFEHLUNG** zum
+   Zeitpunkt. Die Entscheidung selbst steht als "### Die Entscheidung S" am Zuschnitt 11.8e;
+   hier steht, was daraus OFFEN bleibt.
+   PROVENIENZ: die fehlende Mitgliedschaft und die Fundstellen-Zahl sind **GEMESSEN am Repo
+   (CC, 2026-08-27)**; die Kaskade ist **GEMESSEN am Schema** (docs/db-stand.md,
+   `project_secrets_project_id_fkey`).
+
+6. **`ensureTrackingKey` LÄUFT IN DIESEM WEG NICHT — ANDERS ALS IN `setCapiToken`.** Jene
+   Server-Action stellt den projektweiten Tracking-Schlüssel bei JEDEM Ziel sicher; die
+   Callback-Route von 11.8e tut es NICHT (ARCHITEKT, 2026-08-27).
+   **DER GRUND WAR DER ZUSCHNITT, NICHT EINE ENTSCHEIDUNG GEGEN DEN SCHRITT:** Es wäre ein
+   Schreibvorgang auf einer ZWEITEN Tabelle (`projects`) ohne heutige Wirkung — nichts liest
+   den google-Zugang, der `events:ingest`-Aufruf ist aus der Scheibe ausgeschlossen.
+   **WAS DARAUS FOLGT:** Ein Projekt, das AUSSCHLIESSLICH über diesen Weg konfiguriert wird,
+   hat womöglich keinen Tracking-Schlüssel. Heute fällt das nicht auf; **es wird
+   VORBEDINGUNG der Transport-Scheibe**, also der Scheibe, die den Zugang tatsächlich
+   benutzt.
+   **GEMELDET, NICHT GEPLANT. KEINE EMPFEHLUNG.**
+   PROVENIENZ: Der Unterschied zu `setCapiToken` ist **GEMESSEN am Code (CC, 2026-08-27)**;
+   die Folge für ein Projekt ohne Schlüssel ist eine **ABLEITUNG** und keine Messung — es
+   ist kein Projekt in diesem Zustand beobachtet worden.
+
+7. **`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE — DIE LESE-SEITE DES
+   GEHEIMNISSES IST UNGEBAUT UND UNGEPRÜFT.** 11.8e hat die SCHREIB-Seite gebaut:
+   `encryptSecret` hat seit Commit 1f50c9a einen Aufrufer, `decryptSecret` **nicht**
+   (GEMESSEN am Repo, CC, 2026-08-27).
+   **WAS DAS BEDEUTET UND WAS NICHT:** Der Rundlauf ist in den TESTS bewiesen (Vermerk 6,
+   Test R11 entschlüsselt und zerlegt das geschriebene Chiffrat). Er ist **NICHT an der
+   abgelegten Zeile** bewiesen — kein Pfad der laufenden Anwendung hat je ein echtes
+   Chiffrat aus `project_secrets.secret_enc` gelesen.
+   **DIE VERBINDUNG ZUM VORRATS-EINTRAG 3, damit niemand zwei Sachen für eine hält:** Jener
+   sagt, dass eine Ablauf-ÜBERWACHUNG jede Zeile entschlüsseln müsste. Dieser sagt, dass
+   überhaupt noch nichts entschlüsselt. Zwei verschiedene Aussagen über dieselbe Funktion.
+   **GEMELDET, NICHT GEPLANT. KEINE EMPFEHLUNG** — der Lesepfad gehört der Scheibe, die den
+   Zugang benutzt.
+   PROVENIENZ: **GEMESSEN am Repo (CC, 2026-08-27)**; die Testaussage steht in Vermerk 6.
 
 ## Hebungs-Kandidaten
 

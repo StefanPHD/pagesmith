@@ -1,5 +1,5 @@
 import "server-only";
-import { randomBytes } from "node:crypto";
+import { randomBytes, timingSafeEqual } from "node:crypto";
 
 // ===========================================================================
 // DER AUTORISIERUNGS-START FUER GOOGLE — DIE REINE HAELFTE (Phase 11.8, Scheibe 11.8d).
@@ -298,4 +298,125 @@ export function buildAuthorizeStart(params: {
     }),
     setCookie: serializeStateCookie(state, params.projectId),
   };
+}
+
+// ===========================================================================
+// DIE LESE-SEITE (Phase 11.8, Scheibe 11.8e) — ADDITIV ANGEFUEGT.
+//
+// WARUM SIE HIER STEHT UND NICHT IN DER CALLBACK-ROUTE (ARCHITEKT, 2026-08-27):
+// Das Cookie-FORMAT wird oben GESCHRIEBEN (zwei Teile, Punkt als Trenner). Laege der
+// Parser woanders, wuessten ZWEI Dateien ein Format — und zwei Stellen, die dieselbe
+// Frage beantworten, laufen auseinander. Serialisieren und Zerlegen gehoeren an
+// denselben Ort; ein Rundlauf-Test (P7) haelt sie zusammen.
+//
+// NICHTS OBERHALB DIESER LINIE IST GEAENDERT — ausser der Import-Zeile, die um
+// timingSafeEqual erweitert wurde. Die 30 Tests dieser Datei bleiben gruen; das IST
+// der Beweis der Additivitaet.
+//
+// DIE DREI RIEGEL BLEIBEN AUCH HIER UNBERUEHRT: Diese Datei importiert
+// src/lib/secrets/ weiterhin NICHT, in keine Richtung. Sie fallen in der
+// Callback-Route, wo encryptSecret und formatOAuthPayload AUFGERUFEN werden.
+// T24 bewacht das unveraendert weiter.
+// ===========================================================================
+
+/** Die Zahl der Teile im Cookie-WERT. Genau zwei — nicht mehr, nicht weniger. */
+const STATE_COOKIE_PART_COUNT = 2;
+
+/**
+ * Das Ergebnis von parseStateCookie. Diskriminiert wie AuthorizeConfigResult, WIRFT
+ * NIE — ein Wurf in einem Route-Handler ist ein 500 mit Stack, und was im Stack
+ * landet, ist nicht kontrolliert.
+ *
+ * missing UND bad_format BLEIBEN GETRENNT, obwohl beide auf denselben Ausgang der
+ * Route fuehren: Der Betreiber sieht dasselbe, das LOG unterscheidet sie. "Cookie war
+ * nicht da" (abgelaufen, SameSite griff, Browser verwarf es) und "Cookie war kaputt"
+ * (Manipulationsversuch) sind verschiedene Diagnosen — wer sie zusammenzieht, sucht
+ * beim naechsten Support-Fall an der falschen Stelle.
+ */
+export type StateCookieResult =
+  | { kind: "ok"; state: string; projectId: string }
+  | { kind: "missing" }
+  | { kind: "bad_format" };
+
+/**
+ * Zerlegt den WERT des State-Cookies in seine zwei Teile.
+ *
+ * DIE TEILEZAHL GILT STRIKT — der Kommentar an buildStateCookieValue verlangt es
+ * woertlich: ein angehaengter DRITTER Teil waere sonst still ignoriert worden. Der
+ * Grund steht als Mutationsprobe M3 in Vermerk 3 der Scheibe 11.8c.
+ *
+ * DIE FORM DER KENNUNG WIRD GEPRUEFT, IHRE EXISTENZ NICHT. Das Cookie ist von uns
+ * gesetzt und HttpOnly — aber der Server sieht nur, was der Browser schickt, und ein
+ * gelesener Cookie-Wert bleibt CLIENT-KONTROLLIERTE EINGABE (docs/immer-beachten.md).
+ * Ohne die Formpruefung erzeugte eine verbogene Kennung in der Datenbank einen
+ * Typfehler, und der waere von einem echten Fehler nicht zu unterscheiden.
+ */
+export function parseStateCookie(
+  raw: string | null | undefined,
+): StateCookieResult {
+  if (typeof raw !== "string" || raw.length === 0) return { kind: "missing" };
+
+  const parts = raw.split(COOKIE_VALUE_SEPARATOR);
+  if (parts.length !== STATE_COOKIE_PART_COUNT) return { kind: "bad_format" };
+
+  const [state, projectId] = parts;
+  if (state.length === 0) return { kind: "bad_format" };
+  if (!isProjectIdShape(projectId)) return { kind: "bad_format" };
+
+  return { kind: "ok", state, projectId };
+}
+
+/**
+ * Die Set-Cookie-Zeichenkette, die das State-Cookie LOESCHT.
+ *
+ * SIE GEHOERT HIERHER, WEIL DER NAME UND DIE ATTRIBUTE HIER STEHEN: Ein Loeschbefehl
+ * mit abweichendem Pfad loescht NICHTS, und der Browser meldet das nicht. __Host-
+ * erzwingt Pfad "/" und Secure ohnehin — genau deshalb muessen sie mitgeschrieben
+ * werden, sonst verwirft der Browser auch die Loeschung.
+ *
+ * WANN SIE GEBRAUCHT WIRD: auf JEDEM Ausgang der Callback-Route, auch den
+ * Fehlerausgaengen und auch dann, wenn gar kein Cookie da war. Ein State ist
+ * EINMALIG; bleibt er gueltig, ist er ein zweites Mal einloesbar — und ein
+ * Fehlschlag ist genau der Fall, nach dem jemand es erneut versucht.
+ */
+export function serializeClearedStateCookie(): string {
+  return (
+    `${STATE_COOKIE_NAME}=; Path=/; HttpOnly; Secure; SameSite=Lax; ` + `Max-Age=0`
+  );
+}
+
+/**
+ * Vergleicht den state-Parameter der URL mit dem Zufallswert aus dem Cookie.
+ *
+ * ZEITKONSTANT, UND DER GRUND IST DIE KONSTELLATION, NICHT DIE PARANOIA: Der Wert ist
+ * ein Geheimnis, der Aufrufer kontrolliert die EINE Seite des Vergleichs (den
+ * URL-Parameter) und kann beliebig oft anfragen. Das ist die Lehrbuch-Lage eines
+ * Vergleichs-Orakels. Ob es ueber das Netz praktisch ausnutzbar waere, ist NICHT
+ * gemessen — und genau das ist das Argument: Die Gegenrede waere eine
+ * Abwesenheits-Behauptung ("es gibt kein Orakel"), die niemand belegen kann, waehrend
+ * die Massnahme einen Import und eine Zeile kostet.
+ *
+ * DIE LAENGENPRUEFUNG VOR timingSafeEqual IST PFLICHT UND KEINE VORSICHT:
+ * timingSafeEqual WIRFT bei ungleicher Laenge. Ohne sie waere ausgerechnet die
+ * Sicherheitsfunktion die Stelle, an der ein untergeschobener state einen 500 mit
+ * Stack erzeugt.
+ *
+ * DASS DIE LAENGE DAMIT VERGLEICHBAR WIRD, IST KEIN LECK: Der Zufallswert hat IMMER
+ * dieselbe Laenge (32 Bytes als base64url, s. STATE_BYTES) — sie ist keine Information
+ * ueber den Wert.
+ *
+ * WIRFT NIE.
+ */
+export function statesMatch(
+  fromUrl: string | null | undefined,
+  fromCookie: string,
+): boolean {
+  if (typeof fromUrl !== "string" || fromUrl.length === 0) return false;
+  if (typeof fromCookie !== "string" || fromCookie.length === 0) return false;
+
+  const a = Buffer.from(fromUrl, "utf8");
+  const b = Buffer.from(fromCookie, "utf8");
+  if (a.length !== b.length) return false;
+
+  return timingSafeEqual(a, b);
 }

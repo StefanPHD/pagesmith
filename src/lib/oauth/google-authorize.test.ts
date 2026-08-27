@@ -22,6 +22,15 @@ import {
   STATE_COOKIE_NAME,
 } from "./google-authorize";
 
+// ADDITIV FUER SCHEIBE 11.8e — als EIGENE Import-Anweisung und nicht in den Block
+// darueber hinein: So bleibt der Bestand dieser Datei zeilengleich, und die 30
+// bestehenden Tests sind der Beweis der Additivitaet.
+import {
+  parseStateCookie,
+  serializeClearedStateCookie,
+  statesMatch,
+} from "./google-authorize";
+
 // ===========================================================================
 // KEIN ECHTER WERT. Jede Client-Kennung und jede Adresse unten ist erfunden und am
 // NAMEN erkennbar. Die Weiterleitungs-Adressen sind den registrierten NACHGEBILDET,
@@ -349,5 +358,122 @@ describe("Die Waechter — die drei Riegel und das Anwendungs-Geheimnis", () => 
     expect(REINE_DATEI).toContain('from "node:crypto"');
     expect(ROUTE).toContain("export async function GET");
     expect(ROUTE).toContain("@/lib/oauth/google-authorize");
+  });
+});
+
+// ===========================================================================
+// SCHEIBE 11.8e — DIE LESE-SEITE. Additiv angefuegt; nichts oberhalb ist geaendert.
+// ===========================================================================
+
+describe("parseStateCookie (Scheibe 11.8e)", () => {
+  it("P1 — ein gueltiger Wert liefert BEIDE Teile", () => {
+    const roh = `${ERFUNDENER_STATE}.${ERFUNDENE_PROJEKT_ID}`;
+    expect(parseStateCookie(roh)).toEqual({
+      kind: "ok",
+      state: ERFUNDENER_STATE,
+      projectId: ERFUNDENE_PROJEKT_ID,
+    });
+  });
+
+  // missing und bad_format sind GETRENNTE Zustaende: der Betreiber sieht dasselbe,
+  // das Log unterscheidet sie. Wer sie verschmilzt, macht diesen Test rot.
+  it("P2 — kein Cookie und leerer Wert ergeben missing, NICHT bad_format", () => {
+    expect(parseStateCookie(null)).toEqual({ kind: "missing" });
+    expect(parseStateCookie(undefined)).toEqual({ kind: "missing" });
+    expect(parseStateCookie("")).toEqual({ kind: "missing" });
+  });
+
+  it("P3 — EIN Teil (kein Trenner) wird verworfen", () => {
+    expect(parseStateCookie(ERFUNDENER_STATE)).toEqual({ kind: "bad_format" });
+  });
+
+  // DIE M3-LEKTION: ein angehaengter DRITTER Teil waere sonst still ignoriert worden.
+  // Wird rot, sobald jemand die Teilezahl auf ">= 2" lockert.
+  it("P4 — DREI Teile werden verworfen, die Teilezahl gilt strikt", () => {
+    const roh = `${ERFUNDENER_STATE}.${ERFUNDENE_PROJEKT_ID}.angehaengt`;
+    expect(parseStateCookie(roh)).toEqual({ kind: "bad_format" });
+  });
+
+  it("P5 — ein leerer Zufallswert-Teil wird verworfen", () => {
+    expect(parseStateCookie(`.${ERFUNDENE_PROJEKT_ID}`)).toEqual({
+      kind: "bad_format",
+    });
+  });
+
+  it("P6 — eine formwidrige Projekt-Kennung wird verworfen", () => {
+    expect(parseStateCookie(`${ERFUNDENER_STATE}.keine-uuid`)).toEqual({
+      kind: "bad_format",
+    });
+    expect(parseStateCookie(`${ERFUNDENER_STATE}.`)).toEqual({
+      kind: "bad_format",
+    });
+  });
+
+  // DER EIGENTLICHE GRUND FUER DEN GEMEINSAMEN ORT: Schreiber und Leser duerfen nicht
+  // auseinanderlaufen. Dieser Test faellt, sobald einer von beiden das Trennzeichen
+  // oder die Reihenfolge aendert.
+  it("P7 — Rundlauf: was buildStateCookieValue schreibt, liest parseStateCookie", () => {
+    const state = newStateValue();
+    const roh = buildStateCookieValue(state, ERFUNDENE_PROJEKT_ID);
+    expect(parseStateCookie(roh)).toEqual({
+      kind: "ok",
+      state,
+      projectId: ERFUNDENE_PROJEKT_ID,
+    });
+  });
+});
+
+describe("statesMatch (Scheibe 11.8e)", () => {
+  it("S1 — gleiche Werte stimmen ueberein", () => {
+    expect(statesMatch(ERFUNDENER_STATE, ERFUNDENER_STATE)).toBe(true);
+  });
+
+  it("S2 — verschiedene Werte GLEICHER Laenge stimmen nicht ueberein", () => {
+    const anders = `${ERFUNDENER_STATE.slice(0, -1)}X`;
+    expect(anders.length).toBe(ERFUNDENER_STATE.length);
+    expect(statesMatch(anders, ERFUNDENER_STATE)).toBe(false);
+  });
+
+  // DER LAENGEN-FALL IST DER GRUND FUER DIE VORGESCHALTETE PRUEFUNG: timingSafeEqual
+  // WIRFT bei ungleicher Laenge. Ohne den Riegel waere ausgerechnet die
+  // Sicherheitsfunktion die Stelle, an der ein untergeschobener state einen 500 mit
+  // Stack erzeugt. Der Test prueft BEIDES: kein Wurf UND das Ergebnis false.
+  it("S3 — ungleiche Laenge liefert false und WIRFT NICHT", () => {
+    expect(() => statesMatch("kurz", ERFUNDENER_STATE)).not.toThrow();
+    expect(statesMatch("kurz", ERFUNDENER_STATE)).toBe(false);
+    expect(statesMatch(`${ERFUNDENER_STATE}laenger`, ERFUNDENER_STATE)).toBe(
+      false,
+    );
+  });
+
+  it("S4 — fehlender oder leerer URL-Wert liefert false", () => {
+    expect(statesMatch(null, ERFUNDENER_STATE)).toBe(false);
+    expect(statesMatch(undefined, ERFUNDENER_STATE)).toBe(false);
+    expect(statesMatch("", ERFUNDENER_STATE)).toBe(false);
+  });
+
+  it("S5 — ein leerer Cookie-Wert liefert false, auch gegen einen leeren URL-Wert", () => {
+    expect(statesMatch("", "")).toBe(false);
+    expect(statesMatch(ERFUNDENER_STATE, "")).toBe(false);
+  });
+});
+
+describe("serializeClearedStateCookie (Scheibe 11.8e)", () => {
+  // EIN LOESCHBEFEHL MIT ABWEICHENDEM PFAD LOESCHT NICHTS, und der Browser meldet das
+  // nicht. __Host- erzwingt Pfad "/" und Secure auch beim Loeschen.
+  it("C1 — sie traegt denselben Namen, Pfad / und Secure, und Max-Age=0", () => {
+    const zeile = serializeClearedStateCookie();
+    expect(zeile.startsWith(`${STATE_COOKIE_NAME}=;`)).toBe(true);
+    expect(zeile).toContain("Path=/");
+    expect(zeile).toContain("Secure");
+    expect(zeile).toContain("HttpOnly");
+    expect(zeile).toContain("SameSite=Lax");
+    expect(zeile).toContain("Max-Age=0");
+  });
+
+  it("C2 — sie traegt KEINE Lebensdauer aus dem Setz-Pfad", () => {
+    expect(serializeClearedStateCookie()).not.toContain(
+      `Max-Age=${STATE_COOKIE_MAX_AGE_SECONDS}`,
+    );
   });
 });

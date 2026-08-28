@@ -5,9 +5,24 @@
 // Autorisierungs-Code gegen Zugangs- und Erneuerungs-Token, formt die Nutzlast,
 // chiffriert sie und legt sie in project_secrets.secret_enc ab.
 //
-// WAS SIE AUSDRUECKLICH NICHT TUT: keinen Aufruf gegen events:ingest (der TRAEGER des
-// Zugangsdatums fuer jenen Endpunkt ist NICHT GEMESSEN — docs/roadmap.md, Eintrag
-// 11.8), kein ensureTrackingKey, keine Oberflaeche, keinen Meldungstext.
+// WAS SIE AUSDRUECKLICH NICHT TUT: keinen Aufruf gegen events:ingest, kein
+// ensureTrackingKey, keine Oberflaeche, keinen Meldungstext.
+//
+// WARUM KEIN AUFRUF GEGEN events:ingest — DIE AUSSAGE IST DIESELBE GEBLIEBEN, IHRE
+// BEGRUENDUNG HAT AM 2026-08-28 GEWECHSELT. Hier stand, der TRAEGER des Zugangsdatums
+// fuer jenen Endpunkt sei NICHT GEMESSEN. ER IST GEMESSEN: Kopfzeile Authorization,
+// Wert "Bearer " + Token (GEMESSEN 2026-08-28, live gegen den Endpunkt; Fundstelle
+// docs/ziel-befunde.md, Google-Abschnitt, Teile (bj) bis (bm)).
+// DER HALTBARE GRUND IST DER ZUSCHNITT DIESER ROUTE: Sie holt ein Zugangsdatum und legt
+// es ab — sie sendet nichts. Dieser Grund bleibt auch dann richtig, wenn die
+// Transport-Scheibe gebaut ist; der alte waere mit ihr weggefallen und haette den Satz
+// mitgenommen, den er tragen sollte.
+//
+// WAS DIE MESSUNG NICHT HERGIBT, und der Satz gehoert dazu, sonst liest die naechste
+// Runde "gemessen" als "sendebereit": GEMESSEN IST DIE ANNAHME DER KOPFZEILE, NICHT DIE
+// ANNAHME EINES GUELTIGEN RUMPFES. Feldnamen, Schreibweise, eventSource und
+// x-goog-user-project sind davon UNBERUEHRT — die vier Grenzen der Messung stehen
+// vollstaendig in Teil (bm) derselben Fundstelle.
 //
 // ---------------------------------------------------------------------------
 // HIER FALLEN DIE DREI RIEGEL, MIT ANSAGE (docs/aktiver-stand-11.8.md, "## Scheibe

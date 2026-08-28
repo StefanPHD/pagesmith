@@ -114,6 +114,8 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
     Webserver-Anwendungen, LAUF 5 — die Teile (at) bis (ay)
   - ### Abschnitts-Lesung 2026-08-27 der OAuth-2.0-Dokumentation, LAUF 6 (die ANTWORTSEITE
     des Token-Tauschs) — die Teile (az) bis (bg)
+  - ### Zugespitzter Doku-Lauf 2026-08-28 (LAUF 7) und MESSUNG A gegen events:ingest — die
+    Teile (bh) bis (bm)
 - ## Pinterest (Conversions API)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
@@ -1106,6 +1108,24 @@ abgesucht, obwohl sie es nie war.
     einmal als Rumpf-Feld, je nach Aufrufart — und die falsche Wahl wird IGNORIERT, nicht
     abgewiesen.
     ERSETZT KEINE MESSUNG.
+    VORBEHALT (2026-08-28) — DIE ZITIERTE AUSSAGE TRIFFT DIE TRANSPORT-KOPFZEILE NICHT.
+    Der Wortlaut oben bleibt wörtlich stehen und ist als WIEDERGABE DER ANBIETER-SEITE
+    unverändert richtig: Der Satz steht dort so, und der Schlusssatz "ERSETZT KEINE MESSUNG"
+    war die richtige Einordnung, solange keine vorlag. INZWISCHEN LIEGT EINE VOR.
+    GEMESSEN 2026-08-28: "The Data Manager API ignores headers in an ingestion request" gilt
+    NICHT für die Kopfzeile, in der das Zugangsdatum reist — derselbe Dienst antwortet OHNE
+    Authorization mit 401. Volltext der Auflösung unten in (bl), die Aufrufe in (bj).
+    DER ANKER DIESER ZUORDNUNG IST DER ErrorInfo-METHODENNAME AUS (bj) —
+    google.ads.datamanager.v1.IngestionService.IngestEvents. Er benennt genau den
+    IngestionService, von dem der zitierte Satz spricht; ohne ihn wäre die Zuordnung eine
+    ABLEITUNG und kein Messwert.
+    AUFGELÖST NUR IN DIESER RICHTUNG, UND DAS IST KEINE VORSICHTSFLOSKEL: Was der Satz über
+    die FACHLICHEN Kopfzeilen sagt — login-account und linked-account, die laut dem Absatz
+    oben beim Einliefern stattdessen im Rumpf reisen —, BLEIBT UNBERÜHRT UND UNGEMESSEN.
+    Messung A hat keine der beiden gesetzt. Wer aus diesem Vorbehalt liest, der Satz sei
+    insgesamt widerlegt, baut den Zugriffspfad in eine Kopfzeile und bekommt keinen Fehler,
+    sondern Stille — der Absatz oben hält ausdrücklich fest, dass die falsche Wahl IGNORIERT
+    und nicht abgewiesen wird.
 
 (k) GRUPPE C — KENNUNG DES ZIELS (Katalog-Fragen C1 bis C4).
 
@@ -3330,6 +3350,16 @@ die (h) und (t) schon führen, und markiert jede als NEU oder WIEDERGELESEN.
         GILT. Gleicher Host, gleiche Version, Schwester-Methode, gleicher Zugriffsbereich —
         aber die Doku zeigt kein curl-Beispiel für events:ingest. Die Übertragung wäre eine
         ABLEITUNG. GRUND DER UNENTSCHEIDBARKEIT: kein zweites Beispiel im gelesenen Umfang.
+        VORBEHALT (2026-08-28) — DIESER PUNKT IST BEANTWORTET, ABER NICHT AUF DEM WEG, DEN ER
+        BESCHREIBT. Der Wortlaut oben wird NICHT umformuliert und NICHT gekürzt: er sagt, was
+        am 2026-08-25 AM TEXT nicht entscheidbar war, und das ist unverändert wahr — die Doku
+        zeigt bis heute kein curl-Beispiel für events:ingest (erneut geprüft über sieben
+        Seiten, s. unten (bh)). BEANTWORTET HAT ES EINE MESSUNG, NICHT EINE LESUNG: Der
+        Träger ist die Kopfzeile Authorization mit dem Wert "Bearer " + Token, GEMESSEN
+        2026-08-28 gegen events:ingest — s. unten (bj) und (bk). DIE ÜBERTRAGUNG AUS DEM
+        SCHWESTER-BEISPIEL IST DAMIT NICHT NACHTRÄGLICH ERLAUBT, sondern gegenstandslos: Der
+        Wert steht jetzt aus eigener Quelle fest. Wer diesen Punkt später als offen liest,
+        sucht eine Doku-Stelle, die es nicht gibt und nicht mehr braucht.
      2. OB x-goog-user-project BEI events:ingest PFLICHT IST oder nur im Beispiel steht.
         GRUND: keine Data-Manager-Seite nennt eine Bedingung (s. (am)).
      3. OB EIN AUFRUF GEGEN datamanager.googleapis.com IN IRGENDEINER WEISE GEGEN EIN
@@ -3833,6 +3863,231 @@ niemand aus sieben gestellten Fragen sieben Antworten liest:
 4. **OB EINE WIEDERHOLTE AUTORISIERUNG ERNEUT EIN ERNEUERUNGS-TOKEN LIEFERT** (aus (av),
    ergänzt in (bb) und (bg)) — Instrument in (av) benannt, nicht gefahren. **Sie ist durch
    diesen Lauf NICHT kleiner geworden, nur besser belegt.**
+
+### Zugespitzter Doku-Lauf 2026-08-28 (LAUF 7) und MESSUNG A gegen events:ingest — die Teile (bh) bis (bm)
+
+**WARUM DIESER LAUF UND WAS IHN VON DEN SECHS VORLÄUFEN UNTERSCHEIDET:** Die Läufe 1 bis 6
+lasen Dokumentation. Dieser Lauf hat ZWEI Teile, und sie haben VERSCHIEDENE PROVENIENZ —
+das ist der Grund, warum sie hier getrennt stehen und nicht zu einem Befund verschmolzen
+sind:
+· **TEIL EINS, GELESEN 2026-08-28 (CC):** ein zugespitzter Doku-Lauf über SIEBEN Seiten. Er
+  ging ausdrücklich NICHT noch einmal durch den Abschnitt, sondern an die zwei Stellen, an
+  denen ein Befund nachweislich verschwindet, ohne einen Eintrag zu erzeugen — Seiten von
+  den Listen "GESEHEN, NICHT GEÖFFNET", und nicht vorausgewählte REITER auf geöffneten
+  Seiten.
+· **TEIL ZWEI, GEMESSEN 2026-08-28 (OWNER), live gegen den Endpunkt.** Es ist die ERSTE
+  Messung gegen eine Google-Schnittstelle in diesem Projekt.
+
+**DIE FRAGE, DIE BEIDE TEILE BEANTWORTEN SOLLTEN:** in welcher Kopfzeile und mit welcher
+Schreibweise das Zugangsdatum beim Aufruf von `events:ingest` reist — Katalog-Frage B3,
+seit (j)/B3, (u)/Frage 2 und (z) offen und dort als AUFFÄLLIGSTE LÜCKE DIESES DOKU-BAUMS
+geführt.
+
+**DER DOKU-LAUF HAT SIE NICHT BEANTWORTET. DIE MESSUNG HAT SIE BEANTWORTET.** Beides steht
+unten, und der Doku-Lauf wird NICHT als Vorlauf der Messung weggekürzt: Er begrenzt, was am
+Dokument überhaupt zu holen ist, und genau diese Grenze ist der Grund, warum gemessen wurde.
+
+(bh) **DER ZUGESPITZTE DOKU-LAUF — SIEBEN SEITEN, UND AUF KEINER STEHT EINE KOPFZEILE FÜR
+     `events:ingest`.** **NEU.**
+
+     GELESEN 2026-08-28 (CC). WERKZEUG: Playwright-MCP, `textContent` **von Anfang an, auf
+     jeder Seite** — nicht `innerText`. Der Grund steht als Regel in docs/immer-beachten.md
+     ("EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND") und ist in
+     LAUF 5/6 an dieser Seitenfamilie gemessen worden; **jeder Nicht-Treffer unten ist über
+     das stärkere Instrument erhoben.** Alle sieben mit `?hl=en`, alle HTTP 200, keine
+     Umleitung auf `?hl=de`.
+
+     **DER GELESENE UMFANG — OHNE DIESE LISTE HAT JEDES "STEHT DORT NICHT" KEINE REICHWEITE.**
+     Alle Pfade relativ zu `developers.google.com/data-manager/api`:
+      1. `/devguides/quickstart/install-library` — "Install a client library" — Doku-Stand
+         2026-08-14 — **17 290** Zeichen (Artikelrumpf 15 304) — **2 Reiter-Gruppen, 10
+         Reiter**
+      2. `/reference/rest/v1/events/ingest` — "Method: events.ingest" — 2026-07-28 —
+         **39 628** Zeichen — **0 Reiter-Gruppen**
+      3. `/reference/rest/v1/audienceMembers/ingest` — "Method: audienceMembers.ingest" —
+         2026-07-28 — **8 110** Zeichen — **0 Reiter-Gruppen**
+      4. `/reference/rest/v1/adEvents` — "REST Resource: adEvents" — 2026-06-11 — **524**
+         Zeichen — **0 Reiter-Gruppen**
+      5. `/reference/rest/v1/requestStatus` — "REST Resource: requestStatus" — 2025-10-02 —
+         **516** Zeichen — **0 Reiter-Gruppen**
+      6. `/devguides/quickstart/agent-skills` — "Data Manager API agent skills" — 2026-08-07
+         — **4 961** Zeichen — **1 Reiter-Gruppe, 5 Reiter**
+      7. `/reference/rpc/google.rpc` — "Package google.rpc" — 2026-07-28 — **17 341**
+         Zeichen — **0 Reiter-Gruppen**
+
+     **DIE REITER, JE GRUPPE MIT IHREN BESCHRIFTUNGEN — und die Verschachtelung ist der
+     Befund, nicht eine Formalie:** Auf Seite 1 liegt die zweite Gruppe INNERHALB der
+     REST-Sektion der ersten (am DOM geprüft). Gruppe 1, acht Reiter: `REST` · `.NET` · `Go`
+     · `Java` · `Node.js` · `PHP` · `Python` · `Ruby`. Gruppe 2, zwei Reiter, innerhalb von
+     REST: `Advertiser` · `Data partner`. Auf Seite 6, fünf Reiter: `Antigravity` ·
+     `Claude Code` · `Codex` · `Cursor` · `Other agents`.
+     **ALLE ZEHN REITER DER SEITE 1 SIND EINZELN ANGEKLICKT UND DANACH ERNEUT GEMESSEN
+     WORDEN.** Die Zeichenzahlen je Sektion stimmen paarweise mit der `textContent`-Lesung
+     überein (REST 7 128 · .NET 1 096 · Go 156 · Java 1 307 · Node.js 1 738 · PHP 1 468 ·
+     Python 1 464 · Ruby 156 · Advertiser 3 257 · Data partner 3 378). **DAS IST DIE
+     POSITIVKONTROLLE FÜR DIE METHODE SELBST:** Auf dieser Seitenfamilie liegen alle
+     Reiter-Inhalte im DOM, und `textContent` gibt sie vollständig her. Die fünf Reiter der
+     Seite 6 sind über `textContent` gelesen, aber NICHT angeklickt — sie werden hiermit als
+     nicht angeklickt ausgewiesen und nicht als leer.
+
+     **DAS ERGEBNIS — NICHT-TREFFER MIT BENANNTER REICHWEITE.** Achse: die sieben Seiten
+     oben, je über den vollständigen Artikelrumpf einschliesslich aller nicht ausgewählten
+     Reiter-Sektionen, case-insensitiv. **Suchbegriffe:** `events:ingest` · `IngestEvents` ·
+     `--header` · `Authorization` · `Bearer` · `x-goog-user-project` · `curl`.
+     **AUF KEINER DER SIEBEN SEITEN STEHT EINE KOPFZEILE FÜR `events:ingest`.**
+     **POSITIVKONTROLLE, je auf DERSELBEN Seite** (ohne sie wäre "nicht gefunden" von
+     "falsch gesucht" nicht zu unterscheiden): Seite 1 — `audienceMembers:ingest` 2,
+     `Authorization` 2, `Bearer` 2, `x-goog-user-project` 2, `datamanager` 17, `scope` 12,
+     bei `events:ingest` 0 und `conversion` 0. Seite 2 — `scope` 4, `OAuth` 1, bei
+     `Authorization` 3 (sämtlich im Abschnittstitel "Authorization scopes"), `header` 0,
+     `Bearer` 0, `curl` 0. Seite 6 — `skill` 54, bei `Authorization`/`Bearer`/`--header`/
+     `curl`/`datamanager` sämtlich 0. Seite 7 — `UNAUTHENTICATED` 2, `metadata` 4, bei
+     `Authorization`/`Bearer`/`header`/`curl` sämtlich 0.
+
+     **DAS EINZIGE KOPFZEILEN-BEISPIEL DES SCHNELLSTARTS GILT UNVERÄNDERT DER
+     SCHWESTER-METHODE.** Seite 1 trägt GENAU ZWEI `curl`-Blöcke mit Kopfzeilen — einen je
+     Reiter der inneren Gruppe —, und **beide gehen gegen
+     `https://datamanager.googleapis.com/v1/audienceMembers:ingest`**. Beide tragen dieselben
+     drei Kopfzeilen (formale Auszählung `--header "[^"]+"` je Sektion: 3 und 3).
+     **DAS BESTÄTIGT (al) UND ERWEITERT ES:** (al) hat die Identität der Kopfzeilen in beiden
+     Reitern gemessen; NEU ist, dass die Seite über ALLE ZEHN Reiter hinweg `events:ingest`
+     nirgends nennt und **an keiner Stelle** einen Geltungsanspruch für die ganze API erhebt.
+     Belegt durch eine Auszählung aller Fliesstext-Zeilen des Artikelrumpfs mit `header`,
+     `Authoriz`, `token` oder `credential`: **jede Fundstelle liegt in einem Code-Block**;
+     die einzige Prosa-Zeile lautet "configuring Application Default Credentials (ADC)". Die
+     umgebende Prosa ist beispiel-gebunden — "Copy the sample to the command line to send the
+     request."
+
+     **DER ORT, AN DEM DER BEFUND HÄTTE SEIN KÖNNEN UND NICHT WAR — UND DAS IST DER ERTRAG
+     DES ZUSCHNITTS:** Der Hebungs-Kandidat 2 in docs/aktiver-stand.md führt die Liste
+     "GESEHEN, NICHT GEÖFFNET" als Ort, an dem sich ein Befund versteckt. **Dieser Lauf hat
+     den Ort abgearbeitet und dort NICHTS MEHR GEFUNDEN.** Ebenso die zweite benannte
+     Verschwinde-Stelle: `/reference/rest/v1/events/ingest` trägt **null** Reiter-Gruppen —
+     dort konnte sich nichts verbergen. **EIN AUSSCHLUSS-PRÜFLAUF, DER NICHTS FINDET, IST
+     SELBST EIN BEFUND ÜBER DEN KANDIDATEN**, und er ist der Grund, warum die Frage danach an
+     eine Messung ging statt an einen achten Doku-Lauf.
+
+(bi) **DER STRUKTURBEFUND — DIE REFERENZ-EBENE NENNT DEN TRÄGER BEI KEINER METHODE. NEU, UND
+     ER ORDNET (u)/FRAGE 2 EIN, STATT SIE ZU WIDERLEGEN.**
+
+     GELESEN 2026-08-28 (CC), Seiten 2 und 3 aus (bh).
+
+     **DIE REFERENZSEITEN BEIDER `:ingest`-METHODEN SIND AUF DER KOPFZEILEN-ACHSE IDENTISCH
+     LEER.** Beide tragen dieselben vier Abschnitte — `HTTP request`, `Request body`,
+     `Response body`, `Authorization scopes` — und auf beiden sind `header`, `--header`,
+     `Bearer` und `curl` **je null**. `Authorization` steht auf beiden dreimal und sämtlich
+     im Titel "Authorization scopes"; genannt wird dort ein ZUGRIFFSBEREICH, kein Träger.
+
+     **WAS DARAUS FOLGT, UND ES IST DIE EIGENTLICHE AUSSAGE DIESES TEILS:** Der Unterschied
+     zwischen den beiden Methoden liegt **NICHT in der Referenz**, sondern allein darin, dass
+     der SCHNELLSTART für `audienceMembers` ein `curl`-Beispiel führt und für `events` keines.
+     **DIE ABWESENHEIT BEI `events:ingest` IST DAMIT KEINE EIGENSCHAFT DIESER METHODE**,
+     sondern die Bauform dieser Referenz-Ebene.
+     **WARUM DAS FESTGEHALTEN WIRD:** (z) führt die Lücke als "DIE AUFFÄLLIGSTE LÜCKE DIESES
+     DOKU-BAUMS" — ein Wortlaut, der eine Besonderheit der Methode nahelegt. Sie ist keine.
+     Wer weiter nach einer methodenspezifischen Stelle sucht, sucht nach etwas, das die
+     Referenz grundsätzlich nicht führt.
+     **DIE GRENZE:** Das ist eine Aussage über ZWEI Referenzseiten, nicht über alle. Ob die
+     Referenz-Ebene den Träger AUCH bei anderen Google-APIs nie nennt, ist NICHT erhoben.
+
+(bj) **MESSUNG A — DREI AUFRUFE GEGEN `events:ingest`, LIVE. DIE ERSTE MESSUNG GEGEN EINE
+     GOOGLE-SCHNITTSTELLE IN DIESEM PROJEKT.** **NEU.**
+
+     **GEMESSEN 2026-08-28 vom OWNER**, live gegen
+     `https://datamanager.googleapis.com/v1/events:ingest`.
+
+     **VORKONTROLLE AM tokeninfo-ENDPUNKT, VOR DEN DREI AUFRUFEN** — sie ist der Mitläufer
+     im Sinne der Regel "BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS
+     RICHTIGE GEMESSEN WIRD" (docs/immer-beachten.md, Teil (a)): Der Zugriffsbereich des
+     eingesetzten Zugangsdatums ist `https://www.googleapis.com/auth/datamanager`,
+     `expires_in` 3002. **OHNE SIE WÄRE EIN 401 AUS ZWEI GRÜNDEN ERKLÄRBAR** — falscher
+     Träger oder untaugliches Token —, und das Ergebnis wäre keine Messung, sondern eine
+     Frage.
+
+     **DIE DREI AUFRUFE:**
+     1. **OHNE `Authorization`-Kopfzeile → HTTP 401**, Status `UNAUTHENTICATED`, `reason`
+        `CREDENTIALS_MISSING`. Das `ErrorInfo` nennt als `method`
+        `google.ads.datamanager.v1.IngestionService.IngestEvents`.
+     2. **`Authorization` mit ungültigem Wert → HTTP 401**, "Request had invalid
+        authentication credentials". **`INVALID`, NICHT `MISSING`** — und diese
+        Unterscheidung ist der Kern der Messung, nicht ein Detail: Sie belegt, dass der
+        Anbieter die Kopfzeile **GELESEN UND AUSGEWERTET** hat. Ein Träger, der ignoriert
+        würde, könnte diese zwei Zustände nicht unterscheiden.
+     3. **`Authorization: Bearer <gültiges Token>` → HTTP 400**, `INVALID_ARGUMENT`,
+        `Unknown name "__pagesmith_probe__": Cannot find field`.
+
+     **DER DURCHGRIFF IST DER BEWEIS, NICHT DER STATUSCODE:** Aufruf 3 scheitert an der
+     RUMPF-Prüfung, und die Fehlermeldung **nennt das eingesetzte Sondierungsfeld beim
+     Namen**. Damit ist belegt, dass der Rumpf gelesen wurde — also dass die
+     Authentifizierung VORHER durchgelassen hat. Ein 400 allein bewiese das nicht; der
+     zitierte Feldname beweist es.
+     **DAS SONDIERUNGSFELD IST ERFUNDEN UND AM NAMEN ERKENNBAR** (`__pagesmith_probe__`).
+     Es ist bewusst KEIN Feld aus google-payload.ts — s. Grenze 1 in (bm).
+
+(bk) **DER SCHLUSS — DER TRÄGER DES ZUGANGSDATUMS FÜR `events:ingest` IST BEANTWORTET.
+     GEMESSEN, NICHT GELESEN.** **NEU.**
+
+     **DER TRÄGER IST DIE KOPFZEILE `Authorization` MIT DEM WERT `Bearer ` + TOKEN** — Präfix
+     `Bearer`, ein Leerzeichen, dann das Zugangsdatum.
+
+     **PROVENIENZ: GEMESSEN 2026-08-28 (OWNER), Messung A, s. (bj).** Das ist die erste
+     Angabe im Google-Abschnitt, die diese Provenienz trägt; alle Vorläufer sind GELESEN.
+
+     **DIE BEWEISFÜHRUNG IN EINEM SATZ:** Die drei Aufrufe trennen `MISSING`, `INVALID` und
+     Durchgriff-bis-zum-Rumpf voneinander; nur ein Träger, der gelesen und ausgewertet wird,
+     kann diese drei Zustände erzeugen.
+
+     **WAS DAMIT ERLEDIGT IST:** Katalog-Frage B3 für Google. **DIE DOKU-BEFUNDE DAZU BLEIBEN
+     WÖRTLICH STEHEN UND WERDEN NICHT UMGESCHRIEBEN** — (j)/B3, (u)/Frage 2, (z) und (al)
+     sagen, was am Dokument stand, und das ist unverändert wahr. Was sich geändert hat, ist
+     nicht ihr Inhalt, sondern dass die Frage jetzt aus einer anderen Quelle beantwortet ist.
+     Der Vorbehalt an (as)/Punkt 1 zeigt hierher.
+
+(bl) **DIE AUFLÖSUNG DES WIDERSPRUCHS AUS (j)/B4 — UND ZWAR NUR IN EINER RICHTUNG.** **NEU.**
+
+     **DER WIDERSPRUCH:** (j)/B4 zitiert /devguides/concepts/destinations (Stand 2026-08-20)
+     wörtlich: "Don't set request headers in an IngestionService request. The Data Manager
+     API ignores headers in an ingestion request." Dieselbe Doku zeigt im Schnellstart drei
+     Kopfzeilen an einem Aufruf desselben Dienstes. **Am Text war nicht zu entscheiden, ob
+     "request headers" die Transport-Kopfzeile einschliesst.**
+
+     **AUFGELÖST DURCH MESSUNG A:** Der Satz trifft die TRANSPORT-Kopfzeile **NICHT**.
+     Derselbe Dienst, den jene Seite nennt, antwortet OHNE `Authorization` mit 401.
+     **DER ANKER DIESER ZUORDNUNG IST DER `ErrorInfo`-METHODENNAME** aus Aufruf 1 —
+     `google.ads.datamanager.v1.IngestionService.IngestEvents`. Er benennt genau den
+     `IngestionService`, von dem der zitierte Satz spricht; ohne ihn wäre die Zuordnung eine
+     Ableitung.
+
+     **AUFGELÖST NUR IN DIESER RICHTUNG — UND DIESE GRENZE IST KEINE VORSICHTSFLOSKEL:** Was
+     der Satz über die FACHLICHEN Kopfzeilen sagt — `login-account` und `linked-account`, die
+     laut (j)/B4 beim Einliefern stattdessen im Rumpf reisen —, **bleibt unberührt und
+     ungemessen**. Messung A hat keine dieser beiden gesetzt. Wer aus diesem Teil liest, der
+     Satz sei insgesamt widerlegt, baut den Zugriffspfad in eine Kopfzeile und bekommt keinen
+     Fehler, sondern Stille: (j)/B4 hält ausdrücklich fest, dass die falsche Wahl **IGNORIERT
+     und nicht abgewiesen** wird.
+
+(bm) **DIE GRENZEN VON MESSUNG A — VIER, UND KEINE WIRD WEGGELASSEN.** **NEU.**
+
+     Sie stehen zusammen, damit niemand aus einer beantworteten Frage eine beantwortete
+     Schnittstelle liest.
+
+     1. **GEMESSEN IST DIE ANNAHME DER KOPFZEILE, NICHT DIE ANNAHME EINES GÜLTIGEN RUMPFES.**
+        Aufruf 3 endet mit `INVALID_ARGUMENT` an einem erfundenen Feld. **Feldnamen,
+        Schreibweise (camelCase gegen snake_case, Widerspruch 2 in (y) und (u)/Frage 4) und
+        `eventSource` sind von dieser Messung UNBERÜHRT.** Sie sind weiterhin GELESEN und nie
+        gemessen — s. die bindende Entscheidung (2) in docs/aktiver-stand.md und den Kopf von
+        src/lib/capi/google-payload.ts.
+     2. **`x-goog-user-project` IST NICHT GEMESSEN.** Die Anfrage scheiterte auf der
+        JSON-Parse-Ebene. **IN WELCHER REIHENFOLGE DER ANBIETER AUTHENTIFIZIERUNG,
+        PROJEKT-ZUORDNUNG, KONTINGENT UND RUMPF PRÜFT, IST UNBEKANNT** — eine Projekt-Prüfung
+        kann dahinterliegen und wurde dann nie erreicht. **AUSDRÜCKLICH KEIN SCHLUSS, DIE
+        KOPFZEILE SEI ENTBEHRLICH.** Die offene Frage aus (am) und (as)/Punkt 2 bleibt offen.
+     3. **DAS ZUGANGSDATUM STAMMT AUS DEM OAUTH-PLAYGROUND DES ANBIETERS, NICHT AUS UNSEREM
+        FLUSS.** Für die gemessene Achse — welcher Träger — ist das gleichgültig; für die
+        PROVENIENZ nicht. Ob ein Zugangsdatum aus dem in Phase 11.8 gebauten Fluss (s.
+        docs/aktiver-stand-11.8.md) an dieser Schnittstelle ebenso trägt, ist NICHT gemessen.
+     4. **EIN ANBIETER KANN SEIN VERHALTEN ÄNDERN, OHNE DASS HIER ETWAS ROT WIRD.** Diese
+        Messung datiert vom 2026-08-28 und gilt für diesen Tag.
 
 ## Pinterest (Conversions API)
 

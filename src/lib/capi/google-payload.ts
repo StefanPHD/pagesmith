@@ -21,36 +21,60 @@
 //
 // ---------------------------------------------------------------------------
 // SAEMTLICHE FELDNAMEN, VERSCHACHTELUNGEN UND FORMATANGABEN IN DIESER DATEI SIND
-// GELESEN UND NIE GEMESSEN. Quelle jeder einzelnen Angabe: docs/ziel-befunde.md,
-// Abschnitt "Google (Google Ads Conversions · GA4)", Teile (l)/D1 bis D6, (m)/E1 bis
-// E4 und (w)/D1 bis F3 — je Feld unten benannt.
+// GELESEN UND NIE GEMESSEN — SO STAND ES HIER BIS ZUM 2026-08-28, UND AUF DER
+// WERTE-ACHSE GILT ES UNVERAENDERT WEITER. Quelle jeder einzelnen Angabe:
+// docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)", Teile
+// (l)/D1 bis D6, (m)/E1 bis E4 und (w)/D1 bis F3 — je Feld unten benannt.
 //
-// HIER STAND ALS BEGRUENDUNG DES SATZES DARUEBER: "Es ist KEIN Aufruf gegen eine
-// Google-Schnittstelle gefahren worden." DIESE BEGRUENDUNG IST SEIT DEM 2026-08-28
-// FALSCH — an jenem Tag ist ein Aufruf gegen events:ingest gefahren worden (GEMESSEN
-// 2026-08-28, live gegen den Endpunkt; Fundstelle docs/ziel-befunde.md,
-// Google-Abschnitt, Teile (bj) bis (bm)).
+// EINGESCHRAENKT AM 2026-08-28 DURCH MESSUNG B1 (GEMESSEN, OWNER, live gegen
+// events:ingest; Fundstelle docs/ziel-befunde.md, Google-Abschnitt, Teile (bn) bis
+// (bu)). Der Satz oben zerfaellt seither in zwei Haelften, und sie haben
+// verschiedenen Rang:
+//   GEMESSEN, ALSO NICHT MEHR BLOSS GELESEN — die NAMEN und die FORMEN:
+//   · saemtliche DREIZEHN Schluesselnamen dieser Datei sind angenommen, in BEIDEN
+//     Schreibweisen (Teil (bq));
+//   · die Gestalt des Zeitstempels aus toISOString() ist angenommen (Teil (bs));
+//   · eventSource ist ein ENUM und kein freier String (Teil (br));
+//   · operatingAccount.accountId muss NUMERISCH sein (Teil (bt)).
+//   WEITERHIN GELESEN UND NIE GEMESSEN — die WERTE:
+//   · WELCHER eventSource-Wert fuer den Offline-Klick-Import gilt (die Menge der
+//     Enum-Mitglieder ist nicht einmal erhoben);
+//   · das Format von productDestinationId;
+//   · das Format der Klick-Kennungen;
+//   · ob eventSource ein Pflichtfeld ist.
+// WER DIE ZWEITE HAELFTE STREICHT, WEIL DIE ERSTE GEMESSEN IST, NIMMT DIE EINZIGE
+// GRENZE MIT, DIE DIESE DATEI NOCH TRAEGT.
 //
-// DER SATZ DARUEBER BLEIBT UNVERAENDERT WAHR, UND DAS IST DER GANZE PUNKT DIESES
-// ABSATZES: Jener Aufruf setzte ein ERFUNDENES Sondierungsfeld und KEIN Feld dieser
-// Datei. Er hat KEINEN Feldnamen bestaetigt und KEINEN widerlegt. Belegt ist die
-// Annahme der KOPFZEILE, nicht die eines gueltigen Rumpfes; die vier Grenzen der
-// Messung stehen vollstaendig in Teil (bm) derselben Fundstelle.
-// WER DARAUS "die Wire-Form ist jetzt gemessen" LIEST, LIEST DAS GEGENTEIL DESSEN, WAS
-// GEMESSEN WURDE. Was daraus folgt, steht unveraendert im naechsten Absatz und wird
-// hier NICHT wiederholt: Wer diese Namen zitiert, zitiert eine Doku-Lesung, und der
-// gepinnte Schluesselnamen-Test ist der einzige Waechter, der eine spaetere Korrektur
-// sichtbar macht.
+// ---------------------------------------------------------------------------
+// ZUR AELTEREN MESSUNG A (2026-08-28, derselbe Tag, ANDERER Zuschnitt) — sie steht
+// hier, weil ihre Grenze sonst als heutige Grenze gelesen wird:
+// Messung A setzte ein ERFUNDENES Sondierungsfeld und KEIN Feld dieser Datei. Sie hat
+// KEINEN Feldnamen bestaetigt und KEINEN widerlegt; belegt war allein die Annahme der
+// KOPFZEILE (Teile (bj) bis (bm)). DAS BLEIBT ALS AUSSAGE UEBER MESSUNG A WAHR.
+// WAS SICH GEAENDERT HAT: Messung B1 hat die Nutzlast dieser Datei tatsaechlich
+// gesendet und damit genau das gemessen, was A offengelassen hat. Wer die Grenze von A
+// heute als Stand der Datei liest, liest einen ueberholten Stand.
 //
-// WAS DAS HEISST UND WARUM TROTZDEM GEBAUT WIRD, steht im Zuschnitt unter
+// WAS B1 AUSDRUECKLICH NICHT GEMESSEN HAT, und das ist die Fortsetzung derselben
+// Grenze: Der Rumpf trug KEIN aufloesbares Ziel und KEINE echte Klick-Kennung. Ein
+// erfolgreicher Ingest war strukturell unmoeglich. Was ein GUELTIGER Rumpf ausloest,
+// ist unverandert ungemessen.
+//
+// WARUM DIESE DATEI TROTZ UNGEMESSENER WIRE-FORM GEBAUT WORDEN IST, steht im Zuschnitt
+// unter
 // "### Die Grenze dieses Zuschnitts — warum trotz ungemessener Wire-Form gebaut wird".
-// Kurz, und nur als Zeiger: Vier Widersprueche der Anbieter-Doku sind unaufgeloest,
-// und EINER davon (camelCase gegen snake_case, Teil (u)/Frage 4) betrifft JEDEN
-// Schluessel unten. Getragen wird die Scheibe von der STRUKTUR — zwei Ebenen, Menge
-// statt Einzelkennung, Verwerfung statt halber Nutzlast —, nicht von den Namen.
-// WER DIESE NAMEN SPAETER ZITIERT, ZITIERT EINE DOKU-LESUNG UND KEINE MESSUNG.
-// Der Schluesselnamen-Test in google-payload.test.ts ist genau dafuer da: Er macht
-// eine spaetere Korrektur zu einem SICHTBAREN Diff statt zu einer stillen Aenderung.
+// DER TITEL BESCHREIBT EINE HISTORISCHE ENTSCHEIDUNG UND BLEIBT RICHTIG: gebaut WURDE
+// ohne Messung, und der Einwand dagegen war berechtigt.
+// Kurz, und nur als Zeiger: DREI Widersprueche der Anbieter-Doku sind unaufgeloest
+// (Teil (y)); der vierte — camelCase gegen snake_case — ist seit dem 2026-08-28
+// AUFGELOEST, und zwar durch eine Messung, nicht durch die Doku. An der DOKU ist er
+// weiterhin nicht entscheidbar.
+// Getragen wird die Scheibe von der STRUKTUR — zwei Ebenen, Menge statt Einzelkennung,
+// Verwerfung statt halber Nutzlast —, nicht von den Namen; das gilt unveraendert.
+// Der Schluesselnamen-Test in google-payload.test.ts BLEIBT UNVERAENDERT NOETIG, und
+// sein Zweck hat sich nur verschoben: Er bewachte einen UNBELEGTEN Stand gegen eine
+// stille Korrektur und bewacht jetzt einen BELEGTEN gegen eine stille Abweichung.
+// Beides ist derselbe Mechanismus — eine Aenderung wird ein SICHTBARER Diff.
 //
 // ---------------------------------------------------------------------------
 // WARUM ZWEI EBENEN — DER GRUND IST DIE FORM DER SCHNITTSTELLE UND AUSDRUECKLICH
@@ -102,6 +126,13 @@ export type GoogleEvent = {
    * GELESEN, Teil (w)/D3: "generated output will always be Z-normalized and use 0, 3,
    * 6 or 9 fractional digits". Die Einheit weicht von ALLEN bisher gebauten Zielen ab
    * (Teil (l)/D3) — genau dort liegt der Kopierfehler, den der Zeitstempel-Test faengt.
+   *
+   * SEIT DEM 2026-08-28 AUCH GEMESSEN, nicht mehr nur gelesen: Die Aufrufe 4, 5 und 6
+   * der Messung B1 trugen 2026-08-28T12:00:00.000Z und haben die Parse-Ebene verlassen
+   * — die Zeitstempel-Form wird beim Parsen geprueft (OWNER, live; Teil (bs)).
+   * DIE GRENZE: Gemessen ist EINE Gestalt an EINEM Wert. Ob eine Epochen-Zahl
+   * abgewiesen wuerde, ist NICHT gemessen — es ist keine gefahren worden. Der
+   * Zeitstempel-Test bleibt der einzige Waechter gegen den Kopierfehler.
    */
   eventTimestamp: string;
   eventSource: string;
@@ -243,10 +274,29 @@ export function buildGoogleEvent(input: GoogleEventInput): GoogleBuildResult {
  *
  * `operatingAccountId` UND `productDestinationId` SIND UNDURCHSICHTIGE ZEICHENKETTEN:
  * Sie werden NICHT gelesen, NICHT geprueft, NICHT abgeleitet und NICHT normalisiert.
- * Das deckt sich mit dem Befundstand — Teil (k)/C1 nennt zwar "reine Ziffernfolge,
- * kein Praefix", haelt aber ausdruecklich fest: "EIN ZEICHENVORRAT ODER EINE
- * LAENGENANGABE STEHT AUF KEINER GELESENEN SEITE." Eine Pruefung waere hier dieselbe
- * Falle wie eine Formpruefung an der Klick-Kennung.
+ * DIESE ENTSCHEIDUNG GILT UNVERAENDERT. Ihre Begruendung ist am 2026-08-28 zur Haelfte
+ * ueberholt worden, und beides gehoert hierher, weil sonst die naechste Politur die
+ * Entscheidung mit ihrer Begruendung streicht.
+ *
+ * HIER STAND: "Das deckt sich mit dem Befundstand — Teil (k)/C1 nennt zwar 'reine
+ * Ziffernfolge, kein Praefix', haelt aber ausdruecklich fest: 'EIN ZEICHENVORRAT ODER
+ * EINE LAENGENANGABE STEHT AUF KEINER GELESENEN SEITE.'"
+ * DER ZITIERTE SATZ UEBER DIE DOKU BLEIBT WAHR. Was nicht mehr traegt, ist der Schluss
+ * daraus: FUER `operatingAccountId` GIBT ES SEIT DEM 2026-08-28 EINE GEMESSENE
+ * FORMVORGABE — der Wert MUSS NUMERISCH SEIN (OWNER, Messung B1, live;
+ * "000-ERFUNDEN-000" wird mit INVALID_NUMBER_FORMAT abgewiesen, Teil (bt)).
+ * FUER `productDestinationId` IST NICHTS GEMESSEN — die semantische Pruefung hielt
+ * beim ersten Verstoss, und das Feld kam nie an die Reihe (Teil (bu), dort
+ * ausdruecklich als ABLEITUNG gekennzeichnet).
+ *
+ * WARUM DIE FUNKTION TROTZDEM NICHT NORMALISIERT, und das ist jetzt der tragende
+ * Grund: DER ORT DER NORMALISIERUNG IST DIE EINGABE, NICHT DER BAUER. Google Ads zeigt
+ * Kundennummern MIT Bindestrichen an; ein Betreiber schreibt ab, was er sieht. Wer die
+ * Bindestriche hier stillschweigend entfernte, verstaeckte den Fehler an der einzigen
+ * Stelle, an der er noch sichtbar zu machen waere. Der Kandidat dazu steht in
+ * docs/aktiver-stand.md, Vorrat.
+ * FUER `productDestinationId` bleibt die alte Begruendung unveraendert richtig: Eine
+ * Pruefung waere dieselbe Falle wie eine Formpruefung an der Klick-Kennung.
  *
  * KEIN `reference` AM DESTINATION UND KEIN `destinationReferences` AM EVENT: Bei genau
  * EINEM Empfaenger unnoetig — "OHNE destinationReferences GEHT EIN EREIGNIS AN ALLE

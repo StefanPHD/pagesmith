@@ -108,9 +108,20 @@ describe("extractGoogleClickIds: der Wert selbst", () => {
     // Crawl-Laeufe war die Einlieferungs-Schnittstelle, nicht das Auto-Tagging
     // (docs/aktiver-stand.md, Vorrat, Eintrag 4).
     // ER BEWACHT, DASS EINE AENDERUNG DIESER WAHL SICHTBAR WIRD, sobald die erste
-    // Messung sie beantwortet. DIESELBE BAUFORM WIE BEIM SCHLUESSELNAMEN-TEST in
-    // google-payload.test.ts: ein gepinnter unbelegter Stand, damit seine Korrektur ein
-    // Diff wird und keine stille Aenderung.
+    // Messung sie beantwortet.
+    // DIE ANALOGIE ZUM SCHLUESSELNAMEN-TEST in google-payload.test.ts IST AM 2026-08-28
+    // NACHGEZOGEN WORDEN. Hier stand, jener pinne "ein gepinnter unbelegter Stand" —
+    // das trifft seit Messung B1 nicht mehr zu: die dreizehn Schluesselnamen sind
+    // GEMESSEN (docs/ziel-befunde.md, Teil (bq)).
+    // WAS DIE BEIDEN TESTS WEITERHIN TEILT, und nur darauf kam es je an: DIE BAUFORM.
+    // Ein gepinnter Stand macht seine Aenderung zu einem DIFF statt zu einer stillen
+    // Aenderung — jener bewacht inzwischen einen BELEGTEN Stand, dieser hier
+    // unveraendert einen UNBELEGTEN. Der Unterschied ist die Beweislage, nicht der
+    // Mechanismus.
+    // DIESER PIN RUHT WEITERHIN AUF NICHTS GELESENEM: B1 hat KEINEN Query-String
+    // benutzt, die Schreibung der URL-Parameternamen ist von ihr unberuehrt
+    // (docs/aktiver-stand.md, Vorrat, Eintrag 4 — "DIE ERSTE MESSUNG NIMMT SIE MIT"
+    // ist NICHT eingeloest).
     // ROT, sobald der Vergleich schreibungsunempfindlich wird — etwa durch ein
     // toLowerCase auf den Parameternamen oder eine eigene Zerlegung, die nicht
     // unterscheidet. WER DAS TUT, TUT ES DANN SICHTBAR UND MIT EINER BEGRUENDUNG.

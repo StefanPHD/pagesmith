@@ -116,6 +116,7 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
     des Token-Tauschs) — die Teile (az) bis (bg)
   - ### Zugespitzter Doku-Lauf 2026-08-28 (LAUF 7) und MESSUNG A gegen events:ingest — die
     Teile (bh) bis (bm)
+  - ### MESSUNG B1 gegen events:ingest (2026-08-28) — die Teile (bn) bis (bu)
 - ## Pinterest (Conversions API)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
@@ -1823,6 +1824,13 @@ abgesucht, obwohl sie es nie war.
     · Welche Rollenstufe ein Google-Ads-Konto verlangt (I4).
     · Ob die snake_case-Fassung aus /reference/ecapi gleichwertig gültig ist (r,
       Widerspruch 2).
+      ERSETZT AM 2026-08-28 — DIESER PUNKT IST BEANTWORTET: JA, GLEICHWERTIG. GEMESSEN
+      (OWNER), Messung B1, s. (bq). Die Frage stand hier in der GLEICHWERTIGKEITS-Form, und
+      genau die ist gemessen — Aufruf 6 (snake_case) erreicht dieselbe Prüfschicht wie 4 und
+      5 (camelCase), mit identischem Feldpfad und identischem reason.
+      AN DER DOKU IST ER WEITERHIN NICHT ENTSCHEIDBAR, und deshalb bleibt er unter dieser
+      Überschrift stehen statt zu verschwinden: LÜCKE F zählt, was DIESE LESUNG nicht
+      entscheiden konnte. Das bleibt richtig. Beantwortet hat es ein Aufruf.
 
 ### Acht Fragen ohne Katalog-Ort (2026-08-24) — UNBEANTWORTET, UND SIE STEHEN NICHT IM KATALOG
 
@@ -2017,7 +2025,17 @@ Dasselbe gilt für die Fenster-Hälfte von D3 (s. (w)).
     ES STEHT ZWEI GEGEN EINS GEGEN DIE FÜNFER-LISTE, plus eine vierte Stelle, die gar keine
     Pflicht kennt. DER WIDERSPRUCH IST NACH LAUF 2 GRÖSSER ALS VORHER.
 
-    FRAGE 4 · WIDERSPRUCH 2, camelCase ODER snake_case — DIE REFERENZ ENTSCHEIDET ES NICHT.
+    FRAGE 4 · WIDERSPRUCH 2, camelCase ODER snake_case — BEANTWORTET, ABER NICHT AN DER DOKU.
+    ERSETZT AM 2026-08-28: Hier stand als Ergebnis "AN DER DOKU NICHT ENTSCHEIDBAR". Das ist
+    ÜBERHOLT — nicht weil die Doku etwas anderes sagt, sondern weil GEMESSEN worden ist.
+    DAS ERGEBNIS: BEIDE SCHREIBWEISEN SIND ZULÄSSIG, und zwar gleichwertig. GEMESSEN
+    2026-08-28 (OWNER), Messung B1 — Volltext s. (bq), der Lauf s. (bn).
+    WARUM DIESE STELLE ERSETZT WIRD UND (bm)/GRENZE 1 NICHT: Dieser Teil trägt ein ERGEBNIS
+    auf eine Katalog-Frage, und ein Ergebnis, das überholt ist, wird richtiggestellt. Jener
+    trägt eine Aussage über die Grenzen einer BENANNTEN Messung; die bleibt wahr und bekommt
+    einen Vorbehalt danebengestellt.
+    DIE DOKU-BEOBACHTUNG DARUNTER BLEIBT WÖRTLICH STEHEN — sie sagt, was am Dokument steht,
+    und das ist unverändert richtig: DIE REFERENZ ENTSCHEIDET ES NICHT.
     WAS SIE ZEIGT: Dieselbe Event-Nachricht in beiden Schreibweisen, systematisch.
     /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28), "JSON representation":
     destinationReferences, transactionId, eventTimestamp, lastUpdatedTimestamp, userData,
@@ -2041,6 +2059,9 @@ Dasselbe gilt für die Fenster-Hälfte von D3 (s. (w)).
     AN DER DOKU NICHT ENTSCHEIDBAR. Die zwei Bäume sind erkennbar die Protobuf- und die
     JSON-Sicht DERSELBEN Schnittstelle; dass beide Schreibweisen im REST-Rumpf angenommen
     werden, folgt daraus aber nicht aus dem TEXT.
+    NACHGETRAGEN 2026-08-28: Der letzte Satz ist als Aussage über den TEXT weiterhin richtig
+    — die Ableitung wäre unzulässig gewesen. Sie ist auch nicht gemacht worden: die Antwort
+    kommt aus einer MESSUNG, nicht aus dem Text (s. (bq)).
 
     FRAGE 5 · adEvents/ingest GEGEN events/ingest — BEANTWORTET, UND EINDEUTIG.
     GELESEN 2026-08-24, /reference/rest/v1/adEvents/ingest (Doku-Stand 2026-07-28), erster
@@ -2077,6 +2098,10 @@ Dasselbe gilt für die Fenster-Hälfte von D3 (s. (w)).
     den Zusatz "The URL uses gRPC Transcoding syntax." DIE REST-ADRESSE IST EINE ABBILDUNG
     DES gRPC-DIENSTES, KEINE EIGENSTÄNDIGE SCHNITTSTELLE. Das erklärt die Doppelgestalt aus
     Widerspruch 2, OHNE sie zu entscheiden.
+    NACHGETRAGEN 2026-08-28: Der Satz bleibt wörtlich richtig — diese LESUNG hat den
+    Widerspruch nicht entschieden. Entschieden hat ihn eine Messung (s. (bq)), und sie
+    bestätigt die Erklärung: Beide Schreibweisen sind zulässig, weil beide dieselbe
+    gRPC-Nachricht abbilden.
 
     B4 · BESTÄTIGT DURCH SCHWEIGEN, und das ist hier eine eigene Aussage — ABGELEGT.
     GELESEN 2026-08-24, /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28): Die Seite
@@ -2404,9 +2429,16 @@ Dasselbe gilt für die Fenster-Hälfte von D3 (s. (w)).
     WIDERSPRUCH 1 (aus (r)) · DIE PFLICHT-KENNUNG — VERSCHÄRFT, NICHT AUFGELÖST.
     Vier Stellen, drei Aussagen. Volltext s. (u), Frage 3. NICHT AUFGELÖST.
 
-    WIDERSPRUCH 2 (aus (r)) · camelCase GEGEN snake_case — NICHT ENTSCHIEDEN.
+    WIDERSPRUCH 2 (aus (r)) · camelCase GEGEN snake_case — AUFGELÖST DURCH EINE MESSUNG.
+    ERSETZT AM 2026-08-28: Hier stand "NICHT ENTSCHIEDEN" und "NICHT AUFGELÖST".
     Die Referenz zeigt beide Schreibweisen in zwei Bäumen und sagt zur Gleichwertigkeit im
-    Ingest-Rumpf nichts. Volltext s. (u), Frage 4. NICHT AUFGELÖST.
+    Ingest-Rumpf nichts — das gilt unverändert und ist die Beobachtung, die den Widerspruch
+    erzeugt hat. Volltext dieser Beobachtung s. (u), Frage 4.
+    AUFGELÖST: BEIDE SCHREIBWEISEN SIND GLEICHWERTIG ZULÄSSIG, GEMESSEN 2026-08-28 (OWNER),
+    Messung B1 — s. (bq). NICHT AUS DEM TEXT, sondern aus einem Aufruf: der Widerspruch war
+    am Dokument nicht auflösbar und ist es bis heute nicht.
+    DIE ÜBERSCHRIFT DIESES WIDERSPRUCHS BLEIBT WÖRTLICH — sie wird von (s)/LÜCKE F und von
+    (z)/Punkt 2 zitiert.
 
     WIDERSPRUCH 3 · NEU IN LAUF 2 — DIE HÖCHSTZAHL DER EREIGNISSE JE ANFRAGE. FAKTOR FÜNF.
     · STELLE A: /reference/rest/v1/events/ingest (Doku-Stand 2026-07-28), Feld events[] —
@@ -2461,6 +2493,10 @@ Dasselbe gilt für die Fenster-Hälfte von D3 (s. (w)).
     (1) Ob ErrorInfo.metadata je einen NUTZLAST-Wert trägt. Die Referenz bestimmt
         Schlüssel-Form und Typ, über die Werte sagt sie nichts.
     (2) Ob snake_case im REST-Rumpf gleichwertig zulässig ist (Widerspruch 2).
+        ERSETZT AM 2026-08-28 — BEANTWORTET: JA, GLEICHWERTIG. GEMESSEN (OWNER), Messung B1,
+        s. (bq). AN DER DOKU bleibt es unentscheidbar; der Punkt steht deshalb weiter unter
+        dieser Überschrift, die aufzählt, was ZWEI LÄUFE nicht entscheiden konnten. Von den
+        vier Punkten sind damit drei offen.
     (3) Ob TOO_MANY_EVENTS mit 10.000 die Zielgruppen-Zahl trägt (Widerspruch 3).
     (4) Ob ein doppelter transactionId zusammenführt oder verwirft (Widerspruch 4).
 
@@ -4088,6 +4124,252 @@ Dokument überhaupt zu holen ist, und genau diese Grenze ist der Grund, warum ge
         docs/aktiver-stand-11.8.md) an dieser Schnittstelle ebenso trägt, ist NICHT gemessen.
      4. **EIN ANBIETER KANN SEIN VERHALTEN ÄNDERN, OHNE DASS HIER ETWAS ROT WIRD.** Diese
         Messung datiert vom 2026-08-28 und gilt für diesen Tag.
+
+     **VORBEHALT 2026-08-28 AN GRENZE 1 — DER WORTLAUT OBEN BLEIBT ZEICHEN FÜR ZEICHEN
+     STEHEN, UND ER IST WEITERHIN WAHR.** Grenze 1 ist eine Aussage über die Grenzen von
+     **MESSUNG A**, und als solche ist sie unverändert richtig: Messung A hat Feldnamen,
+     Schreibweise und `eventSource` nicht berührt.
+     **WAS DIESER VORBEHALT SAGT, UND ES IST DAS EINZIGE:** Wer den Satz als Aussage über den
+     HEUTIGEN Stand liest, liest ihn falsch. **MESSUNG B1 vom selben Tag (s. (bn) bis (bu))
+     hat drei der dort genannten Achsen beantwortet** — die dreizehn Feldnamen (bo)/(bp), die
+     Schreibweise (bq), die Gestalt des Zeitstempels (bs) — und `eventSource` als TYP
+     (br: es ist ein Enum, `WEB` ist ein Mitglied).
+     **WAS AUF GRENZE 1 UNVERÄNDERT ZUTRIFFT:** die WERTE-Achse. Welcher `eventSource`-Wert
+     für den Offline-Klick-Import der richtige ist, welches Format `productDestinationId`
+     verlangt und welches die Klick-Kennungen — nichts davon ist gemessen (s. (bu)).
+     **WARUM VORBEHALT UND NICHT ERSETZUNG:** Ein Satz über die Grenzen einer BENANNTEN
+     Messung wird nicht durch eine zweite Messung falsch; er behielte seinen Gegenstand auch
+     dann, wenn B1 nie stattgefunden hätte. Ihn zu ersetzen machte aus einem richtigen Satz
+     über A einen Satz über nichts.
+     **PROVENIENZ:** GEMESSEN 2026-08-28 (OWNER), Messung B1. Die Zuordnung, welche Achse von
+     B1 getroffen wird und welche nicht, ist am Messergebnis erhoben (CC, 2026-08-28).
+
+### MESSUNG B1 gegen events:ingest (2026-08-28) — die Teile (bn) bis (bu)
+
+**WAS DIESER ABSCHNITT IST UND WIE ER SICH VON MESSUNG A UNTERSCHEIDET:** Messung A (s. (bj))
+hat den TRÄGER des Zugangsdatums beantwortet und dabei einen erfundenen Sondierungsrumpf
+benutzt — sie hat kein Feld dieses Projekts gesendet. **MESSUNG B1 SENDET DIE NUTZLAST, DIE
+`buildIngestEventsRequest` UND `buildGoogleEvent` ERZEUGEN**, und misst damit genau das, was
+A ausdrücklich offengelassen hat.
+
+**HERKUNFT FÜR ALLE TEILE DIESES ABSCHNITTS: GEMESSEN 2026-08-28 (OWNER), live gegen
+`https://datamanager.googleapis.com/v1/events:ingest`.** Wo eine Angabe NICHT aus einem
+Antwortrumpf folgt, sondern vom Owner aus erster Hand stammt (er hat die Befehle formuliert),
+steht das an der Angabe. Wo etwas ABGELEITET ist, steht auch das dort — s. besonders (bu).
+
+(bn) **DER LAUF — SIEBEN AUFRUFE, UND DER ZUSCHNITT DER RÜMPFE IST TEIL DES BEFUNDES.** **NEU.**
+
+     **DIE AUFRUFGESTALT, EINHEITLICH ÜBER ALLE SIEBEN:** Methode `POST`, Kopfzeilen
+     `Authorization: Bearer <Token>` und `Content-Type: application/json`. **OHNE
+     `x-goog-user-project`, OHNE `validateOnly`, ohne Query-String.**
+     **DIESE ANGABE IST DER GRUND, WARUM DIESER TEIL ZUERST STEHT:** Bei Messung A war die
+     Aufrufgestalt NICHT festgehalten worden, und eine Folgemessung hatte deshalb keinen
+     Ausgangswert, gegen den sie eine einzelne Achse hätte variieren können. Hier steht sie.
+
+     **VORKONTROLLE AM tokeninfo-ENDPUNKT, VOR DEN SIEBEN AUFRUFEN** — der Mitläufer im Sinne
+     der Regel "BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS RICHTIGE
+     GEMESSEN WIRD" (docs/immer-beachten.md, Teil (a)): Zugriffsbereich
+     `https://www.googleapis.com/auth/datamanager`, `expires_in` 3539, `access_type`
+     `offline`.
+
+     **DER SCHREIB-AUSSCHLUSS — ER IST KEIN NEBENUMSTAND, SONDERN DER ZUSCHNITT:** Der Rumpf
+     trug **KEIN auflösbares Ziel** (`account_id` "000-ERFUNDEN-000") und **KEINE echte
+     Klick-Kennung** ("ERFUNDEN-KEINE-ECHTE-GCLID"). **EIN ERFOLGREICHER INGEST WAR DAMIT
+     STRUKTURELL UNMÖGLICH.** Es ist kein Ereignis bei Google entstanden, und **die
+     DATENKLASSEN-GRENZE IST NICHT BERÜHRT** — es ist kein fremdvergebenes Merkmal verarbeitet
+     worden (s. docs/offene-punkte.md, "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE").
+     **DAS IST DER PREIS UND ZUGLEICH DER SCHUTZ:** Was ein GÜLTIGER Rumpf auslöst, ist
+     dadurch nicht gemessen — s. (bu).
+
+     **DIE SIEBEN AUFRUFE UND IHRE ANTWORTEN:**
+      1. `{"__pagesmith_probe__":true}` → **400**, "Invalid JSON payload received. Unknown
+         name \"__pagesmith_probe__\": Cannot find field." — **POSITIVKONTROLLE**, und sie
+         trägt: ein unbekannter Name wird beim Namen genannt.
+      2. Volle Nutzlast **camelCase**, `eventSource` "ERFUNDEN_B1" → **400**, "Invalid value
+         at 'events[0].event_source'
+         (type.googleapis.com/google.ads.datamanager.v1.EventSource), \"ERFUNDEN_B1\"".
+      3. **DIESELBEN dreizehn Schlüssel in DERSELBEN Reihenfolge, snake_case** → **ZEICHEN-
+         GLEICHE** Antwort zu 2.
+      4. **camelCase OHNE `eventSource`**, sonst identisch → **400, ANDERE Fehlerklasse:**
+         `ErrorInfo` (domain `datamanager.googleapis.com`) + `RequestInfo` + `requestId`;
+         `fieldViolation` mit field "destinations[0].operating_account.account_id",
+         description "String is not a valid number.", reason `INVALID_NUMBER_FORMAT`.
+      5. **camelCase MIT `eventSource` "WEB"**, sonst identisch zu 4 → **zeichengleich zu 4**.
+      6. **snake_case OHNE `event_source`** (Gegenstück zu 4) → **zeichengleich zu 4/5**,
+         Feldpfad und reason identisch.
+      7. `{"__pagesmith_probe_a__":true,"__pagesmith_probe_b__":true}` → **400, ZWEI
+         `fieldViolations`, BEIDE Namen in der Meldung.**
+
+     **DREI ANGABEN AUS ERSTER HAND (OWNER, 2026-08-28), die NICHT aus den Antwortrümpfen
+     folgen und deshalb eigens ausgewiesen sind** — ohne sie trügen (bo), (bp) und (bs) je
+     eine unbelegte Voraussetzung:
+     · Rumpf 3 trug **dieselben dreizehn Schlüssel in derselben Reihenfolge** wie 2, eins zu
+       eins übersetzt.
+     · Rümpfe 4, 5 und 6 trugen **denselben Zeitstempel** `2026-08-28T12:00:00.000Z`.
+     · Die Rümpfe 1, 2, 3 und 7 tragen unter `details` **GENAU EIN Element vom Typ
+       `BadRequest`; `ErrorInfo` und `RequestInfo` fehlen dort vollständig.** Zweiter,
+       unabhängiger Marker: in **1 und 7** trägt der `fieldViolation` **NUR `description`** —
+       kein `field`, kein `reason`; in **4, 5 und 6** trägt er alle drei.
+       **DIE REICHWEITE DIESES ZWEITEN MARKERS IST KLEINER ALS DIE DES ERSTEN, und das gehört
+       hierher:** Er ist für 1 und 7 erhoben, NICHT für 2 und 3. Für 2 und 3 trägt allein der
+       erste Marker. Wer beide Marker als gleich weit liest, schreibt sich eine Beobachtung
+       auf, die an zwei Aufrufen nicht gemacht wurde.
+
+(bo) **DIE ZWEI FEHLERKLASSEN SIND AN DER ANTWORTGESTALT UNTERSCHEIDBAR.** **NEU.**
+
+     **GEMESSEN 2026-08-28 (OWNER).**
+
+     · **PARSE-EBENE:** unter `details` nur `BadRequest`, KEIN `ErrorInfo`, KEIN
+       `RequestInfo`, KEIN `requestId`; die Meldung nennt entweder JSON oder einen Feldpfad;
+       der `fieldViolation` trägt nur `description` (für 1 und 7 erhoben, s. die
+       Reichweiten-Anmerkung in (bn)).
+     · **SEMANTISCHE PRÜFUNG:** `ErrorInfo` + `RequestInfo` + `requestId`, und der
+       `fieldViolation` trägt `field`, `description` und `reason`.
+
+     **AUFRUFE 1, 2, 3 UND 7 BLIEBEN AUF DER ERSTEN; 4, 5 UND 6 ERREICHTEN DIE ZWEITE.**
+
+     **WARUM DAS DER TRAGENDE BEFUND DIESES LAUFS IST UND NICHT EINE FORMALIE:** Alle sieben
+     Aufrufe enden mit **HTTP 400**. **DER STATUSCODE UNTERSCHEIDET SIE NICHT.** Wer eine
+     Antwort dieser Schnittstelle allein am Statuscode beurteilt, kann "der Rumpf ist
+     syntaktisch unbrauchbar" nicht von "der Rumpf ist gelesen worden und ein WERT stimmt
+     nicht" trennen — und das sind zwei völlig verschiedene Befunde für jeden, der später
+     einen Fehlschlag untersucht.
+
+(bp) **DER PARSER SAMMELT — ER HÄLT NICHT BEIM ERSTEN FEHLER. UND ERST DAS MACHT AUFRUF 3
+     AUSSAGEKRÄFTIG.** **NEU.**
+
+     **GEMESSEN 2026-08-28 (OWNER):** Aufruf 7 sendet ZWEI unbekannte Namen und bekommt ZWEI
+     `fieldViolations` in EINER Antwort, **beide Namen in der Meldung**.
+
+     **ERSTE FOLGE, FÜR JEDE KÜNFTIGE AUSWERTUNG:** Wer nur den ERSTEN `fieldViolation` einer
+     Anbieter-Antwort liest, **verliert Diagnostik, die der Anbieter geliefert hat**. Das
+     trifft jeden Fehlerpfad, der diese Schnittstelle einmal anspricht.
+
+     **ZWEITE FOLGE, UND SIE IST DIE BEWEISTECHNISCH WICHTIGERE:** Aufruf 3 war damit
+     **rückwirkend schon vollständig aussagekräftig**. Ein unbekannter snake_case-Name hätte
+     die Antwort von der des Aufrufs 2 unterscheidbar gemacht; sie war zeichengleich.
+     **DIE AUSSAGE STEHT DAMIT AUF ZWEI UNABHÄNGIGEN WEGEN:** über Aufruf 6 (er erreicht die
+     semantische Schicht, also hat die Parse-Ebene das ganze snake_case-Dokument
+     durchlaufen) UND über Aufruf 7 plus die Zeichengleichheit von 2 und 3.
+     **WARUM DAS EIGENS FESTGEHALTEN WIRD:** Aufruf 3 ALLEIN hätte die Frage nicht
+     entschieden — bei einem fail-fast-Parser wären nur die Schlüssel VOR `event_source`
+     belegt gewesen. Genau diese Lücke ist der Grund, warum die Aufrufe 6 und 7 gefahren
+     wurden. Wer den Lauf später kürzt, streicht mit ihnen den Beweis.
+
+(bq) **SNAKE_CASE IST GLEICHWERTIG ZULÄSSIG — UND SÄMTLICHE DREIZEHN SCHLÜSSELNAMEN SIND
+     ANGENOMMEN, IN BEIDEN SCHREIBWEISEN.** **NEU.**
+
+     **GEMESSEN 2026-08-28 (OWNER).** **DIE BEWEISFIGUR IN EINEM SATZ:** Wer die semantische
+     Schicht erreicht, hat die Parse-Ebene über das GANZE Dokument durchlaufen — sonst wäre
+     er dort nicht angekommen.
+
+     **DIE DREIZEHN:** `destinations` · `operatingAccount` · `accountType` · `accountId` ·
+     `productDestinationId` · `events` · `eventTimestamp` · `eventSource` · `adIdentifiers` ·
+     `gclid` · `conversionValue` · `currency` · `transactionId`.
+
+     **JE SCHREIBWEISE, UND DIE ZUORDNUNG IST GENAUER ALS "4/5 GEGEN 6":**
+     · **camelCase:** zwölf über Aufruf 4 (der `eventSource` nicht trug) und Aufruf 5;
+       `eventSource` selbst zusätzlich über 5, das mit "WEB" die Parse-Ebene verliess.
+     · **snake_case:** zwölf über Aufruf 6; `event_source` selbst über Aufruf 3 — dessen
+       Antwort ist ein **WERT**-Fehler ("Invalid value at 'events[0].event_source'") und kein
+       Unbekannter-Name-Fehler, **der Schlüssel war also erkannt**.
+     Diese Aufteilung steht hier, weil eine gröbere Angabe den dreizehnten Schlüssel je
+     Schreibweise unbelegt liesse und niemand es merkte.
+
+     **WAS DAMIT BEANTWORTET IST — VIER STELLEN, in der Form, in der jede von ihnen fragt:**
+     (u)/Frage 4 · (y)/Widerspruch 2 · (s)/LÜCKE F · (z)/Punkt 2. Die beiden letzten fragen
+     ausdrücklich nach der **GLEICHWERTIGKEIT**, und genau die ist gemessen: Aufruf 6 erreicht
+     dieselbe Schicht wie 4 und 5, mit **identischem Feldpfad und identischem `reason`**.
+
+     **KEINE FOLGE FÜR DEN CODE, UND DAS GEHÖRT IN DIESEN TEIL:** Gebaut wird camelCase, und
+     camelCase ist angenommen. **ES WIRD KEINE ZEILE UMBENANNT.** Der Befund erlaubt
+     snake_case, er verlangt es nicht.
+
+     **DIE GRENZE:** Gemessen sind die dreizehn Schlüssel UNSERER Nutzlast. Über Felder, die
+     wir nicht senden — `userData`, `eventDeviceInfo`, `cartData`, `customVariables` und die
+     übrigen aus (u)/Frage 4 —, sagt dieser Befund nichts.
+
+(br) **`eventSource` IST EIN ENUM, KEIN FREIER STRING.** **NEU.**
+
+     **GEMESSEN 2026-08-28 (OWNER):** Die Antwort auf 2 und 3 nennt den Typ beim Namen —
+     `type.googleapis.com/google.ads.datamanager.v1.EventSource`. `"ERFUNDEN_B1"` wird auf der
+     Parse-Ebene abgewiesen; `"WEB"` wird angenommen (Aufruf 5 verliess die Parse-Ebene).
+
+     **DIE GRENZE, UND SIE IST DER TRAGENDE TEIL:** **Die MENGE der Mitglieder ist NICHT
+     erhoben**, und **ob `WEB` der richtige Wert für einen Offline-Klick-Import ist, ist NICHT
+     gemessen** — ein Wert kann syntaktisch gültig und fachlich falsch sein, und die
+     Schnittstelle meldet das nicht.
+     **FOLGE FÜR DIE BINDENDE ENTSCHEIDUNG (2)** (docs/aktiver-stand.md): Sie wird **KLEINER,
+     NICHT ERLEDIGT**. Dass `eventSource` vom Aufrufer geliefert und nie in der Funktion
+     gewählt wird, gilt unverändert — die Wahl des Wertes ruht weiterhin auf nichts Gemessenem.
+
+(bs) **`eventTimestamp` IN DER GESTALT VON `toISOString()` WIRD ANGENOMMEN.** **NEU.**
+
+     **GEMESSEN 2026-08-28 (OWNER).** Die Rümpfe 4, 5 und 6 trugen den Zeitstempel
+     `2026-08-28T12:00:00.000Z` (Angabe aus erster Hand, s. (bn)) und haben die Parse-Ebene
+     verlassen. **Die Zeitstempel-Form wird beim Parsen geprüft** — ein unbrauchbarer Wert
+     käme über die erste Schicht nicht hinaus.
+
+     **WAS SICH DAMIT ÄNDERT:** Die Gestalt war GELESEN ((w)/D3: "generated output will always
+     be Z-normalized and use 0, 3, 6 or 9 fractional digits") und ist jetzt GEMESSEN.
+     **DIE EINHEIT WEICHT VON ALLEN VIER GEBAUTEN ZIELEN AB** — dort reist eine Zahl, hier
+     eine Zeichenkette; der gepinnte Zeitstempel-Test in google-payload.test.ts fängt genau
+     diesen Kopierfehler und bleibt unverändert nötig.
+
+     **DIE GRENZE:** Gemessen ist EINE Gestalt an EINEM Wert. Ob eine Epochen-Zahl abgewiesen
+     würde, ist NICHT gemessen — es ist keine gefahren worden.
+
+(bt) **`operatingAccount.accountId` MUSS NUMERISCH SEIN.** **NEU.**
+
+     **GEMESSEN 2026-08-28 (OWNER):** Aufrufe 4, 5 und 6 werden auf der SEMANTISCHEN Schicht
+     abgewiesen — field "destinations[0].operating_account.account_id", description "String is
+     not a valid number.", reason `INVALID_NUMBER_FORMAT`.
+
+     **DIE GRENZE:** **Dass die BINDESTRICHE der Grund waren, ist NICHT isoliert gemessen.**
+     Gemessen ist die Abweisung von "000-ERFUNDEN-000" — ein Wert, der zugleich Bindestriche
+     trägt und kein echtes Konto bezeichnet. Welcher der beiden Umstände greift, trennt diese
+     Messung nicht.
+
+     **DIE FOLGE, DIE ABGELEGT GEHÖRT UND DIE ÜBER DIESEN LAUF HINAUS BINDET:** **Google Ads
+     zeigt Kundennummern MIT Bindestrichen an.** Ein Betreiber, der sie so abschreibt, wie er
+     sie sieht, erzeugt ohne Normalisierung **AN DER EINGABE** einen stillen Fehlschlag — die
+     Anfrage wird abgewiesen, der Besucher merkt nichts, und die Conversion fehlt.
+     **DER REINE BAUER NORMALISIERT AUSDRÜCKLICH NICHT UND SOLL DAS NICHT ÄNDERN:**
+     `buildIngestEventsRequest` reicht beide Kennungen unverändert durch (Entscheidung im
+     Zuschnitt der Scheibe 11.2a). Die Normalisierung gehört an die Eingabe, nicht in den
+     Bauer; der Kandidat dazu steht in docs/aktiver-stand.md, Vorrat.
+
+(bu) **WAS B1 NICHT GEMESSEN HAT — DREI DINGE, UND IHRE BEGRÜNDUNG IST EINE ABLEITUNG.**
+     **NEU.**
+
+     **NICHT GEMESSEN:** das Format von `productDestinationId` · das Format der
+     Klick-Kennungen (`gclid`, `gbraid`, `wbraid`) · **ob `eventSource` ein Pflichtfeld ist**
+     (Aufruf 4 ohne es erreichte dieselbe Schicht wie 5 mit ihm — das zeigt nur, dass die
+     Abwesenheit keinen PARSE-Fehler erzeugt).
+
+     **DIE BEGRÜNDUNG IST AUSDRÜCKLICH EINE ABLEITUNG UND KEINE MESSUNG.** Sie lautet: die
+     semantische Prüfung hält beim ersten Verstoss, also kam nichts hinter `account_id` je
+     zur Prüfung. **SIE SETZT ZWEIERLEI VORAUS, UND BEIDES IST UNBELEGT:**
+     (1) dass ein einziger zurückgegebener `fieldViolation` in 4/5/6 ein Anhalten bedeutet und
+         nicht schlicht die einzige Beanstandung war;
+     (2) dass die erfundene `productDestinationId` und die erfundene Klick-Kennung überhaupt
+         ungültig WAREN — das ist unbekannt.
+
+     **DIE SPANNUNG ZU (bp) GEHÖRT AUSDRÜCKLICH HIERHER UND WIRD NICHT GEGLÄTTET:** Auf der
+     **PARSE**-Ebene sammelt der Anbieter **nachweislich** (Aufruf 7, zwei `fieldViolations`).
+     **OB DIE SEMANTISCHE EBENE DAS AUCH TUT, IST NICHT GEMESSEN.** Die Ableitung oben läuft
+     also der einzigen harten Beobachtung zum Sammelverhalten ENTGEGEN. Wer sie später als
+     Befund zitiert, zitiert eine Vermutung; wer sie prüfen will, braucht einen Aufruf mit
+     einem GÜLTIGEN `account_id` und mehreren fehlerhaften Folgefeldern.
+
+     **`x-goog-user-project` — GEMESSEN, MIT ERHALTENER GRENZE:** Die Kopfzeile fehlte in
+     **allen sieben** Aufrufen, und die semantische Prüfung wurde dennoch erreicht.
+     **AUSDRÜCKLICH KEIN SCHLUSS AUF ENTBEHRLICHKEIT:** Eine Projekt- oder Kontingentprüfung
+     kann HINTER dem ersten Feldverstoss liegen und wäre dann nie erreicht worden. **Grenze 2
+     in (bm) bleibt, und die offene Frage aus (am) und (as)/Punkt 2 bleibt offen.**
+
+     **UND DIE VIERTE GRENZE AUS (bm) GILT UNVERÄNDERT MIT:** Ein Anbieter kann sein Verhalten
+     ändern, ohne dass hier etwas rot wird. Diese Messung datiert vom 2026-08-28.
 
 ## Pinterest (Conversions API)
 

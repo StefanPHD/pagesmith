@@ -7,9 +7,20 @@ gehoben und archiviert, verschwindet sie wieder. Verfahren: docs/arbeitsweise.md
 > **VERMERK 2026-08-27 — LIES IHN, BEVOR DU WEITERLIEST. DER KOPFSATZ DARÜBER BLEIBT
 > WÖRTLICH STEHEN UND BESCHREIBT EINE PAUSIERTE PHASE.**
 >
-> **PHASE 11.2 PAUSIERT SEIT DEM 2026-08-25.** Sie ist NICHT abgeschlossen und NICHT
-> archiviert. Ihr Stand in dieser Datei bleibt GÜLTIG und wird bei der Rückkehr
-> weitergeführt — hier ist nichts überholt, es ruht nur.
+> **PHASE 11.2 PAUSIERTE VOM 2026-08-25 BIS ZUM 2026-08-28.** Sie ist NICHT abgeschlossen
+> und NICHT archiviert. Ihr Stand in dieser Datei ist GÜLTIG — hier ist nichts überholt.
+>
+> **ERSETZT AM 2026-08-28.** Hier stand "PAUSIERT SEIT DEM 2026-08-25 … es ruht nur". Das
+> ist überholt, und der Grund ist benennbar: **Die Pause hing an der Sperre "TRÄGER DES
+> ZUGANGSDATUMS", und die ist mit VERMERK 3 gefallen** (GEMESSEN 2026-08-28, OWNER; Befund
+> in docs/ziel-befunde.md, Teile (bj) bis (bm)). **VERMERK 4 vom selben Tag** hat mit
+> Messung B1 die Nutzlast-Achse nachgezogen (ebenda, Teile (bn) bis (bu)).
+> **WAS DAS NICHT HEISST, und ohne diesen Satz liest jemand "Pause vorbei" als "baubar":**
+> Die Vorbedingungen der TRANSPORT-Scheibe sind damit NICHT alle erfüllt. Welche stehen und
+> welche fallen, steht in VERMERK 3 und VERMERK 4 — nicht hier, zweimal geschrieben liefe es
+> auseinander.
+> **PROVENIENZ:** Das Fallen der Sperre ist eine FOLGE aus Messung A; die Datierung der Pause
+> auf den 2026-08-28 ist eine FOLGE daraus. KEINE eigene Messung.
 >
 > **PHASE 11.8 (Autorisierungsschicht) IST SEIT DEM 2026-08-27 ABGESCHLOSSEN UND
 > ARCHIVIERT.** Ihr Stand liegt weiterhin in `docs/aktiver-stand-11.8.md` — **die Datei
@@ -384,6 +395,25 @@ gegen snake_case, in Teil (u), Frage 4, ausdrücklich als "AN DER DOKU NICHT
 ENTSCHEIDBAR" geführt. Ein Bau auf dieser Grundlage kann in Gänze am ersten echten
 Aufruf scheitern.
 
+ERSETZT AM 2026-08-28 — DER ABSATZ DARÜBER IST EIN ZEITDOKUMENT UND BESCHREIBT DEN
+ZUSTAND VOM 2026-08-25. ER BLEIBT STEHEN, WEIL ER DIE ENTSCHEIDUNG TRÄGT, DIE DIESER
+UNTERABSCHNITT BEGRÜNDET: Gebaut WURDE trotz ungemessener Wire-Form, und der Einwand
+gegen diesen Bau war berechtigt. Als Aussage über den HEUTIGEN Stand ist er FALSCH:
+· "Sämtliche Feldnamen, Verschachtelungen und Formatvorgaben … GELESEN und NIE
+  GEMESSEN" — überholt auf der NAMENS-, SCHREIBWEISEN- und ZEITSTEMPEL-Achse.
+  GEMESSEN 2026-08-28 (OWNER), Messung B1: docs/ziel-befunde.md, Teile (bq) und (bs).
+· "Vier Widersprüche … unaufgelöst" — es sind DREI. Widerspruch 2 ist aufgelöst
+  (Teil (bq)); 1, 3 und 4 stehen unverändert.
+· "camelCase gegen snake_case … AN DER DOKU NICHT ENTSCHEIDBAR" — an der DOKU
+  weiterhin nicht entscheidbar, und genau so steht es dort auch heute noch. Als
+  offene Frage ist es erledigt: BEIDE Schreibweisen sind gleichwertig zulässig,
+  gemessen, nicht gelesen.
+· "Ein Bau auf dieser Grundlage kann in Gänze am ersten echten Aufruf scheitern" —
+  der erste echte Aufruf ist gefahren. Er ist NICHT an der Gestalt gescheitert.
+WAS AUF DER WERTE-ACHSE STEHEN BLEIBT und den Einwand teilweise am Leben hält:
+welcher eventSource-Wert gilt, welches Format productDestinationId und die
+Klick-Kennungen verlangen — nichts davon ist gemessen (Teil (bu)).
+
 ERWOGEN UND VERWORFEN: den Nutzlast-Bau bis zur ersten Messung ZURÜCKZUSTELLEN und
 in dieser Scheibe nur die Extraktion zu bauen.
 
@@ -400,6 +430,15 @@ KEIN BELEGTER STAND. Wer sie später zitiert — in einer Anleitung, in einem Ko
 in einem Zuschnitt —, zitiert eine DOKU-LESUNG und keine Messung. Der gepinnte
 Schlüsselnamen-Test ist genau dafür da: Er macht eine spätere Korrektur zu einem
 sichtbaren Diff statt zu einer stillen Änderung.
+
+ERSETZT AM 2026-08-28 — DIE FELDNAMEN SIND EIN BELEGTER STAND. Der Absatz darüber
+bleibt als Zeitdokument stehen und ist als Aussage über heute FALSCH: Wer die Namen
+zitiert, zitiert seit dem 2026-08-28 eine MESSUNG (OWNER, Messung B1;
+docs/ziel-befunde.md, Teil (bq)) und keine Doku-Lesung.
+DER GEPINNTE SCHLÜSSELNAMEN-TEST BLEIBT UNVERÄNDERT NÖTIG, und sein Zweck hat sich
+nur verschoben: Er bewachte einen UNBELEGTEN Stand gegen eine stille Korrektur; er
+bewacht jetzt einen BELEGTEN gegen eine stille Abweichung. Beides ist derselbe
+Mechanismus — eine Änderung wird ein sichtbarer Diff. Der Test wird NICHT angefasst.
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -551,6 +590,69 @@ Satz über das Fallen der Sperre ist eine FOLGE aus Messung A. Die drei Vorbedin
 GEMESSEN am Dateitext (CC, 2026-08-28) — sie stehen an den genannten Orten und sind dort
 nachgelesen, nicht erinnert.
 
+### VERMERK 4 (Commit folgt) — DIE NUTZLAST IST GEMESSEN, DIE WIRE-FORM IST KEINE DOKU-LESUNG MEHR
+
+**WAS GESCHEHEN IST:** MESSUNG B1 gegen `events:ingest` — SIEBEN Aufrufe, GEMESSEN
+2026-08-28 (OWNER, live). Anders als Messung A hat sie **die Nutzlast gesendet, die
+buildIngestEventsRequest und buildGoogleEvent erzeugen**, statt eines erfundenen
+Sondierungsrumpfes.
+
+**DER BEFUND STEHT NICHT HIER, SONDERN IN docs/ziel-befunde.md**, Google-Abschnitt, Teile
+(bn) bis (bu) — der Lauf mit Aufrufgestalt und Schreib-Ausschluss in (bn), die zwei
+Fehlerklassen in (bo), das Sammel-Verhalten des Parsers in (bp), die Schreibweisen-Auflösung
+in (bq), eventSource in (br), eventTimestamp in (bs), accountId in (bt), die Grenzen in (bu).
+**ZWEIMAL GESCHRIEBEN LIEFE ES AUSEINANDER**, deshalb hier nur der Zeiger.
+
+**DAS ERGEBNIS IN EINEM SATZ:** Sämtliche dreizehn Schlüsselnamen unserer Nutzlast sind
+angenommen — in BEIDEN Schreibweisen —, die Gestalt des Zeitstempels ist angenommen,
+eventSource ist ein Enum, und `operatingAccount.accountId` muss numerisch sein.
+
+**WAS DER LAUF AUSDRÜCKLICH NICHT GETAN HAT, und das gehört an den Anfang und nicht in eine
+Fussnote:** Der Rumpf trug KEIN auflösbares Ziel und KEINE echte Klick-Kennung. **Ein
+erfolgreicher Ingest war strukturell unmöglich, und die DATENKLASSEN-GRENZE ist nicht berührt
+worden.**
+
+---
+
+**WELCHE VORBEDINGUNGEN DER TRANSPORT-SCHEIBE DAVON NICHT BERÜHRT SIND — VIER, UND DIESE
+AUFZÄHLUNG IST DER TEIL DIESES VERMERKS, DER ÜBER DIE RUNDE HINAUS BINDET.** Ohne sie liest
+jemand "die Nutzlast ist gemessen" als "sendebereit", und genau das folgt daraus nicht:
+
+- **DIE DREI VORBEDINGUNGEN AUS VERMERK 3 STEHEN UNVERÄNDERT.** Die Datenklassen-Grenze für
+  ANDERE Merkmale als die Klick-Kennung, die Sieben-Tage-Frist im Publishing-Status
+  "Testing", und der nachgeschuldete Live-Nachweis der Scheibe 11.2a. **MESSUNG B1 IST DIESER
+  NACHWEIS EBENSO WENIG WIE MESSUNG A:** Sie hat keine Zeile Produktivcode ausgeführt und
+  keinen Aufrufer hergestellt — die Nutzlast ist von Hand nachgebaut, nicht von
+  buildGoogleEvent erzeugt. Die Schuld steht unverändert.
+- **DIE WERTE-ACHSE IST OFFEN, UND SIE IST DIE EIGENTLICHE RESTLÜCKE.** Gemessen sind NAMEN
+  und FORMEN. NICHT gemessen sind: welcher `eventSource`-Wert für den Offline-Klick-Import
+  gilt (die Mitgliedermenge des Enums ist nicht einmal erhoben), welches Format
+  `productDestinationId` verlangt, und welches Format die Klick-Kennungen verlangen.
+  **DIE BINDENDE ENTSCHEIDUNG (2) GILT DESHALB WEITER** — s. dort, sie ist im selben Zug
+  nachgezogen worden.
+- **`x-goog-user-project` BLEIBT UNGEMESSEN.** Die Kopfzeile fehlte in allen sieben Aufrufen
+  und die semantische Prüfung wurde erreicht — **das ist KEIN Schluss auf Entbehrlichkeit**,
+  weil eine Projekt- oder Kontingentprüfung hinter dem ersten Feldverstoss liegen kann.
+- **ES GIBT WEITERHIN KEINEN LESEPFAD FÜR DAS ZUGANGSDATUM UND KEINEN ORT FÜR DIE
+  KONTO-KENNUNGEN.** B1 hat beide von Hand gesetzt. Was der Transport dafür braucht, ist von
+  dieser Messung unberührt.
+
+**DER VORRATS-EINTRAG 4 IST UNBERÜHRT** — "DIE SCHREIBUNG DER URL-PARAMETERNAMEN STÜTZT SICH
+AUF NICHTS GELESENES", im Abschnitt "Vorrat (gemeldet, nicht gebaut)" DIESER Datei.
+**B1 hat keinen Query-String benutzt**, genau wie A. Der dort festgehaltene Satz "DIE ERSTE
+MESSUNG NIMMT SIE MIT" ist weiterhin NICHT eingelöst.
+
+**EINE FOLGE, DIE NICHT DEN TRANSPORT BETRIFFT, SONDERN DIE AUSWERTUNG:** Der Anbieter
+sammelt auf der Parse-Ebene mehrere Verstösse in EINER Antwort (Teil (bp)). Wer später einen
+Rückkanal baut und nur den ersten `fieldViolation` liest, verliert Diagnostik, die geliefert
+wurde. Als Vorrats-Eintrag unten festgehalten.
+
+**PROVENIENZ, JE TEIL:** Messung B1 GEMESSEN 2026-08-28 (OWNER), live gegen den Endpunkt;
+drei Angaben zum Rumpf-Zuschnitt stammen aus erster Hand vom OWNER und sind in Teil (bn) als
+solche ausgewiesen. Die Aussage, dass B1 den Live-Nachweis nicht einlöst, ist eine FOLGE aus
+ihrem Zuschnitt. Die Zuordnung, welche Vorbedingung berührt ist und welche nicht, ist GEMESSEN
+am Dateitext (CC, 2026-08-28).
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 Fünf Stück, alle am 2026-08-25 mit dem Zuschnitt der Scheibe 11.2a getroffen. Je
@@ -619,6 +721,44 @@ sobald der Wert GEMESSEN ist, und validateOnly=true beantwortet "wird die Anfrag
 angenommen", nicht "ist der Wert der fachlich richtige".
 PROVENIENZ: GELESEN 2026-08-25 an /devguides/events/send-events (Doku-Stand 2026-08-18).
 KEINE Messung.
+
+NACHGEZOGEN 2026-08-28 — DIE ENTSCHEIDUNG (2) GILT UNVERÄNDERT, IHRE GRUNDLAGE IST AUF EINER
+ACHSE GEMESSEN. Der Text darüber bleibt WÖRTLICH stehen; dieser Absatz sagt, was sich
+verschoben hat und was nicht.
+· **GEMESSEN IST DER TYP, NICHT DER WERT.** `eventSource` ist ein Enum
+  (`google.ads.datamanager.v1.EventSource`) und kein freier String; `"WEB"` ist ein gültiges
+  Mitglied, `"ERFUNDEN_B1"` nicht. GEMESSEN 2026-08-28 (OWNER), Messung B1 —
+  docs/ziel-befunde.md, Teil (br).
+· **WAS DAMIT ÜBERHOLT IST — GENAU EINE ANNAHME:** dass die Funktion einen beliebigen String
+  weiterreichen dürfte, ohne dass die Schnittstelle etwas dagegen hätte. Sie hat etwas
+  dagegen. Der SATZ oben behauptet das nicht; überholt ist die stillschweigende Erwartung,
+  nicht der Wortlaut.
+· **WAS UNVERÄNDERT GILT UND DIE ENTSCHEIDUNG TRÄGT:** **WELCHER Wert für den
+  Offline-Klick-Import der richtige ist, ist NICHT gemessen** — die MENGE der Enum-Mitglieder
+  ist nicht einmal erhoben. Eine Wahl IN der Funktion wäre weiterhin eine unbelegte
+  Festlegung an der schlechtestmöglichen Stelle. **DIE SPERRE IST KLEINER GEWORDEN, NICHT
+  GEFALLEN.**
+· **DIE GRENZE DER GRENZE, damit niemand sie zu weit liest:** Auch das Instrument aus dem
+  Absatz oben (`validateOnly=true`) beantwortet weiterhin "wird die Anfrage angenommen", nicht
+  "ist der Wert der fachlich richtige". Ein syntaktisch gültiges Enum-Mitglied kann fachlich
+  falsch sein, und die Schnittstelle meldet das nicht.
+PROVENIENZ: GEMESSEN 2026-08-28 (OWNER), Messung B1. Die Folge für die Entscheidung ist eine
+ABLEITUNG aus dieser Messung.
+
+NACHGEZOGEN 2026-08-28, ZWEITER TEIL — DIE FELDNAMEN UND DIE SCHREIBWEISE SIND KEINE
+DOKU-LESUNG MEHR. Dieser Absatz steht hier und nicht bei (2), weil er ALLE bindenden
+Entscheidungen dieses Zuschnitts betrifft und weil (2) die Stelle ist, an der die
+Provenienz-Frage am schärfsten gestellt wurde.
+· **GEMESSEN 2026-08-28 (OWNER), Messung B1:** Sämtliche DREIZEHN Schlüsselnamen unserer
+  Nutzlast sind angenommen, in BEIDEN Schreibweisen (docs/ziel-befunde.md, Teil (bq)), und die
+  Gestalt des Zeitstempels aus `toISOString()` ebenfalls (Teil (bs)).
+· **KEINE FOLGE FÜR DEN CODE:** Gebaut wird camelCase, und camelCase ist angenommen. Es wird
+  KEINE Zeile umbenannt.
+· **WAS NICHT GEMESSEN IST — die WERTE-Achse, und sie ist die verbliebene Lücke:** das Format
+  von `productDestinationId`, das Format der Klick-Kennungen, und ob `eventSource` ein
+  Pflichtfeld ist. Die Begründung, warum diese drei ungemessen blieben, ist in Teil (bu)
+  ausdrücklich als ABLEITUNG gekennzeichnet und läuft der einzigen harten Beobachtung zum
+  Sammelverhalten entgegen — wer sie zitiert, zitiert eine Vermutung.
 
 **(3) KEINE NUTZLAST OHNE KLICK-KENNUNG.**
 ENTSCHEIDUNG: Kann keine Klick-Kennung gebildet werden, entsteht KEINE Nutzlast —
@@ -841,6 +981,52 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig. DIE ZÄ
      ist die Vorgabe, kein Fehler" (GELESEN, Teil (k)/C3). Beim zweiten Empfänger wird
      es fällig und ist dann erzwungen eindeutig (Teil (v)/C3, DUPLICATE_DESTINATION_REFERENCE).
    · KEIN eventName. Für Google Ads optional, Pflicht nur für GA4 (GELESEN, Teil (w)/F1).
+
+NACHGETRAGEN AM 2026-08-28 — DREI EINTRÄGE AUS MESSUNG B1. Die Zählung "FÜNF" im Kopf
+dieses Abschnitts ist damit überholt und durch ACHT abgelöst; sie stand dort bis zum
+2026-08-28 und war für ihren Tag richtig. KEINE EMPFEHLUNG zu keinem von ihnen.
+
+6. **eventSourceUrl AN DER FAN-OUT-STELLE IST UNGEMESSEN — OHNE SIE BEKOMMT
+   extractGoogleClickIds KEINEN EINGABEWERT.** Die Extraktion nimmt eine URL entgegen;
+   die einzige URL, die den Ingest-Pfad erreicht, ist eventSourceUrl aus dem
+   Beacon-Rumpf. **OB SIE AN DER STELLE, AN DER DIE ADAPTER GERUFEN WERDEN, ÜBERHAUPT
+   VERFÜGBAR IST, IST NICHT GEMESSEN** — GEMESSEN ist nur, dass sie NICHT PERSISTIERT
+   wird (Vermerk 1, persistEvent in src/lib/analytics/persist.ts) und dass sie an die
+   Adapter weitergereicht wird.
+   WARUM DAS HIER STEHT UND NICHT ALS ERLEDIGT GILT: Es ist die Vorbedingung, ohne die
+   der gesamte Zuschnitt der Scheibe 11.2a keinen Eingang hat. Ein Transport-Zuschnitt,
+   der sie nicht prüft, plant einen Adapter, dem der Eingabewert fehlt — und das fällt
+   erst beim Bauen auf.
+   AUFLAGE AN DEN TRANSPORT-ZUSCHNITT, nicht an diese Scheibe.
+   TRIGGER: die Transport-Scheibe.
+7. **DIE NORMALISIERUNG DER KUNDENNUMMER GEHÖRT AN DIE EINGABE, NICHT IN DEN REINEN
+   BAUER.** GEMESSEN 2026-08-28 (OWNER), Messung B1: `operatingAccount.accountId` muss
+   numerisch sein — "000-ERFUNDEN-000" wird mit `INVALID_NUMBER_FORMAT` abgewiesen
+   (docs/ziel-befunde.md, Teil (bt)).
+   DER PREIS, UND ER IST DER GRUND FÜR DIESEN EINTRAG: **Google Ads zeigt Kundennummern
+   MIT Bindestrichen an.** Ein Betreiber schreibt ab, was er sieht. Ohne Normalisierung
+   an der EINGABE entsteht ein STILLER Fehlschlag — die Anfrage wird abgewiesen, niemand
+   sieht etwas, und die Conversion fehlt.
+   **buildIngestEventsRequest NORMALISIERT AUSDRÜCKLICH NICHT UND SOLL DAS NICHT ÄNDERN**
+   — der reine Bauer reicht beide Kennungen unverändert durch, und diese Entscheidung
+   steht im Zuschnitt dieser Scheibe. Der Ort für die Normalisierung ist die Stelle, an
+   der der Betreiber die Nummer eingibt; die gibt es heute nicht.
+   GRENZE: Dass die BINDESTRICHE der Grund der Abweisung waren, ist NICHT isoliert
+   gemessen (s. Teil (bt)).
+   TRIGGER: die Ablage-Scheibe für die Konto-Kennungen.
+8. **EINE AUSWERTUNG DER ANBIETER-FEHLER DARF NICHT NUR DEN ERSTEN fieldViolation
+   LESEN — DER PARSER SAMMELT.** GEMESSEN 2026-08-28 (OWNER), Messung B1, Aufruf 7: zwei
+   unbekannte Namen ergeben ZWEI fieldViolations in EINER Antwort
+   (docs/ziel-befunde.md, Teil (bp)).
+   WER NUR DEN ERSTEN LIEST, VERLIERT DIAGNOSTIK, DIE DER ANBIETER GELIEFERT HAT — und
+   merkt es nicht, weil eine Antwort mit einem gelesenen Verstoss genauso aussieht wie
+   eine mit einem einzigen.
+   GRENZE: GEMESSEN ist das Sammeln auf der PARSE-Ebene. **Ob die SEMANTISCHE Ebene
+   ebenfalls sammelt, ist NICHT gemessen** — Teil (bu) führt dazu eine ausdrücklich als
+   ABLEITUNG gekennzeichnete Gegenannahme.
+   TRIGGER: der erste Rückkanal für abgelehnte Ereignisse. Er berührt alle vier
+   bestehenden Adapter — s. den Kandidaten "EIN ADAPTER KANN HEUTE KEIN EREIGNIS
+   ABLEHNEN" in docs/claude-history/backlog-polish.md und Vorrats-Eintrag 3 oben.
 
 ## Hebungs-Kandidaten
 

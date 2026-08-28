@@ -339,6 +339,38 @@ liegen beide hier und finden einander.
         "sendebereit" liest, liest das Gegenteil dessen, was gemessen wurde.
       PROVENIENZ: GEMESSEN 2026-08-28 (OWNER), live gegen den Endpunkt. Die Folge für den
       Zuschnitt ist eine ABLEITUNG aus dieser Messung, keine zweite Messung.
+
+      VORBEHALT 2026-08-28 AN DER GRENZE DARÜBER — DER WORTLAUT BLEIBT ZEICHEN FÜR ZEICHEN
+      STEHEN. Er ist als Aussage über MESSUNG A unverändert wahr; dieser Vorbehalt tritt
+      DANEBEN und trennt, was auf ihn heute noch zutrifft.
+      DIE FORM IST VORBEHALT UND NICHT ABGELAUFEN, wie durchgehend an diesem Eintrag
+      (Entscheidung vom 2026-08-28): Ein Satz über die Grenzen einer BENANNTEN Messung
+      verliert seinen Gegenstand nicht dadurch, dass eine zweite Messung folgt.
+      DER ANLASS: MESSUNG B1 vom selben Tag, SIEBEN Aufrufe gegen denselben Endpunkt, mit
+      der Nutzlast, die buildIngestEventsRequest und buildGoogleEvent erzeugen. GEMESSEN
+      2026-08-28 (OWNER), live. Volltext: docs/ziel-befunde.md, Google-Abschnitt, Teile (bn)
+      bis (bu). ER WIRD HIER NICHT WIEDERHOLT — zwei Fassungen liefen auseinander.
+      DIE VIER ACHSEN EINZELN, weil eine pauschale Marke die zwei Hälften zusammenzöge:
+      · FELDNAMEN — FÄLLT. Sämtliche dreizehn Schlüssel unserer Nutzlast sind angenommen
+        (Teil (bq)).
+      · SCHREIBWEISE — FÄLLT. camelCase UND snake_case sind gleichwertig zulässig
+        (Teil (bq)). KEINE FOLGE FÜR DEN CODE: gebaut wird camelCase, es wird keine Zeile
+        umbenannt.
+      · eventSource — STEHT ZUR HÄLFTE. Gemessen ist der TYP: ein Enum, "WEB" ist ein
+        Mitglied (Teil (br)). NICHT gemessen ist der WERT — welcher für den
+        Offline-Klick-Import gilt, und die Mitgliedermenge ist nicht einmal erhoben.
+      · x-goog-user-project — STEHT UNVERÄNDERT. Die Kopfzeile fehlte auch in allen sieben
+        B1-Aufrufen, und die semantische Prüfung wurde erreicht — das ist AUSDRÜCKLICH KEIN
+        Schluss auf Entbehrlichkeit (Teil (bu)). Grenze 2 in (bm) bleibt.
+      WAS NEU HINZUKOMMT UND IN DER ALTEN GRENZE GAR NICHT VORKAM: operatingAccount.accountId
+      MUSS NUMERISCH SEIN (Teil (bt)) — Google Ads zeigt Kundennummern mit Bindestrichen an,
+      und ohne Normalisierung AN DER EINGABE entsteht ein stiller Fehlschlag.
+      WAS DEN SATZ "NICHT DIE ANNAHME EINES GÜLTIGEN RUMPFES" WEITERHIN TRÄGT: B1 hat
+      ausdrücklich KEIN auflösbares Ziel und KEINE echte Klick-Kennung gesendet. Ein
+      erfolgreicher Ingest war strukturell unmöglich, und die DATENKLASSEN-GRENZE ist nicht
+      berührt worden. Was ein GÜLTIGER Rumpf auslöst, ist nach wie vor ungemessen.
+      PROVENIENZ: GEMESSEN 2026-08-28 (OWNER), Messung B1. Die Zuordnung je Achse ist eine
+      ABLEITUNG aus dieser Messung.
 - [x] Phase 11.8 — Autorisierungsschicht: die Ablage und die Erneuerung MEHRWERTIGER
       Zugangsdaten.
 

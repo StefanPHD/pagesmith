@@ -493,7 +493,7 @@ gehört an den Code.
 Läufen vom 2026-08-25. Die Mutationsergebnisse GEMESSEN am selben Tag. Der Satz über
 den fehlenden Live-Test ist eine FOLGE aus dem Zuschnitt, keine Messung.
 
-### VERMERK 3 (Commit folgt) — DER TRÄGER DES ZUGANGSDATUMS IST GEMESSEN, DIE SPERRE IST GEFALLEN
+### VERMERK 3 (Commit 18d0ff5) — DER TRÄGER DES ZUGANGSDATUMS IST GEMESSEN, DIE SPERRE IST GEFALLEN
 
 **WAS GESCHEHEN IST — ZWEI ARBEITEN AN EINEM TAG, MIT VERSCHIEDENER PROVENIENZ:** Ein
 zugespitzter Doku-Lauf über SIEBEN Seiten (GELESEN 2026-08-28, CC) und MESSUNG A gegen
@@ -887,3 +887,41 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig. DIE ZÄ
    der verdeckte Reiter sind Beobachtungen an der eigenen Arbeit, nicht an einem fremden
    System. Der Inhalt der vier Sätze ist GELESEN an der genannten Seite, ebenfalls
    2026-08-25.
+
+3. **EIN TITEL-ZEIGER AUS UMLAUTFREIEM QUELLTEXT IST INHALTLICH EINDEUTIG UND ALS
+   SUCHANKER UNBRAUCHBAR** (angetreten 2026-08-28, beim Nachziehen des Kommentarkopfes
+   der Callback-Route).
+   DER BEFUND — GEMESSEN am Repo (CC, 2026-08-28): Der Kommentarkopf von
+   src/app/api/oauth/google/callback/route.ts zitiert eine Überschrift aus
+   docs/aktiver-stand-11.8.md UMLAUTFREI TRANSLITERIERT — "unberuehrt laesst" gegen
+   "unberührt lässt" in der Zieldatei. Eine wörtliche Suche nach dem zitierten String
+   FINDET DIE ÜBERSCHRIFT NICHT. Der Abschnitt existiert, ist eindeutig und ist am
+   2026-08-28 aufgelöst worden; unbrauchbar ist nicht der Zeiger, sondern seine
+   MASCHINELLE Auffindbarkeit.
+   WARUM KANDIDAT — ES IST KEIN EINZELFALL, SONDERN EINE STRUKTURELLE KOLLISION ZWEIER
+   GELTENDER AUFLAGEN: "KEINE UMLAUTE IM QUELLTEXT" (Auflage am Kopf derselben Datei und
+   am Kopf von src/lib/oauth/google-authorize.ts) verlangt die Transliteration; die
+   Zeiger-Disziplin verlangt, dass ein zitierter Titel WÖRTLICH stehen bleibt, weil er
+   sonst nicht mehr auffindbar ist. BEIDE GELTEN, UND SIE SCHLIESSEN EINANDER AUS, sobald
+   eine deutsche Überschrift aus Quelltext heraus zitiert wird. Das trifft JEDEN künftigen
+   Titel-Zeiger dieser Art, nicht nur diesen.
+   DIE ABGRENZUNG ZU "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT
+   VERZEICHNIS NICHT" (docs/immer-beachten.md): Dort trifft eine Suche eine ANDERE
+   Fundstelle als die gemeinte — der Schaden ist ein falscher Treffer. Hier trifft sie GAR
+   KEINE. Verwandte Achse, entgegengesetzter Ausgang, und der zweite Fall ist der
+   harmlosere: Ein Nicht-Treffer zwingt zum Suchen, ein falscher Treffer nicht.
+   DIE ABGRENZUNG ZU "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER"
+   (docs/immer-beachten.md): Jene Regel empfiehlt den Titel GERADE ALS haltbaren Anker und
+   stellt ihn der Zeilennummer gegenüber. Dieser Befund zeigt die Bedingung, unter der das
+   nicht trägt — nicht weil der Titel altert, sondern weil die zitierende Datei ihn nicht
+   schreiben darf, wie er dasteht.
+   DIE BESTEHENDE FUNDSTELLE WIRD NICHT GEHEILT. Dieser Kandidat stellt sie fest; das
+   Beheben wäre eine eigene Entscheidung und ist keine.
+   NICHT ENTSCHIEDEN: ob künftige Titel umlautfrei GEWÄHLT werden, ob der Quelltext an
+   Zeiger-Stellen eine Ausnahme von der Umlaut-Auflage bekommt, ob eine andere Zeigerform
+   an die Stelle des Titels tritt, oder ob es bei der blossen Feststellung bleibt. KEINE
+   EMPFEHLUNG.
+   PROVENIENZ: GEMESSEN am Repo (CC, 2026-08-28) — die Transliteration, der Nicht-Treffer
+   der wörtlichen Suche und das Vorhandensein der Zielüberschrift sind am Dateitext
+   erhoben. Dass die Kollision JEDEN künftigen Zeiger dieser Art trifft, ist eine
+   ABLEITUNG aus den zwei Auflagen, keine Messung.

@@ -590,7 +590,7 @@ Satz über das Fallen der Sperre ist eine FOLGE aus Messung A. Die drei Vorbedin
 GEMESSEN am Dateitext (CC, 2026-08-28) — sie stehen an den genannten Orten und sind dort
 nachgelesen, nicht erinnert.
 
-### VERMERK 4 (Commit folgt) — DIE NUTZLAST IST GEMESSEN, DIE WIRE-FORM IST KEINE DOKU-LESUNG MEHR
+### VERMERK 4 (Commit abcff79) — DIE NUTZLAST IST GEMESSEN, DIE WIRE-FORM IST KEINE DOKU-LESUNG MEHR
 
 **WAS GESCHEHEN IST:** MESSUNG B1 gegen `events:ingest` — SIEBEN Aufrufe, GEMESSEN
 2026-08-28 (OWNER, live). Anders als Messung A hat sie **die Nutzlast gesendet, die

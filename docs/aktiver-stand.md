@@ -706,6 +706,37 @@ Nicht-Auslösung GEMESSEN am Zuschnitt dieser Scheibe; der Kandidat eine
 ARCHITEKTEN-EINORDNUNG (2026-08-25), keine Messung und keine Ableitung; die
 Erfüllung der Festlegung GEMESSEN am Code (2026-08-24, Vermerk 1).
 
+VORBEHALT 2026-08-28 — DER KANDIDAT IST EINE OWNER-ENTSCHEIDUNG GEWORDEN. Der Text
+darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Vorbehalt tritt DANEBEN und sagt,
+was an ihm heute noch trägt.
+· ÜBERHOLT IST GENAU EINE ANGABE: die Einleitung "ALS KANDIDAT, AUSDRÜCKLICH NICHT ALS
+  ENTSCHEIDUNG (ARCHITEKT, 2026-08-25)". Sie IST seit dem 2026-08-28 eine Entscheidung.
+· DIE ENTSCHEIDUNG, IN EINEM SATZ: Die Datenklassen-Achse bekommt eine DRITTE Klasse —
+  FREMDVERGEBENE, FÜR UNS UNDURCHSICHTIGE KENNUNG (gclid, gbraid, wbraid und künftige
+  Klick-Kennungen anderer Anbieter), mit der Auflage TRANSIT-ONLY: niemals in die
+  Datenbank, niemals in ein Log, kein Hashen. IHR ORT IST docs/offene-punkte.md, Eintrag
+  "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE", Block vom 2026-08-28. Dort steht sie
+  vollständig mit ihren zwei Begründungen, ihrer Reichweite und dem gemessenen Stand;
+  hier NICHT wiederholt, zweimal geschrieben liefe es auseinander.
+· WÖRTLICH RICHTIG BLEIBT DIE GANZE TECHNISCHE EINORDNUNG DARÜBER — und das ist mehr als
+  eine Höflichkeit: Der Absatz hat die dritte Klasse mit exakt den Gründen vorgeschlagen,
+  die die Entscheidung dann getragen haben (der Besucher tippt sie nicht, wir bilden sie
+  nicht, wir können sie nicht auflösen, sie geht an ihren Urheber zurück, und sie ist
+  NICHT HASHBAR). Er ist die Herleitung der Entscheidung und wird deshalb nicht gekürzt.
+· DIE GRENZE GILT UNVERÄNDERT: "Das ist eine TECHNISCHE Einordnung, KEINE RECHTLICHE."
+  Auch die Owner-Entscheidung sagt NICHT, ob eine Klick-Kennung personenbezogen ist; der
+  Satz "NICHT-SPEICHERN IST NICHT NICHT-VERARBEITEN" gilt für sie weiter mit, und die
+  vierte Frage — die Rechtsgrundlage — liegt unverändert beim Kunden.
+· WAS DAMIT NICHT ERLEDIGT IST, UND DIESER PUNKT IST DER GRUND FÜR DIESEN VORBEHALT:
+  DIE DATENKLASSEN-GRENZE BLEIBT VORBEDINGUNG DER TRANSPORT-SCHEIBE. Geklärt ist sie für
+  die KLICK-KENNUNG. Für ANDERE Merkmale ist sie es nicht — der offene Punkt schliesst
+  sich nicht. Wer aus diesem Vorbehalt "die Vorbedingung ist weg" liest, liest ihn
+  falsch; die Überschrift des Eintrags oben bleibt wörtlich stehen und meint weiterhin,
+  was sie sagt.
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-28 — keine Messung, keine Ableitung. Der
+gemessene Stand, auf den sie sich stützt, steht an ihrem Ort in docs/offene-punkte.md
+(GEMESSEN am Repo, CC, 2026-08-28).
+
 ## Vorrat (gemeldet, nicht gebaut)
 
 FÜNF Befunde. Die ersten drei GEMELDET am 2026-08-24, die zwei letzten am

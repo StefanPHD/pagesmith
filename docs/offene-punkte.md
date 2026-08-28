@@ -156,6 +156,81 @@ aufeinander; sie liegen alle hier und finden einander.
   WAS DIE AUFLAGE NICHT TUT: Sie beantwortet NICHT, ob eine IP personenbezogen ist — sie
   IST es. Sie regelt, wie mit ihr umgegangen wird. Der Satz „NICHT-SPEICHERN IST NICHT
   NICHT-VERARBEITEN" oben gilt für sie unverändert mit.
+  DIE ACHSE BEKOMMT AM 2026-08-28 EINE DRITTE KLASSE — OWNER-ENTSCHEIDUNG. Der Text
+  darüber bleibt ZEICHEN FÜR ZEICHEN stehen und wird von diesem Block NICHT ersetzt; die
+  Präzisierung vom 2026-08-19 nannte ZWEI Klassen, und beide gelten unverändert weiter.
+  Was hinzutritt, ist eine DRITTE — sie steht NEBEN den beiden und ist AUSDRÜCKLICH KEINE
+  AUSNAHME von einer der beiden.
+  · FREMDVERGEBENE, FÜR UNS UNDURCHSICHTIGE KENNUNG. GEGENSTAND: gclid, gbraid, wbraid —
+    und künftige Klick-Kennungen anderer Anbieter (Meta, TikTok und weitere).
+    DIE AUFLAGE: TRANSIT-ONLY — niemals in die Datenbank, niemals in ein Log, KEIN Hashen,
+    weil strukturell unmöglich.
+  DIE REICHWEITE, UND SIE IST DER GRUND, WARUM DER GEGENSTAND NICHT BEI GOOGLE ENDET: Die
+  Klasse gilt ANBIETERÜBERGREIFEND. Sie ist an der Google-Klick-Kennung entschieden worden,
+  aber ihr Kriterium ist die HERKUNFT des Merkmals, nicht der Empfänger. Wer sie als
+  Google-Sonderfall liest, baut beim nächsten Anbieter dieselbe Entscheidung ein zweites
+  Mal — und möglicherweise anders.
+  WARUM EINE DRITTE KLASSE UND KEINE ZUORDNUNG ZU EINER BESTEHENDEN — ohne diesen Absatz
+  wird sie beim nächsten Aufräumen als überflüssige Verfeinerung eingezogen: Der Besucher
+  tippt sie nicht ein, also ist sie KEINE Nutzer-Eingabe. Und sie ist keine Angabe des
+  Transports, also KEIN Infrastruktur-Datum. Der Anbieter vergibt sie, wir können sie nicht
+  auflösen, und sie geht an ihren URHEBER zurück.
+  WARUM „KEIN HASHEN" KEINE ERLEICHTERUNG IST, SONDERN EINE FESTSTELLUNG: Die Auflage für
+  Nutzer-Eingaben verlangt SHA-256 im Browser. Auf eine Klick-Kennung angewandt wäre sie
+  ein RIEGEL — der Anbieter erwartet sie im KLARTEXT, ein Hash macht sie wertlos. Die
+  Hash-Auflage zielt auf Merkmale, bei denen Hashen MÖGLICH UND vom Anbieter VERLANGT ist;
+  hier ist beides nicht der Fall. Wer daraus eine Lockerung liest, hat die Richtung
+  vertauscht: Die Auflage TRANSIT-ONLY ist strenger als die Hash-Auflage, nicht milder —
+  sie erlaubt keinerlei Ablage, auch keine gehashte.
+  WAS HEUTE SCHON SO LÄUFT UND WAS NICHT — GEMESSEN AM REPO (CC, 2026-08-28), und die
+  Trennung gehört hin, weil ein pauschales „gelebter Stand" hier falsch wäre:
+  (a) KEIN ADAPTER NIMMT HEUTE EINE KLICK-KENNUNG ENTGEGEN ODER REICHT EINE DURCH.
+      ACHSE: die vier Dateien meta-forward.ts, pinterest-forward.ts, tiktok-forward.ts und
+      linkedin-forward.ts samt ihren Nutzlast-Bauten, Begriffe gclid · gbraid · wbraid ·
+      fbclid · _fbc · ttclid · li_fat_id. NULL Treffer in allen vieren.
+      DIE DREI GOOGLE-KENNUNGEN EXISTIEREN IM REPO IN GENAU VIER DATEIEN —
+      google-click-ids.ts, google-payload.ts und ihre zwei Testdateien —, und die beiden
+      Produktivdateien haben KEINEN Aufrufer: 'google' steht nicht in TRACKING_TARGETS
+      (src/lib/settings.ts). DIE AUFLAGE IST FÜR DIE KLICK-KENNUNG DAMIT NOCH KEIN
+      GELEBTER STAND, SONDERN EINE VORGABE AN DIE TRANSPORT-SCHEIBE. Das ist der
+      Unterschied zum Beleg (a) darüber, wo die Log-Einschränkung gelebter Stand IST.
+  (b) EIN GRENZFALL IST GEMESSEN UND WIRD GEMELDET, NICHT ZUGEORDNET: forwardToMeta
+      (src/lib/capi/meta-forward.ts) liest `_fbp` aus dem Beacon-Rumpf und reicht es als
+      `userData.fbp` an Meta durch. Das ist eine FREMDVERGEBENE, für uns UNDURCHSICHTIGE
+      Kennung — aber eine BROWSER-Kennung und KEINE Klick-Kennung. OB SIE UNTER DIESE
+      KLASSE FÄLLT, IST HIER NICHT ENTSCHIEDEN. Festgehalten ist nur, dass sie sich schon
+      heute so verhält, wie die Klasse es verlangt: durchgereicht, nicht abgelegt.
+      pinterest-forward.ts und linkedin-forward.ts nennen `_fbp` ausschliesslich in
+      Kommentaren, die begründen, warum sie es NICHT lesen.
+  (c) ES WIRD NICHTS PERSISTIERT UND NICHTS GELOGGT. persistEvent
+      (src/lib/analytics/persist.ts) schreibt GENAU FÜNF Werte — project_id, event_type,
+      event_id, source, variant — und keiner davon trägt ein Identitäts-Merkmal; der
+      Kommentar an Ort und Stelle sagt es selbst („KEIN IP/UA (lean/PII-frei)").
+      ACHSE DER LOG-PRÜFUNG, und ihre Reichweite gehört dazu: ALLE 48 console-Aufrufe im
+      Produktivcode unter src/ (Testdateien ausgenommen, binärsicher gelesen — mappings.ts
+      trägt ein NUL-Byte und fällt aus einer gewöhnlichen Suche still heraus), jeder
+      einzeln auf sein Argument geprüft. KEINER führt eine Klick-Kennung. Zwei tragen ein
+      Wort, das auf der Suchachse anschlägt, und beide sind geprüft und entlastet: die
+      OAuth-Rückkehr loggt bei `bad_payload` einen FELDNAMEN und keinen Wert, und der
+      Pinterest-Adapter loggt den geschwärzten Anbieter-Rumpf über describeErrorBody.
+      POSITIVKONTROLLE DERSELBEN SUCHE: `gclid` trifft 28-mal in src/, `_fbp` 16-mal,
+      `console.error` 41-mal — die Suche greift, der Nicht-Treffer ist einer.
+  WAS DIESE ENTSCHEIDUNG NICHT IST: Sie beantwortet NICHT, ob eine Klick-Kennung
+  personenbezogen ist. Der Satz „NICHT-SPEICHERN IST NICHT NICHT-VERARBEITEN" oben gilt
+  für sie UNVERÄNDERT mit. Die VIERTE FRAGE — die RECHTSGRUNDLAGE — liegt weiterhin beim
+  KUNDEN als Verantwortlichem und ist von dieser Entscheidung UNBERÜHRT.
+  WAS OFFEN BLEIBT, UND DIESER PUNKT SCHLIESST SICH NICHT: Für ANDERE Nutzer-Eingaben ist
+  nichts entschieden — die Grenze der Hash-Auflage gilt unverändert, und der Fall eines
+  Merkmals, das ein Ziel im Klartext erwartet, bleibt eine ANDERE, hier nicht getroffene
+  Entscheidung.
+  DIE BEDINGUNG DER NEUBEWERTUNG: wenn ein Ziel oder der Markt ein PERSISTIERUNGS-Modell
+  für Klick-Kennungen verlangt. Dann ist DIESE Klasse der Gegenstand einer NEUEN
+  Owner-Entscheidung; der Eintrag darüber geht dadurch nicht wieder auf.
+  PROVENIENZ, JE TEIL: die Klasse, ihr Gegenstand, ihre Auflage und die Reichweite sind
+  OWNER-ENTSCHEIDUNG (2026-08-28) — KEINE Messung, KEINE Ableitung, eine FESTLEGUNG. Die
+  beiden Begründungen sind Teil derselben Entscheidung. Die Punkte (a), (b) und (c) sind
+  GEMESSEN am Repo (CC, 2026-08-28) mit den je genannten Achsen. Dass die Auflage für die
+  Klick-Kennung noch kein gelebter Stand ist, ist eine ABLEITUNG aus (a).
 - COOKIE-DOKU-SCHNIPSEL FÜR DIE KUNDEN-DATENSCHUTZERKLÄRUNG FEHLT NOCH
   (Trigger: vor dem öffentlichen Launch; Phase 9): Für das A/B-Test-Cookie
   (__Host-ps_v) stellt Pagesmith dem Kunden heute KEINEN fertigen

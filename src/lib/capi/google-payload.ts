@@ -21,10 +21,26 @@
 //
 // ---------------------------------------------------------------------------
 // SAEMTLICHE FELDNAMEN, VERSCHACHTELUNGEN UND FORMATANGABEN IN DIESER DATEI SIND
-// GELESEN UND NIE GEMESSEN. Es ist KEIN Aufruf gegen eine Google-Schnittstelle
-// gefahren worden. Quelle jeder einzelnen Angabe: docs/ziel-befunde.md, Abschnitt
-// "Google (Google Ads Conversions · GA4)", Teile (l)/D1 bis D6, (m)/E1 bis E4 und
-// (w)/D1 bis F3 — je Feld unten benannt.
+// GELESEN UND NIE GEMESSEN. Quelle jeder einzelnen Angabe: docs/ziel-befunde.md,
+// Abschnitt "Google (Google Ads Conversions · GA4)", Teile (l)/D1 bis D6, (m)/E1 bis
+// E4 und (w)/D1 bis F3 — je Feld unten benannt.
+//
+// HIER STAND ALS BEGRUENDUNG DES SATZES DARUEBER: "Es ist KEIN Aufruf gegen eine
+// Google-Schnittstelle gefahren worden." DIESE BEGRUENDUNG IST SEIT DEM 2026-08-28
+// FALSCH — an jenem Tag ist ein Aufruf gegen events:ingest gefahren worden (GEMESSEN
+// 2026-08-28, live gegen den Endpunkt; Fundstelle docs/ziel-befunde.md,
+// Google-Abschnitt, Teile (bj) bis (bm)).
+//
+// DER SATZ DARUEBER BLEIBT UNVERAENDERT WAHR, UND DAS IST DER GANZE PUNKT DIESES
+// ABSATZES: Jener Aufruf setzte ein ERFUNDENES Sondierungsfeld und KEIN Feld dieser
+// Datei. Er hat KEINEN Feldnamen bestaetigt und KEINEN widerlegt. Belegt ist die
+// Annahme der KOPFZEILE, nicht die eines gueltigen Rumpfes; die vier Grenzen der
+// Messung stehen vollstaendig in Teil (bm) derselben Fundstelle.
+// WER DARAUS "die Wire-Form ist jetzt gemessen" LIEST, LIEST DAS GEGENTEIL DESSEN, WAS
+// GEMESSEN WURDE. Was daraus folgt, steht unveraendert im naechsten Absatz und wird
+// hier NICHT wiederholt: Wer diese Namen zitiert, zitiert eine Doku-Lesung, und der
+// gepinnte Schluesselnamen-Test ist der einzige Waechter, der eine spaetere Korrektur
+// sichtbar macht.
 //
 // WAS DAS HEISST UND WARUM TROTZDEM GEBAUT WIRD, steht im Zuschnitt unter
 // "### Die Grenze dieses Zuschnitts — warum trotz ungemessener Wire-Form gebaut wird".

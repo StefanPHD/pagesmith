@@ -301,6 +301,44 @@ liegen beide hier und finden einander.
       DIE VOLLE HERLEITUNG STEHT IN docs/aktiver-stand-11.8.md — die Datei liegt nach
       dem Phasenende weiterhin unter docs/ und ist NICHT nach docs/claude-history/
       verschoben worden (der Grund steht in ihrem Kopf).
+
+      VORBEHALT 2026-08-28 AN DEM BLOCK DARÜBER — DER BLOCKER IST GEFALLEN, UND DIESE
+      STELLE IST DIE FOLGENREICHSTE VON ALLEN. Der Wortlaut oben bleibt unverändert
+      stehen; hier steht, was an ihm heute noch trägt und was nicht.
+      WARUM DIESER VORBEHALT ZUERST GELESEN WERDEN MUSS und nicht als Fussnote taugt: Der
+      Block darüber steht im Eintrag 11.2 — also in dem Eintrag, den eine Zuschnitt-Runde
+      dieser Phase als PFLICHTLEKTÜRE öffnet (docs/aktiver-stand.md, Abschnitt "Was den
+      Zuschnitt bindet", führt ihn als bindend). Wer ihn ohne diesen Vorbehalt liest,
+      beginnt mit einer Arbeit, die getan ist.
+      · ÜBERHOLT IST, FÜNF ANGABEN, JE EINZELN:
+        (1) "DER AUFRUF GEGEN events:ingest IST WEITERHIN EIN OFFENER BLOCKER".
+        (2) "er ist mit Phase 11.8 KLEINER GEWORDEN UND NICHT ERLEDIGT".
+        (3) "Der TRÄGER des Zugangsdatums für diesen Endpunkt ist NICHT GEMESSEN".
+        (4) "Der Zugang ist da, der Weg zum Endpunkt nicht."
+        (5) "Wer 11.2 zuschneidet, plant die Messung dieses Trägers als ERSTEN Schritt
+            ein." DAS IST EINE ARBEITSANWEISUNG FÜR EINE ERLEDIGTE ARBEIT und die
+            teuerste der fünf: Die vier anderen sind Beschreibungen eines Zustands, diese
+            schickt die nächste Runde los.
+      · DER STAND: Der Träger ist die Kopfzeile Authorization mit dem Wert "Bearer " +
+        Token. GEMESSEN 2026-08-28, live gegen den Endpunkt. Fundstelle:
+        docs/ziel-befunde.md, Google-Abschnitt, Teile (bj) bis (bm).
+      · WAHR BLEIBT, UND ZWAR VOLLSTÄNDIG: was Scheibe 11.8e getan hat und dass sie den
+        Aufruf ausdrücklich AUSGESCHLOSSEN hat ("sie beschafft ein Zugangsdatum,
+        chiffriert es und legt es ab — mehr nicht") · der Verweis auf
+        docs/aktiver-stand-11.8.md samt der Begründung, warum jene Datei ihren Ort behält.
+      · WAS AN DIE STELLE DER ARBEITSANWEISUNG TRITT — ALS ZEIGER, NICHT ALS KOPIE: Der
+        erste Schritt ist getan. Die verbleibenden Vorbedingungen der TRANSPORT-Scheibe
+        stehen in docs/aktiver-stand.md, VERMERK 3 — die Datenklassen-Grenze
+        (Owner-Entscheidung, nicht getroffen), die Sieben-Tage-Frist im Publishing-Status
+        "Testing" und der nachgeschuldete Live-Nachweis der Scheibe 11.2a. Sie werden hier
+        NICHT wiederholt; zweimal geschrieben liefen sie auseinander.
+      · DIE GRENZE, DIE AN JEDEM DIESER VORBEHALTE STEHT: GEMESSEN IST DIE ANNAHME DER
+        KOPFZEILE, NICHT DIE ANNAHME EINES GÜLTIGEN RUMPFES. Feldnamen, Schreibweise,
+        eventSource und x-goog-user-project sind UNBERÜHRT; die vier Grenzen der Messung
+        stehen vollständig in Teil (bm) derselben Fundstelle. Wer "Blocker gefallen" als
+        "sendebereit" liest, liest das Gegenteil dessen, was gemessen wurde.
+      PROVENIENZ: GEMESSEN 2026-08-28 (OWNER), live gegen den Endpunkt. Die Folge für den
+      Zuschnitt ist eine ABLEITUNG aus dieser Messung, keine zweite Messung.
 - [x] Phase 11.8 — Autorisierungsschicht: die Ablage und die Erneuerung MEHRWERTIGER
       Zugangsdaten.
 
@@ -360,6 +398,30 @@ liegen beide hier und finden einander.
         nullbaren project_id EINGELÖST, aber die NUTZER-Achse ist VERTAGT, nicht
         entschieden.
 
+      VORBEHALT 2026-08-28 AN DER ERSTEN DER DREI MARKEN DARÜBER. Der Wortlaut oben bleibt
+      unverändert stehen, UND DIE ZAHL "DREI" WIRD NICHT ANGETASTET — sie zählt, welche
+      Abschnitte damals geprüft wurden, und das bleibt richtig.
+      WAS DIESER VORBEHALT BETRIFFT, IST NICHT DIE MARKIERUNG, SONDERN IHRE BEGRÜNDUNG —
+      und das ist der Grund, warum er hier und nicht am Block selbst steht: Die erste Marke
+      begründet, warum jener Abschnitt NICHT als abgelaufen markiert wurde, mit "der ERSTE
+      (der Träger des Zugangsdatums bei Google) ist NICHT erledigt, sondern KLEINER
+      GEWORDEN". DIESE BEGRÜNDUNG IST SEIT DEM 2026-08-28 FALSCH.
+      · ÜBERHOLT IST: "ist NICHT erledigt, sondern KLEINER GEWORDEN". Der Träger ist
+        GEMESSEN — Kopfzeile Authorization, Wert "Bearer " + Token (GEMESSEN 2026-08-28,
+        live gegen den Endpunkt; Fundstelle docs/ziel-befunde.md, Google-Abschnitt, Teile
+        (bj) bis (bm)).
+      · WAHR BLEIBT: dass der Abschnitt nicht als abgelaufen markiert wurde und WEITERHIN
+        nicht markiert werden darf — jetzt aber aus einem ANDEREN Grund. Er trägt eine
+        ZWEITE Marke, den LinkedIn-Blocker, und die ist unverändert offen; eine
+        Abgelaufen-Markierung risse sie mit. Der Abschnitt selbst trägt seit dem
+        2026-08-28 einen eigenen Vorbehalt.
+      · WAHR BLEIBEN AUSSERDEM: die zweite und die dritte Marke oben (Schema-Risiko,
+        Ablage-Auflage). Messung A berührt keine von beiden.
+      · DIE GRENZE: GEMESSEN IST DIE ANNAHME DER KOPFZEILE, NICHT DIE ANNAHME EINES
+        GÜLTIGEN RUMPFES — die vier Grenzen stehen in Teil (bm) derselben Fundstelle.
+      PROVENIENZ: GEMESSEN 2026-08-28 (OWNER). Die Folge für die Markierung ist eine
+      ABLEITUNG.
+
       WAS ÜBER DIE PHASE HINAUS WEITERBINDET — die fünf Zeiger-Ziele oben, in einem Satz
       je: die DREI ENTSCHEIDUNGEN zum Geheimnis-Speicher (Verfahren, Tabelle,
       Eigentums-Achse) · die VERWAHRUNG des Chiffrier-Schlüssels und ihr Preis · der
@@ -381,6 +443,23 @@ liegen beide hier und finden einander.
         für jede Live-Test-Anleitung mit Google.
       · DER AUFRUF GEGEN events:ingest UND SEIN UNGEMESSENER TRÄGER → Eintrag 11.2, als
         offener Blocker.
+
+      VORBEHALT 2026-08-28 AN DER VIERTEN DER VIER ANGABEN DARÜBER. Der Wortlaut oben
+      bleibt unverändert stehen, UND DIE ZAHL "VIER" WIRD NICHT ANGETASTET — die Verortung
+      hat vier Angaben betroffen, und das bleibt richtig. DIE VERORTUNG SELBST GILT
+      UNVERÄNDERT WEITER: Der Ort der vierten Angabe ist und bleibt Eintrag 11.2.
+      · ÜBERHOLT IST GENAU EIN WORT DER VIERTEN ANGABE: "SEIN UNGEMESSENER TRÄGER". Er ist
+        gemessen — Kopfzeile Authorization, Wert "Bearer " + Token (GEMESSEN 2026-08-28,
+        live gegen den Endpunkt; Fundstelle docs/ziel-befunde.md, Google-Abschnitt, Teile
+        (bj) bis (bm)). Ebenso überholt ist der Zusatz "als offener Blocker": Am Zielort
+        steht seit dem 2026-08-28 ein eigener Vorbehalt, der ihn auflöst.
+      · WAHR BLEIBT: die Verortung als solche · die Angabe, dass der Aufruf gegen
+        events:ingest 11.2 betrifft und nicht 11.8 · sämtliche drei übrigen Angaben, von
+        denen KEINE von Messung A berührt wird — insbesondere die SIEBEN-TAGE-FRIST, die
+        unverändert als Pflicht-Hinweis für jede Live-Test-Anleitung mit Google gilt.
+      · DIE GRENZE: GEMESSEN IST DIE ANNAHME DER KOPFZEILE, NICHT DIE ANNAHME EINES
+        GÜLTIGEN RUMPFES — die vier Grenzen stehen in Teil (bm) derselben Fundstelle.
+      PROVENIENZ: GEMESSEN 2026-08-28 (OWNER).
 
       DIE BEDINGUNG, UNTER DER DIESER RUMPF DOCH KOLLABIERT, und ohne sie stünde die
       Entscheidung als Dauerzustand da: Sobald KEIN Dokument und KEIN Produktivcode mehr
@@ -437,6 +516,33 @@ liegen beide hier und finden einander.
         Zugangsdaten aus dem zweiten Beschaffungsweg — das eigene Werkzeug liest sie nicht
         aus. Das ist keine fehlende Arbeit, sondern eine fehlende Handhabe. Fundstelle:
         der Offene Punkt oben, Richtigstellung vom 2026-08-20.
+
+      VORBEHALT 2026-08-28 — ES IST NUR NOCH EINER. Der Wortlaut oben bleibt Zeichen für
+      Zeichen stehen, einschliesslich der Kopfzeile mit ihrer Zahl; dieser Vorbehalt tritt
+      DANEBEN und trennt, was noch trägt.
+      DIESER SATZ IST ZWEIMAL ÜBERHOLT WORDEN, GESTAFFELT UND AUS VERSCHIEDENEN GRÜNDEN —
+      und ohne diesen Hinweis liest die nächste Runde zwei Vorbehalte an derselben Stelle
+      als Widerspruch: Am 2026-08-25 traf es die Angabe, der Träger stehe AUSSERHALB des
+      Doku-Baums (er stand innerhalb, s. den Vorbehalt vom 2026-08-25 weiter unten). Am
+      2026-08-28 trifft es die Frage selbst — er ist GEMESSEN. Der ältere Vorbehalt bleibt
+      gültig und wird von diesem NICHT abgelöst; er beantwortete eine andere Frage.
+      · ÜBERHOLT IST: die Kopfzeile "ZWEI BLOCKER STEHEN VOR EINEM ZUSCHNITT" — es ist nur
+        noch EINER · und in der ersten Marke der Satz "Er muss ausserhalb dieses
+        Doku-Baums gesucht oder gemessen werden": ER IST GEMESSEN. Kopfzeile
+        Authorization, Wert "Bearer " + Token (GEMESSEN 2026-08-28, live gegen den
+        Endpunkt; Fundstelle docs/ziel-befunde.md, Google-Abschnitt, Teile (bj) bis (bm)).
+      · WAHR BLEIBT: "steht auf 33 gelesenen Seiten NICHT" — die Seite, die den Träger
+        trägt, war nicht unter den 33, und die ZAHL 33 wird nicht angetastet · die
+        Fundstellen-Angabe auf Teil (u)/Frage 2 und Teil (z), die weiterhin beschreibt,
+        was am Dokument steht.
+      · DIE ZWEITE MARKE — LINKEDIN — IST UNBERÜHRT UND UNVERÄNDERT OFFEN. Sie steht hier
+        eigens, weil eine Kopfzeile, die von ZWEI auf EINEN geht, sie mitzureissen droht:
+        Messung A ging gegen Google. Die strukturell unmögliche Ablauf-Überwachung bei
+        LinkedIn ist von ihr in keiner Weise berührt. SIE IST DER VERBLEIBENDE BLOCKER.
+      · DIE GRENZE: GEMESSEN IST DIE ANNAHME DER KOPFZEILE, NICHT DIE ANNAHME EINES
+        GÜLTIGEN RUMPFES — die vier Grenzen stehen in Teil (bm) derselben Fundstelle.
+      PROVENIENZ: GEMESSEN 2026-08-28 (OWNER), live gegen den Endpunkt.
+
       ABGELAUFEN AM 2026-08-27 — der folgende Satz bleibt WÖRTLICH stehen und ist ein
       ZEITDOKUMENT: Die Schicht IST gebaut (11.8a bis 11.8f), und das Zugangsmodell steht
       seit dem 2026-08-25. OFFEN GEBLIEBEN IST ALLEIN DER ZWEIG — erzeugen die Kunden ihr
@@ -516,6 +622,29 @@ liegen beide hier und finden einander.
         Beispiel gilt der Schwester-Methode) · ob x-goog-user-project Pflicht ist · 2.000
         gegen 10.000 · das Zugangsmodell.
 
+      VORBEHALT 2026-08-28 AN DER AUFZÄHLUNG DARÜBER. Der Wortlaut bleibt unverändert
+      stehen; hier steht, welcher ihrer vier Punkte heute noch offen ist.
+      · ÜBERHOLT IST GENAU EIN PUNKT: "der Träger des Zugangsdatums für events:ingest" ist
+        KEIN offener Posten mehr. GEMESSEN 2026-08-28, live gegen den Endpunkt: Kopfzeile
+        Authorization, Wert "Bearer " + Token. Fundstelle: docs/ziel-befunde.md,
+        Google-Abschnitt, Teile (bj) bis (bm).
+      · WAHR BLEIBT — UND ZWAR AUSDRÜCKLICH: "ob x-goog-user-project Pflicht ist" ·
+        "2.000 gegen 10.000". BEIDE SIND UNVERÄNDERT OFFEN, und der erste ist es
+        BEGRÜNDET: Der Aufruf scheiterte auf der JSON-Parse-Ebene, und in welcher
+        Reihenfolge der Anbieter Authentifizierung, Projekt-Zuordnung, Kontingent und
+        Rumpf prüft, ist UNBEKANNT — eine Projekt-Prüfung kann dahinterliegen und wurde
+        dann nie erreicht. AUSDRÜCKLICH KEIN SCHLUSS, DIE KOPFZEILE SEI ENTBEHRLICH.
+      · WAHR BLEIBT AUCH DIE KLAMMER "(das gefundene Beispiel gilt der Schwester-Methode)"
+        — als Aussage über die DOKU. Sie ist am 2026-08-28 über sieben weitere Seiten
+        bestätigt worden: für events:ingest führt der Anbieter weiterhin kein
+        Kopfzeilen-Beispiel. Beantwortet hat die Frage eine MESSUNG, keine Lesung.
+      · NICHT VON DIESEM VORBEHALT BEHANDELT: "das Zugangsmodell". Es ist bereits am
+        2026-08-25 abgelöst worden — von dem Block weiter unten, der es ausdrücklich für
+        ERLEDIGT erklärt. Hier wird es NICHT ein zweites Mal behandelt.
+      · DIE GRENZE: GEMESSEN IST DIE ANNAHME DER KOPFZEILE, NICHT DIE ANNAHME EINES
+        GÜLTIGEN RUMPFES — die vier Grenzen stehen in Teil (bm) derselben Fundstelle.
+      PROVENIENZ: GEMESSEN 2026-08-28 (OWNER), live gegen den Endpunkt.
+
       **VORBEHALT 2026-08-25 AN DEN ERSTEN DER "ZWEI BLOCKER" OBEN — DER TRÄGER DES
       ZUGANGSDATUMS.** Der Wortlaut jenes Punktes bleibt unverändert stehen; hier steht, was
       an ihm heute noch trägt und was nicht.
@@ -533,6 +662,33 @@ liegen beide hier und finden einander.
       · **DIE GRENZE, DIE BLEIBT:** Das Beispiel gilt audienceMembers:ingest. Für
         events:ingest liegt weiterhin KEIN Kopfzeilen-Beispiel vor, und **gemessen ist
         nichts.** Der Blocker ist damit KLEINER geworden und NICHT erledigt.
+
+      VORBEHALT 2026-08-28 AN DER VIERTEN MARKE DES VORBEHALTS DARÜBER — ES SIND GENAU
+      ZWEI HALBSÄTZE. Der Wortlaut des ganzen Blocks bleibt unverändert stehen; die ersten
+      drei Marken sind von diesem Vorbehalt NICHT berührt.
+      · ÜBERHOLT SIND ZWEI HALBSÄTZE DER VIERTEN MARKE, und nur sie: "und gemessen ist
+        nichts." · "Der Blocker ist damit KLEINER geworden und NICHT erledigt."
+        GEMESSEN 2026-08-28, live gegen den Endpunkt: Der Träger ist die Kopfzeile
+        Authorization mit dem Wert "Bearer " + Token. Fundstelle: docs/ziel-befunde.md,
+        Google-Abschnitt, Teile (bj) bis (bm). DER BLOCKER IST GEFALLEN, nicht kleiner
+        geworden.
+      · WAHR BLEIBT — UND VERBREITERT — DER ERSTE SATZ DERSELBEN MARKE: "Das Beispiel gilt
+        audienceMembers:ingest. Für events:ingest liegt weiterhin KEIN Kopfzeilen-Beispiel
+        vor." Ein zugespitzter Doku-Lauf über SIEBEN Seiten hat das am 2026-08-28
+        bestätigt und die Reichweite erweitert (GELESEN 2026-08-28, Teil (bh)); dazu tritt
+        der Befund, dass die Referenzseiten BEIDER :ingest-Methoden auf der
+        Kopfzeilen-Achse identisch leer sind (Teil (bi)) — die Abwesenheit ist keine
+        Eigenschaft dieser Methode.
+      · WAHR BLEIBEN DIE ERSTEN DREI MARKEN VOLLSTÄNDIG. Die dritte gehört eigens
+        geschützt: der Befund, dass die tragende Seite nicht übersehen, sondern
+        AUSGESCHLOSSEN worden war. Er ist Gegenstand des Hebungs-Kandidaten 2 in
+        docs/aktiver-stand.md und wird von diesem Vorbehalt in keiner Weise angetastet —
+        im Gegenteil, der Lauf vom 2026-08-28 hat jenen Ausschluss-Ort eigens
+        abgearbeitet.
+      · DIE GRENZE: GEMESSEN IST DIE ANNAHME DER KOPFZEILE, NICHT DIE ANNAHME EINES
+        GÜLTIGEN RUMPFES — die vier Grenzen stehen in Teil (bm) derselben Fundstelle.
+      PROVENIENZ: GEMESSEN 2026-08-28 (OWNER), live gegen den Endpunkt; der Doku-Lauf
+      GELESEN 2026-08-28 (CC), sieben Seiten mit ausgewiesenem Umfang.
 
       **ENTSCHIEDEN AM 2026-08-25 (OWNER) — DAS ZUGANGSMODELL, UND WAS DAS FÜR DIE AUFLAGE
       DIESES EINTRAGS BEDEUTET.** Der Text darüber bleibt Zeichen für Zeichen stehen; dieser
@@ -575,6 +731,27 @@ liegen beide hier und finden einander.
       Nachtrags "DIE ENTSCHEIDUNG ZWISCHEN ADVERTISER UND DATA PARTNER WIRD HIER NICHT
       GETROFFEN" bleibt als Zeitdokument stehen und ist weiterhin wahr: getroffen ist sie
       nicht DORT, sondern vom Owner.
+
+      VORBEHALT 2026-08-28 — VON DEN DREI ÜBRIGEN SIND ES ZWEI. Der Wortlaut oben bleibt
+      unverändert stehen, EINSCHLIESSLICH DER ZAHLEN: "vier Dinge" bleibt richtig als
+      Aussage über jenen Nachtrag, und "Die drei übrigen" beschreibt richtig, was am
+      2026-08-25 übrig war.
+      · ÜBERHOLT IST: "Die drei übrigen" als Aussage über HEUTE — es sind zwei · und darin
+        der Posten "der Träger des Zugangsdatums für events:ingest". Er ist GEMESSEN
+        2026-08-28, live gegen den Endpunkt: Kopfzeile Authorization, Wert "Bearer " +
+        Token. Fundstelle: docs/ziel-befunde.md, Google-Abschnitt, Teile (bj) bis (bm).
+      · WAHR BLEIBT: der Ablöse-Mechanismus dieses Blocks samt seiner Begründung ("statt
+        zwei Stellen widersprechen zu lassen") · "das Zugangsmodell … IST ERLEDIGT" · die
+        zwei verbleibenden Posten "ob x-goog-user-project Pflicht ist" und "2.000 gegen
+        10.000", beide unverändert offen · der Zeitdokument-Satz am Ende über die
+        Entscheidung zwischen Advertiser und Data Partner.
+      · WAS DIESER BLOCK FÜR SICH SELBST FESTHÄLT, GILT JETZT EIN ZWEITES MAL: Er löst
+        einen Punkt jenes Nachtrags ab, damit nicht zwei Stellen widersprechen. Dieser
+        Vorbehalt tut dasselbe für einen zweiten Punkt — und aus demselben Grund.
+      · DIE GRENZE: GEMESSEN IST DIE ANNAHME DER KOPFZEILE, NICHT DIE ANNAHME EINES
+        GÜLTIGEN RUMPFES — die vier Grenzen stehen in Teil (bm) derselben Fundstelle.
+      PROVENIENZ: GEMESSEN 2026-08-28 (OWNER), live gegen den Endpunkt.
+
       **DER VERIFIZIERUNGS-BEFUND, UND ER VERSCHÄRFT DEN ZWEITEN BLOCKER, STATT IHN ZU
       ENTSCHÄRFEN:** Für den heutigen Eigenbetrieb ist keine Verifizierung nötig — aber die
       Freistellung ruht auf einer BENANNTEN Ausnahme, zieht eine unbezifferte

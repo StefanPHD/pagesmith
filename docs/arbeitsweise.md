@@ -835,13 +835,6 @@ Auslöser mitten in der Sitzung — Wörter wie „gepusht" oder „morgen" fall
 dutzendfach, und ein ungefragt vorgelegtes Übergabe-Dokument unterbricht genau
 dort, wo gerade gedacht wird.
 
-**Eine Erinnerung ist erlaubt, mehr nicht.** Zeigt sich ein klares
-Schluss-Signal, darf die Instanz einmal pro Sitzung mit einem Satz daran
-erinnern, dass das Delta aussteht. Kein Entwurf, kein Nachfassen. Der reale
-Ausfall ist nicht „vergessen und morgen nachgeholt", sondern Kontextgrenze,
-Absturz oder geschlossener Browser — dann ist die Sitzung weg und das Delta mit
-ihr.
-
 **Die Abschnitte beginnen bei 5**, weil 1–4 in diesem Dokument stehen.
 
 ### Die Gliederung des Deltas

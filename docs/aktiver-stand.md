@@ -1335,6 +1335,34 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
    **AUSDRÜCKLICH NICHT ÜBERTRAGBAR:** Für LinkedIn ist die Nicht-Rotation NICHT
    gemessen. Wer den Rahmen um einen zweiten Anbieter-Zweig erweitert, prüft sie dort
    eigens — s. Teil (bz).
+
+   **ERGÄNZT AM 2026-08-29 — EINE ZWEITE ACHSE, DIE DIESER EINTRAG BIS DAHIN NICHT
+   FÜHRTE. DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN.** Er beschreibt die ROTATIONS-Achse
+   vollständig und richtig; was fehlte, ist eine davon UNABHÄNGIGE.
+
+   **DIE ACHSE: AUSSTELLUNGS- UND SCHREIBREIHENFOLGE KÖNNEN DIVERGIEREN.** Lauf A stellt
+   aus, Lauf B stellt aus, B schreibt, A schreibt — danach steht das **ÄLTERE** Token in
+   der Zeile. Das ist kein Rotations-Problem: es tritt auch dann ein, wenn der Anbieter
+   NICHT rotiert, weil es an unserer Schreibreihenfolge hängt und nicht an seiner
+   Token-Vergabe.
+
+   **WARUM DAS ZÄHLT, UND ERST DIESER SATZ MACHT ES ZU EINEM POSTEN:** Invalidierte der
+   Anbieter das vorige ZUGANGSDATUM bei Ausstellung eines neuen, stünde in der Zeile ein
+   **TOTES Token mit einem Ablaufzeitpunkt in der ZUKUNFT** — und der Vorlauf aus
+   Festlegung 1 erneuerte es NICHT, weil die Uhr sagt, es reiche noch. Der Fehlzustand
+   wäre damit genau der stumme, gegen den die Scheibe 1a überhaupt gebaut wird.
+
+   **PROVENIENZ: UNGEMESSEN.** Ob der Anbieter ein vorheriges Zugangsdatum bei der
+   Ausstellung eines neuen entwertet, ist an keiner Schnittstelle erhoben. Messung C
+   belegt ZWEI ERFOLGREICHE EINLÖSUNGEN — sie belegt **NICHT** die gleichzeitige
+   Gültigkeit zweier ausgestellter Zugangsdaten. **WER DAS AUS (bv) ABLEITET, LEITET
+   MEHR AB, ALS DORT STEHT.**
+
+   **DERSELBE SACHVERHALT STEHT IM KOMMENTARKOPF VON src/lib/oauth/token-refresh.ts**,
+   dort als ACHSE 2 neben der Rotation. Zwei Orte, weil der eine beim Zuschneiden und
+   der andere beim Bauen gelesen wird; die Angabe ist an beiden dieselbe und trägt an
+   beiden ihre Provenienz.
+
    GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.
    TRIGGER: eine gemessene Rotation bei irgendeinem Anbieter dieses Rahmens, ODER ein
    Auslöser (Scheibe 1b), der die Funktion nachweislich nebenläufig ruft.

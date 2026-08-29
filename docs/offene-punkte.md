@@ -1249,3 +1249,64 @@ aufeinander; sie liegen alle hier und finden einander.
   Bedingung, die nirgends sonst einen Ort hätte.
   PROVENIENZ: die Namensvergabe und ihre Begründung sind ARCHITEKTEN-ENTSCHEIDUNG
   (2026-08-27). KEINE Messung.
+- DER DECKEL ENDET VOR DEM LESEN DES RUMPFES — ZWEI DATEIEN (Trigger: die nächste Arbeit
+  an einer dieser beiden Dateien, spätestens mit dem ersten automatischen Aufrufer):
+  GEMESSEN am committeten Objekt (CC, 2026-08-29, `git show HEAD:<pfad>`): In
+  src/lib/oauth/google-token.ts (exchangeAuthorizationCode) und in src/lib/vercel/client.ts
+  (ALLE DREI Funktionen) steht `clearTimeout(timer)` in einem `finally`, das NUR den
+  `fetch` umschliesst. Der Antwort-Rumpf wird DANACH gelesen — `await res.json()` bzw.
+  `await res.json().catch(() => null)`.
+  WARUM DAS EIN UNTERSCHIED IST UND KEINE FORMSACHE: `fetch` kehrt zurück, sobald die
+  KOPFZEILEN da sind. Der RUMPF ist ein ZWEITER Netzvorgang. Ist der Deckel vorher
+  gelöscht, läuft genau dieser zweite Vorgang OHNE JEDE ZEITGRENZE — ein hängender
+  Antwortstrom hält die Funktion dann unbegrenzt fest, und zwar STILL: kein Fehler, keine
+  Logzeile, kein roter Test.
+  ES IST EINE HALBE ERFÜLLUNG EINER BESTEHENDEN REGEL, KEIN NEUER BEFUND ÜBER EIN NEUES
+  RISIKO: "DEFENSIVE TIMEOUTS: JEDER externe API-Call ... braucht ein striktes Timeout"
+  (CLAUDE.md, Block A) ist an beiden Stellen sichtbar befolgt — der Deckel steht da, er
+  endet nur zu früh. Genau deshalb fällt es niemandem auf.
+  IN google-token.ts KOMMT EINE ZWEITE HÄLFTE DAZU: Dort fehlt im Rumpf-Pfad auch die
+  ABBRUCH-UNTERSCHEIDUNG. Ein Abbruch beim Lesen käme als `network_error` heraus, nicht
+  als `timeout` — beide enden beim Aufrufer gleich, aber die Diagnose führt an den
+  falschen Ort.
+  DIE BEHEBUNG STEHT ALS MUSTER IM REPO: src/lib/oauth/google-refresh.ts
+  (exchangeRefreshToken) hat seit dem 2026-08-29 EIN `finally` um den GANZEN Ablauf und
+  prüft `AbortError` auf BEIDEN Pfaden; zwei Tests (G18/G19) bewachen die Wirkung, nicht
+  die Textstelle. Wer die Lücke schliesst, kopiert kein Verfahren, sondern zieht ein
+  vorhandenes nach.
+  WARUM ES HEUTE KLEIN IST: Beide Dateien werden von einem MENSCHEN ausgelöst — ein
+  Domain-Vorgang, ein Autorisierungs-Durchlauf. Ein einzelner hängender Aufruf fällt auf,
+  weil jemand wartet. MIT DEM ERSTEN AUTOMATISCHEN AUFRUFER IST DAS VORBEI.
+  AUSDRÜCKLICH NICHT GEMESSEN: wie oft oder ob ein Antwortstrom in dieser Umgebung
+  tatsächlich hängenbleibt. Der Punkt beschreibt eine FEHLENDE GRENZE, kein beobachtetes
+  Ereignis.
+  PROVENIENZ: die Lage in beiden Dateien GEMESSEN am committeten Objekt (CC, 2026-08-29);
+  die Folge (unbegrenzte Laufzeit) ist eine ABLEITUNG aus dem Kontrollfluss, keine
+  Messung.
+- DIE MIDDLEWARE LEITET API-ROUTEN AUF EINE HTML-SEITE UM (Trigger: der erste
+  programmatische Aufrufer einer API-Route, spätestens Scheibe 1b):
+  GEMESSEN LIVE (Stefan, 2026-08-29, Schritt 5 des Live-Tests der Scheibe 1a): Ein POST
+  OHNE Sitzung gegen /api/oauth/google/refresh endet in einer Umleitung auf /login, und
+  dort antwortet Next mit 405. DER HANDLER WIRD NICHT ERREICHT; sein eigener 401 ist auf
+  diesem Weg unerreichbar.
+  ES IST KEIN LECK, UND DIESER SATZ GEHÖRT AN DEN ANFANG: Die Sperre TRÄGT. Sie trägt nur
+  eine Ebene höher als gebaut. Ohne Sitzung kommt niemand an die Erneuerung.
+  WARUM ES TROTZDEM EIN PUNKT IST: Ein PROGRAMMATISCHER Aufrufer bekommt einen Zustand,
+  den keine Maschine lesen kann — eine Umleitung auf eine Anmeldeseite und danach ein
+  Methodenfehler, der mit der eigentlichen Ursache nichts zu tun hat. BEI EINER
+  GET-ROUTE WÄRE ES EINE 200 MIT EINER ANMELDESEITE IM RUMPF — UND DIE SIEHT WIE ERFOLG
+  AUS. Genau dieser Satz steht bereits im Kommentar von
+  src/app/api/oauth/google/refresh/route.ts als Begründung dafür, dass die Route POST ist
+  und keinen Redirect antwortet; er beschreibt dieselbe Falle eine Ebene darüber, wo sie
+  NICHT behoben ist.
+  EINE FOLGE FÜR DEN BESTAND, die mitgehört: Der `!user`-Zweig jener Route hat damit
+  KEINEN Live-Nachweis. Er wird NICHT entfernt — er trägt, sobald jemand den Matcher der
+  Middleware ändert.
+  AUSDRÜCKLICH UNGEMESSEN: ob src/proxy.ts ALLE /api/*-Pfade fasst. Erhoben ist genau
+  zweierlei — ein AUTHENTIFIZIERTER POST erreicht die Route nachweislich (Schritt 4a
+  antwortete mit dem handler-eigenen 404), und ein UNAUTHENTIFIZIERTER wird umgeleitet.
+  Mehr ist nicht erhoben, und es wird hier NICHTS vermutet: weder über /api/e noch über
+  /api/capi noch über den Matcher-Text.
+  PROVENIENZ: GEMESSEN LIVE (Stefan, 2026-08-29). Die Aussage über den unerreichbaren
+  401 ist eine ABLEITUNG aus dieser Beobachtung; die Aussage über den GET-Fall ist eine
+  ÜBERTRAGUNG auf einen Fall, der nicht gefahren wurde, und ausdrücklich keine Messung.

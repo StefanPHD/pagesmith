@@ -465,32 +465,42 @@ Der Rahmen ist ANBIETER-NEUTRAL mit EINEM Google-Zweig. **LinkedIn erbt ihn** �
 Scheibe fasst LinkedIn NICHT an; sie baut den Rahmen nur so, dass ein zweiter Zweig
 später keine Umstellung verlangt.
 
-### Warum sie zuerst kommt — und dieser Grund bindet
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-Ein Google-Zugangsdatum lebt **3599 Sekunden** (GEMESSEN 2026-08-28, OWNER; s. VERMERK
-5 und docs/ziel-befunde.md, Google-Abschnitt, Teil (bw)).
+VERDICHTET AM 2026-08-29, nach dem Bau-Commit ca6b4c1 und dem bestätigten Live-Test.
+Hier standen die ANWEISUNGEN FÜR die Scheibe; sie sind mit dem Vollzug abgelaufen.
+ZWEI Unterabschnitte sind entfallen:
 
-**DER FEHLZUSTAND, GEGEN DEN DIESE SCHEIBE GEBAUT WIRD, IST AUF DREI EBENEN
-GLEICHZEITIG STUMM** — GEMESSEN am Repo (CC, 2026-08-29):
-· **Die vier Adapter werfen nie und loggen ausschliesslich `errorName`** — je eine
-  Zeile in `meta-forward.ts`, `pinterest-forward.ts`, `tiktok-forward.ts` und
-  `linkedin-forward.ts`. Kein Fremdtext, keine Ursache, kein Ziel-Zustand.
-· **Der Fan-Out läuft über `Promise.allSettled`, dessen Ergebnis am Aufrufort weder
-  gebunden noch gelesen wird** (`handleIngest`, src/lib/capi/ingest.ts). Das steht
-  bereits als Vorrats-Eintrag 3, Ebene 2, und wird hier NICHT neu erhoben, sondern
-  benutzt.
-· **Der Ingest antwortet in jedem Pfad mit einer leeren 204** —
-  INGEST-204-CONTAINMENT (docs/immer-beachten.md).
+- **"Warum sie zuerst kommt — und dieser Grund bindet"** trug den dreifach stummen
+  Fehlzustand (die vier Adapter loggen nur `errorName` · das Ergebnis des `allSettled`
+  wird am Aufrufort nicht gelesen · der Ingest antwortet immer mit leerer 204) und den
+  Satz, ein Transport ohne Erneuerung sende EINE STUNDE und schweige danach.
+  **ER IST EIN ZUSCHNITT-ARGUMENT und hat seinen Gegenstand mit dem Vollzug verloren** —
+  die Reihenfolge ist entschieden und gebaut.
+  **WAS DAVON WEITERLEBT, UND ZWAR AN ZWEI ORTEN, WEIL ES SONST STERBEN WÜRDE:** Der
+  Fehlzustand steht vollständig im Kommentarkopf von `src/lib/oauth/token-refresh.ts`
+  (dort mit derselben Provenienz, GEMESSEN am Repo, CC, 2026-08-29), und seine zweite
+  Ebene steht unabhängig davon als Vorrats-Eintrag 3, Ebene 2, in DIESER Datei.
+  **Die 3599 Sekunden** stehen in VERMERK 5 und in docs/ziel-befunde.md, Teil (bw).
+- **"Scope — und wo er zum STOPP wird"** nannte, was diese Scheibe nicht anfassen darf.
+  Der Scope einer gebauten Scheibe ist mit ihrem Vollzug abgelaufen; was tatsächlich
+  angefasst wurde, steht im Vermerk, und der Schutz der genannten Dateien ist
+  ausserdem am Code verankert (der Ingest-Wächter in `token-refresh.test.ts`).
 
-**FOLGE: Ein Transport ohne Erneuerung sendet EINE STUNDE und schweigt danach.** Kein
-roter Test, keine Meldung, kein Log-Eintrag. Sichtbar wird es beim KUNDEN, an
-fehlenden Conversions — und dort ist es von jeder anderen Ursache nicht zu
-unterscheiden.
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WORDEN IST, obwohl es nach Anweisung aussieht — im
+Zweifel stehengelassen (Stopp-Bedingung dieser Runde):**
+- **"Was sie ist"** bleibt: Der Satz "LinkedIn erbt ihn" bindet die Scheibe, die den
+  zweiten Anbieter-Zweig baut, und "sie prüft KEIN Eigentum" ist eine dauerhafte
+  Eigenschaft der gebauten Funktion, nicht eine Anweisung an ihren Bau.
+- **Die Festlegungen 1 und 2** bleiben, obwohl die Auflage nur 3, 4 und 5 nennt: Beide
+  sind GRÜNDE und keine Anweisungen — Festlegung 2 hält fest, dass `client_secret` auf
+  dem GEMESSENEN Weg mitgeht und ein Verzicht ungemessen wäre; Festlegung 1 hält fest,
+  warum es keine Drift-Behandlung gibt. Wer sie streicht, nimmt der nächsten Runde die
+  Begründung und lässt nur den Code stehen.
 
-**WARUM DAS EIN ZUSCHNITT-ARGUMENT IST UND KEINE VORSICHT:** Der Schaden entsteht
-nicht dadurch, DASS etwas fehlt, sondern dadurch, dass das Fehlen unbeobachtbar ist.
-Wer den Transport zuerst baut, hat eine Stunde lang einen funktionierenden Beweis und
-danach ein Produkt, dessen Defekt niemand messen kann.
+**WAS HIER NIE STAND und deshalb auch nicht gestrichen werden konnte:** die
+Pipeline-Gates und die Pflicht-Mutationen. Sie waren Auflagen der Bau-Prompts, nie Text
+dieses Zuschnitts; ihre Ergebnisse stehen im Vermerk.
 
 ### Fünf Festlegungen
 
@@ -547,6 +557,16 @@ für sich und jeder anders.
 · **`retry`** — Netz, Timeout, 5xx.
 · **`dead`** — `invalid_grant`, kein Erneuerungs-Token, unbrauchbare Nutzlast. Der
   Kunde muss neu autorisieren.
+  **ZUM DRITTEN FALL "kein Erneuerungs-Token" (ARCHITEKT, 2026-08-29):** Er ist IN DIESER
+  SCHEIBE GEGENSTANDSLOS und bekommt deshalb keinen Ausgang. Die Erneuerungs-Funktion
+  SETZT ein Erneuerungs-Token VORAUS — sie liest es aus der abgelegten Nutzlast —, und
+  der Deuter des Anbieter-Zweigs kennt absichtlich KEIN `no_refresh_token`
+  (s. die Entscheidungen vom 2026-08-29, V-3). **DER FALL WIRD NICHT GESTRICHEN:** Er
+  beschreibt den CODE-TAUSCH (`toOAuthPayload` in src/lib/oauth/google-token.ts), wo ein
+  fehlendes Erneuerungs-Token einen toten Zugang bedeutet und einen eigenen Ausgang hat.
+  Ohne diesen Absatz liest die Transport-Scheibe die Zeile als dreiteilig und sucht einen
+  Ausgang, den es hier nicht gibt. Der nächstliegende ist `no_row` — "nichts abgelegt" —,
+  und das ist eine ANDERE Aussage.
 · **`misconfigured`** — Chiffrier-Schlüssel weg, Env fehlt, `unknown_key`. **Ein
   BETREIBER-Problem, kein Kunden-Problem**, und genau deshalb ein eigener Zustand: Wer
   ihn in `dead` einebnet, schickt den Kunden durch einen Autorisierungs-Fluss, der
@@ -575,9 +595,13 @@ hätte.
 **SIE WIRD NACH DEM LIVE-TEST NICHT ZURÜCKGEBAUT.** Zwei Gründe, und beide sind
 benannt:
 · Der offene Punkt "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN"
-  (CLAUDE.md, "## Offene Punkte") führt als Ursache (4) genau diesen Fall — ein Ziel,
-  dessen Zugangsdatum ablaufen kann — und **sein Trigger ist EINGETRETEN** (dort
+  (CLAUDE.md, "## Offene Punkte") führt als TRIGGER (4) genau diesen Fall — ein Ziel,
+  dessen Zugangsdatum ablaufen kann — und **er ist EINGETRETEN** (dort
   wörtlich: "für LinkedIn ist er EINGETRETEN, seit das Ziel am 2026-08-19 sendet").
+  **SACHKORREKTUR 2026-08-29, ERSETZT UND NICHT GESTEMPELT:** Hier stand "als Ursache
+  (4)". Der Eintrag führt DREI URSACHEN und VIER TRIGGER; eine Ursache (4) gibt es
+  nicht. Wer sie sucht, sucht in der falschen Liste und findet den Beleg für diesen
+  Absatz nicht.
 · **Die beiden Ablauf-Zeitpunkte liegen in `project_secrets.secret_enc` und sind damit
   unlesbar** — nicht nur für die Oberfläche, sondern für jeden ausser dem
   Dechiffrier-Pfad.
@@ -588,18 +612,72 @@ das Eigentums-Gate. Kein neues Muster.
 
 **SIE GIBT KEINE TOKEN ZURÜCK.** Nur den Zustand und die zwei Ablaufzeitpunkte.
 
-### Scope — und wo er zum STOPP wird
+### Die Entscheidungen vom 2026-08-29 — ACHT, und sie binden über diese Scheibe hinaus
 
-**KEINE SCHEMA-ÄNDERUNG, KEINE NEUE SPALTE, KEINE NEUE DEPENDENCY.**
-**VERLANGT DER BAU-PLAN AN IRGENDEINER STELLE EINE SCHEMA-AUSSAGE, IST DAS EIN
-STOPP** — kein Nebenbei-Rückfrage, sondern ein Anhalten des Zuschnitts.
+**WARUM SIE HIER STEHEN UND NICHT NUR IM CODE:** Sie sind während des Baus gefallen, in
+Prompt und Antwort. "WAS NUR IM GESPRÄCH GESAGT WIRD, EXISTIERT FÜR DIE NÄCHSTE SITZUNG
+NICHT" (docs/immer-beachten.md). Jede von ihnen steht ZUSÄTZLICH begründet am Code; hier
+steht, WAS entschieden wurde und WER es entschieden hat — die volle Begründung wird
+NICHT verdoppelt.
 
-**UNBERÜHRT, namentlich, damit die Liste prüfbar ist:** `ingest.ts` · alle vier
-`*-forward.ts` · `token.ts` · `settings.ts` · `google-payload.ts` ·
-`google-click-ids.ts` · `TRACKING_TARGETS`.
+**PROVENIENZ ALLER ACHT: ARCHITEKT, 2026-08-29. Keine Messung**, ausser wo an der
+einzelnen Entscheidung etwas anderes steht.
 
-**NICHT ZU DIESER SCHEIBE:** der automatische Auslöser (1b) · Messung B2 · alles an
-den Konto-Kennungen (2).
+· **P1 — `no_key`, `bad_key` UND `bad_format` bilden auf `misconfigured` ab.** Damit
+  sind alle sechs `DecryptResult`-Zustände zugeordnet; die zwei übrigen kommen aus dem
+  Zuschnitt oben. **DER GRUND FÜR `bad_format` IST DIE REVERSIBILITÄT, NICHT DIE
+  KOSTEN-ASYMMETRIE:** `misconfigured` holt einen Betreiber an die Zeile, und der kann
+  danach immer noch zur Neu-Autorisierung schicken; umgekehrt geht es nicht. Dazu deckt
+  `bad_format` den Fall einer KÜNFTIGEN FASSUNG unter altem Code-Stand.
+· **P2 — Uhr 2 wird bei einer brauchbaren Antwort NEU GESETZT, sonst bleibt der
+  ABGELEGTE Wert stehen.** Nie zurück auf `{kind:"unknown"}` — das wäre der einzige Weg,
+  der Information VERLIERT, und Festlegung 5 hängt an dieser Information.
+  **SCHLÄGT EIN ABGELEGTES `{kind:"unknown"}` DURCH EINE BRAUCHBARE ANTWORT IN EIN
+  `{kind:"at"}` UM, IST DAS ERWÜNSCHT:** Der Zugang verlässt damit dauerhaft die
+  Asymmetrie der Festlegung 5.
+· **P3 — die Beweis-Route ist POST, nicht GET.** Ein GET würde von jedem
+  Vorablade-Mechanismus mit der Sitzung des Betreibers ausgelöst, und diese Route
+  SCHREIBT eine Zeile und ruft einen fremden Endpunkt. **DER PREIS IST BENANNT:** Der
+  Live-Test braucht einen `fetch` aus der eingeloggten Anwendung statt einer URL-Eingabe.
+· **A-3 — "KEINE ZEILE" und "ZEILE OHNE CHIFFRAT" werden GETRENNT.** Keine Zeile →
+  `dead`/`no_row`; Zeile mit leerem `secret_enc` → `misconfigured`/`no_secret_enc`.
+  **DER GRUND IST DER ZWEITE ANBIETER, NICHT DIESER:** LinkedIn-Zeilen tragen heute
+  KLARTEXT im Feld `secret`. Erbt LinkedIn den Rahmen, meldete eine eingeebnete Fassung
+  "der Kunde muss neu autorisieren" für eine INTAKTE Zeile in Alt-Form.
+· **A-4 — Uhr 2 wird VOR Uhr 1 geprüft.** Der Fall, den der Zuschnitt nicht regelte:
+  Uhr 2 überschritten, Uhr 1 reicht noch → das Ergebnis ist `dead`.
+  **DIE GRENZE, UND SIE IST DER TEIL, DER SCHEIBE 4 BINDET:** Für die Beweis-Route ist
+  das die ehrliche Auskunft. **FÜR EINEN AUFRUFER AUF DEM TRANSPORTWEG WÄRE SIE ES
+  NICHT** — dort könnte noch gesendet werden, solange Uhr 1 läuft. Wer den Transport
+  baut, prüft diese Zuordnung neu; ein eigener Test hält die Lage fest.
+· **B-1 — ein LESEFEHLER ist `retry`, ein SCHREIBFEHLER bleibt `misconfigured`.**
+  Beim Lesen ist nichts verbraucht und kein Nebeneffekt eingetreten, ein zweiter Versuch
+  ist folgenlos. Beim Schreiben ist die Erneuerung bereits VERBRAUCHT, und **unter
+  Scheibe 1b wird das schärfer:** ein automatischer Wiederholer liefe an einer
+  CHECK-Verletzung ENDLOS, der Ausgang muss ihn ANHALTEN.
+  **"Netz, Timeout, 5xx" IM ERGEBNISTYP OBEN BESCHREIBT DEN ANBIETER-FALL UND IST KEINE
+  ABSCHLIESSENDE LISTE** — sonst liest die nächste Runde `read` als Verstoss gegen den
+  Zuschnitt.
+· **B-2 — eine unbrauchbare 2xx-ANTWORT ist `retry`, nicht `dead`.** Sie ist
+  unerwartetes ANBIETER-Verhalten, und eine Neu-Autorisierung heilt daran nichts; es
+  gilt dieselbe Zeile wie beim unerwarteten Code. **DIE LESART, DIE SONST WIEDER
+  AUFGEMACHT WIRD:** "dead — … unbrauchbare Nutzlast" meint die ABGELEGTE Nutzlast
+  (die `parse_*`-Ausgänge), NICHT die Anbieter-Antwort.
+· **B-3 — ab Status 500 gewinnt `retry`/"server" gegen `invalid_grant`.** Verboten war,
+  einen Statuscode als VORBEDINGUNG für `invalid_grant` zu verlangen (Teil (bd) nennt
+  für diesen Code keinen); unterhalb 500 gilt er deshalb bei JEDEM Status. **Verboten
+  war NICHT, den Status überhaupt zu betrachten.** Eine 5xx-Antwort, die `invalid_grant`
+  nennt, ist UNGEMESSEN — im unbelegten Fall entscheidet die Asymmetrie.
+
+**EINE NEUNTE ÄNDERUNG DERSELBEN RUNDE, DIE KEINE ZUORDNUNGS-ENTSCHEIDUNG IST UND
+DESHALB HIER UNTEN STEHT — B-4:** Der Deckel des Netzrufs umschliesst seit dem
+2026-08-29 AUCH das Lesen des Antwort-Rumpfes. `fetch` kehrt zurück, sobald die
+Kopfzeilen da sind; der Rumpf ist ein ZWEITER Netzvorgang und lief bis dahin ohne
+Zeitgrenze. **DIE GRENZE:** Heute löst ein Betreiber den Ruf von Hand aus, der Fall ist
+klein. **Mit Scheibe 1b sieht niemand mehr in diese Datei.**
+**DIESELBE LÜCKE STEHT UNBEHOBEN IN ZWEI BESTANDS-DATEIEN** — sie ist als eigener
+offener Punkt verortet ("DER DECKEL ENDET VOR DEM LESEN DES RUMPFES — ZWEI DATEIEN",
+CLAUDE.md, "## Offene Punkte") und NICHT hier.
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -814,10 +892,15 @@ solche ausgewiesen. Die Aussage, dass B1 den Live-Nachweis nicht einlöst, ist e
 ihrem Zuschnitt. Die Zuordnung, welche Vorbedingung berührt ist und welche nicht, ist GEMESSEN
 am Dateitext (CC, 2026-08-28).
 
-### VERMERK 5 (noch ohne Commit-Nummer) — DIE ERNEUERUNG IST GEMESSEN, DAS ERNEUERUNGS-TOKEN ROTIERT NICHT
+### VERMERK 5 (Commit 4aba869) — DIE ERNEUERUNG IST GEMESSEN, DAS ERNEUERUNGS-TOKEN ROTIERT NICHT
 
-**DIES IST DIE EINE ERLAUBTE LÜCKE** im Sinne der Fortschreibungs-Regel oben: der
-jüngste Vermerk, noch nicht committet. Eine ZWEITE Lücke gibt es nicht.
+**DIE COMMIT-NUMMER IST AM 2026-08-29 NACHGETRAGEN WORDEN.** Hier stand "noch ohne
+Commit-Nummer" samt dem Satz, dies sei die eine erlaubte Lücke. Beides ist eingelöst;
+die Lücke steht jetzt an VERMERK 6. **DER HASH IST AM REPO ERMITTELT** (CC, 2026-08-29),
+nicht aus einem Prompt übernommen: drei unabhängige `-S`-Suchen über
+docs/aktiver-stand.md — nach dem Titeltext dieses Vermerks, nach der Überschrift des
+Zuschnitts der Scheibe 1a und nach dem Titel des Vorrats-Eintrags 6 — treffen ALLE
+denselben Commit, und es ist der einzige Treffer je Suche.
 
 **WAS GESCHEHEN IST:** MESSUNG C gegen `oauth2.googleapis.com/token` — GEMESSEN
 2026-08-28 (OWNER, live). Sie löst ein Erneuerungs-Token ein, statt wie A und B1 gegen
@@ -851,6 +934,113 @@ Entscheidung und hier KEINE.
 **PROVENIENZ:** Messung C GEMESSEN 2026-08-28 (OWNER), live gegen den Endpunkt. Die
 Zuordnung, welche Festlegung der Scheibe 1a auf welchem Teil ruht, ist GEMESSEN am
 Dateitext (CC, 2026-08-29).
+
+### VERMERK 6 (noch ohne Commit-Nummer) — DIE SCHEIBE 1a IST GEBAUT UND LIVE BEWIESEN
+
+**DIES IST DIE EINE ERLAUBTE LÜCKE** im Sinne der Fortschreibungs-Regel oben: der
+jüngste Vermerk, noch nicht committet. Eine ZWEITE Lücke gibt es nicht — der Hash an
+VERMERK 5 ist in derselben Runde nachgetragen worden.
+
+**WAS GEBAUT WURDE — Bau-Commit `ca6b4c1`:** SECHS neue Dateien, KEINE bestehende
+angefasst. Drei Quelldateien — `refreshAccessToken` (src/lib/oauth/token-refresh.ts, der
+anbieter-neutrale Rahmen), `exchangeRefreshToken` plus `toRefreshedPayload`
+(src/lib/oauth/google-refresh.ts, der Google-Zweig) und die Beweis-Route
+(src/app/api/oauth/google/refresh/route.ts) — und drei Testdateien daneben, zusammen 59
+Tests. Die Suite steht damit bei 68 Dateien und 1376 Tests; **kein Bestandstest ist
+gefallen**, und die zwei geänderten Tests dieser Scheibe sind ihre eigenen. Alle vier
+Gates waren vor dem Commit grün (tsc, eslint, vitest, next build).
+
+**DER EINZIGE AUFRUFER IST DIE BEWEIS-ROUTE.** Kein Automatismus, kein Aufrufer auf dem
+Ingest-Pfad; ein Quelltext-Wächter in token-refresh.test.ts hält das fest und trägt
+seine eigene Grenze (er sieht Zeichen, keinen Import-Graphen).
+
+---
+
+**DER LIVE-TEST — GEMESSEN 2026-08-29 vom OWNER, an der ausgelieferten Anwendung.**
+Deployment vorher als "Ready" bestätigt.
+
+- **Schritt 1, die Regression:** Der erste Aufruf per direkter URL-Eingabe endete in
+  `?google=no_state`. Nach vollständigem Durchlauf des Zustimmungs-Bildschirms:
+  `/?google=ok`.
+  **DIE URSACHE DES `no_state` IST NICHT GEMESSEN.** Sie wird hier auch nicht vermutet.
+  **DER BEFUND SELBST IST WERTVOLL UND DESHALB PROTOKOLLIERT: es ist der erste
+  LIVE-BELEG, dass dieser fail-closed-Zweig überhaupt feuert.** Bis dahin war er nur
+  durch Tests gedeckt.
+- **Schritt 2 (11:49 CEST):**
+  `{"state":"ok","accessTokenExpiresAt":1788000301,`
+  `"refreshTokenExpiresAt":{"kind":"at","epochSeconds":1788601501}}`
+- **Schritt 3 (12:42 CEST):** `accessTokenExpiresAt` 1788003743,
+  `refreshTokenExpiresAt` 1788601500.
+- **Schritt 3b (unmittelbar danach):** `accessTokenExpiresAt` identisch, 1788003743.
+- **Schritt 4a:** HTTP 404, `{"error":"not_found"}`.
+- **Schritt 4b:** aus der Sitzung von Konto A, mit einer EXISTIERENDEN Kennung eines
+  Projekts von Konto B → HTTP 404, `{"error":"not_found"}`. **Die UUID selbst ist
+  bewusst nicht aufgeschrieben.** Das ist der echte Gegenversuch zur Eigentums-Achse;
+  4a prüft nur den Id-Filter.
+- **Schritt 5:** kein Handler-Ergebnis. Die Middleware leitet auf `/login` um, dort
+  antwortet Next mit 405. **Die Route ist NICHT erreicht worden.**
+
+**DREI ABLEITUNGEN AUS DIESEN WERTEN — GERECHNET, NICHT GEMESSEN.** Sie stehen getrennt,
+damit niemand sie später als Beobachtung zitiert:
+
+1. **DIE ZWEITE UHR IST NEU GESETZT WORDEN, NICHT STEHENGEBLIEBEN.** 1788601501 →
+   1788601500. Wäre `refresh_token_expires_in` in der Erneuerungs-Antwort NICHT gekommen,
+   hätte der Code den abgelegten Wert byte-gleich durchgereicht (so ist der Zweig
+   gebaut). Er hat sich bewegt, **also lief der Neu-Setzen-Zweig**.
+   **ZWEI FOLGEN, und beide sind neu AM EIGENEN PRODUKTIVPFAD statt an einem Handaufruf:**
+   Das Feld kommt AUCH BEI DER ERNEUERUNG — Teil (bx) hatte genau das offen —, und der
+   absolute Zeitpunkt bleibt auf die Sekunde stabil, **die zweite Uhr wird bei der
+   Einlösung NICHT verlängert**. Das ist die Grundlage der Festlegungen 3 und 5, jetzt an
+   unserem Code bestätigt.
+   **DIE EINE SEKUNDE IST DIE `floor()`-RUNDUNG, KEIN BEFUND.**
+2. **DER VORLAUF HAT GEGRIFFEN, BEVOR DER ZUGANG ABLIEF.** Die Differenz der beiden
+   `accessTokenExpiresAt` beträgt 3442 s; das ist zugleich die verstrichene Zeit zwischen
+   Rückkehr und Schritt 3. Zum Zeitpunkt von Schritt 3 lief das alte Zugangsdatum noch
+   rund **157 Sekunden**.
+   **DIE 157 RUHEN AUF DER GEMESSENEN ANNAHME `expires_in` = 3599** (Teil (bw)); eine
+   Abweichung um 1 s verschiebt sie um 1 s. Ohne diese Grenze gehört die Zahl nicht ins
+   Protokoll.
+3. **DER ABSTAND DER BEIDEN UHREN BETRÄGT EXAKT 601 200 SEKUNDEN — sieben Tage minus
+   eine Stunde.** Reine Arithmetik auf zwei gemessenen Werten, ohne Annahme. Das ist die
+   Sieben-Tage-Frist aus VERMERK 3, sichtbar in unseren eigenen Daten.
+   **FOLGE: Der Zugang stirbt bei `epochSeconds` 1788601500.** Ob die Rohwerte
+   3599/604799 oder 3600/604800 lauten, ist **NICHT auflösbar** — die Antwort wird nicht
+   geloggt, und das bleibt so.
+
+---
+
+**WAS DER LIVE-TEST NICHT ZEIGT — und das gehört an dieselbe Stelle wie das, was er
+zeigt:**
+
+- **DIE PUNKTE 2, 3 UND 6 DER NACHWEIS-TABELLE BLEIBEN OFFEN:** der echte Fehlercode für
+  ein totes Erneuerungs-Token, Statuscode und Rumpfform des Fehlerfalls am
+  Token-Endpunkt, und der Schlüsselwechsel aus Festlegung 4. Der erste und der zweite
+  bräuchten einen widerrufenen Zugang, der dritte zwei Kennungen in `SECRET_ENC_KEYS`.
+  **`invalid_grant → dead` ruht damit weiterhin auf einer ERWARTUNG** (Teil (bz)).
+- **DER `!user`-ZWEIG DER ROUTE HAT KEINEN LIVE-NACHWEIS.** Schritt 5 hat die Route nicht
+  erreicht — die Sperre trägt eine Ebene höher. **DER ZWEIG WIRD NICHT ENTFERNT:** Er
+  trägt, sobald jemand den Matcher der Middleware ändert. Die Lage darüber ist als
+  eigener offener Punkt verortet ("DIE MIDDLEWARE LEITET API-ROUTEN AUF EINE HTML-SEITE
+  UM").
+- **VERMERK 2 IST NICHT GETILGT.** Der nachgeschuldete Live-Nachweis der Scheibe 11.2a
+  steht unverändert: `buildGoogleEvent` und `extractGoogleClickIds` haben weiterhin
+  KEINEN Aufrufer im Produktivcode, und diese Scheibe hat sie mit keiner Zeile berührt.
+  **Die Schuld wandert an die Transport-Scheibe.**
+
+---
+
+**WAS DIESER VERMERK AUS DEM VERDICHTETEN ZUSCHNITT AUFNIMMT:** die zwei entfallenen
+Unterabschnitte sind oben in "### Vollzogen" einzeln benannt, mit dem Ort, an dem ihr
+fortwirkender Teil weiterlebt. **Die acht Entscheidungen vom 2026-08-29 sind NICHT hier
+aufgenommen worden, sondern als eigener Unterabschnitt IM ZUSCHNITT verankert** — sie
+binden über diese Scheibe hinaus und gehören deshalb nicht in ein Protokoll, das eine
+abgeschlossene Arbeit beschreibt.
+
+**PROVENIENZ, JE TEIL:** Umfang, Testzahl, Gate-Ergebnisse und der Bau-Commit GEMESSEN
+am Repo bzw. an den Läufen vom 2026-08-29 (CC). Die Live-Werte GEMESSEN 2026-08-29
+(OWNER), an der ausgelieferten Anwendung. Die drei Ableitungen sind GERECHNET auf diesen
+Werten und ausdrücklich KEINE zweite Beobachtung. Der Satz über den nicht getilgten
+Live-Nachweis der Scheibe 11.2a ist eine FOLGE aus dem Zuschnitt dieser Scheibe.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -1144,7 +1334,12 @@ PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-08-28, gestützt auf eine Lesung am Co
 ## Vorrat (gemeldet, nicht gebaut)
 
 Alle Einträge sind NICHT gebaut und NICHT entschieden. KEINE EMPFEHLUNG zu keinem von
-ihnen. Einträge 1 bis 3 GEMELDET am 2026-08-24, Einträge 4 und 5 am 2026-08-25.
+ihnen. JEDER EINTRAG TRÄGT SEIN EIGENES DATUM.
+KEINE SAMMEL-DATIERUNG IN DIESEM KOPF, UND ES KOMMT KEINE ZURÜCK: Hier stand "Einträge
+1 bis 3 GEMELDET am 2026-08-24, Einträge 4 und 5 am 2026-08-25". Sie ist am 2026-08-29
+ERSATZLOS ENTFALLEN — sie deckte die Einträge 6 bis 13 nicht und wurde mit jedem
+Zuwachs neu falsch. Es ist dieselbe Bauform wie die Stückzahl darunter, nur mit einem
+Datum statt einer Zahl.
 KEINE STÜCKZAHL IN DIESEM KOPF, UND ES KOMMT KEINE ZURÜCK: Die Einträge sind
 nummeriert, die Liste zählt sich damit selbst, und eine Zahl daneben ist eine zweite
 Wahrheit, die bei jedem Zuwachs neu falsch wird — in dieser Datei dreimal
@@ -1249,6 +1444,11 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
      ist die Vorgabe, kein Fehler" (GELESEN, Teil (k)/C3). Beim zweiten Empfänger wird
      es fällig und ist dann erzwungen eindeutig (Teil (v)/C3, DUPLICATE_DESTINATION_REFERENCE).
    · KEIN eventName. Für Google Ads optional, Pflicht nur für GA4 (GELESEN, Teil (w)/F1).
+   GEMELDET 2026-08-25, NICHT GEBAUT. KEINE EMPFEHLUNG.
+   DAS DATUM IST AM 2026-08-29 AUS DEM KOPF DES VORRATS HIERHER GEWANDERT, nicht neu
+   erhoben: Dieser Eintrag war der EINZIGE der dreizehn ohne eigene Datumsangabe
+   (GEMESSEN am Dateitext, CC, 2026-08-29), und mit dem Wegfall der Sammel-Datierung
+   hätte er seine einzige verloren.
 
 6. **eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE
    LIEGT NICHT MEHR AM TRANSPORTWEG, SONDERN AM INHALT DER URL.**
@@ -1366,6 +1566,81 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
    GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.
    TRIGGER: eine gemessene Rotation bei irgendeinem Anbieter dieses Rahmens, ODER ein
    Auslöser (Scheibe 1b), der die Funktion nachweislich nebenläufig ruft.
+
+10. **`retry` HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN.** DREI Ausgänge
+    der Erneuerungs-Funktion können DAUERHAFT sein und trotzdem `retry` melden:
+    `unexpected` (ein Anbieter-Code, den wir nicht abbilden), `read` (die Datenbank
+    antwortet nicht), und seit der Entscheidung B-2 der unbrauchbare 2xx-Rumpf.
+    **UNTER EINEM MENSCHEN-AUSLÖSER IST DAS HARMLOS** — jemand klickt, bekommt `retry`,
+    und hört irgendwann auf. **UNTER EINEM AUTOMATISMUS IST ES EINE SCHLEIFE, DIE JE
+    DURCHLAUF EINEN ECHTEN ERNEUERUNGSRUF VERBRAUCHT.**
+    **DIESELBE FIGUR WIE DIE BEGRÜNDUNG AN `write_failed`, EINE EBENE HÖHER:** Dort hält
+    der ZUSTAND den Wiederholer an (`misconfigured` statt `retry`), weil eine
+    CHECK-Verletzung sich durch Wiederholen nie auflöst. Hier gibt es niemanden, der ihn
+    anhält — `retry` sagt "nochmal", und die Funktion kennt keine Zählung, keine
+    Verzögerung und keine Obergrenze. **Sie soll sie auch nicht kennen: eine
+    Bibliotheksfunktion ohne Aufrufer kann nicht wissen, wie oft sie schon lief.**
+    GEMELDET 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG, wo die Grenze liegt oder wie
+    sie aussieht.
+    TRIGGER: der Zuschnitt der Scheibe 1b.
+
+11. **G18/G19 MESSEN UNSERE VERZWEIGUNG, NICHT DIE FEHLERFORM DER LAUFZEIT.** Die zwei
+    Tests, die den verschobenen Deckel bewachen (Entscheidung B-4), arbeiten mit einer
+    Attrappe, die **den Namen `AbortError` SELBST WÄHLT**. Sie beweisen, dass unsere
+    Verzweigung diesen Namen richtig behandelt.
+    **WAS SIE NICHT BEWEISEN: ob die Laufzeit bei einem Abbruch WÄHREND DES RUMPF-LESENS
+    denselben Namen wirft.** Das ist UNGEMESSEN — für `fetch` selbst ist das Verhalten im
+    Bestand mehrfach beobachtet, für den Rumpf-Strom nicht.
+    **DER SCHADEN WÄRE BEGRENZT, und der Satz gehört dazu, damit der Posten nicht grösser
+    gelesen wird als er ist:** Beide Wege enden in `retry` — nur die Diagnose wäre
+    `network` statt `timeout`. **OHNE DIESEN EINTRAG GILT DIE ACHSE BEIM NÄCHSTEN LESEN
+    ALS GEPRÜFT**, weil zwei grüne Tests danebenstehen.
+    GILT FÜR G18 UND G19 GLEICHERMASSEN.
+    GEMELDET 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: die erste Runde, die einen echten Abbruch am Rumpf-Strom beobachten kann.
+
+12. **TEIL (bv) IST MEHRDEUTIG UND BLEIBT ES.** "Kein neues Erneuerungs-Token an die
+    Stelle des alten" trennt **"das Feld fehlt"** nicht von **"das Feld trägt denselben
+    Wert"**.
+    **DER BAU IST UNTER BEIDEN AUSLEGUNGEN RICHTIG** — `toRefreshedPayload`
+    (src/lib/oauth/google-refresh.ts) übernimmt einen vorhandenen, nicht-leeren Wert und
+    lässt sonst den abgelegten stehen; er bliebe auch dann richtig, wenn der Anbieter
+    eines Tages doch rotierte. **DER POSTEN IST NICHT DER CODE, SONDERN DIE FUNDSTELLE:**
+    Solange der Satz dort steht, leitet die nächste Runde die Mehrdeutigkeit neu ab.
+    NICHT IN DIESER RUNDE: docs/ziel-befunde.md bleibt unberührt.
+    GEMELDET 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: die nächste Runde, die docs/ziel-befunde.md ohnehin öffnet — dann wird es
+    dort nachgezogen.
+
+13. **ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN.**
+    **HERKUNFTSDATEI: docs/aktiver-stand-11.8.md**, Abschnitt "Vorrat (gemeldet, nicht
+    gebaut)", Einträge 5 und 6. **DER GRUND FÜR DIE ÜBERNAHME IST IHR ORT, NICHT IHR
+    INHALT:** Jene Datei ist archiviert und wird nicht mehr geladen; beide Trigger sind
+    inzwischen EINGETRETEN, und ein eingetretener Trigger in einer ungelesenen Datei ist
+    ein Posten, der still stirbt.
+    **NUR ÜBERNOMMEN — NICHT NEU GEMESSEN, NICHT BEHOBEN, NICHT UMFORMULIERT.** Die
+    Befunde und ihre Provenienz stehen am Ursprung und werden hier NICHT verdoppelt.
+    · **`'google'` FEHLT IN `TRACKING_TARGETS`** — die Zeile ist für die Oberfläche
+      unsichtbar und über die Anwendung nicht löschbar. **TRIGGER EINGETRETEN:** Die
+      Aufnahme ist Scheibe 3 des Schnitts (bindende Entscheidung (6)), und sie kommt VOR
+      dem Transport (bindende Entscheidung (8)).
+    · **`ensureTrackingKey` LÄUFT IM GOOGLE-OAUTH-WEG NICHT** — anders als in
+      `setCapiToken`. Ein Projekt, das ausschliesslich über diesen Weg konfiguriert wird,
+      hat womöglich keinen Tracking-Schlüssel. **TRIGGER EINGETRETEN:** Der Ursprung
+      führt ihn als "VORBEDINGUNG der Transport-Scheibe"; die Scheibe 1a hat ihn
+      gemessen bestätigt und ausdrücklich NICHT behoben.
+    ÜBERNOMMEN 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG.
+
+**EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
+Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT
+DIESER SCHEIBE GEGENSTANDSLOS.** `refreshAccessToken` liest, dechiffriert und zerlegt
+eine echte Zeile aus `project_secrets.secret_enc`; der Live-Test hat den Pfad gefahren.
+**docs/aktiver-stand-11.8.md WIRD DAFÜR NICHT ANGEFASST.** Der Sonderfall jener Datei —
+archiviert, aber nicht verschoben — ist im Verfahren ungeregelt, und ein rückwirkender
+Eingriff in eine abgeschlossene Phase wäre eine EIGENE Entscheidung. Sie steht hier
+ausdrücklich AUS. Dieser Vermerk ist der einzige Ort, an dem der Sachverhalt festgehalten
+ist; wer jene Datei liest, findet dort einen Eintrag, der nicht mehr zutrifft, und
+NICHTS, das darauf hinweist.
 
 ## Hebungs-Kandidaten
 

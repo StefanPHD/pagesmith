@@ -117,6 +117,7 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
   - ### Zugespitzter Doku-Lauf 2026-08-28 (LAUF 7) und MESSUNG A gegen events:ingest — die
     Teile (bh) bis (bm)
   - ### MESSUNG B1 gegen events:ingest (2026-08-28) — die Teile (bn) bis (bu)
+  - ### MESSUNG C gegen den Token-Endpunkt (2026-08-28) — die Teile (bv) bis (bz)
 - ## Pinterest (Conversions API)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
@@ -3766,6 +3767,17 @@ ist nicht eingetreten. Alle Zitate unten sind englisch, die Feldnamen sprachunab
      Was Google in einer echten Antwort auf unseren Bereich schickt, ist an keiner
      Schnittstelle erhoben.
 
+     **VORBEHALT 2026-08-28 — DIE LETZTE AUSSAGE DIESES TEILS IST WIDERLEGT. S. (bx).**
+     Der Wortlaut oben bleibt ZEICHENGLEICH stehen (Konvention im Kopf dieser Datei:
+     ein älterer Teil wird nicht umgeschrieben). Was fällt, ist genau der Satz, dass
+     `{kind:"unknown"}` für unseren Fluss der zu ERWARTENDE Fall sei: **Messung C hat
+     `refresh_token_expires_in` in einer echten Antwort auf unseren Bereich BEKOMMEN.**
+     **DER TEIL HAT SEINE EIGENE LÜCKE SELBST BENANNT** —
+     "an keiner Schnittstelle erhoben" —, und genau diese Lücke hat Messung C
+     geschlossen. Die Lesung war für
+     ihren Tag richtig; überholt ist die Erwartung, die aus ihr abgeleitet wurde, nicht
+     die Lesung.
+
 (bd) **DIE FEHLERFORM DES TOKEN-ENDPUNKTS — EIN CODE, KEINE RUMPFFORM, KEIN STATUSCODE FÜR
      DIESEN FALL.** GELESEN 2026-08-27, Abschnitt "Errors" innerhalb von "Step 5".
      Wörtlich, vollständig: "When exchanging the authorization code for an access token you may
@@ -4370,6 +4382,142 @@ steht das an der Angabe. Wo etwas ABGELEITET ist, steht auch das dort — s. bes
 
      **UND DIE VIERTE GRENZE AUS (bm) GILT UNVERÄNDERT MIT:** Ein Anbieter kann sein Verhalten
      ändern, ohne dass hier etwas rot wird. Diese Messung datiert vom 2026-08-28.
+
+### MESSUNG C gegen den Token-Endpunkt (2026-08-28) — die Teile (bv) bis (bz)
+
+**WAS DIESER ABSCHNITT IST UND WIE ER SICH VON A UND B1 UNTERSCHEIDET:** Messung A (s. (bj))
+und Messung B1 (s. (bn)) liefen beide gegen `events:ingest` — den EINLIEFERUNGS-Endpunkt.
+**MESSUNG C LÄUFT GEGEN DEN TOKEN-ENDPUNKT** und misst damit erstmals den ANDEREN der beiden
+Endpunkte, an denen die Phase 11.2 hängt: nicht, was wir senden, sondern womit wir es senden
+dürfen.
+
+**HERKUNFT FÜR ALLE TEILE DIESES ABSCHNITTS: GEMESSEN 2026-08-28 (OWNER), live gegen
+`https://oauth2.googleapis.com/token`.** Wo eine Angabe eine RECHNUNG aus gemessenen Werten
+ist und keine Beobachtung, steht das an der Angabe — s. besonders (bw).
+
+(bv) **DAS ERNEUERUNGS-TOKEN WIRD NICHT ROTIERT — ZWEIMAL DASSELBE EINGELÖST, BEIDE MALE
+     200.** **NEU.**
+
+     **GEMESSEN 2026-08-28 (OWNER):** Dasselbe Erneuerungs-Token wurde ZWEIMAL gegen den
+     Token-Endpunkt eingelöst. **Beide Aufrufe antworten mit 200.** Der zweite Aufruf wird
+     nicht abgewiesen, und die Antwort trägt kein neues Erneuerungs-Token an die Stelle des
+     alten.
+
+     **GOOGLE ROTIERT DAS ERNEUERUNGS-TOKEN ALSO NICHT.** Ein einmal abgelegtes Token bleibt
+     nach einer Einlösung brauchbar.
+
+     **`client_secret` WURDE MITGESENDET** — die Aufrufgestalt steht in (by), weil sie dort
+     eine eigene offene Frage trägt.
+
+     **EINE FRÜHER OFFENE FRAGE IST DAMIT FÜR GOOGLE ERLEDIGT:** Die Auflage
+     "AUSGEGEBEN IST NICHT EINGELÖST" — festgehalten am LinkedIn-Teil (w) dieser Datei, wo eine
+     programmatische Erneuerung als GELESEN, aber UNGEPRÜFT geführt wird — ist für Google
+     eingelöst: die Erneuerung ist gefahren und sie geht durch. **FÜR LINKEDIN GILT SIE
+     UNVERÄNDERT WEITER**, s. (bz).
+
+(bw) **DIE ZWEI UHREN — DAS ZUGANGSDATUM LEBT 3599 SEKUNDEN, UND DIE UHR DES
+     ERNEUERUNGS-TOKENS WIRD BEI DER EINLÖSUNG NICHT VERLÄNGERT.** **NEU.**
+
+     **GEMESSEN 2026-08-28 (OWNER) — die vier Zahlen, wie sie in den Antworten standen:**
+     · `expires_in` **3599**.
+     · `refresh_token_expires_in` im ersten Aufruf **581553**.
+     · `refresh_token_expires_in` im zweiten Aufruf **581408**.
+     · Der Abstand zwischen den beiden Aufrufen: **145 Sekunden**.
+
+     **DIE AUSSAGE, UND SIE IST EINE RECHNUNG AUS DIESEN VIER WERTEN, KEINE ZWEITE
+     BEOBACHTUNG:** 581553 − 581408 = 145 — **genau der verstrichene Abstand**. Die Restdauer
+     ist also um exakt die vergangene Zeit gesunken. **DIE UHR DES ERNEUERUNGS-TOKENS LÄUFT
+     WEITER UND WIRD DURCH DIE EINLÖSUNG NICHT ZURÜCKGESETZT.** Das ist die schärfere Aussage
+     als "sie wird nicht verlängert": Sie wird nicht einmal angehalten.
+
+     **DIE EINORDNUNG DER ERSTEN ZAHL — EBENFALLS EINE RECHNUNG, NICHT EIN MESSWERT:**
+     581553 Sekunden sind **6,73 Tage**. Das ist die **Sieben-Tage-Frist im
+     Publishing-Status "Testing"**, die als GELESEN bereits in (af) steht — hier zum ersten
+     Mal an einer echten Antwort wiedergefunden.
+     **WAS DARAN AUSDRÜCKLICH EINE FOLGERUNG IST UND KEINE MESSUNG:** Dass die Differenz zu
+     sieben vollen Tagen das ALTER der Autorisierung ist, folgt aus der Annahme, dass die
+     Frist bei der Zustimmung zu laufen beginnt. **Das ist nicht gemessen** — der
+     Zustimmungs-Zeitpunkt ist in diesem Lauf nicht erhoben worden.
+
+(bx) **DIE GELESENE ERWARTUNG, `refresh_token_expires_in` TREFFE UNSEREN FLUSS NICHT, IST
+     WIDERLEGT — DAS FELD KAM.** **NEU.**
+
+     **GEMESSEN 2026-08-28 (OWNER):** Beide Antworten trugen `refresh_token_expires_in`
+     (s. die Werte in (bw)). Der Aufruf betraf den Data-Manager-Bereich.
+
+     **WAS DAMIT FÄLLT — GENAU EINE AUSSAGE, UND SIE IST EINE ABLEITUNG AUS EINER LESUNG,
+     NICHT DIE LESUNG SELBST:** Teil (bc) hält GELESEN fest, das Feld werde "only set when
+     the user grants time-based access", und leitet daraus ab, `{kind:"unknown"}` sei für
+     unseren Fluss der **zu ERWARTENDE** Fall. **DIESE ABLEITUNG IST WIDERLEGT.** Der
+     gelesene Satz des Anbieters selbst ist von dieser Messung NICHT berührt — was fällt,
+     ist unsere Folgerung daraus. Ein VORBEHALT steht an (bc) und zeigt hierher.
+
+     **OB ES AM PUBLISHING-STATUS HÄNGT, IST OFFEN — UND WIRD HIER NICHT AUFGELÖST.** Beide
+     Zustände tragen die Beobachtung gleich gut:
+     · Der Anbieter setzt das Feld generell, und die gelesene Bedingung ist enger formuliert
+       als das tatsächliche Verhalten.
+     · Der Anbieter setzt es, WEIL die Anwendung im Publishing-Status "Testing" steht — dann
+       verschwände es mit der Verifizierung, und `{kind:"unknown"}` würde nachträglich doch
+       zum Normalfall.
+     **DIE MESSUNG TRENNT DIE BEIDEN NICHT**, weil sie in nur EINEM Publishing-Status
+     gefahren ist. **WER SIE TRENNEN WILL, BRAUCHT DIESELBE MESSUNG NACH DER VERIFIZIERUNG.**
+
+     **DIE FOLGE FÜR DEN CODE STEHT NICHT HIER:** `src/lib/secrets/oauth-payload.ts` trägt am
+     Typ `RefreshTokenExpiry` die widerlegte Erwartung im Kommentar. **DIE DATEI IST IN
+     DIESER RUNDE NICHT ANGEFASST WORDEN** (Invariante des Auftrags) — dieselbe Handhabung
+     wie in Lauf 6, der dort schon einmal eine Richtigstellung GEMELDET und nicht angeglichen
+     hat (s. (bc)). Ob und wie sie nachzieht, ist eine eigene Entscheidung an einer
+     Code-Datei und keine Doku-Arbeit.
+     **WAS DIE ENTSCHEIDUNG SELBST ANGEHT — DER ZUSTAND `{kind:"unknown"}` WIRD NICHT
+     ÜBERFLÜSSIG:** Er bleibt gebraucht, solange nicht gemessen ist, dass JEDER Anbieter
+     dieses Rahmens das Feld liefert. Für LinkedIn ist es nicht gemessen (s. (bz)).
+
+(by) **`client_secret` WURDE MITGESENDET — DER ANBIETER FÜHRT ES ALS "Optional". NICHT
+     GEDEUTET.** **NEU.**
+
+     **GEMESSEN 2026-08-28 (OWNER):** Beide Aufrufe trugen `client_secret`. Beide
+     antworteten mit 200.
+
+     **DER ANBIETER FÜHRT DAS FELD ALS "Optional"** (GELESEN; s. die Feldliste des
+     Token-Endpunkts im Lauf 6, Teile (az) bis (bg)).
+
+     **AUSDRÜCKLICH NICHT GEDEUTET, und die Nicht-Deutung ist hier der Befund:** Ob ein
+     Aufruf OHNE `client_secret` ebenfalls durchginge, ist **NICHT GEMESSEN** — es ist keiner
+     gefahren worden. Aus "mit Secret geht es" folgt nichts über "ohne Secret geht es auch",
+     und aus dem Wort "Optional" in der Doku folgt es ebenso wenig: Ein Feld kann als optional
+     dokumentiert und für einen bestimmten Client-Typ dennoch verlangt sein.
+     **WAS DARAUS FÜR DEN BAU FOLGT:** Gebaut wird MIT `client_secret` — das ist der
+     gemessene Weg. Der Verzicht wäre eine Änderung auf ungemessener Grundlage.
+
+(bz) **WAS C NICHT GEMESSEN HAT — ZWEI DINGE, BEIDE AUSDRÜCKLICH.** **NEU.**
+
+     **ERSTENS: DER FEHLERCODE FÜR EIN TOTES ERNEUERUNGS-TOKEN IST UNGEMESSEN.** Es ist kein
+     Aufruf mit einem abgelaufenen, widerrufenen oder gefälschten Erneuerungs-Token gefahren
+     worden.
+     **`invalid_grant` IST EINE ERWARTUNG AUS DEM OAUTH-STANDARD, KEINE MESSUNG.** Sie wird
+     hier ausdrücklich als solche geführt, und zwar auch gegen den naheliegenden Einwand,
+     der Anbieter nenne den Code ja: Teil (bd) hält `invalid_grant` GELESEN fest — aber für
+     den **CODE-TAUSCH**, nicht für die **ERNEUERUNG**, und dort ausdrücklich OHNE
+     Statuscode, OHNE Rumpfform und OHNE Trennung der Fälle. **Wer ihn von dort auf die
+     Erneuerung überträgt, überträgt einen Fehlercode von einem Fluss auf einen anderen** —
+     dieselbe Figur, vor der (bd) beim Statuscode warnt.
+     **DAS TRIFFT DEN AUSGANG `dead`** der Scheibe 1a
+     (docs/aktiver-stand.md, Abschnitt "Die Erneuerung des Zugangsdatums"):
+     Er ruht bei diesem Code auf einer Erwartung. Die
+     Festlegung "ein unerwarteter Anbieter-Code landet in `retry`, nicht in `dead`" ist genau
+     die Vorkehrung dagegen.
+
+     **ZWEITENS: NICHTS AN DIESER MESSUNG GILT FÜR LINKEDIN.** Weder die Nicht-Rotation
+     (bv) noch das Verhalten der zweiten Uhr (bw) noch die Anwesenheit eines
+     Ablauf-Feldes (bx) ist dort erhoben. **Für LinkedIn steht weiterhin nur eine LESUNG**
+     (Teil (w) dieser Datei: Erneuerung per `grant_type=refresh_token`, das Refresh-Token
+     BEHÄLT seine Restlaufzeit) **mit der ausdrücklichen Auflage
+     "AUSGEGEBEN IST NICHT EINGELÖST"** — sie ist für LinkedIn NICHT eingelöst.
+     **WER DEN ANBIETER-NEUTRALEN RAHMEN DER SCHEIBE 1a UM DEN LINKEDIN-ZWEIG ERWEITERT,
+     MISST DORT EIGENS.** Der Rahmen erbt keine Messung.
+
+     **UND DIE GRENZE, DIE FÜR JEDE MESSUNG DIESER DATEI GILT:** Ein Anbieter kann sein
+     Verhalten ändern, ohne dass hier etwas rot wird. Diese Messung datiert vom 2026-08-28.
 
 ## Pinterest (Conversions API)
 

@@ -59,6 +59,7 @@ docs/immer-beachten.md.
 · Was den Zuschnitt bindet
 · Fortschreibungs-Regeln
 · Scheibe 11.2a — Klick-Kennungen lösen und die Nutzlast bauen
+· Die Erneuerung des Zugangsdatums — Scheibe 1a des Schnitts der Phase 11.2
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -440,6 +441,166 @@ nur verschoben: Er bewachte einen UNBELEGTEN Stand gegen eine stille Korrektur; 
 bewacht jetzt einen BELEGTEN gegen eine stille Abweichung. Beides ist derselbe
 Mechanismus — eine Änderung wird ein sichtbarer Diff. Der Test wird NICHT angefasst.
 
+## Die Erneuerung des Zugangsdatums — Scheibe 1a des Schnitts der Phase 11.2
+
+**DIE KURZFORM WIRD HIER EINMAL AUFGELÖST UND DANACH NICHT WIEDERHOLT:** "1a" meint
+DIESE Scheibe — die erste des Schnitts, in den die Phase 11.2 am 2026-08-28 zerlegt
+worden ist (bindende Entscheidung (6)). **SIE IST NICHT DIE SCHEIBE 11.2a.** Jene ist
+abgeschlossen, hat zwei reine Funktionen gebaut und trägt ihren eigenen Abschnitt
+weiter oben. Die beiden Bezeichner sehen einander ähnlich und meinen verschiedene
+Arbeiten; deshalb steht hier der INHALT im Titel und die Kurzform dahinter.
+
+**PROVENIENZ DES GANZEN ABSCHNITTS, wo an der einzelnen Angabe nichts anderes steht:
+ARCHITEKT, 2026-08-28. Keine Messung.**
+
+### Was sie ist
+
+Eine BIBLIOTHEKSFUNKTION in der Bauform von `createAdminClient`
+(src/lib/supabase/admin.ts): **sie prüft KEIN Eigentum.** Ihr Kommentarkopf verlangt
+das ausdrücklich vom AUFRUFER — dieselbe Arbeitsteilung, aus der der Bestand seinen
+Nutzen zieht, und derselbe Preis: Wer sie ohne Eigentums-Gate ruft, hat kein
+Eigentums-Gate, und nichts wird davon rot.
+
+Der Rahmen ist ANBIETER-NEUTRAL mit EINEM Google-Zweig. **LinkedIn erbt ihn** — diese
+Scheibe fasst LinkedIn NICHT an; sie baut den Rahmen nur so, dass ein zweiter Zweig
+später keine Umstellung verlangt.
+
+### Warum sie zuerst kommt — und dieser Grund bindet
+
+Ein Google-Zugangsdatum lebt **3599 Sekunden** (GEMESSEN 2026-08-28, OWNER; s. VERMERK
+5 und docs/ziel-befunde.md, Google-Abschnitt, Teil (bw)).
+
+**DER FEHLZUSTAND, GEGEN DEN DIESE SCHEIBE GEBAUT WIRD, IST AUF DREI EBENEN
+GLEICHZEITIG STUMM** — GEMESSEN am Repo (CC, 2026-08-29):
+· **Die vier Adapter werfen nie und loggen ausschliesslich `errorName`** — je eine
+  Zeile in `meta-forward.ts`, `pinterest-forward.ts`, `tiktok-forward.ts` und
+  `linkedin-forward.ts`. Kein Fremdtext, keine Ursache, kein Ziel-Zustand.
+· **Der Fan-Out läuft über `Promise.allSettled`, dessen Ergebnis am Aufrufort weder
+  gebunden noch gelesen wird** (`handleIngest`, src/lib/capi/ingest.ts). Das steht
+  bereits als Vorrats-Eintrag 3, Ebene 2, und wird hier NICHT neu erhoben, sondern
+  benutzt.
+· **Der Ingest antwortet in jedem Pfad mit einer leeren 204** —
+  INGEST-204-CONTAINMENT (docs/immer-beachten.md).
+
+**FOLGE: Ein Transport ohne Erneuerung sendet EINE STUNDE und schweigt danach.** Kein
+roter Test, keine Meldung, kein Log-Eintrag. Sichtbar wird es beim KUNDEN, an
+fehlenden Conversions — und dort ist es von jeder anderen Ursache nicht zu
+unterscheiden.
+
+**WARUM DAS EIN ZUSCHNITT-ARGUMENT IST UND KEINE VORSICHT:** Der Schaden entsteht
+nicht dadurch, DASS etwas fehlt, sondern dadurch, dass das Fehlen unbeobachtbar ist.
+Wer den Transport zuerst baut, hat eine Stunde lang einen funktionierenden Beweis und
+danach ein Produkt, dessen Defekt niemand messen kann.
+
+### Fünf Festlegungen
+
+**1. DER VORLAUF IST EINE BENANNTE KONSTANTE, FÜNF MINUTEN.** Erneuert wird, wenn
+`accessTokenExpiresAt` INNERHALB des Vorlaufs liegt — nicht erst bei Ablauf.
+**KEINE DRIFT-BEHANDLUNG, und das ist kein Versäumnis:** Der Wert entsteht aus UNSERER
+eigenen Uhr; wir vergleichen unsere gegen unsere. Ein Ausgleich gegen die Uhr des
+Anbieters hätte hier keinen Gegenstand.
+
+**2. `client_secret` WIRD MITGESENDET** — so ist es gemessen (Messung C; s. VERMERK 5
+und docs/ziel-befunde.md, Teile (bv) und (by)). **AUSDRÜCKLICH NICHT GEDEUTET:** Der
+Anbieter führt das Feld als "Optional"; ob es entbehrlich WÄRE, ist nicht gemessen und
+wird hier nicht behauptet.
+
+**3. KEIN NEBENLÄUFIGKEITS-RIEGEL.** Google rotiert das Erneuerungs-Token nicht
+(GEMESSEN 2026-08-28, OWNER, Teil (bv)); zwei gleichzeitige Läufe lösen dasselbe Token
+doppelt ein, und der Schaden ist ein überflüssiger Netzaufruf.
+**GEMELDET, NICHT GEBAUT** — Vorrats-Eintrag 9.
+
+**4. DER CHIFFRIER-SCHLÜSSEL ROTIERT NEBENBEI MIT.** Wird eine Zeile neu geschrieben,
+nimmt `encryptSecret` (src/lib/secrets/cipher.ts) immer die AKTIVE Kennung — eine
+erneuerte Zeile trägt danach den heute aktiven Schlüssel, auch wenn sie unter einem
+älteren angelegt wurde. **DAS IST ERWÜNSCHT UND GEHÖRT IN DEN KOMMENTARKOPF DER
+GEBAUTEN FUNKTION**, damit niemand es für einen Fehler hält und einen Riegel dagegen
+baut.
+
+**5. IST `refreshTokenExpiresAt` ÜBERSCHRITTEN, IST DER ZUGANG TOT — OHNE NETZAUFRUF.**
+Der Ausgang ist `dead`, und er wird VOR jedem Aufruf gestellt.
+**DER GRUND IST DIE ZWEI-UHREN-LAGE SELBST:** `OAuthPayload`
+(src/lib/secrets/oauth-payload.ts) trägt zwei Ablauf-Felder, damit "abgelaufen, aber
+erneuerbar" von "endgültig weg" zu trennen ist. Wer die zweite Uhr nicht abfragt, hat
+sie gebaut und nicht benutzt.
+**DER ZUSTAND `{kind:"unknown"}` GILT NIE ALS ÜBERSCHRITTEN — DER NETZAUFRUF WIRD
+GEMACHT.** ENTSCHEIDUNG: ARCHITEKT, 2026-08-29.
+GRUND: **dieselbe Asymmetrie wie beim Ergebnistyp.** Ein Aufruf, der sich als
+überflüssig erweist, kostet einen Netzaufruf; ein zu Unrecht für tot erklärter Zugang
+kostet einen Kunden-Autorisierungsfluss, den niemand gebraucht hätte. Von zwei
+unbelegten Möglichkeiten wird die gewählt, deren Fehlgriff der billigere ist.
+GRENZE: **Sie gilt NUR der zweiten Uhr, nicht `accessTokenExpiresAt`.** Dort ist der
+Ablauf ein Zeitpunkt und kein benannter Zustand; der Vorlauf aus Festlegung 1 bleibt
+davon unberührt.
+Der Satz "'unbekannt' ist kein Überschreiten" bleibt damit wörtlich richtig — er ist
+jetzt entschieden statt offen.
+
+### Der Ergebnistyp — vier Zustände, nach REAKTION sortiert
+
+**DIE SORTIER-ACHSE IST DER GANZE PUNKT:** Die Zustände sind danach geschnitten, WAS
+DER AUFRUFER TUN SOLL — nicht danach, was schiefging. Eine Sortierung nach
+Fehlerursache zwänge jeden Aufrufer, die Zuordnung selbst zu treffen, und zwar jeder
+für sich und jeder anders.
+
+· **`ok`** — erneuert, ODER das alte Zugangsdatum reichte noch. **Die zwei Fälle
+  werden im Ergebnis NICHT getrennt**, weil der Aufrufer in beiden dasselbe tut.
+· **`retry`** — Netz, Timeout, 5xx.
+· **`dead`** — `invalid_grant`, kein Erneuerungs-Token, unbrauchbare Nutzlast. Der
+  Kunde muss neu autorisieren.
+· **`misconfigured`** — Chiffrier-Schlüssel weg, Env fehlt, `unknown_key`. **Ein
+  BETREIBER-Problem, kein Kunden-Problem**, und genau deshalb ein eigener Zustand: Wer
+  ihn in `dead` einebnet, schickt den Kunden durch einen Autorisierungs-Fluss, der
+  nichts heilt.
+
+**JEDER FEHLZUSTAND TRÄGT EINEN BENANNTEN `reason`. KEIN FREMDTEXT NACH AUSSEN** —
+weder eine Anbieter-Meldung noch ein Fehler-`message`.
+
+**DIE SECHS ZUSTÄNDE VON `decryptSecret` DÜRFEN NICHT AUF "ging nicht" EINGEEBNET
+WERDEN.** `DecryptResult` (src/lib/secrets/cipher.ts) trägt sechs `kind`-Werte, davon
+FÜNF Fehlzustände (GEMESSEN am Repo, CC, 2026-08-29). Diese Scheibe legt ZWEI
+Zuordnungen fest:
+· `unknown_key` -> **`misconfigured`**. Der Kopf nennt eine Kennung, die DIESER
+  Umgebung nicht bekannt ist — das ist "andere Umgebung", nicht "Zugang tot".
+· `auth_failed` -> **`dead`**.
+**FÜR DIE ÜBRIGEN IST DIE ZUORDNUNG HIER NICHT ENTSCHIEDEN**, und wer sie hier sucht,
+findet sie nicht.
+
+**EIN UNERWARTETER ANBIETER-CODE LANDET IN `retry`, NICHT IN `dead`.** Der Grund ist
+asymmetrisch und deshalb entscheidbar: Weiterversuchen ist harmlos, vorzeitiges
+Aufgeben nicht — es kostet einen Kunden-Autorisierungsfluss, den niemand gebraucht
+hätte.
+
+### Die Beweis-Route bleibt stehen — als Produkt-Baustein
+
+**SIE WIRD NACH DEM LIVE-TEST NICHT ZURÜCKGEBAUT.** Zwei Gründe, und beide sind
+benannt:
+· Der offene Punkt "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN"
+  (CLAUDE.md, "## Offene Punkte") führt als Ursache (4) genau diesen Fall — ein Ziel,
+  dessen Zugangsdatum ablaufen kann — und **sein Trigger ist EINGETRETEN** (dort
+  wörtlich: "für LinkedIn ist er EINGETRETEN, seit das Ziel am 2026-08-19 sendet").
+· **Die beiden Ablauf-Zeitpunkte liegen in `project_secrets.secret_enc` und sind damit
+  unlesbar** — nicht nur für die Oberfläche, sondern für jeden ausser dem
+  Dechiffrier-Pfad.
+
+**BAUFORM — das Muster der zwei bestehenden OAuth-Routen** (GEMESSEN am Repo, CC,
+2026-08-29): `runtime = "nodejs"`, `dynamic = "force-dynamic"`, `getUser()`, **dann**
+das Eigentums-Gate. Kein neues Muster.
+
+**SIE GIBT KEINE TOKEN ZURÜCK.** Nur den Zustand und die zwei Ablaufzeitpunkte.
+
+### Scope — und wo er zum STOPP wird
+
+**KEINE SCHEMA-ÄNDERUNG, KEINE NEUE SPALTE, KEINE NEUE DEPENDENCY.**
+**VERLANGT DER BAU-PLAN AN IRGENDEINER STELLE EINE SCHEMA-AUSSAGE, IST DAS EIN
+STOPP** — kein Nebenbei-Rückfrage, sondern ein Anhalten des Zuschnitts.
+
+**UNBERÜHRT, namentlich, damit die Liste prüfbar ist:** `ingest.ts` · alle vier
+`*-forward.ts` · `token.ts` · `settings.ts` · `google-payload.ts` ·
+`google-click-ids.ts` · `TRACKING_TARGETS`.
+
+**NICHT ZU DIESER SCHEIBE:** der automatische Auslöser (1b) · Messung B2 · alles an
+den Konto-Kennungen (2).
+
 ## Abgeschlossene Scheiben-Vermerke
 
 ### VERMERK 1 (Commit 2d0b59e) — DIE GESTALT-ENTSCHEIDUNG UND DIE MESSUNG DER KLICK-KENNUNG
@@ -653,12 +814,56 @@ solche ausgewiesen. Die Aussage, dass B1 den Live-Nachweis nicht einlöst, ist e
 ihrem Zuschnitt. Die Zuordnung, welche Vorbedingung berührt ist und welche nicht, ist GEMESSEN
 am Dateitext (CC, 2026-08-28).
 
+### VERMERK 5 (noch ohne Commit-Nummer) — DIE ERNEUERUNG IST GEMESSEN, DAS ERNEUERUNGS-TOKEN ROTIERT NICHT
+
+**DIES IST DIE EINE ERLAUBTE LÜCKE** im Sinne der Fortschreibungs-Regel oben: der
+jüngste Vermerk, noch nicht committet. Eine ZWEITE Lücke gibt es nicht.
+
+**WAS GESCHEHEN IST:** MESSUNG C gegen `oauth2.googleapis.com/token` — GEMESSEN
+2026-08-28 (OWNER, live). Sie löst ein Erneuerungs-Token ein, statt wie A und B1 gegen
+`events:ingest` zu senden; sie misst damit erstmals den ANDEREN der beiden
+Google-Endpunkte, an denen diese Phase hängt.
+
+**DER BEFUND STEHT NICHT HIER, SONDERN IN docs/ziel-befunde.md**, Google-Abschnitt,
+Teile (bv) bis (bz) — der Lauf und die Nicht-Rotation in (bv), die zwei Uhren in (bw),
+die widerlegte Annahme in (bx), `client_secret` in (by), die Grenzen in (bz).
+**ZWEIMAL GESCHRIEBEN LIEFE ES AUSEINANDER**, deshalb hier nur der Zeiger.
+
+**DAS ERGEBNIS IN EINEM SATZ:** Google gibt dasselbe Erneuerungs-Token zweimal
+zurückgetauscht wieder her, ohne es zu rotieren; das Zugangsdatum lebt 3599 Sekunden,
+und die Uhr des Erneuerungs-Tokens läuft bei der Einlösung WEITER, statt sich zu
+verlängern.
+
+**WAS DARAUS FÜR DEN ZUSCHNITT FOLGT UND SCHON EINGETRAGEN IST:** Die Scheibe 1a (s.
+den Abschnitt "Die Erneuerung des Zugangsdatums") stützt zwei ihrer fünf Festlegungen
+auf diesen Vermerk — das Mitsenden von `client_secret` und den Verzicht auf einen
+Nebenläufigkeits-Riegel. **Der Verzicht ist als Vorrats-Eintrag 9 festgehalten, NICHT
+gebaut.**
+
+**EINE FOLGE, DIE NICHT DEN ZUSCHNITT BETRIFFT, SONDERN EINE CODE-DATEI:** Messung C
+widerlegt eine GELESENE Annahme am Typ `RefreshTokenExpiry`
+(src/lib/secrets/oauth-payload.ts). **DIE DATEI IST IN DIESER RUNDE NICHT ANGEFASST
+WORDEN** (Invariante des Auftrags: kein Produktivcode) — dieselbe Handhabung wie beim
+Lauf 6, der dort schon einmal eine Richtigstellung gemeldet und nicht angeglichen hat.
+Der Sachverhalt steht in Teil (bx); ob und wie die Datei nachzieht, ist eine eigene
+Entscheidung und hier KEINE.
+
+**PROVENIENZ:** Messung C GEMESSEN 2026-08-28 (OWNER), live gegen den Endpunkt. Die
+Zuordnung, welche Festlegung der Scheibe 1a auf welchem Teil ruht, ist GEMESSEN am
+Dateitext (CC, 2026-08-29).
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
-Fünf Stück, alle am 2026-08-25 mit dem Zuschnitt der Scheibe 11.2a getroffen. Je
-Eintrag: die ENTSCHEIDUNG, ihr GRUND und ihre GRENZE. Die Befunde selbst werden NICHT
-verdoppelt — sie stehen in docs/ziel-befunde.md bzw. an der Roadmap-Zeile 11.2, und
-zwei Fassungen liefen auseinander.
+Je Eintrag: die ENTSCHEIDUNG, ihr GRUND und ihre GRENZE. Die Befunde selbst werden
+NICHT verdoppelt — sie stehen in docs/ziel-befunde.md bzw. an der Roadmap-Zeile 11.2,
+und zwei Fassungen liefen auseinander.
+KEINE STÜCKZAHL IN DIESEM KOPF, UND ES KOMMT KEINE ZURÜCK: Die Einträge sind
+nummeriert, die Liste zählt sich damit selbst, und eine Zahl daneben ist eine zweite
+Wahrheit, die bei jedem Zuwachs neu falsch wird — in dieser Datei dreimal
+protokolliert kaputtgegangen.
+UND KEINE SAMMEL-HERKUNFT: Jeder Eintrag trägt seine eigene Provenienz. Eine
+gemeinsame Angabe im Kopf war mit dem ersten Eintrag aus einem anderen Anlass falsch,
+und zwar für alle auf einmal.
 
 **(1) ABLAGE UND LADEKLASSE DER GOOGLE-DATEIEN.**
 ENTSCHEIDUNG: Beide Dateien liegen in src/lib/capi/ und sind REIN — kein
@@ -877,14 +1082,77 @@ PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-28 — keine Messung, keine Ableitung. De
 gemessene Stand, auf den sie sich stützt, steht an ihrem Ort in docs/offene-punkte.md
 (GEMESSEN am Repo, CC, 2026-08-28).
 
+**(6) DER SCHEIBEN-SCHNITT DER PHASE 11.2.**
+ENTSCHEIDUNG: Die Phase wird geschnitten in — **1a** die Erneuerungs-Funktion OHNE
+Auslöser · **1b** den automatischen Auslöser · **2** die Ablage der
+Google-Konto-Kennungen · **3** 'google' in TRACKING_TARGETS · **4** den Transport.
+DIE AUFZÄHLUNG OBEN TRÄGT VIER NUMMERN UND FÜNF STÜCKE, und der Satz steht hier, damit
+niemand beim Nachzählen einen Fehler vermutet: Nummer 1 zerfällt in 1a und 1b. Die
+GRENZE unten ist die Probe darauf; sie behandelt 1a und 1b ausdrücklich verschieden.
+GRUND: **Der Transport erzeugt allein KEINEN sendenden Pfad.** Vier unabhängige Tore
+halten ihn auf — `withPixel` (die Ableitung aus TRACKING_TARGETS in
+src/lib/capi/token.ts), `hasSecret` (src/lib/tracking/target-readiness.ts), das
+Consent-Gate (`allowedTargets` in src/lib/capi/ingest.ts über `consentAllows`) und
+`hasAdapter` (src/lib/tracking/target-adapters.ts). GEMESSEN am Repo (CC, 2026-08-29).
+**UND ZWEI DINGE FEHLEN GANZ:** ein Lesepfad für das Zugangsdatum und ein Ort für die
+Konto-Kennungen. Wer den Transport zuerst baut, baut gegen vier geschlossene Tore und
+zwei nicht vorhandene Voraussetzungen.
+GRENZE: **Zwingend ist NUR 4 nach 1a, 2 und 3.** 1b darf dazwischen stehen. Die
+Reihenfolge ist damit KEINE Kette, sondern eine Halbordnung — wer sie als Kette liest,
+hält eine erlaubte Umstellung für einen Verstoss.
+PROVENIENZ: ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-08-28. Die vier Tore und die zwei
+Fehlstellen sind GEMESSEN am Repo (CC, 2026-08-29); der Schnitt selbst ist eine
+Festlegung, keine Messung.
+
+**(7) 1a WIRD VOM AUSLÖSER GETRENNT.**
+ENTSCHEIDUNG: Die Erneuerungs-Funktion (1a) und der automatische Auslöser (1b) sind
+ZWEI Scheiben und nicht eine.
+GRUND: **Die Funktion ist in allen drei denkbaren Auslöser-Varianten IDENTISCH.**
+Verschieden ist nur, WER sie ruft und WIE dieser Ruf autorisiert wird. Dazu kommt ein
+Beweis-Grund, und er ist der schärfere: **1a ist mit dem VORHANDENEN Muster beweisbar**
+— der Bauform der zwei bestehenden OAuth-Routen —, **1b braucht ein NEUES.** Ein
+Zuschnitt, der beides zusammenlegt, koppelt eine beweisbare Arbeit an eine, deren
+Beweisform erst noch zu bestimmen ist.
+GRENZE, UND SIE IST DER TRAGENDE TEIL DIESES EINTRAGS: **1b löst das eigentliche
+Problem. 1a ALLEIN HÄLT KEINEN ZUGANG AM LEBEN** — eine Funktion, die niemand ruft,
+erneuert nichts. Wer 1a abschliesst und 1b vertagt, hat den Fehlzustand aus dem
+Abschnitt "Warum sie zuerst kommt" NICHT beseitigt, sondern nur das Werkzeug dagegen
+gebaut.
+PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-08-28. Keine Messung.
+
+**(8) 'google' DARF ÜBER FORWARDER_BY_TARGET LAUFEN.**
+ENTSCHEIDUNG: Der Google-Transport bekommt KEINEN eigenen, parallelen Weg; er läuft
+über `FORWARDER_BY_TARGET` (src/lib/capi/ingest.ts) wie die vier bestehenden Ziele.
+GRUND: **Die drei Punkte im Kommentarkopf von
+src/app/api/oauth/google/callback/route.ts sind KEINE Gegenposition** — sie stehen
+dort ausdrücklich als "DREI FOLGEN, benannte Kosten und keine Versehen" (GELESEN am
+Code, CC, 2026-08-29). (1) und (2) benennen KOSTEN DER HEUTIGEN LAGE — die Oberfläche
+sieht die Zeile nicht, und `removeCapiToken` weist 'google' ab. (3) ist eine
+UMFANGS-Aussage: die Aufnahme in TRACKING_TARGETS sei "eine eigene Scheibe". Keiner
+der drei sagt, der Weg sei falsch; sie sagen, er sei noch nicht bezahlt.
+**EIN PARALLELER PFAD WÄRE EIN ZWEITES URTEIL DARÜBER, WELCHE ZIELE LIVE SIND** —
+dieselbe Figur wie `domains` gegen `settings.hosting.label` (docs/immer-beachten.md,
+"DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER 'IST DIESES PROJEKT LIVE?'"). Dort
+hat sie eine Seite dauerhaft 404en lassen, während das UI "veröffentlicht" zeigte.
+GRENZE: **Der Preis ist Scheibe 3, und sie kommt VOR dem Transport.** Diese
+Entscheidung macht die Aufnahme in TRACKING_TARGETS nicht billiger — sie sagt nur,
+dass der Preis zu zahlen und nicht zu umgehen ist. Was die Aufnahme nach sich zieht,
+steht in jenem Kommentarkopf unter (3) und wird hier NICHT wiederholt.
+PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-08-28, gestützt auf eine Lesung am Code (CC,
+2026-08-29).
+
 ## Vorrat (gemeldet, nicht gebaut)
 
-FÜNF Befunde. Die ersten drei GEMELDET am 2026-08-24, die zwei letzten am
-2026-08-25 hinzugekommen. Alle NICHT gebaut und NICHT entschieden.
-NACHGEZOGEN AM 2026-08-25 — die ersten drei sind ERSETZT, nicht ergänzt: zwei
-Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig. DIE ZÄHLUNG
-"DREI" IST DAMIT ÜBERHOLT UND DURCH "FÜNF" ABGELÖST; sie stand hier bis zum
-2026-08-25 und war für ihren Tag richtig. KEINE EMPFEHLUNG zu keinem von ihnen.
+Alle Einträge sind NICHT gebaut und NICHT entschieden. KEINE EMPFEHLUNG zu keinem von
+ihnen. Einträge 1 bis 3 GEMELDET am 2026-08-24, Einträge 4 und 5 am 2026-08-25.
+KEINE STÜCKZAHL IN DIESEM KOPF, UND ES KOMMT KEINE ZURÜCK: Die Einträge sind
+nummeriert, die Liste zählt sich damit selbst, und eine Zahl daneben ist eine zweite
+Wahrheit, die bei jedem Zuwachs neu falsch wird — in dieser Datei dreimal
+protokolliert kaputtgegangen. Aus demselben Grund steht hier keine Ordnungsangabe der
+Form "die zwei letzten": sie wandert mit jedem Zuwachs weiter, ohne dass jemand sie
+anfasst.
+NACHGEZOGEN AM 2026-08-25 — die Einträge 1 bis 3 sind ERSETZT, nicht ergänzt: zwei
+Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
 
 1. **DER EINWILLIGUNGS-DRAHT FÜHRT KEINEN GOOGLE-SCHLÜSSEL.** GEMESSEN AM CODE (CC,
    2026-08-25): Der Befund folgt aus TRACKING_TARGETS (src/lib/settings.ts) — die
@@ -982,23 +1250,43 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig. DIE ZÄ
      es fällig und ist dann erzwungen eindeutig (Teil (v)/C3, DUPLICATE_DESTINATION_REFERENCE).
    · KEIN eventName. Für Google Ads optional, Pflicht nur für GA4 (GELESEN, Teil (w)/F1).
 
-NACHGETRAGEN AM 2026-08-28 — DREI EINTRÄGE AUS MESSUNG B1. Die Zählung "FÜNF" im Kopf
-dieses Abschnitts ist damit überholt und durch ACHT abgelöst; sie stand dort bis zum
-2026-08-28 und war für ihren Tag richtig. KEINE EMPFEHLUNG zu keinem von ihnen.
-
-6. **eventSourceUrl AN DER FAN-OUT-STELLE IST UNGEMESSEN — OHNE SIE BEKOMMT
-   extractGoogleClickIds KEINEN EINGABEWERT.** Die Extraktion nimmt eine URL entgegen;
-   die einzige URL, die den Ingest-Pfad erreicht, ist eventSourceUrl aus dem
-   Beacon-Rumpf. **OB SIE AN DER STELLE, AN DER DIE ADAPTER GERUFEN WERDEN, ÜBERHAUPT
-   VERFÜGBAR IST, IST NICHT GEMESSEN** — GEMESSEN ist nur, dass sie NICHT PERSISTIERT
-   wird (Vermerk 1, persistEvent in src/lib/analytics/persist.ts) und dass sie an die
-   Adapter weitergereicht wird.
-   WARUM DAS HIER STEHT UND NICHT ALS ERLEDIGT GILT: Es ist die Vorbedingung, ohne die
-   der gesamte Zuschnitt der Scheibe 11.2a keinen Eingang hat. Ein Transport-Zuschnitt,
-   der sie nicht prüft, plant einen Adapter, dem der Eingabewert fehlt — und das fällt
-   erst beim Bauen auf.
-   AUFLAGE AN DEN TRANSPORT-ZUSCHNITT, nicht an diese Scheibe.
-   TRIGGER: die Transport-Scheibe.
+6. **eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE
+   LIEGT NICHT MEHR AM TRANSPORTWEG, SONDERN AM INHALT DER URL.**
+   GEMESSEN am Repo (CC, 2026-08-29). INSTRUMENT: formale Suche über src/ nach
+   `eventSourceUrl` ohne Testdateien, dazu die Lesung der getroffenen Symbole.
+   **WAS DAMIT ENTSCHIEDEN IST — DREI ANGABEN:**
+   · **DER TRANSPORTWEG STEHT.** `eventSourceUrl` ist ein Feld des Typs
+     `CapiRequestBody` (src/lib/capi/ingest.ts). `handleIngest` reicht `body`
+     unverändert an `dispatchForward` und von dort an `FORWARDER_BY_TARGET[target]`
+     weiter — jeder Adapter bekommt es, ohne dass jemand etwas hinzufügen müsste.
+   · **DREI DER VIER ADAPTER LESEN SIE HEUTE SCHON**, je über `asString(body.eventSourceUrl)`:
+     `forwardToMeta` (src/lib/capi/meta-forward.ts) und die Adapter in
+     src/lib/capi/pinterest-forward.ts und src/lib/capi/tiktok-forward.ts.
+     **LinkedIn liest sie NICHT** — der Kommentarkopf von src/lib/capi/linkedin-forward.ts
+     sagt es ausdrücklich. Ein Google-Zweig wäre damit der VIERTE Leser und kein
+     Sonderfall.
+   · **`extractGoogleClickIds` BEKÄME VON DORT EINEN EINGABEWERT.** Die Funktion
+     (src/lib/capi/google-click-ids.ts) nimmt `unknown` entgegen und ist in ihrem
+     eigenen Kopf genau auf diese Quelle zugeschnitten. Gesetzt wird der Wert im
+     Beacon-Rumpf von `buildCapiBeaconStatement` (src/lib/tracking/meta.ts) als
+     `location.href` — absolut, wie die Funktion es verlangt.
+   **EIN NAHELIEGENDER EINWAND IST GEPRÜFT UND TRÄGT NICHT:** Der Bestätigungs-Beacon
+   `buildPixelConfirmStatement` (ebenda) trägt `eventSourceUrl` ausdrücklich NICHT
+   ("BARE Payload"). **Das trifft den Fan-Out nicht:** Der Bestätigungs-Zweig
+   (`isBrowserConfirm` in `handleIngest`) kehrt mit seiner 204 zurück, BEVOR der
+   Forward-Block erreicht wird. Ein Confirm kommt an der Fan-Out-Stelle nie an.
+   **WAS OFFEN BLEIBT UND DER GRUND IST, WARUM DIESER EINTRAG NICHT ENTFÄLLT:** Gemessen
+   ist, dass die URL ANKOMMT — nicht, dass sie eine Klick-Kennung TRÄGT. Beide Lücken
+   aus Vermerk 1 stehen unverändert: dass eine ECHTE gclid von Google denselben Weg
+   nimmt, ist NICHT GEPRÜFT, und gemessen ist ein EIN-SEITEN-FALL. Auf einer Seite mit
+   mehreren Schritten ist `location.href` zur Conversion-Zeit eine andere URL als beim
+   Einstieg.
+   **ERSETZT AM 2026-08-29** — hier stand, die Verfügbarkeit an der Fan-Out-Stelle sei
+   NICHT GEMESSEN, samt der Auflage an den Transport-Zuschnitt, sie zu prüfen. Die
+   Prüfung ist gefahren, die Auflage ist damit eingelöst; der Wortlaut war bis zu diesem
+   Tag richtig.
+   TRIGGER: die Transport-Scheibe — jetzt für die verbliebene Frage nach dem INHALT der
+   URL, nicht mehr für ihre Verfügbarkeit.
 7. **DIE NORMALISIERUNG DER KUNDENNUMMER GEHÖRT AN DIE EINGABE, NICHT IN DEN REINEN
    BAUER.** GEMESSEN 2026-08-28 (OWNER), Messung B1: `operatingAccount.accountId` muss
    numerisch sein — "000-ERFUNDEN-000" wird mit `INVALID_NUMBER_FORMAT` abgewiesen
@@ -1025,8 +1313,31 @@ dieses Abschnitts ist damit überholt und durch ACHT abgelöst; sie stand dort b
    ebenfalls sammelt, ist NICHT gemessen** — Teil (bu) führt dazu eine ausdrücklich als
    ABLEITUNG gekennzeichnete Gegenannahme.
    TRIGGER: der erste Rückkanal für abgelehnte Ereignisse. Er berührt alle vier
-   bestehenden Adapter — s. den Kandidaten "EIN ADAPTER KANN HEUTE KEIN EREIGNIS
-   ABLEHNEN" in docs/claude-history/backlog-polish.md und Vorrats-Eintrag 3 oben.
+   bestehenden Adapter — s. den Kandidaten
+   "EIN ADAPTER KANN HEUTE KEIN EREIGNIS ABLEHNEN" in
+   docs/claude-history/backlog-polish.md und Vorrats-Eintrag 3 oben.
+
+9. **KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG — ZWEI GLEICHZEITIGE LÄUFE LÖSEN
+   DASSELBE ERNEUERUNGS-TOKEN DOPPELT EIN.** Die Scheibe 1a
+   (s. den Abschnitt "Die Erneuerung des Zugangsdatums", Festlegung 3) baut
+   ausdrücklich KEINEN Riegel — keine Sperre auf der Zeile, keine Vereinzelung, kein
+   Warten.
+   **WARUM DER SCHADEN KLEIN IST, und das ist der Grund für "melden statt bauen":**
+   Google rotiert das Erneuerungs-Token NICHT (GEMESSEN 2026-08-28, OWNER, Messung C;
+   docs/ziel-befunde.md, Google-Abschnitt, Teil (bv)). Der zweite Lauf bekommt ein
+   gültiges Zugangsdatum wie der erste; was entsteht, ist ein ÜBERFLÜSSIGER NETZAUFRUF
+   und eine zweite Schreibung derselben Zeile — kein verlorener Zugang.
+   **DIE GRENZE, UND SIE HÄNGT AN EINER FREMDEN EIGENSCHAFT:** Diese Einschätzung ruht
+   VOLLSTÄNDIG darauf, dass der Anbieter nicht rotiert. **Rotierte er, wäre derselbe
+   Fall ein VERLORENER ZUGANG** — der zweite Lauf entwertete das Token des ersten, und
+   der Schaden wäre nicht ein Netzaufruf, sondern eine Neu-Autorisierung durch den
+   Kunden. Ein Anbieter kann das ändern, ohne dass hier etwas rot wird.
+   **AUSDRÜCKLICH NICHT ÜBERTRAGBAR:** Für LinkedIn ist die Nicht-Rotation NICHT
+   gemessen. Wer den Rahmen um einen zweiten Anbieter-Zweig erweitert, prüft sie dort
+   eigens — s. Teil (bz).
+   GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.
+   TRIGGER: eine gemessene Rotation bei irgendeinem Anbieter dieses Rahmens, ODER ein
+   Auslöser (Scheibe 1b), der die Funktion nachweislich nebenläufig ruft.
 
 ## Hebungs-Kandidaten
 

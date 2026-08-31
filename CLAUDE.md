@@ -191,7 +191,10 @@ gehen von hier eine Station weiter.
       Person erzeugt.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") (TRIGGER,
   wörtlich und ausdrücklich nicht "falls es je nötig wird": sobald ein Ziel eine Kennung JE
-  EREIGNISTYP trägt.)
+  EREIGNISTYP trägt. — EINGETRETEN, nachgezogen am 2026-08-31: LinkedIn trägt seit Scheibe
+  11.1d eine Kennung je Ereignistyp und sendet seit dem 2026-08-19. Der Wortlaut des
+  Triggers ist NICHT angetastet; der überholte Halbsatz des Grundes ist in
+  docs/offene-punkte.md ERSETZT)
 - CLAUDE.md NÄHERT SICH DEM LADELIMIT (Trigger: vor der nächsten Hebung an einem
   Phasenende)
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
@@ -258,6 +261,8 @@ gehen von hier eine Station weiter.
   Grund nicht erraten, und für ihn sieht das Produkt kaputt aus)
 - DIE PROJEKTWAHL ÜBERLEBT KEIN NEULADEN (Trigger: der erste fremde Nutzer mit mehr als
   einem Projekt — spätestens vor einem Beta-Launch)
+- WAS GOOGLE BEI EINER FREMDEN KUNDENNUMMER TUT, IST UNGELESEN UND UNGEMESSEN (Trigger: der
+  Zuschnitt der Scheibe 4 der Phase 11.2 — der Transport)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

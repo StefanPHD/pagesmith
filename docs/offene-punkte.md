@@ -327,12 +327,34 @@ aufeinander; sie liegen alle hier und finden einander.
   WAS HIER NICHT ENTSCHIEDEN WIRD: wie die Zusage an den Kunden künftig lautet und ob
   Pagesmith je ein Insight Tag ausliefert. KEINE EMPFEHLUNG.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
-  Grund: kein realer Konsument, kein Ziel trägt heute eine Kennung je Ereignistyp. TRIGGER,
+  Grund: kein realer Konsument. TRIGGER,
   wörtlich und ausdrücklich nicht "falls es je nötig wird": sobald ein Ziel eine Kennung JE
   EREIGNISTYP trägt. Was still kaputtgeht: Ein Nenner, der nur Variante A kennt, meldet
   vollständig, während beim halben Traffic nichts ankommt. Die drei Messbefunde, die dann
   sofort gelten und nicht neu erhoben werden müssen, stehen in
   docs/claude-history/backlog-polish.md, "VOLLSTÄNDIGKEITS-ACHSE — WAS DANN SOFORT GILT".
+  SACHKORREKTUR 2026-08-31 — ERSETZT UND NICHT GESTEMPELT: Im Grund stand zusätzlich "kein
+  Ziel trägt heute eine Kennung je Ereignistyp". DAS IST AM CODE FALSCH. LinkedIn trägt seit
+  Scheibe 11.1d genau das — `settings.pixels.linkedin.conversionRules`, eine Zuordnung
+  Ereignisname -> Conversion-Regel-Kennung (GEMESSEN am Repo, CC, 2026-08-31, am Typ
+  ProjectSettings in src/lib/settings.ts und an getConversionRules/setConversionRule
+  ebenda) — und das Ziel SENDET seit dem 2026-08-19 (Scheibe 11.1f).
+  ERSETZT und nicht gestempelt, weil dieser Halbsatz ein MASSSTAB ist: Wer den Trigger an ihm
+  misst, hält ihn für nicht eingetreten. Der ANDERE Halbsatz des Grundes ("kein realer
+  Konsument") bleibt WÖRTLICH stehen und ist unberührt — er sagt, dass die ACHSE keinen
+  Abnehmer hat, nicht dass es keine Kennung je Ereignistyp gäbe. Das sind zwei verschiedene
+  Aussagen, und nur die eine ist überholt.
+  DER TRIGGER IST DAMIT EINGETRETEN, und sein WORTLAUT wird NICHT angetastet — er trifft
+  genau diesen Fall. Der Stub in CLAUDE.md ist im selben Zug nachgezogen.
+  WAS DARAUS NICHT FOLGT: dass die Vollständigkeits-Achse zu bauen wäre. Der Punkt ist
+  weiterhin OFFEN und NICHT ENTSCHIEDEN; KEINE EMPFEHLUNG.
+  OB DIESER EINTRAG EINER DER DREI AUS "DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN
+  TRIGGER UND SIND NICHT GESICHTET" IST, IST NICHT GEPRÜFT WORDEN. Der Satz steht hier
+  ausdrücklich statt einer Behauptung in die eine oder die andere Richtung: Jener Eintrag
+  nennt seine drei Mitglieder nicht, und eine Zuordnung ohne Prüfung wäre eine erfundene.
+  PROVENIENZ: GEMESSEN am Repo (CC, 2026-08-31), in der Aufklärungsrunde zum Zuschnitt der
+  Scheibe 2 der Phase 11.2. Dass der Trigger damit eingetreten ist, ist eine FOLGE aus dieser
+  Messung und seinem Wortlaut, keine zweite Beobachtung.
 - CLAUDE.md NÄHERT SICH DEM LADELIMIT (Trigger: vor der nächsten Hebung an einem
   Phasenende): GEMESSEN am 2026-08-13 — die Datei steht bei rund 149 KB gegenüber dem
   dokumentierten 150k-Ladelimit, "## Immer beachten" trägt 1 012 Zeilen und 80 Regeln,
@@ -1436,3 +1458,57 @@ aufeinander; sie liegen alle hier und finden einander.
   React-State ohne Persistenz, der Auto-Load über `updated_at`, die Schreibziele der
   Callback-Route und von `setCapiToken` — GEMESSEN am Code (CC, 2026-08-31). Die zwei
   Ausgänge desselben Handgriffs sind eine FOLGE daraus, keine eigene Live-Beobachtung.
+
+- WAS GOOGLE BEI EINER FREMDEN KUNDENNUMMER TUT, IST UNGELESEN UND UNGEMESSEN (Trigger: der
+  Zuschnitt der Scheibe 4 der Phase 11.2 — der Transport):
+  DIE FRAGE, WÖRTLICH: Was antwortet die Data Manager API, wenn eine Anfrage in
+  `destinations[].operatingAccount.accountId` eine Kundennummer nennt, für die das
+  hinterlegte Zugangsdatum NICHT autorisiert ist?
+  DER BEFUND IST EIN NICHT-BEFUND, UND ER IST DER GANZE INHALT DIESES PUNKTES: Dazu steht im
+  Repo NICHTS — weder GELESEN noch GEMESSEN. GEMESSEN am Dateitext (CC, 2026-08-31; ACHSE:
+  docs/ziel-befunde.md und docs/ziel-fragenkatalog.md im Volltext, Begriffe
+  `PERMISSION_DENIED` · `NOT_ALLOWLISTED` · `UNAUTHORIZED` · `401` · `403` ·
+  `x-goog-user-project` · `loginAccount` · `operatingAccount` · `manager` · `role` ·
+  `access level`). POSITIVKONTROLLE: Dieselbe Achse fördert die Statuscode-Zuordnung
+  (`UNAUTHENTICATED` -> 401, `PERMISSION_DENIED` -> 403), den Schreibzugriffs-Satz aus Teil
+  (x)/I4 ("this loginAccount must have WRITE ACCESS to the operatingAccount") und den
+  `x-goog-user-project`-Befund aus Teil (am) zutage — sie erreicht den Abschnitt. HIER STEHT
+  KEINE VERMUTUNG ÜBER DAS ANBIETER-VERHALTEN.
+  WAS ES STATTDESSEN GIBT, und keines davon beantwortet die Frage: (1) eine ANFORDERUNG an
+  den Zugriff (Teil (x)/I4, GELESEN) — sie sagt, was gelten MUSS, nicht was bei Verstoss
+  geschieht, und der Befund schliesst dort selbst mit "KEINE ENTWARNUNG"; (2) drei Wege, auf
+  denen Zugriff überhaupt entsteht (Teil (ad), GELESEN) — mit der dort tragenden GRENZE, dass
+  sie aus der GOOGLE-ADS-Doku stammen und `loginAccount`/`operatingAccount` auf keiner jener
+  Seiten vorkommen; (3) das Fehler-Enum mit `NOT_ALLOWLISTED` — kein gelesener Satz ordnet es
+  diesem Fall zu, und die Zuordnung wird hier auch nicht hergestellt.
+  WARUM ER AN SCHEIBE 4 HÄNGT UND NICHT AN SCHEIBE 2: EINE ABGELEGTE KENNUNG IST INERT.
+  Solange Tor B (die Klartext-Spalte `secret` der google-Zeile bleibt NULL) und Tor D
+  (`'google'` steht nicht in `TARGETS_WITH_ADAPTER`) halten, verlässt kein Byte den Server;
+  ein falscher oder fremder Wert im Einstellungs-Blob richtet nichts an. DAS RISIKO ENTSTEHT
+  BEIM SENDEN — und die Messung, die die Frage beantwortet, braucht den Transportpfad
+  ohnehin, weil sie einen echten Aufruf gegen `events:ingest` mit einem GÜLTIGEN
+  Zugangsdatum verlangt.
+  EIN KANDIDAT, DER DIE GANZE KLASSE AUFLÖSEN WÜRDE — NICHT TIPPEN, SONDERN WÄHLEN: Kann die
+  Schnittstelle die Konten AUFZÄHLEN, die das hinterlegte Zugangsdatum erreicht, braucht es
+  für die Kundennummer kein Eingabefeld mehr — der Betreiber kann dann nur greifen, was der
+  Token ohnehin trägt, und eine fremde Kundennummer ist gar nicht erst eintippbar. OB ES
+  EINEN SOLCHEN ENDPUNKT GIBT, IST UNGELESEN UND UNGEMESSEN. Als KANDIDAT benannt — KEINE
+  EMPFEHLUNG und KEIN AUFTRAG; ausdrücklich auch keine Aussage darüber, ob er die
+  Ablage-Entscheidung des Zuschnitts der Scheibe 2 berührte.
+  ABGRENZUNG ZU "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN — DREI URSACHEN,
+  DIE GETRENNT BLEIBEN" (dieser Datei), und sie ist der Grund für einen EIGENEN Eintrag statt
+  einer fünften Ursache dort: Jener Eintrag führt Ursachen, die IM EIGENEN HAUS liegen — ein
+  falscher Wert, eine halbe Konfiguration, eine fehlende Warnung, ein abgelaufener Zugang.
+  DIESER hier ist eine Frage über das VERHALTEN EINES FREMDEN SYSTEMS, und sie ist nicht
+  beantwortbar, ohne es zu befragen. WIRD SIE BEANTWORTET, kann daraus eine weitere Ursache
+  DORT werden; solange sie offen ist, wäre eine Ursache ohne Befund dort ein Platzhalter, der
+  wie ein Wissensstand aussieht.
+  Was still kaputtgeht: Ein Betreiber tippt die Kundennummer eines Kontos ein, das sein Token
+  nicht erreicht — ein Zahlendreher genügt. Ob der Anbieter das als Fehler meldet, still
+  verwirft oder etwas Drittes tut, weiss niemand; im schlechtesten der drei Fälle fehlen
+  Conversions, während die Oberfläche "konfiguriert" sagt und kein Log etwas Auffälliges
+  trägt.
+  PROVENIENZ: Der Nicht-Treffer GEMESSEN am Dateitext (CC, 2026-08-31), Achse und
+  Positivkontrolle oben. Die Zuordnung zu Scheibe 4 ist eine ARCHITEKTEN-FESTLEGUNG
+  (2026-08-31), gestützt auf die zwei am Code gemessenen Tore. Der Aufzählungs-Kandidat ist
+  eine ARCHITEKTEN-EINORDNUNG desselben Tages, keine Messung und keine Lesung.

@@ -2633,24 +2633,55 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
    gemessen (s. Teil (bt)).
    TRIGGER: die Ablage-Scheibe für die Konto-Kennungen.
 
-   **VERMERK 2026-08-31 — TRIGGER EINGETRETEN, DIE FRAGE IST OFFEN UND LIEGT BEIM OWNER.**
+   **VERMERK 2026-08-31 — TRIGGER EINGETRETEN, UND DIESER EINTRAG GILT. ENTSCHIEDEN
+   (OWNER, 2026-08-31).**
    Die Ablage-Scheibe ist zugeschnitten (s. den Abschnitt "Die Konto-Kennungen bekommen ihre
-   Eingabe"), damit ist der Trigger dieses Eintrags erfüllt. **BEANTWORTET IST ER NICHT.**
+   Eingabe"), damit ist der Trigger dieses Eintrags erfüllt — **und anders als bei einem
+   blossen Trigger-Vermerk ist die Frage dahinter jetzt beantwortet.**
    · **WAS DER ZUSCHNITT EINLÖST:** Den Ort, den dieser Eintrag vermisst hat — "die Stelle,
      an der der Betreiber die Nummer eingibt; die gibt es heute nicht" — **gibt es mit
      Scheibe 2.** Und der zweite Halbsatz des Titels ist unberührt: Der reine Bauer
      `buildIngestEventsRequest` wird von dieser Scheibe nicht angefasst.
-   · **WAS OFFEN IST UND HIER NICHT ENTSCHIEDEN WIRD:** ob an dieser Eingabe TATSÄCHLICH
-     normalisiert wird. Der Zuschnitt der Scheibe 2 hat dazu eine Festlegung ERWOGEN und
-     **NICHT geschrieben**, weil sie dem Titel dieses Eintrags auf einer Achse widerspricht
-     (Normalisieren gegen Nicht-Normalisieren). **Die Entscheidung liegt beim OWNER und ist
-     am 2026-08-31 vorgelegt.** Solange sie aussteht, sagt Scheibe 2 über die Normalisierung
-     NICHTS — weder ja noch nein.
-   · **WAS DIESER VERMERK AUSDRÜCKLICH NICHT TUT:** die Frage in die eine oder andere
-     Richtung vorwegnehmen. Er hält fest, dass sie gestellt ist und wer sie entscheidet.
+   · **DIE ENTSCHEIDUNG, IN EINEM SATZ: ES WIRD AN DER EINGABE NORMALISIERT — DIESER EINTRAG
+     GILT WÖRTLICH, MIT TITEL UND RUMPF.** Damit ist er **kein Vorrats-Posten mehr im Sinne
+     des Kopfes dieses Abschnitts** ("NICHT gebaut und NICHT entschieden"): **nicht gebaut,
+     aber entschieden.**
+   · **EINE GEGENREDE IST ERWOGEN UND VERWORFEN WORDEN, und sie gehört festgehalten, damit
+     niemand sie für ungeprüft hält und neu vorbringt:** Der Zuschnitt der Scheibe 2 hat eine
+     SECHSTE Festlegung erwogen, die das Gegenteil gesagt hätte — keine Normalisierung im
+     Code, die Form nur im Platzhalter und im Hinweistext der Karte. **Ihre Begründung war
+     eine Asymmetrie:** Eine fehlende Normalisierung kostet einen zweiten Versuch, sobald es
+     Rückmeldung gibt; eine FALSCHE Normalisierung schreibt einen veränderten Wert in die
+     Datenbank, und niemand sieht mehr, was der Betreiber getippt hat. **SIE IST NICHT
+     GESCHRIEBEN WORDEN UND ENTFÄLLT DAUERHAFT** (OWNER, 2026-08-31).
+     **DIE NUMMER IST BEWUSST NICHT GENANNT:** Sie hätte im Entwurf die sechste getragen, und
+     eine künftige sechste Festlegung würde denselben Zeiger tragen — s. die Regel "EIN
+     ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT"
+     (docs/immer-beachten.md). **Der Zuschnitt führt weiterhin FÜNF Festlegungen; die sechste
+     hat es nie gegeben.**
+   · **WAS DIE ENTSCHEIDUNG NICHT BERÜHRT — FESTLEGUNG (5) DES ZUSCHNITTS BLEIBT WÖRTLICH
+     STEHEN.** Sie sagt, dass die beiden Kennungen **nicht auf FORM GEPRÜFT** werden, weil
+     eine Prüfung auf beiden Achsen erfunden wäre. **PRÜFEN UND NORMALISIEREN SIND ZWEI
+     VERSCHIEDENE DINGE:** Das eine WEIST AB, das andere VERÄNDERT. Wer die Entscheidung als
+     Aufhebung von Festlegung (5) liest, baut eine Formprüfung, die niemand entschieden hat.
+   · **DIE GRENZE DIESES EINTRAGS GILT UNVERÄNDERT MIT, UND SIE IST JETZT DIE GRENZE DER
+     ENTSCHEIDUNG:** Dass die BINDESTRICHE der Grund der Abweisung waren, ist NICHT isoliert
+     gemessen (Teil (bt)). Die Normalisierung ruht damit auf einer **Lesung plus einer
+     Messung, die zwei Ursachen nicht trennt** — nicht auf einem Beleg, dass Bindestriche
+     abgewiesen werden. **Zeigt Scheibe 4 an einer echten Antwort etwas anderes, ist sie neu
+     zu bewerten.**
+   · **WAS HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN IST:** WIE normalisiert wird — welche Zeichen
+     fallen, ob beim Schreiben oder beim Lesen, und was mit einem Wert geschieht, der danach
+     leer wäre. Das ist Sache des Bau-Plans, wie der TRIM aus Festlegung (5).
    PROVENIENZ: Dass der Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
-   Existenz des Zuschnitts (CC, 2026-08-31). Die Vorlage an den Owner ist ein Vorgang dieser
-   Runde, keine Messung.
+   Existenz des Zuschnitts (CC, 2026-08-31). **Die Entscheidung ist eine OWNER-ENTSCHEIDUNG
+   vom 2026-08-31 — keine Messung und keine Ableitung.** Der gemessene Stand, auf dem sie
+   ruht, steht unverändert im Rumpf dieses Eintrags.
+   **ERSETZT AM 2026-08-31:** Hier stand ein Vermerk, der die Frage als OFFEN und beim Owner
+   liegend führte. Er beschrieb einen Vorgangs-Zustand, der mit der Entscheidung vorbei ist;
+   ihn stehenzulassen hiesse, neben einer getroffenen Entscheidung zu behaupten, sie stehe
+   aus. **Was er festhielt — dass eine Gegenrede erwogen wurde —, ist oben aufgenommen und
+   nicht verloren.**
 8. **EINE AUSWERTUNG DER ANBIETER-FEHLER DARF NICHT NUR DEN ERSTEN fieldViolation
    LESEN — DER PARSER SAMMELT.** GEMESSEN 2026-08-28 (OWNER), Messung B1, Aufruf 7: zwei
    unbekannte Namen ergeben ZWEI fieldViolations in EINER Antwort

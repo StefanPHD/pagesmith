@@ -957,6 +957,14 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   datierte Überschrift — sonst rutscht ein Eintrag unter eine fremde Herkunft;
   das erklärt die vier Nachtrags-Abschnitte. Wer einen fünften anlegt, zieht
   diesen Stub im SELBEN Zug nach.
+  NACHGEZOGEN 2026-08-31 — DER FÜNFTE NACHTRAGS-ABSCHNITT: "Nachtrag 2026-08-31 —
+  BEOBACHTUNG AUS DEM LIVE-TEST DER SCHEIBE 3 (kosmetisch)" (1). DER MESSBLOCK
+  DARÜBER IST UNANGETASTET UND BLEIBT ES: seine Zahlen (123 Einträge, 163 KB,
+  sieben Abschnitte) und seine Aufzählung sind die vom 2026-08-21, NICHT die von
+  heute — sie sind datiert und damit alt, nicht falsch. Wer sie überschreibt,
+  nimmt eine Messung mit; wer sie als aktuell liest, liest ein Datum nicht mit.
+  HIER STEHT AUS DEMSELBEN GRUND KEINE NEUE ZAHL: Eine wäre eine zweite Wahrheit
+  neben einer datierten Messung. Wer die heutigen Werte braucht, misst sie.
 - supabase/checks/ — versionierte Messproben für Live-Tests und Gegenproben. KEINE Probe
   fasst ECHTE Daten an; welche Bauformen das zulässt und was eine Datei dann in ihrem Kopf
   sagen muss, steht im README des Ordners — hier der Zeiger, dort die Regel.

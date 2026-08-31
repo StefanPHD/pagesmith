@@ -2267,3 +2267,16 @@ ist (CLAUDE.md, docs/immer-beachten.md), steht hier NICHT noch einmal.
   in `docs/claude-history/phase-11.1-linkedin.md`. Hier fehlt nichts, hier steht etwas zu
   viel.
   KEIN TRIGGER, KEINE EMPFEHLUNG. GEMELDET, NICHT GEBAUT.
+
+## Nachtrag 2026-08-31 — BEOBACHTUNG AUS DEM LIVE-TEST DER SCHEIBE 3 (kosmetisch)
+
+- DAS LAYOUT UNTER DER LINKEDIN-KARTE LIEST SICH ZERRISSEN.
+  DIE BEOBACHTUNG (OWNER, 2026-08-31, am Live-Test der Scheibe 3): Die Abschnitte
+  "Verwendete Events" und "Conversion-Regeln" wirken optisch direkt an die
+  LinkedIn-Karte angehängt, als gehörten sie zu ihr. Der Bereich MESSEN liest sich an
+  dieser Stelle zerrissen.
+  KOSMETISCH, KEIN BLOCKER: Es geht keine Aussage verloren und nichts wird falsch
+  dargestellt — die Zuordnung ist nur nicht auf einen Blick erkennbar.
+  WARUM ES HIER UND NICHT ALS OFFENER PUNKT STEHT: Es gibt keinen Zeitpunkt, zu dem es
+  still kaputtginge. Das UI wird ohnehin neu gestaltet; wer das tut, nimmt es mit.
+  KEIN TRIGGER, KEINE EMPFEHLUNG zur Bauform. GEMELDET, NICHT GEBAUT.

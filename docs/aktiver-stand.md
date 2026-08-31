@@ -694,6 +694,16 @@ bindenden Entscheidung (6) sagt es ausdrücklich: "Zwingend ist NUR 4 nach 1a, 2
 der Schnitt ist eine HALBORDNUNG, keine Kette. Wer die Nummern als Kette liest, hält
 diesen Zuschnitt für einen Verstoss.
 
+**EIN WEG HINEIN OHNE WEG HINAUS IST EINE SACKGASSE IM EIGENEN PROJEKT.** Dieser Satz
+stand als Begründung der Reihenfolge im Zuschnitt und ist mit dem Vollzug NICHT abgelaufen
+— er ist kein Zuschnitt-Argument, sondern ein MUSTER: **Ein Ziel, das man verbinden, aber
+nicht trennen kann, ist schlechter als eines, das es gar nicht gibt.** Wer verbunden hat,
+kommt ohne den SQL-Editor nicht mehr heraus, und die Anwendung zeigt ihm den Zustand nicht
+einmal an.
+**ER TRIFFT JEDES KÜNFTIGE ZIEL MIT EINEM AUTORISIERUNGS-FLUSS**, nicht nur Google: Sobald
+ein Weg hinein gebaut wird, gehört der Weg hinaus in DIESELBE Scheibe. **SCHEIBE 2 BAUT
+DARAN WEITER** — sie gibt den Kennungen eine Eingabe, und für die gilt dasselbe.
+
 **PROVENIENZ DES GANZEN ABSCHNITTS, wo an der einzelnen Angabe nichts anderes steht:
 ARCHITEKT, 2026-08-29. Keine Messung.** Jede mit GEMESSEN gekennzeichnete Angabe stammt
 aus der Aufklärungsrunde vom 2026-08-29 (CC, am Repo, mit Positivkontrolle je Achse).
@@ -727,27 +737,51 @@ Oberfläche sieht die Zeile nicht, (2) `removeCapiToken` weist `'google'` ab, di
 über die Anwendung nicht entfernbar. Der dritte Punkt dort ist die UMFANGS-Aussage, dass
 die Aufnahme eine eigene Scheibe sei; **das ist diese.**
 
-### Warum jetzt
+### Vollzogen — was im Zuschnitt der Scheibe 3 stand und wohin es gegangen ist
 
-**DER ZUSTAND IST HEUTE SCHLECHTER ALS EIN FEHLENDES FEATURE, und das ist der Grund für
-die Reihenfolge:** Ein Betreiber kann sein Google-Konto über die abgetippte Start-URL
-VERBINDEN — die Zeile entsteht, chiffriert und korrekt. Er kann sie danach **nicht mehr
-loswerden**. `removeCapiToken` weist `'google'` vor jedem DB-Zugriff ab; die einzige
-Entfernung läuft über den SQL-Editor. **Ein Weg hinein ohne Weg hinaus ist eine Sackgasse
-im eigenen Projekt.**
+**DER TITEL WEICHT ABSICHTLICH VON DEM DER SCHEIBEN 11.2a UND 1a AB** (dort jeweils
+"### Vollzogen — was hier stand und wohin es gegangen ist"): Jener Titel steht in dieser
+Datei bereits ZWEIMAL und ist als Hausform über Standdateien hinweg als
+Hebungs-Kandidat 5 verortet. Ein DRITTES gleichlautendes Vorkommen vertiefte eine
+Anker-Kollision, die diese Datei gerade festgehalten hat.
 
-**DIE ZWEITE HÄLFTE DES GRUNDES IST DIE UNSICHTBARKEIT.** `listConfiguredTargets`
-(src/app/projects/actions.ts) liest ALLE Zeilen des Projekts und filtert das Ergebnis mit
-`isTrackingTarget` — **GEMESSEN am Code (CC, 2026-08-29):** eine bestehende
-`'google'`-Zeile wird gelesen und danach verworfen. Der Betreiber hat also einen abgelegten
-Zugang, den nichts anzeigt. Der Zustand ist nicht falsch dargestellt, er ist GAR NICHT
-dargestellt — und das ist die Klasse von Fehlzustand, die dieses Projekt an mehreren
-Stellen als die teuerste führt.
+VERDICHTET AM 2026-08-31, nach dem Bau-Commit `659d672`, dem Fix `7771019` und dem
+bestätigten Live-Test. Hier standen die ANWEISUNGEN FÜR die Scheibe; sie sind mit dem
+Vollzug abgelaufen. DREI Unterabschnitte und ZWEI Absätze sind entfallen:
 
-**WARUM NICHT ERST SCHEIBE 2:** Die Kennungen brauchen einen Ort und eine Eingabe; das ist
-ein eigener Gegenstand. Die Sackgasse oben braucht keinen davon — sie braucht einen
-Verbinden- und einen Trennen-Weg. Die beiden Arbeiten hängen nicht aneinander, und die
-Halbordnung erlaubt beide Reihenfolgen.
+- **"Warum jetzt"** trug die Begründung der Reihenfolge — die Sackgasse (verbinden ja,
+  trennen nein) und die Unsichtbarkeit der bestehenden Zeile. **WAS ENTFALLEN IST, WAR DER
+  VERGLEICH MIT EINEM ZUSTAND, DEN ES NICHT MEHR GIBT:** Der Abschnitt begründete, warum
+  diese Scheibe VOR Scheibe 2 kommt, indem er den Zustand VOR ihr beschrieb. Beide
+  Hälften jenes Zustands sind mit dem Vollzug behoben; der Text verglich ab da mit nichts.
+  **DIE ZWEI FORTWIRKENDEN AUSSAGEN SIND NICHT VERSCHWUNDEN, sondern stehen im KOPF dieses
+  Abschnitts:** dass die Halbordnung 3 vor 2 erlaubt, und der Satz über die Sackgasse —
+  jener als MUSTER für jedes künftige Ziel mit einem Autorisierungs-Fluss, nicht als
+  Begründung dieser Reihenfolge.
+- **"Der Scope — und wo er zum STOPP wird"** nannte, was diese Scheibe nicht anfassen
+  darf. Der Scope einer gebauten Scheibe ist mit ihrem Vollzug abgelaufen; was tatsächlich
+  angefasst wurde, steht im Vermerk. **SEINE EINE FORTWIRKENDE ZEILE IST NICHT
+  VERSCHWUNDEN:** "die Schuld der Scheibe 11.2a wandert weiter" — der nachgeschuldete
+  Live-Nachweis für `buildGoogleEvent` und `extractGoogleClickIds` — steht jetzt in
+  VERMERK 7 unter "Was der Live-Test NICHT zeigt", und zwar dort, wo die nächste Runde ihn
+  liest.
+- **"Zwei Auflagen an Stufe 1"** verlangte je Tor einen Test, der sein Tor benennt, und
+  einen Wächter über die Geheimnis-Felder der vier bestehenden Ziele. **BEIDE SIND
+  EINGELÖST** (VERMERK 7 nennt die Fundstellen). Ihre Begründungen leben AM CODE weiter:
+  in den Kommentarköpfen der vier Tor-Tests und in `tracking/target-cards.test.ts`.
+- **Das offene Gate an Festlegung (4)** (darf eine `"use server"`-Datei aus einer
+  `"use client"`-Datei importieren?) ist durch die Entscheidung E1 gegenstandslos
+  geworden: Die Konfiguration ist in ein reines lib-Modul gewandert, das unter BEIDEN
+  Ausgängen der Frage trägt. Der Ersatz steht als ein Satz an Ort und Stelle.
+- **Das offene Gate an Entscheidung (C)** (kann `GOOGLE_TARGET` als `TrackingTarget`
+  getypt werden?) ist BEANTWORTET und durch sein Ergebnis ersetzt, ebenfalls an Ort und
+  Stelle.
+
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WORDEN IST, obwohl es nach Anweisung aussieht — im
+Zweifel stehengelassen:** die sechs Festlegungen, die drei Entscheidungen, der Abschnitt
+"Was die Aufnahme erzwingt" und die Beweis-Achse. Sie sind GRÜNDE und BEFUNDE, keine
+Anweisungen; jede von ihnen bindet eine spätere Scheibe. Die Begründung je Stück steht an
+ihr selbst.
 
 ### Sechs Festlegungen
 
@@ -810,12 +844,13 @@ Spalten gefüllt wären. Der erste Fall ist der schlimmere: er ist STILL.
 keine Zielnamen-Liste in der Action, KEIN DRITTES URTEIL. Zwei Instanzen, die dieselbe
 Frage beantworten, laufen auseinander — dieselbe Figur wie `domains` gegen
 `settings.hosting.label`.
-**OFFEN UND ALS GATE FÜR STUFE 1 ZU FÜHREN, HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN:** ob eine
-`"use server"`-Datei aus der heutigen Quelle der Kartenkonfiguration importieren darf, und
-ob die Konfiguration dafür in eine REINE Datei muss. **DIE LAGE IST GEMESSEN (CC,
-2026-08-29):** `src/components/TargetCard.tsx` trägt in Zeile 1 `"use client"`,
-`src/app/projects/actions.ts` trägt `"use server"`. Ob die Ableitung damit einen Umzug der
-Konfiguration verlangt, ist eine Frage an den Bau-Plan und nicht an diesen Zuschnitt.
+**DAS GATE DAZU IST BEANTWORTET, UND ZWAR OHNE DIE FRAGE ZU ENTSCHEIDEN (E1, ARCHITEKT,
+2026-08-29):** Ob eine `"use server"`-Datei aus einer `"use client"`-Datei importieren
+darf, ist **am Code nicht entscheidbar** und **bleibt es**. Die Konfiguration ist deshalb
+VOLLSTÄNDIG in ein reines lib-Modul gewandert (`src/lib/tracking/target-cards.ts`) — der
+einzige Weg über diese Grenze, den der Bestand vorlebt, und richtig **unter beiden
+Ausgängen** der offenen Frage. **KEIN Re-Export aus der Karten-Datei**, sonst gäbe es zwei
+Adressen für eine Sache. Die volle Begründung steht im Kopf jenes Moduls.
 
 **(5) DIE ZWEI FEST VERDRAHTETEN ZAHLEN WERDEN ERSETZT, NICHT NACHGEZOGEN.**
 **GEMESSEN am Repo (CC, 2026-08-29):** `src/lib/settings.targets.test.ts` nennt ZWEIMAL
@@ -901,10 +936,14 @@ an". Zusammengezogen koppelte sie die Existenz eines Erneuerungs-Zweiges an die
 Oberflächen-Liste, **und genau diese Unabhängigkeit ist der Punkt von Festlegung (6)**:
 Ein Ziel darf einen Autorisierungs- und Erneuerungs-Weg haben, ohne deshalb ein Empfänger
 zu sein.
-**OFFEN ALS GATE FÜR STUFE 1, HIER NICHT ENTSCHIEDEN:** ob die Konstante als
-`TrackingTarget` GETYPT werden kann, ohne diese Kopplung zu erzeugen. Der Typ ist eine
-schwächere Bindung als der Import einer Liste — ob schwach genug, ist eine Frage an den
-Bau-Plan.
+**DAS GATE DAZU IST BEANTWORTET (Gate 3 der Stufe 1, GEMESSEN am Code, CC, 2026-08-29):**
+Ein `import type` erzeugt **keine Laufzeit-Abhängigkeit** — er wird beim Bauen gelöscht,
+und die Konstante bräuchte die Liste als WERT nicht. **ER ERZEUGT ABER EINE
+BAU-ZEIT-KOPPLUNG:** `GOOGLE_TARGET` liesse sich erst typen, NACHDEM `'google'` in der
+Liste steht, und `callback/route.ts` sowie `token-refresh.ts` brächen, sobald jemand es
+wieder herausnähme. **Das ist genau die Richtung, die diese Entscheidung vermeidet** — der
+Erneuerungs-Zweig darf nicht an der Oberflächen-Liste hängen. **DIE KONSTANTE BLEIBT
+ROUTEN-LOKAL UND UNGETYPT.**
 
 ### Was die Aufnahme erzwingt — BEFUND, keine Auflage
 
@@ -925,33 +964,6 @@ auf. Was er nicht erzwingt, fällt nur auf, wenn jemand daran denkt. Eine Festle
 dort nötig, wo das Vergessen NICHT wehtut — und beim Adapter-Eintrag täte das Gegenteil
 weh: ein versehentlicher Eintrag machte aus dieser Scheibe stillschweigend die
 Transport-Scheibe.
-
-### Der Scope — und wo er zum STOPP wird
-
-**NICHT ZU DIESER SCHEIBE:**
-- die Konto-Kennungen und ihre Ablage (Scheibe 2),
-- der Transport (Scheibe 4),
-- `ensureTrackingKey` im OAuth-Weg — **Vorrats-Eintrag 13, zweiter Spiegelstrich, TRIGGER
-  EINGETRETEN, GEMESSEN am Code (CC, 2026-08-29) und ausdrücklich NICHT behoben**: Der
-  Callback ruft es nicht, und sein Kommentar sagt das ausdrücklich,
-- jede Änderung am Resolver (`getCapiConfigByTrackingKey`), am Ingest-Pfad oder an einem
-  Adapter,
-- jede Migration.
-
-**KEINE SCHEMA-ÄNDERUNG, UND SIE IST AUCH NICHT NÖTIG:** Der CHECK
-`project_secrets_target_valid` nimmt `'google'` bereits an. **DIE PROVENIENZ GEHÖRT DAZU
-UND IST NICHT VON HEUTE:** LIVE ABGELESEN am 2026-08-27 (Owner, SQL-Editor; Wortlaut,
-Zeilenzahl und zwei Wegwerf-Inserts in docs/db-stand.md). Am Repo lesbar ist nur, dass
-Migration 0026 sie schreibt — **ob sie in der laufenden Datenbank gilt, ist am Repo nicht
-entscheidbar.**
-**DARAUS FOLGT EIN STOPP:** Verlangt der Bau-Plan eine Schema-Aussage, ist das ein STOPP
-dieser Scheibe. Sie ist eine Oberflächen- und Autorisierungs-Scheibe; sie hat an der
-Datenbank nichts zu suchen.
-
-**DIE SCHULD DER SCHEIBE 11.2a WANDERT WEITER.** `buildGoogleEvent` und
-`extractGoogleClickIds` bekommen auch hier KEINEN Aufrufer im Produktivcode — diese Scheibe
-berührt sie mit keiner Zeile. Der nachgeschuldete Live-Nachweis aus VERMERK 2 steht
-unverändert und geht an die Transport-Scheibe.
 
 ### Die Beweis-Achse
 
@@ -992,35 +1004,6 @@ möglichen Ursachen und deckt keine davon.
 **AM ENDE STEHT DIE FRAGE, DIE DER VERMERK BEANTWORTEN MUSS:** Welches Tor hält, wenn man
 die anderen drei gedanklich wegnimmt? Wer sie nicht beantworten kann, hat die Tore nicht
 geprüft, sondern ihr gemeinsames Schweigen.
-
-### Zwei Auflagen an Stufe 1
-
-**SIE SIND GATES, KEINE HINWEISE**, und beide folgen aus der Beweis-Achse darüber bzw.
-aus Festlegung (2) — sie stehen hier, weil ein Bau-Plan, der sie übersieht, GRÜN
-durchläuft und trotzdem eine Zusage dieser Scheibe verliert.
-
-**(a) JE TOR EIN TEST, DER SEIN TOR BENENNT.** Die Feststellung der Beweis-Achse, dass
-ein Live-Test das Nicht-Senden NICHT auf ein einzelnes Tor zurückführen kann, wird damit
-zur Auflage: Es braucht VIER Tests, je einen für `withPixel`, die Geheimnis-Schleife, das
-Consent-Gate und `hasAdapter`, und jeder benennt in seinem Kommentar, WELCHES Tor er
-deckt. **EIN TEST, DER BLOSS "es geht nichts hinaus" BEHAUPTET, DECKT KEINES DER VIER** —
-er ist eine Abwesenheits-Behauptung mit vier möglichen Ursachen, und er bliebe grün, wenn
-drei der vier Tore fielen.
-
-**(b) DIE VIER BESTEHENDEN ZIELE BEHALTEN IHRE `secret*`-FELDER, MIT EINEM TEST.**
-Festlegung (2) macht die drei Felder von `TargetCardConfig` OPTIONAL. **DAMIT KANN EIN
-SPÄTERER EINGRIFF SIE BEI `meta`, `pinterest`, `tiktok` ODER `linkedin` STILL WEGLASSEN,
-UND DER COMPILER SCHWIEGE** — die Karte verlöre ihr Eingabefeld für das Zugangsdatum, ohne
-dass irgendwo etwas rot wird. **WAS HEUTE EIN PFLICHTFELD ERZWINGT, MUSS DANACH EIN
-WÄCHTER ERZWINGEN.** Es ist dieselbe Figur wie bei `LEGACY_CONSENT_ROLE`, wo ebenfalls
-kein Typ, sondern ein Test die tragende Eigenschaft hält.
-**DIE KOSTEN DER FESTLEGUNG (2) SIND DAMIT BENANNT UND NICHT WEGGEREDET:** Sie tauscht
-eine Compiler-Zusage gegen eine Test-Zusage. Das ist der Preis der Bauform "Abwesenheit
-ist der Schalter", und er wird hier bezahlt statt später entdeckt.
-
-**ZWEI WEITERE GATES STEHEN NICHT HIER, SONDERN AN IHRER ENTSCHEIDUNG** — die
-Import-Frage an Festlegung (4) und die Typ-Frage an Entscheidung (C). Zweimal aufgezählt
-liefen sie auseinander.
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -1397,6 +1380,109 @@ am Repo bzw. an den Läufen vom 2026-08-29 (CC). Die Live-Werte GEMESSEN 2026-08
 (OWNER), an der ausgelieferten Anwendung. Die drei Ableitungen sind GERECHNET auf diesen
 Werten und ausdrücklich KEINE zweite Beobachtung. Der Satz über den nicht getilgten
 Live-Nachweis der Scheibe 11.2a ist eine FOLGE aus dem Zuschnitt dieser Scheibe.
+
+### VERMERK 7 (Commits 659d672, 7771019, aa17f11) — DIE SCHEIBE 3 IST GEBAUT UND LIVE BEWIESEN
+
+**DREI COMMITS, UND SIE SIND GETRENNT, WEIL SIE VERSCHIEDENE DINGE SIND** — alle drei am
+Repo ermittelt (CC, 2026-08-31; je eine Suche über die Commit-Botschaft und eine
+unabhängige `-S`-Gegenprobe auf eine Zeile des jeweiligen Diffs, je genau ein Treffer):
+- **`659d672`** — der Bau (`feat(tracking)`): 16 Dateien, zwei davon neu.
+- **`7771019`** — der Fix (`fix(ui)`): die Meldung überlebte ihren Gegenstand, s. unten.
+- **`aa17f11`** — der gemeldete Befund (`docs(claude)`): Vorrats-Eintrag 16.
+
+**WAS GEBAUT WURDE:** `'google'` steht in `TRACKING_TARGETS`; die Konfiguration der Karten
+ist ZEICHENGLEICH in ein reines lib-Modul gewandert (`src/lib/tracking/target-cards.ts`,
+sha256 vorher/nachher identisch, 126 Zeilen); die Karte trägt weder ein öffentliches noch
+ein Geheimnis-Feld, dafür einen Verbinden- und den bestehenden Trennen-Weg; `setCapiToken`
+weist ein Ziel ohne Geheimnis-Feld ab, VOR jedem DB-Zugriff und aus DERSELBEN Quelle, aus
+der die Karte ihr Feld schaltet; der Ergebniscode des Flusses erreicht die Karte als Prop
+aus `page.tsx`. **Suite: 69 Dateien, 1403 Tests** (vorher 68/1376). Alle vier Gates waren
+vor jedem der drei Commits grün.
+
+**DIE VIER TOR-TESTS, je mit ihrem Tor im Kommentar** — Auflage (a) des Zuschnitts,
+eingelöst: `capi/token.test.ts` (Tor 1 `withPixel`, beobachtet den `in`-Filter statt des
+Ergebnisses; Tor 2 die Geheimnis-Schleife, mit Positivkontrolle) ·
+`capi/ingest.consent-targets.test.ts` (Tor 3, beide Hälften plus Positivkontrolle) ·
+`capi/fan-out.test.ts`, Lauf `W-google` (Tor 4). **Auflage (b) eingelöst:**
+`tracking/target-cards.test.ts` nagelt die Menge der Ziele ohne Geheimnis-Feld auf
+`{google}` fest.
+
+---
+
+**DER LIVE-TEST — GEMESSEN 2026-08-31 vom OWNER, an der ausgelieferten Anwendung.**
+Deployment vorher als "Ready" bestätigt.
+
+- **Schritt 0, die Regression:** Die Bestandskarten (Meta, Pinterest) unverändert —
+  Geheimnis-Feld, Platzhalter, Statuszeile. Keine Seiteneffekte.
+- **Schritt 1, Sichtbarkeit an einer BESTEHENDEN google-Zeile:** "Zugangsdaten
+  hinterlegt", der Hinweis "Auslieferung folgt", beide Knöpfe an ihrem Platz.
+- **Schritt 2, Verbinden:** lief durch, Karte auf "Zugangsdaten hinterlegt".
+- **Schritt 3, Trennen:** "Nicht konfiguriert", nach einem Neuladen unverändert.
+- **Schritt 4, Abbruch im Zustimmungs-Bildschirm:** der neutrale Satz, keine Fehlerfarbe,
+  kein Code.
+- **Schritt 5, die Adresse:** der Parameter verschwindet; nach einem Neuladen keine
+  Meldung mehr.
+- **Danach DREIMAL hintereinander über ZWEI Projekte verbunden und getrennt, kein
+  Fehlschlag.**
+
+---
+
+**WAS DER LIVE-TEST NICHT ZEIGT — und das steht an derselben Stelle wie das, was er
+zeigt:**
+
+- **WELCHES TOR HÄLT.** Vier Ursachen erzeugen dieselbe Beobachtung, und drei schweigen
+  dabei. Das leisten **allein die vier Tor-Tests**; ein "ich habe nichts ankommen sehen"
+  ist hier **keine Messung**.
+- **DASS DIE TORE IN DER DEPLOYTEN LAUFZEIT HALTEN.** Jeder Tor-Test läuft gegen
+  Attrappen.
+- **EIN ECHTER FEHLERCODE.** Er ist **nicht herstellbar** — die zwölf Codes hängen an
+  Zuständen, die man von aussen nicht steuert. Angezeigt wurde einer nur deshalb, weil
+  `no_state` von selbst auftrat (s. den offenen Punkt dazu).
+- **VERMERK 2 IST NICHT GETILGT.** Der nachgeschuldete Live-Nachweis der Scheibe 11.2a
+  steht unverändert: `buildGoogleEvent` und `extractGoogleClickIds` haben weiterhin KEINEN
+  Aufrufer im Produktivcode, und diese Scheibe hat sie mit keiner Zeile berührt. **Die
+  Schuld wandert an die Transport-Scheibe.**
+
+---
+
+**DER BEFUND WÄHREND DES BAUS, UND ER HAT DIE SCHEIBE GERETTET:** Entfernen-Knopf,
+zweistufige Bestätigung und Statuskanal lagen **INNERHALB** des `label`, das an
+`secretLabel` hängt. **Festlegung (2) hätte sie mitgenommen** — verbinden ja, trennen
+nein, und **KEIN Test wäre davon rot geworden**. Gefunden hat ihn das Gate (β) der
+Bau-Stufe, VOR dem Bau; der Trennen-Weg steht seither ausserhalb beider Bedingungen, mit
+einem eigenen Wächter.
+
+**DER FIX `7771019` — DIE MELDUNG ÜBERLEBTE IHREN GEGENSTAND.** GEMESSEN LIVE (OWNER,
+2026-08-31): Nach einem fehlgeschlagenen Versuch und anschliessendem Entfernen stand die
+Karte auf "Nicht konfiguriert" UND darunter der rote Fehlercode — zwei Aussagen über
+denselben Zustand in derselben Kachel. Ursache: `connectOutcome` hatte keinen Setzer.
+**DIE MOUNT-GRENZE DER KARTE LÖST DAS NICHT** (der Zustand liegt im Container und kommt
+als Prop). Zurückgesetzt wird jetzt an drei Stellen — den zwei Rückrufen, die
+`configuredTargets` fortschreiben, und am Projekt-Kontext-Wechsel.
+
+**DIE MUTATIONSPROBEN — FÜNF, je mit Vorhersage VOR dem Lauf, danach zurückgenommen:**
+- **`public*`-Felder der Google-Karte ergänzt.** Vorhergesagt: nur T-A2. **Gefallen: DREI**
+  — alle mit DERSELBEN Fehlerklasse ("die Google-Karte trägt ein öffentliches Feld"), also
+  Deckung; die vorab benannte Überschuss-KLASSE war aber eine andere. **Als Befund
+  festgehalten**, s. Vorrats-Eintrag 20.
+- **Den Ausgang aus Festlegung (4) entfernt.** Vorhergesagt und gefallen: **genau T-E.**
+- **`'google'` in `TARGETS_WITH_ADAPTER` aufgenommen.** Vorhergesagt und gefallen: **genau
+  `W-google`.**
+- **Den Rücksetz-Weg aus den zwei Zugangsdaten-Rückrufen entfernt.** Vorhergesagt und
+  gefallen: **genau der Entfernen-Lauf**, 1 von 1403.
+- **Den Rücksetz-Weg aus `applyZenForLoadedCode` entfernt.** Vorhergesagt und gefallen:
+  **genau der Projektwechsel-Lauf**, 1 von 1403. **Die zwei Rücksetz-Orte sind damit
+  einzeln bewacht** — keiner ist grün aus dem Grund des anderen.
+
+**EIN WERKZEUG-ZWISCHENFALL DIESER SCHEIBE** ist als Vorrats-Eintrag 17 verortet und hier
+nur genannt: `src/app/projects/actions.ts` kippte während des Baus vollständig auf CRLF,
+bei vier grünen Gates.
+
+**PROVENIENZ, JE TEIL:** Umfang, Testzahl, Gate-Ergebnisse, die drei Commit-Nummern und
+die sha256-Gleichheit des Umzugs GEMESSEN am Repo bzw. an den Läufen vom 2026-08-29 und
+2026-08-31 (CC). Die Live-Werte GEMESSEN 2026-08-31 (OWNER) an der ausgelieferten
+Anwendung. Die Mutationsergebnisse GEMESSEN an denselben Läufen. Der Satz über den nicht
+getilgten Live-Nachweis der Scheibe 11.2a ist eine FOLGE aus dem Zuschnitt dieser Scheibe.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -2015,6 +2101,26 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     GEMELDET 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG.
     TRIGGER: Stufe 1 der Scheibe 3 — dort ist es ein GATE, kein Hinweis.
 
+    **ERLEDIGT AM 2026-08-29 — DER EINTRAG BLEIBT STEHEN, UND ZWAR WEGEN DER MESSUNG.**
+    Gate (1) der Stufe 1 hat es beantwortet (GEMESSEN am Repo, CC, 2026-08-29): **Alle
+    ACHT Läufe D-T1 bis D-T8 zählen ihr `pixels`-Objekt VOLLSTÄNDIG auf, und KEINER trägt
+    einen `google`-Eintrag.** Das Memo `consentTargets` filtert über
+    `isTargetDeliverable`; ein Ziel ohne Kennung erscheint in keiner der geprüften
+    Mengen. **Sie brechen nicht** — und der volle Lauf nach der Aufnahme hat es bestätigt:
+    von den 1376 Bestandstests fielen genau die ZWEI fest verdrahteten Längen-Zahlen,
+    keine Fixture-Liste.
+    **MITGEPRÜFT UND HIER FESTGEHALTEN, weil der Eintrag es nicht nannte:**
+    `TargetCard.test.tsx` enthält EINE kartenzählende Zusicherung
+    (`getAllByText(STATUS_CONFIGURED)).toHaveLength(1)`). Auch sie bricht nicht — die
+    Liste der konfigurierten Ziele ist dort gemockt.
+    **WARUM DER EINTRAG NICHT GELÖSCHT WIRD:** Ein gelöschter Eintrag nähme die MESSUNG
+    mit. Die Frage "brechen die Fixture-Listen beim nächsten Ziel?" stellt sich beim
+    sechsten wieder, und dann ist der Unterschied zwischen "geprüft und tragfähig" und
+    "nie geprüft" die ganze Auskunft.
+    **DIES IST DIE ERSTE ERLEDIGT-KENNZEICHNUNG IN DIESEM VORRAT.** Es gab bisher keine
+    Bauform dafür; diese hier ist gewählt und nicht vorgefunden — sie steht als eigener
+    Absatz UNTER dem unveränderten Eintrag, mit Datum, Grund und der Messung.
+
 16. **`saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE
     UI-ABWESENHEIT UND NICHT DURCH EINEN RIEGEL.**
     **GEMESSEN am Code (CC, 2026-08-29):** `saveProject` (src/app/projects/actions.ts)
@@ -2039,6 +2145,82 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     aufnimmt — die Frage ist dann nicht mehr, ob ein Feld existiert, sondern was in der
     Spalte stehen darf.
     GEMELDET 2026-08-29.
+
+17. **DIE GIT-WARNUNG WAR DER AUSLÖSER, NICHT DIE KONTROLLE.**
+    **DER VORFALL, GEMESSEN (CC, 2026-08-29):** `src/app/projects/actions.ts` kippte
+    während der Bau-Runde VOLLSTÄNDIG auf CRLF — **1504 CR-Bytes, HEAD 0**. **ALLE VIER
+    GATES WAREN GRÜN**, und der Inhalts-Diff war sauber (34 Einfügungen, 0 Löschungen),
+    weil git beim Stagen normalisiert. **Sichtbar wurde es allein an der Zeile "CRLF will
+    be replaced by LF"** aus `git diff --numstat`.
+    **WELCHES WERKZEUG ES WAR, IST NICHT GEMESSEN.** Die Gegenprobe spricht gegen die
+    naheliegende Antwort: Nach `git checkout` wurden DIESELBEN zwei Änderungen mit
+    DEMSELBEN Editier-Werkzeug erneut eingetragen und nach jeder einzelnen nachgemessen —
+    **CR = 0**. Die zwölf anderen Dateien derselben Runde, gleiches Werkzeug, blieben
+    ebenfalls sauber.
+    **DIE HYPOTHESE IST ALS HYPOTHESE ZU LESEN UND NICHT ALS BEFUND:** Was diese Datei von
+    den anderen unterschied, war ein MUTATIONS-ZYKLUS (setzen, messen, zurücknehmen). Ob
+    er die Ursache war, ist **nicht geprüft**.
+    **DIE KONTROLLE WAR NICHT NACHLÄSSIG, und das gehört dazu, sonst liest sich der
+    Eintrag als Vorwurf:** Sie folgte der Regel "EIN NACHWEIS AN EINER NEUEN DATEI IST
+    BLIND" und traf damit genau die Dateien, bei denen das Problem NICHT lag — die neu
+    geschriebenen. Die bearbeiteten Bestands-Dateien waren zu diesem Zeitpunkt nicht
+    geprüft.
+    **WAS OHNE DEN VERURSACHER HANDHABBAR FOLGT — zwei Dinge:** Die Byte-Kontrolle gehört
+    nach **JEDEM** Mutations-Zyklus über die mutierte Datei, nicht nur ans Rundenende —
+    **die RÜCKNAHME ist der Schreibvorgang**, der hier still etwas verändert hat. Und sie
+    vergleicht **gegen HEAD**, nicht nur absolut: "CR = 0" allein sagt nichts, wenn die
+    Datei schon vorher CR trug.
+    **GEGENRICHTUNG ZUR BESTEHENDEN REGEL:** "WERKZEUG-REGEL: sed -i STRIPPT IN DIESER
+    UMGEBUNG STILL DAS CR" (docs/immer-beachten.md) beschreibt ein still GESTRIPPTES CR —
+    hier ist eines still HINZUGEFÜGT worden. Dieselbe Achse, entgegengesetzte Richtung.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: die nächste Runde mit einem Mutations-Zyklus.
+
+18. **`connectOutcome` HÄNGT AM ZWEIG "KEIN GEHEIMNIS-FELD", NICHT AM ZIEL.**
+    Die Karte liest den Ergebniscode ausschliesslich im Verbinden-Zweig, und den gibt es
+    nur, wo `secretLabel` fehlt. **HEUTE IST DAS DECKUNGSGLEICH**, weil
+    `tracking/target-cards.test.ts` die Menge der Ziele ohne Geheimnis-Feld auf `{google}`
+    festnagelt.
+    **KOMMT EIN ZWEITES ZIEL OHNE GEHEIMNIS-FELD, WIRD JENER TEST ROT — UND DAS IST DER
+    GANZE MECHANISMUS: DER TEST ERZWINGT EINEN BLICK, NICHT EINE LÖSUNG.** Wer ihn nur
+    nachzieht, zeigt dem neuen Ziel Googles Ergebniscode.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG — weder eine Ziel-Bindung des
+    Codes noch ein zweiter Zustand ist hier vorgeschlagen.
+    TRIGGER: das zweite Ziel ohne Geheimnis-Feld.
+
+19. **DER RESET LEERT DIE MELDUNG AUCH BEI EINEM ANDEREN ZIEL.**
+    Ein Google-Fehlercode verschwindet, sobald der Betreiber sein Meta-Token speichert —
+    die erste der drei Rücksetz-Stellen hängt an `handleCredentialsSaved`, also am
+    VORGANG und nicht am ZIEL.
+    **DAS IST DIE GEWOLLTE RICHTUNG, und sie gehört so begründet, sonst liest die nächste
+    Runde es als Fehler:** Zu früh geleert kostet eine Information, die **ein Klick
+    wiederherstellt** — der Betreiber versucht es erneut. Zu spät geleert erzeugt genau
+    den Widerspruch in der Kachel, den der Fix `7771019` beseitigt hat. Von zwei
+    Ungenauigkeiten ist die gewählt, deren Fehlgriff billiger ist.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: eine Runde, die die Rücksetz-Bedingung ziel-genau machen will — dann ist
+    dieser Absatz die Gegenrede, die sie zu widerlegen hat.
+
+20. **DIE MUTATIONS-VORHERSAGE 1 WAR ZU ENG — DER SECHSTE PROTOKOLLIERTE FALL, DER FÜNFTE
+    IN DERSELBEN RICHTUNG.**
+    Vorhergesagt war: nur T-A2 fällt. **Gefallen sind DREI** — T-A2 (Oberfläche), der neue
+    Daten-Lauf in `tracking/target-cards.test.ts` und der bestehende Lauf "JEDES Ziel:
+    Daten-Seite und Oberfläche sagen dasselbe über die Auslieferung".
+    **ALLE DREI MELDEN DIESELBE FEHLERKLASSE** ("die Google-Karte trägt ein öffentliches
+    Feld"), zweimal als Daten-Aussage, einmal als DOM-Aussage — nach Lektion (g) also
+    **Deckung, keine Kaskade**.
+    **TROTZDEM IST ES EIN BEFUND UND KEIN TREFFER:** Die vorab benannte
+    Überschuss-KLASSE lautete "Abfragen werden MEHRDEUTIG". Die zwei Zusatztreffer liegen
+    **ausserhalb** dieser Klasse. Damit ist es der **sechste** protokollierte Fall der
+    Regel "EINE MUTATIONS-VORHERSAGE KANN IN BEIDE RICHTUNGEN FALSCH SEIN"
+    (docs/immer-beachten.md) und der **fünfte in derselben Richtung: zu eng gezählt**.
+    **DIE REGEL SAGT ES SELBST — die einseitige Streuung ist die eigentliche Aussage:**
+    Zufall träfe mal nach oben, mal nach unten; eine systematische Ursache trifft immer
+    dieselbe Seite.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG dazu, wie eine Vorhersage künftig
+    breiter zu fassen wäre.
+    TRIGGER: die nächste Hebung an docs/immer-beachten.md, die jene Regel ohnehin
+    berührt — dort ist die Zahl der Fälle zu führen, nicht hier.
 
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT

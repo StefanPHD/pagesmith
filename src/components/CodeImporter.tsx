@@ -227,7 +227,24 @@ export default function CodeImporter({
   // router.replace ist eine echte Navigation; sie liesse die Server-Komponente erneut
   // laufen, mitten in einer offenen Editor-Sitzung. Diese Zeile schreibt ausschliesslich
   // die Adresszeile um und ruehrt weder Render noch Zustand an.
-  const [connectOutcome] = useState<string | null>(initialConnectOutcome);
+  //
+  // ER HAT SEIT DEM 2026-08-31 EINEN SETZER, UND DAS IST EIN BUGFIX, KEINE POLITUR
+  // (GEMESSEN LIVE, OWNER): Die Meldung ueberlebte ihren eigenen Gegenstand. Nach einem
+  // fehlgeschlagenen Versuch und anschliessendem ENTFERNEN stand die Karte auf "Nicht
+  // konfiguriert" UND darunter der rote Fehlercode — zwei Aussagen ueber denselben
+  // Zustand in derselben Kachel, und sie widersprachen sich.
+  // DIE REGEL DAHINTER: "EIN SIGNAL LEUCHTET NUR, WENN DER NUTZER JETZT ETWAS TUN KANN"
+  // (docs/immer-beachten.md). Die Meldung beschreibt einen ABGESCHLOSSENEN VERSUCH; ihre
+  // Bedingung ist nicht mehr wahr, sobald jemand den Zustand geaendert hat, ueber den sie
+  // spricht. Sie darf ihn deshalb nicht ueberleben.
+  // WO ZURUECKGESETZT WIRD UND WARUM DORT — die Bedingung ist bewusst NICHT auf das
+  // Entfernen zugeschnitten, obwohl das der gemessene Fall ist: Sie haengt an JEDER
+  // Handlung, die den Konfigurations-Zustand des Ziels aendert. Das sind genau die zwei
+  // Stellen, die configuredTargets fortschreiben (handleCredentialsSaved,
+  // handleCredentialsRemoved) — plus der Projekt-Kontext-Wechsel, s. unten.
+  const [connectOutcome, setConnectOutcome] = useState<string | null>(
+    initialConnectOutcome,
+  );
   useEffect(() => {
     if (initialConnectOutcome === null) return;
     window.history.replaceState(null, "", window.location.pathname);
@@ -1123,6 +1140,15 @@ export default function CodeImporter({
     setPublishStatus("idle");
     setPublishError(null);
     setPublishRestored(false);
+    // DIE MELDUNG DES AUTORISIERUNGS-FLUSSES GEHOERT ZU EINEM PROJEKT — dieselbe Klasse
+    // wie uploadError und der Publish-Status darueber.
+    // DIE MOUNT-GRENZE DER KARTE LOEST DAS NICHT, und der Satz gehoert hierher, weil der
+    // Kommentar zwoelf Zeilen weiter oben genau das fuer die ZUGANGSDATEN-Zustaende
+    // behauptet: Jene liegen IN der Karte und sterben mit ihrem `key`. Dieser hier liegt
+    // im CONTAINER und wird als PROP hineingereicht — eine frisch gemontierte Karte
+    // bekommt denselben Wert erneut. Ohne diese Zeile zeigte Projekt B den Ausgang eines
+    // Vorgangs aus Projekt A.
+    setConnectOutcome(null);
     // Varianten-Aktionsstatus ist ebenfalls projekt-ungebundener View-State.
     // NICHT hier zurueckgesetzt werden activeVariant/Stash: die sind projekt-
     // ABGELEITET und werden am Lade-Chokepoint aus dem geladenen Projekt gesetzt
@@ -1501,6 +1527,11 @@ export default function CodeImporter({
     setConfiguredTargets((prev) =>
       prev === null || prev.includes(target) ? prev : [...prev, target],
     );
+    // DIE MELDUNG DES AUTORISIERUNGS-FLUSSES DARF DIESEN ZUSTAND NICHT UEBERLEBEN.
+    // Sie steht hier, obwohl der gemessene Fall das ENTFERNEN war: Die Bedingung ist
+    // "der Konfigurations-Zustand hat sich geaendert", nicht "es wurde entfernt". Auf
+    // das Entfernen zugeschnitten waere sie beim naechsten Weg wieder offen.
+    setConnectOutcome(null);
     // setCapiState laesst pixels unangetastet -> eine ungespeicherte Pixel-ID-Edit
     // bleibt erhalten; settingsEqual ignoriert capi -> kein false-dirty.
     setSettings((prev) => setCapiState(prev, { trackingKey, tokenSet: true }));
@@ -1512,6 +1543,9 @@ export default function CodeImporter({
     setConfiguredTargets((prev) =>
       prev === null ? prev : prev.filter((t) => t !== target),
     );
+    // DER GEMESSENE FALL (OWNER, 2026-08-31): Ohne diese Zeile stand die Karte nach dem
+    // Entfernen auf "Nicht konfiguriert" und der rote Fehlercode blieb darunter stehen.
+    setConnectOutcome(null);
     // trackingKey ERHALTEN (er kommt aus prev, also aus dem eigenen Projekt) — nur
     // der Aktivierungszustand faellt. tokenSet wird seit dieser Haelfte von NIEMANDEM
     // mehr gelesen: die Karte leitet ihren Status aus der Geheimnis-Tabelle ab.

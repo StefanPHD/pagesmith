@@ -941,6 +941,109 @@ describe("Container-Waechter: ein Rueckruf nach dem Projektwechsel darf NICHTS a
 });
 
 // ===========================================================================
+// DIE MELDUNG DES AUTORISIERUNGS-FLUSSES DARF IHREN GEGENSTAND NICHT UEBERLEBEN.
+//
+// DER GEMESSENE FEHLZUSTAND (OWNER, LIVE, 2026-08-31): Nach einem fehlgeschlagenen
+// Verbinden-Versuch und anschliessendem Entfernen stand die Karte auf "Nicht
+// konfiguriert" UND darunter der rote Fehlercode — zwei Aussagen ueber denselben
+// Zustand in derselben Kachel, und sie widersprachen sich.
+//
+// WARUM DIESE LAEUFE DEN CONTAINER RENDERN UND NICHT DIE KARTE: Der Zustand liegt im
+// CONTAINER und erreicht die Karte als PROP. An der Karte allein ist die Fehlerklasse
+// gar nicht beobachtbar — sie zeigt brav, was man ihr gibt.
+//
+// EIN TEST, DER NUR DIE EXISTENZ EINES SETZERS PRUEFT, DECKT DAS NICHT: Er waere auch
+// dann gruen, wenn der Setzer an der falschen Stelle oder gar nicht gerufen wird.
+// Deshalb bilden beide Laeufe den ABLAUF nach.
+// ===========================================================================
+describe("Container: der Ergebniscode ueberlebt den Zustand nicht, ueber den er spricht", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>`;
+
+  it("Fehlercode steht -> ENTFERNEN -> die Meldung ist weg, die Karte ist unkonfiguriert", async () => {
+    // ROT DURCH DIE PFLICHT-MUTATION (den Ruecksetz-Weg in den zwei
+    // Zugangsdaten-Rueckrufen entfernen). Er ist der einzige Lauf, der den gemessenen
+    // Ablauf nachbildet.
+    // DIE VORBEDINGUNG WIRD MITGEPRUEFT und ist nicht Zierrat: Ohne den Nachweis, dass
+    // die Meldung VORHER dastand, waere "sie ist weg" trivial wahr — sie koennte aus
+    // jedem beliebigen Grund nie gerendert worden sein.
+    listConfiguredTargets.mockResolvedValue(["google"]);
+    removeCapiToken.mockResolvedValue({ ok: true } as never);
+
+    render(
+      <CodeImporter
+        initialProjectId="p1"
+        initialCode={HTML}
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+        ]}
+        initialConnectOutcome="write"
+      />,
+    );
+    await screen.findByText("Titel");
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+
+    // VORHER: die Meldung steht, samt rohem Code.
+    const meldung = await screen.findByText(/Fehlercode/);
+    expect(meldung.textContent).toContain("write");
+    expect(
+      await screen.findByRole("button", { name: "Google entfernen" }),
+    ).toBeTruthy();
+
+    // ENTFERNEN, durch die zweistufige Bestaetigung.
+    fireEvent.click(screen.getByRole("button", { name: "Google entfernen" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Ja, Google entfernen" }),
+    );
+    await waitFor(() =>
+      expect(removeCapiToken).toHaveBeenCalledWith("p1", "google"),
+    );
+
+    // NACHHER: BEIDE Aussagen zusammen — die Meldung ist weg UND die Karte sagt, was
+    // sie sagen soll. Nur eine der beiden zu pruefen liesse den Widerspruch offen,
+    // und genau der WAR der Fehler.
+    await waitFor(() => expect(screen.queryByText(/Fehlercode/)).toBeNull());
+    expect(screen.getAllByText(STATUS_UNCONFIGURED).length).toBeGreaterThan(0);
+  });
+
+  it("Fehlercode steht -> PROJEKTWECHSEL -> die Meldung ist weg", async () => {
+    // DIE ZWEITE ACHSE, und sie loest die Mount-Grenze NICHT von selbst: Der Zustand
+    // liegt im Container; die Karte bekommt ihn als Prop und wird beim Wechsel zwar neu
+    // gemontiert, aber mit DEMSELBEN Wert. Ohne den Reset im
+    // Projekt-Kontext-Wechsel zeigte Projekt B den Ausgang eines Vorgangs aus A.
+    // ROT, WENN der Reset in applyZenForLoadedCode faellt. Er faellt NICHT bei der
+    // Pflicht-Mutation — das ist ein anderer Ort und eine andere Zusicherung.
+    listConfiguredTargets.mockResolvedValue([]);
+    loadProject.mockResolvedValueOnce({
+      id: "p2",
+      name: "P2",
+      html: HTML,
+      mappings: [],
+      settings: {},
+    });
+
+    render(
+      <CodeImporter
+        initialProjectId="p1"
+        initialCode={HTML}
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-02T00:00:00Z" },
+        ]}
+        initialConnectOutcome="write"
+      />,
+    );
+    await screen.findByText("Titel");
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    expect(await screen.findByText(/Fehlercode/)).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
+    fireEvent.click(await screen.findByText("P2"));
+
+    await waitFor(() => expect(screen.queryByText(/Fehlercode/)).toBeNull());
+  });
+});
+
+// ===========================================================================
 // DIE KARTE OHNE GEHEIMNIS-FELD (Scheibe 3).
 //
 // SIE IST DIE ERSTE IHRER ART: 'linkedin' hat kein oeffentliches Feld, aber eines fuer

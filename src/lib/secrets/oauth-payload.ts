@@ -185,39 +185,45 @@ const ALLOWED_FIELDS = [
 /**
  * Wann das Erneuerungs-Token ablaeuft — oder dass es NICHT BEKANNT ist.
  *
- * "unknown" IST EIN EIGENER ZUSTAND UND KEIN FEHLENDES FELD. Grund: Ob die Anbieter
- * diesen Ablauf ueberhaupt mitliefern, ist NICHT belegt (docs/ziel-befunde.md fuehrt
- * LinkedIns zwoelf Monate als BEOBACHTUNG an der Oberflaeche des Generators, nicht als
- * gemessenes Antwortfeld; fuer Google s. die Richtigstellung darunter). Ein fehlendes
- * Feld waere von einer kaputten Zeichenkette nicht zu unterscheiden — ein benannter
- * Zustand ist es.
+ * "unknown" IST EIN EIGENER ZUSTAND UND KEIN FEHLENDES FELD — UND DIESE BEGRUENDUNG
+ * HAENGT NICHT AN DER HAEUFIGKEIT: Ein benannter Zustand trennt "der Anbieter hat den
+ * Ablauf NICHT GELIEFERT" von "die abgelegte Zeichenkette ist KAPUTT". Ein schlicht
+ * fehlendes Feld traegt diese Unterscheidung nicht, gleichgueltig welcher der beiden
+ * Faelle der haeufigere ist.
  *
- * RICHTIGGESTELLT AM 2026-08-27 — ERSETZT UND NICHT GESTEMPELT, weil es eine
- * SACHKORREKTUR AN EINER LESUNG ist und kein Mechanismuswechsel. Bis zu diesem Tag stand
- * an der Stelle oben: "fuer Google nennt keine gelesene Stelle eines". DAS WAR FALSCH.
+ * WER DEN ZUSTAND FUER UEBERFLUESSIG HAELT, LIEST ZUERST DIESEN SATZ: Er wird
+ * gebraucht, solange nicht gemessen ist, dass JEDER Anbieter dieses Rahmens den Ablauf
+ * liefert. Fuer LinkedIn ist er NICHT erhoben — docs/ziel-befunde.md fuehrt dort
+ * zwoelf Monate als BEOBACHTUNG an der Oberflaeche des Generators, nicht als
+ * gemessenes Antwortfeld (Teil (w)), und die Auflage "AUSGEGEBEN IST NICHT
+ * EINGELOEST" ist fuer LinkedIn offen (Teil (bz)).
  *
- *   DAS FELD EXISTIERT. Es heisst refresh_token_expires_in und traegt eine RESTDAUER in
- *   Sekunden, keinen Zeitpunkt. GELESEN 2026-08-27 (docs/ziel-befunde.md,
- *   Google-Abschnitt, Lauf 6, Teil (bc)).
+ * FUER GOOGLE IST DAS FELD DA — AUF ZWEI UNABHAENGIGEN WEGEN BELEGT, JE MIT EIGENER
+ * PROVENIENZ:
  *
- *   ES TRIFFT UNS NICHT. Der Anbieter setzt es AUSSCHLIESSLICH, wenn der Nutzer
- *   "time-based access" gewaehrt, und das gibt es nur bei ausgewaehlten
- *   Google-Produkten. Fuer den Data-Manager-Bereich nennt keine gelesene Stelle es.
+ *   DAS FELD HEISST refresh_token_expires_in und traegt eine RESTDAUER in Sekunden,
+ *   keinen Zeitpunkt. GELESEN 2026-08-27 (docs/ziel-befunde.md, Google-Abschnitt,
+ *   Teil (bc)).
  *
- *   FOLGE FUER DIE ENTSCHEIDUNG — SIE KIPPT NICHT, SIE WIRD GESTUETZT: "unknown" ist
- *   fuer unseren Fluss damit der ZU ERWARTENDE Fall und nicht der Randfall. Genau
- *   dafuer ist der benannte Zustand gebaut.
+ *   ES KOMMT IN UNSEREM BEREICH. Messung C gegen den Token-Endpunkt trug es in BEIDEN
+ *   Antworten; der Aufruf betraf den Data-Manager-Bereich. GEMESSEN 2026-08-28
+ *   (OWNER), docs/ziel-befunde.md, Teil (bx).
  *
- *   DIE PROVENIENZ GEHOERT ZUM SATZ: Das ist GELESEN, nicht GEMESSEN. Was Google in
- *   einer echten Antwort auf UNSEREN Bereich schickt, ist an keiner Schnittstelle
- *   erhoben.
+ *   UND ES KOMMT AUCH BEI DER ERNEUERUNG — an unserem eigenen Produktivpfad: Die
+ *   zweite Uhr hat sich zwischen zwei Laeufen bewegt (epochSeconds 1788601501 ->
+ *   1788601500). Bewegen kann sie sich nur, wenn die Antwort eine brauchbare Restdauer
+ *   trug, denn sonst reicht toRefreshedPayload den abgelegten Wert byte-gleich durch.
+ *   DIE ZWEI ZEITPUNKTE SIND GEMESSEN 2026-08-29 (OWNER) an der ausgelieferten
+ *   Anwendung; DIESER SCHLUSS DARAUS IST GERECHNET UND KEINE ZWEITE BEOBACHTUNG —
+ *   docs/aktiver-stand.md, VERMERK 6, Ableitung 1, haelt beides getrennt.
  *
- * WARUM DIE KORREKTUR DIE AUSSAGE SCHAERFER MACHT STATT SCHWAECHER — und ohne diesen
- * Satz liest die naechste Runde sie als Rueckzug: Der alte Wortlaut behauptete, es gebe
- * KEIN solches Feld. Der neue sagt, es gebe eines und es treffe uns nicht. Das ist die
- * staerkere Aussage, weil sie den Fall BENENNT, in dem es uns doch traefe — ein Produkt
- * mit time-based access. Der alte Wortlaut kannte diesen Fall nicht und haette ihn
- * darum auch nicht erkannt.
+ * WAS DAMIT AUSDRUECKLICH NICHT BEHAUPTET IST: dass das Feld IMMER kommt. Zwei
+ * ERKLAERUNGEN tragen die Beobachtung gleich gut — der Anbieter setzt es generell, und
+ * seine gelesene Bedingung ("only set when the user grants time-based access",
+ * Teil (bc)) ist enger formuliert als sein Verhalten; ODER er setzt es, WEIL die
+ * Anwendung im Publishing-Status "Testing" steht. Beide Messungen liefen in EINEM
+ * Status und trennen die zwei nicht (Teil (bx)). Mit einer Verifizierung koennte
+ * "unknown" auch fuer Google zum Normalfall werden — der Zustand bleibt gebraucht.
  */
 export type RefreshTokenExpiry =
   | { kind: "at"; epochSeconds: number }

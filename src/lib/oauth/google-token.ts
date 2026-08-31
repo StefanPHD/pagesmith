@@ -302,8 +302,17 @@ export function toOAuthPayload(
   // ist still falsch (zu gross heisst "gilt fuer immer", zu klein "sofort tot"), also
   // gibt es dort einen Ausgang. refreshTokenExpiresAt HAT einen benannten Zustand fuer
   // "nicht bekannt"; ein unbrauchbarer Wert IST genau das. Eine ganze Autorisierung an
-  // einem optionalen Feld scheitern zu lassen, das laut Teil (bc) ohnehin nur bei
-  // "time-based access" kommt, waere der teurere Fehler.
+  // einem optionalen Feld scheitern zu lassen, waere der teurere Fehler.
+  //
+  // DIE STUETZE DIESES SATZES IST DIE KOSTEN-ASYMMETRIE UND NICHT DIE SELTENHEIT DES
+  // FELDES: Ein fehlender Ablauf kostet einen benannten Zustand, den der Rahmen
+  // behandelt; eine gescheiterte Autorisierung kostet den Kunden einen VOLLSTAENDIGEN
+  // DURCHLAUF. Der Tausch bleibt derselbe, gleich wie oft das Feld kommt — deshalb
+  // beantwortet dieser Kommentar die Frage der Haeufigkeit gar nicht.
+  // WAS ZU IHR ERHOBEN IST, STEHT AN GENAU EINER STELLE: am Typ RefreshTokenExpiry in
+  // src/lib/secrets/oauth-payload.ts, dort mit Provenienz je Angabe. Zweimal
+  // beschrieben liefe es auseinander.
+  // PROVENIENZ DIESER STUETZE: ARCHITEKTEN-FESTLEGUNG 2026-08-29. Keine Messung.
   const rawRefreshExpiry = raw["refresh_token_expires_in"];
   const refreshExpiryAbsent =
     rawRefreshExpiry === undefined || rawRefreshExpiry === null;

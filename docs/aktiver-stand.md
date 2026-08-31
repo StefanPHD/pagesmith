@@ -1756,3 +1756,14 @@ NICHTS, das darauf hinweist.
    der wörtlichen Suche und das Vorhandensein der Zielüberschrift sind am Dateitext
    erhoben. Dass die Kollision JEDEN künftigen Zeiger dieser Art trifft, ist eine
    ABLEITUNG aus den zwei Auflagen, keine Messung.
+
+4. **DIE LIVE-BESTÄTIGUNG AUS VERMERK 6, ABLEITUNG 1, GEHÖRT SACHLICH NACH
+   docs/ziel-befunde.md, TEIL (bx) — DORT IST SIE NOCH NICHT VERORTET** (angetreten
+   2026-08-31). Teil (bx) hält fest, dass `refresh_token_expires_in` beim CODE-TAUSCH kam,
+   und lässt die Erneuerung offen; VERMERK 6, Ableitung 1 schliesst genau diese Lücke am
+   eigenen Produktivpfad. Solange sie nur in dieser Standdatei steht, verschwindet sie mit
+   der Archivierung der Phase aus dem Befund-Bestand. NICHT IN DIESER RUNDE VOLLZOGEN:
+   docs/ziel-befunde.md bleibt unberührt. TRIGGER: die nächste Runde, die
+   docs/ziel-befunde.md ohnehin öffnet — dieselbe Runde wie Vorrats-Eintrag 12 dieser
+   Datei, und beides gehört zusammen erledigt. KEINE EMPFEHLUNG. PROVENIENZ: FOLGE aus
+   dem Vergleich der beiden Fundstellen (CC, 2026-08-31), keine Messung.

@@ -1327,7 +1327,7 @@ Scope-Ausweitung hält:
   seine `public*`-Beschriftungen in DIESEM Literal hinzu und nirgendwo sonst. **Ein
   Zielnamen-Zweig in der Komponente wäre der erste im Haus.**
 
-### Fünf Festlegungen des Zuschnitts der Scheibe 2
+### Sechs Festlegungen des Zuschnitts der Scheibe 2
 
 **(1) EIN SKALAR PLUS DIE VORHANDENE EREIGNIS-ACHSE — KEIN NEUES FELD.**
 `operatingAccount.accountId` (die Google-Ads-Kundennummer) geht in den Slot, den `pixelId`
@@ -1480,6 +1480,68 @@ nicht gesetzt". Beides ist Bestandsverhalten der zwei Slots (`setPixelId` trimmt
 `setConversionRule` löscht bei leerem Wert den Schlüssel) und Sache des Bau-Plans, nicht
 dieses Zuschnitts.
 
+**(6) DIE KUNDENNUMMER WIRD AN DER EINGABE NORMALISIERT.**
+**WAS FÄLLT: BINDESTRICHE UND LEERRAUM. SONST NICHTS.** Keine Prüfung, keine Ablehnung,
+keine Bedingung. **Was nach dem Entfernen dasteht, geht unverändert durch — auch wenn es
+keine Ziffernfolge ist.** Ein Wert, der danach nicht numerisch ist, wird gesendet und vom
+Anbieter abgewiesen; das ist derselbe Ausgang wie ohne diese Festlegung und ausdrücklich
+gewollt.
+**WO: AN DER EINGABE.** Der reine Bauer bleibt unberührt — `buildIngestEventsRequest`
+normalisiert nicht und soll das nicht ändern. Das ist der zweite Halbsatz von
+Vorrats-Eintrag 7, wörtlich übernommen und nicht neu entschieden.
+**NUR DIE KUNDENNUMMER.** Für `productDestinationId` ist **nicht gelesen**, ob der Anbieter
+sie je mit Trennzeichen anzeigt. **Was nicht erhoben ist, wird nicht mitbehandelt** — eine
+Normalisierung auf Verdacht wäre genau die erfundene Transformation, gegen die Festlegung (5)
+auf der Prüf-Achse argumentiert.
+**SICHTBARKEIT IST PFLICHT UND NICHT KOSMETIK:** Der gespeicherte Wert muss der sein, den
+das Feld zeigt. **Es darf keinen unsichtbaren Unterschied zwischen Getipptem und
+Gespeichertem geben.** WANN das geschieht — beim Tippen, beim Verlassen des Feldes, beim
+Speichern — ist Sache des Bau-Plans; **DASS es sichtbar ist, ist die Festlegung.**
+
+**GRUND:** **Google Ads zeigt Kundennummern MIT Bindestrichen an**, und ein Betreiber
+schreibt ab, was er sieht. Ohne Normalisierung entsteht ein **STILLER Fehlschlag** — die
+Anfrage wird abgewiesen, niemand sieht etwas, die Conversion fehlt. **Scheibe 2 baut keinen
+Transport und damit keine Rückmeldung, die ihn auffinge**; die Beschriftung wäre in dieser
+Scheibe die einzige Auskunft, und eine Beschriftung ist eine Auskunft, kein Riegel.
+
+**DIE MESSLÜCKE, UND WARUM SIE HIER NICHT ENTSCHEIDET:** Dass die BINDESTRICHE der Grund der
+Abweisung waren, ist **NICHT isoliert gemessen** (docs/ziel-befunde.md, Teil (bt)).
+**Normalisiert wird nicht, WEIL wir es wissen, sondern weil der Ausgang UNTER BEIDEN
+MÖGLICHKEITEN gleich gut ist:** Waren die Bindestriche der Grund, rettet es den Fall; waren
+sie es nicht, ist eine Ziffernfolge ohne Bindestriche **immer noch genau das, was die
+gelesene Doku verlangt** (Teil (j): "accountId, productDestinationId — Zeichenkette mit
+Ziffern, in Anführungszeichen"). **Dieselbe Figur wie beim Deuter in
+`src/lib/oauth/google-refresh.ts`** — richtig unter beiden Auslegungen, statt richtig unter
+der einen, die man für wahrscheinlicher hält.
+
+**EINE ZURÜCKGEZOGENE GEGENFASSUNG GEHÖRT IN DEN TEXT, SONST WIRD DIESE FESTLEGUNG ALS
+MEINUNGSWECHSEL GELESEN:** Erwogen worden war das Gegenteil — keine Normalisierung im Code,
+die Form nur im Platzhalter und im Hinweistext der Karte. **Ihre Begründung war eine
+Asymmetrie:** eine falsche Normalisierung schreibe einen veränderten Wert in die Datenbank,
+"und niemand sieht mehr, was der Betreiber getippt hat". **SIE IST WIDERLEGT, NICHT
+ÜBERSTIMMT:** Das Argument trifft eine **VERSTECKTE** Transformation, also eine
+server-seitige Umformung. **Hier ist es ein EINGABEFELD, und der gespeicherte Wert steht
+sichtbar darin** — genau deshalb ist die Sichtbarkeit oben Pflicht und nicht Kosmetik. **Die
+Asymmetrie gibt es unter dieser Bauform nicht.**
+**DAZU EIN PRÄZEDENZFALL IM HAUS:** `setPixelId` (src/lib/settings.ts) **trimmt bereits**.
+Eine Normalisierung an der Eingabe ist gebaut — nur eine schwächere.
+PROVENIENZ: ARCHITEKTEN-/OWNER-ENTSCHEIDUNG 2026-08-31. Keine Messung.
+
+**GRENZE:** Sie sagt, **DASS** und **WAS** normalisiert wird — **nicht WO im Code**. Das ist
+das Gate unten.
+**ZWEI STELLEN DIESES ZUSCHNITTS WERDEN DADURCH ENGER, UND BEIDE BLEIBEN WÖRTLICH STEHEN:**
+· Die **GRENZE von Festlegung (5)** sagt, der Zuschnitt sage nichts über einen TRIM, das sei
+  Sache des Bau-Plans. **Das gilt unverändert für `productDestinationId` und für "leer heisst
+  nicht gesetzt".** Für die KUNDENNUMMER ist die Leerraum-Achse mit (6) entschieden. **(5)
+  wird dadurch nicht falsch** — sie spricht von PRÜFEN, (6) von VERÄNDERN, und die beiden
+  sind nicht dasselbe: **das eine weist ab, das andere formt um.**
+· Der Eintrag "TRIM UND LEER-BEHANDLUNG DER ZWEI KENNUNGEN" in "Was Scheibe 2 ausdrücklich
+  NICHT entscheidet" ist im selben Zug **auf seinen verbliebenen Gegenstand verengt** worden.
+**EIN UNTERSCHIED, DER BEIM BAUEN ZÄHLT UND SONST ÜBERSEHEN WIRD:** `setPixelId` trimmt
+**AUSSEN**. (6) verlangt mehr — ein eingefügtes "123 456 7890" trägt Leerraum **INNEN**, und
+den entfernt kein Trim. **Wer (6) für erledigt hält, weil schon getrimmt wird, hat sie nicht
+gebaut.**
+
 ### Was Scheibe 2 ausdrücklich NICHT entscheidet
 
 Vier Dinge, je mit dem Ort, an dem sie entschieden werden. **Sie stehen hier, damit die
@@ -1487,7 +1549,13 @@ Bau-Runde sie nicht für vergessen hält und nebenbei mitentscheidet:**
 - **DER FELDNAME `pixelId`.** GATE für Stufe 1 des Bau-Plans, s. Festlegung (1), Grenze 2.
 - **OB ES EINEN AUFZÄHLUNGS-ENDPUNKT FÜR DIE ERREICHBAREN KONTEN GIBT.** Offener Punkt in
   docs/offene-punkte.md, Trigger "der Zuschnitt der Scheibe 4", s. Festlegung (4).
-- **TRIM UND LEER-BEHANDLUNG DER ZWEI KENNUNGEN.** Bau-Plan, s. Festlegung (5).
+- **TRIM UND LEER-BEHANDLUNG — WAS DAVON ÜBRIG IST.** Bau-Plan, s. Festlegung (5). **VERENGT
+  AM 2026-08-31, weil Festlegung (6) einen Teil davon entschieden hat:** Für die
+  KUNDENNUMMER ist die Leerraum-Achse jetzt entschieden (Bindestriche und Leerraum fallen).
+  **Offen und beim Bau-Plan bleiben:** der Trim für `productDestinationId`, die Frage "leer
+  heisst nicht gesetzt" für beide, und das WANN der Normalisierung. **Ohne diese Verengung
+  sagte die Liste 'nicht entschieden' über etwas, das eine Festlegung desselben Abschnitts
+  entscheidet** — und die Liste ist die Prüfliste der Bau-Runde.
 - **WIE DER AUSDRUCK VON `settingsEqual` AUSSIEHT.** Er braucht keinen — Festlegung (1) ist
   gerade so gewählt, dass die Funktion unverändert trägt. **Fasst der Bau-Plan sie dennoch
   an, ist das begründungspflichtig**, weil damit die tragende Begründung der Festlegung (1)
@@ -1518,6 +1586,27 @@ Karte in dieser Kombination tatsächlich rendert, und **den Bau-Plan sagen lasse
 folgt** — Unterdrückung, Umformulierung, eine gemeinsame Zeile oder gar nichts. **KEINE
 EMPFEHLUNG**, und ausdrücklich keine Vorwegnahme: Ein Zielnamen-Zweig in der Komponente wäre
 in jedem Fall ausgeschlossen (s. "Woraus Scheibe 2 besteht", zweiter Befund).
+
+**EIN ZWEITES GATE FÜR STUFE 1 — ES FOLGT AUS FESTLEGUNG (6): `setPixelId` IST GETEILT.**
+**DER BEFUND, GEMESSEN am Code (CC, 2026-08-31):** `setPixelId` (src/lib/settings.ts) nimmt
+das ZIEL als Parameter entgegen, **urteilt aber über kein Ziel verschieden** — sie schreibt
+`pixels[target].pixelId = pixelId.trim()`, für alle fünf gleich. **Alle vier bestehenden
+Ziele laufen durch dieselbe Funktion**, und ihr einziger Aufrufer im Produktivcode ist
+`onPixelIdChange` in `src/components/CodeImporter.tsx`. **Eine Normalisierung dort träfe die
+vier mit.**
+**DAS IST EIN SCOPE-BRUCH UND KEINE GESCHMACKSFRAGE:** "Jede Änderung am Resolver-Verhalten
+für die vier bestehenden Ziele" ist im Scope dieser Scheibe ausgeschlossen — und ein
+Bindestrich, der bei Metas Pixel-ID plötzlich fiele, wäre genau das, nur eine Ebene früher.
+**DIE FRAGE AN DEN BAU-PLAN, in einem Satz:** Wie entsteht eine ZIEL-SPEZIFISCHE
+Normalisierung, **OHNE** einen Zielnamen-Zweig in der Komponente (ausgeschlossen, s. "Woraus
+Scheibe 2 besteht") **UND OHNE** das Verhalten der vier bestehenden Ziele zu ändern (Scope)?
+**KANDIDATEN NENNEN, KEINE AUSWAHL — und dieser Zuschnitt nennt keine.**
+**EIN BEFUND, DER DAZUGEHÖRT UND AUSDRÜCKLICH KEINE EMPFEHLUNG IST:** `TARGET_CARDS`
+(src/lib/tracking/target-cards.ts) trägt schon heute **ziel-spezifische DATEN** — je Ziel
+Beschriftung, Hilfetext und Platzhalter, und die ABWESENHEIT einer Feldgruppe schaltet das
+Feld ab. Dass dort ziel-spezifische Angaben leben, ist gemessen; **dass eine Normalisierung
+dorthin gehörte, ist damit NICHT gesagt.** Wer diesen Absatz als Auswahl liest, hat die
+Entscheidung getroffen, die der Bau-Plan treffen soll.
 
 ### Die Beweis-Achse der Scheibe 2
 
@@ -2646,19 +2735,22 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
      GILT WÖRTLICH, MIT TITEL UND RUMPF.** Damit ist er **kein Vorrats-Posten mehr im Sinne
      des Kopfes dieses Abschnitts** ("NICHT gebaut und NICHT entschieden"): **nicht gebaut,
      aber entschieden.**
-   · **EINE GEGENREDE IST ERWOGEN UND VERWORFEN WORDEN, und sie gehört festgehalten, damit
-     niemand sie für ungeprüft hält und neu vorbringt:** Der Zuschnitt der Scheibe 2 hat eine
-     SECHSTE Festlegung erwogen, die das Gegenteil gesagt hätte — keine Normalisierung im
-     Code, die Form nur im Platzhalter und im Hinweistext der Karte. **Ihre Begründung war
-     eine Asymmetrie:** Eine fehlende Normalisierung kostet einen zweiten Versuch, sobald es
-     Rückmeldung gibt; eine FALSCHE Normalisierung schreibt einen veränderten Wert in die
-     Datenbank, und niemand sieht mehr, was der Betreiber getippt hat. **SIE IST NICHT
-     GESCHRIEBEN WORDEN UND ENTFÄLLT DAUERHAFT** (OWNER, 2026-08-31).
-     **DIE NUMMER IST BEWUSST NICHT GENANNT:** Sie hätte im Entwurf die sechste getragen, und
-     eine künftige sechste Festlegung würde denselben Zeiger tragen — s. die Regel "EIN
-     ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT"
-     (docs/immer-beachten.md). **Der Zuschnitt führt weiterhin FÜNF Festlegungen; die sechste
-     hat es nie gegeben.**
+   · **DIE ENTSCHEIDUNG TRÄGT EINE FESTLEGUNG, UND ZWAR DIE SECHSTE DES ZUSCHNITTS DER
+     SCHEIBE 2** ("DIE KUNDENNUMMER WIRD AN DER EINGABE NORMALISIERT", 2026-08-31). Was sie
+     sagt — Bindestriche und Leerraum fallen, sonst nichts, an der Eingabe, nur die
+     Kundennummer, sichtbar — steht **dort und nicht hier**; zweimal geschrieben liefe es
+     auseinander.
+   · **EINE GEGENFASSUNG IST ERWOGEN UND ZURÜCKGEZOGEN WORDEN, und sie gehört festgehalten,
+     damit niemand sie für ungeprüft hält und neu vorbringt:** Sie hätte das Gegenteil gesagt
+     — keine Normalisierung im Code, die Form nur im Platzhalter und im Hinweistext der
+     Karte. **Ihre Begründung war eine Asymmetrie:** eine falsche Normalisierung schreibe
+     einen veränderten Wert in die Datenbank, und niemand sehe mehr, was der Betreiber
+     getippt hat.
+     **SIE IST WIDERLEGT, NICHT ÜBERSTIMMT** (ARCHITEKT, 2026-08-31): Das Argument trifft
+     eine **VERSTECKTE** Transformation, also eine server-seitige Umformung. Hier ist es ein
+     **Eingabefeld**, und der gespeicherte Wert steht sichtbar darin. Dazu ein Präzedenzfall
+     im Haus — `setPixelId` trimmt bereits, eine Normalisierung an der Eingabe ist gebaut,
+     nur eine schwächere. **Die volle Herleitung steht an Festlegung (6) selbst.**
    · **WAS DIE ENTSCHEIDUNG NICHT BERÜHRT — FESTLEGUNG (5) DES ZUSCHNITTS BLEIBT WÖRTLICH
      STEHEN.** Sie sagt, dass die beiden Kennungen **nicht auf FORM GEPRÜFT** werden, weil
      eine Prüfung auf beiden Achsen erfunden wäre. **PRÜFEN UND NORMALISIEREN SIND ZWEI

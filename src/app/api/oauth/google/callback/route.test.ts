@@ -144,6 +144,19 @@ function ergebnisCode(res: Response): string | null {
   return new URL(ziel(res), "http://localhost:3000").searchParams.get("google");
 }
 
+/**
+ * Die PROJEKT-KENNUNG im Rueckkehr-Ziel, oder null (mitgereiste Fix-Scheibe).
+ *
+ * GELESEN WIE DER ERGEBNISCODE — ueber searchParams und NICHT ueber einen
+ * Zeichenketten-Vergleich auf die ganze Location. Ein Vergleich auf den Volltext waere
+ * bei JEDER kuenftigen Ergaenzung rot, ohne dass an der geprueften Eigenschaft etwas
+ * kaputt waere; genau deshalb sind die bestehenden Laeufe dieser Datei von der Ergaenzung
+ * unberuehrt geblieben.
+ */
+function projektKennung(res: Response): string | null {
+  return new URL(ziel(res), "http://localhost:3000").searchParams.get("project");
+}
+
 /** Das zuletzt geschriebene Upsert-Argument. */
 function geschrieben(): Record<string, unknown> {
   const letzter = upsert.mock.calls.at(-1);
@@ -220,6 +233,45 @@ describe("Der error-Zweig (E4/E5)", () => {
   it("R3b — der error-WERT steht in keinem Log", async () => {
     await GET(anfrage("error=ein_sehr_auffaelliger_fremdwert"));
     expect(logText()).not.toContain("ein_sehr_auffaelliger_fremdwert");
+  });
+
+  // =========================================================================
+  // T9 — DER denied-ZWEIG TRAEGT DIE PROJEKT-KENNUNG, OHNE DIE ANORDNUNG ZU AENDERN.
+  //
+  // BEIDE HAELFTEN EINZELN, und das ist die Auflage: Der Zweig liest das Cookie NUR, um
+  // die Kennung zu entnehmen — er VERIFIZIERT den State nicht. Ein Lauf, der nur die
+  // Kennung prueft, liesse offen, ob dabei die bewusste Anordnung gekippt ist; ein Lauf,
+  // der nur die Anordnung prueft, liesse offen, ob die Kennung ueberhaupt ankommt.
+  // =========================================================================
+  it("T9a — denied traegt die Kennung, wenn das Cookie lesbar ist", async () => {
+    // WIRD ROT, WENN die Lesung im denied-Zweig faellt. Dann landete ausgerechnet der
+    // Fall, den ein Betreiber am haeufigsten selbst ausloest — er klickt "Abbrechen" —,
+    // im Rueckfall-Projekt.
+    const res = await GET(anfrage("error=access_denied"));
+    expect(ergebnisCode(res)).toBe("denied");
+    expect(projektKennung(res)).toBe(PROJEKT_ID);
+  });
+
+  it("T9b — OHNE lesbares Cookie bleibt denied denied: kein Sitzungsfehler, keine Kennung", async () => {
+    // DIE ZWEITE HAELFTE, und sie bewacht die ANORDNUNG: Ein Fehlschlag der Lesung ist
+    // FOLGENLOS — kein Ausgang, kein no_state, kein Verdacht. Eine ganz normale Ablehnung
+    // kommt weiterhin als denied heraus.
+    // WIRD ROT, WENN jemand die Lesung zu einer PRUEFUNG macht (etwa "kein Cookie ->
+    // no_state") — genau die Verwechslung, gegen die der Kommentar an der Stelle steht.
+    cookieWert = undefined;
+    const res = await GET(anfrage("error=access_denied"));
+    expect(ergebnisCode(res)).toBe("denied");
+    expect(projektKennung(res)).toBeNull();
+  });
+
+  it("T9c — ein KAPUTTES Cookie ist im denied-Zweig ebenfalls folgenlos", async () => {
+    // Die dritte Gestalt desselben Fehlschlags. Sie steht getrennt, weil parseStateCookie
+    // sie als EIGENEN Zustand fuehrt (bad_format gegen missing) — und weil ein Zweig, der
+    // nur `missing` abfaengt, hier durchfiele.
+    cookieWert = `${STATE}.${PROJEKT_ID}.zuviel`;
+    const res = await GET(anfrage("error=access_denied"));
+    expect(ergebnisCode(res)).toBe("denied");
+    expect(projektKennung(res)).toBeNull();
   });
 });
 
@@ -518,6 +570,43 @@ describe("Die Ausgaenge als Menge (A-II, E6)", () => {
     for (const res of await alleAusgaenge()) {
       expect(await res.text()).toBe("");
     }
+  });
+
+  // =========================================================================
+  // T6 — DIE PROJEKT-KENNUNG IM RUECKKEHR-ZIEL (mitgereiste Fix-Scheibe).
+  // =========================================================================
+  it("T6 — der Erfolgs-Ausgang traegt die Kennung aus dem Cookie", async () => {
+    // ROT DURCH DIE PFLICHT-MUTATION "den Projekt-Parameter im Callback weglassen".
+    // DIE KENNUNG KOMMT AUS DEM COOKIE, NICHT AUS DER URL — deshalb ist sie hier
+    // PROJEKT_ID und nicht irgendein Anfrage-Parameter. Waere sie ueber Google gereist,
+    // entschiede der Rueckkehrer, an welches Projekt gebunden wird.
+    const res = await GET(anfrage(ERFOLGS_QUERY));
+    expect(ergebnisCode(res)).toBe("ok");
+    expect(projektKennung(res)).toBe(PROJEKT_ID);
+  });
+
+  it("T6b — no_state traegt KEINE Kennung, und das ist die benannte Grenze", async () => {
+    // KEIN FEHLSCHLAG, SONDERN EINE EIGENSCHAFT: Die Kennung liegt im Cookie, und genau
+    // dessen Fehlen hat zu diesem Ausgang gefuehrt. WIRD ROT, WENN jemand hier "der
+    // Vollstaendigkeit halber" etwas anhaengt — es gaebe nichts anzuhaengen, und ein
+    // erfundener Wert waehlte ein fremdes Projekt.
+    cookieWert = undefined;
+    const res = await GET(anfrage(ERFOLGS_QUERY));
+    expect(ergebnisCode(res)).toBe("no_state");
+    expect(projektKennung(res)).toBeNull();
+  });
+
+  it("T6c — der /login-Ausgang traegt KEINE Kennung", async () => {
+    // ER LAEUFT GAR NICHT UEBER outcomeUrl (redirectOut("/login") mit einem Literal), und
+    // deshalb ist hier nichts auszunehmen gewesen. DER LAUF STEHT TROTZDEM, weil die
+    // Tatsache sonst nur ein Kommentar waere:
+    // /login ist eine ANDERE Seite. Der Mount-Effekt, der die Adresse raeumt, lebt in
+    // CodeImporter und laeuft dort nicht — EIN PARAMETER, DEN NICHTS KONSUMIERT, BLEIBT
+    // STEHEN, und das verletzt die Festlegung "beide Parameter zusammen entfernt".
+    angemeldeterNutzer = null;
+    const res = await GET(anfrage(ERFOLGS_QUERY));
+    expect(ziel(res)).toBe("/login");
+    expect(projektKennung(res)).toBeNull();
   });
 });
 

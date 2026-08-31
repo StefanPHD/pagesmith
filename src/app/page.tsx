@@ -2,6 +2,13 @@ import CodeImporter from "@/components/CodeImporter";
 import { signOut } from "@/app/auth/actions";
 import { listProjects, loadProject } from "@/app/projects/actions";
 import { createClient } from "@/lib/supabase/server";
+// DIE ENTSCHEIDUNG LIEGT NICHT HIER, und der Grund steht im Kopf jener Datei: Diese Seite
+// ist eine Server-Komponente und im Bestand von keinem Test erreichbar. Hier bleibt die
+// VERDRAHTUNG, dort liegen die vier Faelle — mit ihren Waechtern.
+import {
+  PROJECT_PARAM,
+  resolveConnectReturn,
+} from "@/lib/oauth/connect-return";
 
 // DER ERGEBNISCODE DES GOOGLE-AUTORISIERUNGS-FLUSSES (Scheibe 3).
 //
@@ -35,7 +42,32 @@ export default async function Home({
 
   // Auto-Load (3.3): das zuletzt bearbeitete Projekt + die volle Liste fuer den
   // Switcher. Kein Projekt -> null/leer, Editor startet im leeren Zustand.
-  const [project, projects] = await Promise.all([loadProject(), listProjects()]);
+  //
+  // SEIT DER FIX-SCHEIBE ENTSCHEIDET resolveConnectReturn, WELCHES Projekt geladen wird:
+  // Traegt die Adresse eine Kennung aus dem Autorisierungs-Fluss, gilt DIESE; sonst
+  // bleibt es beim Rueckfall "zuletzt bearbeitet". DIE AUTO-LOAD-REGEL IST UNVERAENDERT —
+  // sie bekommt einen Vorrang davor, sie wird nicht ersetzt.
+  //
+  // DER LADER WIRD HEREINGEREICHT, nicht dort importiert: Das Eigentums-Gate bleibt in
+  // loadProject, und die Entscheidung bleibt ohne Datenbank testbar.
+  //
+  // Promise.all BLEIBT — die Projektliste haengt an nichts davon ab und laedt weiterhin
+  // nebenlaeufig. listProjects liefert ALLE Projekte des Nutzers; ein per Kennung
+  // gewaehltes ist also in jedem Fall in der Liste, und der Umschalter zeigt es aktiv.
+  const [connect, projects] = await Promise.all([
+    resolveConnectReturn({
+      rawProject: params[PROJECT_PARAM],
+      hasOutcome: connectOutcome !== null,
+      load: loadProject,
+    }),
+    listProjects(),
+  ]);
+  const project = connect.project;
+  // DIE MELDUNG STEHT UNTER DEM VORBEHALT DER PROJEKT-WAHL: Loeste die Kennung nicht auf,
+  // faellt das Projekt zurueck UND die Meldung entfaellt — eine falsch verortete Auskunft
+  // ist schlechter als keine. Die vier Faelle stehen in resolveConnectReturn, nicht hier;
+  // diese Zeile ist die Verdrahtung, keine zweite Entscheidung.
+  const outcomeToShow = connect.showOutcome ? connectOutcome : null;
 
   return (
     <main className="mx-auto w-full max-w-[1800px] px-4 py-8 lg:px-8">
@@ -70,7 +102,7 @@ export default async function Home({
         initialVariantBMappings={project?.mappings_b ?? null}
         initialAbTestActive={project?.ab_test_active ?? false}
         initialAbTestStartedAt={project?.ab_test_started_at ?? null}
-        initialConnectOutcome={connectOutcome}
+        initialConnectOutcome={outcomeToShow}
       />
     </main>
   );

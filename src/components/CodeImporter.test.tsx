@@ -3365,3 +3365,59 @@ describe("CodeImporter — Scheibe 11.1b: verwendete Events", () => {
     expect(section().querySelectorAll("li").length).toBe(0);
   });
 });
+
+// ===========================================================================
+// T7 — DIE ADRESSE WIRD BEIM MOUNT GERAEUMT, UND ZWAR FUER BEIDE PARAMETER
+// (mitgereiste Fix-Scheibe zur Phase 11.2).
+//
+// WARUM DER GUARD SICH GEAENDERT HAT: Er fragte bis dahin nach dem ERGEBNISCODE. Seit die
+// Adresse ZWEI fluechtige Parameter traegt, liesse er einen Projekt-Parameter OHNE
+// Ergebniscode stehen — und der waehlte dann bei JEDEM Neuladen erneut. Genau das halbe
+// Deep-Linking, das der Zuschnitt ausschliesst.
+//
+// DIE LAEUFE STEHEN EINZELN, weil sie verschieden brechen: der erste am neuen Guard, der
+// zweite an seiner Untergrenze (ohne Suchzeichenkette wird NICHTS angefasst).
+// ===========================================================================
+describe("Der Mount-Effekt raeumt die Adresse", () => {
+  const HTML = `<h1 data-pagesmith-id="ps-aaaaaa">Titel</h1>`;
+
+  afterEach(() => {
+    window.history.replaceState(null, "", "/");
+  });
+
+  it("T7 — ein Projekt-Parameter OHNE Ergebniscode wird entfernt", async () => {
+    // ROT DURCH DIE MUTATION "den alten Guard stehen lassen" (Rueckkehr zu
+    // `initialConnectOutcome === null` -> frueh zurueck): Dann bliebe die Kennung stehen.
+    window.history.replaceState(null, "", "/?project=abc");
+    render(<CodeImporter initialProjectId="p1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    expect(window.location.search).toBe("");
+  });
+
+  it("T7b — beide Parameter zusammen werden entfernt", async () => {
+    // DIE FESTLEGUNG WOERTLICH: zusammen konsumiert, zusammen entfernt. Ein Lauf, der nur
+    // den Projekt-Parameter prueft, liesse offen, ob der Ergebniscode weiterhin
+    // mitgeht — er war der einzige, den der alte Guard kannte.
+    window.history.replaceState(null, "", "/?google=write&project=abc");
+    render(
+      <CodeImporter
+        initialProjectId="p1"
+        initialCode={HTML}
+        initialConnectOutcome="write"
+      />,
+    );
+    await screen.findByText("Titel");
+    expect(window.location.search).toBe("");
+  });
+
+  it("T7c — ohne Suchzeichenkette wird die Adresse NICHT angefasst", async () => {
+    // DIE UNTERGRENZE, und ohne sie waeren die zwei Laeufe darueber hohl: Sie zeigten nur,
+    // dass am Ende nichts dasteht — auch eine Fassung, die IMMER schreibt, saehe dort
+    // richtig aus. Hier wird belegt, dass der frueh zurueckkehrende Zweig existiert.
+    window.history.replaceState(null, "", "/unterseite");
+    render(<CodeImporter initialProjectId="p1" initialCode={HTML} />);
+    await screen.findByText("Titel");
+    expect(window.location.pathname).toBe("/unterseite");
+    expect(window.location.search).toBe("");
+  });
+});

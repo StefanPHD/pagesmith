@@ -246,11 +246,25 @@ export default function CodeImporter({
     initialConnectOutcome,
   );
   useEffect(() => {
-    if (initialConnectOutcome === null) return;
+    // DER GUARD FRAGT SEIT DER FIX-SCHEIBE NICHT MEHR NACH DEM ERGEBNISCODE, SONDERN NACH
+    // DER SUCHZEICHENKETTE. Grund: Seither trägt die Adresse ZWEI flüchtige Parameter —
+    // den Ergebniscode und die Projekt-Kennung —, und beide werden ZUSAMMEN konsumiert
+    // und ZUSAMMEN entfernt. Der alte Guard liess einen Projekt-Parameter OHNE
+    // Ergebniscode stehen; er hätte dann bei JEDEM Neuladen erneut gewählt — ein halbes
+    // Deep-Linking, das der Zuschnitt ausdrücklich ausschliesst.
+    //
+    // DIE GRENZE GEHÖRT AN DIESE STELLE, sonst löscht sie eines Tages stillschweigend
+    // etwas Fremdes: Diese Zeile nimmt die GANZE Suchzeichenkette mit. Das ist heute
+    // richtig — GEMESSEN am Repo (CC, 2026-08-31): ausser dieser Seite liest NIEMAND die
+    // Suchzeichenkette der App-Seite, es gibt keinen dauerhaften Parameter. KOMMT JE
+    // EINER DAZU, IST DIESE STELLE NEU ZU BEWERTEN.
+    if (window.location.search === "") return;
     window.history.replaceState(null, "", window.location.pathname);
-    // Absichtlich EINMAL beim Mount: der Wert kommt aus dem ersten Render und aendert
-    // sich danach nicht mehr.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Absichtlich EINMAL beim Mount. Die leere Abhaengigkeitsliste ist seit der
+    // Fix-Scheibe VOLLSTAENDIG und braucht keine Ausnahme mehr: Der Rumpf liest nur noch
+    // window, keinen Prop und keinen State. Die frueher noetige
+    // eslint-disable-Zeile ist damit entfallen — sie waere jetzt eine unbenutzte
+    // Direktive und faellt als Lint-Warnung auf.
   }, []);
   // Aktives Projekt. null = neues, noch nicht gespeichertes Projekt (keine
   // DB-Zeile bis zum ersten Speichern).

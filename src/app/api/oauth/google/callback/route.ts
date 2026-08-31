@@ -126,8 +126,32 @@ type Outcome =
   | "encrypt"
   | "write";
 
-function outcomeUrl(outcome: Outcome): string {
-  return `${RETURN_PATH}?${RESULT_PARAM}=${outcome}`;
+/**
+ * Baut das Rueckkehr-Ziel: der Ergebniscode, und — wenn bekannt — die PROJEKT-KENNUNG.
+ *
+ * WARUM DIE KENNUNG MITKOMMT (mitgereiste Fix-Scheibe zur Phase 11.2): Ohne sie laedt die
+ * App bei der Rueckkehr das Projekt mit dem juengsten updated_at, und das ist NICHT
+ * zwingend das, in dem der Fluss gestartet wurde. Der Ergebniscode erschiene dann an der
+ * Karte eines FREMDEN Projekts — die Auskunft erscheint am falschen Projekt und
+ * verschwindet am richtigen, sobald jemand umschaltet.
+ *
+ * SIE IST EIN HINWEIS, KEINE AUTORITAET. Die Empfaengerseite prueft ihre FORM und laedt
+ * ueber loadProject, das auf user_id filtert und unter RLS steht; die Kennung waehlt
+ * ausschliesslich unter Projekten, die dem Nutzer ohnehin gehoeren. Sie erweitert keinen
+ * Zugriff, und ihr Verlust ist folgenlos (dann gilt der Rueckfall).
+ *
+ * DER PARAMETERNAME WIRD HIER GESETZT UND NICHT IMPORTIERT — dieselbe Trennung wie beim
+ * Ergebniscode: Diese Route ist die SENDENDE Seite des URL-Vertrags. Ein Import zoege
+ * eine Server-Komponenten-Datei in einen Route-Handler, ohne dass eine Seite von der
+ * anderen etwas braeuchte.
+ */
+const PROJECT_PARAM = "project";
+
+function outcomeUrl(outcome: Outcome, projectId?: string): string {
+  const base = `${RETURN_PATH}?${RESULT_PARAM}=${outcome}`;
+  return projectId
+    ? `${base}&${PROJECT_PARAM}=${encodeURIComponent(projectId)}`
+    : base;
 }
 
 /**
@@ -176,7 +200,29 @@ export async function GET(request: Request): Promise<Response> {
   if (errorParam !== null && errorParam.length > 0) {
     // Der WERT wird nicht geloggt: er ist Fremdtext aus einer fremden Weiterleitung.
     console.warn("[oauth/google/callback] denied", { hasError: true });
-    return redirectOut(outcomeUrl("denied"));
+    // DIE KENNUNG WIRD HIER GELESEN, NICHT DER STATE VERIFIZIERT — und dieser Satz muss
+    // stehen, weil die Zeile sonst beim naechsten Blick wie eine Aufweichung der bewusst
+    // gewaehlten Anordnung aussieht:
+    // · Die Anordnung schuetzt den Verweigerungsfall davor, an der STATE-PRUEFUNG zu
+    //   scheitern (s. den Absatz darueber). Das Cookie zu LESEN ist etwas anderes als
+    //   statesMatch zu rufen — jener Vergleich bleibt unangetastet an seiner Stelle,
+    //   weiter unten. Hier wird AUSSCHLIESSLICH projectId entnommen.
+    // · EIN FEHLSCHLAG DER LESUNG IST FOLGENLOS: kein Ausgang, kein Log, kein Verdacht —
+    //   dann eben kein Parameter, und die Empfaengerseite faellt auf "zuletzt bearbeitet"
+    //   zurueck. Eine ganz normale Ablehnung kommt weiterhin als `denied` heraus und NIE
+    //   als Sitzungsfehler.
+    // · OB GOOGLE BEI EINER VERWEIGERUNG DEN state MITSCHICKT, IST WEITERHIN UNGEMESSEN
+    //   (docs/ziel-befunde.md, Teil (be)) — und fuer diese Zeile gleichgueltig: Die
+    //   Kennung reist in UNSEREM Cookie, nicht im state-Parameter des Anbieters.
+    const abgelehnt = parseStateCookie(
+      (await cookies()).get(STATE_COOKIE_NAME)?.value ?? null,
+    );
+    return redirectOut(
+      outcomeUrl(
+        "denied",
+        abgelehnt.kind === "ok" ? abgelehnt.projectId : undefined,
+      ),
+    );
   }
 
   // (2) DAS STATE-COOKIE. missing und bad_format fuehren auf denselben Ausgang — der
@@ -185,14 +231,28 @@ export async function GET(request: Request): Promise<Response> {
   const parsed = parseStateCookie(jar.get(STATE_COOKIE_NAME)?.value ?? null);
   if (parsed.kind !== "ok") {
     console.warn("[oauth/google/callback] no_state", { reason: parsed.kind });
+    // DIESER AUSGANG TRAEGT DIE KENNUNG NICHT, UND ER KANN ES NICHT: Sie liegt im
+    // Cookie, und genau dessen Fehlen oder Kaputtsein hat uns hierher gefuehrt. Die
+    // Rueckkehr landet damit im Rueckfall-Projekt, und der Ergebniscode wird dort
+    // ANGEZEIGT (Fall (a) in lib/oauth/connect-return.ts) — "keine Kennung" ist etwas
+    // anderes als "unaufloesbare Kennung".
+    // ES IST DIE BENANNTE GRENZE DER FIX-SCHEIBE, kein Fehlschlag: Ausgerechnet der
+    // einzige Fehlercode, den ein Betreiber bisher je gesehen hat, wird von ihr nicht
+    // gebessert.
     return redirectOut(outcomeUrl("no_state"));
   }
+
+  // AB HIER TRAEGT JEDER AUSGANG DIE PROJEKT-KENNUNG. Der Helfer steht bewusst NACH dem
+  // Guard darueber: Vor ihm gibt es kein `parsed.projectId`, und ein Aufruf oberhalb
+  // dieser Zeile ist damit ein BAU-FEHLER statt eines stillen `undefined`.
+  const zielMitProjekt = (outcome: Outcome): string =>
+    outcomeUrl(outcome, parsed.projectId);
 
   // (3) DER STATE, ZEITKONSTANT VERGLICHEN (s. statesMatch). Geloggt wird der
   //     FEHLSCHLAG, nie ein Wert und nie eine Laenge.
   if (!statesMatch(params.get("state"), parsed.state)) {
     console.warn("[oauth/google/callback] state_mismatch");
-    return redirectOut(outcomeUrl("state_mismatch"));
+    return redirectOut(zielMitProjekt("state_mismatch"));
   }
 
   // (4) DER CODE. Kein error UND kein code ist ein missgebildeter Aufruf; ohne diesen
@@ -200,7 +260,7 @@ export async function GET(request: Request): Promise<Response> {
   const code = params.get("code") ?? "";
   if (code.length === 0) {
     console.warn("[oauth/google/callback] no_code");
-    return redirectOut(outcomeUrl("no_code"));
+    return redirectOut(zielMitProjekt("no_code"));
   }
 
   // (5) DIE SITZUNG. Ohne sie dorthin, wo eine entsteht — relative Location bewusst,
@@ -246,7 +306,7 @@ export async function GET(request: Request): Promise<Response> {
       userId: user.id,
       failed: Boolean(lookupError),
     });
-    return redirectOut(outcomeUrl("not_found"));
+    return redirectOut(zielMitProjekt("not_found"));
   }
 
   // (7) DIE KONFIGURATION. FAIL-LOUD; geloggt wird der NAME der Variablen, nie ihr
@@ -256,7 +316,7 @@ export async function GET(request: Request): Promise<Response> {
     console.error("[oauth/google/callback] missing_env", {
       variable: config.variable,
     });
-    return redirectOut(outcomeUrl("config"));
+    return redirectOut(zielMitProjekt("config"));
   }
 
   // (8) DER TAUSCH. GOOGLE_OAUTH_REDIRECT_URI geht UNVERAENDERT hinein — der Anbieter
@@ -272,7 +332,7 @@ export async function GET(request: Request): Promise<Response> {
       reason: exchanged.kind,
       status: exchanged.kind === "http_error" ? exchanged.status : null,
     });
-    return redirectOut(outcomeUrl("exchange"));
+    return redirectOut(zielMitProjekt("exchange"));
   }
 
   // DIE UHR WIRD GENAU EINMAL GELESEN und an BEIDE Umrechnungen weitergereicht.
@@ -289,14 +349,14 @@ export async function GET(request: Request): Promise<Response> {
     console.error("[oauth/google/callback] no_refresh_token", {
       projectId: parsed.projectId,
     });
-    return redirectOut(outcomeUrl("no_refresh"));
+    return redirectOut(zielMitProjekt("no_refresh"));
   }
   if (payload.kind !== "ok") {
     // Der FELDNAME, nie sein Inhalt.
     console.error("[oauth/google/callback] bad_response", {
       field: payload.field,
     });
-    return redirectOut(outcomeUrl("bad_response"));
+    return redirectOut(zielMitProjekt("bad_response"));
   }
   if (payload.refreshExpiryIgnored) {
     // Das Feld war da und war unbrauchbar. Der Zustand bleibt "unbekannt"; die
@@ -311,7 +371,7 @@ export async function GET(request: Request): Promise<Response> {
     console.error("[oauth/google/callback] bad_payload", {
       field: formatted.field,
     });
-    return redirectOut(outcomeUrl("bad_payload"));
+    return redirectOut(zielMitProjekt("bad_payload"));
   }
 
   // (11) DIE CHIFFRIERUNG. no_key und bad_key sind Betriebs-Zustaende der Umgebung,
@@ -321,7 +381,7 @@ export async function GET(request: Request): Promise<Response> {
     console.error("[oauth/google/callback] encrypt", {
       reason: encrypted.kind,
     });
-    return redirectOut(outcomeUrl("encrypt"));
+    return redirectOut(zielMitProjekt("encrypt"));
   }
 
   // (12) HARTE INVARIANTE: Admin-Client (service_role, bypassed RLS) erst HIER, NACH
@@ -378,9 +438,9 @@ export async function GET(request: Request): Promise<Response> {
       projectId: parsed.projectId,
       message: writeError.message,
     });
-    return redirectOut(outcomeUrl("write"));
+    return redirectOut(zielMitProjekt("write"));
   }
 
   console.info("[oauth/google/callback] ok", { projectId: parsed.projectId });
-  return redirectOut(outcomeUrl("ok"));
+  return redirectOut(zielMitProjekt("ok"));
 }

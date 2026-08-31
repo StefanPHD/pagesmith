@@ -2015,6 +2015,31 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     GEMELDET 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG.
     TRIGGER: Stufe 1 der Scheibe 3 — dort ist es ein GATE, kein Hinweis.
 
+16. **`saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE
+    UI-ABWESENHEIT UND NICHT DURCH EINEN RIEGEL.**
+    **GEMESSEN am Code (CC, 2026-08-29):** `saveProject` (src/app/projects/actions.ts)
+    reicht den Einstellungs-Blob unverändert in die `projects`-Spalte durch — kein
+    Schema-Check, keine Feldprüfung, keine Ziel-Prüfung. Der einzige Weg, der heute
+    `settings.pixels.<ziel>.pixelId` setzt, ist das öffentliche Eingabefeld der Karte
+    (`setPixelId` hat im Produktivcode GENAU EINEN Aufrufer, components/CodeImporter.tsx).
+    **WAS DARAUS FOLGT UND WARUM ES HIERHER GEHÖRT:** Das erste der vier Tore der
+    Scheibe 3 (`withPixel` in src/lib/capi/token.ts) hält, WEIL die Google-Karte kein
+    solches Feld anbietet. Ein selbstgebauter Aufruf könnte `pixels.google` trotzdem in
+    den Blob legen. **DIE TRAGENDE SCHICHT IST DESHALB TOR B** — die Klartext-Spalte
+    `secret` der google-Zeile bleibt NULL, und der Resolver liest ausschliesslich sie.
+    **ES IST KEINE NEUE LÜCKE, UND DIESER SATZ GEHÖRT DAZU, damit der Eintrag nicht
+    grösser gelesen wird als er ist:** Der Blob ist seit jeher CLIENT-besessen
+    (`saveProject` ersetzt ihn ganzheitlich — die Regel "SERVER-EIGENE IDENTITÄT NIE IN
+    EINEN CLIENT-BESESSENEN BLOB" beschreibt genau das). Die Scheibe 3 ändert daran
+    nichts; sie macht nur sichtbar, dass ein TOR daran hängt.
+    **GEMELDET, NICHT BEHOBEN. KEINE EMPFEHLUNG** — weder eine Validierung in
+    `saveProject` noch eine Allowlist im Blob ist hier vorgeschlagen.
+    TRIGGER: **der Zuschnitt der Scheibe 2.** Dort fällt Tor A ABSICHTLICH (die Kennungen
+    bekommen ihre Eingabe), und ab da zählt, dass der Blob beliebige Ziel-Schlüssel
+    aufnimmt — die Frage ist dann nicht mehr, ob ein Feld existiert, sondern was in der
+    Spalte stehen darf.
+    GEMELDET 2026-08-29.
+
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT
 DIESER SCHEIBE GEGENSTANDSLOS.** `refreshAccessToken` liest, dechiffriert und zerlegt

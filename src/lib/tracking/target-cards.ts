@@ -53,26 +53,43 @@ import type { TrackingTarget } from "@/lib/settings";
  * DIE DREI OEFFENTLICHEN FELDER SIND SEIT 11.1a OPTIONAL — UND IHRE ABWESENHEIT IST DER
  * SCHALTER (Variante C des freigegebenen Plans).
  *
- * WARUM UEBERHAUPT: Das vierte Ziel hat kein oeffentliches Feld, das diese Scheibe
- * anbieten duerfte. Seine Kennung ist eine Conversion-Regel-URN, die JE EREIGNISTYP
- * gilt; wo sie abgelegt wird, ist ausdruecklich NICHT entschieden (Trigger (ii) der
- * Primaerschluessel-Entscheidung, CLAUDE.md "## Offene Punkte"). Ein Eingabefeld
- * anzubieten hiesse, die Ablage im CLIENT-besessenen Einstellungs-Blob faktisch zu
- * entscheiden — durch die Hintertuer und ohne Beschluss.
+ * WARUM UEBERHAUPT: Das vierte Ziel hat kein oeffentliches Feld, weil seine Kennung
+ * KEINEN projektweiten Skalar bildet. Sie ist eine Conversion-Regel-URN und gilt JE
+ * EREIGNISTYP; sie lebt deshalb im Ereignis-Block des Bereichs MESSEN
+ * (settings.pixels.<ziel>.conversionRules), nicht auf dieser Karte. Es fehlt ihm kein
+ * Feld — es hat schlicht keine Kennung, die auf eine Karte gehoerte.
  *
- * NACHGETRAGEN (Scheibe 2 der Phase 11.2), UND DER ABSATZ DARUEBER BLEIBT WOERTLICH:
- * Der Halbsatz "wo sie abgelegt wird, ist ausdruecklich NICHT entschieden" beschrieb
- * den Stand vom 2026-08-19 und ist ueberholt. TRIGGER (ii) IST GEPRUEFT UND VERNEINT
- * (ARCHITEKT, 2026-08-31): Eine Kennung, die der Betreiber SEHEN und AENDERN koennen
- * muss, ist kein Geheimnis im Sinne von project_secrets — jene Tabelle traegt RLS
- * aktiv und keine einzige Policy und ist bewusst unlesbar. Beide Kennungsformen
- * liegen damit im Einstellungs-Blob, und zwar per Beschluss statt durch die
- * Hintertuer. Die volle Begruendung und ihre GRENZE (sie ruht auf einem NICHT-Treffer,
- * nicht auf einem Beleg) stehen in docs/aktiver-stand.md, Festlegung (2) des
- * Zuschnitts der Scheibe 2.
- * WAS DER ABSATZ DARUEBER WEITERHIN RICHTIG SAGT: dass die Abwesenheit der Felder der
- * Schalter ist, und dass die URN JE EREIGNISTYP gilt. Nur die Ablage-Frage ist
- * beantwortet.
+ * DER KONTRAST MACHT DEN GRUND SICHTBAR, und er ist seit Scheibe 2 der Phase 11.2 am
+ * eigenen Bestand zu sehen statt nur behauptet: Das FUENFTE Ziel traegt BEIDES
+ * nebeneinander — ein oeffentliches Feld fuer den projektweiten Skalar (die
+ * Kundennummer) UND einen Ereignis-Block fuer die Kennung je Ereignistyp. Beide
+ * Kennungsarten haben je ihren Ort, und die Karte fuehrt genau die eine davon. Das
+ * vierte Ziel hat nur die zweite; deshalb ist seine Karte leer und nicht unvollstaendig.
+ *
+ * WO BEIDE KENNUNGSFORMEN LIEGEN: im CLIENT-besessenen Einstellungs-Blob, und zwar PER
+ * BESCHLUSS. Trigger (ii) der Primaerschluessel-Entscheidung ist GEPRUEFT UND VERNEINT
+ * (ARCHITEKT, 2026-08-31) — eine Kennung, die der Betreiber SEHEN und AENDERN koennen
+ * muss, ist kein Geheimnis im Sinne von project_secrets; jene Tabelle traegt RLS aktiv
+ * und keine einzige Policy und ist bewusst unlesbar.
+ *
+ * DIE GRENZE GEHOERT ZWINGEND DAZU, sonst ist dieser Absatz staerker als seine Quelle:
+ * Die Entscheidung ruht auf einem NICHT-TREFFER, nicht auf einem Beleg — der Anbieter
+ * stuft keine der Kennungen als vertraulich ein, aber er stuft sie auch nicht als
+ * unbedenklich ein; er ist nicht gefragt worden. DER OFFENE PUNKT IST NICHT
+ * GESCHLOSSEN: Trigger (i) ist unberuehrt, und stuft der Anbieter je eine der Kennungen
+ * als vertraulich ein, ist Trigger (ii) eingetreten und die Owner-Entscheidung vom
+ * 2026-08-12 NEU zu treffen. Die volle Begruendung wird hier NICHT verdoppelt — sie
+ * steht in docs/aktiver-stand.md, Festlegung (2) des Zuschnitts der Scheibe 2.
+ *
+ * ERSETZT AM 2026-08-31 (ARCHITEKT), OHNE STEMPEL-BLOCK. Hier stand eine Fassung mit
+ * ZWEI Gruenden: der URN je Ereignistyp UND dem Satz, die Ablage sei nicht entschieden,
+ * ein Feld entschiede sie "durch die Hintertuer". DER ZWEITE GRUND IST ERSATZLOS
+ * ENTFALLEN, nicht nur seine Praemisse: Ist die Ablage per Beschluss entschieden, kann
+ * ein Eingabefeld sie nicht mehr durch die Hintertuer entscheiden — der Satz hat keinen
+ * Gegenstand mehr. DER ALTE WORTLAUT IST NICHT AUFBEWAHRT, und das ist eine
+ * Entscheidung: Er traegt keine Herleitung, die beim naechsten Wechsel wieder gebraucht
+ * wuerde. Die Bedingung, unter der die alte Lage zurueckkehrt, ist EIN Satz, und den
+ * traegt die GRENZE oben.
  *
  * WARUM DIE ABWESENHEIT UND KEIN EIGENES FLAG: Ein Flag NEBEN den drei Feldern waere
  * eine zweite Wahrheit ueber dieselbe Sache — es koennte "kein Feld" sagen, waehrend

@@ -378,16 +378,49 @@ export default function TargetCard({
 
       <div className="flex flex-col gap-3">
         {/* DAS OEFFENTLICHE FELD ENTFAELLT GANZ, wenn die Karte keines fuehrt (11.1a).
-            NICHT nur die Beschriftung: Ein Eingabefeld ohne Bedeutung ist eine
-            Einladung, etwas Falsches hineinzuschreiben — und was hineingeschrieben
-            wuerde, landete im CLIENT-besessenen Einstellungs-Blob und entschiede damit
-            eine Ablage, die niemand beschlossen hat.
+            NICHT nur die Beschriftung, und der Grund liegt in der SACHLAGE und nicht in
+            einer offenen Frage: Ein Ziel ohne oeffentliches Feld hat keine Kennung, die
+            auf diese Ebene gehoerte — seine Kennung gilt JE EREIGNISTYP und lebt im
+            Ereignis-Block. Ein Eingabefeld dafuer waere ein Feld ohne Bedeutung und
+            damit eine Einladung, etwas Falsches hineinzuschreiben. DIE HERLEITUNG WIRD
+            HIER NICHT VERDOPPELT: sie steht am Typ in lib/tracking/target-cards.ts,
+            Absatz "WARUM UEBERHAUPT".
+
             DIE FOLGE FUER DEN AUSGELIEFERTEN CODE gehoert hierher, weil sie an genau
-            dieser Zeile haengt: Das Memo consentTargets (components/CodeImporter.tsx)
-            filtert auf eine gesetzte Kennung. Ohne Feld gibt es keinen Weg, eine zu
-            setzen -> das Ziel erscheint in KEINEM ausgelieferten Text. Wer hier ein
-            Feld ergaenzt, aendert damit den ausgelieferten Code jeder Seite, die es
-            benutzt. */}
+            dieser Zeile haengt — ABER SIE HAENGT NICHT AM FELD, SONDERN AN DER KENNUNG,
+            GLEICH WELCHER FORM. Das Memo consentTargets (components/CodeImporter.tsx)
+            filtert ueber isTargetDeliverable, und das ist ein ODER: Skalar ODER
+            Zuordnung je Ereignistyp. Ein Ziel ohne Kartenfeld kann seinen
+            Consent-Schluessel also sehr wohl in den ausgelieferten Text bringen.
+            DER GEGENBEWEIS STEHT IM EIGENEN BESTAND: LinkedIn hat kein Kartenfeld und
+            trotzdem einen Weg, eine Kennung zu setzen — den Ereignis-Block; es ist damit
+            auslieferfaehig, und sein Schluessel steht im Draht. Die ANDERE Haelfte
+            desselben ODER ist live bestaetigt (Owner, 2026-08-31, Live-Test der Scheibe
+            2, Schritt 7: NUR die Kundennummer hinterlegt, Schluessel im Draht).
+
+            ERSETZT (Scheibe 2 der Phase 11.2), NICHT GESTEMPELT — ZWEI SAETZE SIND
+            GEFALLEN, und die Begruendung gehoert an die Stelle, weil sie sonst
+            zurueckkehrt.
+            DIE ZWEI WOERTLICHEN ZITATE SIND EINE STREICHUNGS-SPUR UND KEIN STEMPEL, und
+            der Unterschied entscheidet ueber ihr Ueberleben: Ein Stempel bewahrt eine
+            HERLEITUNG, die beim naechsten Wechsel wieder gebraucht wird — die gibt es
+            hier nicht. Diese Zitate bewahren den WORTLAUT ALS SUCHANKER. Satz (2) war
+            ZWEI SCHEIBEN LANG unbemerkt falsch, und die Zwillingsstelle in
+            lib/tracking/target-cards.ts wurde NUR gefunden, weil nach dem Wortlaut
+            gesucht werden konnte. Wer sie nach der Regel wegraeumt, die fuer Stempel
+            gilt, nimmt dem naechsten Fund sein Werkzeug.
+            (1) "entschiede damit eine Ablage, die niemand beschlossen hat" — die Ablage
+                IST beschlossen; der Satz hat keinen Gegenstand mehr.
+            (2) "Ohne Feld gibt es keinen Weg, eine zu setzen -> das Ziel erscheint in
+                KEINEM ausgelieferten Text" — das war seit 11.1d FALSCH, nicht erst seit
+                dieser Scheibe. ER MACHTE EINE WIRKUNG AN DER FALSCHEN URSACHE FEST, und
+                zwar an genau der Zeile, die das Feld schaltet: Wer ihm folgte, hielt den
+                Consent-Draht fuer ans Kartenfeld gekoppelt.
+
+            WAS RICHTIG BLEIBT UND NICHT VERLORENGEHT: Wer hier ein Feld ergaenzt,
+            aendert damit den ausgelieferten Code jeder Seite, die es benutzt. DIE FOLGE
+            STIMMT, NUR IHRE HERLEITUNG WAR FALSCH — ein neues Feld erzeugt einen neuen
+            WEG, eine Kennung zu setzen, und DAS wirkt auf den Draht. */}
         {config.publicLabel !== undefined && (
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-medium text-gray-700">

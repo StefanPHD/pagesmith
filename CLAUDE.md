@@ -251,6 +251,10 @@ gehen von hier eine Station weiter.
   an einer dieser beiden Dateien, spätestens mit dem ersten automatischen Aufrufer)
 - DIE MIDDLEWARE LEITET API-ROUTEN AUF EINE HTML-SEITE UM (Trigger: der erste
   programmatische Aufrufer einer API-Route, spätestens Scheibe 1b)
+- DER ERSTE AUTORISIERUNGS-VERSUCH NACH EINER PAUSE ENDET IN no_state (Trigger:
+  EINGETRETEN — der Fehler tritt heute regelmässig auf. Er beisst spätestens beim ersten
+  fremden Kunden, für den ein fehlgeschlagener Erstversuch das Produkt kaputt aussehen
+  lässt)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

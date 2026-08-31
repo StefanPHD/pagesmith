@@ -1310,3 +1310,86 @@ aufeinander; sie liegen alle hier und finden einander.
   PROVENIENZ: GEMESSEN LIVE (Stefan, 2026-08-29). Die Aussage über den unerreichbaren
   401 ist eine ABLEITUNG aus dieser Beobachtung; die Aussage über den GET-Fall ist eine
   ÜBERTRAGUNG auf einen Fall, der nicht gefahren wurde, und ausdrücklich keine Messung.
+
+- DER ERSTE AUTORISIERUNGS-VERSUCH NACH EINER PAUSE ENDET IN no_state (Trigger:
+  EINGETRETEN — der Fehler tritt heute regelmässig auf. Er beisst spätestens beim ersten
+  fremden Kunden, für den ein fehlgeschlagener Erstversuch das Produkt kaputt aussehen
+  lässt):
+  DAS MUSTER — GEMESSEN LIVE (Owner, dreimal beobachtet, zuletzt 2026-08-31): Der erste
+  Versuch des Google-Autorisierungs-Flusses nach einer längeren Pause bzw. am Tagesanfang
+  endet mit `?google=no_state`. Der unmittelbar darauf folgende zweite Versuch läuft
+  durch; danach beliebig oft fehlerfrei — dreimal hintereinander über ZWEI Projekte, kein
+  Fehlschlag. ES IST ALSO NICHT "der erste Versuch scheitert immer", sondern "der erste
+  Versuch einer WARMEN PERIODE".
+  DER KNOPF SCHEIDET ALS URSACHE AUS: Das Muster trat sowohl über die abgetippte
+  Start-URL auf (docs/aktiver-stand.md, VERMERK 6, Schritt 1) als auch über den in
+  Scheibe 3 gebauten Knopf.
+  HOST-DIVERGENZ IST WIDERLEGT (GEMESSEN, Owner, 2026-08-31): identischer Host in der
+  Adresszeile vor dem Klick und nach der fehlgeschlagenen Rückkehr. Damit fällt der
+  Kandidat, der das Muster zuvor am besten erklärt hätte.
+  DER SITZUNGS-AUFBAU IST AUSGESCHLOSSEN (GEMESSEN, Owner, 2026-08-31): frischer Login
+  im Inkognito-Fenster, kein Fehler. DIE GRENZE DIESER MESSUNG GEHÖRT DAZU, sonst wird
+  sie stärker gelesen, als sie ist: Ein Inkognito-Fenster tauscht den GANZEN
+  Cookie-Vorrat und misst damit mehrere Achsen auf einmal; und ein ausbleibender Fehler
+  in einem Fall, für den der Hauptkandidat ohnehin keinen vorhersagt, ist eine
+  ÜBEREINSTIMMUNG und kein Beweis. WAS SIE ZEIGT, IST DIE RICHTUNG: Es hängt an einer
+  VERALTETEN Sitzung, nicht am Anlegen einer neuen.
+  SIEBEN KANDIDATEN SIND WIDERLEGT, und sie stehen hier, damit niemand sie erneut prüft
+  (Herleitung je Kandidat: die Aufklärungsrunde vom 2026-08-31):
+  · Host-Divergenz — durch die Messung oben.
+  · Direkter Aufruf der Callback-Adresse — erklärt einen Einzelfall, nicht das
+    regelmässige Muster über den Knopf.
+  · `Secure` über http (lokal) — in Prod läuft https, und es erklärt die anschliessende
+    Fehlerfreiheit nicht.
+  · `Max-Age=600` überschritten — träfe den zweiten Versuch genauso; zehn Minuten sind
+    keine Tagespause.
+  · `SameSite=Lax` — Lax sendet bei Top-Level-GET mit, der Callback IST ein GET, und im
+    Repo gibt es keinen `form_post`-Modus.
+  · Kaputter Cookie-Wert (`bad_format`) — erklärt kein "einmal je Periode"; bleibt als
+    Diagnose-Alternative, weil er am Log sofort abzutrennen ist.
+  · Plattform verwirft `Set-Cookie` auf einer 302 — träfe jeden Versuch gleich.
+  K8 IST OFFEN, MIT SEINER UNGEPRÜFTEN VORAUSSETZUNG: Die Supabase-Sitzung lebt rund eine
+  Stunde; der erste Aufruf nach einer Pause löst eine ERNEUERUNG aus, und die schreibt
+  selbst Cookies (`updateSession` in src/lib/supabase/middleware.ts baut dafür eine
+  eigene Response). Die Start-Route erzeugt ihre Weiterleitung SEPARAT
+  (src/app/api/oauth/google/start/route.ts: `new Response(null, { status: 302, headers:
+  { …, "Set-Cookie": start.setCookie } })`) und ruft `getUser()` VOR dem Cookie-Setzen.
+  DIE VORAUSSETZUNG, DIE NICHT GEPRÜFT IST: Die Erneuerung müsste auf den
+  /start-Request FALLEN. Ist der erste Aufruf des Tages die Seite `/`, ist /start beim
+  Klick längst warm.
+  K9 WIRD AUSDRÜCKLICH GEFÜHRT — etwas, das der Code nicht hergibt. Nach acht geprüften
+  Kandidaten ist EINER übrig, und der trägt eine offene Voraussetzung; das ist zu wenig,
+  um die Liste für abschliessend zu erklären.
+  DER STRUKTURELLE BEFUND, UND ER TRÄGT UNABHÄNGIG VON DER DIAGNOSE (GEMESSEN am Repo,
+  CC, 2026-08-31; Achse: `Set-Cookie`, `cookies().set`, `.cookies.set` über src/, ohne
+  Testdateien, mit Positivkontrolle): ES GIBT IM REPO KEINE BAUFORM, DIE ZEIGT, WIE EINE
+  ROUTE AUTH-COOKIES AUFFRISCHT UND EIN EIGENES COOKIE SETZT. Die zwei OAuth-Routen
+  teilen das Problem und bauen es gleich; sie lösen es nicht. Die dritte Stelle
+  (src/app/app-serve/route.ts, das Varianten-Cookie) läuft im SERVING-Zweig ausdrücklich
+  OHNE `updateSession` und trifft die Lage nie.
+  no_state HAT VIER BEDINGUNGEN UND ZWEI kind-WERTE (`parseStateCookie` in
+  src/lib/oauth/google-authorize.ts): `missing` · und `bad_format` mit drei
+  Unterbedingungen (Teilezahl ≠ 2, leerer State-Teil, formwidrige Projekt-Kennung). DER
+  CODE ALLEIN IST DAMIT KEIN BEFUND. Die Log-Zeile `[oauth/google/callback] no_state`
+  trägt ihren `reason` und trennt `missing` von `bad_format`.
+  DIE ENTSCHEIDENDE MESSUNG: DevTools → Netzwerk → die Anfrage `/api/oauth/google/start`
+  → Antwort-Header, IM FEHLERFALL. Zu notieren: wie viele `Set-Cookie`-Header die 302
+  trägt und welche Namen. DREI AUSGÄNGE: `__Host-ps_oauth` fehlt und Auth-Cookies sind da
+  → K8 bestätigt · beide da → K8 als Verdrängung widerlegt · nur `__Host-ps_oauth` → auf
+  diesem Request fand keine Erneuerung statt, K8 widerlegt.
+  ZWEI VORBEDINGUNGEN, ohne die der Schritt nichts misst: Das Netzwerk-Fenster muss VOR
+  dem Klick offen sein und "Preserve log" aktiv haben — die Antwort ist eine 302 und
+  verschwindet sonst mit der Navigation. Und der Schritt ist NUR IM FEHLERFALL
+  aussagekräftig, also nach einer Pause; ein warmer Lauf zeigt die Konstellation nicht.
+  DIE LOG-ZEILE IST NICHT DAS ERSTINSTRUMENT: `reason: missing` trifft K8, den
+  http-Kandidaten und K9 gleichzeitig.
+  AM CODE NICHT ENTSCHEIDBAR, ausdrücklich: ob Next die Middleware-Cookies und den rohen
+  `Set-Cookie`-Header eines Route-Handlers ZUSAMMENFÜHRT · ob die Erneuerung auf /start
+  fällt · ob ein Browser das Cookie aus eigenem Grund verwirft. Alle drei stehen
+  ausserhalb des Repos.
+  OB DAS EINE EIGENE BAU-SCHEIBE BRAUCHT, IST HIER NICHT ENTSCHIEDEN und wird NACH der
+  Messung entschieden.
+  PROVENIENZ, JE TEIL: Das Muster, die Host-Messung und der Inkognito-Lauf GEMESSEN LIVE
+  (Owner, 2026-08-31). Die Code-Befunde GEMESSEN am Repo (CC, 2026-08-31). Die
+  Widerlegungen der sieben Kandidaten sind ABLEITUNGEN aus diesen Befunden, keine
+  Messungen. K8 und K9 sind Kandidaten, keine Diagnosen.

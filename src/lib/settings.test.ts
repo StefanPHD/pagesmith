@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
+  eventAxisTargets,
   getCapiTokenSet,
   getMetaPixelId,
+  getPixelId,
   getTrackingKey,
   setCapiState,
   setMetaPixelId,
+  setPixelId,
   settingsEqual,
+  TRACKING_TARGETS,
   type ProjectSettings,
 } from "./settings";
 
@@ -119,5 +123,117 @@ describe("capi-Helper (Scheibe 2a)", () => {
     // Pixel-ID bleibt -> eine unsaved Pixel-ID-Edit geht beim Token-Set nicht verloren.
     expect(getMetaPixelId(next)).toBe("999");
     expect(getTrackingKey(next)).toBe("k");
+  });
+});
+
+// ===========================================================================
+// DIE UMFORMUNG DER OEFFENTLICHEN KENNUNG (Festlegung (6), Scheibe 2 der Phase 11.2).
+//
+// GEPRUEFT WIRD DER SCHREIBPFAD, NICHT DIE TABELLE: Die Laeufe rufen setPixelId und
+// lesen mit getPixelId zurueck — genau die Kette, die das kontrollierte Eingabefeld
+// durchlaeuft. Ein Test auf die Tabelle selbst pruefte nur ab, was danebensteht.
+// ===========================================================================
+describe("setPixelId — die ziel-spezifische Umformung", () => {
+  it("N-A: Bindestriche fallen bei der Kundennummer", () => {
+    // ROT, WENN die Umformung entfaellt oder den Bindestrich nicht trifft.
+    // DER FALL AUS DEM ANBIETER-KONTO: Google Ads zeigt Kundennummern MIT
+    // Bindestrichen an; ein Betreiber schreibt ab, was er sieht.
+    const next = setPixelId({}, "google", "987-654-3210");
+    expect(getPixelId(next, "google")).toBe("9876543210");
+  });
+
+  it("N-B: LEERRAUM INNEN faellt ebenfalls — und daran scheitert ein blosses Trim", () => {
+    // DIE SCHAERFERE HAELFTE, und sie ist der Grund fuer einen eigenen Lauf: Der
+    // Bestand trimmt seit jeher AUSSEN. Ein eingefuegtes "123 456 7890" traegt den
+    // Leerraum INNEN, und den entfernt kein Trim.
+    // ROT, WENN jemand die Umformung auf einen Rand-Trim zurueckbaut.
+    expect(getPixelId(setPixelId({}, "google", "123 456 7890"), "google")).toBe(
+      "1234567890"
+    );
+    // Beide Zeichenklassen zusammen, wie sie beim Kopieren real vorkommen.
+    expect(getPixelId(setPixelId({}, "google", " 987-654 3210 "), "google")).toBe(
+      "9876543210"
+    );
+  });
+
+  it("N-C: ein danach NICHT numerischer Wert geht unveraendert durch — keine Pruefung, keine Ablehnung", () => {
+    // FESTLEGUNG (5) BLEIBT UNANGETASTET: Es wird NICHT auf Form geprueft. Was nach
+    // dem Entfernen dasteht, wird abgelegt; die Abweisung ist Sache des Anbieters.
+    // ROT, WENN jemand eine Zifferpruefung einzieht — genau die erfundene Pruefung,
+    // gegen die Festlegung (5) argumentiert.
+    expect(getPixelId(setPixelId({}, "google", "abc-def"), "google")).toBe(
+      "abcdef"
+    );
+    expect(getPixelId(setPixelId({}, "google", "kein Konto"), "google")).toBe(
+      "keinKonto"
+    );
+  });
+
+  it("N-D: die VIER bestehenden Ziele sind UNBERUEHRT — mit Positivkontrolle im selben Lauf", () => {
+    // DIE TRAGENDE ZUSICHERUNG DIESER SCHEIBE GEGENUEBER DEM BESTAND: setPixelId ist
+    // GETEILT; alle fuenf Ziele laufen hindurch. Eine Umformung, die alle traefe, waere
+    // eine Verhaltensaenderung an vier ausgelieferten Zielen — und zwar still.
+    // ROT DURCH DIE PFLICHT-MUTATION "die Umformung auf alle Ziele ausweiten".
+    for (const target of TRACKING_TARGETS) {
+      if (target === "google") continue;
+      expect(getPixelId(setPixelId({}, target, "123-456"), target)).toBe(
+        "123-456"
+      );
+    }
+    // POSITIVKONTROLLE IM SELBEN LAUF: Ohne sie waere die Schleife auch dann gruen,
+    // wenn die Umformung UEBERHAUPT NICHT stattfaende — "nichts veraendert" saehe
+    // dann fuer alle fuenf gleich aus.
+    expect(getPixelId(setPixelId({}, "google", "123-456"), "google")).toBe(
+      "123456"
+    );
+  });
+
+  it("N-D2: der TRIM gilt weiterhin fuer ALLE Ziele", () => {
+    // DER BESTAND, DER NICHT KIPPEN DARF: Die Umformung tritt HINTER den Trim, nicht
+    // an seine Stelle. ROT, WENN jemand `pixelId.trim()` durch die Tabelle ERSETZT —
+    // dann verloeren vier Ziele ihren Rand-Trim, und zwar lautlos, weil die Identitaet
+    // nach nichts aussieht.
+    for (const target of TRACKING_TARGETS) {
+      expect(getPixelId(setPixelId({}, target, "  777  "), target)).toBe("777");
+    }
+  });
+
+  it("N-E: was das Feld zeigt, IST der abgelegte Wert — die Rueckgabe der Kette", () => {
+    // DIE SICHTBARKEITS-AUFLAGE AUS FESTLEGUNG (6), auf ihrer pruefbaren Ebene: Das
+    // Eingabefeld ist KONTROLLIERT — sein `value` kommt aus getPixelId ueber den
+    // Container. Was setPixelId schreibt, liest das Feld im naechsten Render zurueck.
+    // WIRD ROT, WENN die Umformung aus dem Schreibpfad in den Speicherpfad wandert:
+    // Dann bliebe hier der getippte Wert stehen, und Feld und Datenbank liefen
+    // auseinander.
+    // WAS ER NICHT ZEIGT, und der Satz gehoert dazu: Er prueft die ZWEI FUNKTIONEN,
+    // nicht das DOM. Dass das Feld den Wert wirklich anzeigt, prueft der
+    // Container-Lauf in CodeImporter.test.tsx und danach der Live-Test.
+    const abgelegt = setPixelId({}, "google", "987-654-3210");
+    expect(getPixelId(abgelegt, "google")).toBe("9876543210");
+  });
+});
+
+// ===========================================================================
+// DIE ZIELE MIT EREIGNIS-ACHSE (Scheibe 2 der Phase 11.2).
+// ===========================================================================
+describe("eventAxisTargets", () => {
+  it("N-F1: genau die Ziele mit Kennung JE EREIGNISTYP — linkedin und google", () => {
+    // ROT, WENN ein Ziel hinzukommt oder wegfaellt. Die Liste ist eine ABLEITUNG aus
+    // einer erschoepfenden Zuordnung; ein sechstes Ziel erzwingt dort eine Entscheidung
+    // und schlaegt hier durch.
+    expect([...eventAxisTargets]).toEqual(["linkedin", "google"]);
+  });
+
+  it("N-F2: die REIHENFOLGE ist die von TRACKING_TARGETS, nicht eine eigene", () => {
+    // DIE ZUSICHERUNG, DIE EINE VIERTE WAHRHEIT UEBER DIE ZIEL-ORDNUNG VERHINDERT:
+    // Die Bloecke im Bereich MESSEN erscheinen in derselben Ordnung wie die Karten.
+    // ROT, WENN jemand die Liste haendisch sortiert oder als Aufzaehlung hinschreibt.
+    // MITWACHSEND UND OHNE ZAEHLUNG: Der Vergleich filtert dieselbe Quelle und bleibt
+    // beim sechsten Ziel richtig.
+    expect([...eventAxisTargets]).toEqual(
+      TRACKING_TARGETS.filter((t) => eventAxisTargets.includes(t))
+    );
+    // POSITIVKONTROLLE: Die Liste ist nicht leer — sonst waere der Vergleich trivial.
+    expect(eventAxisTargets.length).toBeGreaterThan(0);
   });
 });

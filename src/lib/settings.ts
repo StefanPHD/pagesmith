@@ -95,8 +95,26 @@ export type ProjectSettings = {
     Record<
       TrackingTarget,
       {
-        // Pixel-ID ist OEFFENTLICH (steht im ausgelieferten Snippet) -> kein
-        // Secret, plain gespeichert. Der echte Secret liegt in project_secrets.
+        // Die oeffentliche Kennung des Ziels -> kein Secret, plain gespeichert.
+        // Der echte Secret liegt in project_secrets.
+        //
+        // ERSETZT (Scheibe 2 der Phase 11.2) — HIER STAND "Pixel-ID ist OEFFENTLICH
+        // (steht im ausgelieferten Snippet)". SACHKORREKTUR, kein Stempel: Der
+        // Klammerzusatz war die BEGRUENDUNG fuer "oeffentlich", und er trifft nicht
+        // mehr jedes Ziel. Fuer 'google' liefert dieses Projekt KEIN Tag aus; die
+        // Kundennummer steht in keinem Snippet, sie reist ausschliesslich in der
+        // Nutzlast des Server-Aufrufs. Dasselbe gilt seit 11.1a fuer 'pinterest' und
+        // 'tiktok' (s. deren Hilfetexte in tracking/target-cards.ts: "nicht im
+        // Seitenquelltext"). WAS BLEIBT: Der Wert ist NICHT geheim — das ist die
+        // Aussage, die den Slot traegt. Der Grund dafuer ist je Ziel ein anderer.
+        // WER DEN ALTEN SATZ STEHENLAESST, begruendet die Offenheit mit einer
+        // Sichtbarkeit, die es fuer drei von fuenf Zielen nicht gibt.
+        //
+        // DER NAME BLEIBT 'pixelId', OBWOHL ER FUER 'google' die KUNDENNUMMER traegt
+        // (ENTSCHEIDUNG: ARCHITEKT, 2026-08-31). Der Praezedenzfall steht im Repo:
+        // capi/ingest.ts uebersetzt config.pixelId beim Uebergeben zu adAccountId —
+        // am VERBRAUCHER, ohne den Slot umzubenennen. Ein Umbenennen traefe 30
+        // Dateien, darunter sechs Testdateien mit woertlichen Zusicherungen.
         pixelId?: string;
         // DIE ZUORDNUNG EREIGNISNAME -> CONVERSION-REGEL-KENNUNG (Scheibe 11.1d,
         // Form F1). Sie steht NEBEN pixelId, nicht darin: pixelId bleibt ein
@@ -336,8 +354,120 @@ export function hasTargetPixelId(
   return hasPixelId(pixelId);
 }
 
+// KEINE UMFORMUNG — die Vorgabe fuer jedes Ziel, dessen Kennung so abgelegt wird,
+// wie der Betreiber sie eingibt.
+const KENNUNG_UNVERAENDERT = (value: string): string => value;
+
+// BINDESTRICHE UND LEERRAUM FALLEN, SONST NICHTS (Festlegung (6), Scheibe 2 der
+// Phase 11.2). Keine Pruefung, keine Ablehnung: Was nach dem Entfernen dasteht,
+// geht unveraendert durch — auch wenn es keine Ziffernfolge ist.
+//
+// DER GRUND: Google Ads zeigt Kundennummern MIT Bindestrichen an, und ein Betreiber
+// schreibt ab, was er sieht. Ohne Umformung entstuende ein STILLER Fehlschlag — die
+// Anfrage wird abgewiesen, niemand sieht etwas, die Conversion fehlt.
+//
+// DIE MESSLUECKE ENTSCHEIDET HIER NICHT, und der Satz gehoert an die Fundstelle:
+// Dass die BINDESTRICHE der Grund der Abweisung waren, ist NICHT isoliert gemessen
+// (docs/ziel-befunde.md, Teil (bt) — der abgewiesene Wert trug Bindestriche UND
+// bezeichnete kein echtes Konto). Umgeformt wird nicht, WEIL wir es wissen, sondern
+// weil der Ausgang unter BEIDEN Moeglichkeiten gleich gut ist: Waren sie der Grund,
+// rettet es den Fall; waren sie es nicht, ist eine Ziffernfolge ohne Bindestriche
+// immer noch genau das, was die gelesene Doku verlangt (Teil (j)).
+//
+// \s DECKT DEN LEERRAUM INNEN MIT AB, und das ist der Punkt gegen ein blosses Trim:
+// Ein eingefuegtes "123 456 7890" traegt Leerraum INNEN, und den entfernt kein Trim.
+const OHNE_TRENNZEICHEN = (value: string): string => value.replace(/[-\s]/g, "");
+
+/**
+ * DIE UMFORMUNG DER OEFFENTLICHEN KENNUNG JE ZIEL — ERSCHOEPFEND (Festlegung (6)).
+ *
+ * WARUM EIN Record UND KEINE AUFZAEHLUNG: Ein sechstes Ziel erzwingt damit eine
+ * ENTSCHEIDUNG, statt stillschweigend die Identitaet zu erben — dieselbe Figur wie
+ * bei TARGET_CARDS (components/TargetCard.tsx bzw. tracking/target-cards.ts) und
+ * CONSENT_KEY_BY_TARGET (tracking/consent-targets.ts). Eine Aufzaehlung waere vom
+ * Compiler NICHT erzwungen, und was er nicht erzwingt, faellt nur auf, wenn jemand
+ * daran denkt (Festlegung (6) der Scheibe 3 sagt genau das).
+ *
+ * WARUM EINE FUNKTIONS-ZUORDNUNG UND KEIN SCHALTER: Ein `Record<…, boolean>`
+ * setzte voraus, dass jede kuenftige Umformung DIESELBE ist. Die Frage, die diese
+ * Tabelle beantwortet, lautet aber "welche Umformung gilt fuer dieses Ziel" — und
+ * die naechste kann eine andere sein.
+ *
+ * WARUM HIER UND NICHT IN EINEM EIGENEN MODUL (ENTSCHEIDUNG: ARCHITEKT,
+ * 2026-08-31): Ein eigenes Modul waere eine WEITERE ziel-geschluesselte Stelle. Der
+ * Kopf von tracking/target-adapters.ts zaehlt sie und hat sich dabei zweimal
+ * verzaehlt. Diese Tabelle fuegt keinen neuen ORT hinzu — sie steht in der Datei,
+ * die die Ablage-Form ohnehin allein kennt.
+ *
+ * DIE GRENZE, UND SIE GEHOERT AN DIESE STELLE: Die Umformung wirkt NUR IM
+ * SCHREIBPFAD. Ein Wert, der auf anderem Weg in den Blob gelangt — ein
+ * selbstgebauter saveProject-Aufruf, s. docs/aktiver-stand.md, Vorrat 16 —, wird NIE
+ * umgeformt und beim Lesen unveraendert angezeigt und weitergereicht. DAS IST KEINE
+ * NEUE LUECKE UND NICHTS, WAS HIER ZU BAUEN WAERE; ohne diesen Satz haelt die
+ * naechste Runde die Umformung fuer eine Zusicherung ueber den INHALT der Spalte.
+ */
+const NORMALIZE_PIXEL_ID: Record<TrackingTarget, (value: string) => string> = {
+  meta: KENNUNG_UNVERAENDERT,
+  pinterest: KENNUNG_UNVERAENDERT,
+  tiktok: KENNUNG_UNVERAENDERT,
+  linkedin: KENNUNG_UNVERAENDERT,
+  google: OHNE_TRENNZEICHEN,
+};
+
+/**
+ * NUTZT DIESES ZIEL DIE EREIGNIS-ACHSE? — ERSCHOEPFEND, aus demselben Grund wie
+ * NORMALIZE_PIXEL_ID darueber (Scheibe 2 der Phase 11.2).
+ *
+ * SIE BEANTWORTET, WELCHE ZIELE EINE KENNUNG JE EREIGNISTYP TRAGEN und deshalb im
+ * Bereich MESSEN einen eigenen Block mit Regel-Feldern bekommen. Bis hierher stand
+ * die Antwort als EINZELNE Konstante in components/CodeImporter.tsx
+ * (`RULES_TARGET = "linkedin"`); mit dem zweiten Ziel ist sie eine Menge.
+ *
+ * DIESELBE FORM WIE DIE TABELLE DARUEBER, UND DAS IST ABSICHT: Zwei Formen fuer
+ * dieselbe Frage — "was gilt je Ziel" — liefen auseinander, und beim sechsten Ziel
+ * erzwaenge die eine eine Entscheidung und die andere nicht.
+ *
+ * DIE REIHENFOLGE STEHT NICHT HIER. Wer die Ziele in einer Ansicht auflistet,
+ * leitet sie aus TRACKING_TARGETS ab (s. eventAxisTargets) — eine eigene Ordnung an
+ * dieser Stelle waere eine zweite Wahrheit ueber die Ziel-Reihenfolge.
+ */
+const USES_EVENT_AXIS: Record<TrackingTarget, boolean> = {
+  meta: false,
+  pinterest: false,
+  tiktok: false,
+  // Seit 11.1d: die Conversion-Regel-URN gilt JE EREIGNISTYP.
+  linkedin: true,
+  // Seit Scheibe 2 der Phase 11.2: productDestinationId ist die Kennung einer
+  // Conversion-Action und gilt damit faktisch je Ereignistyp (GELESEN,
+  // docs/ziel-befunde.md, Teil (k)/C3 — NICHT gemessen).
+  google: true,
+};
+
+/**
+ * Die Ziele mit Ereignis-Achse, IN DER ORDNUNG VON TRACKING_TARGETS.
+ *
+ * ABGELEITET, NICHT FESTGELEGT: Die Reihenfolge kommt aus der Ziel-Liste selbst und
+ * ist damit dieselbe wie bei den Karten. Eine eigene Aufzaehlung hier waere eine
+ * vierte Wahrheit ueber die Ziel-Ordnung.
+ */
+export const eventAxisTargets: readonly TrackingTarget[] = TRACKING_TARGETS.filter(
+  (target) => USES_EVENT_AXIS[target]
+);
+
 // Immutabel + nest-erhaltend: schreibt pixels.<ziel>.pixelId, ohne die Zweige
 // ANDERER Ziele anzutasten. Leerer/whitespace Wert wird zu "".
+//
+// DER TRIM BLEIBT UND GILT WEITER FUER ALLE ZIELE (Scheibe 2 der Phase 11.2). Die
+// ziel-spezifische Umformung tritt DAHINTER, nicht an seine Stelle: Fuer die vier
+// bestehenden Ziele ist sie die Identitaet, ihr Verhalten ist damit unveraendert.
+// WER DEN TRIM DURCH DIE TABELLE ERSETZT, aendert das Verhalten von vier Zielen —
+// und zwar still, weil die Identitaet nach nichts aussieht.
+//
+// DASS DIE UMFORMUNG SICHTBAR IST, ist keine zusaetzliche Mechanik, sondern die
+// vorhandene Bauform: Das Eingabefeld ist KONTROLLIERT (value aus getPixelId ueber
+// den Container), es zeigt also den ABGELEGTEN Wert. Genau deshalb sitzt die
+// Umformung HIER und nicht im Speicherpfad — sonst zeigte das Feld den getippten und
+// die Datenbank den umgeformten Wert, und Festlegung (6) waere verletzt.
 export function setPixelId(
   settings: ProjectSettings,
   target: TrackingTarget,
@@ -347,7 +477,10 @@ export function setPixelId(
     ...settings,
     pixels: {
       ...settings.pixels,
-      [target]: { ...settings.pixels?.[target], pixelId: pixelId.trim() },
+      [target]: {
+        ...settings.pixels?.[target],
+        pixelId: NORMALIZE_PIXEL_ID[target](pixelId.trim()),
+      },
     },
   };
 }

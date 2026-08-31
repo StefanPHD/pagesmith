@@ -67,7 +67,7 @@ export default function MeasureView({
   onCredentialsSaved,
   onCredentialsRemoved,
   usedEvents,
-  rulesTarget,
+  rulesTargets,
   conversionRuleFor,
   onConversionRuleChange,
   eventCounts,
@@ -120,18 +120,31 @@ export default function MeasureView({
   usedEvents: { names: string[]; scope: "a-only" | "a-and-b" };
   // --- Conversion-Regeln (Scheibe 11.1d) ---
   /**
-   * DAS ZIEL, dessen Kennung JE EREIGNISTYP gilt. Es kommt als PROP herein und
-   * wird hier NICHT gewaehlt — dieselbe Trennung wie bei `targets` darueber: Der
-   * Container weiss, WELCHES Ziel gemeint ist, diese Ansicht nur, DASS eines
-   * gemeint ist. Ein Zielwert in dieser Datei waere eine ziel-geschluesselte
+   * DIE ZIELE, deren Kennung JE EREIGNISTYP gilt. Sie kommen als PROP herein und
+   * werden hier NICHT gewaehlt — dieselbe Trennung wie bei `targets` darueber: Der
+   * Container weiss, WELCHE Ziele gemeint sind, diese Ansicht nur, DASS welche
+   * gemeint sind. Ein Zielwert in dieser Datei waere eine ziel-geschluesselte
    * Aussage in einer reinen Ansicht.
+   *
+   * PLURAL SEIT SCHEIBE 2 DER PHASE 11.2 — hier stand `rulesTarget:
+   * TrackingTarget`, weil es EIN Ziel gab. Die Ansicht rechnet die Menge NICHT aus
+   * und filtert sie nicht; sie schleift ueber das, was sie bekommt. IHRE ORDNUNG
+   * IST DIE DER LISTE — sie wird hier weder sortiert noch umgestellt, sonst waere
+   * das eine zweite Wahrheit ueber die Ziel-Reihenfolge.
    */
-  rulesTarget: TrackingTarget;
+  rulesTargets: readonly TrackingTarget[];
   /** Die GESPEICHERTE bzw. laufende Regel-Kennung eines Ereignisnamens, "" wenn
-   *  keine hinterlegt ist. Skalar je Name, KEIN Record — dieselbe Bauform wie
-   *  `pixelIdFor`: die Ansicht bekommt Werte, keinen Blob. */
-  conversionRuleFor: (event: string) => string;
-  onConversionRuleChange: (event: string, value: string) => void;
+   *  keine hinterlegt ist. Skalar je Ziel und Name, KEIN Record — dieselbe Bauform
+   *  wie `pixelIdFor`: die Ansicht bekommt Werte, keinen Blob.
+   *  DAS ZIEL REIST SEIT SCHEIBE 2 MIT: Bei zwei Bloecken muss der Aufruf sagen,
+   *  welchen er meint, und der Wert stammt aus `rulesTargets` — die Ansicht
+   *  erfindet ihn nicht. */
+  conversionRuleFor: (target: TrackingTarget, event: string) => string;
+  onConversionRuleChange: (
+    target: TrackingTarget,
+    event: string,
+    value: string
+  ) => void;
   // --- Statistik ---
   eventCounts: EventCount[];
   adblockLoss: AdblockLoss | null;
@@ -335,45 +348,83 @@ export default function MeasureView({
           beiden darunter: Die Namen stammen aus dem Editor-Zustand und die
           Zuordnung aus dem Einstellungs-Blob — keine Abfrage, keine Zeile, kein
           Geheimnis, das ein Gate zu schuetzen haette. */}
-      <div className="mt-4 border-t border-gray-200 pt-4">
-        <h2 className="mb-1 text-sm font-medium text-gray-700">
-          Conversion-Regeln ({TARGET_CARDS[rulesTarget].name})
-        </h2>
-        <p className="mb-3 text-xs text-gray-500">
-          Je verwendetem Event eine Regel-Kennung des Ziels
-          {usedEvents.scope === "a-and-b"
-            ? " — über beide Varianten."
-            : "."}
-        </p>
-        {usedEvents.names.length === 0 ? (
-          /* EIGENER WORTLAUT, bewusst NICHT der des Abschnitts darueber: Zwei
-             gleichlautende Leer-Texte unmittelbar uebereinander waeren auf dem
-             Bildschirm nicht auseinanderzuhalten, und ein Bestandstest behauptet
-             den oberen woertlich. Er nennt ausserdem die FOLGE ("nichts
-             zuzuordnen") statt nur den Zustand — sonst liest sich ein leerer
-             Kasten wie ein Ladefehler. */
-          <p className="text-xs text-gray-500">
-            Ohne verknüpfte Events gibt es nichts zuzuordnen.
+      {/* EIN BLOCK JE ZIEL MIT EREIGNIS-ACHSE (Scheibe 2 der Phase 11.2). Bis hierher
+          war es EIN fester Block, weil es EIN Ziel gab.
+          DIE REIHENFOLGE IST DIE DER PROP UND WIRD HIER NICHT ANGEFASST — sie kommt
+          aus TRACKING_TARGETS (eventAxisTargets in lib/settings.ts) und ist damit
+          dieselbe wie bei den Karten weiter oben. Ein Sortieren an dieser Stelle waere
+          eine zweite Wahrheit ueber die Ziel-Ordnung.
+          DIE EREIGNISNAMEN SIND PROJEKTWEIT, NICHT ZIEL-ABHAENGIG: usedEvents stammt
+          aus den Mappings beider Varianten. Beide Bloecke schleifen deshalb ueber
+          DIESELBE Namensliste; verschieden ist nur, in welchen Ziel-Slot der Wert
+          geht. */}
+      {rulesTargets.map((rulesTarget) => (
+        <div
+          key={rulesTarget}
+          className="mt-4 border-t border-gray-200 pt-4"
+        >
+          <h2 className="mb-1 text-sm font-medium text-gray-700">
+            Conversion-Regeln ({TARGET_CARDS[rulesTarget].name})
+          </h2>
+          <p className="mb-3 text-xs text-gray-500">
+            Je verwendetem Event eine Regel-Kennung des Ziels
+            {usedEvents.scope === "a-and-b"
+              ? " — über beide Varianten."
+              : "."}
           </p>
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {usedEvents.names.map((name) => (
-              <li key={name}>
-                <label className="flex flex-col gap-1 text-sm">
-                  <span className="font-medium text-gray-700">{name}</span>
-                  <input
-                    type="text"
-                    value={conversionRuleFor(name)}
-                    onChange={(e) => onConversionRuleChange(name, e.target.value)}
-                    placeholder="Regel-Kennung eintragen"
-                    className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </label>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+          {usedEvents.names.length === 0 ? (
+            /* EIGENER WORTLAUT, bewusst NICHT der des Abschnitts darueber: Zwei
+               gleichlautende Leer-Texte unmittelbar uebereinander waeren auf dem
+               Bildschirm nicht auseinanderzuhalten, und ein Bestandstest behauptet
+               den oberen woertlich. Er nennt ausserdem die FOLGE ("nichts
+               zuzuordnen") statt nur den Zustand — sonst liest sich ein leerer
+               Kasten wie ein Ladefehler. */
+            <p className="text-xs text-gray-500">
+              Ohne verknüpfte Events gibt es nichts zuzuordnen.
+            </p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {usedEvents.names.map((name) => (
+                <li key={name}>
+                  <label className="flex flex-col gap-1 text-sm">
+                    <span className="font-medium text-gray-700">{name}</span>
+                    {/* DER ZUGAENGLICHE NAME TRAEGT DAS ZIEL, DER SICHTBARE NICHT —
+                        und das ist eine OBERFLAECHEN-Entscheidung, keine
+                        Test-Bequemlichkeit (Scheibe 2 der Phase 11.2).
+                        DAS PROBLEM, DAS MIT DEM ZWEITEN BLOCK ENTSTEHT: Beide Bloecke
+                        schleifen ueber DIESELBE Ereignisliste. Ohne diesen Zusatz
+                        traegt die Seite zwei Eingabefelder mit dem zugaenglichen Namen
+                        "purchase", die in VERSCHIEDENE Ziel-Slots schreiben — genau
+                        die Lage, die docs/immer-beachten.md unter "ZWEI BEDIENELEMENTE
+                        MIT GLEICHEM NAMEN UND VERSCHIEDENER WIRKUNG SIND EIN
+                        OBERFLAECHEN-PROBLEM, KEIN TESTPROBLEM" fuehrt.
+                        WARUM NICHT DER SICHTBARE TEXT: Die Ueberschrift des Blocks
+                        nennt das Ziel bereits; es in jede Zeile zu schreiben waere
+                        eine Wiederholung, die der Betreiber nicht braucht. Wer NICHT
+                        sieht, hat die Ueberschrift aber nicht im Ohr, wenn er von Feld
+                        zu Feld springt — fuer ihn ist der Zusatz die einzige
+                        Unterscheidung.
+                        DIE HAUSFORM STEHT VOR: Die Ziel-KARTEN loesen dieselbe Frage
+                        ueber ziel-praefixierte Beschriftungen ("Meta-Pixel-ID" gegen
+                        "Pinterest-Anzeigenkonto-ID"), und ein Bestandstest haelt sie
+                        fest. */}
+                    <input
+                      type="text"
+                      aria-label={`${TARGET_CARDS[rulesTarget].name}: ${name}`}
+                      value={conversionRuleFor(rulesTarget, name)}
+                      onChange={(e) =>
+                        onConversionRuleChange(rulesTarget, name, e.target.value)
+                      }
+                      placeholder="Regel-Kennung eintragen"
+                      className="w-full max-w-xs rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                  </label>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ))}
 
       {/* Statistik (Phase 8 Scheibe 3): server-seitige Analytics-Counts des aktiven
           Projekts (PageViews + Conversions), server-beobachtet (source='server'),

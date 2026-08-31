@@ -395,17 +395,30 @@ describe("TargetCard — der Folgenlosigkeits-Hinweis haengt an hasAdapter", () 
         expect(screen.queryByText(HINWEIS)).toBeNull();
         expect(container.textContent).not.toContain("wird an dieses Ziel nichts");
       } else {
-        // KEIN EMPFAENGER: Der Hinweis steht, das oeffentliche Feld fehlt GANZ.
+        // KEIN EMPFAENGER: Der Hinweis steht.
         expect(screen.queryByText(HINWEIS)).not.toBeNull();
-        expect(card.publicLabel).toBeUndefined();
 
-        // DIE AUFLAGE DER SCHEIBE 11.1a, UND SIE IST DER GRUND FUER DIESEN ZWEIG:
-        // NEBEN dem Hinweis darf KEINE zweite Meldung stehen, die als Grund eine
+        // UMGESCHRIEBEN IN SCHEIBE 2 DER PHASE 11.2, NICHT REPARIERT — HIER STAND
+        // ZUSAETZLICH `expect(card.publicLabel).toBeUndefined()`.
+        // DIE AUFGEHOBENE ZUSICHERUNG, ausdruecklich benannt: Der Zweig setzte "kein
+        // Empfaenger" mit "kein oeffentliches Feld" gleich. Das war wahr, solange
+        // 'google' die einzige Karte ohne Adapter war UND kein Feld hatte. Scheibe 2
+        // gibt ihr das Feld, und die beiden Tatsachen sind ab jetzt unabhaengig — wie
+        // sie es auf der anderen Seite seit 11.1f schon sind (LinkedIn: Empfaenger ja,
+        // Feld nein). DIE VIER MOEGLICHEN KOMBINATIONEN SIND DAMIT ALLE BELEGT.
+        //
+        // DIE AUFLAGE DER SCHEIBE 11.1a GILT UNVERAENDERT UND IST DER GRUND FUER DIESEN
+        // ZWEIG: NEBEN dem Hinweis darf KEINE zweite Meldung stehen, die als Grund eine
         // fehlende Kennung nennt. Sie waere eine falsche Diagnose — der Grund ist der
-        // fehlende Empfaenger, und der Betreiber suchte nach einem Feld, das diese
-        // Karte gar nicht hat.
-        // WIRD ROT, WENN: jemand die Unterdrueckung in TargetCard entfernt. Dann
-        // rendert die Zeile mit `undefined` im Text, und diese Zusicherung faellt.
+        // fehlende Empfaenger.
+        // WAS SICH GEAENDERT HAT, IST DER MECHANISMUS DAHINTER, und der Satz gehoert
+        // hierher, weil derselbe gruene Test sonst aus einem ANDEREN Grund gruen ist als
+        // vorher: Bis Scheibe 2 unterblieb die Zeile, WEIL das Label fehlte; seither
+        // unterbleibt sie, WEIL der Adapter-Term davorsteht (E1). Die Zusage ist
+        // dieselbe, ihr Traeger ein anderer.
+        // WIRD ROT, WENN: jemand den hasAdapter-Term in TargetCard entfernt. Dann
+        // stuenden auf der Google-Karte BEIDE Zeilen, und eine naennte den falschen
+        // Grund.
         expect(container.textContent).not.toContain("wird an dieses Ziel nichts");
       }
 
@@ -1053,17 +1066,65 @@ describe("Container: der Ergebniscode ueberlebt den Zustand nicht, ueber den er 
 // Geheimnis-Feld haengt.
 // ===========================================================================
 describe("TargetCard — ein Ziel ohne Geheimnis-Feld (Scheibe 3)", () => {
-  it("T-A2 (TOR 1, Daten-Seite): KEIN oeffentliches Eingabefeld auf der Google-Karte", () => {
-    // ER BENENNT SEIN TOR: Das erste der vier Tore haengt daran, dass
-    // settings.pixels.google ueber die Oberflaeche nicht entstehen kann — und der
-    // einzige Weg dorthin ist dieses Feld (setPixelId hat im Produktivcode GENAU einen
-    // Aufrufer, und der haengt an ihm).
-    // ROT DURCH DIE PFLICHT-MUTATION "public*-Felder der Google-Karte ergaenzen".
-    // WAS ER AUSDRUECKLICH NICHT ZEIGT, und der Satz gehoert dazu: Tor 1 ist damit eine
-    // UI-ABWESENHEIT und kein Riegel — saveProject schreibt den Blob unvalidiert. Der
-    // Riegel ist Tor 2, und der steht in capi/token.test.ts.
+  // UMGESCHRIEBEN IN SCHEIBE 2 DER PHASE 11.2, NICHT REPARIERT.
+  // ER HIESS "T-A2 (TOR 1, Daten-Seite): KEIN oeffentliches Eingabefeld auf der
+  // Google-Karte" und hielt genau die Zusicherung, die Scheibe 2 ABSICHTLICH aufhebt:
+  // Tor A faellt, die Konto-Kennung bekommt ihre Eingabe. Sein alter Kommentar sagte
+  // seinen eigenen Tod voraus ("ROT DURCH DIE PFLICHT-MUTATION 'public*-Felder der
+  // Google-Karte ergaenzen'") — die Mutation ist jetzt der Bau.
+  // WAS UNVERAENDERT GILT UND DESHALB STEHENBLEIBT: Tor A war eine UI-ABWESENHEIT und
+  // nie ein Riegel — saveProject schreibt den Blob unvalidiert. Die tragende Schicht
+  // war und ist Tor B (capi/token.test.ts), und Tor D haelt unabhaengig davon
+  // (capi/fan-out.test.ts, Lauf W-google). DIESER LAUF STEHT FUER KEIN TOR MEHR.
+  it("E1: die VIER bestehenden Ziele zeigen die Auslieferungs-Zeile UNVERAENDERT", () => {
+    // DIE GEGENPROBE ZUM ADAPTER-TERM AUS SCHEIBE 2 (E1), und sie ist der Grund, warum
+    // dieser Term ueberhaupt gewaehlt werden durfte: Er steht in einer GETEILTEN
+    // Komponente. Waere er fuer eines der vier bestehenden Ziele wirksam, verschwaende
+    // dort eine Zeile, die der Betreiber heute sieht — still.
+    // ROT, WENN jemand den Term umdreht (`!hasAdapter &&`) oder ihn auf etwas anderes
+    // als den Adapter bezieht.
+    // NICHT DAS EINZIGE NETZ, UND DAS GEHOERT HIERHER: Dieselbe Achse faellt auch im
+    // Lauf "JEDES Ziel: Daten-Seite und Oberflaeche sagen dasselbe ueber die
+    // Auslieferung" (erster Zweig). Dieser Lauf hier benennt sie EINZELN und nennt E1
+    // im Namen; jener prueft sie im Durchlauf ueber alle Ziele. Keiner von beiden ist
+    // redundant — wer einen streicht, verliert entweder die Benennung oder die
+    // Vollstaendigkeit.
+    for (const target of TRACKING_TARGETS) {
+      if (!hasAdapter(target)) continue;
+      const card = TARGET_CARDS[target];
+      if (card.publicLabel === undefined) continue;
+      const { unmount } = renderCard({
+        target,
+        hasAdapter: true,
+        configured: true,
+        savedPixelId: "",
+      });
+      expect(screen.queryByText(noDeliveryText(card.publicLabel))).not.toBeNull();
+      unmount();
+    }
+    // POSITIVKONTROLLE, ohne die die Schleife bei lauter uebersprungenen Zielen trivial
+    // gruen waere: Es muss ueberhaupt Ziele MIT Adapter UND oeffentlichem Feld geben.
+    expect(
+      TRACKING_TARGETS.filter(
+        (t) => hasAdapter(t) && TARGET_CARDS[t].publicLabel !== undefined,
+      ).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it("die Google-Karte fuehrt GENAU EIN Eingabefeld — das oeffentliche", () => {
+    // GENAU EINS, nicht "mindestens eins": Die Zahl ist die eigentliche Aussage. Ein
+    // zweites Textfeld auf dieser Karte waere das Geheimnis-Feld, und das darf es hier
+    // nicht geben — ein eingefuegter Klartext gehoert nicht in eine Zeile, deren
+    // Geheimnis chiffriert liegt.
     renderCard({ target: "google", hasAdapter: false, configured: false });
-    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.getAllByRole("textbox")).toHaveLength(1);
+    // UND ES IST DAS RICHTIGE: ueber den eigenen Platzhalter gegriffen, nicht ueber die
+    // Position. POSITIVKONTROLLE fuer die Zeile darueber — ohne sie waere "genau eins"
+    // auch dann wahr, wenn es das falsche Feld waere.
+    expect(
+      screen.getByPlaceholderText(TARGET_CARDS.google.publicPlaceholder!),
+    ).toBeTruthy();
+    // METAS FELD IST ES NICHT: dieselbe Abfrage wie im alten Lauf, unveraendert.
     expect(
       screen.queryByPlaceholderText(TARGET_CARDS.meta.publicPlaceholder!),
     ).toBeNull();

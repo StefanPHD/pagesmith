@@ -3421,3 +3421,115 @@ describe("Der Mount-Effekt raeumt die Adresse", () => {
     expect(window.location.search).toBe("");
   });
 });
+
+// ===========================================================================
+// SCHEIBE 2 DER PHASE 11.2 — DIE KONTO-KENNUNGEN BEKOMMEN IHRE EINGABE.
+//
+// GEPRUEFT WIRD HIER DAS, WAS DIE UNIT-LAEUFE NICHT ZEIGEN KOENNEN: dass die
+// Umformung im DOM ANKOMMT (das Feld zeigt den abgelegten Wert) und dass die
+// Ereignis-Achse ZWEI Bloecke traegt. Die Umformung selbst und die Reihenfolge der
+// Ziele sind in lib/settings.test.ts geprueft; hier steht die Verdrahtung.
+// ===========================================================================
+describe("CodeImporter — Scheibe 2: die Google-Konto-Kennung", () => {
+  function googleInput() {
+    return screen.getByPlaceholderText(
+      TARGET_CARDS.google.publicPlaceholder!
+    ) as HTMLInputElement;
+  }
+
+  it("G-T1: das Feld zeigt den UMGEFORMTEN Wert — die Sichtbarkeits-Auflage aus Festlegung (6)", () => {
+    // DIE ANDERE HAELFTE VON N-E: Jener Lauf prueft die zwei Funktionen, dieser das
+    // DOM. Das Feld ist KONTROLLIERT — sein value kommt aus getPixelId ueber den
+    // Container —, also ist "was der Betreiber sieht" hier woertlich messbar.
+    // WIRD ROT, WENN die Umformung aus setPixelId in den Speicherpfad wandert: Dann
+    // stuende hier weiter "987-654-3210", waehrend die Datenbank etwas anderes traegt.
+    render(<CodeImporter initialCode="<button>X</button>" />);
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    fireEvent.change(googleInput(), { target: { value: "987-654-3210" } });
+    expect(googleInput().value).toBe("9876543210");
+  });
+
+  it("G-T2: der umgeformte Wert ist auch der GESPEICHERTE — kein unsichtbarer Unterschied", () => {
+    // DIE ZWEITE HAELFTE DER AUFLAGE: Feld und Datenbank tragen DENSELBEN Wert. Ein
+    // Lauf, der nur das Feld prueft, liesse eine zweite Umformung im Speicherpfad
+    // unbemerkt; einer, der nur den Speicherpfad prueft, liesse ein Feld zu, das
+    // etwas anderes zeigt. Erst beide zusammen schliessen den unsichtbaren
+    // Unterschied aus.
+    render(<CodeImporter initialCode="<button>X</button>" />);
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    fireEvent.change(googleInput(), { target: { value: " 987 654-3210 " } });
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    return screen
+      .findByRole("button", { name: /Gespeichert/ })
+      .then(() => {
+        const args = saveProject.mock.calls[0] as unknown[];
+        expect(args[3]).toEqual({ pixels: { google: { pixelId: "9876543210" } } });
+        expect(googleInput().value).toBe("9876543210");
+      });
+  });
+
+  it("G-T3: die VIER bestehenden Ziele werden im Container NICHT umgeformt", () => {
+    // DIE GEGENPROBE AM ECHTEN BEDIENWEG, nicht nur an der reinen Funktion: setPixelId
+    // ist GETEILT, und der Container ruft fuer alle Ziele denselben Rueckruf.
+    // ROT DURCH DIE PFLICHT-MUTATION "die Umformung auf alle Ziele ausweiten".
+    render(<CodeImporter initialCode="<button>X</button>" />);
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    const meta = screen.getByPlaceholderText(
+      TARGET_CARDS.meta.publicPlaceholder!
+    ) as HTMLInputElement;
+    fireEvent.change(meta, { target: { value: "123-456" } });
+    expect(meta.value).toBe("123-456");
+    // POSITIVKONTROLLE IM SELBEN LAUF: dass ueberhaupt umgeformt wird, zeigt das
+    // Google-Feld daneben — sonst waere "nicht umgeformt" auch dann wahr, wenn die
+    // Umformung gar nicht existierte.
+    fireEvent.change(googleInput(), { target: { value: "123-456" } });
+    expect(googleInput().value).toBe("123456");
+  });
+});
+
+describe("CodeImporter — Scheibe 2: die Ereignis-Achse traegt ZWEI Ziele", () => {
+  it("G-T4: beide Bloecke stehen, in der Ordnung von TRACKING_TARGETS", () => {
+    // WIRD ROT, WENN die Liste wieder einwertig wird ODER wenn jemand sie in der
+    // Ansicht sortiert. Die Ordnung wird aus dem gerenderten Text gelesen, nicht aus
+    // der Liste — sonst pruefte der Lauf die Quelle gegen sich selbst.
+    const { container } = render(<CodeImporter initialCode="<button>X</button>" />);
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    const text = container.textContent ?? "";
+    const linkedin = text.indexOf("Conversion-Regeln (LinkedIn)");
+    const google = text.indexOf("Conversion-Regeln (Google)");
+    expect(linkedin).toBeGreaterThan(-1);
+    expect(google).toBeGreaterThan(-1);
+    // LinkedIn steht in TRACKING_TARGETS VOR Google — also auch hier.
+    expect(linkedin).toBeLessThan(google);
+  });
+
+  it("G-T5: die Regel-Felder beider Ziele sind EINDEUTIG benannt und schreiben in VERSCHIEDENE Slots", () => {
+    // ZWEI BEDIENELEMENTE MIT GLEICHEM NAMEN UND VERSCHIEDENER WIRKUNG WAEREN EIN
+    // OBERFLAECHEN-PROBLEM (docs/immer-beachten.md). Beide Bloecke schleifen ueber
+    // DIESELBE Ereignisliste; ohne den ziel-tragenden zugaenglichen Namen hiessen
+    // beide Felder "Lead".
+    // ROT, WENN das aria-label faellt (dann ist getByLabelText mehrdeutig) ODER wenn
+    // beide Rueckrufe in dasselbe Ziel schreiben.
+    render(
+      <CodeImporter
+        initialCode='<button id="ps-aaaaaa">X</button>'
+        initialMappings={[
+          { elementId: "ps-aaaaaa", type: "track", config: { event: "Lead" } },
+        ]}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    const li = screen.getByLabelText("LinkedIn: Lead") as HTMLInputElement;
+    const go = screen.getByLabelText("Google: Lead") as HTMLInputElement;
+    fireEvent.change(li, { target: { value: "urn:lla:x" } });
+    fireEvent.change(go, { target: { value: "555000" } });
+    // JEDER WERT STEHT IN SEINEM EIGENEN FELD — die Gegenprobe dazu, dass beide
+    // Rueckrufe dasselbe Ziel treffen wuerden.
+    expect((screen.getByLabelText("LinkedIn: Lead") as HTMLInputElement).value).toBe(
+      "urn:lla:x"
+    );
+    expect((screen.getByLabelText("Google: Lead") as HTMLInputElement).value).toBe(
+      "555000"
+    );
+  });
+});

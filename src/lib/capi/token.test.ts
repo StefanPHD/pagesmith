@@ -932,6 +932,25 @@ describe("Scheibe 3 — TOR 1 (withPixel) und TOR 2 (die Geheimnis-Schleife)", (
     // und der Autorisierungs-Fluss fuellt secret_enc).
     // WIRD ROT, WENN der Resolver anfaengt, secret_enc zu lesen, oder wenn hasSecret
     // weicher wird.
+    //
+    // SEIN GEGENSTUECK HEISST "TOR 2, POSITIVKONTROLLE: mit KLARTEXT in secret WUERDE
+    // google aufgeloest" UND STEHT UNMITTELBAR DARUNTER. Der Name steht hier, damit
+    // eine spaetere Streichung sichtbar ist: Ohne jenen Lauf waere dieser eine
+    // Abwesenheits-Behauptung ohne Reichweite — "kein Empfaenger" saehe auch dann
+    // richtig aus, wenn google aus einem ganz anderen Grund nie aufgeloest wuerde.
+    // DAS IST EIN ZEIGER UND KEIN WAECHTER: Wird das Gegenstueck geloescht, bleibt
+    // dieser Lauf GRUEN. Der Zeiger macht den Verlust beim LESEN sichtbar, er
+    // verhindert ihn nicht.
+    //
+    // DIE KENNUNG TRAEGT KEINE BINDESTRICHE (nachgezogen in Scheibe 2 der Phase 11.2).
+    // Hier stand "123-456-7890". Der Wert ist fuer das, was dieser Lauf misst,
+    // gleichgueltig — geprueft wird "Kennung gesetzt, secret NULL, kein Empfaenger".
+    // STEHENGELASSEN HAETTE ER EINE DATENLAGE BEHAUPTET, DIE DER PRODUKTIVE PFAD NICHT
+    // MEHR HERSTELLT: Seit Festlegung (6) formt setPixelId die Kundennummer an der
+    // Eingabe um, Bindestriche erreichen den Blob ueber die Oberflaeche nicht mehr.
+    // Ein spaeterer Leser haette ihn als Beleg gelesen, dass die Kette Bindestriche
+    // vertraegt (docs/immer-beachten.md, "TESTDATEN UND TEST-SEQUENZ MUESSEN DEN
+    // PRODUKTIVEN PFAD TREFFEN").
     const { ins, config } = await inFilter(
       {
         data: {
@@ -939,7 +958,7 @@ describe("Scheibe 3 — TOR 1 (withPixel) und TOR 2 (die Geheimnis-Schleife)", (
           settings: {
             pixels: {
               meta: { pixelId: "PIXEL-123" },
-              google: { pixelId: "123-456-7890" },
+              google: { pixelId: "9876543210" },
             },
           },
         },
@@ -967,7 +986,7 @@ describe("Scheibe 3 — TOR 1 (withPixel) und TOR 2 (die Geheimnis-Schleife)", (
       {
         data: {
           id: "proj-1",
-          settings: { pixels: { google: { pixelId: "123-456-7890" } } },
+          settings: { pixels: { google: { pixelId: "9876543210" } } },
         },
         error: null,
       },

@@ -350,7 +350,25 @@ export default function TargetCard({
           Irre fuehrt: der Betreiber suchte nach einem Feld, das die Karte nicht hat.
           DIE BEDINGUNG LIEST DIESELBE QUELLE WIE DIE ANZEIGE DES FELDES (config.
           publicLabel) — nicht ein zweites Merkmal, das danebenlaufen koennte. */}
-      {config.publicLabel !== undefined &&
+      {/* DER ADAPTER-TERM IST MIT SCHEIBE 2 DER PHASE 11.2 DAZUGEKOMMEN (E1), und er
+          ist keine Politur: Ohne ihn traegt EIN Kartenzustand BEIDE Zeilen, und die
+          zweite nennt den falschen Grund.
+          DER ZUSTAND, UM DEN ES GEHT: Zugangsdaten hinterlegt UND gespeicherte Kennung
+          noch leer. Das ist der Zustand UNMITTELBAR NACH DEM VERBINDEN — also der
+          erste, den jeder Betreiber ueberhaupt zu sehen bekommt. Der Adapter-Hinweis
+          darueber nennt dort den WAHREN Grund (es gibt keinen Empfaenger); diese Zeile
+          nennt einen unvollstaendigen (die Kennung fehle). Traegt er sie ein,
+          verschwindet die Zeile — und es geht weiterhin nichts hinaus.
+          SIE HEILT SICH SELBST, UND DAS IST DER GRUND FUER DIESE FORM: Sobald das Ziel
+          einen Empfaenger bekommt, wird hasAdapter wahr, die Zeile kehrt von selbst
+          zurueck — und dann ist ihre Aussage richtig. Es braucht weder eine Rangfolge
+          zwischen den beiden Zeilen noch einen neuen Wortlaut.
+          FUER DIE VIER BESTEHENDEN ZIELE AENDERT SICH NICHTS: hasAdapter ist dort true,
+          der Term ist wirkungslos. Ein Test sichert das, dieser Kommentar nicht.
+          ES IST KEIN ZIELNAMEN-ZWEIG: Der Wert kommt als Prop und wird in MeasureView
+          aus TARGETS_WITH_ADAPTER abgeleitet. Diese Komponente kennt keinen Zielwert. */}
+      {hasAdapter &&
+        config.publicLabel !== undefined &&
         configured === true &&
         !hasTargetPixelId(savedPixelId, target) && (
           <p className="mb-2 text-xs text-gray-500">

@@ -60,6 +60,20 @@ import type { TrackingTarget } from "@/lib/settings";
  * anzubieten hiesse, die Ablage im CLIENT-besessenen Einstellungs-Blob faktisch zu
  * entscheiden — durch die Hintertuer und ohne Beschluss.
  *
+ * NACHGETRAGEN (Scheibe 2 der Phase 11.2), UND DER ABSATZ DARUEBER BLEIBT WOERTLICH:
+ * Der Halbsatz "wo sie abgelegt wird, ist ausdruecklich NICHT entschieden" beschrieb
+ * den Stand vom 2026-08-19 und ist ueberholt. TRIGGER (ii) IST GEPRUEFT UND VERNEINT
+ * (ARCHITEKT, 2026-08-31): Eine Kennung, die der Betreiber SEHEN und AENDERN koennen
+ * muss, ist kein Geheimnis im Sinne von project_secrets — jene Tabelle traegt RLS
+ * aktiv und keine einzige Policy und ist bewusst unlesbar. Beide Kennungsformen
+ * liegen damit im Einstellungs-Blob, und zwar per Beschluss statt durch die
+ * Hintertuer. Die volle Begruendung und ihre GRENZE (sie ruht auf einem NICHT-Treffer,
+ * nicht auf einem Beleg) stehen in docs/aktiver-stand.md, Festlegung (2) des
+ * Zuschnitts der Scheibe 2.
+ * WAS DER ABSATZ DARUEBER WEITERHIN RICHTIG SAGT: dass die Abwesenheit der Felder der
+ * Schalter ist, und dass die URN JE EREIGNISTYP gilt. Nur die Ablage-Frage ist
+ * beantwortet.
+ *
  * WARUM DIE ABWESENHEIT UND KEIN EIGENES FLAG: Ein Flag NEBEN den drei Feldern waere
  * eine zweite Wahrheit ueber dieselbe Sache — es koennte "kein Feld" sagen, waehrend
  * eine Beschriftung danebensteht. So gibt es nur eine Quelle.
@@ -176,24 +190,47 @@ export const TARGET_CARDS: Record<TrackingTarget, TargetCardConfig> = {
     secretPlaceholderNew: "Zugangsdaten einfügen",
     secretPlaceholderReplace: "Neue Zugangsdaten eingeben zum Ersetzen",
   },
-  // DAS FUENFTE ZIEL — DIE ERSTE KARTE OHNE OEFFENTLICHES *UND* OHNE GEHEIMNIS-FELD
-  // (Scheibe 3). Beide Gruppen FEHLEN, und beide Male ist die Abwesenheit der Schalter:
-  // - KEIN OEFFENTLICHES FELD: Google braucht ZWEI Skalare, wo pixelId einen traegt
-  //   (Kundennummer und Ziel-Kennung). Wo sie abgelegt werden, entscheidet Scheibe 2;
-  //   ein Feld hier entschiede es durch die Hintertuer. Solange es fehlt, kann
-  //   settings.pixels.google nicht ueber die Oberflaeche entstehen — das haelt das
-  //   erste der vier Tore.
-  //   DIE GRENZE GEHOERT DAZU: Das ist eine UI-ABWESENHEIT und kein Riegel. saveProject
-  //   schreibt den Einstellungs-Blob unvalidiert; die tragende Schicht ist das zweite
-  //   Tor (die Klartext-Spalte secret bleibt NULL), nicht dieses hier.
+  // DAS FUENFTE ZIEL — DIE EINZIGE KARTE MIT OEFFENTLICHEM UND OHNE GEHEIMNIS-FELD
+  // (Scheibe 2 der Phase 11.2). Nur EINE Gruppe fehlt, und ihre Abwesenheit ist der
+  // Schalter:
+  // - DAS OEFFENTLICHE FELD IST MIT SCHEIBE 2 DAZUGEKOMMEN. Es traegt die
+  //   GOOGLE-ADS-KUNDENNUMMER (operatingAccount.accountId) — EINEN Wert je Projekt.
+  //   ERSETZT — HIER STAND "KEIN OEFFENTLICHES FELD: Google braucht ZWEI Skalare, wo
+  //   pixelId einen traegt (Kundennummer und Ziel-Kennung)". DIE AUSSAGE WAR FALSCH,
+  //   und sie ist der Grund, warum das Feld so lange fehlte: productDestinationId ist
+  //   KEIN projektweiter Skalar. Sie gilt je Conversion-Action und damit faktisch je
+  //   Ereignistyp (GELESEN, docs/ziel-befunde.md, Google-Abschnitt, Teil (k)/C3) und
+  //   liegt deshalb auf der EREIGNIS-ACHSE (settings.pixels.google.conversionRules,
+  //   Bereich MESSEN), nicht auf dieser Karte. Es sind zwei Kennungen auf ZWEI
+  //   VERSCHIEDENEN ACHSEN, nicht zwei Skalare.
+  //   SACHKORREKTUR, KEIN STEMPEL: Die alte Fassung wuerde beim naechsten Lesen erneut
+  //   zu dem Schluss fuehren, dieser Slot reiche fuer Google nicht.
+  //   WAS DAMIT FAELLT, UND ZWAR ABSICHTLICH: das erste der vier Tore der Scheibe 3.
+  //   settings.pixels.google kann ab hier ueber die Oberflaeche entstehen. Die tragende
+  //   Schicht war ohnehin das ZWEITE Tor (die Klartext-Spalte secret bleibt NULL) — das
+  //   erste war eine UI-ABWESENHEIT und kein Riegel, weil saveProject den
+  //   Einstellungs-Blob unvalidiert schreibt. Nach Tor A tragen Tor B UND Tor D, und
+  //   Tor D (kein Eintrag in TARGETS_WITH_ADAPTER) haelt unabhaengig.
+  //   DIE BESCHRIFTUNG FOLGT DER DOPPELAUSSAGE DER ZWEI NACHBARKARTEN (HERKUNFT plus
+  //   ABGRENZUNG): Die Nummer stammt aus dem Google-Ads-Konto, und wir liefern KEIN Tag
+  //   aus — im Seitenquelltext landet allein der Consent-Schluessel.
+  //   DER PLATZHALTER ZEIGT DIE FORM, IN DER DER ANBIETER SIE ANZEIGT — MIT
+  //   Bindestrichen. Das ist Absicht und kein Widerspruch zur Umformung: Der Betreiber
+  //   soll wiedererkennen, was er abschreibt; die Bindestriche fallen beim Eintragen
+  //   (NORMALIZE_PIXEL_ID in lib/settings.ts). Er enthaelt Metas aufsteigende
+  //   Beispielziffern NICHT — CodeImporter.test.tsx waehlt Metas Feld per
+  //   Teilstring-Muster ueber dessen Platzhalter.
   // - KEIN GEHEIMNIS-FELD: Das Zugangsdatum entsteht ueber den Autorisierungs-Fluss und
   //   liegt chiffriert; ein eingefuegter Klartext hat in dieser Zeile nichts zu suchen.
   //   setCapiToken weist ein Ziel ohne Geheimnis-Feld deshalb ab, VOR jedem DB-Zugriff,
   //   und leitet sein Urteil aus GENAU DIESER Tabelle ab — nicht aus einer zweiten Liste.
-  // WAS DIE KARTE STATTDESSEN TRAEGT: einen Verbinden-Weg und den bestehenden
+  // WAS DIE KARTE AUSSERDEM TRAEGT: einen Verbinden-Weg und den bestehenden
   // Trennen-Weg. Beide leben in der Komponente, nicht hier — diese Datei beschreibt
   // ausschliesslich Beschriftungen.
   google: {
     name: "Google",
+    publicLabel: "Google-Ads-Kundennummer",
+    publicHint: "Aus dem Google-Ads-Konto, nicht im Seitenquelltext",
+    publicPlaceholder: "z.B. 987-654-3210",
   },
 };

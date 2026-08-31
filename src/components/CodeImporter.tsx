@@ -44,6 +44,7 @@ import {
 } from "@/lib/mappings";
 import { editPreviewHtml, generateFunctional } from "@/lib/generate";
 import {
+  eventAxisTargets,
   getConversionRules,
   getHostingLabel,
   getPixelId,
@@ -104,25 +105,37 @@ import PublishView from "@/components/PublishView";
 // nicht ausbremsen.
 const DEBOUNCE_MS = 300;
 
-// DAS ZIEL, DESSEN KENNUNG JE EREIGNISTYP GILT (Scheibe 11.1d).
+// DIE ZIELE MIT EREIGNIS-ACHSE HEISSEN JETZT eventAxisTargets UND STEHEN IN
+// lib/settings.ts (Scheibe 2 der Phase 11.2).
 //
-// GEMELDET, WEIL ES ZAEHLT: Das ist ein ZIELWERT im Code und damit eine WEITERE
-// ziel-geschluesselte Fundstelle neben den ACHT, die der Kopf von
-// lib/tracking/target-adapters.ts fuehrt. Die Zaehlung dort ist NICHT nachgezogen
-// worden — jene Datei ist in dieser Scheibe geschuetzt; der Befund gehoert in eine
-// eigene Doku-Runde und steht im Bericht dieser Scheibe.
+// HIER STAND `const RULES_TARGET: TrackingTarget = "linkedin";` — EIN Zielwert, weil
+// es EIN Ziel war. Mit dem zweiten ist daraus eine Menge geworden, und sie ist
+// UMGEZOGEN statt hier zu wachsen. Der alte Kommentar begruendete den Zielwert
+// ausfuehrlich; drei seiner Aussagen sind mit dem Umzug abgelaufen und eine gilt
+// weiter — deshalb steht hier, was aus ihnen wurde:
 //
-// WARUM ER SICH NICHT VERMEIDEN LIESS: Die Zuordnung Ereignisname -> Regel-Kennung
-// ist heute die Kennungsform GENAU EINES Ziels. Irgendeine Stelle muss sagen,
-// welches — und die Alternativen waeren schlechter: ein Record ueber ALLE Ziele
-// waere eine ziel-geschluesselte Aussage MIT vier Eintraegen statt einem Wert, und
-// eine Ableitung aus einer bestehenden Liste (etwa "hat keinen Adapter") koppelte
-// die Oberflaeche an eine Tatsache, die etwas ANDERES bedeutet.
+// · "Das ist ein ZIELWERT im Code und damit eine WEITERE ziel-geschluesselte
+//   Fundstelle" — GILT NICHT MEHR FUER DIESE DATEI: Der Wert ist weg. Die Fundstelle
+//   ist nicht verschwunden, sondern nach lib/settings.ts gewandert (USES_EVENT_AXIS),
+//   und sie steht dort NEBEN der Umformungs-Tabelle statt an einem eigenen Ort. Die
+//   Zaehlung im Kopf von lib/tracking/target-adapters.ts ist WEITERHIN NICHT
+//   nachgezogen — jene Datei ist auch in dieser Scheibe geschuetzt.
+// · "ein Record ueber ALLE Ziele waere eine ziel-geschluesselte Aussage MIT vier
+//   Eintraegen statt einem Wert" — DAS IST DIE VERWORFENE ALTERNATIVE, UND SIE IST
+//   JETZT DIE GEWAEHLTE. Der Grund hat sich umgedreht: Bei EINEM Ziel war der Record
+//   Aufwand ohne Gewinn; bei ZWEI ist die Aufzaehlung der Fall, den der Compiler
+//   NICHT erzwingt — ein sechstes Ziel erbte stillschweigend "keine Ereignis-Achse".
+//   Die Begruendung steht vollstaendig an USES_EVENT_AXIS und wird hier nicht
+//   verdoppelt.
+// · "eine Ableitung aus einer bestehenden Liste (etwa 'hat keinen Adapter')
+//   koppelte die Oberflaeche an eine Tatsache, die etwas ANDERES bedeutet" — GILT
+//   UNVERAENDERT. Es gibt bis heute nichts, woraus sich "dieses Ziel nutzt die
+//   Ereignis-Achse" ableiten liesse; deshalb ist es eine eigene Aussage.
+// · "WARUM HIER UND NICHT IN MeasureView … der Container weiss, WELCHES Ziel, die
+//   Ansicht nur, DASS eines gemeint ist" — GILT UNVERAENDERT, nur im Plural: Die
+//   Ansicht bekommt die Menge als PROP und traegt weiterhin keinen Zielwert.
 //
-// WARUM HIER UND NICHT IN MeasureView: Die Ansicht bekommt die Ziele schon heute
-// als PROP (targets) und traegt selbst keinen Zielwert. Diese Trennung bleibt —
-// der Container weiss, WELCHES Ziel, die Ansicht nur, DASS eines gemeint ist.
-const RULES_TARGET: TrackingTarget = "linkedin";
+// DIE REIHENFOLGE KOMMT AUS TRACKING_TARGETS, nicht von hier — s. eventAxisTargets.
 
 const typeStyles: Record<ElementType, string> = {
   button: "bg-blue-100 text-blue-800 border-blue-200",
@@ -2382,15 +2395,22 @@ export default function CodeImporter({
               // DREI SCHMALE PROPS STATT DES BLOBS, wie bei den Kennungen darueber:
               // Die Ansicht bekommt einen LESER je Ereignisname und einen
               // Rueckruf — der Container bleibt der EINZIGE Schreiber von settings.
-              // DER ZIELNAME KOMMT AUS DEM CONTAINER, nicht aus der Ansicht (s. die
-              // Begruendung an RULES_TARGET oben).
-              rulesTarget={RULES_TARGET}
-              conversionRuleFor={(event) =>
-                getConversionRules(settings, RULES_TARGET)[event] ?? ""
+              // DIE ZIELE KOMMEN AUS DER ABLEITUNG, nicht aus der Ansicht (s. den
+              // Kommentar-Block oben und eventAxisTargets in lib/settings.ts).
+              //
+              // SEIT SCHEIBE 2 DER PHASE 11.2 FUEHREN DIE ZWEI RUECKRUFE DAS ZIEL MIT.
+              // Das ist der eigentliche Umbau an dieser Stelle: Solange es EIN Ziel
+              // gab, konnte der Container es schliessen; bei zwei muss die Ansicht
+              // sagen, WELCHES sie meint — sie tut es mit einem Wert aus der Menge,
+              // die sie selbst bekommen hat, und traegt damit weiterhin keinen
+              // Zielwert.
+              rulesTargets={eventAxisTargets}
+              conversionRuleFor={(target, event) =>
+                getConversionRules(settings, target)[event] ?? ""
               }
-              onConversionRuleChange={(event, value) =>
+              onConversionRuleChange={(target, event, value) =>
                 setSettings((prev) =>
-                  setConversionRule(prev, RULES_TARGET, event, value)
+                  setConversionRule(prev, target, event, value)
                 )
               }
               eventCounts={eventCounts}

@@ -69,18 +69,42 @@ describe("TARGET_CARDS: die Menge der Ziele OHNE Geheimnis-Feld", () => {
 });
 
 describe("TARGET_CARDS: die Google-Karte", () => {
-  it("fuehrt WEDER ein oeffentliches NOCH ein Geheimnis-Feld", () => {
-    // DAS IST DIE DATEN-SEITE DES ERSTEN TORES (withPixel): Ohne oeffentliches Feld gibt
-    // es keinen Weg, settings.pixels.google ueber die Oberflaeche zu setzen, und ohne
-    // Kennung nimmt der Aufloesungs-Pfad das Ziel nicht auf.
-    // DIE GRENZE GEHOERT DAZU UND STEHT AUSDRUECKLICH HIER: Das ist eine
-    // UI-ABWESENHEIT und kein Riegel — saveProject schreibt den Einstellungs-Blob
-    // unvalidiert. Die tragende Schicht ist das ZWEITE Tor, nicht dieses.
-    expect(TARGET_CARDS.google.publicLabel).toBeUndefined();
-    expect(TARGET_CARDS.google.publicHint).toBeUndefined();
-    expect(TARGET_CARDS.google.publicPlaceholder).toBeUndefined();
+  // UMGESCHRIEBEN IN SCHEIBE 2 DER PHASE 11.2, NICHT REPARIERT — und der Satz gehoert
+  // hierher, weil ein umgeschriebener Test sonst wie ein nachgebesserter aussieht:
+  // DIESER LAUF HIELT DIE ZUSICHERUNG "google hat KEIN oeffentliches Feld", ALSO DIE
+  // DATEN-SEITE DES ERSTEN TORES. Genau diese Zusicherung hebt Scheibe 2 ABSICHTLICH
+  // auf — sie gibt den Konto-Kennungen ihre Eingabe. Der Lauf misst deshalb ab jetzt
+  // die NEUE Gestalt der Karte, und was er darueber hinaus festhaelt, ist der
+  // UNTERSCHIED zwischen den beiden Feldgruppen: die eine kommt, die andere bleibt weg.
+  it("fuehrt EIN oeffentliches und KEIN Geheimnis-Feld", () => {
+    // DIE OEFFENTLICHE GRUPPE IST VOLLSTAENDIG — der Typ erlaubt seit Scheibe 3 eine
+    // halb gefuellte Gruppe (Label ohne Platzhalter), also braucht sie einen Waechter.
+    expect(TARGET_CARDS.google.publicLabel).toBeTruthy();
+    expect(TARGET_CARDS.google.publicHint).toBeTruthy();
+    expect(TARGET_CARDS.google.publicPlaceholder).toBeTruthy();
+
+    // DIE GEHEIMNIS-GRUPPE FEHLT WEITERHIN GANZ, und DAS ist die Zusicherung, die
+    // Scheibe 2 NICHT anfasst: Das Zugangsdatum entsteht ueber den Autorisierungs-Fluss
+    // und liegt chiffriert; setCapiToken weist ein Ziel ohne Geheimnis-Feld ab, VOR
+    // jedem DB-Zugriff, und leitet sein Urteil aus GENAU DIESER Tabelle ab.
     expect(TARGET_CARDS.google.secretLabel).toBeUndefined();
     expect(TARGET_CARDS.google.secretPlaceholderNew).toBeUndefined();
     expect(TARGET_CARDS.google.secretPlaceholderReplace).toBeUndefined();
+  });
+
+  it("der Platzhalter zeigt die Form MIT Trennzeichen und beruehrt Metas Muster nicht", () => {
+    // ZWEI ZUSICHERUNGEN IN EINEM LAUF, und sie gehoeren zusammen:
+    // (1) DER PLATZHALTER TRAEGT BINDESTRICHE — ABSICHT, kein Widerspruch zur
+    //     Umformung: Der Betreiber soll wiedererkennen, was er im Anbieter-Konto sieht;
+    //     die Bindestriche fallen beim Eintragen (NORMALIZE_PIXEL_ID, lib/settings.ts).
+    //     WIRD ROT, WENN jemand den Platzhalter "aufraeumt" und damit die Wiedererkennung
+    //     nimmt, die der einzige Grund fuer seine Form ist.
+    // (2) ER ENTHAELT METAS BEISPIELZIFFERN NICHT: CodeImporter.test.tsx waehlt Metas
+    //     Feld per Teilstring-Muster ueber dessen Platzhalter. Ein enthaltendes Muster
+    //     machte jene Abfrage mehrdeutig — und zwar dort, nicht hier.
+    expect(TARGET_CARDS.google.publicPlaceholder).toContain("-");
+    expect(TARGET_CARDS.google.publicPlaceholder).not.toContain(
+      TARGET_CARDS.meta.publicPlaceholder!.replace(/^z\.B\. /, ""),
+    );
   });
 });

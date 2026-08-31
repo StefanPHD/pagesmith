@@ -135,8 +135,20 @@ export const META_TARGET = "meta";
 
 /** Serverseitig aufgeloeste CAPI-Konfiguration fuer EIN Projekt. */
 export type CapiConfig = {
-  // OEFFENTLICHE Meta-Pixel-ID (aus settings.pixels.meta.pixelId). Kein Secret,
-  // aber serverseitig aufgeloest, damit der Client die pixelId NIE selbst sendet.
+  // DIE OEFFENTLICHE KENNUNG DES ZIELS (aus settings.pixels.<ziel>.pixelId). Kein
+  // Secret, aber serverseitig aufgeloest, damit der Client sie NIE selbst sendet.
+  //
+  // ERSETZT (Scheibe 2 der Phase 11.2) — HIER STAND "OEFFENTLICHE Meta-Pixel-ID (aus
+  // settings.pixels.meta.pixelId)". SACHKORREKTUR, kein Stempel: Das Feld traegt seit
+  // Phase 11 die Kennung JEDES aufgeloesten Ziels, nicht Metas — Pinterests
+  // Anzeigenkonto-Kennung, TikToks Pixel-ID und ab Scheibe 2 Googles KUNDENNUMMER.
+  // "Meta-Pixel-ID" beschrieb den Stand, als es nur ein Ziel gab.
+  // WAS "OEFFENTLICH" HEISST UND WAS NICHT: nicht geheim — NICHT "steht im
+  // ausgelieferten Snippet". Fuer drei der fuenf Ziele wird kein Tag ausgeliefert; die
+  // Kennung reist ausschliesslich in der Nutzlast des Server-Aufrufs. Die
+  // gleichlautende Korrektur steht am Typ in lib/settings.ts.
+  // DER NAME BLEIBT: capi/ingest.ts uebersetzt diesen Wert beim Uebergeben bereits zu
+  // adAccountId — am VERBRAUCHER, ohne den Slot umzubenennen.
   //
   // NACHGETRAGEN 11.1e, NICHT GESTEMPELT — der Satz darueber bleibt lesbar und
   // beschreibt weiterhin den Regelfall; die Ergaenzung tritt daneben:

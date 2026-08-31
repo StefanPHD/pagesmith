@@ -1292,40 +1292,50 @@ der Aufklärungsrunde vom 2026-08-31 (CC, am Repo, mit Positivkontrolle je Achse
 GELESEN gekennzeichnete steht mit ihrer Fundstelle in docs/ziel-befunde.md und wird hier
 **nicht verdoppelt** — zweimal geschrieben liefe sie auseinander.
 
-### Woraus Scheibe 2 besteht
+### Vollzogen — was im Zuschnitt der Scheibe 2 stand und wohin es gegangen ist
 
-**Die zwei Google-Konto-Kennungen bekommen eine Eingabe, eine Ablage und eine Anzeige — und
-sonst nichts.** Kein Transport, keine Nutzlast, kein Netzaufruf.
+**DER TITEL WEICHT ABSICHTLICH AB, aus demselben Grund wie bei Scheibe 3 und der
+Fix-Scheibe:** "### Vollzogen — was hier stand und wohin es gegangen ist" steht in dieser
+Datei bereits zweimal und ist als Hausform über Standdateien hinweg Hebungs-Kandidat 5.
 
-**DER EIGENTLICHE GEGENSTAND IST NICHT DAS EINGABEFELD.** Er ist, dass `settings.pixels.google`
-heute über die Oberfläche **gar nicht entstehen kann**. GEMESSEN am Repo (CC, 2026-08-31):
-`TARGET_CARDS.google` (src/lib/tracking/target-cards.ts) trägt ausschliesslich `name:
-"Google"` — weder `publicLabel` noch `secretLabel`; die Karte schaltet ihre beiden Feldgruppen
-über die ABWESENHEIT dieser Beschriftungen. **Positivkontrolle:** dieselbe Ablesung findet
-für `linkedin` die drei `secret*`-Felder und für `meta` alle sechs. **FOLGE:** Ein
-Betreiber, der Google verbunden hat, kann heute keine einzige Kennung hinterlegen — die
-Karte steht auf "Zugangsdaten hinterlegt" und das Ziel bleibt ohne jede Kennung.
+VERDICHTET AM 2026-08-31, nach dem Bau-Commit `6dc7e27` und dem bestätigten Live-Test.
+Hier standen die ANWEISUNGEN FÜR die Scheibe; sie sind mit dem Vollzug abgelaufen. VIER
+Unterabschnitte sind entfallen:
 
-**WAS DAMIT EINGELÖST WIRD, UND ES STEHT BEREITS ALS SCHULD IM ZUSCHNITT DER SCHEIBE 3:**
-Deren Festlegung (1) hält fest, Tor A werde "ZUGEHALTEN, NICHT ABGEWARTET", und ihre GRENZE
-sagt: "Mit Scheibe 2 fällt Tor A **ABSICHTLICH**." **Das ist diese.**
+- **"Woraus Scheibe 2 besteht"** nannte den Gegenstand und den GEMESSENEN Befund, dass
+  `settings.pixels.google` über die Oberfläche gar nicht entstehen könne. **BEIDES HAT
+  SEINEN GEGENSTAND VERLOREN:** Der Befund beschrieb den Zustand VOR der Scheibe, und der
+  ist behoben — der Text verglich ab da mit nichts. **SEINE ZWEI BEFUNDE SIND NICHT
+  VERSCHWUNDEN:** Dass `RULES_TARGET` auf ein Ziel verdrahtet war, ist mit
+  `eventAxisTargets` erledigt und am Code dokumentiert; dass die Karte KEINEN
+  Zielnamen-Zweig trägt, steht unverändert als Festlegung (2) des Zuschnitts der Scheibe 3
+  und gilt dort weiter.
+- **"Was Scheibe 2 ausdrücklich NICHT entscheidet"** führte vier Posten. **DREI SIND
+  ENTSCHIEDEN:** der Feldname `pixelId` bleibt (ARCHITEKT, 2026-08-31, mit dem
+  Präzedenzfall `adAccountId` am Verbraucher); die Leerraum-Achse der Kundennummer regelt
+  Festlegung (6); `settingsEqual` trägt unverändert und ist nicht angefasst worden. **EINER
+  BLEIBT OFFEN UND HAT EINEN EIGENEN ORT:** ob die Schnittstelle die erreichbaren Konten
+  aufzählen kann — docs/offene-punkte.md, "WAS GOOGLE BEI EINER FREMDEN KUNDENNUMMER TUT",
+  Trigger "der Zuschnitt der Scheibe 4".
+- **DIE ZWEI GATES FÜR STUFE 1** (die zwei Nicht-Auslieferungs-Zeilen · der geteilte
+  `setPixelId`) waren Aufträge an den Bau-Plan und sind beantwortet: Das erste durch den
+  Adapter-Term in `TargetCard.tsx`, das zweite durch die erschöpfende Zuordnung
+  `NORMALIZE_PIXEL_ID`. **IHRE BEFUNDE LEBEN AM CODE WEITER**, in den Kommentarköpfen
+  beider Stellen — dort, wo die nächste Runde sie liest.
+- **"Die Beweis-Achse"** und **"Der Scope — und wo er zum STOPP wird"** sind mit dem
+  Vollzug abgelaufen; was tatsächlich gemessen und was angefasst wurde, steht in VERMERK 9.
+  **DREI SÄTZE SIND GERETTET UND NICHT VERLOREN:** dass live auf KEIN einzelnes Tor
+  zurückzuführen ist, warum nichts hinausgeht (VERMERK 9, "Was der Live-Test nicht zeigt")
+  · dass die Schuld aus VERMERK 2 weiterwandert (ebenda) · und der Satz, dass der
+  Schema-STOPP **der Detektor für Trigger (ii)** ist — er steht als GRENZE an Festlegung (2)
+  und gilt für jede künftige Ablage-Frage.
 
-**ZWEI BEFUNDE, DIE DIESE SCHEIBE ERZWINGT — BEFUND, KEINE AUFLAGE** (GEMESSEN am Repo, CC,
-2026-08-31). Sie stehen hier, weil ein Bau-Plan sonst auf sie stösst und sie für eine
-Scope-Ausweitung hält:
-- **DIE EREIGNIS-ACHSE IST HEUTE AUF EIN ZIEL VERDRAHTET.** `RULES_TARGET` ist eine
-  Konstante mit dem Wert `"linkedin"` (src/components/CodeImporter.tsx), und
-  `src/components/MeasureView.tsx` rendert GENAU EINEN Block mit der Überschrift
-  "Conversion-Regeln ({TARGET_CARDS[rulesTarget].name})". Ein zweites Ziel auf derselben
-  Achse verlangt, dass aus der Konstante eine MENGE wird. **Der Kommentar an jener Konstante
-  hat den Fall vorgesehen** ("der Container weiss, WELCHES Ziel, die Ansicht nur, DASS eines
-  gemeint ist") — die Ansicht trägt selbst keinen Zielwert und muss deshalb nicht umgebaut,
-  sondern nur mehrfach beliefert werden.
-- **DIE KARTE HAT KEINEN ZIELNAMEN-ZWEIG, UND DAS BLEIBT SO.** Festlegung (2) der Scheibe 3
-  hat es gemessen und begründet: `TargetCard` enthält keinen einzigen Zielnamen-Vergleich,
-  die Zielwerte stehen ausschliesslich im Konfigurations-Literal. Scheibe 2 fügt Google
-  seine `public*`-Beschriftungen in DIESEM Literal hinzu und nirgendwo sonst. **Ein
-  Zielnamen-Zweig in der Komponente wäre der erste im Haus.**
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WORDEN IST, obwohl es nach Anweisung aussieht — im
+Zweifel stehengelassen:** die sechs Festlegungen. Sie sind GRÜNDE und GRENZEN, keine
+Anweisungen, und jede bindet über diese Scheibe hinaus — (1) und (6) die Ablage und die
+Umformung, (2) die Ablage-Entscheidung samt ihrer Grenze, (3) die Consent-Folge, (4) die
+Zuordnung der Fremdkonto-Frage zu Scheibe 4, (5) die Nicht-Prüfung der Form.
+
 
 ### Sechs Festlegungen des Zuschnitts der Scheibe 2
 
@@ -1432,6 +1442,25 @@ NICHT MIT DEM DEPLOY", dort BELEG 2 — derselbe Consent-Draht).
 **GRENZE:** Diese Festlegung sagt NICHT, ob der Schlüssel wünschenswert ist, und sie ändert
 NICHTS am Consent-Draht. Sie hält fest, dass Scheibe 2 ihn verändert — und dass das bisher
 nirgends stand.
+
+**PRÄZISIERT AM 2026-08-31, UND ZWAR IN ZWEI PUNKTEN, DIE DER TEXT DARÜBER OFFENLIESS.**
+Beide sind GEMESSEN am Code (CC, 2026-08-31) und der erste zusätzlich LIVE bestätigt
+(OWNER, 2026-08-31, Schritt 7 des Live-Tests, s. VERMERK 9):
+· **`isTargetDeliverable` IST EIN ODER — DIE KUNDENNUMMER ALLEIN REICHT.** Es braucht
+  weder beide Kennungsformen noch die Conversion-Regel. Umgekehrt reicht auch die
+  Conversion-Regel allein. **Der Absatz oben sagt "sobald EINE der beiden Kennungsformen
+  belegt ist" und ist damit richtig; was er nicht sagte, ist, WELCHE der beiden im
+  Regelfall zuerst da ist** — und das ist die Kundennummer, weil sie auf der Karte steht.
+  **LIVE BESTÄTIGT:** Der Owner hatte NUR die Kundennummer hinterlegt, und die Seite trug
+  den Schlüssel.
+· **DAS MEMO LIEST `settings`, NICHT `savedSettings`.** **AUSLÖSER DER CONSENT-FOLGE IST
+  DAMIT DIE EINGABE, NICHT DAS SPEICHERN.** Ein noch nicht gespeicherter Wert bringt den
+  Schlüssel bereits in den Publish. Das ist am Memo ausdrücklich begründet (es beschreibt,
+  was in DIESES Dokument hineingeht, und das Dokument wird aus demselben laufenden Stand
+  gebaut) — **es ist kein Versehen, aber es verschiebt den Zeitpunkt um einen Schritt nach
+  vorn**, und wer die Folge am Speichern festmacht, sucht sie an der falschen Stelle.
+**WAS SICH DADURCH NICHT ÄNDERT:** die zwei Folgen darüber. Der Vorteil für Scheibe 4 und
+die Auflage für Phase 11.5 gelten unverändert — nur früher, als der Text sie beschrieb.
 
 **(4) DIE FREMDKONTO-FRAGE BINDET SCHEIBE 4, NICHT DIESE.**
 **DER BEFUND ZUERST, UND ER IST EIN NICHT-BEFUND:** Was Google tut, wenn eine Anfrage eine
@@ -1541,160 +1570,6 @@ das Gate unten.
 **AUSSEN**. (6) verlangt mehr — ein eingefügtes "123 456 7890" trägt Leerraum **INNEN**, und
 den entfernt kein Trim. **Wer (6) für erledigt hält, weil schon getrimmt wird, hat sie nicht
 gebaut.**
-
-### Was Scheibe 2 ausdrücklich NICHT entscheidet
-
-Vier Dinge, je mit dem Ort, an dem sie entschieden werden. **Sie stehen hier, damit die
-Bau-Runde sie nicht für vergessen hält und nebenbei mitentscheidet:**
-- **DER FELDNAME `pixelId`.** GATE für Stufe 1 des Bau-Plans, s. Festlegung (1), Grenze 2.
-- **OB ES EINEN AUFZÄHLUNGS-ENDPUNKT FÜR DIE ERREICHBAREN KONTEN GIBT.** Offener Punkt in
-  docs/offene-punkte.md, Trigger "der Zuschnitt der Scheibe 4", s. Festlegung (4).
-- **TRIM UND LEER-BEHANDLUNG — WAS DAVON ÜBRIG IST.** Bau-Plan, s. Festlegung (5). **VERENGT
-  AM 2026-08-31, weil Festlegung (6) einen Teil davon entschieden hat:** Für die
-  KUNDENNUMMER ist die Leerraum-Achse jetzt entschieden (Bindestriche und Leerraum fallen).
-  **Offen und beim Bau-Plan bleiben:** der Trim für `productDestinationId`, die Frage "leer
-  heisst nicht gesetzt" für beide, und das WANN der Normalisierung. **Ohne diese Verengung
-  sagte die Liste 'nicht entschieden' über etwas, das eine Festlegung desselben Abschnitts
-  entscheidet** — und die Liste ist die Prüfliste der Bau-Runde.
-- **WIE DER AUSDRUCK VON `settingsEqual` AUSSIEHT.** Er braucht keinen — Festlegung (1) ist
-  gerade so gewählt, dass die Funktion unverändert trägt. **Fasst der Bau-Plan sie dennoch
-  an, ist das begründungspflichtig**, weil damit die tragende Begründung der Festlegung (1)
-  ihren Gegenstand verlöre.
-
-**EIN GATE FÜR STUFE 1 — DIE KARTE TRÜGE ZWEI AUSSAGEN ÜBER NICHT-AUSLIEFERUNG, UND EINE
-NENNTE DEN FALSCHEN GRUND.**
-**GOOGLE WÄRE DIE ERSTE KARTE MIT `publicLabel` UND OHNE ADAPTER.** Bei Scheibe 3 stand die
-UMGEKEHRTE Kombination zur Prüfung — kein Label, kein Adapter (Gate (α) jener Bau-Stufe;
-ARCHITEKTEN-ANGABE 2026-08-31, der Gate-Text selbst ist mit dem Vollzug jener Scheibe
-verdichtet). **Scheibe 2 erzeugt die andere Hälfte derselben Kombinatorik.**
-**DER BEFUND, GEMESSEN am Code (CC, 2026-08-31):** `src/components/TargetCard.tsx` rendert
-ZWEI voneinander unabhängige Zeilen über die Nicht-Auslieferung. Die eine hängt am Adapter
-(`{!hasAdapter && …}`, fester Satz "Auslieferung folgt — dieses Ziel sendet noch nicht"),
-die andere an der Anwesenheit des Labels (`config.publicLabel !== undefined && configured
-=== true && !hasTargetPixelId(savedPixelId, target)` -> `noDeliveryText(config.publicLabel)`).
-**Ihre Bedingungen schliessen einander NICHT aus.** Für ein Google-Projekt mit bestehender
-Geheimnis-Zeile und noch leerer Kundennummer wären ab Scheibe 2 **BEIDE wahr**.
-**WARUM DAS NICHT NUR DOPPELT, SONDERN IRREFÜHREND IST:** Die label-gebundene Zeile nennt als
-Grund eine **fehlende Kennung**. Der wirkliche Grund, dass nichts hinausgeht, ist der
-**fehlende Empfänger** — und den nennt die andere Zeile. Der Betreiber trüge die Kennung ein,
-die eine Zeile verschwände, und es ginge weiterhin nichts hinaus. **Genau diese Fehldiagnose
-ist der Grund, aus dem 11.1a die label-gebundene Zeile auf Karten ohne öffentliches Feld
-unterdrückt hat** — der Kommentar an jener Bedingung sagt es wörtlich; die Unterdrückung
-greift aber über die Abwesenheit des Labels, und die fällt mit Scheibe 2 weg.
-**HIER WIRD NICHTS ENTSCHIEDEN.** Es ist ein **GATE FÜR STUFE 1**: am Code prüfen, was die
-Karte in dieser Kombination tatsächlich rendert, und **den Bau-Plan sagen lassen, was daraus
-folgt** — Unterdrückung, Umformulierung, eine gemeinsame Zeile oder gar nichts. **KEINE
-EMPFEHLUNG**, und ausdrücklich keine Vorwegnahme: Ein Zielnamen-Zweig in der Komponente wäre
-in jedem Fall ausgeschlossen (s. "Woraus Scheibe 2 besteht", zweiter Befund).
-
-**EIN ZWEITES GATE FÜR STUFE 1 — ES FOLGT AUS FESTLEGUNG (6): `setPixelId` IST GETEILT.**
-**DER BEFUND, GEMESSEN am Code (CC, 2026-08-31):** `setPixelId` (src/lib/settings.ts) nimmt
-das ZIEL als Parameter entgegen, **urteilt aber über kein Ziel verschieden** — sie schreibt
-`pixels[target].pixelId = pixelId.trim()`, für alle fünf gleich. **Alle vier bestehenden
-Ziele laufen durch dieselbe Funktion**, und ihr einziger Aufrufer im Produktivcode ist
-`onPixelIdChange` in `src/components/CodeImporter.tsx`. **Eine Normalisierung dort träfe die
-vier mit.**
-**DAS IST EIN SCOPE-BRUCH UND KEINE GESCHMACKSFRAGE:** "Jede Änderung am Resolver-Verhalten
-für die vier bestehenden Ziele" ist im Scope dieser Scheibe ausgeschlossen — und ein
-Bindestrich, der bei Metas Pixel-ID plötzlich fiele, wäre genau das, nur eine Ebene früher.
-**DIE FRAGE AN DEN BAU-PLAN, in einem Satz:** Wie entsteht eine ZIEL-SPEZIFISCHE
-Normalisierung, **OHNE** einen Zielnamen-Zweig in der Komponente (ausgeschlossen, s. "Woraus
-Scheibe 2 besteht") **UND OHNE** das Verhalten der vier bestehenden Ziele zu ändern (Scope)?
-**KANDIDATEN NENNEN, KEINE AUSWAHL — und dieser Zuschnitt nennt keine.**
-**EIN BEFUND, DER DAZUGEHÖRT UND AUSDRÜCKLICH KEINE EMPFEHLUNG IST:** `TARGET_CARDS`
-(src/lib/tracking/target-cards.ts) trägt schon heute **ziel-spezifische DATEN** — je Ziel
-Beschriftung, Hilfetext und Platzhalter, und die ABWESENHEIT einer Feldgruppe schaltet das
-Feld ab. Dass dort ziel-spezifische Angaben leben, ist gemessen; **dass eine Normalisierung
-dorthin gehörte, ist damit NICHT gesagt.** Wer diesen Absatz als Auswahl liest, hat die
-Entscheidung getroffen, die der Bau-Plan treffen soll.
-
-### Die Beweis-Achse der Scheibe 2
-
-**SIE HAT ZWEI HÄLFTEN, UND DIE ZWEITE IST DIE, DIE MAN VERGISST:** Dass die Scheibe STEHT,
-zeigen die Kennungen, die man eingibt und wiederfindet. Dass sie **NICHT MEHR TUT** als das,
-zeigt nur eine Aussage über die Tore, die nach dem Fall von Tor A noch halten. Eine
-Anleitung, die nur die erste Hälfte prüft, meldet Erfolg für eine Scheibe, die den Transport
-mitgebaut haben könnte.
-
-**LIVE — JEDER SCHRITT MISST GENAU EINE ACHSE:**
-1. **Die Felder erscheinen.** Die Google-Karte trägt ein Feld für die Kundennummer; der
-   Bereich mit den Conversion-Regeln führt Google neben LinkedIn.
-2. **Ablegen und Überleben.** Beide Kennungen eintragen, speichern, Projekt wechseln,
-   zurückwechseln — beide Werte stehen unverändert da. **Das ist zugleich die Gegenprobe zur
-   Dirty-Falle aus Festlegung (1):** Vor dem Speichern muss "Ungespeicherte Änderungen"
-   erscheinen, und ein Wechsel ohne Speichern muss nachfragen. **Erscheint der Text nicht,
-   ist die Festlegung verfehlt, auch wenn der Wert danach zufällig noch da ist.**
-3. **Isolation.** Ein zweites Projekt ohne Google-Kennungen bleibt unverändert; die
-   Bestandskarten (Meta, Pinterest, TikTok, LinkedIn) sind unangetastet — Beschriftung,
-   Platzhalter, Statuszeile, Geheimnis-Feld.
-4. **Kein Geheimnis-Feld.** Auf der Google-Karte gibt es weiterhin **kein** Eingabefeld für
-   ein Zugangsdatum. Die Karte gewinnt ein öffentliches Feld, nicht zwei.
-5. **Der Hinweis "Auslieferung folgt — dieses Ziel sendet noch nicht" steht weiterhin auf
-   der Karte.** Er ist eine AUSSAGE DER OBERFLÄCHE über `hasAdapter`, **kein Beweis des
-   Nicht-Sendens**.
-
-**WAS LIVE NICHT ZU BEWEISEN IST, und dieser Absatz ist der wichtigere Teil:** Dass Google
-nach dem Fall von Tor A immer noch nicht sendet, kann ein Live-Test **auf kein einzelnes Tor
-zurückführen**. Tor B (kein Klartext in `secret`) und Tor D (kein Adapter) sind **je für sich
-hinreichend**; ein ausbleibendes Ereignis sieht unter beiden identisch aus. **Zwei Ursachen
-erzeugen dieselbe Beobachtung — das ist keine Messung, sondern eine Frage**
-(docs/immer-beachten.md, "BEVOR EIN ERGEBNIS BEURTEILT WIRD …", Teil (a)).
-**DIE TRENNUNG LEISTEN NUR TESTS, JE EINER, UND JEDER BENENNT SEIN TOR:**
-· **EIN TEST FÜR TOR B:** Ein Projekt mit gesetzten Google-Kennungen **und** einer
-  `project_secrets`-Zeile, deren `secret` NULL ist, ergibt im Resolver **keinen** Empfänger
-  `'google'` — beobachtet an der Paarungsschleife, nicht am Ergebnis eines Netzaufrufs.
-  **MIT POSITIVKONTROLLE IM SELBEN LAUF:** dasselbe Projekt mit gefülltem `secret` ergäbe
-  einen — sonst ist der Test eine Abwesenheits-Behauptung ohne Reichweite.
-· **EIN TEST FÜR TOR D:** `'google'` ist nicht in `TARGETS_WITH_ADAPTER`, und der Verteiler
-  überspringt es — auch dann, wenn ein Empfänger `'google'` künstlich hergestellt wird.
-  **Genau diese Konstruktion ist der Punkt:** Sie nimmt Tor B gedanklich weg und zeigt, dass
-  Tor D allein trägt.
-**AM ENDE STEHT DIE FRAGE, DIE DER VERMERK BEANTWORTEN MUSS:** Welches Tor hält, wenn man
-das andere gedanklich wegnimmt? Wer sie nicht beantworten kann, hat die Tore nicht geprüft,
-sondern ihr gemeinsames Schweigen.
-
-**DER VORHER-WERT — ER IST NÖTIG, UND ZWAR AN EINER ANDEREN STELLE, ALS DIE REGEL ES
-NAHELEGT.** Geprüft (ARCHITEKT, 2026-08-31):
-· **FÜR DIE SCHRITTE 1 BIS 5 IST KEINER NÖTIG.** Sie prüfen einen NEUEN Zustand, nicht einen
-  Unterschied; ihre Voraussetzungen sind nach dem Deploy jederzeit wieder herstellbar.
-· **FÜR FESTLEGUNG (3) IST EINER NÖTIG — UND SEINE FRIST IST NICHT DER DEPLOY, SONDERN DAS
-  NÄCHSTE VERÖFFENTLICHEN.** Wer zeigen will, dass eine **bereits veröffentlichte** Seite den
-  Schlüssel `"google"` NICHT trägt und eine **danach veröffentlichte** ihn trägt, braucht die
-  ausgelieferte Fassung der alten Seite. **SIE ÜBERLEBT DEN DEPLOY** (ein Code-Deploy
-  erreicht ein ausgeliefertes Artefakt nicht) — **sie stirbt mit dem ersten Publish in
-  demselben Projekt.** **PFLICHT-STOPP: Ohne gesicherte Vorher-Kopie des ausgelieferten
-  Textes kein erneutes Veröffentlichen in dem Projekt, an dem der Vergleich geführt wird.**
-  Die Regel dahinter ist "EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER
-  NACHWEIS NICHT MEHR HERSTELLBAR" (docs/immer-beachten.md); **ihr Wortlaut nennt den
-  Deploy, und genau hier trifft er nicht — die Frist ist eine andere Handlung.** Wer der
-  Formulierung folgt statt der Sache, sichert zum falschen Zeitpunkt und hat den Wert
-  trotzdem verloren.
-· **DASS DER VERGLEICH ÜBERHAUPT GEFÜHRT WIRD, IST NICHT ZWINGEND.** Festlegung (3) ist als
-  BEFUND geführt und nicht als Bau-Gegenstand; wird er nicht gefahren, gehört das als **nicht
-  gefahren protokolliert** und nicht als bestanden.
-
-### Der Scope der Scheibe 2 — und wo er zum STOPP wird
-
-**NICHT ZU DIESER SCHEIBE**, je mit dem Ort, an dem es hingehört:
-- **DER TRANSPORT.** Scheibe 4. Keine Nutzlast, kein Netzaufruf, kein Aufrufer für
-  `buildGoogleEvent` oder `extractGoogleClickIds`. **Die Schuld aus VERMERK 2 wandert
-  unverändert weiter** — sie wird von dieser Scheibe nicht eingelöst.
-- **`TARGETS_WITH_ADAPTER` UND `FORWARDER_BY_TARGET`.** Unangetastet. **Es ist der einzige
-  Ort, an dem diese Scheibe still zur Transport-Scheibe würde** — dieselbe Lage und derselbe
-  Grund wie in Festlegung (6) der Scheibe 3.
-- **JEDE ÄNDERUNG AM RESOLVER-VERHALTEN FÜR DIE VIER BESTEHENDEN ZIELE.**
-  `getCapiConfigByTrackingKey` (src/lib/capi/token.ts) liegt auf dem meistgetroffenen Pfad
-  der Plattform; die Zahl der Datenbank-Runden bleibt unverändert.
-- **DIE FREMDKONTO-MESSUNG.** Scheibe 4, s. Festlegung (4).
-- **DER CONSENT-DIALOG.** Phase 11.5, s. Festlegung (3).
-
-**KEINE SCHEMA-ÄNDERUNG. VERLANGT DER BAU-PLAN EINE, IST DAS EIN STOPP** — keine Migration,
-keine neue Spalte, keine Policy, keine Constraint-Erweiterung. **UND ES IST ZUGLEICH DER
-HINWEIS, DASS TRIGGER (ii) DOCH ANGESCHLAGEN HAT:** Wer für die Kennungen einen Ort in der
-Datenbank braucht, hat gerade festgestellt, dass sie nicht in den Einstellungs-Blob gehören —
-und dann ist Festlegung (2) widerlegt und die Owner-Entscheidung vom 2026-08-12 neu zu
-treffen. **Der STOPP ist deshalb kein Formalismus, sondern der Detektor für genau diesen
-Fall.**
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -2261,6 +2136,108 @@ Anwendung. Die Mutationsergebnisse GEMESSEN an denselben Läufen. Dass (b) und (
 ununterscheidbar sind, ist eine FOLGE aus den vier Fällen der reinen Funktion, keine
 Messung.
 
+### VERMERK 9 (Commit 6dc7e27) — DIE SCHEIBE 2 IST GEBAUT UND LIVE BEWIESEN
+
+**DER COMMIT** ist am Repo ermittelt (CC, 2026-08-31): eine Suche über die
+Commit-Botschaft **und** zwei unabhängige `-S`-Gegenproben auf Zeichenfolgen, die dieser
+Diff erst eingeführt hat (`NORMALIZE_PIXEL_ID`, `eventAxisTargets`, beide über
+`src/lib/settings.ts`) — **je genau ein Treffer, `6dc7e27`.**
+
+**WAS GEBAUT WURDE:** `settings.pixels.google` kann über die Oberfläche entstehen — die
+Karte trägt ein öffentliches Feld für die **Kundennummer**, die Ereignis-Achse einen
+zweiten Block für die **`productDestinationId`**. **KEIN NEUES FELD im Typ:** beide
+Kennungen belegen die zwei vorhandenen Slots, `settingsEqual` ist unverändert. Die
+Kundennummer wird an der EINGABE normalisiert (`NORMALIZE_PIXEL_ID`, erschöpfend über
+`TrackingTarget`, der Trim bleibt DAVOR); die Ereignis-Achse führt zwei Ziele, ihre
+Ordnung ist aus `TRACKING_TARGETS` ABGELEITET (`eventAxisTargets`); die label-gebundene
+Nicht-Auslieferungs-Zeile hängt zusätzlich am Adapter. **Suite: 70 Dateien, 1436 Tests**
+(vorher 70/1421). Alle vier Gates waren vor dem Commit grün.
+
+**DREI BESTANDSLÄUFE SIND UMGESCHRIEBEN, NICHT REPARIERT** — sie hielten die Zusicherung
+"Google hat kein öffentliches Feld", und genau die hebt diese Scheibe auf:
+`tracking/target-cards.test.ts` ("fuehrt EIN oeffentliches und KEIN Geheimnis-Feld"),
+`TargetCard.test.tsx` (aus "T-A2 (TOR 1, Daten-Seite)" wurde "die Google-Karte fuehrt
+GENAU EIN Eingabefeld") und dort der `else`-Zweig von "JEDES Ziel". **Jeder nennt im
+Kommentar die aufgehobene Zusicherung**; der dritte zusätzlich den WECHSEL DES TRÄGERS —
+die Zeile unterblieb bis hierher, WEIL das Label fehlte, seither, WEIL der Adapter-Term
+davorsteht. Ohne diesen Satz wäre derselbe grüne Test aus einem anderen Grund grün.
+
+---
+
+**DER LIVE-TEST — GEMESSEN 2026-08-31 vom OWNER, an der ausgelieferten Anwendung.**
+Deployment vorher als "Ready" bestätigt.
+
+- **0, die Regression:** Die Meta-Karte unverändert — Feld, Platzhalter, Statuszeile.
+- **1:** Das Feld "Google-Ads-Kundennummer" erscheint; die Regel-Blöcke stehen in der
+  Ordnung **LinkedIn, Google**.
+- **2:** Die Normalisierung ist **im Feld sichtbar** — Bindestriche fallen beim Tippen.
+  Der Cursor verhält sich unauffällig.
+- **3:** Die Dirty-Gegenprobe greift: "Ungespeicherte Änderungen" erscheint, der
+  Projektwechsel fragt nach, der Wert überlebt Speichern und Wechsel.
+- **4:** Google- und LinkedIn-Regeln speichern getrennt.
+- **5:** Kein Geheimnis-Feld; Verbinden und Trennen unverändert.
+- **6:** Bei verbundener Instanz ohne Kundennummer steht **NUR** der Adapter-Hinweis.
+- **7:** **DER CONSENT-VERGLEICH IST GEFAHREN UND BESTANDEN.** Die VORHER veröffentlichte
+  Seite trug den Schlüssel `"google"` NICHT; nach dem Veröffentlichen mit hinterlegter
+  Kundennummer trägt sie ihn.
+
+**WAS SCHRITT 7 ZUSÄTZLICH BELEGT, und es steht in keiner Beweis-Achse:** Der Owner hatte
+**NUR die Kundennummer** hinterlegt. Damit ist **am ausgelieferten Artefakt** bestätigt,
+was am Code gemessen war — `isTargetDeliverable` ist ein **ODER**, und die Kundennummer
+ALLEIN reicht. **Festlegung (3) ist live eingelöst und nicht nur benannt.**
+
+---
+
+**WAS DER LIVE-TEST NICHT ZEIGT:**
+- **WELCHES TOR HÄLT.** Tor B und Tor D sind **je für sich hinreichend**; ein
+  ausbleibendes Ereignis sieht unter beiden identisch aus. Das leisten **allein** "TOR 2"
+  in `capi/token.test.ts` und `W-google` in `capi/fan-out.test.ts` — **beide aus Scheibe
+  3, beide unverändert.**
+- **DASS EINE ECHTE KUNDENNUMMER VOM ANBIETER ANGENOMMEN WIRD.** Kein Transport.
+- **VERMERK 2 IST NICHT GETILGT.** `buildGoogleEvent` und `extractGoogleClickIds` haben
+  weiterhin keinen Aufrufer im Produktivcode. **Die Schuld wandert an Scheibe 4.**
+
+---
+
+**DER STAND DES SCHNITTS, UND ER STEUERT DIE NÄCHSTE SITZUNG:** **1a, 2 und 3 stehen.**
+Die GRENZE der bindenden Entscheidung (6) lautet "Zwingend ist NUR 4 nach 1a, 2 und 3" —
+**SCHEIBE 4 IST DAMIT ENTSPERRT.** **1b bleibt offen und ist für 4 nicht zwingend.**
+
+---
+
+**DIE MUTATIONSPROBEN — DREI, je mit Vorhersage VOR dem Lauf, danach zurückgenommen:**
+- **Die Normalisierung entfernt.** Vorhergesagt: zwei Läufe. **Gefallen: ACHT.**
+- **Sie auf alle Ziele ausgeweitet.** Vorhergesagt: einer. **Gefallen: ZWEI.** Die vorab
+  benannte Überschuss-KLASSE ("Bestands-Fixtures mit Trennzeichen bei einem anderen
+  Ziel") war **LEER**, wie nach der Fixture-Korrektur angesagt.
+- **`'google'` in `TARGETS_WITH_ADAPTER`.** Vorhergesagt und gefallen: **genau
+  `W-google`.** Kein Überschuss.
+
+**BEIDE ÜBERSCHÜSSE SIND GEPRÜFT UND NICHT VERBUCHT — ES IST DECKUNG, KEINE KASKADE**
+(Lektion (g) an "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE"): Alle Zusatztreffer melden
+DIESELBE Assertion-Gestalt, einmal an der reinen Funktion und einmal am Bedienweg —
+wörtlich `expected '987-654-3210' to be '9876543210'` und Verwandte.
+
+**DIE URSACHE IST BENENNBAR, UND SIE IST NEU:** Die Vorhersagen stammten aus **Stufe 1**,
+und der Testbestand ist seither um Läufe gewachsen, **die dieselbe Achse messen**. **Eine
+Vorhersage über einen gewachsenen Bestand ist systematisch zu niedrig.**
+**DER STRUKTURELLE AUSLÖSER GEHÖRT DAZU, sonst liest sich der Befund als Unachtsamkeit:**
+Der Bau-Prompt sagte "mit den Vorhersagen aus Stufe 1", statt sie vor dem Lauf gegen den
+aktuellen Bestand aktualisieren zu lassen. **In der Fix-Scheibe hat CC genau das getan —
+dort stand keine solche Vorgabe.** Der Hebungs-Kandidat dazu steht unten.
+**KEINE ZAHL WIRD IN docs/immer-beachten.md NACHGEZOGEN** — das ist Doku-Arbeit mit
+eigenem Trigger (Vorrats-Eintrag 20).
+
+---
+
+**PROVENIENZ, JE TEIL:** Umfang, Testzahl, Gate-Ergebnisse, die Commit-Nummer und der
+Objekt-Nachweis GEMESSEN am Repo bzw. an den Läufen vom 2026-08-31 (CC). Die Live-Werte
+GEMESSEN 2026-08-31 (OWNER) an der ausgelieferten Anwendung. Die Mutationsergebnisse
+GEMESSEN an denselben Läufen. Dass Schritt 7 das ODER in `isTargetDeliverable` belegt, ist
+eine FOLGE aus dem Zustand, den der Owner hergestellt hat, plus der Code-Messung — keine
+zweite Beobachtung. Die Entsperrung der Scheibe 4 ist eine FOLGE aus der GRENZE der
+bindenden Entscheidung (6), keine Messung.
+
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
 Je Eintrag: die ENTSCHEIDUNG, ihr GRUND und ihre GRENZE. Die Befunde selbst werden
@@ -2769,6 +2746,23 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
    Existenz des Zuschnitts (CC, 2026-08-31). **Die Entscheidung ist eine OWNER-ENTSCHEIDUNG
    vom 2026-08-31 — keine Messung und keine Ableitung.** Der gemessene Stand, auf dem sie
    ruht, steht unverändert im Rumpf dieses Eintrags.
+
+   **ERLEDIGT AM 2026-08-31 — DER EINTRAG BLEIBT STEHEN, UND ZWAR WEGEN SEINER MESSUNG UND
+   SEINER GRENZE.** Bauform wie bei Eintrag 15: ein eigener datierter Absatz UNTER dem
+   unveränderten Eintrag, mit Datum, Grund und dem, was ihn eingelöst hat.
+   **WAS IHN EINLÖST:** Der Eintrag sagte "Der Ort für die Normalisierung ist die Stelle,
+   an der der Betreiber die Nummer eingibt; **die gibt es heute nicht**." **ES GIBT SIE
+   JETZT, UND DORT WIRD NORMALISIERT** — `NORMALIZE_PIXEL_ID` in `src/lib/settings.ts`,
+   gerufen aus `setPixelId`, also im Schreibpfad der Eingabe. Bau-Commit `6dc7e27`, live
+   bestätigt (VERMERK 9, Schritt 2: die Bindestriche fallen sichtbar im Feld).
+   **DER ZWEITE HALBSATZ DES TITELS IST EINGEHALTEN:** `buildIngestEventsRequest`
+   normalisiert weiterhin nicht und ist nicht angefasst worden.
+   **WARUM DER EINTRAG NICHT GELÖSCHT WIRD — ZWEI GRÜNDE, und der zweite wiegt schwerer:**
+   (1) Seine MESSUNG (Teil (bt): `INVALID_NUMBER_FORMAT` auf `account_id`) ist der Beleg,
+   auf dem die Umformung überhaupt ruht. (2) Seine GRENZE — dass **nicht isoliert gemessen
+   ist, ob die Bindestriche der Grund der Abweisung waren** — ist der MASSSTAB für jede
+   spätere Frage an dieser Achse, etwa den Schrägstrich aus Eintrag 28 oder den
+   Zeichenvorrat aus Eintrag 29. **Ein gelöschter Eintrag nähme beide mit.**
    **ERSETZT AM 2026-08-31:** Hier stand ein Vermerk, der die Frage als OFFEN und beim Owner
    liegend führte. Er beschrieb einen Vorgangs-Zustand, der mit der Entscheidung vorbei ist;
    ihn stehenzulassen hiesse, neben einer getroffenen Entscheidung zu behaupten, sie stehe
@@ -3225,6 +3219,87 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     nächste Runde, die `src/lib/settings.ts` oder den Dirty-Pfad ohnehin öffnet.
     GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG dazu, wie der Beleg zu lauten hat.
 
+    **NACHTRAG 2026-08-31 — DER ERSTE TRIGGER IST EINGETRETEN UND DER EINTRAG IST
+    ERLEDIGT.** Scheibe 2 hat `src/lib/settings.ts` geöffnet, und der Beleg ist im selben
+    Zug korrigiert worden: Der Kommentar über `settingsEqual` behauptete, der
+    Speichern-Knopf bleibe inaktiv. **DIE FUNKTION SELBST IST NICHT ANGEFASST WORDEN** —
+    Festlegung (1) ist gerade so gewählt, dass sie unverändert trägt.
+    **DER EINTRAG BLEIBT STEHEN, WEIL ER DIE MESSUNG TRÄGT:** dass `dirty` nicht im
+    `disabled` steht und der Verlust an den drei ausbleibenden Warnungen hängt. Die
+    Unterscheidung stellt sich bei der nächsten Dirty-Frage wieder, und dann ist der
+    Unterschied zwischen "gemessen" und "nie geprüft" die ganze Auskunft.
+
+28. **DER SCHRÄGSTRICH FÄLLT NICHT — UND DAS IST KONFORM, KEIN DEFEKT.**
+    **GEMESSEN LIVE (OWNER, 2026-08-31):** Ein `/` im Kundennummer-Feld bleibt stehen.
+    Festlegung (6) sagt "Bindestriche und Leerraum, SONST NICHTS", und Festlegung (5)
+    prüft keine Form — beides greift hier genau so, wie es dasteht.
+    **DIE UNTERSCHEIDUNG, DIE DEN FILTER RECHTFERTIGT UND DEN SCHRÄGSTRICH AUSSCHLIESST:**
+    Bindestriche fallen, **WEIL Google Ads Kundennummern MIT Bindestrichen ANZEIGT** — der
+    Betreiber schreibt ab, was er sieht, und die Umformung heilt ein KOPIER-Artefakt. Für
+    Schrägstriche gibt es keine solche Grundlage; sie wären ein TIPPFEHLER.
+    **DEN FILTER "ZU VERVOLLSTÄNDIGEN" HIESSE, AUF EINER UNGEMESSENEN ACHSE ZU RATEN** —
+    genau das, wogegen Festlegung (5) argumentiert. **Der Eintrag steht hier, damit die
+    nächste Runde ihn nicht als Lücke aufräumt.**
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: eine gemessene Anzeigekonvention des Anbieters, die ein ANDERES Trennzeichen
+    führt.
+
+29. **EINE GRENZE AM ZEICHENVORRAT DER NORMALISIERUNG.**
+    `[-\s]` trifft den **ASCII-Bindestrich**; `\s` deckt auch das **geschützte
+    Leerzeichen** ab. **EIN GEDANKENSTRICH AUS EINER FREMDEN QUELLE FÄLLT NICHT** — weder
+    Halbgeviert- noch Geviertstrich sind ASCII-Bindestriche.
+    **OB DAS JE VORKOMMT, IST UNGEMESSEN.** Als GRENZE notiert und nicht gebaut: Ein
+    breiterer Zeichenvorrat wäre dieselbe Ratearbeit wie beim Schrägstrich oben.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: ein beobachteter Fall — ein Betreiber, dessen Kundennummer nach dem Eintragen
+    einen Strich behält.
+
+30. **DER `never`-KOMMENTAR IN `TargetCard.test.tsx` IST ÜBERHOLT — UND WAR ES SCHON VOR
+    DIESER RUNDE.**
+    Er sagt, im `else`-Zweig von "JEDES Ziel" verenge TypeScript `target` auf `never`,
+    "seit 11.1f deckt sich diese Union mit `TrackingTarget`".
+    **GEMESSEN am Repo (CC, 2026-08-31):** Seit Scheibe 3 hat `TARGETS_WITH_ADAPTER` VIER
+    Mitglieder und `TRACKING_TARGETS` FÜNF; der Zweig verengt auf `'google'`, nicht auf
+    `never`. **Der Satz war also schon vor Scheibe 2 falsch** — diese Runde hat ihn nur
+    sichtbar gemacht, weil sie den Nachbarzweig umgeschrieben hat.
+    **ES IST EINE TATSACHENBEHAUPTUNG ÜBER DEN COMPILER, KEINE ZUSAGE DES TESTS** — der
+    Lauf misst unverändert das Richtige. Deshalb nicht in derselben Runde korrigiert: Eine
+    Kommentar-Sachkorrektur gehört nicht in den Diff eines Baus.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: die nächste Runde, die `src/components/TargetCard.test.tsx` ohnehin öffnet.
+
+31. **DAS `aria-label`-MUSTER AN DER EREIGNIS-ACHSE IST DATEN, KEIN MECHANISMUS.**
+    **DER BEFUND:** Mit zwei Zielen auf derselben Ereignisliste tragen zwei Eingabefelder
+    denselben zugänglichen Namen ("Lead") und schreiben in VERSCHIEDENE Ziel-Slots — die
+    Lage aus "ZWEI BEDIENELEMENTE MIT GLEICHEM NAMEN UND VERSCHIEDENER WIRKUNG SIND EIN
+    OBERFLÄCHEN-PROBLEM, KEIN TESTPROBLEM" (docs/immer-beachten.md). Aufgelöst ist sie
+    durch ein ziel-präfixiertes `aria-label`, nach der Hausform der Karten.
+    **EIN DRITTES ZIEL AUF DIESER ACHSE ERBT DAS MUSTER NICHT VON SELBST.** Der Ausdruck
+    baut den Namen aus `TARGET_CARDS[…].name` und wächst damit mit — **aber nur, solange
+    die Namen unterscheidbar bleiben.** Zwei Ziele mit gleichem Kartennamen erzeugten
+    dieselbe Mehrdeutigkeit erneut, und **kein Test hielte das** (der bestehende prüft
+    genau zwei benannte Felder).
+    **GEMELDET, DAMIT ES NICHT ALS GELÖST GILT.** Nicht gebaut, keine Empfehlung.
+    TRIGGER: ein drittes Ziel mit Ereignis-Achse, ODER zwei Ziele mit gleichlautendem
+    Kartennamen.
+
+32. **VERMERK AN VORRATS-EINTRAG 20 — DIE URSACHE, NICHT DIE ZAHL.**
+    Jener Eintrag hält fest, dass eine Mutations-Vorhersage zu eng war, und ordnet den Fall
+    in die Reihe der Regel "EINE MUTATIONS-VORHERSAGE KANN IN BEIDE RICHTUNGEN FALSCH SEIN"
+    ein. **MIT SCHEIBE 2 SIND ZWEI WEITERE FÄLLE AUFGETRETEN, BEIDE IN DERSELBEN RICHTUNG**
+    (zu eng), beide als DECKUNG und nicht als Kaskade geprüft — die Einzelheiten stehen in
+    VERMERK 9 und werden hier nicht verdoppelt.
+    **HIER STEHT KEINE FALLZAHL, UND DAS IST ABSICHT:** Eintrag 20 führt bewusst keine, die
+    Regel selbst führt eine datierte, und eine dritte Zahl daneben würde bei jedem Zuwachs
+    neu falsch — dieselbe Bauform, die in dieser Datei mehrfach protokolliert
+    kaputtgegangen ist.
+    **WAS NEU IST UND DEN VERMERK RECHTFERTIGT: DIE URSACHE IST ERSTMALS BENENNBAR.** Sie
+    ist nicht Unachtsamkeit, sondern eine übernommene Vorhersage über einen INZWISCHEN
+    GEWACHSENEN Testbestand. Der Hebungs-Kandidat dazu steht unten.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: derselbe wie bei Eintrag 20 — die nächste Hebung an docs/immer-beachten.md,
+    die jene Regel ohnehin berührt.
+
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT
 DIESER SCHEIBE GEGENSTANDSLOS.** `refreshAccessToken` liest, dechiffriert und zerlegt
@@ -3472,3 +3547,48 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
    Positiv- und Negativkontrolle. Der Volltext der drei Nachbarregeln GELESEN in
    docs/immer-beachten.md (CC, 2026-08-31). Dass eine dritte Regel auf derselben Achse die
    Trefferwahrscheinlichkeit senkt, ist eine ABLEITUNG, keine Messung.
+
+7. **EINE MUTATIONS-VORHERSAGE WIRD VOR DEM LAUF GEGEN DEN AKTUELLEN TESTBESTAND
+   AKTUALISIERT** (angetreten 2026-08-31, aus zwei Fällen der Scheibe 2).
+   **DIE AUSSAGE:** Eine Vorhersage, die aus einer FRÜHEREN Stufe übernommen wird, ist
+   **systematisch zu eng** — zwischen ihrer Formulierung und dem Lauf entstehen Tests, die
+   DIESELBE Achse messen. Wer sie unverändert übernimmt, sagt einen Bestand voraus, den es
+   zum Zeitpunkt der Vorhersage noch nicht gab.
+   **DER BEFUND (GEMESSEN am eigenen Lauf, CC, 2026-08-31):** Zwei Pflicht-Mutationen der
+   Scheibe 2 trafen mehr als vorhergesagt — zwei gegen acht, einer gegen zwei. **Beide
+   Male DECKUNG und keine Kaskade**; die Zusatztreffer waren Läufe, die im Bau derselben
+   Runde entstanden sind und dieselbe Assertion-Gestalt tragen.
+   **DER STRUKTURELLE AUSLÖSER GEHÖRT ZUR AUSSAGE, sonst liest sie sich als Ermahnung zur
+   Sorgfalt:** Der Bau-Prompt gab die Vorhersagen wörtlich vor ("mit den Vorhersagen aus
+   Stufe 1"), statt sie vor dem Lauf gegen den aktuellen Bestand aktualisieren zu lassen.
+   **IN DER FIX-SCHEIBE HAT CC GENAU DAS GETAN** — dort stand keine solche Vorgabe, und
+   eine Vorhersage wurde VOR dem Lauf korrigiert, weil ein zweiter Lauf denselben Zweig
+   durchläuft (VERMERK 8, erste Mutationsprobe). **Dasselbe Verfahren, zwei Ausgänge, und
+   der Unterschied lag im Prompt.**
+
+   **DIE NACHBARSCHAFT — DIE FRAGE, NICHT IHRE ANTWORT.** Die Regel "EINE
+   MUTATIONS-VORHERSAGE KANN IN BEIDE RICHTUNGEN FALSCH SEIN" (docs/immer-beachten.md) ist
+   im Volltext gelesen (CC, 2026-08-31). Sie lautet: Unerwartetes ROT ist genauso ein
+   Befund wie unerwartetes Grün; beide Abweichungen werden VOR jeder Reparatur untersucht;
+   BELEG sechsmal in einer Phase, davon fünfmal zu eng; und die einseitige Streuung ist die
+   eigentliche Aussage.
+   **WAS FÜR EINEN ABSATZ AN IHR SPRICHT:** Sie führt bereits die einseitige Streuung und
+   nennt sie ausdrücklich ein Zeichen für eine SYSTEMATISCHE Ursache. Diese Aussage
+   BENENNT eine solche Ursache — sie ist die Antwort auf eine Frage, die jene Regel selbst
+   stellt. Eine eigene Regel daneben zerschnitte Frage und Antwort.
+   **WAS FÜR EINE EIGENE SPRICHT:** Die bestehende sagt, eine Vorhersage KÖNNE falsch sein,
+   und verlangt, die Abweichung zu UNTERSUCHEN. Diese sagt, WANN sie es systematisch ist,
+   und verlangt etwas anderes — eine HANDLUNG VOR dem Lauf statt einer Untersuchung
+   danach. **Ein Absatz an einer Regel, deren operative Anweisung nachgelagert ist, feuert
+   im richtigen Moment nicht.**
+   **NICHT ENTSCHIEDEN, und ohne diesen Satz stellt die Hebung eine Regel neben eine, die
+   dieselbe Achse führt, und dann greift keine mehr richtig:** ob es ein ABSATZ wird oder
+   eine EIGENE Regel. KEINE EMPFEHLUNG.
+   **GILT UNABHÄNGIG VON DIESER ENTSCHEIDUNG UND AB SOFORT:** Eine übernommene Vorhersage
+   wird vor dem Lauf gegen den aktuellen Bestand geprüft. Die Ablage-Frage betrifft, WO die
+   Regel steht, nicht OB sie befolgt wird.
+   GEMELDET 2026-08-31, NICHT GEBAUT.
+   PROVENIENZ: Die zwei Fälle GEMESSEN am eigenen Lauf (CC, 2026-08-31). Der Volltext der
+   Nachbarregel GELESEN in docs/immer-beachten.md (CC, 2026-08-31). Dass der Prompt der
+   strukturelle Auslöser war, ist eine ABLEITUNG aus dem Vergleich mit der Fix-Scheibe,
+   keine Messung.

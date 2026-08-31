@@ -20,6 +20,10 @@ import {
   slugForLabel,
 } from "@/lib/hosting/host";
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
+// DIE QUELLE DES ZIEL-GATES IN setCapiToken (Scheibe 3). REINES lib-MODUL, damit diese
+// "use server"-Datei und die Karte DIESELBE Tabelle lesen; die Alternativen und der
+// Grund stehen in dessen Kopf. Ein Wert-Import, kein Typ: das Gate fragt zur LAUFZEIT.
+import { TARGET_CARDS } from "@/lib/tracking/target-cards";
 import {
   deliverableVariantB,
   emptyPublishVariant,
@@ -585,6 +589,36 @@ export async function setCapiToken(
   // Ownership-Gate darunter.
   if (!isTrackingTarget(target))
     return { ok: false, error: "Unbekanntes Tracking-Ziel." };
+
+  // ZWEITES ZIEL-GATE (Scheibe 3), UND ES BEANTWORTET EINE ANDERE FRAGE ALS DAS ERSTE:
+  // Jenes fragt, ob das Ziel BEKANNT ist; dieses, ob es ueberhaupt ein GEHEIMNIS-FELD
+  // fuehrt. Ein Ziel ohne Feld nimmt keinen eingefuegten Text entgegen.
+  //
+  // WARUM DAS SICHERHEITSRELEVANT IST UND NICHT BLOSS ORDENTLICH: Ohne diese Zeile
+  // schriebe der Upsert unten den uebergebenen Text als KLARTEXT nach
+  // project_secrets.secret — in eine Zeile, deren Geheimnis chiffriert gehoert und deren
+  // Klartext-Spalte NULL bleiben muss. Der Fall OHNE bestehende Zeile ist der
+  // gefaehrlichere, weil er STILL durchginge; bei bestehender Zeile braeche zusaetzlich
+  // der CHECK project_secrets_secret_genau_eines mit 23514, weil dann beide Spalten
+  // gefuellt waeren.
+  //
+  // DAS URTEIL KOMMT AUS DERSELBEN QUELLE WIE DIE KARTE — TARGET_CARDS
+  // (lib/tracking/target-cards.ts), dasselbe Feld, das dort das Eingabefeld schaltet.
+  // KEINE ZWEITE LISTE UND KEIN DRITTES URTEIL: Ein eigenes Register hier waere eine
+  // zweite Instanz derselben Frage, und zwei Instanzen laufen auseinander — dieselbe
+  // Figur wie domains gegen settings.hosting.label.
+  //
+  // VOR JEDEM DB-ZUGRIFF, aus demselben Grund wie das Gate darueber: Zwischen hier und
+  // dem naechsten Absatz liegen createClient, das Ownership-Gate und createAdminClient.
+  // Ein abgewiesener Aufruf soll den privilegierten Client gar nicht erst erzeugen.
+  //
+  // DIE MELDUNG BEHAUPTET WEDER URSACHE NOCH ERGEBNIS: Sie sagt, was fuer dieses Ziel
+  // gilt — nicht, warum der Aufruf kam, und nicht, was in der Datenbank steht.
+  if (TARGET_CARDS[target].secretLabel === undefined)
+    return {
+      ok: false,
+      error: "Für dieses Ziel werden keine Zugangsdaten eingefügt.",
+    };
 
   const supabase = await createClient();
   const {

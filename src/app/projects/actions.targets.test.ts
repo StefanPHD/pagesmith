@@ -130,6 +130,47 @@ describe("Unbekanntes Ziel wird abgewiesen — VOR jedem privilegierten Zugriff"
     expect(adminUpsert).not.toHaveBeenCalled();
   });
 
+  // =========================================================================
+  // DAS ZWEITE ZIEL-GATE (Scheibe 3) — EIN ZIEL OHNE GEHEIMNIS-FELD NIMMT KEINEN
+  // KLARTEXT AN. Es beantwortet eine ANDERE Frage als das Gate darueber: jenes fragt,
+  // ob das Ziel BEKANNT ist, dieses, ob es ein Geheimnis-Feld FUEHRT. 'google' ist
+  // bekannt und faellt trotzdem heraus.
+  // =========================================================================
+  it("setCapiToken: Ziel OHNE Geheimnis-Feld -> Fehler, KEIN Client, KEIN Admin-Client", async () => {
+    // ROT, WENN DER AUSGANG ENTFERNT WIRD ODER HINTER DEN OWNERSHIP-BLOCK RUTSCHT.
+    // WAS ER VERHINDERT, und das ist der sicherheitsrelevante Teil dieser Scheibe: Ohne
+    // ihn schriebe der Upsert den uebergebenen Text als KLARTEXT nach
+    // project_secrets.secret — in eine Zeile, deren Geheimnis chiffriert gehoert und
+    // deren Klartext-Spalte NULL bleiben muss. Ohne bestehende Zeile ginge das STILL
+    // durch; mit bestehender braeche der CHECK project_secrets_secret_genau_eines.
+    //
+    // DIE REIHENFOLGE WIRD MITGEPRUEFT UND IST NICHT NEBENSACHE: Auch createClient darf
+    // nicht gerufen worden sein. Ein Ausgang, der erst NACH dem Ownership-Gate greift,
+    // waere fachlich richtig und verletzte trotzdem die Anordnung, auf der dieser Pfad
+    // ruht — der privilegierte Client soll fuer einen abgewiesenen Aufruf gar nicht
+    // erst entstehen.
+    makeClient({ user: { id: "u1" } });
+    const result = await setCapiToken("proj-1", "google", "EINGEFUEGT");
+    expect(result).toEqual({
+      ok: false,
+      error: "Für dieses Ziel werden keine Zugangsdaten eingefügt.",
+    });
+    expect(createClient).not.toHaveBeenCalled();
+    expect(createAdminClient).not.toHaveBeenCalled();
+    expect(adminUpsert).not.toHaveBeenCalled();
+  });
+
+  it("removeCapiToken: ein Ziel OHNE Geheimnis-Feld bleibt TRENNBAR", async () => {
+    // DIE GEGENPROBE ZUM LAUF DARUEBER, und sie ist der Grund, warum er nicht zu weit
+    // greift: Das Gate sitzt AUSSCHLIESSLICH im Setzen. Ein Trennen ohne Verbinden waere
+    // eine Sackgasse — genau der Zustand, den diese Scheibe beseitigt.
+    // ROT, WENN jemand das Gate "der Symmetrie halber" auch in removeCapiToken einbaut.
+    makeClient({ user: { id: "u1" }, owned: { id: "proj-1", settings: {} } });
+    const result = await removeCapiToken("proj-1", "google");
+    expect(result).toEqual({ ok: true });
+    expect(adminDeleteEq).toContainEqual(["target", "google"]);
+  });
+
   it("removeCapiToken: unbekanntes Ziel -> Fehler, KEIN Admin-Client, KEIN DELETE", async () => {
     makeClient({ user: { id: "u1" } });
     const result = await removeCapiToken("proj-1", "pintrest" as TrackingTarget);

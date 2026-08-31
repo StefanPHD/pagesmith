@@ -82,6 +82,18 @@ export const CONSENT_KEY_BY_TARGET: Record<TrackingTarget, string> = {
   // irgendwo etwas rot wird. Wer dann hier etwas ueberprueft, prueft eine Zeile, die
   // seit ihrem ersten Tag unveraendert dasteht.
   linkedin: "linkedin",
+  // DAS FUENFTE ZIEL, aus demselben Grund ein Literal wie die drei darueber: keine
+  // Consent-Konstante in tracking/consent.ts, aus der es importiert werden koennte.
+  // Schreibweise nach derselben Regel — Namensraum settings.pixels.<platform>,
+  // snake_case, klein.
+  // DIESER EINTRAG IST HEUTE FOLGENLOS, UND ZWAR AUS EINEM SCHAERFEREN GRUND ALS BEI
+  // LINKEDIN: Dort fehlte nur das Eingabefeld fuer die Kennung. Hier fehlt es ebenfalls
+  // (die Google-Karte traegt kein oeffentliches Feld), UND es gibt keinen Adapter. Der
+  // Schluessel erreicht den Draht erst, wenn das Ziel eine KENNUNG traegt — das Memo
+  // consentTargets in components/CodeImporter.tsx filtert darauf —, und eine Kennung
+  // kann ueber die Oberflaeche nicht entstehen. Wer hier etwas ueberprueft, prueft eine
+  // Zeile, die seit ihrem ersten Tag unveraendert dasteht.
+  google: "google",
 };
 
 /**
@@ -137,4 +149,15 @@ export const LEGACY_CONSENT_ROLE: Record<TrackingTarget, boolean> = {
   // dieser Scheibe. Es ist also nichts zu erben, und `true` verschenkte die Ausnahme an
   // ein Ziel, ueber das nie jemand gefragt wurde.
   linkedin: false,
+  // FALSE — UND DER GRUND IST DERSELBE WIE BEIM VIERTEN ZIEL, nicht ein neuer: Diese
+  // Rolle verteilt ein ERBE. Sie gilt nur fuer einen Draht OHNE Einwilligungs-Feld, also
+  // fuer Seiten, die VOR der Einfuehrung des Feldes publiziert wurden. Fuer Google kann
+  // es solche Seiten nicht geben — das Ziel existiert erst ab dieser Scheibe. Es ist
+  // also nichts zu erben.
+  // DAS IST ZUGLEICH DAS DRITTE DER VIER TORE: Ein Beacon ohne cns-Feld erlaubt damit
+  // ausschliesslich das Alt-Ziel; ein Beacon MIT cns-Feld traegt auf jeder heute
+  // publizierten Seite keinen google-Schluessel, und `undefined === true` ist false.
+  // Ein Test haelt die Rolle, nicht dieser Kommentar (consent-targets.test.ts: genau
+  // EIN Traeger, und es ist meta).
+  google: false,
 };

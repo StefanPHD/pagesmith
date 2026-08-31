@@ -197,9 +197,20 @@ describe("hasTargetPixelId — das ziel-bewusste Urteil (Scheibe 11.1c)", () => 
       expect(hasTargetPixelId("   ", target)).toBe(false);
       expect(hasTargetPixelId("123456789012345", target)).toBe(true);
     }
-    // POSITIVKONTROLLE, ohne die die Schleife auch bei leerer Liste gruen waere:
-    // sie muss ueberhaupt vier Ziele gesehen haben.
-    expect(TRACKING_TARGETS.length).toBe(4);
+    // POSITIVKONTROLLE, ohne die die Schleife auch bei LEERER Liste gruen waere.
+    //
+    // MITWACHSEND STATT FEST VERDRAHTET (Scheibe 3, Festlegung (5)): Hier stand
+    // `toBe(4)`. Eine Zahl neben einer Liste wird bei JEDEM Zuwachs neu falsch, ohne
+    // dass an der geprueften Eigenschaft — dem ziel-GENERISCHEN Urteil — etwas kaputt
+    // waere; sie ist beim fuenften Ziel gefallen und faellt beim sechsten wieder.
+    //
+    // UND WARUM HIER KEINE ZAEHLUNG DER DURCHLAEUFE STEHT, obwohl sie sich anbietet
+    // (ARCHITEKT, 2026-08-29): "die Schleife lief so oft, wie die Liste lang ist" ist
+    // eine TAUTOLOGIE — beide Zahlen stammen aus derselben Iteration und koennen gar
+    // nicht auseinandergehen. Die einzige nicht-triviale Haelfte der urspruenglichen
+    // Zusicherung ist, dass die Liste NICHT LEER ist. Wer die Zaehlung "zur Sicherheit"
+    // ergaenzt, baut Mechanik gegen einen Fall, den es nicht gibt.
+    expect(TRACKING_TARGETS.length).toBeGreaterThan(0);
   });
 });
 
@@ -283,7 +294,10 @@ describe("isTargetDeliverable — ist dieses Ziel auslieferfaehig? (Scheibe 11.1
         isTargetDeliverable({ pixels: { [target]: { pixelId: "123" } } }, target)
       ).toBe(true);
     }
-    expect(TRACKING_TARGETS.length).toBe(4);
+    // POSITIVKONTROLLE, mitwachsend und ohne Zaehlung — die Begruendung steht
+    // vollstaendig am gleichartigen Ausdruck im Lauf ueber hasTargetPixelId und wird
+    // hier NICHT verdoppelt.
+    expect(TRACKING_TARGETS.length).toBeGreaterThan(0);
   });
 
   it("die ZUORDNUNG allein genuegt ebenfalls — fuer JEDES Ziel dasselbe", () => {

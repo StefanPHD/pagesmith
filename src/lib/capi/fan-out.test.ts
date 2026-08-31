@@ -784,6 +784,12 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
     // jetzt verdrahtet (s. beforeEach) und MUSS feuern — der Lauf darunter hat die
     // Seite gewechselt, aus "erreicht KEINEN Adapter" wurde "erreicht GENAU seinen".
     linkedin: vi.fn<() => void>(),
+    // DER STOLPERDRAHT HAT ERNEUT AUSGELOEST (Scheibe 3), und diesmal in der Rolle, fuer
+    // die er urspruenglich gebaut wurde: 'google' ist ein bekanntes Ziel OHNE
+    // Empfaenger. Dieser Spion wird NIE verdrahtet und darf NIE feuern — seine
+    // Untaetigkeit ist die Zusicherung im Lauf darunter und zugleich das VIERTE der
+    // vier Tore dieser Scheibe.
+    google: vi.fn<() => void>(),
   };
 
   /**
@@ -906,6 +912,17 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
         // Einwilligungs-Gate und faellt erst am Verteiler heraus. Dieser Lauf
         // unterscheidet die beiden Orte NICHT — er zeigt das Ergebnis, nicht die
         // Stelle. Fuer die Stelle ist der Kontrollfluss zu lesen.
+        //
+        // FUER 'google' IST DIESER LAUF DAS VIERTE TOR DER SCHEIBE 3, und er wird
+        // hier ausdruecklich als solches benannt (Auflage (a) des Zuschnitts: je Tor
+        // ein Test, der SEIN Tor nennt). Die drei anderen Tore stehen woanders und
+        // messen ausdruecklich etwas anderes: Tor 1 (withPixel) und Tor 2 (die
+        // Geheimnis-Schleife) in capi/token.test.ts, Tor 3 (Consent) in
+        // capi/ingest.consent-targets.test.ts. Kein Lauf darf fuer zwei Tore
+        // einstehen — live sind sie ohnehin nicht auseinanderzuhalten.
+        // ER WIRD FUER 'google' ROT, sobald jemand das Ziel in TARGETS_WITH_ADAPTER
+        // eintraegt und einen Forwarder danebensetzt. Genau das ist die Aenderung, die
+        // aus dieser Scheibe stillschweigend die Transport-Scheibe machte.
         getCapiConfigByTrackingKey.mockResolvedValue(resolution([entryFor(target)]));
 
         const res = await handleIngest(requestWithConsentForAll());

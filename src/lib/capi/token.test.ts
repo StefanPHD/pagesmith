@@ -865,3 +865,114 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
     ]);
   });
 });
+
+// ===========================================================================
+// DIE TORE 1 UND 2 DER SCHEIBE 3 — JEDER LAUF BENENNT SEIN TOR.
+//
+// WARUM JE EIN EIGENER LAUF UND NICHT EIN GEMEINSAMER "google sendet nicht": Vier
+// unabhaengige Tore halten dieses Ziel auf, und LIVE sind sie nicht auseinanderzuhalten —
+// ein ausbleibendes Ereignis sieht unter jedem von ihnen identisch aus. Ein Test, der
+// bloss behauptet, es gehe nichts hinaus, ist eine Abwesenheits-Behauptung mit vier
+// moeglichen Ursachen und deckt KEINE davon. Die Trennung leisten allein diese Laeufe.
+// Die beiden anderen Tore stehen in ingest.consent-targets.test.ts (Consent) und in
+// fan-out.test.ts (Adapter).
+// ===========================================================================
+describe("Scheibe 3 — TOR 1 (withPixel) und TOR 2 (die Geheimnis-Schleife)", () => {
+  /** Zeichnet die `in`-Filter der Geheimnis-Abfrage auf. */
+  async function inFilter(
+    projects: { data: unknown; error: unknown },
+    secrets: { data: unknown; error: unknown },
+  ) {
+    const ins: [string, unknown][] = [];
+    const from = vi.fn((table: string) => {
+      const result = () => (table === "projects" ? projects : secrets);
+      const builder: Record<string, unknown> = {};
+      builder.select = vi.fn(() => builder);
+      builder.eq = vi.fn(() => builder);
+      builder.in = vi.fn((col: string, vals: unknown) => {
+        ins.push([col, vals]);
+        return builder;
+      });
+      builder.maybeSingle = vi.fn(async () => result());
+      builder.then = (
+        onOk: (v: unknown) => unknown,
+        onErr?: (e: unknown) => unknown,
+      ) => Promise.resolve(result()).then(onOk, onErr);
+      return builder;
+    });
+    createAdminClient.mockReturnValue({ from });
+    const config = await getCapiConfigByTrackingKey("tk-abc");
+    return { ins, config };
+  }
+
+  it("TOR 1: ohne settings.pixels.google fragt der Resolver GAR NICHT nach der google-Zeile", async () => {
+    // WIRD ROT, WENN jemand fuer google einen Vorgabewert einfuehrt oder den Filter in
+    // withPixel lockert. Die Beobachtung ist ABSICHTLICH der `in`-Filter und nicht das
+    // Ergebnis: Das Ergebnis waere auch dann leer, wenn Tor 2 greift — der Filter zeigt,
+    // dass das Ziel schon VOR der Abfrage ausgeschieden ist. Nur so misst dieser Lauf
+    // SEIN Tor und nicht das des Nachbarn.
+    const { ins, config } = await inFilter(
+      projectWithPixel("proj-1", "PIXEL-123"),
+      secretRows([
+        { target: "meta", secret: "SECRET-TOKEN" },
+        // Die google-Zeile EXISTIERT — genau so entsteht sie im Autorisierungs-Fluss.
+        { target: "google", secret: null },
+      ]),
+    );
+    expect(ins).toEqual([["target", ["meta"]]]);
+    expect(config?.targets.map((t) => t.target)).toEqual(["meta"]);
+  });
+
+  it("TOR 2: MIT Kennung im Blob, aber secret = NULL -> kein Empfaenger", async () => {
+    // DER FALL, DEN TOR 1 NICHT DECKT, und er ist der wichtigere: saveProject schreibt
+    // den Einstellungs-Blob UNVALIDIERT, ein selbstgebauter Aufruf koennte
+    // settings.pixels.google also setzen. Dann passiert das Ziel Tor 1 — und faellt
+    // HIER heraus, weil die Klartext-Spalte secret der google-Zeile NULL ist (der CHECK
+    // project_secrets_secret_genau_eines erzwingt genau eines von secret/secret_enc,
+    // und der Autorisierungs-Fluss fuellt secret_enc).
+    // WIRD ROT, WENN der Resolver anfaengt, secret_enc zu lesen, oder wenn hasSecret
+    // weicher wird.
+    const { ins, config } = await inFilter(
+      {
+        data: {
+          id: "proj-1",
+          settings: {
+            pixels: {
+              meta: { pixelId: "PIXEL-123" },
+              google: { pixelId: "123-456-7890" },
+            },
+          },
+        },
+        error: null,
+      },
+      secretRows([
+        { target: "meta", secret: "SECRET-TOKEN" },
+        { target: "google", secret: null },
+      ]),
+    );
+    // Tor 1 laesst es durch — das ist die VORBEDINGUNG dieses Laufs und wird
+    // mitgeprueft, sonst maesse er wieder Tor 1.
+    expect(ins).toEqual([["target", ["meta", "google"]]]);
+    expect(config?.targets.map((t) => t.target)).toEqual(["meta"]);
+  });
+
+  it("TOR 2, POSITIVKONTROLLE: mit KLARTEXT in secret WUERDE google aufgeloest", async () => {
+    // OHNE DIESEN LAUF WAERE DER VORIGE HOHL: "kein Empfaenger" saehe auch dann richtig
+    // aus, wenn google aus einem ganz anderen Grund nie aufgeloest wuerde. Hier ist
+    // belegt, dass GENAU die leere Klartext-Spalte das Tor ist.
+    // ER IST ZUGLEICH DIE BEGRUENDUNG FUER DAS ZIEL-GATE IN setCapiToken: Stuende dort
+    // ein Klartext, waere das Ziel ein Empfaenger — deshalb weist die Action ein Ziel
+    // ohne Geheimnis-Feld ab, VOR jedem DB-Zugriff.
+    const { config } = await inFilter(
+      {
+        data: {
+          id: "proj-1",
+          settings: { pixels: { google: { pixelId: "123-456-7890" } } },
+        },
+        error: null,
+      },
+      secretRows([{ target: "google", secret: "KLARTEXT" }]),
+    );
+    expect(config?.targets.map((t) => t.target)).toEqual(["google"]);
+  });
+});

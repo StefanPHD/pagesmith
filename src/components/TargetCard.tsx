@@ -4,6 +4,13 @@ import { useState } from "react";
 import { removeCapiToken, setCapiToken } from "@/app/projects/actions";
 import { actionThrew, safeAction } from "@/lib/safe-action";
 import { hasTargetPixelId, type TrackingTarget } from "@/lib/settings";
+// DIE BESCHRIFTUNGEN LIEGEN SEIT DER SCHEIBE 3 IN EINEM REINEN lib-MODUL und NICHT mehr
+// hier. Grund und die verworfenen Alternativen stehen in dessen Kopf; kurz: setCapiToken
+// ("use server") muss dieselbe Quelle lesen wie diese Karte, und ein reines Modul ist der
+// einzige Weg ueber diese Grenze, der unter beiden Ausgaengen einer nicht entscheidbaren
+// Frage traegt. DIESE DATEI RE-EXPORTIERT NICHTS — zwei Adressen fuer eine Sache waeren
+// genau das Problem, das der Umzug beseitigt.
+import { TARGET_CARDS } from "@/lib/tracking/target-cards";
 
 /**
  * DIE KARTE JE PLATTFORM (Phase 11, sechste Scheibe, zweite Haelfte).
@@ -46,133 +53,6 @@ import { hasTargetPixelId, type TrackingTarget } from "@/lib/settings";
 /** Die drei Zustaende der Karte. `null` heisst NOCH NICHT GELADEN. */
 export type ConfiguredState = boolean | null;
 
-/**
- * Was eine Plattform an Beschriftung mitbringt.
- *
- * ZIEL-SPEZIFISCHE BESCHRIFTUNGEN SIND FACHLICH BEGRUENDET, NICHT TEST-GETRIEBEN:
- * "CAPI-Token" ist METAS Vokabular — Pinterest hat keinen CAPI-Token. Ein
- * gemeinsamer Text waere fachlich falsch UND machte jede Abfrage mehrdeutig, die
- * heute auf Metas Begriffe zeigt. Beides zeigt in dieselbe Richtung; die Fachlage
- * ist der Grund, die Eindeutigkeit die Folge.
- *
- * DAS FELD hasAdapter IST MIT SCHEIBE C2 ENTFALLEN. Es stand hier und steuerte den
- * Folgenlosigkeits-Hinweis — und war damit die ZWEITE Behauptung ueber dieselbe
- * Tatsache neben den Ziel-Zweigen im Verteiler; die beiden waren durch nichts
- * verbunden. Die Tatsache steht jetzt EINMAL, in TARGETS_WITH_ADAPTER
- * (lib/tracking/target-adapters.ts), und erreicht diese Karte als PROP.
- * WARUM ALS PROP UND NICHT DURCH EIGENEN ZUGRIFF AUF DIE LISTE: Nur so ist der
- * Hinweis-Zweig im Test erreichbar, ohne Modulzustand zu mutieren — und genau das
- * ist hier schon einmal begruendet verworfen worden (s. den Zweig selbst).
- * DIESE KONFIGURATION BESCHREIBT SEITHER NUR NOCH BESCHRIFTUNGEN. Ueber Adapter
- * behauptet sie nichts mehr.
- */
-/**
- * DIE DREI OEFFENTLICHEN FELDER SIND SEIT 11.1a OPTIONAL — UND IHRE ABWESENHEIT IST DER
- * SCHALTER (Variante C des freigegebenen Plans).
- *
- * WARUM UEBERHAUPT: Das vierte Ziel hat kein oeffentliches Feld, das diese Scheibe
- * anbieten duerfte. Seine Kennung ist eine Conversion-Regel-URN, die JE EREIGNISTYP
- * gilt; wo sie abgelegt wird, ist ausdruecklich NICHT entschieden (Trigger (ii) der
- * Primaerschluessel-Entscheidung, CLAUDE.md "## Offene Punkte"). Ein Eingabefeld
- * anzubieten hiesse, die Ablage im CLIENT-besessenen Einstellungs-Blob faktisch zu
- * entscheiden — durch die Hintertuer und ohne Beschluss.
- *
- * WARUM DIE ABWESENHEIT UND KEIN EIGENES FLAG: Ein Flag NEBEN den drei Feldern waere
- * eine zweite Wahrheit ueber dieselbe Sache — es koennte "kein Feld" sagen, waehrend
- * eine Beschriftung danebensteht. So gibt es nur eine Quelle.
- *
- * WAS DER TYP NICHT VERHINDERT, ausdruecklich benannt statt behauptet: Er verbietet
- * eine HALB gefuellte Gruppe nicht (Label ohne Platzhalter). Die Alternative — die drei
- * in ein verschachteltes Objekt zu ziehen — haette sechzehn bestehende Testzeilen
- * umgeschrieben, darunter Waechter ueber ganz andere Entscheidungen. Der Preis dieser
- * Wahl ist diese Luecke; die Komponente liest die drei ausschliesslich INNERHALB des
- * einen Zweiges, der an `publicLabel` haengt.
- */
-export type TargetCardConfig = {
-  name: string;
-  publicLabel?: string;
-  publicHint?: string;
-  publicPlaceholder?: string;
-  secretLabel: string;
-  secretPlaceholderNew: string;
-  secretPlaceholderReplace: string;
-};
-
-export const TARGET_CARDS: Record<TrackingTarget, TargetCardConfig> = {
-  meta: {
-    name: "Meta",
-    publicLabel: "Meta-Pixel-ID",
-    publicHint: "Öffentlich, steht im Seitenquelltext",
-    publicPlaceholder: "z.B. 123456789012345",
-    secretLabel: "Meta CAPI-Token",
-    secretPlaceholderNew: "CAPI-Token einfügen",
-    secretPlaceholderReplace: "Neuen Token eingeben zum Ersetzen",
-  },
-  // DIE DREI OEFFENTLICHEN FELDER NENNEN DIE KONTO-KENNUNG (Phase 11, elfte
-  // Scheibe). Sie nannten bis dahin die TAG-Kennung des Browser-Tags — und den
-  // injizieren wir gar nicht; der Adapter braucht die Kennung, die im
-  // Endpunkt-PFAD steht. Zwei verschiedene Nummern im selben Anbieter-Konto,
-  // und der Unterschied ist fuer den Betreiber unsichtbar.
-  //
-  // (1) DAS ANBIETER-PRAEFIX BLEIBT, obwohl der Kartenname es schon traegt: Die
-  //     Karte des ersten Ziels ist genauso gebaut ("Meta-Pixel-ID"). Zwei
-  //     Beschriftungen in verschiedener Bauart waeren schlechter als eine lange.
-  //     "Anzeigenkonto-ID" ist der Wortlaut, den der Betreiber im Anbieter-Konto
-  //     wiederfindet — nicht die interne Bezeichnung "Konto-Kennung" und nicht
-  //     der Schnittstellen-Name ad_account_id.
-  // (2) DER HILFETEXT TRIFFT EINE DOPPELAUSSAGE, die auf dieser Karte bisher
-  //     keinen Ausdruck hatte: HERKUNFT plus ABGRENZUNG. Er ist NICHT mehr der
-  //     des ersten Ziels — dort ist "steht im Seitenquelltext" wahr, weil
-  //     buildMetaRuntime die Kennung als PS_PIXEL_ID einbettet; hier injiziert
-  //     kein Erzeuger etwas, es landet allein der Consent-Schluessel. "Server-…"
-  //     ist ausgeschlossen, weil es mit dem Untertext des Geheimnis-Feldes
-  //     kollidierte ("Server-Side, geheim") — und genau dieser Unterschied ist
-  //     das, was die Karte erklaeren muss.
-  // (3) DER PLATZHALTER IST ABSTEIGEND, damit er nicht als Kuerzung von Metas
-  //     aufsteigendem Beispiel gelesen wird. Er darf Metas Zeichenkette nicht
-  //     ENTHALTEN — CodeImporter.test.tsx waehlt Metas Feld ueber dessen
-  //     Platzhalter, per Teilstring-Muster.
-  pinterest: {
-    name: "Pinterest",
-    publicLabel: "Pinterest-Anzeigenkonto-ID",
-    publicHint: "Aus dem Anzeigenkonto, nicht im Seitenquelltext",
-    publicPlaceholder: "z.B. 987654321098",
-    secretLabel: "Pinterest-Zugangsdaten",
-    secretPlaceholderNew: "Zugangsdaten einfügen",
-    secretPlaceholderReplace: "Neue Zugangsdaten eingeben zum Ersetzen",
-  },
-  // DAS DRITTE ZIEL. Die oeffentliche Kennung heisst hier tatsaechlich Pixel-ID —
-  // anders als beim zweiten Ziel, wo der Adapter die ANZEIGENKONTO-Kennung braucht
-  // und die Karte deshalb umbenannt werden musste. Der Hilfetext folgt derselben
-  // Doppelaussage wie dort (HERKUNFT plus ABGRENZUNG): Die Kennung stammt aus dem
-  // Events Manager des Anbieters, und wir injizieren KEIN Browser-Tag — im
-  // Seitenquelltext landet allein der Consent-Schluessel.
-  // DER PLATZHALTER IST ABSTEIGEND und enthaelt Metas aufsteigende Beispielziffern
-  // NICHT: CodeImporter.test.tsx waehlt Metas Feld ueber dessen Platzhalter, per
-  // Teilstring-Muster.
-  tiktok: {
-    name: "TikTok",
-    publicLabel: "TikTok-Pixel-ID",
-    publicHint: "Aus dem Events Manager, nicht im Seitenquelltext",
-    publicPlaceholder: "z.B. CABCDE0123FGHIJKLMNO",
-    secretLabel: "TikTok-Zugangsdaten",
-    secretPlaceholderNew: "Zugangsdaten einfügen",
-    secretPlaceholderReplace: "Neue Zugangsdaten eingeben zum Ersetzen",
-  },
-  // DAS VIERTE ZIEL — DIE ERSTE KARTE OHNE OEFFENTLICHES FELD (11.1a). Die drei
-  // public-Felder FEHLEN, und das ist der Schalter, nicht ein Versehen: s. die
-  // Begruendung am Typ. Die Karte legt hier ausschliesslich das Zugangsdatum ab.
-  // KEIN EIGENER HILFETEXT ZUM FEHLENDEN FELD: Die Karte sagt ueber die Auslieferung
-  // bereits eine Zeile ("Auslieferung folgt — dieses Ziel sendet noch nicht"), und eine
-  // zweite Erklaerung daneben waere die zweite Aussage ueber dieselbe Sache.
-  linkedin: {
-    name: "LinkedIn",
-    secretLabel: "LinkedIn-Zugangsdaten",
-    secretPlaceholderNew: "Zugangsdaten einfügen",
-    secretPlaceholderReplace: "Neue Zugangsdaten eingeben zum Ersetzen",
-  },
-};
-
 /** Die drei erlaubten Statustexte. Mehr gibt es nicht, und das ist die Zusage. */
 export const STATUS_LOADING = "Wird geladen";
 export const STATUS_UNCONFIGURED = "Nicht konfiguriert";
@@ -208,6 +88,7 @@ export default function TargetCard({
   pixelId,
   savedPixelId,
   onPixelIdChange,
+  connectOutcome,
   configured,
   onCredentialsSaved,
   onCredentialsRemoved,
@@ -244,6 +125,24 @@ export default function TargetCard({
    */
   savedPixelId: string;
   onPixelIdChange: (value: string) => void;
+  /**
+   * DER ERGEBNISCODE DES AUTORISIERUNGS-FLUSSES (Scheibe 3), oder null.
+   *
+   * ER KOMMT AUS DER ADRESSE und wird von der Server-Komponente hereingereicht — die
+   * Karte liest keinen Query-Parameter selbst. Grund: Ein Lesen im Browser waere beim
+   * ersten Render auf Server und Client verschieden; als Prop ist der Wert auf beiden
+   * Seiten derselbe.
+   *
+   * PFLICHTIG UND NICHT OPTIONAL, aus demselben Grund wie savedPixelId: Ein Default
+   * liesse eine vergessene Aufrufstelle still auf null zurueckfallen, und die Karte
+   * schwiege dauerhaft ueber jeden Fehlschlag. So ist eine vergessene Stelle ein
+   * BUILD-Fehler.
+   *
+   * ER WIRD NUR IM VERBINDEN-ZWEIG GELESEN, also nur auf einer Karte OHNE
+   * Geheimnis-Feld. Das ist KEINE Fallunterscheidung ueber Zielnamen — die Karte fragt
+   * nach ihrer eigenen Gestalt, nicht danach, wie das Ziel heisst.
+   */
+  connectOutcome: string | null;
   /** null = noch nicht geladen. S. den Kommentar an der Statuszeile unten. */
   configured: ConfiguredState;
   /**
@@ -492,7 +391,19 @@ export default function TargetCard({
 
         {/* Zugangsdaten: GEHEIM, write-only. Der echte Wert geht nur in die
             Server-Action und kommt NIE zurueck -> das Feld startet und bleibt
-            leer, gespeist wird es NIE aus einem geladenen Wert. */}
+            leer, gespeist wird es NIE aus einem geladenen Wert.
+
+            DIE GANZE GRUPPE ENTFAELLT, WENN DIE KARTE KEIN GEHEIMNIS-FELD FUEHRT
+            (Scheibe 3) — dieselbe Bauform wie beim oeffentlichen Feld darueber, und
+            derselbe Schalter: die ABWESENHEIT der Beschriftung. Ein Ziel, dessen
+            Zugangsdatum ueber einen Autorisierungs-Fluss entsteht und CHIFFRIERT liegt,
+            darf kein Feld anbieten, in das jemand einen Klartext einfuegt.
+            WAS DABEI AUSDRUECKLICH NICHT MITENTFAELLT: der TRENNEN-Weg und der
+            Statuskanal. Beide standen bis zur Scheibe 3 INNERHALB dieser Gruppe — ein
+            Ziel ohne Geheimnis-Feld haette damit auch keinen Weg mehr aus dem Projekt
+            heraus, und KEIN Test waere davon rot geworden. Sie stehen jetzt darunter,
+            ausserhalb dieser Bedingung. */}
+        {config.secretLabel !== undefined && (
         <label className="flex flex-col gap-1 text-sm">
           <span className="font-medium text-gray-700">
             {config.secretLabel}
@@ -537,56 +448,166 @@ export default function TargetCard({
               >
                 {status === "saving" ? "…" : `${config.name} speichern`}
               </button>
-              {projectId && configured && !confirming && (
-                <button
-                  type="button"
-                  onClick={() => setConfirming(true)}
-                  disabled={removing}
-                  className="shrink-0 rounded-md border border-red-200 px-2 py-2 text-xs text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {config.name} entfernen
-                </button>
-              )}
             </div>
-
-            {/* Zweistufige Bestaetigung. AUCH SIE TRAEGT DEN ZIEL-NAMEN: Zwei
-                Karten koennen ihre Bestaetigung GLEICHZEITIG offen haben — sie
-                halten getrennte Zustaende, und nichts schliesst die eine, wenn die
-                andere aufgeht. Ein blosses "Ja, entfernen" waere dann zweimal da,
-                und im selben Drawer steht es bereits bei der Domain-Zeile und bei
-                Variante B. Am Code entschieden, nicht aus Vorsicht. */}
-            {confirming && (
-              <div className="flex flex-wrap items-center gap-2 rounded-md bg-red-50 px-3 py-2">
-                <span className="text-xs text-red-700">
-                  Zugangsdaten für {config.name} löschen?
-                </span>
-                <button
-                  type="button"
-                  onClick={handleRemove}
-                  disabled={removing}
-                  className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300"
-                >
-                  {removing ? "Entferne…" : `Ja, ${config.name} entfernen`}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setConfirming(false)}
-                  disabled={removing}
-                  className="rounded-md border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Abbrechen
-                </button>
-              </div>
-            )}
-
-            {status === "saved" && (
-              <span className="text-xs text-green-600">Zugangsdaten gespeichert</span>
-            )}
-            {status === "error" && error && (
-              <span className="text-xs text-red-600">{error}</span>
-            )}
           </div>
         </label>
+        )}
+
+        {/* DER VERBINDEN-WEG (Scheibe 3). Er tritt NEBEN das Geheimnis-Feld und
+            erscheint nur, wo es keines gibt — dieselbe Bedingung, umgekehrt gelesen.
+
+            ES IST EIN KNOPF UND KEIN LINK, und das ist ENTSCHIEDEN (Entscheidung (A) des
+            Zuschnitts): Ein <a href> oder <Link> traegt eine Adresse, die ein
+            Vorablade-Mechanismus verfolgen kann; hier gibt es keine — der Ruf entsteht
+            erst im Handler.
+            DER TRAGENDE GRUND IST KEIN SICHERHEITS-, SONDERN EIN PRODUKT-ARGUMENT: Ein
+            Verbinden ist ein BEWUSSTER AKT des Betreibers. Ein Element, das ohne Klick
+            feuert, ist keiner — es autorisierte in seinem Namen, ohne dass er es getan
+            hat. Dazu die Empfindlichkeit der State-Achse: der Live-Test der Scheibe 1a
+            hat ein ?google=no_state erzeugt, dessen Ursache bis heute NICHT GEMESSEN ist.
+            DAS P3-ARGUMENT (GET wird vorabgeladen) TRAEGT HIER NUR ZUR HAELFTE: Anders
+            als die Beweis-Route schreibt die Start-Route keine Zeile und ruft keinen
+            fremden Endpunkt; der Schaden waere ein ueberschriebenes State-Cookie, und der
+            ist klein und ungemessen.
+
+            KEIN safeAction: Der Knopf ruft KEINE Server-Action, sondern navigiert. Es
+            haengt kein Busy-Flag und kein Fehlerkanal daran, den ein Wurf leer liesse.
+            Rief er je eine Action, greift die Pflicht sofort. */}
+        {config.secretLabel === undefined && (
+          <div className="flex flex-col gap-2">
+            <span className="text-sm font-medium text-gray-700">
+              Zugangsdaten
+              <span className="block text-xs font-normal text-gray-400">
+                Über den Anbieter autorisieren — kein Einfügen
+              </span>
+            </span>
+            <div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!projectId) return;
+                  window.location.assign(
+                    `/api/oauth/google/start?project=${encodeURIComponent(projectId)}`,
+                  );
+                }}
+                disabled={!projectId}
+                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+              >
+                {configured
+                  ? `${config.name} neu verbinden`
+                  : `${config.name} verbinden`}
+              </button>
+            </div>
+
+            {/* DIE RUECKMELDUNG DES FLUSSES — DREI FAELLE, NICHT DREIZEHN TEXTE
+                (Entscheidung (B) des Zuschnitts).
+                · ok  -> KEIN Text. Der Erfolgsfall traegt sich selbst: die Karte kippt
+                         auf "Zugangsdaten hinterlegt".
+                · denied -> KEIN FEHLER, sondern eine WAHL des Nutzers. Neutral, keine
+                         Fehlersprache, keine Warnfarbe.
+                · sonst -> EIN Text plus der ROHE CODE, sichtbar fuer den Support.
+                DER TEXT BEHAUPTET WEDER URSACHE NOCH ERGEBNIS (docs/immer-beachten.md,
+                die Meldungstext-Auflage an der safeAction-Regel), UND HIER IST DAS
+                SCHAERFER ALS SONST — der Grund gehoert an diese Stelle, damit die
+                naechste Runde den Text nicht "klarer" macht und die Aussage
+                zurueckholt:
+                · BEOBACHTET IST NUR, DASS EIN FEHLERCODE ZURUECKKAM. Ob die
+                  Autorisierung durchlief, ob etwas hinterlegt wurde und woran es lag,
+                  wissen wir NICHT.
+                · BEIM CODE `write` HAT DER KUNDE AUTORISIERT und der Tausch lief durch —
+                  gescheitert ist die Ablage. Und bricht die Verbindung auf dem RUECKWEG
+                  eines Schreibvorgangs, IST die Zeile geschrieben.
+                · DIE KARTE STEHT DANEBEN UND IST DIE AUTORITAET: Sie leitet ihren
+                  Zustand aus der DATENBANK ab. Ein Text, der einen Ausgang behauptet,
+                  erzeugt im Zweifel einen SICHTBAREN WIDERSPRUCH in derselben Kachel —
+                  "Zugangsdaten hinterlegt" oben, "nicht abgeschlossen" darunter.
+                DESHALB VERWEIST DER TEXT AUF DIE STATUSZEILE, statt selbst etwas ueber
+                den Zustand zu sagen.
+                WARUM DREIZEHN EIGENE TEXTE AUSDRUECKLICH NICHT: Sie waeren dreizehn
+                Formulierungen, die niemand liest und die driften. Der rohe Code kostet
+                keine und macht einen Support-Fall trotzdem adressierbar.
+                `denied` BLEIBT DAVON UNBERUEHRT: Dort ist die Ablehnung vom ANBIETER
+                gemeldet und damit bekannt — der Text sagt, was geschehen ist, nicht was
+                daraus folgt. */}
+            {connectOutcome === "denied" && (
+              <p className="text-xs text-gray-500">
+                Die Autorisierung wurde abgebrochen.
+              </p>
+            )}
+            {connectOutcome !== null &&
+              connectOutcome !== "ok" &&
+              connectOutcome !== "denied" && (
+                <p className="text-xs text-red-600">
+                  Der Verbindungsversuch kam mit einem Fehlercode zurück. Was
+                  hinterlegt ist, sagt die Statuszeile oben. Code:{" "}
+                  {connectOutcome}
+                </p>
+              )}
+          </div>
+        )}
+
+        {/* DER TRENNEN-WEG UND DER STATUSKANAL — AUSSERHALB BEIDER GRUPPEN.
+            SIE STANDEN BIS ZUR SCHEIBE 3 INNERHALB DES GEHEIMNIS-FELDES, und das war
+            solange folgenlos, wie jede Karte eines hatte. Mit der ersten Karte ohne
+            Feld waere der Trennen-Weg mit dem Feld verschwunden: ein Betreiber koennte
+            verbinden und danach nicht mehr trennen — schlechter als der Zustand vorher,
+            und KEIN Test waere davon rot geworden. Deshalb steht dieser Block hier und
+            nicht dort.
+            Ein Test haelt das fest, nicht dieser Kommentar. */}
+        {projectId && configured && !confirming && (
+          <div className="flex flex-wrap items-center gap-2">
+            {/* ZIEL-SPEZIFISCHER NAME. Zwei Karten traegen sonst zwei Knoepfe
+                desselben Namens — und im selben Drawer steht bereits ein
+                "Entfernen" je Domain-Zeile. Die Projektregel nennt zwei gleich
+                benannte Bedienelemente mit verschiedener Wirkung ein
+                Oberflaechen-Problem; diese Karte darf es nicht verschaerfen. */}
+            <button
+              type="button"
+              onClick={() => setConfirming(true)}
+              disabled={removing}
+              className="shrink-0 rounded-md border border-red-200 px-2 py-2 text-xs text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {config.name} entfernen
+            </button>
+          </div>
+        )}
+
+        {/* Zweistufige Bestaetigung. AUCH SIE TRAEGT DEN ZIEL-NAMEN: Zwei
+            Karten koennen ihre Bestaetigung GLEICHZEITIG offen haben — sie
+            halten getrennte Zustaende, und nichts schliesst die eine, wenn die
+            andere aufgeht. Ein blosses "Ja, entfernen" waere dann zweimal da,
+            und im selben Drawer steht es bereits bei der Domain-Zeile und bei
+            Variante B. Am Code entschieden, nicht aus Vorsicht. */}
+        {confirming && (
+          <div className="flex flex-wrap items-center gap-2 rounded-md bg-red-50 px-3 py-2">
+            <span className="text-xs text-red-700">
+              Zugangsdaten für {config.name} löschen?
+            </span>
+            <button
+              type="button"
+              onClick={handleRemove}
+              disabled={removing}
+              className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+            >
+              {removing ? "Entferne…" : `Ja, ${config.name} entfernen`}
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              disabled={removing}
+              className="rounded-md border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Abbrechen
+            </button>
+          </div>
+        )}
+
+        {status === "saved" && (
+          <span className="text-xs text-green-600">Zugangsdaten gespeichert</span>
+        )}
+        {status === "error" && error && (
+          <span className="text-xs text-red-600">{error}</span>
+        )}
       </div>
     </div>
   );

@@ -101,9 +101,11 @@ import TargetCard, {
   STATUS_CONFIGURED,
   STATUS_LOADING,
   STATUS_UNCONFIGURED,
-  TARGET_CARDS,
 } from "@/components/TargetCard";
 import type { ConfiguredState } from "@/components/TargetCard";
+// SEIT DER SCHEIBE 3 AUS DEM REINEN lib-MODUL — die Karten-Datei re-exportiert die
+// Tabelle nicht. Der Test liest damit dieselbe Adresse wie Komponente und Server-Action.
+import { TARGET_CARDS } from "@/lib/tracking/target-cards";
 import { TRACKING_TARGETS, type TrackingTarget } from "@/lib/settings";
 // DIE QUELLE, nicht eine Annahme ueber sie: Der Durchlauf ueber die Ziel-Liste rechnet
 // die Tatsache genauso aus wie MeasureView.
@@ -149,6 +151,7 @@ function renderCard(
       trackingKey: string,
     ) => void;
     onCredentialsRemoved?: (forProjectId: string, target: TrackingTarget) => void;
+    connectOutcome?: string | null;
   } = {},
 ) {
   const props = {
@@ -170,6 +173,10 @@ function renderCard(
     // schreibt eine Ableitung auf, die die Messung widerlegt hat.
     savedPixelId: "",
     onPixelIdChange: vi.fn(),
+    // null = der Nutzer kommt nicht aus dem Autorisierungs-Fluss (Scheibe 3). Der
+    // Default ist der Normalfall; die Laeufe, die den Zweig pruefen, setzen ihn
+    // ausdruecklich.
+    connectOutcome: null as string | null,
     configured: false as ConfiguredState,
     onCredentialsSaved: vi.fn(),
     onCredentialsRemoved: vi.fn(),
@@ -562,6 +569,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           pixelId=""
           savedPixelId=""
           onPixelIdChange={vi.fn()}
+          connectOutcome={null}
           configured={true}
           onCredentialsSaved={vi.fn()}
           onCredentialsRemoved={vi.fn()}
@@ -573,6 +581,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           pixelId=""
           savedPixelId=""
           onPixelIdChange={vi.fn()}
+          connectOutcome={null}
           configured={true}
           onCredentialsSaved={vi.fn()}
           onCredentialsRemoved={vi.fn()}
@@ -600,6 +609,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           pixelId=""
           savedPixelId=""
           onPixelIdChange={vi.fn()}
+          connectOutcome={null}
           configured={true}
           onCredentialsSaved={vi.fn()}
           onCredentialsRemoved={vi.fn()}
@@ -611,6 +621,7 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           pixelId=""
           savedPixelId=""
           onPixelIdChange={vi.fn()}
+          connectOutcome={null}
           configured={true}
           onCredentialsSaved={vi.fn()}
           onCredentialsRemoved={vi.fn()}
@@ -926,5 +937,208 @@ describe("Container-Waechter: ein Rueckruf nach dem Projektwechsel darf NICHTS a
     expect(screen.getAllByText(STATUS_CONFIGURED)).toHaveLength(1);
     expect(within(metaKarte()).getByText(STATUS_UNCONFIGURED)).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Meta entfernen" })).toBeNull();
+  });
+});
+
+// ===========================================================================
+// DIE KARTE OHNE GEHEIMNIS-FELD (Scheibe 3).
+//
+// SIE IST DIE ERSTE IHRER ART: 'linkedin' hat kein oeffentliches Feld, aber eines fuer
+// das Zugangsdatum; 'google' hat keines von beiden. Was hier geprueft wird, ist deshalb
+// nicht "sieht die Karte richtig aus", sondern DREI Zusagen, die je fuer sich brechen
+// koennen — kein Einfuege-Feld, ein Verbinden-Weg, und ein Trennen-Weg, der NICHT am
+// Geheimnis-Feld haengt.
+// ===========================================================================
+describe("TargetCard — ein Ziel ohne Geheimnis-Feld (Scheibe 3)", () => {
+  it("T-A2 (TOR 1, Daten-Seite): KEIN oeffentliches Eingabefeld auf der Google-Karte", () => {
+    // ER BENENNT SEIN TOR: Das erste der vier Tore haengt daran, dass
+    // settings.pixels.google ueber die Oberflaeche nicht entstehen kann — und der
+    // einzige Weg dorthin ist dieses Feld (setPixelId hat im Produktivcode GENAU einen
+    // Aufrufer, und der haengt an ihm).
+    // ROT DURCH DIE PFLICHT-MUTATION "public*-Felder der Google-Karte ergaenzen".
+    // WAS ER AUSDRUECKLICH NICHT ZEIGT, und der Satz gehoert dazu: Tor 1 ist damit eine
+    // UI-ABWESENHEIT und kein Riegel — saveProject schreibt den Blob unvalidiert. Der
+    // Riegel ist Tor 2, und der steht in capi/token.test.ts.
+    renderCard({ target: "google", hasAdapter: false, configured: false });
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(
+      screen.queryByPlaceholderText(TARGET_CARDS.meta.publicPlaceholder!),
+    ).toBeNull();
+  });
+
+  it("KEIN Feld fuer ein Zugangsdatum — und kein Speichern-Knopf", () => {
+    // DIE ZWEITE ABWESENHEIT, getrennt gefuehrt: Der Lauf darueber pruefte das
+    // OEFFENTLICHE Feld, dieser das GEHEIMNIS-Feld. Zusammengezogen waere nicht mehr zu
+    // sehen, welche der beiden Gruppen zurueckkam.
+    // ROT, WENN die Bedingung am secretLabel faellt: dann stuende ein Passwort-Feld da,
+    // dessen Inhalt als KLARTEXT in eine Zeile ginge, die chiffriert gehoert.
+    const { container } = renderCard({
+      target: "google",
+      hasAdapter: false,
+      configured: false,
+    });
+    expect(container.querySelector('input[type="password"]')).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Google speichern" }),
+    ).toBeNull();
+  });
+
+  it("DER VERBINDEN-WEG IST EIN KNOPF, kein Link", () => {
+    // ROT, WENN aus dem Knopf ein <a href> oder <Link> wird. Die Achse ist die
+    // ROLLE, nicht der Text: Ein Link traegt role="link" und eine Adresse, die ein
+    // Vorablade-Mechanismus verfolgen kann — und ein Verbinden ist ein BEWUSSTER Akt
+    // des Betreibers, kein Nebeneffekt einer Mausbewegung (Entscheidung (A)).
+    renderCard({ target: "google", hasAdapter: false, configured: false });
+    expect(
+      screen.getByRole("button", { name: "Google verbinden" }),
+    ).toBeTruthy();
+    expect(screen.queryByRole("link")).toBeNull();
+  });
+
+  it("ohne Projekt ist der Verbinden-Knopf gesperrt", () => {
+    // Dieselbe Bedingung, unter der die Ansicht schon heute "Projekt zuerst speichern"
+    // sagt. ROT, WENN die Sperre faellt: der Fluss braucht eine Projekt-Kennung in der
+    // Adresse, und ohne sie endete er in einem 404 des Betreibers.
+    renderCard({
+      target: "google",
+      hasAdapter: false,
+      configured: false,
+      projectId: null,
+    });
+    expect(
+      screen.getByRole("button", { name: "Google verbinden" }),
+    ).toHaveProperty("disabled", true);
+  });
+
+  it("DER TRENNEN-WEG EXISTIERT, OBWOHL ES KEIN GEHEIMNIS-FELD GIBT", () => {
+    // DER WICHTIGSTE LAUF DIESES BLOCKS, und er bewacht einen Fehler, der beim Bauen
+    // BEINAHE entstanden waere: Bis zur Scheibe 3 lagen Entfernen-Knopf, Bestaetigung
+    // und Statuskanal INNERHALB der Geheimnis-Gruppe. Waeren sie dort geblieben, haette
+    // die Bedingung am secretLabel sie mitgenommen — ein Betreiber koennte verbinden und
+    // danach nicht mehr trennen, und KEIN Test waere davon rot geworden.
+    // ROT, WENN jemand den Block zurueck in die Gruppe schiebt.
+    renderCard({ target: "google", hasAdapter: false, configured: true });
+    expect(
+      screen.getByRole("button", { name: "Google entfernen" }),
+    ).toBeTruthy();
+  });
+
+  it("der Trennen-Weg fuehrt durch die Bestaetigung bis zur Action", async () => {
+    // DIE GANZE KETTE, nicht nur der Knopf: Ein sichtbarer Knopf, der nichts ausloest,
+    // saehe im Lauf darueber genauso aus. ROT, WENN die Bestaetigung oder der Aufruf
+    // ausserhalb der Geheimnis-Gruppe verlorengeht.
+    removeCapiToken.mockResolvedValue({ ok: true } as never);
+    renderCard({ target: "google", hasAdapter: false, configured: true });
+    fireEvent.click(screen.getByRole("button", { name: "Google entfernen" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Ja, Google entfernen" }),
+    );
+    await waitFor(() =>
+      expect(removeCapiToken).toHaveBeenCalledWith("p1", "google"),
+    );
+  });
+
+  it("konfiguriert: der Knopf heisst NEU verbinden, und der Status bleibt der Statuszeile", () => {
+    // ZWEI AUSSAGEN, DIE NICHT ZUSAMMENFALLEN DUERFEN: Der Knopf beschreibt die
+    // HANDLUNG, die Statuszeile den ZUSTAND. Ein "verbunden" am Knopf waere eine
+    // zweite Behauptung ueber dieselbe Sache — und die Statuszeile ist die Autoritaet,
+    // weil sie aus der Datenbank abgeleitet ist.
+    renderCard({ target: "google", hasAdapter: false, configured: true });
+    expect(
+      screen.getByRole("button", { name: "Google neu verbinden" }),
+    ).toBeTruthy();
+    expect(screen.getByText(STATUS_CONFIGURED)).toBeTruthy();
+  });
+});
+
+// ===========================================================================
+// DIE DREI ERGEBNIS-FAELLE DES AUTORISIERUNGS-FLUSSES (Entscheidung (B)).
+// Sie werden EINZELN gefuehrt, weil sie verschieden brechen: der Erfolgsfall durch
+// einen Text, den es nicht geben darf; der Abbruch durch Fehlersprache, die er nicht
+// verdient; der Rest durch einen fehlenden Code, den der Support braucht.
+// ===========================================================================
+describe("TargetCard — die Rueckmeldung des Autorisierungs-Flusses", () => {
+  it("ok -> KEIN Text; der Erfolgsfall traegt sich selbst", () => {
+    // ROT, WENN jemand "Erfolg!" ergaenzt. Die Karte kippt bereits auf "Zugangsdaten
+    // hinterlegt"; ein zweiter Erfolgstext waere die zweite Aussage ueber dieselbe
+    // Sache und ueberlebte ausserdem die Wahrheit, sobald jemand die Zeile loescht.
+    const { container } = renderCard({
+      target: "google",
+      hasAdapter: false,
+      configured: true,
+      connectOutcome: "ok",
+    });
+    // BEIDE ANKER, weil es ZWEI Zweige gibt: "Autorisierung" traegt nur der
+    // denied-Zweig, "Fehlercode" nur der uebrige. Ein einzelner Anker liesse den
+    // jeweils anderen unbemerkt rendern.
+    expect(container.textContent).not.toContain("Autorisierung");
+    expect(container.textContent).not.toContain("Fehlercode");
+  });
+
+  it("denied -> neutral, KEINE Fehlersprache", () => {
+    // ROT, WENN der Abbruch als Fehler dargestellt wird. Er ist eine WAHL des Nutzers.
+    // Geprueft wird der Text UND die Abwesenheit des Fehler-Wortlauts — ein blosses
+    // "irgendein Text steht da" traefe beide Zweige gleich.
+    renderCard({
+      target: "google",
+      hasAdapter: false,
+      configured: false,
+      connectOutcome: "denied",
+    });
+    expect(screen.getByText("Die Autorisierung wurde abgebrochen.")).toBeTruthy();
+    expect(screen.queryByText(/Fehlercode/)).toBeNull();
+  });
+
+  it("jeder andere Code -> EIN Text, und der ROHE CODE steht sichtbar dabei", () => {
+    // ROT, WENN der Code weggelassen oder in ein title-Attribut gesperrt wird. Er ist
+    // der ERSATZ fuer dreizehn eigene Texte: Ohne ihn hat ein Betreiber im Support-Fall
+    // nichts in der Hand, und mit dreizehn Formulierungen haetten wir dreizehn Texte,
+    // die driften.
+    // DER TEXT BEHAUPTET WEDER URSACHE NOCH ERGEBNIS, und das wird MITGEPRUEFT: Er sagt
+    // ausschliesslich, dass ein Fehlercode zurueckkam — beobachtet —, und verweist fuer
+    // den ZUSTAND auf die Statuszeile. WIRD ROT, WENN jemand ihn "klarer" macht und
+    // dabei einen Ausgang behauptet ("nicht abgeschlossen", "nichts hinterlegt"): Beim
+    // Code `write` hat der Kunde autorisiert und nur die Ablage scheiterte, und die
+    // Karte daneben liest ihren Zustand aus der Datenbank — ein behaupteter Ausgang
+    // erzeugt dort einen sichtbaren Widerspruch in derselben Kachel.
+    renderCard({
+      target: "google",
+      hasAdapter: false,
+      configured: false,
+      connectOutcome: "state_mismatch",
+    });
+    const zeile = screen.getByText(/Fehlercode/);
+    expect(zeile.textContent).toContain("state_mismatch");
+    expect(zeile.textContent).toContain("Statuszeile");
+    expect(zeile.textContent).not.toContain("abgeschlossen");
+  });
+
+  it("null -> gar keine Rueckmeldung", () => {
+    // DER NORMALFALL, und ohne ihn waeren die drei Laeufe darueber hohl: Sie zeigten
+    // nur, dass IRGENDETWAS gerendert wird — auch eine Zeile, die immer dasteht.
+    const { container } = renderCard({
+      target: "google",
+      hasAdapter: false,
+      configured: false,
+      connectOutcome: null,
+    });
+    // BEIDE ANKER, weil es ZWEI Zweige gibt: "Autorisierung" traegt nur der
+    // denied-Zweig, "Fehlercode" nur der uebrige. Ein einzelner Anker liesse den
+    // jeweils anderen unbemerkt rendern.
+    expect(container.textContent).not.toContain("Autorisierung");
+    expect(container.textContent).not.toContain("Fehlercode");
+  });
+
+  it("eine Karte MIT Geheimnis-Feld zeigt die Rueckmeldung NICHT", () => {
+    // DIE ABGRENZUNG, und sie ist der Grund, warum der Wert an JEDE Karte durchgereicht
+    // werden darf: Gelesen wird er ausschliesslich im Verbinden-Zweig. ROT, WENN die
+    // Anzeige aus diesem Zweig herauswandert — dann truege jede Karte die Meldung eines
+    // Flusses, der sie nichts angeht.
+    const { container } = renderCard({
+      target: "meta",
+      configured: false,
+      connectOutcome: "state_mismatch",
+    });
+    expect(container.textContent).not.toContain("state_mismatch");
   });
 });

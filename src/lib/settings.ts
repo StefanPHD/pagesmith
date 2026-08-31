@@ -45,11 +45,24 @@ import { hasPixelId } from "@/lib/tracking/target-readiness";
 // geschluesselt und verlangt deshalb KEINEN Eintrag fuer dieses Ziel — ein Projekt mit
 // hinterlegtem LinkedIn-Zugangsdatum verhaelt sich am Ingest exakt wie eines ohne.
 // EIN TEST HAELT DEN RIEGEL, nicht dieser Kommentar: tracking/target-adapters.test.ts.
+// PHASE 11.2, SCHEIBE 3 — DAS FUENFTE MITGLIED IST DAS ERSTE OHNE EINGABEFELD. 'linkedin'
+// war das erste ohne Empfaenger; 'google' ist das erste, das WEDER eine oeffentliche
+// Kennung NOCH ein Zugangsdatum ueber ein Formular entgegennimmt. Sein Zugangsdatum
+// entsteht ueber den Autorisierungs-Fluss und liegt chiffriert; seine Kennungen sind
+// Scheibe 2.
+// WAS DIESE ZEILE AUSLOEST UND WAS NICHT: Sie macht das Ziel fuer die Oberflaeche
+// SICHTBAR (Karten, listConfiguredTargets) und ueber die Anwendung TRENNBAR. Sie macht
+// es NICHT zum Empfaenger — 'google' steht bewusst NICHT in TARGETS_WITH_ADAPTER
+// (lib/tracking/target-adapters.ts), und der Verteiler im Ingest-Pfad ist ueber
+// TargetWithAdapter geschluesselt. VIER Tore halten nach dieser Zeile weiterhin
+// geschlossen; welche und woran man das sieht, steht im Zuschnitt
+// (docs/aktiver-stand.md, Scheibe 3).
 export const TRACKING_TARGETS = [
   "meta",
   "pinterest",
   "tiktok",
   "linkedin",
+  "google",
 ] as const;
 
 /** Ein bekanntes Tracking-Ziel. */

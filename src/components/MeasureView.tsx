@@ -10,9 +10,13 @@ import type {
 // client-importierbar — genau dafuer wurde sie seinerzeit aus tracking/meta.ts geloest.
 import { PAGEVIEW_EVENT } from "@/lib/analytics/events";
 import type { TrackingTarget } from "@/lib/settings";
-// TARGET_CARDS liefert den ANBIETER-NAMEN fuer die Verlust-Kachel (s. dort). Named
-// neben dem Default-Import derselben Datei — kein zweiter Modulpfad.
-import TargetCard, { TARGET_CARDS } from "@/components/TargetCard";
+// TARGET_CARDS liefert den ANBIETER-NAMEN fuer die Verlust-Kachel (s. dort).
+// SEIT DER SCHEIBE 3 AUS DEM REINEN lib-MODUL, nicht mehr aus der Karten-Datei: Die
+// Tabelle ist dorthin umgezogen, damit die Server-Action dieselbe Quelle lesen kann, und
+// die Karten-Datei re-exportiert sie ausdruecklich NICHT. Zwei Modulpfade sind es damit
+// wieder — aber fuer ZWEI Dinge (Komponente und Daten), nicht zweimal fuer dasselbe.
+import TargetCard from "@/components/TargetCard";
+import { TARGET_CARDS } from "@/lib/tracking/target-cards";
 import { hasAdapter } from "@/lib/tracking/target-adapters";
 
 // Anzeige-Label je event_type fuer die Analytics-Sektion (Scheibe 3). Der reservierte
@@ -58,6 +62,7 @@ export default function MeasureView({
   pixelIdFor,
   savedPixelIdFor,
   onPixelIdChange,
+  connectOutcome,
   configuredTargets,
   onCredentialsSaved,
   onCredentialsRemoved,
@@ -84,6 +89,13 @@ export default function MeasureView({
    */
   savedPixelIdFor: (target: TrackingTarget) => string;
   onPixelIdChange: (target: TrackingTarget, value: string) => void;
+  /**
+   * Der Ergebniscode des Autorisierungs-Flusses, oder null (Scheibe 3). Diese Ansicht
+   * DEUTET ihn nicht und kennt seine Werte nicht — sie reicht ihn durch, wie sie es
+   * mit den Kennungen tut. Gelesen wird er ausschliesslich im Verbinden-Zweig der
+   * Karte, also nur dort, wo es kein Geheimnis-Feld gibt.
+   */
+  connectOutcome: string | null;
   /** null = noch nicht geladen; das traegt den dritten Karten-Zustand. */
   configuredTargets: TrackingTarget[] | null;
   onCredentialsSaved: (
@@ -228,6 +240,11 @@ export default function MeasureView({
             pixelId={pixelIdFor(target)}
             savedPixelId={savedPixelIdFor(target)}
             onPixelIdChange={(value) => onPixelIdChange(target, value)}
+            // DURCHGEREICHT, NICHT GEFILTERT: Welche Karte ihn zeigt, entscheidet die
+            // Karte an ihrer eigenen Gestalt (kein Geheimnis-Feld -> Verbinden-Zweig).
+            // Ein Filter nach Zielnamen an dieser Stelle waere die erste
+            // Fallunterscheidung ueber Ziele in dieser Ansicht.
+            connectOutcome={connectOutcome}
             configured={
               configuredTargets === null
                 ? null

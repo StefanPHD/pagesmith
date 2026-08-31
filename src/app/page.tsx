@@ -3,7 +3,31 @@ import { signOut } from "@/app/auth/actions";
 import { listProjects, loadProject } from "@/app/projects/actions";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function Home() {
+// DER ERGEBNISCODE DES GOOGLE-AUTORISIERUNGS-FLUSSES (Scheibe 3).
+//
+// HIER UND NICHT IM BROWSER: Diese Seite reicht schon neun server-geladene Werte als
+// initial*-Props hinein; der Parameter folgt demselben Weg. Ein Lesen im Client waere
+// beim ersten Render auf Server und Client verschieden.
+//
+// DER NAME DES PARAMETERS IST DAS EINZIGE ZIEL-LITERAL DIESES WEGES und steht bewusst
+// HIER: Er ist der URL-Vertrag der Callback-Route (dort RESULT_PARAM), keine Aussage
+// darueber, welches Ziel eine Karte hat. Weiter unten kennt ihn niemand mehr — die Karte
+// zeigt ihn an ihrer eigenen Gestalt, nicht an einem Zielnamen.
+//
+// GEDEUTET WIRD ER HIER NICHT: kein Abgleich gegen eine Code-Liste, keine Uebersetzung.
+// Was ankommt, geht als Zeichenkette weiter; die drei Faelle unterscheidet die Karte.
+// Ein Array (?google=a&google=b) waere kein string -> null, statt eine Anzeige zu raten.
+const RESULT_PARAM = "google";
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const raw = params[RESULT_PARAM];
+  const connectOutcome = typeof raw === "string" && raw !== "" ? raw : null;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -46,6 +70,7 @@ export default async function Home() {
         initialVariantBMappings={project?.mappings_b ?? null}
         initialAbTestActive={project?.ab_test_active ?? false}
         initialAbTestStartedAt={project?.ab_test_started_at ?? null}
+        initialConnectOutcome={connectOutcome}
       />
     </main>
   );

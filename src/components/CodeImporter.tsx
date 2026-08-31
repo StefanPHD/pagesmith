@@ -174,6 +174,7 @@ export default function CodeImporter({
   initialVariantBMappings = null,
   initialAbTestActive = false,
   initialAbTestStartedAt = null,
+  initialConnectOutcome = null,
 }: {
   // Auto-Load: das zuletzt bearbeitete (bereits stabilisierte) HTML des Users.
   // Leer -> Editor startet leer wie bisher.
@@ -200,11 +201,40 @@ export default function CodeImporter({
   // projects.ab_test_started_at — SERVER-autoritativ, projekt-abgeleitet wie das
   // Flag darueber. NULL = keine Abgrenzung (nie ein Test ODER Lauf vor 9c-2).
   initialAbTestStartedAt?: string | null;
+  // DER ERGEBNISCODE DES GOOGLE-AUTORISIERUNGS-FLUSSES (Scheibe 3), aus der Adresse
+  // gelesen — von der SERVER-Komponente, nicht hier. null = der Nutzer kommt nicht aus
+  // dem Fluss. Reicht unveraendert bis zur Karte durch; diese Datei deutet ihn nicht.
+  initialConnectOutcome?: string | null;
 }) {
   // Eingabe-State: aendert sich bei JEDEM Tastendruck und haelt die Textarea
   // sofort aktuell (Tippen darf nie auf Parsing/Preview warten). Startet mit dem
   // geladenen Projekt-Code.
   const [code, setCode] = useState(initialCode);
+
+  // DER ERGEBNISCODE LEBT SO LANGE WIE DIESER SEITENAUFRUF, und die Adresse verliert ihn
+  // sofort (Scheibe 3).
+  //
+  // WARUM ER IN DEN ZUSTAND WANDERT: Er beschreibt einen ABGESCHLOSSENEN VERSUCH —
+  // dieselbe Klasse wie publishStatus/publishError. Beim naechsten Hinsehen ist seine
+  // Aussage veraltet, er bekommt deshalb KEIN bleibendes Signal und ueberlebt keinen
+  // zweiten Seitenaufruf.
+  //
+  // WARUM DIE ADRESSE IHN VERLIERT: Bliebe er stehen, zeigte JEDES Neuladen denselben
+  // Fehlschlag erneut an — eine Meldung ueber einen Vorgang, den es gerade gar nicht
+  // gegeben hat.
+  //
+  // history.replaceState UND NICHT router.replace, und der Grund gehoert hierher: Ein
+  // router.replace ist eine echte Navigation; sie liesse die Server-Komponente erneut
+  // laufen, mitten in einer offenen Editor-Sitzung. Diese Zeile schreibt ausschliesslich
+  // die Adresszeile um und ruehrt weder Render noch Zustand an.
+  const [connectOutcome] = useState<string | null>(initialConnectOutcome);
+  useEffect(() => {
+    if (initialConnectOutcome === null) return;
+    window.history.replaceState(null, "", window.location.pathname);
+    // Absichtlich EINMAL beim Mount: der Wert kommt aus dem ersten Render und aendert
+    // sich danach nicht mehr.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // Aktives Projekt. null = neues, noch nicht gespeichertes Projekt (keine
   // DB-Zeile bis zum ersten Speichern).
   const [projectId, setProjectId] = useState<string | null>(initialProjectId);
@@ -2292,6 +2322,7 @@ export default function CodeImporter({
               onPixelIdChange={(t, value) =>
                 setSettings((prev) => setPixelId(prev, t, value))
               }
+              connectOutcome={connectOutcome}
               configuredTargets={configuredTargets}
               onCredentialsSaved={handleCredentialsSaved}
               onCredentialsRemoved={handleCredentialsRemoved}

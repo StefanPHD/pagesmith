@@ -126,6 +126,72 @@ describe("allowedTargets: DIE KREUZPROBE (Invariante 6)", () => {
     ).toEqual(["meta", "pinterest"]);
   });
 
+  // =========================================================================
+  // TOR 3 DER SCHEIBE 3 — DAS CONSENT-GATE. DIESER LAUF BENENNT SEIN TOR.
+  //
+  // Er steht hier und nicht bei den Tor-Laeufen in token.test.ts, weil die ENTSCHEIDUNG
+  // hier lebt. Was er NICHT zeigt: dass google auch aus den drei anderen Gruenden nicht
+  // sendet — das leisten die Laeufe dort und in fan-out.test.ts. Vier Ursachen sehen an
+  // der Netzwerk-Grenze identisch aus; getrennt werden sie ausschliesslich hier, je
+  // einzeln.
+  // =========================================================================
+  it("TOR 3: ein Draht OHNE google-Schluessel laesst google NICHT durch", () => {
+    // DER REALE FALL, und deshalb ist er der erste: JEDE heute publizierte Kundenseite
+    // traegt ein cns-Objekt OHNE google — der Schluessel geht zur VEROEFFENTLICHUNGSZEIT
+    // in den ausgelieferten Text, und ein Code-Deploy erreicht sie nicht.
+    // consentAllows liest wire["google"], bekommt undefined, vergleicht === true.
+    // WIRD ROT, WENN der strikte Vergleich zu truthy aufgeweicht wird.
+    const GOOGLE_ENTRY = {
+      target: "google" as const,
+      config: { pixelId: "123-456-7890", token: "IRRELEVANT" },
+    };
+    expect(
+      names(
+        allowedTargets([META_ENTRY, GOOGLE_ENTRY], bodyWith(wire(true, false))),
+      ),
+    ).toEqual(["meta"]);
+  });
+
+  it("TOR 3: ein Draht GANZ OHNE Feld laesst google NICHT durch (Altbestands-Rolle)", () => {
+    // DIE ZWEITE HAELFTE DESSELBEN TORES, und sie haengt an einer ANDEREN Zeile:
+    // Fehlt das Feld ganz, entscheidet nicht consentAllows, sondern LEGACY_CONSENT_ROLE.
+    // Dort steht google auf false — es gibt bei diesem Ziel nichts zu erben, weil es
+    // keine Seite gibt, die aelter waere als das Feld.
+    // WIRD ROT, WENN LEGACY_CONSENT_ROLE.google auf true kippt. Der Waechter in
+    // consent-targets.test.ts faengt dieselbe Aenderung von der anderen Seite ("genau
+    // EIN Traeger, und es ist meta") — hier ist ihre WIRKUNG auf das Tor gemessen.
+    const GOOGLE_ENTRY = {
+      target: "google" as const,
+      config: { pixelId: "123-456-7890", token: "IRRELEVANT" },
+    };
+    expect(names(allowedTargets([META_ENTRY, GOOGLE_ENTRY], bodyWith()))).toEqual(
+      ["meta"],
+    );
+  });
+
+  it("TOR 3, POSITIVKONTROLLE: mit google-Schluessel auf true KAEME es durch", () => {
+    // OHNE IHN waeren die beiden Laeufe darueber hohl: "google fehlt im Ergebnis" saehe
+    // auch dann richtig aus, wenn allowedTargets dieses Ziel aus einem ganz anderen
+    // Grund nie durchliesse. Hier ist belegt, dass GENAU der Schluessel entscheidet.
+    const GOOGLE_ENTRY = {
+      target: "google" as const,
+      config: { pixelId: "123-456-7890", token: "IRRELEVANT" },
+    };
+    const body = {
+      trackingKey: "tk-abc",
+      eventID: "evt-123",
+      event: "Purchase",
+      [CONSENT_WIRE_FIELD]: {
+        [CONSENT_KEY_BY_TARGET.meta]: true,
+        [CONSENT_KEY_BY_TARGET.google]: true,
+      },
+    } as Body;
+    expect(names(allowedTargets([META_ENTRY, GOOGLE_ENTRY], body))).toEqual([
+      "meta",
+      "google",
+    ]);
+  });
+
   it("W: beide verboten -> leer — UND WARUM DAS ALLEIN NICHT GENUEGT", () => {
     // Dieser Fall ist gegen VERTAUSCHTE Wachen BLIND: false gegen false bleibt
     // false, das Ergebnis ist in beiden Zustaenden leer. Er steht hier als

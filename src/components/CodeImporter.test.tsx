@@ -128,7 +128,7 @@ import { addCustomDomain, listProjectDomains } from "@/app/projects/domain-actio
 import CodeImporter from "@/components/CodeImporter";
 // Der ANBIETER-NAME aus derselben Konstante, die die Ansicht liest. Der Test
 // behauptet damit, dass der Name GERENDERT wird — nicht, wie er lautet.
-import { TARGET_CARDS } from "@/components/TargetCard";
+import { TARGET_CARDS } from "@/lib/tracking/target-cards";
 import {
   ACTION_THROW_MESSAGE,
   SAVE_THROW_MESSAGE,

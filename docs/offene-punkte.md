@@ -1311,32 +1311,48 @@ aufeinander; sie liegen alle hier und finden einander.
   401 ist eine ABLEITUNG aus dieser Beobachtung; die Aussage über den GET-Fall ist eine
   ÜBERTRAGUNG auf einen Fall, der nicht gefahren wurde, und ausdrücklich keine Messung.
 
-- DER ERSTE AUTORISIERUNGS-VERSUCH NACH EINER PAUSE ENDET IN no_state (Trigger:
-  EINGETRETEN — der Fehler tritt heute regelmässig auf. Er beisst spätestens beim ersten
-  fremden Kunden, für den ein fehlgeschlagener Erstversuch das Produkt kaputt aussehen
-  lässt):
-  DAS MUSTER — GEMESSEN LIVE (Owner, dreimal beobachtet, zuletzt 2026-08-31): Der erste
-  Versuch des Google-Autorisierungs-Flusses nach einer längeren Pause bzw. am Tagesanfang
-  endet mit `?google=no_state`. Der unmittelbar darauf folgende zweite Versuch läuft
-  durch; danach beliebig oft fehlerfrei — dreimal hintereinander über ZWEI Projekte, kein
-  Fehlschlag. ES IST ALSO NICHT "der erste Versuch scheitert immer", sondern "der erste
-  Versuch einer WARMEN PERIODE".
-  DER KNOPF SCHEIDET ALS URSACHE AUS: Das Muster trat sowohl über die abgetippte
-  Start-URL auf (docs/aktiver-stand.md, VERMERK 6, Schritt 1) als auch über den in
-  Scheibe 3 gebauten Knopf.
-  HOST-DIVERGENZ IST WIDERLEGT (GEMESSEN, Owner, 2026-08-31): identischer Host in der
-  Adresszeile vor dem Klick und nach der fehlgeschlagenen Rückkehr. Damit fällt der
-  Kandidat, der das Muster zuvor am besten erklärt hätte.
-  DER SITZUNGS-AUFBAU IST AUSGESCHLOSSEN (GEMESSEN, Owner, 2026-08-31): frischer Login
-  im Inkognito-Fenster, kein Fehler. DIE GRENZE DIESER MESSUNG GEHÖRT DAZU, sonst wird
-  sie stärker gelesen, als sie ist: Ein Inkognito-Fenster tauscht den GANZEN
-  Cookie-Vorrat und misst damit mehrere Achsen auf einmal; und ein ausbleibender Fehler
-  in einem Fall, für den der Hauptkandidat ohnehin keinen vorhersagt, ist eine
-  ÜBEREINSTIMMUNG und kein Beweis. WAS SIE ZEIGT, IST DIE RICHTUNG: Es hängt an einer
-  VERALTETEN Sitzung, nicht am Anlegen einer neuen.
-  SIEBEN KANDIDATEN SIND WIDERLEGT, und sie stehen hier, damit niemand sie erneut prüft
-  (Herleitung je Kandidat: die Aufklärungsrunde vom 2026-08-31):
-  · Host-Divergenz — durch die Messung oben.
+- EIN AUTORISIERUNGS-FLUSS, DER AUF EINER ANDEREN ADRESSE STARTET ALS DER REGISTRIERTEN
+  WEITERLEITUNG, ENDET GARANTIERT IN no_state (Trigger: EINGETRETEN — jeder Start über
+  eine Vorschau-Adresse läuft hinein. OB UND WAS GEBAUT WIRD, IST NICHT ENTSCHIEDEN; die
+  Frage wird spätestens fällig, wenn ein fremder Nutzer den Fluss startet — er kann den
+  Grund nicht erraten, und für ihn sieht das Produkt kaputt aus):
+  DIE URSACHE IST BEWIESEN, DIE BEHEBUNG IST NICHT ENTSCHIEDEN. DIESER PUNKT IST AM
+  2026-08-31 UMGESCHRIEBEN WORDEN, NICHT ERGÄNZT — er stand bis dahin als "ungeklärt, ein
+  Kandidat offen", und das trifft nicht mehr zu. Was von der alten Fassung bleibt, bleibt
+  aus einem benannten Grund; was fällt, fällt benannt.
+  DIE MESSUNG (OWNER, 2026-08-31): Ein Start über Vercel → Deployment → "Visit" landet auf
+  der VORSCHAU-Adresse (pagesmith-<hash>-…), NICHT auf dem Host aus
+  GOOGLE_OAUTH_REDIRECT_URI. Das State-Cookie ist host-only (der `__Host-`-Präfix
+  verbietet ein Domain-Attribut); Google kehrt an den REGISTRIERTEN Host zurück, und der
+  Browser sendet das Cookie dort nicht mit → no_state.
+  UND DAS ERKLÄRT AUCH DEN ZWEITEN TEIL DES MUSTERS, den vorher niemand erklären konnte:
+  Die Rückkehr ist RELATIV. Der Nutzer steht danach auf dem RICHTIGEN Host, und der zweite
+  Versuch läuft — nicht weil "etwas warm geworden" wäre, sondern weil er inzwischen
+  woanders steht.
+  DAS BEOBACHTETE MUSTER BLEIBT RICHTIG, SEINE DEUTUNG WAR FALSCH: Beobachtet war "der
+  erste Versuch einer warmen Periode scheitert" (GEMESSEN LIVE, Owner, dreimal, zuletzt
+  2026-08-31). Die Pause war eine KORRELATION, keine Ursache — der Tagesanfang war der
+  Zeitpunkt, an dem der Einstieg über das Vercel-Dashboard lief. WER DAS NICHT MITLIEST,
+  SUCHT WEITER NACH EINER ZEITABHÄNGIGEN URSACHE.
+  K1 IST BESTÄTIGT. K8 UND K9 SIND TOT.
+  DIE HOST-PRÜFUNG WAR EINE FALSCHE ENTWARNUNG — UND SIE WAR NICHT NACHLÄSSIG. Sie stand
+  hier als "HOST-DIVERGENZ IST WIDERLEGT (GEMESSEN, Owner, 2026-08-31): identischer Host in
+  der Adresszeile vor dem Klick und nach der fehlgeschlagenen Rückkehr." Die Beobachtung
+  war korrekt ausgeführt und ist es immer noch — sie hat nur den WARMEN Zustand gemessen,
+  und dort steht man längst auf dem richtigen Host.
+  DIE LEHRE, DIE ÜBER DIESEN FALL HINAUSGEHT: EIN INSTRUMENT, DAS NUR IM NICHT-FEHLERFALL
+  GREIFT, ENTLASTET EINEN KANDIDATEN, OHNE IHN GEPRÜFT ZU HABEN. Es sieht dabei wie eine
+  Messung aus, und genau deshalb ist es teurer als gar keine — es hat den einzigen
+  richtigen Kandidaten aus der Liste getrieben.
+  DER INKOGNITO-BEFUND BLEIBT UND IST WEITERHIN RICHTIG (GEMESSEN, Owner, 2026-08-31):
+  frischer Login im Inkognito-Fenster, kein Fehler. SEINE GRENZE STAND SCHON DAMALS DABEI
+  (ein Inkognito-Fenster tauscht den GANZEN Cookie-Vorrat und misst mehrere Achsen auf
+  einmal), UND SIE IST JETZT EINGELÖST: Der Lauf lief vom richtigen Host. Er hat nie den
+  Sitzungs-Aufbau entlastet, sondern nur bestätigt, dass es dort keinen Fehler gibt.
+  SECHS KANDIDATEN BLEIBEN WIDERLEGT, und sie stehen hier, damit niemand sie erneut prüft
+  (Herleitung je Kandidat: die Aufklärungsrunde vom 2026-08-31). SIE SIND AM 2026-08-31
+  EINZELN GEGEN DIE NEUE URSACHE GEPRÜFT — eine Mengen-Aussage wird nicht dadurch richtig,
+  dass man ein falsches Mitglied entfernt:
   · Direkter Aufruf der Callback-Adresse — erklärt einen Einzelfall, nicht das
     regelmässige Muster über den Knopf.
   · `Secure` über http (lokal) — in Prod läuft https, und es erklärt die anschliessende
@@ -1348,48 +1364,43 @@ aufeinander; sie liegen alle hier und finden einander.
   · Kaputter Cookie-Wert (`bad_format`) — erklärt kein "einmal je Periode"; bleibt als
     Diagnose-Alternative, weil er am Log sofort abzutrennen ist.
   · Plattform verwirft `Set-Cookie` auf einer 302 — träfe jeden Versuch gleich.
-  K8 IST OFFEN, MIT SEINER UNGEPRÜFTEN VORAUSSETZUNG: Die Supabase-Sitzung lebt rund eine
-  Stunde; der erste Aufruf nach einer Pause löst eine ERNEUERUNG aus, und die schreibt
-  selbst Cookies (`updateSession` in src/lib/supabase/middleware.ts baut dafür eine
-  eigene Response). Die Start-Route erzeugt ihre Weiterleitung SEPARAT
-  (src/app/api/oauth/google/start/route.ts: `new Response(null, { status: 302, headers:
-  { …, "Set-Cookie": start.setCookie } })`) und ruft `getUser()` VOR dem Cookie-Setzen.
-  DIE VORAUSSETZUNG, DIE NICHT GEPRÜFT IST: Die Erneuerung müsste auf den
-  /start-Request FALLEN. Ist der erste Aufruf des Tages die Seite `/`, ist /start beim
-  Klick längst warm.
-  K9 WIRD AUSDRÜCKLICH GEFÜHRT — etwas, das der Code nicht hergibt. Nach acht geprüften
-  Kandidaten ist EINER übrig, und der trägt eine offene Voraussetzung; das ist zu wenig,
-  um die Liste für abschliessend zu erklären.
-  DER STRUKTURELLE BEFUND, UND ER TRÄGT UNABHÄNGIG VON DER DIAGNOSE (GEMESSEN am Repo,
-  CC, 2026-08-31; Achse: `Set-Cookie`, `cookies().set`, `.cookies.set` über src/, ohne
-  Testdateien, mit Positivkontrolle): ES GIBT IM REPO KEINE BAUFORM, DIE ZEIGT, WIE EINE
-  ROUTE AUTH-COOKIES AUFFRISCHT UND EIN EIGENES COOKIE SETZT. Die zwei OAuth-Routen
-  teilen das Problem und bauen es gleich; sie lösen es nicht. Die dritte Stelle
-  (src/app/app-serve/route.ts, das Varianten-Cookie) läuft im SERVING-Zweig ausdrücklich
-  OHNE `updateSession` und trifft die Lage nie.
+  DER SIEBTE — HOST-DIVERGENZ — IST AUS DIESER LISTE HERAUSGENOMMEN UND IST DIE URSACHE.
+  Er steht nicht mehr unter den Widerlegten; die Liste sagt SECHS und nicht mehr sieben.
+  K8 IST TOT, und der Grund gehört dazu, sonst wird er wieder aufgenommen: Er hing an der
+  Vermutung, eine Sitzungs-Erneuerung verdränge das Cookie auf demselben Request. Die
+  Ursache liegt aber nicht darin, dass das Cookie nicht GESETZT wurde, sondern darin, dass
+  es beim Callback nicht GESENDET wird — ein anderer Host. K9 (etwas, das der Code nicht
+  hergibt) ist damit ebenfalls gegenstandslos.
+  DER KNOPF SCHEIDET WEITERHIN ALS URSACHE AUS: Das Muster trat sowohl über die abgetippte
+  Start-URL auf (docs/aktiver-stand.md, VERMERK 6, Schritt 1) als auch über den in
+  Scheibe 3 gebauten Knopf — beide erben den Host der Seite, auf der sie stehen.
+  DER STRUKTURELLE BEFUND BLEIBT STEHEN UND TRÄGT UNABHÄNGIG VON DER DIAGNOSE (GEMESSEN am
+  Repo, CC, 2026-08-31; Achse: `Set-Cookie`, `cookies().set`, `.cookies.set` über src/,
+  ohne Testdateien, mit Positivkontrolle): ES GIBT IM REPO KEINE BAUFORM, DIE ZEIGT, WIE
+  EINE ROUTE AUTH-COOKIES AUFFRISCHT UND EIN EIGENES COOKIE SETZT. Er war die Herleitung
+  für K8; ER ÜBERLEBT DESSEN TOD, weil er eine Aussage über den BESTAND ist und keine über
+  die Ursache.
   no_state HAT VIER BEDINGUNGEN UND ZWEI kind-WERTE (`parseStateCookie` in
   src/lib/oauth/google-authorize.ts): `missing` · und `bad_format` mit drei
-  Unterbedingungen (Teilezahl ≠ 2, leerer State-Teil, formwidrige Projekt-Kennung). DER
-  CODE ALLEIN IST DAMIT KEIN BEFUND. Die Log-Zeile `[oauth/google/callback] no_state`
-  trägt ihren `reason` und trennt `missing` von `bad_format`.
-  DIE ENTSCHEIDENDE MESSUNG: DevTools → Netzwerk → die Anfrage `/api/oauth/google/start`
-  → Antwort-Header, IM FEHLERFALL. Zu notieren: wie viele `Set-Cookie`-Header die 302
-  trägt und welche Namen. DREI AUSGÄNGE: `__Host-ps_oauth` fehlt und Auth-Cookies sind da
-  → K8 bestätigt · beide da → K8 als Verdrängung widerlegt · nur `__Host-ps_oauth` → auf
-  diesem Request fand keine Erneuerung statt, K8 widerlegt.
-  ZWEI VORBEDINGUNGEN, ohne die der Schritt nichts misst: Das Netzwerk-Fenster muss VOR
-  dem Klick offen sein und "Preserve log" aktiv haben — die Antwort ist eine 302 und
-  verschwindet sonst mit der Navigation. Und der Schritt ist NUR IM FEHLERFALL
-  aussagekräftig, also nach einer Pause; ein warmer Lauf zeigt die Konstellation nicht.
-  DIE LOG-ZEILE IST NICHT DAS ERSTINSTRUMENT: `reason: missing` trifft K8, den
-  http-Kandidaten und K9 gleichzeitig.
-  AM CODE NICHT ENTSCHEIDBAR, ausdrücklich: ob Next die Middleware-Cookies und den rohen
-  `Set-Cookie`-Header eines Route-Handlers ZUSAMMENFÜHRT · ob die Erneuerung auf /start
-  fällt · ob ein Browser das Cookie aus eigenem Grund verwirft. Alle drei stehen
-  ausserhalb des Repos.
-  OB DAS EINE EIGENE BAU-SCHEIBE BRAUCHT, IST HIER NICHT ENTSCHIEDEN und wird NACH der
-  Messung entschieden.
-  PROVENIENZ, JE TEIL: Das Muster, die Host-Messung und der Inkognito-Lauf GEMESSEN LIVE
-  (Owner, 2026-08-31). Die Code-Befunde GEMESSEN am Repo (CC, 2026-08-31). Die
-  Widerlegungen der sieben Kandidaten sind ABLEITUNGEN aus diesen Befunden, keine
-  Messungen. K8 und K9 sind Kandidaten, keine Diagnosen.
+  Unterbedingungen (Teilezahl ≠ 2, leerer State-Teil, formwidrige Projekt-Kennung). Die
+  Log-Zeile `[oauth/google/callback] no_state` trägt ihren `reason` und trennt `missing`
+  von `bad_format`. DAS BLEIBT DIE DIAGNOSE-ACHSE für jeden künftigen Fall, der NICHT auf
+  die Host-Ursache zurückgeht.
+  WAS FEHLT, IST KEIN FIX, SONDERN EIN ABGLEICH: Die Start-Route kennt den Host, auf dem
+  Google zurückkehren wird (GOOGLE_OAUTH_REDIRECT_URI), UND den, auf dem sie selbst läuft
+  — SIE VERGLEICHT SIE NICHT. Ein Fluss auf dem falschen Host läuft trotzdem los und
+  scheitert GARANTIERT, nach dem Umweg über Google.
+  NICHT ENTSCHIEDEN, OB UND WAS GEBAUT WIRD. KEINE EMPFEHLUNG. Zwei Gründe stehen
+  ausdrücklich dagegen, dass hier ein Defekt zu reparieren wäre: DER CODE VERHÄLT SICH
+  KORREKT — ein `__Host-`-Cookie SOLL host-only sein, das ist seine Schutzwirkung und
+  nicht sein Fehler. Und EIN KUNDE KÄME ÜBER EINE FESTE DOMAIN; die Vorschau-Adresse ist
+  ein Entwickler-Einstieg.
+  EINE FOLGE, DIE SCHON HEUTE GILT UND KEINE ENTSCHEIDUNG BRAUCHT: Jede Live-Anleitung zu
+  diesem Fluss nennt den Start-Host ausdrücklich, und ein Durchlauf, der in no_state
+  endet, ist UNGÜLTIG statt ein Befund. Ohne diesen Satz wird jeder künftige Live-Test
+  durch diesen Fall verfälscht — er sieht aus wie ein Fehlschlag der geprüften Sache.
+  PROVENIENZ, JE TEIL: Die Vorschau-Adresse, der Host-Vergleich und das Muster GEMESSEN
+  LIVE (Owner, 2026-08-31). Die Code-Befunde GEMESSEN am Repo (CC, 2026-08-31). Dass die
+  relative Rückkehr den geglückten Zweitversuch erklärt, ist eine FOLGE aus der Messung,
+  keine eigene Beobachtung. Der Tod von K8 und K9 ist eine ABLEITUNG aus der bewiesenen
+  Ursache.

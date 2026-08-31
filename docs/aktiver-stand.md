@@ -61,6 +61,7 @@ docs/immer-beachten.md.
 · Scheibe 11.2a — Klick-Kennungen lösen und die Nutzlast bauen
 · Die Erneuerung des Zugangsdatums — Scheibe 1a des Schnitts der Phase 11.2
 · Google als reguläres Ziel in der Oberfläche — Scheibe 3 des Schnitts der Phase 11.2
+· Die Rückkehr in das gestartete Projekt — eine mitgereiste Fix-Scheibe
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -1004,6 +1005,223 @@ möglichen Ursachen und deckt keine davon.
 **AM ENDE STEHT DIE FRAGE, DIE DER VERMERK BEANTWORTEN MUSS:** Welches Tor hält, wenn man
 die anderen drei gedanklich wegnimmt? Wer sie nicht beantworten kann, hat die Tore nicht
 geprüft, sondern ihr gemeinsames Schweigen.
+
+## Die Rückkehr in das gestartete Projekt — eine mitgereiste Fix-Scheibe
+
+**SIE IST KEINE SCHEIBE DES SCHNITTS, UND DAS IST DER ERSTE SATZ, WEIL ER SONST FALSCH
+ERSCHLOSSEN WIRD.** Der Schnitt der Phase 11.2 (bindende Entscheidung (6)) hat **1a, 1b,
+2, 3 und 4** — mehr nicht. Diese hier ist eine **FIX-SCHEIBE, DIE MITREIST**.
+**DIE HAUSFORM DAFÜR GIBT ES:** Phase 9 trug zwei mitgereiste Nicht-A/B-Scheiben — die
+Fix-Scheibe safeAction und den Leere-Variante-Riegel (CLAUDE.md, "## Detail-Archiv",
+Eintrag zu docs/claude-history/phase-9-ab-testing.md). Wer sie in den Schnitt einordnet,
+hält sie für eine vergessene Nummer und sucht nach einer Lücke, die es nicht gibt.
+
+**DER DEFEKT IST ÄLTER ALS SEINE SICHTBARKEIT.** Er liegt in Code aus **Phase 11.8** —
+`loadProject()` ohne Argument und eine Callback-Route, die ihre Weiterleitung ohne
+Projekt-Kennung baut. **SCHÄDLICH WURDE ER ERST DURCH SCHEIBE 3**, weil vorher NIEMAND den
+Ergebniscode las: Der Kommentarkopf jener Route hielt ausdrücklich fest, es gebe "KEIN
+MELDUNGSTEXT IN DIESER SCHEIBE … Text, den nichts rendert, ist toter Text". Solange nichts
+rendert, ist es gleichgültig, in welchem Projekt man landet.
+**DASSELBE MUSTER WIE BEI `no_state`:** ein Zustand aus 11.8, den erst die Oberfläche der
+Scheibe 3 sichtbar gemacht hat. **Das ist kein Zufall, sondern die Eigenschaft einer
+Scheibe, die eine stumme Mechanik erstmals anzeigt** — sie deckt auf, was vorher niemand
+sehen konnte.
+
+**PROVENIENZ DES GANZEN ABSCHNITTS, wo an der einzelnen Angabe nichts anderes steht:
+ARCHITEKT, 2026-08-31. Keine Messung.** Jede mit GEMESSEN gekennzeichnete Angabe stammt
+aus der Aufklärungsrunde vom 2026-08-31 (CC, am Repo, mit Positivkontrolle je Achse).
+
+### Was diese Fix-Scheibe ist
+
+**Der Nutzer kehrt aus dem Autorisierungs-Fluss in DAS PROJEKT zurück, in dem er gestartet
+ist.**
+
+**DER MECHANISMUS — GEMESSEN am Code (CC, 2026-08-31):** `src/app/page.tsx` ruft
+`loadProject()` **ohne Argument**; `loadProject` (src/app/projects/actions.ts) fällt dann
+auf `.order("updated_at", { ascending: false }).limit(1)` zurück — **das Projekt mit dem
+jüngsten Zeitstempel**, nicht das zuletzt angesehene. **Die Callback-Route schreibt NICHT
+auf `projects`** (ihr einziger Zugriff dort ist ein `.select("id")` für das
+Eigentums-Gate), und **der Projektwechsel hält nichts fest** — er lebt ausschliesslich im
+React-State des Containers, ohne Cookie, ohne `localStorage`, ohne Spalte. In Projekt B zu
+wechseln ändert Bs Zeitstempel also nicht, und die Rückkehr auf `/` lädt weiterhin A.
+
+**DER SCHADEN IST NICHT DER SPRUNG, SONDERN WAS ER MITBRINGT — und ohne diesen Absatz
+liest die nächste Runde die Scheibe als Bequemlichkeits-Politur:** Der Ergebniscode
+erscheint an der Google-Karte eines **FREMDEN** Projekts. Bei einem Fehlercode steht damit
+eine **rote Meldung an einer Karte, die damit nichts zu tun hat**. Und wechselt der
+Betreiber danach zum richtigen Projekt, läuft `handleSwitch` durch
+`applyZenForLoadedCode`, wo seit dem Fix `7771019` der Reset auf `connectOutcome` steht —
+**die Meldung ist dann weg.**
+**IN EINEM SATZ: DIE AUSKUNFT ERSCHEINT AM FALSCHEN PROJEKT UND VERSCHWINDET AM
+RICHTIGEN.**
+
+### Warum jetzt — und warum sie keine Scheibe des Schnitts ist
+
+**WARUM JETZT:** Weil Scheibe 3 den Ergebniscode überhaupt erst anzeigt. Vor ihr war der
+Sprung folgenlos; mit ihr ist er eine **falsch verortete Aussage** — und eine falsch
+verortete Aussage ist schlechter als gar keine, weil der Betreiber ihr glaubt.
+**WARUM NICHT ALS SCHEIBE DES SCHNITTS:** Der Schnitt beschreibt den Weg zum Transport.
+Diese Arbeit bringt ihn keinen Schritt näher; sie repariert etwas, das die letzte Scheibe
+sichtbar gemacht hat. **Sie hat keine Nummer im Schnitt und bekommt keine.**
+**WAS SIE NICHT IST:** kein Deep-Linking, keine Änderung an der Auto-Load-Regel, keine
+Erweiterung des Eigentums-Gates. S. den Scope.
+
+### Die fünf Festlegungen dieser Fix-Scheibe
+
+**(1) SERVER-SEITIG, NICHT CLIENT-SEITIG.** `page.tsx` liest die Kennung und reicht sie
+als `initialProjectId` weiter; **`loadProject(id)` trägt sie bereits** — die Signatur
+nimmt sie entgegen, nur ruft niemand sie so.
+**DER GRUND IST KEIN GESCHMACK, SONDERN EIN GEMESSENER BEFUND (CC, 2026-08-31):** Ein
+client-seitiges Umschalten nach dem Laden liefe durch `handleSwitch` und damit durch
+`applyZenForLoadedCode` — **und dort steht seit dem Fix `7771019` der Reset auf
+`connectOutcome`. Die Meldung stürbe, bevor sie jemand sieht.** Der server-seitige Weg
+feuert ihn nicht: **alle fünf Aufrufer von `applyZenForLoadedCode` sind
+Ereignis-Handler** (`resetToEmpty`, `switchVariant`, `handleRemoveVariantB`,
+`handleSwitch`, `handleDelete`), **keiner läuft beim Mount**.
+**DIESER UNTERSCHIED STEHT AN KEINER STELLE IM CODE**, und deshalb gehört er in den
+Zuschnitt: Die beiden naheliegenden Bauformen verhalten sich hier **entgegengesetzt**, und
+die naheliegendere ist die falsche.
+GRENZE: Die Festlegung sagt, WO gewählt wird, nicht WIE die Kennung an `page.tsx` kommt —
+das ist Festlegung (2).
+
+**(2) DIE ADRESSE TRÄGT DIE KENNUNG — ALS HINWEIS, NICHT ALS AUTORITÄT.**
+Sie wählt nur unter Projekten, die dem Nutzer **ohnehin gehören**. **DAS GATE BLEIBT
+UNVERÄNDERT:** `loadProject` filtert `.eq("user_id", user.id)` **und** steht unter RLS auf
+`projects`. **Die Kennung erweitert keinen Zugriff** — sie wählt innerhalb dessen, was das
+Gate schon erlaubt.
+**DREI AUFLAGEN, je mit ihrem Grund:**
+· **FORMPRÜFUNG VOR DER ABFRAGE.** `isProjectIdShape` existiert
+  (src/lib/oauth/google-authorize.ts), und die Start-Route macht es genauso vor: Eine
+  formwidrige Kennung erzeugte in der Datenbank einen Typfehler, **und der wäre von einem
+  echten Fehler nicht zu unterscheiden**.
+· **BEI `null` KEIN LEERER EDITOR**, sondern der heutige Rückfall auf "zuletzt
+  bearbeitet". **Der reale Fall ist ein Projekt, das während des Flusses gelöscht wurde**;
+  ein leerer Editor mit einem roten Fehlercode daneben wäre die schlechteste aller
+  Auskünfte — er sähe aus, als hätte der Nutzer gar kein Projekt.
+· **KEIN EIGENER TEXT für "gehört dir nicht"** — dieselbe Begründung wie in der
+  Start-Route, die drei Fälle bewusst auf einen Ausgang legt: **er verriete die Existenz
+  einer fremden Kennung.**
+· **LÖST DIE KENNUNG SICH NICHT AUF, WIRD DER ERGEBNISCODE NICHT ANGEZEIGT. Das PROJEKT
+  fällt zurück, die MELDUNG nicht.**
+  **OHNE DIESEN ZUSATZ REPRODUZIERT DER RÜCKFALL GENAU DEN FEHLER, DEN DIESE SCHEIBE
+  BESEITIGT:** Der Betreiber stünde in A und sähe dort den Ergebniscode eines Vorgangs aus
+  B — dieselbe falsch verortete Auskunft, nur auf einem anderen Weg dorthin.
+  **DER GRUND IST DER GRUNDSATZ DIESER SCHEIBE SELBST:** Die Auskunft gehört zu EINEM
+  Projekt. Löst sich die Kennung nicht auf, **gibt es kein Projekt, an dem sie richtig
+  stünde** — und dann ist "gar nicht" die einzige verbleibende richtige Anzeige.
+  **DER PREIS GEHÖRT DAZU UND IST KLEIN:** Im seltenen Fall — ein während des Flusses
+  gelöschtes Projekt — verliert der Betreiber eine Auskunft. **Die Alternative ist eine
+  FALSCH VERORTETE**, und die ist nach dem eigenen Satz dieses Zuschnitts schlechter als
+  gar keine, weil er ihr glaubt.
+  **GRENZE — sie ist scharf und wird beim Bauen leicht zu weit gezogen:** Die Auflage gilt
+  NUR, wenn eine Kennung **DA WAR und nicht auflöste**. **Kommt gar keine** (`denied`,
+  `no_state`), bleibt es bei Festlegung (5): Die Meldung **wird gezeigt**, am Projekt, das
+  ohnehin geladen wird. "Keine Kennung" und "unauflösbare Kennung" sind zwei verschiedene
+  Zustände, und wer sie zusammenzieht, unterdrückt die Meldung in genau dem Fall, der
+  heute als einziger eintritt.
+  **AUFLAGE AN STUFE 1, ALS TESTFALL UND NICHT ALS KOMMENTAR:** Ein Lauf hält fest, dass
+  eine unauflösbare Kennung bei gleichzeitigem Ergebniscode das Rückfall-Projekt lädt
+  **UND die Meldung unterdrückt**; ein zweiter, dass sie ohne Kennung **erscheint**. Beide
+  Hälften einzeln — ein Lauf, der nur die Unterdrückung prüft, wäre auch dann grün, wenn
+  die Meldung nie erschiene.
+GRENZE: Die Bewertung "es leckt nichts" ruht auf der Messung des HEUTIGEN Gates (CC,
+2026-08-31): `maybeSingle()` liefert bei fremder Kennung `null` — kein Name, keine
+Existenz, kein Inhalt. **Wer das Gate ändert, prüft diesen Satz neu.**
+
+**(3) DER PARAMETER IST GENAUSO FLÜCHTIG WIE DER ERGEBNISCODE.** Er wählt bei **DIESEM
+EINEN** Laden aus und verschwindet mit der Suchzeichenkette.
+**AUSDRÜCKLICH KEIN DEEP-LINKING, und das ist eine Abgrenzung, keine Bequemlichkeit:**
+Eine Projektwahl, die ein Neuladen übersteht, ist ein **eigenes Produktmerkmal** — sie
+betrifft jeden Projektwechsel, die Adresszeile und den Zurück-Knopf. **Ein halb gebautes
+Deep-Linking wäre schlechter als keines**, weil die Adresse dann manchmal gilt und
+manchmal nicht.
+GRENZE: Sie verbietet Deep-Linking nicht für immer; sie sagt, dass es hier nicht
+mitentschieden wird.
+
+**(4) BEIDE PARAMETER WERDEN ZUSAMMEN KONSUMIERT UND ZUSAMMEN ENTFERNT.**
+**GEMESSEN am Code (CC, 2026-08-31):** Der Mount-Effekt in
+`src/components/CodeImporter.tsx` kehrt heute **früh zurück**, wenn kein Ergebniscode da
+ist (`if (initialConnectOutcome === null) return;`), und schreibt sonst den **PFAD**
+zurück (`window.history.replaceState(null, "", window.location.pathname)`) — **die ganze
+Suchzeichenkette fällt weg**, nicht ein einzelner Parameter.
+**FOLGE OHNE DIESE FESTLEGUNG:** Ein Projekt-Parameter **ohne** Ergebniscode bliebe stehen
+und wählte bei **jedem** Neuladen erneut — genau das halbe Deep-Linking, das (3)
+ausschliesst.
+GRENZE: Die Festlegung verlangt, dass beide zusammen behandelt werden. **WIE** die Stelle
+das tut — ob sie weiterhin den Pfad zurückschreibt oder Parameter einzeln entfernt —, ist
+Sache des Bau-Plans.
+
+**(5) `denied` UND `no_state` TRAGEN DIE KENNUNG NICHT — DAS WIRD AUFGESCHRIEBEN, NICHT
+WEGGEBAUT.**
+**GEMESSEN am Code (CC, 2026-08-31):** Ab Schritt (2) der Callback-Route steht
+`parsed.projectId` im Gültigkeitsbereich und **wird bereits benutzt** (Eigentums-Gate,
+Erfolgs-Log). **Zwei Ausgänge liegen davor:** `denied` (Schritt 1, **bewusst** vor dem
+Cookie-Lesen — ungemessen ist, ob Google bei einer Verweigerung den `state` mitschickt) und
+`no_state` (die Kennung liegt **im fehlenden Cookie**).
+**BEI `no_state` IST NICHTS ZU MACHEN. UND DAS IST DIE BITTERE POINTE, DIE IN DEN
+ZUSCHNITT GEHÖRT: DER EINZIGE FEHLERCODE, DEN EIN BETREIBER BISHER JE GESEHEN HAT, IST
+`no_state` — und genau der landet weiterhin am falschen Projekt.** Diese Scheibe
+verbessert also ausgerechnet den Fall nicht, der heute eintritt. Wer das nicht
+aufschreibt, hält den Fix nach dem Live-Test für wirkungslos.
+**BEI `denied` IST ES EIN GATE FÜR STUFE 1, KEINE ENTSCHEIDUNG VON HIER:** Lässt sich die
+Kennung mitgeben, **ohne die bewusste Anordnung der Route zu ändern**? Wenn nein, bleibt
+es wie es ist, **und der Zustand wird benannt** statt stillschweigend hingenommen.
+
+### Der Scope dieser Fix-Scheibe — und wo er zum STOPP wird
+
+**NICHT ZU DIESER SCHEIBE:**
+- **`no_state`** — eigener offener Punkt, **nicht diagnostiziert**; diese Scheibe rührt
+  ihn nicht an und behauptet nicht, ihn zu bessern.
+- die Konto-Kennungen (Scheibe 2) und der Transport (Scheibe 4),
+- **Deep-Linking auf Projekte** (s. Festlegung (3)),
+- **jede Änderung am Eigentums-Gate von `loadProject`**,
+- **die Auto-Load-Regel "zuletzt bearbeitet" selbst** — sie bleibt, wie sie ist; diese
+  Scheibe fügt einen Vorrang hinzu, sie ersetzt die Regel nicht.
+
+**KEINE SCHEMA-ÄNDERUNG, KEINE MIGRATION, KEINE NEUE DEPENDENCY.** Verlangt der Bau-Plan
+eine Schema-Aussage, ist das ein **STOPP** — hier wird nur gelesen, was `loadProject`
+ohnehin liest.
+
+**DIE REFRESH-ROUTE IST NICHT BETROFFEN, und der Satz steht hier, damit niemand sie
+vorsorglich mitnimmt.** GEMESSEN am Code (CC, 2026-08-31):
+`src/app/api/oauth/google/refresh/route.ts` ist ein `POST`, der ausschliesslich **JSON**
+zurückgibt — kein `Location`, keine Weiterleitung, keine Rückkehr in die Oberfläche. **Das
+Problem kann sie nicht treffen, solange sie nicht weiterleitet.**
+
+### Die Beweis-Achse dieser Fix-Scheibe — mit ihrer Falle
+
+**SIE HAT EINE FALLE, UND SIE IST DER GRUND, WARUM DIESER ABSCHNITT NICHT KURZ SEIN
+DARF.** GEMESSEN am Repo (CC, 2026-08-31): **`setCapiToken` und `removeCapiToken` setzen
+`projects.updated_at`** (wie Speichern, Publish und die Varianten-Aktionen — neun Stellen
+insgesamt, alle in `actions.ts`). **Wer in B ein Zugangsdatum speichert und dann in B den
+Fluss startet, landet auch OHNE den Fix in B** — durch den vorherigen Schreibvorgang, nicht
+durch die Scheibe.
+**EIN LIVE-TEST, DER DIE REIHENFOLGE NICHT FESTHÄLT, BESTEHT ZUFÄLLIG.**
+
+**DER LIVE-TEST MUSS DIE DIVERGENZ ALSO ABSICHTLICH HERSTELLEN:**
+1. **In Projekt A zuletzt schreiben** (speichern genügt) — A trägt damit den jüngsten
+   Zeitstempel.
+2. **Nach Projekt B wechseln, dort NICHTS schreiben** — kein Speichern, kein Publish, kein
+   Zugangsdatum.
+3. **Den Fluss in B starten** und zurückkehren.
+**PROTOKOLLIERT WIRD DIE REIHENFOLGE, nicht nur das Ergebnis.** Ohne sie ist "es landet in
+B" keine Aussage.
+
+**UND EIN VORHER-WERT GEHÖRT DAZU — ALS PFLICHT-STOPP, NICHT ALS HINWEIS:** Der
+**Fehlzustand ist VOR dem Deploy zu sehen** — dieselbe Reihenfolge fahren und festhalten,
+dass die App in **A** landet und der Ergebniscode an **As** Google-Karte steht. **Nach dem
+Deploy ist er nicht mehr herstellbar**, und dann ist "es landet jetzt richtig" nicht von
+"es hätte auch vorher richtig gelandet" zu unterscheiden. Die Regel dahinter: "EIN
+VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS NICHT MEHR HERSTELLBAR"
+(docs/immer-beachten.md).
+
+**WAS DER LIVE-TEST NICHT ZEIGEN WIRD, und es gehört an dieselbe Stelle:**
+· **Den `no_state`-Fall.** Er trägt die Kennung nicht (Festlegung (5)) und landet weiter
+  am falschen Projekt — **das ist kein Fehlschlag des Fixes**, sondern seine benannte
+  Grenze.
+· **Dass das Eigentums-Gate hält.** Eine fremde Kennung ist live nicht sinnvoll zu
+  erzeugen; das gehört in einen Test.
+· **Den `denied`-Fall**, solange das Gate aus Festlegung (5) nicht beantwortet ist.
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -2221,6 +2439,23 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     breiter zu fassen wäre.
     TRIGGER: die nächste Hebung an docs/immer-beachten.md, die jene Regel ohnehin
     berührt — dort ist die Zahl der Fälle zu führen, nicht hier.
+
+21. **VORRATS-EINTRAG 19 WIRD DURCH DIE FIX-SCHEIBE SCHÄRFER, NICHT GEGENSTANDSLOS.**
+    **DER BEFUND (GEMESSEN am Code bzw. ABGELEITET daraus, CC, 2026-08-31):** Heute steht
+    die Meldung des Autorisierungs-Flusses ohnehin am FALSCHEN Projekt — ihr Verlust durch
+    ein fremdes Speichern fällt deshalb kaum auf. **Landet der Nutzer nach der Fix-Scheibe
+    im richtigen Projekt, steht sie an der RICHTIGEN Karte** — und dann ist das Leeren
+    durch ein Meta-Speichern ein **sichtbarer Verlust einer Information, die gerade jemand
+    liest**.
+    **DIE BEGRÜNDUNG IN EINTRAG 19 BLEIBT GÜLTIG** (zu früh geleert kostet eine
+    Information, die ein Klick wiederherstellt; zu spät geleert erzeugt den Widerspruch in
+    der Kachel) — **IHR PREIS STEIGT.** Der Text dort wird hier NICHT verdoppelt; wer
+    entscheiden will, liest ihn und diesen Absatz zusammen.
+    **WAS DAS NICHT HEISST:** Es ist keine Aufforderung, den Reset ziel-genau zu machen.
+    Die Gegenrede dazu steht unverändert in Eintrag 19.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: der Live-Test der Fix-Scheibe — ab da ist der Fall beobachtbar, und erst
+    dann ist er zu bewerten.
 
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT

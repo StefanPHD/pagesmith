@@ -1055,16 +1055,59 @@ Betreiber danach zum richtigen Projekt, läuft `handleSwitch` durch
 **IN EINEM SATZ: DIE AUSKUNFT ERSCHEINT AM FALSCHEN PROJEKT UND VERSCHWINDET AM
 RICHTIGEN.**
 
-### Warum jetzt — und warum sie keine Scheibe des Schnitts ist
+### Vollzogen — was im Zuschnitt der Fix-Scheibe stand und wohin es gegangen ist
 
-**WARUM JETZT:** Weil Scheibe 3 den Ergebniscode überhaupt erst anzeigt. Vor ihr war der
-Sprung folgenlos; mit ihr ist er eine **falsch verortete Aussage** — und eine falsch
-verortete Aussage ist schlechter als gar keine, weil der Betreiber ihr glaubt.
-**WARUM NICHT ALS SCHEIBE DES SCHNITTS:** Der Schnitt beschreibt den Weg zum Transport.
-Diese Arbeit bringt ihn keinen Schritt näher; sie repariert etwas, das die letzte Scheibe
-sichtbar gemacht hat. **Sie hat keine Nummer im Schnitt und bekommt keine.**
-**WAS SIE NICHT IST:** kein Deep-Linking, keine Änderung an der Auto-Load-Regel, keine
-Erweiterung des Eigentums-Gates. S. den Scope.
+**DER TITEL WEICHT ABSICHTLICH AB, aus demselben Grund wie bei Scheibe 3:**
+"### Vollzogen — was hier stand und wohin es gegangen ist" steht in dieser Datei bereits
+zweimal und ist als Hausform über Standdateien hinweg Hebungs-Kandidat 5. Ein weiteres
+gleichlautendes Vorkommen vertiefte eine Anker-Kollision, die diese Datei selbst
+festhält.
+
+VERDICHTET AM 2026-08-31, nach dem Bau-Commit `2b735aa` und dem bestätigten Live-Test.
+Hier standen die ANWEISUNGEN FÜR die Scheibe; sie sind mit dem Vollzug abgelaufen. DREI
+Unterabschnitte und EIN Absatz sind entfallen:
+
+- **"Warum jetzt — und warum sie keine Scheibe des Schnitts ist"** begründete die
+  Reihenfolge und grenzte die Scheibe vom Schnitt ab. **WAS ENTFALLEN IST, WAR DER
+  VERGLEICH MIT EINEM ZUSTAND, DEN ES NICHT MEHR GIBT:** Der Abschnitt begründete das
+  JETZT, indem er den Zustand VOR der Scheibe beschrieb — den Sprung nach A und die
+  falsch verortete Auskunft. Beides ist mit dem Vollzug behoben; der Text verglich ab da
+  mit nichts.
+  **DREI FORTWIRKENDE AUSSAGEN SIND NICHT VERSCHWUNDEN:** Dass sie keine Scheibe des
+  Schnitts ist, steht als erster Satz im KOPF dieses Abschnitts — **und dazu gehört, was
+  dort noch nicht stand: SIE HAT KEINE NUMMER IM SCHNITT UND BEKOMMT KEINE.** Dass die
+  **Auto-Load-Regel "zuletzt bearbeitet" unverändert bleibt und nur einen Vorrang davor
+  bekommt**, lebt AM CODE weiter, im Kommentar an der Verdrahtung in `src/app/page.tsx`.
+  Der Ausschluss des **Deep-Linkings** steht unverändert als Festlegung (3).
+- **"Der Scope dieser Fix-Scheibe — und wo er zum STOPP wird"** nannte, was nicht
+  angefasst werden darf. Der Scope einer gebauten Scheibe ist mit ihrem Vollzug
+  abgelaufen; was tatsächlich angefasst wurde, steht in VERMERK 8.
+  **SEINE ZWEI FORTWIRKENDEN AUSSAGEN SIND GERETTET:** Der GEMESSENE Befund, dass die
+  **Refresh-Route nicht betroffen ist**, steht jetzt in VERMERK 8 — dort, wo die nächste
+  Runde ihn liest. Und seine Zeile zu `no_state` ("eigener offener Punkt, **nicht
+  diagnostiziert**") ist am 2026-08-31 überholt worden: Die Ursache ist gemessen, der
+  Punkt in docs/offene-punkte.md umgeschrieben.
+- **"Die Beweis-Achse dieser Fix-Scheibe — mit ihrer Falle"** war die Anleitung für den
+  Live-Test, einschliesslich des Pflicht-Stopps auf den Vorher-Wert. Sie ist gefahren;
+  ihre Ergebnisse stehen in VERMERK 8. **DIE FALLE SELBST IST KEINE ANWEISUNG UND BLEIBT
+  ERHALTEN:** dass `setCapiToken` und `removeCapiToken` `projects.updated_at` setzen und
+  ein Live-Test ohne festgehaltene Reihenfolge deshalb ZUFÄLLIG besteht, steht jetzt in
+  VERMERK 8 **und** — in seiner produktwirksamen Gestalt — im neuen offenen Punkt "DIE
+  PROJEKTWAHL ÜBERLEBT KEIN NEULADEN" (docs/offene-punkte.md).
+- **Der Absatz "AUFLAGE AN STUFE 1, ALS TESTFALL UND NICHT ALS KOMMENTAR"** in Festlegung
+  (2) verlangte zwei getrennte Läufe — Unterdrückung bei unauflösbarer Kennung,
+  Erscheinen ohne Kennung. **BEIDE SIND EINGELÖST** (T4 und T1 in
+  `src/lib/oauth/connect-return.test.ts`); ihre Begründungen leben in den Kommentarköpfen
+  jener Läufe weiter. Die Festlegung selbst bleibt unangetastet.
+
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WORDEN IST, obwohl es nach Anweisung aussieht — im
+Zweifel stehengelassen:** der Kopf des Abschnitts, "Was diese Fix-Scheibe ist" und die
+fünf Festlegungen. Sie sind GRÜNDE und BEFUNDE, keine Anweisungen.
+**EINE ÜBERSCHNEIDUNG WIRD GEMELDET STATT AUFGELÖST:** Der Mechanismus unter "Was diese
+Fix-Scheibe ist" — `loadProject()` ohne Argument, die Callback-Route schreibt nicht auf
+`projects`, der Projektwechsel hält nichts fest — steht ab dem 2026-08-31 **auch** im
+neuen offenen Punkt. Er ist dort der GEGENSTAND, hier die HERLEITUNG der Scheibe. Wer
+eine der beiden Fassungen ändert, prüft die andere.
 
 ### Die fünf Festlegungen dieser Fix-Scheibe
 
@@ -1119,11 +1162,6 @@ Gate schon erlaubt.
   ohnehin geladen wird. "Keine Kennung" und "unauflösbare Kennung" sind zwei verschiedene
   Zustände, und wer sie zusammenzieht, unterdrückt die Meldung in genau dem Fall, der
   heute als einziger eintritt.
-  **AUFLAGE AN STUFE 1, ALS TESTFALL UND NICHT ALS KOMMENTAR:** Ein Lauf hält fest, dass
-  eine unauflösbare Kennung bei gleichzeitigem Ergebniscode das Rückfall-Projekt lädt
-  **UND die Meldung unterdrückt**; ein zweiter, dass sie ohne Kennung **erscheint**. Beide
-  Hälften einzeln — ein Lauf, der nur die Unterdrückung prüft, wäre auch dann grün, wenn
-  die Meldung nie erschiene.
 GRENZE: Die Bewertung "es leckt nichts" ruht auf der Messung des HEUTIGEN Gates (CC,
 2026-08-31): `maybeSingle()` liefert bei fremder Kennung `null` — kein Name, keine
 Existenz, kein Inhalt. **Wer das Gate ändert, prüft diesen Satz neu.**
@@ -1151,77 +1189,36 @@ GRENZE: Die Festlegung verlangt, dass beide zusammen behandelt werden. **WIE** d
 das tut — ob sie weiterhin den Pfad zurückschreibt oder Parameter einzeln entfernt —, ist
 Sache des Bau-Plans.
 
-**(5) `denied` UND `no_state` TRAGEN DIE KENNUNG NICHT — DAS WIRD AUFGESCHRIEBEN, NICHT
-WEGGEBAUT.**
+**(5) `no_state` TRÄGT DIE KENNUNG NICHT — DAS WIRD AUFGESCHRIEBEN, NICHT WEGGEBAUT.
+`denied` TRÄGT SIE, SEIT DAS GATE BEANTWORTET IST.**
+**DER TITEL IST AM 2026-08-31 ERSETZT WORDEN, NICHT GESTEMPELT**, und der Grund gehört
+dazu: Er nannte beide Ausgänge in einem Atemzug. Nach der Antwort auf das Gate wäre seine
+eine Hälfte falsch — **und eine halb korrigierte Aussage ist gefährlicher als eine ganz
+falsche, weil danach niemand mehr die andere Hälfte nachliest.**
 **GEMESSEN am Code (CC, 2026-08-31):** Ab Schritt (2) der Callback-Route steht
 `parsed.projectId` im Gültigkeitsbereich und **wird bereits benutzt** (Eigentums-Gate,
-Erfolgs-Log). **Zwei Ausgänge liegen davor:** `denied` (Schritt 1, **bewusst** vor dem
-Cookie-Lesen — ungemessen ist, ob Google bei einer Verweigerung den `state` mitschickt) und
-`no_state` (die Kennung liegt **im fehlenden Cookie**).
+Erfolgs-Log). **Zwei Ausgänge liegen davor:** `denied` (Schritt 1, **bewusst** vor der
+State-Prüfung) und `no_state` (die Kennung liegt **im fehlenden Cookie**).
 **BEI `no_state` IST NICHTS ZU MACHEN. UND DAS IST DIE BITTERE POINTE, DIE IN DEN
 ZUSCHNITT GEHÖRT: DER EINZIGE FEHLERCODE, DEN EIN BETREIBER BISHER JE GESEHEN HAT, IST
 `no_state` — und genau der landet weiterhin am falschen Projekt.** Diese Scheibe
 verbessert also ausgerechnet den Fall nicht, der heute eintritt. Wer das nicht
 aufschreibt, hält den Fix nach dem Live-Test für wirkungslos.
-**BEI `denied` IST ES EIN GATE FÜR STUFE 1, KEINE ENTSCHEIDUNG VON HIER:** Lässt sich die
-Kennung mitgeben, **ohne die bewusste Anordnung der Route zu ändern**? Wenn nein, bleibt
-es wie es ist, **und der Zustand wird benannt** statt stillschweigend hingenommen.
-
-### Der Scope dieser Fix-Scheibe — und wo er zum STOPP wird
-
-**NICHT ZU DIESER SCHEIBE:**
-- **`no_state`** — eigener offener Punkt, **nicht diagnostiziert**; diese Scheibe rührt
-  ihn nicht an und behauptet nicht, ihn zu bessern.
-- die Konto-Kennungen (Scheibe 2) und der Transport (Scheibe 4),
-- **Deep-Linking auf Projekte** (s. Festlegung (3)),
-- **jede Änderung am Eigentums-Gate von `loadProject`**,
-- **die Auto-Load-Regel "zuletzt bearbeitet" selbst** — sie bleibt, wie sie ist; diese
-  Scheibe fügt einen Vorrang hinzu, sie ersetzt die Regel nicht.
-
-**KEINE SCHEMA-ÄNDERUNG, KEINE MIGRATION, KEINE NEUE DEPENDENCY.** Verlangt der Bau-Plan
-eine Schema-Aussage, ist das ein **STOPP** — hier wird nur gelesen, was `loadProject`
-ohnehin liest.
-
-**DIE REFRESH-ROUTE IST NICHT BETROFFEN, und der Satz steht hier, damit niemand sie
-vorsorglich mitnimmt.** GEMESSEN am Code (CC, 2026-08-31):
-`src/app/api/oauth/google/refresh/route.ts` ist ein `POST`, der ausschliesslich **JSON**
-zurückgibt — kein `Location`, keine Weiterleitung, keine Rückkehr in die Oberfläche. **Das
-Problem kann sie nicht treffen, solange sie nicht weiterleitet.**
-
-### Die Beweis-Achse dieser Fix-Scheibe — mit ihrer Falle
-
-**SIE HAT EINE FALLE, UND SIE IST DER GRUND, WARUM DIESER ABSCHNITT NICHT KURZ SEIN
-DARF.** GEMESSEN am Repo (CC, 2026-08-31): **`setCapiToken` und `removeCapiToken` setzen
-`projects.updated_at`** (wie Speichern, Publish und die Varianten-Aktionen — neun Stellen
-insgesamt, alle in `actions.ts`). **Wer in B ein Zugangsdatum speichert und dann in B den
-Fluss startet, landet auch OHNE den Fix in B** — durch den vorherigen Schreibvorgang, nicht
-durch die Scheibe.
-**EIN LIVE-TEST, DER DIE REIHENFOLGE NICHT FESTHÄLT, BESTEHT ZUFÄLLIG.**
-
-**DER LIVE-TEST MUSS DIE DIVERGENZ ALSO ABSICHTLICH HERSTELLEN:**
-1. **In Projekt A zuletzt schreiben** (speichern genügt) — A trägt damit den jüngsten
-   Zeitstempel.
-2. **Nach Projekt B wechseln, dort NICHTS schreiben** — kein Speichern, kein Publish, kein
-   Zugangsdatum.
-3. **Den Fluss in B starten** und zurückkehren.
-**PROTOKOLLIERT WIRD DIE REIHENFOLGE, nicht nur das Ergebnis.** Ohne sie ist "es landet in
-B" keine Aussage.
-
-**UND EIN VORHER-WERT GEHÖRT DAZU — ALS PFLICHT-STOPP, NICHT ALS HINWEIS:** Der
-**Fehlzustand ist VOR dem Deploy zu sehen** — dieselbe Reihenfolge fahren und festhalten,
-dass die App in **A** landet und der Ergebniscode an **As** Google-Karte steht. **Nach dem
-Deploy ist er nicht mehr herstellbar**, und dann ist "es landet jetzt richtig" nicht von
-"es hätte auch vorher richtig gelandet" zu unterscheiden. Die Regel dahinter: "EIN
-VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS NICHT MEHR HERSTELLBAR"
-(docs/immer-beachten.md).
-
-**WAS DER LIVE-TEST NICHT ZEIGEN WIRD, und es gehört an dieselbe Stelle:**
-· **Den `no_state`-Fall.** Er trägt die Kennung nicht (Festlegung (5)) und landet weiter
-  am falschen Projekt — **das ist kein Fehlschlag des Fixes**, sondern seine benannte
-  Grenze.
-· **Dass das Eigentums-Gate hält.** Eine fremde Kennung ist live nicht sinnvoll zu
-  erzeugen; das gehört in einen Test.
-· **Den `denied`-Fall**, solange das Gate aus Festlegung (5) nicht beantwortet ist.
+**BEI `denied` IST DAS GATE BEANTWORTET (Bau-Runde 2026-08-31, Commit `2b735aa`) — HIER
+STAND DIE FRAGE, JETZT STEHT DIE ANTWORT:** Die Kennung lässt sich mitgeben, **ohne die
+bewusste Anordnung der Route zu ändern.**
+**DIE UNTERSCHEIDUNG, DIE ES TRÄGT: DAS COOKIE ZU LESEN IST ETWAS ANDERES, ALS DEN STATE
+ZU VERIFIZIEREN.** Die Anordnung schützt den Verweigerungsfall davor, an der
+STATE-PRÜFUNG zu scheitern; `statesMatch` bleibt unangetastet an seiner Stelle weiter
+unten. Im `denied`-Zweig wird ausschliesslich `projectId` entnommen.
+**EIN FEHLSCHLAG DER LESUNG IST FOLGENLOS:** kein Ausgang, kein Log, kein Verdacht — dann
+eben kein Parameter, und die Empfängerseite fällt zurück. **Eine normale Ablehnung kommt
+weiterhin als `denied` heraus und NIE als Sitzungsfehler**; drei Läufe halten das fest
+(T9a mit lesbarem Cookie, T9b ohne Cookie, T9c mit kaputtem Cookie).
+**WAS UNBERÜHRT BLEIBT:** Ob Google bei einer Verweigerung den `state` mitschickt, ist
+weiterhin UNGEMESSEN (docs/ziel-befunde.md, Teil (be)) — **und für diese Antwort
+gleichgültig**, weil die Kennung in UNSEREM Cookie reist und nicht im `state`-Parameter
+des Anbieters.
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -1701,6 +1698,92 @@ die sha256-Gleichheit des Umzugs GEMESSEN am Repo bzw. an den Läufen vom 2026-0
 2026-08-31 (CC). Die Live-Werte GEMESSEN 2026-08-31 (OWNER) an der ausgelieferten
 Anwendung. Die Mutationsergebnisse GEMESSEN an denselben Läufen. Der Satz über den nicht
 getilgten Live-Nachweis der Scheibe 11.2a ist eine FOLGE aus dem Zuschnitt dieser Scheibe.
+
+### VERMERK 8 (Commit 2b735aa) — DIE FIX-SCHEIBE IST GEBAUT UND LIVE BEWIESEN
+
+**DER COMMIT** ist am Repo ermittelt (CC, 2026-08-31): eine Suche über die
+Commit-Botschaft **und** zwei unabhängige `-S`-Gegenproben auf Zeichenfolgen, die dieser
+Diff erst eingeführt hat (`resolveConnectReturn`, `zielMitProjekt`) — **je genau ein
+Treffer, `2b735aa`.** Die Botschafts-Suche allein trifft zwei Commits (der Zuschnitt
+`0c984c8` trägt dieselben Worte im Titel); die `-S`-Proben trennen sie.
+
+**WAS GEBAUT WURDE:** Die Callback-Route hängt die Projekt-Kennung an ihr Rückkehr-Ziel
+(`outcomeUrl` zweiargumentig, `zielMitProjekt` NACH dem `no_state`-Guard, damit ein Aufruf
+oberhalb ein Bau-Fehler statt eines stillen `undefined` ist). Die Entscheidung, WELCHES
+Projekt geladen wird und OB der Ergebniscode gezeigt werden darf, liegt in einer reinen
+Funktion (`src/lib/oauth/connect-return.ts`, vier Fälle, Lader hereingereicht);
+`src/app/page.tsx` verdrahtet sie. Der Mount-Effekt räumt die Adresse jetzt an der
+SUCHZEICHENKETTE statt am Ergebniscode. **Suite: 70 Dateien, 1421 Tests** (vorher
+69/1403). Alle vier Gates waren vor dem Commit grün.
+
+**DIE LIVE-WERTE — GEMESSEN 2026-08-31 (OWNER) an der ausgelieferten Anwendung**, jeder
+Durchlauf vom Host aus `GOOGLE_OAUTH_REDIRECT_URI` gestartet:
+- **0a/0b — DER VORHER-ZUSTAND IST REPRODUZIERT UND DOKUMENTIERT.** Auf der RICHTIGEN
+  Domain, mit der absichtlich hergestellten Divergenz (zuletzt in A geschrieben, dann nach
+  B gewechselt ohne dort zu schreiben): Der Fluss in B kehrte nach **A** zurück.
+- **1 — der Fluss in B führt nach B zurück**, die Zugangsdaten sind hinterlegt.
+- **2 — nach F5 ist die Kennung aus der Adresse entfernt.**
+- **3 — Abbruch in B führt nach B zurück**, mit dem neutralen Satz.
+- **4 — `?project=kaputt` fällt sauber zurück**, keine Meldung, Adresse bereinigt.
+- **5 — `?project=<B>` ohne Ergebniscode lädt B**, Adresse danach bereinigt.
+
+**DIE FALLE DER BEWEIS-ACHSE, und ohne sie sind die Werte oben wertlos** — GEMESSEN am
+Repo (CC, 2026-08-31): **`setCapiToken` und `removeCapiToken` setzen `projects.updated_at`**
+(wie Speichern, Publish und die Varianten-Aktionen — neun Stellen insgesamt, alle in
+`actions.ts`). **Wer in B ein Zugangsdatum speichert und dann in B den Fluss startet,
+landet auch OHNE den Fix in B.** **EIN LIVE-TEST, DER DIE REIHENFOLGE NICHT FESTHÄLT,
+BESTEHT ZUFÄLLIG** — deshalb steht sie oben bei 0a/0b und nicht als Fussnote.
+
+**WAS DER LIVE-TEST NICHT ZEIGT:**
+- **(b) UND (c) SIND LIVE NICHT ZU TRENNEN.** Eine formwidrige Kennung und eine
+  formgültige, die nicht auflöst, sehen für den Nutzer **identisch** aus: Rückfall-Projekt,
+  keine Meldung. **Das leisten allein T2 und T4** — und sie leisten es über die
+  BEOBACHTUNG DES LADER-AUFRUFS, nicht über das Ergebnis, weil das Ergebnis eben gleich
+  ist.
+- **DER `no_state`-FALL LANDET WEITERHIN AM FALSCHEN PROJEKT.** Das ist die **benannte
+  Grenze** aus Festlegung (5), **kein Fehlschlag** — die Kennung liegt im fehlenden
+  Cookie. Wer das nicht mitliest, hält den Fix für wirkungslos.
+- **DASS DAS EIGENTUMS-GATE HÄLT.** Eine fremde Kennung ist live nicht sinnvoll zu
+  erzeugen; das trägt der Test.
+
+**DIE REFRESH-ROUTE IST NICHT BETROFFEN — GERETTET AUS DEM VERDICHTETEN SCOPE, damit
+niemand sie später vorsorglich mitnimmt.** GEMESSEN am Code (CC, 2026-08-31):
+`src/app/api/oauth/google/refresh/route.ts` ist ein `POST`, der ausschliesslich **JSON**
+zurückgibt — kein `Location`, keine Weiterleitung, keine Rückkehr in die Oberfläche. **Das
+Problem kann sie nicht treffen, solange sie nicht weiterleitet.**
+
+**DAS GATE AUS FESTLEGUNG (5) IST BEANTWORTET** — der `denied`-Zweig trägt die Kennung,
+die Anordnung der Route ist unangetastet. Die Antwort steht an Festlegung (5) selbst,
+nicht hier; zweimal geschrieben liefe sie auseinander.
+
+**DIE MUTATIONSPROBEN — VIER, je mit Vorhersage VOR dem Lauf, danach zurückgenommen:**
+- **Die Formprüfung entfernt.** Vorhergesagt in Stufe 1: nur T2. **VOR dem Lauf
+  korrigiert**, weil T2b denselben Zweig durchläuft und ebenfalls den Lader-Aufruf
+  beobachtet; angesagte KLASSE: die Fall-(b)-Läufe, deren Wert die FORM verletzt.
+  **Gefallen: T2 und T2b — genau die angesagte Klasse, kein Überlauf.**
+- **Die Unterdrückung im nicht-auflösenden Fall entfernt.** Vorhergesagt und gefallen:
+  **genau T4.**
+- **Den Projekt-Parameter im Callback weggelassen (`zielMitProjekt`).** Vorhergesagt und
+  gefallen: **genau T6.**
+- **Dasselbe eine Ebene tiefer (das Anhängen in `outcomeUrl` selbst).** Diese Probe war
+  NICHT vorgegeben; sie ist gefahren worden, weil die Anweisung zwei Lesarten zuliess und
+  die zweite einen Deckungsrand MISST statt ihn herzuleiten. Vorhergesagt und gefallen:
+  **T6 und T9a.** **DER BEFUND: Der `denied`-Zweig ist EIGENS gedeckt**, nicht als Beifang
+  des Helfers.
+
+**EIN MESSWERKZEUG DIESER RUNDE HAT SICH ALS KAPUTT ERWIESEN** und ist als
+**Hebungs-Kandidat 6** verortet, mit der Korrektur an Eintrag 17 als Vorrats-Eintrag 22;
+hier nur genannt: `grep -c $'\r'` zählt in dieser Umgebung nicht CR-Zeilen, sondern ALLE
+Zeilen.
+**DER OBJEKT-NACHWEIS DIESES COMMITS IST MIT DEM NEUEN INSTRUMENT GEFÜHRT** (`tr -dc '\r'
+| wc -c` gegen `git show HEAD:<pfad>`): **CR 0, NUL 0 für alle sieben Dateien.**
+
+**PROVENIENZ, JE TEIL:** Umfang, Testzahl, Gate-Ergebnisse, die Commit-Nummer, der
+Objekt-Nachweis und die `updated_at`-Falle GEMESSEN am Repo bzw. an den Läufen vom
+2026-08-31 (CC). Die Live-Werte GEMESSEN 2026-08-31 (OWNER) an der ausgelieferten
+Anwendung. Die Mutationsergebnisse GEMESSEN an denselben Läufen. Dass (b) und (c) live
+ununterscheidbar sind, ist eine FOLGE aus den vier Fällen der reinen Funktion, keine
+Messung.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -2365,11 +2448,23 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     GEMELDET 2026-08-29.
 
 17. **DIE GIT-WARNUNG WAR DER AUSLÖSER, NICHT DIE KONTROLLE.**
-    **DER VORFALL, GEMESSEN (CC, 2026-08-29):** `src/app/projects/actions.ts` kippte
-    während der Bau-Runde VOLLSTÄNDIG auf CRLF — **1504 CR-Bytes, HEAD 0**. **ALLE VIER
-    GATES WAREN GRÜN**, und der Inhalts-Diff war sauber (34 Einfügungen, 0 Löschungen),
-    weil git beim Stagen normalisiert. **Sichtbar wurde es allein an der Zeile "CRLF will
-    be replaced by LF"** aus `git diff --numstat`.
+    **DER VORFALL (CC, 2026-08-29):** `src/app/projects/actions.ts` kippte während der
+    Bau-Runde auf CRLF. **ALLE VIER GATES WAREN GRÜN**, und der Inhalts-Diff war sauber
+    (34 Einfügungen, 0 Löschungen), weil git beim Stagen normalisiert. **Sichtbar wurde es
+    allein an der Zeile "CRLF will be replaced by LF"** aus `git diff --numstat`.
+    **DIE ZAHL IST AM 2026-08-31 ERSETZT WORDEN, NICHT GESTEMPELT.** Hier stand
+    "**1504 CR-Bytes, HEAD 0**" und das Wort **VOLLSTÄNDIG**. Beides ruhte auf
+    `grep -c $'\r'`, und diese Sonde zählt in dieser Umgebung ALLE Zeilen statt der
+    CR-Zeilen (Herleitung mit Positiv- und Negativkontrolle: Vorrats-Eintrag 22). **Die
+    Datei hat exakt 1504 Zeilen** — die Zahl war die Zeilenzahl, nicht der Umfang des
+    Schadens. **ERSETZT statt gestempelt, weil dieser Eintrag ein MASSSTAB ist:** Wer die
+    nächste CRLF-Frage an ihm misst, misst sonst an einer Zahl, die nichts gezählt hat.
+    **DER BEFUND SELBST BLEIBT, UND ZWAR AUS EINEM GEMESSENEN GRUND:** "CR = Zeilenzahl"
+    ist **auch das erwartete Bild einer echt gekippten Datei** — das Merkmal trennt die
+    beiden Fälle nicht. **Was sie trennt, ist die Git-Warnung**, und die kann git nur
+    ausgeben, wenn die Datei im Arbeitsbaum tatsächlich CR trägt; sie stammt nicht aus der
+    Sonde. **Der Titel dieses Eintrags wird dadurch schärfer:** Die Warnung war nicht nur
+    der Auslöser — sie war das einzige Instrument jener Runde, das nicht gelogen hat.
     **WELCHES WERKZEUG ES WAR, IST NICHT GEMESSEN.** Die Gegenprobe spricht gegen die
     naheliegende Antwort: Nach `git checkout` wurden DIESELBEN zwei Änderungen mit
     DEMSELBEN Editier-Werkzeug erneut eingetragen und nach jeder einzelnen nachgemessen —
@@ -2456,6 +2551,94 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
     TRIGGER: der Live-Test der Fix-Scheibe — ab da ist der Fall beobachtbar, und erst
     dann ist er zu bewerten.
+
+22. **KORREKTUR AN VORRATS-EINTRAG 17 — DIE ZAHL, NICHT DER BEFUND.**
+    **DIE MESSUNG (CC, 2026-08-31):** `grep -c $'\r'` zählt in dieser Umgebung nicht
+    CR-Zeilen, sondern **ALLE** Zeilen. Belegt mit Positiv- und Negativkontrolle in EINEM
+    Lauf: eine reine LF-Datei mit drei Zeilen ergab `grep=3` und `tr=0`; eine echte
+    CRLF-Datei mit zwei Zeilen ergab `grep=2` und `tr=2`.
+    **DIE FOLGE FÜR EINTRAG 17:** Die dort protokollierte Zahl **"1504 CR-Bytes"** ist
+    nicht mehr belegbar — `src/app/projects/actions.ts` hat **exakt 1504 Zeilen**.
+    **ABER DER BEFUND STEHT, UND DAS IST DIE FASSUNG, DIE GILT:** "CR = Zeilenzahl" ist
+    **AUCH das erwartete Bild einer echt auf CRLF gekippten Datei** — dort trägt jede
+    Zeile ein CR. **DAS MERKMAL TRENNT DIE BEIDEN FÄLLE NICHT.**
+    **WAS SIE TRENNT, IST DIE GIT-WARNUNG:** `"CRLF will be replaced by LF"` kann git nur
+    ausgeben, wenn die Datei im Arbeitsbaum tatsächlich CR trägt. **Sie stammt nicht aus
+    der Sonde und kann von ihr nicht erzeugt worden sein.**
+    **DASS HEUTE NIRGENDS `i/crlf` STEHT, WIDERSPRICHT DEM NICHT** (GEMESSEN, CC,
+    2026-08-31: `git ls-files --eol` über alle verfolgten Dateien — 227× `i/lf`, 5×
+    `i/none`, 2× `i/-text`): Das ist die Normalisierung beim Commit; **der Index sollte
+    den Zustand nie gesehen haben.**
+    **DER TITEL VON EINTRAG 17 WIRD DADURCH SCHÄRFER, NICHT HINFÄLLIG:** Die Git-Warnung
+    war nicht nur der Auslöser — **sie war in jener Runde das einzige Instrument, das
+    nicht gelogen hat.**
+    KORRIGIERT AM EINTRAG 17 SELBST (2026-08-31), nicht daneben: dort ist die Zahl
+    ERSETZT. Dieser Eintrag trägt die Herleitung.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: keiner — die Korrektur ist vollzogen; der Eintrag steht als Beleg.
+
+23. **— DIE NUMMER IST FREI UND BLEIBT ES.** Hier stand am 2026-08-31 kurzzeitig "DIE
+    INSTRUMENTEN-REGEL FÜR DIE BYTE-KONTROLLE"; sie ist noch am selben Tag als
+    **Hebungs-Kandidat 6** umgebucht worden (ARCHITEKT).
+    **DER GRUND DER UMBUCHUNG:** Der Vorrat heisst "gemeldet, nicht gebaut" und sammelt
+    BAUWÜRDIGES. Eine dauerhafte, projektweite WERKZEUG-Regel ist kein Bauvorhaben,
+    sondern ein Kandidat für docs/immer-beachten.md. **DER UNTERSCHIED ENTSCHEIDET ÜBER
+    IHR ÜBERLEBEN:** Der Vorrat wird mit dieser Standdatei ARCHIVIERT, die
+    Kandidatenliste wird am Phasenende DURCHGESEHEN.
+    **HIER STEHT ABSICHTLICH KEIN ZEIGER AUF DEN INHALT.** Die Regel steht danach an
+    GENAU EINEM Ort; ein zweiter wäre eine Fassung, die neben ihr altert. Diese Zeile
+    hält nur die LÜCKE fest.
+    **DIE LÜCKE WIRD BENANNT STATT GESCHLOSSEN, und die übrigen Nummern bleiben:** Ein
+    Umnummerieren machte jeden bestehenden Verweis auf einen Vorrats-Eintrag still falsch
+    — und still ist hier das Problem, nicht die Lücke.
+
+24. **`PROJECT_PARAM` STEHT ZWEIMAL, UND DIE DIVERGENZ IST EINSEITIG STUMM.**
+    **DER BEFUND (GEMESSEN am Repo, CC, 2026-08-31):**
+    `src/app/api/oauth/google/callback/route.ts` definiert die Konstante lokal (mit
+    Begründung im Kommentar: die Route ist die SENDENDE Seite des URL-Vertrags);
+    `src/lib/oauth/connect-return.ts` exportiert eine zweite Konstante desselben Namens
+    für die empfangende Seite.
+    **DIE ASYMMETRIE IST DER GANZE PUNKT:** Ändert jemand den Wert **im Callback**, wird
+    **T6 rot**. Ändert er ihn **in `connect-return.ts`**, wird **NICHTS rot** — die Läufe
+    dort reichen `rawProject` direkt hinein und gehen nie über den Parameternamen. **DIE
+    FOLGE WÄRE EIN STILLER RÜCKFALL AUF "ZULETZT BEARBEITET"** — also genau der Defekt,
+    den die Fix-Scheibe behebt.
+    **NICHT GEBAUT, UND DER GRUND GEHÖRT DAZU:** Der Bau ERWEITERT ein bestehendes
+    Muster — `RESULT_PARAM = "google"` steht seit Phase 11.8 genauso doppelt. **Es jetzt
+    einseitig zu heilen, machte aus einem konsistenten Muster ein halbes.** **BEIDE PAARE
+    GEHÖREN ZUSAMMEN**, falls es je angefasst wird.
+    **DIE KONVENTIONSZEILE "Konstanten leben in geteilten Dateien, nie als handgetippte
+    Literale" IST HIER ZWEIMAL NICHT EINGEHALTEN** — das steht hier, damit niemand die
+    Doppelung für die Konvention hält.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: eine Änderung an einem der beiden Parameternamen.
+
+25. **`loadProject` EBNET DREI FÄLLE AUF `null` EIN.**
+    **GEMESSEN am Code (CC, 2026-08-31):** "nicht gefunden", "gehört einem anderen Nutzer"
+    und "DB-Fehler" sind an der Rückgabe **nicht zu trennen** — alle drei liefern `null`.
+    **FÜR DIE FIX-SCHEIBE IST DAS FOLGENLOS:** Alle drei bekommen dieselbe Behandlung
+    (Rückfall auf "zuletzt bearbeitet", Meldung unterdrückt), und für zwei von ihnen ist
+    genau das gewollt — ein eigener Text für "gehört dir nicht" verriete die Existenz
+    einer fremden Kennung.
+    **ABER: EIN DB-FEHLER FÜHRT DAMIT ZU RÜCKFALL UND UNTERDRÜCKTER MELDUNG — DER
+    BETREIBER SÄHE NICHTS.** Er hat gerade einen Autorisierungs-Fluss durchlaufen, steht
+    danach im falschen Projekt, und nichts sagt ihm, dass etwas schiefging.
+    **EIN FIX LÄGE IN `loadProject` UND DAMIT AUSSERHALB JEDES BISHERIGEN SCOPES** — die
+    Fix-Scheibe hat das Eigentums-Gate ausdrücklich nicht angefasst.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: die nächste Arbeit an `loadProject` oder an der Fehlerbehandlung des
+    Projekt-Ladepfads.
+
+26. **EINE BESTANDS-LINT-WARNUNG IN `src/lib/tracking/consent.test.ts`.**
+    **GEMESSEN (CC, 2026-08-31):** `consent.test.ts:33 — Unused eslint-disable directive
+    (no problems were reported from 'no-new-func')`. `eslint` meldet 0 Fehler und genau
+    diese eine Warnung.
+    **SIE STAMMT NICHT AUS DIESER SCHEIBE:** Die Datei steht in keinem Diff der Runde
+    (`git status` führt sie nicht), und die Lint-Konfiguration ist ebenfalls unberührt.
+    **GEMELDET, NICHT BEHOBEN** — sie ausserhalb ihres Scopes anzufassen wäre ein
+    Scope-Bruch, und eine unbenutzte Direktive ist kein Defekt, sondern eine Altlast.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: die nächste Arbeit an `consent.test.ts` oder eine Aufräumrunde am Lint-Stand.
 
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT
@@ -2644,3 +2827,63 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
    PROVENIENZ: die Zählung GEMESSEN am Repo (CC, 2026-08-29); dass jede künftige Phase
    den Titel erneut erzeugt, ist eine ABLEITUNG aus der Verdichtungs-Bauform, keine
    Messung.
+
+6. **DIE BYTE-KONTROLLE BRAUCHT EIN BENANNTES INSTRUMENT: `tr -dc '\r' | wc -c` BZW.
+   `git ls-files --eol`, NIE `grep -c $'\r'`** (angetreten 2026-08-31, aus dem Vorrat
+   umgebucht — dessen Nummer 23 bleibt als benannte Lücke stehen).
+   **DER BEFUND — GEMESSEN (CC, 2026-08-31), mit Positiv- und Negativkontrolle in EINEM
+   Lauf:** `grep -c $'\r'` zählt in dieser Umgebung nicht CR-Zeilen, sondern **ALLE**
+   Zeilen. Eine reine LF-Datei mit drei Zeilen ergab `grep=3` und `tr=0`; eine echte
+   CRLF-Datei mit zwei Zeilen ergab `grep=2` und `tr=2`.
+   **WARUM DAS TEUER IST UND NICHT BLOSS UNGENAU: EIN INSTRUMENT, DAS MAL RICHTIG UND MAL
+   DIE ZEILENZAHL LIEFERT, IST AN SEINER AUSGABE NICHT ALS KAPUTT ZU ERKENNEN.** Vier
+   frühere Runden haben mit ihm "CR=0" gemeldet — das Ergebnis war richtig, **der Weg
+   dorthin nicht überprüfbar.** Der einzige Verräter ist "CR == Zeilenzahl, exakt", und
+   genau der ist am 2026-08-31 als Bestätigung gelesen worden statt als Warnsignal.
+   **DIE ZWEITE HÄLFTE IST ALLGEMEINER UND WIEGT SCHWERER: PRÜFLING UND KONTROLLE MIT
+   DERSELBEN WAAGE ZU WIEGEN RETTET NICHTS.** Die Gegenprobe der Bau-Runde lief mit
+   demselben kaputten Instrument und hat den Fehler deshalb BESTÄTIGT statt gefangen.
+   **DIE FOLGEN SIND BEREITS EINGETRETEN, das ist kein hypothetischer Schaden:** ein
+   falscher STOPP im Objekt-Nachweis (CR≠0 gemeldet, tatsächlich 0), eine falsche Aussage
+   über den Arbeitsbaum des ganzen Repos ("trägt überall CRLF"), und eine Zahl in
+   Vorrats-Eintrag 17, die ersetzt werden musste.
+
+   **DIE NACHBARSCHAFT IN docs/immer-beachten.md — DIE FRAGE, NICHT IHRE ANTWORT.** Beide
+   benannten Regeln sind im Volltext gelesen (CC, 2026-08-31); es sind in Wahrheit DREI,
+   und die dritte liegt am nächsten:
+   · **"WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG STILL DAS CR"** — sie handelt
+     davon, dass ein Werkzeug den GEGENSTAND verändert (CR, Kodierung), und ihre Prüfung
+     ist `git status` plus der Ausschluss leerer Diffs.
+   · Ihr Absatz **"EIN WERKZEUG KANN AUCH EINEN BEFUND ERZEUGEN, DEN DER GEGENSTAND NICHT
+     HERGIBT"** — die Gegenrichtung, das ERGEBNIS statt des Gegenstands.
+   · **"EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND"** (Phase
+     11.8) — bereits eine EIGENE Regel neben jenem Absatz, für den Nicht-Treffer.
+   **WAS FÜR EINEN ABSATZ SPRICHT:** Der Gegenrichtungs-Absatz sagt wörtlich, ein Werkzeug
+   verändere "das ERGEBNIS, ohne den Gegenstand anzufassen" — genau das ist hier
+   geschehen. Eine dritte eigenständige Regel auf derselben Achse macht es
+   unwahrscheinlicher, dass beim nächsten Fall die richtige greift.
+   **WAS FÜR EINE EIGENE SPRICHT:** Jener Absatz und die 11.8er-Regel sind beide auf die
+   ABWESENHEIT zugeschnitten — ihre operative Anweisung lautet "WO EIN MESSERGEBNIS EINE
+   ABWESENHEIT IST, WIRD DAS WERKZEUG GEWECHSELT", und beide Belege sind Nicht-Treffer.
+   **HIER IST DAS ERGEBNIS EINE ANWESENHEIT** (eine Zahl, wo null stehen müsste); die
+   Anweisung feuert also nicht. Und die zweite Hälfte — dass eine Kontrolle mit derselben
+   Waage nichts rettet — steht in keiner der drei.
+   **NICHT ENTSCHIEDEN, und ohne diesen Satz stellt die Hebung eine dritte Regel neben
+   zwei bestehende, und dann greift keine mehr richtig:** ob das ein ABSATZ an der
+   bestehenden Werkzeug-Regel wird oder eine EIGENE. KEINE EMPFEHLUNG.
+   **GILT UNABHÄNGIG VON DIESER ENTSCHEIDUNG UND AB SOFORT:** Die Byte-Kontrolle läuft
+   über `tr` bzw. `git ls-files --eol`. Die Ablage-Frage betrifft, WO die Regel steht,
+   nicht OB sie befolgt wird.
+   **EIN VERWANDTER KANDIDAT LIEGT IN EINER ANDEREN DATEI:** Hebungs-Kandidat 1 in
+   docs/aktiver-stand-11.8.md ("EIN NEU GESCHRIEBENES ARTEFAKT KANN EIN NUL-BYTE TRAGEN,
+   UND KEIN GATE MELDET ES") lässt unter "NICHT ENTSCHIEDEN" ausdrücklich offen, "ob die
+   Byte-Kontrolle eine Auflage an jede neue Datei wird · welchen Umfang sie hätte".
+   **DORT WIRD NICHT ERGÄNZT:** Jene Datei ist eine ARCHIVIERTE Phase, und ein
+   rückwirkender Eingriff in sie steht in dieser Datei bereits einmal ausdrücklich AUS
+   (s. den Vermerk zum Vorrat der Phase 11.8). **WER EINEN VON BEIDEN HEBT, LIEST DEN
+   ANDEREN MIT** — jener fragt, WANN gemessen wird, dieser, WOMIT.
+   GEMELDET 2026-08-31, NICHT GEBAUT.
+   PROVENIENZ: Der Instrumenten-Befund GEMESSEN am eigenen Lauf (CC, 2026-08-31), mit
+   Positiv- und Negativkontrolle. Der Volltext der drei Nachbarregeln GELESEN in
+   docs/immer-beachten.md (CC, 2026-08-31). Dass eine dritte Regel auf derselben Achse die
+   Trefferwahrscheinlichkeit senkt, ist eine ABLEITUNG, keine Messung.

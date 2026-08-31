@@ -60,6 +60,7 @@ docs/immer-beachten.md.
 · Fortschreibungs-Regeln
 · Scheibe 11.2a — Klick-Kennungen lösen und die Nutzlast bauen
 · Die Erneuerung des Zugangsdatums — Scheibe 1a des Schnitts der Phase 11.2
+· Google als reguläres Ziel in der Oberfläche — Scheibe 3 des Schnitts der Phase 11.2
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -679,6 +680,348 @@ klein. **Mit Scheibe 1b sieht niemand mehr in diese Datei.**
 offener Punkt verortet ("DER DECKEL ENDET VOR DEM LESEN DES RUMPFES — ZWEI DATEIEN",
 CLAUDE.md, "## Offene Punkte") und NICHT hier.
 
+## Google als reguläres Ziel in der Oberfläche — Scheibe 3 des Schnitts der Phase 11.2
+
+**DIE KURZFORM WIRD HIER EINMAL AUFGELÖST UND DANACH NICHT WIEDERHOLT:** "Scheibe 3"
+meint die dritte Scheibe des Schnitts, in den die Phase 11.2 am 2026-08-28 zerlegt worden
+ist (bindende Entscheidung (6)). **SIE IST NICHT DIE SCHEIBE 11.2a** — jene ist
+abgeschlossen und hat zwei reine Funktionen gebaut. Wie bei Scheibe 1a steht deshalb der
+INHALT im Titel und die Kurzform dahinter.
+
+**DIE REIHENFOLGE IST ERLAUBT UND SIEHT NUR FALSCH AUS:** Diese Scheibe kommt VOR
+Scheibe 2 (der Ablage der Konto-Kennungen), obwohl die Nummer höher ist. Die GRENZE der
+bindenden Entscheidung (6) sagt es ausdrücklich: "Zwingend ist NUR 4 nach 1a, 2 und 3" —
+der Schnitt ist eine HALBORDNUNG, keine Kette. Wer die Nummern als Kette liest, hält
+diesen Zuschnitt für einen Verstoss.
+
+**PROVENIENZ DES GANZEN ABSCHNITTS, wo an der einzelnen Angabe nichts anderes steht:
+ARCHITEKT, 2026-08-29. Keine Messung.** Jede mit GEMESSEN gekennzeichnete Angabe stammt
+aus der Aufklärungsrunde vom 2026-08-29 (CC, am Repo, mit Positivkontrolle je Achse).
+
+### Was Scheibe 3 ist
+
+**DER TITEL WEICHT ABSICHTLICH VON DEM DER SCHEIBE 1a AB** ("### Was sie ist"): Zwei
+zeichengleiche `###`-Überschriften in DERSELBEN Datei machen jeden Such-Anker mehrdeutig,
+und der erste Treffer wäre systematisch der falsche — die Regel "EIN ANKER, DER EINDEUTIG
+AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" (docs/immer-beachten.md) beschreibt
+genau diesen Schaden.
+
+`'google'` wird ein REGULÄRES Fan-Out-Ziel: sichtbar in der Oberfläche, über die
+Anwendung verbindbar und trennbar — statt über eine abgetippte URL.
+
+**DER EIGENTLICHE GEGENSTAND IST NICHT DER LISTENEINTRAG.** Er ist, dass der
+Autorisierungs-Fluss heute NEBEN der Anwendung liegt. **GEMESSEN am Repo (CC,
+2026-08-29):** Eine formale Suche über `src/components` und `src/app` auf `*.tsx`,
+case-insensitiv und mehrzeilig, nach "google" liefert GENAU EINEN Treffer, und der ist
+`src/app/layout.tsx` — `import { Geist } from "next/font/google"`, also die Schriftart.
+**Positivkontrolle:** dieselbe Suche nach "linkedin" trifft in `TargetCard.tsx` und
+`CodeImporter.tsx`. **Negativkontrolle:** ein Phantom-Muster trifft nichts.
+**FOLGE:** Es gibt heute keinen Knopf, keinen Link, keine Karte und keinen Text zu
+Google. `/api/oauth/google/start` ist ausschliesslich durch händisches Aufrufen der URL
+erreichbar, und `/api/oauth/google/refresh` ebenso.
+
+**WAS DAMIT EINGELÖST WIRD, und es steht bereits als Schuld im Code:** Der Kommentarkopf
+von `src/app/api/oauth/google/callback/route.ts` nennt unter "DREI FOLGEN, benannte
+Kosten und keine Versehen" genau die zwei Zustände, die diese Scheibe beendet — (1) die
+Oberfläche sieht die Zeile nicht, (2) `removeCapiToken` weist `'google'` ab, die Zeile ist
+über die Anwendung nicht entfernbar. Der dritte Punkt dort ist die UMFANGS-Aussage, dass
+die Aufnahme eine eigene Scheibe sei; **das ist diese.**
+
+### Warum jetzt
+
+**DER ZUSTAND IST HEUTE SCHLECHTER ALS EIN FEHLENDES FEATURE, und das ist der Grund für
+die Reihenfolge:** Ein Betreiber kann sein Google-Konto über die abgetippte Start-URL
+VERBINDEN — die Zeile entsteht, chiffriert und korrekt. Er kann sie danach **nicht mehr
+loswerden**. `removeCapiToken` weist `'google'` vor jedem DB-Zugriff ab; die einzige
+Entfernung läuft über den SQL-Editor. **Ein Weg hinein ohne Weg hinaus ist eine Sackgasse
+im eigenen Projekt.**
+
+**DIE ZWEITE HÄLFTE DES GRUNDES IST DIE UNSICHTBARKEIT.** `listConfiguredTargets`
+(src/app/projects/actions.ts) liest ALLE Zeilen des Projekts und filtert das Ergebnis mit
+`isTrackingTarget` — **GEMESSEN am Code (CC, 2026-08-29):** eine bestehende
+`'google'`-Zeile wird gelesen und danach verworfen. Der Betreiber hat also einen abgelegten
+Zugang, den nichts anzeigt. Der Zustand ist nicht falsch dargestellt, er ist GAR NICHT
+dargestellt — und das ist die Klasse von Fehlzustand, die dieses Projekt an mehreren
+Stellen als die teuerste führt.
+
+**WARUM NICHT ERST SCHEIBE 2:** Die Kennungen brauchen einen Ort und eine Eingabe; das ist
+ein eigener Gegenstand. Die Sackgasse oben braucht keinen davon — sie braucht einen
+Verbinden- und einen Trennen-Weg. Die beiden Arbeiten hängen nicht aneinander, und die
+Halbordnung erlaubt beide Reihenfolgen.
+
+### Sechs Festlegungen
+
+**(1) ALLE VIER TORE BLEIBEN GESCHLOSSEN. NACH DIESER SCHEIBE IST GOOGLE SICHTBAR UND
+VERWALTBAR UND SENDET NACHWEISLICH NICHT.**
+Die vier Tore stehen in bindender Entscheidung (6) und sind am 2026-08-29 erneut am Code
+erhoben (CC): `withPixel` (die Ableitung aus TRACKING_TARGETS in
+`src/lib/capi/token.ts`) · die Geheimnis-Schleife ebenda (sie selektiert `("target,
+secret")` und verwirft bei `hasSecret === false`) · das Consent-Gate (`allowedTargets` in
+`src/lib/capi/ingest.ts` über `consentAllows`) · `hasAdapter` (`dispatchForward` ebenda,
+Quelle `src/lib/tracking/target-adapters.ts`).
+**TOR A WIRD ZUGEHALTEN, NICHT ABGEWARTET:** Die Karte bekommt KEINE `public*`-Felder.
+GRUND: Google braucht ZWEI Skalare, wo `pixelId` einen trägt (Kundennummer und
+Ziel-Kennung) — die Kennungen sind Scheibe 2, und ein Eingabefeld hier entschiede ihre
+Ablage im client-besessenen Einstellungs-Blob durch die Hintertür.
+**GRENZE, UND SIE GEHÖRT ZWINGEND IN DIESEN ZUSCHNITT:** Mit Scheibe 2 fällt Tor A
+**ABSICHTLICH**. Danach trägt Tor B allein — und Tor B ist eine Aussage über eine
+DATENBANK-SPALTE, nicht über die Oberfläche: Der Resolver liest die Klartext-Spalte
+`secret`, und die Google-Zeile trägt dort NULL (der Callback schreibt `secret: null` und
+`secret_enc`, der CHECK `project_secrets_secret_genau_eines` erzwingt genau eines von
+beiden). **WER SCHEIBE 2 ZUSCHNEIDET, PRÜFT TOR B DORT NEU.** Ohne diesen Satz liest jene
+Runde die vier geschlossenen Tore als dauerhaft, und sie sind es nicht.
+
+**(2) DIE KARTE HAT KEIN GEHEIMNIS-FELD — DIE ABWESENHEIT IST DER SCHALTER.**
+Dieselbe Bauform wie heute bei `publicLabel`: Die drei `secret*`-Felder von
+`TargetCardConfig` (src/components/TargetCard.tsx) werden OPTIONAL, und ihre Abwesenheit
+schaltet das Eingabefeld ab. Ein optionaler VERBINDEN-Weg tritt daneben.
+**KEIN Flag, KEINE zweite Kartenkomponente, KEINE Fallunterscheidung über Zielnamen in
+der Komponente.**
+GRUND — **GEMESSEN am Code (CC, 2026-08-29):** Die Komponente `TargetCard` enthält heute
+KEINEN einzigen Zielnamen-Vergleich; die Zielwerte stehen ausschliesslich im
+Konfigurations-Literal `TARGET_CARDS` und in Kommentaren (Achse: `target ===` sowie die
+fünf Zielwerte als Literal, case-insensitiv, mehrzeilig; Positivkontrolle: dieselbe Suche
+findet in `src/app/projects/actions.ts` vier `target ===`). **Genau diese Eigenschaft
+macht die Komponente tragbar** — ein Flag NEBEN den Feldern wäre eine zweite Wahrheit über
+dieselbe Sache, und ein Zielnamen-Zweig wäre der erste im Haus.
+
+**(3) VERBINDEN UND TRENNEN KOMMEN ZUSAMMEN.**
+Ein Trennen ohne Verbinden sperrt den Betreiber aus seinem eigenen Projekt aus und wäre
+schlechter als der heutige Zustand: Er könnte die Zeile entfernen und danach keine neue
+anlegen, ohne wieder eine URL abzutippen.
+**DER LÖSCHPFAD TUT BEREITS DAS RICHTIGE — GEMESSEN am Code (CC, 2026-08-29):**
+`removeCapiToken` löscht auf `(project_id, target)` gefiltert; der `project_tokens`-Zweig
+liegt hinter `if (target === META_TARGET)` und rührt Metas Rollback-Reserve für ein anderes
+Ziel nicht an; der `settings`-Merge lässt `tokenSet` unverändert. **DER FEHLENDE TEIL IST
+ALLEIN DER VERBINDEN-WEG.**
+GRENZE: Das gilt für eine Zeile, die NUR in `project_secrets` steht — und genau so entsteht
+sie im Google-Weg. Für ein Ziel, das je in beiden Tabellen läge, ist hier nichts gesagt.
+
+**(4) EIN ZIEL OHNE GEHEIMNIS-FELD NIMMT KEIN KLARTEXT-GEHEIMNIS AN.**
+`setCapiToken` bekommt einen EIGENEN, BENANNTEN Ausgang — **VOR jedem DB-Zugriff**, in
+derselben Anordnung wie das bestehende `isTrackingTarget`-Gate, also vor `createClient()`,
+vor dem Ownership-Gate und insbesondere vor `createAdminClient()`.
+**GRUND, UND ER IST DER SICHERHEITSRELEVANTE TEIL DIESER SCHEIBE:** Ohne diesen Ausgang
+schriebe die Action einen eingefügten Text als **KLARTEXT** nach `project_secrets.secret`
+— in eine Zeile, deren Geheimnis chiffriert gehört. Bei bereits bestehender Zeile bräche
+zusätzlich der CHECK `project_secrets_secret_genau_eines` mit 23514, weil dann beide
+Spalten gefüllt wären. Der erste Fall ist der schlimmere: er ist STILL.
+**DAS URTEIL WIRD AUS DERSELBEN QUELLE ABGELEITET WIE DIE KARTE.** Kein zweites Register,
+keine Zielnamen-Liste in der Action, KEIN DRITTES URTEIL. Zwei Instanzen, die dieselbe
+Frage beantworten, laufen auseinander — dieselbe Figur wie `domains` gegen
+`settings.hosting.label`.
+**OFFEN UND ALS GATE FÜR STUFE 1 ZU FÜHREN, HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN:** ob eine
+`"use server"`-Datei aus der heutigen Quelle der Kartenkonfiguration importieren darf, und
+ob die Konfiguration dafür in eine REINE Datei muss. **DIE LAGE IST GEMESSEN (CC,
+2026-08-29):** `src/components/TargetCard.tsx` trägt in Zeile 1 `"use client"`,
+`src/app/projects/actions.ts` trägt `"use server"`. Ob die Ableitung damit einen Umzug der
+Konfiguration verlangt, ist eine Frage an den Bau-Plan und nicht an diesen Zuschnitt.
+
+**(5) DIE ZWEI FEST VERDRAHTETEN ZAHLEN WERDEN ERSETZT, NICHT NACHGEZOGEN.**
+**GEMESSEN am Repo (CC, 2026-08-29):** `src/lib/settings.targets.test.ts` nennt ZWEIMAL
+`expect(TRACKING_TARGETS.length).toBe(4)` — je einmal im Lauf über `hasTargetPixelId` und
+im Lauf über `isTargetDeliverable`. Beide sind im Kommentar als POSITIVKONTROLLE
+deklariert, und diese ABSICHT bleibt: Sie verhindern, dass die `for`-Schleife darüber bei
+leerer Liste trivial grün ist.
+**IHR AUSDRUCK WIRD MITWACHSEND.** GRUND: Eine Zahl neben einer Liste wird bei jedem
+Zuwachs neu falsch, ohne dass an der geprüften Eigenschaft etwas kaputt wäre — die Zahl
+nachzuziehen hiesse, dieselbe Bauform mit einem neuen Wert zu bauen und beim sechsten Ziel
+erneut. Es ist dieselbe Bauform, die in DIESER Datei dreimal protokolliert kaputtgegangen
+ist (die Stückzahlen in den Köpfen von "Entscheidungen" und "Vorrat").
+GRENZE: Die Festlegung sagt, dass der Ausdruck mitwächst — sie sagt NICHT, WIE. Das ist
+Sache des Bau-Plans.
+
+**(6) `TARGETS_WITH_ADAPTER` WIRD NICHT ANGEFASST.**
+**GEMESSEN am Repo (CC, 2026-08-29):** Kein Compiler erzwingt dort einen Eintrag —
+`FORWARDER_BY_TARGET` (src/lib/capi/ingest.ts) ist über `TargetWithAdapter` geschlüsselt
+und nicht über `TrackingTarget`. **ES IST DER EINZIGE ORT, AN DEM DIESE SCHEIBE STILL ZUR
+TRANSPORT-SCHEIBE WÜRDE**, und deshalb braucht er eine Festlegung, während die drei
+erzwungenen Stellen darunter keine brauchen.
+GRENZE: Die Festlegung verbietet den Eintrag für DIESE Scheibe. Sie sagt nichts darüber,
+ob er später kommt — bindende Entscheidung (8) sagt, dass er über `FORWARDER_BY_TARGET`
+laufen SOLL, und Scheibe 4 zahlt ihn.
+
+### Drei Entscheidungen, die nach den sechs Festlegungen gefallen sind — sie binden gleich
+
+**WARUM SIE GETRENNT STEHEN UND NICHT ALS (7) BIS (9) IN DER LISTE DARÜBER:** Die sechs
+Festlegungen sind als Block gefallen, diese drei danach — sie beantworten die Fragen, die
+dieser Zuschnitt zunächst als OFFEN ausgewiesen hatte. Ein Abschnitt "Was ausdrücklich
+NICHT entschieden ist" stand hier und ist mit ihnen ERSATZLOS ENTFALLEN; es blieb nichts
+darin übrig. **SIE BINDEN GENAU SO WIE DIE SECHS.** Getrennt stehen sie, damit die
+Nummern der sechs unangetastet bleiben und die spätere Entscheidung als spätere lesbar
+ist.
+**PROVENIENZ ALLER DREI: ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-08-29.** Keine Messung, ausser
+wo an der einzelnen Angabe etwas anderes steht.
+
+**(A) DER VERBINDEN-WEG IST NICHT VORABLADE-FÄHIG.** Kein `<Link>`, kein `<a href>` auf
+die Start-Route. **DIE FORM WÄHLT DER BAU-PLAN** — verboten ist nur, dass sie ohne Klick
+feuern kann.
+**DIE EHRLICHE HÄLFTE GEHÖRT DAZU, sonst ruht die Entscheidung auf einem zu starken
+Grund: DAS P3-ARGUMENT TRÄGT HIER NUR ZUR HÄLFTE.** P3 (s. "Die Entscheidungen vom
+2026-08-29") legte die Beweis-Route auf POST, weil sie eine Zeile SCHREIBT und einen
+FREMDEN Endpunkt ruft. **Die Start-Route tut beides nicht.** Der Schaden eines
+Vorablade-Treffers wäre ein überschriebenes State-Cookie — **klein und UNGEMESSEN**.
+**DER TRAGENDE GRUND IST EIN ANDERER, und er ist kein Sicherheits-, sondern ein
+Produkt-Argument:** Ein Verbinden ist ein BEWUSSTER AKT DES BETREIBERS. Ein Element, das
+ohne Klick feuert, ist keiner — es autorisiert in seinem Namen, ohne dass er es getan hat.
+**DAZU DIE EMPFINDLICHKEIT DER STATE-ACHSE**, und sie ist belegt statt vermutet: Der
+Live-Test der Scheibe 1a hat `?google=no_state` erzeugt (VERMERK 6, Schritt 1), **die
+Ursache ist bis heute NICHT GEMESSEN**. Eine Achse, deren Fehlzustand man einmal gesehen
+und nie erklärt hat, bekommt keinen zusätzlichen unbeabsichtigten Auslöser.
+
+**(B) DIE ERGEBNISCODES GEHÖREN IN DIESE SCHEIBE — ALS DREI FÄLLE, NICHT ALS DREIZEHN
+TEXTE.**
+· **`ok`** → die Karte kippt. **KEIN Text.** Der Erfolgsfall trägt sich selbst.
+· **`denied`** → **KEIN FEHLER, sondern eine WAHL DES NUTZERS.** Neutral, keine
+  Fehlersprache, keine Farbe, die nach Defekt aussieht.
+· **alles Übrige** → **EIN Text**, und der rohe Code daneben SICHTBAR für den Support.
+**GRUND:** Der Erfolgsfall trägt sich selbst, die zwölf anderen nicht. **Eine Karte, die
+nach einem gescheiterten Verbinden unverändert "Nicht konfiguriert" sagt, IST die stille
+Fehlklasse, die diese Scheibe beseitigen soll** — der Betreiber hätte gehandelt, nichts
+wäre geschehen, und nichts sagte es ihm.
+**DER TEXT BEHAUPTET WEDER URSACHE NOCH ERGEBNIS — UND ER MUSS ES NICHT:** Die Karte
+liest ihren Zustand aus der DATENBANK und ist die Autorität darüber, ob die Verbindung
+besteht. Der Text sagt nur, dass der Vorgang nicht durchlief; ob etwas hinterlegt ist,
+sagt die Karte. **DER WORTLAUT WIRD HIER NICHT FORMULIERT** — das ist Sache des Bau-Plans.
+**GRENZE: DREIZEHN EIGENE TEXTE SIND AUSDRÜCKLICH NICHT GEGENSTAND.** Wer sie später
+will, schneidet dafür eine eigene Arbeit zu. **DER ROHE CODE IST GENAU DER ERSATZ DAFÜR**:
+Er kostet keine dreizehn Formulierungen und macht einen Support-Fall trotzdem
+adressierbar.
+**GEMESSEN am Code (CC, 2026-08-29):** Der Callback kehrt auf `/?google=<code>` zurück
+und kennt DREIZEHN Codes (`ok`, `denied`, `no_state`, `state_mismatch`, `no_code`,
+`not_found`, `config`, `exchange`, `bad_response`, `no_refresh`, `bad_payload`, `encrypt`,
+`write`); NICHTS in der Oberfläche liest den Parameter heute. Der Kommentarkopf jener
+Route weist die Abbildung ausdrücklich "der Oberflaechen-Scheibe" zu — **diese
+Entscheidung nimmt sie an.**
+
+**(C) `GOOGLE_TARGET` BLEIBT ROUTEN-LOKAL.**
+**GRUND:** Die Konstante beantwortet eine ANDERE Frage als TRACKING_TARGETS — "unter
+welchem Schlüssel legt DIESER OAuth-Fluss ab" gegen "welche Ziele bietet die OBERFLÄCHE
+an". Zusammengezogen koppelte sie die Existenz eines Erneuerungs-Zweiges an die
+Oberflächen-Liste, **und genau diese Unabhängigkeit ist der Punkt von Festlegung (6)**:
+Ein Ziel darf einen Autorisierungs- und Erneuerungs-Weg haben, ohne deshalb ein Empfänger
+zu sein.
+**OFFEN ALS GATE FÜR STUFE 1, HIER NICHT ENTSCHIEDEN:** ob die Konstante als
+`TrackingTarget` GETYPT werden kann, ohne diese Kopplung zu erzeugen. Der Typ ist eine
+schwächere Bindung als der Import einer Liste — ob schwach genug, ist eine Frage an den
+Bau-Plan.
+
+### Was die Aufnahme erzwingt — BEFUND, keine Auflage
+
+**GEMESSEN am Repo (CC, 2026-08-29).** Drei `Record<TrackingTarget, …>` verlangen bei einer
+Erweiterung von TRACKING_TARGETS je einen Eintrag, sonst bricht der Build:
+- `TARGET_CARDS` (src/components/TargetCard.tsx) — die Beschriftungen der Karte.
+- `CONSENT_KEY_BY_TARGET` (src/lib/tracking/consent-targets.ts) — der Consent-Schlüssel.
+- `LEGACY_CONSENT_ROLE` (ebenda) — **dort zwingend `false`.** Nicht der Compiler verlangt
+  das, sondern ein Test: `consent-targets.test.ts` prüft, dass es GENAU EINEN Träger gibt,
+  und ein zweiter Lauf nagelt ihn auf `meta`. Ein `true` verschenkte die Altbestands-
+  Ausnahme an ein Ziel, über das nie jemand gefragt wurde.
+
+**`TARGETS_WITH_ADAPTER` UND `FORWARDER_BY_TARGET` VERLANGEN NICHTS.**
+
+**DER UNTERSCHIED IST DER GRUND FÜR DIE FESTLEGUNG (6) — und dafür, dass die drei darüber
+KEINE brauchen:** Was der Compiler erzwingt, kann niemand vergessen; es fällt beim Bauen
+auf. Was er nicht erzwingt, fällt nur auf, wenn jemand daran denkt. Eine Festlegung ist
+dort nötig, wo das Vergessen NICHT wehtut — und beim Adapter-Eintrag täte das Gegenteil
+weh: ein versehentlicher Eintrag machte aus dieser Scheibe stillschweigend die
+Transport-Scheibe.
+
+### Der Scope — und wo er zum STOPP wird
+
+**NICHT ZU DIESER SCHEIBE:**
+- die Konto-Kennungen und ihre Ablage (Scheibe 2),
+- der Transport (Scheibe 4),
+- `ensureTrackingKey` im OAuth-Weg — **Vorrats-Eintrag 13, zweiter Spiegelstrich, TRIGGER
+  EINGETRETEN, GEMESSEN am Code (CC, 2026-08-29) und ausdrücklich NICHT behoben**: Der
+  Callback ruft es nicht, und sein Kommentar sagt das ausdrücklich,
+- jede Änderung am Resolver (`getCapiConfigByTrackingKey`), am Ingest-Pfad oder an einem
+  Adapter,
+- jede Migration.
+
+**KEINE SCHEMA-ÄNDERUNG, UND SIE IST AUCH NICHT NÖTIG:** Der CHECK
+`project_secrets_target_valid` nimmt `'google'` bereits an. **DIE PROVENIENZ GEHÖRT DAZU
+UND IST NICHT VON HEUTE:** LIVE ABGELESEN am 2026-08-27 (Owner, SQL-Editor; Wortlaut,
+Zeilenzahl und zwei Wegwerf-Inserts in docs/db-stand.md). Am Repo lesbar ist nur, dass
+Migration 0026 sie schreibt — **ob sie in der laufenden Datenbank gilt, ist am Repo nicht
+entscheidbar.**
+**DARAUS FOLGT EIN STOPP:** Verlangt der Bau-Plan eine Schema-Aussage, ist das ein STOPP
+dieser Scheibe. Sie ist eine Oberflächen- und Autorisierungs-Scheibe; sie hat an der
+Datenbank nichts zu suchen.
+
+**DIE SCHULD DER SCHEIBE 11.2a WANDERT WEITER.** `buildGoogleEvent` und
+`extractGoogleClickIds` bekommen auch hier KEINEN Aufrufer im Produktivcode — diese Scheibe
+berührt sie mit keiner Zeile. Der nachgeschuldete Live-Nachweis aus VERMERK 2 steht
+unverändert und geht an die Transport-Scheibe.
+
+### Die Beweis-Achse
+
+**SIE HAT ZWEI HÄLFTEN, UND DIE ZWEITE IST DIE, DIE MAN VERGISST:** Dass die Scheibe
+STEHT, zeigt eine sichtbare und bedienbare Karte. Dass sie NICHT MEHR TUT als das, zeigt
+nur eine Aussage über die GESCHLOSSENEN TORE. Eine Anleitung, die nur die erste Hälfte
+prüft, meldet Erfolg für eine Scheibe, die den Transport mitgebaut haben könnte.
+
+**LIVE — JEDER SCHRITT MISST GENAU EINE ACHSE:**
+1. **Sichtbarkeit an einer BESTEHENDEN Zeile.** Ein Projekt, für das bereits eine
+   `'google'`-Zeile existiert, zeigt die Karte mit dem Status "Zugangsdaten hinterlegt".
+   Das ist der Nachweis, dass der Filter in `listConfiguredTargets` sie nicht mehr wirft —
+   und NUR das.
+2. **Verbinden.** Der Weg führt durch den Zustimmungs-Bildschirm und kehrt zurück; die
+   Karte steht danach auf "Zugangsdaten hinterlegt".
+3. **Trennen.** Die Karte steht danach auf "Nicht konfiguriert", und ein erneutes Laden
+   bestätigt es. Erst dieser Schritt beweist, dass die Sackgasse zu ist.
+4. **Kein Geheimnis-Feld.** Auf der Google-Karte gibt es kein Eingabefeld für ein
+   Zugangsdatum. **PFLICHT-STOPP VOR SCHRITT 2 UND 3:** Wer 2 und 3 in EINEM Durchlauf
+   fährt, misst das Trennen an einer Zeile, die er selbst gerade angelegt hat — das ist
+   zulässig, aber es ist NICHT der Fall aus Schritt 1. Beide Fälle gehören einzeln
+   gefahren, oder der nicht gefahrene wird als nicht gefahren protokolliert.
+5. **Der Hinweis "Auslieferung folgt — dieses Ziel sendet noch nicht"** steht auf der
+   Karte. Er ist eine AUSSAGE DER OBERFLÄCHE über `hasAdapter`, **kein Beweis des
+   Nicht-Sendens**.
+
+**WAS LIVE NICHT ZU BEWEISEN IST, und dieser Absatz ist der wichtigere Teil der
+Beweis-Achse:** Dass Google nicht sendet, kann ein Live-Test nicht auf EIN Tor
+zurückführen. Tor B (kein Klartext in `secret`) und Tor D (kein Adapter) sind **je für
+sich hinreichend**; ein ausbleibendes Ereignis sieht unter beiden identisch aus, und Tor A
+und C schweigen dabei ebenfalls. Ein Ergebnis, das aus vier Gründen so aussehen kann wie
+beobachtet, ist keine Messung, sondern eine Frage
+(docs/immer-beachten.md, "BEVOR EIN ERGEBNIS BEURTEILT WIRD …", Teil (a)).
+**DIE TRENNUNG LEISTEN NUR TESTS**, je Tor einer, und jeder benennt SEIN Tor. Ein Test,
+der bloss "es geht nichts hinaus" behauptet, ist eine Abwesenheits-Behauptung mit vier
+möglichen Ursachen und deckt keine davon.
+
+**AM ENDE STEHT DIE FRAGE, DIE DER VERMERK BEANTWORTEN MUSS:** Welches Tor hält, wenn man
+die anderen drei gedanklich wegnimmt? Wer sie nicht beantworten kann, hat die Tore nicht
+geprüft, sondern ihr gemeinsames Schweigen.
+
+### Zwei Auflagen an Stufe 1
+
+**SIE SIND GATES, KEINE HINWEISE**, und beide folgen aus der Beweis-Achse darüber bzw.
+aus Festlegung (2) — sie stehen hier, weil ein Bau-Plan, der sie übersieht, GRÜN
+durchläuft und trotzdem eine Zusage dieser Scheibe verliert.
+
+**(a) JE TOR EIN TEST, DER SEIN TOR BENENNT.** Die Feststellung der Beweis-Achse, dass
+ein Live-Test das Nicht-Senden NICHT auf ein einzelnes Tor zurückführen kann, wird damit
+zur Auflage: Es braucht VIER Tests, je einen für `withPixel`, die Geheimnis-Schleife, das
+Consent-Gate und `hasAdapter`, und jeder benennt in seinem Kommentar, WELCHES Tor er
+deckt. **EIN TEST, DER BLOSS "es geht nichts hinaus" BEHAUPTET, DECKT KEINES DER VIER** —
+er ist eine Abwesenheits-Behauptung mit vier möglichen Ursachen, und er bliebe grün, wenn
+drei der vier Tore fielen.
+
+**(b) DIE VIER BESTEHENDEN ZIELE BEHALTEN IHRE `secret*`-FELDER, MIT EINEM TEST.**
+Festlegung (2) macht die drei Felder von `TargetCardConfig` OPTIONAL. **DAMIT KANN EIN
+SPÄTERER EINGRIFF SIE BEI `meta`, `pinterest`, `tiktok` ODER `linkedin` STILL WEGLASSEN,
+UND DER COMPILER SCHWIEGE** — die Karte verlöre ihr Eingabefeld für das Zugangsdatum, ohne
+dass irgendwo etwas rot wird. **WAS HEUTE EIN PFLICHTFELD ERZWINGT, MUSS DANACH EIN
+WÄCHTER ERZWINGEN.** Es ist dieselbe Figur wie bei `LEGACY_CONSENT_ROLE`, wo ebenfalls
+kein Typ, sondern ein Test die tragende Eigenschaft hält.
+**DIE KOSTEN DER FESTLEGUNG (2) SIND DAMIT BENANNT UND NICHT WEGGEREDET:** Sie tauscht
+eine Compiler-Zusage gegen eine Test-Zusage. Das ist der Preis der Bauform "Abwesenheit
+ist der Schalter", und er wird hier bezahlt statt später entdeckt.
+
+**ZWEI WEITERE GATES STEHEN NICHT HIER, SONDERN AN IHRER ENTSCHEIDUNG** — die
+Import-Frage an Festlegung (4) und die Typ-Frage an Entscheidung (C). Zweimal aufgezählt
+liefen sie auseinander.
+
 ## Abgeschlossene Scheiben-Vermerke
 
 ### VERMERK 1 (Commit 2d0b59e) — DIE GESTALT-ENTSCHEIDUNG UND DIE MESSUNG DER KLICK-KENNUNG
@@ -760,7 +1103,8 @@ worden und trägt seine Gegenprobe im selben Lauf; er bewacht NICHT, dass die Wa
 richtig ist (sie ruht auf nichts Gelesenem), sondern dass ihre Änderung SICHTBAR wird.
 
 **WAS DIESER VERMERK AUS DEM VERDICHTETEN ZUSCHNITT AUFNIMMT** — die drei entfallenen
-Unterabschnitte sind oben im Abschnitt "### Vollzogen" einzeln benannt; ihr Inhalt
+Unterabschnitte sind oben im Abschnitt "### Vollzogen" DER SCHEIBE 11.2a einzeln
+benannt; ihr Inhalt
 steht hier: der Gegenstand (zwei Dateien, ihre Symbolnamen, kein Aufrufer) im ersten
 Absatz, der Beweis-Grund samt der Schuld der nächsten Scheibe im zweiten. Die eine
 fortwirkende Aussage aus "Warum der Schnitt nichts verbaut" ist NICHT hierher gewandert,
@@ -935,11 +1279,22 @@ Entscheidung und hier KEINE.
 Zuordnung, welche Festlegung der Scheibe 1a auf welchem Teil ruht, ist GEMESSEN am
 Dateitext (CC, 2026-08-29).
 
-### VERMERK 6 (noch ohne Commit-Nummer) — DIE SCHEIBE 1a IST GEBAUT UND LIVE BEWIESEN
+### VERMERK 6 (Commit a351858) — DIE SCHEIBE 1a IST GEBAUT UND LIVE BEWIESEN
 
-**DIES IST DIE EINE ERLAUBTE LÜCKE** im Sinne der Fortschreibungs-Regel oben: der
-jüngste Vermerk, noch nicht committet. Eine ZWEITE Lücke gibt es nicht — der Hash an
-VERMERK 5 ist in derselben Runde nachgetragen worden.
+**DIE COMMIT-NUMMER IST AM 2026-08-29 NACHGETRAGEN WORDEN.** Hier stand "(noch ohne
+Commit-Nummer)" samt dem Absatz, dies sei die eine erlaubte Lücke; beides ist eingelöst
+und ERSETZT. **NACH DIESER RUNDE HAT DIE DATEI KEINE LÜCKE.**
+**DIE FORTSCHREIBUNGS-REGEL OBEN IST EINE OBERGRENZE UND KEIN SOLL** — null Lücken sind
+der Normalzustand, sobald der jüngste Vermerk committet ist. Wer aus ihr ein Soll liest,
+lässt eine Lücke stehen, die längst füllbar ist, und begründet sie mit einer Regel, die
+das Gegenteil sagt.
+**DER HASH IST AM REPO ERMITTELT** (CC, 2026-08-29), nicht aus einem Prompt übernommen —
+nach demselben Verfahren wie bei VERMERK 5: drei unabhängige `-S`-Suchen über
+docs/aktiver-stand.md, nach dem Titeltext dieses Vermerks, nach "DREI ABLEITUNGEN AUS
+DIESEN WERTEN" und nach "DIE ZWEITE UHR IST NEU GESETZT WORDEN". Alle drei treffen
+denselben Commit, und es ist je genau EIN Treffer.
+**NICHT ZU VERWECHSELN MIT DEM BAU-COMMIT:** `a351858` trägt DIESEN VERMERK, `ca6b4c1`
+trägt den BAU. Beide Nummern stehen in diesem Abschnitt und meinen verschiedene Arbeiten.
 
 **WAS GEBAUT WURDE — Bau-Commit `ca6b4c1`:** SECHS neue Dateien, KEINE bestehende
 angefasst. Drei Quelldateien — `refreshAccessToken` (src/lib/oauth/token-refresh.ts, der
@@ -1030,7 +1385,8 @@ zeigt:**
 ---
 
 **WAS DIESER VERMERK AUS DEM VERDICHTETEN ZUSCHNITT AUFNIMMT:** die zwei entfallenen
-Unterabschnitte sind oben in "### Vollzogen" einzeln benannt, mit dem Ort, an dem ihr
+Unterabschnitte sind oben in "### Vollzogen" DER SCHEIBE 1a einzeln benannt, mit dem
+Ort, an dem ihr
 fortwirkender Teil weiterlebt. **Die acht Entscheidungen vom 2026-08-29 sind NICHT hier
 aufgenommen worden, sondern als eigener Unterabschnitt IM ZUSCHNITT verankert** — sie
 binden über diese Scheibe hinaus und gehören deshalb nicht in ein Protokoll, das eine
@@ -1631,6 +1987,34 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
       gemessen bestätigt und ausdrücklich NICHT behoben.
     ÜBERNOMMEN 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG.
 
+14. **DER KOMMENTARKOPF VON `createAdminClient` IST ZU WEIT.** Er sagt: "GESCHRIEBEN wird
+    in BEIDE — project_secrets UND project_tokens (Doppelschreib in
+    setCapiToken/removeCapiToken; die Alt-Tabelle ist die Rollback-Reserve)".
+    **GEMESSEN am Code (CC, 2026-08-29):** Der `project_tokens`-Zweig in `setCapiToken`
+    liegt hinter `if (target === META_TARGET)`, ebenso der in `removeCapiToken`. Für die
+    drei anderen Ziele beschreibt der privilegierte Client **nur EINE** Tabelle.
+    **ALS AUSSAGE ÜBER META RICHTIG, ALS AUSSAGE ÜBER DEN CLIENT ZU WEIT** — und der Satz
+    steht dort, um zu erklären, WOFÜR es diesen Client gibt; mit einer Tabelle zu viel
+    erklärt er einen Doppelschreib, den es für drei von vier Zielen nicht gibt.
+    FUNDSTELLE: `src/lib/supabase/admin.ts`, Kommentarkopf von `createAdminClient`.
+    **AUSDRÜCKLICH NICHT MITGEZÄHLT:** `setCapiToken` schreibt zusätzlich `projects`
+    (settings und tracking_key) — aber über den SSR-Client, nicht über diesen. Der
+    Kommentar ist an dieser Stelle also nicht unvollständig, sondern nur zu weit.
+    GEMELDET 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: die nächste Runde, die `src/lib/supabase/admin.ts` ohnehin anfasst.
+
+15. **DIE FIXTURE-LISTEN IN `CodeImporter.test.tsx` SIND UNGEPRÜFT.** Mehrere Läufe dort
+    schreiben Consent-Schlüsselmengen als Literal ab (`toEqual(["meta", "pinterest",
+    "tiktok"])` und Verwandte) und prüfen damit den ausgelieferten Text eines konkreten
+    Fixtures, nicht die Konstante.
+    **OB SIE BEI EINEM FÜNFTEN ZIEL BRECHEN, HÄNGT AM FIXTURE UND IST NICHT ERHOBEN.**
+    Der Unterschied zu den zwei Zahlen aus Festlegung (5) ist genau dieser: jene sind
+    GEMESSEN und brechen sicher, diese sind UNGEMESSEN und brechen vielleicht.
+    Beides ungeprüft in einen Bau-Plan zu schreiben wäre dieselbe Sicherheit für zwei
+    verschiedene Wissensstände.
+    GEMELDET 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: Stufe 1 der Scheibe 3 — dort ist es ein GATE, kein Hinweis.
+
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT
 DIESER SCHEIBE GEGENSTANDSLOS.** `refreshAccessToken` liest, dechiffriert und zerlegt
@@ -1641,6 +2025,28 @@ Eingriff in eine abgeschlossene Phase wäre eine EIGENE Entscheidung. Sie steht 
 ausdrücklich AUS. Dieser Vermerk ist der einzige Ort, an dem der Sachverhalt festgehalten
 ist; wer jene Datei liest, findet dort einen Eintrag, der nicht mehr zutrifft, und
 NICHTS, das darauf hinweist.
+
+**EIN ZWEITER VERMERK, KEIN EINTRAG — DIE AUSLEGUNG DES SKILL-KONFLIKTS** (2026-08-29):
+Der projekteigene Skill `supabase-doku` verlangt eine Anbieter-Lesung, sobald ein Schema,
+eine Policy oder ein Constraint berührt **oder auch nur erfragt** wird. Eine
+READ-ONLY-Runde kann sie nicht erbringen: Der Anbieter-Crawl legt gemessenermassen
+Dateien an (je Navigation eine `page-*.yml`; GEMESSEN 2026-08-25, festgehalten in
+docs/immer-beachten.md).
+**DIE AUSLEGUNG (ARCHITEKT, 2026-08-29):** Der Auslöser greift NICHT, wenn die Frage
+UNSEREN Constraint betrifft und keine Anbieter-Eigenschaft — es gäbe keine
+Anbieter-Angabe, die die Antwort trüge; die Antwort steht im SQL-Editor.
+**DASS DIES EINE AUSLEGUNG IST UND KEINE REGELÄNDERUNG, IST DER GANZE ZWECK DIESES
+VERMERKS.** Der Wortlaut des Skills ist unberührt, und diese Datei ist nicht der Ort, an
+dem er geändert würde (Weg 7: docs/arbeitsweise.md, als Änderungsantrag). **ER STEHT HIER,
+DAMIT DIE NÄCHSTE KOLLISION NICHT NEU VERHANDELT WIRD** — sie ist eingetreten, sie wird
+wieder eintreten, und ohne eine festgehaltene Auslegung entscheidet sie jede Runde neu und
+möglicherweise anders.
+**DIE GRENZE:** Sie deckt AUSSCHLIESSLICH den Fall "unser eigener Constraint, keine
+Anbieter-Eigenschaft, READ-ONLY-Runde". Sie sagt NICHTS über eine Runde, die baut, und
+nichts über eine Frage nach dem VERHALTEN des Anbieters — dort greift der Auslöser
+unverändert.
+PROVENIENZ: die Kollision GEMESSEN am eigenen Lauf (CC, 2026-08-29); die Auslegung eine
+ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
 
 ## Hebungs-Kandidaten
 
@@ -1767,3 +2173,32 @@ NICHTS, das darauf hinweist.
    docs/ziel-befunde.md ohnehin öffnet — dieselbe Runde wie Vorrats-Eintrag 12 dieser
    Datei, und beides gehört zusammen erledigt. KEINE EMPFEHLUNG. PROVENIENZ: FOLGE aus
    dem Vergleich der beiden Fundstellen (CC, 2026-08-31), keine Messung.
+
+5. **"### Vollzogen — was hier stand und wohin es gegangen ist" IST EINE HAUSFORM ÜBER
+   STANDDATEIEN HINWEG, KEINE LOKALE DUBLETTE** (angetreten 2026-08-29).
+   DER BEFUND — GEMESSEN am Repo (CC, 2026-08-29; Achse: der Titel-Kern ohne
+   Gedankenstrich, case-insensitiv, mehrzeilig, Testdateien eingeschlossen, mit
+   Positiv- und Negativkontrolle): SECHSMAL in docs/claude-history/phase-11.1-linkedin.md,
+   ZWEIMAL in docs/aktiver-stand.md — **in beiden Dateien als deren EIGENE Überschriften,
+   NICHT als Zeiger auf eine fremde.** Jede künftige Phase erzeugt ihn erneut, weil die
+   Verdichtungs-Bauform ihn verlangt.
+   **DIE ENTSCHEIDUNG IST NICHT, OB MAN HIER UMBENENNT.** Sie lautet, ob die Hausform in
+   ALLEN Standdateien einen unterscheidenden Zusatz bekommt. Eine Umbenennung nur an
+   einer Stelle machte diese Datei intern eindeutig und die Hausform inkonsistent — der
+   nächste Leser fände denselben Titel dann in zwei Bauformen und wüsste nicht, welche
+   gilt.
+   VERWANDT MIT KANDIDAT 3: Dort steht die ACHSE (ein Titel als Suchanker), hier der
+   FALL. Die Begründung wird NICHT verdoppelt.
+   **DER BEFUND ÜBER DAS PRÜFVERFAHREN, und er ist der brauchbarere Teil dieses
+   Kandidaten:** Eine Titelsuche findet ZEIGER und NAMENSVETTERN gleichermassen, und nur
+   die Zeiger zählen — **ein Namensvetter in einer fremden Datei stirbt bei einer
+   Umbenennung nicht.** Wer beides zusammenzieht, hält jeden mehrfach vergebenen Titel für
+   unantastbar und benennt nie wieder etwas um. Die Trennung leistet der Kontext des
+   Treffers: eine Überschrift ist ein Namensvetter, ein Zitat im Fliesstext ist ein
+   Zeiger.
+   NICHT ENTSCHIEDEN: ob die Hausform einen Zusatz bekommt, welcher, und ob die
+   bestehenden Vorkommen nachgezogen werden. KEINE EMPFEHLUNG.
+   GEMELDET 2026-08-29, NICHT GEBAUT.
+   PROVENIENZ: die Zählung GEMESSEN am Repo (CC, 2026-08-29); dass jede künftige Phase
+   den Titel erneut erzeugt, ist eine ABLEITUNG aus der Verdichtungs-Bauform, keine
+   Messung.

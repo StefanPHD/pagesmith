@@ -256,6 +256,8 @@ gehen von hier eine Station weiter.
   eine Vorschau-Adresse läuft hinein. OB UND WAS GEBAUT WIRD, IST NICHT ENTSCHIEDEN; die
   Frage wird spätestens fällig, wenn ein fremder Nutzer den Fluss startet — er kann den
   Grund nicht erraten, und für ihn sieht das Produkt kaputt aus)
+- DIE PROJEKTWAHL ÜBERLEBT KEIN NEULADEN (Trigger: der erste fremde Nutzer mit mehr als
+  einem Projekt — spätestens vor einem Beta-Launch)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

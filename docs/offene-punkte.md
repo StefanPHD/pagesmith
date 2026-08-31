@@ -1404,3 +1404,35 @@ aufeinander; sie liegen alle hier und finden einander.
   relative Rückkehr den geglückten Zweitversuch erklärt, ist eine FOLGE aus der Messung,
   keine eigene Beobachtung. Der Tod von K8 und K9 ist eine ABLEITUNG aus der bewiesenen
   Ursache.
+
+- DIE PROJEKTWAHL ÜBERLEBT KEIN NEULADEN (Trigger: der erste fremde Nutzer mit mehr als
+  einem Projekt — spätestens vor einem Beta-Launch):
+  DER BEFUND (OWNER-Beobachtung 2026-08-31; der Mechanismus GEMESSEN am Code, CC,
+  2026-08-31): Der Projektwechsel lebt ausschliesslich im React-State des Containers —
+  kein Cookie, kein localStorage, keine Spalte. Ein Neuladen fällt auf den Auto-Load
+  zurück, und der lädt das Projekt mit dem jüngsten `updated_at`.
+  ER IST NICHT OAUTH-SPEZIFISCH, und das ist der erste Satz, weil er sonst falsch verortet
+  wird: JEDER Wechsel plus F5 tut das. Die Fix-Scheibe vom 2026-08-31 hat ihn nicht
+  verursacht, sondern SICHTBAR GEMACHT — sie hat den Rückkehr-Weg repariert und damit den
+  allgemeineren Fall freigelegt.
+  DIE SCHÄRFE, DIE DEN PUNKT ERST ZU EINEM MACHT: `updated_at` heisst "zuletzt
+  GESCHRIEBEN", nicht "zuletzt ANGESEHEN". Die Callback-Route schreibt auf
+  `project_secrets`, NICHT auf `projects`; `setCapiToken` schreibt auf beide.
+  FOLGE — ZWEI BETREIBER TUN AUS IHRER SICHT DASSELBE, UND ES GEHT VERSCHIEDEN AUS:
+  · Meta-Token in B eingefügt -> F5 bleibt in B.
+  · Google in B verbunden -> F5 springt nach A.
+  DERSELBE HANDGRIFF, ZWEI AUSGÄNGE. Das ist nicht "unbequem", sondern unvorhersagbar: Der
+  Betreiber kann aus dem Verhalten keine Regel ableiten, weil die Regel an einer Spalte
+  hängt, die er nicht sieht.
+  NICHT GEBAUT: Eine überlebende Projektwahl ist ein EIGENES PRODUKTMERKMAL — sie betrifft
+  jeden Wechsel, die Adresszeile und den Zurück-Knopf. Festlegung (3) des Zuschnitts der
+  Fix-Scheibe schliesst sie ausdrücklich aus, und der Grund gilt weiter: EIN HALB GEBAUTES
+  DEEP-LINKING WÄRE SCHLECHTER ALS KEINES, weil die Adresse dann manchmal gilt und
+  manchmal nicht. KEINE EMPFEHLUNG, wie es zu lösen wäre.
+  WARUM DIESER PUNKT HIER STEHT UND NICHT IM VORRAT DER STANDDATEI — OWNER-ENTSCHEIDUNG
+  (2026-08-31): Er stirbt sonst mit der Phase. Vorrat 13 hat gezeigt, was dort mit
+  eingetretenen Triggern geschieht.
+  PROVENIENZ, JE TEIL: Die Beobachtung LIVE (Owner, 2026-08-31). Der Mechanismus — der
+  React-State ohne Persistenz, der Auto-Load über `updated_at`, die Schreibziele der
+  Callback-Route und von `setCapiToken` — GEMESSEN am Code (CC, 2026-08-31). Die zwei
+  Ausgänge desselben Handgriffs sind eine FOLGE daraus, keine eigene Live-Beobachtung.

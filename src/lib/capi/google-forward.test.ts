@@ -73,10 +73,15 @@ afterEach(() => {
 describe("forwardToGoogle — die Nutzlast", () => {
   it("GF-1: Adresse, Gestalt und die benannte eventSource-Konstante", async () => {
     // WIRD ROT, WENN: die Adresse wandert, ein Schluessel umbenannt wird, die
-    // Klick-Kennung nicht aus eventSourceUrl geloest wird — oder wenn jemand die
+    // Klick-Kennung nicht aus eventSourceUrl geloest wird, transactionId aus der
+    // Nutzlast verschwindet oder einen anderen Wert traegt — oder wenn jemand die
     // eventSource-Konstante aendert. Genau das soll ein sichtbarer Diff sein: Der Wert
     // ist eine OWNER-ENTSCHEIDUNG auf einem GEMESSENEN TYP, aber einem UNGEMESSENEN
     // WERT (Teil (br)).
+    // DIESER LAUF IST DER MENGEN-WAECHTER (toEqual auf die GANZE Nutzlast) und traegt
+    // transactionId deshalb mit. Die GLEICHHEIT mit eventID bewacht GF-5 eigens — ein
+    // toEqual gegen ein Literal wuerde bei einem abgedrifteten Wert zwar rot, sagte aber
+    // nicht, WELCHE der beiden Achsen gebrochen ist.
     await forwardToGoogle(config(), "Purchase", "evt-1", rumpf());
 
     expect(aufrufe[0].url).toBe(ENDPUNKT);
@@ -96,6 +101,7 @@ describe("forwardToGoogle — die Nutzlast", () => {
           eventTimestamp: new Date(JETZT * 1000).toISOString(),
           eventSource: "WEB",
           adIdentifiers: { gclid: GCLID },
+          transactionId: "evt-1",
         },
       ],
     });
@@ -114,21 +120,35 @@ describe("forwardToGoogle — die Nutzlast", () => {
     expect(String(aufrufe[0].init.body)).not.toContain(TOKEN);
   });
 
-  it("GF-5: transactionId und x-goog-user-project werden ausdruecklich NICHT gesendet", async () => {
-    // ZWEI ABWESENHEITEN MIT POSITIVKONTROLLE IM SELBEN LAUF: Der Aufruf FINDET statt
-    // (die Zusicherung darunter belegt es), also sind die beiden Nicht-Treffer echte
-    // Nicht-Treffer und kein leerer Durchgang.
-    // WARUM KEIN transactionId: optional in dieser Gestalt (Teil (l)/D5); eventID ist
-    // UNSERE Dedup-Kennung, nicht Googles Transaktion.
+  it("GF-5: transactionId IST in der Nutzlast und traegt GENAU eventID — x-goog-user-project nicht", async () => {
+    // ER HAT DEN VORGAENGER ERSETZT, NICHT ERGAENZT: Jener behauptete die ABWESENHEIT
+    // von transactionId. Sein Gegenstand ist mit Messung D verschwunden (Teil (ca)) —
+    // und eine Abwesenheits-Behauptung, deren Gegenstand es nicht mehr gibt, geht ab da
+    // IMMER auf und schuetzt nichts (docs/immer-beachten.md, "EINE
+    // ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL", Weise (1)).
+    //
+    // WODURCH WIRD ER ROT — DREI ACHSEN:
+    //   (1) transactionId verschwindet wieder aus der Nutzlast;
+    //   (2) SEIN WERT DRIFTET VON eventID WEG — ein frisch erzeugter, ein abgeleiteter,
+    //       ein umgeformter Wert;
+    //   (3) eine dritte Kopfzeile kommt hinzu (die x-goog-user-project-Haelfte, von
+    //       dieser Aenderung unberuehrt).
+    //
+    // (2) IST DER EIGENTLICHE ZWECK UND NICHT DIE ANWESENHEIT: Meta dedupliziert bereits
+    // ueber genau diesen Schluessel. Driftet der Wert bei einem spaeteren Refactor weg,
+    // deduplizierten Meta und Google ueber VERSCHIEDENE Schluessel — der Aufruf gelaenge
+    // weiterhin, der Anbieter meldete nichts, und ohne diese Zusicherung wuerde nichts
+    // rot.
     // WARUM KEIN x-goog-user-project: ungemessen in beide Richtungen (Teil (bu)).
-    await forwardToGoogle(config(), "Purchase", "evt-DEDUP-1", rumpf());
+    // DIE POSITIVKONTROLLE STECKT IN gesendet(): es besteht auf GENAU EINEM Aufruf. Ohne
+    // sie waeren beide Zusicherungen Aussagen ueber einen Durchgang, den es nie gab.
+    const EVENT_ID = "evt-DEDUP-1";
+    await forwardToGoogle(config(), "Purchase", EVENT_ID, rumpf());
 
     const kopf = aufrufe[0].init.headers as Record<string, string>;
     expect(Object.keys(kopf)).toEqual(["Authorization", "Content-Type"]);
-    const nutzlast = gesendet();
-    const ereignis = (nutzlast.events as Record<string, unknown>[])[0];
-    expect(ereignis.transactionId).toBeUndefined();
-    expect(String(aufrufe[0].init.body)).not.toContain("evt-DEDUP-1");
+    const ereignis = (gesendet().events as Record<string, unknown>[])[0];
+    expect(ereignis.transactionId).toBe(EVENT_ID);
   });
 
   it("GF-1b: Betrag und Waehrung reisen nur, wenn sie brauchbar sind", async () => {

@@ -100,10 +100,25 @@ import type { GoogleClickIds } from "./google-click-ids";
  * unbelegte Festlegung an der schlechtestmoeglichen Stelle: unsichtbar fuer jeden
  * Aufrufer.
  *
- * `transactionId` IST OPTIONAL UND WIRD PER VORGABE NICHT BEFUELLT. Beim gewaehlten
- * Weg ist es optional (GELESEN, Teil (l)/D5); bei der NICHT gewaehlten Gestalt waere
- * es Pflicht. Die beiden tauschen ihren Rang — wer den einen Zuschnitt aus dem anderen
- * ableitet, erbt genau die falsche Haelfte.
+ * `transactionId` IST EIN OPTIONALER PARAMETER DIESER FUNKTION UND EIN PFLICHTFELD DES
+ * ANBIETERS — der Unterschied ist der ganze Inhalt dieses Absatzes. Der Bauer setzt
+ * KEINEN Vorgabewert; wer ihn ruft, liefert den Wert. Der Adapter google-forward.ts tut
+ * das UNBEDINGT und setzt `eventID` ein; der Grund fuer genau diesen Wert steht dort,
+ * am sichtbaren Aufrufer, und wird hier NICHT verdoppelt.
+ * BEI DER GEWAEHLTEN OFFLINE-GESTALT IST DAS FELD PFLICHT — GEMESSEN 2026-09-01 (OWNER,
+ * Messung D; docs/ziel-befunde.md, Google-Abschnitt, Teil (ca)): Ein Aufruf ohne das
+ * Feld wird mit REQUIRED_FIELD_MISSING an `events[0].transaction_id` abgewiesen, ein
+ * sonst zeichengleicher mit dem Feld liefert 200.
+ * HIER STAND DAS GEGENTEIL ("optional und wird per Vorgabe nicht befuellt"), und es
+ * ruhte auf ZWEI unabhaengigen Lesungen — Teil (l)/D5 und Teil (w)/D2 ordnen die Pflicht
+ * beide der NICHT gewaehlten Multi-Source-Gestalt zu. BEIDE WERDEN NICHT KORRIGIERT: Sie
+ * beschreiben, was am Dokument STAND, mit Quelle und Datum. Ueberholt ist die ERWARTUNG,
+ * nicht die Beobachtung — zwei Lesungen aus demselben Dokumentenbaum sind keine zwei
+ * Belege.
+ * WARUM DER PARAMETER TROTZDEM OPTIONAL BLEIBT: Diese Funktion BAUT die Nutzlast, sie
+ * WAEHLT die Werte nicht — dieselbe Linie wie bei `eventSource` darueber. Ein
+ * Pflicht-Parameter machte sie zur Mitentscheiderin darueber, WAS der Dedup-Schluessel
+ * ist, und diese Entscheidung gehoert an die Stelle, an der sie jemand sieht.
  */
 export type GoogleEventInput = {
   adIdentifiers: GoogleClickIds;

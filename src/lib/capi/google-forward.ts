@@ -181,13 +181,47 @@ function resolveDestinationId(
  * das, eine Funktion mit weniger Parametern erfuellt die laengere Signatur. Dieselbe
  * Lage wie beim vierten Ziel, nur eine Stelle weiter.
  *
- * eventID WIRD ENTGEGENGENOMMEN UND NICHT GESENDET. Der Typ Forwarder gibt die
- * Reihenfolge vor, und der Rumpf hinter eventID wird gebraucht. GESENDET wird es
- * nicht: transactionId ist in dieser Gestalt OPTIONAL (GELESEN, docs/ziel-befunde.md,
- * Teil (l)/D5 — es ist einer der zwei Rang-Wechsel gegenueber Multi-Source), und
- * eventID ist UNSERE Dedup-Kennung, nicht Googles Transaktion. Sie dafuer einzusetzen
- * waere geraten — und ein geratener Wert in einem Dedup-Feld eines fremden Systems
- * faellt nicht auf.
+ * transactionId WIRD GESENDET, UND SEIN WERT IST eventID.
+ *
+ * DAS FELD IST BEI DIESER GESTALT PFLICHT — GEMESSEN 2026-09-01 (OWNER, Messung D;
+ * docs/ziel-befunde.md, Google-Abschnitt, Teil (ca)): Ein Aufruf OHNE das Feld wird mit
+ * REQUIRED_FIELD_MISSING an events[0].transaction_id abgewiesen, ein sonst
+ * ZEICHENGLEICHER mit dem Feld liefert 200. Zwischen beiden Aufrufen lag genau diese
+ * eine Aenderung; der Befund steht damit isoliert und ruht nicht auf einer Ableitung.
+ * ZWEI UNABHAENGIGE LESUNGEN SAGTEN DAS GEGENTEIL — Teil (l)/D5 und Teil (w)/D2 ordnen
+ * die Pflicht beide der NICHT gewaehlten Multi-Source-Gestalt zu und fuehren das Feld
+ * fuer die Offline-Gestalt als optional. BEIDE WERDEN NICHT KORRIGIERT: Sie beschreiben,
+ * was am Dokument STAND, mit Quelle und Datum, und das bleibt wahr. Ueberholt ist die
+ * ERWARTUNG, nicht die Beobachtung — zwei Lesungen aus demselben Dokumentenbaum sind
+ * keine zwei Belege.
+ *
+ * WARUM DER WERT eventID IST — OWNER-/ARCHITEKTEN-ENTSCHEIDUNG 2026-09-01, keine
+ * Messung: DIE FEHLRICHTUNGEN SIND UNSYMMETRISCH. Ein frischer Wert je Aufruf irrte
+ * Richtung UEBERZAEHLUNG — eine Beacon-Wiederholung erzeugte zwei Transaktionen, und
+ * ueberzaehlte Conversions lenken Gebote und kosten den Kunden Geld. eventID irrt
+ * Richtung UNTERZAEHLUNG, und eine Conversion zu wenig ist der billigere Fehler. DAZU,
+ * UND ES IST DER ZWEITE TRAGENDE GRUND: Meta dedupliziert bereits ueber genau diesen
+ * Schluessel. Zwei verschiedene Dedup-Achsen fuer dasselbe Ereignis waeren eine
+ * Divergenz, die niemand pflegt — und die erst auffiele, wenn zwei Ziele verschieden
+ * zaehlen.
+ *
+ * ES WIRD UNBEDINGT GESETZT, NIE BEDINGT. Ein Spread-Muster wie bei conversionValue und
+ * currency waere hier falsch: Fehlte eventID, entstuende stillschweigend eine Anfrage,
+ * die der Anbieter abweist. FEHLEN KANN ES NICHT — handleIngest (capi/ingest.ts)
+ * verwirft einen Rumpf ohne eventID mit 400, VOR jedem Fan-Out, und dispatchForward hat
+ * im Produktivcode keinen zweiten Aufrufer.
+ *
+ * DIE GRENZE, ZWEITEILIG:
+ * · WIDERSPRUCH 4 IST MIT DIESEM EINBAU SCHARF (Teil (y), fortgeschrieben in (ca)/(f)):
+ *   Was bei einem DOPPELTEN transactionId geschieht, ist UNAUFGELOEST — eine Stelle sagt
+ *   Zusammenfuehrung, eine andere Verwerfung unter ERROR, und BEIDE SIND LESUNGEN, keine
+ *   Messung. Bis zum Einbau war der Widerspruch ohne Gegenstand, weil das Feld gar nicht
+ *   gesendet wurde; die Preise der beiden Ausgaenge sind nicht dieselben (eine fehlende
+ *   Conversion gegen einen verfallenen Datensatz).
+ * · 541 SERVER-ZEILEN OHNE EIN EINZIGES DOPPEL SIND KEIN BEWEIS FUER DIE ZUKUNFT
+ *   (GEMESSEN 2026-09-01, OWNER, am laufenden Bestand, mit Positivkontrolle).
+ *   sendBeacon-Wiederholung und bfcache bleiben Plattform-Eigenschaften; die Messung
+ *   sagt "gemessen, keine Treffer" — nicht "kann nicht vorkommen".
  *
  * x-goog-user-project WIRD NICHT GESENDET. Die Kopfzeile fehlte in allen sieben
  * Aufrufen der Messung B1, und die semantische Pruefung wurde dennoch erreicht — das
@@ -202,7 +236,6 @@ export async function forwardToGoogle(
   eventID: string,
   body: GoogleForwardBody,
 ): Promise<void> {
-  void eventID;
   // DIE EINZIGE ANWEISUNG VOR DEM try, UND SIE IST EINE REINE DEKLARATION: sie wertet
   // nichts aus und kann nicht werfen. Sie steht hier, damit finally sie sieht.
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -244,6 +277,10 @@ export async function forwardToGoogle(
       adIdentifiers: extractGoogleClickIds(body.eventSourceUrl),
       eventTimestamp: new Date(),
       eventSource: GOOGLE_EVENT_SOURCE,
+      // UNBEDINGT, NICHT BEDINGT — s. den Kopf dieser Funktion. Das Feld ist Pflicht
+      // (GEMESSEN, Teil (ca)); ein Spread wie bei den zwei Zeilen darunter liesse
+      // stillschweigend eine Anfrage entstehen, die der Anbieter abweist.
+      transactionId: eventID,
       ...(typeof body.value === "number" && Number.isFinite(body.value)
         ? { conversionValue: body.value }
         : {}),

@@ -103,6 +103,20 @@ import type { TrackingTarget } from "@/lib/settings";
  * KEINE REGEL. Wer daraus schliesst, die beiden Listen seien dasselbe, nimmt dem
  * naechsten Ziel ohne Empfaenger seinen Zwischenzustand — und der Karten-Hinweis
  * "Auslieferung folgt" haette wieder keinen Fall, den er beschreiben koennte.
+ *
+ * NACHGEZOGEN 2026-09-01 (Scheibe 4 der Phase 11.2) — DER ABSATZ DARUEBER BLEIBT
+ * WOERTLICH, UND SEIN "HEUTE" MEINT INZWISCHEN DEN DRITTEN TAG. Er stammt vom
+ * 2026-08-19 (Scheibe 11.1f), war seit Scheibe 3 FALSCH — 'google' stand in
+ * TRACKING_TARGETS und nicht hier — und ist mit dieser Scheibe WIEDER WAHR.
+ * DASS EINE AUSSAGE ZWEIMAL KIPPT UND ZWEIMAL ZURUECKKIPPT, IST DER EIGENTLICHE
+ * BEFUND: Die Deckungsgleichheit der beiden Listen ist nachweislich ein Zustand, der
+ * eintreten UND vergehen kann. Wer sie fuer eine Eigenschaft haelt, hat sie nur zu
+ * einem der drei Zeitpunkte gelesen.
+ * WAS DAMIT EINTRITT UND WAS DER ABSATZ DARUEBER VORHERGESAGT HAT: Der
+ * Karten-Hinweis "Auslieferung folgt" hat ab jetzt KEINEN Fall mehr im Betrieb.
+ * ER BLEIBT TROTZDEM, und der Grund steht an der Komponente selbst: Die Tatsache
+ * kommt dort als PROP herein, der Zweig ist also jedem Test erreichbar — und beim
+ * naechsten Ziel ohne Empfaenger kehrt er von selbst zurueck.
  */
 export const TARGETS_WITH_ADAPTER = [
   "meta",
@@ -112,6 +126,15 @@ export const TARGETS_WITH_ADAPTER = [
   // faellt, und der Waechter, der ihn hielt, ist in derselben Scheibe ENTFERNT worden
   // — so, wie sein eigener Kommentar es verlangt hat.
   "linkedin",
+  // DAS FUENFTE ZIEL (Scheibe 4 der Phase 11.2) — UND DIESE ZEILE IST TOR D.
+  // Sie ist die EINE Aenderung, die die Scheibe 3 ausdruecklich verboten hat: Ihre
+  // Festlegung (6) nennt diesen Ort "DER EINZIGE ORT, AN DEM DIESE SCHEIBE STILL ZUR
+  // TRANSPORT-SCHEIBE WUERDE". Der Preis wird hier gezahlt, nicht umgangen.
+  // WAS SIE AUSLOEST UND WAS NICHT: Der Compiler verlangt ab hier einen Eintrag in
+  // FORWARDER_BY_TARGET (capi/ingest.ts) — ein fehlender ist ein BUILD-Fehler. Sie
+  // macht 'google' NICHT sendebereit: Der Empfaenger braucht ausserdem eine Kennung,
+  // ein brauchbares Zugangsdatum mit lebender Uhr 1 und die Einwilligung im Draht.
+  "google",
 ] as const satisfies readonly TrackingTarget[];
 
 /**

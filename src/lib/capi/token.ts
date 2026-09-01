@@ -42,6 +42,14 @@ import {
 // Primitiv, das hier bis dahin direkt stand. Die GEHEIMNIS-Haelfte (hasSecret) ist
 // unveraendert und bleibt der einzige Grund fuer diesen Import.
 import { hasSecret } from "@/lib/tracking/target-readiness";
+// DER ZWEITE DECHIFFRIER-LESER DES REPOS (Scheibe 4 der Phase 11.2). Der erste ist
+// refreshAccessToken (lib/oauth/token-refresh.ts) und bleibt der EINZIGE, der ERNEUERT.
+// DIE KORREKTUR, DIE DAZUGEHOERT und die im Zuschnitt ausgeschrieben steht: Den
+// abgelegten Stand zu LESEN heisst zu DECHIFFRIEREN — secret_enc gibt ohne diese
+// beiden kein Zugangsdatum her. Der zweite Leser war nie vermeidbar; vermeidbar war
+// die ERNEUERUNG, und die findet hier nicht statt (s. usableTokenFromRow).
+import { decryptSecret } from "@/lib/secrets/cipher";
+import { parseOAuthPayload } from "@/lib/secrets/oauth-payload";
 
 /**
  * Aufloesung EINES trackingKeys (Phase 8 Scheibe 1, ADDITIV erweitert).
@@ -168,8 +176,148 @@ export type CapiConfig = {
   pixelId: string;
   // GEHEIMER Meta-CAPI-Token (aus project_secrets, RLS ohne jede Policy).
   // Verlaesst den Server NIE — weder in eine HTTP-Response noch in ein Log.
+  //
+  // ERSETZT (Scheibe 4 der Phase 11.2) — HIER STAND ALLEIN "Meta-CAPI-Token", UND DAS
+  // WAR SCHON VOR DIESER SCHEIBE ZU ENG. Das Feld traegt seit Phase 11 das GEHEIMNIS
+  // DES AUFGELOESTEN ZIELS, nicht Metas: Metas Zugriffstoken im Query-String,
+  // Pinterests und LinkedIns in einer Bearer-Kopfzeile, TikToks in einer eigenen. Die
+  // gleichlautende Korrektur hat das Nachbarfeld pixelId in Scheibe 2 bekommen; diese
+  // Haelfte ist damals nicht mitgezogen worden.
+  // SACHKORREKTUR, KEIN STEMPEL — der Grund ist derselbe wie dort: Wer die naechste
+  // Ablage-Frage an diesem Typ misst, misst sonst an einer falschen Angabe.
+  //
+  // SEIT SCHEIBE 4 KANN ES ABLAUFEN. Fuer vier Ziele stammt der Wert aus der
+  // Klartext-Spalte secret und ist statisch; fuer 'google' aus secret_enc,
+  // dechiffriert, und er lebt 3599 Sekunden. AM TYP IST DAS NICHT ABLESBAR, und das
+  // ist Absicht: Ein Adapter benutzt das Geheimnis, er verwaltet es nicht. Uhr 1 ist
+  // im Resolver geprueft, BEVOR die Zeile ueberhaupt ein ResolvedTarget wird
+  // (usableTokenFromRow) — ein Adapter bekommt nie ein abgelaufenes.
+  //
+  // DIE ZUSAGE OBEN GILT UNVERAENDERT UND WIRD ERWEITERT: Das ERNEUERUNGS-Token
+  // verlaesst den Resolver ebenfalls nie — es steht in derselben chiffrierten Nutzlast
+  // und wird dort gelesen und verworfen. Der Rueckgabetyp von usableTokenFromRow
+  // (`string | null`) ist der Mechanismus, nicht dieser Kommentar.
   token: string;
 };
+
+/**
+ * IST DIESES ZUGANGSDATUM JETZT NOCH BRAUCHBAR? — UHR 1, UND SONST NICHTS.
+ *
+ * MODUL-PRIVAT UND NICHT IN tracking/target-readiness.ts (ARCHITEKTEN-ENTSCHEIDUNG,
+ * 2026-09-01), obwohl dort die verwandten Praedikate hasSecret und hasPixelId liegen.
+ * DER GRUND IST DIE FRAGE, NICHT DER ORT: Scheibe 1b fragt "SOLL ERNEUERT WERDEN?"
+ * (accessTokenExpiresAt - now > REFRESH_LEAD_SECONDS, s. refreshAccessToken); dieser
+ * Pfad fragt "IST ES BRAUCHBAR?". Zwei verschiedene Fragen mit zwei verschiedenen
+ * Schwellen — ein Praedikat mit EINEM Aufrufer in ein geteiltes Haus zu legen waere
+ * Infrastruktur auf Verdacht.
+ *
+ * KEIN VORLAUF. Der Vorlauf existiert, um FRUEH ZU ERNEUERN; dieser Pfad erneuert
+ * nicht, und ein noch fuenf Minuten gueltiges Zugangsdatum zu verwerfen haette keinen
+ * Gegenwert — es entstuende nur ein Ereignis weniger.
+ *
+ * DER RAND IST AUSGESCHRIEBEN, weil er sonst beim naechsten Lesen geraten wird:
+ * expiresAt === now gilt als NICHT MEHR BRAUCHBAR (fail-closed). Die Sekunde, in der
+ * ein Zugangsdatum ablaeuft, gehoert nicht mehr ihm.
+ *
+ * DAS RESTRISIKO GEHOERT AN DIESE STELLE UND WIRD NICHT GEBAUT: Ein Zugangsdatum, das
+ * WAEHREND DES FLUGES stirbt, liefert eine 401 vom Anbieter — ein geloggter
+ * Fehlschlag, kein Bruch. Die leere 204 steht, der Handler laeuft zu Ende, und der
+ * Betreiber sieht nichts (offener Punkt "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM
+ * NICHT SENDEN", Ursache (3)).
+ */
+function hasUsableAccessToken(
+  expiresAtSeconds: number,
+  nowSeconds: number,
+): boolean {
+  return expiresAtSeconds > nowSeconds;
+}
+
+/**
+ * DAS BRAUCHBARE ZUGANGSDATUM EINER GEHEIMNIS-ZEILE — ODER null.
+ *
+ * SIE IST DER EINZIGE ORT IN DIESER DATEI, AN DEM EINE OAuthPayload EXISTIERT, UND
+ * DAS IST DER MECHANISMUS HINTER DER FESTLEGUNG "DAS ERNEUERUNGS-TOKEN VERLAESST DEN
+ * RESOLVER NICHT" — nicht eine Zusage, sondern der RUECKGABETYP: `string | null` kann
+ * kein zweites Geheimnis tragen. Ab dem return zeigt kein Bezeichner mehr auf
+ * refreshToken oder refreshTokenExpiresAt.
+ * WER DAS AENDERN WOLLTE, MUESSTE DREI TYPEN ANFASSEN — den Rueckgabetyp hier,
+ * CapiConfig und ResolvedTarget. Drei sichtbare Aenderungen an einer geteilten Datei;
+ * ein Feld mehr in einer inline ausgepackten Nutzlast waere dagegen EINE Zeile
+ * gewesen. Genau deshalb ist das Auspacken hier eingesperrt.
+ *
+ * DIE REIHENFOLGE IST ENTSCHIEDEN UND NICHT ZUFAELLIG — CHIFFRAT ZUERST, KLARTEXT
+ * DANACH. Der CHECK project_secrets_secret_genau_eines erlaubt heute nur EINE der
+ * beiden Spalten, der Fall "beide gefuellt" ist also nicht erreichbar; die
+ * Reihenfolge entscheidet trotzdem, WAS GESCHAEHE, und ein Verhalten, das nur aus der
+ * Zeilenfolge folgt, ist keines.
+ * WARUM DAS CHIFFRAT GEWINNT: Der Klartext ist die ALT-FORM (heute LinkedIn), das
+ * Chiffrat der neuere Stand. Gaebe der Klartext den Ausschlag, verdeckte ein
+ * stehengebliebener Alt-Wert einen migrierten Zugang — und er verdeckte ihn
+ * DAUERHAFT, weil ein Klartext-Geheimnis KEINE Uhr traegt und damit nie ablaeuft.
+ * Das ist fail-open in die teuerste Richtung. Ein Lauf haelt die Wahl fest.
+ *
+ * WAS GELOGGT WIRD UND WAS NICHT — die Auflage TRANSIT-ONLY faengt hier an, nicht
+ * erst im Adapter: In die Zeile gehen der ZIEL-NAME (unser Vokabular) und ein
+ * SELBSTVERGEBENER Grund. NICHT hinein gehen: das Chiffrat, der Klartext, das
+ * Zugangsdatum, das Erneuerungs-Token, irgendein Feldwert der Nutzlast — und
+ * ausdruecklich auch NICHT die projectId. Der Erneuerungspfad loggt sie, weil ihn ein
+ * Mensch ausloest; dieser Pfad laeuft bei JEDEM Besucher JEDER Kundenseite, und eine
+ * Projekt-Kennung je Beacon waere eine Datenerhebung, die niemand beschlossen hat
+ * (dieselbe Begruendung wie am Consent-Gate in capi/ingest.ts).
+ *
+ * DIE GRENZE, DIE NICHT GELOEST WIRD: Es gibt KEINE Drosselung. Ein Projekt mit
+ * kaputtem Chiffrat schreibt eine Zeile PRO BESUCHER. Ein Zaehler waere Zustand auf
+ * dem meistgetroffenen Pfad der Plattform; er ist bewusst nicht gebaut und als Grenze
+ * benannt.
+ *
+ * SIE WIRFT NIE. decryptSecret und parseOAuthPayload tragen denselben Vertrag, der
+ * Rest sind typeof-Vergleiche und ein Zahlenvergleich.
+ */
+function usableTokenFromRow(
+  row: { secret: unknown; secret_enc: unknown },
+  target: string,
+  nowSeconds: number,
+): string | null {
+  const encrypted = row.secret_enc;
+  if (typeof encrypted === "string" && encrypted.length > 0) {
+    const decrypted = decryptSecret(encrypted);
+    if (decrypted.kind !== "ok") {
+      // DER GRUND IST DAS kind SELBST — ein Mitglied UNSERER Union, kein Fremdtext.
+      // Eine Abbildungstabelle daneben waere eine zweite Wahrheit ueber dieselben
+      // fuenf Zustaende.
+      console.error("[capi/resolve] secret unusable", {
+        target,
+        reason: `decrypt_${decrypted.kind}`,
+      });
+      return null;
+    }
+
+    const parsed = parseOAuthPayload(decrypted.value);
+    if (parsed.kind !== "ok") {
+      console.error("[capi/resolve] secret unusable", {
+        target,
+        reason: `parse_${parsed.kind}`,
+      });
+      return null;
+    }
+
+    if (!hasUsableAccessToken(parsed.value.accessTokenExpiresAt, nowSeconds)) {
+      console.error("[capi/resolve] secret unusable", {
+        target,
+        reason: "access_token_expired",
+      });
+      return null;
+    }
+
+    // NUR DAS ZUGANGSDATUM. Die drei uebrigen Felder der Nutzlast enden hier.
+    return parsed.value.accessToken;
+  }
+
+  // DIE KLARTEXT-FORM, UNVERAENDERT SEIT PHASE 11: hasSecret trimmt NICHT — ein
+  // Geheimnis aus reinem Leerraum galt hier immer als VORHANDEN und gilt es weiterhin.
+  if (hasSecret(row.secret)) return row.secret;
+  return null;
+}
 
 /**
  * Loest einen OEFFENTLICHEN trackingKey server-seitig zur vollstaendigen
@@ -189,6 +337,16 @@ export type CapiConfig = {
  *
  * Aufloesung: trackingKey (server-autoritative Spalte projects.tracking_key)
  *   -> project_id (+ settings.pixels.<ziel>.pixelId) -> project_secrets.secret je Ziel.
+ *
+ * NACHGEZOGEN (Scheibe 4 der Phase 11.2) — DIE ZEILE DARUEBER BLEIBT WOERTLICH UND IST
+ * SEITHER ZU ENG: Die letzte Station heisst jetzt project_secrets.secret ODER
+ * secret_enc je Ziel, je nach GEHEIMNIS-KLASSE der Zeile. Die chiffrierte Klasse wird
+ * dechiffriert, ihre Nutzlast gelesen und ihre Uhr 1 geprueft, BEVOR ein Empfaenger
+ * entsteht — alles in usableTokenFromRow.
+ * RICHTIGGESTELLT UND NICHT GESTEMPELT, weil dieser Kopf ein MASSSTAB ist: Wer den
+ * naechsten Lesepfad an ihm misst, misst sonst an einer halben Angabe.
+ * DIE ZUSAGE "GENAU ZWEI Abfragen" GILT UNVERAENDERT — es ist eine Spalte mehr
+ * geworden, keine Runde.
  *
  * Gibt null zurueck (KEIN Throw — jeder dieser Zustaende ist regulaer), wenn:
  * - der Key leer ist, ODER
@@ -331,9 +489,13 @@ export async function getCapiConfigByTrackingKey(
   // dann keinen brauchbaren Wert.
   // KEIN RUECKFALL auf project_tokens: er machte eine unvollstaendige Uebernahme
   // unsichtbar und entwertete genau die Pruefung, die vor jenem Deploy stand.
+  // secret_enc IST MIT SCHEIBE 4 DAZUGEKOMMEN — EINE SPALTE, KEINE RUNDE. Die Zusage
+  // "GENAU ZWEI Abfragen" im Kopf dieser Funktion gilt damit unveraendert; sie zaehlt
+  // Runden, nicht Spalten. Die Verzweigung nach Geheimnis-Klasse geschieht JE ZEILE in
+  // usableTokenFromRow, nicht in einer zweiten Abfrage.
   const { data: rows, error: secretsError } = await admin
     .from("project_secrets")
-    .select("target, secret")
+    .select("target, secret, secret_enc")
     .eq("project_id", projectId)
     .in(
       "target",
@@ -360,11 +522,25 @@ export async function getCapiConfigByTrackingKey(
   // Zusicherung: Eine Zusicherung behauptete noch einmal, was das Praedikat gerade
   // entschieden hat — genau die zweite Ausformulierung, gegen die diese Scheibe
   // gerichtet ist.
-  const secretByTarget = new Map<string, string>();
-  for (const row of rows as { target: unknown; secret: unknown }[]) {
+  // DIE UHR WIRD GENAU EINMAL GELESEN und fuer ALLE Zeilen dieser Aufloesung benutzt.
+  // Zweimal gelesen haetten zwei Ziele derselben Runde verschiedene Bezugspunkte, und
+  // eine spaetere Differenz waere unerklaerlich — dieselbe Begruendung wie in
+  // refreshAccessToken (lib/oauth/token-refresh.ts).
+  const nowSeconds = Math.floor(Date.now() / 1000);
+
+  const tokenByTarget = new Map<string, string>();
+  for (const row of rows as {
+    target: unknown;
+    secret: unknown;
+    secret_enc: unknown;
+  }[]) {
     if (typeof row.target !== "string") continue;
-    if (!hasSecret(row.secret)) continue;
-    secretByTarget.set(row.target, row.secret);
+    // NEUN AUSGAENGE MUENDEN IN null, UND KEINER IST VON AUSSEN UNTERSCHEIDBAR — fuenf
+    // Dechiffrier-Zustaende, zwei Lese-Zustaende, die tote Uhr 1 und die Zeile ohne
+    // brauchbares Geheimnis. Alle enden in derselben leeren 204.
+    const token = usableTokenFromRow(row, row.target, nowSeconds);
+    if (token === null) continue;
+    tokenByTarget.set(row.target, token);
   }
 
   // DIE PAARUNG — JE ZIEL. Nur wer BEIDES traegt, wird Empfaenger. Die Reihenfolge
@@ -372,7 +548,7 @@ export async function getCapiConfigByTrackingKey(
   // der Datenbank abhaengig.
   const targets: ResolvedTarget[] = [];
   for (const entry of withPixel) {
-    const token = secretByTarget.get(entry.target);
+    const token = tokenByTarget.get(entry.target);
     if (!token) continue;
     // "LEERE ZUORDNUNG" WIRD IN "FELD NICHT GESETZT" UEBERSETZT (Scheibe 11.1e), und
     // das ist KEINE Kosmetik — der Grund ist eine gemessene Tatsache ueber das

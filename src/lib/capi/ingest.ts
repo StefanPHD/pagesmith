@@ -15,6 +15,7 @@ import { forwardToMeta } from "@/lib/capi/meta-forward";
 import { forwardToPinterest } from "@/lib/capi/pinterest-forward";
 import { forwardToTiktok } from "@/lib/capi/tiktok-forward";
 import { forwardToLinkedin } from "@/lib/capi/linkedin-forward";
+import { forwardToGoogle } from "@/lib/capi/google-forward";
 // HIER STAND EIN TYP-IMPORT VON TrackingTarget ("NUR DER TYP … er traegt den Waechter
 // fuer die Ziel-Konstante unten"). Mit Scheibe C2 sind die beiden lokalen
 // Ziel-Konstanten entfallen, und damit sein einziger Verwender. Die Zusage, dass
@@ -325,6 +326,46 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
       body,
       clientIp,
     ),
+
+  // DAS FUENFTE ZIEL (Scheibe 4 der Phase 11.2) — ES PROJIZIERT NOCH STAERKER ALS DAS
+  // VIERTE, und beide Abweichungen sind Entscheidungen mit Grund:
+  //  (1) DIE EIGENE FORM nimmt BEIDE Kennungsformen. Google ist die Vereinigung von
+  //      Meta und LinkedIn: eine Kennung JE PROJEKT (die Google-Ads-Kundennummer, im
+  //      pixelId-Slot) UND eine JE EREIGNISTYP (die productDestinationId, in
+  //      conversionRules). Die Umbenennung geschieht HIER, am Verbraucher — der Slot
+  //      in CapiConfig bleibt unangetastet, wie schon bei Pinterests
+  //      adAccountId.
+  //  (2) ZWEI ARGUMENTE WENIGER: WEDER clientIp NOCH userAgent werden weitergereicht.
+  //      Die gewaehlte Gestalt (Offline Conversion Import auf Basis der
+  //      Klick-Kennungen) traegt KEIN Feld fuer eine Besucher-Adresse — kein
+  //      landingPageDeviceInfo, kein eventDeviceInfo, kein userData. Beide zu
+  //      verlangen waere ein selbstgemachter Verlust an Merkmalen, die dieses Ziel
+  //      nicht kennt. TypeScript deckt das: eine Funktion mit weniger Parametern
+  //      erfuellt die laengere Signatur.
+  //
+  // DER TYP Forwarder IST DAFUER NICHT GEAENDERT WORDEN, und das gehoert hierher,
+  // damit es niemand fuer eine Auslassung haelt: Er musste es nicht. Dieselbe Lage wie
+  // beim vierten Ziel, nur eine Stelle weiter.
+  //
+  // WAS HIER STEHT, KANN NICHT WERFEN — dieselbe Auflage wie an der linkedin-Zeile:
+  // Diese Zeile laeuft SYNCHRON (dispatchForward ist keine async-Funktion), und alles,
+  // was hier stuende, laege AUSSERHALB des 204-Containments. Es sind reine
+  // Eigenschafts-Lesungen und ein Objektliteral.
+  // `?? {}` FAENGT KEINEN GEMESSENEN FALL, SONDERN DEN TYP: conversionRules ist an
+  // ResolvedTarget optional (11.1e uebersetzt "leere Zuordnung" in "Feld nicht
+  // gesetzt"). Fuer ein Ziel OHNE Zuordnung entstuende hier sonst undefined — und der
+  // Riegel im Adapter faende nichts vor, was er lesen koennte.
+  google: (entry, event, eventID, body) =>
+    forwardToGoogle(
+      {
+        operatingAccountId: entry.config.pixelId,
+        token: entry.config.token,
+        conversionRules: entry.conversionRules ?? {},
+      },
+      event,
+      eventID,
+      body,
+    ),
 };
 
 /**
@@ -349,6 +390,22 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
  * weder LEGACY_CONSENT_ROLE noch CONSENT_KEY_BY_TARGET einen Eintrag dafuer tragen.
  * MIT EINEM VIERTEN ZIEL OHNE ADAPTER WIRD ER ERREICHBAR: Dessen Consent-Eintraege
  * erzwingt der Compiler, es passiert also das Gate — und faellt hier heraus.
+ *
+ * NACHGEZOGEN 2026-09-01 (Scheibe 4 der Phase 11.2) — DIE ZWEI SAETZE DARUEBER BLEIBEN
+ * WOERTLICH, UND IHR "HEUTE" MEINT INZWISCHEN DEN DRITTEN TAG:
+ * · Bis Scheibe 11.1a galt "unerreichbar" — jedes bekannte Ziel hatte einen Adapter.
+ * · Mit 11.1a und erneut mit Scheibe 3 wurde er ERREICHBAR: 'linkedin' bzw. 'google'
+ *   waren bekannte Ziele OHNE Adapter, passierten das Consent-Gate und fielen hier
+ *   heraus. Der zweite Satz hat genau das vorhergesagt und ist zweimal eingetreten.
+ * · MIT DIESER SCHEIBE IST ER WIEDER UNERREICHBAR: 'google' hat einen Adapter, und
+ *   damit steht KEIN bekanntes Ziel mehr ohne einen. Ein UNBEKANNTES kommt hier
+ *   weiterhin nie an — es faellt schon in allowedTargets heraus, weil weder
+ *   LEGACY_CONSENT_ROLE noch CONSENT_KEY_BY_TARGET einen Eintrag dafuer tragen.
+ * DASS DIE AUSSAGE ZWEIMAL GEKIPPT UND ZWEIMAL ZURUECKGEKIPPT IST, IST DER BEFUND UND
+ * NICHT DIE FUSSNOTE: Sie beschreibt einen ZUSTAND, keine Eigenschaft. Wer sie als
+ * Eigenschaft liest, hat sie zu einem von vier Zeitpunkten gelesen.
+ * WER DEN ZWEIG HEUTE BEWACHT, steht in capi/fan-out.test.ts an der Schleife ueber
+ * TRACKING_TARGETS und ist mit dieser Scheibe eigens nachgezogen worden.
  *
  * SIE WIRFT NIE — dieselbe Auflage wie beim Adapter selbst, und sie ist strukturell
  * erfuellt: ein Nachschlag in einer totalen Zuordnung und eine Weiterreichung.

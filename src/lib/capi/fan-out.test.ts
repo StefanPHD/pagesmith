@@ -92,6 +92,22 @@ vi.mock("@/lib/capi/linkedin-forward", async (importActual) => {
   };
 });
 
+// DER FUENFTE ADAPTER (Scheibe 4 der Phase 11.2), nach demselben Muster wie die vier
+// darueber. OHNE IHN liefe die echte Implementierung: Sie faende in der Fixture keine
+// Zuordnung, ginge an ihrem eigenen Riegel heraus — und der Kreuzvergleich meldete
+// "der Adapter wurde nicht gerufen", obwohl der Verteiler richtig verdrahtet ist. Ein
+// Fehlschlag, dessen Ursache zwei Dateien entfernt liegt.
+const { goOverride } = vi.hoisted(() => ({
+  goOverride: { fn: null as null | (() => Promise<void>) },
+}));
+vi.mock("@/lib/capi/google-forward", async (importActual) => {
+  const actual = await importActual<typeof import("@/lib/capi/google-forward")>();
+  return {
+    forwardToGoogle: (...args: Parameters<typeof actual.forwardToGoogle>) =>
+      goOverride.fn ? goOverride.fn() : actual.forwardToGoogle(...args),
+  };
+});
+
 const { after, scheduled } = vi.hoisted(() => {
   const scheduled: Array<() => Promise<void> | void> = [];
   return {
@@ -789,6 +805,13 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
     // Empfaenger. Dieser Spion wird NIE verdrahtet und darf NIE feuern — seine
     // Untaetigkeit ist die Zusicherung im Lauf darunter und zugleich das VIERTE der
     // vier Tore dieser Scheibe.
+    // NACHGEZOGEN (Scheibe 4 der Phase 11.2) — DER ABSATZ DARUEBER BLEIBT LESBAR, WEIL
+    // ER DEN GRUND FESTHAELT, AUS DEM DIESER SPION ENTSTAND; SEIN ZUSTAND IST ABER
+    // UMGEKEHRT: Das Ziel hat seit dieser Scheibe einen Empfaenger. Der Spion IST jetzt
+    // verdrahtet (s. beforeEach) und MUSS feuern — der Lauf darunter hat die Seite
+    // gewechselt, aus "erreicht KEINEN Adapter" wurde "erreicht GENAU seinen". Es ist
+    // derselbe Vorgang wie bei 'linkedin' in 11.1f, und es ist das ZWEITE Mal, dass
+    // dieselbe Schleife ihre Aussage ohne eine Zeile Testcode umkehrt.
     google: vi.fn<() => void>(),
   };
 
@@ -857,6 +880,10 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
     linkOverride.fn = async () => {
       SPY_BY_TARGET.linkedin();
     };
+    // DER FUENFTE, SEIT SCHEIBE 4 DER PHASE 11.2 — aus demselben Grund wie der vierte.
+    goOverride.fn = async () => {
+      SPY_BY_TARGET.google();
+    };
   });
 
   // DIE SCHLEIFE UNTERSCHEIDET SEIT 11.1a ZWEI FAELLE, und das ist keine Aufweichung
@@ -879,6 +906,18 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
   // DER else-ZWEIG BLEIBT STEHEN, obwohl ihn heute KEIN Ziel mehr erreicht: Er ist
   // die Zusicherung fuer das naechste Ziel ohne Empfaenger — und genau dafuer ist die
   // Teilmengen-Eigenschaft von TARGETS_WITH_ADAPTER da.
+  //
+  // NACHGEZOGEN 2026-09-01 (Scheibe 4 der Phase 11.2) — DER SATZ DARUEBER GILT WIEDER,
+  // UND ER IST DAMIT ZUM ZWEITEN MAL WAHR: Seit 'google' einen Empfaenger hat, erzeugt
+  // der else-Zweig KEINE EINZIGE INSTANZ mehr. Die Schleife verzweigt zur
+  // DEFINITIONSZEIT ueber hasAdapter; ein Zweig ohne Mitglied erzeugt kein it(), und
+  // VITEST MELDET DAS NICHT — eine Schleife mit null Laeufen ist kein Fehler.
+  // DAS IST DIE FEHLERKLASSE "EIN WAECHTER OHNE GEGENSTAND GEHT AB DA IMMER AUF", und
+  // sie ist hier STILL: Der Block bleibt gruen, und niemand sieht, dass eine Zusicherung
+  // aufgehoert hat zu messen.
+  // WAS AN SEINE STELLE TRITT: der Lauf "W-REST" unten. Er ist ausdruecklich KEIN
+  // Ersatz fuer den else-Zweig, sondern der einzige Weg, den Erschoepfungs-Rest von
+  // dispatchForward ueberhaupt noch zu erreichen — s. dort.
   for (const target of TRACKING_TARGETS) {
     if (hasAdapter(target)) {
       it("W-" + target + ": das aufgeloeste Ziel erreicht GENAU seinen Adapter, die anderen NICHT", async () => {
@@ -958,6 +997,112 @@ describe("Fan-Out — DIE ZUORDNUNG IST VOLLSTAENDIG (Kreuzvergleich Ziel -> Ada
   // Genau die Fehlerklasse "gruen aus einem anderen Grund". Der neue Wert ist bewusst
   // KEIN Anbietername, der spaeter ein Ziel werden koennte.
   // =====================================================================
+  // =====================================================================
+  // W-REST — DER ERSATZ FUER DEN ELSE-ZWEIG (Scheibe 4 der Phase 11.2, K1).
+  //
+  // WAS ER HALTEN SOLL: 'google' erreicht GENAU seinen Adapter, die vier anderen NICHT
+  // — und ein Ziel OHNE Adapter bleibt stumm uebersprungen, mit unveraenderter leerer
+  // 204. Die erste Haelfte traegt der Kreuzvergleich oben; DIESER Lauf traegt die
+  // zweite.
+  //
+  // WARUM ES IHN BRAUCHT — GEMESSEN AM COMPILER (CC, 2026-09-01), und die Messung hat
+  // die naheliegende Annahme WIDERLEGT:
+  // Die Annahme war, der Compiler halte den Rest-Zweig von dispatchForward — er nimmt
+  // ein TrackingTarget, FORWARDER_BY_TARGET ist ueber TargetWithAdapter geschluesselt,
+  // hasAdapter ist die Verengung dazwischen. VOR dieser Scheibe traf das zu: Der Zweig
+  // probeweise entfernt, ergab `tsc --noEmit`
+  //   "error TS7053: Element implicitly has an 'any' type because expression of type
+  //    '\"meta\" | \"pinterest\" | \"tiktok\" | \"linkedin\" | \"google\"' can't be used
+  //    to index type 'Record<\"meta\" | \"pinterest\" | \"tiktok\" | \"linkedin\",
+  //    Forwarder>'."
+  // DIESELBE MUTATION NACH DIESER SCHEIBE: `tsc --noEmit` laeuft SAUBER DURCH, Exit 0,
+  // keine Ausgabe. Der Grund steht in der alten Meldung selbst — sie brach, WEIL
+  // 'google' im Record fehlte. Jetzt steht es drin, die beiden Unionen sind
+  // deckungsgleich, und ein TrackingTarget indiziert einen Record ueber TrackingTarget
+  // fehlerfrei.
+  // FOLGE: DER COMPILER HAELT DEN ZWEIG NICHT MEHR. Wer ihn entfernt, bekommt einen
+  // gruenen Build — und ein unbekanntes Ziel liefe in einen undefined-Aufruf.
+  //
+  // DIE GRENZE DIESES LAUFS, UND SIE GEHOERT AN IHN: Er misst gegen eine TEILWEISE
+  // GEMOCKTE Consent-Zuordnung. Er beweist, dass der Verteiler ein Ziel OHNE Adapter
+  // ueberspringt — er beweist NICHT, dass ein solches Ziel real entstehen kann.
+  // WARUM DER MOCK UNVERMEIDLICH IST: Ohne ihn ist der Zweig aus dem Handler heraus
+  // GAR NICHT erreichbar. Ein unbekanntes Ziel faellt schon in allowedTargets heraus
+  // (W4 unten misst genau das), und ein bekanntes ohne Adapter gibt es nicht mehr.
+  // DIE ECHTEN SCHLUESSEL BLEIBEN ECHT: importActual liefert die Zuordnung, und der
+  // Lauf legt EINEN erfundenen Eintrag daneben. Die Eigenschaft, auf der
+  // requestWithConsentForAll besteht — "DIE SCHLUESSEL KOMMEN AUS DER ECHTEN
+  // ZUORDNUNG, nie abgeschrieben" — bleibt damit unberuehrt.
+  // =====================================================================
+  it("W-REST: ein bekanntes Ziel OHNE Adapter erreicht KEINEN Adapter — die 204 bleibt", async () => {
+    const ERFUNDENES_ZIEL = "__ziel_ohne_adapter__";
+    const ERFUNDENER_SCHLUESSEL = "__consent_ohne_adapter__";
+
+    // DER TEIL-MOCK GILT NUR IN DIESEM LAUF und wird danach zurueckgenommen.
+    const echt = await vi.importActual<
+      typeof import("@/lib/tracking/consent-targets")
+    >("@/lib/tracking/consent-targets");
+    vi.doMock("@/lib/tracking/consent-targets", () => ({
+      ...echt,
+      CONSENT_KEY_BY_TARGET: {
+        ...echt.CONSENT_KEY_BY_TARGET,
+        [ERFUNDENES_ZIEL]: ERFUNDENER_SCHLUESSEL,
+      },
+    }));
+    vi.resetModules();
+    const { handleIngest: frischerHandler } = await import("./ingest");
+
+    // DIE POSITIVKONTROLLE FAEHRT IM SELBEN LAUF MIT: Neben dem Ziel ohne Adapter steht
+    // 'meta'. Feuert dessen Spion, ist bewiesen, dass der Lauf den Verteiler ueberhaupt
+    // erreicht hat — ohne diesen Mitlaeufer waere "kein Adapter gerufen" auch dann
+    // wahr, wenn gar nichts stattgefunden haette.
+    getCapiConfigByTrackingKey.mockResolvedValue(
+      resolution([
+        entryFor("meta"),
+        {
+          target: ERFUNDENES_ZIEL,
+          config: { pixelId: "PX-rest", token: "SEC-rest" },
+        },
+      ]),
+    );
+
+    const consent: Record<string, boolean> = {
+      [ERFUNDENER_SCHLUESSEL]: true,
+    };
+    for (const t of TRACKING_TARGETS) consent[CONSENT_KEY_BY_TARGET[t]] = true;
+
+    const res = await frischerHandler(
+      new Request("http://localhost/api/e", {
+        method: "POST",
+        headers: {
+          "user-agent": "Mozilla/5.0 (W-REST)",
+          "x-vercel-forwarded-for": "203.0.113.7",
+        },
+        body: JSON.stringify({
+          trackingKey: "tk-abc",
+          eventID: "evt-123",
+          event: "Purchase",
+          [CONSENT_WIRE_FIELD]: consent,
+        }),
+      }),
+    );
+
+    // DIE LEERE 204 IST TEIL DER ZUSICHERUNG, nicht Beiwerk: Ein Ziel ohne Adapter
+    // darf den Handler nicht anders enden lassen als eines mit.
+    expect(res.status).toBe(204);
+    expect(await res.text()).toBe("");
+    // Der Mitlaeufer hat gefeuert — der Verteiler wurde erreicht.
+    expect(SPY_BY_TARGET.meta).toHaveBeenCalledTimes(1);
+    // Und KEIN Spion des Ziels ohne Adapter, denn es gibt keinen.
+    for (const t of TRACKING_TARGETS) {
+      if (t === "meta") continue;
+      expect(SPY_BY_TARGET[t]).not.toHaveBeenCalled();
+    }
+
+    vi.doUnmock("@/lib/tracking/consent-targets");
+    vi.resetModules();
+  });
+
   it("W4: ein unbekanntes Ziel faellt schon am Einwilligungs-Gate — es erreicht den Verteiler nicht", async () => {
     // DIE POSITIVKONTROLLE FAEHRT IM SELBEN LAUF MIT: Neben dem unbekannten Ziel
     // steht ein bekanntes. Feuert dessen Spion, ist bewiesen, dass der Lauf den

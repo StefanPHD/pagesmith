@@ -1,4 +1,6 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 // `import "server-only"` wirft ausserhalb der react-server-Condition (also auch in
 // vitest) -> hier durch ein leeres Modul ersetzen, damit token.ts/admin.ts laden.
@@ -12,6 +14,12 @@ const { createAdminClient } = vi.hoisted(() => ({
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
 import { getCapiConfigByTrackingKey } from "./token";
+// ECHT, NICHT GEMOCKT (Scheibe 4 der Phase 11.2): Die Chiffrierung und das Lesen der
+// Nutzlast laufen in dieser Datei mit dem echten Code. Waeren sie gemockt, pruefte der
+// Lesepfad nur den Mock — dieselbe Auflage wie in oauth/token-refresh.test.ts.
+import { encryptSecret } from "@/lib/secrets/cipher";
+import { formatOAuthPayload } from "@/lib/secrets/oauth-payload";
+import type { OAuthPayload } from "@/lib/secrets/oauth-payload";
 
 /**
  * Baut einen minimalen, chainbaren Supabase-Client-Mock. Pro Tabelle ein
@@ -49,8 +57,16 @@ function projectWithPixel(id: string, pixelId: string) {
   };
 }
 
-/** Die Geheimnis-ZEILEN einer Abfrage — seit Scheibe 7 eine Liste, keine Einzelzeile. */
-function secretRows(rows: { target: string; secret: string | null }[]) {
+/**
+ * Die Geheimnis-ZEILEN einer Abfrage — seit Scheibe 7 eine Liste, keine Einzelzeile.
+ *
+ * secret_enc IST MIT SCHEIBE 4 DER PHASE 11.2 DAZUGEKOMMEN UND IST OPTIONAL. Die
+ * Bestandslaeufe uebergeben es NICHT, und das ist Absicht: Eine Zeile ohne die Spalte
+ * bildet den Klartext-Fall ab, und der Resolver muss ihn unveraendert bedienen.
+ */
+function secretRows(
+  rows: { target: string; secret: string | null; secret_enc?: string | null }[],
+) {
   return { data: rows, error: null };
 }
 
@@ -378,7 +394,13 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
 
     const secrets = calls.find((c) => c.table === "project_secrets");
     if (!secrets) throw new Error("kein Zugriff auf project_secrets aufgezeichnet");
-    expect(secrets.cols).toBe("target, secret");
+    // NACHGEZOGEN (Scheibe 4 der Phase 11.2): secret_enc ist die DRITTE Spalte. Sie ist
+    // EINE SPALTE UND KEINE RUNDE — die Zusage "GENAU ZWEI Abfragen" (I2) gilt
+    // unveraendert, und TR-6 misst sie eigens. Der ZWECK dieses Waechters ist
+    // unveraendert: Er macht eine Aenderung an der Spaltenliste zu einem SICHTBAREN
+    // Diff statt zu einer stillen Aenderung — er hat mit dieser Scheibe genau das
+    // getan.
+    expect(secrets.cols).toBe("target, secret, secret_enc");
     // Der Projekt-Filter bleibt eine Gleichheit …
     expect(secrets.eqs).toEqual([["project_id", "proj-1"]]);
     // … der Ziel-Filter ist seit Scheibe 7 eine MENGE. Er bleibt der Filter, der ein
@@ -932,6 +954,15 @@ describe("Scheibe 3 — TOR 1 (withPixel) und TOR 2 (die Geheimnis-Schleife)", (
     // und der Autorisierungs-Fluss fuellt secret_enc).
     // WIRD ROT, WENN der Resolver anfaengt, secret_enc zu lesen, oder wenn hasSecret
     // weicher wird.
+    // NACHGEZOGEN (Scheibe 4 der Phase 11.2) — DIE ERSTE HAELFTE DER VORHERSAGE IST
+    // ABGELAUFEN, DER LAUF BLEIBT: Der Resolver LIEST secret_enc seit Scheibe 4, und
+    // dieser Lauf ist trotzdem gruen — seine Fixture traegt die Spalte gar nicht. Er
+    // misst ab jetzt den Fall "Zeile OHNE brauchbares Geheimnis in BEIDEN Spalten",
+    // und das ist weiterhin eine wahre Zusicherung.
+    // WAS ER NICHT MEHR DECKT UND WER ES UEBERNIMMT: Dass google sein Zugangsdatum aus
+    // secret_enc bekommt — und dass ein unbrauchbares Chiffrat oder eine tote Uhr 1
+    // KEINEN Empfaenger erzeugt — steht in TR-1 bis TR-7 weiter unten. Ohne diesen
+    // Absatz behauptete der Kommentar eine Garantie, die sein Lauf nicht mehr traegt.
     //
     // SEIN GEGENSTUECK HEISST "TOR 2, POSITIVKONTROLLE: mit KLARTEXT in secret WUERDE
     // google aufgeloest" UND STEHT UNMITTELBAR DARUNTER. Der Name steht hier, damit
@@ -993,5 +1024,381 @@ describe("Scheibe 3 — TOR 1 (withPixel) und TOR 2 (die Geheimnis-Schleife)", (
       secretRows([{ target: "google", secret: "KLARTEXT" }]),
     );
     expect(config?.targets.map((t) => t.target)).toEqual(["google"]);
+  });
+});
+
+// =========================================================================
+// SCHEIBE 4 DER PHASE 11.2 — DER LESEPFAD FUER DAS CHIFFRIERTE ZUGANGSDATUM
+//
+// WAS HIER ECHT LAEUFT UND WAS ATTRAPPE IST, und die Trennung ist der Grund, warum
+// diese Laeufe ueberhaupt etwas messen:
+//   ECHT:     decryptSecret und encryptSecret (lib/secrets/cipher.ts) mit einem
+//             ERFUNDENEN, aber FORMGUELTIGEN Schluessel · formatOAuthPayload und
+//             parseOAuthPayload (lib/secrets/oauth-payload.ts) · usableTokenFromRow
+//             und hasUsableAccessToken (die Prueflinge, modul-privat in token.ts).
+//   ATTRAPPE: allein der Datenbank-Client.
+// WAERE DIE CHIFFRIERUNG GEMOCKT, pruefte diese Datei nur den Mock.
+// =========================================================================
+
+/** ERFUNDEN, ABER FORMGUELTIG: 32 Bytes, base64. Kein echter Schluessel. */
+const S4_TESTSCHLUESSEL = Buffer.from(
+  "ERFUNDEN-testschluessel-S4-00001",
+  "utf8",
+).toString("base64");
+const S4_KENNUNG = "s4-test";
+
+const S4_ZUGANGSDATUM = "ERFUNDEN-access-token-S4-nicht-echt-0001";
+const S4_ERNEUERUNGS_TOKEN = "ERFUNDEN-refresh-token-S4-nicht-echt-0001";
+
+/** Die feste Uhr dieses Blocks. */
+const S4_JETZT = 1_800_000_000;
+
+const S4_ORIGINAL_ENV = { ...process.env };
+
+function s4Umgebung(ueberschreibungen: Record<string, string | undefined> = {}) {
+  const werte: Record<string, string | undefined> = {
+    SECRET_ENC_KEYS: `${S4_KENNUNG}:${S4_TESTSCHLUESSEL}`,
+    SECRET_ENC_ACTIVE_KEY_ID: S4_KENNUNG,
+    ...ueberschreibungen,
+  };
+  for (const [name, wert] of Object.entries(werte)) {
+    if (wert === undefined) delete process.env[name];
+    else process.env[name] = wert;
+  }
+}
+
+function s4Nutzlast(
+  ueberschreibungen: Partial<OAuthPayload> = {},
+): OAuthPayload {
+  return {
+    accessToken: S4_ZUGANGSDATUM,
+    accessTokenExpiresAt: S4_JETZT + 600,
+    refreshToken: S4_ERNEUERUNGS_TOKEN,
+    refreshTokenExpiresAt: { kind: "at", epochSeconds: S4_JETZT + 500_000 },
+    ...ueberschreibungen,
+  };
+}
+
+/** Chiffriert einen fertigen Klartext. Wirft im TESTAUFBAU, nie im Pruefling. */
+function s4Chiffre(klartext: string): string {
+  const chiffriert = encryptSecret(klartext);
+  if (chiffriert.kind !== "ok") throw new Error("Testaufbau kaputt: encrypt");
+  return chiffriert.value;
+}
+
+/** Baut ein ECHTES Chiffrat aus einer Nutzlast. */
+function s4Chiffrat(payload: OAuthPayload = s4Nutzlast()): string {
+  const formatiert = formatOAuthPayload(payload);
+  if (formatiert.kind !== "ok") throw new Error("Testaufbau kaputt: format");
+  return s4Chiffre(formatiert.value);
+}
+
+/** Ein Projekt, das eine Kennung im Blob traegt (Tor 1 offen). */
+function s4Projekt(pixels: Record<string, unknown>) {
+  return { data: { id: "proj-1", settings: { pixels } }, error: null };
+}
+
+/** Zaehlt die Datenbank-Runden UND liefert die Aufloesung. */
+async function s4Aufloesen(
+  projects: { data: unknown; error: unknown },
+  secrets: { data: unknown; error: unknown },
+) {
+  const tabellen: string[] = [];
+  const from = vi.fn((table: string) => {
+    tabellen.push(table);
+    const result = () => (table === "projects" ? projects : secrets);
+    const builder: Record<string, unknown> = {};
+    builder.select = vi.fn(() => builder);
+    builder.eq = vi.fn(() => builder);
+    builder.in = vi.fn(() => builder);
+    builder.maybeSingle = vi.fn(async () => result());
+    builder.then = (
+      onOk: (v: unknown) => unknown,
+      onErr?: (e: unknown) => unknown,
+    ) => Promise.resolve(result()).then(onOk, onErr);
+    return builder;
+  });
+  createAdminClient.mockReturnValue({ from });
+  const config = await getCapiConfigByTrackingKey("tk-abc");
+  return { config, tabellen };
+}
+
+describe("Scheibe 4 — der Lesepfad fuer das chiffrierte Zugangsdatum", () => {
+  beforeEach(() => {
+    s4Umgebung();
+    vi.useFakeTimers();
+    vi.setSystemTime(S4_JETZT * 1000);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    for (const name of ["SECRET_ENC_KEYS", "SECRET_ENC_ACTIVE_KEY_ID"]) {
+      const wert = S4_ORIGINAL_ENV[name];
+      if (wert === undefined) delete process.env[name];
+      else process.env[name] = wert;
+    }
+  });
+
+  it("TR-1: gueltiges Chiffrat + lebende Uhr 1 -> Empfaenger mit dem DECHIFFRIERTEN Zugangsdatum", async () => {
+    // WIRD ROT, WENN: der Dechiffrier-Zweig fehlt (dann kein Empfaenger), oder wenn
+    // ein ANDERES Feld der Nutzlast in config.token landet — deshalb wird der WERT
+    // verglichen und nicht bloss seine Anwesenheit.
+    const { config } = await s4Aufloesen(
+      s4Projekt({ google: { pixelId: "9876543210" } }),
+      secretRows([{ target: "google", secret: null, secret_enc: s4Chiffrat() }]),
+    );
+    expect(config?.targets).toEqual([
+      {
+        target: "google",
+        config: { pixelId: "9876543210", token: S4_ZUGANGSDATUM },
+      },
+    ]);
+  });
+
+  it("TR-2: Uhr 1 ueberschritten -> KEIN Empfaenger; eine Sekunde davor -> Empfaenger", async () => {
+    // DIE GEGENPROBE IM SELBEN LAUF IST DER GANZE PUNKT: "kein Empfaenger" waere auch
+    // dann wahr, wenn der Dechiffrier-Weg insgesamt tot waere. Erst der zweite Teil
+    // belegt, dass GENAU die Uhr entschieden hat.
+    // DER RAND IST MITGEPRUEFT: expiresAt === now gilt als NICHT MEHR BRAUCHBAR.
+    const tot = await s4Aufloesen(
+      s4Projekt({ google: { pixelId: "9876543210" } }),
+      secretRows([
+        {
+          target: "google",
+          secret: null,
+          secret_enc: s4Chiffrat(s4Nutzlast({ accessTokenExpiresAt: S4_JETZT })),
+        },
+      ]),
+    );
+    expect(tot.config?.targets).toEqual([]);
+
+    const lebt = await s4Aufloesen(
+      s4Projekt({ google: { pixelId: "9876543210" } }),
+      secretRows([
+        {
+          target: "google",
+          secret: null,
+          secret_enc: s4Chiffrat(
+            s4Nutzlast({ accessTokenExpiresAt: S4_JETZT + 1 }),
+          ),
+        },
+      ]),
+    );
+    expect(lebt.config?.targets.map((t) => t.target)).toEqual(["google"]);
+  });
+
+  it("TR-3: jeder unbrauchbare Zustand von Chiffrat und Nutzlast -> KEIN Empfaenger", async () => {
+    // DIE FAELLE EINZELN, statt eines Sammel-Laufs: Wird einer still auf "ok"
+    // eingeebnet, faellt GENAU seine Zeile — und die Beschriftung nennt ihn.
+    const echt = s4Chiffrat();
+    const teile = echt.split(".");
+    const faelle: [string, string][] = [
+      ["decrypt_bad_format", "kein-chiffrat-dieser-form"],
+      [
+        "decrypt_unknown_key",
+        [teile[0], "s4-fremd", teile[2], teile[3], teile[4]].join("."),
+      ],
+      [
+        "decrypt_auth_failed",
+        [teile[0], teile[1], teile[2], teile[3], `${teile[4]}QQ`].join("."),
+      ],
+      ["parse_bad_format", s4Chiffre("keine-nutzlast-dieser-form")],
+      ["parse_unknown_version", s4Chiffre("v9.a.b.c.d")],
+    ];
+
+    for (const [name, chiffrat] of faelle) {
+      const { config } = await s4Aufloesen(
+        s4Projekt({ google: { pixelId: "9876543210" } }),
+        secretRows([{ target: "google", secret: null, secret_enc: chiffrat }]),
+      );
+      expect(config?.targets, name).toEqual([]);
+    }
+
+    // no_key: die UMGEBUNG ist kaputt, nicht die Zeile. Eigener Fall, weil er die
+    // einzige Ursache ausserhalb der Daten ist.
+    s4Umgebung({ SECRET_ENC_KEYS: undefined, SECRET_ENC_ACTIVE_KEY_ID: undefined });
+    const ohneSchluessel = await s4Aufloesen(
+      s4Projekt({ google: { pixelId: "9876543210" } }),
+      secretRows([{ target: "google", secret: null, secret_enc: echt }]),
+    );
+    expect(ohneSchluessel.config?.targets, "decrypt_no_key").toEqual([]);
+  });
+
+  it("TR-4: die KLARTEXT-Zeile ist unveraendert — und laeuft NICHT durch den Dechiffrier-Weg", async () => {
+    // DIE ZWEITE HAELFTE IST DER EIGENTLICHE WAECHTER: Ein Klartext-Geheimnis, das
+    // durch decryptSecret liefe, faellt dort als bad_format heraus — und die VIER
+    // bestehenden Ziele senden nichts mehr. Der Beleg ist, dass dieser Lauf OHNE
+    // gesetzte Chiffrier-Umgebung durchgeht: gaebe es einen Dechiffrier-Versuch, waere
+    // er schon an no_key gescheitert.
+    s4Umgebung({ SECRET_ENC_KEYS: undefined, SECRET_ENC_ACTIVE_KEY_ID: undefined });
+    const { config } = await s4Aufloesen(
+      s4Projekt({ meta: { pixelId: "PIXEL-123" } }),
+      secretRows([{ target: "meta", secret: "SECRET-TOKEN" }]),
+    );
+    expect(config?.targets).toEqual([META_ENTRY]);
+  });
+
+  it("TR-5: das ERNEUERUNGS-Token verlaesst den Resolver nicht — weder im Ergebnis noch im Log", async () => {
+    // I5, und der Lauf BEHAUPTET es, waehrend der Rueckgabetyp von usableTokenFromRow
+    // (`string | null`) es ERZWINGT. Beides gehoert zusammen: der Typ haelt heute, der
+    // Lauf faengt den Tag, an dem jemand ihn aufweitet.
+    // DIE POSITIVKONTROLLE STECKT IM SELBEN LAUF: das ZUGANGSDATUM steht im Ergebnis.
+    // Ohne sie waere "das Erneuerungs-Token fehlt" auch dann wahr, wenn gar nichts
+    // aufgeloest worden waere.
+    const fehler = vi.spyOn(console, "error").mockImplementation(() => {});
+    const info = vi.spyOn(console, "info").mockImplementation(() => {});
+    const { config } = await s4Aufloesen(
+      s4Projekt({ google: { pixelId: "9876543210" } }),
+      secretRows([{ target: "google", secret: null, secret_enc: s4Chiffrat() }]),
+    );
+
+    const alsText = JSON.stringify(config);
+    expect(alsText).toContain(S4_ZUGANGSDATUM);
+    expect(alsText).not.toContain(S4_ERNEUERUNGS_TOKEN);
+
+    const ausgaben = [...fehler.mock.calls, ...info.mock.calls]
+      .map((args) => JSON.stringify(args))
+      .join("\n");
+    expect(ausgaben).not.toContain(S4_ERNEUERUNGS_TOKEN);
+    expect(ausgaben).not.toContain(S4_ZUGANGSDATUM);
+    fehler.mockRestore();
+    info.mockRestore();
+  });
+
+  it("TR-6: GENAU ZWEI Datenbank-Runden, auch mit gemischten Geheimnis-Klassen", async () => {
+    // I2. WIRD ROT, WENN jemand je Zeile nachfragt oder eine Vorab-Abfrage einfuehrt.
+    // Die Mischung ist Absicht: sie ist der Fall, in dem eine zeilenweise Abfrage am
+    // naheliegendsten waere.
+    const { config, tabellen } = await s4Aufloesen(
+      s4Projekt({
+        meta: { pixelId: "PIXEL-123" },
+        google: { pixelId: "9876543210" },
+      }),
+      secretRows([
+        { target: "meta", secret: "SECRET-TOKEN" },
+        { target: "google", secret: null, secret_enc: s4Chiffrat() },
+      ]),
+    );
+    expect(tabellen).toEqual(["projects", "project_secrets"]);
+    expect(config?.targets.map((t) => t.target)).toEqual(["meta", "google"]);
+  });
+
+  it("TR-7 (TOR-2-ERSATZ): google bekommt sein Zugangsdatum aus secret_enc — UND eine Zeile mit toter Uhr 1 oder unbrauchbarem Chiffrat erzeugt KEIN ResolvedTarget", async () => {
+    // ER ERSETZT "TOR 2: MIT Kennung im Blob, aber secret = NULL -> kein Empfaenger".
+    // JENER WAECHTER HAT SEINEN GEGENSTAND VERLOREN: Er hielt, dass google KEIN
+    // Zugangsdatum bekommt, weil die Klartext-Spalte NULL ist. Ab dieser Scheibe
+    // bekommt es eines — aus der anderen Spalte.
+    // BEIDE HAELFTEN IN EINEM LAUF, und das ist keine Bequemlichkeit: Die erste allein
+    // bewachte nur den Erfolgsfall, und der alte Waechter hielt gerade den
+    // MISSERFOLGSFALL. Wer nur die erste baut, tauscht einen Riegel gegen eine
+    // Erfolgsmeldung.
+    const projekt = s4Projekt({ google: { pixelId: "9876543210" } });
+
+    const lebendig = await s4Aufloesen(
+      projekt,
+      secretRows([{ target: "google", secret: null, secret_enc: s4Chiffrat() }]),
+    );
+    expect(lebendig.config?.targets.map((t) => t.target)).toEqual(["google"]);
+    expect(lebendig.config?.targets[0]?.config.token).toBe(S4_ZUGANGSDATUM);
+
+    const abgelaufen = await s4Aufloesen(
+      projekt,
+      secretRows([
+        {
+          target: "google",
+          secret: null,
+          secret_enc: s4Chiffrat(
+            s4Nutzlast({ accessTokenExpiresAt: S4_JETZT - 1 }),
+          ),
+        },
+      ]),
+    );
+    expect(abgelaufen.config?.targets).toEqual([]);
+
+    const kaputt = await s4Aufloesen(
+      projekt,
+      secretRows([
+        {
+          target: "google",
+          secret: null,
+          secret_enc: "kein-chiffrat-dieser-form",
+        },
+      ]),
+    );
+    expect(kaputt.config?.targets).toEqual([]);
+  });
+
+  it("2(a): BEIDE Spalten gefuellt -> das CHIFFRAT gewinnt", async () => {
+    // DER CHECK project_secrets_secret_genau_eines VERBIETET DIESEN ZUSTAND, der Fall
+    // ist ueber die Anwendung also nicht erreichbar. Der Lauf steht trotzdem, und der
+    // Grund ist der Zuschnitt: Ein Verhalten, das nur aus der Zeilenreihenfolge folgt,
+    // ist keines. Hier ist es entschieden und festgehalten.
+    // WARUM DAS CHIFFRAT GEWINNT: Der Klartext ist die ALT-FORM. Gaebe er den
+    // Ausschlag, verdeckte ein stehengebliebener Alt-Wert einen migrierten Zugang —
+    // und zwar DAUERHAFT, weil ein Klartext-Geheimnis keine Uhr traegt und nie
+    // ablaeuft. Fail-open in die teuerste Richtung.
+    // WIRD ROT, WENN jemand die beiden Zweige vertauscht.
+    const { config } = await s4Aufloesen(
+      s4Projekt({ google: { pixelId: "9876543210" } }),
+      secretRows([
+        {
+          target: "google",
+          secret: "ALT-KLARTEXT-NICHT-MEHR-GUELTIG",
+          secret_enc: s4Chiffrat(),
+        },
+      ]),
+    );
+    expect(config?.targets[0]?.config.token).toBe(S4_ZUGANGSDATUM);
+  });
+
+  it("T15-ERSATZ: der Ingest-Pfad ENTSCHLUESSELT, ERNEUERT ABER NIE", async () => {
+    // ER ERSETZT "T15 — KEIN AUFRUFER AUF DEM INGEST-PFAD (mit Positivkontrolle)" in
+    // oauth/token-refresh.test.ts. JENER WAECHTER HAT SEINEN GEGENSTAND VERLOREN: Er
+    // hielt, dass decryptSecret keinen Aufrufer auf dem Ingest-Pfad hat. Ab dieser
+    // Scheibe hat es einen — und die Achse verschiebt sich von "entschluesselt nicht"
+    // zu "entschluesselt, erneuert aber nie".
+    //
+    // ER IST DER WICHTIGSTE DER DREI ERSATZ-WAECHTER, und der Grund ist, dass er das
+    // EINZIGE ist, was von einer Entscheidung im Code sichtbar bleibt: Dass der
+    // Transport NICHT erneuert, traegt vier Festlegungen des Zuschnitts — die
+    // Auflaesung von A-4, den Verzicht auf den Vorlauf, das Nicht-Verlassen des
+    // Erneuerungs-Tokens und den Ausschluss von 1b aus dieser Scheibe. NICHTS DAVON
+    // IST AM CODE ZU SEHEN; sichtbar ist nur, was ein Waechter behauptet.
+    // OHNE IHN WAERE DIE ENTSCHEIDUNG EINE ABSICHT OHNE MECHANISMUS.
+    //
+    // SEINE GRENZE, UND SIE STEHT AN IHM SELBST: ER SIEHT ZEICHEN, NICHT DEN
+    // IMPORT-GRAPHEN. Eine PROSA-Erwaehnung im Kommentar wuerde ihn ebenso rot machen
+    // wie ein echter Aufruf — er irrt also in die STRENGE Richtung, und das ist
+    // gewollt: lieber ein Fehlalarm, den jemand prueft, als ein Durchlassen, das
+    // niemand sieht. Wer ihn wegen eines Fehlalarms weicher macht, nimmt ihm genau die
+    // Wirkung, fuer die er da ist.
+    //
+    // SEIN KOMMENTAR-FILTER IST NICHT DER ZEILENWEISE: Ein Filter, der einen Kommentar
+    // am ZEILENANFANG erkennt, laesst die Fortsetzungszeilen eines mehrzeiligen Blocks
+    // als Code durchgehen — GEMESSEN an nurCode in oauth/google-authorize.test.ts und
+    // festgehalten als Vorrats-Eintrag 34. Hier werden die Bloecke ALS BLOECKE
+    // entfernt, mit einer Positivkontrolle darauf, dass ueberhaupt etwas uebrig bleibt.
+    const quelle = readFileSync(join(__dirname, "token.ts"), "utf8");
+    const nurCodeBlockweise = quelle
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/(^|[^:])\/\/.*$/gm, "$1");
+
+    // POSITIVKONTROLLE IM SELBEN LAUF, ZWEIFACH — ohne sie waere jeder Nicht-Treffer
+    // von einem leeren Lesevorgang nicht zu unterscheiden:
+    //  (a) der Filter hat nicht alles weggeworfen,
+    //  (b) die zwei Dechiffrier-Leser sind im CODE und nicht bloss im Kommentar.
+    expect(nurCodeBlockweise).toContain("export async function getCapiConfigByTrackingKey");
+    expect(nurCodeBlockweise).toContain("decryptSecret(encrypted)");
+    expect(nurCodeBlockweise).toContain("parseOAuthPayload(decrypted.value)");
+
+    // DIE EIGENTLICHE ZUSICHERUNG: entschluesseln JA, erneuern NIE.
+    expect(nurCodeBlockweise).not.toMatch(/refreshAccessToken/);
+    expect(nurCodeBlockweise).not.toMatch(/exchangeRefreshToken/);
+    expect(nurCodeBlockweise).not.toMatch(/encryptSecret/);
+    expect(nurCodeBlockweise).not.toMatch(/formatOAuthPayload/);
+    // UND KEIN IMPORT AUS DEM OAUTH-HAUS. Die zwei erlaubten Nachbarn liegen in
+    // secrets/, nicht in oauth/ — die Richtung ist damit auch als Import-Aussage
+    // festgehalten, soweit ein Zeichen-Waechter das kann.
+    expect(nurCodeBlockweise).not.toMatch(/from\s+["'][^"']*\/oauth\//);
   });
 });

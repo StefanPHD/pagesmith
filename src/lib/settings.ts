@@ -57,6 +57,27 @@ import { hasPixelId } from "@/lib/tracking/target-readiness";
 // TargetWithAdapter geschluesselt. VIER Tore halten nach dieser Zeile weiterhin
 // geschlossen; welche und woran man das sieht, steht im Zuschnitt
 // (docs/aktiver-stand.md, Scheibe 3).
+// PHASE 11.2, SCHEIBE 4 — DIE ZWEI ABSAETZE DARUEBER BLEIBEN WOERTLICH STEHEN UND SIND
+// ALS AUSSAGE UEBER HEUTE BEIDE UEBERHOLT. Sie beschreiben ihren Tag und werden nicht
+// gestrichen; sie sind die Herleitung, aus der der Schnitt dieser Phase entstanden ist.
+// WAS NICHT MEHR ZUTRIFFT, JE EINZELN:
+//  · "'linkedin' … steht bewusst NICHT in TARGETS_WITH_ADAPTER" — seit 11.1f falsch.
+//  · "'google' steht bewusst NICHT in TARGETS_WITH_ADAPTER" — seit Scheibe 4 falsch.
+//  · "VIER Tore halten nach dieser Zeile weiterhin geschlossen" — mit Scheibe 4 haelt
+//    KEINES der vier mehr. Tor A ist mit Scheibe 2 absichtlich gefallen (die Kennungen
+//    bekamen ihre Eingabe), Tor B mit dem Lesepfad in capi/token.ts (die google-Zeile
+//    traegt ihr Geheimnis in secret_enc, und der Resolver liest es jetzt), Tor C ist
+//    hinter Tor B ohnehin unerreichbar, und Tor D mit dem Eintrag in
+//    TARGETS_WITH_ADAPTER.
+// WAS AN IHRE STELLE TRITT — UND ES SIND KEINE TORE MEHR, SONDERN BEDINGUNGEN: Ein
+// Ereignis erreicht Google nur, wenn eine Kundennummer hinterlegt ist, eine
+// Conversion-Regel FUER DIESES EREIGNIS existiert, das Zugangsdatum eine lebende
+// Uhr 1 hat, der Einwilligungs-Draht den Schluessel traegt und eine Klick-Kennung in
+// der Adresse steht. Fehlt eines davon, geht nichts hinaus — aber als Eigenschaft des
+// Ziels, nicht als Riegel gegen es.
+// DAS IST NICHT ZWEIMAL DASSELBE: Ein Tor haelt ein FERTIGES Ziel zurueck; eine
+// Bedingung beschreibt, was ein Ziel BRAUCHT. Wer die Aufzaehlung oben als heutige
+// Liste liest, sucht Riegel, die es nicht mehr gibt.
 export const TRACKING_TARGETS = [
   "meta",
   "pinterest",

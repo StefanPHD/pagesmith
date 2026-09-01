@@ -228,6 +228,19 @@ export const TARGET_CARDS: Record<TrackingTarget, TargetCardConfig> = {
   //   erste war eine UI-ABWESENHEIT und kein Riegel, weil saveProject den
   //   Einstellungs-Blob unvalidiert schreibt. Nach Tor A tragen Tor B UND Tor D, und
   //   Tor D (kein Eintrag in TARGETS_WITH_ADAPTER) haelt unabhaengig.
+  //   NACHGEZOGEN (Scheibe 4 der Phase 11.2) — DER SATZ DARUEBER BLEIBT WOERTLICH UND
+  //   IST ALS AUSSAGE UEBER HEUTE FALSCH: Mit Scheibe 4 haelt WEDER Tor B NOCH Tor D.
+  //   Tor B ist gefallen, weil der Resolver die google-Zeile jetzt aus secret_enc liest
+  //   statt aus der leeren Klartext-Spalte (usableTokenFromRow in capi/token.ts); Tor D,
+  //   weil 'google' in TARGETS_WITH_ADAPTER steht und einen Eintrag in
+  //   FORWARDER_BY_TARGET hat.
+  //   ER BLEIBT STEHEN, WEIL ER DIE HERLEITUNG DIESER KARTE TRAEGT: Er sagt, warum das
+  //   oeffentliche Feld ueberhaupt entstehen durfte, und diese Begruendung altert nicht
+  //   mit dem Fall der Tore. Gestrichen waere sie weg; gestempelt waere sie irrefuehrend.
+  //   WAS AB JETZT GILT: Das Ziel SENDET, sobald Kundennummer, Conversion-Regel,
+  //   lebendes Zugangsdatum, Einwilligung und Klick-Kennung zusammenkommen. Die Karte
+  //   sagt darueber weiterhin NICHTS — sie sagt, ob Zugangsdaten HINTERLEGT sind, nie
+  //   ob sie funktionieren.
   //   DIE BESCHRIFTUNG FOLGT DER DOPPELAUSSAGE DER ZWEI NACHBARKARTEN (HERKUNFT plus
   //   ABGRENZUNG): Die Nummer stammt aus dem Google-Ads-Konto, und wir liefern KEIN Tag
   //   aus — im Seitenquelltext landet allein der Consent-Schluessel.

@@ -567,6 +567,48 @@ aufeinander; sie liegen alle hier und finden einander.
       dem heute LAUTEN Fehler (422 im Log) einen STILLEN (kein Forward), also eine
       Verschiebung und keine Behebung, solange der Betreiber weder das eine noch das andere
       sieht.
+
+      VERMERK 2026-09-01 — EIN ZWEITER ANBIETER ZEIGT DIESELBE KLASSE. AUS EINEM
+      LINKEDIN-SONDERFALL WIRD EIN MUSTER. Der Text der Ursache (1) darüber bleibt ZEICHEN FÜR
+      ZEICHEN stehen; dieser Vermerk tritt DANEBEN und schreibt nichts um.
+      DER BEFUND, GEMESSEN 2026-09-01 (OWNER), LIVE AUFGETRETEN — er ist der Grund, warum der
+      erste Live-Test der Scheibe 4 fehlschlug: Die Oberfläche von Google Ads zeigt am
+      Conversion-Snippet die gtag-Gestalt `AW-<id>/<label>`. Die Data Manager API verlangt in
+      `destinations[].productDestinationId` eine ANDERE Gestalt — die numerische
+      Conversion-Type-ID (ctId). Der abgetippte gtag-Wert wird abgewiesen: field
+      `"destinations[0].product_destination_id"`, description `"String is not a valid number."`,
+      reason `INVALID_NUMBER_FORMAT` (docs/ziel-befunde.md, Google-Abschnitt, Teil (ca)/(a),
+      Handaufruf 1). Die ctId steht an einer ANDEREN Stelle der Oberfläche — Conversions >
+      Conversion-Action > Details > "Conversion type ID".
+      DIE SPIEGELUNG ZUR LINKEDIN-HÄLFTE IST EXAKT UND DESHALB LEHRREICH: Dort FEHLTE ein
+      Präfix, hier ist eines ZU VIEL. Beide Male zeigt die Oberfläche des Anbieters eine
+      Gestalt, die seine eigene Schnittstelle nicht annimmt; beide Male trägt der Betreiber ein,
+      was er SIEHT; beide Male reicht der Adapter den Wert unverändert durch, und beide Male ist
+      der Fehlschlag für den Betreiber UNSICHTBAR — sichtbar allein im Log.
+      DASS ES ZWEIMAL UNABHÄNGIG AUFGETRETEN IST, IST DIE EIGENTLICHE AUSSAGE: Zwei Anbieter,
+      zwei verschiedene Schnittstellen, dieselbe Fehlerklasse. ES IST KEIN LINKEDIN-SONDERFALL,
+      SONDERN EINE EIGENSCHAFT DER GATTUNG "Kennung, die der Betreiber aus einer fremden
+      Oberfläche abschreibt". WER DEN NÄCHSTEN ANBIETER ANBINDET, RECHNET DAMIT — und die
+      Katalog-Frage dahinter lautet nicht "welches Format", sondern "zeigt die Oberfläche des
+      Anbieters dasselbe Format, das seine Schnittstelle verlangt".
+      KEIN BAUAUFTRAG, UND DIE GRENZE IST DIESELBE WIE DAMALS: Eine Formprüfung an der Eingabe
+      machte aus dem heute LAUTEN Fehler (der Statuscode im Log) einen STILLEN (kein Forward) —
+      eine Verschiebung und keine Behebung, solange der Betreiber weder das eine noch das andere
+      sieht. HINZU KOMMT HIER EINE ZWEITE GRENZE, die es bei LinkedIn nicht gab: Für
+      `productDestinationId` ist AUSSER "reine Ziffernfolge" nichts über Länge oder Zeichenvorrat
+      gemessen (Teil (k)/C1 sagt es ausdrücklich); eine Prüfung wäre auf dieser Achse ERFUNDEN —
+      dieselbe Linie wie Festlegung (5) des Zuschnitts der Scheibe 2.
+      WAS BEREITS GESCHEHEN IST UND KEINE BEHEBUNG DARSTELLT: Der Owner hat den Wert im UI von
+      Hand auf die numerische ctId korrigiert (2026-09-01). Das ist eine Datenkorrektur an EINEM
+      Projekt, kein Riegel und keine Warnung.
+      DIE ZAHL "DREI" IM TITEL DIESES EINTRAGS BLEIBT UNANGETASTET, ebenso die Zahl VIER aus dem
+      Vermerk an Ursache (4): Dieser Vermerk fügt KEINE fünfte Ursache hinzu. Er sagt, dass
+      Ursache (1) BREITER ist als ihr Wortlaut — sie beschreibt einen Anbieter und trifft eine
+      Gattung.
+      PROVENIENZ: GEMESSEN 2026-09-01 (OWNER), live gegen den Endpunkt und an der eigenen
+      Anwendung; die Fehlerform GELESEN an docs/ziel-befunde.md, Teil (ca)/(a). Dass daraus ein
+      MUSTER statt eines Sonderfalls wird, ist eine ABLEITUNG aus zwei unabhängigen Fällen,
+      keine dritte Messung.
   (2) EIN UNVOLLSTÄNDIG KONFIGURIERTES ZIEL FÄLLT STILL AUS. TRIGGER: die UI-Warnung
       (Owner-Absicht, 2026-08-18), spätestens vor echtem Ad-Traffic. GEMESSEN am Code
       (2026-08-18): Liegt nur die Kennung oder nur das Zugangsdatum vor, entsteht kein
@@ -1574,3 +1616,43 @@ aufeinander; sie liegen alle hier und finden einander.
   PROVENIENZ: ARCHITEKTEN-FESTLEGUNG 2026-09-01, im Zuschnitt der Scheibe 4 getroffen. KEINE
   Messung. Dass der alte Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
   Existenz des Zuschnitts.
+
+  ZWEITER VERMERK 2026-09-01 — DER NEUE TRIGGER IST EINGETRETEN. DER PUNKT IST FÄLLIG, NICHT
+  BEANTWORTET. Der Text darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Vermerk tritt
+  DANEBEN.
+  ES SIND ZWEI VERMERKE VOM SELBEN TAG, UND SIE SAGEN VERSCHIEDENES — ohne diesen Satz liest
+  jemand sie als eine Fortschreibung: Der ERSTE hat den Trigger von "der Zuschnitt der
+  Scheibe 4" auf "der BESTÄTIGTE LIVE-NACHWEIS der Scheibe 4" ENGER gesetzt. Der ZWEITE hält
+  fest, dass GENAU DIESER ENGERE Trigger inzwischen eingetreten ist.
+  DER BEFUND: Der Live-Nachweis der Scheibe 4 ist gefahren und bestätigt (GEMESSEN 2026-09-01,
+  OWNER, an der ausgelieferten Anwendung; protokolliert in docs/aktiver-stand.md, VERMERK 10).
+  Ein Ereignis von einer gehosteten Kundenseite erreicht Google.
+  WAS SICH DAMIT ÄNDERT, UND ES IST NUR DIES: DAS INSTRUMENT EXISTIERT JETZT. Der erste Vermerk
+  begründete den Aufschub damit, ein gültiges Zugangsdatum auf dem Transportpfad gebe es VOR
+  dem Transport nicht — die Messung wäre "nicht bloss unterlassen, sondern unmöglich". SIE IST
+  AB JETZT MÖGLICH.
+  DAS INSTRUMENT, BENANNT UND NICHT GEFAHREN: ein HANDAUFRUF ausserhalb des Produkts, mit einem
+  gültigen Zugangsdatum und einer FREMDEN Kundennummer in
+  `destinations[].operatingAccount.accountId` — DIESELBE GESTALT WIE MESSUNG D
+  (docs/ziel-befunde.md, Google-Abschnitt, Teil (ca)/(a)): `POST`, Kopfzeilen `Authorization:
+  Bearer <Token>` und `Content-Type: application/json`, OHNE `x-goog-user-project`, OHNE
+  `validateOnly`, ohne Query-String, sonst zeichengleich zum angenommenen Aufruf 4.
+  WARUM EIN HANDAUFRUF UND NICHT DER ADAPTER: Der Adapter liest den Antwortrumpf nicht und soll
+  es nicht (TRANSIT-ONLY). Über ihn wäre nur der Statuscode sichtbar — und der trennt die
+  gemessenen Fehlerklassen nicht. Es ist derselbe Grund, aus dem Messung D drei ihrer vier
+  Aufrufe von Hand gefahren hat.
+  WAS DIESER VERMERK NICHT TUT: Er beantwortet die Frage NICHT, verkleinert sie nicht und
+  vermutet nichts über das Anbieter-Verhalten. DER PUNKT BLEIBT IN VOLLEM UMFANG OFFEN — er ist
+  nur von "vertagt" auf "fällig" gewechselt.
+  DER AUFZÄHLUNGS-KANDIDAT BLEIBT UNBERÜHRT UND UNGELESEN, wie schon im ersten Vermerk.
+  EIN ZUSATZ AUS DEM LIVE-NACHWEIS, DER DIE FRAGE EINGRENZT UND SIE NICHT BEANTWORTET: Für die
+  EIGENE Kundennummer ist belegt, dass das Zugangsdatum aus dem in Phase 11.8 gebauten Fluss
+  trägt — der Adapter-Aufruf aus dem Live-Test endete mit HTTP 400, also WEDER 401 NOCH 403,
+  und kam damit an der Authentifizierung vorbei (ABLEITUNG aus dem Statuscode, KEINE eigene
+  Messung; s. VERMERK 10, Abschnitt (c)). ÜBER EINE FREMDE KUNDENNUMMER SAGT DAS NICHTS: Dort
+  wäre gerade eine 403 der zu erwartende Ausgang, und ob sie kommt, ist der Gegenstand dieses
+  Punktes.
+  PROVENIENZ: Der Live-Nachweis GEMESSEN 2026-09-01 (OWNER). Dass der Trigger damit eingetreten
+  ist, ist eine FOLGE aus seinem Wortlaut. Die Gestalt des Instruments ist GELESEN an Teil (ca)
+  derselben Datei, aus der auch Messung D stammt. KEINE Messung an einer Google-Schnittstelle
+  in dieser Runde.

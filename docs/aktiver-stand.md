@@ -213,10 +213,12 @@ KEINE Wiedergabe der Begründungen.
   Organischer Traffic, Direktaufrufe und Traffic anderer Kanäle erzeugen bei
   diesem Ziel NICHTS. Wer die Zahlen gegen die eigene Auswertung hält, findet
   eine Lücke und sucht einen Defekt, den es nicht gibt.
-- **ZWEI RANG-WECHSEL GEGENÜBER DER NICHT GEWÄHLTEN GESTALT:** eventSource ist
-  hier PFLICHT (bei Multi-Source optional), transactionId dagegen OPTIONAL (dort
-  Pflicht). Wer den einen Zuschnitt aus dem anderen ableitet, erbt genau die
-  falsche Hälfte.
+- **EIN RANG-WECHSEL GEGENÜBER DER NICHT GEWÄHLTEN GESTALT:** eventSource ist
+  hier PFLICHT (bei Multi-Source optional). Wer den einen Zuschnitt aus dem
+  anderen ableitet, erbt genau die falsche Hälfte. Bis zum 2026-09-01 standen
+  hier ZWEI — an diesem Tag ist die eventSource-Hälfte BESTÄTIGT und die zweite
+  ("transactionId dagegen OPTIONAL, dort Pflicht") WIDERLEGT worden, gemessen;
+  s. docs/ziel-befunde.md, Teil (ca).
 
 ORT ALLER DREI IM VOLLTEXT: docs/roadmap.md, Eintrag 11.2, und
 docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)".
@@ -1712,11 +1714,40 @@ Die fünf Zuordnungen, je mit ihrem Grund:
   sein, und die Schnittstelle meldet das nicht.** Die Mitgliedermenge ist nicht einmal erhoben.
   **Verlangt der Live-Test ein anderes Mitglied, wird die Konstante angepasst** — sie ist
   genau dafür benannt und liegt an einer Stelle.
-· **`transactionId` WIRD NICHT GESENDET.** GRUND: In der Offline-Gestalt ist es OPTIONAL
-  (GELESEN, Teil (l)/D5 — es ist einer der zwei Rang-Wechsel gegenüber Multi-Source).
-  `eventID` ist **unsere** Dedup-Kennung und **nicht** Googles Transaktion; sie dafür
-  einzusetzen wäre **geraten**, und ein geratener Wert in einem Dedup-Feld eines fremden
-  Systems fällt nicht auf.
+· **`transactionId` WIRD GESENDET, WERT = `eventID`.**
+  **ERSETZT AM 2026-09-01.** Hier stand: "`transactionId` WIRD NICHT GESENDET", begründet
+  damit, dass das Feld in der Offline-Gestalt OPTIONAL sei (GELESEN, Teil (l)/D5) und
+  `eventID` dafür einzusetzen **geraten** wäre. **DIE PRÄMISSE IST WIDERLEGT: In der
+  Offline-Gestalt ist `transactionId` PFLICHT** (GEMESSEN 2026-09-01, OWNER,
+  docs/ziel-befunde.md, Teil (ca)) — ein Aufruf ohne das Feld wird mit
+  `REQUIRED_FIELD_MISSING` abgewiesen, ein sonst zeichengleicher mit dem Feld liefert 200.
+  **ZWEI unabhängige gelesene Stellen sagten das Gegenteil**, (l)/D5 und (w)/D2; beide
+  bleiben stehen und tragen jetzt einen Zeiger auf (ca).
+  **DER ALTE WORTLAUT IST ERSETZT UND NICHT DANEBENGESTELLT**, weil er eine BAU-ANWEISUNG
+  für eine laufende Scheibe ist — zwei Anweisungen nebeneinander wären eine Falle für den,
+  der baut.
+
+  **GRUND FÜR DEN WERT — OWNER-/ARCHITEKTEN-ENTSCHEIDUNG 2026-09-01, nach Kandidatenlage.
+  KEINE Messung, eine Festlegung.**
+  **DIE FEHLRICHTUNGEN SIND UNSYMMETRISCH, und das entscheidet:** Ein **frischer Wert je
+  Aufruf** irrte Richtung **ÜBERZÄHLUNG** — eine Beacon-Wiederholung erzeugte zwei
+  Transaktionen, und überzählte Conversions lenken Gebote und kosten den Kunden Geld.
+  **`eventID` irrt Richtung UNTERZÄHLUNG.** Eine Conversion zu wenig ist der billigere
+  Fehler.
+  **DAZU, UND ES IST DER ZWEITE TRAGENDE GRUND:** Meta dedupliziert **bereits über genau
+  diesen Schlüssel**. Zwei verschiedene Dedup-Achsen für dasselbe Ereignis wären eine
+  Divergenz, die niemand pflegt — und die erst auffiele, wenn zwei Ziele verschieden zählen.
+
+  **GRENZE, ZWEITEILIG:**
+  · **WIDERSPRUCH 4 IST DAMIT SCHARF** (docs/ziel-befunde.md, Teil (y), fortgeschrieben in
+    (ca)/(f)): Was bei einem doppelten `transactionId` geschieht, ist unaufgelöst — Stelle A
+    sagt Zusammenführung, Stelle B Verwerfung unter ERROR, **beide sind Lesungen**. **Gilt
+    Stelle B, verfällt der Datensatz, statt zusammengeführt zu werden — der Preis wäre
+    grösser als "eine Conversion zu wenig".** **DAS ÄNDERT DIE WAHL NICHT**, weil ein
+    frischer Wert auch unter Stelle B schlechter wäre: dort verfiele ein Datensatz, hier
+    entstünde eine erfundene zweite Conversion.
+  · **DIE WIEDERHOLUNGS-ACHSE IST GEMESSEN UND OFFEN ZUGLEICH** — s. den Messbefund
+    "Wiederholt sich `eventID`?" weiter unten in diesem Abschnitt.
 · **`x-goog-user-project` WIRD NICHT GESENDET.** GRUND: **ungemessen in beide Richtungen.**
   Die Kopfzeile fehlte in allen sieben Aufrufen der Messung B1, und die semantische Prüfung
   wurde erreicht — **das ist ausdrücklich KEIN Schluss auf Entbehrlichkeit** (Teil (bu)), aber
@@ -1761,6 +1792,52 @@ ihn dann, weil die Zuordnung über `TargetWithAdapter` erschöpfend ist.
 GRENZE hat den Weg hierher schon benannt: "bindende Entscheidung (8) sagt, dass er über
 `FORWARDER_BY_TARGET` laufen SOLL, und Scheibe 4 zahlt ihn." **Der Preis wird hier gezahlt.**
 **KEIN PARALLELER PFAD** — bindende Entscheidung (8), unverändert.
+
+### Wiederholt sich `eventID`? — ein Messbefund, der die Wahl aus Festlegung (5) trägt
+
+**WARUM DIESER BEFUND HIERHER GEHÖRT UND NICHT IN EINEN VERMERK:** Festlegung (5) setzt
+`eventID` als `transactionId` ein. Diese Wahl ist nur so gut wie die Antwort auf eine
+einzige Frage — **kann derselbe Wert zweimal am Ingest ankommen?** Ohne sie ist die
+Festlegung eine Vermutung.
+
+**GEMESSEN AM LAUFENDEN BESTAND (OWNER, 2026-09-01):**
+**541 Server-Zeilen · 541 verschiedene `event_id` · NULL Doppel.**
+**POSITIVKONTROLLE:** Die Zahl 541 ist deutlich von null verschieden — die Abfrage hat
+ihren Suchraum erreicht. Ohne sie wäre "keine Doppel" von "keine Zeilen gesehen" nicht zu
+unterscheiden (docs/immer-beachten.md, Lektion (d) an "MUTATIONSPROBEN UND
+LIVE-TEST-INSTRUMENTE").
+
+**WAS DAS TRÄGT — ZWEIERLEI, UND DAS ZWEITE WIEGT SCHWERER:**
+· **`eventID` ist als `transactionId` brauchbar.** Das ist der Anlass der Messung.
+· **DIE ADBLOCKER-VERLUSTRATE STEHT AUF SAUBERER GRUNDLAGE.** Ihr Nenner zählt
+  **Server-Zeilen**, nicht verschiedene `event_id` (`get_adblock_loss`); eine Wiederholung
+  verschöbe sie. **Keine ist je aufgetreten.** Dieser Teil des Befunds ist der wertvollere,
+  weil ihn niemand gesucht hat: Er belegt eine Produktzahl, die seit Phase 8 angezeigt wird
+  und deren Grundlage bis heute ungemessen war.
+
+**DIE GRENZE, UND SIE IST NICHT KLEIN:** Das sind **541 Zeilen aus EIGEN-Traffic bei EINEM
+Betreiber**. `sendBeacon`-Wiederholung und bfcache bleiben **Plattform-Eigenschaften**, die
+unter fremdem Traffic, anderen Browsern und schlechteren Netzen auftreten können.
+**ABWESENHEIT ÜBER 541 ZEILEN IST KEIN BEWEIS FÜR DIE ZUKUNFT** — sie ist der Unterschied
+zwischen "ungemessen" und "gemessen, keine Treffer", und genau als dieser Unterschied ist
+sie hier abgelegt.
+**DIE MÖGLICHKEIT STEHT IM REPO SELBST**, seit Phase 8: `supabase/migrations/0011_events.sql`
+begründet das Fehlen eines Unique-Constraints auf `event_id` unter anderem damit, dass "ein
+sendBeacon-Retry schon heute doppeln" könne. Diese Messung widerlegt das nicht — sie sagt,
+dass es in 541 Fällen nicht geschehen ist.
+
+**WAS AM CODE GEKLÄRT IST (GEMESSEN am Repo, CC, 2026-09-01)** — und diese Hälfte braucht
+keine Stichprobe:
+· **Klick, Reload, Zurück-Navigation und zwei Mappings erzeugen JE EIGENE WERTE.** `eidStmt`
+  (src/lib/tracking/meta.ts) liegt **INNERHALB** von `__psMetaFire` und wird bei jedem Fire
+  neu ausgewertet — `crypto.randomUUID()`, mit einem Rückfall aus `Date.now()` und
+  `Math.random()`.
+· **DER BESTÄTIGUNGS-BEACON TRÄGT DIESELBE `eventID`** — das ist sein Zweck, er trägt den
+  Verlustraten-Join. **ER ERREICHT DEN FAN-OUT ABER NICHT:** der frühe `return` im Zweig
+  `isBrowserConfirm` von `handleIngest` (src/lib/capi/ingest.ts) sperrt ihn **strukturell**
+  ab, nicht über einen Term in einer Bedingung. **DAS IST DIE ENTSCHEIDENDE HÄLFTE** — ohne
+  sie käme jeder Wert garantiert zweimal am Adapter an, und die Wahl aus Festlegung (5) wäre
+  von vornherein falsch.
 
 ### Eine Korrektur des Architekten, die den Gegenstand dieser Scheibe verschiebt
 

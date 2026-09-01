@@ -203,6 +203,19 @@ liegen beide hier und finden einander.
       häufigste Verwechslung beim Zuschnitt: eventSource ist hier PFLICHT (bei
       Multi-Source optional), transactionId dagegen OPTIONAL (dort Pflicht). Wer den
       einen Zuschnitt aus dem anderen ableitet, erbt genau die falsche Hälfte.
+      VORBEHALT, DATIERT 2026-09-01 — DER ABSATZ DARÜBER BLEIBT WÖRTLICH STEHEN, SEINE
+      ZWEI HÄLFTEN HABEN SEITHER VERSCHIEDENEN RANG. Beide sind an einer Messreihe
+      gegen events:ingest geprüft worden (GEMESSEN 2026-09-01, OWNER; Befund und
+      Aufrufe in docs/ziel-befunde.md, Teil (ca)):
+      · eventSource ist hier PFLICHT — BESTÄTIGT.
+      · transactionId dagegen OPTIONAL — WIDERLEGT. Das Feld ist in der Offline-Gestalt
+        PFLICHT; ein Aufruf ohne es wird mit REQUIRED_FIELD_MISSING abgewiesen.
+      ES IST DAMIT NUR NOCH EIN RANG-WECHSEL STATT ZWEIER.
+      DIE WARNUNG DES ABSATZES BLEIBT RICHTIG UND WIRD NICHT GESTRICHEN: Wer den einen
+      Zuschnitt aus dem anderen ableitet, erbt weiterhin genau die falsche Hälfte — sie
+      trifft jetzt nur noch EINE Achse statt zweier.
+      DER BEFUND STEHT HIER NICHT IM VOLLTEXT, sondern an der genannten Fundstelle; die
+      Messreihe zweimal zu schreiben liefe auseinander.
       DIE TAG-ACHSE IST DAMIT WEITGEHEND ERLEDIGT, UND ES BLEIBT GENAU EINE FRAGE ÜBRIG.
       Die frühere Abgrenzung "fragt dieser Absatz, OB ÜBERHAUPT EIN TAG EXISTIERT?" ist
       GEGENSTANDSLOS: Der Vorbehalt fragt nach einer UPLOAD_CLICKS-ACTION im Kundenkonto,

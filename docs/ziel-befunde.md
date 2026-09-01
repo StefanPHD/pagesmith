@@ -1271,6 +1271,12 @@ abgesucht, obwohl sie es nie war.
     den einen Adapter aus dem anderen ableitet, erbt genau die falsche Hälfte.
     DAS IST EINE FESTSTELLUNG AM TEXT UND KEINE AUSSAGE DARÜBER, WELCHE GESTALT ZU WÄHLEN
     IST.
+    ZEIGER, NACHGETRAGEN 2026-09-01 — DIE ZEILE `transactionId` DIESER TABELLE IST DURCH
+    EINE MESSUNG WIDERLEGT: In der OFFLINE-Gestalt ist das Feld PFLICHT, nicht optional
+    (GEMESSEN 2026-09-01, OWNER, s. Teil (ca)). DIESER TEIL WIRD NICHT UMGESCHRIEBEN — er
+    beschreibt, was am 2026-08-24 an der genannten Quelle STAND, und das bleibt wahr.
+    Überholt ist die ERWARTUNG, die man aus der Tabelle ableiten würde, nicht die
+    Beobachtung. Die Zeile `eventSource` ist von der Messung BESTÄTIGT.
     DIE FÜNFER-LISTE DER KENNUNGEN, für BEIDE Gestalten identisch — mindestens eines davon:
     (1) adIdentifiers mit mindestens einem aus gclid, gbraid, wbraid · (2)
     adIdentifiers.landingPageDeviceInfo.ipAddress · (3) Session-Attribute · (4) userData ·
@@ -2155,6 +2161,15 @@ Dasselbe gilt für die Fenster-Hälfte von D3 (s. (w)).
     "Optional. The unique identifier for this event. REQUIRED FOR EVENTS SENT AS AN
     ADDITIONAL DATA SOURCE FOR TAG CONVERSIONS." Das bestätigt den Kern des LAUF-1-Befunds
     an einer zweiten, unabhängigen Stelle. ERSETZT KEINE MESSUNG.
+    ZEIGER, NACHGETRAGEN 2026-09-01 — UND DER SATZ "ERSETZT KEINE MESSUNG" DARÜBER IST
+    EINGELÖST WORDEN, GEGEN DIE LESUNG: Die zitierte Pflicht-Annotation ordnet die Pflicht
+    der Multi-Source-Gestalt zu ("as an additional data source for tag conversions"). Für
+    die OFFLINE-Gestalt ist `transactionId` PFLICHT (GEMESSEN 2026-09-01, OWNER, s. Teil
+    (ca)). DIESER TEIL WIRD NICHT UMGESCHRIEBEN — das Zitat ist wörtlich richtig und bleibt
+    es. Was widerlegt ist, ist die Zuordnung, nicht der Wortlaut.
+    DASS DIESE STELLE DEN LAUF-1-BEFUND "an einer zweiten, unabhängigen Stelle" bestätigt
+    hat, IST DER EIGENTLICHE BEFUND FÜR DIE NÄCHSTE RUNDE: Zwei übereinstimmende Lesungen
+    aus DEMSELBEN Dokumentenbaum sind keine zwei Belege. S. Teil (ca), Punkt (d).
 
     D3 · NEU UND WICHTIG — DIE ZEITFENSTER-LÜCKE AUS LAUF 1 IST HALB GESCHLOSSEN.
     EINHEIT — BEANTWORTET, mit ausdrücklicher Toleranz. GELESEN 2026-08-24,
@@ -4518,6 +4533,187 @@ ist und keine Beobachtung, steht das an der Angabe — s. besonders (bw).
 
      **UND DIE GRENZE, DIE FÜR JEDE MESSUNG DIESER DATEI GILT:** Ein Anbieter kann sein
      Verhalten ändern, ohne dass hier etwas rot wird. Diese Messung datiert vom 2026-08-28.
+
+### MESSUNG D gegen events:ingest (2026-09-01) — der Teil (ca)
+
+**WAS DIESER ABSCHNITT IST UND WIE ER SICH VON MESSUNG B1 UNTERSCHEIDET:** Messung B1 (s.
+(bn)) hat die Nutzlast dieses Projekts gesendet, aber mit einem **strukturell unmöglichen
+Ziel** — erfundene Kundennummer, erfundene Klick-Kennung. Sie konnte deshalb nur
+Fehlerklassen voneinander unterscheiden; was ein GÜLTIGER Rumpf auslöst, hat sie
+ausdrücklich offengelassen (s. (bu)). **MESSUNG D SENDET DIESELBE NUTZLAST MIT EINEM ECHTEN
+ZIEL UND ERREICHT ALS ERSTE MESSUNG DIESES ABSCHNITTS EINE 200.** Damit wechselt die
+Nutzlast-Achse von "welche Fehler kommen zurück" zu "welche Gestalt wird ANGENOMMEN".
+
+**HERKUNFT FÜR ALLE TEILE DIESES ABSCHNITTS: GEMESSEN 2026-09-01 (OWNER), vier Aufrufe,
+live gegen `https://datamanager.googleapis.com/v1/events:ingest`.** Das Zugangsdatum stammt
+aus dem OAuth-Playground, Zugriffsbereich `https://www.googleapis.com/auth/datamanager`. Wo
+eine Angabe NICHT aus einem Antwortrumpf folgt, sondern vom Owner aus erster Hand stammt
+(er hat die Rümpfe formuliert), steht das an der Angabe.
+
+(ca) **DIE OFFLINE-GESTALT IST VOLLSTÄNDIG GEMESSEN — UND `transactionId` IST DORT PFLICHT,
+     GEGEN ZWEI UNABHÄNGIGE LESUNGEN.** **NEU.**
+
+     **(a) DER LAUF — VIER AUFRUFE, DREI DAVON VON HAND.**
+
+     **DIE AUFRUFGESTALT, EINHEITLICH:** Methode `POST`, Kopfzeilen `Authorization: Bearer
+     <Token>` und `Content-Type: application/json`. **OHNE `x-goog-user-project`, OHNE
+     `validateOnly`, ohne Query-String** — dieselbe Gestalt wie in Messung B1, damit die
+     Läufe gegeneinander lesbar bleiben.
+
+     **DIE FESTEN WERTE ÜBER ALLE VIER AUFRUFE** (Angabe aus erster Hand, OWNER): Ereignis
+     `Purchase` · `eventSource` `"WEB"` · `eventTimestamp` in der Gestalt von
+     `toISOString()` · `adIdentifiers.gclid` `"Tester-123"` ·
+     `operatingAccount.accountId` die **normalisierte, echte** Google-Ads-Kundennummer.
+
+      1. **DER ADAPTER-AUFRUF AUS DEM LIVE-TEST DER SCHEIBE 4** → **HTTP 400**.
+         **NUR DER STATUSCODE IST BEKANNT, UND DAS IST KEIN VERSEHEN:** Der Adapter liest
+         den Antwortrumpf nicht und soll es nicht (Festlegung E4 des Zuschnitts der Scheibe
+         4, docs/aktiver-stand.md). Dieser Aufruf trägt zum Befund **nichts als den
+         Fehlschlag** bei; die drei folgenden sind der Grund, warum trotzdem etwas
+         gemessen ist.
+      2. **HANDAUFRUF 1**, `productDestinationId` = `"AW-18400360380/CeeiCP-…"` — die
+         gtag-Gestalt, wie sie die Google-Ads-Oberfläche am Conversion-Snippet anzeigt →
+         **400, SEMANTISCHE SCHICHT** (`ErrorInfo` + `RequestInfo` + `requestId`), **EIN
+         `fieldViolation`:** field `"destinations[0].product_destination_id"`, description
+         `"String is not a valid number."`, reason `INVALID_NUMBER_FORMAT`.
+      3. **HANDAUFRUF 2**, `productDestinationId` = die **numerische** Conversion-Type-ID
+         (ctId) derselben Conversion-Action, **sonst zeichengleich** → **400, SEMANTISCHE
+         SCHICHT, EIN `fieldViolation`:** field `"events[0].transaction_id"`, description
+         `"Required field is missing."`, reason `REQUIRED_FIELD_MISSING`.
+      4. **HANDAUFRUF 3**, zusätzlich `transactionId` gesetzt, **sonst zeichengleich zu 3**
+         → **HTTP 200**, Rumpf `{ "requestId": "…" }`.
+
+     **ZWISCHEN AUFRUF 3 UND 4 LAG GENAU EINE ÄNDERUNG — DAS EINE FELD.** Der Befund unter
+     (d) steht damit **isoliert** und ruht nicht auf einer Ableitung. Das ist der
+     Unterschied zu (bu), wo eine Begründung ausdrücklich als Ableitung ausgewiesen werden
+     musste.
+
+     **(b) WAS ERSTMALS POSITIV BELEGT IST — UND ZWAR "ANGENOMMEN", NICHT "NICHT
+     ABGEWIESEN".**
+
+     Der Anbieter arbeitet **FAST-FAIL** — "the entire request fails" bei einem einzigen
+     Pflichtfeld-Verstoss (GELESEN, s. (l)/D5). **EINE 200 HEISST DESHALB: KEIN FELD DIESES
+     RUMPFES IST BEANSTANDET WORDEN.** Das ist die Schlussweise, die die vier Angaben unten
+     trägt; ohne sie wären es vier Nicht-Abweisungen.
+
+     · **DIE NORMALISIERTE KUNDENNUMMER AUS SCHEIBE 2 WIRD ANGENOMMEN.**
+       **DAS IST DIE ZWEITE HÄLFTE ZU TEIL (bt), UND SIE HAT DORT GEFEHLT:** (bt) ist ein
+       reiner NEGATIV-Befund — abgewiesen wurde `"000-ERFUNDEN-000"`, und welcher der zwei
+       Umstände (Bindestriche oder erfundenes Konto) griff, trennt jene Messung nicht. **EIN
+       GÜLTIGER WERT WAR BIS HEUTE NIE ANGENOMMEN WORDEN.** Jetzt ist er es. Die
+       Normalisierung an der Eingabe (`NORMALIZE_PIXEL_ID`, VERMERK 9) ist damit nicht mehr
+       nur die Vorsorge gegen einen vermuteten Fehlschlag, sondern liefert einen belegt
+       gültigen Wert.
+     · **`"WEB"` IST FÜR DEN OFFLINE-KLICK-IMPORT EIN ANGENOMMENER WERT.**
+       **TEIL (br) HATTE DEN TYP GEMESSEN, NICHT DEN WERT** — dort ist `eventSource` als
+       Enum belegt und `"ERFUNDEN_B1"` auf der Parse-Ebene abgewiesen worden, aber die
+       Grenze stand ausdrücklich dabei: "ob `WEB` der richtige Wert für einen
+       Offline-Klick-Import ist, ist NICHT gemessen". **Er ist es jetzt — im Sinne der
+       ANNAHME.** Die Grenze aus (br) verschwindet damit **nicht ganz**: ein Wert kann
+       angenommen und in der Verbuchung trotzdem anders wirken als gedacht, s. (e).
+     · **DIE ZEITSTEMPEL-GESTALT AUS `toISOString()` WIRD ANGENOMMEN** — Bestätigung von
+       (bs) an einem Aufruf, der die semantische Schicht **vollständig** durchlaufen hat und
+       nicht nur die Parse-Ebene verlassen hat.
+     · **`productDestinationId` IST EINE REINE ZAHL — DIE ctId DER CONVERSION-ACTION. DIE
+       gtag-GESTALT `"AW-<id>/<label>"` WIRD ABGEWIESEN.**
+       **DAS BESTÄTIGT DIE GELESENE FORMANGABE AUS (k)/C1 DURCH MESSUNG.** Dort stand
+       "reine Ziffernfolge, kein Präfix", belegt nur INDIREKT über eine Fehlermeldung an
+       einem ANDEREN Feld (`login_account.account_id`) und über die Beispiele. **Jetzt steht
+       der Fehler am Feld selbst**: `"destinations[0].product_destination_id"`.
+       **DAS SCHLIESST ZUGLEICH DIE ERSTE DER DREI LÜCKEN AUS (bu)** ("das Format von
+       `productDestinationId`" — dort ausdrücklich als NICHT GEMESSEN geführt).
+       **DIE PRAKTISCHE FOLGE, UND SIE IST DIESELBE KLASSE WIE BEI (bt):** Die
+       Google-Ads-Oberfläche zeigt am Conversion-Snippet die gtag-Gestalt an. Ein Betreiber,
+       der abschreibt, was er sieht, trägt einen Wert ein, den die Schnittstelle abweist —
+       der Besucher merkt nichts, und die Conversion fehlt. **Die ctId steht an einer
+       ANDEREN Stelle der Oberfläche** (Conversions > Conversion-Action > Details >
+       "Conversion type ID", s. (k)/C1). **KEIN BAUAUFTRAG** — hier abgelegt, weil die
+       Eingabe der Konversionsregeln genau dieser Ort ist.
+
+     **(c) DIE PFLICHTFELD-LISTE DER OFFLINE-GESTALT, WIE SIE AUS DEM 200 FOLGT.**
+
+     `operatingAccount.accountId` · `productDestinationId` · `eventTimestamp` ·
+     `eventSource` · `transactionId` · `adIdentifiers` mit mindestens einer Klick-Kennung.
+
+     **DIE EPISTEMISCHE GRENZE DIESER LISTE GEHÖRT AN SIE SELBST, SONST WIRD SIE STÄRKER
+     GELESEN, ALS SIE IST:** Ein 200 belegt, dass diese Menge **HINREICHEND** ist. Er belegt
+     **NICHT**, dass jedes ihrer Mitglieder **NOTWENDIG** ist — alle sechs waren in allen
+     vier Rümpfen gesetzt, und ein Feld, das nie gefehlt hat, kann durch keinen dieser
+     Aufrufe als Pflicht erwiesen werden.
+     **ALS NOTWENDIG GEMESSEN IST GENAU EINS: `transactionId`** (Aufruf 3, sein Fehlen wird
+     beim Namen genannt). Die übrigen fünf stehen als GELESENE Pflicht ((l)/D5) und sind
+     jetzt zusätzlich als **angenommen** belegt.
+     **WER DIE LISTE ALS SECHSFACH GEMESSENE PFLICHT ZITIERT, ZITIERT EINE ABLEITUNG.**
+
+     **(d) DER WIDERSPRUCH ZUR GELESENEN DOKU — DER KERN DIESES TEILS.**
+
+     **`transactionId` IST BEI DER OFFLINE-GESTALT PFLICHT. GEMESSEN.** Der Anbieter nennt
+     das Feld beim Namen und den Grund dazu: `"Required field is missing."`,
+     `REQUIRED_FIELD_MISSING`.
+
+     **ZWEI UNABHÄNGIGE GELESENE STELLEN SAGEN DAS GEGENTEIL:**
+     · **(l)/D5**, die Rang-Tabelle aus LAUF 1 (GELESEN 2026-08-24,
+       /devguides/events/send-events, Tabelle "Convert the data to Event objects", Reiter
+       Google Ads): `transactionId` — MULTI-SOURCE **PFLICHT**, OFFLINE/ECL **OPTIONAL**.
+     · **(w)/D2**, die Referenz aus LAUF 2 (GELESEN 2026-08-24,
+       /reference/rest/v1/events/ingest), wörtlich: "Optional. The unique identifier for
+       this event. REQUIRED FOR EVENTS SENT AS AN ADDITIONAL DATA SOURCE FOR TAG
+       CONVERSIONS."
+     **BEIDE ORDNEN DIE PFLICHT DER MULTI-SOURCE-GESTALT ZU** — die Referenz sogar
+     ausdrücklich über die Formulierung "additional data source for tag conversions". Für
+     die OFFLINE-Gestalt steht an beiden Stellen "optional".
+
+     **JENE ZWEI TEILE WERDEN NICHT KORRIGIERT, UND DAS IST KEINE NACHLÄSSIGKEIT.** Sie
+     beschreiben, **was am Dokument STAND**, mit Quelle und Datum — und das bleibt wahr.
+     Überholt ist nicht ihre Beobachtung, sondern die **Erwartung**, die man aus ihr
+     ableiten würde. Beide tragen seit dem 2026-09-01 einen Zeiger hierher; wer sie liest,
+     kommt hier vorbei.
+     **DAS IST DER STÄRKSTE FALL DER REGEL, DIE ÜBER DIESER GANZEN DATEI STEHT** (CLAUDE.md,
+     "## Anbieter-Befunde der Fan-Out-Ziele"): "Ein Dokument beschreibt ein fremdes System,
+     es belegt es nicht." **ZWEI übereinstimmende Lesungen sind nicht mehr wert als eine,
+     wenn beide aus demselben Dokumentenbaum stammen** — was hier eintrat, ist keine
+     Verwechslung zweier Stellen, sondern ein Anbieter, dessen Dokumentation seinem
+     Endpunkt widerspricht.
+
+     **(e) EINE GRENZE, DIE NICHT FEHLEN DARF: DER 200 BELEGT DIE ANNAHME DER ANFRAGE,
+     NICHT EINE VERBUCHTE CONVERSION.**
+
+     Die gesendete Klick-Kennung war **`"Tester-123"`** — eine **erfundene** `gclid`, die
+     keinem Klick entspricht. **SIE IST ANGENOMMEN WORDEN.** Daraus folgt zweierlei, und das
+     zweite ist die Warnung:
+     · **DIE SCHNITTSTELLE PRÜFT DIE FORM DER KLICK-KENNUNG BEIM EINLIEFERN NICHT.** Die
+       zweite der drei Lücken aus (bu) ("das Format der Klick-Kennungen") ist damit
+       geschlossen — allerdings mit dem Ergebnis, dass es keine Formprüfung GIBT, nicht mit
+       einer Formangabe.
+     · **DAS IST EINE WARNUNG, KEINE ENTLASTUNG.** Ein Transport, der 200 liefert, beweist
+       **nichts** über eine Conversion im Konto. Ein falsch geschriebener, abgelaufener oder
+       einem fremden Konto gehörender `gclid` erzeugt **denselben 200** — und das Ereignis
+       verfällt still, irgendwo hinter der Annahme. **Die Zuordnung geschieht ASYNCHRON und
+       ist an diesem Endpunkt nicht beobachtbar.**
+     **WAS DAMIT NACH WIE VOR NICHT GEMESSEN IST:** ob ein ECHTER `gclid` zu einer
+     sichtbaren Conversion im Google-Ads-Konto führt. Das ist eine ANDERE Achse als der
+     Transport, und sie braucht ein anderes Instrument — die Oberfläche des Kontos, nicht
+     den Antwortrumpf. **KEINE der vier Messungen dieses Abschnitts hat sie berührt.**
+
+     **(f) WIDERSPRUCH 4 AUS (y) WIRD MIT DEM EINBAU SCHARF.**
+
+     Was bei einem **doppelten** `transactionId` geschieht, ist unverändert **NICHT
+     AUFGELÖST**: Stelle A (/devguides/events/send-events) sagt ZUSAMMENFÜHRUNG, Stelle B
+     (/reference/rest/v1/requestStatus/retrieve,
+     `PROCESSING_ERROR_REASON_DUPLICATE_TRANSACTION_ID`) sagt VERWERFUNG unter ERROR.
+     **BEIDE SIND LESUNGEN; DIESE MESSREIHE HAT KEINEN DOPPELTEN WERT GESENDET.**
+
+     **WAS SICH ÄNDERT, IST NICHT DER WIDERSPRUCH, SONDERN SEINE FOLGENLOSIGKEIT:** Bis zum
+     2026-09-01 war er ohne Gegenstand, weil das Feld gar nicht gesendet wurde. **Mit dem
+     Einbau trägt jeder Aufruf einen `transactionId`** — und damit wird entscheidbar
+     relevant, welche der beiden Stellen gilt. **DER PREIS DER BEIDEN AUSGÄNGE IST NICHT
+     DERSELBE:** nach A fehlt eine Conversion, nach B verfällt der Datensatz.
+     **DAS INSTRUMENT, DAS IHN AUFLÖSTE, IST BENANNT UND NICHT GEFAHREN:** zwei Aufrufe mit
+     demselben `transactionId` gegen dieselbe Conversion-Action, und danach die Abfrage des
+     `requestStatus`. **In diesem Lauf NICHT gefahren.**
+
+     **UND DIE GRENZE, DIE FÜR JEDE MESSUNG DIESER DATEI GILT:** Ein Anbieter kann sein
+     Verhalten ändern, ohne dass hier etwas rot wird. Diese Messung datiert vom 2026-09-01.
 
 ## Pinterest (Conversions API)
 

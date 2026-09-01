@@ -231,6 +231,39 @@ aufeinander; sie liegen alle hier und finden einander.
   beiden Begründungen sind Teil derselben Entscheidung. Die Punkte (a), (b) und (c) sind
   GEMESSEN am Repo (CC, 2026-08-28) mit den je genannten Achsen. Dass die Auflage für die
   Klick-Kennung noch kein gelebter Stand ist, ist eine ABLEITUNG aus (a).
+
+  VERMERK 2026-09-01 ZU PUNKT (a) DES BLOCKS VOM 2026-08-28 — EINE ZWEITE ACHSE, KEINE
+  KORREKTUR. Der Owner-Block darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Vermerk tritt
+  DANEBEN. Er steht am ENDE des Eintrags und nicht zwischen (a) und (b), weil er sonst eine
+  Aufzählung unterbräche, auf die die PROVENIENZ-Zeile darüber namentlich zeigt.
+  DIE OWNER-MESSUNG VOM 2026-08-28 IST AUF IHRER ACHSE RICHTIG, UND DAS STEHT ZUERST: Punkt
+  (a) sagt "KEIN ADAPTER NIMMT HEUTE EINE KLICK-KENNUNG ENTGEGEN ODER REICHT EINE DURCH" und
+  nennt seine Achse selbst — die vier Adapter-Dateien samt ihren Nutzlast-Bauten, Begriffe
+  gclid · gbraid · wbraid · fbclid · _fbc · ttclid · li_fat_id. Das sind BENANNTE
+  Kennungsfelder, und auf dieser Achse ist der Nicht-Treffer am 2026-09-01 erneut bestätigt.
+  DIE ZWEITE ACHSE — GEMESSEN am Code (CC, 2026-09-01): eventSourceUrl wird im Beacon-Bau
+  (buildCapiBeaconStatement, src/lib/tracking/meta.ts) als location.href gesetzt, also die
+  vollständige Adresse EINSCHLIESSLICH Query-String. Drei der vier Adapter lesen das Feld und
+  senden es weiter — forwardToMeta und forwardToPinterest als event_source_url,
+  forwardToTiktok als page.url; forwardToLinkedin liest es nicht.
+  FOLGE: Ein gclid im Query-String einer gehosteten Kundenseite REIST HEUTE SCHON MIT — an
+  meta, pinterest und tiktok —, UNBENANNT, als Bestandteil einer Zeichenkette. Das gilt für
+  jeden Klick-Parameter eines Werbenetzwerks, nicht nur für Googles.
+  DIE ZUORDNUNG WIRD HIER NICHT GETROFFEN, UND DAS IST DER ZWECK DIESES VERMERKS: OB DIE
+  UNBENANNTE DURCHLEITUNG UNTER DIE DRITTE DATENKLASSE FÄLLT, IST EINE OWNER-ENTSCHEIDUNG.
+  Sie steht aus. Dieser Vermerk stellt die zweite Achse fest und ordnet sie ausdrücklich
+  NICHT ein — dieselbe Handhabung wie bei _fbp in Punkt (b) desselben Blocks, wo ein
+  Grenzfall "GEMELDET, NICHT ZUGEORDNET" wird.
+  WAS UNVERÄNDERT GILT UND AUF BEIDEN ACHSEN TRÄGT: persistEvent (src/lib/analytics/
+  persist.ts) schreibt die Kennung NICHT, und keiner der 48 console-Aufrufe führt sie —
+  Punkt (c) desselben Blocks, dort mit Achse und Positivkontrolle; in dieser Runde NICHT neu
+  gezählt. Die Auflage TRANSIT-ONLY ist auf ihren zwei anderen Hälften also eingehalten.
+  DER VOLLTEXT DES BEFUNDES STEHT NICHT HIER, sondern in docs/aktiver-stand.md, Abschnitt
+  "Vorrat (gemeldet, nicht gebaut)", Eintrag 36 — dort mit den Symbolnamen je Adapter.
+  Zweimal geschrieben liefe er auseinander.
+  PROVENIENZ: GEMESSEN am Code (CC, 2026-09-01). Dass es sich um eine ZWEITE Achse und nicht
+  um eine Korrektur der ersten handelt, ist eine FOLGE aus dem Vergleich der beiden Achsen,
+  keine eigene Messung.
 - COOKIE-DOKU-SCHNIPSEL FÜR DIE KUNDEN-DATENSCHUTZERKLÄRUNG FEHLT NOCH
   (Trigger: vor dem öffentlichen Launch; Phase 9): Für das A/B-Test-Cookie
   (__Host-ps_v) stellt Pagesmith dem Kunden heute KEINEN fertigen
@@ -1512,3 +1545,32 @@ aufeinander; sie liegen alle hier und finden einander.
   Positivkontrolle oben. Die Zuordnung zu Scheibe 4 ist eine ARCHITEKTEN-FESTLEGUNG
   (2026-08-31), gestützt auf die zwei am Code gemessenen Tore. Der Aufzählungs-Kandidat ist
   eine ARCHITEKTEN-EINORDNUNG desselben Tages, keine Messung und keine Lesung.
+
+  VERMERK 2026-09-01 — DER TRIGGER IST EINGETRETEN, UND ER IST BEHANDELT. DER TEXT DARÜBER
+  BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; dieser Vermerk tritt DANEBEN und sagt, was der Zuschnitt
+  mit dem Punkt gemacht hat.
+  DER TRIGGER LAUTETE "der Zuschnitt der Scheibe 4 der Phase 11.2 — der Transport". DER
+  ZUSCHNITT STEHT (docs/aktiver-stand.md, Abschnitt "Der Transport — Scheibe 4 des Schnitts
+  der Phase 11.2", 2026-09-01), und dieser Punkt ist dort ausdrücklich behandelt worden —
+  nicht übersehen, nicht mitgenommen.
+  DAS ERGEBNIS, IN EINEM SATZ: DIE MESSUNG GEHÖRT NICHT IN SCHEIBE 4, SONDERN FOLGT NACH
+  IHREM LIVE-NACHWEIS.
+  DER GRUND IST DERSELBE, DEN DER PUNKT SELBST SCHON TRÄGT, nur eine Stufe weiter gedacht:
+  Die Messung verlangt einen ECHTEN Aufruf gegen events:ingest mit einem GÜLTIGEN
+  Zugangsdatum und einer FREMDEN Kundennummer. Ein gültiges Zugangsdatum auf dem
+  Transportpfad gibt es VOR dem Transport nicht — die Scheibe baut den Lesepfad, der es
+  überhaupt erst beschafft. Die Messung IN die Scheibe zu legen hiesse, sie an eine
+  Voraussetzung zu hängen, die dieselbe Scheibe erst herstellt.
+  NEUER TRIGGER: DER BESTÄTIGTE LIVE-NACHWEIS DER SCHEIBE 4. Er ist enger als der alte und
+  ausdrücklich nicht "irgendwann nach dem Transport": Erst wenn der Durchlauf steht, ist der
+  Aufruf mit gültigem Zugangsdatum überhaupt herstellbar — vorher wäre die Messung nicht
+  fällig, sondern unmöglich.
+  DER AUFZÄHLUNGS-KANDIDAT BLEIBT UNBERÜHRT UND UNGELESEN. Ob die Schnittstelle die
+  erreichbaren Konten aufzählen kann, ist weiterhin UNGELESEN UND UNGEMESSEN; der Zuschnitt
+  der Scheibe 4 hat ihn nicht aufgegriffen, und dieser Vermerk greift ihn ebenfalls nicht auf.
+  WAS DIESER VERMERK NICHT TUT: Er beantwortet die Frage des Punktes NICHT und verkleinert
+  sie nicht. Der Punkt bleibt in vollem Umfang offen — er hat nur einen anderen Zeitpunkt
+  bekommen.
+  PROVENIENZ: ARCHITEKTEN-FESTLEGUNG 2026-09-01, im Zuschnitt der Scheibe 4 getroffen. KEINE
+  Messung. Dass der alte Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
+  Existenz des Zuschnitts.

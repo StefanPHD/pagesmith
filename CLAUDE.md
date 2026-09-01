@@ -262,7 +262,10 @@ gehen von hier eine Station weiter.
 - DIE PROJEKTWAHL ÜBERLEBT KEIN NEULADEN (Trigger: der erste fremde Nutzer mit mehr als
   einem Projekt — spätestens vor einem Beta-Launch)
 - WAS GOOGLE BEI EINER FREMDEN KUNDENNUMMER TUT, IST UNGELESEN UND UNGEMESSEN (Trigger: der
-  Zuschnitt der Scheibe 4 der Phase 11.2 — der Transport)
+  BESTÄTIGTE LIVE-NACHWEIS DER SCHEIBE 4 der Phase 11.2 — NACHGEZOGEN am 2026-09-01, weil der
+  vorige Trigger am selben Tag eingetreten und im Volltext ERSETZT worden ist; vor dem
+  Nachweis gibt es kein gültiges Zugangsdatum, an dem sich die Frage überhaupt messen liesse,
+  die Messung wäre also nicht bloss unterlassen, sondern unmöglich)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

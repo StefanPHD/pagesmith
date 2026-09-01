@@ -63,6 +63,7 @@ docs/immer-beachten.md.
 · Google als reguläres Ziel in der Oberfläche — Scheibe 3 des Schnitts der Phase 11.2
 · Die Rückkehr in das gestartete Projekt — eine mitgereiste Fix-Scheibe
 · Die Konto-Kennungen bekommen ihre Eingabe — Scheibe 2 des Schnitts der Phase 11.2
+· Der Transport — Scheibe 4 des Schnitts der Phase 11.2
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -1571,6 +1572,349 @@ das Gate unten.
 den entfernt kein Trim. **Wer (6) für erledigt hält, weil schon getrimmt wird, hat sie nicht
 gebaut.**
 
+## Der Transport — Scheibe 4 des Schnitts der Phase 11.2
+
+**DIE KURZFORM WIRD HIER EINMAL AUFGELÖST UND DANACH NICHT WIEDERHOLT:** "Scheibe 4" meint
+die vierte Scheibe des Schnitts, in den die Phase 11.2 am 2026-08-28 zerlegt worden ist
+(bindende Entscheidung (6)) — den Transport. **SIE IST NICHT DIE "SCHEIBE 4" DER PHASE 11**,
+und diese Abgrenzung steht hier, weil beide Namen im Repo vorkommen: Jene ist die Naht des
+Meta-Forwards, abgeschlossen am 2026-08-06, und `src/lib/capi/ingest.ts` zitiert sie an zwei
+Stellen im Kommentarkopf ("SEIT PHASE 11 SCHEIBE 4 NICHT MEHR VON HIER AUS"). Wer eine
+Fundstelle "Scheibe 4" liest, prüft zuerst, welche Phase gemeint ist.
+
+**SIE IST DIE LETZTE SCHEIBE DES SCHNITTS, UND SIE IST ENTSPERRT.** Die GRENZE der bindenden
+Entscheidung (6) lautet "Zwingend ist NUR 4 nach 1a, 2 und 3"; alle drei stehen (VERMERK 6,
+VERMERK 7, VERMERK 9). **1b bleibt offen und ist für diese Scheibe nicht zwingend** — was
+das für das PRODUKT heisst und nicht nur für den Schnitt, steht in Festlegung (4).
+
+**PROVENIENZ DES GANZEN ABSCHNITTS, wo an der einzelnen Angabe nichts anderes steht:
+ARCHITEKT, 2026-09-01. Keine Messung.** Jede mit GEMESSEN gekennzeichnete Angabe stammt aus
+den Aufklärungsrunden vom 2026-09-01 (CC, am Repo, mit Positivkontrolle je Achse); jede mit
+GELESEN gekennzeichnete steht mit ihrer Fundstelle in docs/ziel-befunde.md und wird hier
+**nicht verdoppelt** — zweimal geschrieben liefe sie auseinander.
+
+### Was Scheibe 4 ist
+
+**Ein Ereignis von einer gehosteten Kundenseite erreicht Google.** Damit sendet das fünfte
+Fan-Out-Ziel, und die Phase 11.2 hat ihren Gegenstand eingelöst.
+
+**DER TITEL WEICHT ABSICHTLICH VON DEM DER SCHEIBE 1a AB** ("### Was sie ist") **UND VON DEM
+DER SCHEIBE 3** ("### Was Scheibe 3 ist"): Zwei zeichengleiche `###`-Überschriften in
+DERSELBEN Datei machen jeden Such-Anker mehrdeutig, und der erste Treffer wäre systematisch
+der falsche (docs/immer-beachten.md, "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER
+DATEI MIT VERZEICHNIS NICHT").
+
+### Sieben Festlegungen des Zuschnitts der Scheibe 4
+
+**(1) DER LESEPFAD LIEGT IN `getCapiConfigByTrackingKey`, NICHT IM ADAPTER.**
+Die zweite Datenbank-Runde jener Funktion (`src/lib/capi/token.ts`) selektiert zusätzlich
+`secret_enc`; die Paarungsschleife verzweigt **JE ZEILE** nach Geheimnis-Klasse — Klartext in
+`secret` wie bisher, Chiffrat in `secret_enc` über den neuen Weg. **KEINE zusätzliche
+Datenbank-Runde**: die Zahl bleibt bei ZWEI im Request plus dem Persist im `after()`.
+**GRUND:** Die Frage "hat dieses Ziel ein brauchbares Zugangsdatum" wird heute an **genau
+einer Stelle für alle Ziele** beantwortet. Eine zweite Instanz derselben Frage — im Adapter,
+im Handler oder in einem Vorlauf — liefe auseinander; es ist dieselbe Figur wie `domains`
+gegen `settings.hosting.label` (docs/immer-beachten.md, "DIE domains-ZEILE IST DIE ALLEINIGE
+WAHRHEIT ÜBER 'IST DIESES PROJEKT LIVE?'").
+**GRENZE, UND SIE WIRD BEWUSST IN KAUF GENOMMEN:** Die Krypto-Arbeit fällt damit **VOR dem
+Consent-Gate** an — auch für ein Ziel, dessen Einwilligung im Draht fehlt und das gleich
+darauf aus `allowedTargets` (src/lib/capi/ingest.ts) herausfällt. Der Preis ist Rechenzeit
+auf dem meistgetroffenen Pfad der Plattform, und er wird gezahlt, weil die Alternative eine
+zweite Wahrheit wäre.
+**WAS DIE GRENZE NICHT SAGT:** Sie ist **nicht gemessen**. Wie teuer eine Dechiffrierung je
+Beacon ist, hat niemand erhoben; hier steht, dass der Aufwand anfällt, nicht wie gross er
+ist.
+
+**(2) NUR DAS ZUGANGSDATUM VERLÄSST DEN RESOLVER.**
+Das **Erneuerungs-Token** aus der entschlüsselten Nutzlast wird **nie** an `ResolvedTarget`
+gehängt, **nie** an einen Adapter gereicht, **nie** geloggt. Es wird gelesen, verworfen und
+existiert für die Dauer der Auflösung.
+**GRUND:** Ein Zugangsdatum stirbt nach einer Stunde, ein Erneuerungs-Token ist ein
+DAUERHAFTES Geheimnis. Es in eine Adapter-Signatur zu legen hiesse, es auf einen Pfad zu
+setzen, der bei **jedem Besucher jeder Kundenseite** läuft — und jeder künftige Adapter
+bekäme es mitgeliefert, ohne es zu brauchen.
+**GRENZE:** Die Festlegung gilt der SIGNATUR und dem LOG. Sie sagt nichts darüber, wie lange
+der Wert im Arbeitsspeicher lebt; das ist eine Eigenschaft der Laufzeit und hier nicht
+geregelt.
+
+**(3) UHR 1 IST DER RIEGEL, UHR 2 KOMMT NICHT VOR.**
+Ist `accessTokenExpiresAt` überschritten, entsteht **kein** `ResolvedTarget` — fail-closed,
+in der Gestalt des bestehenden `if (!token) continue`. Ein Ziel ohne lebendes Zugangsdatum
+ist damit ununterscheidbar von einem Ziel ohne Zugangsdatum, und das ist der Punkt: Der
+bestehende Pfad kennt diesen Ausgang schon.
+**KEIN VORLAUF VON `REFRESH_LEAD_SECONDS`. GRUND:** Der Vorlauf existiert, um früh zu
+**ERNEUERN** (Festlegung 1 der Scheibe 1a). Der Transport erneuert nicht; ein noch fünf
+Minuten gültiges Zugangsdatum zu verwerfen hätte **keinen Gegenwert** — es entstünde nur ein
+Ereignis weniger. Geprüft wird `expiresAt <= now`.
+**RESTRISIKO, BENANNT UND NICHT GEBAUT:** Ein Zugangsdatum, das **während des Fluges** stirbt,
+liefert eine 401 vom Anbieter. Das ist ein **geloggter Fehlschlag, kein Bruch** — die 204
+bleibt, der Handler läuft zu Ende, und der Betreiber sieht nichts (Ursache (3) des offenen
+Punktes "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN").
+
+**A-4 IST DAMIT AUFGELÖST, OHNE ANGEFASST ZU WERDEN — und dieser Absatz ist der wichtigste
+der Festlegung.**
+Die Entscheidung **A-4** (s. "Die Entscheidungen vom 2026-08-29") führt als GRENZE: "FÜR
+EINEN AUFRUFER AUF DEM TRANSPORTWEG WÄRE SIE ES NICHT — dort könnte noch gesendet werden,
+solange Uhr 1 läuft. Wer den Transport baut, prüft diese Zuordnung neu."
+**DIE PRÜFUNG IST HIERMIT ERFOLGT, UND IHR ERGEBNIS IST: DIE FALLE HAT KEINEN GEGENSTAND.**
+A-4 beschreibt die **Reihenfolge INNERHALB von `refreshAccessToken`** (src/lib/oauth/
+token-refresh.ts) — Uhr 2 vor Uhr 1. **Der Transport ruft diese Funktion nicht** (Festlegung
+(3) und der Ausschluss unten). Ob das Erneuerungs-Token tot ist, ändert **nichts** daran, ob
+mit dem vorhandenen Zugangsdatum gesendet werden kann; die beiden Fragen berühren einander
+nur, wenn dieselbe Funktion beide beantwortet.
+**WAS DARAUS FOLGT UND WAS AUSDRÜCKLICH NICHT:** `T3b` (src/lib/oauth/token-refresh.test.ts)
+bleibt **gültig und unverändert** — er misst die Beweis-Route, und für die ist die Auskunft
+weiterhin die ehrliche. Der Kommentar an Schritt (6) in `token-refresh.ts` **bleibt stehen**;
+er hat den Bau dieser Scheibe geleitet und ist damit eingelöst, nicht überholt.
+
+**(4) DIE FOLGE VON KANDIDAT 1 GEHÖRT IN DEN ZUSCHNITT, NICHT IN EINE FUSSNOTE.**
+**Das Zugangsdatum lebt 3599 Sekunden** (GEMESSEN 2026-08-28, OWNER, Messung C —
+docs/ziel-befunde.md, Google-Abschnitt, Teil (bw)). Ohne Erneuerung auf dem Transportweg und
+ohne Scheibe 1b sendet ein Projekt an Google **NUR innerhalb einer Stunde** nach dem
+Verbinden oder nach einem Druck auf die Beweis-Route.
+**DANACH IST URSACHE (4) EINGETRETEN** — der offene Punkt "EIN ZIEL KANN KONFIGURIERT SEIN
+UND TROTZDEM NICHT SENDEN" (docs/offene-punkte.md) führt sie als "DER ZUGANG BRICHT OHNE
+ZUTUN DES KUNDEN — ABLAUF ODER WIDERRUF", **in ihrer stummen Form**: Die Karte sagt
+"Zugangsdaten hinterlegt", es geht nichts hinaus, und niemand handelt, weil niemand etwas tut.
+**DER SATZ, DER MIT MUSS: 1b IST FÜR DAS PRODUKT NICHT OPTIONAL, NUR FÜR DIESE SCHEIBE.** Der
+Schnitt erlaubt 4 ohne 1b — das ist eine Aussage über die BAUBARKEIT, nicht über die
+Brauchbarkeit. **Wer das übersieht, hält Google nach dem Live-Test für fertig und hat ein
+Ziel gebaut, das eine Stunde am Tag sendet.**
+
+**(5) DIE NUTZLAST — DIE KETTE STEHT SEIT SCHEIBE 11.2a UND BEKOMMT HIER IHREN AUFRUFER.**
+`extractGoogleClickIds(body.eventSourceUrl)` (src/lib/capi/google-click-ids.ts) →
+`buildGoogleEvent` → `buildIngestEventsRequest` (beide src/lib/capi/google-payload.ts), dann
+ein POST mit der Kopfzeile `Authorization` und dem Wert `Bearer ` + Zugangsdatum (GEMESSEN
+2026-08-28, OWNER, Messung A — Teile (bj) bis (bm)). **Ohne Klick-Kennung entsteht kein
+Event** — bindende Entscheidung (3), unverändert.
+Die fünf Zuordnungen, je mit ihrem Grund:
+· **`operatingAccountId` ← `entry.config.pixelId`.** Seit Scheibe 2 trägt der Slot für
+  `'google'` die Google-Ads-Kundennummer, an der Eingabe über `NORMALIZE_PIXEL_ID`
+  normalisiert (VERMERK 9).
+· **`productDestinationId` ← `entry.conversionRules?.[event]`**, über einen Auflöser in der
+  Gestalt von `resolveRuleUrn` (src/lib/capi/linkedin-forward.ts). **Keine Regel für dieses
+  Ereignis → kein Ziel → kein Versand.** GRUND: Die Kennung gilt je Conversion-Action und
+  damit faktisch je Ereignistyp (GELESEN, Teil (k)/C3) — ohne sie gibt es keine Adresse, an
+  die geliefert werden könnte. Es ist dieselbe Klasse wie Riegel 3 des LinkedIn-Adapters.
+· **`eventSource` ← eine BENANNTE KONSTANTE IM ADAPTER, Wert `"WEB"`.**
+  **PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-01.** Keine Messung.
+  **GRUND:** Pagesmith verarbeitet Web-Traffic; der Vorbau an den Aufrufer-Schnittstellen —
+  ein Feld im Beacon-Rumpf, ein Wert am `ResolvedTarget`, eine Einstellung in der Oberfläche
+  — wird damit gespart.
+  **BINDENDE ENTSCHEIDUNG (2) BLEIBT GEWAHRT, und der Satz gehört dazu, sonst liest die
+  nächste Runde hier einen Verstoss:** Jene verbietet die Wahl **IN DER BAU-FUNKTION** —
+  "unsichtbar für jeden Aufrufer". `buildGoogleEvent` nimmt den Wert weiterhin als Parameter
+  entgegen und setzt keinen Vorgabewert; **die Konstante IST der Aufrufer**, und sie steht
+  sichtbar im Adapter.
+  **GRENZE, WÖRTLICH AN DIE KONSTANTE ZU SCHREIBEN:** Gemessen ist der **TYP**, nicht der
+  **WERT** — `eventSource` ist ein Enum, `"WEB"` ist ein gültiges Mitglied (GEMESSEN
+  2026-08-28, OWNER, Teil (br)). **Ein syntaktisch gültiges Enum-Mitglied kann fachlich falsch
+  sein, und die Schnittstelle meldet das nicht.** Die Mitgliedermenge ist nicht einmal erhoben.
+  **Verlangt der Live-Test ein anderes Mitglied, wird die Konstante angepasst** — sie ist
+  genau dafür benannt und liegt an einer Stelle.
+· **`transactionId` WIRD NICHT GESENDET.** GRUND: In der Offline-Gestalt ist es OPTIONAL
+  (GELESEN, Teil (l)/D5 — es ist einer der zwei Rang-Wechsel gegenüber Multi-Source).
+  `eventID` ist **unsere** Dedup-Kennung und **nicht** Googles Transaktion; sie dafür
+  einzusetzen wäre **geraten**, und ein geratener Wert in einem Dedup-Feld eines fremden
+  Systems fällt nicht auf.
+· **`x-goog-user-project` WIRD NICHT GESENDET.** GRUND: **ungemessen in beide Richtungen.**
+  Die Kopfzeile fehlte in allen sieben Aufrufen der Messung B1, und die semantische Prüfung
+  wurde erreicht — **das ist ausdrücklich KEIN Schluss auf Entbehrlichkeit** (Teil (bu)), aber
+  es ist auch kein Beleg dafür, dass sie nötig wäre. Kein Vorbau auf Verdacht.
+
+**(6) DER ADAPTER IST EINE NEUE DATEI, IN DER BAUFORM VON `linkedin-forward.ts`.**
+Das `try` beginnt **VOR** dem Nutzlast-Bau und umschliesst die Riegel — nicht erst beim
+Netzruf wie bei `forwardToMeta`. **GRUND:** Der jüngste Adapter ist die vorsichtigere Bauform;
+bei ihm kann keine Zeile des Nutzlast-Baus das 204-Containment brechen, während `meta` diese
+Zusage über eine Auflage im Kommentarkopf trägt ("WER VOR DEM try EINE ZEILE ERGÄNZT, DIE
+WERFEN KANN, BRICHT DAS 204-CONTAINMENT DES AUFRUFERS"). Eine Auflage ist schwächer als eine
+Struktur.
+**EIGENE TIMEOUT-KONSTANTE, 3000 ms**, wie bei allen vier bestehenden Adaptern (GEMESSEN am
+Repo, CC, 2026-09-01: `META_FORWARD_TIMEOUT_MS`, `PINTEREST_FORWARD_TIMEOUT_MS`,
+`TIKTOK_FORWARD_TIMEOUT_MS`, `LINKEDIN_FORWARD_TIMEOUT_MS`, alle `3_000`).
+**KEIN gemeinsamer Deckel, kein `Promise.race`, kein geteiltes Abbruchsignal** — die Auflage
+steht am Fan-Out in `src/lib/capi/ingest.ts` und gilt unverändert. Fire-and-log, kein Wurf
+nach aussen.
+
+**TRANSIT-ONLY ALS INVARIANTE DIESER SCHEIBE (OWNER, 2026-09-01, STRIKT):**
+Die Klick-Kennung geht **in die Nutzlast und sonst nirgendwohin** — kein Feld in `events`,
+keine Logzeile, kein Fehlerpfad, der sie trägt, und **KEIN Zurückspiegeln des
+Anbieter-Rumpfes**. **Geloggt wird der GRUND, nie der WERT.**
+**GRUND:** Die dritte Datenklasse (OWNER-ENTSCHEIDUNG 2026-08-28, docs/offene-punkte.md,
+"DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE") verlangt genau das, und der offene Punkt
+hält ausdrücklich fest, dass die Auflage für die Klick-Kennung bis hierher "NOCH KEIN
+GELEBTER STAND, SONDERN EINE VORGABE AN DIE TRANSPORT-SCHEIBE" war. **Mit dieser Scheibe wird
+sie gelebter Stand oder gar nicht.**
+**DAS VERBOT DES ZURÜCKSPIEGELNS IST DER TEIL, DER SONST DURCHRUTSCHT:** Drei der vier
+bestehenden Adapter deuten den Anbieter-Rumpf und schreiben Teile davon ins Log
+(`describeMetaError`, `describeErrorBody`, `describeLinkedinError`). Ein Anbieter kann den
+verletzenden Wert zurückspiegeln — und der wäre hier die Klick-Kennung. Das Sicherheits-Manifest
+führt dieselbe Klasse bereits als Tier-1-Item ("META-FEHLERLOG SPIEGELT DAS ZUGANGSDATUM
+ZURÜCK"). **Hier wird sie nicht wiederholt, sondern von vornherein ausgeschlossen.**
+
+**(7) TOR D FÄLLT.**
+`'google'` kommt in `TARGETS_WITH_ADAPTER` (src/lib/tracking/target-adapters.ts), und
+`FORWARDER_BY_TARGET` (src/lib/capi/ingest.ts) bekommt seinen Eintrag — der Compiler erzwingt
+ihn dann, weil die Zuordnung über `TargetWithAdapter` erschöpfend ist.
+**DAS IST DIE EINE ÄNDERUNG, DIE DIE SCHEIBE 3 AUSDRÜCKLICH VERBOTEN HAT** (dort Festlegung
+(6): "ES IST DER EINZIGE ORT, AN DEM DIESE SCHEIBE STILL ZUR TRANSPORT-SCHEIBE WÜRDE"). Ihre
+GRENZE hat den Weg hierher schon benannt: "bindende Entscheidung (8) sagt, dass er über
+`FORWARDER_BY_TARGET` laufen SOLL, und Scheibe 4 zahlt ihn." **Der Preis wird hier gezahlt.**
+**KEIN PARALLELER PFAD** — bindende Entscheidung (8), unverändert.
+
+### Eine Korrektur des Architekten, die den Gegenstand dieser Scheibe verschiebt
+
+**SIE STEHT IM ZUSCHNITT UND NICHT IN EINER FUSSNOTE, WEIL SIE TRAGEND IST.**
+
+**ES HIESS IN DER ZUSCHNITT-RUNDE, KANDIDAT 1 VERMEIDE EINEN ZWEITEN DECHIFFRIER-LESER. DAS
+IST FALSCH.** Den abgelegten Stand zu **lesen** HEISST zu **dechiffrieren**:
+`project_secrets.secret_enc` gibt ohne `decryptSecret` (src/lib/secrets/cipher.ts) und
+`parseOAuthPayload` (src/lib/secrets/oauth-payload.ts) **kein Zugangsdatum her**.
+
+**WAS KANDIDAT 1 TATSÄCHLICH VERMEIDET, IST DIE ERNEUERUNG — NICHT DIE ENTSCHLÜSSELUNG.** Der
+zweite Dechiffrier-Leser entsteht **so oder so** und ist der Gegenstand dieser Scheibe. Bis
+zum 2026-09-01 hatte `decryptSecret` **genau einen** Aufrufer im Produktivcode:
+`refreshAccessToken` (GEMESSEN am Repo, CC, 2026-09-01; Suchmuster `decryptSecret`, Suchraum
+`src/` rekursiv binärsicher, Positivkontrolle über `encryptSecret` mit zwei Produktiv-Aufrufern).
+**Mit dieser Scheibe sind es zwei.**
+
+**WARUM DAS FESTGEHALTEN WIRD, OBWOHL DIE ENTSCHEIDUNG UNVERÄNDERT BLEIBT:** Wer den falschen
+Satz glaubt, sucht beim Bauen nach einem Weg, der ohne Entschlüsselung auskommt — und findet
+keinen. Und er liest den Ersatz für den Wächter `T15` als Verschärfung, wo er in Wahrheit eine
+**Verschiebung der Achse** ist: von "dieser Pfad entschlüsselt nicht" zu "dieser Pfad
+entschlüsselt, erneuert aber nie".
+
+### Die drei Wächter, die gegenstandslos werden — je mit ihrem Ersatz
+
+**JEDER WIRD ERSETZT, KEINER GESTRICHEN.** Ein Wächter, dessen Gegenstand verschwindet, geht
+ab da IMMER auf und schützt nichts — docs/immer-beachten.md, "EINE ABWESENHEITS-BEHAUPTUNG
+WIRD AUF DREI WEISEN HOHL", Weise (1). **Das ist bei allen dreien der Fall.**
+
+· **`TOR 2`** (`src/lib/capi/token.test.ts`, Lauf "TOR 2: MIT Kennung im Blob, aber
+  secret = NULL -> kein Empfaenger") **hält heute**, dass `'google'` kein Zugangsdatum
+  bekommt, weil die Klartext-Spalte `secret` NULL trägt.
+  **ERSATZ:** `'google'` bekommt es **aus `secret_enc`** — **UND** eine Zeile mit **toter
+  Uhr 1** oder **unbrauchbarem Chiffrat** erzeugt **KEIN** `ResolvedTarget`. Der zweite Teil
+  ist der tragende: Ohne ihn bewachte der Ersatz nur den Erfolgsfall.
+· **`W-google`** (`src/lib/capi/fan-out.test.ts`) **hält heute**, dass `'google'` nicht in
+  `TARGETS_WITH_ADAPTER` steht und deshalb keinen Adapter erreicht.
+  **ERSATZ:** `'google'` **wird erreicht** — und ein Ziel **OHNE** Adapter bleibt weiterhin
+  **stumm übersprungen**. Der zweite Teil hält den Rest-Zweig von `dispatchForward` am Leben,
+  der sonst seinen letzten Fall verlöre.
+· **`T15`** (`src/lib/oauth/token-refresh.test.ts`, Lauf "T15 — KEIN AUFRUFER AUF DEM
+  INGEST-PFAD (mit Positivkontrolle)") **hält heute**, dass `decryptSecret` keinen Aufrufer
+  auf dem Ingest-Pfad hat.
+  **ERSATZ, UND ER IST DER WICHTIGSTE DER DREI:** Der Ingest-Pfad **ENTSCHLÜSSELT, ERNEUERT
+  ABER NIE** — kein `refreshAccessToken`, kein `exchangeRefreshToken`.
+  **OHNE IHN WÄRE KANDIDAT 1 EINE ABSICHT OHNE MECHANISMUS.** Die Entscheidung, dass der
+  Transport nicht erneuert, trägt vier andere Festlegungen dieses Zuschnitts — (2), (3), die
+  Auflösung von A-4 und den Ausschluss von 1b. **Nichts davon ist im Code sichtbar; sichtbar
+  ist nur, was ein Wächter behauptet.**
+
+**DAZU, UND ES IST KEIN AUFTRAG:** Die zwei **Quelltext-Wächter** in
+`src/lib/oauth/google-authorize.test.ts` und `src/lib/secrets/oauth-payload.test.ts` prüfen
+per Textsuche, dass bestimmte Dateien `encryptSecret`/`decryptSecret` nicht nennen. **Sie sind
+auf ihre REICHWEITE zu prüfen, nicht blind zu ändern** — welche Datei sie jeweils befragen,
+entscheidet, ob diese Scheibe sie überhaupt berührt. Der Befund gehört in den Bau-Prompt,
+nicht hierher. Die Grenze eines solchen Wächters steht in docs/immer-beachten.md, "EIN WÄCHTER
+ÜBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG".
+
+### Was ausdrücklich NICHT zu dieser Scheibe gehört, je mit Grund
+
+· **DIE FREMDKONTO-MESSUNG.** Was Google bei einer Kundennummer tut, für die das Zugangsdatum
+  nicht autorisiert ist, braucht **einen echten Aufruf mit gültigem Zugangsdatum und fremder
+  Kundennummer** — also eine Messung **NACH** dem Transport, nicht in ihm. Der offene Punkt
+  "WAS GOOGLE BEI EINER FREMDEN KUNDENNUMMER TUT, IST UNGELESEN UND UNGEMESSEN" trägt seit dem
+  2026-09-01 einen Vermerk mit dem neuen Trigger.
+· **1b UND DIE OBERGRENZE FÜR `retry`.** Beides berührt der Transport **nicht mehr, seit er
+  nicht erneuert** — Vorrats-Eintrag 10 hängt an einem Aufrufer von `refreshAccessToken`, und
+  diese Scheibe erzeugt keinen. Die Folge für das PRODUKT steht in Festlegung (4) und
+  verschwindet dadurch nicht.
+· **DIE MESSUNG DES `eventSource`-WERTES.** **Bauen geht ohne sie**: Die Konstante ist benannt
+  und liegt an einer Stelle, eine Korrektur ist ein Wort. Die Sperre der bindenden
+  Entscheidung (2) ist damit nicht gefallen, sondern umgangen — und das steht an der Konstante.
+· **`ensureTrackingKey`.** Ohne Tracking-Schlüssel erreicht **kein Beacon** den Ingest; der
+  fehlende Schlüssel erzeugt auf dem Transportweg **gar keinen Verkehr**, nicht nur keinen
+  sichtbaren. **Der Unterschied ist der ganze Grund für den Ausschluss:** Ein Zustand, der
+  nichts erzeugt, kann nichts stillschweigend falsch machen. Der Vorrats-Eintrag 13 trägt
+  seit dem 2026-09-01 einen Vermerk dazu, samt der Bedingung, unter der das kippt.
+· **KEINE MIGRATION.** `secret_enc` existiert seit 0025, `'google'` steht seit 0026 im CHECK
+  `project_secrets_target_valid`, und der CHECK `project_secrets_secret_genau_eines` hält
+  unverändert. **Die Regel "JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE
+  CONSTRAINT-ERWEITERUNG MIT" ist für dieses Ziel bereits eingelöst** — der Zielwert ist mit
+  0026 dazugekommen.
+
+### Die Beweis-Achse der Scheibe 4 — drei Schulden in einem Durchlauf
+
+**DIESER LIVE-TEST LÖST DREI SCHULDEN EIN, UND SIE WERDEN EINZELN PROTOKOLLIERT:**
+(1) den **eigenen** Nachweis dieser Scheibe · (2) den **nachgeschuldeten aus VERMERK 2**
+(`buildGoogleEvent` und `extractGoogleClickIds` haben seit dem 2026-08-25 keinen Aufrufer im
+Produktivcode; die Schuld ist über VERMERK 6, 7 und 9 mitgewandert) · (3) die **Restlücke aus
+Vermerk 1** — dass eine **ECHTE** gclid denselben Weg nimmt, und ob die Kennung auf einer
+Seite mit **MEHREREN SCHRITTEN** überlebt.
+**WER NUR (1) FÄHRT, HAT ZWEI SCHULDEN IM RÜCKEN UND MERKT ES NICHT**, weil an ihnen nichts
+rot ist.
+
+**SCHRITT 0 IST NEU-VERBINDEN, UND DER GRUND GEHÖRT DAZU:** Das Zugangsdatum lebt **eine
+Stunde**, das Erneuerungs-Token im Publishing-Status "Testing" **sieben Tage** (GELESEN,
+Teil (af); die Frist steht als Pflicht-Hinweis an docs/roadmap.md, Eintrag 11.2). **Beide
+Uhren werden vor dem Test zurückgesetzt.** Ohne diesen Schritt misst der Test einen
+abgelaufenen Zugang und schreibt ihn dem Adapter zu — es ist der Fall der Regel "EIN
+LIVE-TEST-SCHRITT SETZT EINEN ZUSTAND DES PRÜFLINGS VORAUS" (docs/immer-beachten.md).
+
+**DER START-HOST WIRD GENANNT UND VOR JEDEM SCHRITT ABGELESEN.** Ein Durchlauf, der in
+`no_state` endet, ist **UNGÜLTIG und wird wiederholt** — er ist kein Befund. Der Grund ist
+bewiesen und steht im offenen Punkt "EIN AUTORISIERUNGS-FLUSS, DER AUF EINER ANDEREN ADRESSE
+STARTET ALS DER REGISTRIERTEN WEITERLEITUNG, ENDET GARANTIERT IN no_state"; jener Punkt
+verlangt genau diese Auflage an jede Live-Anleitung dieses Flusses.
+
+**REGRESSION ZUERST:** Ein Projekt mit einem **Klartext-Ziel** sendet **unverändert**. Erst
+danach Google. **GRUND:** Diese Scheibe fasst die Paarungsschleife an, durch die **alle vier
+bestehenden Ziele** laufen; ein Fehlgriff dort ist ein Totalausfall des Fan-Outs und wäre am
+Google-Ergebnis nicht zu sehen.
+
+**WAS DER NACHWEIS NICHT ZEIGT — DREI, EINZELN:**
+· **OB `"WEB"` FACHLICH RICHTIG IST.** Ein angenommener Aufruf beweist den TYP, nicht die
+  Zuordnung. Ein fachlich falscher Wert wird nicht gemeldet.
+· **OB `x-goog-user-project` ENTBEHRLICH IST.** Ein erfolgreicher Aufruf ohne die Kopfzeile
+  ist **kein** Beleg — eine Projekt- oder Kontingentprüfung kann hinter dem liegen, was
+  erreicht wurde (Teil (bu), Grenze 2 in (bm)).
+· **WAS BEI EINER FREMDEN KUNDENNUMMER GESCHIEHT.** Der Durchlauf benutzt die **eigene**;
+  über eine fremde sagt er nichts.
+
+### 1b als Folgetask — nicht geschnitten, mit drei Vorbedingungen
+
+**DER OWNER HAT 1b ALS UNMITTELBAREN FOLGETASK BESTÄTIGT; SEIN ZUSCHNITT IST OFFEN.**
+**PROVENIENZ: ARCHITEKTEN-EINORDNUNG 2026-09-01, auf Owner-Bestätigung. Keine Messung.**
+Dieser Abschnitt schneidet nichts zu — er hält fest, **was vor einem Zuschnitt zu klären ist**.
+
+**(i) OB DIE PLATTFORM EINEN AUSLÖSER HERGIBT, DER HÄUFIGER ALS STÜNDLICH LÄUFT.**
+**UNGEMESSEN.** Instrument: docs/plattform-befunde.md **plus eine eigene Messung** — die
+Befund-Datei allein trägt eine Doku-Lesung, und eine Doku-Lesung ist keine Messung.
+**DER ARCHITEKT HAT HIERZU EINE ERINNERUNG UND KEINEN BEFUND; SIE WIRD AUSDRÜCKLICH NICHT ALS
+PRÄMISSE GEFÜHRT.** Der Satz steht hier, weil eine unbelegte Erinnerung sonst beim nächsten
+Lesen wie ein Stand aussieht — und weil an dieser Zahl der ganze Zuschnitt von 1b hängt: Ein
+Auslöser, der seltener läuft als das Zugangsdatum lebt, löst das Problem nicht.
+
+**(ii) VORRATS-EINTRAG 9 WIRD UNTER EINEM AUTOMATISMUS SCHARF.** "KEIN
+NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG" ist heute harmlos, weil ein Mensch klickt; sein
+eigener TRIGGER nennt "ein Auslöser (Scheibe 1b), der die Funktion nachweislich nebenläufig
+ruft". Die **zweite Achse** jenes Eintrags — Ausstellungs- und Schreibreihenfolge können
+divergieren — ist ausdrücklich **UNGEMESSEN**.
+
+**(iii) VORRATS-EINTRAG 10 EBENSO.** "`retry` HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE
+LIEFERN" trägt den Zuschnitt von 1b als seinen Trigger. Drei Ausgänge können dauerhaft sein
+und trotzdem `retry` melden; unter einem Automatismus ist das eine Schleife, die je Durchlauf
+einen echten Erneuerungsruf verbraucht.
+
+**DAZU EINE VORBEDINGUNG, DIE KEIN CODE IST — UND SIE IST DIE UNBEQUEMSTE:** Im
+Publishing-Status "Testing" stirbt das **ERNEUERUNGS**-Token nach **sieben Tagen**.
+**EIN PERFEKTER AUTOMATISMUS HÄLT DAS ZUGANGSDATUM EINE WOCHE AM LEBEN UND FÄLLT DANN
+TROTZDEM AUS.** Der Statuswechsel auf "In Produktion" mit Googles Verifizierung steht
+**NEBEN** 1b, **nicht in ihm** — es ist eine Arbeit am Anbieter-Konto und keine am Code.
+**Wer 1b baut und diesen Satz überliest, hat nach sieben Tagen denselben stummen Ausfall wie
+ohne 1b, nur später.**
+
 ## Abgeschlossene Scheiben-Vermerke
 
 ### VERMERK 1 (Commit 2d0b59e) — DIE GESTALT-ENTSCHEIDUNG UND DIE MESSUNG DER KLICK-KENNUNG
@@ -2897,6 +3241,35 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
       gemessen bestätigt und ausdrücklich NICHT behoben.
     ÜBERNOMMEN 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG.
 
+    **VERMERK 2026-09-01 ZUM ZWEITEN SPIEGELSTRICH (`ensureTrackingKey`) — DER
+    URSPRUNGSTEXT WIRD NICHT UMGESCHRIEBEN, DIESER VERMERK TRITT DANEBEN.**
+    Der Ursprung führt den Posten als "VORBEDINGUNG der Transport-Scheibe".
+    **SCHEIBE 4 BEHEBT IHN NICHT**, und der Grund gehört dazu, sonst gilt er als übersehen:
+    **Ohne Tracking-Schlüssel erreicht kein Beacon den Ingest** — `getCapiConfigByTrackingKey`
+    (src/lib/capi/token.ts) kehrt bei leerem Schlüssel ohne Datenbank-Runde zurück, und ein
+    Projekt ohne Schlüssel trägt auch keinen ausgelieferten Emitter, der einen senden könnte.
+    **ES ENTSTEHT ALSO GAR KEIN VERKEHR, NICHT NUR KEIN SICHTBARER.** Ein Zustand, der nichts
+    erzeugt, kann nichts stillschweigend falsch machen; das ist der Unterschied zu einem
+    Posten, der still Conversions verliert.
+    **DIE BEDINGUNG, UNTER DER DAS KIPPT:** eine Scheibe, die **OHNE Veröffentlichung sendet**
+    — **Phase 11.4, der Testknopf**. Dort löst ein Betreiber den Versand von Hand aus, und der
+    Weg über den ausgelieferten Emitter entfällt; ab da ist ein fehlender Schlüssel kein
+    leiser Zustand mehr, sondern ein Fehlschlag mit Auslöser.
+    **EIN GEMESSENER ZUSATZ (CC, 2026-09-01), der die Prämisse "ohne Publish kein Schlüssel"
+    enger fasst als bisher angenommen:** Eine `domains`-Zeile KANN **ohne** `publishProject`
+    entstehen — `persistDomainRow` (src/lib/domains/register.ts) legt sie an, erreichbar über
+    `registerCustomDomain` und die Server-Action `addCustomDomain`
+    (src/app/projects/domain-actions.ts), und **diese Kette berührt `publishProject` an keiner
+    Stelle**. ACHSE: `from("domains")` über `src/` rekursiv, binärsicher, Testdateien
+    gefiltert — zwölf Fundstellen, davon DREI `insert`; zwei davon (`assignDomainLabel`,
+    `insertDomainLabel`) haben ausschliesslich `publishProject` als Aufrufer, die dritte nicht.
+    Positivkontrolle: dieselbe Achse führt die Aufrufer-Kette je Symbol lückenlos.
+    **WAS DER ZUSATZ NICHT SAGT:** `ensureTrackingKey` läuft **weiterhin nur** in
+    `setCapiToken` und `publishProject` (GEMESSEN am Repo, CC, 2026-09-01). Die
+    Custom-Domain-Zeile setzt **keinen** Tracking-Schlüssel — der Zusatz benennt eine
+    `domains`-Zeile ohne Publish, **nicht** einen Schlüssel ohne Publish. Wer beides
+    zusammenzieht, liest hier eine Behebung, die nicht dasteht.
+
 14. **DER KOMMENTARKOPF VON `createAdminClient` IST ZU WEIT.** Er sagt: "GESCHRIEBEN wird
     in BEIDE — project_secrets UND project_tokens (Doppelschreib in
     setCapiToken/removeCapiToken; die Alt-Tabelle ist die Rollback-Reserve)".
@@ -3299,6 +3672,105 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
     TRIGGER: derselbe wie bei Eintrag 20 — die nächste Hebung an docs/immer-beachten.md,
     die jene Regel ohnehin berührt.
+
+33. **DAS INSTRUMENT ZUM AUFFINDEN EINES NUL-BYTES IST EIN ANDERES ALS DAS ZUM SUCHEN
+    DARIN — UND DIE EINE HÄLFTE DIESES EINTRAGS STEHT SCHON IN docs/immer-beachten.md.**
+    **DIE ERSTE HÄLFTE IST BESTÄTIGUNG, NICHT BEFUND, UND DAS STEHT ZUERST:** Dass `grep`
+    OHNE `-a` bei einer Datei mit NUL-Byte "Binary file … matches" meldet **STATT** der
+    Trefferzeilen — und die Datei damit still aus jeder Achse fällt —, steht bereits in
+    docs/immer-beachten.md, in der Regel "WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG
+    STILL DAS CR", Absatz "DIE GEGENRICHTUNG GEHÖRT DAZU", dort mit derselben Fundstelle
+    (`src/lib/mappings.ts`) und GEMESSEN am 2026-08-13. **ERNEUT GEMESSEN (CC, 2026-09-01):**
+    Die Datei trägt **genau ein** NUL-Byte (`tr -dc '\000' < … | wc -c` → 1); `grep -na` findet
+    darin `isValidRedirectUrl` in Zeile 44, `grep -n` meldet stattdessen die Binärzeile.
+    **DIE ZWEITE HÄLFTE IST NEU UND IST DER EIGENTLICHE INHALT DIESES EINTRAGS: DAS
+    NAHELIEGENDE SUCHINSTRUMENT FINDET DIE DATEI GAR NICHT.** Ein Lauf über `src/` mit
+    `grep -qP '\x00'` je Datei lieferte **NULL** Treffer; derselbe Lauf mit
+    `tr -dc '\000' | wc -c` fand `src/lib/mappings.ts`. GEMESSEN (CC, 2026-09-01), beide
+    Läufe im selben Durchgang, derselbe Suchraum.
+    **WARUM DAS TEUER IST:** Die Abwesenheit war vom WERKZEUG erzeugt, nicht vom Gegenstand —
+    genau die Klasse, die docs/immer-beachten.md als "EINE ABWESENHEIT KANN VOM WERKZEUG
+    ERZEUGT SEIN, NICHT VOM GEGENSTAND" führt. Ohne den zweiten Griff wäre "im Repo liegt kein
+    NUL-Byte" als Befund protokolliert worden, **mit benannter Reichweite, sauber ausgewiesen
+    und trotzdem falsch**.
+    **DER VORSCHLAG — UND ER IST EIN VORSCHLAG, KEINE ENTSCHEIDUNG:** Ein **ABSATZ** an der
+    bestehenden Werkzeug-Regel, nicht ein eigener. Zwei Gründe: Die erste Hälfte steht dort
+    schon und würde als eigener Eintrag ein zweites Mal behauptet; und der neue Teil ist die
+    **Vervollständigung** desselben Befundes — er sagt, WOMIT man die Datei findet, die jener
+    Absatz beschreibt.
+    **DIE GEGENREDE GEHÖRT DAZU:** Die 11.8er-Regel oben ist die sachlich nähere (sie handelt
+    von der werkzeug-erzeugten ABWESENHEIT), und ein Absatz an der sed-Regel legte den Befund
+    an die entferntere. **NICHT ENTSCHIEDEN**, an welcher der beiden er landet.
+    **DER BEZUG ZU HEBUNGS-KANDIDAT 6 GEHÖRT MIT:** Jener stellt dieselbe Ablage-Frage für die
+    Byte-Kontrolle (`tr` gegen `grep -c $'\r'`) und lässt sie ebenfalls offen. **Wer einen von
+    beiden hebt, liest den anderen mit** — es ist dieselbe Werkzeug-Achse, und zwei getrennt
+    getroffene Entscheidungen darüber liefen auseinander.
+    GEMELDET 2026-09-01, NICHT GEBAUT.
+
+34. **EIN ZEILENWEISER KOMMENTAR-FILTER IST BEI MEHRZEILIGEN BLÖCKEN UNTAUGLICH.**
+    Er erkennt einen Kommentar an seinem **ZEILENANFANG**. Die Fortsetzungszeilen eines
+    `{/* … */}`-Blocks beginnen mit **Fliesstext** und zählen deshalb als Code — ein Vergleich
+    zweier Fassungen "ohne Kommentare" meldet dann eine Code-Änderung, die es nicht gibt, oder
+    verdeckt eine, die es gibt.
+    **DER ERSATZ:** beide Fassungen **OHNE Kommentare** vergleichen — also den Kommentar
+    entfernen statt die Zeile zu übergehen —, **mit einer künstlichen Code-Änderung als
+    POSITIVKONTROLLE**. Ohne die Positivkontrolle ist ein leerer Vergleich nicht von einem
+    kaputten Vergleich zu unterscheiden; es ist der Fall der Lektion (d) an "MUTATIONSPROBEN
+    UND LIVE-TEST-INSTRUMENTE" (docs/immer-beachten.md), nur am Diff statt am Test.
+    **WARUM DER EINTRAG ÜBERHAUPT NÖTIG IST — DAS IST SEIN GANZER ZWECK:** Der Befund ist
+    bisher **NUR in der Commit-Botschaft von `3efa01b` verwahrt**. Eine Commit-Botschaft wird
+    nicht gelesen, wenn jemand das nächste Mal zwei Fassungen vergleicht; sie ist ein
+    Zeitdokument und kein Nachschlagewerk. **Ohne diesen Eintrag wird dasselbe Instrument
+    wieder gebaut und liefert wieder eine falsche Auskunft.**
+    GEMELDET 2026-09-01, NICHT GEBAUT. KEINE EMPFEHLUNG, ob daraus eine Regel wird.
+
+35. **DER KOMMENTARKOPF VON `schedulePersist` DECKT DEN CODE NICHT.**
+    **GEMESSEN am Code (CC, 2026-09-01):** Der Kopf von `schedulePersist`
+    (src/lib/capi/ingest.ts) sagt, sein `try/catch` sei "die zweite Schicht, falls die
+    Registrierung/der Aufruf selbst wirft". **Am Code liegt das `try` INNERHALB des an
+    `after()` übergebenen Callbacks**; der Aufruf `after(...)` selbst steht **ungeschützt**, und
+    `handleIngest` trägt an dieser Stelle kein umschliessendes `try`. Wirft die Registrierung,
+    verlässt der Wurf die Funktion.
+    **KEIN TEST DECKT DAS:** Alle sechs `ingest.*.test.ts` mocken `next/server` mit einem
+    `after`, das die Callbacks nur einsammelt — **die Registrierung kann dort gar nicht
+    werfen.** GEMESSEN am Repo (CC, 2026-09-01).
+    **DIES IST EINE AUSSAGE ÜBER DEN KOMMENTAR, NICHT ÜBER DIE EINTRITTSWAHRSCHEINLICHKEIT.**
+    Ob der Fall je eintritt, ist nicht erhoben und wird hier nicht behauptet. Es ist der Fall
+    der Regel "EIN KOMMENTAR IST EINE BEHAUPTUNG, KEINE EIGENSCHAFT" (docs/immer-beachten.md):
+    Die Selbstbeschreibung ist zu weit, und sie lädt dazu ein, eine Achse für gedeckt zu halten
+    und keinen Test dafür zu schreiben.
+    **KEIN VORSCHLAG** — weder eine Umschliessung noch eine Kommentar-Korrektur ist hier
+    vorgeschlagen.
+    GEMELDET 2026-09-01, NICHT GEBAUT.
+
+36. **DIE ADAPTER REICHEN EINE KLICK-KENNUNG HEUTE SCHON DURCH — AUF EINER ANDEREN ACHSE ALS
+    DER GEMESSENEN.**
+    **GEMESSEN am Code (CC, 2026-09-01):** `eventSourceUrl` wird im Beacon-Bau
+    (`buildCapiBeaconStatement`, src/lib/tracking/meta.ts) als **`location.href`** gesetzt —
+    also die vollständige Adresse **einschliesslich Query-String**. `handleIngest` reicht den
+    Rumpf unverändert an `dispatchForward` weiter, und **drei der vier Adapter lesen das Feld**:
+    `forwardToMeta` als `event_source_url`, `forwardToPinterest` ebenso,
+    `forwardToTiktok` als `page.url`. `forwardToLinkedin` liest es nicht.
+    **FOLGE:** Ein `gclid` im Query-String einer gehosteten Kundenseite **reist heute schon
+    mit** — an meta, pinterest und tiktok —, **UNBENANNT**, als Bestandteil einer Zeichenkette.
+    Das gilt für **jeden** Klick-Parameter eines Werbenetzwerks, nicht nur für Googles.
+    **DIE ABGRENZUNG GEHÖRT DAZU UND IST KEIN EINWAND GEGEN DEN BESTEHENDEN BEFUND:** Der
+    offene Punkt "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE" (docs/offene-punkte.md,
+    Block vom 2026-08-28, Punkt (a)) sagt "KEIN ADAPTER NIMMT HEUTE EINE KLICK-KENNUNG
+    ENTGEGEN ODER REICHT EINE DURCH". **Das ist auf der Achse BENANNTER Kennungsfelder
+    gemessen** — die dortige Achse nennt `gclid · gbraid · wbraid · fbclid · _fbc · ttclid ·
+    li_fat_id — **und dort ist es richtig**: null Treffer in allen vier Adaptern, heute erneut
+    bestätigt. **DIESER EINTRAG NENNT EINE ZWEITE ACHSE, KEINE KORREKTUR DER ERSTEN.**
+    **OB DIE UNBENANNTE DURCHLEITUNG UNTER DIE DRITTE DATENKLASSE FÄLLT, IST HIER NICHT
+    ENTSCHIEDEN.** Es ist eine **OWNER-Frage**, und sie wird in diesem Eintrag ausdrücklich
+    nicht beantwortet und nicht vorbereitet.
+    **WAS HEUTE GILT UND GEPRÜFT IST — und es ist der Teil, der die Auflage TRANSIT-ONLY auf
+    ihren beiden anderen Hälften einlöst:** `persistEvent` (src/lib/analytics/persist.ts)
+    schreibt die Kennung **nicht** — es schreibt genau fünf Werte, und keiner trägt sie. Und
+    **keiner der 48 console-Aufrufe** im Produktivcode führt sie (GEMESSEN, CC, 2026-08-28,
+    im offenen Punkt mit Achse und Positivkontrolle protokolliert; in dieser Runde **nicht**
+    neu gezählt).
+    GEMELDET 2026-09-01, NICHT GEBAUT. KEINE EMPFEHLUNG.
 
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT

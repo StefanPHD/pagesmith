@@ -2070,6 +2070,50 @@ PRÄMISSE GEFÜHRT.** Der Satz steht hier, weil eine unbelegte Erinnerung sonst 
 Lesen wie ein Stand aussieht — und weil an dieser Zahl der ganze Zuschnitt von 1b hängt: Ein
 Auslöser, der seltener läuft als das Zugangsdatum lebt, löst das Problem nicht.
 
+**NACHGETRAGEN 2026-09-02 — DIE ANBIETER-LESUNG IST GEFAHREN. DIE ABSÄTZE DARÜBER BLEIBEN
+WÖRTLICH STEHEN**, einschliesslich der Sachkorrektur zum Instrument: Sie beschreibt den Zustand
+VOR dieser Lesung und ist als Zeitdokument richtig. **Was sich ändert, ist nicht ihr Wortlaut,
+sondern der Zustand der Vorbedingung.**
+**DER VOLLTEXT STEHT NICHT HIER, SONDERN IN docs/plattform-befunde.md** — Abschnitt "Vercel",
+Teile (a) bis (g), und Abschnitt "Supabase", Teile (ab) bis (ag). **Zweimal geschrieben liefe
+es auseinander;** was hier steht, ist der Zeiger plus die eine Folge je Anbieter.
+
+· **VERCEL SCHEIDET AUF DEM HEUTIGEN TARIF AUS.** Hobby erlaubt **einmal pro Tag**, und
+  häufigere Ausdrücke **scheitern beim Deploy**; die Auslösezeit ist zusätzlich auf ±59 Minuten
+  ungenau. Gegen ein Zugangsdatum, das **3599 Sekunden** lebt (Festlegung (4) dieser Scheibe),
+  trägt das nicht. Pro und Enterprise erlauben einmal pro Minute. **Zeiger:**
+  docs/plattform-befunde.md, "Vercel", Teil (a) — dort auch die Falle der Übersichtsseite, die
+  Minuten-Granularität ohne Tarif-Vorbehalt zeigt.
+· **SUPABASE TRÄGT DIE FREQUENZ.** Supabase Cron (pg_cron) reicht von **jeder Sekunde bis
+  einmal im Jahr**; der HTTP-Weg nach aussen läuft über `pg_net`. **Zeiger:**
+  docs/plattform-befunde.md, "Supabase", Teile (ac) bis (af) — dort auch die Versions-
+  Vorbedingung der Sekunden-Granularität und die Rechte-Lage von `pg_net`.
+
+**DIE VORBEDINGUNG IST DAMIT NICHT ERLEDIGT, SONDERN VERSCHOBEN — UND DIESER ABSATZ IST DER
+WICHTIGERE TEIL DES NACHTRAGS:** **ALLES AN DIESER LESUNG IST GELESEN, NICHTS IST GEMESSEN.**
+Der Satz "eine Doku-Lesung ist keine Messung" gilt unverändert; er ist durch diesen Nachtrag
+nicht eingelöst, sondern bestätigt. **WAS EINE MESSUNG WÄRE, IST HIER NICHT ZU ENTSCHEIDEN**,
+und es wird auch kein Anbieter ausgewählt: "Vercel scheidet aus" ist eine Aussage über einen
+gelesenen Tarif, keine Wahl zugunsten des anderen.
+
+**DREI EIGENSCHAFTEN AUS DIESER LESUNG BINDEN EINEN ZUSCHNITT — ALS ZEIGER, NICHT ALS KOPIE:**
+· **DOPPELTE LÄUFE SIND VORGESEHEN**, und verpasste ebenso; der Anbieter verlangt Idempotenz.
+  docs/plattform-befunde.md, "Vercel", Teil (c), Punkt 3 — dort auch Punkt 4, die Nebenläufigkeit,
+  die der Anbieter als Problem des Aufrufers führt. **Das berührt Vorbedingung (ii) und
+  Vorrats-Eintrag 9;** ausgewertet wird es hier nicht, und der dortige Trigger ist NICHT
+  eingetreten.
+· **KEINE WIEDERHOLUNG BEI FEHLSCHLAG.** Ebenda, Punkt 2. **Das berührt Vorbedingung (iii) und
+  Vorrats-Eintrag 10** — die Obergrenze für `retry` bekäme damit auf der Vercel-Seite keinen
+  Helfer.
+· **`pg_net` IST BETA, UND SEINE SIGNATUREN KÖNNEN SICH ÄNDERN.** docs/plattform-befunde.md,
+  "Supabase", Teil (ae) — dort auch Zeitlimit, Commit-Bindung, unlogged tables und die Grenze
+  von 200 Anfragen je Sekunde.
+
+**KEIN ZUSCHNITT. DIE VORBEDINGUNG BLEIBT OFFEN; ihr Zustand ist ein anderer.**
+PROVENIENZ: **GELESEN 2026-09-02** (CC, Browser-Werkzeug, `textContent`), zwölf Vercel- und
+vier Supabase-Seiten, Umfang je Seite in den genannten Abschnitten. **KEINE Messung an einer
+Schnittstelle, keine am eigenen Dashboard, keine an dieser Datenbank.**
+
 **(ii) VORRATS-EINTRAG 9 WIRD UNTER EINEM AUTOMATISMUS SCHARF.** "KEIN
 NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG" ist heute harmlos, weil ein Mensch klickt; sein
 eigener TRIGGER nennt "ein Auslöser (Scheibe 1b), der die Funktion nachweislich nebenläufig

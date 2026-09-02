@@ -147,6 +147,15 @@ als Korrektheitsbeweis.
 - Seit mehreren Antworten ist keine Produktentscheidung gefallen. Das offen zu
   sagen ist kein Eingeständnis, sondern die Korrektur.
 
+**Nachgebessert wird, was eine spätere Instanz braucht, um zu verstehen, zu
+rekonstruieren oder zu bauen — sonst nicht.** Eine falsche Tatsachenbehauptung, ein
+toter Zeiger, eine leise abgeschwächte Regel, ein Wert, der ohne Ablage
+verschwindet: das kostet später eine Runde oder einen Fehler. Eine ungenaue Zahl im
+Fließtext, eine uneinheitliche Überschrift, ein holpriger Satzbau: das kostet
+nichts. **Rekonstruierbarkeit, nicht Perfektion.** Wer eine Nachbesserung ansetzt,
+nennt vorher, welche spätere Handlung ohne sie scheitert; findet er keine,
+unterbleibt sie.
+
 ---
 
 ## 3. ARBEITSWEISE
@@ -356,6 +365,14 @@ Datei und fiele unter Weg 8.
 **Vollzugsauflage für `docs/immer-beachten.md`:** Ihr Verzeichnis führt je Regel
 deren wörtlichen Anfang. Wer die erste Zeile einer Regel ersetzt, zieht den
 Verzeichnis-Eintrag im selben Zug nach. Zwei Orte, ein Zug.
+
+**Ein Korrektur-Block setzt voraus, dass der korrigierte Text committet war.** Wer
+einen Wortlaut richtigstellt, der in derselben, noch nicht committeten Runde
+entstanden ist, erzählt eine Korrektur an einem Text, den nie jemand gesehen hat.
+Der Test ist am Repo prüfbar: Steht der zitierte alte Wortlaut in
+`git show HEAD:<pfad>`, bleibt der Block. Steht er nicht dort, wird die korrigierte
+Aussage schlicht geschrieben. Die Sache bleibt in beiden Fällen; es entfällt allein
+die Erzählung.
 
 ### Aufklärung vor dem Eingriff
 
@@ -575,6 +592,21 @@ hebelt die Regel dort aus, wo sie am billigsten greifen würde.
   Zahl, einmal als Liste —, ist die Liste maßgeblich. Weicht die Zahl ab, wird
   sie gemeldet, nicht angeglichen: eine falsche Zahl neben einer richtigen Liste
   ist ein Befund über die Sorgfalt des Berichts, kein Rechenfehler.
+
+**Ein angeforderter Volltext-Diff kostet Sitzungsdauer, und das ist eine reale
+Ressource.** Ein Diff über tausend Zeilen verbraucht Kontext, der danach für Denken
+und Entscheiden fehlt — der Preis fällt nicht beim Lesen an, sondern zwei Runden
+später, wenn die Sitzung gewechselt werden muss. Volltext bleibt Pflicht für
+Migrations-SQL, RLS, Ingest- und Serve-Pfad und für den einzelnen Hunk, an dem eine
+benannte Invariante hängt — und unverändert für die Doku-Ausnahme oben: Regeln und
+Security-Manifest. **Bei Doku-Runden ist er die Ausnahme, nicht die
+Vorlage.** Was dort trägt: `git diff --stat` als Scope-Beleg, die ersetzten
+Passagen als Zitat im Bericht, additive Teile als Überschrift plus Provenienzzeile.
+
+**Für Sachkorrekturen gibt es ein billigeres Instrument als das Diff.** Die Bauform
+zitiert den ersetzten Wortlaut selbst („Hier stand …"). Damit steht der alte Text im
+neuen, und ein gezielter Vergleich gegen `git show HEAD:<pfad>` prüft dieselbe Frage
+in vier Zeilen statt in vierhundert.
 
 ---
 

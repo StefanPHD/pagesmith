@@ -118,6 +118,8 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
     Teile (bh) bis (bm)
   - ### MESSUNG B1 gegen events:ingest (2026-08-28) — die Teile (bn) bis (bu)
   - ### MESSUNG C gegen den Token-Endpunkt (2026-08-28) — die Teile (bv) bis (bz)
+  - ### MESSUNG D gegen events:ingest (2026-09-01) — der Teil (ca)
+  - ### MESSUNG E gegen requestStatus:retrieve (2026-09-02) — der Teil (cb)
 - ## Pinterest (Conversions API)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
@@ -1601,8 +1603,22 @@ abgesucht, obwohl sie es nie war.
     JE DESTINATION: requestStatus aus { REQUEST_STATUS_UNKNOWN, SUCCESS, PROCESSING, FAILED,
     PARTIAL_SUCCESS } ·
     eventsIngestionStatus.recordCount ("includes both successful and failed records") ·
-    warningInfo[] (je Eintrag reason + recordCount) · errorInfo[] (je Eintrag reason +
-    recordCount).
+    warningInfo (GELESEN 2026-08-24, je Eintrag reason + recordCount) ·
+    errorInfo als OBJEKT mit dem Array errorCounts[], dessen Einträge recordCount und reason
+    tragen.
+    SACHKORREKTUR 2026-09-02 — ERSETZT, NICHT GESTEMPELT. Hier stand "warningInfo[] (je
+    Eintrag reason + recordCount) · errorInfo[] (je Eintrag reason + recordCount)", also
+    errorInfo als ARRAY. DAS IST AM ENDPUNKT FALSCH: GEMESSEN 2026-09-02 (OWNER), Messung E,
+    ist errorInfo ein OBJEKT, und das Array darin heisst errorCounts. Volltext der gemessenen
+    Gestalt: (cb)/(e).
+    DIE HÄLFTE ZU warningInfo IST NICHT MITKORRIGIERT UND BLEIBT GELESEN — Messung E hat
+    KEINE Warnung erzeugt, das Feld kam nicht zurück. Wer aus der gemessenen errorInfo-Gestalt
+    auf die von warningInfo schliesst, LEITET AB.
+    DIESE STELLE UND (x)/G5 BLEIBEN ZWEI STELLEN, UND DAS IST ABSICHT — ZUSAMMENFÜHREN WURDE
+    ERWOGEN UND VERWORFEN (ARCHITEKT, 2026-09-02): Es sind ZWEI UNABHÄNGIGE QUELLEN zu
+    derselben Sache — hier der Diagnostics-Devguide, dort die REST-Referenz. Sie haben
+    einander kontrolliert, und GENAU DESHALB IST DER FEHLER AUFGEFALLEN. Wer sie zusammenzieht,
+    gewinnt eine Stelle weniger und verliert die Kontrolle.
     Die Trennung ist scharf definiert: "An error indicates that the API completely rejected
     the record. A warning indicates that the API didn't reject the record, but it had to
     ignore portions of the record's data."
@@ -2329,6 +2345,18 @@ Dasselbe gilt für die Fenster-Hälfte von D3 (s. (w)).
     KEINEN ERFOLGS-ZÄHLER. Was ankam, ergibt sich nur indirekt aus errorInfo/warningInfo,
     und die zählen JE GRUND, nicht je Ereignis (ErrorCount { recordCount, reason },
     WarningCount { recordCount, reason }).
+    ERGÄNZT 2026-09-02 — DER SATZ DARÜBER BLEIBT WÖRTLICH STEHEN UND IST DURCH EINE MESSUNG
+    BESTÄTIGT; ES FEHLTE ALLEIN DER PFAD. GEMESSEN 2026-09-02 (OWNER), Messung E: Der
+    Blatt-Typ ErrorCount trägt tatsächlich recordCount und reason, und gezählt wird tatsächlich
+    JE GRUND. WO ER HÄNGT, STAND HIER NICHT: errorInfo ist ein OBJEKT, und die ErrorCount-Liste
+    darin heisst errorCounts[] — der volle Pfad lautet also errorInfo.errorCounts[].
+    Volltext der gemessenen Gestalt: (cb)/(e).
+    ERGÄNZT UND NICHT ERSETZT, UND DAS IST DER UNTERSCHIED ZU (p)/H5: Jene Stelle schrieb
+    errorInfo[] mit eckigen Klammern und ist damit FALSCH; sie ist am selben Tag ERSETZT
+    worden. Diese hier war RICHTIG UND UNVOLLSTÄNDIG. Eine korrekte Angabe als falsch zu
+    markieren wäre selbst eine Falschaussage.
+    WarningCount IST NICHT MITGEMESSEN — Messung E hat keine Warnung erzeugt; jene Hälfte
+    bleibt GELESEN (2026-08-24).
     ZWEI WEITERE PRÄZISIERUNGEN: errorInfo ist "Only populated if the requestStatus is
     FAILED or PARTIAL_SUCCESS"; beide Felder sind "not populated while the request has
     requestStatus of PROCESSING" — das bestätigt die Warnung aus (p)/H5, dass ein leeres
@@ -4562,8 +4590,31 @@ eine Angabe NICHT aus einem Antwortrumpf folgt, sondern vom Owner aus erster Han
 
      **DIE FESTEN WERTE ÜBER ALLE VIER AUFRUFE** (Angabe aus erster Hand, OWNER): Ereignis
      `Purchase` · `eventSource` `"WEB"` · `eventTimestamp` in der Gestalt von
-     `toISOString()` · `adIdentifiers.gclid` `"Tester-123"` ·
-     `operatingAccount.accountId` die **normalisierte, echte** Google-Ads-Kundennummer.
+     `toISOString()` · `operatingAccount.accountId` die **normalisierte, echte**
+     Google-Ads-Kundennummer.
+
+     **`adIdentifiers.gclid` GEHÖRT NICHT IN DIESE AUFZÄHLUNG — SACHKORREKTUR 2026-09-02,
+     ERSETZT UND NICHT GESTEMPELT.** Hier stand `adIdentifiers.gclid` `"Tester-123"` als
+     vierter fester Wert, also **über alle vier Aufrufe**. **DAS TRIFFT NICHT ZU.**
+     **OWNER-ANGABE 2026-09-02:** Am 2026-09-01 waren **ZWEI** von Hand gesetzte Werte im
+     Einsatz — **`"Tester-123"`** und **`"EAIaIQobChMI"`**. Für die **drei HANDAUFRUFE** (2, 3
+     und 4) gilt `"Tester-123"` unverändert; **der ADAPTER-Aufruf (1) bezog seinen Wert aus dem
+     Query-String der Browserzeile**, und **WELCHER DER BEIDEN WERTE DORT STAND, IST NICHT
+     REKONSTRUIERBAR UND WIRD NICHT ZUGEORDNET.**
+     **DIE ÜBRIGEN VIER FESTEN WERTE SIND VON DIESER KORREKTUR NICHT BERÜHRT** — Ereignis,
+     `eventSource`, `eventTimestamp` und `operatingAccount.accountId` galten über alle vier
+     Aufrufe und gelten es weiter.
+     **WAS DIE KORREKTUR NICHT ANTASTET, UND DAS IST DER WICHTIGERE SATZ: DER BEFUND UNTER (d)
+     BLEIBT ISOLIERT.** Er ruht auf dem Unterschied zwischen **Aufruf 3 und Aufruf 4**, und die
+     sind beide Handaufrufe mit demselben `"Tester-123"`. **Zwischen ihnen lag weiterhin genau
+     eine Änderung — das Feld `transactionId`.**
+     **EBENSO UNBERÜHRT: (e).** Die dort als angenommen protokollierte erfundene `gclid` ist
+     die von Aufruf 4, also `"Tester-123"`. Dass Messung E für genau diese Anfrage
+     `PROCESSING_ERROR_REASON_INVALID_GCLID` zurückbekommen hat (s. (cb)), passt dazu
+     widerspruchsfrei.
+     **PROVENIENZ:** OWNER-ANGABE 2026-09-02, aus erster Hand. **KEINE Messung.** Dass die
+     Zuordnung nicht rekonstruierbar ist, ist ebenfalls Owner-Angabe und ausdrücklich **kein
+     Nicht-Treffer einer Suche**.
 
       1. **DER ADAPTER-AUFRUF AUS DEM LIVE-TEST DER SCHEIBE 4** → **HTTP 400**.
          **NUR DER STATUSCODE IST BEKANNT, UND DAS IST KEIN VERSEHEN:** Der Adapter liest
@@ -4571,8 +4622,8 @@ eine Angabe NICHT aus einem Antwortrumpf folgt, sondern vom Owner aus erster Han
          4, docs/aktiver-stand.md). Dieser Aufruf trägt zum Befund **nichts als den
          Fehlschlag** bei; die drei folgenden sind der Grund, warum trotzdem etwas
          gemessen ist.
-      2. **HANDAUFRUF 1**, `productDestinationId` = `"AW-18400360380/CeeiCP-…"` — die
-         gtag-Gestalt, wie sie die Google-Ads-Oberfläche am Conversion-Snippet anzeigt →
+      2. **HANDAUFRUF 1**, `productDestinationId` = `"AW-<KONVERSIONS-ID-11-ZIFFERN>/<LABEL>"`
+         — die gtag-Gestalt, wie sie die Google-Ads-Oberfläche am Conversion-Snippet anzeigt →
          **400, SEMANTISCHE SCHICHT** (`ErrorInfo` + `RequestInfo` + `requestId`), **EIN
          `fieldViolation`:** field `"destinations[0].product_destination_id"`, description
          `"String is not a valid number."`, reason `INVALID_NUMBER_FORMAT`.
@@ -4582,6 +4633,27 @@ eine Angabe NICHT aus einem Antwortrumpf folgt, sondern vom Owner aus erster Han
          `"Required field is missing."`, reason `REQUIRED_FIELD_MISSING`.
       4. **HANDAUFRUF 3**, zusätzlich `transactionId` gesetzt, **sonst zeichengleich zu 3**
          → **HTTP 200**, Rumpf `{ "requestId": "…" }`.
+
+     **DIE MASKIERUNGS-LEGENDE ZU AUFRUF 2 — STABIL, UND DIE GESTALT IST DER BEFUND, NICHT DIE
+     ZAHL:**
+     · **`AW-` und der Schrägstrich stehen literal da, weil sie die Aussage tragen:** Der
+       Befund ist, dass **die gtag-Gestalt `AW-<id>/<label>` abgewiesen wird** und nur die
+       reine Ziffernfolge trägt (s. (b), vierter Spiegelstrich). **Der Zahlenwert trägt
+       nichts.**
+     · `<KONVERSIONS-ID-11-ZIFFERN>` — die Konversions-Kennung des Kontos, elf Ziffern.
+     · `<LABEL>` — das Konversions-Label derselben Action, eine undurchsichtige Zeichenfolge.
+     **BEIDE TEILE SIND MASKIERT, NICHT GEKAPPT.** Bis zum 2026-09-02 stand hier die
+     **vollständige** Präfix-Zahl und ein **gekapptes** Label — also die ersten Zeichen des
+     echten Labels, gefolgt von drei Punkten. **Das ist genau die Bauform, die
+     docs/immer-beachten.md unter "SCHWÄRZUNG — VIER TEILE", Teil (a), benennt: eine Kappung
+     behält den Anfang.**
+
+     **DAS IST KONSISTENZ, NICHT VERTRAULICHKEIT — UND OHNE DIESEN SATZ LIEST JEMAND DIE
+     MASKIERUNG ALS WIRKSAMEN SCHUTZ.** Der Wert ist am 2026-09-01 committet worden und
+     **steht in der Git-Historie; von dort ist er nicht zu entfernen.** Die Maskierung
+     bewirkt allein, dass der **heutige** Dateistand dieselbe Linie fährt wie (cb) — nicht
+     abgelegt wird, was jederzeit in der Oberfläche des Kontos ablesbar ist
+     (docs/aktiver-stand.md, Vorrats-Eintrag 40).
 
      **ZWISCHEN AUFRUF 3 UND 4 LAG GENAU EINE ÄNDERUNG — DAS EINE FELD.** Der Befund unter
      (d) steht damit **isoliert** und ruht nicht auf einer Ableitung. Das ist der
@@ -4714,6 +4786,279 @@ eine Angabe NICHT aus einem Antwortrumpf folgt, sondern vom Owner aus erster Han
 
      **UND DIE GRENZE, DIE FÜR JEDE MESSUNG DIESER DATEI GILT:** Ein Anbieter kann sein
      Verhalten ändern, ohne dass hier etwas rot wird. Diese Messung datiert vom 2026-09-01.
+
+### MESSUNG E gegen requestStatus:retrieve (2026-09-02) — der Teil (cb)
+
+**WAS DIESER ABSCHNITT IST UND WIE ER SICH VON A, B1, C UND D UNTERSCHEIDET:** A, B1 und D
+liefen gegen `events:ingest`, C gegen den Token-Endpunkt. **MESSUNG E IST DIE ERSTE MESSUNG
+GEGEN DEN DIAGNOSTIK-ENDPUNKT** und damit gegen den dritten Endpunkt dieser Phase. Sie misst
+nicht, was wir senden, und nicht, ob es angenommen wird — sondern **was der Anbieter mit dem
+Angenommenen getan hat**. Das ist genau die Achse, die (o)/G1 als "die eigentliche
+Verarbeitung ist asynchron" beschreibt und die an `events:ingest` grundsätzlich nicht
+beobachtbar ist: Teil (ca)/(e) hält ausdrücklich fest, dass ein 200 dort **nichts** über eine
+verbuchte Conversion sagt.
+
+**HERKUNFT FÜR ALLE TEILE DIESES ABSCHNITTS: GEMESSEN 2026-09-02 (OWNER), DREI Aufrufe in
+EINEM Lauf, live gegen `https://datamanager.googleapis.com/v1/requestStatus:retrieve`.**
+Instrument: `curl` unter Git Bash. Das Zugangsdatum stammt aus dem OAuth-Playground,
+Zugriffsbereich `https://www.googleapis.com/auth/datamanager`. Die Aufrufe trugen **KEIN**
+`x-goog-user-project` — dieselbe Gestalt wie in B1 und D, damit die Läufe gegeneinander lesbar
+bleiben.
+
+(cb) **DIE VERARBEITUNG IST GEMESSEN: DER ANGENOMMENE AUFRUF DER MESSUNG D IST BEI GOOGLE
+     GESCHEITERT — `PROCESSING_ERROR_REASON_INVALID_GCLID`.** **NEU.**
+
+     **(a) DER LAUF — DREI AUFRUFE, EIN ZUGANGSDATUM, DREI VERSCHIEDENE AUSGÄNGE.**
+
+     **DIE AUFRUFGESTALT, EINHEITLICH:** Methode `GET`, Kopfzeile `Authorization: Bearer
+     <Token>`, kein Rumpf, der Wert als Query-Parameter `requestId`. Das ist die Gestalt, die
+     (x)/G5 aus der Doku führt — **sie ist damit erstmals gemessen und nicht mehr nur
+     gelesen.**
+
+      1. **ECHTAUFRUF**, `requestId` = die des **200er-Aufrufs der Messung D vom 2026-09-01**
+         (Aufruf 4 in (ca)/(a)) → **HTTP 200**. Rumpf, **strukturell vollständig und
+         zeichengleich bis auf ZWEI maskierte Werte**:
+
+         **MASKIERT, NICHT GEKAPPT — die Legende steht unter dem Block, die Begründung
+         dahinter.**
+
+         ```json
+         {
+           "requestStatusPerDestination": [
+             {
+               "destination": {
+                 "reference": "447601b5-e352-4b07-8ee4-382937648d55",
+                 "operatingAccount": { "accountId": "<KUNDENNUMMER-10-ZIFFERN>",
+                                       "accountType": "GOOGLE_ADS" },
+                 "productDestinationId": "<CTID-10-ZIFFERN>"
+               },
+               "requestStatus": "FAILED",
+               "errorInfo": {
+                 "errorCounts": [
+                   { "recordCount": "1",
+                     "reason": "PROCESSING_ERROR_REASON_INVALID_GCLID" }
+                 ]
+               },
+               "eventsIngestionStatus": { "recordCount": "1" }
+             }
+           ]
+         }
+         ```
+
+         **DIE MASKIERUNGS-LEGENDE — STABIL, UND DASSELBE ZEICHEN MEINT DENSELBEN WERT AN
+         JEDER FUNDSTELLE DIESER DATEI:**
+         · `<KUNDENNUMMER-10-ZIFFERN>` — die echte Google-Ads-Kundennummer des Owners,
+           `operatingAccount.accountId`. Eine Ziffernfolge, zehn Stellen, ohne Trennzeichen
+           (also der normalisierte Wert aus Scheibe 2).
+         · `<CTID-10-ZIFFERN>` — die Conversion-Type-ID derselben Conversion-Action,
+           `productDestinationId`. Ebenfalls eine reine Ziffernfolge, zehn Stellen, **ohne
+           `AW-`-Präfix und ohne Label** — und **genau diese Form ist der Befund unter (b)**,
+           nicht der Zahlenwert.
+         **MASKIERT, NICHT GEKAPPT** — eine Kappung behielte den Anfang und liesse die halbe
+         Nummer stehen (docs/immer-beachten.md, "SCHWÄRZUNG — VIER TEILE", Teil (a)).
+
+         **WARUM DIESE ZWEI UND WARUM AUSGERECHNET SIE NICHT FEHLEN — ENTSCHIEDEN (ARCHITEKT,
+         2026-09-02):** Die Aussage dieser Messung ist der **Fehlergrund**. Ob die Kundennummer
+         so oder anders lautet, ändert daran nichts; **ein Wert ohne Aussagebeitrag in einem
+         öffentlichen Repo ist ein einseitiger Handel**, und die Git-Historie macht ihn
+         unumkehrbar. **Messung D hat es genauso gehalten** — (ca)/(a) nennt die Kundennummer
+         als "die normalisierte, echte", ohne Ziffern.
+         **DIE ABGRENZUNG ZU DEM, WAS HIER VOLLSTÄNDIG STEHT:** `EAIaIQobChMI`, `Tester-123`
+         und die erfundene UUID des Mitläufers sind **Dummy-Werte** und **tragen die Aussage**
+         — sie stehen ungekürzt. Dasselbe gilt für `reference`, die **Google selbst vergeben
+         hat** und die kein Konto bezeichnet.
+
+         **DIE `requestId` SELBST STAMMT AUS DEM VERLAUF DES OWNERS UND WAR IM REPO NICHT
+         PROTOKOLLIERT** — (ca)/(a) legt den Erfolgsrumpf mit `{ "requestId": "…" }` ab, also
+         mit ausgelassenem Wert. **DAS IST EIN ANDERER FALL ALS DIE ZWEI MASKIERUNGEN OBEN,
+         und die Trennlinie ist die BESCHAFFBARKEIT** — ausgeschrieben als eigener Posten
+         (docs/aktiver-stand.md, Vorrats-Eintrag 40).
+
+      2. **MITLÄUFER 1** — derselbe Endpunkt **OHNE** den Query-Parameter → **HTTP 400**,
+         `status` `INVALID_ARGUMENT`, `domain` `datamanager.googleapis.com`,
+         `BadRequest.fieldViolations`: field `"request_id"`, description `"Required field is
+         missing."`, reason `REQUIRED_FIELD_MISSING`.
+      3. **MITLÄUFER 2** — formgültige, **nicht existierende** UUID
+         `00000000-0000-4000-8000-000000000000` → **HTTP 404**, `status` `NOT_FOUND`,
+         `message` `"Resource not found."`, `domain` `datamanager.googleapis.com`.
+
+     **(b) DER ERSTE GELESENE VERARBEITUNGS-FEHLERGRUND DIESER PHASE.**
+
+     **`PROCESSING_ERROR_REASON_INVALID_GCLID`** — wörtlich so zurückgegeben.
+
+     **DAS IST NEU IN EINER ART, DIE LEICHT ÜBERSEHEN WIRD:** Bis heute hat diese Phase
+     ausschliesslich Fehler der **EINLIEFERUNG** gesehen — Parse-Ebene und semantische Schicht,
+     beide in (bo) beschrieben, beide vor der Verarbeitung. **Ein `ProcessingErrorReason` ist
+     nie zurückgekommen.** Das Enum war bis heute **nur GELESEN** ((x)/H2 und (x)/I2 zitieren
+     Mitglieder daraus). **Der Kanal ist damit erstmals als real und befüllt belegt**, nicht
+     nur als Feld in einer Referenz.
+
+     **WAS ER INHALTLICH SAGT:** Die Anfrage vom 2026-09-01 ist **angenommen und danach
+     verworfen** worden. `requestStatus` `FAILED`, ein Datensatz gesendet, ein Datensatz
+     fehlerhaft. **Das ist die Bestätigung von (ca)/(e) an einem echten Fall:** dort stand,
+     die erfundene `gclid` `"Tester-123"` sei angenommen worden und „das Ereignis verfällt
+     still, irgendwo hinter der Annahme". **ES IST STILL VERFALLEN, UND JETZT IST DAS STILLE
+     SICHTBAR GEMACHT.**
+
+     **(c) WAS DIE DREI AUFRUFE TRENNEN — DREI ACHSEN, EINZELN, UND KEINE DAVON WÄRE ALLEIN
+     ENTSCHEIDBAR GEWESEN.**
+
+     · **ERREICHBARKEIT DES ENDPUNKTS UND GÜLTIGKEIT DES ZUGANGSDATUMS.** Mitläufer 1
+       antwortet **400 `INVALID_ARGUMENT`** — **nicht 401, nicht 403**. Der Aufruf ist an der
+       Authentifizierung **vorbeigekommen** und erst an der Feldprüfung gescheitert. Nach der
+       Statuscode-Zuordnung aus (x)/G3 (`UNAUTHENTICATED` → 401, `PERMISSION_DENIED` → 403)
+       ist damit belegt, dass Token und Bereich für **diese Methode** tragen. **Dieselbe
+       Schlussweise wie in VERMERK 10, Abschnitt (c) (docs/aktiver-stand.md)** — dort aus
+       einem 400 statt 401/403 am Einlieferungs-Endpunkt.
+     · **GÜLTIGKEIT DER ABGEFRAGTEN `requestId`.** Echtaufruf **200** gegen Mitläufer 2
+       **404**. Der Endpunkt unterscheidet also **eine bekannte von einer unbekannten**
+       Kennung, und der Echtaufruf hat eine bekannte getroffen.
+     · **DER 404 IST HIER EIN FEHLENDES OBJEKT, NICHT DIE FREISCHALTUNGS-SPERRE.** (x)/G3
+       hebt zu `NOT_FOUND` eigens hervor: „if a request is denied for an entire class of
+       users, such as gradual feature rollout or UNDOCUMENTED ALLOWLIST, NOT_FOUND may be
+       used" — **ein 404 kann also eine Freischaltungs-Sperre sein.** Hier ist er es
+       nachweislich nicht: **derselbe Aufrufer, dasselbe Zugangsdatum, derselbe Endpunkt hat
+       im selben Lauf einen 200 bekommen.** Eine Sperre, die für eine Kennung greift und für
+       eine andere nicht, ist keine.
+
+     **WAS DAMIT VON EINER VERMUTUNG ZU EINER MESSUNG WIRD:** Der Soll-Ausgang eines
+     Kontrollaufrufs mit erfundener `requestId` war bis zum 2026-09-02 **an keiner gelesenen
+     Stelle benannt** — die Doku sagt nirgends, was der Endpunkt bei unbekannter Kennung tut.
+     **Er ist jetzt gemessen: HTTP 404, `NOT_FOUND`, `"Resource not found."`** Wer künftig
+     einen Mitläufer dieser Art fährt, hat einen Soll-Ausgang, der **vorher feststeht** — die
+     Auflage aus docs/immer-beachten.md, „BEVOR EIN ERGEBNIS BEURTEILT WIRD …", Teil (a).
+
+     **(d) DIE GRENZE — UND SIE IST DER WICHTIGSTE TEIL DIESER MESSUNG.**
+
+     **GOOGLE MELDET EINEN GRUND JE DATENSATZ, NICHT ALLE.** `errorCounts` trägt **genau
+     einen** Eintrag, `recordCount` `"1"`, bei **einem** gesendeten Datensatz. Ob der Anbieter
+     bei einem Datensatz mit **mehreren** Mängeln alle nennt oder beim ersten hält, **ist an
+     dieser Antwort nicht zu sehen** — sie hatte nur einen Datensatz und nur einen Mangel.
+     Es ist dieselbe offene Achse wie die Spannung zwischen (bp) und (bu): auf der
+     **Parse**-Ebene sammelt der Anbieter nachweislich, für die **semantische** Ebene ist es
+     unbelegt, und für die **Verarbeitungs**-Ebene ist es das ab heute ebenfalls.
+
+     **INVALID_GCLID VERDECKT DIE TAG-HYPOTHESE, ES ENTLASTET SIE NICHT.**
+
+     Der Verdacht vom 2026-09-01 — die im Kundenkonto hinterlegte Conversion-Aktion könnte
+     tag-basiert sein, während Pagesmith **kein Google-Tag ausliefert** — ist durch diese
+     Messung **weder bestätigt noch widerlegt**. Ein Datensatz, dessen Klick-Kennung schon
+     verworfen wird, kommt an einer etwaigen zweiten Prüfung **gar nicht erst an**. **Ob nach
+     einer gültigen Klick-Kennung ein ZWEITER Fehlergrund käme, ist an dieser Messung NICHT zu
+     sehen.** Wer aus dem einen zurückgegebenen Grund schliesst, es gebe nur diesen, schliesst
+     aus einer Antwort, die nur einen Grund haben KONNTE.
+
+     **(e) DIE ANTWORTGESTALT — GEMESSEN, UND SIE WEICHT VON DER GELESENEN AB.**
+
+     **GEMESSEN 2026-09-02 (OWNER):**
+     · `requestStatusPerDestination` ist ein **Array**; je Eintrag ein `destination`-Objekt,
+       `requestStatus`, `errorInfo` und `eventsIngestionStatus`.
+     · **`errorInfo` IST EIN OBJEKT, KEIN ARRAY.** Es enthält ein Array **`errorCounts[]`**,
+       dessen Einträge `recordCount` und `reason` tragen.
+     · **`recordCount` REIST ALS ZEICHENKETTE** (`"1"`), nicht als Zahl — **das bestätigt die
+       Formfalle aus (w)/D4 erstmals an einer echten Antwort**; dort war sie GELESEN
+       (`"string (int64 format)"`).
+     · **`FAILED` ist als Enum-Wert an einer echten Antwort belegt** — die
+       Namensberichtigung aus (x)/G5 („Das Enum heisst FAILED, nicht FAILURE") ist damit
+       gemessen und nicht mehr nur gelesen.
+     · **`RequestStatusPerDestination` SPIEGELT DAS `destination`-OBJEKT ZURÜCK** — das
+       bestätigt (x)/G4, ebenfalls erstmals gemessen.
+
+     **WAS AUSDRÜCKLICH GELESEN BLEIBT UND NICHT MITGEMESSEN IST: `warningInfo`.** Dieser
+     Lauf hat **keine Warnung erzeugt**; das Feld kam nicht zurück. Was (p)/H5 und (x)/G5
+     darüber sagen, bleibt **GELESEN** und wird durch diese Messung **weder bestätigt noch
+     berichtigt**. Wer aus der gemessenen `errorInfo`-Gestalt auf die von `warningInfo`
+     schliesst, leitet ab.
+
+     **ZWEI GELESENE STELLEN SIND AM 2026-09-02 NACHGEZOGEN WORDEN — UND ZWAR VERSCHIEDEN,
+     WEIL SIE VERSCHIEDEN FALSCH WAREN:**
+     · **(p)/H5 führte `errorInfo[]` als Array. Das ist durch diese Messung FALSCH und
+       ERSETZT** — Sachkorrektur.
+     · **(x)/G5 nennt den Blatt-Typ `ErrorCount { recordCount, reason }` ohne den Wrapper. Das
+       ist durch diese Messung BESTÄTIGT und nur UNVOLLSTÄNDIG; die Stelle ist ERGÄNZT, nicht
+       ersetzt.** **Eine korrekte Angabe als falsch zu markieren wäre selbst eine
+       Falschaussage.**
+     **DER UNTERSCHIED IST DER GANZE GRUND FÜR ZWEI VERSCHIEDENE BEHANDLUNGEN**, und wer ihn
+     einebnet, macht aus einer Richtigstellung eine Abwertung.
+     **DIE BUCHSTABEN SIND AM DATEITEXT ABGELESEN (CC, 2026-09-02), UND DIE ZUORDNUNG IST
+     LEICHT ZU VERFEHLEN:** **H5 gehört zu (p)** — "GRUPPE H — BETRIEB". **(o) ist "GRUPPE G —
+     ANTWORT UND FEHLER"** und trägt G1 bis G5, kein H5. Ein Zeiger "(o)/H5" wäre tot.
+
+     **(f) DIE FEHLERANTWORTEN TRAGEN EINE `requestId` MIT `t-`-PRÄFIX, DIE ERFOLGSANTWORT
+     KEINS. NEU UND BISHER NIRGENDS GEMESSEN.**
+
+     Mitläufer 1 → `t-59f75797-0006-4d4f-863e-985b225faede`, und zwar **sowohl in
+     `ErrorInfo.metadata` als auch in `RequestInfo`** — dieselbe Doppelung, die (o)/G2 aus der
+     Doku führt. Mitläufer 2 → `t-a6fbae6e-13f0-4c3d-9f65-62254f37e02e`.
+
+     **DAS BESTÄTIGT EINE FORMBEOBACHTUNG, DIE (o)/G5 AUSDRÜCKLICH NICHT GEDEUTET HAT:** Dort
+     steht, die Bezeichner in den FEHLER-Beispielen der Doku trügen ein `t-`-Präfix, die im
+     ERFOLGS-Beispiel nicht, und „KEINE GELESENE SEITE ERKLÄRT DEN UNTERSCHIED". **Beide
+     Fehlerläufe dieses Tages zeigen dasselbe Bild an echten Antworten.**
+
+     **DIE FOLGE, DIE PRAKTISCH ZÄHLT:** Wer eine `t-`-Kennung aus einer Fehlerantwort in
+     `requestStatus:retrieve` einsetzt, **fragt nicht nach dem, was er meint** — sie
+     bezeichnet den gescheiterten Aufruf, nicht eine eingelieferte Anfrage. Nach (o)/G5 sind
+     Diagnostiken ohnehin nur für Anfragen abrufbar, die **gelingen**.
+
+     **OB DAS PRÄFIX EINE BEDEUTUNGSTRAGENDE UNTERSCHEIDUNG IST ODER DER ZUFALL ZWEIER LÄUFE,
+     IST NICHT GEMESSEN.** Zwei Fehlerantworten sind zwei Fehlerantworten; eine Regel ist
+     daraus nicht abzuleiten, und der Anbieter erklärt sie nirgends.
+
+     **(g) `destination.reference` KAM ZURÜCK, OBWOHL DER EINLIEFERUNGS-AUFRUF KEINE GESENDET
+     HAT.** Der Wert `"447601b5-e352-4b07-8ee4-382937648d55"` steht in der Antwort;
+     `buildIngestEventsRequest` (src/lib/capi/google-payload.ts) baut genau ein
+     `destinations`-Element und reicht **keine** Referenzen durch.
+
+     **ALS BEOBACHTUNG ABGELEGT, NICHT GEDEUTET.** Ob der Anbieter bei fehlender Referenz eine
+     eigene vergibt, ist an **einer** Antwort nicht zu entscheiden. Die Frage nach
+     `reference` / `destinationReferences` ist als **Vorrats-Eintrag 5** in
+     docs/aktiver-stand.md verortet; **sein Trigger — „der zweite Empfänger in EINER Anfrage"
+     — ist NICHT eingetreten**, und diese Beobachtung ändert daran nichts.
+
+     **(h) ZUGRIFFSBEREICH UND `x-goog-user-project`.**
+
+     · **DERSELBE EINE ZUGRIFFSBEREICH TRÄGT FÜR `events:ingest` UND FÜR
+       `requestStatus:retrieve`.** Bis heute stand dazu nur die allgemeine Doku-Aussage aus
+       (al) — „The scope `https://www.googleapis.com/auth/datamanager` is required for all
+       services in the Data Manager API" (GELESEN 2026-08-25) — und der einzige wörtlich
+       zitierte „Authorization scopes"-Abschnitt der Datei gehört `events/ingest`. **Für diese
+       Methode ist es jetzt gemessen.** Ein zweites Zugangsdatum ist nicht nötig.
+     · **`x-goog-user-project` WAR NICHT DABEI UND WURDE NICHT VERLANGT.** **DIESELBE GRENZE
+       WIE IN (bu), WÖRTLICH ÜBERNOMMEN UND NICHT ABGESCHWÄCHT:** Ein erfolgreicher Aufruf
+       ohne die Kopfzeile ist **KEIN Beleg für ihre Entbehrlichkeit** — eine Projekt- oder
+       Kontingentprüfung kann hinter dem liegen, was erreicht wurde. Grenze 2 in (bm) bleibt,
+       die offene Frage aus (am) und (as)/Punkt 2 bleibt offen.
+
+     **(i) WAS MESSUNG E NICHT GEMESSEN HAT.**
+
+     · **OB IM GOOGLE-ADS-KONTO ETWAS SICHTBAR IST.** Diese Messung sagt, dass der Anbieter
+       den Datensatz **verworfen** hat. Sie sagt nichts über die Oberfläche des Kontos, und
+       sie hätte auch bei `SUCCESS` nichts darüber gesagt — die Achse aus (ca)/(e) bleibt
+       unberührt.
+     · **OB `"WEB"` FACHLICH RICHTIG IST.** Der Aufruf scheiterte an der Klick-Kennung; jede
+       Aussage über ein Feld dahinter wäre eine Ableitung.
+     · **OB `productDestinationId` (`<CTID-10-ZIFFERN>`) AUF DIE RICHTIGE CONVERSION-ACTION
+       ZEIGT.** Die Antwort spiegelt den Wert zurück, den wir gesendet haben — **ein Echo ist
+       keine Bestätigung.**
+     · **DIE HALTBARKEIT EINER `requestId`.** Der Echtaufruf lag rund einen Tag nach der
+       Einlieferung und wurde beantwortet. **Ob und wann eine `requestId` verfällt, steht auf
+       keiner der bisher gelesenen Seiten und ist nicht gemessen** — ein einzelner Abruf nach
+       einem Tag belegt kein Fenster.
+     · **DAS SAMMELVERHALTEN DER VERARBEITUNGS-EBENE** — s. (d).
+
+     **EINE BEOBACHTUNG ZU WIDERSPRUCH 4 AUS (y), DIE IHN NICHT BERÜHRT UND DESHALB HIER UND
+     NICHT DORT STEHT:** Widerspruch 4 fragt, was bei einem **doppelten** `transactionId`
+     geschieht — Stelle B stützt sich dabei auf
+     `PROCESSING_ERROR_REASON_DUPLICATE_TRANSACTION_ID`, ein Mitglied **desselben Enums**, aus
+     dem `PROCESSING_ERROR_REASON_INVALID_GCLID` stammt. **Damit ist erstmals belegt, dass
+     dieses Enum ein realer, befüllter Kanal ist und nicht nur eine Referenz-Liste.** **DEN
+     WIDERSPRUCH LÖST DAS NICHT AUF:** Diese Messreihe hat **keinen doppelten Wert gesendet**,
+     und ob eine Doppelung zusammengeführt oder verworfen wird, bleibt **unentschieden**.
+     (y) ist unverändert.
+
+     **UND DIE GRENZE, DIE FÜR JEDE MESSUNG DIESER DATEI GILT:** Ein Anbieter kann sein
+     Verhalten ändern, ohne dass hier etwas rot wird. Diese Messung datiert vom 2026-09-02.
 
 ## Pinterest (Conversions API)
 

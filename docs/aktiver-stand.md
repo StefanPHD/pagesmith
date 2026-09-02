@@ -152,6 +152,64 @@ Gegenstand" — NICHT im Abschnitt "Was den Zuschnitt bindet". Wer sie dort such
 findet sie nicht und hält sie für erledigt.
 PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-25. KEINE Messung, KEINE Ableitung.
 
+**EINE ZWEITE SPERRE, ANGETRETEN AM 2026-09-02: AUF DEM GOOGLE-ADS-KONTO EXISTIERT KEIN
+ECHTER ANZEIGENKLICK.**
+
+**SIE STEHT HIER UND NICHT IM ABSCHNITT "Was den Zuschnitt bindet" — aus demselben Grund wie
+die Sperre darüber**, und die Verortungs-Zeile dort gilt für beide: Wer eine Sperre dieser
+Phase sucht, sucht sie in "### (1) Der Gegenstand".
+
+**DER ZUSTAND — OWNER-ANGABE 2026-09-02:** Das verwendete Google-Ads-Konto ist ein reines
+**Entwickler-/Testkonto**. Es laufen **keine aktiven kostenpflichtigen Kampagnen**, und es hat
+folglich **nie einen echten Anzeigenklick gegeben**. **KEINE Messung an einer
+Google-Oberfläche** — weder an der Kampagnen-Ansicht noch an einem Bericht.
+
+**SIE DECKT SICH MIT DEM GEMESSENEN FEHLERGRUND, IST ABER NICHT DURCH IHN BEWIESEN — UND
+BEIDES GEHÖRT HIN.** Messung E hat für die Anfrage vom 2026-09-01
+`PROCESSING_ERROR_REASON_INVALID_GCLID` zurückbekommen (docs/ziel-befunde.md, Google-Abschnitt,
+Teil (cb)). Das ist mit dieser Sperre **verträglich**, aber es belegt sie nicht: Der Fehlergrund
+sagt, dass **die gesendete Kennung** ungültig war — er sagt nichts darüber, ob auf dem Konto je
+ein Klick stattgefunden hat. **Zwei Angaben, die zueinander passen, sind nicht dieselbe
+Angabe.**
+
+**DIE FOLGE, UND SIE IST DER GRUND, WARUM DAS EINE SPERRE IST UND KEIN HINWEIS:** Ein OFFLINE
+CONVERSION IMPORT ruht **vollständig** auf der Klick-Kennung. **Ohne einen echten Klick gibt es
+keine gültige Kennung, und ohne gültige Kennung kann strukturell nichts verbucht werden** —
+unabhängig davon, wie die Conversion-Aktion im Konto zugeschnitten ist, und unabhängig davon,
+ob unser Transport fehlerfrei arbeitet. **Selbst ein in jeder Hinsicht richtiger Transport
+verbuchte nichts.**
+
+**ÜBER DEN ZUSTAND DES TRANSPORTS SAGT DIESE SPERRE AUSDRÜCKLICH NICHTS, und dieser Absatz
+steht hier, damit niemand ihr mehr entnimmt, als sie trägt.** Was gemessen ist: Der Transport
+erreicht Google, wird authentifiziert, und die Nutzlast passiert Parse- und semantische Schicht
+(VERMERK 10, (c); docs/ziel-befunde.md, Teil (ca)). Was **nicht** gemessen ist und in (cb)/(i)
+ausdrücklich als ungemessen geführt wird: **ob `"WEB"` fachlich richtig ist** und **ob
+`productDestinationId` auf die richtige Conversion-Action zeigt**. **"Der Transport arbeitet
+fehlerfrei" wäre also eine Behauptung über zwei ungemessene Achsen** und steht deshalb nirgends.
+**DIE AUSSAGE DER SPERRE WIRD DADURCH NICHT SCHWÄCHER, und das ist der Punkt:** Sie trifft den
+**NACHWEIS**, nicht die Baubarkeit, und sie trifft ihn **unabhängig** vom Zustand des
+Transports. Ob er fehlerfrei ist oder nicht, ist für sie gleichgültig — ohne gültige
+Klick-Kennung verbucht auch ein fehlerfreier Transport nichts.
+
+**WAS DAMIT GESPERRT IST — DREI DINGE, EINZELN:**
+· **DER NACHWEIS EINER VERBUCHTEN CONVERSION.** VERMERK 10, Abschnitt (f), führt ihn als
+  offen; er bleibt es, und zwar aus einem Grund, der **nicht** am Code liegt.
+· **DIE MESSUNG DES AUTO-TAGGINGS** — Vorrats-Eintrag 4, Satz "DIE ERSTE MESSUNG NIMMT SIE
+  MIT". Ohne Klick hängt Google keinen Query-String an, den man lesen könnte.
+· **DIE ENTSCHEIDUNG ÜBER DIE TAG-HYPOTHESE** vom 2026-09-01. Solange jeder Aufruf schon an
+  der Klick-Kennung scheitert, kommt kein Datensatz an einer etwaigen zweiten Prüfung an.
+
+**WAS AUSDRÜCKLICH NICHT GESPERRT IST:** der Bau. Scheibe 1b und jede weitere Arbeit an
+Transport, Erneuerung und Oberfläche sind davon **unberührt** — die Sperre trifft den
+**NACHWEIS**, nicht die Baubarkeit. Wer sie als Baustopp liest, liest sie falsch.
+
+**AUSDRÜCKLICH KEINE EMPFEHLUNG**, wie sie aufzulösen wäre — weder eine Kampagne noch ein
+anderer Kontozuschnitt noch ein Verzicht auf den Nachweis ist hier vorgeschlagen.
+
+PROVENIENZ: OWNER-ANGABE 2026-09-02, aus erster Hand. **KEINE Messung.** Der Fehlergrund, mit
+dem sie sich deckt, ist GEMESSEN 2026-09-02 (OWNER) und steht in docs/ziel-befunde.md,
+Teil (cb); die Verträglichkeit der beiden ist eine **FOLGE**, keine zweite Beobachtung.
+
 ### (2) Die Herkunft — als Zeiger, nicht als Kopie
 
 docs/roadmap.md, Eintrag 11.2 ("Google"), Marker `[ ]`. Dort steht der Volltext
@@ -2711,12 +2769,51 @@ nicht verändert (1457 vor und nach), also fällt der ganze Zuwachs auf `26caa38
 · **Schritt 0, Neu-Verbinden:** beide Uhren zurückgesetzt.
 · **Schritt 1, die Regression:** ein Klartext-Ziel (Meta) läuft **unverändert** und
   dedupliziert sauber.
-· **Schritt 2, der Transport mit einer ECHTEN `gclid`:** durchgelaufen, **KEINE Fehlerzeile im
-  Vercel-Log.**
+· **Schritt 2, der Transport mit einer VON HAND GESETZTEN `gclid`:** durchgelaufen, **KEINE
+  Fehlerzeile im Vercel-Log.**
 · **Schritt 3, der Mehr-Schritte-Fall:** auf der Folgeseite fehlt die `gclid`, **es entsteht
   kein Ereignis.**
 · **Schritt 5, die Positivkontrolle:** `[capi] Google forward skipped: no_click_id` im
   Wortlaut im Log.
+
+**SACHKORREKTUR 2026-09-02 — DIE HERKUNFT DER KLICK-KENNUNG. ERSETZT, NICHT GESTEMPELT, UND
+SIE GILT FÜR JEDE STELLE DIESER DATEI, DIE SCHRITT 2 ODER SCHRITT 3 BESCHREIBT.**
+
+**OWNER-ANGABE 2026-09-02:** Die Klick-Kennungen des Live-Tests waren **VON HAND IN DIE
+BROWSERZEILE GESETZT** und **STAMMEN AUS KEINEM KLICK**. Schritt 3 benutzte dieselbe von Hand
+gesetzte Adresse, nicht einen zweiten Anzeigenklick.
+
+**ES WAREN ZWEI WERTE IM EINSATZ, UND SIE WERDEN NICHT ZUGEORDNET:** **`EAIaIQobChMI`** und
+**`Tester-123`** — beide vollständig, kein gekürztes Zitat. **WELCHER WERT ZU WELCHEM
+ADAPTER-AUFRUF GEHÖRT, IST NICHT REKONSTRUIERBAR** (OWNER-ANGABE 2026-09-02).
+**DASS BEIDE WERTE OHNE ZUORDNUNG DASTEHEN, IST DIE HALTBARERE FASSUNG, UND DER GRUND GEHÖRT
+DAZU:** Eine Zuordnung, die niemand belegen kann, wäre eine erfundene Genauigkeit — und die
+tragende Aussage braucht sie nicht. **Sie gilt unter JEDER Lesart: von Hand gesetzt, aus keinem
+Klick.** Wer hier später einen einzelnen Wert einsetzt, legt eine Zuordnung fest, für die es
+keine Grundlage gibt.
+
+**WAS BEWIESEN BLEIBT, BLEIBT BEWIESEN — und dieser Absatz steht VOR dem, was fällt, damit die
+Korrektur nicht als Relativierung des ganzen Nachweises gelesen wird:** Der Transport
+funktioniert. Der Adapter baut die Nutzlast, `extractGoogleClickIds` findet die Kennung,
+`buildGoogleEvent` verwirft **nicht**, der Netzruf geht hinaus. **Die Positivkontrolle aus
+Schritt 5 ist unberührt** — sie hängt an der ABWESENHEIT einer Kennung und nicht an deren
+Herkunft. **Schuld 1 und Schuld 2 sind unberührt.** Der Befund aus Schritt 3 ist unberührt:
+`location.href` trägt die Kennung nach einem Seitenwechsel nicht mehr, und das ist eine
+Eigenschaft des Browsers, die nicht davon abhängt, wer den Query-String geschrieben hat.
+
+**WAS FÄLLT, IST AUSSCHLIESSLICH DIE QUALIFIZIERUNG DER KENNUNG ALS ECHT** — und damit die
+Aussage, der Pfad sei je mit einem **gültigen Klick** durchlaufen worden. Er ist es nicht.
+
+**DIE ZWEITE FOLGE IST GRÖSSER ALS DIE ERSTE UND STEHT DESHALB EIGENS DA: DAS AUTO-TAGGING IST
+NICHT GEMESSEN.** Der Query-String stammt nicht von Google, sondern vom Owner. Was Schritt 2
+über die Parameternamen belegt, ist damit eine Aussage über **UNSERE Extraktion gegen einen
+selbst gesetzten Wert** — also dieselbe Achse wie die Messung vom 2026-08-24 (VERMERK 1), nur
+diesmal über den vollständigen Produktivpfad. **Über die Schreibung der Parameter, die GOOGLE
+anhängt, sagt der Durchlauf nichts.** Vorrats-Eintrag 4 ist im selben Zug berichtigt.
+
+**PROVENIENZ:** OWNER-ANGABE 2026-09-02, aus erster Hand. **KEINE Messung** — weder an einer
+Google-Oberfläche noch an einem Log. Die Live-Werte der Schritte selbst bleiben GEMESSEN
+2026-09-01 (OWNER); korrigiert ist die **Herkunft der Eingabe**, nicht die Beobachtung.
 
 **SCHULD 1 — DER EIGENE NACHWEIS DIESER SCHEIBE: EINGELÖST.** Ein Ereignis von einer
 gehosteten Kundenseite erreicht Google. Damit sendet das fünfte Fan-Out-Ziel.
@@ -2730,24 +2827,41 @@ gefahren. **DAS IST EINE ABLEITUNG AUS ZWEI LOGZEILEN UND KEINE ABLESUNG DER NUT
 Zeile aus Schritt 5 stünde auch in Schritt 2. Sie steht dort nicht, und eine Fehlerzeile
 ebenfalls nicht — also ist eine Nutzlast MIT Kennung hinausgegangen.
 
-**SCHULD 3 — DIE RESTLÜCKE AUS VERMERK 1, BEIDE HÄLFTEN: EINGELÖST.**
+**SCHULD 3 — DIE RESTLÜCKE AUS VERMERK 1: DIE ZWEITE HÄLFTE IST EINGELÖST, DIE ERSTE NICHT.**
 · **ERSTE HÄLFTE — dass eine ECHTE `gclid` denselben Weg nimmt wie der selbstgesetzte Testwert
-  vom 2026-08-24: JA.** Schritt 2 hat sie über eine echte Anzeige erzeugt, nicht von Hand
-  eingetippt.
+  vom 2026-08-24: WEITERHIN OFFEN.**
+  **SACHKORREKTUR 2026-09-02 — ERSETZT, NICHT GESTEMPELT.** Hier stand "**: JA.** Schritt 2 hat
+  sie über eine echte Anzeige erzeugt, nicht von Hand eingetippt." **Das trifft nicht zu** —
+  s. die Sachkorrektur zur Herkunft der Klick-Kennung in Abschnitt (b) oben. Die Kennung war
+  von Hand gesetzt; **es hat keinen Anzeigenklick gegeben.**
+  **WAS SCHRITT 2 STATTDESSEN EINGELÖST HAT, und es ist nicht nichts:** Der selbstgesetzte
+  Wert hat zum ersten Mal den **VOLLSTÄNDIGEN PRODUKTIVPFAD** durchlaufen — Beacon,
+  `extractGoogleClickIds`, `buildGoogleEvent`, Adapter, Netzruf. VERMERK 1 hatte nur gemessen,
+  dass er im `eventSourceUrl` **ankommt**. **Die Restlücke ist damit kleiner geworden, nicht
+  geschlossen.**
 · **ZWEITE HÄLFTE — ob die Kennung auf einer Seite mit MEHREREN SCHRITTEN überlebt: NEIN**, und
-  das ist ein Befund und kein Fehlschlag. S. Abschnitt (e).
+  das ist ein Befund und kein Fehlschlag. S. Abschnitt (e). **VON DER SACHKORREKTUR UNBERÜHRT:**
+  Dass `location.href` nach einem Seitenwechsel den Query-String nicht mehr trägt, hängt nicht
+  daran, wer ihn geschrieben hat.
 
 **EIN NEBENBEFUND AUS SCHRITT 2, DER VORRATS-EINTRAG 4 BERÜHRT — ABLEITUNG, KEINE MESSUNG AM
 PARAMETERNAMEN:** Jener Eintrag hält fest, dass die schreibungssensitive, kleingeschriebene
 Wahl der URL-Parameternamen (`gclid` · `gbraid` · `wbraid`) sich **auf nichts Gelesenes**
 stützt, und schliesst mit "DIE ERSTE MESSUNG NIMMT SIE MIT". VERMERK 3 und VERMERK 4 haben
 ausdrücklich festgehalten, dass die Messungen A und B1 sie NICHT eingelöst haben (beide haben
-keinen Query-String benutzt). **SCHRITT 2 HAT EINEN BENUTZT — den, den Google selbst angehängt
-hat.** Aus der Abwesenheit von `no_click_id` folgt: **mindestens einer der drei
-kleingeschriebenen Namen hat getroffen.** **WELCHER, IST NICHT GEMESSEN**, und über die zwei
-übrigen sagt der Durchlauf nichts. **DER EINTRAG WIRD IN DIESER RUNDE NICHT FORTGESCHRIEBEN** —
-er ist im Auftrag nicht genannt; hier steht der Befund, die Fortschreibung ist eine eigene
-Entscheidung.
+keinen Query-String benutzt). **SCHRITT 2 HAT EINEN BENUTZT — ABER EINEN VON HAND GESETZTEN,
+NICHT DEN, DEN GOOGLE ANHÄNGT.**
+**SACHKORREKTUR 2026-09-02 — ERSETZT, NICHT GESTEMPELT.** Hier stand "den, den Google selbst
+angehängt hat." Das trifft nicht zu; s. die Sachkorrektur zur Herkunft der Klick-Kennung in
+Abschnitt (b) oben.
+**WAS VON DEM NEBENBEFUND BLEIBT:** Aus der Abwesenheit von `no_click_id` folgt weiterhin,
+dass **mindestens einer der drei kleingeschriebenen Namen getroffen hat** — nur ist das jetzt
+eine Aussage über **UNSERE Extraktion gegen einen selbst gesetzten Wert** und **nicht** über
+Googles Auto-Tagging. **WELCHER der drei getroffen hat, ist nach wie vor NICHT GEMESSEN**, und
+über die zwei übrigen sagt der Durchlauf nichts.
+**WAS NICHT MEHR BLEIBT:** Der Satz "DIE ERSTE MESSUNG NIMMT SIE MIT" aus Vorrats-Eintrag 4
+ist damit **NICHT** eingelöst — auf der Auto-Tagging-Achse steht der Eintrag unverändert da,
+wo er am 2026-08-25 stand. **Vorrats-Eintrag 4 ist im selben Zug berichtigt.**
 
 ---
 
@@ -2759,11 +2873,22 @@ FEHLSCHLAGS** — und dieser Satz ist der ganze Inhalt des Abschnitts: Der gegl�
 erzeugt **KEINE Logzeile**, aus der sich ein Statuscode ablesen liesse. Belegen kann nur der
 Aufruf, der gescheitert ist.
 
-**DER BEFUND:** Der Adapter-Aufruf aus dem Live-Test der Scheibe 4 endete mit **HTTP 400**
+**DER BEFUND:** **EIN** Adapter-Aufruf aus dem Live-Test der Scheibe 4 endete mit **HTTP 400**
 (Aufruf 1 in Teil (ca); im eigenen Log als `[capi] Google forward failed: HTTP 400`). **400 IST
 WEDER 401 NOCH 403.** Der Anbieter ordnet `UNAUTHENTICATED` einer 401 und `PERMISSION_DENIED`
 einer 403 zu (GELESEN, Google-Abschnitt); die Anfrage ist also an der Authentifizierung
 **vorbeigekommen** und erst an einem Feld ihres Rumpfes gescheitert.
+
+**DER UNBESTIMMTE ARTIKEL IST EINE SACHKORREKTUR VOM 2026-09-02, ERSETZT UND NICHT
+GESTEMPELT.** Hier stand "**Der** Adapter-Aufruf", also im bestimmten Singular. **DER
+LIVE-TEST HAT MEHR ALS EINEN ERZEUGT:** Schritt 2 protokolliert ausdrücklich "KEINE
+Fehlerzeile im Vercel-Log", dieser hier eine 400 — **zwei verschiedene Aufrufe**, und die
+Owner-Angabe vom 2026-09-02 (zwei von Hand gesetzte Klick-Kennungen, keine Zuordnung) bestätigt
+es. **DER BESTIMMTE ARTIKEL BEHAUPTETE, ES HABE NUR EINEN GEGEBEN.**
+**DIE ABLEITUNG DIESES ABSCHNITTS IST DAVON UNBERÜHRT UND WIRD NICHT SCHWÄCHER:** Sie ruht auf
+dem **Statuscode** dieses einen gescheiterten Aufrufs — 400 statt 401 oder 403 —, und der ist
+unabhängig davon, wie viele Aufrufe daneben liefen. **Ein zweiter, geglückter Aufruf spricht
+für dieselbe Aussage, nicht gegen sie.**
 
 **PROVENIENZ: ABLEITUNG AUS DEM STATUSCODE. KEINE EIGENE MESSUNG** — es ist kein Aufruf
 gefahren worden, dessen Zweck diese Frage war.
@@ -2830,8 +2955,22 @@ und der Auflage TRANSIT-ONLY zusammen. Als eigener Vorrats-Eintrag verortet.
   Anfrage**, nicht eine verbuchte Conversion; die Zuordnung läuft **asynchron** und ist an
   diesem Endpunkt nicht beobachtbar. Messung D hat eine **erfundene** `gclid` ("Tester-123")
   mit 200 angenommen bekommen — die Schnittstelle prüft die Form der Klick-Kennung beim
-  Einliefern nicht (Teil (ca)/(e)). **Diese Achse braucht ein anderes Instrument: die
-  Oberfläche des Kontos.**
+  Einliefern nicht (Teil (ca)/(e)). **Diese Achse braucht ein anderes Instrument — und es
+  sind ZWEI, nicht eines.**
+  **SACHKORREKTUR 2026-09-02, ERSETZT UND NICHT GESTEMPELT.** Hier stand "**Diese Achse
+  braucht ein anderes Instrument: die Oberfläche des Kontos.**" **DAS NENNT EIN INSTRUMENT, WO
+  ES ZWEI GIBT.**
+  · **DER DIAGNOSTIK-ENDPUNKT `requestStatus:retrieve`** beantwortet, **was mit dem Datensatz
+    geschehen ist** — und er hat es getan: Messung E (docs/ziel-befunde.md, Teil (cb)) hat für
+    genau diese Anfrage `FAILED` und `PROCESSING_ERROR_REASON_INVALID_GCLID` zurückbekommen.
+    **Die Achse war also nicht unerreichbar, sondern nur nicht abgefragt.**
+  · **DIE OBERFLÄCHE DES KONTOS** bleibt für die **andere Hälfte** unersetzt, und deshalb
+    bleibt sie hier stehen: **Ob eine Conversion tatsächlich verbucht UND ZUGEORDNET wurde,
+    sagt auch ein `SUCCESS` nicht.** Der Diagnostik-Endpunkt meldet Verarbeitung, nicht
+    Verbuchung.
+  **PROVENIENZ:** GEMESSEN 2026-09-02 (OWNER), Messung E. Dass die Oberfläche für die zweite
+  Hälfte unersetzt bleibt, ist eine **ABLEITUNG** aus der gelesenen Bedeutung von `SUCCESS`
+  ((p)/H5), **keine Messung** — ein `SUCCESS` ist an diesem Konto nie beobachtet worden.
 · **OB `"WEB"` FACHLICH RICHTIG IST.** Gemessen ist der TYP (Enum) und die ANNAHME des Wertes,
   nicht die Zuordnung. Ein fachlich falsches Enum-Mitglied wird nicht gemeldet.
 · **OB `x-goog-user-project` ENTBEHRLICH IST.** Ein erfolgreicher Aufruf ohne die Kopfzeile ist
@@ -3295,42 +3434,56 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
    nicht unter den Entscheidungen, weil sie auf keiner Grundlage ruht, die eine
    Bindung tragen könnte.
 
-   **VERMERK 2026-09-01 — "DIE ERSTE MESSUNG NIMMT SIE MIT" IST TEILWEISE EINGELÖST. DER
-   EINTRAG SCHRUMPFT VON DREI UNGEPRÜFTEN NAMEN AUF ZWEI UND ENTFÄLLT NICHT.** Der Text
-   darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Vermerk tritt DANEBEN.
-   **WAS BISHER GALT UND ZWEIMAL AUSDRÜCKLICH FESTGEHALTEN WORDEN IST:** VERMERK 3 und
-   VERMERK 4 führen diesen Eintrag je als UNBERÜHRT — Messung A und Messung B1 haben
-   **keinen Query-String benutzt**, sondern eine Kopfzeile und einen Rumpf gesetzt. Der
-   Satz "DIE ERSTE MESSUNG NIMMT SIE MIT" war bis zum 2026-09-01 **nicht** eingelöst.
-   **WAS SCHRITT 2 DES LIVE-TESTS DER SCHEIBE 4 GEÄNDERT HAT:** Er hat einen Query-String
-   benutzt — **den, den GOOGLE SELBST an die Ziel-URL gehängt hat**, über eine echte
-   Anzeige und nicht von Hand eingetippt. Damit ist zum ersten Mal das AUTO-TAGGING
-   gemessen worden und nicht die Einlieferungs-Schnittstelle; genau diese Achse hatte der
-   Eintrag als "WEDER einen Befund NOCH einen Nicht-Treffer mit benannter Reichweite"
-   geführt.
-   **WAS DARAUS FOLGT — UND ES IST EINE ABLEITUNG AUS ZWEI LOGZEILEN, KEINE ABLESUNG DER
-   NUTZLAST:** Hätte `extractGoogleClickIds` keinen der drei schreibungssensitiven Namen
-   getroffen, verwürfe `buildGoogleEvent` mit `no_click_id`, und die Zeile
-   `[capi] Google forward skipped: no_click_id` stünde im Log — sie steht dort im Schritt 5
-   und in Schritt 2 **nicht**, und eine Fehlerzeile ebenfalls nicht.
-   **MINDESTENS EINER DER DREI KLEINGESCHRIEBENEN NAMEN HAT ALSO GETROFFEN.**
-   **DIE GRENZE IST DER EIGENTLICHE INHALT DIESES VERMERKS, und ohne sie wäre er ein
-   Freispruch, den die Beobachtung nicht deckt: WELCHER der drei getroffen hat, ist NICHT
-   GEMESSEN.** Das Log nennt keinen Namen — es nennt bei Erfolg gar nichts —, und die
-   Nutzlast ist nicht abgelesen worden. **ÜBER DIE ZWEI ÜBRIGEN SAGT DER DURCHLAUF
-   NICHTS.**
-   **DASS ES BEI EINEM DURCHLAUF BEI EINEM BLEIBT, IST KEINE SCHWÄCHE DER MESSUNG, SONDERN
-   DIE SACHE SELBST:** Ein Anzeigenklick hängt in aller Regel **EINEN** der drei an, nicht
-   alle drei. Ein einzelner Durchlauf kann die anderen beiden also gar nicht mitnehmen —
-   wer das erwartet, erwartet ein Instrument, das es nicht gibt.
-   **WAS OFFEN BLEIBT UND WARUM DER EINTRAG STEHEN BLEIBT:** Für **zwei** der drei Namen
-   stützt sich die Schreibung weiterhin auf **nichts Gelesenes und nichts Gemessenes**. Der
-   im Eintrag benannte Fehlerweg gilt für sie unverändert: Ein exakter Vergleich kann nur
-   VERFEHLEN, und ein Verfehlen ist als fehlende Conversion sichtbar — aber eben nur, wenn
-   jemand hinsieht.
-   PROVENIENZ: ABLEITUNG aus zwei Logzeilen des Live-Tests (Live-Werte GEMESSEN 2026-09-01,
-   OWNER; die Ableitung CC, 2026-09-01). **KEINE Ablesung der gesendeten Nutzlast, KEINE
-   Messung am Parameternamen selbst.** Dass VERMERK 3 und 4 den Eintrag als unberührt
+   **VERMERK 2026-09-02 — "DIE ERSTE MESSUNG NIMMT SIE MIT" IST NICHT EINGELÖST. DER EINTRAG
+   SCHRUMPFT NICHT UND ENTFÄLLT NICHT; ALLE DREI NAMEN BLEIBEN UNGEPRÜFT.** Der Text darüber
+   bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Vermerk tritt DANEBEN.
+   **ER ERSETZT DEN VERMERK VOM 2026-09-01 VOLLSTÄNDIG**, und zwar als SACHKORREKTUR: Jener
+   sagte, der Eintrag schrumpfe "von drei ungeprüften Namen auf zwei", weil Schritt 2 des
+   Live-Tests der Scheibe 4 einen Query-String benutzt habe — "den, den GOOGLE SELBST an die
+   Ziel-URL gehängt hat, über eine echte Anzeige und nicht von Hand eingetippt". **DIE
+   PRÄMISSE TRIFFT NICHT ZU.**
+   **OWNER-ANGABE 2026-09-02:** Die Klick-Kennungen des Live-Tests waren **von Hand in die
+   Browserzeile gesetzt** und stammen aus keinem Klick; im Einsatz waren **zwei** Werte
+   (`EAIaIQobChMI` und `Tester-123`), und **welcher zu welchem Adapter-Aufruf gehört, ist nicht
+   rekonstruierbar**. Volltext der Korrektur: VERMERK 10, Abschnitt (b), "SACHKORREKTUR
+   2026-09-02 — DIE HERKUNFT DER KLICK-KENNUNG".
+   **FÜR DIESEN EINTRAG IST DIE ZUORDNUNG GLEICHGÜLTIG:** Beide Werte sind von Hand gesetzt,
+   also misst der Durchlauf in beiden Fällen die eigene Extraktion und nicht Googles
+   Auto-Tagging.
+   **WAS BISHER GALT UND ZWEIMAL AUSDRÜCKLICH FESTGEHALTEN WORDEN IST — UNVERÄNDERT:** VERMERK
+   3 und VERMERK 4 führen diesen Eintrag je als UNBERÜHRT; Messung A und Messung B1 haben
+   **keinen Query-String benutzt**, sondern eine Kopfzeile und einen Rumpf gesetzt.
+   **DAS GILT JETZT AUCH FÜR SCHRITT 2 — auf der Achse dieses Eintrags.** Ein von Hand
+   gesetzter Query-String misst **UNSERE EXTRAKTION**, nicht **GOOGLES AUTO-TAGGING**. Genau
+   diese Achse führt der Eintrag als "WEDER einen Befund NOCH einen Nicht-Treffer mit benannter
+   Reichweite", und dabei bleibt es.
+   **WAS SCHRITT 2 TROTZDEM HERGIBT — UND ES IST EINE ABLEITUNG AUS ZWEI LOGZEILEN, KEINE
+   ABLESUNG DER NUTZLAST:** Hätte `extractGoogleClickIds` keinen der drei
+   schreibungssensitiven Namen getroffen, verwürfe `buildGoogleEvent` mit `no_click_id`, und
+   die Zeile `[capi] Google forward skipped: no_click_id` stünde im Log — sie steht dort im
+   Schritt 5 und in Schritt 2 **nicht**, und eine Fehlerzeile ebenfalls nicht.
+   **MINDESTENS EINER DER DREI KLEINGESCHRIEBENEN NAMEN HAT ALSO GETROFFEN — den Wert, den der
+   OWNER GETIPPT HAT.** Das ist eine Aussage über die Extraktion und über nichts sonst.
+   **DIE GRENZE IST DER EIGENTLICHE INHALT DIESES VERMERKS: WELCHER der drei getroffen hat,
+   ist NICHT GEMESSEN.** Das Log nennt keinen Namen — es nennt bei Erfolg gar nichts —, und die
+   Nutzlast ist nicht abgelesen worden. **ÜBER DIE ZWEI ÜBRIGEN SAGT DER DURCHLAUF NICHTS.**
+   **EIN ABSATZ DES ALTEN VERMERKS IST ERSATZLOS ENTFALLEN, und das gehört benannt:** Er
+   erklärte, warum ein einzelner Durchlauf nur EINEN der drei Namen mitnehmen könne — "Ein
+   Anzeigenklick hängt in aller Regel EINEN der drei an". **Der Satz setzte einen Anzeigenklick
+   voraus, den es nicht gegeben hat**, und beschrieb damit ein Instrument, das nie im Einsatz
+   war.
+   **WAS OFFEN BLEIBT UND WARUM DER EINTRAG STEHEN BLEIBT:** Für **ALLE DREI** Namen stützt
+   sich die Schreibung weiterhin auf **nichts Gelesenes und nichts Gemessenes**. Der im Eintrag
+   benannte Fehlerweg gilt unverändert: Ein exakter Vergleich kann nur VERFEHLEN, und ein
+   Verfehlen ist als fehlende Conversion sichtbar — aber eben nur, wenn jemand hinsieht.
+   **DER SATZ "DIE ERSTE MESSUNG NIMMT SIE MIT" WARTET DAMIT WEITER**, und er wartet auf
+   dasselbe wie am 2026-08-25: einen Durchlauf mit einem Query-String, den **GOOGLE** geschrieben
+   hat. Der ist an die Sperre "AUF DEM KONTO EXISTIERT KEIN ECHTER ANZEIGENKLICK" gebunden, s.
+   den Abschnitt "Gegenstand der Phase".
+   PROVENIENZ, JE TEIL: Die Korrektur der Prämisse ist eine **OWNER-ANGABE 2026-09-02**, keine
+   Messung. Die Ableitung aus den zwei Logzeilen bleibt eine **ABLEITUNG** (Live-Werte GEMESSEN
+   2026-09-01, OWNER; die Ableitung CC, 2026-09-01), **KEINE Ablesung der gesendeten Nutzlast,
+   KEINE Messung am Parameternamen selbst**. Dass VERMERK 3 und 4 den Eintrag als unberührt
    führen, ist GEMESSEN am Dateitext (CC, 2026-09-01).
    **DIE STREICHUNG DES EINTRAGS IST HIER NICHT ENTSCHIEDEN UND WIRD ES AUCH NICHT** — er
    ist nur kleiner geworden.
@@ -3448,20 +3601,29 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
    TRIGGER: die Transport-Scheibe — jetzt für die verbliebene Frage nach dem INHALT der
    URL, nicht mehr für ihre Verfügbarkeit.
 
-   **VERMERK 2026-09-01 — DER TRIGGER IST EINGETRETEN, UND DIE FRAGE IST BEANTWORTET. DIESER
-   EINTRAG HAT SEINEN GEGENSTAND VOLLSTÄNDIG ABGEARBEITET.** Der Text darüber bleibt ZEICHEN
-   FÜR ZEICHEN stehen; dieser Vermerk tritt DANEBEN.
+   **VERMERK 2026-09-01, SACHKORRIGIERT AM 2026-09-02 — DER TRIGGER IST EINGETRETEN, UND DIE
+   FRAGE IST NUR IN EINER RICHTUNG BEANTWORTET.** Der Text darüber bleibt ZEICHEN FÜR ZEICHEN
+   stehen; dieser Vermerk tritt DANEBEN.
+   **WAS AM 2026-09-02 ERSETZT WORDEN IST:** Die Überschrift sagte "DIE FRAGE IST BEANTWORTET.
+   DIESER EINTRAG HAT SEINEN GEGENSTAND VOLLSTÄNDIG ABGEARBEITET", und der erste Spiegelstrich
+   qualifizierte die Kennung als ECHT und ihren Weg als "über eine echte Anzeige". **DIE
+   PRÄMISSE TRIFFT NICHT ZU** — OWNER-ANGABE 2026-09-02, Volltext in VERMERK 10, Abschnitt (b),
+   "SACHKORREKTUR 2026-09-02 — DIE HERKUNFT DER KLICK-KENNUNG".
    **DER TRIGGER LAUTETE "die Transport-Scheibe — jetzt für die verbliebene Frage nach dem
-   INHALT der URL".** Die Scheibe ist gebaut und live bewiesen (VERMERK 10), und **die Frage
-   ist in BEIDE Richtungen beantwortet** — GEMESSEN 2026-09-01 (OWNER), an der ausgelieferten
-   Anwendung:
-   · **LANDEPAGE: DIE KENNUNG IST DA.** Schritt 2 — die gehostete Seite über eine **echte**
-     Anzeige aufgerufen, die Conversion auf derselben Seite ausgelöst: durchgelaufen, keine
-     Fehlerzeile, kein `no_click_id`. **Damit ist die ERSTE Hälfte der Restlücke aus VERMERK 1
-     eingelöst:** Eine ECHTE `gclid` nimmt denselben Weg wie der selbstgesetzte Testwert vom
-     2026-08-24.
-   · **FOLGESEITE: SIE IST WEG.** Schritt 3 — derselbe Anzeigenklick, die Conversion erst nach
-     einem Seitenwechsel: `location.href` trägt die Kennung zur Conversion-Zeit nicht mehr,
+   INHALT der URL".** Die Scheibe ist gebaut und live bewiesen (VERMERK 10), und die Frage ist
+   damit so weit beantwortet — GEMESSEN 2026-09-01 (OWNER), an der ausgelieferten Anwendung:
+   · **LANDEPAGE: DIE KENNUNG IST DA — BEI EINEM VON HAND GESETZTEN WERT.** Schritt 2 — die
+     gehostete Seite mit von Hand gesetztem Query-String aufgerufen, die Conversion auf
+     derselben Seite ausgelöst: durchgelaufen, keine Fehlerzeile, kein `no_click_id`.
+     **DAS IST NEU GEGENÜBER VERMERK 1 und nicht nichts:** Dort war gemessen, dass der Wert im
+     `eventSourceUrl` **ankommt**; hier durchläuft er zum ersten Mal den **VOLLSTÄNDIGEN
+     PRODUKTIVPFAD** bis zum Netzruf.
+     **DIE ERSTE HÄLFTE DER RESTLÜCKE AUS VERMERK 1 IST DAMIT NICHT EINGELÖST:** Ob eine
+     **ECHTE** `gclid` denselben Weg nimmt, ist weiterhin **NICHT GEPRÜFT**. Sie ist kleiner
+     geworden, nicht geschlossen.
+   · **FOLGESEITE: SIE IST WEG.** Schritt 3 — dieselbe von Hand gesetzte Adresse, die
+     Conversion erst nach einem Seitenwechsel: `location.href` trägt die Kennung zur
+     Conversion-Zeit nicht mehr,
      und es entsteht kein Ereignis. **Damit ist die ZWEITE Hälfte eingelöst** — die, die
      dieser Eintrag als "auf einer Seite mit mehreren Schritten ist `location.href` zur
      Conversion-Zeit eine andere URL als beim Einstieg" formuliert hatte.
@@ -4298,10 +4460,16 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
 39. **CONVERSIONS AUF FOLGESEITEN SIND FÜR GOOGLE HEUTE NICHT MESSBAR — UND DIE NAHELIEGENDE
     ABHILFE IST DURCH TRANSIT-ONLY VERSPERRT.**
     **GEMESSEN LIVE (OWNER, 2026-09-01, Schritt 3 des Live-Tests der Scheibe 4):** Wird die
-    gehostete Seite über eine echte Anzeige aufgerufen und die Conversion erst auf einer
-    FOLGESEITE ausgelöst, trägt `location.href` die Klick-Kennung nicht mehr,
+    gehostete Seite mit einer Klick-Kennung im Query-String aufgerufen und die Conversion erst
+    auf einer FOLGESEITE ausgelöst, trägt `location.href` die Klick-Kennung nicht mehr,
     `extractGoogleClickIds` findet nichts, `buildGoogleEvent` verwirft mit `no_click_id`, und
     **es entsteht kein Ereignis.**
+    **SACHKORREKTUR 2026-09-02 — ERSETZT, NICHT GESTEMPELT.** Hier stand "über eine echte
+    Anzeige aufgerufen". Der Query-String war **von Hand gesetzt** (OWNER-ANGABE 2026-09-02;
+    Volltext in VERMERK 10, Abschnitt (b)). **DER BEFUND IST DAVON UNBERÜHRT UND WIRD NICHT
+    SCHWÄCHER:** Dass `location.href` nach einem Seitenwechsel den Query-String nicht mehr
+    trägt, ist eine **Eigenschaft des Browsers** — sie hängt nicht daran, wer ihn geschrieben
+    hat. Korrigiert ist die Herkunft der Eingabe, nicht die Beobachtung.
     **DAS IST KEIN DEFEKT DER SCHEIBE 4**, sondern die Folge der gewählten Gestalt: Der
     OFFLINE CONVERSION IMPORT ruht auf der Klick-Kennung, und "KEINE KLICK-KENNUNG, KEINE
     CONVERSION" ist als Eigenschaft der Gestalt schon in docs/roadmap.md, Eintrag 11.2
@@ -4327,6 +4495,86 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     GEMELDET 2026-09-01, NICHT GEBAUT.
     TRIGGER: der Zuschnitt der Phase 17, ODER eine erneute Owner-Befassung mit der dritten
     Datenklasse — je nachdem, was zuerst eintritt.
+
+40. **EINE MESSUNG WURDE MIT AUSGELASSENEM SCHLÜSSELWERT ABGELEGT — UND DER AUSGELASSENE WERT
+    WAR DIE EINZIGE EINGABE DES DIAGNOSE-INSTRUMENTS.**
+    **DER BEFUND — GEMESSEN am Repo (CC, 2026-09-02), zwei unabhängige Suchläufe:** Der
+    Erfolgsrumpf des 200er-Aufrufs der Messung D steht in docs/ziel-befunde.md, Teil (ca)/(a),
+    als `{ "requestId": "…" }` — **mit drei Punkten an der Stelle des Wertes.** Eine Suche über
+    den gesamten Google-Abschnitt nach UUID-artigen Zeichenfolgen findet dort **genau zwei**,
+    und **beide sind Beispiele aus der Anbieter-Doku** ((o)/G5), keine eigenen Messwerte. Eine
+    zweite, repo-weite Suche über das **gesamte Arbeitsverzeichnis rekursiv, ohne
+    Dateityp-Filter**, nach der tatsächlichen Kennung liefert **null Treffer**.
+    **Positivkontrolle:** Dieselbe UUID-Achse hat die zwei Doku-Beispiele erreicht, ist also
+    nicht leer gelaufen.
+    **WARUM DAS ZÄHLT, UND ES IST NICHT DIE ÜBLICHE GEHEIMNIS-FRAGE:** Der Statusabruf über
+    `requestStatus:retrieve` nimmt **GENAU EINE** Eingabe — die `requestId` ((x)/G5). **Ohne
+    sie ist der einzige Diagnostik-Kanal des Anbieters nicht adressierbar.** Die Doku macht
+    daraus selbst eine Auflage: "Record the requestId returned" und "Capture and collect the
+    request_id from each … response" ((o)/G5, GELESEN 2026-08-24). Der Wert war am 2026-09-02
+    nur noch da, weil der Owner ihn in seinem eigenen Verlauf hatte; **aus dem Repo wäre er
+    nicht mehr zu beschaffen gewesen.**
+    **EINE `requestId` IST KEIN GEHEIMNIS.** Sie ist ein Vorgangs-Bezeichner ohne
+    Zugriffswirkung; die Auslassung war keine Schwärzung, sondern eine Kürzung.
+    **DER BEFUND GILT DEM ABLAGE-VERFAHREN, NICHT DIESER EINEN STELLE — und das ist der ganze
+    Grund für den Eintrag:** Eine Kürzung mit "…" sieht in einem Protokoll wie Sorgfalt aus.
+    Sie ist es dort, wo der Wert ein Geheimnis ist, und sie ist das Gegenteil davon, wo der
+    Wert der **einzige Schlüssel zu einer späteren Nachfrage** ist. **Was die beiden Fälle
+    trennt, steht heute nirgends.**
+    **DIE ABGRENZUNG GEHÖRT ZWINGEND DAZU, SONST WIDERSPRICHT DIESER EINTRAG EINER
+    ENTSCHEIDUNG DESSELBEN TAGES.** Am 2026-09-02 sind in docs/ziel-befunde.md, Teil (cb),
+    **ZWEI Werte ABSICHTLICH nicht im Klartext abgelegt** worden — die Google-Ads-Kundennummer
+    und die Conversion-Type-ID, beide maskiert (ARCHITEKTEN-ENTSCHEIDUNG 2026-09-02). Wer
+    diesen Eintrag ohne die Abgrenzung liest, hält das für denselben Fehler.
+    **DIE TRENNLINIE IST DIE BESCHAFFBARKEIT, NICHT DIE VERTRAULICHKEIT:**
+    · **Eine `requestId` existiert EINMAL UND FLÜCHTIG.** Sie entsteht in einer Antwort, sie
+      steht in keiner Oberfläche, und **ist sie einmal nicht aufgeschrieben, ist sie aus KEINER
+      Quelle wiederzubeschaffen.** Ihr Verlust kostet das Instrument der nächsten Runde.
+    · **Eine Kundennummer steht JEDERZEIT in der Oberfläche des Kontos**, ebenso die
+      Conversion-Type-ID. Ihr Fehlen im Repo kostet einen Blick, nicht eine Messung.
+    **IN EINEM SATZ: NICHT ABGELEGT WIRD, WAS JEDERZEIT ABLESBAR IST; ABGELEGT WIRD, WAS SONST
+    VERSCHWINDET.** Das ist die Regel, die beide Fälle zugleich erklärt — und sie ist etwas
+    anderes als "Geheimnisse werden geschwärzt", weil **keiner der drei Werte ein Geheimnis
+    ist**.
+    **KEINE EMPFEHLUNG** — weder eine Regel noch eine Auflage an künftige Messprotokolle ist
+    hier vorgeschlagen, und (ca) ist **nicht** nachträglich befüllt worden.
+    GEMELDET 2026-09-02, NICHT GEBAUT.
+    PROVENIENZ: die zwei Suchläufe GEMESSEN am Repo (CC, 2026-09-02). Dass der Wert aus dem
+    Verlauf des Owners stammt, ist eine **OWNER-ANGABE 2026-09-02**. Die Doku-Auflage ist
+    GELESEN (s. (o)/G5).
+    TRIGGER: die nächste Messung, deren Antwort einen Bezeichner für eine **spätere** Nachfrage
+    trägt.
+
+41. **`INVALID_GCLID` VERDECKT DIE TAG-HYPOTHESE — SIE IST WEDER BESTÄTIGT NOCH WIDERLEGT.**
+    **DER VERDACHT VOM 2026-09-01 (OWNER):** Die im Google-Ads-Konto hinterlegte
+    Conversion-Aktion könnte **tag-basiert** sein, während Pagesmith **kein Google-Tag
+    ausliefert** — die Gestalt-Entscheidung schliesst eines ausdrücklich aus (s. "### (3) Der
+    Vorbehalt der Owner-Entscheidung zur Gestalt").
+    **WAS MESSUNG E DAZU SAGT — GEMESSEN 2026-09-02 (OWNER), docs/ziel-befunde.md,
+    Teil (cb):** **NICHTS.** Die Anfrage vom 2026-09-01 ist mit
+    `PROCESSING_ERROR_REASON_INVALID_GCLID` verworfen worden, `errorCounts` trägt **genau
+    einen** Eintrag bei **einem** gesendeten Datensatz.
+    **DER MECHANISMUS, DER DEN VERDACHT VERDECKT:** Ein Datensatz, dessen Klick-Kennung schon
+    verworfen wird, **kommt an einer etwaigen zweiten Prüfung gar nicht erst an**. Ob nach
+    einer gültigen Kennung ein ZWEITER Grund käme, ist an dieser Antwort **nicht zu sehen** —
+    sie konnte nur einen Grund haben.
+    **WER AUS DEM EINEN ZURÜCKGEGEBENEN GRUND SCHLIESST, ES GEBE NUR DIESEN, SCHLIESST AUS
+    EINER ANTWORT, DIE NUR EINEN GRUND HABEN KONNTE.** Das ist der Satz, der diesen Eintrag
+    trägt, und er ist der Grund, warum er neben Messung E steht statt in ihr aufzugehen: Ein
+    erledigt aussehender Verdacht wird nicht wieder aufgenommen.
+    **DIE VERBINDUNG ZUR SPERRE, und sie macht den Eintrag unauflösbar-bis-auf-weiteres:**
+    Solange auf dem Konto kein echter Anzeigenklick existiert (s. die zweite Sperre in
+    "### (1) Der Gegenstand"), **gibt es keine gültige Klick-Kennung**, mit der man die zweite
+    Prüfung überhaupt erreichen könnte. **Der Verdacht hängt an derselben Sperre wie der
+    Nachweis.**
+    **KEINE EMPFEHLUNG**, und ausdrücklich keine Aussage darüber, ob die Conversion-Aktion
+    tag-basiert IST — der Zuschnitt der Aktion im Kundenkonto ist **nicht erhoben**.
+    GEMELDET 2026-09-02, NICHT GEBAUT.
+    PROVENIENZ: Der Fehlergrund GEMESSEN 2026-09-02 (OWNER). Der Verdacht ist eine
+    **OWNER-ANGABE 2026-09-01**. Dass der eine den anderen verdeckt, ist eine **FOLGE** aus
+    dem Fast-Fail-Verhalten und der Einzahl des `errorCounts`-Eintrags, **keine Messung**.
+    TRIGGER: der erste Aufruf mit einer **gültigen** Klick-Kennung — also derselbe wie das
+    Fallen der Sperre.
 
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT

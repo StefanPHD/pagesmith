@@ -120,6 +120,7 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
   - ### MESSUNG C gegen den Token-Endpunkt (2026-08-28) — die Teile (bv) bis (bz)
   - ### MESSUNG D gegen events:ingest (2026-09-01) — der Teil (ca)
   - ### MESSUNG E gegen requestStatus:retrieve (2026-09-02) — der Teil (cb)
+  - ### Abschnitts-Lesung 2026-09-02 zur Zuordnung ohne Klick-Kennung, LAUF 8 — der Teil (cc)
 - ## Pinterest (Conversions API)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
@@ -5059,6 +5060,287 @@ bleiben.
 
      **UND DIE GRENZE, DIE FÜR JEDE MESSUNG DIESER DATEI GILT:** Ein Anbieter kann sein
      Verhalten ändern, ohne dass hier etwas rot wird. Diese Messung datiert vom 2026-09-02.
+
+### Abschnitts-Lesung 2026-09-02 zur Zuordnung ohne Klick-Kennung, LAUF 8 — der Teil (cc)
+
+**HERKUNFT — ALLES IN DIESEM LAUF IST GELESEN, NICHTS IST GEMESSEN (2026-09-02):** NEUN
+Seiten, Instrument: Browser-Werkzeug, Textabruf über `textContent` (nicht `innerText`), alle
+auf Englisch (`?hl=en`). **Es ist KEIN Aufruf gegen eine Google-Schnittstelle gefahren
+worden** — kein Token beschafft, kein Endpunkt angesprochen, keine Fehlerform erhoben. Jede
+Angabe nennt Seitenpfad und den Doku-Stand, den die Seite selbst ausweist.
+**WARUM ES EIN LESE-LAUF UND KEIN MESSPROTOKOLL IST, und das entscheidet die Bauform:** Die
+Fragen dieses Laufs sind Fragen an die DOKUMENTATION — welche Kennungen die Schnittstelle
+kennt, welche Auflagen daran hängen, was der Anbieter über Testen sagt. **Wo eine Antwort eine
+Messung verlangte, steht das an der Angabe.**
+
+**ZWEI SEITEN LIEGEN AUSSERHALB DES DATA-MANAGER-BAUMS** (`support.google.com/google-ads`) und
+**eine ausserhalb des Produkts** (`developers.google.com/google-ads/api` — die Google Ads API,
+nicht die Data Manager API). Das steht an jeder Angabe dabei; wer es überliest, hält eine
+Aussage über ein anderes Produkt für eine über unseres.
+
+**DER ANLASS:** Messung E hat am 2026-09-02 `PROCESSING_ERROR_REASON_INVALID_GCLID` ergeben
+(s. (cb)), und die zweite Sperre der laufenden Phase hält fest, dass es auf dem Konto nie einen
+echten Anzeigenklick gegeben hat (docs/aktiver-stand.md, "### (1) Der Gegenstand",
+OWNER-ANGABE 2026-09-02). **Dieser Lauf beschafft Optionen. Er entscheidet nichts.**
+
+(cc) **DIE ZUORDNUNGS-WEGE OHNE KLICK-KENNUNG SIND GELESEN — UND DER GEMESSENE FEHLERGRUND
+     LIEGT AUF EINER ANDEREN ACHSE, ALS ER AUSSIEHT.** **NEU.**
+
+     **(a) DIE FEHLERGRÜNDE TRENNEN DEKODIERUNG VON ZUORDNUNG — UND UNSER GEMESSENER GRUND
+     LIEGT AUF DER DEKODIER-ACHSE.**
+
+     **DAS IST DER TRAGENDE BEFUND DIESES LAUFS UND STEHT DESHALB ZUERST UND MIT EIGENER
+     ÜBERSCHRIFT.** GELESEN 2026-09-02, `/reference/rest/v1/requestStatus/retrieve`
+     (Doku-Stand 2026-07-28), Enum `ProcessingErrorReason`, je wörtlich:
+
+     · `PROCESSING_ERROR_REASON_INVALID_GCLID` — **"The google click ID could not be
+       decoded."**
+     · `PROCESSING_ERROR_REASON_INVALID_CLICK` — **"The event can't be attributed to a click
+       (GCLID). This may be because the click did not come from a Google Ads campaign, for
+       example."**
+     · `PROCESSING_ERROR_REASON_TOO_RECENT_CLICK` — **"The click occurred too recently."**
+     · `PROCESSING_ERROR_REASON_EVENT_TOO_OLD` — **"The conversion is older than max supported
+       age."**
+     · `PROCESSING_ERROR_REASON_CONVERSION_PRECEDES_CLICK` — **"The event timestamp on the
+       event was earlier than the associated click."**
+
+     **ES SIND ZWEI VERSCHIEDENE ACHSEN, UND SIE SEHEN AM NAMEN GLEICH AUS:**
+     `INVALID_GCLID` sagt, die Zeichenkette liess sich **nicht dekodieren** — eine Aussage über
+     die FORM des Wertes. `INVALID_CLICK` sagt, das Ereignis liess sich **keinem Klick
+     zuordnen** — eine Aussage über die WELT. Wer die beiden zusammenzieht, liest aus einem
+     Formfehler eine Zuordnungs-Auskunft.
+
+     **DIE FOLGE FÜR MESSUNG E, UND SIE IST DER GRUND FÜR DIESEN TEIL:** Der am 2026-09-02
+     gemessene Grund (s. (cb)) ist `INVALID_GCLID`, also der **DEKODIER**-Fehler. Der gesendete
+     Wert war `"Tester-123"`. **Der Fehlergrund sagt damit AUSSCHLIESSLICH, dass diese
+     Zeichenkette keine dekodierbare Klick-Kennung ist.**
+     **ER SAGT NICHTS ÜBER:** das Konto und ob es Klicks hat · die Conversion-Aktion und ob
+     ihr Typ passt · das Zugangsdatum und ob es das richtige Konto adressiert. **Ein Datensatz,
+     dessen Kennung nicht einmal dekodiert werden kann, erreicht keine dieser Prüfungen.**
+     **WAS DAS AN DER STANDDATEI NICHT ÄNDERT:** Die zweite Sperre
+     (docs/aktiver-stand.md, "### (1) Der Gegenstand") sagt bereits, der Fehlergrund sei mit
+     ihr "verträglich, aber es belegt sie nicht". **Dieser Befund macht den Abstand grösser,
+     nicht kleiner** — er benennt die Achse, auf der der Grund liegt. **DORT IST NICHTS
+     GEÄNDERT; hier steht die Lesung, dort die Sperre.**
+     **ERSETZT KEINE MESSUNG:** Welcher Grund bei einer **wohlgeformten** Kennung käme, ist
+     nicht erhoben. `INVALID_CLICK` ist der gelesene Kandidat, kein beobachteter Wert.
+
+     **(b) DIE `UPLOAD_CLICKS`-AUFLAGE — GELESEN, UND AUSDRÜCKLICH KEINE DIAGNOSE UNSERES
+     FALLS.**
+
+     GELESEN 2026-09-02, `/devguides/events/send-events` (Doku-Stand **2026-08-18**, also
+     unverändert gegenüber LAUF 1), Feldbeschreibung `productDestinationId`, wörtlich:
+
+     > "**For Google Ads offline conversions or enhanced conversions for leads**, the
+     > productDestinationId must be the ID of a Google Ads conversion action with type set to
+     > **UPLOAD_CLICKS**. In the Google Ads UI, the Conversion source for an UPLOAD_CLICKS
+     > conversion action is **Website (Import from clicks)**."
+
+     Zum Vergleich, dieselbe Feldbeschreibung: "For multi-source conversions or events, the
+     productDestinationId must be … The ID of a Google Ads conversion with type set to
+     **WEBPAGE**. In the Google Ads UI, the Conversion source for a WEBPAGE conversion action
+     is **Website**."
+
+     **DAS IST EINE GELESENE AUFLAGE UND KEINE AUSSAGE ÜBER UNSEREN AUFRUF.** Dass die am
+     2026-09-01 adressierte Conversion-Aktion tag-basiert ist, ist **Kontext**; **OB DIE
+     SCHNITTSTELLE EINE AKTION FALSCHEN TYPS ABLEHNT — UND MIT WELCHEM GRUND —, IST
+     UNGEMESSEN.** Die gelesene Doku sagt "must be", nicht, was bei einem Verstoss geschieht.
+     **Die Frage steht ausdrücklich offen**; sie ist dieselbe wie Frage 2 im Abschnitt "Acht
+     Fragen ohne Katalog-Ort" ("WAS GESCHIEHT BEI EINEM TYP-FEHLGRIFF DER CONVERSION-ACTION?"),
+     die dort seit dem 2026-08-24 unbeantwortet steht.
+
+     **EINE BEMERKENSWERTE HÄLFTE DIESES ZITATS:** Offline-Conversions **und** Enhanced
+     Conversions for Leads stehen in DERSELBEN Bedingung und verlangen DENSELBEN Aktionstyp.
+     **Ein Wechsel auf den PII-Weg verlangte also KEINE andere Conversion-Aktion.**
+
+     **(c) VIER ALTERNATIVEN ZUR KLICK-KENNUNG — UND NUR EINE IST WIRKLICH KLICKFREI.**
+
+     GELESEN 2026-09-02, `/devguides/events/send-events` (Doku-Stand 2026-08-18), Tabelle
+     "Convert the data to Event objects", Reiter Google Ads, Zeile **"Google Ads offline
+     conversions or enhanced conversions for leads"**, Spalte Identifiers, wörtlich:
+
+     > "Required. **Set at least one of the following:** `adIdentifiers` with at least one of
+     > gclid, gbraid or wbraid, **or** `landingPageDeviceInfo.ipAddress` set · **Session
+     > attributes** · **userData** · **eventDeviceInfo.ipAddress**"
+
+     | Alternative | braucht einen Anzeigenklick? | Datenklasse |
+     |---|---|---|
+     | `adIdentifiers.landingPageDeviceInfo.ipAddress` | nein | IP/UA — zweite Klasse |
+     | **Session attributes** | **JA** — s. unten | UA plus Ablage |
+     | **`userData`** (gehashte Kontaktdaten) | **NEIN** | PII — erste Klasse |
+     | `eventDeviceInfo.ipAddress` | nein | IP/UA — zweite Klasse |
+
+     **DIE AUFLÖSUNG ZU SESSION ATTRIBUTES IST DER KERN DIESES PUNKTES, UND SIE WIDERLEGT DIE
+     NAHELIEGENDE LESART.** GELESEN 2026-09-02, `support.google.com/google-ads/answer/16194756`
+     ("About session_attributes", **ausserhalb des Data-Manager-Baums**): Die Seite führt sie
+     ausdrücklich als Mittel, "In scenarios where GCLID is not available". **SIE SIND
+     TROTZDEM KEIN KLICKFREIER WEG:** Zwei der vier Pflicht-Unterfelder sind `gad_source`
+     ("An aggregate parameter served in the URL to identify the source of traffic originating
+     from ads … **You should capture the value present in the landing page URL**") und
+     `gad_campaignid` ("**This is also a URL parameter** … and should be captured from the
+     landing page URL"). **Beide stehen nur dann in der Landepage-URL, wenn ein Anzeigenklick
+     sie dort hingeschrieben hat**, und das mitgelieferte Erfassungs-Skript prüft genau das,
+     bevor es überhaupt etwas erzeugt.
+     **WER SIE FÜR EINEN AUSWEG AUS DER ZWEITEN SPERRE HÄLT, IRRT** — sie setzen denselben
+     Klick voraus, den die Sperre als nicht existent ausweist. Die übrigen zwei Pflichtfelder
+     sind `session_start_time_usec` und `landing_page_user_agent`.
+
+     **`userData` IST DER EINZIGE GELESENE WEG, DER OHNE ANZEIGENKLICK AUSKOMMT — UND ER IST
+     PER OWNER-ENTSCHEIDUNG AUSGESCHLOSSEN.** Der Ausschluss steht seit dem 2026-08-24 in
+     docs/aktiver-stand.md, "### (3) Der Vorbehalt der Owner-Entscheidung zur Gestalt":
+     "ENHANCED CONVERSIONS FOR LEADS … ist der PII-Zweig und bleibt ausgeschlossen, **solange
+     die DATENKLASSEN-GRENZE steht**." **DAS STEHT HIER, DAMIT NIEMAND IHN FÜR EINE OFFENE
+     OPTION HÄLT.** **NEU IST NICHT DER WEG, SONDERN SEINE STELLUNG: er ist der einzige.**
+     **KEINE EMPFEHLUNG.**
+
+     **SEINE TECHNISCHE GESTALT — GELESEN, und sie steht in dieser Datei bereits ausführlich**
+     ((m)/E2 zur Hashung und Normalisierung, (w)/E1 und (w)/D5 zur Feldliste und den vier
+     Pflichtfeldern von `AddressInfo`). **Hier nur, was dort nicht steht:**
+     · **DIE AUFLAGE IM KUNDEN-KONTO IST EIN EIGENER FEHLERGRUND.** GELESEN 2026-09-02,
+       `/reference/rest/v1/requestStatus/retrieve` (Doku-Stand 2026-07-28):
+       `PROCESSING_ERROR_REASON_DESTINATION_ACCOUNT_ENHANCED_CONVERSIONS_TERMS_NOT_SIGNED` —
+       **"Enhanced conversions terms are not signed in the destination account."**
+       **ER GREIFT ERST BEI DER VERARBEITUNG**, also nicht beim Einliefern.
+     · **EIN KONTO-SCHALTER, MIT DATUM.** GELESEN 2026-09-02,
+       `support.google.com/google-ads/answer/2998031` (**ausserhalb des Data-Manager-Baums**):
+       "Enhanced conversions for web and leads are now combined into a **single on/off
+       setting**. **Starting from April 2026**, Google Ads accepts user-provided data from
+       website tags, Data Manager, and API connections."
+     · **KEINE ALLOWLIST FÜR DIESEN WEG.** `allowlist` ist auf `/devguides/events/send-events`
+       ein **Nicht-Treffer (0)**; die Übersichtsseite `/devguides/events` (Doku-Stand
+       2026-07-30) nennt eine Allowlist ausdrücklich für **Store Sales** und für
+       **Multi-Source zu Google Analytics**, **nicht** für Offline/ECL.
+     **DIE DATENKLASSEN-BERÜHRUNG WIRD BENANNT UND NICHT ENTSCHIEDEN:** `userData` trifft die
+     ERSTE Klasse der Präzisierung vom 2026-08-19 (NUTZER-EINGABEN), für die
+     docs/offene-punkte.md ausdrücklich sagt: "Für ANDERE Nutzer-Eingaben ist sie NICHT
+     getroffen." Session Attributes berühren zusätzlich TRANSIT-ONLY, weil das gelesene
+     Erfassungs-Skript den Wert in `localStorage` **ablegt**. **Die Entscheidung fällt der
+     Owner; hier steht nur die Berührung.**
+
+     **(d) KEIN TESTKONTO, KEINE SANDBOX — NICHT-TREFFER MIT BENANNTER REICHWEITE.**
+
+     **ACHSE:** `test` · `sandbox` · `staging` · `dry run` · `dry-run` · `sample data` ·
+     `placeholder`, case-insensitiv, je über den vollständigen Artikelrumpf per `textContent`.
+     **SUCHRAUM UND ERGEBNIS, je mit Zeichenzahl:**
+     · `/devguides/events/send-events` (Doku-Stand 2026-08-18, **100 221 Zeichen**):
+       `test` **0**, `sandbox` **0**.
+     · `/devguides/concepts/best-practices` (Doku-Stand 2026-07-30, **2 142 Zeichen**):
+       **alle sieben Begriffe 0**.
+     · `/reference/rest/v1/events/ingest` (Doku-Stand 2026-07-28): `sandbox` **0**; `test`
+       **1**, und dieser eine Treffer ist die Annotation selbst.
+     **KEINE ENTWARNUNG** — drei Seiten sind nicht der ganze Baum.
+
+     **DAS EINZIGE BENANNTE INSTRUMENT IST `validateOnly`**, wörtlich (GELESEN 2026-09-02,
+     `/reference/rest/v1/events/ingest`, Doku-Stand 2026-07-28):
+     > "`validateOnly` — boolean — Optional. **For testing purposes.** If true, the request is
+     > validated but not executed. **Only errors are returned, not results.**"
+     Dazu ein zweiter Weg, den diese Datei bisher nicht führt: der **API Explorer** auf
+     `/devguides/events/send-events` ("Select the REST tab and click Open in API Explorer …
+     complete the authorization prompts to send the request"). **NICHT BENUTZT** — er verlangt
+     eine Anmeldung.
+
+     **DIE BEKANNTE FALLE GILT UNVERÄNDERT:** Nach (o)/G5 sind Diagnostiken **nur** für
+     Anfragen abrufbar, die gelingen und `validateOnly` **nicht** gesetzt haben —
+     `validateOnly` **schneidet also den einzigen Kanal ab**, der in unserem Fall überhaupt
+     etwas gesagt hat.
+
+     **WAS `validateOnly` PRÜFT, IST AN DER DOKU NICHT ENTSCHEIDBAR.** Sie sagt "validated but
+     not executed" und benennt den Umfang der Validierung **nirgends**.
+     **DIE FOLGENDE ÜBERLEGUNG IST EINE ABLEITUNG UND AUSDRÜCKLICH KEIN BEFUND:** Messung D
+     hat die erfundene `gclid` `"Tester-123"` in einem Aufruf **ohne** `validateOnly` mit
+     HTTP 200 angenommen bekommen (s. (ca)/(e)), und erst die asynchrone Verarbeitung hat sie
+     verworfen (s. (cb)). **Wenn schon die vollständige Ausführung die Kennung beim Einliefern
+     nicht prüft, kann eine blosse Validierung es nicht.** **GRUNDLAGE:** die zwei genannten
+     Messungen plus die gelesene Annotation. **NICHT GEMESSEN**, und wer sie als Befund
+     zitiert, zitiert eine Vermutung.
+
+     **(e) DAS ZEITFENSTER BLEIBT OHNE ZAHL.**
+
+     **ACHSE:** `90 days` · `63 days` · `days` · `window` · `older than` · `conversion window`.
+     **ERGEBNIS, je Seite:** `/reference/rest/v1/requestStatus/retrieve` — `days` **0** ·
+     `/reference/rest/v1/events/ingest` — `90` **0**, `time window` **0**, `expire` **0** ·
+     `support.google.com/google-ads/answer/2998031` — `90 days` **0**, `days` **0** ·
+     `developers.google.com/google-ads/api/docs/conversions/upload-offline` (Doku-Stand
+     2026-08-19, **anderer Produktbaum**) — `days` **0**.
+     **AN DER LETZTEN SEITE IST DAS INSTRUMENT GEWECHSELT WORDEN**, weil das Ergebnis eine
+     ABWESENHEIT war: die Suche ist gegen den vollständigen `document.body` wiederholt worden
+     statt nur gegen den Artikelrumpf — **ebenfalls 0**. Zwei Instrumente, dasselbe Ergebnis
+     (docs/immer-beachten.md, "EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN").
+     **DASS EIN FENSTER EXISTIERT, BLEIBT DREIFACH BELEGT** — obere und untere Schranke, s.
+     (w)/D3. **DIE LÄNGE STEHT WEITERHIN NIRGENDS. KEINE ENTWARNUNG.** Lücke D aus (s) bleibt
+     unverändert offen und wird hier **nicht** umgeschrieben.
+
+     **(f) EIN MIGRATIONS-TERMIN UND EIN ALLOWLIST-SATZ — GEMELDET ALS KOLLISION MIT TEIL (a),
+     NICHT AUFGELÖST.**
+
+     GELESEN 2026-09-02, `support.google.com/google-ads/answer/2998031` ("About offline
+     conversion imports", **ausserhalb des Data-Manager-Baums**), wörtlich:
+     > "**Starting June 15, 2026**, offline conversions import and enhanced conversions for
+     > leads uploads will be **migrated to the Data Manager API and blocked in the Google Ads
+     > API**. **Developer tokens that haven't sent a request between January 2026 through June
+     > 2026 will not be allowlisted for legacy access.**"
+
+     **DAS WIDERSPRICHT TEIL (a) NICHT — ES GIBT IHM EIN DATUM UND EINEN ZWEITEN GRUND.**
+     Teil (a) führt den programmatischen Alt-Weg als für uns geschlossen. Neu sind hier: der
+     **Stichtag**, der zum Lesezeitpunkt bereits **verstrichen** war, und ein **zweiter
+     Sperrgrund** (kein Legacy-Allowlisting ohne Anfrage im Fenster Januar–Juni 2026), der
+     neben dem in (a) genannten liegt.
+     **OB (a) FORTZUSCHREIBEN IST, IST HIER NICHT ENTSCHIEDEN, UND (a) IST NICHT ANGETASTET.**
+
+     **EINE AUFFORDERUNG AUF EINER FREMDEN SEITE — GEMELDET, NICHT BEFOLGT:** Dieselbe Seite
+     empfiehlt zweimal einen Wechsel ("we recommend starting with enhanced conversions for
+     leads instead", "we recommend upgrading it"). **Das ist eine Anbieter-Empfehlung und kein
+     Auftrag an uns**; sie berührt eine Owner-Entscheidung vom 2026-08-24 und wird hier
+     wiedergegeben, nicht übernommen.
+
+     **(g) DER GELESENE UMFANG — NEUN SEITEN, ALLE AM 2026-09-02.**
+
+     | # | Pfad | Titel | Doku-Stand | HTTP |
+     |---|---|---|---|---|
+     | 1 | `/data-manager/api/devguides/events` | Events overview | 2026-07-30 | 200 |
+     | 2 | `/data-manager/api/devguides/events/google-ads/offline` | Google Ads offline conversions | — | 200 |
+     | 3 | `/data-manager/api/devguides/events/send-events` | Send events | 2026-08-18 | 200 |
+     | 4 | `support.google.com/google-ads/answer/16194756` | About session_attributes | — | 200 |
+     | 5 | `/data-manager/api/devguides/concepts/best-practices` | Best practices | 2026-07-30 | 200 |
+     | 6 | `/data-manager/api/reference/rest/v1/events/ingest` | Method: events.ingest | 2026-07-28 | 200 |
+     | 7 | `support.google.com/google-ads/answer/2998031` | About offline conversion imports | — | 200 |
+     | 8 | `google-ads/api/docs/conversions/upload-offline` | Manage offline conversions | 2026-08-19 | 200 |
+     | 9 | `/data-manager/api/reference/rest/v1/requestStatus/retrieve` | Method: requestStatus.retrieve | 2026-07-28 | 200 |
+
+     **SEITE 2 IST EIN STUMMEL** — 256 Zeichen, sie verweist nur auf "Get started"
+     (= Seite 3). Wer dort die Offline-Gestalt sucht, findet sie nicht; sie steht auf
+     `/devguides/events/send-events`.
+     **EIN ZEHNTER AUFRUF IST EIN 404**: `/devguides/events/enhanced-conversions-leads` — ein
+     **geratener** Pfad, den es nicht gibt. Er ist hier aufgeführt, damit niemand ihn ein
+     zweites Mal errät.
+
+     **GESEHEN, NICHT GEÖFFNET — mit Grund, und zwei davon sind LÜCKEN:**
+     · **LÜCKE 1 — `/data-manager/api/devguides/quickstart/agent-skills`. NEU IM
+       NAVIGATIONSBAUM und in keinem früheren Lauf verzeichnet** (LAUF 1 und LAUF 2 führen sie
+       nicht). Nicht geöffnet, weil kein Auftrag darauf zeigte. **Das ist genau der Ort, den
+       Hebungs-Kandidat 2 in docs/aktiver-stand.md beschreibt** — die Liste "GESEHEN, NICHT
+       GEÖFFNET" als Ort, an dem sich ein Befund versteckt.
+     · **LÜCKE 2 — die EINRICHTUNGS-DOKU von Enhanced Conversions for Leads**
+       (`support.google.com/google-ads/…` zu Google Tag Manager bzw. Google-Tag). Nicht
+       geöffnet, weil unsere Gestalt kein Google-Tag ausliefert. **FOLGE: Die Auflagen von ECL
+       sind in diesem Lauf NUR über die Fehlercodes und den Konto-Schalter gelesen, NICHT über
+       die Einrichtungs-Doku.** Was dort an weiteren Auflagen steht, ist **nicht erhoben**.
+     · `/devguides/events/google-ads/online` (Multi-Source) und `/store-sales` — die zwei
+       nicht gewählten Gestalten, vom Zuschnitt ausgeschlossen.
+     · `/devguides/events/google-ads/offline/upgrade` und die zwei `upgrade/*`-Unterseiten —
+       Migration aus der Google Ads API; wir kommen aus keiner.
+     · Alles zu `audiences/*`, `accounts/partner-links/*`, `cm360/*`, `analytics/*` — vom
+       Auftrag ausgeschlossen.
+     · Die fünf Code-Beispiele auf GitHub (`IngestEvents.cs`, `.java`, `.ts`, `.php`, `.py`) —
+       fremde Repositories, nicht geöffnet.
+
+     **AUF FREMDEN SEITEN NICHT GETAN:** keine Anmeldung, keine Eingabe, kein Download, kein
+     Klick auf "Open in API Explorer" oder "Execute". **Keine Seite verlangte eine Anmeldung,
+     um ihren Text zu lesen.**
+
+     **UND DIE GRENZE, DIE FÜR JEDE LESUNG DIESER DATEI GILT:** Ein Dokument beschreibt ein
+     fremdes System, es belegt es nicht — und ein Anbieter kann sein Verhalten ändern, ohne
+     dass hier etwas rot wird. Diese Lesung datiert vom 2026-09-02.
 
 ## Pinterest (Conversions API)
 

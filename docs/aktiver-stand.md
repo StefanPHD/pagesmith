@@ -4576,6 +4576,36 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     TRIGGER: der erste Aufruf mit einer **gültigen** Klick-Kennung — also derselbe wie das
     Fallen der Sperre.
 
+    **ERGÄNZT 2026-09-02 NACH DEM DOKU-LAUF 8 — DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN
+    STEHEN UND IST RICHTIG; ER WAR NUR UNVOLLSTÄNDIG.** Zwei Dinge treten hinzu, und das
+    zweite ist das schwerere.
+    · **DER VERDECKTE ZWEITE GRUND HAT JETZT EINEN ZWEITEN, DOKUMENTIERTEN KANDIDATEN NEBEN
+      DER TAG-HYPOTHESE: DIE `UPLOAD_CLICKS`-AUFLAGE.** GELESEN 2026-09-02
+      (docs/ziel-befunde.md, Google-Abschnitt, Teil (cc)/(b);
+      `/devguides/events/send-events`, Doku-Stand 2026-08-18): "For Google Ads offline
+      conversions or enhanced conversions for leads, the productDestinationId must be the ID
+      of a Google Ads conversion action with type set to **UPLOAD_CLICKS**."
+      **DER EINTRAG NANNTE BISHER NUR EINEN KANDIDATEN.** Es sind zwei, und sie schliessen
+      einander nicht aus. **OB DIE SCHNITTSTELLE EINE AKTION FALSCHEN TYPS ÜBERHAUPT ABLEHNT,
+      IST UNGEMESSEN** — die Doku sagt "must be", nicht, was bei einem Verstoss geschieht.
+    · **DER VERDECKUNGS-MECHANISMUS GREIFT EINE STUFE FRÜHER, ALS DIESER EINTRAG ANNIMMT.**
+      Der Text oben sagt, der Datensatz komme "an einer etwaigen zweiten Prüfung gar nicht
+      erst an". **Das ist richtig und noch zu schwach:** Unser Fehlergrund ist ein
+      **DEKODIER-Fehler**, nicht ein Zuordnungs-Fehler — GELESEN 2026-09-02, Teil (cc)/(a):
+      `PROCESSING_ERROR_REASON_INVALID_GCLID` heisst wörtlich "The google click ID could not
+      be decoded", während der Zuordnungs-Fehler ein eigener Enum-Wert ist
+      (`PROCESSING_ERROR_REASON_INVALID_CLICK`, "The event can't be attributed to a click").
+      **EIN DATENSATZ, DESSEN KENNUNG NICHT EINMAL DEKODIERT WERDEN KANN, ERREICHT WEDER DIE
+      ZUORDNUNG NOCH EINE PRÜFUNG DER CONVERSION-AKTION.** Verdeckt ist also nicht ein
+      zweiter Grund hinter einem ersten, sondern **alles, was hinter der Dekodierung liegt**.
+    **WAS SICH DADURCH NICHT ÄNDERT — UND DAS IST DER GRUND, WARUM HIER ERGÄNZT UND NICHT
+    ERSETZT WIRD:** Der Eintrag bleibt in seiner Aussage unberührt. Die Tag-Hypothese ist
+    weiterhin **weder bestätigt noch widerlegt**, der Satz über die Antwort, die nur einen
+    Grund haben konnte, gilt unverändert, und **der TRIGGER bleibt wörtlich stehen**.
+    PROVENIENZ: beide Zusätze **GELESEN 2026-09-02** (Doku-Lauf 8, s. Teil (cc)); dass der
+    Dekodier-Fehler vor der Zuordnung liegt, ist eine **ABLEITUNG** aus den zwei gelesenen
+    Enum-Beschreibungen, **keine Messung**.
+
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT
 DIESER SCHEIBE GEGENSTANDSLOS.** `refreshAccessToken` liest, dechiffriert und zerlegt

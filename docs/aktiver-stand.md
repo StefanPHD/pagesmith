@@ -1711,7 +1711,12 @@ Korrektur des Architekten, die Ausschluss-Liste und "1b als Folgetask". Sie sind
 BEFUNDE und GRENZEN, keine Anweisungen, und jede bindet über diese Scheibe hinaus —
 insbesondere (2) TRANSIT-ONLY für das Erneuerungs-Token, (5) die Wahl von `eventSource` und
 `transactionId` samt ihren Grenzen, (6) die Bauform und die TRANSIT-ONLY-Invariante, und die
-drei Vorbedingungen von 1b.
+fünf Vorbedingungen von 1b.
+**SACHKORREKTUR 2026-09-02 — HIER STAND "drei Vorbedingungen von 1b". ERSETZT.** Es waren
+schon damals VIER (die vierte war nicht nummeriert), und seit dem 2026-09-02 sind es FÜNF.
+**DIE BEGRÜNDUNG STEHT NICHT HIER, SONDERN EINMAL IM 1b-ABSCHNITT** ("SACHKORREKTUR
+2026-09-02 — DIE ZAHL IM TITEL") — dieselbe Zahl an drei Orten dreimal zu begründen liefe
+auseinander. GEMESSEN am Dateitext (CC, 2026-09-02).
 
 ### Sieben Festlegungen des Zuschnitts der Scheibe 4
 
@@ -1790,6 +1795,11 @@ Verbinden oder nach einem Druck auf die Beweis-Route.
 UND TROTZDEM NICHT SENDEN" (docs/offene-punkte.md) führt sie als "DER ZUGANG BRICHT OHNE
 ZUTUN DES KUNDEN — ABLAUF ODER WIDERRUF", **in ihrer stummen Form**: Die Karte sagt
 "Zugangsdaten hinterlegt", es geht nichts hinaus, und niemand handelt, weil niemand etwas tut.
+**PRÄZISIERUNG 2026-09-02 — ERGÄNZT UND NICHT ERSETZT: DER SATZ DARÜBER IST NICHT FALSCH.**
+Zu eng ist nicht seine Aussage, sondern ihr Geltungsbereich. **STUMM IST DIE OBERFLÄCHE,
+NICHT DER BETRIEB** — die Karte schweigt (`listConfiguredTargets` selektiert nur `target`),
+das Server-Log nicht (`usableTokenFromRow` schreibt eine Zeile je Beacon). GEMESSEN am Code
+(CC, 2026-09-02); Volltext als Vorrats-Eintrag 42 und 43, hier nur der Zeiger.
 **DER SATZ, DER MIT MUSS: 1b IST FÜR DAS PRODUKT NICHT OPTIONAL, NUR FÜR DIESE SCHEIBE.** Der
 Schnitt erlaubt 4 ohne 1b — das ist eine Aussage über die BAUBARKEIT, nicht über die
 Brauchbarkeit. **Wer das übersieht, hält Google nach dem Live-Test für fertig und hat ein
@@ -1988,15 +1998,73 @@ entschlüsselt, erneuert aber nie".
   CONSTRAINT-ERWEITERUNG MIT" ist für dieses Ziel bereits eingelöst** — der Zielwert ist mit
   0026 dazugekommen.
 
-### 1b als Folgetask — nicht geschnitten, mit drei Vorbedingungen
+### 1b als Folgetask — nicht geschnitten, mit fünf Vorbedingungen
 
 **DER OWNER HAT 1b ALS UNMITTELBAREN FOLGETASK BESTÄTIGT; SEIN ZUSCHNITT IST OFFEN.**
 **PROVENIENZ: ARCHITEKTEN-EINORDNUNG 2026-09-01, auf Owner-Bestätigung. Keine Messung.**
 Dieser Abschnitt schneidet nichts zu — er hält fest, **was vor einem Zuschnitt zu klären ist**.
 
+**SACHKORREKTUR 2026-09-02 — DIE ZAHL IM TITEL. ERSETZT, NICHT GESTEMPELT.** Hier stand "mit
+drei Vorbedingungen", und dieselbe Zahl stand an ZWEI weiteren Stellen dieser Datei
+(VERMERK 10, Abschnitt (g), und der Verdichtungs-Block "Vollzogen — was im Zuschnitt der
+Scheibe 4 stand"). **DER ABSCHNITT FÜHRTE VIER:** Die vierte trug die Wörter "EINE
+VORBEDINGUNG" wörtlich und die Einstufung "DIE UNBEQUEMSTE" — sie war als einzige NICHT
+nummeriert und fiel deshalb durch jede Zählung.
+**DIE ZAHL WIRD IN EINEM SCHRITT AUF FÜNF GESETZT, NICHT AUF VIER.** Gemessen waren vier;
+die fünfte ist in DERSELBEN Runde nachgetragen worden (s. (v)). Eine Zwischenstufe "vier"
+wäre beim Verlassen dieser Runde bereits wieder falsch gewesen.
+**DIE REPARATUR IST DIE NUMMER, NICHT DIE ZAHL:** Jede Vorbedingung trägt ab jetzt eine, und
+die Liste zählt sich damit selbst. **Der Text der vierten ist WÖRTLICH unverändert; sie hat
+nur ihre Nummer bekommen.**
+**DASS DIE ZAHL IM TITEL ÜBERHAUPT STEHENBLEIBT, IST HIER NICHT ENTSCHIEDEN WORDEN.** Diese
+Datei führt an zwei anderen Köpfen den Grundsatz "KEINE STÜCKZAHL IN DIESEM KOPF, UND ES
+KOMMT KEINE ZURÜCK" (die Köpfe von "Entscheidungen, die über ihre Scheibe hinaus binden" und
+von "Vorrat"), und dieser Titel widerspricht ihm. **DIE ENTSCHEIDUNG DARÜBER IST EINE EIGENE
+UND STEHT AUS** — hier ist die Zahl richtiggestellt, nicht die Bauform.
+
+**"DREI VORBEDINGUNGEN" IST IN DIESER DATEI MEHRDEUTIG, UND DAS WAR ES SCHON VOR DIESER
+KORREKTUR:** VERMERK 3 und VERMERK 4 führen EIGENE Aufzählungen unter der Überschrift
+"WELCHE VORBEDINGUNGEN DER TRANSPORT-SCHEIBE DAVON NICHT BERÜHRT SIND — DREI …" bzw.
+"— VIER …". Das sind ANDERE Vorbedingungen, und sie gehören der SCHEIBE 4, nicht 1b; **GENAU
+EINE ist in beiden Mengen enthalten, die Sieben-Tage-Frist.** **EIN ZITAT DER FORM "die drei
+Vorbedingungen" OHNE ABSCHNITTSANGABE TRIFFT NICHT EINDEUTIG.**
+**DIE PROVENIENZ-ZEILE VON VERMERK 3 ("Die drei Vorbedingungen sind GEMESSEN am Dateitext")
+IST DAVON NICHT BERÜHRT UND BLEIBT WÖRTLICH** — sie zählt JENE Menge und ist für sie richtig.
+**PROVENIENZ: GEMESSEN am Dateitext (CC, 2026-09-02)** — Achse: formale Suche über das Repo
+nach "drei Vorbedingung", "vier Vorbedingung", "Vorbedingungen von 1b" und "Vorbedingungen
+eines 1b" über *.md, *.ts und *.tsx, VIER Treffer, alle in dieser Datei. Gegenprobe auf die
+Überschrift "1b als Folgetask": DREI Treffer, davon zwei KURZFORM-Zitate OHNE Zahl — die
+Titeländerung macht also keinen Zeiger tot.
+
 **(i) OB DIE PLATTFORM EINEN AUSLÖSER HERGIBT, DER HÄUFIGER ALS STÜNDLICH LÄUFT.**
-**UNGEMESSEN.** Instrument: docs/plattform-befunde.md **plus eine eigene Messung** — die
-Befund-Datei allein trägt eine Doku-Lesung, und eine Doku-Lesung ist keine Messung.
+**UNGEMESSEN — UND ZWAR OHNE JEDE VORARBEIT.**
+**SACHKORREKTUR 2026-09-02, ERSETZT UND NICHT GESTEMPELT.** Hier stand: "Instrument:
+docs/plattform-befunde.md **plus eine eigene Messung** — die Befund-Datei allein trägt eine
+Doku-Lesung, und eine Doku-Lesung ist keine Messung."
+**DIE BEFUND-DATEI TRÄGT ZU DIESER FRAGE NICHTS.** GEMESSEN am Dateitext (CC, 2026-09-02):
+docs/plattform-befunde.md hat **keinen Vercel-Abschnitt**; ihr "Verzeichnis der Abschnitte"
+führt GENAU EINEN Eintrag, "Supabase (Postgres · Auth · RLS · Vault · Backups)". Eine Suche
+über die Datei nach "cron", "Zeitplan" und "stündlich" trifft EINE Stelle, und die liegt im
+Supabase-Abschnitt (Teil (m), ein zitiertes `cron.schedule`-Beispiel aus der Vault-Doku, dort
+selbst als "EIN BEISPIEL, KEINE REGEL" eingestuft).
+**DAS INSTRUMENT IST ALSO NICHT SCHWÄCHER ALS BESCHRIEBEN, SONDERN NICHT VORHANDEN:** Die
+abschnittsweise Anbieter-Lesung für die Plattform-Klasse, zu der dieser Auslöser gehört,
+**STEHT KOMPLETT AUS** — sie ist nie gefahren worden, und es gibt keinen Ort, an dem ihre
+Befunde lägen. Die Auflage dafür steht in docs/immer-beachten.md, "EIN NEUER ANBIETER WIRD
+ERST ANGEBUNDEN, NACHDEM SEINE DOKUMENTATION ABSCHNITTSWEISE GELESEN UND DIE BEFUNDE VERORTET
+SIND — UND DAS GILT FÜR JEDE ANBIETER-KLASSE, NICHT NUR FÜR FAN-OUT-ZIELE".
+**DER UNTERSCHIED IST DER GANZE PUNKT UND KEINE SPITZFINDIGKEIT:** Wer eine SCHWÄCHERE
+Antwort erwartet, schlägt nach, findet nichts, hält es für ein Suchproblem und gibt auf.
+**Wer weiss, dass es KEINE gibt, plant die Lesung ein.**
+**KEINE EMPFEHLUNG**, welche Anbieter-Seiten zu lesen wären oder ob für diese Klasse ein
+eigener Fragenkatalog entsteht — beides ist eine eigene Entscheidung.
+**WAS AM REPO ENTSCHEIDBAR IST UND HIER NUR DEN RAHMEN ABSTECKT:** Heute ist KEIN Auslöser
+irgendeiner Frequenz eingerichtet — es gibt keine `vercel.json`, eine formale Suche über
+`src/`, `next.config.ts` und `package.json` nach "cron", "crons" und "CRON_SECRET"
+(case-insensitiv) trifft nichts, und `supabase/` trägt nur `checks`, `manual` und
+`migrations`, keine Edge Function und keinen Treffer auf `pg_cron` oder `pg_net`. **DAS
+BEANTWORTET DIE FRAGE NICHT** — es sagt, was NICHT eingerichtet ist, nicht, was die Plattform
+HERGIBT. GEMESSEN am Repo (CC, 2026-09-02).
 **DER ARCHITEKT HAT HIERZU EINE ERINNERUNG UND KEINEN BEFUND; SIE WIRD AUSDRÜCKLICH NICHT ALS
 PRÄMISSE GEFÜHRT.** Der Satz steht hier, weil eine unbelegte Erinnerung sonst beim nächsten
 Lesen wie ein Stand aussieht — und weil an dieser Zahl der ganze Zuschnitt von 1b hängt: Ein
@@ -2013,13 +2081,73 @@ LIEFERN" trägt den Zuschnitt von 1b als seinen Trigger. Drei Ausgänge können 
 und trotzdem `retry` melden; unter einem Automatismus ist das eine Schleife, die je Durchlauf
 einen echten Erneuerungsruf verbraucht.
 
-**DAZU EINE VORBEDINGUNG, DIE KEIN CODE IST — UND SIE IST DIE UNBEQUEMSTE:** Im
+**(iv) DAZU EINE VORBEDINGUNG, DIE KEIN CODE IST — UND SIE IST DIE UNBEQUEMSTE:** Im
 Publishing-Status "Testing" stirbt das **ERNEUERUNGS**-Token nach **sieben Tagen**.
 **EIN PERFEKTER AUTOMATISMUS HÄLT DAS ZUGANGSDATUM EINE WOCHE AM LEBEN UND FÄLLT DANN
 TROTZDEM AUS.** Der Statuswechsel auf "In Produktion" mit Googles Verifizierung steht
 **NEBEN** 1b, **nicht in ihm** — es ist eine Arbeit am Anbieter-Konto und keine am Code.
 **Wer 1b baut und diesen Satz überliest, hat nach sieben Tagen denselben stummen Ausfall wie
 ohne 1b, nur später.**
+**DER TEXT DIESER VORBEDINGUNG IST AM 2026-09-02 WÖRTLICH UNVERÄNDERT GEBLIEBEN; SIE HAT NUR
+IHRE NUMMER BEKOMMEN** (s. die Sachkorrektur am Kopf dieses Abschnitts).
+**DIE FRIST IST NICHT NUR GELESEN — VERMERK 6, Ableitung 3, FINDET SIE AN EIGENEN DATEN
+WIEDER:** Der Abstand der beiden Uhren beträgt dort **601 200 Sekunden, sieben Tage minus
+eine Stunde** — reine Arithmetik auf ZWEI GEMESSENEN Werten aus unserem eigenen Fluss.
+**WER NUR DEN SATZ OBEN LIEST, HÄLT DIE FRIST FÜR EINE REINE DOKU-ANGABE UND DAMIT FÜR
+SCHWÄCHER BELEGT, ALS SIE IST.** Dort steht auch, was daran NICHT auflösbar ist (ob die
+Rohwerte 3599/604799 oder 3600/604800 lauten). **VERMERK 6 IST DAFÜR NICHT ANGEFASST WORDEN.**
+PROVENIENZ: die Frist selbst **GELESEN 2026-08-25** (docs/ziel-befunde.md, Google-Abschnitt,
+Teil (af)); die Wiederfindung an eigenen Daten **GERECHNET** auf zwei Werten, die am
+2026-08-29 (OWNER) an der ausgelieferten Anwendung GEMESSEN worden sind — keine dritte
+Beobachtung.
+
+**(v) DIE BEWEIS-ROUTE IST FÜR EINEN MASCHINELLEN AUFRUFER HEUTE NICHT ERREICHBAR — ZEIGER,
+KEINE KOPIE.**
+Der Volltext steht in docs/offene-punkte.md, Eintrag "DIE MIDDLEWARE LEITET API-ROUTEN AUF
+EINE HTML-SEITE UM"; sein Trigger lautet dort wörtlich "der erste programmatische Aufrufer
+einer API-Route, **spätestens Scheibe 1b**". **ER WIRD HIER NICHT VERDOPPELT** — zwei
+Fassungen liefen auseinander.
+**WAS DER ZEIGER TRAGEN MUSS, DAMIT ER OHNE DEN VOLLTEXT BRAUCHBAR IST:** Ein Aufruf gegen
+`/api/oauth/google/refresh` **OHNE SITZUNG** endet in einer Umleitung auf `/login`, und dort
+antwortet Next mit **405**; der Handler wird nicht erreicht. **FOLGE: EIN MASCHINELLER
+AUSLÖSER KANN DIE BESTEHENDE BEWEIS-ROUTE NICHT ERREICHEN.**
+**DAS IST KEINE RANDBEDINGUNG, SONDERN EIN RIEGEL VOR DEM ZUSCHNITT:** Vorbedingung (i) fragt
+danach, OB es einen Auslöser gibt; dieser Punkt sagt, dass ein solcher Auslöser am HEUTIGEN
+Weg scheitert, **gleich wie oft er läuft**. Wer (i) beantwortet und diesen Punkt nicht liest,
+hat die halbe Frage beantwortet.
+**HIER STEHT AUSDRÜCKLICH KEINE EMPFEHLUNG**, wie die Umleitung zu umgehen oder der Zugang
+anders zu bauen wäre; der Eintrag selbst führt dazu ebenfalls keine.
+**WARUM ER BIS HEUTE NICHT IM 1b-ABSCHNITT STAND:** Er ist am 2026-08-29 aus dem Live-Test
+der Scheibe 1a entstanden und dort verortet worden, dieser Abschnitt ist am 2026-09-01
+geschrieben worden. **BEIDE TEXTE WAREN FÜR SICH VOLLSTÄNDIG; DIE VERBINDUNG FEHLTE.**
+PROVENIENZ: die Umleitung **GEMESSEN LIVE (Stefan, 2026-08-29**, Schritt 5 des Live-Tests der
+Scheibe 1a — s. den Eintrag). Dass der Trigger jenes Punktes auf 1b zeigt und im 1b-Abschnitt
+nicht genannt war, ist **GEMESSEN am Dateitext (CC, 2026-09-02)**. Die Folge für einen
+maschinellen Auslöser ist eine **ABLEITUNG** aus der gemessenen Umleitung, keine zweite
+Messung.
+
+**WAS AN 1b UNGEMESSEN BLEIBT — AN EINER STELLE, ALS ZEIGER (2026-09-02).**
+**DIESE LISTE FÜHRT NICHTS NEUES EIN.** Jeder Posten steht anderswo im Volltext; hier steht
+er, damit der nächste Zuschnitt ihn an EINER Stelle findet statt in vier Dateien. **WER EINEN
+POSTEN BRAUCHT, LIEST IHN DORT** — eine zweite Fassung liefe auseinander.
+· **DIE AUSLÖSER-FREQUENZ DER PLATTFORM.** Vorbedingung (i) in diesem Abschnitt; dort steht
+  auch, dass es zu ihr KEINE abgelegte Anbieter-Lesung gibt.
+· **OB GOOGLE EIN VORHERIGES ZUGANGSDATUM BEI AUSSTELLUNG EINES NEUEN ENTWERTET.**
+  Vorrats-Eintrag 9, ZWEITE Achse ("AUSSTELLUNGS- UND SCHREIBREIHENFOLGE KÖNNEN DIVERGIEREN")
+  — dort ausdrücklich als UNGEMESSEN geführt; derselbe Sachverhalt steht als ACHSE 2 im
+  Kommentarkopf von src/lib/oauth/token-refresh.ts.
+· **WAS GOOGLE NACH ABLAUF DER SIEBEN-TAGE-FRIST ANTWORTET** — Statuscode, Rumpfform, und ob
+  überhaupt `invalid_grant`. docs/ziel-befunde.md, Teil (bz) ("DER FEHLERCODE FÜR EIN TOTES
+  ERNEUERUNGS-TOKEN IST UNGEMESSEN"); Teil (bd) hält `invalid_grant` GELESEN fest, aber für
+  den CODE-TAUSCH und NICHT für die ERNEUERUNG.
+· **OB `refresh_token_expires_in` NACH EINEM STATUSWECHSEL WEITER GELIEFERT WIRD.**
+  docs/ziel-befunde.md, Teil (bx) — dort ausdrücklich offen, mit dem Satz "WER SIE TRENNEN
+  WILL, BRAUCHT DIESELBE MESSUNG NACH DER VERIFIZIERUNG".
+**WAS DIESE LISTE NICHT IST: eine Reihenfolge, eine Auswahl, oder eine Aussage darüber,
+welcher Posten vor einem Zuschnitt zwingend beantwortet sein muss.** Sie führt zusammen, was
+ungemessen ist; entschieden ist damit nichts.
+PROVENIENZ: reine ZUSAMMENFÜHRUNG bestehender Angaben, GEMESSEN am Dateitext (CC,
+2026-09-02). **Keine der vier Angaben ist hier neu erhoben**, und keine ist umformuliert.
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -3000,8 +3128,29 @@ niemand etwas tut.
 
 **WER DIESEN VERMERK ALS "GOOGLE IST FERTIG" LIEST, HAT EIN ZIEL, DAS EINE STUNDE AM TAG
 SENDET.** Der Schnitt erlaubt 4 ohne 1b — das ist eine Aussage über die BAUBARKEIT, nicht über
-die Brauchbarkeit. **Die Roadmap-Zeile 11.2 bleibt offen.** Die drei Vorbedingungen eines
-1b-Zuschnitts stehen unverändert im Abschnitt "1b als Folgetask".
+die Brauchbarkeit. **Die Roadmap-Zeile 11.2 bleibt offen.** Die **fünf** Vorbedingungen eines
+1b-Zuschnitts stehen im Abschnitt "1b als Folgetask".
+
+**SACHKORREKTUR 2026-09-02 — DIE ZAHL UND EIN WORT. ERSETZT, NICHT GESTEMPELT.** Hier stand
+"Die **drei** Vorbedingungen eines 1b-Zuschnitts stehen **unverändert** im Abschnitt". Beides
+trifft nicht mehr zu: Der Abschnitt führte schon damals VIER (die vierte war nicht
+nummeriert), und mit der Runde vom 2026-09-02 sind es FÜNF. **Das Wort "unverändert" ist
+ERSATZLOS ENTFALLEN** — es behauptet Stillstand über einen Abschnitt, der sich geändert hat,
+und wäre ab dieser Runde eine falsche Entwarnung für jeden, der dort nicht nachsieht.
+**DIE AUSSAGE DIESES ABSCHNITTS IST DAVON UNBERÜHRT:** 1b bleibt für das Produkt nicht
+optional. **DIE BEGRÜNDUNG DER ZAHL STEHT EINMAL IM 1b-ABSCHNITT** und wird hier nicht
+verdoppelt. GEMESSEN am Dateitext (CC, 2026-09-02).
+
+**PRÄZISIERUNG 2026-09-02 ZU "in ihrer stummen Form" — ERGÄNZT UND NICHT ERSETZT: DER SATZ
+DARÜBER IST NICHT FALSCH.** Zu eng ist nicht seine Aussage, sondern ihr Geltungsbereich.
+**STUMM IST DIE OBERFLÄCHE, NICHT DER BETRIEB.** GEMESSEN am Code (CC, 2026-09-02):
+`listConfiguredTargets` (src/app/projects/actions.ts) selektiert aus `project_secrets`
+ausschliesslich `target` — die Karte sagt "Zugangsdaten hinterlegt", solange die Zeile
+existiert, unabhängig von jedem Ablauf. **DAS SERVER-LOG SCHWEIGT DAGEGEN NICHT:**
+`usableTokenFromRow` (src/lib/capi/token.ts) schreibt bei toter Uhr 1 eine Zeile JE BEACON.
+**WARUM DAS HIER STEHT UND NICHT NUR IM VORRAT:** Aus "stumm" folgt sonst, es gebe nichts zu
+beobachten — und damit keine Live-Test-Achse für 1b. Die gibt es. Volltext als
+Vorrats-Eintrag 42 und 43; hier nur der Zeiger.
 
 ---
 
@@ -4605,6 +4754,73 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     PROVENIENZ: beide Zusätze **GELESEN 2026-09-02** (Doku-Lauf 8, s. Teil (cc)); dass der
     Dekodier-Fehler vor der Zuordnung liegt, ist eine **ABLEITUNG** aus den zwei gelesenen
     Enum-Beschreibungen, **keine Messung**.
+
+42. **DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER,
+    UNGEDROSSELT.** GEMESSEN am Code (CC, 2026-09-02): `usableTokenFromRow`
+    (src/lib/capi/token.ts, modul-privat) schreibt bei toter Uhr 1
+    `console.error("[capi/resolve] secret unusable", …)` mit dem `reason`
+    `access_token_expired` und gibt `null` zurück.
+    **DER KOMMENTARKOPF DERSELBEN FUNKTION BENENNT DIE LAGE BEREITS SELBST** — "Es gibt KEINE
+    Drosselung. Ein Projekt mit kaputtem Chiffrat schreibt eine Zeile PRO BESUCHER" —,
+    allerdings am Fall des KAPUTTEN CHIFFRATS; **die tote Uhr 1 liegt auf demselben Weg und
+    ist dort nicht genannt.**
+    **DIE ZEILE NENNT KEIN PROJEKT.** Sie trägt den Ziel-Namen und einen SELBSTVERGEBENEN
+    Grund; die `projectId` fehlt absichtlich, und der Kommentar begründet das mit dem Pfad
+    selbst — er läuft bei JEDEM Besucher JEDER Kundenseite, und eine Projekt-Kennung je
+    Beacon wäre eine Datenerhebung, die niemand beschlossen hat.
+    **WARUM DAS ZÄHLT — IN ZWEI RICHTUNGEN, UND BEIDE GEHÖREN HIN:**
+    · **ES IST HEUTE DIE EINZIGE BEOBACHTBARE SIGNATUR DES BRUCHS**, den Scheibe 1b beheben
+      soll — also die Live-Test-Achse für 1b. Sie ist eine ANWESENHEIT und keine Abwesenheit,
+      anders als der Erfolgsbeleg des Adapters, der nach VERMERK 10, Abschnitt (d), ein
+      SCHWEIGEN ist; und sie ist im Wortlaut von allen drei Adapter-Zeilen unterscheidbar.
+      **SIE ORDNET SICH ABER KEINEM PRÜFLING ZU**, weil sie kein Projekt nennt — wer mit ihr
+      misst, misst über alle Projekte zugleich.
+    · **ES IST UNBEGRENZTES SCHREIBEN AUF DEM MEISTGETROFFENEN PFAD DER PLATTFORM.** Nach
+      Ablauf der Stunde erzeugt jeder Besucher jeder Seite eines betroffenen Projekts eine
+      Fehlerzeile, ohne Zählung und ohne Ende.
+    **KEIN VORSCHLAG ZUR DROSSELUNG**, und ausdrücklich auch keiner dazu, ob die `projectId`
+    hineingehörte. GEMELDET 2026-09-02, NICHT GEBAUT.
+    TRIGGER: der Zuschnitt der Scheibe 1b — er berührt beide Richtungen zugleich.
+
+43. **"STUMM" GILT FÜR DIE OBERFLÄCHE, NICHT FÜR DEN BETRIEB.** Diese Datei sagt an ZWEI
+    Stellen, der Ausfall nach Ablauf des Zugangsdatums sei "in ihrer stummen Form" —
+    Festlegung (4) des Zuschnitts der Scheibe 4 und VERMERK 10, Abschnitt (g). **BEIDE
+    BLEIBEN RICHTIG UND SIND DESHALB ERGÄNZT UND NICHT ERSETZT WORDEN;** zu eng ist nicht die
+    Aussage, sondern ihr Geltungsbereich.
+    GEMESSEN am Code (CC, 2026-09-02):
+    · **DIE OBERFLÄCHE SCHWEIGT WIRKLICH.** `listConfiguredTargets`
+      (src/app/projects/actions.ts) selektiert aus `project_secrets` ausschliesslich
+      `target` — kein `secret_enc`, keine Uhr. Die Karte sagt "Zugangsdaten hinterlegt",
+      solange die Zeile existiert, unabhängig von jedem Ablauf.
+    · **DAS SERVER-LOG SCHWEIGT NICHT.** S. Vorrats-Eintrag 42; hier nicht verdoppelt.
+    **WARUM DIE UNTERSCHEIDUNG FÜR EINEN ZUSCHNITT ZÄHLT:** Aus "stumm" folgt sonst, es gebe
+    nichts zu beobachten — und damit keine Live-Test-Achse. **Die gibt es.**
+    GEMELDET 2026-09-02, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: der Zuschnitt der Scheibe 1b, ODER jede Arbeit, die eine Anzeige des
+    Ablauf-Zustands in der Oberfläche berührt.
+
+44. **DIE BEWEIS-ROUTE HAT KEINEN AUFRUFER IN DER ANWENDUNG.** Diese Datei sagt an zwei
+    Stellen "nach einem Druck auf die Beweis-Route" (Festlegung (4) des Zuschnitts der
+    Scheibe 4 und VERMERK 10, Abschnitt (g)).
+    GEMESSEN am Repo (CC, 2026-09-02; Achse: formale Suche über `src/` nach "oauth/google"
+    ausserhalb von `src/app/api/oauth/`, dazu eine Suche nach "fetch" in `src/components/`;
+    POSITIVKONTROLLE: dieselbe Suche findet den Verbinden-Weg): **Es gibt kein Bedienelement,
+    das `/api/oauth/google/refresh` ruft.** Der einzige Oberflächen-Bezug zu einer
+    Google-OAuth-Route steht in `src/components/TargetCard.tsx` und ruft
+    `/api/oauth/google/start` — der Knopf "Google verbinden" bzw. "Google neu verbinden".
+    **ES IST KEIN WIDERSPRUCH, SONDERN EINE ZU WEICHE FORMULIERUNG — UND DIESELBE DATEI KENNT
+    DIE SACHE GENAUER:** Entscheidung **P3** (s. "Die Entscheidungen vom 2026-08-29") sagt
+    wörtlich "DER PREIS IST BENANNT: Der Live-Test braucht einen `fetch` aus der eingeloggten
+    Anwendung statt einer URL-Eingabe." **ZWEI STELLEN, ZWEI GENAUIGKEITEN; BEIM ZUSCHNITT
+    ZÄHLT DIE GENAUERE.**
+    **WAS AM CODE TRÄGT:** Die Stunde beginnt in der Praxis mit dem Verbinden bzw.
+    Neu-Verbinden; die zweite genannte Quelle ist nur VON HAND erreichbar. **UND FÜR EINEN
+    MASCHINELLEN AUFRUFER IST SIE GAR NICHT ERREICHBAR** — s. Vorbedingung (v) im Abschnitt
+    "1b als Folgetask".
+    GEMELDET 2026-09-02, NICHT GEBAUT. **KEINE EMPFEHLUNG**, ob ein Bedienelement entstehen
+    sollte.
+    TRIGGER: der Zuschnitt der Scheibe 1b, ODER die erste Arbeit, die den Ablauf-Zustand in
+    der Oberfläche sichtbar macht.
 
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT

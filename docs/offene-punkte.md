@@ -1407,6 +1407,22 @@ aufeinander; sie liegen alle hier und finden einander.
   PROVENIENZ: GEMESSEN LIVE (Stefan, 2026-08-29). Die Aussage über den unerreichbaren
   401 ist eine ABLEITUNG aus dieser Beobachtung; die Aussage über den GET-Fall ist eine
   ÜBERTRAGUNG auf einen Fall, der nicht gefahren wurde, und ausdrücklich keine Messung.
+  NACHGEZOGEN 2026-09-02 — DIESER PUNKT IST JETZT AUCH DORT VERORTET, WO ER GEBRAUCHT WIRD:
+  Er steht seit dem 2026-09-02 als FÜNFTE VORBEDINGUNG im Abschnitt "1b als Folgetask"
+  (docs/aktiver-stand.md) — als ZEIGER, NICHT als Kopie. DER VOLLTEXT BLEIBT HIER; zweimal
+  geschrieben liefe er auseinander.
+  WARUM DAS NACHZUTRAGEN WAR: Der Trigger oben zeigt seit dem 2026-08-29 auf Scheibe 1b, der
+  1b-Abschnitt ist am 2026-09-01 geschrieben worden und nannte diesen Punkt nicht. BEIDE
+  TEXTE WAREN FÜR SICH VOLLSTÄNDIG; DIE VERBINDUNG FEHLTE — und ein Zuschnitt, der nur den
+  1b-Abschnitt liest, hätte sie nicht gefunden.
+  WAS DER ZEIGER DORT TRÄGT, DAMIT ER OHNE DIESEN VOLLTEXT BRAUCHBAR IST: dass ein Aufruf
+  ohne Sitzung garantiert die Anmeldeseite trifft, und die Folge — ein maschineller Auslöser
+  kann die bestehende Beweis-Route nicht erreichen, gleich wie oft er läuft.
+  DER TRIGGER UND DER GESAMTE TEXT DARÜBER SIND NICHT ANGETASTET, UND ES IST KEINE ANTWORT
+  HINZUGEKOMMEN: Ob und was gebaut wird, ist hier so wenig entschieden wie zuvor.
+  PROVENIENZ: dass der Punkt im 1b-Abschnitt nicht genannt war, ist GEMESSEN am Dateitext
+  (CC, 2026-09-02). Die Messung der Umleitung selbst bleibt die vom 2026-08-29 und ist
+  unberührt; die Folge für einen maschinellen Auslöser ist eine ABLEITUNG daraus.
 
 - EIN AUTORISIERUNGS-FLUSS, DER AUF EINER ANDEREN ADRESSE STARTET ALS DER REGISTRIERTEN
   WEITERLEITUNG, ENDET GARANTIERT IN no_state (Trigger: EINGETRETEN — jeder Start über

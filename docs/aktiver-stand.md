@@ -2183,6 +2183,33 @@ Teil (af)); die Wiederfindung an eigenen Daten **GERECHNET** auf zwei Werten, di
 2026-08-29 (OWNER) an der ausgelieferten Anwendung GEMESSEN worden sind — keine dritte
 Beobachtung.
 
+**NACHTRAG 2026-09-03 — DIE FRIST HAT JETZT EIN KONKRETES DATUM AN UNSEREN EIGENEN DATEN.
+DER TEXT DER VORBEDINGUNG DARÜBER BLEIBT WÖRTLICH STEHEN; dieser Nachtrag tritt DANEBEN.**
+**AUS DEM LIVE-TEST DES SCHRITTS 1b-1** (GEMESSEN 2026-09-03, OWNER; s. VERMERK 11,
+Abschnitt (b)): `accessTokenExpiresAt` **1788431623**, `refreshTokenExpiresAt.epochSeconds`
+**1788868675**, Abstand **437 052 Sekunden**.
+**DAS ERNEUERUNGS-TOKEN STIRBT AM 2026-09-08 GEGEN 11:58 UTC.**
+**SACHKORREKTUR AN DER VORGABE DIESER RUNDE, GERECHNET STATT ÜBERNOMMEN:** Die Vorgabe
+nannte "gegen 12:07 UTC". `1788868675` ist **2026-09-08T11:57:55Z** — rund neun Minuten
+früher. Die Zahl ist hier NEU GERECHNET und nicht abgeschrieben worden; die vorgegebene ist
+nicht übernommen.
+**DIE ABWEICHUNG ZU VERMERK 6 IST KEIN WIDERSPRUCH, und das gehört zwingend dazu:** Dort
+betrug der Abstand der beiden Uhren **601 200 Sekunden** (sieben Tage minus eine Stunde),
+weil UNMITTELBAR NACH DEM VERBINDEN gemessen wurde — beide Uhren waren frisch. **Hier steht
+ein ÄLTERES Erneuerungs-Token neben einem frischen Zugangsdatum**, und der Abstand
+schrumpft entsprechend: 601 200 minus 437 052 sind 164 148 Sekunden, also **rund 1,9 Tage**.
+Der Abstand der beiden Uhren ist damit **kein Messwert über die Frist, sondern über das
+ALTER des Erneuerungs-Tokens** — wer ihn als Frist liest, liest ihn falsch.
+**DIE UNSCHÄRFE AUS VERMERK 6 TRÄGT DAS DATUM MIT:** Ob die Rohwerte 3599/604799 oder
+3600/604800 lauten, ist **NICHT auflösbar** — die Antwort des Anbieters wird nicht geloggt,
+und das bleibt so. Das Datum ist auf die Sekunde gerechnet und auf diese Unschärfe hin zu
+lesen.
+**KEINE EMPFEHLUNG**, was vor dem 2026-09-08 zu geschehen hat — weder ein Neu-Verbinden noch
+ein Statuswechsel ist hier vorgeschlagen. Die Vorbedingung selbst bleibt, was sie ist: eine
+Arbeit am ANBIETER-KONTO und keine am Code.
+PROVENIENZ: die zwei Werte **GEMESSEN 2026-09-03 (OWNER)**; Abstand, Datum und die
+Differenz zu VERMERK 6 **GERECHNET** (CC, 2026-09-03) — keine zweite Beobachtung.
+
 **(v) DIE BEWEIS-ROUTE IST FÜR EINEN MASCHINELLEN AUFRUFER HEUTE NICHT ERREICHBAR — ZEIGER,
 KEINE KOPIE.**
 Der Volltext steht in docs/offene-punkte.md, Eintrag "DIE MIDDLEWARE LEITET API-ROUTEN AUF
@@ -2282,6 +2309,50 @@ HÄLT KEINEN ZUGANG AM LEBEN — eine Funktion, die niemand ruft, erneuert nicht
 1b-1 gleichlautend.** Der Nachtrag dazu steht am Ende jener Entscheidung und wird hier NICHT
 verdoppelt.
 
+### Vollzogen — was im Zuschnitt des Schritts 1b-1 stand und wohin es gegangen ist
+
+**DER TITEL WEICHT ABSICHTLICH AB, aus demselben Grund wie bei Scheibe 3, der Fix-Scheibe,
+Scheibe 2 und Scheibe 4:** "Vollzogen — was hier stand und wohin es gegangen ist" steht in
+dieser Datei bereits zweimal und ist als Hausform über Standdateien hinweg
+Hebungs-Kandidat 5. **DIE ZITATE UNTEN STEHEN OHNE `###`-MARKE** — die Auflage aus
+docs/immer-beachten.md, "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT
+VERZEICHNIS NICHT" (Zusatz 2026-08-27): Ein Titel-Zitat mit Marke kollidierte für immer mit
+jeder künftigen Überschrift desselben Wortlauts.
+
+VERDICHTET AM 2026-09-03, nach dem Bau-Commit `6bc01ed` und dem Live-Test. Hier standen die
+ANWEISUNGEN FÜR den Schritt; sie sind mit dem Vollzug abgelaufen. DREI Unterabschnitte sind
+entfallen. **JEDES DER DREI STÜCKE TAUCHT IN VERMERK 11 WIEDER AUF — das ist die Bedingung,
+unter der überhaupt gestrichen werden durfte:** Der Zuschnitt ist der Maßstab, gegen den der
+Vermerk misst, und der Verlauf ist kein Ersatz (er wird beim Pflicht-Gate nicht gelesen).
+
+- **"Was hineingehört — drei Stücke"** nannte die Klammer, die Obergrenze aus
+  Vorrats-Eintrag 10 und die Umverdrahtung der Beweis-Route. **Alle drei sind gebaut und
+  sagen sich am Code selbst.** **WO ES WIEDER AUFTAUCHT:** VERMERK 11, Abschnitt (a), in
+  Symbolen — einschliesslich der Angabe, dass `attempts` NICHT nach aussen geht.
+  **SEINE EINE FORTWIRKENDE ZEILE IST NICHT VERSCHWUNDEN:** Dass der Riegel aus
+  Vorbedingung (v) weder berührt noch umgangen wird — die Route bleibt POST, bleibt hinter
+  Sitzung und Eigentums-Gate —, steht als Live-Schritt 5 in VERMERK 11, Abschnitt (b), und
+  ist dort GEMESSEN statt zugesagt.
+- **"Die offene Entwurfsfrage — 'Obergrenze' hat drei Lesarten"** legte drei Lesarten vor
+  und entschied keine. **SIE IST ENTSCHIEDEN** (OWNER, 2026-09-03): gebaut ist die
+  WIEDERHOLUNG MIT DECKEL INNERHALB EINES AUFRUFS. **WO ES WIEDER AUFTAUCHT:** VERMERK 11,
+  Abschnitt (a) — dort steht auch der Grund, warum die dritte Lesart im Scope NICHT BAUBAR
+  ist, und **dieser Grund bindet über den Schritt hinaus**: `unexpected` bündelt dauerhafte
+  und vorübergehende Fälle, und die Angabe, die sie trennte, wird in `token-refresh.ts`
+  verworfen. Wer die Klassifikation später angeht, findet die Vorbedingung dort.
+- **"Die Beweis-Achse des Schritts 1b-1"** war die ANLEITUNG für den Live-Test — die
+  bestehende Route, `fetch` aus dem eingeloggten Tab, kein Bedienelement. **Sie ist
+  gefahren.** **WO ES WIEDER AUFTAUCHT:** VERMERK 11, Abschnitt (b) mit den fünf Schritten,
+  und Abschnitt (c) mit dem, was sie NICHT gezeigt hat — dort um den Befund erweitert, dass
+  der Nachweis eine REGRESSION ist und keine Erneuerung.
+
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WORDEN IST, obwohl es nach Anweisung aussieht — im
+Zweifel stehengelassen:** die drei Befunde, die Form je Projekt samt ihrem Grund, die
+Ausschlüsse mit ihren Gründen, die vier Invarianten und "Was dieser Zuschnitt offen lässt".
+Sie sind GRÜNDE, BEFUNDE und GRENZEN, keine Anweisungen, und **jede von ihnen bindet
+1b-2** — die Befunde tragen die Takt-Wahl, die Ausschlüsse sagen, was dort erst fällig
+wird, und die Invarianten gelten dem gebauten Zustand, nicht dem Bauvorgang.
+
 ### Die drei Befunde, die diesen Zuschnitt tragen
 
 **GEMESSEN am Repo (CC, 2026-09-03), Aufklärungsrunde desselben Tages.** Als Ort steht der
@@ -2332,20 +2403,6 @@ in der `refreshAccessToken` selbst schon steht (s. den Abschnitt "Was sie ist" d
 Scheibe 1a: "sie prüft KEIN Eigentum"), und derselbe Preis: **Wer sie ohne Eigentums-Gate
 ruft, hat kein Eigentums-Gate, und nichts wird davon rot.**
 
-### Was hineingehört — drei Stücke
-
-· **DIE KLAMMER** selbst, in der Form oben.
-· **DIE OBERGRENZE AUS VORRATS-EINTRAG 10 — SIE LIEGT IN 1b-1 UND NICHT IN 1b-2.** Jener
-  Eintrag trägt den Zuschnitt der Scheibe 1b als seinen TRIGGER, also den des PAKETS; **der
-  Schritt, der sie zahlt, ist dieser hier.** Welche Gestalt die Obergrenze bekommt,
-  entscheidet die Entwurfsfrage weiter unten und nicht dieser Absatz.
-· **DIE UMVERDRAHTUNG DER BESTEHENDEN BEWEIS-ROUTE AUF DIE KLAMMER.**
-  **SIE MACHT 1b-1 DEMOBAR, OHNE DASS EIN NEUER ZUGANG ENTSTEHT** — es kommt kein
-  Pfad hinzu, es wechselt nur, was hinter dem bestehenden liegt. **DER RIEGEL AUS
-  VORBEDINGUNG (v) WIRD WEDER BERÜHRT NOCH UMGANGEN:** Die Route bleibt POST, bleibt hinter
-  Sitzung und Eigentums-Gate, und ein Aufruf ohne Sitzung endet weiterhin dort, wo er heute
-  endet.
-
 ### Was ausdrücklich draussen bleibt, je mit seinem Grund
 
 · **JEDER AUSLÖSER** — kein `pg_cron`, kein `pg_net`, keine `vercel.json`, keine
@@ -2387,28 +2444,6 @@ Geschäftslogik dahinter, sauber getrennt.
 **(I-4) DER ACHSE-2-KOMMENTARKOPF VON `src/lib/oauth/token-refresh.ts` BLEIBT UND WIRD NICHT
 ABGESCHWÄCHT.** Er trägt den ungemessenen Sachverhalt aus Vorrats-Eintrag 9, zweite Achse;
 eine Klammer davor macht ihn nicht kleiner.
-
-### Die offene Entwurfsfrage — "Obergrenze" hat drei Lesarten
-
-**SIE STEHT HIER ALS FRAGE UND NICHT ALS ENTSCHEIDUNG.**
-· **WIEDERHOLUNG MIT DECKEL INNERHALB EINES AUFRUFS.**
-· **EIN PERSISTIERTER ZÄHLER ÜBER AUFRUFE HINWEG.**
-· **EINE EHRLICHERE AUSGANGS-KLASSIFIKATION**, die `retry` nur dort meldet, wo Wiederholen
-  etwas ändern kann.
-**DIE ZWEITE FÄLLT AUS DIESEM SCHRITT:** Sie braucht ZUSTAND und WISSEN ÜBER DEN TAKT, und
-beides gibt es erst mit 1b-2.
-**ZWISCHEN DER ERSTEN UND DER DRITTEN ENTSCHEIDET DER ARCHITEKT AM PLAN. HIER NICHT
-ENTSCHIEDEN, KEINE EMPFEHLUNG.**
-
-### Die Beweis-Achse des Schritts 1b-1
-
-**DIE BESTEHENDE BEWEIS-ROUTE, AUS DEM EINGELOGGTEN TAB PER `fetch`.** Das ist der Preis,
-den Entscheidung **P3** (s. "Die Entscheidungen vom 2026-08-29") ausdrücklich benannt hat:
-"Der Live-Test braucht einen `fetch` aus der eingeloggten Anwendung statt einer
-URL-Eingabe."
-**KEIN BEDIENELEMENT, KEIN NEUER ZUGANG.** Der Schritt fügt der Oberfläche nichts hinzu; wer
-hier einen Knopf baut, hat nicht mehr 1b-1 gebaut. Vorrats-Eintrag 44 hält
-ausdrücklich fest, dass es heute keines gibt, und dieser Zuschnitt ändert daran nichts.
 
 ### Was dieser Zuschnitt offen lässt
 
@@ -3463,6 +3498,203 @@ zwei Logzeilen), der Nebenbefund zu Vorrats-Eintrag 4 (ebenso), und die Aufteilu
 Test-Zuwachses auf die zwei Commits (aus zwei gemessenen Endpunkten). Die Einordnung von
 Schritt 3 in (e) ist eine ARCHITEKTEN-KORREKTUR vom 2026-09-01. Der Werkzeug-Befund in (h) ist
 GEMESSEN am eigenen Lauf (CC, 2026-09-01).
+
+### VERMERK 11 (Bau-Commit 6bc01ed) — DER SCHRITT 1b-1 IST GEBAUT UND LIVE GEPRÜFT
+
+**DER COMMIT IST AM REPO ERMITTELT** (CC, 2026-09-03, `git log`), nicht aus einem Prompt
+übernommen: `6bc01ed` (`feat(oauth)`), voller Hash
+`6bc01edbacd9bc37ae45aeb8822a9e519533effd`.
+**IM KOPF STEHT DER BAU-COMMIT UND AUSDRÜCKLICH NICHT DER COMMIT DIESES VERMERKS** — die
+Bauform von VERMERK 10, aus demselben Grund: Der Vermerk-Commit ist ein `docs(claude)` und
+entsteht erst mit dieser Runde. **DIE DATEI HAT DAMIT KEINE LÜCKE.**
+
+**DER TITEL SAGT "LIVE GEPRÜFT" UND NICHT "LIVE BEWIESEN", anders als die VERMERKE 6 bis
+10.** Das ist keine Bescheidenheit, sondern der Befund aus Abschnitt (c): Der Live-Test hat
+eine REGRESSION belegt und die Klammer selbst nicht erreicht.
+
+---
+
+**(a) WAS GEBAUT IST — IN SYMBOLEN, GEMESSEN am Repo (CC, 2026-09-03).**
+
+Der Bau-Commit fasste FÜNF Dateien an, ZWEI davon neu.
+
+· **`runRefresh`** (`src/lib/oauth/refresh-run.ts`, neu) — die Klammer. REINE Datei, KEINE
+  Direktive; sie erbt `server-only` über den Import von `token-refresh.ts`, und ihr Kopf
+  benennt das (dieselbe Bauform wie `connect-return.ts`). Sie wiederholt **ausschliesslich
+  bei `kind:"retry"`** und höchstens `REFRESH_MAX_ATTEMPTS` mal; jeder andere Ausgang kehrt
+  sofort zurück. Bei erschöpftem Deckel eine Zeile
+  `[oauth/refresh-run] exhausted { projectId, target, attempts }`.
+· **`REFRESH_MAX_ATTEMPTS = 3` — GESETZT, NICHT GEMESSEN**, als benannte Konstante an EINER
+  Stelle, damit ihre Änderung ein sichtbarer Diff ist.
+· **`RefreshRunResult = { outcome, attempts }`.** `outcome` ist der Ausgang von
+  `refreshAccessToken`, UNVERÄNDERT — die Klammer deutet nichts um.
+· **DIE BEWEIS-ROUTE IST UMVERDRAHTET** (`src/app/api/oauth/google/refresh/route.ts`): zwei
+  Stellen, Import und Aufruf. **Alles bis zum Eigentums-Gate ist zeichengleich**, Rumpf und
+  Statuscodes ebenso; `attempts` geht NICHT nach aussen.
+· **`T15b`** (`src/lib/oauth/token-refresh.test.ts`) — der Wächter über die Umverdrahtung,
+  mit seiner Grenze an sich selbst. **`T15` ist unangetastet.**
+
+**EIN AUSSCHLUSS, DER ALS GEBAUTE INVARIANTE IM KOPF DER KLAMMER STEHT: EIN WURF IST KEIN
+AUSGANG.** Kein `try/catch` um den Aufruf, keine Umdeutung eines Wurfs in einen
+retry-Ausgang, keine Wiederholung nach einem Wurf. **DER GRUND: Die Schleife zählt
+RÜCKGABEN**, und eine Schleife ist genau die Stelle, an der ein Wurf versehentlich zu einem
+erfundenen Ausgang wird — dann meldete die Klammer "nochmal versuchen" für einen Zustand,
+über den sie nichts weiss. Test **K6** hält es fest.
+
+**WAS VERWORFEN IST, UND DER GRUND BINDET ÜBER DIESEN SCHRITT HINAUS:** die dritte Lesart
+der Obergrenze — eine EHRLICHERE AUSGANGS-KLASSIFIKATION, die `retry` nur dort meldet, wo
+Wiederholen etwas ändern kann. **SIE IST IM SCOPE NICHT BAUBAR** (GEMESSEN am Code, CC,
+2026-09-03): Vier der fünf retry-Gründe sind aus der Bauform als vorübergehend erkennbar,
+der fünfte nicht — **`unexpected` bündelt** ein 4xx≠`invalid_grant` (darunter dauerhafte
+Fälle wie `invalid_client` und vorübergehende wie 429) UND eine unbrauchbare 2xx-Antwort;
+die einzige Angabe, die sie trennte (der Statuscode bzw. der fehlende Feldname), wird in
+`token-refresh.ts` **geloggt und verworfen**. Eine Klassifikation ohne diese Angabe wäre
+ERFUNDEN. **BAUBAR WIRD SIE ERST, WENN `token-refresh.ts` DEN STATUS IM ERGEBNIS TRÄGT** —
+also mit einer Änderung an jener Datei, und die stand unter Scope-Schutz.
+
+**DIE VIER GATES WAREN VOR DEM COMMIT GRÜN** (`tsc --noEmit`, `eslint`, `vitest run`,
+`next build`). **SUITE: 72 Dateien / 1465 Tests** (vorher 71/1457, VERMERK 10) — **eine
+Datei und acht Läufe mehr**, kein Bestandstest gefallen oder verändert. `eslint` meldet 0
+Fehler und die eine Bestands-Warnung aus Vorrats-Eintrag 26.
+
+---
+
+**(b) DER LIVE-NACHWEIS — GEMESSEN 2026-09-03 vom OWNER**, fünf Schritte per `fetch` aus dem
+eingeloggten Tab (der Preis aus Entscheidung P3).
+
+· **Schritt 1, die Regression:** HTTP 200,
+  `{"state":"ok","accessTokenExpiresAt":1788431623,`
+  `"refreshTokenExpiresAt":{"kind":"at","epochSeconds":1788868675}}`.
+  **GENAU DREI FELDER, KEIN `attempts`** — die Zusage "kein neues Rumpf-Feld" ist am
+  ausgelieferten Stand eingelöst.
+· **Schritt 2, unmittelbar danach:** identischer Rumpf, **`accessTokenExpiresAt`
+  UNVERÄNDERT**.
+· **Schritt 3, fremdes Projekt:** HTTP 404.
+· **Schritt 4, formwidrige Kennung:** HTTP 404, `{"error":"not_found"}`.
+· **Schritt 5, ohne Sitzung:** Umleitung auf `/login`, dort **405**, leerer Rumpf. **Das ist
+  korrektes Verhalten und kein Befund** — der offene Punkt "DIE MIDDLEWARE LEITET API-ROUTEN
+  AUF EINE HTML-SEITE UM" beschreibt genau das, und sein Sachverhalt ist durch 1b-1 nicht
+  eingetreten.
+
+**WAS SCHRITT 3 UND 4 TRAGEN, und es ist der sicherheitsrelevante Teil:** Die Reihenfolge
+**Form → Sitzung → Eigentum → KLAMMER → Funktion** hält am ausgelieferten Stand. Ein
+`state`-Rumpf statt eines 404 hätte geheissen, die Klammer läuft VOR dem Gate — und das Gate
+ist die einzige Isolationsschicht dieses Pfades.
+
+---
+
+**(c) WAS DER LIVE-TEST NICHT GEZEIGT HAT — DIESER ABSCHNITT IST DER WICHTIGERE UND STEHT
+DESHALB NICHT ALS FUSSNOTE.**
+
+· **ES IST KEINE ERNEUERUNG NACHGEWIESEN. DER NACHWEIS IST EINE REGRESSION.**
+  **SCHRITT 2 IST BELEGT ÜBER DEN FRÜHEN AUSGANG "reichte noch":** Nach Schritt 1 trug das
+  Zugangsdatum noch rund eine Stunde, also weit mehr als den Vorlauf von 300 Sekunden; der
+  identische Rumpf ist genau das erwartete Bild.
+  **FÜR SCHRITT 1 IST ES AM RÜCKGABEWERT NICHT ENTSCHEIDBAR, UND DIESE PRÄZISIERUNG GEHÖRT
+  HIERHER, WEIL SIE SONST BEIM NÄCHSTEN LESEN ALS GEKLÄRT GILT:** `refreshAccessToken`
+  liefert für "erneuert" und für "reichte noch" **denselben `kind:"ok"`** und trennt die
+  zwei Fälle nicht (Festlegung des Ergebnistyps, T2 in `token-refresh.test.ts` pinnt es).
+  **DER SCHLÜSSEL, DER ES AUFLÖSTE, IST NICHT PROTOKOLLIERT — DIE UHRZEIT DES AUFRUFS**
+  (GERECHNET auf den zwei gemessenen Werten, CC, 2026-09-03): Hätte Schritt 1 erneuert,
+  wäre er **exakt um 2026-09-03T09:33:44Z** gelaufen (`accessTokenExpiresAt` minus 3599 s);
+  hätte er nicht erneuert, irgendwann **vor 2026-09-03T10:28:43Z**. Lief er merklich nach
+  09:33:44Z, war es keine Erneuerung.
+  **DIE AUSSAGE DIESES PUNKTES IST VON DER OFFENEN FRAGE UNBERÜHRT: NACHGEWIESEN IST EINE
+  ERNEUERUNG IN KEINEM DER BEIDEN FÄLLE** — denn der Rückgabewert trennt sie nicht. Wer
+  einen Erneuerungs-Nachweis braucht, braucht ein anderes Instrument als diese Route.
+· **DASS DIE KLAMMER IM DEPLOYTEN PFAD LIEGT, IST NICHT GEZEIGT.** Der Erfolgsfall
+  durchläuft sie in EINEM Versuch und hinterlässt **keine Spur** — weder im Rumpf noch im
+  Log. **Ihre Anwesenheit belegen allein `T15b` und `K1` bis `K6`**, und die laufen gegen
+  Attrappen.
+· **DASS DIE OBERGRENZE GREIFT, IST NICHT GEZEIGT.** Dazu bräuchte es einen echten,
+  wiederholten `retry` von Google — nicht herstellbar. Die Zeile
+  `[oauth/refresh-run] exhausted` ist im Vercel-Log **nie erschienen**.
+· **KEIN BEDIENELEMENT, KEIN NEUER ZUGANG.** Der Schritt hat der Oberfläche nichts
+  hinzugefügt; Vorrats-Eintrag 44 gilt unverändert weiter.
+
+---
+
+**(d) DER WORKER-BEFUND — EIGENER ABSCHNITT, WEIL ER DER WERTVOLLSTE POSTEN DIESER RUNDE
+IST.**
+
+**GEMESSEN am eigenen Lauf (CC, 2026-09-03), Pflicht-Mutation "Obergrenze ausbauen":** Aus
+einem dauerhaften `retry`-Mock wird ohne Deckel eine ENDLOSSCHLEIFE. Der Test-Läufer meldet
+die betroffene Datei dann **WEDER ALS `passed` NOCH ALS `failed`** — sie **verschwindet**,
+und der Fehlschlag ist nur an der DIFFERENZ zählbar: **72 Dateien gemeldet, 71 gezählt; 1
+failed + 1454 passed von 1465, es fehlen genau die ZEHN Läufe von
+`src/app/api/oauth/google/refresh/route.test.ts`.** Daneben steht ein
+`Worker exited unexpectedly` unter "Unhandled Errors" — an einer Stelle, die man beim
+Überfliegen für Lärm hält.
+
+**EINE VERSCHWUNDENE TESTDATEI SIEHT HARMLOSER AUS ALS EIN ROTER TEST.** Das ist der Kern:
+Ein roter Test zwingt zum Hinsehen, eine fehlende Datei nicht — und die Schlusszeile
+"1 failed" liest sich wie ein sauber eingegrenzter Treffer.
+
+**DIE VORHERSAGE LAUTETE "Timeout" UND WAR IN DER KLASSE RICHTIG, IN DER GESTALT ZU ENG.**
+Angesagt war vor dem Lauf: "K4 fällt; zusätzlich endet R6 nicht" — die Klasse "der Deckel
+greift nicht" ist getroffen, die GESTALT des zweiten Treffers ist eine andere als
+vorhergesagt.
+**DIE ZUSATZTREFFER SIND GEPRÜFT UND ALS DECKUNG EINGEORDNET, NICHT ALS KASKADE**
+(docs/immer-beachten.md, Lektion (g) an "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE"): Beide
+melden dieselbe Fehlerklasse, und der zweite ist die direkte Wirkung derselben Mutation über
+einen zweiten Pfad — kein Folgeschaden aus einem fremden Testzustand.
+
+**DIE ÜBRIGEN VIER MUTATIONEN TRAFEN GENAU DIE VORHERGESAGTEN LÄUFE, OHNE ÜBERSCHUSS:**
+Umverdrahtung zurückdrehen → nur `T15b` (**und alle zehn Läufe in `route.test.ts` blieben
+grün — der vorhergesagte Befund, jetzt gemessen statt hergeleitet**); Wiederholung auch bei
+`dead` → nur `K2`; `target` hart `'google'` → nur `K5`; das `catch` einbauen → nur `K6`.
+
+---
+
+**(e) DREI WEITERE BEFUNDE AUS DER RUNDE.**
+
+· **`LC_ALL=C grep -P` LÄUFT IN DIESER UMGEBUNG NICHT** — es meldet
+  "`-P supports only unibyte and UTF-8 locales`" und liefert KEINE Trefferzeilen. **Wer die
+  leere Ausgabe als "sauber" liest, hat nichts gemessen.** Gewechselt auf `tr` und eine
+  direkte Zeichen-Suche, mit Positivkontrolle. **ES IST DER VIERTE FALL DERSELBEN ACHSE** —
+  neben `grep -c $'\r'` (Hebungs-Kandidat 6), `grep -qP '\x00'` (Vorrats-Eintrag 33) und
+  `python3` (VERMERK 10, Abschnitt (h)). GEMESSEN am eigenen Lauf (CC, 2026-09-03).
+· **DIE HAUSREGEL IST "KEINE UMLAUTE", NICHT "ASCII-ONLY".** GEMESSEN am Bestand (CC,
+  2026-09-03): `token-refresh.ts`, `google-refresh.ts`, `google-token.ts` und
+  `route.ts` tragen ausschliesslich Geviertstriche und Mittelpunkte als Nicht-ASCII, keinen
+  einzigen Umlaut. Die ASCII-Auflage stammte aus dem Plan dieser Runde und war ZU ENG;
+  **RICHTIGGESTELLT, nicht gestempelt.** Die Kontrolle hat dabei gearbeitet: Im ersten Wurf
+  stand ein "Auslöser" in der Klammer und ist vor dem Commit gefallen.
+· **DIE RÜCKNAHME EINER MUTATION LIEF ÜBER `cp` — EINEN GANZ-DATEI-SCHREIBER.** Die
+  Byte-Kontrolle danach war deshalb Pflicht und nicht Kür (docs/immer-beachten.md,
+  "WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG STILL DAS CR", Absatz zur Reichweite):
+  CR 0, NUL 0. Der Objekt-Nachweis am committeten Objekt (`git show HEAD:<pfad>`) ergab für
+  alle fünf Dateien ebenfalls CR 0 und NUL 0.
+
+---
+
+**(f) ZWEI ÜBERHOLTE STELLEN — GEMELDET UND NICHT GEÄNDERT.** Beide standen in dieser Runde
+unter Scope-Schutz; ihre Richtigstellung ist eine EIGENE Arbeit und hier ausdrücklich NICHT
+vollzogen.
+
+· **`src/lib/oauth/token-refresh.ts`, Kopf:** "DER HEUTIGE AUFRUFER IST
+  src/app/api/oauth/google/refresh/route.ts" und "Der einzige Aufrufer ist eine Route, die
+  ein Mensch ausloest". **Der heutige Aufrufer ist die KLAMMER**; die Route ruft sie, nicht
+  mehr die Funktion. Der zweite Satz bleibt in seiner SACHE richtig — es löst weiterhin ein
+  Mensch aus —, nur nicht mehr in seiner Kette.
+· **VERMERK 6 in dieser Datei:** "DER EINZIGE AUFRUFER IST DIE BEWEIS-ROUTE. Kein
+  Automatismus, kein Aufrufer auf dem Ingest-Pfad; **ein Quelltext-Wächter in
+  token-refresh.test.ts hält das fest**". **DER WÄCHTER T15 HAT DEN ERSTEN HALBSATZ NIE
+  GEPRÜFT** — er liest ausschliesslich `ingest.ts` (GEMESSEN am Test, CC, 2026-09-03). Die
+  Aussage "die Route ist der einzige Aufrufer" wäre mit der Umverdrahtung falsch geworden,
+  **ohne dass irgendetwas rot wird**; genau diese Lücke schliesst `T15b` seit dieser Runde.
+  **DIE RICHTIGSTELLUNG AN VERMERK 6 IST NICHT VOLLZOGEN und wird hier als Posten benannt,
+  nicht nebenbei erledigt.**
+
+---
+
+**PROVENIENZ, JE TEIL:** Umfang, Testzahl, Gate-Ergebnisse, der Commit-Hash, die
+Symbolnamen und die Mutationsergebnisse GEMESSEN am Repo bzw. an den Läufen vom 2026-09-03
+(CC). Die fünf Live-Werte GEMESSEN 2026-09-03 (OWNER) an der ausgelieferten Anwendung.
+**ABLEITUNGEN, ausdrücklich als solche gekennzeichnet und nicht als Beobachtung:** die zwei
+Uhrzeiten in (c) (GERECHNET auf `accessTokenExpiresAt` und dem Vorlauf), die Einordnung von
+Schritt 2 als früher Ausgang, und die Nicht-Baubarkeit der dritten Lesart (aus dem gelesenen
+Ergebnistyp). Der Worker-Befund in (d) ist GEMESSEN am eigenen Lauf.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 

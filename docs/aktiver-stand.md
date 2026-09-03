@@ -64,6 +64,7 @@ docs/immer-beachten.md.
 · Die Rückkehr in das gestartete Projekt — eine mitgereiste Fix-Scheibe
 · Die Konto-Kennungen bekommen ihre Eingabe — Scheibe 2 des Schnitts der Phase 11.2
 · Der Transport — Scheibe 4 des Schnitts der Phase 11.2
+· Die Klammer um die Erneuerung — Schritt 1b-1 der Scheibe 1b des Schnitts der Phase 11.2
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -2000,6 +2001,43 @@ entschlüsselt, erneuert aber nie".
 
 ### 1b als Folgetask — nicht geschnitten, mit fünf Vorbedingungen
 
+**ZEIGER 2026-09-03 — 1b-1 IST GESCHNITTEN. DER TITEL DARÜBER BLEIBT WÖRTLICH STEHEN, UND
+SEINE ANGABE "nicht geschnitten" IST DAMIT FÜR DIE ERSTE HÄLFTE ÜBERHOLT.**
+**1b ENTSTEHT IN ZWEI SCHRITTEN — 1b-1 (die Klammer) UND 1b-2 (der Takt).** "1b" ohne Suffix
+meint weiterhin das PAKET, und **1b-2 IST NICHT GESCHNITTEN**; der Nachtrag dazu steht am
+Ende der bindenden Entscheidung (7).
+**WARUM DER TITEL NICHT NACHGEZOGEN WIRD:** Er wird zitiert — aus dieser Datei (der
+Verdichtungs-Block "Vollzogen — was im Zuschnitt der Scheibe 4 stand" und VERMERK 10,
+Abschnitt (g)) und aus Vorrats-Eintrag 44. **Eine Umformulierung machte diese Zeiger tot,
+und ein toter Zeiger fällt an keinem Gate auf.**
+**WO DER ZUSCHNITT STEHT:** im Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der
+Scheibe 1b des Schnitts der Phase 11.2", unmittelbar vor den abgeschlossenen
+Scheiben-Vermerken. **HIER STEHT KEIN VOLLTEXT UND KEINE ZUSAMMENFASSUNG SEINES INHALTS** —
+zwei Fassungen liefen auseinander.
+
+**DIESER ABSCHNITT BLEIBT, UND ZWAR VOLLSTÄNDIG, WEIL SEINE FÜNF VORBEDINGUNGEN WEITER
+BINDEN. WELCHE AN WELCHEM SCHRITT HÄNGT, JE EINZELN:**
+· **(i) DIE AUSLÖSER-FREQUENZ DER PLATTFORM BINDET 1b-2.** 1b-1 fragt nicht nach einem Takt
+  und löst sie nicht ein.
+· **(v) DIE ERREICHBARKEIT FÜR EINEN MASCHINELLEN AUFRUFER BINDET EBENFALLS 1b-2** — und
+  zwar nur, soweit dessen Takt von AUSSEN kommt. 1b-1 lässt die Beweis-Route unverändert
+  hinter Sitzung und Eigentums-Gate.
+· **(ii) UND (iii) SIND IN DER AUFZÄHLUNG DES ZUSCHNITTS BENANNT, MIT VERSCHIEDENEM AUSGANG:
+  (iii), die Obergrenze für `retry`, IST IN 1b-1 AUFGENOMMEN** — sie steht dort unter "Was
+  hineingehört — drei Stücke". **(ii), der Nebenläufigkeits-Riegel, IST BEGRÜNDET VERTAGT**
+  — der Grund steht unter "Was ausdrücklich draussen bleibt, je mit seinem Grund" und liegt
+  in der Form des Riegels, die erst der Takt festlegt.
+· **(iv) STEHT UNVERÄNDERT NEBEN BEIDEN SCHRITTEN**, wie sie es schon nach ihrem eigenen
+  Wortlaut tut: Der Statuswechsel auf "In Produktion" ist eine Arbeit am Anbieter-Konto und
+  keine am Code.
+**WER AUS "1b-1 IST GESCHNITTEN" LIEST, DIESER ABSCHNITT SEI ERLEDIGT, LIEST IHN FALSCH.**
+
+**DIESELBE ÜBERHOLTE ANGABE STEHT NOCH EINMAL IM ERSTEN ABSATZ DARUNTER** ("SEIN ZUSCHNITT
+IST OFFEN"). **SIE BLEIBT EBENFALLS WÖRTLICH STEHEN und ist als Aussage über den 2026-09-01
+richtig**; dieser Zeiger gilt für beide Stellen. **ER STEHT DESHALB DAVOR UND NICHT DANEBEN**
+— wer den Abschnitt von oben liest, hat die Auflösung, bevor er auf den Satz trifft.
+PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO. Keine Messung.
+
 **DER OWNER HAT 1b ALS UNMITTELBAREN FOLGETASK BESTÄTIGT; SEIN ZUSCHNITT IST OFFEN.**
 **PROVENIENZ: ARCHITEKTEN-EINORDNUNG 2026-09-01, auf Owner-Bestätigung. Keine Messung.**
 Dieser Abschnitt schneidet nichts zu — er hält fest, **was vor einem Zuschnitt zu klären ist**.
@@ -2192,6 +2230,194 @@ welcher Posten vor einem Zuschnitt zwingend beantwortet sein muss.** Sie führt 
 ungemessen ist; entschieden ist damit nichts.
 PROVENIENZ: reine ZUSAMMENFÜHRUNG bestehender Angaben, GEMESSEN am Dateitext (CC,
 2026-09-02). **Keine der vier Angaben ist hier neu erhoben**, und keine ist umformuliert.
+
+## Die Klammer um die Erneuerung — Schritt 1b-1 der Scheibe 1b des Schnitts der Phase 11.2
+
+**DIE KURZFORM WIRD HIER EINMAL AUFGELÖST UND DANACH NICHT WIEDERHOLT:** **"1b" OHNE SUFFIX
+MEINT DAS ARBEITSPAKET** — den automatischen Auslöser, wie ihn die bindende
+Entscheidung (6) als zweite Hälfte der Nummer 1 des Schnitts führt. **1b ENTSTEHT IN ZWEI
+SCHRITTEN: 1b-1 (die Klammer, DIESER Abschnitt) und 1b-2 (der Takt).**
+**DIE BEIDEN SCHRITTE TRAGEN IHR SUFFIX AUSNAHMSLOS. EIN ZITAT DER FORM "SCHEIBE 1b" OHNE
+SUFFIX MEINT DAS PAKET UND NIE EINE HÄLFTE** — das gilt für die bestehenden Zitate in dieser
+Datei, in docs/offene-punkte.md und in den Trigger-Wortlauten des Vorrats, und sie sind
+deshalb ausdrücklich NICHT nachgezogen worden.
+**ES GIBT KEINE SCHEIBE 1c.** Wer eine sucht, sucht einen Namen, der nie vergeben wurde.
+**1b-1 IST NICHT DIE SCHEIBE 1a:** jene ist gebaut und live bewiesen (VERMERK 6) und trägt
+ihren eigenen Abschnitt weiter oben. Wie bei den vier Zuschnitten davor steht deshalb der
+INHALT im Titel und die Kurzform dahinter.
+
+**PROVENIENZ — SIE WIRD HIER GETRENNT GEFÜHRT, WEIL SONST EIN NAME, DEN DER ARCHITEKT
+VERGEBEN HAT, EINE OWNER-PROVENIENZ BEKÄME:**
+· **OWNER-ENTSCHEIDUNG 2026-09-03:** dass der Takt in DIESEM Schritt **NICHT gebaut wird.**
+· **ARCHITEKTEN-FESTLEGUNG 2026-09-03:** die **Benennung 1b-1 / 1b-2** und der **Verzicht auf
+  eine Scheibe 1c**. Sie ist auf eine CC-Meldung derselben Runde gefallen.
+· **PROVENIENZ DES ÜBRIGEN ABSCHNITTS, wo an der einzelnen Angabe nichts anderes steht:
+  ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO. Keine Messung.** Jede mit GEMESSEN
+  gekennzeichnete Angabe stammt aus der Aufklärungsrunde vom 2026-09-03 (CC, am Repo).
+
+### Was Schritt 1b-1 ist
+
+**Eine Klammer JE PROJEKT um `refreshAccessToken` (src/lib/oauth/token-refresh.ts), in einer
+REINEN Datei — kein `"use server"` —, deren Autorisierung beim AUFRUFER liegt.** Sie
+beantwortet für EIN Projekt die Frage "erneuern, und was ist dabei herausgekommen", und sie
+beantwortet sie **ohne jeden Auslöser**.
+
+**DER TITEL WEICHT ABSICHTLICH VON DENEN DER VIER ANDEREN ZUSCHNITTE AB** ("Was sie ist",
+"Was Scheibe 3 ist", "Was diese Fix-Scheibe ist", "Was Scheibe 4 ist"): Zwei zeichengleiche
+`###`-Überschriften in DERSELBEN Datei machen jeden Such-Anker mehrdeutig, und der erste
+Treffer wäre systematisch der falsche (docs/immer-beachten.md, "EIN ANKER, DER EINDEUTIG
+AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT").
+
+**WAS ER NICHT IST — UND DIESER SATZ STEHT GANZ VORN, WEIL ER DIE GRÖSSTE ERWARTUNG AN EINE
+ARBEIT MIT DIESER NUMMER BRICHT: 1b-1 BAUT KEINEN AUSLÖSER.** Kein Zeitplan, kein Haken am
+Verkehr, kein Aufruf aus `after()`. **DER TAKT IST DER ZWEITE SCHRITT, 1b-2** —
+OWNER-ENTSCHEIDUNG 2026-09-03, dass er in diesem Schritt nicht gebaut wird.
+**WER 1b-1 BAUT UND DANACH ERWARTET, DASS EIN ZUGANGSDATUM VON SELBST AM LEBEN BLEIBT, HAT
+DIESELBE LAGE WIE NACH 1a:** Das Werkzeug ist gebaut, und niemand ruft es. Die Aussage aus
+VERMERK 10, Abschnitt (g) — ein Projekt sendet an Google nur innerhalb einer Stunde —
+**bleibt nach 1b-1 wahr.**
+**DAS IST KEIN WIDERSPRUCH ZUR GRENZE DER BINDENDEN ENTSCHEIDUNG (7), SONDERN IHRE
+ANWENDUNG:** "1b löst das eigentliche Problem" bleibt wahr und meint das PAKET; "1a ALLEIN
+HÄLT KEINEN ZUGANG AM LEBEN — eine Funktion, die niemand ruft, erneuert nichts" **gilt für
+1b-1 gleichlautend.** Der Nachtrag dazu steht am Ende jener Entscheidung und wird hier NICHT
+verdoppelt.
+
+### Die drei Befunde, die diesen Zuschnitt tragen
+
+**GEMESSEN am Repo (CC, 2026-09-03), Aufklärungsrunde desselben Tages.** Als Ort steht der
+SYMBOLNAME und nie eine Zeilennummer — Fortschreibungs-Regel dieser Datei.
+
+**(1) DER ABLAUFZEITPUNKT STECKT IM CHIFFRAT, IN KEINER SPALTE.**
+`accessTokenExpiresAt` ist ein Feld der Nutzlast `OAuthPayload`
+(src/lib/secrets/oauth-payload.ts). Sichtbar wird es ausschliesslich über `decryptSecret`
+(src/lib/secrets/cipher.ts) und `parseOAuthPayload`; `project_secrets` trägt dafür KEINE
+Spalte.
+**FOLGE, UND SIE IST DER GRUND FÜR DIE FORM DIESES SCHRITTS:** Ein Zeitplan IN DER DATENBANK
+kann nicht entscheiden, **WELCHES** Projekt fällig ist — er kann nur "alle anstossen". Eine
+SQL-Auswahl verlangte eine KLARTEXT-SPALTE neben dem Chiffrat, also **eine zweite Wahrheit
+über denselben Zeitpunkt**; es ist dieselbe Figur wie `domains` gegen
+`settings.hosting.label` (docs/immer-beachten.md, "DIE domains-ZEILE IST DIE ALLEINIGE
+WAHRHEIT ÜBER 'IST DIESES PROJEKT LIVE?'").
+
+**(2) `refreshAccessToken` IST EINE BIBLIOTHEKSFUNKTION.**
+Die Beweis-Route (src/app/api/oauth/google/refresh/route.ts) ist ihr **einziger Aufrufer —
+nicht ihr einziger MÖGLICHER**. Die Umleitung, die aus `updateSession`
+(src/lib/supabase/middleware.ts) stammt, trifft **HTTP-Aufrufe VON AUSSEN**; ein Aufrufer im
+selben Prozess stellt gar keine Anfrage und läuft an ihr vorbei.
+**FOLGE: VORBEDINGUNG (v) SPERRT DIE ZEITGETAKTETE AUSLÖSER-FAMILIE UND DAMIT EINEN TEIL VON
+1b-2 — NICHT DIESEN SCHRITT.** Wer sie als Riegel vor 1b-1 liest, hält eine
+Bibliotheksfunktion für eine Route.
+
+**(3) `usableTokenFromRow` DECHIFFRIERT BEI JEDEM BEACON UND PRÜFT DIE UHR — GIBT DEN
+ZEITPUNKT ABER NICHT HERAUS.**
+Die Funktion (src/lib/capi/token.ts, modul-privat) liest die Nutzlast, prüft Uhr 1 über
+`hasUsableAccessToken` und gibt `string | null` zurück.
+**DIE INFORMATION, DIE EIN ZEITPLAN TEUER BESCHAFFEN MÜSSTE, FÄLLT DORT OHNEHIN AN.**
+**WAS DARAUS FOLGT, IST HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN:** Der Befund gehört zum TAKT
+und damit zu 1b-2, nicht zur Klammer. **KEINE EMPFEHLUNG.**
+
+### Der Gegenstand — eine Klammer je Projekt
+
+**DIE FORM IST "JE PROJEKT" UND NICHT "SWEEP", und der Grund gehört hinein, sonst wird sie
+beim nächsten Umbau als willkürlich gelesen:**
+**Ein verkehrsgetakteter Auslöser kennt genau EIN Projekt; ein Sweep ist eine SCHLEIFE über
+die Klammer. Umgekehrt gilt es nicht** — aus einem Sweep lässt sich kein Ein-Projekt-Aufruf
+herausschneiden, ohne ihn neu zu bauen.
+**DIE FORM JE PROJEKT IST DAMIT DIE EINZIGE, DIE BEIDE TAKT-FAMILIEN OFFENHÄLT, ZWISCHEN
+DENEN 1b-2 ZU WÄHLEN HAT — und genau das ist der Zweck der vertagten Takt-Wahl.** Wer hier
+einen Sweep baut, hat die Wahl getroffen, die 1b-2 treffen soll, und zwar unsichtbar.
+
+**REINE DATEI, KEIN `"use server"`. AUTORISIERUNG BEIM AUFRUFER.** Dieselbe Arbeitsteilung,
+in der `refreshAccessToken` selbst schon steht (s. den Abschnitt "Was sie ist" der
+Scheibe 1a: "sie prüft KEIN Eigentum"), und derselbe Preis: **Wer sie ohne Eigentums-Gate
+ruft, hat kein Eigentums-Gate, und nichts wird davon rot.**
+
+### Was hineingehört — drei Stücke
+
+· **DIE KLAMMER** selbst, in der Form oben.
+· **DIE OBERGRENZE AUS VORRATS-EINTRAG 10 — SIE LIEGT IN 1b-1 UND NICHT IN 1b-2.** Jener
+  Eintrag trägt den Zuschnitt der Scheibe 1b als seinen TRIGGER, also den des PAKETS; **der
+  Schritt, der sie zahlt, ist dieser hier.** Welche Gestalt die Obergrenze bekommt,
+  entscheidet die Entwurfsfrage weiter unten und nicht dieser Absatz.
+· **DIE UMVERDRAHTUNG DER BESTEHENDEN BEWEIS-ROUTE AUF DIE KLAMMER.**
+  **SIE MACHT 1b-1 DEMOBAR, OHNE DASS EIN NEUER ZUGANG ENTSTEHT** — es kommt kein
+  Pfad hinzu, es wechselt nur, was hinter dem bestehenden liegt. **DER RIEGEL AUS
+  VORBEDINGUNG (v) WIRD WEDER BERÜHRT NOCH UMGANGEN:** Die Route bleibt POST, bleibt hinter
+  Sitzung und Eigentums-Gate, und ein Aufruf ohne Sitzung endet weiterhin dort, wo er heute
+  endet.
+
+### Was ausdrücklich draussen bleibt, je mit seinem Grund
+
+· **JEDER AUSLÖSER** — kein `pg_cron`, kein `pg_net`, keine `vercel.json`, keine
+  GitHub-Action, kein Aufruf aus `after()`. **OWNER-ENTSCHEIDUNG 2026-09-03: Der Takt wird
+  in diesem Schritt NICHT gebaut; er ist der Gegenstand von 1b-2.**
+· **DER NEBENLÄUFIGKEITS-RIEGEL (Vorrats-Eintrag 9). ZWEI GRÜNDE, UND DER ZWEITE TRÄGT:**
+  **(a)** Sein Trigger verlangt einen Auslöser, der die Funktion **NACHWEISLICH nebenläufig
+  ruft** — ein auslöserloser Schritt erfüllt ihn nicht. **1b-2 KANN IHN ERFÜLLEN, 1b-1
+  NICHT.**
+  **(b)** **DIE FORM DES RIEGELS HÄNGT AM GRAD DER NEBENLÄUFIGKEIT, UND DEN LEGT ERST DER
+  TAKT FEST:** Ein Riegel im Prozessspeicher trägt für einen Sweep mit zwei Läufen und trägt
+  NICHT, wenn der Verkehr ihn auslöst. **Vor der Takt-Wahl gebaut, wäre er auf Verdacht
+  gebaut.**
+· **JEDE MIGRATION UND JEDE NEUE SPALTE AN `project_secrets`**, insbesondere **KEINE
+  KLARTEXT-SPALTE FÜR DEN ABLAUFZEITPUNKT.** Das ist die SWEEP-Frage aus Befund (1), und sie
+  existiert **nur in der zeitgetakteten Familie**.
+· **VORRATS-EINTRAG 42 · VORRATS-EINTRAG 43 · VORRATS-EINTRAG 44** — je mit eigenem Vermerk
+  an ihrer Stelle, hier nicht verdoppelt.
+· **VORBEDINGUNG (iv), DIE SIEBEN-TAGE-FRIST.** Sie ist **Arbeit am Anbieter-Konto und kein
+  Code**; sie steht NEBEN **beiden Schritten** und in keinem von ihnen.
+· **src/lib/vercel/client.ts UND src/lib/oauth/google-token.ts.**
+  **GRUND, UND ER SPART ARBEIT:** Der offene Punkt "DER DECKEL ENDET VOR DEM LESEN DES
+  RUMPFES — ZWEI DATEIEN" (docs/offene-punkte.md) betrifft genau diese beiden. **KEINE von
+  ihnen liegt auf dem Erneuerungs-Pfad**, und `exchangeRefreshToken`
+  (src/lib/oauth/google-refresh.ts) trägt das richtige Muster samt zwei Wächtern bereits
+  (Entscheidung B-4). **Sein Trigger "spätestens mit dem ersten automatischen Aufrufer"
+  tritt durch 1b-1 NICHT scharf ein** — dieser Schritt erzeugt keinen. **MIT 1b-2 IST DAS
+  NEU ZU PRÜFEN**, und zwar dort und nicht hier.
+
+### Die geschützten Invarianten dieses Zuschnitts
+
+**(I-1) `src/lib/capi/ingest.ts` UND `src/lib/capi/token.ts` BLEIBEN UNBERÜHRT.** Berührt
+der Schritt den Gegenstand ihrer Kommentarköpfe, werden diese **GEPRÜFT UND GEMELDET, NICHT
+GEÄNDERT.**
+**(I-2) `"use server"`-DATEIEN EXPORTIEREN AUSSCHLIESSLICH ASYNC-FUNKTIONEN** — deshalb ist
+die Klammer eine REINE Datei (docs/immer-beachten.md, "'USE SERVER'-DATEIEN").
+**(I-3) REINE FUNKTION, AUTORISIERUNG DAVOR.** Ownership-Prüfung beim Aufrufer,
+Geschäftslogik dahinter, sauber getrennt.
+**(I-4) DER ACHSE-2-KOMMENTARKOPF VON `src/lib/oauth/token-refresh.ts` BLEIBT UND WIRD NICHT
+ABGESCHWÄCHT.** Er trägt den ungemessenen Sachverhalt aus Vorrats-Eintrag 9, zweite Achse;
+eine Klammer davor macht ihn nicht kleiner.
+
+### Die offene Entwurfsfrage — "Obergrenze" hat drei Lesarten
+
+**SIE STEHT HIER ALS FRAGE UND NICHT ALS ENTSCHEIDUNG.**
+· **WIEDERHOLUNG MIT DECKEL INNERHALB EINES AUFRUFS.**
+· **EIN PERSISTIERTER ZÄHLER ÜBER AUFRUFE HINWEG.**
+· **EINE EHRLICHERE AUSGANGS-KLASSIFIKATION**, die `retry` nur dort meldet, wo Wiederholen
+  etwas ändern kann.
+**DIE ZWEITE FÄLLT AUS DIESEM SCHRITT:** Sie braucht ZUSTAND und WISSEN ÜBER DEN TAKT, und
+beides gibt es erst mit 1b-2.
+**ZWISCHEN DER ERSTEN UND DER DRITTEN ENTSCHEIDET DER ARCHITEKT AM PLAN. HIER NICHT
+ENTSCHIEDEN, KEINE EMPFEHLUNG.**
+
+### Die Beweis-Achse des Schritts 1b-1
+
+**DIE BESTEHENDE BEWEIS-ROUTE, AUS DEM EINGELOGGTEN TAB PER `fetch`.** Das ist der Preis,
+den Entscheidung **P3** (s. "Die Entscheidungen vom 2026-08-29") ausdrücklich benannt hat:
+"Der Live-Test braucht einen `fetch` aus der eingeloggten Anwendung statt einer
+URL-Eingabe."
+**KEIN BEDIENELEMENT, KEIN NEUER ZUGANG.** Der Schritt fügt der Oberfläche nichts hinzu; wer
+hier einen Knopf baut, hat nicht mehr 1b-1 gebaut. Vorrats-Eintrag 44 hält
+ausdrücklich fest, dass es heute keines gibt, und dieser Zuschnitt ändert daran nichts.
+
+### Was dieser Zuschnitt offen lässt
+
+**AN EINER STELLE, DAMIT DER NÄCHSTE ZUSCHNITT ES NICHT IN VIER DATEIEN SUCHT:**
+· **DER TAKT SELBST — Schritt 1b-2.**
+· **DIE FRAGE, WELCHE PROJEKTE FÄLLIG SIND.** Sie hängt an Befund (1) und **existiert nur in
+  der zeitgetakteten Familie** — ein verkehrsgetakteter Auslöser stellt sie gar nicht.
+**WAS DIESE LISTE NICHT IST: eine Reihenfolge, eine Auswahl, oder eine Aussage darüber,
+welcher Posten vor 1b-2 zwingend beantwortet sein muss.**
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -3489,6 +3715,8 @@ hält eine erlaubte Umstellung für einen Verstoss.
 PROVENIENZ: ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-08-28. Die vier Tore und die zwei
 Fehlstellen sind GEMESSEN am Repo (CC, 2026-08-29); der Schnitt selbst ist eine
 Festlegung, keine Messung.
+ZEIGER 2026-09-03: 1b entsteht in ZWEI SCHRITTEN — der NACHTRAG dazu steht EINMAL, am Ende
+der Entscheidung (7), und wird hier nicht verdoppelt.
 
 **(7) 1a WIRD VOM AUSLÖSER GETRENNT.**
 ENTSCHEIDUNG: Die Erneuerungs-Funktion (1a) und der automatische Auslöser (1b) sind
@@ -3505,6 +3733,36 @@ erneuert nichts. Wer 1a abschliesst und 1b vertagt, hat den Fehlzustand aus dem
 Abschnitt "Warum sie zuerst kommt" NICHT beseitigt, sondern nur das Werkzeug dagegen
 gebaut.
 PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-08-28. Keine Messung.
+
+NACHTRAG 2026-09-03 — 1b ENTSTEHT IN ZWEI SCHRITTEN. DIE WORTLAUTE VON (6) UND (7) BLEIBEN
+UNANGETASTET UND SIND WAHR; DIESER NACHTRAG TRITT DANEBEN UND STEHT NUR HIER. Die
+Entscheidung (6) trägt eine einzeilige Zeigerzeile hierher — zweimal geschrieben liefe es
+auseinander.
+KEIN STEMPEL, UND DAS IST DIE ERSTE ANGABE: **Der MECHANISMUS hat sich nicht geändert, nur
+die ZAHL DER SCHRITTE.** Ein Stempel behauptete einen überholten Satz, und es gibt keinen.
+· **DIE ZERLEGUNG: 1b-1** die Klammer um `refreshAccessToken` — geschnitten am 2026-09-03,
+  Volltext im Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der Scheibe 1b des
+  Schnitts der Phase 11.2". **1b-2** der Takt — nicht geschnitten.
+· **DIE AUFZÄHLUNG IN (6) BEHÄLT IHRE FÜNF STÜCKE, WEIL KEIN SECHSTES DAZUKOMMT.** 1b-1 und
+  1b-2 sind Schritte INNERHALB des Stücks 1b, keine weiteren Stücke. **ES GIBT KEINE
+  SCHEIBE 1c.** Der Satz "DIE AUFZÄHLUNG OBEN TRÄGT VIER NUMMERN UND FÜNF STÜCKE" bleibt
+  richtig, ebenso die GRENZE "Zwingend ist NUR 4 nach 1a, 2 und 3".
+· **DIE ANGABEN "1b den automatischen Auslöser" IN (6) UND "der automatische Auslöser (1b)"
+  IN (7) SIND UNTER DIESER ZERLEGUNG WAHR** und lediglich unvollständig: Sie beschreiben das
+  PAKET, und das Paket IST der Auslöser. **EIN ZITAT DER FORM "SCHEIBE 1b" OHNE SUFFIX MEINT
+  DAS PAKET UND NIE EINE HÄLFTE**; die beiden Schritte tragen ihr Suffix ausnahmslos.
+· **DIE FOLGE, DIE OHNE DIESEN NACHTRAG FEHLT — UND SIE IST DIE TEUERSTE: DIE GRENZE DIESER
+  ENTSCHEIDUNG GILT FÜR 1b-1 GLEICHLAUTEND.** "1a ALLEIN HÄLT KEINEN ZUGANG AM LEBEN — eine
+  Funktion, die niemand ruft, erneuert nichts": **Nach 1b-1 hält ebenso wenig ein
+  Zugangsdatum von selbst**, denn die Klammer hat so wenig einen Aufrufer wie die Funktion
+  darunter. **ERST 1b-2 LÖST DAS PROBLEM, AUF DAS SICH DER SATZ "1b löst das eigentliche
+  Problem" BEZIEHT.** Wer 1b-1 abschliesst und 1b-2 vertagt, steht genau dort, wovor diese
+  GRENZE warnt — eine Ebene höher.
+· **WARUM DER SATZ "1b löst das eigentliche Problem" STEHEN BLEIBT:** Er ist die einzige
+  Stelle im Repo, die sagt, WANN der Fehlzustand beseitigt ist. Mit einem eigenständigen
+  Geschwister-Namen wäre er FALSCH geworden, und diese Auskunft stünde danach nirgends mehr.
+PROVENIENZ: ARCHITEKTEN-FESTLEGUNG 2026-09-03, auf CC-Meldung derselben Runde. Keine
+Messung.
 
 **(8) 'google' DARF ÜBER FORWARDER_BY_TARGET LAUFEN.**
 ENTSCHEIDUNG: Der Google-Transport bekommt KEINEN eigenen, parallelen Weg; er läuft
@@ -3989,6 +4247,32 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
    TRIGGER: eine gemessene Rotation bei irgendeinem Anbieter dieses Rahmens, ODER ein
    Auslöser (Scheibe 1b), der die Funktion nachweislich nebenläufig ruft.
 
+   **VERMERK 2026-09-03 — DER ZUSCHNITT DES SCHRITTS 1b-1 NIMMT DIESEN EINTRAG BEGRÜNDET
+   NICHT AUF. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT
+   DANEBEN.**
+   **DIE SCHEIBE 1b ENTSTEHT IN ZWEI SCHRITTEN — 1b-1 (die Klammer) und 1b-2 (der Takt);**
+   der Nachtrag dazu steht am Ende der bindenden Entscheidung (7). **DER TRIGGER-WORTLAUT
+   OBEN ZEIGT AUF DAS PAKET UND IST UNTER DIESER ZERLEGUNG UNVERÄNDERT RICHTIG.**
+   **DER TRIGGER IST NICHT EINGETRETEN, UND ZWAR AN BEIDEN HÄLFTEN:** Eine Rotation ist
+   bei keinem Anbieter dieses Rahmens gemessen worden, und **1b-1 baut KEINEN AUSLÖSER** —
+   die Funktion wird also von nichts nachweislich nebenläufig gerufen. **MIT 1b-2 KANN ER
+   EINTRETEN; DORT IST ER NEU ZU PRÜFEN.**
+   **DER ZWEITE GRUND IST DER TRAGENDE, und er steht ausgeschrieben im Zuschnitt** (dort
+   unter "Was ausdrücklich draussen bleibt, je mit seinem Grund"): **Die FORM des Riegels
+   hängt am GRAD der Nebenläufigkeit, und den legt erst der TAKT fest — also 1b-2.** Ein
+   Riegel im Prozessspeicher trägt für einen Sweep mit zwei Läufen und trägt nicht, wenn der
+   Verkehr ihn auslöst. **Vor der Takt-Wahl gebaut, wäre er auf Verdacht gebaut.**
+   **DIE ZWEITE ACHSE DIESES EINTRAGS IST DAVON UNBERÜHRT UND BLEIBT UNGEMESSEN** — ob der
+   Anbieter ein vorheriges Zugangsdatum bei Ausstellung eines neuen entwertet. Der
+   Zuschnitt führt sie ausdrücklich als geschützte Invariante: **der ACHSE-2-Kommentarkopf
+   von src/lib/oauth/token-refresh.ts bleibt und wird nicht abgeschwächt.**
+   **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT.** Sein Trigger steht wörtlich
+   wie zuvor; was hinzukommt, ist die Auskunft, dass er in 1b-1 **geprüft und begründet
+   vertagt** worden ist — und ein geprüft vertagter Posten sieht in einem Repo sonst genauso
+   aus wie ein übersehener, nämlich wie nichts.
+   PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO; die Zerlegung in zwei
+   Schritte eine ARCHITEKTEN-FESTLEGUNG desselben Tages. Keine Messung.
+
 10. **`retry` HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN.** DREI Ausgänge
     der Erneuerungs-Funktion können DAUERHAFT sein und trotzdem `retry` melden:
     `unexpected` (ein Anbieter-Code, den wir nicht abbilden), `read` (die Datenbank
@@ -4005,6 +4289,35 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     GEMELDET 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG, wo die Grenze liegt oder wie
     sie aussieht.
     TRIGGER: der Zuschnitt der Scheibe 1b.
+
+    **VERMERK 2026-09-03 — TRIGGER EINGETRETEN, UND DIESER EINTRAG LIEGT IN 1b-1. DER
+    TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT DANEBEN.**
+    **DIE SCHEIBE 1b ENTSTEHT IN ZWEI SCHRITTEN — 1b-1 (die Klammer) und 1b-2 (der Takt);**
+    der Nachtrag dazu steht am Ende der bindenden Entscheidung (7). **DER TRIGGER-WORTLAUT
+    OBEN ZEIGT AUF DAS PAKET UND IST UNTER DIESER ZERLEGUNG UNVERÄNDERT RICHTIG.**
+    Der Zuschnitt steht (s. den Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der
+    Scheibe 1b des Schnitts der Phase 11.2") und führt **die Obergrenze aus diesem Eintrag
+    als eines von drei Stücken, die hineingehören.**
+    **DIE OBERGRENZE LIEGT IN 1b-1 UND NICHT IN 1b-2, und dieser Satz gehört hierher, weil
+    die naheliegende Zuordnung die andere wäre:** Sie hängt an der KLAMMER und nicht am
+    Takt — der Ausgang `retry` entsteht in der Funktion darunter, und die Klammer ist die
+    erste Stelle, die zählen kann.
+    **WAS DER ZUSCHNITT NICHT TUT, und das ist der Grund für diesen Vermerk: ER SAGT NICHT,
+    WELCHE GESTALT SIE BEKOMMT.** Er trägt dafür eine eigene offene Entwurfsfrage mit DREI
+    Lesarten — Wiederholung mit Deckel INNERHALB eines Aufrufs · ein persistierter Zähler
+    ÜBER Aufrufe hinweg · eine ehrlichere AUSGANGS-KLASSIFIKATION, die `retry` nur dort
+    meldet, wo Wiederholen etwas ändern kann. **Die zweite fällt aus 1b-1** (sie braucht
+    Zustand und Wissen über den Takt); **zwischen der ersten und der dritten entscheidet der
+    Architekt am Plan.**
+    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT:** Ein eingetretener Trigger
+    ist kein Vollzug, und der Satz "Sie soll sie auch nicht kennen: eine Bibliotheksfunktion
+    ohne Aufrufer kann nicht wissen, wie oft sie schon lief" ist **der Maßstab, an dem die
+    Gestalt der Obergrenze zu messen ist** — die Klammer bekommt einen Aufrufer, die
+    Bibliotheksfunktion darunter nicht.
+    PROVENIENZ: Dass der Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
+    Existenz des Zuschnitts (CC, 2026-09-03). Die drei Lesarten sind ein
+    ARCHITEKTEN-ZUSCHNITT vom 2026-09-03, die Zerlegung in zwei Schritte eine
+    ARCHITEKTEN-FESTLEGUNG desselben Tages; keine Messung.
 
 11. **G18/G19 MESSEN UNSERE VERZWEIGUNG, NICHT DIE FEHLERFORM DER LAUFZEIT.** Die zwei
     Tests, die den verschobenen Deckel bewachen (Entscheidung B-4), arbeiten mit einer
@@ -4826,6 +5139,30 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     hineingehörte. GEMELDET 2026-09-02, NICHT GEBAUT.
     TRIGGER: der Zuschnitt der Scheibe 1b — er berührt beide Richtungen zugleich.
 
+    **VERMERK 2026-09-03 — TRIGGER EINGETRETEN, UND 1b-1 SCHLIESST DIESEN EINTRAG
+    AUSDRÜCKLICH AUS. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK
+    TRITT DANEBEN.**
+    **DIE SCHEIBE 1b ENTSTEHT IN ZWEI SCHRITTEN — 1b-1 (die Klammer) und 1b-2 (der Takt);**
+    der Nachtrag dazu steht am Ende der bindenden Entscheidung (7). **DER TRIGGER-WORTLAUT
+    OBEN ZEIGT AUF DAS PAKET UND IST UNTER DIESER ZERLEGUNG UNVERÄNDERT RICHTIG.**
+    Der Zuschnitt steht (s. den Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der
+    Scheibe 1b des Schnitts der Phase 11.2") und führt diesen Eintrag unter "Was
+    ausdrücklich draussen bleibt, je mit seinem Grund".
+    **BEIDE RICHTUNGEN BLEIBEN DAMIT OFFEN, UND SIE BLEIBEN ES AUS VERSCHIEDENEN GRÜNDEN:**
+    Die **Drosselung** ist nicht Gegenstand der Klammer — sie liegt auf dem Ingest-Pfad, und
+    1b-1 hält `src/lib/capi/ingest.ts` und `src/lib/capi/token.ts` ausdrücklich unberührt.
+    Die **Live-Test-Achse** wird von der Klammer nicht gebraucht: Der Nachweis von 1b-1
+    läuft über die bestehende Beweis-Route, nicht über die Fehlerzeile.
+    **WAS DAS FÜR 1b-2 HEISST UND HIER NUR BENANNT WIRD:** Die Zeile bleibt die einzige
+    beobachtbare Signatur des Bruchs, den ein Takt beheben soll — **und sie ordnet sich
+    weiterhin keinem Prüfling zu**, weil sie kein Projekt nennt.
+    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT. KEINE EMPFEHLUNG** — weder zur
+    Drosselung noch dazu, ob die `projectId` hineingehörte.
+    PROVENIENZ: Dass der Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
+    Existenz des Zuschnitts (CC, 2026-09-03). Der Ausschluss ist ein ARCHITEKTEN-ZUSCHNITT
+    vom 2026-09-03, die Zerlegung in zwei Schritte eine ARCHITEKTEN-FESTLEGUNG desselben
+    Tages; keine Messung.
+
 43. **"STUMM" GILT FÜR DIE OBERFLÄCHE, NICHT FÜR DEN BETRIEB.** Diese Datei sagt an ZWEI
     Stellen, der Ausfall nach Ablauf des Zugangsdatums sei "in ihrer stummen Form" —
     Festlegung (4) des Zuschnitts der Scheibe 4 und VERMERK 10, Abschnitt (g). **BEIDE
@@ -4865,6 +5202,90 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     sollte.
     TRIGGER: der Zuschnitt der Scheibe 1b, ODER die erste Arbeit, die den Ablauf-Zustand in
     der Oberfläche sichtbar macht.
+
+    **VERMERK 2026-09-03 — DER ERSTE TRIGGER IST EINGETRETEN, UND 1b-1 SCHLIESST DIESEN
+    EINTRAG AUSDRÜCKLICH AUS. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER
+    VERMERK TRITT DANEBEN.**
+    **DIE SCHEIBE 1b ENTSTEHT IN ZWEI SCHRITTEN — 1b-1 (die Klammer) und 1b-2 (der Takt);**
+    der Nachtrag dazu steht am Ende der bindenden Entscheidung (7). **DER TRIGGER-WORTLAUT
+    OBEN ZEIGT AUF DAS PAKET UND IST UNTER DIESER ZERLEGUNG UNVERÄNDERT RICHTIG.**
+    Der Zuschnitt steht (s. den Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der
+    Scheibe 1b des Schnitts der Phase 11.2") und führt diesen Eintrag unter "Was
+    ausdrücklich draussen bleibt, je mit seinem Grund".
+    **DIE BEWEIS-ROUTE BEKOMMT KEIN BEDIENELEMENT.** 1b-1 verdrahtet sie auf die Klammer um
+    und macht sich damit demobar; **die Live-Test-Achse bleibt der `fetch` aus dem
+    eingeloggten Tab** — der Preis, den Entscheidung P3 benannt hat. **ES ENTSTEHT KEIN
+    NEUER ZUGANG:** Es kommt kein Pfad hinzu, es wechselt nur, was hinter dem bestehenden
+    liegt.
+    **DER BEFUND DIESES EINTRAGS GILT DAMIT UNVERÄNDERT WEITER:** Auch nach 1b-1 gibt es
+    kein Bedienelement, das die Route ruft, und für einen maschinellen Aufrufer ist sie
+    unverändert nicht erreichbar (Vorbedingung (v) im Abschnitt "1b als Folgetask", die dort
+    1b-2 bindet).
+    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN ZWEITER TRIGGER IST
+    UNBERÜHRT** — die erste Arbeit, die den Ablauf-Zustand in der Oberfläche sichtbar macht,
+    steht aus. **KEINE EMPFEHLUNG.**
+    PROVENIENZ: Dass der erste Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut
+    und der Existenz des Zuschnitts (CC, 2026-09-03). Der Ausschluss ist ein
+    ARCHITEKTEN-ZUSCHNITT vom 2026-09-03, die Zerlegung in zwei Schritte eine
+    ARCHITEKTEN-FESTLEGUNG desselben Tages; keine Messung.
+
+45. **DER BEREICH "VERÖFFENTLICHEN" FÜHRT BEI EINEM PROJEKT MIT VERBUNDENER CUSTOM-DOMAIN
+    NUR DIE LABEL-URL, NICHT DIE CUSTOM-DOMAIN.**
+    **ES IST KEIN SERVING-FEHLER, UND DIESER SATZ STEHT ZUERST:** Beide Adressen
+    funktionieren. Die Seite ist unter der Label-URL **und** unter der Custom-Domain
+    erreichbar; es geht nichts verloren und nichts 404t.
+    **DER SCHADEN LIEGT IN DER ANZEIGE:** Wer die Live-Adresse von dort kopiert, **nimmt die
+    falsche** — er trägt eine Adresse in eine Anzeige, in eine Übergabe oder in ein
+    Dokument, die nicht die ist, unter der die Seite laufen soll.
+    **PROVENIENZ: OWNER-BEOBACHTUNG 2026-09-02. NICHT GEMESSEN, NICHT AM CODE GEPRÜFT.** Es
+    ist weder erhoben, welche Stelle die angezeigte Adresse baut, noch ob die Beobachtung
+    für jedes Projekt mit Custom-Domain gilt oder nur für das beobachtete. **Wer sie
+    aufgreift, misst sie zuerst.**
+    GEMELDET 2026-09-03, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder dazu, welche der beiden
+    Adressen führen sollte, noch dazu, ob beide zu zeigen wären.
+    TRIGGER: die nächste Arbeit am Bereich "Veröffentlichen".
+
+46. **DIE NUTZLAST VON HANDAUFRUF 3 DER MESSUNG D IST NUR RELATIONAL PROTOKOLLIERT — VIER
+    FELDER SIND NICHT AUFLÖSBAR.**
+    **DER BEFUND:** Das Protokoll beschreibt Aufruf 3 als "sonst zeichengleich zu 3" und
+    Aufruf 3 seinerseits über Aufruf 2. **Eine Kette aus Verweisen endet damit nicht bei
+    einem Wert**, und vier Felder der gesendeten Nutzlast lassen sich heute nicht mehr
+    bestimmen.
+    **ES IST DIESELBE KLASSE WIE VORRATS-EINTRAG 40, und darin liegt der Grund für diesen
+    Eintrag: EIN PROTOKOLL, DAS AUF EINEN VORGÄNGER ZEIGT STATT SEINEN GEGENSTAND ZU NENNEN,
+    IST NICHT WIEDERVERWENDBAR.** Jener Eintrag hält denselben Mechanismus an einer
+    ausgelassenen `requestId` fest — dort fehlt der Wert, hier steht an seiner Stelle ein
+    Zeiger. **Der Ausgang ist derselbe: Die Messung ist nicht nachzubauen, und ihre Aussage
+    ist an keinem Feld nachzuprüfen.**
+    **PROVENIENZ: OWNER-BEOBACHTUNG 2026-09-02. NICHT GEMESSEN, NICHT AM CODE GEPRÜFT.** Es
+    ist in dieser Runde **kein** Abgleich am Dateitext gefahren worden — weder darüber,
+    welche vier Felder es sind, noch darüber, wie viele Aufrufe der Messung D relational
+    beschrieben sind. **Wer den Eintrag aufgreift, erhebt beides zuerst.**
+    GEMELDET 2026-09-03, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder eine Auflage an künftige
+    Messprotokolle noch eine nachträgliche Befüllung ist hier vorgeschlagen.
+    TRIGGER: die nächste Messung mit einem Bezeichner für eine spätere Nachfrage.
+
+47. **DAS TOKEN "1b" IST IM REPO NICHT EINDEUTIG — ZWEI NUMMERIERUNGEN TEILEN DIE KÜRZEL
+    1a, 1b UND 1c.**
+    Neben dem Schnitt der Phase 11.2 führt `docs/claude-history/future-roadmap.md` unter
+    **Säule 1** eine EIGENE Aufzählung — **(1a)** llms.txt · **(1b)** Schema.org/JSON-LD ·
+    **(1c)** Zwischenschritt (manuelle JSON-LD-Injektion) —, und `docs/roadmap.md` zitiert
+    daraus. **ES SIND DREI KOLLIDIERENDE KÜRZEL, NICHT NUR DAS EINE, NACH DEM GESUCHT
+    WURDE.**
+    **WAS HEUTE TRÄGT UND WARUM DAS KEIN ZUFALL BLEIBEN DARF: EINDEUTIG WIRD DIE ANGABE
+    ALLEIN DURCH DAS WORT DAVOR.** "Scheibe 1b" bzw. "Schritt 1b-1" trifft; **das nackte
+    "1b" trifft beide Nummerierungen.** Wer den Suffix- und Präfix-Gebrauch für Kosmetik
+    hält und ihn beim nächsten Aufräumen kürzt, **erzeugt die Mehrdeutigkeit, die es heute
+    nicht gibt.**
+    GEMELDET, NICHT GEBAUT. **KEINE EMPFEHLUNG**, ob eine der beiden Nummerierungen
+    umbenannt wird — die fremde liegt in einem ARCHIV und in der ROADMAP, und beide sind
+    ausserhalb jedes heutigen Scopes.
+    TRIGGER: die nächste Arbeit an Säule 1 der Zukunfts-Roadmap, ODER die erste Umbenennung
+    an einer der beiden Nummerierungen.
+    PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-03; Achse: rekursive Suche über `*.md`,
+    `*.ts` und `*.tsx`, binärsicher, mit Positivkontrolle über die 22 `11.1c`-Treffer).
+    Dass die Kollision heute folgenlos ist, ist eine ABLEITUNG aus dem Sprachgebrauch, keine
+    zweite Messung.
 
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT

@@ -1423,6 +1423,28 @@ aufeinander; sie liegen alle hier und finden einander.
   PROVENIENZ: dass der Punkt im 1b-Abschnitt nicht genannt war, ist GEMESSEN am Dateitext
   (CC, 2026-09-02). Die Messung der Umleitung selbst bleibt die vom 2026-08-29 und ist
   unberührt; die Folge für einen maschinellen Auslöser ist eine ABLEITUNG daraus.
+  VERMERK 2026-09-03 — DER TRIGGER IST GEPRÜFT UND NICHT EINGETRETEN. DER TRIGGER-WORTLAUT
+  UND DER GESAMTE TEXT DARÜBER SIND UNANGETASTET; DIESER VERMERK TRITT DANEBEN, HAKT NICHTS
+  AB UND BEANTWORTET NICHTS.
+  DER STAND: Scheibe 1b ist am 2026-09-03 geschnitten und in ZWEI SCHRITTE zerlegt — 1b-1
+  (die Klammer um die Erneuerungs-Funktion) und 1b-2 (der Takt). "1b" ohne Suffix meint
+  weiterhin das PAKET. Volltext des Zuschnitts und der Nachtrag zur Zerlegung:
+  docs/aktiver-stand.md.
+  1b-1 ERZEUGT KEINEN PROGRAMMATISCHEN AUFRUFER und lässt die Route unverändert hinter
+  Sitzung und Eigentums-Gate; sie wird lediglich auf die neue Klammer umverdrahtet.
+  DER TRIGGER IST DAMIT NICHT EINGETRETEN, UND DIE UNTERSCHEIDUNG IST DER GANZE PUNKT: Sein
+  KALENDER-TEIL ("spätestens Scheibe 1b") ist erreicht, sein SACHVERHALT ("der erste
+  programmatische Aufrufer einer API-Route") ist es nicht. Wer nur die erste Hälfte liest,
+  hält den Punkt für fällig; wer nur die zweite liest, übersieht, dass die Frist läuft.
+  ER TRITT MIT 1b-2 EIN — falls dessen Takt VON AUSSEN kommt. Ein Auslöser im selben Prozess
+  stellt keine Anfrage und läuft an der Umleitung vorbei; ein zeitgetakteter Aufruf von
+  aussen läuft hinein. WELCHE FAMILIE 1b-2 WÄHLT, IST NICHT ENTSCHIEDEN.
+  DER GRUND FÜR DIESEN VERMERK, und er gehört hinein: EIN GEPRÜFT VERTAGTER TRIGGER SIEHT IN
+  EINEM REPO GENAUSO AUS WIE EIN ÜBERSEHENER — nämlich wie nichts.
+  KEINE EMPFEHLUNG, ob und was gebaut wird.
+  PROVENIENZ: der Zuschnitt und die Zerlegung sind eine ARCHITEKTEN-FESTLEGUNG vom
+  2026-09-03. Dass 1b-1 keinen programmatischen Aufrufer erzeugt, ist eine FOLGE aus seinem
+  Zuschnitt, KEINE Messung. Die Messung der Umleitung bleibt die vom 2026-08-29.
 
 - EIN AUTORISIERUNGS-FLUSS, DER AUF EINER ANDEREN ADRESSE STARTET ALS DER REGISTRIERTEN
   WEITERLEITUNG, ENDET GARANTIERT IN no_state (Trigger: EINGETRETEN — jeder Start über

@@ -15,6 +15,32 @@ vi.mock("server-only", () => ({}));
 //   ECHT:    isProjectIdShape (google-authorize) und die Route selbst.
 //
 // WAS DIESE DATEI PRUEFT, IST DAS GATE UND DIE ANTWORTFORM — nicht die Erneuerung.
+//
+// ---------------------------------------------------------------------------
+// NACHGEZOGEN MIT SCHRITT 1b-1 — NUR DIE SELBSTBESCHREIBUNG, KEINE ZUSICHERUNG:
+// SEIT DER UMVERDRAHTUNG LAUFEN DIESE TESTS DURCH DIE ECHTE KLAMMER
+// (runRefresh, lib/oauth/refresh-run.ts), WAEHREND SIE DIE FUNKTION DARUNTER MOCKEN.
+// Der Mock oben greift also eine Ebene TIEFER als der Aufruf der Route.
+//
+// SIE SIND DAMIT GRUEN AUS EINEM ANDEREN GRUND ALS ZUVOR (docs/immer-beachten.md,
+// "EIN GRUENER TEST IST KEIN BELEG, DASS DER GRUND SEINER GRUENHEIT DERSELBE GEBLIEBEN
+// IST") — und das gehoert aufgeschrieben, weil ein roter Test zum Hinsehen zwingt und
+// ein gruener nicht. KEINE Assertion, KEIN Mock und KEINE Testlogik ist dafuer
+// angefasst worden.
+//
+// ZWEI LAEUFE SIND EIGENS ZU LESEN:
+//   · R6 ist der einzige Lauf, dessen Attrappe kind:"retry" liefert. Er behauptet
+//     KEINE Aufrufzahl — deshalb bleibt er gruen, obwohl die Klammer dort jetzt
+//     DREIMAL ruft (REFRESH_MAX_ATTEMPTS) statt einmal. Sein Gegenstand ist die
+//     ANTWORTFORM, und die ist byte-gleich: der Deckel gibt denselben retry-Ausgang
+//     zurueck, den die Attrappe liefert.
+//   · R7 behauptet toHaveBeenCalledTimes(1) und bekommt aus dem beforeEach ein
+//     kind:"ok" — die Klammer kehrt beim ersten Versuch zurueck, die Zahl stimmt
+//     weiterhin. WER DIE ATTRAPPE DIESES LAUFS AUF retry UMSTELLT, macht ihn rot, und
+//     zwar zu Recht: Er zaehlt dann die Versuche der Klammer, nicht die Aufrufe der
+//     Route.
+// DASS DIE ROUTE UEBER DIE KLAMMER GEHT, HAELT DIESE DATEI NICHT FEST — das leistet
+// T15b in lib/oauth/token-refresh.test.ts.
 // ===========================================================================
 
 const refreshAccessTokenMock = vi.fn();

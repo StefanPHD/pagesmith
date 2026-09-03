@@ -1,8 +1,15 @@
 // Die Beweis-Route der Erneuerung (Phase 11.2, Scheibe 1a des Schnitts).
 //
 // WAS DIESE ROUTE TUT: Sie prueft die Sitzung, prueft das Eigentum am Projekt, ruft
-// die Erneuerungs-Funktion und gibt deren ZUSTAND samt den ZWEI ABLAUFZEITPUNKTEN
-// zurueck.
+// die KLAMMER (runRefresh, lib/oauth/refresh-run.ts) und gibt deren ZUSTAND samt den
+// ZWEI ABLAUFZEITPUNKTEN zurueck.
+//
+// SEIT SCHRITT 1b-1 LIEGT DIE KLAMMER DAZWISCHEN — die Route ruft refreshAccessToken
+// NICHT mehr direkt. Sie faehrt einen LAUF mit Obergrenze; die Wiederholung bei
+// kind:"retry" geschieht dort, nicht hier.
+// DIE ANTWORT IST DAVON UNBERUEHRT: attempts geht NICHT nach aussen. Der Rumpf traegt
+// weiterhin ausschliesslich state und die zwei Zeitpunkte bzw. state und reason — ein
+// zusaetzliches Feld waere ein neues Vokabular fuer einen Aufrufer, den es nicht gibt.
 //
 // SIE GIBT KEINE TOKEN ZURUECK. Weder das Zugangsdatum noch das Erneuerungs-Token
 // noch das Chiffrat, auch nicht gekuerzt — ein gekuerztes Geheimnis ist ein Geheimnis
@@ -34,7 +41,7 @@
 // KEINE UMLAUTE IM QUELLTEXT — s. den Kopf von lib/oauth/google-authorize.ts.
 import { createClient } from "@/lib/supabase/server";
 import { isProjectIdShape } from "@/lib/oauth/google-authorize";
-import { refreshAccessToken } from "@/lib/oauth/token-refresh";
+import { runRefresh } from "@/lib/oauth/refresh-run";
 
 // Der Pfad zieht ueber cipher.ts node:crypto herein -> Node-Runtime, nicht Edge.
 export const runtime = "nodejs";
@@ -108,10 +115,20 @@ export async function POST(request: Request): Promise<Response> {
   }
   if (!project) return notFound();
 
-  const result = await refreshAccessToken({
+  // DIE KLAMMER, NACH DEM GATE. Die Reihenfolge ist tragend und unveraendert:
+  // Form -> Sitzung -> Eigentum -> KLAMMER -> Funktion. runRefresh prueft ebenso wenig
+  // Eigentum wie refreshAccessToken darunter; das Gate oben bleibt die einzige
+  // Isolationsschicht dieses Pfades.
+  //
+  // attempts WIRD BEWUSST NICHT GELESEN. Es ist die einzige Stelle, an der ein
+  // Aufrufer "aufgegeben" von "einmal danebengegangen" trennen koennte (s. den Kopf
+  // von RefreshRunResult) — fuer die Antwort dieser Route ist das kein Unterschied,
+  // und ein zusaetzliches Rumpf-Feld waere ein neues Vokabular ohne Konsumenten.
+  const run = await runRefresh({
     projectId,
     target: GOOGLE_TARGET,
   });
+  const result = run.outcome;
 
   // DIE ANTWORT TRAEGT DEN ZUSTAND, NICHT DEN HTTP-STATUS ALS URTEIL: Alle vier
   // Zustaende sind ein gueltiges Ergebnis der Pruefung — auch "dead" ist eine

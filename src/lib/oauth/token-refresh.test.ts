@@ -827,6 +827,49 @@ describe("der Waechter und die Charakterisierung", () => {
     expect(ingest).toContain("@/lib/capi/meta-forward");
   });
 
+  it("T15b — DIE ROUTE RUFT DIE KLAMMER, DIE KLAMMER RUFT DIE FUNKTION", () => {
+    // WAS ER SCHLIESST — UND ER SCHLIESST EINE LUECKE, DIE T15 NIE HATTE: Bis
+    // Schritt 1b-1 stand in docs/aktiver-stand.md (VERMERK 6), ein Waechter halte
+    // fest, dass die Beweis-Route der EINZIGE Aufrufer von refreshAccessToken sei.
+    // T15 hat das nie geprueft — er liest ausschliesslich ingest.ts. Mit der
+    // Umverdrahtung waere jene Aussage falsch geworden, OHNE dass etwas rot wird;
+    // genau dagegen steht dieser Lauf.
+    //
+    // SEINE GRENZE TRAEGT ER AN SICH SELBST (docs/immer-beachten.md, "EIN WAECHTER
+    // UEBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG"): Er sieht IMPORT-ZEILEN, keinen
+    // Import-Graphen. Ein dynamisches import() oder ein Re-Export ueber eine dritte
+    // Datei entgeht ihm; umgekehrt machte ihn ein blosser Kommentar, der den
+    // Import-String zitiert, ROT — das waere ein FEHLALARM und kein Befund. Er irrt
+    // damit in die STRENGE Richtung, und das ist Absicht.
+    const route = readFileSync(
+      join(
+        process.cwd(),
+        "src",
+        "app",
+        "api",
+        "oauth",
+        "google",
+        "refresh",
+        "route.ts",
+      ),
+      "utf8",
+    );
+    const klammer = readFileSync(
+      join(process.cwd(), "src", "lib", "oauth", "refresh-run.ts"),
+      "utf8",
+    );
+
+    // DIE ROUTE GEHT UEBER DIE KLAMMER — und NICHT mehr direkt an die Funktion.
+    expect(route).toContain('from "@/lib/oauth/refresh-run"');
+    expect(route).not.toContain('from "@/lib/oauth/token-refresh"');
+
+    // DIE KLAMMER IST DER EINZIGE, DER DIE FUNKTION HOLT. Dieselbe Zeile ist zugleich
+    // die POSITIVKONTROLLE dieses Lesers: Ohne sie waeren "der Import steht nicht in
+    // der Route" und "eine der Dateien ist leer eingelesen worden" am Ergebnis nicht
+    // zu unterscheiden.
+    expect(klammer).toContain('from "@/lib/oauth/token-refresh"');
+  });
+
   it("T16 — refreshAccessToken WIRFT NIE, auch bei feindlichen Eingaben", async () => {
     // CHARAKTERISIERUNG. Heute eine Eigenschaft; sie wird eine AUFLAGE, sobald ein
     // Aufrufer auf dem Ingest-Pfad entsteht, wo das 204-CONTAINMENT gilt.

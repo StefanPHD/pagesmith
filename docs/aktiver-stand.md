@@ -6452,6 +6452,92 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     PROVENIENZ: GEMESSEN am Code (CC, 2026-09-03); die Einordnung ist eine
     ARCHITEKTEN-BEOBACHTUNG desselben Tages.
 
+50. **STIRBT DAS ERNEUERUNGS-TOKEN, IST DER AUSFALL FÜR NIEMANDEN SICHTBAR.**
+    **DER BEFUND — GEMESSEN am Repo (CC, 2026-09-03):** Die Oberfläche sagt weiterhin
+    "Zugangsdaten hinterlegt": `listConfiguredTargets` (src/app/projects/actions.ts)
+    selektiert aus `project_secrets` ausschliesslich `target` — **keine Uhr, kein
+    `secret_enc`** (dieselbe Messung wie in Vorrats-Eintrag 43). Die Seite läuft, und
+    **die Conversions verschwinden still.**
+    **DER EINZIGE ORT, AN DEM DER ZUSTAND HEUTE ERSCHEINT, IST EINE LOGZEILE** —
+    `[capi/resolve] secret unusable` mit dem `reason` `refresh_token_expired`
+    (`usableTokenFromRow`, src/lib/capi/token.ts). **Die sieht kein Kunde, und der
+    Betreiber muss sie SUCHEN.**
+
+    **DER VORSCHLAG KOMMT VOM OWNER (2026-09-03) UND IST HIER ABGELEGT, NICHT
+    ZUGESCHNITTEN:** eine Anzeige im Dashboard, die den Kunden zur Neu-Autorisierung
+    auffordert.
+
+    **ER ZERFÄLLT IN ZWEI DINGE MIT SEHR UNTERSCHIEDLICHEM PREIS, UND DIESE TRENNUNG IST
+    DER EIGENTLICHE INHALT DIESES EINTRAGS** — wer sie nicht mitliest, schneidet beide
+    als eine Arbeit zu und bezahlt für die billigere den Preis der teureren:
+    · **DIE AUSFALLMELDUNG ("die Verbindung ist tot") IST DIE BILLIGERE.** Der Zustand
+      wird **HEUTE SCHON ERKANNT**: `hasLiveRefreshToken` (ebenda, modul-privat) trifft
+      die Unterscheidung an **genau einer Stelle** — GEMESSEN am Repo (CC, 2026-09-03):
+      eine Definition, ein Aufrufer —, und der Resolver schreibt bereits eine Zeile mit
+      `refresh_token_expired`. **WAS FEHLT, IST EIN WEG VON DORT IN DIE OBERFLÄCHE.**
+    · **UND DER RESOLVER DARF IHN NICHT SELBST GEHEN.** Er führt die `projectId`
+      **bewusst nicht** — Invariante **(I-4)** der Scheibe 1b-2a, und der Grund steht am
+      Kopf von `usableTokenFromRow`: Dieser Pfad läuft bei JEDEM Besucher JEDER
+      Kundenseite, und eine Projekt-Kennung je Beacon wäre eine Datenerhebung, die
+      niemand beschlossen hat. GEMESSEN (CC, 2026-09-03): **keine** der Logzeilen des
+      Resolvers trägt eine. **Ein Zuschnitt, der den Weg über den Resolver nimmt, bricht
+      diese Invariante — und zwar an der teuersten Stelle des Systems.**
+    · **DIE VORWARNUNG ("läuft in drei Tagen ab") IST DIE TEURERE.** Sie braucht den
+      **Ablaufzeitpunkt**, und der steckt im Chiffrat: **keine Spalte, keine
+      SQL-Abfrage, die Datenbank hat den Schlüssel nicht.** GEMESSEN am Repo (CC,
+      2026-09-03): Keine Migration legt eine Ablauf-Spalte auf `project_secrets` an.
+      **SIE HÄNGT DAMIT AN DERSELBEN KLARTEXT-SPALTEN-FRAGE WIE DER ZEITGETAKTETE
+      AUSLÖSER** — Befund (1) des Zuschnitts zu Schritt 1b-1, "DER ABLAUFZEITPUNKT
+      STECKT IM CHIFFRAT, IN KEINER SPALTE". Dass es dieselbe Frage ist, ist eine
+      **ABLEITUNG** aus jenem Befund und keine Messung.
+
+    **DIE VORBEDINGUNG, DIE JEDER ZUSCHNITT DER VORWARNUNG ZUERST BEANTWORTEN MUSS —
+    UNGEMESSEN:** Ob Google nach dem Statuswechsel auf "In Produktion" überhaupt noch
+    einen Ablaufzeitpunkt für das Erneuerungs-Token mitliefert. **Der Zeiger steht in
+    docs/ziel-befunde.md, Teil (bx)**, und er ist dort ausdrücklich offen gelassen: Beide
+    Erklärungen tragen die Beobachtung gleich gut, und "WER SIE TRENNEN WILL, BRAUCHT
+    DIESELBE MESSUNG NACH DER VERIFIZIERUNG."
+    **OHNE IHN KANN KEINE ANZEIGE VORHERSAGEN, DASS ETWAS AUSLÄUFT — sie kann nur melden,
+    dass es bereits kaputt ist.** Wer die Vorwarnung ohne diese Messung zuschneidet, baut
+    eine Anzeige, die im Produktivbetrieb **keine Datengrundlage** hat.
+
+    **WAS ZUR LEBENSDAUER BEKANNT IST, JE MIT PROVENIENZ UND NICHT VERMISCHT:**
+    · **GEMESSEN:** Im Publishing-Status "Testing" lebt das Erneuerungs-Token **sieben
+      Tage** — Vorbedingung (iv) im Abschnitt "1b als Folgetask", an eigenen Daten
+      wiedergefunden (VERMERK 6, Ableitung 3, und der Nachtrag vom 2026-09-03 mit dem
+      konkreten Datum).
+    · **ABLEITUNG, NICHT LESUNG — UND DIESE KENNZEICHNUNG IST GEGENÜBER DER VORLAGE
+      DIESER RUNDE VERSCHÄRFT:** Dass nach dem Statuswechsel die Frist entfällt und das
+      Token dann nur noch durch Ereignisse stirbt, ist **die UMKEHRUNG einer gelesenen
+      Bedingung**, nicht die gelesene Bedingung selbst. Gelesen ist ausschliesslich der
+      Satz des Anbieters über den **Testing**-Zustand ("…publishing status of 'Testing'
+      is issued a refresh token expiring in 7 days", docs/ziel-befunde.md, Teil (af)).
+      **Aus "im Zustand A gilt X" folgt nicht "ausserhalb von A gilt X nicht"** — das ist
+      genau der Schluss, den Teil (bx) für die Nachbaraussage schon einmal gezogen und
+      dann als **widerlegt** protokolliert hat.
+      **KEIN Aufruf, keine Beobachtung.** Wer diese Angabe als GELESEN zitiert, zitiert
+      eine Folgerung als Quelle.
+
+    **DER NEBENEFFEKT, DER DEN EINTRAG MIT 48 VERBINDET:** Eine Ausfallmeldung im
+    Dashboard löste das Log-Problem **an der Wurzel** — niemand müsste mehr nach
+    `refresh_token_expired` filtern, und die Gewöhnung an die mehrdeutige Fehlerzeile
+    hätte keinen Gegenstand mehr.
+    **DIE ABGRENZUNG GEHÖRT DAZU, sonst laufen zwei Fassungen derselben Sache
+    nebeneinander: 48 fragt, WAS DIE LOGZEILE BEDEUTET. Dieser Eintrag fragt, WO DER
+    ZUSTAND STATTDESSEN ERSCHEINEN SOLLTE.** Zwei verschiedene Fragen an demselben
+    Zustand.
+
+    GEMELDET, NICHT GEBAUT. **KEINE EMPFEHLUNG**, wie die Anzeige aussähe, wo sie sässe,
+    oder welcher der beiden Teile zuerst käme.
+    TRIGGER: die nächste Arbeit an der Ziel-Karte, **ODER** der Statuswechsel auf
+    "In Produktion", **ODER** der erste Kunde mit einer Google-Verbindung.
+    PROVENIENZ: **OWNER-VORSCHLAG 2026-09-03**; die Code-Aussagen **GEMESSEN am Repo**
+    (CC, 2026-09-03, Aufklärungsrunde desselben Tages); dass die Vorwarnung an derselben
+    Frage hängt wie der Zeitplan, ist eine **ABLEITUNG** aus Befund (1) des
+    1b-1-Zuschnitts und keine Messung; die Einordnung der Statuswechsel-Angabe als
+    Ableitung statt Lesung ist **GEMESSEN am Dateitext** (CC, 2026-09-03, an
+    docs/ziel-befunde.md, Teile (af) und (bx)).
+
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT
 DIESER SCHEIBE GEGENSTANDSLOS.** `refreshAccessToken` liest, dechiffriert und zerlegt

@@ -50,6 +50,10 @@ import { hasSecret } from "@/lib/tracking/target-readiness";
 // die ERNEUERUNG, und die findet hier nicht statt (s. usableTokenFromRow).
 import { decryptSecret } from "@/lib/secrets/cipher";
 import { parseOAuthPayload } from "@/lib/secrets/oauth-payload";
+// NUR DER TYP. Er beschreibt die ZWEITE Uhr und traegt keinen Wert; ein import type
+// wird beim Bauen geloescht und erzeugt keine Laufzeit-Abhaengigkeit. Die Datei ist
+// selbst server-only, die Richtung ist damit unbedenklich.
+import type { RefreshTokenExpiry } from "@/lib/secrets/oauth-payload";
 
 /**
  * Aufloesung EINES trackingKeys (Phase 8 Scheibe 1, ADDITIV erweitert).
@@ -98,6 +102,53 @@ export type TrackingKeyResolution = {
    */
   abTestActive: boolean;
   targets: ResolvedTarget[];
+  /**
+   * DIE ZIELE, DEREN ZUGANGSDATUM ERNEUERT WERDEN SOLLTE (Scheibe 1b-2a).
+   *
+   * SIE IST IMMER EIN ARRAY, NIE undefined — UND DAS IST EINE ENTSCHEIDUNG GEGEN DIE
+   * NACHBARFORM EINE EBENE TIEFER, nicht eine Nachlaessigkeit: conversionRules an
+   * ResolvedTarget ist bewusst undefined statt leer, weil toEqual einen Schluessel mit
+   * dem Wert undefined IGNORIERT (GEMESSEN 2026-08-18) und ein leeres Objekt an JEDEM
+   * Empfaenger die Ganz-Objekt-Vergleiche gebrochen haette.
+   * HIER IST GENAU DAS DER ZWECK. ACHTZEHN Laeufe in token.test.ts pinnen die
+   * vollstaendige Aufloesung mit toEqual; ein optionales, im Normalfall leeres Feld
+   * ginge an ALLEN achtzehn STILL vorbei — der Bestand bliebe gruen, und niemand
+   * haette einen Anlass hinzusehen. Ein IMMER gesetztes Array macht das Nachziehen
+   * ERZWUNGEN statt erhofft.
+   * WER ES SPAETER ZU `renewable?:` VEREINFACHT, SCHALTET DIESE FALLE WIEDER SCHARF.
+   * Der Waechter dagegen ist R7 in token.test.ts.
+   *
+   * SIE TRAEGT KEIN GEHEIMNIS. Weder Zugangsdatum noch Erneuerungs-Token stehen
+   * darin; runRefresh (lib/oauth/refresh-run.ts) verlangt nur projectId und target
+   * und liest die Zeile selbst. Das ist der Mechanismus hinter der Invariante "das
+   * Erneuerungs-Token verlaesst den Resolver nicht" — nicht dieser Satz.
+   */
+  renewable: RenewableTarget[];
+};
+
+/**
+ * EIN ZIEL, DESSEN ZUGANGSDATUM ERNEUERT WERDEN SOLLTE — MIT SEINER LAGE.
+ *
+ * WARUM DIE OEFFENTLICHEN KENNUNGEN MITREISEN: Nach einer Rettung braucht der
+ * Aufrufer ein vollstaendiges ResolvedTarget. pixelId und conversionRules stammen aus
+ * projects.settings, das NUR in der ersten Datenbank-Runde gelesen wird — ohne sie
+ * kostete die Nach-Aufloesung eine ZWEITE projects-Runde statt einer schmalen Lesung
+ * auf project_secrets. BEIDE SIND OEFFENTLICHE KENNUNGEN UND KEINE GEHEIMNISSE
+ * (s. den Kommentar an CapiConfig.pixelId).
+ *
+ * WARUM DIE LAGE EIN EIGENES FELD IST: Ohne sie muesste der Aufrufer die Uhr erneut
+ * befragen, also eine Angabe ein zweites Mal herstellen, die hier ohnehin schon
+ * entschieden ist.
+ *  · "expired" — Uhr 1 ist tot, Uhr 2 lebt. Das Ziel steht NICHT in targets; ohne
+ *    Rettung sendet es nicht.
+ *  · "lead"    — Uhr 1 lebt, liegt aber innerhalb der Schwelle. Das Ziel steht
+ *    ZUSAETZLICH in targets und sendet diesen Beacon noch.
+ */
+export type RenewableTarget = {
+  target: TrackingTarget;
+  pixelId: string;
+  conversionRules?: Record<string, string>;
+  lage: "expired" | "lead";
 };
 
 /** Ein AUFGELOESTER Empfaenger: sein Ziel-Name plus die vollstaendigen Zugangsdaten. */
@@ -201,6 +252,71 @@ export type CapiConfig = {
 };
 
 /**
+ * DIE SCHWELLE, AB DER DIESER PFAD EINE ERNEUERUNG MELDET (Scheibe 1b-2a).
+ *
+ * SIE IST NICHT DIESELBE ZAHL WIE DER VORLAUF, AUCH WENN SIE DENSELBEN WERT TRAEGT.
+ * Der Vorlauf (REFRESH_LEAD_SECONDS in lib/oauth/token-refresh.ts) sagt "ab hier wird
+ * ERNEUERT"; diese Schwelle sagt "ab hier wird GEMELDET". Zwei Fragen, zwei Orte —
+ * und der Import von dort ist diesem Pfad ohnehin verwehrt (der Waechter T15-ERSATZ
+ * in token.test.ts verbietet token.ts jeden Import aus /oauth/).
+ *
+ * DIE RELATION IST BINDEND: SCHWELLE <= VORLAUF.
+ *
+ * · SCHWELLE <= VORLAUF IST SELBSTBEGRENZEND. Jedes Signal fuehrt zu einer echten
+ *   Erneuerung, die Zeile bekommt einen frischen Ablauf, und das Signal hoert auf.
+ *   Das Fenster ist nicht die Laenge des Vorlaufs, sondern die Zeit bis zur ERSTEN
+ *   erfolgreichen Erneuerung.
+ * · SCHWELLE > VORLAUF IST SELBSTWIEDERHOLEND. Im Band zwischen beiden gibt
+ *   refreshAccessToken "reichte noch" zurueck OHNE zu schreiben; die Zeile bleibt
+ *   unveraendert, und JEDER folgende Beacon loest dasselbe Nichts erneut aus — eine
+ *   Datenbank-Runde plus Entschluesselung je Besucher, STILL: keine Logzeile, kein
+ *   roter Test, keine Spur.
+ * · DIE FEHLERRICHTUNGEN SIND UNGLEICH TEUER. Zu klein ist harmlos, weil die Rettung
+ *   den Rest auffaengt. Zu gross ist eine Kostenvervielfachung auf dem
+ *   meistgetroffenen Pfad der Plattform.
+ *
+ * DER WAECHTER IST U1 in token.test.ts: er importiert BEIDE Zahlen und behauptet die
+ * Relation. Er bindet die RELATION, nicht die Gleichheit, und er sagt NICHTS darueber,
+ * ob eine der beiden Zahlen richtig gewaehlt ist.
+ *
+ * DER EXPORT DIENT DIESEM WAECHTER UND KEINEM PRODUKTIV-AUFRUFER. Im Produktivcode
+ * wird die Konstante ausschliesslich in dieser Datei gelesen.
+ */
+export const REFRESH_SIGNAL_LEAD_SECONDS = 300;
+
+/**
+ * LEBT DIE ZWEITE UHR NOCH? — DIE TRENNUNG "ERNEUERBAR" GEGEN "ENDGUELTIG TOT".
+ *
+ * MODUL-PRIVAT, aus demselben Grund wie hasUsableAccessToken darunter und mit
+ * derselben Begruendung: ein Praedikat mit EINEM Aufrufer in ein geteiltes Haus zu
+ * legen waere Infrastruktur auf Verdacht.
+ *
+ * ES IST EINE ZWEITE INSTANZ, UND DAS WIRD HIER BENANNT STATT VERSCHWIEGEN: Dieselbe
+ * Bedingung steht inline in refreshAccessToken (lib/oauth/token-refresh.ts,
+ * Schritt (6)). Sie ist NICHT entdoppelt, und der Grund ist kein Geschmack — eine
+ * gemeinsame Quelle verlangte einen Import in jene Datei, und die wird von dieser
+ * Scheibe GERUFEN, nicht angefasst.
+ * DIE ZWEI SIND NICHT DECKUNGSGLEICH, UND ZWAR ABSICHTLICH: Dort entscheidet Uhr 2
+ * ueber "erneuern oder aufgeben", hier ueber "melden oder schweigen".
+ *
+ * {kind:"unknown"} GILT NIE ALS UEBERSCHRITTEN. Das ist Festlegung 5 der Scheibe 1a,
+ * UEBERNOMMEN und nicht neu erfunden: Von zwei unbelegten Moeglichkeiten wird die
+ * gewaehlt, deren Fehlgriff der billigere ist — ein ueberfluessiger Netzaufruf gegen
+ * einen Kunden-Autorisierungsfluss, den niemand gebraucht haette.
+ *
+ * DER RAND IST AUSGESCHRIEBEN, weil er sonst geraten wird: epochSeconds === now gilt
+ * als UEBERSCHRITTEN (fail-closed) — dieselbe Wahl wie bei Uhr 1 und dieselbe wie in
+ * refreshAccessToken, wo der Vergleich `<= now` lautet.
+ */
+function hasLiveRefreshToken(
+  expiry: RefreshTokenExpiry,
+  nowSeconds: number,
+): boolean {
+  if (expiry.kind === "unknown") return true;
+  return expiry.epochSeconds > nowSeconds;
+}
+
+/**
  * IST DIESES ZUGANGSDATUM JETZT NOCH BRAUCHBAR? — UHR 1, UND SONST NICHTS.
  *
  * MODUL-PRIVAT UND NICHT IN tracking/target-readiness.ts (ARCHITEKTEN-ENTSCHEIDUNG,
@@ -233,17 +349,31 @@ function hasUsableAccessToken(
 }
 
 /**
- * DAS BRAUCHBARE ZUGANGSDATUM EINER GEHEIMNIS-ZEILE — ODER null.
+ * DIE LAGE EINER GEHEIMNIS-ZEILE — BRAUCHBAR, ERNEUERBAR ODER GAR NICHTS.
  *
  * SIE IST DER EINZIGE ORT IN DIESER DATEI, AN DEM EINE OAuthPayload EXISTIERT, UND
  * DAS IST DER MECHANISMUS HINTER DER FESTLEGUNG "DAS ERNEUERUNGS-TOKEN VERLAESST DEN
- * RESOLVER NICHT" — nicht eine Zusage, sondern der RUECKGABETYP: `string | null` kann
- * kein zweites Geheimnis tragen. Ab dem return zeigt kein Bezeichner mehr auf
- * refreshToken oder refreshTokenExpiresAt.
- * WER DAS AENDERN WOLLTE, MUESSTE DREI TYPEN ANFASSEN — den Rueckgabetyp hier,
- * CapiConfig und ResolvedTarget. Drei sichtbare Aenderungen an einer geteilten Datei;
- * ein Feld mehr in einer inline ausgepackten Nutzlast waere dagegen EINE Zeile
- * gewesen. Genau deshalb ist das Auspacken hier eingesperrt.
+ * RESOLVER NICHT" — nicht eine Zusage, sondern der RUECKGABETYP: RowResolution ist
+ * eine GESCHLOSSENE Union mit benannten Feldern, und keines davon nimmt ein zweites
+ * Geheimnis auf. Ab dem return zeigt kein Bezeichner mehr auf refreshToken oder
+ * refreshTokenExpiresAt.
+ * ERSETZT MIT SCHEIBE 1b-2a — hier stand "der RUECKGABETYP: `string | null` kann kein
+ * zweites Geheimnis tragen". Der Typ ist ein anderer geworden; DIE AUSSAGE IST
+ * DIESELBE, und sie ist der Grund, warum die Union geschlossen ist und nicht etwa ein
+ * Objekt mit der ganzen Nutzlast.
+ *
+ * RICHTIGGESTELLT MIT SCHEIBE 1b-2a, NICHT GESTEMPELT — HIER STAND "WER DAS AENDERN
+ * WOLLTE, MUESSTE DREI TYPEN ANFASSEN". DAS IST AM CODE ZU HOCH. GEMESSEN am Repo
+ * (CC, 2026-09-03): Es genuegen ZWEI, auf zwei unabhaengigen Wegen — den Rueckgabetyp
+ * hier PLUS CapiConfig (ResolvedTarget bleibt unberuehrt, es traegt config nur), ODER
+ * den Rueckgabetyp hier PLUS ResolvedTarget (dann bleibt CapiConfig unberuehrt). Dazu
+ * kommt je das Objektliteral in der Paarungsschleife, und das ist kein Typ.
+ * DER SCHUTZ BLEIBT REAL UND WIRD NICHT KLEINGEREDET: Zwei sichtbare Aenderungen an
+ * einer geteilten Datei sind weiterhin etwas anderes als eine Zeile in einer inline
+ * ausgepackten Nutzlast. Genau deshalb ist das Auspacken hier eingesperrt.
+ * WARUM DIE KORREKTUR UEBERHAUPT NOETIG IST: EINE ZU STARKE BEGRUENDUNG IST EINE
+ * EINLADUNG, DIE REGEL BEIM NAECHSTEN UMBAU ALS UEBERTRIEBEN ZU LESEN. Eine Zahl, die
+ * beim Nachzaehlen nicht stimmt, entwertet den Satz, den sie tragen soll.
  *
  * DIE REIHENFOLGE IST ENTSCHIEDEN UND NICHT ZUFAELLIG — CHIFFRAT ZUERST, KLARTEXT
  * DANACH. Der CHECK project_secrets_secret_genau_eines erlaubt heute nur EINE der
@@ -273,11 +403,19 @@ function hasUsableAccessToken(
  * SIE WIRFT NIE. decryptSecret und parseOAuthPayload tragen denselben Vertrag, der
  * Rest sind typeof-Vergleiche und ein Zahlenvergleich.
  */
+type RowResolution =
+  /** Das Zugangsdatum traegt. inLead sagt, ob es INNERHALB der Schwelle liegt. */
+  | { kind: "usable"; token: string; inLead: boolean }
+  /** Uhr 1 ist tot, Uhr 2 lebt. Kein Zugangsdatum — aber eine Erneuerung ist moeglich. */
+  | { kind: "renewable" }
+  /** Endgueltig tot, unbrauchbar oder gar kein Geheimnis. Neun Wege, ein Ausgang. */
+  | { kind: "unusable" };
+
 function usableTokenFromRow(
   row: { secret: unknown; secret_enc: unknown },
   target: string,
   nowSeconds: number,
-): string | null {
+): RowResolution {
   const encrypted = row.secret_enc;
   if (typeof encrypted === "string" && encrypted.length > 0) {
     const decrypted = decryptSecret(encrypted);
@@ -289,7 +427,7 @@ function usableTokenFromRow(
         target,
         reason: `decrypt_${decrypted.kind}`,
       });
-      return null;
+      return { kind: "unusable" };
     }
 
     const parsed = parseOAuthPayload(decrypted.value);
@@ -298,25 +436,53 @@ function usableTokenFromRow(
         target,
         reason: `parse_${parsed.kind}`,
       });
-      return null;
+      return { kind: "unusable" };
     }
 
+    // UHR 2 ENTSCHEIDET, WAS EIN TOTES ZUGANGSDATUM BEDEUTET (Scheibe 1b-2a). Vor
+    // dieser Scheibe war jede tote Uhr 1 dasselbe wie "gar kein Geheimnis"; sie ist es
+    // nur noch dann, wenn auch das Erneuerungs-Token hin ist.
+    const erneuerbar = hasLiveRefreshToken(
+      parsed.value.refreshTokenExpiresAt,
+      nowSeconds,
+    );
+
     if (!hasUsableAccessToken(parsed.value.accessTokenExpiresAt, nowSeconds)) {
+      // DIE FEHLERZEILE BLEIBT IN BEIDEN FAELLEN STEHEN, und das ist Absicht: Sie ist
+      // die einzige beobachtbare Signatur dieses Zustands (Vorrats-Eintrag 42), und
+      // sie ist die Live-Test-Achse dieser Scheibe. Der Grund unterscheidet die zwei
+      // Lagen; beide Werte sind SELBSTVERGEBEN, keiner ist Fremdtext.
       console.error("[capi/resolve] secret unusable", {
         target,
-        reason: "access_token_expired",
+        reason: erneuerbar ? "access_token_expired" : "refresh_token_expired",
       });
-      return null;
+      return erneuerbar ? { kind: "renewable" } : { kind: "unusable" };
     }
 
     // NUR DAS ZUGANGSDATUM. Die drei uebrigen Felder der Nutzlast enden hier.
-    return parsed.value.accessToken;
+    // inLead IST KEINE ZWEITE PRUEFUNG DER UHR, SONDERN DIESELBE MIT EINER ANDEREN
+    // SCHWELLE: brauchbar ist es (sonst waeren wir oben ausgestiegen), und die Frage
+    // lautet nur noch, ob es NAHE genug am Ablauf ist, um eine Vorsorge zu melden.
+    // OHNE erneuerbar WAERE DAS EIN SIGNAL INS LEERE: Ein Zugangsdatum, dessen
+    // Erneuerungs-Token tot ist, laesst sich nicht erneuern — eine Vorsorge dafuer
+    // erzeugte je Beacon einen Netzruf, der garantiert nichts aendert.
+    const inLead =
+      erneuerbar &&
+      parsed.value.accessTokenExpiresAt - nowSeconds <=
+        REFRESH_SIGNAL_LEAD_SECONDS;
+
+    return { kind: "usable", token: parsed.value.accessToken, inLead };
   }
 
   // DIE KLARTEXT-FORM, UNVERAENDERT SEIT PHASE 11: hasSecret trimmt NICHT — ein
   // Geheimnis aus reinem Leerraum galt hier immer als VORHANDEN und gilt es weiterhin.
-  if (hasSecret(row.secret)) return row.secret;
-  return null;
+  // SIE HAT KEINE NUTZLAST UND KEINE UHR. Ein Klartext-Geheimnis laeuft an der
+  // Entschluesselung vorbei, kann also weder ablaufen noch erneuert werden — es ist
+  // NIE erneuerbar und NIE im Vorlauf. Das ist der Mechanismus hinter der Zusage,
+  // dass diese Scheibe fuer die vier Klartext-Ziele wirkungslos ist (Lauf R6).
+  if (hasSecret(row.secret))
+    return { kind: "usable", token: row.secret, inLead: false };
+  return { kind: "unusable" };
 }
 
 /**
@@ -407,7 +573,17 @@ export async function getCapiConfigByTrackingKey(
   // anonymen Aufrufer bleibt das Ergebnis identisch (204, kein Zustandsleck); der
   // Unterschied ist nur intern sichtbar. Halbe Sperre = keine Sperre.
   if (project.blocked_at)
-    return { projectId, blocked: true, abTestActive, targets: [] };
+    // renewable IST HIER LEER, UND ZWAR STRUKTURELL: Dieser Ausstieg liegt VOR der
+    // Geheimnis-Abfrage, es gibt also keine Zeile, keine Nutzlast und keine Uhr. EIN
+    // GESPERRTES PROJEKT ERNEUERT NICHTS — das ist keine Zusage des Aufrufers, sondern
+    // eine Eigenschaft dieser Zeile.
+    return {
+      projectId,
+      blocked: true,
+      abTestActive,
+      targets: [],
+      renewable: [],
+    };
 
   // Die Pixel-IDs ALLER bekannten Ziele aus derselben Zeile — kein zweiter Lookup.
   // Reuse der Settings-Ableitung, jetzt ziel-parametrisiert (getPixelId statt
@@ -474,7 +650,13 @@ export async function getCapiConfigByTrackingKey(
   );
 
   if (withPixel.length === 0)
-    return { projectId, blocked: false, abTestActive, targets: [] };
+    return {
+      projectId,
+      blocked: false,
+      abTestActive,
+      targets: [],
+      renewable: [],
+    };
 
   // Schritt 2: (project_id, Ziel) -> Geheimnisse ALLER in Frage kommenden Ziele in
   // EINER Runde (Phase 11 Scheibe 7). Fehlende Zeile (Zugangsdaten nie gesetzt) ->
@@ -503,7 +685,13 @@ export async function getCapiConfigByTrackingKey(
     );
 
   if (secretsError || !rows)
-    return { projectId, blocked: false, abTestActive, targets: [] };
+    return {
+      projectId,
+      blocked: false,
+      abTestActive,
+      targets: [],
+      renewable: [],
+    };
 
   // Geheimnisse nach Ziel greifbar machen. Der Schluessel bleibt bewusst ein roher
   // string: nachgeschlagen wird ausschliesslich mit Werten aus TRACKING_TARGETS, ein
@@ -528,28 +716,52 @@ export async function getCapiConfigByTrackingKey(
   // refreshAccessToken (lib/oauth/token-refresh.ts).
   const nowSeconds = Math.floor(Date.now() / 1000);
 
-  const tokenByTarget = new Map<string, string>();
+  const lageByTarget = new Map<string, RowResolution>();
   for (const row of rows as {
     target: unknown;
     secret: unknown;
     secret_enc: unknown;
   }[]) {
     if (typeof row.target !== "string") continue;
-    // NEUN AUSGAENGE MUENDEN IN null, UND KEINER IST VON AUSSEN UNTERSCHEIDBAR — fuenf
-    // Dechiffrier-Zustaende, zwei Lese-Zustaende, die tote Uhr 1 und die Zeile ohne
-    // brauchbares Geheimnis. Alle enden in derselben leeren 204.
-    const token = usableTokenFromRow(row, row.target, nowSeconds);
-    if (token === null) continue;
-    tokenByTarget.set(row.target, token);
+    // ACHT AUSGAENGE MUENDEN IN "unusable", UND KEINER IST VON AUSSEN UNTERSCHEIDBAR —
+    // fuenf Dechiffrier-Zustaende, zwei Lese-Zustaende und die Zeile ohne brauchbares
+    // Geheimnis. Alle enden in derselben leeren 204.
+    // ERSETZT MIT SCHEIBE 1b-2a — hier stand "NEUN AUSGAENGE MUENDEN IN null". Die
+    // TOTE UHR 1 ist der neunte gewesen und ist es nicht mehr: Sie muendet jetzt in
+    // "renewable", wenn Uhr 2 noch lebt, und nur sonst in "unusable". NACH AUSSEN
+    // AENDERT DAS NICHTS — auch eine geglueckte Rettung endet in derselben leeren 204.
+    lageByTarget.set(row.target, usableTokenFromRow(row, row.target, nowSeconds));
   }
 
   // DIE PAARUNG — JE ZIEL. Nur wer BEIDES traegt, wird Empfaenger. Die Reihenfolge
   // folgt TRACKING_TARGETS und ist damit deterministisch, nicht von der Zeilenfolge
   // der Datenbank abhaengig.
   const targets: ResolvedTarget[] = [];
+  const renewable: RenewableTarget[] = [];
   for (const entry of withPixel) {
-    const token = tokenByTarget.get(entry.target);
-    if (!token) continue;
+    const lage = lageByTarget.get(entry.target);
+    if (!lage || lage.kind === "unusable") continue;
+
+    // DIE ZWEITE MENGE WIRD IN DERSELBEN SCHLEIFE GEBAUT — keine zweite Iteration,
+    // keine zweite Lesung, keine zusaetzliche Datenbank-Runde. Die Reihenfolge folgt
+    // TRACKING_TARGETS und ist damit auch hier deterministisch.
+    if (lage.kind === "renewable" || lage.inLead) {
+      renewable.push({
+        target: entry.target,
+        pixelId: entry.pixelId,
+        ...(hasConversionRules(entry.rules)
+          ? { conversionRules: entry.rules }
+          : {}),
+        lage: lage.kind === "renewable" ? "expired" : "lead",
+      });
+    }
+
+    // ERNEUERBAR HEISST NICHT SENDEFAEHIG. Eine Zeile mit toter Uhr 1 erzeugt KEIN
+    // ResolvedTarget — fail-closed, wie vor dieser Scheibe. Der Aufrufer bekommt sie
+    // ueber renewable gemeldet und muss sie eigens retten; sie faellt ihm nicht als
+    // halber Empfaenger in die Hand.
+    if (lage.kind !== "usable") continue;
+    const token = lage.token;
     // "LEERE ZUORDNUNG" WIRD IN "FELD NICHT GESETZT" UEBERSETZT (Scheibe 11.1e), und
     // das ist KEINE Kosmetik — der Grund ist eine gemessene Tatsache ueber das
     // PRUEFWERKZEUG und gehoert deshalb an diese Fundstelle:
@@ -572,5 +784,75 @@ export async function getCapiConfigByTrackingKey(
     });
   }
 
-  return { projectId, blocked: false, abTestActive, targets };
+  return { projectId, blocked: false, abTestActive, targets, renewable };
+}
+
+/**
+ * DAS FRISCHE ZUGANGSDATUM EINES GERADE ERNEUERTEN ZIELS — DIE SCHMALE NACH-AUFLOESUNG.
+ *
+ * WARUM ES SIE UEBERHAUPT GIBT, UND DER SATZ GEHOERT AN DEN ANFANG: refreshAccessToken
+ * (lib/oauth/token-refresh.ts) GIBT DAS ZUGANGSDATUM NICHT ZURUECK — sein ok-Ausgang
+ * traegt nur die zwei Ablaufzeitpunkte, und runRefresh reicht ihn unveraendert durch.
+ * Das frische Zugangsdatum steht danach ausschliesslich CHIFFRIERT in
+ * project_secrets.secret_enc. Wer es haben will, muss lesen.
+ *
+ * SIE IST DIE DRITTE DATENBANK-RUNDE DES REQUESTS, UND DAS IST EIN BENANNTER PREIS,
+ * KEIN VERSEHEN. Sie faellt AUSSCHLIESSLICH im Rettungsfall an — also fuer ein
+ * Projekt, dessen Zugangsdatum gerade tot war und gerade erneuert wurde. Fuer jeden
+ * anderen Beacon bleibt es bei ZWEI Runden; die Zusage im Kopf von
+ * getCapiConfigByTrackingKey gilt fuer den Normalfall unveraendert.
+ * DIE BILLIGERE VARIANTE GIBT ES NICHT: Eine zweite VOLLSTAENDIGE Aufloesung kostete
+ * ZWEI Runden, weil sie projects erneut laese — deshalb reisen pixelId und
+ * conversionRules in RenewableTarget mit, und deshalb liest diese Funktion NUR
+ * project_secrets.
+ *
+ * SIE PRUEFT KEIN EIGENTUM, UND SIE BRAUCHT ES AUCH NICHT ZU: projectId stammt aus der
+ * Aufloesung eines trackingKeys und ist damit SERVER-aufgeloest — kein Aufrufer kann
+ * sie setzen. Das ist dieselbe Kette wie beim Rest dieses Pfades.
+ *
+ * SIE WIRFT NIE — dieselbe Zusage wie usableTokenFromRow, und aus denselben Gruenden:
+ * { data, error } wird destrukturiert (nie nur { data }), decryptSecret und
+ * parseOAuthPayload tragen denselben Vertrag, der Rest sind typeof-Vergleiche.
+ *
+ * SIE ERNEUERT NICHT. Sie liest. Wer hier einen Aufruf an das oauth-Haus ergaenzt,
+ * bricht den Waechter T15-ERSATZ in token.test.ts — und zwar zu Recht.
+ */
+export async function resolveRefreshedTarget(
+  projectId: string,
+  entry: RenewableTarget,
+): Promise<ResolvedTarget | null> {
+  const admin = createAdminClient();
+
+  const { data: row, error } = await admin
+    .from("project_secrets")
+    .select("secret, secret_enc")
+    .eq("project_id", projectId)
+    .eq("target", entry.target)
+    .maybeSingle();
+
+  if (error || !row) return null;
+
+  // DIE UHR WIRD HIER NEU GELESEN, und das ist richtig statt inkonsequent: Zwischen
+  // der ersten Aufloesung und diesem Aufruf liegt ein NETZRUF an den Anbieter. Die
+  // alte Uhr auf ein Zugangsdatum anzuwenden, das nach ihr ausgestellt wurde, waere
+  // ein Vergleich gegen einen Bezugspunkt, den es nicht mehr gibt.
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const lage = usableTokenFromRow(
+    row as { secret: unknown; secret_enc: unknown },
+    entry.target,
+    nowSeconds,
+  );
+
+  // FAIL-CLOSED: Alles ausser "usable" ergibt keinen Empfaenger. Auch ein erneut
+  // "renewable" — eine zweite Rettung im selben Request gibt es nicht, sie waere eine
+  // Schleife ohne Abbruchbedingung auf dem meistgetroffenen Pfad der Plattform.
+  if (lage.kind !== "usable") return null;
+
+  return {
+    target: entry.target,
+    config: { pixelId: entry.pixelId, token: lage.token },
+    ...(entry.conversionRules
+      ? { conversionRules: entry.conversionRules }
+      : {}),
+  };
 }

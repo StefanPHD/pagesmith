@@ -804,7 +804,24 @@ describe("kein Geheimnis verlaesst diesen Pfad", () => {
 });
 
 describe("der Waechter und die Charakterisierung", () => {
-  it("T15 — KEIN AUFRUFER AUF DEM INGEST-PFAD (mit Positivkontrolle)", () => {
+  it("T15 — DER INGEST GEHT UEBER DIE KLAMMER UND NICHT AN IHR VORBEI (mit Positivkontrolle)", () => {
+    // DER TITEL IST MIT SCHEIBE 1b-2a KORRIGIERT, DIE ZUSICHERUNGEN SIND ES NICHT —
+    // KEINE EINZIGE IST ENTFERNT ODER AUFGEWEICHT WORDEN.
+    //
+    // WAS ER VORHER ZUGESICHERT HAT: Er hiess "KEIN AUFRUFER AUF DEM INGEST-PFAD" und
+    // meinte genau das — bis Scheibe 1b-2a rief der Ingest die Erneuerung ueberhaupt
+    // nicht. SEIT 1b-2a IST DER TITEL FALSCH: capi/ingest.ts ruft runRefresh, also
+    // erneuert der Ingest-Pfad sehr wohl.
+    //
+    // WARUM DIESELBEN ZWEI BEHAUPTUNGEN TROTZDEM WERTVOLL BLEIBEN — und das ist der
+    // Grund, warum hier NICHTS gestrichen wird: Dass ingest.ts weder "token-refresh"
+    // noch "refreshAccessToken" enthaelt, heisst ab jetzt "der Ingest geht ueber die
+    // KLAMMER und nicht an ihr vorbei". Die Klammer traegt die Obergrenze aus
+    // Schritt 1b-1; ein Handler, der die Funktion direkt riefe, umginge sie — still,
+    // und mit einer Wiederholungs-Schleife ohne Deckel auf dem meistgetroffenen Pfad
+    // der Plattform. DIE ZUSICHERUNG IST DIESELBE GEBLIEBEN, IHR TITEL WAR ES NICHT.
+    // WER NUR DEN TITEL AENDERT UND DIESEN ABSATZ WEGLAESST, LOESCHT DIE SPUR.
+    //
     // SEINE GRENZE TRAEGT ER AN SICH SELBST (docs/immer-beachten.md, "EIN WAECHTER
     // UEBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG"): Er sieht einen NAMEN, keinen
     // Import-Graphen. Eine blosse PROSA-Erwaehnung von "token-refresh" in einem

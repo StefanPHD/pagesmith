@@ -79,6 +79,10 @@ beforeEach(() => {
     projectId: "proj-1",
     blocked: false,
     abTestActive: false,
+    // SEIT SCHEIBE 1b-2a IM TYP NICHT OPTIONAL. LEER IST HIER TRAGEND: Diese Datei
+    // misst den Deckel des Adapters, und eine Rettung laege SERIELL davor — sie
+    // verschoebe die gemessene Frist.
+    renewable: [],
     targets: [
       { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
     ],

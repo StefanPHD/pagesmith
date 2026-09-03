@@ -63,6 +63,11 @@ beforeEach(() => {
     projectId: "proj-1",
     blocked: false,
     abTestActive: false,
+    // SEIT SCHEIBE 1b-2a TRAEGT JEDE AUFLOESUNG DIESE MENGE — sie ist im Typ NICHT
+    // optional. Eine Fixture ohne sie bildet einen Zustand ab, den der Resolver nicht
+    // erzeugen kann (docs/immer-beachten.md, "TESTDATEN UND TEST-SEQUENZ MUESSEN DEN
+    // PRODUKTIVEN PFAD TREFFEN").
+    renewable: [],
     targets: [
       { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
     ],
@@ -158,6 +163,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
       blocked: true,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
 
     const res = await handleIngest(makeRequest(CONFIRM_BODY));
@@ -188,6 +194,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
 
     const res = await handleIngest(makeRequest(CONFIRM_BODY));

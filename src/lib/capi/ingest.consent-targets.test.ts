@@ -311,7 +311,18 @@ function makeRequest(wireValue?: { value: unknown }): Request {
 }
 
 function resolution(targets: unknown[]) {
-  return { projectId: "proj-1", blocked: false, abTestActive: false, targets };
+  // renewable IST SEIT SCHEIBE 1b-2a TEIL JEDER AUFLOESUNG UND IM TYP NICHT OPTIONAL.
+  // Hier steht es LEER, und das ist die Aussage dieser Datei: Die Einwilligung wird an
+  // aufgeloesten Empfaengern gemessen, nicht an rettbaren Zielen — dass allowedTargets
+  // seit 1b-2a auch die zweite Menge filtert, ist in ingest.refresh.test.ts (H8)
+  // geprueft und aendert an diesen Laeufen nichts.
+  return {
+    projectId: "proj-1",
+    blocked: false,
+    abTestActive: false,
+    targets,
+    renewable: [],
+  };
 }
 
 async function runScheduled(): Promise<void> {

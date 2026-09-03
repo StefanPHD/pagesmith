@@ -13,7 +13,17 @@ const { createAdminClient } = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
-import { getCapiConfigByTrackingKey } from "./token";
+import {
+  getCapiConfigByTrackingKey,
+  resolveRefreshedTarget,
+  REFRESH_SIGNAL_LEAD_SECONDS,
+} from "./token";
+// AUS DEM OAUTH-HAUS, UND NUR HIER: Der Waechter T15-ERSATZ weiter unten verbietet
+// token.ts jeden Import aus /oauth/ — er liest den Quelltext der QUELLDATEI, nicht
+// den dieser Testdatei. EINE TESTDATEI DARF ALSO IMPORTIEREN, WAS DER PRUEFLING NICHT
+// DARF, und genau darauf ruht der Kopplungs-Lauf U1: Die zwei Zahlen koennen im
+// Produktivcode nicht zusammenkommen, ihre Relation aber sehr wohl bewacht werden.
+import { REFRESH_LEAD_SECONDS } from "@/lib/oauth/token-refresh";
 // ECHT, NICHT GEMOCKT (Scheibe 4 der Phase 11.2): Die Chiffrierung und das Lesen der
 // Nutzlast laufen in dieser Datei mit dem echten Code. Waeren sie gemockt, pruefte der
 // Lesepfad nur den Mock — dieselbe Auflage wie in oauth/token-refresh.test.ts.
@@ -216,6 +226,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       blocked: false,
       abTestActive: false,
       targets: [META_ENTRY],
+      renewable: [],
     });
   });
 
@@ -267,6 +278,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
   });
 
@@ -289,6 +301,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       blocked: false,
       abTestActive: false,
       targets: [{ target: "meta", config: { pixelId: "PIXEL-123", token: " " } }],
+      renewable: [],
     });
   });
 
@@ -326,6 +339,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
   });
 
@@ -459,6 +473,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       blocked: false,
       abTestActive: true,
       targets: [META_ENTRY],
+      renewable: [],
     });
   });
 
@@ -469,11 +484,21 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     });
     // Phase 8 Scheibe 1: die projectId reitet in DERSELBEN Aufloesung mit (sie wurde
     // vorher intern schon aufgeloest und verworfen) -> KEINE zweite Query.
+    //
+    // WARUM renewable AUCH DANN DASTEHT, WENN ES LEER IST — der Satz steht an DIESEM
+    // der achtzehn Ganz-Objekt-Vergleiche, weil er der aelteste und meistgelesene ist:
+    // toEqual IGNORIERT einen Schluessel mit dem Wert undefined, auf jeder Ebene
+    // (GEMESSEN 2026-08-18). Waere renewable optional und im Normalfall leer, gingen
+    // ALLE ACHTZEHN dieser Vergleiche STILL an der Erweiterung vorbei — der Bestand
+    // bliebe gruen, und niemand haette einen Anlass hinzusehen.
+    // WER DIESE ZEILE HIER ODER IN EINEM DER SIEBZEHN ANDEREN "vereinfacht", SCHALTET
+    // GENAU DIESE FALLE WIEDER SCHARF. Der Waechter dagegen ist R7 weiter unten.
     expect(await getCapiConfigByTrackingKey("tk-abc")).toEqual({
       projectId: "proj-1",
       blocked: false,
       abTestActive: false,
       targets: [META_ENTRY],
+      renewable: [],
     });
   });
 
@@ -506,6 +531,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
   });
 
@@ -521,6 +547,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
   });
 
@@ -534,6 +561,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
   });
 
@@ -547,6 +575,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
   });
 
@@ -582,6 +611,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       blocked: false,
       abTestActive: false,
       targets: [META_ENTRY],
+      renewable: [],
     });
   });
 
@@ -615,6 +645,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: false,
       // KEINE Empfaenger bei gesperrt — Geheimnisse werden gar nicht erst gelesen.
       targets: [],
+      renewable: [],
     });
   });
 });
@@ -683,6 +714,7 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
           conversionRules: { Lead: URN },
         },
       ],
+      renewable: [],
     });
   });
 
@@ -701,6 +733,7 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
   });
 
@@ -722,6 +755,7 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
   });
 
@@ -738,6 +772,7 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
   });
 
@@ -774,6 +809,7 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
     expect(from).toHaveBeenCalledTimes(1);
   });
@@ -833,6 +869,10 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
           conversionRules: { Lead: URN },
         },
       ],
+      // KLARTEXT-ZIELE SIND NIE ERNEUERBAR (Scheibe 1b-2a): Sie tragen keine Nutzlast
+      // und keine Uhr. Das leere Array steht hier ausdruecklich und nicht implizit —
+      // s. den Kommentar an TrackingKeyResolution.renewable in capi/token.ts.
+      renewable: [],
     });
   });
 
@@ -1351,7 +1391,369 @@ describe("Scheibe 4 — der Lesepfad fuer das chiffrierte Zugangsdatum", () => {
     expect(config?.targets[0]?.config.token).toBe(S4_ZUGANGSDATUM);
   });
 
-  it("T15-ERSATZ: der Ingest-Pfad ENTSCHLUESSELT, ERNEUERT ABER NIE", async () => {
+  // =======================================================================
+  // SCHEIBE 1b-2a — DIE VIER LAGEN UND DIE ZWEITE MENGE
+  //
+  // ECHT laufen weiterhin Chiffrierung, Nutzlast-Form und die zwei modul-privaten
+  // Praedikate; Attrappe ist allein der Datenbank-Client. Die feste Uhr ist S4_JETZT.
+  // =======================================================================
+
+  /** Ein google-Projekt mit Kennung im Blob — Tor 1 offen, wie im S4-Block. */
+  function bProjekt() {
+    return s4Projekt({ google: { pixelId: "111" } });
+  }
+
+  it("R1: Uhr 1 TOT, Uhr 2 LEBT -> kein Empfaenger, aber ein renewable-Eintrag 'expired'", async () => {
+    // WIRD ROT, WENN: die Abzweigung fehlt · die Lage falsch zugeordnet wird · das
+    // Ziel faelschlich in targets landet (dann liefe ein TOTES Zugangsdatum in den
+    // Adapter, und das ist der teuerste Fehlgriff dieser Scheibe).
+    const { config } = await s4Aufloesen(
+      bProjekt(),
+      secretRows([
+        {
+          target: "google",
+          secret: null,
+          secret_enc: s4Chiffrat(
+            s4Nutzlast({ accessTokenExpiresAt: S4_JETZT - 1 }),
+          ),
+        },
+      ]),
+    );
+
+    expect(config?.targets).toEqual([]);
+    expect(config?.renewable).toEqual([
+      { target: "google", pixelId: "111", lage: "expired" },
+    ]);
+  });
+
+  it("R2: Uhr 1 lebt INNERHALB der Schwelle -> Empfaenger UND renewable 'lead'", async () => {
+    // DIE DOPPELTE MITGLIEDSCHAFT IST DER GANZE PUNKT: Das Zugangsdatum traegt DIESEN
+    // Beacon noch, deshalb bleibt das Ziel Empfaenger; erneuert wird NACH der Antwort.
+    // WIRD ROT, WENN: die Vorsorge-Lage entfernt wird (renewable leer) — ODER wenn das
+    // Ziel dabei aus targets herausfaellt, was ein verlorener Forward waere.
+    // ER IST DAS EINZIGE STUECK FUER DIESE FEHLERKLASSE, GEMESSEN (Mutationsprobe 3
+    // vom 2026-09-03: "inLead fest auf false" -> GENAU dieser Lauf faellt, 1 von 1487).
+    // Der Satz steht hier, damit ihn niemand spaeter als redundant entfernt und dabei
+    // die einzige Abdeckung der Vorsorge-Lage mitnimmt (docs/immer-beachten.md,
+    // Lektion (f) an "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE").
+    const { config } = await s4Aufloesen(
+      bProjekt(),
+      secretRows([
+        {
+          target: "google",
+          secret: null,
+          secret_enc: s4Chiffrat(
+            s4Nutzlast({
+              accessTokenExpiresAt: S4_JETZT + REFRESH_SIGNAL_LEAD_SECONDS - 1,
+            }),
+          ),
+        },
+      ]),
+    );
+
+    expect(config?.targets.map((t) => t.target)).toEqual(["google"]);
+    expect(config?.renewable).toEqual([
+      { target: "google", pixelId: "111", lage: "lead" },
+    ]);
+
+    // DIE GEGENPROBE EINE SEKUNDE JENSEITS DER SCHWELLE — ohne sie waere nicht zu
+    // unterscheiden, ob die Schwelle greift oder ob JEDES lebende Zugangsdatum
+    // gemeldet wird.
+    const { config: weit } = await s4Aufloesen(
+      bProjekt(),
+      secretRows([
+        {
+          target: "google",
+          secret: null,
+          secret_enc: s4Chiffrat(
+            s4Nutzlast({
+              accessTokenExpiresAt: S4_JETZT + REFRESH_SIGNAL_LEAD_SECONDS + 1,
+            }),
+          ),
+        },
+      ]),
+    );
+    expect(weit?.targets.map((t) => t.target)).toEqual(["google"]);
+    expect(weit?.renewable).toEqual([]);
+  });
+
+  it("R3: Uhr 2 UEBERSCHRITTEN und Uhr 1 tot -> in KEINER der beiden Mengen", async () => {
+    // "ENDGUELTIG TOT" IST DER EINZIGE FALL, IN DEM NICHTS GEMELDET WIRD. WIRD ROT,
+    // WENN: die Uhr-2-Pruefung umgedreht wird — dann meldete der Resolver einen Zugang
+    // als erneuerbar, den keine Erneuerung mehr rettet, und jeder Beacon bezahlte
+    // dafuer einen Netzruf.
+    const { config } = await s4Aufloesen(
+      bProjekt(),
+      secretRows([
+        {
+          target: "google",
+          secret: null,
+          secret_enc: s4Chiffrat(
+            s4Nutzlast({
+              accessTokenExpiresAt: S4_JETZT - 1,
+              refreshTokenExpiresAt: { kind: "at", epochSeconds: S4_JETZT },
+            }),
+          ),
+        },
+      ]),
+    );
+
+    expect(config?.targets).toEqual([]);
+    expect(config?.renewable).toEqual([]);
+  });
+
+  it("R4: Uhr 2 UNBEKANNT gilt NIE als abgelaufen -> erneuerbar", async () => {
+    // FESTLEGUNG 5 DER SCHEIBE 1a, UEBERNOMMEN: Von zwei unbelegten Moeglichkeiten
+    // wird die gewaehlt, deren Fehlgriff der billigere ist. WIRD ROT, WENN: jemand
+    // "unbekannt" als "abgelaufen" liest — dann verloere ein Kunde seinen Zugang,
+    // obwohl niemand weiss, ob er tot ist.
+    const { config } = await s4Aufloesen(
+      bProjekt(),
+      secretRows([
+        {
+          target: "google",
+          secret: null,
+          secret_enc: s4Chiffrat(
+            s4Nutzlast({
+              accessTokenExpiresAt: S4_JETZT - 1,
+              refreshTokenExpiresAt: { kind: "unknown" },
+            }),
+          ),
+        },
+      ]),
+    );
+
+    expect(config?.renewable).toEqual([
+      { target: "google", pixelId: "111", lage: "expired" },
+    ]);
+  });
+
+  it("R5: renewable traegt WEDER Zugangsdatum NOCH Erneuerungs-Token — weder im Ergebnis noch im Log", async () => {
+    // (I-3). Erweiterung des Musters aus TR-5, jetzt auf die ZWEITE Menge.
+    // WIRD ROT, WENN: jemand ein Geheimnis an RenewableTarget haengt, um sich die
+    // Nach-Aufloesung zu sparen — genau die Abkuerzung, gegen die der Rueckgabetyp
+    // gebaut ist.
+    const fehler = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const { config } = await s4Aufloesen(
+        bProjekt(),
+        secretRows([
+          {
+            target: "google",
+            secret: null,
+            secret_enc: s4Chiffrat(
+              s4Nutzlast({ accessTokenExpiresAt: S4_JETZT - 1 }),
+            ),
+          },
+        ]),
+      );
+
+      const alsText = JSON.stringify(config?.renewable);
+      expect(alsText).not.toContain(S4_ERNEUERUNGS_TOKEN);
+      expect(alsText).not.toContain(S4_ZUGANGSDATUM);
+      // DIE FELDMENGE EXAKT, nicht bloss "enthaelt nicht": ein Feld mit einem anderen
+      // Namen truege dasselbe Geheimnis und entginge der Textsuche.
+      expect(Object.keys(config?.renewable[0] ?? {}).sort()).toEqual([
+        "lage",
+        "pixelId",
+        "target",
+      ]);
+
+      const geloggt = JSON.stringify(fehler.mock.calls);
+      expect(geloggt).not.toContain(S4_ERNEUERUNGS_TOKEN);
+      expect(geloggt).not.toContain(S4_ZUGANGSDATUM);
+      // POSITIVKONTROLLE: der Leser hat ueberhaupt etwas gesehen.
+      expect(geloggt).toContain("access_token_expired");
+    } finally {
+      fehler.mockRestore();
+    }
+  });
+
+  it("R6: die KLARTEXT-Ziele sind NIE erneuerbar — mit Positivkontrolle am selben Lauf", async () => {
+    // (I-5). WIRD ROT, WENN: der Klartext-Zweig eine Lage bekommt, die er nicht haben
+    // kann — er hat keine Nutzlast und keine Uhr.
+    // DIE POSITIVKONTROLLE STEHT IM SELBEN LAUF: Ohne sie waere "meta ist nicht
+    // erneuerbar" von "die Abzweigung ist ueberhaupt kaputt" nicht zu unterscheiden.
+    const { config } = await s4Aufloesen(
+      s4Projekt({ meta: { pixelId: "PIXEL-123" }, google: { pixelId: "111" } }),
+      secretRows([
+        { target: "meta", secret: "SECRET-TOKEN" },
+        {
+          target: "google",
+          secret: null,
+          secret_enc: s4Chiffrat(
+            s4Nutzlast({ accessTokenExpiresAt: S4_JETZT - 1 }),
+          ),
+        },
+      ]),
+    );
+
+    expect(config?.targets.map((t) => t.target)).toEqual(["meta"]);
+    expect(config?.renewable.map((r) => r.target)).toEqual(["google"]);
+  });
+
+  it("R7: renewable ist IMMER ein Array, auch wenn nichts zu erneuern ist", async () => {
+    // DER WAECHTER GEGEN DIE TEST-FALLE. WIRD ROT, WENN: jemand das Feld optional
+    // macht und im Normalfall weglaesst — dann gingen die ACHTZEHN
+    // Ganz-Objekt-Vergleiche bei jeder kuenftigen Erweiterung STILL vorbei, weil
+    // toEqual einen Schluessel mit dem Wert undefined ignoriert.
+    // toBeInstanceOf STATT toEqual([]): geprueft wird die ANWESENHEIT eines Arrays,
+    // nicht sein Inhalt — sonst waere der Lauf von R6 nicht zu unterscheiden.
+    const { config } = await s4Aufloesen(
+      s4Projekt({ meta: { pixelId: "PIXEL-123" } }),
+      secretRows([{ target: "meta", secret: "SECRET-TOKEN" }]),
+    );
+    expect(Array.isArray(config?.renewable)).toBe(true);
+    expect(config?.renewable).toHaveLength(0);
+
+    // UND AM GESPERRTEN PROJEKT, das VOR der Geheimnis-Abfrage zurueckkehrt — dort
+    // gibt es gar keine Zeile, aus der das Feld entstehen koennte.
+    const { config: gesperrt } = await s4Aufloesen(
+      {
+        data: {
+          id: "proj-1",
+          settings: { pixels: { meta: { pixelId: "PIXEL-123" } } },
+          blocked_at: "2026-09-03T00:00:00Z",
+        },
+        error: null,
+      },
+      secretRows([]),
+    );
+    expect(gesperrt?.blocked).toBe(true);
+    expect(Array.isArray(gesperrt?.renewable)).toBe(true);
+  });
+
+  it("R8: KEINE projectId in den Logzeilen des Resolvers — auch nicht in der neuen Lage", async () => {
+    // (I-4). Dieser Pfad laeuft bei JEDEM Besucher JEDER Kundenseite; eine
+    // Projekt-Kennung je Beacon waere eine Datenerhebung, die niemand beschlossen hat.
+    // WIRD ROT, WENN: jemand die projectId in die Fehlerzeile aufnimmt, um sie
+    // zuordenbar zu machen.
+    const fehler = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      await s4Aufloesen(
+        bProjekt(),
+        secretRows([
+          {
+            target: "google",
+            secret: null,
+            secret_enc: s4Chiffrat(
+              s4Nutzlast({ accessTokenExpiresAt: S4_JETZT - 1 }),
+            ),
+          },
+        ]),
+      );
+      const geloggt = JSON.stringify(fehler.mock.calls);
+      expect(geloggt).not.toContain("proj-1");
+      // POSITIVKONTROLLE im selben Lauf.
+      expect(geloggt).toContain("[capi/resolve] secret unusable");
+    } finally {
+      fehler.mockRestore();
+    }
+  });
+
+  it("U1 (KOPPLUNG): die Melde-Schwelle liegt NIE ueber dem Erneuerungs-Vorlauf", () => {
+    // DIE RELATION IST BINDEND: SCHWELLE <= VORLAUF.
+    // SCHWELLE <= VORLAUF ist SELBSTBEGRENZEND — jedes Signal fuehrt zu einer echten
+    // Erneuerung, die Zeile bekommt einen frischen Ablauf, und das Signal hoert auf.
+    // SCHWELLE > VORLAUF ist SELBSTWIEDERHOLEND — im Band zwischen beiden meldet die
+    // Erneuerung "reichte noch" OHNE zu schreiben, die Zeile bleibt unveraendert, und
+    // JEDER folgende Beacon loest dasselbe Nichts erneut aus: eine Datenbank-Runde
+    // plus Entschluesselung je Besucher, STILL — keine Logzeile, kein roter Test,
+    // keine Spur.
+    //
+    // SEINE GRENZE TRAEGT ER AN SICH SELBST: ER BINDET DIE RELATION, NICHT DIE
+    // GLEICHHEIT, und er sagt NICHTS darueber, ob eine der beiden Zahlen richtig
+    // GEWAEHLT ist. Er faengt den Umbau, nicht den Entwurf.
+    expect(REFRESH_SIGNAL_LEAD_SECONDS).toBeLessThanOrEqual(REFRESH_LEAD_SECONDS);
+  });
+
+  it("R9 (NACH-AUFLOESUNG): liefert den FRISCHEN Token und traegt die Kennungen weiter", async () => {
+    // W2 — die schmale Lesung nach einer Erneuerung. WIRD ROT, WENN: sie das alte
+    // Chiffrat liest, die Kennungen verliert oder eine tote Zeile als Empfaenger
+    // ausgibt.
+    const FRISCH = "ERFUNDEN-access-token-FRISCH-0002";
+    const from = vi.fn(() => {
+      const builder: Record<string, unknown> = {};
+      builder.select = vi.fn(() => builder);
+      builder.eq = vi.fn(() => builder);
+      builder.maybeSingle = vi.fn(async () => ({
+        data: {
+          secret: null,
+          secret_enc: s4Chiffrat(
+            s4Nutzlast({
+              accessToken: FRISCH,
+              accessTokenExpiresAt: S4_JETZT + 3599,
+            }),
+          ),
+        },
+        error: null,
+      }));
+      return builder;
+    });
+    createAdminClient.mockReturnValue({ from });
+
+    const frisch = await resolveRefreshedTarget("proj-1", {
+      target: "google",
+      pixelId: "111",
+      conversionRules: { Lead: "AW-1/xyz" },
+      lage: "expired",
+    });
+
+    expect(frisch).toEqual({
+      target: "google",
+      config: { pixelId: "111", token: FRISCH },
+      conversionRules: { Lead: "AW-1/xyz" },
+    });
+    // GENAU EINE RUNDE, UND ZWAR AUF project_secrets. Eine zweite vollstaendige
+    // Aufloesung laese projects erneut — das ist der Unterschied zwischen einer und
+    // zwei zusaetzlichen Runden auf dem meistgetroffenen Pfad der Plattform.
+    expect(from).toHaveBeenCalledTimes(1);
+    expect(from).toHaveBeenCalledWith("project_secrets");
+  });
+
+  it("R10 (NACH-AUFLOESUNG, FAIL-CLOSED): eine weiterhin tote Zeile ergibt KEINEN Empfaenger", async () => {
+    // WIRD ROT, WENN: der fail-closed-Zweig faellt — dann reichte eine gescheiterte
+    // Erneuerung ein totes Zugangsdatum an den Adapter durch.
+    const from = vi.fn(() => {
+      const builder: Record<string, unknown> = {};
+      builder.select = vi.fn(() => builder);
+      builder.eq = vi.fn(() => builder);
+      builder.maybeSingle = vi.fn(async () => ({
+        data: {
+          secret: null,
+          secret_enc: s4Chiffrat(
+            s4Nutzlast({ accessTokenExpiresAt: S4_JETZT - 1 }),
+          ),
+        },
+        error: null,
+      }));
+      return builder;
+    });
+    createAdminClient.mockReturnValue({ from });
+
+    await expect(
+      resolveRefreshedTarget("proj-1", {
+        target: "google",
+        pixelId: "111",
+        lage: "expired",
+      }),
+    ).resolves.toBeNull();
+  });
+
+  it("T15-ERSATZ: token.ts ENTSCHLUESSELT, ERNEUERT ABER NIE — DIE ERNEUERUNG LIEGT IM HANDLER", async () => {
+    // DER TITEL IST MIT SCHEIBE 1b-2a NACHGEZOGEN, DIE ZUSICHERUNGEN SIND ES NICHT.
+    // Er hiess "der Ingest-Pfad ENTSCHLUESSELT, ERNEUERT ABER NIE", und diese Aussage
+    // ist auf der PFAD-Achse seit 1b-2a FALSCH: Der Ingest-Pfad erneuert sehr wohl —
+    // capi/ingest.ts ruft die Klammer aus Schritt 1b-1.
+    // WAS UNVERAENDERT WAHR IST UND WARUM DER LAUF DESHALB BLEIBT: token.ts selbst
+    // erneuert nicht. Der Resolver MELDET nur, wer erneuert werden sollte; gehandelt
+    // wird eine Ebene hoeher. GENAU DAS HAELT DIESER LAUF FEST, und genau das war auch
+    // vorher schon gemessen — er liest den Quelltext von token.ts und hat nie etwas
+    // anderes gelesen.
+    // WER NUR DEN TITEL AENDERT UND DIESEN ABSATZ WEGLAESST, LOESCHT DIE SPUR: Danach
+    // stuende ein richtiger Satz an einer Stelle, an der er vorher zu weit war, und
+    // nichts sagte, dass er es je war.
+    // KEINE ZUSICHERUNG IST ENTFERNT ODER AUFGEWEICHT WORDEN.
     // ER ERSETZT "T15 — KEIN AUFRUFER AUF DEM INGEST-PFAD (mit Positivkontrolle)" in
     // oauth/token-refresh.test.ts. JENER WAECHTER HAT SEINEN GEGENSTAND VERLOREN: Er
     // hielt, dass decryptSecret keinen Aufrufer auf dem Ingest-Pfad hat. Ab dieser

@@ -71,6 +71,9 @@ function resolutionWithTest(abTestActive: boolean) {
     projectId: "proj-1",
     blocked: false,
     abTestActive,
+    // SEIT SCHEIBE 1b-2a IM TYP NICHT OPTIONAL — s. den Kommentar an
+    // TrackingKeyResolution.renewable in capi/token.ts.
+    renewable: [],
     targets: [
       { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
     ],
@@ -235,6 +238,7 @@ describe("A/B-Variante im Ingest (Phase 9 Scheibe 9b-2)", () => {
       blocked: true,
       abTestActive: true,
       targets: [],
+      renewable: [],
     });
 
     const res = await handleIngest(

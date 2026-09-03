@@ -61,6 +61,10 @@ beforeEach(() => {
     projectId: "proj-1",
     blocked: false,
     abTestActive: false,
+    // SEIT SCHEIBE 1b-2a IM TYP NICHT OPTIONAL. LEER IST HIER TRAGEND: Diese Datei
+    // zaehlt die after()-Registrierungen, und eine nicht-leere Menge braechte eine
+    // ZWEITE hinzu (die Vorsorge) — s. H2 in ingest.refresh.test.ts.
+    renewable: [],
     targets: [
       { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
     ],
@@ -120,6 +124,7 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
       blocked: true,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
 
     const res = await handleIngest(makeRequest(VALID_BODY));
@@ -148,6 +153,7 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
       blocked: false,
       abTestActive: false,
       targets: [],
+      renewable: [],
     });
 
     const res = await handleIngest(makeRequest(VALID_BODY));

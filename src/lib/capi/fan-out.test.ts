@@ -195,7 +195,18 @@ const TWO_ENTRIES = [
 ];
 
 function resolution(targets: unknown[]) {
-  return { projectId: "proj-1", blocked: false, abTestActive: false, targets };
+  // renewable IST SEIT SCHEIBE 1b-2a TEIL JEDER AUFLOESUNG UND IM TYP NICHT OPTIONAL.
+  // HIER STEHT ES LEER, UND DAS IST TRAGEND FUER DIESE DATEI: Sie misst
+  // Gleichzeitigkeit, Frist und Containment des Fan-Outs. Eine Rettung laege SERIELL
+  // VOR dem Fan-Out und verschoebe genau die Zeiten, die diese Laeufe pinnen. Was die
+  // geoeffnete Forward-Wache leistet, prueft H10 in ingest.refresh.test.ts.
+  return {
+    projectId: "proj-1",
+    blocked: false,
+    abTestActive: false,
+    targets,
+    renewable: [],
+  };
 }
 
 function makeRequest(): Request {

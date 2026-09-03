@@ -1,8 +1,14 @@
 import { after } from "next/server";
 import {
   getCapiConfigByTrackingKey,
+  resolveRefreshedTarget,
   type ResolvedTarget,
 } from "@/lib/capi/token";
+// DIE KLAMMER AUS SCHRITT 1b-1 WIRD GERUFEN, NICHT ANGEFASST. Sie ist der EINZIGE
+// Einstieg in die Erneuerung — genau dafuer ist sie gebaut worden (s. den Kopf von
+// lib/oauth/refresh-run.ts: "1b-2 soll GENAU EINEN Einstieg haben"). Dieser Handler
+// baut keinen zweiten Weg daneben.
+import { runRefresh } from "@/lib/oauth/refresh-run";
 // DIE EINE QUELLE FUER "HAT DIESES ZIEL EINEN EMPFAENGER" (Scheibe C2). Eine REINE
 // Datei, damit auch die Oberflaeche sie lesen kann — dieser Handler ist server-only
 // und taugte deshalb nicht als Quelle, obwohl er bis hierher eine war.
@@ -165,13 +171,57 @@ function resolveClientIp(request: Request): string | undefined {
 }
 
 /**
+ * REGISTRIERT EINE HINTERGRUND-ARBEIT — UND FAENGT DEN WURF BEI DER REGISTRIERUNG.
+ *
+ * DER BEFUND, DER SIE NOETIG MACHT (GEMESSEN am Code, CC, 2026-09-01, als
+ * Vorrats-Eintrag 35 gemeldet, GEBAUT in Scheibe 1b-2a): Ein try/catch INNERHALB des
+ * an after() uebergebenen Callbacks schuetzt den Callback — NICHT die Registrierung.
+ * Der Aufruf after(...) selbst stand bis hierher ungeschuetzt, und handleIngest traegt
+ * an seinen Aufrufstellen kein umschliessendes try. EIN WURF DORT VERLAESST DEN
+ * HANDLER UND BRICHT DAS 204-CONTAINMENT.
+ *
+ * KEIN TEST HAT ES GEDECKT, UND ZWAR STRUKTURELL: Alle sechs ingest.*.test.ts ersetzen
+ * after durch eine Attrappe, die die Callbacks nur einsammelt — DIE KANN GAR NICHT
+ * WERFEN. Der Lauf, der es prueft, braucht eine EIGENE, WERFENDE Attrappe; er heisst
+ * H9 und steht in ingest.refresh.test.ts.
+ *
+ * WARUM SIE HIER GEBAUT WIRD UND NICHT IN EINER EIGENEN SCHEIBE: Scheibe 1b-2a haengt
+ * eine ZWEITE Registrierung an dieselbe Stelle. Eine Scheibe, die eine bekannte Luecke
+ * in genau dem Mechanismus stehen laesst, den sie gerade benutzt, hat den
+ * Scope-Schutz gegen die Sache gewendet, die er schuetzen soll.
+ *
+ * DER catch IST NICHT LEER UND DARF ES NIE WERDEN. Ein still verschluckter Wurf waere
+ * schlimmer als der Wurf selbst: Die 204 stuende, die Hintergrund-Arbeit faende nicht
+ * statt, und nichts sagte es. Geloggt wird das LABEL (unser eigenes Vokabular) und
+ * errorName — nie eine projectId, nie ein Fremdtext.
+ */
+function scheduleAfter(label: string, cb: () => Promise<void> | void): void {
+  try {
+    after(cb);
+  } catch (err) {
+    console.error(
+      `[capi/ingest] after registration failed: ${label} ${errorName(err)}`,
+    );
+  }
+}
+
+/**
  * Plant den Analytics-Persist als Hintergrund-Task ein (Scheibe 1, in Scheibe A aus dem
  * Handler extrahiert — UNVERAENDERTE Semantik, jetzt von zwei Aufrufern geteilt).
  *
  * after() laeuft NACH der Response -> die 204-Antwortzeit bleibt unveraendert, und der
  * Callback kann strukturell nichts mehr in den Response-Pfad werfen. persistEvent schluckt
- * seine Fehler ohnehin selbst; der try/catch hier ist die zweite Schicht, falls die
- * Registrierung/der Aufruf selbst wirft.
+ * seine Fehler ohnehin selbst; der try/catch hier ist die zweite Schicht INNERHALB des
+ * Callbacks.
+ *
+ * RICHTIGGESTELLT MIT SCHEIBE 1b-2a, NICHT GESTEMPELT — HIER STAND, der try/catch sei
+ * "die zweite Schicht, falls die Registrierung/der Aufruf selbst wirft". DAS WAR EINE
+ * BEHAUPTUNG UEBER EINE DECKUNG, DIE ES NICHT GAB: Das try liegt IM Callback und hat
+ * die Registrierung nie geschuetzt. Der Schutz dafuer heisst jetzt scheduleAfter und
+ * steht darueber. WER NUR DEN SCHUTZ BAUT UND DEN KOPF STEHENLAESST, hat danach einen
+ * richtigen Satz an einer Stelle, an der er vorher falsch war — und keine Spur davon,
+ * dass er es je war (docs/immer-beachten.md, "EIN KOMMENTAR IST EINE BEHAUPTUNG,
+ * KEINE EIGENSCHAFT").
  *
  * source ist ein PFLICHT-Argument (kein Default): der Beobachtungs-Ort wird an jeder
  * Aufrufstelle bewusst gesetzt — er stammt aus der SERVER-Interpretation des obs-Markers,
@@ -187,7 +237,7 @@ function schedulePersist(
   source: ObservationSource,
   variant: Variant | null
 ): void {
-  after(async () => {
+  scheduleAfter("persist", async () => {
     try {
       await persistEvent({ projectId, eventType, eventId, source, variant });
     } catch (err) {
@@ -466,11 +516,25 @@ function dispatchForward(
  * mit true" zu unterscheiden — beides ist true. Die Ausnahme braucht genau diese
  * eine zusaetzliche Angabe, und sie ist keine Aussage ueber ein Ziel, sondern
  * ueber den Body.
+ *
+ * GENERISCH SEIT SCHEIBE 1b-2a, UND ZWAR AUS EINEM GRUND, DER GEGEN EINE ZWEITE
+ * INSTANZ SPRICHT: Der Handler muss die Einwilligung ab jetzt fuer ZWEI Mengen
+ * beantworten — die aufgeloesten Empfaenger UND die rettbaren Ziele. Beide tragen
+ * einen target-Namen und sonst nichts Gemeinsames. Ein zweiter, danebengeschriebener
+ * Filter waere eine zweite Wahrheit ueber die Einwilligung, also genau das, was der
+ * Abschnitt zu den zwei Ziel-Vokabularen weiter oben ausschliesst.
+ * DIE SCHRANKE HEISST ResolvedTarget["target"] UND NICHT TrackingTarget, obwohl beide
+ * dasselbe bedeuten: Der Kommentar am Kopf dieser Datei haelt fest, dass dieser
+ * Handler von lib/settings.ts "jetzt gar nichts mehr" importiert. Ein indizierter
+ * Zugriff auf einen ohnehin importierten Typ haelt diese Zusage — ein neuer Typ-Import
+ * machte sie falsch, fuer nichts als einen kuerzeren Namen.
+ * DIE AUFRUFER MIT ResolvedTarget[] BLEIBEN TYPGLEICH; die bestehenden Laeufe in
+ * ingest.consent-targets.test.ts sind davon unberuehrt.
  */
-export function allowedTargets(
-  targets: ResolvedTarget[],
+export function allowedTargets<T extends { target: ResolvedTarget["target"] }>(
+  targets: T[],
   body: CapiRequestBody,
-): ResolvedTarget[] {
+): T[] {
   // ABWESEND HEISST HIER `undefined`, UND DAS IST KEINE ZUFAELLIGKEIT: JSON kennt
   // kein undefined -> ein Feld, das im Text fehlt, ist hier undefined, und JEDES
   // vorhandene Feld traegt einen JSON-Wert (auch null). Genau an dieser Eigenschaft
@@ -590,6 +654,51 @@ export async function handleIngest(request: Request): Promise<Response> {
 
   schedulePersist(resolution.projectId, event, eventID, "server", variant);
 
+  // --- DIE VORSORGE (Scheibe 1b-2a) — NACH DER ANTWORT, NICHT IM ANFRAGE-WEG ---
+  //
+  // Ein Ziel in der Lage "lead" traegt DIESEN Beacon noch: sein Zugangsdatum lebt, es
+  // liegt nur nahe am Ablauf. Der laufende Beacon wartet deshalb auf NICHTS.
+  //
+  // WARUM SIE VOR DER FORWARD-WACHE STEHT UND NICHT DAHINTER — das ist der Grund, aus
+  // dem sie ueberhaupt wirkt: Sie soll den Inline-Fall STRUKTURELL selten machen, und
+  // "trafficstark" heisst BEACONS. Der Volumen-Event ist der PageView, und der ist
+  // nicht forwardbar. Hinter isForwardable gestellt traefe die Vorsorge genau die
+  // Beacons NICHT, die sie wirksam machen — ein trafficstarkes Projekt mit seltenen
+  // Conversions liefe dann stuendlich in die Rettung.
+  //
+  // KEIN CONSENT-GATE, und der Grund gehoert dazu: Eine Erneuerung sendet die
+  // Anmeldedaten des BETREIBERS an den Anbieter — kein Besucher-Merkmal, keine
+  // Klick-Kennung, keine Adresse. Die Lebendigkeit eines Betreiber-Zugangsdatums an
+  // die Wahl eines einzelnen Besuchers zu haengen waere eine Kopplung ohne Gegenstand.
+  // WER SIE DOCH GATEN WILL, tut es mit allowedTargets wie im Rettungs-Zweig unten;
+  // die Entscheidung steht hier, damit sie nicht spaeter unbemerkt kippt.
+  //
+  // DAS FENSTER SCHLIESST DIE ERSTE ERFOLGREICHE ERNEUERUNG, NICHT EINE DROSSELUNG.
+  // Sobald die Zeile neu geschrieben ist, liegt der Ablauf wieder eine Stunde weg, die
+  // Lage faellt auf "brauchbar" zurueck und dieser Zweig laeuft nicht mehr. GENAU DAS
+  // HAENGT AN DER RELATION SCHWELLE <= VORLAUF (s. REFRESH_SIGNAL_LEAD_SECONDS in
+  // capi/token.ts): Waere die Schwelle groesser, gaebe es ein Band, in dem die
+  // Erneuerung "reichte noch" meldet OHNE zu schreiben — und dann liefe dieser Zweig
+  // bei JEDEM Beacon erneut, still und ohne Ende.
+  const vorsorge = resolution.renewable.filter((e) => e.lage === "lead");
+  if (vorsorge.length > 0) {
+    scheduleAfter("refresh-lead", async () => {
+      for (const entry of vorsorge) {
+        try {
+          await runRefresh({
+            projectId: resolution.projectId,
+            target: entry.target,
+          });
+        } catch (err) {
+          // KEIN LEERER catch. Der Ausgang der Erneuerung ist ein Ergebnis, kein
+          // Wurf; wirft es doch, ist das ein Befund und wird benannt. Geloggt wird
+          // der NAME des Fehlers, nie ein Wert und nie die projectId.
+          console.error(`[capi/ingest] refresh lead error: ${errorName(err)}`);
+        }
+      }
+    });
+  }
+
   // --- FORWARD NUR FUER CONVERSIONS (Scheibe 2a) ---
   // NICHTS META-BEZOGENES PASSIERT AUSSERHALB DIESER BEDINGUNG. Das ist die tragende
   // Aussage und sie gilt unveraendert; nur ihr ORT hat sich verschoben: Seit Phase 11
@@ -615,8 +724,28 @@ export async function handleIngest(request: Request): Promise<Response> {
   // Der Compiler sieht sie nicht, und ein Test, der nur "es wurde nichts gesendet"
   // prueft, ginge in beiden Zustaenden durch (eine Schleife ueber eine leere Menge
   // sendet ohnehin nichts). Was sie sichtbar macht, ist fan-out.test.ts.
+  // DIE WACHE HAT SICH MIT SCHEIBE 1b-2a GEOEFFNET, UND DAS IST DIE INVASIVSTE
+  // AENDERUNG DIESER SCHEIBE.
+  //
+  // WARUM SIE SICH OEFFNEN MUSSTE: Ein Projekt, dessen einziges Ziel gerade tot ist,
+  // hat targets.length === 0 — die Zeile erzeugt fail-closed KEIN ResolvedTarget mehr.
+  // Mit der alten Wache wuerde der ganze Block uebersprungen, und die Rettung liefe
+  // NIE. Sie stuende gebaut da und haette keinen Fall.
+  //
+  // SIE IST WEITERHIN DIE GEFAEHRLICHSTE STELLE DIESER SCHEIBE, WEIL SIE LAUTLOS
+  // FALSCH WIRD — der Satz stand hier schon vor dieser Scheibe und gilt jetzt fuer
+  // ZWEI Mengen statt einer: Der Compiler sieht sie nicht, und ein Test, der nur
+  // "es wurde nichts gesendet" prueft, ginge in beiden Zustaenden durch. WER DEN
+  // rettbar-TERM ENTFERNT, sieht keinen Typfehler und keine Meldung — nur ein Ziel,
+  // das nach einer Stunde nichts mehr sendet.
+  // WER DAS HEUTE BEWACHT, HEISST H10 in ingest.refresh.test.ts.
+  //
+  // DIE LAENGEN-PRUEFUNG BLEIBT EINE LAENGEN-PRUEFUNG. Ein leeres Array ist truthy;
+  // eine Existenz-Pruefung waere hier immer wahr, und die Wache haette nichts mehr
+  // entschieden.
   const targets = resolution.targets;
-  if (targets.length > 0 && isForwardable(event)) {
+  const rettbar = resolution.renewable.filter((e) => e.lage === "expired");
+  if ((targets.length > 0 || rettbar.length > 0) && isForwardable(event)) {
     // --- EINWILLIGUNG (Phase 11, fuenfte Scheibe) — EIGENER SICHTBARER ZWEIG ---
     //
     // WARUM KEIN DRITTER TERM IM if-KOPF DARUEBER: Dieselbe Lektion wie beim
@@ -659,7 +788,80 @@ export async function handleIngest(request: Request): Promise<Response> {
     // ist Absicht (204-Containment): beides ist die leere 204. Im Code sind es zwei
     // getrennte, sichtbare Zweige — die Laengen-Wache oben und dieser hier.
     const allowed = allowedTargets(targets, body);
-    if (allowed.length === 0) return status(204);
+    // DIESELBE ENTSCHEIDUNG, DIESELBE FUNKTION, ZWEITE MENGE. Ein rettbares Ziel ohne
+    // Einwilligung wird NICHT gerettet — sonst kostete ein Beacon einen Netzruf an den
+    // Anbieter fuer ein Ziel, an das anschliessend garantiert nichts hinausgeht.
+    const allowedRettbar = allowedTargets(rettbar, body);
+    if (allowed.length === 0 && allowedRettbar.length === 0) return status(204);
+
+    // --- DIE RETTUNG (Scheibe 1b-2a) — IM ANFRAGE-WEG, VOR DEM FAN-OUT ---
+    //
+    // DER MASSSTAB, DER DIESE ANORDNUNG ENTSCHEIDET: WER WENIG TRAFFIC HAT, BRAUCHT
+    // JEDE CONVERSION. Ein Projekt mit EINER Conversion pro Tag hat ein totes
+    // Zugangsdatum, wenn sein Beacon eintrifft — UND DIESER BEACON IST DIE CONVERSION.
+    // Ihn nach der Antwort zu erneuern hiesse, ihn zu verlieren und beim naechsten Mal
+    // bereit zu sein, das aber erst in vierundzwanzig Stunden.
+    //
+    // SIE LIEGT SERIELL ZUM FAN-OUT, NICHT PARALLEL, und das ist der einzige Punkt, an
+    // dem dieser Eingriff die bestehende Anordnung verlaesst: Die Erneuerung muss durch
+    // sein, bevor der Adapter das Zugangsdatum bekommt. Der Preis ist der
+    // CONCURRENCY-SLOT, nicht die Wartezeit des Besuchers — ein keepalive-Beacon
+    // blockiert weder Rendering noch Interaktion.
+    //
+    // DER DECKEL IST DER DER KLAMMER, UND ES WIRD KEINE ZWEITE KONSTANTE ERFUNDEN:
+    // runRefresh versucht bis zu REFRESH_MAX_ATTEMPTS mal, je bis an den Deckel des
+    // Erneuerungs-Aufrufs. Der Inline-Fall kostet damit im SCHLECHTESTEN Fall die dort
+    // benannten rund 24 Sekunden, und er faellt nur an, wenn wirklich zu retten ist.
+    //
+    // ---------------------------------------------------------------------------
+    // DIE KEHRSEITE, UND SIE GEHOERT AN DEN CODE UND NICHT NUR IN DIE DOKU:
+    // DIESE WIEDERHOLUNG IST UNGEDROSSELT.
+    //
+    // Ein Ziel mit LEBENDER Uhr 2, dessen Erneuerung DAUERHAFT scheitert (ein
+    // widerrufener Zugang, eine CHECK-Verletzung beim Schreiben), ist nach den vier
+    // Lagen IMMER "erneuerbar". Es gibt keinen Zustand, der das festhielte: Ein Marker
+    // verlangte eine Migration, ein Riegel verlangte Nebenlaeufigkeits-Zustand — BEIDES
+    // IST SCHEIBE 1b-2b UND HIER AUSDRUECKLICH AUSGESCHLOSSEN.
+    // FOLGE: JE BEACON bis zu ein Netzruf an den Anbieter und eine Logzeile MIT
+    // projectId — geschrieben in refresh-run.ts und in der Funktion darunter, also
+    // AUSSERHALB dieser Scheibe und ausserhalb der Zusage, dass dieser Handler und der
+    // Resolver keine projectId je Beacon fuehren.
+    // DAS IST DER SCHAERFSTE TRIGGER FUER 1b-2b. Wer jene Scheibe zuschneidet, findet
+    // hier den Fall, den sie zu begrenzen hat.
+    // ---------------------------------------------------------------------------
+    const gerettet: ResolvedTarget[] = [];
+    for (const entry of allowedRettbar) {
+      try {
+        const lauf = await runRefresh({
+          projectId: resolution.projectId,
+          target: entry.target,
+        });
+        // JEDER ANDERE AUSGANG WIRD UEBERSPRUNGEN, NICHT GEDEUTET. dead heisst, der
+        // Kunde muss neu autorisieren; misconfigured holt einen Betreiber an die
+        // Zeile; retry ist nach dem Deckel der Klammer erschoepft. In allen dreien
+        // gibt es kein frisches Zugangsdatum, das man nachlesen koennte — eine
+        // Nach-Aufloesung waere eine Datenbank-Runde auf Verdacht.
+        if (lauf.outcome.kind !== "ok") continue;
+        const frisch = await resolveRefreshedTarget(resolution.projectId, entry);
+        if (frisch) gerettet.push(frisch);
+      } catch (err) {
+        // (I-1) — DAS 204-CONTAINMENT GILT AUCH HIER. Die Klammer wirft heute nicht
+        // selbst, und die Funktion darunter ist als wurffrei CHARAKTERISIERT — das ist
+        // eine Eigenschaft und keine Zusage, und ihr eigener Kommentar sagt, sie werde
+        // eine AUFLAGE, sobald ein Aufrufer auf diesem Pfad entsteht. Der ist mit
+        // dieser Scheibe entstanden. Bis die Auflage dort steht, traegt dieses try.
+        // KEIN LEERER catch: geloggt wird der NAME des Fehlers, nie ein Wert.
+        console.error(`[capi/ingest] refresh inline error: ${errorName(err)}`);
+      }
+    }
+
+    // BLEIBT NACH DER RETTUNG NIEMAND UEBRIG, IST HIER SCHLUSS — vor der IP- und
+    // User-Agent-Aufloesung, aus demselben Grund wie beim Ausgang darueber: sonst
+    // liefen zwei Header-Lesungen auf Vorrat fuer einen Beacon, der garantiert nichts
+    // sendet. NACH AUSSEN IST DIESER AUSGANG VON DEN ANDEREN NICHT UNTERSCHEIDBAR,
+    // und das ist Absicht (204-Containment).
+    const empfaenger = [...allowed, ...gerettet];
+    if (empfaenger.length === 0) return status(204);
 
     // --- Server-gesetzte Felder (NIE aus Client-Payload) ---
     // Sie werden HIER ermittelt, INNERHALB der Bedingung — also genau dann, wenn wirklich
@@ -695,8 +897,14 @@ export async function handleIngest(request: Request): Promise<Response> {
     // · Ein Wecker per race hoerte auf zu WARTEN, ohne abzubrechen — damit loeste sich
     //   die Antwort von der Empfaenger-Latenz, und das ist die am 2026-08-06
     //   gestrichene Scheibe durch die Hintertuer.
+    // DIE MENGE HEISST SEIT SCHEIBE 1b-2a empfaenger UND NICHT MEHR allowed: Sie
+    // traegt die aufgeloesten UND die gerade geretteten Ziele. AN DER ANORDNUNG
+    // AENDERT DAS NICHTS — alle starten weiterhin GLEICHZEITIG, jeder traegt seinen
+    // eigenen Deckel, und die Gesamtwartezeit ist das MAXIMUM der Einzeldeckel.
+    // Die SERIELLE Arbeit liegt VOR dieser Zeile, in der Rettung, und sie ist dort
+    // benannt.
     await Promise.allSettled(
-      allowed.map((entry) =>
+      empfaenger.map((entry) =>
         dispatchForward(entry, event, eventID, body, clientIp, userAgent),
       ),
     );

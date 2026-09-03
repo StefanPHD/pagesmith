@@ -2594,6 +2594,84 @@ VERZEICHNIS NICHT").
 eine eigene Scheibe sein DARF statt einer vergessenen Auflage, steht unten unter "Warum die
 Vorsorge die Rettung erst tragfähig macht" — es ist der Kern dieses Zuschnitts.
 
+### Vollzogen — was im Zuschnitt der Scheibe 1b-2a stand und wohin es gegangen ist
+
+**DER TITEL WEICHT ABSICHTLICH AB, aus demselben Grund wie bei Scheibe 3, der
+Fix-Scheibe, Scheibe 2, Scheibe 4 und Schritt 1b-1:** "Vollzogen — was hier stand und
+wohin es gegangen ist" steht in dieser Datei bereits zweimal und ist als Hausform über
+Standdateien hinweg Hebungs-Kandidat 5. **DIE ZITATE UNTEN STEHEN OHNE `###`-MARKE** —
+die Auflage aus docs/immer-beachten.md, "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN
+EINER DATEI MIT VERZEICHNIS NICHT" (Zusatz 2026-08-27): Ein Titel-Zitat mit Marke
+kollidierte für immer mit jeder künftigen Überschrift desselben Wortlauts.
+
+VERDICHTET AM 2026-09-03, nach dem Bau-Commit `d57d50c` und dem bestätigten Live-Test.
+Hier standen die ANWEISUNGEN FÜR die Scheibe; sie sind mit dem Vollzug abgelaufen. VIER
+Unterabschnitte sind entfallen. **JEDES DER VIER STÜCKE TAUCHT IN VERMERK 12 WIEDER AUF
+— das ist die Bedingung, unter der überhaupt gestrichen werden durfte:** Der Zuschnitt
+ist der Maßstab, gegen den der Vermerk misst, und der Verlauf ist kein Ersatz (er wird
+beim Pflicht-Gate nicht gelesen).
+
+- **"Der Gegenstand — vier Lagen statt zwei"** nannte die vier Lagen und was je Lage
+  geschieht. **Gebaut, und der Code sagt es jetzt selbst** — `RowResolution`,
+  `hasLiveRefreshToken` und die Paarungsschleife in `capi/token.ts`. **WO ES WIEDER
+  AUFTAUCHT:** VERMERK 12, Abschnitt (a), in Symbolen und mit der Lagen-Tabelle,
+  einschliesslich des Satzes "ERNEUERBAR HEISST NICHT SENDEFÄHIG".
+  **SEINE EINE FORTWIRKENDE ZEILE IST NICHT VERSCHWUNDEN:** Dass **"UHR 2 UNBEKANNT"
+  NIE ALS ABGELAUFEN GILT**, ist Festlegung 5 der Scheibe 1a — ÜBERNOMMEN, nicht neu
+  erfunden — und steht unverändert an ihrer Stelle weiter oben sowie am Prädikat
+  `hasLiveRefreshToken` selbst.
+- **"Das dritte Stück — der Wurf bei der Registrierung"** trug den gemessenen Befund
+  (das `try` liegt IM Callback, der `after()`-Aufruf stand ungeschützt, keine der sechs
+  Attrappen kann werfen) und die Begründung, warum er in DIESE Scheibe gehört.
+  **Beides ist eingelöst**: `scheduleAfter` deckt BEIDE Registrierungen, und der
+  Kommentarkopf von `schedulePersist` ist richtiggestellt. **WO ES WIEDER AUFTAUCHT:**
+  VERMERK 12, Abschnitt (a) für den Bau und Abschnitt (e) für die Attrappen-Blindheit;
+  der Befund selbst steht unverändert als **Vorrats-Eintrag 35** samt seinem neuen
+  Vermerk, und die Begründung lebt am Code, im Kopf von `scheduleAfter`.
+- **"Die Test-Falle, die der Plan behandeln muss"** war eine ANWEISUNG an den Plan —
+  achtzehn Ganz-Objekt-Vergleiche, `toEqual` ignoriert `undefined`, zehn mockende
+  Dateien. **Sie ist behandelt: `renewable` ist ein PFLICHTFELD.** **WO ES WIEDER
+  AUFTAUCHT:** VERMERK 12, Abschnitt (e) — dort **beide Hälften** der Falle, die
+  achtzehn und die zehn, samt der Entscheidung, die Fixtures und nicht den Handler zu
+  reparieren. **DIE GEMESSENE EIGENSCHAFT SELBST IST DAMIT NICHT VERLOREN:** Sie steht
+  zusätzlich am Feld `renewable` in `capi/token.ts`, an einem der achtzehn Läufe und im
+  Wächter **R7**.
+- **"Zwei Entwurfsfragen, vorgelegt und nicht entschieden"** legte zwei Fragen vor und
+  entschied keine. **BEIDE SIND ENTSCHIEDEN** (OWNER, 2026-09-03): **(1) Der Resolver
+  MELDET, der Handler HANDELT** — Form 1; **(2) der Inline-Weg bekommt DENSELBEN Deckel
+  wie der Hintergrund-Weg**, `runRefresh` unverändert, **keine zweite Konstante**.
+  **WO ES WIEDER AUFTAUCHT:** VERMERK 12, Abschnitt (a) für die gebaute Form und
+  Abschnitt (g) für die Kopplung.
+  **DER GRUND GEGEN DIE ANDERE FORM BINDET ÜBER DIE SCHEIBE HINAUS UND WIRD DESHALB
+  HIER FESTGEHALTEN:** Ein erneuernder Resolver hätte den Wächter **`T15-ERSATZ`** rot
+  gemacht — jenen, der `capi/token.ts` jeden Import aus `/oauth/` verbietet — und damit
+  die Zusicherung getroffen, auf der **vier Festlegungen der Scheibe 4** ruhen. Wer die
+  Frage später neu aufmacht, findet den Preis hier.
+
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WORDEN IST, obwohl es nach Anweisung aussieht — im
+Zweifel stehengelassen:** der Kopf des Abschnitts samt Nomenklatur und Suffix-Disziplin,
+"Was Scheibe 1b-2a ist", die zwei Befunde, "Warum die Vorsorge die Rettung erst
+tragfähig macht", die Ausschlüsse mit ihren Gründen, die sechs Invarianten und "Was
+diese Scheibe offen lässt". Sie sind GRÜNDE, BEFUNDE und GRENZEN, keine Anweisungen,
+und jede von ihnen bindet **1b-2b** — die Befunde tragen die Anordnung, die Ausschlüsse
+sagen, was dort erst fällig wird, und die Invarianten gelten dem gebauten Zustand, nicht
+dem Bauvorgang.
+
+**EIN STÜCK IST GESTRICHEN, DAS NICHT NUR ABGELAUFEN, SONDERN FALSCH WAR — UND DAS WIRD
+HIER BENANNT STATT VERWISCHT:**
+- **"Die Beweis-Achse der Scheibe 1b-2a"** war die ANLEITUNG für den Live-Test. Sie ist
+  gefahren. **IHRE TRAGENDE ZEILE WAR AM GEBAUTEN CODE FALSCH:** "Bleibt sie nach der
+  Wartezeit aus und geht die Conversion hinaus, ist die Scheibe bewiesen; steht sie da,
+  ist sie es nicht." **Die Fehlerzeile steht im Rettungsfall NOTWENDIG da** — der
+  `console.error` liegt VOR der Verzweigung. **WO ES WIEDER AUFTAUCHT:** VERMERK 12,
+  Abschnitt (c), vollständig und mit dem Grund, warum die Anleitung einen Erfolg als
+  Fehlschlag angekündigt hat. **DIE STREICHUNG IST KEINE KORREKTUR DER AUSSAGE, SONDERN
+  DAS ABLAUFEN DER ANLEITUNG;** die Aussage selbst ist im Vermerk als Fehlgriff
+  festgehalten, damit die nächste Runde die Achse nicht ein zweites Mal falsch setzt.
+  **AUCH DIE ZWEITE UNTAUGLICHE HÄLFTE STEHT DORT:** die erwartete
+  `[oauth/token-refresh] ok`-Zeile ist ein `console.info` und liegt an einer anderen
+  Log-Ebene als die Fehlerzeile — **ihre Abwesenheit war nie ein Befund.**
+
 ### Die zwei Befunde, die diesen Zuschnitt tragen
 
 **GEMESSEN am Repo (CC, 2026-09-03).** Als Ort steht der SYMBOLNAME und nie eine
@@ -2628,23 +2706,20 @@ DATENBANK-ZUGRIFF.** Die Angabe fällt ohnehin an; sie wird heute nur weggeworfe
 INFORMATION, DIE EIN ZEITPLAN TEUER BESCHAFFEN MÜSSTE, FÄLLT DORT OHNEHIN AN. WAS DARAUS
 FOLGT, IST HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN … Der Befund gehört zum TAKT."
 
-### Der Gegenstand — vier Lagen statt zwei
-
-Heute kennt der Resolver je Zeile ZWEI Ausgänge: ein brauchbares Zugangsdatum oder `null`.
-**Diese Scheibe macht daraus VIER**, und je Lage geschieht etwas anderes:
-
-· **BRAUCHBAR** — wie heute. Kein Eingriff, kein Aufruf.
-· **ERNEUERBAR, ZUGANGSDATUM TOT** — `runRefresh` **IM ANFRAGE-WEG**, danach forwarden.
-  **Das ist der Fall, für den diese Scheibe gebaut wird.**
-· **ERNEUERBAR, IM VORLAUF** — `runRefresh` **NACH DER ANTWORT**. Das Zugangsdatum trägt
-  noch; der laufende Beacon wartet auf nichts.
-· **ENDGÜLTIG TOT** — `null`, wie heute. Kein Aufruf, keine Wiederholung.
+### Die eine Festlegung, die aus dem verdichteten Gegenstand gerettet ist
 
 **"UHR 2 UNBEKANNT" GILT NIE ALS ABGELAUFEN.** Das ist **Festlegung 5 der Scheibe 1a**,
 ÜBERNOMMEN und nicht neu erfunden: Von zwei unbelegten Möglichkeiten wird die gewählt, deren
 Fehlgriff der billigere ist — ein überflüssiger Netzaufruf gegen einen
 Kunden-Autorisierungsfluss, den niemand gebraucht hätte. **Ein Zugangsdatum mit unbekannter
 zweiter Uhr landet damit in einer der beiden ERNEUERBAR-Lagen, nie in der vierten.**
+
+**SIE STEHT ALS EIGENER UNTERABSCHNITT DA, WEIL DER ABSCHNITT, IN DEM SIE STAND,
+VERDICHTET IST** (s. den Vollzogen-Block darüber). Sie ist KEINE Anweisung an den Bau,
+sondern eine übernommene Festlegung — und sie bindet jeden künftigen Leser der zweiten
+Uhr, nicht nur diese Scheibe. **AM CODE STEHT SIE ZUSÄTZLICH**, am Prädikat
+`hasLiveRefreshToken` in `capi/token.ts`; zwei Orte, weil der eine beim Zuschneiden und
+der andere beim Bauen gelesen wird.
 
 ### Warum die Vorsorge die Rettung erst tragfähig macht
 
@@ -2667,31 +2742,6 @@ hat ein totes Zugangsdatum, wenn sein Beacon eintrifft — **und dieser Beacon I
 Conversion.** Ihn nach der Antwort zu erneuern hiesse, ihn zu verlieren und beim nächsten
 Mal bereit zu sein, das aber erst in vierundzwanzig Stunden. **Deshalb steht der tote Fall
 INLINE und nicht im Hintergrund.**
-
-### Das dritte Stück — der Wurf bei der Registrierung
-
-**ES IST KEINE ZUGABE.** Der Wurf bei der `after()`-**REGISTRIERUNG** wird abgefangen — für
-die NEUE Registrierung dieser Scheibe **UND** für die bestehende in `schedulePersist`.
-
-**DER BEFUND (GEMESSEN am Code, CC, 2026-09-03; Vorrats-Eintrag 35):** Der Kommentarkopf von
-`schedulePersist` (src/lib/capi/ingest.ts) behauptet, sein `try/catch` sei "die zweite
-Schicht, falls die Registrierung/der Aufruf selbst wirft". **Das `try` liegt IM Callback**;
-der `after()`-Aufruf steht **ungeschützt**, und `handleIngest` trägt an seinen beiden
-Aufrufstellen **kein umschliessendes `try`**. **Ein Wurf dort verlässt den Handler und
-BRICHT DAS 204-CONTAINMENT.**
-**KEIN TEST DECKT ES:** Alle sechs `ingest.*.test.ts` ersetzen `after` mit einer Attrappe,
-die die Callbacks nur einsammelt — **dort kann die Registrierung gar nicht werfen.**
-
-**WARUM ES IN DIESE SCHEIBE GEHÖRT UND NICHT IN EINE EIGENE:** Wir hängen eine **ZWEITE**
-Registrierung an dieselbe Stelle. **Eine Scheibe, die eine bekannte Lücke in genau dem
-Mechanismus stehen lässt, den sie gerade benutzt, hat den Scope-Schutz gegen die Sache
-gewendet, die er schützen soll.**
-
-**DER KOMMENTARKOPF WIRD IM SELBEN ZUG RICHTIGGESTELLT.** Er ist heute eine BEHAUPTUNG über
-eine Deckung, die es nicht gibt (docs/immer-beachten.md, "EIN KOMMENTAR IST EINE BEHAUPTUNG,
-KEINE EIGENSCHAFT"). Wer nur den Schutz baut und den Kopf stehen lässt, hat danach einen
-richtigen Satz an einer Stelle, an der er vorher falsch war — und keine Spur davon, dass er
-es je war.
 
 ### Was diese Scheibe ausdrücklich nicht baut, je mit Grund
 
@@ -2742,47 +2792,6 @@ Nutzlast und keine Uhr** — meta, pinterest, tiktok und linkedin tragen ihr Geh
 Klartext-Spalte und laufen an der Entschlüsselung vorbei.
 **(I-6) KEIN NEBENLÄUFIGKEITS-RIEGEL IN DIESER SCHEIBE.** Ein "kleiner Riegel nebenbei" ist
 ein **VERSTOSS, KEIN BONUS**.
-
-### Die Test-Falle, die der Plan behandeln muss
-
-**ACHTZEHN LÄUFE PINNEN DAS AUFLÖSUNGS-OBJEKT MIT `toEqual`** (src/lib/capi/token.test.ts) —
-und **`toEqual` IGNORIERT einen Schlüssel mit dem Wert `undefined`**, auf jeder Ebene
-(GEMESSEN 2026-08-18, festgehalten am Code in capi/token.ts).
-**DIE FOLGE, UND SIE IST DIE FALLE: Ein OPTIONALES Feld, das im Normalfall leer bleibt,
-ginge STILL durch.** Der Bestand bliebe grün, und niemand hätte einen Anlass hinzusehen.
-**WIRD DER RÜCKGABEWERT ERWEITERT, WERDEN DIESE LÄUFE BEWUSST NACHGEZOGEN. EIN GRÜNER
-BESTAND IST HIER KEIN BELEG.**
-**WAS AUSSERDEM NICHT ROT WIRD:** Zehn Testdateien MOCKEN `@/lib/capi/token` — sie bestimmen
-die Form selbst und bleiben bei jeder Erweiterung grün.
-
-### Zwei Entwurfsfragen, vorgelegt und nicht entschieden
-
-**(1) MELDET DER RESOLVER NUR, UND DER HANDLER HANDELT — ODER ERNEUERT DER RESOLVER SELBST?**
-**GEGEN die zweite Form:** Sie macht den **LESEPFAD ZUM SCHREIBPFAD**. **FÜR sie:**
-`refreshAccessToken` gibt das Zugangsdatum bewusst **nicht** zurück (es trägt nur die zwei
-Ablaufzeitpunkte) — der Handler müsste es sonst nachlesen, und das wäre eine dritte
-Datenbank-Runde auf dem meistgetroffenen Pfad der Plattform. **ENTSCHIEDEN WIRD AM PLAN.**
-
-**(2) BEKOMMT DER INLINE-WEG DENSELBEN DECKEL WIE DER HINTERGRUND-WEG?**
-`runRefresh` versucht bis zu **dreimal**, je bis an den Deckel des Erneuerungs-Aufrufs —
-**inline sind das im schlechtesten Fall rund 24 Sekunden VOR dem Fan-Out**.
-**DER PREIS IST DER CONCURRENCY-SLOT, NICHT DIE WARTEZEIT DES BESUCHERS** — ein
-`keepalive`-Beacon blockiert weder Rendering noch Interaktion (CLAUDE.md,
-"/API/E-SCHLANKHEIT", Absatz "WO DER PREIS LIEGT").
-**DIE ANTWORT DARF KEINE ZWEITE KONSTANTE ERFINDEN.** **ENTSCHIEDEN WIRD AM PLAN.**
-
-### Die Beweis-Achse der Scheibe 1b-2a
-
-**ZUM ERSTEN MAL IN DIESER PHASE EIN ECHTER LIVE-TEST:** verbinden, **eine Stunde warten**,
-Beacon auslösen — und **die Conversion muss bei Google ankommen**. Kein Ersatz, keine
-Attrappe, kein Handaufruf.
-**VORRATS-EINTRAG 42 LIEFERT DIE BEOBACHTBARE SIGNATUR DES BRUCHS:** die Fehlerzeile
-`[capi/resolve] secret unusable` mit dem Grund `access_token_expired`. **Bleibt sie nach der
-Wartezeit aus und geht die Conversion hinaus, ist die Scheibe bewiesen; steht sie da, ist
-sie es nicht.**
-**DER TEST DAUERT ÜBER EINE STUNDE UND IST KEIN NEBENBEI. DAS GEHÖRT IN DIE ANLEITUNG UND
-NICHT IN DEN RÜCKBLICK** — wer ihn zwischen zwei anderen Schritten einplant, fährt ihn
-verkürzt und misst dann den Fall, den es ohnehin schon gab.
 
 ### Was diese Scheibe offen lässt
 
@@ -4037,6 +4046,368 @@ Symbolnamen und die Mutationsergebnisse GEMESSEN am Repo bzw. an den Läufen vom
 Uhrzeiten in (c) (GERECHNET auf `accessTokenExpiresAt` und dem Vorlauf), die Einordnung von
 Schritt 2 als früher Ausgang, und die Nicht-Baubarkeit der dritten Lesart (aus dem gelesenen
 Ergebnistyp). Der Worker-Befund in (d) ist GEMESSEN am eigenen Lauf.
+
+### VERMERK 12 (Bau-Commit d57d50c) — DIE SCHEIBE 1b-2a IST GEBAUT UND LIVE BEWIESEN
+
+**DER COMMIT IST AM REPO ERMITTELT** (CC, 2026-09-03), nicht aus einem Prompt
+übernommen: `d57d50c` (`feat(capi)`), voller Hash
+`d57d50c84a7a90905ad151b3c74a25fd90ed8aaf`. **VIER unabhängige `-S`-Gegenproben** auf
+Zeichenfolgen, die dieser Diff erst eingeführt hat — `REFRESH_SIGNAL_LEAD_SECONDS`,
+`hasLiveRefreshToken`, `resolveRefreshedTarget`, `scheduleAfter` —, **je genau ein
+Treffer, alle derselbe Commit.**
+**IM KOPF STEHT DER BAU-COMMIT UND AUSDRÜCKLICH NICHT DER COMMIT DIESES VERMERKS** —
+die Bauform von VERMERK 10 und 11, aus demselben Grund: Der Vermerk-Commit ist ein
+`docs(claude)` und entsteht erst mit dieser Runde. **DIE DATEI HAT DAMIT KEINE LÜCKE.**
+
+**DER TITEL SAGT "LIVE BEWIESEN" UND NICHT "LIVE GEPRÜFT", anders als VERMERK 11** —
+und der Unterschied ist begründet, nicht rhetorisch: Dort belegte der Nachweis eine
+REGRESSION und erreichte die Klammer nicht. Hier ist die Erneuerung **am
+ausgelieferten Stand gelaufen und persistiert**, und sie ist an einer von ihr
+unabhängigen zweiten Beobachtung belegt (Abschnitt (c)).
+
+---
+
+**(a) WAS GEBAUT IST — IN SYMBOLEN, GEMESSEN am Repo (CC, 2026-09-03).**
+
+Der Bau-Commit fasste **VIERZEHN** Dateien an, **EINE davon neu**
+(`src/lib/capi/ingest.refresh.test.ts`). **ZEHN der dreizehn geänderten sind
+Fixture-Nachzüge** — der Grund steht in Abschnitt (e).
+
+· **`RowResolution`** (`src/lib/capi/token.ts`, modul-privat) — eine **benannte,
+  geschlossene Summe** an der Stelle, an der `usableTokenFromRow` bis hierher
+  `string | null` lieferte: `{kind:"usable"; token; inLead}` · `{kind:"renewable"}` ·
+  `{kind:"unusable"}`. **DIE AUSSAGE DES ALTEN RÜCKGABETYPS IST DIESELBE GEBLIEBEN**
+  und steht am Code: Keines der Felder nimmt ein zweites Geheimnis auf, und ab dem
+  `return` zeigt kein Bezeichner mehr auf `refreshToken` oder
+  `refreshTokenExpiresAt`.
+· **`hasLiveRefreshToken`** (ebenda, modul-privat) — die Trennung "erneuerbar" gegen
+  "endgültig tot". `{kind:"unknown"}` gilt **nie** als überschritten (Festlegung 5 der
+  Scheibe 1a, übernommen); `epochSeconds === now` gilt als überschritten,
+  fail-closed. **ES IST EINE ZWEITE INSTANZ DERSELBEN BEDINGUNG**, die inline in
+  `refreshAccessToken` (Schritt (6)) steht — nicht entdoppelt, weil eine gemeinsame
+  Quelle einen Import in eine Datei verlangte, die diese Scheibe **ruft und nicht
+  anfasst**. Der Satz steht am Prädikat.
+· **`REFRESH_SIGNAL_LEAD_SECONDS = 300`** (ebenda) — die Melde-Schwelle als eigene
+  Konstante. **Exportiert ausschliesslich für den Kopplungs-Wächter**, im
+  Produktivcode nur in dieser Datei gelesen; der Satz steht an der Konstante.
+· **`RenewableTarget`** und das Feld **`renewable: RenewableTarget[]`** an
+  `TrackingKeyResolution` — **NICHT optional.** Es trägt Zielname, öffentliche
+  Kennung, Zuordnung und die **Lage** (`"expired"` bzw. `"lead"`), **kein Geheimnis**.
+· **DIE VIER LAGEN, wie sie der Resolver seither bildet** (die Bauanweisung dazu ist
+  mit dem Vollzug verdichtet, s. den Vollzogen-Block am Zuschnitt):
+  **BRAUCHBAR** → nur `targets` · **IM VORLAUF** → `targets` **und** `renewable`
+  mit `lage:"lead"` · **TOT, UHR 2 LEBT** → nur `renewable` mit `lage:"expired"` ·
+  **ENDGÜLTIG TOT** → keine der beiden. **ERNEUERBAR HEISST NICHT SENDEFÄHIG:** Eine
+  Zeile mit toter Uhr 1 erzeugt weiterhin **kein** `ResolvedTarget`.
+· **`resolveRefreshedTarget`** (ebenda, exportiert) — die schmale Nach-Auflösung:
+  **EINE** Runde auf `project_secrets`, `{ data, error }` destrukturiert, fail-closed
+  auf `null`, wirft nie. **SIE IST DIE DRITTE DATENBANK-RUNDE DES REQUESTS UND FÄLLT
+  AUSSCHLIESSLICH IM RETTUNGSFALL AN** — der Preis ist am Code benannt, und der
+  Live-Nachweis zeigt ihn ausbleiben, wo er nicht gebraucht wird (Abschnitt (b)).
+· **DIE ZWEI ZWEIGE IN `src/lib/capi/ingest.ts`:** die **VORSORGE** nach dem
+  Confirm-Zweig und **vor** der Forward-Wache, in `after()` — ohne Consent-Gate, weil
+  eine Erneuerung die Anmeldedaten des BETREIBERS sendet und kein Besucher-Merkmal;
+  die **RETTUNG** **innerhalb** der Forward-Wache und **nach** dem Consent-Gate, mit
+  `runRefresh` und der Nach-Auflösung, seriell vor dem Fan-Out.
+· **DIE GEÖFFNETE FORWARD-WACHE** (ebenda) — aus `targets.length > 0` ist
+  `targets.length > 0 || rettbar.length > 0` geworden. **DAS IST DER INVASIVSTE PUNKT
+  DER SCHEIBE**, und der Grund steht dort: Ein Projekt, dessen einziges Ziel gerade tot
+  ist, hat `targets.length === 0`; mit der alten Wache liefe die Rettung **nie**, und
+  weder ein Compiler noch ein Bestandstest sähe es.
+· **`allowedTargets` IST GENERISCH GEWORDEN** über
+  `<T extends { target: ResolvedTarget["target"] }>` — dieselbe Entscheidung, dieselbe
+  Funktion, zwei Mengen. **KEIN neuer Typ-Import**: Die Schranke ist ein indizierter
+  Zugriff auf einen ohnehin importierten Typ, damit die Zusage im Kopf der Datei
+  ("importiert von lib/settings.ts jetzt gar nichts mehr") wahr bleibt.
+· **`scheduleAfter`** (ebenda) — der Schutz der `after()`-**REGISTRIERUNG**, benutzt von
+  **BEIDEN** Registrierungen, der neuen dieser Scheibe **und** der bestehenden in
+  `schedulePersist`. Der `catch` **loggt** über `errorName`; ein Wurf verschwindet
+  nicht. **DER KOMMENTARKOPF VON `schedulePersist` IST IM SELBEN ZUG RICHTIGGESTELLT**
+  — er behauptete diese Deckung, ohne sie zu haben, und der Satz steht dort, dass er
+  es tat.
+· **`U1`** (`src/lib/capi/token.test.ts`) — der Kopplungs-Wächter, s. Abschnitt (g).
+
+**EINE ZAHL IM KOMMENTARKOPF VON `usableTokenFromRow` IST IM BAU RICHTIGGESTELLT WORDEN,
+NICHT GESTEMPELT — UND SIE STEHT AN EINER ZWEITEN STELLE UNVERÄNDERT WEITER. DAS IST EIN
+GEMELDETER BEFUND, KEINE ERLEDIGUNG:**
+Der Kopf sagte, wer das Erneuerungs-Token nach aussen tragen wolle, müsse **DREI Typen**
+anfassen. **GEMESSEN am Repo (CC, 2026-09-03): es genügen ZWEI**, auf zwei unabhängigen
+Wegen — der Rückgabetyp hier **plus** `CapiConfig` (dann bleibt `ResolvedTarget`
+unberührt, es trägt `config` nur), **oder** der Rückgabetyp hier **plus**
+`ResolvedTarget` (dann bleibt `CapiConfig` unberührt). Dazu kommt je das Objektliteral in
+der Paarungsschleife, und das ist kein Typ.
+**DER SCHUTZ BLEIBT REAL UND WIRD NICHT KLEINGEREDET:** Zwei sichtbare Änderungen an
+einer geteilten Datei sind weiterhin etwas anderes als eine Zeile in einer inline
+ausgepackten Nutzlast. **WARUM DIE KORREKTUR ÜBERHAUPT NÖTIG WAR: EINE ZU STARKE
+BEGRÜNDUNG IST EINE EINLADUNG, DIE REGEL BEIM NÄCHSTEN UMBAU ALS ÜBERTRIEBEN ZU LESEN** —
+eine Zahl, die beim Nachzählen nicht stimmt, entwertet den Satz, den sie tragen soll.
+**DIE ZWEITE STELLE IST INVARIANTE (I-3) DIESES ZUSCHNITTS**, weiter unten: "Wer ihn
+erweitert, muss DREI Typen anfassen, und genau das ist der Schutz." **SIE IST NICHT
+ANGETASTET WORDEN, und das ist Scope und kein Urteil** — diese Runde verdichtet den
+Zuschnitt und lässt die Invarianten im Zweifel stehen. **DIE INVARIANTE SELBST BLEIBT
+GÜLTIG; ÜBERHOLT IST IHR BELEG** (docs/immer-beachten.md, "EINE REGEL KANN GÜLTIG
+BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD" — dort mit der Auflage, ihn RICHTIGZUSTELLEN und
+nicht zu stempeln, sobald jemand die Stelle ohnehin öffnet). **WER SIE ÖFFNET, ZIEHT SIE
+NACH.**
+· **`T15`** (`src/lib/oauth/token-refresh.test.ts`) und **`T15-ERSATZ`**
+  (`src/lib/capi/token.test.ts`) tragen **neue Titel und unveränderte Zusicherungen** —
+  s. Abschnitt (c), letzter Absatz.
+
+**DIE VIER GATES WAREN VOR DEM COMMIT GRÜN** (`tsc --noEmit`, `eslint`, `vitest run`,
+`next build`). **SUITE: 73 Dateien / 1487 Läufe** (vorher 72/1465, VERMERK 11) — **eine
+Datei und ZWEIUNDZWANZIG Läufe mehr.** `eslint` meldet 0 Fehler und die eine
+Bestands-Warnung aus Vorrats-Eintrag 26; zwei von der Bau-Runde selbst erzeugte
+Warnungen sind **vor** dem Gate behoben worden.
+
+---
+
+**(b) DER LIVE-NACHWEIS — GEMESSEN 2026-09-03 vom OWNER**, an der ausgelieferten
+Anwendung. **Die Uhrzeiten sind die des Vercel-Logs.**
+
+· **16:47:01, Pageview:** `[capi/resolve] secret unusable`, `reason`
+  `access_token_expired`. **KEINE Rettung** — ein Pageview ist nicht forwardable, und
+  die Rettung liegt hinter `isForwardable`.
+· **16:47:07, Conversion (ZWEI Beacons):** dieselbe Zeile — **und HIER lief die
+  Rettung.**
+· **16:50:53, Conversion:** **KEINE Fehlerzeile mehr**, nur
+  `Google forward skipped: no_click_id`. Die Invocation zeigt **ZWEI Supabase-GETs und
+  einen POST** — die zwei Resolver-Runden plus den Persist, **KEINE dritte Leserunde.**
+· **16:55:36, Conversion mit `gclid`:** **der Google-Adapter SCHWEIGT.** Kein
+  `forward failed`, kein `skipped`.
+· **POSITIVKONTROLLE ohne `gclid`:** `skipped: no_click_id` im Wortlaut.
+
+---
+
+**(c) WAS DEN BEWEIS TRÄGT — UND WARUM DIE FEHLERZEILE ZUM ERFOLG GEHÖRT UND NICHT
+GEGEN IHN. DIESER ABSCHNITT IST DER WICHTIGSTE DES VERMERKS.**
+
+**DER `console.error` STEHT VOR DER VERZWEIGUNG UND WIRD IN BEIDEN FÄLLEN
+GESCHRIEBEN.** Was die Fälle trennt, ist der `reason`:
+`access_termopen`-artige Verwechslungen sind hier ausgeschlossen, weil die zwei Werte
+selbstvergeben sind — **`access_token_expired` heisst "erneuerbar"** und mündet in
+`kind:"renewable"`, **`refresh_token_expired` heisst "endgültig tot"** und mündet in
+`kind:"unusable"`.
+
+**DER BEWEIS IST DESHALB NICHT DAS AUSBLEIBEN DER ZEILE AM AUSLÖSENDEN BEACON, SONDERN
+AM FOLGENDEN.** Um **16:50:53** hält der Resolver den Token für brauchbar — der frische
+Ablauf steht in der Zeile, die Erneuerung ist also **gelaufen UND persistiert**. **Die
+ausbleibende dritte Leserunde belegt das unabhängig**: zwei GETs plus ein POST heisst,
+dass `resolveRefreshedTarget` nicht gebraucht wurde, weil schon die reguläre Auflösung
+ein brauchbares Zugangsdatum fand.
+**ZWEI UNABHÄNGIGE BEOBACHTUNGEN AN DERSELBEN INVOCATION**, und keine davon ist eine
+Abwesenheits-Behauptung allein: die eine ist das Ausbleiben der Zeile, die andere die
+Zahl der Datenbank-Zugriffe. Dazu tritt **16:55:36** mit dem schweigenden Adapter und
+die Positivkontrolle ohne `gclid`.
+
+**DASS ES DIE RETTUNG WAR UND NICHT DIE VORSORGE, IST AM KONTROLLFLUSS ENTSCHIEDEN:**
+Um 16:47:07 war Uhr 1 **tot** (`access_token_expired`), das Ziel lag also in
+`rettbar` und nicht in `vorsorge` — die Vorsorge greift ausschliesslich im
+Vorlauf-Band eines **lebenden** Zugangsdatums.
+
+**DIE ARCHITEKTEN-ANLEITUNG WAR AN DIESER STELLE FALSCH UND HAT EINEN ERFOLG ALS
+FEHLSCHLAG ANGEKÜNDIGT.** Sie hatte die Beweis-Achse aus dem Zuschnitt übernommen —
+"bleibt sie aus und geht die Conversion hinaus, ist die Scheibe bewiesen; steht sie da,
+ist sie es nicht" —, **ohne den gebauten Code dagegen zu halten.** Am gebauten Code
+steht die Zeile im Rettungsfall **notwendig** da.
+**GEMELDET, damit die nächste Runde die Achse nicht ein zweites Mal falsch setzt.** Es
+ist der Fall der Regel "EINE ANLEITUNG, DIE EINE VORAUSSETZUNG NICHT NENNT, ERZEUGT
+EINE FALSCHE ENTWARNUNG" (docs/immer-beachten.md) **in seiner Umkehrung**: Sie hat
+keine falsche Entwarnung erzeugt, sondern einen **falschen Alarm** — und der ist die
+billigere Fehlerrichtung, weil er zum Hinsehen zwingt statt davon abzuhalten.
+
+**ZUR ERWARTETEN `[oauth/token-refresh] ok`-ZEILE: SIE IST EIN `console.info` UND IN
+EINER ERROR-GEFILTERTEN ANSICHT NICHT SICHTBAR. IHRE ABWESENHEIT IST KEIN BEFUND** —
+und die Anleitung hätte sie **nicht als Kriterium führen dürfen**, weil sie an einer
+**anderen Log-Ebene** liegt als die Fehlerzeile. Zwei Kriterien auf zwei Ebenen in
+einer Anleitung, die nur eine Ebene zeigt, sind kein Kriterium, sondern eine Falle.
+
+**DIE ZWEI QUELLTEXT-WÄCHTER SIND IM SELBEN ZUG NACHGEZOGEN — TITEL UND ERKLÄRTEXT,
+KEINE EINZIGE ZUSICHERUNG:**
+· **`T15`** hiess "KEIN AUFRUFER AUF DEM INGEST-PFAD" und heisst jetzt "DER INGEST GEHT
+  ÜBER DIE KLAMMER UND NICHT AN IHR VORBEI". **Der Titel war falsch geworden** — der
+  Ingest erneuert seit dieser Scheibe. **Seine zwei Behauptungen und seine
+  Positivkontrolle sind unangetastet**, und ihre Aussage ist dieselbe geblieben: Ein
+  Handler, der die Funktion direkt riefe, umginge die Obergrenze der Klammer.
+· **`T15-ERSATZ`** hiess "der Ingest-Pfad ENTSCHLÜSSELT, ERNEUERT ABER NIE" und heisst
+  jetzt "token.ts ENTSCHLÜSSELT, ERNEUERT ABER NIE — DIE ERNEUERUNG LIEGT IM HANDLER".
+  **Fünf Zusicherungen unangetastet.** Er las immer schon nur `token.ts`; falsch war
+  seine PFAD-Aussage, nicht sein Gegenstand.
+· **BEIDE TRAGEN DEN SATZ, WAS SIE VORHER ZUGESICHERT HABEN.** Wer nur den Titel
+  ändert, löscht die Spur — dann stünde ein richtiger Satz an einer Stelle, an der er
+  vorher falsch war, und nichts sagte, dass er es je war.
+
+---
+
+**(d) ZWEI EIGENSCHAFTEN, DIE ERST DIE MESSUNG SICHTBAR GEMACHT HAT.**
+
+· **EIN CONVERSION-BEACON-PAAR HINTERLÄSST AUCH IM ERFOLGSFALL EINE FEHLERZEILE.** Der
+  Bestätigungs-Beacon (`source` `browser`) durchläuft den Resolver — dort entsteht die
+  Zeile — und kehrt **VOR** dem Forward-Zweig zurück; er sieht den alten Token und
+  **rettet nicht**. **WELCHE DER BEIDEN ZEILEN UM 16:47:07 DAS WAR, IST AM LOG NICHT
+  ENTSCHEIDBAR**; dass es so sein **muss**, folgt aus dem Kontrollfluss.
+  **ABLEITUNG, KEINE MESSUNG.**
+  **DIE FOLGE STEHT IM VORRAT UND NICHT HIER:** Vorrats-Eintrag 42 trägt seit dieser
+  Runde einen Vermerk, weil seine bisherige Fassung genau diesen Fall nicht kannte.
+· **EIN PROJEKT MIT NUR PAGEVIEWS WIRD NICHT GERETTET UND NICHT VORGESORGT.**
+  "Erneuerbar, tot" landet in `rettbar`, und `rettbar` wird **ausschliesslich** in der
+  Forward-Wache abgearbeitet — hinter `isForwardable`.
+  **KEIN DEFEKT, und der Grund gehört dazu:** Es steht dabei **keine Conversion auf dem
+  Spiel**, und die **erste** Conversion rettet. Der Zustand kostet also nichts, was
+  jemand vermissen könnte.
+  **ABER: DIE BENENNUNG IST WEITER ALS DIE SACHE.** Der Testplan-Lauf heisst "PageView
+  rettet nicht, sorgt aber vor" — und vorsorgen tut er **NUR im Vorlauf-Band**, nicht
+  bei totem Token. **Der Lauf selbst ist richtig; sein NAME behauptet mehr.** Als
+  eigener Vorrats-Eintrag verortet.
+
+---
+
+**(e) DER BLINDFLECK — EIGENER ABSCHNITT, WEIL ER DER WERTVOLLSTE POSTEN DIESER RUNDE
+IST.**
+
+Nach dem Bau von `token.ts` und `ingest.ts` fielen **91 Läufe in 9 Dateien**, **alle
+mit EINER Ursache**: `ingest.ts` las `resolution.renewable.filter`, und die neun
+Dateien, die `@/lib/capi/token` mocken, **bauen ihre Auflösung selbst** — ihre Fixtures
+trugen kein `renewable`.
+
+**DAS PFLICHTFELD HAT DIE VORHERGESAGTE FALLE IN EINEN FEHLSCHLAG VERWANDELT STATT IN
+EIN SCHWEIGEN.** Die Falle hat zwei Hälften, und beide sind dieselbe gemessene
+Eigenschaft:
+· **DIE ACHTZEHN GANZ-OBJEKT-VERGLEICHE** in `token.test.ts` pinnen die vollständige
+  Auflösung mit `toEqual`, und **`toEqual` ignoriert einen Schlüssel mit dem Wert
+  `undefined` auf jeder Ebene** (GEMESSEN 2026-08-18). Ein optionales, im Normalfall
+  leeres Feld wäre an **allen achtzehn** still vorbeigegangen.
+· **DIE ZEHN MOCKENDEN DATEIEN** bestimmen die Form selbst; ein neues Feld erscheint in
+  keiner ihrer Fixtures. Ein optionales Feld wäre in **allen neun**, die den Handler
+  tatsächlich fahren, grün geblieben.
+**MIT EINEM PFLICHTFELD IST BEIDES LAUT GEWORDEN:** die achtzehn als bewusst
+nachgezogene Vergleiche, die neun als Fehlschlag beim ersten Lauf.
+
+**REPARIERT WURDEN DIE FIXTURES, NICHT DER HANDLER.** Ein Vorgabewert (`?? []`) wäre
+defensiver Code gegen einen Zustand, den der Typ verbietet — **und er hätte neun
+Attrappen dauerhaft in einer Gestalt grün gelassen, die der Resolver nicht erzeugen
+kann.** Das ist die Regel "TESTDATEN UND TEST-SEQUENZ MÜSSEN DEN PRODUKTIVEN PFAD
+TREFFEN" (docs/immer-beachten.md).
+**JEDE NACHGEZOGENE FIXTURE TRÄGT DEN GRUND IM KOMMENTAR**, und wo das leere Array
+**tragend** ist, steht das eigens dabei: in `fan-out.test.ts` die Zeiten (eine Rettung
+läge seriell davor), in `ingest.timeout.test.ts` der gemessene Deckel, in
+`ingest.persist.test.ts` die Zahl der Registrierungen.
+
+**DIE ACHTZEHN SIND EXPLIZIT NACHGEZOGEN — KEIN `objectContaining`.** Das hätte aus
+einem Ganz-Objekt-Vergleich einen Teil-Vergleich gemacht und **genau die Zusicherung
+mitgenommen**, die diese achtzehn seit Scheibe 2b-i tragen. An einem von ihnen steht
+der Absatz, warum das Feld auch leer dasteht; der Wächter dagegen ist **R7**.
+
+---
+
+**(f) DIE MUTATIONS-STREUUNG ALS DATENPUNKT.**
+
+**SECHS Mutationen, je mit Vorhersage VOR dem Lauf, danach zurückgenommen; keine ist im
+Bau-Commit.** Vier trafen genau die vorhergesagten Läufe: "erneuerbar, tot wie
+endgültig tot" → R1/R4/R5/R6 · "Vorsorge-Lage entfernt" → **genau R2** · "Schutz der
+Registrierung ausgebaut" → **genau H9**, und **alle sechs bestehenden
+`ingest.*.test.ts` blieben grün** · "Schwelle über den Vorlauf" → **genau U1**.
+
+**ZWEIMAL WAR DIE KLASSE RICHTIG UND DIE AUFZÄHLUNG DANEBEN:**
+· **ZU BREIT** — "Uhr-2-Prüfung umgedreht": vorhergesagt sechs, gefallen **fünf**.
+  **R8 fiel nicht, und er konnte nicht fallen:** Er prüft die Zeile
+  `[capi/resolve] secret unusable` und die **Abwesenheit der `projectId`**, nicht den
+  `reason`. Die Mutation wechselt nur den `reason`. **Der Test ist nicht hohl; die
+  Vorhersage hatte ihn an einer Achse festgemacht, die er nicht misst.**
+· **ZU ENG** — "Kill-Switch hinter die Erneuerung": vorhergesagt vier, gefallen
+  **fünf**. `ingest.forwardable` kam hinzu, mit **demselben Assert-Gegenstand**
+  (`persistEvent` nicht gerufen) und damit **derselben Fehlerklasse**. Ausgeschlossen
+  worden war er, weil nur auf `fetch` geschaut wurde.
+**BEIDE ÜBERSCHÜSSE SIND VOR JEDER REPARATUR GEPRÜFT UND ALS DECKUNG EINGEORDNET,
+NICHT ALS KASKADE** (Lektion (g) an "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE").
+
+**DIE STREUUNG WAR NICHT EINSEITIG — UND DAS IST DER EIGENTLICHE POSTEN DIESES
+ABSCHNITTS.** Das weicht von der in docs/immer-beachten.md protokollierten Reihe ab
+("EINE MUTATIONS-VORHERSAGE KANN IN BEIDE RICHTUNGEN FALSCH SEIN": sechs Fälle, davon
+fünf zu eng), deren **Einseitigkeit dort ausdrücklich als Hinweis auf eine
+SYSTEMATISCHE Ursache** geführt wird.
+**EIN GEGENBEISPIEL WIDERLEGT SIE NICHT — ES IST EIN DATENPUNKT UND GEHÖRT ALS SOLCHER
+NOTIERT.** Zwei Fälle in einer Runde, in beide Richtungen, sagen weder, dass die
+systematische Ursache weg ist, noch dass sie nie bestand. **HIER WIRD KEINE ZAHL IN
+docs/immer-beachten.md NACHGEZOGEN**; jene Datei führt ihre eigene datierte Zählung,
+und eine zweite daneben wäre bei jedem Zuwachs neu falsch (dieselbe Erwägung wie in
+Vorrats-Eintrag 20 und 32).
+
+**ZWEI LÄUFE SIND ALS EINZELSTÜCKE GEKENNZEICHNET** (Lektion (f) ebenda), je mit der
+gemessenen Zahl im Kommentar: **R2** trägt die Vorsorge-Lage allein, **H9** den
+Registrierungs-Schutz allein — **1 von 1487.** Der Satz steht dort, damit sie niemand
+als redundant entfernt und dabei die einzige Abdeckung mitnimmt.
+
+**NACH JEDER RÜCKNAHME GEPRÜFT:** Mutations-Marker 0, `git status` unverändert,
+`git diff --numstat` identisch zum Stand davor — **keine leeren Diffs.** **Jede
+Mutation wurde VOR dem Lauf auf ihre ANWESENHEIT in der Datei geprüft** (VERMERK 10,
+Abschnitt (h): eine nicht entstandene Mutation misst den unveränderten Bestand).
+
+---
+
+**(g) DIE KOPPLUNG SCHWELLE / VORLAUF.**
+
+Die Melde-Schwelle (`REFRESH_SIGNAL_LEAD_SECONDS`, `capi/token.ts`) und der
+Erneuerungs-Vorlauf (`REFRESH_LEAD_SECONDS`, `oauth/token-refresh.ts`) tragen **denselben
+Wert und sind nicht dieselbe Zahl**: Der Vorlauf sagt "ab hier wird ERNEUERT", die
+Schwelle "ab hier wird GEMELDET".
+
+**DIE RELATION IST BINDEND: SCHWELLE <= VORLAUF.** Die zwei Fehlerrichtungen sind
+**ungleich teuer**, und das entscheidet sie:
+· **SCHWELLE <= VORLAUF IST SELBSTBEGRENZEND.** Jedes Signal führt zu einer echten
+  Erneuerung, die Zeile bekommt einen frischen Ablauf, und das Signal hört auf. Das
+  Fenster ist **nicht die Länge des Vorlaufs**, sondern die Zeit bis zur ERSTEN
+  erfolgreichen Erneuerung.
+· **SCHWELLE > VORLAUF IST SELBSTWIEDERHOLEND.** Im Band zwischen beiden gibt die
+  Erneuerung "reichte noch" zurück **OHNE zu schreiben**; die Zeile bleibt unverändert,
+  und **JEDER folgende Beacon löst dasselbe Nichts erneut aus** — eine Datenbank-Runde
+  plus Entschlüsselung je Besucher, **STILL: keine Logzeile, kein roter Test, keine
+  Spur.**
+· **Zu klein ist harmlos**, weil die Rettung den Rest auffängt. **Zu gross ist eine
+  Kostenvervielfachung auf dem meistgetroffenen Pfad der Plattform.**
+
+**DER WÄCHTER IST `U1`** (`token.test.ts`): Er importiert **beide** Zahlen — eine
+Testdatei darf aus `/oauth/` importieren, `T15-ERSATZ` liest den Quelltext von
+`token.ts` und nicht den der Tests — und behauptet die Relation.
+**SEINE GRENZE TRÄGT ER AN SICH SELBST: ER BINDET DIE RELATION, NICHT DIE GLEICHHEIT,
+UND ER SAGT NICHTS DARÜBER, OB EINE DER BEIDEN ZAHLEN RICHTIG GEWÄHLT IST.** Er fängt
+den Umbau, nicht den Entwurf. **Die sechste Mutationsprobe hat ihn eigens geprüft** —
+Schwelle auf 301, **genau U1** gefallen.
+
+---
+
+**(h) WAS DER LIVE-TEST NICHT GEZEIGT HAT.**
+
+· **KEINE VERBUCHTE CONVERSION.** Auf dem Konto existiert **kein echter Anzeigenklick**
+  (die zweite Sperre der Phase, s. "### (1) Der Gegenstand"). Der Nachweis belegt den
+  **Transport**, nicht die **Verbuchung** — und diese Grenze liegt **nicht am Code**.
+· **NICHT, DASS DIE OBERGRENZE GREIFT.** Dazu bräuchte es einen echten, wiederholten
+  `retry` des Anbieters — nicht herstellbar. `[oauth/refresh-run] exhausted` ist im Log
+  **nicht erschienen**.
+· **NICHT DIE NEBENLÄUFIGKEIT.** Zwei gleichzeitig eintreffende Beacons desselben
+  Projekts sind nicht gefahren worden; Invariante (I-6) verbietet den Riegel, und die
+  zweite Achse von Vorrats-Eintrag 9 bleibt **UNGEMESSEN** — **unter einem
+  verkehrsgetakteten Auslöser wird sie schärfer.**
+· **NICHT DIE UNGEDROSSELTE WIEDERHOLUNG.** Ein Ziel mit lebender Uhr 2 und **dauerhaft
+  scheiternder** Erneuerung ruft **je Beacon** den Anbieter und schreibt eine Zeile
+  **MIT `projectId`** — geschrieben in `refresh-run.ts` und in der Funktion darunter,
+  also **ausserhalb dieser Scheibe** und ausserhalb der Zusage (I-4). Der Satz steht am
+  Code, an der Rettung; **es ist der schärfste Trigger für 1b-2b.**
+· **NICHT, OB `"WEB"` FACHLICH RICHTIG IST** und **nicht, was bei einer FREMDEN
+  Kundennummer geschieht** — beides unverändert offen und von dieser Scheibe nicht
+  berührt.
+
+---
+
+**PROVENIENZ, JE TEIL:** Umfang, Testzahl, Gate-Ergebnisse, der Commit-Hash samt der
+vier `-S`-Gegenproben, die Symbolnamen, die Mutationsergebnisse und der Byte-/
+Objekt-Nachweis **GEMESSEN am Repo bzw. an den Läufen vom 2026-09-03 (CC)**. Die fünf
+Live-Beobachtungen **GEMESSEN 2026-09-03 (OWNER)** an der ausgelieferten Anwendung.
+**ABLEITUNGEN, ausdrücklich als solche gekennzeichnet und nicht als Beobachtung:** dass
+eine der zwei Zeilen um 16:47:07 vom Bestätigungs-Beacon stammt (aus dem Kontrollfluss,
+Abschnitt (d)) · dass um 16:47:07 die Rettung und nicht die Vorsorge lief (ebenso) ·
+dass die ausbleibende dritte Leserunde die Persistenz der Erneuerung belegt (aus der
+Zahl der Datenbank-Zugriffe, Abschnitt (c)). Die Einordnung der Anleitung als falsch
+ist eine **ARCHITEKTEN-KORREKTUR vom 2026-09-03**, gestützt auf den gebauten Code.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -5493,6 +5864,42 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO. Der Code-Befund ist der
     unveränderte aus dem Eintrag oben, am 2026-09-03 erneut am Code bestätigt (CC).
 
+    **ZWEITER VERMERK 2026-09-03 — VOLLZOGEN MIT SCHEIBE 1b-2a. DER TEXT DARÜBER BLEIBT
+    ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT DANEBEN.**
+    **WAS GEBAUT IST:** `scheduleAfter` (src/lib/capi/ingest.ts) umschliesst den
+    `after()`-Aufruf und fängt den Wurf bei der **REGISTRIERUNG** — für die NEUE
+    Registrierung der Scheibe **UND** für die bestehende in `schedulePersist`. Der `catch`
+    **loggt** über `errorName`; ein Wurf verschwindet nicht. **DER KOMMENTARKOPF VON
+    `schedulePersist` IST IM SELBEN ZUG RICHTIGGESTELLT** und trägt den Satz, dass er
+    diese Deckung behauptet hat, ohne sie zu haben. Bau-Commit `d57d50c`, s. VERMERK 12,
+    Abschnitt (a).
+    **DER BEFUND DIESES EINTRAGS IST DAMIT NICHT NUR BEHOBEN, SONDERN GEMESSEN:** Die
+    Pflicht-Mutation "Schutz der Registrierung ausbauen" hat **genau EINEN** Lauf fallen
+    lassen — **H9** in `ingest.refresh.test.ts`, 1 von 1487 — und **alle sechs bestehenden
+    `ingest.*.test.ts` blieben grün.** Das ist die Aussage dieses Eintrags ("KEIN TEST
+    DECKT DAS", weil die sammelnde `after`-Attrappe nicht werfen kann) **gemessen statt
+    hergeleitet**; H9 trägt dafür eine eigene, umschaltbare Attrappe, die wirft.
+    **DER EINTRAG WIRD NICHT ABGEHAKT, UND DAS IST DIE BAUFORM DIESER DATEI, KEINE
+    UNENTSCHLOSSENHEIT:** Der Vorrat kennt kein Abhaken. Er kennt einen **eigenen
+    datierten Absatz UNTER dem unveränderten Eintrag** — so bei Eintrag 15 ("ERLEDIGT AM
+    2026-08-29 — DER EINTRAG BLEIBT STEHEN, UND ZWAR WEGEN DER MESSUNG") und bei
+    Eintrag 7 ("ERLEDIGT AM 2026-08-31"). **Diese Runde folgt ihr.**
+    **WARUM DER EINTRAG STEHEN BLEIBT — ZWEI GRÜNDE, und der zweite wiegt schwerer:**
+    (1) Seine **MESSUNG** — dass das `try` IM Callback liegt und alle sechs Attrappen die
+    Registrierung gar nicht werfen lassen können — ist der Beleg, auf dem der Schutz
+    überhaupt ruht. (2) Seine **BLINDHEITS-AUSSAGE über die Attrappen** ist der MASSSTAB
+    für jede künftige Frage an dieser Achse: Ein Mechanismus, den alle Tests durch eine
+    sammelnde Attrappe ersetzen, ist an ihnen nicht messbar. **Ein gelöschter Eintrag
+    nähme beide mit.**
+    **WAS SEIN SATZ "KEIN VORSCHLAG" ANGEHT:** Er war für den Zeitraum bis zum Bau
+    richtig und ist mit dem Bau abgelaufen — **nicht falsch geworden, sondern
+    gegenstandslos.** Und sein "Ob der Fall je eintritt, ist nicht erhoben" gilt
+    **unverändert**: Gebaut ist gegen die fehlende Deckung, nicht gegen eine beobachtete
+    Häufigkeit; der Live-Test hat **keinen** Registrierungs-Wurf erzeugt.
+    PROVENIENZ: der Bau GEMESSEN am Repo (CC, 2026-09-03), die Mutationsprobe am Lauf
+    desselben Tages. Dass die Bauform dieser Datei kein Abhaken vorsieht, ist GEMESSEN am
+    Dateitext (CC, 2026-09-03; Einträge 7 und 15).
+
 36. **DIE ADAPTER REICHEN EINE KLICK-KENNUNG HEUTE SCHON DURCH — AUF EINER ANDEREN ACHSE ALS
     DER GEMESSENEN.**
     **GEMESSEN am Code (CC, 2026-09-01):** `eventSourceUrl` wird im Beacon-Bau
@@ -5811,6 +6218,48 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     tote Erneuerungs-Token als Ursache bleibt, ist eine **ABLEITUNG** aus den vier Lagen
     jenes Zuschnitts, **keine Messung** — gebaut ist nichts.
 
+    **DRITTER VERMERK 2026-09-03 — DIE ZEILE VERSCHWINDET NICHT, SIE WIRD SELTEN. DIE
+    ABLEITUNG DES ZWEITEN VERMERKS WAR ZU WEIT, UND DAS WIRD HIER RICHTIGGESTELLT STATT
+    GESTEMPELT.** Der Text darüber bleibt ZEICHEN FÜR ZEICHEN stehen; überholt ist eine
+    ABLEITUNG, die dort ausdrücklich als solche gekennzeichnet ist.
+    **WAS DER ZWEITE VERMERK SAGTE:** "NACH 1b-2a BLEIBT ALS URSACHE NUR NOCH DAS TOTE
+    ERNEUERUNGS-TOKEN, denn ein erneuerbarer Zugang wird dann erneuert, statt eine Zeile zu
+    erzeugen."
+    **WAS AM GEBAUTEN CODE GILT (GEMESSEN, CC, 2026-09-03, und LIVE bestätigt, OWNER,
+    2026-09-03 — s. VERMERK 12, Abschnitte (b) bis (d)): DER `console.error` STEHT VOR DER
+    VERZWEIGUNG UND WIRD IN BEIDEN FÄLLEN GESCHRIEBEN.** Ein erneuerbarer Zugang wird
+    erneuert **UND** erzeugt die Zeile. Was die Fälle trennt, ist allein der `reason`.
+    **DREI URSACHEN STATT EINER, und sie sind verschieden schwer:**
+    · **`access_token_expired` — DIE RETTUNG GREIFT.** Ein NORMALVORGANG. Er tritt je
+      Projekt und Stunde höchstens einmal auf, nicht mehr je Besucher; **das ist die
+      Verbesserung, und sie ist real.**
+    · **`refresh_token_expired` — ECHTER AUSFALL**, den kein Code behebt. Er verlangt eine
+      Neu-Autorisierung durch den Kunden und bleibt bis dahin bestehen.
+    · **DER BESTÄTIGUNGS-BEACON ERZEUGT SIE AUCH IM ERFOLGSFALL.** Er durchläuft den
+      Resolver, sieht den alten Token und kehrt VOR dem Forward-Zweig zurück — er rettet
+      nicht. **Ein Conversion-Beacon-PAAR hinterlässt damit auch bei geglückter Rettung
+      eine Fehlerzeile.** ABLEITUNG aus dem Kontrollfluss; am Log ist nicht entscheidbar,
+      welche der zwei Zeilen um 16:47:07 von ihm stammte.
+    **WAS SICH NICHT ÄNDERT UND WAS SCHLIMMER GEWORDEN IST:** Die Zeile ist **seltener**
+    geworden — sie hängt nicht mehr an jedem Besucher einer abgelaufenen Stunde.
+    **UNGEDROSSELT IST SIE WEITERHIN**, und der Fall, in dem sie es am teuersten ist, ist
+    **derselbe geblieben**: ein Ziel mit lebender Uhr 2 und dauerhaft scheiternder
+    Erneuerung schreibt sie je Beacon — und ruft dabei zusätzlich je Beacon den Anbieter.
+    **DIE ZWEITE RICHTUNG DES EINTRAGS — die Live-Test-Achse — HAT SICH DAMIT VERSCHOBEN:**
+    Die Zeile ist **nicht mehr die Signatur des Bruchs**, sie ist ab jetzt die Signatur
+    **eines von drei Zuständen**. **Wer mit ihr misst, misst die Anwesenheit eines
+    Wortes, nicht mehr die eines Defekts.** Der Live-Nachweis der Scheibe 1b-2a ist genau
+    deshalb NICHT über sie geführt worden, sondern über den FOLGENDEN Beacon (VERMERK 12,
+    Abschnitt (c)).
+    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN TRIGGER STEHT WÖRTLICH
+    WIE ZUVOR. KEINE EMPFEHLUNG** — weder zur Drosselung noch dazu, ob die `projectId`
+    hineingehörte.
+    **DIE MEHRDEUTIGKEIT SELBST IST EIN EIGENER POSTEN GEWORDEN**, weil sie eine andere
+    Frage stellt als dieser Eintrag: nicht "wie oft", sondern "was bedeutet sie".
+    PROVENIENZ: der Code-Befund GEMESSEN (CC, 2026-09-03); die drei Ursachen sind eine
+    **ABLEITUNG** aus dem Kontrollfluss, gestützt auf die Live-Beobachtungen vom
+    2026-09-03 (OWNER). **Keine Messung der Häufigkeit** — sie ist nicht erhoben.
+
 43. **"STUMM" GILT FÜR DIE OBERFLÄCHE, NICHT FÜR DEN BETRIEB.** Diese Datei sagt an ZWEI
     Stellen, der Ausfall nach Ablauf des Zugangsdatums sei "in ihrer stummen Form" —
     Festlegung (4) des Zuschnitts der Scheibe 4 und VERMERK 10, Abschnitt (g). **BEIDE
@@ -5934,6 +6383,74 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     `*.ts` und `*.tsx`, binärsicher, mit Positivkontrolle über die 22 `11.1c`-Treffer).
     Dass die Kollision heute folgenlos ist, ist eine ABLEITUNG aus dem Sprachgebrauch, keine
     zweite Messung.
+
+48. **DIE FEHLERZEILE IST MEHRDEUTIG GEWORDEN — DERSELBE WORTLAUT UND DIESELBE LOG-EBENE
+    TRAGEN JETZT ZWEI ZUSTÄNDE.**
+    **GEMESSEN am Code (CC, 2026-09-03), LIVE bestätigt (OWNER, 2026-09-03):**
+    `usableTokenFromRow` (src/lib/capi/token.ts) schreibt bei toter Uhr 1 unverändert
+    `console.error("[capi/resolve] secret unusable", …)`. **Der Aufruf steht VOR der
+    Verzweigung und wird in BEIDEN Fällen geschrieben;** was sie trennt, ist allein der
+    `reason`:
+    · **`access_token_expired` IST EIN NORMALVORGANG.** Uhr 2 lebt, das Ziel landet in
+      `renewable`, **die Rettung greift** — und die Conversion geht hinaus.
+    · **`refresh_token_expired` IST EIN ECHTER AUSFALL.** Uhr 2 ist überschritten, es gibt
+      keinen Weg zurück ausser einer **Neu-Autorisierung durch den Kunden**. **KEIN CODE
+      BEHEBT DAS.**
+    **DIE SCHEIBE HAT DIE ZEILE SELTENER GEMACHT UND IHRE BEDEUTUNG MEHRDEUTIG.** Das ist
+    kein Widerspruch, sondern der ganze Posten: Vor 1b-2a bezeichnete sie **nur** den
+    Bruch, und `console.error` war dafür die richtige Ebene. **Jetzt bezeichnet sie ihn in
+    der Hälfte der Fälle** — in der anderen Hälfte bezeichnet sie einen Vorgang, der
+    funktioniert hat.
+    **DER SCHADEN IST EINE GEWÖHNUNG, KEIN DEFEKT — und darin liegt seine Tücke:** Wer die
+    Zeile regelmässig sieht und regelmässig feststellt, dass alles läuft, hört auf, den
+    `reason` zu lesen. **Dann steht der echte Ausfall im selben Gewand da wie der
+    Normalvorgang.**
+    **EINE DRITTE QUELLE KOMMT DAZU UND MACHT DIE GEWÖHNUNG WAHRSCHEINLICHER:** Der
+    Bestätigungs-Beacon erzeugt die Zeile **auch im Erfolgsfall** (VERMERK 12, Abschnitt
+    (d)) — ein Conversion-Beacon-Paar hinterlässt sie also selbst dann, wenn die Rettung
+    geglückt ist.
+    **KEINE EMPFEHLUNG zur Log-Ebene oder zum Wortlaut.** Weder eine Herabstufung des
+    Normalfalls auf `console.info` noch eine Umbenennung noch eine zweite Zeile ist hier
+    vorgeschlagen — jede davon berührt den meistgetroffenen Pfad der Plattform und ist eine
+    eigene Entscheidung.
+    **DIE ABGRENZUNG ZU VORRATS-EINTRAG 42 GEHÖRT DAZU, sonst liest die nächste Runde zwei
+    Fassungen derselben Sache:** Jener fragt **WIE OFT** die Zeile entsteht (ungedrosselt,
+    je Besucher) und führt sie als Live-Test-Achse. **Dieser fragt, WAS SIE BEDEUTET.**
+    Zwei verschiedene Fragen an derselben Zeile; 42 trägt seit dem 2026-09-03 einen
+    Vermerk, der die Verschiebung seiner zweiten Richtung festhält.
+    GEMELDET 2026-09-03, NICHT GEBAUT.
+    TRIGGER, wörtlich vom Owner: **sobald Logs überflogen statt gelesen werden** — dann
+    wird aus einer harmlosen Gewöhnung eine übersehene Neu-Autorisierung.
+    PROVENIENZ: **OWNER-BEOBACHTUNG und ARCHITEKTEN-EINORDNUNG 2026-09-03**, am Code
+    bestätigt (CC, 2026-09-03). Die Häufigkeit der beiden Fälle ist **nicht erhoben**.
+
+49. **DIE BENENNUNG EINES TESTLAUFS IST WEITER ALS DIE SACHE — "PageView rettet nicht,
+    sorgt aber vor".**
+    Der Lauf **H7** in `src/lib/capi/ingest.refresh.test.ts` trägt diesen Namen. **DER LAUF
+    SELBST IST RICHTIG** und misst, was er messen soll: Ein nicht forwardbares Ereignis löst
+    **keine** Rettung aus, wohl aber die Vorsorge.
+    **SEIN NAME BEHAUPTET MEHR, ALS BEI TOTEM TOKEN GESCHIEHT.** "Erneuerbar, tot" landet in
+    `rettbar`, und `rettbar` wird **ausschliesslich innerhalb der Forward-Wache**
+    abgearbeitet — also hinter `isForwardable`. **Ein Projekt, das nur Pageviews erzeugt,
+    wird weder gerettet noch vorgesorgt**; vorgesorgt wird **nur im Vorlauf-Band eines
+    lebenden Zugangsdatums**. Der Name legt eine Vorsorge nahe, die in genau dem Fall
+    ausbleibt, den der Lauf im Titel führt.
+    **ES IST KEIN DEFEKT, UND DER GRUND GEHÖRT DAZU, sonst wird der Eintrag grösser gelesen
+    als er ist:** Es steht dabei **keine Conversion auf dem Spiel** — ein Pageview forwardet
+    ohnehin nicht —, und **die erste Conversion rettet**. Der Zustand kostet nichts, was
+    jemand vermissen könnte. **Volltext der Einordnung: VERMERK 12, Abschnitt (d).**
+    **WARUM DAS ÜBERHAUPT EIN POSTEN IST:** Ein Testname wird gelesen, wenn niemand den
+    Testkörper liest — beim Überfliegen einer Suite, beim Suchen nach Abdeckung, beim
+    Streichen vermeintlich redundanter Läufe. **Eine zu weite Selbstbeschreibung lädt dazu
+    ein, eine Achse für gedeckt zu halten und keinen Test dafür zu schreiben**
+    (docs/immer-beachten.md, "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL", die
+    vierte Weise: der Testkommentar behauptet eine Garantie, die sein Test nicht deckt).
+    **HIER IST ES DER NAME STATT DES KOMMENTARS — dieselbe Achse, eine Stelle davor.**
+    GEMELDET, NICHT GEBAUT. **KEINE EMPFEHLUNG**, wie der Lauf heissen sollte, und
+    ausdrücklich keine, den Zuschnitt zu ändern.
+    TRIGGER: die nächste Arbeit an `src/lib/capi/ingest.refresh.test.ts`.
+    PROVENIENZ: GEMESSEN am Code (CC, 2026-09-03); die Einordnung ist eine
+    ARCHITEKTEN-BEOBACHTUNG desselben Tages.
 
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT

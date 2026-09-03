@@ -65,6 +65,7 @@ docs/immer-beachten.md.
 · Die Konto-Kennungen bekommen ihre Eingabe — Scheibe 2 des Schnitts der Phase 11.2
 · Der Transport — Scheibe 4 des Schnitts der Phase 11.2
 · Die Klammer um die Erneuerung — Schritt 1b-1 der Scheibe 1b des Schnitts der Phase 11.2
+· Die Rettung am Beacon — Scheibe 1b-2a des Schritts 1b-2 der Scheibe 1b
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -2019,6 +2020,8 @@ zwei Fassungen liefen auseinander.
 BINDEN. WELCHE AN WELCHEM SCHRITT HÄNGT, JE EINZELN:**
 · **(i) DIE AUSLÖSER-FREQUENZ DER PLATTFORM BINDET 1b-2.** 1b-1 fragt nicht nach einem Takt
   und löst sie nicht ein.
+  ZEIGER 2026-09-03: (i) ist gegenstandslos geworden — der Vermerk steht am Ende jener
+  Vorbedingung.
 · **(v) DIE ERREICHBARKEIT FÜR EINEN MASCHINELLEN AUFRUFER BINDET EBENFALLS 1b-2** — und
   zwar nur, soweit dessen Takt von AUSSEN kommt. 1b-1 lässt die Beweis-Route unverändert
   hinter Sitzung und Eigentums-Gate.
@@ -2031,6 +2034,27 @@ BINDEN. WELCHE AN WELCHEM SCHRITT HÄNGT, JE EINZELN:**
   Wortlaut tut: Der Statuswechsel auf "In Produktion" ist eine Arbeit am Anbieter-Konto und
   keine am Code.
 **WER AUS "1b-1 IST GESCHNITTEN" LIEST, DIESER ABSCHNITT SEI ERLEDIGT, LIEST IHN FALSCH.**
+
+**NACHTRAG 2026-09-03 — 1b-2 IST SEIT HEUTE ZUR HÄLFTE GESCHNITTEN. DER SATZ "1b-2 IST NICHT
+GESCHNITTEN" WEITER OBEN BLEIBT WÖRTLICH STEHEN und ist als Aussage über seinen Zeitpunkt
+richtig; dieser Nachtrag tritt DANEBEN.**
+**DER TAKT WIRD IN ZWEI SCHEIBEN GEBAUT: 1b-2a (die Rettung) UND 1b-2b (der Riegel).**
+**1b-2a IST GESCHNITTEN, 1b-2b NICHT.** Damit ist 1b-2 weder offen noch erledigt, sondern
+halb — und **genau diese Lage hat in dieser Datei bisher keinen Namen gehabt.**
+**WO DER ZUSCHNITT STEHT:** im Abschnitt "Die Rettung am Beacon — Scheibe 1b-2a des Schritts
+1b-2 der Scheibe 1b", unmittelbar vor den abgeschlossenen Scheiben-Vermerken. **HIER STEHT
+KEIN VOLLTEXT UND KEINE ZUSAMMENFASSUNG SEINES INHALTS** — zwei Fassungen liefen
+auseinander.
+**ES ENTSTEHT KEINE NEUE NUMMER NEBEN 1b:** 1b-2a und 1b-2b sind Scheiben INNERHALB des
+Schritts 1b-2, keine dritten Schritte. **Der Satz "1b entsteht in ZWEI SCHRITTEN" am Ende der
+bindenden Entscheidung (7) bleibt damit wörtlich wahr**, und die dortige Zeigerzeile führt
+hierher zurück.
+**WARUM DER VOLLE NACHTRAG HIER STEHT UND NICHT DORT:** Dieser Abschnitt ist der
+meistgelesene der beiden Orte — er ist das Pflicht-Gate jedes 1b-Zuschnitts. Eine
+Doppelfassung an beiden Stellen liefe auseinander; die Entscheidung (7) trägt deshalb nur
+einen Zeiger.
+PROVENIENZ: ARCHITEKTEN-FESTLEGUNG 2026-09-03 auf Owner-Entscheidung desselben Tages. Keine
+Messung.
 
 **DIESELBE ÜBERHOLTE ANGABE STEHT NOCH EINMAL IM ERSTEN ABSATZ DARUNTER** ("SEIN ZUSCHNITT
 IST OFFEN"). **SIE BLEIBT EBENFALLS WÖRTLICH STEHEN und ist als Aussage über den 2026-09-01
@@ -2152,6 +2176,51 @@ PROVENIENZ: **GELESEN 2026-09-02** (CC, Browser-Werkzeug, `textContent`), zwölf
 vier Supabase-Seiten, Umfang je Seite in den genannten Abschnitten. **KEINE Messung an einer
 Schnittstelle, keine am eigenen Dashboard, keine an dieser Datenbank.**
 
+**VERMERK 2026-09-03 — DIESE VORBEDINGUNG BINDET 1b-2 NICHT MEHR. SIE IST GEGENSTANDSLOS
+GEWORDEN, NICHT FALSCH. DER GESAMTE TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN,
+EINSCHLIESSLICH DER GEFAHRENEN PLATTFORM-LESUNG UND IHRER BEFUNDE.**
+**DER GRUND IN EINEM SATZ:** Der Takt ist VERKEHRSGETAKTET (OWNER-ENTSCHEIDUNG 2026-09-03) —
+die Erneuerung hängt am eintreffenden Beacon. **ES GIBT KEINEN ZEITPLAN, DESSEN FREQUENZ ZU
+KLÄREN WÄRE.** Die Frage hat damit keinen Adressaten mehr; sie ist nicht beantwortet und
+nicht widerlegt, sondern gegenstandslos.
+
+**WARUM DAS DER TEUERSTE DER DREI HEUTE NACHGEZOGENEN PUNKTE IST — DIESER SATZ TRÄGT DEN
+GANZEN VERMERK:** Der Absatz oben ordnet eine **ARBEIT** an. Er sagt, die abschnittsweise
+Anbieter-Lesung für diese Plattform-Klasse "STEHT KOMPLETT AUS", und er sagt ausdrücklich:
+"Wer weiss, dass es KEINE gibt, **plant die Lesung ein**." **WER IHN OHNE DIESEN VERMERK
+LIEST, PLANT SIE EIN UND STELLT ERST DANACH FEST, DASS DIE FRAGE KEINEN ADRESSATEN MEHR
+HAT.**
+**EINE GEGENSTANDSLOSE ARBEITSANWEISUNG SCHICKT DIE NÄCHSTE RUNDE LOS — SIE IST TEURER ALS
+EINE ÜBERHOLTE BESCHREIBUNG.** Eine Beschreibung liest man falsch; eine Anweisung führt man
+aus. Es ist dieselbe Klasse wie die fünfte überholte Angabe in VERMERK 10, Abschnitt (b)
+("DAS IST EINE ARBEITSANWEISUNG FÜR EINE ERLEDIGTE ARBEIT und die teuerste der fünf").
+
+**WAS AUSDRÜCKLICH BLEIBT UND NICHT GESTRICHEN WIRD — DIE PLATTFORM-LESUNG VOM 2026-09-02
+SAMT IHREN BEFUNDEN:** die zwei Spiegelstriche wenige Zeilen darüber (Vercel · Supabase), die
+drei Eigenschaften, die einen Zuschnitt binden, und die Zeiger nach
+docs/plattform-befunde.md. **HIER STEHT KEINE ZAHL UND KEIN BEFUND IM WORTLAUT**, und das ist
+Absicht: Sie stehen im selben Abschnitt darüber und im Volltext in docs/plattform-befunde.md
+— **eine dritte Fassung liefe neben beiden auseinander.**
+**SIE ÜBERLEBEN DIE TAKT-WAHL, und das ist der Grund für ihr Stehenbleiben:** Sobald
+IRGENDETWAS in diesem Projekt einen Zeitplan braucht — gleich für welchen Gegenstand —, wird
+genau das wieder gebraucht. **Die Lesung ein zweites Mal zu fahren wäre der Preis für eine
+Streichung, die nichts einbringt.**
+
+**DIE BEDINGUNG, UNTER DER (i) WIEDER BINDET:** der erste Zuschnitt in diesem Projekt, der
+einen **ZEITGETAKTETEN** Auslöser vorsieht — **gleich für welchen Gegenstand**, nicht nur für
+die Erneuerung.
+
+**VORBEDINGUNG (v) IST DAVON NICHT BETROFFEN, und das gehört hierher, weil beide an DERSELBEN
+Wahl hängen und nur EINE von ihr entwertet wird:** Sie trägt ihre Einschränkung selbst — "und
+zwar nur, soweit dessen Takt von AUSSEN kommt" (s. den Zeiger-Block am Kopf dieses
+Abschnitts) —, und der Takt kommt **nicht** von aussen. Ein verkehrsgetakteter Auslöser läuft
+im selben Prozess und stellt keine Anfrage; die Umleitung aus `updateSession` trifft ihn
+nicht. **(v) bleibt damit inhaltlich richtig und wird durch die Wahl schlicht nicht ausgelöst
+— das ist etwas anderes als gegenstandslos.**
+
+PROVENIENZ: ARCHITEKTEN-FESTLEGUNG 2026-09-03 auf Owner-Entscheidung desselben Tages. Keine
+Messung.
+
 **(ii) VORRATS-EINTRAG 9 WIRD UNTER EINEM AUTOMATISMUS SCHARF.** "KEIN
 NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG" ist heute harmlos, weil ein Mensch klickt; sein
 eigener TRIGGER nennt "ein Auslöser (Scheibe 1b), der die Funktion nachweislich nebenläufig
@@ -2241,6 +2310,30 @@ er, damit der nächste Zuschnitt ihn an EINER Stelle findet statt in vier Dateie
 POSTEN BRAUCHT, LIEST IHN DORT** — eine zweite Fassung liefe auseinander.
 · **DIE AUSLÖSER-FREQUENZ DER PLATTFORM.** Vorbedingung (i) in diesem Abschnitt; dort steht
   auch, dass es zu ihr KEINE abgelegte Anbieter-Lesung gibt.
+  **VERMERK 2026-09-03 — DIESER POSTEN IST IN BEIDEN HÄLFTEN ÜBERHOLT, UND ZWAR SEIT ZWEI
+  VERSCHIEDENEN TAGEN. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK
+  TRITT DANEBEN.**
+  **ERSTE HÄLFTE — DER POSTEN SELBST, ÜBERHOLT SEIT HEUTE:** Der Takt ist verkehrsgetaktet
+  (OWNER-ENTSCHEIDUNG 2026-09-03), es gibt keinen Zeitplan, dessen Frequenz zu klären wäre.
+  Die Frage ist damit **gegenstandslos** — nicht beantwortet und nicht widerlegt. Der
+  Volltext samt der Bedingung, unter der sie wieder bindet, steht im Vermerk am Ende von
+  Vorbedingung (i).
+  **ZWEITE HÄLFTE — DER NEBENSATZ, FALSCH SEIT DEM 2026-09-02:** "dort steht auch, dass es zu
+  ihr KEINE abgelegte Anbieter-Lesung gibt" traf auf den Tag zu, an dem diese Liste entstand,
+  und **wurde am SELBEN Tag von der gefahrenen Lesung überholt** (zwölf Vercel- und vier
+  Supabase-Seiten, GELESEN 2026-09-02). Der Nachtrag dazu steht seither an (i); **diese Liste
+  ist damals nicht mitgezogen worden.**
+  **WARUM BEIDE HÄLFTEN IN EINEM VERMERK STEHEN UND NICHT NUR DIE ERSTE:** Wer nur die
+  überholte Frage auflöste, machte den Nebensatz zur Falle — der Posten sähe behandelt aus,
+  und die falsche Angabe stünde weiter da. Es ist genau der Fall, den
+  docs/immer-beachten.md unter "WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE
+  ZUR FALLE" führt.
+  **DER POSTEN WIRD NICHT GESTRICHEN UND NICHT UMFORMULIERT.** Die Liste sagt von sich
+  selbst, dass sie nichts Neues einführt und jeder Posten anderswo im Volltext steht — dann
+  gehört auch seine Auflösung dorthin und nicht hierher.
+  PROVENIENZ: die erste Hälfte eine ARCHITEKTEN-FESTLEGUNG 2026-09-03 auf Owner-Entscheidung
+  desselben Tages; dass die zweite seit dem 2026-09-02 falsch ist, ist **GEMESSEN am
+  Dateitext** (CC, 2026-09-03) — der Nachtrag an (i) und diese Zeile tragen dasselbe Datum.
 · **OB GOOGLE EIN VORHERIGES ZUGANGSDATUM BEI AUSSTELLUNG EINES NEUEN ENTWERTET.**
   Vorrats-Eintrag 9, ZWEITE Achse ("AUSSTELLUNGS- UND SCHREIBREIHENFOLGE KÖNNEN DIVERGIEREN")
   — dort ausdrücklich als UNGEMESSEN geführt; derselbe Sachverhalt steht als ACHSE 2 im
@@ -2378,6 +2471,8 @@ selben Prozess stellt gar keine Anfrage und läuft an ihr vorbei.
 **FOLGE: VORBEDINGUNG (v) SPERRT DIE ZEITGETAKTETE AUSLÖSER-FAMILIE UND DAMIT EINEN TEIL VON
 1b-2 — NICHT DIESEN SCHRITT.** Wer sie als Riegel vor 1b-1 liest, hält eine
 Bibliotheksfunktion für eine Route.
+ZEIGER 2026-09-03: Was diese Sperre nach der Takt-Wahl noch trifft, steht im Vermerk am Ende
+von Vorbedingung (i), Abschnitt "1b als Folgetask".
 
 **(3) `usableTokenFromRow` DECHIFFRIERT BEI JEDEM BEACON UND PRÜFT DIE UHR — GIBT DEN
 ZEITPUNKT ABER NICHT HERAUS.**
@@ -2453,6 +2548,253 @@ eine Klammer davor macht ihn nicht kleiner.
   der zeitgetakteten Familie** — ein verkehrsgetakteter Auslöser stellt sie gar nicht.
 **WAS DIESE LISTE NICHT IST: eine Reihenfolge, eine Auswahl, oder eine Aussage darüber,
 welcher Posten vor 1b-2 zwingend beantwortet sein muss.**
+
+## Die Rettung am Beacon — Scheibe 1b-2a des Schritts 1b-2 der Scheibe 1b
+
+**DIE NOMENKLATUR WIRD HIER EINMAL AUFGELÖST UND DANACH NICHT WIEDERHOLT:** **1b-2 IST DER
+TAKT** — der zweite der beiden Schritte, in die die Scheibe 1b zerlegt ist. **ER WIRD IN
+ZWEI SCHEIBEN GEBAUT: 1b-2a (die Rettung, DIESE hier) und 1b-2b (der Riegel).**
+**ES ENTSTEHT KEINE NEUE NUMMER NEBEN 1b.** Der Satz "1b entsteht in ZWEI SCHRITTEN"
+(Nachtrag am Ende der bindenden Entscheidung (7)) **bleibt damit wörtlich wahr und wird
+NICHT ein zweites Mal angefasst**: 1b-2a und 1b-2b sind Scheiben INNERHALB des Schritts
+1b-2, keine dritten Schritte. **ES GIBT WEITERHIN KEINE SCHEIBE 1c.**
+**DIE SUFFIX-DISZIPLIN AUS 1b-1 GILT UNVERÄNDERT UND WÄCHST UM EINE EBENE:** "1b" ohne
+Suffix meint das PAKET, "1b-2" den TAKT als ganzen, "1b-2a" und "1b-2b" die beiden
+Scheiben. **Ein Zitat ohne Suffix meint nie eine Hälfte.**
+
+**PROVENIENZ — GETRENNT GEFÜHRT, aus demselben Grund wie bei 1b-1:**
+· **OWNER-GO 2026-09-03** für den Zuschnitt dieser Scheibe, dazu der Maßstab unter "Warum
+  die Vorsorge die Rettung erst tragfähig macht".
+· **ARCHITEKTEN-FESTLEGUNG 2026-09-03:** die Benennung 1b-2a / 1b-2b und die Aussage, dass
+  daneben keine neue Nummer entsteht.
+· **PROVENIENZ DES ÜBRIGEN ABSCHNITTS, wo an der einzelnen Angabe nichts anderes steht:
+  ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO. Keine Messung.** Jede mit GEMESSEN
+  gekennzeichnete Angabe stammt aus der Aufklärungsrunde vom 2026-09-03 (CC, am Repo).
+
+### Was Scheibe 1b-2a ist
+
+**DER TAKT IST DER VERKEHR** (OWNER-ENTSCHEIDUNG 2026-09-03). Die Erneuerung hängt am
+Ingest-Pfad und an keinem Zeitplan: Ein eintreffender Beacon, dessen Zugangsdatum tot oder
+im Vorlauf ist, löst sie aus. **DAMIT IST DIE ZEITGETAKTETE AUSLÖSER-FAMILIE NICHT GEWÄHLT,
+SONDERN GAR NICHT MEHR IM SPIEL** — und mit ihr fallen die Fragen, die nur sie stellt: die
+Auslöser-Frequenz der Plattform, die Frage, welche Projekte fällig sind, und die
+Erreichbarkeit einer Route für einen maschinellen Aufrufer.
+**DIE ERSTE VON IHNEN IST EINE BENANNTE VORBEDINGUNG UND DAMIT GEGENSTANDSLOS GEWORDEN:
+(i) im Abschnitt "1b als Folgetask"** — der Vermerk dazu steht dort am Ende jener
+Vorbedingung, samt der Bedingung, unter der sie wieder bindet. **Hier steht nur der Zeiger;
+der Volltext bleibt an (i).**
+
+**DER TITEL WEICHT ABSICHTLICH VON DEM DER SCHEIBE 1b-1 AB** ("Die Klammer um die
+Erneuerung — Schritt 1b-1 …"): Zwei ähnlich gebaute `##`-Überschriften in DERSELBEN Datei
+machen jeden Such-Anker mehrdeutig, und der erste Treffer wäre systematisch der falsche
+(docs/immer-beachten.md, "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT
+VERZEICHNIS NICHT").
+
+**WAS SIE NICHT IST:** der Riegel. Der Nebenläufigkeits-Riegel ist **1b-2b**, und warum er
+eine eigene Scheibe sein DARF statt einer vergessenen Auflage, steht unten unter "Warum die
+Vorsorge die Rettung erst tragfähig macht" — es ist der Kern dieses Zuschnitts.
+
+### Die zwei Befunde, die diesen Zuschnitt tragen
+
+**GEMESSEN am Repo (CC, 2026-09-03).** Als Ort steht der SYMBOLNAME und nie eine
+Zeilennummer — Fortschreibungs-Regel dieser Datei.
+
+**(1) DER INGEST WARTET HEUTE SCHON VOR DER 204 AUF EXTERNE AUFRUFE.**
+`handleIngest` (src/lib/capi/ingest.ts) hält den Fan-Out unter `await Promise.allSettled`;
+die Adapter starten GLEICHZEITIG, jeder trägt seinen EIGENEN Deckel (drei Sekunden je
+Adapter), und **die 204 steht DAHINTER**. Der Kommentar an jener Stelle sagt es
+ausdrücklich: das `await` sei "kein Versehen", und wer es entferne, baue eine eigene,
+spätere Änderung unangekündigt mit ein.
+**FOLGE: EINE ERNEUERUNG IM ANFRAGE-WEG IST KEINE NEUE KLASSE VON EINGRIFF.** Sie fügt dem
+Pfad keine Eigenschaft hinzu, die er nicht schon hätte.
+**WAS BLEIBT, UND ES GEHÖRT IN DENSELBEN ATEMZUG:** Sie liegt **SERIELL** zum Fan-Out, nicht
+parallel — die Erneuerung muss durch sein, bevor der Adapter das Zugangsdatum bekommt.
+**Die Gesamtwartezeit ist damit Summe statt Maximum**, und das ist der einzige Punkt, an dem
+dieser Eingriff die bestehende Anordnung verlässt.
+**DIESER BEFUND HAT EINE ARCHITEKTEN-EINSCHÄTZUNG WIDERLEGT, und das gehört hinein, sonst
+sieht der Zuschnitt aus, als sei er immer so gedacht gewesen:** Der Preis eines Eingriffs im
+Anfrage-Weg war **zu hoch angesetzt** worden — angenommen war ein Pfad, der heute auf nichts
+Externes wartet. Er wartet.
+
+**(2) BEIDE UHREN LIEGEN IN DERSELBEN NUTZLAST, UND SIE LIEGEN DORT SCHON ENTSCHLÜSSELT.**
+`usableTokenFromRow` (src/lib/capi/token.ts, modul-privat) ist **der einzige Ort im
+Resolver, an dem eine `OAuthPayload` existiert**, und sie hat **genau EINEN Aufrufer**
+(`getCapiConfigByTrackingKey`). Dort liegen `accessTokenExpiresAt` UND
+`refreshTokenExpiresAt` nebeneinander vor. **Geprüft wird heute nur Uhr 1**
+(`hasUsableAccessToken`); **Uhr 2 wird auf diesem Pfad nie gelesen.**
+**FOLGE: "ERNEUERBAR" VON "ENDGÜLTIG TOT" ZU TRENNEN KOSTET KEINEN ZUSÄTZLICHEN NETZ- ODER
+DATENBANK-ZUGRIFF.** Die Angabe fällt ohnehin an; sie wird heute nur weggeworfen.
+**DAS IST DIE EINLÖSUNG DES DRITTEN BEFUNDS AUS 1b-1**, der genau das offenliess: "DIE
+INFORMATION, DIE EIN ZEITPLAN TEUER BESCHAFFEN MÜSSTE, FÄLLT DORT OHNEHIN AN. WAS DARAUS
+FOLGT, IST HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN … Der Befund gehört zum TAKT."
+
+### Der Gegenstand — vier Lagen statt zwei
+
+Heute kennt der Resolver je Zeile ZWEI Ausgänge: ein brauchbares Zugangsdatum oder `null`.
+**Diese Scheibe macht daraus VIER**, und je Lage geschieht etwas anderes:
+
+· **BRAUCHBAR** — wie heute. Kein Eingriff, kein Aufruf.
+· **ERNEUERBAR, ZUGANGSDATUM TOT** — `runRefresh` **IM ANFRAGE-WEG**, danach forwarden.
+  **Das ist der Fall, für den diese Scheibe gebaut wird.**
+· **ERNEUERBAR, IM VORLAUF** — `runRefresh` **NACH DER ANTWORT**. Das Zugangsdatum trägt
+  noch; der laufende Beacon wartet auf nichts.
+· **ENDGÜLTIG TOT** — `null`, wie heute. Kein Aufruf, keine Wiederholung.
+
+**"UHR 2 UNBEKANNT" GILT NIE ALS ABGELAUFEN.** Das ist **Festlegung 5 der Scheibe 1a**,
+ÜBERNOMMEN und nicht neu erfunden: Von zwei unbelegten Möglichkeiten wird die gewählt, deren
+Fehlgriff der billigere ist — ein überflüssiger Netzaufruf gegen einen
+Kunden-Autorisierungsfluss, den niemand gebraucht hätte. **Ein Zugangsdatum mit unbekannter
+zweiter Uhr landet damit in einer der beiden ERNEUERBAR-Lagen, nie in der vierten.**
+
+### Warum die Vorsorge die Rettung erst tragfähig macht
+
+**DIESER ABSCHNITT IST DER KERN DES ZUSCHNITTS UND NICHT EINE BEGRÜNDUNG NEBENBEI.**
+
+**OHNE DIE VORSORGE ERREICHT JEDES TRAFFICSTARKE PROJEKT STÜNDLICH DEN INLINE-FALL** — und
+dann laufen **alle gleichzeitig eintreffenden Beacons hinein**. Aus einem seltenen Fall
+würde ein regelmässiger, und der Nebenläufigkeits-Riegel wäre keine vertagte Frage mehr,
+sondern eine Vorbedingung.
+**MIT DER VORSORGE BLEIBT DER INLINE-FALL STRUKTURELL DEM PROJEKT VORBEHALTEN, DAS
+STUNDENLANGE LÜCKEN HAT** — also genau dem, bei dem kaum jemand gleichzeitig ankommt.
+**DIE NEBENLÄUFIGKEIT WIRD NICHT DURCH MASCHINERIE KLEINER, SONDERN DURCH DEN ZUSCHNITT.**
+Das ist der Grund, warum der Riegel eine EIGENE Scheibe sein DARF und keine vergessene
+Auflage ist: Er wird nicht verschoben, weil er unbequem wäre, sondern weil die Anordnung
+seinen Anwendungsfall selbst verkleinert.
+
+**DER MASSSTAB DAHINTER (OWNER, 2026-09-03), und er entscheidet die Lagen-Zuordnung oben:
+WER WENIG TRAFFIC HAT, BRAUCHT JEDE CONVERSION.** Ein Projekt mit EINER Conversion pro Tag
+hat ein totes Zugangsdatum, wenn sein Beacon eintrifft — **und dieser Beacon IST die
+Conversion.** Ihn nach der Antwort zu erneuern hiesse, ihn zu verlieren und beim nächsten
+Mal bereit zu sein, das aber erst in vierundzwanzig Stunden. **Deshalb steht der tote Fall
+INLINE und nicht im Hintergrund.**
+
+### Das dritte Stück — der Wurf bei der Registrierung
+
+**ES IST KEINE ZUGABE.** Der Wurf bei der `after()`-**REGISTRIERUNG** wird abgefangen — für
+die NEUE Registrierung dieser Scheibe **UND** für die bestehende in `schedulePersist`.
+
+**DER BEFUND (GEMESSEN am Code, CC, 2026-09-03; Vorrats-Eintrag 35):** Der Kommentarkopf von
+`schedulePersist` (src/lib/capi/ingest.ts) behauptet, sein `try/catch` sei "die zweite
+Schicht, falls die Registrierung/der Aufruf selbst wirft". **Das `try` liegt IM Callback**;
+der `after()`-Aufruf steht **ungeschützt**, und `handleIngest` trägt an seinen beiden
+Aufrufstellen **kein umschliessendes `try`**. **Ein Wurf dort verlässt den Handler und
+BRICHT DAS 204-CONTAINMENT.**
+**KEIN TEST DECKT ES:** Alle sechs `ingest.*.test.ts` ersetzen `after` mit einer Attrappe,
+die die Callbacks nur einsammelt — **dort kann die Registrierung gar nicht werfen.**
+
+**WARUM ES IN DIESE SCHEIBE GEHÖRT UND NICHT IN EINE EIGENE:** Wir hängen eine **ZWEITE**
+Registrierung an dieselbe Stelle. **Eine Scheibe, die eine bekannte Lücke in genau dem
+Mechanismus stehen lässt, den sie gerade benutzt, hat den Scope-Schutz gegen die Sache
+gewendet, die er schützen soll.**
+
+**DER KOMMENTARKOPF WIRD IM SELBEN ZUG RICHTIGGESTELLT.** Er ist heute eine BEHAUPTUNG über
+eine Deckung, die es nicht gibt (docs/immer-beachten.md, "EIN KOMMENTAR IST EINE BEHAUPTUNG,
+KEINE EIGENSCHAFT"). Wer nur den Schutz baut und den Kopf stehen lässt, hat danach einen
+richtigen Satz an einer Stelle, an der er vorher falsch war — und keine Spur davon, dass er
+es je war.
+
+### Was diese Scheibe ausdrücklich nicht baut, je mit Grund
+
+· **DER RIEGEL UND JEDE MIGRATION — SCHEIBE 1b-2b.**
+  **TRIGGER: der erste FREMDE Traffic auf ein Projekt mit Google-Ziel, spätestens vor einem
+  Beta-Launch.**
+  **EINE AUFLAGE MUSS MIT, und ohne sie beginnt jene Scheibe mit einer Lücke, die sie für
+  geschlossen hält:** Vor 1b-2b sind **ZWEI** Dinge nachzuholen — die **Anbieter-Lesung**
+  nach docs/db-regeln.md ("WER DB-CODE ANFASST, LEGT DIE GELESENE ANBIETER-DOKU ALS
+  PROVENIENZ VOR"), und die Frage, **ob PostgREST bei einer bedingten Schreibung verlässlich
+  meldet, ob eine Zeile getroffen wurde**. **BEIDES FEHLT HEUTE** — GEMESSEN am Repo (CC,
+  2026-09-03): Im Produktivcode gibt es **kein Muster für eine Bedingungs-Schreibung** (das
+  einzige `update` mit Rückgabe filtert auf Identität und Eigentum, nicht auf einen
+  ZUSTAND), und docs/plattform-befunde.md sagt **zum Schreibverhalten von PostgREST nichts**
+  (Nicht-Treffer mit benannter Reichweite).
+  **EIN KANDIDAT, DER DIESE FRAGE UMGEHT — ALS KANDIDAT UND NICHT ALS WAHL:** ein Anspruch
+  über einen **EINDEUTIGKEITS-BRUCH** statt über eine Bedingungs-Schreibung. Es ist dieselbe
+  Figur wie bei `assignDomainLabel` (src/app/projects/actions.ts) und `persistDomainRow`
+  (src/lib/domains/register.ts): Der Verlierer bekommt einen **FEHLERCODE** und keinen
+  Zeilenzähler — eine Auskunft, die PostgREST nicht erst zusagen muss. **ENTSCHIEDEN IST DAS
+  NICHT.**
+· **VORRATS-EINTRAG 42, DIE DROSSELUNG.** **Nach dieser Scheibe bleibt als Ursache der
+  Fehlerzeile nur noch das TOTE ERNEUERUNGS-TOKEN — und das behebt kein Code.** Der Eintrag
+  wird damit nicht kleiner, sondern wechselt seinen Gegenstand; sein Vermerk hält es fest.
+· **VORRATS-EINTRAG 44** (kein Bedienelement an der Beweis-Route) — unberührt.
+· **VORBEDINGUNG (iv), DIE SIEBEN-TAGE-FRIST.** Arbeit am Anbieter-Konto, kein Code; sie
+  steht neben dieser Scheibe wie neben allen davor.
+· **JEDE ÄNDERUNG AN `runRefresh`, `token-refresh.ts` UND `google-refresh.ts`.** Die Klammer
+  aus 1b-1 wird GERUFEN, nicht angefasst.
+· **JEDE ERWEITERUNG DES RUMPFES DER BEWEIS-ROUTE.** Sie bleibt, was sie ist.
+
+### Die geschützten Invarianten dieser Scheibe
+
+**(I-1) DAS 204-CONTAINMENT GILT IN JEDEM NEUEN PFAD, AUCH IM INLINE-FALL.** Eine
+Erneuerung, die wirft, darf die 204 nicht kippen. Der Grund steht in
+docs/immer-beachten.md: Ein 500 oder ein Body leakte den Gültigkeitszustand des
+`trackingKey` an einen anonymen Aufrufer.
+**(I-2) DER KILL-SWITCH BLEIBT EIN EIGENER ZWEIG VOR PERSIST UND FORWARD.** **Ein gesperrtes
+Projekt erneuert nichts** — weder inline noch im Hintergrund.
+**(I-3) DAS ERNEUERUNGS-TOKEN VERLÄSST DEN RESOLVER NICHT.** **Der Rückgabetyp ist der
+Mechanismus, nicht die Zusage:** Wer ihn erweitert, muss DREI Typen anfassen, und genau das
+ist der Schutz.
+**(I-4) KEINE `projectId` IN DEN LOGZEILEN DES RESOLVERS.** Dieser Pfad läuft bei JEDEM
+Besucher JEDER Kundenseite; eine Projekt-Kennung je Beacon wäre eine Datenerhebung, die
+niemand beschlossen hat.
+**(I-5) FÜR DIE VIER KLARTEXT-ZIELE IST DIE ÄNDERUNG WIRKUNGSLOS.** Dort existiert **keine
+Nutzlast und keine Uhr** — meta, pinterest, tiktok und linkedin tragen ihr Geheimnis in der
+Klartext-Spalte und laufen an der Entschlüsselung vorbei.
+**(I-6) KEIN NEBENLÄUFIGKEITS-RIEGEL IN DIESER SCHEIBE.** Ein "kleiner Riegel nebenbei" ist
+ein **VERSTOSS, KEIN BONUS**.
+
+### Die Test-Falle, die der Plan behandeln muss
+
+**ACHTZEHN LÄUFE PINNEN DAS AUFLÖSUNGS-OBJEKT MIT `toEqual`** (src/lib/capi/token.test.ts) —
+und **`toEqual` IGNORIERT einen Schlüssel mit dem Wert `undefined`**, auf jeder Ebene
+(GEMESSEN 2026-08-18, festgehalten am Code in capi/token.ts).
+**DIE FOLGE, UND SIE IST DIE FALLE: Ein OPTIONALES Feld, das im Normalfall leer bleibt,
+ginge STILL durch.** Der Bestand bliebe grün, und niemand hätte einen Anlass hinzusehen.
+**WIRD DER RÜCKGABEWERT ERWEITERT, WERDEN DIESE LÄUFE BEWUSST NACHGEZOGEN. EIN GRÜNER
+BESTAND IST HIER KEIN BELEG.**
+**WAS AUSSERDEM NICHT ROT WIRD:** Zehn Testdateien MOCKEN `@/lib/capi/token` — sie bestimmen
+die Form selbst und bleiben bei jeder Erweiterung grün.
+
+### Zwei Entwurfsfragen, vorgelegt und nicht entschieden
+
+**(1) MELDET DER RESOLVER NUR, UND DER HANDLER HANDELT — ODER ERNEUERT DER RESOLVER SELBST?**
+**GEGEN die zweite Form:** Sie macht den **LESEPFAD ZUM SCHREIBPFAD**. **FÜR sie:**
+`refreshAccessToken` gibt das Zugangsdatum bewusst **nicht** zurück (es trägt nur die zwei
+Ablaufzeitpunkte) — der Handler müsste es sonst nachlesen, und das wäre eine dritte
+Datenbank-Runde auf dem meistgetroffenen Pfad der Plattform. **ENTSCHIEDEN WIRD AM PLAN.**
+
+**(2) BEKOMMT DER INLINE-WEG DENSELBEN DECKEL WIE DER HINTERGRUND-WEG?**
+`runRefresh` versucht bis zu **dreimal**, je bis an den Deckel des Erneuerungs-Aufrufs —
+**inline sind das im schlechtesten Fall rund 24 Sekunden VOR dem Fan-Out**.
+**DER PREIS IST DER CONCURRENCY-SLOT, NICHT DIE WARTEZEIT DES BESUCHERS** — ein
+`keepalive`-Beacon blockiert weder Rendering noch Interaktion (CLAUDE.md,
+"/API/E-SCHLANKHEIT", Absatz "WO DER PREIS LIEGT").
+**DIE ANTWORT DARF KEINE ZWEITE KONSTANTE ERFINDEN.** **ENTSCHIEDEN WIRD AM PLAN.**
+
+### Die Beweis-Achse der Scheibe 1b-2a
+
+**ZUM ERSTEN MAL IN DIESER PHASE EIN ECHTER LIVE-TEST:** verbinden, **eine Stunde warten**,
+Beacon auslösen — und **die Conversion muss bei Google ankommen**. Kein Ersatz, keine
+Attrappe, kein Handaufruf.
+**VORRATS-EINTRAG 42 LIEFERT DIE BEOBACHTBARE SIGNATUR DES BRUCHS:** die Fehlerzeile
+`[capi/resolve] secret unusable` mit dem Grund `access_token_expired`. **Bleibt sie nach der
+Wartezeit aus und geht die Conversion hinaus, ist die Scheibe bewiesen; steht sie da, ist
+sie es nicht.**
+**DER TEST DAUERT ÜBER EINE STUNDE UND IST KEIN NEBENBEI. DAS GEHÖRT IN DIE ANLEITUNG UND
+NICHT IN DEN RÜCKBLICK** — wer ihn zwischen zwei anderen Schritten einplant, fährt ihn
+verkürzt und misst dann den Fall, den es ohnehin schon gab.
+
+### Was diese Scheibe offen lässt
+
+· **DER RIEGEL — SCHEIBE 1b-2b**, samt der zwei nachzuholenden Vorarbeiten oben.
+· **OB GOOGLE EIN VORHERIGES ZUGANGSDATUM BEI AUSSTELLUNG EINES NEUEN ENTWERTET** —
+  Vorrats-Eintrag 9, ZWEITE Achse, **UNGEMESSEN**. **UNTER MEHRFACHER ERNEUERUNG WIRD SIE
+  SCHÄRFER**, und deshalb steht sie hier und nicht nur dort: Ein verkehrsgetakteter Auslöser
+  erneuert häufiger als ein Mensch, der eine Route drückt.
+· **WAS GOOGLE NACH ABLAUF DER SIEBEN-TAGE-FRIST ANTWORTET** — Statuscode, Rumpfform, und ob
+  überhaupt `invalid_grant`. Ungemessen; der Zeiger steht in docs/ziel-befunde.md.
+**WAS DIESE LISTE NICHT IST: eine Reihenfolge, eine Auswahl, oder eine Aussage darüber,
+welcher Posten vor 1b-2b zwingend beantwortet sein muss.**
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -3995,6 +4337,9 @@ die ZAHL DER SCHRITTE.** Ein Stempel behauptete einen überholten Satz, und es g
   Geschwister-Namen wäre er FALSCH geworden, und diese Auskunft stünde danach nirgends mehr.
 PROVENIENZ: ARCHITEKTEN-FESTLEGUNG 2026-09-03, auf CC-Meldung derselben Runde. Keine
 Messung.
+ZEIGER 2026-09-03: 1b-2 ist inzwischen ZUR HÄLFTE geschnitten — 1b-2a steht, 1b-2b nicht.
+Der NACHTRAG dazu steht am Kopf von "1b als Folgetask" und wird hier NICHT verdoppelt: zwei
+Fassungen derselben Tatsache liefen auseinander.
 
 **(8) 'google' DARF ÜBER FORWARDER_BY_TARGET LAUFEN.**
 ENTSCHEIDUNG: Der Google-Transport bekommt KEINEN eigenen, parallelen Weg; er läuft
@@ -4504,6 +4849,34 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
    aus wie ein übersehener, nämlich wie nichts.
    PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO; die Zerlegung in zwei
    Schritte eine ARCHITEKTEN-FESTLEGUNG desselben Tages. Keine Messung.
+
+   **ZWEITER VERMERK 2026-09-03 — DER EINTRAG BLEIBT VERTAGT, ABER SEINE ZWEITE ACHSE WIRD
+   UNTER SCHEIBE 1b-2a SCHÄRFER. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN.**
+   **WARUM DAS AN DEN EINTRAG GEHÖRT UND NICHT NUR IN DEN ZUSCHNITT:** Wer diesen Posten in
+   einem Jahr aufschlägt, liest hier zuerst — und der Vermerk oben sagt "geprüft und
+   begründet vertagt". Ohne diesen Zusatz liest er eine Vertagung, deren Gewicht sich
+   seither geändert hat, als unveränderten Stand.
+   **DIE ERSTE ACHSE (DIE ROTATION) IST UNBERÜHRT:** Google rotiert das Erneuerungs-Token
+   nicht (GEMESSEN 2026-08-28, OWNER, Messung C), und daran ändert ein häufigerer Aufruf
+   nichts.
+   **DIE ZWEITE ACHSE (AUSSTELLUNGS- UND SCHREIBREIHENFOLGE) WIRD SCHÄRFER, UND ZWAR AUS
+   EINEM BENENNBAREN GRUND:** Sie ist eine Aussage über NEBENLÄUFIGE Läufe, und
+   Nebenläufigkeit war bisher nur durch zwei gleichzeitige Klicks eines Menschen
+   herstellbar. **EIN VERKEHRSGETAKTETER AUSLÖSER ERNEUERT HÄUFIGER ALS EIN MENSCH, DER EINE
+   ROUTE DRÜCKT** — und mehrere Beacons können denselben Moment treffen. **Was daran
+   UNGEMESSEN ist, bleibt ungemessen:** ob der Anbieter ein vorheriges Zugangsdatum bei
+   Ausstellung eines neuen entwertet. Nur die Wahrscheinlichkeit, dem Fall zu begegnen,
+   steigt.
+   **DER TRIGGER BLEIBT WÖRTLICH STEHEN, UND ER IST WEITERHIN NICHT EINGETRETEN:** 1b-2a
+   baut **KEINEN** Riegel (Invariante (I-6) jenes Zuschnitts), und "ein Auslöser, der die
+   Funktion nachweislich nebenläufig ruft" ist mit ihr noch nicht nachgewiesen, sondern
+   nur wahrscheinlicher geworden. **DER RIEGEL IST SCHEIBE 1b-2b**, und ihr eigener Trigger
+   steht dort.
+   **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT. KEINE EMPFEHLUNG**, welche
+   Form ein Riegel bekäme.
+   PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO. Dass die zweite Achse unter
+   häufigerer Erneuerung schärfer wird, ist eine **ABLEITUNG** aus dem gewählten Takt,
+   **keine Messung** — es ist kein nebenläufiger Lauf beobachtet worden.
 
 10. **`retry` HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN.** DREI Ausgänge
     der Erneuerungs-Funktion können DAUERHAFT sein und trotzdem `retry` melden:
@@ -5100,6 +5473,26 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     vorgeschlagen.
     GEMELDET 2026-09-01, NICHT GEBAUT.
 
+    **VERMERK 2026-09-03 — DIESER EINTRAG WIRD IN SCHEIBE 1b-2a AUFGENOMMEN. DER TEXT
+    DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT DANEBEN.**
+    Der Zuschnitt steht (s. den Abschnitt "Die Rettung am Beacon — Scheibe 1b-2a des
+    Schritts 1b-2 der Scheibe 1b") und führt ihn dort als **DRITTES STÜCK** — sowohl der
+    Schutz der Registrierung als auch die Richtigstellung des Kommentarkopfes.
+    **DER GRUND FÜR DIE AUFNAHME IST NICHT, DASS DER POSTEN REIF WÄRE, SONDERN WO ER
+    LIEGT:** 1b-2a hängt eine **ZWEITE** `after()`-Registrierung an dieselbe Stelle. **Eine
+    Scheibe, die eine bekannte Lücke in genau dem Mechanismus stehen lässt, den sie gerade
+    benutzt, hat den Scope-Schutz gegen die Sache gewendet, die er schützen soll.**
+    **WAS DAMIT ZUR AUFLAGE WIRD:** Der Schutz gilt der NEUEN Registrierung **UND** der
+    bestehenden in `schedulePersist` — eine Scheibe, die nur ihre eigene absichert, liesse
+    die ältere Lücke als die unauffälligere zurück.
+    **DER EINTRAG WIRD NICHT ABGEHAKT.** Er ist gemeldet und aufgenommen, nicht gebaut; sein
+    Satz "KEIN VORSCHLAG" bleibt für den Zeitraum bis zum Bau richtig.
+    **WAS SEIN "Ob der Fall je eintritt, ist nicht erhoben" ANGEHT:** Es bleibt unerhoben,
+    und die Aufnahme ändert daran nichts. Gebaut wird gegen die **fehlende Deckung**, nicht
+    gegen eine beobachtete Häufigkeit.
+    PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO. Der Code-Befund ist der
+    unveränderte aus dem Eintrag oben, am 2026-09-03 erneut am Code bestätigt (CC).
+
 36. **DIE ADAPTER REICHEN EINE KLICK-KENNUNG HEUTE SCHON DURCH — AUF EINER ANDEREN ACHSE ALS
     DER GEMESSENEN.**
     **GEMESSEN am Code (CC, 2026-09-01):** `eventSourceUrl` wird im Beacon-Bau
@@ -5394,6 +5787,29 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     Existenz des Zuschnitts (CC, 2026-09-03). Der Ausschluss ist ein ARCHITEKTEN-ZUSCHNITT
     vom 2026-09-03, die Zerlegung in zwei Schritte eine ARCHITEKTEN-FESTLEGUNG desselben
     Tages; keine Messung.
+
+    **ZWEITER VERMERK 2026-09-03 — SCHEIBE 1b-2a NIMMT DIESEN EINTRAG EBENFALLS NICHT AUF,
+    ABER SIE ÄNDERT SEINEN GEGENSTAND. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN.**
+    Der Zuschnitt steht (s. den Abschnitt "Die Rettung am Beacon — Scheibe 1b-2a des
+    Schritts 1b-2 der Scheibe 1b") und führt ihn dort unter "Was diese Scheibe ausdrücklich
+    nicht baut, je mit Grund".
+    **WAS SICH ÄNDERT, IST DIE URSACHE DER ZEILE UND NICHT IHRE HÄUFIGKEIT:** Heute schreibt
+    `usableTokenFromRow` sie, sobald das Zugangsdatum tot ist — und tot ist es nach einer
+    Stunde ohne Erneuerung, also regelmässig. **NACH 1b-2a BLEIBT ALS URSACHE NUR NOCH DAS
+    TOTE ERNEUERUNGS-TOKEN**, denn ein erneuerbarer Zugang wird dann erneuert, statt eine
+    Zeile zu erzeugen.
+    **UND GENAU DAS MACHT DEN POSTEN NICHT KLEINER, SONDERN ANDERS — der Satz gehört hierher,
+    sonst liest die nächste Runde ihn als halb erledigt: EIN TOTES ERNEUERUNGS-TOKEN BEHEBT
+    KEIN CODE.** Es verlangt eine Neu-Autorisierung durch den Kunden. Die Fehlerzeile
+    beschreibt danach einen Zustand, der **bis zu einer Handlung ausserhalb des Systems
+    bestehen bleibt** — sie wird damit seltener, aber JEDE einzelne wiegt schwerer, und
+    ungedrosselt ist sie weiterhin.
+    **DER EINTRAG BLEIBT OFFEN, WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN TRIGGER
+    STEHT WÖRTLICH WIE ZUVOR.** **KEINE EMPFEHLUNG** — weder zur Drosselung noch dazu, ob
+    die `projectId` hineingehörte.
+    PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO. Dass nach 1b-2a nur noch das
+    tote Erneuerungs-Token als Ursache bleibt, ist eine **ABLEITUNG** aus den vier Lagen
+    jenes Zuschnitts, **keine Messung** — gebaut ist nichts.
 
 43. **"STUMM" GILT FÜR DIE OBERFLÄCHE, NICHT FÜR DEN BETRIEB.** Diese Datei sagt an ZWEI
     Stellen, der Ausfall nach Ablauf des Zugangsdatums sei "in ihrer stummen Form" —

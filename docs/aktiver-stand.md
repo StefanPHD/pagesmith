@@ -67,6 +67,7 @@ docs/immer-beachten.md.
 · Die Klammer um die Erneuerung — Schritt 1b-1 der Scheibe 1b des Schnitts der Phase 11.2
 · Die Rettung am Beacon — Scheibe 1b-2a des Schritts 1b-2 der Scheibe 1b
 · Die Ampel an der Ziel-Karte — Scheibe 11.2b
+· Der Riegel gegen die verlorene Schreibung — Scheibe 1b-2b des Schritts 1b-2 der Scheibe 1b
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -2777,8 +2778,9 @@ INLINE und nicht im Hintergrund.**
   nach docs/db-regeln.md ("WER DB-CODE ANFASST, LEGT DIE GELESENE ANBIETER-DOKU ALS
   PROVENIENZ VOR"), und die Frage, **ob PostgREST bei einer bedingten Schreibung verlässlich
   meldet, ob eine Zeile getroffen wurde**. **BEIDES FEHLT HEUTE** — GEMESSEN am Repo (CC,
-  2026-09-03): Im Produktivcode gibt es **kein Muster für eine Bedingungs-Schreibung** (das
-  einzige `update` mit Rückgabe filtert auf Identität und Eigentum, nicht auf einen
+  2026-09-03): Im Produktivcode gibt es **kein Muster für eine Bedingungs-Schreibung** (die
+  ZWEI `update` mit Rückgabe — `saveProject` und `saveVariantB` — filtern auf Identität und
+  Eigentum, nicht auf einen
   ZUSTAND), und docs/plattform-befunde.md sagt **zum Schreibverhalten von PostgREST nichts**
   (Nicht-Treffer mit benannter Reichweite).
   **EIN KANDIDAT, DER DIESE FRAGE UMGEHT — ALS KANDIDAT UND NICHT ALS WAHL:** ein Anspruch
@@ -3176,6 +3178,284 @@ Invarianten darüber: Ein zeichengleicher Titel machte jeden Such-Anker mehrdeut
   Log-Kanal. Die Scheibe macht einen Zustand sichtbar, sie stellt ihn niemandem zu.
 · **JEDE PERSISTENZ.** Der Grund steht oben in den zwei Befunden und ist der
   Kern dieses Zuschnitts.
+
+## Der Riegel gegen die verlorene Schreibung — Scheibe 1b-2b des Schritts 1b-2 der Scheibe 1b
+
+**DIE NOMENKLATUR IST AN IHREM ORT AUFGELÖST UND WIRD HIER NICHT WIEDERHOLT:** "1b" ohne
+Suffix meint das PAKET, "1b-2" den TAKT, "1b-2a" und "1b-2b" die beiden Scheiben INNERHALB
+des Schritts 1b-2. Der Volltext steht im Kopf des Abschnitts "Die Rettung am Beacon —
+Scheibe 1b-2a des Schritts 1b-2 der Scheibe 1b"; zweimal geschrieben liefe er auseinander.
+**ES ENTSTEHT KEINE NEUE NUMMER NEBEN 1b, UND ES GIBT WEITERHIN KEINE SCHEIBE 1c.**
+**MIT DIESER SCHEIBE IST DER SCHRITT 1b-2 VOLLSTÄNDIG GESCHNITTEN** — der Nachtrag am Kopf
+des Abschnitts "1b als Folgetask" sagt, 1b-2 sei "weder offen noch erledigt, sondern halb";
+diese Hälfte ist die zweite.
+
+**DER TITEL WEICHT ABSICHTLICH VON DENEN DER VIER ANDEREN ZUSCHNITTE DIESER FAMILIE AB**
+("Die Klammer um die Erneuerung …", "Die Rettung am Beacon …", "Die Ampel an der Ziel-Karte
+…"): Zwei ähnlich gebaute `##`-Überschriften in DERSELBEN Datei machen jeden Such-Anker
+mehrdeutig, und der erste Treffer wäre systematisch der falsche (docs/immer-beachten.md,
+"EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT").
+**DIE TITEL-ZITATE IN DIESEM ABSCHNITT STEHEN OHNE `###`-MARKE** — die Auflage aus dem
+Zusatz vom 2026-08-27 zu derselben Regel.
+
+**PROVENIENZ — GETRENNT GEFÜHRT, aus demselben Grund wie bei 1b-1 und 1b-2a:**
+· **OWNER-GO 2026-09-04** für den Zuschnitt dieser Scheibe.
+· **ARCHITEKTEN-ENTSCHEIDUNG 2026-09-04:** die Wahl der Klartext-Spalte `secret_version`
+  gegen jede Uhr-basierte Bedingung, und die Verwerfung des Eindeutigkeits-Bruch-Kandidaten.
+· **PROVENIENZ DES ÜBRIGEN ABSCHNITTS, wo an der einzelnen Angabe nichts anderes steht:
+  ARCHITEKTEN-ZUSCHNITT 2026-09-04, auf Owner-GO. Keine Messung.**
+  **EINE SAMMEL-PROVENIENZ FÜR DIE GEMESSENEN ANGABEN STEHT HIER AUSDRÜCKLICH NICHT, UND
+  DER GRUND IST DER FALL SELBST:** Die erste Fassung dieses Kopfes schrieb ALLE mit
+  GEMESSEN gekennzeichneten Angaben der Aufklärungsrunde desselben Tages zu — **für VIER
+  von ihnen traf das nicht zu; sie sind erst in der Doku-Runde erhoben worden.** Eine
+  Herkunft, die für einen Teil der Menge stimmt, ist nicht schwächer als eine richtige,
+  **sondern falsch** — und sie ist die gefährlichere Bauform, weil an ihr nichts rot wird.
+  **JEDE GEMESSENE ANGABE TRÄGT IHRE HERKUNFT AB JETZT AN SICH SELBST**, samt der Runde,
+  in der sie erhoben wurde. Als Ort steht der SYMBOLNAME und nie eine Zeilennummer —
+  Fortschreibungs-Regel dieser Datei.
+
+### Was die Scheibe 1b-2b ist
+
+**Zwei gleichzeitige Erneuerungsläufe schreiben heute dieselbe Zeile in `project_secrets`,
+und jeder schreibt UNBEDINGT.** Der Schreibpfad ist der Upsert in `refreshAccessToken`
+(src/lib/oauth/token-refresh.ts) mit `onConflict` auf `project_id,target`. **DER SPÄTERE
+SCHREIBER GEWINNT — unabhängig davon, wer das jüngere Zugangsdatum hält.** Diese Scheibe
+setzt an genau diese Stelle einen Riegel.
+
+**ES IST KEIN ISOLATIONSLECK, UND DIESER SATZ STEHT ZUERST:** Kein Tenant sieht Daten eines
+anderen. **DER SCHADEN WÄRE EIN VERLORENER ZUGANG:** Entwertete Google bei Ausstellung eines
+neuen Zugangsdatums das vorherige, hinterliesse ein spät schreibender Lauf ein **TOTES Token
+mit einem Ablaufzeitpunkt in der ZUKUNFT** — der Resolver hielte es für brauchbar und
+erneuerte **nie**. **Das ist genau der stumme Fehlzustand, gegen den diese Phase gebaut
+wird.**
+
+**OB GOOGLE SO VERFÄHRT, IST UNGEMESSEN** — Vorrats-Eintrag 9, ZWEITE Achse ("AUSSTELLUNGS-
+UND SCHREIBREIHENFOLGE KÖNNEN DIVERGIEREN"), dort ausdrücklich als ungemessen geführt, und
+derselbe Sachverhalt steht als ACHSE 2 im Kommentarkopf von src/lib/oauth/token-refresh.ts.
+**DER RIEGEL IST UNABHÄNGIG DAVON RICHTIG, WIE DIE MESSUNG AUSFIELE** — er kostet wenig und
+deckt einen Fall, den niemand beobachten kann, solange er nicht eintritt.
+**DER VORRATS-EINTRAG 9 IST IN DIESER RUNDE NICHT ANGEFASST WORDEN**, und das ist Scope und
+kein Urteil: Sein Vermerk entsteht mit dem Abschluss-Vermerk dieser Scheibe, nicht mit ihrem
+Zuschnitt.
+
+### Der Befund, der die Form des Riegels entscheidet
+
+**GEMESSEN am Repo (CC, 2026-09-04), Aufklärungsrunde desselben Tages: ZUGANGSDATUM,
+ERNEUERUNGS-TOKEN UND ABLAUFZEITPUNKT LIEGEN GEMEINSAM ALS CHIFFRAT IN `secret_enc`. Es gibt
+für keines der drei eine KLARTEXT-SPALTE.** Sichtbar werden sie ausschliesslich über
+`decryptSecret` (src/lib/secrets/cipher.ts) und `parseOAuthPayload`
+(src/lib/secrets/oauth-payload.ts).
+
+**DARAUS FOLGEN ZWEI DINGE, UND SIE SCHLIESSEN DIE BEIDEN NAHELIEGENDEN BAUFORMEN AUS:**
+· **EINE BEDINGUNGS-SCHREIBUNG GEGEN DEN HEUTIGEN ZUSTAND IST UNMÖGLICH.** Die Datenbank
+  kann nicht in das Chiffrat hineinvergleichen; es gibt kein Feld, gegen das ein Filter
+  laufen könnte.
+· **EIN ANSPRUCH ÜBER EINEN EINDEUTIGKEITS-BRUCH HAT KEINE QUELLE.** Die einzige
+  Eindeutigkeit auf der Tabelle ist `project_secrets_project_id_target_key` auf
+  `(project_id, target)` — **und diese Zeile EXISTIERT bereits, wenn eine Erneuerung
+  läuft.** `refreshAccessToken` liest sie, bevor es schreibt; ein zweiter Schreiber
+  kollidiert also nie, er überschreibt.
+
+**DAMIT IST EIN KANDIDAT ENTSCHIEDEN, DEN DIESE DATEI BISHER OFFEN FÜHRTE**, und das gehört
+hierher, weil ein verworfener Kandidat sonst wie ein übersehener aussieht: Der Zuschnitt der
+Scheibe 1b-2a nennt unter "Was diese Scheibe ausdrücklich nicht baut, je mit Grund" einen
+"Anspruch über einen EINDEUTIGKEITS-BRUCH statt über eine Bedingungs-Schreibung" — als
+Kandidat und mit dem Satz "ENTSCHIEDEN IST DAS NICHT". **ER IST HIERMIT ENTSCHIEDEN, UND
+ZWAR VERWORFEN**, aus dem Grund im zweiten Spiegelstrich darüber. **Der Wortlaut jenes
+Kandidaten bleibt an seiner Stelle wörtlich stehen** — er war als Aussage über seinen Tag
+richtig.
+
+**DIE DRITTE VORAUSSETZUNG IST SEIT DEM 2026-09-04 ERFÜLLT UND WIRD HIER NUR GEZEIGT, NICHT
+VERDOPPELT:** Dass eine bedingte Schreibung über PostgREST verlässlich meldet, ob sie
+gegriffen hat, ist **GEMESSEN 2026-09-04 (OWNER), acht Aufrufe gegen den echten Endpunkt**.
+Die drei Wege und ihre Grenzen stehen im geschlossenen Eintrag "DIE RÜCKMELDUNG EINER
+BEDINGTEN SCHREIBUNG ÜBER PostgREST IST UNGEMESSEN" (docs/offene-punkte.md) und im Feld
+`VERIFIZIERT` von supabase/checks/bedingte-schreibung-probe.sql. **WELCHER DER DREI WEGE
+GEWÄHLT WIRD, IST HIER NICHT ENTSCHIEDEN** — das ist Sache des Bau-Plans, und die Messung
+sagt es von sich selbst ("KEINE EMPFEHLUNG, WELCHER DER DREI WEGE DER RIEGEL WIRD").
+
+### Die Entscheidung zur Klartext-Spalte
+
+**GEWÄHLT: EINE ADDITIVE SPALTE `secret_version` (bigint, not null, default 0) UND EIN
+VERGLEICH-UND-SCHREIBE GEGEN DEN GELESENEN WERT.**
+
+**DER GRUND, DER TRÄGT — `secret_version` HÄNGT AN KEINER UHR UND HAT KEIN GEGENSTÜCK IM
+CHIFFRAT.** Ein Klartext-Ablaufzeitpunkt oder eine Klartext-Ausstellungszeit wäre eine
+**ZWEITE WAHRHEIT über einen Wert, der schon im Chiffrat steht** — und die Ampel aus der
+Scheibe 11.2b rechnet ihn heute genau von dort aus: `classifyCredentialRow`
+(src/app/projects/actions.ts) dechiffriert und liest die Nutzlast, `credentialStateFrom`
+(src/lib/tracking/credential-state.ts) bildet daraus die Lage
+(**GEMESSEN am Repo, CC, 2026-09-04, Doku-Runde**).
+Es ist dieselbe Figur wie `domains` gegen `settings.hosting.label`
+(docs/immer-beachten.md, "DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER 'IST DIESES
+PROJEKT LIVE?'"). **Ein Zähler hat diese Figur nicht: er beschreibt nichts, was anderswo
+schon beschrieben wäre.**
+
+**DER ZWEITE GRUND — DIE AUFLÖSUNG DER UHR REICHT FÜR DAS ENGSTE RENNEN NICHT.** Google
+liefert `expires_in` als **ganze Sekunden**. Zwei Läufe in derselben Sekunde erzeugen
+denselben Ablaufzeitpunkt; ein Vergleich darauf **versagte im ENGSTEN Rennen — also genau
+dort, wo der Riegel gebraucht wird — UND SÄHE DABEI AUS, ALS HÄTTE ER GEGRIFFEN.**
+**PROVENIENZ DIESER ZWEITEN BEGRÜNDUNG: die Sekunden-Auflösung von `expires_in` ist GELESEN
+und NICHT GEMESSEN.** Wer sie als Messwert zitiert, zitiert eine Doku-Lesung.
+
+**DER BEFUND (1) DES ZUSCHNITTS ZU SCHRITT 1b-1 WIRD DAMIT NICHT GEBROCHEN, SONDERN
+EINGELÖST**, und dieser Absatz steht hier, damit die nächste Runde in der neuen Spalte
+keinen Verstoss liest: Jener Befund ("DER ABLAUFZEITPUNKT STECKT IM CHIFFRAT, IN KEINER
+SPALTE") argumentiert gegen eine **KLARTEXT-SPALTE NEBEN DEM CHIFFRAT** — gegen eine zweite
+Wahrheit über DENSELBEN Zeitpunkt. **`secret_version` ist keine.** Der gleichlautende
+Ausschluss in "Was ausdrücklich draussen bleibt, je mit seinem Grund" (Zuschnitt 1b-1) nennt
+ausdrücklich "KEINE KLARTEXT-SPALTE FÜR DEN ABLAUFZEITPUNKT" und band ohnehin nur jenen
+Schritt.
+
+### Was gebaut wird — vier Stücke
+
+· **DIE MIGRATION AUF `public.project_secrets`, ADDITIV:** `secret_version bigint not null
+  default 0`. **DIE NUMMER IST DIE NÄCHSTE FREIE** — sie steht hier ausdrücklich nicht,
+  weil eine geratene Nummer beim Bau still danebengreift. **KEIN BACKFILL; DER DEFAULT
+  TRÄGT.**
+· **`secret_version` WIRD BEIM LESEN DER ZEILE MITGELADEN UND BIS ZUR SCHREIBUNG
+  DURCHGEREICHT.** Lesen und Schreiben liegen beide INNERHALB von `refreshAccessToken`
+  (**GEMESSEN am Repo, CC, 2026-09-04, Doku-Runde**) — es entsteht damit **keine** neue
+  Schnittstelle und **kein** neuer Parameter an einem Aufrufer.
+· **DER ERNEUERUNGS-UPSERT WIRD AUF EIN BEDINGTES `update` UMGESTELLT:** Filter auf
+  `project_id`, `target` **UND** `secret_version` = gelesener Wert; gesetzt werden
+  `secret_enc` und `secret_version` = gelesener Wert + 1. **DIE RÜCKMELDUNG WIRD
+  AUSGEWERTET.**
+· **DER VERLIERER-ZWEIG:** null Treffer → **das eigene Zugangsdatum wird VERWORFEN, nicht
+  geschrieben.** **Kein Wurf, kein Abbruch des umgebenden Pfades.**
+
+### Die Grenze des Riegels
+
+**ER VERHINDERT DIE VERLORENE SCHREIBUNG, NICHT DIE FALSCHE REIHENFOLGE.** Gewinnt der
+früher ausgestellte Lauf das Rennen, steht **sein** Token in der Zeile — der Riegel sorgt
+dafür, dass genau ein Lauf schreibt, nicht dafür, dass der richtige es tut.
+
+**KEIN VERFÜGBARES MITTEL LÖST DAS.** Dafür bräuchte es Googles **Ausstellungs-Reihenfolge**,
+und die geben **weder unsere Uhr noch unsere Empfangszeit** her.
+
+**DIE NEBENLÄUFIGKEIT BLEIBT UNGEMESSEN.** **"ATOMAR HEISST NICHT SICHER"**
+(docs/plattform-befunde.md, LAUF 3, Grenze 3) steht **unberührt**; die Messung vom
+2026-09-04 hat die **AUSKUNFT** beantwortet, nicht das **WETTLAUF-VERHALTEN**. **WER AUS
+DIESEM ZUSCHNITT LIEST, DIE NEBENLÄUFIGKEIT SEI GEKLÄRT, LIEST FALSCH.**
+
+### Was die Scheibe 1b-2b ausdrücklich nicht baut, je mit Grund
+
+· **DIE ERST-ANLAGE DER ZEILE.** Der Upsert im OAuth-Callback
+  (src/app/api/oauth/google/callback/route.ts) und die Anlage über `setCapiToken`
+  (src/app/projects/actions.ts) bleiben **unberührt**: Dort gibt es **keine Zeile, gegen die
+  verglichen werden könnte**, und **keine Nebenläufigkeit zweier Erneuerungen**.
+· **JEDE ÄNDERUNG AN `runRefresh`, `refresh-run.ts` UND DER BEWEIS-ROUTE.** Die Klammer aus
+  1b-1 wird **GERUFEN, nicht angefasst**; der Wert wird durchgereicht, die
+  Wiederholungslogik bleibt.
+· **EINE ZWEITE WAHRHEIT ÜBER ABLAUF ODER AUSSTELLUNG.** Kein Klartext-Ablaufzeitpunkt,
+  keine Klartext-Ausstellungszeit. **Wer das später will, baut eine andere Scheibe und
+  beantwortet zuerst, welche der beiden Quellen dann führt.**
+· **DIE DROSSELUNG DER FEHLERZEILE (Vorrats-Eintrag 42) UND IHRE MEHRDEUTIGKEIT
+  (Vorrats-Eintrag 48).** **ABER — UND DAS IST EINE AUFLAGE UND KEIN HINWEIS: DER
+  VERLIERER-ZWEIG BEKOMMT EINE EIGENE, UNTERSCHEIDBARE LOG-ZEILE.** Er darf den Wortlaut
+  des Resolvers **NICHT ERBEN** — dieser lautet `[capi/resolve] secret unusable` und steht
+  DREIMAL in `src/lib/capi/token.ts` (**GEMESSEN am Repo, CC, 2026-09-04, Doku-Runde**);
+  sonst hätte dieselbe Zeile eine **VIERTE** Ursache, und Vorrats-Eintrag 48 führt schon
+  drei.
+· **ALLES ZUM TRANSPORT** · **die WIDERRUFENE Verbindung** (zweite Hälfte von
+  Vorrats-Eintrag 50, mit eigenem Trigger) · **DER FORWARD-VERDACHT — UND ER HAT IN DIESER
+  DATEI WEDER EINE NUMMER NOCH EINEN EINTRAG.** **GEMESSEN am Dateitext (CC, 2026-09-04,
+  Doku-Runde), VOR dem Entstehen dieses Absatzes**, Achse über docs/aktiver-stand.md im
+  Volltext, case-insensitiv: "Forward-Verdacht" · "Fan-Out" neben "feuert" ·
+  "ausschliesslich Google" · "nur Google" · "feuert"/"feuern" — **KEIN Treffer, der den
+  Verdacht führt.** Positivkontrolle: dieselbe Achse fördert an "feuert" SIEBEN Stellen
+  AUSSERHALB dieses Abschnitts zutage, sie läuft also nicht leer.
+  **DIE ACHSE TRIFFT SEITHER IHRE EIGENE BESCHREIBUNG, und das gehört dazu, sonst zählt die
+  nächste Runde nach und kommt auf eine andere Zahl:** Die Suchbegriffe stehen jetzt in
+  DIESEN Zeilen. Wer nachmisst, zieht die Treffer dieses Absatzes ab.
+  **ER IST GEMELDET UND NIRGENDS ABGELEGT; diese Scheibe legt ihn NICHT ab**, das wäre eine
+  eigene Arbeit.
+
+### Die geschützten Invarianten der Scheibe 1b-2b
+
+**(I-1) DAS 204-CONTAINMENT GILT AUCH IM VERLIERER-ZWEIG.** Er liegt auf einem über den
+Ingest erreichbaren Pfad. **Er wirft unter keinen Umständen;** eigenes `try/catch`, geloggt
+wird `errorName(err)` — nie ein Wert, nie ein Fremdtext.
+**(I-2) "APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI"** (docs/immer-beachten.md) —
+`project_secrets` behält **RLS aktiv und NULL Policies**. **Die Migration legt keine an.**
+**DIE FUNDSTELLE TRÄGT DEN FALL, OHNE IHN AUFZUZÄHLEN, und das gehört dazu:** Jene Regel
+sagt von ihrer eigenen Liste ausdrücklich, sie sei **nicht** die vollständige Liste der
+policy-freien Tabellen, und nennt `project_secrets` als den Fall des zweiten Grundes
+(ausschliesslicher service_role-Zugriff). Wer nur die Aufzählung liest, hält diese Zeile für
+einen Fehlgriff.
+**(I-3) "ANLEGEN UND BEFÜLLEN EINER ADDITIVEN SPALTE NICHT VERSCHMELZEN"**
+(docs/immer-beachten.md) — **der Default `0` ist die ANLAGE, kein Backfill.** Es wird keine
+bestehende Zeile angefasst.
+**(I-4) "EIN GUARD AUF EINEN NAMEN, DEN ES NACH DEM LAUF WIEDER GIBT, TRENNT VORHER NICHT
+VON NACHHER"** (docs/immer-beachten.md) — der Katalog-Guard der Migration prüft auf die
+**SACHE** (die Spalte `secret_version` auf `project_secrets`), **nicht auf einen
+Constraint-Namen.**
+**(I-5) DER ACHSE-2-KOMMENTARKOPF VON src/lib/oauth/token-refresh.ts BLEIBT UND WIRD NICHT
+ABGESCHWÄCHT.** Er trägt den ungemessenen Sachverhalt aus Vorrats-Eintrag 9, zweite Achse;
+ein Riegel davor macht ihn nicht kleiner — **die Ausstellungs-Reihenfolge bleibt ungemessen,
+auch wenn nur noch einer schreibt.**
+**(I-6) "MELDUNGSTEXTE BEHAUPTEN WEDER URSACHE NOCH ERGEBNIS"** (docs/immer-beachten.md, in
+der Regel "CLIENT-SEITIGE SERVER-ACTION-AUFRUFE: KEIN WURF BLEIBT UNBEHANDELT") — null
+Treffer heisst **"meine Schreibung ist überholt ODER die Zeile ist weg"**; beide führen zu
+**derselben Handlung**, und die Log-Zeile nennt **keine Ursache**.
+**(I-7) "MIGRATION IMMER VOR CODE-DEPLOY"** (docs/db-regeln.md), **fail-closed.** Der
+umgekehrte Weg schriebe gegen eine Spalte, die es nicht gibt.
+
+### Zwei offene Fragen für den Stufe-1-Prompt — hier NICHT beantwortet
+
+**BEIDE SIND PFLICHT-GATE DES STUFE-1-PROMPTS. KEINE VON BEIDEN BLOCKIERT DAS GO** — in
+jedem Ausgang wird gebaut, und der Zuschnitt oben ändert sich durch keine von ihnen.
+
+· **DIE OFFENE ANGEL (ARCHITEKT, 2026-09-04): Erneuert der Resolver aus 1b-2a nur bei
+  ABGELAUFENER EIGENER UHR, oder auch bei einer ABLEHNUNG DURCH DEN ANBIETER?** Die Antwort
+  ändert den **ABSCHLUSS-VERMERK** — nämlich, wie gross der Nutzen des Riegels ist —,
+  **NICHT den Zuschnitt.**
+· **DER AUSGANG DES VERLIERER-ZWEIGES IST NICHT BENANNT. GEMELDET VON CC (2026-09-04), NICHT
+  ENTSCHIEDEN — und er steht hier, weil ein Bau-Plan ihn sonst nebenbei festlegt.**
+  **GEMESSEN am Repo (CC, 2026-09-04, Doku-Runde)**, an der Typdeklaration `RefreshResult`
+  (src/lib/oauth/token-refresh.ts): Der Ergebnistyp von `refreshAccessToken` kennt **VIER**
+  Zustände — `ok` (trägt beide Ablaufzeitpunkte), `retry`, `dead`, `misconfigured` —, und
+  **keiner von ihnen beschreibt "ein anderer Lauf war schneller".**
+  **WARUM DAS NICHT NEBENBEI ZU ENTSCHEIDEN IST:** `retry` liesse `runRefresh` **erneut
+  laufen** — der Wiederholer holte ein frisches Zugangsdatum und verlöre es wieder, bis zum
+  Deckel. `dead` und `misconfigured` wären **falsch**: nichts ist tot und nichts
+  fehlkonfiguriert. `ok` müsste **zwei Ablaufzeitpunkte tragen, die der Verlierer nicht
+  gelesen hat.**
+  **DIE ENTSCHEIDUNG BERÜHRT DEN ZUSCHNITT NICHT** — sie berührt den Ergebnistyp und damit
+  den Bau-Plan. **HIER WIRD SIE AUSDRÜCKLICH NICHT GETROFFEN, UND ES STEHT KEINE EMPFEHLUNG
+  DABEI.**
+
+### Der Testplan und was er nicht zeigt
+
+**JE TEST STEHT DABEI, WODURCH ER ROT WIRD — ohne diese Angabe ist ein Test eine
+Behauptung:**
+· **(1) DER VERGLEICH GEWINNT** → die Zeile ist geschrieben, die Version um **eins** erhöht.
+  **ROT DURCH:** Entfernen des Versions-Terms aus dem Filter.
+· **(2) DER VERGLEICH VERLIERT** → **nichts geschrieben**, das eigene Zugangsdatum
+  verworfen, **kein Wurf**. **ROT DURCH:** der Verlierer-Zweig schreibt trotzdem.
+  **DIE MUTATION IST HIER PFLICHT UND IHR ERGEBNIS ZU BERICHTEN.**
+· **(3) DER UMGEBENDE INGEST-PFAD LÄUFT BEI EINEM VERLUST ZU ENDE.** **ROT DURCH:** ein
+  Abbruch im Verlierer-Zweig. **GRUND:** Ohne diesen Lauf sieht "geblockt" aus wie
+  "abgestürzt" — es ist die dritte Weise aus docs/immer-beachten.md, "EINE
+  ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL".
+
+**WAS DER UNIT-TEST NICHT ZEIGT, UND DAS GEHÖRT IN DEN ZUSCHNITT UND NICHT IN EINE FUSSNOTE:
+DIE ECHTE NEBENLÄUFIGKEIT.** Der Live-Test beweist, dass der Riegel bei **SEQUENZIELLEN**
+Läufen greift — **nicht, dass er ein echtes Rennen entscheidet.** Ein Nachweis, der beides
+zusammenzieht, behauptet eine Achse, die er nie gefahren hat.
+
+### Das Zeitfenster dieser Scheibe
+
+**PFLICHT-STOPP, KEIN HINWEIS: DAS ERNEUERUNGS-TOKEN STIRBT AM 2026-09-11 GEGEN 07:26:58
+UTC.** **Danach misst jeder Test das statt der Sache** — ein Lauf gegen ein totes
+Erneuerungs-Token erreicht den Vergleich gar nicht und meldet einen Fehlschlag, der keiner
+ist.
+**DER TERMIN WIRD HIER NICHT ZUM ZWEITEN MAL HERGELEITET UND STEHT AN GENAU EINER STELLE
+IM VOLLTEXT:** im Nachtrag zu Vorbedingung (iv), Abschnitt "1b als Folgetask". **Zwei Orte
+mit demselben Datum laufen auseinander, sobald einer nachgezogen wird** — genau das ist am
+2026-09-04 schon einmal geschehen.
+PROVENIENZ: der Wert **GEMESSEN 2026-09-04 (OWNER)**; Datum und Uhrzeit **GERECHNET**
+(CC, 2026-09-04).
 
 ## Abgeschlossene Scheiben-Vermerke
 

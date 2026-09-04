@@ -112,13 +112,104 @@
 --                  einordnet — und sie traegt RLS ohne Policy, sieht also fuer jeden
 --                  Advisor-Lauf aus wie ein vergessener Geheimnis-Speicher.
 --
--- VERIFIZIERT: NOCH NIE GEFAHREN. Diese Datei ist eine ANLEITUNG und noch KEIN
---              PROTOKOLL. Wer sie faehrt, traegt hier das Datum ein und schreibt die
---              gemessenen Ausgaenge je Messung darunter — so wie es
---              upsert-arbiter-probe.sql nach ihrem Lauf am 2026-08-25 tut.
---              GESCHRIEBEN am 2026-09-04 (CC), auf der Anbieter-Lesung desselben Tages.
---              KEINE ANGABE IN DIESER DATEI IST GEMESSEN; die zwei zitierten
---              Anbieter-Saetze sind GELESEN und in LAUF 3 mit Fundstelle verortet.
+-- VERIFIZIERT: 2026-09-04, EINMAL GEFAHREN (Owner), ACHT Aufrufe gegen den echten
+--              Endpunkt. Ab hier ist diese Datei das PROTOKOLL eines Laufs und nicht
+--              mehr nur eine Anleitung; die Messungen unten stehen woertlich wie vor
+--              dem Lauf.
+--              GESCHRIEBEN am 2026-09-04 (CC) auf der Anbieter-Lesung desselben Tages;
+--              die zwei im ZWECK zitierten Anbieter-Saetze sind GELESEN und in LAUF 3
+--              mit Fundstelle verortet — sie sind durch diesen Lauf NICHT gemessen
+--              worden, gemessen ist das VERHALTEN.
+--
+--              SICHTBARKEITS-BELEG (TEIL 2, Vorbereitung 4) ERBRACHT: HTTP 200, ACHT
+--              Kennungen, Content-Range 0-7/*. Damit ist die Saat vollstaendig UND die
+--              Sichtbarkeit der a-Zeilen ueber DENSELBEN Weg mit DEMSELBEN Schluessel
+--              GEMESSEN, vor der ersten Schreibung. DIE FALLE (2) IST DAMIT
+--              AUSGESCHLOSSEN und nicht bloss bedacht: Ein spaeteres "null Zeilen" kann
+--              nicht an fehlender Sichtbarkeit liegen.
+--              VORBEDINGUNG (1e) — NICHT BERICHTET. Die zwei SQL-Gegenproben aus TEIL 1
+--              (rls_aktiv / anzahl_policies und frei=4 / besetzt=4 / gesamt=8) stehen in
+--              der Rueckmeldung dieses Laufs NICHT. Die Saat-Zahl ist ueber den
+--              Sichtbarkeits-Beleg mittelbar belegt (acht Kennungen), die RLS-Lage NICHT.
+--              WER SIE BRAUCHT, FINDET SIE HIER NICHT — das steht hier, damit niemand
+--              aus dem Schweigen auf ein Ergebnis schliesst.
+--              CACHE-BELEG (TEIL 2, Vorbereitung 3): das Lesen lieferte SOFORT 200 —
+--              KEIN manuelles Nachladen noetig. FALLE (5) ist nicht eingetreten; es gab
+--              nichts zu protokollieren.
+--
+--              M-1: KEINER DER DREI AUFGEFUEHRTEN AUSGAENGE IST SO EINGETRETEN, WIE ER
+--                   FORMULIERT WAR. ES IST AUSGANG 3 — "etwas anderes" — UND DAS IST
+--                   SELBST DER BEFUND, KEIN SCHOENHEITSFEHLER.
+--                   GEMESSENER ZUSTAND: Null-Treffer -> 204 No Content, Content-Range
+--                   */*. Ein Treffer -> 204 No Content, Content-Range 0-0/*. KEIN
+--                   Prefer-Kopf in beiden Aufrufen.
+--                   WARUM WEDER AUSGANG 1 NOCH 2: Ausgang 2 verlangt verschiedene
+--                   STATUSCODES — beide sind 204. Ausgang 1 verlangt, dass beide
+--                   Aufrufe GLEICH antworten — sie tun es nicht, die Kopfzeile
+--                   unterscheidet sie.
+--                   WAS DIE PROBE UEBERSEHEN HATTE, und es ist die Lehre dieses Laufs:
+--                   Sie hat die Unterscheidung am STATUSCODE gesucht und nicht damit
+--                   gerechnet, dass sie im VORGABEFALL — ohne jeden Prefer-Kopf — in
+--                   einer KOPFZEILE steht. Sie hat die Kopfzeilen sehr wohl ERHOBEN
+--                   ("ZU NOTIEREN, je Aufruf: der STATUSCODE, ALLE Kopfzeilen"); zu eng
+--                   war nicht die Erhebung, sondern das AUSWERTUNGSRASTER.
+--                   WER DIE DREI AUSGAENGE SPAETER ABGLEICHT UND NUR AUF DEN STATUS
+--                   SIEHT, LANDET AUF AUSGANG 1 — also auf dem GEGENTEIL des Befundes:
+--                   Der Vorgabefall unterscheidet die zwei Lagen sehr wohl.
+--                   Hier steht der ZUSTAND, nicht die Deutung.
+--              M-2: AUSGANG 2 IST EINGETRETEN. Null-Treffer -> 204, Content-Range */0.
+--                   Ein Treffer -> 204, Content-Range 0-0/1. Beide Antworten tragen
+--                   zusaetzlich "preference-applied: count=exact" — der Server bestaetigt
+--                   die Praeferenz ausdruecklich; das war nicht erfragt und ist ein
+--                   Zusatzbefund.
+--                   DASS ES AUSGANG 2 IST, HAENGT AN EINEM HALBSATZ: Der Wortlaut nennt
+--                   "*/1" beim Ein-Treffer, gekommen ist "0-0/1". Die Klammer "(oder
+--                   eine gleichwertige Form, die 0 gegen 1 stellt)" faengt das auf.
+--                   OHNE SIE WAERE AUCH M-2 IN AUSGANG 3 GELANDET.
+--                   AUSGANG 3 — dieselbe Zahl in beiden Antworten, der gefaehrlichste —
+--                   IST AUSGESCHLOSSEN.
+--              M-3: AUSGANG 1 IST EINGETRETEN, ohne Abweichung. Null-Treffer -> 406 mit
+--                   dem Rumpf {"code":"PGRST116","details":"The result contains 0 rows",
+--                   "hint":null,"message":"Cannot coerce the result to a single JSON
+--                   object"}. Ein Treffer -> 200, Content-Type
+--                   application/vnd.pgrst.object+json, Content-Range 0-0/*, ein
+--                   EINZELNES Objekt.
+--                   DIE VORBEDINGUNG IST DAMIT ERFUELLT: Der Ein-Treffer liefert ein
+--                   Objekt und keine Liste — die 406 ist also aussagekraeftig und nicht
+--                   der Beleg eines nicht vorhandenen Weges.
+--                   ZUSATZBEFUND, nicht erfragt: die Fehlerantwort traegt
+--                   "Proxy-Status: PostgREST; error=PGRST116".
+--              M-4: AUSGANG 1 IST EINGETRETEN, ohne Abweichung. Null-Treffer -> 200,
+--                   Content-Length 2, Rumpf []. Ein Treffer -> 200, Rumpf mit einer
+--                   Liste aus EINEM Objekt.
+--
+--              TEIL 4 (unabhaengige Sicht ohne PostgREST): VIER a-Zeilen unveraendert
+--                   (BESETZT, ERFUNDEN-saat, wurde_geschrieben false), VIER d-Zeilen
+--                   geschrieben (BESETZT, ERFUNDEN-geschrieben, true) — genau das Bild,
+--                   das TEIL 4 als Bedingung nennt.
+--                   DAMIT IST FALLE (3) BESTAETIGT ALS WIRKSAM: Die Paarung hat
+--                   getragen, keine Messung hat einer anderen ihre Zeile weggenommen.
+--              TEIL 5: der drop ist gelaufen, tabelle_noch_da = 0.
+--
+--              WAS DIESER LAUF NICHT GEMESSEN HAT — DREI DINGE, und sie gehoeren hier
+--              und nicht in eine Fussnote:
+--                (1) DIE VARIANTE OHNE return=representation unter Singular-Anforderung.
+--                    Sie steht als GRENZE an M-3 und bleibt offen.
+--                (2) DIE NEBENLAEUFIGKEIT. Zwei gleichzeitige bedingte Schreibungen sind
+--                    nicht gefahren worden. "ATOMAR HEISST NICHT SICHER"
+--                    (docs/plattform-befunde.md, LAUF 3, Grenze 3) ist von diesem Lauf
+--                    WEDER BESTAETIGT NOCH WIDERLEGT.
+--                (3) DIE FASSUNG. Gemessen ist DIESE Instanz an DIESEM Tag, nicht
+--                    "PostgREST 16" (LAUF 3, Grenze 1). Welche Fassung antwortete, ist
+--                    nicht erhoben.
+--              FALLE (4) — die Nicht-Wiederholbarkeit ohne neue Saat — IST NICHT
+--              GEPRUEFT: es gab nur EINEN Durchlauf.
+--
+--              PROVENIENZ: GEMESSEN vom Owner am 2026-09-04, acht Aufrufe gegen den
+--              echten Endpunkt plus Sichtbarkeits-Beleg, Gegenlesung und Aufraeum-
+--              Gegenprobe. Berichtet ist der BESTAND (Statuscodes, Kopfzeilen, Ruempfe,
+--              Tabelleninhalt); die Zuordnung zu den Ausgaengen ist eine ABLEITUNG
+--              daraus (CC, 2026-09-04) und keine zweite Beobachtung.
 --
 -- HERKUNFT DER BAUFORM: upsert-arbiter-probe.sql (Kopf-Felder, Wegwerf-Tabelle, RLS im
 --              selben Zug ohne Policy, abgesetzte TEIL-Baender, Anleitung in

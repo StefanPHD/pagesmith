@@ -266,8 +266,6 @@ gehen von hier eine Station weiter.
   vorige Trigger am selben Tag eingetreten und im Volltext ERSETZT worden ist; vor dem
   Nachweis gibt es kein gültiges Zugangsdatum, an dem sich die Frage überhaupt messen liesse,
   die Messung wäre also nicht bloss unterlassen, sondern unmöglich)
-- DIE RÜCKMELDUNG EINER BEDINGTEN SCHREIBUNG ÜBER PostgREST IST UNGEMESSEN (Trigger: der
-  Zuschnitt der Scheibe 1b-2b)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,

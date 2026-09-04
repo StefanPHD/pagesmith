@@ -1699,6 +1699,54 @@ aufeinander; sie liegen alle hier und finden einander.
   docs/plattform-befunde.md, Abschnitt "Supabase", LAUF 3, Teil (ar) — hier NUR der Zeiger
   und das, was er tragen muss, um ohne den Volltext brauchbar zu sein. Zweimal geschrieben
   liefe es auseinander.
+  **GESCHLOSSEN AM 2026-09-04. DIE MESSUNG IST GEFAHREN, ALLE DREI FRAGEN SIND
+  BEANTWORTET.**
+  Der gesamte Text unterhalb dieses Blocks bleibt WÖRTLICH stehen und wird NICHT
+  gekürzt: er trägt die Fragestellung, die Reichweite des Nicht-Treffers und die
+  Abgrenzung SQL gegen HTTP, und mehrere seiner Grenzen gelten weiter. **Geschlossen ist
+  der PUNKT, nicht sein Befund.** Der Satz "DREI FRAGEN SIND OFFEN" oben ist damit ein
+  ZEITDOKUMENT und beschreibt den 2026-09-04 VOR dem Lauf.
+  WAS IHN SCHLIESST: **GEMESSEN 2026-09-04 (OWNER), ACHT Aufrufe gegen den echten
+  Endpunkt**, mit Sichtbarkeits-Beleg vor der ersten Schreibung und unabhängiger
+  Gegenlesung im SQL-Editor danach. Instrument und Protokoll:
+  `supabase/checks/bedingte-schreibung-probe.sql`, Feld `VERIFIZIERT` — dort steht der
+  Bestand je Messung, und er wird hier NICHT verdoppelt.
+  DIE DREI ANTWORTEN, je in einem Satz:
+  · **(a) DER NULL-TREFFER IST ERKENNBAR — AUF DREI WEGEN.** Die Kopfzeile
+    `Content-Range` schon im VORGABEFALL (`*/*` gegen `0-0/*`, ohne jeden Prefer-Kopf) ·
+    die Länge der Menge unter `return=representation` (`[]` gegen eine Liste mit einem
+    Objekt) · und `406`/`PGRST116` unter Singular-Anforderung.
+  · **(b) ENTSCHIEDEN ZUGUNSTEN DER CLIENT-DOKU: `count` ZÄHLT DIE BETROFFENEN ZEILEN,
+    NICHT DIE TABELLE** — `*/0` beim Null-Treffer gegen `0-0/1` beim Ein-Treffer. **Der
+    gefährlichste Ausgang, dieselbe Zahl in beiden Antworten, ist AUSGESCHLOSSEN.** Der
+    Widerspruch der zwei anbietereigenen Quellen (docs/plattform-befunde.md, LAUF 3,
+    Teil (ak)) ist damit **FÜR DEN PATCH** aufgelöst.
+    **WAS DAS ÜBER DIE ZWEI QUELLEN SAGT, UND WAS NICHT:** Die Client-Doku trifft zu. Die
+    Protokoll-Doku hat nie das Gegenteil behauptet — sie hat **geschwiegen**. Ein
+    Schweigen wird durch eine Messung nicht widerlegt, sondern gefüllt.
+  · **(c) DER MECHANISMUS TRÄGT AUCH AUF EINEM PATCH.** Die Vorbedingung ist erfüllt: Der
+    Ein-Treffer liefert ein EINZELNES Objekt und keine Liste — die `406` ist damit
+    aussagekräftig und nicht der Beleg eines Weges, den es nicht gibt.
+  DIE GRENZEN GEHÖREN IN DIESEN BLOCK, sonst wird er weiter gelesen, als er trägt:
+  · **GEMESSEN IST DIE LAUFENDE INSTANZ, NICHT DIE FASSUNG 16.** Der Lauf sagt, was
+    DIESE Instanz an DIESEM Tag tut; über eine andere Fassung sagt er nichts
+    (docs/plattform-befunde.md, LAUF 3, Grenze 1). Welche Fassung antwortete, ist nicht
+    erhoben.
+  · **NICHT GEMESSEN IST DIE VARIANTE OHNE `return=representation`** unter
+    Singular-Anforderung — sie entspricht einem `.update(...).single()` ohne `.select()`.
+    Die Probe sagt das selbst unter M-3, "GRENZE DIESER MESSUNG".
+  · **NICHT GEMESSEN IST DIE NEBENLÄUFIGKEIT.** Zwei gleichzeitige bedingte Schreibungen
+    sind nicht gefahren worden. **"ATOMAR HEISST NICHT SICHER"** (LAUF 3, Grenze 3)
+    bleibt unberührt und ist von diesem Lauf **weder bestätigt noch widerlegt**. Wer
+    diesen Block als "die Nebenläufigkeit ist geklärt" liest, liest ihn falsch.
+  · **KEINE EMPFEHLUNG, WELCHER DER DREI WEGE DER RIEGEL WIRD.** Das entscheidet der
+    Zuschnitt der Scheibe 1b-2b, nicht diese Messung.
+  EIN BEFUND AM INSTRUMENT, DER NICHT ZU DEN DREI FRAGEN GEHÖRT UND TROTZDEM HIERHER:
+  **M-1 IST IN KEINEM DER DREI VORGESEHENEN AUSGÄNGE EINGETRETEN.** Die Probe hatte die
+  Unterscheidung am STATUSCODE gesucht; sie steht aber in einer KOPFZEILE. Wer die
+  Ausgangs-Liste später abgleicht und nur auf den Status sieht, landet auf "der
+  Vorgabefall unterscheidet die zwei Lagen nicht" — dem **GEGENTEIL** des Befundes. Der
+  Volltext steht im `VERIFIZIERT`-Feld der Probe unter M-1.
   · (a) Was meldet ein `update` mit Zustandsfilter zurück, das NULL Zeilen trifft — ein
     Fehler, eine leere Menge, oder etwas Drittes?
   · (b) Liefert `count` bei einer SCHREIBUNG eine verlässliche Zahl?

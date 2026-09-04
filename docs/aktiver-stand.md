@@ -7539,6 +7539,50 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     GEMELDET, NICHT GEBAUT. **KEINE EMPFEHLUNG.**
     TRIGGER: die nächste Messung, die Text nach Zeichenzahl beschneidet.
 
+52. **DREI COMMITTETE ABSCHNITTE TRAGEN DENSELBEN SAMMEL-PROVENIENZ-SATZ — UND AN KEINEM
+    IST ER JE GEPRÜFT WORDEN.**
+    **DER BEFUND — GEMESSEN am Dateitext (CC, 2026-09-04, Doku-Runde; Achse: der Wortlaut
+    "stammt aus der Aufklärungsrunde" über docs/aktiver-stand.md im Volltext, binärsicher):
+    DREI Treffer**, je einer im Zuschnitt zu Schritt 1b-1, im Zuschnitt der Scheibe 1b-2a
+    und im Zuschnitt der Scheibe 11.2b. Alle drei tragen dasselbe Konstrukt und alle drei
+    dasselbe Datum, den 2026-09-03.
+    **DIE MESSUNG LIEF VOR DEM ENTSTEHEN DIESES EINTRAGS, UND SEITHER TRIFFT DIE ACHSE IHRE
+    EIGENE BESCHREIBUNG — das gehört dazu, sonst zählt die nächste Runde nach und kommt auf
+    VIER:** Der zitierte Wortlaut steht jetzt auch in DIESER Zeile. **Wer nachmisst, zieht
+    die Treffer dieses Eintrags ab; die Zahl der Zuschnitte, die das Konstrukt tragen,
+    bleibt DREI.**
+    **WARUM DAS EIN POSTEN IST UND NICHT EINE STILFRAGE:** Am **VIERTEN** Exemplar
+    desselben Konstrukts — im Zuschnitt der Scheibe 1b-2b — ist am 2026-09-04 gemessen
+    worden, dass es für **VIER von vier geprüften Angaben NICHT zutraf**; sie stammten aus
+    einer anderen Runde (GEMESSEN am Repo, CC, 2026-09-04, Korrektur-Runde). **Das
+    Konstrukt hat sich also vermehrt, und an keinem der drei übrigen Exemplare hat es je
+    jemand geprüft.**
+    **DIE BAUFORM IST DAS EIGENTLICHE, NICHT DIE EINZELNE FUNDSTELLE:** Eine
+    Sammel-Provenienz behauptet eine Herkunft über eine **MENGE**, deren Mitglieder sie nie
+    einzeln geprüft hat — **sie kann gar nicht anders.** Sie ist damit die einzige
+    Provenienz-Form, die bei jedem Zuwachs ihres Abschnitts neu falsch werden kann, **ohne
+    dass irgendetwas rot wird.**
+    **DIE GRENZE, UND SIE MUSS MIT — ohne sie liest die nächste Runde hier eine
+    Fehlerbehauptung, die niemand erhoben hat: OB DIE DREI FALSCH SIND, IST UNGEMESSEN.**
+    Gemessen ist ihre **EXISTENZ** und die Falschheit **EINES ANDEREN** Exemplars. **Eine
+    Mengen-Aussage wird nicht dadurch wahr, dass ein Mitglied geprüft ist** — es ist
+    dieselbe Figur, gegen die dieser Eintrag sich richtet, nur in die andere Richtung.
+    **DIE NACHBARSCHAFT IN DIESER DATEI GEHÖRT DAZU, sonst sieht der Posten wie ein
+    Einzelfall aus:** Die Köpfe von "Entscheidungen, die über ihre Scheibe hinaus binden"
+    und von "Vorrat (gemeldet, nicht gebaut)" führen bereits "UND KEINE SAMMEL-HERKUNFT"
+    bzw. "KEINE SAMMEL-DATIERUNG IN DIESEM KOPF, UND ES KOMMT KEINE ZURÜCK" — **die
+    Bauform ist an zwei Listen schon einmal kaputtgegangen und dort abgeschafft worden.**
+    An den ZUSCHNITTEN steht sie unverändert.
+    GEMELDET, NICHT GEBAUT. **KEINE EMPFEHLUNG**, ob und wie die drei zu korrigieren sind —
+    weder eine Prüfung je Angabe noch eine Streichung noch ein Stempel ist hier
+    vorgeschlagen.
+    TRIGGER: die nächste Runde, die einen dieser drei Abschnitte ohnehin öffnet.
+    PROVENIENZ: die drei Fundstellen **GEMESSEN am Dateitext (CC, 2026-09-04,
+    Doku-Runde)**, mit Positivkontrolle über zwei bestehende Titel und einer
+    Negativkontrolle; die Falschheit des vierten Exemplars **GEMESSEN am Repo (CC,
+    2026-09-04, Korrektur-Runde)**; dass die drei deshalb **verdächtig** sind, ist eine
+    **ABLEITUNG und keine Messung**.
+
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT
 DIESER SCHEIBE GEGENSTANDSLOS.** `refreshAccessToken` liest, dechiffriert und zerlegt
@@ -7831,3 +7875,57 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
    Nachbarregel GELESEN in docs/immer-beachten.md (CC, 2026-08-31). Dass der Prompt der
    strukturelle Auslöser war, ist eine ABLEITUNG aus dem Vergleich mit der Fix-Scheibe,
    keine Messung.
+
+8. **EIN ZEIGER AUF EINE NUMMERIERTE ABLAGE KANN AUS PLAUSIBILITÄT ENTSTEHEN STATT AUS
+   NACHSEHEN — UND ER SIEHT DANACH WIE EIN BELEG AUS** (angetreten 2026-09-04).
+   **DER BELEG — GEMESSEN am Repo (CC, 2026-09-04, Korrektur-Runde):** Im Zuschnitt der
+   Scheibe 1b-2b stand "der Forward-Verdacht (Vorrats-Eintrag 41)". **Die Vorgabe des
+   Architekten nannte KEINE Nummer; sie ist beim Schreiben hinzugekommen.**
+   Vorrats-Eintrag 41 führt die **TAG-HYPOTHESE** — einen anderen Gegenstand. Der
+   Forward-Verdacht hat im ganzen Repo **weder Nummer noch Eintrag** (GEMESSEN am
+   Dateitext, CC, 2026-09-04, mit benannter Achse und Positivkontrolle).
+   **DIESER KANDIDAT FÜHRT DEN SUCHBEGRIFF SEITHER SELBST, und das erweitert eine
+   Selbstreferenz, die der Zuschnitt der Scheibe 1b-2b bereits benennt:** Dort steht "wer
+   nachmisst, zieht die Treffer dieses Absatzes ab" — **ab jetzt sind es zwei Orte, dieser
+   hier und jener.** An der Aussage ändert das nichts: **ein Eintrag, der den Verdacht
+   FÜHRT, ist keiner geworden.**
+   **WARUM ES TEUER IST: EIN FALSCHER ZEIGER IST TEURER ALS GAR KEINER**, weil er auf eine
+   **ANDERE** Stelle zeigt, statt zum Suchen zu zwingen. **KEIN GATE HAT IHN GEFANGEN** —
+   sichtbar wurde er allein, weil jemand die Nummer aufgeschlagen hat.
+   **ABGRENZUNG ZU "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER"**
+   (docs/immer-beachten.md): Jene Regel betrifft die **HALTBARKEIT** eines Zeigers — er
+   altert, weil sich sein Ziel bewegt. **DIESER HIER WAR AB DEM ERSTEN TAG FALSCH.**
+   Verwandte Figur, andere Achse.
+   **ABGRENZUNG ZU HEBUNGS-KANDIDAT 2** ("DIE LISTE 'GESEHEN, NICHT GEÖFFNET' IST DER ORT,
+   AN DEM SICH EIN BEFUND VERSTECKT"), und sie gehört dazu, weil beide das Wort
+   "plausibel" führen: Dort wird eine Seite mit einem plausiblen Grund **AUSGESCHLOSSEN**,
+   und der Schaden ist ein **nicht gelesener** Befund. Hier wird ein Zeiger aus
+   Plausibilität **ERFUNDEN**, und der Schaden ist ein **gelesener, aber falscher**.
+   Dieselbe Ursache — ein Urteil ohne Nachsehen —, entgegengesetzte Wirkung.
+   **DIE BEDINGUNG DES ENTFALLENS IST NUR FÜR EINE HÄLFTE FORMULIERBAR, UND DASS DIE
+   ANDERE KEINE HAT, IST SELBST DER BEFUND DIESES KANDIDATEN:**
+   · **FÜR ZEIGER AUF EINE NICHT EXISTIERENDE NUMMER entfällt er**, sobald ein Gate jeden
+     nummerierten Zeiger dieser Datei gegen den Bestand der Nummern auflöst und bei einem
+     Fehlschlag rot wird. Das ist mechanisch machbar.
+   · **FÜR ZEIGER AUF EINE EXISTIERENDE, ABER FALSCHE NUMMER GIBT ES KEINE.** Genau das war
+     dieser Fall: **Vorrats-Eintrag 41 EXISTIERT** — er handelt nur von etwas anderem. Ein
+     Gate müsste den GEGENSTAND des Ziels mit dem des Zeigers vergleichen, und das ist
+     Bedeutung und nicht Zeichen (docs/immer-beachten.md, "EIN WÄCHTER ÜBER QUELLTEXT SIEHT
+     ZEICHEN, NICHT BEDEUTUNG"). **Die einzige Prüfung, die trägt, ist das Aufschlagen des
+     Ziels — also genau die Handlung, deren Ausbleiben den Fehler erzeugt hat.**
+   **WAS DARAUS NICHT FOLGT:** dass nummerierte Zeiger zu vermeiden wären. **KEINE
+   EMPFEHLUNG**, weder zu einer Auflage ("wer eine Nummer schreibt, schlägt sie auf") noch
+   zu einer anderen Zeigerform noch dazu, ob daraus überhaupt eine Regel wird.
+   **NICHT ENTSCHIEDEN:** ob das ein ABSATZ an "DER HALTBARE ANKER IST DER SYMBOLNAME …"
+   wird oder eine EIGENE Regel. **Für einen Absatz spricht**, dass beide von Zeigern
+   handeln und eine dritte Regel auf derselben Achse die Trefferwahrscheinlichkeit senkt.
+   **Für eine eigene spricht**, dass jene Regel eine Aussage über die **ZEIT** macht
+   (Namen überleben, Zeilennummern nicht) und ihre operative Anweisung deshalb beim
+   SCHREIBEN eines Zeigers nicht feuert — dieser Fehler entsteht aber genau dort.
+   GEMELDET 2026-09-04, NICHT GEBAUT.
+   PROVENIENZ: Der Fehlgriff und seine Auflösung **GEMESSEN am Repo (CC, 2026-09-04,
+   Korrektur-Runde)**. Dass die Vorgabe keine Nummer nannte, ist am Prompt jener Runde
+   ABLESBAR und **keine Messung am Repo**. Der Volltext der zwei Nachbar-Stellen GELESEN
+   (docs/immer-beachten.md und Hebungs-Kandidat 2 dieser Datei, CC, 2026-09-04). Dass für
+   die zweite Hälfte keine Bedingung formulierbar ist, ist eine **ABLEITUNG** aus der
+   Quelltext-Wächter-Regel, keine Messung.

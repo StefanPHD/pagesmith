@@ -642,12 +642,24 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Secret-Parameter neu bewerten.
 - DEPENDABOT: ERLEDIGT (2026-07-24: Alerts, Security Updates, Dependency Graph aktiv, 1 Regel).
 - DEPENDABOT-MELDUNGEN OFFEN, NICHT GESICHTET (2026-08-13): Auf dem Default-Branch stehen
-  ZEHN Verwundbarkeits-Meldungen, davon ACHT hoch und zwei mittel. HERKUNFT: die
-  Push-Ausgabe von GitHub, dreimal am 2026-08-13 identisch. AUSDRÜCKLICH: Die Meldungen
+  SIEBEN Verwundbarkeits-Meldungen, davon FÜNF hoch und zwei mittel. HERKUNFT: die
+  Push-Ausgabe von GitHub, fünfmal am 2026-09-04 identisch. AUSDRÜCKLICH: Die Meldungen
   sind NICHT bewertet — weder auf Erreichbarkeit noch auf Ausnutzbarkeit noch darauf, ob
   eine davon Produktivcode betrifft. WARUM ALS EIGENER EINTRAG NEBEN DEM OBEN: Jener ist
   als Aussage über die AKTIVIERUNG richtig und bleibt es; ein Leser schliesst aus
   "ERLEDIGT" aber auf "nichts offen", und genau das trifft nicht zu.
+  DIE ZAHL IST AM 2026-09-04 RICHTIGGESTELLT, NICHT GESTEMPELT — sie ist ein ZUSTAND und
+  keine Herleitung; ein Stempel liesse zwei Zahlen nebeneinander stehen, und wer die
+  falsche nähme, hielte einen Bestand für aktuell, den es nicht mehr gibt. HIER STAND ZEHN,
+  DAVON ACHT HOCH UND ZWEI MITTEL, GEMESSEN dreimal identisch am 2026-08-13 — FÜR IHREN TAG
+  WAR SIE RICHTIG.
+  WAS DIE DIFFERENZ VERURSACHT HAT, IST NICHT ERHOBEN. Der Owner nennt als Ursache eine
+  Runde mit Pull Requests vor mehreren Sitzungen; DAS IST EINE PLAUSIBLE URSACHE UND KEINE
+  MESSUNG. Die Push-Zeile nennt nur SUMMEN — WELCHE Meldungen weggefallen sind, ist an
+  keiner Stelle erhoben, und ob überhaupt welche weggefallen sind statt ersetzt worden zu
+  sein, ebenso wenig.
+  DIE AUSSAGE DES EINTRAGS IST VON DER ZAHL UNBERÜHRT: Die Meldungen sind NICHT GESICHTET.
+  WENIGER MELDUNGEN HEISST NICHT ANGESEHENE MELDUNGEN.
   BINDET-AN: zu bestimmen, sobald die Meldungen gesichtet sind — die Einstufung verlangt
   eine Bewertung, die niemand vorgenommen hat, und ein erfundener Zeitpunkt wäre schlimmer
   als keiner.

@@ -543,11 +543,23 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   EHRLICHE EINORDNUNG: Dauerhygiene, kein Launch-Gate; erledigt am 2026-07-24.
   BINDET-AN: laufend (aktiv).
 - DEPENDABOT-MELDUNGEN OFFEN, NICHT GESICHTET (2026-08-13):
-  RISIKO: Auf dem Default-Branch stehen ZEHN Verwundbarkeits-Meldungen, davon ACHT hoch
+  RISIKO: Auf dem Default-Branch stehen SIEBEN Verwundbarkeits-Meldungen, davon FÜNF hoch
   und zwei mittel. Solange sie nicht gesichtet sind, ist unbekannt, ob eine davon
   Produktivcode betrifft, erreichbar oder ausnutzbar ist.
-  HERKUNFT: die Push-Ausgabe von GitHub, dreimal am 2026-08-13 identisch. KEINE andere
+  HERKUNFT: die Push-Ausgabe von GitHub, fünfmal am 2026-09-04 identisch. KEINE andere
   Quelle, KEINE eigene Prüfung im Dashboard.
+  DIE ZAHL IST AM 2026-09-04 RICHTIGGESTELLT, NICHT GESTEMPELT — sie ist ein ZUSTAND und
+  keine Herleitung; ein Stempel liesse zwei Zahlen nebeneinander stehen, und wer die
+  falsche nähme, hielte einen Bestand für aktuell, den es nicht mehr gibt. HIER STAND ZEHN,
+  DAVON ACHT HOCH UND ZWEI MITTEL, GEMESSEN dreimal identisch am 2026-08-13 — FÜR IHREN TAG
+  WAR SIE RICHTIG.
+  WAS DIE DIFFERENZ VERURSACHT HAT, IST NICHT ERHOBEN. Der Owner nennt als Ursache eine
+  Runde mit Pull Requests vor mehreren Sitzungen; DAS IST EINE PLAUSIBLE URSACHE UND KEINE
+  MESSUNG. Die Push-Zeile nennt nur SUMMEN — WELCHE Meldungen weggefallen sind, ist an
+  keiner Stelle erhoben, und ob überhaupt welche weggefallen sind statt ersetzt worden zu
+  sein, ebenso wenig.
+  DIE AUSSAGE DES EINTRAGS IST VON DER ZAHL UNBERÜHRT: Die Meldungen sind NICHT GESICHTET.
+  WENIGER MELDUNGEN HEISST NICHT ANGESEHENE MELDUNGEN.
   TRAGENDE KONTROLLE: heute KEINE über die blosse Meldung hinaus. Der Eintrag darüber
   ("DEPENDABOT — ERLEDIGT") trägt die AKTIVIERUNG und ist als solche Aussage unverändert
   richtig; er sagt nichts über offene Meldungen, und ein Leser schliesst aus "ERLEDIGT"

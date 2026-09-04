@@ -7194,6 +7194,44 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     eingehalten ist, ist **GEMESSEN am Diff** (`src/lib/capi/**` liegt nicht darin), keine
     Zusage.
 
+51. **`cut -c<n>` SCHNEIDET NACH ZEICHEN UND ZERLEGT DABEI MEHRBYTE-ZEICHEN — DIE FOLGE IST
+    KEINE FEHLERMELDUNG, SONDERN EINE ANDERE AUSGABEFORM.**
+    **GEMESSEN am eigenen Lauf (CC, 2026-09-04):** Ein Reihenfolge-Vergleich zweier
+    Titel-Listen schnitt mit `cut -c1-70`. Das halbiert bei UTF-8 ein Mehrbyte-Zeichen; die
+    entstandene Datei trägt danach eine ungültige Byte-Folge, und `diff` meldet
+    **`Binary file … matches`** STATT der Trefferzeilen. **Die Vergleichsdatei fällt damit
+    aus der Auswertung, ohne dass irgendetwas rot wird.**
+    **GEWECHSELT** auf einen Schnitt an einem TEXTMUSTER (`sed 's/ (Trigger.*//'`), der keine
+    Byte-Grenze verletzt — dazu eine NUL-Zählung über die Messdateien selbst und eine
+    künstliche Abweichung als **POSITIVKONTROLLE**, die anschlug.
+    **WAS DIESER FALL DEN BEKANNTEN HINZUFÜGT, UND ES IST DER GRUND FÜR DEN EINTRAG:** Die
+    bisher protokollierten Fälle erzeugten eine **ABWESENHEIT** — kein Treffer, wo einer
+    wäre. **DIESER ERZEUGT EINE AUSGABE, DIE WIE EIN BEFUND ÜBER DEN INHALT AUSSIEHT UND IN
+    WAHRHEIT EINER ÜBER DAS INSTRUMENT IST.** „Binary file matches" liest sich wie eine
+    Aussage über die Datei; es ist eine über den Schnitt, den man selbst gesetzt hat.
+    **DIE REGEL DAZU STEHT UND WIRD NICHT ERSETZT:** docs/immer-beachten.md, „EINE ABWESENHEIT
+    KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND". **DIESER EINTRAG IST EIN BELEG,
+    KEINE NEUE REGEL** — und ob er dort als Beleg ergänzt wird, ist eine EIGENE Entscheidung;
+    docs/immer-beachten.md ist in dieser Runde unberührt.
+    **HIER STEHT BEWUSST KEINE ORDNUNGSZAHL, UND DAS IST DER ZWEITE BEFUND DIESES EINTRAGS.**
+    Die Vorlage dieser Runde nannte ihn den „fünften Fall … nach `sed -i`, `grep -c $'\r'`,
+    `grep -qP '\x00'` und `LC_ALL=C grep -P`". **DIE ZWEI BESTEHENDEN AUFZÄHLUNGEN DIESER
+    DATEI ZÄHLEN ABER VERSCHIEDENE MITGLIEDER** — GEMESSEN am Dateitext (CC, 2026-09-04):
+    · **VERMERK 10, Abschnitt (h)** nennt sich den DRITTEN Fall, „nach `sed -i` … und `grep`
+      ohne `-a`".
+    · **VERMERK 11, Abschnitt (e)** nennt sich den VIERTEN, „neben `grep -c $'\r'`
+      (Hebungs-Kandidat 6), `grep -qP '\x00'` (Vorrats-Eintrag 33) und `python3`".
+    **KEINE DER BEIDEN LISTEN ENTHÄLT DIE ANDERE.** Die Vereinigung trägt SECHS Werkzeuge,
+    keine der zwei Ordnungszahlen ist an ihr gemessen, und eine dritte Zahl daneben wäre bei
+    der nächsten Ergänzung neu falsch — **dieselbe Bauform, die in dieser Datei mehrfach
+    protokolliert kaputtgegangen ist** (s. die Köpfe von „Entscheidungen, die über ihre
+    Scheibe hinaus binden" und „Vorrat"). **DIE ZAHL WIRD DESHALB NICHT GESETZT UND DIE
+    BESTEHENDEN WERDEN NICHT ANGETASTET:** Sie sind als Aussage über IHRE Liste richtig.
+    **WER DIE REIHE JE ZUSAMMENFÜHRT, FÜHRT DIE MITGLIEDER ZUSAMMEN UND NICHT DIE ZAHLEN**
+    (docs/immer-beachten.md, „MENGEN — ZWEI REGELN, DIE ZUSAMMENGEHÖREN", Teil (a)).
+    GEMELDET, NICHT GEBAUT. **KEINE EMPFEHLUNG.**
+    TRIGGER: die nächste Messung, die Text nach Zeichenzahl beschneidet.
+
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT
 DIESER SCHEIBE GEGENSTANDSLOS.** `refreshAccessToken` liest, dechiffriert und zerlegt

@@ -80,6 +80,9 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
     ruhender Daten, Erreichbarkeit, Backup und Restore) — die Teile (a) bis (aa)
   · Abschnitts-Lesung 2026-09-02 der Supabase-Dokumentation, LAUF 2 (zeitgesteuerte
     Auslöser: Supabase Cron, pg_cron, pg_net) — die Teile (ab) bis (ag)
+  · Abschnitts-Lesung 2026-09-04 der PostgREST- und Supabase-Dokumentation, LAUF 3
+    (bedingte Schreibung, Eindeutigkeits-Bruch, Transaktion und Isolation) — die
+    Teile (ah) bis (ar)
 · Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
   · Abschnitts-Lesung 2026-09-02 der Vercel-Dokumentation, LAUF 1 (Cron Jobs, Tarif-
     Grenzen, Absicherung) — die Teile (a) bis (g)
@@ -176,10 +179,10 @@ keine Reichweite.
 | # | URL (supabase.com …) | Titel | Umfang |
 |---|---|---|---|
 | 1 | /docs/guides/platform/backups | Database Backups | VOLLTEXT |
-| 2 | /docs/guides/database/postgres/row-level-security | Row Level Security | gezielt; Überschriftenliste vollständig |
+| 2 | /docs/guides/database/postgres/row-level-security | Row Level Security | gezielt; Überschriftenliste vollständig — **am 2026-09-04 ERNEUT gezielt gelesen, auf einer ANDEREN Achse (Grants, Schreib-Policies), s. Teil (ap)** |
 | 3 | /docs/guides/database/functions | Database Functions | gezielt + Abschnitt "Suggestions" VOLLTEXT |
 | 4 | /docs/guides/database/database-advisors | Performance and Security Advisors | gezielt; Lint-Liste vollständig (30 Lints) |
-| 5 | /docs/reference/javascript/select | JavaScript: select | gezielt; Beispiel-Überschriften vollständig |
+| 5 | /docs/reference/javascript/select | JavaScript: select | gezielt; Beispiel-Überschriften vollständig — **am 2026-09-04 ERNEUT gezielt gelesen, über die Anker /update und /single; es ist DIESELBE Einzelseite, s. Teil (ah)** |
 | 6 | /docs/guides/database/vault | Vault | **VOLLTEXT** |
 | 7 | /docs/guides/database/extensions/pgsodium | pgsodium (pending deprecation): Encryption Features | **VOLLTEXT** |
 | 8 | /docs/guides/api/using-custom-schemas | Using Custom Schemas | **VOLLTEXT** |
@@ -664,6 +667,507 @@ Seiten plus der erneut gelesenen Seite 13, Instrument Browser-Werkzeug, `textCon
 "GEMESSEN" steht, betrifft es ausschliesslich das eigene Vorgehen (Zeichenzahlen, HTTP-Status,
 Abwesenheit eines Doku-Stands) — GEMESSEN am eigenen Lauf (CC, 2026-09-02). **KEINE Messung an
 einer Supabase-Schnittstelle und KEINE an dieser Datenbank.**
+
+### Abschnitts-Lesung 2026-09-04 der PostgREST- und Supabase-Dokumentation, LAUF 3 (bedingte Schreibung, Eindeutigkeits-Bruch, Transaktion und Isolation) — die Teile (ah) bis (ar)
+
+**HERKUNFT DIESES LAUFS: GELESEN 2026-09-04 (CC), ELF Aufrufe auf ELF Adressen, ZEHN
+Dokumente, Instrument Browser-Werkzeug (Playwright-MCP), durchgehend `textContent`.**
+**KEINE MESSUNG** — weder an einer Supabase-Schnittstelle, noch an einer
+PostgREST-Instanz, noch an dieser Datenbank. Der Anlass war die Auflage im Zuschnitt der
+Scheibe 1b-2a (docs/aktiver-stand.md, „Was diese Scheibe ausdrücklich nicht baut, je mit
+Grund"), die vor der Scheibe 1b-2b **zwei** Nachholungen verlangt — die Anbieter-Lesung
+nach docs/db-regeln.md und die Frage, ob PostgREST bei einer bedingten Schreibung
+verlässlich meldet, ob eine Zeile getroffen wurde. Der Lauf gehört aber keiner Phase und
+wird nicht archiviert.
+
+**DIE DREI ANGABEN, DIE docs/db-regeln.md VERLANGT** (vierte Regel, „WER DB-CODE ANFASST,
+LEGT DIE GELESENE ANBIETER-DOKU ALS PROVENIENZ VOR") — sie stehen hier im Kopf, damit sie
+nicht in einem Bericht verschwinden, der nach der Runde niemand mehr liest:
+· **DATUM:** 2026-09-04.
+· **FUNDSTELLE:** die elf unter Teil (ah) einzeln genannten Adressen mit Titel und
+  gelesenem Anteil — **nicht „die Supabase-Doku".**
+· **FOLGE FÜR DEN BAU:** Für die Fragen nach dem **Eindeutigkeits-Bruch** (Teil (am)),
+  nach **Transaktion und Isolation** (Teil (ao)) und nach **RLS bei der Schreibung**
+  (Teil (ap)) **trägt die Lesung**. Für die Frage nach der **bedingten Schreibung**
+  (Teile (aj) bis (al)) und nach der **Rückmeldung eines ignorierten Duplikats**
+  (Teil (an)) **trägt sie NICHT** — der Kern beider ist an keiner gelesenen Stelle
+  beantwortet. **DIE SCHEIBE 1b-2b IST OHNE DIE MESSUNG AUS TEIL (ar) NICHT VOLLSTÄNDIG
+  PLANBAR.**
+
+**WARUM EIN LAUF ÜBER EINE FREMDE DOKU-SITE IM SUPABASE-ABSCHNITT LIEGT, und dieser Satz
+steht vorn, weil er sonst als Ablage-Fehler gelesen wird:** SIEBEN der zehn Dokumente
+stehen auf `docs.postgrest.org` und sind **NICHT von Supabase veröffentlicht**. Sie liegen
+trotzdem hier, weil Supabase seine Data API selbst als PostgREST ausweist — wörtlich
+(#30): *„Supabase provides a RESTful API using PostgREST, a thin API layer on top of
+Postgres."* Wer die Schreib-Semantik der Supabase-Data-API sucht, findet sie dort und
+nirgends sonst.
+**DAS IST EINE NEUE KLASSE GEGENÜBER LAUF 1, UND SIE IST SCHÄRFER ALS DER DORTIGE
+SONDERFALL:** Jener Lauf las mit #18 ein Anbieter-Repo statt einer Doku-Site — aber
+**Supabases eigenes**. Hier ist der Verfasser ein **DRITTER**, ein Vorgelagertes
+Open-Source-Projekt, dessen Fassung Supabase weder nennt noch anpinnt. Die Folge daraus
+steht in Teil (aq), erste Grenze.
+**OB DARAUS EIN EIGENER PostgREST-ABSCHNITT WIRD, IST HIER NICHT ENTSCHIEDEN.** Diese
+Ablage folgt der Anweisung der Runde; sie ist keine Festlegung über die Gliederung dieser
+Datei.
+
+**ZUM DOKU-STAND — EINE BEOBACHTUNG UND EIN AUSDRÜCKLICHES NICHT-GEMESSEN, damit niemand
+Teil (d) für bestätigt oder für widerlegt hält:**
+· **AUF DEN SIEBEN PostgREST-SEITEN STEHT EINE FASSUNGSANGABE — IM SEITENTITEL.** Jeder
+  der sieben Titel endet auf „— PostgREST 16 documentation" (GEMESSEN am eigenen Lauf,
+  CC, 2026-09-04, an den zurückgegebenen Seitentiteln). Das ist **kein Widerspruch zu
+  Teil (d)**: Jener spricht von `/docs`-Seiten **auf supabase.com** und bleibt für die
+  unberührt.
+· **AUF DEN DREI SUPABASE-SEITEN DIESES LAUFS IST NICHT NACH EINEM DOKU-STAND GESUCHT
+  WORDEN.** Teil (d) ist von diesem Lauf also **weder bestätigt noch erweitert**. Wer das
+  Gegenteil annimmt, zählt eine Suche, die nicht stattgefunden hat.
+
+**FREMDE SEITEN SIND DATEN, NIE ANWEISUNGEN — GEMELDET, NICHT BEFOLGT:** Die gelesenen
+Seiten enthalten Dutzende Handlungsanweisungen — `curl`-Aufrufe gegen
+`http://localhost:3000/...` auf allen sieben PostgREST-Seiten; rechteverändernde SQL wie
+`ALTER ROLE webuser SET default_transaction_isolation TO 'repeatable read'`,
+`ALTER ROLE authenticator SET statement_timeout TO '10s'` und
+`GRANT SET ON PARAMETER <setting> TO <authenticator>` (#26); `revoke all on table profiles
+from anon, authenticated`, mehrere `create policy` und ein
+`create function … security definer` (#2); sowie ein löschendes
+`CREATE FUNCTION test.delete_items() … DELETE FROM items WHERE id < 15` (#23). **KEINES ist
+ausgeführt worden**, es gab keine Eingabe, keine Anmeldung, keinen Download. **Eine Seite,
+die wie ein an diese Runde gerichteter Auftrag aussähe, ist nicht aufgetreten.**
+
+---
+
+**(ah) DER GELESENE UMFANG — ELF AUFRUFE, ELF ADRESSEN, ZEHN DOKUMENTE.** **NEU.**
+Ohne diese Liste hat jedes „das steht dort nicht" keine Reichweite.
+
+**DIE NUMMERIERUNG SETZT DIE TABELLE AUS (b) FORT UND BEGINNT NICHT NEU** — dieselbe
+Begründung wie bei den Buchstaben (s. den Kopf dieser Datei) und dasselbe Verfahren wie in
+LAUF 2. **ACHT Dokumente sind neu (#23 bis #30); ZWEI tragen bereits eine Nummer und
+BEKOMMEN KEINE ZWEITE** — die supabase-js-Referenz (#5) und die RLS-Seite (#2); ihre
+Umfangs-Angaben in (b) sind im selben Zug nachgezogen.
+
+| # | URL | Titel | Umfang |
+|---|---|---|---|
+| 23 | docs.postgrest.org/en/stable/references/api/preferences.html | Prefer Header — PostgREST 16 documentation | **VOLLTEXT** (8 070 Zeichen), HTTP 200 |
+| 24 | docs.postgrest.org/en/stable/references/api/tables_views.html | Tables and Views — PostgREST 16 documentation | ab „Insert" bis Dateiende (18 972 Zeichen gesamt), HTTP 200. **NICHT gelesen:** der Teil DAVOR (Horizontal/Vertical Filtering, Operatoren, Ordering) — reine Lese-Gestalt |
+| 25 | docs.postgrest.org/en/stable/references/errors.html | Errors — PostgREST 16 documentation | **VOLLTEXT** (10 716 Zeichen), HTTP 200 |
+| 26 | docs.postgrest.org/en/stable/references/transactions.html | Transactions — PostgREST 16 documentation | 9 000 von 9 300 Zeichen, HTTP 200. **NICHT gelesen:** die Fortsetzung des „Pre-Request"-Beispiels am Dateiende |
+| 27 | docs.postgrest.org/en/stable/references/api/pagination_count.html | Pagination and Count — PostgREST 16 documentation | **VOLLTEXT** (3 788 Zeichen), HTTP 200 |
+| 28 | docs.postgrest.org/en/stable/references/api/resource_representation.html | Resource Representation — PostgREST 16 documentation | **VOLLTEXT** (4 779 Zeichen), HTTP 200 |
+| 29 | docs.postgrest.org/en/stable/references/api.html | API — PostgREST 16 documentation | nur das **Abschnitts-VERZEICHNIS**, HTTP 200 — eigens aufgerufen, um die Vollständigkeit der Auswahl zu prüfen (s. Teil (al)) |
+| 30 | supabase.com/docs/guides/api | Data REST API \| Supabase Docs | **VOLLTEXT** (3 450 Zeichen), HTTP 200 |
+| 5 | supabase.com/docs/reference/javascript/update **und** /single | JavaScript API Reference \| Supabase Docs | **ZWEI Aufrufe, EIN Dokument** — gezielt gelesen: die Abschnitte `update`, `insert`, `upsert`, `delete`, `rpc` (nur die count-Zeile), `single`, `maybeSingle`, `getOpenApiSpec` |
+| 2 | supabase.com/docs/guides/database/postgres/row-level-security | Row Level Security \| Supabase Docs | gezielt (28 357 Zeichen gesamt): „Grants and policies", die vier Policy-Abschnitte, „Use security definer functions". **NICHT gelesen:** Performance-Empfehlungen, Auth-Helfer, MFA |
+
+**DIE ANGABE ZUR supabase-js-REFERENZ IST KEINE FORMALIE, UND OHNE SIE WIRD DER UMFANG
+FALSCH GELESEN: `/update`, `/insert`, `/upsert`, `/delete` und `/single` SIND ANKER AUF
+EINER EINZIGEN SEITE**, nicht fünf Dokumente. Sie trägt 12 302 861 Zeichen `textContent`
+(GEMESSEN am eigenen Lauf, CC, 2026-09-04) und ist damit das mit Abstand grösste Dokument
+dieses Bestands. **WER SIE ALS FÜNF SEITEN ZÄHLT, ÜBERSCHÄTZT DIE ABDECKUNG UM DAS
+VIERFACHE** — gelesen sind acht Abschnitte daraus, der Rest nicht.
+**EINE ZWEITE FOLGE, DIE BEIM NÄCHSTEN LAUF ARBEIT SPART:** Ein Aufruf auf einen dieser
+Anker lädt das ganze Dokument; die Ablage schreibt dafür jedes Mal rund **804 KB**
+Seiten-Abbild (GEMESSEN an der Werkzeug-Ablage, CC, 2026-09-04, zwei Dateien dieser
+Grösse). Zwei Aufrufe auf dieselbe Seite kosten das zweimal.
+
+**(ai) GESEHEN, NICHT GEÖFFNET — VIER GRÜNDE.** **NEU.**
+
+· **DIE ÜBRIGEN DREIZEHN EINTRÄGE DES PostgREST-API-VERZEICHNISSES** (#29): „Functions as
+  RPC", „Schemas", „Computed Fields", „Domain Representations", „Resource Embedding",
+  „Media Type Handlers", „Aggregate Functions", „OpenAPI", „Vary Header", „CORS",
+  „OPTIONS method", „URL Grammar".
+  **GRUND:** Sie behandeln Lese-Gestalt, Einbettung und Aushandlung und berühren keine der
+  Fragen dieses Laufs. **DAS VERZEICHNIS IST EIGENS GELESEN WORDEN, UM GENAU DAS ZU
+  PRÜFEN** — es trägt keinen Abschnitt „Concurrency", „Locking", „Affected Rows" oder
+  „Conditional Requests". Das ist der Grund, warum der Nicht-Treffer in Teil (al) eine
+  Reichweite hat und nicht bloss eine Behauptung ist.
+· **docs.postgrest.org/en/stable/references/configuration.html** — dort stünden
+  `db-tx-end`, `client-error-verbosity` und `db-max-rows`.
+  **GRUND, UND ER IST DER WICHTIGSTE DIESER LISTE: DORT STÜNDE DER VORGABEWERT UND NICHT
+  DER EINGESTELLTE.** Gefragt wäre, was die Supabase-Instanz gesetzt hat, und das steht in
+  keiner Doku — weder in der von PostgREST noch in der von Supabase. **Ein Vorgabewert, als
+  Antwort auf diese Frage abgelegt, wäre eine Angabe, die richtig aussieht und nichts
+  über unsere Instanz sagt.** Es ist eine Messung, keine Lesung.
+· **DIE POSTGRESQL-EIGENE DOKUMENTATION** zu `READ COMMITTED` und zur Neuauswertung der
+  `WHERE`-Bedingung bei einem gesperrten `UPDATE`.
+  **GRUND:** ausserhalb des Gegenstands dieser Datei — sie trägt Befunde über die
+  PLATTFORM-ANBIETER, und PostgreSQL ist hier kein Anbieter, sondern das, worauf einer
+  aufsetzt. **DIE STELLE WIRD TROTZDEM BENANNT UND NICHT VERSCHWIEGEN**, weil dort die
+  einzige offene Hälfte von Teil (ao) läge; s. Teil (aq), dritte Grenze.
+· **supabase.com/docs/guides/database/database-advisors** und die Postgres-Upgrade-Seiten —
+  **GRUND:** in LAUF 1 als #4 bzw. unter (c) bereits behandelt; kein Bezug zu den Fragen
+  dieses Laufs.
+
+**(aj) DIE RÜCKGABE EINER SCHREIBUNG IM VORGABEFALL — KEIN RUMPF, UND DAS IST AN ZWEI
+QUELLEN BESTÄTIGT.** **NEU.**
+
+GELESEN 2026-09-04 an #23, Abschnitt „Return Representation → Minimal", wörtlich:
+> „With `Prefer: return=minimal`, no response body will be returned. **This is the default
+> mode for all write requests.**"
+
+Die zweite Quelle bestätigt es am Ergebnis statt am Kopf. GELESEN 2026-09-04 an #5,
+wörtlich: *„By default, updated rows are not returned. To return it, chain the call with
+`.select()` after filters."* — und die dort abgebildeten Antworten lauten für ein `update()`
+ohne `.select()` `{ "status": 204, "statusText": "" }`, für `insert()` `201` und für
+`delete()` `204`.
+
+**DIE ZWEI ÜBRIGEN AUSPRÄGUNGEN DES KOPFES, weil sie sonst beim nächsten Lesen als
+Möglichkeit übersehen werden** (#23, „Headers Only" und „Full"):
+`Prefer: return=headers-only` liefert einen `Location`-Kopf, **setzt aber einen
+Primärschlüssel voraus** — wörtlich: *„Make sure that the table is not write-only,
+otherwise constructing the Location header will cause a permissions error."*
+`Prefer: return=representation` liefert die betroffenen Zeilen als Rumpf; in supabase-js
+ist das `.select()` nach den Filtern.
+
+**WAS DIESER TEIL NICHT SAGT:** was der Rumpf bei **null** getroffenen Zeilen enthält.
+Das steht an keiner gelesenen Stelle — s. Teil (al).
+
+**(ak) DIE count-OPTION — ZWEI ANBIETEREIGENE QUELLEN, ZWEI REICHWEITEN. FESTGEHALTEN
+UND NICHT AUFGELÖST.** **NEU.**
+
+**DIE CLIENT-DOKU SAGT ES AUSDRÜCKLICH, UND ZWAR AN ALLEN VIER SCHREIBMETHODEN, JE MIT
+EIGENEM WORTLAUT.** GELESEN 2026-09-04 an #5, Parameterlisten:
+> `update(values, options)` — „Count algorithm to use to count **updated** rows."
+> `insert(values, options)` — „Count algorithm to use to count **inserted** rows."
+> `upsert(values, options)` — „Count algorithm to use to count **upserted** rows."
+> `delete(options)` — „Count algorithm to use to count **deleted** rows."
+Die Werte je: *„exact": Exact but slow count algorithm. Performs a COUNT(*) under the
+hood.* · *„planned": Approximated but fast count algorithm.* · *„estimated": Uses exact
+count for low numbers and planned count for high numbers.* Der Zähler erscheint im
+Antwortobjekt als eigenes Feld `count`.
+
+**DIE PROTOKOLL-DOKU BESCHREIBT DASSELBE `Prefer: count` AUSSCHLIESSLICH ALS
+PAGINIERUNGS-WERKZEUG FÜR LESEANTWORTEN.** GELESEN 2026-09-04 an #27, wörtlich:
+> „**In order to obtain the total size of the table** (such as when rendering the last page
+> link in a pagination control), you can specify a `Prefer: count=<value>` header."
+Der Wert reist dort im `Content-Range`-Kopf (`Content-Range: 0-24/3573458`), alle Beispiele
+der Seite sind `GET`/`HEAD`, und **die Seite sagt zu PATCH, POST und DELETE kein Wort.**
+
+**ZWEI ANBIETEREIGENE QUELLEN, ZWEI VERSCHIEDENE REICHWEITEN. DER WIDERSPRUCH IST HIER
+FESTGEHALTEN UND NICHT AUFGELÖST** — dieselbe Handhabung wie bei Teil (j) dieses
+Abschnitts, wo Doku-Seite und Anbieter-Repo verschiedene Statusangaben zu Vault machen.
+
+**EINE DRITTE STELLE STREIFT DIE FRAGE UND IST DIE EINZIGE, DIE AUF DER PROTOKOLL-SEITE
+ÜBERHAUPT VON BETROFFENEN ZEILEN EINER SCHREIBUNG SPRICHT** (#23, „Max Affected"),
+wörtlich: *„The ‚affected resources' are the number of rows returned by DELETE and PATCH
+requests."* **Sie steht im Dienst einer OBERGRENZE** (s. Teil (al)) **und ist keine Zusage
+über einen Zähler.** Sie belegt aber, dass PostgREST den Begriff für Schreibungen führt.
+
+**EINSTUFUNG: DIE FRAGE, OB `count` BEI EINER SCHREIBUNG EINE VERLÄSSLICHE ZAHL LIEFERT,
+IST DAMIT NICHT BEANTWORTET.** Die Client-Doku behauptet es, die Protokoll-Doku deckt es
+nicht. **Der Posten steht in Teil (ar) als (b).**
+
+**(al) DER NULL-TREFFER-FALL — AN KEINER GELESENEN STELLE BEANTWORTET.
+NICHT-TREFFER MIT BENANNTER REICHWEITE.** **NEU.**
+
+**DIE FRAGE:** Was meldet ein `update` mit Filtern zurück, wenn **KEINE** Zeile passt —
+ein Fehler, eine leere Menge, oder etwas Drittes?
+
+**DIE REICHWEITE, SEITE FÜR SEITE, damit der Nicht-Treffer nachprüfbar ist:**
+· **#24, Abschnitt „Update", VOLLTEXT gelesen:** er nennt PATCH, die Filter, die vier
+  unterstützten Zusatzmerkmale (Return Representation, Resource Embedding, Vertical
+  Filtering, Missing, Specifying Columns) und eine Warnung vor versehentlichen
+  Voll-Tabellen-Änderungen. **KEIN SATZ zum Null-Treffer-Fall.**
+· **#25, VOLLTEXT gelesen:** die vollständige Zuordnungstabelle PostgreSQL→HTTP und die
+  vollständige PGRST-Codeliste (Gruppen 0, 1, 2, 3 und X). **KEIN Code für „keine Zeile
+  betroffen".**
+· **#23, VOLLTEXT gelesen:** die acht unterstützten Präferenzen. **KEINE Untergrenze.**
+· **#27, VOLLTEXT gelesen:** s. Teil (ak).
+· **#29, das Abschnitts-Verzeichnis:** kein Abschnitt „Concurrency", „Locking", „Affected
+  Rows" oder „Conditional Requests". **DAS IST DIE STELLE, DIE DEN NICHT-TREFFER TRÄGT** —
+  ohne sie wäre nicht auszuschliessen, dass die Antwort auf einer nicht geöffneten Seite
+  desselben Abschnitts steht.
+
+**ES GIBT EINE OBERGRENZE UND KEIN GEGENSTÜCK.** GELESEN 2026-09-04 an #23, Abschnitt
+„Max Affected", wörtlich: *„You can set a limit to the amount of resources affected in a
+request by sending `max-affected` preference. This feature works in combination with
+`handling=strict` preference."* Bei Überschreitung:
+> HTTP/1.1 400 Bad Request
+> { „code": „PGRST124", „message": „Query result exceeds max-affected preference
+> constraint", „details": „The query affects 14 rows", „hint": null }
+**SIE MELDET, WENN ZU VIELE ZEILEN BETROFFEN SIND — NIE, WENN ZU WENIGE.** Für einen
+Riegel ist genau die andere Richtung gefragt.
+**GRENZE:** `max-affected` und `PGRST124`/`PGRST128` stehen in der Fassung **16**. Ob die
+laufende Instanz sie kennt, ist ungelesen (s. Teil (aq), erste Grenze).
+
+**EIN DRITTER WEG IST DOKUMENTIERT UND TRIFFT DIE FRAGE SCHRÄG — DIE SINGULAR-ANTWORT.**
+GELESEN 2026-09-04 an #28, Abschnitt „Singular or Plural", wörtlich:
+> „**When a singular response is requested but no entries are found, the server responds
+> with an error message and 406 Not Acceptable status code** rather than the usual empty
+> array and 200 status:
+> { „code": „PGRST116", „message": „Cannot coerce the result to a single JSON object",
+> „details": „**The result contains 0 rows**", „hint": null }"
+Ausgelöst über `Accept: application/vnd.pgrst.object+json`. Derselbe Code steht in #25
+mit der Beschreibung *„More than 1 or no items where returned when requesting a singular
+response"* und HTTP-Status 406.
+Das Gegenstück in der Client-Doku (#5): `single()` — *„Query result must be one row (e.g.
+using `.limit(1)`), otherwise this returns an error."*; `maybeSingle()` — *„Query result
+must be **zero or one row** …"*.
+
+**WARUM DAS DIE FRAGE TROTZDEM NICHT BEANTWORTET, UND DIESER ABSATZ IST DER TEURERE TEIL
+DIESES BEFUNDES:** #28 illustriert den Mechanismus **ausschliesslich an einem `GET`**
+(`/items?id=eq.1`), und beide Client-Einträge tragen als einziges Beispiel „With
+`select()`". **OB DERSELBE 406/PGRST116 BEI EINEM `PATCH` MIT SINGULAR-ANFORDERUNG UND
+NULL GETROFFENEN ZEILEN ENTSTEHT, STEHT AUF KEINER GELESENEN SEITE.** Der Satz „when a
+singular response is requested but no entries are found" ist allgemein formuliert und
+**lässt die Lesart zu — eine Lesart ist keine Zusage.**
+
+**EINSTUFUNG: BRAUCHT MESSUNG.** Der Posten steht in Teil (ar) als (a) und (c).
+
+**(am) DER EINDEUTIGKEITS-BRUCH — 23505 → 409, RUMPFFORM DOKUMENTIERT.** **NEU.**
+
+GELESEN 2026-09-04 an #25, wörtlich:
+> „**PostgREST error messages follow the PostgreSQL error structure. It includes MESSAGE,
+> DETAIL, HINT, ERRCODE and will add an HTTP status code to the response.**"
+> „PostgREST will forward errors coming from PostgreSQL."
+Das dort abgebildete Beispiel (ein Not-Null-Bruch) zeigt die Rumpfform:
+> { „code": „23502", „details": „Failing row contains (null, foo, null).", „hint": null,
+> „message": „null value in column \"id\" of relation \"projects\" violates not-null
+> constraint" }
+Aus der Zuordnungstabelle derselben Seite, wörtlich:
+> `23505` → **409** → „uniqueness violation"
+> `23503` → 409 → „foreign key violation"
+> `42501` → „if authenticated 403, else 401" → „insufficient privileges"
+> `other` → 400
+Fehler von PostgREST selbst tragen dieselbe Struktur mit dem Präfix `PGRST` im Feld `code`.
+
+**IST DIE FORM DOKUMENTIERT UND STABIL ODER EINE BEOBACHTUNG? SIE IST DOKUMENTIERT** — als
+benannte Struktur und als Referenztabelle, nicht als Beispiel nebenbei. **ZWEI VORBEHALTE
+GEHÖREN ZWINGEND DAZU, sonst wird der Befund weiter gelesen, als er trägt:**
+· **DER TEXT DER FELDER `message` UND `details` STAMMT AUS POSTGRESQL, NICHT AUS
+  PostgREST, UND WIRD VON DIESER DOKU NICHT FIXIERT.** Wer auf `code === '23505'`
+  verzweigt, steht auf dokumentiertem Grund. **Wer auf einen Constraint-Namen IM TEXT
+  verzweigt, steht auf keinem** — dafür bräuchte es eine Messung.
+· **DIE AUSFÜHRLICHKEIT IST KONFIGURIERBAR.** Wörtlich (#25, „Client Error Verbosity"):
+  *„For HTTP clients, the error verbosity can be set via `client-error-verbosity` config."*
+  Mit `verbose` kommen `code`, `message`, `details` und `hint`; **mit `minimal` nur `code`
+  und `message`.** **WELCHEN WERT DIE SUPABASE-INSTANZ SETZT, IST UNGELESEN UND
+  UNGEMESSEN** — die Konfigurationsseite ist bewusst nicht geöffnet worden, s. Teil (ai).
+
+**EIN NEBENBEFUND, DER ZUR FEHLERFORM GEHÖRT** (#25, „Proxy-Status Header"): Im Fehlerfall
+wird der Standardkopf `Proxy-Status` mit dem Fehlercode zurückgegeben — *„This is useful
+when doing HEAD requests where the HTTP status is not descriptive enough."*
+
+**EINSTUFUNG: BEANTWORTET auf der CODE- und STATUS-Achse; STREIFT auf der
+WORTLAUT-Achse.**
+
+**(an) `resolution=ignore-duplicates` UND `on_conflict` — DER MECHANISMUS IST
+DOKUMENTIERT, DIE RÜCKMELDUNG NICHT.** **NEU.**
+
+**PROTOKOLL-EBENE**, GELESEN 2026-09-04 an #24, Abschnitte „Upsert" und „On Conflict",
+wörtlich:
+> „You can make an upsert with POST and the `Prefer: resolution=merge-duplicates` header"
+> „**You can also choose to ignore the duplicates with `Prefer: resolution=ignore-duplicates`.**"
+> „By default, upsert operates based on the primary key columns, so you must specify all
+> of them."
+> „**By specifying the `on_conflict` query parameter, you can make upsert work on a
+> column(s) that has a UNIQUE constraint.**"
+**EINE AUFLAGE STEHT DANEBEN UND WIRD LEICHT ÜBERLESEN**, wörtlich: *„**After creating a
+table or changing its primary key, you must refresh PostgREST schema cache for upsert to
+work properly.**"* — mit Zeiger auf „Schema Cache Reloading".
+
+**CLIENT-EBENE**, GELESEN 2026-09-04 an #5, Parameterliste von `upsert`:
+> `ignoreDuplicates` — „**If `true`, duplicate rows are ignored. If `false`, duplicate rows
+> are merged with existing rows.**"
+> `onConflict` — „Comma-separated UNIQUE column(s) to specify how duplicate rows are
+> determined. Two rows are duplicates if all the `onConflict` columns are equal."
+> `defaultToNull` — „… This only applies when inserting new rows, not when merging with
+> existing rows under `ignoreDuplicates: false`. This also only applies when doing bulk
+> upserts."
+
+**WAS MELDET DIE SCHREIBUNG ZURÜCK — INSBESONDERE, OB EINGEFÜGT WURDE ODER NICHT?
+NICHT BEANTWORTET.** Keine gelesene Stelle sagt, wie sich ein **ignoriertes** Duplikat von
+einer **echten** Einfügung unterscheiden lässt. Die zwei denkbaren Kandidaten sind
+dieselben wie in Teil (ak) und (al) — `count` und `return=representation` —, und für den
+Ignorier-Fall steht zu beiden nichts.
+
+**EIN INNERER WIDERSPRUCH DERSELBEN CLIENT-SEITE WIRD GEMELDET UND NICHT AUFGELÖST:** Der
+Fliesstext des `upsert`-Abschnitts sagt *„By default, upserted rows are not returned. To
+return it, chain the call with `.select()`."* Das Beispiel „Upsert with conflict resolution
+and exact row counting" **derselben Seite** ruft `.select()` NICHT und zeigt trotzdem ein
+gefülltes `data`-Feld:
+> // Upserting and returning exact count
+> const { data, error, count } = await supabase
+>   .from('users')
+>   .upsert({ id: 3, message: 'foo', username: 'supabot' },
+>           { onConflict: 'username', count: 'exact' })
+> // Example response:
+> // {  data: [ { id: 42, handle: "saoirse", display_name: "Saoirse" } ],
+> //    count: 1, error: null }
+**ZWEI AUSSAGEN AUF EINER SEITE, DIE NICHT ZUSAMMENPASSEN.** Welche gilt, ist an der Doku
+nicht entscheidbar.
+**PROVENIENZ DIESES EINEN ZITATS, weil sein Instrument ein anderes war als beim übrigen
+Lauf:** Der Beispiel-Rumpf ist aus der **Seiten-eigenen Nutzlast** gelesen (die
+Codeblöcke der Beispiel-Reiter liegen dort serialisiert vor), nicht aus dem gerenderten
+Text — GEMESSEN am eigenen Lauf (CC, 2026-09-04). Es ist derselbe Seiteninhalt, aber ein
+zweites Instrument; ohne diese Angabe wäre nicht nachvollziehbar, warum ein zugeklappter
+Reiter zitierbar ist.
+**ES IST DIE REITER-GESTALT AUS HEBUNGS-KANDIDAT 2** der Standdatei (docs/aktiver-stand.md,
+Zusatz 2026-08-25): eine Aussage, die im Fliesstext der Seite nicht steht und trotzdem
+nicht als leer behandelt werden darf. **HIER IST SIE ZUM ZWEITEN MAL AUFGETRETEN, bei
+einem anderen Anbieter.**
+
+**EINSTUFUNG: DER MECHANISMUS IST BEANTWORTET. DIE RÜCKMELDUNG BRAUCHT MESSUNG.**
+
+**(ao) TRANSAKTION UND ISOLATION — JEDE ANFRAGE EINE TRANSAKTION, READ COMMITTED.** **NEU.**
+
+GELESEN 2026-09-04 an #26, wörtlich:
+> „After User Impersonation, **every request to an API resource runs inside a
+> transaction.** The sequence of the transaction is as follows:
+> START TRANSACTION; -- <Access Mode> <Isolation Level>
+> -- <Transaction-scoped settings>
+> -- <Main Query>
+> END; -- <Transaction End>"
+> **Isolation Level:** „**Every transaction uses the PostgreSQL default isolation level:
+> READ COMMITTED.** Unless you modify `default_transaction_isolation` for an impersonated
+> role or function."
+> **Transaction End:** „**If the transaction doesn't fail, it will always end in a COMMIT.**
+> Unless `db-tx-end` is configured to ROLLBACK …"
+> **Aborting transactions:** „**Any database failure(like a failed constraint) will result
+> in a rollback of the transaction.** You can also RAISE an error inside a function to
+> cause a rollback."
+Die Zugriffsart hängt an der HTTP-Methode: `GET`/`HEAD` → READ ONLY, **`POST`, `PATCH`,
+`PUT`, `DELETE` → READ WRITE**.
+
+**EINE ZWEITE QUELLE STÜTZT DIE ATOMARITÄT VON DER ANDEREN SEITE.** GELESEN 2026-09-04 an
+#30, wörtlich: *„**The REST API resolves all requests to a single SQL statement** leading
+to fast response times and high throughput."*
+
+**DIE MECHANISMEN, MIT DENEN DAS ABWEICHEN KANN, STEHEN IN DERSELBEN QUELLE UND GEHÖREN
+MIT — sonst liest sich „READ COMMITTED" wie eine Eigenschaft statt wie ein Vorgabewert:**
+> `ALTER ROLE webuser SET default_transaction_isolation TO 'repeatable read';`
+> — „Every webuser gets its queries executed with `default_transaction_isolation` set to
+> REPEATABLE READ."
+> oder an einer Funktion: `SET default_transaction_isolation TO 'serializable'`.
+Dazu: PostgREST wendet die Einstellungen der **impersonierten** Rolle als
+transaktions-gebundene Einstellungen an — *„PostgREST applies the impersonated roles
+settings as transaction-scoped settings."*
+**OB AN IRGENDEINER ROLLE DIESES PROJEKTS EINE ABWEICHENDE
+`default_transaction_isolation` GESETZT IST, IST NICHT GEMESSEN.** Das ist eine Frage an
+UNSERE Datenbank und gehört in den SQL-Editor, nicht in eine Anbieter-Lesung.
+**EINE DRITTE ABWEICHUNG:** `Prefer: tx=rollback` ist **nicht** der Vorgabefall —
+*„This preference is not enabled by default but can be activated with `db-tx-end`."*
+
+**EINSTUFUNG: BEANTWORTET, soweit gefragt.** Was daraus für zwei GLEICHZEITIGE bedingte
+Schreibungen folgt, steht **nicht** hier, sondern in Teil (aq), dritte Grenze — und dort
+steht auch, warum es bei diesem Anbieter nicht zu holen ist.
+
+**(ap) RLS UND DIE SCHREIBUNG — ZWEI PRÜFUNGEN, IN DIESER REIHENFOLGE.** **NEU.**
+
+GELESEN 2026-09-04 an #2, Abschnitt „Grants and policies", wörtlich:
+> „**Postgres runs two checks before a client touches a table. Grants decide whether a role
+> can run an operation on the table at all. Policies decide which rows that operation
+> applies to.** Set both for every table you expose."
+> „**A missing grant raises a 42501 error before any policy runs.** When a request fails
+> that your policy should allow, check the grants before you change the policy."
+Aus der Rollentabelle derselben Seite, wörtlich:
+> `service_role` — select, insert, update, delete — „**Full access. It bypasses RLS, so
+> keep it server-side.**"
+Dazu: *„Adding policies doesn't take those grants back. A table protected only by policies
+still hands `anon` an insert path if you never revoke the grant."*
+
+**SCHREIB-POLICIES**, ebenda, Abschnitte „UPDATE policies" und „DELETE policies":
+> „You can specify update policies by combining the `using` and `with check` expressions.
+> The `using` clause decides **which existing rows can be updated**. The `with check`
+> clause decides **what the resulting row is allowed to look like** …"
+> „If no `with check` expression is defined, the `using` expression decides both which rows
+> are visible and which new rows are allowed."
+> „**To perform an UPDATE operation, a corresponding SELECT policy is required. Without a
+> SELECT policy, the UPDATE operation will not work as expected.**"
+Die Client-Doku sagt dasselbe am Löschpfad (#5, Abschnitt `delete`): *„If you use
+`delete()` with filters and you have RLS enabled, **only rows visible through SELECT
+policies are deleted**. Note that by default no rows are visible …"*
+
+**EINE BERÜHRUNG MIT TEIL (z) DIESES ABSCHNITTS, UND SIE IST KEIN WIDERSPRUCH:** Die Seite
+sagt *„On existing projects, a new table in `public` starts with every privilege already
+granted to all three roles"* und setzt unmittelbar daneben *„**Not every project grants
+these automatically.** See Default privileges."* Das ist dieselbe Sache, die (z) als
+offenen Punkt führt („DIE GRANT-VORGABE DER PLATTFORM KIPPT AM 30.10.2026") — hier mit dem
+Vorbehalt im Fliesstext der RLS-Seite. **GEMELDET, NICHT AUSGEWERTET;** der Volltext des
+Punktes steht in docs/offene-punkte.md und wird hier nicht verdoppelt.
+
+**EINSTUFUNG: BEANTWORTET.** Die Folge für die bedingte Schreibung steht in Teil (aq),
+zweite Grenze.
+
+**(aq) DIE DREI GRENZEN DIESES LAUFS — EIGENER TEIL, KEINE FUSSNOTE.** **NEU.**
+
+**GRENZE 1 — DIE GELESENE PostgREST-FASSUNG IST 16. WELCHE UNSERE INSTANZ FÄHRT, IST
+UNGELESEN UND UNGEMESSEN.**
+Alle sieben PostgREST-Seiten liegen unter `/en/stable/` und tragen im Titel „PostgREST 16
+documentation". **Die Supabase-Seite zur Data API (#30) nennt PostgREST namentlich, aber
+KEINE Versionsangabe** — GEMESSEN am eigenen Lauf (CC, 2026-09-04, Begriff „version"
+nullmal auf jener Seite). Der einzige Fassungshinweis im ganzen gelesenen Bestand steht
+am Client-Modifikator `stripNulls`: *„Requires PostgREST 11.2.0+."*
+**FOLGE: JEDE ANGABE DIESES LAUFS IST EINE AUSSAGE ÜBER DIE GELESENE FASSUNG, NICHT ÜBER
+DIE LAUFENDE.** Das trifft besonders die Merkmale, die als jung erkennbar sind —
+`max-affected`, `PGRST124`, `PGRST128`, `handling=strict`.
+
+**GRENZE 2 — UNTER RLS IST „KEINE ZEILE SICHTBAR" VON „KEINE ZEILE PASST" AM ERGEBNIS
+NICHT ZU TRENNEN.**
+Beide erzeugen dieselbe Beobachtung: kein Rumpf, kein Fehler, nichts geschehen. Die
+Grundlage steht in Teil (ap) — eine Schreibung erreicht nur Zeilen, die eine SELECT-Policy
+sichtbar macht, und *„by default no rows are visible"*.
+**FOLGE: WER EINE BEDINGTE SCHREIBUNG ALS RIEGEL BENUTZT, MISST UNTER RLS ZWEI ZUSTÄNDE
+MIT EINEM INSTRUMENT.**
+**DAS IST EINE AUSSAGE ÜBER DEN ANBIETER-MECHANISMUS UND AUSDRÜCKLICH KEINE ÜBER UNSEREN
+BESTAND.** Was für `project_secrets` gilt, steht GEMESSEN in docs/db-stand.md; es wird hier
+**nicht wiederholt und nicht ausgewertet** — diese Datei trägt keinen Zustand unserer
+Datenbank (s. ihren Kopf, „WAS SIE NICHT TRÄGT").
+
+**GRENZE 3 — ATOMAR HEISST NICHT SICHER, UND DIESER SATZ IST DER GRUND FÜR DIESEN TEIL.**
+Garantiert ist nach Teil (ao): **EINE** Anweisung, **EINE** Transaktion, **READ
+COMMITTED**. **Was ZWEI GLEICHZEITIGE bedingte Schreibungen unter READ COMMITTED tun — ob
+die `WHERE`-Bedingung nach dem Warten auf die Zeilensperre NEU ausgewertet wird —, STEHT
+AUF KEINER GELESENEN SEITE.** Weder PostgREST noch Supabase behandeln es; die Antwort
+liegt in der PostgreSQL-eigenen Dokumentation, und die ist nicht Gegenstand dieser Datei
+(s. Teil (ai), dritter Grund).
+**WARUM DER SATZ HIERHER GEHÖRT UND NICHT IN EINE FUSSNOTE: „ATOMAR" WIRD SONST ALS
+„NEBENLÄUFIGKEITSSICHER" GELESEN — und genau das ist die Frage, für die der Riegel
+überhaupt gebaut wird.** Ein Leser, der Teil (ao) allein nimmt, hält die Nebenläufigkeit
+für geklärt und baut ohne sie weiter.
+
+**(ar) DER OFFENE MESSPOSTEN — WAS EINE MESSUNG GEGEN DEN ECHTEN ENDPUNKT BEANTWORTEN
+MUSS, BEVOR DER RIEGEL PLANBAR IST.** **NEU.**
+
+**DIE TRENNLINIE STEHT ZUERST UND GILT FÜR DEN GANZEN LAUF: ALLES IN DIESEM LAUF IST
+GELESEN. EINE DOKU-AUSSAGE ZU EINER FRAGE, DIE EINE MESSUNG VERLANGT, IST ABGELEGT UND
+ERSETZT DIE MESSUNG NICHT — SIE WIRD NIE ALS BEANTWORTET GEZÄHLT.**
+**WER (b) FÜR BEANTWORTET HÄLT, WEIL ES DASTEHT, HAT DIE TRENNLINIE ÜBERSCHRITTEN.**
+
+· **(a) WAS MELDET EIN `update` MIT ZUSTANDSFILTER, DAS NULL ZEILEN TRIFFT?**
+  Fehler, leere Menge, oder etwas Drittes. Grundlage: Teil (al) — an keiner gelesenen
+  Stelle beantwortet, mit benannter Reichweite über sechs Seiten und das
+  Abschnitts-Verzeichnis.
+· **(b) LIEFERT `count` BEI EINER SCHREIBUNG EINE VERLÄSSLICHE ZAHL?**
+  Grundlage: Teil (ak) — **die Client-Doku sagt ja, die Protokoll-Doku schweigt.** Zwei
+  anbietereigene Quellen, zwei Reichweiten.
+· **(c) ENTSTEHT `PGRST116`/406 AUCH BEI EINEM `PATCH` MIT SINGULAR-ANFORDERUNG UND NULL
+  TREFFERN?**
+  Grundlage: Teil (al) — der Mechanismus ist dokumentiert, aber **nur an `GET`
+  illustriert**; die Client-Gegenstücke `single()`/`maybeSingle()` tragen als einziges
+  Beispiel „With `select()`".
+
+**DER PRÄZEDENZFALL FÜR DIE BAUFORM EINER SOLCHEN PROBE IST
+`supabase/checks/upsert-arbiter-probe.sql`. ER IST ALS PRÄZEDENZFALL GENANNT UND NICHT ALS
+AUSWAHL** — weder ist entschieden, dass die Messung diese Gestalt bekommt, noch dass sie
+im SQL-Editor stattfindet; die drei Fragen oben zielen auf einen **HTTP-Endpunkt**, nicht
+auf SQL. **KEINE EMPFEHLUNG.**
+
+**WAS DIESER TEIL NICHT IST: eine Reihenfolge, eine Auswahl, oder eine Aussage darüber,
+welcher der drei Posten vor einem Zuschnitt zwingend beantwortet sein muss.** Er führt
+zusammen, was ungemessen ist; entschieden ist damit nichts.
+
+**PROVENIENZ DES GANZEN LAUFS 3:** GELESEN am 2026-09-04 (CC) an den unter (ah) genannten
+elf Adressen, Instrument Browser-Werkzeug, `textContent` — mit der einen in Teil (an)
+eigens ausgewiesenen Ausnahme, wo die Seiten-eigene Nutzlast gelesen wurde. Wo „GEMESSEN"
+steht, betrifft es **ausschliesslich das eigene Vorgehen** (Zeichenzahlen, HTTP-Status,
+Seitentitel, Begriffs-Achsen auf einer Seite, Grösse der Werkzeug-Ablage) — GEMESSEN am
+eigenen Lauf (CC, 2026-09-04). **KEINE Messung an einer Supabase-Schnittstelle, KEINE an
+einer PostgREST-Instanz und KEINE an dieser Datenbank.**
+**KEIN BEFUND DIESES LAUFS WIDERSPRICHT EINEM BESTEHENDEN TEIL DES SUPABASE-ABSCHNITTS.**
+Geprüft sind die drei Berührungen: Teil (n) (RLS aktiv ohne Policy, `service_role` mit
+`bypassrls`) — **deckungsgleich**; Teil (z) (die Grant-Vorgabe) — **dieselbe Sache, hier
+mit dem Vorbehalt im Fliesstext, s. Teil (ap)**; Teil (d) (kein Doku-Stand auf
+`/docs`-Seiten) — **nicht berührt, weil dieser Lauf auf den drei Supabase-Seiten nicht
+danach gesucht hat** (s. den Kopf).
 
 ## Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
 

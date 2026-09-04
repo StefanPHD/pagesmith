@@ -1155,6 +1155,38 @@ auf SQL. **KEINE EMPFEHLUNG.**
 welcher der drei Posten vor einem Zuschnitt zwingend beantwortet sein muss.** Er führt
 zusammen, was ungemessen ist; entschieden ist damit nichts.
 
+**ZUSATZ 2026-09-04 — DIE DREI POSTEN SIND GEMESSEN, DER MESSPOSTEN IST GESCHLOSSEN. DER
+TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER ZUSATZ TRITT DANEBEN.**
+**GEMESSEN 2026-09-04 (OWNER), ACHT Aufrufe gegen den echten Endpunkt**, mit
+Sichtbarkeits-Beleg vor der ersten Schreibung und unabhängiger Gegenlesung danach.
+**DIE MESSWERTE STEHEN NICHT HIER**, sondern an zwei Orten: der geschlossene Eintrag "DIE
+RÜCKMELDUNG EINER BEDINGTEN SCHREIBUNG ÜBER PostgREST IST UNGEMESSEN" in
+docs/offene-punkte.md trägt die drei Antworten mit ihren Grenzen, und das Protokoll je
+Messung steht im Feld `VERIFIZIERT` von `supabase/checks/bedingte-schreibung-probe.sql`.
+**Zweimal geschrieben liefe es auseinander** — deshalb hier nur der Zeiger.
+
+**DREI SÄTZE SCHÜTZEN DIESEN LAUF VOR EINEM MISSVERSTÄNDNIS, UND SIE SIND DER EIGENTLICHE
+INHALT DIESES ZUSATZES:**
+· **TEIL (ak) BLEIBT RICHTIG.** Die Messung entscheidet den dort festgehaltenen
+  Widerspruch **zugunsten der Client-Doku** — `count` zählt bei einer Schreibung die
+  betroffenen Zeilen. **DIE PROTOKOLL-DOKU HAT NIE DAS GEGENTEIL BEHAUPTET, SIE HAT
+  GESCHWIEGEN**, und genau so steht es in (ak). **EIN SCHWEIGEN WIRD DURCH EINE MESSUNG
+  GEFÜLLT, NICHT WIDERLEGT.** Wer (ak) nach dieser Messung als überholt liest, liest ihn
+  falsch: Er beschreibt, was die zwei Seiten SAGEN, und das hat sich nicht geändert.
+· **TEIL (al) BLEIBT EBENSO RICHTIG.** „An keiner gelesenen Stelle beantwortet" ist eine
+  Aussage über die **DOKU**, nicht über die Welt. Die Messung beantwortet die Frage; die
+  Lesung tat es nicht, und tut es weiterhin nicht.
+· **GRENZE 3 IN TEIL (aq) — "ATOMAR HEISST NICHT SICHER" — IST VON DIESER MESSUNG WEDER
+  BESTÄTIGT NOCH WIDERLEGT.** Zwei gleichzeitige bedingte Schreibungen sind nicht gefahren
+  worden. Sie steht unverändert.
+**EINE VIERTE ANGABE, DAMIT NIEMAND ZU VIEL AUS DEM LAUF MACHT:** Auch **GRENZE 1** gilt
+weiter. Gemessen ist die **LAUFENDE INSTANZ** an DIESEM Tag, nicht „PostgREST 16" — welche
+Fassung antwortete, ist nicht erhoben.
+
+**PROVENIENZ:** die Messung **GEMESSEN 2026-09-04 (OWNER)**; dieser Zusatz eine
+**ARCHITEKTEN-EINORDNUNG** desselben Tages. **KEINE Angabe dieses Zusatzes ist eine zweite
+Beobachtung** — er zeigt auf die Messung und wiederholt sie nicht.
+
 **PROVENIENZ DES GANZEN LAUFS 3:** GELESEN am 2026-09-04 (CC) an den unter (ah) genannten
 elf Adressen, Instrument Browser-Werkzeug, `textContent` — mit der einen in Teil (an)
 eigens ausgewiesenen Ausnahme, wo die Seiten-eigene Nutzlast gelesen wurde. Wo „GEMESSEN"

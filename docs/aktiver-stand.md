@@ -2844,6 +2844,33 @@ INLINE und nicht im Hintergrund.**
   selbst ist GELESEN (CC, 2026-09-04); dass die zweite Nachholung aussteht, ist eine FOLGE
   aus ihrem Ergebnis und **keine Messung**.
 
+  **ZWEITER VERMERK 2026-09-04 — BEIDE NACHHOLUNGEN LIEGEN JETZT VOR. DER TEXT DARÜBER
+  BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT DANEBEN. DIE AUFLAGE IST DAMIT
+  EINGELÖST UND NICHT AUFGEHOBEN.**
+  **DIE ZWEITE NACHHOLUNG — DIE FRAGE NACH DER RÜCKMELDUNG EINER BEDINGTEN SCHREIBUNG:
+  GEMESSEN.** **GEMESSEN 2026-09-04 (OWNER), ACHT Aufrufe gegen den echten Endpunkt**, mit
+  Sichtbarkeits-Beleg vor der ersten Schreibung und unabhängiger Gegenlesung danach.
+  **DER VOLLTEXT STEHT NICHT HIER**, sondern an zwei Orten: der geschlossene Eintrag "DIE
+  RÜCKMELDUNG EINER BEDINGTEN SCHREIBUNG ÜBER PostgREST IST UNGEMESSEN" in
+  docs/offene-punkte.md, und das Protokoll je Messung im Feld `VERIFIZIERT` von
+  `supabase/checks/bedingte-schreibung-probe.sql`.
+  **WAS DER RIEGEL DAMIT HAT — EINE AUSKUNFT DARÜBER, OB ER GEGRIFFEN HAT, AUF DREI
+  WEGEN:** die Kopfzeile `Content-Range` schon im VORGABEFALL, die Länge der Menge unter
+  `return=representation`, und `406`/`PGRST116` unter Singular-Anforderung; `count` zählt
+  dabei die **BETROFFENEN** Zeilen und nicht die Tabelle.
+  **WAS ER WEITERHIN NICHT HAT, UND DIESER SATZ IST DER GRUND FÜR DIESEN VERMERK: DIE
+  NEBENLÄUFIGKEIT IST NICHT GEMESSEN.** Zwei gleichzeitige bedingte Schreibungen sind
+  **nicht gefahren worden**. **"ATOMAR HEISST NICHT SICHER" STEHT UNBERÜHRT AN DERSELBEN
+  STELLE WIE VOR DER MESSUNG** (docs/plattform-befunde.md, LAUF 3, Grenze 3) — die Messung
+  hat die **AUSKUNFT** beantwortet, nicht das **WETTLAUF-VERHALTEN**.
+  **WER AUS "DIE VORARBEITEN SIND ERLEDIGT" LIEST, DIE NEBENLÄUFIGKEIT SEI GEKLÄRT, LIEST
+  FALSCH.** Es sind zwei verschiedene Fragen an derselben Schreibung: die eine, was sie
+  MELDET, die andere, was zwei von ihnen EINANDER tun.
+  PROVENIENZ: die Messung **GEMESSEN 2026-09-04 (OWNER)**; dieser Vermerk ein
+  **ARCHITEKTEN-VERMERK** desselben Tages. Dass die Nebenläufigkeit unberührt bleibt, ist
+  eine **FOLGE** aus dem Zuschnitt der Probe (sie fährt acht Aufrufe nacheinander) und
+  **keine zweite Messung**.
+
 · **VORRATS-EINTRAG 42, DIE DROSSELUNG.** **Nach dieser Scheibe bleibt als Ursache der
   Fehlerzeile nur noch das TOTE ERNEUERUNGS-TOKEN — und das behebt kein Code.** Der Eintrag
   wird damit nicht kleiner, sondern wechselt seinen Gegenstand; sein Vermerk hält es fest.

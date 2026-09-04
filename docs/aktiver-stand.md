@@ -2258,7 +2258,28 @@ DER TEXT DER VORBEDINGUNG DARÜBER BLEIBT WÖRTLICH STEHEN; dieser Nachtrag trit
 **AUS DEM LIVE-TEST DES SCHRITTS 1b-1** (GEMESSEN 2026-09-03, OWNER; s. VERMERK 11,
 Abschnitt (b)): `accessTokenExpiresAt` **1788431623**, `refreshTokenExpiresAt.epochSeconds`
 **1788868675**, Abstand **437 052 Sekunden**.
-**DAS ERNEUERUNGS-TOKEN STIRBT AM 2026-09-08 GEGEN 11:58 UTC.**
+**ERSETZT AM 2026-09-04 — DER TERMIN IST ÜBERHOLT. HIER STAND: "DAS ERNEUERUNGS-TOKEN
+STIRBT AM 2026-09-08 GEGEN 11:58 UTC."**
+**DER NEUE TERMIN: 2026-09-11, 07:26:58 UTC (09:26:58 Ortszeit)** — aus
+`refreshTokenExpiresAt.epochSeconds` **1789111618**, GEMESSEN 2026-09-04 (OWNER) beim
+Live-Test der Scheibe 11.2b; s. VERMERK 13, Abschnitt (b).
+**WARUM ER SICH VERSCHOBEN HAT, UND ES IST KEIN MESSFEHLER: ZWEI NEU-VERBINDUNGEN HABEN DIE
+FRIST ZURÜCKGESETZT.** Das Neu-Verbinden ersetzt die Nutzlast GANZHEITLICH
+(`toOAuthPayload` → `formatOAuthPayload` → `encryptSecret` → Upsert), und die zweite Uhr
+beginnt damit neu.
+**DAS IST KEIN WIDERSPRUCH ZU VERMERK 5, und der Satz gehört zwingend dazu:** Jener misst
+die EINLÖSUNG — die Erneuerung verlängert die zweite Uhr NICHT, sie läuft weiter. Dieser
+misst das NEU-VERBINDEN. **Zwei verschiedene Vorgänge, zwei verschiedene Wirkungen;** wer
+sie zusammenzieht, hält einen der beiden Befunde für widerlegt.
+**ERSETZT UND NICHT GESTEMPELT, und der Grund ist der RANG dieser Zeile:** Sie ist ein
+TERMIN, kein Zeitdokument. Ein Stempel liesse zwei Daten nebeneinander stehen — und wer
+das falsche nimmt, **wartet am 8.9. auf einen Ausfall, der nicht kommt, und hält die Karte
+für kaputt.**
+**DIE ZWEI MESSWERTE DES 2026-09-03 DARÜBER BLEIBEN WÖRTLICH STEHEN.** Sie sind eine
+Beobachtung jenes Tages und als solche unverändert richtig; überholt ist allein, was aus
+ihnen für die ZUKUNFT gefolgert wurde.
+PROVENIENZ: der Wert **GEMESSEN 2026-09-04 (OWNER)**; Datum und Ortszeit **GERECHNET**
+(CC, 2026-09-04) und ausdrücklich nicht übernommen.
 **SACHKORREKTUR AN DER VORGABE DIESER RUNDE, GERECHNET STATT ÜBERNOMMEN:** Die Vorgabe
 nannte "gegen 12:07 UTC". `1788868675` ist **2026-09-08T11:57:55Z** — rund neun Minuten
 früher. Die Zahl ist hier NEU GERECHNET und nicht abgeschrieben worden; die vorgegebene ist
@@ -2274,8 +2295,10 @@ ALTER des Erneuerungs-Tokens** — wer ihn als Frist liest, liest ihn falsch.
 3600/604800 lauten, ist **NICHT auflösbar** — die Antwort des Anbieters wird nicht geloggt,
 und das bleibt so. Das Datum ist auf die Sekunde gerechnet und auf diese Unschärfe hin zu
 lesen.
-**KEINE EMPFEHLUNG**, was vor dem 2026-09-08 zu geschehen hat — weder ein Neu-Verbinden noch
-ein Statuswechsel ist hier vorgeschlagen. Die Vorbedingung selbst bleibt, was sie ist: eine
+**KEINE EMPFEHLUNG**, was vor dem TERMIN zu geschehen hat — weder ein Neu-Verbinden noch
+ein Statuswechsel ist hier vorgeschlagen. (Hier stand "vor dem 2026-09-08"; das Datum ist
+mit der Ersetzung oben weg, **und es kommt hier keines zurück** — ein zweites Datum im
+selben Block wäre genau die Doppelung, die diese Runde beseitigt hat.) Die Vorbedingung selbst bleibt, was sie ist: eine
 Arbeit am ANBIETER-KONTO und keine am Code.
 PROVENIENZ: die zwei Werte **GEMESSEN 2026-09-03 (OWNER)**; Abstand, Datum und die
 Differenz zu VERMERK 6 **GERECHNET** (CC, 2026-09-03) — keine zweite Beobachtung.
@@ -2851,6 +2874,63 @@ GEMESSEN gekennzeichnete Angabe stammt aus der Aufklärungsrunde vom 2026-09-03 
 Repo). Als Ort steht der SYMBOLNAME und nie eine Zeilennummer — Fortschreibungs-Regel
 dieser Datei.
 
+### Vollzogen — was im Zuschnitt der Scheibe 11.2b stand und wohin es gegangen ist
+
+**DER TITEL WEICHT ABSICHTLICH AB, aus demselben Grund wie bei Scheibe 3, der
+Fix-Scheibe, Scheibe 2, Scheibe 4, Schritt 1b-1 und Scheibe 1b-2a:** "Vollzogen — was
+hier stand und wohin es gegangen ist" steht in dieser Datei bereits zweimal und ist als
+Hausform über Standdateien hinweg Hebungs-Kandidat 5. **DIE ZITATE UNTEN STEHEN OHNE
+`###`-MARKE** — die Auflage aus docs/immer-beachten.md, "EIN ANKER, DER EINDEUTIG
+AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" (Zusatz 2026-08-27).
+
+VERDICHTET AM 2026-09-04, nach dem Bau-Commit `7288f90` und dem bestätigten Live-Test.
+Hier standen die ANWEISUNGEN FÜR die Scheibe; sie sind mit dem Vollzug abgelaufen. DREI
+Unterabschnitte sind entfallen. **JEDES DER DREI STÜCKE TAUCHT IN VERMERK 13 WIEDER AUF
+— das ist die Bedingung, unter der überhaupt gestrichen werden durfte:** Der Zuschnitt
+ist der Maßstab, gegen den der Vermerk misst, und der Verlauf ist kein Ersatz (er wird
+beim Pflicht-Gate nicht gelesen).
+
+- **"Der Gegenstand der Scheibe 11.2b — eine Aktion, die rechnet, und eine Karte, die
+  zeigt"** nannte den Gegenstand in zwei Zeilen. **Gebaut, und der Code sagt es jetzt
+  selbst** — `listTargetCredentialStates`, `credentialStateFrom` und die dritte Zeile an
+  der Karte. **WO ES WIEDER AUFTAUCHT:** VERMERK 13, Abschnitt (a), in Symbolen.
+  **SEINE EINE FORTWIRKENDE ZEILE IST NICHT VERSCHWUNDEN:** Die OWNER-ENTSCHEIDUNG vom
+  2026-09-03, **Ausfall UND Vorwarnung** statt nur des einen, ist der Grund, warum die
+  Lagen-Liste darunter SECHS Stück führt und nicht fünf — sie steht dort weiter.
+- **"Zwei Entwurfsfragen der Scheibe 11.2b, vorgelegt und nicht entschieden"** legte zwei
+  Fragen vor und entschied keine. **BEIDE SIND ENTSCHIEDEN** (OWNER, 2026-09-04):
+  **(1) eine ZWEITE Aktion**, `listConfiguredTargets` bleibt wörtlich; **(2) das
+  Uhr-Prädikat bekommt eine DRITTE Instanz**, der Bestand bleibt unangetastet.
+  **WO ES WIEDER AUFTAUCHT:** VERMERK 13, Abschnitt (a), und — als Preis der jeweils
+  anderen Wahl — Abschnitt (d).
+  **DER GRUND GEGEN DIE JEWEILS ANDERE FORM BINDET ÜBER DIE SCHEIBE HINAUS UND WIRD
+  DESHALB HIER FESTGEHALTEN:** Eine Erweiterung der Nachbar-Aktion hätte den Lauf öffnen
+  müssen, der ihre Spaltenliste auf `["target"]` festnagelt — also genau den Wächter der
+  Geheimnis-Disziplin. Und eine Entdoppelung des Prädikats hätte `src/lib/capi/token.ts`
+  UND `src/lib/oauth/token-refresh.ts` angefasst, beide unter Scope-Schutz.
+  **AUSDRÜCKLICH NICHT DER GRUND: ein Quelltext-Wächter.** `T15-ERSATZ` verbietet
+  `capi/token.ts` nur Importe aus `/oauth/` und nennt `secrets/` als erlaubte Nachbarn.
+  **Wer die Entdoppelung später angeht, findet den Preis bei den Invarianten und nicht
+  bei einem Test.**
+- **"Die Beweis-Achse der Scheibe 11.2b"** war die ANLEITUNG für den Live-Test — Karte
+  laden, gegen die Beweis-Route halten, und der Termin der toten Lage. **Sie ist
+  gefahren.** **WO ES WIEDER AUFTAUCHT:** VERMERK 13, Abschnitt (b) mit den sieben
+  Schritten und dem Abgleich auf die Sekunde, und Abschnitt (f) mit dem, was sie NICHT
+  gezeigt hat.
+  **IHRE TERMIN-ANGABE IST MIT DER STREICHUNG NICHT VERLOREN, SONDERN NACHGEZOGEN:** Sie
+  nannte den 2026-09-08; der Termin ist mit zwei Neu-Verbindungen überholt und steht
+  **an EINER Stelle** korrigiert — im Nachtrag zu Vorbedingung (iv), Abschnitt "1b als
+  Folgetask". **DIE TOTE LAGE IST DAMIT WEITERHIN UNGEPRÜFT** (VERMERK 13, Abschnitt (f)).
+
+**WAS AUSDRÜCKLICH NICHT VERDICHTET WORDEN IST, obwohl es nach Anweisung aussieht — im
+Zweifel stehengelassen:** der Befund, der den Zuschnitt umgedreht hat · die zwei Befunde
+zum Verzicht auf Persistenz · die zwei Todesarten samt ihrer Grenze · die sechs Lagen mit
+ihren Gründen · die mitgenommene Schwäche · die tragende Invariante an neuem Ort · die
+sechs geschützten Invarianten · die Ausschlüsse mit ihren Triggern. Sie sind GRÜNDE,
+BEFUNDE und GRENZEN, keine Anweisungen, und jede von ihnen bindet über diese Scheibe
+hinaus — insbesondere die zweite Todesart, deren Trigger noch aussteht, und die
+Invariante (I-1), an der jeder künftige Rückgabetyp dieser Achse gemessen wird.
+
 ### Der Befund, der diesen Zuschnitt umgedreht hat
 
 **ER STEHT VORN, WEIL ER EINE ARCHITEKTEN-ANGABE WIDERLEGT — und zwar eine aus DIESER
@@ -2915,7 +2995,13 @@ wieder aus.
   jeder gespeicherten Fassung: Das Neu-Verbinden ersetzt die Nutzlast **GANZHEITLICH**
   (`toOAuthPayload` → `formatOAuthPayload` → `encryptSecret` → Upsert). **Es gibt
   nichts, was überleben könnte.**
-  **DAS IST DER FALL, DER AM 2026-09-08 EINTRITT.**
+  **DAS IST DER FALL, DER AN DEM TERMIN EINTRITT, DEN DER NACHTRAG ZU VORBEDINGUNG (iv)
+  FÜHRT** (Abschnitt "1b als Folgetask").
+  **HIER STEHT BEWUSST KEIN DATUM MEHR.** Bis zum 2026-09-04 stand hier der 2026-09-08 —
+  **dieselbe Angabe an einem zweiten Ort**, und genau das ist schiefgegangen: Zwei
+  Neu-Verbindungen haben die Frist zurückgesetzt, (iv) ist nachgezogen worden, und diese
+  Stelle wäre stehengeblieben. **Zwei Orte mit demselben Datum laufen auseinander, sobald
+  einer nachgezogen wird; ein Zeiger nicht.**
 · **WIDERRUFEN** (Passwortwechsel, entzogene Rechte). Die Uhr steht in der **Zukunft**,
   das Token ist trotzdem tot; erfahrbar **nur beim Versuch**. **NUR DIESE HÄLFTE
   BRÄUCHTE PERSISTENZ, UND SIE BLEIBT DRAUSSEN.**
@@ -2931,17 +3017,12 @@ trennt nur den Fall, den sie selbst kennt**; bei `{kind:"unknown"}` trennt sie g
 nichts. **Genau deshalb kann die Karte die widerrufene Verbindung nicht anzeigen, ohne
 sie zu speichern.**
 
-### Der Gegenstand der Scheibe 11.2b — eine Aktion, die rechnet, und eine Karte, die zeigt
-
-**Eine Serveraktion, die den Zustand BERECHNET, und eine Karte, die ihn MIT ZEITPUNKT
-zeigt. OWNER-ENTSCHEIDUNG 2026-09-03: Ausfall UND Vorwarnung** — nicht nur das eine.
-
-**DER TITEL TRÄGT DEN ZUSATZ, WEIL "Der Gegenstand" IN DIESER DATEI SCHON DREIMAL
-VORKOMMT** — als "### (1) Der Gegenstand", als "Der Gegenstand — eine Klammer je Projekt"
-und als Zitat "Der Gegenstand — zwei reine Dateien, keine Verdrahtung". Ein nackter
-Titel wäre der vierte und träfe beim Suchen keinen davon eindeutig.
-
 ### Die Lagen, die die Karte tragen muss — SECHS, nicht zwei
+
+**SIE SIND SECHS UND NICHT FÜNF, WEIL DER OWNER AM 2026-09-03 BEIDES VERLANGT HAT —
+AUSFALL UND VORWARNUNG.** Der Satz stand im verdichteten Abschnitt "Der Gegenstand" und
+ist hierher gerettet: Ohne ihn liest die nächste Runde die zweite Lage als Zutat und
+streicht sie beim ersten Aufräumen.
 
 · **LEBT, MIT ABLAUFDATUM.**
 · **LÄUFT BALD AB** (die Vorwarnung).
@@ -3018,45 +3099,6 @@ INVARIANTE ausgeschrieben.
 `src/lib/capi/ingest.ts`.
 **(I-4) `token-refresh.ts`, `google-refresh.ts` UND `refresh-run.ts` BLEIBEN UNBERÜHRT.**
 **(I-5) KEINE MIGRATION, KEINE SPALTE, KEIN SCHREIBVORGANG.**
-
-### Zwei Entwurfsfragen der Scheibe 11.2b, vorgelegt und nicht entschieden
-
-**DER TITEL WEICHT ABSICHTLICH AB, UND DIESMAL NICHT VON EINER ÜBERSCHRIFT, SONDERN VON
-EINEM ZITAT:** "Zwei Entwurfsfragen, vorgelegt und nicht entschieden" steht in dieser
-Datei bereits im Verdichtungs-Block der Scheibe 1b-2a — als **Spur einer gestrichenen
-Überschrift**. Der Zusatz vom 2026-08-27 an "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES
-IN EINER DATEI MIT VERZEICHNIS NICHT" (docs/immer-beachten.md) beschreibt genau diesen
-Fall: **Ein Zitat eines abgelaufenen Titels bleibt für immer stehen und kollidiert
-dauerhaft mit jeder künftigen Überschrift desselben Wortlauts** — und es steht WEITER
-VORN, eine Suche träfe also systematisch das Zitat.
-
-**(1) ERWEITERT `listConfiguredTargets` IHREN RÜCKGABEWERT, ODER ENTSTEHT EINE ZWEITE
-AKTION?** Die Erweiterung spart eine Datenbankrunde je Projektwechsel — der Effekt im
-Container läuft auf der Achse `[projectId]` —, **ändert aber einen Typ, an dem die Karte
-hängt** (`TrackingTarget[]`, gelesen über das Prop `configuredTargets`).
-**ENTSCHIEDEN WIRD AM PLAN.**
-
-**(2) WO LIEGT DAS UHR-PRÄDIKAT?** Es gäbe es dann an **DREI** Stellen — Resolver
-(`hasLiveRefreshToken`, modul-privat in capi/token.ts), Erneuerung (inline in
-`refreshAccessToken`, Schritt (6)) und Aktion.
-**ZWEI WAREN BEWUSST NICHT ENTDOPPELT, MIT BENANNTEM GRUND** (eine gemeinsame Quelle
-verlangte einen Import in eine Datei unter Scope-Schutz); **DREI IST EINE ANDERE ZAHL.**
-**AM CODE ZU BEANTWORTEN, NICHT AM GEFÜHL. ENTSCHIEDEN WIRD AM PLAN.**
-
-### Die Beweis-Achse der Scheibe 11.2b
-
-**Karte laden, Zustand ablesen, gegen den Wert der Beweis-Route halten** — jene gibt
-`state` und die zwei Ablaufzeitpunkte zurück und ist damit die unabhängige zweite
-Quelle für dieselbe Frage.
-
-**DAZU DER LIVE-TEST DER TOTEN LAGE, DEN NIEMAND HERSTELLEN MUSS: Am 2026-09-08 gegen
-11:58 UTC kippt das Erneuerungs-Token des Testprojekts von selbst** (gerechnet auf zwei
-am 2026-09-03 gemessenen Werten, s. den Nachtrag an Vorbedingung (iv) im Abschnitt "1b
-als Folgetask").
-**DAS IST EIN SELTENER GLÜCKSFALL UND GEHÖRT DESHALB IN DEN ZUSCHNITT:** Die tote Lage
-ist sonst **nicht herstellbar** — sie hängt an einer Frist des Anbieters, nicht an
-unserem Code. Wer den Termin verstreichen lässt, ohne die Karte davor und danach
-anzusehen, bekommt sie erst mit der nächsten Frist wieder.
 
 ### Was die Scheibe 11.2b ausdrücklich nicht baut, je mit Grund
 
@@ -4676,6 +4718,231 @@ Abschnitt (d)) · dass um 16:47:07 die Rettung und nicht die Vorsorge lief (eben
 dass die ausbleibende dritte Leserunde die Persistenz der Erneuerung belegt (aus der
 Zahl der Datenbank-Zugriffe, Abschnitt (c)). Die Einordnung der Anleitung als falsch
 ist eine **ARCHITEKTEN-KORREKTUR vom 2026-09-03**, gestützt auf den gebauten Code.
+
+### VERMERK 13 (Bau-Commit 7288f90) — DIE SCHEIBE 11.2b IST GEBAUT UND LIVE BEWIESEN
+
+**DER COMMIT IST AM REPO ERMITTELT** (CC, 2026-09-04, `git log`), nicht aus einem Prompt
+übernommen: `7288f90` (`feat(ui)`), voller Hash
+`7288f9084b75d910ab47007570dbe86eab24c958`.
+**DREI `-S`-GEGENPROBEN, UND EINE TAUGT NICHT — DAS GEHÖRT DAZU:**
+`CREDENTIAL_EXPIRY_WARN_SECONDS` und `listTargetCredentialStates` treffen **je genau
+einen** Commit, und es ist dieser. **`STATUS_UNKNOWN` TRIFFT ZWEI** — daneben `eeeef6f`,
+einen Doku-Commit des Google-Crawls, in dem die Zeichenfolge als Anbieter-Befund steht.
+**Als Gegenprobe ist sie damit untauglich**, und sie steht hier, damit die nächste Runde
+sie nicht für eine dritte Bestätigung hält. Die Zuordnung ruht auf den zwei anderen.
+**IM KOPF STEHT DER BAU-COMMIT UND AUSDRÜCKLICH NICHT DER COMMIT DIESES VERMERKS** — die
+Bauform von VERMERK 10, 11 und 12, aus demselben Grund: Der Vermerk-Commit ist ein
+`docs(claude)` und entsteht erst mit dieser Runde. **DIE DATEI HAT DAMIT KEINE LÜCKE.**
+
+**DER TITEL SAGT "LIVE BEWIESEN", wie VERMERK 12 und anders als VERMERK 11**, und der
+Unterschied ist begründet: Der Nachweis hat die Anzeige nicht nur gesehen, sondern gegen
+eine von ihr **unabhängige zweite Quelle** gehalten — und die stimmte **auf die
+Sekunde** (Abschnitt (b)).
+
+---
+
+**(a) WAS GEBAUT IST — IN SYMBOLEN, GEMESSEN am Repo (CC, 2026-09-04).**
+
+Der Bau-Commit fasste **NEUN** Dateien an, **ZWEI davon neu**
+(`src/lib/tracking/credential-state.ts` und seine Testdatei).
+
+· **`credentialStateFrom`** (`src/lib/tracking/credential-state.ts`, neu) — die eine
+  Berechnung. Sie bildet die **SECHS Lagen** aus einer bereits klassifizierten Zeile;
+  `{kind:"unknown"}` wird **ausdrücklich und negativ** geprüft, `epochSeconds === now`
+  gilt als überschritten (fail-closed). Beides ist ÜBERNOMMEN, nicht neu erfunden.
+· **`CREDENTIAL_EXPIRY_WARN_SECONDS = 172_800`** (ebenda) — die Vorwarn-Schwelle,
+  **GESETZT UND NICHT GEMESSEN**, mit den zwei Ungleichungen an der Konstante. Bauform
+  und Grund wie bei `REFRESH_MAX_ATTEMPTS`.
+· **`TargetCredentialState`** (ebenda) — die geschlossene Union. **KEIN einziger freier
+  String**: nur `kind`-Literale, zwei Zahlen und ein `reason`, der aus den
+  Fehlzuständen von `DecryptResult` und `ParsePayloadResult` **abgeleitet** ist. Kommt
+  dort ein Zustand hinzu, wird die Zuordnung ein Compiler-Fehler statt eines stillen
+  Rückfalls.
+· **`resolveConfigured`** (ebenda) — die **VORRANGREGEL**: Bei Widerspruch gewinnt die
+  Unsicherheit. **Sie gilt in beide Richtungen**, also auch dann, wenn die erste Quelle
+  nichts meldet und die zweite scheitert.
+· **`classifyCredentialRow`** (`src/app/projects/actions.ts`, modul-privat) —
+  entschlüsselt und liest die Nutzlast. **Zugangsdatum und Erneuerungs-Token enden mit
+  ihrem `return`;** der Rückgabetyp trägt ausschliesslich die zweite Uhr.
+· **`listTargetCredentialStates`** (ebenda, exportiert) — die zweite Aktion. Gate-Muster
+  der drei Nachbarinnen (Sitzung → Eigentum am authenticated-Client → Admin-Client),
+  **EINE** Runde für alle Ziele, selektiert `("target, secret_enc")` — **`secret` NIE**.
+  Ihr Fehlerkanal trägt einen **benannten** Grund und keinen DB-Text.
+· **`describeCredentialState`** und die **dritte Zeile** (`src/components/TargetCard.tsx`)
+  — sie steht **neben** `statusText`, nicht darin; dieselbe Hausform wie der
+  Folgenlosigkeits-Hinweis, und aus demselben Grund.
+· **DER VIERTE STATUSZWEIG** (ebenda): `STATUS_UNKNOWN`, und `ConfiguredState` ist auf
+  `boolean | null | "unknown"` erweitert. **Das ist der Ausgang, den die mitgenommene
+  Schwäche bis hierher nicht hatte.**
+· **`MeasureView.tsx`** reicht die zweite Quelle durch und rechnet je Karte um;
+  **`CodeImporter.tsx`** lädt beide Aktionen **gebündelt** (`Promise.all`) auf der
+  unveränderten Achse `[projectId]` und führt die Lage bei Speichern und Trennen nach —
+  **entfernen statt raten.**
+· **`listConfiguredTargets` IST WÖRTLICH UNVERÄNDERT**, samt ihren sechs Läufen und dem
+  Wächter auf ihrer Spaltenliste. Der Diff an `actions.ts` ist **rein additiv**
+  (138 Einfügungen, **0 Löschungen**).
+
+**DIE VIER GATES WAREN VOR DEM COMMIT GRÜN** (`tsc --noEmit`, `eslint`, `vitest run`,
+`next build`). **SUITE: 74 Dateien / 1525 Läufe** (vorher 73/1487, VERMERK 12) — eine
+Datei und **achtunddreissig** Läufe mehr, **kein Bestandstest gefallen**. `eslint` meldet
+0 Fehler und die eine Bestands-Warnung aus Vorrats-Eintrag 26.
+
+---
+
+**(b) DER LIVE-NACHWEIS — GEMESSEN 2026-09-03/04 vom OWNER**, an der ausgelieferten
+Anwendung, sieben Schritte.
+
+· **Regression:** Meta und die übrigen Fan-Out-Ziele zeigen **KEINE Ablaufzeile**.
+  **(I-7) hält damit am ausgelieferten Stand und nicht nur im Test** — das ist der
+  Schritt, den die Tests nicht leisten können.
+· **Google, lebender Zugang:** "Zugang gültig bis **10.9.2026, 15:22:21**"; nach einem
+  Neu-Verbinden "**11.9.2026, 09:26:58**".
+· **DER ABGLEICH GEGEN DIE BEWEIS-ROUTE — DER TRAGENDE SCHRITT:**
+  `refreshTokenExpiresAt.epochSeconds` **1789111618** = **11.9.2026, 09:26:58** Ortszeit,
+  **AUF DIE SEKUNDE identisch mit dem Kartentext**. `accessTokenExpiresAt` **1788510418**
+  lag rund eine Stunde voraus.
+  **DIE KARTE ZEIGT UHR 2 — GEMESSEN UND NICHT ABGELEITET.** Hätte sie Uhr 1 gezeigt,
+  stünde dort ein Zeitpunkt in **einer Stunde** statt in **sieben Tagen**; die zwei sind
+  am Kartentext nicht zu verwechseln.
+· **Trennen:** die Zeile verschwindet **rückstandslos**, die Karte steht auf "Nicht
+  konfiguriert".
+· **Neu verbinden:** die Zeile ist wieder da, mit frischem Datum.
+· **Kein Grün, kein Haken, kein Punkt** — in allen gesehenen Zuständen.
+
+---
+
+**(c) DREI BEFUNDE AUS DEN ZAHLEN, je mit Provenienz.**
+
+· **DIE SIEBEN-TAGE-FRIST IST EIN DRITTES MAL AN EIGENEN DATEN WIEDERGEFUNDEN.** Der
+  Abstand der beiden Uhren **in EINER Antwort** beträgt **601 200 Sekunden** — sieben
+  Tage minus eine Stunde, **derselbe Wert wie in VERMERK 6 und aus demselben Grund**
+  (unmittelbar nach dem Verbinden gemessen, beide Uhren frisch).
+  **WAS ER NICHT AUFLÖST, und dieser Satz gehört zwingend dazu:** Die Unschärfe aus
+  VERMERK 6 — ob die Rohwerte **3599/604799** oder **3600/604800** lauten — **bleibt
+  ungelöst.** Beide Annahmen ergeben denselben Abstand von 601 200 (GERECHNET, CC,
+  2026-09-04: `a − 3599 + 604799 = r` **und** `a − 3600 + 604800 = r`, beide exakt).
+  **Der Abstand kann die Frage strukturell nicht beantworten** — wer ihn dafür hält,
+  liest eine Differenz als Paar.
+  PROVENIENZ: **GERECHNET** auf zwei am 2026-09-04 (OWNER) gemessenen Werten. Keine
+  dritte Beobachtung.
+· **DER TERMIN AUS DEM NACHTRAG AN VORBEDINGUNG (iv) IST ÜBERHOLT UND NACHGEZOGEN.** Dort
+  stand der **2026-09-08 gegen 11:58 UTC**; **zwei Neu-Verbindungen haben die Frist
+  zurückgesetzt**, und der Termin ist jetzt der **2026-09-11, 07:26:58 UTC** (09:26:58
+  Ortszeit).
+  **WER DAS NICHT NACHZIEHT, WARTET AM 8.9. AUF EINEN AUSFALL, DER NICHT KOMMT, UND HÄLT
+  DIE KARTE FÜR KAPUTT.** Nachgezogen ist er **an EINER Stelle** — im Nachtrag zu (iv),
+  ERSETZT und nicht gestempelt, weil es ein TERMIN ist und kein Zeitdokument.
+  **EINE ZWEITE STELLE NANNTE DASSELBE DATUM** ("Die zwei Todesarten" in diesem
+  Zuschnitt); sie trägt seit dieser Runde einen **ZEIGER statt eines Datums**. Eine
+  dritte stand in der Beweis-Achse und ist mit der Verdichtung entfallen.
+  PROVENIENZ: der Wert **GEMESSEN 2026-09-04 (OWNER)**, Datum und Ortszeit **GERECHNET**
+  (CC, 2026-09-04).
+· **DASS DAS NEU-VERBINDEN DIE FRIST ZURÜCKSETZT, IST JETZT GEMESSEN UND NICHT MEHR
+  ABGELEITET.** Zweimal beobachtet.
+  **DIE ZWEI BEOBACHTUNGEN SIND NICHT GLEICH STARK, und das wird hier getrennt statt
+  geglättet:** Für die **zweite** liegen BEIDE Rohwerte vor, und die Arithmetik schliesst
+  exakt — der Verbindungszeitpunkt plus sieben Tage minus eine Sekunde ergibt genau
+  `1789111618`. Für die **erste** ist nur der **KARTENTEXT** protokolliert
+  ("10.9.2026, 15:22:21"); ihr Rohwert ist mit dem zweiten Verbinden **überschrieben und
+  nicht mehr zu beschaffen**. Sie ist mit einem Sieben-Tage-Reset **verträglich**, aber
+  nicht gerechnet — **zwei Angaben, die zueinander passen, sind nicht dieselbe Angabe.**
+  **ES IST DIESELBE KLASSE WIE VORRATS-EINTRAG 40:** ein Wert, der einmal und flüchtig
+  existiert und aus keiner Quelle wiederzubeschaffen ist, sobald ihn niemand aufschreibt.
+  **DAS IST KEIN WIDERSPRUCH ZU VERMERK 5**, und ohne diesen Satz liest die nächste Runde
+  einen: Jener misst die **EINLÖSUNG** — die Erneuerung verlängert die zweite Uhr NICHT,
+  sie läuft weiter. Dieser misst das **NEU-VERBINDEN**, das die Nutzlast GANZHEITLICH
+  ersetzt. **Zwei verschiedene Vorgänge.** Der Befund BESTÄTIGT damit, was die erste
+  Todesart dieses Zuschnitts behauptet ("Es gibt nichts, was überleben könnte") — er
+  widerlegt sie nicht.
+
+---
+
+**(d) DIE LADEKLASSE DER NEUEN DATEI — EINE KORREKTUR AN DER ARCHITEKTEN-VORGABE.**
+
+**DER PLAN VERLANGTE `server-only` ODER DAS ERBEN DERSELBEN MARKE. GEBAUT IST SIE OHNE
+JEDE DIREKTIVE**, mit ausschliesslich `import type` — und die werden beim Bauen gelöscht.
+
+**DER GRUND IST KEINE BEQUEMLICHKEIT, SONDERN DIE ZWEI SEITEN, AUF DENEN SIE LÄUFT:** Die
+Ableitungen (`resolveConfigured`, `credentialStateFor`, `withoutTarget`) laufen im
+**BROWSER** — in `MeasureView` und im Container; die Klassifikation läuft im **SERVER**,
+in der Aktion. **EINE `server-only`-FESSEL HÄTTE DIE KARTE AUSGESPERRT.** Es ist dieselbe
+Lage wie bei `tracking/target-cards.ts` und `tracking/target-readiness.ts`, und es ist
+dieselbe Antwort.
+
+**DER WARNSATZ GEHÖRT MIT, UND ER STEHT AUCH AM CODE:** **Wer dort einen WERT-Import aus
+`secrets/` ergänzt, zieht `server-only` in das Client-Bündel und bricht die Karte — OHNE
+dass ein Test es meldet.** Die Testumgebung ersetzt `server-only` durch ein leeres Modul;
+der Bruch erschiene erst im Browser.
+
+**WAS DIE VORGABE RICHTIG GESEHEN HAT und was hier nicht zurückgenommen wird:** Die Datei
+liest eine `OAuthPayload`-Struktur, und die Untergrenzen-Erwägung aus dem Kopf von
+`oauth-payload.ts` ("server-only einzusetzen, wo rein gereicht hätte, ist NIE ein
+Verstoss") ist die richtige Richtung des Irrtums — **sie gilt nur dort nicht, wo die
+strengere Klasse einen Konsumenten aussperrt.** Genau das ist hier der Fall.
+
+---
+
+**(e) DIE MUTATION M2 — UNERWARTETES GRÜN IST EIN BEFUND.**
+
+**SECHS Mutationen, je mit Vorhersage VOR dem Lauf, danach zurückgenommen; keine ist im
+Bau-Commit.** Fünf trafen genau die vorhergesagten Läufe: "unknown wie lebt" → A5/A9/B9 ·
+"Klartext-Ziel bekommt eine Uhr" → A6/A9/B6 (Berechnung) und C2/C3 (Karte) ·
+"Fehlerfall wieder zur leeren Liste" → **genau B5, 1 von 1525** · "Admin-Client vor das
+Gate" → B1/B2 · "Vorrangregel umgedreht" → E3/E3b/E3-TYP.
+
+**M2 LAG DANEBEN, UND ZWAR ZU BREIT:** Vorhergesagt waren **drei** Läufe (A3, A4, C4),
+gefallen sind **zwei**. **C4 SETZT DIE LAGE ALS LITERAL AN DER KARTE** und durchläuft
+`credentialStateFrom` überhaupt nicht — die Mutation erreichte seine Achse nicht.
+**DER LAUF IST NICHT HOHL, DIE VORHERSAGE WAR ES**, und zwar an genau der Trennung
+**Berechnung gegen Karte**, die bei M1 richtig angesagt und hier vergessen wurde.
+**NICHTS REPARIERT.** Die Karten-Achse deckt **M3b** eigens ab; (I-7) ist seither auf
+beiden Achsen einzeln bewacht.
+
+**EINORDNUNG:** Es ist der **zweite** protokollierte Fall "zu breit" nach **R8**
+(VERMERK 12, Abschnitt (f)). Die Reihe in docs/immer-beachten.md ist überwiegend **zu
+eng**; **KEINE ZAHL WIRD DORT NACHGEZOGEN** — jene Datei führt ihre eigene datierte
+Zählung, und eine zweite daneben wäre bei jedem Zuwachs neu falsch (dieselbe Erwägung wie
+in Vorrats-Eintrag 20 und 32).
+
+**JEDE MUTATION WURDE VOR DEM LAUF AUF IHRE ANWESENHEIT IN DER DATEI GEPRÜFT** (VERMERK
+10, Abschnitt (h)). **NACH JEDER RÜCKNAHME GEPRÜFT:** Mutations-Marker 0, `git status`
+unverändert bei neun Einträgen, keine leeren Diffs.
+
+---
+
+**(f) WAS DER LIVE-TEST NICHT GEZEIGT HAT.**
+
+· **DIE VORWARNUNG.** Sie verlangt einen Zugang mit **weniger als 48 Stunden**
+  Restlaufzeit — beim Test lagen sieben Tage an. **Nicht herstellbar ohne Warten.**
+· **OB DIE SCHWELLE RICHTIG GEWÄHLT IST.** 48 Stunden sind **GESETZT, NICHT GEMESSEN**;
+  der Wächter bindet die **Relation** zu `REFRESH_SIGNAL_LEAD_SECONDS`, nicht den Wert.
+  Er fängt den Umbau, nicht den Entwurf.
+· **OB DER ANGEZEIGTE ZEITPUNKT DER IST, DEN GOOGLE FÜHRT.** Er stammt aus **UNSERER**
+  Nutzlast, gerechnet aus `receivedAt + refresh_token_expires_in`. Der Abgleich auf die
+  Sekunde belegt, dass **Karte und Beweis-Route dieselbe Zahl lesen** — nicht, dass der
+  Anbieter dieselbe Sekunde meint (docs/ziel-befunde.md, Teil (bx)).
+· **DIE LAGEN `unreadable` UND `unknown_expiry`.** Beide verlangen ein kaputtes Chiffrat
+  bzw. eine Antwort ohne Ablauffeld; von aussen nicht steuerbar. Sie tragen allein die
+  Läufe A7, A8, B9 und B10.
+· **DASS DIE VORRANGREGEL GREIFT.** Ein Scheitern der Aktion ist live nicht sinnvoll zu
+  erzeugen; das leisten allein E3/E3b und die Mutation, die sie umdreht.
+· **DIE ABWESENHEIT EINES HYDRATIONS-FEHLERS IN ANDEREN ZEITZONEN.** Geprüft ist eine.
+· **DIE TOTE LAGE.** Sie war für den 2026-09-08 vorgesehen und ist mit den zwei
+  Neu-Verbindungen auf den **2026-09-11** gewandert (s. (c)). **Sie bleibt der einzige
+  Fall dieser Scheibe, den niemand herstellen kann** — er hängt an einer Frist des
+  Anbieters, nicht an unserem Code.
+
+---
+
+**PROVENIENZ, JE TEIL:** Umfang, Testzahl, Gate-Ergebnisse, der Commit-Hash samt der drei
+`-S`-Gegenproben, die Symbolnamen, die Mutationsergebnisse und der Byte-/Objekt-Nachweis
+**GEMESSEN am Repo bzw. an den Läufen vom 2026-09-04 (CC)**. Die Live-Beobachtungen
+**GEMESSEN 2026-09-03/04 (OWNER)** an der ausgelieferten Anwendung.
+**ABLEITUNGEN UND RECHNUNGEN, ausdrücklich als solche gekennzeichnet und nicht als
+Beobachtung:** die Datums- und Ortszeit-Angaben aus den zwei Epochenwerten, der Abstand
+von 601 200 Sekunden, die Unauflösbarkeit des Rohwert-Paares, und die Verträglichkeit der
+ERSTEN Neu-Verbindung mit einem Sieben-Tage-Reset. Die Einordnung von M2 ist eine
+**CC-BEOBACHTUNG am eigenen Lauf** vom 2026-09-04.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -6846,6 +7113,51 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     eine Serveraktion entschlüsseln kann, ist **GEMESSEN am Repo** (CC, 2026-09-03) — die
     Chiffrier-Kennung wird aus der Umgebung gelesen, nicht aus der Datenbank. **Keine
     Messung an einer Oberfläche.**
+
+    **ZWEITER VERMERK 2026-09-04 — DIE ERSTE HÄLFTE IST GEBAUT UND LIVE BEWIESEN. DER
+    TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT DANEBEN.**
+    **WAS GEBAUT IST:** Die Scheibe 11.2b (Bau-Commit `7288f90`, s. VERMERK 13) zeigt den
+    Ausfall **und** die Vorwarnung an der Ziel-Karte. Der Weg von `hasLiveRefreshToken` in
+    die Oberfläche, den dieser Eintrag als "WAS FEHLT" benennt, ist gebaut — **aber NICHT
+    über den Resolver**, sondern über eine eigene Serveraktion
+    (`listTargetCredentialStates`), die beim Laden des Dashboards liest, entschlüsselt und
+    Uhr 2 deutet.
+    **DIE INVARIANTE (I-4) IST DAMIT EINGEHALTEN UND NICHT UMGANGEN**, und das ist genau
+    der Punkt, den dieser Eintrag selbst als den teuersten benennt: Der Resolver führt
+    weiterhin **keine `projectId`**, er ist mit keiner Zeile angefasst worden, und der
+    Ingest-Pfad läuft unverändert. Der Weg in die Oberfläche geht **neben** ihm her.
+    **WAS DER EINTRAG RICHTIG GESEHEN HAT — die Ausfallmeldung war die billigere Hälfte:**
+    Der Zustand wurde bereits erkannt; gefehlt hat allein der Weg. **WORIN ER SICH IRRTE,
+    steht schon im Vermerk vom 2026-09-03 darüber** und ist mit dieser Scheibe eingelöst:
+    Die Vorwarnung war **nicht** die teurere — eine Serveraktion hat den
+    Chiffrier-Schlüssel, und damit fiel die Klartext-Spalten-Frage weg.
+    **DIE ZWEITE HÄLFTE BLEIBT OFFEN UND BEHÄLT IHREN EIGENEN TRIGGER:** die **WIDERRUFENE**
+    Verbindung. Sie ist am Rückgabewert der Erneuerung nicht von "abgelaufen" zu trennen —
+    beide münden in `invalid_grant`, sobald der Anbieter gefragt wird — und bräuchte als
+    einzige Lage **Persistenz**. Ihr Trigger steht im Zuschnitt der Scheibe 11.2b unter
+    "Was die Scheibe 11.2b ausdrücklich nicht baut, je mit Grund": **die erste Messung, die
+    `invalid_grant` bei LEBENDER Uhr zeigt.**
+    **DIE UNGEMESSENE VORBEDINGUNG AUS TEIL (bx) IST DAVON UNBERÜHRT UND GILT WEITER:** Ob
+    Google nach dem Statuswechsel auf "In Produktion" überhaupt noch einen Ablaufzeitpunkt
+    liefert, ist **nicht gemessen**. Trägt er keinen, greift die Vorwarn-Schwelle nie, und
+    die Karte steht auf `unknown_expiry`. **Das ist gebaut und kein Defekt** — aber es
+    heisst, dass die Vorwarnung im Produktivbetrieb ihre Datengrundlage verlieren kann.
+    **DER EINTRAG WIRD NICHT ABGEHAKT, UND DAS IST DIE BAUFORM DIESER DATEI, KEINE
+    UNENTSCHLOSSENHEIT:** Der Vorrat kennt kein Abhaken; er kennt einen eigenen datierten
+    Absatz UNTER dem unveränderten Eintrag — so bei Eintrag 7, 15 und 35. **Diese Runde
+    folgt ihr.** **SEIN TRIGGER STEHT WÖRTLICH WIE ZUVOR**, und zwei seiner drei Hälften
+    sind unverändert offen: der Statuswechsel auf "In Produktion" und der erste Kunde mit
+    einer Google-Verbindung.
+    **WARUM ER STEHEN BLEIBT — ZWEI GRÜNDE, und der zweite wiegt schwerer:** (1) Seine
+    **MESSUNG**, dass `listConfiguredTargets` ausschliesslich `target` selektiert, ist der
+    Beleg, auf dem die zweite Aktion überhaupt ruht. (2) Seine **TRENNUNG der zwei Hälften**
+    ist der Maßstab für die verbliebene: Wer die widerrufene Verbindung später zuschneidet,
+    findet hier, warum sie als einzige Persistenz braucht — und warum der Weg über den
+    Resolver auch dann versperrt bleibt.
+    PROVENIENZ: der Bau **GEMESSEN am Repo** (CC, 2026-09-04); der Live-Nachweis
+    **GEMESSEN 2026-09-03/04 (OWNER)**, s. VERMERK 13, Abschnitt (b). Dass (I-4)
+    eingehalten ist, ist **GEMESSEN am Diff** (`src/lib/capi/**` liegt nicht darin), keine
+    Zusage.
 
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT

@@ -24,6 +24,23 @@ import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 // "use server"-Datei und die Karte DIESELBE Tabelle lesen; die Alternativen und der
 // Grund stehen in dessen Kopf. Ein Wert-Import, kein Typ: das Gate fragt zur LAUFZEIT.
 import { TARGET_CARDS } from "@/lib/tracking/target-cards";
+// DIE ZWEI DECHIFFRIER-LESER (Scheibe 11.2b). Beide tragen `server-only` und sind in
+// dieser "use server"-Datei am richtigen Ort; sie sind AUSSCHLIESSLICH Eingang von
+// listTargetCredentialStates. Der Ingest-Pfad liest dieselben zwei — das ist die
+// dritte Stelle im Produktivcode, an der eine OAuthPayload existiert.
+import { decryptSecret } from "@/lib/secrets/cipher";
+import { parseOAuthPayload } from "@/lib/secrets/oauth-payload";
+// DIE SECHS LAGEN UND DIE SCHWELLE LIEGEN IN EINEM REINEN MODUL, nicht hier. Zwei
+// Gruende, und der erste ist zwingend: Eine "use server"-Datei darf ausschliesslich
+// async-Funktionen exportieren (docs/immer-beachten.md, "'USE SERVER'-DATEIEN") — die
+// benannte Schwelle und die Typen haetten hier keinen Ort. Der zweite: Die Karte
+// leitet aus denselben Typen ab, und sie laeuft im Browser.
+import {
+  credentialStateFrom,
+  type CredentialInput,
+  type ListCredentialStatesResult,
+  type TargetCredentialStates,
+} from "@/lib/tracking/credential-state";
 import {
   deliverableVariantB,
   emptyPublishVariant,
@@ -899,6 +916,127 @@ export async function listConfiguredTargets(
   return data
     .map((row) => (row as { target: unknown }).target)
     .filter(isTrackingTarget);
+}
+
+/**
+ * KLASSIFIZIERT EINE GEHEIMNIS-ZEILE (Scheibe 11.2b). Modul-privat.
+ *
+ * DIE REIHENFOLGE IST DIE DES RESOLVERS (usableTokenFromRow in lib/capi/token.ts),
+ * absichtlich: Chiffrat zuerst, sonst "keine Uhr". Ein Ziel OHNE Chiffrat ist ein
+ * KLARTEXT-Ziel — es hat keine Nutzlast, kann also weder ablaufen noch erneuert
+ * werden.
+ *
+ * DIE KLARTEXT-SPALTE `secret` WIRD NIE GELESEN, und das ist der Mechanismus hinter
+ * der Zusage, dass die vier Klartext-Ziele nie ein Ablaufdatum bekommen: Sie wird
+ * nicht einmal selektiert. Die Zusage haengt damit nicht an dieser Funktion, sondern
+ * an der Abfrage darueber — ein Waechter haelt die Spaltenliste fest.
+ *
+ * ENTSCHLUESSELT WIRD HIER, HERAUS GEHT NICHTS DAVON. Zugangsdatum und
+ * Erneuerungs-Token existieren fuer die Dauer dieser Funktion und enden mit ihrem
+ * `return`; der Rueckgabetyp CredentialInput traegt ausschliesslich die zweite Uhr.
+ * Das ist dieselbe Auflage wie im Resolver, an einem zweiten Ort.
+ *
+ * SIE WIRFT NIE. decryptSecret und parseOAuthPayload tragen denselben Vertrag.
+ */
+function classifyCredentialRow(secretEnc: unknown): CredentialInput {
+  if (typeof secretEnc !== "string" || secretEnc.length === 0)
+    return { kind: "no_clock" };
+
+  const decrypted = decryptSecret(secretEnc);
+  if (decrypted.kind !== "ok")
+    // DER GRUND IST DAS kind SELBST — ein Mitglied UNSERER Union, kein Fremdtext.
+    return { kind: "unreadable", reason: `decrypt_${decrypted.kind}` };
+
+  const parsed = parseOAuthPayload(decrypted.value);
+  if (parsed.kind !== "ok")
+    return { kind: "unreadable", reason: `parse_${parsed.kind}` };
+
+  return { kind: "clock", expiry: parsed.value.refreshTokenExpiresAt };
+}
+
+/**
+ * DIE LAGE DER ZUGANGSDATEN JE ZIEL (Scheibe 11.2b) — die zweite Quelle neben
+ * listConfiguredTargets.
+ *
+ * WARUM EINE ZWEITE AKTION UND KEINE ERWEITERUNG DER ERSTEN — der Grund ist ein
+ * WAECHTER und keine Aesthetik: listConfiguredTargets traegt die Zusage "KEIN
+ * GEHEIMNIS VERLAESST DEN SERVER: selektiert wird AUSSCHLIESSLICH die target-Spalte",
+ * und ein Lauf in actions.targets.test.ts nagelt ihre Spaltenliste auf ["target"]
+ * fest. Eine Erweiterung muesste genau diesen Waechter oeffnen. Er bleibt woertlich
+ * stehen; diese Aktion bringt ihren eigenen mit.
+ * DER PREIS IST BENANNT UND KLEIN: eine dritte Datenbank-Runde beim Projektwechsel.
+ * Sie laeuft im selben Effekt und auf derselben Achse wie die zweite und wird mit ihr
+ * gebuendelt — die Wartezeit ist das Maximum, nicht die Summe.
+ *
+ * GLEICHES GATE-MUSTER WIE DIE DREI ANDEREN: Session-Check ueber den
+ * authenticated-SSR-Client, OWNERSHIP-GATE ueber DENSELBEN Client (RLS greift),
+ * und der Admin-Client ERST DANACH. project_secrets traegt RLS ohne jede Policy —
+ * nur service_role kommt durch, und ohne bestandenes Gate wird er GAR NICHT
+ * instanziiert.
+ *
+ * SIE ANTWORTET NICHT MIT EINER LEEREN LISTE, UND DAS IST DER UNTERSCHIED ZUR
+ * NACHBARIN: listConfiguredTargets ebnet jeden Fehler auf `[]` ein, und die Karte
+ * liest daraus "nicht konfiguriert" — die benannte Schwaeche, die diese Scheibe
+ * mitnimmt. Diese Aktion traegt einen BENANNTEN Fehlerkanal, damit die Karte
+ * "ich weiss es nicht" von "nichts hinterlegt" trennen kann.
+ * DER KANAL TRAEGT KEINEN DB-TEXT. `ownError.message` wie in setCapiToken ist hier
+ * VERBOTEN: Der Rueckgabetyp dieser Scheibe schliesst ein Geheimnis STRUKTUREL aus,
+ * und ein freier String waere der eine Ort, an dem eines landen koennte.
+ *
+ * DREI FEHLERKLASSEN BLEIBEN AUCH HIER ZUSAMMENGEFASST, und das steht hier, damit
+ * niemand mehr Trennschaerfe annimmt, als dasteht: "fremdes Projekt", "Projekt
+ * existiert nicht" und "das Gate selbst brach" muenden alle in `not_found` — genau
+ * wie in den drei Nachbar-Actions. Ein eigener Text fuer "gehoert dir nicht"
+ * verriete die Existenz einer fremden Kennung.
+ */
+export async function listTargetCredentialStates(
+  projectId: string,
+): Promise<ListCredentialStatesResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "unauthenticated" };
+
+  // 1) Ownership-Gate ueber den authenticated-SSR-Client (RLS greift).
+  const { data: owned, error: ownError } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (ownError || !owned) return { ok: false, reason: "not_found" };
+
+  // 2) HARTE INVARIANTE: Admin-Client erst HIER, NACH dem Gate.
+  const admin = createAdminClient();
+
+  // EINE Runde fuer ALLE Ziele — dieselbe Begruendung wie bei der Nachbarin.
+  // ZWEI SPALTEN, UND `secret` IST KEINE DAVON. S. classifyCredentialRow.
+  const { data, error } = await admin
+    .from("project_secrets")
+    .select("target, secret_enc")
+    .eq("project_id", projectId);
+  if (error || !data) return { ok: false, reason: "read_failed" };
+
+  // DIE UHR WIRD GENAU EINMAL GELESEN und fuer ALLE Zeilen benutzt. Zweimal gelesen
+  // haetten zwei Ziele desselben Projekts verschiedene Bezugspunkte, und die
+  // Differenz waere spaeter unerklaerlich (dieselbe Erwaegung wie in
+  // lib/oauth/token-refresh.ts).
+  const nowSeconds = Math.floor(Date.now() / 1000);
+
+  const states: TargetCredentialStates = {};
+  for (const raw of data) {
+    const row = raw as { target: unknown; secret_enc: unknown };
+    // Derselbe Filter wie bei der Nachbarin, aus demselben Grund: Die DB kann nach
+    // einem Rollback Werte tragen, die dieser Code nicht kennt.
+    if (!isTrackingTarget(row.target)) continue;
+    states[row.target] = credentialStateFrom(
+      classifyCredentialRow(row.secret_enc),
+      nowSeconds,
+    );
+  }
+
+  return { ok: true, states };
 }
 
 /** Ergebnis von publishProject. Bei Erfolg die absolute Live-URL + das Label. */

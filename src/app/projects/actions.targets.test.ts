@@ -72,7 +72,26 @@ const {
 });
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
-import { listConfiguredTargets, removeCapiToken, setCapiToken } from "./actions";
+// DIE CHIFFRIERUNG WIRD GEMOCKT, DIE NUTZLAST NICHT (Scheibe 11.2b). Der Grund ist die
+// Trennlinie, nicht Bequemlichkeit: decryptSecret braucht echtes Schluesselmaterial aus
+// der Umgebung und ist in cipher.test.ts eigens geprueft; parseOAuthPayload braucht
+// nichts und ist genau der Leser, dessen Fehlzustaende hier zu Lagen werden. Waere er
+// mitgemockt, pruefte die Zuordnung parse_* nur noch den Mock.
+const { decryptSecret } = vi.hoisted(() => ({
+  decryptSecret: vi.fn<(v: string) => { kind: string; value?: string }>(),
+}));
+vi.mock("@/lib/secrets/cipher", () => ({ decryptSecret }));
+
+import {
+  listConfiguredTargets,
+  listTargetCredentialStates,
+  removeCapiToken,
+  setCapiToken,
+} from "./actions";
+// ECHT, NICHT GEMOCKT: der Schreiber der Nutzlast baut die Zeichenkette, die der
+// Pruefling zurueckliest. Dieselbe Auflage wie in capi/token.test.ts.
+import { formatOAuthPayload } from "@/lib/secrets/oauth-payload";
+import { CREDENTIAL_EXPIRY_WARN_SECONDS } from "@/lib/tracking/credential-state";
 // DIE ECHTEN KONSTANTEN, keine Literale: waechst die Ziel-Liste, waechst dieser
 // Test mit, statt eine handgeschriebene Kopie zu pruefen.
 import { TRACKING_TARGETS, type TrackingTarget } from "@/lib/settings";
@@ -372,5 +391,210 @@ describe("listConfiguredTargets", () => {
       error: null,
     });
     expect(await listConfiguredTargets("proj-1")).toEqual([...TRACKING_TARGETS]);
+  });
+});
+
+// ===========================================================================
+// DIE LAGE DER ZUGANGSDATEN — DIE ZWEITE QUELLE (Scheibe 11.2b).
+//
+// SIE STEHT NEBEN listConfiguredTargets UND ERSETZT SIE NICHT. Der Grund ist der
+// Waechter "SELEKTIERT NIE DAS GEHEIMNIS" weiter oben: Er nagelt die Spaltenliste
+// jener Aktion auf ["target"] fest, und eine Erweiterung muesste ihn oeffnen. Er
+// bleibt woertlich; diese Aktion bringt ihren eigenen mit.
+// ===========================================================================
+
+/** Baut eine echte, abgelegte Nutzlast mit der gewuenschten zweiten Uhr. */
+function nutzlast(refresh: { kind: "at"; epochSeconds: number } | { kind: "unknown" }) {
+  const res = formatOAuthPayload({
+    accessToken: "ZUGANGSDATUM-GEHEIM",
+    accessTokenExpiresAt: 1_700_000_000,
+    refreshToken: "ERNEUERUNGS-TOKEN-GEHEIM",
+    refreshTokenExpiresAt: refresh,
+  });
+  if (res.kind !== "ok") throw new Error("Fixture kaputt: " + res.field);
+  return res.value;
+}
+
+describe("listTargetCredentialStates", () => {
+  it("B1: fremdes Projekt -> not_found und KEIN Admin-Client", async () => {
+    // (I-3): Der RLS-Bypass ist ohne bestandenes Gate physisch unerreichbar.
+    // WIRD ROT, WENN: jemand createAdminClient() vor das Eigentums-Gate zieht.
+    makeClient({ user: { id: "u1" }, owned: null });
+    expect(await listTargetCredentialStates("foreign")).toEqual({
+      ok: false,
+      reason: "not_found",
+    });
+    expect(createAdminClient).not.toHaveBeenCalled();
+  });
+
+  it("B2: nicht eingeloggt -> unauthenticated und KEIN Admin-Client", async () => {
+    makeClient({ user: null });
+    expect(await listTargetCredentialStates("proj-1")).toEqual({
+      ok: false,
+      reason: "unauthenticated",
+    });
+    expect(createAdminClient).not.toHaveBeenCalled();
+  });
+
+  it("B3: selektiert GENAU target und secret_enc — nie die Klartext-Spalte", async () => {
+    // DER SPALTEN-WAECHTER DIESER AKTION, UND ER IST ANDERS GEBAUT ALS DER DER
+    // NACHBARIN — das ist kein Versehen, sondern der Grund fuer seinen Kommentar:
+    //
+    // Der Bestandswaechter oben schreibt `not.toContain("secret")`. DIESE FORM IST
+    // HIER UNTAUGLICH: "secret_enc" ENTHAELT "secret" ALS TEILZEICHENKETTE, der
+    // Ausdruck faellt also, obwohl die Klartext-Spalte gar nicht dabei ist. Es ist der
+    // Fall "EIN WAECHTER UEBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG" auf der
+    // Spaltenachse.
+    // WAS STATTDESSEN TRAEGT: EXAKTE GLEICHHEIT. Sie ist strenger als jede
+    // Teilzeichenketten-Probe — eine dritte Spalte faellt auf, gleich wie sie heisst.
+    //
+    // DIE ZWEI WAECHTER STEHEN NEBENEINANDER UND MEINEN VERSCHIEDENES. Wer sie
+    // angleicht, macht einen von beiden falsch.
+    //
+    // WIRD ROT, WENN: jemand `secret` mitnimmt, `*` selektiert oder eine dritte Spalte
+    // ergaenzt.
+    makeClient({ user: { id: "u1" } });
+    setSelectResult({ data: [], error: null });
+    await listTargetCredentialStates("proj-1");
+    expect(adminSelectCols).toEqual(["target, secret_enc"]);
+    expect(adminSelectCols.join(" ")).not.toContain("*");
+  });
+
+  it("B4: EINE Runde fuer ALLE Ziele, auf project_secrets gefiltert", async () => {
+    // ROT DURCH: eine Abfrage je Ziel. Dieselbe Begruendung wie bei der Nachbarin.
+    makeClient({ user: { id: "u1" } });
+    setSelectResult({ data: [], error: null });
+    await listTargetCredentialStates("proj-1");
+    expect(adminTables).toEqual(["project_secrets"]);
+    expect(adminSelectEq).toEqual([["project_id", "proj-1"]]);
+  });
+
+  it("B5: DB-Fehler -> read_failed, KEIN Wurf", async () => {
+    // DER UNTERSCHIED ZUR NACHBARIN IN EINEM LAUF: Sie ebnet jeden Fehler auf eine
+    // leere Liste ein, und die Karte liest daraus "nicht konfiguriert". Diese hier
+    // sagt, dass sie nichts weiss.
+    //
+    // EINZELSTUECK — GEMESSEN, NICHT VERMUTET (Mutationsprobe M4, 2026-09-04: den
+    // Fehlerfall wieder zur leeren Liste gemacht): Es fiel GENAU DIESER Lauf, 1 von
+    // 1525. Er traegt die Fehlerklasse "die zweite Quelle ebnet ihre Fehler ein wie
+    // die erste" ALLEIN. Wer ihn als redundant entfernt, nimmt die einzige Abdeckung
+    // mit — und damit den ganzen Grund, warum es diese zweite Aktion gibt.
+    makeClient({ user: { id: "u1" } });
+    setSelectResult({ data: null, error: { code: "42P01" } });
+    await expect(listTargetCredentialStates("proj-1")).resolves.toEqual({
+      ok: false,
+      reason: "read_failed",
+    });
+  });
+
+  it("B6: verwirft Zielwerte, die dieser Code nicht kennt", async () => {
+    // DER UNBEKANNTE WERT IST SYNTHETISCH, und das ist die Lehre der Nachbarin: Jeder
+    // plausible Anbietername kann spaeter real werden. Nur ein Wert, der NIEMALS ein
+    // Ziel sein kann, haelt den Lauf unabhaengig von der Ziel-Menge.
+    makeClient({ user: { id: "u1" } });
+    setSelectResult({
+      data: [
+        { target: "meta", secret_enc: null },
+        { target: "__kein_ziel__", secret_enc: null },
+        { target: null, secret_enc: null },
+        {},
+      ],
+      error: null,
+    });
+    expect(await listTargetCredentialStates("proj-1")).toEqual({
+      ok: true,
+      states: { meta: { kind: "no_clock" } },
+    });
+  });
+
+  it("B7: KEIN Geheimnis im Ergebnis — die Laufzeit-Gegenprobe zum Typ", async () => {
+    // (I-1) ist strukturell durch den Rueckgabetyp gesichert; DIESER LAUF MISST ES AM
+    // ERGEBNIS. Zugangsdatum und Erneuerungs-Token stehen in der entschluesselten
+    // Nutzlast und werden gelesen — heraus geht keines von beiden.
+    // WIRD ROT, WENN: jemand ein Feld ergaenzt, das die Nutzlast weiterreicht.
+    makeClient({ user: { id: "u1" } });
+    decryptSecret.mockReturnValue({
+      kind: "ok",
+      value: nutzlast({ kind: "at", epochSeconds: 1_900_000_000 }),
+    });
+    setSelectResult({
+      data: [{ target: "google", secret_enc: "CHIFFRAT" }],
+      error: null,
+    });
+    const roh = JSON.stringify(await listTargetCredentialStates("proj-1"));
+    // POSITIVKONTROLLE: der Lauf hat wirklich eine entschluesselte Zeile gesehen.
+    // Ohne sie waere "kein Geheimnis drin" von "gar nichts drin" nicht zu
+    // unterscheiden.
+    expect(roh).toContain("google");
+    expect(roh).not.toContain("ZUGANGSDATUM-GEHEIM");
+    expect(roh).not.toContain("ERNEUERUNGS-TOKEN-GEHEIM");
+    expect(roh).not.toContain("CHIFFRAT");
+  });
+
+  it("B8: die drei Uhr-2-Lagen entstehen am echten Lesepfad", async () => {
+    // NICHT REDUNDANT ZU DEN A-LAEUFEN: Jene pruefen die Deutung der Uhr ohne
+    // Datenbank; dieser prueft, dass die Aktion die richtige Uhr aus der richtigen
+    // Nutzlast holt. Ein Vertauschen der zwei Uhren waere dort unsichtbar.
+    const jetzt = Math.floor(Date.now() / 1000);
+    const faelle: [number, string][] = [
+      [jetzt + CREDENTIAL_EXPIRY_WARN_SECONDS + 3600, "live"],
+      [jetzt + 3600, "expiring"],
+      [jetzt - 3600, "dead"],
+    ];
+    for (const [epochSeconds, erwartet] of faelle) {
+      makeClient({ user: { id: "u1" } });
+      decryptSecret.mockReturnValue({
+        kind: "ok",
+        value: nutzlast({ kind: "at", epochSeconds }),
+      });
+      setSelectResult({
+        data: [{ target: "google", secret_enc: "CHIFFRAT" }],
+        error: null,
+      });
+      const res = await listTargetCredentialStates("proj-1");
+      expect(res.ok && res.states.google?.kind).toBe(erwartet);
+    }
+  });
+
+  it("B9: unbekannte zweite Uhr -> unknown_expiry, kaputte Nutzlast -> unreadable", async () => {
+    // ZWEI LAGEN, DIE NUR HIER ENTSTEHEN KOENNEN — die eine aus einer gueltigen
+    // Nutzlast ohne Ablaufzeitpunkt, die andere aus einer, die der Leser abweist.
+    makeClient({ user: { id: "u1" } });
+    decryptSecret.mockReturnValue({
+      kind: "ok",
+      value: nutzlast({ kind: "unknown" }),
+    });
+    setSelectResult({
+      data: [{ target: "google", secret_enc: "CHIFFRAT" }],
+      error: null,
+    });
+    expect(await listTargetCredentialStates("proj-1")).toEqual({
+      ok: true,
+      states: { google: { kind: "unknown_expiry" } },
+    });
+
+    makeClient({ user: { id: "u1" } });
+    decryptSecret.mockReturnValue({ kind: "ok", value: "kein-p1-format" });
+    setSelectResult({
+      data: [{ target: "google", secret_enc: "CHIFFRAT" }],
+      error: null,
+    });
+    expect(await listTargetCredentialStates("proj-1")).toEqual({
+      ok: true,
+      states: { google: { kind: "unreadable", reason: "parse_bad_format" } },
+    });
+  });
+
+  it("B10: ein Dechiffrier-Fehlzustand wird zu SEINEM Grund, nicht eingeebnet", async () => {
+    makeClient({ user: { id: "u1" } });
+    decryptSecret.mockReturnValue({ kind: "unknown_key" });
+    setSelectResult({
+      data: [{ target: "google", secret_enc: "CHIFFRAT" }],
+      error: null,
+    });
+    expect(await listTargetCredentialStates("proj-1")).toEqual({
+      ok: true,
+      states: { google: { kind: "unreadable", reason: "decrypt_unknown_key" } },
+    });
   });
 });

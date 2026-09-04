@@ -39,6 +39,7 @@ const {
   getVariantBPublished,
   getVariantCounts,
   listConfiguredTargets,
+  listTargetCredentialStates,
 } = vi.hoisted(() => ({
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
   // Scheibe 9a: die Varianten-Actions. saveVariantB ist der Spy, auf dem der
@@ -84,6 +85,12 @@ const {
   // Bestandstests steht jede Karte auf "Nicht konfiguriert". Ein Default mit Zielen
   // haette in jedem Bestandstest einen Entfernen-Knopf eingeblendet.
   listConfiguredTargets: vi.fn(async (): Promise<unknown> => []),
+  // DER VORGABEWERT IST EINE FORM, DIE DER RESOLVER WIRKLICH ERZEUGT (Scheibe 11.2b):
+  // ein geglueckter Lauf ohne Zeile. `{}` als Bequemlichkeit waere die Falle aus der
+  // Scheibe 1b-2a — eine Attrappe in einer Gestalt, die es im Betrieb nicht gibt.
+  listTargetCredentialStates: vi.fn(
+    async (): Promise<unknown> => ({ ok: true, states: {} }),
+  ),
 }));
 
 vi.mock("@/app/projects/actions", () => ({
@@ -104,6 +111,7 @@ vi.mock("@/app/projects/actions", () => ({
   getVariantBPublished,
   getVariantCounts,
   listConfiguredTargets,
+  listTargetCredentialStates,
 }));
 
 // DomainManager (in der Publish-Sektion gemountet) zieht ueber @/app/projects/domain-

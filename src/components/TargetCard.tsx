@@ -11,6 +11,10 @@ import { hasTargetPixelId, type TrackingTarget } from "@/lib/settings";
 // Frage traegt. DIESE DATEI RE-EXPORTIERT NICHTS — zwei Adressen fuer eine Sache waeren
 // genau das Problem, das der Umzug beseitigt.
 import { TARGET_CARDS } from "@/lib/tracking/target-cards";
+// NUR DER TYP. Die Berechnung laeuft in der Aktion, die Ableitung in MeasureView;
+// diese Karte ZEIGT die Lage und bildet sie nicht. Das reine Modul traegt keine
+// Direktive und zieht nichts aus secrets/ in dieses Buendel — s. seinen Kopf.
+import type { TargetCredentialState } from "@/lib/tracking/credential-state";
 
 /**
  * DIE KARTE JE PLATTFORM (Phase 11, sechste Scheibe, zweite Haelfte).
@@ -50,13 +54,90 @@ import { TARGET_CARDS } from "@/lib/tracking/target-cards";
  *   gleichnamige Karten-Ueberschrift machte ihn mehrdeutig.
  */
 
-/** Die drei Zustaende der Karte. `null` heisst NOCH NICHT GELADEN. */
-export type ConfiguredState = boolean | null;
+/**
+ * Die VIER Zustaende der Karte. `null` heisst NOCH NICHT GELADEN.
+ *
+ * ERWEITERT MIT SCHEIBE 11.2b UM "unknown" — der Satz "die drei Zustaende" stand hier
+ * und ist ersetzt, nicht gestempelt: Ein Typ ist keine Beschreibung, die altern darf.
+ * `"unknown"` heisst GELADEN, ABER NICHTS GEWUSST — die Lage-Aktion ist gescheitert,
+ * und dann ist jede Aussage ueber die Zugangsdaten eine Behauptung ohne Grundlage.
+ *
+ * DER WERT WIRD NICHT HIER GEBILDET, sondern in resolveConfigured
+ * (lib/tracking/credential-state.ts). Dort steht auch die Vorrangregel und ihr Grund;
+ * DIESE DATEI TRIFFT KEINE ZWEITE ENTSCHEIDUNG DARUEBER.
+ * DIE KOPPLUNG IST STRUKTURELL UND NICHT UEBER EINEN IMPORT: Jene Funktion gibt
+ * `boolean | null | "unknown"` zurueck und importiert diesen Typ NICHT — die Richtung
+ * Client -> rein gilt nicht, und ein zweiter NAME waere eine zweite Wahrheit. Ein Lauf
+ * haelt die Zuweisbarkeit fest.
+ */
+export type ConfiguredState = boolean | null | "unknown";
 
-/** Die drei erlaubten Statustexte. Mehr gibt es nicht, und das ist die Zusage. */
+/** Die VIER erlaubten Statustexte. Mehr gibt es nicht, und das ist die Zusage. */
 export const STATUS_LOADING = "Wird geladen";
 export const STATUS_UNCONFIGURED = "Nicht konfiguriert";
 export const STATUS_CONFIGURED = "Zugangsdaten hinterlegt";
+/**
+ * DER VIERTE TEXT (Scheibe 11.2b).
+ *
+ * ER BEHAUPTET NICHTS UEBER DIE ZUGANGSDATEN, und genau das ist sein Zweck. Er steht
+ * nur da, wo die Lage-Aktion gescheitert ist — nicht bei "keine Zeile" und nicht beim
+ * Laden.
+ * KEIN WORT AUS DER VERBOTEN-LISTE des Wirkungs-Waechters in TargetCard.test.tsx.
+ */
+export const STATUS_UNKNOWN = "Zustand unbekannt";
+
+/**
+ * DER TEXT DER DRITTEN ZEILE — oder null, wenn keine steht (Scheibe 11.2b).
+ *
+ * ZWEI LAGEN ERZEUGEN AUSDRUECKLICH KEINE ZEILE:
+ * · `no_clock` — die vier Klartext-Ziele. Sie haben keine Nutzlast und keine Uhr; ein
+ *   Ablaufdatum dort waere ERFUNDEN. Die Aktion selektiert die Klartext-Spalte nicht
+ *   einmal, es gibt also gar keinen Wert, aus dem eines zu lesen waere. EIN LAUF MIT
+ *   POSITIVKONTROLLE HAELT DAS FEST — ohne sie waeren "kein Datum" und "die Karte
+ *   rendert gar nichts" am Ergebnis nicht zu unterscheiden.
+ * · `null` — noch nicht geladen ODER die Aktion ist gescheitert ODER es gibt keine
+ *   Zeile. Alle drei sagen dasselbe: Wir wissen nichts, also steht hier nichts. Die
+ *   Unterscheidung traegt die STATUSZEILE.
+ *
+ * DIE ZEIT WIRD MIT toLocaleString("de-DE") FORMATIERT — dieselbe Hausform wie die
+ * Varianten-Auswertung in MeasureView. KEIN timeZone-Parameter: er naehme dem Nutzer
+ * seine lokale Zeit, und er ist dort schon einmal geprueft und verworfen worden.
+ *
+ * DER GRUND FUER DEN ROHEN `reason` IM UNLESBAR-FALL ist derselbe wie beim rohen
+ * Ergebniscode des Autorisierungs-Flusses: Er kostet keine sieben Formulierungen und
+ * macht einen Support-Fall trotzdem adressierbar. ER IST SELBSTVERGEBEN — ein
+ * Mitglied unserer geschlossenen Union, kein Anbieter-Fremdtext.
+ */
+export function describeCredentialState(
+  state: TargetCredentialState | null,
+): string | null {
+  if (state === null) return null;
+  switch (state.kind) {
+    case "no_clock":
+      return null;
+    case "unknown_expiry":
+      return "Ablaufzeitpunkt unbekannt";
+    case "unreadable":
+      return `Zugangsdaten nicht lesbar (${state.reason})`;
+    case "live":
+      return `Zugang gültig bis ${formatEpochSeconds(state.expiresAt)}`;
+    case "expiring":
+      return `Zugang endet am ${formatEpochSeconds(state.expiresAt)} — bitte neu autorisieren`;
+    case "dead":
+      return `Zugang abgelaufen am ${formatEpochSeconds(state.expiredAt)} — bitte neu autorisieren`;
+  }
+}
+
+/**
+ * Epochensekunden als lesbarer Zeitpunkt.
+ *
+ * ES IST DIE ERSTE STELLE IM REPO, DIE EPOCHENSEKUNDEN ANZEIGT — bis zu dieser
+ * Scheibe wurden sie ausschliesslich gerechnet und verglichen, nie dargestellt. Der
+ * Faktor 1000 steht deshalb hier und nicht verstreut an drei Aufrufstellen.
+ */
+function formatEpochSeconds(seconds: number): string {
+  return new Date(seconds * 1000).toLocaleString("de-DE");
+}
 
 /**
  * DIE ZEILE UEBER DIE AUSLIEFERUNG (Phase 11, Scheibe B2). Sie erscheint, wenn
@@ -90,6 +171,7 @@ export default function TargetCard({
   onPixelIdChange,
   connectOutcome,
   configured,
+  credentialState,
   onCredentialsSaved,
   onCredentialsRemoved,
 }: {
@@ -145,6 +227,26 @@ export default function TargetCard({
   connectOutcome: string | null;
   /** null = noch nicht geladen. S. den Kommentar an der Statuszeile unten. */
   configured: ConfiguredState;
+  /**
+   * DIE LAGE DER ABGELEGTEN ZUGANGSDATEN (Scheibe 11.2b), oder null.
+   *
+   * OPTIONAL — UND DAS IST EINE BEWUSSTE ABWEICHUNG VON DER NACHBARFORM, nicht eine
+   * Nachlaessigkeit. Das Feld `renewable` an TrackingKeyResolution (lib/capi/token.ts)
+   * ist ausdruecklich PFLICHTIG, weil dort ACHTZEHN Ganz-Objekt-Vergleiche mit toEqual
+   * an der Aufloesung haengen und toEqual einen Schluessel mit dem Wert `undefined`
+   * IGNORIERT (GEMESSEN 2026-08-18) — ein optionales Feld waere dort an allen achtzehn
+   * STILL vorbeigegangen.
+   * HIER GIBT ES KEINE SOLCHEN VERGLEICHE: Die Karten-Props werden nirgends als ganzes
+   * Objekt gepinnt. Was es dagegen gibt, ist ein ECHTER dritter Zustand — "noch nicht
+   * geladen" —, und der braucht einen Traeger. `undefined` ist er.
+   * WER DARAUS EIN PFLICHTFELD MACHT, muss einen Wert erfinden, den es vor dem Laden
+   * nicht gibt.
+   *
+   * `null` UND `undefined` FUEHREN ZU DERSELBEN ANZEIGE, naemlich zu keiner. Die drei
+   * Faelle dahinter trennt die STATUSZEILE, nicht diese Zeile — s. credentialStateFor
+   * in lib/tracking/credential-state.ts.
+   */
+  credentialState?: TargetCredentialState | null;
   /**
    * Erfolgs-Rueckruf an den Container. Er traegt die Projekt-Kennung, AUF DIE er
    * sich bezieht — der Container vergleicht sie gegen die aktuelle, bevor er
@@ -238,12 +340,52 @@ export default function TargetCard({
   // src/app/projects/actions.ts, und jene Datei ist in dieser Haelfte unantastbar
   // (Haelfte A ist abgeschlossen und live geprueft). Wer den Fall beheben will,
   // faengt DORT an — nicht hier mit einem Notbehelf, der raet.
+  // ERWEITERT MIT SCHEIBE 11.2b UM DEN VIERTEN ZUSTAND. Der Absatz darueber bleibt
+  // woertlich und beschreibt die Schwaeche unveraendert richtig — was sich aendert,
+  // ist, dass sie jetzt einen AUSGANG hat: Scheitert die Lage-Aktion, steht hier
+  // "Zustand unbekannt" statt einer Behauptung. Die Nachbarin listConfiguredTargets
+  // ebnet ihre Fehler weiterhin auf eine leere Liste ein; die zweite Quelle traegt den
+  // benannten Kanal, und die Vorrangregel steht in resolveConfigured.
   const statusText =
     configured === null
       ? STATUS_LOADING
-      : configured
-        ? STATUS_CONFIGURED
-        : STATUS_UNCONFIGURED;
+      : configured === "unknown"
+        ? STATUS_UNKNOWN
+        : configured
+          ? STATUS_CONFIGURED
+          : STATUS_UNCONFIGURED;
+
+  // DIE DRITTE ZEILE (Scheibe 11.2b) — DIE LAGE DER ZUGANGSDATEN.
+  //
+  // SIE STEHT NEBEN statusText UND NICHT DARIN, und das ist die Hausform dieser Datei
+  // und keine Geschmacksfrage: Der Hinweis ueber die AUSLIEFERUNG steht aus genau
+  // demselben Grund in einer eigenen Zeile ("zwei verschiedene Sachen, deshalb zwei
+  // Zeilen und kein Zusatz im Statustext"). Der Status sagt, ob Zugangsdaten
+  // HINTERLEGT sind; diese Zeile sagt, ob sie NOCH GUELTIG sind. Das ist eine DRITTE
+  // Aussage, und sie bekommt eine dritte Zeile.
+  //
+  // DIE AMPEL ZEIGT UHR 2, NICHT UHR 1. Uhr 1 stirbt seit Scheibe 1b-2a stuendlich und
+  // wird verkehrsgetaktet erneuert — sie anzuzeigen hiesse, dauerhaft "es endet in 43
+  // Minuten" zu melden. Uhr 1 kommt im Rueckgabetyp gar nicht vor.
+  //
+  // KEIN GRUEN, KEIN HAKEN, KEIN PUNKT — auch hier nicht. Dass die Scheibe "Ampel"
+  // heisst, hebt die Grenze an der Statusflaeche nicht auf; sie schafft die
+  // Voraussetzung, unter der eine Aussage ueberhaupt gehalten werden koennte. Alle
+  // vier Texte tragen dieselbe neutrale Klasse.
+  //
+  // DIE ZEITZONE IST KOLLISIONSFREI, WEIL DIESE KARTE IM ERSTEN RENDER NICHT IM BAUM
+  // LIEGT: Sie steckt im Einstellungs-Drawer, und der startet geschlossen (s. den
+  // Kommentar am isSettingsOpen-Gate in CodeImporter.tsx, wo diese Karte seit dieser
+  // Scheibe als ZWEITER Konsument genannt ist). Waere sie im Server-HTML,
+  // formatierten Server und Client denselben Zeitpunkt in VERSCHIEDENEN Zeitzonen —
+  // ein Hydration-Mismatch. Mount-Flag, suppressHydrationWarning und ein fester
+  // timeZone-Parameter sind an der Varianten-Auswertung geprueft und VERWORFEN; die
+  // Abhaengigkeit ist stattdessen benannt, hier und dort.
+  //
+  // KEIN WORT AUS DER VERBOTEN-LISTE des Wirkungs-Waechters — insbesondere kein
+  // "laeuft". Der naheliegende Text "laeuft bald ab" macht jenen Lauf ROT, und zwar
+  // zu Recht: Die Liste haelt die Karte davon ab, ueber WIRKUNG zu sprechen.
+  const credentialLine = describeCredentialState(credentialState ?? null);
 
   return (
     <div className="rounded-md border border-gray-200 px-3 py-3">
@@ -273,6 +415,13 @@ export default function TargetCard({
           {statusText}
         </span>
       </div>
+
+      {/* DIE LAGE DER ZUGANGSDATEN (Scheibe 11.2b). Dieselbe neutrale Klasse wie der
+          Folgenlosigkeits-Hinweis darunter — keine Farbe, kein Symbol, kein Punkt.
+          Der Text und die Faelle stehen in describeCredentialState oben. */}
+      {credentialLine !== null && (
+        <p className="mb-2 text-xs text-gray-500">{credentialLine}</p>
+      )}
 
       {/* Der Folgenlosigkeits-Hinweis (Invariante 6). Er sagt etwas ueber die
           AUSLIEFERUNG, der Status etwas ueber die ZUGANGSDATEN — zwei verschiedene

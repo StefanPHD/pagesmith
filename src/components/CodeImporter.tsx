@@ -17,6 +17,7 @@ import {
   getEventCounts,
   getVariantCounts,
   listConfiguredTargets,
+  listTargetCredentialStates,
   listProjects,
   loadProject,
   publishProject,
@@ -64,6 +65,14 @@ import {
 // die Werte der Geheimnis-Tabelle. Beide lauten heute gleich; sie gleichzusetzen
 // waere genau die Drift, gegen die die Abbildung steht.
 import { CONSENT_KEY_BY_TARGET } from "@/lib/tracking/consent-targets";
+// Der Typ und EINE Nachfuehrung (Scheibe 11.2b). Dieser Container HAELT die Lage und
+// reicht sie durch; gebildet wird sie in der Aktion, gedeutet in MeasureView und in
+// der Karte. withoutTarget liegt im reinen Modul und nicht hier, damit die Regel
+// "entfernen statt raten" einen Lauf bekommt.
+import {
+  withoutTarget,
+  type ListCredentialStatesResult,
+} from "@/lib/tracking/credential-state";
 // NUR das Kennungs-Praedikat, NIE ein ZUSAMMENGESETZTER Zustand — gleichgueltig, wie
 // er heisst. Die Begruendung steht am Memo unten und als Auflage an der Funktion
 // selbst.
@@ -371,6 +380,14 @@ export default function CodeImporter({
   // an der Beschriftung: wer diesen Default umstellt, liest den Kommentar drueben
   // nicht. Wird das Panel je per Default geoeffnet, muss die Formatierung vorher
   // hydration-sicher werden (Mount-Flag oder fester timeZone-Parameter).
+  //
+  // NACHGEZOGEN MIT SCHEIBE 11.2b — ES SIND ZWEI KONSUMENTEN, NICHT EINER. Der Absatz
+  // darueber bleibt woertlich und beschreibt den ersten; der zweite ist die ZIEL-KARTE
+  // (TargetCard), die seit dieser Scheibe den Ablaufzeitpunkt der Zugangsdaten mit
+  // demselben toLocaleString("de-DE") anzeigt. Sie steckt in derselben Flaeche und
+  // haengt an DEMSELBEN Default.
+  // OHNE DIESEN NACHZUG LIEST DIE NAECHSTE RUNDE DIE AUFZAEHLUNG ALS VOLLSTAENDIG,
+  // stellt den Default um und bricht ZWEI Stellen statt einer.
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   // DIE FUENF ZUSTAENDE DER ZUGANGSDATEN-VERWALTUNG LIEGEN SEIT PHASE 11 SCHEIBE 6
   // (zweite Haelfte) IN DER KARTE (TargetCard), nicht mehr hier. Sie beschreiben je
@@ -409,6 +426,15 @@ export default function CodeImporter({
   const [configuredTargets, setConfiguredTargets] = useState<
     TrackingTarget[] | null
   >(null);
+  // Die LAGE der Zugangsdaten je Ziel (Scheibe 11.2b) — die zweite Quelle daneben.
+  // null = NOCH NICHT GELADEN. Ein {ok:false} ist etwas anderes und bleibt es: Es
+  // heisst GELADEN UND GESCHEITERT und fuehrt zum vierten Karten-Zustand, nicht
+  // zurueck in den Ladezustand.
+  // ZWEI ZUSTAENDE STATT EINEM ERWEITERTEN, und der Grund ist der Waechter auf der
+  // Spaltenliste von listConfiguredTargets: jene Aktion bleibt woertlich, samt ihren
+  // sechs Laeufen. Die Kosten stehen am Kopf der neuen Aktion.
+  const [credentialStates, setCredentialStates] =
+    useState<ListCredentialStatesResult | null>(null);
   // Auswertung je Variante (Phase 9 Scheibe 9c-1). DREI Zustaende, bewusst nicht zwei:
   // null = noch nicht geladen, {ok:false} = NICHT LADBAR, {ok:true} = geladen (ggf. mit
   // leeren rows). Genau diese Unterscheidung fehlt den beiden Kacheln darueber, deren
@@ -830,13 +856,32 @@ export default function CodeImporter({
   // SCHWAECHE (s. den Kommentar an der Statuszeile in TargetCard): ein Fehlschlag
   // ist von "nichts konfiguriert" nicht zu unterscheiden. Behoben werden koennte er
   // nur in der Action selbst — Backlog, nicht hier mit einem Notbehelf.
+  //
+  // SEIT SCHEIBE 11.2b LAEDT DIESER EFFEKT ZWEI DINGE, GEBUENDELT. Der Absatz darueber
+  // bleibt woertlich und gilt fuer beide; was hinzukommt, ist die LAGE der
+  // Zugangsdaten aus einer zweiten Aktion.
+  // Promise.all UND NICHT NACHEINANDER: Die zwei Abfragen haengen an nichts
+  // voneinander, die Wartezeit ist damit das MAXIMUM und nicht die Summe. Sie kommen
+  // ausserdem GEMEINSAM an, und das ist mehr als Kosmetik — die Karte behauptet
+  // nichts, solange eine der beiden Quellen fehlt (s. resolveConfigured).
+  // DIE ZWEITE AKTION WIRFT EBENSO WENIG wie die erste; sie gibt bei jedem Fehler ein
+  // {ok:false} mit einem BENANNTEN Grund zurueck. Genau das ist der Ausgang, den die
+  // benannte Schwaeche der ersten nicht hat.
   useEffect(() => {
     let cancelled = false;
     const load = projectId
-      ? listConfiguredTargets(projectId)
-      : Promise.resolve<TrackingTarget[]>([]);
-    load.then((targets) => {
-      if (!cancelled) setConfiguredTargets(targets);
+      ? Promise.all([
+          listConfiguredTargets(projectId),
+          listTargetCredentialStates(projectId),
+        ])
+      : Promise.resolve<[TrackingTarget[], ListCredentialStatesResult]>([
+          [],
+          { ok: true, states: {} },
+        ]);
+    load.then(([targets, states]) => {
+      if (cancelled) return;
+      setConfiguredTargets(targets);
+      setCredentialStates(states);
     });
     return () => {
       cancelled = true;
@@ -1554,6 +1599,14 @@ export default function CodeImporter({
     setConfiguredTargets((prev) =>
       prev === null || prev.includes(target) ? prev : [...prev, target],
     );
+    // DIE LAGE DIESES ZIELS WIRD ENTFERNT, NICHT GERATEN (Scheibe 11.2b). Wir wissen
+    // nach dem Speichern, DASS eine Zeile da ist — nicht, welche Uhr sie traegt. Einen
+    // Wert einzusetzen hiesse, ihn zu erfinden; die Zeile bleibt bis zum naechsten
+    // Laden einfach weg, und das ist die ehrliche Anzeige.
+    // ES IST HEUTE FOLGENLOS UND TROTZDEM RICHTIG: Dieser Weg fuehrt nur ueber ein
+    // Geheimnis-FELD, und ein solches Ziel traegt ohnehin keine Uhr. Der Zweig steht
+    // fuer das erste Ziel, bei dem das nicht mehr gilt.
+    setCredentialStates((prev) => withoutTarget(prev, target));
     // DIE MELDUNG DES AUTORISIERUNGS-FLUSSES DARF DIESEN ZUSTAND NICHT UEBERLEBEN.
     // Sie steht hier, obwohl der gemessene Fall das ENTFERNEN war: Die Bedingung ist
     // "der Konfigurations-Zustand hat sich geaendert", nicht "es wurde entfernt". Auf
@@ -1570,6 +1623,11 @@ export default function CodeImporter({
     setConfiguredTargets((prev) =>
       prev === null ? prev : prev.filter((t) => t !== target),
     );
+    // DIESELBE NACHFUEHRUNG WIE BEIM SPEICHERN, und hier ist sie NICHT folgenlos:
+    // 'google' hat kein Geheimnis-Feld, aber sehr wohl einen Trennen-Weg. Ohne diese
+    // Zeile stuende unter "Nicht konfiguriert" weiter das Ablaufdatum einer Zeile, die
+    // es nicht mehr gibt — eine Auskunft, die ihren Gegenstand ueberlebt.
+    setCredentialStates((prev) => withoutTarget(prev, target));
     // DER GEMESSENE FALL (OWNER, 2026-08-31): Ohne diese Zeile stand die Karte nach dem
     // Entfernen auf "Nicht konfiguriert" und der rote Fehlercode blieb darunter stehen.
     setConnectOutcome(null);
@@ -2385,6 +2443,7 @@ export default function CodeImporter({
               }
               connectOutcome={connectOutcome}
               configuredTargets={configuredTargets}
+              credentialStates={credentialStates}
               onCredentialsSaved={handleCredentialsSaved}
               onCredentialsRemoved={handleCredentialsRemoved}
               // Scheibe 11.1b: die fertige Ableitung, samt ihrer AUSSAGE

@@ -20,6 +20,7 @@ const {
   setCapiToken,
   removeCapiToken,
   listConfiguredTargets,
+  listTargetCredentialStates,
   loadProject,
   saveProject,
   listProjects,
@@ -41,6 +42,15 @@ const {
   })),
   removeCapiToken: vi.fn(async (): Promise<unknown> => ({ ok: true as const })),
   listConfiguredTargets: vi.fn(async (): Promise<unknown> => []),
+  // DER VORGABEWERT IST EINE FORM, DIE DER RESOLVER WIRKLICH ERZEUGT (Scheibe 11.2b):
+  // ein geglueckter Lauf ohne Zeile. `{}` als Bequemlichkeit waere die Falle aus der
+  // Scheibe 1b-2a — eine Attrappe in einer Gestalt, die es im Betrieb nicht gibt.
+  // OHNE DIESEN EINTRAG WAERE DIE FUNKTION IM CONTAINER-WAECHTER `undefined`: Die
+  // Fabrik ist ein VOLLERSATZ des Moduls, ein fehlender Export faellt erst zur
+  // Laufzeit auf.
+  listTargetCredentialStates: vi.fn(
+    async (): Promise<unknown> => ({ ok: true, states: {} }),
+  ),
   loadProject: vi.fn(async (): Promise<unknown> => null),
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
   listProjects: vi.fn(async () => []),
@@ -65,6 +75,7 @@ vi.mock("@/app/projects/actions", () => ({
   setCapiToken,
   removeCapiToken,
   listConfiguredTargets,
+  listTargetCredentialStates,
   loadProject,
   saveProject,
   listProjects,
@@ -101,8 +112,10 @@ import TargetCard, {
   STATUS_CONFIGURED,
   STATUS_LOADING,
   STATUS_UNCONFIGURED,
+  STATUS_UNKNOWN,
 } from "@/components/TargetCard";
 import type { ConfiguredState } from "@/components/TargetCard";
+import type { TargetCredentialState } from "@/lib/tracking/credential-state";
 // SEIT DER SCHEIBE 3 AUS DEM REINEN lib-MODUL — die Karten-Datei re-exportiert die
 // Tabelle nicht. Der Test liest damit dieselbe Adresse wie Komponente und Server-Action.
 import { TARGET_CARDS } from "@/lib/tracking/target-cards";
@@ -142,6 +155,8 @@ function renderCard(
     projectId?: string | null;
     target?: TrackingTarget;
     configured?: ConfiguredState;
+    /** Die Lage der Zugangsdaten (Scheibe 11.2b). null = keine Zeitzeile. */
+    credentialState?: TargetCredentialState | null;
     hasAdapter?: boolean;
     pixelId?: string;
     savedPixelId?: string;
@@ -178,6 +193,10 @@ function renderCard(
     // ausdruecklich.
     connectOutcome: null as string | null,
     configured: false as ConfiguredState,
+    // null = KEINE Zeitzeile (Scheibe 11.2b). Der Default ist der Normalfall der
+    // Bestandslaeufe: Sie rendern die Karte ohne Lage-Auskunft, genau wie vor dieser
+    // Scheibe. Die Laeufe, die die dritte Zeile pruefen, setzen ihn ausdruecklich.
+    credentialState: null as TargetCredentialState | null,
     onCredentialsSaved: vi.fn(),
     onCredentialsRemoved: vi.fn(),
     ...overrides,
@@ -227,12 +246,17 @@ describe("TargetCard — die drei Zustaende der Statuszeile", () => {
   });
 });
 
-describe("TargetCard — der Wortlaut behauptet KEINE Wirkung", () => {
-  // Regel aus Phase 8: die Anzeige sagt, was BEOBACHTET ist, nie was FUNKTIONIERT.
-  // Eine Geheimnis-Zeile existiert auch bei laengst widerrufenem Token — das ist im
-  // Projekt live eingetreten und blieb lautlos ('Bad signature').
-  const VERBOTEN = ["aktiv", "läuft", "verbunden", "✓", "•••", "gerettet"];
+// Regel aus Phase 8: die Anzeige sagt, was BEOBACHTET ist, nie was FUNKTIONIERT.
+// Eine Geheimnis-Zeile existiert auch bei laengst widerrufenem Token — das ist im
+// Projekt live eingetreten und blieb lautlos ('Bad signature').
+//
+// AUS DEM describe HERAUS AUF MODUL-EBENE GEZOGEN (Scheibe 11.2b) — DER INHALT IST
+// ZEICHENGLEICH, kein Wort ergaenzt und keines entfernt. GRUND: Die Lage-Zeile dieser
+// Scheibe muss gegen DIESELBE Liste geprueft werden, und eine zweite Kopie daneben
+// waere eine zweite Wahrheit, die beim naechsten verbotenen Wort auseinanderlaeuft.
+const VERBOTEN = ["aktiv", "läuft", "verbunden", "✓", "•••", "gerettet"];
 
+describe("TargetCard — der Wortlaut behauptet KEINE Wirkung", () => {
   it("kein Wort behauptet Wirkung — mit Positivkontrolle, dass der Scan den Kartentext wirklich liest", () => {
     const { container } = renderCard({ configured: true });
     const text = container.textContent ?? "";
@@ -1304,5 +1328,176 @@ describe("TargetCard — die Rueckmeldung des Autorisierungs-Flusses", () => {
       connectOutcome: "state_mismatch",
     });
     expect(container.textContent).not.toContain("state_mismatch");
+  });
+});
+
+// ===========================================================================
+// DIE DRITTE ZEILE — DIE LAGE DER ZUGANGSDATEN (Scheibe 11.2b).
+//
+// SIE STEHT NEBEN statusText UND NICHT DARIN. Der Status sagt, ob Zugangsdaten
+// HINTERLEGT sind; diese Zeile, ob sie NOCH GUELTIG sind. Zwei verschiedene Sachen,
+// deshalb zwei Zeilen — dieselbe Hausform wie beim Folgenlosigkeits-Hinweis.
+// ===========================================================================
+
+/** Ein fester Zeitpunkt weit in der Zukunft. */
+const EPOCH = 1_800_000_000;
+/** Das Jahr, das die Zeile tragen MUSS, wenn Sekunden als Sekunden gelesen werden. */
+const JAHR = String(new Date(EPOCH * 1000).getFullYear());
+
+describe("TargetCard — die Lage der Zugangsdaten", () => {
+  it("C1: live -> die Zeile traegt ein Datum, der Statustext bleibt unveraendert", () => {
+    // WIRD ROT, WENN: jemand die Lage in den Statustext schreibt (dann faende
+    // getByText(STATUS_CONFIGURED) den Text nicht mehr als eigenen Knoten) oder die
+    // Zeile ganz weglaesst.
+    const { container } = renderCard({
+      configured: true,
+      credentialState: { kind: "live", expiresAt: EPOCH },
+    });
+    expect(screen.getByText(STATUS_CONFIGURED)).toBeTruthy();
+    expect(container.textContent).toContain("Zugang");
+    // DIE JAHRESZAHL IST KEIN SCHMUCK: Sie faellt, wenn jemand den Faktor 1000
+    // vergisst und Sekunden als Millisekunden liest — dann stuende dort 1970.
+    expect(container.textContent).toContain(JAHR);
+    expect(container.textContent).not.toContain("1970");
+  });
+
+  it("C2: no_clock -> KEINE Zeitzeile (Invariante I-7)", () => {
+    // DIE VIER KLARTEXT-ZIELE HABEN KEINE UHR. Die Karte darf fuer sie kein
+    // Ablaufdatum behaupten — die Aktion selektiert die Klartext-Spalte nicht einmal,
+    // es gibt also gar keinen Wert, aus dem eines zu lesen waere.
+    // WIRD ROT, WENN: jemand der no_clock-Lage einen Zeitpunkt andichtet.
+    const { container } = renderCard({
+      configured: true,
+      credentialState: { kind: "no_clock" },
+    });
+    expect(container.textContent).not.toContain("Zugang ");
+    expect(container.textContent).not.toContain(JAHR);
+  });
+
+  it("C3: POSITIVKONTROLLE zu C2 — dieselbe Karte MIT Uhr zeigt die Zeile", () => {
+    // OHNE SIE WAEREN "kein Datum" UND "die Karte rendert gar nichts" AM ERGEBNIS
+    // NICHT ZU UNTERSCHEIDEN (docs/immer-beachten.md, Lektion (d) an
+    // "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE"). Zwei Renderings, ein Unterschied:
+    // die Lage.
+    const ohne = renderCard({
+      configured: true,
+      credentialState: { kind: "no_clock" },
+    });
+    expect(ohne.container.textContent).not.toContain(JAHR);
+    ohne.unmount();
+
+    const mit = renderCard({
+      configured: true,
+      credentialState: { kind: "live", expiresAt: EPOCH },
+    });
+    expect(mit.container.textContent).toContain(JAHR);
+  });
+
+  it("C4: dead und expiring nennen den Zeitpunkt und tragen KEIN verbotenes Wort", () => {
+    // DER WORTLAUT-RIEGEL. Der naheliegende Text "laeuft bald ab" macht den
+    // Wirkungs-Waechter oben ROT, und zwar zu Recht: Die Liste haelt die Karte davon
+    // ab, ueber WIRKUNG zu sprechen. Dieser Lauf haelt fest, dass die zwei neuen
+    // Texte sie einhalten.
+    for (const state of [
+      { kind: "dead" as const, expiredAt: EPOCH },
+      { kind: "expiring" as const, expiresAt: EPOCH },
+    ]) {
+      const { container, unmount } = renderCard({
+        configured: true,
+        credentialState: state,
+      });
+      const text = container.textContent ?? "";
+      expect(text).toContain(JAHR);
+      for (const wort of VERBOTEN) {
+        expect(text.toLowerCase()).not.toContain(wort.toLowerCase());
+      }
+      unmount();
+    }
+  });
+
+  it("C5: KEINE der sechs Lagen bringt eine Gruen-Klasse oder einen Haken mit", () => {
+    // (I-2) GILT AUCH FUER DIE NEUE ZEILE. Dass die Scheibe "Ampel" heisst, hebt die
+    // Grenze nicht auf — sie schafft die Voraussetzung, unter der eine Aussage
+    // ueberhaupt gehalten werden koennte, und entscheidet nichts ueber Farben.
+    // WIRD ROT, WENN: jemand der Vorwarnung oder dem toten Zustand eine Farbe aus der
+    // Gruen-Familie gibt.
+    // SEINE GRENZE TRAEGT ER AN SICH SELBST: Er prueft die GRUEN-Familie und den
+    // Haken. Ein FARBLOSER Punkt entginge ihm — das ist eine Bestandsluecke des
+    // Waechters darueber und mit dieser Scheibe nicht geschlossen.
+    const GRUEN = /green|emerald|teal|lime/;
+    const lagen: TargetCredentialState[] = [
+      { kind: "live", expiresAt: EPOCH },
+      { kind: "expiring", expiresAt: EPOCH },
+      { kind: "dead", expiredAt: EPOCH },
+      { kind: "unknown_expiry" },
+      { kind: "no_clock" },
+      { kind: "unreadable", reason: "decrypt_auth_failed" },
+    ];
+    // POSITIVKONTROLLE: sechs verschiedene Lagen, nicht sechsmal dieselbe.
+    expect(new Set(lagen.map((l) => l.kind)).size).toBe(6);
+
+    for (const credentialState of lagen) {
+      const { container, unmount } = renderCard({
+        configured: true,
+        credentialState,
+      });
+      expect(container.querySelectorAll("[class]").length).toBeGreaterThan(5);
+      for (const el of container.querySelectorAll("[class]")) {
+        expect(el.className).not.toMatch(GRUEN);
+      }
+      expect(container.textContent).not.toContain("✓");
+      unmount();
+    }
+  });
+
+  it("C6: unreadable ist NICHT derselbe Text wie dead", () => {
+    // WIRD ROT, WENN: die zwei Lagen eingeebnet werden. Ein kaputtes Chiffrat ist
+    // etwas anderes als ein abgelaufener Zugang — der Resolver haelt die beiden schon
+    // heute auseinander, die Oberflaeche tat es bis zu dieser Scheibe nicht.
+    const kaputt = renderCard({
+      configured: true,
+      credentialState: { kind: "unreadable", reason: "decrypt_unknown_key" },
+    });
+    const kaputtText = kaputt.container.textContent ?? "";
+    // DER ROHE GRUND STEHT SICHTBAR DA — derselbe Gedanke wie beim rohen Ergebniscode
+    // des Autorisierungs-Flusses: Er kostet keine sieben Formulierungen und macht
+    // einen Support-Fall trotzdem adressierbar.
+    expect(kaputtText).toContain("decrypt_unknown_key");
+    expect(kaputtText).not.toContain(JAHR);
+    kaputt.unmount();
+
+    const tot = renderCard({
+      configured: true,
+      credentialState: { kind: "dead", expiredAt: EPOCH },
+    });
+    expect(tot.container.textContent).not.toContain("decrypt_unknown_key");
+  });
+
+  it("C7: noch nicht geladen -> KEINE Zeitzeile, und der Statustext bleibt bei seinen vier Werten", () => {
+    const { container } = renderCard({
+      configured: null,
+      credentialState: null,
+    });
+    expect(container.textContent).not.toContain(JAHR);
+    expect(screen.getByText(STATUS_LOADING)).toBeTruthy();
+  });
+
+  it("C8: der vierte Statustext erscheint NUR bei 'unknown'", () => {
+    // DER AUSGANG DER MITGENOMMENEN SCHWAECHE. Er trennt "ich weiss es nicht" von
+    // "nichts hinterlegt" — die Unterscheidung, die die Karte bis zu dieser Scheibe
+    // nicht treffen konnte.
+    // WIRD ROT, WENN: der vierte Zustand wegfaellt oder mit einem der drei anderen
+    // zusammenfaellt.
+    expect(STATUS_UNKNOWN).not.toBe(STATUS_UNCONFIGURED);
+    expect(STATUS_UNKNOWN).not.toBe(STATUS_LOADING);
+    expect(STATUS_UNKNOWN).not.toBe(STATUS_CONFIGURED);
+
+    const { unmount } = renderCard({ configured: "unknown" });
+    expect(screen.getByText(STATUS_UNKNOWN)).toBeTruthy();
+    expect(screen.queryByText(STATUS_UNCONFIGURED)).toBeNull();
+    unmount();
+
+    renderCard({ configured: false });
+    expect(screen.queryByText(STATUS_UNKNOWN)).toBeNull();
   });
 });

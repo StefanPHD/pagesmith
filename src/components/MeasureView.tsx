@@ -18,6 +18,14 @@ import type { TrackingTarget } from "@/lib/settings";
 import TargetCard from "@/components/TargetCard";
 import { TARGET_CARDS } from "@/lib/tracking/target-cards";
 import { hasAdapter } from "@/lib/tracking/target-adapters";
+// DIE ZWEI ABLEITUNGEN DER SCHEIBE 11.2b. Sie liegen in einem REINEN Modul und nicht
+// hier, damit die Vorrangregel bei Widerspruch EINEN Ort hat und in einem Lauf ohne
+// DOM pruefbar ist. Diese Ansicht trifft keine zweite Entscheidung darueber.
+import {
+  credentialStateFor,
+  resolveConfigured,
+  type ListCredentialStatesResult,
+} from "@/lib/tracking/credential-state";
 
 // Anzeige-Label je event_type fuer die Analytics-Sektion (Scheibe 3). Der reservierte
 // PageView-Token wird lesbar; jeder Conversion-Name (Purchase/Lead/Custom…) steht als
@@ -64,6 +72,7 @@ export default function MeasureView({
   onPixelIdChange,
   connectOutcome,
   configuredTargets,
+  credentialStates,
   onCredentialsSaved,
   onCredentialsRemoved,
   usedEvents,
@@ -98,6 +107,18 @@ export default function MeasureView({
   connectOutcome: string | null;
   /** null = noch nicht geladen; das traegt den dritten Karten-Zustand. */
   configuredTargets: TrackingTarget[] | null;
+  /**
+   * DIE LAGE DER ZUGANGSDATEN JE ZIEL (Scheibe 11.2b) — die ZWEITE Quelle.
+   *
+   * null = noch nicht geladen. Ein `{ok:false}` heisst GELADEN UND GESCHEITERT, und
+   * das ist etwas anderes: Es fuehrt zum vierten Karten-Zustand, nicht zurueck in den
+   * Ladezustand.
+   *
+   * ZWEI QUELLEN UND NICHT EINE, und der Grund steht am Kopf der Aktion: Die erste
+   * (listConfiguredTargets) traegt einen Waechter, der ihre Spaltenliste auf
+   * ["target"] festnagelt; eine Erweiterung muesste ihn oeffnen. Sie bleibt woertlich.
+   */
+  credentialStates: ListCredentialStatesResult | null;
   onCredentialsSaved: (
     forProjectId: string,
     target: TrackingTarget,
@@ -258,11 +279,18 @@ export default function MeasureView({
             // Ein Filter nach Zielnamen an dieser Stelle waere die erste
             // Fallunterscheidung ueber Ziele in dieser Ansicht.
             connectOutcome={connectOutcome}
-            configured={
-              configuredTargets === null
-                ? null
-                : configuredTargets.includes(target)
-            }
+            // ABGELEITET IN EINEM REINEN MODUL, NICHT HIER (Scheibe 11.2b). Hier stand
+            // bis dahin der Dreisatz `configuredTargets === null ? null :
+            // includes(target)`; er ist ERSETZT, weil jetzt ZWEI Quellen zu wiegen sind
+            // und die Regel dafuer einen Ort mit einem Lauf braucht.
+            // BEI WIDERSPRUCH GEWINNT DIE UNSICHERHEIT — die Begruendung steht an
+            // resolveConfigured und wird hier NICHT verdoppelt.
+            configured={resolveConfigured(
+              configuredTargets,
+              credentialStates,
+              target,
+            )}
+            credentialState={credentialStateFor(credentialStates, target)}
             onCredentialsSaved={onCredentialsSaved}
             onCredentialsRemoved={onCredentialsRemoved}
           />

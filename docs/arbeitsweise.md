@@ -401,10 +401,17 @@ Warum einer Regel), nicht flächendeckend: **Code-first, History-for-why.**
 Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
 
 - **Auftrag 0 — Pflicht-Gate:** Lies `docs/aktiver-stand.md` vollständig, falls
-  sie existiert. Existiert sie nicht, sag das ausdrücklich (keine aktive Phase)
-  und frage nach, statt anzunehmen. Nenne im ersten Satz des Berichts die
-  Scheiben-Überschrift, unter der gearbeitet wird — das ist der Beweis, dass die
-  Datei gelesen wurde, nicht nur zitiert.
+  sie existiert. Beim zweiten und jedem weiteren Prompt derselben Sitzung
+  genügt das Verzeichnis plus die im Prompt benannten Abschnitte — zusammen mit
+  der Angabe, dass die Datei seit der vollständigen Lesung unverändert ist,
+  gemessen an Zeilenzahl und `git status`, nicht behauptet. Ändert sich die
+  Datei oder wurde der Kontext seither verdichtet, entfällt die Verkürzung. Der
+  erste Prompt einer Sitzung und jede Doku-Runde lesen vollständig — dort
+  entstehen die Widersprüche, und wer die Abschnitte benennt, hat vorher
+  entschieden, was relevant ist. Existiert sie nicht, sag das ausdrücklich
+  (keine aktive Phase) und frage nach, statt anzunehmen. Nenne im ersten Satz
+  des Berichts die Scheiben-Überschrift, unter der gearbeitet wird — das ist
+  der Beweis, dass die Datei gelesen wurde, nicht nur zitiert.
   **Das Gate steht im Prompt, nicht nur in `CLAUDE.md`:** Die `CLAUDE.md` lädt
   automatisch, die Standdatei nicht. Ein Gate im Prompt ist der Mechanismus, die
   `CLAUDE.md`-Zeile nur der sichtbare Hinweis darauf.

@@ -2809,6 +2809,41 @@ INLINE und nicht im Hintergrund.**
   niemand beobachten kann, solange er nicht eintritt.
   PROVENIENZ: **OWNER-EINWAND 2026-09-03, vom Architekten angenommen.** Keine Messung.
 
+  **VERMERK 2026-09-04 — DIE ERSTE DER ZWEI NACHHOLUNGEN LIEGT VOR, DIE ZWEITE STEHT AUS
+  UND HAT SEIT HEUTE EINEN ORT. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER
+  VERMERK TRITT DANEBEN UND ÄNDERT AN DER AUFLAGE NICHTS.**
+  **ERSTE NACHHOLUNG — DIE ANBIETER-LESUNG NACH docs/db-regeln.md: GEFAHREN UND ABGELEGT.**
+  GELESEN 2026-09-04 (CC), elf Adressen. **DER VOLLTEXT STEHT NICHT HIER**, sondern in
+  docs/plattform-befunde.md, Abschnitt "Supabase", LAUF 3, Teile **(ah) bis (ar)** — mit den
+  drei Angaben, die die vierte Regel verlangt (Datum · Fundstelle · Folge für den Bau), im
+  Kopf jenes Laufs.
+  **ZWEITE NACHHOLUNG — DIE FRAGE NACH DER RÜCKMELDUNG EINER BEDINGTEN SCHREIBUNG: STEHT
+  AUS.** Sie hat seit dem 2026-09-04 einen eigenen Ort: docs/offene-punkte.md, Eintrag "DIE
+  RÜCKMELDUNG EINER BEDINGTEN SCHREIBUNG ÜBER PostgREST IST UNGEMESSEN", Trigger "der
+  Zuschnitt der Scheibe 1b-2b". **DIE DREI FRAGEN STEHEN DORT UND WERDEN HIER NICHT
+  WIEDERHOLT.**
+  **WAS DIE LESUNG FÜR DEN RIEGEL HERGIBT UND WAS NICHT — ZWEI SÄTZE, DER VOLLTEXT LIEGT AN
+  DEN GENANNTEN ORTEN:** Sie trägt für die **Fehlerform** eines Eindeutigkeits-Bruchs
+  (23505 → 409, Rumpfform dokumentiert) und für **Transaktion und Isolation**. Sie trägt
+  **NICHT** für die Rückmeldung einer bedingten Schreibung — was ein `update` meldet, das
+  null Zeilen trifft, ist an keiner gelesenen Stelle beantwortet.
+  **DIE GRENZE, DIE MITMUSS: ATOMAR HEISST NICHT SICHER.** Garantiert ist **EINE** Anweisung,
+  **EINE** Transaktion, **READ COMMITTED** — was zwei GLEICHZEITIGE bedingte Schreibungen
+  darunter tun, ist **bei diesem Anbieter nicht zu holen**; die Antwort liegt in der
+  PostgreSQL-eigenen Dokumentation. **WER DAS ÜBERLIEST, HÄLT DIE NEBENLÄUFIGKEIT FÜR
+  GEKLÄRT UND BAUT OHNE SIE WEITER** — und genau das ist die Frage, für die dieser Riegel
+  überhaupt gebaut wird.
+  **WARUM DIESE GRENZE HIER STEHT, OBWOHL SIE IM LAUF 3 SCHON STEHT — die Doppelung ist
+  Absicht und hat einen Präzedenzfall in DIESER Datei:** Die bindende Entscheidung (5) sagt
+  über sich selbst, sie stehe an ihrem Ort, weil sie "beim Zuschneiden der Transport-Scheibe
+  unübersehbar sein" muss. Dasselbe gilt hier: **Diese Datei ist das Pflicht-Gate jedes
+  Zuschnitts, docs/plattform-befunde.md wird nur auf ihren eigenen Auslöser hin geladen.**
+  Wer 1b-2b zuschneidet und nur hier liest, muss die Grenze trotzdem sehen. **DIE HERLEITUNG
+  WIRD NICHT VERDOPPELT** — sie steht als dritte Grenze in LAUF 3, Teil (aq).
+  PROVENIENZ: **ARCHITEKTEN-VERMERK 2026-09-04** auf der Lesung desselben Tages. Die Lesung
+  selbst ist GELESEN (CC, 2026-09-04); dass die zweite Nachholung aussteht, ist eine FOLGE
+  aus ihrem Ergebnis und **keine Messung**.
+
 · **VORRATS-EINTRAG 42, DIE DROSSELUNG.** **Nach dieser Scheibe bleibt als Ursache der
   Fehlerzeile nur noch das TOTE ERNEUERUNGS-TOKEN — und das behebt kein Code.** Der Eintrag
   wird damit nicht kleiner, sondern wechselt seinen Gegenstand; sein Vermerk hält es fest.

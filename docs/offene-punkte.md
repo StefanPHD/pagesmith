@@ -1694,3 +1694,49 @@ aufeinander; sie liegen alle hier und finden einander.
   ist, ist eine FOLGE aus seinem Wortlaut. Die Gestalt des Instruments ist GELESEN an Teil (ca)
   derselben Datei, aus der auch Messung D stammt. KEINE Messung an einer Google-Schnittstelle
   in dieser Runde.
+- DIE RÜCKMELDUNG EINER BEDINGTEN SCHREIBUNG ÜBER PostgREST IST UNGEMESSEN (Trigger: der
+  Zuschnitt der Scheibe 1b-2b): DREI FRAGEN SIND OFFEN, und sie stehen im VOLLTEXT in
+  docs/plattform-befunde.md, Abschnitt "Supabase", LAUF 3, Teil (ar) — hier NUR der Zeiger
+  und das, was er tragen muss, um ohne den Volltext brauchbar zu sein. Zweimal geschrieben
+  liefe es auseinander.
+  · (a) Was meldet ein `update` mit Zustandsfilter zurück, das NULL Zeilen trifft — ein
+    Fehler, eine leere Menge, oder etwas Drittes?
+  · (b) Liefert `count` bei einer SCHREIBUNG eine verlässliche Zahl?
+  · (c) Entsteht `PGRST116`/406 auch bei einem `PATCH` mit Singular-Anforderung und null
+    Treffern?
+  WARUM DIESER PUNKT EINEN EIGENEN ORT BRAUCHT UND NICHT IM LAUF 3 BLEIBEN KONNTE: Ein Lauf
+  in docs/plattform-befunde.md wird zwar nicht archiviert, aber er wird auch NICHT AUF EINEN
+  TRIGGER HIN GELESEN — jene Datei lädt, wer an Schema, Policies, Migrationen, dem
+  Geheimnis-Speicher, an Backup/Restore oder am Deploy-Weg arbeitet. Wer nach offenen Posten
+  sucht, kommt dort nie vorbei. Ohne diesen Eintrag verschwindet der Posten, ohne dass
+  irgendetwas rot wird.
+  WAS DER ZEIGER TRAGEN MUSS — DREI ANGABEN, ohne die er in die Irre führt:
+  · DER NICHT-TREFFER ZU (a) HAT REICHWEITE UND IST KEINE BEHAUPTUNG. Gelesen sind SECHS
+    Seiten im Volltext PLUS das Abschnitts-Verzeichnis der Protokoll-Doku, und dieses
+    Verzeichnis trägt KEINEN Abschnitt "Concurrency", "Locking", "Affected Rows" oder
+    "Conditional Requests". Es ist also nicht bloss nicht gefunden worden — es ist
+    ausgeschlossen, dass die Antwort auf einer nicht geöffneten Seite desselben Abschnitts
+    steht.
+  · ZU (b) SAGEN ZWEI ANBIETEREIGENE QUELLEN VERSCHIEDENES, UND DAS IST DER GANZE POSTEN:
+    Die Client-Doku sagt ausdrücklich "count updated rows" (ebenso inserted, upserted,
+    deleted); die Protokoll-Doku kennt `Prefer: count` NUR für Leseantworten und schweigt zu
+    PATCH, POST und DELETE. Der Widerspruch ist in LAUF 3, Teil (ak) festgehalten und
+    NICHT aufgelöst. WER DIE CLIENT-DOKU ALS ANTWORT NIMMT, HAT EINE DOKU-AUSSAGE FÜR EINE
+    MESSUNG GEHALTEN.
+  · DIE DREI FRAGEN ZIELEN AUF EINEN HTTP-ENDPUNKT, NICHT AUF SQL. Das README von
+    supabase/checks/ sagt es wörtlich: "Wer eine PostgREST-Frage im SQL-Editor misst,
+    beantwortet eine andere." Dasselbe README erlaubt einer Probe ausdrücklich, einen Teil
+    gegen den REST-Endpunkt zu fahren, "wenn die gemessene Frage eine PostgREST-Frage ist" —
+    dann sagt sie das in ihrem Kopf unter `WANN`, mit Grund.
+  DER PRÄZEDENZFALL FÜR DIE BAUFORM EINER SOLCHEN PROBE IST
+  supabase/checks/upsert-arbiter-probe.sql — GENANNT ALS PRÄZEDENZFALL UND NICHT ALS AUSWAHL.
+  Das README führt ihn selbst unter einer PostgREST-Frage. KEINE EMPFEHLUNG: weder ist
+  entschieden, dass die Messung diese Gestalt bekommt, noch dass sie überhaupt als Datei in
+  supabase/checks/ entsteht, noch wer sie fährt.
+  DIE GRENZE DIESES PUNKTES: Er sagt NICHT, dass die drei Fragen vor dem Zuschnitt der
+  Scheibe 1b-2b beantwortet sein MÜSSEN. Er sagt, dass sie beim Zuschnitt auf dem Tisch
+  liegen — welche davon der Zuschnitt braucht, entscheidet der Zuschnitt.
+  PROVENIENZ: GELESEN 2026-09-04 (CC), LAUF 3 in docs/plattform-befunde.md, elf Adressen mit
+  Titel und gelesenem Anteil unter Teil (ah). Dass die drei Fragen offen sind, ist ein BEFUND
+  ÜBER DIE GELESENE DOKU und KEINE Messung — es ist an keiner Schnittstelle etwas erhoben
+  worden. Die README-Zitate sind GELESEN am Repo (CC, 2026-09-04).

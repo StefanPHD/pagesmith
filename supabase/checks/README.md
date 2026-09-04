@@ -111,3 +111,4 @@ bevor er sie hatte.
 | `restore-drill.sql` | Übersteht der Event-Trigger `ensure_rls` einen Supabase-Restore, oder muss er manuell nachgezogen werden? |
 | `project-secrets-target-check.sql` | Welche Zielwerte lässt `project_secrets` heute zu (Constraint im Wortlaut), und ist die zugehörige Migration protokolliert? |
 | `upsert-arbiter-probe.sql` | Genügt PostgREST für ein `upsert` ein UNIQUE-Constraint, oder verlangt es den Primärschlüssel — und kollidieren zwei Zeilen mit `NULL` in einer Konflikt-Spalte? |
+| `bedingte-schreibung-probe.sql` | Was meldet PostgREST bei einer bedingten Schreibung zurück — bei null Treffern, mit `count`, und bei Singular-Anforderung? |

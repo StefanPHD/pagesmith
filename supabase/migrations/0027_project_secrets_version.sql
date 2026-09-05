@@ -1,0 +1,129 @@
+-- Phase 11.2, Scheibe 1b-2b — DER RIEGEL GEGEN DIE VERLORENE SCHREIBUNG.
+-- Manuell im Supabase-SQL-Editor ausfuehren, VOR dem Code-Deploy (fail-closed, Invariante
+-- (I-7) des Zuschnitts: der umgekehrte Weg schriebe gegen eine Spalte, die es nicht gibt —
+-- und zwar auf dem Ingest-Pfad, wo es niemand sieht).
+--
+-- WAS SIE TUT: EINE additive Spalte auf public.project_secrets, secret_version integer
+-- not null default 0. Sonst NICHTS.
+--
+-- NO-OP OHNE DEN ZUGEHOERIGEN CODE: Solange kein Schreibpfad die Spalte liest oder
+-- filtert, aendert diese Datei KEIN Verhalten — sie legt eine Spalte an, die niemand
+-- anfasst. Sie ist deshalb gefahrlos frueh einspielbar. Dieselbe Lage wie bei 0026.
+--
+-- WOZU DIE SPALTE DA IST, in einem Satz (der Volltext steht in docs/aktiver-stand.md,
+-- Abschnitt "Der Riegel gegen die verlorene Schreibung", und wird hier NICHT verdoppelt):
+-- Zwei gleichzeitige Erneuerungslaeufe schreiben heute dieselbe Zeile, und jeder schreibt
+-- UNBEDINGT — der spaetere gewinnt, unabhaengig davon, wer das juengere Zugangsdatum
+-- haelt. Der Zaehler macht aus dem unbedingten Upsert ein bedingtes update.
+--
+-- WARUM EIN ZAEHLER UND KEINE UHR: Zugangsdatum, Erneuerungs-Token UND Ablaufzeitpunkt
+-- liegen gemeinsam als Chiffrat in secret_enc; es gibt fuer keines der drei eine
+-- Klartext-Spalte, und die Datenbank kann nicht in ein Chiffrat hineinvergleichen. Ein
+-- Klartext-Ablaufzeitpunkt waere ausserdem eine ZWEITE WAHRHEIT ueber einen Wert, der
+-- schon im Chiffrat steht. Ein Zaehler hat diese Figur nicht.
+--
+-- WARUM integer UND NICHT bigint — der Typ ist am 2026-09-05 eigens geaendert worden, und
+-- der Grund gehoert hierher, sonst wird er beim naechsten Aufraeumen als Verengung
+-- zurueckgedreht: Ob PostgREST einen bigint als JSON-ZAHL oder als ZEICHENKETTE
+-- ausliefert, ist in diesem Projekt UNGELESEN UND UNGEMESSEN. Bei einer Zeichenkette
+-- ergaebe "gelesener Wert + 1" im Code eine VERKETTUNG statt einer Summe — der Riegel
+-- schriebe still eine falsche Version, und nichts wuerde davon rot. int4 ist unzweideutig
+-- eine Zahl. DIE FRAGE WIRD BESEITIGT UND NICHT ABGESICHERT.
+-- DER PREIS IST BENANNT UND KLEIN: Zwei Milliarden Erneuerungen auf EINER Zeile erreicht
+-- niemand.
+--
+-- KEINE POLICY (Invariante (I-2)): project_secrets behaelt RLS aktiv und NULL Policies.
+-- Das ist die TRAGENDE Kontrolle dieser Tabelle und keine Luecke — unter aktiver RLS ohne
+-- jede Policy ist sie fuer anon und authenticated vollstaendig verschlossen, nur
+-- service_role kommt durch. Wer hier eine Policy ergaenzt, gewinnt keinen Schutz, sondern
+-- dessen Anschein.
+-- EINE FOLGE, DIE DAZUGEHOERT: Der Schreibpfad des Riegels laeuft weiterhin ueber den
+-- Admin-Client. Unter RLS ohne Policy waere "keine Zeile GETROFFEN" von "keine Zeile
+-- SICHTBAR" am Ergebnis nicht zu trennen (docs/plattform-befunde.md, LAUF 3, Grenze 2) —
+-- der Admin-Client ist damit Voraussetzung des Riegels und nicht Bequemlichkeit.
+--
+-- KEIN BACKFILL (Invariante (I-3)): Der Default 0 ist die ANLAGE. Es steht kein
+-- update ... set in dieser Datei, und keine bestehende Zeile wird angefasst. Ab
+-- Postgres 11 ist "add column ... not null default" ein Katalog-Vorgang ohne
+-- Tabellen-Neuschrift; bestehende Zeilen LESEN 0, ohne geschrieben zu werden.
+--
+-- KEIN INDEX. Die Auflage aus docs/db-stand.md gilt woertlich ("Wer hier spaeter einen
+-- Index ergaenzt, sollte vorher einen Zugriff nennen koennen, der ihn braucht"): Der
+-- Filter des Riegels trifft die Zeile bereits ueber
+-- project_secrets_project_id_target_key; secret_version ist ein Restpraedikat auf einer
+-- schon eindeutig getroffenen Zeile.
+--
+-- KEIN updated_at IN DIESER DATEI UND KEINES IM SCHREIBPFAD: Der Row-Trigger
+-- project_secrets_set_updated_at fuehrt es nach. Er ist an dieselbe Funktion
+-- set_updated_at gebunden wie projects und project_tokens und traegt tgenabled = 'O',
+-- also aktiv (GEMESSEN 2026-08-26, SQL-Editor, Owner — docs/db-stand.md).
+--
+-- 0021 BIS 0026 WERDEN NICHT UMGESCHRIEBEN. Eine angewandte Migration dokumentiert, was
+-- TATSAECHLICH in der DB gelaufen ist; sie im Nachhinein zu aendern entkoppelt die Datei
+-- von dem, was die DB traegt.
+--
+-- ---------------------------------------------------------------------------
+-- WAS DER KATALOG-GUARD LEISTET UND WAS NICHT — die Auflage aus (I-4) und aus dem
+-- Kopf von 0026, hier fuer eine SPALTE statt fuer einen CONSTRAINT:
+--
+--   ER PRUEFT DIE SACHE UND KEINEN CONSTRAINT-NAMEN: die Existenz der SPALTE
+--   secret_version auf public.project_secrets. Das leistet die eingebaute Klausel
+--   "if not exists" — dieselbe Bauform, in der 0025 die Spalte secret_enc angelegt hat.
+--
+--   WARUM DIESER ANKER VORHER VON NACHHER TRENNT: Vor dem Lauf gibt es KEINE Spalte
+--   dieses Namens auf dieser Tabelle, nach dem Lauf GENAU EINE, und sie ist die, die der
+--   Lauf angelegt hat. Ein zweites Objekt desselben Namens mit ANDERER Bedeutung kann
+--   nicht entstehen — Name und Tabelle bestimmen eine Spalte eindeutig. Das ist der
+--   Unterschied zu 0025, wo nach dem Lauf wieder ein Constraint namens
+--   project_secrets_pkey existierte, nur auf einer anderen Spalte: dort haette ein
+--   Namens-Guard beim zweiten Lauf den NEUEN Schluessel gedroppt.
+--   DER ZWEITE LAUF IST DAMIT EIN ECHTES NO-OP UND KEIN STILLER RUECKBAU.
+--
+--   WAS ER NICHT LEISTET, UND DAS IST DER TEIL, DEN MAN SPAETER VERGISST: ER PRUEFT DEN
+--   NAMEN, NICHT DEN TYP UND NICHT DIE BEDINGUNGEN. Existierte bereits eine Spalte
+--   secret_version mit anderem Typ, ohne not null oder mit anderem Default, griffe
+--   "if not exists" — die Migration meldete ERFOLG, und die abweichende Spalte bliebe
+--   stehen. Der Fehler zeigte sich erst am Schreibpfad, also eine Runde spaeter, an einer
+--   Stelle, die ihn nicht verursacht hat.
+--   DAS IST DER GRUND, WARUM DIE PRUEFUNG UNTEN DEN WORTLAUT ABLIEST UND NICHT DIE
+--   ANWESENHEIT.
+--
+-- ---------------------------------------------------------------------------
+-- PRUEFUNG NACH DEM EINSPIELEN — sie ist NICHT optional, weil am Repo NICHT entscheidbar
+-- ist, ob diese Datei gelaufen ist (docs/immer-beachten.md, "OB EINE MIGRATION IN DER
+-- LAUFENDEN DB ANGEWANDT IST, IST AM REPO NICHT ENTSCHEIDBAR"):
+--
+--   (1) TYP, NOT-NULL-BEDINGUNG UND DEFAULT IM WORTLAUT ABLESEN — nicht die Anwesenheit.
+--       Erwartet: data_type "integer", is_nullable "NO", column_default "0".
+--       Aus information_schema.columns, gefiltert auf table_schema 'public',
+--       table_name 'project_secrets', column_name 'secret_version'.
+--       DIE ZEILENZAHL GEHOERT ZUR PRUEFUNG: GENAU EINE.
+--
+--   (2) DER AUSGANGSWERT DER TESTZEILE WIRD NOTIERT, BEVOR DER CODE DEPLOYT WIRD.
+--       Nach dem Deploy ist er nicht mehr als AUSGANGSWERT zu haben — der erste Beacon
+--       kann ihn bereits erhoeht haben (docs/immer-beachten.md, "EIN VORHER-WERT WIRD VOR
+--       DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS NICHT MEHR HERSTELLBAR").
+--
+--   (3) KEINE POLICY IST ENTSTANDEN: die Zahl der Policies auf project_secrets bleibt
+--       NULL. Diese Datei legt keine an; die Probe ist die Gegenkontrolle dazu.
+--
+--   Die Proben dafuer stehen versioniert unter supabase/checks/ — vor jeder handgetippten
+--   Pruef-Query dort nachsehen.
+
+set lock_timeout = '3s';
+
+-- (S1) DIE SPALTE. Katalog-Guard auf die SACHE: "if not exists" prueft genau diese
+--      Spalte auf genau dieser Tabelle. Kein Constraint-Name kommt darin vor.
+--      integer, nicht bigint — s. den Kopf.
+--      not null default 0: der Default IST die Anlage, kein Backfill.
+alter table public.project_secrets
+  add column if not exists secret_version integer not null default 0;
+
+-- Protokoll-Eintrag als LETZTE Anweisung (Pflicht ab 0018, docs/db-regeln.md): entsteht
+-- nur bei erfolgreichem Durchlauf. Bricht die Migration vorher ab, gibt es keine Zeile,
+-- die einen nie vollzogenen Lauf behauptet.
+-- PROTOKOLL, KEIN STEUERUNGSMECHANISMUS: Es gibt keinen Migrations-Runner, der aus
+-- schema_migrations liest, und es soll keinen geben.
+insert into public.schema_migrations (version, filename, applied_at)
+values ('0027', '0027_project_secrets_version.sql', now())
+on conflict (version) do nothing;

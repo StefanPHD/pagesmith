@@ -429,4 +429,52 @@ describe("Scheibe 1b-2a — die Rettung im Anfrage-Weg", () => {
     expect(forwardToGoogle).not.toHaveBeenCalled();
     expect(forwardToMeta).not.toHaveBeenCalled();
   });
+
+  it("H12: EIN VERLORENES RENNEN BRICHT DEN INGEST NICHT AB — der Handler laeuft zu Ende, und ein zweites Ziel wird weiter geforwardet", async () => {
+    // DIE DRITTE ACHSE DES TESTPLANS DER SCHEIBE 1b-2b, UND SIE IST NICHT OPTIONAL:
+    // Ohne diesen Lauf sieht "geblockt" aus wie "abgestuerzt" (docs/immer-beachten.md,
+    // "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL", dritte Weise).
+    //
+    // WAS HIER DER VERLIERER IST, und das gehoert erklaert, weil man es der Attrappe
+    // nicht ansieht: Der Riegel gibt bei einem verlorenen Rennen den BESTEHENDEN
+    // ok-Ausgang zurueck — er hat ein brauchbares Zugangsdatum beschafft, es steht nur
+    // nicht in der Zeile. AUS SICHT DIESES HANDLERS IST DAS UNUNTERSCHEIDBAR VON EINEM
+    // GEWONNENEN RENNEN, UND GENAU DAS IST DER ZWECK DER WAHL: Die Nach-Aufloesung
+    // liest die Zeile neu und findet dort das Zugangsdatum des GEWINNERS.
+    //
+    // WARUM DIESER LAUF TROTZDEM ETWAS PRUEFT: Er nagelt die FOLGE der Wahl fest. Jeder
+    // Nicht-ok-Ausgang wuerde hier uebersprungen (das ist H5), und die Conversion ginge
+    // still verloren. WIRD ROT, WENN: der Riegel je einen anderen Ausgang liefert und
+    // jemand ihn hier durchreicht · der Verlierer-Zweig wirft und der Wurf den Handler
+    // verlaesst · das zweite, gesunde Ziel mit ausfaellt.
+    //
+    // DAS ZWEITE ZIEL IST DER EIGENTLICHE WAECHTER: Ein Handler, der beim Verlust
+    // abbraeche, naehme Meta mit — und ein Lauf ohne zweites Ziel saehe das nicht.
+    resolveRefreshedTarget.mockResolvedValue({
+      target: "google" as const,
+      // DAS ZUGANGSDATUM DES GEWINNERS, nicht das eigene. Der Name sagt es, damit ein
+      // spaeterer Leser die zwei nicht verwechselt.
+      config: { pixelId: "111", token: "VOM-GEWINNER-GESCHRIEBEN" },
+    });
+    getCapiConfigByTrackingKey.mockResolvedValue(
+      aufloesung({ targets: [META_EMPFAENGER], renewable: [GOOGLE_EINTRAG] }),
+    );
+
+    const res = await handleIngest(beacon());
+
+    expect(res.status).toBe(204);
+    expect(runRefresh).toHaveBeenCalledTimes(1);
+    // DER GERETTETE EMPFAENGER LAEUFT — mit dem Wert aus der Zeile.
+    expect(forwardToGoogle).toHaveBeenCalledTimes(1);
+    expect(forwardToGoogle.mock.calls[0]?.[0]).toMatchObject({
+      token: "VOM-GEWINNER-GESCHRIEBEN",
+    });
+    // UND DAS ZWEITE ZIEL EBENFALLS. Ohne diese Zusicherung bliebe der Lauf gruen,
+    // wenn der Handler nach der Rettung stumm abbraeche.
+    expect(forwardToMeta).toHaveBeenCalledTimes(1);
+    // DER PERSIST IST REGISTRIERT — der Handler ist wirklich bis ans Ende gelaufen und
+    // nicht bloss mit 204 herausgefallen.
+    await laufeHintergrund();
+    expect(persistEvent).toHaveBeenCalledTimes(1);
+  });
 });

@@ -6,6 +6,9 @@ import {
   parseOAuthPayload,
 } from "@/lib/secrets/oauth-payload";
 import type { RefreshTokenExpiry } from "@/lib/secrets/oauth-payload";
+// NUR fuer das try/catch um den Schreibvorgang (Invariante (I-1) der Scheibe 1b-2b):
+// geloggt wird der NAME des Fehlers, nie seine message — die kann Fremdtext tragen.
+import { errorName } from "@/lib/errors";
 import { readTokenExchangeConfig } from "@/lib/oauth/google-token";
 import {
   exchangeRefreshToken,
@@ -77,8 +80,27 @@ import {
 // Kennung wird NIE fuer einen anderen Schluesselwert wiederverwendet.
 //
 // ---------------------------------------------------------------------------
-// KEIN NEBENLAEUFIGKEITS-RIEGEL (Festlegung 3). Keine Sperre auf der Zeile, keine
-// Vereinzelung, kein Warten. ZWEI ACHSEN, UND SIE SIND VERSCHIEDEN:
+// DER NEBENLAEUFIGKEITS-RIEGEL (Scheibe 1b-2b). Ein VERGLEICH-UND-SCHREIBE auf der
+// Klartext-Spalte secret_version: gelesen wird sie mit der Zeile, geschrieben wird nur,
+// wenn sie sich seither nicht bewegt hat.
+//
+// RICHTIGGESTELLT MIT SCHEIBE 1b-2b, NICHT GESTEMPELT — HIER STAND "KEIN
+// NEBENLAEUFIGKEITS-RIEGEL (Festlegung 3). Keine Sperre auf der Zeile, keine
+// Vereinzelung, kein Warten." DAS WAR ALS AUSSAGE UEBER SEINEN TAG RICHTIG und ist
+// seit dieser Scheibe falsch. Festlegung 3 der Scheibe 1a bleibt als ZEITDOKUMENT
+// lesbar: sie verzichtete auf den Riegel, weil ein MENSCH ausloeste und der Schaden
+// ein ueberfluessiger Netzaufruf war. Mit dem verkehrsgetakteten Ausloeser aus
+// Scheibe 1b-2a ist diese Voraussetzung entfallen.
+// WARUM RICHTIGGESTELLT UND NICHT NUR ERGAENZT: Dieser Kopf ist ein MASSSTAB — wer die
+// naechste Nebenlaeufigkeits-Frage an ihm misst, misst sonst an einer Angabe, die das
+// Gegenteil des Codes behauptet (docs/immer-beachten.md, "EINE REGEL KANN GUELTIG
+// BLEIBEN, WAEHREND IHR BELEG FALSCH WIRD").
+//
+// WAS DER RIEGEL NICHT TUT, damit er nicht groesser gelesen wird als er ist: Er ist
+// KEINE Sperre und KEIN Warten. Der Verlierer wartet auf nichts — er verwirft sein
+// eigenes Zugangsdatum und kehrt zurueck. Es gibt weiterhin keine Vereinzelung.
+//
+// ZWEI ACHSEN, UND SIE SIND VERSCHIEDEN:
 //
 //   ACHSE 1 — DIE ROTATION. Google rotiert das Erneuerungs-Token NICHT (GEMESSEN
 //   2026-08-28, OWNER, Messung C; docs/ziel-befunde.md, Teil (bv)): dasselbe Token
@@ -98,9 +120,36 @@ import {
 //   und steht ausserdem als zweite Achse an Vorrats-Eintrag 9 in
 //   docs/aktiver-stand.md. GEMELDET, NICHT GEBAUT.
 //
-//   WAS DEN FALL HEUTE KLEIN HAELT UND MORGEN NICHT MEHR: Der einzige Aufrufer ist
-//   eine Route, die ein Mensch ausloest. Nebenlaeufigkeit ist damit nur durch zwei
-//   gleichzeitige Klicks herstellbar. MIT SCHEIBE 1b WIRD DER FALL REAL.
+//   ERGAENZT MIT SCHEIBE 1b-2b, UND KEIN WORT DARUEBER IST ABGESCHWAECHT (Invariante
+//   (I-5) des Zuschnitts): DIE AUSSTELLUNGS-REIHENFOLGE BLEIBT UNGEMESSEN, AUCH WENN
+//   NUR NOCH EINER SCHREIBT. Der Riegel entscheidet, WER schreibt — nicht, WESSEN
+//   Token das juengere ist. Der Satz darueber gilt damit unveraendert weiter; was der
+//   Riegel an ihm aendert, ist NICHTS.
+//
+//   ZWEI GRENZEN GEHOEREN AN DIESE STELLE UND NICHT IN EINE FUSSNOTE:
+//     (a) ER VERHINDERT DIE VERLORENE SCHREIBUNG, NICHT DIE FALSCHE REIHENFOLGE.
+//         Gewinnt der frueher ausgestellte Lauf das Rennen, steht SEIN Token in der
+//         Zeile. Kein verfuegbares Mittel loest das: dafuer braeuchte es Googles
+//         Ausstellungs-Reihenfolge, und die geben weder unsere Uhr noch unsere
+//         Empfangszeit her.
+//     (b) ER DECKT DIESEN PFAD, NICHT DEN CALLBACK. Verbindet der Betreiber NEU,
+//         waehrend ein Lauf zwischen dem Lesen und dem Schreiben steht, schreibt die
+//         Callback-Route das Chiffrat OHNE Zaehler-Sprung — der Lauf trifft danach
+//         seine Bedingung und ueberschreibt das frisch verbundene Zugangsdatum. DER
+//         RIEGEL GREIFT NICHT UND MELDET ERFOLG. Auch die id im Filter faengt das
+//         nicht: beim Neu-Verbinden ohne vorheriges Trennen bleibt es dieselbe Zeile
+//         mit derselben id. GEMELDET als Vorrats-Eintrag 53, NICHT GEBAUT — ein Upsert
+//         kann "alt + 1" ohne vorherige Lesung nicht ausdruecken, das ist eine eigene
+//         Bauform.
+//
+//   RICHTIGGESTELLT MIT SCHEIBE 1b-2b — HIER STAND: "WAS DEN FALL HEUTE KLEIN HAELT
+//   UND MORGEN NICHT MEHR: Der einzige Aufrufer ist eine Route, die ein Mensch
+//   ausloest. Nebenlaeufigkeit ist damit nur durch zwei gleichzeitige Klicks
+//   herstellbar. MIT SCHEIBE 1b WIRD DER FALL REAL." DAS MORGEN IST EINGETRETEN, und
+//   zwar schon vor dieser Scheibe: Seit 1b-2a ruft der Ingest-Pfad die Erneuerung
+//   ueber die Klammer, verkehrsgetaktet und je Beacon. Der Satz beschrieb den Zustand
+//   bis dahin richtig; wer ihn heute liest, haelt den Fall fuer klein, und er ist es
+//   nicht mehr.
 //
 // ---------------------------------------------------------------------------
 // EINE NAMENSKOLLISION, DIE AUSDRUECKLICH BENANNT WIRD, WEIL SIE SONST BEIM NAECHSTEN
@@ -189,6 +238,33 @@ export type RefreshDeadReason =
 export type RefreshMisconfiguredReason =
   | "unknown_target"
   | "no_secret_enc"
+  // DER DEFENSIVE RIEGEL AN DER GELESENEN ZEILE (Scheibe 1b-2b). Traegt sie nicht die
+  // Form, die das Schema zusagt, wird fail-closed abgebrochen — es wird NICHT
+  // geschrieben.
+  //
+  // DER NAME DECKT BEIDE FAELLE, UND DAS IST EINE ENTSCHEIDUNG UND KEINE UNSCHAERFE:
+  // Der Zweig prueft den Versions-Zaehler UND den Zeilen-Schluessel. Ein Name, der nur
+  // den Zaehler nennt, liesse den Schluessel ungeprueft AUSSEHEN — und ein Leser, der
+  // ihn fuer ungeprueft haelt, baut die Pruefung ein zweites Mal oder verlaesst sich
+  // auf eine, die es schon gibt. ZWEI GRUENDE WAEREN DIE ANDERE MOEGLICHKEIT GEWESEN;
+  // sie sind verworfen, weil die zwei Faelle DIESELBE Aussage treffen (die gelesene
+  // Zeile ist nicht die, die die Datenbank liefern kann) und ZUR SELBEN Handlung
+  // fuehren. Zwei Namen fuer eine Handlung sind eine Unterscheidung ohne Unterschied.
+  //
+  // DAS GEGENSTUECK IST no_row, UND DAS PAAR ERKLAERT SICH SELBST: no_row heisst
+  // "keine Zeile", bad_row heisst "eine Zeile in einer Form, die es nicht geben
+  // duerfte".
+  //
+  // ER BLEIBT, OBWOHL DIE TYPWAHL DER MIGRATION DEN FALL BESEITIGEN SOLL, und das ist
+  // der Grund fuer diesen Ausgang: secret_version ist integer not null (0027), id ist
+  // uuid not null. Ein Waechter, der nichts kostet und den Fall faengt, den es nicht
+  // mehr geben duerfte, ist billiger als die Frage, ob die Typwahl wirklich ueberall
+  // traegt. ER IST DIE ZWEITE SCHICHT UND NICHT DIE ERSTE.
+  //
+  // WARUM misconfigured UND NICHT dead: Eine Spalte, die nicht haelt, was das Schema
+  // zusagt, ist ein BETREIBER-Problem. Kein Kunde wird deswegen durch einen
+  // Autorisierungs-Fluss geschickt, der nichts heilt.
+  | "bad_row"
   | "decrypt_no_key"
   | "decrypt_bad_key"
   | "decrypt_bad_format"
@@ -224,6 +300,31 @@ export type RefreshMisconfiguredReason =
  * Geheimnisse, und sie sind der einzige Weg, sie ueberhaupt zu sehen: sie liegen in
  * project_secrets.secret_enc und sind damit fuer jeden ausser dem Dechiffrier-Pfad
  * unlesbar.
+ *
+ * ---------------------------------------------------------------------------
+ * DIE VERENGUNG VON ok (Scheibe 1b-2b) — SIE STEHT HIER UND NICHT NUR IM ZUSCHNITT,
+ * WEIL SIE SONST UNSICHTBAR IST:
+ *
+ *   ok HEISST AB JETZT "EIN BRAUCHBARES ZUGANGSDATUM WURDE BESCHAFFT" UND NICHT MEHR
+ *   "ES STEHT IN DER ZEILE".
+ *
+ * DER FALL, DER DIE ZWEI TRENNT, IST DER VERLIERER DES RIEGELS: Er hat beim Anbieter
+ * ein frisches Zugangsdatum geholt, seine bedingte Schreibung hat NULL Zeilen
+ * getroffen, und er hat es verworfen. In der Zeile steht das des GEWINNERS — ein
+ * brauchbares, aber ein anderes. Die zwei Ablaufzeitpunkte, die ok dann traegt,
+ * stammen aus der EIGENEN, verworfenen Nutzlast und beschreiben NICHT den Inhalt der
+ * Zeile.
+ *
+ * WARUM TROTZDEM ok UND KEIN FUENFTER ZUSTAND — jeder andere Ausgang waere eine
+ * REGRESSION (GEMESSEN am Repo, CC, 2026-09-05): Der Aufrufer auf dem Ingest-Pfad
+ * ueberspringt JEDEN Ausgang ausser ok und liest die Zeile nur bei ok neu. Heute
+ * schreibt der Verlierer unbedingt, der Aufrufer findet danach ein brauchbares
+ * Zugangsdatum, und der Beacon sendet. Unter einem Nicht-ok-Ausgang ginge genau diese
+ * Conversion verloren — STILL.
+ *
+ * WER DIE ZWEI ZEITPUNKTE ALS AUSSAGE UEBER DIE ZEILE LIEST, LIEST SEIT DIESER SCHEIBE
+ * FALSCH. Der einzige heutige Leser ist die Beweis-Route, und dort ist es eine
+ * Auskunft ueber den Lauf und nicht ueber die Ablage.
  */
 export type RefreshResult =
   | {
@@ -308,12 +409,27 @@ export async function refreshAccessToken(params: {
   //     { data, error } IMMER destrukturiert: sonst wird ein Fehler still verschluckt
   //     und sieht aus wie "keine Zeile" (docs/immer-beachten.md, "POSTGREST-QUERIES +
   //     ECHTE PRIMAERSCHLUESSEL").
-  //     ES WIRD AUSSCHLIESSLICH secret_enc SELEKTIERT. Die Klartext-Spalte secret wird
-  //     NICHT gelesen — kein Klartext-Geheimnis kommt in diesen Pfad.
+  //     DIE KLARTEXT-SPALTE secret WIRD NICHT GELESEN — kein Klartext-Geheimnis kommt
+  //     in diesen Pfad. Das ist die tragende Aussage dieses Absatzes und gilt
+  //     unveraendert.
+  //     RICHTIGGESTELLT MIT SCHEIBE 1b-2b — hier stand "ES WIRD AUSSCHLIESSLICH
+  //     secret_enc SELEKTIERT". Seit dieser Scheibe sind es DREI Spalten: secret_enc,
+  //     secret_version und id. KEINE DER ZWEI NEUEN IST EIN GEHEIMNIS — die eine ist
+  //     ein Zaehler, die andere der Zeilen-Schluessel.
+  //
+  //     WARUM BEIDE NEUEN HIER STEHEN UND NICHT ERST BEIM SCHREIBEN: Sie sind die
+  //     BEDINGUNG des Schreibvorgangs (Schritt 13). Ein zweites Lesen zwischen hier
+  //     und dort waere ein zweiter Zeitpunkt — und genau die Luecke zwischen zwei
+  //     Zeitpunkten ist das, was dieser Riegel schliesst.
+  //
+  //     id IST NICHT REDUNDANT NEBEN (project_id, target), und der Satz gehoert an die
+  //     Abfrage: Nach einem Trennen und Neu-Verbinden traegt die NEUE Zeile denselben
+  //     (project_id, target) und den Default 0 — ein Lauf, der 0 gelesen hatte,
+  //     gewaenne gegen sie. Die id trennt ZEILEN-IDENTITAET vom VERSIONSSTAND.
   const admin = createAdminClient();
   const { data: row, error: readError } = await admin
     .from("project_secrets")
-    .select("secret_enc")
+    .select("secret_enc, secret_version, id")
     .eq("project_id", projectId)
     .eq("target", target)
     .maybeSingle();
@@ -353,6 +469,40 @@ export async function refreshAccessToken(params: {
   if (typeof secretEnc !== "string" || secretEnc.length === 0) {
     console.error("[oauth/token-refresh] no_secret_enc", { projectId, target });
     return { kind: "misconfigured", reason: "no_secret_enc" };
+  }
+
+  // (3b) DER DEFENSIVE RIEGEL AN DER GELESENEN ZEILE (Scheibe 1b-2b).
+  //
+  //      DIE ZWEI WERTE, DIE DER SCHREIBVORGANG ALS BEDINGUNG BRAUCHT, WERDEN HIER
+  //      GEPRUEFT UND NICHT DORT: Ein Filter, der einen unbrauchbaren Wert bekommt,
+  //      trifft null Zeilen — und das saehe wie ein verlorenes Rennen aus. DER
+  //      GEFAEHRLICHSTE AUSGANG WAERE ALSO NICHT EIN FEHLER, SONDERN EIN FALSCHES
+  //      ERGEBNIS: Der Riegel meldete "ein anderer war schneller", und in Wahrheit
+  //      wuerde nie wieder geschrieben.
+  //
+  //      SIE SOLLTEN BEIDE NIE GREIFEN: secret_version ist integer not null (0027),
+  //      id ist uuid not null. DAS IST DER GRUND, WARUM SIE TROTZDEM DASTEHEN — ein
+  //      Waechter, der nichts kostet und den Fall faengt, den es nicht mehr geben
+  //      duerfte, ist billiger als die Frage, ob die Typwahl ueberall traegt. ZWEITE
+  //      SCHICHT, NICHT ERSTE.
+  //
+  //      DER NAME bad_row DECKT BEIDE FAELLE, und warum kein zweiter Grund daneben
+  //      steht, ist am Ergebnistyp ausgeschrieben: Beide treffen dieselbe Aussage — die
+  //      gelesene Zeile hat nicht die Form, die das Schema zusagt — und beide fuehren zu
+  //      derselben Handlung.
+  const rowKey = (row as { id?: unknown }).id;
+  const versionRaw = (row as { secret_version?: unknown }).secret_version;
+  if (
+    typeof rowKey !== "string" ||
+    rowKey.length === 0 ||
+    typeof versionRaw !== "number" ||
+    !Number.isInteger(versionRaw)
+  ) {
+    // NUR DIE EIGENE STUFE. Der gelesene Wert selbst geht NICHT ins Log: er ist zwar
+    // kein Geheimnis, aber die Zeile traegt hier nichts, was jemand braucht — und was
+    // nicht dasteht, kann auch nicht mitwandern.
+    console.error("[oauth/token-refresh] bad_row", { projectId, target });
+    return { kind: "misconfigured", reason: "bad_row" };
   }
 
   // (4) DAS DECHIFFRIEREN. Die Abbildung der sechs Zustaende steht an fromDecrypt.
@@ -616,21 +766,154 @@ export async function refreshAccessToken(params: {
   //      sieht. Der Ausgang muss ihn ANHALTEN, und retry taete das Gegenteil.
   //      DER UNTERSCHIED ZUM LESEFEHLER OBEN IST DAMIT BENANNT: dort ist nichts
   //      verbraucht und ein zweiter Versuch folgenlos, hier nicht.
-  const { error: writeError } = await admin.from("project_secrets").upsert(
-    {
-      project_id: projectId,
+  //      DER RIEGEL (Scheibe 1b-2b): AUS DEM UNBEDINGTEN UPSERT IST EIN BEDINGTES
+  //      update GEWORDEN. Geschrieben wird NUR, wenn secret_version noch den Wert
+  //      traegt, den diese Funktion in Schritt (2) gelesen hat.
+  //
+  //      VIER FILTER, UND KEINER IST UEBERFLUESSIG:
+  //        id             — ZEILEN-IDENTITAET. Nach Trennen und Neu-Verbinden traegt
+  //                         die NEUE Zeile denselben (project_id, target) und den
+  //                         Default 0; ein Lauf, der 0 gelesen hatte, gewaenne gegen
+  //                         sie und ueberschriebe ein frisch verbundenes Zugangsdatum.
+  //        project_id     — Redundanz auf einer Geheimnis-Tabelle ist ABSICHT. Sie
+  //        target           kostet nichts und haelt den Filter auch dann auf der Zeile
+  //                         DIESES Projekts, wenn die id je aus einer anderen Quelle
+  //                         kaeme.
+  //        secret_version — DER RIEGEL SELBST.
+  //
+  //      GESETZT WIRD secret_version = gelesen + 1. Der Sprung ist EINS und nicht die
+  //      Uhrzeit: Google liefert expires_in als ganze Sekunden, zwei Laeufe in
+  //      derselben Sekunde erzeugten denselben Ablaufzeitpunkt — ein Vergleich darauf
+  //      versagte im ENGSTEN Rennen, also genau dort, wo der Riegel gebraucht wird.
+  //
+  //      secret: null BLEIBT IM ARGUMENT. Unter dem CHECK
+  //      project_secrets_secret_genau_eines ist es hier redundant — die Zeile traegt ein
+  //      Chiffrat, also ist secret bereits NULL. Es steht trotzdem da, damit die
+  //      Begruendung darueber wahr bleibt und ein spaeterer Rueckbau auf ein Upsert sie
+  //      nicht verliert.
+  //
+  //      DIE RUECKMELDUNG IST DIE MENGENLAENGE unter return=representation (Weg 2 der
+  //      Messung vom 2026-09-04, OWNER, acht Aufrufe: Null-Treffer eine LEERE Menge,
+  //      Ein-Treffer eine Menge aus EINEM Objekt). Gewaehlt wegen der wenigsten
+  //      beweglichen Teile und weil sie keine Kopfzeile auswerten muss.
+  //      NICHT gewaehlt: die 406/PGRST116 unter Singular-Anforderung — sie legte einen
+  //      NORMALEN Ausgang in den FEHLERKANAL, und derselbe Code kann auch anderswoher
+  //      kommen.
+  //
+  //      DIE RUECKGABE-SPALTENLISTE NENNT AUSSCHLIESSLICH secret_version — ES REIST KEIN
+  //      CHIFFRAT ZURUECK. Eine Rueckgabe ohne Spaltenliste holte die ganze Zeile, also
+  //      auch secret_enc, in den Prozessspeicher eines Pfades, der es gerade erst
+  //      hinausgeschrieben hat.
+  //
+  //      DAS try/catch IST INVARIANTE (I-1) UND KEINE VORSICHT: Dieser Pfad ist ueber
+  //      den Ingest erreichbar, wo das 204-CONTAINMENT gilt. Mit .select() waechst die
+  //      Zahl der Stellen, an denen der Client werfen kann; geloggt wird der NAME des
+  //      Fehlers, nie ein Wert.
+  //
+  //      ZWEI SCHEITERNSARTEN, ZWEI WORTLAUTE — RICHTIGGESTELLT IN DER KORREKTUR-RUNDE
+  //      ZUM BAU: Hier standen ZWEI console.error mit dem IDENTISCHEN Wortlaut
+  //      "[oauth/token-refresh] write" — einmal fuer den WURF des Clients, einmal fuer
+  //      den ZURUECKGEGEBENEN Datenbank-Fehler. Das ist der Befund von Vorrats-Eintrag
+  //      48, neu erzeugt: ein Wortlaut, der mehrere Zustaende traegt, taugt zum Suchen
+  //      nicht mehr. Dass die eine Zeile ein error-Feld mitfuehrt, trennt sie nur fuer
+  //      den, der genau hinsieht — und wer im Log GREPPT, sieht es gar nicht.
+  //      BEIDE NENNEN WEITERHIN KEINE URSACHE (Invariante (I-6)): write_threw sagt, der
+  //      Aufruf hat GEWORFEN; write_returned_error sagt, er hat einen Fehler
+  //      ZURUECKGEGEBEN. Das ist die BEOBACHTUNG und nicht ihr Grund — warum der Client
+  //      geworfen hat oder was die Datenbank abgelehnt hat, sagt keine von beiden.
+  //      DER RUECKGABEWERT IST BEI BEIDEN UNVERAENDERT misconfigured/write_failed: Es
+  //      geht um die Unterscheidbarkeit der Beobachtung, nicht um die Handlung — beide
+  //      halten einen automatischen Wiederholer an, und das aus demselben Grund.
+  let geschrieben: unknown[] | null = null;
+  let writeError: unknown = null;
+  try {
+    const res = await admin
+      .from("project_secrets")
+      .update({
+        secret: null,
+        secret_enc: encrypted.value,
+        secret_version: versionRaw + 1,
+      })
+      .eq("id", rowKey)
+      .eq("project_id", projectId)
+      .eq("target", target)
+      .eq("secret_version", versionRaw)
+      .select("secret_version");
+    geschrieben = res.data;
+    writeError = res.error;
+  } catch (err) {
+    console.error("[oauth/token-refresh] write_threw", {
+      projectId,
       target,
-      secret: null,
-      secret_enc: encrypted.value,
-    },
-    { onConflict: "project_id,target" },
-  );
+      error: errorName(err),
+    });
+    return { kind: "misconfigured", reason: "write_failed" };
+  }
 
+  //      DER FEHLER WIRD VOR DER MENGE GEPRUEFT, UND DAS IST DIE REIHENFOLGE UND KEINE
+  //      GESCHMACKSFRAGE: Bei einem Fehler ist die Menge EBENFALLS leer. Wer zuerst die
+  //      Laenge liest, deutet "Datenbank kaputt" als "Rennen verloren" — der eine
+  //      Ausgang holt einen Betreiber an die Zeile, der andere verwirft schweigend.
   if (writeError) {
     // AUSSCHLIESSLICH die eigene Stufe, nie message/details/hint: dort kann der
     // Anbieter den verletzenden Wert zurueckspiegeln, und der ist hier das Chiffrat.
-    console.error("[oauth/token-refresh] write", { projectId, target });
+    // DER WORTLAUT IST VOM WURF-FALL IM catch UNTERSCHEIDBAR — s. den Block darueber.
+    console.error("[oauth/token-refresh] write_returned_error", {
+      projectId,
+      target,
+    });
     return { kind: "misconfigured", reason: "write_failed" };
+  }
+
+  //      DER VERLIERER-ZWEIG. Null Treffer heisst: ein anderer Lauf hat die Zeile
+  //      seither geschrieben, ODER die Zeile ist weg. BEIDE FUEHREN ZU DERSELBEN
+  //      HANDLUNG — das eigene Zugangsdatum wird VERWORFEN, und es wird KEIN zweites
+  //      Mal geschrieben. Die Logzeile nennt deshalb KEINE Ursache (Invariante (I-6));
+  //      sie nennt, was beobachtet wurde.
+  //      SIE TRAEGT DAS PRAEFIX DES ERNEUERUNGSPFADES UND IST VOM WORTLAUT DES
+  //      RESOLVERS UNTERSCHEIDBAR ("[capi/resolve] secret unusable") — jener traegt
+  //      nach Vorrats-Eintrag 48 schon drei Bedeutungen, eine vierte machte ihn
+  //      unbrauchbar.
+  //
+  //      ZURUECKGEGEBEN WIRD ok, UND ZWAR MIT DEN ZEITPUNKTEN AUS DER EIGENEN,
+  //      VERWORFENEN NUTZLAST. Jeder andere Ausgang waere eine REGRESSION: Der Aufrufer
+  //      auf dem Ingest-Pfad ueberspringt jeden Ausgang ausser ok und liest die Zeile
+  //      nur bei ok neu — dort steht dann das Zugangsdatum des GEWINNERS, und der
+  //      Beacon sendet. Unter dead, misconfigured oder retry ginge genau diese
+  //      Conversion still verloren.
+  //      DIE VERENGUNG VON ok, DIE DAS MIT SICH BRINGT, STEHT AM ERGEBNISTYP.
+  //
+  //      DIE EBENE IST info UND NICHT error, UND DAS IST ENTSCHIEDEN UND NICHT
+  //      UEBERNOMMEN (Korrektur-Runde zum Bau; hier stand console.error). DREI GRUENDE,
+  //      und der erste allein traegt schon:
+  //        (1) NACH UNSERER EIGENEN ENTSCHEIDUNG IST EIN VERLORENES RENNEN KEIN FEHLER.
+  //            Genau deshalb gibt dieser Zweig ok zurueck und nicht retry oder
+  //            misconfigured. Ein Zweig, der ok liefert und auf den Fehlerkanal
+  //            schreibt, widerspricht sich selbst — und wer den Kanal liest, glaubt der
+  //            Ebene und nicht dem Rueckgabewert.
+  //        (2) SIE IST UNGEDROSSELT UND FEUERT JE BEACON. Unter dem verkehrsgetakteten
+  //            Ausloeser aus Scheibe 1b-2a schreibt ein DAUERHAFT verlierender Lauf
+  //            diese Zeile bei JEDEM Beacon jeder Kundenseite (Vorrats-Eintrag 42). Ein
+  //            Nicht-Fehler, der sich auf dem Fehlerkanal beliebig oft wiederholt,
+  //            erzeugt SIGNAL-ERMUEDUNG und macht den Kanal auch fuer die Faelle
+  //            unbrauchbar, die wirklich einen Betreiber brauchen — write_threw und
+  //            write_returned_error stehen genau dort.
+  //        (3) SIE BLEIBT SICHTBAR. info wird mitgeschrieben; die Zeile ist weiterhin
+  //            die EINZIGE Spur eines verlorenen Rennens und geht nicht verloren.
+  //      DIE DROSSELUNG WIRD NICHT GEBAUT — sie bleibt ausdruecklich ausgeschlossen
+  //      (Kopf von src/lib/capi/ingest.ts). DIESE ENTSCHEIDUNG ERSETZT SIE NICHT: Sie
+  //      raeumt die Zeile aus dem Fehlerkanal, sie macht sie nicht seltener. Wer die
+  //      Haeufigkeit fuer ein Problem haelt, hat einen anderen Posten vor sich.
+  if (!geschrieben || geschrieben.length === 0) {
+    console.info("[oauth/token-refresh] write_zero_rows", {
+      projectId,
+      target,
+    });
+    return {
+      kind: "ok",
+      accessTokenExpiresAt: next.payload.accessTokenExpiresAt,
+      refreshTokenExpiresAt: next.payload.refreshTokenExpiresAt,
+    };
   }
 
   console.info("[oauth/token-refresh] ok", { projectId, target });

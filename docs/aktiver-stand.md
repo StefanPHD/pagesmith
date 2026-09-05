@@ -3276,8 +3276,23 @@ sagt es von sich selbst ("KEINE EMPFEHLUNG, WELCHER DER DREI WEGE DER RIEGEL WIR
 
 ### Die Entscheidung zur Klartext-Spalte
 
-**GEWÄHLT: EINE ADDITIVE SPALTE `secret_version` (bigint, not null, default 0) UND EIN
+**GEWÄHLT: EINE ADDITIVE SPALTE `secret_version` (integer, not null, default 0) UND EIN
 VERGLEICH-UND-SCHREIBE GEGEN DEN GELESENEN WERT.**
+
+**DER TYP IST AM 2026-09-05 VON `bigint` AUF `integer` NACHGEZOGEN — SACHKORREKTUR, KEIN
+STEMPEL. DER GRUND STEHT AN GENAU EINER STELLE UND WIRD HIER NICHT VERDOPPELT:** am ersten
+Stück unter "Was gebaut wird — fünf Stücke". **DIESE ZEILE IST DIE ZWEITE FUNDSTELLE
+DERSELBEN ANGABE**, und sie ist in dieser Runde eigens gesucht worden — eine halb
+korrigierte Aussage ist gefährlicher als eine ganz falsche, weil danach niemand mehr die
+andere Hälfte nachliest (docs/immer-beachten.md, "WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT,
+MACHT DIE ANDERE ZUR FALLE").
+GEMESSEN am Dateitext (CC, 2026-09-05, Doku-Runde; Achse: `bigint` über den ganzen
+Riegel-Abschnitt): **ZWEI** Fundstellen der Typ-Angabe, beide nachgezogen — die dritte und
+vierte Nennung stehen im Begründungs-Absatz jenes Stücks und meinen den ALTEN Typ
+ausdrücklich als solchen. **Positivkontrolle:** dieselbe Achse trifft ausserhalb dieses
+Abschnitts die `bigint`-Rückgabetypen dreier Migrationen, läuft also nicht leer.
+**DIE ÜBRIGEN DREI ANGABEN DIESER ZEILE — additiv, `not null`, `default 0` — SIND
+UNVERÄNDERT.**
 
 **DER GRUND, DER TRÄGT — `secret_version` HÄNGT AN KEINER UHR UND HAT KEIN GEGENSTÜCK IM
 CHIFFRAT.** Ein Klartext-Ablaufzeitpunkt oder eine Klartext-Ausstellungszeit wäre eine
@@ -3307,22 +3322,95 @@ Ausschluss in "Was ausdrücklich draussen bleibt, je mit seinem Grund" (Zuschnit
 ausdrücklich "KEINE KLARTEXT-SPALTE FÜR DEN ABLAUFZEITPUNKT" und band ohnehin nur jenen
 Schritt.
 
-### Was gebaut wird — vier Stücke
+### Was gebaut wird — fünf Stücke
 
-· **DIE MIGRATION AUF `public.project_secrets`, ADDITIV:** `secret_version bigint not null
+**DIE ZAHL IM TITEL STAND BIS ZUM 2026-09-05 AUF VIER UND IST NACHGEZOGEN, NICHT
+GESTEMPELT** — sie beschreibt eine Aufzählung, die unmittelbar darunter steht, und zwei
+Zahlen nebeneinander liessen den Leser die falsche nehmen. **DASS SIE ÜBERHAUPT IM TITEL
+STEHT, IST HIER NICHT ENTSCHIEDEN WORDEN:** Diese Datei führt an zwei Köpfen den Grundsatz
+"KEINE STÜCKZAHL IN DIESEM KOPF, UND ES KOMMT KEINE ZURÜCK", und dieser Titel widerspricht
+ihm — dieselbe Lage wie beim Titel des Abschnitts "1b als Folgetask", wo sie ebenfalls
+ausdrücklich aussteht. **Hier ist die Zahl richtiggestellt, nicht die Bauform.**
+GEMESSEN am Dateitext (CC, 2026-09-05, Doku-Runde): Der Titel wird von KEINER Stelle im
+Repo zitiert; das Nachziehen macht keinen Zeiger tot.
+
+· **DIE MIGRATION AUF `public.project_secrets`, ADDITIV:** `secret_version integer not null
   default 0`. **DIE NUMMER IST DIE NÄCHSTE FREIE** — sie steht hier ausdrücklich nicht,
   weil eine geratene Nummer beim Bau still danebengreift. **KEIN BACKFILL; DER DEFAULT
   TRÄGT.**
-· **`secret_version` WIRD BEIM LESEN DER ZEILE MITGELADEN UND BIS ZUR SCHREIBUNG
+  **DER TYP IST AM 2026-09-05 VON `bigint` AUF `integer` GEÄNDERT WORDEN, UND DER GRUND
+  MUSS MIT, sonst wird er beim nächsten Aufräumen als Verengung zurückgedreht:** Ob
+  PostgREST einen `bigint` als JSON-ZAHL oder als ZEICHENKETTE ausliefert, ist in diesem
+  Projekt **UNGELESEN UND UNGEMESSEN** (BEFUND der Stufe 1, CC, 2026-09-05). Bei einer
+  Zeichenkette ergäbe "gelesener Wert + 1" eine **VERKETTUNG statt einer Summe** — der
+  Riegel schriebe **still** eine falsche Version, und nichts würde davon rot. `int4` ist
+  unzweideutig eine Zahl. **DIE FRAGE WIRD DAMIT BESEITIGT UND NICHT ABGESICHERT**; das
+  ist der Unterschied zu einer defensiven Umwandlung, und er ist der ganze Punkt.
+  **DER PREIS IST BENANNT UND KLEIN:** Zwei Milliarden Erneuerungen auf EINER Zeile
+  erreicht niemand.
+  PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-09-05 auf dem Befund der Stufe 1. Dass die
+  Auslieferungsform ungemessen ist, ist ein **NICHT-BEFUND MIT BENANNTER REICHWEITE**
+  (docs/plattform-befunde.md, LAUF 3 — dort ist zur Typ-Auslieferung nichts gelesen), keine
+  Messung an der Schnittstelle.
+· **`secret_version` UND `id` WERDEN BEIM LESEN DER ZEILE MITGELADEN UND BIS ZUR SCHREIBUNG
   DURCHGEREICHT.** Lesen und Schreiben liegen beide INNERHALB von `refreshAccessToken`
   (**GEMESSEN am Repo, CC, 2026-09-04, Doku-Runde**) — es entsteht damit **keine** neue
   Schnittstelle und **kein** neuer Parameter an einem Aufrufer.
-· **DER ERNEUERUNGS-UPSERT WIRD AUF EIN BEDINGTES `update` UMGESTELLT:** Filter auf
+  **`id` IST AM 2026-09-05 DAZUGEKOMMEN**, und ihr Grund steht am Filter darunter.
+· **DER ERNEUERUNGS-UPSERT WIRD AUF EIN BEDINGTES `update` UMGESTELLT:** Filter auf `id`,
   `project_id`, `target` **UND** `secret_version` = gelesener Wert; gesetzt werden
   `secret_enc` und `secret_version` = gelesener Wert + 1. **DIE RÜCKMELDUNG WIRD
   AUSGEWERTET.**
+  **DIE `id` IM FILTER IST AM 2026-09-05 DAZUGEKOMMEN, UND SIE SCHLIESST EINEN FALL, DEN
+  DIE ZAHL ALLEIN NICHT SIEHT:** Ein Vergleich allein auf `secret_version` unterscheidet
+  eine **NEU ANGELEGTE** Zeile nicht von der gelesenen. Nach Trennen und Neu-Verbinden
+  trägt die neue Zeile den Default `0` — und ein Lauf, der `0` gelesen hatte, **gewänne
+  gegen sie** und überschriebe das frisch verbundene Zugangsdatum mit dem aus dem alten,
+  entfernten Zugang. **MIT DER `id` VERGLEICHT DER RIEGEL ZEILEN-IDENTITÄT UND
+  VERSIONSSTAND**, nicht nur eine Zahl.
+  **`project_id` UND `target` BLEIBEN TROTZDEM IM FILTER:** Redundanz auf einer
+  Geheimnis-Tabelle ist Absicht, nicht Nachlässigkeit — sie kostet nichts und hält den
+  Filter auch dann auf der Zeile DIESES Projekts, wenn die `id` je aus einer anderen
+  Quelle käme.
+  PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-09-05. Der Fall selbst ist **AM
+  KONTROLLFLUSS ABGELESEN** (Fall B aus Gate G6 der Stufe 1, CC, 2026-09-05) und
+  **NICHT GEMESSEN** — es ist kein solcher Lauf beobachtet worden.
+· **DER RÜCKMELDUNGS-WEG IST DIE MENGENLÄNGE UNTER `return=representation`** — Weg 2 der
+  Messung vom 2026-09-04 (OWNER, acht Aufrufe; Protokoll im Feld `VERIFIZIERT` von
+  `supabase/checks/bedingte-schreibung-probe.sql`, Messung M-4): Null-Treffer eine LEERE
+  Menge, Ein-Treffer eine Menge aus EINEM Objekt.
+  **GRUND: die wenigsten beweglichen Teile und keine Kopfzeilen-Auswertung.**
+  **WARUM NICHT WEG 3 (`406`/`PGRST116` unter Singular-Anforderung), und das ist der
+  tragende Teil dieser Wahl: ER LEGTE EINEN NORMALEN AUSGANG IN DEN FEHLERKANAL.** Ein
+  verlorenes Rennen ist **kein Fehler** — und derselbe Code kann auch anderswoher kommen,
+  womit der Riegel eine fremde Ursache als sein eigenes Ergebnis läse.
+  **WEG 1 (die Kopfzeile im Vorgabefall) IST MIT DEM INSTALLIERTEN CLIENT NICHT
+  ERREICHBAR** — GEMESSEN am Paket (CC, 2026-09-05): der Zähler wird nur bei gesetzter
+  Zähl-Präferenz überhaupt gelesen, und der aufgelöste Wert trägt keine Kopfzeilen.
+  **WEG 4 (der Zähler) IST ERREICHBAR UND NICHT GEWÄHLT.**
+  **ZWEI AUFLAGEN GEHÖREN ZUM WEG UND SIND KEINE FUSSNOTE:**
+  **(1) DIE RÜCKGABE-SPALTENLISTE NENNT AUSSCHLIESSLICH DIE VERSIONS-SPALTE — ES REIST
+  KEIN CHIFFRAT ZURÜCK.** Eine Rückgabe ohne Spaltenliste holte die ganze Zeile, also auch
+  `secret_enc`, in den Prozessspeicher eines Pfades, der es gerade erst hinausgeschrieben
+  hat.
+  **(2) DER FEHLER WIRD VOR DER MENGE GEPRÜFT.** Bei einem Fehler ist die Menge leer, und
+  **"Datenbank kaputt" darf nie als "Rennen verloren" gedeutet werden** — der eine Ausgang
+  holt einen Betreiber an die Zeile, der andere verwirft schweigend.
+  PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-09-05 auf der Messung vom 2026-09-04 (OWNER)
+  und der Paket-Messung vom 2026-09-05 (CC).
 · **DER VERLIERER-ZWEIG:** null Treffer → **das eigene Zugangsdatum wird VERWORFEN, nicht
-  geschrieben.** **Kein Wurf, kein Abbruch des umgebenden Pfades.**
+  geschrieben.** **Kein Wurf, kein Abbruch des umgebenden Pfades.** Sein AUSGANG ist seit
+  dem 2026-09-05 entschieden — s. den Abschnitt
+  "Was aus den zwei offenen Fragen geworden ist".
+· **DER DEFENSIVE RIEGEL AN DER GELESENEN VERSION — DAS FÜNFTE STÜCK, NEU AM 2026-09-05.**
+  Ist der gelesene Wert **keine ganze Zahl**, wird **fail-closed** abgebrochen, über einen
+  **ADDITIVEN** Grund am **bestehenden** `misconfigured`-Ausgang — kein neuer Zustand, nur
+  ein neues Mitglied einer Union, die heute schon elf trägt.
+  **ER BLEIBT, OBWOHL DAS ERSTE STÜCK DEN FALL BESEITIGEN SOLL, und das ist der Grund für
+  seinen eigenen Punkt:** Ein Wächter, der nichts kostet und den Fall fängt, den es nach
+  der Typwahl **nicht mehr geben dürfte**, ist billiger als die Frage, ob die Typwahl
+  wirklich überall trägt. **Er ist die zweite Schicht und nicht die erste.**
+  PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-09-05. Keine Messung.
 
 ### Die Grenze des Riegels
 
@@ -3333,6 +3421,28 @@ dafür, dass genau ein Lauf schreibt, nicht dafür, dass der richtige es tut.
 **KEIN VERFÜGBARES MITTEL LÖST DAS.** Dafür bräuchte es Googles **Ausstellungs-Reihenfolge**,
 und die geben **weder unsere Uhr noch unsere Empfangszeit** her.
 
+**DIE ZWEITE GRENZE, NEU AM 2026-09-05: DER RIEGEL DECKT DEN ERNEUERUNGSPFAD, NICHT DEN
+CALLBACK.**
+Verbindet der Betreiber **neu**, während ein Erneuerungslauf zwischen dem Lesen und dem
+Schreiben steht, schreibt der Callback das Chiffrat **ohne Zähler-Sprung** — der
+Erneuerungslauf trifft danach seine Bedingung und **überschreibt das frisch verbundene
+Zugangsdatum**. **DER RIEGEL GREIFT NICHT UND MELDET ERFOLG.**
+**DIE `id` AUS DEM FILTER FÄNGT DIESEN FALL NICHT**, und der Satz gehört hierher, weil sie
+den NACHBARFALL fängt: Beim Neu-Verbinden **ohne** vorheriges Trennen bleibt es dieselbe
+Zeile mit derselben `id`. Sie trennt "andere Zeile" von "gelesene Zeile"; sie trennt nicht
+"ein anderer hat dazwischen geschrieben".
+**WIE WAHRSCHEINLICH DAS IST, IST NICHT ERHOBEN** und wird hier nicht geschätzt.
+**BEMERKENSWERT IST ALLEIN:** Der Callback ist die **einzige** Stelle, an der ein **MENSCH**
+und ein **VERKEHRSGETAKTETER AUTOMATISMUS** dieselbe Zeile gleichzeitig anfassen können.
+**WARUM SIE HIER STEHT UND NICHT ALS AUSSCHLUSS:** Ein Ausschluss sagt, was nicht gebaut
+wird; eine Grenze sagt, was der Gebaute **nicht leistet**. Wer nur die Ausschluss-Liste
+liest, hält den Riegel für dicht.
+PROVENIENZ: **GEMESSEN am Repo (CC, 2026-09-05, Gate G4 der Stufe 1)** — der Schreibvorgang
+der Callback-Route ist ein `upsert` mit Konflikt-Auflösung auf `(project_id, target)` und
+trifft damit auch eine BESTEHENDE Zeile; dass dieser Fall real ist, steht in dieser Datei
+bereits (VERMERK 13, Abschnitt (c), zwei Neu-Verbindungen). Die Folge daraus ist eine
+**ABLEITUNG** aus dem Kontrollfluss und **keine zweite Beobachtung**.
+
 **DIE NEBENLÄUFIGKEIT BLEIBT UNGEMESSEN.** **"ATOMAR HEISST NICHT SICHER"**
 (docs/plattform-befunde.md, LAUF 3, Grenze 3) steht **unberührt**; die Messung vom
 2026-09-04 hat die **AUSKUNFT** beantwortet, nicht das **WETTLAUF-VERHALTEN**. **WER AUS
@@ -3342,8 +3452,26 @@ DIESEM ZUSCHNITT LIEST, DIE NEBENLÄUFIGKEIT SEI GEKLÄRT, LIEST FALSCH.**
 
 · **DIE ERST-ANLAGE DER ZEILE.** Der Upsert im OAuth-Callback
   (src/app/api/oauth/google/callback/route.ts) und die Anlage über `setCapiToken`
-  (src/app/projects/actions.ts) bleiben **unberührt**: Dort gibt es **keine Zeile, gegen die
-  verglichen werden könnte**, und **keine Nebenläufigkeit zweier Erneuerungen**.
+  (src/app/projects/actions.ts) bleiben **unberührt**: Bei der ERST-Anlage gibt es **keine
+  Zeile, gegen die verglichen werden könnte**, und **keine Nebenläufigkeit zweier
+  Erneuerungen**.
+  **DIE BEGRÜNDUNG IST AM 2026-09-05 AUF DAS ZURÜCKGESCHNITTEN WORDEN, WAS SIE TRÄGT —
+  SACHKORREKTUR, KEIN STEMPEL.** Sie lautete "**Dort** gibt es keine Zeile, gegen die
+  verglichen werden könnte" und sprach damit vom AUFRUF; **das ist am Code nicht wahr**.
+  **GEMESSEN am Repo (CC, 2026-09-05, Gate G4 der Stufe 1):** Der Callback-Aufruf ist ein
+  `upsert` mit Konflikt-Auflösung auf `(project_id, target)` und trifft damit **AUCH EINE
+  BESTEHENDE ZEILE** — der Fall ist real und in dieser Datei bereits belegt (das
+  Neu-Verbinden ersetzt die Nutzlast ganzheitlich, s. VERMERK 13, Abschnitt (c)).
+  **WARUM DIE HALBE BEGRÜNDUNG GEFÄHRLICHER WAR ALS GAR KEINE:** Sie liest sich wie eine
+  Prüfung, und wer sie glaubt, sucht die Lücke nicht mehr. Ihr fehlender Teil steht seit
+  dieser Runde als **ZWEITE GRENZE** unter "Die Grenze des Riegels".
+  **DER POSTEN BLEIBT EIN AUSSCHLUSS, und das ist keine Verlegenheit, sondern eine
+  Bauform-Aussage:** Ein Zähler-Sprung im Callback ist eine **EIGENE Entscheidung mit
+  EIGENER Bauform** — ein Upsert kann "alt + 1" gar nicht ausdrücken, **ohne vorher zu
+  lesen**. Er ist als Vorrats-Eintrag verortet und **hier NICHT entschieden**.
+  PROVENIENZ: die Korrektur GEMESSEN am Repo (CC, 2026-09-05); der Wortlaut vor der
+  Korrektur ist gegen `git show HEAD:docs/aktiver-stand.md` geprüft und stand dort
+  (CC, 2026-09-05).
 · **JEDE ÄNDERUNG AN `runRefresh`, `refresh-run.ts` UND DER BEWEIS-ROUTE.** Die Klammer aus
   1b-1 wird **GERUFEN, nicht angefasst**; der Wert wird durchgereicht, die
   Wiederholungslogik bleibt.
@@ -3401,29 +3529,60 @@ Treffer heisst **"meine Schreibung ist überholt ODER die Zeile ist weg"**; beid
 **(I-7) "MIGRATION IMMER VOR CODE-DEPLOY"** (docs/db-regeln.md), **fail-closed.** Der
 umgekehrte Weg schriebe gegen eine Spalte, die es nicht gibt.
 
-### Zwei offene Fragen für den Stufe-1-Prompt — hier NICHT beantwortet
+### Was aus den zwei offenen Fragen geworden ist
 
-**BEIDE SIND PFLICHT-GATE DES STUFE-1-PROMPTS. KEINE VON BEIDEN BLOCKIERT DAS GO** — in
-jedem Ausgang wird gebaut, und der Zuschnitt oben ändert sich durch keine von ihnen.
+**DIESER ABSCHNITT HIESS BIS ZUM 2026-09-05 "Zwei offene Fragen für den Stufe-1-Prompt —
+hier NICHT beantwortet" UND FÜHRTE BEIDE ALS OFFEN. BEIDE SIND BEANTWORTET; DER ABSCHNITT
+IST ERSETZT UND NICHT GESTEMPELT.** Der Grund ist seine WIRKUNG und nicht seine Genauigkeit:
+**Ein Abschnitt, der Beantwortetes als offen führt, lässt die nächste Instanz dieselbe Frage
+erneut stellen** — er kostet also eine Runde und nicht nur eine Zeile.
+GEMESSEN am Dateitext (CC, 2026-09-05, Doku-Runde): Der alte Titel wurde von **KEINER**
+Stelle im Repo zitiert — die Umbenennung macht keinen Zeiger tot. **Ein NAMENSVETTER in
+einer fremden Datei bleibt unberührt** und ist keiner: docs/claude-history/phase-11.1-linkedin.md
+führt einen eigenen Abschnitt "Zwei offene Fragen — FRAGEN, kein Befund" samt eigenem
+Zeiger; er stirbt bei einer Umbenennung HIER nicht (die Trennung von Zeiger und Namensvetter
+steht als Prüfverfahren an Hebungs-Kandidat 5).
 
-· **DIE OFFENE ANGEL (ARCHITEKT, 2026-09-04): Erneuert der Resolver aus 1b-2a nur bei
-  ABGELAUFENER EIGENER UHR, oder auch bei einer ABLEHNUNG DURCH DEN ANBIETER?** Die Antwort
-  ändert den **ABSCHLUSS-VERMERK** — nämlich, wie gross der Nutzen des Riegels ist —,
-  **NICHT den Zuschnitt.**
-· **DER AUSGANG DES VERLIERER-ZWEIGES IST NICHT BENANNT. GEMELDET VON CC (2026-09-04), NICHT
-  ENTSCHIEDEN — und er steht hier, weil ein Bau-Plan ihn sonst nebenbei festlegt.**
-  **GEMESSEN am Repo (CC, 2026-09-04, Doku-Runde)**, an der Typdeklaration `RefreshResult`
-  (src/lib/oauth/token-refresh.ts): Der Ergebnistyp von `refreshAccessToken` kennt **VIER**
-  Zustände — `ok` (trägt beide Ablaufzeitpunkte), `retry`, `dead`, `misconfigured` —, und
-  **keiner von ihnen beschreibt "ein anderer Lauf war schneller".**
-  **WARUM DAS NICHT NEBENBEI ZU ENTSCHEIDEN IST:** `retry` liesse `runRefresh` **erneut
-  laufen** — der Wiederholer holte ein frisches Zugangsdatum und verlöre es wieder, bis zum
-  Deckel. `dead` und `misconfigured` wären **falsch**: nichts ist tot und nichts
-  fehlkonfiguriert. `ok` müsste **zwei Ablaufzeitpunkte tragen, die der Verlierer nicht
-  gelesen hat.**
-  **DIE ENTSCHEIDUNG BERÜHRT DEN ZUSCHNITT NICHT** — sie berührt den Ergebnistyp und damit
-  den Bau-Plan. **HIER WIRD SIE AUSDRÜCKLICH NICHT GETROFFEN, UND ES STEHT KEINE EMPFEHLUNG
-  DABEI.**
+· **DIE OFFENE ANGEL IST BEANTWORTET: ERNEUERT WIRD AUSSCHLIESSLICH AUS DER EIGENEN UHR.**
+  Eine **ABLEHNUNG DURCH DEN ANBIETER** löst auf **KEINEM** Pfad eine Erneuerung aus.
+  **DREI BELEGE, GEMESSEN am Repo (CC, 2026-09-05, Gate G1 der Stufe 1):** Der Google-Adapter
+  liest den Anbieter-Rumpf nicht und gibt bei einem Nicht-2xx nichts zurück · der Typ des
+  Empfängers kann strukturell nichts melden (Vorrats-Eintrag 3, Ebene 1) · das Ergebnis des
+  Fan-Outs wird am Aufrufort **weder gebunden noch gelesen**, und unmittelbar danach steht
+  die leere 204. Es gibt hinter dem Fan-Out **keinen** Aufruf der Klammer.
+  **DIE FOLGE, UND SIE GEHÖRT IN DEN ABSCHLUSS-VERMERK: DER RIEGEL DECKT GENAU DIE LÄUFE,
+  DIE AUS DER UHR ENTSTEHEN** — die Vorsorge und die Rettung. Ein abgelehntes Zugangsdatum
+  erzeugt heute **keinen zweiten Erneuerungslauf** und damit auch **keine zweite
+  Schreibung**. **DER NUTZEN IST AUF DIE UHR-ACHSE BEGRENZT.**
+  **DAS IST EIN BEFUND UND KEINE EMPFEHLUNG, UND ER ÄNDERT AM ZUSCHNITT NICHTS** — die
+  Frage war von Anfang an als eine gestellt, die den ABSCHLUSS-VERMERK bewegt und nicht den
+  Zuschnitt.
+· **DER AUSGANG DES VERLIERER-ZWEIGES IST ENTSCHIEDEN: DER BESTEHENDE `ok`-AUSGANG**, mit
+  den Zeitpunkten aus der **eigenen, verworfenen** Nutzlast. **KEIN fünfter Zustand.**
+  **DER TRAGENDE GRUND STAND IN KEINEM DER FÜNF KANDIDATEN: JEDER ANDERE AUSGANG WÄRE EINE
+  REGRESSION.** Heute schreibt der Verlierer, der Aufrufer auf dem Ingest-Pfad liest die
+  Zeile danach **neu** und findet ein brauchbares Zugangsdatum — **der Beacon sendet**.
+  Unter jedem Nicht-`ok`-Ausgang **überspringt** derselbe Aufrufer, und **eine Conversion,
+  die heute durchgeht, ginge verloren. STILL.**
+  GEMESSEN am Repo (CC, 2026-09-05, Gate G2 der Stufe 1): Die Verzweigung liegt im
+  Ingest-Handler und überspringt **jeden** Ausgang ausser `ok`.
+  **DER PREIS WIRD BEZAHLT UND NICHT WEGDEFINIERT: `ok` BEDEUTET AB JETZT "EIN BRAUCHBARES
+  ZUGANGSDATUM WURDE BESCHAFFT" UND NICHT MEHR "ES STEHT IN DER ZEILE".** Das ist eine
+  **VERENGUNG** einer bestehenden Zusage, und sie ist unsichtbar, solange niemand sie
+  aufschreibt. **AUFLAGE AN DEN BAU: SIE GEHÖRT IN DEN TYP-KOMMENTAR DES ERGEBNISTYPS.**
+  **WAS DAGEGEN SPRACH UND WARUM ES NICHT TRÄGT:** Die Beweis-Route berichtet dann zwei
+  Ablaufzeitpunkte, die der Verlierer **nicht gelesen** hat. Sie hat **keinen Aufrufer in
+  der Anwendung** (Vorrats-Eintrag 44), und ihr Kommentarkopf wird in dieser Scheibe
+  **GEPRÜFT UND GEMELDET, nicht geändert** — sie steht unter Scope-Schutz.
+  **DIE VIER VERWORFENEN KANDIDATEN, je ein Satz und ausdrücklich nicht ausgeschrieben:**
+  `retry` führte den Verlierer in die **Wiederholung bis zum Deckel** · `dead` und
+  `misconfigured` wären **sachlich falsch** — nichts ist tot, nichts fehlkonfiguriert · ein
+  **fünfter Zustand** trüge die Regression oben und **ohne Begründungs-Feld zusätzlich einen
+  Typfehler in einer geschützten Datei**.
+  PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-09-05 auf den Gates der Stufe 1. Die
+  Code-Aussagen sind GEMESSEN am Repo (CC, 2026-09-05); dass jeder andere Ausgang eine
+  Regression wäre, ist eine **ABLEITUNG** aus jener Verzweigung und **keine zweite
+  Beobachtung**.
 
 ### Der Testplan und was er nicht zeigt
 
@@ -3438,6 +3597,20 @@ Behauptung:**
   Abbruch im Verlierer-Zweig. **GRUND:** Ohne diesen Lauf sieht "geblockt" aus wie
   "abgestürzt" — es ist die dritte Weise aus docs/immer-beachten.md, "EINE
   ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL".
+· **(4) DIE SPALTENLISTE DER ERNEUERUNGS-LESUNG BRAUCHT EINEN EIGENEN WÄCHTER — NEU AM
+  2026-09-05, UND SIE IST EINE AUFLAGE AN DEN BAU UND KEIN VORSCHLAG.** **ROT DURCH:** eine
+  Spalte aus der Liste entfernt.
+  **DER GRUND IST EINE BLINDE ACHSE IM BESTAND, GEMESSEN am Repo (CC, 2026-09-05, Gate G8
+  der Stufe 1): Die Attrappe des Bestandstests IGNORIERT das Argument der Lesung** — eine
+  erweiterte Spaltenliste geht **STILL** durch —, **und KEIN Test im Repo pinnt sie.** Die
+  einzigen Spalten-Wächter dieser Art liegen an ANDEREN Lesestellen und greifen hier nicht.
+  **WAS DAS KOSTET, WENN NIEMAND IHN BAUT:** Wer die neue Spalte in der Lesung vergisst,
+  bekommt einen **GRÜNEN** Lauf **und** einen Riegel, der auf einem undefinierten Wert
+  vergleicht — also einen, der entweder immer verliert oder immer gewinnt, ohne dass etwas
+  rot wird. **Es ist genau die Fehlerklasse, gegen die diese Scheibe gebaut wird, eine
+  Ebene tiefer.**
+  **DIE ACHSE IST DIE VIERTE UND NICHT DIE DRITTE-KOMMA-EINS:** Die drei darüber prüfen,
+  was der Riegel TUT; diese prüft, ob er überhaupt den Wert bekommt, an dem er es tut.
 
 **WAS DER UNIT-TEST NICHT ZEIGT, UND DAS GEHÖRT IN DEN ZUSCHNITT UND NICHT IN EINE FUSSNOTE:
 DIE ECHTE NEBENLÄUFIGKEIT.** Der Live-Test beweist, dass der Riegel bei **SEQUENZIELLEN**
@@ -7582,6 +7755,51 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     Negativkontrolle; die Falschheit des vierten Exemplars **GEMESSEN am Repo (CC,
     2026-09-04, Korrektur-Runde)**; dass die drei deshalb **verdächtig** sind, ist eine
     **ABLEITUNG und keine Messung**.
+
+53. **DER OAUTH-CALLBACK ZIEHT DEN VERSIONS-ZÄHLER NICHT MIT — DER RIEGEL DER SCHEIBE
+    1b-2b DECKT IHN DESHALB NICHT.**
+    **DER BEFUND — GEMESSEN am Repo (CC, 2026-09-05, Gate G4 der Stufe 1 zur Scheibe
+    1b-2b):** Der Schreibvorgang der Callback-Route
+    (src/app/api/oauth/google/callback/route.ts) ist ein `upsert` mit Konflikt-Auflösung auf
+    `(project_id, target)`. Er trifft damit **nicht nur die Erst-Anlage, sondern auch eine
+    BESTEHENDE Zeile** — das Neu-Verbinden. Dass dieser Fall real ist, steht in dieser Datei
+    bereits: VERMERK 13, Abschnitt (c), zwei Neu-Verbindungen an einem Tag.
+    **WAS DARAUS FOLGT:** Verbindet der Betreiber neu, während ein Erneuerungslauf zwischen
+    dem Lesen und dem Schreiben steht, schreibt der Callback das Chiffrat **ohne
+    Zähler-Sprung**. Der Erneuerungslauf trifft danach seine Bedingung und **überschreibt
+    das frisch verbundene Zugangsdatum** mit dem aus dem alten Erneuerungs-Token. **DER
+    RIEGEL GREIFT NICHT UND MELDET ERFOLG.**
+    **ES IST KEIN ISOLATIONSLECK**, und der Satz steht auch hier zuerst: Kein Tenant sieht
+    Daten eines anderen. **DER SCHADEN WÄRE EIN VERLORENER ZUGANG** — dieselbe Klasse, gegen
+    die die Scheibe 1b-2b gebaut wird, nur auf einer anderen Naht.
+    **WARUM DER POSTEN NICHT IN DIE SCHEIBE 1b-2b GEHÖRT, UND DAS IST SEIN EIGENTLICHER
+    INHALT: EIN UPSERT KANN "ALT + 1" GAR NICHT AUSDRÜCKEN, OHNE VORHER ZU LESEN.** Ein
+    Zähler-Sprung dort ist damit **keine Zeile, sondern eine andere Bauform** — er verlangt
+    eine Lesung vor dem Schreiben und stellt danach dieselbe Frage nach der Rückmeldung noch
+    einmal. **Eine eigene Entscheidung mit eigenem Zuschnitt.**
+    **WIE WAHRSCHEINLICH DER FALL IST, IST NICHT ERHOBEN** und wird hier nicht geschätzt.
+    **Bemerkenswert ist allein:** Der Callback ist die **einzige** Stelle im System, an der
+    ein **MENSCH** und ein **VERKEHRSGETAKTETER AUTOMATISMUS** dieselbe Zeile gleichzeitig
+    anfassen können.
+    **DIE ABGRENZUNG ZU VORRATS-EINTRAG 9 GEHÖRT DAZU, sonst liest die nächste Runde zwei
+    Fassungen derselben Sache:** Jener fragt, ob der **ANBIETER** bei der Ausstellung eines
+    neuen Zugangsdatums das vorherige entwertet — eine Frage an ein fremdes System, und dort
+    ausdrücklich als UNGEMESSEN geführt. **Dieser fragt, ob UNSER eigener zweiter Schreiber
+    den Zähler mitzieht.** Zwei verschiedene Gegenstände an derselben Zeile.
+    **VORRATS-EINTRAG 9 IST IN DIESER RUNDE NICHT ANGEFASST WORDEN**, und das ist Scope und
+    kein Urteil.
+    GEMELDET 2026-09-05, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder ein Zähler-Sprung im
+    Callback noch ein anderer Riegel dort ist hier vorgeschlagen.
+    TRIGGER: **die nächste Arbeit am Schreibpfad der Callback-Route** — dort liegt die
+    Bauform, die ein Zähler-Sprung verlangt, und eine Runde, die sie ohnehin öffnet, zahlt
+    ihn am billigsten.
+    **HIER STEHT BEWUSST KEIN ZWEITER TRIGGER AUS DEM BETRIEB** (etwa "der erste beobachtete
+    Fall"): Die Häufigkeit ist nicht erhoben, und niemand beobachtet diese Naht — ein
+    erfundener Zeitpunkt liesse den Posten als terminiert aussehen, obwohl er es nicht ist.
+    PROVENIENZ: der Code-Befund **GEMESSEN am Repo (CC, 2026-09-05)**; dass daraus ein
+    verlorener Zugang folgen kann, ist eine **ABLEITUNG aus dem Kontrollfluss** und
+    **keine Messung** — es ist kein solcher Lauf beobachtet worden. Die Einordnung als
+    eigener Posten ist eine **ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-05**.
 
 **EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT

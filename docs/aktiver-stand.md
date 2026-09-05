@@ -3499,36 +3499,6 @@ DIESEM ZUSCHNITT LIEST, DIE NEBENLÄUFIGKEIT SEI GEKLÄRT, LIEST FALSCH.**
   **ER IST GEMELDET UND NIRGENDS ABGELEGT; diese Scheibe legt ihn NICHT ab**, das wäre eine
   eigene Arbeit.
 
-### Die geschützten Invarianten der Scheibe 1b-2b
-
-**(I-1) DAS 204-CONTAINMENT GILT AUCH IM VERLIERER-ZWEIG.** Er liegt auf einem über den
-Ingest erreichbaren Pfad. **Er wirft unter keinen Umständen;** eigenes `try/catch`, geloggt
-wird `errorName(err)` — nie ein Wert, nie ein Fremdtext.
-**(I-2) "APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI"** (docs/immer-beachten.md) —
-`project_secrets` behält **RLS aktiv und NULL Policies**. **Die Migration legt keine an.**
-**DIE FUNDSTELLE TRÄGT DEN FALL, OHNE IHN AUFZUZÄHLEN, und das gehört dazu:** Jene Regel
-sagt von ihrer eigenen Liste ausdrücklich, sie sei **nicht** die vollständige Liste der
-policy-freien Tabellen, und nennt `project_secrets` als den Fall des zweiten Grundes
-(ausschliesslicher service_role-Zugriff). Wer nur die Aufzählung liest, hält diese Zeile für
-einen Fehlgriff.
-**(I-3) "ANLEGEN UND BEFÜLLEN EINER ADDITIVEN SPALTE NICHT VERSCHMELZEN"**
-(docs/immer-beachten.md) — **der Default `0` ist die ANLAGE, kein Backfill.** Es wird keine
-bestehende Zeile angefasst.
-**(I-4) "EIN GUARD AUF EINEN NAMEN, DEN ES NACH DEM LAUF WIEDER GIBT, TRENNT VORHER NICHT
-VON NACHHER"** (docs/immer-beachten.md) — der Katalog-Guard der Migration prüft auf die
-**SACHE** (die Spalte `secret_version` auf `project_secrets`), **nicht auf einen
-Constraint-Namen.**
-**(I-5) DER ACHSE-2-KOMMENTARKOPF VON src/lib/oauth/token-refresh.ts BLEIBT UND WIRD NICHT
-ABGESCHWÄCHT.** Er trägt den ungemessenen Sachverhalt aus Vorrats-Eintrag 9, zweite Achse;
-ein Riegel davor macht ihn nicht kleiner — **die Ausstellungs-Reihenfolge bleibt ungemessen,
-auch wenn nur noch einer schreibt.**
-**(I-6) "MELDUNGSTEXTE BEHAUPTEN WEDER URSACHE NOCH ERGEBNIS"** (docs/immer-beachten.md, in
-der Regel "CLIENT-SEITIGE SERVER-ACTION-AUFRUFE: KEIN WURF BLEIBT UNBEHANDELT") — null
-Treffer heisst **"meine Schreibung ist überholt ODER die Zeile ist weg"**; beide führen zu
-**derselben Handlung**, und die Log-Zeile nennt **keine Ursache**.
-**(I-7) "MIGRATION IMMER VOR CODE-DEPLOY"** (docs/db-regeln.md), **fail-closed.** Der
-umgekehrte Weg schriebe gegen eine Spalte, die es nicht gibt.
-
 ### Was aus den zwei offenen Fragen geworden ist
 
 **DIESER ABSCHNITT HIESS BIS ZUM 2026-09-05 "Zwei offene Fragen für den Stufe-1-Prompt —
@@ -3584,51 +3554,42 @@ steht als Prüfverfahren an Hebungs-Kandidat 5).
   Regression wäre, ist eine **ABLEITUNG** aus jener Verzweigung und **keine zweite
   Beobachtung**.
 
-### Der Testplan und was er nicht zeigt
+### Dieser Zuschnitt ist verdichtet — was abgelaufen ist und was bleibt
 
-**JE TEST STEHT DABEI, WODURCH ER ROT WIRD — ohne diese Angabe ist ein Test eine
-Behauptung:**
-· **(1) DER VERGLEICH GEWINNT** → die Zeile ist geschrieben, die Version um **eins** erhöht.
-  **ROT DURCH:** Entfernen des Versions-Terms aus dem Filter.
-· **(2) DER VERGLEICH VERLIERT** → **nichts geschrieben**, das eigene Zugangsdatum
-  verworfen, **kein Wurf**. **ROT DURCH:** der Verlierer-Zweig schreibt trotzdem.
-  **DIE MUTATION IST HIER PFLICHT UND IHR ERGEBNIS ZU BERICHTEN.**
-· **(3) DER UMGEBENDE INGEST-PFAD LÄUFT BEI EINEM VERLUST ZU ENDE.** **ROT DURCH:** ein
-  Abbruch im Verlierer-Zweig. **GRUND:** Ohne diesen Lauf sieht "geblockt" aus wie
-  "abgestürzt" — es ist die dritte Weise aus docs/immer-beachten.md, "EINE
-  ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL".
-· **(4) DIE SPALTENLISTE DER ERNEUERUNGS-LESUNG BRAUCHT EINEN EIGENEN WÄCHTER — NEU AM
-  2026-09-05, UND SIE IST EINE AUFLAGE AN DEN BAU UND KEIN VORSCHLAG.** **ROT DURCH:** eine
-  Spalte aus der Liste entfernt.
-  **DER GRUND IST EINE BLINDE ACHSE IM BESTAND, GEMESSEN am Repo (CC, 2026-09-05, Gate G8
-  der Stufe 1): Die Attrappe des Bestandstests IGNORIERT das Argument der Lesung** — eine
-  erweiterte Spaltenliste geht **STILL** durch —, **und KEIN Test im Repo pinnt sie.** Die
-  einzigen Spalten-Wächter dieser Art liegen an ANDEREN Lesestellen und greifen hier nicht.
-  **WAS DAS KOSTET, WENN NIEMAND IHN BAUT:** Wer die neue Spalte in der Lesung vergisst,
-  bekommt einen **GRÜNEN** Lauf **und** einen Riegel, der auf einem undefinierten Wert
-  vergleicht — also einen, der entweder immer verliert oder immer gewinnt, ohne dass etwas
-  rot wird. **Es ist genau die Fehlerklasse, gegen die diese Scheibe gebaut wird, eine
-  Ebene tiefer.**
-  **DIE ACHSE IST DIE VIERTE UND NICHT DIE DRITTE-KOMMA-EINS:** Die drei darüber prüfen,
-  was der Riegel TUT; diese prüft, ob er überhaupt den Wert bekommt, an dem er es tut.
+**DIE SCHEIBE IST GEBAUT UND LIVE BEWIESEN (VERMERK 14). MIT DEM VERMERK SIND DIE
+ANWEISUNGEN DIESES ZUSCHNITTS ABGELAUFEN; DIE ENTSCHEIDUNGEN SIND ES NICHT.** Verdichtet
+am 2026-09-05 (CC, Doku-Runde) auf Architekten-Auftrag.
 
-**WAS DER UNIT-TEST NICHT ZEIGT, UND DAS GEHÖRT IN DEN ZUSCHNITT UND NICHT IN EINE FUSSNOTE:
-DIE ECHTE NEBENLÄUFIGKEIT.** Der Live-Test beweist, dass der Riegel bei **SEQUENZIELLEN**
-Läufen greift — **nicht, dass er ein echtes Rennen entscheidet.** Ein Nachweis, der beides
-zusammenzieht, behauptet eine Achse, die er nie gefahren hat.
+**WAS ABGELAUFEN IST — die drei gestrichenen Abschnitte, im Titel zitiert, damit die
+Streichung nachweisbar bleibt** (die Zitate stehen ohne `###`-Marke, Auflage aus
+docs/immer-beachten.md, Zusatz vom 2026-08-27 zu "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST
+ES IN EINER DATEI MIT VERZEICHNIS NICHT"):
 
-### Das Zeitfenster dieser Scheibe
+· **Die geschützten Invarianten der Scheibe 1b-2b** — sieben Auflagen an den BAU, alle
+  eingelöst und in VERMERK 14 einzeln quittiert. **KEINE VON IHNEN GEHT VERLOREN, und
+  deshalb steht hier ihr Träger und nicht nur ihr Name:** (I-2), (I-3), (I-4), (I-6) und
+  (I-7) sind WÖRTLICHE Zitate aus docs/immer-beachten.md bzw. docs/db-regeln.md und gelten
+  dort unverändert weiter; (I-1) trägt seit dem Bau der Kommentarkopf des Schreibvorgangs
+  **und** die Läufe T16 und H12; (I-5) trägt der Achse-2-Block im Kopf von
+  src/lib/oauth/token-refresh.ts, der in dieser Scheibe ergänzt und an keiner Stelle
+  abgeschwächt worden ist.
+· **Der Testplan und was er nicht zeigt** — eine Bauanweisung an vier Testachsen. Alle vier
+  sind gebaut, und die Läufe tragen ihre Begründung seither an sich selbst. Was der Plan
+  über die **Nebenläufigkeit** sagte, ist NICHT mit ihm entfallen: es steht doppelt, im
+  Abschnitt "Die Grenze des Riegels" und in VERMERK 14 unter dem, was der Live-Test nicht
+  gezeigt hat.
+· **Das Zeitfenster dieser Scheibe** — ein PFLICHT-STOPP für die Tests DIESER Scheibe; sie
+  sind gefahren, der Termin lag davor. **DER TERMIN SELBST IST NICHT GESTRICHEN:** Er stand
+  schon dort ausdrücklich nur als Zeiger, und sein einziger Volltext liegt unverändert im
+  Nachtrag zu Vorbedingung (iv), Abschnitt "1b als Folgetask".
 
-**PFLICHT-STOPP, KEIN HINWEIS: DAS ERNEUERUNGS-TOKEN STIRBT AM 2026-09-11 GEGEN 07:26:58
-UTC.** **Danach misst jeder Test das statt der Sache** — ein Lauf gegen ein totes
-Erneuerungs-Token erreicht den Vergleich gar nicht und meldet einen Fehlschlag, der keiner
-ist.
-**DER TERMIN WIRD HIER NICHT ZUM ZWEITEN MAL HERGELEITET UND STEHT AN GENAU EINER STELLE
-IM VOLLTEXT:** im Nachtrag zu Vorbedingung (iv), Abschnitt "1b als Folgetask". **Zwei Orte
-mit demselben Datum laufen auseinander, sobald einer nachgezogen wird** — genau das ist am
-2026-09-04 schon einmal geschehen.
-PROVENIENZ: der Wert **GEMESSEN 2026-09-04 (OWNER)**; Datum und Uhrzeit **GERECHNET**
-(CC, 2026-09-04).
+**WAS BLEIBT UND WARUM — die sieben übrigen Abschnitte sind KEINE Anweisungen, sondern
+Entscheidungen und Befunde, an denen die nächste Arbeit misst:** die Verwerfung des
+Eindeutigkeits-Bruch-Kandidaten · **die Entscheidung zur Klartext-Spalte samt ihrem Grund**
+· **die vier Filter mit ihrem Grund** und die Typwahl `integer` · **beide Grenzen des
+Riegels** · die Ausschlüsse samt dem gemessenen Nicht-Befund zum Forward-Verdacht · **die
+Verengung von `ok`** und der Ausgang des Verlierer-Zweiges.
+**SIE SIND NICHT ANGETASTET WORDEN** — die Verdichtung hat gestrichen, nicht umgeschrieben.
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -5458,6 +5419,268 @@ Beobachtung:** die Datums- und Ortszeit-Angaben aus den zwei Epochenwerten, der 
 von 601 200 Sekunden, die Unauflösbarkeit des Rohwert-Paares, und die Verträglichkeit der
 ERSTEN Neu-Verbindung mit einem Sieben-Tage-Reset. Die Einordnung von M2 ist eine
 **CC-BEOBACHTUNG am eigenen Lauf** vom 2026-09-04.
+
+### VERMERK 14 (Bau-Commit 2eae9ca) — DIE SCHEIBE 1b-2b IST GEBAUT UND LIVE BEWIESEN
+
+**DER COMMIT IST AM REPO ERMITTELT** (CC, 2026-09-05, `git log`), nicht aus einem Prompt
+übernommen: `2eae9ca` (`feat(oauth)`), voller Hash
+`2eae9cab541f65d31abac1e77df02db16f6c3c8c`.
+**FÜNF `-S`-GEGENPROBEN, UND EINE TAUGT NICHT — DAS GEHÖRT DAZU, es ist dieselbe Lage wie
+bei `STATUS_UNKNOWN` in VERMERK 13:** `write_zero_rows`, `write_threw`,
+`write_returned_error` und `bad_row` treffen **je genau einen** Commit, und es ist dieser.
+**`secret_version` TRIFFT DREI** — daneben `a0f0c86` und `6d9ae65`, die zwei Doku-Commits
+des Zuschnitts, in denen die Zeichenfolge als PROSA steht. **Als Gegenprobe ist sie damit
+untauglich**, und sie steht hier, damit die nächste Runde sie nicht für eine fünfte
+Bestätigung hält. Die Zuordnung ruht auf den vier anderen.
+**IM KOPF STEHT DER BAU-COMMIT UND AUSDRÜCKLICH NICHT DER COMMIT DIESES VERMERKS** — die
+Bauform von VERMERK 10 bis 13, aus demselben Grund: Der Vermerk-Commit ist ein
+`docs(claude)` und entsteht erst mit dieser Runde. **DIE DATEI HAT DAMIT KEINE LÜCKE.**
+
+**DER TITEL SAGT "LIVE BEWIESEN", wie VERMERK 12 und 13**, und der Unterschied zu VERMERK
+11 ist begründet: Der Nachweis hat den Zähler nicht nur stehen sehen, sondern gegen einen
+**vor dem Deploy gesicherten Ausgangswert** gehalten — und der Sprung war **genau eins**
+(Abschnitt (c)).
+
+---
+
+**(a) WAS GEBAUT IST — IN SYMBOLEN, GEMESSEN am Repo (CC, 2026-09-05).**
+
+Der Bau-Commit fasste **VIER** Dateien an, **EINE davon neu**
+(`supabase/migrations/0027_project_secrets_version.sql`); 928 Einfügungen, 65 Löschungen.
+
+· **`refreshAccessToken`** (`src/lib/oauth/token-refresh.ts`) — der Gegenstand. Die Lesung
+  holt seither `secret_enc, secret_version, id`; aus dem unbedingten `upsert` ist ein
+  bedingtes `update` geworden, mit **VIER** Filtern (`id`, `project_id`, `target`,
+  `secret_version`) und dem Sprung `gelesen + 1`. Die Rückgabe-Spaltenliste nennt
+  **ausschliesslich** die Versions-Spalte — es reist kein Chiffrat zurück.
+· **`RefreshMisconfiguredReason`** (ebenda) — **ADDITIV** um `bad_row` erweitert. Der Name
+  nennt die ZEILE und nicht den Zähler, weil der Zweig **beide** neuen Felder prüft; ein
+  Name, der nur die Version nennt, liesse den Schlüssel ungeprüft AUSSEHEN. Er steht neben
+  dem bestehenden `no_row` derselben Union. **KEIN fünfter Zustand am Ergebnistyp.**
+· **DIE VERENGUNG VON `ok`** steht im Docblock des Ergebnistyps, wörtlich: `ok` heisst ab
+  jetzt "ein brauchbares Zugangsdatum wurde beschafft" und nicht mehr "es steht in der
+  Zeile". **Das war die Auflage des Zuschnitts an den Bau, und sie ist dort eingelöst, wo
+  ein Aufrufer sie liest.**
+· **DER ACHSE-2-KOMMENTARKOPF** (ebenda) — **RICHTIGGESTELLT, NICHT GESTEMPELT**: Der Satz
+  "KEIN NEBENLAEUFIGKEITS-RIEGEL" war als Aussage über seinen Tag richtig und ist seit
+  dieser Scheibe falsch. **ACHSE 1 STEHT ZEICHEN FÜR ZEICHEN UNVERÄNDERT**, ACHSE 2 ist
+  ERGÄNZT und an keiner Stelle abgeschwächt — samt beiden Grenzen des Riegels.
+· **ZWEI LOG-WORTLAUTE STATT EINEM** — `write_threw` (der Aufruf hat GEWORFEN) und
+  `write_returned_error` (er hat einen Fehler ZURÜCKGEGEBEN). **Beide nennen die
+  BEOBACHTUNG und keine Ursache; der Rückgabewert ist bei beiden unverändert
+  `misconfigured`/`write_failed`.** Sie standen im ersten Bau unter dem IDENTISCHEN
+  Wortlaut `[oauth/token-refresh] write` — der Befund von Vorrats-Eintrag 48, neu erzeugt,
+  und in der Korrektur-Runde desselben Commits behoben.
+· **`write_zero_rows` LÄUFT AUF `console.info`, NICHT AUF `console.error`** — entschieden
+  und nicht übernommen. **DER ERSTE GRUND TRÄGT ALLEIN: nach unserer eigenen Entscheidung
+  ist ein verlorenes Rennen kein Fehler**, genau deshalb liefert der Zweig `ok`. Dazu
+  feuert die Zeile unter dem verkehrsgetakteten Auslöser **ungedrosselt je Beacon**
+  (Vorrats-Eintrag 42) und machte den Fehlerkanal für die zwei Fälle unbrauchbar, die
+  wirklich einen Betreiber brauchen. **DIE DROSSELUNG IST NICHT GEBAUT und bleibt
+  ausgeschlossen** — diese Entscheidung räumt die Zeile aus dem Fehlerkanal, sie macht sie
+  nicht seltener.
+· **`leseZeile`** (`src/lib/oauth/token-refresh.test.ts`, neu) — der gemeinsame Bauer der
+  gelesenen Zeile. **Er ist aus einem gemessenen Fehlschlag entstanden**, s. Abschnitt (d).
+· **VIER NEUE LÄUFE** in derselben Datei — **T25** (die vier Filter als sortierte MENGE,
+  der Sprung genau eins, keine Chiffrat-Rückgabe) · **T26** (der Verlierer: genau EIN
+  Schreibversuch, `ok`, kein Wurf, eigene Logzeile auf dem richtigen Kanal) · **T27** (die
+  Spaltenliste der LESUNG, die vierte Testachse) · **T28** (eine Zeile ohne
+  `secret_version` oder ohne `id` kommt nicht durch, ohne Netzruf und ohne Schreibvorgang).
+  Dazu **H12** in `src/lib/capi/ingest.refresh.test.ts` — ein verlorenes Rennen bricht den
+  Ingest nicht ab.
+· **DIE MIGRATION 0027** legt **EINE** additive Spalte an, sonst nichts: **keine Policy,
+  kein Backfill, kein Index, kein `updated_at`.** Der Katalog-Guard prüft die **SACHE**
+  (`add column if not exists` auf genau diese Spalte), keinen Constraint-Namen.
+
+**DIE VIER GATES WAREN VOR DEM COMMIT GRÜN** (`tsc --noEmit`, `eslint`, `vitest run`,
+`next build`). **SUITE: 74 Dateien / 1530 Läufe** (vorher 74/1525, VERMERK 13) — **fünf**
+Läufe mehr, **keine neue Testdatei**, **kein Bestandstest gefallen**. `eslint` meldet 0
+Fehler und die eine Bestands-Warnung aus Vorrats-Eintrag 26.
+
+**DER BYTE-NACHWEIS IST AM COMMITTETEN OBJEKT GEFÜHRT UND NICHT AM ARBEITSBAUM** — die
+Auflage aus docs/immer-beachten.md, "EIN NACHWEIS AN EINER NEUEN DATEI IST BLIND": Bei
+`0027` war die Datei bis zum `git add` UNTRACKED, und dort tragen `git status` und
+`git diff --numstat` nichts. Über `git show HEAD:<pfad>` gemessen (CC, 2026-09-05): alle
+vier Dateien **CR 0, NUL 0**; in den zwei `src/lib/oauth/`-Dateien **null Umlaute** (die
+Auflage ihres Kopfes); **kein Mutations-Rest** im Commit.
+
+---
+
+**(b) DIE MIGRATION UND DIE ABLESUNGEN VOR DEM DEPLOY — GEMESSEN 2026-09-05 vom OWNER,
+SQL-Editor.**
+
+**0027 IST ANGEWANDT: 2026-09-05 09:04:02 UTC**, der Protokoll-Eintrag in
+`schema_migrations` ist vorhanden. **DIE REIHENFOLGE (I-7) IST EINGEHALTEN — Migration,
+Ablesung, Vorher-Wert, dann Deploy.**
+
+· **DER WORTLAUT AUS `information_schema`, abgelesen und nicht die blosse Anwesenheit:**
+  `data_type` **integer** · `is_nullable` **NO** · `column_default` **0** · **GENAU EINE
+  Zeile.** Alle vier Angaben trafen die Erwartung.
+  **WARUM DER WORTLAUT UND NICHT DIE ANWESENHEIT — der Grund steht schon im Kopf der
+  Migration und wird hier nicht verdoppelt, nur quittiert:** `if not exists` prüft den
+  NAMEN, nicht Typ und Bedingungen; eine abweichende Spalte hätte die Migration mit
+  ERFOLG melden lassen.
+· **POLICIES AUF `project_secrets`: 0.** Die Gegenkontrolle zu (I-2) — die Migration legt
+  keine an, und die leere Liste ist die tragende Kontrolle dieser Tabelle.
+· **DER VORHER-WERT, VOR DEM DEPLOY GESICHERT:** `id`
+  **8447287a-8e73-44d4-867e-4461ba3eaea4** · `secret_version` **0** · `updated_at`
+  **2026-09-04 07:26:59.882078+00**.
+  **OHNE DIESEN SCHRITT WÄRE DER NACHWEIS IN (c) NICHT MEHR HERSTELLBAR GEWESEN** — der
+  erste Beacon nach dem Deploy kann den Zähler bereits erhöht haben
+  (docs/immer-beachten.md, "EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT").
+
+---
+
+**(c) DER LIVE-NACHWEIS — GEMESSEN 2026-09-05 vom OWNER**, an der ausgelieferten
+Anwendung.
+
+**DIE REIHENFOLGE IST UMGEKEHRT WORDEN, UND DAS GEHÖRT IN DEN VERMERK UND NICHT IN EINE
+FUSSNOTE:** Die Anleitung sah **Schritt 3 (die Regression) zuerst** vor. **SEINE
+VORBEDINGUNG IST EIN GÜLTIGES ZUGANGSDATUM — und das war tot.** In diesen Zustand kommt
+man nur über eine Erneuerung zurück, also über Schritt 4. **ERST 4, DANN 3.**
+**ES IST GENAU DIE FIGUR AUS docs/immer-beachten.md, "EIN LIVE-TEST-SCHRITT SETZT EINEN
+ZUSTAND DES PRÜFLINGS VORAUS":** Wer Schritt 3 auf einem toten Zugangsdatum gefahren
+hätte, hätte einen Fehlschlag gemessen, der keiner ist.
+
+· **SCHRITT 4 — DER GEWINNER.** Ein **Conversion**-Beacon (Ereignis "Lead",
+  `isCustom` false). Im Log zuerst
+  `[capi/resolve] secret unusable {target: google, reason: access_token_expired}`,
+  **danach** `[oauth/token-refresh] ok`.
+  In der Zeile danach: **`secret_version` 1** (vorher 0 — **SPRUNG GENAU EINS**),
+  `updated_at` **2026-09-05 09:32:17.370263+00**, **`id` unverändert**.
+  **`updated_at` IST MITGELAUFEN, OBWOHL DER SCHREIBVORGANG DAS FELD NICHT SETZT** — der
+  Trigger `project_secrets_set_updated_at` hat gefeuert. **Das ist die Live-Bestätigung
+  einer Annahme, die bis dahin eine Katalog-Messung war** (`tgenabled = 'O'`, GEMESSEN
+  2026-08-26): der Bau verlässt sich darauf, dass er das Feld weglassen darf.
+· **SCHRITT 3 — DIE REGRESSION, NACH Schritt 4 gefahren.** Leere **204** auf `/api/e`, im
+  Log **KEIN** `[oauth/token-refresh]`, `secret_version` bleibt **1**, `updated_at` bleibt
+  **09:32:17**.
+· **KEINE DER VIER FEHLERZEILEN IST JE ERSCHIENEN:** `write_zero_rows` · `bad_row` ·
+  `write_threw` · `write_returned_error`.
+
+**WAS DIE BEIDEN SCHRITTE ZUSAMMEN ZEIGEN UND KEINER ALLEIN — der eigentliche Nachweis
+dieser Scheibe:** **Schritt 4 zeigt, dass die Bedingung greift, WENN geschrieben wird;
+Schritt 3, dass OHNE Erneuerung gar nicht erst geschrieben wird.** Hielte nur einer,
+wüsste niemand, ob der Riegel wirkt oder ob der Pfad nie läuft. **Es ist dieselbe
+Denkfigur wie die dritte Weise in docs/immer-beachten.md, "EINE ABWESENHEITS-BEHAUPTUNG
+WIRD AUF DREI WEISEN HOHL": "blockiert" und "läuft gar nicht" sehen von aussen gleich
+aus.**
+
+**DER PRÜFSCHRITT 4e IST AUSGELASSEN** — ein zweiter Lauf mit einem Sprung auf 2.
+**ARCHITEKTEN-ENTSCHEIDUNG 2026-09-05:** Schritt 3 und 4 zusammen führen den Nachweis
+bereits, und 4e hätte keine Entscheidung geändert. **DAS STEHT HIER, DAMIT DIE AUSLASSUNG
+NICHT WIE EINE VERGESSENE AUSSIEHT** — ein nicht gefahrener Schritt, den niemand als
+Entscheidung protokolliert, liest sich in einem Jahr wie eine Lücke.
+
+---
+
+**(d) DIE MUTATIONEN — ZWEI REIHEN, UND DIE ZWEITE IST DER EIGENTLICHE BEFUND.**
+
+**ERSTE REIHE (Bau, 2026-09-05): NEUN Mutationen**, je mit Vorhersage vor dem Lauf,
+danach zurückgenommen; keine ist im Commit. **ZWEI VORHERSAGEN LAGEN DANEBEN, BEIDE ZU
+BREIT** — und die eine davon ist der Grund für `leseZeile`:
+
+· **DER FIXTURE-FEHLSCHLAG.** Fünf Bestandsläufe (T5, T6, T6b, T6c, T6d) brachen auf einer
+  **nicht vorhergesagten Achse**: Sieben Handfixtures bauten ihre Zeile mit **nur**
+  `secret_enc`. Nach 0027 ist `secret_version` integer NOT NULL und `id` uuid NOT NULL —
+  **eine solche Zeile kann die Datenbank nicht liefern.** Die Fixtures stellten damit einen
+  Zustand her, den der produktive Pfad nicht erzeugt (docs/immer-beachten.md, "TESTDATEN
+  UND TEST-SEQUENZ MÜSSEN DEN PRODUKTIVEN PFAD TREFFEN"), und fielen am defensiven Riegel
+  aus. **FÜNF WURDEN ROT, ZWEI NICHT** — und die zwei stillen sind der Grund für den
+  gemeinsamen Bauer statt sieben nachgezogener Literale: sie wären ab jetzt die Falle für
+  den nächsten, der eine Fixture kopiert. **KEINE ASSERTION IST ANGEFASST WORDEN; alle
+  sieben liefern ihr ALTES Ergebnis.**
+· **EINE MUTATION WAR DAS SCHLECHTE MODELL, NICHT DER TEST** — die zweite Ursache aus
+  Lektion (b) an "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE", und sie ist selten
+  protokolliert: Ein neu ergänzter T16-Fall erreichte den Verlierer-Zweig nicht, weil ein
+  früherer Fall desselben Laufs den Anbieter-Mock auf einem Zustand stehen liess, der VOR
+  dem Schreibvorgang zurückkehrt. **Behoben wurde die MUTATION bzw. ihr Fall, nicht die
+  Zusicherung.**
+
+**ZWEITE REIHE (Korrektur-Runde, 2026-09-05): SECHS Mutationen, NEU GEFAHREN, und der
+Grund für die Wiederholung ist eine Regel und keine Vorsicht:** Die Ergebnisse der ersten
+Reihe lagen nach einer Kontext-Verdichtung nur noch als **PROTOKOLL** vor. **EIN
+PROTOKOLLIERTES ERGEBNIS IST EIN DOKUMENT, KEINE MESSUNG** — und darunter lag die
+Pflicht-Mutation an Achse 2. Die sechs decken: der Versions-Term aus dem Filter · **der
+Verlierer-Zweig schreibt trotzdem (PFLICHT)** · der Sprung auf `+0` · im Verlierer-Zweig
+werfen statt zurückgeben · die Spaltenliste der Lesung · die `id` aus dem Filter.
+
+**SECHS VON SECHS VORHERSAGEN GETROFFEN, KEINE ABWEICHUNG IN EINE DER BEIDEN RICHTUNGEN.**
+Fünf trafen **genau einen** Lauf; die sechste ("der Verlierer wirft") traf **T26 und
+T16**, und die Zusatztreffer-Prüfung ist **am Ergebnis** gemacht worden und nicht
+angenommen: beide meldeten **denselben Fehler im Wortlaut**. **Dieselbe Fehlerklasse, also
+DECKUNG und keine Kaskade** (Lektion (g) ebenda).
+
+**T25 IST DAMIT EIN EINZELSTÜCK FÜR VIER FEHLERKLASSEN**, gemessen und nicht vermutet:
+Versions-Term, `id`, Sprung `+0` und Rückgabe-Spaltenliste fielen **je allein** auf ihn.
+**DIE ZWEI FILTER-KLASSEN SIND AM UNIT-TEST ÜBERHAUPT NUR DORT ERREICHBAR** — die Attrappe
+führt genau EINE Zeile, ein fehlender Filter ändert an ihrem Ergebnis nichts. Es steht in
+seinem Kommentar (Lektion (f)); ebenso bei **T22**, wo die Deckung an der **FIXTURE**
+hängt und nicht an der Assertion.
+
+**JEDE MUTATION WURDE VOR DEM LAUF AUF IHRE ANWESENHEIT IN DER DATEI GEPRÜFT** (VERMERK
+10, Abschnitt (h)). **NACH JEDER RÜCKNAHME GEPRÜFT:** `git status` unverändert bei vier
+Einträgen, `git diff --numstat` ohne leeren Diff, CR/NUL 0, und ein `diff` gegen einen
+Schnappschuss ausserhalb des Repos — **der ausschliesslich Argument von `diff` war und nie
+Quelle eines Schreibvorgangs.**
+
+---
+
+**(e) WAS DER LIVE-TEST NICHT GEZEIGT HAT.**
+
+· **DER VERLIERER-ZWEIG. SEQUENZIELL NICHT HERSTELLBAR.** Zwei Läufe nacheinander erzeugen
+  nie ein verlorenes Rennen — der zweite liest die ERHÖHTE Version und gewinnt ebenfalls.
+  **DASS `write_zero_rows` NIE ERSCHIEN, IST KEIN NACHWEIS**, sondern die erwartete Folge
+  daraus. **IHN DECKEN T26, T16 UND H12 — SONST NICHTS.**
+· **DIE ECHTE NEBENLÄUFIGKEIT.** Kein Nachweis dieser Scheibe hat zwei gleichzeitige
+  bedingte Schreibungen gefahren. **"ATOMAR HEISST NICHT SICHER"**
+  (docs/plattform-befunde.md, LAUF 3, Grenze 3) steht **UNBERÜHRT**; die Messung vom
+  2026-09-04 hat die AUSKUNFT beantwortet, nicht das WETTLAUF-VERHALTEN.
+· **DIE ZWEITE GRENZE — DER CALLBACK.** Von **keinem** Schritt berührt. Sie steht als
+  Grenze im Zuschnitt und als Vorrats-Eintrag 53; **der Riegel greift dort nicht und würde
+  Erfolg melden.**
+· **DIE VIER FEHLERZEILEN.** Keine ist erschienen, und keine war herstellbar. Ihre
+  Abdeckung liegt allein bei T22, T26 und T28.
+
+---
+
+**(f) DREI BEOBACHTUNGEN, DIE AN BESTEHENDE POSTEN GEHEN — je als ZEIGER und
+ausdrücklich NICHT als Änderung an jenen Einträgen.**
+
+· **VORRATS-EINTRAG 48 BEKOMMT EINE WEITERE LESART.** Jener Eintrag führt drei Bedeutungen
+  desselben Wortlauts. **IM FELD BEOBACHTET (OWNER, 2026-09-05) IST EINE VIERTE LAGE: die
+  Resolver-Zeile stand unmittelbar VOR EINEM ERFOLG** — `access_token_expired`, und
+  danach `[oauth/token-refresh] ok`. **Das ist genau die Gewöhnung, die jener Eintrag als
+  seinen eigentlichen Schaden benennt**, jetzt an einer Beobachtung statt an einer
+  Herleitung. **DER EINTRAG SELBST IST NICHT ANGEFASST** — er trägt sein eigenes Datum,
+  und diese Runde schreibt ihm keine zweite Wahrheit hinein.
+· **VORRATS-EINTRAG 49 IST IM FELD BESTÄTIGT.** **Ein PageView löste die Erneuerung NICHT
+  aus, ein Conversion-Beacon schon** (OWNER, 2026-09-05). Genau das behauptet jener
+  Eintrag am Code. **DIE FOLGE FÜR ANLEITUNGEN GEHÖRT DAZU UND IST TEURER ALS DIE
+  BESTÄTIGUNG:** Die Live-Anleitung sagte zuerst nur "einen Beacon" — **das war zu
+  unbestimmt, und der erste Versuch mass deshalb nichts.** Eine Anleitung, die den
+  EREIGNISTYP nicht nennt, misst auf diesem Pfad einen Fehlschlag, der keiner ist.
+· **DIE ZEILE `[capi] Google forward skipped: no destination for event` IST ABGELEGT UND
+  NICHT GEDEUTET.** Sie gehört zum Transport-Schritt. **KEINE ABLEITUNG, KEINE VERMUTUNG —
+  ausdrücklich auch keine über den Forward-Verdacht.** Sie steht hier, damit sie nicht
+  verlorengeht, und nicht, damit jemand sie auslegt.
+
+---
+
+**PROVENIENZ, JE TEIL:** Der Commit-Hash samt der fünf `-S`-Gegenproben, der Umfang, die
+Symbolnamen, die Gate-Ergebnisse, die Testzahl, die Mutationsergebnisse beider Reihen und
+der Byte-/Objekt-Nachweis **GEMESSEN am Repo bzw. an den Läufen vom 2026-09-05 (CC)**.
+Die Ablesungen aus dem SQL-Editor und alle Live-Beobachtungen **GEMESSEN 2026-09-05
+(OWNER)**.
+**ENTSCHEIDUNGEN, ausdrücklich als solche und nicht als Messung:** die Ebene von
+`write_zero_rows`, die zwei getrennten `write`-Wortlaute und die Auslassung des
+Prüfschritts 4e — **ARCHITEKTEN-ENTSCHEIDUNGEN 2026-09-05**.
+**ABLEITUNGEN, ausdrücklich als solche gekennzeichnet und nicht als Beobachtung:** dass
+der Sprung von 0 auf 1 die Bedingung des Filters belegt (die Zahl ist gemessen, ihre
+Deutung ist abgeleitet), und dass die zwei Schritte zusammen mehr zeigen als einzeln.
+**WAS AUSDRÜCKLICH KEINE MESSUNG IST:** die Abwesenheit der vier Fehlerzeilen — sie ist
+eine ABWESENHEIT ohne Positivkontrolle und trägt nichts (docs/immer-beachten.md, Lektion
+(d) an "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE").
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -7833,6 +8056,43 @@ nichts über eine Frage nach dem VERHALTEN des Anbieters — dort greift der Aus
 unverändert.
 PROVENIENZ: die Kollision GEMESSEN am eigenen Lauf (CC, 2026-08-29); die Auslegung eine
 ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
+
+54. **SIEBEN LOG-ZEILEN IN `token-refresh.ts` TEILEN SICH ZWEI WORTLAUTE — `provider`
+    FÜNFMAL, `parse` ZWEIMAL.**
+    **GEMESSEN am Repo (CC, 2026-09-05, Korrektur-Runde zum Bau der Scheibe 1b-2b).
+    ACHSE:** wörtliche Suche nach der vollständigen Zeichenkette `"[oauth/token-refresh]
+    provider"` bzw. `"[oauth/token-refresh] parse"` in `src/lib/oauth/token-refresh.ts`,
+    binärsicher und mit Zeilennummern.
+    **POSITIVKONTROLLE:** dieselbe Achse liefert für `unknown_target` und `write_threw` je
+    **EINEN** Treffer — sie läuft nicht leer und unterscheidet die Vielfachen von den
+    Einzelnen. **GEGENPROBE:** ausserhalb dieser Datei kommt keiner der beiden Wortlaute
+    vor.
+    **DER BEFUND IST ÄLTER ALS DIE SCHEIBE 1b-2b UND VON IHR NICHT VERURSACHT.** Er ist
+    beim Auflösen eines DRITTEN Vorkommens derselben Figur aufgefallen — dort standen zwei
+    `console.error` unter dem identischen Wortlaut `[oauth/token-refresh] write`, und die
+    zwei sind in derselben Runde getrennt worden. **DIESE SIEBEN SIND ES NICHT.**
+    **`provider` (fünf Zeilen) TRÄGT FÜNF ANBIETER-ZUSTÄNDE:** Zeitüberschreitung ·
+    Netzfehler · ein 5xx · `invalid_grant` · alles Übrige.
+    **`parse` (zwei Zeilen) TRÄGT ZWEI LESE-ZUSTÄNDE:** eine fremde Fassung der Nutzlast ·
+    eine kaputte Zeichenkette.
+    **EINE ABWEICHUNG ZUR EINSCHÄTZUNG IM AUFTRAG, UND SIE GEHÖRT HIERHER, WEIL SIE DIE
+    RANGFOLGE UMDREHT — GEMESSEN am Code (CC, 2026-09-05):** Der Auftrag führte `parse` als
+    den schärferen Fall. **AM CODE IST ES `provider`.** Die zwei `parse`-Zeilen enden
+    **BEIDE** in `dead` und unterscheiden sich nur im `reason` — **dieselbe HANDLUNG**. Die
+    fünf `provider`-Zeilen enden in **ZWEI VERSCHIEDENEN Ausgängen**: viermal `retry`,
+    einmal `dead`. **DERSELBE WORTLAUT TRÄGT DORT ALSO "NOCHMAL VERSUCHEN" UND "DER KUNDE
+    MUSS NEU AUTORISIEREN"** — und genau diese Trennung ist das Kriterium, an dem
+    Vorrats-Eintrag 48 seinen Schaden festmacht (Normalvorgang gegen echten Ausfall unter
+    einem Wortlaut). **DIE ZWEI ZAHLEN DES AUFTRAGS SIND UNVERÄNDERT RICHTIG**; abweichend
+    ist allein die Einordnung, welcher der beiden Fälle schwerer wiegt.
+    **ALLE SIEBEN ZEILEN FÜHREN BEREITS EINEN `reason` IN IHRER NUTZLAST**, und das macht
+    den Posten nicht kleiner, sondern bestimmt ihn: **Was sie trennt, steht im Feld und
+    nicht im Wortlaut** — wer im Log GREPPT oder eine Zeile überfliegt, sieht es nicht.
+    **Es ist zeichengenau dieselbe Figur wie in Vorrats-Eintrag 48**, wo derselbe Satz über
+    `[capi/resolve] secret unusable` steht.
+    **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG** — weder darüber, ob getrennt wird, noch
+    wie die Wortlaute dann hiessen.
+    **TRIGGER: die nächste Arbeit an den Log-Wortlauten dieser Datei.**
 
 ## Hebungs-Kandidaten
 

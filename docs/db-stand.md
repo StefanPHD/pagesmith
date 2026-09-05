@@ -78,6 +78,15 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   sagt sie NICHTS — die arithmetische LÜCKENLOSIGKEIT ist damit für 0026 NICHT erneut
   bewiesen, sondern nur der VOLLZUG dieser einen Migration. Für 0001-0025 gilt weiterhin
   die Messung vom 2026-08-26.
+  NACHGEZOGEN AM 2026-09-05: DER HEUTIGE STAND IST 0001-0027. GEMESSEN am 2026-09-05
+  (SQL-Editor, Owner, im Live-Test der Scheibe 1b-2b): 0027
+  (0027_project_secrets_version.sql) steht im Protokoll, applied_at
+  2026-09-05 09:04:02 UTC.
+  DIE GRENZE, und sie ist dieselbe Klasse wie bei 0026: Abgelesen ist der VOLLZUG DIESER
+  EINEN Migration, nicht die arithmetische Lückenlosigkeit. Für 0001-0025 gilt weiterhin
+  die volle Probe vom 2026-08-26, für 0026 die Ablesung vom 2026-08-27.
+  DIE APPLIED_AT-REGEL VON 2026-08-26 GILT UNVERÄNDERT WEITER und ist mit 0027 zum vierten
+  Mal bestätigt: gefüllt ab 0018 durchgehend.
   WER DIE LÜCKENLOSIGKEIT WIEDER ARITHMETISCH WILL, fährt Probe 1 und 1b aus
   supabase/checks/db-stand.sql — sie filtern nicht. Das ist in diesem Lauf NICHT geschehen.
   · 0001-0021, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl = Spannweite+1),
@@ -118,6 +127,17 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   Server-Actions. Es ist dieselbe Denkfigur wie bei project_tokens, audit_logs und events,
   hier aber VERSCHÄRFT: project_secrets ist die GEHEIMNIS-Tabelle, und sie hängt vollständig
   an dieser Leere.
+  DIE NULL IST AM 2026-09-05 ERNEUT GEMESSEN (SQL-Editor, Owner, im Live-Test der Scheibe
+  1b-2b): Policies auf project_secrets weiterhin NULL. Die Ablesung war die GEGENKONTROLLE
+  zur Migration 0027 — sie legt keine Policy an, und eine Migration, die es doch täte,
+  würde an keinem Gate rot. Die Gesamtzahl ZEHN oben ist bei dieser Gelegenheit NICHT
+  nachgemessen worden; abgelesen ist allein die eine Tabelle.
+  EINE FOLGE AUS DER SCHEIBE 1b-2b, die hierher gehört, weil sie die Leere zur
+  VORAUSSETZUNG macht statt nur zur Kontrolle: Der bedingte Schreibvorgang des Riegels
+  läuft über den Admin-Client (service_role). Unter aktiver RLS ohne Policy wäre "keine
+  Zeile GETROFFEN" von "keine Zeile SICHTBAR" am Ergebnis nicht zu trennen — der Riegel
+  läse eine fehlende Sichtbarkeit als verlorenes Rennen. Der Admin-Client ist dort damit
+  Voraussetzung und nicht Bequemlichkeit.
   Bei events ist das Fehlen der INSERT/UPDATE/DELETE-Policy eine ENTSCHEIDUNG, keine Lücke:
   Writes laufen ausschließlich über service_role (Ingest-Pfad, persistEvent). Der Owner LIEST
   seine Events, er schreibt sie nie. Wer hier eine Write-Policy ergänzt, öffnet den
@@ -163,6 +183,25 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   der Schlüssel HINTEN steht, ist kein Entwurfsfehler: "alter table ... add column" hängt
   an, und secret_enc und id sind die beiden Spalten, die 0025 angefügt hat. Eine
   Spaltenreihenfolge ist ein ABLAGERUNGSPROFIL, kein Entwurf.
+  EINE ACHTE SPALTE SEIT 0027 (Phase 11.2, Scheibe 1b-2b): secret_version integer NOT NULL
+  DEFAULT 0 — GEMESSEN am 2026-09-05 (SQL-Editor, Owner, im Live-Test jener Scheibe),
+  abgelesen aus information_schema.columns im WORTLAUT und nicht als blosse Anwesenheit:
+  data_type "integer", is_nullable "NO", column_default "0", GENAU EINE Zeile.
+  WARUM DER WORTLAUT UND NICHT DIE ANWESENHEIT: Der Katalog-Guard der Migration ist
+  "add column if not exists" und prüft damit den NAMEN, nicht Typ und Bedingungen. Eine
+  bereits vorhandene Spalte mit abweichendem Typ hätte die Migration mit ERFOLG melden
+  lassen, und der Fehler wäre erst am Schreibpfad aufgefallen.
+  IHRE ORDINAL_POSITION IST NICHT GEMESSEN und steht deshalb nicht in der Liste darüber —
+  die Probe vom 2026-09-05 filterte auf diese eine Spalte. Dass "add column" anhängt, ist
+  eine ABLEITUNG aus dem Vorgang und keine Messung; wer die volle Reihenfolge braucht,
+  fährt Probe 2 erneut.
+  DER TYP IST integer UND NICHT bigint, und der Grund steht im Kopf der Migration und wird
+  hier nicht verdoppelt — er betrifft die Auslieferungsform über PostgREST und nicht das
+  Schema.
+  KEIN BACKFILL: Der Default 0 ist die ANLAGE; die Migration fasst keine bestehende Zeile
+  an. Der VORHER-WERT der einen bestehenden Zeile ist vor dem Deploy gesichert worden
+  (secret_version 0) und stand nach dem ersten Erneuerungslauf auf 1 — GEMESSEN am
+  2026-09-05 (SQL-Editor, Owner). Volltext: docs/aktiver-stand.md, VERMERK 14.
   PRIMÄRSCHLÜSSEL ist die EINSPALTIGE id (project_secrets_pkey) — GEMESSEN 2026-08-26
   (Probe 3, pg_get_constraintdef). Bis 0025 war es das PAAR (project_id, target); die
   Footgun-Zeile darunter führt project_secrets deshalb NICHT mehr.
@@ -295,6 +334,14 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
     Wortlaut NULLS NOT DISTINCT trägt.
     DIE AUFLAGE GILT WÖRTLICH WEITER: Wer hier später einen Index ergänzt, sollte vorher
     einen Zugriff nennen können, der ihn braucht.
+    0027 HAT KEINEN DRITTEN INDEX ANGELEGT, und die Auflage ist dabei EINGEHALTEN und nicht
+    übergangen worden: Der Filter des Riegels aus der Scheibe 1b-2b trifft die Zeile bereits
+    über project_secrets_project_id_target_key; secret_version ist dort ein RESTPRÄDIKAT auf
+    einer schon eindeutig getroffenen Zeile. Es liess sich also gerade kein Zugriff nennen,
+    der einen Index gebraucht hätte. ES BLEIBEN ZWEI INDIZES — die Zahl ist am 2026-09-05
+    NICHT erneut per indexdef gemessen worden; abgelesen ist allein, dass die Migration
+    keinen anlegt (GEMESSEN am Migrationstext, CC, 2026-09-05). Wer die Zahl braucht, fährt
+    Probe 7 erneut.
     WAS SICH GEÄNDERT HAT, IST IHR TRÄGER UND NICHT SIE SELBST: Bis 0025 trug der
     PRIMÄRSCHLÜSSEL den Zugriff des Lesepfads — eine Gleichheit auf BEIDEN Spalten. Seit
     0025 liegt der PK auf id und trägt ihn NICHT mehr; getragen wird er jetzt vom

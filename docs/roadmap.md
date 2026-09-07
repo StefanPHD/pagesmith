@@ -289,6 +289,63 @@ liegen beide hier und finden einander.
       Vermerk 1. Der Messwert ist gemessen; die Folge für den Zuschnitt ist eine
       FESTLEGUNG, keine Ableitung.
 
+      NACHTRAG 2026-09-07 AN DEN ZWEI LETZTEN SPIEGELSTRICHEN DES STEMPELS — DER
+      WORTLAUT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN. Die Form ist NACHTRAG und
+      nicht ABGELAUFEN, wie durchgehend an diesem Eintrag (Entscheidung vom
+      2026-08-28): Ein Satz über die Grenzen einer BENANNTEN Messung verliert seinen
+      Gegenstand nicht dadurch, dass eine zweite Messung folgt.
+
+      ERSTENS — DIE RÜCKKEHR-BEDINGUNG IST ERFÜLLT. Beide Teile der Restlücke aus
+      Vermerk 1 sind GEMESSEN, je an einem eigenen Tag:
+      · TEIL (2) — ob die Kennung auf einer Seite mit MEHREREN SCHRITTEN überlebt:
+        GEMESSEN 2026-09-01 (OWNER), an der ausgelieferten Anwendung. ERGEBNIS: NEIN,
+        die Kennung überlebt die Navigation nicht. Fundstelle: docs/aktiver-stand.md,
+        VERMERK 10, Abschnitt (b), Schritt 3 und SCHULD 3; dazu Vorrats-Eintrag 6,
+        Vermerk vom 2026-09-01, ebenda.
+        EIN GEMESSENES NEIN ERFÜLLT DIE BEDINGUNG: Sie verlangt, dass die Lücke
+        GEMESSEN ist, nicht dass sie günstig ausfällt. Ohne diesen Satz liest jemand
+        das NEIN als Fehlschlag und hält die Bedingung für offen.
+      · TEIL (1) — ob eine ECHTE Klick-Kennung denselben Weg nimmt: GEMESSEN
+        2026-09-07 (OWNER), am Vercel-Log des eigenen Dienstes. ERGEBNIS: JA — ein
+        Conversion-Beacon von einer Landepage, die mit einer echten, vom Anbieter
+        vergebenen Klick-Kennung geöffnet worden war, hat den Erneuerungsweg und
+        danach den Google-Adapter durchlaufen. Abgelegt als MESSUNG F,
+        docs/ziel-befunde.md, Google-Abschnitt, Teil (cd); nachgezogen in
+        docs/aktiver-stand.md an der ersten Sperre, an VERMERK 1, an VERMERK 10
+        (SCHULD 3) und an Vorrats-Eintrag 6.
+        DASS DIE KENNUNG EINE ECHTE WAR, IST EINE OWNER-ANGABE 2026-09-07 und keine
+        eigene Messung.
+        DREI GRENZEN GEHÖREN AN DIESEN TEIL, sie stehen in (cd) selbst: der
+        Statuscode des Einlieferungs-Aufrufs war NICHT ABLESBAR · die Zuordnung zu
+        der beim Anbieter angenommenen Einlieferung desselben Tages ist eine
+        ABLEITUNG und keine Messung · WELCHER der drei Kennungs-Parameter getroffen
+        hat, ist UNGEMESSEN.
+        KEINE DER DREI BERÜHRT DEN WORTLAUT DER BEDINGUNG: Gefragt ist, ob eine echte
+        Kennung DENSELBEN WEG NIMMT — nicht, wie der Anbieter antwortet, und nicht,
+        welcher Parametername trägt.
+      WAS HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN IST: was aus der erfüllten Bedingung
+      für den ZUSTAND des Stempels folgt. Der Stempel wird in dieser Runde WEDER
+      GESETZT NOCH AUFGEHOBEN; nachgezogen ist seine BEDINGUNG, nicht sein Zustand.
+      Auch der Marker dieses Eintrags bleibt unberührt.
+
+      ZWEITENS — DIE FREIGABE-ZEILE IST FAKTISCH ÜBERHOLT, ALS BEFUND UND NICHT ALS
+      VORWURF. Sie sagt: "Nicht frei ist der Transport." DER TRANSPORT IST GEBAUT UND
+      LIVE BEWIESEN — Scheibe 4 des Schnitts der Phase 11.2, Bau-Commits 26caa38 und
+      84e9fca, beide vom 2026-09-01; der Live-Test ist GEMESSEN 2026-09-01 (OWNER) an
+      der ausgelieferten Anwendung. Volltext: docs/aktiver-stand.md, VERMERK 10.
+      DAS IST EINE ABLEITUNG AUS ZWEI DATIERTEN BELEGEN — dem Datum der zwei
+      Bau-Commits und dem Datum des Live-Tests —, KEINE MESSUNG an dieser Zeile.
+      WAS DAZUGEHÖRT, DAMIT DER BEFUND VOLLSTÄNDIG IST: Zum Zeitpunkt jenes Baus war
+      Teil (2) der Restlücke am selben Tag gemessen, Teil (1) noch offen. KEINE
+      EMPFEHLUNG, was daraus folgt, und KEIN Stempel — die Zeile bleibt wörtlich
+      stehen.
+
+      PROVENIENZ DIESES NACHTRAGS: Teil (2) GEMESSEN 2026-09-01 (OWNER); Teil (1)
+      GEMESSEN 2026-09-07 (OWNER); die zwei Commit-Kennungen und ihr Datum GEMESSEN
+      am Repo (CC, 2026-09-07, Doku-Runde). Dass die Bedingung damit erfüllt und die
+      Freigabe-Zeile überholt ist, sind ABLEITUNGEN aus diesen Belegen, KEINE
+      weiteren Messungen.
+
       ÜBERNOMMEN AM 2026-08-27 AUS DEM EINTRAG 11.8 — ZWEI ANGABEN, DIE JENE PHASE
       ÜBERDAUERN, WEIL SIE DIESE HIER BETREFFEN. Sie sind übernommen worden, WEIL SIE
       11.2 BINDEN, und NICHT, weil jener Eintrag verschwände: Er ist am 2026-08-27

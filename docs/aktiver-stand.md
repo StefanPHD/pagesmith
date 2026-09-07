@@ -157,6 +157,53 @@ Gegenstand" — NICHT im Abschnitt "Was den Zuschnitt bindet". Wer sie dort such
 findet sie nicht und hält sie für erledigt.
 PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-25. KEINE Messung, KEINE Ableitung.
 
+**NACHTRAG 2026-09-07 — DIE RESTLÜCKE IST GESCHLOSSEN, BEIDE HÄLFTEN. DER TEXT DARÜBER
+BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER NACHTRAG TRITT DANEBEN.**
+
+**WARUM ERGÄNZT UND NICHT RICHTIGGESTELLT, und der Grund gehört hierher, weil sonst die
+nächste Runde den Block als überholt überschreibt:** Die zwei Sätze oben sind Aussagen
+**ÜBER VERMERK 1** — "**Vermerk 1** zeigt NICHT, dass eine ECHTE gclid denselben Weg nimmt,
+und **er** misst einen EIN-SEITEN-FALL". Beide bleiben wahr; die Messungen, die die Lücke
+geschlossen haben, sind **andere Messungen** und machen keine Angabe über VERMERK 1 falsch.
+Und der Block trägt die **Herleitung, unter der Scheibe 11.2a freigegeben worden ist** — sie
+wird weiterhin gebraucht. **ÜBERHOLT IST ALLEIN DIE FOLGE** "WER DEN TRANSPORT ZUSCHNEIDET,
+NIMMT SIE DORT WIEDER AUF; sie sind mit dieser Scheibe NICHT erledigt": Der Transport HAT sie
+dort wieder aufgenommen, und beide Hälften sind seither geschlossen.
+
+**DIE ZWEI FUNDSTELLEN, je Hälfte eine:**
+· **ZWEITE HÄLFTE — ob die Kennung auf einer Seite mit MEHREREN SCHRITTEN überlebt:
+  GESCHLOSSEN, Ergebnis NEIN.** Die Kennung überlebt die Navigation nicht.
+  **GEMESSEN 2026-09-01 (OWNER), an der ausgelieferten Anwendung.** Fundstelle: VERMERK 10,
+  Abschnitt (b), Schritt 3 und SCHULD 3, in dieser Datei.
+  **EIN GEMESSENES NEIN ERFÜLLT DIE BEDINGUNG — sie verlangt, dass die Lücke GEMESSEN ist,
+  nicht dass sie günstig ausfällt.** Ohne diesen Satz liest jemand das NEIN als Fehlschlag.
+· **ERSTE HÄLFTE — ob eine ECHTE Klick-Kennung denselben Weg nimmt: GESCHLOSSEN, Ergebnis
+  JA.** Ein Conversion-Beacon von einer Landepage, die mit einer echten, vom Anbieter
+  vergebenen Klick-Kennung geöffnet worden war, hat den Erneuerungsweg und danach den
+  Google-Adapter durchlaufen — der vollständige Produktivpfad bis zum Netzruf.
+  **GEMESSEN 2026-09-07 (OWNER), am Vercel-Log des eigenen Dienstes**, abgelegt als MESSUNG F
+  in docs/ziel-befunde.md, Google-Abschnitt, Teil (cd). **Dass die Kennung eine ECHTE war, ist
+  eine OWNER-ANGABE 2026-09-07 und keine eigene Messung.**
+  **DREI GRENZEN GEHÖREN AN DIESE HÄLFTE, sie stehen in (cd) selbst:** der **Statuscode** des
+  Einlieferungs-Aufrufs war **nicht ablesbar** · die Zuordnung zu der beim Anbieter
+  angenommenen Einlieferung ist eine **ABLEITUNG**, keine Messung · **welcher** der drei
+  Kennungs-Parameter getroffen hat, ist **ungemessen**.
+  **KEINE DER DREI BERÜHRT DEN WORTLAUT DIESER HÄLFTE:** Gefragt war, ob eine echte Kennung
+  denselben Weg nimmt — nicht, wie der Anbieter antwortet und nicht, welcher Parametername
+  trägt.
+
+**WAS DIESER NACHTRAG NICHT TUT:** Er sagt nichts über die zweite Sperre darunter, nichts
+über den Marker der Phase 11.2 und nichts über den Zustand des Roadmap-Stempels. Die
+BEDINGUNG jenes Stempels ist in derselben Runde an ihrem eigenen Ort nachgezogen worden
+(docs/roadmap.md, Eintrag 11.2); **sein ZUSTAND ist dort ausdrücklich NICHT entschieden.**
+
+**PROVENIENZ DIESES NACHTRAGS:** Die zweite Hälfte GEMESSEN 2026-09-01 (OWNER); die erste
+GEMESSEN 2026-09-07 (OWNER). Dass damit die Folge oben überholt ist, ist eine **ABLEITUNG**
+aus diesen zwei datierten Messungen, **keine dritte Messung**. Die Zusammenstellung der fünf
+Orte ist GEMESSEN am Repo (CC, 2026-09-07, Doku-Runde), auf zwei unabhängigen Achsen — den
+Wortlauten der zwei Hälften und dem Wort "Restlücke"; Positivkontrolle je Achse, achtzehn
+bzw. zehn Treffer.
+
 **EINE ZWEITE SPERRE, ANGETRETEN AM 2026-09-02: AUF DEM GOOGLE-ADS-KONTO EXISTIERT KEIN
 ECHTER ANZEIGENKLICK.**
 
@@ -4012,6 +4059,40 @@ Werte, und keiner davon stammt aus den optionalen Rumpf-Feldern; die URL wird
 ausschliesslich an die Adapter weitergereicht. **Die Kennung existiert für die
 Dauer EINES Forwards.**
 
+**NACHTRAG 2026-09-07 — WER DIE ZWEI LÜCKEN AUS "WAS DIE MESSUNG NICHT ZEIGT" SEITHER
+GESCHLOSSEN HAT. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN.**
+
+**WARUM ERGÄNZT UND NICHT RICHTIGGESTELLT:** Dieser Vermerk ist ein **abgeschlossener
+Scheiben-Vermerk**, und die zwei Spiegelstriche beschreiben die **GRENZE SEINER EIGENEN
+MESSUNG** vom 2026-08-24. Als solche sind sie **unverändert wahr** — jene Messung zeigt
+beides bis heute nicht. Wer sie umschriebe, machte aus einer richtigen Grenzangabe eine
+Zustandsbeschreibung und nähme dem Vermerk seine Datierbarkeit.
+
+· **ZWEITER SPIEGELSTRICH (Seite mit MEHREREN SCHRITTEN): GESCHLOSSEN, Ergebnis NEIN** — die
+  Kennung überlebt die Navigation nicht. **GEMESSEN 2026-09-01 (OWNER)**, an der
+  ausgelieferten Anwendung. Fundstelle: VERMERK 10, Abschnitt (b), Schritt 3 und SCHULD 3.
+  **EIN GEMESSENES NEIN SCHLIESST DIE LÜCKE — verlangt war eine MESSUNG, kein günstiger
+  Ausgang.**
+· **ERSTER SPIEGELSTRICH (ECHTE Klick-Kennung): GESCHLOSSEN, Ergebnis JA** — eine echte, vom
+  Anbieter vergebene Kennung hat den vollständigen Produktivpfad bis zum Netzruf genommen.
+  **GEMESSEN 2026-09-07 (OWNER)**, am Vercel-Log des eigenen Dienstes, abgelegt als MESSUNG F
+  in docs/ziel-befunde.md, Google-Abschnitt, Teil (cd). **Dass die Kennung ECHT war, ist eine
+  OWNER-ANGABE 2026-09-07.**
+  **DREI GRENZEN AUS (cd) GEHÖREN DAZU:** der **Statuscode** des Einlieferungs-Aufrufs war
+  **nicht ablesbar** · die Zuordnung zu der beim Anbieter angenommenen Einlieferung ist eine
+  **ABLEITUNG** · **welcher** der drei Kennungs-Parameter getroffen hat, ist **ungemessen**.
+  **KEINE DER DREI BERÜHRT DEN WORTLAUT DES SPIEGELSTRICHS** — er fragt nach dem WEG, nicht
+  nach der Antwort des Anbieters und nicht nach dem Parameternamen.
+
+**UNBERÜHRT BLEIBT DER BLOCK "DIE GRENZE DES TRANSPORTS"** darüber: Dass eventSourceUrl nicht
+persistiert wird, ist eine Aussage über den Code und von diesen zwei Messungen nicht berührt.
+**Vorrats-Eintrag 59 hat sie am 2026-09-07 auf zwei unabhängigen Achsen bestätigt** (GEMESSEN
+am Code, CC) — die Kennung lebt ausschliesslich im Transit.
+
+**PROVENIENZ DIESES NACHTRAGS:** die zwei Messungen wie benannt (OWNER, 2026-09-01 bzw.
+2026-09-07). Dass sie genau die zwei Spiegelstriche treffen, ist eine **ABLEITUNG** aus deren
+Wortlaut, **keine dritte Messung** (CC, 2026-09-07, Doku-Runde).
+
 ### VERMERK 2 (Commit 6653f37) — SCHEIBE 11.2a IST GEBAUT
 
 **WAS GEBAUT WURDE — GEMESSEN am Repo (CC, 2026-08-25):** VIER neue Dateien, keine
@@ -4786,9 +4867,25 @@ gefahren. **DAS IST EINE ABLEITUNG AUS ZWEI LOGZEILEN UND KEINE ABLESUNG DER NUT
 Zeile aus Schritt 5 stünde auch in Schritt 2. Sie steht dort nicht, und eine Fehlerzeile
 ebenfalls nicht — also ist eine Nutzlast MIT Kennung hinausgegangen.
 
-**SCHULD 3 — DIE RESTLÜCKE AUS VERMERK 1: DIE ZWEITE HÄLFTE IST EINGELÖST, DIE ERSTE NICHT.**
+**SCHULD 3 — DIE RESTLÜCKE AUS VERMERK 1: BEIDE HÄLFTEN SIND EINGELÖST.**
+
+**SACHKORREKTUR 2026-09-07 — ERSETZT, NICHT GESTEMPELT, in der Bauform der Sachkorrekturen
+vom 2026-09-02 in diesem Abschnitt.** Hier stand "**DIE ZWEITE HÄLFTE IST EINGELÖST, DIE ERSTE
+NICHT.**" Das ist seit dem 2026-09-07 überholt. **Ersetzt und nicht gestempelt, weil diese
+Zeile ein ZUSTAND ist:** Ein Stempel liesse zwei Zustände nebeneinander stehen, und wer den
+falschen nähme, hielte eine geschlossene Lücke für offen und plante eine Messung ein, die
+gefahren ist.
+
 · **ERSTE HÄLFTE — dass eine ECHTE `gclid` denselben Weg nimmt wie der selbstgesetzte Testwert
-  vom 2026-08-24: WEITERHIN OFFEN.**
+  vom 2026-08-24: EINGELÖST SEIT DEM 2026-09-07.**
+  **SACHKORREKTUR 2026-09-07 — ERSETZT, NICHT GESTEMPELT.** Hier stand "**WEITERHIN OFFEN.**"
+  Der Beleg steht am Ende dieses Spiegelstrichs.
+  **DIE SACHKORREKTUR VOM 2026-09-02 DARUNTER BLEIBT WÖRTLICH STEHEN UND WIRD NICHT
+  AUFGEHOBEN, und dieser Satz ist der wichtigste dieser Änderung:** Sie betrifft den Lauf vom
+  **2026-09-01** und stellt richtig, dass DESSEN Kennung von Hand gesetzt war. Eingelöst hat
+  die Hälfte ein **ANDERER Lauf an einem ANDEREN Tag**. Wer die neue Kopfzeile als Rücknahme
+  jener Korrektur liest, hält den Lauf vom 2026-09-01 rückwirkend für einen Anzeigenklick — und
+  genau das ist er nicht.
   **SACHKORREKTUR 2026-09-02 — ERSETZT, NICHT GESTEMPELT.** Hier stand "**: JA.** Schritt 2 hat
   sie über eine echte Anzeige erzeugt, nicht von Hand eingetippt." **Das trifft nicht zu** —
   s. die Sachkorrektur zur Herkunft der Klick-Kennung in Abschnitt (b) oben. Die Kennung war
@@ -4798,10 +4895,32 @@ ebenfalls nicht — also ist eine Nutzlast MIT Kennung hinausgegangen.
   `extractGoogleClickIds`, `buildGoogleEvent`, Adapter, Netzruf. VERMERK 1 hatte nur gemessen,
   dass er im `eventSourceUrl` **ankommt**. **Die Restlücke ist damit kleiner geworden, nicht
   geschlossen.**
+  **WAS SIE AM 2026-09-07 GESCHLOSSEN HAT — GEMESSEN 2026-09-07 (OWNER), am Vercel-Log des
+  eigenen Dienstes:** Ein Conversion-Beacon von einer Landepage, die mit einer **ECHTEN, vom
+  Anbieter vergebenen Klick-Kennung** in der Adresse geöffnet worden war, hat den
+  Erneuerungsweg und danach den Google-Adapter durchlaufen. Abgelegt als **MESSUNG F** in
+  docs/ziel-befunde.md, Google-Abschnitt, **Teil (cd)**. **Dass die Kennung eine ECHTE war, ist
+  eine OWNER-ANGABE 2026-09-07 und keine eigene Messung.**
+  **DREI GRENZEN GEHÖREN AN DIESE EINLÖSUNG, sie stehen in (cd) selbst:** der **Statuscode**
+  des Einlieferungs-Aufrufs war **nicht ablesbar** — das Werkzeug zeigt ihn nur in einer
+  kostenpflichtigen Stufe · die Zuordnung zu der beim Anbieter angenommenen Einlieferung
+  desselben Tages ist eine **ABLEITUNG**, keine Messung; niemand hat die zwei Seiten über eine
+  gemeinsame Kennung verbunden · **welcher** der drei Kennungs-Parameter getroffen hat, ist
+  **ungemessen**.
+  **KEINE DER DREI BERÜHRT DEN WORTLAUT DIESER HÄLFTE:** Gefragt war, ob eine ECHTE Kennung
+  **denselben Weg nimmt** — nicht, wie der Anbieter antwortet, und nicht, welcher
+  Parametername trägt. **Wer eine der drei als Einwand gegen die Einlösung führt, beantwortet
+  eine andere Frage.**
 · **ZWEITE HÄLFTE — ob die Kennung auf einer Seite mit MEHREREN SCHRITTEN überlebt: NEIN**, und
   das ist ein Befund und kein Fehlschlag. S. Abschnitt (e). **VON DER SACHKORREKTUR UNBERÜHRT:**
   Dass `location.href` nach einem Seitenwechsel den Query-String nicht mehr trägt, hängt nicht
   daran, wer ihn geschrieben hat.
+  **NACHGETRAGEN 2026-09-07, weil diese Hälfte von aussen als BEDINGUNG zitiert wird
+  (docs/roadmap.md, Eintrag 11.2, Rückkehr-Bedingung des Stempels vom 2026-08-25): EIN
+  GEMESSENES NEIN ERFÜLLT DIE BEDINGUNG.** Sie verlangt, dass die Lücke **GEMESSEN** ist, nicht
+  dass sie günstig ausfällt. **PROVENIENZ dieser Hälfte, wörtlich: GEMESSEN 2026-09-01 (OWNER),
+  an der ausgelieferten Anwendung.** Dass ein NEIN die Bedingung erfüllt, ist eine **ABLEITUNG**
+  aus deren Wortlaut (CC, 2026-09-07, Doku-Runde), keine zweite Messung.
 
 **EIN NEBENBEFUND AUS SCHRITT 2, DER VORRATS-EINTRAG 4 BERÜHRT — ABLEITUNG, KEINE MESSUNG AM
 PARAMETERNAMEN:** Jener Eintrag hält fest, dass die schreibungssensitive, kleingeschriebene
@@ -6947,6 +7066,48 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
    PROVENIENZ: Die Live-Werte der Schritte 2 und 3 GEMESSEN 2026-09-01 (OWNER) an der
    ausgelieferten Anwendung. Dass der Trigger damit eingetreten ist, ist eine FOLGE aus seinem
    Wortlaut. **KEINE Ablesung der gesendeten Nutzlast.**
+
+   **VERMERK 2026-09-07 — DIE FRAGE IST JETZT IN BEIDE RICHTUNGEN BEANTWORTET. Der Text
+   darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Vermerk tritt DANEBEN** — dieselbe
+   Bauform wie der Vermerk vom 2026-09-01 darüber.
+   **WARUM DANEBEN UND NICHT ERSETZT, und der Grund ist an beiden betroffenen Sätzen
+   derselbe:** Sie sind über das Wort "DAMIT" an die Messung vom **2026-09-01** gebunden — die
+   Kopfzeile "DIE FRAGE IST NUR IN EINER RICHTUNG BEANTWORTET" und der Satz "**DIE ERSTE
+   HÄLFTE DER RESTLÜCKE AUS VERMERK 1 IST DAMIT NICHT EINGELÖST:** Ob eine **ECHTE** `gclid`
+   denselben Weg nimmt, ist weiterhin **NICHT GEPRÜFT**". **Als Aussagen über JENE Messung
+   sind beide unverändert wahr; als Aussagen über HEUTE sind sie überholt.** Wer sie ersetzte,
+   machte aus einer richtigen Angabe über einen Tag eine falsche über einen anderen.
+   **WAS DIE ERSTE HÄLFTE GESCHLOSSEN HAT — GEMESSEN 2026-09-07 (OWNER), am Vercel-Log des
+   eigenen Dienstes:** Ein Conversion-Beacon von einer Landepage, die mit einer **ECHTEN, vom
+   Anbieter vergebenen Klick-Kennung** in der Adresse geöffnet worden war, hat den
+   Erneuerungsweg und danach den Google-Adapter durchlaufen — der vollständige Produktivpfad
+   bis zum Netzruf. Abgelegt als **MESSUNG F**, docs/ziel-befunde.md, Google-Abschnitt,
+   **Teil (cd)**. **Dass die Kennung eine ECHTE war, ist eine OWNER-ANGABE 2026-09-07.**
+   **DREI GRENZEN AUS (cd) GEHÖREN DAZU:** der **Statuscode** des Einlieferungs-Aufrufs war
+   **nicht ablesbar** · die Zuordnung zu der beim Anbieter angenommenen Einlieferung ist eine
+   **ABLEITUNG**, keine Messung · **welcher** der drei Kennungs-Parameter getroffen hat, ist
+   **ungemessen**. **KEINE DER DREI BERÜHRT DEN WORTLAUT DER FRAGE** — gefragt war der WEG,
+   nicht die Antwort des Anbieters und nicht der Parametername.
+   **DIE ZWEITE HÄLFTE WAR SCHON AM 2026-09-01 EINGELÖST, mit einem NEIN**, und das steht im
+   Vermerk darüber unverändert. **EIN GEMESSENES NEIN ERFÜLLT DIE BEDINGUNG** — sie verlangt,
+   dass die Lücke GEMESSEN ist, nicht dass sie günstig ausfällt. **PROVENIENZ dieser Hälfte,
+   wörtlich: GEMESSEN 2026-09-01 (OWNER), an der ausgelieferten Anwendung.**
+   **TRÄGT DIESER EINTRAG DANACH NOCH ETWAS OFFENES? NEIN — auf seiner eigenen Achse ist
+   nichts mehr offen.** Sein Trigger ("die Transport-Scheibe — jetzt für die verbliebene Frage
+   nach dem INHALT der URL") ist eingetreten, und die Frage ist ab dem 2026-09-07 in **beide**
+   Richtungen beantwortet. Was bleibt, ist **kein offener Punkt, sondern ein MASSSTAB**: der
+   gemessene Teil oben — `eventSourceUrl` erreicht über `CapiRequestBody` jeden Adapter, drei
+   der vier lesen sie, LinkedIn nicht — bleibt der Maßstab für jeden künftigen Adapter, der
+   die URL braucht.
+   **ER WIRD HIER AUSDRÜCKLICH NICHT GESCHLOSSEN UND NICHT GESTRICHEN.** Der Vermerk vom
+   2026-09-01 sagt es bereits im Wortlaut: "OB DER EINTRAG DAMIT ENTFÄLLT, IST HIER NICHT
+   ENTSCHIEDEN UND WIRD ES NICHT. … **DIE STREICHUNG IST EINE EIGENE ENTSCHEIDUNG.**" Diese
+   Runde trifft sie nicht; sie liegt beim Architekten.
+   PROVENIENZ DIESES VERMERKS: die erste Hälfte **GEMESSEN 2026-09-07 (OWNER)**, die zweite
+   **GEMESSEN 2026-09-01 (OWNER)**. Dass damit die zwei benannten Sätze als Aussagen über
+   heute überholt sind, ist eine **ABLEITUNG** aus deren Wortlaut (CC, 2026-09-07,
+   Doku-Runde), **keine dritte Messung**. **KEINE Ablesung der gesendeten Nutzlast**, und
+   **KEINE Messung an einer Google-Oberfläche** in diesem Vermerk.
 
 7. **DIE NORMALISIERUNG DER KUNDENNUMMER GEHÖRT AN DIE EINGABE, NICHT IN DEN REINEN
    BAUER.** GEMESSEN 2026-08-28 (OWNER), Messung B1: `operatingAccount.accountId` muss

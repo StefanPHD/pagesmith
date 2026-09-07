@@ -68,6 +68,7 @@ docs/immer-beachten.md.
 · Die Rettung am Beacon — Scheibe 1b-2a des Schritts 1b-2 der Scheibe 1b
 · Die Ampel an der Ziel-Karte — Scheibe 11.2b
 · Der Riegel gegen die verlorene Schreibung — Scheibe 1b-2b des Schritts 1b-2 der Scheibe 1b
+· Der Schlüssel kommt aus der Spalte — eine zweite Fix-Scheibe ausserhalb des Schnitts
 · Abgeschlossene Scheiben-Vermerke
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
@@ -3590,6 +3591,257 @@ Eindeutigkeits-Bruch-Kandidaten · **die Entscheidung zur Klartext-Spalte samt i
 Riegels** · die Ausschlüsse samt dem gemessenen Nicht-Befund zum Forward-Verdacht · **die
 Verengung von `ok`** und der Ausgang des Verlierer-Zweiges.
 **SIE SIND NICHT ANGETASTET WORDEN** — die Verdichtung hat gestrichen, nicht umgeschrieben.
+
+## Der Schlüssel kommt aus der Spalte — eine zweite Fix-Scheibe ausserhalb des Schnitts
+
+**SIE IST KEINE SCHEIBE DES SCHNITTS, UND DAS IST DER ERSTE SATZ, WEIL ER SONST FALSCH
+ERSCHLOSSEN WIRD.** Der Schnitt der Phase 11.2 (bindende Entscheidung (6)) hat **1a, 1b, 2,
+3 und 4** — mehr nicht; der Nachtrag am Ende der Entscheidung (7) sagt ausdrücklich, die
+Aufzählung behalte ihre fünf Stücke. **SIE LIEGT AUCH NICHT AUF DER PHASEN-ACHSE**, auf der
+11.2a und 11.2b liegen. **SIE HAT KEINE NUMMER UND BEKOMMT KEINE** — dieselbe Einordnung
+wie bei der Fix-Scheibe zur Rückkehr in das gestartete Projekt, und aus demselben Grund:
+Sie behebt einen Defekt, der beim Bauen einer anderen Scheibe sichtbar geworden ist.
+**OB SIE STATTDESSEN EINE NUMMER AUF DER PHASEN-ACHSE BEKÄME (11.2c), IST HIER NICHT
+ENTSCHIEDEN UND AUSDRÜCKLICH NICHT VORGESCHLAGEN** — das wäre eine eigene Festlegung.
+
+**DER TITEL WEICHT ABSICHTLICH VON DEM DER ERSTEN FIX-SCHEIBE AB** ("Die Rückkehr in das
+gestartete Projekt — eine mitgereiste Fix-Scheibe"): Zwei ähnlich gebaute `##`-Überschriften
+in DERSELBEN Datei machen jeden Such-Anker mehrdeutig, und der erste Treffer wäre
+systematisch der falsche (docs/immer-beachten.md, "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES
+IN EINER DATEI MIT VERZEICHNIS NICHT"). **DIE TITEL-ZITATE IN DIESEM ABSCHNITT STEHEN OHNE
+`###`-MARKE** — die Auflage aus dem Zusatz vom 2026-08-27 zu derselben Regel.
+**DIE GRENZE DER KOLLISIONSPRÜFUNG GEHÖRT DAZU, sonst wird sie stärker gelesen, als sie
+ist:** Der volle Titel und seine führende Wortgruppe sind in dieser Datei **einmalig**; das
+Bruchstück "Fix-Scheibe" ist es **nicht**. Wer auf das Bruchstück ankert, trifft weiterhin
+mehrdeutig — die Eindeutigkeit hängt an der führenden Wortgruppe.
+PROVENIENZ DER KOLLISIONSPRÜFUNG: **GEMESSEN am Dateitext (CC, 2026-09-07, Doku-Runde)**,
+Achse: der volle Titel, die führende Wortgruppe und die Bruchstücke "Fix-Scheibe",
+"mitgereiste" und "ausserhalb des Schnitts" über die ganze Datei, case-insensitiv, gegen
+Überschriften UND gegen Titel-Zitate in Verdichtungs-Listen. **POSITIVKONTROLLE:** dieselbe
+Achse trifft "Fix-Scheibe" siebenundzwanzigmal und "mitgereiste" dreimal, sie läuft nicht
+leer.
+
+**PROVENIENZ — GETRENNT GEFÜHRT, aus demselben Grund wie bei 1b-1, 1b-2a und 1b-2b:**
+· **OWNER-GO 2026-09-07** für diesen Zuschnitt.
+· **ARCHITEKTEN-ENTSCHEIDUNG 2026-09-07** für die Wahl unter vier Wegen (s. den Abschnitt
+  dazu unten), gefallen auf der Aufklärung desselben Tages.
+· **PROVENIENZ DES ÜBRIGEN ABSCHNITTS, wo an der einzelnen Angabe nichts anderes steht:
+  ARCHITEKTEN-ZUSCHNITT 2026-09-07, auf Owner-GO. Keine Messung.**
+  **EINE SAMMEL-PROVENIENZ FÜR DIE GEMESSENEN ANGABEN STEHT HIER AUSDRÜCKLICH NICHT** —
+  dieselbe Auflage, die der Zuschnitt der Scheibe 1b-2b sich selbst gegeben hat, nachdem
+  eine Sammel-Herkunft dort für vier Angaben nicht zutraf. **JEDE GEMESSENE ANGABE TRÄGT
+  IHRE HERKUNFT AN SICH SELBST**, samt Erheber, Datum und Runde. Als Ort steht der
+  SYMBOLNAME und nie eine Zeilennummer — Fortschreibungs-Regel dieser Datei.
+
+### Woran diese Scheibe ansetzt
+
+**DER ERZEUGER DES DOKUMENTS LIEST DEN EINSTELLUNGS-BLOB, DIE AUFLÖSUNG LIEST DIE SPALTE —
+UND DER GOOGLE-WEG BEFÜLLT NUR DIE SPALTE.** Ein Projekt, das ausschliesslich über den
+Google-Autorisierungs-Fluss konfiguriert wurde, trägt deshalb **keinen Conversion-Beacon im
+veröffentlichten Text**.
+
+**DIE KETTE, GLIED FÜR GLIED — GEMESSEN am Repo (CC, 2026-09-07, Aufklärungsrunde):**
+`setCapiToken` (src/app/projects/actions.ts) bricht für ein Ziel **ohne Geheimnis-Feld VOR
+jedem Datenbank-Zugriff** ab; `'google'` ist ein solches Ziel · der Verbinden-Weg der Karte
+führt stattdessen über die Start-Route, und die Rückkehr-Route fasst `projects`
+ausschliesslich lesend an und ruft `ensureTrackingKey` **nicht** · `ensureTrackingKey` läuft
+damit nur in `setCapiToken` und in `publishProject`, und `publishProject` schreibt den Wert
+**allein in die Spalte** — sein Settings-Patch geht über `setHostingState`, und die Funktion
+fasst den `capi`-Zweig nicht an · die zwei Erzeuger des Dokuments — der Vorschau-Memo und
+`buildDocumentFor` (beide src/components/CodeImporter.tsx) — lesen über `getTrackingKey`
+den **Blob** · `buildCapiBeaconStatement` (src/lib/tracking/meta.ts) kehrt bei leerem
+Schlüssel mit einer **leeren Zeichenkette** zurück, und ohne Meta-Pixel entsteht dann
+überhaupt keine Laufzeit.
+
+**DIE SEITE SIEHT FUNKTIONIEREND AUS, UND DAS IST DER GRUND, WARUM DER FEHLZUSTAND STILL
+IST.** Der PageView-Emitter wird **server-seitig** injiziert und bezieht seinen Schlüssel
+aus der **Spalte** (`injectPageViewEmitter`, gerufen in `publishProject`). **Die Ansicht
+zeigt also Verkehr, während jede Conversion fehlt.** GEMESSEN am Repo (CC, 2026-09-07).
+
+**ES IST KEIN ISOLATIONSLECK, UND DIESER SATZ STEHT ZUERST:** Kein Tenant sieht Daten eines
+anderen, kein Geheimnis verlässt den Server. **DER SCHADEN IST EINE TOTE SEITE BEI
+LAUFENDEM ANZEIGENBUDGET** — der Betreiber bezahlt Klicks, die Karte sagt "Zugangsdaten
+hinterlegt", die Ansicht zeigt Aufrufe, und es wird nichts gemessen.
+**HEUTE TRIFFT ES NIEMANDEN AUSSER DEN OWNER** (OWNER-ANGABE 2026-09-07: keine Kunden, nur
+eigene Testprojekte). **Das ist eine Aussage über den Zeitpunkt und keine über die
+Schwere** — mit dem ersten fremden Nutzer ist es dieselbe Lage ohne diesen Satz.
+
+### Der Bestand, gemessen
+
+**GEMESSEN 2026-09-07 (OWNER), SQL-Editor**, über alle Projekte:
+· **VIER von FÜNFZEHN** Projekten tragen eine **gefüllte Spalte** und einen **leeren
+  Blob-Wert** — das ist die betroffene Menge.
+· **SIEBEN** tragen **beide**.
+· **VIER** tragen **keinen von beiden**.
+· **KEINES** trägt **nur den Blob**.
+· **DIE DIVERGENZ-PROBE — beide gefüllt, aber verschieden — LIEFERT KEINE ZEILE.**
+
+**WAS DIE LETZTE ZEILE TRÄGT UND WARUM SIE EIGENS DASTEHT:** Sie ist der Grund, warum diese
+Scheibe eine **Ableitung** bauen darf und keine **Zusammenführung**. Gäbe es divergente
+Zeilen, wäre vorher zu entscheiden, welcher der beiden Werte gilt; es gibt sie nicht.
+**DAS IST EIN BEFUND ÜBER HEUTE UND KEINE ZUSICHERUNG ÜBER MORGEN** — die Divergenz kann
+weiterhin entstehen, solange vier Stellen den Blob-Wert schreiben.
+
+**DIE VIER ZAHLEN SUMMIEREN SICH AUF FÜNFZEHN, und dass sie es tun, ist die
+Positivkontrolle der Erhebung** — eine unvollständige Aufteilung wäre an der Summe
+sichtbar geworden. **ABLEITUNG, KEINE ZWEITE MESSUNG.**
+
+### Was diese Scheibe baut — drei Stücke
+
+· **`loadProject` (src/app/projects/actions.ts) BEKOMMT DIE SPALTE IN DIE PROJEKTION UND IN
+  DEN RÜCKGABETYP `ProjectRow`** — in der Bauform der bestehenden server-autoritativen
+  Nachbarn. **DER PRÄZEDENZFALL STEHT IM SELBEN TYP UND WIRD NICHT ERFUNDEN:** `ab_test_active`
+  ist ebenfalls server-autoritativ, hat eine eigene Spalte und liegt in dieser Projektion;
+  sein Kommentar sagt wörtlich, warum er **nicht** in den Einstellungs-Blob gehört — er
+  würde beim nächsten Speichern still zurückgesetzt. **GEMESSEN am Repo (CC, 2026-09-07).**
+· **DER CLIENT HÄLT DEN WERT IN EINEM EIGENEN ZUSTAND NEBEN `settings` UND `savedSettings`.**
+  **ER WIRD AN JEDEM SAAT-PUNKT AM SELBEN ORT NEU GESETZT WIE SIE — DAS IST EINE AUFLAGE UND
+  KEIN HINWEIS.** Ohne sie trüge Projekt B den Schlüssel von A, und das Dokument ginge an das
+  falsche Projekt. **DIE SAAT-PUNKTE SIND VIER, NICHT ZWEI — GEMESSEN am Repo (CC,
+  2026-09-07):** die Erstbelegung aus den Props, `resetToEmpty`, der Projektwechsel in
+  `handleSwitch` und der Nachrück-Zweig nach dem Löschen (alle src/components/CodeImporter.tsx).
+  **WER NUR DIE ZWEI LADE-PFADE BEDIENT, LÄSST DEN LEERZUSTAND UND DIE ERSTBELEGUNG OFFEN.**
+· **DIE ZWEI VERBRAUCHER LESEN AUS DIESEM ZUSTAND STATT ÜBER `getTrackingKey`** — der
+  Vorschau-Memo und `buildDocumentFor`. **Es sind genau diese zwei und keine weiteren:**
+  Die übrigen Lesungen von `getTrackingKey` im Produktivcode reichen den Wert
+  ausschliesslich an sich selbst zurück (in `removeCapiToken` und in den zwei
+  Client-Handlern der Karten-Rückmeldung) und speisen kein Dokument. **GEMESSEN am Repo
+  (CC, 2026-09-07), Achse: alle Vorkommen von `getTrackingKey` und jeder direkte
+  Blob-Zugriff auf das Feld über src/, Testdateien mitgezählt; POSITIVKONTROLLE: dieselbe
+  Achse trifft die Definition in src/lib/settings.ts.**
+
+### Warum Weg C und nicht A, B oder D
+
+**DIESER ABSCHNITT STEHT IM ZUSCHNITT UND NICHT IN EINER FUSSNOTE, WEIL EIN VERWORFENER WEG
+SONST WIE EIN ÜBERSEHENER AUSSIEHT.** Vier Wege lagen vor; **PROVENIENZ DER WAHL:
+ARCHITEKTEN-ENTSCHEIDUNG 2026-09-07 auf der Aufklärung desselben Tages, Owner-GO
+2026-09-07.**
+
+· **WEG A — die Rückkehr-Route ruft `ensureTrackingKey`** und schreibt den Wert. **VERWORFEN
+  AN DER SACHE, NICHT AN EINEM LESART-STREIT:** Er legt die server-vergebene Identität in
+  den Einstellungs-Blob, und **ein Client-Save ohne den Wert leert sie wieder** — der Blob
+  wird ganzheitlich ersetzt, ohne Read-Merge. **Eine Reparatur, die derselbe
+  Speichervorgang aufhebt, ist keine.** Dass der Verlust real ist und nicht hergeleitet,
+  hält ein Bestandslauf fest: der KONTRAST-Lauf in src/app/projects/actions.test.ts, der
+  ausdrücklich als "rot-Beweis" führt, dass ein key-loses Client-`settings` ein
+  server-eigenes Feld entfernt.
+· **WEG B — `publishProject` schreibt den Wert auch in den Blob.** **VERWORFEN AUS DEMSELBEN
+  GRUND**, und zusätzlich, weil der Client das Dokument **VOR** dem Server-Schreiben baut:
+  das erste Publish nach der Änderung trüge weiterhin keinen Beacon.
+· **WEG D — eine eigene Server-Action liefert den Schlüssel.** **VERWORFEN AM FEHLERKANAL:**
+  Sie brächte einen **ZWEITEN** Kanal, der auf dieselbe Weise scheitern kann wie seine
+  Nachbar-Aktion — und ein leerer Wert für "konnte nicht lesen" erzeugt **STILL keinen
+  Beacon**, also genau den Bug, den diese Scheibe behebt. **Weg C holt den Wert dort, wo das
+  Projekt ohnehin geladen wird: EIN Kanal, EIN Fehlerfall.**
+
+**WAS AN DER VERWERFUNG VON A UND B AUSDRÜCKLICH NICHT HÄNGT:** die Frage, ob sie die Regel
+"SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN BLOB" (docs/immer-beachten.md)
+**brechen**. **DIE FRAGE IST AM CODE NICHT ENTSCHEIDBAR UND WIRD HIER NICHT ENTSCHIEDEN** —
+sie hat zwei am Bestand belegbare Lesarten, und beide führen zu derselben Wahl. **Der Grund
+oben trägt ohne sie.**
+
+### Was der Zuschnitt ausdrücklich nicht baut, je mit Grund
+
+· **DEN TOTEN BLOB-WERT ABRÄUMEN.** Nach dieser Scheibe liest ihn **kein Dokument-Erzeuger**
+  mehr, und **vier Stellen schreiben ihn weiter**. **DERSELBE ZUSTAND EXISTIERT BEREITS beim
+  Nachbarfeld `tokenSet` im selben Unterobjekt**, und der Bestand benennt ihn dort selbst
+  als eigene Runde. **Beide zusammen abzuräumen IST diese eigene Runde und nicht diese
+  Scheibe.** Als eigener Vorrats-Eintrag verortet.
+· **DIE ERST-ANLAGE.** Ein neu angelegtes, nie gespeichertes Projekt trägt **weder Spalte
+  noch Blob** — `ensureTrackingKey` läuft im Insert-Zweig von `saveProject` **nicht**
+  (GEMESSEN am Repo, CC, 2026-09-07). **OB DAS GEBAUT WIRD, IST EINE OFFENE FRAGE AN DEN
+  STUFE-1-PROMPT und hier ausdrücklich nicht entschieden.**
+· **EINE ANZEIGE, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST.** Der offene Punkt
+  gleichen Namens (CLAUDE.md, "## Offene Punkte") trägt diese Frage mit **eingetretenem**
+  Trigger. **Keiner der vier Wege berührt ihn**, und dieser hier auch nicht.
+· **JEDE ÄNDERUNG AN DER OAUTH-RÜCKKEHR-ROUTE, AN `setCapiToken`, AN `publishProject` UND AM
+  INGEST-PFAD.** Die drei ersten sind die Schreiber, der vierte ist der Leser der Spalte;
+  diese Scheibe fasst keinen von ihnen an.
+· **EIN BACKFILL.** **Weg C heilt beim nächsten Projektladen** — für jedes Projekt, das eine
+  Spalte trägt. Ein Backfill wäre zudem eine Datenänderung und damit eine eigene Arbeit mit
+  eigenem Pflicht-Stopp.
+
+### Die zwei Grenzen, die mitmüssen
+
+· **DIE VIER PROJEKTE OHNE BEIDE WERTE HEILT DIESE SCHEIBE NICHT** — dort ist nichts
+  abzuleiten. Sie bekommen ihren Schlüssel **beim ersten Publish**; weil der Client das
+  Dokument **VOR** dem Server-Schreiben baut, trägt **genau dieses erste Publish noch keinen
+  Beacon. Erst das zweite.** **DAS IST KEIN DEFEKT DIESER SCHEIBE, SONDERN DIE REIHENFOLGE
+  DES BESTANDS** — und es ist der einzige Fall, in dem der Betreiber zweimal
+  veröffentlichen muss.
+· **BEREITS VERÖFFENTLICHTE SEITEN WERDEN VON KEINEM DEPLOY REPARIERT.** Nötig ist: **das
+  Projekt einmal laden, dann neu veröffentlichen.** **EIN PUBLISH AUS EINER SITZUNG, DIE VOR
+  DEM DEPLOY GELADEN WURDE, TRÄGT DEN ALTEN, KEY-LOSEN ZUSTAND** — der Zustand wird beim
+  Laden gesät, nicht beim Veröffentlichen. Es ist dieselbe Klasse wie
+  docs/immer-beachten.md, "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY".
+
+### Fünf Invarianten, die diese Scheibe schützt
+
+**(I-1) DIE EXAKTE PROJEKTIONS-ZUSICHERUNG VON `loadProject` WÄCHST ADDITIV UND WIRD NICHT
+AUFGEWEICHT.** Sie bleibt ein Vergleich auf die **vollständige** Spaltenliste; eine weiche
+Form verlöre den Schutz gegen ein `select *`. **DIE ZUSICHERUNG DANEBEN, DASS DIE PROJEKTION
+`project_secrets` NICHT BERÜHRT, BLEIBT UNANGETASTET** — der Lauf selbst trägt die Auflage,
+dass sie auch dann stehen bleibt, wenn die Spaltenliste gelockert würde.
+**(I-2) DIESE SCHEIBE BEWEGT SICH AUF DIE REGEL "SERVER-EIGENE IDENTITÄT NIE IN EINEN
+CLIENT-BESESSENEN BLOB" ZU.** Sie schreibt **nichts Neues** in den Blob; sie hört auf, ihn
+zu lesen.
+**(I-3) KEIN LEAK ZWISCHEN PROJEKTEN.** Der neue Zustand wird an **jedem** Saat-Punkt
+zurückgesetzt, an dem heute `settings` zurückgesetzt wird — es sind vier.
+**(I-4) DER INGEST-PFAD, DER RESOLVER UND DIE SPALTE SELBST BLEIBEN UNBERÜHRT.** Die
+Auflösungs-Autorität war und bleibt die Spalte; diese Scheibe ändert daran nichts, sie
+schliesst nur den Erzeuger an dieselbe Quelle an.
+**(I-5) KEINE MIGRATION.** Die Spalte existiert seit 0012 (GEMESSEN am Repo, CC,
+2026-09-07). Kein Schema, keine Policy, kein Constraint, kein RPC — der Pflicht-Stopp für
+die DB-Dateien tritt nicht ein.
+
+### Das Gate für den Stufe-1-Prompt
+
+**ES STEHT IM ZUSCHNITT UND NICHT IN EINER FUSSNOTE, WEIL ES SONST UNTERGEHT: OB DIE
+`loadProject`-FIXTUREN DER KOMPONENTEN-TESTS BRECHEN, IST AM REPO NICHT ENTSCHEIDBAR.** Der
+Lader ist dort **untypisiert** gemockt; ein neues Feld erzeugt deshalb **keinen**
+Compilerfehler, und ob ein Lauf rot wird, hängt allein daran, ob er den erzeugten Text auf
+einen Beacon prüft. **GEMESSEN am Repo (CC, 2026-09-07): NEUN solcher Fixturen in zwei
+Testdateien.**
+
+**ES IST GENAU DIE KLASSE, DIE VORRATS-EINTRAG 15 FÜHRT** — dort für die Consent-Listen, mit
+dem Satz, dass ein ungeprüftes "bricht vielleicht" und ein gemessenes "bricht sicher" nicht
+dieselbe Sicherheit sind, und mit der Einstufung als **GATE, nicht Hinweis**. **JENER
+EINTRAG WIRD ZITIERT, NICHT GEÄNDERT.**
+
+**DAS GATE LAUTET: VOR DEM BAU ERHEBEN, WELCHE DER NEUN FIXTUREN DEN ERZEUGTEN TEXT PRÜFEN
+— UND DAS ERGEBNIS ALS MESSUNG ABLEGEN, NICHT ALS ERWARTUNG.**
+
+**WAS DANEBEN SICHER BRICHT UND DESHALB KEIN GATE IST, SONDERN EINE ANSAGE:** die exakte
+Projektions-Zusicherung von `loadProject`. Sie vergleicht die Spaltenliste **wörtlich**;
+eine zusätzliche Spalte macht sie rot. **DAS IST ABGELEITET AUS DER GESTALT DER
+ZUSICHERUNG, NICHT GEMESSEN** — es ist kein Lauf gefahren worden, und das ginge nur mit der
+Änderung, die es hier noch nicht gibt. **Der Lauf trägt seinen eigenen Präzedenzfall:** Sein
+Kommentar hält fest, dass die Liste bei einer additiven Erweiterung schon zweimal
+**legitim mitgewachsen** ist, und verbietet im selben Atemzug die Aufweichung.
+
+### Die vier Läufe und ihre Rot-Bedingung
+
+**JE LAUF STEHT, WODURCH ER ROT WIRD — ein Testplan ohne diese Angabe ist eine Wunschliste.**
+
+· **DIE PROJEKTION TRÄGT DIE SPALTE UND SONST NICHTS ZUSÄTZLICH.** **WIRD ROT, WENN:** jemand
+  die Spalte wieder herausnimmt, ODER eine weitere Spalte mitnimmt, ODER die Zusicherung auf
+  eine weiche Form umstellt. Er ist der Wächter von (I-1).
+· **DER ERZEUGTE TEXT TRÄGT EINEN BEACON, WENN DIE SPALTE GEFÜLLT IST UND DER BLOB LEER.**
+  **DAS IST DER FALL, DER HEUTE BRICHT**, und dieser Lauf ist der einzige, der ihn deckt.
+  **WIRD ROT, WENN:** der Erzeuger wieder über den Blob liest.
+· **BEIM PROJEKTWECHSEL TRÄGT DAS DOKUMENT DEN SCHLÜSSEL DES NEUEN PROJEKTS.** **WIRD ROT,
+  WENN:** ein Saat-Punkt den neuen Zustand nicht zurücksetzt. Er ist der Wächter von (I-3).
+  **SEINE GRENZE TRÄGT ER AN SICH SELBST:** Er prüft die Saat-Punkte, die seine Fixture
+  ansteuert — **nicht alle vier**, solange die Fixture nicht alle vier herstellt.
+· **EIN LEERER WERT ERZEUGT WEITERHIN KEINEN BEACON UND KEINEN WURF.** **WIRD ROT, WENN:**
+  jemand aus dem fehlenden Schlüssel einen Fehlerpfad macht. **Er ist die Gegenrichtung zum
+  zweiten Lauf** — ohne ihn beweist jener nur, dass etwas entsteht, nicht dass die Bedingung
+  entscheidet.
+
+**WAS DIESE VIER NICHT LEISTEN, UND DER SATZ GEHÖRT IN DEN PLAN:** Sie laufen sämtlich gegen
+Attrappen. **Dass die Spalte im deployten Pfad wirklich ankommt, zeigt allein ein
+Live-Test** — die Beweis-Achse dafür ist hier **nicht** geschnitten und gehört in den
+Bau-Prompt.
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -8093,6 +8345,50 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG** — weder darüber, ob getrennt wird, noch
     wie die Wortlaute dann hiessen.
     **TRIGGER: die nächste Arbeit an den Log-Wortlauten dieser Datei.**
+
+55. **ZWEI WERTE IM EINSTELLUNGS-BLOB WERDEN GEPFLEGT UND VON KEINEM KONSUMENTEN GELESEN.**
+    Es geht um `settings.capi.tokenSet` und `settings.capi.trackingKey` — beide unter
+    demselben Unterobjekt, beide von denselben Stellen geschrieben.
+
+    **`tokenSet` IST ES HEUTE SCHON. GEMESSEN am Repo (CC, 2026-09-07, Doku-Runde);
+    ACHSE:** alle Vorkommen von `getCapiTokenSet` sowie jeder direkte Zugriff auf das Feld
+    über `src/`, rekursiv, binärsicher, **Testdateien mitgezählt**. **ERGEBNIS:**
+    `getCapiTokenSet` hat **NULL Produktiv-Aufrufer** — es gibt die Definition in
+    `src/lib/settings.ts`, sechs Zeilen in deren Testdatei und zwei blosse
+    Kommentar-Erwähnungen. **POSITIVKONTROLLE:** dieselbe Achse, auf `getTrackingKey`
+    angewandt, fördert dessen fünf Produktiv-Aufrufer zutage; sie läuft nicht leer.
+
+    **DIE FORMULIERUNG "VON NIEMANDEM GELESEN" WÄRE ZU WEIT, UND DIE PRÄZISIERUNG IST DER
+    EIGENTLICHE BEFUND DIESES EINTRAGS:** Das Feld **wird** im Produktivcode an zwei
+    Stellen gelesen — in `setCapiToken` und in `removeCapiToken` (beide
+    src/app/projects/actions.ts) —, aber **beide Male ausschliesslich, um es
+    zurückzuschreiben**. **KEIN KONSUMENT LEITET DARAUS EINE ANZEIGE ODER EIN VERHALTEN
+    AB.** Wer den weiteren Satz schreibt, behauptet mehr, als die Messung hergibt; wer den
+    Unterschied einebnet, hält eine Selbst-Fortschreibung für einen Leser.
+    **DER BESTAND BENENNT DIE LAGE SELBST** — der Kommentar an der Karten-Rückmeldung in
+    src/components/CodeImporter.tsx hält fest, dass der Wert seit der Oberflächen-Hälfte
+    von niemandem mehr gelesen wird, trotzdem stehen bleibt, weil der Server ihn weiter
+    schreibt, und dass seine Abschaffung **eine eigene Runde** ist.
+
+    **`trackingKey` WIRD ES MIT DER SCHEIBE "Der Schlüssel kommt aus der Spalte".** Danach
+    liest ihn **kein Dokument-Erzeuger** mehr; geschrieben wird er weiterhin an **vier**
+    Stellen — der Server-Action beim Setzen, der beim Entfernen und den zwei
+    Client-Handlern der Karten-Rückmeldung. **DAS IST EINE ABLEITUNG AUS DEM ZUSCHNITT
+    JENER SCHEIBE UND KEINE MESSUNG** — sie ist zum Zeitpunkt dieses Eintrags nicht gebaut.
+
+    **WARUM DIE BEIDEN ZUSAMMEN STEHEN UND NICHT ALS ZWEI EINTRÄGE:** dieselbe Ursache
+    (ein server-geschriebener Wert in einem client-besessenen Blob), dieselbe Abräum-Arbeit
+    (dieselben vier Schreiber, dieselbe Setzer-Funktion `setCapiState`), und **getrennt
+    bearbeitet zieht jede die andere nach** — wer `trackingKey` aus `setCapiState`
+    entfernt, steht unmittelbar vor derselben Frage für `tokenSet`, und umgekehrt.
+
+    **WAS DIESER EINTRAG NICHT SAGT:** dass die Werte weg sollen. **Ein toter Wert, der
+    weiter geschrieben wird, ist eine dritte Wahrheit** — das ist der Befund. Ob die
+    Antwort das Abräumen ist, ob es ein Lese-Verbot ist oder ob er stehen bleibt, ist
+    **hier nicht entschieden**.
+
+    GEMELDET 2026-09-07, NICHT GEBAUT. **KEINE EMPFEHLUNG.**
+    TRIGGER: die nächste Arbeit am Einstellungs-Blob oder an `setCapiState`.
 
 ## Hebungs-Kandidaten
 

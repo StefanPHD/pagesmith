@@ -3893,159 +3893,63 @@ benannter Schritt.
   Laden gesät, nicht beim Veröffentlichen. Es ist dieselbe Klasse wie
   docs/immer-beachten.md, "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY".
 
-### Fünf Invarianten, die diese Scheibe schützt
+### Diese Scheibe ist verdichtet — was von diesem Zuschnitt bleibt
 
-**(I-1) DIE EXAKTE PROJEKTIONS-ZUSICHERUNG VON `loadProject` WÄCHST ADDITIV UND WIRD NICHT
-AUFGEWEICHT.** Sie bleibt ein Vergleich auf die **vollständige** Spaltenliste; eine weiche
-Form verlöre den Schutz gegen ein `select *`. **DIE ZUSICHERUNG DANEBEN, DASS DIE PROJEKTION
-`project_secrets` NICHT BERÜHRT, BLEIBT UNANGETASTET** — der Lauf selbst trägt die Auflage,
-dass sie auch dann stehen bleibt, wenn die Spaltenliste gelockert würde.
-**(I-2) DIESE SCHEIBE BEWEGT SICH AUF DIE REGEL "SERVER-EIGENE IDENTITÄT NIE IN EINEN
-CLIENT-BESESSENEN BLOB" ZU.** Sie schreibt **nichts Neues** in den Blob; sie hört auf, ihn
-zu lesen.
-**(I-3) KEIN LEAK ZWISCHEN PROJEKTEN.** Der neue Zustand wird an **jedem** Saat-Punkt
-zurückgesetzt, an dem heute `settings` zurückgesetzt wird — es sind vier.
-**(I-4) DER INGEST-PFAD, DER RESOLVER UND DIE SPALTE SELBST BLEIBEN UNBERÜHRT.** Die
-Auflösungs-Autorität war und bleibt die Spalte; diese Scheibe ändert daran nichts, sie
-schliesst nur den Erzeuger an dieselbe Quelle an.
-**(I-5) KEINE MIGRATION.** Die Spalte existiert seit 0012 (GEMESSEN am Repo, CC,
-2026-09-07). Kein Schema, keine Policy, kein Constraint, kein RPC — der Pflicht-Stopp für
-die DB-Dateien tritt nicht ein.
+**DIE SCHEIBE IST GEBAUT UND LIVE BEWIESEN (VERMERK 15). MIT DEM VERMERK SIND DIE
+ANWEISUNGEN DIESES ZUSCHNITTS ABGELAUFEN; DIE ENTSCHEIDUNGEN SIND ES NICHT.** Verdichtet
+am 2026-09-07 (CC, Doku-Runde) auf Architekten-Auftrag.
+**DER TITEL WEICHT ABSICHTLICH VON DEM DER 1b-2b-VERDICHTUNG AB** ("Dieser Zuschnitt ist
+verdichtet — was abgelaufen ist und was bleibt"): Zwei zeichengleiche `###`-Überschriften
+in DERSELBEN Datei machten jeden Such-Anker mehrdeutig, und der erste Treffer wäre
+systematisch der falsche. GEMESSEN am Repo (CC, 2026-09-07, Doku-Runde), ACHSE: beide
+Wortgruppen dieses Titels über docs/, case-insensitiv — **null Treffer**;
+**POSITIVKONTROLLE:** dieselbe Achse trifft die 1b-2b-Fassung an ihrer Überschrift, sie
+läuft nicht leer.
 
-### Das Fixture-Gate — gelaufen, und was es ergeben hat
+**WAS ABGELAUFEN IST — die drei gestrichenen Abschnitte, im Titel zitiert, damit die
+Streichung nachweisbar bleibt** (die Zitate stehen ohne `###`-Marke, Auflage aus
+docs/immer-beachten.md, Zusatz vom 2026-08-27 zu "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST
+ES IN EINER DATEI MIT VERZEICHNIS NICHT"):
 
-**DIESER ABSCHNITT FÜHRTE BIS ZUM 2026-09-07 EIN OFFENES GATE. ES IST GELAUFEN, UND DER
-ABSCHNITT IST DURCH SEIN ERGEBNIS ERSETZT — SACHKORREKTUR, KEIN STEMPEL.**
-**DER GRUND IST SEINE WIRKUNG UND NICHT SEINE GENAUIGKEIT:** Ein Gate, das Beantwortetes
-als offen führt, lässt die nächste Instanz dieselbe Erhebung **noch einmal** fahren. Hier
-stand, ob die `loadProject`-Fixturen der Komponenten-Tests brechen, sei "AM REPO NICHT
-ENTSCHEIDBAR", und die Auflage, es vor dem Bau zu erheben. **Beides ist eingelöst.**
+· **Fünf Invarianten, die diese Scheibe schützt** — Auflagen an den BAU, alle eingelöst und
+  in VERMERK 15 einzeln quittiert. **KEINE VON IHNEN GEHT VERLOREN, und deshalb steht hier
+  ihr Träger und nicht nur ihr Name:** (I-1) trägt der Lauf der Projektions-Zusicherung in
+  src/app/projects/actions.test.ts selbst — er vergleicht weiterhin EXAKT, und die zwei
+  Nachbar-Zusicherungen stehen unangetastet daneben; (I-2) trägt der Kommentar am vierten
+  Stück in `handleCredentialsSaved`, der das Fortbestehen des Blob-Schreibens ausdrücklich
+  festhält, samt der Messung in VERMERK 15; (I-3) tragen die vier nummerierten
+  Saat-Punkt-Kommentare in src/components/CodeImporter.tsx **und** die Läufe K3, K4 und K5;
+  (I-4) trägt die Tatsache, dass die Spalte auf diesem Pfad **nur gelesen** wird — belegt
+  im Scope-Nachweis des Vermerks; (I-5) ist gegenstandslos, es gab keine Migration.
+· **Das Fixture-Gate — gelaufen, und was es ergeben hat** — ein GATE vor dem Bau. Es ist
+  gefahren, und **seine Messung ist nicht mit ihm gestrichen:** sie steht vollständig in
+  VERMERK 15, Abschnitt (a), samt Achse, Positivkontrolle, der Präzisierung neun
+  Anweisungen gegen zehn Fixture-Objekte und dem Mitbefund zur unverbrauchten Attrappe.
+  **Der Satz, der den Abschnitt trug, steht dort ebenfalls:** das Gate hat am richtigen Ort
+  gefragt und die falsche Menge getroffen.
+· **Die sieben Läufe und ihre Rot-Bedingung** — eine Bauanweisung an sieben Testachsen.
+  Alle sieben sind gebaut, und **jeder Lauf trägt seine Rot-Bedingung seither an sich
+  selbst**, im Testkommentar. Was der Plan über die **Memo-Abhängigkeit** sagte, ist NICHT
+  mit ihm entfallen: der gemessene Befund steht in VERMERK 15, Abschnitt (e), und der
+  Kommentar am Vorschau-Memo trägt ihn im Code.
 
-**WARUM DIE BAUFORM NICHT DIE DES VORRATS-EINTRAGS 15 IST — die Wahl gehört benannt, sonst
-sieht sie nach Nachlässigkeit aus:** Jene Bauform lässt den Eintrag **unverändert** stehen
-und hängt eine datierte Erledigt-Kennzeichnung **darunter**; sie ist für einen
-Vorrats-Eintrag gemacht, der seine Identität behalten muss, weil man ihn sonst nicht mehr
-wiederfindet. **Ein Zuschnitt-Abschnitt ist ein MASSSTAB, kein Eintrag** — er wird gelesen,
-um danach zu bauen, und zwei Fassungen nebeneinander liessen den Leser die falsche nehmen.
-**EINE LEHRE AUS JENER BAUFORM IST TROTZDEM ÜBERNOMMEN, und sie ist der Grund, warum der
-Abschnitt nicht einfach entfällt: Ein gelöschter Abschnitt nähme die MESSUNG mit.** Sie
-steht deshalb hier, vollständig.
+**WAS BLEIBT UND WARUM — die sieben übrigen Abschnitte sind KEINE Anweisungen, sondern
+Entscheidungen und Befunde, an denen die nächste Arbeit misst:** der Befund, woran die
+Scheibe ansetzt · **der gemessene Bestand der fünfzehn Projekte** · **die Wahl von Weg C
+samt Grund und die Verwerfung von A, B und D** · **die Wahl der neuen Prop samt ihrem Preis
+von dreizehn Bestandsläufen** · die Ausschlüsse samt **der Entscheidung zur Erst-Anlage**
+und der Korrektur an ihrer Kandidaten-Liste · **die zwei Grenzen**.
+**SIE SIND NICHT ANGETASTET WORDEN** — die Verdichtung hat gestrichen, nicht umgeschrieben.
 
-**DAS ERGEBNIS — GEMESSEN am Repo (CC, 2026-09-07, Stufe 1): KEINE der Fixturen prüft den
-erzeugten Text, einen Beacon oder den `trackingKey`.** ACHSE: alle Vorkommen von
-`loadProject` in den Komponenten-Testdateien `CodeImporter.test.tsx` und
-`TargetCard.test.tsx`, je Lauf befragt, ob seine Zusicherungen das erzeugte Dokument, einen
-Beacon oder den Schlüssel betreffen. **POSITIVKONTROLLE:** dieselbe Achse fördert in beiden
-Dateien die Default-Attrappe des Laders zutage; sie läuft nicht leer. Geprüft wurden
-Zusicherungen auf Pixel-Eingabe, Zugangsdaten-Indikator, Hosting-Link, Varianten-Fehler,
-Domain-Feld, Kartenstatus und Fehlercode — **kein einziges Dokument.**
-**FOLGE: SIE BRECHEN NICHT DARAN, DASS EIN FELD IN DER ATTRAPPE FEHLT.** Der Lader ist dort
-**untypisiert** gemockt; ein neues Feld erzeugt keinen Compilerfehler, und ohne
-Dokument-Zusicherung gibt es nichts, was rot werden könnte.
-
-**DIE ZAHL IST PRÄZISIERT, NICHT KORRIGIERT — DIE NEUN WAR RICHTIG:** Es sind **NEUN
-Anweisungen** und **ZEHN Fixture-Objekte**, weil eine Anweisung **zwei** verkettet (der
-Hin- und Rückwechsel eines Publish-Indikator-Laufs). Die ursprüngliche Neun zählt
-**Anweisungen**, nicht Objekte, und trifft damit zu. **GEMESSEN am Repo (CC, 2026-09-07,
-Stufe 1).**
-
-**EIN MITBEFUND, DEN DAS GATE NICHT VERLANGT HAT: EINE DER FIXTUREN WIRD GAR NICHT
-VERBRAUCHT.** Der Lauf "AUFLAGE B — LEAK: ein Varianten-Fehler ist nach dem Projektwechsel
-WEG" setzt die Attrappe, klickt danach aber "+ Neues Projekt" statt zu wechseln — sie steht
-ungenutzt da. **GEMESSEN am Repo (CC, 2026-09-07, Stufe 1).** **KEIN HANDLUNGSBEDARF FÜR
-DIESE SCHEIBE**; er steht hier, damit niemand aus der blossen **Anwesenheit** einer Attrappe
-auf **Deckung** schliesst.
-
-**WAS OFFEN BLEIBT — UND WARUM ES KEIN GATE MEHR IST:** Ob einer dieser Läufe nach dem Bau
-aus einem **ANDEREN** als dem geprüften Grund rot wird, ist am Repo **nicht entscheidbar**;
-das zeigt erst der Lauf. **ES WIRD AUSDRÜCKLICH NICHT GESCHÄTZT.** Ein Gate verlangt eine
-Erhebung **vor** dem Bau, und diese Frage ist vor dem Bau nicht zu beantworten — sie ist
-eine Beobachtung **während** des Baus und gehört in den Bau-Bericht, nicht hierher.
-
-**DER EIGENTLICHE BRUCH LIEGT WOANDERS, UND DIESER SATZ TRÄGT DEN GANZEN ABSCHNITT:** Die
-**dreizehn** Läufe, die brechen, seeden den Schlüssel **NICHT** über eine
-`loadProject`-Attrappe, sondern über den **Einstellungs-Blob** — sie stehen im Abschnitt
-"Der Weg in den Client — eine neue Prop, und was sie kostet" weiter oben, mit ihrem Preis
-und ihrer Behandlung.
-**DAS GATE HAT AM RICHTIGEN ORT GEFRAGT UND DIE FALSCHE MENGE GETROFFEN.** Es hat den Bruch
-**nicht gefunden**, sondern **ausgeschlossen, dass er dort liegt** — und das ist ein
-Ergebnis und kein Fehlschlag: Ohne die Erhebung hätte der Bau die neun für die gefährdete
-Menge gehalten und die dreizehn erst im roten Lauf entdeckt.
-
-**ES IST GENAU DIE KLASSE, DIE VORRATS-EINTRAG 15 FÜHRT** — dort für die Consent-Listen, mit
-dem Satz, dass ein ungeprüftes "bricht vielleicht" und ein gemessenes "bricht sicher" nicht
-dieselbe Sicherheit sind, und mit der Einstufung als **GATE, nicht Hinweis**. **JENER
-EINTRAG WIRD ZITIERT, NICHT GEÄNDERT.**
-
-**WAS DANEBEN SICHER BRICHT UND DESHALB KEIN GATE IST, SONDERN EINE ANSAGE:** die exakte
-Projektions-Zusicherung von `loadProject`. Sie vergleicht die Spaltenliste **wörtlich**;
-eine zusätzliche Spalte macht sie rot. **DAS IST ABGELEITET AUS DER GESTALT DER
-ZUSICHERUNG, NICHT GEMESSEN** — es ist kein Lauf gefahren worden, und das ginge nur mit der
-Änderung, die es hier noch nicht gibt. **Der Lauf trägt seinen eigenen Präzedenzfall:** Sein
-Kommentar hält fest, dass die Liste bei einer additiven Erweiterung schon zweimal
-**legitim mitgewachsen** ist, und verbietet im selben Atemzug die Aufweichung.
-
-### Die sieben Läufe und ihre Rot-Bedingung
-
-**DIE ZAHL IM TITEL STAND BIS ZUM 2026-09-07 AUF VIER UND IST NACHGEZOGEN, NICHT
-GESTEMPELT** — dieselbe Lage und dieselbe Behandlung wie beim Titel des Abschnitts "Was
-diese Scheibe baut — vier Stücke" weiter oben: **die Zahl ist richtiggestellt, nicht die
-Bauform**, und dass überhaupt eine im Titel steht, ist hier nicht entschieden worden.
-GEMESSEN am Repo (CC, 2026-09-07, Doku-Runde): Der Titel wird von KEINER Stelle im Repo
-zitiert; das Nachziehen macht keinen Zeiger tot. ACHSE: der volle Titel sowie die
-Bruchstücke "Rot-Bedingung" und "vier Läufe" über das ganze Repo, case-insensitiv, gegen
-Überschriften UND gegen Titel-Zitate. **POSITIVKONTROLLE:** dieselbe Achse trifft
-"Rot-Bedingung" ein zweites Mal in einem Vorrats-Eintrag und "vier Läufe" in
-docs/ziel-befunde.md — beides FREMDE Gegenstände (eine dort formulierte Rot-Bedingung
-bzw. vier Messläufe gegen eine Anbieter-Schnittstelle), kein Zitat dieses Titels; sie
-läuft nicht leer. **DER KÜNFTIGE WORTLAUT KOLLIDIERT MIT KEINER ÜBERSCHRIFT** (dieselbe
-Achse auf "sieben Läufe": fünf Treffer, sämtlich Prosa über Messläufe in anderen Dateien).
-
-**JE LAUF STEHT, WODURCH ER ROT WIRD — ein Testplan ohne diese Angabe ist eine Wunschliste.**
-
-· **DIE PROJEKTION TRÄGT DIE SPALTE UND SONST NICHTS ZUSÄTZLICH.** **WIRD ROT, WENN:** jemand
-  die Spalte wieder herausnimmt, ODER eine weitere Spalte mitnimmt, ODER die Zusicherung auf
-  eine weiche Form umstellt. Er ist der Wächter von (I-1).
-· **DER ERZEUGTE TEXT TRÄGT EINEN BEACON, WENN DIE SPALTE GEFÜLLT IST UND DER BLOB LEER.**
-  **DAS IST DER FALL, DER HEUTE BRICHT**, und dieser Lauf ist der einzige, der ihn deckt.
-  **WIRD ROT, WENN:** der Erzeuger wieder über den Blob liest.
-· **BEIM PROJEKTWECHSEL TRÄGT DAS DOKUMENT DEN SCHLÜSSEL DES NEUEN PROJEKTS.** **WIRD ROT,
-  WENN:** ein Saat-Punkt den neuen Zustand nicht zurücksetzt. Er ist der Wächter von (I-3).
-  **SEINE GRENZE TRÄGT ER AN SICH SELBST:** Er prüft die Saat-Punkte, die seine Fixture
-  ansteuert — **nicht alle vier**, solange die Fixture nicht alle vier herstellt.
-  **AUFLAGE, NACHGETRAGEN 2026-09-07: ER MISST ZUSÄTZLICH ÜBER DIE VORSCHAU, NICHT NUR
-  ÜBER DEN EXPORT.** **GEMESSEN am Repo (CC, 2026-09-07, Stufe 1):** Die Vorschau ist
-  **memoisiert**, der Export **nicht**. **EINE VERGESSENE MEMO-ABHÄNGIGKEIT MACHT KEIN
-  GATE ROT** — die Lint-Regel läuft als **WARNUNG**, und der Lint-Befehl dieses Projekts
-  kennt **keine Obergrenze für Warnungen**. **DER SCHADEN WÄRE STILL:** Die Vorschau
-  zeigte den Schlüssel des vorigen Projekts, während Export und Publish richtig lägen.
-  **WER NUR ÜBER DEN EXPORT MISST, DECKT DIESE ACHSE NICHT.**
-· **EIN LEERER WERT ERZEUGT WEITERHIN KEINEN BEACON UND KEINEN WURF.** **WIRD ROT, WENN:**
-  jemand aus dem fehlenden Schlüssel einen Fehlerpfad macht. **Er ist die Gegenrichtung zum
-  zweiten Lauf** — ohne ihn beweist jener nur, dass etwas entsteht, nicht dass die Bedingung
-  entscheidet.
-· **DER LEERZUSTAND TRÄGT NICHT DEN SCHLÜSSEL DES VORIGEN PROJEKTS.** Der Saat-Punkt
-  `resetToEmpty` — den der dritte Lauf **nicht** prüft. **WIRD ROT, WENN:** dieser
-  Saat-Punkt den neuen Zustand nicht zurücksetzt.
-· **DAS NACHGERÜCKTE PROJEKT TRÄGT SEINEN EIGENEN SCHLÜSSEL.** Der Saat-Punkt im
-  Nachrück-Zweig nach dem Löschen — den der dritte Lauf **ebenfalls nicht** prüft. **WIRD
-  ROT, WENN:** dieser Saat-Punkt den neuen Zustand nicht zurücksetzt.
-  **DIESE ZWEI SIND JE EIN EIGENER LAUF UND AUSDRÜCKLICH KEINE KETTE.** **GRUND:** Eine
-  Fixture, die alle vier Saat-Punkte nacheinander durchläuft, meldet bei Rot **nicht mehr,
-  WELCHER gefallen ist** — das wäre eine Probe, die vier Achsen zugleich bewegt
-  (docs/immer-beachten.md, Lektion (h) an "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE").
-  **UND DER SCHADEN AUF DIESER ACHSE IST KEIN KOSMETISCHER:** Ein Leak heisst, das Dokument
-  des leeren Kontexts trägt den Schlüssel des **VORIGEN** Projekts — **Conversions landeten
-  beim falschen Projekt.**
-· **NACH DEM SETZEN EINES ZUGANGSDATUMS TRÄGT DAS ERZEUGTE DOKUMENT DEN SCHLÜSSEL SOFORT,
-  OHNE NEULADEN.** Der Wächter des **vierten Stücks**. **WIRD ROT, WENN:** der Handler der
-  Karten-Rückmeldung den neuen Zustand nicht setzt. **Ohne ihn ruht das vierte Stück auf
-  keinem Test** — und die Regression, gegen die es gebaut wird, wäre still.
-
-**WAS DIESE SIEBEN NICHT LEISTEN, UND DER SATZ GEHÖRT IN DEN PLAN:** Sie laufen sämtlich gegen
-Attrappen. **Dass die Spalte im deployten Pfad wirklich ankommt, zeigt allein ein
-Live-Test** — die Beweis-Achse dafür ist hier **nicht** geschnitten und gehört in den
-Bau-Prompt.
+**EINE ABWEICHUNG VOM AUFTRAG, AUSDRÜCKLICH DEKLARIERT:** Der Abschnitt "Was diese Scheibe
+baut — vier Stücke" ist eine Bauanweisung und wäre nach dem Wortlaut des Auftrags
+abgelaufen. **ER BLEIBT**, aus zwei Gründen. **Der erste ist der Präzedenzfall:** Die
+Verdichtung der Scheibe 1b-2b hat den gleichartigen Abschnitt "Was gebaut wird — fünf
+Stücke" ebenfalls stehen lassen und nur Invarianten, Testplan und Zeitfenster gestrichen
+(GEMESSEN am Repo, CC, 2026-09-07). **Der zweite wiegt schwerer:** Das vierte Stück trägt
+die einzige Ausformulierung der Achsen-Trennung — Leak zwischen Projekten gegen veralteten
+Zustand im selben Projekt —, und die bindet über diese Scheibe hinaus. Wer sie streicht,
+nimmt den Grund mit, aus dem der Handler den Zustand überhaupt setzt.
 
 ## Abgeschlossene Scheiben-Vermerke
 
@@ -6137,6 +6041,247 @@ Deutung ist abgeleitet), und dass die zwei Schritte zusammen mehr zeigen als ein
 **WAS AUSDRÜCKLICH KEINE MESSUNG IST:** die Abwesenheit der vier Fehlerzeilen — sie ist
 eine ABWESENHEIT ohne Positivkontrolle und trägt nichts (docs/immer-beachten.md, Lektion
 (d) an "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE").
+
+### VERMERK 15 (Bau-Commit bf73b85) — DIE SCHEIBE "Der Schlüssel kommt aus der Spalte" IST GEBAUT UND LIVE BEWIESEN
+
+**DER COMMIT IST AM REPO ERMITTELT** (CC, 2026-09-07, `git log`), nicht aus einem Prompt
+übernommen: `bf73b85` (`feat(projects)`), voller Hash
+`bf73b85ef478751a0234fae960ec5cffa3fa923a`.
+**SIEBEN `-S`-GEGENPROBEN, UND EINE TAUGT NICHT — dieselbe Lage wie bei `secret_version` in
+VERMERK 14:** `initialTrackingKey`, `nextTrackingKey`, `setTrackingKey`, `D1_KEY`,
+`tk-aus-der-spalte` und `tk-nachgerueckt` treffen **je genau einen** Commit, und es ist
+dieser. **`tracking_key` TRIFFT ACHTZEHN** — die Spalte ist seit 2b-0 im Repo und wandert
+durch jede Migration und jeden Pfad, der sie liest. **Als Gegenprobe ist sie damit
+untauglich**, und sie steht hier, damit die nächste Runde sie nicht für eine siebte
+Bestätigung hält. Die Zuordnung ruht auf den sechs anderen.
+**IM KOPF STEHT DER BAU-COMMIT UND AUSDRÜCKLICH NICHT DER COMMIT DIESES VERMERKS** — die
+Bauform von VERMERK 10 bis 14.
+
+**DER TITEL SAGT "LIVE BEWIESEN"**, und der Beleg ist ein **vor dem Deploy gesicherter**
+Vorher-Text gegen den Nachher-Text derselben Seite (Abschnitt (b)) — nicht das blosse
+Vorhandensein eines Beacons.
+
+---
+
+**(a) WAS GEBAUT IST — IN SYMBOLEN, GEMESSEN am Repo (CC, 2026-09-07).**
+
+Der Bau-Commit fasste **FÜNF** Dateien an, **KEINE davon neu**; 426 Einfügungen, 12
+Löschungen.
+
+· **`loadProject` und `ProjectRow`** (`src/app/projects/actions.ts`) — die Projektion und
+  der Rückgabetyp wachsen **ADDITIV** um `tracking_key`, in der Bauform des
+  server-autoritativen Nachbarn `ab_test_active` im selben Typ.
+· **`initialTrackingKey`** — eine neue Prop, in `src/app/page.tsx` verdrahtet, in der
+  Bauform der Nachbar-Prop `initialAbTestActive`.
+· **DER ZUSTAND `trackingKey`** (`src/components/CodeImporter.tsx`) — neben `settings` und
+  `savedSettings`, **ohne** Dirty-Baseline (er ist nicht editierbar und geht in keinen
+  Speicher-Payload). Gesetzt an **allen VIER** Saat-Punkten, je am selben Ort wie
+  `setSettings`: die Erstbelegung aus den Props, `resetToEmpty`, `handleSwitch` und der
+  Nachrück-Zweig in `handleDelete`. **Jeder trägt seinen Zähler im Kommentar** ("SAAT-PUNKT
+  n von 4"), damit ein vergessener beim nächsten Umbau auffällt.
+· **DIE ZWEI VERBRAUCHER** (ebenda) — der Vorschau-Memo `functionalHtml` und
+  `buildDocumentFor` lesen aus dem Zustand statt über `getTrackingKey`. Die Dep-Liste des
+  Memos wächst um `trackingKey`.
+· **DAS VIERTE STÜCK** (ebenda) — `handleCredentialsSaved` setzt den Zustand zusätzlich,
+  aus dem Wert, den die Server-Action zurückgibt. **DAS BLOB-SCHREIBEN DORT IST UNVERÄNDERT
+  GEBLIEBEN.** Der Parameter hiess `trackingKey` und ist zu `nextTrackingKey` **umbenannt**
+  — reiner Namenswechsel; ohne ihn stünde dort `setTrackingKey(trackingKey)` und läse sich
+  wie eine Selbstzuweisung.
+· **DIE DREIZEHN NACHGEZOGENEN BESTANDSLÄUFE** — zwei im Block "Scheibe 7b" und elf im
+  Block "Scheibe D1". Der Schlüssel ist aus dem Einstellungs-Blob in die neue Prop gezogen:
+  **derselbe Wert, anderer Kanal.** `D1_TK` behält `tokenSet` (andere Achse, Vorrats-Eintrag
+  55); der Schlüssel reist als `D1_KEY` über einen Parameter mit **Vorgabe**, und nur der
+  Lauf ohne Schlüssel übergibt sichtbar `""`.
+  **KEINE ASSERTION IST ANGEFASST WORDEN, und das ist am Diff belegt und nicht behauptet:**
+  Der gesamte Diff von `CodeImporter.test.tsx` enthält **keine einzige Zeile mit `expect`**;
+  gelöscht sind **vier** Zeilen (die zwei Blob-Schlüssel, die Helfer-Signatur und der
+  Aufruf des Lauf-ohne-Schlüssel). **Alle dreizehn bekommen damit ihr ALTES Ergebnis
+  zurück, nicht ein neues.**
+· **SECHS NEUE LÄUFE** (`K1` bis `K6`, ebenda) — der Beacon bei gefüllter Spalte und leerem
+  Blob · der leere Wert als Gegenrichtung · der Projektwechsel, gemessen über **Export UND
+  Vorschau** · der Leerzustand · der Nachrück-Zweig · das vierte Stück. **Der siebte Lauf
+  liegt woanders:** die exakte Projektions-Zusicherung in `src/app/projects/actions.test.ts`,
+  additiv gewachsen, Vergleich weiterhin **exakt**, die zwei Nachbar-Zusicherungen
+  unangetastet.
+
+**DAS FIXTURE-GATE IST VOR DEM BAU GEFAHREN — GEMESSEN am Repo (CC, 2026-09-07, Stufe 1),
+und die Messung steht hier, weil ihr Abschnitt im Zuschnitt mit dieser Runde gestrichen
+ist.** ACHSE: alle Vorkommen von `loadProject` in `CodeImporter.test.tsx` und
+`TargetCard.test.tsx`, je Lauf befragt, ob seine Zusicherungen das erzeugte Dokument, einen
+Beacon oder den Schlüssel betreffen. **POSITIVKONTROLLE:** dieselbe Achse fördert in beiden
+Dateien die Default-Attrappe des Laders zutage; sie läuft nicht leer.
+**ERGEBNIS: KEINE der Fixturen prüft eines der drei.** Geprüft werden Pixel-Eingabe,
+Zugangsdaten-Indikator, Hosting-Link, Varianten-Fehler, Domain-Feld, Kartenstatus und
+Fehlercode. **Sie brechen also nicht daran, dass ein Feld in der Attrappe fehlt** — der
+Lader ist dort untypisiert gemockt.
+**DIE ZAHL IST PRÄZISIERT, NICHT KORRIGIERT — DIE NEUN WAR RICHTIG:** Es sind **NEUN
+Anweisungen** und **ZEHN Fixture-Objekte**, weil eine Anweisung zwei verkettet.
+**EIN MITBEFUND, DEN DAS GATE NICHT VERLANGT HAT:** Eine der Attrappen wird **gar nicht
+verbraucht** — der Lauf "AUFLAGE B — LEAK: ein Varianten-Fehler ist nach dem
+Projektwechsel WEG" setzt sie und klickt danach "+ Neues Projekt" statt zu wechseln. **KEIN
+HANDLUNGSBEDARF**; er steht hier, damit niemand aus der blossen Anwesenheit einer Attrappe
+auf Deckung schliesst.
+**DER SATZ, DER DAS GATE TRÄGT: ES HAT AM RICHTIGEN ORT GEFRAGT UND DIE FALSCHE MENGE
+GETROFFEN.** Es hat den Bruch nicht gefunden, sondern ausgeschlossen, dass er dort liegt —
+die dreizehn brechenden Läufe seeden über den Blob, nicht über eine Attrappe. **Ohne die
+Erhebung hätte der Bau die neun für die gefährdete Menge gehalten.** Es ist die Klasse, die
+**Vorrats-Eintrag 15** führt; **jener wird ZITIERT, nicht geändert.**
+
+**DIE VIER GATES WAREN VOR DEM COMMIT GRÜN** (`tsc --noEmit`, `eslint`, `vitest run`,
+`next build`). **SUITE: 74 Dateien / 1536 Läufe** (vorher 74/1530, VERMERK 14) — **sechs**
+Läufe mehr, **keine neue Testdatei**, **kein Bestandstest gefallen**. Die Vorher-Zahl ist
+**am echten HEAD gemessen** (`git stash`-Rundlauf, CC, 2026-09-07), nicht aus VERMERK 14
+abgeschrieben. `eslint` meldet 0 Fehler und die eine Bestands-Warnung aus Vorrats-Eintrag
+26. **CR und NUL am COMMITTETEN OBJEKT gemessen** (`git show HEAD:<pfad>`, CC,
+2026-09-07): alle fünf Dateien **0/0**.
+
+---
+
+**(b) DER LIVE-NACHWEIS — GEMESSEN 2026-09-07 vom OWNER**, an der ausgelieferten Anwendung.
+**Prüfling:** Projekt `8e14611a-444d-4e49-94cb-4268e1e1690a`, erwarteter Schlüssel
+`ee456ae4-0f10-418b-9905-8f6666e4c481`.
+
+· **DER AUSGELIEFERTE TEXT, VORHER GEGEN NACHHER — und der Vorher-Beleg war VOR dem Deploy
+  gesichert, sonst wäre er nicht mehr herstellbar** (docs/immer-beachten.md, "EIN
+  VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT"). **VORHER** stand im Klick-Pfad
+  ausschliesslich eine `console.warn`-Zeile — **kein `navigator.sendBeacon`, kein
+  Einwilligungs-Feld**. Der PageView-Emitter trug den Schlüssel aus der Spalte, **und genau
+  deshalb sah die Seite funktionierend aus.** **NACHHER** trägt der Klick-Pfad den
+  vollständigen Beacon samt Einwilligungs-Feld, und der Schlüssel steht im Text.
+· **DER MITLÄUFER** — ein Projekt mit **beiden** Werten, im selben Lauf geprüft. Sein
+  Soll-Ausgang stand **vorher** fest: unverändert ein Beacon. **Eingetreten.**
+· **DIE DREI BEACONS DES PRÜFLINGS, mit Zeitstempel und Ereignisnamen AUS DEM PAYLOAD:**
+  **11:12:52** PageView · **11:12:56** PageView (Netzwerk-Tab offen, Payload abgelesen:
+  `event` `"__ps_pageview"`) · **11:13:29** Conversion (Payload: `event` `"Purchase"`,
+  `value` 9, `currency` `"EUR"`, Einwilligungs-Feld mit gesetztem Google-Schlüssel,
+  `isCustom` false).
+· **DIE KETTE AM CONVERSION-BEACON LIEF VOLLSTÄNDIG DURCH:** Der Resolver meldete
+  `access_token_expired`, danach ein Token-Aufruf beim Anbieter, danach die bedingte
+  Schreibung, danach `[oauth/token-refresh] ok` mit der `projectId` des Prüflings — und
+  danach der Google-Adapter.
+  **DAMIT IST DER RIEGEL DER SCHEIBE 1b-2b EIN ZWEITES MAL IM FELD GELAUFEN**, auf einem
+  dritten Projekt. **Das steht hier als ZEIGER und ist ausdrücklich KEINE Änderung an
+  VERMERK 14.**
+· **DER ADAPTER MELDETE `no destination for event`. DAS IST KEIN DEFEKT UND KEINE
+  KLICK-KENNUNGS-FRAGE:** Die Prüfung auf eine Conversion-Regel läuft **VOR** der
+  Klick-Kennung; dem Projekt fehlt die Zuordnung des Ereignisses zu einer Conversion-Aktion.
+  **Konfiguration, kein Code.**
+
+---
+
+**(c) EINE ABGELÖSTE VORBEOBACHTUNG — sie gehört hinein, damit niemand sie später für einen
+Widerspruch hält.**
+
+Ein früherer Lauf desselben Tages (**10:35**) endete am Resolver, **ohne Erneuerung**. **DER
+EREIGNISNAME WURDE DAMALS NICHT ABGELESEN.** Die Rekonstruktion des Owners spricht für einen
+PageView (ein Seitenaufruf eine Sekunde davor, identischer Ablauf wie 11:12:52).
+**DAS IST EINE ABLEITUNG UND KEINE MESSUNG — der Payload existiert nicht mehr.**
+**SIE IST FOLGENLOS:** Die Läufe von 11:12 und 11:13 messen dieselbe Achse sauber und lösen
+sie ab.
+
+**EINE WIDERLEGTE DEUTUNG DES ARCHITEKTEN, ausdrücklich als solche.** Die Vermutung lautete,
+die fehlende Klick-Kennung habe die Erneuerung verhindert. **GEMESSEN am Repo (CC,
+2026-09-07, Aufklärungsrunde):** Die Klick-Kennung wird erst **IM ADAPTER** gelesen, weit
+hinter der Rettung — ACHSE: alle Vorkommen der drei Klick-Kennungs-Namen und von
+`eventSourceUrl` über `src/`, Testdateien ausgenommen; **POSITIVKONTROLLE:** dieselbe Achse
+trifft die drei `google-*`-Dateien mehrfach, sie läuft nicht leer. **DIE TRENNENDE ACHSE IST
+DIE FORWARDBARKEIT** — ein PageView fällt an der Forward-Wache heraus.
+**VORRATS-EINTRAG 49 UND VERMERK 12, ABSCHNITT (b), FÜHREN DEN FALL BEREITS; beide werden
+ZITIERT, nicht geändert. Kein neuer Posten.**
+
+**EINE AUFLAGE AN JEDE KÜNFTIGE LIVE-ANLEITUNG, und sie ist der teuerste Befund dieses
+Laufs: WER EINEN BEACON PRÜFT, LIEST DEN EREIGNISNAMEN AUS DEM PAYLOAD AB** — nicht nur den
+Statuscode. Der 10:35-Lauf war hinterher **nicht mehr deutbar**, weil genau diese Angabe
+fehlte, und **die Anleitung hatte sie nicht verlangt**. Ein Statuscode auf dem Ingest-Pfad
+ist ohnehin in jedem Fall dieselbe leere Antwort (204-Containment).
+**OB DAS EINE DAUERREGEL WIRD, IST HIER NICHT ENTSCHIEDEN.**
+
+---
+
+**(d) DREI ZEIGER AN BESTEHENDE POSTEN — ausdrücklich KEINE Änderung an jenen Einträgen.**
+
+· **DER OFFENE PUNKT "DIE PROJEKTWAHL ÜBERLEBT KEIN NEULADEN" (CLAUDE.md) HAT DIESEN
+  LIVE-TEST VERFÄLSCHT.** Sein Trigger nennt den ersten **fremden** Nutzer mit mehr als
+  einem Projekt; **getroffen hat er den OWNER, in einer MESSUNG.** Nach einem Neuladen stand
+  ein anderes Projekt im Editor, und zwei inhaltsgleiche Projekte machten es unsichtbar —
+  **der erste Publish traf den falschen Prüfling.** **DER POSTEN IST DAMIT NICHT MEHR NUR
+  EIN ZUKUNFTSRISIKO.**
+· **DIE `console.warn`-ZEILE STEHT UNMITTELBAR NEBEN DEM FEUERNDEN BEACON** und spricht von
+  "nicht konfiguriert", während gesendet wird. **BESTAND, nicht von dieser Scheibe erzeugt.**
+  → **Vorrats-Eintrag 56.**
+· **EIN BESTANDSLAUF DER DREIZEHNER-GRUPPE HAT NUR RELATIVE ZUSICHERUNGEN** und geht auch
+  dann auf, wenn beide verglichenen Wege nichts tragen. **Er ist bei einer Mutationsprobe
+  dieser Runde als einziger nicht gefallen, obwohl vorhergesagt.** → **Vorrats-Eintrag 57.**
+
+---
+
+**(e) DIE MEMO-ABHÄNGIGKEIT DES VORSCHAU-MEMOS IST VORSORGE OHNE WÄCHTER — GEMESSEN, MIT
+UNTERSCHIEDENER URSACHE.**
+
+**Ihre Mutation blieb GRÜN** (die ganze Suite; CC, 2026-09-07). **Das ist nicht "der Test
+prüft nichts" und nicht "die Mutation ist ein schlechtes Modell", sondern die dritte
+Ursache — eine VERDECKUNG** (docs/immer-beachten.md, Lektion (b) an "MUTATIONSPROBEN UND
+LIVE-TEST-INSTRUMENTE"): `settings` steht in derselben Dep-Liste und bekommt an **jedem**
+Saat-Punkt eine **neue Objekt-Referenz**; das Memo rechnet ohnehin neu, und die fehlende Dep
+kann nie sichtbar werden.
+**DIE GEGENPROBE TRENNT ES SAUBER:** Wird stattdessen der **Vorschau-KONSUMENT** auf den
+Blob zurückgedreht, fällt **genau** die Zusicherung in K3, die über die Vorschau misst. Der
+Messpunkt ist also der Wächter des zweiten **Konsumenten**, nicht der Dep-Liste.
+**DIE DEP BLEIBT STEHEN:** Sie ist richtig und wird **tragend**, sobald jemand `settings`
+memoisiert oder aus der Liste nimmt. **KEIN GATE MELDET SIE** — die Lint-Regel läuft als
+Warnung, und der Lint-Befehl dieses Projekts kennt keine Obergrenze für Warnungen.
+**ZWEI KOMMENTARE, DIE DAS GEGENTEIL BEHAUPTETEN, SIND IM SELBEN COMMIT BERICHTIGT** — ein
+Kommentar, der eine Garantie behauptet, die sein Test nicht deckt, ist die vierte Weise aus
+"EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL".
+
+---
+
+**(f) WAS DER LIVE-TEST NICHT GEZEIGT HAT.**
+
+· **Ob Google die Conversion VERBUCHT.** Der Adapter wurde erreicht; was danach geschieht,
+  ist eine andere Achse mit einem anderen Instrument.
+· **Die drei übrigen betroffenen Projekte.** Geprüft ist **eines**; die anderen heilen nach
+  derselben Mechanik — **ABLEITUNG, keine Messung.**
+· **Die vier Projekte ohne beide Werte.** Für sie gilt die erste Grenze des Zuschnitts
+  unverändert.
+· **Das vierte Stück.** Der Prüfling ist ein Google-Projekt; die Sofort-Wirkung nach dem
+  Setzen eines Zugangsdatums deckt im Bestand **nur ein Lauf gegen Attrappen** (K6).
+
+---
+
+**(g) ZWEI KOMMENTARKÖPFE SIND GEPRÜFT UND GEMELDET, NICHT GEÄNDERT.** Der
+Spiegelungs-Kommentar über `projectIdRef` in `src/components/CodeImporter.tsx` sagt
+weiterhin, `settings.capi.trackingKey` speise Vorschau und Publish-Dokument — **das trifft
+seit diesem Commit nicht mehr zu**. Der Docblock von `getTrackingKey` in
+`src/lib/settings.ts` ist als Beschreibung der Funktion unverändert wahr. **Beide gehören
+zur Abräum-Runde von Vorrats-Eintrag 55** und sind bewusst nicht in dieser Scheibe
+nachgezogen worden.
+
+**`docs/db-stand.md` IST GEPRÜFT UND NICHT GEÄNDERT WORDEN** (CC, 2026-09-07, Doku-Runde).
+ACHSE: alle Vorkommen von `tracking_key` und `trackingKey` über die Datei.
+**ERGEBNIS: ZWEI Fundstellen, beide reine Schema-Aussagen** — die Spaltenzeile der Tabelle
+und der partielle Unique-Index. **Keine davon sagt etwas über die KONSUMENTEN der Spalte**,
+und damit ist keine durch diese Scheibe unwahr geworden. **POSITIVKONTROLLE:** dieselbe
+Achse trifft beide Stellen; sie läuft nicht leer.
+
+---
+
+**PROVENIENZ, JE TEIL:** Der Commit-Hash samt der sieben `-S`-Gegenproben, der Umfang, die
+Symbolnamen, die Gate-Ergebnisse, die Testzahl vorher und nachher, das Fixture-Gate, die
+Mutationsergebnisse und der Byte-/Objekt-Nachweis **GEMESSEN am Repo bzw. an den Läufen vom
+2026-09-07 (CC)**. Die Prüfung von `docs/db-stand.md` und die Kollisionsprüfungen dieser
+Runde **GEMESSEN am Repo (CC, 2026-09-07, Doku-Runde)**.
+Alle Live-Beobachtungen samt Zeitstempeln und Payload-Feldern **GEMESSEN 2026-09-07
+(OWNER)**.
+**ENTSCHEIDUNGEN, ausdrücklich als solche und nicht als Messung:** die Umbenennung des
+Handler-Parameters und der Verzicht auf eigene Läufe für die zwei Kommentarköpfe —
+**ARCHITEKTEN-/CC-ENTSCHEIDUNGEN 2026-09-07**.
+**ABLEITUNGEN, ausdrücklich als solche gekennzeichnet und nicht als Beobachtung:** die
+Rekonstruktion des 10:35-Laufs als PageView und die Aussage, dass die drei übrigen
+betroffenen Projekte nach derselben Mechanik heilen.
+**WAS AUSDRÜCKLICH KEINE MESSUNG IST:** dass der Google-Adapter die Conversion tatsächlich
+zustellt — der Lauf endete mit `no destination for event`, und was der Anbieter danach tut,
+hat dieser Test nicht angesehen.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -8593,6 +8738,89 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
 
     GEMELDET 2026-09-07, NICHT GEBAUT. **KEINE EMPFEHLUNG.**
     TRIGGER: die nächste Arbeit am Einstellungs-Blob oder an `setCapiState`.
+
+56. **EINE WARNZEILE IM AUSGELIEFERTEN TEXT SAGT "NICHT KONFIGURIERT" UND STEHT DIREKT ÜBER
+    DEM ZEILE, DIE SENDET.**
+    **DER BEFUND — GEMESSEN am Repo (CC, 2026-09-07, Doku-Runde), Achse: alle `console.warn`
+    in `src/lib/tracking/` und `src/lib/generate.ts`, Testdateien ausgenommen;
+    POSITIVKONTROLLE: dieselbe Achse trifft die zweite Warnung des Beacon-Bauers, sie läuft
+    nicht leer:** `metaTrackStatement` (`src/lib/tracking/meta.ts`) nimmt **zwei** Fragen
+    entgegen — ob die Meta-Laufzeit existiert und ob eine Meta-Kennung hinterlegt ist. Fehlt
+    die Kennung, erzeugt es die Warnung; existiert die Laufzeit trotzdem, hängt es den
+    Feuer-Aufruf **unmittelbar darunter**. **IM ERZEUGTEN TEXT STEHEN BEIDE AUF ZWEI
+    AUFEINANDERFOLGENDEN ZEILEN.**
+
+    **DIE GEMESSENE FASSUNG WEICHT VON DER ERSTEN BESCHREIBUNG AB, UND DIE ABWEICHUNG IST
+    DER EIGENTLICHE INHALT DIESES EINTRAGS:** Der Satz behauptet **kein falsches Ergebnis**.
+    "Meta-Pixel nicht konfiguriert" ist über **Meta** wörtlich wahr, und der Kommentar am
+    Symbol sagt das ausdrücklich — er hält seit der achten Scheibe der Phase 11 fest, die
+    Zeile sei "kein no-op-Hinweis mehr: der Klick sendet trotzdem, nur eben nicht an Meta".
+    **WAS IRREFÜHRT, IST NICHT DER SATZ, SONDERN SEIN ORT.** Wer im Netzwerk-Tab einen
+    feuernden Beacon sieht und eine Zeile darüber "nicht konfiguriert" liest, hält
+    **entweder** die Warnung für einen Defekt **oder** den Beacon für wirkungslos. Die
+    Zeile ist **unvollständig**, nicht falsch: Sie sagt nicht, dass anderswohin gesendet
+    wird.
+    **DER OWNER IST GENAU DARÜBER GESTOLPERT** (GEMESSEN 2026-09-07, Live-Lauf zur Scheibe
+    "Der Schlüssel kommt aus der Spalte").
+
+    **ABGRENZUNG ZU DEN EINTRÄGEN ÜBER MEHRDEUTIGE LOG-WORTLAUTE (48 und 42):** Jene
+    betreffen **Betreiber**-Logs auf dem Server — wer sie liest, ist der Betreiber, und die
+    Frage ist, ob der Wortlaut die Beobachtung von der Ursache trennt. **DIESE Zeile steht
+    im AUSGELIEFERTEN KUNDENTEXT und läuft in der Konsole des BESUCHERS.** Sie hat einen
+    anderen Leser, einen anderen Ort und eine andere Einbahnstrasse: Ein Code-Deploy
+    erreicht bereits publizierte Seiten nicht.
+    **DASS SIE BLEIBT, WAR EINE ENTSCHEIDUNG und ist es weiterhin** — sie zu entfernen war
+    schon damals ausdrücklich als zweite Wirkung ausgeschlossen. **DIESER EINTRAG KIPPT SIE
+    NICHT**, er hält fest, was ihre Nachbarschaft aus ihr gemacht hat.
+
+    **WAS DIESER EINTRAG NICHT SAGT:** dass die Zeile weg soll, dass sie umformuliert werden
+    soll oder dass ein zweiter Satz danebengehört. **BESTAND, nicht von jener Scheibe
+    erzeugt.**
+    GEMELDET 2026-09-07, NICHT GEBAUT. **KEINE EMPFEHLUNG.**
+    TRIGGER: die nächste Arbeit an `metaTrackStatement` oder an den Warn-Wortlauten des
+    erzeugten Textes.
+
+57. **EIN BESTANDSLAUF VERGLEICHT ZWEI WEGE GEGENEINANDER UND GEHT AUCH DANN AUF, WENN
+    BEIDE NICHTS TRAGEN.**
+    Es geht um **D-T9** in `src/components/CodeImporter.test.tsx`, wörtlich: "das
+    Publish-Artefakt traegt DENSELBEN Schluesselsatz wie das Export-Dokument".
+
+    **DER BEFUND — GEMESSEN an der Mutationsprobe M1 der Bau-Runde (CC, 2026-09-07):** Bei
+    einer Mutation, die den Dokument-Erzeuger wieder über den Einstellungs-Blob lesen liess,
+    fielen **SECHZEHN** Läufe. **Vorhergesagt waren SIEBZEHN.** Der eine, der nicht fiel,
+    war D-T9 — **und die Abweichung hatte eine benennbare Ursache, keinen Zufall.**
+
+    **DIE URSACHE:** Seine tragenden Zusicherungen sind **RELATIV** — sie halten das
+    Publish-Artefakt gegen das Export-Dokument. Trägt **keiner** der beiden Wege einen
+    Beacon-Rumpf, liefern beide Leser `null`, und der Vergleich geht auf.
+    **SEINE EIGENE VORBEDINGUNG DECKT GENAU DIESEN FALL NICHT.** Sie lautet im Kommentar
+    "VORBEDINGUNG, sonst vergliche der Test zweimal 'nichts': beide Wege muessen ueberhaupt
+    einen Schluesselsatz tragen" und prüft die **gezogenen** Consent-Schlüssel.
+    **WAS SIE DECKT:** dass überhaupt eine Sammel-Ziehung im Text steht.
+    **WAS SIE NICHT DECKT:** den **Beacon-Rumpf**. Die Ziehung entsteht bereits aus den
+    Pixel-Kennungen und braucht **keinen** Tracking-Schlüssel; das Draht-Feld dagegen
+    existiert nur mit ihm. **Die Vorbedingung greift also eine Ebene zu früh.**
+
+    **ES IST KEINE DECKUNGSLÜCKE DER SCHEIBE, DIE IHN GEFUNDEN HAT** — der absolute Fall ist
+    dort von einem eigenen Lauf gedeckt. **UND ES IST KEIN DEFEKT AN D-T9:** Was er zu
+    prüfen behauptet — dass die zwei Auslieferwege dieselbe Quelle benutzen — prüft er, und
+    er ist laut seinem eigenen Kommentar der einzige Lauf im Bestand, der die beiden Wege
+    überhaupt gegeneinander hält. **Der Befund betrifft seine REICHWEITE, nicht seine
+    Richtigkeit.**
+
+    **WARUM ES ÜBERHAUPT EIN POSTEN IST:** Eine relative Zusicherung sieht wie eine doppelte
+    Absicherung aus und ist gegen jeden Fehler blind, der **beide** Seiten gleich trifft.
+    Wer künftig eine Mutation ansagt, die den Erzeuger als Ganzes betrifft, sollte wissen,
+    dass dieser Lauf sie **nicht** meldet — sonst wird sein Grün als Entwarnung gelesen.
+    Es ist dieselbe Denkfigur wie in docs/immer-beachten.md, "EINE ABWESENHEITS-BEHAUPTUNG
+    WIRD AUF DREI WEISEN HOHL", zweite Weise (trivial wahr) — nur an einer
+    **Gleichheits**-Behauptung statt an einer Abwesenheits-Behauptung.
+
+    **WAS DIESER EINTRAG NICHT SAGT:** wie die Vorbedingung lauten müsste, ob D-T9 eine
+    zweite bekommen soll oder ob ein eigener Lauf danebengehört. **NICHT ENTSCHIEDEN.**
+    GEMELDET 2026-09-07, NICHT GEBAUT. **KEINE EMPFEHLUNG.**
+    TRIGGER: die nächste Mutationsprobe, die den Dokument-Erzeuger als Ganzes trifft,
+    spätestens die nächste Arbeit am D1-Block jener Testdatei.
 
 ## Hebungs-Kandidaten
 

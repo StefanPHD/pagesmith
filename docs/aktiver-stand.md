@@ -9030,6 +9030,105 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     — `stash`, `merge`, `rebase`, `cherry-pick` —, spätestens wenn erneut eine untracked
     Datei nach einer reinen Kontrolle im Status steht.
 
+59. **DIE DREI KLICK-KENNUNGS-PARAMETER — DREI HÄLFTEN EINES THEMAS, UND ES IST NICHTS ZU
+    BEHEBEN.**
+    **WARUM SIE ZUSAMMENSTEHEN UND NICHT AN DREI ORTEN:** Wer eine davon aufschlägt, braucht
+    die anderen zwei, um sie richtig zu lesen. Getrennt abgelegt erzeugen sie **drei Runden
+    statt einer** — und die zweite fände die erste nicht mehr.
+    **DREI QUELLEN, DREI KENNZEICHNUNGEN, und sie werden hier durchgehend getrennt:** was am
+    **CODE** gemessen ist · was am **DATEITEXT DER ABLAGE** gemessen ist · und was eine
+    **OWNER-ANGABE** ist. Wer sie einebnet, hält eine Lesung für eine Messung.
+
+    **ERSTE HÄLFTE — VORRATS-EINTRAG 4 STELLT SEINE FRAGE IN DER EINZAHL, UND DIE
+    VORAUSSETZUNG TRÄGT NICHT.**
+    Der Vermerk vom 2026-09-02 an jenem Eintrag führt als seine Grenze, **WELCHER** der drei
+    Namen getroffen hat, und nennt das ungemessen.
+    **GEMESSEN AM CODE (CC, 2026-09-07):** Die Auslese-Funktion `extractGoogleClickIds`
+    (src/lib/capi/google-click-ids.ts) iteriert über die Konstante der drei Namen und
+    sammelt **JEDEN gefundenen** in ein Ergebnis-Objekt; **eine Vorrangregel gibt es nicht.**
+    Die Nutzlast-Funktion `pickClickIds` (src/lib/capi/google-payload.ts) kopiert alle drei
+    **einzeln**, und der Verwerfungs-Zweig in `buildGoogleEvent` greift **nur bei NULL**
+    Kennungen.
+    **ACHSE:** alle Vorkommen der drei Parameternamen sowie von `GoogleClickIds` und
+    `adIdentifiers` über src/, Testdateien ausgenommen. **POSITIVKONTROLLE:** dieselbe Achse
+    trifft **vierundzwanzigmal**; sie läuft nicht leer.
+    **FOLGE FÜR DIE EINLIEFERUNG VOM 2026-09-07:** Die Adresse trug **zwei** Parameter
+    (OWNER-ANGABE 2026-09-07, an der eigenen Landepage abgelesen), und **BEIDE sind
+    gegangen**. **DIE FRAGE HAT KEINE EINZAHL-ANTWORT.**
+    **WAS OFFEN BLEIBT UND AM CODE NICHT ENTSCHEIDBAR IST:** welchen der beiden der
+    **ANBIETER** zur Zuordnung benutzt hat. Das Log nennt bei Erfolg keinen Namen — es nennt
+    im Erfolgsfall gar nichts.
+    **VORRATS-EINTRAG 4 WIRD ZITIERT UND NICHT GEÄNDERT**; sein Trigger bleibt wörtlich.
+    **UND EINE PRÄZISIERUNG, OHNE DIE DIESER ABSATZ ZU VIEL BEANSPRUCHT:** Die **Hauptfrage**
+    jenes Eintrags ist **nicht** "welcher hat getroffen", sondern die **SCHREIBUNG** der drei
+    Namen — sein Titel sagt, sie stütze sich auf nichts Gelesenes, und sein Schlussabsatz
+    hält das für **ALLE DREI** offen. **DIESE RUNDE SCHLIESST SIE NICHT.** Beantwortet ist
+    die Grenze seines Vermerks, nicht die Frage seines Titels.
+
+    **ZWEITE HÄLFTE — DIE AUSSCHLIESSLICHKEIT IST GELESEN WIDERLEGT.**
+    Eine **OWNER-ANGABE 2026-09-07 (GELESEN, nicht gemessen)** besagte, der Anbieter erwarte
+    **GENAU EINEN** der drei Parameter.
+    **GEMESSEN AM DATEITEXT von docs/ziel-befunde.md (CC, 2026-09-07):** **DREI** gelesene
+    Stellen sagen **"MINDESTENS EINEN"** — die Fünfer-Liste der Kennungen im Google-Abschnitt,
+    die Feld-Aufzählung "AdIdentifiers — ZEHN Felder, **alle Optional**", und das wörtliche
+    Anbieter-Zitat "Set at least one of the following: `adIdentifiers` with at least one of
+    gclid, gbraid or wbraid". **KEINE sagt "genau einen".**
+    **ACHSE:** die Wendungen "genau ein/nur ein … Kennung", `exactly one` und `only one of`
+    über docs/ziel-befunde.md. **ERGEBNIS:** kein Treffer, der die drei Klick-Kennungen
+    betrifft; **der einzige `exactly one`-Treffer gilt einem ANDEREN Feld** (den
+    Kontaktdaten). **POSITIVKONTROLLE:** "mindestens ein" trifft in derselben Datei
+    **siebenmal**.
+    **WAS DAS NICHT HEISST, UND DER SATZ IST DER WICHTIGERE:** Dass **zwei** Kennungen
+    zugleich beim Anbieter **RICHTIG** verarbeitet werden, ist damit **NICHT belegt**. Es ist
+    **UNGELESEN und UNGEMESSEN**. Der Code sendet beide; **wie der Anbieter damit verfährt,
+    weiss niemand.** Widerlegt ist eine Auflage, nicht bestätigt eine Unbedenklichkeit.
+
+    **DRITTE HÄLFTE — DIE PLATTFORM-ZUORDNUNG IST UNGELESEN.**
+    Die **OWNER-ANGABE 2026-09-07** ordnet die zwei Nicht-Standard-Parameter je einer
+    Sitzungsart auf einem bestimmten Betriebssystem zu.
+    **GEMESSEN AM DATEITEXT (CC, 2026-09-07): docs/ziel-befunde.md nennt beide NUR als
+    Feldnamen, NIE mit einer Herkunfts- oder Plattform-Zuordnung.** **NICHT-TREFFER MIT
+    BENANNTER REICHWEITE — ACHSE:** die Begriffe des Betriebssystems, "App-zu-Web" und
+    "Web-to-App" über docs/ziel-befunde.md. **POSITIVKONTROLLE:** der Feldname `gbraid`
+    trifft in derselben Datei **siebenmal**; die Achse läuft nicht leer, sie trifft nur diese
+    Zuordnung nicht. **WELCHER der beiden welcher Sitzungsart gehört, ist am Repo NICHT
+    ENTSCHEIDBAR.**
+    **FÜR DEN CODE IST DAS FOLGENLOS:** Er sendet, was in der Adresse steht, **ohne zu
+    wissen, woher es kommt**. Es ist eine **ungelesene Stelle in der Anbieter-Dokumentation
+    und keine offene Frage an das Produkt.**
+
+    **DAS ERGEBNIS DER RUNDE, UND ES STEHT AUSDRÜCKLICH DA: ES GIBT NICHTS ZU BEHEBEN.**
+    Der Code führt **genau die drei Namen**, die die Ablage als zulässig nennt, und für die
+    gemessene Adresse **war die richtige dabei**.
+    **DER GRUND IST BEMERKENSWERT GENUG, UM DAZUSTEHEN: WEIL ES KEINE VORRANGREGEL GIBT,
+    KANN DER CODE AUCH KEINE FALSCHE TREFFEN.** Ein Vorrang wäre die Stelle, an der man sich
+    vertut — **sie existiert nicht. DIE ABWESENHEIT IST HIER DIE SICHERHEIT, NICHT DIE
+    LÜCKE.** Wer später eine Vorrangregel einzieht, führt diese Stelle ein.
+
+    **TRANSIT-ONLY IST EINGEHALTEN — GEMESSEN AM CODE (CC, 2026-09-07), auf ZWEI
+    UNABHÄNGIGEN ACHSEN.**
+    **ACHSE 1:** die drei Parameternamen sowie `GoogleClickIds` und `adIdentifiers` im
+    Schnitt mit den Persistenz-Verben (`insert`, `update`, `upsert`, `persist`, Browser-
+    Speicher, Cookie, Tabellenzugriff) über src/, ohne Tests. **KEIN Treffer.**
+    **POSITIVKONTROLLE:** die Kennungsnamen treffen vierundzwanzigmal, die Persistenz-Verben
+    dreizehnmal — **beide Achsen leben, ihr Schnitt ist leer.**
+    **ACHSE 2 WAR NÖTIG, UND WARUM, GEHÖRT DAZU: ACHSE 1 HÄTTE DEN PERSIST-PFAD VERFEHLT.**
+    Dort steht **keiner** der Kennungsnamen — der Persist sieht nur den Beacon-Rumpf, und die
+    Kennung säse in der Adresse darin. Geprüft wurde deshalb der Schreibvorgang **selbst**:
+    `persistEvent` (src/lib/analytics/persist.ts) schreibt in die Ereignis-Tabelle **fünf**
+    Spalten — Projekt, Ereignistyp, Ereignis-Kennung, Beobachtungsort und Variante. **Das
+    Adressfeld ist NICHT darunter.**
+    **DIE KENNUNG LEBT DAMIT AUSSCHLIESSLICH IM TRANSIT:** Beacon-Rumpf → Auslese →
+    Netzruf. **Nirgends abgelegt.**
+
+    GEMELDET 2026-09-07, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder zur Ausschliesslichkeit
+    noch zur Plattform-Zuordnung noch zu Vorrats-Eintrag 4.
+    TRIGGER: **die nächste Arbeit am Google-Adapter** (Auslese der Kennungen, Bau der
+    Nutzlast, Verwerfungs-Zweig) **ODER die nächste Anbieter-Lesung am Abschnitt zu den
+    Kennungen** — dort sind die zwei ungelesenen Stellen zu holen: ob mehrere Kennungen
+    zugleich zulässig sind und wie sie dann behandelt werden, und welche Sitzungsart hinter
+    welchem der zwei Nicht-Standard-Parameter steht.
+
 ## Hebungs-Kandidaten
 
 1. **DER EINWILLIGUNGS-RIEGEL BEIM FÜNFTEN ZIEL** — die bindende Entscheidung (4).

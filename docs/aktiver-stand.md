@@ -8958,6 +8958,78 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     TRIGGER: die nächste Mutationsprobe, die den Dokument-Erzeuger als Ganzes trifft,
     spätestens die nächste Arbeit am D1-Block jener Testdatei.
 
+58. **DAS INSTRUMENT DER PRÜFUNG HAT DEN ZUSTAND VERÄNDERT, DEN ES PRÜFEN SOLLTE — EIN
+    NACHWEIS-SCHRITT HAT ZWEI UNTRACKED DATEIEN IM WURZELVERZEICHNIS HINTERLASSEN.**
+    **DER TITEL NENNT DIE KLASSE UND NICHT DIE DATEIEN, und das ist der ganze Eintrag:** Die
+    zwei Dateien sind gelöscht und das Muster ist ergänzt (s. unten). **Was bleibt, ist die
+    Figur.**
+
+    **DER VORGANG — GEMESSEN in dieser Sitzung (CC, 2026-09-07):** Ein `git stash`-Rundlauf,
+    gefahren als **NACHWEIS-SCHRITT** — er sollte belegen, dass der Arbeitsbaum ausser den
+    beabsichtigten Änderungen nichts trägt —, hat **zwei Temporärdateien** im
+    Wurzelverzeichnis zurückgelassen. Sie standen als **untracked** im Status, waren
+    zusammen **über ein Megabyte** gross, und **ein pauschales Stagen hätte sie
+    mitgenommen**. `.gitignore` deckte sie **nicht**.
+
+    **WAS DEN EINTRAG TRÄGT UND NICHT DIE EINZELNE DATEI IST:** Eine Invariante der Form
+    "keine Datei angelegt" war **verletzt, bevor jemand hinsah — und zwar durch den Nachweis
+    selbst.** Wer den Scope prüft, erzeugt dabei den Befund, den er ausschliessen will. **Der
+    Prüfschritt ist damit nicht neutral gegenüber seinem Gegenstand**, und das ist keine
+    Eigenheit dieses einen Kommandos.
+
+    **DIESELBE KLASSE IST SCHON EINMAL AUFGETRETEN UND HAT DORT EINE REGEL ERZEUGT** —
+    docs/immer-beachten.md, Regel "EIN NEUER ANBIETER WIRD ERST ANGEBUNDEN, NACHDEM SEINE
+    DOKUMENTATION ABSCHNITTSWEISE GELESEN UND DIE BEFUNDE VERORTET SIND", Zusatz vom
+    2026-08-20, wörtlich: "**DAS WERKZEUG LEGT BEIM ERSTEN AUFRUF UNGEFRAGT EIN VERZEICHNIS
+    IM ARBEITSVERZEICHNIS AN** (BEFUND DES ERSTEN LAUFS, 2026-08-20). Es steht seit dem
+    2026-08-20 in `.gitignore` — **DER GRUND GEHÖRT TROTZDEM HIERHER, damit niemand den
+    Eintrag für überflüssig hält und entfernt.** Eine Invariante 'keine Datei angelegt' ist
+    sonst verletzt, bevor die erste Seite gelesen ist."
+    **WAS GLEICH IST:** ein Werkzeug schreibt **ungefragt** in den Arbeitsbaum · die
+    Invariante fällt, **bevor** jemand hinsieht · die Antwort war **beide Male** ein
+    `.gitignore`-Muster, und beide Male gehört der **Grund** in die Ablage, damit das Muster
+    nicht als überflüssig gestrichen wird.
+    **WAS NICHT GLEICH IST, und ohne diesen Absatz wird die Abgrenzung nachlässig gelesen:**
+    Dort war das Werkzeug ein **fremdes Zusatzwerkzeug** (der Browser des Anbieter-Crawls),
+    das jemand bewusst gestartet hat; **hier ist es `git` selbst**, gerufen in einem
+    Kommando, dessen erklärter Zweck die **Kontrolle** war. Dort war der Nebeneffekt eine
+    **Voraussetzung** der Arbeit, hier eine **Folge der Prüfung**. **Die zweite Lage ist die
+    unangenehmere**: Ein Werkzeug, das man startet, hat man im Blick; ein Nachweis-Schritt
+    gilt als folgenlos.
+
+    **DIE GRENZE, UND SIE MUSS MIT: DASS DER STASH-RUNDLAUF SIE ERZEUGT HAT, IST EINE
+    ABLEITUNG.** Git protokolliert **keinen Erzeuger**. Die Ableitung ruht auf drei
+    Beobachtungen: **Zeitgleichheit** (beide Zeitstempel 12:54:11, 274 Millisekunden
+    auseinander, also ein Vorgang), **Zweizahl** (genau zwei, wie die zwei geänderten
+    Dateien) und **Dateiauswahl** (genau jene zwei).
+    **GEMESSEN sind:** die Zeitstempel · die Grössen (397 526 und 650 076 Bytes) · und die
+    **Inhalts-Identität mit dem committeten Stand** — beide entsprachen per Prüfsumme ihrer
+    verfolgten Datei im damaligen HEAD, weshalb ihr Löschen **keinen** Verlust bedeutete.
+    **NICHT GEMESSEN IST DER ERZEUGER SELBST.**
+
+    **WAS DER EINTRAG NICHT SAGT: welche Werkzeuge sonst noch so etwas tun.** Die Frage
+    lautet nie "steht es in der Aufzählung", sondern **"schreibt es in den Arbeitsbaum"** —
+    dieselbe Zuschnitt-Frage wie in der Werkzeug-Regel zu den Ganz-Datei-Schreibern
+    (docs/immer-beachten.md). Eine Aufzählung wäre hier eine zweite Wahrheit, die beim
+    nächsten Kommando falsch ist.
+    **UND ER SAGT NICHT, DASS DER NACHWEIS-SCHRITT FALSCH WAR.** Er hat belegt, was er
+    belegen sollte; **der Befund betrifft seinen Preis, nicht seine Gültigkeit.**
+
+    **WAS IN DERSELBEN RUNDE GEBAUT WORDEN IST — genau EINE Sache, damit der Eintrag nicht
+    als offen gelesen wird, wo er es nicht ist:** das Muster `.merge_file_*` in `.gitignore`,
+    in der Bauform des Playwright-Eintrags daneben, mit Kommentar. **Alles andere ist
+    GEMELDET, NICHT GEBAUT** — insbesondere ist **kein** Prüfschritt geändert und **keine**
+    Regel gehoben worden.
+    **KEINE EMPFEHLUNG**, ob daraus eine Dauerregel wird und ob der Nachweis künftig anders
+    zu führen ist.
+    GEMELDET 2026-09-07, NICHT GEBAUT.
+    PROVENIENZ: Zeitstempel, Grössen und Inhalts-Identität **GEMESSEN (CC, 2026-09-07)**;
+    der Erzeuger ist eine **ABLEITUNG** aus den drei genannten Beobachtungen, **keine
+    Messung**. Das Zitat aus docs/immer-beachten.md ist **GELESEN (CC, 2026-09-07)**.
+    TRIGGER: der nächste Nachweis-Schritt, der ein Git-Kommando mit Zusammenführung benutzt
+    — `stash`, `merge`, `rebase`, `cherry-pick` —, spätestens wenn erneut eine untracked
+    Datei nach einer reinen Kontrolle im Status steht.
+
 ## Hebungs-Kandidaten
 
 1. **DER EINWILLIGUNGS-RIEGEL BEIM FÜNFTEN ZIEL** — die bindende Entscheidung (4).

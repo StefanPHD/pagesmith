@@ -121,6 +121,8 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
   - ### MESSUNG D gegen events:ingest (2026-09-01) — der Teil (ca)
   - ### MESSUNG E gegen requestStatus:retrieve (2026-09-02) — der Teil (cb)
   - ### Abschnitts-Lesung 2026-09-02 zur Zuordnung ohne Klick-Kennung, LAUF 8 — der Teil (cc)
+  - ### MESSUNG F am eigenen Dienst (2026-09-07) und ein Nicht-Treffer zur Oberfläche —
+    die Teile (cd) und (ce)
 - ## Pinterest (Conversions API)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
@@ -5079,9 +5081,43 @@ nicht die Data Manager API). Das steht an jeder Angabe dabei; wer es überliest,
 Aussage über ein anderes Produkt für eine über unseres.
 
 **DER ANLASS:** Messung E hat am 2026-09-02 `PROCESSING_ERROR_REASON_INVALID_GCLID` ergeben
-(s. (cb)), und die zweite Sperre der laufenden Phase hält fest, dass es auf dem Konto nie einen
-echten Anzeigenklick gegeben hat (docs/aktiver-stand.md, "### (1) Der Gegenstand",
-OWNER-ANGABE 2026-09-02). **Dieser Lauf beschafft Optionen. Er entscheidet nichts.**
+(s. (cb)), und die zweite Sperre der laufenden Phase hielt **damals** fest, dass es auf dem
+Konto nie einen echten Anzeigenklick gegeben habe (docs/aktiver-stand.md, "### (1) Der
+Gegenstand", OWNER-ANGABE 2026-09-02). **Dieser Lauf beschafft Optionen. Er entscheidet
+nichts.**
+**SACHKORREKTUR 2026-09-07 — NUR DIE ZWEITE HÄLFTE DIESES SATZES IST BETROFFEN, UND DASS
+DAS DASTEHT, IST DER PUNKT:** Die **erste** Hälfte — der am 2026-09-02 gemessene
+Fehlergrund — ist unverändert wahr und **nicht angetastet**. Die **zweite** Hälfte stand
+bis zum 2026-09-07 im Präsens ("hält fest … gegeben hat") und beschrieb damit einen
+Zustand, den es nicht mehr gibt: **Die Sperre ist am 2026-09-07 gefallen** — es hat einen
+echten Anzeigenklick gegeben (GEMESSEN 2026-09-07, OWNER; Volltext an jener Fundstelle,
+Richtigstellung des Zustands-Absatzes). Der Satz steht jetzt in der Vergangenheitsform und
+ist damit als **Zeitdokument** richtig: **Er beschreibt den ANLASS dieses Laufs, und der
+Anlass war am 2026-09-02 gegeben.**
+**WARUM NICHT DER GANZE SATZ ERSETZT WIRD:** Er begründet, **warum** LAUF 8 gefahren wurde.
+Ihn auf den heutigen Stand umzuschreiben nähme dem Lauf seinen Grund und liesse einen
+Doku-Lauf ohne Anlass zurück. **UND WARUM NICHT NUR DIE ZWEITE HÄLFTE STILL GEÄNDERT WIRD:**
+Eine Teilkorrektur an einem Satz mit zwei Angaben ist gefährlicher als gar keine — danach
+stimmt die eine Hälfte, und genau deshalb liest niemand die andere nach
+(docs/immer-beachten.md, "WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR
+FALLE").
+**WAS DIESE KORREKTUR NICHT BERÜHRT:** die **BEFUNDE** des Laufs selbst, Teil (cc). Sie sind
+GELESEN am 2026-09-02 und von einem Klick auf einem Werbekonto nicht betroffen.
+**DIESER SATZ STAND BIS ZUM 2026-09-07 OHNE DAS WORT "BEFUNDE" UND WAR DAMIT ZU WEIT** — er
+las sich als "an Teil (cc) ist nichts nachzuziehen", und das trifft nicht zu: **Teil (cc)
+enthält einen Halbsatz ÜBER die Sperre**, der im Präsens einen fortdauernden Zustand der
+Standdatei behauptete. **Er ist in derselben Runde nachgezogen worden**, s. die
+Sachkorrektur an "WAS DAS AN DER STANDDATEI NICHT ÄNDERT" in (cc)/(a).
+**DASS DIESE EINSCHRÄNKUNG HIER STEHT, IST DER PUNKT:** Eine Abgrenzung, die eine ganze
+Fundstelle freispricht, ist genau die Bauform, mit der eine veraltete Stelle
+unentdeckt bleibt — sie sagt "dort ist nichts", und niemand sieht nach.
+GEMESSEN am Dateitext (CC, 2026-09-07, Doku-Runde), Achse: die Wendung "zweite Sperre" über
+docs/ziel-befunde.md; **POSITIVKONTROLLE:** dieselbe Achse trifft ausser diesen beiden
+Stellen keine weitere in dieser Datei.
+PROVENIENZ: Das Fallen der Sperre ist **GEMESSEN 2026-09-07 (OWNER)**; dass dieser Satz
+davon berührt ist, ist **GEMESSEN am Dateitext (CC, 2026-09-07, Doku-Runde)** — Achse: die
+Wendung "zweite Sperre" über docs/, Positivkontrolle: dieselbe Achse trifft vier weitere
+Stellen in docs/aktiver-stand.md.
 
 (cc) **DIE ZUORDNUNGS-WEGE OHNE KLICK-KENNUNG SIND GELESEN — UND DER GEMESSENE FEHLERGRUND
      LIEGT AUF EINER ANDEREN ACHSE, ALS ER AUSSIEHT.** **NEU.**
@@ -5120,8 +5156,24 @@ OWNER-ANGABE 2026-09-02). **Dieser Lauf beschafft Optionen. Er entscheidet nicht
      **WAS DAS AN DER STANDDATEI NICHT ÄNDERT:** Die zweite Sperre
      (docs/aktiver-stand.md, "### (1) Der Gegenstand") sagt bereits, der Fehlergrund sei mit
      ihr "verträglich, aber es belegt sie nicht". **Dieser Befund macht den Abstand grösser,
-     nicht kleiner** — er benennt die Achse, auf der der Grund liegt. **DORT IST NICHTS
-     GEÄNDERT; hier steht die Lesung, dort die Sperre.**
+     nicht kleiner** — er benennt die Achse, auf der der Grund liegt. **DIESER LAUF HAT DORT
+     NICHTS GEÄNDERT; hier steht die Lesung, dort die Sperre.**
+     **SACHKORREKTUR 2026-09-07 — VON DREI AUSSAGEN DIESES ABSATZES IST GENAU EINE
+     BETROFFEN.**
+     **UNVERÄNDERT WAHR BLEIBEN:** dass die Sperre den Fehlergrund als "verträglich, aber es
+     belegt sie nicht" führt — **jener Satz steht dort weiterhin wörtlich** —, und dass diese
+     Lesung den Abstand grösser macht.
+     **BETROFFEN WAR ALLEIN DER LETZTE HALBSATZ.** Er lautete "**DORT IST NICHTS GEÄNDERT**"
+     und stand im Präsens; er behauptete damit einen fortdauernden Zustand der Standdatei.
+     **DIE ZWEITE SPERRE IST AM 2026-09-07 GEFALLEN** (GEMESSEN 2026-09-07, OWNER — es hat
+     einen echten Anzeigenklick gegeben), und ihr Zustands-Absatz ist an jenem Tag
+     richtiggestellt worden. Der Halbsatz sagt jetzt, was er sagen wollte und was wahr
+     bleibt: **DIESER LAUF** hat dort nichts geändert.
+     **WAS DAS AM BEFUND DES LAUFS ÄNDERT: NICHTS.** Die Trennung von Dekodier- und
+     Zuordnungs-Achse ist am 2026-09-02 GELESEN und von einem Klick auf einem Werbekonto
+     nicht berührt.
+     PROVENIENZ: Das Fallen der Sperre ist **GEMESSEN 2026-09-07 (OWNER)**; dass dieser
+     Halbsatz davon betroffen ist, ist **GEMESSEN am Dateitext (CC, 2026-09-07, Doku-Runde)**.
      **ERSETZT KEINE MESSUNG:** Welcher Grund bei einer **wohlgeformten** Kennung käme, ist
      nicht erhoben. `INVALID_CLICK` ist der gelesene Kandidat, kein beobachteter Wert.
 
@@ -5341,6 +5393,88 @@ OWNER-ANGABE 2026-09-02). **Dieser Lauf beschafft Optionen. Er entscheidet nicht
      **UND DIE GRENZE, DIE FÜR JEDE LESUNG DIESER DATEI GILT:** Ein Dokument beschreibt ein
      fremdes System, es belegt es nicht — und ein Anbieter kann sein Verhalten ändern, ohne
      dass hier etwas rot wird. Diese Lesung datiert vom 2026-09-02.
+
+### MESSUNG F am eigenen Dienst (2026-09-07) und ein Nicht-Treffer zur Oberfläche — die Teile (cd) und (ce)
+
+**WARUM DIESE MESSUNG HIER STEHT UND NICHT NUR IN DER STANDDATEI:** Sie ist die einzige
+Beobachtung dieses Abschnitts, die **NICHT** an einer Google-Oberfläche und **NICHT** an
+einem Google-Endpunkt entstanden ist, sondern am **eigenen Dienst**. Sie gehört trotzdem
+hierher, weil sie die **einzige Brücke** zwischen unserem Aufruf und dem ist, was die
+Anbieter-Oberfläche desselben Tages zeigt — und weil ohne sie ein Befund über den Anbieter
+auf einem Beleg ruht, den nur der Anbieter führt.
+
+(cd) **DER TRANSPORT MIT EINER ECHTEN KLICK-KENNUNG IST AM EIGENEN DIENST GEMESSEN — UND
+     DER STATUSCODE DES EINLIEFERUNGS-AUFRUFS IST NICHT ABLESBAR.** **NEU.**
+
+     **GEMESSEN 2026-09-07 (OWNER), am Vercel-Log des eigenen Dienstes.** Es ist **KEIN**
+     Aufruf gegen eine Google-Schnittstelle eigens dafür gefahren worden; beobachtet wurde
+     der Lauf, den ein Besucher ausgelöst hat.
+
+     **(a) DER LAUF.** Ein **Conversion-Beacon** von einer Landepage, die mit einer
+     **ECHTEN, von Google vergebenen Klick-Kennung** in der Adresse geöffnet worden war, hat
+     den **Erneuerungsweg** und danach den **Google-Adapter** durchlaufen. **DIE KENNUNG
+     STEHT HIER NICHT** — dieselbe Handhabung wie bei den Zugangsdaten und Konto-Kennungen
+     dieser Datei.
+     **IN DER AUFRUF-ÜBERSICHT DER INVOCATION STANDEN DREI DINGE:** ein **Token-Aufruf beim
+     Anbieter**, eine **Schreibung auf der eigenen Datenbank** und ein **Aufruf gegen den
+     Einlieferungs-Endpunkt**.
+
+     **(b) DIE GRENZE, UND SIE MUSS MIT: DER STATUSCODE DES EINLIEFERUNGS-AUFRUFS WAR NICHT
+     ABLESBAR.** Das Werkzeug zeigt ihn **nur in einer kostenpflichtigen Stufe**.
+     **GEMESSEN IST, DASS DER AUFRUF HINAUSGING — NICHT, WIE ER BEANTWORTET WURDE.**
+     **WER DARAUS "ANGENOMMEN" LIEST, LIEST EINE ANTWORT, DIE NIEMAND GESEHEN HAT.** Der
+     Abschnitt (x)/G1 dieser Datei sagt ohnehin, dass selbst ein abgelesenes HTTP 200 nur
+     "entgegengenommen und strukturell in Ordnung" hiesse; hier fehlt schon das.
+
+     **(c) DIE VERBINDUNG ZUR ANNAHME BEIM ANBIETER IST EINE ABLEITUNG, KEINE MESSUNG.**
+     Derselbe Tag zeigt in der Anbieter-Oberfläche eine **angenommene Einlieferung**
+     (Volltext: docs/aktiver-stand.md, Vorrats-Eintrag 41, Schliessungs-Block — er wird hier
+     **nicht wiederholt**, zwei Fassungen liefen auseinander).
+     **DASS ES DIESER AUFRUF WAR, IST NICHT BELEGT.** Es ist die **einzige** Einlieferung
+     dieses Tages, und das macht die Zuordnung plausibel — **aber niemand hat die zwei Seiten
+     über eine gemeinsame Kennung verbunden.** Die Anfrage-Kennung, die der Endpunkt
+     zurückgibt, ist auf dieser Seite nicht abgelesen worden, und die Oberfläche nennt sie in
+     der Protokoll-Zeile nicht.
+     **ES SIND ZWEI BEOBACHTUNGEN, DIE ZUEINANDER PASSEN — UND ZWEI ANGABEN, DIE ZUEINANDER
+     PASSEN, SIND NICHT DIESELBE ANGABE.**
+
+     **(d) WAS DAMIT ERSTMALS GEMESSEN IST, und es ist der Grund für diesen Teil:** dass eine
+     **ECHTE** Klick-Kennung den **vollständigen Produktivpfad** bis zum Netzruf nimmt. Bis
+     hierher nannte **jede** dokumentierte Beobachtung dieses Wegs einen **von Hand
+     gesetzten** Wert; der Satz "ob eine ECHTE gclid denselben Weg nimmt, ist NICHT GEPRÜFT"
+     stand seit dem 2026-09-01 unverändert.
+     **WAS NICHT GEMESSEN IST:** die Antwort des Endpunkts (s. (b)) · ob die Kennung eine
+     Seite mit **MEHREREN SCHRITTEN** überlebt — beobachtet ist ein EIN-SEITEN-FALL · und
+     **welcher** der drei Kennungs-Parameternamen getroffen hat; das Log nennt bei Erfolg
+     keinen.
+
+     PROVENIENZ: **GEMESSEN 2026-09-07 (OWNER)**, am Vercel-Log, Doku-Runde 2026-09-07. Dass
+     die Kennung eine **echte** war, ist eine **OWNER-ANGABE 2026-09-07**. Die Zuordnung zur
+     angenommenen Einlieferung ist eine **ABLEITUNG**, ausdrücklich **keine Messung**. Die
+     Nicht-Ablesbarkeit des Statuscodes ist **GEMESSEN** (das Werkzeug zeigt ihn nicht), die
+     Zuschreibung an die Tarifstufe eine **OWNER-ANGABE** desselben Tages.
+
+(ce) **WAS DIE SPALTE "CONVERSIONS" DER NUTZUNGSÜBERSICHT ZÄHLT, IST IN DIESER DATEI NICHT
+     GELESEN — NICHT-TREFFER MIT BENANNTER REICHWEITE.** **NEU.**
+
+     **DER GEGENSTAND:** Die Data-Manager-Oberfläche zeigt in der Sieben-Tage-Übersicht eine
+     Zahl unter **"Conversions"** und eine unter **"Anfragen"**.
+
+     **GEMESSEN am Dateitext (CC, 2026-09-07, Doku-Runde). ACHSE:** die Begriffe
+     Nutzungsübersicht, Integrationsdetails, Protokolle und Erfolgsquote über diese Datei,
+     case-insensitiv. **ERGEBNIS: NULL Treffer.**
+     **POSITIVKONTROLLE:** dieselbe Datei nennt "Data Manager" **dreiunddreissigmal** — die
+     Achse läuft nicht leer, sie trifft nur diesen Gegenstand nicht.
+
+     **WAS DARAUS FOLGT UND WAS NICHT:** Die Bedeutung der Zahl ist **UNGELESEN**. Sie ist
+     damit **eine ungelesene Stelle in der Anbieter-Dokumentation und keine offene Frage an
+     das Produkt** — es ist **kein** Vorrats-Eintrag daraus geworden, und das ist eine
+     Entscheidung und kein Versehen.
+     **KEINE DEUTUNG DER ZAHL STEHT HIER**, weder eine gelesene noch eine erschlossene.
+
+     PROVENIENZ: **GEMESSEN am Dateitext (CC, 2026-09-07, Doku-Runde)**. Dass die Oberfläche
+     die zwei Spalten führt, ist eine **OWNER-ANGABE 2026-09-07**. **KEINE Lesung an einer
+     Google-Seite** — es ist keine Doku-Seite zu dieser Oberfläche geöffnet worden.
 
 ## Pinterest (Conversions API)
 

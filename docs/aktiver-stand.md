@@ -164,10 +164,39 @@ ECHTER ANZEIGENKLICK.**
 die Sperre darüber**, und die Verortungs-Zeile dort gilt für beide: Wer eine Sperre dieser
 Phase sucht, sucht sie in "### (1) Der Gegenstand".
 
-**DER ZUSTAND — OWNER-ANGABE 2026-09-02:** Das verwendete Google-Ads-Konto ist ein reines
-**Entwickler-/Testkonto**. Es laufen **keine aktiven kostenpflichtigen Kampagnen**, und es hat
-folglich **nie einen echten Anzeigenklick gegeben**. **KEINE Messung an einer
-Google-Oberfläche** — weder an der Kampagnen-Ansicht noch an einem Bericht.
+**DER ZUSTAND — RICHTIGGESTELLT AM 2026-09-07, NICHT GESTEMPELT.** Eine Sperre beschreibt
+einen **ZUSTAND**; ein Stempel liesse zwei Zustände nebeneinander stehen, und wer den
+falschen nähme, hielte eine gefallene Sperre für stehend.
+**ES HAT EINEN ECHTEN ANZEIGENKLICK GEGEBEN — GEMESSEN 2026-09-07 (OWNER):** eine
+geschaltete Anzeige, ein echter Klick, eine echte Klick-Kennung. **DIE SPERRE IST DAMIT
+GEFALLEN.**
+**DAS VERWENDETE GOOGLE-ADS-KONTO IST WEITERHIN EIN REINES ENTWICKLER-/TESTKONTO** —
+OWNER-ANGABE 2026-09-02, **von dieser Messung nicht berührt und deshalb unverändert
+übernommen.** Ein Testkonto kann eine Anzeige schalten; die zwei Angaben widersprechen
+einander nicht.
+**HIER STAND BIS ZUM 2026-09-07:** "Das verwendete Google-Ads-Konto ist ein reines
+**Entwickler-/Testkonto**. Es laufen **keine aktiven kostenpflichtigen Kampagnen**, und es
+hat folglich **nie einen echten Anzeigenklick gegeben**. **KEINE Messung an einer
+Google-Oberfläche** — weder an der Kampagnen-Ansicht noch an einem Bericht."
+**DREI VON VIER TEILEN DIESES SATZES SIND ÜBERHOLT, EINER NICHT — und die Trennung ist der
+Inhalt dieser Richtigstellung:** Der Anzeigenklick ist **GEMESSEN** widerlegt. Dass keine
+Kampagne lief, ist damit ebenfalls überholt — eine geschaltete Anzeige ist eine laufende
+Kampagne; **das ist eine ABLEITUNG aus der Owner-Angabe und keine eigene Messung an der
+Kampagnen-Ansicht.** Auch der Nachsatz "KEINE Messung an einer Google-Oberfläche" trifft
+nicht mehr zu: Die Annahme der Einlieferung ist am 2026-09-07 an eben einer solchen
+abgelesen worden (Vorrats-Eintrag 41). **Die Einschätzung über die ART des Kontos steht
+oben unverändert.**
+**DER TITEL DIESES ABSCHNITTS SAGT WEITERHIN "EXISTIERT KEIN ECHTER ANZEIGENKLICK", und das
+ist ab jetzt falsch.** Er bleibt trotzdem stehen: Er datiert sich über den Zusatz
+"ANGETRETEN AM 2026-09-02" selbst, und die Wendung "die zweite Sperre" wird von aussen
+zitiert — GEMESSEN am Repo (CC, 2026-09-07, Doku-Runde): aus Vorrats-Eintrag 4, aus
+Vorrats-Eintrag 41, aus VERMERK 12 und aus docs/ziel-befunde.md. **DER VOLLE TITELTEXT WIRD
+NIRGENDS ZITIERT** (dieselbe Achse, kein Treffer); dass er trotzdem bleibt, ist eine
+Entscheidung zugunsten der Datierbarkeit, keine Auflage.
+**WAS MIT DER SPERRE NICHT AUTOMATISCH FÄLLT, steht weiter unten in diesem Abschnitt unter
+"WAS DAMIT GESPERRT IST — DREI DINGE, EINZELN" und wird hier NICHT entschieden.** Der
+Schliessungs-Block von Vorrats-Eintrag 41 löst von den dreien **einen** ein — die
+Tag-Hypothese. Über die beiden anderen sagt diese Richtigstellung **nichts**.
 
 **SIE DECKT SICH MIT DEM GEMESSENEN FEHLERGRUND, IST ABER NICHT DURCH IHN BEWIESEN — UND
 BEIDES GEHÖRT HIN.** Messung E hat für die Anfrage vom 2026-09-01
@@ -8065,6 +8094,15 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     stehe **frühestens 30 Minuten, bis zu 24 Stunden später**. **DIE ABGELESENE TABELLE LIEGT
     HINTER DIESER STUFE** (die Fehlerzeilen vom 1. bis 3. September stammen aus eben dieser
     asynchronen Verarbeitung), **aber vor der Verbuchung.**
+    **DARAUS FOLGT EINE AUFLAGE UND NICHT NUR EINE GRENZE, NACHGETRAGEN 2026-09-07: WER
+    INNERHALB DIESES FENSTERS IN DIE BERICHTERSTATTUNG SIEHT, HAT KEIN TAUGLICHES INSTRUMENT
+    FÜR DIE FRAGE "WIRKT DIE CONVERSION"** — docs/ziel-befunde.md, Google-Abschnitt, Teil H1,
+    führt genau diesen Blick als eines von vier täuschenden Instrumenten, wörtlich: "**DER
+    BLICK IN DIE GOOGLE-ADS-OBERFLÄCHE INNERHALB DER 14 TAGE** — die Ereignisse erscheinen in
+    der Berichterstattung, wirken aber nicht auf die Gebote, und Wert-Überschreibungen sind
+    abgeschaltet". Der Absatz darüber nennt das Fenster als **GRENZE dieser Messung**; dieser
+    Satz macht daraus die **AUFLAGE an die nächste** — sonst liest die nächste Runde ein
+    Erscheinen in der Berichterstattung als Wirkung.
 
     **DIE AUSGELASSENE NACHLESE — AUSDRÜCKLICH EINE ENTSCHEIDUNG UND KEIN VERSÄUMNIS.** Die
     drei Statusabfragen über die Diagnose-Kennungen — die zwei vom 2026-09-02 und eine neue —

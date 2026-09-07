@@ -73,6 +73,7 @@ docs/immer-beachten.md.
 · Entscheidungen, die über ihre Scheibe hinaus binden
 · Vorrat (gemeldet, nicht gebaut)
 · Hebungs-Kandidaten
+· Die Teilung der Standdatei — Zuschnitt in drei Schritten
 
 ## Pflicht-Gate — diese Datei zuerst
 
@@ -9635,3 +9636,332 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
    (docs/immer-beachten.md und Hebungs-Kandidat 2 dieser Datei, CC, 2026-09-04). Dass für
    die zweite Hälfte keine Bedingung formulierbar ist, ist eine **ABLEITUNG** aus der
    Quelltext-Wächter-Regel, keine Messung.
+
+## Die Teilung der Standdatei — Zuschnitt in drei Schritten
+
+**WAS DIESER ABSCHNITT IST:** Der Zuschnitt für die Teilung DIESER Datei in drei. Er ist
+SCHRITT 1 der Teilung und selbst kein Bau — er legt die Entscheidung ab, BEVOR sie
+vollzogen wird. Angelegt am 2026-09-07 (CC, Doku-Runde) auf OWNER-ENTSCHEIDUNG.
+
+**DER GEGENSTAND, IN EINEM SATZ:** Diese Datei ist **680 598 Bytes und 9 637 Zeilen** gross
+(GEMESSEN, CC, 2026-09-07, vor diesem Eingriff). Auftrag 0 verlangt beim ersten Prompt jeder
+Sitzung ihre VOLLSTÄNDIGE Lesung; das ist seit mehreren Runden nicht mehr erfüllbar, und die
+letzten Runden haben stattdessen das Verzeichnis plus ausgewählte Abschnitte gelesen. **EIN
+PFLICHT-GATE, DAS NIEMAND VOLLSTÄNDIG LIEST, IST KEIN GATE** — es sieht bei jeder Sitzung
+genauso erfüllt aus wie beim ersten Mal. Dieselbe Datei ist zugleich der MASSSTAB, gegen den
+jede Verdichtung misst; sie lässt sich also nicht einfach kürzen.
+
+**WARUM DIESER ABSCHNITT GANZ HINTEN LIEGT UND NICHT BEI DEN ÜBRIGEN ZUSCHNITTEN:** Die elf
+Scheiben-Zuschnitte stehen geschlossen zwischen "## Scheibe 11.2a" und "## Abgeschlossene
+Scheiben-Vermerke" und wandern in Schritt 2 als BLOCK ins Archiv. Ein Zuschnitt, der die
+Teilung anordnet, darf nicht mit dem Block wandern, den er anordnet — er stünde danach in
+genau der Datei, die er als Archiv bezeichnet, und niemand fände ihn dort, wo die Anordnung
+gilt. **DER ORT IST DAMIT TEIL DER ANORDNUNG UND KEINE FORMSACHE.**
+
+### Die Entscheidung — drei Dateien statt einer
+
+**docs/aktiver-stand.md WIRD IN DREI DATEIEN GETEILT.** OWNER-ENTSCHEIDUNG 2026-09-07.
+
+· **docs/aktiver-stand.md — BLEIBT und wird der STEUERNDE Teil.** Der Name ändert sich
+  NICHT. Das ist keine Bequemlichkeit: Der Name steht in CLAUDE.md und in
+  docs/arbeitsweise.md als Verfahrensslot ("Existiert diese Datei nicht, läuft aktuell keine
+  Phase"), und er wird aus 88 Stellen ausserhalb der Datei zitiert (GEMESSEN am Repo, CC,
+  2026-09-07). Ein Namenswechsel machte alle 88 tot.
+
+· **docs/claude-history/phase-11.2-google.md — das ARCHIV.** Sie nimmt die abgelaufenen
+  Zuschnitte und die fünfzehn Vermerke auf. **SIE TRÄGT IHREN ENDNAMEN VON ANFANG AN** —
+  jenen Namen, den sie am Phasenende ohnehin bekäme. Damit entfällt das Umbenennen am
+  Phasenende, und mit ihm die Fehlerklasse, die docs/aktiver-stand-11.8.md heute festhält:
+  Dort zitieren sechs Quelldateien einen Pfad, weshalb jene Datei ihren Zwischennamen
+  behalten musste und bis heute NICHT unter docs/claude-history/ liegt. **DER ENDNAME VON
+  ANFANG AN IST DIE ANTWORT AUF GENAU DIESEN FALL.**
+  **WAS DAS AUSDRÜCKLICH NICHT HEISST:** Es ist keine Aussage darüber, ob
+  docs/aktiver-stand-11.8.md wandert. Ihre Bedingung steht in ihrem eigenen Kopf und wird
+  hier nicht angetastet.
+
+· **docs/aktiver-stand-vorrat.md — der VORRAT**, alle 59 Einträge.
+  **PROVENIENZ DES NAMENS, und sie ist eine andere als bei den zwei darüber:** Der Name ist
+  vom ARCHITEKTEN gesetzt, NICHT vom Owner entschieden. **ER IST REVIDIERBAR.** Wer ihn
+  ändern will, ändert eine Namenswahl und keine Entscheidung — vor Schritt 3 kostet das
+  nichts, danach kostet es zwölf Zeiger.
+
+### Was die Steuerdatei behält, und was das wiegt
+
+GEMESSEN (CC, 2026-09-07), je an den Zeilengrenzen VOR diesem Eingriff:
+
+· Kopf + Abschnitts-Verzeichnis (Zeilen 1–76) — **4 576 B**
+· der Rahmen (Zeilen 77–425): "Pflicht-Gate — diese Datei zuerst" · "Gegenstand der Phase"
+  mit seinen drei Unterabschnitten · "Was den Zuschnitt bindet" · "Fortschreibungs-Regeln"
+  — **23 204 B**
+· "Entscheidungen, die über ihre Scheibe hinaus binden" (ab Zeile 6434) — **23 174 B**
+· "Hebungs-Kandidaten" (ab Zeile 9325) — **23 749 B**
+· "1b als Folgetask — nicht geschnitten, mit fünf Vorbedingungen" (Zeile 2082, heute
+  INNERHALB des Transport-Zuschnitts) — **27 887 B**
+· dazu die drei neuen REGISTER und dieser Abschnitt hier.
+
+**DIE GEMESSENE SUMME DER FÜNF BLÖCKE IST 102 590 B** (CC, 2026-09-07; ADDITION der fünf
+Werte darüber, keine eigene Messung). Nimmt man die elf Entscheidungen dazu, die nach dem
+nächsten Abschnitt umziehen (4 907 B + 4 946 B = 9 853 B), sind es **112 443 B**. Die drei
+Register und dieser Abschnitt kommen obendrauf — was sie wiegen, steht in der Grenze darunter.
+
+**DIE GRENZE, DIE AN DIESER ZAHL HÄNGT:** Dieser Abschnitt behauptet an KEINER Stelle, die
+Steuerdatei sei nach dem Schnitt vollständig ladbar. Er soll es auch nicht. **Aber er muss
+die Zahl nennen, an der das entschieden wird — sonst nimmt die nächste Runde eine an.**
+
+**DIE ERWARTETE GESAMTGRÖSSE DER STEUERDATEI, als ADDITION ausgewiesen und nicht als
+Messung:** 112 443 B (die Summe darüber) + **rund 21 000 B für diesen Abschnitt** + die drei
+Register mit **rund 10 000 B — SCHÄTZUNG DES ARCHITEKTEN (2026-09-07), UNGEMESSEN**.
+Zusammen **rund 144 000 B**. Die 10 000 B sind das EINZIGE Nicht-Gemessene in diesem ganzen
+Abschnitt; sie sind deshalb eigens als Schätzung gekennzeichnet und dürfen von niemandem als
+Messwert weitergereicht werden.
+
+**DER POSTEN FÜR DIESEN ABSCHNITT MISST SICH SELBST, UND DESHALB STEHT ER GERUNDET DA:** Er
+war **18 611 B**, bevor diese Grenze geschrieben wurde, und **20 910 B** unmittelbar danach
+(beides GEMESSEN, CC, 2026-09-07). **JEDE Änderung an diesem Abschnitt ändert ihn erneut** —
+eine auf das Byte genaue Angabe wäre hier schon beim nächsten Satz falsch, ohne dass etwas
+rot würde. Wer den Wert braucht, misst ihn; wer die Grössenordnung braucht, liest die
+gerundete Zahl.
+
+**DER MASSSTAB — UND ER IST HEUTE ZWEIGETEILT, WEIL SEINE ZWEI HÄLFTEN VERSCHIEDENE DATEN
+TRAGEN:**
+· **110 664 B** ist der höchste Wert, für den eine vollständige Ladung tatsächlich GEMESSEN
+  ist: docs/immer-beachten.md am 2026-08-21, per /context in Wegwerf-Sitzungen, MIT
+  Negativkontrolle, und sie übersteht ein /compact. So gross war jene Datei an jenem Tag
+  (GEMESSEN an der Versionsverwaltung, CC, 2026-09-07: Commit b881cea, der letzte Commit an
+  ihr bis zum 2026-08-22).
+· **126 574 B** ist ihre Grösse HEUTE (GEMESSEN am Repo, CC, 2026-09-07; erreicht am
+  2026-08-27). Bei DIESER Grösse ist die Ladung nicht gemessen — sie ruht auf dem @-Import
+  in CLAUDE.md, also auf einem Mechanismus, nicht auf einer Messung an dieser Zahl.
+
+**RUND 144 000 B LIEGEN ÜBER BEIDEN WERTEN.** Und jetzt die Unterscheidung, die der ganze
+Punkt dieser Grenze ist und die deshalb ausgeschrieben dasteht: **DAS IST KEIN BELEG, DASS
+DIE LADUNG BRICHT. ES IST DER VERLUST DES BELEGS, DASS SIE TRÄGT.** Das sind zwei
+verschiedene Aussagen. Wer sie zusammenzieht, macht aus einer offenen Frage ein Ergebnis —
+in die eine Richtung ("es bricht", und dann wird gegen ein Risiko gebaut, das niemand
+gemessen hat), oder in die andere ("es trägt schon", und dann verlässt sich eine Sitzung auf
+eine Ladung, für die es keinen Nachweis gibt).
+
+**WAS DIE ZAHL NOCH BEWEGT — beides planmässig, nicht erhofft:**
+· **Dieser Zuschnitt wird nach Vollzug VERDICHTET wie jeder andere.** Er ist mit rund
+  21 000 B der grösste neue Posten der Steuerdatei und der einzige, der schrumpfen SOLL.
+· **Die Registergrösse steht erst nach Schritt 2 fest.** Vorher gibt es dazu nur die
+  Schätzung oben.
+
+**DIE PRÜFUNG IST /context UND DAMIT EIN NUTZER-BEFEHL — VON CC NICHT ZU ERBRINGEN.** Sie
+gehört NACH Schritt 2 an den OWNER. Das steht hier ausdrücklich, weil sonst jemand auf eine
+Messung wartet, die keine Instanz liefern kann, und die Grenze auf Jahre offen bleibt, ohne
+dass es jemandem auffällt.
+
+**WAS GESCHIEHT, WENN SIE NICHT TRÄGT:** Der Zuschnitt bleibt gültig. Die Antwort ist dann
+ein WEITERER Schnitt oder eine FRÜHERE Verdichtung — **NICHT eine Rückkehr zur ungeteilten
+Datei.** Der Zustand vorher war 680 598 B, und der war der Anlass.
+
+**WAS AN DER ZAHL NICHT HÄNGT:** Der Zuschnitt bleibt gültig, wie sie auch ausfällt. Die
+Steuerdatei fällt von 680 598 B auf rund 144 000 B, also auf **etwa ein Fünftel** der
+heutigen Grösse (rund 21 %) — und darum geht es.
+
+**"1b ALS FOLGETASK" IST DER EINZIGE BLOCK, DER AUS EINEM ZUSCHNITT HERAUSGELÖST WIRD**, und
+der Grund gehört hin, sonst sieht es wie eine Ausnahme ohne Regel aus: Er steht formal unter
+dem Transport-Zuschnitt, beschreibt aber ausdrücklich NICHT Geschnittenes, sondern die fünf
+Vorbedingungen einer noch nicht geschnittenen Arbeit. Er ist mit 27 887 B / 374 Zeilen
+zugleich der grösste Einzelblock jener Klasse. **Er ist nicht abgelaufen und gehört deshalb
+nicht ins Archiv.**
+
+### Die elf Entscheidungen, die heute am falschen Ort stehen
+
+**HIER SCHEITERTE EIN MECHANISCHER SCHNITT** — und das ist der Grund, warum dieser Zuschnitt
+überhaupt geschrieben wird, statt gleich zu schneiden. Zwei Abschnitte stehen INNERHALB von
+Zuschnitten, die ins Archiv gehen, und sagen im EIGENEN TITEL, dass sie darüber hinaus binden:
+
+· Zeile 760, **"Die Entscheidungen vom 2026-08-29 — ACHT, und sie binden über diese Scheibe
+  hinaus"** (4 907 B) — im Zuschnitt "Die Erneuerung des Zugangsdatums — Scheibe 1a".
+· Zeile 1068, **"Drei Entscheidungen, die nach den sechs Festlegungen gefallen sind — sie
+  binden gleich"** (4 946 B) — im Zuschnitt "Google als reguläres Ziel in der Oberfläche —
+  Scheibe 3".
+
+Beide Titel sind am 2026-09-07 wörtlich am Repo geprüft (CC), beide Grössen gemessen.
+
+**SIE ZIEHEN IN SCHRITT 2 UM** — in den Abschnitt "Entscheidungen, die über ihre Scheibe
+hinaus binden", der in der Steuerdatei bleibt. **DAS IST DIE EINZIGE STELLE, AN DER SCHRITT 2
+ETWAS VERSCHIEBT STATT ZU TRENNEN**, und sie steht hier benannt, damit sie nicht als stiller
+Zusatzeingriff durchgeht.
+
+**WÄRE MECHANISCH GESCHNITTEN WORDEN, WÄRE DER SCHADEN STILL:** Elf bindende Entscheidungen
+lägen im Archiv, das per Definition Abgelaufenes trägt. Nichts hätte etwas gemeldet — der
+Schnitt hätte funktioniert, die Gates wären grün gewesen, und die nächste Scheibe wäre gegen
+Entscheidungen gebaut worden, die sie nicht mehr findet.
+
+**OB ES BEI ELF BLEIBT, IST NICHT GEPRÜFT.** Gemessen sind genau diese zwei Abschnitte, weil
+ihre TITEL die Aussage tragen. Ob in den übrigen neun Zuschnitten weitere bindende
+Entscheidungen ohne einen solchen Titel stecken, ist NICHT erhoben — s. die Grenze dieses
+Zuschnitts weiter unten.
+
+### Warum der Vorrat eine eigene Datei bekommt und nicht ins Archiv geht
+
+Drei Gründe, jeder für sich hinreichend:
+
+**(1) ER IST NICHT ABGELAUFEN — PER DEFINITION.** Sein eigener Kopf sagt: "Alle Einträge sind
+NICHT gebaut und NICHT entschieden." Abgelaufen ist, was vollzogen wurde; ein Vorrats-Eintrag
+ist das Gegenteil davon.
+
+**(2) AM PHASENENDE WIRD ER GEHOBEN, NICHT ARCHIVIERT.** Der Vorrat einer abgeschlossenen
+Phase wandert nach docs/claude-history/backlog-polish.md — so geschehen bei Phase 11 und bei
+Phase 11.1, die dort je eine eigene datierte Überschrift tragen. **LÄGE ER IM ARCHIV, GINGE
+ER MIT DEM ARCHIV MIT** und würde beim Phasenende nicht mehr angefasst. Der Fehler wäre
+still: Das Archiv sähe vollständig aus, und 59 gemeldete Punkte wären begraben.
+
+**(3) ER IST MIT 194 271 B DIE ZWEITGRÖSSTE KLASSE DER DATEI** (28,5 %) und wird aus
+Produktiv- und Testcode heraus adressiert: **ZWÖLF VERSCHIEDENE VORRATS-EINTRÄGE** werden
+dort namentlich zitiert — die Nummern 3, 4, 5, 7, 9, 16, 34, 35, 42, 48, 53 und 55 (GEMESSEN
+am Repo, CC, 2026-09-07; ACHSE: src/** und supabase/** über die Formen "Vorrats-Eintrag <n>",
+"Vorrat, Eintrag <n>" und "Vorrat <n>").
+**DIE ZWEITE ZÄHLUNG DAZU, WEIL SIE EINE ANDERE ACHSE HAT UND SONST MIT DER ERSTEN
+VERWECHSELT WIRD:** Es sind **12 ZEIGER-STELLEN IM PRODUKTIVCODE** und 7 weitere in
+Testdateien. **ZWÖLF EINTRÄGE UND ZWÖLF PRODUKTIV-STELLEN SIND ZWEI VERSCHIEDENE ZWÖLFEN**,
+die sich zufällig treffen; wer sie zusammenzieht, hält die eine für die Bestätigung der
+anderen.
+
+### Die drei Register — die Antwort auf "woher weiss jemand, dass er nachsehen muss"
+
+Die Steuerdatei bekommt **DREI REGISTER**: eines für die elf Zuschnitte, eines für die
+fünfzehn Vermerke, eines für die 59 Vorrats-Einträge. Sie sind der Grund, warum die Teilung
+nicht bloss eine Verlagerung des Problems ist: **Ohne sie weiss eine Sitzung, die nur die
+Steuerdatei liest, nicht einmal, DASS es etwas nachzusehen gibt.**
+
+**BAUFORM — wie das Verzeichnis in docs/immer-beachten.md:** je Eintrag der **WÖRTLICHE
+ANFANG** des Eintrags, auf feste Breite geschnitten und gekappt. **KEINE BESCHREIBUNG.** Der
+Grund steht dort und gilt hier unverändert: Eine Beschreibung wäre eine zweite Wahrheit, die
+neben dem Eintrag altert und irgendwann etwas anderes sagt als er; ein wörtliches Zitat lässt
+sich per Suche gegen den Eintrag prüfen und kann nicht auseinanderlaufen.
+
+**BEIM VERMERK-REGISTER ZUSÄTZLICH NUMMER UND BAU-COMMIT.** Beide stehen heute schon in der
+Überschrift jedes Vermerks (GEMESSEN, CC, 2026-09-07: alle fünfzehn tragen eine Commit-Angabe,
+es gibt keine Lücke); das Register hebt sie nur nach vorn.
+
+**AUFLAGE AUS EINER BESTEHENDEN REGEL, NICHT AUS DIESEM ZUSCHNITT:** Register-Einträge tragen
+**KEINE `##`- oder `###`-MARKE**. Das folgt aus "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN
+EINER DATEI MIT VERZEICHNIS NICHT" (docs/immer-beachten.md). Trüge ein Register-Eintrag die
+Marke, stünde jede Überschrift der Datei mindestens zweimal darin, und eine
+Überschriften-Suche träfe systematisch zuerst das Register. **DIE DREI REGISTER
+VERVIELFACHEN DIESE GEFAHR GEGENÜBER DEM EINEN VERZEICHNIS**, das die Datei heute trägt —
+genau deshalb steht die Auflage hier und nicht nur dort.
+
+### Der Preis: 27 Zeiger, die auswandern — und ein Anker, der heute schon tot ist
+
+**RUND 27 ZEIGER IN PRODUKTIV- UND MIGRATIONSDATEIEN ZEIGEN AUF ANKER, DIE AUSWANDERN**
+(GEMESSEN am Repo, CC, 2026-09-07; ACHSE: src/** und supabase/**, OHNE Testdateien):
+
+· **12 ZUSCHNITT-ANKER** → docs/claude-history/phase-11.2-google.md
+· **3 VERMERK-ANKER** → docs/claude-history/phase-11.2-google.md
+· **12 VORRATS-ANKER** → docs/aktiver-stand-vorrat.md
+
+**DIE VOLLSTÄNDIGE LISTE STEHT NICHT HIER, SONDERN IM MESSBERICHT VOM 2026-09-07 (CC),
+Auftrag 2.** Sie wird hier bewusst nicht verdoppelt: Sie wandert mit Schritt 3 ohnehin in
+einen Vermerk, und zweimal geschrieben liefe sie auseinander. **DIE ZAHL IST KEIN PRÜFUMFANG**
+— wer Schritt 3 fährt, misst neu.
+
+**DIE ZAHL IST EINE UNTERE SCHRANKE, UND DAS GEHÖRT DAZU:** Testdateien sind in den 27 NICHT
+enthalten (dort kommen mindestens 3 Vermerk-Stellen und 7 Vorrats-Stellen hinzu), und rein
+sprachliche Rückverweise ohne Anker fängt keine formale Suche.
+
+**EIN ANKER IST HEUTE SCHON TOT, UND ER GEHÖRT IN DIESELBE RUNDE:**
+`src/lib/oauth/token-refresh.ts` und diese Datei selbst (vor diesem Eingriff Zeile 6700)
+zeigen auf einen Abschnitt **"Warum sie zuerst kommt"**. **DEN ABSCHNITT GIBT ES NICHT MEHR**
+— er ist bei der Verdichtung der Scheibe 1a entfallen und wird an heutiger Zeile 619 als
+entfallen zitiert. GEMESSEN am Repo (CC, 2026-09-07). Beide Zeiger laufen bei einer
+Überschriften-Suche ins Leere und treffen bei einer Volltext-Suche nur noch das Zitat der
+Streichung.
+**WARUM ER HIER STEHT, OBWOHL ER MIT DER TEILUNG NICHTS ZU TUN HAT:** Schritt 3 fasst ohnehin
+jeden Zeiger auf diese Datei an. Ein toter Anker, der bei genau dieser Gelegenheit nicht
+mitgenommen wird, wird auf Jahre nicht mehr angefasst.
+
+### Die drei Schritte der Teilung, und warum die Zeiger zuletzt kommen
+
+**SCHRITT 1 — DIESER ZUSCHNITT.** Rein additiv, eine Datei, keine Zeile verschoben.
+
+**SCHRITT 2 — DER SCHNITT.** Die zwei neuen Dateien entstehen, die abgelaufenen Zuschnitte
+und die fünfzehn Vermerke gehen ins Archiv, die 59 Vorrats-Einträge in die Vorratsdatei, die
+drei Register entstehen in der Steuerdatei, die elf Entscheidungen ziehen um, und
+docs/arbeitsweise.md und CLAUDE.md werden nachgezogen.
+
+**SCHRITT 3 — DIE ZEIGER.** Die 27 Zeiger plus der tote Anker.
+
+**DER GRUND DER REIHENFOLGE, und ohne ihn zieht die nächste Runde sie zusammen:** **VOR
+SCHRITT 2 WEISS NIEMAND, WOHIN DIE ZEIGER ZEIGEN.** Ein Zeiger, der auf eine Datei umgestellt
+wird, die es noch nicht gibt, ist nicht "vorbereitet", sondern falsch — und zwar still: Kein
+Gate prüft einen Pfad in einem Kommentar. Umgekehrt ist ein Zeiger, der nach Schritt 2 noch
+auf die Steuerdatei zeigt, zwar falsch, aber er zeigt auf eine EXISTIERENDE Datei mit einem
+REGISTER, das sagt, wo der Anker jetzt liegt. **DER ZWISCHENZUSTAND NACH SCHRITT 2 IST ALSO
+LESBAR FALSCH, DER NACH EINEM VORGEZOGENEN SCHRITT 3 WÄRE ES NICHT.**
+
+### Was in Schritt 2 an docs/arbeitsweise.md und CLAUDE.md nachzuziehen ist
+
+**SECHS STELLEN IN docs/arbeitsweise.md**, einzeln benannt, damit keine liegenbleibt:
+
+· **"Die Standdatei"** — sie ist ab dem Schnitt ein VERBUND aus drei Dateien. Der Teil "Was
+  sie trägt" muss JE DATEI sagen, was.
+· **"Prompt-Bauform für CC", Auftrag 0** — welche der drei Dateien VOLLSTÄNDIG zu lesen ist
+  und welche auf Zeiger. Das ist der Kern des ganzen Vorhabens; bleibt diese Stelle stehen,
+  ist die Teilung folgenlos.
+· **"Die Kadenz"**, Abschluss-Vermerk und Verdichtung im selben Zug — der Vermerk geht
+  künftig ins ARCHIV, die Verdichtung in die STEUERDATEI. **Zwei Dateien, ein Zug.**
+· **"Phasenende", Schritt 2 Archivierung** — das Umbenennen ENTFÄLLT für das Archiv (es trägt
+  den Endnamen schon); dafür kommen das HEBEN der Vorratsdatei und ihr LÖSCHEN hinzu.
+· **Der Lebenszyklus-Satz** "geplant → roadmap · laufend → Standdatei · abgeschlossen →
+  claude-history" — er schliesst heute AUS, was der Endname-Beschluss tut: eine Datei unter
+  docs/claude-history/, die zu einer LAUFENDEN Phase gehört und mitwächst.
+· **"Wann sie entsteht"** — wer legt künftig WELCHE der drei Dateien an, und WANN.
+
+**DREI STELLEN IN CLAUDE.md:**
+
+· **"## Aktiver Stand — Verfahren ab Phase 10"** — der Abschnitt beschreibt heute EINE Datei.
+· **"## Detail-Archiv"** — ein Eintrag für docs/claude-history/phase-11.2-google.md, samt dem
+  Hinweis, dass sie als einzige Archivdatei zu einer LAUFENDEN Phase gehört.
+· **"## Aktive Dokumente"** — ein Eintrag für die Vorratsdatei.
+
+**DIE VOLLTEXTE STEHEN HIER NICHT.** Sie entstehen in Schritt 2 an ihrem Ort; ein Entwurf an
+dieser Stelle wäre eine zweite Fassung, die neben der gebauten altert.
+
+**"KEINE NEUE DATEI OHNE OWNER-ENTSCHEIDUNG" (CLAUDE.md) IST BEACHTET:** Beide neuen Dateien
+sind vom Owner entschieden — das Archiv mitsamt Namen, die Vorratsdatei dem Grunde nach; nur
+ihr NAME ist Architekten-Setzung und revidierbar.
+
+### Die Grenze dieses Zuschnitts — die Zuschnitte werden verschoben, nicht beurteilt
+
+**DIE ZUSCHNITTE SIND MIT 254 785 B (37,4 %) DIE GRÖSSTE KLASSE DER DATEI**, obwohl alle elf
+verdichtet sind (GEMESSEN, CC, 2026-09-07: jeder der elf trägt einen Abschnitt "Vollzogen —
+…" bzw. "… ist verdichtet"). **OB IHRE "FESTLEGUNGS"-BLÖCKE NOCH BINDEN ODER ABGELAUFEN SIND,
+IST NICHT GEPRÜFT** — weder von CC noch vom Architekten; der Volltext ist ungelesen. Die
+grössten Einzelblöcke dort sind "Sechs Festlegungen des Zuschnitts der Scheibe 2" (18 030 B)
+und "Sieben Festlegungen des Zuschnitts der Scheibe 4" (14 023 B).
+
+**FOLGE, UND SIE IST EINE AUFLAGE AN SCHRITT 2: DIE ZUSCHNITTE WERDEN UNVERÄNDERT VERSCHOBEN
+UND NICHT BEURTEILT.** Kein Satz wird gestrichen, keiner umformuliert, keiner gehoben —
+ausser den zwei Entscheidungs-Abschnitten, die oben namentlich stehen.
+
+**WER SIE SPÄTER BEURTEILT, TUT DAS ALS EIGENE ARBEIT.** Das ist keine Vertagung aus
+Bequemlichkeit: Eine Beurteilung verlangt die Lesung von 254 785 Bytes, und sie im selben Zug
+mit einem Schnitt zu erledigen hiesse, ZWEI ACHSEN GLEICHZEITIG ZU BEWEGEN — danach wäre am
+Ergebnis nicht mehr zu sehen, ob eine Aussage verschoben oder verändert worden ist.
+
+### Wo dieser Zuschnitt liegt und was diese Runde ausdrücklich nicht tut
+
+**ER BLEIBT IN DER STEUERDATEI.** In Schritt 2 wandert er NICHT ins Archiv. Nach Vollzug wird
+er verdichtet wie jeder andere Zuschnitt — die Anweisungen laufen ab, die Entscheidungen und
+die Grenze bleiben.
+
+**WAS DIESE RUNDE NICHT GETAN HAT**, damit die Abwesenheit nicht als Versehen gelesen wird:
+Keine Zeile verschoben, gelöscht oder umsortiert. Keine neue Datei angelegt. Keine Nummer neu
+vergeben — Vermerke (1–15), Vorrat (1–59) und Hebungs-Kandidaten (1–8) behalten ihre Nummern
+über den Schnitt hinweg, und zwar über alle drei Dateien. Kein Zeiger nachgezogen. Nichts an
+docs/arbeitsweise.md, CLAUDE.md, docs/immer-beachten.md, docs/roadmap.md,
+docs/offene-punkte.md, an src/**, supabase/** oder docs/claude-history/** geändert.
+
+**PROVENIENZ DIESES ABSCHNITTS:** Die Entscheidung zur Teilung und der Endname der Archivdatei
+sind **OWNER-ENTSCHEIDUNG (2026-09-07)**. Der Name docs/aktiver-stand-vorrat.md ist
+**ARCHITEKTEN-SETZUNG (2026-09-07)** und revidierbar. Sämtliche Byte-, Zeilen- und
+Zeigerzahlen sind **GEMESSEN am Repo (CC, 2026-09-07)** und stammen aus dem Messbericht
+desselben Tages; die Summen 102 590 B, 112 443 B und die rund 144 000 B sind ADDITIONEN
+dieser Werte und keine eigenen Messungen. **DIE EINZIGE NICHT GEMESSENE ANGABE DES GANZEN
+ABSCHNITTS SIND DIE RUND 10 000 B FÜR DIE DREI REGISTER — ARCHITEKTEN-SCHÄTZUNG, oben als
+solche gekennzeichnet.** Keine Messung an einer laufenden Anwendung, keine Anbieter-Lesung.

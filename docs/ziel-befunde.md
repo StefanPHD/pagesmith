@@ -123,6 +123,8 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
   - ### Abschnitts-Lesung 2026-09-02 zur Zuordnung ohne Klick-Kennung, LAUF 8 — der Teil (cc)
   - ### MESSUNG F am eigenen Dienst (2026-09-07) und ein Nicht-Treffer zur Oberfläche —
     die Teile (cd) und (ce)
+  - ### MESSUNG G in der Google-Ads-Oberfläche (2026-09-07) — die Verbuchung, die Teile
+    (cf) und (cg)
 - ## Pinterest (Conversions API)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
@@ -5475,6 +5477,148 @@ auf einem Beleg ruht, den nur der Anbieter führt.
      PROVENIENZ: **GEMESSEN am Dateitext (CC, 2026-09-07, Doku-Runde)**. Dass die Oberfläche
      die zwei Spalten führt, ist eine **OWNER-ANGABE 2026-09-07**. **KEINE Lesung an einer
      Google-Seite** — es ist keine Doku-Seite zu dieser Oberfläche geöffnet worden.
+
+### MESSUNG G in der Google-Ads-Oberfläche (2026-09-07) — die Verbuchung, die Teile (cf) und (cg)
+
+**WAS DIESER ABSCHNITT IST UND WIE ER SICH VON ALLEN VORIGEN UNTERSCHEIDET:** A, B1 und D
+liefen gegen `events:ingest`, C gegen den Token-Endpunkt, E gegen den Diagnostik-Endpunkt,
+F am eigenen Vercel-Log. **MESSUNG G IST DIE ERSTE ABLESUNG IN DER GOOGLE-ADS-OBERFLÄCHE**
+— also die erste Beobachtung auf der Achse, die (ca)/(e) als offen benennt: **nicht ob ein
+Datensatz angenommen wird, sondern ob daraus eine Conversion wird.**
+
+**HERKUNFT FÜR ALLE TEILE DIESES ABSCHNITTS: GEMESSEN 2026-09-07 (OWNER), abgelesen in der
+Google-Ads-Oberfläche** — Zielvorhaben → Conversions, die Detailseite der Offline-Aktion,
+und das Protokoll im Data Manager. **KEIN Aufruf gegen eine Schnittstelle**, kein `curl`,
+kein Endpunkt. Wo unten GELESEN steht, stammt die Angabe aus DIESER Datei und nicht aus
+einer Google-Seite; **es ist in dieser Runde keine Anbieter-Dokumentation geöffnet worden.**
+
+(cf) **AUS DER EINLIEFERUNG IST EINE VERBUCHTE CONVERSION GEWORDEN — UND DER ANBIETER NENNT
+     DEN ZEITPUNKT SELBST.** **NEU.**
+
+     **(a) DIE ABLESUNG.** **GEMESSEN 2026-09-07 (OWNER), Zielvorhaben → Conversions:** Die
+     **eine** Conversion des Zeitraums sitzt auf der **OFFLINE-AKTION**, Quelle
+     **"Website (Aus Klicks importieren)"**, **Wert 9,00**. Die **tag-basierte** Aktion
+     desselben Kontos steht auf **0,00**.
+
+     **(b) DER TRAGENDE BELEG, UND ER MACHT AUS EINER KETTE EINE BEOBACHTUNG:** Die
+     Detailseite der Offline-Aktion nennt **"LETZTE ERFASSTE CONVERSION: 7. Sept. 2026, um
+     14:00"**. **DER ANBIETER NENNT DEN ZEITPUNKT SELBST** — die Angabe ist abgelesen, nicht
+     erschlossen.
+
+     **(c) DER WERT DECKT SICH MIT DEM GESENDETEN.** Der Beacon desselben Tages trug das
+     Ereignis **Purchase**, Wert **9**, Währung **EUR** — **GEMESSEN am eigenen Payload
+     (OWNER, 2026-09-07)**. Die Oberfläche zeigt **9,00**.
+
+     **(d) DER KONTRAST AUS DEM DATA-MANAGER-PROTOKOLL, weil eine Erfolgszeile ohne ihn eine
+     ABWESENHEITS-BEHAUPTUNG OHNE POSITIVKONTROLLE wäre:** **Vor dem 7. September gibt es
+     KEINE erfolgreiche Einlieferung.** Der 1., 2. und 3. September stehen auf **0 %** mit
+     Fehlern in Höhe der Datensätze; für den **4. September gibt es GAR KEINE Zeile**.
+     **Die Tabelle zeigt Fehlschläge also an, und sie zeigt für die Tage davor keinen
+     Erfolg.**
+
+     **(e) DIE ZUORDNUNG ZU UNSEREM AUFRUF IST EINE ABLEITUNG, KEINE MESSUNG — und dieser
+     Satz gehört an den Anfang jeder Weiterverwendung.** **Niemand hat die zwei Seiten über
+     eine gemeinsame Kennung verbunden**; die Anfrage-Kennung des Endpunkts erscheint in
+     dieser Ansicht nicht. Die Ableitung ruht auf **DREI unabhängigen Beobachtungen** —
+     dem vom Anbieter genannten Zeitpunkt (b), der Wert-Deckung (c) und dem Kontrast (d).
+     **DAS IST STÄRKER ALS EINE PLAUSIBILITÄT UND SCHWÄCHER ALS EINE KENNUNGS-VERBINDUNG.**
+     Dieselbe Grenze führt (cd)/(c) für die Einlieferung; sie ist hier **nicht überwunden**,
+     sondern um zwei Beobachtungen gestützt.
+
+     **(f) DIE RÜCKDATIERUNG IST BESTÄTIGT: EIN OFFLINE-IMPORT WIRD DEM KLICK ZUGERECHNET,
+     NICHT DEM UPLOAD.** **GEMESSEN 2026-09-07 (OWNER):** Der abgelesene Zeitraum **endet am
+     6. September und enthält den 7. NICHT** — die Conversion erscheint trotzdem darin.
+     **DASS DARAUS DIE ZURECHNUNG AUF DEN KLICK FOLGT, IST EINE ABLEITUNG** aus den zwei
+     abgelesenen Angaben (Zeitraum und Erscheinen), **keine dritte Beobachtung.**
+     **DIE PRAKTISCHE FOLGE, und sie trifft jede künftige Live-Anleitung: WER NACH EINEM
+     IMPORT IM ZEITRAUM DES UPLOAD-TAGES SUCHT, FINDET NICHTS UND HÄLT DEN IMPORT FÜR
+     GESCHEITERT.** Gesucht wird im Zeitraum des KLICKS.
+
+     **(g) WAS DAMIT AUF EINER ANDEREN ACHSE BEANTWORTET IST — ALS FOLGE BENANNT, UND DER
+     DORTIGE TEIL BLEIBT UNBERÜHRT:** (cb) führt unter seinen Grenzen "OB
+     `productDestinationId` (`<CTID-10-ZIFFERN>`) AUF DIE RICHTIGE CONVERSION-ACTION ZEIGT"
+     als ungemessen und nennt das Zurückspiegeln des Wertes ausdrücklich "ein Echo ist keine
+     Bestätigung". **Die Conversion sitzt auf der OFFLINE-AKTION** — damit hat der Wert auf
+     eine Action gezeigt, die den Import angenommen und verbucht hat. **DAS IST EINE
+     ABLEITUNG AUS (a) UND (b), KEINE MESSUNG AM FELD**, und (cb) ist in dieser Runde
+     **nicht angefasst** worden.
+
+     **ZWEI MELDUNGEN AUF DERSELBEN SEITE, BEIDE ERKLÄRT — sie stehen hier, damit niemand
+     sie später für einen Widerspruch hält:**
+     · **"No attempted imports with user-provided data" IST FÜR DIESEN WEG
+       GEGENSTANDSLOS.** Sie sucht Importe mit **gehashten Nutzerdaten**; die gewählte
+       Gestalt sendet eine **Klick-Kennung und keine Kontaktdaten** (der PII-Zweig ist
+       ausdrücklich ausgeschlossen, s. die Gestalt-Entscheidung an der Roadmap-Zeile 11.2).
+     · **"Unparseable gclid" TRÄGT DAS DATUM 3. SEPTEMBER** (**OWNER-ANGABE 2026-09-07**) —
+       der Lauf mit einer **erfundenen** Kennung, derselbe, den (cb) als
+       `PROCESSING_ERROR_REASON_INVALID_GCLID` führt. **ALT, kein Widerspruch zur Conversion
+       vom 7.**
+
+     **DIE GRENZEN, UND SIE SIND DER TEIL, DEN MAN SPÄTER ÜBERLIEST:**
+     · **DIE WIRKUNG AUF DIE GEBOTE IST NICHT GEMESSEN.** Diese Ablesung sagt, dass eine
+       Conversion **in der Berichterstattung** steht — nicht, dass sie auf die Gebote wirkt.
+       Diese Datei führt dafür ein Zeitfenster, und es steht in (p)/H2 im Wortlaut: "In den
+       ersten **14 TAGEN** je Conversion-Action fliessen die per API gelieferten
+       Multi-Source-Daten **NICHT** in die Gebotssteuerung, und WERT-ÜBERSCHREIBUNGEN SIND
+       ABGESCHALTET". **HIER STEHT KEINE ZAHL, DIE DORT NICHT STEHT.**
+     · **OB DIESES FENSTER FÜR DIE GEWÄHLTE GESTALT ÜBERHAUPT GILT, IST GELESEN UND NICHT
+       GEKLÄRT — UND DIESE DATEI FÜHRT DAZU BISHER KEINEN VORBEHALT** (GEMESSEN am
+       Dateitext, CC, 2026-09-07, Doku-Runde; ACHSE: die Wendungen zur Geltung des Fensters
+       über den ganzen Dateitext, KEIN Treffer; POSITIVKONTROLLE: "Multi-Source" trifft
+       dreizehnmal, die Achse läuft nicht leer). **DER GRUND, WARUM DIE FRAGE ÜBERHAUPT
+       ENTSTEHT:** (p)/H2 spricht von den "per API gelieferten **Multi-Source**-Daten", und
+       (e) bindet die vierzehn Tage ausdrücklich an die **(b-)Gestalt** — die gewählte ist
+       die **(a-)Gestalt**, der Offline-Import über die Klick-Kennung. **HIER WIRD NICHTS
+       ENTSCHIEDEN**, weder dass das Fenster gilt noch dass es nicht gilt; die Frage ist
+       benannt und offen.
+     · **GEMESSEN IST EINE CONVERSION AUS EINER EINLIEFERUNG.** Über **Wiederholbarkeit**
+       sagt diese Ablesung nichts.
+     · **DIE AKTION TRÄGT WEITERHIN DEN STATUS "Überprüfung erforderlich" — ABGELEGT, NICHT
+       GEDEUTET.** Was er bedeutet, ist **ungelesen**; es ist dazu keine Anbieter-Seite
+       geöffnet worden.
+
+     PROVENIENZ: Die Ablesungen (a), (b), (d), (f) und die zwei Meldungen **GEMESSEN
+     2026-09-07 (OWNER), an der Google-Ads-Oberfläche**. Der gesendete Wert in (c)
+     **GEMESSEN am eigenen Payload (OWNER, 2026-09-07)**. Die Zuordnung in (e), die
+     Zurechnung in (f) und die Folge in (g) sind **ABLEITUNGEN**, je aus den benannten
+     Beobachtungen, **keine Messungen**. Das Zitat aus (p)/H2 ist **GELESEN in DIESER Datei**
+     (CC, 2026-09-07, Doku-Runde), **nicht an einer Google-Seite**. Der Nicht-Treffer zum
+     fehlenden Vorbehalt ist **GEMESSEN am Dateitext** (CC, 2026-09-07).
+
+(cg) **DREI ANGABEN DER DETAILSEITE, DIE EIN KÜNFTIGER HANDAUFRUF BRAUCHT.** **NEU.**
+
+     **WARUM SIE EINEN EIGENEN TEIL BEKOMMEN UND NICHT IN (cf) STEHEN:** (cf) beschreibt ein
+     **EREIGNIS** — dass eine Conversion entstanden ist. Diese drei beschreiben die
+     **KONFIGURATION der Action**, und sie gelten weiter, wenn jenes Ereignis längst alt ist.
+     Wer sie dort unterbrächte, müsste sie beim nächsten Messprotokoll erneut suchen.
+
+     **GEMESSEN 2026-09-07 (OWNER), an der Detailseite der Offline-Aktion:**
+     · **DIE CONVERSION-TYP-ID** — der Wert, den ein Handaufruf als
+       `destinations[].productDestinationId` braucht. **SIE STEHT HIER NICHT IM KLARTEXT:**
+       Diese Datei führt ihn als **`<CTID-10-ZIFFERN>`**, und die Maskierungs-Legende in
+       **(cb)** bindet dieses Zeichen ausdrücklich an **denselben Wert an jeder Fundstelle
+       dieser Datei** — eine reine Ziffernfolge, zehn Stellen, ohne `AW-`-Präfix und ohne
+       Label. **DIE MASKIERUNG IST KONSISTENZ, NICHT VERTRAULICHKEIT**; die Legende in (ca)
+       sagt das für ihre eigenen zwei Zeichen im Wortlaut.
+       **WAS DIE DOKU ZUR VERTRAULICHKEIT SAGT, IST EIN NICHT-TREFFER UND KEINE ENTWARNUNG:**
+       (v)/C4 hält fest, dass die Referenz `productDestinationId` und `accountId` "NIRGENDS
+       als vertraulich" einstuft, und schliesst ausdrücklich mit "DAS IST KEINE ENTWARNUNG —
+       nach zwei Läufen über den vollständigen Baum sagt die Doku zur Vertraulichkeit der
+       Ziel-Kennung schlicht nichts."
+     · **DER TRACKING-ZEITRAUM FÜR KLICK-CONVERSIONS BETRÄGT 90 TAGE.** **ABGELESEN, NICHT
+       GEDEUTET** — welche Folge das für die Haltbarkeit einer Klick-Kennung hat, steht hier
+       nicht und ist nicht erhoben.
+     · **DIE WERT-EINSTELLUNG LAUTET "unterschiedliche Werte verwenden".** Sie ist mit dem
+       gesendeten Wert aus (cf)/(c) **verträglich**; **dass sie ihn durchreicht, ist damit
+       nicht gemessen** — beobachtet ist ein Wert, nicht eine Regel.
+
+     **WAS DIESER TEIL NICHT SAGT:** dass diese drei Angaben für ein **fremdes** Kundenkonto
+     gelten. Sie sind an **einem** Konto abgelesen — dem des Owners.
+
+     PROVENIENZ: alle drei **GEMESSEN 2026-09-07 (OWNER)**, an der Google-Ads-Oberfläche.
+     Die Maskierungs-Bauform und der Nicht-Treffer zur Vertraulichkeit sind **GELESEN in
+     DIESER Datei** (CC, 2026-09-07, Doku-Runde) — die Legende in (cb) bzw. (v)/C4;
+     **KEINE Lesung an einer Google-Seite.**
 
 ## Pinterest (Conversions API)
 

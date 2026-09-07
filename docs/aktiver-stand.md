@@ -8265,6 +8265,38 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     Satz macht daraus die **AUFLAGE an die nächste** — sonst liest die nächste Runde ein
     Erscheinen in der Berichterstattung als Wirkung.
 
+    **NACHTRAG 2026-09-07, SPÄTER AM TAG — DIE VERBUCHUNG IST GEMESSEN. DER ABSATZ DARÜBER
+    BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER NACHTRAG TRITT DANEBEN.**
+    **WARUM ERGÄNZT UND NICHT ERSETZT, und der ganze Absatz ist dafür gelesen worden:** Der
+    Satz "GEMESSEN IST DIE ANNAHME, NICHT DIE VERBUCHUNG" steht in einem Block, der die
+    **GRENZE DIESER Ablesung** beschreibt — der des Data-Manager-Protokolls. **Als Aussage
+    über JENE Ablesung ist er unverändert wahr:** Sie hat die Annahme gezeigt und die
+    Verbuchung nicht. Überholt ist allein seine **Reichweite als Aussage über den
+    Wissensstand**. Wer ihn ersetzte, machte aus einer richtigen Grenzangabe eine falsche.
+    **WAS DIE VERBUCHUNG BELEGT — ALS ZEIGER, NICHT ALS KOPIE:** docs/ziel-befunde.md,
+    Google-Abschnitt, **Teil (cf)** (MESSUNG G, 2026-09-07). Dort steht die Ablesung samt
+    ihren Grenzen; **zweimal geschrieben liefe es auseinander.** In einem Satz: Die eine
+    Conversion des Zeitraums sitzt auf der **Offline-Aktion**, und die Detailseite nennt den
+    Zeitpunkt selbst.
+    **DIE ZUORDNUNG ZU UNSEREM AUFRUF IST AUCH DORT EINE ABLEITUNG UND KEINE MESSUNG** — es
+    gibt weiterhin **keine gemeinsame Kennung** zwischen den zwei Seiten; sie ruht auf drei
+    unabhängigen Beobachtungen. **Das ist genau die Figur, die dieser Block schon für die
+    Einlieferung führt**, und sie wird durch die Verbuchung nicht aufgelöst.
+    **WAS AUSDRÜCKLICH NICHT MITFÄLLT:** der Satz über die **GEBOTSWIRKUNG**. Ob die
+    Conversion auf Gebote wirkt, ist **weiterhin nicht gemessen**; das Zeitfenster-Zitat und
+    die Auflage darüber gelten unverändert. **NUR DIE VERBUCHUNG IST GEMESSEN, NICHT IHRE
+    WIRKUNG.**
+    **UND EINE FRAGE IST DABEI NEU AUFGEGANGEN, die dieser Block noch nicht kennt:** Ob das
+    Zeitfenster für die **gewählte** Gestalt überhaupt gilt oder nur für die
+    Multi-Source-Gestalt, ist **gelesen und nicht geklärt** — die Ablage führte dazu bis zum
+    2026-09-07 **keinen Vorbehalt**. Sie ist als Grenze in **(cf)** benannt und **hier nicht
+    entschieden**; der Absatz darüber wird davon **nicht angetastet**.
+    PROVENIENZ: Die Verbuchung **GEMESSEN 2026-09-07 (OWNER)**, abgelesen in der
+    Google-Ads-Oberfläche (Zielvorhaben → Conversions und die Detailseite der
+    Offline-Aktion). Dass der Satz oben als Grenze SEINER Ablesung wahr bleibt, ist eine
+    **ABLEITUNG** aus seinem Ort im Block (CC, 2026-09-07, Doku-Runde), **keine zweite
+    Messung**. **KEIN Aufruf gegen eine Schnittstelle in dieser Runde.**
+
     **DIE AUSGELASSENE NACHLESE — AUSDRÜCKLICH EINE ENTSCHEIDUNG UND KEIN VERSÄUMNIS.** Die
     drei Statusabfragen über die Diagnose-Kennungen — die zwei vom 2026-09-02 und eine neue —
     **sind NICHT gefahren worden.** **GRUND:** Sie waren das Instrument für den Fall, dass

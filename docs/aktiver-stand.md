@@ -8018,6 +8018,104 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     Dekodier-Fehler vor der Zuordnung liegt, ist eine **ABLEITUNG** aus den zwei gelesenen
     Enum-Beschreibungen, **keine Messung**.
 
+    **ERLEDIGT AM 2026-09-07 — DER EINTRAG BLEIBT STEHEN, UND ZWAR WEGEN SEINES SATZES ÜBER
+    DIE VERDECKUNG.** Bauform wie bei Eintrag 15 und Eintrag 7: ein eigener datierter Absatz
+    UNTER dem unveränderten Eintrag, mit Datum, Grund und dem, was ihn eingelöst hat. **Der
+    Text darüber bleibt Zeichen für Zeichen stehen, der TRIGGER eingeschlossen.**
+
+    **WAS IHN EINLÖST — GEMESSEN 2026-09-07 (OWNER), abgelesen in der Google-Ads-Oberfläche
+    unter Data Manager, Integrationsdetails, Protokolle:** Die Zeile vom **7. Sept. 2026**
+    (Nutzung "offline (Upload)", Nutzungstyp Conversion, Vorgang Hinzufügen) steht auf
+    **1 Anfrage · 1 Datensatz · Erfolgsquote 100 % · 0 Fehler**. Die Nutzungsübersicht der
+    letzten sieben Tage nennt **2 Conversions und 9 Anfragen**.
+    **DER KONTRAST IST DER EIGENTLICHE BELEG, nicht die 100 % für sich:** In **derselben
+    Tabelle** stehen die Zeilen vom **1., 2. und 3. September** auf **0 %**, mit Fehlern in
+    Höhe der Datensätze — das waren die Läufe mit **erfundenen** Kennungen. **Die Tabelle
+    zeigt Fehlschläge also an.** Eine Erfolgsquote ohne diesen Nachbarn wäre eine
+    Abwesenheits-Behauptung ohne Positivkontrolle; mit ihm ist sie eine Messung.
+
+    **WAS DAMIT BEANTWORTET IST — BEIDE KANDIDATEN DIESES EINTRAGS, in seiner eigenen
+    Wortwahl:**
+    · **DIE TAG-HYPOTHESE IST GEGENSTANDSLOS.** Eine tag-basierte Conversion-Aktion hätte
+      diesen Import nicht mit 100 % und 0 Fehlern angenommen. Der Eintrag hatte sie
+      ausdrücklich als "weder bestätigt noch widerlegt" geführt; sie ist jetzt **widerlegt**.
+    · **DIE `UPLOAD_CLICKS`-AUFLAGE IST ERFÜLLT.** Die verwendete Conversion-Aktion trägt
+      offenbar den verlangten Typ — sonst wäre der Datensatz nicht angenommen worden. Der
+      zweite Kandidat, den die Ergänzung vom 2026-09-02 hinzugefügt hatte, ist damit
+      ebenfalls erledigt.
+    **DASS BEIDE ZUGLEICH FALLEN, IST KEIN ZUFALL, SONDERN DIE FIGUR DIESES EINTRAGS:** Der
+    Datensatz hat die Dekodierung überstanden und ist damit zum ersten Mal überhaupt bis
+    hinter sie gelangt — **genau dorthin, wo dieser Eintrag alles vermutet hat, was er nicht
+    sehen konnte.**
+
+    **DIE GRENZE, UND SIE IST DER WICHTIGSTE SATZ DIESES BLOCKS: GEMESSEN IST DIE ANNAHME,
+    NICHT DIE VERBUCHUNG.** Google hat den Datensatz entgegengenommen. **Ob daraus eine
+    Conversion in der Berichterstattung wird und ob sie auf Gebote wirkt, ist eine ANDERE
+    ACHSE mit einem anderen Instrument.**
+    **DIE ABLAGE FÜHRT DAFÜR EIN ZEITFENSTER, und es steht dort im Wortlaut** —
+    docs/ziel-befunde.md, Google-Abschnitt, Teil H2: "In den ersten **14 TAGEN** je
+    Conversion-Action fliessen die per API gelieferten Multi-Source-Daten **NICHT** in die
+    Gebotssteuerung, und WERT-ÜBERSCHREIBUNGEN SIND ABGESCHALTET". Dieselbe Ablage führt in
+    Teil H1 unter den vier täuschenden Instrumenten ausdrücklich auch "**DER BLICK IN DIE
+    GOOGLE-ADS-OBERFLÄCHE INNERHALB DER 14 TAGE** — die Ereignisse erscheinen in der
+    Berichterstattung, wirken aber nicht auf die Gebote".
+    **DIE ABLAGE WIDERSPRICHT DER DEUTUNG NICHT, SIE SCHÄRFT SIE:** Teil G1 hält fest, eine
+    200 heisse "ENTGEGENGENOMMEN UND STRUKTURELL IN ORDNUNG", nicht "verarbeitet" und schon
+    gar nicht "gezählt", und die eigentliche Verarbeitung sei asynchron — die Diagnostik
+    stehe **frühestens 30 Minuten, bis zu 24 Stunden später**. **DIE ABGELESENE TABELLE LIEGT
+    HINTER DIESER STUFE** (die Fehlerzeilen vom 1. bis 3. September stammen aus eben dieser
+    asynchronen Verarbeitung), **aber vor der Verbuchung.**
+
+    **DIE AUSGELASSENE NACHLESE — AUSDRÜCKLICH EINE ENTSCHEIDUNG UND KEIN VERSÄUMNIS.** Die
+    drei Statusabfragen über die Diagnose-Kennungen — die zwei vom 2026-09-02 und eine neue —
+    **sind NICHT gefahren worden.** **GRUND:** Sie waren das Instrument für den Fall, dass
+    die Einlieferung **scheitert**. Sie ist nicht gescheitert, und die zwei alten würden nur
+    bestätigen, was die Tabelle ohnehin zeigt.
+    **ARCHITEKTEN-ENTSCHEIDUNG 2026-09-07, Owner-GO.**
+    **WARUM DAS ÜBERHAUPT DASTEHT: EIN NICHT GEFAHRENER SCHRITT, DEN NIEMAND ALS
+    ENTSCHEIDUNG PROTOKOLLIERT, LIEST SICH IN EINEM JAHR WIE EINE LÜCKE** — und die nächste
+    Runde fährt ihn nach, um etwas zu schliessen, das bewusst offen gelassen wurde.
+
+    **WAS DIESER BLOCK NICHT SAGT: dass der Weg für JEDE Kennungsform trägt.** **GEMESSEN
+    IST EINE EINLIEFERUNG MIT EINER KENNUNGSFORM.** Über die beiden anderen, die die
+    gewählte Gestalt kennt, sagt diese Messung nichts.
+
+    **EIN BEFUND ÜBER DIE ABLAGE SELBST, der in diesen Block gehört, weil er sonst nirgends
+    steht — GEMESSEN am Dateitext (CC, 2026-09-07, Doku-Runde):** **DER TRANSPORT MIT EINER
+    GÜLTIGEN KLICK-KENNUNG IST IN DIESER DATEI AN KEINER STELLE FESTGEHALTEN.** ACHSE: alle
+    Erwähnungen eines geglückten Google-Transports, einer echten bzw. gültigen
+    Klick-Kennung und eines Anzeigenklicks über den ganzen Dateitext.
+    **JEDER dokumentierte Transport mit einer Kennung nennt einen VON HAND GESETZTEN Wert** —
+    VERMERK 12 führt für den 2026-09-03 "Conversion mit `gclid`: der Google-Adapter
+    SCHWEIGT", und der Eintrag zur Landepage sagt für den 2026-09-01 ausdrücklich "bei einem
+    von Hand gesetzten Wert" samt dem Satz, ob eine **ECHTE** Kennung denselben Weg nehme,
+    sei "weiterhin **NICHT GEPRÜFT**". **VERMERK 15 (2026-09-07) endet am Adapter mit
+    `no destination for event` — er trägt keinen Transport.**
+    **POSITIVKONTROLLE:** dieselbe Achse trifft diese drei Stellen und mehrere weitere; sie
+    läuft nicht leer.
+    **FOLGE, und sie ist der Grund für diesen Absatz: DIESER EINTRAG WIRD AUF EINEN BELEG
+    GESCHLOSSEN, DER AUSSCHLIESSLICH BEIM ANBIETER LIEGT.** Der eigene Kanal hat den
+    dazugehörigen Aufruf nicht protokolliert — oder er ist nicht abgelesen worden; **welches
+    von beidem, ist NICHT ERHOBEN.** Wer später fragt, wann Pagesmith zum ersten Mal mit
+    einer gültigen Kennung gesendet hat, findet die Antwort **nicht im Repo**.
+
+    **WAS DIESER BLOCK AUSDRÜCKLICH NICHT TUT — Scope dieser Runde:** Er ändert nichts an der
+    **zweiten Sperre** in "### (1) Der Gegenstand". Jene führt als OWNER-ANGABE vom
+    2026-09-02, auf dem Konto habe es "nie einen echten Anzeigenklick gegeben". **Diese
+    Messung ist damit nicht vereinbar** — ein Datensatz, dessen Kennung dekodiert werden
+    konnte, setzt einen Klick voraus. **DASS DIE SPERRE DAMIT GEFALLEN IST, IST EINE
+    ABLEITUNG AUS DIESER MESSUNG UND KEINE ZWEITE MESSUNG**, und sie wird hier **nur
+    gemeldet**: Der Ort jener Sperre ist nicht Gegenstand dieser Runde.
+
+    PROVENIENZ: Die abgelesene Tabelle samt Kontrast-Zeilen und der Nutzungsübersicht
+    **GEMESSEN 2026-09-07 (OWNER)**, an der Oberfläche des Anbieters. Dass die Kennung des
+    7. September eine **echte** war, ist eine **OWNER-ANGABE 2026-09-07**. Dass daraus das
+    Fallen beider Kandidaten und der zweiten Sperre folgt, ist eine **ABLEITUNG** aus dieser
+    Messung, **keine Messung**. Die Zitate aus docs/ziel-befunde.md sind **GELESEN
+    2026-09-07 (CC, Doku-Runde)**; der Nicht-Befund über den fehlenden Transport-Beleg ist
+    **GEMESSEN am Dateitext (CC, 2026-09-07)**. Die ausgelassene Nachlese ist eine
+    **ARCHITEKTEN-ENTSCHEIDUNG 2026-09-07** auf Owner-GO.
+
 42. **DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER,
     UNGEDROSSELT.** GEMESSEN am Code (CC, 2026-09-02): `usableTokenFromRow`
     (src/lib/capi/token.ts, modul-privat) schreibt bei toter Uhr 1

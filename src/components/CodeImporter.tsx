@@ -196,6 +196,7 @@ export default function CodeImporter({
   initialVariantBMappings = null,
   initialAbTestActive = false,
   initialAbTestStartedAt = null,
+  initialTrackingKey = "",
   initialConnectOutcome = null,
 }: {
   // Auto-Load: das zuletzt bearbeitete (bereits stabilisierte) HTML des Users.
@@ -223,6 +224,13 @@ export default function CodeImporter({
   // projects.ab_test_started_at — SERVER-autoritativ, projekt-abgeleitet wie das
   // Flag darueber. NULL = keine Abgrenzung (nie ein Test ODER Lauf vor 9c-2).
   initialAbTestStartedAt?: string | null;
+  // Der oeffentliche Tracking-Schluessel. Aus projects.tracking_key — SERVER-
+  // autoritativ, projekt-abgeleitet wie die drei Felder darueber. "" = noch keiner
+  // vergeben (die Identitaet entsteht lazy in setCapiToken bzw. publishProject).
+  // NICHT aus settings.capi.trackingKey: den befuellt nur der Meta-Weg, waehrend der
+  // Google-Autorisierungs-Fluss allein die Spalte schreibt — s. den Kommentar an
+  // ProjectRow.tracking_key (src/app/projects/actions.ts).
+  initialTrackingKey?: string;
   // DER ERGEBNISCODE DES GOOGLE-AUTORISIERUNGS-FLUSSES (Scheibe 3), aus der Adresse
   // gelesen — von der SERVER-Komponente, nicht hier. null = der Nutzer kommt nicht aus
   // dem Fluss. Reicht unveraendert bis zur Karte durch; diese Datei deutet ihn nicht.
@@ -308,6 +316,27 @@ export default function CodeImporter({
   const [settings, setSettings] = useState<ProjectSettings>(initialSettings);
   const [savedSettings, setSavedSettings] =
     useState<ProjectSettings>(initialSettings);
+  // SAAT-PUNKT 1 von 4 — der oeffentliche Tracking-Schluessel des geladenen Projekts.
+  //
+  // ER LIEGT NEBEN settings UND NICHT DARIN, und das ist der ganze Punkt der Scheibe
+  // "Der Schluessel kommt aus der Spalte": settings ist CLIENT-besessen, die Spalte
+  // projects.tracking_key ist server-autoritativ. Die zwei Erzeuger des funktionalen
+  // Dokuments lasen ihn frueher ueber getTrackingKey aus dem Blob — den befuellt aber
+  // nur der Meta-Weg. Ein allein ueber den Google-Fluss konfiguriertes Projekt trug
+  // deshalb KEINEN Conversion-Beacon, und still: der PageView-Emitter kommt
+  // server-seitig aus der Spalte, die Ansicht zeigte also Verkehr ohne Conversions.
+  //
+  // ER HAT KEINE DIRTY-BASELINE, anders als mappings/settings daneben — er ist nicht
+  // editierbar und geht in KEINEN Speicher-Payload ein. saveProject listet die Spalte
+  // nicht; sie ueberlebt jeden Save von selbst.
+  //
+  // DIE AUFLAGE, OHNE DIE PROJEKT B DEN SCHLUESSEL VON A TRUEGE: Er wird an JEDEM
+  // Punkt neu gesetzt, an dem auch settings/savedSettings neu gesetzt werden — es
+  // sind VIER, und sie tragen alle einen Zaehler im Kommentar: hier die Erstbelegung
+  // aus den Props, dann resetToEmpty, handleSwitch und der Nachrueck-Zweig in
+  // handleDelete. Ein vergessener Punkt schickt das Dokument an das falsche Projekt,
+  // und der Ingest loeste es dorthin auf.
+  const [trackingKey, setTrackingKey] = useState(initialTrackingKey);
   // A/B-VARIANTEN (Phase 9 Scheibe 9a) — WURZELTAUSCH-MODELL.
   //
   // Der Editor arbeitet IMMER auf genau EINER Variante, und zwar ueber die
@@ -650,12 +679,28 @@ export default function CodeImporter({
       previewMode === "functional"
         ? generateFunctional(debouncedCode, mappings, "preview", {
             metaPixelId: getPixelId(settings, "meta"),
-            trackingKey: getTrackingKey(settings),
+            // AUS DEM ZUSTAND, NICHT AUS settings — s. den Kommentar am
+            // trackingKey-State.
+            //
+            // DIE DEP UNTEN IST VORSORGE UND HAT HEUTE KEINEN WAECHTER — GEMESSEN,
+            // NICHT ANGENOMMEN (Mutationsprobe M4, 2026-09-07): Wird trackingKey aus
+            // der Dep-Liste entfernt, bleibt der GESAMTE Bestand gruen. Der Grund ist
+            // eine Verdeckung: settings steht in derselben Liste und bekommt an JEDEM
+            // der vier Saat-Punkte eine NEUE Objekt-Referenz — das Memo rechnet also
+            // ohnehin neu, und die fehlende Dep wird nie sichtbar. Auch der Wechsel
+            // in die Vorschau selbst aendert previewMode und rechnet neu.
+            // SIE BLEIBT TROTZDEM STEHEN: Sie ist richtig, und sie wird TRAGEND, sobald
+            // jemand settings memoisiert oder aus der Liste nimmt. Wer sie streicht,
+            // weil "kein Test sie deckt", nimmt die Vorsorge genau vor diesem Umbau weg.
+            // DER EINZIGE MELDER IST DIE LINT-REGEL, und die laeuft als WARNUNG — der
+            // Lint-Befehl dieses Projekts kennt keine Obergrenze fuer Warnungen, es
+            // wird also KEIN Gate rot.
+            trackingKey,
             capiProxyUrl: getCapiProxyUrl(),
             consentTargets,
           })
         : "",
-    [previewMode, debouncedCode, mappings, settings, consentTargets]
+    [previewMode, debouncedCode, mappings, settings, trackingKey, consentTargets]
   );
 
   // Edit-iframe-HTML: bei aktivem Text-Override zeigt AUCH der Editieren-Modus den
@@ -1173,6 +1218,9 @@ export default function CodeImporter({
     // Settings spiegeln mappings: leeres Projekt -> leere Settings + Baseline.
     setSettings({});
     setSavedSettings({});
+    // SAAT-PUNKT 2 von 4: leeres Projekt -> kein Schluessel. Ohne diese Zeile truege
+    // das Dokument des LEEREN Kontexts den Schluessel des vorigen Projekts.
+    setTrackingKey("");
     setSelectedElementId(null);
     // Leeres Projekt hat per Definition keine Variante B -> Stash leer, Variante A.
     seedVariantState(null, null, false, null);
@@ -1586,10 +1634,15 @@ export default function CodeImporter({
     projectIdRef.current = projectId;
   }, [projectId]);
 
+  // DER PARAMETER HIESS BIS ZUR SCHEIBE "Der Schluessel kommt aus der Spalte"
+  // trackingKey und IST UMBENANNT, weil es seither einen State DIESES Namens gibt.
+  // Reiner Namenswechsel, kein Verhaltenswechsel — aber ohne ihn stuende unten
+  // setTrackingKey(trackingKey) da, und das liest sich wie eine Selbstzuweisung,
+  // waehrend es in Wahrheit den Server-Wert in den State schreibt.
   function handleCredentialsSaved(
     forProjectId: string,
     target: TrackingTarget,
-    trackingKey: string,
+    nextTrackingKey: string,
   ) {
     if (forProjectId !== projectIdRef.current) return;
     // Der Indikator speist sich aus DIESER Liste, nicht aus dem Blob — ohne die
@@ -1612,10 +1665,27 @@ export default function CodeImporter({
     // "der Konfigurations-Zustand hat sich geaendert", nicht "es wurde entfernt". Auf
     // das Entfernen zugeschnitten waere sie beim naechsten Weg wieder offen.
     setConnectOutcome(null);
+    // DAS VIERTE STUECK DER SCHEIBE "Der Schluessel kommt aus der Spalte", UND ES IST
+    // KEIN SAAT-PUNKT: Die vier Saat-Punkte schuetzen gegen ein LEAK ZWISCHEN
+    // PROJEKTEN, diese Zeile gegen einen VERALTETEN ZUSTAND IM SELBEN Projekt.
+    // Der Server legt die Spalte beim Setzen lazy an und gibt den Wert zurueck; ohne
+    // diese Zeile truege das Dokument zwischen dem Setzen des Zugangsdatums und dem
+    // naechsten Projektladen KEINEN Beacon — genau der Fehlzustand, den die Scheibe
+    // auf dem Google-Pfad behebt, nur auf dem Meta-Pfad neu eingebaut.
+    // DER KENNUNGS-VERGLEICH GANZ OBEN DECKT SIE MIT: ein Nachzuegler aus Projekt A
+    // ist hier schon zurueckgewiesen, bevor irgendein Setzer laeuft.
+    setTrackingKey(nextTrackingKey);
     // setCapiState laesst pixels unangetastet -> eine ungespeicherte Pixel-ID-Edit
     // bleibt erhalten; settingsEqual ignoriert capi -> kein false-dirty.
-    setSettings((prev) => setCapiState(prev, { trackingKey, tokenSet: true }));
-    setSavedSettings((prev) => setCapiState(prev, { trackingKey, tokenSet: true }));
+    // DAS BLOB-SCHREIBEN BLEIBT BESTEHEN und ist von der Zeile darueber unberuehrt:
+    // der Server schreibt den Wert weiterhin, ein einseitiges Entfernen hier liesse
+    // den Blob gegen die Datenbank driften. Sein Abbau ist eine eigene Runde.
+    setSettings((prev) =>
+      setCapiState(prev, { trackingKey: nextTrackingKey, tokenSet: true }),
+    );
+    setSavedSettings((prev) =>
+      setCapiState(prev, { trackingKey: nextTrackingKey, tokenSet: true }),
+    );
   }
 
   function handleCredentialsRemoved(forProjectId: string, target: TrackingTarget) {
@@ -1672,7 +1742,10 @@ export default function CodeImporter({
   ): string {
     return generateFunctional(html, docMappings, "export", {
       metaPixelId: getPixelId(settings, "meta"),
-      trackingKey: getTrackingKey(settings),
+      // AUS DEM ZUSTAND, NICHT AUS settings — s. den Kommentar am trackingKey-State.
+      // Hier braucht es KEINE Dep-Liste: dies ist eine gewoehnliche Funktion und
+      // liest den Wert des laufenden Renders.
+      trackingKey,
       capiProxyUrl,
       consentTargets,
     });
@@ -1995,6 +2068,8 @@ export default function CodeImporter({
     // Projekten (Pixel-ID von A darf nicht in B stehen bleiben).
     setSettings(proj.settings);
     setSavedSettings(proj.settings);
+    // SAAT-PUNKT 3 von 4: aus der SPALTE des geladenen Projekts, nicht aus dessen Blob.
+    setTrackingKey(proj.tracking_key ?? "");
     // Varianten-Zustand am SELBEN Punkt aus dem GELADENEN Projekt ableiten.
     seedVariantState(
       proj.html_b,
@@ -2057,6 +2132,8 @@ export default function CodeImporter({
         // Settings am SELBEN Punkt wie savedMappings reseeden (kein Leak).
         setSettings(next.settings);
         setSavedSettings(next.settings);
+        // SAAT-PUNKT 4 von 4: aus der SPALTE des nachgerueckten Projekts.
+        setTrackingKey(next.tracking_key ?? "");
         // Varianten-Zustand aus dem nachgerueckten Projekt ableiten.
         seedVariantState(
           next.html_b,

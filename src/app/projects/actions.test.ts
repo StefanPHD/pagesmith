@@ -528,7 +528,12 @@ describe("loadProject — Payload traegt NIE den Token", () => {
         // Zustand aus dieser Spalte ab (ABLEITEN STATT LOESCHEN). Schaerfe
         // unveraendert; WEITERHIN AUSSERHALB: published_content und jede
         // project_tokens-Spalte (s. die beiden Assertionen darueber/darunter).
-        cols: "id,name,html,mappings,settings,html_b,mappings_b,ab_test_active,ab_test_started_at",
+        // Scheibe "Der Schluessel kommt aus der Spalte": tracking_key kommt dazu, aus
+        // demselben Grund und in derselben Bauform — die zwei Erzeuger des
+        // funktionalen Dokuments leiten den Beacon-Schluessel aus dieser SPALTE ab
+        // statt aus dem client-besessenen settings-Blob. VIERTES legitimes Mitwachsen,
+        // Schaerfe unveraendert: der Vergleich bleibt EXAKT.
+        cols: "id,name,html,mappings,settings,html_b,mappings_b,ab_test_active,ab_test_started_at,tracking_key",
       },
     ]);
     expect(rec.selectCols[0].cols).not.toContain("published_content");

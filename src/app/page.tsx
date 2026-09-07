@@ -102,6 +102,7 @@ export default async function Home({
         initialVariantBMappings={project?.mappings_b ?? null}
         initialAbTestActive={project?.ab_test_active ?? false}
         initialAbTestStartedAt={project?.ab_test_started_at ?? null}
+        initialTrackingKey={project?.tracking_key ?? ""}
         initialConnectOutcome={outcomeToShow}
       />
     </main>

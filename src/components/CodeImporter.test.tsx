@@ -545,8 +545,14 @@ describe("CodeImporter — Scheibe 7b: Publish bäckt RELATIVEN /api/e-Beacon, E
         ]}
         initialSettings={{
           pixels: { meta: { pixelId: "999000111" } },
-          capi: { trackingKey: "tk-1", tokenSet: true },
+          capi: { tokenSet: true },
         }}
+        // DER SCHLUESSEL IST MIT DER SCHEIBE "Der Schluessel kommt aus der Spalte"
+        // AUS DEM BLOB IN EINE EIGENE PROP GEZOGEN — DERSELBE WERT, ANDERER KANAL.
+        // Beide Laeufe dieses Blocks pruefen unveraendert dasselbe: dass NUR die
+        // capiProxyUrl zwischen Publish und Export divergiert. Ohne den Schluessel
+        // entstuende gar kein Beacon-Rumpf und beide haetten nichts zu vergleichen.
+        initialTrackingKey="tk-1"
       />
     );
   }
@@ -2915,7 +2921,15 @@ describe("CodeImporter — Scheibe D1: das Consent-Memo, durch die Komponente be
   ];
   // OHNE trackingKey entsteht KEIN Beacon-Rumpf und damit kein Draht-Feld. Dass die
   // Beobachtbarkeit daran haengt und NICHT am Memo, ist die Aussage von D-T8.
-  const D1_TK = { trackingKey: "tk-d1", tokenSet: true };
+  //
+  // DER SCHLUESSEL IST MIT DER SCHEIBE "Der Schluessel kommt aus der Spalte" AUS DEM
+  // BLOB IN EINE EIGENE PROP GEZOGEN — DERSELBE WERT, ANDERER KANAL. Der Erzeuger
+  // liest ihn seither aus projects.tracking_key statt aus settings.capi.trackingKey;
+  // eine Fixture, die ihn weiter im Blob truege, pruefte einen Kanal, den das
+  // Produkt nicht mehr benutzt. D1_TK behaelt tokenSet, weil das eine ANDERE Achse
+  // ist und diese Scheibe sie nicht anfasst (Vorrat 55).
+  const D1_KEY = "tk-d1";
+  const D1_TK = { tokenSet: true };
 
   const ORIGINAL_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
   beforeEach(() => {
@@ -2951,7 +2965,14 @@ describe("CodeImporter — Scheibe D1: das Consent-Memo, durch die Komponente be
 
   // Das EXPORT-Dokument, so wie der Kunde es herunterlaedt — abgefangen an der
   // Zwischenablage, dieselbe Bauform wie im Artefakt-Riegel der Scheibe 9a.
-  async function exportDokument(settings: D1Settings): Promise<string> {
+  // DER SCHLUESSEL IST EIN EIGENER PARAMETER MIT VORGABE, und die Vorgabe ist der
+  // BELEGTE Fall: die uebrigen Laeufe brauchen ihn, damit ihre Zusicherungen ueber
+  // den Draht ueberhaupt etwas sehen koennen. NUR D-T8 uebergibt "" — und dass er es
+  // SICHTBAR tut, ist genau seine Aussage.
+  async function exportDokument(
+    settings: D1Settings,
+    trackingKey: string = D1_KEY,
+  ): Promise<string> {
     const writeText = vi.fn(async () => {});
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
@@ -2964,6 +2985,7 @@ describe("CodeImporter — Scheibe D1: das Consent-Memo, durch die Komponente be
           initialCode={D1_HTML}
           initialMappings={D1_MAPPINGS}
           initialSettings={settings}
+          initialTrackingKey={trackingKey}
         />,
       );
       // Die Detection abwarten: der Export liest debouncedCode, nicht code.
@@ -3089,7 +3111,12 @@ describe("CodeImporter — Scheibe D1: das Consent-Memo, durch die Komponente be
     // dortigen Zusicherungen ueber die verdrahteten Schluessel trivial wahr und
     // saehen weiter wie Abdeckung aus. Dieser Test macht die Abhaengigkeit sichtbar,
     // statt sie zu unterstellen.
-    const doc = await exportDokument({ pixels: {} });
+    // DER LEERE ZWEITE PARAMETER IST DER GEGENSTAND DIESES LAUFS und steht deshalb
+    // ausgeschrieben da: Seit der Scheibe "Der Schluessel kommt aus der Spalte" reist
+    // der Schluessel in einer eigenen Prop, nicht mehr im Blob. Ohne dieses ""
+    // bekaeme der Lauf die Vorgabe D1_KEY, truege also einen Schluessel — und seine
+    // zwei Abwesenheits-Zusicherungen fielen, statt still trivial wahr zu werden.
+    const doc = await exportDokument({ pixels: {} }, "");
     expect(gezogeneSchluessel(doc)).toBeNull();
     expect(verdrahteteSchluessel(doc)).toBeNull();
     // GEGENPROBE IM SELBEN TEST: das Wiring selbst ENTSTEHT sehr wohl. Ohne sie
@@ -3120,6 +3147,7 @@ describe("CodeImporter — Scheibe D1: das Consent-Memo, durch die Komponente be
             pixels: { meta: { pixelId: "111" }, pinterest: { pixelId: "222" } },
             capi: D1_TK,
           }}
+          initialTrackingKey={D1_KEY}
         />,
       );
       await screen.findByText("Kaufen");
@@ -3539,5 +3567,293 @@ describe("CodeImporter — Scheibe 2: die Ereignis-Achse traegt ZWEI Ziele", () 
     expect((screen.getByLabelText("Google: Lead") as HTMLInputElement).value).toBe(
       "555000"
     );
+  });
+});
+
+// ===========================================================================
+// SCHEIBE "Der Schluessel kommt aus der Spalte" — SECHS LAEUFE.
+//
+// DER SIEBTE LIEGT WOANDERS und wird hier nur benannt, damit niemand ihn vermisst:
+// Die exakte Projektions-Zusicherung von loadProject steht in
+// src/app/projects/actions.test.ts. Sie ist der Waechter dafuer, dass die Spalte
+// ueberhaupt geladen wird; alles hier setzt voraus, dass sie ankommt.
+//
+// WAS DIESE SECHS NICHT LEISTEN: Sie laufen saemtlich gegen Attrappen. Dass die
+// Spalte im DEPLOYTEN Pfad ankommt, zeigt allein ein Live-Test.
+// ===========================================================================
+describe("CodeImporter — der Beacon-Schluessel stammt aus der Spalte, nicht aus dem Blob", () => {
+  const K_HTML =
+    '<!DOCTYPE html><html><head></head><body><button data-pagesmith-id="ps-aaaaaa">Kaufen</button></body></html>';
+  const K_MAPPINGS = [
+    { elementId: "ps-aaaaaa", type: "track" as const, config: { event: "Lead" } },
+  ];
+
+  const ORIGINAL_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+  beforeEach(() => {
+    // PFLICHT-VORBEDINGUNG, keine Bequemlichkeit: Fehlt die Variable, faellt
+    // buildCapiBeaconStatement in den fail-loud-Zweig und es entstuende auch bei
+    // gefuelltem Schluessel KEIN Beacon — jede Zusicherung unten waere dann aus dem
+    // FALSCHEN Grund erfuellt bzw. verletzt.
+    process.env.NEXT_PUBLIC_APP_URL = "https://app.pagesmith.io";
+  });
+  afterEach(() => {
+    if (ORIGINAL_APP_URL === undefined) delete process.env.NEXT_PUBLIC_APP_URL;
+    else process.env.NEXT_PUBLIC_APP_URL = ORIGINAL_APP_URL;
+  });
+
+  // Das EXPORT-Dokument, abgefangen an der Zwischenablage — dieselbe Bauform wie im
+  // D1-Block weiter oben.
+  async function exportDoc(): Promise<string> {
+    const writeText = vi.fn(async () => {});
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    try {
+      fireEvent.click(
+        screen.getByRole("button", { name: "In Zwischenablage kopieren" }),
+      );
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+      return (writeText.mock.calls[0] as unknown[])[0] as string;
+    } finally {
+      delete (navigator as { clipboard?: unknown }).clipboard;
+    }
+  }
+
+  // Das VORSCHAU-Dokument. Es ist ein EIGENER Messpunkt und keine Verdopplung des
+  // Exports: Die Vorschau laeuft ueber ein MEMO, der Export ueber eine gewoehnliche
+  // Funktion — es sind ZWEI Konsumenten, und ein Test auf nur einem liesse offen, ob
+  // der andere dieselbe Quelle benutzt.
+  //
+  // WAS DIESER MESSPUNKT NICHT DECKT, und der Satz gehoert hierher, damit ihm niemand
+  // mehr zuschreibt, als er traegt: die MEMO-ABHAENGIGKEIT. GEMESSEN (Mutationsproben
+  // M4 und M4b, 2026-09-07): Wird trackingKey aus der Dep-Liste entfernt, bleibt der
+  // GESAMTE Bestand gruen — settings steht in derselben Liste und wechselt an jedem
+  // Saat-Punkt die Referenz, das Memo rechnet also ohnehin neu. Wird dagegen der
+  // VORSCHAU-KONSUMENT auf den Blob zurueckgedreht, faellt GENAU die Zusicherung in
+  // K3, die diesen Messpunkt benutzt. Er ist der Waechter des zweiten KONSUMENTEN,
+  // nicht der Dep-Liste.
+  async function vorschauDoc(): Promise<string> {
+    fireEvent.click(screen.getByRole("button", { name: "Vorschau" }));
+    const frame = await screen.findByTitle("functional-preview");
+    return frame.getAttribute("srcdoc") ?? "";
+  }
+
+  // LAUF 2 — DER FALL, DER VOR DIESER SCHEIBE BRACH.
+  it("K1: Spalte gefuellt, Blob LEER -> der erzeugte Text traegt den Beacon mit dem Spaltenwert", async () => {
+    // WIRD ROT, WENN der Erzeuger wieder ueber den Blob liest: dann ist der
+    // Schluessel leer, buildCapiBeaconStatement gibt "" zurueck, und es entsteht
+    // ueberhaupt kein Beacon-Rumpf.
+    // ER IST DER EINZIGE LAUF, DER DIESE ACHSE DECKT. Die dreizehn Bestandslaeufe
+    // des D1- und des 7b-Blocks tragen ihren Schluessel seit dem Nachziehen zwar
+    // ebenfalls in der Prop — aber ihr Blob ist dabei nicht LEER, sondern traegt
+    // weiter capi.tokenSet. Nur hier fehlt der capi-Zweig vollstaendig.
+    render(
+      <CodeImporter
+        initialProjectId="p-k1"
+        initialCode={K_HTML}
+        initialMappings={K_MAPPINGS}
+        initialSettings={{ pixels: { meta: { pixelId: "111" } } }}
+        initialTrackingKey="tk-aus-der-spalte"
+      />,
+    );
+    await screen.findByText("Kaufen");
+    const doc = await exportDoc();
+    expect(doc).toContain("navigator.sendBeacon(");
+    expect(doc).toContain('"tk-aus-der-spalte"');
+  });
+
+  // LAUF 3 — DIE GEGENRICHTUNG ZU K1.
+  it("K2: leerer Schluessel -> weiterhin KEIN Beacon und KEIN Wurf", async () => {
+    // WIRD ROT, WENN jemand aus dem fehlenden Schluessel einen Fehlerpfad macht.
+    // OHNE IHN BEWIESE K1 NUR, DASS ETWAS ENTSTEHT — nicht, dass der Schluessel
+    // darueber entscheidet.
+    // DIE DRITTE ZUSICHERUNG IST PFLICHT UND KEINE ZUGABE: Ein Test, der nur
+    // Abwesenheit prueft, unterscheidet ein wirksames Gate nicht von einem
+    // abgestuerzten Handler. Sie belegt, dass der Erzeuger ZU ENDE laeuft.
+    render(
+      <CodeImporter
+        initialProjectId="p-k2"
+        initialCode={K_HTML}
+        initialMappings={K_MAPPINGS}
+        initialSettings={{ pixels: { meta: { pixelId: "111" } } }}
+        initialTrackingKey=""
+      />,
+    );
+    await screen.findByText("Kaufen");
+    const doc = await exportDoc();
+    expect(doc).not.toContain("navigator.sendBeacon(");
+    expect(doc).toContain('data-pagesmith-id="ps-aaaaaa"');
+  });
+
+  // LAUF 4 — DER WAECHTER VON (I-3), AUF ZWEI MESSPUNKTEN.
+  it("K3: Projektwechsel -> Export UND Vorschau tragen den Schluessel des NEUEN Projekts", async () => {
+    // WIRD ROT, WENN der Saat-Punkt in handleSwitch den neuen Zustand nicht setzt.
+    // SEINE GRENZE TRAEGT ER AN SICH SELBST: Er stellt die Saat-Punkte 1
+    // (Erstbelegung aus den Props) und 3 (handleSwitch) her — NICHT die Punkte 2
+    // und 4. Die haben ihre eigenen Laeufe (K4, K5), und zwar bewusst getrennt:
+    // eine Fixture, die alle vier nacheinander durchliefe, meldete bei Rot nicht
+    // mehr, WELCHER gefallen ist.
+    // DIE ZWEITE HAELFTE DES MESSPUNKTS IST DER EIGENTLICHE ZUSATZ: Der Export laeuft
+    // ueber eine gewoehnliche Funktion, die Vorschau ueber ein Memo — ZWEI Konsumenten,
+    // zwei Stellen, an denen die Quelle falsch sein kann. Was sie NICHT deckt (die
+    // Dep-Liste des Memos) und warum, steht am Helfer vorschauDoc.
+    // DIE ATTRAPPE TRAEGT DIE VOLLE ZEILENGESTALT, und das ist keine Sorgfalt um
+    // ihrer selbst willen: Fehlt html_b, ist der Varianten-Zustand nach dem Wechsel
+    // undefined statt null, der Editor haelt eine Variante B fuer vorhanden, und der
+    // Kopier-Knopf heisst dann "Variante A kopieren". Der Lauf misst dann nichts
+    // mehr — er findet den Knopf nicht.
+    loadProject.mockResolvedValueOnce({
+      id: "p2",
+      name: "P2",
+      html: K_HTML,
+      mappings: K_MAPPINGS,
+      settings: {},
+      html_b: null,
+      mappings_b: null,
+      ab_test_active: false,
+      ab_test_started_at: null,
+      tracking_key: "tk-von-B",
+    });
+    render(
+      <CodeImporter
+        initialProjectId="p1"
+        initialCode={K_HTML}
+        initialMappings={K_MAPPINGS}
+        initialSettings={{ pixels: { meta: { pixelId: "111" } } }}
+        initialTrackingKey="tk-von-A"
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-02T00:00:00Z" },
+        ]}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    // VORBEDINGUNG MIT BEWEISKRAFT: A traegt seinen Schluessel wirklich. Ohne sie
+    // ginge die Zusicherung unten auch dann auf, wenn NIE ein Beacon entstuende.
+    expect(await exportDoc()).toContain('"tk-von-A"');
+
+    fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
+    fireEvent.click(await screen.findByText("P2"));
+    await waitFor(() => expect(loadProject).toHaveBeenCalledWith("p2"));
+
+    const nachher = await exportDoc();
+    expect(nachher).toContain('"tk-von-B"');
+    expect(nachher).not.toContain("tk-von-A");
+
+    const vorschau = await vorschauDoc();
+    expect(vorschau).toContain('"tk-von-B"');
+    expect(vorschau).not.toContain("tk-von-A");
+  });
+
+  // LAUF 5 — SAAT-PUNKT 2.
+  it("K4: Leerzustand -> das Dokument traegt NICHT den Schluessel des vorigen Projekts", async () => {
+    // WIRD ROT, WENN resetToEmpty den neuen Zustand nicht zuruecksetzt.
+    // DER SCHADEN AUF DIESER ACHSE IST KEIN KOSMETISCHER: Ein Leak hiesse, das
+    // Dokument des leeren Kontexts truege den Schluessel des VORIGEN Projekts —
+    // der Ingest loeste jede Conversion zum falschen Projekt auf.
+    render(
+      <CodeImporter
+        initialProjectId="p1"
+        initialCode={K_HTML}
+        initialMappings={K_MAPPINGS}
+        initialSettings={{ pixels: { meta: { pixelId: "111" } } }}
+        initialTrackingKey="tk-von-A"
+      />,
+    );
+    await screen.findByText("Kaufen");
+    expect(await exportDoc()).toContain('"tk-von-A"');
+
+    fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
+    fireEvent.click(screen.getByRole("button", { name: "+ Neues Projekt" }));
+
+    // Der leere Kontext hat kein HTML mehr -> gemessen wird an der VORSCHAU, die
+    // auch fuer leeren Code ein (leeres) Dokument erzeugt.
+    expect(await vorschauDoc()).not.toContain("tk-von-A");
+  });
+
+  // LAUF 6 — SAAT-PUNKT 4.
+  it("K5: Nachrueck-Zweig nach dem Loeschen -> das Dokument traegt den Schluessel des NACHGERUECKTEN Projekts", async () => {
+    // WIRD ROT, WENN der Saat-Punkt im Nachrueck-Zweig von handleDelete den neuen
+    // Zustand nicht setzt. Dieser Zweig laedt ein Projekt, OHNE dass der Nutzer
+    // gewechselt haette — kein anderer Lauf erreicht ihn.
+    vi.mocked(window).confirm = vi.fn(() => true);
+    listProjects.mockResolvedValueOnce([
+      { id: "p2", name: "P2", updated_at: "2026-01-02T00:00:00Z" },
+    ] as never);
+    // VOLLE ZEILENGESTALT, aus demselben Grund wie in K3.
+    loadProject.mockResolvedValueOnce({
+      id: "p2",
+      name: "P2",
+      html: K_HTML,
+      mappings: K_MAPPINGS,
+      settings: {},
+      html_b: null,
+      mappings_b: null,
+      ab_test_active: false,
+      ab_test_started_at: null,
+      tracking_key: "tk-nachgerueckt",
+    });
+    render(
+      <CodeImporter
+        initialProjectId="p1"
+        initialCode={K_HTML}
+        initialMappings={K_MAPPINGS}
+        initialSettings={{ pixels: { meta: { pixelId: "111" } } }}
+        initialTrackingKey="tk-geloescht"
+        initialProjects={[
+          { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+          { id: "p2", name: "P2", updated_at: "2026-01-02T00:00:00Z" },
+        ]}
+      />,
+    );
+    await screen.findByText("Kaufen");
+    expect(await exportDoc()).toContain('"tk-geloescht"');
+
+    fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
+    // DER KNOPF TRAEGT EIN aria-label OHNE UMLAUT ("Loeschen") — an der Oberflaeche
+    // steht ein Papierkorb-Zeichen. Der Anker ist das Label, nicht das Zeichen.
+    fireEvent.click(screen.getAllByRole("button", { name: "Loeschen" })[0]);
+    await waitFor(() => expect(loadProject).toHaveBeenCalledWith("p2"));
+
+    const nachher = await exportDoc();
+    expect(nachher).toContain('"tk-nachgerueckt"');
+    expect(nachher).not.toContain("tk-geloescht");
+  });
+
+  // LAUF 7 — DAS VIERTE STUECK.
+  it("K6: nach dem Setzen eines Zugangsdatums traegt das Dokument den Schluessel SOFORT, ohne Neuladen", async () => {
+    // WIRD ROT, WENN handleCredentialsSaved den neuen Zustand nicht setzt.
+    // OHNE DIESE ZEILE ERZEUGTE DIE SCHEIBE AUF DEM META-PFAD GENAU DEN
+    // FEHLZUSTAND, DEN SIE AUF DEM GOOGLE-PFAD BEHEBT: Der Server legt die Spalte
+    // beim Setzen lazy an und gibt den Wert zurueck; ohne die Uebernahme truege das
+    // Dokument bis zum naechsten Projektladen keinen Beacon.
+    // DIE ACHSE IST EINE ANDERE ALS BEI K3 BIS K5: dort ein Leak ZWISCHEN
+    // Projekten, hier ein veralteter Zustand IM SELBEN Projekt.
+    render(
+      <CodeImporter
+        initialProjectId="p-k6"
+        initialCode={K_HTML}
+        initialMappings={K_MAPPINGS}
+        initialSettings={{ pixels: { meta: { pixelId: "111" } } }}
+        initialTrackingKey=""
+      />,
+    );
+    await screen.findByText("Kaufen");
+    // VORBEDINGUNG MIT BEWEISKRAFT: vorher steht kein Beacon im Text. Ohne sie
+    // ginge die Zusicherung unten auch dann auf, wenn der Schluessel schon da war.
+    expect(await exportDoc()).not.toContain("navigator.sendBeacon(");
+
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+    fireEvent.change(screen.getByPlaceholderText("CAPI-Token einfügen"), {
+      target: { value: "geheim" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Meta speichern" }));
+    // Der Spy liefert tk-mock zurueck; das ist der Wert, den der Server vergeben hat.
+    await waitFor(() => expect(setCapiToken).toHaveBeenCalledTimes(1));
+
+    const nachher = await exportDoc();
+    expect(nachher).toContain("navigator.sendBeacon(");
+    expect(nachher).toContain('"tk-mock"');
   });
 });

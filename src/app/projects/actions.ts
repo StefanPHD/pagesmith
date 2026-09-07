@@ -93,6 +93,21 @@ export type ProjectRow = {
   // weil sie bei leerer Ergebnismenge NULL ZEILEN zurueckgibt — und genau dann
   // (Test gerade gestartet) wird er gebraucht.
   ab_test_started_at: string | null;
+  // Der oeffentliche Tracking-Schluessel (Phase 8 Scheibe 2b-0). SERVER-autoritativ,
+  // eigene Spalte — aus demselben Grund wie ab_test_active darueber: settings ist
+  // client-besessen und wuerde ihn beim naechsten saveProject wortlos zuruecksetzen.
+  // NULL heisst "noch keiner vergeben": die Identitaet entsteht LAZY, in
+  // setCapiToken oder publishProject. Ein frisch angelegtes Projekt hat keine.
+  //
+  // WOFUER DIE UI IHN BRAUCHT (Scheibe "Der Schluessel kommt aus der Spalte"): Die
+  // zwei Erzeuger des funktionalen Dokuments (Vorschau-Memo und buildDocumentFor)
+  // backen ihn in den Conversion-Beacon. Sie lasen ihn frueher aus dem
+  // Einstellungs-Blob — den befuellt aber nur der Meta-Weg, waehrend der
+  // Google-Autorisierungs-Fluss allein die SPALTE schreibt. Ein so konfiguriertes
+  // Projekt trug deshalb keinen Beacon, und zwar STILL: der PageView-Emitter wird
+  // server-seitig aus der Spalte injiziert, die Ansicht zeigte also Verkehr,
+  // waehrend jede Conversion fehlte. Seither ist die Spalte die EINE Quelle.
+  tracking_key: string | null;
 };
 
 /** Listen-Eintrag fuer den Projekt-Switcher (ohne das schwere html-Feld). */
@@ -138,7 +153,7 @@ export async function loadProject(id?: string): Promise<ProjectRow | null> {
   let query = supabase
     .from("projects")
     .select(
-      "id,name,html,mappings,settings,html_b,mappings_b,ab_test_active,ab_test_started_at"
+      "id,name,html,mappings,settings,html_b,mappings_b,ab_test_active,ab_test_started_at,tracking_key"
     )
     .eq("user_id", user.id);
 

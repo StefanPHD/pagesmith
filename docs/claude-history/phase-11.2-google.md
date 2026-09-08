@@ -1,5 +1,111 @@
 # ARCHIV — PHASE 11.2 (GOOGLE): ZUSCHNITTE UND VERMERKE
 
+
+**═══ ABSCHLUSS — DIE PHASE 11.2 IST BEENDET, DIE STEUERDATEI UND DER VORRAT SIND GELÖSCHT
+(2026-09-08) ═══**
+
+**DIESER BLOCK IST DER EINSTIEG FÜR JEDEN, DER EINEM ZEIGER AUF EINE DATEI FOLGT, DIE ES
+NICHT MEHR GIBT.** Er steht deshalb im Kopf und nicht am Dateiende.
+
+**DIE PHASE 11.2 (GOOGLE ADS) IST AM 2026-09-08 ABGESCHLOSSEN. IHR MARKER STEHT AUF `[x]`.**
+**WAS `[x]` HIER HEISST, UND ZWAR AUSDRÜCKLICH NICHT MEHR: ES HEISST BAU-FERTIG.** Es heisst
+NICHT "alle Fragen beantwortet" und NICHT "Google funktioniert" — die WIRKUNG AUF DIE GEBOTE
+ist ungemessen; bewiesen ist der Weg bis zur VERBUCHUNG beim Anbieter, nicht bis zur Wirkung.
+**DIE VOLLE AUFLAGE STEHT IN docs/roadmap.md, Eintrag 11.2, im "NACHTRAG 2026-09-08, DRITTER
+DES TAGES — DER ABSCHLUSS"** und wird hier NICHT verdoppelt; zwei Fassungen liefen
+auseinander.
+
+**DIE ZWEI GELÖSCHTEN DATEIEN, MIT IHREN NAMEN:**
+· **`docs/aktiver-stand.md`** — die STEUERDATEI der Phase, das Pflicht-Gate ("Auftrag 0").
+· **`docs/aktiver-stand-vorrat.md`** — der VORRAT, 66 Einträge.
+**SIE SIND AUS DEM ARBEITSBAUM GELÖSCHT, NICHT AUS DER HISTORIE.** Der vollständige Text
+beider Dateien steht unverändert im Commit
+
+    dae49f6e7cdb992a45f24dbb5b207354cc17906e   (kurz: dae49f6)
+
+und ist von dort jederzeit lesbar:
+
+    git show dae49f6:docs/aktiver-stand.md
+    git show dae49f6:docs/aktiver-stand-vorrat.md
+
+**DER HASH STEHT HIER, WEIL EINE HISTORIE OHNE IHN THEORETISCH ERREICHBAR UND PRAKTISCH
+NICHT IST — niemand sucht einen Commit, den keiner aufgeschrieben hat.**
+
+**DAS PROTOKOLL DER HEBUNG — WAS WOHIN GEGANGEN IST, JE KLASSE:**
+· **DIE SIEBEN RESTE DER ROADMAP-ZEILE:** FÜNF nach `docs/offene-punkte.md`, je mit Stub in
+  `CLAUDE.md`. Posten (7) an die ROADMAP-ZEILE 11.5, wo die Entscheidung fällt. Posten (8)
+  GESTRICHEN, weil er als offener Punkt bereits in `docs/ziel-befunde.md` geführt wird.
+· **DER VORRAT, 66 EINTRÄGE:** VIERZEHN nach `docs/offene-punkte.md`, FÜNFZIG nach
+  `docs/claude-history/backlog-polish.md` (Abschnitt "Aus Phase 11.2 gehoben (2026-09-08)"),
+  ZWEI gestrichen. **DAS KRITERIUM WAR ZWEITEILIG** — benennbarer Trigger UND "geht sonst
+  STILL kaputt"; nach dem Trigger allein wären es FÜNFUNDFÜNFZIG gewesen.
+· **DIE ELF HEBUNGS-KANDIDATEN:** ACHT als Dauerregeln nach `docs/immer-beachten.md`, EINER
+  (Kandidat 4) ins Backlog, weil er keine Regel ist, sondern eine Verortungs-Aufgabe. ZWEI
+  liegen als KOPIE in dieser Datei — s. den nächsten Punkt.
+· **DIE NEUNZEHN BINDENDEN ENTSCHEIDUNGEN:** DREI als Dauerregeln nach
+  `docs/immer-beachten.md`, SECHZEHN in diese Datei, Abschnitt "Die bindenden Entscheidungen
+  der Phase 11.2, aus der Steuerdatei übernommen". **KEINE hat ihren Gegenstand verloren.**
+
+**DIE ZWEI KANDIDATEN-KOPIEN UND WARUM SIE DEN VOLLZUG ÜBERLEBEN MÜSSEN:** Sie liegen in
+dieser Datei im Abschnitt **"## Zwei Hebungs-Kandidaten der Phase 11.2, die den Vollzug
+überleben müssen"**, mit ihren Nummern 10 und 11.
+· **KANDIDAT 10** trägt den **angenommenen Änderungsantrag** an `docs/arbeitsweise.md` und
+  an die Marker-Legende in `CLAUDE.md` (OWNER-ENTSCHEIDUNG 2026-09-08). **SEIN VOLLZUG IST
+  AUSSTEHEND** und war ausdrücklich NACH diesem Phasenende terminiert — insbesondere Teil
+  (D), der `docs/arbeitsweise.md` betrifft und sie bis dahin sperrt. Er ist in der
+  KORRIGIERTEN Fassung übernommen (Teil (B) trägt seit dem 2026-09-08 zwei Bedingungen,
+  nicht eine).
+· **KANDIDAT 11** ist die gerettete Prinzip-Hälfte der bindenden Entscheidung (B).
+**OHNE DIESE KOPIEN WÄREN BEIDE MIT DER STEUERDATEI VERSCHWUNDEN.**
+
+**EIN TOTER PFAD, DER NIE GEHEILT WERDEN DARF — UND ER LIEGT IM PRODUKTIVCODE:**
+`supabase/migrations/0027_project_secrets_version.sql` zeigt in ihrem Kopfkommentar auf
+`docs/aktiver-stand.md`, Abschnitt **"Der Riegel gegen die verlorene Schreibung"**.
+**DER ANKER ÜBERLEBT — jener Abschnitt liegt als Zuschnitt in DIESER Datei. NUR DER PFAD
+STIRBT.**
+**ER WIRD NICHT NACHGEZOGEN, UND ZWAR NIE:** "ANGEWANDTE MIGRATIONEN WERDEN NICHT
+NACHTRÄGLICH UMGESCHRIEBEN, auch nicht ein Kommentar" (`docs/immer-beachten.md`). Die Regel
+gewinnt gegen jeden Aufräum-Wunsch.
+**ES IST DERSELBE MECHANISMUS, DER `docs/aktiver-stand-11.8.md` ZWÖLF TAGE LIEGEN LIESS —
+HIER ABER OHNE AUSWEG: dort war das Nachziehen ein `docs`-Commit, hier ist es verboten.**
+
+**DAS UMBENENNEN, DAS NICHT NÖTIG WAR:** Diese Datei trägt ihren **ENDNAMEN VON ANFANG AN**
+— seit ihrer Entstehung am 2026-09-08, mitten in der laufenden Phase. **DAMIT ENTFIEL AM
+PHASENENDE JEDES UMBENENNEN, UND MIT IHM DIE FEHLERKLASSE, DIE BEI DER PHASE 11.8 ZWÖLF TAGE
+GEKOSTET HAT** — dort zitierten sechs Quelldateien einen Pfad im Kommentarkopf, und die
+Standdatei blieb deshalb ausserhalb des Archiv-Ordners liegen, bis der Umzug in einer eigenen
+Runde nachgeholt wurde. **DER ENDNAME VON ANFANG AN IST DIE ANTWORT AUF GENAU DIESEN FALL,
+und diese Runde ist ihr Beleg: Es war kein `git mv` nötig.**
+
+**DIE SUCHE NACH RETTENSWERTEM IST BEENDET — NACH VIER DURCHSICHTEN UND DREI ACHSEN.**
+Vor dem Löschen ist die Steuerdatei viermal daraufhin durchgegangen worden, was in ihr steht
+und **nirgends sonst**. Sieben Stücke sind gerettet worden: die ungeprüften
+Festlegungs-Blöcke, die Kopplungs-Zahl, die 437 052 Sekunden, die Byte-Aufstellung, der
+allgemeine Fall zweier paralleler Phasen, die Zwei-Orte-Auflage am Roadmap-Kopf und die Frage
+"ob es bei elf bleibt".
+**GEFAHREN WURDEN DREI ACHSEN:** (1) die Abschnitte der Datei, einzeln · (2) alle Zahlen mit
+Tausender-Trenner und alle sechsstelligen Zahlen · (3) alle Zeilen mit einem Auflagen- oder
+Offenheits-Marker (`NICHT ENTSCHIEDEN`, `STEHT AUS`, `IST UNGEMESSEN`, `IST NICHT GEPRÜFT`,
+`AUFLAGE`, `PFLICHT-STOPP`, `BLEIBT OFFEN`, `IST NICHT ERHOBEN`, `NICHT AUFLÖSBAR`, `KEINE
+EMPFEHLUNG`).
+**NICHT GEFAHREN WURDEN VIER:** Datumsangaben · Symbol- und Dateinamen im Fliesstext ·
+Anbieter-Fundstellen der Form `(xy)` · Zitate fremder Wortlaute.
+**DIE ZAHL IST KEIN PRÜFUMFANG.** Jede NEUE Achse hat neu getroffen; die Ausbeute ging nicht
+gegen null. **WER SPÄTER ETWAS VERMISST, MUSS WISSEN, WO NICHT GESUCHT WURDE — deshalb stehen
+die vier ungefahrenen Achsen hier.**
+**WARUM DIE SUCHE TROTZDEM BEENDET WURDE, und der Grund ist nicht Erschöpfung:** `git rm`
+löscht aus dem ARBEITSBAUM, nicht aus der HISTORIE. **WAS JETZT FEHLT, IST REKONSTRUIERBAR,
+NICHT VERLOREN** — der Hash oben ist der Weg dorthin. **DAS IST DER UNTERSCHIED ZWISCHEN
+"GEHT VERLOREN" UND "LÄDT NICHT MEHR":** Gerettet wurde, was eine spätere Instanz BRAUCHT,
+OHNE DANACH ZU SUCHEN — Auflagen, die beim Lesen dieses Archivs greifen müssen, und
+Herleitungen, die eine Entscheidung tragen. Für alles Übrige reicht der Zeiger.
+
+**DER VERFAHRENSSLOT IST WIEDER FREI:** "Existiert `docs/aktiver-stand.md` nicht, läuft
+aktuell keine Phase" (`CLAUDE.md`). **DAS IST SEIT DEM 2026-09-08 WIEDER DER FALL** — zum
+ersten Mal seit Wochen.
+
+**═══ ENDE DES ABSCHLUSS-BLOCKS ═══**
+
 **WAS DIESE DATEI IST:** Das Archiv der Phase 11.2. Sie trägt die ELF abgelaufenen
 Scheiben-Zuschnitte und die abgeschlossenen Scheiben-Vermerke dieser Phase, im
 Wortlaut und in der Reihenfolge, in der sie entstanden sind.
@@ -20,6 +126,74 @@ eines der Vermerke. Beide führen je Eintrag den wörtlichen Titelanfang und
 diese Datei als Ziel. **Wer einen Zuschnitt oder einen Vermerk sucht, findet über das
 Register hierher — und nur so**; ohne das Register wüsste eine Sitzung, die nur die
 Steuerdatei liest, nicht einmal, DASS es etwas nachzusehen gibt.
+
+**⚠ DIE FESTLEGUNGS-BLÖCKE DER ELF ZUSCHNITTE SIND UNGEPRÜFT — LIES DAS, BEVOR DU EINEN VON
+IHNEN ALS BINDEND LIEST.**
+**OB IHRE "FESTLEGUNGS"-BLÖCKE NOCH BINDEN ODER ABGELAUFEN SIND, IST NICHT GEPRÜFT** —
+weder von CC noch vom Architekten; **der Volltext ist ungelesen.** Die Zuschnitte sind mit
+**254 785 B (37,4 % der damaligen Steuerdatei) die grösste Klasse** gewesen, obwohl alle elf
+verdichtet sind (GEMESSEN, CC, 2026-09-07: jeder der elf trägt einen Abschnitt "Vollzogen —
+…" bzw. "… ist verdichtet"). **Die grössten Einzelblöcke sind "Sechs Festlegungen des
+Zuschnitts der Scheibe 2" (18 030 B) und "Sieben Festlegungen des Zuschnitts der Scheibe 4"
+(14 023 B).**
+**WARUM DAS HIER IM KOPF STEHT UND NICHT IRGENDWO SONST:** Die elf Zuschnitte liegen in
+DIESER Datei und werden weiter gelesen. **WER EINEN FESTLEGUNGS-BLOCK ALS BINDEND LIEST,
+MUSS VORHER WISSEN, DASS DAS UNGEPRÜFT IST.** Eine Festlegung, die längst abgelaufen ist,
+sieht im Archiv genauso aus wie eine, die noch trägt — nichts im Text unterscheidet sie.
+**WAS DIE AUFLAGE WAR, UNTER DER SIE HIERHERKAMEN:** "DIE ZUSCHNITTE WERDEN UNVERÄNDERT
+VERSCHOBEN UND NICHT BEURTEILT. Kein Satz wird gestrichen, keiner umformuliert, keiner
+gehoben." **WER SIE SPÄTER BEURTEILT, TUT DAS ALS EIGENE ARBEIT** — das ist keine Vertagung
+aus Bequemlichkeit: Eine Beurteilung verlangt die Lesung von 254 785 Bytes, und sie im selben
+Zug mit einem Schnitt zu erledigen hiesse, ZWEI ACHSEN GLEICHZEITIG ZU BEWEGEN; danach wäre
+am Ergebnis nicht mehr zu sehen, ob eine Aussage verschoben oder verändert worden ist.
+**PROVENIENZ:** GEMESSEN am Repo (CC, 2026-09-07). Wörtlich übernommen am 2026-09-08 aus
+`docs/aktiver-stand.md`, Abschnitt "Die Grenze dieses Zuschnitts — die Zuschnitte werden
+verschoben, nicht beurteilt", **vor deren Löschung** — die Aussage stand bis dahin
+ausschliesslich dort und wäre mit der Datei verschwunden.
+
+**⚠ UND EINE ZWEITE, TEURERE FRAGE AN DIESELBEN ZUSCHNITTE — SIE IST NICHT DIESELBE WIE DIE
+DARÜBER, UND DIE UNTERSCHEIDUNG IST DER GANZE PUNKT.**
+Der Block darüber fragt, ob die Festlegungs-Blöcke der elf Zuschnitte noch **BINDEN** oder
+abgelaufen sind. **DIESER HIER FRAGT, OB ES WEITERE BINDENDE ENTSCHEIDUNGEN GIBT, DIE NIE
+ERHOBEN WURDEN.**
+**OB ES BEI ELF BLEIBT, IST NICHT GEPRÜFT.** Beim Schnitt vom 2026-09-08 sind genau ZWEI
+Abschnitte als "bindet über die Scheibe hinaus" erkannt und aus den Zuschnitten
+herausgelöst worden — **weil ihre TITEL die Aussage tragen** ("Die Entscheidungen vom
+2026-08-29 — ACHT, und sie binden über diese Scheibe hinaus" und "Drei Entscheidungen, die
+nach den sechs Festlegungen gefallen sind — sie binden gleich"). **Ob in den übrigen NEUN
+Zuschnitten weitere bindende Entscheidungen ohne einen solchen Titel stecken, ist NICHT
+ERHOBEN.**
+**WARUM DAS DIE TEURERE DER BEIDEN FRAGEN IST, und der Satz stammt aus dem Block selbst:**
+Wäre beim Schnitt mechanisch getrennt worden, wäre der Schaden **still** gewesen — der
+Schnitt hätte funktioniert, die Gates wären grün gewesen, **"und die nächste Scheibe wäre
+gegen Entscheidungen gebaut worden, die sie nicht mehr findet."** Genau diese Lage besteht
+für die neun ungeprüften Zuschnitte fort: Eine bindende Entscheidung, die niemand als solche
+erkannt hat, liegt in einer Datei, die als ABGELAUFENES geführt wird — und wer nach ihr
+sucht, sucht sie an einem Ort, an dem er sie nicht erwartet.
+**PROVENIENZ:** Die zwei erkannten Abschnitte sind GEMESSEN am Repo (CC, 2026-09-07), ihre
+Titel wörtlich geprüft. Dass die übrigen neun **nicht** erhoben sind, ist eine Aussage über
+den Prüfumfang jener Messung und ausdrücklich kein Nicht-Treffer. Wörtlich übernommen am
+2026-09-08 aus `docs/aktiver-stand.md`, Abschnitt "Die elf Entscheidungen, die heute am
+falschen Ort stehen", **vor deren Löschung** — die Aussage stand bis dahin ausschliesslich
+dort.
+
+**AUSDRÜCKLICH NICHT ENTSCHIEDEN: DER ALLGEMEINE FALL ZWEIER PARALLELER PHASEN.**
+Diese Phase lief zeitweise NEBEN der Phase 11.8, und beide führten eine eigene Standdatei,
+einen eigenen Vorrat und ein eigenes Pflicht-Gate. **DIE PARALLELITÄT IST ZWEIMAL
+VORGEKOMMEN UND NIE GEREGELT WORDEN.**
+**DER VERMERK, DER SIE BESCHRIEB, BESCHRIEB EINEN EINZELFALL UND KEINE REGEL.** Er hielt
+fest, welche Datei welchen Stand trägt, dass ein Verweis der Form "Vorrat, Eintrag 3" ohne
+Dateinamen ZWEI Standdateien trifft, und dass nichts davon nachgezogen worden ist.
+**WER DARAUS EIN VERFAHREN ABLEITET, LEITET AUS EINEM EINZELFALL AB — UND DER EINZELFALL
+SIEHT OHNE DIESE WARNUNG WIE EIN PRÄZEDENZFALL AUS.**
+**WARUM DAS HIER STEHT UND NICHT IN docs/arbeitsweise.md:** Dort stünde ein VERFAHREN, wo
+der Text selbst sagt, es sei ein Einzelfall. Ausserdem ist jene Datei bis zum Vollzug des
+angenommenen Änderungsantrags gesperrt (Teil (D), s. Hebungs-Kandidat 10 weiter unten in
+dieser Datei).
+**PROVENIENZ:** OWNER-/ARCHITEKTEN-ENTSCHEIDUNG 2026-08-27. Wörtlich übernommen am
+2026-09-08 aus dem Kopf von `docs/aktiver-stand.md`, VERMERK 2026-08-27, **vor deren
+Löschung** — jener Text sagte über sich selbst, er sei "die einzige Stelle im Repo, an der
+das steht", und eine Gegenprobe am Repo (CC, 2026-09-08) hat das bestätigt.
 
 **WOHER SIE STAMMT:** Herausgeschnitten am 2026-09-08 aus `docs/aktiver-stand.md`,
 Stand `57c9231` (9 967 Zeilen, 702 038 B). Es ist Schritt 2 der Teilung, deren Zuschnitt
@@ -4402,6 +4576,44 @@ eingeloggten Tab (der Preis aus Entscheidung P3).
 · **Schritt 1, die Regression:** HTTP 200,
   `{"state":"ok","accessTokenExpiresAt":1788431623,`
   `"refreshTokenExpiresAt":{"kind":"at","epochSeconds":1788868675}}`.
+
+**NACHGETRAGEN 2026-09-08 — DIE ACHSE ZU DEN ZWEI WERTEN AUS SCHRITT 1, GERETTET AUS
+docs/aktiver-stand.md VOR IHRER LÖSCHUNG.** Der Text darüber ist unverändert; dieser
+Nachtrag tritt DANEBEN und steht HIER und nicht am Abschluss-Block, weil er die zwei
+Rohwerte deutet, die drei Zeilen höher stehen — eine Herleitung gehört an ihre Messung.
+
+**DER ABSTAND DER ZWEI UHREN BETRÄGT 437 052 SEKUNDEN** (`1788868675` minus `1788431623`;
+GERECHNET, CC, 2026-09-03, keine dritte Beobachtung).
+
+**DIE HERLEITUNG, DIE DEN WERT ERST BRAUCHBAR MACHT, UND OHNE DIE ER IN DIE IRRE FÜHRT: DER
+ABSTAND IST KEIN MESSWERT ÜBER DIE FRIST, SONDERN ÜBER DAS ALTER DES ERNEUERUNGS-TOKENS.**
+Wer ihn als Frist liest, liest ihn falsch.
+**DER VERGLEICH, DER DAS ZEIGT:** In VERMERK 6 betrug derselbe Abstand **601 200 Sekunden**
+— sieben Tage minus eine Stunde —, weil dort UNMITTELBAR NACH DEM VERBINDEN gemessen wurde
+und beide Uhren frisch waren. Hier steht ein **ÄLTERES** Erneuerungs-Token neben einem
+**frischen** Zugangsdatum, und der Abstand schrumpft entsprechend: 601 200 minus 437 052
+sind **164 148 Sekunden**, also **rund 1,9 Tage** — genau das Alter, das das
+Erneuerungs-Token zum Zeitpunkt dieser Messung hatte.
+**DAS IST KEIN WIDERSPRUCH ZU VERMERK 6**, und der Satz gehört zwingend dazu: Jener misst
+die EINLÖSUNG — die Erneuerung verlängert die zweite Uhr NICHT, sie läuft weiter. Dieser
+misst einen späteren Zeitpunkt derselben zweiten Uhr. Zwei verschiedene Vorgänge, zwei
+verschiedene Wirkungen; wer sie zusammenzieht, hält einen der beiden Befunde für widerlegt.
+
+**WOZU DAS NACH DEM PHASENENDE NOCH GEBRAUCHT WIRD, und das ist der Grund für die Rettung:**
+Der gehobene offene Punkt "DIE SIEBEN-TAGE-FRIST UND DER STATUSWECHSEL AUF 'IN PRODUKTION'"
+(docs/offene-punkte.md) nennt nur den **TERMIN**. **WER IHN DURCH NEU-VERBINDEN VERSCHIEBT,
+BRAUCHT DIESE HERLEITUNG, UM ZU VERSTEHEN, WAS ER DANACH MISST** — ohne sie ist der Termin
+eine Zahl ohne Achse, und der nächste gemessene Abstand sieht wie ein Widerspruch aus.
+**DER TERMIN SELBST STEHT HIER NICHT** und wird nicht verdoppelt; er ist am 2026-09-04
+ersetzt worden und liegt an jenem offenen Punkt.
+
+**DIE UNSCHÄRFE AUS VERMERK 6 TRÄGT MIT:** Ob die Rohwerte der Frist 3599/604799 oder
+3600/604800 lauten, ist **NICHT auflösbar** — die Antwort des Anbieters wird nicht geloggt,
+und das bleibt so.
+PROVENIENZ: die zwei Werte **GEMESSEN 2026-09-03 (OWNER)**, sie stehen unverändert oben.
+Abstand, Differenz und die Einordnung als Alters-Messung sind **GERECHNET bzw. ABGELEITET**
+(CC, 2026-09-03), keine zweite Beobachtung. Übernommen aus docs/aktiver-stand.md, Abschnitt
+"1b als Folgetask", Vorbedingung (iv), am 2026-09-08 vor deren Löschung.
   **GENAU DREI FELDER, KEIN `attempts`** — die Zusage "kein neues Rumpf-Feld" ist am
   ausgelieferten Stand eingelöst.
 · **Schritt 2, unmittelbar danach:** identischer Rumpf, **`accessTokenExpiresAt`
@@ -5729,6 +5941,48 @@ eine Zahl aus dem einen belegt nichts über den anderen.
 **NEBENBEFUND DERSELBEN MESSUNG:** `docs/immer-beachten.md` lädt bei **126 574 B**
 vollständig (OWNER, /context, 2026-09-08). Der bisher höchste gemessene Wert war
 **110 664 B** (2026-08-21).
+
+**NACHGETRAGEN 2026-09-08 — DIE BYTE-AUFSTELLUNG, DIE FEHLENDE HÄLFTE DIESER MESSUNG.**
+Gerettet aus `docs/aktiver-stand.md`, Abschnitt "Was die Steuerdatei behält, und was das
+wiegt", **vor deren Löschung** — sie stand bis dahin ausschliesslich dort. Der Ladbarkeits-
+Block darüber sagt, was die Datei WOG; diese Aufstellung sagt, WORAUS.
+
+**DIE FÜNF BLÖCKE, DIE IN DER STEUERDATEI BLIEBEN — GEMESSEN (CC, 2026-09-07), je an den
+Zeilengrenzen VOR dem Eingriff:**
+· Kopf + Abschnitts-Verzeichnis — **4 576 B**
+· der Rahmen (Pflicht-Gate · Gegenstand der Phase · Was den Zuschnitt bindet ·
+  Fortschreibungs-Regeln) — **23 204 B**
+· "Entscheidungen, die über ihre Scheibe hinaus binden" — **23 174 B**
+· "Hebungs-Kandidaten" — **23 749 B**
+· "1b als Folgetask" — **27 887 B**
+**DIE ZWEI UMGEZOGENEN ENTSCHEIDUNGS-BLÖCKE:** 4 907 B + 4 946 B = **9 853 B** (GEMESSEN,
+CC, 2026-09-07).
+**DIE DREI REGISTER: 10 349 B** (GEMESSEN, CC, 2026-09-08, am gebauten Abschnitt).
+**DIE ADDITIONEN, ausdrücklich als ADDITION und nicht als Messung:** die fünf Blöcke ergeben
+**102 590 B**, mit den zwei umgezogenen **112 443 B**, mit den Registern und dem
+Teilungs-Zuschnitt **rund 144 000 B**. **GEMESSEN war die Steuerdatei nach dem Schnitt
+148 817 B** — es gilt die Messung, nicht die Addition, und die **Differenz von rund 5 000 B**
+ist der Text, den der Schnitt selbst erzeugt hat (die Register-Köpfe, die Klammer um "1b als
+Folgetask", die Herkunfts-Zeilen der zwei umgezogenen Blöcke).
+
+**DIE ZWEI SELBSTMESSUNGEN DES TEILUNGS-ZUSCHNITTS SIND BEWUSST NICHT MITGENOMMEN** —
+18 611 B, 20 910 B und die gerundeten 21 000 B. Sie messen einen ABSCHNITT, den es nach dem
+Löschen der Steuerdatei nicht mehr gibt, und sie sind genau der Fall, den Hebungs-Kandidat 9
+beschreibt ("EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF
+AUS NACHZÜGEN"). Sie hier zu wiederholen hiesse, eine Selbstangabe an einen Ort zu tragen,
+an dem sie nicht einmal mehr ihren Gegenstand hat.
+
+**DER GRUND FÜR DIESE RETTUNG IST NICHT DER, DEN DER BLOCK ÜBER SICH SELBST SAGT — und
+dieser Absatz muss stehen, sonst sucht die nächste Instanz nach einem Massstab für eine Datei,
+die es nicht gibt.** Der Block nannte sich "der MASSSTAB, gegen den die nächste Verdichtung
+misst". **DIESER ZWECK STIRBT MIT DER STEUERDATEI.**
+**WAS IHN TRÄGT, IST EIN ANDERER: Er ist die einzige Herleitung, WIE SICH 680 598 B AUF DIE
+KLASSEN VERTEILT HABEN** — **Zuschnitte 37,4 %, Vorrat 28,5 %, Vermerke 23,0 %.**
+**GENAU DIESE VERTEILUNG HAT DEN SCHNITT ENTSCHIEDEN:** Er lief entlang der **FUNKTION** und
+nicht entlang der **ZEIT**, weil die **Vermerke nicht die Masse waren** — das war die
+Ausgangsannahme des Architekten, und diese Aufstellung hat sie gekippt.
+**DIE NÄCHSTE PHASE, DIE ZU GROSS WIRD, STEHT VOR DERSELBEN FRAGE; ohne die Zahlen ist die
+Antwort wieder eine Vermutung.**
 
 ---
 

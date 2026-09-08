@@ -423,7 +423,7 @@ const OHNE_TRENNZEICHEN = (value: string): string => value.replace(/[-\s]/g, "")
  *
  * DIE GRENZE, UND SIE GEHOERT AN DIESE STELLE: Die Umformung wirkt NUR IM
  * SCHREIBPFAD. Ein Wert, der auf anderem Weg in den Blob gelangt — ein
- * selbstgebauter saveProject-Aufruf, s. docs/aktiver-stand-vorrat.md, Eintrag 16 —,
+ * selbstgebauter saveProject-Aufruf, s. docs/offene-punkte.md, Eintrag 16 —,
  * wird NIE umgeformt und beim Lesen unveraendert angezeigt und weitergereicht. DAS
  * IST KEINE NEUE LUECKE UND NICHTS, WAS HIER ZU BAUEN WAERE; ohne diesen Satz haelt die
  * naechste Runde die Umformung fuer eine Zusicherung ueber den INHALT der Spalte.

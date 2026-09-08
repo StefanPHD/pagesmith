@@ -64,7 +64,7 @@ export type GoogleClickIds = {
  * Conversion), waehrend ein schreibungsunempfindlicher Vergleich einen fremden,
  * zufaellig gleichnamigen Parameter aufgreifen koennte — und ein falscher Wert als
  * Kennung wird vom Anbieter NICHT als Fehler gemeldet.
- * DER OFFENE PUNKT DAZU steht in docs/aktiver-stand-vorrat.md, Eintrag 4. Die erste
+ * DER OFFENE PUNKT DAZU steht in docs/offene-punkte.md, Eintrag 4. Die erste
  * Messung nimmt ihn mit.
  */
 const CLICK_ID_PARAMS = ["gclid", "gbraid", "wbraid"] as const;

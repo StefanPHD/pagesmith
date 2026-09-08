@@ -4095,3 +4095,52 @@ Antwort darauf.
    docs/ziel-befunde.md ohnehin öffnet — dieselbe Runde wie Vorrats-Eintrag 12 dieser
    Datei, und beides gehört zusammen erledigt. KEINE EMPFEHLUNG. PROVENIENZ: FOLGE aus
    dem Vergleich der beiden Fundstellen (CC, 2026-08-31), keine Messung.
+
+67. **DIE ZEIGER AUF DIE ZWEI GELÖSCHTEN DATEIEN DER PHASE 11.2 SIND NICHT NACHGEZOGEN —
+    145 IN DER DOKU, EINER IN EINER MIGRATION.**
+    **DER BEFUND — GEMESSEN am Repo (CC, 2026-09-08, nach dem `git rm`; Achse:
+    `git ls-files` über alle verfolgten Dateien, `grep -o` je Pfad, also Vorkommen und
+    nicht Zeilen):** `docs/aktiver-stand.md` und `docs/aktiver-stand-vorrat.md` sind am
+    2026-09-08 gelöscht worden. **Die Zeiger auf sie sind es nicht.**
+    · **PRODUKTIVCODE UND TESTS: 0 offen.** Alle zehn sind in derselben Runde nachgezogen
+      worden (acht in `src/lib/`, zwei in `src/lib/capi/google-click-ids.test.ts`) — reine
+      Adresse, kein Kommentar umformuliert. **Ein toter Pfad im Code ist teurer als einer in
+      der Doku**, deshalb die Ausnahme.
+    · **EINE MIGRATION: 1, UND SIE WIRD NIE NACHGEZOGEN.**
+      `supabase/migrations/0027_project_secrets_version.sql` zeigt auf
+      `docs/aktiver-stand.md`, Abschnitt "Der Riegel gegen die verlorene Schreibung". **DER
+      ANKER ÜBERLEBT** — der Abschnitt liegt als Zuschnitt in
+      `docs/claude-history/phase-11.2-google.md`; **NUR DER PFAD STIRBT.** Die Regel
+      "ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH UMGESCHRIEBEN, auch nicht ein
+      Kommentar" gewinnt gegen jeden Aufräum-Wunsch. **DIESER EINE PUNKT IST KEIN
+      VORRAT-POSTEN, SONDERN EIN DAUERZUSTAND** und steht hier nur, damit ihn niemand als
+      vergessen zählt.
+    · **GEPFLEGTE DOKU: 71.** `docs/ziel-befunde.md` 20 · `docs/roadmap.md` 12 ·
+      `CLAUDE.md` 10 · `docs/plattform-befunde.md` 8 · `docs/offene-punkte.md` 22 ·
+      `docs/arbeitsweise.md` 6 · `docs/immer-beachten.md` 3 · `docs/db-stand.md` 1.
+    · **ARCHIV: 74.** `docs/claude-history/phase-11.2-google.md` 32 ·
+      `docs/claude-history/backlog-polish.md` 9 ·
+      `docs/claude-history/phase-11.8-autorisierungsschicht.md` 7 ·
+      `phase-11.1-linkedin.md` 2 · `phase-11-multi-tracking-rohfassung.md` 1 ·
+      `phase-11-multi-tracking-aktiver-stand.md` 1 · `phase-10-workspace.md` 1.
+    **WARUM SIE NICHT IN EINEM ZUG NACHGEZOGEN WURDEN:** 145 Doku-Zeiger in EINER Runde
+    hätten den Diff der Archivierung so gross gemacht, dass die Löschung selbst darin nicht
+    mehr prüfbar gewesen wäre. **ZWEI ACHSEN GLEICHZEITIG ZU BEWEGEN** ist genau der
+    Fehler, den der Teilungs-Zuschnitt für die Zuschnitte ausgeschlossen hat.
+    **WAS EIN TOTER DOKU-ZEIGER KOSTET, ehrlich und nicht dramatisiert:** Er zeigt auf einen
+    Pfad, den es nicht mehr gibt. Der ZIEL-TEXT ist in fast allen Fällen weiterhin da — die
+    Vorrats-Einträge in `docs/offene-punkte.md` bzw. `docs/claude-history/backlog-polish.md`,
+    die Zuschnitte und Vermerke im Archiv —, und der Abschluss-Block im Kopf des Archivs
+    nennt den Commit, unter dem beide gelöschten Dateien vollständig nachzulesen sind.
+    **DER SCHADEN IST EIN SUCHWEG, KEIN VERLUST.**
+    **KEINE EMPFEHLUNG**, in welcher Reihenfolge nachgezogen wird, ob überhaupt alle
+    nachgezogen werden, oder ob ein Zeiger auf eine gelöschte Datei in einem ARCHIV
+    (74 der 145) als Zeitdokument stehen bleiben darf — **letzteres ist die eigentlich
+    offene Frage und ausdrücklich nicht entschieden.**
+    GEMELDET 2026-09-08, NICHT GEBAUT.
+    TRIGGER: **die nächste Runde, die eine dieser Dateien ohnehin öffnet** — dann geht ihr
+    Anteil beiläufig mit, und die Zahl schrumpft ohne eine eigene Runde.
+    PROVENIENZ: Die Zahlen sind **GEMESSEN am Repo (CC, 2026-09-08)** nach dem `git rm` und
+    nach dem Nachziehen der Produktivcode-Zeiger; sie zählen VORKOMMEN, nicht Zeilen. Dass
+    ein Zeiger im Archiv als Zeitdokument gelten könnte, ist eine **FRAGE** und keine
+    Feststellung.

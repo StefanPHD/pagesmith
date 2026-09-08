@@ -51,7 +51,7 @@
 //
 // ---------------------------------------------------------------------------
 // KEIN NEBENLAEUFIGKEITS-RIEGEL, UND DAS IST ABSICHT. Keine Sperre, keine
-// Vereinzelung, kein Warten. Vorrats-Eintrag 9 (docs/aktiver-stand-vorrat.md) ist in
+// Vereinzelung, kein Warten. Vorrats-Eintrag 9 (docs/offene-punkte.md) ist in
 // 1b-1 GEPRUEFT UND BEGRUENDET VERTAGT: Die FORM des Riegels haengt am GRAD der
 // Nebenlaeufigkeit, und den legt erst der TAKT fest — also 1b-2. Ein Riegel im
 // Prozessspeicher traegt fuer einen Sweep mit zwei Laeufen und traegt NICHT, wenn der

@@ -49,7 +49,7 @@ import {
 //
 // KEIN WIEDERKEHRENDER AUFRUF. Diese Scheibe baut KEINEN Ausloeser — kein Intervall,
 // kein Poll, kein Effekt. Der automatische Ausloeser ist Scheibe 1b (bindende
-// Entscheidung (7) in docs/aktiver-stand.md). WER IHN BAUT, LIEST ZUERST "EIN
+// Entscheidung (7) in docs/claude-history/phase-11.2-google.md). WER IHN BAUT, LIEST ZUERST "EIN
 // WIEDERKEHRENDER AUFRUF GEGEN EINEN EXTERNEN DIENST HAENGT AN DER SICHTBARKEIT DES
 // BEREICHS, DER IHN BRAUCHT" (docs/immer-beachten.md).
 //
@@ -122,7 +122,7 @@ import {
 //   der ZUKUNFT, und der Vorlauf unten erneuerte es nicht.
 //   OB DER ANBIETER DAS TUT, IST NICHT GEMESSEN. Diese Achse ist NEU aufgeschrieben
 //   und steht ausserdem als zweite Achse an Vorrats-Eintrag 9 in
-//   docs/aktiver-stand-vorrat.md. GEMELDET, NICHT GEBAUT.
+//   docs/offene-punkte.md. GEMELDET, NICHT GEBAUT.
 //
 //   ERGAENZT MIT SCHEIBE 1b-2b, UND KEIN WORT DARUEBER IST ABGESCHWAECHT (Invariante
 //   (I-5) des Zuschnitts): DIE AUSSTELLUNGS-REIHENFOLGE BLEIBT UNGEMESSEN, AUCH WENN

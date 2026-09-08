@@ -274,8 +274,10 @@ gehen von hier eine Station weiter.
   ausdrücklich nicht erhoben)
 
 **AUS DEM PHASENENDE 11.2 GEHOBEN (2026-09-08) — NEUNZEHN PUNKTE.** Fünf aus der
-Rest-Liste der Roadmap-Zeile 11.2, vierzehn aus dem Vorrat der Phase. DIE NUMMERN IN
-KLAMMERN SIND URSPRUNGS-NUMMERN und werden nicht neu vergeben. DAS KRITERIUM WAR
+Rest-Liste der Roadmap-Zeile 11.2, vierzehn aus dem Vorrat der Phase. DIE
+URSPRUNGS-NUMMERN STEHEN NICHT HIER, SONDERN AM EINTRAG IN docs/offene-punkte.md — sie
+waren Nummern der am 2026-09-08 gelöschten Vorratsdatei, und ein Nummern-Präfix in dieser
+Liste zeigte auf eine Ablage, die es nicht mehr gibt. DAS KRITERIUM WAR
 ZWEITEILIG — benennbarer Trigger UND "geht sonst still kaputt"; nach dem Trigger allein
 wären es 55 von 66 Vorrats-Einträgen gewesen statt 14 (GEMESSEN, CC, 2026-09-08). Die
 übrigen liegen in docs/claude-history/backlog-polish.md.
@@ -294,37 +296,37 @@ wären es 55 von 66 Vorrats-Einträgen gewesen statt 14 (GEMESSEN, CC, 2026-09-0
   Ad-Traffic. DIESER PUNKT TRÄGT DIE AUFLAGE AM [x] DER PHASE 11.2)
 - DER UPLOAD_CLICKS-VORBEHALT IM KUNDENKONTO — EINE VORAUSSETZUNG JE KUNDE, KEINE EINMALIGE
   ARBEIT (Trigger: der erste FREMDE Kunde, der Google verbindet)
-- (4) DIE SCHREIBUNG DER URL-PARAMETERNAMEN STÜTZT SICH AUF NICHTS GELESENES (Trigger: die
+- DIE SCHREIBUNG DER URL-PARAMETERNAMEN STÜTZT SICH AUF NICHTS GELESENES (Trigger: die
   erste Messung des Auto-Taggings — "DIE ERSTE MESSUNG NIMMT SIE MIT")
-- (5) DREI FELDER DER NUTZLAST SIND FRAGEN DER TRANSPORT-SCHEIBE, NICHT DIESER (Trigger:
+- DREI FELDER DER NUTZLAST SIND FRAGEN DER TRANSPORT-SCHEIBE, NICHT DIESER (Trigger:
   DREI Trigger, je Feld einer; der Eintrag entfällt ERST, wenn alle drei eingetreten UND
   abgearbeitet sind)
-- (6) eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE IST EINE
+- eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE IST EINE
   ANDERE (Trigger: "die Transport-Scheibe — jetzt für die verbliebene Frage nach dem INHALT
   der URL" — EINGETRETEN, ausdrücklich NICHT geschlossen)
-- (8) EINE AUSWERTUNG DER ANBIETER-FEHLER DARF NICHT NUR DEN ERSTEN fieldViolation LESEN
+- EINE AUSWERTUNG DER ANBIETER-FEHLER DARF NICHT NUR DEN ERSTEN fieldViolation LESEN
   (Trigger: der erste Rückkanal für abgelehnte Ereignisse)
-- (9) KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG (Trigger: eine gemessene Rotation bei
+- KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG (Trigger: eine gemessene Rotation bei
   irgendeinem Anbieter dieses Rahmens, ODER ein Auslöser, der die Funktion nachweislich
   nebenläufig ruft — an BEIDEN Hälften NICHT eingetreten)
-- (10) retry HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN (Trigger: der Zuschnitt
+- retry HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN (Trigger: der Zuschnitt
   der Scheibe 1b — EINGETRETEN)
-- (13) ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN (Trigger: zwei
+- ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN (Trigger: zwei
   eigene Trigger, BEIDE EINGETRETEN)
-- (16) saveProject SCHREIBT settings UNVALIDIERT — TOR A HÄLT DURCH EINE ABWESENHEIT
+- saveProject SCHREIBT settings UNVALIDIERT — TOR A HÄLT DURCH EINE ABWESENHEIT
   (Trigger: der Zuschnitt der Scheibe 2 — EINGETRETEN)
-- (24) PROJECT_PARAM STEHT ZWEIMAL, UND DIE DIVERGENZ IST EINSEITIG STUMM (Trigger: eine
+- PROJECT_PARAM STEHT ZWEIMAL, UND DIE DIVERGENZ IST EINSEITIG STUMM (Trigger: eine
   Änderung an einem der beiden Parameternamen)
-- (39) CONVERSIONS AUF FOLGESEITEN SIND FÜR GOOGLE HEUTE NICHT MESSBAR (Trigger: der
+- CONVERSIONS AUF FOLGESEITEN SIND FÜR GOOGLE HEUTE NICHT MESSBAR (Trigger: der
   Zuschnitt der Phase 17, ODER eine erneute Owner-Befassung mit der dritten Datenklasse)
-- (42) DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER (Trigger:
+- DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER (Trigger:
   der Zuschnitt der Scheibe 1b — EINGETRETEN; der Eintrag bleibt offen)
-- (50) STIRBT DAS ERNEUERUNGS-TOKEN, IST DER AUSFALL FÜR NIEMANDEN SICHTBAR (Trigger: die
+- STIRBT DAS ERNEUERUNGS-TOKEN, IST DER AUSFALL FÜR NIEMANDEN SICHTBAR (Trigger: die
   nächste Arbeit an der Ziel-Karte, ODER der Statuswechsel auf "In Produktion", ODER der
   erste Kunde mit einer Google-Verbindung)
-- (53) DER OAUTH-CALLBACK ZIEHT DEN VERSIONS-ZÄHLER NICHT MIT (Trigger: die nächste Arbeit
+- DER OAUTH-CALLBACK ZIEHT DEN VERSIONS-ZÄHLER NICHT MIT (Trigger: die nächste Arbeit
   am Schreibpfad der Callback-Route)
-- (62) DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT (Trigger: die nächste
+- DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT (Trigger: die nächste
   Runde, die docs/offene-punkte.md ohnehin öffnet, ODER die erste Messung am gebauten
   Google-Transport auf Ablage und Logausgabe)
 
@@ -388,26 +390,17 @@ ZUERST gelesen werden — das ist kein Vorschlag, sondern ein Pflicht-Gate
 (Anlegen zu Phasenbeginn, Fortschreiben während der Phase, Hebung +
 Archivierung am Phasenende): docs/arbeitsweise.md.
 
-SEIT DEM 2026-09-08 IST DER AKTIVE STAND EIN VERBUND AUS BIS ZU DREI DATEIEN, UND DER
-SATZ DARÜBER MEINT AB DA DIE ERSTE VON IHNEN. Die zwei anderen entstehen erst, wenn eine
-Phase so gross wird, dass ihre vollständige Lesung nicht mehr zu leisten ist — EIN
-PFLICHT-GATE, DAS NIEMAND VOLLSTÄNDIG LIEST, IST KEINES:
-- docs/aktiver-stand.md — die STEUERDATEI. Sie ist das Gate und wird VOLLSTÄNDIG
-  gelesen. Ihr Name ändert sich nie; an ihm hängt der Verfahrensslot oben.
-- docs/claude-history/phase-N-<thema>.md — das ARCHIV: die abgelaufenen Zuschnitte und
-  die abgeschlossenen Vermerke. Sie trägt ihren ENDNAMEN VON ANFANG AN und liegt damit
-  als einzige Datei jenes Ordners bei einer LAUFENDEN Phase.
-- docs/aktiver-stand-vorrat.md — der VORRAT. Er ist nicht abgelaufen und geht deshalb
-  NICHT ins Archiv; am Phasenende wird er GEHOBEN.
-ARCHIV UND VORRAT WERDEN NICHT GELADEN UND NICHT GELESEN. Die Steuerdatei führt je
-ausgelagerter Klasse ein REGISTER mit dem wörtlichen Titelanfang jedes Eintrags und
-seiner Zieldatei; wer einen einzelnen Eintrag braucht, schlägt GENAU IHN auf. Wer das
-Archiv "sicherheitshalber" mitliest, stellt genau den Zustand wieder her, den die
-Teilung beseitigt hat.
+EINE STANDDATEI KANN GETEILT WERDEN, wenn eine Phase so gross wird, dass ihre
+vollständige Lesung nicht mehr zu leisten ist — EIN PFLICHT-GATE, DAS NIEMAND
+VOLLSTÄNDIG LIEST, IST KEINES. Die Steuerdatei behält dann ihren Namen und bleibt das
+Gate; Archiv und Vorrat wandern in eigene Dateien und werden NICHT geladen, sondern über
+REGISTER in der Steuerdatei gezielt aufgeschlagen.
 DIE TEILUNG IST KEIN PFLICHTTEIL EINER PHASE — eine kleine Phase bleibt bei EINER Datei.
 Verfahren, Zuschnitt und Nachweisführung: docs/arbeitsweise.md, "Die Standdatei".
-DIE PHASE 11.2 IST DIE ERSTE GETEILTE (2026-09-08); ihre drei Dateien stehen unter
-"## Detail-Archiv" bzw. "## Aktive Dokumente".
+DIE PHASE 11.2 WAR DIE ERSTE UND BISHER EINZIGE GETEILTE (2026-09-08). Sie ist am selben
+Tag abgeschlossen worden; Steuerdatei und Vorrat sind gelöscht, ihr Archiv liegt unter
+"## Detail-Archiv" und trägt im Kopf das Protokoll der Hebung samt dem Commit, unter dem
+die zwei gelöschten Dateien vollständig nachzulesen sind.
 
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,
@@ -924,25 +917,6 @@ NICHT aus dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
   Sie gehört KEINER Phase und wird NICHT archiviert — anders als die
   Phasen-Historien im Detail-Archiv trägt sie auch die noch OFFENEN Phasen und
   bleibt damit ein aktives Dokument, solange es eine Roadmap gibt.
-- docs/aktiver-stand-vorrat.md — der VORRAT der LAUFENDEN Phase 11.2: alle 59
-  Einträge im Wortlaut, mit ihren Nummern, zeichengleich am 2026-09-08 aus
-  docs/aktiver-stand.md herausgeschnitten (Prüfsumme im Kopf der Datei). Sie trägt
-  KEINE Regeln, KEINE Entscheidungen und KEINEN Zustand — ein Vorrats-Eintrag ist
-  per Definition NICHT gebaut und NICHT entschieden. Sie wird NICHT automatisch
-  geladen und NICHT am Stück gelesen.
-  AUSLÖSER: Wer einen namentlich genannten Vorrats-Eintrag braucht, schlägt GENAU
-  IHN auf. Der Weg dorthin führt über das Register in docs/aktiver-stand.md,
-  "## Register — was diese Datei nicht mehr trägt" — je Eintrag Nummer und
-  wörtlicher Titelanfang.
-  SIE IST KEIN ARCHIV, UND DAS ENTSCHEIDET IHR ENDE: Am Phasenende wird sie GEHOBEN
-  (nach docs/claude-history/backlog-polish.md, unter eine eigene datierte
-  Überschrift am Dateiende) und DANACH GELÖSCHT — nicht archiviert. Läge sie im
-  Archiv, ginge sie mit ihm mit, und 59 gemeldete Punkte wären still begraben.
-  EIN VERWEIS DER FORM "Vorrat, Eintrag 3" IST WEITERHIN MEHRDEUTIG —
-  docs/claude-history/phase-11.8-autorisierungsschicht.md führt ebenfalls einen
-  Vorrat. Wer zeigt, nennt den DATEINAMEN mit.
-  IHR NAME IST ARCHITEKTEN-SETZUNG (2026-09-07) und revidierbar; der Name des
-  Archivs ist es nicht.
 - docs/plattform-befunde.md — die GEMESSENEN und GELESENEN Befunde über die
   PLATTFORM-Anbieter, auf denen Pagesmith läuft (Persistenz, Auth, Hosting,
   Ausspielung, Deploy), je Anbieter ein Abschnitt, mit Provenienz an jeder
@@ -1060,23 +1034,23 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   Erledigung am Zeiger. An jeder gehobenen Stelle steht in der Datei ein Zeiger; das
   Protokoll der Hebung steht in ihrem Kopf. Die Anbieter-Befunde selbst stehen NICHT hier,
   sondern in docs/ziel-befunde.md.
-- docs/claude-history/phase-11.2-google.md — das ARCHIV der LAUFENDEN Phase 11.2:
-  die ELF abgelaufenen Scheiben-Zuschnitte und die FÜNFZEHN abgeschlossenen
-  Scheiben-Vermerke, zeichengleich am 2026-09-08 aus docs/aktiver-stand.md
-  herausgeschnitten (Prüfsummen im Kopf der Datei).
-  ACHTUNG, SIE IST DIE EINZIGE DATEI DIESES ORDNERS, DIE ZU EINER LAUFENDEN PHASE
-  GEHÖRT — und das ist Absicht: Sie trägt ihren ENDNAMEN VON ANFANG AN, damit am
-  Phasenende kein Umbenennen nötig ist (die Fehlerklasse, die
-  docs/claude-history/phase-11.8-autorisierungsschicht.md bis heute festhält —
-  STEMPEL 2026-09-08: jene Datei ist an diesem Tag umgezogen, die Fehlerklasse ist damit
-  behoben statt offen; die volle Auflösung steht in ihrem Kopf, und der ENDNAME VON ANFANG
-  AN bleibt die richtige Antwort). SIE WÄCHST WEITER: jeder künftige
-  Abschluss-Vermerk der Phase 11.2 wird HIER angefügt, nicht in der Steuerdatei.
-  WER AUS DEM ORDNERNAMEN SCHLIESST, DIE PHASE SEI ABGESCHLOSSEN, LIEST FALSCH —
-  der Marker unter "## Roadmap & aktueller Stand" steht auf [ ].
-  SIE WIRD NICHT GELADEN UND NICHT AM STÜCK GELESEN. Der Weg hinein führt über die
-  Register in docs/aktiver-stand.md, "## Register — was diese Datei nicht mehr
-  trägt"; wer einen Zuschnitt oder Vermerk braucht, schlägt GENAU IHN auf.
+- docs/claude-history/phase-11.2-google.md — das ARCHIV der ABGESCHLOSSENEN Phase 11.2:
+  die ELF abgelaufenen Scheiben-Zuschnitte und die abgeschlossenen Scheiben-Vermerke,
+  zeichengleich am 2026-09-08 aus docs/aktiver-stand.md herausgeschnitten (Prüfsummen im
+  Kopf der Datei), dazu die sechzehn bindenden Entscheidungen der Phase und zwei
+  Hebungs-Kandidaten, die den Vollzug ihres Antrags überleben müssen.
+  IHR KOPF TRÄGT DEN ABSCHLUSS-BLOCK, und er ist der Einstieg für jeden, der einem toten
+  Zeiger folgt: das Protokoll der Hebung je Klasse, die zwei am 2026-09-08 GELÖSCHTEN
+  Dateien mit Namen, und der COMMIT-HASH, unter dem sie vollständig nachzulesen sind. Wer
+  docs/aktiver-stand.md oder docs/aktiver-stand-vorrat.md sucht, findet DORT, warum der
+  Pfad ins Leere geht und wie der Text trotzdem erreichbar ist.
+  SIE TRÄGT IHREN ENDNAMEN VON ANFANG AN, und diese Phase ist der Beleg dafür, dass das
+  trägt: Am Phasenende war KEIN Umbenennen nötig — die Fehlerklasse, die
+  docs/claude-history/phase-11.8-autorisierungsschicht.md festhält und die dort zwölf Tage
+  gekostet hat, ist hier gar nicht erst entstanden.
+  SIE WIRD NICHT GELADEN UND NICHT AM STÜCK GELESEN. Die Register, über die der Weg hinein
+  führte, standen in docs/aktiver-stand.md und sind mit ihr gelöscht; wer einen Zuschnitt
+  oder Vermerk braucht, sucht ihn seit dem 2026-09-08 in der Datei selbst.
   WARNUNG FÜR JEDEN, DER DARIN AUF EINE ÜBERSCHRIFT ANKERT: der Titel
   "Vollzogen — was hier stand und wohin es gegangen ist" steht ZWEIMAL zeichengleich.
   Der Volltext dieser Warnung steht im Kopf der Datei.

@@ -744,6 +744,70 @@ liegen beide hier und finden einander.
       erhoben. Die Verteilung der Hebung ist GEMESSEN an dieser Runde (CC, 2026-09-08). Dass
       keine der neunzehn Entscheidungen gegenstandslos ist, ist eine ABLEITUNG aus ihrem
       Charakter und keine Messung an jeder einzelnen.
+
+      NACHTRAG 2026-09-08, VIERTER DES TAGES — DIE KOPPLUNGEN DIESER ZEILE, GERETTET AUS
+      DER STEUERDATEI VOR IHRER LÖSCHUNG. Der Wortlaut darüber bleibt ZEICHEN FÜR ZEICHEN
+      stehen; dieser Nachtrag tritt DANEBEN.
+
+      AN DIESER ZEILE HÄNGEN KOPPLUNGEN, UND SIE BRECHEN STILL — es gibt keinen Wächter,
+      weder einen Test noch ein Gate. Wer den Eintrag anfasst, sieht nichts.
+
+      DIE ZAHL IST KEIN PRÜFUMFANG, UND DAS IST DER GANZE INHALT DIESES NACHTRAGS. Die
+      Steuerdatei führte die internen Selbstzitate dieses Eintrags mit ZWEI. GEMESSEN am
+      Repo (CC, 2026-08-25; Achse: docs/roadmap.md vollständig plus eine formale Suche über
+      *.md, *.ts, *.tsx und *.sql nach den wörtlichen Bestandteilen des Kopfsatzes) SIND ES
+      MINDESTENS VIER:
+      · "ENTSPRECHUNG ZUM META-MODELL"
+      · "bestehende Tag-Conversion"
+      · die ZWEI KOPF-ZITATE IM RICHTIGSTELLUNGS-BLOCK — "Es sind ZWEI Ziele, nicht eins"
+        und "der Nachfolger ist für den relevanten Fall allowlist-only und verlangt einen
+        OAuth-Fluss mit Verifizierung"
+
+      DIE AUFLAGE, UND SIE IST DAS EINZIGE, WAS DIESER NACHTRAG LEISTET: WER DIE KOPPLUNGEN
+      PRÜFT, PRÜFT ALLE WÖRTLICHEN INTERNEN SELBSTZITATE DES EINTRAGS — NICHT ZWEI.
+
+      "MINDESTENS VIER" IST SELBST KEINE ABGESCHLOSSENE LISTE, und deshalb steht hier auch
+      keine neue Zahl als Ersatz: Die Suche lief über BENANNTE Begriffe, nicht über alle
+      denkbaren. Eine zweite unbelegte Zahl an die Stelle einer ersten zu setzen wäre keine
+      Verbesserung, sondern dieselbe Bauform mit einem anderen Wert.
+      WELCHE ZWEI URSPRÜNGLICH GEMEINT WAREN, IST AM TEXT NICHT ENTSCHEIDBAR — der
+      ursprüngliche Punkt sagte "DIE EINZELSTELLEN MIT ZEILENANGABEN WERDEN HIER NICHT
+      WIEDERHOLT", und ohne die Einzelstellen lässt sich eine Zahl nicht auf ihre Mitglieder
+      zurückführen.
+
+      ZWEI WEITERE KOPPLUNGEN, DIE NICHT SELBSTZITATE SIND und der Vollständigkeit halber
+      mitgenannt werden: ZWEI wörtliche Zitate zeigen auf den Eintrag 11.5, nicht auf 11.1;
+      Eintrag 11.1 hängt anders daran — über ein SELBSTZITAT, den Halbsatz-Anker
+      "Richtigstellung an jener Zeile", der von 11.1 UND vom Kopf der Roadmap-Datei
+      zurückzitiert wird, und über einen VERWEIS, der bei 11.1 nicht endet, sondern nach
+      docs/immer-beachten.md weiterläuft.
+
+      EINE ZWEITE AUFLAGE AN DENSELBEN EINTRAG, UND SIE IST NICHT DIESELBE WIE DIE OBEN —
+      DIE UNTERSCHEIDUNG GEHÖRT DAZU: Die Auflage oben betrifft die SELBSTZITATE (wer die
+      Kopplungen prüft, prüft alle). DIESE HIER BETRIFFT DAS VOLLSTÄNDIGE LESEN DES KOPFES.
+      WER SIE FÜR DIESELBE HÄLT, ERFÜLLT EINE UND GLAUBT, BEIDE ERFÜLLT ZU HABEN.
+
+      DER KOPF DIESES EINTRAGS IST AN ZWEI STELLEN ZU PRÜFEN, NICHT AN EINER: im
+      RICHTIGSTELLUNGS-BLOCK **UND** im STEMPEL-BLOCK AM ENDE DES EINTRAGS.
+      DER GRUND FÜR DIE ZWEI ORTE: Der Richtigstellungs-Block führt SACHKORREKTUREN, der
+      Stempel-Block einen MECHANISMUSWECHSEL mit einer Bedingung seiner Rückkehr. Die
+      Trennung ist Absicht. Der Kopf trägt zwei Angaben, die im ersten Block als überholt
+      bzw. unvollständig begründet eingestuft sind, und seit dem 2026-08-25 eine DRITTE
+      ("EINE KONZEPT-RUNDE, KEINE SCHEIBE"), die im zweiten steht.
+      WER NUR DEN ERSTEN LIEST, HAT DEN KOPF NICHT VOLLSTÄNDIG GEPRÜFT — UND MERKT ES NICHT,
+      WEIL DER BLOCK, DEN ER GELESEN HAT, IN SICH VOLLSTÄNDIG IST. Das ist der Grund, warum
+      das Übersehen still bleibt: Es fehlt kein Satz, es fehlt ein zweiter Ort.
+      DIE ZAHL "ZWEI" IM RICHTIGSTELLUNGS-BLOCK IST DAVON NICHT BERÜHRT und wird nicht auf
+      drei gehoben: Sie zählt, was in JENEM Block steht, und das sind weiterhin genau zwei.
+      Nicht die Zahl war unvollständig, sondern der Zeiger.
+
+      PROVENIENZ: GEMESSEN am Repo (CC, 2026-08-25) für die Kopplungs-Zahl; die Zwei-Orte-
+      Auflage ist OWNER-ENTSCHEIDUNG 2026-08-25, gestützt auf eine Prüfung am Dateitext (CC,
+      2026-08-25). Beide wörtlich übernommen am 2026-09-08 aus docs/aktiver-stand.md —
+      die Kopplungs-Zahl aus "Was den Zuschnitt bindet", VERMERK ZUR KOPPLUNGS-ZAHL, die
+      Zwei-Orte-Auflage aus "Gegenstand der Phase", Teil (2) —, VOR deren Löschung; beide
+      Aussagen standen bis dahin ausschliesslich dort und wären mit der Datei verschwunden.
+      Der Marker dieser Zeile ist von diesem Nachtrag NICHT berührt.
 - [x] Phase 11.8 — Autorisierungsschicht: die Ablage und die Erneuerung MEHRWERTIGER
       Zugangsdaten.
 

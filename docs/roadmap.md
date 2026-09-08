@@ -123,7 +123,7 @@ liegen beide hier und finden einander.
       mit mehreren Angaben sonst niemand den Rest nachliest. DIESER ZEIGER STEHT HIER
       AUSDRÜCKLICH FÜR 11.2: dessen Satz "Richtigstellung an jener Zeile" meint
       DIESE Zeile und findet den Inhalt sonst nirgends.
-- [~] Phase 11.2 — Google Ads: EINE KONZEPT-RUNDE, KEINE SCHEIBE. Es sind ZWEI Ziele,
+- [x] Phase 11.2 — Google Ads: EINE KONZEPT-RUNDE, KEINE SCHEIBE. Es sind ZWEI Ziele,
       nicht eins, und keines zugeschnitten: Google Ads Conversions und GA4 sind
       verschiedene Produkte mit verschiedenen Schnittstellen und Semantiken. Der
       bisherige Weg für Offline-Conversions ist für NEUE Zugänge seit Mitte Juni
@@ -660,6 +660,90 @@ liegen beide hier und finden einander.
       GEMESSEN am Repo (CC, 2026-09-08). MESSUNG F und G sind GEMESSEN 2026-09-07 (OWNER).
       Dass F und G das Kriterium erfüllen, ist eine ABLEITUNG; dass keine vierte Bedingung
       existiert, ist ein NICHT-TREFFER mit benannter Achse.
+
+      NACHTRAG 2026-09-08, DRITTER DES TAGES — DER ABSCHLUSS. DER MARKER STEHT AUF [x].
+      Der Wortlaut darüber bleibt ZEICHEN FÜR ZEICHEN stehen, wie durchgehend an diesem
+      Eintrag; dieser Nachtrag tritt DANEBEN.
+
+      WAS [x] HIER HEISST, UND ZWAR AUSDRÜCKLICH NICHT MEHR: ES HEISST BAU-FERTIG. Es
+      heisst NICHT "alle Fragen beantwortet" und NICHT "Google funktioniert".
+      DAS KRITERIUM STEHT IN CLAUDE.md, "## Roadmap & aktueller Stand", und lautet: EINE
+      PHASE GEHT AUF [x], WENN KEIN CODE MEHR ZU SCHREIBEN IST. Externe Abhängigkeiten —
+      Messungen, Arbeit an einem Fremdkonto, Owner-Entscheidungen — halten sie NICHT offen,
+      sondern werden GEHOBEN. GEMESSEN am Repo (CC, 2026-09-08): kein Code offen; die
+      sieben Reste sind Messungen, eine Arbeit am Anbieter-Konto und eine Voraussetzung je
+      Kunde — keiner ist ein Bau.
+      DIE AUFLAGE, OHNE DIE [x] UNZULÄSSIG WÄRE, wird hier eingelöst: Was zum Zeitpunkt des
+      [x] PRODUKTRELEVANT UNBEWIESEN ist, steht ausdrücklich da. Es sind drei Dinge.
+
+      ERSTENS — DIE WIRKUNG AUF DIE GEBOTE IST UNGEMESSEN, UND DAS IST DAS
+      PRODUKTVERSPRECHEN SELBST. Bewiesen ist der Weg bis zur VERBUCHUNG beim Anbieter
+      (MESSUNG G, GEMESSEN 2026-09-07, OWNER); NICHT bewiesen ist die WIRKUNG — dass die
+      verbuchte Conversion die Gebotssteuerung erreicht. Gemessen ist eine Conversion IN DER
+      BERICHTERSTATTUNG, nicht in der Gebotssteuerung.
+      WER [x] ALS "GOOGLE FUNKTIONIERT" LIEST, LIEST MEHR, ALS GEMESSEN IST. Pagesmith
+      verkauft server-seitiges Tracking, damit der Werbekanal besser aussteuert; ein Weg,
+      der bis zur Berichterstattung trägt und dort endet, hält dieses Versprechen nicht
+      ein. Ob das 14-Tage-Fenster aus (p)/H2 für die gewählte Gestalt überhaupt gilt, ist
+      GELESEN und nicht geklärt.
+      ORT NACH DER HEBUNG: docs/offene-punkte.md, "DIE WIRKUNG AUF DIE GEBOTE IST
+      UNGEMESSEN", mit Stub in CLAUDE.md.
+
+      ZWEITENS — DER eventSource-WERT IST NICHT GEMESSEN. Gebaut ist "WEB" als
+      OWNER-ENTSCHEIDUNG 2026-09-01. GEMESSEN ist der TYP (ein Enum, kein freier String),
+      NICHT der WERT; welcher der Enum-Werte für den Offline-Klick-Import GILT, sagt der
+      Anbieter für unsere Gestalt nicht — für die Nachbar-Gestalt nennt dieselbe Tabelle
+      einen konkreten Wert, für unsere keinen.
+      DASS EINE CONVERSION VERBUCHT WURDE, BEANTWORTET DAS NICHT: MESSUNG G belegt die
+      Verbuchung MIT "WEB" — sie belegt nicht, dass ein anderer Wert falsch gewesen wäre.
+      ORT NACH DER HEBUNG: docs/offene-punkte.md, "DER eventSource-WERT IST NICHT GEMESSEN
+      — GEBAUT IST 'WEB' ALS ENTSCHEIDUNG", mit Stub in CLAUDE.md.
+
+      DRITTENS — DIE KOPFZEILE x-goog-user-project WIRD NICHT GESENDET, UND OB SIE PFLICHT
+      IST, IST IN BEIDE RICHTUNGEN UNGEMESSEN. Dass die bisherigen Aufrufe ohne sie
+      durchgelaufen sind, ist KEIN Beleg dafür, dass sie fehlen darf — es kann an der
+      Kontoart, am Zugangsmodell oder am Umfang liegen.
+      ORT NACH DER HEBUNG: docs/offene-punkte.md, "DIE KOPFZEILE x-goog-user-project WIRD
+      NICHT GESENDET", mit Stub in CLAUDE.md.
+
+      WAS GEBAUT UND LIVE BEWIESEN IST, WIRD HIER NICHT VERDOPPELT: Die zehn Posten stehen
+      im NACHTRAG 2026-09-08 weiter oben in diesem Eintrag, je mit Provenienz, Vermerk-Nummer
+      und Bau-Commit. ZWEI FASSUNGEN LIEFEN AUSEINANDER.
+
+      DIE HEBUNG — WAS WOHIN GEGANGEN IST, JE KLASSE:
+      · DIE SIEBEN RESTE DIESER ZEILE: FÜNF nach docs/offene-punkte.md, je mit Stub in
+        CLAUDE.md — (1) die Sieben-Tage-Frist samt Termin, (2) der eventSource-Wert, (3) die
+        Kopfzeile, (5) die Wirkung auf die Gebote, (6) der UPLOAD_CLICKS-Vorbehalt. Posten
+        (7) ist an die ROADMAP-ZEILE 11.5 gegeben, wo die Entscheidung fällt. Posten (8) ist
+        GESTRICHEN, weil er als offener Punkt bereits in docs/ziel-befunde.md geführt wird —
+        was Buchhaltung ist und anderswo schon steht, wird nicht umgezogen.
+      · DER VORRAT DER PHASE — SECHSUNDSECHZIG EINTRÄGE: VIERZEHN nach docs/offene-punkte.md,
+        FÜNFZIG nach docs/claude-history/backlog-polish.md, ZWEI gestrichen. DAS KRITERIUM WAR
+        ZWEITEILIG — benennbarer Trigger UND "geht sonst STILL kaputt"; nach dem Trigger
+        allein wären es FÜNFUNDFÜNFZIG gewesen (GEMESSEN, CC, 2026-09-08).
+      · DIE HEBUNGS-KANDIDATEN: ACHT als Dauerregeln nach docs/immer-beachten.md, EINER
+        (Kandidat 4) ins Backlog, weil er keine Regel ist, sondern eine Verortungs-Aufgabe.
+        Kandidat 10 trägt den angenommenen Änderungsantrag an docs/arbeitsweise.md, dessen
+        Vollzug NACH diesem Phasenende terminiert ist; er ist als Kopie ins Archiv gegangen.
+      · DIE NEUNZEHN BINDENDEN ENTSCHEIDUNGEN: DREI als Dauerregeln nach
+        docs/immer-beachten.md, SECHZEHN ins Archiv.
+
+      EIN BEFUND ZU DIESER LETZTEN KLASSE, DER SONST NIRGENDS STEHT: KEINE DER NEUNZEHN HAT
+      IHREN GEGENSTAND VERLOREN — anders als beim Vorrat derselben Phase, wo fünf erledigt
+      sind. DAS IST STRUKTURELL: Eine bindende Entscheidung beschreibt, WIE gebaut wurde;
+      sie kann überholt werden, aber nicht gegenstandslos, solange der Code steht. WER DORT
+      STREICHUNGEN ERWARTET, ERWARTET DIE FEHLERKLASSE DER FALSCHEN LISTE.
+
+      WAS DIESER NACHTRAG NICHT TUT: Er sagt nichts über Schritt 2 des Phasenendes (das
+      Löschen der Steuerdatei und der Vorratsdatei), nichts über die Zeile 11.9 und nichts
+      über den Zustand des Stempel-Blocks am Ende dieses Eintrags.
+
+      PROVENIENZ: Der Marker und das Kriterium sind OWNER-ENTSCHEIDUNG 2026-09-08. Dass kein
+      Code offen ist, ist GEMESSEN am Repo (CC, 2026-09-08). Die drei unbewiesenen Dinge sind
+      GEMESSEN bzw. GELESEN an den je genannten Fundstellen und in dieser Runde NICHT neu
+      erhoben. Die Verteilung der Hebung ist GEMESSEN an dieser Runde (CC, 2026-09-08). Dass
+      keine der neunzehn Entscheidungen gegenstandslos ist, ist eine ABLEITUNG aus ihrem
+      Charakter und keine Messung an jeder einzelnen.
 - [x] Phase 11.8 — Autorisierungsschicht: die Ablage und die Erneuerung MEHRWERTIGER
       Zugangsdaten.
 
@@ -1399,6 +1483,40 @@ liegen beide hier und finden einander.
       Befunde mit ihrem Rang, die vier Owner-Entscheidungen und die Verortung:
       docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, "## 7. Beschlossen
       und verortet — NICHT in dieser Phase gebaut".
+
+      NACHTRAG 2026-09-08 — EINE OFFENE BERÜHRUNG AUS DER PHASE 11.2, HIERHER GEGEBEN.
+      Der Wortlaut darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Nachtrag tritt
+      DANEBEN.
+      WOHER ER KOMMT: aus der Rest-Liste im NACHTRAG 2026-09-08 der Roadmap-Zeile 11.2,
+      Posten (7). Er ist beim Phasenende der Phase 11.2 hierher gegeben worden und NICHT
+      nach docs/offene-punkte.md — der Posten sagt selbst, "die Entscheidung gehört zu
+      11.5 und wird hier nicht getroffen". EIN OFFENER PUNKT WÄRE DER FALSCHE ORT: Er
+      wartet auf einen Trigger; diese Frage wartet auf eine ENTSCHEIDUNG, und die fällt
+      hier.
+      DIE FRAGE, WÖRTLICH: Ob der Hybrid-Ausschluss dieser Zeile ("AUSDRÜCKLICH NICHT IN
+      DIESER PHASE … EIN Ziel als Hybrid aus Browser-Tag und Server-Forward, die übrigen
+      als reiner Server-Fan-Out") von Google berührt ist, hängt an der unbeantworteten
+      Frage, WESSEN Tag die "bestehende Tag-Conversion" ist.
+      WARUM DAS DIESE ZEILE TRIFFT UND NICHT 11.2: Die für Google gewählte Gestalt — der
+      OFFLINE CONVERSION IMPORT — schliesst ein von Pagesmith ausgeliefertes Google-Tag
+      ausdrücklich aus. Die NICHT gewählte Gestalt (Multi-Source) setzt eine bestehende
+      Tag-Conversion voraus. Ist jenes Tag das des KUNDEN, ändert sich am Hybrid-Ausschluss
+      nichts; ist es eines, das Pagesmith ausliefern müsste, wäre Google ein zweites
+      Hybrid-Ziel — und genau das schliesst diese Zeile heute aus.
+      DER BEFUND DAZU IST BEREITS ABGELEGT UND WIRD NICHT NEU ERHOBEN, und dieser Satz ist
+      der eigentliche Zweck des Nachtrags: docs/ziel-befunde.md, Google-Abschnitt, Block
+      "WAS AUSDRÜCKLICH OFFEN BLEIBT", führt wörtlich "OB EINE BESTEHENDE TAG-CONVERSION IM
+      KUNDENKONTO VORAUSGESETZT IST UND WIE SIE DORTHIN KOMMT" — mit dem Zusatz, dass
+      ungeprüft ist, "ob ein Kunde auf einer von Pagesmith ausgelieferten Seite ein eigenes
+      Google-Tag unterbringen kann, und ob Pagesmith eines ausliefern müsste. KEINE
+      EMPFEHLUNG, KEINE ANTWORT." WER DIESEN ZEIGER NICHT HAT, SUCHT EINEN BEFUND, DEN ES
+      SCHON GIBT.
+      KEINE EMPFEHLUNG, wie zu entscheiden wäre, und AUSDRÜCKLICH KEINE Aussage darüber,
+      ob der Hybrid-Ausschluss zu ändern ist.
+      PROVENIENZ: der Posten stammt aus der Rest-Liste der Zeile 11.2 (ARCHITEKT,
+      2026-09-08); der Befund in docs/ziel-befunde.md ist GELESEN 2026-08-20. Dass beide
+      dieselbe Frage tragen, ist GEMESSEN am Dateitext (CC, 2026-09-08). KEINE Messung an
+      einer Google-Oberfläche.
 - [ ] Phase 11.7 — Anbieter-Befunde nachziehen: die VIER GEBAUTEN ZIELE.
       DIE NUMMER IST DIE NÄCHSTE FREIE (Präzedenz: 4.5, 10.5, 11.1 bis 11.6) und
       trägt KEINE Reihenfolge-Aussage — sie steht hinter 11.5, weil davor nichts

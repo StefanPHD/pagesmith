@@ -177,6 +177,16 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - EINE FASSUNGSMARKE DER NUTZLAST WIRD NIE FÜR EINE ANDERE FELDMENGE ...
 - EIN REGRESSIONSSCHRITT DARF DIE VORAUSSETZUNG DES SCHRITTS DANACH NICHT ...
 - EINE PROBE GEGEN DIESELBE SCHICHT KANN EINE FRAGE ÜBER EINE ANDERE ...
+- DIE LISTE "GESEHEN, NICHT GEÖFFNET" IST DER ORT, AN DEM SICH EIN ...
+- EIN TITEL-ZEIGER AUS UMLAUTFREIEM QUELLTEXT IST INHALTLICH EINDEUTIG ...
+- "### Vollzogen — was hier stand und wohin es gegangen ist" IST EINE ...
+- DIE BYTE-KONTROLLE BRAUCHT EIN BENANNTES INSTRUMENT — `tr` BZW. `git ...
+- EINE MUTATIONS-VORHERSAGE WIRD VOR DEM LAUF GEGEN DEN AKTUELLEN ...
+- EIN ZEIGER AUF EINE NUMMERIERTE ABLAGE KANN AUS PLAUSIBILITÄT ...
+- EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN ...
+- EIN NEUES FAN-OUT-ZIEL LÄUFT BEI BESTEHENDEN SEITEN FAIL-CLOSED AN, UND ...
+- EINE ROUTE, DIE SCHREIBT ODER EINEN FREMDEN ENDPUNKT RUFT, IST NIEMALS ...
+- EIN BEDIENELEMENT, DAS EINEN VORGANG IM NAMEN DES NUTZERS AUSLÖST, DARF ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -1698,3 +1708,478 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Schichten ist nicht formulierbar.
   PROVENIENZ: der Befund GEMESSEN an den zwei Läufen vom 2026-08-25 und 2026-08-26.
   Herleitung: docs/claude-history/phase-11.8-autorisierungsschicht.md, Hebungs-Kandidat 5.
+- DIE LISTE "GESEHEN, NICHT GEÖFFNET" IST DER ORT, AN DEM SICH EIN BEFUND VERSTECKT (Phase 11.2, gehoben 2026-09-08 aus den Hebungs-Kandidaten der
+  Standdatei; dort Kandidat 2):
+  WAS DIE HEBUNG ENTSCHIEDEN HAT UND DER KANDIDAT OFFENLIESS: Er stellte frei, ob daraus
+  eine EIGENE Regel wird oder ein ABSATZ an einer bestehenden. Es ist eine EIGENE geworden —
+  ein Absatz hätte eine bestehende Regel UMGESCHRIEBEN, und "nichts wird umsortiert" gilt
+  dieser Datei; ausserdem verschwände der neue Befund im Rumpf einer Regel, die man aus
+  einem anderen Grund aufschlägt. DIE ABGRENZUNGEN, DIE DER KANDIDAT ZU DEN NACHBARREGELN
+  ZIEHT, STEHEN UNVERÄNDERT UNTEN und sind der Ersatz dafür.
+DIE LISTE "GESEHEN, NICHT GEÖFFNET" IST DER ORT, AN DEM SICH EIN BEFUND VERSTECKT**
+  (angetreten 2026-08-25, nach den Doku-Läufen 3 und 4).
+  DER BEFUND — GEMESSEN am eigenen Verfahren (CC, 2026-08-25): ZWEIMAL ist eine Seite in
+  der Liste "GESEHEN, NICHT GEÖFFNET" mit einem plausiblen Grund ausgeschlossen worden,
+  und sie trug die Antwort auf eine Frage, die derselbe Bestand als OFFEN führte.
+  /data-manager/api/devguides/quickstart/install-library stand in LAUF 1 und in LAUF 2
+  unter diesem Punkt ("vom Auftrag ausgeschlossen") und trägt das REST-Beispiel mit der
+  Kopfzeile `Authorization: Bearer …` — also genau den TRÄGER DES ZUGANGSDATUMS, den die
+  Roadmap-Zeile 11.8 als Blocker führt und für dessen Suche sie ausdrücklich AUS dem
+  Doku-Baum HERAUS verweist.
+  **DIE SEITE WAR NICHT ÜBERSEHEN, SIE WAR AUSGESCHLOSSEN WORDEN.** Das ist der Punkt:
+  Ein Übersehen fällt bei der nächsten Durchsicht auf, ein begründeter Ausschluss nicht —
+  er sieht bei jeder Wiederholung genauso richtig aus wie beim ersten Mal.
+  WARUM KANDIDAT: Das ist KEIN Google-Sonderfall, sondern eine Eigenschaft des
+  CRAWL-VERFAHRENS. Es steht neben dem bereits festgehaltenen Befund, dass ein
+  Navigationsbaum nicht alle Seiten eines Abschnitts führt (LAUF 1: drei Seiten fehlten,
+  sichtbar nur über Fliesstext-Verweise) — beide beschreiben, wie eine Seite aus dem
+  Blickfeld gerät, und beide betreffen jede künftige Anbieter-Recherche.
+  DIE ABGRENZUNG, DIE MITMUSS: Die Liste selbst ist RICHTIG und wird von diesem Kandidaten
+  nicht in Frage gestellt — ohne sie hätte ein "steht dort nicht" keine Reichweite (Regel
+  "ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN …", docs/immer-beachten.md). Der
+  Kandidat sagt nicht, dass weniger ausgeschlossen werden soll, sondern dass der
+  AUSSCHLUSS eine eigene Fehlerquelle ist.
+  NICHT ENTSCHIEDEN: ob das eine eigene Regel wird oder ein Absatz an der bestehenden, und
+  ob daraus eine Auflage folgt (etwa: die Ausschluss-Liste gegen die offenen Fragen
+  halten, bevor ein Lauf beginnt). KEINE EMPFEHLUNG.
+
+  ZUSATZ 2026-08-25 — DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN. Zwei Beobachtungen aus
+  dem Supabase-Doku-Lauf desselben Tages treten daneben; die erste bestätigt den
+  Kandidaten, die zweite zeigt ihn in einer Gestalt, die er bisher nicht kannte.
+  · **DER KANDIDAT HAT SICH BEIM ERSTEN GEBRAUCH BEWÄHRT — und das ist selbst ein
+    Befund, kein Selbstlob:** Die Seite
+    supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore stand
+    zunächst auf der Liste "GESEHEN, NICHT GEÖFFNET", mit einem plausiblen Grund
+    ("verlinkt von der Backup-Seite, betrifft die CLI-Migration"). Sie trägt die
+    EINZIGE verbindliche Aussage der ganzen Lesung zu Backup und Restore verschlüsselter
+    Werte. Geöffnet worden ist sie AUSSCHLIESSLICH deshalb, weil dieser Kandidat hier
+    stand — ohne ihn wäre der Ausschluss zum dritten Mal so richtig ausgesehen wie beim
+    ersten Mal.
+  · **EINE ZWEITE GESTALT DERSELBEN SACHE, NEU: DER NICHT VORAUSGEWÄHLTE REITER.** Auf
+    jener Seite trägt Schritt 5 eine Reiter-Gruppe aus zwei Reitern. Der vorausgewählte
+    zeigt den Normalfall; der zweite trägt VIER Sätze, die in keinem anderen der
+    achtzehn gelesenen Dokumente stehen. Im Fliesstext der Seite war davon NICHTS zu
+    sehen — der Reiter musste angeklickt werden.
+    DAS IST DIE REITER-VARIANTE DER SYMBOL-TABELLE: eine Aussage, die im Text nicht
+    steht und trotzdem nicht als leer behandelt werden darf. Die bestehende Auflage
+    ("Triffst du auf eine Tabelle, deren Aussage in SYMBOLEN steht: melden, nicht als
+    leer behandeln") deckt sie NICHT, weil kein Symbol beteiligt ist.
+    WARUM DAS SCHLIMMER IST ALS EIN AUSSCHLUSS: Ein Ausschluss steht wenigstens auf
+    einer Liste und ist damit nachprüfbar. Ein nicht ausgewählter Reiter erzeugt
+    überhaupt keinen Eintrag — die Seite gilt als GEÖFFNET und VOLLSTÄNDIG GELESEN,
+    und der Umfangs-Bericht sagt das auch. Es gibt keine Stelle, an der die Lücke
+    sichtbar würde.
+  BEIDE BEOBACHTUNGEN BETREFFEN DAS CRAWL-VERFAHREN, NICHT SUPABASE. Sie stehen deshalb
+  hier beim Kandidaten und nicht bei den Anbieter-Befunden; der Anbieter ist der Anlass,
+  nicht der Gegenstand. Der Befund über Backup und Restore selbst ist hier AUSDRÜCKLICH
+  NICHT wiedergegeben — sein Ort ist am 2026-08-25 offen und liegt beim Owner.
+  NICHT ENTSCHIEDEN, ob daraus eine Regel wird, ob der Kandidat um die Reiter-Gestalt
+  erweitert wird oder ob beides ein Absatz an einer bestehenden Regel bleibt. KEINE
+  EMPFEHLUNG.
+  PROVENIENZ: GEMESSEN am eigenen Lauf (CC, 2026-08-25) — der Ausschluss, das Öffnen und
+  der verdeckte Reiter sind Beobachtungen an der eigenen Arbeit, nicht an einem fremden
+  System. Der Inhalt der vier Sätze ist GELESEN an der genannten Seite, ebenfalls
+  2026-08-25.
+
+- EIN TITEL-ZEIGER AUS UMLAUTFREIEM QUELLTEXT IST INHALTLICH EINDEUTIG UND ALS SUCHANKER UNBRAUCHBAR (Phase 11.2, gehoben 2026-09-08 aus den Hebungs-Kandidaten der
+  Standdatei; dort Kandidat 3):
+  WAS DIE HEBUNG ENTSCHIEDEN HAT UND DER KANDIDAT OFFENLIESS: Er stellte frei, ob daraus
+  eine EIGENE Regel wird oder ein ABSATZ an einer bestehenden. Es ist eine EIGENE geworden —
+  ein Absatz hätte eine bestehende Regel UMGESCHRIEBEN, und "nichts wird umsortiert" gilt
+  dieser Datei; ausserdem verschwände der neue Befund im Rumpf einer Regel, die man aus
+  einem anderen Grund aufschlägt. DIE ABGRENZUNGEN, DIE DER KANDIDAT ZU DEN NACHBARREGELN
+  ZIEHT, STEHEN UNVERÄNDERT UNTEN und sind der Ersatz dafür.
+EIN TITEL-ZEIGER AUS UMLAUTFREIEM QUELLTEXT IST INHALTLICH EINDEUTIG UND ALS
+  SUCHANKER UNBRAUCHBAR** (angetreten 2026-08-28, beim Nachziehen des Kommentarkopfes
+  der Callback-Route).
+  DER BEFUND — GEMESSEN am Repo (CC, 2026-08-28): Der Kommentarkopf von
+  src/app/api/oauth/google/callback/route.ts zitiert eine Überschrift aus
+  docs/claude-history/phase-11.8-autorisierungsschicht.md UMLAUTFREI TRANSLITERIERT —
+  "unberuehrt laesst" gegen
+  "unberührt lässt" in der Zieldatei. Eine wörtliche Suche nach dem zitierten String
+  FINDET DIE ÜBERSCHRIFT NICHT. Der Abschnitt existiert, ist eindeutig und ist am
+  2026-08-28 aufgelöst worden; unbrauchbar ist nicht der Zeiger, sondern seine
+  MASCHINELLE Auffindbarkeit.
+  WARUM KANDIDAT — ES IST KEIN EINZELFALL, SONDERN EINE STRUKTURELLE KOLLISION ZWEIER
+  GELTENDER AUFLAGEN: "KEINE UMLAUTE IM QUELLTEXT" (Auflage am Kopf derselben Datei und
+  am Kopf von src/lib/oauth/google-authorize.ts) verlangt die Transliteration; die
+  Zeiger-Disziplin verlangt, dass ein zitierter Titel WÖRTLICH stehen bleibt, weil er
+  sonst nicht mehr auffindbar ist. BEIDE GELTEN, UND SIE SCHLIESSEN EINANDER AUS, sobald
+  eine deutsche Überschrift aus Quelltext heraus zitiert wird. Das trifft JEDEN künftigen
+  Titel-Zeiger dieser Art, nicht nur diesen.
+  DIE ABGRENZUNG ZU "EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT
+  VERZEICHNIS NICHT" (docs/immer-beachten.md): Dort trifft eine Suche eine ANDERE
+  Fundstelle als die gemeinte — der Schaden ist ein falscher Treffer. Hier trifft sie GAR
+  KEINE. Verwandte Achse, entgegengesetzter Ausgang, und der zweite Fall ist der
+  harmlosere: Ein Nicht-Treffer zwingt zum Suchen, ein falscher Treffer nicht.
+  DIE ABGRENZUNG ZU "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER"
+  (docs/immer-beachten.md): Jene Regel empfiehlt den Titel GERADE ALS haltbaren Anker und
+  stellt ihn der Zeilennummer gegenüber. Dieser Befund zeigt die Bedingung, unter der das
+  nicht trägt — nicht weil der Titel altert, sondern weil die zitierende Datei ihn nicht
+  schreiben darf, wie er dasteht.
+  DIE BESTEHENDE FUNDSTELLE WIRD NICHT GEHEILT. Dieser Kandidat stellt sie fest; das
+  Beheben wäre eine eigene Entscheidung und ist keine.
+  NICHT ENTSCHIEDEN: ob künftige Titel umlautfrei GEWÄHLT werden, ob der Quelltext an
+  Zeiger-Stellen eine Ausnahme von der Umlaut-Auflage bekommt, ob eine andere Zeigerform
+  an die Stelle des Titels tritt, oder ob es bei der blossen Feststellung bleibt. KEINE
+  EMPFEHLUNG.
+  PROVENIENZ: GEMESSEN am Repo (CC, 2026-08-28) — die Transliteration, der Nicht-Treffer
+  der wörtlichen Suche und das Vorhandensein der Zielüberschrift sind am Dateitext
+  erhoben. Dass die Kollision JEDEN künftigen Zeiger dieser Art trifft, ist eine
+  ABLEITUNG aus den zwei Auflagen, keine Messung.
+
+- "### Vollzogen — was hier stand und wohin es gegangen ist" IST EINE HAUSFORM ÜBER STANDDATEIEN HINWEG, KEINE LOKALE DUBLETTE (Phase 11.2, gehoben 2026-09-08 aus den Hebungs-Kandidaten der
+  Standdatei; dort Kandidat 5):
+  WAS DIE HEBUNG ENTSCHIEDEN HAT UND DER KANDIDAT OFFENLIESS: Er stellte frei, ob daraus
+  eine EIGENE Regel wird oder ein ABSATZ an einer bestehenden. Es ist eine EIGENE geworden —
+  ein Absatz hätte eine bestehende Regel UMGESCHRIEBEN, und "nichts wird umsortiert" gilt
+  dieser Datei; ausserdem verschwände der neue Befund im Rumpf einer Regel, die man aus
+  einem anderen Grund aufschlägt. DIE ABGRENZUNGEN, DIE DER KANDIDAT ZU DEN NACHBARREGELN
+  ZIEHT, STEHEN UNVERÄNDERT UNTEN und sind der Ersatz dafür.
+"### Vollzogen — was hier stand und wohin es gegangen ist" IST EINE HAUSFORM ÜBER
+  STANDDATEIEN HINWEG, KEINE LOKALE DUBLETTE** (angetreten 2026-08-29).
+  DER BEFUND — GEMESSEN am Repo (CC, 2026-08-29; Achse: der Titel-Kern ohne
+  Gedankenstrich, case-insensitiv, mehrzeilig, Testdateien eingeschlossen, mit
+  Positiv- und Negativkontrolle): SECHSMAL in docs/claude-history/phase-11.1-linkedin.md,
+  ZWEIMAL in docs/aktiver-stand.md — **in beiden Dateien als deren EIGENE Überschriften,
+  NICHT als Zeiger auf eine fremde.** Jede künftige Phase erzeugt ihn erneut, weil die
+  Verdichtungs-Bauform ihn verlangt.
+  **DIE ENTSCHEIDUNG IST NICHT, OB MAN HIER UMBENENNT.** Sie lautet, ob die Hausform in
+  ALLEN Standdateien einen unterscheidenden Zusatz bekommt. Eine Umbenennung nur an
+  einer Stelle machte diese Datei intern eindeutig und die Hausform inkonsistent — der
+  nächste Leser fände denselben Titel dann in zwei Bauformen und wüsste nicht, welche
+  gilt.
+  VERWANDT MIT KANDIDAT 3: Dort steht die ACHSE (ein Titel als Suchanker), hier der
+  FALL. Die Begründung wird NICHT verdoppelt.
+  **DER BEFUND ÜBER DAS PRÜFVERFAHREN, und er ist der brauchbarere Teil dieses
+  Kandidaten:** Eine Titelsuche findet ZEIGER und NAMENSVETTERN gleichermassen, und nur
+  die Zeiger zählen — **ein Namensvetter in einer fremden Datei stirbt bei einer
+  Umbenennung nicht.** Wer beides zusammenzieht, hält jeden mehrfach vergebenen Titel für
+  unantastbar und benennt nie wieder etwas um. Die Trennung leistet der Kontext des
+  Treffers: eine Überschrift ist ein Namensvetter, ein Zitat im Fliesstext ist ein
+  Zeiger.
+  NICHT ENTSCHIEDEN: ob die Hausform einen Zusatz bekommt, welcher, und ob die
+  bestehenden Vorkommen nachgezogen werden. KEINE EMPFEHLUNG.
+  GEMELDET 2026-08-29, NICHT GEBAUT.
+  PROVENIENZ: die Zählung GEMESSEN am Repo (CC, 2026-08-29); dass jede künftige Phase
+  den Titel erneut erzeugt, ist eine ABLEITUNG aus der Verdichtungs-Bauform, keine
+  Messung.
+
+- DIE BYTE-KONTROLLE BRAUCHT EIN BENANNTES INSTRUMENT — `tr` BZW. `git ls-files --eol`, NIE `grep -c` AUF DAS CR (Phase 11.2, gehoben 2026-09-08 aus den Hebungs-Kandidaten der
+  Standdatei; dort Kandidat 6):
+  WAS DIE HEBUNG ENTSCHIEDEN HAT UND DER KANDIDAT OFFENLIESS: Er stellte frei, ob daraus
+  eine EIGENE Regel wird oder ein ABSATZ an einer bestehenden. Es ist eine EIGENE geworden —
+  ein Absatz hätte eine bestehende Regel UMGESCHRIEBEN, und "nichts wird umsortiert" gilt
+  dieser Datei; ausserdem verschwände der neue Befund im Rumpf einer Regel, die man aus
+  einem anderen Grund aufschlägt. DIE ABGRENZUNGEN, DIE DER KANDIDAT ZU DEN NACHBARREGELN
+  ZIEHT, STEHEN UNVERÄNDERT UNTEN und sind der Ersatz dafür.
+DIE BYTE-KONTROLLE BRAUCHT EIN BENANNTES INSTRUMENT: `tr -dc '\r' | wc -c` BZW.
+  `git ls-files --eol`, NIE `grep -c $'\r'`** (angetreten 2026-08-31, aus dem Vorrat
+  umgebucht — dessen Nummer 23 bleibt als benannte Lücke stehen).
+  **DER BEFUND — GEMESSEN (CC, 2026-08-31), mit Positiv- und Negativkontrolle in EINEM
+  Lauf:** `grep -c $'\r'` zählt in dieser Umgebung nicht CR-Zeilen, sondern **ALLE**
+  Zeilen. Eine reine LF-Datei mit drei Zeilen ergab `grep=3` und `tr=0`; eine echte
+  CRLF-Datei mit zwei Zeilen ergab `grep=2` und `tr=2`.
+  **WARUM DAS TEUER IST UND NICHT BLOSS UNGENAU: EIN INSTRUMENT, DAS MAL RICHTIG UND MAL
+  DIE ZEILENZAHL LIEFERT, IST AN SEINER AUSGABE NICHT ALS KAPUTT ZU ERKENNEN.** Vier
+  frühere Runden haben mit ihm "CR=0" gemeldet — das Ergebnis war richtig, **der Weg
+  dorthin nicht überprüfbar.** Der einzige Verräter ist "CR == Zeilenzahl, exakt", und
+  genau der ist am 2026-08-31 als Bestätigung gelesen worden statt als Warnsignal.
+  **DIE ZWEITE HÄLFTE IST ALLGEMEINER UND WIEGT SCHWERER: PRÜFLING UND KONTROLLE MIT
+  DERSELBEN WAAGE ZU WIEGEN RETTET NICHTS.** Die Gegenprobe der Bau-Runde lief mit
+  demselben kaputten Instrument und hat den Fehler deshalb BESTÄTIGT statt gefangen.
+  **DIE FOLGEN SIND BEREITS EINGETRETEN, das ist kein hypothetischer Schaden:** ein
+  falscher STOPP im Objekt-Nachweis (CR≠0 gemeldet, tatsächlich 0), eine falsche Aussage
+  über den Arbeitsbaum des ganzen Repos ("trägt überall CRLF"), und eine Zahl in
+  Vorrats-Eintrag 17, die ersetzt werden musste.
+
+  **DIE NACHBARSCHAFT IN docs/immer-beachten.md — DIE FRAGE, NICHT IHRE ANTWORT.** Beide
+  benannten Regeln sind im Volltext gelesen (CC, 2026-08-31); es sind in Wahrheit DREI,
+  und die dritte liegt am nächsten:
+  · **"WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG STILL DAS CR"** — sie handelt
+    davon, dass ein Werkzeug den GEGENSTAND verändert (CR, Kodierung), und ihre Prüfung
+    ist `git status` plus der Ausschluss leerer Diffs.
+  · Ihr Absatz **"EIN WERKZEUG KANN AUCH EINEN BEFUND ERZEUGEN, DEN DER GEGENSTAND NICHT
+    HERGIBT"** — die Gegenrichtung, das ERGEBNIS statt des Gegenstands.
+  · **"EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND"** (Phase
+    11.8) — bereits eine EIGENE Regel neben jenem Absatz, für den Nicht-Treffer.
+  **WAS FÜR EINEN ABSATZ SPRICHT:** Der Gegenrichtungs-Absatz sagt wörtlich, ein Werkzeug
+  verändere "das ERGEBNIS, ohne den Gegenstand anzufassen" — genau das ist hier
+  geschehen. Eine dritte eigenständige Regel auf derselben Achse macht es
+  unwahrscheinlicher, dass beim nächsten Fall die richtige greift.
+  **WAS FÜR EINE EIGENE SPRICHT:** Jener Absatz und die 11.8er-Regel sind beide auf die
+  ABWESENHEIT zugeschnitten — ihre operative Anweisung lautet "WO EIN MESSERGEBNIS EINE
+  ABWESENHEIT IST, WIRD DAS WERKZEUG GEWECHSELT", und beide Belege sind Nicht-Treffer.
+  **HIER IST DAS ERGEBNIS EINE ANWESENHEIT** (eine Zahl, wo null stehen müsste); die
+  Anweisung feuert also nicht. Und die zweite Hälfte — dass eine Kontrolle mit derselben
+  Waage nichts rettet — steht in keiner der drei.
+  **NICHT ENTSCHIEDEN, und ohne diesen Satz stellt die Hebung eine dritte Regel neben
+  zwei bestehende, und dann greift keine mehr richtig:** ob das ein ABSATZ an der
+  bestehenden Werkzeug-Regel wird oder eine EIGENE. KEINE EMPFEHLUNG.
+  **GILT UNABHÄNGIG VON DIESER ENTSCHEIDUNG UND AB SOFORT:** Die Byte-Kontrolle läuft
+  über `tr` bzw. `git ls-files --eol`. Die Ablage-Frage betrifft, WO die Regel steht,
+  nicht OB sie befolgt wird.
+  **EIN VERWANDTER KANDIDAT LIEGT IN EINER ANDEREN DATEI:** Hebungs-Kandidat 1 in
+  docs/claude-history/phase-11.8-autorisierungsschicht.md ("EIN NEU GESCHRIEBENES
+  ARTEFAKT KANN EIN NUL-BYTE TRAGEN,
+  UND KEIN GATE MELDET ES") lässt unter "NICHT ENTSCHIEDEN" ausdrücklich offen, "ob die
+  Byte-Kontrolle eine Auflage an jede neue Datei wird · welchen Umfang sie hätte".
+  **DORT WIRD NICHT ERGÄNZT:** Jene Datei ist eine ARCHIVIERTE Phase, und ein
+  rückwirkender Eingriff in sie steht in dieser Datei bereits einmal ausdrücklich AUS
+  (s. den Vermerk zum Vorrat der Phase 11.8). **WER EINEN VON BEIDEN HEBT, LIEST DEN
+  ANDEREN MIT** — jener fragt, WANN gemessen wird, dieser, WOMIT.
+  GEMELDET 2026-08-31, NICHT GEBAUT.
+  PROVENIENZ: Der Instrumenten-Befund GEMESSEN am eigenen Lauf (CC, 2026-08-31), mit
+  Positiv- und Negativkontrolle. Der Volltext der drei Nachbarregeln GELESEN in
+  docs/immer-beachten.md (CC, 2026-08-31). Dass eine dritte Regel auf derselben Achse die
+  Trefferwahrscheinlichkeit senkt, ist eine ABLEITUNG, keine Messung.
+
+- EINE MUTATIONS-VORHERSAGE WIRD VOR DEM LAUF GEGEN DEN AKTUELLEN TESTBESTAND AKTUALISIERT (Phase 11.2, gehoben 2026-09-08 aus den Hebungs-Kandidaten der
+  Standdatei; dort Kandidat 7):
+  WAS DIE HEBUNG ENTSCHIEDEN HAT UND DER KANDIDAT OFFENLIESS: Er stellte frei, ob daraus
+  eine EIGENE Regel wird oder ein ABSATZ an einer bestehenden. Es ist eine EIGENE geworden —
+  ein Absatz hätte eine bestehende Regel UMGESCHRIEBEN, und "nichts wird umsortiert" gilt
+  dieser Datei; ausserdem verschwände der neue Befund im Rumpf einer Regel, die man aus
+  einem anderen Grund aufschlägt. DIE ABGRENZUNGEN, DIE DER KANDIDAT ZU DEN NACHBARREGELN
+  ZIEHT, STEHEN UNVERÄNDERT UNTEN und sind der Ersatz dafür.
+EINE MUTATIONS-VORHERSAGE WIRD VOR DEM LAUF GEGEN DEN AKTUELLEN TESTBESTAND
+  AKTUALISIERT** (angetreten 2026-08-31, aus zwei Fällen der Scheibe 2).
+  **DIE AUSSAGE:** Eine Vorhersage, die aus einer FRÜHEREN Stufe übernommen wird, ist
+  **systematisch zu eng** — zwischen ihrer Formulierung und dem Lauf entstehen Tests, die
+  DIESELBE Achse messen. Wer sie unverändert übernimmt, sagt einen Bestand voraus, den es
+  zum Zeitpunkt der Vorhersage noch nicht gab.
+  **DER BEFUND (GEMESSEN am eigenen Lauf, CC, 2026-08-31):** Zwei Pflicht-Mutationen der
+  Scheibe 2 trafen mehr als vorhergesagt — zwei gegen acht, einer gegen zwei. **Beide
+  Male DECKUNG und keine Kaskade**; die Zusatztreffer waren Läufe, die im Bau derselben
+  Runde entstanden sind und dieselbe Assertion-Gestalt tragen.
+  **DER STRUKTURELLE AUSLÖSER GEHÖRT ZUR AUSSAGE, sonst liest sie sich als Ermahnung zur
+  Sorgfalt:** Der Bau-Prompt gab die Vorhersagen wörtlich vor ("mit den Vorhersagen aus
+  Stufe 1"), statt sie vor dem Lauf gegen den aktuellen Bestand aktualisieren zu lassen.
+  **IN DER FIX-SCHEIBE HAT CC GENAU DAS GETAN** — dort stand keine solche Vorgabe, und
+  eine Vorhersage wurde VOR dem Lauf korrigiert, weil ein zweiter Lauf denselben Zweig
+  durchläuft (VERMERK 8, erste Mutationsprobe). **Dasselbe Verfahren, zwei Ausgänge, und
+  der Unterschied lag im Prompt.**
+
+  **DIE NACHBARSCHAFT — DIE FRAGE, NICHT IHRE ANTWORT.** Die Regel "EINE
+  MUTATIONS-VORHERSAGE KANN IN BEIDE RICHTUNGEN FALSCH SEIN" (docs/immer-beachten.md) ist
+  im Volltext gelesen (CC, 2026-08-31). Sie lautet: Unerwartetes ROT ist genauso ein
+  Befund wie unerwartetes Grün; beide Abweichungen werden VOR jeder Reparatur untersucht;
+  BELEG sechsmal in einer Phase, davon fünfmal zu eng; und die einseitige Streuung ist die
+  eigentliche Aussage.
+  **WAS FÜR EINEN ABSATZ AN IHR SPRICHT:** Sie führt bereits die einseitige Streuung und
+  nennt sie ausdrücklich ein Zeichen für eine SYSTEMATISCHE Ursache. Diese Aussage
+  BENENNT eine solche Ursache — sie ist die Antwort auf eine Frage, die jene Regel selbst
+  stellt. Eine eigene Regel daneben zerschnitte Frage und Antwort.
+  **WAS FÜR EINE EIGENE SPRICHT:** Die bestehende sagt, eine Vorhersage KÖNNE falsch sein,
+  und verlangt, die Abweichung zu UNTERSUCHEN. Diese sagt, WANN sie es systematisch ist,
+  und verlangt etwas anderes — eine HANDLUNG VOR dem Lauf statt einer Untersuchung
+  danach. **Ein Absatz an einer Regel, deren operative Anweisung nachgelagert ist, feuert
+  im richtigen Moment nicht.**
+  **NICHT ENTSCHIEDEN, und ohne diesen Satz stellt die Hebung eine Regel neben eine, die
+  dieselbe Achse führt, und dann greift keine mehr richtig:** ob es ein ABSATZ wird oder
+  eine EIGENE Regel. KEINE EMPFEHLUNG.
+  **GILT UNABHÄNGIG VON DIESER ENTSCHEIDUNG UND AB SOFORT:** Eine übernommene Vorhersage
+  wird vor dem Lauf gegen den aktuellen Bestand geprüft. Die Ablage-Frage betrifft, WO die
+  Regel steht, nicht OB sie befolgt wird.
+  GEMELDET 2026-08-31, NICHT GEBAUT.
+  PROVENIENZ: Die zwei Fälle GEMESSEN am eigenen Lauf (CC, 2026-08-31). Der Volltext der
+  Nachbarregel GELESEN in docs/immer-beachten.md (CC, 2026-08-31). Dass der Prompt der
+  strukturelle Auslöser war, ist eine ABLEITUNG aus dem Vergleich mit der Fix-Scheibe,
+  keine Messung.
+
+- EIN ZEIGER AUF EINE NUMMERIERTE ABLAGE KANN AUS PLAUSIBILITÄT ENTSTEHEN STATT AUS NACHSEHEN — UND ER SIEHT DANACH WIE EIN BELEG AUS (Phase 11.2, gehoben 2026-09-08 aus den Hebungs-Kandidaten der
+  Standdatei; dort Kandidat 8):
+  WAS DIE HEBUNG ENTSCHIEDEN HAT UND DER KANDIDAT OFFENLIESS: Er stellte frei, ob daraus
+  eine EIGENE Regel wird oder ein ABSATZ an einer bestehenden. Es ist eine EIGENE geworden —
+  ein Absatz hätte eine bestehende Regel UMGESCHRIEBEN, und "nichts wird umsortiert" gilt
+  dieser Datei; ausserdem verschwände der neue Befund im Rumpf einer Regel, die man aus
+  einem anderen Grund aufschlägt. DIE ABGRENZUNGEN, DIE DER KANDIDAT ZU DEN NACHBARREGELN
+  ZIEHT, STEHEN UNVERÄNDERT UNTEN und sind der Ersatz dafür.
+EIN ZEIGER AUF EINE NUMMERIERTE ABLAGE KANN AUS PLAUSIBILITÄT ENTSTEHEN STATT AUS
+  NACHSEHEN — UND ER SIEHT DANACH WIE EIN BELEG AUS** (angetreten 2026-09-04).
+  **DER BELEG — GEMESSEN am Repo (CC, 2026-09-04, Korrektur-Runde):** Im Zuschnitt der
+  Scheibe 1b-2b stand "der Forward-Verdacht (Vorrats-Eintrag 41)". **Die Vorgabe des
+  Architekten nannte KEINE Nummer; sie ist beim Schreiben hinzugekommen.**
+  Vorrats-Eintrag 41 führt die **TAG-HYPOTHESE** — einen anderen Gegenstand. Der
+  Forward-Verdacht hat im ganzen Repo **weder Nummer noch Eintrag** (GEMESSEN am
+  Dateitext, CC, 2026-09-04, mit benannter Achse und Positivkontrolle).
+  **DIESER KANDIDAT FÜHRT DEN SUCHBEGRIFF SEITHER SELBST, und das erweitert eine
+  Selbstreferenz, die der Zuschnitt der Scheibe 1b-2b bereits benennt:** Dort steht "wer
+  nachmisst, zieht die Treffer dieses Absatzes ab" — **ab jetzt sind es zwei Orte, dieser
+  hier und jener.** An der Aussage ändert das nichts: **ein Eintrag, der den Verdacht
+  FÜHRT, ist keiner geworden.**
+  **WARUM ES TEUER IST: EIN FALSCHER ZEIGER IST TEURER ALS GAR KEINER**, weil er auf eine
+  **ANDERE** Stelle zeigt, statt zum Suchen zu zwingen. **KEIN GATE HAT IHN GEFANGEN** —
+  sichtbar wurde er allein, weil jemand die Nummer aufgeschlagen hat.
+  **ABGRENZUNG ZU "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER"**
+  (docs/immer-beachten.md): Jene Regel betrifft die **HALTBARKEIT** eines Zeigers — er
+  altert, weil sich sein Ziel bewegt. **DIESER HIER WAR AB DEM ERSTEN TAG FALSCH.**
+  Verwandte Figur, andere Achse.
+  **ABGRENZUNG ZU HEBUNGS-KANDIDAT 2** ("DIE LISTE 'GESEHEN, NICHT GEÖFFNET' IST DER ORT,
+  AN DEM SICH EIN BEFUND VERSTECKT"), und sie gehört dazu, weil beide das Wort
+  "plausibel" führen: Dort wird eine Seite mit einem plausiblen Grund **AUSGESCHLOSSEN**,
+  und der Schaden ist ein **nicht gelesener** Befund. Hier wird ein Zeiger aus
+  Plausibilität **ERFUNDEN**, und der Schaden ist ein **gelesener, aber falscher**.
+  Dieselbe Ursache — ein Urteil ohne Nachsehen —, entgegengesetzte Wirkung.
+  **DIE BEDINGUNG DES ENTFALLENS IST NUR FÜR EINE HÄLFTE FORMULIERBAR, UND DASS DIE
+  ANDERE KEINE HAT, IST SELBST DER BEFUND DIESES KANDIDATEN:**
+  · **FÜR ZEIGER AUF EINE NICHT EXISTIERENDE NUMMER entfällt er**, sobald ein Gate jeden
+    nummerierten Zeiger dieser Datei gegen den Bestand der Nummern auflöst und bei einem
+    Fehlschlag rot wird. Das ist mechanisch machbar.
+  · **FÜR ZEIGER AUF EINE EXISTIERENDE, ABER FALSCHE NUMMER GIBT ES KEINE.** Genau das war
+    dieser Fall: **Vorrats-Eintrag 41 EXISTIERT** — er handelt nur von etwas anderem. Ein
+    Gate müsste den GEGENSTAND des Ziels mit dem des Zeigers vergleichen, und das ist
+    Bedeutung und nicht Zeichen (docs/immer-beachten.md, "EIN WÄCHTER ÜBER QUELLTEXT SIEHT
+    ZEICHEN, NICHT BEDEUTUNG"). **Die einzige Prüfung, die trägt, ist das Aufschlagen des
+    Ziels — also genau die Handlung, deren Ausbleiben den Fehler erzeugt hat.**
+  **WAS DARAUS NICHT FOLGT:** dass nummerierte Zeiger zu vermeiden wären. **KEINE
+  EMPFEHLUNG**, weder zu einer Auflage ("wer eine Nummer schreibt, schlägt sie auf") noch
+  zu einer anderen Zeigerform noch dazu, ob daraus überhaupt eine Regel wird.
+  **NICHT ENTSCHIEDEN:** ob das ein ABSATZ an "DER HALTBARE ANKER IST DER SYMBOLNAME …"
+  wird oder eine EIGENE Regel. **Für einen Absatz spricht**, dass beide von Zeigern
+  handeln und eine dritte Regel auf derselben Achse die Trefferwahrscheinlichkeit senkt.
+  **Für eine eigene spricht**, dass jene Regel eine Aussage über die **ZEIT** macht
+  (Namen überleben, Zeilennummern nicht) und ihre operative Anweisung deshalb beim
+  SCHREIBEN eines Zeigers nicht feuert — dieser Fehler entsteht aber genau dort.
+  GEMELDET 2026-09-04, NICHT GEBAUT.
+  PROVENIENZ: Der Fehlgriff und seine Auflösung **GEMESSEN am Repo (CC, 2026-09-04,
+  Korrektur-Runde)**. Dass die Vorgabe keine Nummer nannte, ist am Prompt jener Runde
+  ABLESBAR und **keine Messung am Repo**. Der Volltext der zwei Nachbar-Stellen GELESEN
+  (docs/immer-beachten.md und Hebungs-Kandidat 2 dieser Datei, CC, 2026-09-04). Dass für
+  die zweite Hälfte keine Bedingung formulierbar ist, ist eine **ABLEITUNG** aus der
+  Quelltext-Wächter-Regel, keine Messung.
+
+- EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF AUS NACHZÜGEN (Phase 11.2, gehoben 2026-09-08 aus den Hebungs-Kandidaten der
+  Standdatei; dort Kandidat 9):
+  WAS DIE HEBUNG ENTSCHIEDEN HAT UND DER KANDIDAT OFFENLIESS: Er stellte frei, ob daraus
+  eine EIGENE Regel wird oder ein ABSATZ an einer bestehenden. Es ist eine EIGENE geworden —
+  ein Absatz hätte eine bestehende Regel UMGESCHRIEBEN, und "nichts wird umsortiert" gilt
+  dieser Datei; ausserdem verschwände der neue Befund im Rumpf einer Regel, die man aus
+  einem anderen Grund aufschlägt. DIE ABGRENZUNGEN, DIE DER KANDIDAT ZU DEN NACHBARREGELN
+  ZIEHT, STEHEN UNVERÄNDERT UNTEN und sind der Ersatz dafür.
+EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF AUS
+  NACHZÜGEN** (angetreten 2026-09-08, an dieser Datei selbst).
+  **DIE AUSSAGE:** Eine Angabe der Form "IST SIE … GROSS" ist nach jeder Änderung an ihrer
+  eigenen Datei falsch. **DER NACHZUG IST SELBST EINE ÄNDERUNG UND MACHT SIE ERNEUT
+  FALSCH** — die Angabe hält sich nur, solange jemand hinter ihr herläuft, und sie hat
+  **keine Bedingung ihres Entfallens.** Dasselbe gilt für einen mitgeführten
+  Rundenzähler ("nach den DREI Doku-Runden"), und zwar verschärft: Er altert schon durch
+  die Runde, die ihn nachzieht.
+  **EINE DATIERTE MESSUNG HAT DAS PROBLEM NICHT.** Sie ist **alt und nicht falsch**; wer
+  den heutigen Wert braucht, misst ihn.
+  **GEMESSEN AN DIESEM FALL (CC/ARCHITEKT, 2026-09-08):** VIER Nachzüge in DREI Runden
+  desselben Tages — die Selbstangabe wanderte von 148 817 B über 152 393, 152 368 und
+  152 539 auf 152 587 B —, und **eine fünfte Stelle stand offen**, als die Angabe
+  herausgenommen wurde: derselbe Rundenzähler zwölf Zeilen tiefer.
+  **DIE KOSTEN SIND NICHT DIE PFLEGE, SONDERN DIE HALBHEIT:** Wird nur eine der Stellen
+  nachgezogen, stimmt die eine — **und genau deshalb liest niemand die andere nach**
+  (docs/immer-beachten.md, "WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR
+  FALLE"). Der Fall ist an dieser Datei eingetreten und protokolliert.
+  **DER PRÄZEDENZFALL ZEIGT, DASS DIE ANTWORT IM REPO SCHON STAND:** CLAUDE.md,
+  "## Detail-Archiv", Eintrag docs/claude-history/backlog-polish.md. Dort ist ein
+  Messblock ausdrücklich NICHT fortgeschrieben worden, mit derselben Begründung — "sie
+  sind datiert und damit alt, nicht falsch … Wer die heutigen Werte braucht, misst sie."
+  **DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT:** Sie entfällt,
+  sobald ein GATE eine präsentische Selbstangabe rot macht. **Ein solches gibt es nicht** —
+  kein Test, kein Lint, kein Build liest Doku-Text (GEMESSEN an dieser Runde: alle vier
+  Gates blieben bei jedem der vier Nachzüge unverändert grün).
+  **ABGRENZUNG ZU "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER"**
+  (docs/immer-beachten.md): Jene Regel betrifft einen ZEIGER auf etwas anderes, der
+  veraltet, weil sein Ziel sich bewegt. **Hier bewegt sich der GEGENSTAND SELBST**, und
+  die Angabe steht in ihm. Verwandte Figur, andere Achse.
+  **NICHT ENTSCHIEDEN:** ob daraus eine eigene Regel wird, ein Absatz an jener Regel, oder
+  ob es bei der Feststellung an diesem Fall bleibt. **KEINE EMPFEHLUNG.**
+  GEMELDET 2026-09-08, NICHT GEBAUT.
+  PROVENIENZ: Die vier Nachzüge und die offene fünfte Stelle sind **GEMESSEN am Repo und
+  am Verlauf dieser Runde (CC, 2026-09-08)**. Der Präzedenzfall ist **GELESEN in CLAUDE.md**
+  (CC, 2026-09-08). Dass es kein Gate gibt, ist ein **NICHT-TREFFER mit benannter Achse** —
+  die vier Gates dieses Projekts, an dieser Runde beobachtet.
+
+- EIN NEUES FAN-OUT-ZIEL LÄUFT BEI BESTEHENDEN SEITEN FAIL-CLOSED AN, UND EIN DEPLOY HEILT
+  DAS NICHT (Phase 11.2, gehoben 2026-09-08 aus der bindenden Entscheidung (4)):
+  Der Einwilligungs-Draht ist fail-closed an einer Achse, die man beim Hinzufügen eines
+  Ziels nicht sieht. `consentAllows` kennt drei Zweige: das Feld `cns` GANZ ABWESEND ->
+  ERLAUBT (eine Seite, die älter ist als das Feld, verlöre sonst still ihren Forward); das
+  Feld VORHANDEN, der Ziel-Schlüssel darin FEHLT -> VERWEIGERT; und jede bereits
+  veröffentlichte Seite trägt ein `cns`-Objekt OHNE den neuen Schlüssel.
+  FOLGE, UND SIE IST DER GANZE INHALT DIESER REGEL: Nach dem Verdrahten eines neuen Ziels
+  sendet KEINE bestehende Seite an dieses Ziel, bis sie NEU VERÖFFENTLICHT ist. EIN
+  CODE-DEPLOY ERREICHT DAS NICHT — der Schlüssel geht zur VERÖFFENTLICHUNGSZEIT in den
+  ausgelieferten Text.
+  WER EIN ZIEL HINZUFÜGT, PLANT DAS NEU-VERÖFFENTLICHEN ALS PFLICHT-SCHRITT DER
+  LIVE-ANLEITUNG EIN — nicht als Support-Fall. Der Bruch ist still: niemand sieht einen
+  Fehler, es verschwinden nur Conversions.
+  ABGRENZUNG ZU "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY": Jene Regel
+  beschreibt den MECHANISMUS und führt den Consent-Draht bereits als BELEG 2. Diese hier
+  trägt die FOLGE FÜR DEN BETRIEB — dass ein neues Ziel bei bestehenden Seiten
+  fail-closed anläuft. Sie ersetzt jene nicht; sie ist der Fall, den man beim Zuschneiden
+  eines Ziels braucht und in einer Regel über Artefakte nicht sucht.
+  DIE BEDINGUNG IHRES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald etwas ANZEIGT, dass der veröffentlichte Stand nachzuziehen ist. Genau das ist als
+  offener Punkt geführt ("NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN
+  IST", CLAUDE.md), mit EINGETRETENEM Trigger.
+  SIE LÖST ZUGLEICH HEBUNGS-KANDIDAT 1 DER PHASE 11.2 EIN, und der Satz steht hier, weil
+  die Hebung sonst zweimal gelaufen wäre: Jener Kandidat trägt den Titel "DER
+  EINWILLIGUNGS-RIEGEL BEIM FÜNFTEN ZIEL" und benennt in seiner ERSTEN ZEILE sein
+  Gegenstück — "die bindende Entscheidung (4)". **ES IST DIESELBE SACHE UNTER ZWEI
+  ÜBERSCHRIFTEN**, einmal in der Kandidatenliste und einmal in der Entscheidungsliste
+  derselben Standdatei. Die Frage, die der Kandidat offenliess (eigene Regel oder Absatz an
+  "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY"), ist mit dieser Regel zugunsten
+  der EIGENEN entschieden — die Abgrenzung dorthin steht oben.
+  PROVENIENZ: die drei Zweige GEMESSEN am Code (CC, 2026-08-25), `consentAllows` in
+  src/lib/tracking/consent-wire.ts; die Folge für bestehende Seiten ist eine ABLEITUNG aus
+  diesem Zweig und der Erzeugungszeit des Schlüssels, KEINE Messung an einer
+  veröffentlichten Seite. Die Erhebung zur Regel ist OWNER-ENTSCHEIDUNG 2026-09-08. Dass
+  Kandidat 1 und Entscheidung (4) dieselbe Sache sind, ist GEMESSEN am Dateitext (CC,
+  2026-09-08).
+
+- EINE ROUTE, DIE SCHREIBT ODER EINEN FREMDEN ENDPUNKT RUFT, IST NIEMALS EIN GET (Phase
+  11.2, gehoben 2026-09-08 aus der Entscheidung P3):
+  Ein GET wird von jedem Vorablade-Mechanismus ausgelöst — mit der Sitzung des
+  angemeldeten Nutzers und ohne dass er etwas angeklickt hat. Trägt die Route einen
+  Nebeneffekt, ist der Nebeneffekt damit eingetreten.
+  DER PREIS WIRD MITGENANNT, sonst wird die Regel beim nächsten Bau als Umständlichkeit
+  übergangen: Ein Live-Test gegen eine POST-Route braucht einen `fetch` aus der
+  eingeloggten Anwendung statt einer URL-Eingabe im Browser. Das ist unbequemer und der
+  richtige Tausch.
+  DIE ACHSE IST DER NEBENEFFEKT, NICHT DIE SICHERHEIT: Es geht nicht um Autorisierung —
+  die Sitzung ist echt und der Nutzer ist berechtigt. Es geht darum, dass eine Handlung
+  stattfindet, die niemand ausgelöst hat. Wer die Regel als Auth-Frage liest, hält sie für
+  erledigt, sobald ein Gate davorsteht.
+  ABGRENZUNG ZU "EIN SIGNAL LEUCHTET NUR, WENN DER NUTZER JETZT ETWAS TUN KANN": Jene
+  handelt von der ANZEIGE eines Zustands, diese von der AUSLÖSUNG einer Handlung.
+  SIE TRÄGT KEINE BEDINGUNG IHRES ENTFALLENS, UND DER GRUND IST STRUKTURELL: Sie entfiele
+  erst, wenn Vorablade-Mechanismen aufhörten, GET-Anfragen ohne Zutun des Nutzers zu
+  senden. Das ist kein formulierbarer Zustand, sondern die Bauform des Web.
+  PROVENIENZ: ARCHITEKT, 2026-08-29, an der Beweis-Route `/api/oauth/google/refresh`. Der
+  Vorablade-Fall selbst ist NICHT gemessen — er ist der bekannte Grund, aus dem
+  schreibende Routen kein GET sind. Die Erhebung zur Regel ist OWNER-ENTSCHEIDUNG
+  2026-09-08.
+
+- EIN BEDIENELEMENT, DAS EINEN VORGANG IM NAMEN DES NUTZERS AUSLÖST, DARF NICHT OHNE
+  SEINEN KLICK FEUERN KÖNNEN (Phase 11.2, gehoben 2026-09-08 aus der Entscheidung (A)):
+  Kein `<Link>`, kein `<a href>` auf eine Route, die eine Autorisierung, eine Anbindung
+  oder eine Zusage in seinem Namen startet. Die FORM wählt der Bau-Plan; verboten ist
+  allein, dass sie ohne Klick feuern kann.
+  DER TRAGENDE GRUND IST EIN PRODUKT-ARGUMENT UND KEIN SICHERHEITS-ARGUMENT, und das ist
+  der Teil, der sonst wegfällt: Eine Autorisierung ist ein BEWUSSTER AKT. Ein Element, das
+  ohne Klick feuert, ist keiner — es handelt in seinem Namen, ohne dass er es getan hat.
+  WARUM DAS SICHERHEITS-ARGUMENT HIER NUR ZUR HÄLFTE TRÄGT, ehrlich benannt: Der Schaden
+  eines Vorablade-Treffers auf einer Start-Route ist klein (ein überschriebenes
+  State-Cookie) und UNGEMESSEN. Wer die Regel darauf stützt, stützt sie auf einen
+  Nebenpunkt und streicht sie beim nächsten Aufräumen.
+  DAZU EIN ZWEITER GRUND, der belegt statt vermutet ist: Eine Achse, deren Fehlzustand man
+  einmal gesehen und nie erklärt hat, bekommt keinen zusätzlichen unbeabsichtigten
+  Auslöser. Beim Live-Test der Scheibe 1a ist `?google=no_state` aufgetreten; die Ursache
+  ist bis heute NICHT GEMESSEN.
+  ABGRENZUNG ZUR REGEL DARÜBER: Jene betrifft die METHODE der Route (kein GET bei
+  Nebeneffekt), diese das BEDIENELEMENT davor. Beide zusammen schliessen den Weg; eine
+  allein lässt ihn offen — ein POST-Formular kann ebenso wenig ohne Klick abgeschickt
+  werden dürfen, und eine POST-Route hinter einem Vorablade-Link ist unerreichbar, aber
+  falsch gebaut.
+  SIE TRÄGT KEINE BEDINGUNG IHRES ENTFALLENS: Sie gälte, solange ein Produkt Vorgänge im
+  Namen seines Nutzers auslöst.
+  PROVENIENZ: ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-08-29. Das `no_state`-Vorkommnis ist
+  GEMESSEN LIVE (2026-08-29, Live-Test der Scheibe 1a); der Schaden eines
+  Vorablade-Treffers ist ausdrücklich UNGEMESSEN. Die Erhebung zur Regel ist
+  OWNER-ENTSCHEIDUNG 2026-09-08.

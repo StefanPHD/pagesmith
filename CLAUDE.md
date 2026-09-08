@@ -128,7 +128,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 10.5 — Umzug middleware -> proxy (Next-Konvention)
 - [x] Phase 11 — Multi-Tracking (Server-Side Fan-Out)
 - [x] Phase 11.1 — LinkedIn als viertes Fan-Out-Ziel
-- [~] Phase 11.2 — Google Ads
+- [x] Phase 11.2 — Google Ads
 - [x] Phase 11.8 — Autorisierungsschicht
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code)
 - [ ] Phase 11.4 — Der Testknopf
@@ -272,6 +272,61 @@ gehen von hier eine Station weiter.
   GEMESSEN am Repo 2026-09-08: Scheibe 4 der Phase 11.2 ist gebaut und live bewiesen. Ob
   ein Projekt OHNE Tracking-Schlüssel existiert, ist am Repo NICHT feststellbar und
   ausdrücklich nicht erhoben)
+
+**AUS DEM PHASENENDE 11.2 GEHOBEN (2026-09-08) — NEUNZEHN PUNKTE.** Fünf aus der
+Rest-Liste der Roadmap-Zeile 11.2, vierzehn aus dem Vorrat der Phase. DIE NUMMERN IN
+KLAMMERN SIND URSPRUNGS-NUMMERN und werden nicht neu vergeben. DAS KRITERIUM WAR
+ZWEITEILIG — benennbarer Trigger UND "geht sonst still kaputt"; nach dem Trigger allein
+wären es 55 von 66 Vorrats-Einträgen gewesen statt 14 (GEMESSEN, CC, 2026-09-08). Die
+übrigen liegen in docs/claude-history/backlog-polish.md.
+- DIE SIEBEN-TAGE-FRIST UND DER STATUSWECHSEL AUF "IN PRODUKTION" (Trigger: EINGETRETEN,
+  und er trägt einen TERMIN — das Erneuerungs-Token stirbt am 2026-09-11 um 07:26:58 UTC.
+  Ein Neu-Verbinden VERSCHIEBT ihn um sieben Tage und löst ihn NICHT; dauerhaft löst ihn
+  nur der Statuswechsel, und der ist Arbeit am ANBIETER-KONTO, keine Code-Arbeit)
+- DER eventSource-WERT IST NICHT GEMESSEN — GEBAUT IST "WEB" ALS ENTSCHEIDUNG (Trigger: das
+  erste Instrument, das FACHLICHE Falschheit von syntaktischer Gültigkeit trennt —
+  validateOnly=true leistet das ausdrücklich NICHT)
+- DIE KOPFZEILE x-goog-user-project WIRD NICHT GESENDET — OB SIE PFLICHT IST, IST IN BEIDE
+  RICHTUNGEN UNGEMESSEN (Trigger: die erste Anfrage, die OHNE sie scheitert oder MIT ihr
+  anders ausfällt als ohne)
+- DIE WIRKUNG AUF DIE GEBOTE IST UNGEMESSEN (Trigger: der erste Lauf mit genug verbuchten
+  Conversions, dass eine Gebotsstrategie sie verwerten kann — spätestens der erste echte
+  Ad-Traffic. DIESER PUNKT TRÄGT DIE AUFLAGE AM [x] DER PHASE 11.2)
+- DER UPLOAD_CLICKS-VORBEHALT IM KUNDENKONTO — EINE VORAUSSETZUNG JE KUNDE, KEINE EINMALIGE
+  ARBEIT (Trigger: der erste FREMDE Kunde, der Google verbindet)
+- (4) DIE SCHREIBUNG DER URL-PARAMETERNAMEN STÜTZT SICH AUF NICHTS GELESENES (Trigger: die
+  erste Messung des Auto-Taggings — "DIE ERSTE MESSUNG NIMMT SIE MIT")
+- (5) DREI FELDER DER NUTZLAST SIND FRAGEN DER TRANSPORT-SCHEIBE, NICHT DIESER (Trigger:
+  DREI Trigger, je Feld einer; der Eintrag entfällt ERST, wenn alle drei eingetreten UND
+  abgearbeitet sind)
+- (6) eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE IST EINE
+  ANDERE (Trigger: "die Transport-Scheibe — jetzt für die verbliebene Frage nach dem INHALT
+  der URL" — EINGETRETEN, ausdrücklich NICHT geschlossen)
+- (8) EINE AUSWERTUNG DER ANBIETER-FEHLER DARF NICHT NUR DEN ERSTEN fieldViolation LESEN
+  (Trigger: der erste Rückkanal für abgelehnte Ereignisse)
+- (9) KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG (Trigger: eine gemessene Rotation bei
+  irgendeinem Anbieter dieses Rahmens, ODER ein Auslöser, der die Funktion nachweislich
+  nebenläufig ruft — an BEIDEN Hälften NICHT eingetreten)
+- (10) retry HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN (Trigger: der Zuschnitt
+  der Scheibe 1b — EINGETRETEN)
+- (13) ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN (Trigger: zwei
+  eigene Trigger, BEIDE EINGETRETEN)
+- (16) saveProject SCHREIBT settings UNVALIDIERT — TOR A HÄLT DURCH EINE ABWESENHEIT
+  (Trigger: der Zuschnitt der Scheibe 2 — EINGETRETEN)
+- (24) PROJECT_PARAM STEHT ZWEIMAL, UND DIE DIVERGENZ IST EINSEITIG STUMM (Trigger: eine
+  Änderung an einem der beiden Parameternamen)
+- (39) CONVERSIONS AUF FOLGESEITEN SIND FÜR GOOGLE HEUTE NICHT MESSBAR (Trigger: der
+  Zuschnitt der Phase 17, ODER eine erneute Owner-Befassung mit der dritten Datenklasse)
+- (42) DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER (Trigger:
+  der Zuschnitt der Scheibe 1b — EINGETRETEN; der Eintrag bleibt offen)
+- (50) STIRBT DAS ERNEUERUNGS-TOKEN, IST DER AUSFALL FÜR NIEMANDEN SICHTBAR (Trigger: die
+  nächste Arbeit an der Ziel-Karte, ODER der Statuswechsel auf "In Produktion", ODER der
+  erste Kunde mit einer Google-Verbindung)
+- (53) DER OAUTH-CALLBACK ZIEHT DEN VERSIONS-ZÄHLER NICHT MIT (Trigger: die nächste Arbeit
+  am Schreibpfad der Callback-Route)
+- (62) DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT (Trigger: die nächste
+  Runde, die docs/offene-punkte.md ohnehin öffnet, ODER die erste Messung am gebauten
+  Google-Transport auf Ablage und Logausgabe)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
@@ -1051,6 +1106,18 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   NACHGEZOGEN 2026-09-08 — DER SECHSTE ABSCHNITT: "Aus Phase 11.8 gehoben (2026-09-08) —
   Vorrats-Punkte aus docs/aktiver-stand-11.8.md" (3). Er ist beim nachgeholten Phasenende
   der Phase 11.8 entstanden; die drei Einträge tragen ihre Ursprungs-Nummern 1, 2 und 3.
+  NACHGEZOGEN 2026-09-08 — DER SIEBTE ABSCHNITT: "Aus Phase 11.2 gehoben (2026-09-08) —
+  Vorrats-Punkte aus docs/aktiver-stand-vorrat.md". Er ist beim Phasenende der Phase 11.2
+  entstanden und ist der mit ABSTAND grösste dieser Datei; die Einträge tragen ihre
+  URSPRUNGS-NUMMERN aus dem Vorrat, und die Lücken in der Zählung sind die Einträge, die
+  als offene Punkte gehoben oder gestrichen worden sind. HIER STEHT KEINE STÜCKZAHL, und
+  das ist Absicht: Der Abschnitt nennt seine eigene Aufteilung in seinem Kopf, und eine
+  zweite Zahl daneben wäre die Bauform, die dieser Stub zweimal als kaputtgegangen führt.
+  ER TRÄGT ZUSÄTZLICH DEN HEBUNGS-KANDIDATEN 4 aus docs/aktiver-stand.md — er ist KEINE
+  Regel, sondern eine Verortungs-Aufgabe, und er liegt unmittelbar bei Vorrats-Eintrag 12,
+  weil beide DENSELBEN Trigger tragen und zusammen zu erledigen sind.
+  DER ABSCHNITT NENNT AUCH DAS KRITERIUM, nach dem sortiert wurde — benennbarer Trigger
+  UND "geht sonst still kaputt" —, und den gemessenen Grund dafür.
   NACHGEZOGEN 2026-08-31 — DER FÜNFTE NACHTRAGS-ABSCHNITT: "Nachtrag 2026-08-31 —
   BEOBACHTUNG AUS DEM LIVE-TEST DER SCHEIBE 3 (kosmetisch)" (1). DER MESSBLOCK
   DARÜBER IST UNANGETASTET UND BLEIBT ES: seine Zahlen (123 Einträge, 163 KB,

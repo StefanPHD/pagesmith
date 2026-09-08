@@ -1831,15 +1831,34 @@ ROUTEN-LOKAL UND UNGETYPT.**
     **(B) DIE HEBUNG WIRD PFLICHT STATT ERMESSEN, UND SIE SORTIERT NACH DREI ZIELEN STATT
     EINEM.** Wortlaut ALT in docs/arbeitsweise.md, Abschnitt "Phasenende":
     "**1. Hebung (nach Ermessen):**". NEU: Pflicht, mit drei Ausgängen —
-    · **mit Trigger** → docs/offene-punkte.md, plus Stub-Zeile in CLAUDE.md;
-    · **ohne Trigger** → docs/claude-history/backlog-polish.md, ans Dateiende unter eine
+    · **benennbarer Trigger UND "geht sonst STILL kaputt"** → docs/offene-punkte.md, plus
+      Stub-Zeile in CLAUDE.md;
+    · **sonst** → docs/claude-history/backlog-polish.md, ans Dateiende unter eine
       EIGENE datierte Überschrift;
     · **Gegenstand erledigt** → GESTRICHEN (s. Teil C).
     **DER GRUND, DASS EIN ZIEL NICHT REICHT:** docs/offene-punkte.md verlangt einen
     TRIGGER; "falls es je nötig wird" ist dort ausdrücklich unzulässig. Wer alles dorthin
     hebt, muss Trigger erfinden — oder er hebt gar nicht.
-    **GEMESSEN an dieser Runde (CC, 2026-09-08):** Von SIEBEN Vorrats-Einträgen der Phase
-    11.8 trug **EINER** einen Trigger.
+    **DER ERSTE AUSGANG TRÄGT SEIT DEM 2026-09-08 ZWEI BEDINGUNGEN, NICHT EINE — SACHKORREKTUR,
+    KEIN STEMPEL. HIER STAND:** "· **mit Trigger** → docs/offene-punkte.md, plus Stub-Zeile in
+    CLAUDE.md; · **ohne Trigger** → docs/claude-history/backlog-polish.md …" **DAS WAR ZU GROB,
+    UND EIN STEMPEL LIESSE ZWEI KRITERIEN NEBENEINANDER STEHEN**, von denen das falsche eine
+    Datei flutet, die jede Sitzung lädt.
+    **DER TRIGGER ALLEIN TRENNT NICHT.** docs/offene-punkte.md sagt in ihrem eigenen Kopf,
+    sie sei "Kein Backlog-Ersatz" und "hier steht nur, was sonst STILL kaputtgeht". Fast
+    jeder Vorrats-Eintrag trägt einen Trigger; eine Aufräumarbeit mit dem Trigger "die
+    nächste Runde, die diese Datei ohnehin öffnet" geht nicht still kaputt, sie wartet.
+    **DER BELEG, GEMESSEN AN DER HEBUNG DER PHASE 11.2 (CC, 2026-09-08):** Von 66
+    Vorrats-Einträgen hätten nach dem Trigger allein **FÜNFUNDFÜNFZIG** nach
+    docs/offene-punkte.md gehen müssen; nach beiden Bedingungen sind es **VIERZEHN**.
+    **DIE DIFFERENZ VON 41 WÄREN AUFRÄUMPOSTEN GEWESEN, JE MIT EINER STUB-ZEILE IN
+    CLAUDE.md** — also in der Datei, die JEDE Sitzung lädt, und die einen eigenen offenen
+    Punkt dazu führt ("CLAUDE.md NÄHERT SICH DEM LADELIMIT"). **Die grobe Fassung hätte den
+    Posten ausgelöst, den sie nicht kennt.**
+    **GEMESSEN an der Runde vom 2026-09-08 (Phasenende 11.8, CC):** Von SIEBEN
+    Vorrats-Einträgen der Phase 11.8 trug **EINER** einen Trigger. **DIESE ZAHL BLEIBT UND
+    IST NICHT DER BELEG FÜR DIE KORREKTUR** — bei sieben Einträgen fielen beide Kriterien
+    zufällig zusammen; erst 66 haben sie auseinandergezogen.
 
     **(C) DER AUSGANG, DEN DIE ARBEITSWEISE NICHT KENNT.** Was seinen GEGENSTAND verloren
     hat, wird **GESTRICHEN und nicht umgezogen** — mit dem **BELEG DER ERLEDIGUNG AM
@@ -1880,6 +1899,43 @@ ROUTEN-LOKAL UND UNGETYPT.**
     NEUN und ELF sind **GELESEN** (CLAUDE.md bzw. der Kopf von
     docs/claude-history/phase-11.8-autorisierungsschicht.md).
     Der Vollzug ist **AUSSTEHEND**.
+
+11. **EINE KARTE, DIE NACH EINEM GESCHEITERTEN VORGANG UNVERÄNDERT IHREN AUSGANGSZUSTAND
+    ZEIGT, IST DIE STILLE FEHLKLASSE** (angetreten 2026-09-08, beim Phasenende der Phase
+    11.2 aus der bindenden Entscheidung (B) herausgehoben).
+    **DER WORTLAUT, UM DEN ES GEHT — ZITAT aus Entscheidung (B), "DIE ERGEBNISCODES GEHÖREN
+    IN DIESE SCHEIBE — ALS DREI FÄLLE, NICHT ALS DREIZEHN TEXTE":** "Der Erfolgsfall trägt
+    sich selbst, die zwölf anderen nicht. **Eine Karte, die nach einem gescheiterten
+    Verbinden unverändert 'Nicht konfiguriert' sagt, IST die stille Fehlklasse, die diese
+    Scheibe beseitigen soll** — der Betreiber hätte gehandelt, nichts wäre geschehen, und
+    nichts sagte es ihm."
+    **WARUM KANDIDAT:** Der Satz beschreibt KEINEN Google-Sonderfall und keine Eigenschaft
+    des OAuth-Callbacks. Er beschreibt eine Klasse von Oberflächen-Fehlern, die bei JEDEM
+    Vorgang eintritt, der ausserhalb der Anwendung stattfindet und mit einem Zustandswechsel
+    zurückkommt — jede künftige Autorisierung, jede Anbindung mit Rücksprung, jeder
+    Bestätigungs-Fluss. **Der Nutzer hat gehandelt; das Produkt sieht danach aus wie vorher.**
+    **WO DIE ENTSCHEIDUNG LIEGT, AUS DER ER STAMMT:** docs/claude-history/phase-11.2-google.md,
+    Abschnitt "Die bindenden Entscheidungen der Phase 11.2, aus der Steuerdatei übernommen",
+    Block "Drei Entscheidungen, die nach den sechs Festlegungen gefallen sind", Entscheidung
+    (B). **SIE IST DORT UNGETEILT ABGELEGT UND WIRD NICHT ZERSCHNITTEN** — ihre zweite
+    Hälfte (dreizehn Callback-Codes auf drei Fälle) ist Google-spezifisch, und eine
+    Halbierung wäre eine Umformulierung.
+    **NICHT ENTSCHIEDEN:** ob daraus eine eigene Regel wird oder ein Absatz an "EIN SIGNAL
+    LEUCHTET NUR, WENN DER NUTZER JETZT ETWAS TUN KANN" bzw. an "WELCHE REGEL WANN GREIFT"
+    (beide docs/immer-beachten.md). **Für einen Absatz spricht**, dass jene zwei Regeln
+    dieselbe Achse führen — wann ein Zustand angezeigt wird. **Für eine eigene spricht**,
+    dass beide vom SIGNAL handeln, also von einer Anzeige, die etwas MELDET; hier geht es um
+    eine Karte, die nichts meldet und dadurch falsch informiert. **KEINE EMPFEHLUNG.**
+    **WARUM ER ÜBERHAUPT ANGELEGT WIRD:** Die Entscheidung (B) wandert mit dem Phasenende ins
+    Archiv. Ohne diesen Kandidaten verschwände der Prinzip-Teil dorthin mit — und ein Archiv
+    wird nicht gelesen, wenn man eine Regel sucht.
+    **ER WANDERT IN SCHRITT 2 WIE KANDIDAT 10 ALS KOPIE INS ARCHIV**, damit er das Löschen
+    der Steuerdatei überlebt.
+    GEMELDET 2026-09-08, NICHT GEHOBEN.
+    PROVENIENZ: Das Zitat ist WÖRTLICH aus Entscheidung (B); dass sein erster Teil kein
+    Google-Sonderfall ist, ist eine ABLEITUNG aus seinem eigenen Wortlaut und keine Messung.
+    Die Nummer 11 ist vor der Vergabe auf Kollision geprüft (CC, 2026-09-08: die Liste führte
+    1 bis 10).
 
 ## Die Teilung der Standdatei — Zuschnitt in drei Schritten
 

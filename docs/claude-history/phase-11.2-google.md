@@ -5820,3 +5820,651 @@ Migration 0027 (nach geltender Regel) und die Vertagung der 45 Doku-Zeiger
 **WAS AUSDRÜCKLICH KEINE MESSUNG IST:** dass die Steuerdatei bei jeder künftigen Grösse und
 in jeder Umgebung in einem Zug lesbar bleibt — gemessen ist EIN Lauf, an EINER Maschine, mit
 DIESEM Werkzeugstand.
+
+
+## Die bindenden Entscheidungen der Phase 11.2, aus der Steuerdatei übernommen
+
+**WOHER SIE KOMMEN:** Aus docs/aktiver-stand.md, Abschnitt "Entscheidungen, die über ihre
+Scheibe hinaus binden", beim Phasenende am 2026-09-08. **DER TEXT IST ZEICHENGLEICH
+ÜBERNOMMEN** — kein Wort umformuliert, keine Nummer neu vergeben.
+
+**ES WAREN NEUNZEHN — DREI SIND NACH docs/immer-beachten.md GEHOBEN, SECHZEHN STEHEN HIER.**
+Die drei sind (4) "DER EINWILLIGUNGS-RIEGEL IST FAIL-CLOSED UND ERREICHT BESTEHENDE SEITEN
+NICHT", P3 "die Beweis-Route ist POST, nicht GET" und (A) "DER VERBINDEN-WEG IST NICHT
+VORABLADE-FÄHIG". **P3 UND (A) STEHEN TROTZDEM UNTEN MIT** — sie liegen in Blöcken, die
+zeichengleich übernommen werden, und ein Herausschneiden wäre eine Umformulierung. Wer sie
+als Regel braucht, findet sie in docs/immer-beachten.md; hier stehen sie in ihrem
+ursprünglichen Zusammenhang.
+
+**EIN BEFUND, DER ZUR HEBUNG GEHÖRT UND SONST NIRGENDS STEHT: KEINE DER NEUNZEHN HAT IHREN
+GEGENSTAND VERLOREN.** Bei den Vorrats-Einträgen derselben Phase waren fünf erledigt; hier
+keine. **DAS IST STRUKTURELL UND KEIN ZUFALL:** Eine bindende Entscheidung beschreibt, WIE
+gebaut wurde. Sie kann überholt werden, aber sie wird nicht gegenstandslos, solange der Code
+steht. **Wer bei dieser Liste Streichungen erwartet, erwartet die Fehlerklasse der falschen
+Liste.**
+
+**DIE ÜBERSCHRIFTEN DER DREI ÜBERNOMMENEN BLÖCKE SIND HIER NEU GESETZT**, und das ist
+Absicht: Ihre Originaltitel stehen anderswo in dieser Datei bereits als Zitat, und eine
+zeichengleiche Überschrift daneben machte jede Überschriften-Suche mehrdeutig (Regel "EIN
+ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT"). Die
+Originaltitel sind unten je OHNE Marke zitiert.
+
+### Sieben der acht nummerierten Entscheidungen
+
+**DIE ACHTE, (4), STEHT NICHT HIER** — sie ist als Regel nach docs/immer-beachten.md
+gehoben, weil sie keinen Google-Sonderfall beschreibt, sondern eine Eigenschaft, die bei
+JEDEM weiteren Fan-Out-Ziel eintritt. Ihre Nummer bleibt frei und wird nicht neu vergeben.
+
+**(1) ABLAGE UND LADEKLASSE DER GOOGLE-DATEIEN.**
+ENTSCHEIDUNG: Beide Dateien liegen in src/lib/capi/ und sind REIN — kein
+import "server-only", kein "use client". Der Kopfsatz aus dem Zuschnitt steht wörtlich
+in beiden.
+GRUND: Der spätere google-forward.ts ist server-only und muss sie importieren; die
+Richtung server-only -> rein gilt und nicht umgekehrt (dasselbe Muster wie bei
+redact.ts und tracking/event-names.ts).
+GRENZE: Sie sagt NICHTS darüber, ob ein späterer Konsument im BROWSER entsteht. Wird
+einer gebraucht, ist das eine eigene Frage — die Reinheit erlaubt ihn, sie verlangt
+ihn nicht.
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-25.
+
+**(2) eventSource WIRD VOM AUFRUFER GELIEFERT, NIE IN DER FUNKTION GEWÄHLT.**
+ENTSCHEIDUNG: Der Nutzlast-Bau nimmt eventSource als Parameter entgegen und setzt
+keinen Vorgabewert.
+GRUND: Beim Offline Conversion Import ist das Feld PFLICHT — GELESEN, docs/ziel-befunde.md,
+Teil (l)/D5, und bestätigt an der Roadmap-Zeile 11.2 ("ZWEI RANG-WECHSEL"). WELCHER
+Wert der richtige ist, sagt dieselbe Quelle NICHT: sie verlangt "ein Wert des
+EventSource-Enums" und nennt in Teil (w)/F3 fünf mögliche (WEB, APP, IN_STORE, PHONE,
+MESSAGE), ohne einen davon dieser Gestalt zuzuordnen. Eine Wahl IN der Funktion wäre
+eine unbelegte Festlegung an der schlechtestmöglichen Stelle — unsichtbar für jeden
+Aufrufer.
+GRENZE, UND SIE IST ZWEITEILIG:
+· Die Entscheidung entfällt, sobald der Wert GEMESSEN ist. Das Instrument dafür ist
+  validateOnly=true gegen den echten Endpunkt (GELESEN, Teil (p)/H4: "Set validateOnly
+  to true to validate the request without applying the changes").
+· DER PREIS DES INSTRUMENTS GEHÖRT DAZU: Mit validateOnly=true ist laut derselben
+  Quelle GAR KEINE Diagnostik abrufbar (Teil (p)). Das Instrument beantwortet also
+  "wird die Anfrage angenommen", nicht "ist der Wert der fachlich richtige".
+EIN BEFUND ZUR BEGRÜNDUNG SELBST, damit er nicht stärker gelesen wird als er ist:
+docs/ziel-befunde.md führt für die Frage "welcher EventSource-Wert gilt beim
+Offline-Import" KEINEN NICHT-TREFFER MIT BENANNTER REICHWEITE. Es ist also nicht
+belegt, dass danach gesucht wurde — belegt ist nur, dass keine gelesene Stelle den
+Wert nennt. Der Unterschied ist der zwischen "abgesucht und nicht gefunden" und
+"nicht gefunden"; die Regel "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL"
+verlangt hier die schwächere Formulierung.
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-25 auf GELESENER Grundlage. KEINE Messung.
+
+ZUSATZ 2026-08-25 — DER ABSATZ DARÜBER BLEIBT WÖRTLICH STEHEN, UND SEINE AUSSAGE IST
+ÜBERHOLT. Er sagt, für die Frage "welcher EventSource-Wert gilt beim Offline-Import"
+liege KEIN Nicht-Treffer mit benannter Reichweite vor. Das war am 2026-08-25 richtig
+und ist es seit dem Doku-Lauf desselben Tages nicht mehr.
+DER BEFUND — GELESEN 2026-08-25 an der Anbieter-Doku, docs/ziel-befunde.md,
+Google-Abschnitt, Teil (aj) und Teil (ap) (Quelle: /devguides/events/send-events,
+Doku-Stand 2026-08-18): Die Anforderungstabelle jener Seite führt ZWEI Zeilen
+nebeneinander. Für die MULTI-SOURCE-Gestalt nennt sie einen konkreten Wert —
+eventSource "Optional. If set, must be WEB." Für die OFFLINE-Gestalt, also unsere,
+nennt sie KEINEN — dort steht nur "Required. Set to one of the enum values for
+EventSource."
+WAS SICH DAMIT ÄNDERT, UND ES IST NUR DIES: Die Abwesenheit ist jetzt BELEGT statt
+bloss unbemerkt. Es ist an einer benannten Stelle nachgewiesen, dass der Anbieter für
+die Nachbarzeile einen Wert nennt und für unsere nicht — das ist ein NICHT-TREFFER MIT
+BENANNTER REICHWEITE, und die Regel "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN
+HOHL" verlangt die schwächere Formulierung hier nicht mehr.
+WAS SICH NICHT ÄNDERT: **DER WERT SELBST IST WEITERHIN NICHT BENANNT.** Die bindende
+Entscheidung (2) gilt UNVERÄNDERT — eventSource wird vom Aufrufer geliefert und nie in
+der Funktion gewählt. Auch ihre zweiteilige GRENZE bleibt: Die Entscheidung entfällt,
+sobald der Wert GEMESSEN ist, und validateOnly=true beantwortet "wird die Anfrage
+angenommen", nicht "ist der Wert der fachlich richtige".
+PROVENIENZ: GELESEN 2026-08-25 an /devguides/events/send-events (Doku-Stand 2026-08-18).
+KEINE Messung.
+
+NACHGEZOGEN 2026-08-28 — DIE ENTSCHEIDUNG (2) GILT UNVERÄNDERT, IHRE GRUNDLAGE IST AUF EINER
+ACHSE GEMESSEN. Der Text darüber bleibt WÖRTLICH stehen; dieser Absatz sagt, was sich
+verschoben hat und was nicht.
+· **GEMESSEN IST DER TYP, NICHT DER WERT.** `eventSource` ist ein Enum
+  (`google.ads.datamanager.v1.EventSource`) und kein freier String; `"WEB"` ist ein gültiges
+  Mitglied, `"ERFUNDEN_B1"` nicht. GEMESSEN 2026-08-28 (OWNER), Messung B1 —
+  docs/ziel-befunde.md, Teil (br).
+· **WAS DAMIT ÜBERHOLT IST — GENAU EINE ANNAHME:** dass die Funktion einen beliebigen String
+  weiterreichen dürfte, ohne dass die Schnittstelle etwas dagegen hätte. Sie hat etwas
+  dagegen. Der SATZ oben behauptet das nicht; überholt ist die stillschweigende Erwartung,
+  nicht der Wortlaut.
+· **WAS UNVERÄNDERT GILT UND DIE ENTSCHEIDUNG TRÄGT:** **WELCHER Wert für den
+  Offline-Klick-Import der richtige ist, ist NICHT gemessen** — die MENGE der Enum-Mitglieder
+  ist nicht einmal erhoben. Eine Wahl IN der Funktion wäre weiterhin eine unbelegte
+  Festlegung an der schlechtestmöglichen Stelle. **DIE SPERRE IST KLEINER GEWORDEN, NICHT
+  GEFALLEN.**
+· **DIE GRENZE DER GRENZE, damit niemand sie zu weit liest:** Auch das Instrument aus dem
+  Absatz oben (`validateOnly=true`) beantwortet weiterhin "wird die Anfrage angenommen", nicht
+  "ist der Wert der fachlich richtige". Ein syntaktisch gültiges Enum-Mitglied kann fachlich
+  falsch sein, und die Schnittstelle meldet das nicht.
+PROVENIENZ: GEMESSEN 2026-08-28 (OWNER), Messung B1. Die Folge für die Entscheidung ist eine
+ABLEITUNG aus dieser Messung.
+
+NACHGEZOGEN 2026-08-28, ZWEITER TEIL — DIE FELDNAMEN UND DIE SCHREIBWEISE SIND KEINE
+DOKU-LESUNG MEHR. Dieser Absatz steht hier und nicht bei (2), weil er ALLE bindenden
+Entscheidungen dieses Zuschnitts betrifft und weil (2) die Stelle ist, an der die
+Provenienz-Frage am schärfsten gestellt wurde.
+· **GEMESSEN 2026-08-28 (OWNER), Messung B1:** Sämtliche DREIZEHN Schlüsselnamen unserer
+  Nutzlast sind angenommen, in BEIDEN Schreibweisen (docs/ziel-befunde.md, Teil (bq)), und die
+  Gestalt des Zeitstempels aus `toISOString()` ebenfalls (Teil (bs)).
+· **KEINE FOLGE FÜR DEN CODE:** Gebaut wird camelCase, und camelCase ist angenommen. Es wird
+  KEINE Zeile umbenannt.
+· **WAS NICHT GEMESSEN IST — die WERTE-Achse, und sie ist die verbliebene Lücke:** das Format
+  von `productDestinationId`, das Format der Klick-Kennungen, und ob `eventSource` ein
+  Pflichtfeld ist. Die Begründung, warum diese drei ungemessen blieben, ist in Teil (bu)
+  ausdrücklich als ABLEITUNG gekennzeichnet und läuft der einzigen harten Beobachtung zum
+  Sammelverhalten entgegen — wer sie zitiert, zitiert eine Vermutung.
+
+**(3) KEINE NUTZLAST OHNE KLICK-KENNUNG.**
+ENTSCHEIDUNG: Kann keine Klick-Kennung gebildet werden, entsteht KEINE Nutzlast —
+buildGoogleEvent gibt einen Verwerfungsgrund zurück. DIE ENTSCHEIDUNG IST EINE
+AUSSAGE ÜBER DIESE FUNKTION UND BINDET DEN TRANSPORT NICHT.
+GRUND: Damit ist die STRENGERE der beiden widersprüchlichen Lesarten erfüllt. Der
+Leitfaden verlangt mindestens eine Kennung aus einer Fünfer-Liste
+(docs/ziel-befunde.md, Teil (l)/D5), die Referenz kennt gar keine Pflicht und markiert
+jedes Identitätsfeld als Optional (Teil (w)/D5 und Teil (u), Frage 3). Wer die
+schwächere Lesart baut, hat im Fehlerfall FAST-FAIL gegen sich: ein einziger
+Pflichtfeld-Fehler verwirft die GANZE Anfrage, nicht den einen Datensatz (Teil (l)/D5).
+GRENZE, ERSTER TEIL: DER WIDERSPRUCH IST DAMIT UMGANGEN, NICHT AUFGELÖST. Er steht
+unverändert in docs/ziel-befunde.md, Teil (y), als Widerspruch 1 ("VERSCHÄRFT, NICHT
+AUFGELÖST" — vier Stellen, drei Aussagen). Wer ihn später auflöst, prüft diese
+Entscheidung neu; sie könnte dann zu streng sein und Conversions verwerfen, die der
+Anbieter angenommen hätte.
+GRENZE, ZWEITER TEIL — UND ER IST DER GRUND FÜR DIE UMFORMULIERUNG: Sie sagt NICHTS
+darüber, OB und UNTER WELCHER BEDINGUNG eine Klick-Kennung tatsächlich an Google
+hinausgeht. Das ist eine Frage der TRANSPORT-Scheibe. Eine frühere Fassung dieser
+Entscheidung hiess "WIR SENDEN IMMER MINDESTENS EINE KLICK-KENNUNG" und band damit
+den Transport mit — sie ist am 2026-08-25 ersetzt worden, bevor sie je galt.
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-25 auf GELESENER Grundlage. KEINE Messung.
+
+**(5) DIE DATENKLASSEN-GRENZE IST VORBEDINGUNG DER TRANSPORT-SCHEIBE — UND SIE IST
+HIER NICHT ENTSCHIEDEN.**
+Dieser Eintrag steht unter den BINDENDEN ENTSCHEIDUNGEN und nicht im Vorrat, obwohl
+er nichts entscheidet. Der Grund ist sein Ort: Er muss beim Zuschneiden der
+Transport-Scheibe unübersehbar sein, und der Vorrat wird beim Zuschneiden nicht
+zwingend gelesen.
+DER BEFUND — GEMESSEN am Dateitext (CC, 2026-08-25): Der offene Punkt
+"DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE" (docs/offene-punkte.md) nennt in
+seinem Trigger an ERSTER Stelle "Click-IDs". Die Präzisierung vom 2026-08-19 zieht
+die Achse NUTZER-EINGABEN gegen INFRASTRUKTUR-DATEN — und eine Klick-Kennung fällt
+unter keine von beiden: Der Besucher tippt sie nicht, und sie ist keine Angabe des
+Transports. Derselbe Eintrag sagt für die erste Kategorie ausdrücklich: "Für ANDERE
+Nutzer-Eingaben ist sie NICHT getroffen."
+DIESE SCHEIBE LÖST DIE VORBEDINGUNG NICHT AUS, und das ist eine Feststellung, keine
+Beruhigung: Eine reine Funktion ohne Aufrufer ERFASST NICHTS. Der Trigger des offenen
+Punktes lautet "die erste Scheibe, die personenbezogene Merkmale ERFASST" — Scheibe
+11.2a tut es nicht.
+ALS KANDIDAT, AUSDRÜCKLICH NICHT ALS ENTSCHEIDUNG (ARCHITEKT, 2026-08-25): Eine
+gclid ist strukturell näher an IP/UA als an einer E-Mail — der Besucher tippt sie
+nicht, wir bilden sie nicht, wir können sie nicht auflösen, und sie wird an ihren
+URHEBER zurückgereicht. Die Klartext-Auflage zielt erkennbar auf NUTZER-EINGABEN,
+wo Hashen möglich und vom Anbieter verlangt ist; eine gclid ist NICHT HASHBAR, weil
+Google sie im Klartext erwartet. Das spricht für eine DRITTE KLASSE —
+"fremdvergebene, für uns undurchsichtige Kennung" —, NICHT für eine Ausnahme von
+einer der beiden bestehenden.
+DIE GRENZE, UND SIE IST DER TRAGENDE TEIL DIESES EINTRAGS: Das ist eine TECHNISCHE
+Einordnung, KEINE RECHTLICHE. Sie sagt, wo das Merkmal in die bestehende Systematik
+passt, nicht ob es verarbeitet werden darf. DIE ENTSCHEIDUNG FÄLLT DER OWNER, UND
+ZWAR VOR DER TRANSPORT-SCHEIBE. Der Satz "NICHT-SPEICHERN IST NICHT NICHT-VERARBEITEN"
+aus jenem offenen Punkt gilt unverändert mit.
+WAS HEUTE SCHON GILT UND NICHT ERST ENTSCHIEDEN WERDEN MUSS: Die allgemeine
+Festlegung vom 2026-08-15 ("ein Identitäts-Merkmal wird ausschliesslich
+DURCHGELEITET … events bleibt identitätsfrei") ist für die Klick-Kennung erfüllt —
+GEMESSEN am Code, 2026-08-24 (Vermerk 1): persistEvent schreibt eventSourceUrl
+nicht.
+PROVENIENZ, JE TEIL: der Befund GEMESSEN am Dateitext (CC, 2026-08-25); die
+Nicht-Auslösung GEMESSEN am Zuschnitt dieser Scheibe; der Kandidat eine
+ARCHITEKTEN-EINORDNUNG (2026-08-25), keine Messung und keine Ableitung; die
+Erfüllung der Festlegung GEMESSEN am Code (2026-08-24, Vermerk 1).
+
+VORBEHALT 2026-08-28 — DER KANDIDAT IST EINE OWNER-ENTSCHEIDUNG GEWORDEN. Der Text
+darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Vorbehalt tritt DANEBEN und sagt,
+was an ihm heute noch trägt.
+· ÜBERHOLT IST GENAU EINE ANGABE: die Einleitung "ALS KANDIDAT, AUSDRÜCKLICH NICHT ALS
+  ENTSCHEIDUNG (ARCHITEKT, 2026-08-25)". Sie IST seit dem 2026-08-28 eine Entscheidung.
+· DIE ENTSCHEIDUNG, IN EINEM SATZ: Die Datenklassen-Achse bekommt eine DRITTE Klasse —
+  FREMDVERGEBENE, FÜR UNS UNDURCHSICHTIGE KENNUNG (gclid, gbraid, wbraid und künftige
+  Klick-Kennungen anderer Anbieter), mit der Auflage TRANSIT-ONLY: niemals in die
+  Datenbank, niemals in ein Log, kein Hashen. IHR ORT IST docs/offene-punkte.md, Eintrag
+  "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE", Block vom 2026-08-28. Dort steht sie
+  vollständig mit ihren zwei Begründungen, ihrer Reichweite und dem gemessenen Stand;
+  hier NICHT wiederholt, zweimal geschrieben liefe es auseinander.
+· WÖRTLICH RICHTIG BLEIBT DIE GANZE TECHNISCHE EINORDNUNG DARÜBER — und das ist mehr als
+  eine Höflichkeit: Der Absatz hat die dritte Klasse mit exakt den Gründen vorgeschlagen,
+  die die Entscheidung dann getragen haben (der Besucher tippt sie nicht, wir bilden sie
+  nicht, wir können sie nicht auflösen, sie geht an ihren Urheber zurück, und sie ist
+  NICHT HASHBAR). Er ist die Herleitung der Entscheidung und wird deshalb nicht gekürzt.
+· DIE GRENZE GILT UNVERÄNDERT: "Das ist eine TECHNISCHE Einordnung, KEINE RECHTLICHE."
+  Auch die Owner-Entscheidung sagt NICHT, ob eine Klick-Kennung personenbezogen ist; der
+  Satz "NICHT-SPEICHERN IST NICHT NICHT-VERARBEITEN" gilt für sie weiter mit, und die
+  vierte Frage — die Rechtsgrundlage — liegt unverändert beim Kunden.
+· WAS DAMIT NICHT ERLEDIGT IST, UND DIESER PUNKT IST DER GRUND FÜR DIESEN VORBEHALT:
+  DIE DATENKLASSEN-GRENZE BLEIBT VORBEDINGUNG DER TRANSPORT-SCHEIBE. Geklärt ist sie für
+  die KLICK-KENNUNG. Für ANDERE Merkmale ist sie es nicht — der offene Punkt schliesst
+  sich nicht. Wer aus diesem Vorbehalt "die Vorbedingung ist weg" liest, liest ihn
+  falsch; die Überschrift des Eintrags oben bleibt wörtlich stehen und meint weiterhin,
+  was sie sagt.
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-08-28 — keine Messung, keine Ableitung. Der
+gemessene Stand, auf den sie sich stützt, steht an ihrem Ort in docs/offene-punkte.md
+(GEMESSEN am Repo, CC, 2026-08-28).
+
+**(6) DER SCHEIBEN-SCHNITT DER PHASE 11.2.**
+ENTSCHEIDUNG: Die Phase wird geschnitten in — **1a** die Erneuerungs-Funktion OHNE
+Auslöser · **1b** den automatischen Auslöser · **2** die Ablage der
+Google-Konto-Kennungen · **3** 'google' in TRACKING_TARGETS · **4** den Transport.
+DIE AUFZÄHLUNG OBEN TRÄGT VIER NUMMERN UND FÜNF STÜCKE, und der Satz steht hier, damit
+niemand beim Nachzählen einen Fehler vermutet: Nummer 1 zerfällt in 1a und 1b. Die
+GRENZE unten ist die Probe darauf; sie behandelt 1a und 1b ausdrücklich verschieden.
+GRUND: **Der Transport erzeugt allein KEINEN sendenden Pfad.** Vier unabhängige Tore
+halten ihn auf — `withPixel` (die Ableitung aus TRACKING_TARGETS in
+src/lib/capi/token.ts), `hasSecret` (src/lib/tracking/target-readiness.ts), das
+Consent-Gate (`allowedTargets` in src/lib/capi/ingest.ts über `consentAllows`) und
+`hasAdapter` (src/lib/tracking/target-adapters.ts). GEMESSEN am Repo (CC, 2026-08-29).
+**UND ZWEI DINGE FEHLEN GANZ:** ein Lesepfad für das Zugangsdatum und ein Ort für die
+Konto-Kennungen. Wer den Transport zuerst baut, baut gegen vier geschlossene Tore und
+zwei nicht vorhandene Voraussetzungen.
+GRENZE: **Zwingend ist NUR 4 nach 1a, 2 und 3.** 1b darf dazwischen stehen. Die
+Reihenfolge ist damit KEINE Kette, sondern eine Halbordnung — wer sie als Kette liest,
+hält eine erlaubte Umstellung für einen Verstoss.
+PROVENIENZ: ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-08-28. Die vier Tore und die zwei
+Fehlstellen sind GEMESSEN am Repo (CC, 2026-08-29); der Schnitt selbst ist eine
+Festlegung, keine Messung.
+ZEIGER 2026-09-03: 1b entsteht in ZWEI SCHRITTEN — der NACHTRAG dazu steht EINMAL, am Ende
+der Entscheidung (7), und wird hier nicht verdoppelt.
+
+**(7) 1a WIRD VOM AUSLÖSER GETRENNT.**
+ENTSCHEIDUNG: Die Erneuerungs-Funktion (1a) und der automatische Auslöser (1b) sind
+ZWEI Scheiben und nicht eine.
+GRUND: **Die Funktion ist in allen drei denkbaren Auslöser-Varianten IDENTISCH.**
+Verschieden ist nur, WER sie ruft und WIE dieser Ruf autorisiert wird. Dazu kommt ein
+Beweis-Grund, und er ist der schärfere: **1a ist mit dem VORHANDENEN Muster beweisbar**
+— der Bauform der zwei bestehenden OAuth-Routen —, **1b braucht ein NEUES.** Ein
+Zuschnitt, der beides zusammenlegt, koppelt eine beweisbare Arbeit an eine, deren
+Beweisform erst noch zu bestimmen ist.
+GRENZE, UND SIE IST DER TRAGENDE TEIL DIESES EINTRAGS: **1b löst das eigentliche
+Problem. 1a ALLEIN HÄLT KEINEN ZUGANG AM LEBEN** — eine Funktion, die niemand ruft,
+erneuert nichts. Wer 1a abschliesst und 1b vertagt, hat den Fehlzustand NICHT beseitigt,
+sondern nur das Werkzeug dagegen gebaut — er steht in
+docs/claude-history/phase-11.2-google.md, Zuschnitt "Die Erneuerung des Zugangsdatums —
+Scheibe 1a des Schnitts der Phase 11.2", Unterabschnitt "Vollzogen — was hier stand und
+wohin es gegangen ist", dort als entfallener Unterabschnitt "Warum sie zuerst kommt — und
+dieser Grund bindet" zitiert.
+PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-08-28. Keine Messung.
+
+NACHTRAG 2026-09-03 — 1b ENTSTEHT IN ZWEI SCHRITTEN. DIE WORTLAUTE VON (6) UND (7) BLEIBEN
+UNANGETASTET UND SIND WAHR; DIESER NACHTRAG TRITT DANEBEN UND STEHT NUR HIER. Die
+Entscheidung (6) trägt eine einzeilige Zeigerzeile hierher — zweimal geschrieben liefe es
+auseinander.
+KEIN STEMPEL, UND DAS IST DIE ERSTE ANGABE: **Der MECHANISMUS hat sich nicht geändert, nur
+die ZAHL DER SCHRITTE.** Ein Stempel behauptete einen überholten Satz, und es gibt keinen.
+· **DIE ZERLEGUNG: 1b-1** die Klammer um `refreshAccessToken` — geschnitten am 2026-09-03,
+  Volltext im Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der Scheibe 1b des
+  Schnitts der Phase 11.2". **1b-2** der Takt — nicht geschnitten.
+· **DIE AUFZÄHLUNG IN (6) BEHÄLT IHRE FÜNF STÜCKE, WEIL KEIN SECHSTES DAZUKOMMT.** 1b-1 und
+  1b-2 sind Schritte INNERHALB des Stücks 1b, keine weiteren Stücke. **ES GIBT KEINE
+  SCHEIBE 1c.** Der Satz "DIE AUFZÄHLUNG OBEN TRÄGT VIER NUMMERN UND FÜNF STÜCKE" bleibt
+  richtig, ebenso die GRENZE "Zwingend ist NUR 4 nach 1a, 2 und 3".
+· **DIE ANGABEN "1b den automatischen Auslöser" IN (6) UND "der automatische Auslöser (1b)"
+  IN (7) SIND UNTER DIESER ZERLEGUNG WAHR** und lediglich unvollständig: Sie beschreiben das
+  PAKET, und das Paket IST der Auslöser. **EIN ZITAT DER FORM "SCHEIBE 1b" OHNE SUFFIX MEINT
+  DAS PAKET UND NIE EINE HÄLFTE**; die beiden Schritte tragen ihr Suffix ausnahmslos.
+· **DIE FOLGE, DIE OHNE DIESEN NACHTRAG FEHLT — UND SIE IST DIE TEUERSTE: DIE GRENZE DIESER
+  ENTSCHEIDUNG GILT FÜR 1b-1 GLEICHLAUTEND.** "1a ALLEIN HÄLT KEINEN ZUGANG AM LEBEN — eine
+  Funktion, die niemand ruft, erneuert nichts": **Nach 1b-1 hält ebenso wenig ein
+  Zugangsdatum von selbst**, denn die Klammer hat so wenig einen Aufrufer wie die Funktion
+  darunter. **ERST 1b-2 LÖST DAS PROBLEM, AUF DAS SICH DER SATZ "1b löst das eigentliche
+  Problem" BEZIEHT.** Wer 1b-1 abschliesst und 1b-2 vertagt, steht genau dort, wovor diese
+  GRENZE warnt — eine Ebene höher.
+· **WARUM DER SATZ "1b löst das eigentliche Problem" STEHEN BLEIBT:** Er ist die einzige
+  Stelle im Repo, die sagt, WANN der Fehlzustand beseitigt ist. Mit einem eigenständigen
+  Geschwister-Namen wäre er FALSCH geworden, und diese Auskunft stünde danach nirgends mehr.
+PROVENIENZ: ARCHITEKTEN-FESTLEGUNG 2026-09-03, auf CC-Meldung derselben Runde. Keine
+Messung.
+ZEIGER 2026-09-03: 1b-2 ist inzwischen ZUR HÄLFTE geschnitten — 1b-2a steht, 1b-2b nicht.
+Der NACHTRAG dazu steht am Kopf von "1b als Folgetask" und wird hier NICHT verdoppelt: zwei
+Fassungen derselben Tatsache liefen auseinander.
+
+**(8) 'google' DARF ÜBER FORWARDER_BY_TARGET LAUFEN.**
+ENTSCHEIDUNG: Der Google-Transport bekommt KEINEN eigenen, parallelen Weg; er läuft
+über `FORWARDER_BY_TARGET` (src/lib/capi/ingest.ts) wie die vier bestehenden Ziele.
+GRUND: **Die drei Punkte im Kommentarkopf von
+src/app/api/oauth/google/callback/route.ts sind KEINE Gegenposition** — sie stehen
+dort ausdrücklich als "DREI FOLGEN, benannte Kosten und keine Versehen" (GELESEN am
+Code, CC, 2026-08-29). (1) und (2) benennen KOSTEN DER HEUTIGEN LAGE — die Oberfläche
+sieht die Zeile nicht, und `removeCapiToken` weist 'google' ab. (3) ist eine
+UMFANGS-Aussage: die Aufnahme in TRACKING_TARGETS sei "eine eigene Scheibe". Keiner
+der drei sagt, der Weg sei falsch; sie sagen, er sei noch nicht bezahlt.
+**EIN PARALLELER PFAD WÄRE EIN ZWEITES URTEIL DARÜBER, WELCHE ZIELE LIVE SIND** —
+dieselbe Figur wie `domains` gegen `settings.hosting.label` (docs/immer-beachten.md,
+"DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER 'IST DIESES PROJEKT LIVE?'"). Dort
+hat sie eine Seite dauerhaft 404en lassen, während das UI "veröffentlicht" zeigte.
+GRENZE: **Der Preis ist Scheibe 3, und sie kommt VOR dem Transport.** Diese
+Entscheidung macht die Aufnahme in TRACKING_TARGETS nicht billiger — sie sagt nur,
+dass der Preis zu zahlen und nicht zu umgehen ist. Was die Aufnahme nach sich zieht,
+steht in jenem Kommentarkopf unter (3) und wird hier NICHT wiederholt.
+PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-08-28, gestützt auf eine Lesung am Code (CC,
+2026-08-29).
+
+### Die Klammer um die zwei umgezogenen Blöcke
+
+Originaltitel, ohne Marke zitiert: "Zwei Blöcke, die am 2026-09-08 aus abgelaufenen
+Zuschnitten hierher gezogen sind".
+
+### Zwei Blöcke, die am 2026-09-08 aus abgelaufenen Zuschnitten hierher gezogen sind
+
+**WARUM SIE HIER STEHEN:** Beide sagen in ihrem EIGENEN TITEL, dass sie über ihre Scheibe
+hinaus binden — der eine "und sie binden über diese Scheibe hinaus", der andere "sie binden
+gleich". Ihre Zuschnitte sind abgelaufen und nach docs/claude-history/phase-11.2-google.md
+gewandert. **WÄREN DIE BLÖCKE MITGEWANDERT, LÄGEN ELF BINDENDE ENTSCHEIDUNGEN IN DER DATEI,
+DIE PER DEFINITION ABGELAUFENES TRÄGT** — der Schnitt hätte funktioniert, die Gates wären
+grün gewesen, und die nächste Scheibe wäre gegen Entscheidungen gebaut worden, die sie
+nicht mehr findet. An beiden Fundstellen im Archiv steht ein Zeiger, der sagt, was dort
+stand und wohin es gegangen ist.
+
+**WORTLAUT UND ÜBERSCHRIFT SIND UNVERÄNDERT**, und die blockeigene Nummerierung (P1 bis B-4
+bzw. (A) bis (C)) ist es ebenfalls. **SIE LÄUFT NEBEN DER NUMMERIERUNG (1) BIS (8) DIESES
+ABSCHNITTS HER UND WIRD NICHT IN SIE EINGEFÜGT** — "Die Nummern sind stabil und werden nie
+neu vergeben" gilt für beide Reihen, und eine Umnummerierung machte jeden Zeiger von aussen
+tot. **WER AUF EINE DIESER ENTSCHEIDUNGEN ZEIGT, NENNT IHREN BLOCK MIT**; "Entscheidung (A)"
+allein ist in diesem Abschnitt seit dem 2026-09-08 nicht mehr eindeutig.
+
+**HERKUNFT DES ERSTEN BLOCKS:** aus dem Zuschnitt "Die Erneuerung des Zugangsdatums —
+Scheibe 1a des Schnitts der Phase 11.2".
+
+### Der Block vom 2026-08-29, hierher übernommen
+
+Originaltitel, ohne Marke zitiert: "Die Entscheidungen vom 2026-08-29 — ACHT, und sie
+binden über diese Scheibe hinaus".
+**P3 IST ZUSÄTZLICH ALS REGEL GEHOBEN** (docs/immer-beachten.md) — der Grund, warum eine
+schreibende Route mit fremdem Endpunkt kein GET sein darf, gilt für jede solche Route und
+nicht nur für diese. Der Text bleibt hier unverändert stehen.
+
+### Die Entscheidungen vom 2026-08-29 — ACHT, und sie binden über diese Scheibe hinaus
+
+**WARUM SIE HIER STEHEN UND NICHT NUR IM CODE:** Sie sind während des Baus gefallen, in
+Prompt und Antwort. "WAS NUR IM GESPRÄCH GESAGT WIRD, EXISTIERT FÜR DIE NÄCHSTE SITZUNG
+NICHT" (docs/immer-beachten.md). Jede von ihnen steht ZUSÄTZLICH begründet am Code; hier
+steht, WAS entschieden wurde und WER es entschieden hat — die volle Begründung wird
+NICHT verdoppelt.
+
+**PROVENIENZ ALLER ACHT: ARCHITEKT, 2026-08-29. Keine Messung**, ausser wo an der
+einzelnen Entscheidung etwas anderes steht.
+
+· **P1 — `no_key`, `bad_key` UND `bad_format` bilden auf `misconfigured` ab.** Damit
+  sind alle sechs `DecryptResult`-Zustände zugeordnet; die zwei übrigen kommen aus dem
+  Zuschnitt oben. **DER GRUND FÜR `bad_format` IST DIE REVERSIBILITÄT, NICHT DIE
+  KOSTEN-ASYMMETRIE:** `misconfigured` holt einen Betreiber an die Zeile, und der kann
+  danach immer noch zur Neu-Autorisierung schicken; umgekehrt geht es nicht. Dazu deckt
+  `bad_format` den Fall einer KÜNFTIGEN FASSUNG unter altem Code-Stand.
+· **P2 — Uhr 2 wird bei einer brauchbaren Antwort NEU GESETZT, sonst bleibt der
+  ABGELEGTE Wert stehen.** Nie zurück auf `{kind:"unknown"}` — das wäre der einzige Weg,
+  der Information VERLIERT, und Festlegung 5 hängt an dieser Information.
+  **SCHLÄGT EIN ABGELEGTES `{kind:"unknown"}` DURCH EINE BRAUCHBARE ANTWORT IN EIN
+  `{kind:"at"}` UM, IST DAS ERWÜNSCHT:** Der Zugang verlässt damit dauerhaft die
+  Asymmetrie der Festlegung 5.
+· **P3 — die Beweis-Route ist POST, nicht GET.** Ein GET würde von jedem
+  Vorablade-Mechanismus mit der Sitzung des Betreibers ausgelöst, und diese Route
+  SCHREIBT eine Zeile und ruft einen fremden Endpunkt. **DER PREIS IST BENANNT:** Der
+  Live-Test braucht einen `fetch` aus der eingeloggten Anwendung statt einer URL-Eingabe.
+· **A-3 — "KEINE ZEILE" und "ZEILE OHNE CHIFFRAT" werden GETRENNT.** Keine Zeile →
+  `dead`/`no_row`; Zeile mit leerem `secret_enc` → `misconfigured`/`no_secret_enc`.
+  **DER GRUND IST DER ZWEITE ANBIETER, NICHT DIESER:** LinkedIn-Zeilen tragen heute
+  KLARTEXT im Feld `secret`. Erbt LinkedIn den Rahmen, meldete eine eingeebnete Fassung
+  "der Kunde muss neu autorisieren" für eine INTAKTE Zeile in Alt-Form.
+· **A-4 — Uhr 2 wird VOR Uhr 1 geprüft.** Der Fall, den der Zuschnitt nicht regelte:
+  Uhr 2 überschritten, Uhr 1 reicht noch → das Ergebnis ist `dead`.
+  **DIE GRENZE, UND SIE IST DER TEIL, DER SCHEIBE 4 BINDET:** Für die Beweis-Route ist
+  das die ehrliche Auskunft. **FÜR EINEN AUFRUFER AUF DEM TRANSPORTWEG WÄRE SIE ES
+  NICHT** — dort könnte noch gesendet werden, solange Uhr 1 läuft. Wer den Transport
+  baut, prüft diese Zuordnung neu; ein eigener Test hält die Lage fest.
+· **B-1 — ein LESEFEHLER ist `retry`, ein SCHREIBFEHLER bleibt `misconfigured`.**
+  Beim Lesen ist nichts verbraucht und kein Nebeneffekt eingetreten, ein zweiter Versuch
+  ist folgenlos. Beim Schreiben ist die Erneuerung bereits VERBRAUCHT, und **unter
+  Scheibe 1b wird das schärfer:** ein automatischer Wiederholer liefe an einer
+  CHECK-Verletzung ENDLOS, der Ausgang muss ihn ANHALTEN.
+  **"Netz, Timeout, 5xx" IM ERGEBNISTYP OBEN BESCHREIBT DEN ANBIETER-FALL UND IST KEINE
+  ABSCHLIESSENDE LISTE** — sonst liest die nächste Runde `read` als Verstoss gegen den
+  Zuschnitt.
+· **B-2 — eine unbrauchbare 2xx-ANTWORT ist `retry`, nicht `dead`.** Sie ist
+  unerwartetes ANBIETER-Verhalten, und eine Neu-Autorisierung heilt daran nichts; es
+  gilt dieselbe Zeile wie beim unerwarteten Code. **DIE LESART, DIE SONST WIEDER
+  AUFGEMACHT WIRD:** "dead — … unbrauchbare Nutzlast" meint die ABGELEGTE Nutzlast
+  (die `parse_*`-Ausgänge), NICHT die Anbieter-Antwort.
+· **B-3 — ab Status 500 gewinnt `retry`/"server" gegen `invalid_grant`.** Verboten war,
+  einen Statuscode als VORBEDINGUNG für `invalid_grant` zu verlangen (Teil (bd) nennt
+  für diesen Code keinen); unterhalb 500 gilt er deshalb bei JEDEM Status. **Verboten
+  war NICHT, den Status überhaupt zu betrachten.** Eine 5xx-Antwort, die `invalid_grant`
+  nennt, ist UNGEMESSEN — im unbelegten Fall entscheidet die Asymmetrie.
+
+**EINE NEUNTE ÄNDERUNG DERSELBEN RUNDE, DIE KEINE ZUORDNUNGS-ENTSCHEIDUNG IST UND
+DESHALB HIER UNTEN STEHT — B-4:** Der Deckel des Netzrufs umschliesst seit dem
+2026-08-29 AUCH das Lesen des Antwort-Rumpfes. `fetch` kehrt zurück, sobald die
+Kopfzeilen da sind; der Rumpf ist ein ZWEITER Netzvorgang und lief bis dahin ohne
+Zeitgrenze. **DIE GRENZE:** Heute löst ein Betreiber den Ruf von Hand aus, der Fall ist
+klein. **Mit Scheibe 1b sieht niemand mehr in diese Datei.**
+**DIESELBE LÜCKE STEHT UNBEHOBEN IN ZWEI BESTANDS-DATEIEN** — sie ist als eigener
+offener Punkt verortet ("DER DECKEL ENDET VOR DEM LESEN DES RUMPFES — ZWEI DATEIEN",
+CLAUDE.md, "## Offene Punkte") und NICHT hier.
+
+**HERKUNFT DES ZWEITEN BLOCKS:** aus dem Zuschnitt "Google als reguläres Ziel in der
+Oberfläche — Scheibe 3 des Schnitts der Phase 11.2".
+
+### Der Block der drei späteren Entscheidungen, hierher übernommen
+
+Originaltitel, ohne Marke zitiert: "Drei Entscheidungen, die nach den sechs Festlegungen
+gefallen sind — sie binden gleich".
+**(A) IST ZUSÄTZLICH ALS REGEL GEHOBEN** (docs/immer-beachten.md) — ihr tragender Grund ist
+ein Produkt-Argument und kein OAuth-Detail. Der Text bleibt hier unverändert stehen.
+**(B) BLEIBT UNGETEILT HIER**, obwohl ihre erste Hälfte ein Prinzip ist. Eine Halbierung
+wäre eine Umformulierung; stattdessen ist sie als HEBUNGS-KANDIDAT 11 angelegt und unten in
+diesem Archiv mitkopiert.
+
+### Drei Entscheidungen, die nach den sechs Festlegungen gefallen sind — sie binden gleich
+
+**WARUM SIE GETRENNT STEHEN UND NICHT ALS (7) BIS (9) IN DER LISTE DARÜBER:** Die sechs
+Festlegungen sind als Block gefallen, diese drei danach — sie beantworten die Fragen, die
+dieser Zuschnitt zunächst als OFFEN ausgewiesen hatte. Ein Abschnitt "Was ausdrücklich
+NICHT entschieden ist" stand hier und ist mit ihnen ERSATZLOS ENTFALLEN; es blieb nichts
+darin übrig. **SIE BINDEN GENAU SO WIE DIE SECHS.** Getrennt stehen sie, damit die
+Nummern der sechs unangetastet bleiben und die spätere Entscheidung als spätere lesbar
+ist.
+**PROVENIENZ ALLER DREI: ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-08-29.** Keine Messung, ausser
+wo an der einzelnen Angabe etwas anderes steht.
+
+**(A) DER VERBINDEN-WEG IST NICHT VORABLADE-FÄHIG.** Kein `<Link>`, kein `<a href>` auf
+die Start-Route. **DIE FORM WÄHLT DER BAU-PLAN** — verboten ist nur, dass sie ohne Klick
+feuern kann.
+**DIE EHRLICHE HÄLFTE GEHÖRT DAZU, sonst ruht die Entscheidung auf einem zu starken
+Grund: DAS P3-ARGUMENT TRÄGT HIER NUR ZUR HÄLFTE.** P3 (s. "Die Entscheidungen vom
+2026-08-29") legte die Beweis-Route auf POST, weil sie eine Zeile SCHREIBT und einen
+FREMDEN Endpunkt ruft. **Die Start-Route tut beides nicht.** Der Schaden eines
+Vorablade-Treffers wäre ein überschriebenes State-Cookie — **klein und UNGEMESSEN**.
+**DER TRAGENDE GRUND IST EIN ANDERER, und er ist kein Sicherheits-, sondern ein
+Produkt-Argument:** Ein Verbinden ist ein BEWUSSTER AKT DES BETREIBERS. Ein Element, das
+ohne Klick feuert, ist keiner — es autorisiert in seinem Namen, ohne dass er es getan hat.
+**DAZU DIE EMPFINDLICHKEIT DER STATE-ACHSE**, und sie ist belegt statt vermutet: Der
+Live-Test der Scheibe 1a hat `?google=no_state` erzeugt (VERMERK 6, Schritt 1), **die
+Ursache ist bis heute NICHT GEMESSEN**. Eine Achse, deren Fehlzustand man einmal gesehen
+und nie erklärt hat, bekommt keinen zusätzlichen unbeabsichtigten Auslöser.
+
+**(B) DIE ERGEBNISCODES GEHÖREN IN DIESE SCHEIBE — ALS DREI FÄLLE, NICHT ALS DREIZEHN
+TEXTE.**
+· **`ok`** → die Karte kippt. **KEIN Text.** Der Erfolgsfall trägt sich selbst.
+· **`denied`** → **KEIN FEHLER, sondern eine WAHL DES NUTZERS.** Neutral, keine
+  Fehlersprache, keine Farbe, die nach Defekt aussieht.
+· **alles Übrige** → **EIN Text**, und der rohe Code daneben SICHTBAR für den Support.
+**GRUND:** Der Erfolgsfall trägt sich selbst, die zwölf anderen nicht. **Eine Karte, die
+nach einem gescheiterten Verbinden unverändert "Nicht konfiguriert" sagt, IST die stille
+Fehlklasse, die diese Scheibe beseitigen soll** — der Betreiber hätte gehandelt, nichts
+wäre geschehen, und nichts sagte es ihm.
+**DER TEXT BEHAUPTET WEDER URSACHE NOCH ERGEBNIS — UND ER MUSS ES NICHT:** Die Karte
+liest ihren Zustand aus der DATENBANK und ist die Autorität darüber, ob die Verbindung
+besteht. Der Text sagt nur, dass der Vorgang nicht durchlief; ob etwas hinterlegt ist,
+sagt die Karte. **DER WORTLAUT WIRD HIER NICHT FORMULIERT** — das ist Sache des Bau-Plans.
+**GRENZE: DREIZEHN EIGENE TEXTE SIND AUSDRÜCKLICH NICHT GEGENSTAND.** Wer sie später
+will, schneidet dafür eine eigene Arbeit zu. **DER ROHE CODE IST GENAU DER ERSATZ DAFÜR**:
+Er kostet keine dreizehn Formulierungen und macht einen Support-Fall trotzdem
+adressierbar.
+**GEMESSEN am Code (CC, 2026-08-29):** Der Callback kehrt auf `/?google=<code>` zurück
+und kennt DREIZEHN Codes (`ok`, `denied`, `no_state`, `state_mismatch`, `no_code`,
+`not_found`, `config`, `exchange`, `bad_response`, `no_refresh`, `bad_payload`, `encrypt`,
+`write`); NICHTS in der Oberfläche liest den Parameter heute. Der Kommentarkopf jener
+Route weist die Abbildung ausdrücklich "der Oberflaechen-Scheibe" zu — **diese
+Entscheidung nimmt sie an.**
+
+**(C) `GOOGLE_TARGET` BLEIBT ROUTEN-LOKAL.**
+**GRUND:** Die Konstante beantwortet eine ANDERE Frage als TRACKING_TARGETS — "unter
+welchem Schlüssel legt DIESER OAuth-Fluss ab" gegen "welche Ziele bietet die OBERFLÄCHE
+an". Zusammengezogen koppelte sie die Existenz eines Erneuerungs-Zweiges an die
+Oberflächen-Liste, **und genau diese Unabhängigkeit ist der Punkt von Festlegung (6)**:
+Ein Ziel darf einen Autorisierungs- und Erneuerungs-Weg haben, ohne deshalb ein Empfänger
+zu sein.
+**DAS GATE DAZU IST BEANTWORTET (Gate 3 der Stufe 1, GEMESSEN am Code, CC, 2026-08-29):**
+Ein `import type` erzeugt **keine Laufzeit-Abhängigkeit** — er wird beim Bauen gelöscht,
+und die Konstante bräuchte die Liste als WERT nicht. **ER ERZEUGT ABER EINE
+BAU-ZEIT-KOPPLUNG:** `GOOGLE_TARGET` liesse sich erst typen, NACHDEM `'google'` in der
+Liste steht, und `callback/route.ts` sowie `token-refresh.ts` brächen, sobald jemand es
+wieder herausnähme. **Das ist genau die Richtung, die diese Entscheidung vermeidet** — der
+Erneuerungs-Zweig darf nicht an der Oberflächen-Liste hängen. **DIE KONSTANTE BLEIBT
+ROUTEN-LOKAL UND UNGETYPT.**
+
+## Zwei Hebungs-Kandidaten der Phase 11.2, die den Vollzug überleben müssen
+
+**WARUM SIE HIER STEHEN UND NICHT GEHOBEN SIND:** Beide sagen etwas, das ERST NACH diesem
+Phasenende entschieden wird. Sie lägen sonst allein in docs/aktiver-stand.md — und die wird
+in Schritt 2 gelöscht. **DIESE KOPIE IST DER GRUND, WARUM SIE DAS ÜBERLEBEN.**
+**DER TEXT IST ZEICHENGLEICH ÜBERNOMMEN**, einschliesslich der Nummern 10 und 11; sie sind
+die der Kandidatenliste jener Datei und werden nicht neu vergeben.
+**KANDIDAT 10 IST IN DER KORRIGIERTEN FASSUNG ÜBERNOMMEN** — sein Teil (B) ist am
+2026-09-08 sachkorrigiert worden (der erste Ausgang trägt zwei Bedingungen, nicht eine).
+**Der Vollzug seines Antrags an docs/arbeitsweise.md steht weiterhin AUS**; er ist nach
+diesem Phasenende terminiert.
+
+10. **EIN PHASENENDE, DAS AUF DAS LETZTE TODO WARTET, TRITT NIE EIN — UND DIE HEBUNG "NACH
+    ERMESSEN" WIRD ÜBERSPRUNGEN** (angetreten 2026-09-08).
+    **DIESER EINTRAG IST EIN ANGENOMMENER ÄNDERUNGSANTRAG an docs/arbeitsweise.md und
+    CLAUDE.md — OWNER-ENTSCHEIDUNG 2026-09-08 auf Antrag des Architekten desselben Tages.
+    DER VOLLZUG IST AUSSTEHEND.** Er steht hier abgelegt und nicht dort gebaut; warum, sagt
+    die Reihenfolge am Ende.
+
+    **(A) DAS KRITERIUM FÜR `[x]` — NEU, UND ES GEHÖRT IN DIE MARKER-LEGENDE IN CLAUDE.md.**
+    Nicht in die Arbeitsweise: Die Legende steht in der Projektanweisung und wird nicht
+    verdoppelt.
+    **EINE PHASE GEHT AUF `[x]`, WENN KEIN CODE MEHR ZU SCHREIBEN IST.** Externe
+    Abhängigkeiten — Messungen, Arbeit an einem Fremdkonto, Owner-Entscheidungen — halten
+    sie NICHT offen, sondern werden GEHOBEN.
+    **DIE AUFLAGE, OHNE DIE `[x]` UNZULÄSSIG IST:** Ist zum Zeitpunkt des `[x]` etwas
+    PRODUKTRELEVANTES unbewiesen, sagt die Roadmap-Zeile es AUSDRÜCKLICH — dieselbe Bauform
+    wie beim `[~]`, wo beide Hälften benannt sein müssen.
+    **DER GRUND FÜR DIE AUFLAGE, und ohne ihn wird sie beim nächsten Aufräumen als
+    Formalie gestrichen:** `[x]` liest sich als "funktioniert". Bei Phase 11.2 ist die
+    WIRKUNG AUF DIE GEBOTE ungemessen — also das Produktversprechen selbst.
+
+    **(B) DIE HEBUNG WIRD PFLICHT STATT ERMESSEN, UND SIE SORTIERT NACH DREI ZIELEN STATT
+    EINEM.** Wortlaut ALT in docs/arbeitsweise.md, Abschnitt "Phasenende":
+    "**1. Hebung (nach Ermessen):**". NEU: Pflicht, mit drei Ausgängen —
+    · **benennbarer Trigger UND "geht sonst STILL kaputt"** → docs/offene-punkte.md, plus
+      Stub-Zeile in CLAUDE.md;
+    · **sonst** → docs/claude-history/backlog-polish.md, ans Dateiende unter eine
+      EIGENE datierte Überschrift;
+    · **Gegenstand erledigt** → GESTRICHEN (s. Teil C).
+    **DER GRUND, DASS EIN ZIEL NICHT REICHT:** docs/offene-punkte.md verlangt einen
+    TRIGGER; "falls es je nötig wird" ist dort ausdrücklich unzulässig. Wer alles dorthin
+    hebt, muss Trigger erfinden — oder er hebt gar nicht.
+    **DER ERSTE AUSGANG TRÄGT SEIT DEM 2026-09-08 ZWEI BEDINGUNGEN, NICHT EINE — SACHKORREKTUR,
+    KEIN STEMPEL. HIER STAND:** "· **mit Trigger** → docs/offene-punkte.md, plus Stub-Zeile in
+    CLAUDE.md; · **ohne Trigger** → docs/claude-history/backlog-polish.md …" **DAS WAR ZU GROB,
+    UND EIN STEMPEL LIESSE ZWEI KRITERIEN NEBENEINANDER STEHEN**, von denen das falsche eine
+    Datei flutet, die jede Sitzung lädt.
+    **DER TRIGGER ALLEIN TRENNT NICHT.** docs/offene-punkte.md sagt in ihrem eigenen Kopf,
+    sie sei "Kein Backlog-Ersatz" und "hier steht nur, was sonst STILL kaputtgeht". Fast
+    jeder Vorrats-Eintrag trägt einen Trigger; eine Aufräumarbeit mit dem Trigger "die
+    nächste Runde, die diese Datei ohnehin öffnet" geht nicht still kaputt, sie wartet.
+    **DER BELEG, GEMESSEN AN DER HEBUNG DER PHASE 11.2 (CC, 2026-09-08):** Von 66
+    Vorrats-Einträgen hätten nach dem Trigger allein **FÜNFUNDFÜNFZIG** nach
+    docs/offene-punkte.md gehen müssen; nach beiden Bedingungen sind es **VIERZEHN**.
+    **DIE DIFFERENZ VON 41 WÄREN AUFRÄUMPOSTEN GEWESEN, JE MIT EINER STUB-ZEILE IN
+    CLAUDE.md** — also in der Datei, die JEDE Sitzung lädt, und die einen eigenen offenen
+    Punkt dazu führt ("CLAUDE.md NÄHERT SICH DEM LADELIMIT"). **Die grobe Fassung hätte den
+    Posten ausgelöst, den sie nicht kennt.**
+    **GEMESSEN an der Runde vom 2026-09-08 (Phasenende 11.8, CC):** Von SIEBEN
+    Vorrats-Einträgen der Phase 11.8 trug **EINER** einen Trigger. **DIESE ZAHL BLEIBT UND
+    IST NICHT DER BELEG FÜR DIE KORREKTUR** — bei sieben Einträgen fielen beide Kriterien
+    zufällig zusammen; erst 66 haben sie auseinandergezogen.
+
+    **(C) DER AUSGANG, DEN DIE ARBEITSWEISE NICHT KENNT.** Was seinen GEGENSTAND verloren
+    hat, wird **GESTRICHEN und nicht umgezogen** — mit dem **BELEG DER ERLEDIGUNG AM
+    ZEIGER**, damit erkennbar bleibt, dass gestrichen wurde WEIL erledigt und nicht, weil
+    jemand aufgeräumt hat.
+    **GEMESSEN an dieser Runde:** **DREI** der sieben, je durch eine spätere Scheibe
+    gegenstandslos geworden.
+    **DIE LÜCKE, DIE DAS SCHLIESST:** Die Arbeitsweise hat heute ACHT Wege HINEIN und EINEN
+    hinaus, und der greift nur bei Dauerregeln.
+
+    **(D) DER 11.8-VERMERK IN docs/arbeitsweise.md FÄLLT MIT DEM UMZUG.** Sie nennt an
+    mindestens zwei Stellen die "Fehlerklasse, die docs/aktiver-stand-11.8.md festhält" —
+    als Begründung dafür, dass ein Archiv seinen ENDNAMEN von Anfang an trägt.
+    **DIE BEGRÜNDUNG BLEIBT RICHTIG, DER ZUSTAND NICHT:** Die Fehlerklasse ist nach dem
+    Umzug BEHOBEN, nicht offen, und der Pfad zeigt woandershin.
+    **DIE GENAUEN FUNDSTELLEN SIND NICHT GEZÄHLT** — "mindestens zwei" ist eine untere
+    Schranke und kein Prüfumfang; sie werden beim Vollzug gemessen.
+
+    **DER BELEG, DER DEN ANTRAG TRÄGT UND DER GRUND, WARUM ER REIF IST:** Bei Phase 11.1
+    sind **NEUN** Einträge am Phasenende nicht gehoben worden, bei Phase 11.8 **ELF**.
+    **ZWEIMAL IN FOLGE ist der Schritt "nach Ermessen" ÜBERSPRUNGEN und der "mechanische"
+    ausgeführt worden.** Das ist kein Einzelfall, sondern die Bauform: Ein Schritt, der im
+    Ermessen steht und keinen Nachweis verlangt, wird von einer Runde, die abschliessen
+    will, zuverlässig übergangen — und nichts wird davon rot.
+
+    **DIE REIHENFOLGE DES VOLLZUGS, UND SIE IST TEIL DER ENTSCHEIDUNG: ERST die zwei
+    Phasenenden (11.8, dann 11.2), DANN der Antrag.** Die Arbeitsweise während eines
+    laufenden Phasenendes zu ändern erzeugt einen Zustand, in dem Repo und Projektanweisung
+    Verschiedenes über das sagen, was gerade läuft.
+    **VOLLZUG AN BEIDEN ORTEN IM SELBEN ZUG** — Repo-Datei und Projektanweisung; **der
+    zweite Ort wird aus der COMMITTETEN Datei kopiert, nicht aus dem Chat.**
+
+    **WAS DIESER EINTRAG NICHT IST:** kein Vollzug, keine Änderung an docs/arbeitsweise.md
+    oder an der Marker-Legende, und keine Aussage darüber, wann die zwei Phasenenden
+    abgeschlossen sind.
+    PROVENIENZ: **OWNER-ENTSCHEIDUNG 2026-09-08**, Antrag des Architekten desselben Tages.
+    Die Zahlen SIEBEN, EINER und DREI sind **GEMESSEN** (CC, 2026-09-08, an dieser Runde);
+    NEUN und ELF sind **GELESEN** (CLAUDE.md bzw. der Kopf von
+    docs/claude-history/phase-11.8-autorisierungsschicht.md).
+    Der Vollzug ist **AUSSTEHEND**.
+
+11. **EINE KARTE, DIE NACH EINEM GESCHEITERTEN VORGANG UNVERÄNDERT IHREN AUSGANGSZUSTAND
+    ZEIGT, IST DIE STILLE FEHLKLASSE** (angetreten 2026-09-08, beim Phasenende der Phase
+    11.2 aus der bindenden Entscheidung (B) herausgehoben).
+    **DER WORTLAUT, UM DEN ES GEHT — ZITAT aus Entscheidung (B), "DIE ERGEBNISCODES GEHÖREN
+    IN DIESE SCHEIBE — ALS DREI FÄLLE, NICHT ALS DREIZEHN TEXTE":** "Der Erfolgsfall trägt
+    sich selbst, die zwölf anderen nicht. **Eine Karte, die nach einem gescheiterten
+    Verbinden unverändert 'Nicht konfiguriert' sagt, IST die stille Fehlklasse, die diese
+    Scheibe beseitigen soll** — der Betreiber hätte gehandelt, nichts wäre geschehen, und
+    nichts sagte es ihm."
+    **WARUM KANDIDAT:** Der Satz beschreibt KEINEN Google-Sonderfall und keine Eigenschaft
+    des OAuth-Callbacks. Er beschreibt eine Klasse von Oberflächen-Fehlern, die bei JEDEM
+    Vorgang eintritt, der ausserhalb der Anwendung stattfindet und mit einem Zustandswechsel
+    zurückkommt — jede künftige Autorisierung, jede Anbindung mit Rücksprung, jeder
+    Bestätigungs-Fluss. **Der Nutzer hat gehandelt; das Produkt sieht danach aus wie vorher.**
+    **WO DIE ENTSCHEIDUNG LIEGT, AUS DER ER STAMMT:** docs/claude-history/phase-11.2-google.md,
+    Abschnitt "Die bindenden Entscheidungen der Phase 11.2, aus der Steuerdatei übernommen",
+    Block "Drei Entscheidungen, die nach den sechs Festlegungen gefallen sind", Entscheidung
+    (B). **SIE IST DORT UNGETEILT ABGELEGT UND WIRD NICHT ZERSCHNITTEN** — ihre zweite
+    Hälfte (dreizehn Callback-Codes auf drei Fälle) ist Google-spezifisch, und eine
+    Halbierung wäre eine Umformulierung.
+    **NICHT ENTSCHIEDEN:** ob daraus eine eigene Regel wird oder ein Absatz an "EIN SIGNAL
+    LEUCHTET NUR, WENN DER NUTZER JETZT ETWAS TUN KANN" bzw. an "WELCHE REGEL WANN GREIFT"
+    (beide docs/immer-beachten.md). **Für einen Absatz spricht**, dass jene zwei Regeln
+    dieselbe Achse führen — wann ein Zustand angezeigt wird. **Für eine eigene spricht**,
+    dass beide vom SIGNAL handeln, also von einer Anzeige, die etwas MELDET; hier geht es um
+    eine Karte, die nichts meldet und dadurch falsch informiert. **KEINE EMPFEHLUNG.**
+    **WARUM ER ÜBERHAUPT ANGELEGT WIRD:** Die Entscheidung (B) wandert mit dem Phasenende ins
+    Archiv. Ohne diesen Kandidaten verschwände der Prinzip-Teil dorthin mit — und ein Archiv
+    wird nicht gelesen, wenn man eine Regel sucht.
+    **ER WANDERT IN SCHRITT 2 WIE KANDIDAT 10 ALS KOPIE INS ARCHIV**, damit er das Löschen
+    der Steuerdatei überlebt.
+    GEMELDET 2026-09-08, NICHT GEHOBEN.
+    PROVENIENZ: Das Zitat ist WÖRTLICH aus Entscheidung (B); dass sein erster Teil kein
+    Google-Sonderfall ist, ist eine ABLEITUNG aus seinem eigenen Wortlaut und keine Messung.
+    Die Nummer 11 ist vor der Vergabe auf Kollision geprüft (CC, 2026-09-08: die Liste führte
+    1 bis 10).

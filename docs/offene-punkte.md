@@ -1820,3 +1820,1213 @@ aufeinander; sie liegen alle hier und finden einander.
   PROVENIENZ: Der Unterschied zu `setCapiToken` ist GEMESSEN am Code (CC, 2026-08-27 und
   2026-09-08); das Eintreten des Triggers ist GEMESSEN am Repo (CC, 2026-09-08); die Folge
   für ein Projekt ohne Schlüssel ist eine ABLEITUNG und keine Messung.
+
+<!-- Aus dem Vorrat der Phase 11.2 gehoben, 2026-09-08 -->
+
+- VIERZEHN PUNKTE AUS DEM VORRAT DER PHASE 11.2 (2026-09-08) — DIESE ZEILE IST KEIN
+  EIGENER PUNKT, SONDERN DIE KLAMMER UM DIE VIERZEHN DARUNTER.
+  **WOHER SIE KOMMEN:** aus docs/aktiver-stand-vorrat.md, beim Phasenende der Phase 11.2.
+  Der Vorrat führte SECHSUNDSECHZIG Einträge; die übrigen liegen in
+  docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.2 gehoben (2026-09-08)",
+  zwei sind gestrichen.
+  **DAS KRITERIUM:** benennbarer Trigger **UND** "geht sonst STILL kaputt". Der Trigger
+  allein trennt nicht — fast jeder Vorrats-Eintrag trägt einen; nach ihm allein wären es
+  FÜNFUNDFÜNFZIG von 66 gewesen statt VIERZEHN (GEMESSEN, CC, 2026-09-08). Diese Datei
+  sagt in ihrem eigenen Kopf, sie sei "Kein Backlog-Ersatz".
+  **DIE NUMMERN IN KLAMMERN SIND DIE URSPRUNGS-NUMMERN DES VORRATS** und werden NICHT neu
+  vergeben; die Lücken sind die Einträge, die ins Backlog gegangen sind.
+  **DER TEXT JEDES EINTRAGS IST ZEICHENGLEICH ÜBERNOMMEN** — kein Wort umformuliert. Was
+  hinzugekommen ist, ist die Titel- und Trigger-Zeile darüber.
+
+- DIE SCHREIBUNG DER URL-PARAMETERNAMEN STÜTZT SICH AUF NICHTS GELESENES (Trigger: die erste Messung des Auto-Taggings — der Eintrag sagt es selbst, wörtlich: "DIE ERSTE MESSUNG NIMMT SIE MIT"):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 4, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+4. **DIE SCHREIBUNG DER URL-PARAMETERNAMEN STÜTZT SICH AUF NICHTS GELESENES.**
+   GEBAUT WIRD schreibungssensitiv und exakt kleingeschrieben: nur gclid, gbraid und
+   wbraid treffen; GCLID oder Gclid treffen nicht.
+   DER GRUND FÜR DIE ENGERE WAHL: Ein exakter Vergleich kann nur VERFEHLEN, und das
+   ist als fehlende Conversion sichtbar. Ein schreibungsunempfindlicher Vergleich
+   könnte einen FREMDEN, zufällig gleichnamigen Parameter aufgreifen — und ein
+   falscher Wert als Kennung wird vom Anbieter NICHT als Fehler gemeldet. Von zwei
+   unbelegten Möglichkeiten ist die gewählt, deren Fehlschlag sichtbar ist.
+   DIE LÜCKE GEHÖRT DAZU UND IST DER EIGENTLICHE INHALT DIESES EINTRAGS: Das stützt
+   sich auf NICHTS GELESENES. GEMESSEN am Dateitext (2026-08-25, Achse: docs/ziel-befunde.md
+   vollständig, Begriff gclid): sechs Treffer, ALLE betreffen den Feldnamen in der
+   API-Nutzlast (adIdentifiers.gclid), KEINER den Namen des Parameters, den Google an
+   die Ziel-URL hängt. Das ist kein Versäumnis, sondern der Zuschnitt beider
+   Crawl-Läufe: ihr Gegenstand war die EINLIEFERUNGS-Schnittstelle, nicht das
+   Auto-Tagging. Es gibt zu dieser Frage WEDER einen Befund NOCH einen Nicht-Treffer
+   mit benannter Reichweite.
+   DIE ERSTE MESSUNG NIMMT SIE MIT. KEINE bindende Entscheidung — sie steht hier und
+   nicht unter den Entscheidungen, weil sie auf keiner Grundlage ruht, die eine
+   Bindung tragen könnte.
+
+   **VERMERK 2026-09-02 — "DIE ERSTE MESSUNG NIMMT SIE MIT" IST NICHT EINGELÖST. DER EINTRAG
+   SCHRUMPFT NICHT UND ENTFÄLLT NICHT; ALLE DREI NAMEN BLEIBEN UNGEPRÜFT.** Der Text darüber
+   bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Vermerk tritt DANEBEN.
+   **ER ERSETZT DEN VERMERK VOM 2026-09-01 VOLLSTÄNDIG**, und zwar als SACHKORREKTUR: Jener
+   sagte, der Eintrag schrumpfe "von drei ungeprüften Namen auf zwei", weil Schritt 2 des
+   Live-Tests der Scheibe 4 einen Query-String benutzt habe — "den, den GOOGLE SELBST an die
+   Ziel-URL gehängt hat, über eine echte Anzeige und nicht von Hand eingetippt". **DIE
+   PRÄMISSE TRIFFT NICHT ZU.**
+   **OWNER-ANGABE 2026-09-02:** Die Klick-Kennungen des Live-Tests waren **von Hand in die
+   Browserzeile gesetzt** und stammen aus keinem Klick; im Einsatz waren **zwei** Werte
+   (`EAIaIQobChMI` und `Tester-123`), und **welcher zu welchem Adapter-Aufruf gehört, ist nicht
+   rekonstruierbar**. Volltext der Korrektur: VERMERK 10, Abschnitt (b), "SACHKORREKTUR
+   2026-09-02 — DIE HERKUNFT DER KLICK-KENNUNG".
+   **FÜR DIESEN EINTRAG IST DIE ZUORDNUNG GLEICHGÜLTIG:** Beide Werte sind von Hand gesetzt,
+   also misst der Durchlauf in beiden Fällen die eigene Extraktion und nicht Googles
+   Auto-Tagging.
+   **WAS BISHER GALT UND ZWEIMAL AUSDRÜCKLICH FESTGEHALTEN WORDEN IST — UNVERÄNDERT:** VERMERK
+   3 und VERMERK 4 führen diesen Eintrag je als UNBERÜHRT; Messung A und Messung B1 haben
+   **keinen Query-String benutzt**, sondern eine Kopfzeile und einen Rumpf gesetzt.
+   **DAS GILT JETZT AUCH FÜR SCHRITT 2 — auf der Achse dieses Eintrags.** Ein von Hand
+   gesetzter Query-String misst **UNSERE EXTRAKTION**, nicht **GOOGLES AUTO-TAGGING**. Genau
+   diese Achse führt der Eintrag als "WEDER einen Befund NOCH einen Nicht-Treffer mit benannter
+   Reichweite", und dabei bleibt es.
+   **WAS SCHRITT 2 TROTZDEM HERGIBT — UND ES IST EINE ABLEITUNG AUS ZWEI LOGZEILEN, KEINE
+   ABLESUNG DER NUTZLAST:** Hätte `extractGoogleClickIds` keinen der drei
+   schreibungssensitiven Namen getroffen, verwürfe `buildGoogleEvent` mit `no_click_id`, und
+   die Zeile `[capi] Google forward skipped: no_click_id` stünde im Log — sie steht dort im
+   Schritt 5 und in Schritt 2 **nicht**, und eine Fehlerzeile ebenfalls nicht.
+   **MINDESTENS EINER DER DREI KLEINGESCHRIEBENEN NAMEN HAT ALSO GETROFFEN — den Wert, den der
+   OWNER GETIPPT HAT.** Das ist eine Aussage über die Extraktion und über nichts sonst.
+   **DIE GRENZE IST DER EIGENTLICHE INHALT DIESES VERMERKS: WELCHER der drei getroffen hat,
+   ist NICHT GEMESSEN.** Das Log nennt keinen Namen — es nennt bei Erfolg gar nichts —, und die
+   Nutzlast ist nicht abgelesen worden. **ÜBER DIE ZWEI ÜBRIGEN SAGT DER DURCHLAUF NICHTS.**
+   **EIN ABSATZ DES ALTEN VERMERKS IST ERSATZLOS ENTFALLEN, und das gehört benannt:** Er
+   erklärte, warum ein einzelner Durchlauf nur EINEN der drei Namen mitnehmen könne — "Ein
+   Anzeigenklick hängt in aller Regel EINEN der drei an". **Der Satz setzte einen Anzeigenklick
+   voraus, den es nicht gegeben hat**, und beschrieb damit ein Instrument, das nie im Einsatz
+   war.
+   **WAS OFFEN BLEIBT UND WARUM DER EINTRAG STEHEN BLEIBT:** Für **ALLE DREI** Namen stützt
+   sich die Schreibung weiterhin auf **nichts Gelesenes und nichts Gemessenes**. Der im Eintrag
+   benannte Fehlerweg gilt unverändert: Ein exakter Vergleich kann nur VERFEHLEN, und ein
+   Verfehlen ist als fehlende Conversion sichtbar — aber eben nur, wenn jemand hinsieht.
+   **DER SATZ "DIE ERSTE MESSUNG NIMMT SIE MIT" WARTET DAMIT WEITER**, und er wartet auf
+   dasselbe wie am 2026-08-25: einen Durchlauf mit einem Query-String, den **GOOGLE** geschrieben
+   hat. Der ist an die Sperre "AUF DEM KONTO EXISTIERT KEIN ECHTER ANZEIGENKLICK" gebunden, s.
+   den Abschnitt "Gegenstand der Phase".
+   PROVENIENZ, JE TEIL: Die Korrektur der Prämisse ist eine **OWNER-ANGABE 2026-09-02**, keine
+   Messung. Die Ableitung aus den zwei Logzeilen bleibt eine **ABLEITUNG** (Live-Werte GEMESSEN
+   2026-09-01, OWNER; die Ableitung CC, 2026-09-01), **KEINE Ablesung der gesendeten Nutzlast,
+   KEINE Messung am Parameternamen selbst**. Dass VERMERK 3 und 4 den Eintrag als unberührt
+   führen, ist GEMESSEN am Dateitext (CC, 2026-09-01).
+   **DIE STREICHUNG DES EINTRAGS IST HIER NICHT ENTSCHIEDEN UND WIRD ES AUCH NICHT** — er
+   ist nur kleiner geworden.
+
+- DREI FELDER DER NUTZLAST SIND FRAGEN DER TRANSPORT-SCHEIBE, NICHT DIESER (Trigger: DREI Trigger, je Feld einer; der Eintrag entfällt ERST, wenn alle drei eingetreten UND abgearbeitet sind — ein einzelner eingetretener Trigger nimmt ihn NICHT heraus):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 5, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+5. **DREI FELDER DER NUTZLAST SIND FRAGEN DER TRANSPORT-SCHEIBE, NICHT DIESER.** Sie
+   stehen hier, weil sie sonst zwischen die Scheiben fielen: Diese Scheibe baut sie
+   nicht, und die Transport-Scheibe hätte keinen Anlass, nach ihnen zu suchen.
+   · KEIN consent-OBJEKT IN DER ANFRAGE. Die Hülle kennt ein optionales consent, auf
+     Anfrage- UND auf Ereignis-Ebene (GELESEN, docs/ziel-befunde.md, Teil (l)/D1).
+     Wir bauen keines. Grund: Das Einwilligungs-URTEIL wird im Browser gefällt
+     (buildConsentRuntime), und tracking/consent-wire.ts hält ausdrücklich fest "HIER
+     STEHT KEIN ZWEITES URTEIL" — ein Google-eigenes Consent-Feld wäre ein DRITTES.
+     OB es gefüllt werden muss, ist NICHT entschieden.
+   · KEIN reference / destinationReferences. Bei genau EINEM Empfänger unnötig: "OHNE
+     destinationReferences GEHT EIN EREIGNIS AN ALLE DESTINATIONS DER ANFRAGE — das
+     ist die Vorgabe, kein Fehler" (GELESEN, Teil (k)/C3). Beim zweiten Empfänger wird
+     es fällig und ist dann erzwungen eindeutig (Teil (v)/C3, DUPLICATE_DESTINATION_REFERENCE).
+   · KEIN eventName. Für Google Ads optional, Pflicht nur für GA4 (GELESEN, Teil (w)/F1).
+   GEMELDET 2026-08-25, NICHT GEBAUT. KEINE EMPFEHLUNG.
+   DAS DATUM IST AM 2026-08-29 AUS DEM KOPF DES VORRATS HIERHER GEWANDERT, nicht neu
+   erhoben: Dieser Eintrag war der EINZIGE der dreizehn ohne eigene Datumsangabe
+   (GEMESSEN am Dateitext, CC, 2026-08-29), und mit dem Wegfall der Sammel-Datierung
+   hätte er seine einzige verloren.
+
+   **VERMERK 2026-09-01 — DER ADRESSAT DIESES EINTRAGS IST VORBEI. DER EINTRAG IST NICHT
+   FALSCH; ER HAT NIEMANDEN MEHR, AN DEN ER SICH RICHTET.** Der Text darüber bleibt ZEICHEN
+   FÜR ZEICHEN stehen; dieser Vermerk tritt DANEBEN.
+   **DER BEFUND — GEMESSEN am Repo (CC, 2026-09-01):** Die Transport-Scheibe ist gebaut
+   (Bau-Commits `26caa38` und `84e9fca`, s. VERMERK 10) und hat **KEINES der drei Felder
+   aufgegriffen**:
+   · **`consent`** — die Anfrage trägt keines. Der Kommentarkopf von
+     `IngestEventsRequest` (src/lib/capi/google-payload.ts) führt es unverändert unter den
+     vier bewusst fehlenden Hüllen-Feldern und zeigt für die offene Frage auf **genau diesen
+     Eintrag**.
+   · **`reference` / `destinationReferences`** — `buildIngestEventsRequest` (ebenda) baut
+     **GENAU EIN** `destinations`-Element und reicht keine Referenzen durch.
+   · **`eventName`** — `GoogleEvent` (ebenda) führt das Feld nicht, und `buildGoogleEvent`
+     setzt es nicht.
+   **WARUM DAS EIN POSTEN IST UND KEINE ERLEDIGUNG:** Der Eintrag war ausdrücklich
+   geschrieben worden, damit die drei Felder "nicht zwischen die Scheiben fallen" — "Diese
+   Scheibe baut sie nicht, und die Transport-Scheibe hätte keinen Anlass, nach ihnen zu
+   suchen." **DIE TRANSPORT-SCHEIBE IST VORBEI, UND SIE HAT TATSÄCHLICH NICHT NACH IHNEN
+   GESUCHT.** Ein Eintrag, dessen Adressat abgelaufen ist, wird von niemandem mehr gelesen —
+   er sieht bei jeder Durchsicht so aus, als warte er noch, und wartet auf nichts.
+   **EIN EINTRAG OHNE ADRESSATEN BRAUCHT EINEN NEUEN TRIGGER ODER ENTFÄLLT. ER BEKOMMT
+   TRIGGER — ENTSCHIEDEN (ARCHITEKT, 2026-09-01).**
+   **DREI TRIGGER STATT EINEM — je Feld einer, weil die drei nichts miteinander zu tun haben
+   ausser ihrer Herkunft aus derselben Hülle.** Jeder ist am Repo bzw. an einer gelesenen
+   Stelle begründet, und die Begründung ist der Grund, aus dem der Trigger gilt:
+   · **`consent`** → **Phase 11.5 (Einwilligungs-Dialog).** GRUND: Solange kein Dialog
+     existiert, gibt es kein Einwilligungs-URTEIL, das man weiterreichen könnte; der Draht
+     füllt heute ohne Betreiber-Hook alle Schlüssel auf `true` (`__psConsentAll`). Erst mit
+     einem Dialog wird die Frage "muss das Feld gefüllt werden" überhaupt entscheidbar. Die
+     Auflage, dass `"google"` im Dialog zu führen ist, steht bereits an Festlegung (3) des
+     Zuschnitts der Scheibe 2.
+   · **`reference` / `destinationReferences`** → **der ZWEITE Empfänger in EINER Anfrage.**
+     GRUND: Der Eintrag nennt diesen Zeitpunkt selbst ("Beim zweiten Empfänger wird es fällig
+     und ist dann erzwungen eindeutig"), und der Zustand ist am Code messbar — heute genau
+     ein `destinations`-Element.
+   · **`eventName`** → **GA4 als eigenes Ziel.** GRUND: Das Feld ist "für Google Ads
+     optional, Pflicht nur für GA4" (GELESEN, Teil (w)/F1), und **GA4 ist im Produktivcode
+     kein Ziel** (GEMESSEN am Repo, CC, 2026-09-01: kein Adapter, kein Eintrag in
+     `TRACKING_TARGETS`, die Treffer auf "GA4" liegen ausschliesslich in Kommentaren und
+     Doku-Zeigern). Die Roadmap-Zeile 11.2 führt GA4 als zweites Produkt neben Google Ads.
+   **DER EINTRAG HAT AB JETZT DREI TRIGGER, UND ER ENTFÄLLT ERST, WENN ALLE DREI EINGETRETEN
+   UND ABGEARBEITET SIND. EIN EINZELNER EINGETRETENER TRIGGER NIMMT IHN NICHT HERAUS.**
+   Ohne diesen Satz liest die erste Runde, die einen der drei erreicht, den ganzen Eintrag als
+   fällig und danach als erledigt — und die zwei übrigen Felder fielen still weg, also genau
+   das, wogegen der Eintrag ursprünglich geschrieben wurde.
+   **WAS DIESER VERMERK AUSDRÜCKLICH NICHT TUT:** Er streicht nichts und empfiehlt keines der
+   drei Felder zum Bau. **KEINE EMPFEHLUNG.** Ein Trigger sagt, WANN die Frage fällig wird —
+   nicht, wie sie zu beantworten ist.
+   PROVENIENZ: Der Nicht-Bau der drei Felder GEMESSEN am Repo (CC, 2026-09-01). Dass der
+   Adressat vorbei ist, ist eine FOLGE aus dem Wortlaut des Eintrags und dem Vollzug der
+   Scheibe 4. **Die drei Trigger sind eine ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-01, getroffen
+   auf drei ABLEITUNGEN, die je an einer gemessenen bzw. gelesenen Stelle begründet sind** —
+   die Ableitungen stehen oben zeichengleich, wie sie vor der Entscheidung dastanden; geändert
+   hat sich ihr RANG, nicht ihr Inhalt.
+
+- eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE IST EINE ANDERE (Trigger: "die Transport-Scheibe — jetzt für die verbliebene Frage nach dem INHALT der URL, nicht mehr für ihre Verfügbarkeit" — EINGETRETEN, und der Eintrag ist ausdrücklich NICHT geschlossen):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 6, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+6. **eventSourceUrl IST AN DER FAN-OUT-STELLE VERFÜGBAR — GEMESSEN. DIE RESTLÜCKE
+   LIEGT NICHT MEHR AM TRANSPORTWEG, SONDERN AM INHALT DER URL.**
+   GEMESSEN am Repo (CC, 2026-08-29). INSTRUMENT: formale Suche über src/ nach
+   `eventSourceUrl` ohne Testdateien, dazu die Lesung der getroffenen Symbole.
+   **WAS DAMIT ENTSCHIEDEN IST — DREI ANGABEN:**
+   · **DER TRANSPORTWEG STEHT.** `eventSourceUrl` ist ein Feld des Typs
+     `CapiRequestBody` (src/lib/capi/ingest.ts). `handleIngest` reicht `body`
+     unverändert an `dispatchForward` und von dort an `FORWARDER_BY_TARGET[target]`
+     weiter — jeder Adapter bekommt es, ohne dass jemand etwas hinzufügen müsste.
+   · **DREI DER VIER ADAPTER LESEN SIE HEUTE SCHON**, je über `asString(body.eventSourceUrl)`:
+     `forwardToMeta` (src/lib/capi/meta-forward.ts) und die Adapter in
+     src/lib/capi/pinterest-forward.ts und src/lib/capi/tiktok-forward.ts.
+     **LinkedIn liest sie NICHT** — der Kommentarkopf von src/lib/capi/linkedin-forward.ts
+     sagt es ausdrücklich. Ein Google-Zweig wäre damit der VIERTE Leser und kein
+     Sonderfall.
+   · **`extractGoogleClickIds` BEKÄME VON DORT EINEN EINGABEWERT.** Die Funktion
+     (src/lib/capi/google-click-ids.ts) nimmt `unknown` entgegen und ist in ihrem
+     eigenen Kopf genau auf diese Quelle zugeschnitten. Gesetzt wird der Wert im
+     Beacon-Rumpf von `buildCapiBeaconStatement` (src/lib/tracking/meta.ts) als
+     `location.href` — absolut, wie die Funktion es verlangt.
+   **EIN NAHELIEGENDER EINWAND IST GEPRÜFT UND TRÄGT NICHT:** Der Bestätigungs-Beacon
+   `buildPixelConfirmStatement` (ebenda) trägt `eventSourceUrl` ausdrücklich NICHT
+   ("BARE Payload"). **Das trifft den Fan-Out nicht:** Der Bestätigungs-Zweig
+   (`isBrowserConfirm` in `handleIngest`) kehrt mit seiner 204 zurück, BEVOR der
+   Forward-Block erreicht wird. Ein Confirm kommt an der Fan-Out-Stelle nie an.
+   **WAS OFFEN BLEIBT UND DER GRUND IST, WARUM DIESER EINTRAG NICHT ENTFÄLLT:** Gemessen
+   ist, dass die URL ANKOMMT — nicht, dass sie eine Klick-Kennung TRÄGT. Beide Lücken
+   aus Vermerk 1 stehen unverändert: dass eine ECHTE gclid von Google denselben Weg
+   nimmt, ist NICHT GEPRÜFT, und gemessen ist ein EIN-SEITEN-FALL. Auf einer Seite mit
+   mehreren Schritten ist `location.href` zur Conversion-Zeit eine andere URL als beim
+   Einstieg.
+   **ERSETZT AM 2026-08-29** — hier stand, die Verfügbarkeit an der Fan-Out-Stelle sei
+   NICHT GEMESSEN, samt der Auflage an den Transport-Zuschnitt, sie zu prüfen. Die
+   Prüfung ist gefahren, die Auflage ist damit eingelöst; der Wortlaut war bis zu diesem
+   Tag richtig.
+   TRIGGER: die Transport-Scheibe — jetzt für die verbliebene Frage nach dem INHALT der
+   URL, nicht mehr für ihre Verfügbarkeit.
+
+   **VERMERK 2026-09-01, SACHKORRIGIERT AM 2026-09-02 — DER TRIGGER IST EINGETRETEN, UND DIE
+   FRAGE IST NUR IN EINER RICHTUNG BEANTWORTET.** Der Text darüber bleibt ZEICHEN FÜR ZEICHEN
+   stehen; dieser Vermerk tritt DANEBEN.
+   **WAS AM 2026-09-02 ERSETZT WORDEN IST:** Die Überschrift sagte "DIE FRAGE IST BEANTWORTET.
+   DIESER EINTRAG HAT SEINEN GEGENSTAND VOLLSTÄNDIG ABGEARBEITET", und der erste Spiegelstrich
+   qualifizierte die Kennung als ECHT und ihren Weg als "über eine echte Anzeige". **DIE
+   PRÄMISSE TRIFFT NICHT ZU** — OWNER-ANGABE 2026-09-02, Volltext in VERMERK 10, Abschnitt (b),
+   "SACHKORREKTUR 2026-09-02 — DIE HERKUNFT DER KLICK-KENNUNG".
+   **DER TRIGGER LAUTETE "die Transport-Scheibe — jetzt für die verbliebene Frage nach dem
+   INHALT der URL".** Die Scheibe ist gebaut und live bewiesen (VERMERK 10), und die Frage ist
+   damit so weit beantwortet — GEMESSEN 2026-09-01 (OWNER), an der ausgelieferten Anwendung:
+   · **LANDEPAGE: DIE KENNUNG IST DA — BEI EINEM VON HAND GESETZTEN WERT.** Schritt 2 — die
+     gehostete Seite mit von Hand gesetztem Query-String aufgerufen, die Conversion auf
+     derselben Seite ausgelöst: durchgelaufen, keine Fehlerzeile, kein `no_click_id`.
+     **DAS IST NEU GEGENÜBER VERMERK 1 und nicht nichts:** Dort war gemessen, dass der Wert im
+     `eventSourceUrl` **ankommt**; hier durchläuft er zum ersten Mal den **VOLLSTÄNDIGEN
+     PRODUKTIVPFAD** bis zum Netzruf.
+     **DIE ERSTE HÄLFTE DER RESTLÜCKE AUS VERMERK 1 IST DAMIT NICHT EINGELÖST:** Ob eine
+     **ECHTE** `gclid` denselben Weg nimmt, ist weiterhin **NICHT GEPRÜFT**. Sie ist kleiner
+     geworden, nicht geschlossen.
+   · **FOLGESEITE: SIE IST WEG.** Schritt 3 — dieselbe von Hand gesetzte Adresse, die
+     Conversion erst nach einem Seitenwechsel: `location.href` trägt die Kennung zur
+     Conversion-Zeit nicht mehr,
+     und es entsteht kein Ereignis. **Damit ist die ZWEITE Hälfte eingelöst** — die, die
+     dieser Eintrag als "auf einer Seite mit mehreren Schritten ist `location.href` zur
+     Conversion-Zeit eine andere URL als beim Einstieg" formuliert hatte.
+   **DIE ZWEI ZEIGER, damit nichts hier ein zweites Mal geschrieben wird:** Das Protokoll
+   beider Schritte und die Einlösung der drei Schulden stehen in **VERMERK 10, Abschnitt (b)**.
+   Die **FOLGE der zweiten Hälfte** — dass Conversions auf Folgeseiten für Google heute nicht
+   messbar sind und die naheliegende Abhilfe durch TRANSIT-ONLY versperrt ist — ist als
+   **Vorrats-Eintrag 39** verortet, samt ihrem Bezug zu Phase 17 und zur dritten Datenklasse.
+   **Zweimal geschrieben liefe es auseinander.**
+   **WAS DIESER VERMERK NICHT TUT — UND DAS IST DER GRUND, WARUM ER DANEBEN STEHT STATT DEN
+   EINTRAG ZU ERSETZEN: OB DER EINTRAG DAMIT ENTFÄLLT, IST HIER NICHT ENTSCHIEDEN UND WIRD ES
+   NICHT.** Er hat seinen Gegenstand abgearbeitet — das ist etwas anderes, als überflüssig zu
+   sein. **Zwei Gründe sprechen dagegen, ihn beiläufig zu streichen**, und keiner davon wird
+   hier abgewogen: Sein GEMESSENER Teil (`eventSourceUrl` erreicht jeden Adapter über
+   `CapiRequestBody`; drei der vier Adapter lesen sie, LinkedIn nicht) ist der Maßstab für
+   jeden künftigen Adapter, der die URL braucht — und die Bauform dieses Vorrats hat bei
+   Eintrag 7, 15 und 16 jeweils **die Messung als Grund für das Stehenbleiben** genannt.
+   **DIE STREICHUNG IST EINE EIGENE ENTSCHEIDUNG.**
+   PROVENIENZ: Die Live-Werte der Schritte 2 und 3 GEMESSEN 2026-09-01 (OWNER) an der
+   ausgelieferten Anwendung. Dass der Trigger damit eingetreten ist, ist eine FOLGE aus seinem
+   Wortlaut. **KEINE Ablesung der gesendeten Nutzlast.**
+
+   **VERMERK 2026-09-07 — DIE FRAGE IST JETZT IN BEIDE RICHTUNGEN BEANTWORTET. Der Text
+   darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Vermerk tritt DANEBEN** — dieselbe
+   Bauform wie der Vermerk vom 2026-09-01 darüber.
+   **WARUM DANEBEN UND NICHT ERSETZT, und der Grund ist an beiden betroffenen Sätzen
+   derselbe:** Sie sind über das Wort "DAMIT" an die Messung vom **2026-09-01** gebunden — die
+   Kopfzeile "DIE FRAGE IST NUR IN EINER RICHTUNG BEANTWORTET" und der Satz "**DIE ERSTE
+   HÄLFTE DER RESTLÜCKE AUS VERMERK 1 IST DAMIT NICHT EINGELÖST:** Ob eine **ECHTE** `gclid`
+   denselben Weg nimmt, ist weiterhin **NICHT GEPRÜFT**". **Als Aussagen über JENE Messung
+   sind beide unverändert wahr; als Aussagen über HEUTE sind sie überholt.** Wer sie ersetzte,
+   machte aus einer richtigen Angabe über einen Tag eine falsche über einen anderen.
+   **WAS DIE ERSTE HÄLFTE GESCHLOSSEN HAT — GEMESSEN 2026-09-07 (OWNER), am Vercel-Log des
+   eigenen Dienstes:** Ein Conversion-Beacon von einer Landepage, die mit einer **ECHTEN, vom
+   Anbieter vergebenen Klick-Kennung** in der Adresse geöffnet worden war, hat den
+   Erneuerungsweg und danach den Google-Adapter durchlaufen — der vollständige Produktivpfad
+   bis zum Netzruf. Abgelegt als **MESSUNG F**, docs/ziel-befunde.md, Google-Abschnitt,
+   **Teil (cd)**. **Dass die Kennung eine ECHTE war, ist eine OWNER-ANGABE 2026-09-07.**
+   **DREI GRENZEN AUS (cd) GEHÖREN DAZU:** der **Statuscode** des Einlieferungs-Aufrufs war
+   **nicht ablesbar** · die Zuordnung zu der beim Anbieter angenommenen Einlieferung ist eine
+   **ABLEITUNG**, keine Messung · **welcher** der drei Kennungs-Parameter getroffen hat, ist
+   **ungemessen**. **KEINE DER DREI BERÜHRT DEN WORTLAUT DER FRAGE** — gefragt war der WEG,
+   nicht die Antwort des Anbieters und nicht der Parametername.
+   **DIE ZWEITE HÄLFTE WAR SCHON AM 2026-09-01 EINGELÖST, mit einem NEIN**, und das steht im
+   Vermerk darüber unverändert. **EIN GEMESSENES NEIN ERFÜLLT DIE BEDINGUNG** — sie verlangt,
+   dass die Lücke GEMESSEN ist, nicht dass sie günstig ausfällt. **PROVENIENZ dieser Hälfte,
+   wörtlich: GEMESSEN 2026-09-01 (OWNER), an der ausgelieferten Anwendung.**
+   **TRÄGT DIESER EINTRAG DANACH NOCH ETWAS OFFENES? NEIN — auf seiner eigenen Achse ist
+   nichts mehr offen.** Sein Trigger ("die Transport-Scheibe — jetzt für die verbliebene Frage
+   nach dem INHALT der URL") ist eingetreten, und die Frage ist ab dem 2026-09-07 in **beide**
+   Richtungen beantwortet. Was bleibt, ist **kein offener Punkt, sondern ein MASSSTAB**: der
+   gemessene Teil oben — `eventSourceUrl` erreicht über `CapiRequestBody` jeden Adapter, drei
+   der vier lesen sie, LinkedIn nicht — bleibt der Maßstab für jeden künftigen Adapter, der
+   die URL braucht.
+   **ER WIRD HIER AUSDRÜCKLICH NICHT GESCHLOSSEN UND NICHT GESTRICHEN.** Der Vermerk vom
+   2026-09-01 sagt es bereits im Wortlaut: "OB DER EINTRAG DAMIT ENTFÄLLT, IST HIER NICHT
+   ENTSCHIEDEN UND WIRD ES NICHT. … **DIE STREICHUNG IST EINE EIGENE ENTSCHEIDUNG.**" Diese
+   Runde trifft sie nicht; sie liegt beim Architekten.
+   PROVENIENZ DIESES VERMERKS: die erste Hälfte **GEMESSEN 2026-09-07 (OWNER)**, die zweite
+   **GEMESSEN 2026-09-01 (OWNER)**. Dass damit die zwei benannten Sätze als Aussagen über
+   heute überholt sind, ist eine **ABLEITUNG** aus deren Wortlaut (CC, 2026-09-07,
+   Doku-Runde), **keine dritte Messung**. **KEINE Ablesung der gesendeten Nutzlast**, und
+   **KEINE Messung an einer Google-Oberfläche** in diesem Vermerk.
+
+- EINE AUSWERTUNG DER ANBIETER-FEHLER DARF NICHT NUR DEN ERSTEN fieldViolation LESEN (Trigger: der erste Rückkanal für abgelehnte Ereignisse):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 8, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+8. **EINE AUSWERTUNG DER ANBIETER-FEHLER DARF NICHT NUR DEN ERSTEN fieldViolation
+   LESEN — DER PARSER SAMMELT.** GEMESSEN 2026-08-28 (OWNER), Messung B1, Aufruf 7: zwei
+   unbekannte Namen ergeben ZWEI fieldViolations in EINER Antwort
+   (docs/ziel-befunde.md, Teil (bp)).
+   WER NUR DEN ERSTEN LIEST, VERLIERT DIAGNOSTIK, DIE DER ANBIETER GELIEFERT HAT — und
+   merkt es nicht, weil eine Antwort mit einem gelesenen Verstoss genauso aussieht wie
+   eine mit einem einzigen.
+   GRENZE: GEMESSEN ist das Sammeln auf der PARSE-Ebene. **Ob die SEMANTISCHE Ebene
+   ebenfalls sammelt, ist NICHT gemessen** — Teil (bu) führt dazu eine ausdrücklich als
+   ABLEITUNG gekennzeichnete Gegenannahme.
+   TRIGGER: der erste Rückkanal für abgelehnte Ereignisse. Er berührt alle vier
+   bestehenden Adapter — s. den Kandidaten
+   "EIN ADAPTER KANN HEUTE KEIN EREIGNIS ABLEHNEN" in
+   docs/claude-history/backlog-polish.md und Vorrats-Eintrag 3 oben.
+
+- KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG — ZWEI GLEICHZEITIGE LÄUFE LÖSEN EINANDER AB (Trigger: eine gemessene Rotation bei irgendeinem Anbieter dieses Rahmens, ODER ein Auslöser (Scheibe 1b), der die Funktion nachweislich nebenläufig ruft — an BEIDEN Hälften NICHT eingetreten):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 9, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+9. **KEIN NEBENLÄUFIGKEITS-RIEGEL BEI DER ERNEUERUNG — ZWEI GLEICHZEITIGE LÄUFE LÖSEN
+   DASSELBE ERNEUERUNGS-TOKEN DOPPELT EIN.** Die Scheibe 1a
+   (s. den Abschnitt "Die Erneuerung des Zugangsdatums", Festlegung 3) baut
+   ausdrücklich KEINEN Riegel — keine Sperre auf der Zeile, keine Vereinzelung, kein
+   Warten.
+   **WARUM DER SCHADEN KLEIN IST, und das ist der Grund für "melden statt bauen":**
+   Google rotiert das Erneuerungs-Token NICHT (GEMESSEN 2026-08-28, OWNER, Messung C;
+   docs/ziel-befunde.md, Google-Abschnitt, Teil (bv)). Der zweite Lauf bekommt ein
+   gültiges Zugangsdatum wie der erste; was entsteht, ist ein ÜBERFLÜSSIGER NETZAUFRUF
+   und eine zweite Schreibung derselben Zeile — kein verlorener Zugang.
+   **DIE GRENZE, UND SIE HÄNGT AN EINER FREMDEN EIGENSCHAFT:** Diese Einschätzung ruht
+   VOLLSTÄNDIG darauf, dass der Anbieter nicht rotiert. **Rotierte er, wäre derselbe
+   Fall ein VERLORENER ZUGANG** — der zweite Lauf entwertete das Token des ersten, und
+   der Schaden wäre nicht ein Netzaufruf, sondern eine Neu-Autorisierung durch den
+   Kunden. Ein Anbieter kann das ändern, ohne dass hier etwas rot wird.
+   **AUSDRÜCKLICH NICHT ÜBERTRAGBAR:** Für LinkedIn ist die Nicht-Rotation NICHT
+   gemessen. Wer den Rahmen um einen zweiten Anbieter-Zweig erweitert, prüft sie dort
+   eigens — s. Teil (bz).
+
+   **ERGÄNZT AM 2026-08-29 — EINE ZWEITE ACHSE, DIE DIESER EINTRAG BIS DAHIN NICHT
+   FÜHRTE. DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN.** Er beschreibt die ROTATIONS-Achse
+   vollständig und richtig; was fehlte, ist eine davon UNABHÄNGIGE.
+
+   **DIE ACHSE: AUSSTELLUNGS- UND SCHREIBREIHENFOLGE KÖNNEN DIVERGIEREN.** Lauf A stellt
+   aus, Lauf B stellt aus, B schreibt, A schreibt — danach steht das **ÄLTERE** Token in
+   der Zeile. Das ist kein Rotations-Problem: es tritt auch dann ein, wenn der Anbieter
+   NICHT rotiert, weil es an unserer Schreibreihenfolge hängt und nicht an seiner
+   Token-Vergabe.
+
+   **WARUM DAS ZÄHLT, UND ERST DIESER SATZ MACHT ES ZU EINEM POSTEN:** Invalidierte der
+   Anbieter das vorige ZUGANGSDATUM bei Ausstellung eines neuen, stünde in der Zeile ein
+   **TOTES Token mit einem Ablaufzeitpunkt in der ZUKUNFT** — und der Vorlauf aus
+   Festlegung 1 erneuerte es NICHT, weil die Uhr sagt, es reiche noch. Der Fehlzustand
+   wäre damit genau der stumme, gegen den die Scheibe 1a überhaupt gebaut wird.
+
+   **PROVENIENZ: UNGEMESSEN.** Ob der Anbieter ein vorheriges Zugangsdatum bei der
+   Ausstellung eines neuen entwertet, ist an keiner Schnittstelle erhoben. Messung C
+   belegt ZWEI ERFOLGREICHE EINLÖSUNGEN — sie belegt **NICHT** die gleichzeitige
+   Gültigkeit zweier ausgestellter Zugangsdaten. **WER DAS AUS (bv) ABLEITET, LEITET
+   MEHR AB, ALS DORT STEHT.**
+
+   **DERSELBE SACHVERHALT STEHT IM KOMMENTARKOPF VON src/lib/oauth/token-refresh.ts**,
+   dort als ACHSE 2 neben der Rotation. Zwei Orte, weil der eine beim Zuschneiden und
+   der andere beim Bauen gelesen wird; die Angabe ist an beiden dieselbe und trägt an
+   beiden ihre Provenienz.
+
+   GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.
+   TRIGGER: eine gemessene Rotation bei irgendeinem Anbieter dieses Rahmens, ODER ein
+   Auslöser (Scheibe 1b), der die Funktion nachweislich nebenläufig ruft.
+
+   **VERMERK 2026-09-03 — DER ZUSCHNITT DES SCHRITTS 1b-1 NIMMT DIESEN EINTRAG BEGRÜNDET
+   NICHT AUF. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT
+   DANEBEN.**
+   **DIE SCHEIBE 1b ENTSTEHT IN ZWEI SCHRITTEN — 1b-1 (die Klammer) und 1b-2 (der Takt);**
+   der Nachtrag dazu steht am Ende der bindenden Entscheidung (7). **DER TRIGGER-WORTLAUT
+   OBEN ZEIGT AUF DAS PAKET UND IST UNTER DIESER ZERLEGUNG UNVERÄNDERT RICHTIG.**
+   **DER TRIGGER IST NICHT EINGETRETEN, UND ZWAR AN BEIDEN HÄLFTEN:** Eine Rotation ist
+   bei keinem Anbieter dieses Rahmens gemessen worden, und **1b-1 baut KEINEN AUSLÖSER** —
+   die Funktion wird also von nichts nachweislich nebenläufig gerufen. **MIT 1b-2 KANN ER
+   EINTRETEN; DORT IST ER NEU ZU PRÜFEN.**
+   **DER ZWEITE GRUND IST DER TRAGENDE, und er steht ausgeschrieben im Zuschnitt** (dort
+   unter "Was ausdrücklich draussen bleibt, je mit seinem Grund"): **Die FORM des Riegels
+   hängt am GRAD der Nebenläufigkeit, und den legt erst der TAKT fest — also 1b-2.** Ein
+   Riegel im Prozessspeicher trägt für einen Sweep mit zwei Läufen und trägt nicht, wenn der
+   Verkehr ihn auslöst. **Vor der Takt-Wahl gebaut, wäre er auf Verdacht gebaut.**
+   **DIE ZWEITE ACHSE DIESES EINTRAGS IST DAVON UNBERÜHRT UND BLEIBT UNGEMESSEN** — ob der
+   Anbieter ein vorheriges Zugangsdatum bei Ausstellung eines neuen entwertet. Der
+   Zuschnitt führt sie ausdrücklich als geschützte Invariante: **der ACHSE-2-Kommentarkopf
+   von src/lib/oauth/token-refresh.ts bleibt und wird nicht abgeschwächt.**
+   **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT.** Sein Trigger steht wörtlich
+   wie zuvor; was hinzukommt, ist die Auskunft, dass er in 1b-1 **geprüft und begründet
+   vertagt** worden ist — und ein geprüft vertagter Posten sieht in einem Repo sonst genauso
+   aus wie ein übersehener, nämlich wie nichts.
+   PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO; die Zerlegung in zwei
+   Schritte eine ARCHITEKTEN-FESTLEGUNG desselben Tages. Keine Messung.
+
+   **ZWEITER VERMERK 2026-09-03 — DER EINTRAG BLEIBT VERTAGT, ABER SEINE ZWEITE ACHSE WIRD
+   UNTER SCHEIBE 1b-2a SCHÄRFER. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN.**
+   **WARUM DAS AN DEN EINTRAG GEHÖRT UND NICHT NUR IN DEN ZUSCHNITT:** Wer diesen Posten in
+   einem Jahr aufschlägt, liest hier zuerst — und der Vermerk oben sagt "geprüft und
+   begründet vertagt". Ohne diesen Zusatz liest er eine Vertagung, deren Gewicht sich
+   seither geändert hat, als unveränderten Stand.
+   **DIE ERSTE ACHSE (DIE ROTATION) IST UNBERÜHRT:** Google rotiert das Erneuerungs-Token
+   nicht (GEMESSEN 2026-08-28, OWNER, Messung C), und daran ändert ein häufigerer Aufruf
+   nichts.
+   **DIE ZWEITE ACHSE (AUSSTELLUNGS- UND SCHREIBREIHENFOLGE) WIRD SCHÄRFER, UND ZWAR AUS
+   EINEM BENENNBAREN GRUND:** Sie ist eine Aussage über NEBENLÄUFIGE Läufe, und
+   Nebenläufigkeit war bisher nur durch zwei gleichzeitige Klicks eines Menschen
+   herstellbar. **EIN VERKEHRSGETAKTETER AUSLÖSER ERNEUERT HÄUFIGER ALS EIN MENSCH, DER EINE
+   ROUTE DRÜCKT** — und mehrere Beacons können denselben Moment treffen. **Was daran
+   UNGEMESSEN ist, bleibt ungemessen:** ob der Anbieter ein vorheriges Zugangsdatum bei
+   Ausstellung eines neuen entwertet. Nur die Wahrscheinlichkeit, dem Fall zu begegnen,
+   steigt.
+   **DER TRIGGER BLEIBT WÖRTLICH STEHEN, UND ER IST WEITERHIN NICHT EINGETRETEN:** 1b-2a
+   baut **KEINEN** Riegel (Invariante (I-6) jenes Zuschnitts), und "ein Auslöser, der die
+   Funktion nachweislich nebenläufig ruft" ist mit ihr noch nicht nachgewiesen, sondern
+   nur wahrscheinlicher geworden. **DER RIEGEL IST SCHEIBE 1b-2b**, und ihr eigener Trigger
+   steht dort.
+   **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT. KEINE EMPFEHLUNG**, welche
+   Form ein Riegel bekäme.
+   PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO. Dass die zweite Achse unter
+   häufigerer Erneuerung schärfer wird, ist eine **ABLEITUNG** aus dem gewählten Takt,
+   **keine Messung** — es ist kein nebenläufiger Lauf beobachtet worden.
+
+- `retry` HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN (Trigger: der Zuschnitt der Scheibe 1b — EINGETRETEN):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 10, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+10. **`retry` HAT KEINE OBERGRENZE, UND SCHEIBE 1b MUSS EINE LIEFERN.** DREI Ausgänge
+    der Erneuerungs-Funktion können DAUERHAFT sein und trotzdem `retry` melden:
+    `unexpected` (ein Anbieter-Code, den wir nicht abbilden), `read` (die Datenbank
+    antwortet nicht), und seit der Entscheidung B-2 der unbrauchbare 2xx-Rumpf.
+    **UNTER EINEM MENSCHEN-AUSLÖSER IST DAS HARMLOS** — jemand klickt, bekommt `retry`,
+    und hört irgendwann auf. **UNTER EINEM AUTOMATISMUS IST ES EINE SCHLEIFE, DIE JE
+    DURCHLAUF EINEN ECHTEN ERNEUERUNGSRUF VERBRAUCHT.**
+    **DIESELBE FIGUR WIE DIE BEGRÜNDUNG AN `write_failed`, EINE EBENE HÖHER:** Dort hält
+    der ZUSTAND den Wiederholer an (`misconfigured` statt `retry`), weil eine
+    CHECK-Verletzung sich durch Wiederholen nie auflöst. Hier gibt es niemanden, der ihn
+    anhält — `retry` sagt "nochmal", und die Funktion kennt keine Zählung, keine
+    Verzögerung und keine Obergrenze. **Sie soll sie auch nicht kennen: eine
+    Bibliotheksfunktion ohne Aufrufer kann nicht wissen, wie oft sie schon lief.**
+    GEMELDET 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG, wo die Grenze liegt oder wie
+    sie aussieht.
+    TRIGGER: der Zuschnitt der Scheibe 1b.
+
+    **VERMERK 2026-09-03 — TRIGGER EINGETRETEN, UND DIESER EINTRAG LIEGT IN 1b-1. DER
+    TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT DANEBEN.**
+    **DIE SCHEIBE 1b ENTSTEHT IN ZWEI SCHRITTEN — 1b-1 (die Klammer) und 1b-2 (der Takt);**
+    der Nachtrag dazu steht am Ende der bindenden Entscheidung (7). **DER TRIGGER-WORTLAUT
+    OBEN ZEIGT AUF DAS PAKET UND IST UNTER DIESER ZERLEGUNG UNVERÄNDERT RICHTIG.**
+    Der Zuschnitt steht (s. den Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der
+    Scheibe 1b des Schnitts der Phase 11.2") und führt **die Obergrenze aus diesem Eintrag
+    als eines von drei Stücken, die hineingehören.**
+    **DIE OBERGRENZE LIEGT IN 1b-1 UND NICHT IN 1b-2, und dieser Satz gehört hierher, weil
+    die naheliegende Zuordnung die andere wäre:** Sie hängt an der KLAMMER und nicht am
+    Takt — der Ausgang `retry` entsteht in der Funktion darunter, und die Klammer ist die
+    erste Stelle, die zählen kann.
+    **WAS DER ZUSCHNITT NICHT TUT, und das ist der Grund für diesen Vermerk: ER SAGT NICHT,
+    WELCHE GESTALT SIE BEKOMMT.** Er trägt dafür eine eigene offene Entwurfsfrage mit DREI
+    Lesarten — Wiederholung mit Deckel INNERHALB eines Aufrufs · ein persistierter Zähler
+    ÜBER Aufrufe hinweg · eine ehrlichere AUSGANGS-KLASSIFIKATION, die `retry` nur dort
+    meldet, wo Wiederholen etwas ändern kann. **Die zweite fällt aus 1b-1** (sie braucht
+    Zustand und Wissen über den Takt); **zwischen der ersten und der dritten entscheidet der
+    Architekt am Plan.**
+    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT:** Ein eingetretener Trigger
+    ist kein Vollzug, und der Satz "Sie soll sie auch nicht kennen: eine Bibliotheksfunktion
+    ohne Aufrufer kann nicht wissen, wie oft sie schon lief" ist **der Maßstab, an dem die
+    Gestalt der Obergrenze zu messen ist** — die Klammer bekommt einen Aufrufer, die
+    Bibliotheksfunktion darunter nicht.
+    PROVENIENZ: Dass der Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
+    Existenz des Zuschnitts (CC, 2026-09-03). Die drei Lesarten sind ein
+    ARCHITEKTEN-ZUSCHNITT vom 2026-09-03, die Zerlegung in zwei Schritte eine
+    ARCHITEKTEN-FESTLEGUNG desselben Tages; keine Messung.
+
+- ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN (Trigger: zwei eigene Trigger, BEIDE EINGETRETEN):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 13, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+13. **ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN.**
+    **HERKUNFTSDATEI: docs/claude-history/phase-11.8-autorisierungsschicht.md**, Abschnitt
+    "Vorrat (gemeldet, nicht
+    gebaut)", Einträge 5 und 6. **DER GRUND FÜR DIE ÜBERNAHME IST IHR ORT, NICHT IHR
+    INHALT:** Jene Datei ist archiviert und wird nicht mehr geladen; beide Trigger sind
+    inzwischen EINGETRETEN, und ein eingetretener Trigger in einer ungelesenen Datei ist
+    ein Posten, der still stirbt.
+    **NUR ÜBERNOMMEN — NICHT NEU GEMESSEN, NICHT BEHOBEN, NICHT UMFORMULIERT.** Die
+    Befunde und ihre Provenienz stehen am Ursprung und werden hier NICHT verdoppelt.
+    · **`'google'` FEHLT IN `TRACKING_TARGETS`** — die Zeile ist für die Oberfläche
+      unsichtbar und über die Anwendung nicht löschbar. **TRIGGER EINGETRETEN:** Die
+      Aufnahme ist Scheibe 3 des Schnitts (bindende Entscheidung (6)), und sie kommt VOR
+      dem Transport (bindende Entscheidung (8)).
+    · **`ensureTrackingKey` LÄUFT IM GOOGLE-OAUTH-WEG NICHT** — anders als in
+      `setCapiToken`. Ein Projekt, das ausschliesslich über diesen Weg konfiguriert wird,
+      hat womöglich keinen Tracking-Schlüssel. **TRIGGER EINGETRETEN:** Der Ursprung
+      führt ihn als "VORBEDINGUNG der Transport-Scheibe"; die Scheibe 1a hat ihn
+      gemessen bestätigt und ausdrücklich NICHT behoben.
+    ÜBERNOMMEN 2026-08-29, NICHT GEBAUT. KEINE EMPFEHLUNG.
+
+    **VERMERK 2026-09-01 ZUM ZWEITEN SPIEGELSTRICH (`ensureTrackingKey`) — DER
+    URSPRUNGSTEXT WIRD NICHT UMGESCHRIEBEN, DIESER VERMERK TRITT DANEBEN.**
+    Der Ursprung führt den Posten als "VORBEDINGUNG der Transport-Scheibe".
+    **SCHEIBE 4 BEHEBT IHN NICHT**, und der Grund gehört dazu, sonst gilt er als übersehen:
+    **Ohne Tracking-Schlüssel erreicht kein Beacon den Ingest** — `getCapiConfigByTrackingKey`
+    (src/lib/capi/token.ts) kehrt bei leerem Schlüssel ohne Datenbank-Runde zurück, und ein
+    Projekt ohne Schlüssel trägt auch keinen ausgelieferten Emitter, der einen senden könnte.
+    **ES ENTSTEHT ALSO GAR KEIN VERKEHR, NICHT NUR KEIN SICHTBARER.** Ein Zustand, der nichts
+    erzeugt, kann nichts stillschweigend falsch machen; das ist der Unterschied zu einem
+    Posten, der still Conversions verliert.
+    **DIE BEDINGUNG, UNTER DER DAS KIPPT:** eine Scheibe, die **OHNE Veröffentlichung sendet**
+    — **Phase 11.4, der Testknopf**. Dort löst ein Betreiber den Versand von Hand aus, und der
+    Weg über den ausgelieferten Emitter entfällt; ab da ist ein fehlender Schlüssel kein
+    leiser Zustand mehr, sondern ein Fehlschlag mit Auslöser.
+    **EIN GEMESSENER ZUSATZ (CC, 2026-09-01), der die Prämisse "ohne Publish kein Schlüssel"
+    enger fasst als bisher angenommen:** Eine `domains`-Zeile KANN **ohne** `publishProject`
+    entstehen — `persistDomainRow` (src/lib/domains/register.ts) legt sie an, erreichbar über
+    `registerCustomDomain` und die Server-Action `addCustomDomain`
+    (src/app/projects/domain-actions.ts), und **diese Kette berührt `publishProject` an keiner
+    Stelle**. ACHSE: `from("domains")` über `src/` rekursiv, binärsicher, Testdateien
+    gefiltert — zwölf Fundstellen, davon DREI `insert`; zwei davon (`assignDomainLabel`,
+    `insertDomainLabel`) haben ausschliesslich `publishProject` als Aufrufer, die dritte nicht.
+    Positivkontrolle: dieselbe Achse führt die Aufrufer-Kette je Symbol lückenlos.
+    **WAS DER ZUSATZ NICHT SAGT:** `ensureTrackingKey` läuft **weiterhin nur** in
+    `setCapiToken` und `publishProject` (GEMESSEN am Repo, CC, 2026-09-01). Die
+    Custom-Domain-Zeile setzt **keinen** Tracking-Schlüssel — der Zusatz benennt eine
+    `domains`-Zeile ohne Publish, **nicht** einen Schlüssel ohne Publish. Wer beides
+    zusammenzieht, liest hier eine Behebung, die nicht dasteht.
+
+- `saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE ABWESENHEIT (Trigger: der Zuschnitt der Scheibe 2 — EINGETRETEN; der Eintrag wird ausdrücklich NICHT gestrichen):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 16, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+16. **`saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE
+    UI-ABWESENHEIT UND NICHT DURCH EINEN RIEGEL.**
+    **GEMESSEN am Code (CC, 2026-08-29):** `saveProject` (src/app/projects/actions.ts)
+    reicht den Einstellungs-Blob unverändert in die `projects`-Spalte durch — kein
+    Schema-Check, keine Feldprüfung, keine Ziel-Prüfung. Der einzige Weg, der heute
+    `settings.pixels.<ziel>.pixelId` setzt, ist das öffentliche Eingabefeld der Karte
+    (`setPixelId` hat im Produktivcode GENAU EINEN Aufrufer, components/CodeImporter.tsx).
+    **WAS DARAUS FOLGT UND WARUM ES HIERHER GEHÖRT:** Das erste der vier Tore der
+    Scheibe 3 (`withPixel` in src/lib/capi/token.ts) hält, WEIL die Google-Karte kein
+    solches Feld anbietet. Ein selbstgebauter Aufruf könnte `pixels.google` trotzdem in
+    den Blob legen. **DIE TRAGENDE SCHICHT IST DESHALB TOR B** — die Klartext-Spalte
+    `secret` der google-Zeile bleibt NULL, und der Resolver liest ausschliesslich sie.
+    **ES IST KEINE NEUE LÜCKE, UND DIESER SATZ GEHÖRT DAZU, damit der Eintrag nicht
+    grösser gelesen wird als er ist:** Der Blob ist seit jeher CLIENT-besessen
+    (`saveProject` ersetzt ihn ganzheitlich — die Regel "SERVER-EIGENE IDENTITÄT NIE IN
+    EINEN CLIENT-BESESSENEN BLOB" beschreibt genau das). Die Scheibe 3 ändert daran
+    nichts; sie macht nur sichtbar, dass ein TOR daran hängt.
+    **GEMELDET, NICHT BEHOBEN. KEINE EMPFEHLUNG** — weder eine Validierung in
+    `saveProject` noch eine Allowlist im Blob ist hier vorgeschlagen.
+    TRIGGER: **der Zuschnitt der Scheibe 2.** Dort fällt Tor A ABSICHTLICH (die Kennungen
+    bekommen ihre Eingabe), und ab da zählt, dass der Blob beliebige Ziel-Schlüssel
+    aufnimmt — die Frage ist dann nicht mehr, ob ein Feld existiert, sondern was in der
+    Spalte stehen darf.
+    GEMELDET 2026-08-29.
+
+    **VERMERK 2026-08-31 — TRIGGER EINGETRETEN. DER EINTRAG WIRD NICHT GESTRICHEN.**
+    Der Zuschnitt der Scheibe 2 steht (s. den Abschnitt "Die Konto-Kennungen bekommen ihre
+    Eingabe"). Dieser Vermerk sagt, WAS er von diesem Eintrag beantwortet und was er nur
+    VERORTET — die Trennung ist der ganze Zweck, weil ein Eintrag mit eingetretenem Trigger
+    sonst entweder als erledigt gilt oder als übersehen liegenbleibt.
+    · **BEANTWORTET IST DER KERN:** Tor A fällt ABSICHTLICH. Was danach hält, steht an zwei
+      Orten und nicht hier — in der Sachkorrektur an Festlegung (1) der Scheibe 3 (Tor B UND
+      Tor D, Tor D unabhängig und für sich hinreichend) und in der Beweis-Achse der
+      Scheibe 2, die für jedes der beiden einen eigenen Test verlangt, der SEIN Tor benennt.
+      **Der Satz dieses Eintrags "DIE TRAGENDE SCHICHT IST DESHALB TOR B" war damit zu eng**
+      — er nannte eines von zweien; als Aussage über den 2026-08-29 bleibt er richtig und
+      wird NICHT überschrieben.
+    · **NICHT BEANTWORTET, SONDERN VERORTET:** Dass ein Betreiber über das neue Feld eine
+      FREMDE Kundennummer eintragen kann, ist eine Frage an das Verhalten des Anbieters. Sie
+      steht seit dem 2026-08-31 als eigener offener Punkt in docs/offene-punkte.md ("WAS
+      GOOGLE BEI EINER FREMDEN KUNDENNUMMER TUT, IST UNGELESEN UND UNGEMESSEN"), Trigger
+      "der Zuschnitt der Scheibe 4". **Sie ist hier ausdrücklich NICHT entschieden.**
+    · **WARUM DER EINTRAG BLEIBT:** Seine MESSUNG — `saveProject` schreibt den
+      Einstellungs-Blob unvalidiert durch, kein Schema-Check, keine Feldprüfung, keine
+      Ziel-Prüfung — ist der MASSSTAB für jede spätere Blob-Frage. Ein gelöschter Eintrag
+      nähme sie mit. Dieselbe Bauform wie bei Eintrag 15, wo die Erledigt-Kennzeichnung
+      ebenfalls UNTER dem unveränderten Eintrag steht.
+    PROVENIENZ: Dass der Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
+    Existenz des Zuschnitts (CC, 2026-08-31). Die zwei Tore sind GEMESSEN am Repo (CC,
+    2026-08-31).
+
+- `PROJECT_PARAM` STEHT ZWEIMAL, UND DIE DIVERGENZ IST EINSEITIG STUMM (Trigger: eine Änderung an einem der beiden Parameternamen):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 24, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+24. **`PROJECT_PARAM` STEHT ZWEIMAL, UND DIE DIVERGENZ IST EINSEITIG STUMM.**
+    **DER BEFUND (GEMESSEN am Repo, CC, 2026-08-31):**
+    `src/app/api/oauth/google/callback/route.ts` definiert die Konstante lokal (mit
+    Begründung im Kommentar: die Route ist die SENDENDE Seite des URL-Vertrags);
+    `src/lib/oauth/connect-return.ts` exportiert eine zweite Konstante desselben Namens
+    für die empfangende Seite.
+    **DIE ASYMMETRIE IST DER GANZE PUNKT:** Ändert jemand den Wert **im Callback**, wird
+    **T6 rot**. Ändert er ihn **in `connect-return.ts`**, wird **NICHTS rot** — die Läufe
+    dort reichen `rawProject` direkt hinein und gehen nie über den Parameternamen. **DIE
+    FOLGE WÄRE EIN STILLER RÜCKFALL AUF "ZULETZT BEARBEITET"** — also genau der Defekt,
+    den die Fix-Scheibe behebt.
+    **NICHT GEBAUT, UND DER GRUND GEHÖRT DAZU:** Der Bau ERWEITERT ein bestehendes
+    Muster — `RESULT_PARAM = "google"` steht seit Phase 11.8 genauso doppelt. **Es jetzt
+    einseitig zu heilen, machte aus einem konsistenten Muster ein halbes.** **BEIDE PAARE
+    GEHÖREN ZUSAMMEN**, falls es je angefasst wird.
+    **DIE KONVENTIONSZEILE "Konstanten leben in geteilten Dateien, nie als handgetippte
+    Literale" IST HIER ZWEIMAL NICHT EINGEHALTEN** — das steht hier, damit niemand die
+    Doppelung für die Konvention hält.
+    GEMELDET 2026-08-31, NICHT GEBAUT. KEINE EMPFEHLUNG.
+    TRIGGER: eine Änderung an einem der beiden Parameternamen.
+
+- CONVERSIONS AUF FOLGESEITEN SIND FÜR GOOGLE HEUTE NICHT MESSBAR (Trigger: der Zuschnitt der Phase 17, ODER eine erneute Owner-Befassung mit der dritten Datenklasse — je nachdem, was zuerst eintritt):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 39, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+39. **CONVERSIONS AUF FOLGESEITEN SIND FÜR GOOGLE HEUTE NICHT MESSBAR — UND DIE NAHELIEGENDE
+    ABHILFE IST DURCH TRANSIT-ONLY VERSPERRT.**
+    **GEMESSEN LIVE (OWNER, 2026-09-01, Schritt 3 des Live-Tests der Scheibe 4):** Wird die
+    gehostete Seite mit einer Klick-Kennung im Query-String aufgerufen und die Conversion erst
+    auf einer FOLGESEITE ausgelöst, trägt `location.href` die Klick-Kennung nicht mehr,
+    `extractGoogleClickIds` findet nichts, `buildGoogleEvent` verwirft mit `no_click_id`, und
+    **es entsteht kein Ereignis.**
+    **SACHKORREKTUR 2026-09-02 — ERSETZT, NICHT GESTEMPELT.** Hier stand "über eine echte
+    Anzeige aufgerufen". Der Query-String war **von Hand gesetzt** (OWNER-ANGABE 2026-09-02;
+    Volltext in VERMERK 10, Abschnitt (b)). **DER BEFUND IST DAVON UNBERÜHRT UND WIRD NICHT
+    SCHWÄCHER:** Dass `location.href` nach einem Seitenwechsel den Query-String nicht mehr
+    trägt, ist eine **Eigenschaft des Browsers** — sie hängt nicht daran, wer ihn geschrieben
+    hat. Korrigiert ist die Herkunft der Eingabe, nicht die Beobachtung.
+    **DAS IST KEIN DEFEKT DER SCHEIBE 4**, sondern die Folge der gewählten Gestalt: Der
+    OFFLINE CONVERSION IMPORT ruht auf der Klick-Kennung, und "KEINE KLICK-KENNUNG, KEINE
+    CONVERSION" ist als Eigenschaft der Gestalt schon in docs/roadmap.md, Eintrag 11.2
+    festgehalten. **NEU IST NICHT DIE EIGENSCHAFT, SONDERN IHRE REICHWEITE:** Sie trifft nicht
+    nur organischen Traffic und Direktaufrufe, sondern **jeden mehrschrittigen Funnel** — und
+    das ist der Regelfall eines Media Buyers, nicht der Sonderfall.
+    **DIE ABHILFE IST BENANNT UND VERSPERRT, und dieser Satz ist der eigentliche Inhalt des
+    Eintrags:** Eine Kennung über Seitengrenzen zu tragen hiesse, sie zu **SPEICHERN** — in
+    einem Cookie, im `sessionStorage`, in einer Serverzeile. **DIE AUFLAGE TRANSIT-ONLY ERLAUBT
+    KEINE ABLAGE** (OWNER-ENTSCHEIDUNG 2026-08-28, dritte Datenklasse: "niemals in die
+    Datenbank, niemals in ein Log, kein Hashen"; Fundstelle docs/offene-punkte.md,
+    "DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE", Block vom 2026-08-28).
+    **WER DEN FUNNEL MESSBAR MACHEN WILL, ÖFFNET ALSO DIE DATENKLASSEN-FRAGE ERNEUT** — es ist
+    keine Bau-Entscheidung, sondern eine OWNER-Entscheidung über die Reichweite von
+    TRANSIT-ONLY. **HIER WIRD SIE NICHT VORBEREITET UND NICHT EMPFOHLEN.**
+    **DER BEZUG ZU PHASE 17 GEHÖRT DAZU:** "Phase 17 — Multi-Page-Funnels" steht offen in der
+    Roadmap. **Diese Scheibe hat gemessen, dass die beiden Vorhaben kollidieren** — ein
+    Multi-Page-Funnel ohne getragene Klick-Kennung erzeugt für Google nichts, und mit ihr
+    verlangt er eine Ablage, die heute verboten ist. **Wer Phase 17 zuschneidet, findet die
+    Frage hier vor, statt sie neu zu entdecken.**
+    **AUSDRÜCKLICH NICHT GESAGT:** dass TRANSIT-ONLY zu eng ist, dass ein Cookie zulässig
+    wäre, oder dass ein anderes Ziel dasselbe Problem hätte. **KEINE EMPFEHLUNG.**
+    GEMELDET 2026-09-01, NICHT GEBAUT.
+    TRIGGER: der Zuschnitt der Phase 17, ODER eine erneute Owner-Befassung mit der dritten
+    Datenklasse — je nachdem, was zuerst eintritt.
+
+- DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER (Trigger: der Zuschnitt der Scheibe 1b — EINGETRETEN; der Eintrag bleibt offen und wird nicht abgehakt):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 42, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+42. **DER RESOLVER SCHREIBT BEI TOTEM ZUGANGSDATUM EINE FEHLERZEILE JE BESUCHER,
+    UNGEDROSSELT.** GEMESSEN am Code (CC, 2026-09-02): `usableTokenFromRow`
+    (src/lib/capi/token.ts, modul-privat) schreibt bei toter Uhr 1
+    `console.error("[capi/resolve] secret unusable", …)` mit dem `reason`
+    `access_token_expired` und gibt `null` zurück.
+    **DER KOMMENTARKOPF DERSELBEN FUNKTION BENENNT DIE LAGE BEREITS SELBST** — "Es gibt KEINE
+    Drosselung. Ein Projekt mit kaputtem Chiffrat schreibt eine Zeile PRO BESUCHER" —,
+    allerdings am Fall des KAPUTTEN CHIFFRATS; **die tote Uhr 1 liegt auf demselben Weg und
+    ist dort nicht genannt.**
+    **DIE ZEILE NENNT KEIN PROJEKT.** Sie trägt den Ziel-Namen und einen SELBSTVERGEBENEN
+    Grund; die `projectId` fehlt absichtlich, und der Kommentar begründet das mit dem Pfad
+    selbst — er läuft bei JEDEM Besucher JEDER Kundenseite, und eine Projekt-Kennung je
+    Beacon wäre eine Datenerhebung, die niemand beschlossen hat.
+    **WARUM DAS ZÄHLT — IN ZWEI RICHTUNGEN, UND BEIDE GEHÖREN HIN:**
+    · **ES IST HEUTE DIE EINZIGE BEOBACHTBARE SIGNATUR DES BRUCHS**, den Scheibe 1b beheben
+      soll — also die Live-Test-Achse für 1b. Sie ist eine ANWESENHEIT und keine Abwesenheit,
+      anders als der Erfolgsbeleg des Adapters, der nach VERMERK 10, Abschnitt (d), ein
+      SCHWEIGEN ist; und sie ist im Wortlaut von allen drei Adapter-Zeilen unterscheidbar.
+      **SIE ORDNET SICH ABER KEINEM PRÜFLING ZU**, weil sie kein Projekt nennt — wer mit ihr
+      misst, misst über alle Projekte zugleich.
+    · **ES IST UNBEGRENZTES SCHREIBEN AUF DEM MEISTGETROFFENEN PFAD DER PLATTFORM.** Nach
+      Ablauf der Stunde erzeugt jeder Besucher jeder Seite eines betroffenen Projekts eine
+      Fehlerzeile, ohne Zählung und ohne Ende.
+    **KEIN VORSCHLAG ZUR DROSSELUNG**, und ausdrücklich auch keiner dazu, ob die `projectId`
+    hineingehörte. GEMELDET 2026-09-02, NICHT GEBAUT.
+    TRIGGER: der Zuschnitt der Scheibe 1b — er berührt beide Richtungen zugleich.
+
+    **VERMERK 2026-09-03 — TRIGGER EINGETRETEN, UND 1b-1 SCHLIESST DIESEN EINTRAG
+    AUSDRÜCKLICH AUS. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK
+    TRITT DANEBEN.**
+    **DIE SCHEIBE 1b ENTSTEHT IN ZWEI SCHRITTEN — 1b-1 (die Klammer) und 1b-2 (der Takt);**
+    der Nachtrag dazu steht am Ende der bindenden Entscheidung (7). **DER TRIGGER-WORTLAUT
+    OBEN ZEIGT AUF DAS PAKET UND IST UNTER DIESER ZERLEGUNG UNVERÄNDERT RICHTIG.**
+    Der Zuschnitt steht (s. den Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der
+    Scheibe 1b des Schnitts der Phase 11.2") und führt diesen Eintrag unter "Was
+    ausdrücklich draussen bleibt, je mit seinem Grund".
+    **BEIDE RICHTUNGEN BLEIBEN DAMIT OFFEN, UND SIE BLEIBEN ES AUS VERSCHIEDENEN GRÜNDEN:**
+    Die **Drosselung** ist nicht Gegenstand der Klammer — sie liegt auf dem Ingest-Pfad, und
+    1b-1 hält `src/lib/capi/ingest.ts` und `src/lib/capi/token.ts` ausdrücklich unberührt.
+    Die **Live-Test-Achse** wird von der Klammer nicht gebraucht: Der Nachweis von 1b-1
+    läuft über die bestehende Beweis-Route, nicht über die Fehlerzeile.
+    **WAS DAS FÜR 1b-2 HEISST UND HIER NUR BENANNT WIRD:** Die Zeile bleibt die einzige
+    beobachtbare Signatur des Bruchs, den ein Takt beheben soll — **und sie ordnet sich
+    weiterhin keinem Prüfling zu**, weil sie kein Projekt nennt.
+    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT. KEINE EMPFEHLUNG** — weder zur
+    Drosselung noch dazu, ob die `projectId` hineingehörte.
+    PROVENIENZ: Dass der Trigger eingetreten ist, ist eine FOLGE aus seinem Wortlaut und der
+    Existenz des Zuschnitts (CC, 2026-09-03). Der Ausschluss ist ein ARCHITEKTEN-ZUSCHNITT
+    vom 2026-09-03, die Zerlegung in zwei Schritte eine ARCHITEKTEN-FESTLEGUNG desselben
+    Tages; keine Messung.
+
+    **ZWEITER VERMERK 2026-09-03 — SCHEIBE 1b-2a NIMMT DIESEN EINTRAG EBENFALLS NICHT AUF,
+    ABER SIE ÄNDERT SEINEN GEGENSTAND. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN.**
+    Der Zuschnitt steht (s. den Abschnitt "Die Rettung am Beacon — Scheibe 1b-2a des
+    Schritts 1b-2 der Scheibe 1b") und führt ihn dort unter "Was diese Scheibe ausdrücklich
+    nicht baut, je mit Grund".
+    **WAS SICH ÄNDERT, IST DIE URSACHE DER ZEILE UND NICHT IHRE HÄUFIGKEIT:** Heute schreibt
+    `usableTokenFromRow` sie, sobald das Zugangsdatum tot ist — und tot ist es nach einer
+    Stunde ohne Erneuerung, also regelmässig. **NACH 1b-2a BLEIBT ALS URSACHE NUR NOCH DAS
+    TOTE ERNEUERUNGS-TOKEN**, denn ein erneuerbarer Zugang wird dann erneuert, statt eine
+    Zeile zu erzeugen.
+    **UND GENAU DAS MACHT DEN POSTEN NICHT KLEINER, SONDERN ANDERS — der Satz gehört hierher,
+    sonst liest die nächste Runde ihn als halb erledigt: EIN TOTES ERNEUERUNGS-TOKEN BEHEBT
+    KEIN CODE.** Es verlangt eine Neu-Autorisierung durch den Kunden. Die Fehlerzeile
+    beschreibt danach einen Zustand, der **bis zu einer Handlung ausserhalb des Systems
+    bestehen bleibt** — sie wird damit seltener, aber JEDE einzelne wiegt schwerer, und
+    ungedrosselt ist sie weiterhin.
+    **DER EINTRAG BLEIBT OFFEN, WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN TRIGGER
+    STEHT WÖRTLICH WIE ZUVOR.** **KEINE EMPFEHLUNG** — weder zur Drosselung noch dazu, ob
+    die `projectId` hineingehörte.
+    PROVENIENZ: ARCHITEKTEN-ZUSCHNITT 2026-09-03, auf Owner-GO. Dass nach 1b-2a nur noch das
+    tote Erneuerungs-Token als Ursache bleibt, ist eine **ABLEITUNG** aus den vier Lagen
+    jenes Zuschnitts, **keine Messung** — gebaut ist nichts.
+
+    **DRITTER VERMERK 2026-09-03 — DIE ZEILE VERSCHWINDET NICHT, SIE WIRD SELTEN. DIE
+    ABLEITUNG DES ZWEITEN VERMERKS WAR ZU WEIT, UND DAS WIRD HIER RICHTIGGESTELLT STATT
+    GESTEMPELT.** Der Text darüber bleibt ZEICHEN FÜR ZEICHEN stehen; überholt ist eine
+    ABLEITUNG, die dort ausdrücklich als solche gekennzeichnet ist.
+    **WAS DER ZWEITE VERMERK SAGTE:** "NACH 1b-2a BLEIBT ALS URSACHE NUR NOCH DAS TOTE
+    ERNEUERUNGS-TOKEN, denn ein erneuerbarer Zugang wird dann erneuert, statt eine Zeile zu
+    erzeugen."
+    **WAS AM GEBAUTEN CODE GILT (GEMESSEN, CC, 2026-09-03, und LIVE bestätigt, OWNER,
+    2026-09-03 — s. VERMERK 12, Abschnitte (b) bis (d)): DER `console.error` STEHT VOR DER
+    VERZWEIGUNG UND WIRD IN BEIDEN FÄLLEN GESCHRIEBEN.** Ein erneuerbarer Zugang wird
+    erneuert **UND** erzeugt die Zeile. Was die Fälle trennt, ist allein der `reason`.
+    **DREI URSACHEN STATT EINER, und sie sind verschieden schwer:**
+    · **`access_token_expired` — DIE RETTUNG GREIFT.** Ein NORMALVORGANG. Er tritt je
+      Projekt und Stunde höchstens einmal auf, nicht mehr je Besucher; **das ist die
+      Verbesserung, und sie ist real.**
+    · **`refresh_token_expired` — ECHTER AUSFALL**, den kein Code behebt. Er verlangt eine
+      Neu-Autorisierung durch den Kunden und bleibt bis dahin bestehen.
+    · **DER BESTÄTIGUNGS-BEACON ERZEUGT SIE AUCH IM ERFOLGSFALL.** Er durchläuft den
+      Resolver, sieht den alten Token und kehrt VOR dem Forward-Zweig zurück — er rettet
+      nicht. **Ein Conversion-Beacon-PAAR hinterlässt damit auch bei geglückter Rettung
+      eine Fehlerzeile.** ABLEITUNG aus dem Kontrollfluss; am Log ist nicht entscheidbar,
+      welche der zwei Zeilen um 16:47:07 von ihm stammte.
+    **WAS SICH NICHT ÄNDERT UND WAS SCHLIMMER GEWORDEN IST:** Die Zeile ist **seltener**
+    geworden — sie hängt nicht mehr an jedem Besucher einer abgelaufenen Stunde.
+    **UNGEDROSSELT IST SIE WEITERHIN**, und der Fall, in dem sie es am teuersten ist, ist
+    **derselbe geblieben**: ein Ziel mit lebender Uhr 2 und dauerhaft scheiternder
+    Erneuerung schreibt sie je Beacon — und ruft dabei zusätzlich je Beacon den Anbieter.
+    **DIE ZWEITE RICHTUNG DES EINTRAGS — die Live-Test-Achse — HAT SICH DAMIT VERSCHOBEN:**
+    Die Zeile ist **nicht mehr die Signatur des Bruchs**, sie ist ab jetzt die Signatur
+    **eines von drei Zuständen**. **Wer mit ihr misst, misst die Anwesenheit eines
+    Wortes, nicht mehr die eines Defekts.** Der Live-Nachweis der Scheibe 1b-2a ist genau
+    deshalb NICHT über sie geführt worden, sondern über den FOLGENDEN Beacon (VERMERK 12,
+    Abschnitt (c)).
+    **DER EINTRAG WIRD NICHT ABGEHAKT UND NICHT UMFORMULIERT; SEIN TRIGGER STEHT WÖRTLICH
+    WIE ZUVOR. KEINE EMPFEHLUNG** — weder zur Drosselung noch dazu, ob die `projectId`
+    hineingehörte.
+    **DIE MEHRDEUTIGKEIT SELBST IST EIN EIGENER POSTEN GEWORDEN**, weil sie eine andere
+    Frage stellt als dieser Eintrag: nicht "wie oft", sondern "was bedeutet sie".
+    PROVENIENZ: der Code-Befund GEMESSEN (CC, 2026-09-03); die drei Ursachen sind eine
+    **ABLEITUNG** aus dem Kontrollfluss, gestützt auf die Live-Beobachtungen vom
+    2026-09-03 (OWNER). **Keine Messung der Häufigkeit** — sie ist nicht erhoben.
+
+- STIRBT DAS ERNEUERUNGS-TOKEN, IST DER AUSFALL FÜR NIEMANDEN SICHTBAR (Trigger: die nächste Arbeit an der Ziel-Karte, ODER der Statuswechsel auf "In Produktion", ODER der erste Kunde mit einer Google-Verbindung):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 50, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+50. **STIRBT DAS ERNEUERUNGS-TOKEN, IST DER AUSFALL FÜR NIEMANDEN SICHTBAR.**
+    **DER BEFUND — GEMESSEN am Repo (CC, 2026-09-03):** Die Oberfläche sagt weiterhin
+    "Zugangsdaten hinterlegt": `listConfiguredTargets` (src/app/projects/actions.ts)
+    selektiert aus `project_secrets` ausschliesslich `target` — **keine Uhr, kein
+    `secret_enc`** (dieselbe Messung wie in Vorrats-Eintrag 43). Die Seite läuft, und
+    **die Conversions verschwinden still.**
+    **DER EINZIGE ORT, AN DEM DER ZUSTAND HEUTE ERSCHEINT, IST EINE LOGZEILE** —
+    `[capi/resolve] secret unusable` mit dem `reason` `refresh_token_expired`
+    (`usableTokenFromRow`, src/lib/capi/token.ts). **Die sieht kein Kunde, und der
+    Betreiber muss sie SUCHEN.**
+
+    **DER VORSCHLAG KOMMT VOM OWNER (2026-09-03) UND IST HIER ABGELEGT, NICHT
+    ZUGESCHNITTEN:** eine Anzeige im Dashboard, die den Kunden zur Neu-Autorisierung
+    auffordert.
+
+    **ER ZERFÄLLT IN ZWEI DINGE MIT SEHR UNTERSCHIEDLICHEM PREIS, UND DIESE TRENNUNG IST
+    DER EIGENTLICHE INHALT DIESES EINTRAGS** — wer sie nicht mitliest, schneidet beide
+    als eine Arbeit zu und bezahlt für die billigere den Preis der teureren:
+    · **DIE AUSFALLMELDUNG ("die Verbindung ist tot") IST DIE BILLIGERE.** Der Zustand
+      wird **HEUTE SCHON ERKANNT**: `hasLiveRefreshToken` (ebenda, modul-privat) trifft
+      die Unterscheidung an **genau einer Stelle** — GEMESSEN am Repo (CC, 2026-09-03):
+      eine Definition, ein Aufrufer —, und der Resolver schreibt bereits eine Zeile mit
+      `refresh_token_expired`. **WAS FEHLT, IST EIN WEG VON DORT IN DIE OBERFLÄCHE.**
+    · **UND DER RESOLVER DARF IHN NICHT SELBST GEHEN.** Er führt die `projectId`
+      **bewusst nicht** — Invariante **(I-4)** der Scheibe 1b-2a, und der Grund steht am
+      Kopf von `usableTokenFromRow`: Dieser Pfad läuft bei JEDEM Besucher JEDER
+      Kundenseite, und eine Projekt-Kennung je Beacon wäre eine Datenerhebung, die
+      niemand beschlossen hat. GEMESSEN (CC, 2026-09-03): **keine** der Logzeilen des
+      Resolvers trägt eine. **Ein Zuschnitt, der den Weg über den Resolver nimmt, bricht
+      diese Invariante — und zwar an der teuersten Stelle des Systems.**
+    · **DIE VORWARNUNG ("läuft in drei Tagen ab") IST DIE TEURERE.** Sie braucht den
+      **Ablaufzeitpunkt**, und der steckt im Chiffrat: **keine Spalte, keine
+      SQL-Abfrage, die Datenbank hat den Schlüssel nicht.** GEMESSEN am Repo (CC,
+      2026-09-03): Keine Migration legt eine Ablauf-Spalte auf `project_secrets` an.
+      **SIE HÄNGT DAMIT AN DERSELBEN KLARTEXT-SPALTEN-FRAGE WIE DER ZEITGETAKTETE
+      AUSLÖSER** — Befund (1) des Zuschnitts zu Schritt 1b-1, "DER ABLAUFZEITPUNKT
+      STECKT IM CHIFFRAT, IN KEINER SPALTE". Dass es dieselbe Frage ist, ist eine
+      **ABLEITUNG** aus jenem Befund und keine Messung.
+
+    **DIE VORBEDINGUNG, DIE JEDER ZUSCHNITT DER VORWARNUNG ZUERST BEANTWORTEN MUSS —
+    UNGEMESSEN:** Ob Google nach dem Statuswechsel auf "In Produktion" überhaupt noch
+    einen Ablaufzeitpunkt für das Erneuerungs-Token mitliefert. **Der Zeiger steht in
+    docs/ziel-befunde.md, Teil (bx)**, und er ist dort ausdrücklich offen gelassen: Beide
+    Erklärungen tragen die Beobachtung gleich gut, und "WER SIE TRENNEN WILL, BRAUCHT
+    DIESELBE MESSUNG NACH DER VERIFIZIERUNG."
+    **OHNE IHN KANN KEINE ANZEIGE VORHERSAGEN, DASS ETWAS AUSLÄUFT — sie kann nur melden,
+    dass es bereits kaputt ist.** Wer die Vorwarnung ohne diese Messung zuschneidet, baut
+    eine Anzeige, die im Produktivbetrieb **keine Datengrundlage** hat.
+
+    **WAS ZUR LEBENSDAUER BEKANNT IST, JE MIT PROVENIENZ UND NICHT VERMISCHT:**
+    · **GEMESSEN:** Im Publishing-Status "Testing" lebt das Erneuerungs-Token **sieben
+      Tage** — Vorbedingung (iv) im Abschnitt "1b als Folgetask", an eigenen Daten
+      wiedergefunden (VERMERK 6, Ableitung 3, und der Nachtrag vom 2026-09-03 mit dem
+      konkreten Datum).
+    · **ABLEITUNG, NICHT LESUNG — UND DIESE KENNZEICHNUNG IST GEGENÜBER DER VORLAGE
+      DIESER RUNDE VERSCHÄRFT:** Dass nach dem Statuswechsel die Frist entfällt und das
+      Token dann nur noch durch Ereignisse stirbt, ist **die UMKEHRUNG einer gelesenen
+      Bedingung**, nicht die gelesene Bedingung selbst. Gelesen ist ausschliesslich der
+      Satz des Anbieters über den **Testing**-Zustand ("…publishing status of 'Testing'
+      is issued a refresh token expiring in 7 days", docs/ziel-befunde.md, Teil (af)).
+      **Aus "im Zustand A gilt X" folgt nicht "ausserhalb von A gilt X nicht"** — das ist
+      genau der Schluss, den Teil (bx) für die Nachbaraussage schon einmal gezogen und
+      dann als **widerlegt** protokolliert hat.
+      **KEIN Aufruf, keine Beobachtung.** Wer diese Angabe als GELESEN zitiert, zitiert
+      eine Folgerung als Quelle.
+
+    **DER NEBENEFFEKT, DER DEN EINTRAG MIT 48 VERBINDET:** Eine Ausfallmeldung im
+    Dashboard löste das Log-Problem **an der Wurzel** — niemand müsste mehr nach
+    `refresh_token_expired` filtern, und die Gewöhnung an die mehrdeutige Fehlerzeile
+    hätte keinen Gegenstand mehr.
+    **DIE ABGRENZUNG GEHÖRT DAZU, sonst laufen zwei Fassungen derselben Sache
+    nebeneinander: 48 fragt, WAS DIE LOGZEILE BEDEUTET. Dieser Eintrag fragt, WO DER
+    ZUSTAND STATTDESSEN ERSCHEINEN SOLLTE.** Zwei verschiedene Fragen an demselben
+    Zustand.
+
+    GEMELDET, NICHT GEBAUT. **KEINE EMPFEHLUNG**, wie die Anzeige aussähe, wo sie sässe,
+    oder welcher der beiden Teile zuerst käme.
+    TRIGGER: die nächste Arbeit an der Ziel-Karte, **ODER** der Statuswechsel auf
+    "In Produktion", **ODER** der erste Kunde mit einer Google-Verbindung.
+    PROVENIENZ: **OWNER-VORSCHLAG 2026-09-03**; die Code-Aussagen **GEMESSEN am Repo**
+    (CC, 2026-09-03, Aufklärungsrunde desselben Tages); dass die Vorwarnung an derselben
+    Frage hängt wie der Zeitplan, ist eine **ABLEITUNG** aus Befund (1) des
+    1b-1-Zuschnitts und keine Messung; die Einordnung der Statuswechsel-Angabe als
+    Ableitung statt Lesung ist **GEMESSEN am Dateitext** (CC, 2026-09-03, an
+    docs/ziel-befunde.md, Teile (af) und (bx)).
+
+    **VERMERK 2026-09-03 — DIE TRENNUNG DIESES EINTRAGS IST ÜBERHOLT UND DURCH EINE
+    ANDERE ERSETZT. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK
+    TRITT DANEBEN. DER TRIGGER IST UNANGETASTET.**
+    **WAS ÜBERHOLT IST — GENAU EINE ACHSE, NICHT DER GANZE EINTRAG:** die Sortierung in
+    **"billige Ausfallmeldung / teure Vorwarnung"**. Sie ruhte auf dem Schluss, die
+    Vorwarnung hänge "an DERSELBEN KLARTEXT-SPALTEN-FRAGE WIE DER ZEITGETAKTETE
+    AUSLÖSER".
+    **DER GRUND, WARUM SIE FÄLLT (ARCHITEKTEN-BEFUND 2026-09-03): EINE SERVERAKTION HAT
+    DEN CHIFFRIER-SCHLÜSSEL.** Der erste Halbsatz des Eintrags stimmt weiterhin — der
+    Ablaufzeitpunkt steckt im Chiffrat, und die **Datenbank** hat den Schlüssel nicht.
+    **Der Schluss stimmt nicht:** Eine Aktion kann dasselbe tun wie `usableTokenFromRow`
+    (src/lib/capi/token.ts) — lesen, entschlüsseln, beide Uhren prüfen —, beim Laden des
+    Dashboards und abseits jedes Beacons. **Der Satz galt einem ZEITPLAN IN POSTGRES und
+    ist ungeprüft auf die OBERFLÄCHE übertragen worden.**
+    **DIE TRENNUNG, DIE AN IHRE STELLE TRITT, LÄUFT AUF EINER ANDEREN ACHSE:**
+    **ABGELAUFEN NACH EIGENER UHR** gegen **WIDERRUFEN**. Die erste steht in der Nutzlast
+    und braucht keinen Schreibvorgang; die zweite ist nur beim Versuch erfahrbar und
+    bräuchte als einzige Lage Persistenz. **Volltext im Abschnitt "Die Ampel an der
+    Ziel-Karte — Scheibe 11.2b"**, dort unter "Die zwei Todesarten" — hier NICHT
+    verdoppelt.
+    **DIE ERSTE HÄLFTE DIESES EINTRAGS WIRD MIT SCHEIBE 11.2b GEBAUT.** Sie umfasst nach
+    der neuen Trennung **beide** ursprünglich getrennten Anzeigen: Ausfall **und**
+    Vorwarnung (OWNER-ENTSCHEIDUNG 2026-09-03). Was der Eintrag als "die teurere" führte,
+    ist es nicht.
+    **DIE ZWEITE HÄLFTE BLEIBT OFFEN UND BEHÄLT IHREN EIGENEN TRIGGER:** die
+    **widerrufene** Verbindung. Sie ist am Rückgabewert der Erneuerung nicht von
+    "abgelaufen" zu trennen — beide münden in `invalid_grant`, sobald der Anbieter
+    gefragt wird — und steht im Zuschnitt der Scheibe 11.2b unter "Was die Scheibe 11.2b
+    ausdrücklich nicht baut, je mit Grund", mit dem Trigger "die erste Messung, die
+    `invalid_grant` bei LEBENDER Uhr zeigt".
+    **WAS AM EINTRAG UNBERÜHRT BLEIBT UND WEITER TRÄGT:** der Befund selbst (der Ausfall
+    ist für niemanden sichtbar), die drei gemessenen Code-Aussagen, die Invariante (I-4)
+    als Riegel gegen den Weg über den Resolver, die ungemessene Vorbedingung aus Teil
+    (bx), die Abgrenzung zu Eintrag 48 — **und sein TRIGGER, wörtlich wie zuvor.**
+    **DER EINTRAG WIRD NICHT ABGEHAKT.** Ein Zuschnitt ist kein Vollzug; abgehakt wird
+    hier ohnehin nicht (s. die Bauform an den Einträgen 7, 15 und 35).
+    PROVENIENZ: **ARCHITEKTEN-BEFUND 2026-09-03**, auf Owner-GO; die Code-Aussage, dass
+    eine Serveraktion entschlüsseln kann, ist **GEMESSEN am Repo** (CC, 2026-09-03) — die
+    Chiffrier-Kennung wird aus der Umgebung gelesen, nicht aus der Datenbank. **Keine
+    Messung an einer Oberfläche.**
+
+    **ZWEITER VERMERK 2026-09-04 — DIE ERSTE HÄLFTE IST GEBAUT UND LIVE BEWIESEN. DER
+    TEXT DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN; DIESER VERMERK TRITT DANEBEN.**
+    **WAS GEBAUT IST:** Die Scheibe 11.2b (Bau-Commit `7288f90`, s. VERMERK 13) zeigt den
+    Ausfall **und** die Vorwarnung an der Ziel-Karte. Der Weg von `hasLiveRefreshToken` in
+    die Oberfläche, den dieser Eintrag als "WAS FEHLT" benennt, ist gebaut — **aber NICHT
+    über den Resolver**, sondern über eine eigene Serveraktion
+    (`listTargetCredentialStates`), die beim Laden des Dashboards liest, entschlüsselt und
+    Uhr 2 deutet.
+    **DIE INVARIANTE (I-4) IST DAMIT EINGEHALTEN UND NICHT UMGANGEN**, und das ist genau
+    der Punkt, den dieser Eintrag selbst als den teuersten benennt: Der Resolver führt
+    weiterhin **keine `projectId`**, er ist mit keiner Zeile angefasst worden, und der
+    Ingest-Pfad läuft unverändert. Der Weg in die Oberfläche geht **neben** ihm her.
+    **WAS DER EINTRAG RICHTIG GESEHEN HAT — die Ausfallmeldung war die billigere Hälfte:**
+    Der Zustand wurde bereits erkannt; gefehlt hat allein der Weg. **WORIN ER SICH IRRTE,
+    steht schon im Vermerk vom 2026-09-03 darüber** und ist mit dieser Scheibe eingelöst:
+    Die Vorwarnung war **nicht** die teurere — eine Serveraktion hat den
+    Chiffrier-Schlüssel, und damit fiel die Klartext-Spalten-Frage weg.
+    **DIE ZWEITE HÄLFTE BLEIBT OFFEN UND BEHÄLT IHREN EIGENEN TRIGGER:** die **WIDERRUFENE**
+    Verbindung. Sie ist am Rückgabewert der Erneuerung nicht von "abgelaufen" zu trennen —
+    beide münden in `invalid_grant`, sobald der Anbieter gefragt wird — und bräuchte als
+    einzige Lage **Persistenz**. Ihr Trigger steht im Zuschnitt der Scheibe 11.2b unter
+    "Was die Scheibe 11.2b ausdrücklich nicht baut, je mit Grund": **die erste Messung, die
+    `invalid_grant` bei LEBENDER Uhr zeigt.**
+    **DIE UNGEMESSENE VORBEDINGUNG AUS TEIL (bx) IST DAVON UNBERÜHRT UND GILT WEITER:** Ob
+    Google nach dem Statuswechsel auf "In Produktion" überhaupt noch einen Ablaufzeitpunkt
+    liefert, ist **nicht gemessen**. Trägt er keinen, greift die Vorwarn-Schwelle nie, und
+    die Karte steht auf `unknown_expiry`. **Das ist gebaut und kein Defekt** — aber es
+    heisst, dass die Vorwarnung im Produktivbetrieb ihre Datengrundlage verlieren kann.
+    **DER EINTRAG WIRD NICHT ABGEHAKT, UND DAS IST DIE BAUFORM DIESER DATEI, KEINE
+    UNENTSCHLOSSENHEIT:** Der Vorrat kennt kein Abhaken; er kennt einen eigenen datierten
+    Absatz UNTER dem unveränderten Eintrag — so bei Eintrag 7, 15 und 35. **Diese Runde
+    folgt ihr.** **SEIN TRIGGER STEHT WÖRTLICH WIE ZUVOR**, und zwei seiner drei Hälften
+    sind unverändert offen: der Statuswechsel auf "In Produktion" und der erste Kunde mit
+    einer Google-Verbindung.
+    **WARUM ER STEHEN BLEIBT — ZWEI GRÜNDE, und der zweite wiegt schwerer:** (1) Seine
+    **MESSUNG**, dass `listConfiguredTargets` ausschliesslich `target` selektiert, ist der
+    Beleg, auf dem die zweite Aktion überhaupt ruht. (2) Seine **TRENNUNG der zwei Hälften**
+    ist der Maßstab für die verbliebene: Wer die widerrufene Verbindung später zuschneidet,
+    findet hier, warum sie als einzige Persistenz braucht — und warum der Weg über den
+    Resolver auch dann versperrt bleibt.
+    PROVENIENZ: der Bau **GEMESSEN am Repo** (CC, 2026-09-04); der Live-Nachweis
+    **GEMESSEN 2026-09-03/04 (OWNER)**, s. VERMERK 13, Abschnitt (b). Dass (I-4)
+    eingehalten ist, ist **GEMESSEN am Diff** (`src/lib/capi/**` liegt nicht darin), keine
+    Zusage.
+
+- DER OAUTH-CALLBACK ZIEHT DEN VERSIONS-ZÄHLER NICHT MIT (Trigger: die nächste Arbeit am Schreibpfad der Callback-Route):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 53, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+53. **DER OAUTH-CALLBACK ZIEHT DEN VERSIONS-ZÄHLER NICHT MIT — DER RIEGEL DER SCHEIBE
+    1b-2b DECKT IHN DESHALB NICHT.**
+    **DER BEFUND — GEMESSEN am Repo (CC, 2026-09-05, Gate G4 der Stufe 1 zur Scheibe
+    1b-2b):** Der Schreibvorgang der Callback-Route
+    (src/app/api/oauth/google/callback/route.ts) ist ein `upsert` mit Konflikt-Auflösung auf
+    `(project_id, target)`. Er trifft damit **nicht nur die Erst-Anlage, sondern auch eine
+    BESTEHENDE Zeile** — das Neu-Verbinden. Dass dieser Fall real ist, steht in dieser Datei
+    bereits: VERMERK 13, Abschnitt (c), zwei Neu-Verbindungen an einem Tag.
+    **WAS DARAUS FOLGT:** Verbindet der Betreiber neu, während ein Erneuerungslauf zwischen
+    dem Lesen und dem Schreiben steht, schreibt der Callback das Chiffrat **ohne
+    Zähler-Sprung**. Der Erneuerungslauf trifft danach seine Bedingung und **überschreibt
+    das frisch verbundene Zugangsdatum** mit dem aus dem alten Erneuerungs-Token. **DER
+    RIEGEL GREIFT NICHT UND MELDET ERFOLG.**
+    **ES IST KEIN ISOLATIONSLECK**, und der Satz steht auch hier zuerst: Kein Tenant sieht
+    Daten eines anderen. **DER SCHADEN WÄRE EIN VERLORENER ZUGANG** — dieselbe Klasse, gegen
+    die die Scheibe 1b-2b gebaut wird, nur auf einer anderen Naht.
+    **WARUM DER POSTEN NICHT IN DIE SCHEIBE 1b-2b GEHÖRT, UND DAS IST SEIN EIGENTLICHER
+    INHALT: EIN UPSERT KANN "ALT + 1" GAR NICHT AUSDRÜCKEN, OHNE VORHER ZU LESEN.** Ein
+    Zähler-Sprung dort ist damit **keine Zeile, sondern eine andere Bauform** — er verlangt
+    eine Lesung vor dem Schreiben und stellt danach dieselbe Frage nach der Rückmeldung noch
+    einmal. **Eine eigene Entscheidung mit eigenem Zuschnitt.**
+    **WIE WAHRSCHEINLICH DER FALL IST, IST NICHT ERHOBEN** und wird hier nicht geschätzt.
+    **Bemerkenswert ist allein:** Der Callback ist die **einzige** Stelle im System, an der
+    ein **MENSCH** und ein **VERKEHRSGETAKTETER AUTOMATISMUS** dieselbe Zeile gleichzeitig
+    anfassen können.
+    **DIE ABGRENZUNG ZU VORRATS-EINTRAG 9 GEHÖRT DAZU, sonst liest die nächste Runde zwei
+    Fassungen derselben Sache:** Jener fragt, ob der **ANBIETER** bei der Ausstellung eines
+    neuen Zugangsdatums das vorherige entwertet — eine Frage an ein fremdes System, und dort
+    ausdrücklich als UNGEMESSEN geführt. **Dieser fragt, ob UNSER eigener zweiter Schreiber
+    den Zähler mitzieht.** Zwei verschiedene Gegenstände an derselben Zeile.
+    **VORRATS-EINTRAG 9 IST IN DIESER RUNDE NICHT ANGEFASST WORDEN**, und das ist Scope und
+    kein Urteil.
+    GEMELDET 2026-09-05, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder ein Zähler-Sprung im
+    Callback noch ein anderer Riegel dort ist hier vorgeschlagen.
+    TRIGGER: **die nächste Arbeit am Schreibpfad der Callback-Route** — dort liegt die
+    Bauform, die ein Zähler-Sprung verlangt, und eine Runde, die sie ohnehin öffnet, zahlt
+    ihn am billigsten.
+    **HIER STEHT BEWUSST KEIN ZWEITER TRIGGER AUS DEM BETRIEB** (etwa "der erste beobachtete
+    Fall"): Die Häufigkeit ist nicht erhoben, und niemand beobachtet diese Naht — ein
+    erfundener Zeitpunkt liesse den Posten als terminiert aussehen, obwohl er es nicht ist.
+    PROVENIENZ: der Code-Befund **GEMESSEN am Repo (CC, 2026-09-05)**; dass daraus ein
+    verlorener Zugang folgen kann, ist eine **ABLEITUNG aus dem Kontrollfluss** und
+    **keine Messung** — es ist kein solcher Lauf beobachtet worden. Die Einordnung als
+    eigener Posten ist eine **ARCHITEKTEN-ENTSCHEIDUNG vom 2026-09-05**.
+
+**EIN VERMERK ZUM VORRAT DER PHASE 11.8, KEIN EINTRAG** (2026-08-29): Der dortige
+Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT
+DIESER SCHEIBE GEGENSTANDSLOS.** `refreshAccessToken` liest, dechiffriert und zerlegt
+eine echte Zeile aus `project_secrets.secret_enc`; der Live-Test hat den Pfad gefahren.
+**docs/claude-history/phase-11.8-autorisierungsschicht.md WIRD DAFÜR NICHT ANGEFASST.**
+Der Sonderfall jener Datei —
+archiviert, aber nicht verschoben — ist im Verfahren ungeregelt, und ein rückwirkender
+Eingriff in eine abgeschlossene Phase wäre eine EIGENE Entscheidung. Sie steht hier
+ausdrücklich AUS. Dieser Vermerk ist der einzige Ort, an dem der Sachverhalt festgehalten
+ist; wer jene Datei liest, findet dort einen Eintrag, der nicht mehr zutrifft, und
+NICHTS, das darauf hinweist.
+**STEMPEL 2026-09-08 — DER ABSATZ DARÜBER BLEIBT WÖRTLICH:** Der Sonderfall ist an diesem
+Tag aufgelöst, jene Datei ist umgezogen; die volle Auflösung steht in ihrem Kopf. Dass sie
+für DIESEN Eintrag weiterhin nicht angefasst wird, ist davon unberührt.
+
+**EIN ZWEITER VERMERK, KEIN EINTRAG — DIE AUSLEGUNG DES SKILL-KONFLIKTS** (2026-08-29):
+Der projekteigene Skill `supabase-doku` verlangt eine Anbieter-Lesung, sobald ein Schema,
+eine Policy oder ein Constraint berührt **oder auch nur erfragt** wird. Eine
+READ-ONLY-Runde kann sie nicht erbringen: Der Anbieter-Crawl legt gemessenermassen
+Dateien an (je Navigation eine `page-*.yml`; GEMESSEN 2026-08-25, festgehalten in
+docs/immer-beachten.md).
+**DIE AUSLEGUNG (ARCHITEKT, 2026-08-29):** Der Auslöser greift NICHT, wenn die Frage
+UNSEREN Constraint betrifft und keine Anbieter-Eigenschaft — es gäbe keine
+Anbieter-Angabe, die die Antwort trüge; die Antwort steht im SQL-Editor.
+**DASS DIES EINE AUSLEGUNG IST UND KEINE REGELÄNDERUNG, IST DER GANZE ZWECK DIESES
+VERMERKS.** Der Wortlaut des Skills ist unberührt, und diese Datei ist nicht der Ort, an
+dem er geändert würde (Weg 7: docs/arbeitsweise.md, als Änderungsantrag). **ER STEHT HIER,
+DAMIT DIE NÄCHSTE KOLLISION NICHT NEU VERHANDELT WIRD** — sie ist eingetreten, sie wird
+wieder eintreten, und ohne eine festgehaltene Auslegung entscheidet sie jede Runde neu und
+möglicherweise anders.
+**DIE GRENZE:** Sie deckt AUSSCHLIESSLICH den Fall "unser eigener Constraint, keine
+Anbieter-Eigenschaft, READ-ONLY-Runde". Sie sagt NICHTS über eine Runde, die baut, und
+nichts über eine Frage nach dem VERHALTEN des Anbieters — dort greift der Auslöser
+unverändert.
+PROVENIENZ: die Kollision GEMESSEN am eigenen Lauf (CC, 2026-08-29); die Auslegung eine
+ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
+
+- DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT (Trigger: die nächste Runde, die docs/offene-punkte.md ohnehin öffnet, ODER die erste Messung am gebauten Google-Transport auf Ablage und Logausgabe):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 62, im Rahmen
+  des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und
+  NICHT umformuliert; die Nummer ist die des Vorrats.
+
+62. **DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT.**
+    Der Block vom 2026-08-28 in `docs/offene-punkte.md` (Eintrag "DATENKLASSEN-GRENZE VOR
+    DER ERSTEN PII-SCHEIBE") stellt unter Punkt (a) fest, die Auflage TRANSIT-ONLY sei für
+    die Klick-Kennung **"NOCH KEIN GELEBTER STAND, SONDERN EINE VORGABE AN DIE
+    TRANSPORT-SCHEIBE"**. **ER RUHT AUF ZWEI ANGABEN, UND BEIDE TRAFEN AN JENEM TAG ZU:**
+    `'google'` stehe nicht in `TRACKING_TARGETS`, und die zwei Produktivdateien
+    `google-click-ids.ts` und `google-payload.ts` hätten **keinen Aufrufer**.
+    **BEIDES TRIFFT NICHT MEHR ZU — GEMESSEN am Repo (CC, 2026-09-08):** `src/lib/settings.ts`
+    führt `"google"` in `TRACKING_TARGETS` (seit Scheibe 3), und `forwardToGoogle`
+    (`src/lib/capi/google-forward.ts`) ruft `buildGoogleEvent` und `extractGoogleClickIds`
+    (seit Scheibe 4). **DIE VORGABE IST DAMIT GEBAUTER TRANSPORT GEWORDEN.**
+    **WAS DARAUS FOLGT, IST NICHT ERHOBEN, UND DAS IST DER GANZE PUNKT DIESES EINTRAGS:**
+    Ob die Auflage TRANSIT-ONLY im gebauten Transport **tatsächlich eingehalten** wird — keine
+    Ablage, kein Log, kein Hashen —, **hat niemand nachgemessen.** Punkt (c) desselben Blocks
+    misst den Zustand VOR dem Transport; er ist nach Scheibe 4 nicht wiederholt worden.
+    **DER EINTRAG BEHAUPTET KEINEN VERSTOSS.** Er stellt fest, dass eine Aussage über den
+    gelebten Stand auf einer Prämisse ruht, die es nicht mehr gibt.
+    GEMELDET 2026-09-08, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder dazu, ob der Block in
+    `docs/offene-punkte.md` nachgezogen wird, noch dazu, wer die Messung fährt.
+    TRIGGER: **die nächste Runde, die `docs/offene-punkte.md` ohnehin öffnet**, ODER die
+    erste Messung am gebauten Google-Transport auf Ablage und Logausgabe.
+    PROVENIENZ: Die zwei widerlegten Angaben sind **GEMESSEN am Repo (CC, 2026-09-08)**. Dass
+    damit die Prämisse des Punktes (a) entfallen ist, ist eine **ABLEITUNG** aus diesen zwei
+    Messungen. Dass die Einhaltung ungemessen ist, ist ein **NICHT-TREFFER mit benannter
+    Achse** — Punkt (c) jenes Blocks trägt das Datum 2026-08-28 und keine spätere Wiederholung.
+
+<!-- Die Reste der Phase 11.2, gehoben 2026-09-08 -->
+
+- FÜNF RESTE AUS DER ROADMAP-ZEILE 11.2 (2026-09-08) — DIESE ZEILE IST KEIN EIGENER PUNKT,
+  SONDERN DIE KLAMMER UM DIE FÜNF DARUNTER.
+  **WOHER SIE KOMMEN:** aus der Rest-Liste im NACHTRAG 2026-09-08 der Roadmap-Zeile 11.2.
+  Jene Liste führt ACHT Nummern und SIEBEN offene Posten; Nummer (4) war schon am
+  2026-09-08 geschlossen. **DIE NUMMERN IN KLAMMERN SIND DIE DER REST-LISTE** und werden
+  NICHT neu vergeben.
+  **ZWEI DER SIEBEN STEHEN NICHT HIER, je mit Grund:** Posten (7) ist an die ROADMAP-ZEILE
+  11.5 gegangen, weil dort die Entscheidung fällt; Posten (8) ist GESTRICHEN, weil er als
+  offener Punkt bereits in docs/ziel-befunde.md geführt wird — Buchhaltung, die anderswo
+  schon steht, wird nicht umgezogen.
+  **KEINER DER FÜNF IST EINE CODE-ARBEIT.** Es sind Messungen, eine Arbeit am
+  Anbieter-Konto und eine Voraussetzung je Kunde. Genau deshalb steht der Roadmap-Marker
+  auf `[x]` und die Posten hier.
+
+- DIE SIEBEN-TAGE-FRIST UND DER STATUSWECHSEL AUF "IN PRODUKTION" (Trigger: EINGETRETEN, und
+  er trägt einen TERMIN — das Erneuerungs-Token stirbt am 2026-09-11 um 07:26:58 UTC
+  (09:26:58 Ortszeit)):
+  GEHOBEN AM 2026-09-08 aus der Roadmap-Zeile 11.2, Rest-Posten (1), im Rahmen des
+  Phasenendes der Phase 11.2.
+  **ER STEHT ZUERST, WEIL ER EINE LAUFENDE UHR TRÄGT.** Im Publishing-Status "Testing"
+  stirbt das ERNEUERUNGS-Token nach sieben Tagen. **NACH DIESEM TERMIN MELDET JEDE
+  ERNEUERUNG `dead`, und jeder Test misst das statt der Sache** — wer danach einen
+  Live-Test fährt und die Frist nicht kennt, jagt einen Defekt, den es nicht gibt.
+  **DIE ZWISCHENLÖSUNG IST KEINE BEHEBUNG, UND DAS IST DER TRAGENDE SATZ DIESES PUNKTES:**
+  Ein NEU-VERBINDEN setzt die Frist um SIEBEN TAGE zurück — GEMESSEN, zweimal. **Es
+  VERSCHIEBT den Termin und löst ihn NICHT.** Wer neu verbindet, hat denselben Punkt eine
+  Woche später wieder, und zwar ohne dass etwas rot wird.
+  **DAUERHAFT LÖST IHN NUR DER STATUSWECHSEL AUF "IN PRODUKTION" — UND DER IST KEINE
+  CODE-ARBEIT.** Er ist eine Arbeit am ANBIETER-KONTO und steht NEBEN Scheibe 1b, nicht in
+  ihr. **EIN PERFEKTER AUTOMATISMUS HÄLT DAS ZUGANGSDATUM EINE WOCHE AM LEBEN UND FÄLLT
+  DANACH TROTZDEM AUS.**
+  **KEINE EMPFEHLUNG**, ob vor dem Termin neu verbunden oder der Statuswechsel betrieben
+  wird.
+  PROVENIENZ: Der TERMIN ist GERECHNET (CC, 2026-09-04) aus
+  `refreshTokenExpiresAt.epochSeconds` = 1789111618, GEMESSEN 2026-09-04 (OWNER) beim
+  Live-Test der Scheibe 11.2b. Die FRIST selbst ist GELESEN (docs/ziel-befunde.md,
+  Google-Abschnitt, Teil (af)) und ausdrücklich NICHT gemessen — es ist kein Token bis zu
+  seinem Ablauf beobachtet worden. Die zwei Neu-Verbindungen sind GEMESSEN (OWNER,
+  2026-09-04). Die volle Herleitung stand in docs/aktiver-stand.md, Abschnitt "1b als
+  Folgetask", Vorbedingung (iv), und liegt nach Schritt 2 im Archiv
+  docs/claude-history/phase-11.2-google.md.
+
+- DER eventSource-WERT IST NICHT GEMESSEN — GEBAUT IST "WEB" ALS ENTSCHEIDUNG (Trigger: das
+  erste Instrument, das FACHLICHE Falschheit von syntaktischer Gültigkeit trennt):
+  GEHOBEN AM 2026-09-08 aus der Roadmap-Zeile 11.2, Rest-Posten (2), im Rahmen des
+  Phasenendes der Phase 11.2.
+  **DER BEFUND:** `eventSource` ist beim Offline Conversion Import PFLICHT. WELCHER der
+  Enum-Werte für diese Gestalt GILT, sagt der Anbieter nicht — für die NACHBAR-Gestalt
+  (Multi-Source) nennt dieselbe Tabelle einen konkreten Wert ("Optional. If set, must be
+  WEB."), für unsere steht nur "Required. Set to one of the enum values for EventSource".
+  Das ist ein NICHT-TREFFER MIT BENANNTER REICHWEITE, kein Übersehen.
+  **GEMESSEN IST DER TYP, NICHT DER WERT:** `eventSource` ist ein Enum, kein freier String;
+  `"WEB"` ist ein gültiges Mitglied, ein erfundener Wert nicht (Messung B1, 2026-08-28).
+  **DIE SPERRE IST DAMIT KLEINER GEWORDEN, NICHT GEFALLEN.**
+  **WARUM DER TRIGGER SO UND NICHT "die nächste Messung" LAUTET, und das ist der Inhalt
+  dieses Punktes:** Das naheliegende Instrument `validateOnly=true` beantwortet "wird die
+  Anfrage angenommen", NICHT "ist der Wert der fachlich richtige" — mit `validateOnly=true`
+  ist laut derselben Quelle GAR KEINE Diagnostik abrufbar. **Ein syntaktisch gültiges
+  Enum-Mitglied kann fachlich falsch sein, und die Schnittstelle meldet das nicht.** Eine
+  Messung mit dem falschen Instrument beantwortet die Frage nicht, sondern schliesst sie
+  scheinbar.
+  **DASS EINE CONVERSION VERBUCHT WURDE, BEANTWORTET SIE EBENFALLS NICHT:** MESSUNG G
+  (2026-09-07) belegt die Verbuchung mit `"WEB"` — sie belegt nicht, dass ein anderer Wert
+  falsch gewesen wäre, und sie sagt nichts über die WIRKUNG.
+  **KEINE EMPFEHLUNG**, welcher Wert zu wählen wäre oder wie das Instrument aussähe.
+  PROVENIENZ: Die zwei Doku-Zeilen sind GELESEN 2026-08-25 (/devguides/events/send-events,
+  Doku-Stand 2026-08-18), abgelegt in docs/ziel-befunde.md, Google-Abschnitt, Teile (aj) und
+  (ap). Der Enum-Typ ist GEMESSEN 2026-08-28 (OWNER), Messung B1, Teil (br). Die Grenze von
+  `validateOnly` ist GELESEN, Teil (p)/H4. Der Wert "WEB" ist OWNER-ENTSCHEIDUNG 2026-09-01.
+
+- DIE KOPFZEILE x-goog-user-project WIRD NICHT GESENDET — OB SIE PFLICHT IST, IST IN BEIDE
+  RICHTUNGEN UNGEMESSEN (Trigger: die erste Anfrage, die OHNE sie scheitert oder MIT ihr
+  anders ausfällt als ohne):
+  GEHOBEN AM 2026-09-08 aus der Roadmap-Zeile 11.2, Rest-Posten (3), im Rahmen des
+  Phasenendes der Phase 11.2.
+  **DIE ACHSE, OHNE DIE DER PUNKT ZU SCHWACH GELESEN WIRD:** "ungemessen in BEIDE
+  Richtungen" heisst, es ist WEDER belegt, dass sie fehlen darf, NOCH dass sie gebraucht
+  wird. Dass die bisherigen Aufrufe ohne sie durchgelaufen sind, ist KEIN Beleg für das
+  eine — es kann an der Kontoart, am Zugangsmodell oder am Umfang liegen.
+  **WARUM DAS STILL KAPUTTGEHEN KANN:** Wird sie später verlangt — etwa mit einem anderen
+  Zugangsmodell oder für ein fremdes Kundenkonto —, scheitert der Transport an einer
+  Kopfzeile, die im Code gar nicht vorkommt. Es gibt dann nichts zu debuggen, was sichtbar
+  wäre.
+  **KEINE EMPFEHLUNG**, ob sie vorsorglich gesendet werden soll.
+  PROVENIENZ: Dass sie nicht gesendet wird, ist GEMESSEN am Code; dass ihre Pflicht
+  ungemessen ist, steht in docs/claude-history/phase-11.2-google.md, Vermerk zur Scheibe 4,
+  und in docs/ziel-befunde.md, Google-Abschnitt. KEINE Messung an der Schnittstelle.
+
+- DIE WIRKUNG AUF DIE GEBOTE IST UNGEMESSEN (Trigger: der erste Lauf mit genug verbuchten
+  Conversions, dass eine Gebotsstrategie sie überhaupt verwerten kann — spätestens der erste
+  echte Ad-Traffic auf eine gehostete Seite):
+  GEHOBEN AM 2026-09-08 aus der Roadmap-Zeile 11.2, Rest-Posten (5), im Rahmen des
+  Phasenendes der Phase 11.2.
+  **DIESER PUNKT TRÄGT DIE AUFLAGE AM ROADMAP-MARKER `[x]`, und das ist sein eigentliches
+  Gewicht:** Bewiesen ist der Weg bis zur VERBUCHUNG beim Anbieter (MESSUNG G, GEMESSEN
+  2026-09-07). **NICHT bewiesen ist die WIRKUNG** — dass die verbuchte Conversion die
+  Gebotssteuerung tatsächlich erreicht. **Gemessen ist eine Conversion IN DER
+  BERICHTERSTATTUNG, nicht in der Gebotssteuerung.**
+  **DAS IST DAS PRODUKTVERSPRECHEN SELBST**, nicht ein Randdetail: Pagesmith verkauft
+  server-seitiges Tracking, damit der Werbekanal besser aussteuert. Ein Weg, der bis zur
+  Berichterstattung trägt und dort endet, hält das Versprechen nicht ein.
+  **EINE ZWEITE, GELESENE UND NICHT GEKLÄRTE HÄLFTE:** ob das 14-Tage-Fenster aus (p)/H2
+  für die gewählte Gestalt überhaupt gilt, ist GELESEN und nicht entschieden.
+  **KEINE EMPFEHLUNG**, wie die Wirkung zu messen wäre.
+  PROVENIENZ: MESSUNG G GEMESSEN 2026-09-07 (OWNER), docs/ziel-befunde.md, Google-Abschnitt,
+  Teil (cf); die Grenzen jener Messung stehen dort im Abschnitt "DIE GRENZEN". Das
+  14-Tage-Fenster ist GELESEN, Teil (p)/H2. KEINE Messung an einer Gebotsstrategie.
+
+- DER UPLOAD_CLICKS-VORBEHALT IM KUNDENKONTO — EINE VORAUSSETZUNG JE KUNDE, KEINE EINMALIGE
+  ARBEIT (Trigger: der erste FREMDE Kunde, der Google verbindet):
+  GEHOBEN AM 2026-09-08 aus der Roadmap-Zeile 11.2, Rest-Posten (6), im Rahmen des
+  Phasenendes der Phase 11.2.
+  **DER BEFUND:** Ohne eine Conversion-Action vom Typ UPLOAD_CLICKS im Kundenkonto gibt es
+  keine `productDestinationId`, an die geliefert werden könnte.
+  **DER SATZ, DER DIESEN PUNKT VON EINER ERLEDIGTEN AUFGABE TRENNT: ES IST EINE
+  VORAUSSETZUNG JE KUNDE UND KEINE EINMALIGE ARBEIT.** Dass sie im eigenen Konto erfüllt
+  ist, sagt über jedes andere Konto NICHTS. Sie tritt mit JEDEM neuen Kunden erneut ein,
+  und sie liegt in seinem Konto, nicht in unserem Code.
+  **WARUM DAS STILL KAPUTTGEHT:** Ein Kunde, dessen Konto keine solche Action führt, kann
+  Google in Pagesmith vollständig verbinden — Autorisierung, Kennungen, Ampel auf grün — und
+  es wird nie etwas verbucht. **Nichts im Produkt sagt ihm, woran es liegt.**
+  **KEINE EMPFEHLUNG**, ob das Produkt die Action prüft, anlegt oder nur erklärt.
+  PROVENIENZ: Der Vorbehalt ist OWNER-ENTSCHEIDUNG 2026-08-24 zur Gestalt und steht im
+  Volltext an der Roadmap-Zeile 11.2. Dass er je Kunde gilt, ist eine ABLEITUNG aus der Lage
+  der Action im KUNDENKONTO und keine Messung.

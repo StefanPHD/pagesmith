@@ -84,30 +84,67 @@ IST DER GANZE MANGEL: nicht, dass es keinen Testmodus gibt, sondern dass seine R
 die falsche ist.**
 
 **PHASE 11.3 BRINGT IHN AUF PROJEKT-REICHWEITE, JE (PROJEKT, ZIEL).** Danach kann ein
-Kunde die Einrichtung seines eigenen Projekts prüfen, ohne die echten Zahlen zu berühren
-und ohne dass irgendein anderes Projekt davon etwas merkt.
+Kunde die Einrichtung seines eigenen Projekts prüfen, ohne die EIGENEN Analytics-Zahlen zu
+berühren und ohne dass irgendein anderes Projekt davon etwas merkt.
+
+### Die Phase liefert SICHTBARKEIT, nicht ISOLATION
+
+**WAS DER KUNDE BEKOMMT:** Er sieht sein Ereignis in der Test-Ansicht des Anbieters
+ANKOMMEN. Der Beweis, dass die Einrichtung trägt, kommt damit vom ANBIETER — von der
+einzigen Stelle, die ihn führen kann. Unsere eigene Analytics bleibt unberührt, weil der
+Riegel dieser Phase das Ereignis aus `events` heraushält.
+
+**DER PREIS STEHT DANEBEN UND WIRD NICHT WEGGESCHRIEBEN: DER TESTKLICK ZÄHLT BEIM ANBIETER
+ALS ECHTE CONVERSION.** Er fliesst in dessen Berichterstattung und in dessen Optimierung.
+Wer diese Phase als "Testen ohne Nebenwirkung" verkauft, verkauft etwas, das kein Anbieter
+dieses Rahmens liefert.
+
+**RICHTIGGESTELLT AM 2026-09-08, NICHT GESTEMPELT — DIE ANNAHME, DIE DIESE PHASE TRUG, IST
+WIDERLEGT.** Hier stand als Gegenstand, der Kunde könne prüfen, "ohne die echten Zahlen zu
+berühren". Das ist für die Zahlen des ANBIETERS falsch: Meta sagt ausdrücklich, ein so
+markiertes Ereignis werde nicht verworfen und fliesse in Targeting und Messung. Ersetzt
+und nicht gestempelt, weil dieser Abschnitt der Massstab ist, gegen den zugeschnitten
+wird. PROVENIENZ: GELESEN 2026-09-08; Volltext in docs/ziel-befunde.md, Abschnitt "Meta
+(Conversions API)", Teil (a). **KEINE MESSUNG.**
 
 ### Der Träger des Zustands ist eine FRIST, kein Boolean
 
 **Aktiv heisst: der Ablaufzeitpunkt liegt in der Zukunft.** Nicht: ein Schalter steht auf
-wahr.
+wahr. **DIE ENTSCHEIDUNG BLEIBT — IHRE BEGRÜNDUNG IST EINE ANDERE GEWORDEN.**
 
-**DER GRUND MUSS MIT, sonst wird die Frist beim nächsten Aufräumen als Umständlichkeit
-gegen einen Boolean getauscht:** Ein vergessener Testmodus markiert ECHTE Käufe als Test.
-Sie verschwinden lautlos aus der Optimierung des Anbieters, während das Werbebudget
-weiterläuft. Der Schaden ist maximal genau dort, wo niemand hinsieht — es gibt keinen
-Fehler, keine leere Seite, keine rote Zahl; es wird nur teurer und wirkungsloser.
+**DER NEUE GRUND IST UNSERER UND NICHT METAS, und genau deshalb trägt er:** Der Riegel
+dieser Phase nimmt ein Ereignis im Testmodus aus `events` heraus. Bleibt der Testmodus
+hängen, hört die Analytics des Kunden STILL auf zu zählen, während der Anbieter
+weiterzählt. Er sieht dann eine Kurve, die gegen null läuft, und keinen Grund dafür —
+kein Fehler, keine leere Seite, keine rote Zahl. **EINE FRIST DECKELT GENAU DIESEN
+SCHADEN**, weil sie die Dauer des blinden Fensters begrenzt.
 
 **EINE FRIST LÄUFT VON ALLEIN AB. EIN BOOLEAN BLEIBT HÄNGEN.** Ein Boolean braucht eine
 zweite Handlung desselben Menschen, der die erste vergessen hat — und die einzige
 Erinnerung daran wäre eine Anzeige, die er ebenfalls nicht ansieht. Die Frist braucht
 niemanden.
 
-**DIESE FORDERUNG IST NICHT NEU UND NICHT HIER ERFUNDEN.** Sie steht seit der Vorplanung
-als Design-Anforderung in docs/claude-history/future-roadmap.md, Abschnitt
-"Tracking-Testmodus für Kunden", wörtlich: "kein stiller Dauer-Toggle — Auto-Ablauf nach
-X Stunden und/oder unübersehbarer Dashboard-Banner". Diese Phase löst die erste Hälfte
-ein; die zweite (der Banner) ist Sache der Oberflächen-Scheibe.
+**RICHTIGGESTELLT AM 2026-09-08, NICHT GESTEMPELT.** Hier stand als Grund: "Ein vergessener
+Testmodus markiert ECHTE Käufe als Test. Sie verschwinden lautlos aus der Optimierung des
+Anbieters, während das Werbebudget weiterläuft." **DAS IST WIDERLEGT** — die markierten
+Ereignisse verschwinden bei Meta gerade NICHT aus der Optimierung (docs/ziel-befunde.md,
+Abschnitt "Meta (Conversions API)", Teil (a); GELESEN 2026-09-08, KEINE Messung). Der
+gestrichene Grund zeigte in die falsche Richtung: Er befürchtete zu WENIG Zählung beim
+Anbieter, tatsächlich droht zu wenig Zählung bei UNS.
+
+**DIE WIDERLEGTE BEGRÜNDUNG STEHT IM ARCHIV WEITER, UND DIESER SATZ IST DER EINZIGE
+SCHUTZ DAGEGEN:** In docs/claude-history/future-roadmap.md, Abschnitt "Tracking-Testmodus
+für Kunden", steht sie unverändert — dort als "ECHTES RISIKO" bezeichnet, mit demselben
+Bild vom weiterlaufenden Budget. **Jene Datei ist ein ARCHIV und wird nicht rückwirkend
+geändert** (docs/immer-beachten.md, "ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH
+UMGESCHRIEBEN", dieselbe Denkfigur für Historien). Wer dort liest und diesen Absatz nicht
+kennt, übernimmt den falschen Grund ein zweites Mal.
+
+**WAS AUS JENER STELLE UNBERÜHRT GILT:** die FORM-Anforderung "kein stiller Dauer-Toggle —
+Auto-Ablauf nach X Stunden und/oder unübersehbarer Dashboard-Banner". Sie ist von der
+Widerlegung nicht betroffen, weil sie eine Bauform fordert und keine Wirkung behauptet.
+Diese Phase löst ihre erste Hälfte ein; die zweite (der Banner) ist Sache der
+Oberflächen-Scheibe.
 
 ### Reichweite: meta und tiktok — und ausdrücklich sonst keines
 
@@ -237,14 +274,27 @@ CAPI-/Server-Feld; der Client-Pixel brauche keine Änderung) und einem als "ECHT
 bezeichneten Punkt — dem vergessenen Testmodus, der echte Käufe lautlos aus der
 Optimierung nimmt. Daraus die Anforderung "kein stiller Dauer-Toggle".
 
-**EINE AUFLAGE AUS DERSELBEN STELLE IST BIS HEUTE OFFEN und gehört in den Zuschnitt der
-meta-Hälfte, nicht in eine Fussnote:** Die Datei verlangt selbst, "Metas eigene Doku zur
+**DIE AUFLAGE AUS DERSELBEN STELLE IST AM 2026-09-08 AUF DER DOKU-ACHSE EINGELÖST — UND
+IHR ERGEBNIS IST EINE WIDERLEGUNG.** Die Datei verlangt selbst, "Metas eigene Doku zur
 Ausschluss-Regel von test_event_code aus der Optimierung nochmal [zu] verifizieren, nicht
-nur aus dieser Einschätzung [zu] übernehmen". **Ob und wie ein so markiertes Ereignis aus
-der Optimierung fällt, ist in diesem Repo nirgends GEMESSEN und nirgends mit Datum
-GELESEN** (Nicht-Treffer, GEMESSEN am Repo, CC, 2026-09-08, Achse oben). Die Begründung
-der Frist ruht damit auf einer Einschätzung, die ihre eigene Quelle als ungeprüft
-bezeichnet.
+nur aus dieser Einschätzung [zu] übernehmen". Das ist geschehen: **Es gibt keine
+Ausschluss-Regel.** Meta sagt das Gegenteil — ein markiertes Ereignis wird nicht verworfen
+und fliesst in Targeting und Messung.
+
+**DER VOLLTEXT DES BEFUNDS STEHT NICHT HIER, SONDERN IN docs/ziel-befunde.md**, Abschnitt
+"Meta (Conversions API)", Teil (a) — mit Zitat, URL und Datum. Hier steht ein ZEIGER und
+ausdrücklich keine zweite Fassung: zweimal geschrieben liefen sie auseinander, und die
+Befund-Datei ist der Ort, an dem Anbieter-Befunde geführt werden.
+
+**WAS DAMIT WEITERHIN OFFEN IST, und der Satz gehört dazu, sonst liest sich die Auflage als
+erledigt:** Beantwortet ist die DOKU-Achse. **EINE MESSUNG GEGEN DIE SCHNITTSTELLE STEHT
+AUS** — es ist kein Aufruf gefahren worden, und eine Doku-Aussage ersetzt keine Messung.
+Wer die Auflage als abgehakt führt, hebt eine Lesung auf den Rang einer Messung.
+
+**RICHTIGGESTELLT AM 2026-09-08, NICHT GESTEMPELT.** Hier stand, die Auflage sei "BIS HEUTE
+OFFEN" und ob ein markiertes Ereignis aus der Optimierung falle, sei "nirgends GEMESSEN und
+nirgends mit Datum GELESEN". Der zweite Halbsatz ist mit dem Crawl desselben Tages überholt;
+der erste war es damit auch.
 
 ### Die Lücke, die beim Zuschnitt der TikTok-Hälfte gebraucht wird
 
@@ -316,13 +366,27 @@ keine leere Seite, nur eine Zahl, die niemand mehr nachrechnen kann.
 **BEIDE ZWEIGE ODER KEINER.** Wer diese Scheibe baut, ohne dass der Confirm-Zweig eigens
 ausgenommen ist, hat nicht diese Scheibe gebaut.
 
-### Die Env-Variablen bleiben, und wer gewinnt
+### Die Env-Variablen bleiben — und der Riegel hängt NICHT an ihnen
 
 - **`META_TEST_EVENT_CODE`, `TIKTOK_TEST_EVENT_CODE` und `PINTEREST_TEST_MODE` bleiben
   unverändert bestehen.** Sie tragen den Eigenbetrieb des Owners und werden von dieser
-  Phase nicht abgeschafft.
-- **SIND BEIDE WEGE GESETZT, GEWINNT DER PROJEKT-ZUSTAND.** Der spezifischere Wert schlägt
-  den deployment-weiten.
+  Phase nicht abgeschafft. **Ihr heutiges Verhalten ändert sich nicht** — sie hängen
+  weiterhin ihren Wert an die Nutzlast, deployment-weit, wie bisher.
+- **DER PERSIST-RIEGEL HÄNGT ALLEIN AM PROJEKT-ZUSTAND.** Eine gesetzte Env-Variable
+  nimmt KEIN Ereignis aus `events` heraus — bei keinem Projekt, unter keinen Umständen.
+- **DER VORRANG DES PROJEKT-ZUSTANDS GILT NUR DEM NUTZLAST-FELD.** Tragen beide Wege einen
+  Code, gewinnt der des Projekts; das ist eine Aussage darüber, WELCHER Code gesendet wird,
+  und über nichts sonst.
+
+**RICHTIGGESTELLT AM 2026-09-08, NICHT GESTEMPELT — DER ALTE SATZ WAR ZU BREIT UND HÄTTE
+DEN MANDANTENFEHLER ZURÜCKGEHOLT, DEN DIESE PHASE BESEITIGT.** Hier stand: "SIND BEIDE WEGE
+GESETZT, GEWINNT DER PROJEKT-ZUSTAND. Der spezifischere Wert schlägt den deployment-weiten."
+Das liest sich als Aussage über den GANZEN Testmodus, also auch über den Riegel — und
+daraus folgte, dass eine in Produktion gesetzte Env-Variable ALLE Projekte still in den
+Testmodus schaltet und ihre Analytics gemeinsam verstummen lässt. **Genau die
+deployment-weite Reichweite, die der Gegenstand dieser Phase als den Mangel benennt.** Der
+Satz war als Aussage über den Nutzlast-Wert richtig gemeint und als Aussage über den Riegel
+falsch; er ist deshalb ersetzt und nicht gestempelt.
 
 ### Ausdrücklich NICHT mit, je mit Grund
 
@@ -356,6 +420,18 @@ entsteht, würde auch ein halber Riegel liefern; dass auch keine `browser`-Zeile
 liefert nur der vollständige. Wer diesen Teil aus der Anleitung streicht, prüft die
 Invariante dieser Scheibe nicht.
 
+**AUFLAGE AN LAUF 2, OHNE DIE DER LAUF EIN KORREKTES VERHALTEN ALS FEHLSCHLAG
+PROTOKOLLIERT:** Das Ereignis erscheint beim Anbieter **ZUSÄTZLICH in den normalen Zahlen**
+— in der Berichterstattung und in der Optimierung, nicht nur in der Test-Ansicht. **DAS IST
+ERWARTETES VERHALTEN UND DARF NICHT ALS FEHLSCHLAG DES RIEGELS VERBUCHT WERDEN.** Der
+Riegel dieser Phase wirkt auf `events`, also auf UNSERE Ablage; er hat auf die Zählung des
+Anbieters keinen Zugriff und soll keinen haben. Wer das nicht vorher weiss, sieht den
+Testklick in den Kampagnenzahlen auftauchen und sucht einen Fehler, den es nicht gibt.
+GRUNDLAGE: docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)", Teil (a) — GELESEN
+2026-09-08, KEINE Messung. **Für tiktok ist dieselbe Frage ungelesen und ungemessen** (s.
+den Vorrat); dort ist das Erscheinen in den normalen Zahlen weder zu erwarten noch
+auszuschliessen, und ein Lauf gegen tiktok beurteilt diesen Punkt deshalb gar nicht.
+
 **ZWEI VORAUSSETZUNGEN, DIE IN DIE ANLEITUNG GEHÖREN und ohne die ein Lauf ein Ergebnis
 liefert, das keines ist:**
 - **DER A/B-BETRIEB IST VORHER FESTZUSTELLEN.** Ist er aktiv, wird entweder abgeschaltet
@@ -381,13 +457,82 @@ liefert, das keines ist:**
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
-Noch keine. Der Abschnitt steht, damit die erste Entscheidung einen Ort hat und nicht in
-einem Scheiben-Zuschnitt verschwindet.
+### (1) SICHTBARKEIT STATT ISOLATION
+
+**DIE ENTSCHEIDUNG:** Die Phase liefert dem Kunden den Nachweis, dass sein Ereignis beim
+Anbieter ANKOMMT. Sie liefert ihm NICHT die Zusicherung, dass dieses Ereignis die Zahlen
+des Anbieters unberührt lässt. Was gebaut wird, ist eine MARKIERUNG mit einem Riegel auf
+unsere eigene Ablage — keine Isolation beim Empfänger.
+
+**DER GRUND:** Isolation ist bei den Zielen dieses Rahmens nicht zu haben. Meta erklärt
+ausdrücklich, dass markierte Ereignisse in Targeting und Messung fliessen; bei google
+schneidet der einzige Träger die Beobachtung ab, die den Nachweis erst tragen würde; bei
+pinterest ist der Träger nie gemessen und trägt zwei Namen; bei linkedin gibt es keinen.
+**Eine Phase, die Isolation verspricht, verspricht etwas, das kein Anbieter liefert** —
+und ein Produktversprechen, das der Anbieter nicht deckt, fällt dem Kunden auf die Füsse,
+nicht uns.
+
+**WEN SIE BINDET:** jede spätere Scheibe dieser Phase, jede Oberfläche, die den Testmodus
+beschriftet, und jeden Text, der ihn dem Kunden erklärt. **Der Preis wird mitgenannt, nicht
+weggeschrieben:** der Testklick zählt beim Anbieter als echte Conversion.
+
+**IHRE GRENZE — WORAUF SIE RUHT:** auf einer DOKU-LESUNG vom 2026-09-08 (Meta), **NICHT
+auf einer Messung**. Es ist kein Aufruf gegen eine Schnittstelle gefahren worden. Für
+tiktok ruht sie nicht einmal darauf: dort ist die Frage ungelesen UND ungemessen (s.
+Vorrat), und die Entscheidung überträgt sich auf tiktok als VORSICHT, nicht als Befund.
+
+**WANN SIE KIPPT:** wenn eine MESSUNG zeigt, dass ein markiertes Ereignis beim Anbieter
+doch aus Berichterstattung oder Optimierung fällt — oder wenn ein Anbieter sein Verhalten
+ändert, ohne dass hier etwas rot wird. Dann ist die Rahmung neu zu fassen; die Bauform (ein
+Zustand je (Projekt, Ziel), getragen von einer Frist) überlebt beides.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-08, auf GELESENER Grundlage
+(docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)", Teil (a)).
 
 ## Vorrat — gemeldet, nicht gebaut
 
-Noch leer. Was während der Phase auffällt und nicht in ihren Zuschnitt gehört, kommt
-hierher — mit Provenienz und, wo einer benennbar ist, mit Trigger.
+**(1) OB TIKTOK TEST-MARKIERTE EREIGNISSE MITZÄHLT WIE META — UNGELESEN UND UNGEMESSEN.**
+Die Doku der Events API 2.0 sagt zu Berichterstattung und Optimierung markierter Ereignisse
+NICHTS. Das ist ein Schweigen mit benannter Achse und keine Auslassung: gesucht wurde
+`optimi`, `report`, `discard`, `exclud`, `drop` über den gerenderten Rumpf von sechs Seiten
+(Fundstellen in docs/ziel-befunde.md, Abschnitt "TikTok (Events API 2.0)", Teil (d)).
+**WEDER BESTÄTIGT NOCH WIDERLEGT** — Metas Aussage auf tiktok zu übertragen wäre eine
+Annahme über ein fremdes System.
+TRIGGER: die Scheibe, die den tiktok-Zweig des Riegels zuschneidet — spätestens der erste
+Live-Nachweis gegen tiktok. PROVENIENZ: GELESEN 2026-09-08.
+
+**(2) WAS METAS AUFLAGE "REMOVE IT IN PRODUCTION" BEWIRKT, WENN SIE MISSACHTET WIRD — DIE
+DOKU NENNT KEINE FOLGE.** Meta verlangt, das Feld vor dem Produktiv-Rumpf zu entfernen, und
+sagt im selben Abschnitt, die Ereignisse würden ohnehin nicht verworfen und flössen in
+Targeting und Messung. **Was das Entfernen dann bewirkt, steht nirgends.** Solange das
+offen ist, lässt sich nicht sagen, ob ein hängengebliebener Testmodus beim Anbieter
+irgendeinen Schaden anrichtet — die Frist dieser Phase ist mit unserem eigenen Grund
+begründet und nicht mit diesem.
+TRIGGER: die erste Messung gegen die Meta-Schnittstelle, die mit und ohne das Feld
+vergleicht. PROVENIENZ: GELESEN 2026-09-08.
+
+**(3) IM TESTMODUS LAUFEN UNSERE ZAHLEN UND DIE DES ANBIETERS BEWUSST AUSEINANDER — DEM
+KUNDEN ERKLÄRT DAS HEUTE NICHTS.** Wir zählen nicht, der Anbieter zählt. Das ist gewollt und
+die unmittelbare Folge des Riegels. Für den Kunden sieht es aus wie ein Defekt: Sein
+Dashboard steht still, während im Werbekonto Conversions auflaufen. **Es gibt heute keinen
+Ort, an dem das erklärt wird** — keine Anzeige, keinen Hinweistext, keine
+Betreiber-Dokumentation.
+TRIGGER: die Oberflächen-Scheibe 11.3b (dort ist der Ort), spätestens der erste fremde
+Nutzer, der den Testmodus einschaltet. VERWANDT mit dem offenen Punkt "BETREIBER-
+DOKUMENTATION FEHLT — ZWEI PUNKTE" (CLAUDE.md). PROVENIENZ: FOLGERUNG aus dem Zuschnitt
+der Scheibe 11.3a, keine Messung.
+
+**(4) OB DER TESTCODE DAUERHAFT ABLEGBAR IST ODER JE TESTLAUF NEU BESCHAFFT WERDEN MUSS.**
+Hängt an "wechselt pro Sitzung". Für meta schweigt die Doku dazu (Achse `session`,
+`expire`, `rotate`, `valid` über fünf Seiten); für tiktok schweigt sie ebenfalls, und der
+Repo-Befund führt genau diese Eigenschaft als GEMESSEN (2026-08-11), ohne dass die Doku ihn
+stützt oder widerlegt. **Eine Ablage, die einen pro Sitzung wechselnden Wert wie einen
+dauerhaften behandelt, ist ab dem zweiten Testlauf falsch, ohne dass etwas rot wird.**
+Fundstellen: docs/ziel-befunde.md, Abschnitte "Meta (Conversions API)" Teil (c) und "TikTok
+(Events API 2.0)" Teile (e) und (f).
+TRIGGER: die Entscheidung über die Form der Ablage (Stufe 1 der Scheibe 11.3a) — sie kann
+nicht getroffen werden, ohne diese Frage wenigstens als Risiko zu benennen. PROVENIENZ:
+GELESEN 2026-09-08 (Doku-Schweigen) plus der GEMESSENE Repo-Befund vom 2026-08-11.
 
 ## Hebungs-Kandidaten
 

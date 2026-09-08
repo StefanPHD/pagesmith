@@ -126,6 +126,12 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
   - ### MESSUNG G in der Google-Ads-Oberfläche (2026-09-07) — die Verbuchung, die Teile
     (cf) und (cg)
 - ## Pinterest (Conversions API)
+- ## Meta (Conversions API)
+  - ### Abschnitts-Lesung 2026-09-08 der Conversions-API-Dokumentation zum Testmodus —
+    die Teile (a) bis (f)
+- ## TikTok (Events API 2.0)
+  - ### Abschnitts-Lesung 2026-09-08 der Events-API-2.0-Dokumentation zum Testmodus —
+    die Teile (a) bis (g)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
 STATT AUFGELÖST WIRD:** Dieses Verzeichnis führte bis dahin AUSSCHLIESSLICH die drei
@@ -5975,3 +5981,302 @@ alle am 2026-08-20 abgerufen; der Abschnitt "Conversions nachverfolgen" ist VOLL
   "My apps", Token Debugger, Postman-Sammlung, Help-Center-Tickets.
 · Nicht-Pinterest-Ziele (Google-Dokumentation, OAuth-RFC, OWASP) — ausserhalb des
   Gegenstands.
+
+## Meta (Conversions API)
+
+**DIE BUCHSTABEN BEGINNEN HIER BEI (a)** — die Konvention im Kopf dieser Datei bindet die
+Eindeutigkeit an den ZIEL-ABSCHNITT. Was das für Verweise von aussen bedeutet, steht im
+Kopf unter "EIN VERWEIS VON AUSSEN NENNT ABSCHNITT UND BUCHSTABEN — NIE DEN BUCHSTABEN
+ALLEIN".
+
+**WARUM DIESER ABSCHNITT ERST AM 2026-09-08 ENTSTEHT, obwohl meta das ERSTE Fan-Out-Ziel
+ist:** Diese Datei wurde am 2026-08-15 angelegt, als das VIERTE Ziel gebaut wurde; die
+Befunde der Phase 6 lagen da längst in docs/claude-history/phase-6-capi.md. Der fehlende
+Abschnitt war GEMESSEN (CC, 2026-09-08) und ist als Lücke benannt worden, bevor er
+geschlossen wurde. **DIESER ABSCHNITT IST NICHT VOLLSTÄNDIG:** Er trägt AUSSCHLIESSLICH
+die Befunde zum TESTMODUS. Was über Metas Nutzlast, Fehlerformen und Dedup bekannt ist,
+steht weiterhin in docs/claude-history/phase-6-capi.md und ist NICHT hierher übernommen
+worden.
+
+### Abschnitts-Lesung 2026-09-08 der Conversions-API-Dokumentation zum Testmodus — die Teile (a) bis (f)
+
+**HERKUNFT (2026-09-08):** Eine ABSCHNITTS-LESUNG mit dem Browser-Werkzeug, nach der Regel
+"ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN" (docs/immer-beachten.md). Gelesen
+wurde durchgehend mit `textContent`, nie mit `innerText`. GELESEN wurden ACHT Seiten; die
+Liste steht am Ende dieses Abschnitts unter "Der gelesene Umfang".
+**KEIN AUFRUF GEGEN DIE SCHNITTSTELLE.** Keine Anmeldung, keine Eingabe auf einer fremden
+Seite, kein Download. Alles unten ist GELESEN und **ersetzt keine Messung**.
+**KEINE SEITE HAT VERSUCHT, DEN LESENDEN ANZUWEISEN** — geprüft und ausdrücklich vermerkt.
+Auffordernder Text war vorhanden ("Klicke auf Senden", "Öffne dein Terminal"); nichts davon
+wurde ausgeführt.
+
+(a) EIN MIT `test_event_code` MARKIERTES EREIGNIS WIRD NICHT AUSGESCHLOSSEN — ES ZÄHLT
+    ZUSÄTZLICH. **DAS IST DER TRAGENDE BEFUND DIESES ABSCHNITTS.**
+    GELESEN 2026-09-08,
+    https://developers.facebook.com/documentation/ads-commerce/conversions-api/using-the-api.md
+    (22 840 Zeichen), Abschnitt "Test Events Tool", Anker `{#testEvents}`. Zwei
+    aufeinanderfolgende Sätze:
+    "Events sent with `test_event_code` are not dropped." · "They flow into Events Manager
+    and are used for targeting and ads measurement purposes."
+    **DER ANBIETER NENNT TARGETING UND MESSUNG BEIM NAMEN.** Ein Ausschluss aus
+    Berichterstattung oder Optimierung wird auf KEINER der acht gelesenen Seiten behauptet.
+    **DIE REICHWEITE:** Das ist eine Aussage der Doku über das Verhalten des Anbieters. Sie
+    ist NICHT gemessen. Wer sie als Messung zitiert, hebt eine Lesung auf einen Rang, den
+    sie nicht hat.
+
+(b) DER CODE STAMMT AUS DEM TEST-EVENTS-WERKZEUG UND STEHT IM HAUPTTEXT, NICHT IM EREIGNIS.
+    GELESEN 2026-09-08, dieselbe Seite: "The Test Events tool generates a test ID." Der Ort
+    des Werkzeugs, wörtlich: "Events Manager > Data Sources > Your Pixel > Test Events".
+    Und
+    https://developers.facebook.com/documentation/ads-commerce/conversions-api/parameters/main-body.md
+    (672 Zeichen) führt `test_event_code` als OPTIONALEN Parameter des HAUPTTEXTES — auf
+    derselben Ebene wie `data`, nicht innerhalb eines Ereignisses: "Code used to verify
+    that your server events are received correctly by Facebook."
+    Im Beispiel-Rumpf steht der Wert `"TEST123"` neben dem `data`-Array.
+
+(c) OB DER CODE WECHSELT ODER ABLÄUFT — NICHT-TREFFER MIT BENANNTER ACHSE.
+    **ACHSE:** `session` · `expire` · `rotate` · `valid`, case-insensitiv, über den
+    vollständigen Rumpf von FÜNF Seiten des Doku-Baums: `using-the-api.md` (22 840 Z.),
+    `parameters/main-body.md` (672 Z.), `verifying-setup.md` (5 367 Z.),
+    `best-practices.md` (14 243 Z.), `get-started.md` (5 571 Z.).
+    **ERGEBNIS: 0 Treffer auf allen fünf.** Die Doku sagt weder, dass der Code je Sitzung
+    wechselt, noch dass er dauerhaft gilt.
+    **KEINE ENTWARNUNG** — fünf Seiten sind nicht der ganze Baum, und ein Nicht-Treffer ist
+    kein Beweis der Abwesenheit.
+
+(d) EINE 24-STUNDEN-ANGABE EXISTIERT — SIE GILT DER ANSICHT UND NICHT DEM CODE, UND DIESE
+    UNTERSCHEIDUNG IST DER GANZE INHALT DIESES TEILS.
+    GELESEN 2026-09-08, https://www.facebook.com/business/help/1624255387706033
+    ("Server-Events mit dem Test-Events-Tool testen"; deutschsprachig ausgeliefert, Rumpf
+    rund 2 700 Zeichen), wörtlich: "Die Testinformationen bleiben 24 Stunden lang im
+    Test-Events-Tool gespeichert, es sei denn, du entfernst sie per Klick auf Aktivitäten
+    entfernen."
+    **DAS IST EINE AUFBEWAHRUNGSFRIST DER ANZEIGE.** Sie sagt NICHTS über die Gültigkeit
+    des Codes, nichts über einen Ablauf der Markierung und nichts darüber, wie lange ein
+    Code verwendbar bleibt. Wer sie als Code-Lebensdauer liest, liest eine Angabe über ein
+    Fenster in der Oberfläche als Angabe über ein Zugangsdatum.
+    **DIESE SEITE LIEGT IN EINEM ANDEREN BAUM** (`facebook.com/business/help`, nicht
+    `developers.facebook.com`) und wäre nach einer strengen Abschnitts-Regel ausgeschlossen
+    gewesen. Sie trägt die einzige Zeitangabe der ganzen Lesung — geöffnet wurde sie, weil
+    die Entwickler-Doku selbst sie als Autorität für das Test-Events-Werkzeug verlinkt.
+
+(e) DIE AUFLAGE "IN PRODUKTION ENTFERNEN" STEHT DA — OHNE GENANNTE FOLGE.
+    GELESEN 2026-09-08, `using-the-api.md`, Abschnitt "Test Events Tool", wörtlich: "The
+    `test_event_code` field should be used only for testing. You need to remove it when
+    sending your production payload."
+    **DIE DOKU NENNT AN KEINER STELLE, WAS GESCHIEHT, WENN DIE AUFLAGE MISSACHTET WIRD.**
+    Kein Datenverlust, keine Verfälschung, keine Sperre, keine Drosselung — nichts davon
+    steht dort.
+    **DIE SPANNUNG GEHÖRT IN DEN BEFUND, WEIL SIE SONST BEIM NÄCHSTEN LESEN NEU AUFFÄLLT:**
+    Zwei Absätze weiter steht (a) — die Ereignisse würden ohnehin nicht verworfen und
+    flössen in Targeting und Messung. Die Doku fordert also ein Entfernen und sagt im selben
+    Abschnitt, dass die Ereignisse so oder so gezählt werden. **WELCHE WIRKUNG DAS ENTFERNEN
+    HAT, IST AN DER DOKU NICHT ENTSCHEIDBAR.** Hier wird daraus ausdrücklich KEINE Folgerung
+    gezogen.
+
+(f) EINE VERWURF-BEDINGUNG EXISTIERT — SIE BETRIFFT DEN ABGLEICH, NICHT DEN TESTMODUS.
+    GELESEN 2026-09-08,
+    https://developers.facebook.com/documentation/ads-commerce/conversions-api/best-practices.md
+    (14 243 Zeichen), Abschnitt "Use test events", wörtlich: "these events may get discarded
+    if they don't match a Facebook or Meta account."
+    Der Satz steht im Zusammenhang der Empfehlung, für Testereignisse die EIGENEN
+    Kundeninformations-Parameter zu verwenden. **DIE ACHSE IST DER IDENTITÄTS-ABGLEICH, NICHT
+    DIE TEST-MARKIERUNG.** Ein Ereignis wird nach dieser Aussage verworfen, weil es zu
+    keinem Konto passt — nicht, weil es einen Testcode trägt. Wer die beiden zusammenzieht,
+    hält den Testmodus für einen Verwurf-Mechanismus und widerspricht damit (a).
+
+### Der gelesene Umfang — Meta
+
+**GEÖFFNET UND VOLLSTÄNDIG GELESEN (8 Seiten), je mit Zeichenzahl:**
+
+1. `/documentation/ads-commerce/conversions-api/using-the-api.md` — "Using the API"
+   (22 840 Z.) — trägt den Abschnitt "Test Events Tool"; die tragende Fundstelle für (a),
+   (b) und (e).
+2. `/documentation/ads-commerce/conversions-api/parameters/main-body.md` — "Main Body
+   Parameters" (672 Z.) — die Parameter-Definition, (b).
+3. `/documentation/ads-commerce/conversions-api/best-practices.md` — "Best Practices"
+   (14 243 Z.) — Abschnitt "Use test events", (f).
+4. `/documentation/ads-commerce/conversions-api/verifying-setup.md` — "Verifying Your
+   Setup" (5 367 Z.) — **0 Treffer auf `test_event_code`**, entgegen der Erwartung, die der
+   Seitentitel weckt.
+5. `/documentation/ads-commerce/conversions-api/get-started.md` — "Get started" (5 571 Z.)
+   — 0 Treffer auf `test`.
+6. `/documentation/ads-commerce/conversions-api/support.md` — "Troubleshoot the Conversions
+   API" (1 834 Z.) — 0 Treffer auf `test`.
+7. `/documentation/ads-commerce/conversions-api/deduplicate-pixel-and-server-events.md` —
+   "Handling Duplicate Pixel and Conversions API Events" (6 359 Z.) — 0 Treffer; auf eine
+   Wechselwirkung zwischen Testmodus und Dedup geprüft, keine gefunden.
+8. `https://www.facebook.com/business/help/1624255387706033` — "Server-Events mit dem
+   Test-Events-Tool testen" (Rumpf rund 2 700 Z.) — (d).
+
+**NACH DEM DURCHGANG DURCH DIE AUSSCHLUSS-LISTE DOCH GEÖFFNET — und dieser Vermerk gehört
+dazu, weil ein Ausschluss bei jeder Wiederholung genauso richtig aussieht wie beim ersten
+Mal:**
+· `/documentation/ads-commerce/conversions-api/dataset-quality-api.md` (38 311 Z.) —
+  ausgeschlossen als "Qualitäts-Metriken, nicht Testmodus"; das war gegen die Frage nach
+  BERICHTERSTATTUNG nicht haltbar. Geöffnet: **0 Treffer** auf `test_event_code`, `test
+  event`, `exclud`. Der Ausschluss war im Ergebnis richtig und war es vorher nicht
+  begründbar.
+· `/documentation/ads-commerce/conversions-api.md` — "Conversions API" (Übersicht, 3 607
+  Z.) — ausgeschlossen als "nur Einstieg". Geöffnet: **0 Treffer**.
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· **Die gesamte Gateway-Familie** (rund 50 Einträge im Navigationsbaum: Conversions API
+  Gateway, Gateway für mehrere Konten, AWS App Runner, GCP, Control Plane API) — eigenes
+  Produkt mit gehosteter Infrastruktur, nicht unser Direkt-Integrationsweg.
+· `conversions-api/app-events`, `/offline-events`, `/business-messaging`,
+  `/conversion-leads-integration` (mit allen Unterseiten) — andere Ereignisquellen.
+· `/parameters/server-event`, `/parameters/customer-information-parameters`,
+  `/parameters/external-id`, `/parameters/fbp-and-fbc`, `/parameters/custom-data`,
+  `/parameters/app-data`, `/parameters/original-event` — Parameter INNERHALB des
+  Ereignisses; `test_event_code` steht nachweislich im Haupttext (s. (b)).
+· `/parameter-builder-library/*`, `/guides/zapier-integration`, `/guides/gtm-server-side`,
+  `/guides/salesforce-webhooks`, `/guides/business-sdk-features`,
+  `/guides/value-optimization*`, `/guides/predicted-lifetime-value`,
+  `/guides/append-attribution` — fremde Werkzeugketten bzw. andere Produkte.
+· `/payload-helper` — GEÖFFNET, aber als Textquelle unbrauchbar: die Markdown-Fassung trägt
+  420 Zeichen Prosa, der Rest ist ein interaktives Werkzeug. **Was das Werkzeug an Feldern
+  anbietet, ist damit NICHT erhoben.**
+· **"Direktintegrations-Playbook für Entwickler*innen (PDF)"** — ein DOWNLOAD. Nach der
+  Auflage "kein Download" nicht geöffnet. **DAS IST DIE BENANNTE LÜCKE DIESER LESUNG:** ein
+  Playbook zur Direktintegration ist genau der Ort, an dem eine Aussage zum Testmodus
+  stehen könnte.
+
+**EINE GRENZE DER LESUNG, DIE MITMUSS:** Der Doku-Baum ist seit den Befunden der Phase 6
+umgezogen — die Pfade lauten heute `/documentation/ads-commerce/conversions-api/…` statt
+`/docs/marketing-api/conversions-api/…`; die alten Adressen leiten weiter. Ältere Zeiger im
+Repo auf die alte Form sind NICHT nachgezogen worden und waren nicht Gegenstand dieser
+Lesung.
+
+## TikTok (Events API 2.0)
+
+**DIE BUCHSTABEN BEGINNEN HIER BEI (a)** — die Konvention im Kopf dieser Datei bindet die
+Eindeutigkeit an den ZIEL-ABSCHNITT.
+
+**WARUM DIESER ABSCHNITT ERST AM 2026-09-08 ENTSTEHT:** Wie bei meta — die Datei wurde
+angelegt, als das vierte Ziel gebaut wurde. **DIESER ABSCHNITT IST NICHT VOLLSTÄNDIG:** Er
+trägt AUSSCHLIESSLICH die Befunde zum TESTMODUS plus den einen Repo-Befund, der bis heute
+keinen Ort hatte (Teil (f)).
+
+### Abschnitts-Lesung 2026-09-08 der Events-API-2.0-Dokumentation zum Testmodus — die Teile (a) bis (g)
+
+**HERKUNFT (2026-09-08):** ABSCHNITTS-LESUNG mit dem Browser-Werkzeug, durchgehend mit
+`textContent`. GELESEN wurden SECHS Seiten des Abschnitts "Events API 2.0"; die Liste steht
+am Ende unter "Der gelesene Umfang — TikTok".
+**KEIN AUFRUF GEGEN DIE SCHNITTSTELLE.** Keine Anmeldung, keine Eingabe, kein Download.
+**KEINE SEITE HAT VERSUCHT, DEN LESENDEN ANZUWEISEN.**
+
+**EINE WERKZEUG-WARNUNG VORWEG, WEIL SIE DIESE LESUNG BEINAHE VERDORBEN HÄTTE:** Die
+TikTok-Doku ist client-gerendert. Ein `fetch` auf sechs Kandidaten-URLs lieferte je rund
+36 400 Zeichen — **jedes Mal dieselbe leere App-Hülle** — und `test_event_code`-Trefferzahl
+**0**. Als Nicht-Treffer protokolliert hätte das gelautet "TikTok dokumentiert
+`test_event_code` nirgends", sauber mit Reichweite ausgewiesen und **falsch**: die
+GERENDERTE Seite derselben URL-Familie trägt vier Treffer. GEMESSEN am eigenen Lauf (CC,
+2026-09-08). Es ist der Fall aus docs/immer-beachten.md, "EINE ABWESENHEIT KANN VOM WERKZEUG
+ERZEUGT SEIN, NICHT VOM GEGENSTAND". **Jeder künftige Lauf gegen diesen Doku-Baum rendert.**
+
+(a) DER TRÄGER IST EIN FELD AUF DER WURZELEBENE DES RUMPFES.
+    GELESEN 2026-09-08,
+    https://business-api.tiktok.com/portal/docs/events-api-v2-web-setup-verification/v1.3
+    ("Verify Web Events API setup", 40 160 Zeichen gerendert; 4 Treffer auf
+    `test_event_code`). Der Anbieter beschreibt: "In the body of your API request for
+    reporting events, add a new field `test_event_code` and paste the code you get from Step
+    2 as the value of the field."
+    Im Doku-Beispiel steht das Feld neben `event_source` und `event_source_id`, **ausserhalb
+    des `data`-Arrays** — dieselbe Ebenen-Lage wie bei meta, aber in einem anders geformten
+    Rumpf.
+
+(b) DER CODE STAMMT AUS DER OBERFLÄCHE DES WERBEKONTOS.
+    GELESEN 2026-09-08, dieselbe Seite: "In the Test Events tab, click the test code button
+    in Step 2 of the Test Server Events section to copy the code." Der Weg dorthin: Events
+    Manager, Pixel anklicken, Reiter "Test Events".
+
+(c) DIE PARAMETER-SEITE FÜHRT DEN TRÄGER NICHT — UND DAS IST EIN UNTERSCHIED ZU META, DER
+    BEIM SUCHEN ZEIT KOSTET.
+    GEMESSEN am gerenderten Dokument (CC, 2026-09-08),
+    https://business-api.tiktok.com/portal/docs/parameters/v1.3 ("Events API Parameters"),
+    **71 789 Zeichen gerendert: 0 Treffer auf `test_event_code`.**
+    Bei meta steht der Parameter im Parameter-Verzeichnis (Abschnitt "Meta (Conversions
+    API)", Teil (b)); bei tiktok steht er AUSSCHLIESSLICH in der Verifikations-Anleitung.
+    **Wer ihn im Parameter-Verzeichnis sucht, findet ihn nicht und schliesst womöglich, es
+    gebe ihn nicht.**
+
+(d) ZU BERICHTERSTATTUNG UND OPTIMIERUNG SCHWEIGT DIE DOKU — UND DIESES SCHWEIGEN IST DIE
+    WICHTIGERE HÄLFTE DIESES ABSCHNITTS, NICHT EINE AUSLASSUNG.
+    **ACHSE:** `optimi` · `report` · `discard` · `exclud` · `drop`, case-insensitiv, über
+    den gerenderten Rumpf von SECHS Seiten (Liste unten).
+    **ERGEBNIS:** `optimi` und `report` treffen hundertfach — **ausschliesslich im
+    Navigationsbaum** (Kampagnen-Optimierung, Reporting-API), **kein einziges Mal im
+    Artikelrumpf zu Test-Ereignissen**. `discard`, `exclud` und `drop`: 0.
+    Die einzige Aussage im Rumpf, die Messung berührt, betrifft Deduplizierung: "no double
+    counting of such events will occur for the purposes of measurement and reporting" — das
+    ist eine Aussage über DUBLETTEN, nicht über test-markierte Ereignisse.
+    **WEDER BESTÄTIGT NOCH WIDERLEGT, DASS TIKTOK MARKIERTE EREIGNISSE MITZÄHLT.** Metas
+    Aussage (Abschnitt "Meta (Conversions API)", Teil (a)) auf tiktok zu übertragen wäre
+    eine Annahme über ein fremdes System und ist ausdrücklich NICHT gedeckt.
+
+(e) OB DER CODE JE SITZUNG WECHSELT ODER ABLÄUFT — SCHWEIGEN MIT BENANNTER ACHSE.
+    **ACHSE:** `session` · `expire` · `rotate` · `new code` · `regenerate` · `each time` ·
+    `24`, case-insensitiv, über den gerenderten Rumpf derselben sechs Seiten.
+    **ERGEBNIS: 0 Treffer im Rumpf.** `session` trifft fünfmal je Seite — jedes Mal im
+    Navigationsbaum.
+    **ANDERS ALS BEI META GIBT ES HIER NICHT EINMAL EINE AUFBEWAHRUNGSFRIST FÜR DIE
+    ANSICHT** (dort Teil (d)).
+
+(f) DER REPO-BEFUND "WECHSELT PRO SITZUNG" — GEMESSEN 2026-08-11, UND ER HATTE BIS HEUTE IN
+    DIESER DATEI KEINEN ORT.
+    **PROVENIENZ: GEMESSEN 2026-08-11**, im Testmodus eines eigenen Werbekontos. Die
+    Herkunft der Angabe ist ein Kommentar in `src/lib/capi/tiktok-forward.ts`; die H1-Matrix
+    in docs/ziel-fragenkatalog.md führt sie als beantwortet mit dem Kürzel für "gemessen",
+    wörtlich: "`test_event_code` in der Nutzlast, wechselt pro Sitzung, gem".
+    **DASS ER HIER FEHLTE, IST GEMESSEN** (CC, 2026-09-08: die Datei trug bis zu diesem
+    Eintrag genau drei Ziel-Abschnitte — LinkedIn, Google, Pinterest; eine
+    Überschriften-Suche nach meta bzw. tiktok traf null). Er wird hier nachgetragen, damit
+    er den Ort hat, an dem Anbieter-Befunde geführt werden.
+    **DIE DOKU STÜTZT IHN NICHT UND WIDERLEGT IHN NICHT** (s. (e)). Ein Doku-Schweigen
+    entlastet eine Messung nicht und entkräftet sie nicht. **DER BEFUND BLEIBT ALLEIN VON
+    JENER MESSUNG GETRAGEN**, und das Protokoll jener Messung liegt nicht vor — was genau
+    beobachtet wurde und mit welcher Gegenkontrolle, ist an keiner Stelle des Repos
+    festgehalten (GEMESSEN, CC, 2026-09-08).
+
+(g) DIE AUFLAGE "VOR DEM PRODUKTIV-MODUS ENTFERNEN" STEHT DA — OHNE GENANNTE FOLGE.
+    GELESEN 2026-09-08, "Verify Web Events API setup", wörtlich: "Make sure to remove
+    `test_event_code` before switching to 'Production' mode."
+    **KEINE FOLGE WIRD GENANNT** — dieselbe Bauform wie bei meta (Abschnitt "Meta
+    (Conversions API)", Teil (e)). Anders als dort steht daneben aber KEINE Aussage darüber,
+    was mit den markierten Ereignissen geschieht; bei tiktok bleibt also beides offen: die
+    Wirkung des Entfernens UND die Wirkung des Markierens.
+
+### Der gelesene Umfang — TikTok
+
+**GEÖFFNET UND GELESEN (6 Seiten), alle unter
+`https://business-api.tiktok.com/portal/docs/…/v1.3`, je mit gerenderter Zeichenzahl:**
+
+1. `events-api-v2-web-setup-verification` — "Verify Web Events API setup" (40 160 Z.) —
+   **die tragende Fundstelle**, (a), (b), (g).
+2. `parameters` — "Events API Parameters" (71 789 Z.) — (c).
+3. `setup-guide-for-web` — "Setup guide for Web" (65 326 Z.) — 0 Treffer auf
+   `test_event_code`.
+4. `events-api-v2-web-faqs` — "Events API for Web FAQs" (37 529 Z.) — trägt genau ZWEI
+   Fragen (Fehlercode 40001, Fundort des Pixel-Codes); nichts zum Testmodus.
+5. `work-with-payload-helper-for-web` — "Work with Payload Helper for Web" (39 208 Z.) —
+   0 Treffer auf `test_event_code`.
+6. `supported-events` — "Events API supported events" (56 268 Z.) — 0 Treffer.
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· `Events API for Offline`, `Events API for App`, `Events API for CRM` samt ihren eigenen
+  Setup- und Verify-Seiten — andere Ereignisquellen; unser Adapter sendet Web.
+  **ANMERKUNG ZUR SUCHFALLE:** Der Slug `verify-events-api-setup` löst auf die CRM-Variante
+  auf. Die Web-Variante heisst `events-api-v2-web-setup-verification`. Wer die erste öffnet
+  und darin `test_event_code` nicht findet (0 Treffer, 36 560 Z. — geprüft), hält den
+  Träger für undokumentiert.
+· `Events API 1.0` (mit allen Unterseiten) — ältere Fassung; gebaut wird auf 2.0.
+· `Events API Gateway`, `TikTok App Events SDK`, `Google Tag Manager (GTM) Integration`,
+  `Pixel`-Abschnitt — andere Integrationswege.
+· `Send Custom Attribution data to TikTok via Events API 2.0`, `Limited data use`,
+  `Payload Converter`, `Authentication`, `Responses and errors` — im Abschnitt, aber ohne
+  Bezug zu den vier Fragen dieser Lesung.
+· `Sandbox accounts` (unter "Get Started" der Marketing-API) — **DER GRENZFALL DIESER
+  LISTE.** Er liegt in einem anderen Abschnitt, und der Zugang verlangt eine Anmeldung.
+  Ein Sandbox-Konto ist der naheliegendste Ort für eine Aussage über Testdaten und
+  Berichterstattung; **dass er nicht geöffnet ist, begrenzt die Reichweite von (d).**

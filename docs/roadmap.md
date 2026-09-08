@@ -1472,13 +1472,38 @@ liegen beide hier und finden einander.
       Google-Schnittstelle**, weder durch CC noch in diesem Block behauptet; es ist kein
       Aufruf gefahren worden.
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code): klein und
-      eigenständig, damit ein Kunde seine Einrichtung prüfen kann, ohne echte
-      Conversions zu erzeugen. Kontext: docs/claude-history/future-roadmap.md,
-      "Tracking-Testmodus für Kunden".
-      PROVENIENZ: bislang nur als NAME geführt — kein Zuschnitt, keine Recherche,
-      keine Entscheidung. Gemessen ist allein, dass der zweite Adapter einen
-      Testmodus-Parameter kennt (testModeQuery) und beim ersten der Test-Code in
-      die NUTZLAST wandert; für LinkedIn steht ein Nicht-Treffer.
+      eigenständig. Der Kunde sieht sein Ereignis in der Test-Ansicht des
+      Anbieters ANKOMMEN, ohne dass es die EIGENEN Analytics-Zahlen berührt —
+      der Beweis der Einrichtung kommt vom Anbieter, nicht von uns.
+      DER PREIS STEHT DANEBEN UND WIRD NICHT WEGGESCHRIEBEN: Der Testklick zählt
+      beim Anbieter als ECHTE Conversion. Die Phase liefert SICHTBARKEIT, nicht
+      ISOLATION. Kontext: docs/claude-history/future-roadmap.md,
+      "Tracking-Testmodus für Kunden" — mit dem Vorbehalt aus der
+      Richtigstellung unten.
+      RICHTIGGESTELLT AM 2026-09-08 (OWNER-ENTSCHEIDUNG), NICHT GESTEMPELT: Hier
+      stand "damit ein Kunde seine Einrichtung prüfen kann, ohne echte
+      Conversions zu erzeugen". DAS IST WIDERLEGT. Meta sagt ausdrücklich, ein
+      mit test_event_code markiertes Ereignis werde nicht verworfen und fliesse
+      in Targeting und Messung; KEIN Anbieter dieses Rahmens liefert die
+      Isolation, die der gestrichene Halbsatz versprach. Er ist ersetzt und
+      nicht gestempelt, weil eine Roadmap-Zeile ein MASSSTAB ist, gegen den
+      zugeschnitten wird — ein Massstab mit einer falschen Zusage taugt nicht als
+      Massstab. PROVENIENZ der Widerlegung: GELESEN 2026-09-08, Volltext und
+      Fundstellen in docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)",
+      Teil (a). KEINE MESSUNG an der Schnittstelle.
+      ACHTUNG, DIE ALTE BEGRÜNDUNG LEBT IM ARCHIV WEITER: In
+      docs/claude-history/future-roadmap.md, "Tracking-Testmodus für Kunden",
+      steht sie unverändert — jene Datei ist ein Archiv und wird nicht rückwirkend
+      geändert. Wer dort liest und diesen Absatz nicht kennt, übernimmt den
+      falschen Grund erneut.
+      PROVENIENZ DES STANDES: Zuschnitt und Recherche liegen seit dem 2026-09-08
+      vor — die Standdatei docs/aktiver-stand.md trägt Gegenstand, Ausgangslage
+      und die Scheibe 11.3a. HIER STAND BIS DAHIN "bislang nur als NAME geführt —
+      kein Zuschnitt, keine Recherche, keine Entscheidung"; das war für seinen Tag
+      richtig und ist es seit dem Anlegen der Standdatei nicht mehr. Gemessen am
+      Repo ist, dass der zweite Adapter einen Testmodus-Parameter kennt
+      (testModeQuery) und beim ersten der Test-Code in die NUTZLAST wandert; für
+      LinkedIn steht ein Nicht-Treffer.
 - [ ] Phase 11.4 — Der Testknopf: KEINE SCHEIBE, sondern mehrere einzeln
       beweisbare Teile plus eine UNENTSCHIEDENE VORFRAGE — was beim Druck auf den
       Knopf überhaupt aufgerufen wird. OHNE DEREN ANTWORT HAT KEIN ZUSCHNITT EINEN

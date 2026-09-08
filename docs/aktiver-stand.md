@@ -296,18 +296,35 @@ OFFEN" und ob ein markiertes Ereignis aus der Optimierung falle, sei "nirgends G
 nirgends mit Datum GELESEN". Der zweite Halbsatz ist mit dem Crawl desselben Tages überholt;
 der erste war es damit auch.
 
-### Die Lücke, die beim Zuschnitt der TikTok-Hälfte gebraucht wird
+### Die Lücke, die beim Zuschnitt der TikTok-Hälfte gebraucht wird — VERORTET, NICHT GESCHLOSSEN
 
-**docs/ziel-befunde.md HAT WEDER EINEN META- NOCH EINEN TIKTOK-ABSCHNITT** (GEMESSEN am
-Dateitext, CC, 2026-09-08: die Datei trägt genau drei Ziel-Abschnitte — LinkedIn, Google,
-Pinterest; eine Überschriften-Suche nach meta bzw. tiktok trifft null).
+**docs/ziel-befunde.md TRÄGT SEIT COMMIT cbdd1c9 EINEN META- UND EINEN TIKTOK-ABSCHNITT**,
+und der TikTok-Befund hat seinen Ort: Abschnitt "TikTok (Events API 2.0)", Teil (f). Wer
+"wechselt pro Sitzung" nachschlagen will, schlägt dort nach.
 
-**DAS IST FÜR TIKTOK EINE ECHTE LÜCKE UND NICHT NUR EINE ABLAGE-FRAGE.** Die H1-Matrix in
-docs/ziel-fragenkatalog.md führt TikToks Testmodus als **GEMESSEN** — wörtlich:
-"`test_event_code` in der Nutzlast, wechselt pro Sitzung, gem". **Der Befund, auf den sich
-das stützt, hat in docs/ziel-befunde.md keinen Ort.** Das Einzige, was im Repo dazu steht,
-ist ein Kommentar in `src/lib/capi/tiktok-forward.ts`, der eine Messung "2026-08-11, im
-Testmodus eines eigenen Werbekontos" nennt.
+**DIE URSPRÜNGLICHE MESSUNG WAR FÜR IHREN ZEITPUNKT RICHTIG UND WIRD NICHT ALS FEHLER
+DARGESTELLT.** Hier stand, die Datei habe weder einen Meta- noch einen TikTok-Abschnitt und
+der Befund habe dort keinen Ort — GEMESSEN am Dateitext (CC, 2026-09-08, Vormittag), als
+die Datei genau drei Ziel-Abschnitte trug. **WAS ABLÄUFT, IST NICHT DIE ZAHL, SONDERN DER
+AUFTRAG, DEN SIE TRUG:** Die Messung sollte eine fehlende Ablage anzeigen; die Ablage
+existiert seither, und damit hat die Anzeige ihren Gegenstand verloren. Sie ist deshalb
+ersetzt und nicht gestempelt — eine Standdatei ist ein Massstab, und ein Massstab, der auf
+eine nicht existente Leerstelle zeigt, schickt den nächsten Leser ins Leere.
+
+**WAS INHALTLICH UNVERÄNDERT OFFEN BLEIBT — und das ist der Grund, warum dieser
+Unterabschnitt nicht entfällt:** Die H1-Matrix in docs/ziel-fragenkatalog.md führt TikToks
+Testmodus als **GEMESSEN** — wörtlich: "`test_event_code` in der Nutzlast, wechselt pro
+Sitzung, gem". **DIESE ANGABE IST WEITERHIN ALLEIN DURCH DIE MESSUNG VOM 2026-08-11
+GETRAGEN, UND DEREN PROTOKOLL LIEGT IM REPO NICHT VOR** — was beobachtet wurde und mit
+welcher Gegenkontrolle, steht nirgends. Das Einzige, was im Code dazu steht, ist ein
+Kommentar in `src/lib/capi/tiktok-forward.ts`, der eine Messung "2026-08-11, im Testmodus
+eines eigenen Werbekontos" nennt. **DIE DOKU STÜTZT DIE ANGABE NICHT UND WIDERLEGT SIE
+NICHT** (docs/ziel-befunde.md, Abschnitt "TikTok (Events API 2.0)", Teile (e) und (f)).
+
+**DIE LÜCKE IST DAMIT VERORTET, NICHT GESCHLOSSEN.** Verortet heisst: man weiss jetzt, wo
+der Befund steht und worauf er ruht. Geschlossen wäre er erst, wenn ein Protokoll vorläge
+oder eine neue Messung ihn trüge. **WER DIE VERORTUNG FÜR DIE SCHLIESSUNG HÄLT, HÄLT EINE
+ABLAGE FÜR EINEN BELEG.**
 
 **WARUM DAS DEN ZUSCHNITT BERÜHRT:** "wechselt pro Sitzung" ist die Aussage, an der hängt,
 ob ein Testcode ein DAUERHAFT abgelegter Wert sein kann oder bei jedem Testlauf neu
@@ -489,6 +506,48 @@ Zustand je (Projekt, Ziel), getragen von einer Frist) überlebt beides.
 **PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-08, auf GELESENER Grundlage
 (docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)", Teil (a)).
 
+**DIE VERWORFENE ALTERNATIVE — ISOLATION OHNE ANBIETER.** Sie gehört zu dieser
+Entscheidung und ist kein zweiter Beschluss: eine Entscheidung ohne ihr Gegengewicht liest
+sich wie die einzige Möglichkeit, und dann wird die Alternative beim nächsten Mal als
+Einfall präsentiert statt als erwogene und verworfene Option.
+
+**WAS SIE GEWESEN WÄRE:** gar nicht senden — und dem Kunden zeigen, was gesendet worden
+WÄRE. Ein Trockenlauf also, der die Nutzlast baut, sie darstellt und den Aufruf unterlässt.
+**IHRE ZWEI ECHTEN VORZÜGE, und sie werden hier nicht kleingeredet:** Sie vermeidet die
+echte Conversion vollständig — der Preis, den die getroffene Entscheidung ausdrücklich
+mitträgt, entfiele. Und sie trägt **alle fünf Ziele gleich**, weil sie von keinem Anbieter
+etwas verlangt: kein Träger, kein Parameter, keine Test-Ansicht, keine Messung. Die drei
+Ausschlüsse unter "Reichweite: meta und tiktok — und ausdrücklich sonst keines" wären
+hinfällig.
+
+**WARUM SIE TROTZDEM FÄLLT — DER TRAGENDE SATZ: IHR BEWEIS KÄME VON DEM CODE, DER GEPRÜFT
+WERDEN SOLL.** Ein Trockenlauf zeigt, was unser eigener Adapter zusammengesetzt hat. Er
+kann prinzipiell nicht zeigen, dass es beim Anbieter ANKOMMT — und genau das ist die Frage,
+die der Kunde stellt, wenn er die Einrichtung prüft. Ein Zugangsdatum kann widerrufen sein,
+eine Kennung falsch, ein Feld abgelehnt, ein Ereignisname unbekannt: **all das sieht ein
+Trockenlauf nicht, weil er nie fragt.** Was er anzeigt, sähe in jedem dieser Fälle
+tadellos aus. **ANKUNFT IST DAS KERNVERSPRECHEN DIESES PRODUKTS** — ein Prüfwerkzeug, das
+sie nicht belegen kann, prüft die eine Sache nicht, für die es da ist.
+
+**DER ZWEITE GRUND, und er ist der zuschnitts-technische:** Sie braucht einen LESEPFAD und
+eine MASKIERUNG — also genau das, was docs/roadmap.md als der Phase 11.4 fehlend führt
+("ein Lesepfad, ein Rückkanal und eine Maskierung — NICHT die Adapter"). **SIE WÄRE 11.4
+UNTER DER NUMMER 11.3**, und deren unentschiedene Vorfrage stünde damit mitten in dieser
+Scheibe. S. den Abschnitt "Abgrenzung zu Phase 11.4 — 11.3 baut die MARKIERUNG, 11.4 den
+AUSLÖSER".
+
+**WEN DIESER ABSATZ BINDET, UND DAS IST SEIN ZWECK:** jede spätere Runde, die eine ANZEIGE
+DES GESENDETEN vorschlägt — namentlich die Oberflächen-Scheibe 11.3b und die Phase 11.4.
+**DIE ALTERNATIVE IST NICHT VERBOTEN.** Sie ist erwogen und mit Grund verworfen. Wer sie
+neu vorschlägt, trägt gegen DIESEN Grund vor — er beginnt nicht bei null, und er muss
+nicht so tun, als sei sie nie bedacht worden. **Was er nicht darf, ist sie als neuen
+Einfall einbringen**, denn dann wird die Abwägung ein zweites Mal geführt, ohne dass
+jemand weiss, dass es eine erste gab.
+
+**PROVENIENZ DER VERWERFUNG:** ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-08. Derselbe Grund
+steht im Commit-Body des vorangehenden docs(claude)-Commits; **er steht hier, weil ein
+Commit-Body nicht lädt** (s. den Hebungs-Kandidaten unten).
+
 ## Vorrat — gemeldet, nicht gebaut
 
 **(1) OB TIKTOK TEST-MARKIERTE EREIGNISSE MITZÄHLT WIE META — UNGELESEN UND UNGEMESSEN.**
@@ -536,8 +595,61 @@ GELESEN 2026-09-08 (Doku-Schweigen) plus der GEMESSENE Repo-Befund vom 2026-08-1
 
 ## Hebungs-Kandidaten
 
-Noch leer. Hierher gehört, was am Phasenende in docs/immer-beachten.md, in CLAUDE.md oder
-ins Backlog gehoben werden könnte — als KANDIDAT, ohne Auswahl.
+Hierher gehört, was am Phasenende in docs/immer-beachten.md, in CLAUDE.md oder ins Backlog
+gehoben werden könnte — als KANDIDAT, ohne Auswahl.
+
+### (1) EINE VERWORFENE ALTERNATIVE, DIE NUR IM COMMIT-BODY STEHT, IST FÜR KÜNFTIGE RUNDEN VERLOREN
+
+**DIE BEOBACHTUNG:** docs/arbeitsweise.md weist der verworfenen Alternative den COMMIT-BODY
+als Ort zu. **EIN COMMIT-BODY LÄDT NICHT.** Eine spätere Instanz liest Dateien — die
+Standdatei als Pflicht-Gate, CLAUDE.md und docs/immer-beachten.md unbedingt, die
+auslöser-geladenen bei ihrem Auslöser. Sie liest **nicht** `git log`, und nichts in ihrem
+Startkontext verweist sie dorthin.
+
+**DIE FOLGE:** Eine Alternative, die ausschliesslich im Body abgelegt ist, existiert für
+künftige Runden faktisch nicht. Sie wird nicht als überholt erkannt und nicht als erwogen —
+sie wird beim nächsten Mal neu vorgeschlagen, und die Abwägung läuft ein zweites Mal, ohne
+dass jemand von der ersten weiss.
+
+**DIE VERSCHÄRFUNG, die diesen Kandidaten von einer blossen Unbequemlichkeit trennt:** Der
+Body ist unveränderlich. Wird der Verlust bemerkt, lässt sich der Text nur an einem ANDEREN
+Ort nachtragen — und dann steht dieselbe Aussage zweimal, in einem unveränderlichen und
+einem gepflegten Exemplar. Genau die Bauform, die dieses Repo an mehreren Stellen als
+Fehlerquelle führt.
+
+**GEMESSEN AN DIESER PHASE (CC, 2026-09-08):** ZWEI verworfene Alternativen, **beide nur im
+Body**.
+· Die eine — "Isolation ohne Anbieter" — ist am 2026-09-08 nachträglich in diese Datei
+  geholt worden, an die Entscheidung (1).
+· Die andere — "nur meta in der ersten Scheibe" — ist bewusst NICHT geholt worden, weil sie
+  mit ihrer Scheibe abläuft: Ist 11.3a gebaut, gibt es keine erste Scheibe mehr, in der man
+  meta allein hätte bauen können.
+**DIESE ZWEITE HÄLFTE IST DER GRUND, WARUM HIER NICHTS ENTSCHIEDEN WIRD.** Sie zeigt, dass
+der Verlust NICHT immer einer ist — manche Alternativen sollen ablaufen, und für die ist
+der Commit-Body genau der richtige Ort. Eine Regel, die alle Alternativen in eine Datei
+zwänge, produzierte Altlast; eine, die keine hineinliesse, verlöre die dauerhaften. **WO
+DIE GRENZE LIEGT, IST NICHT ERHOBEN.**
+
+**NICHT ENTSCHIEDEN:** ob daraus eine Regel wird · ob docs/arbeitsweise.md einen
+ÄNDERUNGSANTRAG braucht (Weg 7 in CLAUDE.md, "## Aktive Dokumente" — der INHALT jener Datei
+wird nicht von CC entschieden) · oder ob es beim Einzelfall dieser Phase bleibt.
+**KEINE EMPFEHLUNG.**
+
+**PROVENIENZ:** Dass ein Commit-Body nicht lädt, ist eine Eigenschaft des Startkontexts und
+hier NICHT eigens gemessen — es ist am Ladeverhalten dieser Sitzung ABGELESEN. Die Zählung
+der zwei Alternativen dieser Phase ist GEMESSEN am Repo und an den Commit-Bodies (CC,
+2026-09-08).
+
+**DASS docs/arbeitsweise.md DEN COMMIT-BODY ALS ORT FÜHRT, IST BESTÄTIGT — ARCHITEKT, am
+WORTLAUT jener Datei, 2026-09-08.** Sie nennt als Inhalt des Bodys ausdrücklich "eine
+verworfene Alternative, eine Messung, die die Entscheidung getragen hat". Die Prämisse
+dieses Kandidaten steht damit nicht auf einer Behauptung, sondern auf einer gelesenen
+Stelle.
+**DIE ZWEITE HÄLFTE BLEIBT DANEBEN STEHEN UND IST KEIN VORBEHALT MEHR, SONDERN EINE ANGABE
+ÜBER DEN ZUGANG: CC KANN DAS NICHT SELBST PRÜFEN.** docs/arbeitsweise.md ist CC nicht als
+Arbeitsgrundlage zugänglich (CLAUDE.md, "## Aktive Dokumente"). Wer diesen Kandidaten
+später fortschreibt, weiss damit, welche Instanz die Stelle gelesen hat — und dass eine
+erneute Prüfung wieder über den Architekten laufen muss, nicht über eine Suche im Repo.
 
 ## Scheiben-Vermerke
 

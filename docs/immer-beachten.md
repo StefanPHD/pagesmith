@@ -70,7 +70,7 @@ docs/claude-history/. Wer hier einen Messwert sucht, sucht am falschen Ort —
 und wer hier einen einträgt, macht aus einer Regel eine Zustandsbeschreibung,
 die still veraltet.
 
-## Verzeichnis — 90 Regeln in Dateireihenfolge
+## Verzeichnis — die Regeln in Dateireihenfolge
 
 Jeder Eintrag ist der WÖRTLICHE Anfang seiner Regel, auf feste Breite
 geschnitten und mit "..." gekappt — KEINE Beschreibung. GRUND: Eine
@@ -173,6 +173,10 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - EIN GUARD AUF EINEN NAMEN, DEN ES NACH DEM LAUF WIEDER GIBT, TRENNT ...
 - EIN WÄCHTER ÜBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG — ER MUSS ...
 - EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND ...
+- EINE KENNUNG WIRD NIE FÜR EINEN ANDEREN SCHLÜSSELWERT WIEDERVERWENDET ...
+- EINE FASSUNGSMARKE DER NUTZLAST WIRD NIE FÜR EINE ANDERE FELDMENGE ...
+- EIN REGRESSIONSSCHRITT DARF DIE VORAUSSETZUNG DES SCHRITTS DANACH NICHT ...
+- EINE PROBE GEGEN DIESELBE SCHICHT KANN EINE FRAGE ÜBER EINE ANDERE ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -1593,3 +1597,104 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   für einen Abwesenheits-WÄCHTER eine POSITIVKONTROLLE, damit ein echter Nicht-Treffer von
   einem kaputten Wächter zu unterscheiden ist. HIER IST DER WÄCHTER IN ORDNUNG — das
   INSTRUMENT erzeugt die Abwesenheit. Verwandte Denkfigur, andere Achse.
+- EINE KENNUNG WIRD NIE FÜR EINEN ANDEREN SCHLÜSSELWERT WIEDERVERWENDET (Phase 11.8,
+  gehoben 2026-09-08): Ein neuer Schlüssel bekommt eine NEUE Kennung; der alte bleibt zum
+  Lesen stehen, bis nichts mehr unter ihm liegt.
+  DER GRUND: Wer den Wert unter derselben Kennung austauscht, erzeugt genau die
+  Verwechslung, die die Kennung verhindern soll — und sie fällt auf `auth_failed` zurück,
+  also auf die Ununterscheidbarkeit zwischen "falscher Schlüssel" und "verändertes
+  Chiffrat", die zu beseitigen ihr ganzer Zweck war. Die Kennung wäre dann eine Form ohne
+  Wirkung: sie steht im Chiffrat, wird nachgeschlagen, findet einen Schlüssel — und der
+  ist der falsche.
+  DIE GRENZE, UND SIE IST DER TRAGENDE TEIL: Der Code prüft, was er SEHEN kann — eine
+  Konfiguration, die DIESELBE Kennung zweimal aufführt, wird abgewiesen (`readKeyMap` ->
+  `bad_key`; ein Test deckt es). Er kann NICHT sehen, dass eine Kennung GESTERN einen
+  anderen Wert trug. Das ist eine Aussage über die ZEIT, und sie trägt allein diese Regel.
+  Wer sie für vom Code gedeckt hält, hält einen Ausschnitt für das Ganze.
+  WEN SIE BINDET: jede spätere Runde, die einen Schlüssel wechselt. Sie bindet ausserdem
+  den Betrieb: die Umgebungsvariablen führen die Kennungen, nicht der Code.
+  SIE TRÄGT KEINE BEDINGUNG IHRES ENTFALLENS, UND DER GRUND IST STRUKTURELL: Sie entfiele
+  erst, wenn ein Gate die ZEIT-Achse prüfen könnte — wenn also etwas sähe, dass eine
+  Kennung gestern einen anderen Wert trug. Genau das kann kein Code, der nur den heutigen
+  Zustand liest. Wer hier eine Bedingung sucht, sucht nach etwas, das es nicht gibt; ihr
+  Fehlen ist kein Versäumnis.
+  PROVENIENZ: OWNER/ARCHITEKT-ENTSCHEIDUNG 2026-08-25. Dass der Code die Zeit-Achse nicht
+  sehen kann, ist GEMESSEN am gebauten Stand (CC, 2026-08-25, Commit 4b2ec09). Herleitung:
+  docs/aktiver-stand-11.8.md, "Entscheidungen, die über ihre Scheibe hinaus binden".
+- EINE FASSUNGSMARKE DER NUTZLAST WIRD NIE FÜR EINE ANDERE FELDMENGE WIEDERVERWENDET
+  (Phase 11.8, gehoben 2026-09-08): Ändert sich der Feldsatz, bekommt die Form eine NEUE
+  Marke; `p1` bleibt für immer die Feldmenge vom 2026-08-26.
+  WAS DER CODE NICHT SAGEN KANN: Er weist eine unbekannte Marke ab (`unknown_version`),
+  aber er kann nicht sehen, dass `p1` GESTERN eine andere Feldmenge bezeichnet hat. EIN
+  UNTER DERSELBEN MARKE GEÄNDERTER FELDSATZ WIRD NICHT ABGEWIESEN — er wird falsch
+  gedeutet, und der Leser bekommt ein einwandfreies "ok".
+  WEN SIE BINDET: jede spätere Runde, die ein Feld hinzufügt, entfernt oder umdeutet; und
+  ausdrücklich auch die, die eine DRITTE Marke einführen oder eine der zwei entfernen will
+  — sie muss vorher wissen, dass die zwei auf VERSCHIEDENEN Achsen sitzen (`p1` in der
+  Nutzlast, `v1` im Chiffrat) und nicht redundant sind. Warum es zwei gibt, steht im Kopf
+  von `src/lib/secrets/oauth-payload.ts` und braucht keinen zweiten Ort.
+  ES IST DIESELBE DENKFIGUR WIE IN DER REGEL DARÜBER, nur an der anderen Marke: dort der
+  Schlüssel, hier die Feldmenge. Beide Male ist es eine Aussage über die Zeit, und beide
+  Male fällt sie auf einen ununterscheidbaren Ausgang zurück, wenn man sie bricht.
+  SIE TRÄGT KEINE BEDINGUNG IHRES ENTFALLENS, aus demselben strukturellen Grund wie die
+  Regel darüber: Ein Gate müsste sehen, was eine Marke GESTERN bezeichnet hat.
+  PROVENIENZ: die zwei Marken sind OWNER-ENTSCHEIDUNG (2026-08-26) und im Bau umgesetzt
+  (Commit 8532e59); dass der Code die Zeit-Achse nicht sehen kann, ist GEMESSEN am
+  gebauten Stand (CC, 2026-08-26). Die Erhebung zur bindenden Entscheidung ist ARCHITEKT
+  (2026-08-26).
+- EIN REGRESSIONSSCHRITT DARF DIE VORAUSSETZUNG DES SCHRITTS DANACH NICHT ZERSTÖREN
+  (Phase 11.8, gehoben 2026-09-08): Eine Anleitung kann aus lauter tauglichen Schritten
+  bestehen und trotzdem in der falschen REIHENFOLGE stehen.
+  BELEG: Die Live-Test-Anleitung zu 11.8b verlangte in Schritt 3, an einem KONFIGURIERTEN
+  Ziel zweimal ein Geheimnis zu speichern, und in Schritt 6, dass DASSELBE Ziel weiter
+  sendet. Nach Schritt 3 trug es einen Testwert; der Anbieter lehnte ab, und der
+  Server-Forward kam nicht an. GEMESSEN am eigenen Lauf (Owner, 2026-08-26).
+  WARUM DAS SCHLIMMER IST ALS EIN AUSGEFALLENER SCHRITT: "Nichts kommt vom Server an"
+  sieht bei einem kaputten Lesepfad EXAKT so aus wie bei einem ungültigen Zugangsdatum.
+  Die Beobachtung trennt die beiden nicht. Der Schritt hätte als Fehlschlag gelten können,
+  ohne etwas gezeigt zu haben — und die Suche hätte am falschen Ende begonnen.
+  DIE REPARATUR IST EINE ZEILE und hat im Nachlauf getragen: DER ZWEITE WERT IST DER
+  ECHTE. Dann prüft der Regressionsschritt dieselbe Sache wie zuvor, und der Bestand ist
+  hinterher intakt. DER FEHLER LAG IN DER ANLEITUNG, NICHT IN DER AUSFÜHRUNG.
+  ABGRENZUNG ZU LEKTION (c) AN "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE": Dort reisst
+  das INSTRUMENT die Voraussetzung dessen mit, was es prüfen soll; hier tut es die
+  REIHENFOLGE zweier Schritte. Verwandte Klasse, andere Achse.
+  ABGRENZUNG ZU "EINE ANLEITUNG, DIE EINE VORAUSSETZUNG NICHT NENNT": Dort fehlt die
+  Nennung, und die Voraussetzung wäre herstellbar; hier ist sie genannt und wird vom
+  eigenen Ablauf zerstört.
+  SIE TRÄGT KEINE BEDINGUNG IHRES ENTFALLENS, UND DER GRUND IST STRUKTURELL: Sie gälte,
+  solange es Live-Anleitungen mit mehr als einem Schritt gibt. Ein Zustand, in dem das
+  aufhört, ist nicht formulierbar.
+  PROVENIENZ: der Befund GEMESSEN am eigenen Lauf (Owner, 2026-08-26); die Einordnung als
+  Anleitungsfehler ARCHITEKT (2026-08-26). Herleitung: docs/aktiver-stand-11.8.md,
+  Hebungs-Kandidat 4.
+- EINE PROBE GEGEN DIESELBE SCHICHT KANN EINE FRAGE ÜBER EINE ANDERE SCHICHT NICHT
+  SCHLIESSEN (Phase 11.8, gehoben 2026-09-08): Zwischen unserem Code und jeder fremden
+  Wirkung liegen mehrere Schichten — Client, Protokoll-Schicht, Datenbank, Anbieter —, und
+  ein Instrument misst immer nur die, gegen die es spricht. EIN ERGEBNIS VON DER FALSCHEN
+  SCHICHT SIEHT DABEI AUS WIE EINE ANTWORT.
+  BELEG, zweimal in einer Phase eingetreten: Die Probe vom 2026-08-25
+  (supabase/checks/upsert-arbiter-probe.sql) hat gegen den REST-Endpunkt gemessen und
+  damit PostgREST. Offen blieb, ob supabase-js denselben Arbiter erzeugt — und eine ZWEITE
+  Probe hätte wieder PostgREST gemessen und wäre an der Frage vorbeigelaufen. Geschlossen
+  hat sie erst der LIVE-TEST am 2026-08-26, weil dort der Client selbst den Aufruf baut.
+  DAS UMGEKEHRTE GILT AUCH, und es gehört dazu, sonst liest sich die Regel als "immer
+  möglichst weit aussen messen": Wer die PostgREST-Frage im SQL-Editor misst, beantwortet
+  ebenfalls eine andere — er misst dann Postgres. Genau deshalb lief jene Probe gegen den
+  Endpunkt und NICHT im Editor. DIE REGEL SAGT NICHT "WEITER AUSSEN", SONDERN "AN DER
+  SCHICHT, ÜBER DIE DIE FRAGE GESTELLT IST".
+  ABGRENZUNG ZU LEKTION (c) AN "MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE": Jene fragt, ob
+  ein Mittel zu GROB ist und die Voraussetzung des Geprüften mitreisst. Diese fragt, ob es
+  an der RICHTIGEN SCHICHT ansetzt. Ein Instrument kann fein sein, sauber greifen, ein
+  klares Ergebnis liefern — und trotzdem etwas anderes gemessen haben, als gefragt war.
+  ABGRENZUNG ZU "EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN": Dort erzeugt das
+  Werkzeug einen NICHT-Treffer, den der Gegenstand nicht hergibt; hier liefert es einen
+  TREFFER, aber über den falschen Gegenstand.
+  ABGRENZUNG ZUR REGEL DARÜBER: Jene betrifft die REIHENFOLGE zweier Schritte, diese den
+  ORT der Messung. Drei Achsen mit demselben Ausgang — ein Ergebnis, das wie eine Antwort
+  aussieht und keine ist.
+  SIE TRÄGT KEINE BEDINGUNG IHRES ENTFALLENS, UND DER GRUND IST STRUKTURELL: Sie gälte,
+  solange es mehr als eine Schicht zwischen Code und Wirkung gibt. Ein Zustand ohne
+  Schichten ist nicht formulierbar.
+  PROVENIENZ: der Befund GEMESSEN an den zwei Läufen vom 2026-08-25 und 2026-08-26.
+  Herleitung: docs/aktiver-stand-11.8.md, Hebungs-Kandidat 5.

@@ -267,6 +267,11 @@ gehen von hier eine Station weiter.
   vorige Trigger am selben Tag eingetreten und im Volltext ERSETZT worden ist; vor dem
   Nachweis gibt es kein gültiges Zugangsdatum, an dem sich die Frage überhaupt messen liesse,
   die Messung wäre also nicht bloss unterlassen, sondern unmöglich)
+- DER OAUTH-WEG RUFT ensureTrackingKey NICHT — ANDERS ALS setCapiToken (Trigger: die
+  Transport-Scheibe, also die Scheibe, die den Zugang tatsächlich benutzt — EINGETRETEN,
+  GEMESSEN am Repo 2026-09-08: Scheibe 4 der Phase 11.2 ist gebaut und live bewiesen. Ob
+  ein Projekt OHNE Tracking-Schlüssel existiert, ist am Repo NICHT feststellbar und
+  ausdrücklich nicht erhoben)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
@@ -1038,6 +1043,9 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   datierte Überschrift — sonst rutscht ein Eintrag unter eine fremde Herkunft;
   das erklärt die vier Nachtrags-Abschnitte. Wer einen fünften anlegt, zieht
   diesen Stub im SELBEN Zug nach.
+  NACHGEZOGEN 2026-09-08 — DER SECHSTE ABSCHNITT: "Aus Phase 11.8 gehoben (2026-09-08) —
+  Vorrats-Punkte aus docs/aktiver-stand-11.8.md" (3). Er ist beim nachgeholten Phasenende
+  der Phase 11.8 entstanden; die drei Einträge tragen ihre Ursprungs-Nummern 1, 2 und 3.
   NACHGEZOGEN 2026-08-31 — DER FÜNFTE NACHTRAGS-ABSCHNITT: "Nachtrag 2026-08-31 —
   BEOBACHTUNG AUS DEM LIVE-TEST DER SCHEIBE 3 (kosmetisch)" (1). DER MESSBLOCK
   DARÜBER IST UNANGETASTET UND BLEIBT ES: seine Zahlen (123 Einträge, 163 KB,

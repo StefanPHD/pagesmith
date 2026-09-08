@@ -1788,3 +1788,34 @@ aufeinander; sie liegen alle hier und finden einander.
   Titel und gelesenem Anteil unter Teil (ah). Dass die drei Fragen offen sind, ist ein BEFUND
   ÜBER DIE GELESENE DOKU und KEINE Messung — es ist an keiner Schnittstelle etwas erhoben
   worden. Die README-Zitate sind GELESEN am Repo (CC, 2026-09-04).
+
+- DER OAUTH-WEG RUFT ensureTrackingKey NICHT — ANDERS ALS setCapiToken (Trigger: die
+  Transport-Scheibe, also die Scheibe, die den Zugang tatsächlich benutzt):
+  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-11.8.md, Vorrats-Eintrag 6, im Rahmen des
+  nachgeholten Phasenendes der Phase 11.8. Der Wortlaut des Triggers ist der des
+  Vorrats-Eintrags und NICHT umformuliert.
+  DER BEFUND: Die Server-Action `setCapiToken` stellt den projektweiten Tracking-Schlüssel
+  bei JEDEM Ziel sicher; die Callback-Route der Scheibe 11.8e tut es NICHT. GEMESSEN am
+  Code (CC, 2026-08-27), erneut bestätigt am 2026-09-08: `ensureTrackingKey`
+  (src/lib/settings.ts) hat im Produktivcode ausschliesslich Aufrufer in
+  src/app/projects/actions.ts; src/app/api/oauth/google/callback/route.ts nennt den Namen
+  nur im Kommentar, der die Auslassung begründet.
+  DER GRUND WAR DER ZUSCHNITT, NICHT EINE ENTSCHEIDUNG GEGEN DEN SCHRITT: Es wäre ein
+  Schreibvorgang auf einer ZWEITEN Tabelle (`projects`) ohne damalige Wirkung gewesen —
+  nichts las den google-Zugang, der `events:ingest`-Aufruf war aus jener Scheibe
+  ausgeschlossen.
+  WAS DARAUS FOLGT: Ein Projekt, das AUSSCHLIESSLICH über diesen Weg konfiguriert wird, hat
+  womöglich keinen Tracking-Schlüssel — und ohne ihn sendet es nicht.
+  DER TRIGGER IST EINGETRETEN (GEMESSEN am Repo, CC, 2026-09-08): Die Transport-Scheibe ist
+  gebaut und live bewiesen — Scheibe 4 des Schnitts der Phase 11.2, VERMERK 10 im Archiv
+  docs/claude-history/phase-11.2-google.md, Bau-Commits 26caa38 und 84e9fca. Der Punkt ist
+  damit FÄLLIG und wartet nicht mehr.
+  DASS DARAUS EIN DEFEKT FOLGT, IST NICHT ENTSCHIEDEN, und dieser Satz gehört zwingend
+  daneben: Ob ein Projekt in diesem Zustand EXISTIERT, ist am Repo nicht feststellbar — es
+  bräuchte eine Abfrage gegen die laufende Datenbank, und die ist nicht gefahren worden. Es
+  ist bis heute KEIN Projekt ohne Tracking-Schlüssel beobachtet worden.
+  KEINE EMPFEHLUNG, ob der Aufruf ergänzt wird oder ob die Prüfung an anderer Stelle
+  entsteht.
+  PROVENIENZ: Der Unterschied zu `setCapiToken` ist GEMESSEN am Code (CC, 2026-08-27 und
+  2026-09-08); das Eintreten des Triggers ist GEMESSEN am Repo (CC, 2026-09-08); die Folge
+  für ein Projekt ohne Schlüssel ist eine ABLEITUNG und keine Messung.

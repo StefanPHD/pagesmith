@@ -2280,3 +2280,73 @@ ist (CLAUDE.md, docs/immer-beachten.md), steht hier NICHT noch einmal.
   WARUM ES HIER UND NICHT ALS OFFENER PUNKT STEHT: Es gibt keinen Zeitpunkt, zu dem es
   still kaputtginge. Das UI wird ohnehin neu gestaltet; wer das tut, nimmt es mit.
   KEIN TRIGGER, KEINE EMPFEHLUNG zur Bauform. GEMELDET, NICHT GEBAUT.
+
+## Aus Phase 11.8 gehoben (2026-09-08) — Vorrats-Punkte aus docs/aktiver-stand-11.8.md
+
+HERKUNFT: Der Vorrat der Phase 11.8 (Autorisierungsschicht), gehoben am 2026-09-08 im
+Rahmen des nachgeholten Phasenendes — Schritt 1 war beim Abschluss am 2026-08-27
+übersprungen worden. Die Nummern sind die des Ursprungs und werden NICHT neu vergeben.
+VON SIEBEN VORRATS-EINTRÄGEN KOMMEN DREI HIERHER. Einer (6) ist als offener Punkt nach
+docs/offene-punkte.md gegangen, weil er einen Trigger trägt; drei (4, 5, 7) sind
+GESTRICHEN worden, weil ihr Gegenstand erledigt ist — der Beleg je Streichung steht am
+Zeiger in der Herkunftsdatei.
+
+1. **DIE VIER BESTEHENDEN ZIELE TRAGEN IHR GEHEIMNIS HEUTE ALS KLARTEXT.** GEMESSEN am
+   Migrations-SQL (CC, 2026-08-25): `project_secrets` trägt `secret text not null` als
+   Skalar, und der Kommentar an dieser Spalte sagt es ausdrücklich — "KLARTEXT, wie in
+   project_tokens. Tragende Kontrolle ist die ISOLATION (eigene Tabelle + RLS ohne jede
+   Policy), NICHT Verschluesselung."
+   WAS SICH MIT DEN ENTSCHEIDUNGEN DER PHASE 11.8 ÄNDERT: Aus einem Dauerzustand wird ein
+   ÜBERGANGSZUSTAND MIT ENDE. Die additive Form — neue Spalte neben dem Skalar, CHECK auf
+   genau eines von beiden — macht ihn strukturell sichtbar, und jedes Ziel wandert einzeln.
+   WAS SICH NICHT ÄNDERT: DIE WANDERUNG IST NICHT ZUGESCHNITTEN UND NICHT TERMINIERT. Sie
+   ist keine Scheibe, kein Plan und kein Termin — sie ist GEMELDET.
+   KEIN TRIGGER. KEINE EMPFEHLUNG, weder zum Zeitpunkt noch zur Reihenfolge der vier Ziele.
+   AM 2026-09-08 ERNEUT GEPRÜFT (CC): Der Zustand besteht unverändert —
+   `0021_project_secrets.sql` führt weiterhin `secret text not null`; `secret_enc` ist mit
+   Migration 0025 ADDITIV danebengetreten und hat den Skalar nicht ersetzt.
+   PROVENIENZ: der Klartext-Zustand GEMESSEN am Migrations-SQL (2026-08-25) und am Repo
+   (2026-09-08); die Folge aus den Entscheidungen ist eine ABLEITUNG aus docs/roadmap.md,
+   Eintrag 11.8, Block vom 2026-08-25 — keine Messung.
+
+2. **`pinterest` STEHT IM target-CHECK UND TRÄGT NULL ZEILEN.** GEMESSEN (Owner,
+   2026-08-25): linkedin 2 · meta 4 · tiktok 1 · **pinterest 0**.
+   WAS AM REPO NICHT ENTSCHEIDBAR IST: ob das Ziel NIE konfiguriert war oder ob eine Zeile
+   wieder entfernt wurde. Beide Zustände sehen heute identisch aus — die Tabelle führt kein
+   Protokoll, und `removeCapiToken` löscht die Zeile ersatzlos.
+   FALLS ERSTERES: Dann hätte der Pinterest-Adapter NIE live gesendet und trüge eine offene
+   LIVE-TEST-SCHULD — an einem Ziel, das im CHECK steht und damit konfigurierbar aussieht.
+   GEMELDET, NICHT GEPRÜFT. Die Prüfung wäre eine eigene Arbeit (Anbieter-Oberfläche oder
+   Ereignis-Protokoll). KEIN TRIGGER, KEINE EMPFEHLUNG.
+   WARUM ER TROTZ SEINES PRODUKT-GEWICHTS HIER UND NICHT IN docs/offene-punkte.md STEHT:
+   Er trägt keinen Trigger, und ein erfundener wäre genau die Formulierung, die jene Datei
+   nicht zulässt. AM 2026-09-08 NICHT NEU GEZÄHLT — die Zahlen stammen aus einer Abfrage
+   gegen die laufende Datenbank, und diese Runde hat keine gefahren.
+   PROVENIENZ: die Zeilenzahlen GEMESSEN (Owner, 2026-08-25); die Folgerung "dann nie live
+   gesendet" ist eine ABLEITUNG und ausdrücklich keine Messung.
+
+3. **BEIDE ABLAUFZEITPUNKTE STECKEN IM CHIFFRAT.** Die Nutzlast trägt sie als Felder
+   (`accessTokenExpiresAt` und `refreshTokenExpiresAt` in
+   `src/lib/secrets/oauth-payload.ts`), und die Nutzlast geht verschlüsselt in
+   `project_secrets.secret_enc`. `project_secrets` TRÄGT KEINE ABLAUF-SPALTE — GEMESSEN
+   (CC, 2026-08-27, erneut 2026-09-08 über die Migrationen 0021, 0025, 0026 und 0027: kein
+   Treffer).
+   DIE FOLGE, und sie ist der ganze Eintrag: Eine Überwachung, die wissen will, WELCHE
+   Zugänge demnächst ablaufen, müsste JEDE Zeile entschlüsseln. Es gibt keine Spalte, über
+   die sich das filtern oder sortieren liesse.
+   DAS IST KEIN ENTWURFSFEHLER, SONDERN DIE ANDERE SEITE EINER ENTSCHEIDUNG: Der Ablauf
+   steht in der Nutzlast, weil sie der eine Ort der Form ist; eine zweite, unverschlüsselte
+   Kopie in einer Spalte wäre eine zweite Wahrheit, die neben dem Chiffrat altert.
+   HEUTE KEIN PROBLEM, UND AUSDRÜCKLICH KEIN BAUAUFTRAG. Es gibt keine Überwachung, die das
+   bräuchte.
+   WARUM ER KEIN OFFENER PUNKT IST — der Eintrag begründet es selbst: "Ein offener Punkt
+   braucht einen TRIGGER, und für diesen ist keiner benennbar, der nicht erfunden wäre.
+   ‚Falls es je nötig wird' ist genau die Formulierung, die docs/offene-punkte.md nicht
+   zulässt."
+   EIN NEBENSATZ DES URSPRUNGS IST ÜBERHOLT, und er wird hier NICHT mitgeschleppt: Dort
+   stand "und keine Zeile mit einem Chiffrat". Es gibt seit der Phase 11.2 Chiffrate; die
+   Kernaussage — die fehlende Spalte — ist davon unberührt. GEMESSEN am Repo (CC,
+   2026-09-08).
+   PROVENIENZ: die fehlende Spalte und der Feldsatz der Nutzlast sind GEMESSEN am Repo (CC,
+   2026-08-27 und 2026-09-08). Die Folge für eine Überwachung ist eine ABLEITUNG daraus und
+   keine Messung.

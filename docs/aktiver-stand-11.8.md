@@ -50,13 +50,52 @@ Dauerzustand da:** Sobald **kein Produktivcode** diesen Pfad mehr zitiert, gehö
 - **EIN OFFENER PUNKT IST GESCHLOSSEN WORDEN:** "EIN OAUTH-ZUGANG PASST NICHT IN DIE
   SKALAR-SPALTE DER GEHEIMNIS-TABELLE" (`docs/offene-punkte.md`) — Trigger eingetreten,
   Sache gebaut. **Geschlossen, nicht gestrichen:** fünf externe Verweise zeigen darauf.
-- **IHR VORRAT IST NICHT VERTEILT WORDEN.** Die sieben Einträge stehen unverändert hier.
-  Zwei davon (5 und 6) tragen benennbare Trigger und sind Kandidaten für
-  `docs/offene-punkte.md`; Eintrag 7 trägt keinen und bleibt Vorrat. **Am Phasenende ist
-  darüber nicht entschieden worden.**
-- **IHRE ENTSCHEIDUNGEN SIND NICHT GEHOBEN WORDEN.** Der Abschnitt "## Entscheidungen, die
-  über ihre Scheibe hinaus binden" steht unverändert hier. Wer an der Chiffrierung, am
-  Geheimnis-Speicher oder an einem OAuth-Fluss arbeitet, liest ihn HIER.
+- **IHR VORRAT IST AM 2026-09-08 VERTEILT WORDEN.** Bis dahin standen die sieben Einträge
+  unverändert hier; **GENAU EINER (6) trägt einen benennbaren Trigger** und ist als offener
+  Punkt gehoben, drei (1, 2, 3) sind ins Backlog gegangen, drei (4, 5, 7) sind gestrichen,
+  weil ihr Gegenstand erledigt ist. Wohin je Eintrag: s. das Protokoll der Hebung unten.
+  **HIER STAND BIS ZUM 2026-09-08:** "Zwei davon (5 und 6) tragen benennbare Trigger und
+  sind Kandidaten für `docs/offene-punkte.md`; Eintrag 7 trägt keinen und bleibt Vorrat."
+  **DIE ANGABE ÜBER EINTRAG 5 WAR FALSCH** — GEMESSEN am Eintragstext (CC, 2026-09-08):
+  Eintrag 5 nennt keinen Trigger, sondern schliesst mit "GEMELDET, NICHT GEPLANT. Keine
+  Scheibe, kein Termin". Die Angabe über 6 und 7 war richtig. **ERSETZT, NICHT GESTEMPELT:
+  Es ist eine Sachkorrektur**, und ein Stempel liesse zwei Zuordnungen nebeneinander
+  stehen.
+- **IHRE ENTSCHEIDUNGEN SIND AM 2026-09-08 GEHOBEN WORDEN.** Beide stehen seither als
+  Dauerregeln in `docs/immer-beachten.md`; an ihrer Stelle unten steht ein Zeiger. Wer an
+  der Chiffrierung, am Geheimnis-Speicher oder an einem OAuth-Fluss arbeitet, liest sie
+  DORT.
+
+**PROTOKOLL DER HEBUNG — 2026-09-08, NACHGEHOLT.**
+**SCHRITT 1 DES PHASENENDES IST BEIM ABSCHLUSS AM 2026-08-27 ÜBERSPRUNGEN WORDEN und am
+2026-09-08 nachgeholt — ZWÖLF TAGE nach dem `[x]`.** Das gehört ins Protokoll, weil Schritt
+2 (die Archivierung) darauf aufbaut und sonst gegen einen halb vollzogenen Stand liefe.
+**KEIN CODE WAR AN DIESER PHASE OFFEN** (GEMESSEN am Repo, CC, 2026-09-08).
+**WAS WOHIN GEGANGEN IST, JE KLASSE:**
+· **DIE ZWEI BINDENDEN ENTSCHEIDUNGEN → `docs/immer-beachten.md`**, hinten angefügt, in
+  Datei und Verzeichnis: "EINE KENNUNG WIRD NIE FÜR EINEN ANDEREN SCHLÜSSELWERT
+  WIEDERVERWENDET" und "EINE FASSUNGSMARKE DER NUTZLAST WIRD NIE FÜR EINE ANDERE FELDMENGE
+  WIEDERVERWENDET".
+· **DIE HEBUNGS-KANDIDATEN 4 UND 5 → `docs/immer-beachten.md`**, je als EIGENE Regel:
+  "EIN REGRESSIONSSCHRITT DARF DIE VORAUSSETZUNG DES SCHRITTS DANACH NICHT ZERSTÖREN" und
+  "EINE PROBE GEGEN DIESELBE SCHICHT KANN EINE FRAGE ÜBER EINE ANDERE SCHICHT NICHT
+  SCHLIESSEN".
+· **VORRAT 6 → `docs/offene-punkte.md`**, mit Stub-Zeile in `CLAUDE.md`; sein Trigger ist
+  EINGETRETEN.
+· **VORRAT 1, 2 UND 3 → `docs/claude-history/backlog-polish.md`**, Abschnitt "Aus Phase
+  11.8 gehoben (2026-09-08)"; der Stub in `CLAUDE.md` ist im selben Zug nachgezogen.
+· **VORRAT 4, 5 UND 7 GESTRICHEN**, je mit dem Beleg der Erledigung am Zeiger unten.
+**ALLE VIER GEHOBENEN REGELN TRAGEN AM ZIELORT DEN SATZ, DASS SIE KEINE BEDINGUNG IHRES
+ENTFALLENS HABEN, und den strukturellen Grund dafür** — der Code kann die Zeit-Achse nicht
+sehen, und es wird immer Live-Anleitungen und Schichten geben. **EINE BEDINGUNG, DIE NIE
+EINTRETEN KANN, IST VON EINER NICHT FORMULIERBAREN PRAKTISCH NICHT ZU UNTERSCHEIDEN**
+(OWNER-ENTSCHEIDUNG 2026-09-08); ohne den Satz sucht eine spätere Runde nach einer
+Bedingung, die es nicht gibt.
+**NICHTS IST AUS DIESER DATEI GELÖSCHT WORDEN.** Sie bleibt ein Zeitdokument; an jeder
+gehobenen Stelle steht ein Zeiger.
+**SCHRITT 2 — DIE ARCHIVIERUNG — IST NICHT VOLLZOGEN.** Sie scheitert weiterhin am
+Pfad-Blocker: SECHS Quelldateien zitieren `docs/aktiver-stand-11.8.md` im Kommentarkopf
+(GEMESSEN am Repo, CC, 2026-09-08 — dieselben sechs wie am 2026-08-27).
 
 **DER ROADMAP-EINTRAG 11.8 TRÄGT SEIT DEM 2026-08-27 `[x]` UND IST NICHT KOLLABIERT** —
 anders als bei jeder bisher abgeschlossenen Phase steht sein RUMPF vollständig da
@@ -1562,6 +1601,16 @@ Die drei bindenden Entscheidungen zum Geheimnis-Speicher stehen an docs/roadmap.
 Eintrag 11.8, Block vom 2026-08-25, und werden hier NICHT verdoppelt. Was hier steht, ist
 HIER entschieden worden.
 
+**GEHOBEN AM 2026-09-08 — BEIDE EINTRÄGE DIESES ABSCHNITTS STEHEN SEITHER ALS DAUERREGELN
+IN `docs/immer-beachten.md`**, hinten angefügt, in Datei und Verzeichnis:
+"EINE KENNUNG WIRD NIE FÜR EINEN ANDEREN SCHLÜSSELWERT WIEDERVERWENDET" und
+"EINE FASSUNGSMARKE DER NUTZLAST WIRD NIE FÜR EINE ANDERE FELDMENGE WIEDERVERWENDET".
+**DER WORTLAUT UNTEN BLEIBT UNVERÄNDERT STEHEN — er ist die HERLEITUNG, die Zieldatei
+trägt die REGEL.** Was am Zielort hinzugekommen ist: je ein Satz, dass die Regel keine
+Bedingung ihres Entfallens trägt, und der strukturelle Grund dafür.
+**WER SIE ALS REGEL BRAUCHT, LIEST SIE DORT; wer wissen will, WORAUS sie entstanden ist,
+liest hier weiter.**
+
 1. **EINE KENNUNG WIRD NIE FÜR EINEN ANDEREN SCHLÜSSELWERT WIEDERVERWENDET.** Ein neuer
    Schlüssel bekommt eine NEUE Kennung; der alte bleibt zum Lesen stehen, bis nichts mehr
    unter ihm liegt.
@@ -1621,6 +1670,29 @@ HIER entschieden worden.
    abgelaufen ist. Ein dritter Ort wäre eine zweite Wahrheit, die neben den beiden altert.
 
 ## Vorrat (gemeldet, nicht gebaut)
+
+**VERTEILT AM 2026-09-08. DER WORTLAUT ALLER SIEBEN BLEIBT UNVERÄNDERT STEHEN; hier steht
+je Eintrag, wohin er gegangen ist und warum.**
+· **1, 2 UND 3 → `docs/claude-history/backlog-polish.md`**, Abschnitt "Aus Phase 11.8
+  gehoben (2026-09-08)". Keiner trägt einen Trigger.
+· **6 → `docs/offene-punkte.md`**, Eintrag "DER OAUTH-WEG RUFT ensureTrackingKey NICHT —
+  ANDERS ALS setCapiToken", mit Stub-Zeile in `CLAUDE.md`. **Sein Trigger ist EINGETRETEN**
+  (Transport-Scheibe gebaut, GEMESSEN am Repo, CC, 2026-09-08).
+· **4, 5 UND 7 SIND GESTRICHEN, WEIL IHR GEGENSTAND ERLEDIGT IST — NICHT, WEIL JEMAND
+  AUFGERÄUMT HAT.** Der Beleg je Eintrag, GEMESSEN am Repo (CC, 2026-09-08):
+  **(4)** Die Angabe "eine Stunde" hat ihre Quelle bekommen — `docs/ziel-befunde.md`,
+  Google-Abschnitt, Teil (bw): "DAS ZUGANGSDATUM LEBT 3599 SEKUNDEN", `expires_in` **3599**,
+  GEMESSEN 2026-08-28 (OWNER). Der Prüfpunkt, den der Eintrag selbst nannte, ist
+  eingetreten.
+  **(5)** `'google'` steht in `TRACKING_TARGETS` — `src/lib/settings.ts`, Zeile mit
+  `"google"`. Beide genannten Folgen (unsichtbare Karte, `removeCapiToken` weist ab) sind
+  damit gefallen.
+  **(7)** `decryptSecret` hat **DREI** Aufrufer im Produktivcode —
+  `src/app/projects/actions.ts`, `src/lib/capi/token.ts` und
+  `src/lib/oauth/token-refresh.ts`. Der Lesepfad ist gebaut und seit VERMERK 10 der Phase
+  11.2 auch an der abgelegten Zeile bewiesen.
+**GESTRICHEN HEISST HIER: NICHT WEITERVERFOLGT, NICHT GELÖSCHT.** Der Text bleibt als
+Zeitdokument stehen; er beschreibt einen Zustand, den es nicht mehr gibt.
 
 1. **DIE VIER BESTEHENDEN ZIELE TRAGEN IHR GEHEIMNIS HEUTE ALS KLARTEXT.** GEMESSEN am
    Migrations-SQL (CC, 2026-08-25, im Rahmen der Primärschlüssel-Prüfung dieser Phase):
@@ -1756,6 +1828,22 @@ HIER entschieden worden.
    PROVENIENZ: **GEMESSEN am Repo (CC, 2026-08-27)**; die Testaussage steht in Vermerk 6.
 
 ## Hebungs-Kandidaten
+
+**GEHOBEN AM 2026-09-08 — DIE KANDIDATEN 4 UND 5, je als EIGENE Regel in
+`docs/immer-beachten.md`:** "EIN REGRESSIONSSCHRITT DARF DIE VORAUSSETZUNG DES SCHRITTS
+DANACH NICHT ZERSTÖREN" und "EINE PROBE GEGEN DIESELBE SCHICHT KANN EINE FRAGE ÜBER EINE
+ANDERE SCHICHT NICHT SCHLIESSEN". **Damit sind alle acht Kandidaten dieser Phase
+entschieden** — sechs als eigene Regel, einer (8) als Zusatz an einer bestehenden, und
+Kandidat 1 und 2 zu EINER Regel zusammengezogen.
+**BEIDE HATTEN DIE ABLAGE-FRAGE OFFEN GELASSEN** ("NICHT ENTSCHIEDEN: ob das eine eigene
+Regel wird oder ein Absatz an der bestehenden"). **ENTSCHIEDEN AM ZIELTEXT (CC,
+2026-09-08): je eine EIGENE Regel** — die naheliegende Nachbarin, Lektion (c) an
+"MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE", führt eine dritte Achse (das INSTRUMENT ist zu
+grob) und trägt ihre operative Anweisung dort; ein Absatz an ihr feuerte im falschen
+Moment. Beide neuen Regeln grenzen sich am Zielort ausdrücklich gegen sie ab.
+**DER WORTLAUT UNTEN BLEIBT UNVERÄNDERT STEHEN** — er ist die Herleitung; die Zieldatei
+trägt die Regel, dort ergänzt um den Satz, dass sie keine Bedingung ihres Entfallens hat,
+und den strukturellen Grund dafür.
 
 1. **EIN NEU GESCHRIEBENES ARTEFAKT KANN EIN NUL-BYTE TRAGEN, UND KEIN GATE MELDET ES.**
    BEFUND: Beim Schreiben von `src/lib/secrets/cipher.test.ts` ist ein literales NUL-Byte

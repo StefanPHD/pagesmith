@@ -230,10 +230,61 @@ nichts. Der Verlauf ist kein Ersatz: Er wird beim Pflicht-Gate nicht gelesen.
 
 ### Phasenende
 
-**1. Hebung (nach Ermessen):** dauerhaft gültige Regeln aus
-`docs/aktiver-stand.md` nach `docs/immer-beachten.md` heben, offene Punkte nach
-`docs/offene-punkte.md`; wandert etwas dorthin, kommt die Stub-Zeile in
-`CLAUDE.md` im selben Zug dazu. Eigener Commit.
+**1. Hebung (PFLICHT):** dauerhaft gültige Regeln aus `docs/aktiver-stand.md` nach
+`docs/immer-beachten.md` heben; **jeder übrige Eintrag — Vorrat, Hebungs-Kandidaten,
+bindende Entscheidungen — wird EINEM von DREI Zielen zugeordnet.** Eigener Commit.
+
+**DIE DREI ZIELE, je mit ihrem Kriterium:**
+- **BENENNBARER TRIGGER *UND* „GEHT SONST STILL KAPUTT"** → `docs/offene-punkte.md`, plus
+  **Stub-Zeile in `CLAUDE.md` im selben Zug**. Zwei Orte, ein Zug.
+- **SONST** → `docs/claude-history/backlog-polish.md`, ans **Dateiende**, unter eine
+  **EIGENE datierte Überschrift**, **mit den Ursprungs-Nummern**; der Stub JENER Datei in
+  `CLAUDE.md` wird im selben Zug nachgezogen.
+- **GEGENSTAND ERLEDIGT** → **GESTRICHEN, mit dem Beleg der Erledigung**
+  (s. „Wie ein Satz wieder herausgeht").
+
+**DIE ZWEITE BEDINGUNG DES ERSTEN ZIELS IST DER KERN, UND SIE BRAUCHT IHREN GRUND:**
+`docs/offene-punkte.md` verlangt einen Trigger **und** ist ausdrücklich **kein
+Backlog-Ersatz** — „hier steht nur, was sonst STILL kaputtgeht". **DER TRIGGER ALLEIN
+TRENNT NICHT:** Fast jeder Vorrats-Eintrag trägt einen, und eine Aufräumarbeit mit dem
+Trigger „die nächste Runde, die diese Datei ohnehin öffnet" geht nicht still kaputt — sie
+wartet.
+**GEMESSEN an der Hebung der Phase 11.2 (CC, 2026-09-08):** Von 66 Vorrats-Einträgen
+hätten nach dem Trigger allein **FÜNFUNDFÜNFZIG** nach `docs/offene-punkte.md` gemusst;
+nach beiden Bedingungen sind es **VIERZEHN**. **Die Differenz von 41 wären Aufräumposten
+gewesen, je mit einer Stub-Zeile in einer Datei, die JEDE Sitzung lädt** — und die einen
+eigenen offenen Punkt zum Ladelimit führt.
+
+**WARUM PFLICHT UND NICHT ERMESSEN — der Beleg, der den Antrag getragen hat:** Der
+Wortlaut hier war bis zum 2026-09-08 „**1. Hebung (nach Ermessen):**". Bei Phase 11.1 sind
+**NEUN** Einträge am Phasenende nicht gehoben worden, bei Phase 11.8 **ELF**. **ZWEIMAL IN
+FOLGE ist der Ermessens-Schritt übersprungen und der mechanische ausgeführt worden.** Das
+ist kein Einzelfall, sondern die Bauform: **EIN SCHRITT, DER IM ERMESSEN STEHT UND KEINEN
+NACHWEIS VERLANGT, WIRD VON EINER RUNDE, DIE ABSCHLIESSEN WILL, ZUVERLÄSSIG ÜBERGANGEN —
+und nichts wird davon rot.**
+
+**DIE GEGENPROBE STEHT VOR DEM LÖSCHEN — EINE AUFLAGE AN SCHRITT 2, DIE DIE HEBUNG DER
+PHASE 11.2 ERZWUNGEN HAT:** Bevor eine Standdatei gelöscht wird, wird **je Eintrag am
+ZIELORT geprüft, dass er dort angekommen ist** — **gemessen gegen den BESTAND, nicht gegen
+die Liste der eigenen Runde.** Eine Liste, die von derselben Runde stammt wie die
+Verschiebung, bestätigt sich selbst. **NACH DEM LÖSCHEN IST DIE PROBE NICHT MEHR FAHRBAR.**
+Geht die Bilanz nicht auf, wird **nicht gelöscht.**
+
+**EINE FRAGE ZUM ERSTEN ZIEL, AUSDRÜCKLICH KEINE AUFLAGE — UND DER UNTERSCHIED LIEGT IN
+IHRER PROVENIENZ:** Ein Stub in `CLAUDE.md` trägt nur dann etwas, **wenn sein Trigger
+feuert, OHNE dass jemand ohnehin hinsieht.** Ein Trigger der Form „die nächste Runde, die X
+ohnehin öffnet" oder „wer an Y arbeitet" ist **BEOBACHTET** — wer dort arbeitet, schlägt die
+Datei ohnehin auf. Ein Trigger nach **DATUM**, nach einem Ereignis beim **KUNDEN** oder beim
+**ANBIETER**, oder einer, der im **Normalbetrieb unbemerkt** eintritt, ist **UNBEOBACHTET**.
+**WER EINEN STUB SETZT, FRAGT SICH, OB SEIN TRIGGER UNBEOBACHTET FEUERT.**
+**WARUM DAS EINE FRAGE BLEIBT UND KEINE BEDINGUNG WIRD:** Die vier Festlegungen dieses
+Abschnitts ruhen auf Messungen — 55 gegen 14, neun und elf ungehobene Einträge, drei von
+sieben erledigt. **DIESE HIER RUHT AUF EINEM ÜBERGEWICHT, NICHT AUF EINER REGEL:** In einer
+Stichprobe der zehn jüngsten Bestands-Stubs sind **6 unbeobachtet, 2 beobachtet, 2 gemischt**
+(GEMESSEN, CC, 2026-09-08). **DAS IST KEINE GELEBTE REGEL**, sondern eine Tendenz — und eine
+Tendenz trägt keine Auflage.
+**EIN `[x]` ODER EIN STUB WIRD DESHALB NICHT ABGELEHNT**, wenn die Antwort „beobachtet"
+lautet.
 
 **2. Archivierung (mechanisch):** Kopf im Muster der bestehenden
 Historien-Dateien voranstellen, die Datei nach
@@ -278,7 +329,16 @@ nicht mehr zu leisten ist:
   und die abgeschlossenen Vermerke. **Sie trägt ihren Endnamen von Anfang an** und liegt
   damit als einzige Datei jenes Ordners bei einer *laufenden* Phase. Das ist Absicht: Es
   spart am Phasenende das Umbenennen und damit die Fehlerklasse, die
-  `docs/aktiver-stand-11.8.md` festhält.
+  `docs/claude-history/phase-11.8-autorisierungsschicht.md` festhält.
+  **DIE BEGRÜNDUNG BLEIBT RICHTIG, DER ZUSTAND NICHT — NACHGEZOGEN 2026-09-08:** Jene Datei
+  hiess bis dahin `docs/aktiver-stand-11.8.md` und lag ausserhalb des Archiv-Ordners, weil
+  sechs Quelldateien ihren Pfad im Kommentarkopf zitierten. **DIE FEHLERKLASSE IST SEIT DEM
+  2026-09-08 BEHOBEN, NICHT MEHR OFFEN** — die Datei ist umgezogen, die Zeiger sind
+  nachgezogen.
+  **DER BELEG, DASS DIE BAUFORM TRÄGT, IST AM SELBEN TAG ENTSTANDEN:** Phase 11.2 hat ihr
+  Archiv **NICHT umbenennen müssen**, weil es den Endnamen von Anfang an trug — es war kein
+  `git mv` nötig. **BEI PHASE 11.8 HAT DIESELBE LAGE ZWÖLF TAGE GEKOSTET**, zwischen dem
+  `[x]` am 2026-08-27 und dem nachgeholten Umzug am 2026-09-08.
 - **`docs/aktiver-stand-vorrat.md` — der VORRAT.** Er ist per Definition nicht abgelaufen
   und geht deshalb *nicht* ins Archiv.
 
@@ -417,6 +477,24 @@ Repo, nicht vermutet. Sie wird ersetzt, nicht gestempelt.
 
 **Der Ausgang wird nicht nachgeholt.** Es gibt keine Streichungsrunde. Wer eine
 Regel ohnehin anfasst, prüft im selben Zug, ob ihre Bedingung eingetreten ist.
+
+**EIN ZWEITER AUSGANG, DEN DIESER ABSCHNITT BIS ZUM 2026-09-08 NICHT KANNTE — FÜR ALLES,
+WAS KEINE DAUERREGEL IST** (OWNER-ENTSCHEIDUNG 2026-09-08). Der Ausgang oben greift nur
+bei Dauerregeln; **acht Wege führen hinein und einer hinaus**, und für einen
+Vorrats-Eintrag, einen Hebungs-Kandidaten oder eine bindende Entscheidung gab es gar
+keinen.
+**WAS SEINEN GEGENSTAND VERLOREN HAT, WIRD GESTRICHEN UND NICHT UMGEZOGEN** — **MIT DEM
+BELEG DER ERLEDIGUNG AM ZEIGER.** Der Beleg ist der ganze Punkt: Ohne ihn ist „gestrichen"
+von „vergessen" nicht zu unterscheiden, und beides sieht im Diff gleich aus.
+**GEMESSEN (CC, 2026-09-08):** Bei Phase 11.8 waren **DREI von sieben** Vorrats-Einträgen
+gegenstandslos, bei Phase 11.2 **ZWEI von 66** — je durch eine spätere Scheibe.
+
+**DIE GEGENPROBE GEHÖRT DAZU, WEIL SIE VOR DER FALSCHEN ERWARTUNG SCHÜTZT:** Bei den
+**NEUNZEHN** bindenden Entscheidungen der Phase 11.2 war **KEINE** gegenstandslos. **DAS
+IST STRUKTURELL UND KEIN ZUFALL:** Eine bindende Entscheidung beschreibt, **WIE gebaut
+wurde**; sie kann überholt werden, aber sie wird nicht gegenstandslos, solange der Code
+steht. **WER DORT STREICHUNGEN ERWARTET, ERWARTET DIE FEHLERKLASSE DER FALSCHEN LISTE.**
+Der Ausgang gilt dem Vorrat und den Kandidaten, nicht den Entscheidungen.
 
 ### Was mit einem falschen Satz geschieht
 

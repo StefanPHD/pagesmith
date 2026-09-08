@@ -106,6 +106,23 @@ Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
 EIN [~] IM STUB IST ZULÄSSIG, WENN DER EINTRAG IN docs/roadmap.md BEIDE TEILE
 AUSDRÜCKLICH BENENNT — die Auflage gilt dem Eintrag dort, nicht dieser Zeile.
 
+WANN [x] GESETZT WIRD — DAS KRITERIUM (OWNER-ENTSCHEIDUNG 2026-09-08, vollzogen
+2026-09-08): EINE PHASE GEHT AUF [x], WENN KEIN CODE MEHR ZU SCHREIBEN IST.
+EXTERNE ABHÄNGIGKEITEN HALTEN SIE NICHT OFFEN — Messungen, Arbeit an einem
+Fremdkonto, Owner-Entscheidungen: sie werden GEHOBEN, nicht abgewartet. Eine
+Phase, die auf ihr letztes TODO wartet, tritt nie ein.
+DIE AUFLAGE, OHNE DIE [x] UNZULÄSSIG IST: Ist zum Zeitpunkt des [x] etwas
+PRODUKTRELEVANTES unbewiesen, SAGT DIE ROADMAP-ZEILE ES AUSDRÜCKLICH. Das ist
+dieselbe Bauform wie beim [~], wo beide Teile benannt sein müssen — und sie ist
+aus demselben Grund keine Formsache.
+DER GRUND FÜR DIE AUFLAGE, und ohne ihn wird sie beim nächsten Aufräumen als
+Formalie gestrichen: [x] LIEST SICH ALS "FUNKTIONIERT". Bei Phase 11.2 ist die
+WIRKUNG AUF DIE GEBOTE ungemessen — also das Produktversprechen selbst; bewiesen
+ist der Weg bis zur Verbuchung beim Anbieter, nicht bis zur Wirkung. Ohne die
+Auflage läse sich jenes [x] als "Google funktioniert".
+DIE LEGENDE STEHT HIER UND NICHT IN docs/arbeitsweise.md, und wird dort NICHT
+verdoppelt — jene Datei sagt das selbst.
+
 **DER VOLLTEXT JEDER PHASE STEHT IN docs/roadmap.md** — Begründungen,
 Provenienz, Auflagen, Richtigstellungen. Hier steht je Phase EINE Zeile mit
 ihrem Marker. EIN VERWEIS DER FORM "Roadmap-Zeile 11.1" — in dieser Datei, in

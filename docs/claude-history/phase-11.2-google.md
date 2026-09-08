@@ -6686,6 +6686,46 @@ diesem Phasenende terminiert.
     docs/claude-history/phase-11.8-autorisierungsschicht.md).
     Der Vollzug ist **AUSSTEHEND**.
 
+    **STEMPEL 2026-09-08 — DER ANTRAG IST VOLLZOGEN. DER TEXT DARÜBER BLEIBT ZEICHEN FÜR
+    ZEICHEN STEHEN.** Er wird NICHT gestrichen: Das Archiv ist ein Zeitdokument, und er
+    trägt die **Herleitung** des Antrags — die Belege, die ihn getragen haben, stehen
+    nirgends sonst so beieinander. Der Satz "Der Vollzug ist AUSSTEHEND" ist als Aussage
+    über SEINEN Tag richtig und wird von diesem Stempel abgelöst, nicht ersetzt.
+    **DIE VIER TEILE, JE MIT IHREM ORT:**
+    · **(A) DAS `[x]`-KRITERIUM → CLAUDE.md, "## Roadmap & aktueller Stand"**, unmittelbar
+      hinter der Marker-Legende, beginnend mit "WANN [x] GESETZT WIRD — DAS KRITERIUM".
+    · **(B) DIE HEBUNG WIRD PFLICHT → docs/arbeitsweise.md, "### Phasenende"**. Der
+      Wortlaut "**1. Hebung (nach Ermessen):**" ist ersetzt durch "**1. Hebung
+      (PFLICHT):**", die drei Ziele stehen darunter, je mit ihrem Kriterium.
+    · **(C) DER AUSGANG → docs/arbeitsweise.md, "### Wie ein Satz wieder herausgeht"**, als
+      "EIN ZWEITER AUSGANG, DEN DIESER ABSCHNITT BIS ZUM 2026-09-08 NICHT KANNTE".
+    · **(D) DER 11.8-VERMERK → docs/arbeitsweise.md, "### Die Standdatei"**, am
+      Archiv-Spiegelstrich.
+    **EINE ANGABE DES ANTRAGS IST BEIM VOLLZUG GEMESSEN UND DABEI KLEINER GEWORDEN, NICHT
+    GRÖSSER:** Teil (D) sagt, docs/arbeitsweise.md nenne die Fehlerklasse "an mindestens
+    zwei Stellen", und hält ausdrücklich fest, die Fundstellen seien nicht gezählt und die
+    Zahl kein Prüfumfang. **GEMESSEN am Dateitext (CC, 2026-09-08): ES IST GENAU EINE** —
+    ein einziges Vorkommen, über zwei Zeilen umgebrochen (der Pfad in der einen, die
+    Wendung "Fehlerklasse, die" in der anderen). **Die untere Schranke war zu hoch, und
+    genau deshalb stand sie unter Vorbehalt.** Der Antragstext bleibt unverändert; er hat
+    seine eigene Unschärfe benannt, und die Messung hat sie aufgelöst.
+    **EIN FÜNFTER TEIL IST HINZUGEKOMMEN, DER NICHT IM ANTRAG STAND — (E), DIE STUB-ACHSE.**
+    Sie ist in der Sitzung vom 2026-09-08 aus einer Aufklärungs-Runde entstanden und steht
+    in docs/arbeitsweise.md, "### Phasenende", am Ende des Abschnitts.
+    **SIE IST SCHWÄCHER BELEGT ALS DIE VIER DES ANTRAGS, UND DAS STEHT AN IHR SELBST:** Die
+    vier ruhen auf Messungen (55 gegen 14, neun und elf ungehobene Einträge, drei von
+    sieben erledigt). **(E) RUHT AUF EINEM ÜBERGEWICHT** — 6 unbeobachtet gegen 2
+    beobachtet und 2 gemischt, in einer Stichprobe der zehn jüngsten Bestands-Stubs
+    (GEMESSEN, CC, 2026-09-08). **Deshalb ist sie als FRAGE formuliert und nicht als
+    Auflage**, und ein `[x]` oder ein Stub wird an ihr nicht abgelehnt.
+    **WAS DER VOLLZUG NICHT GETAN HAT:** Er hat die Abschnittsnummern der Arbeitsweise
+    nicht angetastet, nichts umsortiert und keinen internen Querverweis verändert.
+    PROVENIENZ DIESES STEMPELS: der Vollzug ist **GEMESSEN an dieser Runde** (CC,
+    2026-09-08); die Fundstellen-Korrektur zu (D) ist **GEMESSEN am Dateitext** (CC,
+    2026-09-08). Die Reihenfolge — erst die zwei Phasenenden, dann der Antrag — ist
+    eingehalten: Phasenende 11.8 in den Commits `33e335b` und `81767b2`, Phasenende 11.2 in
+    `dae49f6` und `003e65f`, dieser Vollzug danach.
+
 11. **EINE KARTE, DIE NACH EINEM GESCHEITERTEN VORGANG UNVERÄNDERT IHREN AUSGANGSZUSTAND
     ZEIGT, IST DIE STILLE FEHLKLASSE** (angetreten 2026-09-08, beim Phasenende der Phase
     11.2 aus der bindenden Entscheidung (B) herausgehoben).

@@ -38,11 +38,20 @@
 //   · eventSource ist ein ENUM und kein freier String (Teil (br));
 //   · operatingAccount.accountId muss NUMERISCH sein (Teil (bt)).
 //   WEITERHIN GELESEN UND NIE GEMESSEN — die WERTE:
-//   · WELCHER eventSource-Wert fuer den Offline-Klick-Import gilt (die Menge der
-//     Enum-Mitglieder ist nicht einmal erhoben);
+//   · WELCHER eventSource-Wert fuer den Offline-Klick-Import gilt — die MENGE der
+//     Enum-Mitglieder ist erhoben (FUENF brauchbare Werte, GELESEN 2026-08-24,
+//     Teil (x)/F3), der daraus GELTENDE Wert nicht;
 //   · das Format von productDestinationId;
-//   · das Format der Klick-Kennungen;
-//   · ob eventSource ein Pflichtfeld ist.
+//   · das Format der Klick-Kennungen.
+// EIN POSTEN IST AUS DIESER LISTE HERAUSGELOEST, WEIL ER NICHT MEHR IN SIE GEHOERT:
+// "ob eventSource ein Pflichtfeld ist" — ES IST PFLICHT. GEMESSEN 2026-09-01 (OWNER),
+// Messreihe gegen events:ingest; Fundstelle docs/ziel-befunde.md, Google-Abschnitt,
+// Teil (ca), und der Eintrag 11.2 in docs/roadmap.md sagt es woertlich ("eventSource
+// ist hier PFLICHT — BESTAETIGT").
+// ER STEHT HIER UND NICHT IN DER LISTE DARUEBER, und der Grund ist die Zuordnung: Jene
+// fuehrt, was MESSUNG B1 erbracht hat. B1 hat diese Frage NICHT beantwortet — sie
+// dort einzureihen schriebe einer Messung ein Ergebnis zu, das eine andere erbracht
+// hat.
 // WER DIE ZWEITE HAELFTE STREICHT, WEIL DIE ERSTE GEMESSEN IST, NIMMT DIE EINZIGE
 // GRENZE MIT, DIE DIESE DATEI NOCH TRAEGT.
 //

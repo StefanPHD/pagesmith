@@ -123,7 +123,7 @@ liegen beide hier und finden einander.
       mit mehreren Angaben sonst niemand den Rest nachliest. DIESER ZEIGER STEHT HIER
       AUSDRÜCKLICH FÜR 11.2: dessen Satz "Richtigstellung an jener Zeile" meint
       DIESE Zeile und findet den Inhalt sonst nirgends.
-- [ ] Phase 11.2 — Google: EINE KONZEPT-RUNDE, KEINE SCHEIBE. Es sind ZWEI Ziele,
+- [~] Phase 11.2 — Google Ads: EINE KONZEPT-RUNDE, KEINE SCHEIBE. Es sind ZWEI Ziele,
       nicht eins, und keines zugeschnitten: Google Ads Conversions und GA4 sind
       verschiedene Produkte mit verschiedenen Schnittstellen und Semantiken. Der
       bisherige Weg für Offline-Conversions ist für NEUE Zugänge seit Mitte Juni
@@ -398,10 +398,19 @@ liegen beide hier und finden einander.
         docs/aktiver-stand-11.8.md samt der Begründung, warum jene Datei ihren Ort behält.
       · WAS AN DIE STELLE DER ARBEITSANWEISUNG TRITT — ALS ZEIGER, NICHT ALS KOPIE: Der
         erste Schritt ist getan. Die verbleibenden Vorbedingungen der TRANSPORT-Scheibe
-        stehen in docs/aktiver-stand.md, VERMERK 3 — die Datenklassen-Grenze
-        (Owner-Entscheidung, nicht getroffen), die Sieben-Tage-Frist im Publishing-Status
-        "Testing" und der nachgeschuldete Live-Nachweis der Scheibe 11.2a. Sie werden hier
-        NICHT wiederholt; zweimal geschrieben liefen sie auseinander.
+        stehen in docs/aktiver-stand.md, VERMERK 3 — die Datenklassen-Grenze (FÜR
+        KLICK-KENNUNGEN GETROFFEN: OWNER-ENTSCHEIDUNG 2026-08-28, dritte Klasse
+        "fremdvergebene, für uns undurchsichtige Kennung", Auflage TRANSIT-ONLY,
+        anbieterübergreifend — docs/offene-punkte.md, Eintrag "DATENKLASSEN-GRENZE VOR DER
+        ERSTEN PII-SCHEIBE", Block vom 2026-08-28), die Sieben-Tage-Frist im
+        Publishing-Status "Testing" und der nachgeschuldete Live-Nachweis der Scheibe
+        11.2a. Sie werden hier NICHT wiederholt; zweimal geschrieben liefen sie
+        auseinander.
+        WAS DABEI NICHT MITKORRIGIERT IST, weil es diese Phase nicht als Vorbedingung
+        bindet: Offen bleibt die VIERTE Frage jenes Eintrags — die RECHTSGRUNDLAGE, sie
+        liegt beim KUNDEN als Verantwortlichem — und die Zuordnung der UNBENANNTEN
+        Durchleitung über eventSourceUrl (Vermerk vom 2026-09-01 ebenda). Beide sind
+        offen und beide sind KEINE Vorbedingung der Transport-Scheibe.
       · DIE GRENZE, DIE AN JEDEM DIESER VORBEHALTE STEHT: GEMESSEN IST DIE ANNAHME DER
         KOPFZEILE, NICHT DIE ANNAHME EINES GÜLTIGEN RUMPFES. Feldnamen, Schreibweise,
         eventSource und x-goog-user-project sind UNBERÜHRT; die vier Grenzen der Messung
@@ -427,8 +436,12 @@ liegen beide hier und finden einander.
         (Teil (bq)). KEINE FOLGE FÜR DEN CODE: gebaut wird camelCase, es wird keine Zeile
         umbenannt.
       · eventSource — STEHT ZUR HÄLFTE. Gemessen ist der TYP: ein Enum, "WEB" ist ein
-        Mitglied (Teil (br)). NICHT gemessen ist der WERT — welcher für den
-        Offline-Klick-Import gilt, und die Mitgliedermenge ist nicht einmal erhoben.
+        Mitglied (Teil (br)). Die MITGLIEDERMENGE ist erhoben — FÜNF brauchbare Werte
+        (WEB · APP · IN_STORE · PHONE · MESSAGE, plus EVENT_SOURCE_UNSPECIFIED "Should
+        never be used"), GELESEN 2026-08-24, docs/ziel-befunde.md, Google-Abschnitt,
+        Teil (x)/F3. NICHT gemessen ist der WERT — welcher für den Offline-Klick-Import
+        GILT; dieselbe Fundstelle sagt, eine Namensliste für Google Ads führe die
+        Referenz weiterhin nicht.
       · x-goog-user-project — STEHT UNVERÄNDERT. Die Kopfzeile fehlte auch in allen sieben
         B1-Aufrufen, und die semantische Prüfung wurde erreicht — das ist AUSDRÜCKLICH KEIN
         Schluss auf Entbehrlichkeit (Teil (bu)). Grenze 2 in (bm) bleibt.
@@ -441,6 +454,114 @@ liegen beide hier und finden einander.
       berührt worden. Was ein GÜLTIGER Rumpf auslöst, ist nach wie vor ungemessen.
       PROVENIENZ: GEMESSEN 2026-08-28 (OWNER), Messung B1. Die Zuordnung je Achse ist eine
       ABLEITUNG aus dieser Messung.
+
+      NACHTRAG 2026-09-08 — DIE TRENNUNG, DER MARKER UND DIE ZWEI LISTEN. Der Wortlaut
+      darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Nachtrag tritt DANEBEN, wie
+      durchgehend an diesem Eintrag.
+
+      ERSTENS — GA4 HAT SEIT DEM 2026-09-08 EINE EIGENE ZEILE: Eintrag 11.9, "GA4 als
+      SECHSTES Fan-Out-Ziel". DIESE ZEILE IST DAMIT AUF GOOGLE ADS VERENGT.
+      DER KOPFSATZ "Es sind ZWEI Ziele, nicht eins" BLEIBT WAHR UND WIRD NICHT ANGETASTET
+      — er ist der GRUND der Trennung, nicht ihr Opfer. Die drei GA4-Stellen dieses
+      Eintrags bleiben im Wortlaut hier stehen; die neue Zeile ZEIGT auf sie und
+      wiederholt sie nicht.
+      PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-08. Keine Messung.
+
+      ZWEITENS — DER MARKER STEHT AB JETZT AUF [~]. Der Satz weiter oben, der ihn
+      ausdrücklich offenliess ("Der Stempel wird in dieser Runde WEDER GESETZT NOCH
+      AUFGEHOBEN; nachgezogen ist seine BEDINGUNG, nicht sein Zustand. Auch der Marker
+      dieses Eintrags bleibt unberührt"), IST DAMIT EINGELÖST. Er bleibt wörtlich stehen
+      und ist als Aussage über SEINE Runde unverändert richtig.
+      DER MARKER IST NUR ZULÄSSIG, WEIL BEIDE TEILE UNTEN AUSDRÜCKLICH BENANNT SIND —
+      die Regel in CLAUDE.md verlangt genau das.
+
+      WAS STEHT UND BEWIESEN IST — ZEHN POSTEN, JE MIT PROVENIENZ:
+      · DIE GESTALT IST ENTSCHIEDEN: OFFLINE CONVERSION IMPORT auf Basis der
+        Klick-Kennungen, Conversion-Action vom Typ UPLOAD_CLICKS. OWNER-ENTSCHEIDUNG
+        2026-08-24, Volltext weiter oben in diesem Eintrag.
+      · DIE AUTORISIERUNGSSCHICHT IST GEBAUT: Phase 11.8, sechs Scheiben, ABGESCHLOSSEN
+        2026-08-27; Stand in docs/aktiver-stand-11.8.md.
+      · KLICK-KENNUNGEN UND NUTZLAST (Scheibe 11.2a): VERMERK 2, Bau-Commit 6653f37.
+      · DIE ERNEUERUNG DES ZUGANGSDATUMS (Scheibe 1a): VERMERK 6, Bau-Commit a351858,
+        live bewiesen.
+      · GOOGLE ALS REGULÄRES ZIEL IN DER OBERFLÄCHE (Scheibe 3): VERMERK 7, Bau-Commits
+        659d672, 7771019, aa17f11, live bewiesen.
+      · DIE KONTO-KENNUNGEN BEKOMMEN IHRE EINGABE (Scheibe 2): VERMERK 9, Bau-Commit
+        6dc7e27, live bewiesen.
+      · DER TRANSPORT (Scheibe 4): VERMERK 10, Bau-Commits 26caa38 und 84e9fca, live
+        bewiesen 2026-09-01.
+      · DIE AMPEL AN DER ZIEL-KARTE (Scheibe 11.2b): VERMERK 13, Bau-Commit 7288f90,
+        live bewiesen.
+      · DER RIEGEL GEGEN DIE VERLORENE SCHREIBUNG (Scheibe 1b-2b): VERMERK 14,
+        Bau-Commit 2eae9ca, live bewiesen.
+      · EINE ECHTE KLICK-KENNUNG HAT DEN PRODUKTIVPFAD DURCHLAUFEN (MESSUNG F) und die
+        EINLIEFERUNG IST BEIM ANBIETER ANGENOMMEN UND ALS CONVERSION VERBUCHT WORDEN
+        (MESSUNG G). Beide GEMESSEN 2026-09-07 (OWNER); Fundstellen docs/ziel-befunde.md,
+        Google-Abschnitt, Teile (cd) und (cf).
+      DIE VERMERKE LIEGEN IM ARCHIV docs/claude-history/phase-11.2-google.md; der Weg
+      dorthin führt über Register 2 in docs/aktiver-stand.md.
+
+      WAS AUSSTEHT — ACHT POSTEN. DAS IST DIE HÄLFTE, DIE DEN MARKER TRÄGT:
+      · (1) DIE SIEBEN-TAGE-FRIST UND DER STATUSWECHSEL AUF "IN PRODUKTION". ER STEHT
+        ZUERST, WEIL ER EINE LAUFENDE UHR TRÄGT: Das Erneuerungs-Token stirbt am
+        2026-09-11 um 07:26:58 UTC (09:26:58 Ortszeit). Fundstelle: docs/aktiver-stand.md,
+        Abschnitt "1b als Folgetask — nicht geschnitten, mit fünf Vorbedingungen",
+        Vorbedingung (iv), Nachtrag vom 2026-09-03 in der Fassung vom 2026-09-04. NACH
+        DIESEM TERMIN MELDET JEDE ERNEUERUNG `dead`, und jeder Test misst das statt der
+        Sache.
+        ER IST KEINE CODE-ARBEIT: Der Statuswechsel ist eine Arbeit am ANBIETER-KONTO und
+        steht NEBEN Scheibe 1b, nicht in ihr. EIN PERFEKTER AUTOMATISMUS HÄLT DAS
+        ZUGANGSDATUM EINE WOCHE AM LEBEN UND FÄLLT DANACH TROTZDEM AUS.
+        DIE ZWISCHENLÖSUNG IST KEINE BEHEBUNG: Ein Neu-Verbinden setzt die Frist um sieben
+        Tage zurück — GEMESSEN, zweimal (ebenda). Es VERSCHIEBT den Termin und löst ihn
+        nicht.
+        PROVENIENZ DER FRIST SELBST: GELESEN (docs/ziel-befunde.md, Google-Abschnitt),
+        ausdrücklich NICHT gemessen — es ist kein Token bis zu seinem Ablauf beobachtet
+        worden.
+      · (2) DER eventSource-WERT. Welcher der fünf Enum-Werte für den Offline-Klick-Import
+        GILT, ist nicht gemessen; gebaut ist "WEB" als OWNER-ENTSCHEIDUNG 2026-09-01.
+      · (3) DIE KOPFZEILE x-goog-user-project. Sie wird nicht gesendet; ob sie Pflicht
+        ist, ist in beide Richtungen ungemessen.
+      · (4) DER NACHGESCHULDETE LIVE-NACHWEIS DER SCHEIBE 11.2a.
+      · (5) DIE WIRKUNG AUF DIE GEBOTE. Gemessen ist eine Conversion IN DER
+        BERICHTERSTATTUNG, nicht ihre Wirkung auf die Gebotssteuerung; ob das
+        14-Tage-Fenster aus (p)/H2 für die gewählte Gestalt überhaupt gilt, ist gelesen
+        und nicht geklärt (docs/ziel-befunde.md, Teil (cf), Abschnitt "DIE GRENZEN").
+      · (6) DER UPLOAD_CLICKS-VORBEHALT IM KUNDENKONTO. Ohne eine Conversion-Action
+        dieses Typs gibt es keine productDestinationId, an die geliefert werden könnte.
+      · (7) DIE OFFENE BERÜHRUNG MIT DER ZUSAGE IN 11.5. Ob der Hybrid-Ausschluss jener
+        Zeile berührt ist, hängt an der unbeantworteten Frage, wessen Tag die "bestehende
+        Tag-Conversion" ist; die Entscheidung gehört zu 11.5 und wird hier nicht getroffen.
+      · (8) OB EIN KUNDE EIN EIGENES GOOGLE-TAG AUF EINER AUSGELIEFERTEN SEITE UNTERBRINGEN
+        KANN. DIESER POSTEN BETRIFFT DIE KUNDENSEITE UND IST KEINE PAGESMITH-ARBEIT — er
+        steht hier, weil er textlich ein offener Punkt DIESER Zeile ist, und er trägt seine
+        Abgrenzung mit, damit ihn niemand stumm zum Bau-Rest zählt. Als offener Punkt
+        geführt in docs/ziel-befunde.md, Google-Abschnitt.
+
+      DRITTENS — "WAS EIN GÜLTIGER RUMPF AUSLÖST" IST BEANTWORTET, UND ZWAR ALS ABLEITUNG.
+      Der Satz weiter oben ("Was ein GÜLTIGER Rumpf auslöst, ist nach wie vor ungemessen")
+      BLEIBT WÖRTLICH STEHEN: Er ist als Aussage über MESSUNG B1 unverändert wahr, und die
+      Form an diesem Eintrag ist NACHTRAG, nicht ABGELAUFEN.
+      WAS DANEBEN TRITT: Am 2026-09-07 ist ein Aufruf mit gültigem Rumpf angenommen und die
+      Conversion verbucht worden (MESSUNG F und G). DASS DAMIT DIE FRAGE AUS B1 BEANTWORTET
+      IST, IST EINE ABLEITUNG AUS ZWEI DATIERTEN BELEGEN UND KEINE MESSUNG AN JENER FRAGE —
+      kein Dokument sagt es bisher, und dieser Absatz ist der erste, der es ausspricht.
+
+      VIERTENS — EINE AUSLASSUNG, DIE GENANNT WIRD, DAMIT SIE NICHT WIE EINE VERGESSENE
+      AUSSIEHT: Das SCHEMA-RISIKO aus dem Kopf dieses Eintrags ("mehrwertige Anmeldungen
+      passen nicht auf ein Geheimnis pro Zeile; im Ernstfall eine ZWEITE Migration auf der
+      Geheimnis-Tabelle") steht NICHT in der Rest-Liste, weil es ERLEDIGT ist. GEMESSEN am
+      Repo (CC, 2026-09-08): Phase 11.8 trägt im Titel "die Ablage und die Erneuerung
+      MEHRWERTIGER Zugangsdaten" und steht auf [x]; die vorhergesagte zweite Migration
+      existiert als supabase/migrations/0025_project_secrets_schema.sql.
+
+      PROVENIENZ DIESES NACHTRAGS: Die Trennung und der Marker sind OWNER-ENTSCHEIDUNG
+      2026-09-08. Die zehn Belege der ersten Liste sind GEMESSEN bzw. GELESEN an den je
+      genannten Fundstellen; die Vermerk-Nummern und Bau-Commits sind aus Register 2 in
+      docs/aktiver-stand.md übernommen und hier NICHT neu erhoben. Der Termin, die zwei
+      Neu-Verbindungen und die Erledigung des Schema-Risikos sind GEMESSEN (OWNER
+      2026-09-04 bzw. CC 2026-09-08). Dass die Frage aus B1 beantwortet ist, ist eine
+      ABLEITUNG.
 - [x] Phase 11.8 — Autorisierungsschicht: die Ablage und die Erneuerung MEHRWERTIGER
       Zugangsdaten.
 
@@ -1223,6 +1344,65 @@ liegen beide hier und finden einander.
       Und KEINE Empfehlung zur Reihenfolge innerhalb der Zeile.
       PROVENIENZ: die vier Punkte sind GELESEN an der Matrix (Stand 2026-08-20);
       die Klammer ist OWNER-ENTSCHEIDUNG (2026-08-20). KEINE Messung.
+- [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel: eine EIGENE Zeile, abgetrennt vom
+      Eintrag 11.2 am 2026-09-08.
+
+      WARUM SIE EINE EIGENE ZEILE IST UND KEIN ABSCHNITT VON 11.2: Google Ads
+      Conversions und GA4 sind ZWEI ADAPTER MIT VERSCHIEDENEN ZUGANGSMODELLEN, nicht
+      zwei Varianten eines. Der eine braucht die Autorisierungsschicht, der andere
+      kommt mit zwei Skalaren aus. DIESE AUSSAGE IST NICHT NEU — sie steht seit dem
+      2026-08-20 im Eintrag 11.2 selbst; die Trennung vollzieht sie, sie erfindet sie
+      nicht.
+
+      DIE ZAHL IM TITEL IST GEMESSEN UND NICHT GESCHÄTZT (CC, 2026-09-08): TRACKING_TARGETS
+      (src/lib/settings.ts) führt heute FÜNF Ziele — meta · pinterest · tiktok · linkedin ·
+      google. GA4 wäre damit das SECHSTE. WER HIER "FÜNFTES" SCHREIBT, VERGIBT EINE
+      ORDINALZAHL ZWEIMAL: 'google' trägt sie bereits, und src/lib/tracking/target-adapters.ts
+      nennt es an seiner Zeile wörtlich "DAS FUENFTE ZIEL".
+
+      DER STAND, IN EINEM SATZ: GA4 IST IN DIESEM REPO NIE ÜBER DIE BESCHREIBUNG
+      HINAUSGEKOMMEN — keine Messung, keine Gestalt-Entscheidung, kein Vorbehalt, kein
+      Zuschnitt (GEMESSEN am Repo, CC, 2026-09-08). Im Produktivcode gibt es GENAU EINE
+      GA4-Stelle, und sie ist eine Abgrenzung: der Docblock von buildIngestEventsRequest
+      (src/lib/capi/google-payload.ts) hält fest, `eventName` sei "fuer Google Ads
+      optional, Pflicht nur fuer GA4".
+
+      WO DER WORTLAUT STEHT — DREI STELLEN IM EINTRAG 11.2, ALS ZEIGER UND NICHT ALS
+      KOPIE: (1) der KOPFSATZ jenes Eintrags, Satz "Es sind ZWEI Ziele, nicht eins";
+      (2) derselbe Kopfsatz, Halbsatz zum GA4-Weg ("verlangt eine Besucher-Kennung aus
+      einem Cookie, das dieses Produkt nicht setzt"); (3) der RICHTIGSTELLUNGS-BLOCK vom
+      2026-08-20, zweiter Spiegelstrich ("RICHTIG, ABER OHNE GRUND"). SIE BLEIBEN DORT
+      UND WERDEN HIER NICHT WIEDERHOLT — zweimal geschrieben liefen sie auseinander.
+
+      DIE ZWEI BEKANNTEN VORBEDINGUNGEN, beide aus jenem Kopfsatz:
+      · DIE BESUCHER-KENNUNG. Der GA4-Weg verlangt sie aus einem Cookie, DAS DIESES
+        PRODUKT NICHT SETZT. Ohne eine Entscheidung darüber gibt es keinen Zuschnitt.
+      · DIE DATENKLASSEN-GRENZE IST BERÜHRT. Eine Besucher-Kennung aus einem
+        First-Party-Cookie ist nach dem Eintrag "DATENKLASSEN-GRENZE VOR DER ERSTEN
+        PII-SCHEIBE" (docs/offene-punkte.md) ein fingerprint-artiges Merkmal und löst
+        dieselbe Grenze aus. DIE DRITTE DATENKLASSE VOM 2026-08-28 DECKT DAS NICHT: Sie
+        gilt fremdvergebenen KLICK-Kennungen, nicht einer selbst gesetzten
+        Besucher-Kennung. WER SIE HIER ANWENDET, WENDET SIE AUF EINE ANDERE KLASSE AN.
+
+      DER ZIELSCHLÜSSEL IST EINE OFFENE FRAGE, UND SIE IST KEINE FOLGE DIESER TRENNUNG:
+      Der Fan-Out-Schlüssel heisst heute 'google' — src/lib/settings.ts (TRACKING_TARGETS)
+      und supabase/migrations/0026_project_secrets_google.sql (der CHECK auf
+      project_secrets). EIN ZWEITES GOOGLE-ZIEL BRAUCHT EINEN EIGENEN SCHLÜSSEL ODER
+      KOLLIDIERT MIT DIESEM. Der Eintrag 11.2 sagt seit dem 2026-08-20 selbst, dass es zwei
+      Adapter sind; die Trennung macht die Folge daraus SICHTBAR, sie erzeugt sie nicht.
+      KEINE EMPFEHLUNG, wie der Schlüssel heissen soll — das ist eine eigene Entscheidung,
+      und sie zieht nach der Regel "JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE
+      CONSTRAINT-ERWEITERUNG MIT" (docs/immer-beachten.md) eine eigene Migration nach sich.
+
+      WAS DIESE ZEILE AUSDRÜCKLICH NICHT TUT: Sie schneidet nichts zu, sie terminiert
+      nichts, und sie sagt nicht, ob GA4 überhaupt gebaut wird.
+
+      PROVENIENZ: DIE TRENNUNG IST OWNER-ENTSCHEIDUNG (2026-09-08) — keine Messung, eine
+      FESTLEGUNG. Die Zahl SECHS, die eine GA4-Stelle im Produktivcode und der Zielschlüssel
+      an seinen zwei Orten sind GEMESSEN am Repo (CC, 2026-09-08). Die zwei Vorbedingungen
+      und die drei Zeiger sind GELESEN im Eintrag 11.2 (CC, 2026-09-08). Dass die dritte
+      Datenklasse eine Besucher-Kennung nicht deckt, ist eine ABLEITUNG aus ihrem
+      Gegenstand, keine Messung.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

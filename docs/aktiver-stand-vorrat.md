@@ -2683,3 +2683,58 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     Zeiger auf ausgewanderte Anker zeigt, ist an Beispielen **GEMESSEN**; die Aussage über den
     Rest ist ausdrücklich **NICHT erhoben**. Die Vertagung ist eine **ENTSCHEIDUNG**, keine
     Messung.
+
+62. **DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT.**
+    Der Block vom 2026-08-28 in `docs/offene-punkte.md` (Eintrag "DATENKLASSEN-GRENZE VOR
+    DER ERSTEN PII-SCHEIBE") stellt unter Punkt (a) fest, die Auflage TRANSIT-ONLY sei für
+    die Klick-Kennung **"NOCH KEIN GELEBTER STAND, SONDERN EINE VORGABE AN DIE
+    TRANSPORT-SCHEIBE"**. **ER RUHT AUF ZWEI ANGABEN, UND BEIDE TRAFEN AN JENEM TAG ZU:**
+    `'google'` stehe nicht in `TRACKING_TARGETS`, und die zwei Produktivdateien
+    `google-click-ids.ts` und `google-payload.ts` hätten **keinen Aufrufer**.
+    **BEIDES TRIFFT NICHT MEHR ZU — GEMESSEN am Repo (CC, 2026-09-08):** `src/lib/settings.ts`
+    führt `"google"` in `TRACKING_TARGETS` (seit Scheibe 3), und `forwardToGoogle`
+    (`src/lib/capi/google-forward.ts`) ruft `buildGoogleEvent` und `extractGoogleClickIds`
+    (seit Scheibe 4). **DIE VORGABE IST DAMIT GEBAUTER TRANSPORT GEWORDEN.**
+    **WAS DARAUS FOLGT, IST NICHT ERHOBEN, UND DAS IST DER GANZE PUNKT DIESES EINTRAGS:**
+    Ob die Auflage TRANSIT-ONLY im gebauten Transport **tatsächlich eingehalten** wird — keine
+    Ablage, kein Log, kein Hashen —, **hat niemand nachgemessen.** Punkt (c) desselben Blocks
+    misst den Zustand VOR dem Transport; er ist nach Scheibe 4 nicht wiederholt worden.
+    **DER EINTRAG BEHAUPTET KEINEN VERSTOSS.** Er stellt fest, dass eine Aussage über den
+    gelebten Stand auf einer Prämisse ruht, die es nicht mehr gibt.
+    GEMELDET 2026-09-08, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder dazu, ob der Block in
+    `docs/offene-punkte.md` nachgezogen wird, noch dazu, wer die Messung fährt.
+    TRIGGER: **die nächste Runde, die `docs/offene-punkte.md` ohnehin öffnet**, ODER die
+    erste Messung am gebauten Google-Transport auf Ablage und Logausgabe.
+    PROVENIENZ: Die zwei widerlegten Angaben sind **GEMESSEN am Repo (CC, 2026-09-08)**. Dass
+    damit die Prämisse des Punktes (a) entfallen ist, ist eine **ABLEITUNG** aus diesen zwei
+    Messungen. Dass die Einhaltung ungemessen ist, ist ein **NICHT-TREFFER mit benannter
+    Achse** — Punkt (c) jenes Blocks trägt das Datum 2026-08-28 und keine spätere Wiederholung.
+
+63. **DIE 110 ZEIGER AUF "11.2" IN DER GEPFLEGTEN DOKU SIND NICHT KLASSIFIZIERT.**
+    **GEMESSEN (CC, 2026-09-08**, über `git ls-files`, Achse: die Zeichenfolge `11.2`, ohne
+    `docs/roadmap.md` und ohne `docs/claude-history/`**):** `CLAUDE.md` 6 ·
+    `docs/offene-punkte.md` 14 · `docs/db-stand.md` 1 · `docs/db-regeln.md` 1 ·
+    `docs/plattform-befunde.md` 2 · `docs/ziel-befunde.md` 6 · `docs/aktiver-stand.md` 48 ·
+    `docs/aktiver-stand-vorrat.md` 17 · `docs/aktiver-stand-11.8.md` 15.
+    **WARUM DAS SEIT DEM 2026-09-08 ZÄHLT:** An diesem Tag ist GA4 aus dem Eintrag 11.2
+    herausgelöst worden (neue Zeile 11.9). **Ob einer dieser 110 Zeiger nach der Trennung GA4
+    meint, ist NICHT ERHOBEN.**
+    **IM PRODUKTIVCODE IST DIE LAGE GEMESSEN UND GÜNSTIG:** Dort ist die Klasse "meint
+    beides" **NULL** — von 48 Stellen meinen 12 dem Text nach Google Ads, EINE nennt GA4 (und
+    zwar als Abgrenzung), und der Rest nennt kein Ziel, sondern eine Scheibe (GEMESSEN, CC,
+    2026-09-08). **IN DER DOKU IST GENAU DAS UNGEPRÜFT.**
+    **DIE ZAHL IST EIN BESTAND UND KEIN PRÜFUMFANG:** Ein Teil der Zeiger zeigt auf
+    Abschnitte, die von der Trennung gar nicht berührt sind. Wer die Arbeit anfasst, misst je
+    Zeiger neu.
+    GEMELDET 2026-09-08, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder zur Reihenfolge noch
+    dazu, ob alle 110 oder nur die tatsächlich mehrdeutigen anzufassen sind.
+    TRIGGER: **die erste Arbeit an GA4** — spätestens ein Zuschnitt der Zeile 11.9 —, ODER
+    die nächste Runde, die eine dieser Dateien ohnehin öffnet.
+    **ABGRENZUNG ZU EINTRAG 61, damit die zwei nicht zusammengezogen werden:** Jener zählt
+    Zeiger auf den PFAD `docs/aktiver-stand.md`, die nach dem Schnitt vom 2026-09-08 auf eine
+    andere Datei zeigen müssten. Dieser zählt Zeiger auf die PHASENNUMMER `11.2`, die nach der
+    Trennung ein anderes Ziel meinen könnten. **Zwei verschiedene Achsen, zwei verschiedene
+    Schäden;** eine gemeinsame Runde ist möglich, aber keine der beiden erledigt die andere.
+    PROVENIENZ: Alle Zahlen **GEMESSEN am Repo (CC, 2026-09-08)**. Dass die Trennung die
+    Mehrdeutigkeit erzeugt, ist eine **ABLEITUNG** aus der Owner-Entscheidung desselben Tages,
+    keine Messung.

@@ -83,9 +83,11 @@ const GOOGLE_FORWARD_TIMEOUT_MS = 3_000;
  * NICHT DER WERT. eventSource ist ein Enum (google.ads.datamanager.v1.EventSource),
  * und "WEB" ist ein gueltiges Mitglied — GEMESSEN 2026-08-28 (OWNER, Messung B1,
  * docs/ziel-befunde.md, Teil (br)). OB "WEB" FUER EINEN OFFLINE-KLICK-IMPORT DER
- * FACHLICH RICHTIGE WERT IST, IST NICHT GEMESSEN; die Mitgliedermenge des Enums ist
- * nicht einmal erhoben. EIN SYNTAKTISCH GUELTIGES ENUM-MITGLIED KANN FACHLICH FALSCH
- * SEIN, UND DIE SCHNITTSTELLE MELDET DAS NICHT.
+ * FACHLICH RICHTIGE WERT IST, IST NICHT GEMESSEN. Die MITGLIEDERMENGE des Enums ist
+ * dagegen erhoben — FUENF brauchbare Werte, GELESEN 2026-08-24, docs/ziel-befunde.md,
+ * Google-Abschnitt, Teil (x)/F3; welcher davon GILT, sagt dieselbe Fundstelle nicht.
+ * EIN SYNTAKTISCH GUELTIGES ENUM-MITGLIED KANN FACHLICH FALSCH SEIN, UND DIE
+ * SCHNITTSTELLE MELDET DAS NICHT.
  * VERLANGT DER LIVE-TEST EIN ANDERES MITGLIED, WIRD DIESE KONSTANTE ANGEPASST — sie
  * ist genau dafuer benannt und liegt an einer Stelle.
  */

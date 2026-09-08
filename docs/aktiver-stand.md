@@ -957,6 +957,8 @@ ist nicht abgelaufen und wird am Phasenende GEHOBEN, nicht archiviert.
 · 59. DIE DREI KLICK-KENNUNGS-PARAMETER — DREI HÄLFTEN EINES THEMAS, UND ES IST ...
 · 60. DIE UMLAUT-AUFLAGE UND DIE TITEL-ZEIGER KOLLIDIEREN — DIESMAL NUR ZUFÄLLIG ...
 · 61. 45 PFAD-ZEIGER IN DER GEPFLEGTEN DOKU SIND NICHT NACHGEZOGEN. GEMESSEN (CC ...
+· 62. DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT. Der Block vom ...
+· 63. DIE 110 ZEIGER AUF "11.2" IN DER GEPFLEGTEN DOKU SIND NICHT KLASSIFIZIERT ...
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -1759,6 +1761,44 @@ ROUTEN-LOKAL UND UNGETYPT.**
    die zweite Hälfte keine Bedingung formulierbar ist, ist eine **ABLEITUNG** aus der
    Quelltext-Wächter-Regel, keine Messung.
 
+9. **EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF AUS
+   NACHZÜGEN** (angetreten 2026-09-08, an dieser Datei selbst).
+   **DIE AUSSAGE:** Eine Angabe der Form "IST SIE … GROSS" ist nach jeder Änderung an ihrer
+   eigenen Datei falsch. **DER NACHZUG IST SELBST EINE ÄNDERUNG UND MACHT SIE ERNEUT
+   FALSCH** — die Angabe hält sich nur, solange jemand hinter ihr herläuft, und sie hat
+   **keine Bedingung ihres Entfallens.** Dasselbe gilt für einen mitgeführten
+   Rundenzähler ("nach den DREI Doku-Runden"), und zwar verschärft: Er altert schon durch
+   die Runde, die ihn nachzieht.
+   **EINE DATIERTE MESSUNG HAT DAS PROBLEM NICHT.** Sie ist **alt und nicht falsch**; wer
+   den heutigen Wert braucht, misst ihn.
+   **GEMESSEN AN DIESEM FALL (CC/ARCHITEKT, 2026-09-08):** VIER Nachzüge in DREI Runden
+   desselben Tages — die Selbstangabe wanderte von 148 817 B über 152 393, 152 368 und
+   152 539 auf 152 587 B —, und **eine fünfte Stelle stand offen**, als die Angabe
+   herausgenommen wurde: derselbe Rundenzähler zwölf Zeilen tiefer.
+   **DIE KOSTEN SIND NICHT DIE PFLEGE, SONDERN DIE HALBHEIT:** Wird nur eine der Stellen
+   nachgezogen, stimmt die eine — **und genau deshalb liest niemand die andere nach**
+   (docs/immer-beachten.md, "WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT, MACHT DIE ANDERE ZUR
+   FALLE"). Der Fall ist an dieser Datei eingetreten und protokolliert.
+   **DER PRÄZEDENZFALL ZEIGT, DASS DIE ANTWORT IM REPO SCHON STAND:** CLAUDE.md,
+   "## Detail-Archiv", Eintrag docs/claude-history/backlog-polish.md. Dort ist ein
+   Messblock ausdrücklich NICHT fortgeschrieben worden, mit derselben Begründung — "sie
+   sind datiert und damit alt, nicht falsch … Wer die heutigen Werte braucht, misst sie."
+   **DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT:** Sie entfällt,
+   sobald ein GATE eine präsentische Selbstangabe rot macht. **Ein solches gibt es nicht** —
+   kein Test, kein Lint, kein Build liest Doku-Text (GEMESSEN an dieser Runde: alle vier
+   Gates blieben bei jedem der vier Nachzüge unverändert grün).
+   **ABGRENZUNG ZU "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER"**
+   (docs/immer-beachten.md): Jene Regel betrifft einen ZEIGER auf etwas anderes, der
+   veraltet, weil sein Ziel sich bewegt. **Hier bewegt sich der GEGENSTAND SELBST**, und
+   die Angabe steht in ihm. Verwandte Figur, andere Achse.
+   **NICHT ENTSCHIEDEN:** ob daraus eine eigene Regel wird, ein Absatz an jener Regel, oder
+   ob es bei der Feststellung an diesem Fall bleibt. **KEINE EMPFEHLUNG.**
+   GEMELDET 2026-09-08, NICHT GEBAUT.
+   PROVENIENZ: Die vier Nachzüge und die offene fünfte Stelle sind **GEMESSEN am Repo und
+   am Verlauf dieser Runde (CC, 2026-09-08)**. Der Präzedenzfall ist **GELESEN in CLAUDE.md**
+   (CC, 2026-09-08). Dass es kein Gate gibt, ist ein **NICHT-TREFFER mit benannter Achse** —
+   die vier Gates dieses Projekts, an dieser Runde beobachtet.
+
 ## Die Teilung der Standdatei — Zuschnitt in drei Schritten
 
 **WAS DIESER ABSCHNITT IST:** Der Zuschnitt für die Teilung DIESER Datei in drei. Er ist
@@ -1770,12 +1810,18 @@ vollzogen wird. Angelegt am 2026-09-07 (CC, Doku-Runde) auf OWNER-ENTSCHEIDUNG.
 SCHNITT VOM 2026-09-08; eine Datei dieser Grösse gibt es seither nicht mehr.** Sie bleibt
 stehen, weil sie der Anlass des ganzen Vorhabens ist und ihr Datum trägt. **NACH DEM SCHNITT
 WAR DIE STEUERDATEI 148 817 B UND 2 102 ZEILEN GROSS** (GEMESSEN, CC, 2026-09-08, an der
-geschnittenen Datei); **NACH DEN ZWEI DOKU-RUNDEN DESSELBEN TAGES — der Ladbarkeits-Messung
-und der Verdichtung dieses Abschnitts — IST SIE 152 368 B UND 2 141 ZEILEN GROSS**
-(GEMESSEN, CC, 2026-09-08). **DREI DATIERTE WERTE, KEINE ERSETZUNG** — wer den einen für den
-anderen nimmt, hält einen Anlass für ein Ergebnis oder einen überholten Stand für den
-heutigen. **DIE LADBARKEITS-MESSUNG UNTEN IST AM MITTLEREN DER DREI WERTE GEFAHREN**, nicht
-am heutigen; der Zuwachs der zwei Runden danach ist von ihr nicht gedeckt. Auftrag 0 verlangt
+geschnittenen Datei). **ZWEI DATIERTE WERTE, KEINE ERSETZUNG** — wer den einen für den
+anderen nimmt, hält einen Anlass für ein Ergebnis.
+**DIESE DATEI FÜHRT IHRE LAUFENDE GRÖSSE NICHT MEHR; WER SIE BRAUCHT, MISST SIE.** Der Grund
+ist der Kreislauf, den eine präsentische Angabe erzeugt: "IST SIE … GROSS" verlangt Pflege
+bei jeder künftigen Änderung an dieser Datei, und **jeder Nachzug ist selbst eine Änderung,
+die sie erneut falsch macht** — am 2026-09-08 vier Nachzüge in drei Runden desselben Tages.
+**EINE DATIERTE MESSUNG HAT DAS PROBLEM NICHT: sie ist alt und nicht falsch.** Dieselbe
+Entscheidung steht mit derselben Begründung in CLAUDE.md, "## Detail-Archiv", Eintrag
+docs/claude-history/backlog-polish.md — dort im Wortlaut "Wer die heutigen Werte braucht,
+misst sie".
+**DIE LADBARKEITS-MESSUNG UNTEN IST BEI 148 817 B GEFAHREN**, also am zweiten der zwei Werte;
+**jedes spätere Wachstum ist von ihr nicht gedeckt.** Auftrag 0 verlangt
 beim ersten Prompt jeder Sitzung ihre VOLLSTÄNDIGE Lesung; das war vor dem Schnitt seit
 mehreren Runden nicht mehr erfüllbar, und die letzten Runden davor haben stattdessen das
 Verzeichnis plus ausgewählte Abschnitte gelesen. **EIN PFLICHT-GATE, DAS NIEMAND VOLLSTÄNDIG

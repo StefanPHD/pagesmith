@@ -128,13 +128,14 @@ angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 10.5 — Umzug middleware -> proxy (Next-Konvention)
 - [x] Phase 11 — Multi-Tracking (Server-Side Fan-Out)
 - [x] Phase 11.1 — LinkedIn als viertes Fan-Out-Ziel
-- [ ] Phase 11.2 — Google
+- [~] Phase 11.2 — Google Ads
 - [x] Phase 11.8 — Autorisierungsschicht
 - [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code)
 - [ ] Phase 11.4 — Der Testknopf
 - [ ] Phase 11.6 — Custom-Pixel
 - [ ] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP)
 - [ ] Phase 11.7 — Anbieter-Befunde nachziehen
+- [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)

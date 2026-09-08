@@ -7,12 +7,13 @@
 // Versehen: 'google' steht nicht in TRACKING_TARGETS (lib/settings.ts), es gibt also
 // weder einen Empfaenger noch einen Eintrag im Fan-Out. Wer hier einen Aufrufer
 // ergaenzt, baut nicht mehr diese Scheibe — s. die tragende Invariante des
-// Zuschnitts in docs/aktiver-stand.md.
+// Zuschnitts in docs/claude-history/phase-11.2-google.md.
 //
 // ---------------------------------------------------------------------------
-// DER KOPFSATZ ZUR ABLAGE — WOERTLICH aus docs/aktiver-stand.md, Abschnitt
-// "## Scheibe 11.2a", Unterabschnitt "Die Ablage-Entscheidung". Er steht ZEICHENGLEICH
-// auch in google-payload.ts; wer ihn hier aendert, aendert eine Entscheidung:
+// DER KOPFSATZ ZUR ABLAGE — WOERTLICH aus docs/claude-history/phase-11.2-google.md,
+// Abschnitt "## Scheibe 11.2a", Unterabschnitt "Die Ablage-Entscheidung". Er steht
+// ZEICHENGLEICH auch in google-payload.ts; wer ihn hier aendert, aendert eine
+// Entscheidung:
 //
 //   Beide Dateien sind REIN — KEIN import "server-only". Grund: der spätere
 //   google-forward.ts ist server-only und muss sie importieren; die Richtung
@@ -29,10 +30,10 @@
 //
 // DER GRUND, ohne den die naechste Politur eine Formpruefung als "Haertung"
 // nachtraegt: GEMESSEN ist ein SELBSTGESETZTER Testwert (Vermerk 1 in
-// docs/aktiver-stand.md); ueber die Form einer ECHTEN gclid ist NICHTS gelesen und
-// NICHTS gemessen. Jede Formpruefung waere am Testwert gruen und im Echtfall ein
-// RIEGEL — und der Riegel waere still: kein Fehler, keine Logzeile, nur eine
-// Conversion, die nicht ankommt.
+// docs/claude-history/phase-11.2-google.md); ueber die Form einer ECHTEN gclid ist
+// NICHTS gelesen und NICHTS gemessen. Jede Formpruefung waere am Testwert gruen und
+// im Echtfall ein RIEGEL — und der Riegel waere still: kein Fehler, keine Logzeile,
+// nur eine Conversion, die nicht ankommt.
 
 /**
  * Die drei Klick-Kennungen, wie sie der Anbieter im Feld `adIdentifiers` fuehrt.
@@ -63,7 +64,7 @@ export type GoogleClickIds = {
  * Conversion), waehrend ein schreibungsunempfindlicher Vergleich einen fremden,
  * zufaellig gleichnamigen Parameter aufgreifen koennte — und ein falscher Wert als
  * Kennung wird vom Anbieter NICHT als Fehler gemeldet.
- * DER OFFENE PUNKT DAZU steht in docs/aktiver-stand.md, Vorrat, Eintrag 4. Die erste
+ * DER OFFENE PUNKT DAZU steht in docs/aktiver-stand-vorrat.md, Eintrag 4. Die erste
  * Messung nimmt ihn mit.
  */
 const CLICK_ID_PARAMS = ["gclid", "gbraid", "wbraid"] as const;

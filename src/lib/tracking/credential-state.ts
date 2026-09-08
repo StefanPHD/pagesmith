@@ -1,6 +1,6 @@
 // DIE LAGE DER ABGELEGTEN ZUGANGSDATEN JE ZIEL — REINE BERECHNUNG
-// (Phase 11.2, Scheibe 11.2b; docs/aktiver-stand.md, Abschnitt "Die Ampel an der
-// Ziel-Karte — Scheibe 11.2b").
+// (Phase 11.2, Scheibe 11.2b; docs/claude-history/phase-11.2-google.md, Abschnitt
+// "Die Ampel an der Ziel-Karte — Scheibe 11.2b").
 //
 // WAS DIESE DATEI IST: die SECHS Lagen, die Vorwarn-Schwelle und zwei Ableitungen
 // fuer die Oberflaeche. Kein Netz, keine Datenbank, kein Chiffrieren, kein Zustand.

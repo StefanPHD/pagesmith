@@ -56,7 +56,8 @@ import { hasPixelId } from "@/lib/tracking/target-readiness";
 // (lib/tracking/target-adapters.ts), und der Verteiler im Ingest-Pfad ist ueber
 // TargetWithAdapter geschluesselt. VIER Tore halten nach dieser Zeile weiterhin
 // geschlossen; welche und woran man das sieht, steht im Zuschnitt
-// (docs/aktiver-stand.md, Scheibe 3).
+// (docs/claude-history/phase-11.2-google.md, "Google als reguläres Ziel in der
+// Oberfläche — Scheibe 3 des Schnitts der Phase 11.2").
 // PHASE 11.2, SCHEIBE 4 — DIE ZWEI ABSAETZE DARUEBER BLEIBEN WOERTLICH STEHEN UND SIND
 // ALS AUSSAGE UEBER HEUTE BEIDE UEBERHOLT. Sie beschreiben ihren Tag und werden nicht
 // gestrichen; sie sind die Herleitung, aus der der Schnitt dieser Phase entstanden ist.
@@ -422,9 +423,9 @@ const OHNE_TRENNZEICHEN = (value: string): string => value.replace(/[-\s]/g, "")
  *
  * DIE GRENZE, UND SIE GEHOERT AN DIESE STELLE: Die Umformung wirkt NUR IM
  * SCHREIBPFAD. Ein Wert, der auf anderem Weg in den Blob gelangt — ein
- * selbstgebauter saveProject-Aufruf, s. docs/aktiver-stand.md, Vorrat 16 —, wird NIE
- * umgeformt und beim Lesen unveraendert angezeigt und weitergereicht. DAS IST KEINE
- * NEUE LUECKE UND NICHTS, WAS HIER ZU BAUEN WAERE; ohne diesen Satz haelt die
+ * selbstgebauter saveProject-Aufruf, s. docs/aktiver-stand-vorrat.md, Eintrag 16 —,
+ * wird NIE umgeformt und beim Lesen unveraendert angezeigt und weitergereicht. DAS
+ * IST KEINE NEUE LUECKE UND NICHTS, WAS HIER ZU BAUEN WAERE; ohne diesen Satz haelt die
  * naechste Runde die Umformung fuer eine Zusicherung ueber den INHALT der Spalte.
  */
 const NORMALIZE_PIXEL_ID: Record<TrackingTarget, (value: string) => string> = {

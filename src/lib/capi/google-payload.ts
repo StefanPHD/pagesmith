@@ -9,9 +9,10 @@
 // diese Scheibe.
 //
 // ---------------------------------------------------------------------------
-// DER KOPFSATZ ZUR ABLAGE — WOERTLICH aus docs/aktiver-stand.md, Abschnitt
-// "## Scheibe 11.2a", Unterabschnitt "Die Ablage-Entscheidung". Er steht ZEICHENGLEICH
-// auch in google-click-ids.ts; wer ihn hier aendert, aendert eine Entscheidung:
+// DER KOPFSATZ ZUR ABLAGE — WOERTLICH aus docs/claude-history/phase-11.2-google.md,
+// Abschnitt "## Scheibe 11.2a", Unterabschnitt "Die Ablage-Entscheidung". Er steht
+// ZEICHENGLEICH auch in google-click-ids.ts; wer ihn hier aendert, aendert eine
+// Entscheidung:
 //
 //   Beide Dateien sind REIN — KEIN import "server-only". Grund: der spätere
 //   google-forward.ts ist server-only und muss sie importieren; die Richtung
@@ -175,7 +176,7 @@ export type GoogleBuildRejection = "no_click_id";
  * der INNEREN Ebene einen Rueckkanal. Der Typ `Forwarder` (capi/ingest.ts) gibt
  * weiterhin `Promise<void>`, und das Ergebnis von `Promise.allSettled` am Aufrufort
  * wird weiterhin nicht ausgewertet. Ein Adapter kann eine Verwerfung also ENTGEGEN-
- * NEHMEN und trotzdem nicht MELDEN — s. docs/aktiver-stand.md, Vorrat, Eintrag 3.
+ * NEHMEN und trotzdem nicht MELDEN — s. docs/aktiver-stand-vorrat.md, Eintrag 3.
  */
 export type GoogleBuildResult =
   | { ok: true; event: GoogleEvent }
@@ -205,7 +206,7 @@ export type GoogleDestination = {
  *   Scheibe baut KEIN userData.
  * · `consent` — das Einwilligungs-URTEIL wird im Browser gefaellt; tracking/consent-wire.ts
  *   haelt fest "HIER STEHT KEIN ZWEITES URTEIL", ein Google-eigenes Consent-Feld waere
- *   ein DRITTES. Offen, s. docs/aktiver-stand.md, Vorrat, Eintrag 5.
+ *   ein DRITTES. Offen, s. docs/aktiver-stand-vorrat.md, Eintrag 5.
  * · `validateOnly` — ein Instrument der MESSUNG, nicht der Nutzlast.
  *
  * VIER PRUEFUNGEN FEHLEN EBENFALLS BEWUSST, und der Grund ist jedes Mal derselbe: Es
@@ -309,7 +310,7 @@ export function buildGoogleEvent(input: GoogleEventInput): GoogleBuildResult {
  * Kundennummern MIT Bindestrichen an; ein Betreiber schreibt ab, was er sieht. Wer die
  * Bindestriche hier stillschweigend entfernte, verstaeckte den Fehler an der einzigen
  * Stelle, an der er noch sichtbar zu machen waere. Der Kandidat dazu steht in
- * docs/aktiver-stand.md, Vorrat.
+ * docs/aktiver-stand-vorrat.md.
  * FUER `productDestinationId` bleibt die alte Begruendung unveraendert richtig: Eine
  * Pruefung waere dieselbe Falle wie eine Formpruefung an der Klick-Kennung.
  *

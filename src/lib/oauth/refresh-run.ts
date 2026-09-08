@@ -1,7 +1,7 @@
 // DIE KLAMMER UM DIE ERNEUERUNG — EIN LAUF JE PROJEKT
-// (Phase 11.2, Schritt 1b-1 der Scheibe 1b; docs/aktiver-stand.md, Abschnitt "Die
-// Klammer um die Erneuerung — Schritt 1b-1 der Scheibe 1b des Schnitts der Phase
-// 11.2").
+// (Phase 11.2, Schritt 1b-1 der Scheibe 1b; docs/claude-history/phase-11.2-google.md,
+// Abschnitt "Die Klammer um die Erneuerung — Schritt 1b-1 der Scheibe 1b des Schnitts
+// der Phase 11.2").
 //
 // WAS DIESE DATEI IST: EIN LAUF um refreshAccessToken, mit einer Obergrenze. Sie ruft
 // die Funktion fuer EIN Projekt und EIN Ziel, wiederholt AUSSCHLIESSLICH bei
@@ -51,8 +51,8 @@
 //
 // ---------------------------------------------------------------------------
 // KEIN NEBENLAEUFIGKEITS-RIEGEL, UND DAS IST ABSICHT. Keine Sperre, keine
-// Vereinzelung, kein Warten. Vorrats-Eintrag 9 (docs/aktiver-stand.md) ist in 1b-1
-// GEPRUEFT UND BEGRUENDET VERTAGT: Die FORM des Riegels haengt am GRAD der
+// Vereinzelung, kein Warten. Vorrats-Eintrag 9 (docs/aktiver-stand-vorrat.md) ist in
+// 1b-1 GEPRUEFT UND BEGRUENDET VERTAGT: Die FORM des Riegels haengt am GRAD der
 // Nebenlaeufigkeit, und den legt erst der TAKT fest — also 1b-2. Ein Riegel im
 // Prozessspeicher traegt fuer einen Sweep mit zwei Laeufen und traegt NICHT, wenn der
 // Verkehr ihn ausloest. Vor der Takt-Wahl gebaut, waere er auf Verdacht gebaut.

@@ -106,7 +106,7 @@ describe("extractGoogleClickIds: der Wert selbst", () => {
     // Schreibung des Parameters, den Google an die Ziel-URL haengt, gibt es weder einen
     // Befund noch einen Nicht-Treffer mit benannter Reichweite — der Gegenstand beider
     // Crawl-Laeufe war die Einlieferungs-Schnittstelle, nicht das Auto-Tagging
-    // (docs/aktiver-stand.md, Vorrat, Eintrag 4).
+    // (docs/aktiver-stand-vorrat.md, Eintrag 4).
     // ER BEWACHT, DASS EINE AENDERUNG DIESER WAHL SICHTBAR WIRD, sobald die erste
     // Messung sie beantwortet.
     // DIE ANALOGIE ZUM SCHLUESSELNAMEN-TEST in google-payload.test.ts IST AM 2026-08-28
@@ -120,7 +120,7 @@ describe("extractGoogleClickIds: der Wert selbst", () => {
     // Mechanismus.
     // DIESER PIN RUHT WEITERHIN AUF NICHTS GELESENEM: B1 hat KEINEN Query-String
     // benutzt, die Schreibung der URL-Parameternamen ist von ihr unberuehrt
-    // (docs/aktiver-stand.md, Vorrat, Eintrag 4 — "DIE ERSTE MESSUNG NIMMT SIE MIT"
+    // (docs/aktiver-stand-vorrat.md, Eintrag 4 — "DIE ERSTE MESSUNG NIMMT SIE MIT"
     // ist NICHT eingeloest).
     // ROT, sobald der Vergleich schreibungsunempfindlich wird — etwa durch ein
     // toLowerCase auf den Parameternamen oder eine eigene Zerlegung, die nicht

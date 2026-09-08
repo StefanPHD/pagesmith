@@ -79,7 +79,8 @@ import type { TrackingTarget } from "@/lib/settings";
  * GESCHLOSSEN: Trigger (i) ist unberuehrt, und stuft der Anbieter je eine der Kennungen
  * als vertraulich ein, ist Trigger (ii) eingetreten und die Owner-Entscheidung vom
  * 2026-08-12 NEU zu treffen. Die volle Begruendung wird hier NICHT verdoppelt — sie
- * steht in docs/aktiver-stand.md, Festlegung (2) des Zuschnitts der Scheibe 2.
+ * steht in docs/claude-history/phase-11.2-google.md, "Sechs Festlegungen des
+ * Zuschnitts der Scheibe 2", Festlegung (2).
  *
  * ERSETZT AM 2026-08-31 (ARCHITEKT), OHNE STEMPEL-BLOCK. Hier stand eine Fassung mit
  * ZWEI Gruenden: der URN je Ereignistyp UND dem Satz, die Ablage sei nicht entschieden,

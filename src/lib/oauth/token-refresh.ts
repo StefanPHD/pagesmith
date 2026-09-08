@@ -17,8 +17,8 @@ import {
 
 // ===========================================================================
 // DIE ERNEUERUNG EINES ABGELEGTEN ZUGANGSDATUMS — DER ANBIETER-NEUTRALE RAHMEN
-// (Phase 11.2, Scheibe 1a des Schnitts; docs/aktiver-stand.md, Abschnitt "Die
-// Erneuerung des Zugangsdatums").
+// (Phase 11.2, Scheibe 1a des Schnitts; docs/claude-history/phase-11.2-google.md,
+// Abschnitt "Die Erneuerung des Zugangsdatums").
 //
 // WAS DIESE DATEI IST: EINE Bibliotheksfunktion. Sie liest die Geheimnis-Zeile,
 // dechiffriert sie, prueft ZWEI Uhren, ruft bei Bedarf den Anbieter, chiffriert das
@@ -61,7 +61,11 @@ import {
 //
 // ---------------------------------------------------------------------------
 // DER FEHLZUSTAND, GEGEN DEN GEBAUT WIRD, IST AUF DREI EBENEN GLEICHZEITIG STUMM
-// (GEMESSEN am Repo, CC, 2026-08-29; docs/aktiver-stand.md, "Warum sie zuerst kommt"):
+// (GEMESSEN am Repo, CC, 2026-08-29; docs/claude-history/phase-11.2-google.md,
+// Zuschnitt "Die Erneuerung des Zugangsdatums — Scheibe 1a des Schnitts der Phase
+// 11.2", Unterabschnitt "Vollzogen — was hier stand und wohin es gegangen ist", dort
+// als entfallener Unterabschnitt "Warum sie zuerst kommt — und dieser Grund bindet"
+// zitiert):
 // die vier Adapter loggen nur errorName, das Ergebnis des Fan-Outs wird am Aufrufort
 // weder gebunden noch gelesen, und der Ingest antwortet in jedem Pfad mit einer
 // leeren 204. FOLGE: Ein Transport ohne Erneuerung sendet EINE STUNDE und schweigt
@@ -118,7 +122,7 @@ import {
 //   der ZUKUNFT, und der Vorlauf unten erneuerte es nicht.
 //   OB DER ANBIETER DAS TUT, IST NICHT GEMESSEN. Diese Achse ist NEU aufgeschrieben
 //   und steht ausserdem als zweite Achse an Vorrats-Eintrag 9 in
-//   docs/aktiver-stand.md. GEMELDET, NICHT GEBAUT.
+//   docs/aktiver-stand-vorrat.md. GEMELDET, NICHT GEBAUT.
 //
 //   ERGAENZT MIT SCHEIBE 1b-2b, UND KEIN WORT DARUEBER IST ABGESCHWAECHT (Invariante
 //   (I-5) des Zuschnitts): DIE AUSSTELLUNGS-REIHENFOLGE BLEIBT UNGEMESSEN, AUCH WENN

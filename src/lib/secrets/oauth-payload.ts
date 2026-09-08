@@ -215,7 +215,8 @@ const ALLOWED_FIELDS = [
  *   trug, denn sonst reicht toRefreshedPayload den abgelegten Wert byte-gleich durch.
  *   DIE ZWEI ZEITPUNKTE SIND GEMESSEN 2026-08-29 (OWNER) an der ausgelieferten
  *   Anwendung; DIESER SCHLUSS DARAUS IST GERECHNET UND KEINE ZWEITE BEOBACHTUNG —
- *   docs/aktiver-stand.md, VERMERK 6, Ableitung 1, haelt beides getrennt.
+ *   docs/claude-history/phase-11.2-google.md, VERMERK 6, Ableitung 1, haelt beides
+ *   getrennt.
  *
  * WAS DAMIT AUSDRUECKLICH NICHT BEHAUPTET IST: dass das Feld IMMER kommt. Zwei
  * ERKLAERUNGEN tragen die Beobachtung gleich gut — der Anbieter setzt es generell, und

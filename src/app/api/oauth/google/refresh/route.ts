@@ -18,8 +18,8 @@
 //
 // ---------------------------------------------------------------------------
 // SIE WIRD NACH DEM LIVE-TEST NICHT ZURUECKGEBAUT — sie ist ein PRODUKT-BAUSTEIN.
-// Zwei Gruende, beide benannt (docs/aktiver-stand.md, "Die Beweis-Route bleibt
-// stehen"):
+// Zwei Gruende, beide benannt (docs/claude-history/phase-11.2-google.md, "Die
+// Beweis-Route bleibt stehen"):
 //   · Der offene Punkt "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN"
 //     (CLAUDE.md, "## Offene Punkte") fuehrt als Ursache (4) genau diesen Fall — ein
 //     Ziel, dessen Zugangsdatum ablaufen kann — und SEIN TRIGGER IST EINGETRETEN.

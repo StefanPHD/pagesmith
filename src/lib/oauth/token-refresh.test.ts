@@ -1191,8 +1191,9 @@ describe("der Waechter und die Charakterisierung", () => {
 
   it("T15b — DIE ROUTE RUFT DIE KLAMMER, DIE KLAMMER RUFT DIE FUNKTION", () => {
     // WAS ER SCHLIESST — UND ER SCHLIESST EINE LUECKE, DIE T15 NIE HATTE: Bis
-    // Schritt 1b-1 stand in docs/aktiver-stand.md (VERMERK 6), ein Waechter halte
-    // fest, dass die Beweis-Route der EINZIGE Aufrufer von refreshAccessToken sei.
+    // Schritt 1b-1 stand in docs/claude-history/phase-11.2-google.md (VERMERK 6), ein
+    // Waechter halte fest, dass die Beweis-Route der EINZIGE Aufrufer von
+    // refreshAccessToken sei.
     // T15 hat das nie geprueft — er liest ausschliesslich ingest.ts. Mit der
     // Umverdrahtung waere jene Aussage falsch geworden, OHNE dass etwas rot wird;
     // genau dagegen steht dieser Lauf.

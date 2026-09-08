@@ -310,7 +310,7 @@ export function buildGoogleEvent(input: GoogleEventInput): GoogleBuildResult {
  * Kundennummern MIT Bindestrichen an; ein Betreiber schreibt ab, was er sieht. Wer die
  * Bindestriche hier stillschweigend entfernte, verstaeckte den Fehler an der einzigen
  * Stelle, an der er noch sichtbar zu machen waere. Der Kandidat dazu steht in
- * docs/aktiver-stand-vorrat.md.
+ * docs/aktiver-stand-vorrat.md, Eintrag 7 (die Nummer ist GEMESSEN, CC, 2026-09-08).
  * FUER `productDestinationId` bleibt die alte Begruendung unveraendert richtig: Eine
  * Pruefung waere dieselbe Falle wie eine Formpruefung an der Klick-Kennung.
  *

@@ -1,8 +1,13 @@
 # ARCHIV — PHASE 11.2 (GOOGLE): ZUSCHNITTE UND VERMERKE
 
 **WAS DIESE DATEI IST:** Das Archiv der Phase 11.2. Sie trägt die ELF abgelaufenen
-Scheiben-Zuschnitte und die FÜNFZEHN abgeschlossenen Scheiben-Vermerke dieser Phase, im
+Scheiben-Zuschnitte und die abgeschlossenen Scheiben-Vermerke dieser Phase, im
 Wortlaut und in der Reihenfolge, in der sie entstanden sind.
+**HIER STAND EINE STÜCKZAHL FÜR DIE VERMERKE, UND ES KOMMT KEINE ZURÜCK:** Sie war mit
+VERMERK 16 am 2026-09-08 neu falsch. Die Vermerke sind nummeriert und zählen sich damit
+selbst; eine Zahl daneben ist eine zweite Wahrheit, die bei jedem Abschluss-Vermerk neu
+nachzuziehen wäre. **DIE ZAHL DER ZUSCHNITTE BLEIBT**, weil sie mit dem Schnitt
+abgeschlossen ist und nicht mitwächst.
 
 **SIE IST KEIN STEUERNDES DOKUMENT.** Was heute gilt — der Rahmen der Phase, die
 bindenden Entscheidungen, die offene Arbeit 1b, der Vorrat, die Hebungs-Kandidaten —
@@ -11,7 +16,7 @@ Pflicht-Gate jedes Bau- und Aufklärungs-Prompts dieser Phase.
 
 **WORAUF SIE ZEIGT UND WAS AUF SIE ZEIGT:** In der Steuerdatei stehen unter
 "## Register — was diese Datei nicht mehr trägt" ein Register der elf Zuschnitte und
-eines der fünfzehn Vermerke. Beide führen je Eintrag den wörtlichen Titelanfang und
+eines der Vermerke. Beide führen je Eintrag den wörtlichen Titelanfang und
 diese Datei als Ziel. **Wer einen Zuschnitt oder einen Vermerk sucht, findet über das
 Register hierher — und nur so**; ohne das Register wüsste eine Sitzung, die nur die
 Steuerdatei liest, nicht einmal, DASS es etwas nachzusehen gibt.
@@ -5610,3 +5615,201 @@ betroffenen Projekte nach derselben Mechanik heilen.
 **WAS AUSDRÜCKLICH KEINE MESSUNG IST:** dass der Google-Adapter die Conversion tatsächlich
 zustellt — der Lauf endete mit `no destination for event`, und was der Anbieter danach tut,
 hat dieser Test nicht angesehen.
+
+---
+
+### VERMERK 16 (Bau-Commits 57c9231, eeac5dd, 25119b7) — DIE TEILUNG DER STANDDATEI IST VOLLZOGEN
+
+**DIE COMMITS SIND AM REPO ERMITTELT** (CC, 2026-09-08, `git log` und `git show --stat`),
+nicht aus einem Prompt übernommen:
+· `57c9231` (2026-09-07, `docs(claude)`) — **SCHRITT 1, der Zuschnitt.** EINE Datei,
+  330 Einfügungen, 0 Löschungen. Rein additiv, keine Zeile verschoben.
+· `eeac5dd` (2026-09-08, `docs(claude)`) — **SCHRITT 2, der Schnitt.** FÜNF Dateien,
+  8 743 Einfügungen, 8 221 Löschungen. `docs/aktiver-stand.md` verliert 8 571 Zeilen; die
+  zwei neuen Dateien entstehen mit 5 612 bzw. 2 615 Zeilen; `CLAUDE.md` und
+  `docs/arbeitsweise.md` werden im SELBEN Commit nachgezogen.
+· `25119b7` (2026-09-08, `docs(claude)`) — **SCHRITT 3, die Zeiger.** ELF Dateien unter
+  `src/`, 48 Einfügungen, 38 Löschungen, **ausschliesslich Kommentarzeilen**.
+**EIN VIERTER COMMIT DESSELBEN TAGES GEHÖRT DAZU UND IST KEIN SCHRITT DER TEILUNG:**
+`b1f91bd` (`docs(claude)`, EINE Datei, 91/42) hat die Ladbarkeit gemessen und den falschen
+Massstab richtiggestellt. Er steht zwischen Schritt 2 und Schritt 3, weil seine Messung erst
+an der geschnittenen Datei möglich war.
+**IM KOPF STEHEN DIE BAU-COMMITS UND AUSDRÜCKLICH NICHT DER COMMIT DIESES VERMERKS** — die
+Bauform von VERMERK 10 bis 15.
+
+**DER TITEL SAGT "VOLLZOGEN" UND NICHT "ERLEDIGT"**, und der Unterschied steht in
+Abschnitt (f): Drei Dinge sind bewusst nicht geheilt.
+
+---
+
+**(a) WAS GEBAUT IST — GEMESSEN am Repo (CC, 2026-09-08).**
+
+**AUS EINER DATEI SIND DREI GEWORDEN.** `docs/aktiver-stand.md` war vor dem Schnitt
+**702 038 B / 9 967 Zeilen** (Stand `57c9231`); der Anlass des ganzen Vorhabens war ihre
+Grösse von **680 598 B / 9 637 Zeilen** am 2026-09-07, also VOR dem Zuschnitt, der sie
+selbst noch einmal wachsen liess.
+
+· **`docs/aktiver-stand.md` — die STEUERDATEI.** Behält ihren Namen; er steht in `CLAUDE.md`
+  und in `docs/arbeitsweise.md` als Verfahrensslot und wird aus 88 Stellen ausserhalb der
+  Datei zitiert. Sie trägt den Rahmen, die bindenden Entscheidungen, "1b als Folgetask",
+  die Hebungs-Kandidaten und die DREI REGISTER.
+· **`docs/claude-history/phase-11.2-google.md` — das ARCHIV.** Die elf abgelaufenen
+  Zuschnitte und die fünfzehn Vermerke. **Sie trägt ihren ENDNAMEN von Anfang an** und liegt
+  damit als einzige Datei jenes Ordners bei einer LAUFENDEN Phase.
+· **`docs/aktiver-stand-vorrat.md` — der VORRAT**, alle 59 Einträge. **Kein Archiv**: Er
+  wird am Phasenende GEHOBEN und danach GELÖSCHT, nicht archiviert.
+
+**DIE DREI REGISTER SIND DER GRUND, WARUM DIE TEILUNG KEINE BLOSSE VERLAGERUNG IST.** Ohne
+sie wüsste eine Sitzung, die nur die Steuerdatei liest, nicht einmal, DASS es etwas
+nachzusehen gibt.
+
+---
+
+**(b) DER NACHWEIS, DASS ZEICHENGLEICH VERSCHOBEN WORDEN IST — DREI GEHASHTE BEREICHE,
+SECHS ERHEBUNGEN.**
+
+Jeder Bereich ist **VOR dem Eingriff** an `git show HEAD:docs/aktiver-stand.md` erhoben und
+**nach dem Schreiben** an der Zieldatei gegengeprüft worden — drei Bereiche mal zwei
+Erhebungen:
+
+· die elf Zuschnitte (Quellzeilen 426–4029 OHNE die drei herausgelösten Blöcke, 3 091
+  Zeilen, 217 042 B)
+  `sha256 = 73fa7aa6de5c535371fc850aae6464803e6f23aaa652dc41667ffc93645f80d3`
+· die fünfzehn Vermerke (Quellzeilen 4030–6433, 2 404 Zeilen, 156 839 B)
+  `sha256 = 639fe1eda798af4834a4c99a227a0e35513643dae06e6a9a258f274d3b385d2d`
+· der Vorrat (Quellzeilen 6758–9324, 2 567 Zeilen, 194 271 B)
+  `sha256 = 17ded6bc996cc772cb958bcc2954b9b1b014066ef235d8be471d82b9de8fc01e`
+
+**WAS DIESE SECHS ERHEBUNGEN BELEGEN UND WAS NICHT:** Sie belegen, dass die verschobenen
+Bereiche BYTE-GLEICH angekommen sind. Sie belegen **NICHT**, dass nichts vergessen wurde —
+dafür trägt jede der zwei neuen Dateien die Zeilenbereiche der Quelle in ihrem Kopf, und die
+drei Register sind die Gegenprobe auf Vollständigkeit.
+
+**DREI BLÖCKE SIND BEWUSST NICHT MITGEWANDERT**, weil sie nicht abgelaufen waren: die zwei
+Entscheidungs-Blöcke aus den Zuschnitten der Scheiben 1a und 3 (zusammen elf bindende
+Entscheidungen) und "1b als Folgetask". **WÄRE MECHANISCH GESCHNITTEN WORDEN, WÄRE DER
+SCHADEN STILL GEWESEN:** Elf bindende Entscheidungen lägen in der Datei, die per Definition
+Abgelaufenes trägt; der Schnitt hätte funktioniert, die Gates wären grün gewesen, und die
+nächste Scheibe wäre gegen Entscheidungen gebaut worden, die sie nicht mehr findet.
+
+---
+
+**(c) DIE LADBARKEIT IST GEMESSEN — UND SIE WAR NIE DER ENGPASS.**
+
+**GEMESSEN (OWNER, /context, 2026-09-08, frische Sitzung):** Basislinie beim Sitzungsstart
+**145,8k Token**, nach der vollständigen Lesung der Steuerdatei **248,6k**; Fenster **1M**,
+danach **25 %** belegt und **715,2k frei**. Gelesen wurde die Datei bei **148 817 B /
+2 102 Zeilen**.
+**DIE DIFFERENZ VON 102,8k IST EINE OBERGRENZE UND KEIN DATEIWERT** — sie liegt vollständig
+in der Kategorie "Messages" und bündelt VIER Dinge: Datei, Prompt, Bericht und Denken.
+**Abgeleitet rund 80k für die Datei allein.**
+
+**DER ENGPASS WAR DIE WERKZEUG-AUSGABEGRENZE VON 30 000 ZEICHEN, NICHT DAS KONTEXTFENSTER.**
+Die geschnittene Datei brauchte **SECHS Lesestücke** (grösstes 29 033 B, GEMESSEN CC,
+2026-09-08); die ungeteilte mit 680 598 B hätte **rund VIERUNDZWANZIG** gebraucht (RECHNUNG,
+untere Schranke 23; die Stücke enden an Zeilengrenzen).
+**DIE FORMULIERUNG "SIE PASST NICHT MEHR IN DEN KONTEXT" WÄRE ZU STARK GEWESEN — richtig ist
+"sie war nicht mehr in EINEM ZUG lesbar".** Der Schnitt bleibt richtig aus dem präziseren
+Grund: **Ein Pflicht-Gate, das vierundzwanzig Werkzeugaufrufe verlangt, füllt niemand
+vollständig aus — und der Ausfall sieht aus wie Sorgfalt**, weil brav gemeldet wird, was
+gelesen wurde.
+
+**DER MASSSTAB DES ZUSCHNITTS WAR DER FALSCHE, und das war ein Fehler des Architekten, kein
+Messfehler:** Er verglich mit **110 664 B** und **126 574 B** — beides Werte für eine
+**@-IMPORT-LADUNG BEIM SITZUNGSSTART** und beide über `docs/immer-beachten.md`. Die
+Steuerdatei lädt **nicht** per @-Import, sie wird über Auftrag 0 GELESEN. Zwei Mechanismen;
+eine Zahl aus dem einen belegt nichts über den anderen.
+**NEBENBEFUND DERSELBEN MESSUNG:** `docs/immer-beachten.md` lädt bei **126 574 B**
+vollständig (OWNER, /context, 2026-09-08). Der bisher höchste gemessene Wert war
+**110 664 B** (2026-08-21).
+
+---
+
+**(d) DIE ZEIGER — GEMESSEN 20, NICHT DIE 27 DES ZUSCHNITTS.**
+
+Der Zuschnitt nannte 27 als **untere Schranke** aus dem Messbericht vom 2026-09-07 und
+sagte ausdrücklich "DIE ZAHL IST KEIN PRÜFUMFANG". Die Neumessung (CC, 2026-09-08, über
+`git ls-files`, drei Achsen: Pfadnennung · Kennungen · Titel-Zitate) ergibt **20 Zeiger im
+Produktivcode**, die auf einen ausgewanderten Anker zeigten. **Alle 20 sind nachgezogen**,
+dazu **3 in Testdateien**.
+
+**DIE DIFFERENZ VON SIEBEN IST VOLLSTÄNDIG AUFGELÖST:**
+· **EINER war nie falsch** — `src/lib/oauth/token-refresh.ts` zeigt auf die **bindende
+  Entscheidung (7)**, und die ist in die STEUERDATEI gezogen, nicht ausgewandert.
+· **SECHS nennen gar keine Datei** (Vorrats-Einträge 7, 9, 35, 42, 48, 53 als blosse
+  Kennung). **Sie waren nie falsch und sind es auch jetzt nicht: Register 3 routet sie
+  weiter — dafür sind die Register gebaut.** Ein Dateiname wäre dort eine ERGÄNZUNG, keine
+  Adress-Korrektur.
+
+**JEDER ANKER IST VOR DEM SCHREIBEN AM TEXT DER ZIELDATEI AUFGELÖST WORDEN. KEINER GING INS
+LEERE.**
+
+**DER TOTE ANKER "Warum sie zuerst kommt" HAT EINE ZWEISTUFIGE ADRESSE BEKOMMEN**, und sie
+ist nicht Höflichkeit, sondern Notwendigkeit: Der Unterabschnitts-Titel
+"Vollzogen — was hier stand und wohin es gegangen ist" steht in dieser Datei **zweimal
+zeichengleich als echte Überschrift**. Eine einstufige Adresse hätte systematisch die
+falsche von beiden getroffen. Aufgenommen ist zudem der **volle** entfallene Titel — er
+lautet "Warum sie zuerst kommt — und dieser Grund bindet"; die Kurzform traf auch im Archiv
+nur unscharf.
+
+---
+
+**(e) ZWEI EINSICHTEN AUS DEM ZUSCHNITT, DIE MIT IHM ABLAUFEN UND DESHALB HIER STEHEN.**
+Sie sind aus dem verdichteten Abschnitt der Steuerdatei entfallen; **nur weil sie hier
+stehen, durften sie dort weg.**
+
+· **DIE REIHENFOLGE WAR KEINE BEQUEMLICHKEIT: VOR SCHRITT 2 WEISS NIEMAND, WOHIN DIE ZEIGER
+  ZEIGEN.** Ein Zeiger, der auf eine noch nicht existierende Datei umgestellt wird, ist
+  nicht "vorbereitet", sondern falsch — und zwar **still**, weil kein Gate einen Pfad in
+  einem Kommentar prüft.
+· **DER ZWISCHENZUSTAND NACH SCHRITT 2 IST LESBAR FALSCH, DER NACH EINEM VORGEZOGENEN
+  SCHRITT 3 WÄRE ES NICHT.** Ein Zeiger, der nach Schritt 2 noch auf die Steuerdatei zeigt,
+  ist falsch, aber er trifft eine EXISTIERENDE Datei mit einem REGISTER, das sagt, wo der
+  Anker jetzt liegt. **Das ist der Grund, warum die Zeiger zuletzt kommen** — und derselbe
+  Grund trägt heute die zwei bewusst nicht geheilten Zeiger aus (f).
+
+**DIE NACHZUG-LISTEN SIND EINGELÖST:** Der Zuschnitt benannte SECHS Stellen in
+`docs/arbeitsweise.md` und DREI in `CLAUDE.md`. Alle neun sind in `eeac5dd` nachgezogen
+worden, im SELBEN Commit wie der Schnitt.
+
+---
+
+**(f) WAS AUSDRÜCKLICH NICHT GEHEILT IST — DREI DINGE, EINZELN.**
+
+· **`supabase/migrations/0027_project_secrets_version.sql` zeigt weiter auf
+  `docs/aktiver-stand.md`.** Der Anker ist ins Archiv gewandert; der Zeiger bleibt trotzdem
+  stehen, weil **"ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH UMGESCHRIEBEN"**
+  (`docs/immer-beachten.md`) den Fall wörtlich nennt — "auch nur einen Kommentar". **Die
+  Regel gewinnt gegen den Scope einer Doku-Runde.** Der Zeiger ist lesbar falsch: Er trifft
+  eine existierende Datei mit Registern.
+· **45 PFAD-ZEIGER IN DER GEPFLEGTEN DOKU SIND NICHT NACHGEZOGEN** (GEMESSEN, CC,
+  2026-09-08). Bewusst vertagt; der Bau hat Vorrang. Als **Vorrats-Eintrag 61** abgelegt.
+· **DER ZWEITE TOTE ANKER IST IN DIESER RUNDE GEHEILT, ABER NICHT IN SCHRITT 3.** Der
+  Zuschnitt nahm an, er sei "mit dem Schnitt ins Archiv gewandert". **DAS TRAF NICHT ZU:**
+  Er sass in der bindenden Entscheidung (7) und ist mit ihr in die STEUERDATEI gezogen, also
+  in die Gegenrichtung der Annahme. Schritt 3 hatte jene Datei im Scope ausgeschlossen und
+  hat ihn deshalb stehengelassen; nachgezogen ist er im Commit dieses Vermerks.
+
+**EINE VIERTE SACHE, DIE KEINE LÜCKE IST UND HIER STEHT, DAMIT SIE NICHT FÜR EINE GEHALTEN
+WIRD:** Ob die "Festlegungs"-Blöcke der elf archivierten Zuschnitte noch binden oder
+abgelaufen sind, **ist weiterhin nicht geprüft**. Der Zuschnitt hat das als eigene Arbeit
+ausgewiesen und die Zuschnitte unverändert verschoben statt beurteilt — zwei Achsen
+gleichzeitig zu bewegen hätte danach unentscheidbar gemacht, ob eine Aussage verschoben oder
+verändert worden ist.
+
+---
+
+**PROVENIENZ, JE TEIL:** Die vier Commit-Hashes, ihre Datei- und Zeilenzahlen, die
+Dateigrössen, die Zeigerzahlen und die sechs Lesestücke sind **GEMESSEN am Repo (CC,
+2026-09-08)**. Die drei `sha256`-Werte sind aus den Köpfen der zwei Zieldateien übernommen
+und stammen aus `eeac5dd`; sie sind hier **NICHT neu erhoben**.
+Die vier `/context`-Werte und der Nebenbefund zu `docs/immer-beachten.md` sind **GEMESSEN
+(OWNER, /context, 2026-09-08)**.
+**RECHNUNGEN, ausdrücklich als solche:** die rund vierundzwanzig Lesestücke für 680 598 B
+und die rund 80k für die Datei allein.
+**ENTSCHEIDUNGEN, ausdrücklich als solche und nicht als Messung:** die Nicht-Heilung der
+Migration 0027 (nach geltender Regel) und die Vertagung der 45 Doku-Zeiger
+(ARCHITEKT, 2026-09-08).
+**WAS AUSDRÜCKLICH KEINE MESSUNG IST:** dass die Steuerdatei bei jeder künftigen Grösse und
+in jeder Umgebung in einem Zug lesbar bleibt — gemessen ist EIN Lauf, an EINER Maschine, mit
+DIESEM Werkzeugstand.

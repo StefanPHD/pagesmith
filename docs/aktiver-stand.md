@@ -57,7 +57,7 @@ diesem Verzeichnis führt die Datei DREI REGISTER, und jede Überschrift stünde
 mehrfach in ihr, wenn ein Eintrag die Marke trüge.
 
 WAS HIER NICHT MEHR STEHT, WEIL ES AUSGEZOGEN IST — und es ist NICHT verschwunden:
-die elf Scheiben-Zuschnitte und die fünfzehn Vermerke liegen in
+die elf Scheiben-Zuschnitte und die Vermerke liegen in
 docs/claude-history/phase-11.2-google.md, der Vorrat in docs/aktiver-stand-vorrat.md.
 Beides ist über den Abschnitt "Register — was diese Datei nicht mehr trägt"
 auffindbar, je Eintrag mit wörtlichem Titelanfang.
@@ -889,6 +889,7 @@ stehen so, wie sie in der Überschrift des jeweiligen Vermerks stehen.
 · 13 (Bau-Commit 7288f90) — DIE SCHEIBE 11.2b IST GEBAUT UND LIVE BEWIESEN
 · 14 (Bau-Commit 2eae9ca) — DIE SCHEIBE 1b-2b IST GEBAUT UND LIVE BEWIESEN
 · 15 (Bau-Commit bf73b85) — DIE SCHEIBE "Der Schlüssel kommt aus der Spalte" IST ...
+· 16 (Bau-Commits 57c9231, eeac5dd, 25119b7) — DIE TEILUNG DER STANDDATEI IST ...
 
 ### Register 3 — der Vorrat
 
@@ -954,6 +955,8 @@ ist nicht abgelaufen und wird am Phasenende GEHOBEN, nicht archiviert.
 · 57. EIN BESTANDSLAUF VERGLEICHT ZWEI WEGE GEGENEINANDER UND GEHT AUCH DANN AUF ...
 · 58. DAS INSTRUMENT DER PRÜFUNG HAT DEN ZUSTAND VERÄNDERT, DEN ES PRÜFEN SOLLTE ...
 · 59. DIE DREI KLICK-KENNUNGS-PARAMETER — DREI HÄLFTEN EINES THEMAS, UND ES IST ...
+· 60. DIE UMLAUT-AUFLAGE UND DIE TITEL-ZEIGER KOLLIDIEREN — DIESMAL NUR ZUFÄLLIG ...
+· 61. 45 PFAD-ZEIGER IN DER GEPFLEGTEN DOKU SIND NICHT NACHGEZOGEN. GEMESSEN (CC ...
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -1220,9 +1223,12 @@ Zuschnitt, der beides zusammenlegt, koppelt eine beweisbare Arbeit an eine, dere
 Beweisform erst noch zu bestimmen ist.
 GRENZE, UND SIE IST DER TRAGENDE TEIL DIESES EINTRAGS: **1b löst das eigentliche
 Problem. 1a ALLEIN HÄLT KEINEN ZUGANG AM LEBEN** — eine Funktion, die niemand ruft,
-erneuert nichts. Wer 1a abschliesst und 1b vertagt, hat den Fehlzustand aus dem
-Abschnitt "Warum sie zuerst kommt" NICHT beseitigt, sondern nur das Werkzeug dagegen
-gebaut.
+erneuert nichts. Wer 1a abschliesst und 1b vertagt, hat den Fehlzustand NICHT beseitigt,
+sondern nur das Werkzeug dagegen gebaut — er steht in
+docs/claude-history/phase-11.2-google.md, Zuschnitt "Die Erneuerung des Zugangsdatums —
+Scheibe 1a des Schnitts der Phase 11.2", Unterabschnitt "Vollzogen — was hier stand und
+wohin es gegangen ist", dort als entfallener Unterabschnitt "Warum sie zuerst kommt — und
+dieser Grund bindet" zitiert.
 PROVENIENZ: ARCHITEKTEN-ENTSCHEIDUNG 2026-08-28. Keine Messung.
 
 NACHTRAG 2026-09-03 — 1b ENTSTEHT IN ZWEI SCHRITTEN. DIE WORTLAUTE VON (6) UND (7) BLEIBEN
@@ -1764,17 +1770,18 @@ vollzogen wird. Angelegt am 2026-09-07 (CC, Doku-Runde) auf OWNER-ENTSCHEIDUNG.
 SCHNITT VOM 2026-09-08; eine Datei dieser Grösse gibt es seither nicht mehr.** Sie bleibt
 stehen, weil sie der Anlass des ganzen Vorhabens ist und ihr Datum trägt. **NACH DEM SCHNITT
 WAR DIE STEUERDATEI 148 817 B UND 2 102 ZEILEN GROSS** (GEMESSEN, CC, 2026-09-08, an der
-geschnittenen Datei); **DIE RUNDE DESSELBEN TAGES, DIE DIE GRENZE UNTEN AUF DEN GEMESSENEN
-STAND GEBRACHT HAT, HAT SIE AUF 152 393 B UND 2 151 ZEILEN GEBRACHT** (GEMESSEN, CC,
-2026-09-08). **DREI DATIERTE WERTE, KEINE ERSETZUNG** — wer den einen für den anderen nimmt,
-hält einen Anlass für ein Ergebnis oder einen überholten Stand für den heutigen. **DIE
-LADBARKEITS-MESSUNG UNTEN IST AM MITTLEREN DER DREI WERTE GEFAHREN**, nicht am heutigen; der
-Zuwachs dieser Runde ist von ihr nicht gedeckt. Auftrag 0 verlangt beim ersten Prompt jeder
-Sitzung ihre VOLLSTÄNDIGE Lesung; das ist seit mehreren Runden nicht mehr erfüllbar, und die
-letzten Runden haben stattdessen das Verzeichnis plus ausgewählte Abschnitte gelesen. **EIN
-PFLICHT-GATE, DAS NIEMAND VOLLSTÄNDIG LIEST, IST KEIN GATE** — es sieht bei jeder Sitzung
-genauso erfüllt aus wie beim ersten Mal. Dieselbe Datei ist zugleich der MASSSTAB, gegen den
-jede Verdichtung misst; sie lässt sich also nicht einfach kürzen.
+geschnittenen Datei); **NACH DEN ZWEI DOKU-RUNDEN DESSELBEN TAGES — der Ladbarkeits-Messung
+und der Verdichtung dieses Abschnitts — IST SIE 152 368 B UND 2 141 ZEILEN GROSS**
+(GEMESSEN, CC, 2026-09-08). **DREI DATIERTE WERTE, KEINE ERSETZUNG** — wer den einen für den
+anderen nimmt, hält einen Anlass für ein Ergebnis oder einen überholten Stand für den
+heutigen. **DIE LADBARKEITS-MESSUNG UNTEN IST AM MITTLEREN DER DREI WERTE GEFAHREN**, nicht
+am heutigen; der Zuwachs der zwei Runden danach ist von ihr nicht gedeckt. Auftrag 0 verlangt
+beim ersten Prompt jeder Sitzung ihre VOLLSTÄNDIGE Lesung; das war vor dem Schnitt seit
+mehreren Runden nicht mehr erfüllbar, und die letzten Runden davor haben stattdessen das
+Verzeichnis plus ausgewählte Abschnitte gelesen. **EIN PFLICHT-GATE, DAS NIEMAND VOLLSTÄNDIG
+LIEST, IST KEIN GATE** — es sieht bei jeder Sitzung genauso erfüllt aus wie beim ersten
+Mal. Dieselbe Datei ist zugleich der MASSSTAB, gegen den jede Verdichtung misst; sie lässt
+sich also nicht einfach kürzen.
 
 **WARUM DIESER ABSCHNITT GANZ HINTEN LIEGT UND NICHT BEI DEN ÜBRIGEN ZUSCHNITTEN:** Die elf
 Scheiben-Zuschnitte stehen geschlossen zwischen "## Scheibe 11.2a" und "## Abgeschlossene
@@ -2058,56 +2065,45 @@ Streichung.
 jeden Zeiger auf diese Datei an. Ein toter Anker, der bei genau dieser Gelegenheit nicht
 mitgenommen wird, wird auf Jahre nicht mehr angefasst.
 
-### Die drei Schritte der Teilung, und warum die Zeiger zuletzt kommen
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-**SCHRITT 1 — DIESER ZUSCHNITT.** Rein additiv, eine Datei, keine Zeile verschoben.
+VERDICHTET AM 2026-09-08, nach den Bau-Commits 57c9231, eeac5dd und 25119b7 und dem
+bestätigten Vollzug. Hier standen die ANWEISUNGEN FÜR die Teilung; sie sind mit dem Vollzug
+abgelaufen. **DIE ENTSCHEIDUNGEN UND DIE GRENZE BLEIBEN** — der Abschnitt hat das für sich
+selbst so festgelegt, und diese Verdichtung hält sich daran.
 
-**SCHRITT 2 — DER SCHNITT.** Die zwei neuen Dateien entstehen, die abgelaufenen Zuschnitte
-und die fünfzehn Vermerke gehen ins Archiv, die 59 Vorrats-Einträge in die Vorratsdatei, die
-drei Register entstehen in der Steuerdatei, die elf Entscheidungen ziehen um, und
-docs/arbeitsweise.md und CLAUDE.md werden nachgezogen.
+VIER Stücke sind entfallen. **DIE TITEL SIND OHNE ###-MARKE ZITIERT**, damit das Zitat nicht
+dauerhaft mit jeder künftigen Überschrift desselben Wortlauts kollidiert:
 
-**SCHRITT 3 — DIE ZEIGER.** Die 27 Zeiger plus der tote Anker.
+- **"Die drei Schritte der Teilung, und warum die Zeiger zuletzt kommen"** nannte Schritt 1,
+  2 und 3 und begründete ihre Reihenfolge. Alle drei sind gefahren. **SEINE ZWEI
+  FORTWIRKENDEN EINSICHTEN STEHEN IN VERMERK 16, Abschnitt (e)** — dass vor Schritt 2
+  niemand weiss, wohin die Zeiger zeigen, und dass der Zwischenzustand nach Schritt 2 LESBAR
+  falsch ist, der nach einem vorgezogenen Schritt 3 aber nicht. **Nur weil sie dort stehen,
+  durften sie hier weg;** beide standen sonst nirgends im Repo (GEMESSEN, CC, 2026-09-08).
+- **"Was in Schritt 2 an docs/arbeitsweise.md und CLAUDE.md nachzuziehen ist"** führte SECHS
+  Stellen in docs/arbeitsweise.md und DREI in CLAUDE.md. **Alle neun sind in eeac5dd
+  nachgezogen**, im selben Commit wie der Schnitt; die Liste war eine Arbeitsanweisung und
+  hat ihren Gegenstand verloren. Der Satz "KEINE NEUE DATEI OHNE OWNER-ENTSCHEIDUNG ist
+  beachtet" fällt mit ihr — er steht als Regel in CLAUDE.md und wird hier nicht verdoppelt.
+- **"WAS DIESE RUNDE NICHT GETAN HAT"** beschrieb, was Schritt 1 bewusst unterliess. Schritt
+  2 hat genau das dann getan; als Aussage über den heutigen Zustand war der Absatz
+  irreführend, als Zeitdokument über den 2026-09-07 war er richtig.
+- **"ER BLEIBT IN DER STEUERDATEI ... Nach Vollzug wird er verdichtet wie jeder andere
+  Zuschnitt"** ist mit dieser Verdichtung eingelöst. Er bleibt in der Steuerdatei; das sagt
+  jetzt der Ort, nicht mehr der Satz.
 
-**DER GRUND DER REIHENFOLGE, und ohne ihn zieht die nächste Runde sie zusammen:** **VOR
-SCHRITT 2 WEISS NIEMAND, WOHIN DIE ZEIGER ZEIGEN.** Ein Zeiger, der auf eine Datei umgestellt
-wird, die es noch nicht gibt, ist nicht "vorbereitet", sondern falsch — und zwar still: Kein
-Gate prüft einen Pfad in einem Kommentar. Umgekehrt ist ein Zeiger, der nach Schritt 2 noch
-auf die Steuerdatei zeigt, zwar falsch, aber er zeigt auf eine EXISTIERENDE Datei mit einem
-REGISTER, das sagt, wo der Anker jetzt liegt. **DER ZWISCHENZUSTAND NACH SCHRITT 2 IST ALSO
-LESBAR FALSCH, DER NACH EINEM VORGEZOGENEN SCHRITT 3 WÄRE ES NICHT.**
-
-### Was in Schritt 2 an docs/arbeitsweise.md und CLAUDE.md nachzuziehen ist
-
-**SECHS STELLEN IN docs/arbeitsweise.md**, einzeln benannt, damit keine liegenbleibt:
-
-· **"Die Standdatei"** — sie ist ab dem Schnitt ein VERBUND aus drei Dateien. Der Teil "Was
-  sie trägt" muss JE DATEI sagen, was.
-· **"Prompt-Bauform für CC", Auftrag 0** — welche der drei Dateien VOLLSTÄNDIG zu lesen ist
-  und welche auf Zeiger. Das ist der Kern des ganzen Vorhabens; bleibt diese Stelle stehen,
-  ist die Teilung folgenlos.
-· **"Die Kadenz"**, Abschluss-Vermerk und Verdichtung im selben Zug — der Vermerk geht
-  künftig ins ARCHIV, die Verdichtung in die STEUERDATEI. **Zwei Dateien, ein Zug.**
-· **"Phasenende", Schritt 2 Archivierung** — das Umbenennen ENTFÄLLT für das Archiv (es trägt
-  den Endnamen schon); dafür kommen das HEBEN der Vorratsdatei und ihr LÖSCHEN hinzu.
-· **Der Lebenszyklus-Satz** "geplant → roadmap · laufend → Standdatei · abgeschlossen →
-  claude-history" — er schliesst heute AUS, was der Endname-Beschluss tut: eine Datei unter
-  docs/claude-history/, die zu einer LAUFENDEN Phase gehört und mitwächst.
-· **"Wann sie entsteht"** — wer legt künftig WELCHE der drei Dateien an, und WANN.
-
-**DREI STELLEN IN CLAUDE.md:**
-
-· **"## Aktiver Stand — Verfahren ab Phase 10"** — der Abschnitt beschreibt heute EINE Datei.
-· **"## Detail-Archiv"** — ein Eintrag für docs/claude-history/phase-11.2-google.md, samt dem
-  Hinweis, dass sie als einzige Archivdatei zu einer LAUFENDEN Phase gehört.
-· **"## Aktive Dokumente"** — ein Eintrag für die Vorratsdatei.
-
-**DIE VOLLTEXTE STEHEN HIER NICHT.** Sie entstehen in Schritt 2 an ihrem Ort; ein Entwurf an
-dieser Stelle wäre eine zweite Fassung, die neben der gebauten altert.
-
-**"KEINE NEUE DATEI OHNE OWNER-ENTSCHEIDUNG" (CLAUDE.md) IST BEACHTET:** Beide neuen Dateien
-sind vom Owner entschieden — das Archiv mitsamt Namen, die Vorratsdatei dem Grunde nach; nur
-ihr NAME ist Architekten-Setzung und revidierbar.
+WAS BEWUSST NICHT VERDICHTET WORDEN IST, je mit seinem Grund — im Zweifel stehengelassen:
+- **Die Byte-Aufstellung und die Addition** bleiben: Sie sind der MASSSTAB, gegen den die
+  nächste Verdichtung misst, und sie tragen die einzige Herleitung der Grössenordnung.
+- **"Die elf Entscheidungen, die heute am falschen Ort stehen"** bleibt, obwohl der Umzug
+  vollzogen ist: Der Abschnitt trägt die offene Grenze "OB ES BEI ELF BLEIBT, IST NICHT
+  GEPRÜFT" und die Lektion über den stillen Schaden eines mechanischen Schnitts.
+- **"Der Preis: 27 Zeiger, die auswandern"** bleibt als Zeitdokument. **Seine Zahl ist
+  überholt** — gemessen sind 20 (VERMERK 16, Abschnitt (d)) —, und er nennt sich selbst eine
+  untere Schranke und ausdrücklich keinen Prüfumfang.
+- **"Die Grenze dieses Zuschnitts"** bleibt vollständig: Ihre Auflage ist gefahren, aber ihr
+  Befund — die Festlegungs-Blöcke der elf Zuschnitte sind ungeprüft — steht offen.
 
 ### Die Grenze dieses Zuschnitts — die Zuschnitte werden verschoben, nicht beurteilt
 
@@ -2127,25 +2123,19 @@ Bequemlichkeit: Eine Beurteilung verlangt die Lesung von 254 785 Bytes, und sie 
 mit einem Schnitt zu erledigen hiesse, ZWEI ACHSEN GLEICHZEITIG ZU BEWEGEN — danach wäre am
 Ergebnis nicht mehr zu sehen, ob eine Aussage verschoben oder verändert worden ist.
 
-### Wo dieser Zuschnitt liegt und was diese Runde ausdrücklich nicht tut
+### Wo dieser Zuschnitt liegt
 
-**ER BLEIBT IN DER STEUERDATEI.** In Schritt 2 wandert er NICHT ins Archiv. Nach Vollzug wird
-er verdichtet wie jeder andere Zuschnitt — die Anweisungen laufen ab, die Entscheidungen und
-die Grenze bleiben.
-
-**WAS DIESE RUNDE NICHT GETAN HAT**, damit die Abwesenheit nicht als Versehen gelesen wird:
-Keine Zeile verschoben, gelöscht oder umsortiert. Keine neue Datei angelegt. Keine Nummer neu
-vergeben — Vermerke (1–15), Vorrat (1–59) und Hebungs-Kandidaten (1–8) behalten ihre Nummern
-über den Schnitt hinweg, und zwar über alle drei Dateien. Kein Zeiger nachgezogen. Nichts an
-docs/arbeitsweise.md, CLAUDE.md, docs/immer-beachten.md, docs/roadmap.md,
-docs/offene-punkte.md, an src/**, supabase/** oder docs/claude-history/** geändert.
+**ER BLEIBT IN DER STEUERDATEI** und ist nicht ins Archiv gewandert — ein Zuschnitt, der die
+Teilung anordnet, darf nicht mit dem Block wandern, den er anordnet.
 
 **PROVENIENZ DIESES ABSCHNITTS:** Die Entscheidung zur Teilung und der Endname der Archivdatei
 sind **OWNER-ENTSCHEIDUNG (2026-09-07)**. Der Name docs/aktiver-stand-vorrat.md ist
-**ARCHITEKTEN-SETZUNG (2026-09-07)** und revidierbar. Sämtliche Byte-, Zeilen- und
-Zeigerzahlen sind **GEMESSEN am Repo (CC, 2026-09-07)** und stammen aus dem Messbericht
-desselben Tages; die Summen 102 590 B, 112 443 B und die rund 144 000 B sind ADDITIONEN
-dieser Werte und keine eigenen Messungen. **KEINE ANGABE DIESES ABSCHNITTS IST MEHR
-GESCHÄTZT** — die drei Register sind mit **10 349 B GEMESSEN (CC, 2026-09-08)**; die frühere
-Architekten-Schätzung von rund 10 000 B ist oben ersetzt. Keine Messung an einer laufenden
-Anwendung, keine Anbieter-Lesung.
+**ARCHITEKTEN-SETZUNG (2026-09-07)** und revidierbar. Die Byte-, Zeilen- und Zeigerzahlen der
+PLANUNG sind **GEMESSEN am Repo (CC, 2026-09-07)** und stammen aus dem Messbericht desselben
+Tages; die Summen 102 590 B, 112 443 B und die rund 144 000 B sind ADDITIONEN dieser Werte und
+keine eigenen Messungen. **VIER ANGABEN SIND JÜNGER UND TRAGEN IHR EIGENES DATUM:** die
+10 349 B der Register und die Grösse der geschnittenen Datei (**GEMESSEN, CC, 2026-09-08**),
+die vier /context-Werte des Ladbarkeits-Blocks (**GEMESSEN, OWNER, /context, 2026-09-08**) und
+die Verdichtung dieses Abschnitts (**CC, 2026-09-08**). **KEINE ANGABE DIESES ABSCHNITTS IST
+MEHR GESCHÄTZT** — die frühere Architekten-Schätzung von rund 10 000 B ist oben ersetzt. Keine
+Messung an einer laufenden Anwendung, keine Anbieter-Lesung.

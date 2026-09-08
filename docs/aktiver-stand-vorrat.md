@@ -1,9 +1,13 @@
 # VORRAT — PHASE 11.2 (GOOGLE)
 
-**WAS DIESE DATEI IST:** Der Vorrat der laufenden Phase 11.2 — alle 59 Einträge, im
+**WAS DIESE DATEI IST:** Der Vorrat der laufenden Phase 11.2 — alle Einträge, im
 Wortlaut und mit ihren Nummern. Sie ist **KEIN ARCHIV**: Ein Vorrats-Eintrag ist per
 Definition NICHT gebaut und NICHT entschieden, und abgelaufen ist nur, was vollzogen
 wurde.
+**HIER STAND "alle 59 Einträge", BIS AM 2026-09-08 DIE EINTRÄGE 60 UND 61 ANGETRETEN
+SIND. ES KOMMT KEINE NEUE ZAHL ZURÜCK** — es ist genau die Bauform, die der Kopf weiter
+unten für sich selbst verbietet ("KEINE STÜCKZAHL IN DIESEM KOPF"): Die Einträge sind
+nummeriert und zählen sich damit selbst.
 
 **SIE IST KEIN STEUERNDES DOKUMENT.** Der Rahmen der Phase, die bindenden
 Entscheidungen, die offene Arbeit 1b und die Hebungs-Kandidaten stehen NICHT hier.
@@ -11,7 +15,7 @@ Entscheidungen, die offene Arbeit 1b und die Hebungs-Kandidaten stehen NICHT hie
 Bau- und Aufklärungs-Prompts dieser Phase.
 
 **WORAUF SIE ZEIGT UND WAS AUF SIE ZEIGT:** In der Steuerdatei steht unter
-"## Register — was diese Datei nicht mehr trägt" ein Register der 59 Einträge, je mit
+"## Register — was diese Datei nicht mehr trägt" ein Register der Einträge, je mit
 Nummer und wörtlichem Titelanfang. **Wer einen Vorrats-Eintrag sucht, findet über das
 Register hierher — und nur so.**
 
@@ -2613,3 +2617,69 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     Kennungen** — dort sind die zwei ungelesenen Stellen zu holen: ob mehrere Kennungen
     zugleich zulässig sind und wie sie dann behandelt werden, und welche Sitzungsart hinter
     welchem der zwei Nicht-Standard-Parameter steht.
+
+60. **DIE UMLAUT-AUFLAGE UND DIE TITEL-ZEIGER KOLLIDIEREN — DIESMAL NUR ZUFÄLLIG NICHT.**
+    **FÜNF Produktivdateien tragen die Auflage "KEINE UMLAUTE IM QUELLTEXT"** — GEMESSEN
+    (CC, 2026-09-08): `src/app/api/oauth/google/refresh/route.ts`,
+    `src/lib/oauth/refresh-run.ts`, `src/lib/oauth/token-refresh.ts`,
+    `src/lib/secrets/oauth-payload.ts` und `src/lib/tracking/credential-state.ts`; alle fünf
+    tragen null Umlaut-Zeilen, vor wie nach Schritt 3 der Teilung.
+    **DIE KOLLISION:** Ein Titel-Zeiger aus einer dieser Dateien auf einen Abschnitt, dessen
+    Überschrift einen Umlaut trägt, ist **entweder ein Regelbruch** — die Auflage verlangt
+    ae/oe/ue/ss — **oder, nach Transliteration, ein maschinell nicht auffindbarer Anker**:
+    Eine wörtliche Suche nach dem transliterierten String findet die Überschrift nicht.
+    **BEIDE AUFLAGEN GELTEN, UND SIE SCHLIESSEN EINANDER AUS**, sobald eine deutsche
+    Überschrift mit Umlaut aus einer dieser Dateien zitiert wird.
+    **DIESMAL IST SIE NICHT EINGETRETEN, UND ZWAR AUS GLÜCK UND NICHT AUS SORGFALT**
+    (GEMESSEN, CC, 2026-09-08): Jeder Titel, der in Schritt 3 in eine dieser fünf Dateien
+    eingesetzt werden musste, ist **zufällig umlautfrei** — "Die Beweis-Route bleibt stehen",
+    "Die Erneuerung des Zugangsdatums", "Die Klammer um die Erneuerung — Schritt 1b-1 …",
+    "Die Ampel an der Ziel-Karte — Scheibe 11.2b", "Vollzogen — was hier stand und wohin es
+    gegangen ist", "Warum sie zuerst kommt — und dieser Grund bindet". **Der einzige Titel mit
+    Umlaut** — "Google als reguläres Ziel in der Oberfläche — Scheibe 3 …" — **landete in
+    `src/lib/settings.ts`, und die trägt die Auflage nicht**; er steht dort mit Umlauten und
+    ist damit auffindbar.
+    **DER BESTAND IST DAMIT HEUTE SAUBER, DIE KOLLISION ABER UNVERÄNDERT DA.**
+    **VERWANDT UND NICHT DASSELBE:** Hebungs-Kandidat 3 der Steuerdatei
+    ("EIN TITEL-ZEIGER AUS UMLAUTFREIEM QUELLTEXT IST INHALTLICH EINDEUTIG UND ALS SUCHANKER
+    UNBRAUCHBAR") beschreibt **den bereits eingetretenen Fall an einer Bestandsstelle**;
+    dieser Eintrag hält fest, dass die Kollision **für jeden künftigen Titel-Zeiger** in diese
+    fünf Dateien scharf ist und diesmal nur nicht ausgelöst hat.
+    GEMELDET 2026-09-08, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder zu umlautfrei gewählten
+    Überschriften, noch zu einer Ausnahme von der Umlaut-Auflage an Zeiger-Stellen, noch zu
+    einer anderen Zeigerform.
+    TRIGGER: **der nächste Titel-Zeiger aus einer dieser fünf Dateien auf einen Abschnitt mit
+    Umlaut in der Überschrift.**
+    PROVENIENZ: Die fünf Dateien, ihre Umlaut-Freiheit und die eingesetzten Titel sind
+    **GEMESSEN am Repo (CC, 2026-09-08)**. Dass die Kollision jeden künftigen Zeiger dieser
+    Art trifft, ist eine **ABLEITUNG** aus den zwei Auflagen, keine Messung.
+
+61. **45 PFAD-ZEIGER IN DER GEPFLEGTEN DOKU SIND NICHT NACHGEZOGEN.**
+    **GEMESSEN (CC, 2026-09-08**, über `git ls-files`, Achse: die wörtliche Zeichenfolge
+    `docs/aktiver-stand.md`**):** `docs/offene-punkte.md` 6 · `docs/roadmap.md` 7 ·
+    `docs/ziel-befunde.md` 17 · `docs/plattform-befunde.md` 8 · `docs/db-stand.md` 1 ·
+    `docs/immer-beachten.md` 2, die übrigen verteilt.
+    **EIN TEIL VON IHNEN ZEIGT AUF ANKER, DIE MIT DEM SCHNITT VOM 2026-09-08 INS ARCHIV ODER
+    IN DEN VORRAT GEWANDERT SIND** — etwa auf VERMERK 6 und VERMERK 10, auf Vorrats-Eintrag 40
+    und 41, auf "Der Transport — Scheibe 4 …" und auf "Die Erneuerung des Zugangsdatums".
+    **SIE SIND LESBAR FALSCH, NICHT TOT, und dieser Satz ist der Grund, warum die Vertagung
+    vertretbar ist:** Jeder trifft eine EXISTIERENDE Datei, und die trägt seit dem Schnitt DREI
+    REGISTER, die sagen, wo der Anker jetzt liegt. **Der Preis ist eine Suche, kein
+    Nicht-Treffer.**
+    **WELCHE DER 45 TATSÄCHLICH INS LEERE ZEIGEN, IST NICHT ERHOBEN.** Die Messung zählt
+    Pfadnennungen, nicht Anker; ein Teil zeigt auf Abschnitte, die in der Steuerdatei
+    GEBLIEBEN sind (den Rahmen, die bindenden Entscheidungen, "1b als Folgetask", die
+    Hebungs-Kandidaten) und ist damit unverändert richtig. **Wer die Arbeit anfasst, misst je
+    Zeiger neu — die 45 sind ein Bestand, kein Prüfumfang.**
+    **BEWUSST VERTAGT (ARCHITEKT, 2026-09-08): DER BAU HAT VORRANG.** Schritt 3 der Teilung
+    hat ausschliesslich die Zeiger aus `src/` und `supabase/` nachgezogen, weil dort ein
+    falscher Pfad in einem Kommentarkopf beim Bauen gelesen wird; die Doku-Zeiger treffen
+    Leser, die ohnehin über die Register gehen.
+    GEMELDET 2026-09-08, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder zur Reihenfolge noch dazu,
+    ob alle 45 oder nur die tatsächlich verschobenen anzufassen sind.
+    TRIGGER: **die nächste Runde, die eine dieser Dateien ohnehin öffnet** — dann geht ihr
+    Anteil beiläufig mit und kostet keinen eigenen Vollzug.
+    PROVENIENZ: Die Zahlen sind **GEMESSEN am Repo (CC, 2026-09-08)**. Dass ein Teil der
+    Zeiger auf ausgewanderte Anker zeigt, ist an Beispielen **GEMESSEN**; die Aussage über den
+    Rest ist ausdrücklich **NICHT erhoben**. Die Vertagung ist eine **ENTSCHEIDUNG**, keine
+    Messung.

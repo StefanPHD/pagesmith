@@ -1763,9 +1763,13 @@ vollzogen wird. Angelegt am 2026-09-07 (CC, Doku-Runde) auf OWNER-ENTSCHEIDUNG.
 (GEMESSEN, CC, 2026-09-07, vor diesem Eingriff). **DIESE ZAHL BESCHREIBT DEN ZUSTAND VOR DEM
 SCHNITT VOM 2026-09-08; eine Datei dieser Grösse gibt es seither nicht mehr.** Sie bleibt
 stehen, weil sie der Anlass des ganzen Vorhabens ist und ihr Datum trägt. **NACH DEM SCHNITT
-IST DIE STEUERDATEI 148 817 B UND 2 102 ZEILEN GROSS** (GEMESSEN, CC, 2026-09-08, an der
-geschnittenen Datei). **ZWEI DATIERTE WERTE, KEINE ERSETZUNG** — wer den einen für den anderen
-nimmt, hält einen Anlass für ein Ergebnis. Auftrag 0 verlangt beim ersten Prompt jeder
+WAR DIE STEUERDATEI 148 817 B UND 2 102 ZEILEN GROSS** (GEMESSEN, CC, 2026-09-08, an der
+geschnittenen Datei); **DIE RUNDE DESSELBEN TAGES, DIE DIE GRENZE UNTEN AUF DEN GEMESSENEN
+STAND GEBRACHT HAT, HAT SIE AUF 152 393 B UND 2 151 ZEILEN GEBRACHT** (GEMESSEN, CC,
+2026-09-08). **DREI DATIERTE WERTE, KEINE ERSETZUNG** — wer den einen für den anderen nimmt,
+hält einen Anlass für ein Ergebnis oder einen überholten Stand für den heutigen. **DIE
+LADBARKEITS-MESSUNG UNTEN IST AM MITTLEREN DER DREI WERTE GEFAHREN**, nicht am heutigen; der
+Zuwachs dieser Runde ist von ihr nicht gedeckt. Auftrag 0 verlangt beim ersten Prompt jeder
 Sitzung ihre VOLLSTÄNDIGE Lesung; das ist seit mehreren Runden nicht mehr erfüllbar, und die
 letzten Runden haben stattdessen das Verzeichnis plus ausgewählte Abschnitte gelesen. **EIN
 PFLICHT-GATE, DAS NIEMAND VOLLSTÄNDIG LIEST, IST KEIN GATE** — es sieht bei jeder Sitzung
@@ -1825,9 +1829,10 @@ Werte darüber, keine eigene Messung). Nimmt man die elf Entscheidungen dazu, di
 nächsten Abschnitt umziehen (4 907 B + 4 946 B = 9 853 B), sind es **112 443 B**. Die drei
 Register und dieser Abschnitt kommen obendrauf — was sie wiegen, steht in der Grenze darunter.
 
-**DIE GRENZE, DIE AN DIESER ZAHL HÄNGT:** Dieser Abschnitt behauptet an KEINER Stelle, die
-Steuerdatei sei nach dem Schnitt vollständig ladbar. Er soll es auch nicht. **Aber er muss
-die Zahl nennen, an der das entschieden wird — sonst nimmt die nächste Runde eine an.**
+**DIE GRENZE, DIE AN DIESER ZAHL HING:** Dieser Abschnitt musste die Zahl nennen, an der über
+die Lesbarkeit der Steuerdatei entschieden wird — sonst hätte die nächste Runde eine
+angenommen. **SIE IST GENANNT WORDEN, UND SIE IST INZWISCHEN GEMESSEN;** der Befund steht
+unten unter "DIE LADBARKEIT IST GEMESSEN — UND DER ENGPASS WAR EIN ANDERER".
 
 **DIE ERWARTETE GESAMTGRÖSSE DER STEUERDATEI, als ADDITION ausgewiesen und nicht als
 Messung:** 112 443 B (die Summe darüber) + **rund 21 000 B für diesen Abschnitt** + die drei
@@ -1852,39 +1857,82 @@ eine auf das Byte genaue Angabe wäre hier schon beim nächsten Satz falsch, ohn
 rot würde. Wer den Wert braucht, misst ihn; wer die Grössenordnung braucht, liest die
 gerundete Zahl.
 
-**DER MASSSTAB — UND ER IST HEUTE ZWEIGETEILT, WEIL SEINE ZWEI HÄLFTEN VERSCHIEDENE DATEN
-TRAGEN:**
-· **110 664 B** ist der höchste Wert, für den eine vollständige Ladung tatsächlich GEMESSEN
-  ist: docs/immer-beachten.md am 2026-08-21, per /context in Wegwerf-Sitzungen, MIT
-  Negativkontrolle, und sie übersteht ein /compact. So gross war jene Datei an jenem Tag
-  (GEMESSEN an der Versionsverwaltung, CC, 2026-09-07: Commit b881cea, der letzte Commit an
-  ihr bis zum 2026-08-22).
-· **126 574 B** ist ihre Grösse HEUTE (GEMESSEN am Repo, CC, 2026-09-07; erreicht am
-  2026-08-27). Bei DIESER Grösse ist die Ladung nicht gemessen — sie ruht auf dem @-Import
-  in CLAUDE.md, also auf einem Mechanismus, nicht auf einer Messung an dieser Zahl.
+**DIE LADBARKEIT IST GEMESSEN — UND DER ENGPASS WAR EIN ANDERER**
 
-**RUND 144 000 B LIEGEN ÜBER BEIDEN WERTEN.** Und jetzt die Unterscheidung, die der ganze
-Punkt dieser Grenze ist und die deshalb ausgeschrieben dasteht: **DAS IST KEIN BELEG, DASS
-DIE LADUNG BRICHT. ES IST DER VERLUST DES BELEGS, DASS SIE TRÄGT.** Das sind zwei
-verschiedene Aussagen. Wer sie zusammenzieht, macht aus einer offenen Frage ein Ergebnis —
-in die eine Richtung ("es bricht", und dann wird gegen ein Risiko gebaut, das niemand
-gemessen hat), oder in die andere ("es trägt schon", und dann verlässt sich eine Sitzung auf
-eine Ladung, für die es keinen Nachweis gibt).
+**DIE MESSUNG (OWNER, /context, 2026-09-08, frische Sitzung):** Basislinie beim Sitzungsstart
+**145,8k Token**, nach der vollständigen Lesung der Steuerdatei **248,6k**. Das Fenster fasst
+**1M**; danach sind **25 %** belegt und **715,2k frei**. Gelesen wurde die Steuerdatei in
+genau dem Zustand, den der Gegenstands-Satz ganz oben für den Schnitt nennt — **148 817 B,
+2 102 Zeilen.**
 
-**WAS DIE ZAHL NOCH BEWEGT — beides planmässig, nicht erhofft:**
-· **Dieser Zuschnitt wird nach Vollzug VERDICHTET wie jeder andere.** Er ist mit rund
-  21 000 B der grösste neue Posten der Steuerdatei und der einzige, der schrumpfen SOLL.
-· **Die Registergrösse steht erst nach Schritt 2 fest.** Vorher gibt es dazu nur die
-  Schätzung oben.
+**DIE DIFFERENZ VON 102,8k IST EINE OBERGRENZE UND KEIN DATEIWERT**, und der Grund gehört
+hin, sonst wird sie beim nächsten Lesen als Gewicht dieser Datei zitiert: Sie liegt
+vollständig in der Kategorie "Messages" und bündelt **VIER Dinge** — die Datei, den Prompt,
+den Bericht der Instanz und ihr Denken. **DIE DATEI ALLEIN IST HÖCHSTENS SO GROSS;
+ABGELEITET RUND 80k.** Es ist derselbe Fall wie "EINE MUTATION, DIE ZWEI ACHSEN GLEICHZEITIG
+BEWEGT, IST KEINE MUTATION, SONDERN EIN UMBAU" (docs/immer-beachten.md) — hier bewegen sich
+VIER Achsen in EINEM Schritt, und deshalb steht hier eine **SCHRANKE UND KEINE ZAHL.**
 
-**DIE PRÜFUNG IST /context UND DAMIT EIN NUTZER-BEFEHL — VON CC NICHT ZU ERBRINGEN.** Sie
-gehört NACH Schritt 2 an den OWNER. Das steht hier ausdrücklich, weil sonst jemand auf eine
-Messung wartet, die keine Instanz liefern kann, und die Grenze auf Jahre offen bleibt, ohne
-dass es jemandem auffällt.
+**DIE FRAGE IST DAMIT BEANTWORTET:** Die Steuerdatei ist bei 148 817 B **in einer Sitzung
+vollständig lesbar**, und zwar mit grossem Abstand zum Fenster.
 
-**WAS GESCHIEHT, WENN SIE NICHT TRÄGT:** Der Zuschnitt bleibt gültig. Die Antwort ist dann
-ein WEITERER Schnitt oder eine FRÜHERE Verdichtung — **NICHT eine Rückkehr zur ungeteilten
-Datei.** Der Zustand vorher war 680 598 B, und der war der Anlass.
+**WAS DER EIGENTLICHE ENGPASS WAR, UND ER WAR NICHT DAS KONTEXTFENSTER:** Die
+Werkzeug-Ausgabegrenze liegt bei **30 000 Zeichen**. Die Steuerdatei brauchte **SECHS
+Stücke** (grösstes 29 033 B, GEMESSEN CC, 2026-09-08); die ungeteilte Datei mit 680 598 B
+hätte **rund VIERUNDZWANZIG** gebraucht.
+**DIE LESART "SIE PASST NICHT MEHR IN DEN KONTEXT" — die der Massstab dieses Abschnitts
+nahegelegt, aber nie ausgeschrieben hat — WAR ZU STARK. AN IHRE STELLE TRITT: "SIE WAR NICHT
+MEHR IN EINEM ZUG LESBAR."**
+**DER SCHNITT BLEIBT RICHTIG, aus dem präziseren Grund:** Ein Pflicht-Gate, das
+VIERUNDZWANZIG Werkzeugaufrufe verlangt, füllt niemand vollständig aus — **und der Ausfall
+sieht aus wie Sorgfalt**, weil brav gemeldet wird, was gelesen wurde.
+
+**DER MASSSTAB DER ALTEN FASSUNG WAR DER FALSCHE, UND DAS IST EIN FEHLER DES ARCHITEKTEN,
+KEIN MESSFEHLER:** Hier standen **110 664 B** und **126 574 B** als Vergleichswerte. Beide
+sind für eine **@-IMPORT-LADUNG BEIM SITZUNGSSTART** erhoben, und beide betreffen
+docs/immer-beachten.md. **DIE STEUERDATEI LÄDT NICHT PER @-IMPORT — SIE WIRD ÜBER AUFTRAG 0
+GELESEN.** Zwei verschiedene Mechanismen; eine Zahl aus dem einen belegt nichts über den
+anderen.
+**WARUM DIE STEUERDATEI KEINEN @-IMPORT BEKOMMT — der Satz muss stehen, sonst schlägt es die
+nächste Runde vor:** Sie existiert nur, solange eine Phase läuft, und **an ihrem FEHLEN hängt
+der Verfahrensslot** ("Existiert diese Datei nicht, läuft aktuell keine Phase", CLAUDE.md).
+**Was ein @-Import auf eine nicht existierende Datei tut, ist UNGEMESSEN.** Auftrag 0 bleibt
+der Mechanismus.
+
+**EIN NEBENBEFUND DERSELBEN MESSUNG, UND ER LÖST EINE ÄLTERE ZAHL AB:** docs/immer-beachten.md
+lädt bei **126 574 B** vollständig (OWNER, /context, 2026-09-08). **DER BISHER HÖCHSTE
+GEMESSENE WERT WAR 110 664 B** — jene Datei am 2026-08-21, per /context in Wegwerf-Sitzungen,
+MIT Negativkontrolle, und sie übersteht ein /compact; so gross war sie an jenem Tag (GEMESSEN
+an der Versionsverwaltung, CC, 2026-09-07: Commit b881cea, der letzte Commit an ihr bis zum
+2026-08-22). **DIE ZWEITE HÄLFTE DES ALTEN MASSSTABS — "bei DIESER Grösse ist die Ladung nicht
+gemessen" — IST DAMIT EINGELÖST.**
+
+**WAS DIE ZAHL NOCH BEWEGT — planmässig, nicht erhofft:** Dieser Zuschnitt wird nach Vollzug
+VERDICHTET wie jeder andere. Er ist mit rund 21 000 B der grösste neue Posten der Steuerdatei
+**und der einzige, der schrumpfen SOLL.**
+
+**WAS GESCHIEHT, WENN DIE DATEI WIEDER WÄCHST:** Der Zuschnitt bleibt gültig. Die Antwort ist
+dann ein WEITERER Schnitt oder eine FRÜHERE Verdichtung — **NICHT eine Rückkehr zur
+ungeteilten Datei.** Der Zustand vorher war 680 598 B, und der war der Anlass.
+
+**DIE GRENZE, DIE BLEIBT — UND SIE IST DER GRUND, WARUM DIESER BLOCK NICHT MIT "ERLEDIGT"
+ENDET: GEMESSEN IST EIN LAUF, AN EINER MASCHINE, MIT DIESEM WERKZEUGSTAND.** Ein anderes
+Fenster, eine andere Ausgabegrenze oder eine Sitzung, die vorher schon voll ist, sind davon
+NICHT gedeckt.
+**WAS DIE ALTE FASSUNG HIER RICHTIG GEMACHT HAT und was deshalb erhalten bleibt:** Sie
+unterschied "DAS IST KEIN BELEG, DASS DIE LADUNG BRICHT" von "ES IST DER VERLUST DES BELEGS,
+DASS SIE TRÄGT". **DIESELBE UNTERSCHEIDUNG GILT JETZT IN DER GEGENRICHTUNG:** Ein gemessener
+Lauf ist ein Beleg FÜR DIESEN LAUF und keine Eigenschaft der Datei. Wer beides zusammenzieht,
+macht aus einem Ergebnis eine Garantie.
+
+**PROVENIENZ DIESES BLOCKS:** Die vier /context-Werte und der Nebenbefund zu
+docs/immer-beachten.md sind **GEMESSEN (OWNER, /context, 2026-09-08)**. Die sechs Lesestücke
+und das grösste mit 29 033 B sind **GEMESSEN (CC, 2026-09-08)**. Die rund VIERUNDZWANZIG
+Stücke für 680 598 B sind eine **RECHNUNG** auf der Ausgabegrenze und keine Messung — die
+untere Schranke bei voller Ausnutzung der Grenze ist 23, die Stücke enden aber an
+Zeilengrenzen. Die rund 80k für die Datei allein sind eine **ABLEITUNG** aus der gebündelten
+Differenz, ausdrücklich keine Messung. Dass der alte Massstab die falsche Ladeklasse traf,
+ist eine **FOLGE** aus dem Vergleich der zwei Mechanismen, keine Beobachtung.
 
 **WAS AN DER ZAHL NICHT HÄNGT:** Der Zuschnitt bleibt gültig, wie sie auch ausfällt. Die
 Steuerdatei fällt von 680 598 B auf rund 144 000 B, also auf **etwa ein Fünftel** der
@@ -2097,6 +2145,7 @@ sind **OWNER-ENTSCHEIDUNG (2026-09-07)**. Der Name docs/aktiver-stand-vorrat.md 
 **ARCHITEKTEN-SETZUNG (2026-09-07)** und revidierbar. Sämtliche Byte-, Zeilen- und
 Zeigerzahlen sind **GEMESSEN am Repo (CC, 2026-09-07)** und stammen aus dem Messbericht
 desselben Tages; die Summen 102 590 B, 112 443 B und die rund 144 000 B sind ADDITIONEN
-dieser Werte und keine eigenen Messungen. **DIE EINZIGE NICHT GEMESSENE ANGABE DES GANZEN
-ABSCHNITTS SIND DIE RUND 10 000 B FÜR DIE DREI REGISTER — ARCHITEKTEN-SCHÄTZUNG, oben als
-solche gekennzeichnet.** Keine Messung an einer laufenden Anwendung, keine Anbieter-Lesung.
+dieser Werte und keine eigenen Messungen. **KEINE ANGABE DIESES ABSCHNITTS IST MEHR
+GESCHÄTZT** — die drei Register sind mit **10 349 B GEMESSEN (CC, 2026-09-08)**; die frühere
+Architekten-Schätzung von rund 10 000 B ist oben ersetzt. Keine Messung an einer laufenden
+Anwendung, keine Anbieter-Lesung.

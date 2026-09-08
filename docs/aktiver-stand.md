@@ -23,10 +23,13 @@ gehoben und archiviert, verschwindet sie wieder. Verfahren: docs/arbeitsweise.md
 > auf den 2026-08-28 ist eine FOLGE daraus. KEINE eigene Messung.
 >
 > **PHASE 11.8 (Autorisierungsschicht) IST SEIT DEM 2026-08-27 ABGESCHLOSSEN UND
-> ARCHIVIERT.** Ihr Stand liegt weiterhin in `docs/aktiver-stand-11.8.md` — **die Datei
+> ARCHIVIERT.** Ihr Stand liegt weiterhin in
+> `docs/claude-history/phase-11.8-autorisierungsschicht.md` — **die Datei
 > ist NICHT nach `docs/claude-history/` verschoben worden**, weil sechs Quelldateien ihren
 > Pfad im Kommentarkopf zitieren. Der Grund und die Bedingung, unter der sie doch wandert,
 > stehen in ihrem eigenen Kopf.
+> **STEMPEL 2026-09-08:** Der Umzug ist an diesem Tag vollzogen, die Prämisse jenes
+> Grundes ist widerlegt; die volle Auflösung steht im Kopf der umgezogenen Datei.
 >
 > **EINE MEHRDEUTIGKEIT BLEIBT, und sie verschwindet mit dem Phasenende NICHT:** Ein
 > Verweis der Form "Vorrat, Eintrag 3" trifft ZWEI Standdateien — beide führen einen
@@ -40,7 +43,8 @@ gehoben und archiviert, verschwindet sie wieder. Verfahren: docs/arbeitsweise.md
 > **WAS MIT DEM 2026-08-27 ABGELAUFEN IST** — damit die Kürzung erkennbar bleibt und nicht
 > als Versehen: die WEITERLEITUNG selbst ("wer an 11.8 arbeitet, liest jene Datei"), die
 > Begründung, warum DIESE Datei ihren Namen behält, und der Rückbau-Absatz. Seine
-> Bedingung ("existiert `docs/aktiver-stand-11.8.md` nicht mehr") ist durch die
+> Bedingung ("existiert `docs/claude-history/phase-11.8-autorisierungsschicht.md` nicht
+> mehr") ist durch die
 > Archivierungs-Entscheidung gegenstandslos geworden; abgelöst hat ihn dieser Vermerk.
 >
 > **PROVENIENZ:** OWNER-/ARCHITEKTEN-ENTSCHEIDUNG 2026-08-25 (die Pause) und 2026-08-27
@@ -961,6 +965,7 @@ ist nicht abgelaufen und wird am Phasenende GEHOBEN, nicht archiviert.
 · 63. DIE 110 ZEIGER AUF "11.2" IN DER GEPFLEGTEN DOKU SIND NICHT KLASSIFIZIERT ...
 · 64. DIE ÜBERGABE-ANWEISUNG "WER EINEN BEACON PRÜFT, LIEST DEN EREIGNISNAMEN ...
 · 65. DIE ZUSTÄNDE HINTER [capi/resolve] secret unusable SIND MEHR ALS DREI ...
+· 66. EINE PRÜFVORSCHRIFT, DIE EINE ACHSE BENENNT, DECKT NUR DIESE ACHSE — UND ...
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -1531,7 +1536,8 @@ ROUTEN-LOKAL UND UNGETYPT.**
    der Callback-Route).
    DER BEFUND — GEMESSEN am Repo (CC, 2026-08-28): Der Kommentarkopf von
    src/app/api/oauth/google/callback/route.ts zitiert eine Überschrift aus
-   docs/aktiver-stand-11.8.md UMLAUTFREI TRANSLITERIERT — "unberuehrt laesst" gegen
+   docs/claude-history/phase-11.8-autorisierungsschicht.md UMLAUTFREI TRANSLITERIERT —
+   "unberuehrt laesst" gegen
    "unberührt lässt" in der Zieldatei. Eine wörtliche Suche nach dem zitierten String
    FINDET DIE ÜBERSCHRIFT NICHT. Der Abschnitt existiert, ist eindeutig und ist am
    2026-08-28 aufgelöst worden; unbrauchbar ist nicht der Zeiger, sondern seine
@@ -1651,7 +1657,8 @@ ROUTEN-LOKAL UND UNGETYPT.**
    über `tr` bzw. `git ls-files --eol`. Die Ablage-Frage betrifft, WO die Regel steht,
    nicht OB sie befolgt wird.
    **EIN VERWANDTER KANDIDAT LIEGT IN EINER ANDEREN DATEI:** Hebungs-Kandidat 1 in
-   docs/aktiver-stand-11.8.md ("EIN NEU GESCHRIEBENES ARTEFAKT KANN EIN NUL-BYTE TRAGEN,
+   docs/claude-history/phase-11.8-autorisierungsschicht.md ("EIN NEU GESCHRIEBENES
+   ARTEFAKT KANN EIN NUL-BYTE TRAGEN,
    UND KEIN GATE MELDET ES") lässt unter "NICHT ENTSCHIEDEN" ausdrücklich offen, "ob die
    Byte-Kontrolle eine Auflage an jede neue Datei wird · welchen Umfang sie hätte".
    **DORT WIRD NICHT ERGÄNZT:** Jene Datei ist eine ARCHIVIERTE Phase, und ein
@@ -1870,7 +1877,8 @@ ROUTEN-LOKAL UND UNGETYPT.**
     abgeschlossen sind.
     PROVENIENZ: **OWNER-ENTSCHEIDUNG 2026-09-08**, Antrag des Architekten desselben Tages.
     Die Zahlen SIEBEN, EINER und DREI sind **GEMESSEN** (CC, 2026-09-08, an dieser Runde);
-    NEUN und ELF sind **GELESEN** (CLAUDE.md bzw. der Kopf von docs/aktiver-stand-11.8.md).
+    NEUN und ELF sind **GELESEN** (CLAUDE.md bzw. der Kopf von
+    docs/claude-history/phase-11.8-autorisierungsschicht.md).
     Der Vollzug ist **AUSSTEHEND**.
 
 ## Die Teilung der Standdatei — Zuschnitt in drei Schritten
@@ -1923,13 +1931,19 @@ gilt. **DER ORT IST DAMIT TEIL DER ANORDNUNG UND KEINE FORMSACHE.**
 · **docs/claude-history/phase-11.2-google.md — das ARCHIV.** Sie nimmt die abgelaufenen
   Zuschnitte und die fünfzehn Vermerke auf. **SIE TRÄGT IHREN ENDNAMEN VON ANFANG AN** —
   jenen Namen, den sie am Phasenende ohnehin bekäme. Damit entfällt das Umbenennen am
-  Phasenende, und mit ihm die Fehlerklasse, die docs/aktiver-stand-11.8.md heute festhält:
+  Phasenende, und mit ihm die Fehlerklasse, die
+  docs/claude-history/phase-11.8-autorisierungsschicht.md heute festhält:
   Dort zitieren sechs Quelldateien einen Pfad, weshalb jene Datei ihren Zwischennamen
   behalten musste und bis heute NICHT unter docs/claude-history/ liegt. **DER ENDNAME VON
   ANFANG AN IST DIE ANTWORT AUF GENAU DIESEN FALL.**
   **WAS DAS AUSDRÜCKLICH NICHT HEISST:** Es ist keine Aussage darüber, ob
-  docs/aktiver-stand-11.8.md wandert. Ihre Bedingung steht in ihrem eigenen Kopf und wird
-  hier nicht angetastet.
+  docs/claude-history/phase-11.8-autorisierungsschicht.md wandert. Ihre Bedingung steht in
+  ihrem eigenen Kopf und wird hier nicht angetastet.
+  **STEMPEL 2026-09-08 — BEIDE ABSÄTZE DARÜBER BLEIBEN WÖRTLICH:** Jene Datei ist an
+  diesem Tag umgezogen, die Fehlerklasse ist damit behoben statt offen, und die Prämisse
+  ihres Liegenbleibens ist widerlegt; die volle Auflösung steht in ihrem Kopf. **Der
+  ENDNAME VON ANFANG AN bleibt die richtige Antwort** — er hat den Umzug erspart, den
+  diese Runde nachholen musste.
 
 · **docs/aktiver-stand-vorrat.md — der VORRAT**, alle 59 Einträge.
   **PROVENIENZ DES NAMENS, und sie ist eine andere als bei den zwei darüber:** Der Name ist

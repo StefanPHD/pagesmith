@@ -7,7 +7,7 @@
 // Chiffrierung, keinen Schreibpfad in project_secrets. Sie importiert src/lib/secrets/
 // NICHT — die drei Riegel (AUFRUFER-RIEGEL CIPHER, AUFRUFER-RIEGEL FORM, IMPORT-RIEGEL)
 // bleiben in dieser Scheibe unberuehrt und fallen erst in 11.8e, mit Ansage
-// (docs/aktiver-stand-11.8.md, "## Scheibe 11.8d" und "## Scheibe 11.8e").
+// (docs/claude-history/phase-11.8-autorisierungsschicht.md, "## Scheibe 11.8d" und "## Scheibe 11.8e").
 //
 // DIE RUECKKEHR LAEUFT INS LEERE, UND DAS IST ABSICHT: /api/oauth/google/callback hat
 // noch keine Route. Der Autorisierungs-Code wird nicht eingeloest und verfaellt. Wer das

@@ -226,7 +226,7 @@ export async function exchangeAuthorizationCode(params: {
  * Das Ergebnis der Antwort-Deutung.
  *
  * no_refresh_token IST EIN EIGENER AUSGANG UND KEIN bad_response — der Unterschied
- * ist der ganze Punkt (docs/aktiver-stand-11.8.md, Nachtrag E3): Ein Zugang OHNE
+ * ist der ganze Punkt (docs/claude-history/phase-11.8-autorisierungsschicht.md, Nachtrag E3): Ein Zugang OHNE
  * Erneuerungs-Token ist nach dem Ablauf des Zugangsdatums TOT, und niemand merkt es,
  * bis irgendwann ein Forward scheitert. Er darf nicht als Erfolg abgelegt werden, und
  * der Betreiber braucht dafuer eine andere Auskunft als fuer eine kaputte Antwort.

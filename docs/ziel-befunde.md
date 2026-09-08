@@ -4181,7 +4181,8 @@ Dokument überhaupt zu holen ist, und genau diese Grenze ist der Grund, warum ge
      3. **DAS ZUGANGSDATUM STAMMT AUS DEM OAUTH-PLAYGROUND DES ANBIETERS, NICHT AUS UNSEREM
         FLUSS.** Für die gemessene Achse — welcher Träger — ist das gleichgültig; für die
         PROVENIENZ nicht. Ob ein Zugangsdatum aus dem in Phase 11.8 gebauten Fluss (s.
-        docs/aktiver-stand-11.8.md) an dieser Schnittstelle ebenso trägt, ist NICHT gemessen.
+        docs/claude-history/phase-11.8-autorisierungsschicht.md) an dieser Schnittstelle
+        ebenso trägt, ist NICHT gemessen.
      4. **EIN ANBIETER KANN SEIN VERHALTEN ÄNDERN, OHNE DASS HIER ETWAS ROT WIRD.** Diese
         Messung datiert vom 2026-08-28 und gilt für diesen Tag.
 

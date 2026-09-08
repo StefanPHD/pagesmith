@@ -62,7 +62,7 @@
 --              verbucht, schreibt sich eine Ursache auf, die nicht stimmt.
 --              KEIN VERIFIZIERT-DATUM FUER DIESE FASSUNG: Die geaenderten Erwartungen
 --              sind gegen den Lauf vom 2026-08-26 formuliert (die Werte stehen in
---              docs/aktiver-stand-11.8.md, Vermerk 2), IN DIESER FORM aber noch nicht
+--              docs/claude-history/phase-11.8-autorisierungsschicht.md, Vermerk 2), IN DIESER FORM aber noch nicht
 --              gefahren. Wer sie das erste Mal faehrt, traegt es oben nach.
 
 -- PROBE 1 — Migrations-Protokoll

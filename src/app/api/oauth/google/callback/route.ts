@@ -25,7 +25,7 @@
 // vollstaendig in Teil (bm) derselben Fundstelle.
 //
 // ---------------------------------------------------------------------------
-// HIER FALLEN DIE DREI RIEGEL, MIT ANSAGE (docs/aktiver-stand-11.8.md, "## Scheibe
+// HIER FALLEN DIE DREI RIEGEL, MIT ANSAGE (docs/claude-history/phase-11.8-autorisierungsschicht.md, "## Scheibe
 // 11.8d" -> "### Die drei Invarianten, die 11.8d unberuehrt laesst"):
 //
 //   AUFRUFER-RIEGEL CIPHER faellt an der Import-Zeile von encryptSecret —

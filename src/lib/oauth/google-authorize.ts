@@ -22,7 +22,7 @@ import { randomBytes, timingSafeEqual } from "node:crypto";
 // SIE IMPORTIERT src/lib/secrets/ NICHT — weder cipher.ts noch oauth-payload.ts. Die
 // drei Riegel jener Scheiben (AUFRUFER-RIEGEL CIPHER, AUFRUFER-RIEGEL FORM,
 // IMPORT-RIEGEL) bleiben in 11.8d unberuehrt und fallen erst in 11.8e, mit Ansage
-// (docs/aktiver-stand-11.8.md). Ein Test bewacht auch das.
+// (docs/claude-history/phase-11.8-autorisierungsschicht.md). Ein Test bewacht auch das.
 //
 // LADEKLASSE server-only, obwohl die Datei "nur Zeichenketten sieht": Sie liest
 // process.env und erzeugt kryptografischen Zufall. Die Klasse ist eine UNTERGRENZE —

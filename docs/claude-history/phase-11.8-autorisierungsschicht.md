@@ -10,6 +10,16 @@ dem Abschluss der Phase. Sechs Scheiben (11.8a bis 11.8f), je mit eigenem Vermer
 Reihenfolge der Vermerke ist NICHT die der Buchstaben** — 11.8f ist VOR 11.8e gelaufen und
 trägt deshalb Vermerk 5, 11.8e trägt Vermerk 6.
 
+**DAS PHASENENDE IST VOLLSTÄNDIG VOLLZOGEN — BEIDE SCHRITTE, AN VERSCHIEDENEN TAGEN.**
+Die Phase ist seit dem 2026-08-27 abgeschlossen (Roadmap-Marker `[x]`). **SCHRITT 1, die
+HEBUNG, ist am 2026-09-08 NACHGEHOLT** worden — zwölf Tage nach dem `[x]`; was wohin
+gegangen ist, steht unten im **PROTOKOLL DER HEBUNG** und wird hier nicht verdoppelt.
+**SCHRITT 2, die ARCHIVIERUNG, ist am 2026-09-08 vollzogen:** Diese Datei liegt seither
+als `docs/claude-history/phase-11.8-autorisierungsschicht.md` unter dem Archiv-Ordner,
+per `git mv` und damit mit ihrer Historie. **DER GRUND, WARUM DAS ZWÖLF TAGE NICHT
+GESCHAH, STEHT IM BLOCK DARUNTER UND BLEIBT WÖRTLICH** — er trägt die Herleitung; seine
+Auflösung steht als STEMPEL unmittelbar dahinter.
+
 **SIE LIEGT NICHT IN `docs/claude-history/`, UND DAS IST EINE ENTSCHEIDUNG MIT GEMESSENEM
 GRUND — KEINE VERGESSENE VERSCHIEBUNG.** (ARCHITEKT, 2026-08-27.)
 **SECHS QUELLDATEIEN ZITIEREN DEN PFAD `docs/aktiver-stand-11.8.md` IN IHREM
@@ -24,6 +34,51 @@ Quelldatei-Änderung — also einem `feat`-Commit für einen reinen Doku-Vorgang
 **DIE BEDINGUNG, UNTER DER SIE DOCH WANDERT, und ohne sie stünde die Entscheidung als
 Dauerzustand da:** Sobald **kein Produktivcode** diesen Pfad mehr zitiert, gehört sie nach
 `docs/claude-history/`. Das ist prüfbar — eine Suche über `src/` nach dem Dateinamen.
+
+**STEMPEL 2026-09-08 — DER BLOCK DARÜBER BLEIBT ZEICHEN FÜR ZEICHEN STEHEN. ER IST NICHT
+FALSCH, SONDERN ÜBERHOLT, UND ER TRÄGT DIE EINZIGE HERLEITUNG DAFÜR, WARUM DIESE DATEI
+ZWÖLF TAGE LIEGENGEBLIEBEN IST.** Was sich geändert hat, ist nicht sein Sachverhalt,
+sondern der MECHANISMUS, über den seine Bedingung eingelöst wurde — deshalb STEMPEL und
+keine Ersetzung.
+
+**DIE PRÄMISSE IST WIDERLEGT.** Der Block sagt, heilbar wäre ein Umbenennen "nur mit einer
+Quelldatei-Änderung — also einem `feat`-Commit für einen reinen Doku-Vorgang". **Am
+2026-09-08 sind die Zeiger auf die geteilte Standdatei der Phase 11.2 in ELF Dateien unter
+`src/` nachgezogen worden — als `docs(claude)`-Commit (`25119b7`), und JEDE der 48
+geänderten Zeilen ist eine Kommentarzeile.** Eine Kommentaränderung ist kein `feat`.
+Die zweite Hälfte des Satzes — dass ein Umbenennen die Zeiger tötet — bleibt richtig; falsch
+war allein, was das kostet.
+**PROVENIENZ, und sie gehört hierher, weil die Vorgabe dieser Runde eine ANDERE Zahl nannte:**
+Die elf Dateien, die 48 Zeilen und der Befund "keine einzige Nicht-Kommentarzeile" sind
+**GEMESSEN am Commit `25119b7`** (CC, 2026-09-08, `git show --numstat` plus eine Zählung der
+`+`-Zeilen, die nicht mit `//`, `*` oder `/*` beginnen). **Die Vorgabe sprach von "27 Zeigern
+in zwölf Dateien"; beide Zahlen sind hier NICHT übernommen worden.** Die 27 stammt aus dem
+Zuschnitt der Teilung ("Der Preis: 27 Zeiger, die auswandern"), wo sie ausdrücklich als
+UNTERE SCHRANKE und nicht als Prüfumfang steht und wo sie inzwischen als überholt geführt
+wird — gemessen sind dort 20 (docs/aktiver-stand.md, VERMERK 16, Abschnitt (d)).
+**DIE WIDERLEGUNG HÄNGT AN KEINER DIESER ZAHLEN**, und das ist der Punkt: Sie hängt allein
+daran, dass der Nachzug als `docs`-Commit in reinen Kommentarzeilen lief.
+
+**DIE BEDINGUNG IST DAMIT ANDERS EINGELÖST, ALS SIE FORMULIERT WAR:** nicht dadurch, dass
+kein Produktivcode den Pfad mehr zitiert — er zitiert ihn weiterhin —, sondern dadurch, dass
+das Nachziehen billiger ist als angenommen. **Wer nur die Bedingung liest und nicht diesen
+Stempel, hält den Umzug für einen Verstoss gegen sie.**
+
+**DIE BEDINGUNG, UNTER DER DER ALTE TEXT WIEDER GÄLTE:** wenn ein Nachziehen von Zeigern in
+Quelldateien wieder als `feat` zu committen wäre — also wenn die Trennung zwischen
+Kommentar- und Code-Änderung im Commit-Verfahren entfiele. Solange `docs(claude)` für reine
+Kommentarzeilen trägt, ruht er.
+
+**EIN EIGENER BEFUND, DEN DIESE RUNDE ERHOBEN HAT UND DER NICHT ZUR PRÄMISSE GEHÖRT: DIE
+ZAHL IM BLOCK DARÜBER IST SECHS, GEMESSEN SIND SIEBEN.** Die siebte ist
+`supabase/checks/db-stand.sql` (Kopfkommentar, Verweis auf Vermerk 2) — GEMESSEN am Repo
+(CC, 2026-09-08). **Sie fehlt nicht aus Nachlässigkeit: Die Prüfvorschrift des Blocks lautet
+"eine Suche über `src/` nach dem Dateinamen", und `supabase/` liegt AUSSERHALB dieser
+Achse.** Die sechs sind für ihre Achse vollständig; die Achse ist enger als ihr Gegenstand.
+**WÄRE DER UMZUG ÜBER DIE URSPRÜNGLICH FORMULIERTE BEDINGUNG GELAUFEN, WÄRE DIESER ZEIGER
+STILL TOT GEBLIEBEN — eine Prüfvorschrift, die eine Achse benennt, meldet ihre eigene Lücke
+nie.** Der Zeiger ist in dieser Runde mit nachgezogen worden. Die allgemeine Form dieses
+Befunds ist als Vorrats-Eintrag abgelegt (`docs/aktiver-stand-vorrat.md`, Eintrag 66).
 
 **SIE WIRD NICHT MEHR FORTGESCHRIEBEN.** Was aus ihr gehoben wurde, und wohin:
 - **VIER IHRER ACHT HEBUNGS-KANDIDATEN SIND DAUERREGELN GEWORDEN** (2026-08-27, Commit
@@ -96,6 +151,9 @@ gehobenen Stelle steht ein Zeiger.
 **SCHRITT 2 — DIE ARCHIVIERUNG — IST NICHT VOLLZOGEN.** Sie scheitert weiterhin am
 Pfad-Blocker: SECHS Quelldateien zitieren `docs/aktiver-stand-11.8.md` im Kommentarkopf
 (GEMESSEN am Repo, CC, 2026-09-08 — dieselben sechs wie am 2026-08-27).
+**STEMPEL 2026-09-08, SPÄTER AM SELBEN TAG: SCHRITT 2 IST VOLLZOGEN** — der Satz darüber
+bleibt wörtlich und beschreibt den Stand vor dem Umzug; die volle Auflösung steht im Kopf
+dieser Datei.
 
 **DER ROADMAP-EINTRAG 11.8 TRÄGT SEIT DEM 2026-08-27 `[x]` UND IST NICHT KOLLABIERT** —
 anders als bei jeder bisher abgeschlossenen Phase steht sein RUMPF vollständig da

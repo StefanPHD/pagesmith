@@ -1060,7 +1060,7 @@ aufeinander; sie liegen alle hier und finden einander.
   braucht?"), und er zeigt zugleich, dass sie heute von der Aufmerksamkeit eines einzelnen
   Zuschnitts abhängt.
   PROVENIENZ: der Vollzug von 0025 ist **GEMESSEN (Owner, 2026-08-26, SQL-Editor;**
-  s. docs/aktiver-stand-11.8.md, Vermerk 2**)**; die Zuordnung "nicht-additiv" ist eine
+  s. docs/claude-history/phase-11.8-autorisierungsschicht.md, Vermerk 2**)**; die Zuordnung "nicht-additiv" ist eine
   ABLEITUNG aus dem Wortlaut dieses Eintrags und **keine Entscheidung** — der Eintrag
   definiert den Begriff selbst nicht.
 - DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT (Trigger: EINGETRETEN —
@@ -1791,7 +1791,8 @@ aufeinander; sie liegen alle hier und finden einander.
 
 - DER OAUTH-WEG RUFT ensureTrackingKey NICHT — ANDERS ALS setCapiToken (Trigger: die
   Transport-Scheibe, also die Scheibe, die den Zugang tatsächlich benutzt):
-  GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-11.8.md, Vorrats-Eintrag 6, im Rahmen des
+  GEHOBEN AM 2026-09-08 aus docs/claude-history/phase-11.8-autorisierungsschicht.md,
+  Vorrats-Eintrag 6, im Rahmen des
   nachgeholten Phasenendes der Phase 11.8. Der Wortlaut des Triggers ist der des
   Vorrats-Eintrags und NICHT umformuliert.
   DER BEFUND: Die Server-Action `setCapiToken` stellt den projektweiten Tracking-Schlüssel

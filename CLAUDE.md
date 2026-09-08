@@ -884,8 +884,8 @@ NICHT aus dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
   Überschrift am Dateiende) und DANACH GELÖSCHT — nicht archiviert. Läge sie im
   Archiv, ginge sie mit ihm mit, und 59 gemeldete Punkte wären still begraben.
   EIN VERWEIS DER FORM "Vorrat, Eintrag 3" IST WEITERHIN MEHRDEUTIG —
-  docs/aktiver-stand-11.8.md führt ebenfalls einen Vorrat. Wer zeigt, nennt den
-  DATEINAMEN mit.
+  docs/claude-history/phase-11.8-autorisierungsschicht.md führt ebenfalls einen
+  Vorrat. Wer zeigt, nennt den DATEINAMEN mit.
   IHR NAME IST ARCHITEKTEN-SETZUNG (2026-09-07) und revidierbar; der Name des
   Archivs ist es nicht.
 - docs/plattform-befunde.md — die GEMESSENEN und GELESENEN Befunde über die
@@ -988,21 +988,23 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   worden sind — darunter die Form der Kennungs-Ablage, die IPv6-Annahme und die
   Klartext-IP als Kennung. Die Anbieter-Befunde selbst stehen NICHT hier, sondern in
   docs/ziel-befunde.md.
-- docs/aktiver-stand-11.8.md — GESAMTE gebaute Phase 11.8 (Autorisierungsschicht,
-  2026-08-25 bis 2026-08-27): sechs Scheiben-Zuschnitte (11.8a bis 11.8f) mit ihren
-  Invarianten und Ausschlüssen, sechs Vermerke mit Bau-Commit und Live-Nachweis, die
-  Entscheidungen, der Vorrat und die Hebungs-Kandidaten.
-  ACHTUNG, SIE LIEGT ALS EINZIGE ARCHIVIERTE PHASE NICHT IN docs/claude-history/ — das ist
-  eine ENTSCHEIDUNG (ARCHITEKT, 2026-08-27) mit gemessenem Grund: SECHS Quelldateien
-  zitieren den Pfad docs/aktiver-stand-11.8.md in ihrem Kommentarkopf, und ein Umbenennen
-  machte alle sechs tot. Dieselbe Lage und dieselbe Antwort wie bei docs/aktiver-stand.md.
-  Sie wandert nach docs/claude-history/, sobald KEIN Produktivcode den Pfad mehr zitiert;
-  der Volltext dieser Bedingung steht in ihrem Kopf.
+- docs/claude-history/phase-11.8-autorisierungsschicht.md — GESAMTE gebaute Phase 11.8
+  (Autorisierungsschicht, 2026-08-25 bis 2026-08-27): sechs Scheiben-Zuschnitte (11.8a bis
+  11.8f) mit ihren Invarianten und Ausschlüssen, sechs Vermerke mit Bau-Commit und
+  Live-Nachweis, die Entscheidungen, der Vorrat und die Hebungs-Kandidaten.
+  SIE HIESS BIS ZUM 2026-09-08 docs/aktiver-stand-11.8.md UND LAG NICHT IM ARCHIV-ORDNER;
+  an diesem Tag ist sie mit dem Phasenende umgezogen. Der Grund für ihr Liegenbleiben und
+  seine Auflösung stehen als Stempel in ihrem Kopf — wer einem alten Zeiger auf den
+  früheren Pfad begegnet, findet dort, warum er ins Leere geht.
   HIER NACHSEHEN, WER AN EINEM OAUTH-FLUSS, AM GEHEIMNIS-SPEICHER ODER AN DER CHIFFRIERUNG
-  ARBEITET: Der Abschnitt "## Entscheidungen, die über ihre Scheibe hinaus binden" ist am
-  Phasenende NICHT gehoben worden, ebenso wenig der Vorrat (sieben Einträge) und zwei
-  Hebungs-Kandidaten, die keine formulierbare Bedingung des Entfallens haben. Die
-  Anbieter-Befunde selbst stehen NICHT hier, sondern in docs/ziel-befunde.md.
+  ARBEITET: Die Phase ist am 2026-09-08 vollständig GEHOBEN worden — ihre bindenden
+  Entscheidungen und die zwei Hebungs-Kandidaten ohne formulierbare Bedingung des
+  Entfallens stehen seither als Dauerregeln in docs/immer-beachten.md; ihr Vorrat ist
+  verteilt — was einen Trigger trug, nach docs/offene-punkte.md, was keinen trug, ins
+  Backlog, und was seinen Gegenstand verloren hatte, gestrichen mit dem Beleg der
+  Erledigung am Zeiger. An jeder gehobenen Stelle steht in der Datei ein Zeiger; das
+  Protokoll der Hebung steht in ihrem Kopf. Die Anbieter-Befunde selbst stehen NICHT hier,
+  sondern in docs/ziel-befunde.md.
 - docs/claude-history/phase-11.2-google.md — das ARCHIV der LAUFENDEN Phase 11.2:
   die ELF abgelaufenen Scheiben-Zuschnitte und die FÜNFZEHN abgeschlossenen
   Scheiben-Vermerke, zeichengleich am 2026-09-08 aus docs/aktiver-stand.md
@@ -1010,7 +1012,10 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   ACHTUNG, SIE IST DIE EINZIGE DATEI DIESES ORDNERS, DIE ZU EINER LAUFENDEN PHASE
   GEHÖRT — und das ist Absicht: Sie trägt ihren ENDNAMEN VON ANFANG AN, damit am
   Phasenende kein Umbenennen nötig ist (die Fehlerklasse, die
-  docs/aktiver-stand-11.8.md bis heute festhält). SIE WÄCHST WEITER: jeder künftige
+  docs/claude-history/phase-11.8-autorisierungsschicht.md bis heute festhält —
+  STEMPEL 2026-09-08: jene Datei ist an diesem Tag umgezogen, die Fehlerklasse ist damit
+  behoben statt offen; die volle Auflösung steht in ihrem Kopf, und der ENDNAME VON ANFANG
+  AN bleibt die richtige Antwort). SIE WÄCHST WEITER: jeder künftige
   Abschluss-Vermerk der Phase 11.2 wird HIER angefügt, nicht in der Steuerdatei.
   WER AUS DEM ORDNERNAMEN SCHLIESST, DIE PHASE SEI ABGESCHLOSSEN, LIEST FALSCH —
   der Marker unter "## Roadmap & aktueller Stand" steht auf [ ].

@@ -18,7 +18,7 @@ import "server-only";
 //
 // ---------------------------------------------------------------------------
 // DIE DREI AUFLAGEN DES ZUSCHNITTS, WOERTLICH. Sie stehen hier und nicht nur in
-// docs/aktiver-stand-11.8.md, weil eine Auflage am Code gelesen wird, nicht in einer
+// docs/claude-history/phase-11.8-autorisierungsschicht.md, weil eine Auflage am Code gelesen wird, nicht in einer
 // Standdatei, die nach dem Phasenende archiviert ist.
 //
 //   (1) SIE WEISS NICHTS VON CHIFFRIERUNG. Sie importiert die Chiffrier-Datei NICHT

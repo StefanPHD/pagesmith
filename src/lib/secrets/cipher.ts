@@ -9,7 +9,7 @@ import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 // Autorisierungsschicht und verdrahtet nichts.
 //
 // SIE HAT IM PRODUKTIVCODE HEUTE KEINEN AUFRUFER — nur ihre Tests rufen sie. Das ist
-// die tragende Invariante dieser Scheibe (docs/aktiver-stand-11.8.md, "## Scheibe
+// die tragende Invariante dieser Scheibe (docs/claude-history/phase-11.8-autorisierungsschicht.md, "## Scheibe
 // 11.8a"): Wer einen Aufrufer ergaenzt, baut nicht mehr diese Scheibe.
 //
 // WARUM DAS VERFAHREN VOR DEM SCHEMA KOMMT — der Grund steht im Zuschnitt und wird

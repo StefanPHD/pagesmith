@@ -43,7 +43,8 @@ vollständig aus, und 59 gemeldete Punkte wären begraben. **DER FEHLER WÄRE ST
 an. Nichts wird umsortiert, nichts nachnummeriert — auch nicht bei der Hebung.
 
 **EINE MEHRDEUTIGKEIT, DIE MIT DIESER DATEI NICHT VERSCHWINDET:** Ein Verweis der Form
-"Vorrat, Eintrag 3" trifft weiterhin ZWEI Phasen — `docs/aktiver-stand-11.8.md` führt
+"Vorrat, Eintrag 3" trifft weiterhin ZWEI Phasen —
+`docs/claude-history/phase-11.8-autorisierungsschicht.md` führt
 ebenfalls einen Vorrat. **Wer zeigt, nennt den DATEINAMEN mit.**
 
 **DER NAME DIESER DATEI IST ARCHITEKTEN-SETZUNG (2026-09-07) UND REVIDIERBAR** — anders
@@ -684,7 +685,8 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
     dort nachgezogen.
 
 13. **ZWEI EINTRÄGE AUS DEM VORRAT DER PHASE 11.8, HIERHER ÜBERNOMMEN.**
-    **HERKUNFTSDATEI: docs/aktiver-stand-11.8.md**, Abschnitt "Vorrat (gemeldet, nicht
+    **HERKUNFTSDATEI: docs/claude-history/phase-11.8-autorisierungsschicht.md**, Abschnitt
+    "Vorrat (gemeldet, nicht
     gebaut)", Einträge 5 und 6. **DER GRUND FÜR DIE ÜBERNAHME IST IHR ORT, NICHT IHR
     INHALT:** Jene Datei ist archiviert und wird nicht mehr geladen; beide Trigger sind
     inzwischen EINGETRETEN, und ein eingetretener Trigger in einer ungelesenen Datei ist
@@ -2254,12 +2256,16 @@ Angaben waren am Code falsch bzw. zu eng, die dritte war unvollständig.
 Eintrag 7 — "`decryptSecret` HAT WEITERHIN KEINEN AUFRUFER IM PRODUKTIVCODE" — **IST MIT
 DIESER SCHEIBE GEGENSTANDSLOS.** `refreshAccessToken` liest, dechiffriert und zerlegt
 eine echte Zeile aus `project_secrets.secret_enc`; der Live-Test hat den Pfad gefahren.
-**docs/aktiver-stand-11.8.md WIRD DAFÜR NICHT ANGEFASST.** Der Sonderfall jener Datei —
+**docs/claude-history/phase-11.8-autorisierungsschicht.md WIRD DAFÜR NICHT ANGEFASST.**
+Der Sonderfall jener Datei —
 archiviert, aber nicht verschoben — ist im Verfahren ungeregelt, und ein rückwirkender
 Eingriff in eine abgeschlossene Phase wäre eine EIGENE Entscheidung. Sie steht hier
 ausdrücklich AUS. Dieser Vermerk ist der einzige Ort, an dem der Sachverhalt festgehalten
 ist; wer jene Datei liest, findet dort einen Eintrag, der nicht mehr zutrifft, und
 NICHTS, das darauf hinweist.
+**STEMPEL 2026-09-08 — DER ABSATZ DARÜBER BLEIBT WÖRTLICH:** Der Sonderfall ist an diesem
+Tag aufgelöst, jene Datei ist umgezogen; die volle Auflösung steht in ihrem Kopf. Dass sie
+für DIESEN Eintrag weiterhin nicht angefasst wird, ist davon unberührt.
 
 **EIN ZWEITER VERMERK, KEIN EINTRAG — DIE AUSLEGUNG DES SKILL-KONFLIKTS** (2026-08-29):
 Der projekteigene Skill `supabase-doku` verlangt eine Anbieter-Lesung, sobald ein Schema,
@@ -2715,7 +2721,8 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     `docs/roadmap.md` und ohne `docs/claude-history/`**):** `CLAUDE.md` 6 ·
     `docs/offene-punkte.md` 14 · `docs/db-stand.md` 1 · `docs/db-regeln.md` 1 ·
     `docs/plattform-befunde.md` 2 · `docs/ziel-befunde.md` 6 · `docs/aktiver-stand.md` 48 ·
-    `docs/aktiver-stand-vorrat.md` 17 · `docs/aktiver-stand-11.8.md` 15.
+    `docs/aktiver-stand-vorrat.md` 17 ·
+    `docs/claude-history/phase-11.8-autorisierungsschicht.md` 15.
     **WARUM DAS SEIT DEM 2026-09-08 ZÄHLT:** An diesem Tag ist GA4 aus dem Eintrag 11.2
     herausgelöst worden (neue Zeile 11.9). **Ob einer dieser 110 Zeiger nach der Trennung GA4
     meint, ist NICHT ERHOBEN.**
@@ -2788,3 +2795,38 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     PROVENIENZ: Die drei Fundstellen und ihre `reason`-Werte **GEMESSEN am Code (CC,
     2026-09-08)**. Dass Eintrag 42 auf seiner Achse richtig zählt, ist eine **ABLEITUNG** aus
     dem Vergleich der beiden Achsen, keine zweite Messung.
+
+66. **EINE PRÜFVORSCHRIFT, DIE EINE ACHSE BENENNT, DECKT NUR DIESE ACHSE — UND MELDET DAS
+    NIE.**
+    **DER BELEG (GEMESSEN, CC, 2026-09-08):** Die Bedingung, unter der die Standdatei der
+    Phase 11.8 ins Archiv wandern sollte, lautete in ihrem eigenen Kopf: "Sobald **kein
+    Produktivcode** diesen Pfad mehr zitiert … Das ist prüfbar — **eine Suche über `src/`
+    nach dem Dateinamen**." Gemessen zitieren **SIEBEN** Dateien den Pfad, nicht sechs; die
+    siebte ist `supabase/checks/db-stand.sql` und liegt **ausserhalb der benannten Achse**.
+    **DIE SECHS SIND FÜR IHRE ACHSE VOLLSTÄNDIG — DIE ACHSE IST ENGER ALS IHR GEGENSTAND.**
+    "Produktivcode" ist mehr als `src/`.
+    **WARUM DAS TEUER IST:** Wäre der Umzug über die Bedingung ausgelöst worden statt über
+    die widerlegte Prämisse, hätte die Prüfung "keine Treffer unter `src/`" gemeldet — und
+    **der siebte Zeiger wäre still tot geblieben.** Eine Vorschrift, die ihre Achse
+    benennt, ist ehrlich; sie kann aber nicht sagen, dass ihr Gegenstand grösser ist als
+    ihre Achse. **Die Ehrlichkeit der Angabe verhindert den Fehler nicht, sie
+    dokumentiert ihn nur im Nachhinein.**
+    **ABGRENZUNG ZU "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL"**
+    (docs/immer-beachten.md): Dort ist der **WÄCHTER** hohl — sein Gegenstand ist weg, er
+    ist trivial wahr, oder er trennt Blockade nicht von Absturz. **Hier ist der Wächter in
+    Ordnung und seine ACHSE zu eng.** Er misst korrekt, was er zu messen behauptet;
+    falsch ist nur die Erwartung, dass das die ganze Frage beantwortet.
+    **ABGRENZUNG ZU "EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM
+    GEGENSTAND"** (ebenda): Dort erzeugt das **INSTRUMENT** einen Nicht-Treffer, den der
+    Gegenstand nicht hergibt, und die Antwort ist ein Werkzeug-Wechsel. **Hier ist das
+    Instrument tadellos** — `grep` über `src/` findet, was unter `src/` liegt. Falsch ist
+    der ZUSCHNITT der Suche, nicht ihr Werkzeug.
+    GEMELDET 2026-09-08, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder dazu, ob daraus eine
+    Regel wird, noch dazu, ob Prüfvorschriften künftig ihre Achse gegen ihren Gegenstand
+    begründen müssen.
+    TRIGGER: **die nächste Prüfvorschrift, die eine Achse benennt** — also die nächste
+    Bedingung der Form "das ist prüfbar: eine Suche über <Ort>".
+    PROVENIENZ: Der Zähl-Unterschied sechs gegen sieben und der Ort der siebten Datei sind
+    **GEMESSEN am Repo (CC, 2026-09-08)**, Achse: `git ls-files` über alle verfolgten
+    Dateien. Dass der Zeiger bei einer Auslösung über die Bedingung still tot geblieben
+    wäre, ist eine **ABLEITUNG** aus dem Wortlaut der Bedingung, keine zweite Messung.

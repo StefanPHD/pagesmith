@@ -45,9 +45,15 @@ UMGEZOGEN ODER NIE DA GEWESEN IST.**
 **SIE LIEGT UNTER `docs/claude-history/`, WÄHREND IHRE PHASE LÄUFT — ALS EINZIGE DATEI
 DIESES ORDNERS, UND DAS IST ABSICHT.** Sie trägt ihren ENDNAMEN von Anfang an, also
 jenen, den sie am Phasenende ohnehin bekäme. Damit entfällt das Umbenennen am
-Phasenende, und mit ihm die Fehlerklasse, die `docs/aktiver-stand-11.8.md` bis heute
+Phasenende, und mit ihm die Fehlerklasse, die
+`docs/claude-history/phase-11.8-autorisierungsschicht.md` bis heute
 festhält: Dort zitieren sechs Quelldateien einen Pfad, weshalb jene Datei ihren
-Zwischennamen behalten musste. **SIE WÄCHST WEITER**: Jeder künftige Abschluss-Vermerk
+Zwischennamen behalten musste.
+**STEMPEL 2026-09-08 — DER SATZ DARÜBER BLEIBT WÖRTLICH:** Jene Datei ist an diesem Tag
+umgezogen, die Fehlerklasse ist damit behoben statt offen; die volle Auflösung steht in
+ihrem Kopf. **DER ENDNAME VON ANFANG AN BLEIBT DIE RICHTIGE ANTWORT** — er erspart genau
+den Umzug, den jene Datei nachholen musste.
+**SIE WÄCHST WEITER**: Jeder künftige Abschluss-Vermerk
 dieser Phase wird hier angefügt, nicht in der Steuerdatei. **WER AUS DEM ORDNERNAMEN
 SCHLIESST, DIE PHASE SEI ABGESCHLOSSEN, LIEST FALSCH** — der Marker der Phase 11.2 steht
 in CLAUDE.md, und er steht auf `[ ]`.
@@ -3375,7 +3381,8 @@ jemand "Sperre gefallen" als "baubar", und genau das folgt daraus nicht:
   sieben Tage (GELESEN 2026-08-25, docs/ziel-befunde.md, Google-Abschnitt, Teil (af)). Sie
   gehört als PFLICHT-HINWEIS in jede Live-Test-Anleitung dieser Phase — sonst wird ein
   abgelaufenes Zugangsdatum als Defekt gejagt. Dieselbe Auflage steht in
-  docs/aktiver-stand-11.8.md und in docs/roadmap.md, Eintrag 11.8; sie wird hier NICHT
+  docs/claude-history/phase-11.8-autorisierungsschicht.md und in docs/roadmap.md,
+  Eintrag 11.8; sie wird hier NICHT
   verdoppelt, sondern genannt, weil sie den Bau dieser Phase trifft.
 - **DER NACHGESCHULDETE LIVE-NACHWEIS DER SCHEIBE 11.2a.** Vermerk 2 in DIESER Datei hält
   fest: "EINEN LIVE-TEST GIBT ES NICHT" und "DIE NÄCHSTE SCHEIBE SCHULDET IHN NACH — für

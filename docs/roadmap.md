@@ -368,9 +368,12 @@ liegen beide hier und finden einander.
       beschafft ein Zugangsdatum, chiffriert es und legt es ab — mehr nicht.
       WAS DAS FÜR DIESE PHASE HEISST: Der Zugang ist da, der Weg zum Endpunkt nicht.
       Wer 11.2 zuschneidet, plant die Messung dieses Trägers als ERSTEN Schritt ein.
-      DIE VOLLE HERLEITUNG STEHT IN docs/aktiver-stand-11.8.md — die Datei liegt nach
+      DIE VOLLE HERLEITUNG STEHT IN
+      docs/claude-history/phase-11.8-autorisierungsschicht.md — die Datei liegt nach
       dem Phasenende weiterhin unter docs/ und ist NICHT nach docs/claude-history/
       verschoben worden (der Grund steht in ihrem Kopf).
+      STEMPEL 2026-09-08: Der Umzug ist an diesem Tag vollzogen, die Prämisse jenes
+      Grundes ist widerlegt; die volle Auflösung steht im Kopf der umgezogenen Datei.
 
       VORBEHALT 2026-08-28 AN DEM BLOCK DARÜBER — DER BLOCKER IST GEFALLEN, UND DIESE
       STELLE IST DIE FOLGENREICHSTE VON ALLEN. Der Wortlaut oben bleibt unverändert
@@ -395,7 +398,10 @@ liegen beide hier und finden einander.
       · WAHR BLEIBT, UND ZWAR VOLLSTÄNDIG: was Scheibe 11.8e getan hat und dass sie den
         Aufruf ausdrücklich AUSGESCHLOSSEN hat ("sie beschafft ein Zugangsdatum,
         chiffriert es und legt es ab — mehr nicht") · der Verweis auf
-        docs/aktiver-stand-11.8.md samt der Begründung, warum jene Datei ihren Ort behält.
+        docs/claude-history/phase-11.8-autorisierungsschicht.md samt der Begründung, warum
+        jene Datei ihren Ort behält. STEMPEL 2026-09-08: Der Umzug ist an diesem Tag
+        vollzogen, die Prämisse jener Begründung ist widerlegt; die volle Auflösung steht
+        im Kopf der umgezogenen Datei.
       · WAS AN DIE STELLE DER ARBEITSANWEISUNG TRITT — ALS ZEIGER, NICHT ALS KOPIE: Der
         erste Schritt ist getan. Die verbleibenden Vorbedingungen der TRANSPORT-Scheibe
         stehen in docs/aktiver-stand.md, VERMERK 3 — die Datenklassen-Grenze (FÜR
@@ -480,7 +486,7 @@ liegen beide hier und finden einander.
         Klick-Kennungen, Conversion-Action vom Typ UPLOAD_CLICKS. OWNER-ENTSCHEIDUNG
         2026-08-24, Volltext weiter oben in diesem Eintrag.
       · DIE AUTORISIERUNGSSCHICHT IST GEBAUT: Phase 11.8, sechs Scheiben, ABGESCHLOSSEN
-        2026-08-27; Stand in docs/aktiver-stand-11.8.md.
+        2026-08-27; Stand in docs/claude-history/phase-11.8-autorisierungsschicht.md.
       · KLICK-KENNUNGEN UND NUTZLAST (Scheibe 11.2a): VERMERK 2, Bau-Commit 6653f37.
       · DIE ERNEUERUNG DES ZUGANGSDATUMS (Scheibe 1a): VERMERK 6, Bau-Commit a351858,
         live bewiesen.
@@ -658,10 +664,13 @@ liegen beide hier und finden einander.
       Zugangsdaten.
 
       ABGESCHLOSSEN AM 2026-08-27. Sechs Scheiben (11.8a bis 11.8f), je mit eigenem
-      Vermerk und eigenem Nachweis. DER STAND LIEGT IN docs/aktiver-stand-11.8.md — die
+      Vermerk und eigenem Nachweis. DER STAND LIEGT IN
+      docs/claude-history/phase-11.8-autorisierungsschicht.md — die
       Datei ist NICHT nach docs/claude-history/ verschoben worden, weil sechs Quelldateien
       ihren Pfad im Kommentarkopf zitieren; der Grund und die Bedingung, unter der sie
       doch wandert, stehen in ihrem Kopf.
+      STEMPEL 2026-09-08: Der Umzug ist an diesem Tag vollzogen, die Prämisse jenes
+      Grundes ist widerlegt; die volle Auflösung steht im Kopf der umgezogenen Datei.
 
       DIESER RUMPF IST NICHT KOLLABIERT, UND DAS IST EINE ENTSCHEIDUNG MIT GEMESSENEM
       GRUND (ARCHITEKT, 2026-08-27) — die übliche Bauform "auf Haken plus Verweissatz
@@ -671,7 +680,8 @@ liegen beide hier und finden einander.
       Neun zeigen auf die PHASE als Ganzes und überlebten einen Kollaps. FÜNF zeigen auf
       INHALT, der dann verschwunden wäre — einer davon aus dem PRODUKTIVCODE:
       · K1 — DIE DREI ENTSCHEIDUNGEN ZUM GEHEIMNIS-SPEICHER (Block vom 2026-08-25).
-        Zeiger: docs/aktiver-stand-11.8.md, zweimal, ausdrücklich mit "HIER STEHT NUR DER
+        Zeiger: docs/claude-history/phase-11.8-autorisierungsschicht.md, zweimal,
+        ausdrücklich mit "HIER STEHT NUR DER
         ZEIGER" bzw. "werden hier NICHT verdoppelt".
       · K2 — DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS. Zeiger: docs/offene-punkte.md,
         Eintrag "DIE VERWAHRUNG DES CHIFFRIER-SCHLÜSSELS IST UNGEREGELT", wörtlich: "Der
@@ -683,7 +693,8 @@ liegen beide hier und finden einander.
         DAS WÄRE DER TEUERSTE GEWESEN — ein Zeiger ins Leere in der Datei, die jede
         Sitzung lädt.
       · K5 — DIE BEGRÜNDUNG DER FESTEN WEITERLEITUNGS-ADRESSE (Block vom 2026-08-27).
-        Zeiger: docs/aktiver-stand-11.8.md, Zuschnitt 11.8d, Entscheidung (5), wörtlich:
+        Zeiger: docs/claude-history/phase-11.8-autorisierungsschicht.md, Zuschnitt 11.8d,
+        Entscheidung (5), wörtlich:
         "Die Begründung steht in docs/roadmap.md, Eintrag 11.8 … und wird hier NICHT
         verdoppelt."
       DIE REGEL, DIE HIER NICHT PASST, UND WARUM: "Auf Haken plus Verweissatz

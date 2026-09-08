@@ -1362,7 +1362,7 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   ENTSCHEIDUNG, KEINE KOPIE" gilt weiterhin dem ADAPTER — ein Zielwert ohne Adapter hat
   keinen zu kopieren.
   WARUM DER TITEL TROTZDEM NICHT GEÄNDERT IST: Er wird von aussen ZITIERT — GEMESSEN am Repo
-  (CC, 2026-08-27): docs/roadmap.md und docs/aktiver-stand-11.8.md nennen ihn wörtlich. Eine
+  (CC, 2026-08-27): docs/roadmap.md und docs/claude-history/phase-11.8-autorisierungsschicht.md nennen ihn wörtlich. Eine
   Umformulierung machte beide Zeiger tot, und ein toter Zeiger fällt an keinem Gate auf.
   WARUM SIE EINE REGEL IST UND KEIN OFFENER PUNKT: Sie sagt, was ZU TUN ist, wenn ein
   Ziel dazukommt — nicht, was heute fehlt. Ein offener Punkt wartet auf einen Trigger;
@@ -1620,7 +1620,7 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Fehlen ist kein Versäumnis.
   PROVENIENZ: OWNER/ARCHITEKT-ENTSCHEIDUNG 2026-08-25. Dass der Code die Zeit-Achse nicht
   sehen kann, ist GEMESSEN am gebauten Stand (CC, 2026-08-25, Commit 4b2ec09). Herleitung:
-  docs/aktiver-stand-11.8.md, "Entscheidungen, die über ihre Scheibe hinaus binden".
+  docs/claude-history/phase-11.8-autorisierungsschicht.md, "Entscheidungen, die über ihre Scheibe hinaus binden".
 - EINE FASSUNGSMARKE DER NUTZLAST WIRD NIE FÜR EINE ANDERE FELDMENGE WIEDERVERWENDET
   (Phase 11.8, gehoben 2026-09-08): Ändert sich der Feldsatz, bekommt die Form eine NEUE
   Marke; `p1` bleibt für immer die Feldmenge vom 2026-08-26.
@@ -1666,8 +1666,8 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   solange es Live-Anleitungen mit mehr als einem Schritt gibt. Ein Zustand, in dem das
   aufhört, ist nicht formulierbar.
   PROVENIENZ: der Befund GEMESSEN am eigenen Lauf (Owner, 2026-08-26); die Einordnung als
-  Anleitungsfehler ARCHITEKT (2026-08-26). Herleitung: docs/aktiver-stand-11.8.md,
-  Hebungs-Kandidat 4.
+  Anleitungsfehler ARCHITEKT (2026-08-26). Herleitung:
+  docs/claude-history/phase-11.8-autorisierungsschicht.md, Hebungs-Kandidat 4.
 - EINE PROBE GEGEN DIESELBE SCHICHT KANN EINE FRAGE ÜBER EINE ANDERE SCHICHT NICHT
   SCHLIESSEN (Phase 11.8, gehoben 2026-09-08): Zwischen unserem Code und jeder fremden
   Wirkung liegen mehrere Schichten — Client, Protokoll-Schicht, Datenbank, Anbieter —, und
@@ -1697,4 +1697,4 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   solange es mehr als eine Schicht zwischen Code und Wirkung gibt. Ein Zustand ohne
   Schichten ist nicht formulierbar.
   PROVENIENZ: der Befund GEMESSEN an den zwei Läufen vom 2026-08-25 und 2026-08-26.
-  Herleitung: docs/aktiver-stand-11.8.md, Hebungs-Kandidat 5.
+  Herleitung: docs/claude-history/phase-11.8-autorisierungsschicht.md, Hebungs-Kandidat 5.

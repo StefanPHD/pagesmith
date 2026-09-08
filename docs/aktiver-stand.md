@@ -1801,6 +1801,78 @@ ROUTEN-LOKAL UND UNGETYPT.**
    (CC, 2026-09-08). Dass es kein Gate gibt, ist ein **NICHT-TREFFER mit benannter Achse** —
    die vier Gates dieses Projekts, an dieser Runde beobachtet.
 
+10. **EIN PHASENENDE, DAS AUF DAS LETZTE TODO WARTET, TRITT NIE EIN — UND DIE HEBUNG "NACH
+    ERMESSEN" WIRD ÜBERSPRUNGEN** (angetreten 2026-09-08).
+    **DIESER EINTRAG IST EIN ANGENOMMENER ÄNDERUNGSANTRAG an docs/arbeitsweise.md und
+    CLAUDE.md — OWNER-ENTSCHEIDUNG 2026-09-08 auf Antrag des Architekten desselben Tages.
+    DER VOLLZUG IST AUSSTEHEND.** Er steht hier abgelegt und nicht dort gebaut; warum, sagt
+    die Reihenfolge am Ende.
+
+    **(A) DAS KRITERIUM FÜR `[x]` — NEU, UND ES GEHÖRT IN DIE MARKER-LEGENDE IN CLAUDE.md.**
+    Nicht in die Arbeitsweise: Die Legende steht in der Projektanweisung und wird nicht
+    verdoppelt.
+    **EINE PHASE GEHT AUF `[x]`, WENN KEIN CODE MEHR ZU SCHREIBEN IST.** Externe
+    Abhängigkeiten — Messungen, Arbeit an einem Fremdkonto, Owner-Entscheidungen — halten
+    sie NICHT offen, sondern werden GEHOBEN.
+    **DIE AUFLAGE, OHNE DIE `[x]` UNZULÄSSIG IST:** Ist zum Zeitpunkt des `[x]` etwas
+    PRODUKTRELEVANTES unbewiesen, sagt die Roadmap-Zeile es AUSDRÜCKLICH — dieselbe Bauform
+    wie beim `[~]`, wo beide Hälften benannt sein müssen.
+    **DER GRUND FÜR DIE AUFLAGE, und ohne ihn wird sie beim nächsten Aufräumen als
+    Formalie gestrichen:** `[x]` liest sich als "funktioniert". Bei Phase 11.2 ist die
+    WIRKUNG AUF DIE GEBOTE ungemessen — also das Produktversprechen selbst.
+
+    **(B) DIE HEBUNG WIRD PFLICHT STATT ERMESSEN, UND SIE SORTIERT NACH DREI ZIELEN STATT
+    EINEM.** Wortlaut ALT in docs/arbeitsweise.md, Abschnitt "Phasenende":
+    "**1. Hebung (nach Ermessen):**". NEU: Pflicht, mit drei Ausgängen —
+    · **mit Trigger** → docs/offene-punkte.md, plus Stub-Zeile in CLAUDE.md;
+    · **ohne Trigger** → docs/claude-history/backlog-polish.md, ans Dateiende unter eine
+      EIGENE datierte Überschrift;
+    · **Gegenstand erledigt** → GESTRICHEN (s. Teil C).
+    **DER GRUND, DASS EIN ZIEL NICHT REICHT:** docs/offene-punkte.md verlangt einen
+    TRIGGER; "falls es je nötig wird" ist dort ausdrücklich unzulässig. Wer alles dorthin
+    hebt, muss Trigger erfinden — oder er hebt gar nicht.
+    **GEMESSEN an dieser Runde (CC, 2026-09-08):** Von SIEBEN Vorrats-Einträgen der Phase
+    11.8 trug **EINER** einen Trigger.
+
+    **(C) DER AUSGANG, DEN DIE ARBEITSWEISE NICHT KENNT.** Was seinen GEGENSTAND verloren
+    hat, wird **GESTRICHEN und nicht umgezogen** — mit dem **BELEG DER ERLEDIGUNG AM
+    ZEIGER**, damit erkennbar bleibt, dass gestrichen wurde WEIL erledigt und nicht, weil
+    jemand aufgeräumt hat.
+    **GEMESSEN an dieser Runde:** **DREI** der sieben, je durch eine spätere Scheibe
+    gegenstandslos geworden.
+    **DIE LÜCKE, DIE DAS SCHLIESST:** Die Arbeitsweise hat heute ACHT Wege HINEIN und EINEN
+    hinaus, und der greift nur bei Dauerregeln.
+
+    **(D) DER 11.8-VERMERK IN docs/arbeitsweise.md FÄLLT MIT DEM UMZUG.** Sie nennt an
+    mindestens zwei Stellen die "Fehlerklasse, die docs/aktiver-stand-11.8.md festhält" —
+    als Begründung dafür, dass ein Archiv seinen ENDNAMEN von Anfang an trägt.
+    **DIE BEGRÜNDUNG BLEIBT RICHTIG, DER ZUSTAND NICHT:** Die Fehlerklasse ist nach dem
+    Umzug BEHOBEN, nicht offen, und der Pfad zeigt woandershin.
+    **DIE GENAUEN FUNDSTELLEN SIND NICHT GEZÄHLT** — "mindestens zwei" ist eine untere
+    Schranke und kein Prüfumfang; sie werden beim Vollzug gemessen.
+
+    **DER BELEG, DER DEN ANTRAG TRÄGT UND DER GRUND, WARUM ER REIF IST:** Bei Phase 11.1
+    sind **NEUN** Einträge am Phasenende nicht gehoben worden, bei Phase 11.8 **ELF**.
+    **ZWEIMAL IN FOLGE ist der Schritt "nach Ermessen" ÜBERSPRUNGEN und der "mechanische"
+    ausgeführt worden.** Das ist kein Einzelfall, sondern die Bauform: Ein Schritt, der im
+    Ermessen steht und keinen Nachweis verlangt, wird von einer Runde, die abschliessen
+    will, zuverlässig übergangen — und nichts wird davon rot.
+
+    **DIE REIHENFOLGE DES VOLLZUGS, UND SIE IST TEIL DER ENTSCHEIDUNG: ERST die zwei
+    Phasenenden (11.8, dann 11.2), DANN der Antrag.** Die Arbeitsweise während eines
+    laufenden Phasenendes zu ändern erzeugt einen Zustand, in dem Repo und Projektanweisung
+    Verschiedenes über das sagen, was gerade läuft.
+    **VOLLZUG AN BEIDEN ORTEN IM SELBEN ZUG** — Repo-Datei und Projektanweisung; **der
+    zweite Ort wird aus der COMMITTETEN Datei kopiert, nicht aus dem Chat.**
+
+    **WAS DIESER EINTRAG NICHT IST:** kein Vollzug, keine Änderung an docs/arbeitsweise.md
+    oder an der Marker-Legende, und keine Aussage darüber, wann die zwei Phasenenden
+    abgeschlossen sind.
+    PROVENIENZ: **OWNER-ENTSCHEIDUNG 2026-09-08**, Antrag des Architekten desselben Tages.
+    Die Zahlen SIEBEN, EINER und DREI sind **GEMESSEN** (CC, 2026-09-08, an dieser Runde);
+    NEUN und ELF sind **GELESEN** (CLAUDE.md bzw. der Kopf von docs/aktiver-stand-11.8.md).
+    Der Vollzug ist **AUSSTEHEND**.
+
 ## Die Teilung der Standdatei — Zuschnitt in drei Schritten
 
 **WAS DIESER ABSCHNITT IST:** Der Zuschnitt für die Teilung DIESER Datei in drei. Er ist

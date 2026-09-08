@@ -327,6 +327,27 @@ ZUERST gelesen werden — das ist kein Vorschlag, sondern ein Pflicht-Gate
 (Anlegen zu Phasenbeginn, Fortschreiben während der Phase, Hebung +
 Archivierung am Phasenende): docs/arbeitsweise.md.
 
+SEIT DEM 2026-09-08 IST DER AKTIVE STAND EIN VERBUND AUS BIS ZU DREI DATEIEN, UND DER
+SATZ DARÜBER MEINT AB DA DIE ERSTE VON IHNEN. Die zwei anderen entstehen erst, wenn eine
+Phase so gross wird, dass ihre vollständige Lesung nicht mehr zu leisten ist — EIN
+PFLICHT-GATE, DAS NIEMAND VOLLSTÄNDIG LIEST, IST KEINES:
+- docs/aktiver-stand.md — die STEUERDATEI. Sie ist das Gate und wird VOLLSTÄNDIG
+  gelesen. Ihr Name ändert sich nie; an ihm hängt der Verfahrensslot oben.
+- docs/claude-history/phase-N-<thema>.md — das ARCHIV: die abgelaufenen Zuschnitte und
+  die abgeschlossenen Vermerke. Sie trägt ihren ENDNAMEN VON ANFANG AN und liegt damit
+  als einzige Datei jenes Ordners bei einer LAUFENDEN Phase.
+- docs/aktiver-stand-vorrat.md — der VORRAT. Er ist nicht abgelaufen und geht deshalb
+  NICHT ins Archiv; am Phasenende wird er GEHOBEN.
+ARCHIV UND VORRAT WERDEN NICHT GELADEN UND NICHT GELESEN. Die Steuerdatei führt je
+ausgelagerter Klasse ein REGISTER mit dem wörtlichen Titelanfang jedes Eintrags und
+seiner Zieldatei; wer einen einzelnen Eintrag braucht, schlägt GENAU IHN auf. Wer das
+Archiv "sicherheitshalber" mitliest, stellt genau den Zustand wieder her, den die
+Teilung beseitigt hat.
+DIE TEILUNG IST KEIN PFLICHTTEIL EINER PHASE — eine kleine Phase bleibt bei EINER Datei.
+Verfahren, Zuschnitt und Nachweisführung: docs/arbeitsweise.md, "Die Standdatei".
+DIE PHASE 11.2 IST DIE ERSTE GETEILTE (2026-09-08); ihre drei Dateien stehen unter
+"## Detail-Archiv" bzw. "## Aktive Dokumente".
+
 ## Code-Qualität, Performance & SaaS-Skalierung
 Zwei bewusst GETRENNTE Blöcke. A gilt ab sofort und ist prüfbar — jede neue Query,
 Policy und jeder externe Call wird daran gemessen. B sind Skalierungs-Leitplanken für
@@ -842,6 +863,25 @@ NICHT aus dem Startkontext: docs/immer-beachten.md lädt unbedingt mit.
   Sie gehört KEINER Phase und wird NICHT archiviert — anders als die
   Phasen-Historien im Detail-Archiv trägt sie auch die noch OFFENEN Phasen und
   bleibt damit ein aktives Dokument, solange es eine Roadmap gibt.
+- docs/aktiver-stand-vorrat.md — der VORRAT der LAUFENDEN Phase 11.2: alle 59
+  Einträge im Wortlaut, mit ihren Nummern, zeichengleich am 2026-09-08 aus
+  docs/aktiver-stand.md herausgeschnitten (Prüfsumme im Kopf der Datei). Sie trägt
+  KEINE Regeln, KEINE Entscheidungen und KEINEN Zustand — ein Vorrats-Eintrag ist
+  per Definition NICHT gebaut und NICHT entschieden. Sie wird NICHT automatisch
+  geladen und NICHT am Stück gelesen.
+  AUSLÖSER: Wer einen namentlich genannten Vorrats-Eintrag braucht, schlägt GENAU
+  IHN auf. Der Weg dorthin führt über das Register in docs/aktiver-stand.md,
+  "## Register — was diese Datei nicht mehr trägt" — je Eintrag Nummer und
+  wörtlicher Titelanfang.
+  SIE IST KEIN ARCHIV, UND DAS ENTSCHEIDET IHR ENDE: Am Phasenende wird sie GEHOBEN
+  (nach docs/claude-history/backlog-polish.md, unter eine eigene datierte
+  Überschrift am Dateiende) und DANACH GELÖSCHT — nicht archiviert. Läge sie im
+  Archiv, ginge sie mit ihm mit, und 59 gemeldete Punkte wären still begraben.
+  EIN VERWEIS DER FORM "Vorrat, Eintrag 3" IST WEITERHIN MEHRDEUTIG —
+  docs/aktiver-stand-11.8.md führt ebenfalls einen Vorrat. Wer zeigt, nennt den
+  DATEINAMEN mit.
+  IHR NAME IST ARCHITEKTEN-SETZUNG (2026-09-07) und revidierbar; der Name des
+  Archivs ist es nicht.
 - docs/plattform-befunde.md — die GEMESSENEN und GELESENEN Befunde über die
   PLATTFORM-Anbieter, auf denen Pagesmith läuft (Persistenz, Auth, Hosting,
   Ausspielung, Deploy), je Anbieter ein Abschnitt, mit Provenienz an jeder
@@ -957,6 +997,23 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   Phasenende NICHT gehoben worden, ebenso wenig der Vorrat (sieben Einträge) und zwei
   Hebungs-Kandidaten, die keine formulierbare Bedingung des Entfallens haben. Die
   Anbieter-Befunde selbst stehen NICHT hier, sondern in docs/ziel-befunde.md.
+- docs/claude-history/phase-11.2-google.md — das ARCHIV der LAUFENDEN Phase 11.2:
+  die ELF abgelaufenen Scheiben-Zuschnitte und die FÜNFZEHN abgeschlossenen
+  Scheiben-Vermerke, zeichengleich am 2026-09-08 aus docs/aktiver-stand.md
+  herausgeschnitten (Prüfsummen im Kopf der Datei).
+  ACHTUNG, SIE IST DIE EINZIGE DATEI DIESES ORDNERS, DIE ZU EINER LAUFENDEN PHASE
+  GEHÖRT — und das ist Absicht: Sie trägt ihren ENDNAMEN VON ANFANG AN, damit am
+  Phasenende kein Umbenennen nötig ist (die Fehlerklasse, die
+  docs/aktiver-stand-11.8.md bis heute festhält). SIE WÄCHST WEITER: jeder künftige
+  Abschluss-Vermerk der Phase 11.2 wird HIER angefügt, nicht in der Steuerdatei.
+  WER AUS DEM ORDNERNAMEN SCHLIESST, DIE PHASE SEI ABGESCHLOSSEN, LIEST FALSCH —
+  der Marker unter "## Roadmap & aktueller Stand" steht auf [ ].
+  SIE WIRD NICHT GELADEN UND NICHT AM STÜCK GELESEN. Der Weg hinein führt über die
+  Register in docs/aktiver-stand.md, "## Register — was diese Datei nicht mehr
+  trägt"; wer einen Zuschnitt oder Vermerk braucht, schlägt GENAU IHN auf.
+  WARNUNG FÜR JEDEN, DER DARIN AUF EINE ÜBERSCHRIFT ANKERT: der Titel
+  "Vollzogen — was hier stand und wohin es gegangen ist" steht ZWEIMAL zeichengleich.
+  Der Volltext dieser Warnung steht im Kopf der Datei.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),

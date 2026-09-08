@@ -217,6 +217,13 @@ zweierlei: Anweisungen für seine Scheibe, die mit dem Protokoll ablaufen, und
 Entscheidungen, die darüber hinaus binden. Nur das Zweite bleibt stehen. Solange
 beide unverdichtet nebeneinander stehen, driften sie — jede spätere Korrektur am
 einen erzeugt eine Runde für das andere.
+**IST DIE STANDDATEI GETEILT, SIND DAS ZWEI DATEIEN IN EINEM ZUG:** Der
+Abschluss-Vermerk wird im **ARCHIV** hinten angefügt, die Verdichtung des Zuschnitts
+geschieht ebenfalls dort — und **Register 2 der STEUERDATEI wird im selben Commit
+nachgezogen**, sonst wächst das Archiv, und nichts in der Steuerdatei sagt es. **Wer nur
+eine der beiden Dateien anfasst, erzeugt zwei ungekoppelte Wahrheiten.** Bleibt bei der
+Verdichtung ein Block übrig, der über seine Scheibe hinaus bindet, zieht er in die
+Steuerdatei und hinterlässt im Archiv einen Zeiger (s. „Was sie trägt").
 **Grenze:** Der Zuschnitt ist der Maßstab, gegen den das Protokoll misst. Was
 gestrichen wird, muss im Protokoll erkennbar bleiben — sonst misst es gegen
 nichts. Der Verlauf ist kein Ersatz: Er wird beim Pflicht-Gate nicht gelesen.
@@ -236,6 +243,21 @@ der zugehörigen Stub-Zeile in `CLAUDE.md` nachziehen, den Detail-Archiv-Eintrag
 ergänzen, `docs/aktiver-stand.md` danach löschen — nicht leer stehen lassen, eine
 leere Datei sähe aus wie eine Phase ohne Inhalt.
 
+**IST DIE STANDDATEI GETEILT, ÄNDERT SICH SCHRITT 2 AN ZWEI STELLEN — EINE ENTFÄLLT, EINE
+KOMMT HINZU:**
+- **DAS UMBENENNEN ENTFÄLLT.** Das Archiv trägt seinen Endnamen bereits; es bleibt
+  liegen, wo es liegt. Was bleibt: der Kopf ist schon da und wird nur um den Abschluss
+  ergänzt, und der Detail-Archiv-Eintrag in `CLAUDE.md` wird nachgezogen — er beschreibt
+  ab jetzt eine abgeschlossene Phase.
+- **DIE VORRATSDATEI WIRD GEHOBEN UND DANACH GELÖSCHT.** Ihre Einträge wandern nach
+  `docs/claude-history/backlog-polish.md`, unter eine **eigene datierte Überschrift am
+  Dateiende**, mit ihren Nummern; der Stub-Eintrag in `CLAUDE.md`, `## Aktive Dokumente`,
+  geht im selben Zug heraus. **DIE HEBUNG GEHÖRT ZU SCHRITT 1, NICHT ZU SCHRITT 2** —
+  hier steht sie, damit das Löschen nicht ohne sie geschieht. **Wer die Datei löscht,
+  ohne gehoben zu haben, begräbt jeden gemeldeten Punkt, und zwar still.**
+- **DIE STEUERDATEI WIRD GELÖSCHT WIE ZUVOR.** Ihre drei Register gehen mit ihr — sie
+  zeigen dann auf ein Archiv, das über den Detail-Archiv-Eintrag auffindbar ist.
+
 **Zwei Dateien, ein Zug.** Wer nur eine anfasst, erzeugt zwei ungekoppelte
 Wahrheiten (s. die `domains`-Regel).
 
@@ -244,22 +266,62 @@ bringt, lässt den anderen zurück.
 
 ### Die Standdatei
 
+**Seit dem 2026-09-08 ist „die Standdatei" ein VERBUND AUS BIS ZU DREI DATEIEN.** Der
+Name `docs/aktiver-stand.md` bleibt und meint seither den *steuernden* Teil. Die zwei
+anderen entstehen erst, wenn eine Phase so gross wird, dass ihre vollständige Lesung
+nicht mehr zu leisten ist:
+
+- **`docs/aktiver-stand.md` — die STEUERDATEI.** Sie ist das Pflicht-Gate. Ihr Name
+  ändert sich nie; an ihm hängt der Verfahrensslot („existiert sie nicht, läuft keine
+  Phase").
+- **`docs/claude-history/phase-N-<thema>.md` — das ARCHIV.** Die abgelaufenen Zuschnitte
+  und die abgeschlossenen Vermerke. **Sie trägt ihren Endnamen von Anfang an** und liegt
+  damit als einzige Datei jenes Ordners bei einer *laufenden* Phase. Das ist Absicht: Es
+  spart am Phasenende das Umbenennen und damit die Fehlerklasse, die
+  `docs/aktiver-stand-11.8.md` festhält.
+- **`docs/aktiver-stand-vorrat.md` — der VORRAT.** Er ist per Definition nicht abgelaufen
+  und geht deshalb *nicht* ins Archiv.
+
+**DIE STEUERDATEI FÜHRT JE AUSGELAGERTER KLASSE EIN REGISTER** — je Eintrag der wörtliche
+Titelanfang und die Zieldatei, ohne `##`-Marke. Ohne das Register wüsste eine Sitzung,
+die nur die Steuerdatei liest, nicht einmal, **dass** es etwas nachzusehen gibt; dann
+wäre die Teilung eine Verlagerung des Problems statt einer Lösung.
+
+**DIE TEILUNG IST KEIN PFLICHTTEIL EINER PHASE.** Eine kleine Phase bleibt bei einer
+Datei. Wer teilt, tut es als eigene, zugeschnittene Arbeit mit Prüfsummen über die
+verschobenen Bereiche — nicht nebenbei.
+
 **Wann sie entsteht:** bei der ersten Handlung der Phase — vor der ersten
 Aufklärung, vor der ersten Konzept-Runde, vor der ersten Bau-Freigabe. Nicht
 erst beim ersten Zuschnitt: Eine Phase kann mit einer Konzept- oder
 Aufklärungs-Runde beginnen, die keine Scheibe hervorbringt. In diesem Fenster
 fallen Befunde an, die keinen Ort haben — und sie landen dort, wo Platz ist.
+**Das gilt für die STEUERDATEI.** Archiv und Vorrat entstehen **nicht** zu Phasenbeginn,
+sondern erst mit dem Schnitt — und der ist eine eigene Arbeit, kein Automatismus. Eine
+Phase, die nie geteilt wird, hat sie nie.
 
 **Damit ist das Auftrag-0-Gate scharf:** Die Standdatei existiert genau dann,
 wenn eine Phase läuft. Ohne Ausnahme.
 
 **Der Lebenszyklus folgt dem Marker:** geplant → `docs/roadmap.md`, `[ ]` ·
 laufend → Standdatei · abgeschlossen → `docs/claude-history/`, `[x]`.
+**EINE AUSNAHME SEIT DEM 2026-09-08, UND SIE IST BENANNT STATT ERSCHLOSSEN:** Der Satz
+liest den ORDNER als Marker-Aussage — „liegt in `claude-history/`" hiesse „abgeschlossen".
+**Das trifft für das ARCHIV einer geteilten Standdatei nicht zu.** Es liegt dort, während
+seine Phase LÄUFT, und es WÄCHST — jeder Abschluss-Vermerk kommt hinzu. **DER MARKER
+ENTSCHEIDET, NICHT DER ORDNER.** Wer den Ordner als Beleg nimmt, hält eine laufende Phase
+für abgeschlossen und baut nicht weiter, wo weiterzubauen ist.
 
 **Nichts über eine laufende Phase geht je in `CLAUDE.md`.** Was dort steht, ist
 die Stub-Zeile mit ihrem Marker — und der wird überschrieben, nie angefügt.
 
-**Wer sie anlegt:** CC, auf Anweisung der Chat-Instanz.
+**Wer sie anlegt:** CC, auf Anweisung der Chat-Instanz. **Das gilt für alle drei.** Die
+Steuerdatei entsteht zu Phasenbeginn; Archiv und Vorratsdatei entstehen im Schnitt, und
+der Schnitt wird zugeschnitten wie eine Scheibe — Zuschnitt, Freigabe, Vollzug,
+Gegenprüfung. **Der Name des Archivs ist eine Owner-Entscheidung** (er ist der Endname
+der Phase); der Name der Vorratsdatei ist Architekten-Setzung und revidierbar.
+**„KEINE NEUE DATEI OHNE OWNER-ENTSCHEIDUNG" (`CLAUDE.md`) GILT UNVERÄNDERT** — beide
+sind keine Ausnahme davon, sondern durch die Teilungs-Entscheidung gedeckt.
 
 **Was sie sofort trägt:** ein Abschnitts-Verzeichnis im Kopf, den Gegenstand der
 Phase, und den Hinweis, dass sie ab jetzt das Pflicht-Gate jedes Bau- und
@@ -274,6 +336,26 @@ im selben Zug wie die Verdichtung des Zuschnitts.
 **Was sie trägt:** abgeschlossene Scheiben-Vermerke · Entscheidungen, die über
 ihre Scheibe hinaus binden · den Vorrat (gemeldet, nicht gebaut) ·
 Hebungs-Kandidaten.
+**NACH EINER TEILUNG VERTEILT SICH DAS AUF DIE DREI DATEIEN, UND ZWAR SO:**
+- **STEUERDATEI:** Kopf und Abschnitts-Verzeichnis · der Rahmen der Phase (Pflicht-Gate,
+  Gegenstand, was den Zuschnitt bindet, Fortschreibungs-Regeln) · **noch nicht
+  geschnittene Arbeit** · die drei Register · Entscheidungen, die über ihre Scheibe
+  hinaus binden · Hebungs-Kandidaten · den Zuschnitt der Teilung selbst.
+- **ARCHIV:** die abgelaufenen Zuschnitte · die abgeschlossenen Scheiben-Vermerke.
+- **VORRAT:** die Vorrats-Einträge, sonst nichts.
+
+**DIE TRENNLINIE IST ABGELAUFEN GEGEN BINDEND, NICHT ALT GEGEN NEU.** Ein Block, der in
+seinem eigenen Titel sagt, dass er über seine Scheibe hinaus bindet, wird aus dem
+abgelaufenen Zuschnitt **herausgelöst** und zieht in die Steuerdatei; an seiner
+Fundstelle im Archiv bleibt ein Zeiger, der sagt, was dort stand und wohin es gegangen
+ist. **Ohne ihn ist nicht zu unterscheiden, ob etwas umgezogen oder nie da gewesen ist.**
+Ein mechanischer Schnitt legte bindende Entscheidungen ins Archiv, das per Definition
+Abgelaufenes trägt — **und nichts meldete es**.
+
+**DIE NUMMERN LAUFEN ÜBER ALLE DREI DATEIEN DURCH.** Vermerke, Vorrats-Einträge und
+Hebungs-Kandidaten behalten ihre Nummer, auch wenn sie die Datei wechseln. **Wer auf
+einen Eintrag zeigt, nennt seit der Teilung den DATEINAMEN mit** — „Vorrat, Eintrag 3"
+allein trifft mehrere Dateien.
 
 **Die Nummern sind stabil und werden nie neu vergeben.** Ein neuer Vermerk tritt
 hinten an, auch wenn er der jüngste ist. Eine Nachnummerierung tötet lebende
@@ -347,6 +429,17 @@ auf den heutigen Stand gebracht, der überholte Wortlaut verschwindet.
 `docs/claude-history/`: das sind Zeitdokumente. Nicht rückwirkend — bestehende
 Stempel bleiben.
 
+**DIESELBE AUSNAHME WIE AM LEBENSZYKLUS-SATZ, UND AUS DEMSELBEN GRUND:** Der Satz oben
+schliesst die *Abschluss-Archive* aus, und das bleibt richtig. **Seit dem 2026-09-08 liegt
+in jenem Ordner aber auch das ARCHIV einer LAUFENDEN Phase** — der ausgelagerte Teil einer
+geteilten Standdatei, der seinen Endnamen von Anfang an trägt. **Es ist kein Zeitdokument:
+es wächst, jeder Abschluss-Vermerk kommt hinzu, und eine falsche Angabe darin wird
+richtiggestellt wie in jedem anderen gepflegten Dokument.** **DER MARKER ENTSCHEIDET, NICHT
+DER ORDNER.**
+**WARUM DAS KEINE FORMSACHE IST:** Wer nach ORDNER filtert statt nach Marker, nimmt eine
+laufende, wachsende Datei von jeder Richtigstellung aus. Sie sieht danach unberührt aus,
+**weil sie unberührbar gemacht wurde** — und niemand merkt, wann das angefangen hat.
+
 **Gestempelt wird nur bei einem Mechanismuswechsel** — wenn der überholte Text
 seine Begründung mitträgt und die beim nächsten Wechsel wieder gebraucht wird.
 Wer stempelt, schreibt dazu, **unter welcher Bedingung der alte Text wieder
@@ -401,11 +494,21 @@ Warum einer Regel), nicht flächendeckend: **Code-first, History-for-why.**
 Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
 
 - **Auftrag 0 — Pflicht-Gate:** Lies `docs/aktiver-stand.md` vollständig, falls
-  sie existiert. Beim zweiten und jedem weiteren Prompt derselben Sitzung
+  sie existiert.
+  **IST DIE STANDDATEI GETEILT, GILT DAS FÜR DIE STEUERDATEI — UND NUR FÜR SIE.** Sie
+  wird vollständig gelesen; **Archiv und Vorratsdatei werden NICHT gelesen**, sondern
+  über die drei Register der Steuerdatei erschlossen. Wer einen dort verzeichneten
+  Zuschnitt, Vermerk oder Vorrats-Eintrag tatsächlich braucht, schlägt **genau ihn** auf
+  und sagt im Bericht, welchen. **DAS IST DER GANZE ZWECK DER TEILUNG:** Ein Pflicht-Gate,
+  das niemand vollständig liest, ist keines — es sieht bei jeder Sitzung genauso erfüllt
+  aus wie beim ersten Mal. Wer statt der Register das Archiv „sicherheitshalber" mitliest,
+  stellt genau den Zustand wieder her, den die Teilung beseitigt hat.
+  Beim zweiten und jedem weiteren Prompt derselben Sitzung
   genügt das Verzeichnis plus die im Prompt benannten Abschnitte — zusammen mit
   der Angabe, dass die Datei seit der vollständigen Lesung unverändert ist,
   gemessen an Zeilenzahl und `git status`, nicht behauptet. Ändert sich die
-  Datei oder wurde der Kontext seither verdichtet, entfällt die Verkürzung. Der
+  Datei oder wurde der Kontext seither verdichtet, entfällt die Verkürzung. **Diese
+  Verkürzung ist von der Teilung unberührt und meint weiterhin die STEUERDATEI.** Der
   erste Prompt einer Sitzung und jede Doku-Runde lesen vollständig — dort
   entstehen die Widersprüche, und wer die Abschnitte benennt, hat vorher
   entschieden, was relevant ist. Existiert sie nicht, sag das ausdrücklich

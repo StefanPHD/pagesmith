@@ -501,7 +501,11 @@ liegen beide hier und finden einander.
       DIE VERMERKE LIEGEN IM ARCHIV docs/claude-history/phase-11.2-google.md; der Weg
       dorthin führt über Register 2 in docs/aktiver-stand.md.
 
-      WAS AUSSTEHT — ACHT POSTEN. DAS IST DIE HÄLFTE, DIE DEN MARKER TRÄGT:
+      WAS AUSSTEHT — SIEBEN POSTEN. DAS IST DIE HÄLFTE, DIE DEN MARKER TRÄGT.
+      DIE LISTE FÜHRT ACHT NUMMERN UND SIEBEN OFFENE POSTEN, und das ist kein Zählfehler:
+      Nummer (4) ist am 2026-09-08 geschlossen worden und bleibt als geschlossene stehen —
+      Nummern werden hier nicht neu vergeben, und eine Umnummerierung machte jeden Zeiger
+      von aussen tot.
       · (1) DIE SIEBEN-TAGE-FRIST UND DER STATUSWECHSEL AUF "IN PRODUKTION". ER STEHT
         ZUERST, WEIL ER EINE LAUFENDE UHR TRÄGT: Das Erneuerungs-Token stirbt am
         2026-09-11 um 07:26:58 UTC (09:26:58 Ortszeit). Fundstelle: docs/aktiver-stand.md,
@@ -522,7 +526,10 @@ liegen beide hier und finden einander.
         GILT, ist nicht gemessen; gebaut ist "WEB" als OWNER-ENTSCHEIDUNG 2026-09-01.
       · (3) DIE KOPFZEILE x-goog-user-project. Sie wird nicht gesendet; ob sie Pflicht
         ist, ist in beide Richtungen ungemessen.
-      · (4) DER NACHGESCHULDETE LIVE-NACHWEIS DER SCHEIBE 11.2a.
+      · (4) DER NACHGESCHULDETE LIVE-NACHWEIS DER SCHEIBE 11.2a — GESCHLOSSEN AM
+        2026-09-08. Der Posten bleibt an seiner Nummer stehen, weil Nummern in diesem
+        Projekt nicht neu vergeben werden; die Begründung steht im NACHTRAG 2026-09-08,
+        ZWEITER DES TAGES, am Ende dieses Eintrags.
       · (5) DIE WIRKUNG AUF DIE GEBOTE. Gemessen ist eine Conversion IN DER
         BERICHTERSTATTUNG, nicht ihre Wirkung auf die Gebotssteuerung; ob das
         14-Tage-Fenster aus (p)/H2 für die gewählte Gestalt überhaupt gilt, ist gelesen
@@ -562,6 +569,91 @@ liegen beide hier und finden einander.
       Neu-Verbindungen und die Erledigung des Schema-Risikos sind GEMESSEN (OWNER
       2026-09-04 bzw. CC 2026-09-08). Dass die Frage aus B1 beantwortet ist, ist eine
       ABLEITUNG.
+
+      NACHTRAG 2026-09-08, ZWEITER DES TAGES — POSTEN (4) IST GESCHLOSSEN, UND ZWAR AUF
+      EINEM BENANNTEN KRITERIUM. Der Wortlaut darüber bleibt Zeichen für Zeichen stehen;
+      dieser Nachtrag tritt DANEBEN, wie durchgehend an diesem Eintrag.
+
+      DIE SCHULD, WÖRTLICH AUS VERMERK 2 (docs/claude-history/phase-11.2-google.md):
+      "Der Beweis dieser Scheibe sind TESTS. EINEN LIVE-TEST GIBT ES NICHT, weil nichts
+      gesendet wird — und gesendet wird nichts, weil die Zugangsdaten keinen Ort haben"
+      … "DIE NÄCHSTE SCHEIBE SCHULDET IHN NACH — für diese hier UND für die eigene."
+
+      DAS KRITERIUM STEHT IM ARCHIV, ES IST DREITEILIG, UND ES IST WÖRTLICH ZITIERBAR.
+      VERMERK 3 nennt es an MESSUNG A: "MESSUNG A IST DIESER NACHWEIS NICHT und darf nicht
+      als solcher verbucht werden: Sie hat keine Zeile Produktivcode ausgeführt, keinen
+      Aufrufer hergestellt und keine Funktion dieser Scheibe berührt."
+      ES STEHT VIERMAL, und die Wiederholung ist der Punkt: VERMERK 3 (an Messung A),
+      VERMERK 4 (an Messung B1 — "Sie hat keine Zeile Produktivcode ausgeführt und keinen
+      Aufrufer hergestellt — die Nutzlast ist von Hand nachgebaut, nicht von
+      buildGoogleEvent erzeugt"), VERMERK 6 und VERMERK 7 zeichengleich ("buildGoogleEvent
+      und extractGoogleClickIds haben weiterhin KEINEN Aufrufer im Produktivcode"). Dazu
+      adressiert der Verdichtungs-Block der Scheibe 1a die Schuld SYMBOLGENAU.
+
+      DER KONTRAST IST DER EIGENTLICHE BELEG: An genau diesem Kriterium sind ZWEI
+      Kandidaten ausdrücklich VERWORFEN worden — Messung A, weil sie keine Zeile
+      Produktivcode ausgeführt hat, und Messung B1, weil sie die Nutzlast von Hand
+      nachgebaut hat. EIN KRITERIUM, DAS ZWEIMAL ETWAS AUSGESCHLOSSEN HAT, IST KEIN
+      NACHTRÄGLICH PASSEND GEMACHTES.
+
+      DER ABGLEICH, BEDINGUNG FÜR BEDINGUNG, je mit Fundstelle:
+      · PRODUKTIVCODE AUSGEFÜHRT — der Google-Adapter forwardToGoogle
+        (src/lib/capi/google-forward.ts) liegt seit Scheibe 4 im Ingest-Pfad.
+      · EIN AUFRUFER HERGESTELLT — dieselbe Datei ruft extractGoogleClickIds,
+        buildGoogleEvent und buildIngestEventsRequest; es ist ihr EINZIGER
+        Produktiv-Aufrufer (GEMESSEN am Repo, CC, 2026-09-08).
+      · DIE NUTZLAST VON buildGoogleEvent ERZEUGT, nicht von Hand nachgebaut — der
+        Netzruf sendet, was buildIngestEventsRequest gebaut hat.
+      UND DAS MATERIAL: Am 2026-09-07 hat eine ECHTE, vom Anbieter vergebene Klick-Kennung
+      diesen Pfad genommen (MESSUNG F, docs/ziel-befunde.md, Google-Abschnitt, Teil (cd)),
+      und die so gebaute Nutzlast ist beim Anbieter angenommen und als Conversion VERBUCHT
+      worden (MESSUNG G, Teile (cf) und (cg)).
+
+      EIN BEFUND, DER DIESEN POSTEN ÄLTER MACHT, ALS DIE REST-LISTE IHN FÜHRTE — und er
+      gehört an den Anfang jeder Weiterverwendung: VERMERK 10 (Scheibe 4, 2026-09-01) hat
+      die Schuld BEREITS ALS EINGELÖST VERMERKT — "SCHULD 2 — DIE SCHULD AUS VERMERK 2:
+      EINGELÖST … Beide laufen jetzt im Produktivpfad, und Schritt 2 hat sie gefahren."
+      DORT IST SIE AUSDRÜCKLICH SCHWÄCHER BELEGT ALS HIER: "DAS IST EINE ABLEITUNG AUS ZWEI
+      LOGZEILEN UND KEINE ABLESUNG DER NUTZLAST."
+      WARUM DER POSTEN TROTZDEM IN DER REST-LISTE STAND: Sie hat ihn aus der
+      Vorbedingungs-Aufzählung von VERMERK 3 übernommen, die dieser Eintrag weiter oben
+      zitiert — und niemand hat ihn gegen VERMERK 10 gehalten. DAS IST KEINE
+      DOPPELSCHLIESSUNG, SONDERN EINE NACHGEZOGENE: Die Einlösung datiert auf den
+      2026-09-01; MESSUNG F und G ersetzen ihre Ableitung aus zwei Logzeilen durch echtes
+      Material bis zur Verbuchung.
+
+      DIE FORM DIESER AUSSAGE, UND SIE IST DER WICHTIGSTE SATZ DIESES NACHTRAGS:
+      F UND G SIND GEMESSEN. DASS SIE DAS KRITERIUM ERFÜLLEN, IST EINE ABLEITUNG aus dem
+      Vergleich von Kriterium und Code — KEINE Messung an der Schuld selbst und KEIN
+      Architekten-Urteil. SIE IST WIDERLEGBAR: Wer eine VIERTE Bedingung findet, die das
+      Archiv führt und die F/G nicht erfüllen, hebt sie auf. GEPRÜFT UND NICHT GEFUNDEN
+      (GEMESSEN am Archivtext, CC, 2026-09-08; Achse: sämtliche Vorkommen von "Schuld" und
+      "Live-Nachweis der Scheibe 11.2a" über die ganze Datei).
+
+      DIE EINE LÜCKE, DIE BLEIBT UND NICHT MITGESCHLOSSEN WIRD: WELCHER der drei
+      Kennungs-Parameter getroffen hat, ist UNGEMESSEN — die Grenze steht in Teil (cd)
+      selbst und hängt an Vorrats-Eintrag 59 (docs/aktiver-stand-vorrat.md): Der Code kennt
+      keine Vorrangregel und sendet alle gefundenen Kennungen; wie der Anbieter zwei
+      zugleich verarbeitet, ist ungemessen. SIE IST HEUTE NICHT HERSTELLBAR — sie braucht
+      einen echten Anzeigenklick mit zwei Parametern, und den kann niemand erzwingen.
+
+      EIN PFLICHT-STOPP FÜR JEDEN KÜNFTIGEN GOOGLE-LIVE-TEST, und er steht hier, weil er
+      sonst im Bericht einer Runde stirbt: DIE PRÜFSEITE MUSS NEU VERÖFFENTLICHT SEIN.
+      Der Consent-Schlüssel geht zur ERZEUGUNGSZEIT in den ausgelieferten Text; eine Seite
+      von VOR der Google-Verdrahtung trägt keinen google-Schlüssel, und "undefined === true"
+      ist false. DER LAUF MISST DANN EIN FAIL-CLOSED-VERHALTEN UND SCHREIBT ES DEM ADAPTER
+      ZU. Dreistufig am Code belegt (GEMESSEN, CC, 2026-09-08): der cns-Block entsteht im
+      Erzeuger (src/lib/tracking/meta.ts), consentAllows liest ihn und gibt für einen
+      fehlenden Ziel-Schlüssel false (src/lib/tracking/consent-wire.ts), und
+      src/lib/tracking/consent-targets.ts nennt genau das "das DRITTE der vier Tore".
+      ES IST DERSELBE MECHANISMUS WIE "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM
+      DEPLOY" (docs/immer-beachten.md), dort BELEG 2.
+
+      PROVENIENZ DIESES NACHTRAGS: Die Zitate aus VERMERK 2, 3, 4, 6, 7 und 10 sind GELESEN
+      im Archiv (CC, 2026-09-08). Der Aufrufer-Befund und der dreistufige Consent-Beleg sind
+      GEMESSEN am Repo (CC, 2026-09-08). MESSUNG F und G sind GEMESSEN 2026-09-07 (OWNER).
+      Dass F und G das Kriterium erfüllen, ist eine ABLEITUNG; dass keine vierte Bedingung
+      existiert, ist ein NICHT-TREFFER mit benannter Achse.
 - [x] Phase 11.8 — Autorisierungsschicht: die Ablage und die Erneuerung MEHRWERTIGER
       Zugangsdaten.
 

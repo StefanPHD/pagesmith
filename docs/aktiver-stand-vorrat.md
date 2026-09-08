@@ -2738,3 +2738,53 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     PROVENIENZ: Alle Zahlen **GEMESSEN am Repo (CC, 2026-09-08)**. Dass die Trennung die
     Mehrdeutigkeit erzeugt, ist eine **ABLEITUNG** aus der Owner-Entscheidung desselben Tages,
     keine Messung.
+
+64. **DIE ÜBERGABE-ANWEISUNG "WER EINEN BEACON PRÜFT, LIEST DEN EREIGNISNAMEN AUS DEM
+    PAYLOAD" IST AUF DER LOG-ACHSE NICHT AUSFÜHRBAR.**
+    **GEMESSEN am Code (CC, 2026-09-08): DER EREIGNISNAME WIRD NIRGENDS GELOGGT, UND ZWAR
+    ABSICHTLICH.** Der Kommentar in `src/lib/capi/google-forward.ts` sagt den Grund an Ort
+    und Stelle: "DER EREIGNIS-NAME STEHT NICHT IN DER MELDUNG. Er ist ein vom Betreiber FREI
+    getippter String … also Kundendatum auf dem meistgetroffenen Pfad der Plattform.
+    **Geloggt wird der GRUND, nie der WERT.**" Die Riegel-Zeile lautet deshalb "no
+    destination for event" ohne den Namen. **DER PAYLOAD WIRD EBENFALLS NIE AUSGEGEBEN** —
+    `JSON.stringify(payload)` geht in den Netzruf, nicht in eine Logzeile; und der
+    Antwort-Rumpf wird bewusst nicht gelesen (Auflage TRANSIT-ONLY).
+    **WO ER SEHR WOHL ABLESBAR IST — zwei Orte, beide KEINE Log-Achse:** in der Datenbank
+    als `events.event_type` (`persistEvent`, `src/lib/analytics/persist.ts`, gekappt auf
+    `EVENT_TYPE_MAX_LENGTH`), und als **Schlüssel des Nachschlags** in `resolveDestinationId`
+    (`google-forward.ts`) — dort entscheidet er über die `productDestinationId`, erscheint
+    aber selbst nicht in der Nutzlast.
+    **WARUM DAS EIN EIGENER POSTEN IST UND KEIN HINWEIS: WER IHN IM LOG SUCHT, FINDET IHN NIE
+    UND HÄLT DAS FÜR EINEN BEFUND.** Eine Anleitung, die "lies den Ereignisnamen aus dem
+    Payload" sagt, schickt den Prüfenden an eine Achse, die es nicht gibt — und der
+    Nicht-Treffer sieht aus wie ein Defekt am Adapter.
+    GEMELDET 2026-09-08, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder dazu, ob der Name
+    geloggt werden sollte (die Auflage spricht dagegen), noch dazu, welche Achse
+    stattdessen zu nehmen ist.
+    TRIGGER: **die nächste Live-Test-Anleitung für ein Google-Ereignis** — spätestens die,
+    die den Ereignisnamen als Prüfschritt führt.
+    PROVENIENZ: Alle vier Fundstellen **GEMESSEN am Code (CC, 2026-09-08)**. Dass ein
+    Prüfender den Nicht-Treffer als Befund liest, ist eine **ABLEITUNG**, keine Beobachtung.
+
+65. **DIE ZUSTÄNDE HINTER `[capi/resolve] secret unusable` SIND MEHR ALS DREI.**
+    **VERMERK ZU VORRATS-EINTRAG 42, KEINE KORREKTUR DORT.** Jener Eintrag zählt in seinem
+    dritten Vermerk **DREI** Ursachen — `access_token_expired`, `refresh_token_expired` und
+    den Bestätigungs-Beacon, der die Zeile auch im Erfolgsfall erzeugt.
+    **AM CODE ENTSTEHT SIE AN DREI FUNDSTELLEN, UND ZWEI DAVON FÜHRT ER NICHT** (GEMESSEN,
+    `src/lib/capi/token.ts`, CC, 2026-09-08): zusätzlich bei `reason: decrypt_${kind}` und
+    bei `reason: parse_${kind}`. Beide `reason`-Werte sind ihrerseits mehrwertig — sie tragen
+    das `kind` einer Union.
+    **DER EINTRAG 42 IST NICHT FALSCH, UND DAS STEHT ZUERST:** Er zählt die Zustände SEINER
+    Achse — die der Uhren-Prüfung, um die es ihm geht. Die zwei anderen liegen davor im
+    Kontrollfluss und gehören einer anderen Frage.
+    **DIE FOLGE GEHT IN DIESELBE RICHTUNG WIE JENER EINTRAG, NICHT GEGEN IHN: DIE ZEILE IST
+    ALS LIVE-TEST-ACHSE NUR NOCH UNTAUGLICHER.** Eintrag 42 sagt "Wer mit ihr misst, misst
+    die Anwesenheit eines Wortes, nicht mehr die eines Defekts" — bei fünf statt drei
+    Ursachen gilt das verschärft.
+    GEMELDET 2026-09-08, NICHT GEBAUT. **KEINE EMPFEHLUNG** — weder zur Aufspaltung der
+    Zeile noch zu einem anderen Wortlaut je Zweig.
+    TRIGGER: **die nächste Runde, die Vorrats-Eintrag 42 ohnehin öffnet**, ODER die erste
+    Live-Anleitung, die diese Zeile als Achse vorsieht.
+    PROVENIENZ: Die drei Fundstellen und ihre `reason`-Werte **GEMESSEN am Code (CC,
+    2026-09-08)**. Dass Eintrag 42 auf seiner Achse richtig zählt, ist eine **ABLEITUNG** aus
+    dem Vergleich der beiden Achsen, keine zweite Messung.

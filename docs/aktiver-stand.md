@@ -149,14 +149,63 @@ Oberflächen-Scheibe.
 
 ### Reichweite: meta und tiktok — und ausdrücklich sonst keines
 
-**MIT DABEI:**
+**RICHTIGGESTELLT AM 2026-09-09, NICHT GESTEMPELT — DIE ÜBERSCHRIFT BESCHREIBT DIE
+REICHWEITE DER GEBAUTEN SCHEIBEN, NICHT DEN GEGENSTAND DER PHASE.**
+
+**DIE PHASE 11.3 UMFASST ALLE FÜNF FAN-OUT-ZIELE** (OWNER-ENTSCHEIDUNG 2026-09-09).
+Gebaut sind zwei davon; drei stehen aus. **DIE PHASE IST DAMIT NICHT FERTIG**, und der
+Marker in CLAUDE.md bleibt aus genau diesem Grund auf `[ ]`.
+
+**WAS HIER STAND UND WORAN ES SICH AUFGEHÄNGT HAT:** Die Liste unten trennte "MIT DABEI"
+von "NICHT DABEI" und schloss mit dem Satz, ein späterer Anlauf bei pinterest oder google
+sei "eine EIGENE Runde". **Dieser Halbsatz ist zweideutig** — er liest sich als "eine
+weitere Scheibe DIESER Phase" und als "eine ANDERE Phase". Gemeint ist das Erste. Wer ihn
+als das Zweite liest, hält die Phase nach 11.3b für abgearbeitet, obwohl drei Fünftel
+ihres Gegenstands offen sind.
+
+**DIE LISTE UNTEN BLEIBT WÖRTLICH STEHEN UND WIRD NICHT UMGESCHRIEBEN**, denn sie ist als
+Aussage über den ZUSCHNITT DER SCHEIBEN 11.3a und 11.3b unverändert richtig, und ihre drei
+Gründe sind der heutige Kenntnisstand. **Was sich ändert, ist ihre Überschrift-Ebene:**
+"NICHT DABEI" heisst **nicht in den gebauten Scheiben**, nicht "nicht in der Phase".
+
+**AUCH DIE ÜBERSCHRIFT BLEIBT WÖRTLICH, obwohl ihr Wortlaut jetzt zu eng ist** — und das
+ist keine Bequemlichkeit: Sie wird von aussen ZITIERT. GEMESSEN am Repo (CC, 2026-09-09):
+zweimal — in der verworfenen Alternative an Entscheidung (1) und **im Kopf von
+`src/lib/tracking/credential-state.ts`**, also in einer Datei, die eine Doku-Runde nicht
+anfasst. Eine Umbenennung machte beide Zeiger tot, und ein toter Zeiger fällt an keinem
+Gate auf.
+
+**WAS JEDES DER DREI OFFENEN ZIELE ALS NÄCHSTES BRAUCHT — DREI VERSCHIEDENE SCHRITTE, UND
+HIER WIRD KEINER DAVON VOLLZOGEN:**
+- **pinterest — EINE MESSUNG.** Es ist bekannt, WO der Träger sitzt; unbekannt ist, welcher
+  der zwei Namen greift. Ein Lauf gegen die Schnittstelle entscheidet es. **Danach ist es
+  baubar.**
+- **google — EIN ANDERER WEG.** Hier fehlt keine Messung, sondern ein Träger, der die
+  Beobachtung nicht abschneidet. Ob es ihn gibt, ist offen; solange nicht, kann diese Phase
+  für google nichts liefern, was ihr eigenes Versprechen einlöst.
+- **linkedin — EINE LESUNG, UND MÖGLICHERWEISE EIN BEGRÜNDETES NEIN.** Der Stand ist ein
+  NICHT-TREFFER, kein Beweis der Abwesenheit. Hat der Anbieter keinen Testmodus, endet
+  dieses Fünftel der Phase **nicht mit Code, sondern mit einer festgehaltenen Feststellung**
+  — und das ist ein gültiger Abschluss, kein Ausfall.
+
+**WAS HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN IST:** die Reihenfolge der drei, ihr Zuschnitt in
+Scheiben, und ob linkedin am Ende gebaut oder abgeschlossen wird. **Der Zustand je
+(Projekt, Ziel) aus 11.3a hat für alle drei bereits die Form**; was ihnen fehlt, steht oben
+je Ziel.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-09 (die Phase umfasst fünf Ziele). Die drei
+Befunde darunter sind unverändert die GELESENEN vom 2026-08-11, 2026-08-20 und 2026-08-24;
+diese Runde hat **nichts neu gemessen und nichts neu gelesen**.
+
+**MIT DABEI — GEBAUT IN DEN SCHEIBEN 11.3a UND 11.3b:**
 - **meta** — Träger ist ein Feld in der NUTZLAST (`test_event_code`). GEMESSEN am Repo
   (CC, 2026-09-08); der Weg selbst ist in Phase 6 live bewiesen.
 - **tiktok** — Träger ist ebenfalls ein Feld in der Nutzlast (`test_event_code`), aber aus
   einer EIGENEN Variablen. GEMESSEN am Repo (CC, 2026-09-08).
 
-**NICHT DABEI, je mit dem Grund — und die Gründe sind DREI VERSCHIEDENE, keine
-Sammelbegründung:**
+**NICHT DABEI — GEMEINT IST: NICHT IN DEN GEBAUTEN SCHEIBEN.** Sie gehören zur Phase
+(s. die Richtigstellung oben). Je mit dem Grund — und die Gründe sind DREI VERSCHIEDENE,
+keine Sammelbegründung:
 - **pinterest — ANDERER TRÄGER, UND SEIN NAME IST UNEINHEITLICH.** Der Testmodus ist dort
   kein Nutzlast-Feld, sondern ein QUERY-PARAMETER an der Endpunkt-URL. Dazu trägt er in
   der Anbieter-Doku ZWEI Namen: die Conversions-Seite sagt `test=true`, die
@@ -178,6 +227,11 @@ Sammelbegründung:**
 heutigen Kenntnisstand. Fällt bei pinterest eine Messung, oder findet sich bei google ein
 Weg, der die Diagnostik nicht kappt, ist das eine EIGENE Runde — und der Zustand je
 (Projekt, Ziel), den 11.3a baut, hat für sie bereits die Form.
+
+**ZU "EINE EIGENE RUNDE" — DER SATZ BLEIBT, SEINE LESART IST FESTGELEGT (2026-09-09):**
+gemeint ist eine eigene Runde INNERHALB dieser Phase, nicht eine andere Phase. Der Satz
+war an dieser Stelle richtig gemeint und ist zweideutig geschrieben; die Auflösung steht
+in der Richtigstellung am Kopf dieses Abschnitts und wird hier nicht verdoppelt.
 
 ### Abgrenzung zu Phase 11.4 — 11.3 baut die MARKIERUNG, 11.4 den AUSLÖSER
 

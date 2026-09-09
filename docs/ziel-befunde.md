@@ -132,6 +132,8 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
 - ## TikTok (Events API 2.0)
   - ### Abschnitts-Lesung 2026-09-08 der Events-API-2.0-Dokumentation zum Testmodus —
     die Teile (a) bis (g)
+  - ### Beobachtung an der Test-Events-Ansicht des Werbekontos (2026-09-09) — der
+    Teil (h)
 
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
 STATT AUFGELÖST WIRD:** Dieses Verzeichnis führte bis dahin AUSSCHLIESSLICH die drei
@@ -6246,6 +6248,58 @@ ERZEUGT SEIN, NICHT VOM GEGENSTAND". **Jeder künftige Lauf gegen diesen Doku-Ba
     (Conversions API)", Teil (e)). Anders als dort steht daneben aber KEINE Aussage darüber,
     was mit den markierten Ereignissen geschieht; bei tiktok bleibt also beides offen: die
     Wirkung des Entfernens UND die Wirkung des Markierens.
+
+### Beobachtung an der Test-Events-Ansicht des Werbekontos (2026-09-09) — der Teil (h)
+
+**HERKUNFT:** GELESEN an der OBERFLÄCHE eines eigenen TikTok-Werbekontos (Stefan,
+2026-09-09), im Zuge des Live-Tests der Scheibe 11.3b. **NICHT an der Dokumentation, NICHT
+gemessen.** Es ist dieselbe Herkunftsklasse wie bei Pinterest, Teile (r) bis (t) — eine
+Aussage, die der Anbieter in seiner eigenen Oberfläche trifft.
+
+(h) DIE TEST-EVENTS-ANSICHT SAGT, TEST-EREIGNISSE LANDETEN NICHT IN DEN ECHTEN DATEN.
+    **WÖRTLICH:** "Test events will not be included in actual data."
+    Gelesen in derselben Ansicht, aus der nach Teil (b) der Testcode kopiert wird (Events
+    Manager, Pixel, Reiter "Test Events").
+
+    **WARUM DAS HIER STEHT UND NICHT UNTER (d):** Teil (d) ist eine Aussage über die
+    DOKUMENTATION, und die bleibt unverändert richtig — die Doku schweigt weiterhin, mit
+    der dort benannten Achse über sechs Seiten. **Diese Zeile kommt aus einer ANDEREN
+    QUELLE.** Sie hebt das Schweigen der Doku nicht auf; sie tritt daneben.
+
+    **SIE IST DAS GEGENTEIL VON METAS AUSSAGE, UND DAS IST DER GRUND, WARUM SIE EINEN
+    EIGENEN TEIL BEKOMMT.** Meta sagt in seiner Doku, ein test-markiertes Ereignis werde
+    NICHT verworfen und fliesse in Targeting und Messung (Abschnitt "Meta (Conversions
+    API)", Teil (a)). TikToks Oberfläche sagt für ihre Test-Ereignisse das Umgekehrte.
+    **ZWEI ZIELE DERSELBEN KLASSE VERHALTEN SICH DAMIT MÖGLICHERWEISE ENTGEGENGESETZT** —
+    und wer von einem auf das andere schliesst, trifft eine Annahme über ein fremdes
+    System.
+
+    **WAS DIESE ZEILE IST UND WAS NICHT — die Trennung trägt den ganzen Teil:** Sie ist
+    eine ZUSAGE DES ANBIETERS in seiner Oberfläche, **keine Beobachtung des Verhaltens**.
+    Sie steht damit über einem Schweigen, aber unter einer Messung. Wer sie als Beleg
+    dafür nimmt, dass TikTok test-markierte Ereignisse tatsächlich aus Berichterstattung
+    und Optimierung heraushält, hebt eine gelesene Zusage auf den Rang einer Messung —
+    genau der Fehler, den dieses Projekt bei Meta schon einmal in die andere Richtung
+    gemacht hat.
+
+    **AUSDRÜCKLICH NICHT GEMESSEN, und der Satz gehört dazu, weil er die naheliegende
+    nächste Prüfung benennt:** ob das im selben Lauf gesendete Ereignis AUCH in TikToks
+    NORMALER Ereignis- bzw. Berichtsansicht erscheint. Der Lauf vom 2026-09-09 hat
+    ausschliesslich die TEST-Ansicht angesehen; die andere ist nicht geöffnet worden.
+    **Erst dieser Vergleich träfe eine Aussage über das Verhalten** statt über die Zusage.
+
+    **WORAUF ES IM PRODUKT DRÜCKT:** Die Rahmung der Phase 11.3 ("Sichtbarkeit, nicht
+    Isolation") ruht auf Metas Aussage. Trifft TikToks Zeile zu, gilt der Preis dieser
+    Rahmung — der Testklick zählt beim Anbieter als echte Conversion — **für TikTok
+    womöglich nicht**. Eine Produktzeile, die das für alle Ziele gleich behauptet, wäre
+    dann für eines davon zu grob. Der offene Punkt dazu wird in der Standdatei geführt
+    (docs/aktiver-stand.md, Vorrat (22)); **hier steht der Befund, dort die Folge für den
+    Text** — zweimal geschrieben liefen sie auseinander.
+
+    **DIE GRENZE DER REICHWEITE, die schon (d) trägt, gilt auch hier:** Das Sandbox-Konto
+    unter "Get Started" der Marketing-API ist weiterhin nicht geöffnet (s. "Der gelesene
+    Umfang — TikTok"). Es bleibt der naheliegendste Ort für eine BELASTBARE Aussage über
+    Testdaten und Berichterstattung.
 
 ### Der gelesene Umfang — TikTok
 

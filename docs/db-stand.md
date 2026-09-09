@@ -87,6 +87,19 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   die volle Probe vom 2026-08-26, für 0026 die Ablesung vom 2026-08-27.
   DIE APPLIED_AT-REGEL VON 2026-08-26 GILT UNVERÄNDERT WEITER und ist mit 0027 zum vierten
   Mal bestätigt: gefüllt ab 0018 durchgehend.
+  NACHGEZOGEN AM 2026-09-09: DER HEUTIGE STAND IST 0001-0028. GEMESSEN am 2026-09-09
+  (SQL-Editor, Owner, Abfrage auf schema_migrations ab '0026'): 0026 (applied_at
+  2026-08-27 10:24:39 UTC), 0027 (2026-09-05 09:04:02 UTC) und 0028
+  (0028_project_secrets_test_mode.sql, 2026-09-09 13:40:36 UTC).
+  DIE GRENZE IST DIESELBE KLASSE WIE BEI 0026 UND 0027: Abgelesen ist der VOLLZUG dieser
+  drei Migrationen, NICHT die arithmetische Lückenlosigkeit — die Abfrage filterte auf
+  version >= '0026'. Für 0001-0025 gilt weiterhin die volle Probe vom 2026-08-26.
+  DIE APPLIED_AT-REGEL IST MIT 0028 ZUM FÜNFTEN MAL BESTÄTIGT.
+  EINE REIHENFOLGE-AUSSAGE, DIE HIER ERSTMALS AUS ZWEI ZEITSTEMPELN FÄLLT statt aus der
+  Disziplin: 0028 lief um 13:40:36 UTC, der erste Live-Lauf der Scheibe 11.3a war gegen
+  den Anker 13:57:52Z gefahren, die Läufe der Scheibe 11.3b gegen 16:15Z, 17:02Z und
+  17:08Z. MIGRATION VOR CODE-DEPLOY IST DAMIT AN DIESEM TAG NACHVOLLZIEHBAR und nicht nur
+  zugesagt (docs/db-regeln.md, "MIGRATION IMMER VOR CODE-DEPLOY").
   WER DIE LÜCKENLOSIGKEIT WIEDER ARITHMETISCH WILL, fährt Probe 1 und 1b aus
   supabase/checks/db-stand.sql — sie filtern nicht. Das ist in diesem Lauf NICHT geschehen.
   · 0001-0021, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl = Spannweite+1),
@@ -132,6 +145,13 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   zur Migration 0027 — sie legt keine Policy an, und eine Migration, die es doch täte,
   würde an keinem Gate rot. Die Gesamtzahl ZEHN oben ist bei dieser Gelegenheit NICHT
   nachgemessen worden; abgelesen ist allein die eine Tabelle.
+  UND AM 2026-09-09 EIN DRITTES MAL, als GEGENKONTROLLE zur Migration 0028 (SQL-Editor,
+  Owner): relrowsecurity TRUE, Policy-Zahl NULL. Auch 0028 legt keine Policy an. DIE
+  GESAMTZAHL ZEHN IST AUCH DIESMAL NICHT NACHGEMESSEN — abgelesen ist allein
+  project_secrets.
+  DASS DIESE ABLESUNG BEI JEDER MIGRATION AN DIESER TABELLE WIEDERHOLT WIRD, IST KEIN
+  RITUAL: Die leere Policy-Liste IST hier die tragende Kontrolle, und eine Migration, die
+  sie bräche, täte es lautlos.
   EINE FOLGE AUS DER SCHEIBE 1b-2b, die hierher gehört, weil sie die Leere zur
   VORAUSSETZUNG macht statt nur zur Kontrolle: Der bedingte Schreibvorgang des Riegels
   läuft über den Admin-Client (service_role). Unter aktiver RLS ohne Policy wäre "keine
@@ -195,6 +215,10 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   die Probe vom 2026-09-05 filterte auf diese eine Spalte. Dass "add column" anhängt, ist
   eine ABLEITUNG aus dem Vorgang und keine Messung; wer die volle Reihenfolge braucht,
   fährt Probe 2 erneut.
+  NACHGEZOGEN AM 2026-09-09 — DER ABSATZ DARÜBER BLEIBT WÖRTLICH STEHEN UND IST ALS AUSSAGE
+  ÜBER DEN 2026-09-05 RICHTIG. Die volle Probe ist am 2026-09-09 gefahren worden:
+  secret_version steht auf ORDINAL_POSITION 8 (SQL-Editor, Owner, ungefilterte
+  Spalten-Abfrage auf project_secrets). AUS DER ABLEITUNG IST DAMIT EINE MESSUNG GEWORDEN.
   DER TYP IST integer UND NICHT bigint, und der Grund steht im Kopf der Migration und wird
   hier nicht verdoppelt — er betrifft die Auslieferungsform über PostgREST und nicht das
   Schema.
@@ -202,6 +226,44 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   an. Der VORHER-WERT der einen bestehenden Zeile ist vor dem Deploy gesichert worden
   (secret_version 0) und stand nach dem ersten Erneuerungslauf auf 1 — GEMESSEN am
   2026-09-05 (SQL-Editor, Owner). Volltext: docs/aktiver-stand.md, VERMERK 14.
+  ZWEI WEITERE SPALTEN SEIT 0028 (Phase 11.3, Scheibe 11.3a) — DIE TABELLE TRÄGT DAMIT
+  ZEHN. GEMESSEN am 2026-09-09 (SQL-Editor, Owner, ungefilterte Abfrage auf
+  information_schema.columns, sortiert nach ordinal_position), im WORTLAUT und nicht als
+  blosse Anwesenheit:
+    9  test_event_code       text,        NULLBAR, KEIN Default
+    10 test_mode_expires_at  timestamptz, NULLBAR, KEIN Default
+  DER WORTLAUT AUS DEMSELBEN GRUND WIE BEI secret_version: Der Katalog-Guard der Migration
+  ist "add column if not exists" und prüft den NAMEN, nicht Typ und Bedingungen.
+  DIE ZAHL ZEHN IST HIER GENANNT UND WIRD MIT DER NÄCHSTEN ADDITIVEN SPALTE FALSCH — sie
+  steht trotzdem da, weil sie im selben Lauf abgelesen ist wie die Reihenfolge; wer sie
+  fortschreibt, misst neu. Die Liste am Anfang dieses Eintrags nennt bewusst KEINE Zahl.
+  EIN ZWEITER, UNABHÄNGIGER BELEG DERSELBEN FORM — und er ist mehr wert als ein zweiter
+  Blick auf dieselbe Abfrage: Bei der Constraint-Probe unten hat Postgres die scheiternde
+  Zeile ausgeschrieben, und ihre DETAIL-Zeile trägt ZEHN Werte in genau dieser Reihenfolge,
+  einschliesslich des Defaults 0 bei secret_version. Spaltenzahl, Reihenfolge und Default
+  sind damit aus ZWEI verschiedenen Quellen bestätigt — information_schema und die
+  Fehlermeldung des Servers.
+  CONSTRAINT project_secrets_test_mode_paar (0028): CHECK (((test_event_code IS NULL) =
+  (test_mode_expires_at IS NULL))) — Definition im WORTLAUT, GEMESSEN am 2026-09-09
+  (SQL-Editor, Owner, pg_get_constraintdef). GENAU EINE Zeile dieses Namens; die
+  Constraint-Abfrage lieferte SECHS Zeilen, jeden Namen genau einmal.
+  DIE ZEILENZAHL IST MITGEMESSEN UND KEIN BEIFANG: Zwei wären der Doppel-Constraint-Fall —
+  ein Katalog-Guard mit falschem Namen legt einen ZWEITEN an, der alte weist weiter ab,
+  UND DER LAUF MELDET ERFOLG. Wer nur den Wortlaut liest, sieht diesen stillen Fehlzustand
+  nicht.
+  MITGEMESSEN AM 2026-09-09, und es ist wie bei 0022, 0024 und 0026 der wertvollere der
+  beiden Belege — hier zum ersten Mal für DIESEN Constraint: Ein Wegwerf-Insert mit BEIDEN
+  Testspalten gesetzt wurde ANGENOMMEN; einer mit nur EINER der beiden mit 23514
+  (check_violation) unter dem Namen project_secrets_test_mode_paar ABGEWIESEN. Beide liefen
+  in je einer eigenen Transaktion mit rollback — es ist KEINE Zeile entstanden und KEINE
+  bestehende angefasst worden.
+  DASS DIE POSITIVKONTROLLE DURCHGING, TRÄGT EINE ZWEITE AUSSAGE MIT: Sie hätte am UNIQUE
+  scheitern können (project_id IS NULL, target 'meta', NULLS NOT DISTINCT). Sie tat es
+  nicht — es gibt also keine zweite projektlose meta-Zeile, und die Probe hat den GEMEINTEN
+  Constraint erreicht und nicht einen anderen.
+  WAS DIESE MESSUNG NICHT ZEIGT: ob der CHECK auf BESTEHENDE Zeilen angewandt wurde. Ein
+  CHECK, der als NOT VALID angelegt wäre, trüge diesen Zusatz in seiner Definition — er tut
+  es nicht, und das ist eine ABLEITUNG aus dem Wortlaut, keine eigene Probe.
   PRIMÄRSCHLÜSSEL ist die EINSPALTIGE id (project_secrets_pkey) — GEMESSEN 2026-08-26
   (Probe 3, pg_get_constraintdef). Bis 0025 war es das PAAR (project_id, target); die
   Footgun-Zeile darunter führt project_secrets deshalb NICHT mehr.

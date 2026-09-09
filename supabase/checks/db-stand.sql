@@ -137,6 +137,15 @@ order by gs.nr;
 --              5 updated_at  timestamptz, NOT NULL, Default now()
 --              6 secret_enc  text,        NULLBAR   (0025)
 --              7 id          uuid,        NOT NULL, Default gen_random_uuid()  (0025)
+--              8 secret_version       integer,     NOT NULL, Default 0    (0027)
+--              9 test_event_code      text,        NULLBAR, KEIN Default  (0028)
+--             10 test_mode_expires_at timestamptz, NULLBAR, KEIN Default  (0028)
+--            NACHGEZOGEN AM 2026-09-09. VORHER endete diese Liste bei 7, und die
+--            ERWARTUNG kannte weder 0027 (2026-09-05) noch 0028 (2026-09-09). EINE
+--            ERWARTUNG MIT FALSCHEM WERT MISST NICHT — sie haette die drei Spalten als
+--            Befund gemeldet, obwohl zwei Migrationen sie absichtlich angelegt haben.
+--            Die drei Zeilen sind GEMESSEN am 2026-09-09 (SQL-Editor, Owner, volle
+--            Spalten-Abfrage), einschliesslich ihrer ordinal_position.
 --            WARUM DER SCHLUESSEL HINTEN STEHT und nicht vorn, wo man ihn suchte:
 --            "alter table ... add column" haengt HINTEN an. secret_enc und id sind die
 --            beiden Spalten, die 0025 angefuegt hat, in genau der Reihenfolge, in der
@@ -184,6 +193,13 @@ order by table_name, ordinal_position;
 --              project_id IS NULL und demselben Ziel BEIDE erlaubt.
 --            · project_secrets_secret_genau_eines — CHECK ueber die Null-Zustaende von
 --              secret und secret_enc.
+--            · project_secrets_test_mode_paar — CHECK ueber die Null-Zustaende von
+--              test_event_code und test_mode_expires_at: BEIDE oder KEINES.
+--              NACHGETRAGEN AM 2026-09-09 (0028, Phase 11.3). GEMESSEN am selben Tag im
+--              Wortlaut; die Constraint-Abfrage lieferte SECHS Zeilen, jeden Namen GENAU
+--              EINMAL. Die Zeilenzahl je Name ist Teil der Erwartung und kein Beifang:
+--              ZWEI gleichnamige waeren der Doppel-Constraint-Fall, bei dem der alte
+--              weiter abweist, WAEHREND DER LAUF ERFOLG MELDET.
 --            · project_secrets_target_valid — CHECK, der die erlaubten Ziele
 --              AUFZAEHLT. WELCHE es sind, sagt der Lauf und nicht diese Zeile: die
 --              Liste waechst mit jedem Fan-Out-Ziel, und jedes bringt seine eigene

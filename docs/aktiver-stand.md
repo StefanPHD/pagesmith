@@ -1322,9 +1322,13 @@ bestätigt und war kein Fehlschlag.
 
 **CODE-COMMIT: `e9544c6`** (`feat(projects): Testmodus-Schalter und Banner in der
 Oberflaeche`, 11 Dateien, 2034 Einfügungen, 68 Löschungen).
-**COMMIT DIESES VERMERKS: — (LÜCKE, Stefan trägt sie nach).** Nach der Lücken-Regel darf
-es immer nur EINE solche Lücke geben; dies ist sie, und die von VERMERK 1 ist im selben
-Zug geschlossen worden.
+**COMMIT DIESES VERMERKS: `daf139e`** (`docs(claude): Vermerk 2 — Scheibe 11.3b live
+bewiesen, zwei Ziele`).
+**NACHGETRAGEN AM 2026-09-09** — hier stand die LÜCKE, die beim Anlegen dieses Vermerks
+entstand; die von VERMERK 1 war im selben Zug geschlossen worden.
+**ES GIBT DAMIT DERZEIT KEINE OFFENE LÜCKE, und das ist regelkonform:** Die Lücken-Regel
+sagt, es dürfe immer nur EINE geben — nicht, dass eine da sein müsse. Keine Lücke heisst,
+dass jeder Vermerk dieser Datei seinen Commit kennt.
 
 **VORAUSSETZUNGEN — GEMESSEN LIVE, 2026-09-09, Stefan.** Das Deployment stand auf
 **Ready**, bevor geprüft wurde; der **A/B-Betrieb war AUS**. Beides ist festgestellt und

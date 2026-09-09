@@ -40,6 +40,9 @@ const {
   getVariantCounts,
   listConfiguredTargets,
   listTargetCredentialStates,
+  listTestModeStates,
+  startTestMode,
+  endTestMode,
 } = vi.hoisted(() => ({
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
   // Scheibe 9a: die Varianten-Actions. saveVariantB ist der Spy, auf dem der
@@ -91,6 +94,16 @@ const {
   listTargetCredentialStates: vi.fn(
     async (): Promise<unknown> => ({ ok: true, states: {} }),
   ),
+  // DERSELBE VORGABEWERT-GRUNDSATZ WIE BEI DER NACHBARIN (Scheibe 11.3b): ein
+  // geglueckter Lauf OHNE Eintrag. Damit traegt in den Bestandslaeufen keine Karte
+  // einen Testmodus-Schalter und kein Banner steht ueber dem Editor — der Bestand
+  // sieht aus wie vor dieser Scheibe. Die Laeufe, die den Schalter pruefen, setzen
+  // den Wert ausdruecklich.
+  listTestModeStates: vi.fn(
+    async (): Promise<unknown> => ({ ok: true, states: {} }),
+  ),
+  startTestMode: vi.fn(),
+  endTestMode: vi.fn(),
 }));
 
 vi.mock("@/app/projects/actions", () => ({
@@ -112,6 +125,9 @@ vi.mock("@/app/projects/actions", () => ({
   getVariantCounts,
   listConfiguredTargets,
   listTargetCredentialStates,
+  listTestModeStates,
+  startTestMode,
+  endTestMode,
 }));
 
 // DomainManager (in der Publish-Sektion gemountet) zieht ueber @/app/projects/domain-

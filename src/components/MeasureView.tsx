@@ -24,7 +24,10 @@ import { hasAdapter } from "@/lib/tracking/target-adapters";
 import {
   credentialStateFor,
   resolveConfigured,
+  testModeStateFor,
   type ListCredentialStatesResult,
+  type ListTestModeStatesResult,
+  type TargetTestModeState,
 } from "@/lib/tracking/credential-state";
 
 // Anzeige-Label je event_type fuer die Analytics-Sektion (Scheibe 3). Der reservierte
@@ -75,6 +78,8 @@ export default function MeasureView({
   credentialStates,
   onCredentialsSaved,
   onCredentialsRemoved,
+  testModes,
+  onTestModeChanged,
   usedEvents,
   rulesTargets,
   conversionRuleFor,
@@ -119,6 +124,24 @@ export default function MeasureView({
    * ["target"] festnagelt; eine Erweiterung muesste ihn oeffnen. Sie bleibt woertlich.
    */
   credentialStates: ListCredentialStatesResult | null;
+  /**
+   * DER TESTZUSTAND JE ZIEL (Scheibe 11.3b) — die DRITTE Quelle.
+   *
+   * null = noch nicht geladen; ein `{ok:false}` heisst GELADEN UND GESCHEITERT.
+   * Beides fuehrt in der Karte zu KEINEM Schalter, und das ist die richtige
+   * Vorsicht: Ein Schalter, der auf unbekanntem Zustand sitzt, boete an, eine
+   * Zaehlung anzuhalten, ohne sagen zu koennen, ob sie schon steht.
+   *
+   * DREI QUELLEN UND NICHT ZWEI, mit demselben Grund wie oben: Der Waechter der
+   * ersten nagelt ihre Spaltenliste fest, die zweite ist auf die Uhr der
+   * Zugangsdaten zugeschnitten. Beide bleiben woertlich.
+   */
+  testModes: ListTestModeStatesResult | null;
+  onTestModeChanged: (
+    forProjectId: string,
+    target: TrackingTarget,
+    state: TargetTestModeState,
+  ) => void;
   onCredentialsSaved: (
     forProjectId: string,
     target: TrackingTarget,
@@ -293,6 +316,15 @@ export default function MeasureView({
             credentialState={credentialStateFor(credentialStates, target)}
             onCredentialsSaved={onCredentialsSaved}
             onCredentialsRemoved={onCredentialsRemoved}
+            // ABGELEITET IN DEMSELBEN REINEN MODUL (Scheibe 11.3b), aus demselben
+            // Grund wie die Zeile darueber: Diese Ansicht DEUTET den Testzustand
+            // nicht und kennt seine Lagen nicht — sie reicht durch. Welche Karte
+            // einen Schalter zeigt, entscheidet der LESER, nicht diese Schleife;
+            // ein Filter nach Zielnamen an dieser Stelle waere die erste
+            // Fallunterscheidung ueber Ziele in dieser Ansicht und zugleich eine
+            // zweite Wahrheit neben der des Servers.
+            testModeState={testModeStateFor(testModes, target)}
+            onTestModeChanged={onTestModeChanged}
           />
         ))}
       </div>

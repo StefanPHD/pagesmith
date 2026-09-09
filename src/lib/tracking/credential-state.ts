@@ -35,6 +35,30 @@
 // kann Umlaute doppelt kodiert zurueckschreiben, und das faellt nur im Diff auf.
 // DIE PRODUKT-TEXTE STEHEN NICHT HIER, sondern in components/TargetCard.tsx — dort
 // gilt die Auflage nicht, und dort duerfen Umlaute stehen.
+//
+// ---------------------------------------------------------------------------
+// NACHGEZOGEN 11.3b, NICHT UMFORMULIERT — DER TEXT DARUEBER BLEIBT VOLLSTAENDIG
+// LESBAR UND IST KEIN WORT GEAENDERT. Ueberholt sind zwei TATSACHENANGABEN ueber
+// den Inhalt dieser Datei; die REGELN des Kopfes sind unberuehrt.
+//
+//  (1) "die SECHS Lagen, die Vorwarn-Schwelle und zwei Ableitungen". Seit 11.3b
+//      liegt hier zusaetzlich der PROJEKT-EIGENE TESTZUSTAND je Ziel: das aus
+//      capi/token.ts umgezogene Praedikat, seine Zustands-Union, die Frist als
+//      benannte Konstante und die Ableitung fuer die Karte.
+//  (2) "Sie bekommt das Ergebnis des Entschluesselns herein" beschrieb die
+//      Arbeitsteilung "die Aktion klassifiziert die Zeile, diese Datei deutet die
+//      Uhr" (s. den Kopf von CredentialInput). SIE GILT FUER DEN TESTZUSTAND NICHT:
+//      activeTestCodeFromRow nimmt eine ROHE Zeile entgegen und ist hier der erste
+//      Leser dieser Art.
+//      DAS IST BEWUSST SO UND KEIN VERSEHEN: Der Umzug musste BYTE-IDENTISCH sein
+//      (Owner-Auflage 2026-09-09) — der Resolver in capi/token.ts ist mit genau
+//      diesem Ausdruck live bewiesen, und ein umgeschriebener Ausdruck waere ein
+//      Eingriff und kein Umzug gewesen. Wer die Arbeitsteilung spaeter
+//      vereinheitlichen will, aendert damit den Ausdruck und braucht dafuer einen
+//      eigenen Zuschnitt.
+//
+// WAS SICH AM VERHALTEN GEAENDERT HAT: NICHTS. Der Ausdruck ist Zeichen fuer
+// Zeichen derselbe, und der Resolver ruft ihn seither aus dieser Datei.
 import type { DecryptResult } from "@/lib/secrets/cipher";
 import type {
   ParsePayloadResult,
@@ -293,4 +317,306 @@ export function withoutTarget(
   const states: TargetCredentialStates = { ...credentials.states };
   delete states[target];
   return { ok: true, states };
+}
+
+// ===========================================================================
+// DER PROJEKT-EIGENE TESTZUSTAND JE ZIEL (Scheibe 11.3b).
+//
+// WARUM IN DIESER DATEI UND NICHT IN EINER EIGENEN: Sie ist die einzige REINE
+// Datei, die ohnehin je Ziel eine Lage aus einer project_secrets-Zeile ableitet,
+// sie wird bereits von Server UND Browser gelesen, und ihre Bauform — geschlossene
+// Union, Zeitpunkte als Epochensekunden, kein freier String — ist genau die, die
+// der Testzustand braucht. Eine eigene Datei waere ein zweites Haus fuer dieselbe
+// Sache. (Owner-Entscheidung 2026-09-09.)
+// ===========================================================================
+
+/**
+ * WELCHE ZIELE EINEN PROJEKT-EIGENEN TESTMODUS TRAGEN. Zwei: meta und tiktok.
+ *
+ * DIE EINE QUELLE FUER DIESE TATSACHE. Sie speist BEIDE Seiten — die Pruefung im
+ * Schreibpfad (app/projects/actions.ts) und die Sichtbarkeit des Schalters, die
+ * sich aus dem Ergebnis des Lesers ergibt. Eine zweite Liste in der Oberflaeche
+ * waere die Doppelung, an der zwei Wahrheiten auseinanderlaufen.
+ *
+ * WARUM MIT ADAPTER, ABER NICHT JEDER MIT ADAPTER: Der Traeger muss ein Feld in
+ * der NUTZLAST sein. pinterest traegt ihn als Query-Parameter mit zwei
+ * widerspruechlichen Namen und NIE GEMESSEN, google als validateOnly, das die
+ * Diagnostik abschneidet, linkedin gar nicht — die drei Gruende stehen ausgefuehrt
+ * in docs/aktiver-stand.md, "Reichweite: meta und tiktok — und ausdruecklich sonst
+ * keines", und werden hier NICHT verdoppelt.
+ *
+ * IHR ORT IST EINE FOLGE DES ZUSCHNITTS UND KEINE ENTSCHEIDUNG UEBER IHN: Die
+ * verwandte Liste TARGETS_WITH_ADAPTER liegt in tracking/target-adapters.ts, und
+ * jene Datei ist von dieser Scheibe ausdruecklich ausgenommen. Wer beide
+ * zusammenlegen will, tut das in einer eigenen Runde.
+ */
+export const TARGETS_WITH_TEST_MODE: readonly TrackingTarget[] = [
+  "meta",
+  "tiktok",
+];
+
+/**
+ * WIE LANGE EIN GESTARTETER TESTMODUS LAEUFT. EINE STUNDE.
+ *
+ * GESETZT (OWNER-ENTSCHEIDUNG 2026-09-09), nicht gemessen. Drei Groessen tragen
+ * sie, und sie gehoeren zusammen:
+ * · LANG GENUG fuer eine Einrichtungspruefung.
+ * · KURZ GENUG, dass ein vergessener Testmodus keine Sitzung Zaehlung kostet — das
+ *   ist der Schaden, gegen den die Frist ueberhaupt gewaehlt wurde: Der Riegel im
+ *   Ingest nimmt das Ereignis aus events, und der Kunde sieht eine Kurve gegen
+ *   null ohne Fehler und ohne Grund.
+ * · DEUTLICH KUERZER als das Wechselintervall des Codes (Metas Testcode wechselt
+ *   alle paar Tage, OWNER-ANGABE 2026-09-09, keine Messung). Die Frist kann damit
+ *   NIE einen brauchbaren Zustand abschneiden.
+ *
+ * SIE STEHT ALS BENANNTE KONSTANTE AN EINER STELLE, damit ihre Aenderung ein
+ * sichtbarer Diff ist — dieselbe Bauform und derselbe Grund wie bei
+ * CREDENTIAL_EXPIRY_WARN_SECONDS weiter oben.
+ *
+ * KEINE AUSWAHL UND KEINE FREIE EINGABE. Die Frist ist ein DECKEL, keine
+ * Praeferenz; eine Zielgruppe, die Geschwindigkeit ueber Konfigurationstiefe
+ * stellt, hat zu ihrer Laenge keine informierte Meinung.
+ */
+export const TEST_MODE_DURATION_SECONDS = 3_600;
+
+/**
+ * IST DER PROJEKT-EIGENE TESTZUSTAND DIESER ZEILE JETZT AKTIV? (Scheibe 11.3a)
+ *
+ * Liefert den CODE, wenn er es ist, sonst null. Der Rueckgabetyp traegt damit beide
+ * Auskuenfte auf einmal — ein Boolean daneben waere ein zweites Urteil ueber denselben
+ * Zustand, und die beiden koennten auseinanderlaufen.
+ *
+ * DIE RANDREGEL, UND SIE IST TEIL DER ENTSCHEIDUNG UND NICHT IHRE FOLGE
+ * (Owner-Entscheidung 2026-09-09): expiresAt === now gilt als ABGELAUFEN. Der Vergleich
+ * lautet deshalb ">" und nicht ">=". Dieselbe Wahl wie bei Uhr 1 (hasUsableAccessToken)
+ * und Uhr 2 (hasLiveRefreshToken) — die Sekunde, in der eine Frist ablaeuft, gehoert
+ * nicht mehr ihr.
+ * SIE BINDET SCHEIBE 11.3b: Jene braucht dasselbe Praedikat fuer die Anzeige der
+ * Restlaufzeit und EXTRAHIERT es dann aus dieser Datei, statt es nachzubauen. Driftet
+ * eine zweite Fassung dort auf ">=", zeigt die Oberflaeche "aktiv", WAEHREND DER RIEGEL
+ * NICHT FEUERT — ein Widerspruch, den niemand sieht, weil beide Seiten fuer sich
+ * plausibel aussehen.
+ *
+ * MODUL-PRIVAT UND KEINE REINE DATEI, aus demselben Grund wie bei den beiden Praedikaten
+ * darueber (Owner-Entscheidung 2026-09-09): ein Praedikat mit EINEM Aufrufer in ein
+ * geteiltes Haus zu legen waere Infrastruktur auf Verdacht. Erst 11.3b bekommt einen
+ * zweiten Aufrufer, und dann wandert es.
+ *
+ * NACHGEZOGEN 11.3b, UND DER ABSATZ DARUEBER BLEIBT WOERTLICH STEHEN: Der Fall, den er
+ * ANKUENDIGT, ist eingetreten. Es sind seit dieser Scheibe ZWEI Aufrufer — der Resolver
+ * (getCapiConfigByTrackingKey in capi/token.ts) und der Leser der Oberflaeche
+ * (listTestModeStates in app/projects/actions.ts) —, und das Praedikat IST gewandert:
+ * aus capi/token.ts hierher, BYTE-IDENTISCH. "MODUL-PRIVAT UND KEINE REINE DATEI"
+ * beschreibt damit den Zustand VOR dem Umzug und nicht den heutigen.
+ * WARUM DER ALTE SATZ TROTZDEM STEHENBLEIBT: Er traegt die BEGRUENDUNG, unter der das
+ * Praedikat einen Aufrufer lang privat war, und die war richtig. Wer sie streicht,
+ * verliert den Massstab fuer das naechste Praedikat mit genau einem Aufrufer.
+ *
+ * SIE WERTET GEGEN DIE UHR DER LAUFZEIT AUS, NICHT GEGEN DIE DER DATENBANK. nowSeconds
+ * ist derselbe Wert, den Uhr 1 und Uhr 2 dieser Aufloesung benutzen — GENAU EINMAL
+ * gelesen, damit zwei Ziele derselben Runde nicht verschiedene Bezugspunkte haben. Die
+ * Folge einer Uhren-Abweichung steht im Kopf der Migration 0028 und wird hier nicht
+ * verdoppelt.
+ *
+ * FAIL-CLOSED IN JEDEM ZWEIFELSFALL, und "closed" heisst hier NICHT aktiv: Ein
+ * fehlender Code, ein Code aus reinem Leerraum, ein fehlender oder unlesbarer
+ * Zeitstempel — alles ergibt null. Der Testmodus ist damit die Ausnahme, die man
+ * ausdruecklich herstellen muss; die Abwesenheit einer Angabe schaltet ihn nie ein.
+ * DER CODE WIRD GETRIMMT, anders als hasSecret weiter unten. Das ist kein Versehen: Ein
+ * Geheimnis aus Leerraum galt hier immer als vorhanden (abgebildeter Bestand), ein
+ * TESTCODE aus Leerraum dagegen ist ein Wert, den der Kunde aus einer fremden
+ * Oberflaeche kopiert hat — er gehoert zur Kennungs-Klasse, und die trimmt.
+ * NACHGEZOGEN 11.3b: "hasSecret weiter unten" zeigte auf capi/token.ts und zeigt nach
+ * dem Umzug ins Leere. Gemeint ist hasSecret in tracking/target-readiness.ts; der
+ * Vergleich selbst gilt unveraendert.
+ *
+ * SIE WIRFT NIE. typeof-Vergleiche, ein trim, Date.parse (liefert NaN statt zu werfen)
+ * und ein Zahlenvergleich.
+ */
+export function activeTestCodeFromRow(
+  row: { test_event_code: unknown; test_mode_expires_at: unknown },
+  nowSeconds: number,
+): string | null {
+  const code =
+    typeof row.test_event_code === "string" ? row.test_event_code.trim() : "";
+  if (!code) return null;
+
+  // PostgREST liefert timestamptz als ISO-Zeichenkette. Date.parse gibt bei allem, was
+  // keine ist, NaN zurueck — Number.isFinite faengt das, ohne einen zweiten Parser.
+  if (typeof row.test_mode_expires_at !== "string") return null;
+  const expiresMs = Date.parse(row.test_mode_expires_at);
+  if (!Number.isFinite(expiresMs)) return null;
+
+  return Math.floor(expiresMs / 1000) > nowSeconds ? code : null;
+}
+
+/**
+ * DIE DREI LAGEN DES TESTZUSTANDS. GESCHLOSSENE UNION, EPOCHENSEKUNDEN.
+ *
+ * KEIN FREIER STRING, dieselbe Zusage wie an TargetCredentialState weiter oben und
+ * aus demselben Grund: In einem freien String koennte der TESTCODE landen, und der
+ * hat auf der Client-Seite nichts verloren. Der Zeitpunkt reist deshalb als ZAHL —
+ * lesbar mit formatEpochSeconds in components/TargetCard.tsx, derselben Hausform
+ * wie die Ablauf-Lage der Zugangsdaten.
+ *
+ * "abgelaufen" IST EINE AUSKUNFT UND KEIN ABFALL (Owner-Entscheidung 2026-09-09):
+ * Eine abgelaufene Frist bleibt in der Datenbank stehen, und die Karte sagt, WANN
+ * sie ablief. Sie zu raeumen hiesse, genau die Angabe zu loeschen, aus der die
+ * Auskunft besteht — und ein Raeumen beim LESEN waere ein Schreibvorgang in einem
+ * Lesepfad, der bei jedem Laden feuerte, ohne dass jemand etwas angeklickt hat.
+ */
+export type TargetTestModeState =
+  /** Kein Testmodus hinterlegt — oder ein Code, der keiner ist (s. testModeStateFrom). */
+  | { kind: "aus" }
+  /** Laeuft. Der Riegel im Ingest nimmt Ereignisse dieses Projekts aus events. */
+  | { kind: "laeuft"; endetAt: number }
+  /** Lief und ist abgelaufen. Der Riegel feuert nicht mehr. */
+  | { kind: "abgelaufen"; endeteAt: number };
+
+/** Die Testzustaende je Ziel. Fehlt ein Ziel, traegt es keinen Schalter. */
+export type TargetTestModeStates = Partial<
+  Record<TrackingTarget, TargetTestModeState>
+>;
+
+/**
+ * WARUM DER LESER SCHEITERTE. GESCHLOSSEN, SELBSTVERGEBEN, KEIN DB-TEXT — dieselbe
+ * Zusage und derselbe Grund wie bei CredentialStatesError.
+ */
+export type TestModeStatesError =
+  /** Keine Sitzung. */
+  | "unauthenticated"
+  /** Das Projekt gehoert dem Nutzer nicht, existiert nicht, oder das Gate brach. */
+  | "not_found"
+  /** Die Abfrage selbst ging daneben. */
+  | "read_failed";
+
+/** Das Ergebnis des Lesers. */
+export type ListTestModeStatesResult =
+  | { ok: true; states: TargetTestModeStates }
+  | { ok: false; reason: TestModeStatesError };
+
+/**
+ * WARUM EINE DER BEIDEN GESTEN SCHEITERTE. GESCHLOSSEN, SELBSTVERGEBEN.
+ *
+ * `not_configured` IST DER WICHTIGSTE WERT DIESER UNION und der Grund, warum sie
+ * ueberhaupt eine ist: Ein `update` ohne getroffene Zeile meldet KEINEN Fehler. Ohne
+ * einen eigenen Ausgang dafuer waere "nichts getroffen" von "geschrieben" nicht zu
+ * unterscheiden, und der Kunde bekaeme eine Erfolgsmeldung fuer einen Vorgang, der
+ * nicht stattgefunden hat.
+ */
+export type TestModeWriteError =
+  /** Keine Sitzung. */
+  | "unauthenticated"
+  /** Fremdes Projekt, kein Projekt, oder das Gate brach. */
+  | "not_found"
+  /** Das Ziel ist unbekannt oder traegt keinen Testmodus. */
+  | "unknown_target"
+  /** Der Code ist nach dem Trimmen leer. */
+  | "empty_code"
+  /** Es gibt fuer dieses Ziel keine Geheimnis-Zeile, an der ein Testzustand haengen koennte. */
+  | "not_configured"
+  /** Der Schreibvorgang selbst ging daneben. */
+  | "write_failed"
+  /**
+   * DER AUFRUF IST GEWORFEN — Netz, Server, Abbruch. Er ist der Ersatzwert fuer
+   * safeAction und wird von KEINER der beiden Aktionen zurueckgegeben.
+   *
+   * ER IST EIN EIGENES MITGLIED UND NICHT write_failed, und das ist der Punkt: Ein
+   * Wurf sagt NICHT, ob geschrieben wurde. Bricht die Verbindung auf dem RUECKWEG,
+   * ist der Schreibvorgang passiert. Ihn als write_failed zu fuehren behauptete ein
+   * ERGEBNIS, das wir nicht kennen.
+   */
+  | "action_threw";
+
+/** Das Ergebnis einer Geste. Bei Erfolg der NEUE Zustand, damit die Karte nicht raet. */
+export type TestModeWriteResult =
+  | { ok: true; state: TargetTestModeState }
+  | { ok: false; reason: TestModeWriteError };
+
+/**
+ * EIN ZEITSTEMPEL AUS DER DATENBANK ALS EPOCHENSEKUNDEN, oder null.
+ *
+ * SIE URTEILT NICHT. Sie liest nur — ob der Testmodus AKTIV ist, entscheidet
+ * ausschliesslich activeTestCodeFromRow, und dieses Urteil wird hier nicht
+ * nachgebaut.
+ */
+function testModeEndsAt(value: unknown): number | null {
+  if (typeof value !== "string") return null;
+  const ms = Date.parse(value);
+  if (!Number.isFinite(ms)) return null;
+  return Math.floor(ms / 1000);
+}
+
+/**
+ * DIE LAGE DES TESTZUSTANDS EINER ZEILE — FUER DIE ANZEIGE.
+ *
+ * DAS URTEIL "AKTIV" FAELLT DAS UMGEZOGENE PRAEDIKAT UND SONST NICHTS. Diese
+ * Funktion fragt es und ordnet danach nur noch den NICHT-aktiven Fall ein. Genau
+ * deshalb kann die Karte nicht "laeuft" zeigen, waehrend der Riegel schweigt: Es
+ * gibt keine zweite Fassung der Frage.
+ *
+ * DER NICHT-AKTIVE FALL HAT ZWEI URSACHEN, und sie werden unterschieden:
+ * · Die Frist liegt in der VERGANGENHEIT -> "abgelaufen", mit ihrem Zeitpunkt.
+ * · Die Frist liegt in der ZUKUNFT, das Praedikat sagt trotzdem nein -> der Code
+ *   ist leer oder Leerraum (der CHECK laesst das zu, s. Migration 0028). Dann ist
+ *   der Testmodus schlicht "aus" — und NICHT "abgelaufen am <Zukunft>", was eine
+ *   sinnlose Auskunft waere.
+ * DER VERGLEICH HIER IST `<=`, SPIEGELBILDLICH ZUM `>` DES PRAEDIKATS und
+ * gleichlautend mit credentialStateFrom weiter oben: die Sekunde, in der eine Frist
+ * ablaeuft, gehoert nicht mehr ihr.
+ */
+export function testModeStateFrom(
+  row: { test_event_code: unknown; test_mode_expires_at: unknown },
+  nowSeconds: number,
+): TargetTestModeState {
+  const endet = testModeEndsAt(row.test_mode_expires_at);
+  if (endet === null) return { kind: "aus" };
+  if (activeTestCodeFromRow(row, nowSeconds) !== null)
+    return { kind: "laeuft", endetAt: endet };
+  if (endet <= nowSeconds) return { kind: "abgelaufen", endeteAt: endet };
+  return { kind: "aus" };
+}
+
+/**
+ * DER TESTZUSTAND EINES ZIELS FUER DIE KARTE — oder null, wenn es keinen gibt.
+ *
+ * `null` HEISST HIER DREIERLEI und fuehrt zu DERSELBEN Anzeige, naemlich zu keiner:
+ * noch nicht geladen, der Leser scheiterte, oder dieses Ziel traegt keinen
+ * Schalter. Dieselbe Figur wie bei credentialStateFor weiter oben.
+ *
+ * WARUM DIE SICHTBARKEIT DES SCHALTERS DARAN HAENGT UND NICHT AN EINER LISTE IN DER
+ * KARTE: Der Leser gibt einen Eintrag nur fuer Ziele heraus, die einen Testmodus
+ * TRAGEN, den Kennungs-Filter des Aufloesungs-Pfades PASSIEREN und eine
+ * Geheimnis-Zeile HABEN. Alle drei Bedingungen faellt der Server mit denselben
+ * Praedikaten, die auch der Resolver benutzt. Die Karte bildet nichts davon nach —
+ * sie zeigt den Schalter, wo ein Eintrag ankommt, und kann deshalb nicht
+ * divergieren.
+ */
+export function testModeStateFor(
+  testModes: ListTestModeStatesResult | null,
+  target: TrackingTarget,
+): TargetTestModeState | null {
+  if (testModes === null || !testModes.ok) return null;
+  return testModes.states[target] ?? null;
+}
+
+/**
+ * SETZT DEN TESTZUSTAND EINES ZIELS AUF EINEN BEKANNTEN WERT.
+ *
+ * SIE RAET NICHT, SIE UEBERNIMMT: Nach einer Geste kennt der Server den neuen
+ * Zustand und gibt ihn zurueck; hier wird er eingesetzt. Das ist der Unterschied zu
+ * withoutTarget weiter oben, die ENTFERNT, weil dort nach dem Speichern eben NICHT
+ * bekannt ist, welche Uhr die Zeile traegt.
+ *
+ * EIN `{ok:false}` BLEIBT `{ok:false}`: Wer nichts weiss, weiss nach einer Geste
+ * auch nichts — eine einzelne Auskunft machte aus einem unbekannten Gesamtbild ein
+ * scheinbar bekanntes.
+ */
+export function withTestModeState(
+  testModes: ListTestModeStatesResult | null,
+  target: TrackingTarget,
+  state: TargetTestModeState,
+): ListTestModeStatesResult | null {
+  if (testModes === null || !testModes.ok) return testModes;
+  return { ok: true, states: { ...testModes.states, [target]: state } };
 }

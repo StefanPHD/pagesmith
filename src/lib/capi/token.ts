@@ -42,6 +42,11 @@ import {
 // Primitiv, das hier bis dahin direkt stand. Die GEHEIMNIS-Haelfte (hasSecret) ist
 // unveraendert und bleibt der einzige Grund fuer diesen Import.
 import { hasSecret } from "@/lib/tracking/target-readiness";
+// DAS TESTMODUS-PRAEDIKAT DER SCHEIBE 11.3a, seit 11.3b hier IMPORTIERT statt gefuehrt.
+// Es lag bis dahin modul-privat weiter unten; der Umzug ist BYTE-IDENTISCH und die
+// Begruendung steht an seiner Fundstelle. Dieselbe Richtung wie bei hasSecret darueber:
+// diese Datei ist server-only, die Quelle ist rein.
+import { activeTestCodeFromRow } from "@/lib/tracking/credential-state";
 // DER ZWEITE DECHIFFRIER-LESER DES REPOS (Scheibe 4 der Phase 11.2). Der erste ist
 // refreshAccessToken (lib/oauth/token-refresh.ts) und bleibt der EINZIGE, der ERNEUERT.
 // DIE KORREKTUR, DIE DAZUGEHOERT und die im Zuschnitt ausgeschrieben steht: Den
@@ -395,63 +400,23 @@ function hasUsableAccessToken(
   return expiresAtSeconds > nowSeconds;
 }
 
-/**
- * IST DER PROJEKT-EIGENE TESTZUSTAND DIESER ZEILE JETZT AKTIV? (Scheibe 11.3a)
- *
- * Liefert den CODE, wenn er es ist, sonst null. Der Rueckgabetyp traegt damit beide
- * Auskuenfte auf einmal — ein Boolean daneben waere ein zweites Urteil ueber denselben
- * Zustand, und die beiden koennten auseinanderlaufen.
- *
- * DIE RANDREGEL, UND SIE IST TEIL DER ENTSCHEIDUNG UND NICHT IHRE FOLGE
- * (Owner-Entscheidung 2026-09-09): expiresAt === now gilt als ABGELAUFEN. Der Vergleich
- * lautet deshalb ">" und nicht ">=". Dieselbe Wahl wie bei Uhr 1 (hasUsableAccessToken)
- * und Uhr 2 (hasLiveRefreshToken) — die Sekunde, in der eine Frist ablaeuft, gehoert
- * nicht mehr ihr.
- * SIE BINDET SCHEIBE 11.3b: Jene braucht dasselbe Praedikat fuer die Anzeige der
- * Restlaufzeit und EXTRAHIERT es dann aus dieser Datei, statt es nachzubauen. Driftet
- * eine zweite Fassung dort auf ">=", zeigt die Oberflaeche "aktiv", WAEHREND DER RIEGEL
- * NICHT FEUERT — ein Widerspruch, den niemand sieht, weil beide Seiten fuer sich
- * plausibel aussehen.
- *
- * MODUL-PRIVAT UND KEINE REINE DATEI, aus demselben Grund wie bei den beiden Praedikaten
- * darueber (Owner-Entscheidung 2026-09-09): ein Praedikat mit EINEM Aufrufer in ein
- * geteiltes Haus zu legen waere Infrastruktur auf Verdacht. Erst 11.3b bekommt einen
- * zweiten Aufrufer, und dann wandert es.
- *
- * SIE WERTET GEGEN DIE UHR DER LAUFZEIT AUS, NICHT GEGEN DIE DER DATENBANK. nowSeconds
- * ist derselbe Wert, den Uhr 1 und Uhr 2 dieser Aufloesung benutzen — GENAU EINMAL
- * gelesen, damit zwei Ziele derselben Runde nicht verschiedene Bezugspunkte haben. Die
- * Folge einer Uhren-Abweichung steht im Kopf der Migration 0028 und wird hier nicht
- * verdoppelt.
- *
- * FAIL-CLOSED IN JEDEM ZWEIFELSFALL, und "closed" heisst hier NICHT aktiv: Ein
- * fehlender Code, ein Code aus reinem Leerraum, ein fehlender oder unlesbarer
- * Zeitstempel — alles ergibt null. Der Testmodus ist damit die Ausnahme, die man
- * ausdruecklich herstellen muss; die Abwesenheit einer Angabe schaltet ihn nie ein.
- * DER CODE WIRD GETRIMMT, anders als hasSecret weiter unten. Das ist kein Versehen: Ein
- * Geheimnis aus Leerraum galt hier immer als vorhanden (abgebildeter Bestand), ein
- * TESTCODE aus Leerraum dagegen ist ein Wert, den der Kunde aus einer fremden
- * Oberflaeche kopiert hat — er gehoert zur Kennungs-Klasse, und die trimmt.
- *
- * SIE WIRFT NIE. typeof-Vergleiche, ein trim, Date.parse (liefert NaN statt zu werfen)
- * und ein Zahlenvergleich.
- */
-function activeTestCodeFromRow(
-  row: { test_event_code: unknown; test_mode_expires_at: unknown },
-  nowSeconds: number,
-): string | null {
-  const code =
-    typeof row.test_event_code === "string" ? row.test_event_code.trim() : "";
-  if (!code) return null;
-
-  // PostgREST liefert timestamptz als ISO-Zeichenkette. Date.parse gibt bei allem, was
-  // keine ist, NaN zurueck — Number.isFinite faengt das, ohne einen zweiten Parser.
-  if (typeof row.test_mode_expires_at !== "string") return null;
-  const expiresMs = Date.parse(row.test_mode_expires_at);
-  if (!Number.isFinite(expiresMs)) return null;
-
-  return Math.floor(expiresMs / 1000) > nowSeconds ? code : null;
-}
+// HIER STAND BIS ZUR SCHEIBE 11.3b DAS TESTMODUS-PRAEDIKAT (activeTestCodeFromRow).
+//
+// ES IST UMGEZOGEN, NICHT GEAENDERT: nach tracking/credential-state.ts, BYTE-IDENTISCH
+// (Owner-Auflage 2026-09-09). Der Import steht oben. Diese Datei RUFT es weiterhin an
+// genau einer Stelle — in der Zeilen-Schleife von getCapiConfigByTrackingKey —, und der
+// Resolver verhaelt sich unveraendert.
+//
+// WARUM ES GEHEN MUSSTE: Sein alter Kommentar sagte es selbst voraus — "Erst 11.3b
+// bekommt einen zweiten Aufrufer, und dann wandert es." Der zweite Aufrufer ist
+// listTestModeStates (app/projects/actions.ts). Diese Datei ist `server-only`; ein
+// Praedikat, das auch die Oberflaechen-Aktion braucht, kann hier nicht liegen. Die
+// Richtung ist dieselbe wie bei hasSecret: server-only -> rein, nie umgekehrt.
+//
+// WARUM DIESER ABSATZ BLEIBT UND NICHT NUR DER IMPORT: Wer den Riegel dieser Phase
+// sucht, sucht ihn hier — der Riegel WIRKT in dieser Datei, sein Urteil FAELLT jetzt
+// nebenan. Ohne diesen Zeiger endet die Suche im Nichts, und der naechste Anlauf baut
+// das Praedikat hier ein zweites Mal.
 
 /**
  * DIE LAGE EINER GEHEIMNIS-ZEILE — BRAUCHBAR, ERNEUERBAR ODER GAR NICHTS.

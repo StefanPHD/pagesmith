@@ -18,6 +18,7 @@ import {
   getVariantCounts,
   listConfiguredTargets,
   listTargetCredentialStates,
+  listTestModeStates,
   listProjects,
   loadProject,
   publishProject,
@@ -71,7 +72,10 @@ import { CONSENT_KEY_BY_TARGET } from "@/lib/tracking/consent-targets";
 // "entfernen statt raten" einen Lauf bekommt.
 import {
   withoutTarget,
+  withTestModeState,
   type ListCredentialStatesResult,
+  type ListTestModeStatesResult,
+  type TargetTestModeState,
 } from "@/lib/tracking/credential-state";
 // NUR das Kennungs-Praedikat, NIE ein ZUSAMMENGESETZTER Zustand — gleichgueltig, wie
 // er heisst. Die Begruendung steht am Memo unten und als Auflage an der Funktion
@@ -106,6 +110,10 @@ import {
 import { exportFilename } from "@/lib/export";
 import { validateUploadFile } from "@/lib/upload";
 import ActionPanel from "@/components/ActionPanel";
+// NUR DER BANNER-TEXT, keine Komponente. Er steht in der Karten-Datei, weil dort die
+// Produkt-Texte zu den Zielen liegen (das reine Modul sagt das ausdruecklich ueber
+// sich selbst); gerendert wird er hier, weil das Banner dem PROJEKT gehoert.
+import { testModeBannerText } from "@/components/TargetCard";
 import MeasureView from "@/components/MeasureView";
 import PublishView from "@/components/PublishView";
 
@@ -464,6 +472,16 @@ export default function CodeImporter({
   // sechs Laeufen. Die Kosten stehen am Kopf der neuen Aktion.
   const [credentialStates, setCredentialStates] =
     useState<ListCredentialStatesResult | null>(null);
+  // DER TESTZUSTAND JE ZIEL (Scheibe 11.3b) — die DRITTE Quelle neben den beiden
+  // darueber, aus demselben Grund wie die zweite: Der Waechter auf der Spaltenliste
+  // von listConfiguredTargets nagelt jene Aktion fest, und die Lage-Aktion ist auf
+  // die Uhr der Zugangsdaten zugeschnitten. Beide bleiben woertlich.
+  //
+  // `null` IM ERSTEN RENDER IST HIER MEHR ALS EIN LADEZUSTAND — es ist das
+  // HYDRATIONS-GATE des Banners weiter unten. S. den Kommentar dort.
+  const [testModes, setTestModes] = useState<ListTestModeStatesResult | null>(
+    null,
+  );
   // Auswertung je Variante (Phase 9 Scheibe 9c-1). DREI Zustaende, bewusst nicht zwei:
   // null = noch nicht geladen, {ok:false} = NICHT LADBAR, {ok:true} = geladen (ggf. mit
   // leeren rows). Genau diese Unterscheidung fehlt den beiden Kacheln darueber, deren
@@ -912,21 +930,27 @@ export default function CodeImporter({
   // DIE ZWEITE AKTION WIRFT EBENSO WENIG wie die erste; sie gibt bei jedem Fehler ein
   // {ok:false} mit einem BENANNTEN Grund zurueck. Genau das ist der Ausgang, den die
   // benannte Schwaeche der ersten nicht hat.
+  // SEIT SCHEIBE 11.3b LAEDT DIESER EFFEKT DREI DINGE. Die zwei Absaetze darueber
+  // bleiben woertlich und gelten fuer alle drei; hinzu kommt der TESTZUSTAND je Ziel.
+  // DIE DRITTE AKTION WIRFT EBENSO WENIG und traegt denselben BENANNTEN Fehlerkanal
+  // wie die zweite. Dass sie hier und nicht in der Karte laeuft, hat denselben Grund
+  // wie bei den beiden anderen: eine Runde fuer ALLE Ziele statt einer je Karte.
   useEffect(() => {
     let cancelled = false;
     const load = projectId
       ? Promise.all([
           listConfiguredTargets(projectId),
           listTargetCredentialStates(projectId),
+          listTestModeStates(projectId),
         ])
-      : Promise.resolve<[TrackingTarget[], ListCredentialStatesResult]>([
-          [],
-          { ok: true, states: {} },
-        ]);
-    load.then(([targets, states]) => {
+      : Promise.resolve<
+          [TrackingTarget[], ListCredentialStatesResult, ListTestModeStatesResult]
+        >([[], { ok: true, states: {} }, { ok: true, states: {} }]);
+    load.then(([targets, states, tests]) => {
       if (cancelled) return;
       setConfiguredTargets(targets);
       setCredentialStates(states);
+      setTestModes(tests);
     });
     return () => {
       cancelled = true;
@@ -1079,6 +1103,12 @@ export default function CodeImporter({
   // nicht eine andere Regel: bei {ok:false} sind die Zeilen leer, also ist
   // hasVariantData zwingend false, und showVariantCounts reduziert sich beweisbar
   // auf (abTestStartedAt !== null || hasVariantB).
+  // DER BANNER-TEXT (Scheibe 11.3b). Abgeleitet, nicht gehalten: Er haengt allein am
+  // geladenen Testzustand, und ein eigener State daneben waere eine zweite Wahrheit,
+  // die nach jeder Geste nachzufuehren waere. Der Text selbst steht in TargetCard,
+  // wo die Produkt-Texte zu den Zielen liegen.
+  const testModeBanner = testModeBannerText(testModes);
+
   const measureSignal =
     variantCounts?.ok === false &&
     (abTestStartedAt !== null || hasVariantB);
@@ -1686,6 +1716,22 @@ export default function CodeImporter({
     setSavedSettings((prev) =>
       setCapiState(prev, { trackingKey: nextTrackingKey, tokenSet: true }),
     );
+  }
+
+  // DER TESTZUSTAND WIRD UEBERNOMMEN, NICHT GERATEN (Scheibe 11.3b) — und das ist der
+  // Unterschied zur Zeile daneben, die ENTFERNT: Nach einer Geste kennt der SERVER den
+  // neuen Zustand und gibt ihn zurueck. Ihn hier neu zu berechnen hiesse, die Frist
+  // ein zweites Mal zu bilden, und zwar gegen eine dritte Uhr — die des Besuchers.
+  //
+  // DER KENNUNGS-VERGLEICH DECKT DEN NACHZUEGLER AUS EINEM ANDEREN PROJEKT, dieselbe
+  // Figur wie bei den beiden Rueckrufen darueber.
+  function handleTestModeChanged(
+    forProjectId: string,
+    target: TrackingTarget,
+    state: TargetTestModeState,
+  ) {
+    if (forProjectId !== projectIdRef.current) return;
+    setTestModes((prev) => withTestModeState(prev, target, state));
   }
 
   function handleCredentialsRemoved(forProjectId: string, target: TrackingTarget) {
@@ -2398,6 +2444,53 @@ export default function CodeImporter({
         )}
       </div>
 
+      {/* DAS TESTMODUS-BANNER (Scheibe 11.3b). Es steht im PROJEKT und nicht in der
+          Einstellungs-Flaeche.
+
+          DAS IST DIE BEGRUENDETE AUSNAHME VON "SIGNAL DORTHIN, WO ES BEHEBBAR IST"
+          (docs/immer-beachten.md, "WELCHE REGEL WANN GREIFT", Absatz WO DAS SIGNAL
+          SITZT — CONTEXT FIRST): Ein laufender Testmodus haelt die Zaehlung des
+          GANZEN Projekts an, nicht die eines Ziels — der Riegel im Ingest haengt an
+          MINDESTENS EINEM Ziel. Die Reichweite der WIRKUNG bestimmt den Ort der
+          Anzeige. Im Drawer stuende es genau dort, wo der Betreiber gerade NICHT
+          hinsieht, wenn er den Testmodus vergessen hat.
+          DIE ERSTE BEDINGUNG JENER REGEL IST ERFUELLT: Der Nutzer kann JETZT etwas
+          tun — der Weg zum Beenden steht daneben.
+
+          ES NENNT DAS VERURSACHENDE ZIEL, UND DAS IST KEINE KOSMETIK: Steht meta im
+          Testmodus, ruht die Zaehlung AUCH fuer tiktok, dessen Karte "kein
+          Testmodus" zeigt. Ohne die Angabe wuesste der Betreiber, DASS seine
+          Zaehlung ruht, aber nicht, WO er sie wieder anschaltet — und suchte sie an
+          der falschen Karte. Stehen mehrere Ziele im Testmodus, nennt es alle.
+
+          KEIN COUNTDOWN, EIN FESTER ENDZEITPUNKT. Ein tickender Zaehler braeuchte
+          eine DRITTE Uhr — die des Besuchers, und die ist die einzige, ueber die wir
+          nichts wissen. Der Zustand aktualisiert sich ausserdem NICHT von selbst:
+          Laeuft die Frist ab, waehrend die Seite offen ist, steht hier bis zum
+          naechsten Laden der alte Stand. DER RIEGEL IST DAVON UNBERUEHRT — er liest
+          je Beacon. Diese Anzeige ist die zweite Instanz, nicht die Autoritaet.
+
+          HYDRATION — DAS GATE IST DER LADEZUSTAND, UND DAS IST HIER KEIN
+          NEBENEFFEKT, SONDERN DIE MASSNAHME: Dieses Banner liegt ANDERS ALS DIE DREI
+          BESTEHENDEN ZEITANZEIGEN NICHT im Einstellungs-Drawer, es ist also nicht
+          durch isSettingsOpen gedeckt. Es formatiert mit demselben
+          toLocaleString("de-DE"), und laege es im ersten Render im Baum, formatierten
+          Server und Client denselben Zeitpunkt in VERSCHIEDENEN Zeitzonen — ein
+          Hydration-Mismatch. Es kann nicht passieren, WEIL testModes im ersten Render
+          `null` ist: Der Wert kommt aus einem Lade-Effekt, und der laeuft
+          ausschliesslich im Browser.
+          WER DEN ZUSTAND JE AUS EINER SERVER-KOMPONENTE VORBEFUELLT, MUSS DIE
+          FORMATIERUNG VORHER HYDRATIONS-SICHER MACHEN. Ohne diesen Satz kippt die
+          Deckung still, genau wie am isSettingsOpen-Gate beschrieben. */}
+      {testModeBanner !== null && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          <span className="font-medium">{testModeBanner}</span> Solange zählt die
+          eigene Auswertung dieses Projekts keine Ereignisse; beim Anbieter kommen
+          sie weiterhin an. Beenden in den Einstellungen unter „Messen“, an der
+          Karte des genannten Ziels.
+        </div>
+      )}
+
       {/* EINSTELLUNGS-DRAWER (Phase 10 Scheibe 10b-1). Die Flaeche liegt seit
           dieser Scheibe AUSSERHALB des Dokumentflusses: fixed, volle Hoehe, rechts
           angeschlagen, mit EIGENEM Scroll-Container. Damit verdraengt das Oeffnen
@@ -2521,6 +2614,8 @@ export default function CodeImporter({
               connectOutcome={connectOutcome}
               configuredTargets={configuredTargets}
               credentialStates={credentialStates}
+              testModes={testModes}
+              onTestModeChanged={handleTestModeChanged}
               onCredentialsSaved={handleCredentialsSaved}
               onCredentialsRemoved={handleCredentialsRemoved}
               // Scheibe 11.1b: die fertige Ableitung, samt ihrer AUSSAGE

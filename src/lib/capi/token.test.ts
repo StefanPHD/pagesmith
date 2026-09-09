@@ -1867,6 +1867,62 @@ describe("Scheibe 4 — der Lesepfad fuer das chiffrierte Zugangsdatum", () => {
 // einer angehaltenen Uhr exakt zu treffen. Eine relativ gerechnete Frist ("now + 0")
 // liefe zwischen dem Bauen der Fixture und dem Lesen im Resolver auseinander.
 // =====================================================================
+// =====================================================================
+// TM9 — DER UMZUGS-WAECHTER (Scheibe 11.3b).
+//
+// WAS ER SICHERT: Das Testmodus-Praedikat liegt seit 11.3b in
+// tracking/credential-state.ts und wird hier IMPORTIERT. Baut jemand es hier ein
+// zweites Mal ein, gibt es wieder zwei Fassungen derselben Frage — und driftet die
+// eine auf ">=", zeigt die Oberflaeche "Testmodus" an, WAEHREND DER RIEGEL NICHT
+// FEUERT. Genau das verhindert die Entscheidung (4) der Phase.
+//
+// SEINE GRENZE TRAEGT ER AN SICH SELBST, und sie gehoert hierher und nicht in einen
+// Bericht: EIN WAECHTER UEBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG. Er kann eine
+// Prosa-Erwaehnung des Namens nicht von einer Definition unterscheiden — deshalb
+// werden die Kommentarbloecke ALS BLOECKE entfernt, bevor er sucht, und deshalb
+// steht der Name im Kopf dieser Datei ausdruecklich in einem Kommentar. Wuerde er
+// darauf anspringen, waere er rot, obwohl nichts gebaut ist; wer ihn dann weicher
+// macht, nimmt ihm die Wirkung.
+// =====================================================================
+describe("TM9 — das Testmodus-Praedikat ist UMGEZOGEN, nicht kopiert (Scheibe 11.3b)", () => {
+  it("token.ts IMPORTIERT das Praedikat und DEFINIERT es nicht", () => {
+    const quelle = readFileSync(join(__dirname, "token.ts"), "utf8");
+    const nurCode = quelle
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/(^|[^:])\/\/.*$/gm, "$1");
+
+    // POSITIVKONTROLLE, ZWEIFACH — ohne sie waere ein Nicht-Treffer von einem leeren
+    // Lesevorgang nicht zu unterscheiden:
+    //  (a) der Kommentar-Filter hat nicht alles weggeworfen,
+    //  (b) der AUFRUF steht im Code und nicht bloss in einem Kommentar.
+    expect(nurCode).toContain("export async function getCapiConfigByTrackingKey");
+    expect(nurCode).toContain("activeTestCodeFromRow(row, nowSeconds)");
+
+    // DIE ZUSICHERUNG: ein Import aus dem reinen Modul, und KEINE Definition hier.
+    expect(nurCode).toMatch(
+      /import\s*\{\s*activeTestCodeFromRow\s*\}\s*from\s*["']@\/lib\/tracking\/credential-state["']/,
+    );
+    expect(nurCode).not.toMatch(/function\s+activeTestCodeFromRow/);
+  });
+
+  it("GEGENPROBE: der Waechter springt NICHT auf eine Prosa-Erwaehnung an", () => {
+    // WARUM DIESER LAUF: Der Kopf der Fundstelle in token.ts NENNT das Praedikat in
+    // einem Kommentar, und er MUSS es — ohne den Namen ist der Zeiger auf den neuen
+    // Ort nicht formulierbar. Ein Waechter, der darauf rot wuerde, waere beim ersten
+    // Gebrauch ein Fehlalarm.
+    const quelle = readFileSync(join(__dirname, "token.ts"), "utf8");
+
+    // POSITIVKONTROLLE: die Prosa-Erwaehnung existiert wirklich — sonst prueft dieser
+    // Lauf eine Abwesenheit, die es gar nicht gibt.
+    expect(quelle).toContain("HIER STAND BIS ZUR SCHEIBE 11.3b DAS TESTMODUS-PRAEDIKAT");
+
+    const nurCode = quelle
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/(^|[^:])\/\/.*$/gm, "$1");
+    expect(nurCode).not.toContain("HIER STAND BIS ZUR SCHEIBE 11.3b");
+  });
+});
+
 describe("TM4 — der projekt-eigene Testzustand und seine Frist (Scheibe 11.3a)", () => {
   const JETZT = new Date("2026-09-09T12:00:00.000Z");
   const CODE = "TEST12345";

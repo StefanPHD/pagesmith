@@ -1,9 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { removeCapiToken, setCapiToken } from "@/app/projects/actions";
-import { actionThrew, safeAction } from "@/lib/safe-action";
-import { hasTargetPixelId, type TrackingTarget } from "@/lib/settings";
+import {
+  endTestMode,
+  removeCapiToken,
+  setCapiToken,
+  startTestMode,
+} from "@/app/projects/actions";
+import {
+  ACTION_THROW_MESSAGE,
+  actionThrew,
+  safeAction,
+} from "@/lib/safe-action";
+import {
+  hasTargetPixelId,
+  TRACKING_TARGETS,
+  type TrackingTarget,
+} from "@/lib/settings";
 // DIE BESCHRIFTUNGEN LIEGEN SEIT DER SCHEIBE 3 IN EINEM REINEN lib-MODUL und NICHT mehr
 // hier. Grund und die verworfenen Alternativen stehen in dessen Kopf; kurz: setCapiToken
 // ("use server") muss dieselbe Quelle lesen wie diese Karte, und ein reines Modul ist der
@@ -14,7 +27,13 @@ import { TARGET_CARDS } from "@/lib/tracking/target-cards";
 // NUR DER TYP. Die Berechnung laeuft in der Aktion, die Ableitung in MeasureView;
 // diese Karte ZEIGT die Lage und bildet sie nicht. Das reine Modul traegt keine
 // Direktive und zieht nichts aus secrets/ in dieses Buendel — s. seinen Kopf.
-import type { TargetCredentialState } from "@/lib/tracking/credential-state";
+import type {
+  ListTestModeStatesResult,
+  TargetCredentialState,
+  TargetTestModeState,
+  TestModeWriteError,
+  TestModeWriteResult,
+} from "@/lib/tracking/credential-state";
 
 /**
  * DIE KARTE JE PLATTFORM (Phase 11, sechste Scheibe, zweite Haelfte).
@@ -134,8 +153,16 @@ export function describeCredentialState(
  * ES IST DIE ERSTE STELLE IM REPO, DIE EPOCHENSEKUNDEN ANZEIGT — bis zu dieser
  * Scheibe wurden sie ausschliesslich gerechnet und verglichen, nie dargestellt. Der
  * Faktor 1000 steht deshalb hier und nicht verstreut an drei Aufrufstellen.
+ *
+ * SEIT SCHEIBE 11.3b EXPORTIERT, UND DAS IST DER GRUND: Das Banner in
+ * CodeImporter.tsx zeigt denselben Zeitpunkt wie diese Karte. Zwei Formatierungen
+ * fuer dieselbe Sache liefen auseinander — die eine mit Sekunden, die andere ohne,
+ * und der Betreiber laese zwei verschiedene Fristen fuer einen Zustand.
+ * DIE ZEITZONEN-ABHAENGIGKEIT REIST MIT: Wer diese Funktion an einer NEUEN Stelle
+ * ruft, prueft, ob jene Stelle im ersten Render im Baum liegt (s. den Absatz an
+ * credentialLine weiter unten und den Kommentar am Banner).
  */
-function formatEpochSeconds(seconds: number): string {
+export function formatEpochSeconds(seconds: number): string {
   return new Date(seconds * 1000).toLocaleString("de-DE");
 }
 
@@ -162,6 +189,104 @@ export function noDeliveryText(publicLabel: string): string {
   return `Ohne ${publicLabel} wird an dieses Ziel nichts gesendet.`;
 }
 
+/**
+ * DIE ZEILE UEBER DEN TESTMODUS (Scheibe 11.3b) — oder null, wenn es nichts zu
+ * sagen gibt.
+ *
+ * KEIN WORT AUS DER VERBOTEN-LISTE des Wirkungs-Waechters, insbesondere weder
+ * "aktiv" noch "läuft". Das ist hier KEINE Ausweich-Formulierung, sondern die
+ * genauere: "Testmodus bis <Zeitpunkt>" sagt, was in der Zeile steht; "läuft" waere
+ * eine Aussage ueber die WIRKUNG beim Anbieter, und die kennt diese Karte nicht.
+ * Der Wächter faengt das Wort ohnehin, und zwar zu Recht.
+ *
+ * DER ZEITPUNKT WIRD MIT formatEpochSeconds FORMATIERT — dieselbe Hausform wie die
+ * Ablauf-Lage der Zugangsdaten, und dieselbe Zeitzonen-Abhaengigkeit (s. dort).
+ *
+ * BENANNT UND EXPORTIERT, damit die Tests sie AUFRUFEN statt abzuschreiben.
+ */
+export function describeTestModeState(
+  state: TargetTestModeState | null,
+): string | null {
+  if (state === null) return null;
+  switch (state.kind) {
+    case "aus":
+      return null;
+    case "laeuft":
+      return `Testmodus bis ${formatEpochSeconds(state.endetAt)}`;
+    case "abgelaufen":
+      return `Testmodus abgelaufen am ${formatEpochSeconds(state.endeteAt)}`;
+  }
+}
+
+/**
+ * DER TEXT DES PROJEKT-BANNERS — oder null, wenn kein Ziel im Testmodus steht.
+ *
+ * ER NENNT JEDES VERURSACHENDE ZIEL MIT SEINEM ENDZEITPUNKT, und das ist die
+ * tragende Angabe: Der Riegel im Ingest haengt an MINDESTENS EINEM Ziel — steht
+ * meta im Testmodus, ruht die Zaehlung AUCH fuer tiktok, dessen Karte "kein
+ * Testmodus" zeigt. Ohne den Namen wuesste der Betreiber, DASS seine Zaehlung ruht,
+ * aber nicht, WO er sie wieder anschaltet.
+ *
+ * DIE REIHENFOLGE FOLGT TRACKING_TARGETS und nicht der Schluesselfolge des Objekts:
+ * dieselbe Determiniertheit wie im Aufloesungs-Pfad, damit zwei Laeufe denselben
+ * Text ergeben.
+ *
+ * ER STEHT IN DIESER DATEI, WEIL HIER DIE PRODUKT-TEXTE ZU DEN ZIELEN STEHEN — das
+ * reine Modul sagt das ausdruecklich ueber sich selbst. Gelesen wird er im
+ * Container (CodeImporter), der das Banner rendert.
+ *
+ * BENANNT UND EXPORTIERT, damit die Tests ihn AUFRUFEN statt abzuschreiben.
+ */
+export function testModeBannerText(
+  testModes: ListTestModeStatesResult | null,
+): string | null {
+  if (testModes === null || !testModes.ok) return null;
+  const laufend = TRACKING_TARGETS.filter(
+    (target) => testModes.states[target]?.kind === "laeuft",
+  ).map((target) => {
+    const state = testModes.states[target];
+    const bis =
+      state !== undefined && state.kind === "laeuft"
+        ? formatEpochSeconds(state.endetAt)
+        : "";
+    return `${TARGET_CARDS[target].name} (bis ${bis})`;
+  });
+  if (laufend.length === 0) return null;
+  return `Testmodus: ${laufend.join(", ")}.`;
+}
+
+/**
+ * WARUM EINE GESTE NICHT DURCHGING — in einem Satz, den der Betreiber lesen kann.
+ *
+ * KEIN TEXT BEHAUPTET URSACHE ODER ERGEBNIS, und das ist die Auflage aus
+ * docs/immer-beachten.md: "keine Verbindung" waere eine Ursache, die wir nicht
+ * kennen, "wurde nicht ausgefuehrt" ein Ergebnis, das wir nicht kennen. Die einzige
+ * Ausnahme ist `not_configured` — dort WISSEN wir, dass nichts geschrieben wurde,
+ * weil kein Datensatz getroffen wurde.
+ *
+ * DIE UNION IST GESCHLOSSEN, und das ist der Mechanismus: Kommt ein Grund hinzu,
+ * meldet der Compiler eine fehlende Zuordnung, statt still auf einen Auffangtext
+ * zurueckzufallen.
+ */
+export function testModeErrorText(reason: TestModeWriteError): string {
+  switch (reason) {
+    case "empty_code":
+      return "Bitte den Testcode aus dem Werbekonto einfügen.";
+    case "not_configured":
+      return "Für dieses Ziel sind keine Zugangsdaten hinterlegt — es wurde nichts geändert.";
+    case "unknown_target":
+      return "Für dieses Ziel gibt es keinen Testmodus.";
+    case "not_found":
+      return "Projekt nicht gefunden.";
+    case "unauthenticated":
+      return "Nicht eingeloggt.";
+    case "write_failed":
+      return "Der Testmodus konnte nicht gesetzt werden — bitte erneut versuchen.";
+    case "action_threw":
+      return ACTION_THROW_MESSAGE;
+  }
+}
+
 export default function TargetCard({
   projectId,
   target,
@@ -174,6 +299,8 @@ export default function TargetCard({
   credentialState,
   onCredentialsSaved,
   onCredentialsRemoved,
+  testModeState,
+  onTestModeChanged,
 }: {
   projectId: string | null;
   target: TrackingTarget;
@@ -264,6 +391,26 @@ export default function TargetCard({
     trackingKey: string,
   ) => void;
   onCredentialsRemoved: (forProjectId: string, target: TrackingTarget) => void;
+  /**
+   * DER PROJEKT-EIGENE TESTZUSTAND DIESES ZIELS (Scheibe 11.3b), oder null.
+   *
+   * null HEISST DREIERLEI und fuehrt zu DERSELBEN Anzeige, naemlich zu keiner: noch
+   * nicht geladen, der Leser scheiterte, oder DIESES ZIEL TRAEGT KEINEN SCHALTER.
+   * Dieselbe Figur wie bei credentialState darueber.
+   *
+   * DIE SICHTBARKEIT DES SCHALTERS HAENGT ALLEIN HIERAN, UND DAS IST DER GANZE
+   * MECHANISMUS: Der Leser (listTestModeStates) gibt einen Eintrag nur fuer Ziele
+   * heraus, die einen Testmodus tragen, den Kennungs-Filter des Aufloesungs-Pfades
+   * passieren und eine Geheimnis-Zeile haben. Die Karte bildet KEINE dieser drei
+   * Bedingungen nach — sie kann deshalb nicht divergieren.
+   */
+  testModeState: TargetTestModeState | null;
+  /** Der neue Zustand nach einer Geste. Der Server kennt ihn; die Karte raet nicht. */
+  onTestModeChanged: (
+    forProjectId: string,
+    target: TrackingTarget,
+    state: TargetTestModeState,
+  ) => void;
 }) {
   const config = TARGET_CARDS[target];
 
@@ -279,6 +426,14 @@ export default function TargetCard({
   const [error, setError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [removing, setRemoving] = useState(false);
+
+  // DER TESTMODUS HAT SEINEN EIGENEN KANAL (Scheibe 11.3b) und teilt ihn NICHT mit
+  // den Zugangsdaten darueber. Grund: Es sind zwei Vorgaenge an derselben Karte, und
+  // ein geteilter Fehlerkanal zeigte die Meldung des einen unter dem anderen — der
+  // Betreiber laese "Testmodus nicht gestartet" als Aussage ueber sein Zugangsdatum.
+  const [testInput, setTestInput] = useState("");
+  const [testBusy, setTestBusy] = useState(false);
+  const [testError, setTestError] = useState<string | null>(null);
 
   async function handleSave() {
     if (!projectId) return;
@@ -324,6 +479,51 @@ export default function TargetCard({
       setError(result.error);
       setStatus("error");
     }
+  }
+
+  // DIE ZWEI GESTEN DES TESTMODUS (Scheibe 11.3b).
+  //
+  // safeAction IST PFLICHT UND KEIN SCHMUCK: An beiden haengt ein UI-Zustand — das
+  // Busy-Flag muss freigegeben, der Fehlerkanal gefuellt werden. result.ok
+  // unterscheidet nur RUECKGABEWERTE; ein Netz- oder Serverfehler ist eine EXCEPTION,
+  // sie verliesse den Handler, das Busy-Flag bliebe stehen und der ZWEITE Versuch
+  // waere blockiert (docs/immer-beachten.md, "CLIENT-SEITIGE SERVER-ACTION-AUFRUFE").
+  //
+  // DER ERSATZWERT IST `action_threw` UND NICHT `write_failed`: Ein Wurf sagt nicht,
+  // ob geschrieben wurde — bricht die Verbindung auf dem Rueckweg, ist der
+  // Schreibvorgang passiert.
+  async function handleTestStart() {
+    if (!projectId || testBusy) return;
+    if (!testInput.trim()) return;
+    setTestBusy(true);
+    setTestError(null);
+    const result = await safeAction<TestModeWriteResult>(
+      () => startTestMode(projectId, target, testInput),
+      { ok: false, reason: "action_threw" },
+    );
+    setTestBusy(false);
+    if (result.ok) {
+      // DAS FELD WIRD GELEERT, und das ist Absicht: Der Code wird beim VERLAENGERN
+      // erneut verlangt, weil Metas Testcode alle paar Tage wechselt. Ein
+      // stehengebliebener Wert lud dazu ein, ihn ungeprueft wiederzuverwenden.
+      setTestInput("");
+      onTestModeChanged(projectId, target, result.state);
+    } else {
+      setTestError(testModeErrorText(result.reason));
+    }
+  }
+
+  async function handleTestEnd() {
+    if (!projectId || testBusy) return;
+    setTestBusy(true);
+    setTestError(null);
+    const result = await safeAction<TestModeWriteResult>(
+      () => endTestMode(projectId, target),
+      { ok: false, reason: "action_threw" },
+    );
+    setTestBusy(false);
+    if (result.ok) onTestModeChanged(projectId, target, result.state);
+    else setTestError(testModeErrorText(result.reason));
   }
 
   // DIE STATUSZEILE — DREI ZUSTAENDE, NICHT ZWEI.
@@ -386,6 +586,12 @@ export default function TargetCard({
   // "laeuft". Der naheliegende Text "laeuft bald ab" macht jenen Lauf ROT, und zwar
   // zu Recht: Die Liste haelt die Karte davon ab, ueber WIRKUNG zu sprechen.
   const credentialLine = describeCredentialState(credentialState ?? null);
+
+  // DIE VIERTE ZEILE (Scheibe 11.3b) — DER TESTZUSTAND. Eigene Zeile aus demselben
+  // Grund wie die dritte: eine VIERTE Aussage. Der Status sagt, ob Zugangsdaten
+  // hinterlegt sind; die dritte, ob sie gueltig sind; diese, ob dieses Ziel gerade
+  // geprueft wird.
+  const testModeLine = describeTestModeState(testModeState);
 
   return (
     <div className="rounded-md border border-gray-200 px-3 py-3">
@@ -807,6 +1013,71 @@ export default function TargetCard({
         )}
         {status === "error" && error && (
           <span className="text-xs text-red-600">{error}</span>
+        )}
+
+        {/* DER TESTMODUS — DREI GESTEN, KEIN AN/AUS-SCHALTER (Scheibe 11.3b).
+            · "Test starten" nimmt den Code entgegen und setzt die Frist.
+            · Nochmal druecken VERLAENGERT — und verlangt den Code ERNEUT.
+            · "Jetzt beenden" raeumt beide Spalten.
+            EIN SCHALTER HAETTE EINEN ZUSTAND OHNE CODE ZUR FOLGE, und den laesst der
+            CHECK project_secrets_test_mode_paar nicht einmal zu. Die drei Gesten
+            bilden das Datenmodell eins zu eins ab. Dass der Code beim Verlaengern
+            erneut verlangt wird, ist kein Schikane-Schritt: Metas Testcode wechselt
+            alle paar Tage, und die Geste faellt genau dorthin, wo er ohnehin frisch
+            geholt werden muss.
+
+            DIE SICHTBARKEIT HAENGT ALLEIN AN testModeState !== null. Die Karte
+            entscheidet NICHTS darueber — der Leser gibt einen Eintrag nur fuer Ziele
+            heraus, die einen Testmodus tragen, den Kennungs-Filter passieren und eine
+            Geheimnis-Zeile haben. Eine eigene Ziel-Liste hier waere die zweite
+            Wahrheit, an der die Oberflaeche vom Riegel abdriftet.
+
+            projectId WIRD MITGEPRUEFT, obwohl der Leser ohne Projekt nichts liefert:
+            Beide Handler kehren ohne projectId zurueck, und ein Knopf, der
+            garantiert nichts tut, gehoert nicht auf die Flaeche. */}
+        {projectId && testModeState !== null && (
+          <div className="flex flex-col gap-2 rounded-md bg-gray-50 px-3 py-2">
+            {testModeLine !== null && (
+              <span className="text-xs text-gray-600">{testModeLine}</span>
+            )}
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                type="text"
+                value={testInput}
+                onChange={(e) => setTestInput(e.target.value)}
+                disabled={testBusy}
+                placeholder="Testcode"
+                aria-label={`Testcode für ${config.name}`}
+                className="min-w-0 flex-1 rounded-md border border-gray-300 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+              />
+              {/* ZIEL-SPEZIFISCHER NAME, aus demselben Grund wie beim
+                  Entfernen-Knopf darueber: Zwei Karten traegen sonst zwei Knoepfe
+                  desselben Namens, und eine Abfrage traefe still den falschen. */}
+              <button
+                type="button"
+                onClick={handleTestStart}
+                disabled={testBusy || !testInput.trim()}
+                className="shrink-0 rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {testModeState.kind === "laeuft"
+                  ? `${config.name}-Test verlängern`
+                  : `${config.name}-Test starten`}
+              </button>
+              {testModeState.kind === "laeuft" && (
+                <button
+                  type="button"
+                  onClick={handleTestEnd}
+                  disabled={testBusy}
+                  className="shrink-0 rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {config.name}-Test jetzt beenden
+                </button>
+              )}
+            </div>
+            {testError !== null && (
+              <span className="text-xs text-red-600">{testError}</span>
+            )}
+          </div>
         )}
       </div>
     </div>

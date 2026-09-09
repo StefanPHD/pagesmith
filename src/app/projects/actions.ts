@@ -6,8 +6,12 @@ import { META_TARGET } from "@/lib/capi/token";
 import type { Mapping } from "@/lib/mappings";
 import {
   ensureTrackingKey,
+  getConversionRules,
   getHostingLabel,
+  getPixelId,
   getTrackingKey,
+  hasConversionRules,
+  hasTargetPixelId,
   isTrackingTarget,
   setCapiState,
   setHostingState,
@@ -37,9 +41,15 @@ import { parseOAuthPayload } from "@/lib/secrets/oauth-payload";
 // leitet aus denselben Typen ab, und sie laeuft im Browser.
 import {
   credentialStateFrom,
+  testModeStateFrom,
+  TARGETS_WITH_TEST_MODE,
+  TEST_MODE_DURATION_SECONDS,
   type CredentialInput,
   type ListCredentialStatesResult,
+  type ListTestModeStatesResult,
   type TargetCredentialStates,
+  type TargetTestModeStates,
+  type TestModeWriteResult,
 } from "@/lib/tracking/credential-state";
 import {
   deliverableVariantB,
@@ -1052,6 +1062,248 @@ export async function listTargetCredentialStates(
   }
 
   return { ok: true, states };
+}
+
+// ===========================================================================
+// DER PROJEKT-EIGENE TESTMODUS — EIN LESER UND ZWEI GESTEN (Scheibe 11.3b).
+//
+// DIE SICHERHEITSACHSE DIESES BLOCKS, UND SIE IST NICHT SEIN FORMALISMUS: WER DIESEN
+// ZUSTAND SCHREIBEN KANN, KANN DIE ANALYTICS EINES FREMDEN PROJEKTS STILL ANHALTEN.
+// Der Schaden ist kein Datenabfluss, sondern DATENVERWEIGERUNG — der Riegel im Ingest
+// nimmt Ereignisse aus events, und das faellt niemandem auf, weil die Zahlen nicht
+// falsch werden, sondern ausbleiben. Kein Fehler, keine leere Seite, keine rote Zahl.
+// Alle drei Funktionen tragen deshalb dasselbe Gate wie setCapiToken: Sitzung, dann
+// Ownership ueber den AUTHENTIFIZIERTEN Client (RLS greift), und ERST DANACH
+// createAdminClient(). Drei eigene IDOR-Waechter halten das fest.
+// ===========================================================================
+
+/**
+ * DER TESTZUSTAND JE ZIEL — fuer die Oberflaeche.
+ *
+ * ER GIBT DAS URTEIL HERAUS, NIE DEN CODE (Owner-Entscheidung 2026-09-09). Der
+ * Testcode wird hier gelesen, weil das Praedikat ihn braucht, und verlaesst diese
+ * Funktion NICHT: Der Rueckgabetyp traegt strukturell keinen freien String.
+ * DER GRUND IST NICHT SPARSAMKEIT, SONDERN DIE DRIFT: Bekaeme die Karte nur die
+ * Frist und entschiede selbst, liesse sie die Nicht-Leer-Haelfte des Praedikats weg —
+ * und zeigte "laeuft", waehrend der Riegel NICHT feuert. Es gibt genau eine Fassung
+ * der Frage, und sie faellt hier.
+ *
+ * DREI BEDINGUNGEN, UND ALLE DREI FALLEN HIER, damit die Karte keine nachbaut:
+ *  (1) Das Ziel TRAEGT einen Testmodus (TARGETS_WITH_TEST_MODE).
+ *  (2) Es passiert den KENNUNGS-FILTER des Aufloesungs-Pfades — mit DENSELBEN
+ *      Praedikaten, die getCapiConfigByTrackingKey benutzt. Ein Ziel ohne Kennung
+ *      ist fuer den Resolver unsichtbar, der Riegel feuerte dort NIE, und ein
+ *      Schalter verspraeche eine Wirkung, die es nicht gibt (Vorrat (7)).
+ *  (3) Es HAT eine Geheimnis-Zeile. Ohne sie gibt es nichts zu testen, und der CHECK
+ *      project_secrets_secret_genau_eines laesst eine Zeile ohne Geheimnis ohnehin
+ *      nicht zu (Vorrat (9)).
+ *
+ * WAS ER NICHT PRUEFT, ausdruecklich: ob das Geheimnis BRAUCHBAR ist. Das saehe er
+ * nur, wenn er es laese — und das tut er bewusst nicht. Fuer die zwei Ziele dieser
+ * Scheibe ist das Geheimnis Klartext, und setCapiToken weist einen leeren Wert
+ * vorher ab; die Luecke ist damit praktisch unerreichbar und als offener Punkt
+ * gefuehrt (Vorrat (11)).
+ */
+export async function listTestModeStates(
+  projectId: string,
+): Promise<ListTestModeStatesResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "unauthenticated" };
+
+  // 1) Ownership-Gate ueber den authenticated-SSR-Client (RLS greift). settings wird
+  //    mitgelesen, weil der Kennungs-Filter unten daraus faellt — eine zweite Runde
+  //    nur fuer den Blob waere eine Abfrage ohne Gewinn.
+  const { data: owned, error: ownError } = await supabase
+    .from("projects")
+    .select("id,settings")
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (ownError || !owned) return { ok: false, reason: "not_found" };
+
+  // 2) HARTE INVARIANTE: Admin-Client erst HIER, NACH dem Gate.
+  const admin = createAdminClient();
+
+  const { data, error } = await admin
+    .from("project_secrets")
+    .select("target, test_event_code, test_mode_expires_at")
+    .eq("project_id", projectId);
+  if (error || !data) return { ok: false, reason: "read_failed" };
+
+  // DER KENNUNGS-FILTER, WORTGLEICH ZUM AUFLOESUNGS-PFAD (getCapiConfigByTrackingKey
+  // in capi/token.ts). Er wird hier nicht nachgebaut, sondern aus denselben
+  // Praedikaten zusammengesetzt; driftete er, zeigte die Oberflaeche einen Schalter
+  // an einem Ziel, das der Riegel gar nicht sieht.
+  const settings = (owned.settings ?? {}) as ProjectSettings;
+  const sichtbar = new Set(
+    TARGETS_WITH_TEST_MODE.filter(
+      (target) =>
+        hasTargetPixelId(getPixelId(settings, target), target) ||
+        hasConversionRules(getConversionRules(settings, target)),
+    ),
+  );
+
+  // DIE UHR WIRD GENAU EINMAL GELESEN und fuer ALLE Zeilen benutzt — dieselbe
+  // Erwaegung wie bei der Nachbarin darueber.
+  const nowSeconds = Math.floor(Date.now() / 1000);
+
+  const states: TargetTestModeStates = {};
+  for (const raw of data) {
+    const row = raw as {
+      target: unknown;
+      test_event_code: unknown;
+      test_mode_expires_at: unknown;
+    };
+    // Derselbe Filter wie bei den Nachbarinnen: Die DB kann nach einem Rollback
+    // Werte tragen, die dieser Code nicht kennt.
+    if (!isTrackingTarget(row.target)) continue;
+    if (!sichtbar.has(row.target)) continue;
+    states[row.target] = testModeStateFrom(row, nowSeconds);
+  }
+
+  return { ok: true, states };
+}
+
+/**
+ * TESTMODUS STARTEN ODER VERLAENGERN — EINE GESTE, EIN SCHREIBVORGANG.
+ *
+ * ES IST BEWUSST KEIN AN/AUS-SCHALTER (Owner-Entscheidung 2026-09-09). Ein Schalter
+ * haette einen Zustand OHNE Code zur Folge, und den laesst der CHECK
+ * project_secrets_test_mode_paar nicht einmal zu. Das Verlangen des Codes beim
+ * VERLAENGERN faellt ausserdem genau dorthin, wo er ohnehin frisch geholt werden
+ * muss: Metas Testcode wechselt alle paar Tage.
+ *
+ * ZWEI PRUEFUNGEN VOR JEDEM CLIENT, und beide sind Sicherheitsachse, nicht Form:
+ * Zwischen ihnen und dem naechsten Absatz liegt das Instanziieren des
+ * PRIVILEGIERTEN Clients. Ein abgewiesener Aufruf soll ihn gar nicht erst erzeugen —
+ * dieselbe Regel wie bei setCapiToken.
+ *
+ * DER LEERE CODE IST KEIN RANDFALL: Der CHECK ist mit `test_event_code = ''`
+ * zufrieden (beide Spalten gesetzt), das Praedikat verwirft den Wert aber beim
+ * Trimmen. Der Kunde glaubte dann, der Testmodus laufe, und er liefe nicht
+ * (Vorrat (12)).
+ */
+export async function startTestMode(
+  projectId: string,
+  target: TrackingTarget,
+  code: string,
+): Promise<TestModeWriteResult> {
+  const trimmed = code.trim();
+  if (!trimmed) return { ok: false, reason: "empty_code" };
+
+  // EIN GATE, ZWEI FRAGEN: ob das Ziel BEKANNT ist, und ob es ueberhaupt einen
+  // Testmodus TRAEGT. Beide enden im selben Grund, weil der Kunde beide nicht
+  // ausloesen kann — die Oberflaeche zeigt den Schalter nur, wo der Leser einen
+  // Eintrag geliefert hat.
+  if (!isTrackingTarget(target) || !TARGETS_WITH_TEST_MODE.includes(target))
+    return { ok: false, reason: "unknown_target" };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "unauthenticated" };
+
+  const { data: owned, error: ownError } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (ownError || !owned) return { ok: false, reason: "not_found" };
+
+  const admin = createAdminClient();
+
+  // DIE FRIST ENTSTEHT AUS DER UHR DER LAUFZEIT, NICHT AUS now() IN POSTGRES, UND DAS
+  // IST EINE ABSICHT DIESER SCHEIBE (Vorrat (6)): Der Resolver vergleicht
+  // test_mode_expires_at gegen Date.now(). Entstuende die Frist in der Datenbank,
+  // verschoebe eine Uhren-Abweichung die effektive Dauer still und in beide
+  // Richtungen. Geschrieben und gelesen wird jetzt gegen dieselbe Uhrenfamilie.
+  // Format: ISO-8601 — dieselbe Hausform wie ab_test_started_at in setAbTestActive.
+  const endetMs = Date.now() + TEST_MODE_DURATION_SECONDS * 1000;
+
+  // AUSSCHLIESSLICH DIE ZWEI TESTSPALTEN, NIE DIE GANZE ZEILE (Entscheidung (6)).
+  // Ein Lesen-Aendern-Schreiben braechte die Zugangsdaten in einen Schreibvorgang,
+  // der sie nicht meint — genau die Bauform, aus der spaeter ein ueberschriebenes
+  // Zugangsdatum wird. KEIN updated_at: den fuehrt der Trigger
+  // project_secrets_set_updated_at nach.
+  //
+  // `update` UND NICHT `upsert`, und das ist erzwungen: Ein Upsert legte bei
+  // fehlender Zeile eine neue an, in der WEDER secret NOCH secret_enc stuende — der
+  // CHECK project_secrets_secret_genau_eines wiese sie mit 23514 ab.
+  //
+  // `.select()` IST PFLICHT UND KEIN ZIERRAT (Supabase-Doku, gelesen 2026-09-09:
+  // "By default, updated rows are not returned"): Ohne sie ist "null Zeilen
+  // getroffen" von "geschrieben" NICHT unterscheidbar, und der Kunde bekaeme eine
+  // Erfolgsmeldung fuer einen Vorgang, der nicht stattgefunden hat.
+  const { data: getroffen, error: writeError } = await admin
+    .from("project_secrets")
+    .update({
+      test_event_code: trimmed,
+      test_mode_expires_at: new Date(endetMs).toISOString(),
+    })
+    .eq("project_id", projectId)
+    .eq("target", target)
+    .select("target")
+    .maybeSingle();
+  if (writeError) return { ok: false, reason: "write_failed" };
+  if (!getroffen) return { ok: false, reason: "not_configured" };
+
+  // DER NEUE ZUSTAND WIRD ZURUECKGEGEBEN, NICHT GERATEN: Der Server kennt ihn, die
+  // Karte muss ihn nicht erfinden. Gegenstueck zu withoutTarget, das ENTFERNT, weil
+  // dort nach dem Speichern eben NICHT bekannt ist, was in der Zeile steht.
+  return {
+    ok: true,
+    state: { kind: "laeuft", endetAt: Math.floor(endetMs / 1000) },
+  };
+}
+
+/**
+ * TESTMODUS BEENDEN — die dritte Geste. Sie raeumt BEIDE Spalten.
+ *
+ * BEIDE ODER KEINE: Der CHECK project_secrets_test_mode_paar verlangt es, und der
+ * Zustand bildet das Datenmodell eins zu eins ab.
+ *
+ * SIE PRUEFT DEN CODE NICHT — es gibt keinen. Das Ziel-Gate bleibt, weil ein Aufruf
+ * mit unbekanntem Ziel auch hier den privilegierten Client nicht erzeugen soll.
+ */
+export async function endTestMode(
+  projectId: string,
+  target: TrackingTarget,
+): Promise<TestModeWriteResult> {
+  if (!isTrackingTarget(target) || !TARGETS_WITH_TEST_MODE.includes(target))
+    return { ok: false, reason: "unknown_target" };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, reason: "unauthenticated" };
+
+  const { data: owned, error: ownError } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (ownError || !owned) return { ok: false, reason: "not_found" };
+
+  const admin = createAdminClient();
+
+  const { data: getroffen, error: writeError } = await admin
+    .from("project_secrets")
+    .update({ test_event_code: null, test_mode_expires_at: null })
+    .eq("project_id", projectId)
+    .eq("target", target)
+    .select("target")
+    .maybeSingle();
+  if (writeError) return { ok: false, reason: "write_failed" };
+  if (!getroffen) return { ok: false, reason: "not_configured" };
+
+  return { ok: true, state: { kind: "aus" } };
 }
 
 /** Ergebnis von publishProject. Bei Erfolg die absolute Live-URL + das Label. */

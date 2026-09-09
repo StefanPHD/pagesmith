@@ -21,6 +21,9 @@ const {
   removeCapiToken,
   listConfiguredTargets,
   listTargetCredentialStates,
+  listTestModeStates,
+  startTestMode,
+  endTestMode,
   loadProject,
   saveProject,
   listProjects,
@@ -51,6 +54,21 @@ const {
   listTargetCredentialStates: vi.fn(
     async (): Promise<unknown> => ({ ok: true, states: {} }),
   ),
+  // DERSELBE GRUND WIE BEI DER NACHBARIN (Scheibe 11.3b): ein geglueckter Lauf OHNE
+  // Eintrag. Damit traegt keine Karte des Bestands einen Testmodus-Schalter, und der
+  // Container-Waechter am Ende dieser Datei findet die Funktion, statt auf undefined
+  // zu laufen.
+  listTestModeStates: vi.fn(
+    async (): Promise<unknown> => ({ ok: true, states: {} }),
+  ),
+  startTestMode: vi.fn(async (): Promise<unknown> => ({
+    ok: true,
+    state: { kind: "laeuft", endetAt: 0 },
+  })),
+  endTestMode: vi.fn(async (): Promise<unknown> => ({
+    ok: true,
+    state: { kind: "aus" },
+  })),
   loadProject: vi.fn(async (): Promise<unknown> => null),
   saveProject: vi.fn(async () => ({ ok: true as const, id: "test-id" })),
   listProjects: vi.fn(async () => []),
@@ -76,6 +94,9 @@ vi.mock("@/app/projects/actions", () => ({
   removeCapiToken,
   listConfiguredTargets,
   listTargetCredentialStates,
+  listTestModeStates,
+  startTestMode,
+  endTestMode,
   loadProject,
   saveProject,
   listProjects,
@@ -108,14 +129,20 @@ vi.mock("@/app/projects/domain-actions", () => ({
 import CodeImporter from "@/components/CodeImporter";
 
 import TargetCard, {
+  describeTestModeState,
   noDeliveryText,
   STATUS_CONFIGURED,
   STATUS_LOADING,
   STATUS_UNCONFIGURED,
   STATUS_UNKNOWN,
+  testModeBannerText,
+  testModeErrorText,
 } from "@/components/TargetCard";
 import type { ConfiguredState } from "@/components/TargetCard";
-import type { TargetCredentialState } from "@/lib/tracking/credential-state";
+import type {
+  TargetCredentialState,
+  TargetTestModeState,
+} from "@/lib/tracking/credential-state";
 // SEIT DER SCHEIBE 3 AUS DEM REINEN lib-MODUL — die Karten-Datei re-exportiert die
 // Tabelle nicht. Der Test liest damit dieselbe Adresse wie Komponente und Server-Action.
 import { TARGET_CARDS } from "@/lib/tracking/target-cards";
@@ -167,6 +194,15 @@ function renderCard(
     ) => void;
     onCredentialsRemoved?: (forProjectId: string, target: TrackingTarget) => void;
     connectOutcome?: string | null;
+    /**
+     * Der Testzustand dieses Ziels (Scheibe 11.3b). null = KEIN Schalter.
+     *
+     * DER DEFAULT IST null, und das ist der Grund, warum keiner der Bestandslaeufe
+     * dieser Datei angefasst werden musste: Ohne Eintrag sieht die Karte aus wie vor
+     * dieser Scheibe — der Wirkungs-Waechter und die Knopf-Abfragen bleiben
+     * unberuehrt.
+     */
+    testModeState?: TargetTestModeState | null;
   } = {},
 ) {
   const props = {
@@ -199,6 +235,13 @@ function renderCard(
     credentialState: null as TargetCredentialState | null,
     onCredentialsSaved: vi.fn(),
     onCredentialsRemoved: vi.fn(),
+    // null = DIESES ZIEL TRAEGT KEINEN SCHALTER (Scheibe 11.3b). Der Default ist
+    // wieder der Normalfall der Bestandslaeufe: Sie rendern die Karte ohne
+    // Testmodus-Block, genau wie vor dieser Scheibe — der Wirkungs-Waechter und die
+    // Knopf-Abfragen bleiben damit unberuehrt. Die Laeufe, die den Block pruefen,
+    // setzen ihn ausdruecklich.
+    testModeState: null as TargetTestModeState | null,
+    onTestModeChanged: vi.fn(),
     ...overrides,
   };
   return { ...render(<TargetCard {...props} />), props };
@@ -610,6 +653,8 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           configured={true}
           onCredentialsSaved={vi.fn()}
           onCredentialsRemoved={vi.fn()}
+          testModeState={null}
+          onTestModeChanged={vi.fn()}
         />
         <TargetCard
           projectId="p1"
@@ -622,6 +667,8 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           configured={true}
           onCredentialsSaved={vi.fn()}
           onCredentialsRemoved={vi.fn()}
+          testModeState={null}
+          onTestModeChanged={vi.fn()}
         />
       </div>,
     );
@@ -650,6 +697,8 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           configured={true}
           onCredentialsSaved={vi.fn()}
           onCredentialsRemoved={vi.fn()}
+          testModeState={null}
+          onTestModeChanged={vi.fn()}
         />
         <TargetCard
           projectId="p1"
@@ -662,6 +711,8 @@ describe("TargetCard — zwei Karten nebeneinander bleiben unterscheidbar", () =
           configured={true}
           onCredentialsSaved={vi.fn()}
           onCredentialsRemoved={vi.fn()}
+          testModeState={null}
+          onTestModeChanged={vi.fn()}
         />
       </div>,
     );
@@ -1499,5 +1550,246 @@ describe("TargetCard — die Lage der Zugangsdaten", () => {
 
     renderCard({ configured: false });
     expect(screen.queryByText(STATUS_UNKNOWN)).toBeNull();
+  });
+});
+
+// ===========================================================================
+// DER TESTMODUS AN DER KARTE (Scheibe 11.3b).
+//
+// DIE SICHTBARKEIT IST DIE TRAGENDE ACHSE, nicht die Gestalt: Der Schalter darf NUR
+// dort stehen, wo der Leser einen Eintrag geliefert hat. Er entscheidet das, weil er
+// als einziger den Kennungs-Filter des Aufloesungs-Pfades kennt; baute die Karte
+// eine eigene Bedingung, waere das die zweite Wahrheit, an der Oberflaeche und
+// Riegel auseinanderlaufen.
+//
+// GEMESSENE GRENZE DER TESTUMGEBUNG, die hier mitgelesen werden muss: jsdom wertet
+// KEIN CSS aus. Geprueft wird DOM-PRAESENZ, nie Sichtbarkeit.
+// ===========================================================================
+describe("TargetCard — der Testmodus-Schalter und seine Sichtbarkeit", () => {
+  it("OHNE Eintrag des Lesers gibt es KEINEN Schalter", () => {
+    // ROT DURCH: eine eigene Ziel-Liste in der Karte statt der Ableitung aus dem
+    // Leser-Ergebnis. Das ist der Normalfall aller Bestandslaeufe.
+    renderCard({ configured: true, testModeState: null });
+    expect(screen.queryByRole("button", { name: /Test starten/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Test verlängern/i })).toBeNull();
+    expect(screen.queryByLabelText(/Testcode/i)).toBeNull();
+  });
+
+  it("MIT Eintrag aus steht der Startknopf, aber KEIN Beenden-Weg", () => {
+    renderCard({ configured: true, testModeState: { kind: "aus" } });
+    expect(screen.getByRole("button", { name: "Meta-Test starten" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /jetzt beenden/i })).toBeNull();
+    // KEINE ZEILE im Zustand "aus": Es gibt nichts zu melden, und ein Text waere
+    // eine Auskunft ueber einen Zustand, den es nicht gibt.
+    expect(describeTestModeState({ kind: "aus" })).toBeNull();
+  });
+
+  it("IM LAUFENDEN ZUSTAND heisst der Knopf VERLAENGERN und der Beenden-Weg steht daneben", () => {
+    // DIE DREI GESTEN. ROT DURCH: ein An/Aus-Schalter — dann fehlte entweder das
+    // Verlaengern oder das Feld, und ein Zustand OHNE Code waere moeglich, den der
+    // CHECK project_secrets_test_mode_paar gar nicht zulaesst.
+    renderCard({
+      configured: true,
+      testModeState: { kind: "laeuft", endetAt: 1_800_000_000 },
+    });
+    expect(screen.getByRole("button", { name: "Meta-Test verlängern" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Meta-Test jetzt beenden" })).toBeTruthy();
+    // DAS FELD STEHT AUCH BEIM VERLAENGERN — Metas Testcode wechselt alle paar Tage,
+    // und die Geste faellt genau dorthin, wo er ohnehin frisch geholt werden muss.
+    expect(screen.getByLabelText("Testcode für Meta")).toBeTruthy();
+  });
+
+  it("der Startknopf ist gesperrt, solange kein Code eingegeben ist", () => {
+    // Sonst laeuft der Betreiber in den empty_code-Ausgang der Aktion, und die Karte
+    // meldete einen Fehler fuer etwas, das sie vorher sehen konnte.
+    renderCard({ configured: true, testModeState: { kind: "aus" } });
+    const knopf = screen.getByRole("button", {
+      name: "Meta-Test starten",
+    }) as HTMLButtonElement;
+    expect(knopf.disabled).toBe(true);
+    fireEvent.change(screen.getByLabelText("Testcode für Meta"), {
+      target: { value: "TEST123" },
+    });
+    expect(knopf.disabled).toBe(false);
+  });
+
+  it("zwei Karten nebeneinander: die Testmodus-Bedienelemente bleiben unterscheidbar", () => {
+    // Dieselbe Auflage wie beim Entfernen-Knopf: getByRole wirft bei MEHREREN
+    // Treffern — der Aufruf selbst ist die Zusicherung.
+    render(
+      <div>
+        <TargetCard
+          projectId="p1"
+          target="meta"
+          hasAdapter={true}
+          pixelId=""
+          savedPixelId=""
+          onPixelIdChange={vi.fn()}
+          connectOutcome={null}
+          configured={true}
+          onCredentialsSaved={vi.fn()}
+          onCredentialsRemoved={vi.fn()}
+          testModeState={{ kind: "aus" }}
+          onTestModeChanged={vi.fn()}
+        />
+        <TargetCard
+          projectId="p1"
+          target="tiktok"
+          hasAdapter={true}
+          pixelId=""
+          savedPixelId=""
+          onPixelIdChange={vi.fn()}
+          connectOutcome={null}
+          configured={true}
+          onCredentialsSaved={vi.fn()}
+          onCredentialsRemoved={vi.fn()}
+          testModeState={{ kind: "aus" }}
+          onTestModeChanged={vi.fn()}
+        />
+      </div>,
+    );
+    expect(screen.getByRole("button", { name: "Meta-Test starten" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "TikTok-Test starten" })).toBeTruthy();
+    expect(screen.getByLabelText("Testcode für Meta")).toBeTruthy();
+    expect(screen.getByLabelText("Testcode für TikTok")).toBeTruthy();
+  });
+});
+
+describe("TargetCard — die beiden Gesten laufen ueber safeAction", () => {
+  it("Erfolg: der SERVER-Zustand wird gemeldet, das Feld geleert", async () => {
+    // ROT DURCH: ein lokal erfundener Zustand statt der Server-Antwort. Die Frist
+    // entsteht auf dem Server; sie hier zu rechnen braechte eine dritte Uhr ins Spiel.
+    startTestMode.mockResolvedValueOnce({
+      ok: true,
+      state: { kind: "laeuft", endetAt: 1_800_003_600 },
+    });
+    const { props } = renderCard({
+      configured: true,
+      testModeState: { kind: "aus" },
+    });
+    fireEvent.change(screen.getByLabelText("Testcode für Meta"), {
+      target: { value: "TEST123" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Meta-Test starten" }));
+
+    await waitFor(() => {
+      expect(props.onTestModeChanged).toHaveBeenCalledWith("p1", "meta", {
+        kind: "laeuft",
+        endetAt: 1_800_003_600,
+      });
+    });
+    expect(
+      (screen.getByLabelText("Testcode für Meta") as HTMLInputElement).value,
+    ).toBe("");
+  });
+
+  it("EIN WURF LAESST DEN KNOPF BEDIENBAR UND ZEIGT EINE MELDUNG", async () => {
+    // DER GRUND FUER safeAction, ausgeschrieben: result.ok unterscheidet nur
+    // RUECKGABEWERTE. Ein Wurf verliesse den Handler, das Busy-Flag bliebe stehen,
+    // und der ZWEITE Versuch waere blockiert — ohne jede Meldung.
+    // ROT DURCH: safeAction durch einen nackten Aufruf ersetzen.
+    startTestMode.mockRejectedValueOnce(new Error("Netz weg"));
+    renderCard({ configured: true, testModeState: { kind: "aus" } });
+    fireEvent.change(screen.getByLabelText("Testcode für Meta"), {
+      target: { value: "TEST123" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Meta-Test starten" }));
+
+    await waitFor(() => {
+      expect(screen.getByText(testModeErrorText("action_threw"))).toBeTruthy();
+    });
+    // DIE ZWEITE HAELFTE, und sie ist die eigentliche: der Knopf ist wieder scharf.
+    const knopf = screen.getByRole("button", {
+      name: "Meta-Test starten",
+    }) as HTMLButtonElement;
+    expect(knopf.disabled).toBe(false);
+  });
+
+  it("Beenden meldet den Server-Zustand", async () => {
+    endTestMode.mockResolvedValueOnce({ ok: true, state: { kind: "aus" } });
+    const { props } = renderCard({
+      configured: true,
+      testModeState: { kind: "laeuft", endetAt: 1_800_000_000 },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Meta-Test jetzt beenden" }));
+    await waitFor(() => {
+      expect(props.onTestModeChanged).toHaveBeenCalledWith("p1", "meta", {
+        kind: "aus",
+      });
+    });
+  });
+
+  it("die Meldungstexte behaupten WEDER URSACHE NOCH ERGEBNIS", () => {
+    // DIE AUFLAGE AUS docs/immer-beachten.md. "keine Verbindung" waere eine Ursache,
+    // die wir nicht kennen; "wurde nicht ausgefuehrt" ein Ergebnis, das wir nicht
+    // kennen — bricht die Verbindung auf dem RUECKWEG, ist der Write passiert.
+    // DIE EINE AUSNAHME IST not_configured: dort WISSEN wir, dass nichts geschrieben
+    // wurde, weil kein Datensatz getroffen wurde.
+    const verboten = [/keine verbindung/i, /nicht ausgeführt/i, /fehlgeschlagen/i];
+    for (const grund of [
+      "empty_code",
+      "unknown_target",
+      "not_found",
+      "unauthenticated",
+      "write_failed",
+      "action_threw",
+    ] as const) {
+      const text = testModeErrorText(grund);
+      // POSITIVKONTROLLE: es gibt ueberhaupt einen Text.
+      expect(text.length).toBeGreaterThan(10);
+      for (const muster of verboten) expect(text).not.toMatch(muster);
+    }
+  });
+});
+
+describe("Das Projekt-Banner nennt das VERURSACHENDE Ziel", () => {
+  it("EIN laufendes Ziel: der Name steht im Text, mit Endzeitpunkt", () => {
+    // DIE SCHAERFUNG DES ZUSCHNITTS. Der Riegel haengt an MINDESTENS EINEM Ziel:
+    // Steht meta im Testmodus, ruht die Zaehlung AUCH fuer tiktok, dessen Karte
+    // "kein Testmodus" zeigt. Ohne den Namen wuesste der Betreiber, DASS seine
+    // Zaehlung ruht, aber nicht, WO er sie wieder anschaltet.
+    // ROT DURCH: ein Banner ohne Ziel-Namen.
+    const text = testModeBannerText({
+      ok: true,
+      states: { meta: { kind: "laeuft", endetAt: 1_800_003_600 } },
+    });
+    expect(text).toContain("Meta");
+    expect(text).not.toContain("TikTok");
+  });
+
+  it("MEHRERE laufende Ziele: es nennt ALLE, in der Reihenfolge von TRACKING_TARGETS", () => {
+    const text = testModeBannerText({
+      ok: true,
+      states: {
+        tiktok: { kind: "laeuft", endetAt: 1_800_003_600 },
+        meta: { kind: "laeuft", endetAt: 1_800_003_600 },
+      },
+    });
+    expect(text).toContain("Meta");
+    expect(text).toContain("TikTok");
+    // DETERMINISTISCH, nicht von der Schluesselfolge des Objekts abhaengig: zwei
+    // Laeufe muessen denselben Text ergeben.
+    expect(text!.indexOf("Meta")).toBeLessThan(text!.indexOf("TikTok"));
+  });
+
+  it("KEIN Banner ohne laufendes Ziel — auch nicht bei abgelaufen", () => {
+    // ROT DURCH: ein Banner, das auf die blosse Anwesenheit einer Zeile anspringt.
+    // Eine abgelaufene Frist haelt die Zaehlung NICHT an; ein Banner dafuer waere
+    // ein Signal ohne Gegenstand.
+    expect(testModeBannerText({ ok: true, states: {} })).toBeNull();
+    expect(
+      testModeBannerText({
+        ok: true,
+        states: { meta: { kind: "abgelaufen", endeteAt: 1_800_000_000 } },
+      }),
+    ).toBeNull();
+  });
+
+  it("KEIN Banner, solange nichts geladen ist oder der Leser scheiterte", () => {
+    // DAS HYDRATIONS-GATE: Im ersten Render ist der Zustand null, das Banner liegt
+    // also garantiert nicht im Server-Baum. Ohne diese Zusicherung braeuchte die
+    // Zeitformatierung ein Mount-Flag.
+    expect(testModeBannerText(null)).toBeNull();
+    expect(testModeBannerText({ ok: false, reason: "read_failed" })).toBeNull();
   });
 });

@@ -10,12 +10,19 @@ vi.mock("server-only", () => ({}));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: vi.fn() }));
 
 import {
+  activeTestCodeFromRow,
   CREDENTIAL_EXPIRY_WARN_SECONDS,
   credentialStateFor,
   credentialStateFrom,
   resolveConfigured,
+  TARGETS_WITH_TEST_MODE,
+  TEST_MODE_DURATION_SECONDS,
+  testModeStateFor,
+  testModeStateFrom,
   withoutTarget,
+  withTestModeState,
   type ListCredentialStatesResult,
+  type ListTestModeStatesResult,
   type TargetCredentialState,
 } from "./credential-state";
 // DIE ZWEITE ZAHL FUER A10. Eine Testdatei darf importieren, was der Pruefling nicht
@@ -340,5 +347,158 @@ describe("withoutTarget — entfernen statt raten", () => {
     expect(withoutTarget(OK_LEER, "google")).toBe(OK_LEER);
     expect(withoutTarget(GESCHEITERT, "google")).toBe(GESCHEITERT);
     expect(withoutTarget(null, "google")).toBeNull();
+  });
+});
+
+// =====================================================================
+// TM10 — DER TESTZUSTAND AN SEINEM NEUEN ORT (Scheibe 11.3b).
+//
+// WARUM DIESER BLOCK HIER UND NICHT IN capi/token.test.ts: Dort prueft TM4 das
+// Praedikat AM RESOLVER — also an seinem AUFRUFER. Nach dem Umzug muss es an seinem
+// EIGENEN Ort geprueft werden, sonst prueft kein Lauf den Umzug selbst, und eine
+// Mutation am umgezogenen Ausdruck faerbte nur einen Test rot, der zufaellig
+// vorbeikommt.
+// =====================================================================
+describe("TM10 — das umgezogene Praedikat und die Randregel", () => {
+  const CODE = { test_event_code: "TEST123" };
+
+  it("aktiv: die Frist liegt in der ZUKUNFT -> der Code kommt zurueck", () => {
+    expect(
+      activeTestCodeFromRow(
+        { ...CODE, test_mode_expires_at: new Date((NOW + 1) * 1000).toISOString() },
+        NOW,
+      ),
+    ).toBe("TEST123");
+  });
+
+  it("DER RAND: expires === now gilt als ABGELAUFEN (der Vergleich ist '>')", () => {
+    // ROT DURCH: '>' zu '>=' am umgezogenen Ausdruck. Das ist die Mutation, gegen die
+    // Entscheidung (4) der Phase gebaut ist — driftet die Anzeige hier, zeigt die
+    // Oberflaeche einen Testmodus, waehrend der Riegel im Ingest NICHT feuert.
+    expect(
+      activeTestCodeFromRow(
+        { ...CODE, test_mode_expires_at: new Date(NOW * 1000).toISOString() },
+        NOW,
+      ),
+    ).toBeNull();
+  });
+
+  it("fail-closed: leerer Code, Leerraum-Code, fehlender oder kaputter Zeitstempel", () => {
+    const frist = new Date((NOW + 3600) * 1000).toISOString();
+    expect(activeTestCodeFromRow({ test_event_code: "", test_mode_expires_at: frist }, NOW)).toBeNull();
+    expect(activeTestCodeFromRow({ test_event_code: "   ", test_mode_expires_at: frist }, NOW)).toBeNull();
+    expect(activeTestCodeFromRow({ ...CODE, test_mode_expires_at: null }, NOW)).toBeNull();
+    expect(activeTestCodeFromRow({ ...CODE, test_mode_expires_at: "kein Datum" }, NOW)).toBeNull();
+  });
+});
+
+describe("TM11 — die drei Lagen des Testzustands", () => {
+  it("laeuft: Frist in der Zukunft plus Code -> mit Endzeitpunkt in EPOCHENSEKUNDEN", () => {
+    const endet = NOW + TEST_MODE_DURATION_SECONDS;
+    expect(
+      testModeStateFrom(
+        {
+          test_event_code: "TEST123",
+          test_mode_expires_at: new Date(endet * 1000).toISOString(),
+        },
+        NOW,
+      ),
+    ).toEqual({ kind: "laeuft", endetAt: endet });
+  });
+
+  it("abgelaufen: Frist in der Vergangenheit -> mit dem Zeitpunkt, an dem sie endete", () => {
+    // DIE AUSKUNFT, UM DERENTWILLEN DIE ZEILE STEHENBLEIBT (Owner-Entscheidung
+    // 2026-09-09): "abgelaufen am ..." statt einer Leerstelle.
+    const endete = NOW - 60;
+    expect(
+      testModeStateFrom(
+        {
+          test_event_code: "TEST123",
+          test_mode_expires_at: new Date(endete * 1000).toISOString(),
+        },
+        NOW,
+      ),
+    ).toEqual({ kind: "abgelaufen", endeteAt: endete });
+  });
+
+  it("LEERER CODE MIT ZUKUENFTIGER FRIST IST 'aus' — NICHT 'abgelaufen am <Zukunft>'", () => {
+    // DER FALL AUS VORRAT (12): Der CHECK laesst test_event_code = '' zu, das
+    // Praedikat verwirft ihn beim Trimmen. "abgelaufen am <Zukunft>" waere eine
+    // sinnlose Auskunft; "aus" ist die richtige.
+    expect(
+      testModeStateFrom(
+        {
+          test_event_code: "",
+          test_mode_expires_at: new Date((NOW + 3600) * 1000).toISOString(),
+        },
+        NOW,
+      ),
+    ).toEqual({ kind: "aus" });
+  });
+
+  it("keine Frist -> 'aus'", () => {
+    expect(
+      testModeStateFrom({ test_event_code: null, test_mode_expires_at: null }, NOW),
+    ).toEqual({ kind: "aus" });
+  });
+
+  it("DER RAND AUCH HIER: expires === now ist 'abgelaufen', nicht 'laeuft'", () => {
+    // Spiegelbildlich zum '>' des Praedikats. Die beiden Vergleiche gehoeren
+    // zusammen; driftete einer, entstuende genau in dieser Sekunde ein Zustand, den
+    // die Karte anders liest als der Riegel.
+    expect(
+      testModeStateFrom(
+        {
+          test_event_code: "TEST123",
+          test_mode_expires_at: new Date(NOW * 1000).toISOString(),
+        },
+        NOW,
+      ),
+    ).toEqual({ kind: "abgelaufen", endeteAt: NOW });
+  });
+});
+
+describe("TM12 — die zwei Ableitungen fuer die Oberflaeche", () => {
+  const LAEUFT: ListTestModeStatesResult = {
+    ok: true,
+    states: { meta: { kind: "laeuft", endetAt: NOW + 60 } },
+  };
+
+  it("testModeStateFor: null bei nicht geladen, bei gescheitert UND bei fehlendem Ziel", () => {
+    // DREI URSACHEN, EINE ANZEIGE — dieselbe Figur wie bei credentialStateFor. Der
+    // dritte Fall ist der wichtigste: er traegt die Sichtbarkeit des Schalters.
+    expect(testModeStateFor(null, "meta")).toBeNull();
+    expect(testModeStateFor({ ok: false, reason: "read_failed" }, "meta")).toBeNull();
+    expect(testModeStateFor(LAEUFT, "tiktok")).toBeNull();
+    expect(testModeStateFor(LAEUFT, "meta")).toEqual({
+      kind: "laeuft",
+      endetAt: NOW + 60,
+    });
+  });
+
+  it("withTestModeState UEBERNIMMT den Server-Zustand, statt ihn zu raten", () => {
+    const danach = withTestModeState(LAEUFT, "meta", { kind: "aus" });
+    expect(danach).toEqual({ ok: true, states: { meta: { kind: "aus" } } });
+  });
+
+  it("ein {ok:false} bleibt {ok:false} — wer nichts weiss, weiss auch nach einer Geste nichts", () => {
+    const gescheitert: ListTestModeStatesResult = { ok: false, reason: "not_found" };
+    expect(withTestModeState(gescheitert, "meta", { kind: "aus" })).toBe(gescheitert);
+    expect(withTestModeState(null, "meta", { kind: "aus" })).toBeNull();
+  });
+});
+
+describe("TM13 — die Menge der Ziele mit Testmodus", () => {
+  it("GENAU meta und tiktok", () => {
+    // ROT DURCH: ein drittes Ziel in der Liste. Die drei Ausschluesse haben je einen
+    // EIGENEN Grund (Traeger nie gemessen, Diagnostik abgeschnitten, gar kein
+    // Testmodus) — sie stehen im Zuschnitt und nicht hier.
+    expect([...TARGETS_WITH_TEST_MODE]).toEqual(["meta", "tiktok"]);
+  });
+
+  it("die Frist ist eine STUNDE", () => {
+    // ROT DURCH: eine stillschweigend geaenderte Dauer. Die Zahl steht an EINER
+    // Stelle, damit ihre Aenderung ein sichtbarer Diff ist.
+    expect(TEST_MODE_DURATION_SECONDS).toBe(3600);
   });
 });

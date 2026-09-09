@@ -44,6 +44,7 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT").
 - ## Vorrat — gemeldet, nicht gebaut
 - ## Hebungs-Kandidaten
 - ## Scheiben-Vermerke
+- ## Scheibe 11.3b — Die drei Gesten und das Banner in der Oberfläche
 
 ## Fortschreibungsregeln
 
@@ -724,6 +725,9 @@ beide Richtungen und still. **Bei einer Frist von Stunden folgenlos — NICHT fo
 einer Frist im Sekunden- oder Minutenbereich.**
 TRIGGER: die Entscheidung über die LÄNGE der Frist (11.3b). PROVENIENZ: ABLEITUNG aus dem
 gebauten Lesepfad (CC, 2026-09-09); die Abweichung selbst ist **ungemessen**.
+**AUFGENOMMEN VOM ZUSCHNITT 11.3b (2026-09-09)** — dort unter "Der Schreibweg": die Frist
+wird gegen die Uhr der LAUFZEIT berechnet, ausdrücklich als Absicht. **NICHT GESTRICHEN —
+erledigt ist der Punkt erst mit dem Abschluss-Vermerk der Scheibe**, der ihn gegenprüft.
 
 **(7) DER RIEGEL ERREICHT NUR ZIELE, DIE DEN KENNUNGS-FILTER PASSIEREN.** Die zweite
 Abfrage des Resolvers fragt nur nach Zielen mit Kennung oder Zuordnung; bei
@@ -731,6 +735,9 @@ Abfrage des Resolvers fragt nur nach Zielen mit Kennung oder Zuordnung; bei
 Kennung ist damit unsichtbar, und der Testklick würde persistiert.
 TRIGGER: der Schalter in 11.3b — er darf nur an konfigurierten Zielen erscheinen.
 PROVENIENZ: GEMESSEN am gebauten Code (CC, 2026-09-09), `getCapiConfigByTrackingKey`.
+**AUFGENOMMEN VOM ZUSCHNITT 11.3b (2026-09-09)** — dort unter "Wo der Schalter erscheint —
+und wo nicht". **NICHT GESTRICHEN — erledigt ist der Punkt erst mit dem Abschluss-Vermerk
+der Scheibe**, der ihn gegenprüft.
 
 **(8) DER PAAR-CHECK BINDET AN DIE FORM VON META UND TIKTOK.**
 `project_secrets_test_mode_paar` verlangt Code UND Frist gemeinsam. **Pinterests Testmodus
@@ -764,6 +771,9 @@ Tür: Riegel ohne Gegenwert. Der Fall ist im Test festgehalten (TM4e) und im Cod
 angeordnet — der Testzustand wird VOR dem Ausstieg für unbrauchbare Zeilen eingesammelt.
 TRIGGER: der Schalter in 11.3b — er darf nur an Zielen erscheinen, die tatsächlich senden
 können. PROVENIENZ: GEMESSEN am gebauten Code (CC, 2026-09-09, Lauf TM4e).
+**AUFGENOMMEN VOM ZUSCHNITT 11.3b (2026-09-09)** — dort unter "Wo der Schalter erscheint —
+und wo nicht", zusammen mit (7) an derselben Stelle. **NICHT GESTRICHEN — erledigt ist der
+Punkt erst mit dem Abschluss-Vermerk der Scheibe**, der ihn gegenprüft.
 
 **(12) DER CHECK LÄSST `test_event_code = ''` ZU.** Beide Spalten sind gesetzt, der CHECK
 ist zufrieden — und der Code fällt im Resolver beim Trimmen weg, der Riegel feuert nicht.
@@ -771,6 +781,9 @@ ist zufrieden — und der Code fällt im Resolver beim Trimmen weg, der Riegel f
 NULL-Zustände, nicht den Inhalt; ein Inhalts-CHECK stand nicht im Zuschnitt.
 TRIGGER: 11.3b prüft beim Schreiben auf nicht-leer. PROVENIENZ: ABLEITUNG aus
 Migrationstext 0028 und `activeTestCodeFromRow` (CC, 2026-09-09).
+**AUFGENOMMEN VOM ZUSCHNITT 11.3b (2026-09-09)** — dort unter "Der Schreibweg" als
+Validierung VOR dem Schreiben (Code nach dem Trimmen nicht leer). **NICHT GESTRICHEN —
+erledigt ist der Punkt erst mit dem Abschluss-Vermerk der Scheibe**, der ihn gegenprüft.
 
 **(13) METAS TESTCODE WECHSELT ALLE PAAR TAGE — 11.3b MUSS DEN KUNDEN ZUM NACHTRAGEN
 FÜHREN, NICHT EINMALIG ABFRAGEN.** Eine Oberfläche, die den Code wie eine Einstellung
@@ -778,6 +791,10 @@ behandelt, erzeugt ab dem zweiten Testlauf einen Zustand, der aussieht wie einge
 und keiner ist. Verwandt mit (12): beide Male hält der Kunde einen toten Testmodus für
 einen laufenden.
 TRIGGER: der Schalter in 11.3b. PROVENIENZ: OWNER-ANGABE 2026-09-09, **keine Messung**.
+**AUFGENOMMEN VOM ZUSCHNITT 11.3b (2026-09-09)** — dort unter "Die Gestalt — kein
+An/Aus-Schalter, sondern DREI GESTEN": die zweite Geste verlangt den Code ERNEUT.
+**NICHT GESTRICHEN — erledigt ist der Punkt erst mit dem Abschluss-Vermerk der Scheibe**,
+der ihn gegenprüft.
 
 **(14) OB TIKTOKS TESTCODE DAUERHAFT ABLEGBAR IST, BLEIBT OFFEN.** Die zweite Hälfte des
 gestrichenen Eintrags (4): Für meta ist die Frage mit "nein" beantwortet, für tiktok
@@ -968,3 +985,221 @@ verlangte zwei Läufe auf EINER Achse, davon Lauf 2 mit BEIDEN Abwesenheiten —
 `server`- und keine `browser`-Zeile. Genau das ist eingetreten. Die Auflage, dass der
 Testklick beim Anbieter zusätzlich in den normalen Zahlen erscheint, ist durch (a) oben
 bestätigt und war kein Fehlschlag.
+
+## Scheibe 11.3b — Die drei Gesten und das Banner in der Oberfläche
+
+**DER GEGENSTAND:** Der Kunde kann den Testmodus je Ziel selbst starten und beenden und
+sieht, dass und wie lange er läuft. **11.3a hat den Zustand und den Riegel gebaut; diese
+Scheibe gibt ihm seinen Weg in die Oberfläche** — und sonst nichts.
+
+**DIESER ABSCHNITT STEHT HINTEN UND NICHT BEI 11.3a**, weil die Fortschreibungsregeln
+dieser Datei es so verlangen ("NICHTS WIRD UMSORTIERT. Neue Abschnitte treten hinten an
+und bekommen eine Zeile im Verzeichnis"). Die Reihenfolge in der Datei ist die des
+EINTRAGENS, nicht die des Bauens; wer die Scheiben in ihrer Abfolge lesen will, liest das
+Verzeichnis.
+
+### Die Gestalt — kein An/Aus-Schalter, sondern DREI GESTEN
+
+- **"Test starten"** nimmt den Testcode entgegen und setzt die Frist.
+- **Nochmal drücken VERLÄNGERT** — und verlangt den Code ERNEUT.
+- **"Jetzt beenden"** räumt beide Spalten.
+
+**DER GRUND, UND ER IST NICHT KOSMETISCH:** Metas Testcode wechselt alle paar Tage
+(Vorrat (13); OWNER-ANGABE 2026-09-09, **keine Messung**). Ein An/Aus-Schalter hätte einen
+Zustand OHNE Code zur Folge — **und den lässt der CHECK `project_secrets_test_mode_paar`
+nicht einmal zu** (Entscheidung (2): beide Spalten gesetzt oder beide leer). Die drei
+Gesten bilden das Datenmodell **eins zu eins** ab; ein Schalter bildete es falsch ab und
+liefe gegen einen CHECK, den er nicht kennt.
+
+**DIE ZWEITE GESTE IST DER EIGENTLICHE ZUGEWINN:** Das Verlangen des Codes beim Verlängern
+fällt genau dorthin, wo er ohnehin frisch geholt werden muss. **Damit ist Vorrat (13)
+eingelöst, statt umgangen zu werden** — eine Oberfläche, die den Code wie eine dauerhafte
+Einstellung behandelt, erzeugt ab dem zweiten Testlauf einen Zustand, der aussieht wie
+eingerichtet und keiner ist.
+
+### Das Ownership-Gate ist die SICHERHEITSACHSE dieser Scheibe, nicht ihr Formalismus
+
+**WER DIESEN ZUSTAND SCHREIBEN KANN, KANN DIE ANALYTICS EINES FREMDEN PROJEKTS STILL
+ANHALTEN.** Der Schaden ist **kein Datenabfluss, sondern DATENVERWEIGERUNG** — und die
+fällt niemandem auf, weil die Zahlen nicht falsch werden, sondern ausbleiben. Es gibt keine
+rote Zahl, keine leere Seite und keinen Fehler; es hört nur etwas auf zu zählen.
+
+**DIE BAUFORM IST VERBINDLICH UND NICHT VERHANDELBAR:** Sitzungsprüfung, dann Ownership
+über den **AUTHENTIFIZIERTEN** Client mit greifender RLS, **ERST DANACH**
+`createAdminClient()`. **KEIN Abkürzen über eine `project_id` aus dem Request.**
+
+**DIE PROVENIENZ DIESER BAUFORM, sauber getrennt:** Sie ist als VORGABE gesetzt
+(OWNER-ENTSCHEIDUNG 2026-09-09) und benennt `setCapiToken` als Muster. **Dass
+`setCapiToken` sie heute trägt, ist an dieser Stelle NICHT gemessen** — Stufe 1 liest sie
+am Code nach, bevor sie kopiert wird. Ein Muster, das man nicht angesehen hat, ist eine
+Erinnerung und kein Muster.
+
+**SIE IST ZUGLEICH DIE ERFÜLLUNG EINER DAUERREGEL:** Autorisierung DAVOR, Geschäftslogik
+DAHINTER, sauber getrennt und als reine Funktion `(userId, params)` (docs/immer-beachten.md,
+"Session-unabhängige Mutationen (MCP-Vorbereitung, kostenlos ab jetzt)").
+
+### Die Frist: FEST 60 MINUTEN
+
+**Keine Auswahl, keine freie Eingabe.** Der Wert ist gesetzt (OWNER-ENTSCHEIDUNG
+2026-09-09) und löst damit ein, was 11.3a ausdrücklich offengelassen hat
+("DIE LÄNGE DER FRIST" und wer sie bestimmt).
+
+**DREI GRÜNDE, die zusammen die Zahl tragen:**
+- **lang genug** für eine Einrichtungsprüfung;
+- **kurz genug**, dass ein vergessener Testmodus keine Sitzung Zählung kostet — das ist
+  der Schaden, gegen den die Frist überhaupt gewählt wurde;
+- **deutlich kürzer als das Wechselintervall des Codes** (alle paar Tage). **Die Frist
+  kann damit nie einen brauchbaren Zustand abschneiden** — sie endet immer vor dem Wert,
+  den sie trägt.
+
+### Der Schreibweg
+
+- **ES WERDEN AUSSCHLIESSLICH DIE ZWEI TESTSPALTEN GESCHRIEBEN, NIE DIE GANZE ZEILE.**
+  Das ist Entscheidung (6) und keine Empfehlung: Ein Lesen-Ändern-Schreiben über die ganze
+  Zeile brächte die Zugangsdaten in einen Schreibvorgang, der sie nicht meint.
+- **DIE FRIST WIRD GEGEN DIE UHR DER LAUFZEIT BERECHNET, NICHT GEGEN DIE DER DATENBANK.**
+  **Das ist eine ABSICHT dieser Scheibe und keine Nebenwirkung:** Geschrieben und gelesen
+  wird dann gegen dieselbe Uhrenfamilie, und die Asymmetrie aus Vorrat (6) entfällt. Der
+  Resolver vergleicht `test_mode_expires_at` ohnehin gegen `Date.now()`; eine Frist aus
+  `now() + interval` in Postgres liesse die effektive Dauer um die Uhrendifferenz
+  verrutschen, in beide Richtungen und still.
+- **VALIDIERUNG VOR DEM SCHREIBEN, zwei Prüfungen:**
+  - **Der Code ist nach dem Trimmen NICHT LEER.** Das schliesst Vorrat (12): Der CHECK
+    lässt `test_event_code = ''` zu, beide Spalten wären gesetzt, der CHECK zufrieden —
+    und der Riegel feuerte trotzdem nicht, weil der Wert im Resolver beim Trimmen
+    wegfällt. **Der Kunde glaubte dann, der Testmodus laufe, und er liefe nicht.**
+  - **Das Ziel ist `meta` oder `tiktok`.** Die übrigen drei sind nicht Gegenstand dieser
+    Phase (s. "Reichweite: meta und tiktok — und ausdrücklich sonst keines").
+
+### Wo der Schalter erscheint — und wo nicht
+
+**NUR AN ZIELEN, DIE TATSÄCHLICH SENDEN KÖNNEN.** Damit sind Vorrat (7) und (11)
+aufgenommen, und zwar an derselben Stelle:
+
+- **(7)** Der Riegel erreicht nur Ziele, die den Kennungs-Filter des Resolvers passieren.
+  Ein Testzustand an einem Ziel ohne Kennung ist für ihn unsichtbar — der Schalter dort
+  verspräche eine Wirkung, die es nicht gibt.
+- **(11)** Ein Ziel mit Testzustand, aber unbrauchbarem Geheimnis, verliert das Ereignis
+  auf BEIDEN Seiten: Der Riegel feuert, die `events`-Zeile entfällt — und der Anbieter
+  bekommt nichts, weil gar nicht gesendet wird. **Reiner Verlust ohne Gegenwert.**
+
+**DAZU DIE FESTLEGUNG AUS VORRAT (9), die die Oberfläche ohnehin kennen muss:** Ein
+Testzustand kann nur dort liegen, wo bereits Zugangsdaten hinterlegt sind — der CHECK
+`project_secrets_secret_genau_eines` verlangt ein Geheimnis je Zeile, ohne Zugangsdaten
+gibt es also keine Zeile, an der er hängen könnte.
+
+### Der Lesepfad
+
+**DAS PRÄDIKAT WIRD AUS `token.ts` EXTRAHIERT, NICHT NACHGEBAUT.** Das ist Entscheidung
+(4), und ihr Grund ist der Schaden bei Zuwiderhandlung: Baut die Oberfläche eine zweite
+Fassung und driftet diese auf `>=`, **zeigt sie "aktiv", während der Riegel NICHT feuert**
+— ein Widerspruch, den niemand sieht, weil beide Seiten für sich plausibel aussehen.
+
+**DIE RANDREGEL FÄHRT MIT UND IST TEIL DES PRÄDIKATS:** `expires === now` gilt als
+**ABGELAUFEN**, der Vergleich lautet `>`. Dieselbe Wahl wie bei den zwei Uhren der
+Autorisierungsschicht.
+
+**WO DER LESER SITZT, IST HIER OFFEN** — ob `listConfiguredTargets` erweitert wird oder ein
+eigener Leser entsteht, **entscheidet Stufe 1 am Code**. Ebenso offen: ob der aktive Code
+mitgelesen wird oder nur die Frist.
+
+### Das Banner
+
+**IM PROJEKT, NICHT APP-WEIT.** Es leuchtet nur, solange die Frist läuft, und **geht von
+allein aus** — dieselbe Eigenschaft, um derentwillen die Frist gewählt wurde.
+
+**KEIN COUNTDOWN IM BROWSER — EIN FESTER ENDZEITPUNKT.** Ein tickender Zähler bräuchte eine
+**DRITTE Uhr**: die des Besuchers, und die ist die einzige, über die wir nichts wissen.
+Vorrat (6) handelt von zweien; eine dritte einzuführen, während die Scheibe die Asymmetrie
+der ersten beiden gerade beseitigt, wäre ein Rückschritt unter anderem Namen.
+
+**DIE BEGRÜNDETE AUSNAHME:** Das Banner sitzt NICHT dort, wo das Problem behebbar ist,
+sondern im Projekt (docs/immer-beachten.md, "WELCHE REGEL WANN GREIFT: BEKOMMT DIESER
+FEHLER EIN BLEIBENDES SIGNAL?", Absatz WO DAS SIGNAL SITZT — CONTEXT FIRST). **DER GRUND
+TRÄGT DIE AUSNAHME:** Ein laufender Testmodus hält die Zählung des GANZEN Projekts an,
+nicht die eines Ziels — der Riegel hängt an mindestens einem Ziel (Entscheidung (3)). Die
+Reichweite der Wirkung bestimmt den Ort der Anzeige.
+
+**DIE ERSTE BEDINGUNG JENER REGEL IST ERFÜLLT und wird hier nicht nur behauptet:** Der
+Nutzer kann JETZT etwas tun — "Jetzt beenden" steht daneben.
+
+**EINE AUFLAGE AN STUFE 1, die aus der Anzeige eines Zeitpunkts folgt:** Ein lokalisiert
+formatierter Endzeitpunkt in einem Teilbaum, der beim ersten Render sichtbar ist, erzeugt
+einen Hydration-Mismatch (docs/immer-beachten.md, "KEIN ZEIT- ODER LOCALE-ABHÄNGIGER WERT
+IN EINEM TEILBAUM, DER BEIM ERSTEN RENDER SICHTBAR IST"). Wie der Zeitpunkt dargestellt
+wird, ist hier NICHT entschieden — dass die Regel gilt, schon.
+
+### safeAction ist PFLICHT
+
+An beiden Gesten hängt ein UI-Zustand: ein Busy-Flag, das freigegeben werden muss, und ein
+Fehlerkanal, der gefüllt werden muss. Damit ist der PFLICHT-Fall der Regel erfüllt
+(docs/immer-beachten.md, "CLIENT-SEITIGE SERVER-ACTION-AUFRUFE: KEIN WURF BLEIBT
+UNBEHANDELT").
+
+**DER GRUND, ohne den die Regel als Formalismus gelesen wird:** `result.ok` unterscheidet
+nur RÜCKGABEWERTE. Ein Netzwerk- oder Serverfehler ist eine EXCEPTION — sie verliesse den
+Handler, jede Zeile ab der Prüfung entfiele, das Busy-Flag würde nie zurückgesetzt. **Es
+gäbe keine Meldung UND der zweite Versuch wäre blockiert.**
+
+**MELDUNGSTEXTE BEHAUPTEN WEDER URSACHE NOCH ERGEBNIS.** "Keine Verbindung" wäre eine
+Ursache, die wir nicht kennen; "wurde nicht ausgeführt" ein Ergebnis, das wir nicht kennen
+— **bricht die Verbindung auf dem Rückweg, ist der Write passiert.**
+
+### Ausdrücklich NICHT dabei, je mit Grund
+
+- **KEIN TESTKNOPF, KEIN RÜCKKANAL, KEINE ANZEIGE DESSEN, WAS BEIM ANBIETER ANKAM.** Das
+  ist Phase 11.4 mit ihrer eigenen unentschiedenen Vorfrage — was beim Druck auf den Knopf
+  überhaupt aufgerufen wird. Wer sie hierher zieht, baut 11.4 unter der Nummer 11.3.
+  S. "Abgrenzung zu Phase 11.4 — 11.3 baut die MARKIERUNG, 11.4 den AUSLÖSER" und die
+  verworfene Alternative an Entscheidung (1).
+- **KEIN pinterest, KEIN google, KEIN linkedin.** Ihre drei verschiedenen Gründe stehen
+  unter "Gegenstand der Phase" und werden hier nicht wiederholt — zweimal geschrieben
+  liefen sie auseinander.
+- **KEINE SELBSTAKTUALISIERUNG DER ANZEIGE.** Läuft die Frist ab, während die Seite offen
+  ist, zeigt sie den alten Stand bis zum nächsten Laden. **DER RIEGEL IST DAVON UNBERÜHRT
+  — er liest je Beacon.** Die Anzeige ist die zweite Instanz, nicht die Autorität.
+- **KEINE ÄNDERUNG AN `ingest.ts`, an `token.ts` (ausser der Extraktion des Prädikats)
+  ODER AN EINEM ADAPTER.** Der Riegel ist gebaut und live bewiesen (VERMERK 1); diese
+  Scheibe fasst ihn nicht an.
+
+### Der Live-Nachweis der Scheibe — ZWEI ACHSEN
+
+**ACHSE 1 — FUNKTION.** Test über die Oberfläche starten, Conversion auslösen, **KEINE
+`events`-Zeile — an BEIDEN Beobachtungsorten**, weder `server` noch `browser`. Danach über
+die Oberfläche beenden, Conversion auslösen, **Zeile wieder da.**
+
+**ACHSE 2 — OWNERSHIP.** Ein zweites Konto versucht, den Testmodus eines FREMDEN Projekts
+zu setzen. **DAS IST DIE GEGENPROBE UND DER EIGENTLICHE NACHWEIS:** "Owner kann schalten"
+ist die halbe Aussage, **"Fremder kann es nicht" die ganze.**
+
+**ZWEI AUFLAGEN AN DIE ANLEITUNG, die aus dem Nachweis der Scheibe 11.3a folgen und ohne
+die Achse 1 nichts zeigt:**
+- **DIE POSITIVKONTROLLE ZUM LEEREN RÜCKLAUF.** "Der Riegel hat gegriffen" und "es hat
+  überhaupt nichts gefeuert" sehen in der `events`-Abfrage IDENTISCH aus. Der Lauf zählt
+  erst, wenn das Ereignis beim Anbieter erscheint (so gefahren in VERMERK 1).
+- **DER A/B-BETRIEB WIRD VOR DEM LAUF FESTGESTELLT**, nicht unterstellt
+  (docs/immer-beachten.md, "BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS
+  DAS RICHTIGE GEMESSEN WIRD", Teil (e)).
+
+**EINE VORAUSSETZUNG VON ACHSE 2 GEHÖRT IN DIE ANLEITUNG UND NICHT IN DEN LAUF:** Es
+braucht ein ZWEITES Konto mit einem eigenen Projekt. Fehlt es, ist der Schritt nicht
+"bestanden", sondern nicht gefahren — eine Anleitung, die eine Voraussetzung nicht nennt,
+erzeugt eine falsche Entwarnung.
+
+### Was die Scheibe offen lässt
+
+- **DER ORT DES LESERS** — `listConfiguredTargets` erweitern oder ein eigener Leser
+  (s. Der Lesepfad).
+- **OB DER AKTIVE CODE IN DER OBERFLÄCHE SICHTBAR IST** oder nur die Frist.
+- **OB EINE ABGELAUFENE FRIST IN DER DATENBANK STEHENBLEIBT** oder beim nächsten Lesen
+  geräumt wird.
+
+**HIER WIRD KEINE DAVON ENTSCHIEDEN.** Sie stehen, damit Stufe 1 sie am Code entscheidet
+und nicht beiläufig im Bau — eine beiläufig getroffene Entscheidung trägt keine
+Provenienz und ist später von einer Nebenwirkung nicht zu unterscheiden.
+
+**PROVENIENZ DES ZUSCHNITTS:** OWNER-ENTSCHEIDUNG 2026-09-09 (Gestalt, Bauform des
+Ownership-Gates, Frist von 60 Minuten, Umfang und Ausschlüsse). Die Angaben über den
+gebauten Code (Resolver, CHECKs, Riegel) sind die GEMESSENEN aus 11.3a und stehen mit ihrer
+Provenienz an den Entscheidungen (2) bis (7) und im Vorrat; **diese Runde hat nichts neu
+gemessen.**

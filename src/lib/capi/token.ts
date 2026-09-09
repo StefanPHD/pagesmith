@@ -124,6 +124,53 @@ export type TrackingKeyResolution = {
    * Erneuerungs-Token verlaesst den Resolver nicht" — nicht dieser Satz.
    */
   renewable: RenewableTarget[];
+  /**
+   * DIE ZIELE, DEREN PROJEKT-EIGENER TESTZUSTAND JETZT AKTIV IST (Scheibe 11.3a).
+   *
+   * SIE IST IMMER EIN ARRAY, NIE undefined — dieselbe Entscheidung wie bei renewable
+   * und aus demselben Grund: Die Ganz-Objekt-Vergleiche in token.test.ts pinnen die
+   * vollstaendige Aufloesung mit toEqual, und toEqual IGNORIERT einen Schluessel mit
+   * dem Wert undefined (GEMESSEN 2026-08-18). Ein optionales Feld ginge an ihnen ALLEN
+   * still vorbei; ein IMMER gesetztes Array macht das Nachziehen ERZWUNGEN statt
+   * erhofft. WER ES SPAETER ZU `testMode?:` VEREINFACHT, SCHALTET DIESE FALLE WIEDER
+   * SCHARF.
+   *
+   * SIE TRAEGT ZWEI FRAGEN AUF EINMAL, UND DAS IST ABSICHT — EINE ABLAGE, EIN URTEIL:
+   *  - IHRE LAENGE ist der PERSIST-RIEGEL des Ingest ("ist dieses PROJEKT im
+   *    Testmodus?"). Sie wird dort an ZWEI Stellen gebraucht, im Server-Zweig und im
+   *    Confirm-Zweig, und dort GENAU EINMAL ausgewertet.
+   *  - IHRE EINTRAEGE tragen den Code, den der Adapter des jeweiligen Ziels an die
+   *    Nutzlast haengt.
+   * Ein zweiter Traeger fuer eine der beiden Fragen waere eine zweite Wahrheit ueber
+   * denselben Zustand — genau die Figur, die dieses Repo mehrfach als Fehlerquelle
+   * fuehrt.
+   *
+   * DER RIEGEL HAENGT DAMIT ALLEIN AM PROJEKT-ZUSTAND. Eine gesetzte Umgebungsvariable
+   * kommt hier NICHT vor und nimmt KEIN Ereignis aus events heraus — bei keinem
+   * Projekt, unter keinen Umstaenden.
+   *
+   * IHRE REICHWEITE IST DIE DER ZWEITEN ABFRAGE, und das ist eine benannte Grenze:
+   * Gefragt wird nur nach Zielen, die den Kennungs-Filter passiert haben; bei
+   * withPixel.length === 0 kehrt diese Funktion VOR der zweiten Abfrage zurueck. Ein
+   * Testzustand an einem Ziel OHNE Kennung ist damit unsichtbar, und der Riegel feuert
+   * nicht. Das ist vertretbar (ohne Kennung wird nichts gesendet, es gibt nichts zu
+   * testen) und steht hier, weil es sonst spaeter als Fehler gesucht wird.
+   */
+  testMode: TestModeTarget[];
+};
+
+/**
+ * EIN ZIEL MIT AKTIVEM TESTZUSTAND — sein Name und der Code, der in die Nutzlast geht.
+ *
+ * DER CODE IST KEIN GEHEIMNIS. Er wird vom Anbieter vergeben, vom Kunden aus dessen
+ * Oberflaeche abgelesen und wandert unverschleiert in die Nutzlast des Aufrufs; er
+ * autorisiert nichts. Die Log- und Schwaerzungs-Disziplin, die fuer Zugangsdaten gilt,
+ * trifft ihn deshalb nicht — was ihn NICHT zu einem Wert macht, den man beilaeufig
+ * protokolliert.
+ */
+export type TestModeTarget = {
+  target: TrackingTarget;
+  code: string;
 };
 
 /**
@@ -346,6 +393,64 @@ function hasUsableAccessToken(
   nowSeconds: number,
 ): boolean {
   return expiresAtSeconds > nowSeconds;
+}
+
+/**
+ * IST DER PROJEKT-EIGENE TESTZUSTAND DIESER ZEILE JETZT AKTIV? (Scheibe 11.3a)
+ *
+ * Liefert den CODE, wenn er es ist, sonst null. Der Rueckgabetyp traegt damit beide
+ * Auskuenfte auf einmal — ein Boolean daneben waere ein zweites Urteil ueber denselben
+ * Zustand, und die beiden koennten auseinanderlaufen.
+ *
+ * DIE RANDREGEL, UND SIE IST TEIL DER ENTSCHEIDUNG UND NICHT IHRE FOLGE
+ * (Owner-Entscheidung 2026-09-09): expiresAt === now gilt als ABGELAUFEN. Der Vergleich
+ * lautet deshalb ">" und nicht ">=". Dieselbe Wahl wie bei Uhr 1 (hasUsableAccessToken)
+ * und Uhr 2 (hasLiveRefreshToken) — die Sekunde, in der eine Frist ablaeuft, gehoert
+ * nicht mehr ihr.
+ * SIE BINDET SCHEIBE 11.3b: Jene braucht dasselbe Praedikat fuer die Anzeige der
+ * Restlaufzeit und EXTRAHIERT es dann aus dieser Datei, statt es nachzubauen. Driftet
+ * eine zweite Fassung dort auf ">=", zeigt die Oberflaeche "aktiv", WAEHREND DER RIEGEL
+ * NICHT FEUERT — ein Widerspruch, den niemand sieht, weil beide Seiten fuer sich
+ * plausibel aussehen.
+ *
+ * MODUL-PRIVAT UND KEINE REINE DATEI, aus demselben Grund wie bei den beiden Praedikaten
+ * darueber (Owner-Entscheidung 2026-09-09): ein Praedikat mit EINEM Aufrufer in ein
+ * geteiltes Haus zu legen waere Infrastruktur auf Verdacht. Erst 11.3b bekommt einen
+ * zweiten Aufrufer, und dann wandert es.
+ *
+ * SIE WERTET GEGEN DIE UHR DER LAUFZEIT AUS, NICHT GEGEN DIE DER DATENBANK. nowSeconds
+ * ist derselbe Wert, den Uhr 1 und Uhr 2 dieser Aufloesung benutzen — GENAU EINMAL
+ * gelesen, damit zwei Ziele derselben Runde nicht verschiedene Bezugspunkte haben. Die
+ * Folge einer Uhren-Abweichung steht im Kopf der Migration 0028 und wird hier nicht
+ * verdoppelt.
+ *
+ * FAIL-CLOSED IN JEDEM ZWEIFELSFALL, und "closed" heisst hier NICHT aktiv: Ein
+ * fehlender Code, ein Code aus reinem Leerraum, ein fehlender oder unlesbarer
+ * Zeitstempel — alles ergibt null. Der Testmodus ist damit die Ausnahme, die man
+ * ausdruecklich herstellen muss; die Abwesenheit einer Angabe schaltet ihn nie ein.
+ * DER CODE WIRD GETRIMMT, anders als hasSecret weiter unten. Das ist kein Versehen: Ein
+ * Geheimnis aus Leerraum galt hier immer als vorhanden (abgebildeter Bestand), ein
+ * TESTCODE aus Leerraum dagegen ist ein Wert, den der Kunde aus einer fremden
+ * Oberflaeche kopiert hat — er gehoert zur Kennungs-Klasse, und die trimmt.
+ *
+ * SIE WIRFT NIE. typeof-Vergleiche, ein trim, Date.parse (liefert NaN statt zu werfen)
+ * und ein Zahlenvergleich.
+ */
+function activeTestCodeFromRow(
+  row: { test_event_code: unknown; test_mode_expires_at: unknown },
+  nowSeconds: number,
+): string | null {
+  const code =
+    typeof row.test_event_code === "string" ? row.test_event_code.trim() : "";
+  if (!code) return null;
+
+  // PostgREST liefert timestamptz als ISO-Zeichenkette. Date.parse gibt bei allem, was
+  // keine ist, NaN zurueck — Number.isFinite faengt das, ohne einen zweiten Parser.
+  if (typeof row.test_mode_expires_at !== "string") return null;
+  const expiresMs = Date.parse(row.test_mode_expires_at);
+  if (!Number.isFinite(expiresMs)) return null;
+
+  return Math.floor(expiresMs / 1000) > nowSeconds ? code : null;
 }
 
 /**
@@ -583,6 +688,11 @@ export async function getCapiConfigByTrackingKey(
       abTestActive,
       targets: [],
       renewable: [],
+      // LEER AUS DEMSELBEN STRUKTURELLEN GRUND WIE renewable: Dieser Ausstieg liegt VOR
+      // der Geheimnis-Abfrage, es gibt also keine Zeile, aus der ein Testzustand
+      // stammen koennte. EIN GESPERRTES PROJEKT KENNT KEINEN TESTMODUS — der
+      // Kill-Switch verwirft ohnehin vor Persist UND Forward.
+      testMode: [],
     };
 
   // Die Pixel-IDs ALLER bekannten Ziele aus derselben Zeile — kein zweiter Lookup.
@@ -656,6 +766,15 @@ export async function getCapiConfigByTrackingKey(
       abTestActive,
       targets: [],
       renewable: [],
+      // KEIN TESTZUSTAND AUF DIESEM WEG — und das ist die ENTSCHEIDUNG fuer den
+      // Lesefehler (Owner, 2026-09-09): Wo der Zustand NICHT gelesen werden kann,
+      // feuert der Riegel NICHT, und es wird persistiert.
+      // DER GRUND GEHOERT AN DIE STELLE UND NICHT NUR IN DEN BERICHT: Die
+      // Gegenrichtung ("im Zweifel nicht persistieren") liesse die Analytics des
+      // Kunden bei JEDEM Datenbank-Schluckauf still verstummen — genau der Schaden,
+      // gegen den die Frist gewaehlt wurde, nur ohne Deckel und ohne Ende. Der Riegel
+      // faellt im Zweifel auf das HEUTIGE Verhalten zurueck.
+      testMode: [],
     };
 
   // Schritt 2: (project_id, Ziel) -> Geheimnisse ALLER in Frage kommenden Ziele in
@@ -675,9 +794,17 @@ export async function getCapiConfigByTrackingKey(
   // "GENAU ZWEI Abfragen" im Kopf dieser Funktion gilt damit unveraendert; sie zaehlt
   // Runden, nicht Spalten. Die Verzweigung nach Geheimnis-Klasse geschieht JE ZEILE in
   // usableTokenFromRow, nicht in einer zweiten Abfrage.
+  // DIE ZWEI TESTMODUS-SPALTEN SIND MIT SCHEIBE 11.3a DAZUGEKOMMEN — ZWEI SPALTEN,
+  // KEINE RUNDE. Die Zusage "GENAU ZWEI Abfragen" im Kopf dieser Funktion gilt damit
+  // unveraendert; sie zaehlt Runden, nicht Spalten — dieselbe Lage wie bei secret_enc
+  // in Scheibe 4. Das war der tragende Grund, den Testzustand auf DIESER Tabelle
+  // abzulegen statt in einer eigenen: eine eigene kostete eine DRITTE Runde JE BEACON.
+  // AUFZAEHLUNG STATT SELECT *: Ein Stern zoege secret_version und id mit, die dieser
+  // Pfad nicht braucht — und beim naechsten Spaltenzuwachs stillschweigend alles
+  // weitere.
   const { data: rows, error: secretsError } = await admin
     .from("project_secrets")
-    .select("target, secret, secret_enc")
+    .select("target, secret, secret_enc, test_event_code, test_mode_expires_at")
     .eq("project_id", projectId)
     .in(
       "target",
@@ -691,6 +818,15 @@ export async function getCapiConfigByTrackingKey(
       abTestActive,
       targets: [],
       renewable: [],
+      // KEIN TESTZUSTAND AUF DIESEM WEG — und das ist die ENTSCHEIDUNG fuer den
+      // Lesefehler (Owner, 2026-09-09): Wo der Zustand NICHT gelesen werden kann,
+      // feuert der Riegel NICHT, und es wird persistiert.
+      // DER GRUND GEHOERT AN DIE STELLE UND NICHT NUR IN DEN BERICHT: Die
+      // Gegenrichtung ("im Zweifel nicht persistieren") liesse die Analytics des
+      // Kunden bei JEDEM Datenbank-Schluckauf still verstummen — genau der Schaden,
+      // gegen den die Frist gewaehlt wurde, nur ohne Deckel und ohne Ende. Der Riegel
+      // faellt im Zweifel auf das HEUTIGE Verhalten zurueck.
+      testMode: [],
     };
 
   // Geheimnisse nach Ziel greifbar machen. Der Schluessel bleibt bewusst ein roher
@@ -717,12 +853,22 @@ export async function getCapiConfigByTrackingKey(
   const nowSeconds = Math.floor(Date.now() / 1000);
 
   const lageByTarget = new Map<string, RowResolution>();
+  // DER TESTZUSTAND WIRD IN DERSELBEN SCHLEIFE GELESEN — keine zweite Iteration, keine
+  // zweite Lesung, keine zusaetzliche Datenbank-Runde. Er steht in einer EIGENEN
+  // Zuordnung und nicht in RowResolution: jene beantwortet "traegt diese Zeile ein
+  // brauchbares Zugangsdatum?", und der Testzustand ist von dieser Frage unabhaengig.
+  // Eine Zeile mit TOTEM Zugangsdatum kann sehr wohl im Testmodus stehen.
+  const testCodeByTarget = new Map<string, string>();
   for (const row of rows as {
     target: unknown;
     secret: unknown;
     secret_enc: unknown;
+    test_event_code: unknown;
+    test_mode_expires_at: unknown;
   }[]) {
     if (typeof row.target !== "string") continue;
+    const testCode = activeTestCodeFromRow(row, nowSeconds);
+    if (testCode) testCodeByTarget.set(row.target, testCode);
     // ACHT AUSGAENGE MUENDEN IN "unusable", UND KEINER IST VON AUSSEN UNTERSCHEIDBAR —
     // fuenf Dechiffrier-Zustaende, zwei Lese-Zustaende und die Zeile ohne brauchbares
     // Geheimnis. Alle enden in derselben leeren 204.
@@ -738,7 +884,18 @@ export async function getCapiConfigByTrackingKey(
   // der Datenbank abhaengig.
   const targets: ResolvedTarget[] = [];
   const renewable: RenewableTarget[] = [];
+  const testMode: TestModeTarget[] = [];
   for (const entry of withPixel) {
+    // DER TESTZUSTAND WIRD VOR JEDEM `continue` EINGESAMMELT, UND DAS IST DIE TRAGENDE
+    // ANORDNUNG DIESER SCHLEIFE — nicht eine Stilfrage:
+    // Ein Ziel, dessen Zugangsdatum tot oder unbrauchbar ist, wird KEIN Empfaenger und
+    // faellt unten heraus. Sein TESTZUSTAND ist davon unberuehrt — er beschreibt, dass
+    // gerade ein Mensch seine Einrichtung prueft, und nicht, ob gesendet werden kann.
+    // Stuende der Einsammler hinter dem `continue`, verloere genau der Fall den Riegel,
+    // in dem der Kunde am ehesten testet: das Ziel, das gerade nicht sendet.
+    const testCode = testCodeByTarget.get(entry.target);
+    if (testCode) testMode.push({ target: entry.target, code: testCode });
+
     const lage = lageByTarget.get(entry.target);
     if (!lage || lage.kind === "unusable") continue;
 
@@ -784,7 +941,7 @@ export async function getCapiConfigByTrackingKey(
     });
   }
 
-  return { projectId, blocked: false, abTestActive, targets, renewable };
+  return { projectId, blocked: false, abTestActive, targets, renewable, testMode };
 }
 
 /**

@@ -75,6 +75,10 @@ beforeEach(() => {
     // SEIT SCHEIBE 1b-2a IM TYP NICHT OPTIONAL — s. den Kommentar an
     // TrackingKeyResolution.renewable in capi/token.ts.
     renewable: [],
+    // DASSELBE FUER DEN TESTZUSTAND (Scheibe 11.3a): IMMER gesetzt, nie weggelassen.
+    // Fehlt das Feld, laeuft der Riegel im Ingest auf undefined — und der Fehlschlag
+    // saehe wie ein Fehler des Handlers aus, obwohl er einer der Fixture ist.
+    testMode: [],
     targets: [
       { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
     ],

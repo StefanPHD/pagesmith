@@ -310,6 +310,12 @@ export async function forwardToTiktok(
   body: TiktokForwardBody,
   clientIp: string | undefined,
   userAgent: string,
+  // DER PROJEKT-EIGENE TESTCODE (Scheibe 11.3a). Als ARGUMENT, nicht aus einer
+  // Variablen — und damit AUCH HIER ohne jede Kopplung an das Vokabular eines anderen
+  // Ziels: Diese Datei liest weiterhin ausschliesslich TIKTOK_TEST_EVENT_CODE, und der
+  // Waechter T18 haelt das fest. OPTIONAL: ohne ihn verhaelt sich diese Funktion
+  // BYTE-GLEICH wie vor Scheibe 11.3a.
+  projectTestEventCode?: string,
 ): Promise<void> {
   // DIE EINZIGE ANWEISUNG VOR DEM try, UND SIE IST EINE REINE DEKLARATION (s.
   // Vertragssatz 1). Sie steht hier, damit finally sie sieht.
@@ -383,7 +389,13 @@ export async function forwardToTiktok(
       event_source_id: config.pixelId,
       data: [eintrag],
     };
-    const testCode = testEventCode();
+    // ZWEI QUELLEN SEIT SCHEIBE 11.3a, EIN FELD, UNVERAENDERTE EBENE: top-level neben
+    // data, wie bisher. Der PROJEKT-eigene Code schlaegt den deployment-weiten — er ist
+    // der spezifischere. DIE REICHWEITE DIESES VORRANGS IST DAS NUTZLAST-FELD UND SONST
+    // NICHTS; der Persist-Riegel im Ingest haengt allein am Projekt-Zustand.
+    // OHNE PROJEKT-CODE UNVERAENDERT: die eigene Umgebungsvariable wirkt wie bisher,
+    // weiterhin bei JEDEM Aufruf gelesen und nicht beim Laden des Moduls.
+    const testCode = projectTestEventCode || testEventCode();
     if (testCode) payload.test_event_code = testCode;
 
     const controller = new AbortController();

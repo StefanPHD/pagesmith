@@ -65,6 +65,7 @@ beforeEach(() => {
     // zaehlt die after()-Registrierungen, und eine nicht-leere Menge braechte eine
     // ZWEITE hinzu (die Vorsorge) — s. H2 in ingest.refresh.test.ts.
     renewable: [],
+    testMode: [],
     targets: [
       { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
     ],
@@ -125,6 +126,7 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
 
     const res = await handleIngest(makeRequest(VALID_BODY));
@@ -154,6 +156,7 @@ describe("Analytics-Persist im Ingest (Phase 8 Scheibe 1, couple-minimal)", () =
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
 
     const res = await handleIngest(makeRequest(VALID_BODY));

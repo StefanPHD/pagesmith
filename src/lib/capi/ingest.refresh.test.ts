@@ -114,6 +114,7 @@ function aufloesung(
     abTestActive: boolean;
     targets: unknown[];
     renewable: unknown[];
+    testMode: unknown[];
   }> = {},
 ) {
   return {
@@ -122,6 +123,11 @@ function aufloesung(
     abTestActive: false,
     targets: [],
     renewable: [],
+    // DER TESTZUSTAND (Scheibe 11.3a) — IMMER gesetzt, hier im BAUER und nicht an den
+    // vierzehn Aufrufstellen: Die Ueberschreibungen unten reichen nur einzelne Felder
+    // nach, den Rest liefert dieser Vorgabewert. Fehlte er, liefe der Riegel im Ingest
+    // auf undefined, und der Fehlschlag saehe wie ein Fehler des Handlers aus.
+    testMode: [],
     ...ueberschreibungen,
   };
 }

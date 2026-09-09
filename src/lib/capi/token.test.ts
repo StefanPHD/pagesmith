@@ -75,7 +75,16 @@ function projectWithPixel(id: string, pixelId: string) {
  * bildet den Klartext-Fall ab, und der Resolver muss ihn unveraendert bedienen.
  */
 function secretRows(
-  rows: { target: string; secret: string | null; secret_enc?: string | null }[],
+  rows: {
+    target: string;
+    secret: string | null;
+    secret_enc?: string | null;
+    // DIE ZWEI TESTMODUS-SPALTEN (Scheibe 11.3a), OPTIONAL: Der Bestand dieser Datei
+    // setzt sie nicht, und eine Zeile ohne sie ist der Normalfall — genau wie in der
+    // Datenbank, wo beide nullbar sind und NULL "kein Testzustand" heisst.
+    test_event_code?: string | null;
+    test_mode_expires_at?: string | null;
+  }[],
 ) {
   return { data: rows, error: null };
 }
@@ -227,6 +236,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: false,
       targets: [META_ENTRY],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -279,6 +289,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -302,6 +313,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: false,
       targets: [{ target: "meta", config: { pixelId: "PIXEL-123", token: " " } }],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -340,6 +352,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -414,7 +427,19 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
     // unveraendert: Er macht eine Aenderung an der Spaltenliste zu einem SICHTBAREN
     // Diff statt zu einer stillen Aenderung — er hat mit dieser Scheibe genau das
     // getan.
-    expect(secrets.cols).toBe("target, secret, secret_enc");
+    // NACHGEZOGEN (Scheibe 11.3a): Die Liste ist um test_event_code und
+    // test_mode_expires_at GEWACHSEN, weil die Ablage des projekt-eigenen Testzustands
+    // bewusst in DIESER Abfrage liegt — so kostet sie eine SPALTE und keine zweite
+    // Datenbank-Runde je Beacon.
+    // DIE ERWARTUNG IST AUS DER ENTSCHEIDUNG GESCHRIEBEN UND DANACH ZEICHENWEISE GEGEN
+    // DIE SPALTENNAMEN DER MIGRATION 0028 GEPRUEFT — nicht aus dem Ist-Wert des Codes
+    // uebernommen. Eine Erwartung, die aus dem Code stammt, macht diesen Waechter zum
+    // SPIEGEL: er bestaetigte dann jeden Tippfehler, statt ihn zu fangen, und der
+    // Ausfall bliebe der oben beschriebene — keine Zeile, capiConfig null, leere 204,
+    // Server-Forward tot.
+    expect(secrets.cols).toBe(
+      "target, secret, secret_enc, test_event_code, test_mode_expires_at",
+    );
     // Der Projekt-Filter bleibt eine Gleichheit …
     expect(secrets.eqs).toEqual([["project_id", "proj-1"]]);
     // … der Ziel-Filter ist seit Scheibe 7 eine MENGE. Er bleibt der Filter, der ein
@@ -474,6 +499,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: true,
       targets: [META_ENTRY],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -499,6 +525,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: false,
       targets: [META_ENTRY],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -532,6 +559,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -548,6 +576,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -562,6 +591,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -576,6 +606,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -612,6 +643,7 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       abTestActive: false,
       targets: [META_ENTRY],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -646,6 +678,12 @@ describe("getCapiConfigByTrackingKey (Scheibe 2b-i)", () => {
       // KEINE Empfaenger bei gesperrt — Geheimnisse werden gar nicht erst gelesen.
       targets: [],
       renewable: [],
+      // UND KEIN TESTZUSTAND, aus demselben strukturellen Grund (Scheibe 11.3a): Dieser
+      // Ausgang liegt VOR der Geheimnis-Abfrage, es gibt also keine Zeile, aus der einer
+      // stammen koennte. Das leere Array ist hier KEINE Abwesenheit einer Aussage,
+      // sondern die Aussage, dass dieser Frueh-Ausgang das Feld SETZT — ein fehlendes
+      // Feld liesse den Riegel im Ingest auf undefined laufen.
+      testMode: [],
     });
   });
 });
@@ -715,6 +753,7 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
         },
       ],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -734,6 +773,7 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -756,6 +796,7 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -773,6 +814,7 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
   });
 
@@ -810,6 +852,7 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
     expect(from).toHaveBeenCalledTimes(1);
   });
@@ -873,6 +916,10 @@ describe("Scheibe 11.1e: die zweite Kennungsform wird zum Empfaenger", () => {
       // und keine Uhr. Das leere Array steht hier ausdruecklich und nicht implizit —
       // s. den Kommentar an TrackingKeyResolution.renewable in capi/token.ts.
       renewable: [],
+      // DER TESTZUSTAND IST DAVON UNABHAENGIG (Scheibe 11.3a): Er haengt nicht an der
+      // Geheimnis-Klasse, sondern an zwei eigenen Spalten. Die Zeile dieses Laufs traegt
+      // sie nicht — deshalb leer, und nicht, weil das Ziel ein Klartext-Ziel ist.
+      testMode: [],
     });
   });
 
@@ -1802,5 +1849,155 @@ describe("Scheibe 4 — der Lesepfad fuer das chiffrierte Zugangsdatum", () => {
     // secrets/, nicht in oauth/ — die Richtung ist damit auch als Import-Aussage
     // festgehalten, soweit ein Zeichen-Waechter das kann.
     expect(nurCodeBlockweise).not.toMatch(/from\s+["'][^"']*\/oauth\//);
+  });
+});
+
+// =====================================================================
+// TM4 — DIE FRIST, AM ECHTEN RESOLVER (Phase 11.3, Scheibe 11.3a).
+//
+// WARUM DIESER BLOCK UNVERZICHTBAR IST, und der Satz gehoert hierher und nicht in einen
+// Bericht: Alle achtzehn Ganz-Objekt-Vergleiche dieser Datei behaupten testMode: [].
+// OHNE TM4 BEHAUPTETE KEIN EINZIGER LAUF AM ECHTEN RESOLVER JEMALS EIN NICHT-LEERES
+// testMode — die Frist waere ungeprueft, und eine Mutation, die den Ablaufzeitpunkt
+// ignoriert (der Zustand gilt ewig), haette nichts, was rot werden koennte. Die
+// Handler-Suiten koennen das nicht leisten: dort ist der Resolver GEMOCKT, sie bekommen
+// testMode als Fixture gereicht und sagen ueber die Frist nichts.
+//
+// DIE UHR WIRD FESTGESTELLT, NICHT GERECHNET: Der Rand (expires === now) ist nur mit
+// einer angehaltenen Uhr exakt zu treffen. Eine relativ gerechnete Frist ("now + 0")
+// liefe zwischen dem Bauen der Fixture und dem Lesen im Resolver auseinander.
+// =====================================================================
+describe("TM4 — der projekt-eigene Testzustand und seine Frist (Scheibe 11.3a)", () => {
+  const JETZT = new Date("2026-09-09T12:00:00.000Z");
+  const CODE = "TEST12345";
+
+  /** Die Standard-Projektzeile: meta mit Kennung, nicht gesperrt. */
+  const PROJEKT = {
+    data: {
+      id: "proj-1",
+      settings: { pixels: { meta: { pixelId: "PIXEL-123" } } },
+      blocked_at: null,
+    },
+    error: null,
+  };
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(JETZT);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  /** Ein Zeitpunkt, um `versatz` Sekunden gegen die angehaltene Uhr verschoben. */
+  function frist(versatzSekunden: number): string {
+    return new Date(JETZT.getTime() + versatzSekunden * 1000).toISOString();
+  }
+
+  it("TM4a: Frist in der ZUKUNFT -> testMode traegt das Ziel MIT seinem Code", async () => {
+    mockAdmin({
+      projects: PROJEKT,
+      project_secrets: secretRows([
+        {
+          target: "meta",
+          secret: "SECRET-TOKEN",
+          test_event_code: CODE,
+          test_mode_expires_at: frist(3600),
+        },
+      ]),
+    });
+
+    await expect(getCapiConfigByTrackingKey("tk-abc")).resolves.toEqual({
+      projectId: "proj-1",
+      blocked: false,
+      abTestActive: false,
+      targets: [META_ENTRY],
+      renewable: [],
+      testMode: [{ target: "meta", code: CODE }],
+    });
+  });
+
+  it("TM4b: Frist in der VERGANGENHEIT -> testMode ist LEER", async () => {
+    mockAdmin({
+      projects: PROJEKT,
+      project_secrets: secretRows([
+        {
+          target: "meta",
+          secret: "SECRET-TOKEN",
+          test_event_code: CODE,
+          test_mode_expires_at: frist(-1),
+        },
+      ]),
+    });
+
+    const res = await getCapiConfigByTrackingKey("tk-abc");
+    expect(res?.testMode).toEqual([]);
+    // GEGENKONTROLLE IM SELBEN LAUF: Das Ziel ist weiterhin Empfaenger. Ohne sie waere
+    // das leere testMode auch dann gruen, wenn die Zeile aus einem ganz anderen Grund
+    // gar nicht gelesen wurde.
+    expect(res?.targets).toEqual([META_ENTRY]);
+  });
+
+  // DIE RANDREGEL IST TEIL DER ENTSCHEIDUNG (E4, Owner 2026-09-09) UND NICHT IHRE FOLGE:
+  // expires === now gilt als ABGELAUFEN, der Vergleich lautet ">" und nicht ">=".
+  // DIESER LAUF BINDET SCHEIBE 11.3b: Jene extrahiert das Praedikat fuer die Anzeige der
+  // Restlaufzeit. Baut sie stattdessen eine zweite Fassung und driftet dort auf ">=",
+  // zeigt die Oberflaeche "aktiv", waehrend der Riegel NICHT feuert.
+  it("TM4c: RANDREGEL — expires === now gilt als ABGELAUFEN (fail-closed)", async () => {
+    mockAdmin({
+      projects: PROJEKT,
+      project_secrets: secretRows([
+        {
+          target: "meta",
+          secret: "SECRET-TOKEN",
+          test_event_code: CODE,
+          test_mode_expires_at: frist(0),
+        },
+      ]),
+    });
+
+    const res = await getCapiConfigByTrackingKey("tk-abc");
+    expect(res?.testMode).toEqual([]);
+  });
+
+  it("TM4d: ein Code aus reinem LEERRAUM ist kein Code — auch bei Frist in der Zukunft", async () => {
+    mockAdmin({
+      projects: PROJEKT,
+      project_secrets: secretRows([
+        {
+          target: "meta",
+          secret: "SECRET-TOKEN",
+          test_event_code: "   ",
+          test_mode_expires_at: frist(3600),
+        },
+      ]),
+    });
+
+    const res = await getCapiConfigByTrackingKey("tk-abc");
+    expect(res?.testMode).toEqual([]);
+  });
+
+  // TM4e — DIE TRAGENDE ANORDNUNG DER PAARUNGSSCHLEIFE. Der Testzustand wird VOR dem
+  // Ausstieg fuer unbrauchbare Zeilen eingesammelt. Faerbt rot, sobald jemand das
+  // Einsammeln hinter das `continue` schiebt — und dann verloere genau der Fall den
+  // Riegel, in dem ein Kunde am ehesten testet: das Ziel, das gerade NICHT sendet.
+  it("TM4e: ein Ziel OHNE brauchbares Geheimnis behaelt seinen Testzustand — targets leer, testMode gesetzt", async () => {
+    mockAdmin({
+      projects: PROJEKT,
+      project_secrets: secretRows([
+        {
+          target: "meta",
+          secret: null,
+          secret_enc: null,
+          test_event_code: CODE,
+          test_mode_expires_at: frist(3600),
+        },
+      ]),
+    });
+
+    const res = await getCapiConfigByTrackingKey("tk-abc");
+    expect(res?.targets).toEqual([]);
+    expect(res?.testMode).toEqual([{ target: "meta", code: CODE }]);
   });
 });

@@ -280,6 +280,12 @@ export async function forwardToMeta(
   body: MetaForwardBody,
   clientIp: string | undefined,
   userAgent: string,
+  // DER PROJEKT-EIGENE TESTCODE (Scheibe 11.3a). Er kommt als ARGUMENT und nicht aus
+  // einer Variablen — der Aufrufer hat ihn aus der Geheimnis-Zeile des Projekts
+  // aufgeloest. OPTIONAL: ohne ihn verhaelt sich diese Funktion BYTE-GLEICH wie vor
+  // Scheibe 11.3a, und genau das sichert die Zusage, dass die Umgebungsvariable ihr
+  // heutiges Verhalten behaelt.
+  projectTestEventCode?: string,
 ): Promise<void> {
   // --- Server-gesetztes Feld (NIE aus Client-Payload) ---
   // Metas Zeiteinheit sind SEKUNDEN, nicht Millisekunden.
@@ -312,8 +318,26 @@ export async function forwardToMeta(
   if (Object.keys(customData).length > 0) serverEvent.custom_data = customData;
 
   const payload: Record<string, unknown> = { data: [serverEvent] };
-  // test_event_code NUR wenn env gesetzt (dev-only). NIE hartcodiert / in Prod.
-  if (META_TEST_EVENT_CODE) payload.test_event_code = META_TEST_EVENT_CODE;
+  // test_event_code — ZWEI QUELLEN SEIT SCHEIBE 11.3a, EIN FELD, UNVERAENDERTE EBENE.
+  //
+  // DER ORT BLEIBT: top-level NEBEN data, nie darin. Das ist Metas Form, und die
+  // Fehlerklasse "verschachtelt statt top-level" ist in Phase 6 bezahlt worden; TM5
+  // pinnt die Ebene ausdruecklich.
+  //
+  // DER VORRANG: der PROJEKT-eigene Code schlaegt den deployment-weiten. Er ist der
+  // spezifischere — die Umgebungsvariable gilt fuer ALLE Projekte, dieser fuer genau
+  // eines, und ein Kunde, der seinen eigenen Code hinterlegt hat, will sein Ereignis in
+  // SEINER Test-Ansicht sehen.
+  // DIE REICHWEITE DIESES SATZES IST DAS NUTZLAST-FELD UND SONST NICHTS: Der
+  // Persist-Riegel im Ingest haengt ALLEIN am Projekt-Zustand; eine gesetzte
+  // Umgebungsvariable nimmt kein Ereignis aus events heraus. Wer den Vorrang breiter
+  // liest, holt die deployment-weite Reichweite zurueck, die Phase 11.3 gerade
+  // beseitigt.
+  //
+  // OHNE PROJEKT-CODE IST DAS VERHALTEN UNVERAENDERT (dev-only, NIE hartcodiert): die
+  // Umgebungsvariable wirkt wie bisher, deployment-weit.
+  const testEventCode = projectTestEventCode || META_TEST_EVENT_CODE;
+  if (testEventCode) payload.test_event_code = testEventCode;
 
   // --- Forward AWAIT-en; Fehler sanitized loggen; Client kriegt IMMER 204. ---
   //

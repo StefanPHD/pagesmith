@@ -74,6 +74,7 @@ function resolutionWithTest(abTestActive: boolean) {
     // SEIT SCHEIBE 1b-2a IM TYP NICHT OPTIONAL — s. den Kommentar an
     // TrackingKeyResolution.renewable in capi/token.ts.
     renewable: [],
+    testMode: [],
     targets: [
       { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
     ],
@@ -239,6 +240,7 @@ describe("A/B-Variante im Ingest (Phase 9 Scheibe 9b-2)", () => {
       abTestActive: true,
       targets: [],
       renewable: [],
+      testMode: [],
     });
 
     const res = await handleIngest(

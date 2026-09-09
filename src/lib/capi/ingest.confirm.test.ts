@@ -68,6 +68,7 @@ beforeEach(() => {
     // erzeugen kann (docs/immer-beachten.md, "TESTDATEN UND TEST-SEQUENZ MUESSEN DEN
     // PRODUKTIVEN PFAD TREFFEN").
     renewable: [],
+    testMode: [],
     targets: [
       { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
     ],
@@ -164,6 +165,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
 
     const res = await handleIngest(makeRequest(CONFIRM_BODY));
@@ -195,6 +197,7 @@ describe("Browser-Bestaetigung im Ingest (Phase 8 Scheibe A)", () => {
       abTestActive: false,
       targets: [],
       renewable: [],
+      testMode: [],
     });
 
     const res = await handleIngest(makeRequest(CONFIRM_BODY));

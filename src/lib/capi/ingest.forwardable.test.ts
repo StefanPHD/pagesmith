@@ -62,6 +62,7 @@ beforeEach(() => {
     // SEIT SCHEIBE 1b-2a IM TYP NICHT OPTIONAL — s. den Kommentar an
     // TrackingKeyResolution.renewable in capi/token.ts.
     renewable: [],
+    testMode: [],
     targets: [
       { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
     ],
@@ -140,6 +141,7 @@ describe("Forward-Gate im Handler (Scheibe 2a)", () => {
       blocked: true,
       abTestActive: false,
       renewable: [],
+      testMode: [],
       targets: [
         { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
       ],

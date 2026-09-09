@@ -83,6 +83,7 @@ beforeEach(() => {
     // misst den Deckel des Adapters, und eine Rettung laege SERIELL davor — sie
     // verschoebe die gemessene Frist.
     renewable: [],
+    testMode: [],
     targets: [
       { target: "meta", config: { pixelId: "PIXEL-123", token: "SECRET-TOKEN" } },
     ],

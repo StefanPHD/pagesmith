@@ -322,6 +322,7 @@ function resolution(targets: unknown[]) {
     abTestActive: false,
     targets,
     renewable: [],
+    testMode: [],
   };
 }
 

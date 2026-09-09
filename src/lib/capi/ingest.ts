@@ -275,6 +275,19 @@ type Forwarder = (
   body: CapiRequestBody,
   clientIp: string | undefined,
   userAgent: string,
+  // DER PROJEKT-EIGENE TESTCODE (Scheibe 11.3a), NACHGESTELLT UND OPTIONAL.
+  //
+  // ER STEHT AM TYP UND NICHT AN ResolvedTarget, und das ist eine Entscheidung: Der
+  // Riegel und dieser Wert stammen aus DERSELBEN Ablage (resolution.testMode). Haengte
+  // der Code zusaetzlich am aufgeloesten Empfaenger, gaebe es ZWEI Traeger desselben
+  // Zustands, und die koennten auseinanderlaufen.
+  //
+  // WAS SICH DADURCH NICHT AENDERT, und das ist der Grund, warum er NACHGESTELLT ist:
+  // Die drei Adapter, die ihn nicht brauchen (pinterest, linkedin, google), bleiben
+  // BYTE-GLEICH — und ihre Pfeil-Ausdruecke unten ebenfalls. Eine Funktion mit weniger
+  // Parametern erfuellt die laengere Signatur; genau dieselbe Lage wie bei userAgent
+  // (linkedin) und clientIp (google).
+  testEventCode: string | undefined,
 ) => Promise<void>;
 
 /**
@@ -314,8 +327,21 @@ type Forwarder = (
  * leistet dasselbe ohne diese Falle.
  */
 const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
-  meta: (entry, event, eventID, body, clientIp, userAgent) =>
-    forwardToMeta(entry.config, event, eventID, body, clientIp, userAgent),
+  // DER SIEBTE WERT WIRD DURCHGEREICHT UND HIER NICHT GEDEUTET (Scheibe 11.3a): Ob er
+  // den Vorrang vor der Umgebungsvariablen bekommt, entscheidet der ADAPTER — dort
+  // steht die Variable, und dort steht die eine Zeile, die das Feld setzt. Eine
+  // Vorrang-Regel HIER waere eine zweite Fassung derselben Entscheidung, an einer
+  // Stelle, die den Env-Wert gar nicht sieht.
+  meta: (entry, event, eventID, body, clientIp, userAgent, testEventCode) =>
+    forwardToMeta(
+      entry.config,
+      event,
+      eventID,
+      body,
+      clientIp,
+      userAgent,
+      testEventCode,
+    ),
 
   // DIE ASYMMETRIE VERSCHWINDET NICHT, SIE WANDERT — vom Kontrollfluss in die Daten,
   // und sie steht jetzt bei dem EINEN Eintrag, der sie braucht.
@@ -343,8 +369,20 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
   // oeffentliche Groesse Anzeigenkonto-ID und steht im Endpunkt-PFAD, hier ist sie
   // tatsaechlich eine Pixel-Kennung und steht im RUMPF. Eine eigene Form waere hier
   // ein Duplikat ohne Aussage.
-  tiktok: (entry, event, eventID, body, clientIp, userAgent) =>
-    forwardToTiktok(entry.config, event, eventID, body, clientIp, userAgent),
+  // DER SIEBTE WERT, ZUM ZWEITEN UND LETZTEN MAL — dieselbe Weitergabe ohne Deutung wie
+  // beim ersten Ziel. TikToks Testcode kommt aus einer EIGENEN Umgebungsvariablen, und
+  // die liest ausschliesslich sein eigener Adapter; die Trennung der beiden Variablen
+  // bleibt damit unangetastet.
+  tiktok: (entry, event, eventID, body, clientIp, userAgent, testEventCode) =>
+    forwardToTiktok(
+      entry.config,
+      event,
+      eventID,
+      body,
+      clientIp,
+      userAgent,
+      testEventCode,
+    ),
 
   // DAS VIERTE ZIEL (Scheibe 11.1f) — UND ES PROJIZIERT AM STAERKSTEN VON ALLEN.
   //
@@ -467,6 +505,7 @@ function dispatchForward(
   body: CapiRequestBody,
   clientIp: string | undefined,
   userAgent: string,
+  testEventCode: string | undefined,
 ): Promise<void> {
   const target = entry.target;
   if (!hasAdapter(target)) return Promise.resolve();
@@ -477,6 +516,7 @@ function dispatchForward(
     body,
     clientIp,
     userAgent,
+    testEventCode,
   );
 }
 
@@ -647,12 +687,57 @@ export async function handleIngest(request: Request): Promise<Response> {
   // ist eine Eigenschaft der BEOBACHTUNG (wie source) und haelt fest, was das Cookie in
   // diesem Moment sagte — sie ist keine Aussage ueber die eventID. Ohne sie waere eine
   // Verlustrate JE VARIANTE nicht berechenbar.
+  // --- DER PERSIST-RIEGEL DES TESTMODUS (Phase 11.3, Scheibe 11.3a) ---
+  //
+  // EIN URTEIL, ZWEI LESUNGEN. Der Wert wird GENAU EINMAL gebildet und an den beiden
+  // Stellen gelesen, an denen persistiert wird. Zwei getrennte Auswertungen derselben
+  // Frage koennten auseinanderlaufen — und die eine, die es dann noch richtig macht,
+  // verdeckte die andere.
+  //
+  // DIE ACHSE IST DAS PROJEKT, NICHT DAS ZIEL, und das ist eine Entscheidung mit Grund
+  // (Owner, 2026-09-09): MINDESTENS EIN Ziel im Testzustand genuegt. Eine events-Zeile
+  // ist NICHT je Ziel — sie traegt project_id, event_type, event_id, source und
+  // variant, aber keine Ziel-Spalte. Sie ist eine BEOBACHTUNG, und der Testzustand
+  // beschreibt die HERKUNFT dieser Beobachtung: ein Mensch, der seine eigene
+  // Einrichtung prueft. Das ist kein Kauf, gleichgueltig welches Ziel gerade geprueft
+  // wird.
+  // VERWORFEN WURDE "ALLE Ziele muessen aktiv sein": Ein Kunde, der meta prueft
+  // waehrend tiktok weiterlaeuft, bekaeme seinen eigenen Testklick als echte Conversion
+  // ins Dashboard — eine Zeile, die teils Test und teils echt ist, und damit genau die
+  // Verschmutzung, gegen die diese Phase gebaut ist.
+  // VERWORFEN WURDE AUCH ein Riegel-Zustand JE PROJEKT neben dem Code je Ziel: zwei
+  // Ablagen fuer denselben Zustand, die auseinanderlaufen koennen.
+  //
+  // DER PREIS WIRD MITGENANNT UND NICHT WEGGESCHRIEBEN: Die Ziele OHNE Testmodus
+  // (pinterest, google, linkedin) bekommen den Testklick als ECHTE Conversion. Das ist
+  // keine neue Verschlechterung, sondern die Entscheidung "SICHTBARKEIT STATT
+  // ISOLATION" an einer weiteren Stelle — kein Anbieter dieses Rahmens liefert
+  // Isolation.
+  //
+  // ER HAENGT ALLEIN AM PROJEKT-ZUSTAND. Eine gesetzte Umgebungsvariable nimmt KEIN
+  // Ereignis aus events heraus — bei keinem Projekt, unter keinen Umstaenden. Der
+  // Vorrang des Projekt-Codes gilt ausschliesslich dem NUTZLAST-Feld und wird im
+  // Adapter entschieden, nicht hier.
+  const testModusAktiv = resolution.testMode.length > 0;
+
   if (isBrowserConfirm) {
-    schedulePersist(resolution.projectId, event, eventID, "browser", variant);
+    // DIE AUSNAHME IM CONFIRM-ZWEIG IST DER PRUEFSTEIN DIESER SCHEIBE UND KEINE
+    // Wiederholung der Zeile darunter: Dieser Zweig hat seinen EIGENEN frueher Ausgang
+    // und laeuft nie in den Server-Zweig hinein. Wer nur dort riegelt, erzeugt eine
+    // browser-Zeile OHNE server-Gegenstueck — und die Adblocker-Verlustrate rechnet
+    // genau diese Differenz. Sie zaehlte den Testlauf als VERLUST und zeigte
+    // RUECKWIRKEND und STILL eine falsche Rate: kein Fehler, keine leere Seite, nur
+    // eine Zahl, die niemand mehr nachrechnen kann.
+    // BEIDE ZWEIGE ODER KEINER. Der Waechter dagegen heisst TM2 in
+    // ingest.test-mode.test.ts und ist ein Einzelstueck — kein anderer Lauf kann diese
+    // Fehlerklasse fangen, weil kein anderer diesen Zweig MIT Testzustand betritt.
+    if (!testModusAktiv)
+      schedulePersist(resolution.projectId, event, eventID, "browser", variant);
     return status(204);
   }
 
-  schedulePersist(resolution.projectId, event, eventID, "server", variant);
+  if (!testModusAktiv)
+    schedulePersist(resolution.projectId, event, eventID, "server", variant);
 
   // --- DIE VORSORGE (Scheibe 1b-2a) — NACH DER ANTWORT, NICHT IM ANFRAGE-WEG ---
   //
@@ -903,9 +988,27 @@ export async function handleIngest(request: Request): Promise<Response> {
     // eigenen Deckel, und die Gesamtwartezeit ist das MAXIMUM der Einzeldeckel.
     // Die SERIELLE Arbeit liegt VOR dieser Zeile, in der Rettung, und sie ist dort
     // benannt.
+    // DER TESTCODE WIRD JE EMPFAENGER NACHGESCHLAGEN (Scheibe 11.3a) — aus DERSELBEN
+    // Menge, die oben den Riegel getragen hat. Ein Ziel bekommt ausschliesslich SEINEN
+    // eigenen Code; ein aktiver Testzustand fuer meta setzt bei tiktok nichts.
+    // KEINE ZWEITE STRUKTUR DAFUER: Die Menge traegt hoechstens so viele Eintraege, wie
+    // es Ziele gibt, und sie ist im Normalfall LEER — ein find darauf ist dann ein
+    // einziger Laengen-Vergleich. Eine Zuordnung daneben waere Aufbau-Arbeit je Beacon
+    // fuer einen Fall, der fast nie eintritt (/api/e-Schlankheit).
+    // ES REIST DER GERETTETE EMPFAENGER MIT: Die Nachschlag-Achse ist der ZIEL-NAME,
+    // und der ist bei einem geretteten Ziel derselbe — resolveRefreshedTarget musste
+    // dafuer nicht angefasst werden.
     await Promise.allSettled(
       empfaenger.map((entry) =>
-        dispatchForward(entry, event, eventID, body, clientIp, userAgent),
+        dispatchForward(
+          entry,
+          event,
+          eventID,
+          body,
+          clientIp,
+          userAgent,
+          resolution.testMode.find((t) => t.target === entry.target)?.code,
+        ),
       ),
     );
   }

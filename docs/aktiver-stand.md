@@ -339,49 +339,48 @@ steht, damit die TikTok-Hälfte sie nicht übersieht.
 Die erste Scheibe legt einen projekt-eigenen Testzustand ab und lässt den Ingest ihn
 lesen. Sie baut keine Oberfläche.
 
-### Was sie baut
+**GEBAUT UND LIVE BEWIESEN AM 2026-09-09.** Der Nachweis steht in VERMERK 1 unter
+"Scheiben-Vermerke"; die Entscheidungen, die über diese Scheibe hinaus binden, stehen als
+(2) bis (7) unter "Entscheidungen, die über ihre Scheibe hinaus binden".
 
-- **EIN TESTZUSTAND JE (PROJEKT, ZIEL), SERVER-AUTORITATIV.** Er trägt zwei Dinge: einen
-  TESTCODE und einen ABLAUFZEITPUNKT. Aktiv heisst: der Ablaufzeitpunkt liegt in der
-  Zukunft.
-- **DIE FORM DER ABLAGE IST HIER AUSDRÜCKLICH OFFEN.** Ob eigene Tabelle, ob Spalten an
-  einer bestehenden, ob etwas Drittes — das wird in Stufe 1 gegen docs/db-stand.md und
-  docs/db-regeln.md beantwortet, **nicht hier gesetzt**. Beide Dateien sind vor dem Plan
-  zu laden; das ist ein Pflicht-Stopp aus CLAUDE.md und keine Erfindung dieses
-  Zuschnitts.
-- **WARUM SERVER-AUTORITATIV, und der Grund gehört in den Zuschnitt, weil er sonst beim
-  Bau als Bequemlichkeit weggewogen wird:** Der Einstellungs-Blob eines Projekts ist
-  CLIENT-besessen — `saveProject` ersetzt ihn GANZHEITLICH. Läge die Frist dort, könnte
-  ein alter Tab beim nächsten Speichern **eine bereits abgelaufene Frist wiederbeleben**.
-  Damit wäre genau die Eigenschaft zerstört, um derentwillen die Frist überhaupt gewählt
-  wurde: dass sie von allein endet. Die Regel dahinter steht dauerhaft in
-  docs/immer-beachten.md, "SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN BLOB".
-- **DER INGEST LIEST AUS DERSELBEN QUELLE, AUS DER DER FORWARD-PFAD SPEIST.** Nicht aus
-  einer zweiten Ablage, die dasselbe behauptet. Der heutige Lesepfad der
-  Ziel-Konfiguration ist `getCapiConfigByTrackingKey` (`src/lib/capi/token.ts`); der
-  Oberflächen-Pfad `listConfiguredTargets` (`src/app/projects/actions.ts`) liest bewusst
-  dieselbe Quelle, und sein Kommentarkopf begründet genau das. **Zwei Wahrheiten, die
-  auseinanderlaufen können, werden hier nicht angelegt.**
-- **IST DER ZUSTAND AKTIV, GESCHIEHT ZWEIERLEI:**
-  - **(i) KEIN PERSIST IN `events`** — weder im Server-Zweig NOCH im Confirm-Zweig.
-  - **(ii) DER ADAPTER HÄNGT DEN CODE AN DIE NUTZLAST** (für meta und tiktok je nach ihrer
-    eigenen Form).
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-### Die Invariante, die den Riegel trägt
+**VERDICHTET AM 2026-09-09.** Was mit der Scheibe ABGELAUFEN ist, steht nicht mehr hier;
+was über sie hinaus bindet, ist entweder unten stehengeblieben oder unter die
+Entscheidungen gezogen. **Die Titel werden ohne Markierungszeichen zitiert** — sonst
+kollidierte das Zitat dauerhaft mit jeder gleichlautenden Überschrift.
 
-**DER CONFIRM-ZWEIG PERSISTIERT ÜBER EINEN EIGENEN FRÜHEN AUSGANG.** Im Ingest steht
-`isBrowserConfirm` als eigener Zweig, der `schedulePersist` mit der Beobachtung "browser"
-ruft und danach **zurückkehrt** — er läuft nie in den Server-Zweig hinein (GEMESSEN am
-Repo, CC, 2026-09-08, `src/lib/capi/ingest.ts`).
+- "Was sie baut" — abgelaufen. Die FORM DER ABLAGE, die dort ausdrücklich offen stand,
+  ist entschieden und steht als (2). Der Grund für SERVER-AUTORITATIV und die Auflage,
+  aus derselben Quelle zu lesen wie der Forward-Pfad, sind darin aufgegangen.
+- "Die Invariante, die den Riegel trägt" — abgelaufen, weil sie EINGELÖST ist: Der
+  Confirm-Zweig ist eigens ausgenommen, der Wächter dagegen heisst TM2, und
+  Pflicht-Mutation 1 hat ihn geprüft (VERMERK 1). Die Regel selbst steht als (3).
+- "Ausdrücklich NICHT mit, je mit Grund" — abgelaufen bis auf die Dev-Dummy-IP, die
+  unten stehenbleibt. Oberfläche, Testknopf und die drei nicht behandelten Ziele sind
+  Gegenstand anderer Scheiben und stehen unter "Gegenstand der Phase".
+- "Der Live-Nachweis der Scheibe — zwei Läufe auf EINER Achse" — abgelaufen, weil
+  gefahren. Was er verlangte und was herauskam, steht in VERMERK 1. Die AUFLAGE, dass
+  der Testklick beim Anbieter zusätzlich in den normalen Zahlen erscheint, bleibt als
+  Teil der Entscheidung (1) bestehen.
+- "Was die Scheibe offen lässt" — abgelaufen. Die Ablage ist entschieden (2); die LÄNGE
+  der Frist bleibt unten stehen, weil sie 11.3b bindet; ob der Testcode dauerhaft
+  ablegbar ist, ist für meta beantwortet (Vorrat (4), gestrichen) und für tiktok als
+  Vorrat (14) neu eingetragen.
 
-**FOLGE, UND SIE IST DER PRÜFSTEIN DIESER SCHEIBE: Wer nur den Server-Zweig ausnimmt, baut
-einen stillen Datenfehler.** Es entstünde eine `browser`-Zeile ohne `server`-Gegenstück.
-Die Adblocker-Verlustrate rechnet genau diese Differenz — sie würde den Testlauf als
-VERLUST zählen und **RÜCKWIRKEND und STILL** eine falsche Rate anzeigen. Kein Fehler,
-keine leere Seite, nur eine Zahl, die niemand mehr nachrechnen kann.
+### Was über die Scheibe hinaus gilt und deshalb hier bleibt
 
-**BEIDE ZWEIGE ODER KEINER.** Wer diese Scheibe baut, ohne dass der Confirm-Zweig eigens
-ausgenommen ist, hat nicht diese Scheibe gebaut.
+- **DIE DEV-DUMMY-IP BLEIBT ALLEIN AN `META_TEST_EVENT_CODE` HÄNGEN.** Der Projekt-Zustand
+  löst sie NICHT aus. GRUND: Sie ist ein Entwicklungs-Behelf für einen fehlenden
+  Client-IP-Wert, kein Bestandteil des Testmodus — sie hängt nur historisch an derselben
+  Variablen. Wer sie mitzieht, setzt in einem Kundenprojekt eine erfundene IP als
+  Identitäts-Merkmal an einen Anbieter. Der Wächter dagegen ist TM8, und er trägt eine
+  eigene Positivkontrolle: ohne sie wäre die Abwesenheits-Behauptung auch dann grün, wenn
+  es die Dummy-IP gar nicht mehr gäbe.
+- **DIE LÄNGE DER FRIST** und wer sie bestimmt (fester Wert, Auswahl, freie Eingabe) ist
+  **hier NICHT gesetzt** — ohne Oberfläche wählt sie niemand. Sie bindet 11.3b.
+  NACHGETRAGEN 2026-09-09: Die GRÖSSENORDNUNG ist seit der Owner-Angabe zu Metas
+  wechselndem Testcode nicht mehr auf Verdacht gewählt (s. Vorrat (4), gestrichen).
 
 ### Die Env-Variablen bleiben — und der Riegel hängt NICHT an ihnen
 
@@ -395,6 +394,18 @@ ausgenommen ist, hat nicht diese Scheibe gebaut.
   Code, gewinnt der des Projekts; das ist eine Aussage darüber, WELCHER Code gesendet wird,
   und über nichts sonst.
 
+**NACHGETRAGEN AM 2026-09-09 — DIE ERSTE HÄLFTE IST SEIT DIESEM TAG LIVE GEMESSEN, DIE
+ZWEITE AUSDRÜCKLICH NICHT:**
+- **"DER PERSIST-RIEGEL HÄNGT ALLEIN AM PROJEKT-ZUSTAND" IST GEMESSEN, nicht mehr nur im
+  Unit-Test behauptet.** Beim Live-Test stand `META_TEST_EVENT_CODE` in Vercel GESETZT —
+  und LAUF 1 hat trotzdem persistiert. Eine gesetzte Umgebungsvariable nimmt also
+  tatsächlich kein Ereignis aus `events` heraus. GEMESSEN LIVE, 2026-09-09, Stefan;
+  Volltext in VERMERK 1.
+- **DER VORRANG SELBST IST UNGEMESSEN GEBLIEBEN.** Beide Quellen trugen an jenem Tag
+  DENSELBEN Wert; kein Instrument des Laufs kann zeigen, welche gewonnen hat. Das ist
+  ein offener Punkt (Vorrat (10)) und **keine bestandene Probe**. Im Unit-Test deckt ihn
+  TM6, in beide Richtungen.
+
 **RICHTIGGESTELLT AM 2026-09-08, NICHT GESTEMPELT — DER ALTE SATZ WAR ZU BREIT UND HÄTTE
 DEN MANDANTENFEHLER ZURÜCKGEHOLT, DEN DIESE PHASE BESEITIGT.** Hier stand: "SIND BEIDE WEGE
 GESETZT, GEWINNT DER PROJEKT-ZUSTAND. Der spezifischere Wert schlägt den deployment-weiten."
@@ -404,73 +415,6 @@ Testmodus schaltet und ihre Analytics gemeinsam verstummen lässt. **Genau die
 deployment-weite Reichweite, die der Gegenstand dieser Phase als den Mangel benennt.** Der
 Satz war als Aussage über den Nutzlast-Wert richtig gemeint und als Aussage über den Riegel
 falsch; er ist deshalb ersetzt und nicht gestempelt.
-
-### Ausdrücklich NICHT mit, je mit Grund
-
-- **DIE DEV-DUMMY-IP BLEIBT ALLEIN AN `META_TEST_EVENT_CODE` HÄNGEN.** Der Projekt-Zustand
-  löst sie NICHT aus. GRUND: Sie ist ein Entwicklungs-Behelf für einen fehlenden
-  Client-IP-Wert, kein Bestandteil des Testmodus — sie hängt nur historisch an derselben
-  Variablen. Wer sie mitzieht, setzt in einem Kundenprojekt eine erfundene IP als
-  Identitäts-Merkmal an einen Anbieter.
-- **KEINE OBERFLÄCHE.** Kein Schalter, kein Banner, keine Anzeige der Restlaufzeit. Der
-  Zustand wird zum Live-Test **per SQL** gesetzt. Schalter und Banner sind Scheibe 11.3b.
-  GRUND FÜR DEN SCHNITT: Der Riegel im Ingest ist die Stelle, an der ein Fehler still
-  wird; er wird zuerst gebaut und einzeln bewiesen, bevor eine Oberfläche ihn bequem
-  auslösbar macht.
-- **KEIN TESTKNOPF, KEIN RÜCKKANAL, KEIN LESEPFAD.** Das ist 11.4 (s. die Abgrenzung unter
-  "Gegenstand der Phase").
-- **KEINE ENTSCHEIDUNG ÜBER PINTEREST, GOOGLE ODER LINKEDIN.** Ihre Gründe stehen unter
-  "Gegenstand der Phase"; sie sind nicht in dieser Scheibe zu revidieren.
-
-### Der Live-Nachweis der Scheibe — zwei Läufe auf EINER Achse
-
-Beide Läufe mit **demselben** Projekt, **demselben** Ereignis und **demselben** Ziel; das
-Einzige, was sich zwischen ihnen ändert, ist der Testzustand.
-
-- **LAUF 1, ohne Testzustand:** Das Ereignis erscheint beim Anbieter normal und erzeugt
-  eine `events`-Zeile.
-- **LAUF 2, mit aktivem Testzustand:** Das Ereignis erscheint in der **Test-Ansicht** des
-  Anbieters und erzeugt **KEINE** `events`-Zeile — **auch keine `browser`-Zeile.**
-
-**DIE ZWEITE HÄLFTE VON LAUF 2 IST DER EIGENTLICHE NACHWEIS.** Dass keine `server`-Zeile
-entsteht, würde auch ein halber Riegel liefern; dass auch keine `browser`-Zeile entsteht,
-liefert nur der vollständige. Wer diesen Teil aus der Anleitung streicht, prüft die
-Invariante dieser Scheibe nicht.
-
-**AUFLAGE AN LAUF 2, OHNE DIE DER LAUF EIN KORREKTES VERHALTEN ALS FEHLSCHLAG
-PROTOKOLLIERT:** Das Ereignis erscheint beim Anbieter **ZUSÄTZLICH in den normalen Zahlen**
-— in der Berichterstattung und in der Optimierung, nicht nur in der Test-Ansicht. **DAS IST
-ERWARTETES VERHALTEN UND DARF NICHT ALS FEHLSCHLAG DES RIEGELS VERBUCHT WERDEN.** Der
-Riegel dieser Phase wirkt auf `events`, also auf UNSERE Ablage; er hat auf die Zählung des
-Anbieters keinen Zugriff und soll keinen haben. Wer das nicht vorher weiss, sieht den
-Testklick in den Kampagnenzahlen auftauchen und sucht einen Fehler, den es nicht gibt.
-GRUNDLAGE: docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)", Teil (a) — GELESEN
-2026-09-08, KEINE Messung. **Für tiktok ist dieselbe Frage ungelesen und ungemessen** (s.
-den Vorrat); dort ist das Erscheinen in den normalen Zahlen weder zu erwarten noch
-auszuschliessen, und ein Lauf gegen tiktok beurteilt diesen Punkt deshalb gar nicht.
-
-**ZWEI VORAUSSETZUNGEN, DIE IN DIE ANLEITUNG GEHÖREN und ohne die ein Lauf ein Ergebnis
-liefert, das keines ist:**
-- **DER A/B-BETRIEB IST VORHER FESTZUSTELLEN.** Ist er aktiv, wird entweder abgeschaltet
-  oder die AUSGELIEFERTE Variante bestimmt, bevor irgendetwas beurteilt wird — die
-  Varianten tragen getrennte Mapping-Sätze (docs/immer-beachten.md, "BEVOR EIN ERGEBNIS
-  BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS RICHTIGE GEMESSEN WIRD", Teil (e)).
-- **DIE REIHENFOLGE DARF DIE VORAUSSETZUNG DES NÄCHSTEN SCHRITTS NICHT ZERSTÖREN.** Läuft
-  ein Regressionsschritt nach Lauf 2, muss der Testzustand vorher wieder abgelaufen oder
-  entfernt sein — sonst misst er den Riegel und nicht die Regression
-  (docs/immer-beachten.md, "EIN REGRESSIONSSCHRITT DARF DIE VORAUSSETZUNG DES SCHRITTS
-  DANACH NICHT ZERSTÖREN").
-
-### Was die Scheibe offen lässt
-
-- **DIE FORM DER ABLAGE** (s. oben) — Stufe 1, gegen docs/db-stand.md und
-  docs/db-regeln.md.
-- **DIE LÄNGE DER FRIST** und wer sie bestimmt (fester Wert, Auswahl, freie Eingabe) —
-  hier NICHT gesetzt, weil ohne Oberfläche niemand sie wählt.
-- **OB DER TESTCODE JE ZIEL ODER JE PROJEKT GILT.** Für meta ist er ein vom Kunden
-  kopierter Wert; für tiktok ist "wechselt pro Sitzung" ungeprüft (s. die Lücke unter
-  "Ausgangslage"). Die Ablage je (Projekt, Ziel) hält beide Fälle offen, entscheidet aber
-  keinen.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -548,6 +492,158 @@ jemand weiss, dass es eine erste gab.
 steht im Commit-Body des vorangehenden docs(claude)-Commits; **er steht hier, weil ein
 Commit-Body nicht lädt** (s. den Hebungs-Kandidaten unten).
 
+### (2) DIE ABLAGE — ZWEI ADDITIVE SPALTEN AUF project_secrets
+
+**DIE ENTSCHEIDUNG:** Der Testzustand liegt in `project_secrets.test_event_code` (text) und
+`project_secrets.test_mode_expires_at` (timestamptz), beide nullbar, zusammengehalten vom
+CHECK `project_secrets_test_mode_paar` (beide gesetzt oder beide leer). Migration 0028.
+
+**DER TRAGENDE GRUND:** Der Resolver `getCapiConfigByTrackingKey` (`src/lib/capi/token.ts`)
+liest diese Tabelle in seiner ZWEITEN Abfrage ohnehin. Zwei Spalten mehr sind **eine
+SPALTE, keine RUNDE** — dieselbe Bauform, in der `blocked_at`, `ab_test_active` und
+`secret_enc` hinzugekommen sind, und die Zusage "GENAU ZWEI Abfragen" im Kopf jener
+Funktion gilt unverändert.
+
+**DIE DREI VERWORFENEN ALTERNATIVEN, je mit ihrem Ausscheidungsgrund** — sie stehen hier,
+damit keine davon beim nächsten Mal als Einfall wiederkommt:
+- **EINE EIGENE TABELLE.** Kostet eine DRITTE Datenbank-Runde JE BEACON (oder einen Join,
+  der die zweite Abfrage umbaut) — auf dem Pfad, den jeder Besucher jeder Kundenseite
+  trifft (CLAUDE.md, /API/E-SCHLANKHEIT). Dazu eine neue RLS-Entscheidung. **Sie kauft
+  nichts, was die Spalten nicht auch liefern.**
+- **SPALTEN AUF `projects`.** Die Zeile wird in Abfrage 1 ohnehin gelesen, die Achse wäre
+  also billig — aber `projects` trägt EINE Zeile je Projekt. Ein Zustand je
+  (Projekt, Ziel) ginge dort nur als JSON-Blob, also als zweite Blob-Wahrheit neben
+  `settings`.
+- **`projects.settings`.** CLIENT-besessen; `saveProject` ersetzt den Blob GANZHEITLICH.
+  Ein alter Tab könnte eine bereits ABGELAUFENE Frist wiederbeleben und damit genau die
+  Eigenschaft zerstören, um derentwillen die Frist gewählt wurde: dass sie von allein
+  endet (docs/immer-beachten.md, "SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN
+  BLOB").
+
+**IHRE GRENZE:** Der bestehende CHECK `project_secrets_secret_genau_eines` verlangt, dass
+jede Zeile GENAU EIN Geheimnis trägt. **Ein Testzustand kann damit nur dort liegen, wo
+bereits Zugangsdaten hinterlegt sind.** Das ist vertretbar — ohne Zugangsdaten wird nichts
+gesendet, es gäbe nichts zu prüfen —, aber es ist eine Festlegung und keine Nebenwirkung.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-09 auf der Grundlage von Stufe 1, gegen
+docs/db-stand.md und docs/db-regeln.md geplant; die Supabase-Lesung dazu (RLS ohne Policy,
+service_role) ist im Kopf der Migration 0028 mit Datum und Fundstelle vermerkt.
+
+### (3) DER RIEGEL HÄNGT AN MINDESTENS EINEM ZIEL, NICHT AN ALLEN
+
+**DIE ENTSCHEIDUNG:** Steht **mindestens ein** Ziel eines Projekts im Testzustand, wird das
+Ereignis nicht persistiert — **in BEIDEN Zweigen**, im Server-Zweig wie im Confirm-Zweig.
+
+**DIE BEGRÜNDUNG, WÖRTLICH: DER ZUSTAND BESCHREIBT DIE HERKUNFT DES KLICKS, NICHT SEIN
+ZIEL.** Eine `events`-Zeile ist NICHT je Ziel — sie trägt `project_id`, `event_type`,
+`event_id`, `source` und `variant`, aber keine Ziel-Spalte. Sie ist eine BEOBACHTUNG, und
+wer gerade seine eigene Einrichtung prüft, erzeugt keinen Kauf, gleichgültig welches Ziel
+er dabei ansieht.
+
+**DIE ZWEI VERWORFENEN KANDIDATEN:**
+- **K2 — ALLE konfigurierten Ziele müssen aktiv sein.** Hätte den HALB PERSISTIERTEN
+  TESTLAUF zum **REGELFALL** gemacht: Ein Kunde prüft meta, tiktok läuft weiter, die
+  `events`-Zeile entsteht trotzdem und zählt als echte Conversion — während bei meta
+  dasselbe Ereignis als Test markiert ankommt. Verfehlt zusätzlich den Zweck der Phase.
+- **K3 — ein Riegel-Zustand je PROJEKT neben dem Code je Ziel.** Semantisch am ehrlichsten,
+  aber zwei Ablagen für denselben Zustand, also zwei Wahrheiten, die auseinanderlaufen
+  können. K1 erreicht dasselbe Verhalten, ABGELEITET aus den Ziel-Zeilen statt zweitens
+  geführt.
+
+**DER PREIS WIRD MITGENANNT UND NICHT WEGGESCHRIEBEN:** Die Ziele OHNE Testmodus
+(pinterest, google, linkedin) bekommen den Testklick als ECHTE Conversion. Das ist keine
+neue Verschlechterung, sondern die Entscheidung (1) an einer weiteren Stelle.
+
+**IHRE GRENZE:** Sie reicht nur so weit wie die zweite Abfrage des Resolvers. Gefragt wird
+nur nach Zielen, die den Kennungs-Filter passiert haben; ein Testzustand an einem Ziel OHNE
+Kennung ist unsichtbar, und der Riegel feuert dann nicht.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-09. Dass `events` keine Ziel-Spalte trägt, ist
+GEMESSEN am Schema (CC, 2026-09-09, docs/db-stand.md).
+
+### (4) KEIN REINES PRÄDIKAT IN DIESER SCHEIBE — EIN URTEIL, ZWEI LESUNGEN
+
+**DIE ENTSCHEIDUNG:** Die Frage "ist dieses Projekt im Testmodus?" wird GENAU EINMAL
+ausgewertet (`testModusAktiv` in `handleIngest`) und an den zwei Stellen gelesen, an denen
+persistiert wird. Es entsteht **keine reine Datei** und kein geteiltes Prädikat — ein
+Prädikat mit EINEM Aufrufer in ein geteiltes Haus zu legen wäre Infrastruktur auf Verdacht
+(dieselbe Figur, mit der `targetReadiness` im Projekt schon einmal gestrichen wurde).
+
+**DIE RANDREGEL IST TEIL DIESER ENTSCHEIDUNG UND NICHT IHRE FOLGE:**
+**`expires === now` gilt als ABGELAUFEN. Der Vergleich lautet `>`, nicht `>=`.** Dieselbe
+Wahl wie bei Uhr 1 (`hasUsableAccessToken`) und Uhr 2 (`hasLiveRefreshToken`) — die
+Sekunde, in der eine Frist abläuft, gehört nicht mehr ihr. Der Wächter ist TM4c.
+
+**SIE BINDET SCHEIBE 11.3b, und das ist ihr eigentlicher Zweck:** Jene braucht dasselbe
+Prädikat für die Anzeige der Restlaufzeit. **Sie EXTRAHIERT es aus `activeTestCodeFromRow`
+(`src/lib/capi/token.ts`), statt es nachzubauen.** Baut sie eine zweite Fassung und driftet
+diese auf `>=`, **zeigt die Oberfläche "aktiv", während der Riegel NICHT feuert** — ein
+Widerspruch, den niemand sieht, weil beide Seiten für sich plausibel aussehen.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-09.
+
+### (5) BEI EINEM LESEFEHLER FEUERT DER RIEGEL NICHT
+
+**DIE ENTSCHEIDUNG:** Kann der Testzustand nicht gelesen werden — Datenbank-Fehler,
+fehlende Zeile, unlesbarer Zeitstempel —, feuert der Riegel **nicht**, und das Ereignis
+wird persistiert. Alle Früh-Ausgänge des Resolvers setzen `testMode: []`.
+
+**DER GRUND:** Die Gegenrichtung ("im Zweifel nicht persistieren") liesse die Analytics des
+Kunden bei **jedem Datenbank-Schluckauf still verstummen** — genau der Schaden, gegen den
+die Frist überhaupt gewählt wurde, nur ohne Deckel und ohne Ende. Der Riegel fällt im
+Zweifel auf das HEUTIGE Verhalten zurück.
+
+**IHRE GRENZE:** Sie ist eine Aussage über den PERSIST, nicht über den Forward. Ein Ziel,
+dessen Zugangsdatum unbrauchbar ist, sendet ohnehin nicht — behält aber seinen Testzustand
+(TM4e), und daraus folgt ein eigener offener Punkt (Vorrat (11)).
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-09.
+
+### (6) 11.3b SCHREIBT AUSSCHLIESSLICH DIE ZWEI TESTSPALTEN, NIE DIE GANZE ZEILE
+
+**DIE ENTSCHEIDUNG:** Der Schreibpfad der Oberflächen-Scheibe setzt `test_event_code` und
+`test_mode_expires_at` — und sonst keine Spalte von `project_secrets`.
+
+**DER GRUND:** Ein Lesen-Ändern-Schreiben über die ganze Zeile brächte **die Zugangsdaten
+in einen Schreibvorgang, der sie nicht meint.** Ein Geheimnis, das nur mitreist, weil es
+zufällig in derselben Zeile steht, ist genau die Bauform, aus der später ein überschriebenes
+oder ein in ein Log geratenes Zugangsdatum wird.
+
+**DIE MESSUNG, DIE DIESE REGEL STÜTZT UND SIE NICHT ERSETZT:** Die vier bestehenden
+Schreibpfade machen es heute richtig — sie schreiben spaltenweise. Für den `upsert` von
+`setCapiToken` ist das seit dem 2026-09-09 **GEMESSEN** (VERMERK 1, Schritt 8): Nach
+erneutem Speichern des Meta-Tokens über die Oberfläche standen beide Testspalten
+unverändert. **Die Regel hält fest, was heute zutrifft** — eine Messung am Bestand ist
+keine Zusage für einen künftigen Pfad.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-09; die stützende Messung GEMESSEN LIVE am
+2026-09-09 durch Stefan.
+
+### (7) EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE
+
+**DIE ENTSCHEIDUNG:** Die erwartete Spaltenliste des Tippfehler-Wächters in
+`token.test.ts` wird **aus der ENTSCHEIDUNG und dem MIGRATIONSTEXT** geschrieben — nie aus
+dem Ist-Wert des Codes, auch nicht ausschnittsweise aus einem Fehlertext.
+
+**DER GRUND: EINE ERWARTUNG AUS DEM CODE MACHT DEN WÄCHTER ZUM SPIEGEL.** Er bestätigte
+dann jeden Tippfehler, statt ihn zu fangen — und der Ausfall, gegen den er gebaut ist,
+bliebe genau der, den sein eigener Kommentar beschreibt: keine Zeile, `capiConfig` null,
+weiter leere 204, Server-Forward tot. Ein Wächter, der sich an seinem Prüfling ausrichtet,
+prüft nichts.
+
+**WIE ES IN DIESER SCHEIBE GEMACHT WURDE, als Muster für die nächste:** Die fünf
+Spaltennamen wurden aus der Entscheidung einzeln niedergeschrieben, danach MASCHINELL
+Zeichen für Zeichen gegen die `add column`-Anweisungen der Migration 0028 verglichen
+(`diff` leer), und erst zuletzt wurde der Code gegen diese Liste gehalten — in dieser
+Richtung, damit bei einer Abweichung der CODE korrigiert worden wäre und nicht die
+Erwartung.
+
+**IHRE REICHWEITE:** jeder Wächter über einen Wortlaut, nicht nur dieser eine — eine
+Spaltenliste, eine Endpunkt-Adresse, ein Feldname in einer Nutzlast.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-09; der Vollzug GEMESSEN am eigenen Lauf (CC,
+2026-09-09).
+
 ## Vorrat — gemeldet, nicht gebaut
 
 **(1) OB TIKTOK TEST-MARKIERTE EREIGNISSE MITZÄHLT WIE META — UNGELESEN UND UNGEMESSEN.**
@@ -581,17 +677,118 @@ Nutzer, der den Testmodus einschaltet. VERWANDT mit dem offenen Punkt "BETREIBER
 DOKUMENTATION FEHLT — ZWEI PUNKTE" (CLAUDE.md). PROVENIENZ: FOLGERUNG aus dem Zuschnitt
 der Scheibe 11.3a, keine Messung.
 
-**(4) OB DER TESTCODE DAUERHAFT ABLEGBAR IST ODER JE TESTLAUF NEU BESCHAFFT WERDEN MUSS.**
-Hängt an "wechselt pro Sitzung". Für meta schweigt die Doku dazu (Achse `session`,
+**(4) — GESTRICHEN AM 2026-09-09, FÜR META BEANTWORTET. DIE NUMMER BLEIBT STEHEN** und wird
+nicht nachvergeben; ein Verweis nennt die Nummer, nicht das Datum, und er wird nicht rot,
+wenn sie weiterwandert.
+
+HIER STAND: "OB DER TESTCODE DAUERHAFT ABLEGBAR IST ODER JE TESTLAUF NEU BESCHAFFT WERDEN
+MUSS. Hängt an 'wechselt pro Sitzung'. Für meta schweigt die Doku dazu (Achse `session`,
 `expire`, `rotate`, `valid` über fünf Seiten); für tiktok schweigt sie ebenfalls, und der
 Repo-Befund führt genau diese Eigenschaft als GEMESSEN (2026-08-11), ohne dass die Doku ihn
-stützt oder widerlegt. **Eine Ablage, die einen pro Sitzung wechselnden Wert wie einen
-dauerhaften behandelt, ist ab dem zweiten Testlauf falsch, ohne dass etwas rot wird.**
-Fundstellen: docs/ziel-befunde.md, Abschnitte "Meta (Conversions API)" Teil (c) und "TikTok
-(Events API 2.0)" Teile (e) und (f).
-TRIGGER: die Entscheidung über die Form der Ablage (Stufe 1 der Scheibe 11.3a) — sie kann
-nicht getroffen werden, ohne diese Frage wenigstens als Risiko zu benennen. PROVENIENZ:
-GELESEN 2026-09-08 (Doku-Schweigen) plus der GEMESSENE Repo-Befund vom 2026-08-11.
+stützt oder widerlegt. Eine Ablage, die einen pro Sitzung wechselnden Wert wie einen
+dauerhaften behandelt, ist ab dem zweiten Testlauf falsch, ohne dass etwas rot wird."
+TRIGGER war: die Entscheidung über die Form der Ablage.
+
+**DER BELEG DER ERLEDIGUNG — OWNER-ANGABE, 2026-09-09: Metas Testcode WECHSELT alle paar
+Tage.** Damit ist die Frage für meta beantwortet, und zwar mit **nein**: Der Code ist kein
+dauerhaft ablegbarer Wert.
+
+**DIE FOLGE, und sie ist der eigentliche Zugewinn:** **Eine Frist von STUNDEN ist damit
+gemessen richtig dimensioniert und nicht mehr auf Verdacht gesetzt.** Ein Code, der alle
+paar Tage wechselt, ist nach Tagen ohnehin wertlos — eine Frist, die kürzer ist als sein
+Wechselintervall, kann keinen brauchbaren Zustand vorzeitig abschneiden. Die Wahl der
+Frist-Grössenordnung ruht ab jetzt auf einer Angabe über den Anbieter statt auf einer
+Abwägung ohne Anhalt.
+
+**WAS AUSDRÜCKLICH NICHT MITBEANTWORTET IST:** die Lage bei **tiktok**. Sie ist als
+eigener Eintrag (14) neu eingetragen, mit ihrem eigenen Trigger — sie mit meta zusammen
+abzuhaken wäre eine Annahme über ein fremdes System.
+
+**PROVENIENZ DER STREICHUNG:** OWNER-ANGABE 2026-09-09. **KEINE Messung gegen die
+Meta-Schnittstelle** — der Owner berichtet aus dem Gebrauch seines eigenen Werbekontos.
+
+**(5) LÄUFT DIE FRIST ZWISCHEN DEM SERVER-BEACON UND DEM BESTÄTIGUNGS-BEACON AB, ENTSTEHT
+EINE `browser`-ZEILE OHNE `server`-GEGENSTÜCK.** Das ist derselbe Schaden, den Invariante
+I1 benennt — nur zeitlich statt strukturell verursacht: Es sind ZWEI Anfragen mit zwei
+Auflösungen, und der Riegel urteilt in jeder neu. Das Fenster ist Sekunden breit, die
+Frist Stunden; die Adblocker-Verlustrate würde den Lauf dann als Verlust zählen.
+TRIGGER: die erste Runde, die Zustand über zwei Anfragen hinweg führt. PROVENIENZ:
+ABLEITUNG aus dem gebauten Kontrollfluss (CC, 2026-09-09), **keine Messung** — der Fall
+ist nicht herbeigeführt worden.
+
+**(6) DIE UHREN-ASYMMETRIE: GESCHRIEBEN WIRD GEGEN DIE DATENBANK-UHR, GELESEN GEGEN DIE
+DER LAUFZEIT.** Der Resolver vergleicht `test_mode_expires_at` gegen `Date.now()`; die
+Frist entsteht (beim Live-Test und künftig in 11.3b) aus `now() + interval` in Postgres.
+Weichen beide Uhren ab, verschiebt sich die effektive Dauer um genau diese Differenz, in
+beide Richtungen und still. **Bei einer Frist von Stunden folgenlos — NICHT folgenlos bei
+einer Frist im Sekunden- oder Minutenbereich.**
+TRIGGER: die Entscheidung über die LÄNGE der Frist (11.3b). PROVENIENZ: ABLEITUNG aus dem
+gebauten Lesepfad (CC, 2026-09-09); die Abweichung selbst ist **ungemessen**.
+
+**(7) DER RIEGEL ERREICHT NUR ZIELE, DIE DEN KENNUNGS-FILTER PASSIEREN.** Die zweite
+Abfrage des Resolvers fragt nur nach Zielen mit Kennung oder Zuordnung; bei
+`withPixel.length === 0` kehrt er VOR ihr zurück. Ein Testzustand an einem Ziel ohne
+Kennung ist damit unsichtbar, und der Testklick würde persistiert.
+TRIGGER: der Schalter in 11.3b — er darf nur an konfigurierten Zielen erscheinen.
+PROVENIENZ: GEMESSEN am gebauten Code (CC, 2026-09-09), `getCapiConfigByTrackingKey`.
+
+**(8) DER PAAR-CHECK BINDET AN DIE FORM VON META UND TIKTOK.**
+`project_secrets_test_mode_paar` verlangt Code UND Frist gemeinsam. **Pinterests Testmodus
+ist ein QUERY-PARAMETER OHNE Code** — nimmt eine spätere Scheibe pinterest auf, muss
+"Frist ohne Code" erlaubt werden, und dann wird dieser CHECK in einer EIGENEN Migration
+ERSETZT, nicht nachträglich geändert.
+TRIGGER: die Scheibe, die pinterest in den Testmodus aufnimmt. PROVENIENZ: ABLEITUNG aus
+dem Migrationstext 0028 und dem Pinterest-Befund (GELESEN 2026-08-20).
+
+**(9) EIN TESTZUSTAND KANN NUR DORT LIEGEN, WO BEREITS ZUGANGSDATEN HINTERLEGT SIND.**
+Folge des bestehenden CHECK `project_secrets_secret_genau_eines`: jede Zeile trägt genau
+ein Geheimnis, also gibt es ohne Zugangsdaten keine Zeile, an der ein Testzustand hängen
+könnte. Bewusst so — aber eine Festlegung, die die Oberfläche kennen muss.
+TRIGGER: der Schalter in 11.3b. PROVENIENZ: GEMESSEN am Schema (docs/db-stand.md).
+
+**(10) WELCHE QUELLE DEN VORRANG HAT, IST UNENTSCHEIDBAR GEBLIEBEN.** Beim Live-Test vom
+2026-09-09 stand `META_TEST_EVENT_CODE` in Vercel gesetzt — **mit DEMSELBEN Wert wie die
+Projektzeile (TEST13317)**. Kein Instrument jenes Laufs kann zeigen, welche der beiden
+Quellen gewonnen hat; die Nutzlast sähe in beiden Fällen identisch aus. **Das ist ein
+offener Punkt und KEINE bestandene Probe.** Im Unit-Test deckt ihn TM6, in beide
+Richtungen.
+TRIGGER: ein Lauf mit **VERSCHIEDENEN** Codes in Umgebungsvariable und Projektzeile.
+PROVENIENZ: GEMESSEN LIVE, 2026-09-09, Stefan (der gesetzte Env-Wert); die
+Unentscheidbarkeit ist eine ABLEITUNG daraus.
+
+**(11) EIN ZIEL MIT TESTZUSTAND, ABER UNBRAUCHBAREM GEHEIMNIS, VERLIERT DAS EREIGNIS AUF
+BEIDEN SEITEN.** Der Riegel feuert (der Testzustand ist gültig), das Ereignis verschwindet
+aus `events` — **und der Anbieter bekommt nichts, weil gar nicht gesendet wird.** Das ist
+derselbe Schaden, den der CHECK für "Frist ohne Code" ausschliesst, nur durch eine andere
+Tür: Riegel ohne Gegenwert. Der Fall ist im Test festgehalten (TM4e) und im Code bewusst so
+angeordnet — der Testzustand wird VOR dem Ausstieg für unbrauchbare Zeilen eingesammelt.
+TRIGGER: der Schalter in 11.3b — er darf nur an Zielen erscheinen, die tatsächlich senden
+können. PROVENIENZ: GEMESSEN am gebauten Code (CC, 2026-09-09, Lauf TM4e).
+
+**(12) DER CHECK LÄSST `test_event_code = ''` ZU.** Beide Spalten sind gesetzt, der CHECK
+ist zufrieden — und der Code fällt im Resolver beim Trimmen weg, der Riegel feuert nicht.
+**Der Kunde glaubt, der Testmodus laufe, und er läuft nicht.** Der CHECK prüft die
+NULL-Zustände, nicht den Inhalt; ein Inhalts-CHECK stand nicht im Zuschnitt.
+TRIGGER: 11.3b prüft beim Schreiben auf nicht-leer. PROVENIENZ: ABLEITUNG aus
+Migrationstext 0028 und `activeTestCodeFromRow` (CC, 2026-09-09).
+
+**(13) METAS TESTCODE WECHSELT ALLE PAAR TAGE — 11.3b MUSS DEN KUNDEN ZUM NACHTRAGEN
+FÜHREN, NICHT EINMALIG ABFRAGEN.** Eine Oberfläche, die den Code wie eine Einstellung
+behandelt, erzeugt ab dem zweiten Testlauf einen Zustand, der aussieht wie eingerichtet
+und keiner ist. Verwandt mit (12): beide Male hält der Kunde einen toten Testmodus für
+einen laufenden.
+TRIGGER: der Schalter in 11.3b. PROVENIENZ: OWNER-ANGABE 2026-09-09, **keine Messung**.
+
+**(14) OB TIKTOKS TESTCODE DAUERHAFT ABLEGBAR IST, BLEIBT OFFEN.** Die zweite Hälfte des
+gestrichenen Eintrags (4): Für meta ist die Frage mit "nein" beantwortet, für tiktok
+NICHT. Der Repo-Befund führt "wechselt pro Sitzung" als GEMESSEN (2026-08-11), ohne dass
+ein Protokoll dazu im Repo vorliegt; die Doku stützt es weder noch widerlegt sie es.
+**Metas Antwort auf tiktok zu übertragen wäre eine Annahme über ein fremdes System** —
+zumal "pro Sitzung" und "alle paar Tage" nicht dasselbe sind.
+TRIGGER: die Scheibe, die den tiktok-Zweig zuschneidet — spätestens der erste
+Live-Nachweis gegen tiktok. PROVENIENZ: GELESEN 2026-09-08 (Doku-Schweigen) plus der
+GEMESSENE Repo-Befund vom 2026-08-11; die Abgrenzung gegen meta ist OWNER-ANGABE
+2026-09-09.
 
 ## Hebungs-Kandidaten
 
@@ -651,7 +848,123 @@ Arbeitsgrundlage zugänglich (CLAUDE.md, "## Aktive Dokumente"). Wer diesen Kand
 später fortschreibt, weiss damit, welche Instanz die Stelle gelesen hat — und dass eine
 erneute Prüfung wieder über den Architekten laufen muss, nicht über eine Suche im Repo.
 
+### (2) DIE ZAHL "NEUN HANDLER-TESTDATEIEN" STIMMT NUR UNTER EINER ENGEN LESART
+
+**KANDIDAT FÜR EINE RICHTIGSTELLUNG, NICHT FÜR EINEN STEMPEL — und hier wird sie
+ausdrücklich NICHT vollzogen:** Der Satz steht im Abschnitt "Ausgangslage — was am
+2026-09-08 gemessen und gelesen ist", den diese Runde nicht anfasst. Wer ihn richtigstellt,
+tut es in einer Runde, die jenen Abschnitt ohnehin öffnet.
+
+**DER SATZ:** Die Ausgangslage sagt, `META_TEST_EVENT_CODE` sei "der Grund, warum neun
+Handler-Testdateien die Variable in ihrer Config-Fabrik auf leer setzen".
+
+**DER BEFUND — GEMESSEN am Repo (CC, 2026-09-09), drei Zahlen für drei Lesarten:**
+- **ZEHN** Dateien tragen wörtlich `META_TEST_EVENT_CODE: ""` — die acht `ingest.*.test.ts`,
+  `fan-out.test.ts` und `meta-forward.test.ts`.
+- **ELF** mocken das Modul `@/lib/capi/config` überhaupt; die elfte
+  (`src/app/api/capi/route.test.ts`) über einen mutierbaren Zugriff mit Startwert `""`.
+- **NEUN** trifft zu, wenn man ausschliesslich die HANDLER-Tests zählt (acht `ingest.*`
+  plus `fan-out`). **Unter dieser Lesart ist der Satz richtig**, unter der Lesart "alle
+  Testdateien" um zwei zu niedrig.
+
+**EIN ZWEITER, KLEINERER PUNKT AM SELBEN SATZ:** Der Ausdruck "Config-Fabrik" ist
+irreführend. Es gibt kein Config-Objekt und keine geteilte Fabrik, sondern in jeder Datei
+eine **wörtlich duplizierte `vi.mock`-Factory für das MODUL**. Ein geteilter Helfer ist
+technisch ausgeschlossen — gehobene Factories dürfen keine datei-externen Bindungen lesen.
+
+**WARUM DAS EIN KANDIDAT IST UND KEIN FEHLER:** Die Zahl trägt im Bestand keine
+Entscheidung; sie erklärt einen Nebeneffekt. **Teuer wird sie erst, wenn jemand sie als
+Umfangs-Angabe benutzt** — etwa um zu prüfen, ob ein Eingriff alle betroffenen Dateien
+erfasst hat. Dann zählt er zwei zu wenig, und zwar ohne es zu merken.
+
+**NICHT ENTSCHIEDEN:** ob die Richtigstellung alle drei Zahlen nennt oder nur die enge
+Lesart benennt · ob "Config-Fabrik" mitkorrigiert wird. **KEINE EMPFEHLUNG.**
+
+**PROVENIENZ:** GEMESSEN am Repo (CC, 2026-09-09) im Zuge der Scheibe 11.3a; die
+Einordnung als Kandidat statt als Richtigstellung ist eine Auflage dieser Runde.
+
 ## Scheiben-Vermerke
 
-Noch keiner. Ein Vermerk entsteht erst, wenn eine Scheibe gebaut UND live geprüft ist —
-nicht bei grünen Gates allein.
+Ein Vermerk entsteht erst, wenn eine Scheibe gebaut UND live geprüft ist — nicht bei
+grünen Gates allein.
+
+### VERMERK 1 — Scheibe 11.3a, gebaut und live bewiesen
+
+**CODE-COMMIT: `54259a4`** (`feat(capi): projekt-eigener Testmodus fuer meta und tiktok`,
+17 Dateien, 1093 Einfügungen, 14 Löschungen).
+**COMMIT DIESES VERMERKS: — (LÜCKE, Stefan trägt sie nach).** Nach der Lücken-Regel oben
+darf es immer nur EINE solche Lücke geben; dies ist sie.
+
+**MIGRATION UND VORAUSSETZUNGEN — GEMESSEN LIVE, 2026-09-09, Stefan.**
+Migration 0028 wurde im SQL-Editor eingespielt, VOR dem Code-Deploy. Die drei Proben aus
+dem Kopf der Migration sind bestanden: **beide Spalten nullbar ohne Default**, der CHECK
+`project_secrets_test_mode_paar` **genau einmal** vorhanden, die **Policy-Zahl auf
+`project_secrets` weiterhin NULL**. Der A/B-Betrieb war **AUS** (`ab_test_active` false) —
+**die Voraussetzung des Laufs ist damit festgestellt und nicht unterstellt.**
+
+**LAUF 1 — ohne Testzustand.** `events` trägt **`server` UND `browser`** zur `event_id`
+`88553b7f-99e8-4405-a313-1e24714e1505`; im Events Manager erschienen beide, **dedupliziert**.
+
+**LAUF 2 — mit aktivem Testzustand** (Code `TEST13317`, Frist `15:56:50Z`). Hinter dem
+Anker `13:57:52Z` **KEINE Zeile in `events`, weder `server` noch `browser`.**
+
+**DIE POSITIVKONTROLLE ZU LAUF 2, UND SIE IST DER TEIL, DER DEN LAUF ERST ZU EINEM BEFUND
+MACHT:** Das Ereignis `83a4fcad-3b23-48ee-84ce-38fbabb9ce1b` ist im Events Manager um
+**15:58:17 und 15:58:21 als Browser und Server** erschienen, dedupliziert. **OHNE SIE WÄRE
+DER LEERE RÜCKLAUF KEIN BEFUND** — "der Riegel hat gegriffen" und "es hat überhaupt nichts
+gefeuert" sehen in der `events`-Abfrage identisch aus.
+
+**LAUF 3 — Regression nach Entfernen des Zustands.** Hinter dem Anker `14:06:54Z` wieder
+**`server` und `browser`** zur `event_id` `dab74281-7045-4c97-98ad-fa556f0e94df`.
+
+**SCHRITT 8 — UND ER IST EIGENS ZU NENNEN, WEIL ER EINE ABLEITUNG IN EINE MESSUNG
+VERWANDELT.** Nach erneutem Speichern des Meta-Tokens über die Oberfläche standen
+`test_event_code` und `test_mode_expires_at` **UNVERÄNDERT**. Damit ist der H1-Befund für
+den `upsert` von `setCapiToken` keine ABLEITUNG aus der PostgREST-Semantik mehr, sondern
+eine **MESSUNG: der Upsert schreibt spaltenweise, und ein aktiver Testzustand überlebt das
+Token-Speichern.** GEMESSEN LIVE, 2026-09-09, Stefan.
+
+**DER H1-BEFUND IM GANZEN, mit seiner Grenze:** Vier Schreibpfade berühren eine Zeile in
+`project_secrets` — der OAuth-Callback und `setCapiToken` (je `upsert`), der Entfernen-Pfad
+(`delete`) und `refreshAccessToken` (`update`). **Keiner setzt die Testspalten.** Pfad 3
+nimmt den Zustand **mit der ganzen Zeile** mit, und das ist richtig: ohne Zugangsdaten gibt
+es nichts zu testen, und der CHECK `project_secrets_secret_genau_eines` verlangt ohnehin ein
+Geheimnis je Zeile. Für `refreshAccessToken` ist die Spaltenweise-Wirkung SQL-Semantik. Für
+die **zwei Upserts** war sie eine ABLEITUNG — für `setCapiToken` ist sie seit Schritt 8
+gemessen; **für den OAuth-Callback bleibt sie eine ABLEITUNG**, denn dieser Pfad ist nicht
+gefahren worden.
+
+**EIN UNBESTELLTER BEFUND AUS DEMSELBEN LAUF — GEMESSEN LIVE, 2026-09-09:** In Vercel war
+`META_TEST_EVENT_CODE` **gesetzt**, und zwar mit **demselben Wert `TEST13317`**. Zwei
+Folgen, getrennt zu führen:
+- **(a) LAUF 1 HAT MIT GESETZTER UMGEBUNGSVARIABLE PERSISTIERT.** Damit ist Invariante I2
+  nicht nur im Unit-Test, sondern **LIVE gemessen**: die Umgebungsvariable schaltet den
+  Riegel NICHT. **Dazu gehört, dass Lauf 1 beim Anbieter NICHT unmarkiert war** — bei Meta
+  waren **beide** Läufe test-markiert. **Die zwei Läufe unterscheiden sich sauber auf der
+  `events`-Achse und NICHT auf der Anbieter-Achse**; wer den Nachweis auf letzterer sucht,
+  findet keinen Unterschied und hält den Lauf für misslungen.
+- **(b) DER VORRANG BLEIBT UNENTSCHEIDBAR.** Beide Quellen trugen denselben Wert. Als
+  offener Punkt geführt (Vorrat (10)), **nicht als bestandene Probe.**
+
+**BEIDE PFLICHT-MUTATIONEN GEFAHREN, VORHERSAGEN VOR DEM LAUF NEU ABGELEITET UND EXAKT
+GETROFFEN:**
+- **Mutation 1** (die Ausnahme im Confirm-Zweig entfernt) färbte **genau TM2** rot —
+  Fehlerklasse "persistEvent wurde gerufen, obwohl nicht erwartet". Kein anderer Lauf im
+  Repo betritt diesen Zweig mit aktivem Testzustand; **TM2 ist ein Einzelstück** und im
+  Testkommentar als solches benannt. Damit ist I1 geprüft.
+- **Mutation 2** (der Ablaufzeitpunkt ignoriert) färbte **genau TM4b und TM4c** rot —
+  Fehlerklasse "`testMode` trägt einen Eintrag, wo `[]` erwartet ist". **TM4d blieb
+  vorhergesagt GRÜN**, weil ein Code aus Leerraum schon vor der Fristprüfung ausscheidet;
+  die Handler-Suiten blieben unberührt, weil dort der Resolver gemockt ist.
+- Beide Rücknahmen sind belegt: kein leerer Diff, Mutations-Marker nicht mehr auffindbar,
+  CR und NUL je 0.
+
+**GATES:** `tsc --noEmit` grün · `eslint` 0 Fehler (die eine Warnung steht in einer Datei
+ausserhalb des Diffs) · `vitest` **75 Dateien / 1551 Tests grün, vorher 74 / 1536** ·
+`next build` grün. Alle vier VOR dem Diff.
+
+**WAS DIESER VERMERK MISST, seit der Zuschnitt verdichtet ist:** Der Live-Nachweis
+verlangte zwei Läufe auf EINER Achse, davon Lauf 2 mit BEIDEN Abwesenheiten — keine
+`server`- und keine `browser`-Zeile. Genau das ist eingetreten. Die Auflage, dass der
+Testklick beim Anbieter zusätzlich in den normalen Zahlen erscheint, ist durch (a) oben
+bestätigt und war kein Fehlschlag.

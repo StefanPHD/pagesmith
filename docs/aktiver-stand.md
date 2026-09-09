@@ -1064,13 +1064,38 @@ Resolver gewesen. Der Kopf trägt einen NACHGEZOGEN-Absatz, der es benennt.
 TRIGGER: die nächste Runde, die diese Datei um eine Ableitung erweitert. PROVENIENZ:
 GEMESSEN am Repo (CC, 2026-09-09).
 
-**(18) `docs/db-stand.md` KENNT MIGRATION 0028 NICHT — DORT STEHEN ACHT SPALTEN, ES SIND
-ZEHN.** Die zwei Testspalten fehlen, obwohl VERMERK 1 die Migration als eingespielt und
-dreifach geprüft führt. **Jene Datei wird ausschliesslich aus einer MESSUNG
-fortgeschrieben**, nie aus einer Migrationsdatei — es braucht also eine Ablesung im
-SQL-Editor, keine Übernahme von hier.
-TRIGGER: die nächste Migration, die gegen den Schemastand geplant wird — dort wäre der
-falsche Stand teuer. PROVENIENZ: GEMESSEN am Dateitext (CC, 2026-09-09).
+**(18) — GESTRICHEN AM 2026-09-09, ERLEDIGT. DIE NUMMER BLEIBT STEHEN.**
+
+HIER STAND: "`docs/db-stand.md` KENNT MIGRATION 0028 NICHT — DORT STEHEN ACHT SPALTEN, ES
+SIND ZEHN. Die zwei Testspalten fehlen, obwohl VERMERK 1 die Migration als eingespielt und
+dreifach geprüft führt. Jene Datei wird ausschliesslich aus einer MESSUNG fortgeschrieben,
+nie aus einer Migrationsdatei — es braucht also eine Ablesung im SQL-Editor, keine
+Übernahme von hier."
+TRIGGER war: die nächste Migration, die gegen den Schemastand geplant wird.
+
+**DER BELEG — GEMESSEN am 2026-09-09 (SQL-Editor, Stefan) und in Commit `696a6d5`
+niedergeschrieben:** `docs/db-stand.md` führt `project_secrets` jetzt mit ZEHN Spalten;
+`test_event_code` und `test_mode_expires_at` stehen dort im WORTLAUT (Typ, Nullbarkeit,
+kein Default), dazu `project_secrets_test_mode_paar` im Wortlaut mit der Zeilenzahl, die
+Wegwerf-Probe als Wirkungs-Beleg, die dritte Policy-Gegenkontrolle und der Migrationsstand
+0001-0028.
+**DIE AUFLAGE IST EINGEHALTEN:** fortgeschrieben wurde aus der ABLESUNG, nicht aus den
+Migrationsdateien — die Abfragen und ihre Ergebnisse sind der Beleg, nicht dieser Eintrag.
+
+**ZWEI DINGE SIND DABEI AUS EINER ABLEITUNG EINE MESSUNG GEWORDEN, und sie sind der
+eigentliche Ertrag über das Nachziehen hinaus:** die `ordinal_position` von
+`secret_version` (dort bis dahin ausdrücklich als NICHT gemessen geführt), und
+**"MIGRATION VOR CODE-DEPLOY"** — 0028 lief um 13:40:36 UTC, der erste Live-Lauf der
+Scheibe 11.3a war gegen den Anker 13:57:52Z gefahren. Die Regel ruhte bis dahin auf
+Disziplin; an diesem Tag ist sie an zwei Zeitstempeln nachvollziehbar.
+
+**MITERLEDIGT, obwohl es nicht im Eintrag stand:** Die ERWARTUNG-Felder von PROBE 2 und 3
+in `supabase/checks/db-stand.sql` kannten weder 0027 noch 0028 und sind im selben Commit
+nachgezogen — **ausschliesslich die ERWARTUNG, keine einzige Abfrage**. Ein Instrument mit
+falscher Erwartung misst nicht, es meldet einen Fehlalarm.
+
+**PROVENIENZ DER STREICHUNG:** GEMESSEN am 2026-09-09 (SQL-Editor, Stefan); der Vollzug
+GESCHRIEBEN am selben Tag (CC), Commit `696a6d5`.
 
 **(19) DREI LESER, DREI OWNERSHIP-GATES, DREI RUNDEN IM SELBEN LADE-EFFEKT.**
 `listConfiguredTargets`, `listTargetCredentialStates` und `listTestModeStates` laufen
@@ -1112,16 +1137,32 @@ TRIGGER: die Messung, ob TikTok test-markierte Ereignisse in den echten Daten f�
 PROVENIENZ: GELESEN an TikToks Oberfläche (Stefan, 2026-09-09) gegen die Meta-Doku-Lesung
 vom 2026-09-08; die Folge für den Text ist eine ABLEITUNG, **keine Messung**.
 
-**(23) TIKTOKS ANBIETER-BEFUND GEHÖRT NACH `docs/ziel-befunde.md` UND STEHT DORT NOCH
-NICHT.** Die Oberflächen-Aussage aus dem TikTok-Lauf ist ein Befund über ein
-FAN-OUT-ZIEL; ihr Ort ist Abschnitt "TikTok (Events API 2.0)" jener Datei, die keiner
-Phase gehört und nicht archiviert wird. **Der Wortlaut steht in VERMERK 2 und wird hier
-NICHT wiederholt** — zweimal geschrieben liefen die Fassungen auseinander.
-**WARUM ES EILT, OHNE DRINGEND ZU SEIN:** Solange der Befund nur in einer Standdatei
-steht, verschwindet er mit deren Archivierung am Phasenende aus dem Blickfeld jeder Runde,
-die ein Fan-Out-Ziel zuschneidet — und genau die soll ihn lesen.
-TRIGGER: die nächste Runde, die `docs/ziel-befunde.md` ohnehin öffnet. PROVENIENZ:
-FESTGESTELLT (CC, 2026-09-09) am Ort des Befunds.
+**(23) — GESTRICHEN AM 2026-09-09, ERLEDIGT. DIE NUMMER BLEIBT STEHEN.**
+
+HIER STAND: "TIKTOKS ANBIETER-BEFUND GEHÖRT NACH `docs/ziel-befunde.md` UND STEHT DORT
+NOCH NICHT. Die Oberflächen-Aussage aus dem TikTok-Lauf ist ein Befund über ein
+FAN-OUT-ZIEL; ihr Ort ist Abschnitt 'TikTok (Events API 2.0)' jener Datei, die keiner
+Phase gehört und nicht archiviert wird." Dazu der Grund, warum es eilt, ohne dringend zu
+sein: Solange der Befund nur in einer Standdatei steht, verschwindet er mit deren
+Archivierung am Phasenende aus dem Blickfeld jeder Runde, die ein Fan-Out-Ziel
+zuschneidet — und genau die soll ihn lesen.
+TRIGGER war: die nächste Runde, die `docs/ziel-befunde.md` ohnehin öffnet.
+
+**DER BELEG — Commit `863c62c`:** `docs/ziel-befunde.md` trägt seither im Abschnitt
+"TikTok (Events API 2.0)" den **Teil (h)**, samt eigener Zeile im Verzeichnis jener Datei.
+Er führt die Oberflächen-Aussage im Wortlaut, mit ihrer Herkunft (GELESEN an der
+Oberfläche, Stefan, 2026-09-09 — nicht an der Doku, nicht gemessen), mit der Abgrenzung
+zu Teil (d) (jener spricht über die DOKUMENTATION und bleibt richtig), mit dem
+Gegensatz zu Metas Teil (a) und mit der ausdrücklich NICHT gemessenen Frage, ob dasselbe
+Ereignis auch in TikToks normaler Berichtsansicht erscheint.
+
+**DIE ARBEITSTEILUNG STEHT UND IST NICHT VERDOPPELT:** Der BEFUND liegt jetzt dort, die
+FOLGE FÜR DEN PRODUKTTEXT bleibt hier als Vorrat (22). Beide zeigen aufeinander, keiner
+wiederholt den anderen.
+
+**PROVENIENZ DER STREICHUNG:** GESCHRIEBEN am 2026-09-09 (CC), Commit `863c62c`; die
+zugrunde liegende Lesung ist unverändert Stefans Beobachtung an der Anbieter-Oberfläche
+vom selben Tag.
 
 **(24) TIKTOKS TESTCODE HÄLT NACH OWNER-ANGABE MINDESTENS EINEN TAG.** Das **entlastet die
 60-Minuten-Frist für TikTok**: Die Frist ist dann deutlich kürzer als das

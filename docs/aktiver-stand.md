@@ -45,6 +45,7 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT").
 - ## Hebungs-Kandidaten
 - ## Scheiben-Vermerke
 - ## Scheibe 11.3b — Die drei Gesten und das Banner in der Oberfläche
+- ## Scheibe 11.3c — Der Paar-CHECK wird ersetzt
 
 ## Fortschreibungsregeln
 
@@ -835,6 +836,38 @@ ihre eigene Lage im ersten Render.
 
 **PROVENIENZ:** Entscheidung der Stufe 1 (CC, 2026-09-09) auf der Grundlage der drei am
 Repo GEMESSENEN Formatierstellen; der Banner-Ort ist OWNER-ENTSCHEIDUNG 2026-09-09.
+
+### (12) DER TESTZUSTAND WIRD ZIEL-ABHÄNGIG GEPRÜFT, NICHT GENERISCH
+
+**DIE ENTSCHEIDUNG:** Die Datenbank-Bedingung über `test_event_code` und
+`test_mode_expires_at` zählt die Ziele AUF und urteilt je Ziel verschieden. Sie formuliert
+KEINE ziel-blinde Regel, die für alle gleich gilt.
+
+**DER GRUND, IN EINEM SATZ: DIESELBE SPALTENKOMBINATION IST BEI MANCHEN ZIELEN EIN SCHADEN
+UND BEI ANDEREN DER NORMALFALL.** "Frist gesetzt, Code leer" ist bei `meta` und `tiktok`
+reiner Datenverlust — der Riegel feuerte, das Ereignis verschwände aus `events`, und der
+Anbieter bekäme keine Test-Markierung. Bei `pinterest` ist genau dieser Zustand der
+einzige, den sein Testmodus überhaupt annehmen kann: er ist ein QUERY-PARAMETER ohne Code.
+**Eine Bedingung, die beides gleich behandelt, muss eines von beidem falsch entscheiden.**
+
+**WEN SIE BINDET:** jede spätere Scheibe dieser Phase, die ein weiteres Ziel in den
+Testmodus aufnimmt — sie fügt der Aufzählung eine Klausel hinzu und erbt keine generische
+Regel, die für ihr Ziel nie geprüft wurde. Und jede Runde, die den CHECK erneut anfasst.
+
+**IHRE GRENZE, UND SIE GEHÖRT HIN, WEIL SIE SICH UMDREHEN KANN:** Bleiben `meta` und
+`tiktok` die einzigen Ziele MIT Code und werden alle künftigen wie `pinterest` gebaut —
+Testmodus ohne Code —, dann wird die Aufzählung zur Liste von AUSNAHMEN und die generische
+Bauform zur Regel. **Heute ist das nicht absehbar:** `linkedin` und `google` haben nach dem
+Kenntnisstand dieser Phase gar keinen brauchbaren Testmodus, tragen also weder Code noch
+Frist. **WER DAS UMDREHT, ENTSCHEIDET NEU UND LIEST DIESEN ABSATZ ZUERST** — er beginnt
+nicht bei null, und die verworfene Bauform steht mit ihrem Ausscheidungsgrund im Abschnitt
+"Scheibe 11.3c — Der Paar-CHECK wird ersetzt".
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-10, auf der Grundlage der Messung vom selben Tag
+(VERMERK 3). Die Form des heutigen CHECK `project_secrets_test_mode_paar` und die Bauform
+seines Katalog-Guards sind GEMESSEN am Migrationstext 0028 (CC, 2026-09-10). Dass
+`testModeQuery` (`src/lib/capi/pinterest-forward.ts`) ohne jeden Code auskommt, ist
+GEMESSEN am Repo (CC, 2026-09-10).
 
 ## Vorrat — gemeldet, nicht gebaut
 
@@ -1873,3 +1906,181 @@ kollidierte das Zitat dauerhaft mit jeder gleichlautenden Überschrift.
 **PROVENIENZ DES ZUSCHNITTS:** OWNER-ENTSCHEIDUNG 2026-09-09 (Gestalt, Bauform des
 Ownership-Gates, Frist von 60 Minuten, Umfang und Ausschlüsse); die Schärfung des Banners
 — es nennt das verursachende Ziel — ebenfalls OWNER, 2026-09-09.
+
+## Scheibe 11.3c — Der Paar-CHECK wird ersetzt
+
+Die dritte Scheibe macht am SCHEMA Platz für Pinterest. Sie ersetzt den Paar-CHECK aus
+0028 durch eine ziel-abhängige Bedingung — und sonst nichts. Sie nimmt pinterest NICHT in
+den Testmodus auf; sie räumt nur die Bedingung weg, die es verhindert.
+
+**NOCH NICHT GEBAUT.** Dieser Abschnitt ist ein ZUSCHNITT, kein Vermerk.
+
+### Was sie baut
+
+**EINE EIGENE MIGRATION.** Sie droppt `project_secrets_test_mode_paar` und legt an seiner
+Stelle eine Bedingung an, die je nach `target` verschieden urteilt.
+
+**0028 WIRD NICHT ANGEFASST — WEDER IHR SQL NOCH IHR KOMMENTAR.** Eine angewandte
+Migration dokumentiert, was TATSÄCHLICH in der Datenbank gelaufen ist; sie im Nachhinein zu
+ändern entkoppelt die Datei von dem, was die Datenbank trägt (docs/immer-beachten.md,
+"ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH UMGESCHRIEBEN"). **DAS IST HIER KEINE
+FORMALIE, DIE MAN AUCH ANDERS SEHEN KÖNNTE: 0028 SAGT DIESE ERSETZUNG SELBST VORAUS.** Ihr
+Kommentar an (S3) nennt Pinterests Query-Parameter, benennt die Folge ("dann wird dieser
+CHECK ERSETZT") und schreibt den Weg vor ("in einer eigenen Migration, nicht hier
+nachtraeglich geaendert"). Wer 0028 ändert, bricht eine Auflage, die in der Datei selbst
+steht. GEMESSEN am Migrationstext (CC, 2026-09-10).
+
+### Die vier Zweige, je mit ihrem Grund
+
+- **`meta` — Code und Frist gemeinsam oder beide leer.** UNVERÄNDERT wie in 0028. Der
+  Träger ist ein Feld in der Nutzlast; ohne Code gibt es nichts zu senden.
+- **`tiktok` — dito.** Derselbe Träger, dieselbe Bedingung, aus einem eigenen Wert.
+- **`pinterest` — Code VERBOTEN, Frist frei.** Der Testmodus ist dort ein QUERY-PARAMETER
+  ohne Code (`testModeQuery`, `src/lib/capi/pinterest-forward.ts`; GEMESSEN am Repo, CC,
+  2026-09-10). **Ein abgelegter Code wäre tote Daten** — eine Oberfläche könnte ihn
+  anzeigen, obwohl der Adapter ihn nie sendet, und der Kunde hielte einen Wert für wirksam,
+  der es nie war.
+- **Sonst (`google`, `linkedin`) — beide Spalten leer.** FAIL-CLOSED: Für diese Ziele ist
+  kein brauchbarer Testmodus bekannt, also ist auch kein Zustand ablegbar. Ein Zustand ohne
+  Wirkung ist kein harmloser Leerlauf, sondern ein Riegel ohne Gegenwert — dieselbe Tür,
+  die Vorrat (11) beschreibt.
+
+### Die Anforderung in einem Satz
+
+**"FRIST OHNE CODE" WIRD ERLAUBT, OHNE DASS "CODE OHNE FRIST" ERLAUBT WIRD** — und die
+zwei Gründe aus 0028 bleiben JE ZIEL gültig, statt gemeinsam zu fallen:
+
+- **Code ohne Frist** ist ein Zustand, der nie aktiv wird. Ein Kunde trägt seinen Code ein
+  und wundert sich, dass nichts geschieht. **Das gilt bei jedem Ziel** und wird nirgends
+  gelockert.
+- **Frist ohne Code** ist bei `meta` und `tiktok` reiner Datenverlust ohne Gegenwert. Bei
+  `pinterest` ist genau dieser Zustand der NORMALFALL.
+
+**DIESELBE SPALTENKOMBINATION, ZWEI ENTGEGENGESETZTE URTEILE — DAS IST DER GANZE GRUND FÜR
+DIE ZIEL-ABHÄNGIGKEIT.** Sie steht als bindende Entscheidung (12); hier steht ihr Fall,
+dort ihre Reichweite.
+
+### Die verworfene Alternative — BAUFORM B, generisch und ohne Ziel-Aufzählung
+
+**SIE STEHT HIER UND NICHT IM COMMIT-BODY, UND DAS IST ABSICHT:** Ein Commit-Body lädt
+nicht (s. Hebungs-Kandidat (1) dieser Datei). Eine Alternative, die ausschliesslich dort
+abgelegt ist, wird beim nächsten Mal als Einfall neu vorgeschlagen, und die Abwägung läuft
+ein zweites Mal, ohne dass jemand von der ersten weiss.
+
+**WAS SIE GEWESEN WÄRE:** eine Bedingung ohne jede Ziel-Aufzählung — "ein Code ohne Frist
+ist verboten, sonst alles erlaubt". **DAS MODELL DAHINTER:** die Frist ist die AUTORITÄT,
+der Code eine NUTZLAST, die nur manche Ziele brauchen.
+
+**IHR VORTEIL WIRD MITGENANNT UND NICHT KLEINGEREDET:** kein zweiter Ort im Schema, der
+Ziele aufzählt. Der CHECK `project_secrets_target_valid` zählt sie bereits auf; eine zweite
+Aufzählung daneben ist eine zweite Stelle, die bei jedem neuen Ziel mitgeführt werden muss.
+
+**WARUM SIE TROTZDEM AUSSCHEIDET — DER TRAGENDE SATZ: SIE GIBT DIE ZUSICHERUNG FÜR `meta`
+UND `tiktok` AUF.** "Frist ohne Code" wäre dort ein zulässiger Datenbank-Zustand, also
+genau der Fall, den 0028 als reinen Datenverlust benennt. **Er hinge dann allein an der
+ABWESENHEIT eines Schreibwegs, der ihn erzeugt** — und das ist dieselbe Bauform wie der
+bereits geführte offene Punkt "saveProject SCHREIBT settings UNVALIDIERT — TOR A HÄLT DURCH
+EINE ABWESENHEIT" (CLAUDE.md, "## Offene Punkte"). Ein Schutz, der aus einer Abwesenheit
+besteht, verschwindet still, sobald jemand einen zweiten Schreibweg baut.
+
+**WARUM DER EINWAND GEGEN A NICHT TRÄGT:** Jedes neue Ziel bringt nach
+docs/immer-beachten.md ohnehin eine EIGENE Migration mit ("JEDES WEITERE FAN-OUT-ZIEL
+BRINGT SEINE EIGENE CONSTRAINT-ERWEITERUNG MIT" — und jene Regel gilt seit ihrer
+Erweiterung vom 2026-08-27 ausdrücklich für JEDEN neuen Zielwert, auch ohne Adapter). **A
+fügt dieser Migration eine Klausel hinzu, statt eine eigene Runde zu erzeugen.** Der Preis
+der Aufzählung ist damit nicht eine zusätzliche Migration, sondern eine zusätzliche Zeile
+in einer, die es ohnehin gibt.
+
+### Auflage an den Namen — SICHERHEIT, KEINE KOSMETIK
+
+**DIE NEUE BEDINGUNG TRÄGT EINEN NEUEN NAMEN.** Nicht `project_secrets_test_mode_paar`.
+
+**DER GRUND:** 0028 schützt ihr `add constraint` mit einem Katalog-Guard auf
+`conname = 'project_secrets_test_mode_paar'` und `conrelid` (GEMESSEN am Migrationstext,
+CC, 2026-09-10). Trüge die neue Bedingung denselben Namen, fände ein zweiter Lauf der
+NEUEN Migration ihre eigene Bedingung vor, droppte sie — und liesse die Tabelle **STILL
+ohne Schutz** zurück. Ein `drop constraint` mit passendem Namen scheitert nicht; er tut
+genau das, was dasteht (docs/immer-beachten.md, "EIN GUARD AUF EINEN NAMEN, DEN ES NACH DEM
+LAUF WIEDER GIBT, TRENNT VORHER NICHT VON NACHHER").
+
+**DER NAME SELBST WIRD IM STUFE-1-PLAN VORGESCHLAGEN, NICHT HIER GESETZT.** Die Auflage ist
+"neu und nicht der alte", nicht ein bestimmtes Wort.
+
+**DIE PRÜFFRAGE AN JEDEN GUARD DIESER MIGRATION, in einem Satz:** Trennt mein Anker den
+Zustand VOR dem Lauf vom Zustand DANACH? Der Drop des ALTEN Namens tut es (nach dem Lauf
+gibt es ihn nicht mehr); der Guard auf den NEUEN nur, solange dieser vorher nirgends
+existiert.
+
+### Der Nachweis ist eine WEGWERF-PROBE IM SQL-EDITOR, kein Live-Test
+
+**JE ZWEIG EIN EINFÜGEVERSUCH, DER GELINGEN MUSS, UND EINER, DER SCHEITERN MUSS** — gegen
+die echte Datenbank, in einer Transaktion mit Rücknahme, ohne echte Daten anzufassen.
+
+**EIN GRÜNER UNIT-TEST KANN DAS NICHT LEISTEN, UND DAS IST KEINE Vorsicht, SONDERN EINE
+SCHICHT-FRAGE:** Die Bedingung lebt in Postgres. Eine TypeScript-Nachbildung urteilt über
+ihre eigene Nachbildung (docs/immer-beachten.md, "EINE PROBE GEGEN DIESELBE SCHICHT KANN
+EINE FRAGE ÜBER EINE ANDERE SCHICHT NICHT SCHLIESSEN").
+
+**DIE SCHEITERN-HÄLFTE IST DIE TRAGENDE.** Eine Probe, die nur Gelingen zeigt, ist mit
+einer versehentlich WEGGEFALLENEN Bedingung genauso grün — "erlaubt" und "gar keine
+Bedingung da" sehen an einem gelungenen Einfügeversuch identisch aus.
+
+### PFLICHT-STOPP VOR DEM LAUF — der heutige Datenbestand wird ERHOBEN, nicht angenommen
+
+**ZU ERHEBEN: ob heute Zeilen mit gesetztem Testzustand existieren, und je Ziel welche.**
+
+**WARUM DAS EIN STOPP IST UND KEIN HINWEIS: `add constraint` SCHEITERT AN EINER
+VERLETZENDEN ZEILE.** Die Migration bräche dann mitten im Lauf ab — nach dem Drop des alten
+CHECK und vor dem Anlegen des neuen.
+
+**DIE ANNAHME, DIE HIER AUSDRÜCKLICH NICHT ÜBERNOMMEN WIRD:** Es liegt nahe, dass beide
+Bauformen jeden heute gültigen Zustand akzeptieren und ein Backfill entfällt. **DAS IST
+NICHT GEMESSEN, UND FÜR BAUFORM A IST ES ZUSÄTZLICH NICHT ALLGEMEIN WAHR** — der heutige
+CHECK erlaubt "Code UND Frist" an JEDEM Ziel, also auch an `pinterest`, `google` und
+`linkedin`. Eine solche Zeile ist heute gültig und wäre unter A verletzend. Ob es sie
+gibt, entscheidet die Erhebung; **plausibel ist ihre Abwesenheit, belegt ist sie nicht.**
+
+**FÄLLT DIE ERHEBUNG ANDERS AUS ALS ERWARTET, IST DAS EIN BEFUND UND KEIN HINDERNIS** — er
+gehört in den Stufe-1-Plan, zusammen mit der Frage, ob eine solche Zeile bereinigt oder die
+Bedingung angepasst wird. **HIER WIRD DAS NICHT ENTSCHIEDEN.**
+
+**AUFLAGE AN DIE STUFE 1:** docs/db-stand.md und docs/db-regeln.md werden ZUERST geladen —
+vor dem Plan, nicht während des Baus (CLAUDE.md, Pflicht-Stopp zum DB-Stand). Der
+gemessene Schemastand führt `project_secrets` seit Commit `696a6d5` mit zehn Spalten und
+dem Paar-CHECK im Wortlaut; wer ohne ihn plant, plant gegen ein Schema, das er nicht kennt.
+
+### Ausdrücklich NICHT in dieser Scheibe, je mit Grund
+
+- **`pinterest` in `TARGETS_WITH_TEST_MODE`.** Das ist 11.3d. Die Liste steht heute auf
+  `["meta", "tiktok"]`, und ein Wächter nagelt sie fest (GEMESSEN am Repo, CC, 2026-09-10:
+  `TARGETS_WITH_TEST_MODE` in `src/lib/tracking/credential-state.ts`, Wächter in
+  `credential-state.test.ts`). **Diese Scheibe rührt weder Liste noch Wächter an** — sie
+  macht am Schema Platz, mehr nicht.
+- **Der Schalter an der Pinterest-Karte, der Banner-Text, der Wächter TM13.** Oberfläche
+  ist 11.3d.
+- **Die Vorrang-Frage aus Vorrat (26)** — deployment-weiter Env-Schalter gegen
+  projekt-eigene Frist. **Eigene Entscheidung, eigene Runde.** Sie entsteht erst, wenn
+  pinterest den projekt-eigenen Zustand tatsächlich BENUTZT; diese Scheibe erlaubt ihn nur.
+- **Jede Änderung an 0028.** S. oben.
+- **docs/db-stand.md.** Sie wird ausschliesslich aus einer MESSUNG fortgeschrieben, also
+  erst NACH dem Einspielen und aus einer Ablesung im SQL-Editor — nie aus einer
+  Migrationsdatei.
+
+### Was diese Scheibe an anderer Stelle fällig macht — GEMELDET, hier nicht vollzogen
+
+- **Entscheidung (2) NENNT DEN CHECK IM WORTLAUT** — "zusammengehalten vom CHECK
+  `project_secrets_test_mode_paar` (beide gesetzt oder beide leer)". Der Satz ist HEUTE
+  richtig und wird mit dem Bau dieser Scheibe überholt. **Er wird hier nicht angefasst**;
+  eine Richtigstellung ohne vollzogenen Bau behauptete einen Zustand, den es nicht gibt.
+- **Vorrat (8) IST DER EINTRAG, DER DIESE SCHEIBE ANGEKÜNDIGT HAT.** Er wird durch den
+  Zuschnitt NICHT gegenstandslos — sein Trigger ("die Scheibe, die pinterest in den
+  Testmodus aufnimmt") ist mit dem Zuschnitt aufgegriffen, aber nicht abgearbeitet.
+  **Erledigt ist er erst mit dem eingespielten CHECK**, und die Streichung trägt dann ihren
+  eigenen Beleg.
+
+**PROVENIENZ DES ZUSCHNITTS:** OWNER-ENTSCHEIDUNG 2026-09-10 (die vier Zweige, die
+Ausscheidung der Bauform B, die Auflage an den Namen, der Umfang und die Ausschlüsse), auf
+der Grundlage der Messung vom selben Tag (VERMERK 3). Die Form des heutigen CHECK und die
+Bauform seines Katalog-Guards sind GEMESSEN am Migrationstext 0028 (CC, 2026-09-10);
+`testModeQuery` und `TARGETS_WITH_TEST_MODE` sind GEMESSEN am Repo (CC, 2026-09-10). **Der
+heutige Datenbestand ist AUSDRÜCKLICH NICHT gemessen** — s. den Pflicht-Stopp oben.

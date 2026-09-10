@@ -1114,6 +1114,103 @@ Folgestellen und der Typ `TestModeTarget` sind GEMESSEN am Repo (CC, 2026-09-10,
 Aufklärungsrunde 2). Dass der Fehlerfall der verworfenen Alternative still wäre, ist eine
 ABLEITUNG aus 0028 und dem gemessenen Ingest-Pfad, **keine Messung**.
 
+### (15) DAS TESTMODUS-SIGNAL ERREICHT DIE ADAPTER ÜBER DIE LAMBDAS, NICHT ÜBER GEÄNDERTE ADAPTER-SIGNATUREN
+
+**DIE ENTSCHEIDUNG:** Der siebte Wert des Typs `Forwarder` (`src/lib/capi/ingest.ts`) wird
+**`TestModeTarget | undefined`**. Die Dispatch-Stelle übergibt den **EINTRAG** statt seines
+Codes (das `?.code` fällt weg); die Lambdas in `FORWARDER_BY_TARGET` entnehmen ihm, was
+ihr Adapter braucht — `meta` und `tiktok` geben `testMode?.code` weiter, `pinterest` gibt
+`testMode !== undefined` weiter. **Alle drei Adapter bleiben byte-gleich.**
+
+**DER GRUND:** Was fehlt, ist die **ANWESENHEIT** des Eintrags, nicht sein Wert — und die
+steht seit 11.3d in `resolution.testMode` bereits da. **Sie wurde an der Dispatch-Stelle
+weggeworfen** (`?.code`). Ein `pinterest`-Eintrag trägt nie einen Code; der siebte Wert war
+für dieses Ziel konstant `undefined`.
+
+**WARUM DAS KEIN ZWEITES URTEIL IST** (Entscheidung (13), zweite Auflage): Das Urteil fällt
+**EINMAL**, in `resolution.testMode`. **Die Lambdas urteilen nicht, sie LESEN** — `?.code`
+liest den Wert, `!== undefined` die Anwesenheit. **Ein Urteil, zwei Lesungen**, dieselbe
+Bauform wie Entscheidung (4).
+
+**WARUM ES KEIN VERZWEIGEN NACH ZIELNAME IST:** `FORWARDER_BY_TARGET` **ist** die
+Ziel-Zuordnung und eine Compiler-Bindung über `Record<TargetWithAdapter, Forwarder>`.
+Innerhalb eines Lambdas steht **kein `if` auf den Zielnamen**; dort steht, was jener
+Adapter braucht — wie heute schon, wo das `pinterest`-Lambda `{ adAccountId, token }`
+bildet. **DIE ASYMMETRIE WOHNT IN DEN DATEN, NICHT IM KONTROLLFLUSS**; der Kommentarkopf
+jener Zuordnung sagt das seit Scheibe C2 wörtlich.
+
+**DER VERWORFENE KANDIDAT — er stand kurz vor der Freigabe und käme sonst wieder:** Der
+siebte Parameter der **ADAPTER** trägt den ganzen Eintrag, jeder Adapter liest daraus.
+**SEIN AUSSCHEIDUNGSGRUND, in drei Punkten:**
+- **DREI ADAPTER-SIGNATUREN** ändern sich statt einer Typzeile.
+- **DER ERST IN 11.3d GEBAUTE BOOLEAN-PARAMETER** von `forwardToPinterest` (`testMode?:
+  boolean`) wäre nach EINER Scheibe wieder falsch.
+- **T17a2 UND T17b** (`pinterest-forward.test.ts`, in 11.3d gebaut) müssten umgeschrieben
+  werden. GEMESSEN am Repo (CC, 2026-09-10): es sind die **einzigen zwei** Aufrufe im
+  Testbestand, die einem Adapter ein siebtes Argument übergeben — `meta-forward.test.ts`
+  hat **null** von acht, `tiktok-forward.test.ts` **einen** von neunzehn.
+
+**EIN VIERTER GRUND IST IN DER VORGABE GENANNT WORDEN UND HÄLT DER MESSUNG NICHT STAND —
+er steht hier berichtigt, nicht weggelassen:** Es hiess, der Kandidat ziehe "eine neue
+Kopplung vom Adapter zur Auflösung, heute importiert kein Adapter aus `capi/token.ts`".
+**GEMESSEN am Repo (CC, 2026-09-10), Achse: der Modulpfad über alle fünf Adapter:**
+`meta-forward.ts` und `tiktok-forward.ts` tragen beide bereits
+`import type { CapiConfig } from "@/lib/capi/token"`. **Neu wäre die Kopplung allein für
+`pinterest-forward.ts`** — für zwei von drei betroffenen Adaptern besteht sie längst.
+**DER PUNKT WIEGT DAMIT EIN DRITTEL SEINES ANGENOMMENEN GEWICHTS; die drei Gründe darüber
+tragen die Entscheidung allein.**
+
+**EIN ZWEITER VERWORFENER KANDIDAT:** ein **ACHTER** Parameter, der die Anwesenheit als
+Boolean trägt, während der siebte den Code behält. **Ausgeschieden nicht am Aufwand,
+sondern an derselben Begründung wie K3 in Entscheidung (3):** zwei Träger für dieselbe
+Frage, die bei einem späteren Umbau auseinanderlaufen.
+
+**WEN SIE BINDET:** die Scheibe 11.3e und jede spätere Runde, die ein weiteres Ziel
+verdrahtet oder den `Forwarder`-Typ anfasst.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-10. Der Ausgangszustand — der `Forwarder`-Typ,
+die Dispatch-Zeile, die drei Adapter-Signaturen und der `pinterest`-Eintrag, der sechs
+Parameter nimmt und sechs weiterreicht — ist GEMESSEN am Repo (CC, 2026-09-10). Die
+Aufruf-Zahlen der drei Adapter-Testdateien ebenso.
+
+### (16) EIN NICHT-LEERER CODE FÜR EIN ZIEL OHNE CODE-PFLICHT WIRD ABGEWIESEN
+
+**DIE ENTSCHEIDUNG:** `startTestMode` weist ihn ab, mit einem **NEUEN** Grund.
+`TestModeWriteError` bekommt das Mitglied **`code_not_allowed`**, `testModeErrorText`
+einen Satz dazu.
+
+**DER GRUND:** Die Oberfläche kann den Fall nach der Gestalt-Entscheidung (A) **nicht
+erzeugen** — es gibt kein Feld. **Aber eine Server-Action nimmt entgegen, was über die
+Leitung kommt** (dieselbe Erwägung, die `isTrackingTarget` überhaupt begründet), und der
+CHECK aus 0029 wäre sonst die einzige Stelle, die es je bemerkt — **NACH dem Instanziieren
+des privilegierten Clients, und mit einem rohen Datenbank-Fehler als Auskunft.**
+
+**DIE ZWEI VERWORFENEN, je mit Grund:**
+- **IGNORIEREN** (Code verwerfen, Frist setzen): Der Aufrufer bekäme `ok: true` für einen
+  Vorgang, bei dem etwas Verlangtes verworfen wurde — **eine schweigende Annahme.**
+- **ABWEISEN ALS `unknown_target`:** schlicht **unwahr**. Das Ziel ist bekannt und hat
+  einen Testmodus, nur keinen Code. **Ein Fehlergrund, der etwas Falsches sagt, schickt
+  den nächsten Sucher an die falsche Stelle.**
+
+**DAS AUSSCHLAGGEBENDE ARGUMENT BETRIFFT DEN ZWEITEN KONSUMENTEN DER ZIELMENGE:** Der Lauf
+"die Ziel-Pruefung liest die ECHTE Menge, nicht eine Kopie"
+(`src/app/projects/actions.testmode.test.ts`) ruft `startTestMode` mit einem Code für
+JEDES Ziel und behauptet `ok === true`. **Bei IGNORIEREN bliebe er GRÜN** — grün aus dem
+falschen Grund, während sein **gemockter** Schreibweg die Datenbank nie befragt. **Bei
+ABWEISEN wird er ROT**, und die ohnehin nötige Änderung wird **ERZWUNGEN statt erhofft**.
+**EIN FEHLERWEG, DER EINEN BESTEHENDEN LAUF ROT MACHT, IST BESSER ALS EINER, DER IHN
+STILL RICHTIG AUSSEHEN LÄSST.**
+
+**ZWEI AUFLAGEN AN DIE UMSETZUNG:**
+- **Der Grund kommt aus `requiresTestCode`**, nicht aus einer eigenen Prüfung — **kein
+  zweites Urteil über die Code-Pflicht.**
+- **Der Text in `testModeErrorText` behauptet WEDER URSACHE NOCH ERGEBNIS:** Er sagt, dass
+  dieses Ziel keinen Testcode annimmt — nicht, warum der Aufruf zustande kam. Dieselbe
+  Disziplin wie bei den Meldungstexten von `safeAction` (docs/immer-beachten.md).
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-10. Die Gate-Reihenfolge in `startTestMode` und
+der gemockte Schreibweg des zweiten Konsumenten sind GEMESSEN am Repo (CC, 2026-09-10).
+
 ## Vorrat — gemeldet, nicht gebaut
 
 **(1) OB TIKTOK TEST-MARKIERTE EREIGNISSE MITZÄHLT WIE META — UNGELESEN UND UNGEMESSEN.**
@@ -1682,6 +1779,29 @@ zitiert**, weil er nicht umbenannt worden ist; **verschoben ist die SCHEIBE, nic
 ABLAGEORT.**
 PROVENIENZ: die Einteilung ist eine ABLEITUNG aus Entscheidung (14) und den am 2026-09-10
 gemessenen Fundstellen; die Fundstellen selbst sind GEMESSEN am Repo (CC, 2026-09-10).
+
+**ZUSATZ 2026-09-10 — ZWEI ANGABEN DIESES EINTRAGS SIND ÜBERHOLT, DER EINTRAG BLEIBT.** Der
+Text darüber bleibt wörtlich stehen und wird nicht gestrichen; was folgt, tritt daneben.
+**DIE ZWEI STELLEN:** "**Teuer wird es erst an der Ziel-Karte**, wo der Text **dem
+Betreiber erklärt**, warum es keinen An/Aus-Schalter gibt" (im Text oben) und "der
+**sichtbare** Erklärtext an der Ziel-Karte" (im Zusatz darüber). **Beide unterstellen, der
+Erklärtext werde AUSGELIEFERT.**
+**GEMESSEN am Repo (CC, 2026-09-10), Achse `schalter|an/aus`, case-insensitiv, über
+`src/components/TargetCard.tsx`:** FÜNF Treffer, **KEINER im gerenderten JSX**. Der Text
+steht in einem **JSX-KOMMENTAR** und wird nicht ausgeliefert. Gegenprobe: kein Lauf in
+`TargetCard.test.tsx` erwartet ihn im gerenderten Text.
+**ES SIND ZWEI KOMMENTARE, KEIN KUNDENTEXT** — und damit fällt auch die Einstufung "die
+teuerste der sechs Stellen".
+**WAS DAVON UNBERÜHRT BLEIBT UND DER GRUND IST, WARUM DER EINTRAG NICHT SCHRUMPFT:** Die
+Einteilung in VIER Aufräum-Stellen und ZWEI Scheibenarbeit-Stellen **stimmt unverändert**
+— nur ihre Begründung wechselt. **Nicht die Sichtbarkeit trennt sie, sondern die AUSSAGE:**
+Die vier tragen einen toten NAMEN, diese zwei eine falsche AUSSAGE ("ein Zustand ohne Code
+ist unmöglich"), und die wird mit 11.3e für `pinterest` zum Normalfall.
+**WARUM DIESER SATZ HIER STEHT:** Dieselbe Richtigstellung ist am 2026-09-10 bereits an
+**zwei** anderen Stellen vollzogen worden — im Abschnitt 11.3e und in "Was beim Zuschnitt
+von 11.3d vorliegen muss", Teil (a). **Dieser Eintrag war die dritte und letzte.** Wer ihn
+öffnet, ohne die zwei anderen zu lesen, hielte den Erklärtext weiterhin für Kundentext.
+PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10), mit Gegenprobe.
 
 ## Hebungs-Kandidaten
 
@@ -2985,6 +3105,65 @@ PROVENIENZ: die Kommentar-Eigenschaft, die Achse und die Gegenprobe sind GEMESSE
 (CC, 2026-09-10); die Constraint-Umbenennung ist GEMESSEN LIVE (Stefan, 2026-09-10,
 VERMERK 4).
 
+### Zwei Auflagen an den Bau, und eine Bau-Entscheidung, die NICHT getroffen wird
+
+**ANGELEGT AM 2026-09-10 NACH DER STUFE 1.** Sie stehen hier und nicht im Plan, weil der
+Plan ausserhalb des Repos liegt und **das Pflicht-Gate der frischen Sitzung diese Datei
+ist**, nicht jener.
+
+**(a) DER GATE-TAUSCH IN `startTestMode` — DIE MESSUNG IST GEFAHREN, DIE AUFLAGE BLEIBT.**
+Die Code-Prüfung ist heute die **ALLERERSTE** Anweisung, **vor** der Ziel-Prüfung
+(GEMESSEN am Repo, CC, 2026-09-10). Um sie ziel-abhängig zu machen, wird die Ziel-Prüfung
+vorgezogen. **FÜR EINE EINGABE, DIE BEIDES FALSCH MACHT** — unbekanntes Ziel UND leerer
+Code —, **DREHT SICH DER ABLEHNUNGSGRUND** von `empty_code` auf `unknown_target`.
+**GEMESSEN am Repo (CC, 2026-09-10), Achse `empty_code` über `src/`:** DREI Fundstellen —
+das Union-Mitglied, das Gate selbst und **GENAU EIN Lauf**. Jener ruft
+`startTestMode("proj-1", "meta", "   ")`, also mit einem **BEKANNTEN** Ziel. **KEIN
+Bestandslauf behauptet `empty_code` für ein unbekanntes Ziel; der Tausch bricht heute
+keinen.**
+**DIE AUFLAGE BLEIBT TROTZDEM:** Die Messung gilt dem Bestand vom 2026-09-10. Die
+Bau-Runde erhebt sie **gegen den dann aktuellen Bestand** neu — und meldet, was sie
+findet, statt still nachzuziehen.
+
+**(a2) EIN DRITTER KONSUMENT DER ZIELMENGE — GEMESSEN, UND ER STAND WEDER IM ZUSCHNITT NOCH
+IN DER VORGABE.** Der Lauf **"ein Ziel OHNE Testmodus wird abgewiesen — vor jedem Client"**
+(dieselbe Datei) iteriert über eine **hartkodierte Liste** `["pinterest", "google",
+"linkedin"]` und ruft `startTestMode` mit dem Code `"TEST123"`; er erwartet
+`unknown_target`. **MIT DER AUFNAHME VON `pinterest` IN DIE MENGE WIRD ER ROT** — dieses
+Ziel ist dann bekannt und antwortet nach Entscheidung (16) mit `code_not_allowed`.
+**DAS IST DER GEWÜNSCHTE AUSGANG UND KEIN SCHADEN**, aber er gehört benannt: Der Zuschnitt
+führte bisher ZWEI Konsumenten der Menge (TM13 wird rot, die Schleife wächst still mit).
+**ES SIND DREI**, und dieser dritte trägt eine **KOPIE der Komplementärmenge** — die
+Bauform, vor der der Titel des zweiten Konsumenten ("nicht eine Kopie") warnt.
+**WER SEIN ROT FÜR EINEN FEHLER HÄLT, ZIEHT DIE LISTE NACH, STATT DIE ZUSICHERUNG ZU
+PRÜFEN.**
+
+**(b) DER LIVE-LAUF FEUERT EINE ECHTE CONVERSION BEI META — VORBEDINGUNG, KEINE FUSSNOTE.**
+Während `pinterest` im Testmodus läuft, greift der Riegel für das **GANZE** Projekt
+(Entscheidung (3)); `meta` steht dabei **NICHT** im Testmodus, sein Forward geht **ohne**
+`test_event_code` hinaus. **Folge: Meta verbucht eine ECHTE Conversion, und `events` trägt
+trotzdem keine Zeile.**
+**DAS IST KEIN FEHLER**, sondern der Preis, den Entscheidung (3) ausdrücklich benennt
+("Die Ziele OHNE Testmodus bekommen den Testklick als ECHTE Conversion") — **neu ist, dass
+er zum ersten Mal EINTRITT.**
+**ER IST ZUGLEICH EINE NÜTZLICHE POSITIVKONTROLLE:** Kommt bei Meta etwas an, hat definitiv
+etwas gefeuert — und die leere `events`-Abfrage ist dann **der Riegel** statt eines
+ausgebliebenen Beacons.
+**OB META FÜR DEN LAUF ABGEKLEMMT WIRD, IST OWNER-ENTSCHEIDUNG und hier NICHT getroffen.**
+Wer abklemmt, verliert die Positivkontrolle und braucht eine andere.
+
+**(c) EIN DIREKTER LAUF AUF `requiresTestCode` WIRD NICHT GEBAUT — MIT BEDINGUNG.**
+Er prüfte den erschöpfenden `switch` gegen eine **Kopie seiner selbst** — dieselbe Figur
+wie eine Kontroll-Abfrage, die den Funktionskörper abschreibt. Was er fangen könnte,
+fangen die **WIRKUNGS-Läufe**, und dort richtet eine falsche Antwort Schaden an, statt nur
+abzuweichen. **Er macht ausserdem die Pflicht-Mutation "meta verlangt keinen Code"
+unschärfer** — sie soll genau die Läufe färben, die die Wirkung messen, und in 11.3d ist er
+aus genau diesem Grund unterlassen worden.
+**DIE BEDINGUNG, UNTER DER ER DOCH GEBAUT WIRD** — sie steht hier, damit die Frage nicht
+bei jedem neuen Leser neu gestellt wird: **sobald ein Konsument hinzukommt, dessen WIRKUNG
+kein Lauf misst.** Nach 11.3e hat jeder der drei Leser (`activeTestCodeFromRow`,
+`startTestMode`, die Karte) seinen Wirkungs-Lauf.
+
 ### Der Nachweis — ein Live-Lauf mit einem PFLICHT-STOPP
 
 **DIE TEST-ANSICHT DES ANBIETERS IST EIN LIVE-STROM OHNE RÜCKSCHAU** (GEMESSEN LIVE,
@@ -3126,6 +3305,19 @@ ausdrücklich NICHT die Entscheidung:**
   "verlängern" **dasselbe** — beide rufen `startTestMode` und setzen die Frist neu. Bei
   `meta` und `tiktok` unterscheidet sie der frisch verlangte Code; bei `pinterest` gibt es
   nichts zu unterscheiden. **Ob die Beschriftung trotzdem wechselt, ist Teil dieser Frage.**
+
+### (B) IST ENTSCHIEDEN — DIE LAMBDAS LESEN, DIE ADAPTER BLEIBEN BYTE-GLEICH
+
+**PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-10.** Der Volltext steht als **Entscheidung
+(15)** unter "Entscheidungen, die über ihre Scheibe hinaus binden" und **wird hier NICHT
+verdoppelt** — zweimal geschrieben liefen sie auseinander.
+**IN EINEM SATZ:** Der siebte Wert des Typs `Forwarder` wird `TestModeTarget | undefined`;
+die Lambdas entnehmen ihm, was ihr Adapter braucht. **Der verworfene Kandidat und seine
+drei Ausscheidungsgründe stehen dort ebenfalls** — wer ihn neu vorschlägt, trägt gegen sie
+vor.
+**DAMIT IST DIE ÜBERSCHRIFT DIESES UNTERABSCHNITTS VOLLSTÄNDIG ÜBERHOLT: BEIDE Fragen sind
+entschieden.** Sie bleibt wörtlich stehen, aus dem Grund, der am Kopf des Abschnitts
+benannt ist — sie wird zitiert, und eine Umbenennung machte jenen Zeiger tot.
 
 **(B) IN WELCHER GESTALT DER FAN-OUT DAS TESTMODUS-SIGNAL AN `forwardToPinterest`
 WEITERGIBT.** Sie entsteht aus dem Befund (4) oben: Der siebte Wert der Dispatch-Stelle ist

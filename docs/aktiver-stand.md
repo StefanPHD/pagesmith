@@ -2844,6 +2844,62 @@ Code" und wird hier nicht verdoppelt.
 - **Der Erklärtext.**
 - **Der Banner, der das verursachende Ziel nennt** — Entscheidung (10) gilt unverändert.
 
+**ERGÄNZT AM 2026-09-10 NACH DEM BAU VON 11.3d — VIER DINGE SIND SEITHER DAZUGEKOMMEN UND
+FEHLTEN IN DER LISTE OBEN.** Sie ist als Aussage über den Zuschnitt-Zeitpunkt richtig und
+wird nicht umgeschrieben; was ihr fehlt, steht hier.
+
+**(1) `requiresTestCode` WANDERT AUS `credential-state.ts` HERAUS.** Sie ist heute
+modul-privat und hat **genau einen Leser** — `activeTestCodeFromRow` in derselben Datei
+(GEMESSEN am Repo, CC, 2026-09-10). Die Vorprüfung im Schreibpfad braucht **dieselbe**
+Auskunft: `startTestMode` weist einen leeren Code mit `empty_code` ab, bevor irgendein
+anderes Gate greift — **für `pinterest` wäre der Schalter damit unbedienbar.**
+**DIE AUFLAGE: EINE QUELLE.** Kein zweites Urteil darüber, welches Ziel einen Code
+verlangt. Das ist die zweite Auflage von Entscheidung (13) — "kein drittes Urteil" —,
+sinngemäss auf den SCHREIBPFAD angewandt: dort urteilte sonst eine zweite Fassung über
+dieselbe Frage, und die beiden liefen auseinander. **Der Ort ist Bausache; DASS es einer
+ist, nicht.**
+
+**(2) DER ZWEITE KONSUMENT DER ZIELMENGE WIRD ZWINGEND IM SELBEN ZUG GEÄNDERT.** Der Lauf
+"die Ziel-Pruefung liest die ECHTE Menge, nicht eine Kopie"
+(`src/app/projects/actions.testmode.test.ts`) iteriert über `TARGETS_WITH_TEST_MODE`, ruft
+`startTestMode` **mit einem Code für JEDES Ziel** und behauptet `ok === true`. **Für
+`pinterest` ist diese Zusicherung falsch**, sobald die Vorprüfung ziel-abhängig wird — und
+**sein Schreibweg ist GEMOCKT**, er bliebe also grün, während der echte Pfad einen Wert
+ablegte, den der CHECK aus 0029 abweist.
+**NICHT DANACH, SONDERN IM SELBEN ZUG:** Ein Lauf, der aus dem falschen Grund grün ist,
+sieht von einem richtigen nicht zu unterscheiden aus. Der Kommentar an seiner Schleife
+(gesetzt in 11.3d, Commit `3d42501`) benennt beide Fallen am Ort der Handlung.
+
+**(3) TM13 WIRD ROT — ABSICHT, NICHT KOLLATERALSCHADEN.** `describe("TM13 — die Menge der
+Ziele mit Testmodus")` mit `it("GENAU meta und tiktok")`
+(`src/lib/tracking/credential-state.test.ts`) nagelt die Menge fest und **ist der Ort, an
+dem die Erweiterung sichtbar wird**. Er wird **NACHGEZOGEN, nicht entfernt** — ein Wächter,
+der bei einer beabsichtigten Änderung entfernt statt nachgezogen wird, ist ab dann keiner
+mehr. **Zwei Konsumenten derselben Menge, zwei entgegengesetzte Ausgänge:** dieser wird
+rot, jener aus (2) wächst still mit.
+
+**(4) DIE VERDRAHTUNG IM FAN-OUT FEHLT — UND SIE IST GRÖSSER ALS EINE ZEILE.**
+**GEMESSEN am Repo (CC, 2026-09-10), und die Messung fällt anders aus als die Annahme aus
+dem Bau-Bericht:** Der `pinterest`-Eintrag in `FORWARDER_BY_TARGET`
+(`src/lib/capi/ingest.ts`) nimmt **sechs** Parameter und reicht **sechs** weiter; `meta` und
+`tiktok` nehmen und reichen **sieben**. Soweit trifft die Annahme zu.
+**WAS SIE NICHT SAGT UND WAS DEN AUFWAND BESTIMMT — DREI BEFUNDE:**
+- Die Dispatch-Stelle übergibt als siebten Wert
+  `resolution.testMode.find((t) => t.target === entry.target)?.code`, also **den CODE**.
+- **Ein `pinterest`-Eintrag trägt NIE einen `code`** — der Resolver setzt den Schlüssel nur,
+  wenn einer da ist, und der CHECK aus 0029 verbietet ihn dort. Der Wert wäre also
+  **konstant `undefined`.**
+- Der siebte Parameter heisst am Typ `Forwarder` **`testEventCode: string | undefined`**;
+  `forwardToPinterest` erwartet **`testMode?: boolean`**.
+**FOLGE: DAS BLOSSE DURCHREICHEN DES SIEBTEN WERTES WÄRE EIN TYPFEHLER UND WÄRE, WENN ES
+KOMPILIERTE, WIRKUNGSLOS.** Was fehlt, ist **kein Argument, sondern ein SIGNAL**: Der
+Fan-Out muss die ANWESENHEIT des Eintrags weitergeben, nicht seinen Wert.
+**WELCHE GESTALT DAS SIGNAL BEKOMMT, IST HIER NICHT ENTSCHIEDEN** — s. den Abschnitt
+"Zwei offene Fragen, die hier NICHT entschieden werden".
+**OHNE DIESE VERDRAHTUNG BEKOMMT DER ANBIETER KEINE MARKIERUNG**, und der Live-Lauf misst
+am falschen Ende: Der Riegel feuerte, die `events`-Zeile entfiele, und in Pinterests
+Test-Ansicht stünde nichts — **ununterscheidbar von einem kaputten Adapter.**
+
 ### Die drei Gesten verlangen heute zwingend einen Code
 
 **GEMESSEN am Repo (CC, 2026-09-10):** `startTestMode` weist einen nach dem Trimmen leeren
@@ -2864,6 +2920,41 @@ unbedienbar.** Das ist Bausache und **hier nicht entschieden.**
 - **`src/app/projects/actions.ts`, Kopf von `startTestMode`:** dieselbe Klasse, aber
   Kommentar.
 
+**RICHTIGGESTELLT AM 2026-09-10, NICHT GESTEMPELT — DIE EINSTUFUNG DER ERSTEN STELLE IST
+GEMESSEN FALSCH.** **HIER STAND:** "SICHTBARER TEXT, kein Kommentar — die teuerste der
+sechs Stellen aus Vorrat (29)."
+**DER BEFUND — GEMESSEN am Repo (CC, 2026-09-10), Achse `schalter|an/aus`,
+case-insensitiv, über die ganze Datei:** FÜNF Treffer, **KEINER im gerenderten JSX**. Der
+Erklärtext steht in einem **JSX-KOMMENTAR** (`{/* DER TESTMODUS — DREI GESTEN, KEIN
+AN/AUS-SCHALTER (Scheibe 11.3b). … */}`) und wird **nicht ausgeliefert**. Gegenprobe: kein
+Lauf in `TargetCard.test.tsx` erwartet den Satz im gerenderten Text.
+**ES SIND ALSO ZWEI KOMMENTARE, KEIN KUNDENTEXT** — die Überschrift dieses Unterabschnitts
+bleibt trotzdem wörtlich stehen, weil sie von aussen nicht zitiert wird und ihre ANDERE
+Hälfte trägt: **beide gehören weiterhin in diese Scheibe und nicht in eine Aufräumrunde.**
+**DER GRUND DAFÜR IST UNBERÜHRT UND IST NICHT DIE SICHTBARKEIT, SONDERN DIE AUSSAGE:** Die
+vier übrigen Stellen aus Vorrat (29) tragen nur einen **toten NAMEN**; diese zwei tragen
+eine **falsche AUSSAGE** — "ein Zustand ohne Code ist unmöglich" —, und die wird mit dieser
+Scheibe für `pinterest` zum Normalfall. **Wer sie als Aufräumposten mitnimmt, ändert einen
+Namen und lässt die falsche Aussage stehen.**
+**WAS DIE RICHTIGSTELLUNG KOSTET UND WARUM SIE TROTZDEM NÖTIG IST:** Die Dringlichkeit
+sinkt — ein Kommentar steht nicht vor den Augen des Betreibers. **Die Einstufung "die
+teuerste der sechs Stellen" fällt damit weg.** Sie stehenzulassen hiesse, eine Scheibe
+gegen einen Schaden zu planen, den es nicht gibt, und beim nächsten Mal einer Angabe zu
+folgen, die eine Messung widerlegt.
+**WAS DIE ZWEI STELLEN SACHLICH SAGEN MÜSSEN:**
+- **NICHT MEHR "ein Schalter ohne Code ist unmöglich"** — für `pinterest` ist er der
+  einzige Zustand, den sein Testmodus annehmen kann.
+- **DER CONSTRAINT-NAME:** beide nennen `project_secrets_test_mode_paar`. Er heisst seit
+  Migration 0029 **`project_secrets_test_mode_je_ziel`** und urteilt JE ZIEL verschieden.
+- **DIE UNTERSCHEIDUNG SELBST, denn ohne sie wird aus der Korrektur eine zweite falsche
+  Aussage:** Für `meta` und `tiktok` gilt "beide oder keine" **unverändert weiter** — der
+  neue CHECK urteilt für diese zwei wortgleich wie der alte. Was sich ändert, ist die
+  Reichweite der Aussage, nicht ihr Inhalt für die zwei Ziele, für die sie geschrieben
+  wurde.
+PROVENIENZ: die Kommentar-Eigenschaft, die Achse und die Gegenprobe sind GEMESSEN am Repo
+(CC, 2026-09-10); die Constraint-Umbenennung ist GEMESSEN LIVE (Stefan, 2026-09-10,
+VERMERK 4).
+
 ### Der Nachweis — ein Live-Lauf mit einem PFLICHT-STOPP
 
 **DIE TEST-ANSICHT DES ANBIETERS IST EIN LIVE-STROM OHNE RÜCKSCHAU** (GEMESSEN LIVE,
@@ -2871,6 +2962,39 @@ unbedienbar.** Das ist Bausache und **hier nicht entschieden.**
 erst klickt, findet eine leere Fläche **bei korrektem Verhalten** — und protokolliert einen
 Fehlschlag, den es nicht gibt. Der Schritt gehört als PFLICHT-STOPP in die Anleitung, nicht
 als Hinweis.
+
+**ERGÄNZT AM 2026-09-10 — DREI AUFLAGEN UND EINE ACHSE, DIE ES BEIM ZUSCHNITT NOCH NICHT
+GAB.** Der Pflicht-Stopp oben ist die erste der drei und bleibt wörtlich; die zwei anderen
+stammen aus derselben Messung, die vierte Achse aus dem Bau von 11.3d.
+
+**AUFLAGE 2 — DIE PRÜFSEITE WIRD NEU VERÖFFENTLICHT, BEVOR GEMESSEN WIRD.** Der
+Einwilligungs-Schlüssel geht **zur ERZEUGUNGSZEIT** in den ausgelieferten Text; ein
+Code-Deploy erreicht eine bereits veröffentlichte Seite nicht. Eine Seite, die den
+Schlüssel für `pinterest` nicht trägt, läuft **fail-closed** an — der Forward unterbleibt,
+und beim Anbieter erscheint nichts. **DAS IST KEINE THEORIE:** Beim Live-Test der Scheibe
+11.3b kam der erste Klick bei Meta genau deshalb NICHT an, und erst die erneute
+Veröffentlichung liess ihn feuern (VERMERK 2, Meta-Lauf). Dieselbe Figur steht als Regel in
+docs/immer-beachten.md, "EIN NEUES FAN-OUT-ZIEL LÄUFT BEI BESTEHENDEN SEITEN FAIL-CLOSED
+AN, UND EIN DEPLOY HEILT DAS NICHT".
+
+**AUFLAGE 3 — DIE GEGENPROBE GEHÖRT DAZU, UND SIE HAT ZWEI HÄLFTEN.** Erscheint das
+Ereignis **in der Test-Ansicht** — UND bleibt es **aus der Eventübersicht** heraus? Die
+zweite Hälfte ist die **Isolations-Zusage**, für `pinterest` am 2026-09-10 GEMESSEN
+(VERMERK 3, SCHLUSS 3). **Sie muss nach dieser Scheibe weiter halten**, und nur eine
+Ablesung an beiden Ansichten zeigt das. **Wer nur die Test-Ansicht prüft, belegt die
+Ankunft und nicht die Isolation.**
+
+**DIE VIERTE ACHSE — SIE IST NEU UND GAB ES AM 2026-09-10 NOCH NICHT:** Der Riegel nimmt
+das Ereignis seit der Aufnahme in die Zielmenge **zusätzlich aus `events`**. Die
+`events`-Zeile ist damit **Teil des Nachweises** und nicht nur Nebenbefund.
+**UND SIE BRINGT IHRE EIGENE FALLE MIT: EIN LEERER RÜCKLAUF BEWEIST OHNE POSITIVKONTROLLE
+NICHTS** — "der Riegel hat gegriffen" und "es hat überhaupt nichts gefeuert" sehen in der
+`events`-Abfrage identisch aus. **Die Positivkontrolle ist die Ankunft beim Anbieter im
+selben Zeitfenster.** Sie hat in dieser Phase bereits einmal zugeschlagen und einen
+Fehlschlag entlarvt, der sonst als bestandener Riegel gebucht worden wäre (VERMERK 2).
+**DAMIT HÄNGEN AUFLAGE 3 UND DIE VIERTE ACHSE ZUSAMMEN:** Dieselbe Ablesung trägt beide —
+sie ist Isolations-Beleg gegenüber der Eventübersicht **und** Positivkontrolle gegenüber
+`events`.
 
 ### Ein Zeiger, der mit dem Abschluss dieser Scheibe fällig wird
 
@@ -2881,9 +3005,73 @@ als Hinweis.
   GÜLTIGEN NICHT ZU UNTERSCHEIDEN** — er trägt kein Datum am Beleg, sondern nur am Eintrag.
   **Nachzuziehen mit dem Abschluss-Vermerk dieser Scheibe.**
 
+### Ausdrücklich NICHT in dieser Scheibe
+
+- **VORRAT (10) — die Vorrang-Frage bei `meta` und `tiktok`.** `META_TEST_EVENT_CODE` und
+  `TIKTOK_TEST_EVENT_CODE` bestehen fort; welcher Wert in die Nutzlast wandert, wenn
+  Umgebungsvariable und Projektzeile VERSCHIEDENE tragen, bleibt **offen und ungemessen**.
+  **Nur für `pinterest` ist die Achse entfallen**, weil dort die zweite Quelle weggefallen
+  ist — s. die Streichung von Vorrat (26).
+- **DIE VIER VERBLIEBENEN STELLEN AUS VORRAT (29)** mit dem toten Constraint-Namen. Sie
+  tragen einen Namen, der ins Leere zeigt, und **keine falsche Aussage**; sie bleiben
+  Aufräumarbeit.
+- **`google` und `linkedin`.** Für das eine schneidet der einzige Träger die Beobachtung
+  ab, für das andere gibt es keinen — s. "Gegenstand der Phase".
+- **DIE UMBENENNUNG VON `activeTestCodeFromRow`** (VERMERK 5, dritte Grenze). Der Name
+  benennt seit 11.3d nicht mehr, was die Funktion liefert; die Umbenennung ginge nicht ohne
+  TM9 und ist eine **EIGENE Entscheidung**.
+
+### Zwei offene Fragen, die hier NICHT entschieden werden
+
+**(A) WELCHE GESTALT DER SCHALTER AN DER PINTEREST-KARTE HAT.** Das ist eine UI-Frage und
+am Code nicht zu beantworten; sie gehört dem Owner.
+
+**DIE GRUNDLAGE DER ENTSCHEIDUNG — GEMESSEN am Repo (CC, 2026-09-10), und sie ist
+ausdrücklich NICHT die Entscheidung:**
+- **EIN KONFIGURIERTES ZIEL OHNE TESTMODUS ZEIGT HEUTE GAR NICHTS.** Der ganze Block hängt
+  an **`projectId && testModeState !== null`**; der Leser gibt einen Eintrag nur für Ziele
+  heraus, die einen Testmodus tragen. Kein Feld, kein Knopf, keine Zeile — und **die Karte
+  entscheidet das nicht selbst**, sie zeigt den Schalter dort, wo ein Eintrag ankommt.
+- **DIE DREI GESTEN HABEN HEUTE DIESE GESTALT:** ein Textfeld (`placeholder="Testcode"`,
+  `aria-label={`Testcode für ${config.name}`}`) · **EIN** Knopf, dessen Beschriftung
+  zwischen `${config.name}-Test starten` und `${config.name}-Test verlängern` wechselt
+  (`testModeState.kind === "laeuft"`) · ein **zweiter** Knopf
+  `${config.name}-Test jetzt beenden`, der **nur im laufenden Zustand** erscheint. Darüber
+  die Zustandszeile aus `describeTestModeState` — bei `kind: "aus"` liefert sie **`null`**,
+  dann steht dort nichts.
+- **DIE SPERRE, DIE DEN AUSSCHLAG GIBT:** Der Start-Knopf trägt
+  `disabled={testBusy || !testInput.trim()}` — **er ist gesperrt, solange nichts eingegeben
+  ist.** Fällt das Feld für `pinterest` weg, fällt diese Sperre mit, und der Knopf braucht
+  eine andere Freigabe-Bedingung.
+- **UND EINE ZWEITE FOLGE, DIE MAN LEICHT ÜBERSIEHT:** Ohne Feld tun "starten" und
+  "verlängern" **dasselbe** — beide rufen `startTestMode` und setzen die Frist neu. Bei
+  `meta` und `tiktok` unterscheidet sie der frisch verlangte Code; bei `pinterest` gibt es
+  nichts zu unterscheiden. **Ob die Beschriftung trotzdem wechselt, ist Teil dieser Frage.**
+
+**(B) IN WELCHER GESTALT DER FAN-OUT DAS TESTMODUS-SIGNAL AN `forwardToPinterest`
+WEITERGIBT.** Sie entsteht aus dem Befund (4) oben: Der siebte Wert der Dispatch-Stelle ist
+der CODE, und `pinterest` trägt nie einen. **Das blosse Durchreichen ist ein Typfehler und
+wäre wirkungslos.** Ob der Fan-Out die Anwesenheit des Eintrags als Boolean bildet, ob der
+`Forwarder`-Typ einen zweiten Wert bekommt, oder ob die Auflösung ihn anders herausgibt,
+ist **Bausache und hier nicht entschieden.**
+**WAS FESTSTEHT UND KEINE ENTSCHEIDUNG IST:** Es muss die ANWESENHEIT des Eintrags
+transportieren, nicht seinen Wert — und es darf **kein zweites Urteil** darüber entstehen,
+ob dieses Ziel im Testmodus steht (Entscheidung (13), zweite Auflage). Riegel und Markierung
+lesen dieselbe aufgelöste Menge.
+
 **PROVENIENZ DES ZUSCHNITTS:** OWNER-ENTSCHEIDUNG 2026-09-10. Die Vorprüfung der drei
 Gesten, TM13 und die zwei Kundentext-Stellen sind GEMESSEN am Repo (CC, 2026-09-10); der
 Pflicht-Stopp am Live-Lauf ist GEMESSEN LIVE (Stefan, 2026-09-10, VERMERK 3).
+**ERGÄNZT AM 2026-09-10 NACH DEM BAU VON 11.3d** (OWNER-ENTSCHEIDUNG desselben Tages): die
+vier Punkte am Gegenstand, die Richtigstellung an den zwei Kundentext-Stellen, die zwei
+weiteren Auflagen und die vierte Achse am Nachweis, die Ausschlüsse und die zwei offenen
+Fragen. **Alle Code-Angaben dieser Ergänzung sind GEMESSEN am Repo (CC, 2026-09-10)** —
+namentlich der `pinterest`-Eintrag in `FORWARDER_BY_TARGET`, der siebte Wert der
+Dispatch-Stelle, die Signatur von `forwardToPinterest`, die Sichtbarkeitsbedingung des
+Testmodus-Blocks in `TargetCard.tsx` und die Kommentar-Eigenschaft des Erklärtextes. **Die
+zwei Auflagen am Live-Lauf sind GEMESSEN LIVE** (Stefan, 2026-09-10 bzw. 2026-09-09;
+VERMERK 3 und VERMERK 2). **Dass die Verdrahtung ein SIGNAL und kein Argument braucht, ist
+eine ABLEITUNG** aus den drei gemessenen Befunden, keine eigene Messung.
 
 ### EINE NAMENSKOLLISION, DIE DIESE TEILUNG ERZEUGT — GEMELDET, NICHT AUFGELÖST
 

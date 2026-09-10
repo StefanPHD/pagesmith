@@ -894,6 +894,77 @@ ist am selben Tag von Migration 0029 ersetzt worden; das Wort "heutigen" war ab 
 Zeitpunkt galt. Geändert ist die Zeitform, nicht die Herkunft. **Die Entscheidung (12)
 oben ist unangetastet.**
 
+### (13) `PINTEREST_TEST_MODE` ENTFÄLLT — DIE FRIST STEUERT ALLEIN
+
+**DIE ENTSCHEIDUNG:** Die Umgebungsvariable `PINTEREST_TEST_MODE` entfällt VOLLSTÄNDIG.
+Der Testmodus für `pinterest` hängt danach allein an der projekt-eigenen Frist
+`test_mode_expires_at`. **Es gibt dann genau EINE Quelle für "ist dieses Ziel dieses
+Projekts im Testmodus".**
+
+**DER TRAGENDE GRUND, UND ER IST NICHT AUFRÄUMEN:** Nach der Aufnahme von `pinterest` in
+`TARGETS_WITH_TEST_MODE` entstünde sonst genau der Zustand, den 0028 als **"reiner
+Datenverlust ohne Gegenwert"** benennt — die Frist ist gesetzt, der Riegel feuert, das
+Ereignis verschwindet aus `events`, **UND der Anbieter bekommt keine Test-Markierung, weil
+die Variable nicht gesetzt ist. Er verbucht eine ECHTE Conversion.**
+
+**DAS IST DER NORMALFALL, NICHT DER SONDERFALL:** Die Variable ist heute nirgends gesetzt.
+Genau diesen Zustand hat der Paar-CHECK für `meta` und `tiktok` verboten; für `pinterest`
+ist er in 11.3c aufgehoben worden, **weil er dort den falschen Fall traf**. Wer die
+Variable stehen lässt, **baut den Schaden ein, den 11.3c freigeräumt hat.**
+
+**DIE ZWEI WEITEREN GRÜNDE, kürzer, aber sie gehören dazu:**
+- **STILLE MANDANTEN-KOPPLUNG.** Ein Wert in Vercel markiert die Pinterest-Ereignisse
+  ALLER Kunden als Test. Dieselbe Klasse wie ein Cookie mit Domain-Attribut auf einer
+  Wildcard.
+- **VORRAT (25).** Jeder nicht-leere Wert schaltet ein, `"false"` und `"0"` eingeschlossen;
+  ausgeschaltet wird nur durch Entfernen. **Diese Falle besteht nur, solange die Variable
+  besteht.**
+
+**DIE AUFLAGE AN DIE REIHENFOLGE — SIE IST TEIL DER ENTSCHEIDUNG UND KEINE ANMERKUNG:** Das
+Entfernen ist eine **VERHALTENSÄNDERUNG AUF DEM SERVE-PFAD** (`testModeQuery` wird bei
+JEDEM Pinterest-Forward gelesen, GEMESSEN am Repo, CC, 2026-09-10). Es geschieht im SELBEN
+Zug wie das, was es ersetzt: **erst treibt die Frist den Parameter, dann fällt die
+Variable.** Umgekehrt entstünde ein Fenster, in dem `pinterest` gar keinen Testmodus hat.
+
+**DIE ZWEITE AUFLAGE, ebenfalls bindend: RIEGEL UND PARAMETER LESEN DIESELBE FUNKTION.**
+Der Riegel nimmt das Ereignis aus `events` (Entscheidung (3)), der Parameter markiert es
+beim Anbieter — **beide beantworten dieselbe Frage.** Zwei Instanzen, die dasselbe
+beurteilen, laufen auseinander; **kein drittes Urteil.**
+**OB ES FÜR `meta` UND `tiktok` BEREITS EIN SOLCHES GETEILTES PRÄDIKAT GIBT, IST
+UNGEMESSEN** und ausdrücklich NICHT hier entschieden — das ist die erste Frage der
+Aufklärung zu 11.3d.
+
+**IHRE GRENZE:** Die Entscheidung nimmt **den einzigen Hebel, der heute unabhängig von der
+Oberfläche wirkt**. Nach 11.3d ist die Oberfläche dieser Hebel — vorher nicht. **Wer die
+Reihenfolge dreht, steht ohne beides da.**
+
+**WAS SIE NICHT ENTSCHEIDET:** wie die Frist den Parameter erreicht — ob der Adapter den
+Testzustand aus der Konfiguration liest, in welcher Gestalt, und ob der Resolver ihn heute
+überhaupt bis dorthin durchreicht. **Das ist Bausache und ungemessen.**
+
+**EIN WIDERSPRUCH IM SELBEN DOKUMENT — GEMELDET, IN DIESER RUNDE NICHT AUFGELÖST:** Der
+Abschnitt "Die Env-Variablen bleiben — und der Riegel hängt NICHT an ihnen" (unter
+"Scheibe 11.3a") sagt wörtlich, `META_TEST_EVENT_CODE`, `TIKTOK_TEST_EVENT_CODE` und
+`PINTEREST_TEST_MODE` blieben "unverändert bestehen" und würden "von dieser Phase nicht
+abgeschafft". **Für `pinterest` ist das mit dieser Entscheidung überholt**; für die zwei
+anderen Variablen gilt es unverändert. Der Satz wird hier NICHT geändert — er stammt aus
+dem Zuschnitt einer anderen Scheibe, und eine Richtigstellung ohne Vollzug behauptete einen
+Zustand, den es noch nicht gibt. **WER IHN LIEST, LIEST DIESEN ABSATZ MIT;** nachgezogen
+wird er mit dem Abschluss-Vermerk der Scheibe, die die Variable entfernt.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-10. Dass `testModeQuery`
+(`src/lib/capi/pinterest-forward.ts`) bei jedem Aufruf gelesen wird, dass sie die
+**EINZIGE** Lesestelle im Produktivcode ist und dass jeder nicht-leere Wert einschaltet,
+ist GEMESSEN am Repo (CC, 2026-09-10) — Achse: der Variablenname, case-insensitiv, ganzes
+Repo ohne `node_modules`, `.git`, `.next`; SIEBEN Vorkommen, davon EINE Lesestelle
+(`process.env`), eine Stub-Stelle in `pinterest-forward.test.ts`, vier in dieser Datei und
+eine in einer archivierten Rohfassung. Negativkontrolle 0.
+**DASS DIE VARIABLE NIRGENDS GESETZT IST, IST ZWEIGETEILT UND WIRD NICHT ZUSAMMENGEZOGEN:**
+Für **Vercel** ist es **OWNER-ANGABE (2026-09-10), KEINE Messung** — die Vercel-Umgebung
+liegt nicht im Repo und ist von hier aus nicht messbar. Für **`.env.local`** ist es
+**GEMESSEN am Repo (CC, 2026-09-10)**: die Datei existiert, ist von derselben Suche erfasst
+und trägt den Namen NICHT.
+
 ## Vorrat — gemeldet, nicht gebaut
 
 **(1) OB TIKTOK TEST-MARKIERTE EREIGNISSE MITZÄHLT WIE META — UNGELESEN UND UNGEMESSEN.**
@@ -1333,6 +1404,15 @@ PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10) an `testModeQuery`; die Wirkung de
 Parameters ist GEMESSEN LIVE (Stefan, 2026-09-10, VERMERK 3). Dass jemand `"false"`
 einträgt, ist eine ABLEITUNG über einen plausiblen Fehlgriff, **keine Beobachtung**.
 
+**ZUSATZ 2026-09-10 — DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN, UND DER EINTRAG BLEIBT
+OFFEN.** Entscheidung (13) macht ihn gegenstandslos: Sie schafft die Variable ab, und die
+Anwesenheits-Falle besteht nur, solange die Variable besteht.
+**ABER ERST MIT DEM VOLLZUG, NICHT MIT DER ENTSCHEIDUNG** — die Variable steht noch im
+Code, und `testModeQuery` liest sie unverändert bei jedem Aufruf. **Ein Eintrag, der auf
+eine Entscheidung hin gestrichen wird, behauptet einen Zustand, den es noch nicht gibt.**
+Gestrichen wird er beim Abschluss-Vermerk der Scheibe, die die Variable entfernt, mit dem
+Beleg der Erledigung.
+
 **(26) DER SCHALTER WIRKT DEPLOYMENT-WEIT, DIE GEPLANTE FRIST PROJEKT-EIGEN.**
 Vorrat (10) führt die Vorrang-Frage für zwei **CODES** (meta/tiktok): welcher Wert in die
 Nutzlast wandert, wenn Umgebungsvariable und Projektzeile verschiedene tragen. **Bei
@@ -1348,6 +1428,20 @@ TRIGGER: der Zuschnitt der Pinterest-Scheibe.
 PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10) — dass `testModeQuery` die Variable je Aufruf
 liest und keinen Projekt-Zustand kennt; die Abgrenzung gegen (10) ist eine ABLEITUNG,
 **keine Messung**.
+
+**ZUSATZ 2026-09-10 — DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN, UND DER EINTRAG BLEIBT
+OFFEN.** Entscheidung (13) macht ihn gegenstandslos, und zwar an der Wurzel: **Die
+Kollision entsteht nur, weil es ZWEI Arten von Zustand gibt.** Fällt der deployment-weite
+Schalter weg, bleibt die projekt-eigene Frist als einzige Quelle, und die Frage "was gilt,
+wenn beide etwas sagen" hat keinen Gegenstand mehr.
+**ABER ERST MIT DEM VOLLZUG, NICHT MIT DER ENTSCHEIDUNG** — bis die Variable aus dem Code
+ist, kann sie gesetzt werden, und dann steht die Kollision wieder da. **Ein Eintrag, der
+auf eine Entscheidung hin gestrichen wird, behauptet einen Zustand, den es noch nicht
+gibt.** Gestrichen wird er beim Abschluss-Vermerk der Scheibe, die die Variable entfernt,
+mit dem Beleg der Erledigung.
+**WAS DER ZUSATZ NICHT BERÜHRT:** den Zeiger auf (10). Jener Eintrag führt die
+Vorrang-Frage für die zwei CODES bei `meta` und `tiktok`, und **die bleibt offen** —
+Entscheidung (13) betrifft `pinterest`.
 
 **(27) DAS TESTANFRAGEN-LIMIT BINDET PHASE 11.4, NICHT DIESE.**
 Pinterest deckelt Testanfragen eigens (docs/ziel-befunde.md, Abschnitt "Pinterest
@@ -1544,6 +1638,39 @@ GEMELDET 2026-09-10, NICHT GEBAUT.
 der engen Achse und die zwei zusätzlichen der breiten sind beide protokolliert. Dass der
 Prompt der Auslöser war, ist eine **ABLEITUNG** und am Prompt jener Runde ablesbar, nicht
 am Repo.
+
+### (4) EINE ZAHL IN EINER WÖRTLICHEN PROMPT-VORGABE WIRD NICHT GEPRÜFT, WEIL SIE VORGABE IST
+
+**DER BELEG — GEMESSEN am eigenen Lauf (CC, 2026-09-10):** Der Commit-Body zu `ce7b49e`
+war wörtlich vorgegeben und nannte "fuenf Kommentare unter src/". **Dieselbe Runde hat
+SECHS Vorkommen in VIER Dateien gemessen**, mit Negativkontrolle und Gegenprobe. Der Body
+ist unverändert übernommen worden, **weil er Vorgabe war** — der Widerspruch fiel erst nach
+dem Commit auf und ist per `--amend` vor dem Push behoben worden (`3bbd486`).
+
+**DIE URSACHE IST DIE BAUFORM, NICHT DIE SORGFALT:** Ein Commit-Body kommt aus dem
+**PROMPT**, die Messung aus der **RUNDE**. **Niemand hält beide gegeneinander, weil sie aus
+verschiedenen Quellen stammen und je für sich richtig aussehen.** Die Vorgabe wird als
+Vorgabe gelesen und nicht als Behauptung, die zu prüfen wäre.
+
+**DIE HERKUNFT DER FALSCHEN ZAHL GEHÖRT DAZU:** Sie stammte aus einem früheren Bericht, der
+"fünf Dateien" schrieb und **VIER Namen aufzählte** — der Widerspruch stand offen im selben
+Satz. **Die Regel "Liste schlägt Zahl" hätte ihn gefangen**; sie ist beim Schreiben des
+Prompts nicht angewandt worden.
+
+**DIE GEGENFORM, DIE BILLIGER IST ALS DIE PRÜFUNG: ZAHLEN GEHÖREN NICHT IN EINE WÖRTLICHE
+BODY-VORGABE** — entweder ohne Zahl formulieren lassen, oder ausdrücklich dazuschreiben,
+dass die Zahl gegen die Messung DIESER Runde zu prüfen ist.
+
+**ABGRENZUNG ZU "Liste schlägt Zahl"** (docs/immer-beachten.md, Review-Kalibrierung): Jene
+betrifft das **LESEN** eines Berichts — zwei Angaben stehen nebeneinander, die Liste gilt.
+Diese betrifft das **SCHREIBEN** einer Vorgabe: die falsche Zahl wandert in ein Artefakt,
+**das danach unveränderlich ist**.
+
+**NICHT ENTSCHIEDEN:** ob eigene Regel oder Absatz. **KEINE EMPFEHLUNG.**
+GEMELDET 2026-09-10, NICHT GEBAUT.
+
+**PROVENIENZ:** GEMESSEN am eigenen Lauf (CC, 2026-09-10); dass die Bauform die Ursache
+ist, ist eine **ABLEITUNG**.
 
 ## Scheiben-Vermerke
 

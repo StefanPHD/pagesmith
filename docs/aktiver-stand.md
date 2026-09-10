@@ -46,6 +46,7 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT").
 - ## Scheiben-Vermerke
 - ## Scheibe 11.3b — Die drei Gesten und das Banner in der Oberfläche
 - ## Scheibe 11.3c — Der Paar-CHECK wird ersetzt
+- ## Was beim Zuschnitt von 11.3d vorliegen muss — gesammelt, nicht zugeschnitten
 
 ## Fortschreibungsregeln
 
@@ -965,6 +966,101 @@ liegt nicht im Repo und ist von hier aus nicht messbar. Für **`.env.local`** is
 **GEMESSEN am Repo (CC, 2026-09-10)**: die Datei existiert, ist von derselben Suche erfasst
 und trägt den Namen NICHT.
 
+**ZUSATZ 2026-09-10 — EINE LÜCKE DIESER ENTSCHEIDUNG IST GESCHLOSSEN, DER TEXT DARÜBER
+BLEIBT WÖRTLICH STEHEN.** Die zweite Auflage verlangt, dass Riegel und Markierung
+DIESELBE Funktion lesen. **Sie sagt nicht, WAS diese Funktion für ein Ziel OHNE Code
+liefern soll** — und genau das ist bei `pinterest` seit 0029 der Regelfall. Die Lücke ist
+in der Aufklärungsrunde desselben Tages gemeldet und mit **Entscheidung (14)** geschlossen
+worden: Das Prädikat urteilt über die FRIST, der Code wird zur Beigabe.
+**AN (13) ÄNDERT DAS NICHTS** — die Auflage "kein drittes Urteil" gilt unverändert und
+wird von (14) ausdrücklich eingehalten. Ergänzt ist, was sie offenliess.
+
+### (14) DAS PRÄDIKAT URTEILT ÜBER DIE FRIST, NICHT ÜBER DEN CODE
+
+**DIE ENTSCHEIDUNG:** Das Prädikat urteilt künftig über die **FRIST**; der Code wird zur
+**BEIGABE**. Zusätzlich weiss der TypeScript-Code **ZIEL-ABHÄNGIG**, welche Ziele einen
+Code VERLANGEN — für ein Ziel mit Code-Pflicht bleibt "Frist ohne Code" **fail-closed**,
+für `pinterest` ist es der **Normalfall**.
+**ES BLEIBT BEI EINEM URTEIL.** Kein zweites Prädikat, kein Boolean daneben.
+
+**DER BEFUND, DER SIE AUSLÖST — GEMESSEN am Repo (CC, 2026-09-10, Aufklärungsrunde 2):**
+`activeTestCodeFromRow` (`src/lib/tracking/credential-state.ts`) hat den Rückgabetyp
+`string | null` und verwirft in ihrer ERSTEN Prüfung jede Zeile ohne Code. Für ein Ziel,
+das seit 0029 per CHECK NIE einen Code trägt, ist sie damit **konstant `null`**: kein
+Eintrag in `resolution.testMode` (`getCapiConfigByTrackingKey`, `src/lib/capi/token.ts`),
+`testModusAktiv` bleibt falsch (`handleIngest`, `src/lib/capi/ingest.ts`), der Nachschlag
+an der Fan-Out-Stelle findet nichts, und die Ziel-Karte zeigt **"aus"**, obwohl eine Frist
+in der Zukunft steht (`testModeStateFrom`, dieselbe Datei).
+
+**IN EINEM SATZ, UND ER IST DER KERN: DAS SCHEMA KANN SEIT 0029 EINEN ZUSTAND ABLEGEN, DEN
+DER AUFLÖSUNGS-PFAD NICHT ALS TESTMODUS ERKENNT.** Beide Schichten sehen für sich richtig
+aus, und **nichts wird davon rot**.
+
+**WAS AM HEUTIGEN KOMMENTARKOPF RICHTIG BLEIBT UND WAS NICHT** — die Unterscheidung gehört
+hinein, sonst liest die nächste Runde die Entscheidung als Widerruf: Das **ZIEL** jener
+Bauform ist unverändert richtig — wörtlich dort: "ein Boolean daneben waere ein zweites
+Urteil ueber denselben Zustand, und die beiden koennten auseinanderlaufen". Was **nicht
+trägt, ist die FORM** — dass der CODE der Träger des Urteils ist. Die Begründung war aus
+ZWEI Zielen gebildet, die beide einen Code haben, und auf alle künftigen ausgedehnt.
+**Das ist die Figur aus docs/immer-beachten.md, "EINE REGEL KANN RICHTIG SEIN UND NICHT
+SKALIEREN — DER BRUCH ZEIGT SICH AN IHRER BEGRÜNDUNG, NICHT AN IHREM WORTLAUT".**
+
+**DIE KONKRETE ZUSAGE, DIE DABEI ZU FASSEN IST, im Wortlaut** (GEMESSEN am Kommentarkopf,
+CC, 2026-09-10): "FAIL-CLOSED IN JEDEM ZWEIFELSFALL … Ein fehlender Code, ein Code aus
+reinem Leerraum, ein fehlender oder unlesbarer Zeitstempel — alles ergibt null."
+**IHR ERSTES GLIED IST ES, DAS SICH ÄNDERT, UND NUR FÜR ZIELE OHNE CODE-PFLICHT.** Der
+zweite Halbsatz derselben Zusage bleibt wahr, und zwar unverändert wörtlich: "die
+Abwesenheit einer Angabe schaltet ihn nie ein" — eingeschaltet wird der Testmodus weiterhin
+durch die ANWESENHEIT der Frist, nie durch eine Abwesenheit.
+
+**DIE VERWORFENEN KANDIDATEN, je mit Ausscheidungsgrund** — sie stehen hier, damit keiner
+als Einfall wiederkommt:
+- **PLATZHALTER-CODE FÜR PINTEREST.** Scheitert am CHECK aus 0029, der `test_event_code`
+  bei `pinterest` verbietet. Wäre ausserdem **tote Daten**: ein Wert, den der Adapter nie
+  sendet und eine Oberfläche anzeigen könnte.
+- **EIN ZWEITES, ZIEL-ABHÄNGIGES PRÄDIKAT DANEBEN.** Bricht die zweite Auflage von (13)
+  und die Begründung des heutigen Kommentarkopfs. Zwei Urteile über denselben Zustand
+  laufen auseinander.
+- **NUR DER CHECK WEISS ES** — das Prädikat urteilt allein über die Frist, ohne
+  Ziel-Wissen. **DAS IST DIE ERNSTHAFTE ALTERNATIVE, und der Grund für ihr Ausscheiden ist
+  der eigentliche Inhalt dieser Entscheidung: DER CODE KANN NICHT WISSEN, OB DER CHECK IN
+  DER LAUFENDEN DATENBANK STEHT** (docs/immer-beachten.md, "OB EINE MIGRATION IN DER
+  LAUFENDEN DB ANGEWANDT IST, IST AM REPO NICHT ENTSCHEIDBAR"). **Der Fehlerfall wäre
+  STILL:** Eine `meta`-Zeile mit Frist ohne Code gälte als aktiv, der Riegel nähme das
+  Ereignis aus `events`, und der Anbieter bekäme keine Markierung — **er verbuchte eine
+  ECHTE Conversion.** Genau der Zustand, den 0028 "reiner Datenverlust ohne Gegenwert"
+  nennt. Unter dieser Entscheidung wäre dieselbe Zeile schlicht **nicht aktiv**, und das
+  Ereignis bliebe erhalten.
+  **IHR VORTEIL WIRD MITGENANNT:** die Ziel-Aufzählung stünde genau einmal im System, im
+  CHECK. **Er wiegt den stillen Fehlerfall nicht auf.**
+
+**DIE GRENZE DES EINWANDS GEGEN DIESE ENTSCHEIDUNG, ehrlich benannt:** Sie führt eine
+Ziel-Auskunft in den TypeScript-Code ein, die es dort so noch nicht gibt. Sie ist aber
+**KEIN dritter Ort** — `TARGETS_WITH_TEST_MODE` zählt bereits Ziele auf, wächst mit 11.3d
+ohnehin um `pinterest`, und ein Wächter macht jede Erweiterung rot.
+**DER WÄCHTER IST NACHGEMESSEN UND NICHT ÜBERNOMMEN (GEMESSEN am Repo, CC, 2026-09-10):**
+`describe("TM13 — die Menge der Ziele mit Testmodus")` mit `it("GENAU meta und tiktok")` in
+`src/lib/tracking/credential-state.test.ts`, Zusicherung
+`expect([...TARGETS_WITH_TEST_MODE]).toEqual(["meta", "tiktok"])`. **Es gibt einen ZWEITEN
+Konsumenten der Menge im Testbestand**, der in der Vorgabe nicht genannt war: eine
+Schleife über `TARGETS_WITH_TEST_MODE` in `src/app/projects/actions.testmode.test.ts` —
+sie deckt mit `pinterest` automatisch ein Ziel mehr ab, und das ist beim Zuschnitt zu
+prüfen, nicht zu unterstellen.
+**WELCHE GESTALT die Auskunft bekommt, ist hier AUSDRÜCKLICH NICHT entschieden** — zweites
+Feld, eigene Konstante oder Funktion ist Bausache und gehört in den Stufe-1-Plan.
+
+**WAS UNBERÜHRT BLEIBT UND IM ZUSCHNITT ZU HALTEN IST:**
+- **Entscheidung (4)** — `expires === now` gilt als abgelaufen; ein Urteil, zwei Lesungen.
+- **Entscheidung (3)** — der Riegel hängt an mindestens einem Ziel.
+- **Die Fail-closed-Haltung des Prädikats:** ein unlesbarer oder fehlender Zeitstempel
+  ergibt weiterhin "nicht aktiv". Geändert wird, was ein fehlender CODE bedeutet — und
+  zwar NUR für Ziele ohne Code-Pflicht.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-10. Der Rumpf des Prädikats, die drei
+Folgestellen und der Typ `TestModeTarget` sind GEMESSEN am Repo (CC, 2026-09-10,
+Aufklärungsrunde 2). Dass der Fehlerfall der verworfenen Alternative still wäre, ist eine
+ABLEITUNG aus 0028 und dem gemessenen Ingest-Pfad, **keine Messung**.
+
 ## Vorrat — gemeldet, nicht gebaut
 
 **(1) OB TIKTOK TEST-MARKIERTE EREIGNISSE MITZÄHLT WIE META — UNGELESEN UND UNGEMESSEN.**
@@ -1506,6 +1602,21 @@ PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10), Achse: der alte Constraint-Name,
 case-insensitiv, Suchraum `src/`, alle Dateitypen, Testdateien eingeschlossen — sechs
 Treffer in vier Dateien, mit Negativkontrolle (0) und Gegenprobe (der NEUE Name kommt
 unter `src/` NICHT vor).
+
+**ZUSATZ 2026-09-10 — DIE SECHS ZERFALLEN IN ZWEI KLASSEN, UND NUR VIER GEHÖREN NOCH
+HIERHER.** Der Text darüber bleibt wörtlich stehen; der Eintrag wird NICHT gestrichen.
+**VIER STELLEN TRAGEN NUR EINEN TOTEN NAMEN** — ihre Aussage gilt für `meta` und `tiktok`
+unverändert: `endTestMode` (`src/app/projects/actions.ts`), zwei Läufe in
+`src/app/projects/actions.testmode.test.ts` und einer in
+`src/components/TargetCard.test.tsx`. **Sie bleiben der Gegenstand dieses Eintrags.**
+**ZWEI STELLEN TRAGEN EINE AUSSAGE, DIE AB 11.3d SACHLICH FALSCH WIRD**, und sie sind
+damit **SCHEIBENARBEIT und keine Aufräumarbeit**: der Kopf von `startTestMode`
+(`src/app/projects/actions.ts`) und der sichtbare Erklärtext an der Ziel-Karte
+(`src/components/TargetCard.tsx`). Beide sagen, ein Zustand ohne Code sei unmöglich — für
+`pinterest` ist genau das ab 11.3d der Normalfall. **Sie stehen unter "Was beim Zuschnitt
+von 11.3d vorliegen muss" und gehören in die Scheibe, nicht in eine Aufräumrunde.**
+PROVENIENZ: die Einteilung ist eine ABLEITUNG aus Entscheidung (14) und den am 2026-09-10
+gemessenen Fundstellen; die Fundstellen selbst sind GEMESSEN am Repo (CC, 2026-09-10).
 
 ## Hebungs-Kandidaten
 
@@ -2311,3 +2422,45 @@ Tages nicht mehr**, die Angabe bleibt als Provenienz des ZUSCHNITTS stehen und i
 Aussage über den heutigen Zustand. `testModeQuery` und `TARGETS_WITH_TEST_MODE` sind
 GEMESSEN am Repo (CC, 2026-09-10). **Der Datenbestand war zum Zeitpunkt des Zuschnitts
 ausdrücklich NICHT gemessen; erhoben ist er am 2026-09-10 vor dem Lauf** (VERMERK 4).
+
+## Was beim Zuschnitt von 11.3d vorliegen muss — gesammelt, nicht zugeschnitten
+
+**DIES IST KEIN ZUSCHNITT.** Der Abschnitt sammelt, was beim Zuschneiden auf dem Tisch
+liegen muss; er entscheidet nichts und schneidet nichts. Angelegt 2026-09-10.
+
+### (a) Der Erklärtext an der Ziel-Karte ist KUNDENTEXT, keine Aufräumarbeit
+
+`src/components/TargetCard.tsx` sagt dem Betreiber im **sichtbaren** Text, ein Schalter
+ohne Code sei unmöglich — wörtlich: "EIN SCHALTER HAETTE EINEN ZUSTAND OHNE CODE ZUR
+FOLGE, und den laesst der CHECK … nicht einmal zu." **Ab 11.3d ist genau das der Normalfall
+für `pinterest`.** Der Satz steht **vor den Augen des Betreibers**, nicht in einem
+Kommentar; er gehört in die Scheibe.
+
+**Der Kopf von `startTestMode`** (`src/app/projects/actions.ts`) trägt dieselbe Aussage —
+**dieselbe Klasse, aber Kommentar statt Oberfläche.** Er gehört mit, wiegt aber weniger.
+
+**FOLGE FÜR VORRAT (29), dort vermerkt und nicht gestrichen:** Jener Eintrag behält die
+VIER Stellen, die nur einen toten Constraint-Namen tragen. **Diese ZWEI sind
+Scheibenarbeit.** Wer sie als Aufräumposten mitnimmt, ändert einen Namen und lässt die
+falsche Aussage stehen.
+PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10); die Einordnung als Scheibenarbeit ist eine
+ABLEITUNG aus Entscheidung (14).
+
+### (b) Zwei Pinterest-Läufe verlieren ihren Gegenstand, nicht nur einer
+
+`src/lib/capi/pinterest-forward.test.ts` trägt **drei** Läufe an der Umgebungsvariablen
+(GEMESSEN am Repo, CC, 2026-09-10):
+- **T17** "der Testmodus ist standardmaessig AUS" — er hängt an der **ABWESENHEIT** der
+  Variablen. **Nach ihrem Entfernen ist er TRIVIAL WAHR und meldet weiter Erfolg.**
+- **T17b** "gesetzte Umgebungsvariable -> test=true im Query-String" — sein Gegenstand
+  verschwindet vollständig.
+- **T17c** "METAS Umgebungsvariable schaltet hier NICHTS" — prüft eine **Nicht-Kopplung**,
+  die sinnvoll bleibt; **ihre Achse wechselt** von "Metas Env" auf "Metas Projekt-Zustand".
+
+**T17 UND T17b WERDEN ERSETZT, NICHT GESTRICHEN:** dieselbe Frage, andere Quelle. **Wer
+nur T17b anfasst, lässt einen Wächter stehen, der nichts mehr prüft und grün meldet** —
+das ist die Figur "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL"
+(docs/immer-beachten.md), **Fall (1): ihr Gegenstand wird entfernt.**
+PROVENIENZ: die drei Läufe und ihre Zusicherungen sind GEMESSEN am Repo (CC, 2026-09-10);
+dass T17 danach trivial wahr wäre, ist eine ABLEITUNG aus seinem Rumpf, **keine Messung an
+einem Lauf ohne die Variable**.

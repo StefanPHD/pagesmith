@@ -2056,4 +2056,52 @@ describe("TM4 — der projekt-eigene Testzustand und seine Frist (Scheibe 11.3a)
     expect(res?.targets).toEqual([]);
     expect(res?.testMode).toEqual([{ target: "meta", code: CODE }]);
   });
+
+  // TM4f — DIE NEUE ACHSE (Scheibe 11.3d): EIN ZIEL OHNE CODE-PFLICHT.
+  //
+  // SEIT 0029 KANN DAS SCHEMA "Frist ohne Code" BEI pinterest ABLEGEN; bis zu dieser
+  // Scheibe verwarf das Praedikat jede Zeile ohne Code, und der Eintrag entstand gar
+  // nicht — der Riegel schwieg, obwohl eine Frist in der Zukunft stand.
+  //
+  // DER VERGLEICH LAEUFT UEBER `"code" in eintrag` UND NICHT UEBER toEqual, und das ist
+  // die riskanteste Stelle dieser Scheibe: toEqual IGNORIERT einen Schluessel mit dem
+  // Wert undefined (GEMESSEN 2026-08-18, s. den Kopf von ResolvedCapiConfig.renewable).
+  // Ein Lauf, der "pinterest kommt OHNE Code an" mit toEqual behauptete, waere mit
+  // `{ target: "pinterest" }` UND mit `{ target: "pinterest", code: undefined }`
+  // GLEICHERMASSEN gruen — er koennte die Abwesenheit gar nicht pruefen.
+  it("TM4f: pinterest mit Frist OHNE Code -> Eintrag in testMode, und der Schluessel `code` FEHLT", async () => {
+    mockAdmin({
+      projects: {
+        data: {
+          id: "proj-1",
+          settings: { pixels: { pinterest: { pixelId: "TAG-987" } } },
+          blocked_at: null,
+        },
+        error: null,
+      },
+      project_secrets: secretRows([
+        {
+          target: "pinterest",
+          secret: "PIN-SECRET",
+          test_event_code: null,
+          test_mode_expires_at: frist(3600),
+        },
+      ]),
+    });
+
+    const res = await getCapiConfigByTrackingKey("tk-abc");
+
+    // ZUERST DIE LAENGE — sie ist der Riegel (Entscheidung (3)): "mindestens ein Ziel".
+    expect(res?.testMode).toHaveLength(1);
+    const eintrag = res!.testMode[0];
+    expect(eintrag.target).toBe("pinterest");
+    expect("code" in eintrag).toBe(false);
+
+    // GEGENKONTROLLE IM SELBEN LAUF: Das Ziel ist weiterhin Empfaenger. Ohne sie waere
+    // der Eintrag auch dann erklaerbar, wenn die Zeile aus einem ganz anderen Grund
+    // anders gelesen wuerde.
+    expect(res?.targets).toEqual([
+      { target: "pinterest", config: { pixelId: "TAG-987", token: "PIN-SECRET" } },
+    ]);
+  });
 });

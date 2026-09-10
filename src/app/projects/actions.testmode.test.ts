@@ -270,6 +270,26 @@ describe("Was VOR dem privilegierten Client abgewiesen wird", () => {
   it("die Ziel-Pruefung liest die ECHTE Menge, nicht eine Kopie", async () => {
     // ROT DURCH: eine handgeschriebene Liste in der Aktion. Waechst die Menge, waechst
     // dieser Lauf mit.
+    //
+    // -----------------------------------------------------------------
+    // VERMERKT MIT DER SCHEIBE 11.3d — ZWEI FALLEN AN DIESER SCHLEIFE, KEINE DAVON
+    // HEUTE SCHARF. Die Scheibe 11.3d aendert an diesem Lauf NICHTS; sie ruehrt
+    // TARGETS_WITH_TEST_MODE ausdruecklich nicht an. Der Vermerk steht hier, weil er am
+    // ORT DER HANDLUNG stehen muss: Ein Satz im Zuschnitt ist kein Waechter, und ein
+    // Waechter ist hier nicht baubar — der Fall bricht erst MIT der
+    // Mengen-Erweiterung, also in der Scheibe 11.3e.
+    //
+    //  (1) SIE WAECHST STILLSCHWEIGEND MIT, STATT ROT ZU WERDEN. Kommt `pinterest` in
+    //      die Menge, prueft dieser Lauf ab dann ein Ziel mit, fuer das ihn niemand
+    //      geschrieben hat — und er behauptet dabei `ok === true` fuer einen Aufruf MIT
+    //      Code. Fuer `pinterest` ist genau das falsch: der CHECK aus 0029 verbietet
+    //      dort einen Testcode. DAS GEGENSTUECK IST TM13 in
+    //      lib/tracking/credential-state.test.ts — jener Waechter WIRD rot, und das ist
+    //      Absicht. Zwei Konsumenten derselben Menge, zwei entgegengesetzte Ausgaenge.
+    //  (2) IHR SCHREIBWEG IST GEMOCKT. Die Datenbank faellt in diesem Lauf gar nicht
+    //      auf: Er bliebe GRUEN AUS DEM FALSCHEN GRUND, waehrend der echte Schreibpfad
+    //      einen Wert ablegte, den der CHECK aus 0029 abweist.
+    // -----------------------------------------------------------------
     makeClient({ user: { id: "u1" } });
     for (const ziel of TARGETS_WITH_TEST_MODE) {
       const r = await startTestMode("proj-1", ziel, "TEST123");

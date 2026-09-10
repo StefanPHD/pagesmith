@@ -459,23 +459,66 @@ describe("Pinterest-Adapter — Endpunkt, Kennung und Testmodus", () => {
     );
   });
 
-  it("T17: der Testmodus ist standardmaessig AUS", async () => {
+  // ===================================================================
+  // DIE DREI T17-LAEUFE, NACHGEZOGEN MIT DER SCHEIBE 11.3d.
+  //
+  // T17 UND T17b SIND ERSETZT, NICHT GESTRICHEN — dieselbe Frage, andere Quelle.
+  // `PINTEREST_TEST_MODE` ist mit dieser Scheibe entfallen (Entscheidung (13)); haette
+  // man nur T17b angefasst, bliebe T17 als Waechter stehen, der an der ABWESENHEIT
+  // einer Variablen haengt, die es nicht mehr gibt: TRIVIAL WAHR und weiter gruen
+  // meldend (docs/immer-beachten.md, "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI
+  // WEISEN HOHL", Fall (1) — ihr Gegenstand wird entfernt).
+  //
+  // T17c IST ENTFALLEN, MIT ZEIGER STATT ERSATZ. Er behauptete, METAS Umgebungsvariable
+  // schalte hier nichts. Diese Datei liest seit 11.3d GAR KEINE Umgebungsvariable mehr
+  // — der Lauf waere damit auf derselben Achse trivial wahr wie T17 es waere. Seine
+  // Achse in der neuen Gestalt lautet "der Testzustand des einen Ziels faerbt den
+  // Aufruf eines anderen nicht", und die ist am ADAPTER nicht messbar: Metas Zustand
+  // ist hier nicht sichtbar, es gibt nur den eigenen Parameter.
+  // GEPRUEFT UND GEFUNDEN (GEMESSEN am Repo, CC, 2026-09-10): Die Achse steht
+  // BEREITS — als TM7 in capi/ingest.test-mode.test.ts ("ein Testzustand fuer meta
+  // setzt bei tiktok NICHTS"), also genau dort, wo resolution.testMode je Ziel
+  // nachgeschlagen wird. Ein zweiter Lauf daneben waere eine Doppelung, und eine
+  // Doppelung ist schlechter als eine Streichung.
+  // ===================================================================
+
+  it("T17: der Testmodus ist standardmaessig AUS — OHNE Parameter kein Anhang", async () => {
+    // ERSETZT T17. Der Gegenstand ist derselbe (standardmaessig aus), die Quelle eine
+    // andere: nicht mehr die fehlende Umgebungsvariable, sondern der fehlende
+    // Parameter. Der Aufruf laesst ihn hier bewusst GANZ weg — so ruft ihn der Eintrag
+    // dieses Ziels in FORWARDER_BY_TARGET (capi/ingest.ts) heute auch.
     await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
     expect(fetchCalls()[0][0]).not.toContain("test=true");
   });
 
-  it("T17b: gesetzte Umgebungsvariable -> test=true im Query-String", async () => {
-    vi.stubEnv("PINTEREST_TEST_MODE", "1");
-    await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
-    expect(fetchCalls()[0][0]).toContain("?test=true");
+  it("T17a2: ein AUSDRUECKLICHES `false` haengt ebenfalls nichts an", async () => {
+    // ER TRENNT "SIEHT DEN WERT" VON "SIEHT DIE ANWESENHEIT DES PARAMETERS", und das ist
+    // sein ganzer Zweck: T17 uebergibt gar nichts, T17b uebergibt `true`. Zwischen
+    // beiden liegt eine Bauform, die keiner von ihnen faengt — eine Pruefung auf
+    // `testMode !== undefined`. Sie waere an T17 und T17b gruen und schaltete den
+    // Testmodus bei JEDEM uebergebenen Wert ein, auch bei `false`.
+    // DIESELBE VERWECHSLUNG BESCHREIBT VORRAT (25) AN DER ABGESCHAFFTEN
+    // UMGEBUNGSVARIABLEN: `PINTEREST_TEST_MODE` war ein ANWESENHEITS-Test und kein
+    // Wahrheits-Test — wer ihn auf "false" setzte, um den Testmodus auszuschalten,
+    // schaltete ihn EIN, und jede echte Conversion lief in die Sandbox, ohne dass
+    // irgendwo etwas rot wurde. Die Falle verschwindet nicht dadurch, dass die Variable
+    // faellt; sie wandert an den Parameter, und hier steht ihr Waechter.
+    // ROT DURCH: `testMode !== undefined ? "?test=true" : ""` in testModeQuery.
+    await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA, false);
+    expect(fetchCalls()[0][0]).not.toContain("test=true");
   });
 
-  it("T17c: METAS Umgebungsvariable schaltet hier NICHTS — die Kopplung existiert nicht", async () => {
-    // Der Dev-Dummy fuer die IP im Ingest-Pfad haengt an META_TEST_EVENT_CODE.
-    // Diese Kopplung darf nicht wachsen.
-    vi.stubEnv("META_TEST_EVENT_CODE", "TEST12345");
-    await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA);
-    expect(fetchCalls()[0][0]).not.toContain("test=true");
+  it("T17b: Parameter `true` -> der Anhang lautet GENAU '?test=true'", async () => {
+    // ERSETZT T17b. DER WORTLAUT WIRD FESTGENAGELT UND NICHT NUR ENTHALTEN GEPRUEFT:
+    // "?test=true" ist die am 2026-09-10 GEGEN DEN ANBIETER GEMESSENE Form (GEMESSEN
+    // LIVE, Stefan). Ein toContain liesse eine veraenderte Schreibung durch, solange
+    // die Zeichenfolge irgendwo vorkaeme — etwa "?is_test=TRUE&test=true" oder einen
+    // zweiten Parameter davor. Der zweite in der Doku genannte Name `is_test` ist
+    // damit NICHT ausgeschlossen, sondern fuer den Bau entbehrlich.
+    await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA, true);
+    expect(fetchCalls()[0][0]).toBe(
+      "https://api.pinterest.com/v5/ad_accounts/549755885175/events?test=true",
+    );
   });
 });
 

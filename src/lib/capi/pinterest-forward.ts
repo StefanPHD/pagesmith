@@ -423,7 +423,7 @@ function evaluateSuccessBody(
 }
 
 /**
- * DER TESTMODUS, gelesen bei JEDEM Aufruf statt beim Laden des Moduls.
+ * DER TESTMODUS, GEBILDET AUS DEM PARAMETER DES AUFRUFERS (Scheibe 11.3d).
  *
  * ZWEI GRUENDE, und der erste ist der tragende: DIE KOPPLUNG AN METAS
  * UMGEBUNGSVARIABLE DARF NICHT ENTSTEHEN. Der Dev-Dummy fuer die IP im Ingest-Pfad
@@ -435,9 +435,35 @@ function evaluateSuccessBody(
  * STANDARDMAESSIG AUS: unset oder leer -> kein Query-Parameter, kein Testmodus.
  * Die Anbieter-Doku warnt ausdruecklich davor, ihn vor echten Aufrufen nicht zu
  * entfernen.
+ *
+ * ---------------------------------------------------------------------------
+ * NACHGEZOGEN 11.3d — DIE ABSAETZE DARUEBER BLEIBEN WOERTLICH STEHEN, IHR RANG
+ * AENDERT SICH. `PINTEREST_TEST_MODE` IST MIT DIESER SCHEIBE ENTFALLEN
+ * (Entscheidung (13), Owner 2026-09-10); der Testmodus haengt seither allein an der
+ * projekt-eigenen Frist, und der Aufrufer reicht das Urteil herein.
+ *  · DER ERSTE GRUND GILT UNVERAENDERT UND SOGAR SCHAERFER: "Diese Datei liest jene
+ *    Variable NIRGENDS" ist weiterhin wahr — sie liest ueberhaupt KEINE
+ *    Umgebungsvariable mehr. Die Kopplung an Metas Variable kann hier nicht
+ *    entstehen, weil es nichts zu lesen gibt.
+ *  · DER ZWEITE GRUND HAT SEINEN GEGENSTAND VERLOREN und wird deshalb nachgezogen
+ *    statt gestrichen: "bei JEDEM Aufruf statt beim Laden des Moduls" unterschied
+ *    zwei Lesezeitpunkte EINER Umgebungsvariablen. Es gibt keine mehr; eine reine
+ *    Funktion ueber ihren Parameter hat keinen Ladezeitpunkt, an dem etwas
+ *    einfriere. Was von ihm BLEIBT, ist die Pruefbarkeit ohne Modul-Mock.
+ *  · DER WORTLAUT DES ANHANGS IST UNANGETASTET: "?test=true" ist die am 2026-09-10
+ *    GEGEN DEN ANBIETER GEMESSENE Form (GEMESSEN LIVE, Stefan; der zweite in der
+ *    Doku genannte Name `is_test` ist damit NICHT ausgeschlossen, nur entbehrlich).
+ *    GEWECHSELT IST ALLEIN DIE QUELLE DES SCHALTERS, nicht die Gestalt des Anhangs.
+ *  · STANDARDMAESSIG AUS GILT WEITER, nur an einer anderen Achse: kein Parameter
+ *    oder `false` -> kein Query-Parameter, kein Testmodus.
+ *
+ * SIE NIMMT EIN BOOLEAN UND KEINEN CODE — anders als bei meta und tiktok, wo der
+ * siebte Wert der Testcode selbst ist. Pinterests Testmodus KENNT keinen Code (der
+ * CHECK aus 0029 verbietet ihn dort sogar); ein `string | undefined` an dieser
+ * Stelle behauptete einen Wert, den es nie gibt.
  */
-function testModeQuery(): string {
-  return process.env.PINTEREST_TEST_MODE?.trim() ? "?test=true" : "";
+function testModeQuery(testMode: boolean | undefined): string {
+  return testMode ? "?test=true" : "";
 }
 
 /**
@@ -453,7 +479,14 @@ export async function forwardToPinterest(
   eventID: string,
   body: PinterestForwardBody,
   clientIp: string | undefined,
-  userAgent: string
+  userAgent: string,
+  // DER PROJEKT-EIGENE TESTZUSTAND (Scheibe 11.3d), NACHGESTELLT UND OPTIONAL —
+  // dieselbe Bauform wie der siebte Wert bei forwardToMeta und forwardToTiktok, und
+  // aus demselben Grund: Eine Funktion mit weniger Parametern erfuellt die laengere
+  // Signatur, der Eintrag dieses Ziels in FORWARDER_BY_TARGET (capi/ingest.ts) bleibt
+  // damit BYTE-GLEICH.
+  // ER TRAEGT EIN URTEIL UND KEINEN WERT — s. den Kopf von testModeQuery.
+  testMode?: boolean
 ): Promise<void> {
   // DIE EINZIGE ANWEISUNG VOR DEM try, UND SIE IST EINE REINE DEKLARATION: sie
   // wertet nichts aus und kann nicht werfen. Sie steht hier, damit finally sie
@@ -541,7 +574,7 @@ export async function forwardToPinterest(
     // die Kennung des Betreibers fuegt nichts hinzu.
     const url =
       `https://api.pinterest.com/v5/ad_accounts/` +
-      `${encodeURIComponent(config.adAccountId)}/events${testModeQuery()}`;
+      `${encodeURIComponent(config.adAccountId)}/events${testModeQuery(testMode)}`;
 
     const controller = new AbortController();
     timer = setTimeout(() => controller.abort(), PINTEREST_FORWARD_TIMEOUT_MS);

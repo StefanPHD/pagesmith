@@ -59,12 +59,25 @@
 //
 // WAS SICH AM VERHALTEN GEAENDERT HAT: NICHTS. Der Ausdruck ist Zeichen fuer
 // Zeichen derselbe, und der Resolver ruft ihn seither aus dieser Datei.
+//
+// ---------------------------------------------------------------------------
+// NACHGEZOGEN 11.3d — EINE TATSACHENANGABE DES KOPFES IST UEBERHOLT, DIE REGEL
+// DAHINTER NICHT. Oben steht: "Saemtliche Importe sind `import type` und werden beim
+// Bauen geloescht". SEIT DIESER SCHEIBE GIBT ES EINEN WERT-IMPORT — isTrackingTarget
+// aus @/lib/settings. Der Satz bleibt woertlich stehen, weil er die Herleitung der
+// Regel traegt; heute zutreffend ist er nicht mehr.
+// DIE REGEL SELBST IST UNBERUEHRT UND GILT SCHAERFER ALS DER SATZ: Verboten ist ein
+// Wert-Import aus secrets/ oder oauth/ — der zoege `server-only` in das
+// Client-Buendel und braeche die Karte. @/lib/settings traegt KEINE Direktive und
+// ist aus Client-Code erreichbar (GEMESSEN am Repo, CC, 2026-09-10:
+// components/TargetCard.tsx importiert daraus WERTE). Die Richtung bleibt
+// server-only -> rein, nie umgekehrt.
 import type { DecryptResult } from "@/lib/secrets/cipher";
 import type {
   ParsePayloadResult,
   RefreshTokenExpiry,
 } from "@/lib/secrets/oauth-payload";
-import type { TrackingTarget } from "@/lib/settings";
+import { isTrackingTarget, type TrackingTarget } from "@/lib/settings";
 
 /**
  * AB WANN "LAEUFT BALD AB" GEMELDET WIRD. ACHTUNDVIERZIG STUNDEN.
@@ -380,6 +393,79 @@ export const TARGETS_WITH_TEST_MODE: readonly TrackingTarget[] = [
 export const TEST_MODE_DURATION_SECONDS = 3_600;
 
 /**
+ * VERLANGT DIESES ZIEL EINEN TESTCODE? JE ZIEL, POSITIV BEANTWORTET (Scheibe 11.3d,
+ * Entscheidung (14) der Phase; Owner-Entscheidung 2026-09-10).
+ *
+ * DIE GESTALT IST EIN ERSCHOEPFENDER switch OHNE default-Rueckfall, UND DAS IST IHR
+ * GANZER ZWECK: Kommt ein SECHSTES Ziel in TRACKING_TARGETS, BRICHT tsc, bis jemand
+ * seinen Zweig geschrieben hat. Der Schlusszweig weist `target` einem `never` zu —
+ * genau dort bricht es.
+ * WER SIE SPAETER ZU EINEM KNAPPEREN AUSDRUCK ZUSAMMENZIEHT, NIMMT IHR GENAU DIESE
+ * WIRKUNG. Eine Negativ-Ausnahme (`target !== "pinterest"`) liefe fuer ein neues Ziel
+ * stillschweigend als "verlangt einen Code" an — sicher in der RICHTUNG, aber niemand
+ * wuerde gefragt, und nichts wuerde rot.
+ * DER VERGLEICH MIT isForwardable (capi/ingest.ts) TRAEGT HIER NICHT, und der Satz
+ * gehoert dazu, weil er sonst beim naechsten Aufraeumen gezogen wird: Dort ist die
+ * positive Menge UNBEGRENZT und nutzerkontrolliert (jeder Custom-Event-Name), und
+ * deshalb ist der Negativ-Ausschluss dort richtig. Hier ist sie GESCHLOSSEN und KLEIN.
+ *
+ * SIE IST KEIN DRITTER ORT NEBEN TARGETS_WITH_TEST_MODE UND DEM CHECK AUS 0029: Jene
+ * Auflage zielt auf eine zweite stille LISTE, die auseinanderlaufen kann. Eine
+ * erschoepfende Fallunterscheidung kann das nicht — sie bricht den Build, statt still
+ * falsch zu werden.
+ *
+ * WARUM `true` FUER linkedin UND google, DIE GAR KEINEN TESTMODUS HABEN: Es ist die
+ * FAIL-CLOSED-Richtung. Eine Zeile mit Frist ohne Code gilt dort als NICHT aktiv — der
+ * Riegel feuert nicht, das Ereignis bleibt in events. Der CHECK aus 0029 verbietet
+ * beiden Zielen ohnehin BEIDE Spalten; diese Antwort ist die zweite Verteidigung und
+ * ausdruecklich KEINE Aussage darueber, dass es dort einen Testmodus gaebe.
+ *
+ * MODUL-PRIVAT, WEIL ES HEUTE GENAU EINEN LESER GIBT (activeTestCodeFromRow unten) —
+ * dieselbe Erwaegung wie bei den Praedikaten darueber: ein Urteil mit EINEM Aufrufer in
+ * ein geteiltes Haus zu legen waere Infrastruktur auf Verdacht. Braucht die Scheibe
+ * 11.3e sie fuer die ziel-abhaengige Vorpruefung im Schreibpfad, wandert sie DANN.
+ */
+function requiresTestCode(target: TrackingTarget): boolean {
+  switch (target) {
+    case "meta":
+      return true;
+    case "tiktok":
+      return true;
+    case "pinterest":
+      return false;
+    case "linkedin":
+      return true;
+    case "google":
+      return true;
+    default: {
+      // HIER BRICHT DER BUILD BEIM SECHSTEN ZIEL. `target` ist an dieser Stelle
+      // `never`, solange die Faelle darueber die Union erschoepfen; kommt ein Wert
+      // hinzu, ist er es nicht mehr und die Zuweisung schlaegt fehl.
+      const unbekanntesZiel: never = target;
+      return unbekanntesZiel;
+    }
+  }
+}
+
+/**
+ * DAS URTEIL UEBER EINE ZEILE. GESCHLOSSENE UNION — URTEIL UND CODE GETRENNT
+ * (Scheibe 11.3d, Owner-Entscheidung 2026-09-10).
+ *
+ * WARUM NICHT `string | true | null` UND WARUM KEIN LEERER STRING FUER "aktiv ohne
+ * Code": Ein `if (x)` bliebe fuer beide Faelle wahr. Der Bestand liefe dann
+ * stillschweigend weiter und lieferte nur bei den Zielen MIT Code noch einen Wert —
+ * genau die Bauform, vor der Entscheidung (14) warnt.
+ * DASS BEIDE AUFRUFER DESHALB ANGEFASST WERDEN MUESSEN, IST DER VORTEIL UND NICHT DER
+ * PREIS: Der Compiler zaehlt die Aufrufstellen auf, statt sie durchrutschen zu lassen.
+ *
+ * `code` IST OPTIONAL UND NICHT `code: string | undefined`: Ein Ziel ohne Code-Pflicht
+ * traegt den Schluessel GAR NICHT. Der Unterschied ist messbar und nicht kosmetisch —
+ * toEqual IGNORIERT einen Schluessel mit dem Wert undefined (GEMESSEN 2026-08-18),
+ * `"code" in x` tut es nicht.
+ */
+export type TestModeVerdict = { aktiv: true; code?: string } | { aktiv: false };
+
+/**
  * IST DER PROJEKT-EIGENE TESTZUSTAND DIESER ZEILE JETZT AKTIV? (Scheibe 11.3a)
  *
  * Liefert den CODE, wenn er es ist, sonst null. Der Rueckgabetyp traegt damit beide
@@ -432,22 +518,71 @@ export const TEST_MODE_DURATION_SECONDS = 3_600;
  *
  * SIE WIRFT NIE. typeof-Vergleiche, ein trim, Date.parse (liefert NaN statt zu werfen)
  * und ein Zahlenvergleich.
+ *
+ * ---------------------------------------------------------------------------
+ * NACHGEZOGEN 11.3d, UND DIE ABSAETZE DARUEBER BLEIBEN WOERTLICH STEHEN. Geaendert ist,
+ * WORUEBER geurteilt wird: SEIT DIESER SCHEIBE URTEILT SIE UEBER DIE FRIST, DER CODE IST
+ * BEIGABE (Entscheidung (14), Owner 2026-09-10). Was daran je Absatz gilt:
+ *
+ *  · "Liefert den CODE, wenn er es ist, sonst null" — UEBERHOLT ALS FORM, GUELTIG ALS
+ *    ZIEL. Der Rueckgabetyp ist jetzt TestModeVerdict und traegt weiterhin BEIDE
+ *    Auskuenfte auf einmal; der Satz darueber ("ein Boolean daneben waere ein zweites
+ *    Urteil ueber denselben Zustand") ist unveraendert der Grund dafuer. Was nicht
+ *    traegt, ist die Annahme, der CODE koenne das Urteil TRAGEN — sie war aus ZWEI
+ *    Zielen gebildet, die beide einen Code haben, und auf alle kuenftigen ausgedehnt.
+ *    (docs/immer-beachten.md, "EINE REGEL KANN RICHTIG SEIN UND NICHT SKALIEREN — DER
+ *    BRUCH ZEIGT SICH AN IHRER BEGRUENDUNG, NICHT AN IHREM WORTLAUT".)
+ *
+ *  · "FAIL-CLOSED IN JEDEM ZWEIFELSFALL … Ein fehlender Code, ein Code aus reinem
+ *    Leerraum, ein fehlender oder unlesbarer Zeitstempel — alles ergibt null." SEIN
+ *    ERSTES GLIED GILT KUENFTIG NUR FUER ZIELE MIT CODE-PFLICHT (requiresTestCode
+ *    oben); fuer pinterest ist "Frist ohne Code" der einzige Zustand, den sein
+ *    Testmodus ueberhaupt annehmen kann — er ist ein QUERY-PARAMETER ohne Code.
+ *    DER ZWEITE HALBSATZ BLEIBT WOERTLICH WAHR: "die Abwesenheit einer Angabe schaltet
+ *    ihn nie ein" — eingeschaltet wird weiterhin durch die ANWESENHEIT der Frist.
+ *    Der ZEITSTEMPEL-Teil ist unberuehrt: fehlt er oder ist er unlesbar, ist der
+ *    Testmodus nicht aktiv, bei JEDEM Ziel.
+ *
+ *  · DER TRIM-ABSATZ gilt unveraendert, wo ein Code steht.
  */
 export function activeTestCodeFromRow(
-  row: { test_event_code: unknown; test_mode_expires_at: unknown },
+  row: {
+    target: unknown;
+    test_event_code: unknown;
+    test_mode_expires_at: unknown;
+  },
   nowSeconds: number,
-): string | null {
+): TestModeVerdict {
+  // DAS ZIEL KOMMT AUS DER ZEILE UND NICHT AUS EINEM ZWEITEN PARAMETER, und das ist
+  // eine Entscheidung mit Grund: Die Zeile TRAEGT ihr Ziel (project_secrets.target),
+  // und beide Aufrufer lesen die Spalte ohnehin. Ein Parameter daneben liesse sich mit
+  // einem FREMDEN Ziel fuellen — dann urteilte das Praedikat ueber die Zeile des einen
+  // Ziels nach der Regel eines anderen, und nichts wuerde rot.
+  // UNBEKANNTES ZIEL -> NICHT AKTIV. Fail-closed, dieselbe Richtung wie der else-Zweig
+  // des CHECK aus 0029: Die Datenbank kann nach einem Rollback Werte tragen, die dieser
+  // Code nicht kennt.
+  if (!isTrackingTarget(row.target)) return { aktiv: false };
+
   const code =
     typeof row.test_event_code === "string" ? row.test_event_code.trim() : "";
-  if (!code) return null;
+  // DER FEHLENDE CODE IST NUR NOCH BEI ZIELEN MIT CODE-PFLICHT EIN RIEGEL.
+  if (!code && requiresTestCode(row.target)) return { aktiv: false };
 
   // PostgREST liefert timestamptz als ISO-Zeichenkette. Date.parse gibt bei allem, was
   // keine ist, NaN zurueck — Number.isFinite faengt das, ohne einen zweiten Parser.
-  if (typeof row.test_mode_expires_at !== "string") return null;
+  if (typeof row.test_mode_expires_at !== "string") return { aktiv: false };
   const expiresMs = Date.parse(row.test_mode_expires_at);
-  if (!Number.isFinite(expiresMs)) return null;
+  if (!Number.isFinite(expiresMs)) return { aktiv: false };
 
-  return Math.floor(expiresMs / 1000) > nowSeconds ? code : null;
+  // DER VERGLEICH LAUTET ">" UND NICHT ">=" — die Randregel der Entscheidung (4), und
+  // sie ist von dieser Scheibe NICHT beruehrt.
+  if (Math.floor(expiresMs / 1000) > nowSeconds) {
+    // DER CODE WIRD NUR GESETZT, WENN ES EINEN GIBT. Ein Schluessel mit dem Wert
+    // undefined waere an einem toEqual nicht zu sehen — s. den Kopf von
+    // TestModeVerdict.
+    return code ? { aktiv: true, code } : { aktiv: true };
+  }
+  return { aktiv: false };
 }
 
 /**
@@ -564,14 +699,30 @@ function testModeEndsAt(value: unknown): number | null {
  * DER VERGLEICH HIER IST `<=`, SPIEGELBILDLICH ZUM `>` DES PRAEDIKATS und
  * gleichlautend mit credentialStateFrom weiter oben: die Sekunde, in der eine Frist
  * ablaeuft, gehoert nicht mehr ihr.
+ *
+ * NACHGEZOGEN 11.3d — DER ABSATZ UEBER DIE ZWEI URSACHEN BLEIBT WOERTLICH STEHEN UND
+ * IST FUER ZIELE MIT CODE-PFLICHT UNVERAENDERT RICHTIG. Seine zweite Ursache ("die
+ * Frist liegt in der ZUKUNFT, das Praedikat sagt trotzdem nein -> der Code ist leer
+ * oder Leerraum") HAT SEIT DIESER SCHEIBE ZWEI EINSCHRAENKUNGEN: Sie gilt nur noch,
+ * wo requiresTestCode das Ziel bejaht — bei pinterest ist genau dieser Zustand
+ * "laeuft" —, und sie ist nicht mehr die einzige: auch ein Ziel, das dieser Code gar
+ * nicht kennt, faellt hierher.
+ * WARUM DIESE FUNKTION MITGEZOGEN WIRD UND NICHT BLEIBT, WIE SIE WAR: Ohne den Nachzug
+ * zeigte die Karte "aus", WAEHREND DER RIEGEL FEUERT. Der Kunde saehe, dass nichts
+ * laeuft, und seine Conversions verschwaenden — die Umkehrung genau des Widerspruchs,
+ * gegen den die Entscheidung (4) gebaut ist.
  */
 export function testModeStateFrom(
-  row: { test_event_code: unknown; test_mode_expires_at: unknown },
+  row: {
+    target: unknown;
+    test_event_code: unknown;
+    test_mode_expires_at: unknown;
+  },
   nowSeconds: number,
 ): TargetTestModeState {
   const endet = testModeEndsAt(row.test_mode_expires_at);
   if (endet === null) return { kind: "aus" };
-  if (activeTestCodeFromRow(row, nowSeconds) !== null)
+  if (activeTestCodeFromRow(row, nowSeconds).aktiv)
     return { kind: "laeuft", endetAt: endet };
   if (endet <= nowSeconds) return { kind: "abgelaufen", endeteAt: endet };
   return { kind: "aus" };

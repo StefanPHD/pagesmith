@@ -360,7 +360,10 @@ describe("withoutTarget — entfernen statt raten", () => {
 // vorbeikommt.
 // =====================================================================
 describe("TM10 — das umgezogene Praedikat und die Randregel", () => {
-  const CODE = { test_event_code: "TEST123" };
+  // NACHGEZOGEN 11.3d: Die Zeile traegt jetzt ihr ZIEL, weil das Praedikat es von dort
+  // liest. "meta" ist hier ueberall das Ziel MIT Code-Pflicht — die Laeufe dieses
+  // Blocks pruefen unveraendert den Bestand, nicht die neue Achse.
+  const CODE = { target: "meta", test_event_code: "TEST123" };
 
   it("aktiv: die Frist liegt in der ZUKUNFT -> der Code kommt zurueck", () => {
     expect(
@@ -368,7 +371,7 @@ describe("TM10 — das umgezogene Praedikat und die Randregel", () => {
         { ...CODE, test_mode_expires_at: new Date((NOW + 1) * 1000).toISOString() },
         NOW,
       ),
-    ).toBe("TEST123");
+    ).toEqual({ aktiv: true, code: "TEST123" });
   });
 
   it("DER RAND: expires === now gilt als ABGELAUFEN (der Vergleich ist '>')", () => {
@@ -380,24 +383,120 @@ describe("TM10 — das umgezogene Praedikat und die Randregel", () => {
         { ...CODE, test_mode_expires_at: new Date(NOW * 1000).toISOString() },
         NOW,
       ),
-    ).toBeNull();
+    ).toEqual({ aktiv: false });
   });
 
   it("fail-closed: leerer Code, Leerraum-Code, fehlender oder kaputter Zeitstempel", () => {
     const frist = new Date((NOW + 3600) * 1000).toISOString();
-    expect(activeTestCodeFromRow({ test_event_code: "", test_mode_expires_at: frist }, NOW)).toBeNull();
-    expect(activeTestCodeFromRow({ test_event_code: "   ", test_mode_expires_at: frist }, NOW)).toBeNull();
-    expect(activeTestCodeFromRow({ ...CODE, test_mode_expires_at: null }, NOW)).toBeNull();
-    expect(activeTestCodeFromRow({ ...CODE, test_mode_expires_at: "kein Datum" }, NOW)).toBeNull();
+    expect(activeTestCodeFromRow({ target: "meta", test_event_code: "", test_mode_expires_at: frist }, NOW)).toEqual({ aktiv: false });
+    expect(activeTestCodeFromRow({ target: "meta", test_event_code: "   ", test_mode_expires_at: frist }, NOW)).toEqual({ aktiv: false });
+    expect(activeTestCodeFromRow({ ...CODE, test_mode_expires_at: null }, NOW)).toEqual({ aktiv: false });
+    expect(activeTestCodeFromRow({ ...CODE, test_mode_expires_at: "kein Datum" }, NOW)).toEqual({ aktiv: false });
+  });
+});
+
+// =====================================================================
+// TM14 — DIE ZIEL-ABHAENGIGE ACHSE DES PRAEDIKATS (Scheibe 11.3d, Entscheidung (14)).
+//
+// WAS DIESER BLOCK PRUEFT UND TM10 NICHT LEISTEN KANN: TM10 misst ein Ziel MIT
+// Code-Pflicht und war vor dieser Scheibe der ganze Bestand. Seit 0029 kann das Schema
+// einen Zustand ablegen — Frist ohne Code bei pinterest —, den der Aufloesungs-Pfad
+// vorher NICHT als Testmodus erkannte. Beide Schichten sahen fuer sich richtig aus, und
+// nichts wurde davon rot; genau diese Luecke schliessen die Laeufe hier.
+//
+// ES GIBT ABSICHTLICH KEINEN LAUF, DER requiresTestCode DIREKT BEFRAGT, und das ist
+// keine Auslassung: Die Ziel-Auskunft ist modul-privat, und ein zweiter Waechter neben
+// TM14a machte die Pflicht-Mutation "meta verlangt keinen Code" unschaerfer — sie soll
+// GENAU die Laeufe faerben, die die Wirkung messen, nicht die, die die Tabelle
+// abschreiben.
+// =====================================================================
+describe("TM14 — Ziele MIT und OHNE Code-Pflicht (Scheibe 11.3d)", () => {
+  const ZUKUNFT = new Date((NOW + 3600) * 1000).toISOString();
+  const VERGANGENHEIT = new Date((NOW - 60) * 1000).toISOString();
+
+  it("TM14a: Ziel MIT Code-Pflicht, Frist in der Zukunft, Code LEER -> NICHT aktiv", () => {
+    // DER WAECHTER GEGEN DEN STILLEN FEHLERFALL AUS ENTSCHEIDUNG (14), und er ist der
+    // Grund, warum das Ziel-Wissen ueberhaupt in den TypeScript-Code kommt: Urteilte
+    // das Praedikat allein ueber die Frist, gaelte diese meta-Zeile als AKTIV — der
+    // Riegel naehme das Ereignis aus events, der Anbieter bekaeme KEINE Markierung und
+    // verbuchte eine ECHTE Conversion. Genau das, was 0028 "reiner Datenverlust ohne
+    // Gegenwert" nennt.
+    // ROT DURCH: requiresTestCode("meta") auf false.
+    expect(
+      activeTestCodeFromRow(
+        { target: "meta", test_event_code: "", test_mode_expires_at: ZUKUNFT },
+        NOW,
+      ),
+    ).toEqual({ aktiv: false });
+  });
+
+  it("TM14b: Ziel OHNE Code-Pflicht, Frist in der Zukunft, Code LEER -> AKTIV, und der Schluessel `code` FEHLT", () => {
+    // DER NORMALFALL FUER pinterest: sein Testmodus ist ein QUERY-PARAMETER ohne Code,
+    // und der CHECK aus 0029 verbietet dort einen Code sogar.
+    const urteil = activeTestCodeFromRow(
+      { target: "pinterest", test_event_code: null, test_mode_expires_at: ZUKUNFT },
+      NOW,
+    );
+    expect(urteil).toEqual({ aktiv: true });
+    // DIE ZWEITE ZUSICHERUNG IST NICHT REDUNDANT: toEqual IGNORIERT einen Schluessel
+    // mit dem Wert undefined (GEMESSEN 2026-08-18). Ohne sie waere der Lauf auch mit
+    // `{ aktiv: true, code: undefined }` gruen.
+    expect("code" in urteil).toBe(false);
+  });
+
+  it("TM14c: Ziel OHNE Code-Pflicht, Frist in der VERGANGENHEIT -> NICHT aktiv", () => {
+    // DIE FRIST BLEIBT DAS URTEIL. Die Aenderung dieser Scheibe betrifft, was ein
+    // fehlender CODE bedeutet — nicht, was ein abgelaufener Zeitpunkt bedeutet.
+    expect(
+      activeTestCodeFromRow(
+        { target: "pinterest", test_event_code: null, test_mode_expires_at: VERGANGENHEIT },
+        NOW,
+      ),
+    ).toEqual({ aktiv: false });
+  });
+
+  it("TM14d: DER RAND GILT FUER BEIDE ZIEL-KLASSEN — expires === now ist abgelaufen", () => {
+    // Entscheidung (4), an der neuen Achse gegengeprueft: Die Randregel ist von der
+    // Code-Pflicht unabhaengig. Ohne den pinterest-Teil waere sie fuer die neue Klasse
+    // ungeprueft, und eine Drift auf '>=' faerbte nur die Haelfte rot.
+    const rand = new Date(NOW * 1000).toISOString();
+    expect(
+      activeTestCodeFromRow(
+        { target: "meta", test_event_code: "TEST123", test_mode_expires_at: rand },
+        NOW,
+      ),
+    ).toEqual({ aktiv: false });
+    expect(
+      activeTestCodeFromRow(
+        { target: "pinterest", test_event_code: null, test_mode_expires_at: rand },
+        NOW,
+      ),
+    ).toEqual({ aktiv: false });
+  });
+
+  it("TM14e: ein Ziel, das dieser Code NICHT kennt, ist NICHT aktiv (fail-closed)", () => {
+    // Die Datenbank kann nach einem Rollback Werte tragen, die dieser Code nicht kennt
+    // — derselbe Filter-Gedanke wie bei den Lesern in app/projects/actions.ts. Ohne
+    // diesen Lauf waere der erste Ausgang des Praedikats ungeprueft.
+    expect(
+      activeTestCodeFromRow(
+        { target: "gibtsnicht", test_event_code: null, test_mode_expires_at: ZUKUNFT },
+        NOW,
+      ),
+    ).toEqual({ aktiv: false });
   });
 });
 
 describe("TM11 — die drei Lagen des Testzustands", () => {
+  // NACHGEZOGEN 11.3d: Auch die Anzeige-Ableitung bekommt das Ziel aus der Zeile
+  // gereicht, weil sie das Urteil beim Praedikat holt. "meta" ist hier das Ziel MIT
+  // Code-Pflicht; die neue Klasse steht in TM11b darunter.
   it("laeuft: Frist in der Zukunft plus Code -> mit Endzeitpunkt in EPOCHENSEKUNDEN", () => {
     const endet = NOW + TEST_MODE_DURATION_SECONDS;
     expect(
       testModeStateFrom(
         {
+          target: "meta",
           test_event_code: "TEST123",
           test_mode_expires_at: new Date(endet * 1000).toISOString(),
         },
@@ -413,6 +512,7 @@ describe("TM11 — die drei Lagen des Testzustands", () => {
     expect(
       testModeStateFrom(
         {
+          target: "meta",
           test_event_code: "TEST123",
           test_mode_expires_at: new Date(endete * 1000).toISOString(),
         },
@@ -425,9 +525,13 @@ describe("TM11 — die drei Lagen des Testzustands", () => {
     // DER FALL AUS VORRAT (12): Der CHECK laesst test_event_code = '' zu, das
     // Praedikat verwirft ihn beim Trimmen. "abgelaufen am <Zukunft>" waere eine
     // sinnlose Auskunft; "aus" ist die richtige.
+    // NACHGEZOGEN 11.3d: Der Satz gilt fuer Ziele MIT Code-Pflicht. Fuer pinterest ist
+    // dieselbe Zeile "laeuft" — s. TM11b. Das ist der Zeiger, den der Beleg der
+    // Streichung von Vorrat (12) mit der Scheibe 11.3e braucht.
     expect(
       testModeStateFrom(
         {
+          target: "meta",
           test_event_code: "",
           test_mode_expires_at: new Date((NOW + 3600) * 1000).toISOString(),
         },
@@ -438,7 +542,10 @@ describe("TM11 — die drei Lagen des Testzustands", () => {
 
   it("keine Frist -> 'aus'", () => {
     expect(
-      testModeStateFrom({ test_event_code: null, test_mode_expires_at: null }, NOW),
+      testModeStateFrom(
+        { target: "meta", test_event_code: null, test_mode_expires_at: null },
+        NOW,
+      ),
     ).toEqual({ kind: "aus" });
   });
 
@@ -449,12 +556,50 @@ describe("TM11 — die drei Lagen des Testzustands", () => {
     expect(
       testModeStateFrom(
         {
+          target: "meta",
           test_event_code: "TEST123",
           test_mode_expires_at: new Date(NOW * 1000).toISOString(),
         },
         NOW,
       ),
     ).toEqual({ kind: "abgelaufen", endeteAt: NOW });
+  });
+});
+
+describe("TM11b — die Anzeige eines Ziels OHNE Code-Pflicht (Scheibe 11.3d)", () => {
+  it("laufende Frist ohne Code -> 'laeuft', mit Endzeitpunkt", () => {
+    // OHNE DIESEN NACHZUG ZEIGTE DIE KARTE "aus", WAEHREND DER RIEGEL FEUERT. Der Kunde
+    // saehe, dass nichts laeuft, und seine Conversions verschwaenden aus events — die
+    // Umkehrung genau des Widerspruchs, gegen den Entscheidung (4) gebaut ist.
+    // ROT DURCH: das Praedikat urteilt wieder ueber den Code.
+    const endet = NOW + TEST_MODE_DURATION_SECONDS;
+    expect(
+      testModeStateFrom(
+        {
+          target: "pinterest",
+          test_event_code: null,
+          test_mode_expires_at: new Date(endet * 1000).toISOString(),
+        },
+        NOW,
+      ),
+    ).toEqual({ kind: "laeuft", endetAt: endet });
+  });
+
+  it("abgelaufene Frist ohne Code -> 'abgelaufen', nicht 'aus'", () => {
+    // DIE GEGENKONTROLLE IM SELBEN BLOCK: Ohne sie waere "laeuft" oben auch dann
+    // erklaerbar, wenn die Funktion fuer dieses Ziel gar nicht mehr zwischen den drei
+    // Lagen unterschiede.
+    const endete = NOW - 60;
+    expect(
+      testModeStateFrom(
+        {
+          target: "pinterest",
+          test_event_code: null,
+          test_mode_expires_at: new Date(endete * 1000).toISOString(),
+        },
+        NOW,
+      ),
+    ).toEqual({ kind: "abgelaufen", endeteAt: endete });
   });
 });
 

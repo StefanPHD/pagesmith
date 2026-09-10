@@ -320,6 +320,41 @@ describe("Testmodus-Riegel im Ingest (Phase 11.3, Scheibe 11.3a)", () => {
     expect(res.status).toBe(204);
     expect(await res.text()).toBe("");
   });
+
+  // TM15 — EIN ZIEL OHNE CODE HAELT DEN PERSIST AUF (Scheibe 11.3d).
+  //
+  // ER IST KEINE DOPPELUNG VON TM1 UND TM2, UND DIESER SATZ IST DER GRUND, WARUM ER
+  // NICHT GESTRICHEN WERDEN DARF: Jene tragen Eintraege MIT Code. Wuerde der Riegel
+  // spaeter von `resolution.testMode.length > 0` auf eine Pruefung des CODES umgebaut —
+  // etwa `.some((t) => t.code)` —, blieben TM1 und TM2 GRUEN, weil ihre Eintraege einen
+  // Code haben. NUR EIN CODE-LOSER EINTRAG FAENGT DAS. Die Mutationsprobe M4 dieser
+  // Scheibe hat es an genau diesem Umbau gemessen.
+  //
+  // DER SCHADEN, den er abwehrt, ist der Kern der Entscheidung (3): Der Riegel haengt an
+  // MINDESTENS EINEM Ziel, nicht an einem Ziel MIT Code. Faellt er auf die Code-Achse
+  // zurueck, persistiert ein Projekt, dessen pinterest-Ziel gerade im Testmodus steht —
+  // der Testklick landete als echte Conversion in events, und niemand saehe es.
+  //
+  // DIE FIXTURE IST DURCH DIE TYPAENDERUNG DIESER SCHEIBE UEBERHAUPT ERST SCHREIBBAR:
+  // `TestModeTarget.code` war Pflicht, ein Eintrag ohne Code brach den Build. Seit 11.3d
+  // ist er optional, und der Aufloesungs-Pfad erzeugt ihn fuer pinterest (TM4f in
+  // capi/token.test.ts).
+  //
+  // pinterest STEHT DABEI NICHT IN TARGETS_WITH_TEST_MODE, und das ist kein
+  // Widerspruch: Der Resolver ist hier GEMOCKT, und geprueft wird der RIEGEL, nicht der
+  // Schreibweg. Dass heute kein Schreibpfad diesen Zustand erzeugen kann, ist eine
+  // Aussage ueber die Zielmenge und gehoert zu 11.3e.
+  it("TM15: ein Ziel OHNE Code im Testmodus verhindert den Persist ebenso", async () => {
+    getCapiConfigByTrackingKey.mockResolvedValue(
+      aufloesung({ testMode: [{ target: "pinterest" }] }),
+    );
+
+    const res = await handleIngest(beacon());
+    await laufeHintergrund();
+
+    expect(res.status).toBe(204);
+    expect(persistEvent).not.toHaveBeenCalled();
+  });
 });
 
 // W1 — DER WAECHTER UEBER DEN MIGRATIONSTEXT.

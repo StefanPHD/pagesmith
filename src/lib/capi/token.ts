@@ -172,10 +172,26 @@ export type TrackingKeyResolution = {
  * autorisiert nichts. Die Log- und Schwaerzungs-Disziplin, die fuer Zugangsdaten gilt,
  * trifft ihn deshalb nicht — was ihn NICHT zu einem Wert macht, den man beilaeufig
  * protokolliert.
+ *
+ * NACHGEZOGEN 11.3d — DER ABSATZ DARUEBER BLEIBT WOERTLICH STEHEN UND GILT, WO EIN CODE
+ * STEHT. `code` IST SEIT DIESER SCHEIBE OPTIONAL, und das ist der Traeger fuer "aktiv
+ * OHNE Code": pinterests Testmodus ist ein QUERY-PARAMETER ohne Code, und der CHECK aus
+ * 0029 verbietet dort einen. Ohne diese Aenderung waere jener Zustand am Typ gar nicht
+ * darstellbar.
+ * DER SCHLUESSEL FEHLT DANN GANZ — er steht NICHT mit dem Wert undefined da. Der
+ * Unterschied ist messbar und nicht kosmetisch: toEqual IGNORIERT einen Schluessel mit
+ * dem Wert undefined (GEMESSEN 2026-08-18), `"code" in eintrag` tut es nicht. EIN LAUF,
+ * DER "pinterest kommt OHNE Code an" MIT toEqual BEHAUPTET, KANN DIE ABWESENHEIT GAR
+ * NICHT PRUEFEN — er waere mit beiden Formen gruen. Der Waechter dagegen ist TM4f in
+ * token.test.ts, und er prueft `"code" in eintrag`.
+ * WAS DAVON UNBERUEHRT BLEIBT: `testMode` selbst ist weiterhin IMMER ein Array und nie
+ * undefined (s. den Absatz an der Feld-Deklaration oben). Optional geworden ist EIN FELD
+ * IM EINTRAG, nicht das Feld an der Aufloesung — wer beides zusammenzieht, schaltet die
+ * dort beschriebene Falle wieder scharf.
  */
 export type TestModeTarget = {
   target: TrackingTarget;
-  code: string;
+  code?: string;
 };
 
 /**
@@ -823,7 +839,11 @@ export async function getCapiConfigByTrackingKey(
   // Zuordnung und nicht in RowResolution: jene beantwortet "traegt diese Zeile ein
   // brauchbares Zugangsdatum?", und der Testzustand ist von dieser Frage unabhaengig.
   // Eine Zeile mit TOTEM Zugangsdatum kann sehr wohl im Testmodus stehen.
-  const testCodeByTarget = new Map<string, string>();
+  // NACHGEZOGEN 11.3d: Die Zuordnung traegt seither das URTEIL und nicht mehr den CODE.
+  // Ein Ziel OHNE Code-Pflicht (pinterest) ist aktiv, ohne einen Code zu haben — eine
+  // Zuordnung auf `string` koennte diesen Zustand nicht ablegen, und `""` als Ersatz
+  // waere von "nicht aktiv" bei jedem `if` ununterscheidbar.
+  const testUrteilByTarget = new Map<string, { code?: string }>();
   for (const row of rows as {
     target: unknown;
     secret: unknown;
@@ -832,8 +852,12 @@ export async function getCapiConfigByTrackingKey(
     test_mode_expires_at: unknown;
   }[]) {
     if (typeof row.target !== "string") continue;
-    const testCode = activeTestCodeFromRow(row, nowSeconds);
-    if (testCode) testCodeByTarget.set(row.target, testCode);
+    // DAS PRAEDIKAT LIEST DAS ZIEL AUS DER ZEILE. Diese Zeile reicht es nicht eigens
+    // hinein, und sie verengt row.target auch nicht — der Ausstieg unten fuer
+    // unbrauchbare Zeilen soll seine Achse behalten. Ein Ziel, das dieser Code nicht
+    // kennt, urteilt das Praedikat selbst fail-closed ab.
+    const testUrteil = activeTestCodeFromRow(row, nowSeconds);
+    if (testUrteil.aktiv) testUrteilByTarget.set(row.target, testUrteil);
     // ACHT AUSGAENGE MUENDEN IN "unusable", UND KEINER IST VON AUSSEN UNTERSCHEIDBAR —
     // fuenf Dechiffrier-Zustaende, zwei Lese-Zustaende und die Zeile ohne brauchbares
     // Geheimnis. Alle enden in derselben leeren 204.
@@ -858,8 +882,15 @@ export async function getCapiConfigByTrackingKey(
     // gerade ein Mensch seine Einrichtung prueft, und nicht, ob gesendet werden kann.
     // Stuende der Einsammler hinter dem `continue`, verloere genau der Fall den Riegel,
     // in dem der Kunde am ehesten testet: das Ziel, das gerade nicht sendet.
-    const testCode = testCodeByTarget.get(entry.target);
-    if (testCode) testMode.push({ target: entry.target, code: testCode });
+    // DER SCHLUESSEL `code` WIRD NUR GESETZT, WENN ES EINEN GIBT (Scheibe 11.3d) — er
+    // steht sonst GAR NICHT da und nicht mit dem Wert undefined. Der Grund steht am
+    // Kopf von TestModeTarget: toEqual saehe den Unterschied nicht.
+    const testUrteil = testUrteilByTarget.get(entry.target);
+    if (testUrteil)
+      testMode.push({
+        target: entry.target,
+        ...(testUrteil.code === undefined ? {} : { code: testUrteil.code }),
+      });
 
     const lage = lageByTarget.get(entry.target);
     if (!lage || lage.kind === "unusable") continue;

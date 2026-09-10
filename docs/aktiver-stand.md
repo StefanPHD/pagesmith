@@ -3431,9 +3431,52 @@ wird die Frist VERLÄNGERT; "starten" wäre dort schlicht falsch. **Dass bei `me
 im ERGEBNIS** — und eine Beschriftung, die den Mechanismus beschreibt statt das Ergebnis,
 wäre für den Nutzer die schlechtere.
 
-**DER GRUND GEGEN DEN ERKLÄRTEXT:** Das UI wird später **komplett neu gestaltet**. **Eine
-Textzeile überlebt das nicht, die Struktur schon** — der Aufwand ginge in etwas, das mit
-dem Redesign ohnehin verschwindet.
+**DER GRUND GEGEN DEN ERKLÄRTEXT — GESCHÄRFT AM 2026-09-10, NICHT ERGÄNZT. DER BULLET
+DARÜBER BLEIBT WÖRTLICH UND UNANGETASTET.**
+
+**HIER STAND:** "Das UI wird später **komplett neu gestaltet**. **Eine Textzeile überlebt
+das nicht, die Struktur schon** — der Aufwand ginge in etwas, das mit dem Redesign ohnehin
+verschwindet."
+
+**WARUM ER NICHT MEHR TRÄGT:** Er trennt nach der FORM — "ist es eine Textzeile?" — und
+trifft damit **jede** Textzeile an dieser Karte, auch eine, die das Redesign sehr wohl
+mitnehmen müsste. **DIE ENTSCHEIDUNG WAR AUS EINEM EINZIGEN FALL GEBILDET**, in dem ein
+Text ERKLÄRT, warum es kein Feld gibt — und auf JEDEN Text ausgedehnt. **Das ist die Figur
+aus docs/immer-beachten.md, "EINE REGEL KANN RICHTIG SEIN UND NICHT SKALIEREN — DER BRUCH
+ZEIGT SICH AN IHRER BEGRÜNDUNG, NICHT AN IHREM WORTLAUT".** Am Wortlaut des Bullets war
+nichts zu sehen; er ist unqualifiziert und war es immer.
+
+**DER GRUND, DER STATTDESSEN GILT — ER TRENNT NACH DER HALBWERTSZEIT, NICHT NACH DER
+FORM:**
+- **EIN TEXT, DER EINE EIGENSCHAFT UNSERES UI ERKLÄRT, STIRBT MIT DEM UI.** Das Redesign
+  wirft ihn weg; die Struktur bleibt. Der Aufwand ginge in etwas, das ohnehin verschwindet
+  — das ist der alte Grund, und für DIESE Klasse ist er unverändert richtig.
+- **EIN TEXT, DER SAGT, IN WELCHER REIHENFOLGE EIN FREMDES SYSTEM ZU BEDIENEN IST, STIRBT
+  MIT JENEM SYSTEM.** Ein Redesign erreicht ihn nicht — es müsste ihn MITNEHMEN, weil die
+  Eigenschaft, die er beschreibt, unser UI gar nicht kennt.
+
+**DAS IST EINE ANDERE HALBWERTSZEIT, UND SIE ENTSCHEIDET — nicht die Frage, ob es eine
+Textzeile ist.**
+
+**DIE PRÜFFRAGE AN JEDEN KÜNFTIGEN TEXT AN DIESER KARTE, IN EINEM SATZ: WORAN HÄNGT DIE
+EIGENSCHAFT, DIE ER BESCHREIBT — AN UNSEREM UI ODER AN EINEM FREMDEN SYSTEM?**
+
+**WARUM DER BULLET KEINE AUSNAHME BEKOMMT UND STATTDESSEN DER GRUND GESCHÄRFT WIRD:** Eine
+benannte Ausnahme neben einem unqualifizierten Bullet lässt die nächste Runde **raten**, ob
+ihr Fall auch eine ist. **AUSNAHMEN SAMMELN SICH; EIN GRUND, DER DIE TRENNLINIE SELBST
+TRÄGT, SAMMELT NICHTS.**
+
+**WAS DIE SCHÄRFUNG NICHT BERÜHRT, und das ist GEMESSEN und nicht angenommen (CC,
+2026-09-10):** Dieser Grund trägt **AUSSCHLIESSLICH DEN FÜNFTEN BULLET**. Die vier anderen
+Teile der Entscheidung tragen ihre Begründung **je an sich selbst** — das Code-Feld am
+CHECK aus 0029, die wechselnde Beschriftung am Absatz darunter, der Sperr-Grund an der
+Abwesenheit des Feldes, der Beenden-Knopf daran, dass er ohnehin keinen Code verlangt.
+**ER HAT SIE NIE GEDECKT, ALSO KANN ER SIE AUCH NICHT UNGEDECKT LASSEN.**
+
+**PROVENIENZ DER SCHÄRFUNG:** OWNER-ENTSCHEIDUNG 2026-09-10, auf einen Befund hin, der
+**GEMESSEN am Dateitext** ist (CC, 2026-09-10): der Bullet ist unqualifiziert, und der alte
+Grund ist generisch. Dass die zwei Textklassen verschiedene Halbwertszeiten haben, ist eine
+**ABLEITUNG** aus der Herkunft der jeweils beschriebenen Eigenschaft, **keine Messung**.
 
 **DIE GRENZE, UND SIE MUSS MIT:** Nach dieser Scheibe verhält sich `pinterest` an der Karte
 **ANDERS als `meta` und `tiktok`** — kein Feld, ein Knopf, der ohne Eingabe klickbar ist —,
@@ -3565,6 +3608,24 @@ AUFGELÖST** — sie ist OWNER-Sache. **Die Entscheidung, diese Scheibe zu bauen
 getroffen** (OWNER, 2026-09-10); ob (A) dabei eine benannte Ausnahme bekommt oder in ihrem
 Grund nachgezogen wird, ist **NICHT entschieden**.
 
+**NACHGEZOGEN AM 2026-09-10 — DER WIDERSPRUCH BESTAND, UND ER IST AUFGELÖST STATT
+WEGDEFINIERT.** Der Absatz darüber bleibt wörtlich stehen; er hält die Prüfung fest, aus
+der die Auflösung folgt.
+**WAS DIE PRÜFUNG ERGEBEN HAT UND WAS DARAUS FOLGT:** Die Abgrenzung "kein Widerspruch, das
+eine erklärt und das andere bedient" war eine **Unterscheidung im Kopf, nicht im Text** —
+im Text stand ein unqualifizierter Bullet und ein Grund, der jede Textzeile trifft.
+**BEHOBEN IST DAS NICHT MIT EINER AUSNAHME, SONDERN MIT EINEM GESCHÄRFTEN GRUND**
+(OWNER-ENTSCHEIDUNG 2026-09-10): Er trennt nach der **HALBWERTSZEIT** statt nach der FORM —
+ein Text über UNSER UI stirbt mit dem UI, ein Text über die Bedienung eines FREMDEN Systems
+stirbt mit jenem System.
+**DER VOLLTEXT STEHT AN DER GESTALT-ENTSCHEIDUNG (A) UND WIRD HIER NICHT VERDOPPELT** —
+zweimal geschrieben liefen sie auseinander. **Dort steht auch die Prüffrage**, an der sich
+jeder künftige Text an dieser Karte entscheidet.
+**DER BULLET IST DABEI NICHT ANGETASTET WORDEN**, und die GRENZE von (A) ebenso wenig: Sie
+sagt, dass der Betreiber keine Auskunft bekommt, **WARUM** `pinterest` sich anders verhält
+— **ein anderer Gegenstand, den diese Scheibe ausdrücklich NICHT auflöst** (s. den
+Ausschluss unten).
+
 ### (2) Der Banner-Satz wird ziel-abhängig — Vorrat (22) wird damit aufgelöst
 
 **DER HEUTIGE SATZ, IM WORTLAUT UND MIT SEINEM ORT** (GEMESSEN am Repo, CC, 2026-09-10;
@@ -3614,6 +3675,25 @@ löst (1) nicht mit auf.**
 **VORRAT (22) WIRD JETZT NICHT GESTRICHEN**, sondern erst mit dem Abschluss-Vermerk dieser
 Scheibe und mit Beleg. **Ein Eintrag, der auf eine ENTSCHEIDUNG hin gestrichen wird,
 behauptet einen Zustand, den es noch nicht gibt.**
+
+### Zwei Angaben für den Stufe-1-Plan — GRUNDLAGE, KEINE ENTSCHEIDUNG
+
+**Beide GEMESSEN am Repo (CC, 2026-09-10).** Sie entscheiden nichts; sie sagen, wogegen der
+Plan zuschneidet.
+
+**(a) DER ERKLÄRSATZ STEHT IN `src/components/CodeImporter.tsx`, NICHT AN DER KARTE.**
+Ziel-abhängig ist heute **nur der Präfix** aus `testModeBannerText`
+(`src/components/TargetCard.tsx`) — die Namen der laufenden Ziele mit ihrem Endzeitpunkt.
+**Der Satz danach ist ein festes JSX-Literal in einer ANDEREN Datei und kennt kein Ziel.**
+**TEIL (2) BERÜHRT DAMIT EINE DATEI, DIE IN DIESER PHASE NOCH NIE IM BAU-SCOPE STAND** —
+weder in 11.3a noch in 11.3b, 11.3d oder 11.3e. Wer den Scope aus den Vorgänger-Scheiben
+fortschreibt, übersieht sie.
+
+**(b) DIE KARTE HAT IM LAUFENDEN ZUSTAND KEINEN FLIESSTEXT.** Sie zeigt für `pinterest`
+**drei Elemente**: die Zustandszeile aus `describeTestModeState` ("Testmodus bis
+&lt;Zeitpunkt&gt;"), den Startknopf ("Pinterest-Test verlängern") und den Beenden-Knopf
+("Pinterest-Test jetzt beenden") — dazu eine Fehlerzeile **nur** nach einem Fehlschlag.
+**DIE REIHENFOLGE-ANGABE WÄRE DAS ERSTE ELEMENT DIESER ART; ES GIBT KEINE ANHÄNGESTELLE.**
 
 ### Der Nachweis — am Unit-Test, KEIN Live-Lauf
 

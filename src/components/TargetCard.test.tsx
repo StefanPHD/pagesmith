@@ -135,6 +135,7 @@ import TargetCard, {
   STATUS_LOADING,
   STATUS_UNCONFIGURED,
   STATUS_UNKNOWN,
+  testModeAnbieterAuskunft,
   testModeBannerText,
   testModeErrorText,
 } from "@/components/TargetCard";
@@ -1663,6 +1664,80 @@ describe("TargetCard — der Testmodus-Schalter und seine Sichtbarkeit", () => {
     expect(screen.queryByLabelText(/Testcode/i)).toBeNull();
   });
 
+  // =====================================================================
+  // TM25 BIS TM28 — DIE REIHENFOLGE-ANGABE (Scheibe 11.3f).
+  //
+  // VIER FAELLE, UND SIE GEHOEREN ZUSAMMEN: Die Angabe haengt an ZWEI Bedingungen,
+  // und nur alle vier zusammen trennen sie. Mit dreien bliebe eine Angabe gruen,
+  // die bei JEDEM laufenden Ziel erscheint (TM27 faengt genau das).
+  //
+  // DER TEXT WIRD NICHT ABGESCHRIEBEN, SONDERN AUS DER QUELLE GELESEN
+  // (testModeAnbieterAuskunft): Ein Literal hier waere eine zweite Fassung, die beim
+  // naechsten Wortlaut-Wechsel auseinanderlaeuft — und der Lauf waere dann rot, ohne
+  // dass etwas kaputt ist.
+  //
+  // WAS DIESE VIER NICHT LEISTEN KOENNEN, und das gehoert in den Kommentar, damit es
+  // niemand fuer gedeckt haelt: Sie trennen die gewaehlte Bauform NICHT von der
+  // verworfenen. "haengt am reihenfolgeHinweis" und "haengt an !requiresTestCode"
+  // liefern fuer alle FUENF heutigen Ziele dasselbe. Die Fehlerklasse entsteht erst
+  // beim sechsten Ziel, und was dort schuetzt, ist tsc — nicht ein Lauf.
+  // =====================================================================
+
+  const HINWEIS_PINTEREST =
+    testModeAnbieterAuskunft("pinterest").reihenfolgeHinweis;
+
+  it("TM25: pinterest LAUFEND -> die Reihenfolge-Angabe steht", () => {
+    // POSITIVKONTROLLE ZUR QUELLE: Traegt pinterest gar keinen Hinweis mehr, sind die
+    // drei Abwesenheits-Laeufe darunter trivial wahr (docs/immer-beachten.md, "EINE
+    // ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL", Fall 1).
+    expect(HINWEIS_PINTEREST).toBeDefined();
+
+    renderCard({
+      target: "pinterest",
+      configured: true,
+      testModeState: { kind: "laeuft", endetAt: 1_800_000_000 },
+    });
+    expect(screen.getByText(HINWEIS_PINTEREST!)).toBeTruthy();
+  });
+
+  it("TM26: pinterest RUHEND -> keine Reihenfolge-Angabe", () => {
+    // ROT DURCH: eine Angabe ohne Zustands-Bedingung. Ein Hinweis, den man liest,
+    // BEVOR man entscheidet, ist Ballast.
+    renderCard({
+      target: "pinterest",
+      configured: true,
+      testModeState: { kind: "aus" },
+    });
+    expect(screen.queryByText(HINWEIS_PINTEREST!)).toBeNull();
+  });
+
+  it("TM27: meta LAUFEND -> keine Reihenfolge-Angabe", () => {
+    // DER TRAGENDE LAUF DER VIER. Ohne ihn waere eine Angabe, die bei JEDEM
+    // laufenden Ziel erscheint, gruen — die Zustands-Bedingung allein trennt nichts.
+    // POSITIVKONTROLLE: metas Auskunft traegt KEINEN Hinweis. Ohne sie pruefte der
+    // Lauf eine Abwesenheit, deren Gegenstand er nicht kennt.
+    expect(testModeAnbieterAuskunft("meta").reihenfolgeHinweis).toBeUndefined();
+
+    renderCard({
+      target: "meta",
+      configured: true,
+      testModeState: { kind: "laeuft", endetAt: 1_800_000_000 },
+    });
+    expect(screen.queryByText(HINWEIS_PINTEREST!)).toBeNull();
+    // DIE ZWEITE ZUSICHERUNG, und sie ist die schaerfere: an dieser Karte steht
+    // ueberhaupt kein zweiter Hinweistext — nicht bloss nicht DIESER.
+    expect(screen.queryByText(/zuerst öffnen/i)).toBeNull();
+  });
+
+  it("TM28: meta RUHEND -> keine Reihenfolge-Angabe", () => {
+    renderCard({
+      target: "meta",
+      configured: true,
+      testModeState: { kind: "aus" },
+    });
+    expect(screen.queryByText(HINWEIS_PINTEREST!)).toBeNull();
+  });
+
   it("zwei Karten nebeneinander: die Testmodus-Bedienelemente bleiben unterscheidbar", () => {
     // Dieselbe Auflage wie beim Entfernen-Knopf: getByRole wirft bei MEHREREN
     // Treffern — der Aufruf selbst ist die Zusicherung.
@@ -1848,6 +1923,87 @@ describe("Das Projekt-Banner nennt das VERURSACHENDE Ziel", () => {
     });
     expect(text).toContain("Pinterest");
     expect(text).not.toContain("Meta");
+  });
+
+  // =====================================================================
+  // TM29 BIS TM32 — DER BANNER-SATZ IST ZIEL-ABHAENGIG (Scheibe 11.3f).
+  //
+  // WARUM ES DIESE LAEUFE VORHER NICHT GAB, und es ist kein Versaeumnis dieser
+  // Scheibe: Der Satz stand bis hierher als freies JSX-Literal im Container, und der
+  // rendert den Banner in KEINEM Lauf (sein Leser-Mock liefert dauerhaft ein leeres
+  // states-Objekt). Der Satz, den der Kunde liest, war damit VON KEINEM LAUF GEDECKT.
+  // Seit er aus dieser Funktion kommt, ist er ohne Container-Render pruefbar.
+  //
+  // DIE TEXTE WERDEN AUS DER QUELLE GELESEN, nicht abgeschrieben — dieselbe
+  // Erwaegung wie bei den vier Laeufen zur Reihenfolge-Angabe.
+  // =====================================================================
+
+  it("TM29: meta -> beim Anbieter zaehlen sie weiter", () => {
+    const text = testModeBannerText({
+      ok: true,
+      states: { meta: { kind: "laeuft", endetAt: 1_800_003_600 } },
+    });
+    expect(text).toContain(testModeAnbieterAuskunft("meta").bannerHalbsatz);
+  });
+
+  it("TM30: pinterest -> sie kommen an, gezaehlt werden sie nicht", () => {
+    const text = testModeBannerText({
+      ok: true,
+      states: { pinterest: { kind: "laeuft", endetAt: 1_800_003_600 } },
+    });
+    expect(text).toContain(testModeAnbieterAuskunft("pinterest").bannerHalbsatz);
+    // DIE GEGENPROBE: metas Zusage steht NICHT da. Ohne sie waere der Lauf auch dann
+    // gruen, wenn der Text BEIDE Fassungen truege.
+    expect(text).not.toContain(testModeAnbieterAuskunft("meta").bannerHalbsatz);
+  });
+
+  it("TM31: tiktok -> die vorsichtige Fassung, und KEIN Anspruch", () => {
+    // DER LAUF, DER DIE AUFLOESUNG VON VORRAT (22) TRAEGT. TikToks Isolation ist
+    // GELESEN, EINMAL, UNGEMESSEN — der Text sagt deshalb, dass wir es nicht wissen,
+    // und behauptet gerade NICHT "zaehlt nicht". Wer ihn spaeter schaerft, braucht
+    // die Messung aus Vorrat (1), nicht die Vermutung.
+    const text = testModeBannerText({
+      ok: true,
+      states: { tiktok: { kind: "laeuft", endetAt: 1_800_003_600 } },
+    });
+    expect(text).toContain(testModeAnbieterAuskunft("tiktok").bannerHalbsatz);
+    // ROT DURCH: eine Fassung, die tiktok metas Zusage oder pinterests Messung
+    // zuschreibt. Beide Richtungen einzeln, weil beide falsch waeren.
+    expect(text).not.toContain(testModeAnbieterAuskunft("meta").bannerHalbsatz);
+    expect(text).not.toContain(
+      testModeAnbieterAuskunft("pinterest").bannerHalbsatz,
+    );
+  });
+
+  it("TM32: ZWEI laufende Ziele -> jeder Halbsatz steht DIREKT beim Namen, kein Sammelsatz", () => {
+    // DER WAECHTER UEBER DIE AUFLAGE AUS ENTSCHEIDUNG 1, und er ist der einzige.
+    // Ein Sammelsatz am Ende ("bei Meta … , bei Pinterest nicht") zwaenge den Text,
+    // die STAENDE ZU VERGLEICHEN — und die drei sind ungleich belegt. Genau dabei
+    // ginge die vorsichtige Fassung fuer tiktok verloren.
+    const text = testModeBannerText({
+      ok: true,
+      states: {
+        meta: { kind: "laeuft", endetAt: 1_800_003_600 },
+        pinterest: { kind: "laeuft", endetAt: 1_800_007_200 },
+      },
+    })!;
+
+    const metaHalb = testModeAnbieterAuskunft("meta").bannerHalbsatz;
+    const pinHalb = testModeAnbieterAuskunft("pinterest").bannerHalbsatz;
+    expect(text).toContain(metaHalb);
+    expect(text).toContain(pinHalb);
+
+    // DIE TRAGENDE ZUSICHERUNG — NICHT die blosse Anwesenheit beider Halbsaetze:
+    // Jeder steht ZWISCHEN seinem eigenen Namen und dem naechsten Namen. Ein
+    // Sammelsatz am Ende schoebe BEIDE Halbsaetze hinter BEIDE Namen, und diese
+    // Reihenfolge-Pruefung faellt.
+    const iMeta = text.indexOf("Meta");
+    const iMetaHalb = text.indexOf(metaHalb);
+    const iPin = text.indexOf("Pinterest");
+    const iPinHalb = text.indexOf(pinHalb);
+    expect(iMeta).toBeLessThan(iMetaHalb);
+    expect(iMetaHalb).toBeLessThan(iPin);
+    expect(iPin).toBeLessThan(iPinHalb);
   });
 
   it("KEIN Banner ohne laufendes Ziel — auch nicht bei abgelaufen", () => {

@@ -227,6 +227,100 @@ export function describeTestModeState(
 }
 
 /**
+ * WAS DER ANBIETER EINES ZIELS MIT TEST-MARKIERTEN EREIGNISSEN TUT — UND OB SEINE
+ * TEST-ANSICHT EINEN BEDIENHINWEIS BRAUCHT (Scheibe 11.3f).
+ *
+ * EINE STELLE, ZWEI AUSKUENFTE. Sie speist BEIDE Kundentexte dieser Scheibe: den
+ * Banner-Halbsatz je laufendem Ziel und die Reihenfolge-Angabe an der Ziel-Karte.
+ * Eine zweite Stelle, die Ziele beurteilt, gibt es damit NICHT — und genau das ist
+ * die Auflage, unter der sie gebaut ist.
+ *
+ * DIE GESTALT IST EIN ERSCHOEPFENDER switch OHNE default-Rueckfall, dieselbe Bauform
+ * und derselbe Zweck wie bei requiresTestCode und testModeErrorText: Kommt ein
+ * SECHSTES Ziel in TRACKING_TARGETS, BRICHT tsc — und fragt BEIDE Auskuenfte
+ * zugleich ab.
+ *
+ * ---------------------------------------------------------------------------
+ * DIE ACHSE DES reihenfolgeHinweis — UND SIE IST NICHT DIE DER CODE-PFLICHT.
+ * Dieser Absatz ist der Grund, warum die Auskunft hier steht und nicht aus
+ * requiresTestCode abgeleitet wird; wer ihn streicht, holt genau die Verwechslung
+ * zurueck, gegen die er geschrieben ist:
+ *
+ *  · DER HINWEIS HAENGT DARAN, OB DIE TEST-ANSICHT DES ANBIETERS RUECKSCHAU HAT.
+ *    Pinterests Ansicht hat KEINE: ein Ereignis, das bei geschlossener Ansicht
+ *    gesendet wurde, erscheint auch spaeter nicht (GEMESSEN LIVE, 2026-09-10).
+ *    Wer einschaltet, ausloest und DANN nachsieht, findet nichts — bei KORREKTEM
+ *    Verhalten.
+ *  · ER HAENGT NICHT AN DER CODE-PFLICHT. Dass heute genau das Ziel ohne
+ *    Code-Pflicht auch das ohne Rueckschau ist, ist ZUFALL und muss nicht so
+ *    bleiben. Ein kuenftiges Ziel ohne Code-Pflicht, dessen Ansicht Rueckschau hat,
+ *    bekaeme den Hinweis sonst faelschlich — und niemand merkt es.
+ *  · SEIN FEHLEN HEISST "DIE ANSICHT BRAUCHT KEINEN HINWEIS", NICHT "DAS ZIEL
+ *    VERLANGT EINEN CODE". Die Abwesenheit ist der Schalter, wie bei den optionalen
+ *    Feldern in TargetCardConfig.
+ *  · WAS HIER SCHUETZT, IST tsc BEIM SECHSTEN ZIEL — und sonst nichts. KEIN LAUF
+ *    KANN DIE GEWAEHLTE VON DER VERWORFENEN BAUFORM TRENNEN, weil beide fuer alle
+ *    fuenf heutigen Ziele DASSELBE liefern. Das ist die Figur "EINE VORBEDINGUNG,
+ *    DIE AUCH DER ALTE ZUSTAND ERFUELLT" (docs/immer-beachten.md).
+ *    EIN KOMMENTAR IST KEIN WAECHTER — dieser Satz steht hier, statt weggeschrieben
+ *    zu werden.
+ *
+ * ---------------------------------------------------------------------------
+ * DIE DREI BANNER-FASSUNGEN SIND UNGLEICH BELEGT, und deshalb sind es DREI und
+ * nicht eine:
+ *  · meta      — fliesst in Targeting und Messung. GELESEN (Anbieter-Doku,
+ *                2026-09-08).
+ *  · pinterest — kommt an, wird NICHT gezaehlt. GEMESSEN LIVE (2026-09-10).
+ *  · tiktok    — die Oberflaeche behauptet Isolation, die WIRKUNG ist UNGEMESSEN.
+ *                Seine Fassung ist KEIN Anspruch, sondern das EINGESTAENDNIS, dass
+ *                wir es nicht wissen. Wer sie spaeter zu "zaehlt nicht" schaerft,
+ *                braucht dafuer die Messung aus Vorrat (1) — nicht die Vermutung.
+ * google und linkedin tragen keinen Testmodus und erscheinen nie im Banner; ihre
+ * Fassung ist die vorsichtige und wird heute von nichts gelesen.
+ */
+type TestModeAnbieterAuskunft = {
+  /** Der Halbsatz, der im Banner DIREKT BEIM NAMEN dieses Ziels steht. */
+  bannerHalbsatz: string;
+  /** Der Bedienhinweis an der Karte — fehlt, wenn die Ansicht keinen braucht. */
+  reihenfolgeHinweis?: string;
+};
+
+export function testModeAnbieterAuskunft(
+  target: TrackingTarget,
+): TestModeAnbieterAuskunft {
+  switch (target) {
+    case "meta":
+      return { bannerHalbsatz: "beim Anbieter zählen sie weiter" };
+    case "tiktok":
+      return {
+        bannerHalbsatz: "was der Anbieter mit ihnen tut, ist nicht geprüft",
+      };
+    case "pinterest":
+      return {
+        bannerHalbsatz:
+          "beim Anbieter kommen sie an, gezählt werden sie nicht",
+        reihenfolgeHinweis:
+          "Test-Ansicht im Werbekonto zuerst öffnen, dann auslösen.",
+      };
+    case "linkedin":
+      return {
+        bannerHalbsatz: "was der Anbieter mit ihnen tut, ist nicht geprüft",
+      };
+    case "google":
+      return {
+        bannerHalbsatz: "was der Anbieter mit ihnen tut, ist nicht geprüft",
+      };
+    default: {
+      // HIER BRICHT DER BUILD BEIM SECHSTEN ZIEL, und er fragt BEIDE Auskuenfte
+      // zugleich ab: was der Banner fuer dieses Ziel sagt, und ob seine Ansicht
+      // einen Hinweis braucht.
+      const unbekanntesZiel: never = target;
+      return unbekanntesZiel;
+    }
+  }
+}
+
+/**
  * DER TEXT DES PROJEKT-BANNERS — oder null, wenn kein Ziel im Testmodus steht.
  *
  * ER NENNT JEDES VERURSACHENDE ZIEL MIT SEINEM ENDZEITPUNKT, und das ist die
@@ -244,6 +338,33 @@ export function describeTestModeState(
  * Container (CodeImporter), der das Banner rendert.
  *
  * BENANNT UND EXPORTIERT, damit die Tests ihn AUFRUFEN statt abzuschreiben.
+ *
+ * ---------------------------------------------------------------------------
+ * ERWEITERT 11.3f — ER LIEFERT JETZT DEN VOLLSTAENDIGEN BANNER-TEXT. Die Absaetze
+ * darueber gelten unveraendert; was dazukommt, sind drei Dinge:
+ *
+ *  (1) DER GANZE TEXT KOMMT AUS DIESER FUNKTION. Bis hierher lieferte sie nur den
+ *      vorderen Teil ("Testmodus: <Ziele>."), und die zwei Saetze danach standen als
+ *      freies JSX-Literal im Container. DER GRUND FUER DEN UMZUG IST GEMESSEN: Jenes
+ *      Literal war von KEINEM Lauf gedeckt — der Container-Test rendert den Banner
+ *      nie (sein Leser-Mock liefert dauerhaft ein leeres states-Objekt), und keine
+ *      Testdatei nannte einen der Saetze. Hier ist der Text ohne Container-Render
+ *      pruefbar.
+ *
+ *  (2) JEDES ZIEL TRAEGT SEINEN HALBSATZ DIREKT BEI SICH — UND ES GIBT KEINEN
+ *      SAMMELSATZ AM ENDE, der zwei Ziele gegenueberstellt. Das ist eine Auflage und
+ *      keine Geschmacksfrage: Ein Sammelsatz zwingt den Text, die STAENDE ZU
+ *      VERGLEICHEN, und die drei sind ungleich belegt (s. den Kopf von
+ *      testModeAnbieterAuskunft). Wer tiktok mit meta in eine Gruppe zieht, behauptet
+ *      eine Gleichheit, die wir nicht haben, und verliert genau die vorsichtige
+ *      Fassung.
+ *      DER PREIS STEHT DABEI: Bei drei laufenden Zielen wird der Satz lang. Bewusst.
+ *
+ *  (3) DIE ZWEI SCHLUSSSAETZE SIND WOERTLICH UEBERNOMMEN UND NICHT ZIEL-ABHAENGIG.
+ *      "Solange zaehlt die eigene Auswertung dieses Projekts keine Ereignisse" gilt
+ *      dem PROJEKT — der Riegel haengt an MINDESTENS EINEM Ziel (Entscheidung (3)),
+ *      nicht an dem, dessen Namen man gerade liest. Der Beenden-Weg ist eine
+ *      Wegbeschreibung. Beide je Ziel zu wiederholen waere falsch bzw. redundant.
  */
 export function testModeBannerText(
   testModes: ListTestModeStatesResult | null,
@@ -257,10 +378,17 @@ export function testModeBannerText(
       state !== undefined && state.kind === "laeuft"
         ? formatEpochSeconds(state.endetAt)
         : "";
-    return `${TARGET_CARDS[target].name} (bis ${bis})`;
+    // DER HALBSATZ STEHT DIREKT BEIM NAMEN — s. (2) im Kopf. Die Trennung der
+    // Eintraege ist deshalb ein Semikolon und kein Komma: ein Komma liesse die
+    // Aufzaehlung mit dem Halbsatz verschwimmen.
+    return `${TARGET_CARDS[target].name} (bis ${bis}) — ${testModeAnbieterAuskunft(target).bannerHalbsatz}`;
   });
   if (laufend.length === 0) return null;
-  return `Testmodus: ${laufend.join(", ")}.`;
+  return (
+    `Testmodus: ${laufend.join("; ")}. ` +
+    "Solange zählt die eigene Auswertung dieses Projekts keine Ereignisse. " +
+    "Beenden in den Einstellungen unter „Messen“, an der Karte des genannten Ziels."
+  );
 }
 
 /**
@@ -1100,6 +1228,35 @@ export default function TargetCard({
             {testModeLine !== null && (
               <span className="text-xs text-gray-600">{testModeLine}</span>
             )}
+            {/* DIE REIHENFOLGE-ANGABE (Scheibe 11.3f) — NUR IM LAUFENDEN ZUSTAND,
+                UND NUR WO DIE ANSICHT DES ANBIETERS EINEN HINWEIS BRAUCHT.
+
+                BEIDE HAELFTEN DER BEDINGUNG HABEN EINEN EIGENEN GRUND:
+                · "laeuft" — ein Hinweis, den man liest, BEVOR man entscheidet, ist
+                  Ballast; einer, der dasteht, WENN er gebraucht wird, ist Bedienung.
+                · reihenfolgeHinweis !== undefined — die Auskunft je Ziel, NICHT die
+                  Code-Pflicht. Warum das nicht dasselbe ist, steht im Kopf von
+                  testModeAnbieterAuskunft und wird hier NICHT verdoppelt.
+
+                SIE BEHAUPTET NICHTS UEBER DEN ANBIETER, sondern sagt nur, in welcher
+                REIHENFOLGE zu bedienen ist. Eine Aussage ueber ein fremdes System
+                altert, ohne dass hier etwas rot wird; eine Bedienreihenfolge altert
+                mit JENEM System und nicht mit unserem UI — das ist der geschaerfte
+                Grund der Gestalt-Entscheidung (A).
+                SIE SAGT AUSDRUECKLICH NICHT, WARUM ES KEIN CODE-FELD GIBT. Die
+                GRENZE jener Entscheidung bleibt unaufgeloest.
+
+                DER NAME DER ANSICHT IST BESCHREIBEND UND KEIN ANBIETER-LABEL, und das
+                ist Absicht: Das Label ist SPRACHABHAENGIG (in der deutschen
+                Oberflaeche "Events testen"), ein hartkodiertes waere fuer ein
+                englisches Konto schlicht falsch. */}
+            {testModeState.kind === "laeuft" &&
+              testModeAnbieterAuskunft(target).reihenfolgeHinweis !==
+                undefined && (
+                <span className="text-xs text-gray-600">
+                  {testModeAnbieterAuskunft(target).reihenfolgeHinweis}
+                </span>
+              )}
             <div className="flex flex-wrap items-center gap-2">
               {/* DAS FELD STEHT NUR, WO EIN CODE VERLANGT WIRD (Scheibe 11.3e). Ein
                   Feld fuer pinterest boete eine Eingabe an, die der CHECK aus 0029

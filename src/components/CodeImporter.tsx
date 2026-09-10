@@ -2482,12 +2482,20 @@ export default function CodeImporter({
           WER DEN ZUSTAND JE AUS EINER SERVER-KOMPONENTE VORBEFUELLT, MUSS DIE
           FORMATIERUNG VORHER HYDRATIONS-SICHER MACHEN. Ohne diesen Satz kippt die
           Deckung still, genau wie am isSettingsOpen-Gate beschrieben. */}
+      {/* DER GANZE BANNER-TEXT KOMMT SEIT SCHEIBE 11.3f AUS testModeBannerText.
+          HIER STAND EIN FREIES JSX-LITERAL mit zwei Saetzen, und es sagte fuer ALLE
+          Ziele dasselbe: "beim Anbieter kommen sie weiterhin an". Fuer pinterest ist
+          das wahr und trotzdem irrefuehrend — Ankunft ja, Zaehlung nein, beides am
+          2026-09-10 gemessen; der Leser liest "ankommen" als "zaehlen".
+          ES IST NICHT NUR UMFORMULIERT, SONDERN UMGEZOGEN, und der Grund ist
+          gemessen: Jenes Literal war von KEINEM Lauf gedeckt (dieser Container
+          rendert den Banner in keinem Test — sein Leser-Mock liefert dauerhaft ein
+          leeres states-Objekt). In der Funktion ist der Text ohne Container-Render
+          pruefbar, und er steht dort, wo die Produkt-Texte zu den Zielen ohnehin
+          stehen. HIER ENTSTEHT DAMIT KEIN ZWEITES URTEIL ueber Ziele. */}
       {testModeBanner !== null && (
         <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-          <span className="font-medium">{testModeBanner}</span> Solange zählt die
-          eigene Auswertung dieses Projekts keine Ereignisse; beim Anbieter kommen
-          sie weiterhin an. Beenden in den Einstellungen unter „Messen“, an der
-          Karte des genannten Ziels.
+          {testModeBanner}
         </div>
       )}
 

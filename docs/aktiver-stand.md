@@ -2703,6 +2703,36 @@ Kommentar; **er gehört in die Scheibe 11.3e.**
 **NACHGEZOGEN AM 2026-09-10:** Hier stand "Ab 11.3d". Der Normalfall entsteht erst, wenn
 `pinterest` in der Zielmenge steht — **das ist 11.3e.**
 
+**RICHTIGGESTELLT AM 2026-09-10, NICHT GESTEMPELT — DIE SICHTBARKEIT IST GEMESSEN FALSCH,
+DIE ZUORDNUNG NICHT.** **HIER STAND:** "sagt dem Betreiber im **sichtbaren** Text" und "Der
+Satz steht **vor den Augen des Betreibers**, nicht in einem Kommentar".
+**DER BEFUND — GEMESSEN am Repo (CC, 2026-09-10), Achse `schalter|an/aus`, case-insensitiv,
+über die ganze Datei:** FÜNF Treffer, **KEINER im gerenderten JSX**. Der Satz steht in einem
+**JSX-KOMMENTAR** (`{/* DER TESTMODUS — DREI GESTEN, KEIN AN/AUS-SCHALTER (Scheibe 11.3b).
+… */}`) und wird **nicht ausgeliefert**. Gegenprobe: kein Lauf in `TargetCard.test.tsx`
+erwartet ihn im gerenderten Text.
+**ES SIND ALSO ZWEI KOMMENTARE, KEIN KUNDENTEXT.** Damit trägt auch die zweite Hälfte des
+Absatzes darunter nicht mehr: "dieselbe Klasse, aber Kommentar statt Oberfläche. Er gehört
+mit, **wiegt aber weniger**" — **beide wiegen gleich**, es ist zweimal dieselbe Klasse.
+**WAS UNBERÜHRT BLEIBT UND DER GRUND IST, WARUM DIESER TEIL NICHT ENTFÄLLT:** Die
+**ZUORDNUNG zu 11.3e** ist handlungsbindend und **stimmt**. Beide Stellen bleiben
+Scheibenarbeit — **nicht wegen ihrer Sichtbarkeit, sondern weil sie eine falsche AUSSAGE
+tragen** ("ein Zustand ohne Code ist unmöglich"), während die vier übrigen Stellen aus
+Vorrat (29) nur einen toten NAMEN tragen. Die Abgrenzung im Absatz "FOLGE FÜR VORRAT (29)"
+gilt unverändert.
+**DIE ÜBERSCHRIFT DIESES TEILS BLEIBT WÖRTLICH STEHEN, obwohl ihr Wort "KUNDENTEXT" nach
+dieser Messung zu weit ist** — ihre andere Hälfte ("keine Aufräumarbeit") ist der tragende
+Teil und unverändert richtig. Sie wird nirgends zitiert (GEMESSEN am Repo, CC, 2026-09-10:
+genau ein Vorkommen im ganzen Repo, die Überschrift selbst); umbenannt wird sie trotzdem
+nicht, weil dieser Absatz sie auflöst und eine Umbenennung nichts hinzufügte.
+**WAS DIE RICHTIGSTELLUNG KOSTET:** Die Dringlichkeit sinkt — ein Kommentar steht nicht vor
+den Augen des Betreibers. **Die Einstufung als die teuerste Stelle fällt weg**; sie
+stehenzulassen hiesse, gegen einen Schaden zu planen, den es nicht gibt.
+PROVENIENZ: die Kommentar-Eigenschaft, die Achse und die Gegenprobe sind GEMESSEN am Repo
+(CC, 2026-09-10). **Dieselbe Richtigstellung steht im Abschnitt 11.3e** an der dortigen
+Fassung derselben zwei Stellen; sie ist hier NICHT verdoppelt, sondern an beiden Orten
+vollzogen, weil beide je für sich gelesen werden.
+
 **Der Kopf von `startTestMode`** (`src/app/projects/actions.ts`) trägt dieselbe Aussage —
 **dieselbe Klasse, aber Kommentar statt Oberfläche.** Er gehört mit, wiegt aber weniger.
 
@@ -3023,8 +3053,57 @@ sie ist Isolations-Beleg gegenüber der Eventübersicht **und** Positivkontrolle
 
 ### Zwei offene Fragen, die hier NICHT entschieden werden
 
+**DIE ÜBERSCHRIFT DIESES UNTERABSCHNITTS BLEIBT WÖRTLICH, OBWOHL SIE SEIT DEM 2026-09-10 ZU
+WEIT IST:** Frage (A) ist ENTSCHIEDEN, offen ist nur noch (B). Sie wird an einer anderen
+Stelle dieser Datei ZITIERT (GEMESSEN am Dateitext, CC, 2026-09-10: einmal, im Punkt (4)
+des Gegenstands); eine Umbenennung machte jenen Zeiger tot, und der Satz hier leistet
+dasselbe und kostet keinen.
+
 **(A) WELCHE GESTALT DER SCHALTER AN DER PINTEREST-KARTE HAT.** Das ist eine UI-Frage und
 am Code nicht zu beantworten; sie gehört dem Owner.
+
+### (A) IST ENTSCHIEDEN — KEIN CODE-FELD, EIN KNOPF, KEIN ERKLÄRTEXT
+
+**PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-10**, auf der Grundlage der darunter stehenden
+Messung am Repo (CC, 2026-09-10). **Die Frage (B) bleibt offen** und wird davon nicht
+berührt.
+
+**DIE ENTSCHEIDUNG, in fünf Teilen:**
+- **KEIN CODE-FELD für `pinterest`.** Der CHECK aus 0029 verbietet dort einen Testcode; ein
+  Feld böte eine Eingabe an, die die Datenbank zurückweist.
+- **EIN KNOPF, dessen Beschriftung weiter zwischen "Test starten" und "Test verlängern"
+  wechselt** — wie bei `meta` und `tiktok`.
+- **DER SPERR-GRUND `!testInput.trim()` FÄLLT WEG, `testBusy` BLEIBT.** Ohne Feld gibt es
+  nichts, worauf jene Sperre sich beziehen könnte; der Schutz gegen den Doppelklick bleibt.
+- **DER BEENDEN-KNOPF UNVERÄNDERT** — er erscheint nur im laufenden Zustand und verlangt
+  ohnehin keinen Code.
+- **KEIN ZUSÄTZLICHER ERKLÄRTEXT AUF DER KARTE.**
+
+**DER GRUND FÜR DIE WECHSELNDE BESCHRIFTUNG, OBWOHL BEIDE GESTEN DASSELBE TUN — er gehört
+hierher, sonst zieht die nächste Runde sie zu einem festen Text zusammen: SIE BESCHREIBT,
+WAS DER NUTZER ERREICHT, NICHT WAS DER CODE TUT.** Läuft ein Test und der Nutzer drückt,
+wird die Frist VERLÄNGERT; "starten" wäre dort schlicht falsch. **Dass bei `meta` und
+`tiktok` zusätzlich ein Code neu verlangt wird, ist der Unterschied im MECHANISMUS, nicht
+im ERGEBNIS** — und eine Beschriftung, die den Mechanismus beschreibt statt das Ergebnis,
+wäre für den Nutzer die schlechtere.
+
+**DER GRUND GEGEN DEN ERKLÄRTEXT:** Das UI wird später **komplett neu gestaltet**. **Eine
+Textzeile überlebt das nicht, die Struktur schon** — der Aufwand ginge in etwas, das mit
+dem Redesign ohnehin verschwindet.
+
+**DIE GRENZE, UND SIE MUSS MIT:** Nach dieser Scheibe verhält sich `pinterest` an der Karte
+**ANDERS als `meta` und `tiktok`** — kein Feld, ein Knopf, der ohne Eingabe klickbar ist —,
+**und der Betreiber bekommt dafür KEINE sichtbare Auskunft.** Die bestehende Erklärung
+steht in einem JSX-Kommentar und wird nicht ausgeliefert (GEMESSEN am Repo, CC,
+2026-09-10). **Das ist bewusst so entschieden und keine Auslassung;** wer es später ändern
+will, ändert es im Redesign.
+
+**WAS DIESE ENTSCHEIDUNG AM GEGENSTAND DER SCHEIBE KLARSTELLT, damit der Bullet oben nicht
+falsch gelesen wird:** Die Zeile "**Der Erklärtext.**" unter "Der Gegenstand" meint das
+BERICHTIGEN der bestehenden Aussage — sie sagt heute, ein Schalter ohne Code sei unmöglich,
+und nennt den Constraint unter seinem alten Namen. **Sie meint NICHT, einen neuen,
+sichtbaren Erklärtext zu bauen.** Der Bullet bleibt wörtlich stehen; dieser Satz löst ihn
+auf.
 
 **DIE GRUNDLAGE DER ENTSCHEIDUNG — GEMESSEN am Repo (CC, 2026-09-10), und sie ist
 ausdrücklich NICHT die Entscheidung:**

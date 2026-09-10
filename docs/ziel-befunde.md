@@ -126,6 +126,8 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
   - ### MESSUNG G in der Google-Ads-Oberfläche (2026-09-07) — die Verbuchung, die Teile
     (cf) und (cg)
 - ## Pinterest (Conversions API)
+  - ### MESS-RUNDE 2026-09-10 gegen die Conversions API und die Anbieter-Oberfläche —
+    die Teile (u) bis (z)
 - ## Meta (Conversions API)
   - ### Abschnitts-Lesung 2026-09-08 der Conversions-API-Dokumentation zum Testmodus —
     die Teile (a) bis (f)
@@ -5983,6 +5985,143 @@ alle am 2026-08-20 abgerufen; der Abschnitt "Conversions nachverfolgen" ist VOLL
   "My apps", Token Debugger, Postman-Sammlung, Help-Center-Tickets.
 · Nicht-Pinterest-Ziele (Google-Dokumentation, OAuth-RFC, OWASP) — ausserhalb des
   Gegenstands.
+
+### MESS-RUNDE 2026-09-10 gegen die Conversions API und die Anbieter-Oberfläche — die Teile (u) bis (z)
+
+**HERKUNFT (2026-09-10) — SIE IST GETEILT, UND DIE TEILUNG GEHÖRT AN DEN ANFANG:** Die
+Teile (u) bis (x) ruhen auf einer MESSUNG — vier Conversions gegen den echten Endpunkt,
+gefahren vom **OWNER, LIVE, 2026-09-10**, dazu die Ablesungen an der Eventübersicht und der
+Test-Ereignis-Ansicht des eigenen Werbekontos und eine Ablesung der Vercel-Logs. Teil (y)
+ruht auf einer **DOKU-LESUNG DURCH DIE CHAT-INSTANZ, 2026-09-10**. Teil (z) ist ein
+NICHT-TREFFER über das Werkzeug, kein Befund über den Inhalt.
+**KEINE ANMELDUNG AUF EINER FREMDEN SEITE, KEINE EINGABE, KEIN DOWNLOAD** — die Ablesungen
+am Werbekonto sind die des Owners an seinem eigenen Konto.
+
+(u) DER TESTMODUS-PARAMETER IST GEMESSEN WIRKSAM, UND DIE ISOLATION AUCH.
+    GEMESSEN LIVE, 2026-09-10, Stefan (Katalog-Frage H5 und die offene Namensfrage).
+    **`test=true` GREIFT.** Ein mit diesem Query-Parameter gesendetes Ereignis erscheint
+    **NICHT in der Eventübersicht des Werbekontos**; ein ohne ihn gesendetes erscheint.
+    **DIE ISOLATION IST DAMIT GEMESSEN, NICHT MEHR NUR GELESEN** — die Doku-Aussage aus
+    (m) ("test data is not processed for reporting or optimization") ist für die
+    BERICHTERSTATTUNG belegt.
+    **WAS DEN SCHLUSS TRÄGT, UND ES SIND ZWEI HÄLFTEN:** die ZÄHLUNG (vier Conversions
+    gefeuert, der Zähler steht auf zwei — genau die zwei ohne Parameter; ein ignorierter
+    Parameter ergäbe vier) UND der Ausschluss der Alternativursache: Der Anbieter hat die
+    markierten Läufe **ANGENOMMEN UND VERARBEITET**, nicht abgelehnt — der Vercel-Log
+    zeigt **200 OK** und eine INHALTLICHE Feld-Warnung, und eine Ablehnung erzeugt keine
+    Feld-Warnung. **OHNE DIESE ZWEITE HÄLFTE WÄRE DIE ABWESENHEIT KEIN BEFUND**, sondern
+    von "es ist gar nichts angekommen" nicht zu unterscheiden.
+    **DIE ZAHLEN, ZEITSTEMPEL UND EREIGNIS-KENNUNGEN STEHEN HIER NICHT** — sie stehen in
+    docs/aktiver-stand.md, VERMERK 3. Zweimal geschrieben liefen sie auseinander; dort
+    steht das Protokoll, hier der Befund über den Anbieter.
+    **DIE GRENZE, DIE MITMUSS:** Gemessen ist die BERICHTERSTATTUNG, **nicht die
+    OPTIMIERUNG**. Die Doku nennt für die Sandbox beides; belegt ist die erste Hälfte.
+    Und der Zählerstand NACH dem letzten Lauf ist UNGEMESSEN — der Beleg ruht auf den
+    zwei markierten Läufen davor, nicht auf dem letzten.
+
+(v) DIE NAMENS-SPANNUNG AUS (p)(1) IST FÜR DEN BAU ENTBEHRLICH GEWORDEN — UND NICHT
+    AUFGELÖST.
+    GEMESSEN LIVE, 2026-09-10, Stefan.
+    **TEIL (p)(1) BLEIBT WÖRTLICH STEHEN** und wird von diesem Teil nicht ersetzt: Die
+    Conversions-Seite sagt `test=true`, die Rate-Limit-Seite für denselben Endpunkt sagt
+    `is_test=TRUE`. **BEIDE SÄTZE STEHEN WEITERHIN IN DER ANBIETER-DOKU.**
+    **WAS DIE MESSUNG ENTSCHEIDET:** dass `test=true` **WIRKT** (s. (u)). Der gebaute
+    Adapter sendet genau diesen Namen; er braucht den zweiten nicht.
+    **WAS SIE AUSDRÜCKLICH NICHT ENTSCHEIDET:** ob `is_test` ebenfalls wirkt, ob es ein
+    Alias ist oder ob es ins Leere geht. **ES IST NICHT GEPRÜFT WORDEN** — kein Lauf hat
+    ihn gesendet.
+    **„DIE ZWEI-NAMEN-FRAGE IST ENTSCHIEDEN" WÄRE ZU STARK.** Gemessen ist, dass der EINE
+    Name wirkt, nicht, dass der andere es nicht tut. Der Unterschied zählt für jeden, der
+    später einer Anbieter-Änderung nachgeht: Fiele `test=true` eines Tages aus, wäre
+    `is_test` ein ungeprüfter Kandidat und keine bekannte Alternative.
+
+(w) DIE TEST-ANSICHT IST EIN LIVE-STROM OHNE RÜCKSCHAU — KATALOG-FRAGE H5, JETZT MIT
+    MESSERGEBNIS.
+    GEMESSEN LIVE, 2026-09-10, Stefan.
+    **DER BEFUND:** Die Test-Ereignis-Ansicht im Werbekonto zeigt **nur, was ankommt,
+    WÄHREND sie geöffnet ist**. Ein Ereignis, das bei geschlossener Ansicht gesendet
+    wurde, erscheint **auch später nicht** — es gibt keine Rückschau.
+    **DER BELEG IST EIN POSITIV-/NEGATIV-PAAR AN DERSELBEN ANSICHT:** zwei Ereignisse bei
+    GESCHLOSSENER Ansicht — nie erschienen; ein Ereignis bei GEÖFFNETER Ansicht — sofort
+    erschienen. **DIE REIHENFOLGE SCHLIESST BLOSSE VERZÖGERUNG AUS:** ein SPÄTERES
+    Ereignis erschien, während die FRÜHEREN nie erschienen — eine Ansicht, die nur
+    nachhinkt, hätte das ältere zuerst gezeigt.
+    **WAS SIE JE EREIGNIS ZURÜCKGIBT** (abgelesen an einem angekommenen Ereignis):
+    Eventtyp · Kennung des Ereignisses · Plattform (hier: Web) · Eventquelle (hier: API) ·
+    Empfangszeit · die empfangenen Daten (hier: User Agent und IP-Adresse) · eine
+    **Warnliste je Parameter**.
+    **DAS BEANTWORTET KATALOG-FRAGE H5 MIT EINEM ERGEBNIS STATT MIT EINEM KANDIDATEN.**
+    Teil (m) führte drei Kandidaten und "keiner geprüft"; Kandidat (1) ist jetzt gefahren
+    und tauglich. **TEIL (m) BLEIBT WÖRTLICH STEHEN** — seine Aussage war für ihren Tag
+    richtig.
+    **DIE AUFLAGE, DIE DARAUS FOLGT UND DIE JEDE LIVE-ANLEITUNG TRAGEN MUSS: DIE ANSICHT
+    WIRD GEÖFFNET, BEVOR GESENDET WIRD.** Wer erst sendet und dann nachsieht, misst eine
+    Abwesenheit, die das Instrument erzeugt hat und nicht der Gegenstand — genau die
+    Fehlerklasse, die docs/immer-beachten.md unter "EINE ABWESENHEIT KANN VOM WERKZEUG
+    ERZEUGT SEIN, NICHT VOM GEGENSTAND" führt.
+
+(x) ZWEI WARNUNGEN AN UNSERER NUTZLAST: `external_id` UND `click_id` FEHLEN.
+    GEMESSEN LIVE, 2026-09-10, Stefan — an der Test-Ansicht UND im Vercel-Log, also an
+    zwei unabhängigen Stellen mit demselben Wortlaut.
+    **DIE ANSICHT MELDETE ZU UNSEREM EREIGNIS ZWEI WARNUNGEN:** "external_id is missing"
+    und "click_id is missing". Der Vercel-Log führt im selben Fenster dieselbe
+    Pinterest-Forward-Warnung, **ohne einen einzigen Fehler**, bei bestätigtem 200 OK.
+    **BEIDE BLOCKIEREN DIE VERARBEITUNG NACH ANBIETER-ANGABE NICHT** — das Ereignis ist
+    angekommen und verarbeitet worden; die Warnung ist eine Qualitäts-Aussage, keine
+    Ablehnung. Das deckt sich mit der Rumpfform aus (e), wo `warning_message` neben
+    `error_message` als eigener Kanal geführt wird.
+    **BEIDE SIND PERSONENBEZOGENE MERKMALE, UND GENAU DAS IST DER GRUND, WARUM SIE HIER
+    NICHT ALS AUFGABE STEHEN:** `external_id` ist eine Nutzer-Kennung, `click_id` eine
+    Klick-Kennung. Sie zu liefern hiesse, eine Datenklasse zu erheben, die Pagesmith heute
+    nicht erhebt.
+    **ZEIGER STATT NEUEM POSTEN:** Der Fall ist vom bestehenden offenen Punkt
+    **"DATENKLASSEN-GRENZE VOR DER ERSTEN PII-SCHEIBE"** (CLAUDE.md, "## Offene Punkte";
+    Volltext in docs/offene-punkte.md) **VOLLSTÄNDIG GEDECKT** — dessen Trigger nennt
+    Click-IDs ausdrücklich. **ES ENTSTEHT KEIN NEUER OFFENER PUNKT**, und dieser Teil trifft
+    KEINE Entscheidung darüber, ob die zwei Merkmale je erhoben werden.
+    **EIN BEFUND ÜBER DEN BESTAND, UNBEWERTET:** Die zwei Warnungen sind dieselbe Achse,
+    die Teil (t) an der Qualitäts-Ansicht schon einmal gezeigt hat ("nicht eingerichtet"
+    bei E-Mail, External ID, Product ID). Dort war der Prüfling leer; hier ist er es nicht
+    mehr, und die Lücke ist dieselbe geblieben.
+
+(y) EINE SPANNUNG ZUR ZUGRIFFSSTUFE — ABGELEGT UND NICHT BEWERTET.
+    **GELESEN 2026-09-10 DURCH DIE CHAT-INSTANZ** (nicht durch CC, **NICHT GEMESSEN**),
+    help.pinterest.com, Artikel "The Pinterest Conversions API".
+    **WAS DORT STEHT:** Die Conversions API verlange **KEINE Anwendung und KEINE gültige
+    App-ID**; ein Business-Konto und ein über die Conversions-Seite erzeugtes Token
+    genügten.
+    **WORAN DAS RÜHRT:** CLAUDE.md sagt, Pinterest verlange für die höhere Zugriffsstufe
+    eine Vertragsannahme und ein Prüfverfahren. Die Teile (f) und (h) dieses Abschnitts
+    tragen dieselbe Aussage aus der Entwickler-Doku (Trial-Freigabe, Standard-Upgrade mit
+    Video-Nachweis).
+    **DIE SPANNUNG WIRD HIER ABGELEGT UND AUSDRÜCKLICH NICHT BEWERTET.** Es können ZWEI
+    ACHSEN sein — die CONVERSIONS API gegen die weitere Pinterest-API —, und der Artikel
+    trennt sie selbst. Dann widerspräche nichts, und beide Aussagen wären für ihren
+    Gegenstand richtig.
+    **WAS DAGEGEN SPRICHT, DAS HIER ZU ENTSCHEIDEN:** Die Quellen sind von verschiedener
+    Art (Hilfe-Artikel gegen Entwickler-Doku), keine der beiden ist gemessen, und die
+    Aussage in CLAUDE.md trägt dort eine Folge für die kommerzielle Stufe.
+    **CLAUDE.md IST IN DIESER RUNDE NICHT ANGEFASST WORDEN**, und es wird hier auch nicht
+    vorgeschlagen, es anzufassen.
+
+(z) DIE BENANNTE LÜCKE: DIE ENDPUNKT-REFERENZ IST WEITERHIN UNGELESEN — UND DER
+    NICHT-TREFFER STAMMT VOM WERKZEUG.
+    **developers.pinterest.com/docs/api/v5/events-create/ IST NICHT GELESEN.**
+    **DER VERSUCH IST GEFAHREN WORDEN, 2026-09-10, DURCH DIE CHAT-INSTANZ**, und er hat
+    **nur das Seitengerüst ohne Rumpf** geliefert.
+    **DAS IST EINE VOM WERKZEUG ERZEUGTE ABWESENHEIT UND KEIN BEFUND ÜBER DEN INHALT** —
+    dieselbe Fehlerklasse, die docs/immer-beachten.md unter "EINE ABWESENHEIT KANN VOM
+    WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND" führt, und die im Google- wie im
+    Vercel-Abschnitt schon zweimal aufgetreten ist.
+    **WER SIE SCHLIESSEN WILL, BRAUCHT `textContent` STATT `innerText`** — an beiden
+    früheren Fällen lag genau dort der Unterschied (115 157 gegen 40 271 Zeichen beim
+    einen, die ganze Tarif-Tabelle beim anderen). Ein zweiter Versuch mit demselben
+    Instrument ist kein zweiter Versuch.
+    **WARUM DIE LÜCKE ZÄHLT:** Genau dort stehen laut Anbieter die PFLICHTFELDER — s. (q),
+    wo das Parameter-Verzeichnis ausdrücklich sagt, dass es sie NICHT benennt. Sie ist seit
+    dem 2026-08-20 als "GESEHEN, NICHT GEÖFFNET" geführt und **bleibt es unverändert**;
+    dieser Teil verschiebt nur den Grund — damals nicht geöffnet, heute nicht lesbar
+    bekommen.
 
 ## Meta (Conversions API)
 

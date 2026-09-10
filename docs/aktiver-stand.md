@@ -1137,6 +1137,27 @@ TRIGGER: die Messung, ob TikTok test-markierte Ereignisse in den echten Daten f�
 PROVENIENZ: GELESEN an TikToks Oberfläche (Stefan, 2026-09-09) gegen die Meta-Doku-Lesung
 vom 2026-09-08; die Folge für den Text ist eine ABLEITUNG, **keine Messung**.
 
+**ZUSATZ 2026-09-10 — DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN, UND DER EINTRAG BLEIBT
+OFFEN.** Sein Trigger ist die TikTok-Messung, und die steht aus; die Ergänzung betrifft ein
+DRITTES Ziel und löst ihn nicht ab.
+**FÜR PINTEREST IST DIE LAGE SEIT DEM 2026-09-10 GEMESSEN STATT GELESEN — UND SIE IST EINE
+DRITTE:** Ein test-markiertes Ereignis erscheint dort **NICHT in der Eventübersicht**
+(VERMERK 3, SCHLUSS 3). Damit stehen jetzt **drei verschiedene Lagen** nebeneinander, und
+keine trägt für die anderen:
+- **meta** — fliesst in Targeting und Messung (GELESEN 2026-09-08 an der Anbieter-Doku).
+- **tiktok** — Oberflächen-Aussage "Test events will not be included in actual data"
+  (GELESEN an der Oberfläche, Stefan, 2026-09-09), **die WIRKUNG ungemessen**.
+- **pinterest** — die Abwesenheit in der Eventübersicht ist **GEMESSEN LIVE, 2026-09-10,
+  Stefan**; die Wirkung auf die OPTIMIERUNG bleibt auch hier ungemessen (VERMERK 3, zweite
+  Grenze).
+**WAS DAS FÜR DEN BANNER-SATZ HEISST — UND ES IST KEINE ÄNDERUNG AN IHM:** Der Grund, ihn
+nicht ziel-abhängig zu machen, war die dünne Provenienz einer einmal gelesenen
+Oberflächen-Zeile. **Für pinterest ist dieser Grund weggefallen, für tiktok nicht.** Ein
+Text, der zwei von drei Zielen belegt unterscheidet und das dritte rät, wäre genau die
+falsche Genauigkeit, vor der der Absatz oben warnt. **HIER WIRD NICHTS ENTSCHIEDEN.**
+PROVENIENZ DIESES ZUSATZES: GEMESSEN LIVE, 2026-09-10, Stefan (die Läufe); die Einordnung
+als dritte Lage ist eine ABLEITUNG, **keine Messung**.
+
 **(23) — GESTRICHEN AM 2026-09-09, ERLEDIGT. DIE NUMMER BLEIBT STEHEN.**
 
 HIER STAND: "TIKTOKS ANBIETER-BEFUND GEHÖRT NACH `docs/ziel-befunde.md` UND STEHT DORT
@@ -1174,6 +1195,81 @@ Aussage über Beständigkeit. **Und es widerspricht dem Repo-Befund "wechselt pr
 nicht, sondern lässt ihn offen** — eine Sitzung kann länger als einen Tag dauern.
 TRIGGER: die Scheibe, die den tiktok-Zweig zuschneidet — dieselbe wie bei (14), und beide
 werden zusammen gelesen. PROVENIENZ: GEMELDET von Stefan, 2026-09-09, **keine Messung**.
+
+**(25) `PINTEREST_TEST_MODE` IST EIN ANWESENHEITS-TEST, KEIN WAHRHEITS-TEST.**
+`testModeQuery` (`src/lib/capi/pinterest-forward.ts`) schaltet den Testmodus bei **JEDEM
+nicht-leeren Wert** ein — also auch bei `"false"`, `"0"`, `"nein"` und `"aus"`.
+Ausgeschaltet wird ausschliesslich durch **Entfernen** der Variable (oder durch einen Wert,
+der nach dem Trimmen leer ist).
+**DER FEHLZUSTAND IST STILL, und das ist der ganze Grund für diesen Eintrag:** Wer die
+Variable auf `"false"` setzt, um den Testmodus AUSZUSCHALTEN, schaltet ihn EIN — und dann
+liefe **jede echte Conversion in Pinterests Sandbox** und verschwände aus den Zahlen des
+Werbekontos, **ohne dass irgendwo etwas rot wird**. Seit dem 2026-09-10 ist das keine
+Befürchtung mehr, sondern die gemessene Wirkung des Parameters (VERMERK 3, SCHLUSS 3).
+**WAS DER EINTRAG NICHT SAGT:** dass die Bauform falsch ist. Sie spiegelt `META_TEST_EVENT_CODE`
+und `TIKTOK_TEST_EVENT_CODE`, wo ein WERT gebraucht wird und die Anwesenheit deshalb
+zwangsläufig der Schalter ist. Bei einem BOOLEAN-artigen Schalter fällt dieselbe Bauform
+anders aus.
+TRIGGER: die erste Ops-Runde oder der erste Betreiber, der den Schalter setzt.
+PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10) an `testModeQuery`; die Wirkung des gesetzten
+Parameters ist GEMESSEN LIVE (Stefan, 2026-09-10, VERMERK 3). Dass jemand `"false"`
+einträgt, ist eine ABLEITUNG über einen plausiblen Fehlgriff, **keine Beobachtung**.
+
+**(26) DER SCHALTER WIRKT DEPLOYMENT-WEIT, DIE GEPLANTE FRIST PROJEKT-EIGEN.**
+Vorrat (10) führt die Vorrang-Frage für zwei **CODES** (meta/tiktok): welcher Wert in die
+Nutzlast wandert, wenn Umgebungsvariable und Projektzeile verschiedene tragen. **Bei
+pinterest kollidiert etwas anderes** — ein deployment-weiter **SCHALTER** mit einer
+projekt-eigenen **FRIST**. Das sind nicht zwei Werte derselben Art, sondern zwei
+verschiedene Arten von Zustand.
+**OB DAS DIESELBE FRAGE IST, IST NICHT ENTSCHIEDEN; DASS SIE ENTSTEHT, SCHON.** Wer
+pinterest zuschneidet, muss sagen, was gilt, wenn `PINTEREST_TEST_MODE` gesetzt ist und
+ein Projekt KEINE Frist trägt — und umgekehrt.
+**ZEIGER AUF (10), KEINE VERDOPPLUNG:** Die Vorrang-Frage der Codes steht dort und wird
+hier nicht zweitens geführt.
+TRIGGER: der Zuschnitt der Pinterest-Scheibe.
+PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10) — dass `testModeQuery` die Variable je Aufruf
+liest und keinen Projekt-Zustand kennt; die Abgrenzung gegen (10) ist eine ABLEITUNG,
+**keine Messung**.
+
+**(27) DAS TESTANFRAGEN-LIMIT BINDET PHASE 11.4, NICHT DIESE.**
+Pinterest deckelt Testanfragen eigens (docs/ziel-befunde.md, Abschnitt "Pinterest
+(Conversions API)", Teil (e): "Test requests have a rate limit of 10 per app per second")
+und rät in der Oberfläche von hohen Testmengen ab.
+**FÜR HANDLÄUFE IST DAS UNERHEBLICH** — ein Mensch, der einen Testklick auslöst, kommt
+diesem Deckel nicht nahe. **EIN TESTKNOPF, DER JE KUNDE FEUERT, LÄUFT DAGEGEN GEGEN EIN
+APP-WEITES LIMIT**: Der Deckel gilt **je App**, nicht je Werbekonto und nicht je Kunde —
+die Kunden teilen ihn sich also, und ein einzelner kann ihn für alle ausschöpfen.
+**DER EINTRAG STEHT HIER UND NICHT BEI 11.4**, weil er in dieser Phase gemessen worden ist;
+sein Trigger zeigt aber dorthin.
+TRIGGER: der Zuschnitt der Phase 11.4.
+PROVENIENZ: GELESEN 2026-08-20 (das Limit, Teil (e) der Befund-Datei); die Oberflächen-
+Empfehlung ist GELESEN an der Anbieter-Oberfläche (Stefan, 2026-09-10). Die Folge für einen
+Testknopf ist eine ABLEITUNG, **keine Messung** — es ist kein Lauf gegen den Deckel
+gefahren worden.
+
+**(28) JEDER NEUE VERMERK DIESER PHASE KIPPT EINEN FREMDEN ZEIGER VON TOT AUF FALSCH.**
+Vier Dateien nennen "docs/aktiver-stand.md, VERMERK <n>" und meinen die **Standdatei der
+Phase 11.2**, die am 2026-09-08 gelöscht und nach
+docs/claude-history/phase-11.2-google.md archiviert worden ist — GEMESSEN am Repo (CC,
+2026-09-10): Zeiger auf **VERMERK 6, 10, 14 und 16** in docs/offene-punkte.md,
+docs/db-stand.md, docs/ziel-befunde.md und den Archiven. **Bis zum 2026-09-10 liefen sie
+ins LEERE**; mit VERMERK 3 dieser Phase trifft der erste einen **EXISTIERENDEN, aber
+FALSCHEN** Eintrag.
+**DER KERN, ohne den der Eintrag als Aufräumposten gelesen wird: EIN TOTER ZEIGER ZWINGT
+ZUM SUCHEN, EIN FALSCHER NICHT.** Und es ist **kein Einzelfall, sondern eine BAUFORM** —
+mit jedem weiteren Vermerk dieser Phase kippt ein weiterer.
+**WAS AUSDRÜCKLICH NICHT FOLGT: eine andere Nummerierung.** Die 3 ist die nächste freie;
+ein Sprung bräche die Fortschreibungsregel und träfe die Zeiger auf 4 ff. genauso.
+**EIN BESTEHENDER BACKLOG-EINTRAG IST FÜR DIESE TEILMENGE ÜBERHOLT — ALS ZEIGER VERMERKT,
+JENE DATEI NICHT ANGEFASST:** Eintrag 67 in docs/claude-history/backlog-polish.md ("146
+tote Doku-Zeiger … der Schaden ist ein Suchweg, kein Verlust") beschreibt genau den
+Schaden, der hier **nicht mehr** zutrifft. Für die vier Zeiger oben ist der Suchweg
+weggefallen und an seine Stelle ein falsches Ziel getreten.
+TRIGGER: jeder weitere Vermerk dieser Phase — **EINGETRETEN und WIEDERKEHREND**.
+PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10); dass es mit jedem Vermerk erneut eintritt,
+ist eine ABLEITUNG. Die Einordnung als Vorrat statt offener Punkt ist
+ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-10 — der Punkt gehört dieser Phase und geht am
+Phasenende über die Hebung weiter.
 
 ## Hebungs-Kandidaten
 
@@ -1497,6 +1593,119 @@ womit sich eine Server-Action-Anfrage von Hand zusammenstellen und mit fremder
 Projekt-Kennung absenden liesse. Das ist als Vorrats-Eintrag **(16)** mit Trigger geführt
 und ausdrücklich **KEIN Mängel-Vermerk an dieser Scheibe**: Der Bau ist vollständig, es
 fehlt ein Messmittel.
+
+### VERMERK 3 — MESS-RUNDE gegen Pinterest (2026-09-10), KEINE SCHEIBE
+
+**DIES IST EIN MESS-VERMERK UND KEIN SCHEIBEN-VERMERK.** Er hält eine Runde fest, die
+**keine Zeile Code geändert hat**: kein Zuschnitt, kein Bau, kein Test, keine Migration.
+Er nimmt die nächste freie Nummer und tritt hinten an, wie die Fortschreibungsregeln es
+verlangen.
+
+**ES GIBT DESHALB KEINEN CODE-COMMIT, UND DAS IST KEIN VERSÄUMNIS.** Der Satz steht hier,
+weil eine fehlende Commit-Nummer sonst als vergessen gelesen wird und jemand sie sucht.
+Was es gibt, ist der **COMMIT DIESES VERMERKS — noch offen**; das ist die EINE Lücke, die
+die Lücken-Regel erlaubt, und VERMERK 1 wie VERMERK 2 kennen beide ihren Commit.
+
+**PROVENIENZ DER GANZEN RUNDE, und sie ist DREIFACH — CC HAT NICHTS DAVON GEMESSEN:** Die
+vier Läufe und die Ablesungen an der Anbieter-Oberfläche sind **GEMESSEN LIVE, 2026-09-10,
+Stefan**. Die Aussage über den Vercel-Log ist ebenfalls **GEMESSEN LIVE, 2026-09-10,
+Stefan**. Die Doku-Lesung, auf die Teil (v) der Befund-Datei zurückgeht, ist **GELESEN
+2026-09-10 durch die CHAT-INSTANZ**. Wo unten ABLEITUNG steht, ist es eine Ableitung aus
+diesen Angaben und keine weitere Messung.
+
+**DER GEGENSTAND, IN EINEM SATZ:** Die Runde entscheidet die offene Namensfrage aus dem
+Zuschnitt (`test=true` gegen `is_test=TRUE`) und misst zusätzlich eine Eigenschaft der
+Anbieter-Oberfläche, die den späteren Bau bindet.
+
+#### DIE VIER LÄUFE — GEMESSEN LIVE, 2026-09-10, Stefan
+
+**LAUF A — ohne Testmodus, Variable nicht gesetzt.**
+07:53:29 UTC · `event_id` `450ea2c8-a676-4aa6-bb0c-51e625bd941f`.
+In Pinterests Eventübersicht **ERSCHIENEN** (Ablesung 07:53 UTC).
+
+**LAUF B — mit `?test=true`, Test-Ansicht GESCHLOSSEN.**
+08:03:06 UTC · `event_id` `8f494d43-af2a-4ddf-9d07-5536732bd8cd`.
+08:04:59 UTC · `event_id` `8e99d49a-42db-4a7b-aabd-012d7c2cd32a`.
+In der Eventübersicht **NICHT erschienen**. In der Test-Ansicht **NICHT erschienen**.
+
+**LAUF C — ohne Testmodus, nach Löschen der Variable und Redeploy.**
+08:15:00 UTC · In der Eventübersicht **ERSCHIENEN, Zähler auf 2**.
+
+**LAUF D — mit `?test=true`, Test-Ansicht GEÖFFNET.**
+08:33:18 UTC · `event_id` `3fa58d04-284a-4886-9b4a-c661ba5c3e1a`.
+In der Test-Ansicht **ERSCHIENEN**: Eventtyp `lead` · Plattform Web · Eventquelle API ·
+URL `https://meta-test-5nlm3e.publayer.net/` · Nutzerdaten User Agent und IP-Adresse ·
+Warnungen (2): "external_id is missing", "click_id is missing".
+
+**VERCEL-LOG, Fenster 08:00–08:10 UTC.** Pinterest-Forward-Warnung
+"external_id is missing…", **KEINE Fehler**, 200 OK bestätigt.
+
+#### DIE VIER SCHLÜSSE, je mit ihrem Beleg
+
+**SCHLUSS 1 — `test=true` IST DER WIRKSAME PARAMETERNAME. ABLEITUNG aus den vier Läufen.**
+BELEG: Vier Conversions gefeuert, der Zähler der Eventübersicht steht auf **2** — genau
+die zwei ohne Parameter (A und C). Ein ignorierter Parameter ergäbe **4**. Die Ableitung
+ruht damit auf einer Zahl, nicht auf einem Eindruck.
+
+**SCHLUSS 2 — DER ANBIETER HAT DIE B-LÄUFE ANGENOMMEN UND VERARBEITET, NICHT ABGELEHNT.
+ABLEITUNG aus dem Vercel-Log.** BELEG: **200 OK** plus eine **INHALTLICHE Warnung über die
+Nutzlast** ("external_id is missing"). Eine Ablehnung erzeugt so etwas nicht — sie erzeugt
+einen Fehlerstatus und keine Feld-Warnung. **DAMIT IST DIE ALTERNATIVURSACHE „leer, weil
+abgelehnt" AUSGESCHLOSSEN**, und genau diese Alternative ist es, an der ein solcher
+Nachweis sonst scheitert.
+
+**SCHLUSS 3 — DIE ISOLATION IST GEMESSEN: test-markierte Ereignisse erscheinen NICHT in der
+Eventübersicht. ABLEITUNG aus SCHLUSS 1 zusammen mit SCHLUSS 2.** Erst beide zusammen
+tragen: der erste zeigt die Abwesenheit, der zweite schliesst aus, dass sie von einer
+Ablehnung kommt. Ohne den zweiten
+wäre der leere Rücklauf kein Befund — dieselbe Figur wie die Positivkontrolle in VERMERK 1
+und VERMERK 2.
+
+**SCHLUSS 4 — DIE TEST-ANSICHT IST EIN LIVE-STROM OHNE RÜCKSCHAU. ABLEITUNG aus einem
+Positiv-/Negativ-Paar an DERSELBEN Ansicht.** BELEG: **B** (Ansicht geschlossen) ist nie
+erschienen, **D** (Ansicht geöffnet) sofort. **ZUSÄTZLICH SCHLIESST DIE REIHENFOLGE BLOSSE
+VERZÖGERUNG AUS:** C (08:15) erschien, während das ÄLTERE B (08:03/08:04) nie erschien —
+eine Ansicht, die bloss nachhinkt, hätte das ältere zuerst gezeigt.
+
+#### DREI GRENZEN, DIE MITMÜSSEN
+
+**· DER ZÄHLERSTAND DER EVENTÜBERSICHT NACH LAUF D IST UNGEMESSEN.** Die Ablesung "2"
+stammt von **08:15**, Lauf D lief um **08:33**. **DER ISOLATIONS-BELEG RUHT AUF DEN
+B-LÄUFEN, NICHT AUF D.** Wer D mitzählt, hält eine nicht gefahrene Ablesung für einen
+Befund.
+
+**· GEMESSEN IST DIE BERICHTERSTATTUNG, NICHT DIE OPTIMIERUNG.** Pinterests Doku spricht
+von einer Sandbox ohne Verarbeitung für Reporting **UND** Optimierung
+(docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", Teil (m), GELESEN
+2026-08-20); **belegt ist heute nur die erste Hälfte.** Die zweite ist dieselbe Achse, die
+CLAUDE.md unter "## Offene Punkte" als "DIE WIRKUNG AUF DIE GEBOTE IST UNGEMESSEN" führt —
+dort für Google, hier für Pinterest, und in beiden Fällen ungemessen.
+
+**· DIE MESSUNG SAGT NICHTS ÜBER `is_test`.** Sie schliesst den zweiten Namen **NICHT
+AUS**; sie macht ihn für den Bau **entbehrlich**. "Die Zwei-Namen-Frage ist entschieden"
+wäre zu stark: gemessen ist, dass der EINE Name wirkt, nicht, dass der andere es nicht
+tut.
+
+#### EINE NAMENSKOLLISION, DIE DIESER VERMERK ERZEUGT — GEMELDET, NICHT BEHOBEN
+
+**MIT DIESEM VERMERK TRÄGT `docs/aktiver-stand.md` WIEDER EINEN "VERMERK 3" — UND MEHRERE
+ZEIGER MEINEN EINEN ANDEREN.** GEMESSEN am Repo (CC, 2026-09-10): `docs/roadmap.md` nennt
+"docs/aktiver-stand.md, VERMERK 3"; daneben stehen Zeiger auf VERMERK 6, 10, 14 und 16
+derselben Datei in docs/offene-punkte.md, docs/db-stand.md, docs/ziel-befunde.md und den
+Archiven. **SIE ALLE MEINEN DIE STANDDATEI DER PHASE 11.2**, die am 2026-09-08 gelöscht und
+nach docs/claude-history/phase-11.2-google.md archiviert worden ist.
+
+**WARUM DAS SCHLIMMER IST ALS VORHER:** Bis heute liefen diese Zeiger **ins Leere** — die
+Nummer gab es in der aktuellen Datei nicht. Ab jetzt trifft mindestens einer von ihnen
+einen **existierenden, aber falschen** Eintrag, und ein falscher Zeiger zwingt nicht zum
+Suchen (docs/immer-beachten.md, "EIN ZEIGER AUF EINE NUMMERIERTE ABLAGE KANN AUS
+PLAUSIBILITÄT ENTSTEHEN STATT AUS NACHSEHEN").
+
+**WAS HIER NICHT GETAN WIRD, UND WARUM:** Die Nummer wird **nicht** übersprungen — 3 ist
+die nächste freie, und ein Sprung bräche die Fortschreibungsregel und träfe die Zeiger auf
+VERMERK 4 ff. genauso. Die Zeiger werden **nicht** nachgezogen: drei der betroffenen
+Dateien liegen ausserhalb des Scopes dieser Runde. **GEMELDET, NICHT BEHOBEN** — die
+Entscheidung darüber ist eine eigene.
 
 ## Scheibe 11.3b — Die drei Gesten und das Banner in der Oberfläche
 

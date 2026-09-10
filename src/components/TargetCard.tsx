@@ -27,6 +27,14 @@ import { TARGET_CARDS } from "@/lib/tracking/target-cards";
 // NUR DER TYP. Die Berechnung laeuft in der Aktion, die Ableitung in MeasureView;
 // diese Karte ZEIGT die Lage und bildet sie nicht. Das reine Modul traegt keine
 // Direktive und zieht nichts aus secrets/ in dieses Buendel — s. seinen Kopf.
+// DER WERT-IMPORT requiresTestCode IST SEIT SCHEIBE 11.3e DER EINZIGE AUS DIESEM
+// MODUL — alles andere bleibt `import type`. Er ist unbedenklich und der Kopf jener
+// Datei sagt warum: Sie traegt KEINE Direktive und zieht nichts aus secrets/ oder
+// oauth/ in dieses Buendel.
+// WARUM GEFRAGT UND NICHT NACHGEBILDET: Welches Ziel einen Testcode verlangt, steht
+// an EINER Stelle. Eine zweite Fassung hier liefe von der Aktion weg, und der Bruch
+// waere still — die Karte boete ein Feld an, dessen Wert der CHECK aus 0029 abweist.
+import { requiresTestCode } from "@/lib/tracking/credential-state";
 import type {
   ListTestModeStatesResult,
   TargetCredentialState,
@@ -272,6 +280,12 @@ export function testModeErrorText(reason: TestModeWriteError): string {
   switch (reason) {
     case "empty_code":
       return "Bitte den Testcode aus dem Werbekonto einfügen.";
+    // ER BEHAUPTET WEDER URSACHE NOCH ERGEBNIS (Auflage aus Entscheidung (16)): Der
+    // Satz sagt, dass dieses Ziel keinen Testcode annimmt — nicht, warum der Aufruf
+    // zustande kam. Ueber die Oberfläche kann er gar nicht entstehen; sie zeigt für
+    // ein solches Ziel kein Feld.
+    case "code_not_allowed":
+      return "Dieses Ziel nimmt keinen Testcode entgegen.";
     case "not_configured":
       return "Für dieses Ziel sind keine Zugangsdaten hinterlegt — es wurde nichts geändert.";
     case "unknown_target":
@@ -481,6 +495,17 @@ export default function TargetCard({
     }
   }
 
+  // VERLANGT DIESES ZIEL EINEN TESTCODE? (Scheibe 11.3e)
+  //
+  // GEFRAGT, NICHT NACHGEBILDET — die eine Quelle steht in
+  // lib/tracking/credential-state.ts und speist auch die Vorpruefung im Schreibpfad.
+  //
+  // SIE HAENGT AN DREI STELLEN, UND JEDE EINZELNE MACHT DEN SCHALTER UNBEDIENBAR,
+  // wenn sie fehlt: das Gate im Handler oben, die Sperre am Knopf unten und die
+  // Anwesenheit des Feldes. "Verlaengern" ist dabei KEINE eigene Funktion — derselbe
+  // Handler, dieselben Sperren.
+  const brauchtTestCode = requiresTestCode(target);
+
   // DIE ZWEI GESTEN DES TESTMODUS (Scheibe 11.3b).
   //
   // safeAction IST PFLICHT UND KEIN SCHMUCK: An beiden haengt ein UI-Zustand — das
@@ -494,11 +519,20 @@ export default function TargetCard({
   // Schreibvorgang passiert.
   async function handleTestStart() {
     if (!projectId || testBusy) return;
-    if (!testInput.trim()) return;
+    // DIE SPERRE IST ZIEL-ABHAENGIG (Scheibe 11.3e): Ein Ziel ohne Code-Pflicht hat
+    // kein Feld, also gibt es nichts, worauf sie sich beziehen koennte. Stuende sie
+    // hier unbedingt, waere der Knopf fuer pinterest UNBEDIENBAR — und zwar still:
+    // der Handler kehrte zurueck, ohne dass irgendetwas passierte.
+    if (brauchtTestCode && !testInput.trim()) return;
     setTestBusy(true);
     setTestError(null);
     const result = await safeAction<TestModeWriteResult>(
-      () => startTestMode(projectId, target, testInput),
+      // OHNE CODE-PFLICHT GEHT DIE LEERE ZEICHENKETTE HINAUS UND NICHT testInput:
+      // Der Zustand kann bei einem Zielwechsel einen Wert tragen, den kein Feld
+      // dieser Karte je angezeigt hat — und die Aktion wiese ihn nach Entscheidung
+      // (16) mit `code_not_allowed` ab. Der Fall ist damit ueber die Oberflaeche
+      // unerreichbar, so wie die Gestalt-Entscheidung (A) es vorsieht.
+      () => startTestMode(projectId, target, brauchtTestCode ? testInput : ""),
       { ok: false, reason: "action_threw" },
     );
     setTestBusy(false);
@@ -1026,6 +1060,32 @@ export default function TargetCard({
             alle paar Tage, und die Geste faellt genau dorthin, wo er ohnehin frisch
             geholt werden muss.
 
+            NACHGEZOGEN 11.3e — ZWEI ANGABEN DES ABSATZES DARUEBER SIND UEBERHOLT, ER
+            BLEIBT WOERTLICH STEHEN:
+             (1) DER CONSTRAINT HEISST SEIT MIGRATION 0029
+                 project_secrets_test_mode_je_ziel und urteilt JE ZIEL verschieden;
+                 der alte Name existiert nicht mehr (GEMESSEN LIVE, Stefan,
+                 2026-09-10). Nur der Name zeigt ins Leere.
+             (2) "EIN SCHALTER HAETTE EINEN ZUSTAND OHNE CODE ZUR FOLGE, UND DEN
+                 LAESST DER CHECK NICHT EINMAL ZU" GILT NUR NOCH FUER ZIELE MIT
+                 CODE-PFLICHT. Fuer pinterest ist "Frist ohne Code" seit 0029 der
+                 EINZIGE Zustand, den sein Testmodus annehmen kann — sein Traeger ist
+                 ein QUERY-PARAMETER ohne Code, und der CHECK VERBIETET dort einen
+                 Testcode.
+             FUER META UND TIKTOK GILT "BEIDE ODER KEINE" UNVERAENDERT — der neue
+             CHECK urteilt fuer diese zwei WORTGLEICH wie der alte. Was sich aendert,
+             ist die REICHWEITE der Aussage, nicht ihr Inhalt fuer die zwei Ziele,
+             fuer die sie geschrieben wurde.
+
+            DIE GESTALT IST DESHALB ZIEL-ABHAENGIG (Gestalt-Entscheidung (A), Owner
+            2026-09-10): OHNE Code-Pflicht faellt das Feld weg, der Startknopf traegt
+            nur noch die Doppelklick-Sperre, und der Beenden-Knopf bleibt unveraendert.
+            KEIN ZUSAETZLICHER ERKLAERTEXT — das UI wird spaeter neu gestaltet, und
+            eine Textzeile ueberlebt das nicht, die Struktur schon.
+            DIE FOLGE, EHRLICH BENANNT: pinterest verhaelt sich an dieser Karte ANDERS
+            als meta und tiktok, und der Betreiber bekommt dafuer KEINE sichtbare
+            Auskunft. Das ist bewusst so entschieden und keine Auslassung.
+
             DIE SICHTBARKEIT HAENGT ALLEIN AN testModeState !== null. Die Karte
             entscheidet NICHTS darueber — der Leser gibt einen Eintrag nur fuer Ziele
             heraus, die einen Testmodus tragen, den Kennungs-Filter passieren und eine
@@ -1041,22 +1101,36 @@ export default function TargetCard({
               <span className="text-xs text-gray-600">{testModeLine}</span>
             )}
             <div className="flex flex-wrap items-center gap-2">
-              <input
-                type="text"
-                value={testInput}
-                onChange={(e) => setTestInput(e.target.value)}
-                disabled={testBusy}
-                placeholder="Testcode"
-                aria-label={`Testcode für ${config.name}`}
-                className="min-w-0 flex-1 rounded-md border border-gray-300 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
-              />
+              {/* DAS FELD STEHT NUR, WO EIN CODE VERLANGT WIRD (Scheibe 11.3e). Ein
+                  Feld fuer pinterest boete eine Eingabe an, die der CHECK aus 0029
+                  zurueckweist — und der Betreiber saehe einen Fehler fuer etwas, das
+                  die Karte ihm selbst angeboten hat. */}
+              {brauchtTestCode && (
+                <input
+                  type="text"
+                  value={testInput}
+                  onChange={(e) => setTestInput(e.target.value)}
+                  disabled={testBusy}
+                  placeholder="Testcode"
+                  aria-label={`Testcode für ${config.name}`}
+                  className="min-w-0 flex-1 rounded-md border border-gray-300 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
+                />
+              )}
               {/* ZIEL-SPEZIFISCHER NAME, aus demselben Grund wie beim
                   Entfernen-Knopf darueber: Zwei Karten traegen sonst zwei Knoepfe
-                  desselben Namens, und eine Abfrage traefe still den falschen. */}
+                  desselben Namens, und eine Abfrage traefe still den falschen.
+                  DIE BESCHRIFTUNG WECHSELT AUCH OHNE FELD zwischen "starten" und
+                  "verlaengern" — sie beschreibt, WAS DER NUTZER ERREICHT, nicht was
+                  der Code tut. Laeuft ein Test und er drueckt, wird die Frist
+                  VERLAENGERT; "starten" waere dort schlicht falsch. */}
               <button
                 type="button"
                 onClick={handleTestStart}
-                disabled={testBusy || !testInput.trim()}
+                // DER SPERR-GRUND !testInput.trim() GILT NUR MIT FELD (Scheibe
+                // 11.3e). Ohne Feld gibt es nichts, worauf er sich beziehen koennte —
+                // er machte den Knopf dauerhaft unbedienbar. testBusy BLEIBT: der
+                // Schutz gegen den Doppelklick haengt an keinem Feld.
+                disabled={testBusy || (brauchtTestCode && !testInput.trim())}
                 className="shrink-0 rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {testModeState.kind === "laeuft"

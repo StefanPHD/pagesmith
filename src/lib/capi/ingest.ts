@@ -3,6 +3,7 @@ import {
   getCapiConfigByTrackingKey,
   resolveRefreshedTarget,
   type ResolvedTarget,
+  type TestModeTarget,
 } from "@/lib/capi/token";
 // DIE KLAMMER AUS SCHRITT 1b-1 WIRD GERUFEN, NICHT ANGEFASST. Sie ist der EINZIGE
 // Einstieg in die Erneuerung — genau dafuer ist sie gebaut worden (s. den Kopf von
@@ -275,19 +276,41 @@ type Forwarder = (
   body: CapiRequestBody,
   clientIp: string | undefined,
   userAgent: string,
-  // DER PROJEKT-EIGENE TESTCODE (Scheibe 11.3a), NACHGESTELLT UND OPTIONAL.
+  // DER PROJEKT-EIGENE TESTZUSTAND DIESES ZIELS (Scheibe 11.3a; seit 11.3e der
+  // EINTRAG statt seines Codes), NACHGESTELLT UND OPTIONAL.
   //
   // ER STEHT AM TYP UND NICHT AN ResolvedTarget, und das ist eine Entscheidung: Der
   // Riegel und dieser Wert stammen aus DERSELBEN Ablage (resolution.testMode). Haengte
-  // der Code zusaetzlich am aufgeloesten Empfaenger, gaebe es ZWEI Traeger desselben
+  // der Zustand zusaetzlich am aufgeloesten Empfaenger, gaebe es ZWEI Traeger desselben
   // Zustands, und die koennten auseinanderlaufen.
   //
   // WAS SICH DADURCH NICHT AENDERT, und das ist der Grund, warum er NACHGESTELLT ist:
-  // Die drei Adapter, die ihn nicht brauchen (pinterest, linkedin, google), bleiben
-  // BYTE-GLEICH — und ihre Pfeil-Ausdruecke unten ebenfalls. Eine Funktion mit weniger
-  // Parametern erfuellt die laengere Signatur; genau dieselbe Lage wie bei userAgent
-  // (linkedin) und clientIp (google).
-  testEventCode: string | undefined,
+  // Die zwei Adapter, die ihn nicht brauchen (linkedin, google), bleiben BYTE-GLEICH —
+  // und ihre Pfeil-Ausdruecke unten ebenfalls. Eine Funktion mit weniger Parametern
+  // erfuellt die laengere Signatur; genau dieselbe Lage wie bei userAgent (linkedin)
+  // und clientIp (google).
+  //
+  // -------------------------------------------------------------------------
+  // NACHGEZOGEN 11.3e — ER TRUG BIS HIERHER DEN CODE (`testEventCode: string |
+  // undefined`), UND DAS WAR FUER EIN ZIEL OHNE CODE KONSTANT `undefined`
+  // (Entscheidung (15), Owner 2026-09-10). Der Absatz darueber bleibt woertlich; was
+  // sich aendert, ist der INHALT des siebten Wertes, nicht seine Stellung.
+  //
+  // WAS FEHLTE, WAR KEIN ARGUMENT, SONDERN EIN SIGNAL: Die ANWESENHEIT des Eintrags.
+  // Sie stand in resolution.testMode laengst da und wurde an der Dispatch-Stelle
+  // WEGGEWORFEN (`?.code`). pinterests Testmodus ist ein QUERY-PARAMETER ohne Code;
+  // der CHECK aus 0029 verbietet dort einen. Ein blosses Durchreichen des Codes waere
+  // ein Typfehler gewesen und, haette es kompiliert, WIRKUNGSLOS.
+  //
+  // ES BLEIBT BEI EINEM URTEIL (Entscheidung (13), zweite Auflage): Das Urteil faellt
+  // EINMAL, im Aufloesungs-Pfad. DIE LAMBDAS UNTEN URTEILEN NICHT, SIE LESEN — `?.code`
+  // liest den WERT, `!== undefined` die ANWESENHEIT. Ein Urteil, zwei Lesungen,
+  // dieselbe Bauform wie bei Entscheidung (4).
+  //
+  // WARUM NICHT EIN ACHTER PARAMETER MIT DER ANWESENHEIT ALS BOOLEAN: Zwei Traeger
+  // fuer dieselbe Frage, die bei einem spaeteren Umbau auseinanderlaufen — derselbe
+  // Ausscheidungsgrund wie bei K3 in Entscheidung (3).
+  testMode: TestModeTarget | undefined,
 ) => Promise<void>;
 
 /**
@@ -332,7 +355,10 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
   // steht die Variable, und dort steht die eine Zeile, die das Feld setzt. Eine
   // Vorrang-Regel HIER waere eine zweite Fassung derselben Entscheidung, an einer
   // Stelle, die den Env-Wert gar nicht sieht.
-  meta: (entry, event, eventID, body, clientIp, userAgent, testEventCode) =>
+  // SEIT 11.3e WIRD AUS DEM EINTRAG DER CODE GELESEN (`?.code`) — EINE LESUNG, KEIN
+  // URTEIL. Der Adapter bekommt exakt den Wert, den er vorher bekam; die Signatur von
+  // forwardToMeta ist unberuehrt.
+  meta: (entry, event, eventID, body, clientIp, userAgent, testMode) =>
     forwardToMeta(
       entry.config,
       event,
@@ -340,7 +366,7 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
       body,
       clientIp,
       userAgent,
-      testEventCode,
+      testMode?.code,
     ),
 
   // DIE ASYMMETRIE VERSCHWINDET NICHT, SIE WANDERT — vom Kontrollfluss in die Daten,
@@ -354,7 +380,19 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
   // BUILD (adAccountId fehlt). Eine VERTAUSCHUNG der beiden Werte kompiliert dagegen
   // anstandslos, weil beide Felder Zeichenketten sind — und sie stuende das GEHEIMNIS
   // in den Endpunkt-Pfad. Dagegen gibt es nur T10 in fan-out.test.ts.
-  pinterest: (entry, event, eventID, body, clientIp, userAgent) =>
+  //
+  // DER SIEBTE WERT, SEIT 11.3e AUCH HIER — UND ER WIRD ANDERS GELESEN ALS BEI DEN
+  // ZWEI ZIELEN MIT CODE: `testMode !== undefined` liest die ANWESENHEIT des Eintrags,
+  // nicht seinen Wert. pinterests Testmodus ist ein QUERY-PARAMETER ohne Code; der
+  // CHECK aus 0029 verbietet dort einen, ein Eintrag traegt also NIE einen `code`.
+  // ES IST EINE LESUNG UND KEIN ZWEITES URTEIL (Entscheidung (13), zweite Auflage):
+  // Ob dieses Ziel im Testmodus steht, hat der Aufloesungs-Pfad EINMAL entschieden —
+  // die Anwesenheit des Eintrags IST diese Entscheidung. Hier steht kein `if` auf den
+  // Zielnamen; DIE ASYMMETRIE WOHNT IN DEN DATEN, NICHT IM KONTROLLFLUSS.
+  // WARUM NICHT `testMode?.code !== undefined` ODER `!!testMode?.code`: Beides fragte
+  // nach dem CODE und waere fuer dieses Ziel konstant falsch — der Testmodus liefe nie
+  // an, und nichts wuerde rot.
+  pinterest: (entry, event, eventID, body, clientIp, userAgent, testMode) =>
     forwardToPinterest(
       { adAccountId: entry.config.pixelId, token: entry.config.token },
       event,
@@ -362,6 +400,7 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
       body,
       clientIp,
       userAgent,
+      testMode !== undefined,
     ),
 
   // DAS DRITTE ZIEL NIMMT DIE AUFGELOESTE CONFIG UNVERAENDERT — wie das erste und
@@ -373,7 +412,7 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
   // beim ersten Ziel. TikToks Testcode kommt aus einer EIGENEN Umgebungsvariablen, und
   // die liest ausschliesslich sein eigener Adapter; die Trennung der beiden Variablen
   // bleibt damit unangetastet.
-  tiktok: (entry, event, eventID, body, clientIp, userAgent, testEventCode) =>
+  tiktok: (entry, event, eventID, body, clientIp, userAgent, testMode) =>
     forwardToTiktok(
       entry.config,
       event,
@@ -381,7 +420,7 @@ const FORWARDER_BY_TARGET: Record<TargetWithAdapter, Forwarder> = {
       body,
       clientIp,
       userAgent,
-      testEventCode,
+      testMode?.code,
     ),
 
   // DAS VIERTE ZIEL (Scheibe 11.1f) — UND ES PROJIZIERT AM STAERKSTEN VON ALLEN.
@@ -505,7 +544,7 @@ function dispatchForward(
   body: CapiRequestBody,
   clientIp: string | undefined,
   userAgent: string,
-  testEventCode: string | undefined,
+  testMode: TestModeTarget | undefined,
 ): Promise<void> {
   const target = entry.target;
   if (!hasAdapter(target)) return Promise.resolve();
@@ -516,7 +555,7 @@ function dispatchForward(
     body,
     clientIp,
     userAgent,
-    testEventCode,
+    testMode,
   );
 }
 
@@ -988,9 +1027,13 @@ export async function handleIngest(request: Request): Promise<Response> {
     // eigenen Deckel, und die Gesamtwartezeit ist das MAXIMUM der Einzeldeckel.
     // Die SERIELLE Arbeit liegt VOR dieser Zeile, in der Rettung, und sie ist dort
     // benannt.
-    // DER TESTCODE WIRD JE EMPFAENGER NACHGESCHLAGEN (Scheibe 11.3a) — aus DERSELBEN
+    // DER TESTZUSTAND WIRD JE EMPFAENGER NACHGESCHLAGEN (Scheibe 11.3a) — aus DERSELBEN
     // Menge, die oben den Riegel getragen hat. Ein Ziel bekommt ausschliesslich SEINEN
-    // eigenen Code; ein aktiver Testzustand fuer meta setzt bei tiktok nichts.
+    // eigenen Eintrag; ein aktiver Testzustand fuer meta setzt bei tiktok nichts.
+    // SEIT 11.3e REIST DER EINTRAG STATT SEINES CODES (Entscheidung (15)): Das `?.code`
+    // ist hier WEGGEFALLEN, weil es die ANWESENHEIT wegwarf, die ein Ziel ohne Code
+    // gerade braucht. Was der Adapter daraus entnimmt, entscheidet sein Lambda in
+    // FORWARDER_BY_TARGET — hier wird nichts gedeutet und nichts geurteilt.
     // KEINE ZWEITE STRUKTUR DAFUER: Die Menge traegt hoechstens so viele Eintraege, wie
     // es Ziele gibt, und sie ist im Normalfall LEER — ein find darauf ist dann ein
     // einziger Laengen-Vergleich. Eine Zuordnung daneben waere Aufbau-Arbeit je Beacon
@@ -1007,7 +1050,7 @@ export async function handleIngest(request: Request): Promise<Response> {
           body,
           clientIp,
           userAgent,
-          resolution.testMode.find((t) => t.target === entry.target)?.code,
+          resolution.testMode.find((t) => t.target === entry.target),
         ),
       ),
     );

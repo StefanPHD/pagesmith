@@ -634,11 +634,26 @@ describe("TM12 — die zwei Ableitungen fuer die Oberflaeche", () => {
 });
 
 describe("TM13 — die Menge der Ziele mit Testmodus", () => {
-  it("GENAU meta und tiktok", () => {
-    // ROT DURCH: ein drittes Ziel in der Liste. Die drei Ausschluesse haben je einen
-    // EIGENEN Grund (Traeger nie gemessen, Diagnostik abgeschnitten, gar kein
-    // Testmodus) — sie stehen im Zuschnitt und nicht hier.
-    expect([...TARGETS_WITH_TEST_MODE]).toEqual(["meta", "tiktok"]);
+  // NACHGEZOGEN MIT SCHEIBE 11.3e, NICHT ENTFERNT — UND DAS IST DER PUNKT DIESES
+  // WAECHTERS: Er ist der ORT, an dem eine Erweiterung der Menge SICHTBAR wird. Wer
+  // ihn bei einer beabsichtigten Aenderung entfernt statt ihn nachzuziehen, hat ab
+  // dann keinen mehr. Sein Rot war der gewuenschte Ausgang der Scheibe.
+  //
+  // WAS SICH SEITHER AN DER BEGRUENDUNG GEAENDERT HAT (der Absatz im Lauf unten stand
+  // bis 11.3e woertlich so da): pinterests Traeger war "NIE GEMESSEN". Er ist am
+  // 2026-09-10 LIVE gemessen — `test=true` wirkt (docs/ziel-befunde.md, Abschnitt
+  // "Pinterest (Conversions API)", Teil (u)). Damit ist SEIN Ausschlussgrund
+  // weggefallen; die zwei uebrigen bestehen unveraendert.
+  it("GENAU meta, tiktok und pinterest", () => {
+    // ROT DURCH: ein VIERTES Ziel in der Liste — oder ein entferntes drittes. Die
+    // zwei verbliebenen Ausschluesse haben je einen EIGENEN Grund (google: der
+    // einzige Traeger schneidet die Diagnostik ab; linkedin: gar kein Testmodus) —
+    // sie stehen im Zuschnitt und nicht hier.
+    //
+    // DIE REIHENFOLGE IST TEIL DER ZUSICHERUNG UND NICHT BEIFANG: pinterest steht
+    // HINTEN, angefuegt statt einsortiert. Diese Liste ist keine Anzeige-Reihenfolge
+    // — die faellt in den Bannertext und folgt dort TRACKING_TARGETS.
+    expect([...TARGETS_WITH_TEST_MODE]).toEqual(["meta", "tiktok", "pinterest"]);
   });
 
   it("die Frist ist eine STUNDE", () => {

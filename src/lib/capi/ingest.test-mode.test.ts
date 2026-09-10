@@ -61,6 +61,18 @@ const TIKTOK_EMPFAENGER = {
   target: "tiktok" as const,
   config: { pixelId: "TT-PIXEL", token: "TT-SECRET" },
 };
+/**
+ * DER DRITTE EMPFAENGER (Scheibe 11.3e) — ADDITIV, die zwei darueber sind unberuehrt.
+ *
+ * `pixelId` IST HIER DIE ANZEIGENKONTO-ID: Das Lambda in FORWARDER_BY_TARGET bildet
+ * sie auf `adAccountId` ab, und sie landet im Endpunkt-PFAD statt im Rumpf. Deshalb
+ * ist sie hier als solche BENANNT und nicht als "PIXEL-…" — ein Name, der in der URL
+ * auftaucht, soll im Lauf wiedererkennbar sein.
+ */
+const PINTEREST_EMPFAENGER = {
+  target: "pinterest" as const,
+  config: { pixelId: "AD-ACCOUNT-77", token: "PIN-SECRET" },
+};
 
 /**
  * Ein Beacon, dessen Einwilligungs-Draht ALLE bekannten Ziele erlaubt.
@@ -128,16 +140,52 @@ function nutzlastAn(fragment: string): Record<string, unknown> | undefined {
   return JSON.parse(String(treffer[1]?.body)) as Record<string, unknown>;
 }
 
+/**
+ * DIE URL, an die der Aufruf mit diesem Namensbestandteil gegangen ist (Scheibe
+ * 11.3e) — oder undefined, wenn es keinen gab.
+ *
+ * SIE IST FUER pinterest DAS EINZIGE MESSINSTRUMENT, das es gibt: Sein Testmodus
+ * steht NICHT in der Nutzlast, sondern als Query-Anhang an der ADRESSE. Ein Lauf, der
+ * ihn wie bei meta und tiktok im Rumpf sucht, misst garantiert nichts und sieht wie
+ * ein Fehlschlag des Adapters aus.
+ */
+function urlAn(fragment: string): string | undefined {
+  const calls = (global.fetch as unknown as { mock: { calls: [string, RequestInit][] } })
+    .mock.calls;
+  const treffer = calls.find(([url]) => String(url).includes(fragment));
+  return treffer ? String(treffer[0]) : undefined;
+}
+
+/**
+ * EIN ECHTER ERFOLGS-RUMPF FUER pinterest, wie sein Adapter ihn als Erfolg liest.
+ *
+ * ER IST KEINE BEQUEMLICHKEIT: Ohne ihn schreibt evaluateSuccessBody eine Fehlerzeile
+ * ins Testprotokoll und verdeckt echte Meldungen. Bauform woertlich nach
+ * pinterestOkBody in capi/fan-out.test.ts.
+ */
+function pinterestOkBody(): string {
+  return JSON.stringify({
+    num_events_received: 1,
+    num_events_processed: 1,
+    events: [{ status: "processed" }],
+  });
+}
+
 beforeEach(() => {
   scheduled.length = 0;
   configState.testCode = "";
   vi.stubEnv("TIKTOK_TEST_EVENT_CODE", "");
   getCapiConfigByTrackingKey.mockResolvedValue(aufloesung());
   persistEvent.mockResolvedValue(undefined);
-  global.fetch = vi.fn(
-    async () =>
-      new Response(JSON.stringify({ code: 0, data: {} }), { status: 200 }),
-  );
+  // DIE ATTRAPPE VERZWEIGT SEIT 11.3e NACH DER ADRESSE, UND FUER DIE ZWEI
+  // BESTEHENDEN ZIELE AENDERT DAS NICHTS: Sie bekommen denselben Rumpf wie zuvor.
+  // pinterest braucht einen ECHTEN Erfolgs-Rumpf, sonst schreibt evaluateSuccessBody
+  // eine Fehlerzeile ins Protokoll und verdeckt echte Meldungen.
+  global.fetch = vi.fn(async (url: string) =>
+    String(url).includes("api.pinterest.com")
+      ? new Response(pinterestOkBody(), { status: 200 })
+      : new Response(JSON.stringify({ code: 0, data: {} }), { status: 200 }),
+  ) as unknown as typeof fetch;
 });
 
 afterEach(() => {
@@ -354,6 +402,100 @@ describe("Testmodus-Riegel im Ingest (Phase 11.3, Scheibe 11.3a)", () => {
 
     expect(res.status).toBe(204);
     expect(persistEvent).not.toHaveBeenCalled();
+  });
+
+  // =====================================================================
+  // TM19 BIS TM21 — DIE VERDRAHTUNG (Scheibe 11.3e, Entscheidung (15)).
+  //
+  // SIE SIND DER EINZIGE BEWEIS, DASS DIE VERDRAHTUNG UEBERHAUPT ETWAS TUT, UND DAS
+  // IST GEMESSEN, NICHT BEHAUPTET (Stufe 1, 2026-09-10): Ohne TM19 und TM20 wird bei
+  // den zwei Mutationen "die Verdrahtung reicht das Signal nicht weiter" und "sie
+  // reicht es fuer JEDES Ziel weiter" KEIN EINZIGER Lauf im Repo rot. fan-out.test.ts
+  // prueft die Adresse mit `toContain`, und die exakten URL-Zusicherungen in
+  // pinterest-forward.test.ts rufen den ADAPTER DIREKT — an ihnen geht das Lambda in
+  // FORWARDER_BY_TARGET vorbei.
+  //
+  // DER MESSORT IST DIE ADRESSE UND NICHT DER RUMPF: pinterests Testmodus ist ein
+  // QUERY-PARAMETER. Wer ihn wie bei meta und tiktok in der Nutzlast sucht, misst
+  // garantiert nichts.
+  // =====================================================================
+
+  // TM19 — DAS SIGNAL KOMMT AN. ROT DURCH: ein Lambda, das den siebten Wert nicht
+  // weiterreicht (der Zustand VOR dieser Scheibe), oder eines, das `testMode?.code`
+  // statt der ANWESENHEIT liest — jener Wert ist fuer dieses Ziel konstant undefined,
+  // der Anhang bliebe leer, und nichts wuerde sonst rot.
+  it("TM19: pinterest im Testmodus -> die Adresse traegt genau ?test=true", async () => {
+    getCapiConfigByTrackingKey.mockResolvedValue(
+      aufloesung({
+        targets: [PINTEREST_EMPFAENGER],
+        testMode: [{ target: "pinterest" }],
+      }),
+    );
+
+    await handleIngest(beacon());
+
+    const url = urlAn("api.pinterest.com");
+    // ZWEI BEHAUPTUNGEN, NICHT EINE: dass ueberhaupt gesendet wurde, und WOHIN. Ohne
+    // die erste waere `undefined?.endsWith(...)` still falsch statt laut rot.
+    expect(url).toBeDefined();
+    // WOERTLICH UND AM ENDE: Der Query-Anhang lautet "?test=true" und sonst nichts.
+    // `toContain` liesse `?test=true&irgendwas` durch und auch ein `is_test=TRUE`
+    // daneben — der zweite Name ist bei diesem Anbieter ungeprueft (GELESEN
+    // 2026-08-20, docs/ziel-befunde.md, Teil (p)(1) und (v)).
+    expect(url!.endsWith("/events?test=true")).toBe(true);
+  });
+
+  // TM20 — DIE ISOLATION JE ZIEL, AUF DER VERDRAHTUNGS-ACHSE. Das Gegenstueck zu TM7,
+  // nur an der Adresse statt am Rumpf.
+  // ROT DURCH: ein Lambda, das die Anwesenheit IRGENDEINES Eintrags liest statt der
+  // seines eigenen Ziels — etwa `resolution.testMode.length > 0`. Dann markierte ein
+  // Meta-Testlauf still auch die Pinterest-Ereignisse, und der Anbieter verbuchte
+  // sie nicht mehr in der Eventuebersicht.
+  it("TM20: NUR meta im Testmodus -> Pinterests Adresse traegt KEIN test=true", async () => {
+    getCapiConfigByTrackingKey.mockResolvedValue(
+      aufloesung({
+        targets: [META_EMPFAENGER, PINTEREST_EMPFAENGER],
+        testMode: [{ target: "meta", code: META_CODE }],
+      }),
+    );
+
+    await handleIngest(beacon());
+
+    // DIE POSITIVKONTROLLE ZUERST: Ohne sie waere "kein test=true" auch dann gruen,
+    // wenn gar kein Pinterest-Aufruf stattgefunden hat
+    // (docs/immer-beachten.md, "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN
+    // HOHL", Fall 2: trivial wahr).
+    expect(nutzlastAn("graph.facebook.com")?.test_event_code).toBe(META_CODE);
+    const url = urlAn("api.pinterest.com");
+    expect(url).toBeDefined();
+    expect(url).not.toContain("test=true");
+  });
+
+  // TM21 — DER RIEGEL GILT AUCH FUER DIESES ZIEL (Entscheidung (3): mindestens EIN
+  // Ziel). Er ist NICHT dasselbe wie TM15: jener prueft einen code-losen Eintrag am
+  // gemockten Resolver ohne jeden Adapter-Bezug, dieser prueft dieselbe Achse in dem
+  // Lauf, in dem der Pinterest-Adapter TATSAECHLICH sendet.
+  // ROT DURCH: ein Riegel, der auf die Code-Achse zurueckfaellt — dann persistierte
+  // ein Projekt, dessen pinterest-Ziel gerade geprueft wird, und der Testklick landete
+  // als echte Conversion in events.
+  it("TM21: pinterest im Testmodus -> KEIN Persist, trotzdem leere 204", async () => {
+    getCapiConfigByTrackingKey.mockResolvedValue(
+      aufloesung({
+        targets: [PINTEREST_EMPFAENGER],
+        testMode: [{ target: "pinterest" }],
+      }),
+    );
+
+    const res = await handleIngest(beacon());
+    await laufeHintergrund();
+
+    expect(res.status).toBe(204);
+    expect(await res.text()).toBe("");
+    expect(persistEvent).not.toHaveBeenCalled();
+    // DIE POSITIVKONTROLLE: Der Forward hat stattgefunden. "Der Riegel hat gegriffen"
+    // und "es ist gar nichts gelaufen" saehen an persistEvent identisch aus — genau
+    // die Figur, die beim Live-Test der Scheibe 11.3b einmal zugeschlagen hat.
+    expect(urlAn("api.pinterest.com")).toBeDefined();
   });
 });
 

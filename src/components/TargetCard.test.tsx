@@ -1613,6 +1613,56 @@ describe("TargetCard — der Testmodus-Schalter und seine Sichtbarkeit", () => {
     expect(knopf.disabled).toBe(false);
   });
 
+  // TM22 — DIE ZIEL-ABHAENGIGE GESTALT (Scheibe 11.3e, Gestalt-Entscheidung (A)).
+  //
+  // DREI BEHAUPTUNGEN, UND JEDE EINZELNE MACHT DEN SCHALTER SONST UNBEDIENBAR:
+  //  (1) KEIN Code-Feld — ein Feld boete eine Eingabe an, die der CHECK aus 0029 fuer
+  //      dieses Ziel zurueckweist.
+  //  (2) Der Startknopf steht — mit derselben wechselnden Beschriftung wie bei den
+  //      Zielen MIT Code.
+  //  (3) Er ist OHNE Eingabe klickbar. Das ist die eigentliche Zusicherung: Die
+  //      Sperre `!testInput.trim()` haengt an einem Feld, das es hier nicht gibt;
+  //      bliebe sie stehen, waere der Knopf DAUERHAFT gesperrt — und zwar still.
+  //
+  // ROT DURCH: ein Code-Feld auch fuer pinterest (Pflicht-Mutation M4), oder eine
+  // Sperre, die die Code-Pflicht nicht liest.
+  it("TM22: ein Ziel OHNE Code-Pflicht zeigt KEIN Code-Feld, und der Startknopf ist ohne Eingabe klickbar", () => {
+    renderCard({
+      target: "pinterest",
+      configured: true,
+      testModeState: { kind: "aus" },
+    });
+    expect(screen.queryByLabelText(/Testcode/i)).toBeNull();
+    const knopf = screen.getByRole("button", {
+      name: "Pinterest-Test starten",
+    }) as HTMLButtonElement;
+    expect(knopf.disabled).toBe(false);
+  });
+
+  // TM23 — DIE BESCHRIFTUNG WECHSELT AUCH OHNE FELD.
+  //
+  // SIE BESCHREIBT, WAS DER NUTZER ERREICHT, NICHT WAS DER CODE TUT: Laeuft ein Test
+  // und er drueckt, wird die Frist VERLAENGERT — "starten" waere dort schlicht
+  // falsch. Dass bei meta und tiktok zusaetzlich ein Code neu verlangt wird, ist der
+  // Unterschied im MECHANISMUS, nicht im ERGEBNIS.
+  // ROT DURCH: ein fester Text, sobald das Feld wegfaellt.
+  it("TM23: im laufenden Zustand heisst der Knopf VERLAENGERN — auch ohne Code-Feld — und der Beenden-Weg steht daneben", () => {
+    renderCard({
+      target: "pinterest",
+      configured: true,
+      testModeState: { kind: "laeuft", endetAt: 1_800_000_000 },
+    });
+    expect(
+      screen.getByRole("button", { name: "Pinterest-Test verlängern" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Pinterest-Test jetzt beenden" }),
+    ).toBeTruthy();
+    // AUCH HIER KEIN FELD: Der Wegfall gilt in BEIDEN Zustaenden, nicht nur im
+    // ruhenden. Ohne diese Zeile bliebe die Achse im laufenden Zustand ungeprueft.
+    expect(screen.queryByLabelText(/Testcode/i)).toBeNull();
+  });
+
   it("zwei Karten nebeneinander: die Testmodus-Bedienelemente bleiben unterscheidbar", () => {
     // Dieselbe Auflage wie beim Entfernen-Knopf: getByRole wirft bei MEHREREN
     // Treffern — der Aufruf selbst ist die Zusicherung.
@@ -1726,8 +1776,16 @@ describe("TargetCard — die beiden Gesten laufen ueber safeAction", () => {
     // DIE EINE AUSNAHME IST not_configured: dort WISSEN wir, dass nichts geschrieben
     // wurde, weil kein Datensatz getroffen wurde.
     const verboten = [/keine verbindung/i, /nicht ausgeführt/i, /fehlgeschlagen/i];
+    // `code_not_allowed` IST MIT SCHEIBE 11.3e DAZUGEKOMMEN. DIESE LISTE IST EINE
+    // KOPIE DER UNION UND WAECHST NICHT VON SELBST MIT — sie waere ohne den Eintrag
+    // still gruen geblieben und haette den neuen Text ungeprueft gelassen.
+    // WARUM SIE TROTZDEM EINE LISTE BLEIBT: Die Union ist ein TYP und zur Laufzeit
+    // geloescht; es gibt nichts, worueber sich iterieren liesse. Was den Bruch faengt,
+    // ist der erschoepfende switch in testModeErrorText — er ist ein BUILD-Fehler,
+    // sobald ein Grund fehlt.
     for (const grund of [
       "empty_code",
+      "code_not_allowed",
       "unknown_target",
       "not_found",
       "unauthenticated",
@@ -1770,6 +1828,26 @@ describe("Das Projekt-Banner nennt das VERURSACHENDE Ziel", () => {
     // DETERMINISTISCH, nicht von der Schluesselfolge des Objekts abhaengig: zwei
     // Laeufe muessen denselben Text ergeben.
     expect(text!.indexOf("Meta")).toBeLessThan(text!.indexOf("TikTok"));
+  });
+
+  // TM24 — DAS DRITTE ZIEL IM BANNER (Scheibe 11.3e).
+  //
+  // ER PRUEFT KEINEN NEUEN MECHANISMUS, UND GENAU DAS IST SEINE AUSSAGE: Am Banner
+  // ist fuer diese Scheibe NICHTS gebaut worden. testModeBannerText liest `kind` und
+  // `endetAt` und macht keine Annahme ueber den Code — pinterest erscheint von
+  // selbst. Der Lauf haelt fest, dass diese Ableitung tatsaechlich traegt, statt es
+  // aus dem Rumpf zu erschliessen.
+  // WARUM DAS ZAEHLT: Der Riegel haengt an MINDESTENS EINEM Ziel. Steht pinterest im
+  // Testmodus, ruht die Zaehlung des GANZEN Projekts — ohne den Namen wuesste der
+  // Betreiber, DASS sie ruht, aber nicht, WO er sie wieder anschaltet.
+  // ROT DURCH: eine Ziel-Liste im Bannertext statt der Ableitung aus dem Zustand.
+  it("TM24: ein laufendes pinterest wird mit Namen genannt", () => {
+    const text = testModeBannerText({
+      ok: true,
+      states: { pinterest: { kind: "laeuft", endetAt: 1_800_003_600 } },
+    });
+    expect(text).toContain("Pinterest");
+    expect(text).not.toContain("Meta");
   });
 
   it("KEIN Banner ohne laufendes Ziel — auch nicht bei abgelaufen", () => {

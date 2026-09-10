@@ -41,6 +41,7 @@ import { parseOAuthPayload } from "@/lib/secrets/oauth-payload";
 // leitet aus denselben Typen ab, und sie laeuft im Browser.
 import {
   credentialStateFrom,
+  requiresTestCode,
   testModeStateFrom,
   TARGETS_WITH_TEST_MODE,
   TEST_MODE_DURATION_SECONDS,
@@ -1185,21 +1186,69 @@ export async function listTestModeStates(
  * zufrieden (beide Spalten gesetzt), das Praedikat verwirft den Wert aber beim
  * Trimmen. Der Kunde glaubte dann, der Testmodus laufe, und er liefe nicht
  * (Vorrat (12)).
+ *
+ * ---------------------------------------------------------------------------
+ * NACHGEZOGEN 11.3e — ZWEI ANGABEN DES KOPFES SIND UEBERHOLT, DIE DRITTE NICHT, UND
+ * DER TEXT DARUEBER BLEIBT WOERTLICH STEHEN.
+ *
+ *  (1) DER CONSTRAINT HEISST SEIT MIGRATION 0029 `project_secrets_test_mode_je_ziel`
+ *      und urteilt JE ZIEL verschieden. `project_secrets_test_mode_paar` existiert
+ *      nicht mehr (GEMESSEN LIVE, Stefan, 2026-09-10). NUR DER NAME ZEIGT INS LEERE —
+ *      wer ihn im Katalog nachschlaegt, findet nichts.
+ *  (2) "Ein Schalter haette einen Zustand OHNE Code zur Folge, und den laesst der
+ *      CHECK nicht einmal zu" GILT NUR NOCH FUER ZIELE MIT CODE-PFLICHT. Fuer
+ *      `pinterest` ist "Frist ohne Code" seit 0029 der EINZIGE Zustand, den sein
+ *      Testmodus annehmen kann: sein Traeger ist ein QUERY-PARAMETER ohne Code.
+ *      FUER `meta` UND `tiktok` GILT "BEIDE ODER KEINE" UNVERAENDERT — der neue CHECK
+ *      urteilt fuer diese zwei WORTGLEICH wie der alte. Was sich aendert, ist die
+ *      REICHWEITE der Aussage, nicht ihr Inhalt fuer die zwei Ziele, fuer die sie
+ *      geschrieben wurde.
+ *  (3) UNBERUEHRT: das Verlangen des Codes beim VERLAENGERN, dort wo einer verlangt
+ *      wird. Metas Testcode wechselt weiterhin alle paar Tage.
+ *
+ * DIE GATE-REIHENFOLGE IST MIT DIESER SCHEIBE GETAUSCHT: Die ZIEL-Pruefung steht
+ * jetzt VOR der Code-Pruefung, weil letztere ohne das Ziel gar nicht entscheidbar ist
+ * — ob ein Code verlangt wird, sagt requiresTestCode, und die braucht ein GEPRUEFTES
+ * Ziel. FUER EINE EINGABE, DIE BEIDES FALSCH MACHT (unbekanntes Ziel UND leerer
+ * Code), DREHT SICH DAMIT DER ABLEHNUNGSGRUND von `empty_code` auf `unknown_target`.
+ * BEIDE GATES LIEGEN WEITERHIN VOR DER SITZUNG UND VOR DEM ADMIN-CLIENT; an der
+ * Sicherheitsachse aendert der Tausch nichts.
  */
 export async function startTestMode(
   projectId: string,
   target: TrackingTarget,
   code: string,
 ): Promise<TestModeWriteResult> {
-  const trimmed = code.trim();
-  if (!trimmed) return { ok: false, reason: "empty_code" };
-
   // EIN GATE, ZWEI FRAGEN: ob das Ziel BEKANNT ist, und ob es ueberhaupt einen
   // Testmodus TRAEGT. Beide enden im selben Grund, weil der Kunde beide nicht
   // ausloesen kann — die Oberflaeche zeigt den Schalter nur, wo der Leser einen
   // Eintrag geliefert hat.
+  // ES STEHT SEIT 11.3e ZUERST: Die Code-Pruefung darunter ist ZIEL-ABHAENGIG und
+  // ohne ein geprueftes Ziel nicht zu treffen.
   if (!isTrackingTarget(target) || !TARGETS_WITH_TEST_MODE.includes(target))
     return { ok: false, reason: "unknown_target" };
+
+  // DIE CODE-PRUEFUNG, ZIEL-ABHAENGIG (Entscheidung (16), Owner 2026-09-10).
+  //
+  // DER GRUND KOMMT AUS requiresTestCode UND AUS KEINER EIGENEN PRUEFUNG — kein
+  // zweites Urteil ueber die Code-Pflicht. Eine handgeschriebene Liste hier liefe von
+  // jener Auskunft weg, und der Bruch waere still: Die Aktion verlangte einen Code,
+  // den die Karte gar nicht erhebt, ODER sie liesse einen durch, den der CHECK aus
+  // 0029 abweist.
+  //
+  // ZWEI AUSGAENGE, ZWEI VERSCHIEDENE SACHVERHALTE:
+  //  · Ziel MIT Code-Pflicht, Code nach dem Trimmen leer -> `empty_code` (unveraendert).
+  //  · Ziel OHNE Code-Pflicht, Code NICHT leer -> `code_not_allowed`.
+  // DIE OBERFLAECHE KANN DEN ZWEITEN FALL NICHT ERZEUGEN (es gibt kein Feld) — eine
+  // Server Action nimmt aber entgegen, was ueber die Leitung kommt. Ohne diesen
+  // Ausgang bemerkte ihn erst der CHECK, NACH dem Instanziieren des privilegierten
+  // Clients und mit einem rohen Datenbank-Fehler als Auskunft.
+  // IGNORIEREN WAERE DIE SCHLECHTERE WAHL: Der Aufrufer bekaeme `ok: true` fuer einen
+  // Vorgang, bei dem etwas Verlangtes verworfen wurde — eine schweigende Annahme.
+  const brauchtCode = requiresTestCode(target);
+  const trimmed = code.trim();
+  if (brauchtCode && !trimmed) return { ok: false, reason: "empty_code" };
+  if (!brauchtCode && trimmed) return { ok: false, reason: "code_not_allowed" };
 
   const supabase = await createClient();
   const {
@@ -1239,10 +1288,20 @@ export async function startTestMode(
   // "By default, updated rows are not returned"): Ohne sie ist "null Zeilen
   // getroffen" von "geschrieben" NICHT unterscheidbar, und der Kunde bekaeme eine
   // Erfolgsmeldung fuer einen Vorgang, der nicht stattgefunden hat.
+  //
+  // `test_event_code` IST FUER EIN ZIEL OHNE CODE-PFLICHT AUSDRUECKLICH `null` UND
+  // NICHT WEGGELASSEN (Scheibe 11.3e): Ein weggelassener Schluessel liesse einen
+  // ALTEN Code stehen — beim VERLAENGERN eines Ziels, das gerade seine Code-Pflicht
+  // verloren hat, oder nach einem von Hand gesetzten Zustand. Der CHECK aus 0029
+  // verlangt bei `pinterest` `test_event_code IS NULL`; ein stehengebliebener Wert
+  // liesse den Schreibvorgang mit 23514 scheitern, und der Betreiber saehe
+  // `write_failed` fuer etwas, das die Aktion selbst hinterlassen hat.
+  // ES BLEIBT BEI GENAU ZWEI SPALTEN (Entscheidung (6)) — die Zahl der Schluessel
+  // aendert sich nicht, nur der Wert eines von ihnen.
   const { data: getroffen, error: writeError } = await admin
     .from("project_secrets")
     .update({
-      test_event_code: trimmed,
+      test_event_code: brauchtCode ? trimmed : null,
       test_mode_expires_at: new Date(endetMs).toISOString(),
     })
     .eq("project_id", projectId)

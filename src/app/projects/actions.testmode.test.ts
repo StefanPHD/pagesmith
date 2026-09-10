@@ -111,9 +111,11 @@ import { endTestMode, listTestModeStates, startTestMode } from "./actions";
 // DIE ECHTEN KONSTANTEN, keine Literale: waechst die Frist oder die Ziel-Menge,
 // waechst dieser Test mit, statt eine handgeschriebene Kopie zu pruefen.
 import {
+  requiresTestCode,
   TARGETS_WITH_TEST_MODE,
   TEST_MODE_DURATION_SECONDS,
 } from "@/lib/tracking/credential-state";
+import { TRACKING_TARGETS } from "@/lib/settings";
 
 /**
  * Minimaler SSR-Client-Mock: Sitzung + Ownership-Gate.
@@ -249,12 +251,38 @@ describe("Was VOR dem privilegierten Client abgewiesen wird", () => {
   });
 
   it("ein Ziel OHNE Testmodus wird abgewiesen — vor jedem Client", async () => {
-    // pinterest, google und linkedin tragen keinen Testmodus dieser Phase. Der
-    // Aufruf kann ueber die Oberflaeche gar nicht entstehen — eine Server Action
-    // nimmt aber entgegen, was ueber die Leitung kommt, und der Typ ist zur Laufzeit
-    // geloescht.
+    // google und linkedin tragen keinen Testmodus dieser Phase. Der Aufruf kann ueber
+    // die Oberflaeche gar nicht entstehen — eine Server Action nimmt aber entgegen,
+    // was ueber die Leitung kommt, und der Typ ist zur Laufzeit geloescht.
+    //
+    // -----------------------------------------------------------------
+    // NACHGEZOGEN MIT SCHEIBE 11.3e. HIER STAND EINE HARTKODIERTE KOPIE DER
+    // KOMPLEMENTAERMENGE: `["pinterest", "google", "linkedin"]`. Mit der Aufnahme von
+    // pinterest in TARGETS_WITH_TEST_MODE ist sie ROT geworden — DAS WAR DER
+    // GEWUENSCHTE AUSGANG und kein Schaden: pinterest ist seither ein BEKANNTES Ziel
+    // mit Testmodus und antwortet nach Entscheidung (16) mit `code_not_allowed`.
+    //
+    // WAS GEPRUEFT WURDE, BEVOR ETWAS GEAENDERT WURDE (Auflage (a2) des Zuschnitts):
+    // Die ZUSICHERUNG des Titels — "ein Ziel OHNE Testmodus wird abgewiesen, vor
+    // jedem Client" — ist unveraendert richtig. Falsch geworden ist allein ihr
+    // BEISPIEL. Wer stattdessen die Liste um pinterest kuerzt und sie hartkodiert
+    // stehenlaesst, hat die Kopie behalten und den naechsten Bruch nur vertagt.
+    //
+    // DIE MENGE WIRD DESHALB ABGELEITET STATT AUFGEZAEHLT. Sie ist damit
+    // definitionsgemaess das Komplement und kann nicht mehr von ihm abdriften; kommt
+    // ein Ziel in den Testmodus, wandert es hier von selbst heraus.
+    // DIE POSITIVKONTROLLE STEHT DANEBEN UND IST NICHT VERZICHTBAR: Waere die
+    // abgeleitete Menge LEER, ginge der Lauf trivial durch und behauptete weiter
+    // etwas (docs/immer-beachten.md, "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI
+    // WEISEN HOHL", Fall 2).
+    // -----------------------------------------------------------------
+    const ohneTestmodus = TRACKING_TARGETS.filter(
+      (ziel) => !TARGETS_WITH_TEST_MODE.includes(ziel),
+    );
+    expect(ohneTestmodus.length).toBeGreaterThan(0);
+
     makeClient({ user: { id: "u1" } });
-    for (const ziel of ["pinterest", "google", "linkedin"] as const) {
+    for (const ziel of ohneTestmodus) {
       expect(await startTestMode("proj-1", ziel, "TEST123")).toEqual({
         ok: false,
         reason: "unknown_target",
@@ -265,6 +293,61 @@ describe("Was VOR dem privilegierten Client abgewiesen wird", () => {
       });
     }
     expect(createAdminClient).not.toHaveBeenCalled();
+  });
+
+  // TM16 — EIN ZIEL OHNE CODE-PFLICHT KOMMT OHNE CODE DURCH (Scheibe 11.3e).
+  //
+  // ER IST DER LAUF, DER DIE SCHEIBE SCHARF MACHT: Bis hierher konnte KEIN
+  // Schreibpfad des Produkts fuer pinterest einen Testzustand ablegen —
+  // `startTestMode` wies das Ziel mit `unknown_target` ab, und davor wies die
+  // Code-Pruefung jeden leeren Code mit `empty_code` ab. BEIDE Riegel mussten fallen,
+  // und dieser Lauf haelt fest, dass sie es getan haben.
+  //
+  // ROT DURCH: eine Vorpruefung, die wieder fuer JEDES Ziel einen Code verlangt
+  // (Pflicht-Mutation M1) — oder eine Ziel-Pruefung, die pinterest nicht kennt.
+  it("TM16: ein Ziel OHNE Code-Pflicht startet OHNE Code, und die Frist steht", async () => {
+    makeClient({ user: { id: "u1" } });
+    setUpdateResult({ data: { target: "pinterest" }, error: null });
+    vi.useFakeTimers();
+    vi.setSystemTime(1_800_000_000 * 1000);
+    try {
+      const r = await startTestMode("proj-1", "pinterest", "");
+      // ZWEI BEHAUPTUNGEN, NICHT EINE: dass es DURCHGEHT und dass der Zustand die
+      // FRIST traegt. Ein `ok: true` ohne Endzeitpunkt waere ein Erfolg ohne Wirkung.
+      expect(r).toEqual({
+        ok: true,
+        state: {
+          kind: "laeuft",
+          endetAt: 1_800_000_000 + TEST_MODE_DURATION_SECONDS,
+        },
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  // TM17 — DER NEUE ABLEHNUNGSGRUND (Entscheidung (16), Scheibe 11.3e).
+  //
+  // ZWEI BEHAUPTUNGEN, NICHT EINE: "abgewiesen" und "geschrieben, aber Fehler
+  // gemeldet" saehen an einer einzelnen Assertion identisch aus — dieselbe Auflage
+  // wie bei der Pflicht-Mutation zum leeren Code darueber.
+  //
+  // WARUM NICHT `unknown_target`: Das Ziel IST bekannt und HAT einen Testmodus, nur
+  // keinen Code. Ein Fehlergrund, der etwas Falsches sagt, schickt den naechsten
+  // Sucher an die falsche Stelle.
+  // WARUM NICHT IGNORIEREN: Der Aufrufer bekaeme `ok: true` fuer einen Vorgang, bei
+  // dem etwas Verlangtes verworfen wurde — eine schweigende Annahme.
+  //
+  // ROT DURCH: ein durchgereichter Code (dann traegt der Patch einen Wert, den der
+  // CHECK aus 0029 abweist) oder ein stillschweigendes Verwerfen.
+  it("TM17: ein nicht-leerer Code fuer ein Ziel OHNE Code-Pflicht wird abgewiesen UND nichts geschrieben", async () => {
+    makeClient({ user: { id: "u1" } });
+    expect(await startTestMode("proj-1", "pinterest", "TEST123")).toEqual({
+      ok: false,
+      reason: "code_not_allowed",
+    });
+    expect(createAdminClient).not.toHaveBeenCalled();
+    expect(adminUpdate).not.toHaveBeenCalled();
   });
 
   it("die Ziel-Pruefung liest die ECHTE Menge, nicht eine Kopie", async () => {
@@ -290,10 +373,36 @@ describe("Was VOR dem privilegierten Client abgewiesen wird", () => {
     //      auf: Er bliebe GRUEN AUS DEM FALSCHEN GRUND, waehrend der echte Schreibpfad
     //      einen Wert ablegte, den der CHECK aus 0029 abweist.
     // -----------------------------------------------------------------
+    //
+    // NACHGEZOGEN MIT SCHEIBE 11.3e — FALLE (1) IST EINGETRETEN UND HIER AUFGELOEST.
+    // Der Absatz darueber bleibt woertlich stehen; er hat den Fall vorhergesagt.
+    //
+    // WAS SICH AENDERT: Der Lauf ruft NICHT MEHR JEDES Ziel mit einem Code. Er fragt
+    // je Ziel die EINE Quelle (requiresTestCode) und erwartet den Ausgang, der zu
+    // diesem Ziel gehoert. DIE ZUSICHERUNG DES TITELS IST UNBERUEHRT: Er liest
+    // weiterhin die ECHTE Menge und keine Kopie — waechst sie, waechst er mit.
+    //
+    // WARUM NICHT EINFACH pinterest AUSNEHMEN: Das waere eine handgeschriebene
+    // Ausnahme neben einer Auskunft, die es schon gibt — genau die zweite Wahrheit,
+    // gegen die der Titel dieses Laufs geschrieben ist. Er FRAGT deshalb, statt zu
+    // wissen.
+    //
+    // FALLE (2) BESTEHT UNVERAENDERT FORT: Der Schreibweg ist weiterhin GEMOCKT, die
+    // Datenbank faellt hier nicht auf. Was der echte Schreibpfad ABLEGT, prueft ein
+    // eigener Lauf ("der Schreibweg legt fuer ein Ziel OHNE Code-Pflicht …" unten) —
+    // und der prueft den PATCH, nicht die Datenbank.
     makeClient({ user: { id: "u1" } });
     for (const ziel of TARGETS_WITH_TEST_MODE) {
       const r = await startTestMode("proj-1", ziel, "TEST123");
-      expect(r.ok).toBe(true);
+      if (requiresTestCode(ziel)) {
+        expect(r).toEqual(
+          expect.objectContaining({ ok: true }),
+        );
+      } else {
+        // ENTSCHEIDUNG (16): Ein nicht-leerer Code fuer ein Ziel OHNE Code-Pflicht
+        // wird abgewiesen — mit einem EIGENEN Grund, nicht als unknown_target.
+        expect(r).toEqual({ ok: false, reason: "code_not_allowed" });
+      }
     }
   });
 });
@@ -320,6 +429,40 @@ describe("startTestMode — der Schreibweg", () => {
     // DER CODE WIRD GETRIMMT ABGELEGT — sonst stuende in der Zeile ein Wert, den das
     // Praedikat spaeter anders liest als der Schreiber ihn gemeint hat.
     expect(patch.test_event_code).toBe("TEST123");
+  });
+
+  // TM18 — DER SCHREIBWEG FUER EIN ZIEL OHNE CODE-PFLICHT (Scheibe 11.3e).
+  //
+  // ER PRUEFT ZWEI DINGE, UND DIE ZWEITE IST DIE UNSCHEINBARE: dass der Patch
+  // `test_event_code` AUSDRUECKLICH auf `null` setzt statt den Schluessel
+  // WEGZULASSEN. Der Unterschied ist nicht kosmetisch — ein weggelassener Schluessel
+  // liesse einen ALTEN Code stehen, und der CHECK aus 0029 verlangt bei pinterest
+  // `test_event_code IS NULL`. Der Betreiber saehe dann `write_failed` fuer etwas,
+  // das die Aktion selbst hinterlassen hat.
+  //
+  // DIE SPALTENZAHL BLEIBT ZWEI (Entscheidung (6)) — geaendert hat sich der WERT
+  // eines Schluessels, nicht ihre Menge.
+  //
+  // ROT DURCH: ein weggelassener `test_event_code`-Schluessel, ein durchgereichter
+  // Code, oder eine dritte Spalte im Patch.
+  it("TM18: der Schreibweg legt fuer ein Ziel OHNE Code-Pflicht test_event_code als NULL ab — und nur die zwei Spalten", async () => {
+    makeClient({ user: { id: "u1" } });
+    setUpdateResult({ data: { target: "pinterest" }, error: null });
+    await startTestMode("proj-1", "pinterest", "");
+
+    expect(adminUpdate).toHaveBeenCalledTimes(1);
+    const patch = adminUpdate.mock.calls[0][0] as Record<string, unknown>;
+    expect(Object.keys(patch).sort()).toEqual([
+      "test_event_code",
+      "test_mode_expires_at",
+    ]);
+    // `toBeNull` UND NICHT `toBeFalsy`: Ein leerer String waere ebenfalls falsy, und
+    // genau den weist der CHECK aus 0029 bei pinterest ab.
+    expect(patch.test_event_code).toBeNull();
+    // POSITIVKONTROLLE ZUR ZEILE DARUEBER: Der Patch traegt trotzdem eine Frist —
+    // sonst waere "nichts Sinnvolles geschrieben" von "korrekt geschrieben" nicht zu
+    // unterscheiden.
+    expect(typeof patch.test_mode_expires_at).toBe("string");
   });
 
   it("die Frist entsteht aus der Uhr der LAUFZEIT und traegt die benannte Dauer", async () => {
@@ -477,16 +620,53 @@ describe("listTestModeStates — was er herausgibt und was nicht", () => {
   });
 
   it("ein Ziel OHNE Testmodus bekommt keinen Eintrag, auch mit Kennung und Zeile", async () => {
+    // -----------------------------------------------------------------
+    // NACHGEZOGEN MIT SCHEIBE 11.3e — DER TITEL BLEIBT WOERTLICH, DAS EXEMPLAR NICHT.
+    //
+    // HIER STAND `pinterest` als Beispiel fuer "ein Ziel ohne Testmodus". Mit der
+    // Aufnahme in TARGETS_WITH_TEST_MODE ist der Lauf ROT geworden.
+    // WAS GEPRUEFT WURDE, BEVOR ETWAS GEAENDERT WURDE: Die ZUSICHERUNG des Titels ist
+    // unveraendert richtig — der Leser gibt fuer ein Ziel ohne Testmodus keinen
+    // Eintrag heraus, auch wenn Kennung UND Zeile da sind. Falsch geworden ist allein
+    // sein BEISPIEL.
+    //
+    // DAS EXEMPLAR WIRD DESHALB ABGELEITET STATT HARTKODIERT. Es ist damit
+    // definitionsgemaess ein Ziel ohne Testmodus und kann nicht mehr davon abdriften;
+    // kommt es spaeter in den Testmodus, wandert der Lauf von selbst auf das
+    // naechste. Dieselbe Bauform wie beim Lauf "ein Ziel OHNE Testmodus wird
+    // abgewiesen — vor jedem Client" weiter oben.
+    //
+    // DIE LEERLAUF-ZUSICHERUNG IST PFLICHT UND KEIN ZIERRAT, UND DAS IST KEIN
+    // HYPOTHETISCHER FALL: google und linkedin stehen in dieser Phase noch aus
+    // (docs/aktiver-stand.md, "Gegenstand der Phase"). Kommen BEIDE in den Testmodus,
+    // ist die Komplementaermenge LEER — dieser Lauf iterierte dann ueber nichts,
+    // bliebe GRUEN und pruefte nichts mehr. Das ist Fall (1) aus
+    // docs/immer-beachten.md, "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN
+    // HOHL": Sein Gegenstand ist entfernt worden, und er sieht danach STAERKER aus
+    // statt schwaecher, weil er weiter Erfolg meldet.
+    // ER SICHERT DESHALB ZUERST ZU, DASS DIE MENGE NICHT LEER IST, und prueft danach.
+    //
+    // DIE KENNUNG BLEIBT TRAGEND ("auch mit Kennung und Zeile"): hasTargetPixelId
+    // urteilt heute ziel-generisch (lib/settings.ts) — ein nicht-leerer Wert
+    // passiert den Kennungs-Filter fuer JEDES Ziel. Der Lauf zeigt damit, dass der
+    // Eintrag an der ZIELMENGE ausfaellt und nicht am Filter davor.
+    // -----------------------------------------------------------------
+    const ohneTestmodus = TRACKING_TARGETS.filter(
+      (ziel) => !TARGETS_WITH_TEST_MODE.includes(ziel),
+    );
+    expect(ohneTestmodus.length).toBeGreaterThan(0);
+    const exemplar = ohneTestmodus[0];
+
     makeClient({
       user: { id: "u1" },
       owned: {
         id: "proj-1",
-        settings: { pixels: { pinterest: { pixelId: "PIN" } } },
+        settings: { pixels: { [exemplar]: { pixelId: "KENNUNG-1" } } },
       },
     });
     setSelectResult({
       data: [
-        { target: "pinterest", test_event_code: null, test_mode_expires_at: null },
+        { target: exemplar, test_event_code: null, test_mode_expires_at: null },
       ],
       error: null,
     });

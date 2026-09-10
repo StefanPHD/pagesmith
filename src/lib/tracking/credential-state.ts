@@ -344,7 +344,8 @@ export function withoutTarget(
 // ===========================================================================
 
 /**
- * WELCHE ZIELE EINEN PROJEKT-EIGENEN TESTMODUS TRAGEN. Zwei: meta und tiktok.
+ * WELCHE ZIELE EINEN PROJEKT-EIGENEN TESTMODUS TRAGEN. Drei: meta, tiktok und
+ * seit Scheibe 11.3e pinterest.
  *
  * DIE EINE QUELLE FUER DIESE TATSACHE. Sie speist BEIDE Seiten — die Pruefung im
  * Schreibpfad (app/projects/actions.ts) und die Sichtbarkeit des Schalters, die
@@ -358,6 +359,24 @@ export function withoutTarget(
  * in docs/aktiver-stand.md, "Reichweite: meta und tiktok — und ausdruecklich sonst
  * keines", und werden hier NICHT verdoppelt.
  *
+ * NACHGEZOGEN 11.3e, UND DER ABSATZ DARUEBER BLEIBT WOERTLICH STEHEN: Sein
+ * pinterest-Halbsatz ist UEBERHOLT, seine zwei anderen gelten unveraendert. Der
+ * Traeger von pinterest ist WEITERHIN ein Query-Parameter und kein Nutzlast-Feld —
+ * ueberholt ist allein das "NIE GEMESSEN": `test=true` ist am 2026-09-10 LIVE als
+ * wirksam gemessen (docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)",
+ * Teil (u)), und der zweite Name `is_test` ist damit fuer den Bau ENTBEHRLICH
+ * geworden — NICHT ausgeschlossen (Teil (v)).
+ * DASS DER TRAEGER KEIN NUTZLAST-FELD IST, HAT DAMIT AUFGEHOERT, EIN AUSSCHLUSSGRUND
+ * ZU SEIN, und das ist der eigentliche Nachzug: Die Anforderung "ein Feld in der
+ * NUTZLAST" war aus ZWEI Zielen gebildet, die beide eines haben. Was diese Menge
+ * wirklich verlangt, ist ein PROJEKT-EIGEN steuerbarer Testmodus — die GESTALT des
+ * Traegers ist Sache des Adapters (docs/immer-beachten.md, "EINE REGEL KANN RICHTIG
+ * SEIN UND NICHT SKALIEREN — DER BRUCH ZEIGT SICH AN IHRER BEGRUENDUNG, NICHT AN
+ * IHREM WORTLAUT").
+ * DIE FOLGE, DIE MITMUSS: Ein Ziel dieser Menge traegt NICHT zwingend einen Code.
+ * Welches einen VERLANGT, sagt ausschliesslich requiresTestCode unten — und beide
+ * Fragen sind seit 11.3e verschieden.
+ *
  * IHR ORT IST EINE FOLGE DES ZUSCHNITTS UND KEINE ENTSCHEIDUNG UEBER IHN: Die
  * verwandte Liste TARGETS_WITH_ADAPTER liegt in tracking/target-adapters.ts, und
  * jene Datei ist von dieser Scheibe ausdruecklich ausgenommen. Wer beide
@@ -366,6 +385,7 @@ export function withoutTarget(
 export const TARGETS_WITH_TEST_MODE: readonly TrackingTarget[] = [
   "meta",
   "tiktok",
+  "pinterest",
 ];
 
 /**
@@ -424,8 +444,29 @@ export const TEST_MODE_DURATION_SECONDS = 3_600;
  * dieselbe Erwaegung wie bei den Praedikaten darueber: ein Urteil mit EINEM Aufrufer in
  * ein geteiltes Haus zu legen waere Infrastruktur auf Verdacht. Braucht die Scheibe
  * 11.3e sie fuer die ziel-abhaengige Vorpruefung im Schreibpfad, wandert sie DANN.
+ *
+ * NACHGEZOGEN 11.3e — DER FALL, DEN DER ABSATZ DARUEBER ANKUENDIGT, IST EINGETRETEN,
+ * UND ER BLEIBT WOERTLICH STEHEN. Sie ist seit dieser Scheibe EXPORTIERT und hat
+ * DREI Leser: activeTestCodeFromRow unten, die Vorpruefung in startTestMode
+ * (app/projects/actions.ts) und die Ziel-Karte (components/TargetCard.tsx). Der Ort
+ * ist derselbe geblieben — gewandert ist nur das Schluesselwort `export`.
+ * WARUM DER ALTE SATZ NICHT GESTRICHEN WIRD: Er traegt die BEGRUENDUNG, unter der
+ * die Auskunft einen Aufrufer lang privat war, und die war richtig. Wer sie
+ * streicht, verliert den Massstab fuer die naechste Auskunft mit genau einem Leser.
+ *
+ * DIE AUFLAGE AN DIE DREI LESER — EINE QUELLE, KEIN ZWEITES URTEIL (Entscheidung
+ * (13), zweite Auflage, sinngemaess auf den SCHREIBPFAD und die OBERFLAECHE
+ * angewandt): Weder die Aktion noch die Karte bilden nach, welches Ziel einen Code
+ * verlangt. Sie FRAGEN. Eine zweite Fassung dieser Frage liefe auseinander, und der
+ * Bruch waere still: Die Karte boete ein Feld an, dessen Wert der CHECK aus 0029
+ * abweist, oder die Aktion verlangte einen Code, den die Karte gar nicht erhebt.
+ *
+ * SIE IST NICHT DASSELBE WIE TARGETS_WITH_TEST_MODE, und seit 11.3e faellt das
+ * auseinander: Jene sagt, welches Ziel UEBERHAUPT einen Testmodus hat; diese, ob es
+ * dafuer einen CODE braucht. pinterest steht in beiden — in der einen als Mitglied,
+ * in dieser mit `false`.
  */
-function requiresTestCode(target: TrackingTarget): boolean {
+export function requiresTestCode(target: TrackingTarget): boolean {
   switch (target) {
     case "meta":
       return true;
@@ -638,6 +679,17 @@ export type ListTestModeStatesResult =
  * einen eigenen Ausgang dafuer waere "nichts getroffen" von "geschrieben" nicht zu
  * unterscheiden, und der Kunde bekaeme eine Erfolgsmeldung fuer einen Vorgang, der
  * nicht stattgefunden hat.
+ *
+ * `code_not_allowed` IST MIT 11.3e DAZUGEKOMMEN (Entscheidung (16), Owner
+ * 2026-09-10) — DIE OBERFLAECHE KANN IHN NICHT ERZEUGEN, UND DAS IST KEIN ARGUMENT
+ * GEGEN IHN: Eine Server Action nimmt entgegen, was ueber die Leitung kommt
+ * (dieselbe Erwaegung, die isTrackingTarget ueberhaupt begruendet). Ohne diesen
+ * Ausgang waere der CHECK aus 0029 die EINZIGE Stelle, die den Fall je bemerkt —
+ * NACH dem Instanziieren des privilegierten Clients und mit einem rohen
+ * Datenbank-Fehler als Auskunft.
+ * ER IST AUSDRUECKLICH NICHT `unknown_target`: Das Ziel ist BEKANNT und hat einen
+ * Testmodus, nur keinen Code. Ein Fehlergrund, der etwas Falsches sagt, schickt den
+ * naechsten Sucher an die falsche Stelle.
  */
 export type TestModeWriteError =
   /** Keine Sitzung. */
@@ -646,8 +698,15 @@ export type TestModeWriteError =
   | "not_found"
   /** Das Ziel ist unbekannt oder traegt keinen Testmodus. */
   | "unknown_target"
-  /** Der Code ist nach dem Trimmen leer. */
+  /** Der Code ist nach dem Trimmen leer — nur bei Zielen MIT Code-Pflicht. */
   | "empty_code"
+  /**
+   * Ein nicht-leerer Code fuer ein Ziel OHNE Code-Pflicht (Scheibe 11.3e).
+   *
+   * DER GRUND KOMMT AUS requiresTestCode UND AUS KEINER EIGENEN PRUEFUNG — kein
+   * zweites Urteil ueber die Code-Pflicht.
+   */
+  | "code_not_allowed"
   /** Es gibt fuer dieses Ziel keine Geheimnis-Zeile, an der ein Testzustand haengen koennte. */
   | "not_configured"
   /** Der Schreibvorgang selbst ging daneben. */

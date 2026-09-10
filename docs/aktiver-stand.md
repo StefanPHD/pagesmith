@@ -209,8 +209,13 @@ HIER WIRD KEINER DAVON VOLLZOGEN:**
   **DER PAAR-CHECK IST ERSETZT** (Migration 0029, Commit `1fb9b90`, VERMERK 4); `pinterest`
   kann eine **Frist ohne Code** tragen, und Vorrat (8) ist mit Beleg gestrichen. **WAS
   PINTEREST JETZT NOCH FEHLT, IST DIE AUFNAHME IN `TARGETS_WITH_TEST_MODE` UND DER
-  SCHALTER — Scheibe 11.3d.** Die Kollision aus deployment-weitem Schalter und
+  SCHALTER — Scheibe 11.3e.** Die Kollision aus deployment-weitem Schalter und
   projekt-eigener Frist (Vorrat (26)) steht unverändert offen.
+  **NACHGEZOGEN AM 2026-09-10 (zweite Teilung desselben Tages):** Hier stand "Scheibe
+  11.3d". Die Pinterest-Runde ist an diesem Tag in **11.3d** (Auflösungs-Pfad) und
+  **11.3e** (Oberfläche) geteilt worden; **Zielmenge und Schalter sind 11.3e.** Der Zeiger
+  ist nachgezogen, **weil er eine Handlung bindet** — wer ihm folgt, sucht die Oberfläche
+  in einem Abschnitt, der sie ausschliesst.
 - **google — EIN ANDERER WEG.** Hier fehlt keine Messung, sondern ein Träger, der die
   Beobachtung nicht abschneidet. Ob es ihn gibt, ist offen; solange nicht, kann diese Phase
   für google nichts liefern, was ihr eigenes Versprechen einlöst.
@@ -938,8 +943,13 @@ UNGEMESSEN** und ausdrücklich NICHT hier entschieden — das ist die erste Frag
 Aufklärung zu 11.3d.
 
 **IHRE GRENZE:** Die Entscheidung nimmt **den einzigen Hebel, der heute unabhängig von der
-Oberfläche wirkt**. Nach 11.3d ist die Oberfläche dieser Hebel — vorher nicht. **Wer die
+Oberfläche wirkt**. Nach 11.3e ist die Oberfläche dieser Hebel — vorher nicht. **Wer die
 Reihenfolge dreht, steht ohne beides da.**
+**NACHGEZOGEN AM 2026-09-10:** Hier stand "Nach 11.3d". Die Pinterest-Runde ist an diesem
+Tag geteilt worden, **die Oberfläche ist 11.3e**. Der Zeiger ist nachgezogen, **weil er
+eine BEDINGUNG nennt** — er sagt, ab wann ein Hebel wieder da ist, und das ist eine
+Aussage, nach der gebaut wird. **Der Satz selbst ist unverändert**, geändert ist die
+Scheibennummer.
 
 **WAS SIE NICHT ENTSCHEIDET:** wie die Frist den Parameter erreicht — ob der Adapter den
 Testzustand aus der Konfiguration liest, in welcher Gestalt, und ob der Resolver ihn heute
@@ -1038,8 +1048,13 @@ als Einfall wiederkommt:
 
 **DIE GRENZE DES EINWANDS GEGEN DIESE ENTSCHEIDUNG, ehrlich benannt:** Sie führt eine
 Ziel-Auskunft in den TypeScript-Code ein, die es dort so noch nicht gibt. Sie ist aber
-**KEIN dritter Ort** — `TARGETS_WITH_TEST_MODE` zählt bereits Ziele auf, wächst mit 11.3d
+**KEIN dritter Ort** — `TARGETS_WITH_TEST_MODE` zählt bereits Ziele auf, wächst mit 11.3e
 ohnehin um `pinterest`, und ein Wächter macht jede Erweiterung rot.
+**NACHGEZOGEN AM 2026-09-10:** Hier stand "wächst mit 11.3d". Die Zielmenge wächst seit
+der Teilung desselben Tages in **11.3e**; **11.3d rührt sie ausdrücklich NICHT an.** Der
+Zeiger ist nachgezogen, **weil er eine Handlung bindet** — wer 11.3d baut und diesem Satz
+folgt, nimmt `pinterest` in die Menge auf und macht die Scheibe scharf, die im Betrieb
+wirkungslos bleiben soll.
 **DER WÄCHTER IST NACHGEMESSEN UND NICHT ÜBERNOMMEN (GEMESSEN am Repo, CC, 2026-09-10):**
 `describe("TM13 — die Menge der Ziele mit Testmodus")` mit `it("GENAU meta und tiktok")` in
 `src/lib/tracking/credential-state.test.ts`, Zusicherung
@@ -1596,10 +1611,14 @@ Kommentar für überholt, obwohl seine Aussage trägt.
 **WARUM DAS NICHT SCHLIMMER IST, ALS ES KLINGT, UND WARUM ES TROTZDEM HIERHER GEHÖRT:** Es
 sind Kommentare, kein Verhalten; nichts wird davon rot, und nichts läuft falsch. **Teuer
 wird es erst an der Ziel-Karte** (`TargetCard.tsx`), wo der Text dem Betreiber erklärt,
-warum es keinen An/Aus-Schalter gibt — und die Erklärung ab 11.3d für `pinterest` eine
+warum es keinen An/Aus-Schalter gibt — und die Erklärung ab 11.3e für `pinterest` eine
 ANDERE ist, weil dort gerade kein Code abgelegt werden darf.
 TRIGGER: die nächste Runde, die eine dieser Dateien ohnehin öffnet — praktisch Scheibe
-11.3d, die `TARGETS_WITH_TEST_MODE` und die Ziel-Karte anfasst.
+11.3e, die `TARGETS_WITH_TEST_MODE` und die Ziel-Karte anfasst.
+**NACHGEZOGEN AM 2026-09-10:** An beiden Stellen stand "11.3d". **EIN TRIGGER IST DIE
+HANDLUNGS-BINDUNG SCHLECHTHIN** — er sagt, WANN der Eintrag fällig wird, und ein Trigger
+auf die falsche Scheibe feuert zu früh und ins Leere. Zielmenge und Ziel-Karte sind seit
+der Teilung vom 2026-09-10 **11.3e**.
 PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10), Achse: der alte Constraint-Name,
 case-insensitiv, Suchraum `src/`, alle Dateitypen, Testdateien eingeschlossen — sechs
 Treffer in vier Dateien, mit Negativkontrolle (0) und Gegenprobe (der NEUE Name kommt
@@ -1611,12 +1630,18 @@ HIERHER.** Der Text darüber bleibt wörtlich stehen; der Eintrag wird NICHT ges
 unverändert: `endTestMode` (`src/app/projects/actions.ts`), zwei Läufe in
 `src/app/projects/actions.testmode.test.ts` und einer in
 `src/components/TargetCard.test.tsx`. **Sie bleiben der Gegenstand dieses Eintrags.**
-**ZWEI STELLEN TRAGEN EINE AUSSAGE, DIE AB 11.3d SACHLICH FALSCH WIRD**, und sie sind
+**ZWEI STELLEN TRAGEN EINE AUSSAGE, DIE AB 11.3e SACHLICH FALSCH WIRD**, und sie sind
 damit **SCHEIBENARBEIT und keine Aufräumarbeit**: der Kopf von `startTestMode`
 (`src/app/projects/actions.ts`) und der sichtbare Erklärtext an der Ziel-Karte
 (`src/components/TargetCard.tsx`). Beide sagen, ein Zustand ohne Code sei unmöglich — für
-`pinterest` ist genau das ab 11.3d der Normalfall. **Sie stehen unter "Was beim Zuschnitt
-von 11.3d vorliegen muss" und gehören in die Scheibe, nicht in eine Aufräumrunde.**
+`pinterest` ist genau das ab 11.3e der Normalfall. **Sie stehen unter "Was beim Zuschnitt
+von 11.3d vorliegen muss", Teil (a), und gehören in die Scheibe 11.3e, nicht in eine
+Aufräumrunde.**
+**NACHGEZOGEN AM 2026-09-10:** Hier stand zweimal "ab 11.3d" und "gehören in die Scheibe".
+Beides ist **handlungsbindend** — es sagt, welche Scheibe die zwei Stellen mitnimmt. Seit
+der Teilung desselben Tages ist das **11.3e**. **Der Titel des Abschnitts bleibt wörtlich
+zitiert**, weil er nicht umbenannt worden ist; **verschoben ist die SCHEIBE, nicht der
+ABLAGEORT.**
 PROVENIENZ: die Einteilung ist eine ABLEITUNG aus Entscheidung (14) und den am 2026-09-10
 gemessenen Fundstellen; die Fundstellen selbst sind GEMESSEN am Repo (CC, 2026-09-10).
 
@@ -1784,6 +1809,40 @@ GEMELDET 2026-09-10, NICHT GEBAUT.
 
 **PROVENIENZ:** GEMESSEN am eigenen Lauf (CC, 2026-09-10); dass die Bauform die Ursache
 ist, ist eine **ABLEITUNG**.
+
+### (5) EINE SCHEIBE ZU TEILEN MACHT JEDEN ZEIGER AUF SIE HALB FALSCH — UND ER BLEIBT AUFFINDBAR, ALSO FÄLLT ES NICHT AUF
+
+**DER BELEG — GEMESSEN am Dateitext (CC, 2026-09-10):** **SIEBZEHN** Stellen dieser Datei
+nannten "11.3d", **KEINE** nannte "11.3e"; **alle waren geschrieben worden, als "11.3d" die
+ganze Pinterest-Runde meinte.** Nach der Teilung landet der Leser in einem Abschnitt, der
+die gesuchte Hälfte **ausdrücklich AUSSCHLIESST**.
+
+**WARUM ES NICHT AUFFÄLLT, und das ist der ganze Punkt: DER ZEIGER IST NICHT TOT.** Er
+löst sich auf, er trifft, und was er trifft, sieht aus wie ein gültiger Abschnitt. **Es
+gibt keinen Moment, in dem jemand suchen muss** — und nur das Suchen brächte den Fehler
+ans Licht.
+
+**ABGRENZUNG ZU VORRAT (28):** Dort kippt ein Zeiger von **TOT auf FALSCH**, weil eine
+Nummer neu vergeben wird. Hier bleibt er **GÜLTIG und wird HALB falsch**, weil sein ZIEL
+sich teilt. **Verwandte Achse, anderer Mechanismus** — jener entsteht durch Nachvergabe,
+dieser durch Teilung.
+
+**DIE GEGENFORM, die hier gewählt wurde:** ein **AUFLÖSUNGS-SATZ AM LANDEPLATZ** plus
+Nachziehen **allein dort, wo der Zeiger eine HANDLUNG bindet**. Das Kriterium hat die
+siebzehn in **elf handlungsbindende** und **sechs beschreibende** geteilt.
+**WARUM NICHT ALLE SIEBZEHN:** Ein beschreibender Zeiger ist als Aussage über seinen
+Zeitpunkt richtig; ihn nachzuziehen machte aus einem Zeitdokument eine Behauptung über
+heute. **WARUM NICHT NUR DER SATZ:** Ein Trigger, eine Bedingung und eine Aufgabenliste
+werden AUSGEFÜHRT, nicht gelesen — sie erreicht kein Satz an einem anderen Ort.
+
+**NICHT ENTSCHIEDEN:** ob daraus eine eigene Regel wird oder ein Absatz. **KEINE
+EMPFEHLUNG.**
+GEMELDET 2026-09-10, NICHT GEBAUT.
+
+**PROVENIENZ:** Die Zählung und die Fundstellen sind GEMESSEN am Dateitext (CC,
+2026-09-10). Die Einteilung in elf und sechs ist eine **ABLEITUNG** aus dem Kriterium, an
+jeder Stelle einzeln vollzogen. Dass ein auffindbarer Zeiger seltener geprüft wird als ein
+toter, ist eine **ABLEITUNG**, keine Messung.
 
 ## Scheiben-Vermerke
 
@@ -2403,17 +2462,25 @@ in einer, die es ohnehin gibt.
   `TARGETS_WITH_TEST_MODE` steht weiterhin auf `["meta", "tiktok"]`, und ein Wächter nagelt
   die Liste fest (GEMESSEN am Repo, CC, 2026-09-10). **Kein Schreibpfad kann den erlaubten
   Zustand heute herstellen.**
-- **WAS 11.3d ZU TUN HAT UND WAS DIESE SCHEIBE IHM NICHT ABGENOMMEN HAT:** `pinterest` in
+- **WAS 11.3e ZU TUN HAT UND WAS DIESE SCHEIBE IHM NICHT ABGENOMMEN HAT:** `pinterest` in
   `TARGETS_WITH_TEST_MODE` samt Wächter, der Schalter an der Pinterest-Karte, der
   Banner-Text — und **die Vorrang-Frage aus Vorrat (26)**, deployment-weiter Env-Schalter
   gegen projekt-eigene Frist. Jene ist eine EIGENE Entscheidung und ist hier NICHT
   getroffen; sie entsteht erst, wenn pinterest den projekt-eigenen Zustand tatsächlich
   BENUTZT.
-- **DIE GESTE, DIE 11.3d BRAUCHT, IST EINE ANDERE ALS BEI META UND TIKTOK.** Dort verlangt
+  **NACHGEZOGEN AM 2026-09-10:** Hier stand "WAS 11.3d ZU TUN HAT". **Es ist eine
+  Aufgabenliste, also handlungsbindend**; sämtliche vier Posten sind seit der Teilung
+  desselben Tages **11.3e**. Der Vorrang-Posten (26) bindet ebenfalls 11.3e, weil er erst
+  entsteht, wenn der Zustand BENUTZT wird.
+- **DIE GESTE, DIE 11.3e BRAUCHT, IST EINE ANDERE ALS BEI META UND TIKTOK.** Dort verlangt
   die Oberfläche einen Code; bei `pinterest` gibt es keinen, den man verlangen könnte — der
   CHECK verbietet ihn sogar. **Wer die Karte kopiert, baut ein Eingabefeld für einen Wert,
   den die Datenbank zurückweist.** HIER WIRD NICHTS ENTSCHIEDEN; die Feststellung steht,
   damit der Zuschnitt sie nicht übersieht.
+  **NACHGEZOGEN AM 2026-09-10:** Hier stand "DIE GESTE, DIE 11.3d BRAUCHT". **Die Geste
+  ist Oberfläche, also 11.3e.** Der Zeiger ist nachgezogen, weil er eine Bauanweisung
+  trägt ("wer die Karte kopiert, baut ein Eingabefeld …") — sie gälte sonst der Scheibe,
+  die die Karte nicht anfasst.
 
 **PROVENIENZ DES ZUSCHNITTS:** OWNER-ENTSCHEIDUNG 2026-09-10 (die vier Zweige, die
 Ausscheidung der Bauform B, die Auflage an den Namen, der Umfang und die Ausschlüsse), auf
@@ -2430,13 +2497,26 @@ ausdrücklich NICHT gemessen; erhoben ist er am 2026-09-10 vor dem Lauf** (VERME
 **DIES IST KEIN ZUSCHNITT.** Der Abschnitt sammelt, was beim Zuschneiden auf dem Tisch
 liegen muss; er entscheidet nichts und schneidet nichts. Angelegt 2026-09-10.
 
+**WOHIN SEINE ZWEI TEILE GEHÖREN, nachgetragen am 2026-09-10 nach der Teilung der Runde:
+TEIL (a) GEHÖRT ZU 11.3e** (Erklärtext und Kundentext an der Oberfläche), **TEIL (b) ZU
+11.3d** (die zwei Pinterest-Läufe, die mit der Umgebungsvariablen ihren Gegenstand
+verlieren).
+**DIE ÜBERSCHRIFT WIRD NICHT UMBENANNT, obwohl sie nach der Teilung zu eng klingt** — sie
+wird an DREI Stellen dieser Datei zitiert (GEMESSEN am Dateitext, CC, 2026-09-10,
+MEHRZEILIG gesucht: Verzeichnis, Vorrat (29) und der Kollisions-Absatz in 11.3e; eine
+ZEILENWEISE Suche findet nur zwei, weil das Zitat in Vorrat (29) über einen Zeilenumbruch
+läuft). Eine Umbenennung machte drei Zeiger tot; **der Satz oben leistet dasselbe und
+kostet keinen.**
+
 ### (a) Der Erklärtext an der Ziel-Karte ist KUNDENTEXT, keine Aufräumarbeit
 
 `src/components/TargetCard.tsx` sagt dem Betreiber im **sichtbaren** Text, ein Schalter
 ohne Code sei unmöglich — wörtlich: "EIN SCHALTER HAETTE EINEN ZUSTAND OHNE CODE ZUR
-FOLGE, und den laesst der CHECK … nicht einmal zu." **Ab 11.3d ist genau das der Normalfall
+FOLGE, und den laesst der CHECK … nicht einmal zu." **Ab 11.3e ist genau das der Normalfall
 für `pinterest`.** Der Satz steht **vor den Augen des Betreibers**, nicht in einem
-Kommentar; er gehört in die Scheibe.
+Kommentar; **er gehört in die Scheibe 11.3e.**
+**NACHGEZOGEN AM 2026-09-10:** Hier stand "Ab 11.3d". Der Normalfall entsteht erst, wenn
+`pinterest` in der Zielmenge steht — **das ist 11.3e.**
 
 **Der Kopf von `startTestMode`** (`src/app/projects/actions.ts`) trägt dieselbe Aussage —
 **dieselbe Klasse, aber Kommentar statt Oberfläche.** Er gehört mit, wiegt aber weniger.
@@ -2468,6 +2548,20 @@ dass T17 danach trivial wahr wäre, ist eine ABLEITUNG aus seinem Rumpf, **keine
 einem Lauf ohne die Variable**.
 
 ## Scheibe 11.3d — Der Auflösungs-Pfad lernt Ziele ohne Code
+
+**EIN VERWEIS DER FORM "Scheibe 11.3d", DER VOR DEM 2026-09-10 GESCHRIEBEN WURDE, MEINT
+DIE GANZE PINTEREST-ARBEIT — also 11.3d UND 11.3e.** Die Runde ist am 2026-09-10 geteilt
+worden; **die Oberfläche ist seither 11.3e.** Wer über einen solchen Verweis hier landet
+und die Oberfläche sucht, ist im falschen Abschnitt — dieser hier schliesst sie
+ausdrücklich aus.
+**DIESER SATZ STEHT AM KOPF UND NICHT AN DEN SIEBZEHN EINZELSTELLEN, und das ist die
+Entscheidung dieser Auflösung:** Der Zeiger ist **nicht tot**, er landet in der falschen
+Hälfte — also erreicht ein Satz am LANDEPLATZ jeden Leser, während siebzehn
+Einzelkorrekturen nur die erreichen, die jemand gefunden hat. Nachgezogen ist deshalb
+allein dort, wo ein Zeiger eine HANDLUNG bindet; der Rest ist Zeitdokument und von diesem
+Satz gedeckt. Die Bauform ist dem Präzedenzfall in CLAUDE.md nachgebildet ("EIN VERWEIS
+DER FORM 'Roadmap-Zeile 11.1' … MEINT DIE PHASE MIT DIESER NUMMER … dieser Satz löst sie
+auf").
 
 Die vierte Scheibe macht den Testmodus für ein Ziel OHNE Code überhaupt lesbar. Sie baut
 keine Oberfläche und nimmt `pinterest` NICHT in die Zielmenge auf.
@@ -2688,3 +2782,15 @@ stehenbleiben, ist eine EIGENE Entscheidung und hier NICHT getroffen.**
 PROVENIENZ: die Zählung ist GEMESSEN am Dateitext (CC, 2026-09-10); dass mehrere auf die
 falsche Hälfte zeigen, ist eine ABLEITUNG aus der Teilung, keine Messung an jeder einzelnen
 Stelle.
+
+**ZUSATZ 2026-09-10 — DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN UND IST ALS AUFNAHME SEINES
+ZEITPUNKTS RICHTIG; DIE KOLLISION IST SEITHER AUFGELÖST.** Die siebzehn sind einzeln
+durchgegangen und nach EINEM Kriterium sortiert worden — bindet der Zeiger eine HANDLUNG
+oder beschreibt er einen ZUSTAND: **ELF binden eine Handlung und sind nachgezogen, SECHS
+beschreiben und bleiben stehen.** Was stehenbleibt, deckt der **Auflösungs-Satz am Kopf von
+"Scheibe 11.3d — Der Auflösungs-Pfad lernt Ziele ohne Code"**; er ist der Landeplatz jedes
+alten Zeigers.
+**DER SATZ "KEINE NENNT 11.3e" IST DAMIT ÜBERHOLT** — er war für seinen Zeitpunkt richtig
+und wird nicht gestrichen, weil er die Messung trägt, aus der die Auflösung folgt.
+PROVENIENZ: die Sortierung ist eine ABLEITUNG aus dem Kriterium, an jeder der siebzehn
+Stellen einzeln vollzogen (CC, 2026-09-10); die Zuordnung selbst ist keine Messung.

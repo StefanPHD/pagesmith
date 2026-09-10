@@ -403,6 +403,77 @@ aufeinander; sie liegen alle hier und finden einander.
   Hebungs-Commit 92c1a3b). Die beiden übrigen Zahlen des Eintrags halten der Messung
   stand: 149 970 Bytes und 80 Regeln. HERKUNFT der beiden falschen: ein Diktat, das beim
   Eintragen bereits als zu niedrig gemeldet und damals nicht nachgezogen wurde.
+
+  NACHGETRAGEN 2026-09-10 — VIER ANGABEN ZUR AUSGELAGERTEN DATEI. Der Eintrag oben ist
+  von 2026-08-13/14 und beschreibt den Zustand VOR der Auslagerung; er bleibt wörtlich
+  stehen und wird nicht umgeschrieben. Was seither dazugekommen ist, betrifft
+  docs/immer-beachten.md — die Datei, die jenen Abschnitt seit dem 2026-08-14 trägt.
+
+  (a) DAS LADEN IST GEMESSEN, UND ES TRÄGT. Der Eintrag stand bisher allein auf der
+  GRÖSSE; ob die Datei überhaupt noch VOLLSTÄNDIG ankommt, war nie erhoben. Jetzt ist es
+  das: In einer FRISCHEN Sitzung, OHNE jedes Werkzeug, waren drei Angaben allein aus dem
+  Startkontext abrufbar — die Marke IB-GELADEN in Zeile 1, die LETZTE Regelüberschrift
+  der Datei im Wortlaut, und ein Eintrag aus der MITTE des Verzeichnisses.
+  docs/immer-beachten.md lädt also vollständig.
+  DIE WARNUNG DES WERKZEUGS BEI RUND 170 000 ZEICHEN IST EINE WARNUNG UND KEINE
+  ABSCHNEIDUNG. Wer sie als Abschneidung liest, hält eine vollständig geladene Datei für
+  halb geladen und baut Vorsorge gegen einen Zustand, der nicht eingetreten ist.
+  FOLGE: DAS AUFTRAG-0-GATE FÜR DIESE DATEI BLEIBT RUHEND. Der Gate-Apparat in CLAUDE.md,
+  "## Immer beachten — AUSGELAGERT nach docs/immer-beachten.md", ruht ausdrücklich,
+  solange der @-Import trägt — er trägt.
+  PROVENIENZ: GEMESSEN 2026-09-10 in einer frischen Sitzung ohne Werkzeug. Der Befund ist
+  diesem Eintrag VORGEGEBEN worden; die Runde, die ihn hier einträgt, hat ihn NICHT
+  nachgemessen. Die Grösse der Datei am selben Tag: 170 046 Zeichen in 172 427 Bytes,
+  2 185 Zeilen (GEMESSEN am Repo, CC, 2026-09-10) — eine DATIERTE Angabe, also alt und
+  nicht falsch; wer den heutigen Wert braucht, misst ihn.
+
+  (b) DIE PRÜFUNG, DIE DAS WIEDERHOLT, GEHÖRT DAZU — sonst ist (a) ein Einzelereignis,
+  das niemand nachstellen kann. VIER FRAGEN, in einer FRISCHEN Sitzung, OHNE jedes
+  Werkzeug: (1) die ZAHL der Einträge im Verzeichnis der Datei · (2) die LETZTE
+  Regelüberschrift im Wortlaut · (3) ein Eintrag aus der MITTE des Verzeichnisses ·
+  (4) die Marke in Zeile 1.
+  MARKE UND LETZTE ÜBERSCHRIFT WERDEN ZUSAMMEN GEFRAGT, UND DAS IST KEINE
+  GRÜNDLICHKEIT: Die Marke steht auch im Stub von CLAUDE.md und ist von dort
+  ABSCHREIBBAR, ohne die Datei je geöffnet zu haben — allein beantwortet sie nichts. Die
+  letzte Überschrift steht ausschliesslich am DATEIENDE und wandert mit jeder angefügten
+  Regel. Erst beide zusammen trennen "geladen" von "aus dem Stub geraten".
+
+  (c) DIE ENTFALLENS-PRÜFUNG IST GEFAHREN UND ERGAB NULL. Regel für Regel in
+  Dateireihenfolge: 104 Regeln · SIEBEN nennen eine Bedingung ihres Entfallens · KEINE
+  davon ist eingetreten · 97 nennen gar keine. Geprüft wurden die sieben Bedingungen
+  einzeln am Repo (CI-Gates, eslint-Konfiguration, git-Hooks, Migrations-Runner,
+  textContent-Vorschrift, ein Gate über nummerierte Zeiger bzw. über präsentische
+  Selbstangaben, ein Anzeiger für den nachzuziehenden veröffentlichten Stand); die Belege
+  je Bedingung stehen im Bericht jener Runde.
+  DIE FOLGE IST DER GRUND FÜR DIESEN NACHTRAG: Der Ausgang über die Entfallens-Bedingung
+  greift NUR für Regeln, die nach seiner Einführung entstanden sind — die sieben stammen
+  sämtlich aus den Phasen 11.8 und 11.2. DER BESTAND KANN ÜBER DIESEN WEG NIE SCHRUMPFEN.
+  WER DIE DATEI KLEINER HABEN WILL, TEILT SIE NACH LADEKLASSE; STREICHEN IST KEIN WEG
+  DORTHIN — und das ist jetzt GEMESSEN statt vermutet.
+  PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10).
+
+  (d) VIERZEHN ÜBERSCHNEIDUNGEN SIND ERHOBEN UND AUSDRÜCKLICH NICHT ZUSAMMENGELEGT.
+  DER GRUND GEHÖRT DAZU, sonst liest die nächste Aufräumrunde die Liste als
+  Arbeitsvorrat: Bei fast jeder zieht die JÜNGERE Regel die Abgrenzung zur älteren
+  SELBST — es sind bewusste Nachbarn, keine Dubletten, und beim Zusammenlegen verlöre die
+  schärfere Hälfte ihre Kante.
+  WAS SIE STATTDESSEN ZEIGEN, UND DAS IST IHR ERTRAG FÜR DIESEN EINTRAG: natürliche
+  LADEKLASSEN. Drei dichte Gruppen — zerstörte Voraussetzungen von Live-Schritten: FÜNF
+  Regeln · Zeiger und Anker in Dokumenten: VIER · ausgelieferte Artefakte, die ein Deploy
+  nicht erreicht: VIER. Fällt je die Entscheidung zu teilen, liegen die Schnittlinien
+  hier — GEMESSEN statt geraten.
+  HIER STEHT AUSDRÜCKLICH KEIN VORSCHLAG, OB UND WIE GETEILT WIRD. Das ist dieselbe
+  Zurückhaltung wie oben ("HIER STEHT AUSDRÜCKLICH KEIN VORSCHLAG, WAS AUSGELAGERT
+  WIRD") und aus demselben Grund: Der Zuschnitt gehört in eine Arbeitsweise-Runde, nicht
+  in einen offenen Punkt.
+  PROVENIENZ: die Erhebung der vierzehn und die drei Gruppengrössen GEMESSEN am Repo
+  (CC, 2026-09-10); dass NICHT zusammengelegt wird, ist OWNER/ARCHITEKT-ENTSCHEIDUNG
+  2026-09-10.
+
+  DER TRIGGER DIESES PUNKTES BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem
+  Phasenende"). Der Satz steht hier, damit ein späterer Leser nicht sucht, warum ein
+  Nachtrag von 2026-09-10 den Trigger nicht bewegt hat: Es stand bereits einer da, und
+  ein bestehender Trigger wird nicht ersetzt, nur weil ein Befund dazukommt.
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real; HEUTE FÄLLT ER NICHT AUF, weil
   ohne Dialog nie etwas abgelehnt wird): GEMESSEN am 2026-08-12, read-only am Code.

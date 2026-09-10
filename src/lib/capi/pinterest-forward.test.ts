@@ -497,12 +497,18 @@ describe("Pinterest-Adapter — Endpunkt, Kennung und Testmodus", () => {
     // beiden liegt eine Bauform, die keiner von ihnen faengt — eine Pruefung auf
     // `testMode !== undefined`. Sie waere an T17 und T17b gruen und schaltete den
     // Testmodus bei JEDEM uebergebenen Wert ein, auch bei `false`.
-    // DIESELBE VERWECHSLUNG BESCHREIBT VORRAT (25) AN DER ABGESCHAFFTEN
-    // UMGEBUNGSVARIABLEN: `PINTEREST_TEST_MODE` war ein ANWESENHEITS-Test und kein
-    // Wahrheits-Test — wer ihn auf "false" setzte, um den Testmodus auszuschalten,
-    // schaltete ihn EIN, und jede echte Conversion lief in die Sandbox, ohne dass
-    // irgendwo etwas rot wurde. Die Falle verschwindet nicht dadurch, dass die Variable
-    // faellt; sie wandert an den Parameter, und hier steht ihr Waechter.
+    // DIE VERWECHSLUNG HAT EINEN NAMEN UND EINEN STILLEN AUSGANG: Ein Schalter, der auf
+    // die ANWESENHEIT einer Angabe prueft statt auf ihren WERT, wird durch "false"
+    // EINGESCHALTET statt ausgeschaltet. Wer ihn ausschalten will und deshalb "false"
+    // eintraegt, erreicht das Gegenteil — und nichts wird davon rot: Der Aufruf gelingt,
+    // der Anbieter antwortet mit Erfolg, und jede echte Conversion laeuft in seine
+    // Sandbox statt in die Zahlen des Werbekontos.
+    // DIE ABGESCHAFFTE UMGEBUNGSVARIABLE `PINTEREST_TEST_MODE` WAR GENAU SO GEBAUT — sie
+    // schaltete bei JEDEM nicht-leeren Wert ein, "false" und "0" eingeschlossen, und
+    // ausgeschaltet wurde nur durch ihr Entfernen. Dort war die Bauform noch vertretbar,
+    // weil eine Variable ohne Wert nicht existiert; an einem BOOLEAN-Parameter ist sie es
+    // nicht mehr. DIE FALLE VERSCHWINDET NICHT DADURCH, DASS DIE VARIABLE FAELLT — sie
+    // wandert an den Parameter, und hier steht ihr Waechter.
     // ROT DURCH: `testMode !== undefined ? "?test=true" : ""` in testModeQuery.
     await forwardToPinterest(CONFIG, "Purchase", "evt-1", {}, IP, UA, false);
     expect(fetchCalls()[0][0]).not.toContain("test=true");

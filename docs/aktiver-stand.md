@@ -775,10 +775,31 @@ Spaltenliste, eine Endpunkt-Adresse, ein Feldname in einer Nutzlast.
 
 ### (8) DER LESER GIBT DAS URTEIL HERAUS, NIE DEN TESTCODE
 
-**DIE ENTSCHEIDUNG:** `listTestModeStates` liest `test_event_code`, WEIL das Prädikat ihn
-braucht — und gibt ihn NICHT heraus. Über die Client-Grenze geht ausschliesslich das
-Urteil ("aus" / "läuft bis" / "abgelaufen am") samt einem Zeitpunkt in Epochensekunden.
-Der Rückgabetyp trägt **strukturell keinen freien String**.
+**DIE ENTSCHEIDUNG:** `listTestModeStates` liest `test_event_code` — und gibt ihn NICHT
+heraus. Über die Client-Grenze geht ausschliesslich das Urteil ("aus" / "läuft bis" /
+"abgelaufen am") samt einem Zeitpunkt in Epochensekunden. Der Rückgabetyp trägt
+**strukturell keinen freien String**.
+
+**RICHTIGGESTELLT AM 2026-09-10, NICHT GESTEMPELT — DIE ENTSCHEIDUNG SELBST IST UNBERÜHRT
+UND WIRD WICHTIGER, NICHT SCHWÄCHER.** Geändert ist ein BEGRÜNDUNGSHALBSATZ, nicht die
+Zusage. **HIER STAND:** "`listTestModeStates` liest `test_event_code`, **WEIL das Prädikat
+ihn braucht**".
+**WAS DARAN NICHT MEHR TRÄGT:** Unter Entscheidung (14) urteilt das Prädikat über die
+FRIST; der Code ist BEIGABE. Er ist damit nicht mehr der TRÄGER des Urteils, und für ein
+Ziel OHNE Code-Pflicht (`pinterest`) braucht das Prädikat ihn überhaupt nicht.
+**WAS UNVERÄNDERT ZUTRIFFT, und deshalb ist der Satz richtigzustellen und nicht zu
+streichen:** Die Spalte wird weiterhin GELESEN und wird weiterhin GEBRAUCHT — bei `meta`
+und `tiktok` entscheidet ihre Anwesenheit mit, ob der Testmodus aktiv ist (fail-closed bei
+fehlendem Code). Der Leser liest also nicht auf Vorrat.
+**WARUM ERSETZT UND NICHT GESTEMPELT:** Diese Entscheidung ist ein MASSSTAB. Wer dem alten
+Halbsatz folgt und daraus schliesst, das Prädikat hänge am Code, baut die Fassung, gegen
+die (14) geschrieben ist.
+**DIE ZUSAGE WIEGT SEIT (14) SCHWERER:** Der Code ist jetzt eine Angabe, die für das
+Urteil ENTBEHRLICH sein kann — und genau deshalb wäre es umso billiger, ihn beiläufig
+mitzugeben. Er geht trotzdem nicht über die Client-Grenze.
+PROVENIENZ: der Rumpf des Prädikats und der `select` von `listTestModeStates` sind
+GEMESSEN am Repo (CC, 2026-09-10) nach Commit `3d42501`; die Einordnung als
+Begründungs-Richtigstellung ist OWNER-ENTSCHEIDUNG 2026-09-10.
 
 **DER GRUND IST NICHT SPARSAMKEIT, SONDERN DIE DRIFT:** Bekäme der Client nur die Frist
 und entschiede selbst, ob der Testmodus läuft, liesse er die **Nicht-Leer-Hälfte** des
@@ -1498,63 +1519,65 @@ nicht, sondern lässt ihn offen** — eine Sitzung kann länger als einen Tag da
 TRIGGER: die Scheibe, die den tiktok-Zweig zuschneidet — dieselbe wie bei (14), und beide
 werden zusammen gelesen. PROVENIENZ: GEMELDET von Stefan, 2026-09-09, **keine Messung**.
 
-**(25) `PINTEREST_TEST_MODE` IST EIN ANWESENHEITS-TEST, KEIN WAHRHEITS-TEST.**
-`testModeQuery` (`src/lib/capi/pinterest-forward.ts`) schaltet den Testmodus bei **JEDEM
-nicht-leeren Wert** ein — also auch bei `"false"`, `"0"`, `"nein"` und `"aus"`.
-Ausgeschaltet wird ausschliesslich durch **Entfernen** der Variable (oder durch einen Wert,
-der nach dem Trimmen leer ist).
-**DER FEHLZUSTAND IST STILL, und das ist der ganze Grund für diesen Eintrag:** Wer die
-Variable auf `"false"` setzt, um den Testmodus AUSZUSCHALTEN, schaltet ihn EIN — und dann
-liefe **jede echte Conversion in Pinterests Sandbox** und verschwände aus den Zahlen des
-Werbekontos, **ohne dass irgendwo etwas rot wird**. Seit dem 2026-09-10 ist das keine
-Befürchtung mehr, sondern die gemessene Wirkung des Parameters (VERMERK 3, SCHLUSS 3).
-**WAS DER EINTRAG NICHT SAGT:** dass die Bauform falsch ist. Sie spiegelt `META_TEST_EVENT_CODE`
-und `TIKTOK_TEST_EVENT_CODE`, wo ein WERT gebraucht wird und die Anwesenheit deshalb
-zwangsläufig der Schalter ist. Bei einem BOOLEAN-artigen Schalter fällt dieselbe Bauform
-anders aus.
-TRIGGER: die erste Ops-Runde oder der erste Betreiber, der den Schalter setzt.
-PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10) an `testModeQuery`; die Wirkung des gesetzten
-Parameters ist GEMESSEN LIVE (Stefan, 2026-09-10, VERMERK 3). Dass jemand `"false"`
-einträgt, ist eine ABLEITUNG über einen plausiblen Fehlgriff, **keine Beobachtung**.
+**(25) — GESTRICHEN AM 2026-09-10, GEGENSTAND VERLOREN. DIE NUMMER BLEIBT STEHEN** und
+wird nicht nachvergeben.
 
-**ZUSATZ 2026-09-10 — DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN, UND DER EINTRAG BLEIBT
-OFFEN.** Entscheidung (13) macht ihn gegenstandslos: Sie schafft die Variable ab, und die
-Anwesenheits-Falle besteht nur, solange die Variable besteht.
-**ABER ERST MIT DEM VOLLZUG, NICHT MIT DER ENTSCHEIDUNG** — die Variable steht noch im
-Code, und `testModeQuery` liest sie unverändert bei jedem Aufruf. **Ein Eintrag, der auf
-eine Entscheidung hin gestrichen wird, behauptet einen Zustand, den es noch nicht gibt.**
-Gestrichen wird er beim Abschluss-Vermerk der Scheibe, die die Variable entfernt, mit dem
-Beleg der Erledigung.
+HIER STAND: "`PINTEREST_TEST_MODE` IST EIN ANWESENHEITS-TEST, KEIN WAHRHEITS-TEST" — jeder
+nicht-leere Wert schaltete den Testmodus EIN, `"false"` und `"0"` eingeschlossen, und
+ausgeschaltet wurde nur durch Entfernen der Variable.
+TRIGGER war: die erste Ops-Runde oder der erste Betreiber, der den Schalter setzt.
+**DER ALTE VOLLTEXT WIRD NICHT MITGEFÜHRT** — er beschrieb eine Umgebungsvariable, die es
+nicht mehr gibt.
 
-**(26) DER SCHALTER WIRKT DEPLOYMENT-WEIT, DIE GEPLANTE FRIST PROJEKT-EIGEN.**
-Vorrat (10) führt die Vorrang-Frage für zwei **CODES** (meta/tiktok): welcher Wert in die
-Nutzlast wandert, wenn Umgebungsvariable und Projektzeile verschiedene tragen. **Bei
-pinterest kollidiert etwas anderes** — ein deployment-weiter **SCHALTER** mit einer
-projekt-eigenen **FRIST**. Das sind nicht zwei Werte derselben Art, sondern zwei
-verschiedene Arten von Zustand.
-**OB DAS DIESELBE FRAGE IST, IST NICHT ENTSCHIEDEN; DASS SIE ENTSTEHT, SCHON.** Wer
-pinterest zuschneidet, muss sagen, was gilt, wenn `PINTEREST_TEST_MODE` gesetzt ist und
-ein Projekt KEINE Frist trägt — und umgekehrt.
-**ZEIGER AUF (10), KEINE VERDOPPLUNG:** Die Vorrang-Frage der Codes steht dort und wird
-hier nicht zweitens geführt.
-TRIGGER: der Zuschnitt der Pinterest-Scheibe.
-PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10) — dass `testModeQuery` die Variable je Aufruf
-liest und keinen Projekt-Zustand kennt; die Abgrenzung gegen (10) ist eine ABLEITUNG,
-**keine Messung**.
+**DER BELEG DER ERLEDIGUNG — DREIFACH, und die dritte Hälfte ist die tragende:**
+- **DIE VARIABLE IST AUS DEM PRODUKTIVCODE ENTFERNT.** Commit `3d42501` (Scheibe 11.3d,
+  VERMERK 5); `testModeQuery` (`src/lib/capi/pinterest-forward.ts`) ist eine reine Funktion
+  über einen Parameter und liest überhaupt keine Umgebungsvariable mehr.
+- **SIE IST IN KEINER UMGEBUNG GESETZT.** Für `.env.local` GEMESSEN am Repo (CC,
+  2026-09-10); für **Vercel GEMESSEN LIVE (Stefan, 2026-09-10)** — Production, Preview und
+  Development einzeln nachgesehen. Damit ist auch die zweite Hälfte der Provenienz von
+  Entscheidung (13), die dort als OWNER-ANGABE geführt war, eine Messung geworden.
+- **DIE FALLE SELBST IST NICHT VERSCHWUNDEN, SIE IST GEWANDERT — UND SIE HAT JETZT EINEN
+  WÄCHTER.** Ein Schalter, der auf ANWESENHEIT statt auf den WERT prüft, wird durch
+  `"false"` eingeschaltet; am Parameter von `forwardToPinterest` wäre das dieselbe Klasse.
+  Der Lauf **T17a2** (`src/lib/capi/pinterest-forward.test.ts`) übergibt ausdrücklich
+  `false` und verlangt einen leeren Anhang; die Mutationsprobe **M5** hat ihn an genau
+  diesem Umbau rot gemacht. **Der Kommentar jenes Laufs sagt die Verwechslung SELBST** und
+  zeigt nicht mehr auf diesen Eintrag — ein Zeiger aus Testcode in diese Datei stürbe am
+  Phasenende ohnehin (s. Hebungs-Kandidat (6)).
 
-**ZUSATZ 2026-09-10 — DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN, UND DER EINTRAG BLEIBT
-OFFEN.** Entscheidung (13) macht ihn gegenstandslos, und zwar an der Wurzel: **Die
-Kollision entsteht nur, weil es ZWEI Arten von Zustand gibt.** Fällt der deployment-weite
-Schalter weg, bleibt die projekt-eigene Frist als einzige Quelle, und die Frage "was gilt,
-wenn beide etwas sagen" hat keinen Gegenstand mehr.
-**ABER ERST MIT DEM VOLLZUG, NICHT MIT DER ENTSCHEIDUNG** — bis die Variable aus dem Code
-ist, kann sie gesetzt werden, und dann steht die Kollision wieder da. **Ein Eintrag, der
-auf eine Entscheidung hin gestrichen wird, behauptet einen Zustand, den es noch nicht
-gibt.** Gestrichen wird er beim Abschluss-Vermerk der Scheibe, die die Variable entfernt,
-mit dem Beleg der Erledigung.
-**WAS DER ZUSATZ NICHT BERÜHRT:** den Zeiger auf (10). Jener Eintrag führt die
-Vorrang-Frage für die zwei CODES bei `meta` und `tiktok`, und **die bleibt offen** —
-Entscheidung (13) betrifft `pinterest`.
+PROVENIENZ DER STREICHUNG: der Wegfall im Code ist GEMESSEN am Repo (CC, 2026-09-10); die
+Vercel-Ablesung ist GEMESSEN LIVE (Stefan, 2026-09-10); der Wächter und sein Rot-Werden
+sind GEMESSEN am eigenen Lauf (CC, 2026-09-10).
+
+**(26) — GESTRICHEN AM 2026-09-10, GEGENSTAND VERLOREN. DIE NUMMER BLEIBT STEHEN** und
+wird nicht nachvergeben.
+
+HIER STAND: "DER SCHALTER WIRKT DEPLOYMENT-WEIT, DIE GEPLANTE FRIST PROJEKT-EIGEN" — bei
+`pinterest` kollidierten ein deployment-weiter SCHALTER und eine projekt-eigene FRIST, also
+zwei verschiedene ARTEN von Zustand, und wer die Scheibe zuschnitt, musste sagen, was gilt,
+wenn beide etwas sagen.
+TRIGGER war: der Zuschnitt der Pinterest-Scheibe.
+**DER ALTE VOLLTEXT WIRD NICHT MITGEFÜHRT** — er beschrieb eine Kollision, die es nicht
+mehr gibt.
+
+**DER BELEG DER ERLEDIGUNG — AN DER WURZEL, NICHT AN DER FRAGE:** Mit Commit `3d42501`
+(Scheibe 11.3d, VERMERK 5) fällt der deployment-weite Schalter. Es gibt seither nur noch
+EINE Art von Zustand — die projekt-eigene Frist —, und **eine Kollision zwischen zwei
+Quellen kann nicht entstehen, wo es nur eine gibt.** Die Frage hat damit keinen
+Gegenstand mehr; sie ist nicht beantwortet worden, sondern entfallen.
+
+**WAS DIE STREICHUNG AUSDRÜCKLICH NICHT MITNIMMT — DER ZEIGER AUF (10):** Jener Eintrag
+führt die Vorrang-Frage für die zwei **CODES** bei `meta` und `tiktok` — welcher Wert in
+die Nutzlast wandert, wenn Umgebungsvariable und Projektzeile VERSCHIEDENE tragen. **Er
+bleibt unverändert OFFEN**, mit seinem eigenen Trigger. `META_TEST_EVENT_CODE` und
+`TIKTOK_TEST_EVENT_CODE` bestehen fort; nur `PINTEREST_TEST_MODE` ist entfallen. **Wer die
+beiden Streichungen als Erledigung der ganzen Vorrang-Achse liest, hält eine Frage über
+drei Ziele für beantwortet, die nur für eines entfallen ist.**
+
+PROVENIENZ DER STREICHUNG: GEMESSEN am Repo (CC, 2026-09-10) — der Wegfall der Variablen im
+Produktivcode; dass damit die Kollision entfällt, ist eine ABLEITUNG aus dem Wegfall der
+zweiten Quelle, **keine Messung**.
 
 **(27) DAS TESTANFRAGEN-LIMIT BINDET PHASE 11.4, NICHT DIESE.**
 Pinterest deckelt Testanfragen eigens (docs/ziel-befunde.md, Abschnitt "Pinterest
@@ -1843,6 +1866,50 @@ GEMELDET 2026-09-10, NICHT GEBAUT.
 2026-09-10). Die Einteilung in elf und sechs ist eine **ABLEITUNG** aus dem Kriterium, an
 jeder Stelle einzeln vollzogen. Dass ein auffindbarer Zeiger seltener geprüft wird als ein
 toter, ist eine **ABLEITUNG**, keine Messung.
+
+### (6) EIN ZEIGER AUS PRODUKTIV- ODER TESTCODE IN DIE STANDDATEI STIRBT AM PHASENENDE, UND ZWAR UNABHÄNGIG VOM GEGENSTAND, AUF DEN ER ZEIGT
+
+**DER BELEG — GEMESSEN am Repo (CC, 2026-09-10):** Der Kommentar des Laufs **T17a2** in
+`src/lib/capi/pinterest-forward.test.ts` zeigte auf **Vorrat (25)** dieser Datei. Zwei
+Runden später ist der Eintrag gestrichen — **und die Standdatei wird am Phasenende
+archiviert, der Zeiger stürbe also auch ohne die Streichung.** Die Streichung hat den
+Befund nur früher sichtbar gemacht; sie ist nicht seine Ursache.
+
+**DIE HERKUNFT GEHÖRT DAZU, sonst liest sich der Kandidat als Ermahnung zur Sorgfalt:**
+Der Zeiger stand **nicht in der Vorgabe des Bau-Prompts**; er ist beim Schreiben des
+Kommentars hinzugekommen. **Das ist dieselbe Figur wie Hebungs-Kandidat (4)** — dort
+wandert eine ungeprüfte Zahl aus einem Prompt in einen unveränderlichen Commit-Body, hier
+ein selbst erzeugter Zeiger in einen Kommentar. **Beide entstehen beim SCHREIBEN und
+werden nicht geprüft, weil sie niemandem als Behauptung erscheinen.**
+
+**ABGRENZUNG ZU VORRAT (28):** Dort zeigt die **DOKU** auf eine gelöschte Standdatei — vier
+Dateien nennen "docs/aktiver-stand.md, VERMERK <n>" und meinen die Standdatei der Phase
+11.2. Hier zeigt der **CODE** darauf. **Gegenrichtung, gleiche Ursache** — eine Ablage mit
+Halbwertszeit wird zitiert, als hätte sie keine.
+**DER UNTERSCHIED, DER DAZUGEHÖRT:** Ein Doku-Zeiger lässt sich in derselben Runde
+nachziehen, in der jemand die Doku ohnehin öffnet. Ein Zeiger aus `src/` verlangt einen
+**Code-Commit** — und der fällt unter einen anderen Scope, andere Gates und eine andere
+Freigabe. **Er ist damit teurer zu heilen als der, gegen den (28) geschrieben ist.**
+
+**DIE GEGENFORM, die hier gewählt wurde:** Ein Kommentar am **ORT DER HANDLUNG** sagt die
+Sache selbst. Der Kommentar an T17a2 beschreibt die Verwechslung jetzt vollständig — ein
+Schalter, der auf ANWESENHEIT statt auf den WERT prüft, wird durch `"false"` eingeschaltet,
+und der Fehlzustand ist still. **Ein Verweis auf eine Ablage, die eine Halbwertszeit hat,
+ersetzt das nicht.** Der historische Fall (`PINTEREST_TEST_MODE` war so gebaut) darf
+danebenstehen, weil er ohne jedes Dokument verständlich ist.
+
+**NICHT ENTSCHIEDEN:** ob daraus eine eigene Regel wird oder ein Absatz an einer
+bestehenden · und ob Zeiger aus `src/` in die Standdatei künftig **ganz unterbleiben**
+sollen. **KEINE EMPFEHLUNG.**
+GEMELDET 2026-09-10, NICHT GEBAUT.
+
+**PROVENIENZ:** Die Fundstelle, ihr Wortlaut und ihre Auflösung sind GEMESSEN am Repo (CC,
+2026-09-10), mit Positiv- und Negativkontrolle auf der Suchachse. Dass der Zeiger **nicht**
+in der Prompt-Vorgabe stand, ist am Prompt jener Runde ABLESBAR und keine Messung am Repo.
+Dass **jeder** solche Zeiger am Phasenende stirbt, ist eine **ABLEITUNG** aus dem
+Archivierungs-Verfahren (CLAUDE.md, "## Aktiver Stand — Verfahren ab Phase 10"), **keine
+Messung** — es ist kein Phasenende beobachtet worden, bei dem ein Code-Zeiger betroffen
+gewesen wäre.
 
 ## Scheiben-Vermerke
 
@@ -2299,6 +2366,96 @@ identisch 76 / 1599** — es ist kein Test hinzugekommen · `next build` grün.
 SQL; sie belegen allein, dass die neue Datei nichts kaputtmacht. Der Nachweis der Wirkung
 ist die Probe oben.
 
+### VERMERK 5 — Scheibe 11.3d, gebaut und gepusht
+
+**CODE-COMMIT: `3d42501`** (`feat(tracking): Testmodus erkennt Ziele ohne Code — 11.3d`,
+**acht Dateien**, 545 Einfügungen, 39 Löschungen). **GEPUSHT** — GEMESSEN am Repo (CC,
+2026-09-10): `origin/main` steht auf demselben Hash.
+**DASS ES GENAU EIN BAU-COMMIT IST, IST GEMESSEN und nicht angenommen** (CC, 2026-09-10,
+zwei Achsen): `git log` über die drei berührten Produktivdateien nennt als jüngsten Commit
+nur diesen, und eine Suche über die Scheibennummer findet drei Commits, davon **einen**
+`feat` — die zwei anderen sind die `docs(claude)`-Runden des Zuschnitts und des
+Zeiger-Nachzugs.
+**COMMIT DIESES VERMERKS: — offen.** Er ist der jüngste; die Lücken-Regel erlaubt genau
+eine, und dies ist sie.
+
+**ES GIBT KEINEN LIVE-NACHWEIS, UND DAS IST KEIN MANGEL** — s. die vierte Grenze unten.
+Der Nachweis dieser Scheibe sind ihre Läufe und ihre fünf Mutationsproben.
+
+**GATES (GEMESSEN am eigenen Lauf, CC, 2026-09-10, alle vier VOR dem Diff):**
+`tsc --noEmit` grün · `eslint` **0 Fehler** (die eine Warnung steht in
+`src/lib/tracking/consent.test.ts`, ausserhalb des Diffs und vorbestehend) ·
+`vitest` **76 Dateien / 1608 Tests grün, vorher 76 / 1599** (+9) · `next build` grün.
+
+**WAS GEBAUT IST — VIER SÄTZE:**
+- Das **Prädikat urteilt über die FRIST**; der Rückgabetyp trennt Urteil und Code
+  (`{ aktiv: true; code?: string } | { aktiv: false }`).
+- Welche Ziele einen Code VERLANGEN, sagt ein **erschöpfender `switch` über
+  `TrackingTarget`** ohne `default`-Rückfall, mit `never` im Schlusszweig — beim sechsten
+  Ziel bricht `tsc`.
+- **Das Ziel kommt aus der ZEILE**, nicht aus einem zweiten Parameter.
+- **`PINTEREST_TEST_MODE` ist aus dem Produktivcode entfernt**; der Query-Anhang kommt aus
+  dem Parameter und lautet unverändert `"?test=true"`.
+
+**DIE MESSUNG, DIE DIE No-op-ZUSAGE TRÄGT — GEMESSEN LIVE (Stefan, 2026-09-10, Vercel):**
+`PINTEREST_TEST_MODE` ist in **KEINER der drei Umgebungen gesetzt** — Production, Preview
+und Development **einzeln nachgesehen**. Die bisherige OWNER-ANGABE aus Entscheidung (13)
+ist damit eine **MESSUNG**.
+**WARUM DAS IM VERMERK STEHT UND NICHT IM BAU-BERICHT:** Wäre sie gesetzt gewesen, hätte
+dieser Deploy dem Betrieb **still die Isolation genommen** — Pinterest-Ereignisse liefen ab
+dem Deploy nicht mehr in die Sandbox, der Anbieter verbuchte echte Conversions, und nichts
+wäre rot geworden. **Die Zusage "11.3d ist ein No-op" ruht auf dieser Ablesung**, nicht auf
+einer Erinnerung.
+
+**DIE FÜNF MUTATIONSPROBEN, je mit der VOR dem Lauf aktualisierten Vorhersage und dem
+Ergebnis (GEMESSEN am eigenen Lauf, CC, 2026-09-10):**
+- **M1** — das Prädikat urteilt wieder über den Code: **3 vorhergesagt, 3 gefallen.**
+- **M2** — die Ziel-Auskunft behauptet für `meta` "verlangt keinen Code": **4 vorhergesagt,
+  4 gefallen.**
+  **DER BEFUND IST NICHT DIE ZAHL:** Der Wächter gegen den stillen Fehlerfall aus
+  Entscheidung (14) **EXISTIERT, und er ist VIERFACH.** Eine `meta`-Zeile mit Frist ohne
+  Code kann nicht unbemerkt als aktiv gelten. Die drei Zusatztreffer melden **DIESELBE
+  Fehlerklasse** — **Deckung, keine Kaskade**, und das ist am Ergebnis geprüft und nicht
+  unterstellt.
+- **M3** — der Anhang wird unabhängig vom Parameter angehängt: **3 vorhergesagt, 3
+  gefallen**, T17b grün — **genau eine Achse bewegt.**
+- **M4** — der Riegel auf die Code-Achse umgebaut (`.some((t) => t.code)` statt
+  `.length > 0`): **1 vorhergesagt, 1 gefallen.**
+  **TM15 IST AN DIESER MUTATION EIN EINZELSTÜCK** — kein anderer Lauf im Repo fängt sie,
+  weil die Einträge von TM1 und TM2 einen Code tragen. **GEMESSEN, nicht behauptet**; der
+  Grund steht im Kommentar des Laufs, damit ihn niemand als Doppelung von TM1/TM2 streicht.
+- **M5** — Anwesenheit statt Wert am Parameter: **1 vorhergesagt, 1 gefallen.**
+
+**DREIMAL WAR DIE VORHERSAGE DES PROMPTS ZU ENG** und ist vor dem Lauf gegen den aktuellen
+Bestand korrigiert worden — bei **M2, M3 und M5**. **Ohne diese Auflage wären drei
+Überschüsse als Kaskade oder als Fehler gelesen worden.**
+
+**BEIDE RÜCKNAHME-RUNDEN BELEGT:** Suche nach den Mutations-Markern über `src/` ohne
+Treffer, `git diff --numstat` ohne leeren Diff, CR und NUL je 0 auf allen berührten
+Dateien.
+
+**VIER GRENZEN, HIER WIRD NICHT GEKÜRZT:**
+- **DER PARAMETER IST GEBAUT, ABER NICHTS SPEIST IHN.** Der `pinterest`-Eintrag in
+  `FORWARDER_BY_TARGET` (`src/lib/capi/ingest.ts`) reicht den siebten Wert nicht weiter.
+  **Wer nach diesem Deploy eine Pinterest-Markierung beim Anbieter sucht, misst etwas, das
+  hier nicht gebaut ist.** Die Verdrahtung ist 11.3e.
+- **DER NAME `activeTestCodeFromRow` LÜGT SEIT DIESER SCHEIBE.** Sie liefert ein URTEIL,
+  keinen Code. **Umbenennen ginge nicht ohne TM9** — den Umzugs-Wächter in
+  `capi/token.test.ts`, der den Aufruf-String festnagelt —, und an einem Wächter
+  nachzuziehen ist die Bewegung in die falsche Richtung. Der Name bleibt; die Umbenennung
+  wäre eine **EIGENE Entscheidung**.
+- **`requiresTestCode` IST MODUL-PRIVAT und muss in 11.3e wandern:** Dort braucht die
+  Vorprüfung im Schreibpfad dieselbe Auskunft, sonst weist `startTestMode` `pinterest` mit
+  `empty_code` ab **und der Schalter ist unbedienbar**.
+- **KEIN LIVE-NACHWEIS.** Gegen den Anbieter ist in dieser Scheibe **nichts gemessen**
+  worden. Der Nachweis sind die Läufe und die fünf Mutationen.
+
+**WAS DIE DOKU-RUNDE ZUSÄTZLICH VOLLZOGEN HAT** (Commit dieses Vermerks): Vorrat (25) und
+(26) sind mit Beleg gestrichen, Entscheidung (8) ist in ihrem Begründungshalbsatz
+richtiggestellt, der Zuschnitt der Scheibe ist verdichtet, und der Kommentar an **T17a2**
+ist **vom Zeiger auf Vorrat (25) gelöst** — er sagt die Verwechslung jetzt selbst. Der Fall
+steht als **Hebungs-Kandidat (6)**.
+
 ## Scheibe 11.3b — Die drei Gesten und das Banner in der Oberfläche
 
 Die zweite Scheibe gibt dem Testzustand seinen Weg in die Oberfläche: drei Gesten je Ziel
@@ -2566,128 +2723,73 @@ auf").
 Die vierte Scheibe macht den Testmodus für ein Ziel OHNE Code überhaupt lesbar. Sie baut
 keine Oberfläche und nimmt `pinterest` NICHT in die Zielmenge auf.
 
-**NOCH NICHT GEBAUT.** Dieser Abschnitt ist ein ZUSCHNITT, kein Vermerk.
+**GEBAUT UND GEPUSHT AM 2026-09-10.** Der Nachweis steht in VERMERK 5 unter
+"Scheiben-Vermerke". **SIE HAT KEINEN LIVE-NACHWEIS**, und das ist kein Mangel, sondern der
+Schnitt: Sie ist vollständig am Unit-Test beweisbar, und genau daran verlief die Grenze zu
+11.3e.
 
-### Die Schnitt-Entscheidung — eine NACHWEIS-Grenze, keine Größen-Grenze
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-**ZWEI SCHEIBEN, und die Grenze liegt am NACHWEIS: 11.3d ist vollständig am Unit-Test
-beweisbar, 11.3e braucht einen Live-Lauf gegen den Anbieter.**
+**VERDICHTET AM 2026-09-10.** Was mit der Scheibe ABGELAUFEN ist, steht nicht mehr hier;
+was über sie hinaus bindet, ist entweder unten stehengeblieben oder in VERMERK 5
+aufgegangen. **Die Titel werden ohne Markierungszeichen zitiert** — sonst kollidierte das
+Zitat dauerhaft mit jeder gleichlautenden Überschrift.
+**DER AUFLÖSUNGS-SATZ AM KOPF DIESES ABSCHNITTS IST NICHT MIT VERDICHTET WORDEN** und steht
+wörtlich: Er ist der Landeplatz jedes Zeigers aus der Zeit vor der Teilung und läuft mit
+der Scheibe gerade NICHT ab.
 
-**DER TRAGENDE GRUND, GEMESSEN am Repo (CC, 2026-09-10):** Solange `pinterest` nicht in
-`TARGETS_WITH_TEST_MODE` steht, weist `startTestMode` jedes Ziel ab, das nicht darin steht
-(`unknown_target`). **KEIN Schreibpfad des Produkts kann einen Testzustand für `pinterest`
-ablegen.** 11.3d ist damit im Betrieb wirkungslos und gefahrlos einspielbar; **erst 11.3e
-schaltet scharf.**
+- "Die Schnitt-Entscheidung — eine NACHWEIS-Grenze, keine Größen-Grenze" — abgelaufen,
+  weil die Scheibe gebaut ist und der Schnitt gehalten hat: 11.3d ist ohne einen einzigen
+  Aufruf gegen den Anbieter bewiesen worden. **Ihre zweite Bedingung ist EINGELÖST und aus
+  einer OWNER-ANGABE eine MESSUNG geworden** — `PINTEREST_TEST_MODE` ist in keiner der drei
+  Vercel-Umgebungen gesetzt (VERMERK 5). **Die No-op-Grenze selbst bleibt unten stehen**,
+  weil sie 11.3e bindet.
+- "Der Gegenstand — vier Teile, die zusammengehören" — abgelaufen, weil GEBAUT. Was daraus
+  geworden ist, steht in VERMERK 5 in vier Sätzen. **Teil 3 stand als ausdrücklich NICHT
+  entschieden da und ist entschieden:** die Ziel-Auskunft ist ein erschöpfender `switch`
+  über `TrackingTarget`, modul-privat, mit `never` im Schlusszweig — festgehalten als
+  Entscheidung (14) und an der Mutationsprobe M2 belegt.
+- "Was zu halten ist — je mit dem Grund" — abgelaufen, weil GEHALTEN und nicht bloss
+  behauptet: Die zweite Auflage von (13) (EIN Urteil) steht unverändert, (4) und (3) sind
+  unberührt, die Fail-closed-Haltung am Zeitstempel gilt für jedes Ziel, und der
+  Kommentarkopf von `activeTestCodeFromRow` ist NACHGEZOGEN statt gestrichen. **Die Belege
+  sind die fünf Mutationsproben in VERMERK 5**, nicht dieser Satz.
+- "Die drei T17-Läufe — zwei verlieren ihren Gegenstand, nicht einer" — abgelaufen, weil
+  vollzogen. T17 und T17b sind ERSETZT (dieselbe Frage, andere Quelle), **T17c ist
+  ENTFALLEN mit einem Zeiger auf TM7** in `capi/ingest.test-mode.test.ts` — die
+  Nicht-Kopplung steht dort, wo je Ziel nachgeschlagen wird, und eine Doppelung wäre
+  schlechter als eine Streichung. **Dazu ist T17a2 neu entstanden**, der Wächter gegen den
+  Anwesenheits-Schalter.
+- "Der zweite Konsument der Zielmenge — er wächst mit, statt rot zu werden" — abgelaufen
+  als BEFUND, eingelöst als KOMMENTAR am Ort der Handlung. Der Lauf selbst ist unberührt
+  geblieben; **seine zwei Fallen sind an der Schleife benannt** und werden mit 11.3e
+  scharf, wenn `pinterest` in die Menge kommt.
+- "Ausdrücklich NICHT in dieser Scheibe" — abgelaufen. **Alle vier Ausschlüsse sind
+  eingehalten und am Diff des Commits `3d42501` ablesbar:** `TARGETS_WITH_TEST_MODE` steht
+  unverändert auf `["meta", "tiktok"]` und TM13 ist grün, `TargetCard.tsx` und der
+  Erklärtext sind nicht im Diff, und Vorrat (10) ist nicht berührt.
+- "Zwei Zeiger, die mit dem Abschluss dieser Scheibe fällig werden" — abgelaufen, weil
+  VOLLZOGEN: Entscheidung (8) ist in ihrem Begründungshalbsatz richtiggestellt, Vorrat (25)
+  und (26) sind mit Beleg gestrichen.
 
-**VERSCHMOLZEN WÄRE DER LIVE-LAUF DER EINZIGE NACHWEIS FÜR BEIDES**, und ein Fehlschlag
-liesse offen, welche Hälfte ihn verursacht hat — Prädikat, Typ, Ziel-Auskunft, Adapter,
-Zielmenge, Schalter und Erklärtext auf einmal.
+### Was über die Scheibe hinaus gilt und deshalb hier bleibt
 
-**DIE GRENZE DER NO-OP-AUSSAGE, und sie ist ein PFLICHT-STOPP und keine Fussnote:** Die
-Wirkungslosigkeit gilt für den SCHREIBPFAD des Produkts. **Sie gilt NICHT für eine von
-Hand im SQL-Editor gesetzte Zeile** — genau der Weg, auf dem 11.3a live geprüft wurde.
-Nach 11.3d ist eine solche Zeile für `pinterest` WIRKSAM: das Prädikat erkennt sie, der
-Adapter bekommt den Parameter. **Das ist kein Mangel, sondern der Weg, auf dem 11.3e
-später geprüft wird.**
-**UND SIE HÄNGT AN EINER ZWEITEN BEDINGUNG, DIE VOR DEM DEPLOY ZU PRÜFEN IST:** 11.3d
-entfernt `PINTEREST_TEST_MODE`. Das ist nur dann wirkungslos, wenn die Variable **nirgends
-gesetzt** ist. Für `.env.local` ist das GEMESSEN (CC, 2026-09-10), **für Vercel ist es
-OWNER-ANGABE und nicht gemessen** (Entscheidung (13)). **Wäre sie dort gesetzt, schaltete
-11.3d den Testmodus für `pinterest` deployment-weit STILL AB** — und der Anbieter verbuchte
-ab dem Deploy echte Conversions. **VOR DEM DEPLOY IN VERCEL NACHSEHEN.**
-
-### Der Gegenstand — vier Teile, die zusammengehören
-
-**SIE WERDEN NICHT EINZELN FREIGEGEBEN.** Jeder für sich lässt einen halben Zustand
-zurück: ein Prädikat, das die Frist liest, aber keinen Träger für "aktiv ohne Code" hat;
-ein Typ, den niemand füllt; eine Ziel-Auskunft ohne Leser; ein Adapter-Parameter, den
-nichts speist.
-
-1. **DAS PRÄDIKAT URTEILT ÜBER DIE FRIST STATT ÜBER DEN CODE** — Entscheidung (14).
-   `activeTestCodeFromRow` (`src/lib/tracking/credential-state.ts`).
-2. **`TestModeTarget.code` WIRD VON PFLICHT AUF OPTIONAL.** Heute `code: string`, **kein
-   `?`, kein `| null`** (GEMESSEN am Repo, CC, 2026-09-10). **"Aktiv ohne Code" ist am Typ
-   derzeit NICHT darstellbar** — ohne diesen Teil hat das neue Urteil keinen Träger.
-3. **DIE ZIEL-AUSKUNFT "VERLANGT EINEN CODE" KOMMT IN DEN TYPESCRIPT-CODE.** **IHRE
-   GESTALT IST NICHT ENTSCHIEDEN** — zweites Feld an `TARGETS_WITH_TEST_MODE`, eigene
-   Konstante oder Funktion. **Der Stufe-1-Plan schlägt vor, der Owner entscheidet.**
-4. **`forwardToPinterest` NIMMT EINEN PARAMETER AN und bildet daraus den Query-Anhang;
-   `PINTEREST_TEST_MODE` FÄLLT.** **IM SELBEN ZUG**, nach der Reihenfolge aus Entscheidung
-   (13): erst treibt die Frist den Parameter, dann fällt die Variable.
-
-### Was zu halten ist — je mit dem Grund
-
-- **ENTSCHEIDUNG (13), ZWEITE AUFLAGE: EIN URTEIL.** Kein zweites Prädikat, kein Boolean
-  daneben. **Vom Bestand bereits erfüllt** (GEMESSEN, CC, 2026-09-10:
-  `activeTestCodeFromRow` ist das einzige Prädikat, Riegel und Nutzlast lesen dieselbe
-  aufgelöste Menge `resolution.testMode`). **Es muss GEHALTEN, nicht hergestellt werden** —
-  wer das übersieht, baut die zweite Fassung, gegen die die Auflage geschrieben ist.
-- **ENTSCHEIDUNG (4):** `expires === now` gilt als abgelaufen. Ein Urteil, zwei Lesungen.
-- **ENTSCHEIDUNG (3):** der Riegel hängt an MINDESTENS EINEM Ziel.
-- **DIE FAIL-CLOSED-HALTUNG BLEIBT, ABER IHRE ACHSE WECHSELT.** Ein fehlender oder
-  unlesbarer Zeitstempel ergibt weiterhin "nicht aktiv". **Geändert wird ausschliesslich,
-  was ein fehlender CODE bedeutet — und NUR für Ziele ohne Code-Pflicht.**
-- **DER KOMMENTARKOPF VON `activeTestCodeFromRow` TRÄGT EINE ZUSAGE, DIE MITZUZIEHEN IST**
-  (GEMESSEN am Kommentarkopf, CC, 2026-09-10): "FAIL-CLOSED IN JEDEM ZWEIFELSFALL … Ein
-  fehlender Code … alles ergibt null." **Ihr zweiter Halbsatz bleibt wahr** — "die
-  Abwesenheit einer Angabe schaltet ihn nie ein": eingeschaltet wird weiterhin durch die
-  ANWESENHEIT der Frist. **Der Kopf wird NACHGEZOGEN, nicht gestrichen.**
-
-### Die drei T17-Läufe — zwei verlieren ihren Gegenstand, nicht einer
-
-`src/lib/capi/pinterest-forward.test.ts`, alle drei GEMESSEN am Repo (CC, 2026-09-10):
-- **T17** "der Testmodus ist standardmaessig AUS" hängt an der **ABWESENHEIT** der
-  Variablen und wäre nach ihrem Entfernen **TRIVIAL WAHR** — er meldete weiter Erfolg.
-  Das ist docs/immer-beachten.md, "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN
-  HOHL", **Fall (1): ihr Gegenstand wird entfernt.**
-- **T17b** "gesetzte Umgebungsvariable -> test=true im Query-String" verliert ihn ganz.
-- **BEIDE WERDEN ERSETZT, NICHT GESTRICHEN:** dieselbe Frage, andere Quelle.
-- **T17c** prüft eine Nicht-Kopplung, die sinnvoll bleibt; **ihre Achse wechselt** von
-  "Metas Env" auf "Metas Projekt-Zustand".
-
-### Der zweite Konsument der Zielmenge — er wächst mit, statt rot zu werden
-
-**GEMESSEN am Repo (CC, 2026-09-10), und die Zusicherung gehört dazu, weil sie den Fall
-entscheidet:** `src/app/projects/actions.testmode.test.ts` trägt den Lauf "die
-Ziel-Pruefung liest die ECHTE Menge, nicht eine Kopie". Er iteriert über
-`TARGETS_WITH_TEST_MODE` und ruft **`startTestMode("proj-1", ziel, "TEST123")`** — also
-**MIT einem Code für JEDES Ziel** — und behauptet `r.ok === true`.
-
-**FÜR `pinterest` IST GENAU DIESE ZUSICHERUNG FALSCH**, sobald die Vorprüfung
-ziel-abhängig wird: Ein Code darf dort nicht angenommen werden, der CHECK aus 0029
-verbietet ihn. **UND DER SCHREIBWEG IST IN DIESEM LAUF GEMOCKT** — die Datenbank fiele
-also gar nicht auf; **der Lauf würde grün aus dem falschen Grund**, während der
-Schreibpfad einen Wert ablegte, den die echte Datenbank abweist.
-
-**DER LAUF WIRD VOR DEM BAU GELESEN UND SEIN VERHALTEN FÜR `pinterest` BENANNT — NICHT
-UNTERSTELLT.** Was daraus folgt, entscheidet der Stufe-1-Plan; **hier steht der Befund.**
-
-**ABGRENZUNG ZU TM13:** Jener Wächter (`describe("TM13 — die Menge der Ziele mit
-Testmodus")` mit `it("GENAU meta und tiktok")`, `src/lib/tracking/credential-state.test.ts`)
-nagelt die Menge fest und **wird rot** — das ist der Ort, an dem die Erweiterung sichtbar
-wird, und Absicht. **Der Lauf oben verhält sich entgegengesetzt: er wächst stillschweigend
-mit.** Zwei Konsumenten derselben Menge, zwei entgegengesetzte Ausgänge.
-
-### Ausdrücklich NICHT in dieser Scheibe
-
-- **`pinterest` in `TARGETS_WITH_TEST_MODE`** — das ist 11.3e und der Schalter, der scharf
-  macht.
-- **Der Schalter an der Karte, der Erklärtext, der Banner.**
-- **Die zwei Kundentext-Stellen aus Vorrat (29)** — sie gehören zu 11.3e.
-- **Vorrat (10)** — die Vorrang-Frage bei `meta` und `tiktok` bleibt offen und wird hier
-  nicht berührt.
-
-### Zwei Zeiger, die mit dem Abschluss dieser Scheibe fällig werden
-
-- **ENTSCHEIDUNG (8), BEGRÜNDUNGSHALBSATZ:** "`listTestModeStates` liest
-  `test_event_code`, WEIL das Prädikat ihn braucht". Unter (14) braucht das Prädikat ihn
-  **fürs URTEIL nicht mehr**, nur als Beigabe. **DIE ENTSCHEIDUNG SELBST BLEIBT GÜLTIG und
-  wird sogar wichtiger** — den Code nicht über die Client-Grenze geben. **Nachzuziehen mit
-  dem Abschluss-Vermerk dieser Scheibe**, nicht vorher: eine Richtigstellung ohne Vollzug
-  behauptete einen Zustand, den es nicht gibt.
-- **VORRAT (25) UND (26)** werden mit dem Vollzug dieser Scheibe gegenstandslos und **hier
-  gestrichen, mit Beleg**. Der Zusatz vom 2026-09-10 an beiden Einträgen sagt das bereits;
-  dies ist der Zeiger auf die Scheibe, die es einlöst.
+- **DIE No-op-ZUSAGE GILT DEM SCHREIBPFAD DES PRODUKTS, NICHT EINER VON HAND GESETZTEN
+  ZEILE** — und das ist ein PFLICHT-STOPP für 11.3e und keine Fussnote. Solange
+  `pinterest` nicht in `TARGETS_WITH_TEST_MODE` steht, weist `startTestMode` es mit
+  `unknown_target` ab; **kein Schreibpfad des Produkts kann für dieses Ziel einen
+  Testzustand ablegen.** Eine im SQL-Editor gesetzte Zeile ist seit 11.3d dagegen
+  **WIRKSAM**: das Prädikat erkennt sie. **Das ist kein Mangel, sondern der Weg, auf dem
+  11.3e geprüft wird** — derselbe Weg wie beim Live-Test der Scheibe 11.3a.
+  **WAS DABEI HEUTE NOCH FEHLT, und ohne diesen Satz misst 11.3e am falschen Ende:** Der
+  Adapter bekommt den Parameter **nicht** — der `pinterest`-Eintrag in
+  `FORWARDER_BY_TARGET` reicht den siebten Wert nicht weiter. Wer eine solche Zeile setzt,
+  sieht den Riegel feuern und beim Anbieter **nichts**.
+- **DIE VIER GRENZEN DER SCHEIBE STEHEN IN VERMERK 5 UND WERDEN HIER NICHT VERDOPPELT** —
+  der ungespeiste Parameter, der irreführend gewordene Name `activeTestCodeFromRow`, die
+  nötige Wanderung von `requiresTestCode` nach 11.3e und das Fehlen eines Live-Nachweises.
+  **Zwei Fassungen derselben Grenze liefen auseinander**; die Fassung, die gilt, steht beim
+  Nachweis.
 
 **PROVENIENZ DES ZUSCHNITTS:** OWNER-ENTSCHEIDUNG 2026-09-10 (die Schnitt-Grenze, die vier
 Teile, die Ausschlüsse). Der Rumpf des Prädikats, der Typ `TestModeTarget`, die Vorprüfung

@@ -95,10 +95,25 @@ ANKOMMEN. Der Beweis, dass die Einrichtung trägt, kommt damit vom ANBIETER — 
 einzigen Stelle, die ihn führen kann. Unsere eigene Analytics bleibt unberührt, weil der
 Riegel dieser Phase das Ereignis aus `events` heraushält.
 
-**DER PREIS STEHT DANEBEN UND WIRD NICHT WEGGESCHRIEBEN: DER TESTKLICK ZÄHLT BEIM ANBIETER
-ALS ECHTE CONVERSION.** Er fliesst in dessen Berichterstattung und in dessen Optimierung.
-Wer diese Phase als "Testen ohne Nebenwirkung" verkauft, verkauft etwas, das kein Anbieter
-dieses Rahmens liefert.
+**DER PREIS STEHT DANEBEN UND WIRD NICHT WEGGESCHRIEBEN — UND ER IST ZIEL-ABHÄNGIG.** Bei
+**meta** zählt der Testklick beim Anbieter als echte Conversion und fliesst in dessen
+Berichterstattung und in dessen Optimierung. Bei **pinterest** ist das für die
+BERICHTERSTATTUNG widerlegt: ein markiertes Ereignis erscheint dort NICHT in der
+Eventübersicht. Bei **tiktok** behauptet die Oberfläche dasselbe, ohne dass es gemessen
+wäre; für **linkedin** und **google** ist kein Testmodus bekannt.
+**WER DIESE PHASE ALS "TESTEN OHNE NEBENWIRKUNG" VERKAUFT, VERKAUFT ETWAS, DAS NICHT JEDES
+ZIEL LIEFERT** — und ein Versprechen, das bei einem Ziel eingelöst wird und beim nächsten
+nicht, ist keines.
+
+**RICHTIGGESTELLT AM 2026-09-10, NICHT GESTEMPELT — DIE VERALLGEMEINERUNG AUF ALLE ANBIETER
+IST WIDERLEGT, DIE AUSSAGE ÜBER META NICHT.** Hier stand: "DER TESTKLICK ZÄHLT BEIM
+ANBIETER ALS ECHTE CONVERSION. Er fliesst in dessen Berichterstattung und in dessen
+Optimierung. Wer diese Phase als 'Testen ohne Nebenwirkung' verkauft, verkauft etwas, das
+kein Anbieter dieses Rahmens liefert." Geändert ist die REICHWEITE, kein Wort über meta.
+**DIE ZWEITE ACHSE WIRD NICHT MITGESTRICHEN:** Für pinterest ist allein die
+BERICHTERSTATTUNG gemessen. **Die OPTIMIERUNG ist UNGEMESSEN** — Pinterests Doku behauptet
+auch dort Isolation, belegt ist sie nicht. PROVENIENZ: GEMESSEN LIVE, 2026-09-10, Stefan;
+Volltext und die drei Grenzen in VERMERK 3.
 
 **RICHTIGGESTELLT AM 2026-09-08, NICHT GESTEMPELT — DIE ANNAHME, DIE DIESE PHASE TRUG, IST
 WIDERLEGT.** Hier stand als Gegenstand, der Kunde könne prüfen, "ohne die echten Zahlen zu
@@ -177,9 +192,14 @@ Gate auf.
 
 **WAS JEDES DER DREI OFFENEN ZIELE ALS NÄCHSTES BRAUCHT — DREI VERSCHIEDENE SCHRITTE, UND
 HIER WIRD KEINER DAVON VOLLZOGEN:**
-- **pinterest — EINE MESSUNG.** Es ist bekannt, WO der Träger sitzt; unbekannt ist, welcher
-  der zwei Namen greift. Ein Lauf gegen die Schnittstelle entscheidet es. **Danach ist es
-  baubar.**
+- **pinterest — DIE MESSUNG IST GEFAHREN, ES IST BAUBAR.** NACHGEZOGEN AM 2026-09-10; hier
+  stand: "EINE MESSUNG. Es ist bekannt, WO der Träger sitzt; unbekannt ist, welcher der
+  zwei Namen greift. Ein Lauf gegen die Schnittstelle entscheidet es. Danach ist es
+  baubar." **Der Lauf ist am 2026-09-10 gefahren** (GEMESSEN LIVE, Stefan; VERMERK 3):
+  `test=true` wirkt. **Was pinterest jetzt noch fehlt, ist kein Befund, sondern ein
+  Zuschnitt** — namentlich der Paar-CHECK, der Code UND Frist verlangt, während pinterests
+  Testmodus keinen Code kennt (Vorrat (8)), und die Kollision aus deployment-weitem
+  Schalter und projekt-eigener Frist (Vorrat (26)).
 - **google — EIN ANDERER WEG.** Hier fehlt keine Messung, sondern ein Träger, der die
   Beobachtung nicht abschneidet. Ob es ihn gibt, ist offen; solange nicht, kann diese Phase
   für google nichts liefern, was ihr eigenes Versprechen einlöst.
@@ -210,9 +230,13 @@ keine Sammelbegründung:
   kein Nutzlast-Feld, sondern ein QUERY-PARAMETER an der Endpunkt-URL. Dazu trägt er in
   der Anbieter-Doku ZWEI Namen: die Conversions-Seite sagt `test=true`, die
   Rate-Limit-Seite für DENSELBEN Endpunkt sagt `is_test=TRUE` (GELESEN 2026-08-20,
-  docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", Teil (p)(1)). **NIE
-  GEMESSEN** — kein Lauf gegen die Schnittstelle hat entschieden, welcher der beiden
-  greift.
+  docs/ziel-befunde.md, Abschnitt "Pinterest (Conversions API)", Teil (p)(1)).
+  **NACHGEZOGEN AM 2026-09-10: `test=true` IST ALS WIRKSAM GEMESSEN.** Hier stand "NIE
+  GEMESSEN — kein Lauf gegen die Schnittstelle hat entschieden, welcher der beiden
+  greift."; ein Lauf hat es am 2026-09-10 entschieden (GEMESSEN LIVE, Stefan; VERMERK 3
+  und docs/ziel-befunde.md, Teil (u)). **`is_test` BLEIBT UNGEPRÜFT UND IST NICHT
+  AUSGESCHLOSSEN** — es ist für den Bau nur entbehrlich geworden; gemessen ist, dass der
+  EINE Name wirkt, nicht, dass der andere es nicht tut.
 - **google — DER TESTMODUS SCHNEIDET DEN KANAL AB, DER VERARBEITUNG BELEGT.** Der einzige
   benannte Träger ist `validateOnly`, ein Boolean auf der Wurzelebene der Anfrage; mit
   `validateOnly=true` ist KEINE Diagnostik abrufbar (GELESEN 2026-08-24,
@@ -480,17 +504,39 @@ Anbieter ANKOMMT. Sie liefert ihm NICHT die Zusicherung, dass dieses Ereignis di
 des Anbieters unberührt lässt. Was gebaut wird, ist eine MARKIERUNG mit einem Riegel auf
 unsere eigene Ablage — keine Isolation beim Empfänger.
 
-**DER GRUND:** Isolation ist bei den Zielen dieses Rahmens nicht zu haben. Meta erklärt
-ausdrücklich, dass markierte Ereignisse in Targeting und Messung fliessen; bei google
-schneidet der einzige Träger die Beobachtung ab, die den Nachweis erst tragen würde; bei
-pinterest ist der Träger nie gemessen und trägt zwei Namen; bei linkedin gibt es keinen.
-**Eine Phase, die Isolation verspricht, verspricht etwas, das kein Anbieter liefert** —
-und ein Produktversprechen, das der Anbieter nicht deckt, fällt dem Kunden auf die Füsse,
-nicht uns.
+**DER GRUND: ISOLATION IST ZIEL-ABHÄNGIG.** Meta erklärt ausdrücklich, dass markierte
+Ereignisse in Targeting und Messung fliessen — dort gibt es sie nicht. Bei **pinterest**
+ist sie für die BERICHTERSTATTUNG als vorhanden GEMESSEN (2026-09-10); der Träger ist
+damit gemessen, und `is_test` bleibt ungeprüft — **nicht ausgeschlossen, nur für den Bau
+entbehrlich**. Bei **tiktok** behauptet die Oberfläche Isolation, ohne dass sie gemessen
+wäre. Bei **google** schneidet der einzige Träger die Beobachtung ab, die den Nachweis
+erst tragen würde; bei **linkedin** gibt es keinen.
+**EIN PRODUKT KANN NICHT VERSPRECHEN, WAS JE ANBIETER VERSCHIEDEN AUSFÄLLT** — und ein
+Kunde, der bei einem Ziel Isolation erlebt und beim nächsten nicht, hält das Produkt für
+kaputt. Ein Produktversprechen, das der Anbieter nicht deckt, fällt dem Kunden auf die
+Füsse, nicht uns.
 
 **WEN SIE BINDET:** jede spätere Scheibe dieser Phase, jede Oberfläche, die den Testmodus
 beschriftet, und jeden Text, der ihn dem Kunden erklärt. **Der Preis wird mitgenannt, nicht
-weggeschrieben:** der Testklick zählt beim Anbieter als echte Conversion.
+weggeschrieben — und er ist ziel-abhängig:** bei meta zählt der Testklick beim Anbieter als
+echte Conversion, bei pinterest erscheint er nicht in der Eventübersicht (GEMESSEN
+2026-09-10), bei tiktok ist es behauptet und ungemessen.
+
+**RICHTIGGESTELLT AM 2026-09-10, NICHT GESTEMPELT — DIESE ENTSCHEIDUNG BLEIBT IM WORTLAUT
+GÜLTIG UND BINDET UNVERÄNDERT, AUCH FÜR PHASE 11.4.** Geändert ist ausschliesslich ihr
+GRUND, und er ist SCHÄRFER geworden, nicht schwächer: aus "Isolation gibt es nicht" wird
+"Isolation ist ziel-abhängig, und genau deshalb ist sie nicht versprechbar". **WER DIE
+SCHÄRFUNG ALS AUFWEICHUNG LIEST, HAT SIE UMGEDREHT** — die Ziel-Abhängigkeit ist ein
+STÄRKERER Grund gegen das Versprechen als die pauschale Abwesenheit, weil sie den Fall
+einschliesst, in dem ein Kunde Isolation bei einem Ziel tatsächlich erlebt.
+**HIER STAND, an den drei Stellen oben und in dieser Zeile:** "Isolation ist bei den Zielen
+dieses Rahmens nicht zu haben." · "bei pinterest ist der Träger nie gemessen und trägt zwei
+Namen" · "Eine Phase, die Isolation verspricht, verspricht etwas, das kein Anbieter
+liefert" · "der Testklick zählt beim Anbieter als echte Conversion."
+**DIE ZWEITE ACHSE BLEIBT UNGEMESSEN UND WIRD NICHT MITGESTRICHEN:** Für pinterest ist die
+BERICHTERSTATTUNG gemessen, die OPTIMIERUNG nicht.
+PROVENIENZ: GEMESSEN LIVE, 2026-09-10, Stefan (VERMERK 3); die Einordnung als
+Grund-Schärfung ist ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-10.
 
 **IHRE GRENZE — WORAUF SIE RUHT:** auf einer DOKU-LESUNG vom 2026-09-08 (Meta), **NICHT
 auf einer Messung**. Es ist kein Aufruf gegen eine Schnittstelle gefahren worden. Für
@@ -1364,6 +1410,45 @@ Lesart benennt · ob "Config-Fabrik" mitkorrigiert wird. **KEINE EMPFEHLUNG.**
 **PROVENIENZ:** GEMESSEN am Repo (CC, 2026-09-09) im Zuge der Scheibe 11.3a; die
 Einordnung als Kandidat statt als Richtigstellung ist eine Auflage dieser Runde.
 
+### (3) EINE SUCH-ACHSE, DIE AUS DEN ERWARTETEN FORMULIERUNGEN GEBILDET IST, BESTÄTIGT DIE ERWARTUNG STATT SIE ZU PRÜFEN
+
+**DER BELEG — GEMESSEN am eigenen Lauf (CC, 2026-09-10):** Um zu prüfen, welche Stellen
+eine Messung widerlegt hat, ist zuerst die Achse
+`kein anbieter|dieses rahmens|nicht zu haben|nie gemessen` gefahren worden. Sie ergab
+**GENAU DREI Treffer — exakt die drei Stellen, die der Auftrag wörtlich zitierte.**
+**DAS SAH WIE EINE BESTÄTIGUNG AUS.** Eine VIERTE Stelle im selben Block trägt **KEINES
+dieser Wörter** ("der Testklick zählt beim Anbieter als echte Conversion") und wurde erst
+über eine zweite, breitere Achse sichtbar; eine FÜNFTE kam im selben Zug dazu, im selben
+Absatz wie eine der drei.
+
+**DER STRUKTURELLE AUSLÖSER GEHÖRT DAZU, sonst liest sich der Kandidat als Ermahnung zur
+Sorgfalt:** Der Prompt zitierte die drei Stellen WÖRTLICH und gab damit die Achse vor.
+**WER DIE GESUCHTEN FORMULIERUNGEN KENNT, SUCHT NACH IHNEN STATT NACH DER SACHE** — und
+findet dann zuverlässig genau das, was er schon wusste.
+
+**DIE GEGENFORM, in zwei Teilen:** Die Achse aus dem **GEGENSTAND** bilden, nicht aus den
+bekannten Fundstellen. Und **die Zahl der Treffer NICHT als Bestätigung lesen, wenn sie
+der Zahl der erwarteten Stellen entspricht** — genau diese Übereinstimmung ist das
+Warnsignal, nicht der Beweis.
+
+**DIE ABGRENZUNGEN, beide im Volltext gelesen (CC, 2026-09-10):**
+· **"EINE ZÄHLUNG ENTLANG EINER ACHSE IST BEI EINEM UMBAU SYSTEMATISCH ZU NIEDRIG, NICHT
+  ZUFÄLLIG"** (docs/immer-beachten.md) — der nächste Nachbar. Dort sind es MEHRERE
+  Bruch-Achsen, die man einzeln benennen muss; hier ist es EINE Achse, die aus der
+  ERWARTUNG gebildet ist. Jene Regel zählt zu wenig Achsen, diese zieht die eine falsch.
+· **"EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND"**
+  (docs/immer-beachten.md) — dort erzeugt das WERKZEUG den Nicht-Treffer; hier arbeitet
+  das Werkzeug tadellos, und die ACHSE ist zu eng. Verwandte Figur, anderer Verursacher.
+
+**NICHT ENTSCHIEDEN:** ob daraus eine eigene Regel wird oder ein Absatz an einer der
+beiden Nachbarregeln. **KEINE EMPFEHLUNG.**
+GEMELDET 2026-09-10, NICHT GEBAUT.
+
+**PROVENIENZ:** Der Fall ist GEMESSEN am eigenen Lauf (CC, 2026-09-10) — die drei Treffer
+der engen Achse und die zwei zusätzlichen der breiten sind beide protokolliert. Dass der
+Prompt der Auslöser war, ist eine **ABLEITUNG** und am Prompt jener Runde ablesbar, nicht
+am Repo.
+
 ## Scheiben-Vermerke
 
 Ein Vermerk entsteht erst, wenn eine Scheibe gebaut UND live geprüft ist — nicht bei
@@ -1603,8 +1688,11 @@ verlangen.
 
 **ES GIBT DESHALB KEINEN CODE-COMMIT, UND DAS IST KEIN VERSÄUMNIS.** Der Satz steht hier,
 weil eine fehlende Commit-Nummer sonst als vergessen gelesen wird und jemand sie sucht.
-Was es gibt, ist der **COMMIT DIESES VERMERKS — noch offen**; das ist die EINE Lücke, die
-die Lücken-Regel erlaubt, und VERMERK 1 wie VERMERK 2 kennen beide ihren Commit.
+**COMMIT DIESES VERMERKS: `494d929`** (`docs(claude): Pinterest-Testmodus gemessen —
+test=true wirksam, Isolation belegt`).
+**NACHGETRAGEN AM 2026-09-10** — hier stand die LÜCKE. **DAMIT KENNT JEDER VERMERK DIESER
+DATEI SEINEN COMMIT, und es gibt KEINE offene Lücke mehr.** Das ist regelkonform: Die
+Lücken-Regel sagt, es dürfe immer nur EINE geben — nicht, dass eine da sein müsse.
 
 **PROVENIENZ DER GANZEN RUNDE, und sie ist DREIFACH — CC HAT NICHTS DAVON GEMESSEN:** Die
 vier Läufe und die Ablesungen an der Anbieter-Oberfläche sind **GEMESSEN LIVE, 2026-09-10,

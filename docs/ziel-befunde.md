@@ -140,10 +140,17 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
 **EINE ASYMMETRIE, DIE MIT DEM EINTRAG VOM 2026-08-24 ENTSTANDEN IST UND HIER BENANNT
 STATT AUFGELÖST WIRD:** Dieses Verzeichnis führte bis dahin AUSSCHLIESSLICH die drei
 `##`-Ziel-Abschnitte. Die beiden `###`-Zeilen darüber sind die ERSTEN Unterabschnitte
-darin — die rund fünfzehn übrigen (Messprotokolle, Nachträge, Abschnitts-Lesungen bei
-LinkedIn und Pinterest) stehen NICHT hier. Wer das Verzeichnis als vollständige Liste der
+darin — **die MEHRZAHL der übrigen** (Messprotokolle, Nachträge, Abschnitts-Lesungen bei
+LinkedIn und Pinterest) steht NICHT hier. Wer das Verzeichnis als vollständige Liste der
 Unterabschnitte liest, liest falsch. OB DIE ÜBRIGEN NACHGEZOGEN WERDEN, IST HIER NICHT
 ENTSCHIEDEN und war nicht Gegenstand des Eingriffs.
+**HIER STAND EINE ZAHL — "die rund fünfzehn übrigen" —, UND SIE IST AM 2026-09-10
+ERSATZLOS HERAUSGENOMMEN, NICHT NACHGEZOGEN.** Sie war zuletzt um drei zu niedrig.
+**Ein Nachzug ist selbst eine Änderung und macht die Angabe erneut falsch**
+(docs/immer-beachten.md, "EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT
+EINEN KREISLAUF AUS NACHZÜGEN"). Die Auskunft, auf die es ankommt, steht ohne Zahl
+darüber: **nicht jeder Unterabschnitt wird geführt.** Wer die heutige Zahl braucht, misst
+sie.
 
 ## LinkedIn (Conversions API)
 
@@ -5814,7 +5821,14 @@ DIESE Lesung galt sie noch.)
     `num_events_processed` und `events[]`. AUCH HIER trägt die Doku eine Aussage, die hier
     nicht wiedergegeben ist.
 
-(m) INSTRUMENT ZU H5 (taugliches Live-Test-Instrument): drei Kandidaten, keiner geprüft —
+(m) INSTRUMENT ZU H5 (taugliches Live-Test-Instrument): drei Kandidaten, davon EINER
+    geprüft —
+    **NACHGEZOGEN AM 2026-09-10.** Hier stand "drei Kandidaten, keiner geprüft"; das war
+    für den 2026-08-20 richtig. **Kandidat (1), die Test-Ereignis-Ansicht, ist am
+    2026-09-10 GEFAHREN und tauglich** (GEMESSEN LIVE, Stefan) — Volltext in den Teilen
+    (u) und (w) dieses Abschnitts, samt dem Befund, dass sie ein LIVE-STROM OHNE RÜCKSCHAU
+    ist. **Die Kandidaten (2) und (3) bleiben UNGEPRÜFT.** Der Wortlaut der drei
+    Kandidaten unten ist unverändert:
     (1) die Test-Ereignis-Ansicht im Werbekonto, gespeist über den Testmodus-Parameter; die
     Doku nennt dafür eine Sandbox: "Test event data is sent to a sandbox environment…
     test data is not processed for reporting or optimization." (2) die
@@ -5888,7 +5902,11 @@ DIESE Lesung galt sie noch.)
     direct integration, use value `direct`") · der Wert als Zeichenkette · der Riegel
     "beide oder keiner" für IP und User-Agent (durch die Mindestregel an `user_data`) ·
     alle acht Zuordnungen der Übersetzungstabelle · der Testmodus als Query-Parameter
-    (mit dem Vorbehalt aus (p)(1)).
+    (NACHGEZOGEN 2026-09-10: hier stand "mit dem Vorbehalt aus (p)(1)". **Der Vorbehalt
+    ist für den BAU entfallen** — `test=true`, der Name, den der Adapter sendet, ist am
+    2026-09-10 als wirksam GEMESSEN (Teil (u); GEMESSEN LIVE, Stefan). **TEIL (p)(1)
+    BLEIBT WÖRTLICH STEHEN: die Spannung in der Anbieter-Doku besteht fort**, und
+    `is_test` ist ungeprüft, nicht ausgeschlossen — s. Teil (v)).
     PRÄZISER GEWORDEN: Der Kommentar an `custom_data` in
     `src/lib/capi/pinterest-forward.ts` sagt, ein NEGATIVER Wert gehe durch und die Doku
     rate davon ab, ohne es zu verbieten. Die heutige Fassung rät weiterhin nur ab —

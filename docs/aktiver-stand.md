@@ -209,8 +209,23 @@ HIER WIRD KEINER DAVON VOLLZOGEN:**
   **DER PAAR-CHECK IST ERSETZT** (Migration 0029, Commit `1fb9b90`, VERMERK 4); `pinterest`
   kann eine **Frist ohne Code** tragen, und Vorrat (8) ist mit Beleg gestrichen. **WAS
   PINTEREST JETZT NOCH FEHLT, IST DIE AUFNAHME IN `TARGETS_WITH_TEST_MODE` UND DER
-  SCHALTER — Scheibe 11.3e.** Die Kollision aus deployment-weitem Schalter und
-  projekt-eigener Frist (Vorrat (26)) steht unverändert offen.
+  SCHALTER — Scheibe 11.3e.**
+  **RICHTIGGESTELLT AM 2026-09-10, DRITTER NACHTRAG DESSELBEN TAGES — DIE KOLLISION IST
+  ENTFALLEN, NICHT BEANTWORTET.** Hier stand: "Die Kollision aus deployment-weitem
+  Schalter und projekt-eigener Frist (Vorrat (26)) steht unverändert offen."
+  **MIT DEM WEGFALL DES DEPLOYMENT-WEITEN SCHALTERS GIBT ES NUR NOCH EINE ART VON
+  ZUSTAND** — die projekt-eigene Frist —, und eine Kollision zwischen zwei Quellen kann
+  nicht entstehen, wo es nur eine gibt. Beleg an der Streichung von Vorrat (26); der
+  Wegfall selbst ist Scheibe 11.3d, Commit `3d42501` (VERMERK 5).
+  **ERSETZT UND NICHT GESTEMPELT, weil der Satz eine HANDLUNG bindet:** Er sagt, was
+  `pinterest` noch fehlt. Wer ihm folgt, sucht eine Entscheidung, die keinen Gegenstand
+  mehr hat.
+  **DIE GRENZE MUSS MIT, sonst wird aus einer Streichung eine zu weite Entwarnung:** Für
+  `meta` und `tiktok` besteht die Vorrang-Frage **FORT** (Vorrat (10)) — `META_TEST_EVENT_CODE`
+  und `TIKTOK_TEST_EVENT_CODE` bestehen, und welcher Wert in die Nutzlast wandert, wenn
+  Umgebungsvariable und Projektzeile VERSCHIEDENE tragen, ist unverändert ungemessen.
+  **Wer die Streichung als Erledigung der ganzen Achse liest, hält eine Frage über drei
+  Ziele für beantwortet, die nur für eines entfallen ist.**
   **NACHGEZOGEN AM 2026-09-10 (zweite Teilung desselben Tages):** Hier stand "Scheibe
   11.3d". Die Pinterest-Runde ist an diesem Tag in **11.3d** (Auflösungs-Pfad) und
   **11.3e** (Oberfläche) geteilt worden; **Zielmenge und Schalter sind 11.3e.** Der Zeiger
@@ -2621,14 +2636,27 @@ in einer, die es ohnehin gibt.
   Zustand heute herstellen.**
 - **WAS 11.3e ZU TUN HAT UND WAS DIESE SCHEIBE IHM NICHT ABGENOMMEN HAT:** `pinterest` in
   `TARGETS_WITH_TEST_MODE` samt Wächter, der Schalter an der Pinterest-Karte, der
-  Banner-Text — und **die Vorrang-Frage aus Vorrat (26)**, deployment-weiter Env-Schalter
-  gegen projekt-eigene Frist. Jene ist eine EIGENE Entscheidung und ist hier NICHT
-  getroffen; sie entsteht erst, wenn pinterest den projekt-eigenen Zustand tatsächlich
-  BENUTZT.
+  Banner-Text.
+  **DER VIERTE POSTEN IST AM 2026-09-10 ENTFALLEN UND WIRD HIER EIGENS VERMERKT, WEIL
+  "GESTRICHEN" SONST VON "VERGESSEN" NICHT ZU UNTERSCHEIDEN IST.** Er lautete: "und die
+  Vorrang-Frage aus Vorrat (26), deployment-weiter Env-Schalter gegen projekt-eigene
+  Frist. Jene ist eine EIGENE Entscheidung und ist hier NICHT getroffen; sie entsteht
+  erst, wenn pinterest den projekt-eigenen Zustand tatsächlich BENUTZT."
+  **WODURCH:** Scheibe 11.3d (Commit `3d42501`, VERMERK 5) hat den deployment-weiten
+  Schalter entfernt. Der Posten hat damit keinen Gegenstand mehr — **11.3e hat DREI
+  Aufgaben, nicht vier.** Beleg an der Streichung von Vorrat (26).
+  **DIE GRENZE:** Für `meta` und `tiktok` besteht die Vorrang-Frage FORT (Vorrat (10)) —
+  ihre zwei Umgebungsvariablen bestehen. Sie ist nur für `pinterest` entfallen und
+  bindet 11.3e nicht.
   **NACHGEZOGEN AM 2026-09-10:** Hier stand "WAS 11.3d ZU TUN HAT". **Es ist eine
   Aufgabenliste, also handlungsbindend**; sämtliche vier Posten sind seit der Teilung
   desselben Tages **11.3e**. Der Vorrang-Posten (26) bindet ebenfalls 11.3e, weil er erst
   entsteht, wenn der Zustand BENUTZT wird.
+  **DIE ZAHL VIER IN DIESEM ABSATZ BLEIBT WÖRTLICH UND IST NICHT NACHGEZOGEN** — sie
+  beschreibt die TEILUNG vom 2026-09-10 und datiert sich über ihre eigene Überschrift.
+  **WAS HEUTE GILT, STEHT IN DER LISTE, NICHT IN DER ZAHL:** drei Posten. Der letzte Satz
+  jenes Nachtrags ist mit dem Entfall des vierten Postens gegenstandslos geworden und
+  bindet nichts mehr.
 - **DIE GESTE, DIE 11.3e BRAUCHT, IST EINE ANDERE ALS BEI META UND TIKTOK.** Dort verlangt
   die Oberfläche einen Code; bei `pinterest` gibt es keinen, den man verlangen könnte — der
   CHECK verbietet ihn sogar. **Wer die Karte kopiert, baut ein Eingabefeld für einen Wert,

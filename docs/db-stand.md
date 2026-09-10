@@ -102,6 +102,28 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   zugesagt (docs/db-regeln.md, "MIGRATION IMMER VOR CODE-DEPLOY").
   WER DIE LÜCKENLOSIGKEIT WIEDER ARITHMETISCH WILL, fährt Probe 1 und 1b aus
   supabase/checks/db-stand.sql — sie filtern nicht. Das ist in diesem Lauf NICHT geschehen.
+  NACHGEZOGEN AM 2026-09-10: DER HEUTIGE STAND IST 0001-0029. 0029
+  (0029_project_secrets_test_mode_je_ziel.sql, Phase 11.3, Scheibe 11.3c) ist am
+  2026-09-10 eingespielt.
+  DIESE ZEILE RUHT AUF EINER ANDEREN GRUNDLAGE ALS ALLE VORIGEN, UND DAS IST KEIN DETAIL:
+  Bei 0026, 0027 und 0028 ist der VOLLZUG am PROTOKOLL abgelesen worden — ein Eintrag in
+  schema_migrations mit gefülltem applied_at. FÜR 0029 IST DAS NICHT GESCHEHEN. Belegt ist
+  die WIRKUNG, nicht der Protokoll-Eintrag: GEMESSEN LIVE am 2026-09-10 (SQL-Editor,
+  Stefan) ist, dass project_secrets_test_mode_paar NULL Zeilen liefert und
+  project_secrets_test_mode_je_ziel GENAU EINE — beides kann nur die Migration bewirkt
+  haben. Das ist ein LIVE-TEST im Sinne der Regel oben und damit zulässig; es ist aber
+  KEIN Protokoll-Nachweis.
+  WAS DARAUS FOLGT: applied_at für 0029 ist NICHT abgelesen, die APPLIED_AT-REGEL ist mit
+  0029 also NICHT zum sechsten Mal bestätigt, und eine Reihenfolge-Aussage aus
+  Zeitstempeln — wie sie für 0028 oben steht — lässt sich für diesen Tag NICHT führen. Wer
+  sie braucht, liest schema_migrations nach. Die arithmetische Lückenlosigkeit ist
+  unverändert nicht wiederholt; für 0001-0025 gilt weiterhin die volle Probe vom
+  2026-08-26.
+  EINE REIHENFOLGE-AUSSAGE IST HIER AUCH NICHT NÖTIG: Zu 0029 gehört KEIN Code-Deploy —
+  keine Zeile unter src/ hat sich geändert (GEMESSEN am Repo, CC, 2026-09-10, Commit
+  1fb9b90: eine Datei angelegt, keine geändert). "MIGRATION VOR CODE-DEPLOY" bindet an
+  diesem Tag nichts; die Regel greift erst bei der Scheibe, die pinterest in
+  TARGETS_WITH_TEST_MODE aufnimmt.
   · 0001-0021, LÜCKENLOS — arithmetisch bewiesen (Probe 1b: Zeilenzahl = Spannweite+1),
     nicht nur an der Dateisortierung abgelesen. GEMESSEN am 2026-08-05: 21 Zeilen,
     Spannweite 0001-0021; applied_at gefüllt bei 0018, 0019, 0020 und 0021 — bei 0021 mit
@@ -264,6 +286,54 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   WAS DIESE MESSUNG NICHT ZEIGT: ob der CHECK auf BESTEHENDE Zeilen angewandt wurde. Ein
   CHECK, der als NOT VALID angelegt wäre, trüge diesen Zusatz in seiner Definition — er tut
   es nicht, und das ist eine ABLEITUNG aus dem Wortlaut, keine eigene Probe.
+  RICHTIGGESTELLT AM 2026-09-10, NICHT GESTEMPELT — der ganze Block darüber bleibt lesbar,
+  weil er als Aussage über den 2026-09-09 richtig ist und weil an ihm die Provenienz-Regel
+  dieser Datei hängt. HEUTE GILT ER NICHT MEHR: project_secrets_test_mode_paar EXISTIERT
+  NICHT MEHR. Migration 0029 (Commit 1fb9b90) hat ihn gedroppt und durch
+  CONSTRAINT project_secrets_test_mode_je_ziel ersetzt — eine ziel-abhängige Bedingung, die
+  je nach target verschieden urteilt.
+  LIVE ABGELESEN am 2026-09-10 (SQL-Editor, Stefan, pg_get_constraintdef): unter dem ALTEN
+  Namen NULL Zeilen; unter dem NEUEN GENAU EINE Zeile, mit ALLEN VIER Zweigen in der
+  Definition und OHNE "NOT VALID".
+  DER WORTLAUT DER NEUEN DEFINITION STEHT HIER NICHT, UND ER WIRD NICHT REKONSTRUIERT —
+  das ist die einzige Stelle dieses Eintrags, an der eine Angabe FEHLT statt zu gelten:
+  Die Ablesung ist gefahren, ihre Ausgabe liegt der schreibenden Runde aber nicht im
+  Zeichenbild vor. Eine aus der Migrationsdatei zurückgerechnete Definition wäre eine
+  ABLEITUNG im Gewand einer Messung — Postgres normalisiert Klammerung und Kasten, und der
+  zurückgerechnete Text sähe aus wie abgelesen. WER DIE ABFRAGE ERNEUT FÄHRT, TRÄGT DEN
+  WORTLAUT HIER NACH; alle Nachbar-Constraints dieses Eintrags führen ihn.
+  WAS AUS DEM FEHLENDEN "NOT VALID" FOLGT: Der Bestand ist beim add constraint VALIDIERT
+  worden. Das ist dieselbe ABLEITUNG wie beim alten CHECK und keine eigene Probe — aber sie
+  ruht hier zusätzlich auf einer Erhebung VOR dem Lauf (s. den Bestand unten): es gab keine
+  verletzende Zeile, an der die Validierung hätte scheitern können.
+  DIE WIRKUNG IST GEMESSEN UND NICHT NUR DER KATALOG — und das ist wie bei 0022, 0024, 0026
+  und 0028 der wertvollere der beiden Belege: Eine Wegwerf-Probe über die VOLLSTÄNDIGE
+  Wahrheitstabelle (18 Fälle: fünf Zielwerte, dazu die vier Kombinationen der zwei
+  Null-Zustände) ergab 18 Zeilen, 0 Abweichungen und 0 überlebende Probezeilen. Ein
+  Scheitern zählte AUSSCHLIESSLICH bei 23514 unter project_secrets_test_mode_je_ziel; jeder
+  andere Fehlschlag wäre als Abweichung gezählt worden. GEMESSEN LIVE, 2026-09-10, Stefan.
+  Alle Probezeilen trugen project_id IS NULL und ein offensichtlich erfundenes Geheimnis;
+  jeder Fall lief in einem eigenen zurückgenommenen Block — es ist KEINE Zeile entstanden
+  und KEINE bestehende angefasst worden.
+  EIN EINZIGER DER 18 FÄLLE SCHLIESST DEN ALTEN ZUSTAND AUS: pinterest mit Frist und ohne
+  Code wurde ANGENOMMEN — unter dem alten CHECK war das unmöglich. Die übrigen siebzehn
+  sind mit beiden Fassungen verträglich oder trennen nur in die strengere Richtung.
+  DIE GRENZE: Der else-Zweig ist an google und linkedin gemessen, NICHT an einem
+  unbekannten Zielwert. Dass ein sechstes Ziel fail-closed anliefe, folgt aus der Semantik
+  von case/else und ist NICHT gemessen — es ist heute auch nicht messbar, weil eine Zeile
+  mit unbekanntem Ziel vorher an project_secrets_target_valid scheitert.
+  DIE ZAHL SECHS FÜR DIE CONSTRAINT-ABFRAGE OBEN IST NICHT NACHGEMESSEN. Die Ablesung vom
+  2026-09-10 war auf je EINEN Namen gefiltert und sagt über die Gesamtzahl NICHTS. Dass sie
+  sechs bleibt, weil ein Constraint durch genau einen ersetzt wurde, ist eine ABLEITUNG.
+  Wer die Zahl braucht, fährt die ungefilterte Abfrage.
+  DER BESTAND DER TABELLE, GEMESSEN LIVE am 2026-09-10 (SQL-Editor, Stefan, Erhebung VOR
+  dem Lauf): 18 Zeilen, verteilt auf fünf Zielwerte — google 9, linkedin 2, meta 5,
+  pinterest 1, tiktok 1. ALLE mit BEIDEN Testspalten leer, KEINE Zeile ohne Projekt.
+  DIE NULL BEI "ohne Projekt" IST KEIN BEIFANG: Sie schliesst aus, dass ein Fall der
+  Wegwerf-Probe am UNIQUE (project_id, target) statt am gemeinten CHECK scheitert — die
+  Probezeilen tragen project_id IS NULL, und NULLS NOT DISTINCT liesse nur EINE projektlose
+  Zeile je Ziel zu. Sie ist damit die weitergeführte Fassung der Aussage, die 2026-09-09
+  für 'meta' allein galt (s. oben).
   PRIMÄRSCHLÜSSEL ist die EINSPALTIGE id (project_secrets_pkey) — GEMESSEN 2026-08-26
   (Probe 3, pg_get_constraintdef). Bis 0025 war es das PAAR (project_id, target); die
   Footgun-Zeile darunter führt project_secrets deshalb NICHT mehr.

@@ -1936,29 +1936,25 @@ PROVENIENZ DIESES ZUSATZES: die sieben Fundstellen, ihre Verteilung und die Gege
 GEMESSEN am Repo (CC, 2026-09-10) nach dem Bau-Commit; dass die siebte von der
 Richtigstellung selbst stammt, ist am Dateitext ABLESBAR und keine Ableitung.
 
-**(30) DER NAME VON PINTERESTS TEST-ANSICHT IST GEMESSEN UND NIRGENDS ABGELEGT — UND ER IST
-SPRACHABHÄNGIG.** In Pinterests **deutscher** Oberfläche heisst der Navigationspunkt
-"Conversions" → **"Events testen"**, die Karte darin **"Conversions API-Events testen"**
-(GELESEN an der Oberfläche, Owner, 2026-09-10). **DER BEFUND GEHÖRT NACH
-`docs/ziel-befunde.md`, Abschnitt "Pinterest (Conversions API)"** — dort liegen die
-Anbieter-Befunde je Ziel, und dorthin greift jeder, der an diesem Ziel arbeitet.
-**DER VERMERK "SPRACHABHÄNGIG" IST NICHT DIE FUSSNOTE, SONDERN DER HALBE EINTRAG:** Ein
-Kunde mit englischem Konto liest an derselben Stelle etwas anderes. **Wer den deutschen
-Namen ohne diesen Vermerk ablegt, legt eine Angabe ab, die für einen Teil der Nutzer schlicht
-falsch ist** — und sie sieht dort aus wie jede andere gemessene Angabe.
-**GENAU DESHALB TRÄGT DIE OBERFLÄCHE IHN NICHT:** Die Reihenfolge-Angabe der Scheibe 11.3f
-sagt "Test-Ansicht im Werbekonto zuerst öffnen, dann auslösen" und nennt **kein Label**. Das
-ist ENTSCHIEDEN (Plan-Nachtrag, Entscheidung 2, 2026-09-10) und wird von diesem Eintrag
-**nicht wieder aufgemacht** — er betrifft die ABLAGE des Befunds, nicht den Kundentext.
-TRIGGER: **eine eigene Doku-Runde an `docs/ziel-befunde.md`** — ausdrücklich NICHT die
-Abschluss-Runde der Scheibe 11.3f, deren Scope jene Datei als UNBERÜHRT führt.
-**WARUM ER HIER FESTGEHALTEN IST UND NICHT NUR IM ZUSCHNITT STAND:** Der Zuschnitt der
-Scheibe 11.3f wird mit ihrem Abschluss VERDICHTET. Ein Zeiger, der nur dort steht, geht mit
-der Verdichtung verloren — und dann ist der Befund gemessen, richtig und nirgends.
-PROVENIENZ: der Name selbst ist GELESEN an Pinterests Oberfläche (Owner, 2026-09-10);
-**dass er sprachabhängig ist, ist eine ABLEITUNG** aus dem Umstand, dass es eine übersetzte
-Oberfläche ist — **an keinem englischen Konto GEMESSEN**. Dass der Befund heute in keiner
-Datei des Repos steht, ist GEMESSEN am Repo (CC, 2026-09-10).
+**(30) — GESTRICHEN AM 2026-09-10, VERORTET. DIE NUMMER BLEIBT STEHEN.**
+
+HIER STAND: "DER NAME VON PINTERESTS TEST-ANSICHT IST GEMESSEN UND NIRGENDS ABGELEGT — UND
+ER IST SPRACHABHÄNGIG." Sein Gegenstand ist damit erledigt: Der Befund liegt jetzt dort, wo
+jeder greift, der an diesem Ziel arbeitet, statt mit dieser Standdatei am Phasenende aus dem
+Blickfeld zu geraten.
+TRIGGER war: eine eigene Doku-Runde an `docs/ziel-befunde.md`.
+
+**DER BELEG:** `docs/ziel-befunde.md` trägt im Abschnitt "Pinterest (Conversions API)" den
+**Teil (aa)**, samt eigener Zeile im Verzeichnis jener Datei — beide Labels im Wortlaut, die
+Provenienz (GELESEN an der Oberfläche, Owner, 2026-09-10), die Grenze (deutsche Oberfläche,
+an keinem englischen Konto gemessen, die Sprachabhängigkeit als ABLEITUNG) und die Folge für
+den Kundentext. Geschrieben im Commit dieser Runde, Betreff "docs(claude): der Name von
+Pinterests Test-Ansicht ist sprachabhaengig".
+
+**WARUM HIER KEIN COMMIT-HASH STEHT UND BEI (23) EINER:** Dort entstand der Teil in einem
+FRÜHEREN Commit, dessen Hash beim Streichen vorlag. Hier liegen Befund und Streichung in
+EINEM Commit — der Hash existiert erst, nachdem dieser Satz geschrieben ist. Wer ihn
+nachtragen will, trägt ihn gegen genau diesen Grund vor.
 
 ## Hebungs-Kandidaten
 

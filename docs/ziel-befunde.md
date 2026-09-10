@@ -128,6 +128,7 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
 - ## Pinterest (Conversions API)
   - ### MESS-RUNDE 2026-09-10 gegen die Conversions API und die Anbieter-Oberfläche —
     die Teile (u) bis (z)
+  - ### Ablesung an der Anbieter-Oberfläche (2026-09-10) — der Teil (aa)
 - ## Meta (Conversions API)
   - ### Abschnitts-Lesung 2026-09-08 der Conversions-API-Dokumentation zum Testmodus —
     die Teile (a) bis (f)
@@ -6140,6 +6141,39 @@ am Werbekonto sind die des Owners an seinem eigenen Konto.
     dem 2026-08-20 als "GESEHEN, NICHT GEÖFFNET" geführt und **bleibt es unverändert**;
     dieser Teil verschiebt nur den Grund — damals nicht geöffnet, heute nicht lesbar
     bekommen.
+
+### Ablesung an der Anbieter-Oberfläche (2026-09-10) — der Teil (aa)
+
+**HERKUNFT (2026-09-10):** Eine ABLESUNG des OWNERS an seinem EIGENEN Werbekonto — kein
+Aufruf gegen die Schnittstelle, keine Anmeldung auf einer fremden Seite, keine Eingabe.
+Sie fällt auf denselben Tag wie die MESS-RUNDE darüber und steht trotzdem als EIGENE
+Unterüberschrift: Jene misst gegen den Endpunkt, diese liest einen NAMEN ab, und ihr
+Herkunfts-Kopf teilt seine Teile (u) bis (z) einzeln nach Provenienz auf. Ein
+angehängtes (aa) machte jene Aufteilung stillschweigend falsch.
+
+(aa) DER NAME DER TEST-ANSICHT IN PINTERESTS OBERFLÄCHE — UND ER IST SPRACHABHÄNGIG.
+     GELESEN AN DER OBERFLÄCHE, Owner, 2026-09-10.
+     **DER NAME:** Unter "Conversions" heisst der Navigationspunkt **"Events testen"**;
+     die Karte darin heisst **"Conversions API-Events testen"**.
+     **WELCHE ANSICHT DAS IST:** dieselbe, deren VERHALTEN Teil (w) misst — der Live-Strom
+     ohne Rückschau. (w) sagt, WAS sie tut, und benennt sie beschreibend; dieser Teil nennt
+     ihr LABEL. **DASS ES DIESELBE ANSICHT IST, IST EINE FOLGERUNG** aus dem Weg dorthin
+     und nicht eigens gemessen.
+     **DIE GRENZE IST DER EIGENTLICHE INHALT DIESES TEILS:** Das ist die **DEUTSCHE**
+     Oberfläche. Ein Kunde mit englischem Konto liest an derselben Stelle etwas anderes.
+     **AN KEINEM ENGLISCHEN KONTO GEMESSEN** — dass der Name sprachabhängig ist, ist eine
+     ABLEITUNG daraus, dass es eine übersetzte Oberfläche ist, und keine Messung.
+     **WER DEN DEUTSCHEN NAMEN OHNE DIESEN VERMERK ÜBERNIMMT, ÜBERNIMMT EINE ANGABE, DIE
+     FÜR EINEN TEIL DER NUTZER SCHLICHT FALSCH IST** — und sie sieht hier aus wie jede
+     andere abgelesene Angabe.
+     **DIE FOLGE, DIE DEN BEFUND ERST NÜTZLICH MACHT — ALS FOLGERUNG GEKENNZEICHNET UND
+     NICHT ALS AUFLAGE:** Ein hartkodiertes Label in einem Kundentext wäre für ein
+     anderssprachiges Konto falsch. Der Hinweis an der Pinterest-Karte nennt die Ansicht
+     deshalb BESCHREIBEND — "Test-Ansicht im Werbekonto zuerst öffnen, dann auslösen." —
+     und nicht mit ihrem Label; GEBAUT in Scheibe 11.3f (GEMESSEN am Repo, CC, 2026-09-10:
+     `testModeAnbieterAuskunft` in `src/components/TargetCard.tsx`).
+     **DIE ENTSCHEIDUNG DAHINTER STEHT NICHT HIER**, sondern in docs/aktiver-stand.md —
+     diese Datei trägt Befunde, keine Entscheidungen.
 
 ## Meta (Conversions API)
 

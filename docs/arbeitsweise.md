@@ -194,6 +194,18 @@ Ergebnisse, die noch niemand gemessen hat. In den Prompt gehört: *„Nach
 bestätigtem Live-Test schreibst du den Abschluss-Vermerk; die Messwerte liefert
 Stefan"* — nicht der fertige Text.
 
+**Der Beleg eines Vermerks sind seine harten Angaben, nicht die Erzählung darum.**
+Zeitanker, Ereignis-Kennungen, Commit-Hashes, Mutationsergebnisse, Gate-Zahlen und
+jede Angabe, deren Fehlen eine spätere Handlung scheitern lässt — die stehen im
+Wortlaut. Der Ablauf des Laufs in Prosa steht nicht dabei. Das ist dieselbe Trennung
+wie im Kopf dieses Dokuments („Erzählungen darüber, wie eine Regel entstanden ist …
+gehören nicht hierher"), angewandt auf den Vermerk statt auf die Regel.
+
+**An der anderen Stelle wird nicht gekürzt:** Wo eine Angabe eine Grenze trägt — für
+welchen Pfad etwas gemessen und für welchen es abgeleitet ist —, gehört sie in den
+Vermerk, auch wenn sie lang ist. Eine Grenze, die niemand mitschreibt, wird beim
+nächsten Lesen zur Vollständigkeit.
+
 **Vor dem Live-Test wird das Deployment verifiziert.** Sonst testet Stefan die
 alte Version.
 
@@ -351,6 +363,23 @@ wäre die Teilung eine Verlagerung des Problems statt einer Lösung.
 Datei. Wer teilt, tut es als eigene, zugeschnittene Arbeit mit Prüfsummen über die
 verschobenen Bereiche — nicht nebenbei.
 
+**UNTERHALB VON 4000 ZEILEN WIRD NICHT GETEILT.** Ein Verbot, keine Schwelle, ab der
+zu teilen wäre. Oberhalb bleibt es beim Absatz darüber: kein Pflichtteil, eigene
+zugeschnittene Arbeit, der Name des Archivs ist Owner-Entscheidung.
+
+**Die Zahl ruht auf dem gemessenen unteren Punkt, nicht auf der Mitte.** 1578 Zeilen
+liest CC nachweislich vollständig (gemessen 2026-09-10 an der Standdatei der Phase
+11.3). Bei 9967 Zeilen hat er die vollständige Lesung selbst als nicht mehr leistbar
+gemeldet — Phase 11.2, Stand unmittelbar vor der Teilung vom 2026-09-08; die
+Zeilenzahl gemessen am Repo (2026-09-10, Commit `57c9231`). Alles dazwischen ist
+unerhoben. Deshalb trägt der gemessene untere Punkt ein Verbot, und eine Pflicht zum
+Teilen oberhalb ruhte auf nichts.
+
+**Ohne die Zahl entscheidet jede Instanz neu, und die Richtung ist vorhersehbar:**
+Eine Runde ohne Bauaufgabe findet immer einen Grund zu teilen. Die eine hält 500
+Zeilen für zu viel, die nächste 1000 — und die Zeit geht in Teilrunden statt in
+Produktentscheidungen.
+
 **Wann sie entsteht:** bei der ersten Handlung der Phase — vor der ersten
 Aufklärung, vor der ersten Konzept-Runde, vor der ersten Bau-Freigabe. Nicht
 erst beim ersten Zuschnitt: Eine Phase kann mit einer Konzept- oder
@@ -488,6 +517,19 @@ BELEG DER ERLEDIGUNG AM ZEIGER.** Der Beleg ist der ganze Punkt: Ohne ihn ist �
 von „vergessen" nicht zu unterscheiden, und beides sieht im Diff gleich aus.
 **GEMESSEN (CC, 2026-09-08):** Bei Phase 11.8 waren **DREI von sieben** Vorrats-Einträgen
 gegenstandslos, bei Phase 11.2 **ZWEI von 66** — je durch eine spätere Scheibe.
+
+**WAS STEHENBLEIBT, IST TITEL UND BELEG — NICHT DER ALTE VOLLTEXT.** Nummer, Titel, ein
+Satz zum Gegenstand, der Beleg der Erledigung. Der volle frühere Wortlaut wird nicht
+mitgeführt: An einem Eintrag, dessen Gegenstand verschwunden ist, hängt keine spätere
+Handlung mehr — genau das stellt der Beleg der Erledigung fest. Titel und Beleg tragen
+alles, was noch trägt.
+**GEMESSEN (CC, 2026-09-10, `docs/aktiver-stand.md` der Phase 11.3):** Sieben gestrichene
+Vorrats-Einträge trugen **183 Zeilen** — 11,6 % der Datei und mehr als ihre zwei längsten
+Blöcke zusammen, in einer Datei, die jede Sitzung vollständig liest.
+**Die Grenze:** Das gilt für Vorrats-Einträge und Hebungs-Kandidaten. Bei einer Dauerregel
+entscheidet weiter der Test unter „Was mit einem falschen Satz geschieht" — trägt der
+überholte Text seine Begründung mit und wird die beim nächsten Wechsel gebraucht, wird
+gestempelt statt ersetzt.
 
 **DIE GEGENPROBE GEHÖRT DAZU, WEIL SIE VOR DER FALSCHEN ERWARTUNG SCHÜTZT:** Bei den
 **NEUNZEHN** bindenden Entscheidungen der Phase 11.2 war **KEINE** gegenstandslos. **DAS

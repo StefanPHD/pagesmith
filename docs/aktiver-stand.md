@@ -2131,6 +2131,18 @@ höchstens EINE Lücke gibt.** Bei zwei sagt sie nicht mehr, welche die offene i
 zweite entsteht **automatisch** beim nächsten Vermerk, wenn niemand die erste geschlossen
 hat.
 
+**DIE SCHÄRFUNG, UND SIE IST DER EIGENTLICHE INHALT DIESES KANDIDATEN: DAMIT SETZT DIE
+REGEL SICH SELBST AUSSER KRAFT, STATT BLOSS UNGENAU ZU WERDEN.** Eine ungenaue Regel liefert
+ein schlechteres Urteil; diese liefert **gar keines mehr** — ihre Diagnose fragt nach der
+EINEN offenen Lücke, und bei zwei gibt es die Frage nicht mehr, auf die sie antwortet.
+**DER AUSFALL IST DABEI NICHT DIE FOLGE EINES FEHLERS, SONDERN DES NORMALEN GEBRAUCHS:**
+Die zweite Lücke entsteht **ohne Zutun** beim nächsten Vermerk. Die Regel hält also genau
+so lange, wie jemand sie von Hand am Leben erhält — und niemand ist dafür zuständig.
+**DAS IST EINE ABLEITUNG AUS DEM WORTLAUT DER REGEL UND DER BAUFORM DES NACHTRAGS, KEINE
+MESSUNG:** Der Zustand "zwei offene Lücken" ist in dieser Datei **nie eingetreten** — er
+ist viermal knapp vermieden worden, dreimal davon, weil eine spätere Runde ihn beiläufig
+bemerkte.
+
 **ABGRENZUNG ZU HEBUNGS-KANDIDAT (6):** Dort stirbt ein Zeiger AUS dem Code IN diese Datei,
 weil die Ablage eine Halbwertszeit hat. Hier fehlt eine Angabe INNERHALB der Datei, weil sie
 zum Schreibzeitpunkt noch nicht existiert. **Verwandte Figur — eine Angabe, die im falschen
@@ -2722,8 +2734,16 @@ nur diesen, und eine Suche über die Scheibennummer findet SIEBEN Commits, davon
 dessen BETREFF die Scheibe 11.3e trägt. **DIE ZWEITE ACHSE ALLEIN ENTSCHEIDET NICHT**, und
 das gehört dazu: Sie liefert auch `3d42501` (Scheibe 11.3d), weil dessen Rumpf die Nummer
 11.3e nennt. Erst der Betreff trennt die beiden.
-**COMMIT DIESES VERMERKS: — offen.** Er ist der jüngste; die Lücken-Regel erlaubt genau
-eine, und dies ist sie.
+**COMMIT DIESES VERMERKS: `dedb7d6`** (`docs(claude): Vermerk zur Scheibe 11.3e —
+Pinterest ist live bewiesen`).
+**NACHGETRAGEN AM 2026-09-10, IN DER RUNDE UNMITTELBAR DANACH** — hier stand die LÜCKE.
+**DAMIT KENNT JEDER VERMERK DIESER DATEI SEINEN COMMIT, und es gibt KEINE offene Lücke
+mehr.** Das ist regelkonform: Die Lücken-Regel sagt, es dürfe immer nur EINE geben — nicht,
+dass eine da sein müsse.
+**DER NACHTRAG IST DIESMAL NICHT ERST DER ÜBERNÄCHSTEN RUNDE AUFGEFALLEN**, und genau das
+ist der Unterschied zu VERMERK 1, 2, 3 und 5: Er ist als offener Posten aus der
+Vermerk-Runde heraus GEMELDET und in der nächsten geschlossen worden. **DASS ES DAFÜR EINE
+MELDUNG BRAUCHTE UND KEINEN MECHANISMUS, STEHT ALS HEBUNGS-KANDIDAT (7).**
 
 **GATES (GEMESSEN am eigenen Lauf, CC, 2026-09-10, alle vier VOR dem Diff):**
 `tsc --noEmit` grün · `eslint` **0 Fehler** (die eine Warnung steht in
@@ -3227,6 +3247,46 @@ der Scheibe gerade NICHT ab.
   Adapter bekommt den Parameter **nicht** — der `pinterest`-Eintrag in
   `FORWARDER_BY_TARGET` reicht den siebten Wert nicht weiter. Wer eine solche Zeile setzt,
   sieht den Riegel feuern und beim Anbieter **nichts**.
+
+  **NACHGEZOGEN AM 2026-09-10 — DER PFLICHT-STOPP IST ABGELAUFEN, DIE DENKFIGUR NICHT.**
+  Der Absatz darüber bleibt wörtlich stehen und war bis zum Bau richtig. **BEIDE
+  ZUSTANDSAUSSAGEN SIND MIT COMMIT `9422920` FALSCH GEWORDEN** (Scheibe 11.3e, VERMERK 6),
+  und sie werden hier einzeln zitiert, damit niemand raten muss, welche gemeint sind:
+  **HIER STAND** "Solange `pinterest` nicht in `TARGETS_WITH_TEST_MODE` steht, weist
+  `startTestMode` es mit `unknown_target` ab; **kein Schreibpfad des Produkts kann für
+  dieses Ziel einen Testzustand ablegen**." — `pinterest` **steht** seither in der Menge,
+  und `startTestMode` legt für dieses Ziel eine **Frist ohne Code** an.
+  **UND HIER STAND** "Der Adapter bekommt den Parameter **nicht**." — Das
+  `pinterest`-Lambda in `FORWARDER_BY_TARGET` **reicht den siebten Wert seither weiter**;
+  es liest die **ANWESENHEIT** des Eintrags (`testMode !== undefined`), und die Läufe TM19
+  und TM20 sind die einzigen Wächter darüber.
+  **DER PFLICHT-STOPP SELBST IST DAMIT ERLEDIGT:** Er galt der Scheibe 11.3e, und die ist
+  gebaut und live bewiesen.
+
+  **WAS BLEIBT, UND ZWAR VERALLGEMEINERT — DIE DENKFIGUR TRÄGT ÜBER DIESE SCHEIBE HINAUS:**
+  **EINE No-op-ZUSAGE IST EINE AUSSAGE ÜBER DEN SCHREIBPFAD DES PRODUKTS, NIE ÜBER DIE
+  DATENBANK.** Macht eine Scheibe einen Zustand LESBAR, bevor ein Schreibpfad ihn ERZEUGEN
+  kann, dann gilt "das ist ein No-op" nur so weit, wie das Produkt reicht — **eine von Hand
+  im SQL-Editor gesetzte Zeile ist ab diesem Moment WIRKSAM**, und das Prädikat erkennt sie.
+  **DAS IST KEIN MANGEL, SONDERN DER PRÜFWEG:** Genau eine solche Zeile ist das Mittel, mit
+  dem sich der Lesepfad prüfen lässt, bevor es eine Oberfläche gibt — so ist die Scheibe
+  11.3a live geprüft worden.
+  **WEN SIE BINDET:** jede künftige Scheibe dieser Bauform — namentlich, falls für `google`
+  oder `linkedin` je ein Auflösungs-Pfad VOR seiner Oberfläche entsteht. **Wer dort "No-op"
+  zusagt, sagt es dem Schreibpfad zu und nicht dem Schema.**
+
+  **EINE BEOBACHTUNG, DIE DER NACHZUG MITNIMMT, WEIL SIE EINE VORHERSAGE WIDERLEGT:** Der
+  Absatz sagte, 11.3e werde auf **demselben Weg** geprüft wie 11.3a — über eine von Hand
+  gesetzte Zeile. **DAS IST NICHT EINGETRETEN.** Der Live-Nachweis der Scheibe 11.3e lief
+  **über die Oberfläche** (Testmodus über die Karte gestartet, VERMERK 6) — und zwar
+  zwangsläufig, weil genau jene Scheibe den Schreibpfad mitbrachte. **DIE VORHERSAGE WAR
+  FÜR IHREN ZEITPUNKT RICHTIG UND IST DURCH IHREN EIGENEN GEGENSTAND ÜBERHOLT WORDEN;** die
+  Denkfigur oben ist davon unberührt, weil sie den Fall beschreibt, in dem es die
+  Oberfläche NOCH NICHT gibt.
+  PROVENIENZ DIESES NACHZUGS: die zwei falsch gewordenen Zustandsaussagen sind GEMESSEN am
+  Repo (CC, 2026-09-10) nach Commit `9422920`; dass der Live-Nachweis über die Oberfläche
+  lief, ist GEMESSEN LIVE (Stefan, 2026-09-10, VERMERK 6). Dass die Denkfigur über die
+  Scheibe hinaus trägt, ist eine ABLEITUNG, keine Messung.
 - **DIE VIER GRENZEN DER SCHEIBE STEHEN IN VERMERK 5 UND WERDEN HIER NICHT VERDOPPELT** —
   der ungespeiste Parameter, der irreführend gewordene Name `activeTestCodeFromRow`, die
   nötige Wanderung von `requiresTestCode` nach 11.3e und das Fehlen eines Live-Nachweises.

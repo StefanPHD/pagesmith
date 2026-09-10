@@ -295,13 +295,24 @@ wieder ein einheitlicher, durchgehend gemessener Stand ohne Sonderfälle.
   LIVE ABGELESEN am 2026-09-10 (SQL-Editor, Stefan, pg_get_constraintdef): unter dem ALTEN
   Namen NULL Zeilen; unter dem NEUEN GENAU EINE Zeile, mit ALLEN VIER Zweigen in der
   Definition und OHNE "NOT VALID".
-  DER WORTLAUT DER NEUEN DEFINITION STEHT HIER NICHT, UND ER WIRD NICHT REKONSTRUIERT —
-  das ist die einzige Stelle dieses Eintrags, an der eine Angabe FEHLT statt zu gelten:
-  Die Ablesung ist gefahren, ihre Ausgabe liegt der schreibenden Runde aber nicht im
-  Zeichenbild vor. Eine aus der Migrationsdatei zurückgerechnete Definition wäre eine
-  ABLEITUNG im Gewand einer Messung — Postgres normalisiert Klammerung und Kasten, und der
-  zurückgerechnete Text sähe aus wie abgelesen. WER DIE ABFRAGE ERNEUT FÄHRT, TRÄGT DEN
-  WORTLAUT HIER NACH; alle Nachbar-Constraints dieses Eintrags führen ihn.
+  DER WORTLAUT DER NEUEN DEFINITION, NACHGETRAGEN AM 2026-09-10 — LIVE ABGELESEN am
+  2026-09-10 (SQL-Editor, Stefan, pg_get_constraintdef), Zeile für Zeile wie abgelesen und
+  NICHT aus der Migrationsdatei zurückgerechnet:
+
+```
+CHECK (
+CASE target
+    WHEN 'meta'::text THEN ((test_event_code IS NULL) = (test_mode_expires_at IS NULL))
+    WHEN 'tiktok'::text THEN ((test_event_code IS NULL) = (test_mode_expires_at IS NULL))
+    WHEN 'pinterest'::text THEN (test_event_code IS NULL)
+    ELSE ((test_event_code IS NULL) AND (test_mode_expires_at IS NULL))
+END)
+```
+
+  WARUM DER WORTLAUT UND NICHT DIE ANWESENHEIT — derselbe Grund wie bei secret_version und
+  beim alten Paar-CHECK: Postgres normalisiert Klammerung und Typkasten. Ein
+  zurückgerechneter Text sähe aus wie abgelesen, und die Unterscheidung wäre an der Datei
+  nicht mehr zu treffen. Die vier Zweige sind hier NACHZÄHLBAR statt behauptet.
   WAS AUS DEM FEHLENDEN "NOT VALID" FOLGT: Der Bestand ist beim add constraint VALIDIERT
   worden. Das ist dieselbe ABLEITUNG wie beim alten CHECK und keine eigene Probe — aber sie
   ruht hier zusätzlich auf einer Erhebung VOR dem Lauf (s. den Bestand unten): es gab keine

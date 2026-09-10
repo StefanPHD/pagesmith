@@ -197,10 +197,17 @@ HIER WIRD KEINER DAVON VOLLZOGEN:**
   stand: "EINE MESSUNG. Es ist bekannt, WO der Träger sitzt; unbekannt ist, welcher der
   zwei Namen greift. Ein Lauf gegen die Schnittstelle entscheidet es. Danach ist es
   baubar." **Der Lauf ist am 2026-09-10 gefahren** (GEMESSEN LIVE, Stefan; VERMERK 3):
-  `test=true` wirkt. **Was pinterest jetzt noch fehlt, ist kein Befund, sondern ein
-  Zuschnitt** — namentlich der Paar-CHECK, der Code UND Frist verlangt, während pinterests
-  Testmodus keinen Code kennt (Vorrat (8)), und die Kollision aus deployment-weitem
-  Schalter und projekt-eigener Frist (Vorrat (26)).
+  `test=true` wirkt.
+  **NACHGEZOGEN AM 2026-09-10, ZWEITER NACHTRAG DESSELBEN TAGES — DAS SCHEMA STEHT
+  INZWISCHEN AUCH.** Hier stand: "Was pinterest jetzt noch fehlt, ist kein Befund, sondern
+  ein Zuschnitt — namentlich der Paar-CHECK, der Code UND Frist verlangt, während
+  pinterests Testmodus keinen Code kennt (Vorrat (8)), und die Kollision aus
+  deployment-weitem Schalter und projekt-eigener Frist (Vorrat (26))."
+  **DER PAAR-CHECK IST ERSETZT** (Migration 0029, Commit `1fb9b90`, VERMERK 4); `pinterest`
+  kann eine **Frist ohne Code** tragen, und Vorrat (8) ist mit Beleg gestrichen. **WAS
+  PINTEREST JETZT NOCH FEHLT, IST DIE AUFNAHME IN `TARGETS_WITH_TEST_MODE` UND DER
+  SCHALTER — Scheibe 11.3d.** Die Kollision aus deployment-weitem Schalter und
+  projekt-eigener Frist (Vorrat (26)) steht unverändert offen.
 - **google — EIN ANDERER WEG.** Hier fehlt keine Messung, sondern ein Träger, der die
   Beobachtung nicht abschneidet. Ob es ihn gibt, ist offen; solange nicht, kann diese Phase
   für google nichts liefern, was ihr eigenes Versprechen einlöst.
@@ -876,10 +883,16 @@ nicht bei null, und die verworfene Bauform steht mit ihrem Ausscheidungsgrund im
 "Scheibe 11.3c — Der Paar-CHECK wird ersetzt".
 
 **PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-10, auf der Grundlage der Messung vom selben Tag
-(VERMERK 3). Die Form des heutigen CHECK `project_secrets_test_mode_paar` und die Bauform
-seines Katalog-Guards sind GEMESSEN am Migrationstext 0028 (CC, 2026-09-10). Dass
+(VERMERK 3). Die Form des CHECK `project_secrets_test_mode_paar` und die Bauform seines
+Katalog-Guards sind am 2026-09-10 GEMESSEN am Migrationstext 0028 (CC) — **0028 war zu
+diesem Zeitpunkt der geltende Stand**, und die Angabe datiert sich damit selbst. Dass
 `testModeQuery` (`src/lib/capi/pinterest-forward.ts`) ohne jeden Code auskommt, ist
 GEMESSEN am Repo (CC, 2026-09-10).
+**NACHGEZOGEN AM 2026-09-10:** Hier stand "die Form des **heutigen** CHECK". Jener CHECK
+ist am selben Tag von Migration 0029 ersetzt worden; das Wort "heutigen" war ab da falsch,
+**die Provenienz-Aussage selbst ist es nie gewesen** — gemessen wurde, was an jenem
+Zeitpunkt galt. Geändert ist die Zeitform, nicht die Herkunft. **Die Entscheidung (12)
+oben ist unangetastet.**
 
 ## Vorrat — gemeldet, nicht gebaut
 
@@ -1376,6 +1389,30 @@ ist eine ABLEITUNG. Die Einordnung als Vorrat statt offener Punkt ist
 ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-10 — der Punkt gehört dieser Phase und geht am
 Phasenende über die Hebung weiter.
 
+**(29) SECHS KOMMENTARE UNTER `src/` NENNEN EINEN CONSTRAINT, DEN ES NICHT MEHR GIBT —
+IHRE AUSSAGE GILT, IHR NAME IST TOT.** Migration 0029 hat
+`project_secrets_test_mode_paar` durch `project_secrets_test_mode_je_ziel` ersetzt
+(VERMERK 4). Sechs Kommentarstellen in VIER Dateien führen den alten Namen weiter:
+`startTestMode` und `stopTestMode` (`src/app/projects/actions.ts`, je eine Stelle im
+Funktionskopf), zwei Läufe in `src/app/projects/actions.testmode.test.ts`, ein Lauf in
+`src/components/TargetCard.test.tsx` und der Erklärtext an der Ziel-Karte
+(`src/components/TargetCard.tsx`).
+**WAS SIE SAGEN, BLEIBT FÜR `meta` UND `tiktok` RICHTIG:** "beide oder keine" gilt dort
+unverändert — der neue CHECK urteilt für diese zwei Ziele wortgleich wie der alte. **NUR
+DER NAME ZEIGT INS LEERE.** Wer ihn im Katalog nachschlägt, findet nichts und hält den
+Kommentar für überholt, obwohl seine Aussage trägt.
+**WARUM DAS NICHT SCHLIMMER IST, ALS ES KLINGT, UND WARUM ES TROTZDEM HIERHER GEHÖRT:** Es
+sind Kommentare, kein Verhalten; nichts wird davon rot, und nichts läuft falsch. **Teuer
+wird es erst an der Ziel-Karte** (`TargetCard.tsx`), wo der Text dem Betreiber erklärt,
+warum es keinen An/Aus-Schalter gibt — und die Erklärung ab 11.3d für `pinterest` eine
+ANDERE ist, weil dort gerade kein Code abgelegt werden darf.
+TRIGGER: die nächste Runde, die eine dieser Dateien ohnehin öffnet — praktisch Scheibe
+11.3d, die `TARGETS_WITH_TEST_MODE` und die Ziel-Karte anfasst.
+PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10), Achse: der alte Constraint-Name,
+case-insensitiv, Suchraum `src/`, alle Dateitypen, Testdateien eingeschlossen — sechs
+Treffer in vier Dateien, mit Negativkontrolle (0) und Gegenprobe (der NEUE Name kommt
+unter `src/` NICHT vor).
+
 ## Hebungs-Kandidaten
 
 Hierher gehört, was am Phasenende in docs/immer-beachten.md, in CLAUDE.md oder ins Backlog
@@ -1859,8 +1896,10 @@ Entscheidung darüber ist eine eigene.
 **CODE-COMMIT: `1fb9b90`** (`feat(db): Migration 0029 — Paar-CHECK wird ziel-abhaengig
 ersetzt`, 1 Datei, 224 Einfügungen). GEMESSEN am Repo (CC, 2026-09-10): **GENAU EIN**
 Commit legt `supabase/migrations/0029_project_secrets_test_mode_je_ziel.sql` an.
-**COMMIT DIESES VERMERKS: LÜCKE** — er wird vom Commit dieser Runde geschlossen. Es ist
-die EINZIGE offene; VERMERK 1 bis 3 kennen ihren Commit.
+**COMMIT DIESES VERMERKS: `277ccd0`** (`docs(claude): Vermerk 4 — Scheibe 11.3c
+eingespielt und wirksam belegt`).
+**NACHGETRAGEN AM 2026-09-10** — hier stand die LÜCKE. **DAMIT KENNT JEDER VERMERK DIESER
+DATEI SEINEN COMMIT, und es gibt KEINE offene Lücke mehr.**
 
 **MIGRATION:** `0029_project_secrets_test_mode_je_ziel.sql`, eingespielt am **2026-09-10**.
 **DIE UHRZEIT IST NICHT ERHOBEN** und wird nicht erfunden. Bei 0028 steht sie (13:40:36
@@ -1895,14 +1934,32 @@ grösserer Befund als alles, was diese Scheibe baut.
 - **(3)** Policies auf `project_secrets` — **NULL.** Die Gegenkontrolle zur Migration:
   sie legt keine an, und eine, die es doch täte, würde an keinem Gate rot.
 
-**DER WORTLAUT DER ABGELESENEN DEFINITION LIEGT DIESEM VERMERK NICHT VOR — UND ER WIRD
-NICHT REKONSTRUIERT.** Gemeldet ist, WAS Stefan an der Ablesung festgestellt hat (eine
-Zeile, vier Zweige, kein `NOT VALID`), nicht der Text, den `pg_get_constraintdef`
-ausgegeben hat. **Eine aus der Migrationsdatei zurückgerechnete Definition wäre eine
-ABLEITUNG im Gewand einer Messung** — Postgres normalisiert die Schreibung (Klammerung,
-`::text`-Kasten), und der zurückgerechnete Text sähe aus wie abgelesen. Die Lücke ist
-benannt und in einer Zeile zu schliessen, sobald die Ausgabe vorliegt. **SIE BETRIFFT
-AUCH docs/db-stand.md**, wo die Nachbar-Constraints ihre Definition im Wortlaut tragen.
+**DER WORTLAUT DER ABGELESENEN DEFINITION, NACHGETRAGEN AM 2026-09-10** — GEMESSEN LIVE,
+2026-09-10, Stefan (SQL-Editor, `pg_get_constraintdef`); von der Chat-Instanz in den
+Prompt gereicht, **NICHT am Repo erhoben und NICHT aus der Migrationsdatei
+zurückgerechnet**. Zeile für Zeile wie abgelesen, nicht umformatiert:
+
+```
+CHECK (
+CASE target
+    WHEN 'meta'::text THEN ((test_event_code IS NULL) = (test_mode_expires_at IS NULL))
+    WHEN 'tiktok'::text THEN ((test_event_code IS NULL) = (test_mode_expires_at IS NULL))
+    WHEN 'pinterest'::text THEN (test_event_code IS NULL)
+    ELSE ((test_event_code IS NULL) AND (test_mode_expires_at IS NULL))
+END)
+```
+
+**KEIN `NOT VALID` IM TEXT — und das ist die tragende Aussage dieser Ablesung, nicht ein
+Nebenbefund:** Der Bestand ist beim `add constraint` VALIDIERT worden. Ein `NOT VALID`
+stünde in der Definition und prüfte nur künftige Zeilen; die 18 Bestandszeilen wären dann
+ungeprüft durchgelaufen.
+
+**WARUM DER WORTLAUT UND NICHT DIE ANWESENHEIT:** Postgres normalisiert die Schreibung
+(Klammerung, `::text`-Kasten). Eine aus der Migrationsdatei zurückgerechnete Definition
+wäre eine ABLEITUNG im Gewand einer Messung und sähe aus wie abgelesen — sie hätte in der
+vorigen Runde, als die Ausgabe nicht vorlag, hier gestanden, ohne dass jemand es hätte
+sehen können. **Der Text oben ist der abgelesene, und die vier Zweige sind an ihm
+nachzählbar statt behauptet.**
 
 **WIRKUNGS-PROBE — GEMESSEN LIVE, 2026-09-10, Stefan.** Vollständige Wahrheitstabelle,
 **18 Fälle**: `zeilen` **18**, `abweichungen` **0**, überlebende Probezeilen **0**,

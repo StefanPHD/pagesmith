@@ -172,8 +172,22 @@ Oberflächen-Scheibe.
 REICHWEITE DER GEBAUTEN SCHEIBEN, NICHT DEN GEGENSTAND DER PHASE.**
 
 **DIE PHASE 11.3 UMFASST ALLE FÜNF FAN-OUT-ZIELE** (OWNER-ENTSCHEIDUNG 2026-09-09).
-Gebaut sind zwei davon; drei stehen aus. **DIE PHASE IST DAMIT NICHT FERTIG**, und der
+**Gebaut sind DREI davon — `meta`, `tiktok` und seit dem 2026-09-10 `pinterest`; ZWEI
+stehen aus: `google` und `linkedin`.** **DIE PHASE IST DAMIT NICHT FERTIG**, und der
 Marker in CLAUDE.md bleibt aus genau diesem Grund auf `[ ]`.
+
+**NACHGEZOGEN AM 2026-09-10, NICHT GESTEMPELT — HIER STAND "Gebaut sind zwei davon; drei
+stehen aus."** Das war bis zum Bau der Scheibe 11.3e richtig (Commit `9422920`, VERMERK 6).
+**WARUM DIESE ZAHL NACHGEZOGEN WIRD UND NICHT ALS ZEITDOKUMENT STEHENBLEIBT:** Sie ist
+**keine datierte Messung**, sondern eine **STANDAUSSAGE im Gegenstand der Phase** — der
+nächste Zuschnitt liest sie als **AUSGANGSLAGE**. Wer ihr folgt, plant für drei
+ausstehende Ziele statt für zwei und sucht einen Zuschnitt für eines, das steht.
+**DIE ZWEI VERBLIEBENEN SIND DESHALB BEIM NAMEN GENANNT:** Eine blosse Zahl liesse offen,
+WELCHE, und die drei Ziele brauchen ausdrücklich **verschiedene** Dinge — was jedem von
+ihnen fehlt, steht unverändert in der Liste weiter unten.
+PROVENIENZ: der Bau von `pinterest` ist GEMESSEN am Repo (CC, 2026-09-10, Commit `9422920`,
+gepusht) und live belegt (VERMERK 6); dass `google` und `linkedin` die zwei verbliebenen
+sind, ist am Bestand dieser Liste ABLESBAR.
 
 **WAS HIER STAND UND WORAN ES SICH AUFGEHÄNGT HAT:** Die Liste unten trennte "MIT DABEI"
 von "NICHT DABEI" und schloss mit dem Satz, ein späterer Anlauf bei pinterest oder google
@@ -210,6 +224,17 @@ HIER WIRD KEINER DAVON VOLLZOGEN:**
   kann eine **Frist ohne Code** tragen, und Vorrat (8) ist mit Beleg gestrichen. **WAS
   PINTEREST JETZT NOCH FEHLT, IST DIE AUFNAHME IN `TARGETS_WITH_TEST_MODE` UND DER
   SCHALTER — Scheibe 11.3e.**
+  **NACHGEZOGEN AM 2026-09-10, VIERTER NACHTRAG DESSELBEN TAGES — PINTEREST FEHLT NICHTS
+  MEHR.** Der Satz darüber bleibt wörtlich stehen und war bis zum Bau richtig. **BEIDES IST
+  GEBAUT UND LIVE BEWIESEN** (Commit `9422920`, gepusht; VERMERK 6): `pinterest` steht in
+  `TARGETS_WITH_TEST_MODE`, der Schalter steht an der Karte — **ohne Code-Feld**, mit einem
+  Startknopf, der ohne Eingabe klickbar ist —, und der Testmodus ist am Anbieter gemessen
+  angekommen.
+  **ERSETZT UND NICHT GESTEMPELT, AUS DEMSELBEN GRUND WIE DER ABSATZ DARUNTER: DER SATZ
+  BINDET EINE HANDLUNG.** Er sagt, was `pinterest` noch fehlt; wer ihm folgt, baut etwas
+  ein zweites Mal, das steht. **WAS FÜR `pinterest` JETZT NOCH OFFEN IST, IST KEINE
+  BAUARBEIT, SONDERN EINE MESSUNG:** die OPTIMIERUNGS-Hälfte der Sandbox-Zusage — belegt ist
+  die BERICHTERSTATTUNG (VERMERK 6, dritte Grenze).
   **RICHTIGGESTELLT AM 2026-09-10, DRITTER NACHTRAG DESSELBEN TAGES — DIE KOLLISION IST
   ENTFALLEN, NICHT BEANTWORTET.** Hier stand: "Die Kollision aus deployment-weitem
   Schalter und projekt-eigener Frist (Vorrat (26)) steht unverändert offen."
@@ -2080,6 +2105,49 @@ Archivierungs-Verfahren (CLAUDE.md, "## Aktiver Stand — Verfahren ab Phase 10"
 Messung** — es ist kein Phasenende beobachtet worden, bei dem ein Code-Zeiger betroffen
 gewesen wäre.
 
+### (7) DIE COMMIT-LÜCKE EINES VERMERKS ENTSTEHT STRUKTURELL UND FÄLLT ERST DER NÄCHSTEN RUNDE AUF
+
+**DER BELEG — GEMESSEN am Dateitext (CC, 2026-09-10):** **VIER von FÜNF** Vermerken dieser
+Datei tragen denselben Nachtrag, wörtlich "hier stand die LÜCKE" — VERMERK 1, 2, 3 und 5.
+**KEINER von ihnen hat seine Lücke in der Runde geschlossen, die den Vermerk geschrieben
+hat.**
+
+**DIE URSACHE IST DIE REIHENFOLGE VON SCHREIBEN UND COMMITTEN, NICHT DIE NACHLÄSSIGKEIT:**
+Der Hash existiert im Moment des Schreibens **nicht**. Die Lücke ist also **die Bauform**,
+und sie lässt sich in derselben Runde gar nicht vermeiden — nur in der nächsten schliessen.
+**GENAU DAS MACHT SIE STILL:** Sie sieht in jeder Runde aus wie der regelkonforme Zustand,
+den die Lücken-Regel ausdrücklich erlaubt.
+
+**WAS SIE DIESMAL GEFANGEN HAT, UND ES IST KEIN MECHANISMUS:** eine **STOPP-BEDINGUNG IM
+PROMPT**, die ausdrücklich danach fragte ("bereits eine offene Lücke da: STOPP"). **DAS IST
+EIN ZUFALL DER VORGABE.** Die Fortschreibungsregel VERLANGT den Nachtrag — VERMERK 1 sagt
+sogar, er habe VOR dem Anlegen des nächsten Vermerks zu geschehen —, aber **nichts
+ERZWINGT ihn**: kein Test, kein Lint, kein Build liest diese Datei.
+
+**WARUM DAS MEHR IST ALS EINE FORMALIE:** Die Lücken-Regel trägt eine DIAGNOSE — "steht
+eine zweite da, ist entweder ein Commit nicht nachgetragen worden oder ein Vermerk
+beschreibt etwas, das nie eingecheckt wurde". **Diese Diagnose funktioniert nur, solange es
+höchstens EINE Lücke gibt.** Bei zwei sagt sie nicht mehr, welche die offene ist — und die
+zweite entsteht **automatisch** beim nächsten Vermerk, wenn niemand die erste geschlossen
+hat.
+
+**ABGRENZUNG ZU HEBUNGS-KANDIDAT (6):** Dort stirbt ein Zeiger AUS dem Code IN diese Datei,
+weil die Ablage eine Halbwertszeit hat. Hier fehlt eine Angabe INNERHALB der Datei, weil sie
+zum Schreibzeitpunkt noch nicht existiert. **Verwandte Figur — eine Angabe, die im falschen
+Moment verlangt wird —, anderer Gegenstand.**
+
+**NICHT ENTSCHIEDEN:** ob daraus eine eigene Regel wird oder ein Absatz an den
+Fortschreibungsregeln · und ob eine AUFLAGE folgt (etwa: jede Runde prüft zuerst die
+Lücken, oder der Vermerk-Commit trägt den Nachtrag im selben Zug per `--amend`).
+**KEINE EMPFEHLUNG.**
+GEMELDET 2026-09-10, NICHT GEBAUT.
+
+**PROVENIENZ:** Die vier Nachträge und ihre Fundstellen sind **GEMESSEN am Dateitext (CC,
+2026-09-10)**; die Zuordnung des Commits `619e392` zu VERMERK 5 ist **GEMESSEN am Repo (CC,
+2026-09-10, zwei Achsen)**. Dass die Ursache **strukturell** ist, ist eine **ABLEITUNG** aus
+der Reihenfolge von Schreiben und Committen, keine Messung. Dass kein Gate diese Datei
+liest, ist ein **NICHT-TREFFER mit benannter Achse** — die vier Gates dieses Projekts.
+
 ## Scheiben-Vermerke
 
 Ein Vermerk entsteht erst, wenn eine Scheibe gebaut UND live geprüft ist — nicht bei
@@ -2923,9 +2991,26 @@ in einer, die es ohnehin gibt.
   `TARGETS_WITH_TEST_MODE` steht weiterhin auf `["meta", "tiktok"]`, und ein Wächter nagelt
   die Liste fest (GEMESSEN am Repo, CC, 2026-09-10). **Kein Schreibpfad kann den erlaubten
   Zustand heute herstellen.**
+  **NACHGEZOGEN AM 2026-09-10 — DIE ZWEITE HÄLFTE IST EINGELÖST, DER SATZ DARÜBER BLEIBT
+  WÖRTLICH.** **DER CODE ERZEUGT ES SEIT COMMIT `9422920` SEHR WOHL** (Scheibe 11.3e,
+  VERMERK 6): `TARGETS_WITH_TEST_MODE` trägt `["meta", "tiktok", "pinterest"]`, TM13 ist
+  darauf nachgezogen, und `startTestMode` legt für dieses Ziel eine **Frist ohne Code** an.
+  **WARUM DIESE STELLE NACHGEZOGEN WIRD UND DIE VERMERKE NICHT:** Sie steht im Teil "Was
+  über die Scheibe hinaus gilt", also im BINDENDEN Rest der Scheibe 11.3c — nicht in ihrem
+  abgelaufenen Zuschnitt und nicht in einem Vermerk. **DIE ERSTE HÄLFTE DES SATZES BLEIBT
+  UNVERÄNDERT RICHTIG**, und die Warnung davor ebenso: Wer Schema und Code zusammenzieht,
+  hält weiterhin zwei Achsen für eine.
 - **WAS 11.3e ZU TUN HAT UND WAS DIESE SCHEIBE IHM NICHT ABGENOMMEN HAT:** `pinterest` in
   `TARGETS_WITH_TEST_MODE` samt Wächter, der Schalter an der Pinterest-Karte, der
   Banner-Text.
+  **NACHGEZOGEN AM 2026-09-10 — ALLE DREI POSTEN SIND ERLEDIGT** (Commit `9422920`,
+  VERMERK 6). Der Banner-Text brauchte dabei **KEINE Zeile**: `testModeBannerText` liest
+  `kind` und `endetAt` und macht keine Annahme über den Code — `pinterest` erscheint von
+  selbst, und ein Lauf hält es fest.
+  **DIESE LISTE IST DER TEUERSTE DER NACHZÜGE, UND DAS IST DER GRUND FÜR DEN ABSATZ: EINE
+  AUFGABENLISTE WIRD AUSGEFÜHRT, NICHT GELESEN.** Ein Trigger, eine Bedingung und eine
+  Aufgabenliste erreicht kein Satz an einem anderen Ort — deshalb steht die Erledigung
+  HIER und nicht nur im Vermerk.
   **DER VIERTE POSTEN IST AM 2026-09-10 ENTFALLEN UND WIRD HIER EIGENS VERMERKT, WEIL
   "GESTRICHEN" SONST VON "VERGESSEN" NICHT ZU UNTERSCHEIDEN IST.** Er lautete: "und die
   Vorrang-Frage aus Vorrat (26), deployment-weiter Env-Schalter gegen projekt-eigene
@@ -2955,6 +3040,16 @@ in einer, die es ohnehin gibt.
   ist Oberfläche, also 11.3e.** Der Zeiger ist nachgezogen, weil er eine Bauanweisung
   trägt ("wer die Karte kopiert, baut ein Eingabefeld …") — sie gälte sonst der Scheibe,
   die die Karte nicht anfasst.
+  **ZWEITER NACHTRAG DESSELBEN TAGES — DIE GESTE IST GEBAUT, DER TEXT DARÜBER BLEIBT
+  WÖRTLICH.** Die Karte zeigt für `pinterest` **kein Code-Feld**; der Startknopf trägt nur
+  noch die Doppelklick-Sperre und ist ohne Eingabe klickbar (Gestalt-Entscheidung (A),
+  Commit `9422920`, VERMERK 6). **DIE WARNUNG BLEIBT GÜLTIG UND WIRD NICHT GESTRICHEN** —
+  "wer die Karte kopiert, baut ein Eingabefeld für einen Wert, den die Datenbank
+  zurückweist" gilt unverändert für **JEDES künftige Ziel ohne Code-Pflicht**. Sie war eine
+  Bauanweisung an 11.3e und ist ab jetzt eine an dessen Nachfolger.
+  **WAS DER BAU DER FESTSTELLUNG HINZUGEFÜGT HAT:** Die Auskunft, welches Ziel einen Code
+  verlangt, steht seit dieser Scheibe an **EINER** Stelle (`requiresTestCode`) und wird von
+  Karte UND Schreibpfad **GEFRAGT, nicht nachgebildet**.
 
 **PROVENIENZ DES ZUSCHNITTS:** OWNER-ENTSCHEIDUNG 2026-09-10 (die vier Zweige, die
 Ausscheidung der Bauform B, die Auflage an den Namen, der Umfang und die Ausschlüsse), auf

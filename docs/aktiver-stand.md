@@ -1270,6 +1270,46 @@ Nutzer, der den Testmodus einschaltet. VERWANDT mit dem offenen Punkt "BETREIBER
 DOKUMENTATION FEHLT — ZWEI PUNKTE" (CLAUDE.md). PROVENIENZ: FOLGERUNG aus dem Zuschnitt
 der Scheibe 11.3a, keine Messung.
 
+**VERMERKT AM 2026-09-10 NACH DER SCHEIBE 11.3f — NICHT GESTRICHEN. DER EINTRAG BLEIBT
+OFFEN, UND DIE ENTSCHEIDUNG IST AM TEXT DES EINTRAGS FESTGEMACHT, NICHT AM GEFÜHL, er sei
+"im Wesentlichen erledigt":** Der Eintrag zählt DREI Orte auf, an denen die Erklärung fehlt
+— "keine Anzeige, keinen Hinweistext, keine Betreiber-Dokumentation". **Zwei davon sind
+gebaut, der dritte steht wörtlich im Eintrag und fehlt weiterhin.** Wer bei zwei von drei
+streicht, streicht den Teil mit, der noch aussteht.
+
+**WAS DIE SCHEIBEN 11.3b BIS 11.3f DAVON EINGELÖST HABEN:** Der Banner nennt seit 11.3b
+Ziel und Frist und sagt den Satz, der genau diesen Eintrag adressiert — "Solange zählt die
+eigene Auswertung dieses Projekts keine Ereignisse". Seit 11.3f sagt er zusätzlich JE ZIEL,
+was beim Anbieter geschieht — für `pinterest` GEMESSEN LIVE, für `meta` GELESEN, für
+`tiktok` ausdrücklich als ungeprüft. **Damit ist das Auseinanderlaufen der zwei Zählungen
+benannt, statt dass der Kunde es als Defekt deuten muss.** Der TRIGGER des Eintrags ("die
+Oberflächen-Scheibe 11.3b") ist also EINGETRETEN und ABGEARBEITET — der Eintrag ist
+trotzdem nicht leer.
+
+**DIE ZWEI RESTLÜCKEN, EINZELN UND JE MIT IHRER ACHSE:**
+· **(a) DIE BETREIBER-DOKUMENTATION FEHLT WEITERHIN.** Sie steht im Eintrag ausdrücklich
+  als dritter Ort, und der Eintrag verweist selbst auf den offenen Punkt
+  "BETREIBER-DOKUMENTATION FEHLT — ZWEI PUNKTE" (CLAUDE.md). Eine Anzeige IM Produkt
+  ersetzt keine Dokumentation ÜBER das Produkt: Wer nachliest, warum seine Zahlen
+  auseinanderliefen, hat die Anzeige längst nicht mehr vor sich.
+· **(b) DER BANNER ERKLÄRT NUR WÄHREND DES LAUFENDEN TESTMODUS — DIE LÜCKE IN DER KURVE
+  ÜBERLEBT IHN.** Das ist die schärfere der beiden, weil sie erst nach dem Beenden beisst:
+  Mit dem Ablauf der Frist ist der Banner sofort weg, die fehlenden Ereignisse des
+  Zeitraums bleiben in der Auswertung fehlend, und **nichts sagt mehr, warum**. Der Eintrag
+  beschreibt genau diesen Fall ("Sein Dashboard steht still") — er beschreibt ihn nur für
+  die Zeit WÄHREND, und die Zeit DANACH ist von 11.3b bis 11.3f nicht berührt worden.
+  **AUSDRÜCKLICH KEINE EMPFEHLUNG**, was dagegen zu bauen wäre; hier steht der Befund, nicht
+  seine Auflösung.
+
+**DER TRIGGER DES EINTRAGS BLEIBT WÖRTLICH STEHEN UND WIRD NICHT ERSETZT**, obwohl seine
+erste Hälfte eingetreten ist: Seine zweite Hälfte — "spätestens der erste fremde Nutzer, der
+den Testmodus einschaltet" — trägt die zwei Restlücken weiter und ist NICHT eingetreten.
+PROVENIENZ DIESES VERMERKS: der gebaute Banner-Stand GEMESSEN am Repo (CC, 2026-09-10,
+Commit `8fcd4e0`); dass die Betreiber-Dokumentation fehlt, ist GEMESSEN am Repo (CC,
+2026-09-10) und steht zugleich als offener Punkt in CLAUDE.md; dass der Banner nach dem
+Beenden verschwindet, ist eine ABLEITUNG aus seiner Bedingung (`testModeState.kind ===
+"laeuft"`), **keine Messung an einer laufenden Oberfläche**.
+
 **(4) — GESTRICHEN AM 2026-09-09, FÜR META BEANTWORTET. DIE NUMMER BLEIBT STEHEN** und wird
 nicht nachvergeben; ein Verweis nennt die Nummer, nicht das Datum, und er wird nicht rot,
 wenn sie weiterwandert.
@@ -1585,18 +1625,51 @@ TRIGGER: ein Schreibweg auf `project_secrets`, der die Nicht-Leer-Prüfung nicht
 PROVENIENZ: ABLEITUNG aus `hasSecret` und dem gebauten Lesepfad (CC, 2026-09-09), **keine
 Messung** — der Fall ist nicht herbeigeführt worden.
 
-**(22) DER BANNER-SATZ "beim Anbieter kommen sie weiterhin an" IST NICHT FALSCH, ABER
-ZIEL-ABHÄNGIG ZU LESEN.** Er spricht von **ANKUNFT**; der Leser wird ihn als **ZÄHLUNG**
-lesen. **Für Meta trifft beides zu** (die Doku sagt ausdrücklich, markierte Ereignisse
-flössen in Targeting und Messung); **für TikTok womöglich nur das Erste** — dessen
-Oberfläche sagt "Test events will not be included in actual data".
-**NICHT GEÄNDERT, UND DER GRUND IST DIE PROVENIENZ:** Ein ziel-abhängiger Text ruhte dann
-auf einer EINMAL GELESENEN Oberflächen-Zeile. Das ist zu wenig für eine
-Produktaussage — und ein falsch differenzierter Text wäre schlechter als ein zu
-allgemeiner, weil er Genauigkeit behauptet, die niemand gemessen hat.
-TRIGGER: die Messung, ob TikTok test-markierte Ereignisse in den echten Daten führt.
-PROVENIENZ: GELESEN an TikToks Oberfläche (Stefan, 2026-09-09) gegen die Meta-Doku-Lesung
-vom 2026-09-08; die Folge für den Text ist eine ABLEITUNG, **keine Messung**.
+**(22) — GESTRICHEN AM 2026-09-10, GESCHLOSSEN DURCH DEN BAU. DIE NUMMER BLEIBT STEHEN**
+und wird nicht nachvergeben; ein Verweis nennt die Nummer, nicht das Datum, und er wird
+nicht rot, wenn sie weiterwandert.
+
+HIER STAND: "DER BANNER-SATZ 'beim Anbieter kommen sie weiterhin an' IST NICHT FALSCH, ABER
+ZIEL-ABHÄNGIG ZU LESEN" — der Satz sprach von ANKUNFT, der Leser las ihn als ZÄHLUNG, und
+der Eintrag hielt fest, dass ein ziel-abhängiger Text auf einer einmal gelesenen
+Oberflächen-Zeile zu dünn ruhte.
+TRIGGER war: die Messung, ob TikTok test-markierte Ereignisse in den echten Daten führt.
+**DER ALTE VOLLTEXT WIRD NICHT MITGEFÜHRT** — er beschrieb einen Satz, den es so nicht
+mehr gibt.
+
+**DER BELEG DER ERLEDIGUNG:** Commit `8fcd4e0` (Scheibe 11.3f, VERMERK 7), gepusht. Der
+Banner-Satz ist **ziel-abhängig** geworden: `meta` "beim Anbieter zählen sie weiter",
+`pinterest` "beim Anbieter kommen sie an, gezählt werden sie nicht", `tiktok` "was der
+Anbieter mit ihnen tut, ist nicht geprüft". **Der Live-Blick hat ihn gesehen** — einzeilig
+bei einem Ziel, bei zwei Zielen beide Halbsätze je direkt beim Namen und ein Absatz
+(GEMESSEN LIVE, Stefan, 2026-09-10).
+
+**DER EINWAND DIESES EINTRAGS IST NICHT ENTKRÄFTET, SONDERN ÜBERWOGEN, und das ist der
+Unterschied:** Er warnte davor, Genauigkeit zu behaupten, die niemand gemessen hat. **Die
+gebaute Fassung behauptet für `tiktok` gerade KEINE** — sie ist die Stelle, an der das
+Nichtwissen steht. **Der Ausschlag gab: Ein Kundentext, der für ein Ziel irreführt, sollte
+nicht auf eine Messung warten, die niemand terminiert hat.** OWNER-ENTSCHEIDUNG 2026-09-10.
+
+**DER ZEIGER, DER GERETTET WERDEN MUSS — UND ER IST DER GRUND, WARUM DIESE STREICHUNG NICHT
+KÜRZER AUSFÄLLT: DIE TIKTOK-MESSUNG STEHT WEITER OFFEN, UND ZWAR IN VORRAT (1).** Jener
+führt "OB TIKTOK TEST-MARKIERTE EREIGNISSE MITZÄHLT WIE META — UNGELESEN UND UNGEMESSEN"
+mit eigenem Trigger. **Dieser Eintrag hier trug die FOLGE FÜR DEN PRODUKTTEXT, (1) trägt
+die MESSUNG selbst** (GEMESSEN am Dateitext, CC, 2026-09-10).
+**WER DIESE STREICHUNG ALS ERLEDIGUNG DER GANZEN ACHSE LIEST, HÄLT EINE FRAGE FÜR
+BEANTWORTET, DIE NUR IHRE TEXTFORM BETRIFFT.** Gestrichen ist, dass der Text für zwei von
+drei Zielen falsch lag — nicht, dass wir wüssten, was TikTok tut.
+
+**EINE NAMENSVETTER-PRÜFUNG, damit die Streichung keinen fremden Zeiger tötet (GEMESSEN am
+Repo, CC, 2026-09-10):** Ausserhalb dieser Datei nennen **zwei** Stellen einen
+"Vorrats-Eintrag 22" — docs/claude-history/backlog-polish.md und
+docs/claude-history/phase-11.2-google.md. **Beide meinen den Vorrat der PHASE 11.2**
+(CR-Zeilen-Instrument bzw. Hebungs-Kandidat 6 jener Phase), **nicht diesen Eintrag**. Es
+sind NAMENSVETTERN und keine Zeiger; **kein Zeiger stirbt mit dieser Streichung.**
+
+PROVENIENZ DER STREICHUNG: der Bau ist GEMESSEN am Repo (CC, 2026-09-10, Commit `8fcd4e0`,
+gepusht); der gesehene Banner ist GEMESSEN LIVE (Stefan, 2026-09-10); die Zuordnung der
+TikTok-Messung zu Vorrat (1) und die Namensvetter-Prüfung sind GEMESSEN am Dateitext bzw.
+am Repo (CC, 2026-09-10).
 
 **ZUSATZ 2026-09-10 — DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN, UND DER EINTRAG BLEIBT
 OFFEN.** Sein Trigger ist die TikTok-Messung, und die steht aus; die Ergänzung betrifft ein
@@ -1862,6 +1935,30 @@ führt.
 PROVENIENZ DIESES ZUSATZES: die sieben Fundstellen, ihre Verteilung und die Gegenprobe sind
 GEMESSEN am Repo (CC, 2026-09-10) nach dem Bau-Commit; dass die siebte von der
 Richtigstellung selbst stammt, ist am Dateitext ABLESBAR und keine Ableitung.
+
+**(30) DER NAME VON PINTERESTS TEST-ANSICHT IST GEMESSEN UND NIRGENDS ABGELEGT — UND ER IST
+SPRACHABHÄNGIG.** In Pinterests **deutscher** Oberfläche heisst der Navigationspunkt
+"Conversions" → **"Events testen"**, die Karte darin **"Conversions API-Events testen"**
+(GELESEN an der Oberfläche, Owner, 2026-09-10). **DER BEFUND GEHÖRT NACH
+`docs/ziel-befunde.md`, Abschnitt "Pinterest (Conversions API)"** — dort liegen die
+Anbieter-Befunde je Ziel, und dorthin greift jeder, der an diesem Ziel arbeitet.
+**DER VERMERK "SPRACHABHÄNGIG" IST NICHT DIE FUSSNOTE, SONDERN DER HALBE EINTRAG:** Ein
+Kunde mit englischem Konto liest an derselben Stelle etwas anderes. **Wer den deutschen
+Namen ohne diesen Vermerk ablegt, legt eine Angabe ab, die für einen Teil der Nutzer schlicht
+falsch ist** — und sie sieht dort aus wie jede andere gemessene Angabe.
+**GENAU DESHALB TRÄGT DIE OBERFLÄCHE IHN NICHT:** Die Reihenfolge-Angabe der Scheibe 11.3f
+sagt "Test-Ansicht im Werbekonto zuerst öffnen, dann auslösen" und nennt **kein Label**. Das
+ist ENTSCHIEDEN (Plan-Nachtrag, Entscheidung 2, 2026-09-10) und wird von diesem Eintrag
+**nicht wieder aufgemacht** — er betrifft die ABLAGE des Befunds, nicht den Kundentext.
+TRIGGER: **eine eigene Doku-Runde an `docs/ziel-befunde.md`** — ausdrücklich NICHT die
+Abschluss-Runde der Scheibe 11.3f, deren Scope jene Datei als UNBERÜHRT führt.
+**WARUM ER HIER FESTGEHALTEN IST UND NICHT NUR IM ZUSCHNITT STAND:** Der Zuschnitt der
+Scheibe 11.3f wird mit ihrem Abschluss VERDICHTET. Ein Zeiger, der nur dort steht, geht mit
+der Verdichtung verloren — und dann ist der Befund gemessen, richtig und nirgends.
+PROVENIENZ: der Name selbst ist GELESEN an Pinterests Oberfläche (Owner, 2026-09-10);
+**dass er sprachabhängig ist, ist eine ABLEITUNG** aus dem Umstand, dass es eine übersetzte
+Oberfläche ist — **an keinem englischen Konto GEMESSEN**. Dass der Befund heute in keiner
+Datei des Repos steht, ist GEMESSEN am Repo (CC, 2026-09-10).
 
 ## Hebungs-Kandidaten
 
@@ -2849,6 +2946,142 @@ Lauf bzw. am Repo (CC, 2026-09-10)**. Die Zuordnung von V4 zum Pinterest-Testlau
 **ABLEITUNG** aus dem Zeitstempel-Paar und dem gemeinsamen Aufruf, **keine Messung an einer
 Ereigniskennung** — s. die erste Grenze.
 
+### VERMERK 7 — Scheibe 11.3f, gebaut und live gesehen
+
+**CODE-COMMIT: `8fcd4e0`** (`feat(ui): zwei Kundentexte fuer den Testmodus — 11.3f`, **drei
+Dateien**, 327 Einfügungen, **6 Löschungen**). **GEPUSHT** — GEMESSEN am Repo (CC,
+2026-09-10): `origin/main` steht auf demselben Hash.
+**DASS ES GENAU EIN BAU-COMMIT IST, IST GEMESSEN** (CC, 2026-09-10, zwei Achsen): `git log`
+über die zwei berührten Produktivdateien nennt als jüngsten Commit nur diesen, und eine
+Suche über die Scheibennummer findet DREI Commits, davon **einen `feat`** — die zwei
+anderen sind die `docs(claude)`-Runden des Zuschnitts und der Schärfung von (A).
+**COMMIT DIESES VERMERKS: — offen.** Er ist der jüngste; die Lücken-Regel erlaubt genau
+eine, und dies ist sie.
+
+**ES ÄNDERT SICH KEINE LOGIK, UND DAS IST AN DEN SECHS LÖSCHUNGEN ABLESBAR:** vier Zeilen
+sind das entfallene JSX-Literal im Container, zwei die ersetzte Rückgabezeile. Alles andere
+ist additiv.
+
+**GATES (GEMESSEN am eigenen Lauf, CC, 2026-09-10, alle vier VOR dem Diff):**
+`tsc --noEmit` grün · `eslint` **0 Fehler** (die eine Warnung steht in
+`src/lib/tracking/consent.test.ts`, ausserhalb des Diffs und vorbestehend) ·
+`vitest` **1625 grün**, vorher **1617** (**+8**) · `next build` grün.
+
+#### DIE FÜNF MUTATIONEN — ALLE EXAKT WIE DIE AKTUALISIERTE VORHERSAGE
+
+**M1** (die Angabe erscheint ziel-blind): **einer** · **M2** (`kind === "laeuft"` entfernt):
+**einer** · **M3** (Banner fällt auf den einheitlichen Satz zurück): **vier** ·
+**M4** (Reihenfolge aus den Objektschlüsseln): **einer** · **M5** (der Halbsatz wandert in
+einen Sammelsatz): **einer**.
+
+**M5 IST DER EINZIGE WÄCHTER ÜBER DIE AUFLAGE AUS ENTSCHEIDUNG 1**, und er hat TM32 rot
+gemacht. **TM32 PRÜFT DIE POSITION DER HALBSÄTZE STATT IHRER BLOSSEN ANWESENHEIT** — ein
+`toContain` wäre bei einem Sammelsatz am Ende GRÜN geblieben, weil beide Halbsätze dann
+immer noch im Text stehen. Die drei Reihenfolge-Zusicherungen (`Name < Halbsatz <
+nächster Name`) sind das, was den Sammelsatz überhaupt von der Reihung trennt.
+
+**EINE MUTATIONSFORM IST VOR DEM LAUF VERWORFEN WORDEN, und der Grund gehört in den
+Vermerk:** Die naheliegende Fassung von M1 — die Auskunfts-Bedingung **einfach streichen** —
+hätte `{undefined}` gerendert; React zeigt dafür nichts, und **TM27 wäre GRÜN geblieben.
+NICHT weil der Wächter schwach ist, sondern weil die Mutation den Fehler gar nicht
+herstellt.** Gefahren ist stattdessen die faithful Form: der Hinweis wird für JEDES Ziel aus
+`pinterest` gelesen. *(docs/immer-beachten.md: "wer eine Mutation ansagt, liest zuerst, was
+ZWISCHEN der mutierten Funktion und dem Prüfling liegt".)*
+
+**DIE RICHTUNG DER ABWEICHUNGEN — RICHTIGGESTELLT GEGEN DIE VORGABE DIESER RUNDE, WEIL DIE
+MESSUNG ANDERS AUSFÄLLT.** Die Vorgabe nannte **M2 UND M3** als "zu weit". **GEMESSEN am
+eigenen Lauf (CC, 2026-09-10) ist nur M2 zu weit, M3 war zu ENG:**
+- **M2** — der Plan sagte "L2 **und L4** fallen" (zwei), gefallen ist **nur TM26** (einer).
+  **ZU WEIT — und das ist tatsächlich das erste Mal in dieser Phase in diese Richtung.**
+  Der Grund ist benennbar: Nach der Mutation bleibt die Auskunfts-Bedingung stehen, und
+  `meta` trägt gar keinen Hinweis; TM28 kann deshalb nicht fallen.
+- **M3** — der Plan sagte "L5, L6, L7" (drei), gefallen sind **vier** (TM29–TM32).
+  **ZU ENG**, und damit die **SECHSTE** Abweichung dieser Richtung in der Phase (11.3d:
+  M2, M3, M5 — 11.3e: M1, M4). **An der Fehlerklasse als DECKUNG geprüft:** TM32 fällt aus
+  demselben Grund wie die drei anderen — der ziel-abhängige Halbsatz fehlt.
+**WARUM DIE RICHTIGSTELLUNG ZÄHLT UND NICHT PEDANTERIE IST:** Die EINSEITIGE STREUUNG ist
+die eigentliche Aussage der Regel "EINE MUTATIONS-VORHERSAGE KANN IN BEIDE RICHTUNGEN
+FALSCH SEIN" (docs/immer-beachten.md) — Zufall träfe mal nach oben, mal nach unten. Wer M3
+als "zu weit" verbucht, macht aus **fünf zu eng und eins zu weit** ein **ausgeglichenes
+Bild** und löscht damit genau den Befund. Ein Überschuss war zudem zu PRÜFEN (Deckung oder
+Kaskade); bei einer zu weiten Vorhersage gibt es nichts zu prüfen — die Vorgabe widerspricht
+sich an dieser Stelle selbst.
+
+**KEIN BESTANDSLAUF IST GEBROCHEN**, und das ist keine Entwarnung, sondern die Bestätigung
+eines Befunds: Der Banner-Satz war **von keinem Lauf gedeckt**. Über alle
+`src/**/*.test.ts(x)` gesucht (Achse: "beim Anbieter", "kommen sie weiterhin an", "Solange
+zählt", "Beenden in den Einstellungen", "Testmodus:") — **kein Treffer in einer Testdatei**;
+und `CodeImporter.test.tsx` rendert den Banner in **keinem** Lauf, weil sein Leser-Mock
+dauerhaft ein leeres `states`-Objekt liefert. **Seit dieser Scheibe ist der Text ohne
+Container-Render prüfbar** (GEMESSEN am Repo, CC, 2026-09-10).
+
+#### DER LIVE-BLICK — GEMESSEN LIVE, 2026-09-10, Stefan
+
+**FÜNF PUNKTE, ALLE BESTÄTIGT:**
+1. Der Hinweis steht an der Pinterest-Karte **an der richtigen Stelle und lesbar**.
+2. Der Banner ist bei **EINEM** laufenden Ziel **einzeilig**.
+3. Bei **ZWEI** laufenden Zielen stehen **beide Halbsätze je direkt beim Namen**, und der
+   Banner bleibt **ein Absatz**.
+4. An der **Meta-Karte** steht **keine** Reihenfolge-Angabe; Code-Feld und Sperre sind
+   unverändert.
+5. Nach dem Beenden ist der Banner **sofort weg**.
+
+**EINE UNGEPLANTE GEGENPROBE AUS DEMSELBEN LAUF, UND SIE GEHÖRT HINEIN:** Die Meta-Karte
+stand auf **"Testmodus abgelaufen"** — und der Banner nannte **NUR `pinterest`**. **DAS
+BELEGT LIVE, DASS DIE BANNER-BEDINGUNG `kind === "laeuft"` LIEST UND NICHT BLOSS "HAT EINE
+FRIST".** Ein abgelaufener Testmodus taucht nicht auf.
+**WARUM DAS MEHR IST ALS EIN NEBENBEFUND:** Diese Achse war bisher **nur im Unit-Test**
+gedeckt (der Lauf "KEIN Banner ohne laufendes Ziel — auch nicht bei abgelaufen"). Sie ist
+**nicht geplant gewesen** und im Betrieb entstanden — die wertvollste Art von Gegenprobe,
+weil niemand sie herbeigeführt hat.
+
+**WAS DER BLICK AUSDRÜCKLICH NICHT IST: ein Nachweis über die Wirkung beim Anbieter.** Die
+ist in VERMERK 6 belegt; **diese Scheibe fügt ihr nichts hinzu und misst sie nicht erneut.**
+
+#### DIE DREI PROVENIENZEN — SIE WERDEN NICHT ANGEGLICHEN
+
+- **`meta`** — "beim Anbieter zählen sie weiter". **GELESEN** (Anbieter-Doku, 2026-09-08).
+- **`pinterest`** — "kommen an, gezählt werden sie nicht". **GEMESSEN LIVE** (2026-09-10).
+- **`tiktok`** — "was der Anbieter mit ihnen tut, ist nicht geprüft". **GELESEN, EINMAL,
+  UNGEMESSEN.**
+
+**EINE KORREKTUR, DIE IN DEN VERMERK GEHÖRT UND NICHT IN EINE FUSSNOTE:** Die
+Zusammenfassung des Live-Blicks führte **`meta` als "gemessen"**. **DAS IST FALSCH —
+`meta` ist GELESEN.** **DER CODE HAT ES RICHTIG** (der Kommentarkopf von
+`testModeAnbieterAuskunft` nennt für jedes der drei Ziele die Provenienz einzeln); falsch
+war allein die Zusammenfassung.
+**WARUM DAS FESTGEHALTEN WIRD:** Genau auf diesem Weg wird aus einer Lesung eine Messung,
+die es nie gab — eine Zusammenfassung ist bequemer zu zitieren als der Kommentarkopf, und
+sie trägt keine Provenienz an sich. **Die Meta-Aussage ruht unverändert auf einer
+DOKU-LESUNG vom 2026-09-08 und auf keinem einzigen Aufruf.**
+
+#### DREI GRENZEN, HIER WIRD NICHT GEKÜRZT
+
+- **DIE GEWÄHLTE BAUFORM IST VON DER VERWORFENEN NICHT DURCH EINEN LAUF ZU TRENNEN.**
+  "`reihenfolgeHinweis` vorhanden" und "`!requiresTestCode`" liefern für **alle fünf**
+  heutigen Ziele **dasselbe**. **Kein Lauf kann die richtige von der falschen Bauform
+  unterscheiden**; die Fehlerklasse entsteht erst beim sechsten Ziel. **Was schützt, ist
+  `tsc` — und ein Kommentar ist kein Wächter.** Das ist die Figur "EINE VORBEDINGUNG, DIE
+  AUCH DER ALTE ZUSTAND ERFÜLLT" (docs/immer-beachten.md), und sie steht als Absatz am
+  `switch` selbst.
+- **DER ANSICHTS-NAME IST BESCHREIBEND, NICHT ABGELESEN.** Das Label ist **sprachabhängig**
+  — in der deutschen Oberfläche heisst der Navigationspunkt "Events testen", die Karte darin
+  "Conversions API-Events testen" (GELESEN an der Oberfläche, Owner, 2026-09-10). **Ein
+  Kunde mit englischem Konto liest dort etwas anderes**; ein hartkodiertes Label wäre für
+  ihn schlicht falsch. Der Text sagt deshalb "Test-Ansicht im Werbekonto".
+- **TIKTOKS FASSUNG RUHT AUF EINER EINMAL GELESENEN OBERFLÄCHEN-ZEILE.** Sie ist **kein
+  Anspruch, sondern das Eingeständnis** — und sie **ersetzt die TikTok-Messung NICHT**. Die
+  steht unverändert als **Vorrat (1)** offen.
+
+**PROVENIENZ DIESES VERMERKS, DREIFACH GETEILT:** Die fünf Punkte des Live-Blicks und die
+ungeplante Gegenprobe sind **GEMESSEN LIVE, 2026-09-10, Stefan** — **CC hat davon nichts
+gemessen**. Bau-Commit, Push-Zustand, Gates, Testzahlen, die fünf Mutationsergebnisse, die
+Richtungs-Richtigstellung und der Befund über die ungedeckten Bestandsläufe sind **GEMESSEN
+am eigenen Lauf bzw. am Repo (CC, 2026-09-10)**. Der Ansichts-Name ist **GELESEN an der
+Anbieter-Oberfläche (Owner, 2026-09-10)**. Dass die gewählte Bauform heute nicht von der
+verworfenen zu trennen ist, ist eine **ABLEITUNG** aus der Deckungsgleichheit beider
+Auskünfte über die fünf Ziele, **keine Messung**.
+
 ## Scheibe 11.3b — Die drei Gesten und das Banner in der Oberfläche
 
 Die zweite Scheibe gibt dem Testzustand seinen Weg in die Oberfläche: drei Gesten je Ziel
@@ -3550,7 +3783,69 @@ der dieselbe Datei an mehreren Stellen warnt — und der Kandidat ist die, die d
 Die sechste Scheibe ändert **zwei Texte in der Oberfläche** und sonst nichts. Sie baut
 keinen Zustand, keine Geste, keinen Adapter und keine Migration.
 
-**NOCH NICHT GEBAUT.** Dieser Abschnitt ist ein ZUSCHNITT, kein Plan.
+**GEBAUT UND LIVE GESEHEN AM 2026-09-10.** Der Nachweis steht in VERMERK 7 unter
+"Scheiben-Vermerke". Diese Scheibe hat **KEINE** Entscheidung erzeugt, die über sie hinaus
+bindet — sie hat die Gestalt-Entscheidung (A) in ihrem geschärften Grund und die
+Entscheidung (10) VOLLZOGEN, und beide stehen unverändert an ihrem Ort.
+
+### Vollzogen — was hier stand und wohin es gegangen ist
+
+**VERDICHTET AM 2026-09-10.** Was mit der Scheibe ABGELAUFEN ist, steht nicht mehr hier;
+was über sie hinaus bindet, ist unten stehengeblieben. **Die Titel werden ohne
+Markierungszeichen zitiert** — sonst kollidierte das Zitat dauerhaft mit jeder
+gleichlautenden Überschrift.
+
+- "(1) Die Reihenfolge-Angabe an der Pinterest-Karte" — abgelaufen, weil GEBAUT. Sie steht
+  als zweite Zeile unter der Zustandszeile, **nur im laufenden Zustand und nur, wo die
+  Auskunft je Ziel einen Hinweis trägt**. Der Wortlaut lautet "Test-Ansicht im Werbekonto
+  zuerst öffnen, dann auslösen." **Der Befund, auf dem sie ruht, läuft NICHT ab** und steht
+  unverändert in VERMERK 3, SCHLUSS 4.
+- "KEIN WIDERSPRUCH ZUR GESTALT-ENTSCHEIDUNG (A)" samt dem Nachtrag — abgelaufen, weil die
+  Spannung **aufgelöst** ist: (A) hat am 2026-09-10 einen **geschärften Grund** bekommen,
+  der nach der HALBWERTSZEIT trennt statt nach der Form. Der Volltext steht dort; hier
+  stand nur der Zeiger, und der ist mit dem Vollzug abgelaufen.
+- "(2) Der Banner-Satz wird ziel-abhängig" — abgelaufen, weil GEBAUT. Der ganze Text kommt
+  jetzt aus `testModeBannerText`; das freie JSX-Literal im Container ist entfallen. **Die
+  drei Fassungen und ihre ungleiche Provenienz stehen im Kommentarkopf von
+  `testModeAnbieterAuskunft` und in VERMERK 7** — nicht mehr hier.
+- "Zwei Angaben für den Stufe-1-Plan" — abgelaufen, weil der Plan gebaut ist. **Beide
+  Angaben haben getragen:** Der Erklärsatz lag tatsächlich im Container (Teil (2) hat die
+  Datei berührt), und die Karte hatte tatsächlich keine Anhängestelle (die Angabe ist das
+  erste Fliesstext-Element dieser Art geworden).
+- "Der Nachweis — am Unit-Test, KEIN Live-Lauf" — abgelaufen, weil gefahren. Was herauskam,
+  steht in VERMERK 7, einschliesslich des Live-BLICKS und seiner ungeplanten Gegenprobe.
+- "Eine offene Frage, die hier NICHT entschieden wird" — abgelaufen, weil ENTSCHIEDEN
+  (OWNER, 2026-09-10): zweite Zeile unter der Zustandszeile, vor der Bedien-Reihe.
+- "Ausdrücklich NICHT in dieser Scheibe" — abgelaufen. **Alle sechs Ausschlüsse sind
+  eingehalten und am Diff des Commits `8fcd4e0` ablesbar:** Vorrat (20) und (10) sind nicht
+  berührt, die vier Stellen aus Vorrat (29) tragen den toten Namen unverändert, `google`
+  und `linkedin` sind nicht angefasst, `activeTestCodeFromRow` heisst weiterhin so, und es
+  ist **kein** Erklärtext entstanden, der sagt, warum `pinterest` kein Feld hat.
+
+### Was über die Scheibe hinaus gilt und deshalb hier bleibt
+
+- **DIE AUSKUNFTSSTELLE IST EINE, NICHT ZWEI — UND IHRE ACHSE IST NICHT DIE DER
+  CODE-PFLICHT.** `testModeAnbieterAuskunft` (`src/components/TargetCard.tsx`) liefert je
+  Ziel den **Banner-Halbsatz** und, wo nötig, den **Reihenfolge-Hinweis**. **Der Hinweis
+  hängt daran, ob die Test-Ansicht des Anbieters RÜCKSCHAU hat — nicht daran, ob er einen
+  Code verlangt.** Dass heute genau das Ziel ohne Code-Pflicht auch das ohne Rückschau ist,
+  ist **Zufall und muss nicht so bleiben**.
+  **WEN DAS BINDET:** jede Runde, die ein weiteres Ziel aufnimmt oder die Bedingung der
+  Angabe anfasst. **Der ganze Absatz steht am `switch` selbst** und wird hier nicht
+  verdoppelt.
+- **DIE PRÜFFRAGE AN JEDEN KÜNFTIGEN TEXT AN DIESER KARTE** steht an der
+  Gestalt-Entscheidung (A) und lautet: **woran hängt die Eigenschaft, die er beschreibt —
+  an unserem UI oder an einem fremden System?** Sie ist mit dieser Scheibe zum ersten Mal
+  angewandt worden und hat sie getragen.
+- **DER BANNER-TEXT LIEGT JETZT GANZ IN EINER FUNKTION, UND DAS IST EINE ZUSAGE AN DIE
+  NÄCHSTE RUNDE:** Wer ihn ändert, ändert `testModeBannerText` — nicht den Container. **Ein
+  zweites Textstück im JSX wäre der Rückfall in genau den Zustand, den diese Scheibe
+  aufgelöst hat**, und er war dort von keinem Lauf gedeckt.
+- **JEDES ZIEL TRÄGT SEINEN HALBSATZ DIREKT BEI SICH — KEIN SAMMELSATZ AM ENDE.** Ein
+  Sammelsatz zwänge den Text, die STÄNDE ZU VERGLEICHEN, und die drei sind ungleich
+  belegt; dabei ginge die vorsichtige Fassung für `tiktok` verloren. **Der Wächter dagegen
+  ist TM32, und er ist der einzige** — er prüft die POSITION der Halbsätze, nicht ihre
+  Anwesenheit.
 
 ### Warum das keine Kosmetik ist — die Entscheidung, die sie nötig macht
 
@@ -3568,179 +3863,6 @@ das Gegenteil dessen, wofür er gebaut ist.
 missverstanden wird:** "Für Kunden gebaut" heisst **NICHT** "ein Kunde sieht es". CLAUDE.md
 führt unverändert **keine Kunden und keinen fremden Traffic**; kein Trigger, der daran
 hängt, tritt mit dieser Entscheidung ein.
-
-### (1) Die Reihenfolge-Angabe an der Pinterest-Karte
-
-**DER BEFUND, AUF DEM SIE RUHT:** Pinterests Test-Ansicht ist ein **LIVE-STROM OHNE
-RÜCKSCHAU** — ein Ereignis, das bei geschlossener Ansicht gesendet wurde, erscheint **auch
-später nicht** (GEMESSEN LIVE, 2026-09-10, Stefan; VERMERK 3, SCHLUSS 4, belegt über ein
-Positiv-/Negativ-Paar an derselben Ansicht, und die Reihenfolge schliesst blosse
-Verzögerung aus).
-
-**DIE FOLGE FÜR DEN KUNDEN: WER EINSCHALTET, KLICKT UND DANN NACHSIEHT, FINDET NICHTS —
-BEI KORREKTEM VERHALTEN.** Genau der Fall, den der Absatz darüber beschreibt.
-
-**WANN SIE ERSCHEINT — ZWEI BEDINGUNGEN, BEIDE EINSCHRÄNKEND:**
-- **NUR IM LAUFENDEN ZUSTAND.** Ein Hinweis, den man liest, BEVOR man entscheidet, ist
-  Ballast; einer, der dasteht, WENN er gebraucht wird, ist Bedienung.
-- **NUR BEI `pinterest`.** Die Eigenschaft ist an DIESEM Anbieter gemessen; für `meta` und
-  `tiktok` ist sie weder gemessen noch behauptet.
-
-**SIE BEHAUPTET NICHTS ÜBER DEN ANBIETER — nur, in welcher REIHENFOLGE zu bedienen ist.**
-Ein Satz über das Verhalten eines fremden Systems altert, ohne dass hier etwas rot wird;
-eine Bedienanweisung tut das nicht.
-
-**KEIN WIDERSPRUCH ZUR GESTALT-ENTSCHEIDUNG (A) — SO DIE BEGRÜNDUNG DER OWNER-ENTSCHEIDUNG,
-UND SIE STEHT HIER MIT IHRER GEPRÜFTEN GRENZE:** Jene lehnte einen Text ab, der ERKLÄRT,
-warum es kein Feld gibt — **Hintergrund**, den ein Redesign wegwirft. Dies ist eine
-**BEDIENANWEISUNG** und überlebt es, weil die Eigenschaft **am Anbieter hängt und nicht an
-unserem UI**.
-**WAS DIE PRÜFUNG AM TEXT VON (A) ERGEBEN HAT, UND ES WIRD HIER NICHT WEGGESCHRIEBEN
-(GEMESSEN am Dateitext, CC, 2026-09-10):** Der Bullet dort lautet unqualifiziert **"KEIN
-ZUSÄTZLICHER ERKLÄRTEXT AUF DER KARTE"**, und sein Grund ist **generisch** — "eine
-Textzeile überlebt das [Redesign] nicht, die Struktur schon". **DIESER GRUND DECKT DEM
-WORTLAUT NACH AUCH EINE BEDIENANWEISUNG.** Was ihn NICHT deckt, ist die **GRENZE** von (A):
-sie spricht ausdrücklich davon, dass der Betreiber keine Auskunft bekommt, **WARUM
-`pinterest` sich anders verhält** — ein anderer Gegenstand als die Reihenfolge beim
-Anbieter.
-**DIE SPANNUNG IST DAMIT AUF DEN BULLET UND SEINEN GRUND BEGRENZT UND WIRD HIER NICHT
-AUFGELÖST** — sie ist OWNER-Sache. **Die Entscheidung, diese Scheibe zu bauen, ist
-getroffen** (OWNER, 2026-09-10); ob (A) dabei eine benannte Ausnahme bekommt oder in ihrem
-Grund nachgezogen wird, ist **NICHT entschieden**.
-
-**NACHGEZOGEN AM 2026-09-10 — DER WIDERSPRUCH BESTAND, UND ER IST AUFGELÖST STATT
-WEGDEFINIERT.** Der Absatz darüber bleibt wörtlich stehen; er hält die Prüfung fest, aus
-der die Auflösung folgt.
-**WAS DIE PRÜFUNG ERGEBEN HAT UND WAS DARAUS FOLGT:** Die Abgrenzung "kein Widerspruch, das
-eine erklärt und das andere bedient" war eine **Unterscheidung im Kopf, nicht im Text** —
-im Text stand ein unqualifizierter Bullet und ein Grund, der jede Textzeile trifft.
-**BEHOBEN IST DAS NICHT MIT EINER AUSNAHME, SONDERN MIT EINEM GESCHÄRFTEN GRUND**
-(OWNER-ENTSCHEIDUNG 2026-09-10): Er trennt nach der **HALBWERTSZEIT** statt nach der FORM —
-ein Text über UNSER UI stirbt mit dem UI, ein Text über die Bedienung eines FREMDEN Systems
-stirbt mit jenem System.
-**DER VOLLTEXT STEHT AN DER GESTALT-ENTSCHEIDUNG (A) UND WIRD HIER NICHT VERDOPPELT** —
-zweimal geschrieben liefen sie auseinander. **Dort steht auch die Prüffrage**, an der sich
-jeder künftige Text an dieser Karte entscheidet.
-**DER BULLET IST DABEI NICHT ANGETASTET WORDEN**, und die GRENZE von (A) ebenso wenig: Sie
-sagt, dass der Betreiber keine Auskunft bekommt, **WARUM** `pinterest` sich anders verhält
-— **ein anderer Gegenstand, den diese Scheibe ausdrücklich NICHT auflöst** (s. den
-Ausschluss unten).
-
-### (2) Der Banner-Satz wird ziel-abhängig — Vorrat (22) wird damit aufgelöst
-
-**DER HEUTIGE SATZ, IM WORTLAUT UND MIT SEINEM ORT** (GEMESSEN am Repo, CC, 2026-09-10;
-`src/components/CodeImporter.tsx`, der JSX-Zweig an `testModeBanner`):
-
-> "Solange zählt die eigene Auswertung dieses Projekts keine Ereignisse; **beim Anbieter
-> kommen sie weiterhin an.** Beenden in den Einstellungen unter „Messen", an der Karte des
-> genannten Ziels."
-
-**FÜR `pinterest` IST ER WAHR UND TROTZDEM IRREFÜHREND:** Ankunft **ja**, Zählung **nein** —
-beides am 2026-09-10 gemessen (VERMERK 6, drei Isolations-Achsen). **DER LESER LIEST
-"ANKOMMEN" ALS "ZÄHLEN".**
-
-**DER STAND JE ZIEL, UND ER IST UNGLEICH BELEGT — DAS IST DER GANZE GRUND FÜR DREI
-FASSUNGEN STATT EINER:**
-- **`meta`** — fliesst in Targeting und Messung. **GELESEN** (Anbieter-Doku, 2026-09-08;
-  docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)", Teil (a)).
-- **`pinterest`** — kommt an, wird **nicht gezählt**. **GEMESSEN LIVE** (2026-09-10;
-  VERMERK 3, SCHLUSS 3, und VERMERK 6).
-- **`tiktok`** — die Oberfläche behauptet Isolation. **GELESEN, EINMAL, UNGEMESSEN**
-  (Stefan an der Anbieter-Oberfläche, 2026-09-09; docs/ziel-befunde.md, Abschnitt "TikTok
-  (Events API 2.0)", Teil (h)).
-
-**FÜR `tiktok` BEKOMMT DER TEXT DIE VORSICHTIGERE FASSUNG. DAS IST KEINE BEHAUPTUNG ÜBER
-`tiktok`, SONDERN DAS EINGESTÄNDNIS, DASS WIR ES NICHT WISSEN** — und ehrlicher als der
-heutige Satz, der für alle drei dasselbe sagt und damit **für zwei falsch liegt**.
-
-**DER EINWAND GEGEN DIESE AUFLÖSUNG STEHT MIT DABEI, damit er nicht als übersehen gilt:**
-Vorrat (22) trug als Trigger die **TIKTOK-MESSUNG**, nicht die Pinterest-Messung, und
-warnte ausdrücklich davor, einen ziel-abhängigen Text auf eine **einmal gelesene
-Oberflächen-Zeile** zu stützen — "ein falsch differenzierter Text wäre schlechter als ein
-zu allgemeiner, weil er Genauigkeit behauptet, die niemand gemessen hat".
-**ER WIRD NICHT ENTKRÄFTET, SONDERN ÜBERWOGEN:** Ein Kundentext, der für ein Ziel
-irreführt, sollte nicht auf eine Messung warten, **die niemand terminiert hat**.
-**OWNER-ENTSCHEIDUNG 2026-09-10.**
-**DIE VORSICHTIGERE FASSUNG IST ZUGLEICH DIE ANTWORT AUF DEN EINWAND:** Sie behauptet für
-`tiktok` gerade KEINE Genauigkeit — sie ist die Stelle, an der das Nichtwissen steht.
-
-**DIE TIKTOK-MESSUNG BLEIBT AUSSTEHEND UND WIRD VON DIESER SCHEIBE NICHT ERSETZT.** Sie ist
-**NICHT** in Vorrat (22) geführt, sondern in **Vorrat (1)** — "OB TIKTOK TEST-MARKIERTE
-EREIGNISSE MITZÄHLT WIE META — UNGELESEN UND UNGEMESSEN", mit dem Trigger "die Scheibe, die
-den tiktok-Zweig des Riegels zuschneidet — spätestens der erste Live-Nachweis gegen
-tiktok". **DIESER ZEIGER IST GEMESSEN UND NICHT GERATEN** (CC, 2026-09-10): Vorrat (22)
-trägt die FOLGE FÜR DEN PRODUKTTEXT, Vorrat (1) die MESSUNG selbst. **Wer (22) auflöst,
-löst (1) nicht mit auf.**
-
-**VORRAT (22) WIRD JETZT NICHT GESTRICHEN**, sondern erst mit dem Abschluss-Vermerk dieser
-Scheibe und mit Beleg. **Ein Eintrag, der auf eine ENTSCHEIDUNG hin gestrichen wird,
-behauptet einen Zustand, den es noch nicht gibt.**
-
-### Zwei Angaben für den Stufe-1-Plan — GRUNDLAGE, KEINE ENTSCHEIDUNG
-
-**Beide GEMESSEN am Repo (CC, 2026-09-10).** Sie entscheiden nichts; sie sagen, wogegen der
-Plan zuschneidet.
-
-**(a) DER ERKLÄRSATZ STEHT IN `src/components/CodeImporter.tsx`, NICHT AN DER KARTE.**
-Ziel-abhängig ist heute **nur der Präfix** aus `testModeBannerText`
-(`src/components/TargetCard.tsx`) — die Namen der laufenden Ziele mit ihrem Endzeitpunkt.
-**Der Satz danach ist ein festes JSX-Literal in einer ANDEREN Datei und kennt kein Ziel.**
-**TEIL (2) BERÜHRT DAMIT EINE DATEI, DIE IN DIESER PHASE NOCH NIE IM BAU-SCOPE STAND** —
-weder in 11.3a noch in 11.3b, 11.3d oder 11.3e. Wer den Scope aus den Vorgänger-Scheiben
-fortschreibt, übersieht sie.
-
-**(b) DIE KARTE HAT IM LAUFENDEN ZUSTAND KEINEN FLIESSTEXT.** Sie zeigt für `pinterest`
-**drei Elemente**: die Zustandszeile aus `describeTestModeState` ("Testmodus bis
-&lt;Zeitpunkt&gt;"), den Startknopf ("Pinterest-Test verlängern") und den Beenden-Knopf
-("Pinterest-Test jetzt beenden") — dazu eine Fehlerzeile **nur** nach einem Fehlschlag.
-**DIE REIHENFOLGE-ANGABE WÄRE DAS ERSTE ELEMENT DIESER ART; ES GIBT KEINE ANHÄNGESTELLE.**
-
-### Der Nachweis — am Unit-Test, KEIN Live-Lauf
-
-**BEIDES IST TEXT IN DER OBERFLÄCHE, und die WIRKUNG beim Anbieter ist bereits belegt** —
-diese Scheibe fügt ihr nichts hinzu und misst sie nicht erneut. **EIN LIVE-LAUF WÜRDE HIER
-NICHTS ENTSCHEIDEN, WAS NICHT SCHON ENTSCHIEDEN IST.**
-
-**WAS ZU PRÜFEN IST:**
-- **DIE REIHENFOLGE-ANGABE ERSCHEINT NUR IM LAUFENDEN ZUSTAND UND NUR BEI `pinterest`** —
-  **VIER Fälle**, und sie gehören zusammen: `pinterest` ruhend (nicht da) · `pinterest`
-  laufend (da) · `meta` ruhend (nicht da) · `meta` laufend (**nicht da** — das ist der
-  Fall, der die Ziel-Bedingung von der Zustands-Bedingung trennt; ohne ihn wäre eine
-  Angabe, die bei jedem laufenden Ziel erscheint, grün).
-- **DER BANNER-SATZ SAGT JE ZIEL DAS RICHTIGE** — je Ziel ein Lauf, und für `tiktok` die
-  vorsichtigere Fassung.
-- **FÜR `meta` ÄNDERT SICH NICHTS.** Regression, an der Karte wie am Banner.
-
-### Eine offene Frage, die hier NICHT entschieden wird
-
-**WO GENAU DIE REIHENFOLGE-ANGABE STEHT** (an der Karte, in der Statuszeile, am Knopf)
-**UND WIE SIE FORMULIERT IST.** Das ist eine UI-Frage; der Stufe-1-Plan schlägt vor, **der
-Owner entscheidet**.
-
-**DIE GRUNDLAGE, GEMESSEN UND AUSDRÜCKLICH NICHT DIE ENTSCHEIDUNG (am Repo, CC,
-2026-09-10):** Der Testmodus-Block der Karte hängt ganz an `projectId && testModeState !==
-null`. Im **laufenden** Zustand zeigt er für `pinterest` **DREI Elemente und sonst nichts**:
-- die Zustandszeile aus `describeTestModeState` — **"Testmodus bis &lt;Zeitpunkt&gt;"**,
-- den Startknopf **"Pinterest-Test verlängern"** (ohne Code-Feld, ohne Eingabe klickbar),
-- den Beenden-Knopf **"Pinterest-Test jetzt beenden"**.
-Dazu eine Fehlerzeile, **nur** wenn eine Geste fehlschlug. **ES GIBT HEUTE KEINEN
-FLIESSTEXT AN DIESER KARTE**, an den sich eine Angabe anhängen liesse — sie wäre das erste
-Element dieser Art.
-
-### Ausdrücklich NICHT in dieser Scheibe
-
-- **VORRAT (20) — der graue Platzhalter des Testcode-Feldes.** Sein Trigger lautet "das
-  UI-Redesign — und früher, wenn ein Kunde die Karte SIEHT". **"Für Kunden gebaut" IST
-  NICHT "ein Kunde sieht es"**; CLAUDE.md führt unverändert keine Kunden und keinen fremden
-  Traffic. **DER TRIGGER BLEIBT AUS.**
-  **NEBENBEI, und es macht ihn kleiner statt dringender:** Er betrifft ohnehin nur `meta`
-  und `tiktok` — `pinterest` hat seit 11.3e **kein Feld mehr**.
-- **DIE VIER VERBLIEBENEN STELLEN AUS VORRAT (29)** mit dem toten Constraint-Namen.
-- **VORRAT (10)** — die Vorrang-Frage bei `meta` und `tiktok`.
-- **`google` und `linkedin`.**
-- **DIE UMBENENNUNG VON `activeTestCodeFromRow`.**
-- **EIN ERKLÄRTEXT, WARUM `pinterest` KEIN FELD HAT.** Gestalt-Entscheidung (A) gilt
-  unverändert; diese Scheibe baut eine BEDIENANWEISUNG und keine Erklärung.
 
 **PROVENIENZ DES ZUSCHNITTS:** OWNER-ENTSCHEIDUNG 2026-09-10 (dass der Testmodus für Kunden
 gebaut ist, die zwei Teile, die Auflösung von Vorrat (22) gegen dessen eigenen Einwand, der

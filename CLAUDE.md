@@ -289,6 +289,9 @@ gehen von hier eine Station weiter.
   GEMESSEN am Repo 2026-09-08: Scheibe 4 der Phase 11.2 ist gebaut und live bewiesen. Ob
   ein Projekt OHNE Tracking-Schlüssel existiert, ist am Repo NICHT feststellbar und
   ausdrücklich nicht erhoben)
+- DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027 ABGESCHALTET — DANN SCHEITERT
+  DER FORWARD STILL (Trigger: der 15.01.2027 — der Abschalttermin der Version 202601, die
+  der Adapter sendet)
 
 **AUS DEM PHASENENDE 11.2 GEHOBEN (2026-09-08) — NEUNZEHN PUNKTE.** Fünf aus der
 Rest-Liste der Roadmap-Zeile 11.2, vierzehn aus dem Vorrat der Phase. DIE

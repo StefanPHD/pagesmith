@@ -1025,6 +1025,29 @@ nächsten Refactor als unnötig defensiv wegoptimiert.
   das wir nicht kennen — bricht die Verbindung auf dem Rückweg, ist der Write
   passiert.
 
+### Haltung
+
+- **Wir sind Werkzeug, nicht Aufsicht.** Der Betreiber entscheidet
+  eigenverantwortlich über die Einwilligung auf seinen Seiten; wir weisen hin und
+  erzwingen nicht. Ein Einwilligungs-Dialog ist ein MERKMAL, das er einschalten
+  kann — keine Voraussetzung, die wir durchsetzen. Dass ohne gesetzten
+  Einwilligungs-Hook alle Ziele als erlaubt gelten, ist deshalb **eine Haltung,
+  keine Lücke** — auch im Code als Entscheidung begründet, nicht als Loch zu
+  reparieren (`phase-11-multi-tracking-aktiver-stand.md`, Befund 2). (Owner
+  2026-08-12, Volltext an der Roadmap-Zeile 11.5.)
+  **Den Dialog zu bauen ist entschieden** — in derselben Runde (E3), und die
+  Roadmap-Zeile 11.5 begründet die Phase damit, dass „konform out-of-the-box" heute
+  nicht zutrifft. Nicht entschieden ist, ihn dem Betreiber aufzuzwingen. Die
+  Haltung bindet also, **wie** gebaut wird, nicht **ob**: ein Dialog, den der
+  Betreiber abschalten oder durch ein fremdes CMP ersetzen kann.
+  **Wer aus dem Zustand eine Dringlichkeit ableitet — „hier fehlt Konformität, also
+  hat es Vorrang" —, argumentiert gegen eine gefallene Entscheidung:** Die
+  Einwilligung liegt beim Betreiber, und der Zeitpunkt der Phase steht an der
+  Roadmap-Zeile 11.5 — vor einem Beta-Launch mit fremden Nutzern. Ohne gesetzten
+  Hook gilt alles als erlaubt, und das liest sich wie ein Missstand; der Satz steht
+  hier, weil die Entscheidung sonst nur in einer Datei steht, die nicht unbedingt
+  lädt.
+
 ### Konventionen, die daran hängen
 
 - Reservierte Tokens sind namespaced (`__ps_*`); Konstanten leben in geteilten

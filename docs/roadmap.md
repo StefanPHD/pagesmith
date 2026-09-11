@@ -1471,89 +1471,32 @@ liegen beide hier und finden einander.
       sind **GEMESSEN am Repo (CC, 2026-08-27)**. **KEINE MESSUNG an einer
       Google-Schnittstelle**, weder durch CC noch in diesem Block behauptet; es ist kein
       Aufruf gefahren worden.
-- [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code): klein und
-      eigenständig. Der Kunde sieht sein Ereignis in der Test-Ansicht des
-      Anbieters ANKOMMEN, ohne dass es die EIGENEN Analytics-Zahlen berührt —
-      der Beweis der Einrichtung kommt vom Anbieter, nicht von uns.
-      DER PREIS STEHT DANEBEN UND WIRD NICHT WEGGESCHRIEBEN: Der Testklick zählt
-      beim Anbieter als ECHTE Conversion. Die Phase liefert SICHTBARKEIT, nicht
-      ISOLATION. Kontext: docs/claude-history/future-roadmap.md,
-      "Tracking-Testmodus für Kunden" — mit dem Vorbehalt aus der
-      Richtigstellung unten.
-      RICHTIGGESTELLT AM 2026-09-08 (OWNER-ENTSCHEIDUNG), NICHT GESTEMPELT: Hier
-      stand "damit ein Kunde seine Einrichtung prüfen kann, ohne echte
-      Conversions zu erzeugen". DAS IST WIDERLEGT. Meta sagt ausdrücklich, ein
-      mit test_event_code markiertes Ereignis werde nicht verworfen und fliesse
-      in Targeting und Messung; FÜR META liefert der Anbieter also NICHT die
-      Isolation, die der gestrichene Halbsatz versprach. Er ist ersetzt und
-      nicht gestempelt, weil eine Roadmap-Zeile ein MASSSTAB ist, gegen den
-      zugeschnitten wird — ein Massstab mit einer falschen Zusage taugt nicht als
-      Massstab. PROVENIENZ der Widerlegung: GELESEN 2026-09-08, Volltext und
-      Fundstellen in docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)",
-      Teil (a). KEINE MESSUNG an der Schnittstelle.
-      RICHTIGGESTELLT AM 2026-09-10, NICHT GESTEMPELT — DIE VERALLGEMEINERUNG AUF
-      ALLE ANBIETER IST WIDERLEGT, DIE AUSSAGE ÜBER META IST ES NICHT.
-      HIER STAND, unmittelbar hinter dem Semikolon: "KEIN Anbieter dieses Rahmens
-      liefert die Isolation, die der gestrichene Halbsatz versprach." An seiner
-      Stelle steht jetzt "FÜR META liefert der Anbieter also NICHT die Isolation
-      …" — geändert ist ausschliesslich die REICHWEITE, kein Wort über Meta.
-      WAS DIE VERALLGEMEINERUNG WIDERLEGT: PINTEREST liefert sie. Ein mit
-      test=true markiertes Ereignis erscheint dort NICHT in der Eventübersicht;
-      vier Conversions gefeuert, der Zähler stand bei der Ablesung um 08:15 UTC
-      auf zwei — genau die zwei ohne Parameter. Dass die zwei markierten nicht
-      etwa abgelehnt wurden, trägt der Vercel-Log: 200 OK mit einer inhaltlichen
-      Feld-Warnung.
-      PROVENIENZ: GEMESSEN LIVE, 2026-09-10, Stefan (die vier Läufe und der Log);
-      Volltext in docs/aktiver-stand.md, VERMERK 3, und in docs/ziel-befunde.md,
-      Abschnitt "Pinterest (Conversions API)", Teil (u). NICHT GELESEN, sondern
-      GEMESSEN — das ist der Unterschied zur Richtigstellung darüber.
-      WARUM ERSETZT UND NICHT GESTEMPELT: aus demselben Grund wie am 2026-09-08 —
-      eine Roadmap-Zeile ist der MASSSTAB, gegen den zugeschnitten wird, und ein
-      Massstab, der "kein Anbieter" sagt, während einer es tut, schneidet die
-      offenen drei Fünftel der Phase gegen eine falsche Annahme zu.
-      ZWEI GRENZEN, DIE MITMÜSSEN: Gemessen ist die BERICHTERSTATTUNG, nicht die
-      OPTIMIERUNG — Pinterests Doku nennt für die Sandbox beides, belegt ist die
-      erste Hälfte. Und die Messung sagt NICHTS über den zweiten Parameternamen
-      is_test; sie schliesst ihn nicht aus, sie macht ihn für den Bau entbehrlich.
-      DIE VERALLGEMEINERUNG STEHT AUCH IN docs/aktiver-stand.md — an zwei Stellen
-      ("Gegenstand der Phase" und Entscheidung (1)). Sie ist dort GEMELDET und
-      NICHT behoben; das ist eine eigene Entscheidung und nicht diese.
-      ACHTUNG, DIE ALTE BEGRÜNDUNG LEBT IM ARCHIV WEITER: In
-      docs/claude-history/future-roadmap.md, "Tracking-Testmodus für Kunden",
-      steht sie unverändert — jene Datei ist ein Archiv und wird nicht rückwirkend
-      geändert. Wer dort liest und diesen Absatz nicht kennt, übernimmt den
-      falschen Grund erneut.
-      PROVENIENZ DES STANDES: Zuschnitt und Recherche liegen seit dem 2026-09-08
-      vor — die Standdatei docs/aktiver-stand.md trägt Gegenstand, Ausgangslage
-      und die Scheibe 11.3a. HIER STAND BIS DAHIN "bislang nur als NAME geführt —
-      kein Zuschnitt, keine Recherche, keine Entscheidung"; das war für seinen Tag
-      richtig und ist es seit dem Anlegen der Standdatei nicht mehr. Gemessen am
-      Repo ist, dass der zweite Adapter einen Testmodus-Parameter kennt
-      (testModeQuery) und beim ersten der Test-Code in die NUTZLAST wandert; für
-      LinkedIn steht ein Nicht-Treffer.
-      NACHGEZOGEN AM 2026-09-10 — DIESE ZEILE TRUG DIE RICHTIGSTELLUNG VOM
-      2026-09-09 NICHT, UND OHNE SIE LIEST SIE SICH ALS "klein und eigenständig".
-      DIE PHASE 11.3 UMFASST ALLE FÜNF FAN-OUT-ZIELE (OWNER-ENTSCHEIDUNG
-      2026-09-09). Gebaut sind ZWEI — meta und tiktok, beide live bewiesen am
-      2026-09-09 —, DREI STEHEN AUS: pinterest, google, linkedin. Der Marker
-      bleibt aus genau diesem Grund auf [ ].
-      WAS DIE ZWEIDEUTIGKEIT VERURSACHT HAT, und sie ist in der Standdatei
-      aufgelöst: Der dortige Satz, ein späterer Anlauf sei "eine EIGENE Runde",
-      liest sich als weitere Scheibe DIESER Phase UND als andere Phase. Gemeint
-      ist das Erste. Wer das Zweite liest, hält die Phase nach 11.3b für
-      abgearbeitet, obwohl drei Fünftel ihres Gegenstands offen sind.
-      WAS JEDES DER DREI ALS NÄCHSTES BRAUCHT — DREI VERSCHIEDENE SCHRITTE:
-      pinterest brauchte EINE MESSUNG, und die ist am 2026-09-10 gefahren (s. die
-      Richtigstellung oben) — es ist damit baubar. Google fehlt keine Messung,
-      sondern ein Träger, der die Beobachtung nicht abschneidet. LinkedIn fehlt
-      eine LESUNG, und ihr Ergebnis kann ein begründetes NEIN sein — dann endet
-      dieses Fünftel nicht mit Code, sondern mit einer festgehaltenen
-      Feststellung, und das ist ein gültiger Abschluss.
-      HIER WIRD KEINER DIESER DREI SCHRITTE VOLLZOGEN und keine Reihenfolge
-      festgelegt. PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-09 (fünf Ziele), am
-      2026-09-10 aus docs/aktiver-stand.md, Abschnitt "Reichweite: meta und
-      tiktok — und ausdrücklich sonst keines", hierher nachgezogen; dass diese
-      Zeile sie bis dahin nicht trug, ist GEMESSEN am Dateitext (CC, 2026-09-10).
+- [x] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code): ABGESCHLOSSEN
+      (2026-09-08 bis 2026-09-11). Ein Testmodus je (Projekt, Ziel), getragen von
+      einer festen Frist von einer Stunde: Solange er läuft, nimmt ein Riegel die
+      Ereignisse des Projekts aus der eigenen Auswertung, und der Anbieter bekommt
+      sie markiert. Die Phase umfasste alle fünf Fan-Out-Ziele — GEBAUT für meta,
+      tiktok und pinterest in sechs Scheiben (11.3a–11.3f), OHNE CODE ABGESCHLOSSEN
+      für linkedin und google. Sie liefert SICHTBARKEIT, nicht ISOLATION
+      (docs/immer-beachten.md, "SICHTBARKEIT STATT ISOLATION …"). Volle Herleitung:
+      docs/claude-history/phase-11.3-testmodus.md.
+      WAS ZUM ZEITPUNKT DES HAKENS UNBEWIESEN IST — der Haken heisst BAU-FERTIG,
+      nicht "der Testmodus funktioniert bei jedem Ziel":
+      · DER NATÜRLICHE ABLAUF DER FRIST, die tragende Eigenschaft der Phase ("eine
+        Frist deckelt genau diesen Schaden"), ist am RIEGEL LIVE NIE GEMESSEN: Jede
+        Regression lief über das Entfernen des Zustands (11.3a) oder über "jetzt
+        beenden" (11.3b, 11.3e, 11.3f). Live gesehen ist allein die ANZEIGE einer
+        natürlich abgelaufenen Frist (11.3f: Karte "Testmodus abgelaufen", Banner
+        ohne sie; GEMESSEN LIVE, 2026-09-10). Der Ablauf selbst ist im Unit-Test
+        gedeckt (GEMESSEN am eigenen Lauf, 2026-09-09).
+      · pinterest: Die BERICHTERSTATTUNG ist als isoliert GEMESSEN (LIVE,
+        2026-09-10); die OPTIMIERUNGS-Hälfte der Sandbox-Zusage ist UNGEMESSEN.
+      · tiktok: Was der Anbieter mit einem markierten Ereignis tut, ist UNGEMESSEN.
+        Die Doku schweigt dazu (GELESEN 2026-09-08, Schweigen mit benannter Achse);
+        die Oberfläche sagt "Test events will not be included in actual data"
+        (GELESEN an der Oberfläche, einmal, 2026-09-09).
+      · linkedin und google haben KEINEN Testmodus: DOKU-LESUNG vom 2026-09-11,
+        NICHT-TREFFER mit benannter Reichweite, KEINE Messung.
 - [ ] Phase 11.4 — Der Testknopf: KEINE SCHEIBE, sondern mehrere einzeln
       beweisbare Teile plus eine UNENTSCHIEDENE VORFRAGE — was beim Druck auf den
       Knopf überhaupt aufgerufen wird. OHNE DEREN ANTWORT HAT KEIN ZUSCHNITT EINEN

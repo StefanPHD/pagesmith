@@ -2287,8 +2287,14 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   · DIE DOKU ZEIGT AUF DIE STANDDATEI. Ein Zeiger "docs/aktiver-stand.md, VERMERK n" stirbt
     am Phasenende und KIPPT mit der nächsten Standdatei von TOT auf FALSCH, sobald deren
     Nummern die seine erreichen. EIN TOTER ZEIGER ZWINGT ZUM SUCHEN, EIN FALSCHER NICHT.
-    BELEG: Am 2026-09-11 treffen vierzehn Zeiger, die die Standdatei der Phase 11.2 meinen,
-    einen existierenden, aber falschen Eintrag der Phase 11.3.
+    BELEG: Vierzehn Zeiger, die die Standdatei der Phase 11.2 meinen, trafen bis zum
+    2026-09-11 einen existierenden, aber falschen Eintrag der Phase 11.3; seit der Umbenennung
+    jener Standdatei an diesem Tag sind sie tot, und die nächste Standdatei unter demselben
+    Pfad macht sie wieder falsch. AM 2026-09-11 IST DER MECHANISMUS AN DER PHASE 11.3
+    VOLLZOGEN — zu sehen daran, dass der Pfad seit dem `git mv` nach
+    docs/claude-history/phase-11.3-testmodus.md nicht mehr existiert; das Sterben am
+    Phasenende war schon am 2026-09-08 beim Löschen der Standdatei der Phase 11.2 beobachtet
+    (docs/claude-history/backlog-polish.md, Eintrag 67).
   · DER CODE ZEIGT AUF DIE STANDDATEI. BELEG: Der Kommentar des Laufs T17a2
     (`src/lib/capi/pinterest-forward.test.ts`) zeigte auf einen Vorrats-Eintrag der
     Standdatei; zwei Runden später war der Eintrag gestrichen — und am Phasenende wäre der
@@ -2303,17 +2309,23 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   Testdateien 71) und EIN Pfad-Zeiger auf docs/aktiver-stand.md, in
   `src/lib/tracking/credential-state.ts` (mit Testdateien zwei; der zweite in
   `src/app/projects/actions.testmode.test.ts`). In `supabase/migrations/` zeigen DREI Stellen
-  auf die Standdatei der Phase 11.3 — eine in 0028, zwei in 0029; sie sterben mit ihrer
-  Archivierung und bleiben tot.
+  auf die Standdatei der Phase 11.3 — eine in 0028, zwei in 0029. Alle diese Pfad-Zeiger
+  sind seit der Umbenennung am 2026-09-11 tot; die drei in den Migrationen bleiben es.
   DIE GEGENFORM: (1) Am ORT DER HANDLUNG — in einem Kommentar, einer Migration — sagt der
   Text die Sache selbst, statt auf eine Ablage mit Halbwertszeit zu zeigen; so vollzogen am
   Kommentar von T17a2 (Scheibe 11.3d). (2) Wer in der Doku auf eine Standdatei zeigt, nennt
   die PHASE ("Vorrat (n) der Phase 11.3") und nicht nur den Pfad: Die Phasennummer wird nicht
   neu vergeben und löst über das Archiv der Phase auf. Teil (2) ist eine ABLEITUNG aus der
   Ursache und nicht erprobt.
+  WAS BEIM UMZUG NACHGEZOGEN WIRD: JEDER Zeiger auf den neu belegten Pfad, auch der
+  beschreibende. Das Kriterium der Nachbarregel "EINE ZITIERTE EINHEIT ZU TEILEN …"
+  (handlungsbindend gegen beschreibend) trägt hier NICHT: Ein beschreibender Zeiger auf eine
+  geteilte Einheit bleibt als Zeitdokument richtig, einer auf einen wiederverwendeten Pfad
+  wird falsch.
   DER UNTERSCHIED ZUM OFFENEN PUNKT "ZEIGER AUF docs/aktiver-stand.md MEINEN EINE FRÜHERE
   STANDDATEI …" (docs/offene-punkte.md): Diese Regel sagt, wie man solche Zeiger nicht wieder
-  baut; jener Posten sagt, dass heute vierzehn falsch sind und was mit ihnen geschieht.
+  baut; jener Posten führt vierzehn solche Zeiger, seit dem 2026-09-11 tot, und sagt, was mit
+  ihnen geschieht.
   DIE BEDINGUNG DES ENTFALLENS IST HALB FORMULIERBAR: Für künftige Zeiger entfällt sie,
   sobald jede Ablage, auf die gezeigt wird, ihren Endnamen von Anfang an trägt — für die
   Standdatei ist das nicht der Fall, sie heisst per Verfahren docs/aktiver-stand.md
@@ -2321,8 +2333,9 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   EMPFOHLEN. Für Zeiger in angewandten Migrationen gibt es keine: sie werden nie
   umgeschrieben.
   PROVENIENZ: die Zahlen GEMESSEN am Repo (CC, 2026-09-11), Achsen wie genannt; der Fall
-  T17a2 GEMESSEN am Repo (CC, 2026-09-10). Dass jeder solche Zeiger am Phasenende stirbt,
-  ist eine ABLEITUNG aus dem Archivierungs-Verfahren. Herleitung: das Archiv der Phase 11.3,
+  T17a2 GEMESSEN am Repo (CC, 2026-09-10). Dass die Zeiger mit dem Umzug der Standdatei
+  gestorben sind, ist GEMESSEN am Repo (CC, 2026-09-11: der alte Pfad existiert weder im
+  Arbeitsbaum noch in `git ls-files`). Herleitung: das Archiv der Phase 11.3,
   Hebungs-Kandidat (6) und Vorrat (28).
 
 - SICHTBARKEIT STATT ISOLATION — EIN TESTMODUS BELEGT DIE ANKUNFT BEIM ANBIETER, NICHT DASS

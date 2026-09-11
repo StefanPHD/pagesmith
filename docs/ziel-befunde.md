@@ -923,8 +923,8 @@ und darüber hinaus. NACHRANGIG: Versionierung, Mengen, Voraussetzungen auf der 
      403 "No ad accounts found" (Teil (c), GEMESSEN 2026-08-15) und für ein falsches
      Präfix eine 422 (Teil (l), GEMESSEN 2026-08-17). Ein Testmodus, der sie nicht prüft,
      belegt nicht die Einrichtung, die der Kunde prüfen will.
-     WO SIE ALS BINDENDE ENTSCHEIDUNG GEFÜHRT WIRD: in der Standdatei der Phase 11.3,
-     docs/aktiver-stand.md, Entscheidung (17) — bis zu deren Archivierung am Phasenende.
+     WO SIE ALS BINDENDE ENTSCHEIDUNG GEFÜHRT WIRD: im Archiv der Phase 11.3,
+     docs/claude-history/phase-11.3-testmodus.md, Entscheidung (17).
      Diese Datei trägt keine Entscheidungen.
 
 (af) DIE VERSIONIERUNG — MONATLICH, MINDESTENS EIN JAHR, UND EIN TERMIN FÜR DEN WERT DES
@@ -6665,8 +6665,8 @@ geworden.
      Schnittstelle als der benutzten, und sein Zustand läge im Konto des Kunden; die Probezeit
      aus (cl) ist nicht schaltbar und für die gewählte Gestalt nicht ausgesagt.
      WO SIE ALS BINDENDE ENTSCHEIDUNG GEFÜHRT WIRD, samt Grund, Grenze und Bedingung ihres
-     Kippens: in der Standdatei der Phase 11.3, docs/aktiver-stand.md, Entscheidung (18) — bis
-     zu deren Archivierung am Phasenende. Diese Datei trägt keine Entscheidungen.
+     Kippens: im Archiv der Phase 11.3, docs/claude-history/phase-11.3-testmodus.md,
+     Entscheidung (18). Diese Datei trägt keine Entscheidungen.
 
 ### Der gelesene Umfang (2026-09-11) — Google
 
@@ -7248,8 +7248,9 @@ am Werbekonto sind die des Owners an seinem eigenen Konto.
     zeigt **200 OK** und eine INHALTLICHE Feld-Warnung, und eine Ablehnung erzeugt keine
     Feld-Warnung. **OHNE DIESE ZWEITE HÄLFTE WÄRE DIE ABWESENHEIT KEIN BEFUND**, sondern
     von "es ist gar nichts angekommen" nicht zu unterscheiden.
-    **DIE ZAHLEN, ZEITSTEMPEL UND EREIGNIS-KENNUNGEN STEHEN HIER NICHT** — sie stehen in
-    docs/aktiver-stand.md, VERMERK 3. Zweimal geschrieben liefen sie auseinander; dort
+    **DIE ZAHLEN, ZEITSTEMPEL UND EREIGNIS-KENNUNGEN STEHEN HIER NICHT** — sie stehen im
+    Archiv der Phase 11.3, docs/claude-history/phase-11.3-testmodus.md, VERMERK 3. Zweimal
+    geschrieben liefen sie auseinander; dort
     steht das Protokoll, hier der Befund über den Anbieter.
     **DIE GRENZE, DIE MITMUSS:** Gemessen ist die BERICHTERSTATTUNG, **nicht die
     OPTIMIERUNG**. Die Doku nennt für die Sandbox beides; belegt ist die erste Hälfte.
@@ -7390,8 +7391,9 @@ angehängtes (aa) machte jene Aufteilung stillschweigend falsch.
      deshalb BESCHREIBEND — "Test-Ansicht im Werbekonto zuerst öffnen, dann auslösen." —
      und nicht mit ihrem Label; GEBAUT in Scheibe 11.3f (GEMESSEN am Repo, CC, 2026-09-10:
      `testModeAnbieterAuskunft` in `src/components/TargetCard.tsx`).
-     **DIE ENTSCHEIDUNG DAHINTER STEHT NICHT HIER**, sondern in docs/aktiver-stand.md —
-     diese Datei trägt Befunde, keine Entscheidungen.
+     **DIE ENTSCHEIDUNG DAHINTER STEHT NICHT HIER**, sondern im Archiv der Phase 11.3,
+     docs/claude-history/phase-11.3-testmodus.md — diese Datei trägt Befunde, keine
+     Entscheidungen.
 
 ## Meta (Conversions API)
 
@@ -7701,9 +7703,11 @@ Aussage, die der Anbieter in seiner eigenen Oberfläche trifft.
     Isolation") ruht auf Metas Aussage. Trifft TikToks Zeile zu, gilt der Preis dieser
     Rahmung — der Testklick zählt beim Anbieter als echte Conversion — **für TikTok
     womöglich nicht**. Eine Produktzeile, die das für alle Ziele gleich behauptet, wäre
-    dann für eines davon zu grob. Der offene Punkt dazu wird in der Standdatei geführt
-    (docs/aktiver-stand.md, Vorrat (22)); **hier steht der Befund, dort die Folge für den
-    Text** — zweimal geschrieben liefen sie auseinander.
+    dann für eines davon zu grob. Die Folge für den Text ist gebaut: Der Banner-Satz ist seit
+    Scheibe 11.3f ziel-abhängig und führt für TikTok das Nichtwissen. Die offene Messung dazu
+    steht in docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.3 gehoben
+    (2026-09-11) …", Vorrat (1); **hier steht der Befund, dort die Messung** — zweimal
+    geschrieben liefen sie auseinander.
 
     **DIE GRENZE DER REICHWEITE, die schon (d) trägt, gilt auch hier:** Das Sandbox-Konto
     unter "Get Started" der Marketing-API ist weiterhin nicht geöffnet (s. "Der gelesene

@@ -1,3 +1,50 @@
+# Phase 11.3 — Tracking-Testmodus-Modul: DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der steuernde Stand der Phase 11.3 — das, was jeweils galt, nicht
+das, was geworden ist. Sie hiess bis zum Phasenende `docs/aktiver-stand.md` und war das
+Pflicht-Gate ("Auftrag 0") jeder Sitzung, die an der Phase arbeitete; wo sie einer anderen
+Fassung widersprach, galt sie.
+
+**ZEITRAUM UND UMFANG:** angelegt am 2026-09-08, VOR der ersten Scheibe; archiviert am
+2026-09-11 mit dem Abschluss der Phase. Die Phase umfasste ALLE FÜNF Fan-Out-Ziele: GEBAUT
+für meta, tiktok und pinterest — sechs Scheiben (11.3a bis 11.3f) und eine Mess-Runde, je mit
+eigenem Vermerk —; OHNE CODE ABGESCHLOSSEN für linkedin und google (Entscheidungen (17) und
+(18)).
+
+**WIE SIE ENDETE:** Ihr Marker steht auf `[x]`, und das heisst BAU-FERTIG — nicht "der
+Testmodus funktioniert bei jedem Ziel". Was zum Zeitpunkt des Hakens unbewiesen ist, steht an
+der Roadmap-Zeile 11.3 (docs/roadmap.md) und wird hier NICHT verdoppelt.
+
+**SIE WIRD NICHT MEHR FORTGESCHRIEBEN. DIE HEBUNG IST AM 2026-09-11 GEFAHREN** (Commit
+`f318574`); was wohin gegangen ist, je Klasse:
+- **VORRAT:** (3), (10), (15) und (28) als offene Punkte nach docs/offene-punkte.md, je mit
+  Stub in CLAUDE.md; (21) dort als Ursache (5) an einem bestehenden Posten; (1), (2), (5),
+  (11), (16), (17), (19), (20), (24), (27) und (29) nach docs/claude-history/backlog-polish.md,
+  Abschnitt "Aus Phase 11.3 gehoben (2026-09-11) …"; (9) und (14) gestrichen, mit Beleg.
+- **HEBUNGS-KANDIDATEN:** (3) und (5) als Dauerregeln nach docs/immer-beachten.md, (6)
+  zusammen mit Vorrat (28) als EINE Regel, (8) als Absatz an einer bestehenden; (1), (4) und
+  (7) ins Backlog, als Änderungsanträge in Wartestellung; (2) vollzogen und gestrichen; (9)
+  am Phasenende an der Roadmap-Zeile 11.2 geprüft.
+- **ENTSCHEIDUNGEN:** (1) und (7) als Dauerregeln nach docs/immer-beachten.md. Die übrigen
+  sechzehn und die Gestalt-Entscheidung (A) stehen hier und nirgends sonst.
+- **DER SCHUTZSATZ** gegen die widerlegte Begründung in docs/claude-history/future-roadmap.md
+  hat eine eigene Regel in docs/immer-beachten.md bekommen.
+**AN JEDER GEHOBENEN STELLE STEHT EIN ZEIGER "→ GEHOBEN 2026-09-11"** — ohne ihn wäre ein
+umgezogener Eintrag von einem nie dagewesenen nicht zu unterscheiden.
+
+**IHR ABSCHNITTS-VERZEICHNIS BLEIBT STEHEN.** Jede Überschrift steht hier zweimal, und die
+erste Fundstelle ist das Verzeichnis (docs/immer-beachten.md, "EIN ANKER, DER EINDEUTIG
+AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT").
+
+**IHRE VERWEISE SIND AB HIER ZEITDOKUMENTE.** Sie zeigen auf Abschnitte, Einträge und
+Codezustände, wie sie am Tag ihrer Entstehung waren; was heute gilt, steht im Repo. **Sie ist
+keine Quelle für Codezustände** — sie nennt Orte, an denen zu messen ist. Zeiger im Code und
+in zwei angewandten Migrationen, die den alten Pfad nennen, sind mit der Umbenennung tot; aus
+den Migrationen sind sie nie heilbar (docs/immer-beachten.md, "EINE ABLAGE MIT HALBWERTSZEIT
+WIRD ZITIERT, ALS HÄTTE SIE KEINE …").
+
+---
+
 # AKTIVER STAND — Phase 11.3 (Tracking-Testmodus-Modul)
 
 **WAS DIESE DATEI IST:** Der steuernde Stand der LAUFENDEN Phase 11.3. Sie trägt den
@@ -717,6 +764,8 @@ falsch; er ist deshalb ersetzt und nicht gestempelt.
 
 ### (1) SICHTBARKEIT STATT ISOLATION
 
+**→ GEHOBEN 2026-09-11** nach docs/immer-beachten.md: "SICHTBARKEIT STATT ISOLATION — …".
+
 **DIE ENTSCHEIDUNG:** Die Phase liefert dem Kunden den Nachweis, dass sein Ereignis beim
 Anbieter ANKOMMT. Sie liefert ihm NICHT die Zusicherung, dass dieses Ereignis die Zahlen
 des Anbieters unberührt lässt. Was gebaut wird, ist eine MARKIERUNG mit einem Riegel auf
@@ -951,6 +1000,8 @@ keine Zusage für einen künftigen Pfad.
 2026-09-09 durch Stefan.
 
 ### (7) EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE
+
+**→ GEHOBEN 2026-09-11** nach docs/immer-beachten.md: "EIN WÄCHTER ÜBER DIE SPALTENLISTE …".
 
 **DIE ENTSCHEIDUNG:** Die erwartete Spaltenliste des Tippfehler-Wächters in
 `token.test.ts` wird **aus der ENTSCHEIDUNG und dem MIGRATIONSTEXT** geschrieben — nie aus
@@ -1533,6 +1584,7 @@ ABLEITUNG aus ihrem Ort und ihrem Wortlaut, **keine Messung an einem Kundenkonto
 
 ## Vorrat — gemeldet, nicht gebaut
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …", (1).
 **(1) OB TIKTOK TEST-MARKIERTE EREIGNISSE MITZÄHLT WIE META — UNGELESEN UND UNGEMESSEN.**
 Die Doku der Events API 2.0 sagt zu Berichterstattung und Optimierung markierter Ereignisse
 NICHTS. Das ist ein Schweigen mit benannter Achse und keine Auslassung: gesucht wurde
@@ -1543,6 +1595,7 @@ Annahme über ein fremdes System.
 TRIGGER: die Scheibe, die den tiktok-Zweig des Riegels zuschneidet — spätestens der erste
 Live-Nachweis gegen tiktok. PROVENIENZ: GELESEN 2026-09-08.
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …", (2).
 **(2) WAS METAS AUFLAGE "REMOVE IT IN PRODUCTION" BEWIRKT, WENN SIE MISSACHTET WIRD — DIE
 DOKU NENNT KEINE FOLGE.** Meta verlangt, das Feld vor dem Produktiv-Rumpf zu entfernen, und
 sagt im selben Abschnitt, die Ereignisse würden ohnehin nicht verworfen und flössen in
@@ -1553,6 +1606,8 @@ begründet und nicht mit diesem.
 TRIGGER: die erste Messung gegen die Meta-Schnittstelle, die mit und ohne das Feld
 vergleicht. PROVENIENZ: GELESEN 2026-09-08.
 
+**→ GEHOBEN 2026-09-11** nach docs/offene-punkte.md: Restlücke (b) als "NACH DEM ENDE EINES
+TESTMODUS …", Restlücke (a) als Punkt (3) an "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE".
 **(3) IM TESTMODUS LAUFEN UNSERE ZAHLEN UND DIE DES ANBIETERS BEWUSST AUSEINANDER — DEM
 KUNDEN ERKLÄRT DAS HEUTE NICHTS.** Wir zählen nicht, der Anbieter zählt. Das ist gewollt und
 die unmittelbare Folge des Riegels. Für den Kunden sieht es aus wie ein Defekt: Sein
@@ -1634,6 +1689,7 @@ abzuhaken wäre eine Annahme über ein fremdes System.
 **PROVENIENZ DER STREICHUNG:** OWNER-ANGABE 2026-09-09. **KEINE Messung gegen die
 Meta-Schnittstelle** — der Owner berichtet aus dem Gebrauch seines eigenen Werbekontos.
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …", (5).
 **(5) LÄUFT DIE FRIST ZWISCHEN DEM SERVER-BEACON UND DEM BESTÄTIGUNGS-BEACON AB, ENTSTEHT
 EINE `browser`-ZEILE OHNE `server`-GEGENSTÜCK.** Das ist derselbe Schaden, den Invariante
 I1 benennt — nur zeitlich statt strukturell verursacht: Es sind ZWEI Anfragen mit zwei
@@ -1721,6 +1777,8 @@ mit Testmodus, mit Kennung und mit Geheimnis-Zeile (gegengeprüft am Bestand, CC
 2026-09-09; Vorrat (11), Absatz "NICHT GESTRICHEN"). Die Festlegung selbst steht dauerhaft
 in Entscheidung (2), Absatz "IHRE GRENZE".
 
+**→ GEHOBEN 2026-09-11** nach docs/offene-punkte.md, mit neuem Gegenstand: "DER CODE TRÄGT
+EINEN DEPLOYMENT-WEITEN TESTMODUS-HEBEL …".
 **(10) WELCHE QUELLE DEN VORRANG HAT, IST UNENTSCHEIDBAR GEBLIEBEN.** Beim Live-Test vom
 2026-09-09 stand `META_TEST_EVENT_CODE` in Vercel gesetzt — **mit DEMSELBEN Wert wie die
 Projektzeile (TEST13317)**. Kein Instrument jenes Laufs kann zeigen, welche der beiden
@@ -1743,6 +1801,7 @@ gesetzt sind und **VERSCHIEDENE** Werte tragen. Das ist eine Aussage über den V
 der Trigger oben steht unverändert. **Wer die zwei Sätze zusammenzieht, hält "der Projekt-
 Code funktioniert" für "der Projekt-Code gewinnt" — zwei verschiedene Aussagen.**
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …", (11).
 **(11) EIN ZIEL MIT TESTZUSTAND, ABER UNBRAUCHBAREM GEHEIMNIS, VERLIERT DAS EREIGNIS AUF
 BEIDEN SEITEN.** Der Riegel feuert (der Testzustand ist gültig), das Ereignis verschwindet
 aus `events` — **und der Anbieter bekommt nichts, weil gar nicht gesendet wird.** Das ist
@@ -1828,6 +1887,7 @@ das Feld wird nach dem Start geleert; GEMESSEN am Repo, CC, 2026-09-11). Die Anb
 selbst ist in docs/ziel-befunde.md verortet, Abschnitt "TikTok (Events API 2.0)", Teile (e)
 und (f).
 
+**→ GEHOBEN 2026-09-11** nach docs/offene-punkte.md: "DIE IDOR-WÄCHTER SIND NAMENTLICH …".
 **(15) DIE IDOR-WÄCHTER SIND NAMENTLICH — EINE NEUE SERVER-ACTION IST UNGESCHÜTZT BY
 DEFAULT, UND NICHTS WIRD DAVON ROT.** Jeder bestehende Wächter nennt die Aktion, die er
 prüft; er weiss von einer neuen nichts. **GEMESSEN in dieser Scheibe:** Die
@@ -1840,6 +1900,7 @@ Aktion von Hand wiederholt.
 TRIGGER: die nächste Scheibe, die eine Server-Action anlegt. PROVENIENZ: GEMESSEN am Repo
 und an der Mutationsprobe (CC, 2026-09-09).
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …", (16).
 **(16) DIE OWNERSHIP-ACHSE IST LIVE NICHT PRÜFBAR — ES FEHLT EIN WERKZEUGSTAND, NICHT EIN
 BAUTEIL.** Die Oberfläche BIETET DEN ANGRIFF GAR NICHT AN: Ein zweites Konto sieht das
 fremde Projekt nicht, es gibt kein Feld für eine fremde Projekt-Kennung und keinen Weg,
@@ -1851,6 +1912,7 @@ TRIGGER: der erste Werkzeugstand, der eine gebastelte Anfrage gegen eine Server-
 erlaubt. PROVENIENZ: FESTGESTELLT beim Live-Test (Stefan/CC, 2026-09-09); s. VERMERK 2,
 Abschnitt zur nicht gefahrenen Achse.
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …", (17).
 **(17) `credential-state.ts` BESCHREIBT EINE ARBEITSTEILUNG, DIE FÜR DEN TESTZUSTAND NICHT
 GILT.** Ihr Kopf sagt: "die Aktion klassifiziert die Zeile, diese Datei deutet die Uhr".
 Das umgezogene Prädikat `activeTestCodeFromRow` nimmt eine **ROHE Zeile** entgegen und ist
@@ -1893,6 +1955,7 @@ falscher Erwartung misst nicht, es meldet einen Fehlalarm.
 **PROVENIENZ DER STREICHUNG:** GEMESSEN am 2026-09-09 (SQL-Editor, Stefan); der Vollzug
 GESCHRIEBEN am selben Tag (CC), Commit `696a6d5`.
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …", (19).
 **(19) DREI LESER, DREI OWNERSHIP-GATES, DREI RUNDEN IM SELBEN LADE-EFFEKT.**
 `listConfiguredTargets`, `listTargetCredentialStates` und `listTestModeStates` laufen
 gebündelt und prüfen jeder für sich dasselbe. **Das folgt heute der Hausform** und ist
@@ -1901,12 +1964,15 @@ Uhr 2 zugeschnitten. Ein geteiltes Gate wäre ein eigener Zuschnitt — und (15)
 es keinen gibt.
 TRIGGER: der vierte Leser. PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-09).
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …", (20).
 **(20) DER PLATZHALTER DES TESTCODE-FELDES IST GRAU AUF GRAU UND KAUM ZU LESEN.** Für den
 Betreiber tragbar, **für einen Kunden nicht**. Es ist eine Darstellungs-Achse und keine
 Logik-Achse: Die Testumgebung wertet kein CSS aus, kein Lauf kann das fangen.
 TRIGGER: das UI-Redesign — und früher, wenn ein Kunde die Karte sieht. PROVENIENZ:
 GEMELDET von Stefan an der Live-Oberfläche, 2026-09-09.
 
+**→ GEHOBEN 2026-09-11** nach docs/offene-punkte.md, als Ursache (5) an "EIN ZIEL KANN
+KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN …".
 **(21) EIN KLARTEXT-GEHEIMNIS `''` BLIEBE FÜR DIE OBERFLÄCHE UNSICHTBAR UND FÜR DEN
 RESOLVER UNBRAUCHBAR.** `hasSecret` trimmt NICHT; unbrauchbar ist damit genau der Wert
 `''`. Der Leser des Testzustands liest das Geheimnis bewusst nicht und kann den Fall
@@ -2027,6 +2093,7 @@ wiederholt den anderen.
 zugrunde liegende Lesung ist unverändert Stefans Beobachtung an der Anbieter-Oberfläche
 vom selben Tag.
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …", (24).
 **(24) TIKTOKS TESTCODE HÄLT NACH OWNER-ANGABE MINDESTENS EINEN TAG.** Das **entlastet die
 60-Minuten-Frist für TikTok**: Die Frist ist dann deutlich kürzer als das
 Wechselintervall und kann keinen brauchbaren Zustand abschneiden — dieselbe Ungleichung,
@@ -2098,6 +2165,7 @@ PROVENIENZ DER STREICHUNG: GEMESSEN am Repo (CC, 2026-09-10) — der Wegfall der
 Produktivcode; dass damit die Kollision entfällt, ist eine ABLEITUNG aus dem Wegfall der
 zweiten Quelle, **keine Messung**.
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …", (27).
 **(27) DAS TESTANFRAGEN-LIMIT BINDET PHASE 11.4, NICHT DIESE.**
 Pinterest deckelt Testanfragen eigens (docs/ziel-befunde.md, Abschnitt "Pinterest
 (Conversions API)", Teil (e): "Test requests have a rate limit of 10 per app per second")
@@ -2114,6 +2182,8 @@ Empfehlung ist GELESEN an der Anbieter-Oberfläche (Stefan, 2026-09-10). Die Fol
 Testknopf ist eine ABLEITUNG, **keine Messung** — es ist kein Lauf gegen den Deckel
 gefahren worden.
 
+**→ GEHOBEN 2026-09-11** nach docs/offene-punkte.md: "ZEIGER AUF docs/aktiver-stand.md MEINEN EINE
+FRÜHERE STANDDATEI …"; die Bauform in docs/immer-beachten.md: "EINE ABLAGE MIT HALBWERTSZEIT …".
 **(28) JEDER NEUE VERMERK DIESER PHASE KIPPT EINEN FREMDEN ZEIGER VON TOT AUF FALSCH.**
 Vier Dateien nennen "docs/aktiver-stand.md, VERMERK <n>" und meinen die **Standdatei der
 Phase 11.2**, die am 2026-09-08 gelöscht und nach
@@ -2138,6 +2208,7 @@ ist eine ABLEITUNG. Die Einordnung als Vorrat statt offener Punkt ist
 ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-10 — der Punkt gehört dieser Phase und geht am
 Phasenende über die Hebung weiter.
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …", (29).
 **(29) SECHS KOMMENTARE UNTER `src/` NENNEN EINEN CONSTRAINT, DEN ES NICHT MEHR GIBT —
 IHRE AUSSAGE GILT, IHR NAME IST TOT.** Migration 0029 hat
 `project_secrets_test_mode_paar` durch `project_secrets_test_mode_je_ziel` ersetzt
@@ -2271,6 +2342,9 @@ gehoben werden könnte — als KANDIDAT, ohne Auswahl.
 
 ### (1) EINE VERWORFENE ALTERNATIVE, DIE NUR IM COMMIT-BODY STEHT, IST FÜR KÜNFTIGE RUNDEN VERLOREN
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …",
+HEBUNGS-KANDIDAT (1), als Änderungsantrag in Wartestellung.
+
 **DIE BEOBACHTUNG:** docs/arbeitsweise.md weist der verworfenen Alternative den COMMIT-BODY
 als Ort zu. **EIN COMMIT-BODY LÄDT NICHT.** Eine spätere Instanz liest Dateien — die
 Standdatei als Pflicht-Gate, CLAUDE.md und docs/immer-beachten.md unbedingt, die
@@ -2333,6 +2407,8 @@ der Liste der Dateien, und er nennt die Factory so, wie sie dasteht.
 
 ### (3) EINE SUCH-ACHSE, DIE AUS DEN ERWARTETEN FORMULIERUNGEN GEBILDET IST, BESTÄTIGT DIE ERWARTUNG STATT SIE ZU PRÜFEN
 
+**→ GEHOBEN 2026-09-11** nach docs/immer-beachten.md: "EINE SUCH-ACHSE, DIE AUS DEN ERWARTETEN …".
+
 **DER BELEG — GEMESSEN am eigenen Lauf (CC, 2026-09-10):** Um zu prüfen, welche Stellen
 eine Messung widerlegt hat, ist zuerst die Achse
 `kein anbieter|dieses rahmens|nicht zu haben|nie gemessen` gefahren worden. Sie ergab
@@ -2372,6 +2448,9 @@ am Repo.
 
 ### (4) EINE ZAHL IN EINER WÖRTLICHEN PROMPT-VORGABE WIRD NICHT GEPRÜFT, WEIL SIE VORGABE IST
 
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …",
+HEBUNGS-KANDIDAT (4), als Änderungsantrag in Wartestellung.
+
 **DER BELEG — GEMESSEN am eigenen Lauf (CC, 2026-09-10):** Der Commit-Body zu `ce7b49e`
 war wörtlich vorgegeben und nannte "fuenf Kommentare unter src/". **Dieselbe Runde hat
 SECHS Vorkommen in VIER Dateien gemessen**, mit Negativkontrolle und Gegenprobe. Der Body
@@ -2404,6 +2483,8 @@ GEMELDET 2026-09-10, NICHT GEBAUT.
 ist, ist eine **ABLEITUNG**.
 
 ### (5) EINE SCHEIBE ZU TEILEN MACHT JEDEN ZEIGER AUF SIE HALB FALSCH — UND ER BLEIBT AUFFINDBAR, ALSO FÄLLT ES NICHT AUF
+
+**→ GEHOBEN 2026-09-11** nach docs/immer-beachten.md: "EINE ZITIERTE EINHEIT ZU TEILEN …".
 
 **DER BELEG — GEMESSEN am Dateitext (CC, 2026-09-10):** **SIEBZEHN** Stellen dieser Datei
 nannten "11.3d", **KEINE** nannte "11.3e"; **alle waren geschrieben worden, als "11.3d" die
@@ -2438,6 +2519,9 @@ jeder Stelle einzeln vollzogen. Dass ein auffindbarer Zeiger seltener geprüft w
 toter, ist eine **ABLEITUNG**, keine Messung.
 
 ### (6) EIN ZEIGER AUS PRODUKTIV- ODER TESTCODE IN DIE STANDDATEI STIRBT AM PHASENENDE, UND ZWAR UNABHÄNGIG VOM GEGENSTAND, AUF DEN ER ZEIGT
+
+**→ GEHOBEN 2026-09-11** nach docs/immer-beachten.md, zusammen mit Vorrat (28): "EINE ABLAGE MIT
+HALBWERTSZEIT …".
 
 **DER BELEG — GEMESSEN am Repo (CC, 2026-09-10):** Der Kommentar des Laufs **T17a2** in
 `src/lib/capi/pinterest-forward.test.ts` zeigte auf **Vorrat (25)** dieser Datei. Zwei
@@ -2482,6 +2566,9 @@ Messung** — es ist kein Phasenende beobachtet worden, bei dem ein Code-Zeiger 
 gewesen wäre.
 
 ### (7) DIE COMMIT-LÜCKE EINES VERMERKS ENTSTEHT STRUKTURELL UND FÄLLT ERST DER NÄCHSTEN RUNDE AUF
+
+**→ GEHOBEN 2026-09-11** nach docs/claude-history/backlog-polish.md, "Aus Phase 11.3 gehoben …",
+HEBUNGS-KANDIDAT (7), als Änderungsantrag in Wartestellung.
 
 **DER BELEG — GEMESSEN am Dateitext (CC, 2026-09-10):** **VIER von FÜNF** Vermerken dieser
 Datei tragen denselben Nachtrag, wörtlich "hier stand die LÜCKE" — VERMERK 1, 2, 3 und 5.
@@ -2537,6 +2624,9 @@ der Reihenfolge von Schreiben und Committen, keine Messung. Dass kein Gate diese
 liest, ist ein **NICHT-TREFFER mit benannter Achse** — die vier Gates dieses Projekts.
 
 ### (8) EINE AUSSAGE KANN IN EINEM TEIL DER SEITE STEHEN, DEN DIE GELESENE FASSUNG NICHT TRÄGT — UND DER UMFANGS-BERICHT FÜHRT DIE SEITE TROTZDEM ALS GELESEN
+
+**→ GEHOBEN 2026-09-11** nach docs/immer-beachten.md, als Absatz an "EINE ABWESENHEIT KANN VOM
+WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND".
 
 **DER BELEG — GEMESSEN an den gespeicherten Kopien der Google-Lesung (CC, 2026-09-11):** Der
 tragende Allowlist-Satz der Übersichtsseite `/data-manager/api/devguides/events` — "Sending

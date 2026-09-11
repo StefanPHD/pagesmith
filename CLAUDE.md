@@ -147,7 +147,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11.1 — LinkedIn als viertes Fan-Out-Ziel
 - [x] Phase 11.2 — Google Ads
 - [x] Phase 11.8 — Autorisierungsschicht
-- [ ] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code)
+- [x] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code)
 - [ ] Phase 11.4 — Der Testknopf
 - [ ] Phase 11.6 — Custom-Pixel
 - [ ] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP)
@@ -1094,6 +1094,17 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   WARNUNG FÜR JEDEN, DER DARIN AUF EINE ÜBERSCHRIFT ANKERT: der Titel
   "Vollzogen — was hier stand und wohin es gegangen ist" steht ZWEIMAL zeichengleich.
   Der Volltext dieser Warnung steht im Kopf der Datei.
+- docs/claude-history/phase-11.3-testmodus.md — GESAMTE gebaute Phase 11.3
+  (Tracking-Testmodus-Modul, 2026-09-08 bis 2026-09-11): Gegenstand und Ausgangslage, sechs
+  Scheiben (11.3a bis 11.3f) und eine Mess-Runde mit sieben Vermerken, achtzehn bindende
+  Entscheidungen samt der Gestalt-Entscheidung (A), der Vorrat und die Hebungs-Kandidaten.
+  Sie ist ZUGLEICH der steuernde Stand und die Historie; sie hiess bis zum Phasenende
+  docs/aktiver-stand.md. IHR KOPF TRÄGT DAS PROTOKOLL DER HEBUNG, und an jeder gehobenen
+  Stelle steht ein Zeiger "→ GEHOBEN 2026-09-11".
+  HIER NACHSEHEN, WER AM TESTMODUS ODER AN EINEM WEITEREN ZIEL ARBEITET: Die sechzehn nicht
+  gehobenen Entscheidungen und die Gestalt-Entscheidung (A) stehen NUR hier — darunter die
+  Ablage, der Riegel an mindestens einem Ziel, das Urteil über die Frist und die Abschlüsse
+  ohne Code für linkedin (17) und google (18).
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),

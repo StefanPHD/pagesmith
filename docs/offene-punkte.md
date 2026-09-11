@@ -1218,6 +1218,17 @@ aufeinander; sie liegen alle hier und finden einander.
   hält fest, DASS eine Sichtung fällig ist, und trifft keine Aussage über ihr Ergebnis.
   Die Zahl DREI ist eine Momentaufnahme vom 2026-08-24 und wird nicht stillschweigend
   fortgeschrieben.
+  MOMENTAUFNAHME VOM 2026-09-11, NEBEN DER ALTEN UND NICHT STATT IHRER — GEMESSEN an CLAUDE.md,
+  Abschnitt "Offene Punkte", nach der Hebung der Phase 11.3 (CC; Achse: jede Stub-Zeile, die
+  mit "- " beginnt, samt ihren Folgezeilen, das Wort EINGETRETEN mit Wortgrenze;
+  Negativkontrolle 0): Von 59 Stub-Einträgen tragen ZWÖLF das Wort EINGETRETEN — DREIZEHN,
+  wenn man diesen Eintrag mitzählt, dessen Titel "EINGETRETENEN" führt. Die zwölf: "DIE
+  VOLLSTÄNDIGKEITS-ACHSE …" · "NICHTS ZEIGT AN …" · "EIN ZIEL KANN KONFIGURIERT SEIN …" ·
+  "DAS POSTGRES-UPGRADE …" · "EIN AUTORISIERUNGS-FLUSS …" · "DER OAUTH-WEG RUFT
+  ensureTrackingKey NICHT …" · "DIE SIEBEN-TAGE-FRIST …" · "eventSourceUrl IST AN DER
+  FAN-OUT-STELLE VERFÜGBAR …" · "retry HAT KEINE OBERGRENZE …" · "ZWEI EINTRÄGE AUS DEM
+  VORRAT DER PHASE 11.8 …" · "saveProject SCHREIBT settings UNVALIDIERT …" · "DER RESOLVER
+  SCHREIBT BEI TOTEM ZUGANGSDATUM …". Mit dieser Zählung ist keine Sichtung gefahren.
 - DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT (Trigger: die nächste
   Arbeit an db-stand.sql oder am DB-Doku-Stand): CLAUDE.md hält im Abschnitt "## Aktueller
   DB-/Analytics-Stand" fest, jener Titel-Zeiger brauche die Regeltitel weiterhin an einem
@@ -3352,7 +3363,7 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
   der Mechanismus nicht.
   **DER BEFUND — GEMESSEN am Repo (CC, 2026-09-11): VIERZEHN Zeiger nennen
   `docs/aktiver-stand.md` zusammen mit einer Nummer, meinen die Standdatei der Phase 11.2
-  (oder eine frühere) und treffen heute einen existierenden, aber FALSCHEN Eintrag der
+  (oder eine frühere) und trafen an diesem Tag einen existierenden, aber FALSCHEN Eintrag der
   Standdatei der Phase 11.3.** Achse: jede verfolgte Datei ausser der Standdatei selbst,
   der Pfad mit einer Nummer (`VERMERK n`, `Entscheidung (n)`, `Vorrat (n)` bzw.
   `Vorrats-Eintrag n`, `Hebungs-Kandidat n`) in derselben Zeile oder bis zu zwei Zeilen
@@ -3365,17 +3376,18 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
     Adresse);
   · CLAUDE.md und docs/claude-history/backlog-polish.md — je Hebungs-Kandidat 4.
   NICHT MITGEZÄHLT: elf Zeiger derselben Art, deren Nummer die Standdatei der Phase 11.3
-  nicht erreicht (VERMERK 10, 14, 16; Vorrats-Eintrag 40, 41, 42) — sie sind heute schon
-  tot; und eine Stelle in docs/claude-history/phase-11.2-google.md, die "DIESER Datei
+  nicht erreicht (VERMERK 10, 14, 16; Vorrats-Eintrag 40, 41, 42) — sie waren an jenem Tag
+  schon tot; und eine Stelle in docs/claude-history/phase-11.2-google.md, die "DIESER Datei
   (docs/aktiver-stand.md)" schreibt und damit zweideutig ist.
-  **WAS MIT IHNEN GESCHIEHT:** Mit der Umbenennung der Standdatei am Ende der Phase 11.3
-  werden alle vierzehn TOT, nicht richtig — richtig würden sie erst mit dem Archivpfad der
-  Phase 11.2, docs/claude-history/phase-11.2-google.md. Die nächste Standdatei unter
-  demselben Pfad macht sie wieder falsch. **Ein toter Zeiger zwingt zum Suchen, ein falscher
-  nicht.** Die toten führt Eintrag 67 in docs/claude-history/backlog-polish.md.
+  **DER HEUTIGE STAND:** Die Standdatei der Phase 11.3 ist am 2026-09-11 nach
+  docs/claude-history/phase-11.3-testmodus.md umbenannt. Seither sind alle vierzehn TOT, nicht
+  richtig — richtig wären sie erst mit dem Archivpfad der Phase 11.2,
+  docs/claude-history/phase-11.2-google.md. Die nächste Standdatei unter demselben Pfad macht
+  sie wieder falsch. **Ein toter Zeiger zwingt zum Suchen, ein falscher nicht.** Die toten
+  führt Eintrag 67 in docs/claude-history/backlog-polish.md.
   **DER UNTERSCHIED ZUR REGEL "EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE
   KEINE" (docs/immer-beachten.md):** Jene sagt, wie man solche Zeiger nicht wieder baut;
-  dieser Posten sagt, dass heute vierzehn falsch sind und was mit ihnen geschieht.
+  dieser Posten sagt, dass vierzehn solche Zeiger bestehen und was mit ihnen geschieht.
   **KEINE EMPFEHLUNG**, ob, wann und in welcher Reihenfolge sie nachgezogen werden.
   PROVENIENZ: die Zählung GEMESSEN am Repo (CC, 2026-09-11), die Zuordnung zu einer Phase je
   Treffer am Kontext abgelesen. Dass die nächste Standdatei sie wieder falsch macht, ist eine

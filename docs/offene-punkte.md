@@ -490,6 +490,91 @@ aufeinander; sie liegen alle hier und finden einander.
   Phasenende"). Der Satz steht hier, damit ein späterer Leser nicht sucht, warum ein
   Nachtrag von 2026-09-10 den Trigger nicht bewegt hat: Es stand bereits einer da, und
   ein bestehender Trigger wird nicht ersetzt, nur weil ein Befund dazukommt.
+
+  NACHGETRAGEN 2026-09-11 — DREI BLÖCKE UND DER TRIGGER. Alles darüber bleibt wörtlich
+  stehen; seine Angaben sind datierte Messungen und werden hier gelesen, nicht ersetzt.
+  Die Buchstaben laufen weiter, damit ein Verweis auf einen Teil dieses Postens eindeutig
+  bleibt.
+
+  (e) DIE GRENZE, WIE DAS WERKZEUG SIE MELDET — 150,0k, IN ZEICHEN. BEOBACHTET am
+  2026-09-11 (Owner, Ablesung der Werkzeug-Ausgabe beim Sitzungsstart; KEINE Messung),
+  wörtlich: "docs\immer-beachten.md is over the 150.0k-char limit (188.8k chars)". Die
+  erste Zahl ist die SCHWELLE, die zweite die DATEIGRÖSSE.
+  DREI FOLGEN FÜR DIESEN POSTEN, und sie sind der Ertrag dieses Blocks:
+  · WIE (a) ZU LESEN IST. (a) nennt "die Warnung des Werkzeugs bei rund 170 000
+    Zeichen". Die 170k vom 2026-09-10 waren demnach die damalige GRÖSSE der Datei, nicht
+    die Schwelle. (a) WIRD NICHT ERSETZT: "eine Warnung und keine Abschneidung" bleibt
+    wahr — der Satz ist mehrdeutig, nicht falsch, und seine Messung ist datiert.
+  · DIE MARGE DES KOPFES. Der Eintrag oben rechnet in BYTES ("rund 149 KB",
+    "149 970 Bytes"). Gilt die Grenze in ZEICHEN, lag CLAUDE.md am 2026-08-13 WEITER unter
+    ihr, als er sagt. Die Zeichenzahl jenes Tages ist NICHT erhoben. Das ist eine Aussage
+    über die MARGE des Eintrags, nicht über seine Berechtigung.
+  · DIE EINHEIT IST IM REPO UNEINHEITLICH (GEMESSEN am Repo, CC, 2026-09-11): Commit
+    45449c4 rechnet in Zeichen ("~153.9k auf ~16.5k Zeichen"); der Kopf von
+    docs/immer-beachten.md und der Stub in CLAUDE.md rechnen in Bytes ("149 970 von
+    150 000 Bytes").
+  DIE GRÖSSEN AM 2026-09-11 (GEMESSEN am Repo, CC): docs/immer-beachten.md 191 435 Bytes /
+  188 757 Zeichen / 2 428 Zeilen · CLAUDE.md 85 398 Bytes / 84 032 Zeichen. Beide reines
+  LF, kein BOM; Zeichen gezählt als Unicode-Codepoints. Datiert, also alt und nicht
+  falsch; wer den heutigen Wert braucht, misst ihn.
+
+  (f) DIE LADE-PROBE IST BEI DER NEUEN GRÖSSE ERNEUT GEFAHREN. GEMESSEN 2026-09-11 in einer
+  FRISCHEN Sitzung OHNE Werkzeug, bei 191 435 Bytes / 188 757 Zeichen. Abgefragt: die
+  LETZTE Regelüberschrift im Wortlaut · ihr RUMPF sinngemäss · die VIER
+  Regelüberschriften davor im Wortlaut · die ZAHL der Verzeichnis-Einträge · ein Eintrag
+  aus der MITTE. Alle Antworten stimmten mit dem Dateitext überein, gegengeprüft mit
+  Werkzeug ERST NACH der Antwort. Die letzte Regel begann in Zeile 2420 von 2428
+  (datierte Angabe), ihr Rumpf war bis zum Schlusssatz abrufbar.
+  DER TRAGENDE BELEG: Die Vorgabe der Probe nannte FÜNF am 2026-09-11 angefügte Regeln.
+  Die Antwort nannte SECHS und meldete die Abweichung selbst; die sechste steht
+  unmittelbar vor den vier abgefragten. WER EINE DATEI NICHT LIEST, SONDERN AUS EINEM STUB
+  ODER AUS DER VORGABE ABSCHREIBT, KANN EINE ANGABE NICHT ÜBERBIETEN.
+  WARUM DIE PROBE SCHARF WAR: Die sechs Regeln stehen am DATEIENDE, in keinem Stub und in
+  keiner anderen Datei — dort, wo eine Kürzung zuerst greift.
+  EINE ABWEICHUNG VON (b): Die Marke in Zeile 1 wurde NICHT abgefragt. Dass (b) die Marke
+  für sich allein als wertlos bezeichnet, macht die Auslassung nicht zu keiner — (b)
+  schreibt VIER Fragen vor, gefahren wurde ein anderer Satz.
+  DIE ZAHLEN FÜGEN SICH, GEMESSEN und nicht abgeleitet (Repo, CC, 2026-09-11): (c) zählte
+  am 2026-09-10 104 Regeln; der Hebungs-Commit f318574 hat sechs angefügt (dazu einen
+  Zusatz an einer bestehenden Regel), der Folge-Commit a00f56c keine. Heute stehen 110
+  Verzeichnis-Einträge UND 110 Regeln, und jeder Verzeichnis-Eintrag ist positionsweise
+  der Anfang seiner Regel.
+  DIE GRENZE DIESER PROBE: Sie sagt, dass der Import an DIESEM Tag bei DIESER Grösse
+  vollständig geladen hat. Sie sagt NICHT, wo eine Obergrenze liegt, und NICHT, dass das
+  Werkzeug die gemeldete Grenze nie durchsetzt. (a) bleibt wörtlich stehen — eine
+  datierte Messung für ihren Stand.
+
+  (g) DIE ZWEITE ACHSE: WAS DAS LADEN KOSTET, BEVOR GEARBEITET WIRD. Alles darüber
+  argumentiert über GRÖSSE gegen eine Grenze; für die Kosten des Ladens führte dieser
+  Posten keine Zahl.
+  BEOBACHTET am 2026-09-11 (Owner, /context beim Sitzungsstart, frische Sitzung ohne
+  Arbeit; KEINE Messung, und von CC nicht nachmessbar — /context ist ein Nutzer-Befehl):
+  190,5k von 1M Token belegt (19 %). Nach Kategorie: Speicherdateien 152,6k (15,3 %) ·
+  Werkzeuge 31,9k (3,2 %) · Systemvorgabe 2,6k · Fertigkeiten 3,4k · Nachrichten 8 Token.
+  Frei: 776,5k (77,6 %).
+  WAS DARAUS FOLGT:
+  · DAS FENSTER IST NICHT DIE ENGE STELLE — 77,6 % sind frei, bevor gearbeitet wird.
+  · DIE MAUT FÄLLT IN JEDER SITZUNG AN, unabhängig von der Aufgabe, und sie wächst mit
+    jeder Hebung (ABLEITUNG: jede Hebung fügt der unbedingt geladenen Datei Regeln an).
+  WAS NICHT DARAUS FOLGT: welche Ursache knappe Sitzungen trägt. OWNER-BEOBACHTUNG:
+  Sitzungen gehen schnell zur Neige, und eine zweite Ursache liegt ausserhalb der Doku —
+  lange Berichte verbrauchen den Rest in wenigen Runden. WELCHE DER BEIDEN URSACHEN
+  WIEVIEL TRÄGT, IST NICHT ERHOBEN.
+  HIER STEHT KEIN VORSCHLAG — weder zum Teilen noch zu kürzeren Berichten noch zu beidem;
+  der Zuschnitt gehört, wie oben zweimal gesagt, in eine Arbeitsweise-Runde.
+
+  DER TRIGGER IST AM 2026-09-11 EINGETRETEN, UND SEINE FRAGE IST ERST NACHTRÄGLICH
+  BEANTWORTET (GEMESSEN am Repo, CC, 2026-09-11): Der Posten ist am 2026-09-10 bearbeitet
+  worden (Commit 371001e, die Nachträge (a) bis (d)), rund 32½ Stunden vor dem
+  Hebungs-Commit f318574. Die Hebung selbst hat ihn NICHT angefasst — sie änderte
+  docs/offene-punkte.md an vier Stellen, keine davon in diesem Posten — und hat sechs
+  Regeln ans Ende von docs/immer-beachten.md angefügt. Die Runde vom 2026-09-10 KONNTE
+  die Frage des Triggers nicht beantworten: Sie lief, bevor feststand, was die Hebung
+  anfügen würde, und liess den Trigger ausdrücklich stehen (die Reihenfolge ist
+  GEMESSEN, der Schluss daraus eine ABLEITUNG). Beantwortet ist sie erst durch die Probe
+  unter (f) — NACHTRÄGLICH, als die sechs Regeln schon am Dateiende standen.
+  DER TRIGGER BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem Phasenende"). Er ist
+  wiederkehrend und feuert am nächsten Phasenende erneut.
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real; HEUTE FÄLLT ER NICHT AUF, weil
   ohne Dialog nie etwas abgelehnt wird): GEMESSEN am 2026-08-12, read-only am Code.

@@ -4289,6 +4289,15 @@ PROVENIENZ: GELESEN 2026-08-20 (das Limit, Teil (e) der Befund-Datei); die Oberf
 Empfehlung ist GELESEN an der Anbieter-Oberfläche (Stefan, 2026-09-10). Die Folge für einen
 Testknopf ist eine ABLEITUNG, **keine Messung** — es ist kein Lauf gegen den Deckel
 gefahren worden.
+ZUSATZ 2026-09-11, NACH DER HEBUNG — DER TRIGGER DARÜBER TRITT SO NIE EIN: Phase 11.4 ist am
+2026-09-11 VERWORFEN (docs/roadmap.md, Zeile "Phase 11.4 — Der Testknopf"), einen Zuschnitt
+wird es nicht geben. Der Wortlaut des Eintrags bleibt stehen, weil der Kopf dieses
+Abschnitts ihn als zeichengleich übernommen führt. GEGENSTANDSLOS IST DER EINTRAG DAMIT
+NICHT AUSGEMACHT: Der gebaute Testmodus der Phase 11.3 hängt an pinterest-Forwards
+`?test=true` an (`testModeQuery` in src/lib/capi/pinterest-forward.ts, GEMESSEN am Repo, CC,
+2026-09-11) — ob der Anbieter solche Aufrufe als "Test requests" unter diesen Deckel zählt,
+ist NICHT gelesen und NICHT gemessen. Über Streichung oder neuen Trigger ist NICHT
+entschieden.
 
 **(29) SECHS KOMMENTARE UNTER `src/` NENNEN EINEN CONSTRAINT, DEN ES NICHT MEHR GIBT —
 IHRE AUSSAGE GILT, IHR NAME IST TOT.** Migration 0029 hat

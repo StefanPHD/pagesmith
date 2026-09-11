@@ -2361,9 +2361,11 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   DER PREIS WIRD MITGENANNT, UND ER IST ZIEL-ABHÄNGIG: Bei meta zählt der Testklick beim
   Anbieter als echte Conversion; bei pinterest erscheint er nicht in der Eventübersicht; bei
   tiktok ist es behauptet und ungemessen.
-  WEN SIE BINDET: Phase 11.4 ausdrücklich — ein Testknopf erbt diese Rahmung —, jede
-  Oberfläche, die den Testmodus beschriftet, und jeden Kundentext über das
-  Tracking-Versprechen. "Testen ohne Nebenwirkung" ist ein Versprechen, das nicht jedes Ziel
+  WEN SIE BINDET: jede Runde, die ein Ereignis aus der Anwendung heraus erzeugt oder einen
+  Testzustand anzeigt — sie erbt diese Rahmung (zuerst benannt an Phase 11.4, dem
+  Testknopf, die am 2026-09-11 VERWORFEN ist: docs/roadmap.md, Zeile "Phase 11.4 — Der
+  Testknopf") —, jede Oberfläche, die den Testmodus beschriftet, und jeden Kundentext über
+  das Tracking-Versprechen. "Testen ohne Nebenwirkung" ist ein Versprechen, das nicht jedes Ziel
   einlöst.
   WANN SIE KIPPT: erst, wenn für JEDES Ziel mit Testmodus AUF BEIDEN ACHSEN —
   Berichterstattung UND Optimierung — GEMESSEN ist, dass ein markiertes Ereignis die Zahlen

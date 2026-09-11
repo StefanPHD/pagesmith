@@ -2683,6 +2683,22 @@ aufeinander; sie liegen alle hier und finden einander.
     `domains`-Zeile ohne Publish, **nicht** einen Schlüssel ohne Publish. Wer beides
     zusammenzieht, liest hier eine Behebung, die nicht dasteht.
 
+    **NACHGETRAGEN 2026-09-11 — DIE KIPPBEDINGUNG DARÜBER HAT KEIN BENANNTES VORHABEN MEHR.
+    DER WORTLAUT DES VERMERKS BLEIBT STEHEN:** Er ist Teil des Vorrats-Eintrags, den der Kopf
+    dieses Postens als "NICHT umformuliert" führt; ein Umschreiben machte jenen Satz falsch.
+    Die Bedingung lautet "eine Scheibe, die OHNE Veröffentlichung sendet", und als ihr
+    einziges Vorhaben nennt sie **Phase 11.4, den Testknopf — die ist am 2026-09-11
+    VERWORFEN** (docs/roadmap.md, Zeile "Phase 11.4 — Der Testknopf"). **EINE ZWEITE
+    BEDINGUNG NENNT DIESER VERMERK NICHT** — auch sein gemessener Zusatz nicht: Der benennt
+    eine `domains`-Zeile ohne Publish und ausdrücklich keinen Schlüssel ohne Publish.
+    **DAS KIPPEN DIESES ZUSTANDS HÄNGT DAMIT AN KEINEM BENANNTEN EREIGNIS MEHR.** Wer den
+    Spiegelstrich für wartend hält, liest einen entfallenen Zeiger mit. OB EIN ANDERES
+    VORHABEN OHNE VERÖFFENTLICHUNG SENDET ODER SENDEN WIRD, IST NICHT GEPRÜFT UND HIER NICHT
+    ENTSCHIEDEN.
+    PROVENIENZ: der Wortlaut des Vermerks GELESEN (CC, 2026-09-11), seine Zugehörigkeit zum
+    Vorrats-Eintrag GEMESSEN an der gelöschten Vorratsdatei im Stand vor Commit `003e65f`
+    (CC, 2026-09-11); die Verwerfung ist OWNER-ENTSCHEIDUNG 2026-09-11.
+
 - `saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE ABWESENHEIT (Trigger: der Zuschnitt der Scheibe 2 — EINGETRETEN; der Eintrag wird ausdrücklich NICHT gestrichen):
   GEHOBEN AM 2026-09-08 aus docs/aktiver-stand-vorrat.md, Vorrats-Eintrag 16, im Rahmen
   des Phasenendes der Phase 11.2. Der Wortlaut darunter ist der des Vorrats-Eintrags und

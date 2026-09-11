@@ -105,6 +105,11 @@ wird nur dort gesetzt, wo beide Teile im Text der Zeile ausdrücklich stehen; oh
 Benennung ist er unzulässig, weil er sonst nur "irgendwie halb" hiesse.
 EIN [~] IM STUB IST ZULÄSSIG, WENN DER EINTRAG IN docs/roadmap.md BEIDE TEILE
 AUSDRÜCKLICH BENENNT — die Auflage gilt dem Eintrag dort, nicht dieser Zeile.
+[-] VERWORFEN — ZUGELASSEN AM 2026-09-11 (OWNER), ERSTMALS AN PHASE 11.4. Die Phase
+wird nicht gebaut; ihre Zeile BLEIBT stehen, weil sie trägt, was erwogen und gemessen
+wurde. Zulässig nur, wenn der Eintrag in docs/roadmap.md den GRUND und die PROVENIENZ
+der Entscheidung trägt. [-] ist weder [x] noch [ ]: nichts ist gebaut, und nichts
+steht aus.
 
 WANN [x] GESETZT WIRD — DAS KRITERIUM (OWNER-ENTSCHEIDUNG 2026-09-08, vollzogen
 2026-09-08): EINE PHASE GEHT AUF [x], WENN KEIN CODE MEHR ZU SCHREIBEN IST.
@@ -148,7 +153,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11.2 — Google Ads
 - [x] Phase 11.8 — Autorisierungsschicht
 - [x] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code)
-- [ ] Phase 11.4 — Der Testknopf
+- [-] Phase 11.4 — Der Testknopf
 - [ ] Phase 11.6 — Custom-Pixel
 - [ ] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP)
 - [ ] Phase 11.7 — Anbieter-Befunde nachziehen

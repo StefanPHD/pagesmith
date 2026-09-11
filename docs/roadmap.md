@@ -1497,7 +1497,7 @@ liegen beide hier und finden einander.
         (GELESEN an der Oberfläche, einmal, 2026-09-09).
       · linkedin und google haben KEINEN Testmodus: DOKU-LESUNG vom 2026-09-11,
         NICHT-TREFFER mit benannter Reichweite, KEINE Messung.
-- [ ] Phase 11.4 — Der Testknopf: KEINE SCHEIBE, sondern mehrere einzeln
+- [-] Phase 11.4 — Der Testknopf: KEINE SCHEIBE, sondern mehrere einzeln
       beweisbare Teile plus eine UNENTSCHIEDENE VORFRAGE — was beim Druck auf den
       Knopf überhaupt aufgerufen wird. OHNE DEREN ANTWORT HAT KEIN ZUSCHNITT EINEN
       GEGENSTAND. Auflagen und Messbefunde: phase-11-multi-tracking.md, "## Die
@@ -1505,6 +1505,64 @@ liegen beide hier und finden einander.
       Rückkanal und eine Maskierung — NICHT die Adapter. Die frühere Bindung "es
       braucht die Adapter, die es hier nicht gibt" ist mit dem zweiten und dritten
       Ziel eingelöst worden, ohne dass der Testknopf näher gerückt wäre.
+      VERWORFEN 2026-09-11 (OWNER-ENTSCHEIDUNG) — DIE PHASE WIRD NICHT GEBAUT. Der
+      Wortlaut darüber bleibt ZEICHEN FÜR ZEICHEN stehen: Er trägt die MESSUNG dessen,
+      was dem Knopf fehlt, und ohne sie käme er als Einfall zurück. Dieser Block tritt
+      DANEBEN und trägt den Grund:
+      · DIE FALSCHE ENTWARNUNG IST DER TRAGENDE GRUND. Ein Testknopf, der auf dem
+        Statuscode des Anbieters ruht, meldet Erfolg für ein Ereignis, dessen Inhalt
+        der Anbieter nicht geprüft hat. BELEG, GEMESSEN (docs/ziel-befunde.md,
+        Abschnitt "LinkedIn (Conversions API)"): Teil (e) — ein erfundener
+        Währungscode bei sonst gültiger Nutzlast ergibt 201 Created; Teil (j) — ein
+        syntaktisch unmöglicher Identitätswert ebenso, und die Empfangsanzeige des
+        Anbieters zählte ihn mit. Der Bestand nennt das den "STILLEN FEHLZUSTAND
+        DIESES ZIELS". DASS DAS EREIGNIS DORT VERFÄLLT, IST AN (e) EINE FOLGERUNG,
+        KEINE MESSUNG. GEMESSEN ist ein Verfall nach der Annahme bei google:
+        Abschnitt "Google (Google Ads Conversions · GA4)", Teil (cb) — ein mit 200
+        angenommener Aufruf endete in der Verarbeitung als FAILED
+        (PROCESSING_ERROR_REASON_INVALID_GCLID).
+        DIE GRENZE DIESES GRUNDES, und sie gehört dazu: Die Auflage 1 der dreizehnten
+        Scheibe liess den Knopf nur "Verbindung & Token gültig" melden, nie etwas über
+        Zustellung. Diese Meldung wäre bei einer 201 wörtlich wahr; die falsche
+        Entwarnung entsteht im Schluss des Betreibers, nicht im Text des Knopfes.
+      · KEIN ZIEL HAT EINEN RÜCKKANAL IN DIE ANWENDUNG — UND WAS ES BEIM ANBIETER GIBT,
+        BELEGT DIE ANKUNFT, NICHT DIE TAUGLICHKEIT. Alle fünf Adapter geben
+        Promise<void> zurück (GEMESSEN am Repo, CC, 2026-09-11). Je Ziel, was der
+        Anbieter selbst zeigt (docs/ziel-befunde.md, je Ziel-Abschnitt):
+        meta — das Test-Events-Werkzeug; markierte Ereignisse fliessen in Targeting
+        und Messung (Teile (a), (b), GELESEN) · tiktok — eine Test-Events-Ansicht,
+        die Ankunft GEMESSEN LIVE 2026-09-09 (docs/claude-history/
+        phase-11.3-testmodus.md, TikTok-Lauf); was mit markierten Ereignissen
+        geschieht, UNGEMESSEN (Teile (d), (h)) · pinterest — eine Test-Ansicht als
+        Live-Strom ohne Rückschau, mit Warnliste je Parameter (Teile (w), (x),
+        GEMESSEN LIVE 2026-09-10); markierte Ereignisse erscheinen NICHT in der
+        Eventübersicht (Teil (u), GEMESSEN) · linkedin — 201 mit leerem Rumpf,
+        keine Ereignis-Kennung (Teil (d), GEMESSEN); kein Testmodus (Teil (aa),
+        GELESEN, NICHT-TREFFER) · google — Diagnostik über requestStatus.retrieve
+        (Teil (cb), GEMESSEN), verzögert bis zu 24 Stunden (Teil (ci), GELESEN),
+        unter validateOnly gar keine (Teil (cj), GELESEN), und sie zeigt nur
+        verarbeitete, also gezählte Eingänge (Teil (ci)).
+      · DIE KOLLISION MIT EINER DAUERREGEL: "SICHTBARKEIT STATT ISOLATION …"
+        (docs/immer-beachten.md, gehoben aus Entscheidung (1) der Phase 11.3) bindet
+        11.4 ausdrücklich — ein Testknopf erbt die Rahmung, dass die ANKUNFT beim
+        Anbieter das Versprechen ist und "Testen ohne Nebenwirkung" nicht. Ein Knopf,
+        der aus der Anwendung heraus nur sieht, dass ein Aufruf ANGENOMMEN wurde,
+        belegt diese Ankunft bei keinem Ziel sofort, und bei meta erzeugt er dabei
+        eine echte Conversion.
+      · WAS ÜBRIGBLEIBT, UND ES IST KEINE PHASE: die FEHLER-ISOLATION im Fehlerfall —
+        sagen zu können, ob ein gescheiterter Live-Test an der Seite oder an den
+        Zugangsdaten liegt. Das braucht weder Lesepfad noch Rückkanal noch
+        Maskierung. GEMESSEN am Code (CC, 2026-09-11): listTargetCredentialStates
+        liest je Ziel die Zeile (target, secret_enc) und leitet den Zustand lokal ab;
+        setCapiToken schreibt das Geheimnis, ohne den Anbieter zu rufen. KEINER DER
+        BEIDEN PRÜFT GEGEN DEN ANBIETER. Ob die Frage an anderer Stelle beantwortbar
+        ist (Logs, Fehlerzeilen des Resolvers), ist NICHT geprüft. KEINE EMPFEHLUNG,
+        ob daraus etwas wird — der Satz steht da, damit die Frage nicht mit der Phase
+        verschwindet.
+      · WER SIE NEU VORSCHLÄGT, trägt gegen diesen Grund vor und beginnt nicht bei
+        null. Sie ist nicht verboten, sie ist erwogen und mit Grund verworfen.
+      PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-11. Die Befunde GEMESSEN bzw. GELESEN wie
+      je Stelle angegeben; Prüfung am Dateitext und am Code durch CC, 2026-09-11.
 - [ ] Phase 11.6 — Custom-Pixel: KEINE Wiederholung, sondern eine EIGENE
       ARCHITEKTUR-SCHEIBE — und ihre VORFRAGE ist offen: was es überhaupt ist.
       (a) ein CLIENT-seitiges Snippet — dann gar kein Fan-Out-Ziel, sondern

@@ -453,6 +453,9 @@ Verweise.
 **Die Lücken-Regel:** Ein Vermerk ohne Commit-Nummer ist der jüngste, noch nicht
 committete. Es darf immer nur eine Lücke geben — stehen zwei da, ist etwas
 liegengeblieben.
+Sie wird in Auftrag 0 der nächsten Runde geschlossen. Sie entsteht strukturell —
+der Hash existiert im Moment des Schreibens nicht — und sieht deshalb in jeder
+Runde wie der erlaubte Zustand aus.
 
 **Provenienz an jeder Angabe:** gemessen (am Repo oder live, mit Datum) oder
 gelesen (mit Quelle). Als Ort steht der Symbolname, nie eine Zeilennummer — die
@@ -523,7 +526,7 @@ Satz zum Gegenstand, der Beleg der Erledigung. Der volle frühere Wortlaut wird 
 mitgeführt: An einem Eintrag, dessen Gegenstand verschwunden ist, hängt keine spätere
 Handlung mehr — genau das stellt der Beleg der Erledigung fest. Titel und Beleg tragen
 alles, was noch trägt.
-**GEMESSEN (CC, 2026-09-10, `docs/aktiver-stand.md` der Phase 11.3):** Sieben gestrichene
+**GEMESSEN (CC, 2026-09-10, `docs/claude-history/phase-11.3-testmodus.md`):** Sieben gestrichene
 Vorrats-Einträge trugen **183 Zeilen** — 11,6 % der Datei und mehr als ihre zwei längsten
 Blöcke zusammen, in einer Datei, die jede Sitzung vollständig liest.
 **Die Grenze:** Das gilt für Vorrats-Einträge und Hebungs-Kandidaten. Bei einer Dauerregel
@@ -579,7 +582,9 @@ Datei und fiele unter Weg 8.
 deren wörtlichen Anfang. Wer die erste Zeile einer Regel ersetzt, zieht den
 Verzeichnis-Eintrag im selben Zug nach. Zwei Orte, ein Zug.
 
-**Ein Korrektur-Block setzt voraus, dass der korrigierte Text committet war.** Wer
+**Ein Korrektur-Block, den es nur beim Stempel gibt — eine Sachkorrektur trägt keinen
+in der Datei (s. „Review-Kalibrierung") —, setzt voraus, dass der korrigierte Text
+committet war.** Wer
 einen Wortlaut richtigstellt, der in derselben, noch nicht committeten Runde
 entstanden ist, erzählt eine Korrektur an einem Text, den nie jemand gesehen hat.
 Der Test ist am Repo prüfbar: Steht der zitierte alte Wortlaut in
@@ -672,6 +677,10 @@ Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
 - **Geschützte Invarianten, nummeriert und wörtlich benannt.** Nicht „die Doku
   beachten", sondern die konkrete Regel im Wortlaut — nur so ist der Check
   sichtbar und prüfbar.
+- **Die Prompt-Invariante:** Keine Angabe aus dem Prompt wird als Tatsache
+  übernommen. Trägt der Bestand eine Aussage nicht — eine Zahl, ein Zitat, ein
+  Zustand —, schreibt CC sie nicht und meldet es. Der Prompt ist die einzige
+  Stelle, an der diese Auflage steht; ohne sie prüft sie niemand.
 - **Stopp-Bedingungen, explizit:** wann CC abbrechen und vorlegen muss. **Jede
   Stopp-Bedingung nennt auch inhaltliche Kollisionen, nicht nur mechanische** —
   eine Stelle kann sachlich falsch werden, ohne dass die Änderung sie berührt.
@@ -740,6 +749,9 @@ Du schreibst die Messages, Stefan committet.
 - **Der Body enthält nur, was der Diff nicht hergibt** — eine verworfene
   Alternative, eine Messung, die die Entscheidung getragen hat. Den Diff
   nachzuerzählen ist Duplikation.
+  Eine verworfene Alternative, die über ihre Scheibe hinaus bindet, gehört
+  zusätzlich in die Standdatei — ein Commit-Body lädt nicht. Eine, die mit ihrer
+  Scheibe abläuft, bleibt allein im Body.
 - **Messages per Heredoc** (`git commit -F -`), nie als PowerShell-Here-String
   im Bash-Tool — das schreibt ein führendes `@` in die Message.
 - **Vor jedem Push** `git status` / `git diff` auf versehentliche Secrets oder
@@ -833,10 +845,10 @@ Security-Manifest. **Bei Doku-Runden ist er die Ausnahme, nicht die
 Vorlage.** Was dort trägt: `git diff --stat` als Scope-Beleg, die ersetzten
 Passagen als Zitat im Bericht, additive Teile als Überschrift plus Provenienzzeile.
 
-**Für Sachkorrekturen gibt es ein billigeres Instrument als das Diff.** Die Bauform
-zitiert den ersetzten Wortlaut selbst („Hier stand …"). Damit steht der alte Text im
-neuen, und ein gezielter Vergleich gegen `git show HEAD:<pfad>` prüft dieselbe Frage
-in vier Zeilen statt in vierhundert.
+**Für Sachkorrekturen gibt es ein billigeres Instrument als das Diff.** In die Datei
+kommt allein der heutige Stand; der ersetzte Wortlaut steht **im Bericht**, alt und
+neu nebeneinander. Ein gezielter Vergleich gegen `git show HEAD:<pfad>` prüft dieselbe
+Frage in vier Zeilen statt in vierhundert.
 
 ---
 

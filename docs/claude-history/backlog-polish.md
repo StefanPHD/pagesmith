@@ -4423,3 +4423,183 @@ Lücke ist also die Bauform und schliesst sich frühestens in der nächsten Rund
 fünf Vermerken der Phase trugen denselben Nachtrag. Bleibt er aus, entsteht beim nächsten
 Vermerk ohne Zutun eine zweite Lücke, und die Lücken-Regel verliert ihre Diagnose.
 **EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+
+## Nachtrag 2026-09-11 — BEOBACHTUNG: DIE TESTMODUS-ANZEIGE VERALTET BEI OFFENER SEITE
+Eigener Abschnitt nach der Konvention oben: Ein Anhängen ans Dateiende hätte den Eintrag
+sonst unter "Aus Phase 11.3 gehoben (2026-09-11) — Vorrat und drei Hebungs-Kandidaten der
+Standdatei" einsortiert, und von dort stammt er nicht. Er stammt aus einer Beobachtung des
+Owners und ist nach dem Phasenende am Code nachgesehen worden.
+
+- DIE TESTMODUS-ANZEIGE VERALTET BEI OFFENER SEITE — UND DER NAHELIEGENDE FIX DREHT DEN
+  FEHLER IN DIE GEFÄHRLICHE RICHTUNG.
+  Scheibe 11.3b hat "keine Selbstaktualisierung" ausdrücklich ausgeschlossen und dafür
+  einen eigenen Zuschnitt verlangt — dies ist eine BEWUSSTE AUSLASSUNG, KEIN DEFEKT.
+  ZUERST DIE GEFÄHRLICHE RICHTUNG, WEIL SIE DER TEURERE TEIL DIESES EINTRAGS IST: Ein
+  Countdown im Client, der `endetAt` gegen die BROWSER-Uhr hält, ist schnell geschrieben
+  und sieht richtig aus. Der Riegel urteilt aber gegen die Uhr der LAUFZEIT (`Date.now()`
+  in `getCapiConfigByTrackingKey`). Geht die Browser-Uhr vor, zeigt die Karte
+  "abgelaufen" und das Banner verschwindet, während der Riegel noch feuert — der Kunde
+  hält seine Zählung für wieder laufend, während sie ruht. DAS GEHT STILL KAPUTT; der
+  heutige Fehler ist die harmlose Richtung. Geht die Browser-Uhr nach, steht die Anzeige
+  zu lange — die heutige Richtung, nur kürzer.
+  ZWEI ENTSCHEIDUNGEN STEHEN DAGEGEN, UND KEINE VON BEIDEN IST GEHOBEN. Sie stehen allein
+  im Archiv docs/claude-history/phase-11.3-testmodus.md, Abschnitt "Entscheidungen, die
+  über ihre Scheibe hinaus binden", und erreichen niemanden, der nur diesen Eintrag öffnet:
+  · Entscheidung (4), "KEIN REINES PRÄDIKAT IN DIESER SCHEIBE — EIN URTEIL, ZWEI
+    LESUNGEN": Die Frage wird genau einmal ausgewertet, die Oberfläche übernimmt das
+    Prädikat, statt es nachzubauen — sonst zeigt sie "aktiv", während der Riegel nicht
+    feuert. Ihr erster Halbsatz ist überholt (das Prädikat `activeTestCodeFromRow` liegt
+    seit 11.3b in der reinen Datei src/lib/tracking/credential-state.ts), ihr bindender
+    Teil nicht.
+  · Entscheidung (8), "DER LESER GIBT DAS URTEIL HERAUS, NIE DEN TESTCODE" — sie trifft
+    den Countdown unmittelbarer: "Bekäme der Client nur die Frist und entschiede selbst,
+    ob der Testmodus läuft", entstünde der Widerspruch, den (4) verbietet; "Es urteilt nur
+    eine Seite, also kann nichts auseinanderlaufen." Sie bindet ausdrücklich "jede spätere
+    Runde, die den Testzustand anzeigt oder eine zweite Anzeige daneben baut".
+  Beide nennen als Beispiel die ANDERE Richtung (Anzeige "aktiv", Riegel schweigt). Dass
+  ein Countdown gegen die Browser-Uhr unter dieselbe Figur fällt — ein zweites Urteil über
+  dieselbe Frage, gegen eine dritte Uhr —, ist eine ABLEITUNG. Der Code sagt es selbst an
+  zwei Stellen: im Kommentar am Testmodus-Banner in `CodeImporter` ("KEIN COUNTDOWN … eine
+  DRITTE Uhr — die des Besuchers") und an `handleTestModeChanged`.
+  DIE BEOBACHTUNG (OWNER-ANGABE, 2026-09-10): Eine Frist verstreicht bei geöffneter Seite.
+  Das Banner über dem Editor bleibt stehen, die Ziel-Karte zeigt weiter "Testmodus bis
+  <Uhrzeit>". Erst ein Neuladen räumt beides.
+  AM CODE NACHGESEHEN (CC, 2026-09-11, Stand `a00f56c`) — DIE BEOBACHTUNG IST DAS GEBAUTE
+  VERHALTEN:
+  · GEHOLT WIRD DER TESTZUSTAND AN GENAU ZWEI STELLEN, beide in `CodeImporter`: im
+    gebündelten Lade-Effekt mit der Achse `[projectId]` (`listTestModeStates` neben
+    `listConfiguredTargets` und `listTargetCredentialStates`) und in
+    `handleTestModeChanged` nach einer eigenen Geste — dort nur für das EINE Ziel, mit dem
+    Zustand, den der Server zurückgibt (`withTestModeState`). Neu geholt wird damit beim
+    Neuladen und beim Wechsel des Projekts; das Öffnen der Einstellungs-Fläche holt nicht
+    neu, weil der Zustand im Container liegt.
+  · KEIN TIMER, KEIN INTERVALL, KEINE SICHTBARKEITS- ODER FOKUS-BEHANDLUNG für diesen
+    Zustand. Achse über `src/` ohne Testdateien: `visibilitychange`, `document.hidden`,
+    `visibilityState`, ein `focus`-Listener, `onFocus`, `setInterval`, `setTimeout`,
+    `requestAnimationFrame`. Alle Treffer liegen anderswo — Debounce und zwei
+    Status-Rückstellungen in `CodeImporter`, die Timer in `DomainManager` und die Timeouts
+    der Server-Aufrufe unter `src/lib/`. Der Poll in `DomainManager` mit seiner
+    `document.hidden`-Prüfung ist zugleich die Positivkontrolle der Achse.
+  · DAS BANNER hängt an `testModeBannerText(testModes)`, abgeleitet und ohne eigenen
+    Zustand. Es nennt ALLE Ziele mit `kind === "laeuft"`, in der Reihenfolge von
+    `TRACKING_TARGETS`, jedes mit eigenem "(bis <Zeit>)".
+  · DIE KARTE RECHNET NICHT: `describeTestModeState` zeigt die Lage, die der Server
+    gebildet hat — beim Laden (`testModeStateFrom` in `listTestModeStates`, gegen
+    `Date.now()` der Laufzeit) oder als Antwort auf die letzte eigene Geste. Nach Ablauf
+    steht dort weiter "Testmodus bis <vergangene Zeit>", dazu "<Name>-Test verlängern" und
+    "<Name>-Test jetzt beenden", bei pinterest auch der Reihenfolge-Hinweis.
+  · DER CLIENT BERECHNET DIE AKTIVITÄT NIRGENDS SELBST. Der Befund ist eine veraltete
+    Anzeige, kein zweites Urteil.
+  · NACH DEN DREI WEITEREN ZIELEN UNVERÄNDERT, SOWEIT DER CODE DAS ENTSCHEIDET: Seit
+    `e9544c6` (11.3b) hat sich an `CodeImporter` nur die Stelle geändert, an der das Banner
+    seinen Text rendert (11.3f); `MeasureView` ist unverändert. pinterest (11.3e) läuft
+    durch denselben Leser, dieselbe Lage und dieselbe Karte. linkedin und google tragen
+    keinen Testmodus, der Leser gibt für sie keinen Eintrag heraus — dort gibt es keine
+    Anzeige, die veralten könnte. NICHT AM CODE ENTSCHEIDBAR: ob es live bei pinterest
+    ebenso auftritt (nicht beobachtet) und ob das Deployment dem Stand `a00f56c` entspricht
+    (nicht gemessen).
+  DAS VERHALTEN IST ENTSCHIEDEN, NICHT ENTGLITTEN: Scheibe 11.3b hat "keine
+  Selbstaktualisierung" ausdrücklich ausgeschlossen. Ihr Abschnitt im Archiv, Unterabschnitt
+  "Was über die Scheibe hinaus gilt und deshalb hier bleibt", sagt wörtlich "DIE ANZEIGE IST
+  DIE ZWEITE INSTANZ, NIE DIE AUTORITÄT" und verlangt für eine Selbstaktualisierung "einen
+  eigenen Zuschnitt". Der Kommentar am Banner sagt dasselbe seit `e9544c6`.
+  BEI MEHREREN ZIELEN VERALTET DAS BANNER NUR TEILWEISE — UND DAS IST SCHWERER ZU ERKENNEN
+  ALS EINE GANZ FALSCHE ANZEIGE. Beispiel: meta läuft bis 11:00, pinterest bis 11:30. Um
+  11:15 nennt das Banner beide; der meta-Teil ist veraltet, der pinterest-Teil stimmt, und
+  der Projektsatz "Solange zählt die eigene Auswertung dieses Projekts keine Ereignisse"
+  stimmt ebenfalls, weil der Riegel an mindestens einem Ziel hängt. Der Text ist also
+  überwiegend wahr. Eine Geste an EINEM Ziel frischt nur dessen Eintrag auf; die übrigen
+  bleiben, wie sie sind.
+  DER ZWEITE FALL — IN EINEM REITER STARTEN, IM ANDEREN BEENDEN — FOLGT AUS DEM CODE: Der
+  Zustand eines Reiters ändert sich nur über seinen Lade-Effekt und seine eigenen Gesten;
+  einen Kanal zwischen Reitern gibt es nicht (Achse über `src/`: `BroadcastChannel`, ein
+  `storage`-Listener, `.channel(`, `postgres_changes`, `subscribe(` — kein Treffer). Wer
+  in Reiter B beendet, lässt Reiter A auf "Testmodus bis …" stehen. Vom Owner nicht
+  gesehen.
+  DER SPIEGELFALL IST DIE GEFÄHRLICHE RICHTUNG, UND ER ENTSTEHT OHNE JEDEN FIX: Wer in
+  Reiter B STARTET, lässt Reiter A ohne Banner stehen, mit einer Karte ohne Testzeile oder
+  mit "abgelaufen am …", während der Riegel feuert. Gedeckelt ist das durch die Frist
+  (`TEST_MODE_DURATION_SECONDS`, eine Stunde), und der startende Reiter zeigt das Banner.
+  Dasselbe gilt für ein zweites Gerät. Diese Richtung nennt der Code selbst die schlimmere:
+  Der Kopf von `testModeStateFrom` beschreibt eine Karte, die "aus" zeigt, während der
+  Riegel feuert, als Umkehrung des Widerspruchs, gegen den Entscheidung (4) gebaut ist.
+  WAS NICHT KAPUTT IST, UND ES TRÄGT DIE EINORDNUNG FÜR DEN BEOBACHTETEN FALL — EIN REITER,
+  DIE FRIST LÄUFT AB:
+  · Der Riegel urteilt je Beacon: `handleIngest` löst über `getCapiConfigByTrackingKey`
+    auf, das die Uhr der Laufzeit einmal je Auflösung liest und `activeTestCodeFromRow`
+    fragt. Ab Ablauf zählt das Projekt wieder.
+  · "Jetzt beenden" in der veralteten Karte ruft `endTestMode`; das setzt beide Spalten
+    ohne Blick auf die Frist auf null — Nullen auf einen toten Zustand, danach zeigt die
+    Karte keine Testzeile mehr.
+  · "Verlängern" ruft `startTestMode`; das setzt die Frist ab jetzt neu, bei meta und tiktok
+    mit neuem Code — also einen neuen Testmodus, so wie die Beschriftung es verspricht.
+  · Die veraltete Anzeige irrt nur in die harmlose Richtung: Sie zeigt MEHR Testmodus, als
+    läuft, nie weniger. Sie trägt ihren eigenen Endzeitpunkt; dass sie veraltet ist, steht
+    im Text — hervorgehoben wird es nirgends.
+  WARUM ES HIER UND NICHT ALS OFFENER PUNKT STEHT — AUCH MIT DEM SPIEGELFALL
+  (OWNER/ARCHITEKT-ENTSCHEIDUNG 2026-09-11): Im beobachteten Fall geht nichts still
+  kaputt — die Anzeige ist veraltet und sichtbar, der Riegel ist unberührt. Für den
+  Spiegelfall tragen drei Gründe zusammen:
+  · Die Frist deckelt ihn auf eine Stunde. Das ist genau der Schaden, den sie deckeln
+    soll, und sie tut es hier.
+  · Der startende Reiter zeigt das Banner — wer ihn ausgelöst hat, hat es gesehen.
+  · Er braucht eine eigene Handlung desselben Menschen kurz zuvor. "Still kaputt" meint
+    einen Zustand, den niemand veranlasst hat und den niemand sieht.
+  DIE BEDINGUNG, UNTER DER DAS KIPPT: Wird ein Projekt für MEHR ALS EINE PERSON zugänglich,
+  fällt der zweite Grund weg — A startet, B sieht nichts, und B hat nie ein Banner gesehen.
+  Dann ginge es still kaputt, und der Eintrag gehörte nach docs/offene-punkte.md.
+  WAS DAVON AM REPO ENTSCHEIDBAR IST UND WAS NICHT (GEMESSEN am Repo, CC, 2026-09-11):
+  · EIN PROJEKT GEHÖRT GENAU EINER IDENTITÄT. `projects.user_id` ist eine einzelne Spalte,
+    `not null`, mit Verweis auf `auth.users` (0001_projects.sql); die vier Policies auf
+    `projects` prüfen dort alle `auth.uid() = user_id`, und die Ownership-Gates in den
+    Server-Actions und den OAuth-Routen filtern über `.eq("user_id", user.id)`. Eine
+    Tabelle, die ein Projekt einer zweiten Identität zuordnet, gibt es nicht — weder unter
+    den `create table` der Migrationen noch in einer Suche nach `member`, `collaborator`,
+    `team_id`, `teams`, `invite`, `shared_with`, `org_id`, `organization` über `src/` und
+    `supabase/` (kein Treffer). Für die laufende Datenbank ist die ZAHL der Policies
+    gemessen (docs/db-stand.md, "projects 4", Stand 2026-08-05); ihr Wortlaut stammt aus
+    der Migration.
+  · EINE IDENTITÄT IST NICHT EINE PERSON. Teilen zwei Menschen eine Anmeldung, ist die
+    Bedingung eingetreten, ohne dass sich eine Zeile Code ändert — und am Repo ist das
+    nicht zu sehen. IHR EINTRETEN AUF DIESEM WEG IST UNGEPRÜFT. Nach Owner-Angabe nutzt
+    heute niemand ausser dem Owner das Produkt (CLAUDE.md, Abschnitt "Modus").
+  DIE FORM, DIE BEIDES LÖST — KANDIDAT, KEINE VORGABE: Der CLIENT entscheidet, WANN er
+  fragt; der SERVER entscheidet, WAS wahr ist. Ein geplanter Aufruf von
+  `listTestModeStates` zum bekannten `endetAt`, kein Polling; sagt der Server "läuft noch",
+  wird neu geplant. Dazu ein Nachfragen, wenn der Reiter wieder sichtbar wird. Die Anzeige
+  wechselt nur auf eine Antwort des Servers, ein zweites Urteil entsteht nicht. Das
+  Nachfragen beim Sichtbarwerden trifft auch den Zwei-Reiter-Fall und seinen Spiegel,
+  sobald der Nutzer in den veralteten Reiter zurückkehrt.
+  EINE LÜCKE DES KANDIDATEN, UND SIE GEHÖRT ZU IHM: Das Neuplanen korrigiert eine
+  VORGEHENDE Browser-Uhr nicht von selbst. Die Antwort des Lesers trägt nur `endetAt`, keine
+  Bezugszeit des Servers (`ListTestModeStatesResult`). Wer mit demselben `endetAt` gegen
+  dieselbe vorgehende Uhr neu plant, bekommt eine Wartezeit von null und fragt Schlag auf
+  Schlag, bis die Uhr des Servers den Zeitpunkt erreicht hat. Es braucht ein weiteres Stück
+  — eine Mindestwartezeit beim Neuplanen, eine Bezugszeit in der Antwort oder etwas
+  Drittes. GENANNT, NICHT EMPFOHLEN.
+  DIE DAUERREGEL ZUR SICHTBARKEIT — GEFUNDEN, IHR WORTLAUT PASST NUR ZUM TEIL:
+  docs/immer-beachten.md, "EIN WIEDERKEHRENDER AUFRUF GEGEN EINEN EXTERNEN DIENST HÄNGT AN
+  DER SICHTBARKEIT DES BEREICHS, DER IHN BRAUCHT — NICHT AN DER DES TABS". Ihr Beleg ist der
+  Poll in `DomainManager`. Drei Abstände zum Kandidaten, am Wortlaut abgelesen: Sie spricht
+  von einem EXTERNEN Dienst, `listTestModeStates` ist unsere eigene Server-Action; sie
+  spricht von einem WIEDERKEHRENDEN Aufruf, der Kandidat plant einen einzelnen; und sie
+  verwirft die Sichtbarkeit des Tabs als Bindung — der Kandidat benutzt sie nicht als
+  Pause, sondern als Anlass zum Nachfragen. Der Bereich, der die Antwort braucht, ist
+  zweigeteilt: das Banner steht im Projekt, die Karte in der Einstellungs-Fläche, die beim
+  Schliessen abgebaut wird; beide lesen denselben Zustand im Container. Wie weit die Regel
+  greift, entscheidet der Zuschnitt.
+  ZWEI NACHBARN, DIE BEIM ZUSCHNITT MITMÜSSEN:
+  · Der offene Punkt "NACH DEM ENDE EINES TESTMODUS ERKLÄRT NICHTS DIE LÜCKE IN DER EIGENEN
+    KURVE" (docs/offene-punkte.md). Heute erklärt das stehengebliebene Banner die ruhende
+    Zählung länger, als sie ruht; eine Nachfrage zum Ablauf nimmt es in dem Moment weg und
+    zieht die dort beschriebene Lücke in der offenen Seite auf den Ablaufzeitpunkt vor.
+  · Eintrag (19) im Abschnitt "Aus Phase 11.3 gehoben (2026-09-11) …" dieser Datei — drei
+    Leser im selben Lade-Effekt. Ein Nachfragen, das nur den Testzustand holt, ruft
+    `listTestModeStates` an einer zweiten Stelle ausserhalb dieses Bündels.
+  KEIN TRIGGER, KEINE EMPFEHLUNG, OB UND WANN GEBAUT WIRD. GEMELDET, NICHT GEBAUT.
+  PROVENIENZ: die Beobachtung OWNER-ANGABE (2026-09-10), von CC nicht nachgestellt. Die
+  Fundstellen, die zwei Such-Achsen und der Diff seit `e9544c6` GEMESSEN am Repo (CC,
+  2026-09-11, Stand `a00f56c`). Die teilweise Veraltung, der Zwei-Reiter-Fall, sein
+  Spiegel, die Wirkung der zwei Gesten auf einen toten Zustand, die Lücke des Kandidaten
+  und die Wechselwirkung mit dem offenen Punkt sind ABLEITUNGEN aus dem Code; keiner ist
+  live herbeigeführt.

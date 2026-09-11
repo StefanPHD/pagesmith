@@ -1157,6 +1157,9 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   nimmt eine Messung mit; wer sie als aktuell liest, liest ein Datum nicht mit.
   HIER STEHT AUS DEMSELBEN GRUND KEINE NEUE ZAHL: Eine wäre eine zweite Wahrheit
   neben einer datierten Messung. Wer die heutigen Werte braucht, misst sie.
+  NACHGEZOGEN 2026-09-11 — EIN WEITERER NACHTRAGS-ABSCHNITT: "Nachtrag 2026-09-11 —
+  BEOBACHTUNG: DIE TESTMODUS-ANZEIGE VERALTET BEI OFFENER SEITE" (1). Eine
+  Owner-Beobachtung, am Code nachgesehen; KEIN offener Punkt.
 - supabase/checks/ — versionierte Messproben für Live-Tests und Gegenproben. KEINE Probe
   fasst ECHTE Daten an; welche Bauformen das zulässt und was eine Datei dann in ihrem Kopf
   sagen muss, steht im README des Ordners — hier der Zeiger, dort die Regel.

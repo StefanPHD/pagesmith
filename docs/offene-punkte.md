@@ -1968,6 +1968,44 @@ aufeinander; sie liegen alle hier und finden einander.
   eine ABLEITUNG aus dem 204-Containment und dem Logpfad des Adapters, KEINE Messung an einer
   abgeschalteten Version.
 
+- OB DAS LIVE VERWENDETE LINKEDIN-ZUGANGSDATUM ABLÄUFT, IST ERST AB MITTE OKTOBER 2026
+  ENTSCHEIDBAR (Trigger: Mitte Oktober 2026 — abzulesen an der Direct-API-Seite im
+  Campaign Manager, Anzeigen "Status" und "Data last received"):
+  ANGELEGT AM 2026-09-11. Der Trigger stand bis dahin allein in docs/ziel-befunde.md,
+  Abschnitt "LinkedIn (Conversions API)", Block "WAS AUSDRÜCKLICH OFFEN BLEIBT (2026-08-20)",
+  Punkt "OB DAS LIVE VERWENDETE ZUGANGSDATUM ABLÄUFT" — in einer Datei, die nicht geladen wird
+  und keinen Stub in CLAUDE.md hat. Der Befund bleibt dort; hierher wandert der Trigger.
+  **WAS BEOBACHTET WIRD:** ob Ereignisse des Ziels `linkedin` beim Anbieter weiter ankommen.
+  **WO ES ABGELESEN WIRD:** in der Anbieter-Oberfläche — Campaign Manager, Direct-API-Seite,
+  "Status" und der Empfangs-Zeitstempel "Data last received". Nicht im Code, nicht im Log.
+  **WAS JEDER AUSGANG BEDEUTET:**
+  · Der Zeitstempel läuft über Mitte Oktober 2026 hinaus weiter, und der Status bleibt: Die
+    Doku-Aussage "läuft nicht ab" ist für DIESES Zugangsdatum durch eine Beobachtung gestützt —
+    für diesen Tag, nicht für jeden künftigen.
+  · Der Zeitstempel bleibt stehen, oder der Status kippt: Das Zugangsdatum trägt nicht mehr.
+    **Die Beobachtung trennt dabei NICHT** zwischen einem Ablauf nach Zeit und dem zweiten,
+    nicht zeitbasierten Ende — das anmeldende Mitglied verlässt die Organisation (ebenda, Teil
+    (al), mit einer am Dokument nicht entscheidbaren Reichweite).
+  · Eine Ablesung VOR Mitte Oktober 2026 sagt über einen Ablauf nach Zeit nichts.
+  **SOLANGE NICHTS KIPPT, IST KEINE HANDLUNG NÖTIG.**
+  **DIE ABGRENZUNG — ZWEI NACHBARN, DIE BEIM SELBEN ZIEL BEISSEN:** Der Eintrag "EIN ZIEL KANN
+  KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN — DREI URSACHEN, DIE GETRENNT BLEIBEN" führt unter
+  Ursache (4) die KLASSE — ein Zugang, der ohne Zutun des Kunden bricht; hier steht der TERMIN
+  für den einen Fall. "DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027 ABGESCHALTET — DANN
+  SCHEITERT DER FORWARD STILL" ist die andere Achse: dort läuft die VERSION ab, hier das
+  ZUGANGSDATUM.
+  PROVENIENZ: "läuft nicht ab" ist GELESEN 2026-08-20 an
+  learn.microsoft.com/en-us/linkedin/marketing/conversions/getting-access-conversions
+  (docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions API)", Teil (v)) und erneut GELESEN
+  2026-09-11 an S1 und S2: "The generated access tokens don't expire." (ebenda, Teil (al)). Dass
+  das live verwendete Zugangsdatum ein ANDERES Artefakt ist als das des OAuth-Generators, ist
+  BEOBACHTET 2026-08-20 (Owner, Token-Inspector im Entwicklerportal: der Generator-Wert mit
+  "Expires: in about 2 months", der Campaign-Manager-Wert als ungültig zurückgewiesen; ebenda,
+  Teil (v)). Der Zeitpunkt "rund sechzig Tage nach dem 2026-08-19" steht so im genannten Block;
+  worauf die sechzig Tage ruhen, sagt er nicht — sie decken sich mit der Frist des ANDEREN
+  Artefakts und sind keine Anbieter-Aussage über den Campaign-Manager-Weg. KEINE Messung.
+  KEINE EMPFEHLUNG.
+
 <!-- Aus dem Vorrat der Phase 11.2 gehoben, 2026-09-08 -->
 
 - VIERZEHN PUNKTE AUS DEM VORRAT DER PHASE 11.2 (2026-09-08) — DIESE ZEILE IST KEIN
@@ -3121,6 +3159,20 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
   Doku-Stand 2026-08-18), abgelegt in docs/ziel-befunde.md, Google-Abschnitt, Teile (aj) und
   (ap). Der Enum-Typ ist GEMESSEN 2026-08-28 (OWNER), Messung B1, Teil (br). Die Grenze von
   `validateOnly` ist GELESEN, Teil (p)/H4. Der Wert "WEB" ist OWNER-ENTSCHEIDUNG 2026-09-01.
+  VORBEHALT 2026-09-11 — DIE WERTELISTE DES ANBIETERS, WIE SIE AM 2026-09-11 GELESEN IST,
+  TRÄGT EINEN WERT MEHR ALS DIE ERHEBUNG VOM 2026-08-24: `OTHER` ("The event was generated from
+  other sources."); docs/ziel-befunde.md, Google-Abschnitt, Teil (cn), mit dem Vorbehalt an
+  (w)/F3. **OB SICH DIE LISTE SEIT JENER ERHEBUNG VERÄNDERT HAT, IST NICHT ENTSCHEIDBAR** — die
+  Release notes datieren `OTHER` auf "2025-08-06 v1.2", also davor. Dazu dieselbe Lesung: Die
+  Referenz nennt das Feld "Optional. Signal for where the event happened (web, app, in-store,
+  etc.)."; die Pflicht steht im Leitfaden und in den Release notes (ebenda, Teil (cn)).
+  **DER EINTRAG BLEIBT OFFEN, UND SEINE AUSSAGE IST UNBERÜHRT:** Der gebaute Wert "WEB" ist
+  weiterhin ungemessen, der Trigger unverändert, und für diese Gestalt steht weiterhin nur
+  "Required. Set to one of the enum values for `EventSource`." (GELESEN 2026-09-11,
+  /devguides/events/send-events, Doku-Stand 2026-08-18). **WER DEN VORBEHALT ALS FORTSCHRITT
+  LIEST, HÄLT EINE FRAGE FÜR BEWEGT, DIE STEHT:** Ein Wert mehr in der Liste ist eine Option
+  mehr, zwischen denen die Doku nicht entscheidet.
+  PROVENIENZ DIESES VORBEHALTS: GELESEN 2026-09-11 (CC), KEINE Messung.
 
 - DIE KOPFZEILE x-goog-user-project WIRD NICHT GESENDET — OB SIE PFLICHT IST, IST IN BEIDE
   RICHTUNGEN UNGEMESSEN (Trigger: die erste Anfrage, die OHNE sie scheitert oder MIT ihr

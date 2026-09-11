@@ -292,6 +292,9 @@ gehen von hier eine Station weiter.
 - DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027 ABGESCHALTET — DANN SCHEITERT
   DER FORWARD STILL (Trigger: der 15.01.2027 — der Abschalttermin der Version 202601, die
   der Adapter sendet)
+- OB DAS LIVE VERWENDETE LINKEDIN-ZUGANGSDATUM ABLÄUFT, IST ERST AB MITTE OKTOBER 2026
+  ENTSCHEIDBAR (Trigger: Mitte Oktober 2026 — abzulesen an der Direct-API-Seite im
+  Campaign Manager, Anzeigen "Status" und "Data last received")
 
 **AUS DEM PHASENENDE 11.2 GEHOBEN (2026-09-08) — NEUNZEHN PUNKTE.** Fünf aus der
 Rest-Liste der Roadmap-Zeile 11.2, vierzehn aus dem Vorrat der Phase. DIE

@@ -83,6 +83,8 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT" in docs/immer-beachten.md
   · Abschnitts-Lesung 2026-09-04 der PostgREST- und Supabase-Dokumentation, LAUF 3
     (bedingte Schreibung, Eindeutigkeits-Bruch, Transaktion und Isolation) — die
     Teile (ah) bis (ar)
+  · Vermerk 2026-09-11 (Abkündigung eines Management-API-Endpunkts, Suche im Repo,
+    abgelesene Versionsstände) — die Teile (as) und (at)
 · Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
   · Abschnitts-Lesung 2026-09-02 der Vercel-Dokumentation, LAUF 1 (Cron Jobs, Tarif-
     Grenzen, Absicherung) — die Teile (a) bis (g)
@@ -1200,6 +1202,59 @@ Geprüft sind die drei Berührungen: Teil (n) (RLS aktiv ohne Policy, `service_r
 mit dem Vorbehalt im Fliesstext, s. Teil (ap)**; Teil (d) (kein Doku-Stand auf
 `/docs`-Seiten) — **nicht berührt, weil dieser Lauf auf den drei Supabase-Seiten nicht
 danach gesucht hat** (s. den Kopf).
+
+### Vermerk 2026-09-11 (Abkündigung eines Management-API-Endpunkts, Suche im Repo, abgelesene Versionsstände) — die Teile (as) und (at)
+
+**HERKUNFT: KEIN DOKU-LAUF.** Zwei Angaben stammen vom OWNER — eine Changelog-Lesung und
+eine Ablesung der Projekteinstellungen —, eine Suche ist GEMESSEN am Repo (CC,
+2026-09-11). **KEINE Messung an einer Supabase-Schnittstelle und KEINE an dieser
+Datenbank.** BEOBACHTET steht hier neben den drei Klassen aus dem Kopf dieser Datei: Es
+meint eine Ablesung der Anbieter-Oberfläche, mit Quelle und Datum, und ist keine Messung.
+
+**(as) DIE ABKÜNDIGUNG VON `analytics/endpoints/logs.all` — DAS REPO RUFT DIE MANAGEMENT
+API NICHT AUF.** **NEU.**
+GELESEN 2026-08-22 (Owner; von CC NICHT nachgelesen), supabase.com/changelog, Eintrag
+48235: Supabase entfernt am 23.09.2026 den Management-API-Endpunkt
+`analytics/endpoints/logs.all`. Betroffen ist allein, wer ihn DIREKT aufruft — Skripte,
+Integrationen, Werkzeuge; die Nutzung über den Explorer im Dashboard nicht. Nachfolger:
+`analytics/endpoints/logs`, mit ClickHouse-SQL und einem Filter `source_name`.
+**GEMESSEN am Repo (CC, 2026-09-11) — NICHT-TREFFER MIT BENANNTER REICHWEITE:**
+· ACHSE: `logs.all` · `analytics/endpoints` · `api.supabase.com` · `management` ·
+  `SUPABASE_ACCESS_TOKEN` — je als fester String, ohne Beachtung der Gross- und
+  Kleinschreibung.
+· REICHWEITE: `src/` · `.github/` (`dependabot.yml`, `workflows/ci.yml`) · `supabase/` ·
+  `.claude/` · die Konfigurationsdateien im Wurzelverzeichnis (`.env.local.example`,
+  `.gitattributes`, `.gitignore`, `eslint.config.mjs`, `next.config.ts`, `next-env.d.ts`,
+  `package.json`, `package-lock.json`, `postcss.config.mjs`, `tsconfig.json`,
+  `vitest.config.ts`) · `.env.local` nur als Zählung, ohne Inhalt. Ein Verzeichnis
+  `scripts/` gibt es nicht. NICHT durchsucht: `node_modules/`, `.next/`, `docs/`.
+· ERGEBNIS: vier der fünf Begriffe treffen nichts. `management` trifft genau einmal, als
+  Teilwort — „Schluesselmanagement" in einem Kommentar von Migration 0021 —, also keinen
+  Aufruf.
+· POSITIVKONTROLLE: `@supabase/supabase-js` trifft in `src/` und `package.json`;
+  `supabase.co` — ein Begriff mit Punkt wie drei der Achse — trifft viermal in
+  `supabase/`; `.env.local` trägt drei Zeilen mit `SUPABASE`.
+· NEGATIVKONTROLLE: ein erfundener Begriff trifft null Mal.
+FOLGERUNG: In den durchsuchten Orten trifft die Abkündigung keinen Aufruf. Über Werkzeuge
+AUSSERHALB des Repos — einen lokal eingerichteten Anbieter-Zugang, eine Integration am
+Konto — sagt die Suche nichts.
+
+**(at) DIE VERSIONSSTÄNDE DES PROJEKTS, ABGELESEN — UND ZWEI BERÜHRUNGEN.** **NEU.**
+BEOBACHTET 2026-09-11 (Owner, Ablesung der Projekteinstellungen in der
+Anbieter-Oberfläche; KEINE Messung): Postgres `17.6.1.127`, angeboten wird ein Upgrade auf
+`17.6.1.166` · Auth `2.196.0` · PostgREST `14.5`.
+· **DER POSTEN "DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT"**
+  (docs/offene-punkte.md) nennt mit Stand 2026-08-20 „17.6.1.127 -> 17.6.1.155". Der
+  Ausgangsstand ist derselbe, das angebotene Ziel ein anderes. FOLGERUNG aus den zwei
+  Ablesungen: Zwischen dem 2026-08-20 und dem 2026-09-11 ist kein Upgrade eingespielt
+  worden, soweit die Oberfläche den Stand zeigt. Der Posten ist NICHT geändert.
+· **TEIL (aq), GRENZE 1** hält fest, die gelesene PostgREST-Fassung sei 16 und die unserer
+  Instanz „UNGELESEN UND UNGEMESSEN". Die Oberfläche nennt jetzt `14.5`. Das ist eine
+  BEOBACHTUNG und keine Messung — (aq) wird davon NICHT geschlossen und NICHT geändert.
+  Welche der dort als jung benannten Merkmale (`max-affected`, `PGRST124`, `PGRST128`,
+  `handling=strict`) die Fassung `14.5` trägt, ist ungelesen. Die Messung vom 2026-09-04
+  (Zusatz unter (ar)) bleibt, was sie ist: eine Messung an der laufenden Instanz jenes
+  Tages, deren Fassung nicht erhoben war.
 
 ## Vercel (Hosting · Ausspielung · Deploy · zeitgesteuerte Auslöser)
 

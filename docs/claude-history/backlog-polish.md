@@ -4144,3 +4144,282 @@ Antwort darauf.
     nach dem Nachziehen der Produktivcode-Zeiger; sie zählen VORKOMMEN, nicht Zeilen. Dass
     ein Zeiger im Archiv als Zeitdokument gelten könnte, ist eine **FRAGE** und keine
     Feststellung.
+
+## Aus Phase 11.3 gehoben (2026-09-11) — Vorrat und drei Hebungs-Kandidaten der Standdatei
+
+**WOHER SIE KOMMEN:** Aus der Standdatei der Phase 11.3 (Tracking-Testmodus-Modul), beim
+Phasenende am 2026-09-11. Hier stehen die Vorrats-Einträge (1), (2), (5), (11), (16),
+(17), (19), (20), (24), (27) und (29) unter ihren Ursprungs-Nummern, dahinter drei
+Hebungs-Kandidaten. **Die übrigen offenen Vorrats-Einträge sind als offene Punkte
+gehoben:** (3), (10), (15) und (28) nach docs/offene-punkte.md, (21) dort als Ursache (5)
+des Postens "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN". (9) und (14) sind
+gestrichen; der Beleg steht am Eintrag in der Standdatei.
+**EIN NUMMERN-ZEIGER OHNE PFAD IN DIESEN EINTRÄGEN MEINT DIE STANDDATEI DER PHASE 11.3** —
+"VERMERK 2", "Vorrat (21)", "Entscheidung (3)", "diese Scheibe", "diese Phase". Sie wird am
+Phasenende archiviert; dieser Satz löst die Zeiger auf, umgeschrieben sind sie NICHT.
+**DER TEXT DER VORRATS-EINTRÄGE IST ZEICHENGLEICH ÜBERNOMMEN.** Hinzu kommt je ein als
+solcher gekennzeichneter Zusatz BEI DER HEBUNG an (2) und an (24).
+
+**(1) OB TIKTOK TEST-MARKIERTE EREIGNISSE MITZÄHLT WIE META — UNGELESEN UND UNGEMESSEN.**
+Die Doku der Events API 2.0 sagt zu Berichterstattung und Optimierung markierter Ereignisse
+NICHTS. Das ist ein Schweigen mit benannter Achse und keine Auslassung: gesucht wurde
+`optimi`, `report`, `discard`, `exclud`, `drop` über den gerenderten Rumpf von sechs Seiten
+(Fundstellen in docs/ziel-befunde.md, Abschnitt "TikTok (Events API 2.0)", Teil (d)).
+**WEDER BESTÄTIGT NOCH WIDERLEGT** — Metas Aussage auf tiktok zu übertragen wäre eine
+Annahme über ein fremdes System.
+TRIGGER: die Scheibe, die den tiktok-Zweig des Riegels zuschneidet — spätestens der erste
+Live-Nachweis gegen tiktok. PROVENIENZ: GELESEN 2026-09-08.
+
+**(2) WAS METAS AUFLAGE "REMOVE IT IN PRODUCTION" BEWIRKT, WENN SIE MISSACHTET WIRD — DIE
+DOKU NENNT KEINE FOLGE.** Meta verlangt, das Feld vor dem Produktiv-Rumpf zu entfernen, und
+sagt im selben Abschnitt, die Ereignisse würden ohnehin nicht verworfen und flössen in
+Targeting und Messung. **Was das Entfernen dann bewirkt, steht nirgends.** Solange das
+offen ist, lässt sich nicht sagen, ob ein hängengebliebener Testmodus beim Anbieter
+irgendeinen Schaden anrichtet — die Frist dieser Phase ist mit unserem eigenen Grund
+begründet und nicht mit diesem.
+TRIGGER: die erste Messung gegen die Meta-Schnittstelle, die mit und ohne das Feld
+vergleicht. PROVENIENZ: GELESEN 2026-09-08.
+ZUSATZ BEI DER HEBUNG (2026-09-11): Der Gegenstand ist unberührt — die Doku nennt weiterhin
+keine Folge. Der deployment-weite Fall, `META_TEST_EVENT_CODE` in einer Vercel-Umgebung und
+damit an jeder Meta-Nutzlast ohne Projekt-Code, ist entfallen: Die Variable ist dort
+gelöscht (OWNER-ANGABE, 2026-09-11, keine Messung). Der Code liest sie weiterhin; das führt
+der offene Punkt "DER CODE TRÄGT EINEN DEPLOYMENT-WEITEN TESTMODUS-HEBEL, DEN IN VERCEL
+HEUTE NIEMAND SETZT UND DEN NIEMAND BEOBACHTET" (docs/offene-punkte.md).
+
+**(5) LÄUFT DIE FRIST ZWISCHEN DEM SERVER-BEACON UND DEM BESTÄTIGUNGS-BEACON AB, ENTSTEHT
+EINE `browser`-ZEILE OHNE `server`-GEGENSTÜCK.** Das ist derselbe Schaden, den Invariante
+I1 benennt — nur zeitlich statt strukturell verursacht: Es sind ZWEI Anfragen mit zwei
+Auflösungen, und der Riegel urteilt in jeder neu. Das Fenster ist Sekunden breit, die
+Frist Stunden; die Adblocker-Verlustrate würde den Lauf dann als Verlust zählen.
+TRIGGER: die erste Runde, die Zustand über zwei Anfragen hinweg führt. PROVENIENZ:
+ABLEITUNG aus dem gebauten Kontrollfluss (CC, 2026-09-09), **keine Messung** — der Fall
+ist nicht herbeigeführt worden.
+
+**(11) EIN ZIEL MIT TESTZUSTAND, ABER UNBRAUCHBAREM GEHEIMNIS, VERLIERT DAS EREIGNIS AUF
+BEIDEN SEITEN.** Der Riegel feuert (der Testzustand ist gültig), das Ereignis verschwindet
+aus `events` — **und der Anbieter bekommt nichts, weil gar nicht gesendet wird.** Das ist
+derselbe Schaden, den der CHECK für "Frist ohne Code" ausschliesst, nur durch eine andere
+Tür: Riegel ohne Gegenwert. Der Fall ist im Test festgehalten (TM4e) und im Code bewusst so
+angeordnet — der Testzustand wird VOR dem Ausstieg für unbrauchbare Zeilen eingesammelt.
+TRIGGER: der Schalter in 11.3b — er darf nur an Zielen erscheinen, die tatsächlich senden
+können. PROVENIENZ: GEMESSEN am gebauten Code (CC, 2026-09-09, Lauf TM4e).
+
+**NICHT GESTRICHEN — UND DAS IST EIN BEFUND, KEINE FORMALIE (GEGENGEPRÜFT AM BESTAND,
+CC, 2026-09-09).** Der Trigger ist abgearbeitet, SOWEIT ER ABARBEITBAR WAR: Der Schalter
+erscheint nur an Zielen mit Testmodus, mit Kennung und mit Geheimnis-Zeile. **DER
+EINTRAG SELBST BLEIBT TROTZDEM WAHR, weil "senden können" für ein Klartext-Ziel GAR NICHT
+BEOBACHTBAR IST.** Der Leser sieht, DASS eine Zeile da ist — ob das Zugangsdatum beim
+Anbieter noch gilt, weiss allein der Anbieter.
+
+**DER REALE FALL, an dem das beisst:** ein widerrufenes Meta-Zugangsdatum. Die Karte
+zeigt "Zugangsdaten hinterlegt", der Schalter steht da, der Kunde startet den Testmodus —
+**der Riegel feuert, die `events`-Zeile entfällt, und der Forward stirbt bei Meta mit
+`Bad signature`.** Das Ereignis ist auf BEIDEN Seiten weg, also genau der Schaden, den
+dieser Eintrag beschreibt. Der Fehlzustand ist im Projekt schon einmal live aufgetreten
+und blieb damals lautlos (s. die Regel "CAPI-TOKEN UND PIXEL-/DATASET-ID SIND EIN PAAR").
+
+**WAS DAS FÜR DIE STREICHUNG HEISST:** Sie wäre nur zu haben, wenn die Oberfläche eine
+Aussage über die GÜLTIGKEIT eines Klartext-Geheimnisses treffen könnte. Das kann sie
+nicht, und ein Ratewert wäre schlimmer als keiner.
+NEUER TRIGGER: ein Rückkanal, der einen abgelehnten Forward sichtbar macht — dasselbe
+Stück, das der Phase 11.4 fehlt. **VERWANDT, ABER ENGER: Eintrag (21)**, der allein den
+code-nahen Sonderfall des leeren Klartext-Geheimnisses führt.
+
+**(16) DIE OWNERSHIP-ACHSE IST LIVE NICHT PRÜFBAR — ES FEHLT EIN WERKZEUGSTAND, NICHT EIN
+BAUTEIL.** Die Oberfläche BIETET DEN ANGRIFF GAR NICHT AN: Ein zweites Konto sieht das
+fremde Projekt nicht, es gibt kein Feld für eine fremde Projekt-Kennung und keinen Weg,
+per Klick eine Aktion mit fremdem Ziel auszulösen. Der Angriff, gegen den das Gate
+schützt, ist eine **gebastelte Anfrage**, kein Klick. **Die Achse trägt heute allein der
+Unit-Wächter IDOR 2** — er belegt, dass der Riegel im CODE greift, nicht dass er im
+BETRIEB greift.
+TRIGGER: der erste Werkzeugstand, der eine gebastelte Anfrage gegen eine Server-Action
+erlaubt. PROVENIENZ: FESTGESTELLT beim Live-Test (Stefan/CC, 2026-09-09); s. VERMERK 2,
+Abschnitt zur nicht gefahrenen Achse.
+
+**(17) `credential-state.ts` BESCHREIBT EINE ARBEITSTEILUNG, DIE FÜR DEN TESTZUSTAND NICHT
+GILT.** Ihr Kopf sagt: "die Aktion klassifiziert die Zeile, diese Datei deutet die Uhr".
+Das umgezogene Prädikat `activeTestCodeFromRow` nimmt eine **ROHE Zeile** entgegen und ist
+dort der erste Leser dieser Art. **Bewusst so belassen, weil der Umzug byte-identisch sein
+musste** — ein umgeschriebener Ausdruck wäre ein Eingriff in einen live bewiesenen
+Resolver gewesen. Der Kopf trägt einen NACHGEZOGEN-Absatz, der es benennt.
+TRIGGER: die nächste Runde, die diese Datei um eine Ableitung erweitert. PROVENIENZ:
+GEMESSEN am Repo (CC, 2026-09-09).
+
+**(19) DREI LESER, DREI OWNERSHIP-GATES, DREI RUNDEN IM SELBEN LADE-EFFEKT.**
+`listConfiguredTargets`, `listTargetCredentialStates` und `listTestModeStates` laufen
+gebündelt und prüfen jeder für sich dasselbe. **Das folgt heute der Hausform** und ist
+kein Versehen: Die erste trägt einen Wächter auf ihrer Spaltenliste, die zweite ist auf
+Uhr 2 zugeschnitten. Ein geteiltes Gate wäre ein eigener Zuschnitt — und (15) sagt, warum
+es keinen gibt.
+TRIGGER: der vierte Leser. PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-09).
+
+**(20) DER PLATZHALTER DES TESTCODE-FELDES IST GRAU AUF GRAU UND KAUM ZU LESEN.** Für den
+Betreiber tragbar, **für einen Kunden nicht**. Es ist eine Darstellungs-Achse und keine
+Logik-Achse: Die Testumgebung wertet kein CSS aus, kein Lauf kann das fangen.
+TRIGGER: das UI-Redesign — und früher, wenn ein Kunde die Karte sieht. PROVENIENZ:
+GEMELDET von Stefan an der Live-Oberfläche, 2026-09-09.
+
+**(24) TIKTOKS TESTCODE HÄLT NACH OWNER-ANGABE MINDESTENS EINEN TAG.** Das **entlastet die
+60-Minuten-Frist für TikTok**: Die Frist ist dann deutlich kürzer als das
+Wechselintervall und kann keinen brauchbaren Zustand abschneiden — dieselbe Ungleichung,
+die die Frist für Meta trägt.
+**WAS ES NICHT TUT:** Es beantwortet Vorrat (14) nicht. Dort steht die Frage, ob TikToks
+Code DAUERHAFT ablegbar ist; "mindestens einen Tag" ist eine Untergrenze und keine
+Aussage über Beständigkeit. **Und es widerspricht dem Repo-Befund "wechselt pro Sitzung"
+nicht, sondern lässt ihn offen** — eine Sitzung kann länger als einen Tag dauern.
+TRIGGER: die Scheibe, die den tiktok-Zweig zuschneidet — dieselbe wie bei (14), und beide
+werden zusammen gelesen. PROVENIENZ: GEMELDET von Stefan, 2026-09-09, **keine Messung**.
+ZUSATZ BEI DER HEBUNG (2026-09-11): Sein Lese-Partner, Vorrat (14), ist gestrichen — die
+Oberfläche verlangt den Testcode bei jedem Start und jeder Verlängerung, eine dauerhafte
+Ablage gibt es nicht. Die Anbieter-Frage, ob der Code je Sitzung wechselt, steht in
+docs/ziel-befunde.md, Abschnitt "TikTok (Events API 2.0)", Teile (e) und (f).
+
+**(27) DAS TESTANFRAGEN-LIMIT BINDET PHASE 11.4, NICHT DIESE.**
+Pinterest deckelt Testanfragen eigens (docs/ziel-befunde.md, Abschnitt "Pinterest
+(Conversions API)", Teil (e): "Test requests have a rate limit of 10 per app per second")
+und rät in der Oberfläche von hohen Testmengen ab.
+**FÜR HANDLÄUFE IST DAS UNERHEBLICH** — ein Mensch, der einen Testklick auslöst, kommt
+diesem Deckel nicht nahe. **EIN TESTKNOPF, DER JE KUNDE FEUERT, LÄUFT DAGEGEN GEGEN EIN
+APP-WEITES LIMIT**: Der Deckel gilt **je App**, nicht je Werbekonto und nicht je Kunde —
+die Kunden teilen ihn sich also, und ein einzelner kann ihn für alle ausschöpfen.
+**DER EINTRAG STEHT HIER UND NICHT BEI 11.4**, weil er in dieser Phase gemessen worden ist;
+sein Trigger zeigt aber dorthin.
+TRIGGER: der Zuschnitt der Phase 11.4.
+PROVENIENZ: GELESEN 2026-08-20 (das Limit, Teil (e) der Befund-Datei); die Oberflächen-
+Empfehlung ist GELESEN an der Anbieter-Oberfläche (Stefan, 2026-09-10). Die Folge für einen
+Testknopf ist eine ABLEITUNG, **keine Messung** — es ist kein Lauf gegen den Deckel
+gefahren worden.
+
+**(29) SECHS KOMMENTARE UNTER `src/` NENNEN EINEN CONSTRAINT, DEN ES NICHT MEHR GIBT —
+IHRE AUSSAGE GILT, IHR NAME IST TOT.** Migration 0029 hat
+`project_secrets_test_mode_paar` durch `project_secrets_test_mode_je_ziel` ersetzt
+(VERMERK 4). Sechs Kommentarstellen in VIER Dateien führen den alten Namen weiter:
+`startTestMode` und `stopTestMode` (`src/app/projects/actions.ts`, je eine Stelle im
+Funktionskopf), zwei Läufe in `src/app/projects/actions.testmode.test.ts`, ein Lauf in
+`src/components/TargetCard.test.tsx` und der Erklärtext an der Ziel-Karte
+(`src/components/TargetCard.tsx`).
+**WAS SIE SAGEN, BLEIBT FÜR `meta` UND `tiktok` RICHTIG:** "beide oder keine" gilt dort
+unverändert — der neue CHECK urteilt für diese zwei Ziele wortgleich wie der alte. **NUR
+DER NAME ZEIGT INS LEERE.** Wer ihn im Katalog nachschlägt, findet nichts und hält den
+Kommentar für überholt, obwohl seine Aussage trägt.
+**WARUM DAS NICHT SCHLIMMER IST, ALS ES KLINGT, UND WARUM ES TROTZDEM HIERHER GEHÖRT:** Es
+sind Kommentare, kein Verhalten; nichts wird davon rot, und nichts läuft falsch. **Teuer
+wird es erst an der Ziel-Karte** (`TargetCard.tsx`), wo der Text dem Betreiber erklärt,
+warum es keinen An/Aus-Schalter gibt — und die Erklärung ab 11.3e für `pinterest` eine
+ANDERE ist, weil dort gerade kein Code abgelegt werden darf.
+TRIGGER: die nächste Runde, die eine dieser Dateien ohnehin öffnet — praktisch Scheibe
+11.3e, die `TARGETS_WITH_TEST_MODE` und die Ziel-Karte anfasst.
+**NACHGEZOGEN AM 2026-09-10:** An beiden Stellen stand "11.3d". **EIN TRIGGER IST DIE
+HANDLUNGS-BINDUNG SCHLECHTHIN** — er sagt, WANN der Eintrag fällig wird, und ein Trigger
+auf die falsche Scheibe feuert zu früh und ins Leere. Zielmenge und Ziel-Karte sind seit
+der Teilung vom 2026-09-10 **11.3e**.
+PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10), Achse: der alte Constraint-Name,
+case-insensitiv, Suchraum `src/`, alle Dateitypen, Testdateien eingeschlossen — sechs
+Treffer in vier Dateien, mit Negativkontrolle (0) und Gegenprobe (der NEUE Name kommt
+unter `src/` NICHT vor).
+
+**ZUSATZ 2026-09-10 — DIE SECHS ZERFALLEN IN ZWEI KLASSEN, UND NUR VIER GEHÖREN NOCH
+HIERHER.** Der Text darüber bleibt wörtlich stehen; der Eintrag wird NICHT gestrichen.
+**VIER STELLEN TRAGEN NUR EINEN TOTEN NAMEN** — ihre Aussage gilt für `meta` und `tiktok`
+unverändert: `endTestMode` (`src/app/projects/actions.ts`), zwei Läufe in
+`src/app/projects/actions.testmode.test.ts` und einer in
+`src/components/TargetCard.test.tsx`. **Sie bleiben der Gegenstand dieses Eintrags.**
+**ZWEI STELLEN TRAGEN EINE AUSSAGE, DIE AB 11.3e SACHLICH FALSCH WIRD**, und sie sind
+damit **SCHEIBENARBEIT und keine Aufräumarbeit**: der Kopf von `startTestMode`
+(`src/app/projects/actions.ts`) und der sichtbare Erklärtext an der Ziel-Karte
+(`src/components/TargetCard.tsx`). Beide sagen, ein Zustand ohne Code sei unmöglich — für
+`pinterest` ist genau das ab 11.3e der Normalfall. **Sie stehen unter "Was beim Zuschnitt
+von 11.3d vorliegen muss", Teil (a), und gehören in die Scheibe 11.3e, nicht in eine
+Aufräumrunde.**
+**NACHGEZOGEN AM 2026-09-10:** Hier stand zweimal "ab 11.3d" und "gehören in die Scheibe".
+Beides ist **handlungsbindend** — es sagt, welche Scheibe die zwei Stellen mitnimmt. Seit
+der Teilung desselben Tages ist das **11.3e**. **Der Titel des Abschnitts bleibt wörtlich
+zitiert**, weil er nicht umbenannt worden ist; **verschoben ist die SCHEIBE, nicht der
+ABLAGEORT.**
+PROVENIENZ: die Einteilung ist eine ABLEITUNG aus Entscheidung (14) und den am 2026-09-10
+gemessenen Fundstellen; die Fundstellen selbst sind GEMESSEN am Repo (CC, 2026-09-10).
+
+**ZUSATZ 2026-09-10 — ZWEI ANGABEN DIESES EINTRAGS SIND ÜBERHOLT, DER EINTRAG BLEIBT.** Der
+Text darüber bleibt wörtlich stehen und wird nicht gestrichen; was folgt, tritt daneben.
+**DIE ZWEI STELLEN:** "**Teuer wird es erst an der Ziel-Karte**, wo der Text **dem
+Betreiber erklärt**, warum es keinen An/Aus-Schalter gibt" (im Text oben) und "der
+**sichtbare** Erklärtext an der Ziel-Karte" (im Zusatz darüber). **Beide unterstellen, der
+Erklärtext werde AUSGELIEFERT.**
+**GEMESSEN am Repo (CC, 2026-09-10), Achse `schalter|an/aus`, case-insensitiv, über
+`src/components/TargetCard.tsx`:** FÜNF Treffer, **KEINER im gerenderten JSX**. Der Text
+steht in einem **JSX-KOMMENTAR** und wird nicht ausgeliefert. Gegenprobe: kein Lauf in
+`TargetCard.test.tsx` erwartet ihn im gerenderten Text.
+**ES SIND ZWEI KOMMENTARE, KEIN KUNDENTEXT** — und damit fällt auch die Einstufung "die
+teuerste der sechs Stellen".
+**WAS DAVON UNBERÜHRT BLEIBT UND DER GRUND IST, WARUM DER EINTRAG NICHT SCHRUMPFT:** Die
+Einteilung in VIER Aufräum-Stellen und ZWEI Scheibenarbeit-Stellen **stimmt unverändert**
+— nur ihre Begründung wechselt. **Nicht die Sichtbarkeit trennt sie, sondern die AUSSAGE:**
+Die vier tragen einen toten NAMEN, diese zwei eine falsche AUSSAGE ("ein Zustand ohne Code
+ist unmöglich"), und die wird mit 11.3e für `pinterest` zum Normalfall.
+**WARUM DIESER SATZ HIER STEHT:** Dieselbe Richtigstellung ist am 2026-09-10 bereits an
+**zwei** anderen Stellen vollzogen worden — im Abschnitt 11.3e und in "Was beim Zuschnitt
+von 11.3d vorliegen muss", Teil (a). **Dieser Eintrag war die dritte und letzte.** Wer ihn
+öffnet, ohne die zwei anderen zu lesen, hielte den Erklärtext weiterhin für Kundentext.
+PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-10), mit Gegenprobe.
+
+**ZUSATZ 2026-09-10 — DIE ZWEI SCHEIBENARBEIT-STELLEN SIND ERLEDIGT, DER EINTRAG BLEIBT
+OFFEN. Der Text darüber bleibt wörtlich stehen.**
+**DER BELEG:** Commit `9422920` (Scheibe 11.3e, VERMERK 6). Beide Stellen — der Kopf von
+`startTestMode` (`src/app/projects/actions.ts`) und der JSX-Kommentar am Testmodus-Block
+(`src/components/TargetCard.tsx`) — tragen seither einen NACHGEZOGEN-Block, der (1) den
+neuen Namen `project_secrets_test_mode_je_ziel` nennt und (2) die falsche Aussage
+richtigstellt: "ein Zustand ohne Code ist unmöglich" gilt **nur noch für Ziele MIT
+Code-Pflicht**, und für `meta` und `tiktok` bleibt "beide oder keine" **wortgleich**
+bestehen. **DIE ALTEN ABSÄTZE SIND NICHT GESTRICHEN, SONDERN RICHTIGGESTELLT** — Hausform
+dieses Projekts.
+**DER EINTRAG WIRD NICHT GESTRICHEN, UND SEIN TRIGGER GILT UNVERÄNDERT DEN VIER ÜBRIGEN
+STELLEN:** `endTestMode` (`src/app/projects/actions.ts`), zwei Läufe in
+`src/app/projects/actions.testmode.test.ts` und einer in
+`src/components/TargetCard.test.tsx`. Sie tragen weiterhin **nur einen toten NAMEN** und
+keine falsche Aussage; sie bleiben **Aufräumarbeit**.
+
+**DIE AUFTEILUNG STIMMT WEITER — DIE ZAHL SECHS NICHT MEHR, UND SIE WIRD NICHT
+ANGEGLICHEN.** GEMESSEN am Repo (CC, 2026-09-10, nach `9422920`; Achse: der alte
+Constraint-Name, case-insensitiv, Suchraum `src/`, alle Dateitypen, Testdateien
+eingeschlossen): **SIEBEN Fundstellen in VIER Dateien**, nicht sechs. **DIE SIEBTE IST DIE
+RICHTIGSTELLUNG SELBST** — der Nachzug im Kopf von `startTestMode` muss den toten Namen
+NENNEN, um sagen zu können, dass er tot ist.
+**DAS IST KEIN RÜCKSCHRITT, SONDERN DIE BAUFORM:** Eine Richtigstellung, die ihren
+Gegenstand nicht benennt, ist keine. Gegenprobe: der NEUE Name steht seit `9422920` in
+**zwei** Dateien unter `src/` (`actions.ts`, `TargetCard.tsx`) — vorher in keiner.
+**WER KÜNFTIG NACH DEM TOTEN NAMEN SUCHT, ZIEHT DIE ZWEI RICHTIGSTELLUNGS-STELLEN AB** und
+findet die vier, die der Trigger meint. **DIE ZAHL IM TITEL DES EINTRAGS BLEIBT WÖRTLICH
+STEHEN** — sie ist als Messung vom 2026-09-10 datiert und damit alt, nicht falsch; eine
+zweite Zahl daneben wäre genau die Bauform, die diese Datei mehrfach als kaputtgegangen
+führt.
+PROVENIENZ DIESES ZUSATZES: die sieben Fundstellen, ihre Verteilung und die Gegenprobe sind
+GEMESSEN am Repo (CC, 2026-09-10) nach dem Bau-Commit; dass die siebte von der
+Richtigstellung selbst stammt, ist am Dateitext ABLESBAR und keine Ableitung.
+
+**DREI HEBUNGS-KANDIDATEN — ÄNDERUNGSANTRÄGE IN WARTESTELLUNG, KEINE REGELN.** Sie richten
+sich an den, der den Prompt oder den Commit-Body schreibt — das ist der Architekt, und über
+den INHALT von docs/arbeitsweise.md entscheidet nicht CC (CLAUDE.md, Abschnitt "Aktive
+Dokumente", Weg 7). Der Volltext jedes Kandidaten steht unter seiner Nummer im Archiv der
+Phase 11.3, Abschnitt "Hebungs-Kandidaten"; hier steht nur sein Gegenstand.
+
+**HEBUNGS-KANDIDAT (1) — EINE VERWORFENE ALTERNATIVE, DIE NUR IM COMMIT-BODY STEHT, IST FÜR
+KÜNFTIGE RUNDEN VERLOREN.** docs/arbeitsweise.md weist der verworfenen Alternative den
+Commit-Body als Ort zu, und ein Commit-Body lädt nicht — was nur dort steht, wird beim
+nächsten Mal als Einfall neu vorgeschlagen. Wo die Grenze liegt, ist nicht erhoben: Manche
+Alternativen sollen mit ihrer Scheibe ablaufen, und für die ist der Body der richtige Ort.
+**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+
+**HEBUNGS-KANDIDAT (4) — EINE ZAHL IN EINER WÖRTLICHEN PROMPT-VORGABE WIRD NICHT GEPRÜFT,
+WEIL SIE VORGABE IST.** Ein wörtlich vorgegebener Commit-Body trug eine Zahl aus einem
+früheren Bericht, die der Messung derselben Runde widersprach, und wurde übernommen, weil er
+Vorgabe war. Die Gegenform: keine Zahl in eine wörtliche Body-Vorgabe, oder ausdrücklich
+die Prüfung gegen die Messung der Runde verlangen. Die Nachbarregel "Liste schlägt Zahl"
+steht in docs/arbeitsweise.md, Abschnitt "Review-Kalibrierung — nach Tragweite, nicht nach
+Artefakt-Typ". **EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+
+**HEBUNGS-KANDIDAT (7) — DIE COMMIT-LÜCKE EINES VERMERKS ENTSTEHT STRUKTURELL UND FÄLLT ERST
+DER NÄCHSTEN RUNDE AUF.** Der Hash existiert beim Schreiben des Vermerks noch nicht, die
+Lücke ist also die Bauform und schliesst sich frühestens in der nächsten Runde — vier von
+fünf Vermerken der Phase trugen denselben Nachtrag. Bleibt er aus, entsteht beim nächsten
+Vermerk ohne Zutun eine zweite Lücke, und die Lücken-Regel verliert ihre Diagnose.
+**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**

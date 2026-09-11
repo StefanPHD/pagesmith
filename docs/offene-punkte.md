@@ -312,7 +312,7 @@ aufeinander; sie liegen alle hier und finden einander.
   ist beides gleich plausibel. Was still kaputtgeht: das Containment ist als
   Sicherheitsregel geführt (Enumeration-Schutz) — bleibt die Messung aus, bleibt offen, ob
   eine Sicherheitszusage hält.
-- BETREIBER-DOKUMENTATION FEHLT — ZWEI PUNKTE (Trigger: vor dem öffentlichen Launch; wie
+- BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE (Trigger: vor dem öffentlichen Launch; wie
   der COOKIE-DOKU-SCHNIPSEL darüber eine PRODUKTPFLICHT, kein Nice-to-have): (1) dass
   Pagesmith KEINEN Einwilligungs-Dialog mitliefert und ohne einen ALLE Ziele als erlaubt
   gelten — daraus folgt, dass "konform out-of-the-box" heute nicht zutrifft; (2) die GRENZE
@@ -359,6 +359,22 @@ aufeinander; sie liegen alle hier und finden einander.
   events-Tabelle und hat mit der Zählung des Anbieters nichts zu tun.
   WAS HIER NICHT ENTSCHIEDEN WIRD: wie die Zusage an den Kunden künftig lautet und ob
   Pagesmith je ein Insight Tag ausliefert. KEINE EMPFEHLUNG.
+  (3) was der TESTMODUS bewirkt und was nicht: Er läuft je (Projekt, Ziel) für eine feste
+  Frist von einer Stunde; solange er an IRGENDEINEM Ziel läuft, nimmt der Riegel JEDES
+  Ereignis des Projekts aus `events` — die eigene Auswertung zählt dann nicht, während beim
+  Anbieter weiter ankommt. Was der Anbieter mit dem markierten Ereignis tut, ist
+  ZIEL-ABHÄNGIG: meta zählt es weiter (GELESEN), pinterest führt es nicht in der
+  Eventübersicht (GEMESSEN, allein die Berichterstattung), bei tiktok ist es ungeprüft; für
+  linkedin und google gibt es gar keinen Testmodus. Was still kaputtgeht: Die Oberfläche
+  erklärt das nur, solange der Testmodus läuft; wer später nachliest, warum eigene und
+  fremde Zahlen auseinanderliefen, findet keine Dokumentation.
+  GEHOBEN AM 2026-09-11 aus Vorrat (3) der Phase 11.3, Restlücke (a); sein Trigger ist der
+  des Postens. Den Fall NACH dem Ende eines Testmodus führt der Posten "NACH DEM ENDE EINES
+  TESTMODUS ERKLÄRT NICHTS DIE LÜCKE IN DER EIGENEN KURVE". KEINE EMPFEHLUNG, was zu
+  schreiben wäre.
+  BEFUND ZUM TRIGGER: Dieser Punkt kann FRÜHER fällig werden als der Posten — Vorrat (3)
+  trug als offene Hälfte seines Triggers "spätestens der erste fremde Nutzer, der den
+  Testmodus einschaltet", und ein Beta-Start mit fremden Nutzern läge vor dem Launch.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
   Grund: kein realer Konsument. TRIGGER,
   wörtlich und ausdrücklich nicht "falls es je nötig wird": sobald ein Ziel eine Kennung JE
@@ -722,6 +738,23 @@ aufeinander; sie liegen alle hier und finden einander.
       dieser Zahlen als heutige Liste liest, zählt falsch. Dieselbe Bauform wie an der
       Phase-8-Roadmap-Zeile: eine Zahl, die einen Tag beschreibt, wird nicht rückwirkend
       angepasst.
+  (5) EIN LEERES KLARTEXT-GEHEIMNIS. TRIGGER: ein Schreibweg auf `project_secrets`, der die
+      Nicht-Leer-Prüfung nicht trägt. GEHOBEN AM 2026-09-11 aus Vorrat (21) der Phase 11.3.
+      Eine Zeile mit dem Klartext `''` zählt für die Karte als "Zugangsdaten hinterlegt" —
+      `listConfiguredTargets` liest nur die EXISTENZ der Zeile —, und der Resolver verwirft
+      sie: `hasSecret` (`src/lib/tracking/target-readiness.ts`) trimmt NICHT, unbrauchbar
+      ist damit genau der Wert `''`, und `usableTokenFromRow` (`src/lib/capi/token.ts`)
+      liefert für ihn kein Zugangsdatum.
+      WAS SIE SEIT PHASE 11.3 SCHÄRFER MACHT: Der Leser des Testzustands liest das Geheimnis
+      bewusst nicht. Der Schalter stünde da, der Riegel nähme das Ereignis aus `events`, und
+      gesendet würde nichts — das Ereignis wäre auf BEIDEN Seiten weg.
+      HEUTE NICHT ERREICHBAR: `setCapiToken` weist einen leeren Token vorher ab; der Fall
+      öffnet sich erst mit einem Schreibweg ohne diese Prüfung.
+      WAS SIE VON (2) TRENNT: Dort fehlt eine Hälfte der Konfiguration; hier ist sie da und
+      trägt einen Wert, der keiner ist.
+      PROVENIENZ: ABLEITUNG aus `hasSecret` und dem gebauten Lesepfad (CC, 2026-09-09),
+      am 2026-09-11 gegen den Code nachgesehen (CC) — KEINE Messung, der Fall ist nicht
+      herbeigeführt worden.
   WAS HIER NICHT ENTSCHIEDEN WIRD: welche der drei zuerst angefasst wird, ob das Präfix
   ergänzt oder geprüft wird, und wie eine Warnung aussieht.
   Was still kaputtgeht: Conversion-Verluste SICHTBAR zu machen ist das Verkaufsargument
@@ -3229,3 +3262,121 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
   PROVENIENZ: Der Vorbehalt ist OWNER-ENTSCHEIDUNG 2026-08-24 zur Gestalt und steht im
   Volltext an der Roadmap-Zeile 11.2. Dass er je Kunde gilt, ist eine ABLEITUNG aus der Lage
   der Action im KUNDENKONTO und keine Messung.
+
+<!-- Aus dem Vorrat der Phase 11.3 gehoben, 2026-09-11 -->
+
+- NACH DEM ENDE EINES TESTMODUS ERKLÄRT NICHTS DIE LÜCKE IN DER EIGENEN KURVE (Trigger: der
+  erste fremde Nutzer, der den Testmodus einschaltet):
+  GEHOBEN AM 2026-09-11 aus Vorrat (3) der Phase 11.3, im Rahmen ihres Phasenendes — NUR
+  SEINE RESTLÜCKE (b).
+  **DER BEFUND:** Solange die Frist läuft, nimmt der Riegel jedes Ereignis des Projekts aus
+  `events`; beim Anbieter kommt es an. Der Banner erklärt das — aber NUR, solange der
+  Testmodus läuft: Seine Bedingung ist `testModeState.kind === "laeuft"`, und nach dem
+  Beenden ist er sofort weg (GEMESSEN LIVE, Stefan, 2026-09-09 und 2026-09-10, in drei
+  Läufen der Phase 11.3). **Die fehlenden Ereignisse des Zeitraums bleiben in der
+  Auswertung fehlend, und nichts sagt mehr, warum.**
+  **WARUM DAS STILL KAPUTTGEHT:** Der Kunde sieht hinterher eine Delle in seiner eigenen
+  Kurve, während im Werbekonto Conversions aufgelaufen sind. Es sieht aus wie ein Defekt,
+  und die einzige Erklärung ist verschwunden, bevor er hinsieht — genau das Misstrauen, das
+  der Testmodus auflösen soll.
+  **WAS NICHT HIER STEHT — RESTLÜCKE (a), DIE FEHLENDE BETREIBER-DOKUMENTATION ZUM
+  TESTMODUS:** Sie steht als Punkt (3) am Posten "BETREIBER-DOKUMENTATION FEHLT — DREI
+  PUNKTE".
+  **KEINE EMPFEHLUNG**, was gegen die Lücke zu bauen wäre.
+  PROVENIENZ: der Banner-Stand GEMESSEN am Repo (CC, 2026-09-10, Commit `8fcd4e0`); das
+  Verschwinden nach dem Beenden GEMESSEN LIVE (Stefan). Dass die Lücke in der Auswertung
+  bleibt, ist eine ABLEITUNG aus dem Riegel, keine Messung an einer laufenden Oberfläche.
+
+- DER CODE TRÄGT EINEN DEPLOYMENT-WEITEN TESTMODUS-HEBEL, DEN IN VERCEL HEUTE NIEMAND SETZT
+  UND DEN NIEMAND BEOBACHTET (Trigger: das Setzen von `META_TEST_EVENT_CODE` oder
+  `TIKTOK_TEST_EVENT_CODE` in einer Vercel-Umgebung — spätestens der erste fremde Kunde, weil
+  der Hebel dann Projekte trifft, die nicht dem Setzenden gehören):
+  GEHOBEN AM 2026-09-11 aus Vorrat (10) der Phase 11.3, im Rahmen ihres Phasenendes, MIT
+  NEUEM GEGENSTAND: Der Kern ist nicht mehr, welche Quelle gewinnt, sondern dass der Hebel
+  überhaupt besteht.
+  **DER BEFUND — GEMESSEN am Repo (CC, 2026-09-11).** Achse: beide Namen, ohne Rücksicht auf
+  Gross- und Kleinschreibung, alle Dateien ohne `node_modules`, `.next`, `.git`,
+  `.playwright-mcp`, Testdateien eingeschlossen; Negativkontrolle 0.
+  · `META_TEST_EVENT_CODE` liest `src/lib/capi/config.ts` beim Laden des Moduls
+    (`?.trim() || ""`). Zwei Konsumenten: `forwardToMeta` (`src/lib/capi/meta-forward.ts`)
+    setzt `test_event_code` aus Projekt-Code ODER diesem Wert; `resolveClientIp`
+    (`src/lib/capi/ingest.ts`) setzt bei fehlender oder Loopback-IP die feste Dummy-IP
+    `123.123.123.123`.
+  · `TIKTOK_TEST_EVENT_CODE` liest `testEventCode` (`src/lib/capi/tiktok-forward.ts`) bei
+    jedem Aufruf (`?.trim() ?? ""`); `forwardToTiktok` setzt `test_event_code` aus
+    Projekt-Code ODER diesem Wert.
+  · UNBESETZT geht an keiner der drei Stellen etwas hinaus — kein leeres Feld, keine
+    Dummy-IP.
+  · GESETZT trägt jede Meta- bzw. TikTok-Nutzlast ohne Projekt-Code den Wert, für ALLE
+    Projekte des Deployments. Der Persist-Riegel bleibt unberührt; er hängt allein am
+    Projekt-Zustand (GEMESSEN LIVE, Stefan, 2026-09-09).
+  **NIEMAND BEOBACHTET IHN:** Banner und Ziel-Karte lesen allein den Projekt-Zustand
+  (`listTestModeStates`); ein gesetzter Umgebungswert erscheint dort nicht.
+  **WER IHN SETZT:** In Vercel sind beide Variablen seit dem 2026-09-11 gelöscht
+  (OWNER-ANGABE, keine Messung); ob der zu diesem Zeitpunkt laufende Deploy den Wert noch
+  trägt, ist nicht erhoben. Die lokale `.env.local` setzt `META_TEST_EVENT_CODE`, nicht
+  leer (GEMESSEN am Repo, CC, 2026-09-11) — lokal ist der Hebel gesetzt, samt Dummy-IP.
+  **DIE VORRANG-FRAGE STECKT DARIN:** Tragen beide Quellen VERSCHIEDENE Codes, gewinnt nach
+  dem Code der Projekt-Code (an beiden Adaptern `projectTestEventCode || …`); im Unit-Test
+  deckt es TM6 in beide Richtungen (`src/lib/capi/ingest.test-mode.test.ts`). LIVE ist es
+  ungemessen — am 2026-09-09 trugen beide Quellen denselben Wert.
+  **DIE LÄUFE, DIE DEN HEBEL SETZEN ODER SEIN FEHLEN PRÜFEN:** `src/app/api/capi/route.test.ts`
+  (Code in der Nutzlast und Dummy-IP, je gesetzt und leer), TM6 und TM8 in
+  `src/lib/capi/ingest.test-mode.test.ts`, T18 in `src/lib/capi/tiktok-forward.test.ts`
+  (TikTok-Wert und Nicht-Kopplung an Metas Variable). Zehn weitere Testdateien setzen die
+  Meta-Konstante wörtlich auf `""`.
+  **ABGRENZUNG:** `PINTEREST_TEST_MODE` gehört nicht hierher — der Code liest ihn seit Commit
+  `3d42501` nicht mehr.
+  **KEINE EMPFEHLUNG**, ob der Hebel entfernt, sichtbar gemacht oder belassen wird.
+
+- DIE IDOR-WÄCHTER SIND NAMENTLICH — EINE NEUE SERVER-ACTION IST UNGESCHÜTZT BY DEFAULT, UND
+  NICHTS WIRD DAVON ROT (Trigger: die nächste Runde, die eine Server-Action anlegt):
+  GEHOBEN AM 2026-09-11 aus Vorrat (15) der Phase 11.3, im Rahmen ihres Phasenendes. Der
+  Wortlaut darunter ist der des Vorrats; "diese Scheibe" und "diese Runde" meinen die
+  Scheibe 11.3b.
+  Jeder bestehende Wächter nennt die Aktion, die er prüft; er weiss von einer neuen nichts.
+  **GEMESSEN in dieser Scheibe:** Die Pflicht-Mutation "Ownership-Gate entfernen" wäre GRÜN
+  geblieben, hätte diese Runde nicht drei eigene Wächter mitgebaut — die bestehenden decken
+  `setCapiToken`, `removeCapiToken` und die zwei Leser der Scheibe 11.2b. **Einen geteilten
+  Ownership-Helfer gibt es nicht** (GEMESSEN am Repo, CC, 2026-09-09: keine Fundstelle für
+  `assertProjectOwnership`, `assertOwnership`, `requireOwner`, `ownProject`, `ensureOwner`);
+  das Gate ist in jeder Aktion von Hand wiederholt.
+  PROVENIENZ: GEMESSEN am Repo und an der Mutationsprobe (CC, 2026-09-09).
+
+- ZEIGER AUF docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI — DIE UMBENENNUNG AM
+  PHASENENDE MACHT SIE TOT, DIE NÄCHSTE STANDDATEI WIEDER FALSCH (Trigger: das Anlegen der
+  nächsten Standdatei unter demselben Pfad — sobald ihre Nummern die eines solchen Zeigers
+  erreichen, trifft er wieder einen existierenden, aber falschen Eintrag):
+  GEHOBEN AM 2026-09-11 aus Vorrat (28) der Phase 11.3, im Rahmen ihres Phasenendes, MIT
+  NEU GEFASSTEM TRIGGER: Der alte hing an den Vermerken dieser Phase und läuft mit ihr ab;
+  der Mechanismus nicht.
+  **DER BEFUND — GEMESSEN am Repo (CC, 2026-09-11): VIERZEHN Zeiger nennen
+  `docs/aktiver-stand.md` zusammen mit einer Nummer, meinen die Standdatei der Phase 11.2
+  (oder eine frühere) und treffen heute einen existierenden, aber FALSCHEN Eintrag der
+  Standdatei der Phase 11.3.** Achse: jede verfolgte Datei ausser der Standdatei selbst,
+  der Pfad mit einer Nummer (`VERMERK n`, `Entscheidung (n)`, `Vorrat (n)` bzw.
+  `Vorrats-Eintrag n`, `Hebungs-Kandidat n`) in derselben Zeile oder bis zu zwei Zeilen
+  davor oder danach, jeder Treffer einzeln gelesen. Die vierzehn:
+  · docs/roadmap.md, Roadmap-Zeile 11.2 — VERMERK 1, VERMERK 3, zweimal Vorrats-Eintrag 6;
+  · docs/ziel-befunde.md, Google-Abschnitt — zweimal Hebungs-Kandidat 2, zweimal
+    Entscheidung (2), Vorrats-Eintrag 5;
+  · docs/plattform-befunde.md — zweimal Hebungs-Kandidat 2;
+  · docs/offene-punkte.md — VERMERK 6 (am Posten zum Autorisierungs-Fluss über eine andere
+    Adresse);
+  · CLAUDE.md und docs/claude-history/backlog-polish.md — je Hebungs-Kandidat 4.
+  NICHT MITGEZÄHLT: elf Zeiger derselben Art, deren Nummer die Standdatei der Phase 11.3
+  nicht erreicht (VERMERK 10, 14, 16; Vorrats-Eintrag 40, 41, 42) — sie sind heute schon
+  tot; und eine Stelle in docs/claude-history/phase-11.2-google.md, die "DIESER Datei
+  (docs/aktiver-stand.md)" schreibt und damit zweideutig ist.
+  **WAS MIT IHNEN GESCHIEHT:** Mit der Umbenennung der Standdatei am Ende der Phase 11.3
+  werden alle vierzehn TOT, nicht richtig — richtig würden sie erst mit dem Archivpfad der
+  Phase 11.2, docs/claude-history/phase-11.2-google.md. Die nächste Standdatei unter
+  demselben Pfad macht sie wieder falsch. **Ein toter Zeiger zwingt zum Suchen, ein falscher
+  nicht.** Die toten führt Eintrag 67 in docs/claude-history/backlog-polish.md.
+  **DER UNTERSCHIED ZUR REGEL "EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE
+  KEINE" (docs/immer-beachten.md):** Jene sagt, wie man solche Zeiger nicht wieder baut;
+  dieser Posten sagt, dass heute vierzehn falsch sind und was mit ihnen geschieht.
+  **KEINE EMPFEHLUNG**, ob, wann und in welcher Reihenfolge sie nachgezogen werden.
+  PROVENIENZ: die Zählung GEMESSEN am Repo (CC, 2026-09-11), die Zuordnung zu einer Phase je
+  Treffer am Kontext abgelesen. Dass die nächste Standdatei sie wieder falsch macht, ist eine
+  ABLEITUNG aus der Nummernvergabe, keine Messung.

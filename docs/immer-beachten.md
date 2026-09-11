@@ -187,6 +187,12 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - EIN NEUES FAN-OUT-ZIEL LÄUFT BEI BESTEHENDEN SEITEN FAIL-CLOSED AN, UND ...
 - EINE ROUTE, DIE SCHREIBT ODER EINEN FREMDEN ENDPUNKT RUFT, IST NIEMALS ...
 - EIN BEDIENELEMENT, DAS EINEN VORGANG IM NAMEN DES NUTZERS AUSLÖST, DARF ...
+- EINE SUCH-ACHSE, DIE AUS DEN ERWARTETEN FORMULIERUNGEN GEBILDET IST, ...
+- EINE ZITIERTE EINHEIT ZU TEILEN MACHT JEDEN ZEIGER AUF SIE HALB FALSCH ...
+- EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE — DIE ...
+- SICHTBARKEIT STATT ISOLATION — EIN TESTMODUS BELEGT DIE ANKUNFT BEIM ...
+- EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM ...
+- EINE WIDERLEGTE BEGRÜNDUNG STEHT IM ARCHIV WEITER: "ECHTES RISIKO" IM ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -1594,9 +1600,12 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   ist der Grund für diese Regel: Die Disziplin, die sonst vor einer hohlen
   Abwesenheits-Aussage schützt, verschärft hier den Schaden.
   DIE BEDINGUNG DES ENTFALLENS IST NUR TEILWEISE FORMULIERBAR, UND BEIDES STEHT HIER: Für
-  den ANBIETER-CRAWL entfällt sie, sobald `textContent` verbindlich vorgeschrieben ist —
-  dann ist der Werkzeug-Wechsel schon geschehen. FÜR DEN ALLGEMEINEN FALL IST KEINE
-  FORMULIERBAR: Jede Oberflächen-Abfrage, jeder Reiter, jedes gefilterte Log und jedes
+  den ANBIETER-CRAWL entfällt allein ihr `innerText`-Fall, sobald `textContent` verbindlich
+  vorgeschrieben ist — dann ist dieser Werkzeug-Wechsel schon geschehen. Der FASSUNGS-Fall
+  (Absatz am Ende dieser Regel) entfällt damit nicht: Liest ein Lauf eine andere
+  Darstellung derselben Seite, erreicht `textContent` den fehlenden Teil gar nicht, und ob
+  es ihn im gerenderten Artikel erfasst hätte, ist nicht erhoben. FÜR DEN ALLGEMEINEN FALL
+  IST KEINE FORMULIERBAR: Jede Oberflächen-Abfrage, jeder Reiter, jedes gefilterte Log und jedes
   `grep` über eine Datei mit Sonderbytes kann denselben Ausschnitt-Fehler erzeugen, und eine
   Bedingung, unter der es keine Ausschnitte mehr gibt, gibt es nicht.
   ABGRENZUNG ZUR GEGENRICHTUNG IN "WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG STILL
@@ -1607,6 +1616,25 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   für einen Abwesenheits-WÄCHTER eine POSITIVKONTROLLE, damit ein echter Nicht-Treffer von
   einem kaputten Wächter zu unterscheiden ist. HIER IST DER WÄCHTER IN ORDNUNG — das
   INSTRUMENT erzeugt die Abwesenheit. Verwandte Denkfigur, andere Achse.
+  DIE HÄLFTE, AN DER DIESE REGEL NICHT FEUERT (Phase 11.3, gehoben 2026-09-11 aus
+  Hebungs-Kandidat (8)): Sie greift, wenn jemand "steht dort nicht" behauptet. SIE GREIFT
+  NICHT, WENN EIN UMFANGS-BERICHT EINE SEITE STILL ALS GELESEN FÜHRT — dann gibt es keine
+  Abwesenheits-Aussage, an der sie ansetzen könnte, und die Lücke erzeugt keinen Eintrag.
+  BELEG — GEMESSEN an den gespeicherten Kopien einer Anbieter-Lesung (CC, 2026-09-11): Der
+  tragende Satz einer Übersichtsseite ("… is an allowlist-only feature …") steht im
+  Server-HTML im Element `devsite-key-takeaways-panel`, INNERHALB von
+  `div.devsite-article-body`. Die Markdown-Fassung derselben Seite, die der Lauf als
+  Lesetext benutzte, trägt ihn nicht (null Treffer auf "allowlist-only"). Der Bericht führte
+  die Seite als gelesen; gefunden hat den Satz erst der Abgleich mit dem Bestand
+  (docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)", Teil (aq)).
+  DAS DRITTE MITGLIED DERSELBEN REIHE, UND ES IST EIN ANDERES: `innerText` gegen
+  `textContent` (diese Regel) und der nicht vorausgewählte Reiter (die Regel "DIE LISTE
+  'GESEHEN, NICHT GEÖFFNET' IST DER ORT, AN DEM SICH EIN BEFUND VERSTECKT", Zusatz vom
+  2026-08-25) lasen die richtige Quelle unvollständig. HIER WAR DIE QUELLE EINE ANDERE
+  FASSUNG DERSELBEN SEITE, UND IHR FEHLT DER TEIL VON VORNHEREIN — kein Werkzeugwechsel
+  innerhalb dieser Fassung hätte ihn zutage gefördert.
+  DASS DER LAUF DEN SATZ OHNE DEN ABGLEICH NICHT GESEHEN HÄTTE, ist eine ABLEITUNG aus
+  seinem Ablauf, keine Messung.
 - EINE KENNUNG WIRD NIE FÜR EINEN ANDEREN SCHLÜSSELWERT WIEDERVERWENDET (Phase 11.8,
   gehoben 2026-09-08): Ein neuer Schlüssel bekommt eine NEUE Kennung; der alte bleibt zum
   Lesen stehen, bis nichts mehr unter ihm liegt.
@@ -2183,3 +2211,205 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   GEMESSEN LIVE (2026-08-29, Live-Test der Scheibe 1a); der Schaden eines
   Vorablade-Treffers ist ausdrücklich UNGEMESSEN. Die Erhebung zur Regel ist
   OWNER-ENTSCHEIDUNG 2026-09-08.
+
+- EINE SUCH-ACHSE, DIE AUS DEN ERWARTETEN FORMULIERUNGEN GEBILDET IST, BESTÄTIGT DIE
+  ERWARTUNG STATT SIE ZU PRÜFEN (Phase 11.3, gehoben 2026-09-11 aus Hebungs-Kandidat (3)):
+  Wer nach den Formulierungen sucht, die er schon kennt, findet zuverlässig genau sie — und
+  hält das für eine Prüfung.
+  BELEG — GEMESSEN am eigenen Lauf (CC, 2026-09-10): Um zu prüfen, welche Stellen eine
+  Messung widerlegt hatte, lief zuerst die Achse
+  `kein anbieter|dieses rahmens|nicht zu haben|nie gemessen`. Sie ergab GENAU DREI Treffer —
+  exakt die drei Stellen, die der Auftrag wörtlich zitierte. Eine VIERTE Stelle im selben
+  Block trug keines dieser Wörter und wurde erst über eine breitere Achse sichtbar, eine
+  FÜNFTE im selben Zug.
+  DER AUSLÖSER IST DIE BAUFORM, NICHT DIE SORGFALT: Der Prompt zitierte die Stellen wörtlich
+  und gab damit die Achse vor.
+  DIE GEGENFORM, IN ZWEI TEILEN: (1) Die Achse wird aus dem GEGENSTAND gebildet, nicht aus den
+  bekannten Fundstellen. (2) Entspricht die Trefferzahl der Zahl der erwarteten Stellen, ist
+  genau diese Übereinstimmung DAS WARNSIGNAL, NICHT DER BEWEIS.
+  ABGRENZUNG ZU "EINE ZÄHLUNG ENTLANG EINER ACHSE IST BEI EINEM UMBAU SYSTEMATISCH ZU
+  NIEDRIG, NICHT ZUFÄLLIG": Jene zählt zu WENIGE Achsen — mehrere Bruch-Achsen, die einzeln
+  zu benennen sind. Diese zieht die EINE Achse falsch, weil sie aus der Erwartung stammt.
+  ABGRENZUNG ZU "EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND": Dort
+  erzeugt das WERKZEUG den Nicht-Treffer; hier arbeitet es tadellos, und die ACHSE ist zu
+  eng. Verwandte Figur, anderer Verursacher.
+  DIE BEDINGUNG DES ENTFALLENS: sobald ein Gate die HERKUNFT einer Such-Achse sichtbar macht
+  — also zeigt, ob sie aus dem Gegenstand oder aus einer Erwartung gebildet ist. Ein solches
+  Gate gibt es heute nicht.
+  PROVENIENZ: der Fall GEMESSEN am eigenen Lauf (CC, 2026-09-10); dass der Prompt der
+  Auslöser war, ist eine ABLEITUNG, am Prompt jener Runde ablesbar. Herleitung: das Archiv
+  der Phase 11.3, Hebungs-Kandidat (3).
+
+- EINE ZITIERTE EINHEIT ZU TEILEN MACHT JEDEN ZEIGER AUF SIE HALB FALSCH — UND ER BLEIBT
+  AUFFINDBAR, ALSO FÄLLT ES NICHT AUF (Phase 11.3, gehoben 2026-09-11 aus Hebungs-Kandidat
+  (5)): Wird eine Einheit, auf die gezeigt wird — eine Scheibe, ein Abschnitt, ein Eintrag —,
+  in zwei geteilt, zeigt jeder alte Zeiger auf das Ganze und landet in einer Hälfte. ER IST
+  NICHT TOT: Er löst sich auf, er trifft, und was er trifft, sieht aus wie ein gültiges Ziel.
+  Es gibt keinen Moment, in dem jemand suchen muss — und nur das Suchen brächte den Fehler
+  ans Licht.
+  BELEG — GEMESSEN am Dateitext (CC, 2026-09-10): SIEBZEHN Stellen der Standdatei der Phase
+  11.3 nannten "11.3d", KEINE "11.3e"; alle waren geschrieben, als "11.3d" die ganze
+  Pinterest-Runde meinte. Nach der Teilung landete der Leser in einem Abschnitt, der die
+  gesuchte Hälfte ausdrücklich ausschloss.
+  DAS KRITERIUM — HANDLUNGSBINDEND GEGEN BESCHREIBEND: Ein Trigger, eine Bedingung, eine
+  Aufgabenliste werden AUSGEFÜHRT, nicht gelesen. Ein beschreibender Zeiger ist als Aussage
+  über seinen Zeitpunkt richtig. Die siebzehn zerfielen in ELF handlungsbindende und SECHS
+  beschreibende.
+  DIE GEGENFORM, ZWEI TEILE, UND SIE TRAGEN NUR ZUSAMMEN: (1) Ein AUFLÖSUNGS-SATZ AM
+  LANDEPLATZ — er erreicht jeden, der dort ankommt, auch über einen Zeiger, den niemand
+  gefunden hat. (2) NACHGEZOGEN wird allein, wo ein Zeiger eine HANDLUNG bindet; was
+  ausgeführt wird, erreicht kein Satz an einem anderen Ort. Beschreibende Zeiger bleiben
+  stehen — sie nachzuziehen machte aus einem Zeitdokument eine Behauptung über heute.
+  Präzedenzfall der Bauform: CLAUDE.md, "EIN VERWEIS DER FORM 'Roadmap-Zeile 11.1' … MEINT
+  DIE PHASE MIT DIESER NUMMER".
+  ABGRENZUNG ZU "EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE": Dort kippt
+  ein Zeiger von TOT auf FALSCH, weil ein Pfad neu belegt wird; hier bleibt er GÜLTIG und wird
+  HALB falsch, weil sein Ziel sich teilt. Verwandte Achse, anderer Mechanismus.
+  ABGRENZUNG ZU "EIN ZEIGER AUF EINE NUMMERIERTE ABLAGE KANN AUS PLAUSIBILITÄT ENTSTEHEN
+  STATT AUS NACHSEHEN": Jener war ab dem ersten Tag falsch; dieser war richtig und ist durch
+  eine spätere Teilung halb falsch geworden.
+  DIE BEDINGUNG DES ENTFALLENS IST STRUKTURELL NICHT FORMULIERBAR, UND DAS IST DIE ANTWORT:
+  Ein Gate müsste wissen, welche Hälfte ein Zeiger MEINTE — das ist Bedeutung, nicht Zeichen
+  ("EIN WÄCHTER ÜBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG"). Und eine Teilung ist ein
+  Entschluss, der jederzeit an jeder Einheit fallen kann; einen Zustand, in dem das aufhört,
+  gibt es nicht.
+  PROVENIENZ: Zählung und Fundstellen GEMESSEN am Dateitext (CC, 2026-09-10); die Einteilung
+  in elf und sechs ist eine ABLEITUNG aus dem Kriterium, an jeder Stelle einzeln vollzogen.
+  Herleitung: das Archiv der Phase 11.3, Hebungs-Kandidat (5).
+
+- EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE — DIE DOKU UND DER CODE
+  ZEIGEN AUF DIE STANDDATEI (Phase 11.3, gehoben 2026-09-11 aus Hebungs-Kandidat (6) und
+  Vorrat (28), als EINE Regel): docs/aktiver-stand.md ist ein Pfad, der je Phase eine ANDERE
+  Datei trägt — am Phasenende wird sie archiviert, die nächste Standdatei entsteht unter
+  demselben Namen. Wer auf ihn zeigt, zeigt auf eine Ablage mit Halbwertszeit und schreibt,
+  als hätte sie keine.
+  ZWEI RICHTUNGEN, EINE URSACHE:
+  · DIE DOKU ZEIGT AUF DIE STANDDATEI. Ein Zeiger "docs/aktiver-stand.md, VERMERK n" stirbt
+    am Phasenende und KIPPT mit der nächsten Standdatei von TOT auf FALSCH, sobald deren
+    Nummern die seine erreichen. EIN TOTER ZEIGER ZWINGT ZUM SUCHEN, EIN FALSCHER NICHT.
+    BELEG: Am 2026-09-11 treffen vierzehn Zeiger, die die Standdatei der Phase 11.2 meinen,
+    einen existierenden, aber falschen Eintrag der Phase 11.3.
+  · DER CODE ZEIGT AUF DIE STANDDATEI. BELEG: Der Kommentar des Laufs T17a2
+    (`src/lib/capi/pinterest-forward.test.ts`) zeigte auf einen Vorrats-Eintrag der
+    Standdatei; zwei Runden später war der Eintrag gestrichen — und am Phasenende wäre der
+    Zeiger ohnehin gestorben.
+  DIE TEURE HÄLFTE: Ein Doku-Zeiger wird nachgezogen, wenn jemand die Datei ohnehin öffnet.
+  Ein Zeiger aus `src/` verlangt einen CODE-COMMIT — anderer Scope, andere Gates, andere
+  Freigabe. Aus einer ANGEWANDTEN MIGRATION ist er gar nicht heilbar ("ANGEWANDTE
+  MIGRATIONEN WERDEN NICHT NACHTRÄGLICH UMGESCHRIEBEN").
+  DER BESTAND — GEMESSEN am Repo (CC, 2026-09-11): Im Produktivcode unter `src/` stehen 44
+  pfadlose Nummern-Zeiger (Achse: `VERMERK n`, `Vorrat (n)`, `Vorrats-Eintrag n`,
+  `Entscheidung (n)` und `(A)`/`(B)`, `Hebungs-Kandidat n`, Vorkommen gezählt; mit
+  Testdateien 71) und EIN Pfad-Zeiger auf docs/aktiver-stand.md, in
+  `src/lib/tracking/credential-state.ts` (mit Testdateien zwei; der zweite in
+  `src/app/projects/actions.testmode.test.ts`). In `supabase/migrations/` zeigen DREI Stellen
+  auf die Standdatei der Phase 11.3 — eine in 0028, zwei in 0029; sie sterben mit ihrer
+  Archivierung und bleiben tot.
+  DIE GEGENFORM: (1) Am ORT DER HANDLUNG — in einem Kommentar, einer Migration — sagt der
+  Text die Sache selbst, statt auf eine Ablage mit Halbwertszeit zu zeigen; so vollzogen am
+  Kommentar von T17a2 (Scheibe 11.3d). (2) Wer in der Doku auf eine Standdatei zeigt, nennt
+  die PHASE ("Vorrat (n) der Phase 11.3") und nicht nur den Pfad: Die Phasennummer wird nicht
+  neu vergeben und löst über das Archiv der Phase auf. Teil (2) ist eine ABLEITUNG aus der
+  Ursache und nicht erprobt.
+  DER UNTERSCHIED ZUM OFFENEN PUNKT "ZEIGER AUF docs/aktiver-stand.md MEINEN EINE FRÜHERE
+  STANDDATEI …" (docs/offene-punkte.md): Diese Regel sagt, wie man solche Zeiger nicht wieder
+  baut; jener Posten sagt, dass heute vierzehn falsch sind und was mit ihnen geschieht.
+  DIE BEDINGUNG DES ENTFALLENS IST HALB FORMULIERBAR: Für künftige Zeiger entfällt sie,
+  sobald jede Ablage, auf die gezeigt wird, ihren Endnamen von Anfang an trägt — für die
+  Standdatei ist das nicht der Fall, sie heisst per Verfahren docs/aktiver-stand.md
+  (CLAUDE.md, Abschnitt "Aktiver Stand — Verfahren ab Phase 10"). GENANNT, NICHT
+  EMPFOHLEN. Für Zeiger in angewandten Migrationen gibt es keine: sie werden nie
+  umgeschrieben.
+  PROVENIENZ: die Zahlen GEMESSEN am Repo (CC, 2026-09-11), Achsen wie genannt; der Fall
+  T17a2 GEMESSEN am Repo (CC, 2026-09-10). Dass jeder solche Zeiger am Phasenende stirbt,
+  ist eine ABLEITUNG aus dem Archivierungs-Verfahren. Herleitung: das Archiv der Phase 11.3,
+  Hebungs-Kandidat (6) und Vorrat (28).
+
+- SICHTBARKEIT STATT ISOLATION — EIN TESTMODUS BELEGT DIE ANKUNFT BEIM ANBIETER, NICHT DASS
+  DESSEN ZAHLEN UNBERÜHRT BLEIBEN (Phase 11.3, gehoben 2026-09-11 aus der Entscheidung (1)):
+  DIE ENTSCHEIDUNG: Der Testmodus liefert dem Kunden den Nachweis, dass sein Ereignis beim
+  Anbieter ANKOMMT. Er liefert NICHT die Zusicherung, dass es die Zahlen des Anbieters
+  unberührt lässt. Gebaut ist eine MARKIERUNG mit einem Riegel auf unsere eigene Ablage
+  (`events`) — keine Isolation beim Empfänger.
+  DER GRUND: ISOLATION IST ZIEL-ABHÄNGIG, UND WAS JE ANBIETER VERSCHIEDEN AUSFÄLLT, IST NICHT
+  VERSPRECHBAR.
+  · meta — markierte Ereignisse fliessen in Targeting und Messung (GELESEN 2026-09-08,
+    docs/ziel-befunde.md, Abschnitt "Meta (Conversions API)", Teil (a); keine Messung).
+  · pinterest — ein markiertes Ereignis erscheint NICHT in der Eventübersicht: die
+    BERICHTERSTATTUNG ist isoliert GEMESSEN (LIVE, 2026-09-10); die OPTIMIERUNG ist
+    ungemessen.
+  · tiktok — die Oberfläche behauptet Isolation (GELESEN an der Oberfläche, 2026-09-09);
+    gemessen ist sie nicht.
+  · linkedin und google — kein Testmodus; beide sind in Phase 11.3 ohne Code abgeschlossen.
+  Ein Kunde, der bei einem Ziel Isolation erlebt und beim nächsten nicht, hält das Produkt
+  für kaputt. DIE ZIEL-ABHÄNGIGKEIT IST DER STÄRKERE GRUND GEGEN DAS VERSPRECHEN, NICHT DER
+  SCHWÄCHERE — sie schliesst den Fall ein, in dem Isolation bei einem Ziel tatsächlich
+  eintritt.
+  DER PREIS WIRD MITGENANNT, UND ER IST ZIEL-ABHÄNGIG: Bei meta zählt der Testklick beim
+  Anbieter als echte Conversion; bei pinterest erscheint er nicht in der Eventübersicht; bei
+  tiktok ist es behauptet und ungemessen.
+  WEN SIE BINDET: Phase 11.4 ausdrücklich — ein Testknopf erbt diese Rahmung —, jede
+  Oberfläche, die den Testmodus beschriftet, und jeden Kundentext über das
+  Tracking-Versprechen. "Testen ohne Nebenwirkung" ist ein Versprechen, das nicht jedes Ziel
+  einlöst.
+  WANN SIE KIPPT: erst, wenn für JEDES Ziel mit Testmodus AUF BEIDEN ACHSEN —
+  Berichterstattung UND Optimierung — GEMESSEN ist, dass ein markiertes Ereignis die Zahlen
+  des Anbieters unberührt lässt. Ein einzelnes Ziel, auf einer Achse isoliert gemessen, kippt
+  sie NICHT; bei pinterest ist genau das am 2026-09-10 eingetreten, und die Entscheidung ist
+  geblieben. Ändert ein Anbieter sein Verhalten, wird hier nichts rot. Die Bauform — ein
+  Zustand je (Projekt, Ziel), getragen von einer Frist — überlebt beides.
+  DIE VERWORFENE ALTERNATIVE — ISOLATION OHNE ANBIETER: gar nicht senden und dem Kunden
+  zeigen, was gesendet worden WÄRE. Ihre Vorzüge sind echt: keine echte Conversion, und alle
+  fünf Ziele gleich. SIE FÄLLT, WEIL IHR BEWEIS VON DEM CODE KÄME, DER GEPRÜFT WERDEN SOLL:
+  Ein Trockenlauf kann nicht zeigen, dass etwas beim Anbieter ANKOMMT — ein widerrufenes
+  Zugangsdatum, eine falsche Kennung, ein abgelehntes Feld sähe er nie, weil er nie fragt.
+  Dazu bräuchte sie einen Lesepfad und eine Maskierung, also genau das, was der Phase 11.4
+  fehlt. SIE IST NICHT VERBOTEN: Wer sie neu vorschlägt, trägt gegen diesen Grund vor und
+  beginnt nicht bei null.
+  PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-08 auf GELESENER Grundlage; ihr Grund ist am
+  2026-09-10 auf die Ziel-Abhängigkeit geschärft (ARCHITEKT/OWNER, nach der Messung desselben
+  Tages). Die Bedingung des Kippens ist OWNER-ENTSCHEIDUNG 2026-09-11. Herleitung: das Archiv
+  der Phase 11.3, Entscheidung (1).
+
+- EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE — UND KEIN
+  WÄCHTER ÜBER EINEN WORTLAUT (Phase 11.3, gehoben 2026-09-11 aus der Entscheidung (7)):
+  Die Erwartung eines Wächters über einen Wortlaut wird aus der ENTSCHEIDUNG und der Quelle
+  der Wahrheit geschrieben — nie aus dem Ist-Wert des Codes, auch nicht ausschnittsweise aus
+  einem Fehlertext.
+  DER GRUND: EINE ERWARTUNG AUS DEM CODE MACHT DEN WÄCHTER ZUM SPIEGEL. Er bestätigt dann
+  jeden Tippfehler, statt ihn zu fangen. BELEG: der Tippfehler-Wächter über die Spaltenliste
+  des Resolvers (`src/lib/capi/token.test.ts`); der Ausfall, gegen den er steht, ist still —
+  keine Zeile, keine Konfiguration, weiter die leere 204, der Server-Forward tot.
+  DAS MUSTER, IN DIESER REIHENFOLGE: (1) die erwarteten Werte aus der Entscheidung einzeln
+  niederschreiben; (2) sie MASCHINELL Zeichen für Zeichen gegen die Quelle prüfen — dort
+  gegen die `add column`-Anweisungen der Migration 0028, `diff` leer; (3) erst zuletzt den
+  Code gegen diese Liste halten. Die Richtung ist der Punkt: Bei einer Abweichung wird der
+  CODE korrigiert und nicht die Erwartung.
+  DIE REICHWEITE: jeder Wächter über einen Wortlaut — eine Spaltenliste, eine
+  Endpunkt-Adresse, ein Feldname in einer Nutzlast.
+  ABGRENZUNG ZU "EIN WÄCHTER ÜBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG": Jene betrifft
+  das MEDIUM des Wächters — was er sehen kann, in welche Richtung er irren muss, welche
+  Grenze an ihm stehen muss. Diese betrifft die HERKUNFT SEINER ERWARTUNG. Ein Wächter kann
+  sein Medium kennen und trotzdem ein Spiegel sein.
+  ABGRENZUNG ZU "EINE SUCH-ACHSE, DIE AUS DEN ERWARTETEN FORMULIERUNGEN GEBILDET IST, …":
+  Dort bestätigt eine Achse aus der ERWARTUNG die Erwartung; hier bestätigt eine Erwartung
+  aus dem CODE den Code. Beide Male liefert das Geprüfte den Massstab.
+  DIE BEDINGUNG DES ENTFALLENS IST HALB FORMULIERBAR: Für einen Wortlaut, dessen Quelle der
+  Wahrheit ein maschinenlesbares Artefakt im Repo ist, entfällt sie, sobald ein Gate Code und
+  Artefakt DIREKT gegeneinander prüft — etwa über aus dem Schema erzeugte Typen —, denn dann
+  schreibt niemand mehr eine Erwartung. Für einen Wortlaut aus fremder Quelle — Feldnamen und
+  Adressen eines Anbieters — gibt es keine: Seine Wahrheit liegt ausserhalb des Repos, und
+  kein Gate prüft die Entscheidung, aus der die Erwartung stammt.
+  PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-09; das Muster GEMESSEN am eigenen Lauf (CC,
+  2026-09-09). Die zwei Hälften der Bedingung sind eine ABLEITUNG (CC, 2026-09-11).
+  Herleitung: das Archiv der Phase 11.3, Entscheidung (7).
+
+- EINE WIDERLEGTE BEGRÜNDUNG STEHT IM ARCHIV WEITER: "ECHTES RISIKO" IM ABSCHNITT
+  "Tracking-Testmodus für Kunden" DER future-roadmap — SIE WIRD DORT NICHT KORRIGIERT (Phase
+  11.3, gehoben 2026-09-11): docs/claude-history/future-roadmap.md sagt dort, ein vergessener
+  Testmodus nehme echte Käufe lautlos aus der Optimierung des Anbieters. Für meta ist das
+  widerlegt — markierte Ereignisse fliessen in Targeting und Messung (docs/ziel-befunde.md,
+  Abschnitt "Meta (Conversions API)", Teil (a); GELESEN 2026-09-08, keine Messung); für
+  pinterest ist nur die Berichterstattung isoliert gemessen. Die Frist trägt UNSER Grund:
+  Bleibt der Testmodus hängen, verstummt die eigene Zählung des Kunden. Jene Datei ist ein
+  Archiv und wird nicht rückwirkend geändert; ihre Form-Anforderung gilt unberührt.

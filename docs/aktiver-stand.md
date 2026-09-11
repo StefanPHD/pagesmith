@@ -509,8 +509,18 @@ und meldet nicht pauschal Erfolg.
 steuert im Ingest zusätzlich eine Dev-Dummy-IP. Fehlt eine Client-IP UND ist die Variable
 gesetzt, wird eine feste öffentliche Dummy-IP eingesetzt (`src/lib/capi/ingest.ts`). **Das
 ist ein ZWEITER Nebeneffekt derselben Variablen und hat mit dem Testmodus des Anbieters
-nichts zu tun** — er ist der Grund, warum neun Handler-Testdateien die Variable in ihrer
-Config-Fabrik auf leer setzen.
+nichts zu tun** — er ist der Grund, warum Testdateien die Konstante in einer je Datei
+duplizierten `vi.mock`-Factory für das Modul `@/lib/capi/config` auf leer setzen. **DREI
+ZAHLEN, JE NACH LESART** (GEMESSEN am Repo, CC, 2026-09-11, Achse: der wörtliche Eintrag
+bzw. der Modul-Mock über `src/`, Testdateien eingeschlossen, Negativkontrolle 0):
+- **NEUN** Handler-Testdateien setzen sie wörtlich auf `""`: `fan-out.test.ts` und die
+  acht `ingest.confirm`, `ingest.consent`, `ingest.consent-targets`, `ingest.forwardable`,
+  `ingest.persist`, `ingest.refresh`, `ingest.timeout`, `ingest.variant` (je `.test.ts`).
+- **ZEHN** Testdateien tragen wörtlich `META_TEST_EVENT_CODE: ""` — die neun plus
+  `meta-forward.test.ts`.
+- **ZWÖLF** mocken das Modul überhaupt — die zehn plus `src/app/api/capi/route.test.ts` und
+  `src/lib/capi/ingest.test-mode.test.ts`; beide über einen veränderlichen Zugriff mit dem
+  Startwert `""`, weil sie die Konstante je Lauf umschalten.
 
 ### Die Nicht-Treffer im Code (GEMESSEN am Repo, CC, 2026-09-08, Achse oben)
 
@@ -662,10 +672,19 @@ kollidierte das Zitat dauerhaft mit jeder gleichlautenden Überschrift.
 
 ### Die Env-Variablen bleiben — und der Riegel hängt NICHT an ihnen
 
-- **`META_TEST_EVENT_CODE`, `TIKTOK_TEST_EVENT_CODE` und `PINTEREST_TEST_MODE` bleiben
-  unverändert bestehen.** Sie tragen den Eigenbetrieb des Owners und werden von dieser
-  Phase nicht abgeschafft. **Ihr heutiges Verhalten ändert sich nicht** — sie hängen
-  weiterhin ihren Wert an die Nutzlast, deployment-weit, wie bisher.
+- **ZWEI DER DREI VARIABLEN LIEST DER CODE WEITERHIN, DIE DRITTE NICHT MEHR.**
+  `META_TEST_EVENT_CODE` liest `src/lib/capi/config.ts` (Konstante gleichen Namens, beim
+  Laden des Moduls; Konsumenten `forwardToMeta` und `resolveClientIp`),
+  `TIKTOK_TEST_EVENT_CODE` liest `testEventCode` in `src/lib/capi/tiktok-forward.ts` (bei
+  jedem Aufruf). Ist eine gesetzt, hängt ihr Adapter den Wert als `test_event_code` an
+  jede Nutzlast ohne Projekt-Code — deployment-weit; unbesetzt geht kein Feld hinaus.
+  `PINTEREST_TEST_MODE` liest der Code seit Commit `3d42501` nicht mehr. GEMESSEN am Repo
+  (CC, 2026-09-11).
+- **IN VERCEL IST KEINE DER DREI GESETZT:** `PINTEREST_TEST_MODE` GEMESSEN LIVE (Stefan,
+  2026-09-10, alle drei Umgebungen); `META_TEST_EVENT_CODE` und `TIKTOK_TEST_EVENT_CODE`
+  am 2026-09-11 gelöscht (OWNER-ANGABE, keine Messung). Die lokale `.env.local` setzt
+  `META_TEST_EVENT_CODE` (GEMESSEN am Repo, CC, 2026-09-11). Der Hebel, den der Code
+  damit weiter trägt, steht als offener Punkt in docs/offene-punkte.md.
 - **DER PERSIST-RIEGEL HÄNGT ALLEIN AM PROJEKT-ZUSTAND.** Eine gesetzte Env-Variable
   nimmt KEIN Ereignis aus `events` heraus — bei keinem Projekt, unter keinen Umständen.
 - **DER VORRANG DES PROJEKT-ZUSTANDS GILT NUR DEM NUTZLAST-FELD.** Tragen beide Wege einen
@@ -1159,15 +1178,10 @@ Scheibennummer.
 Testzustand aus der Konfiguration liest, in welcher Gestalt, und ob der Resolver ihn heute
 überhaupt bis dorthin durchreicht. **Das ist Bausache und ungemessen.**
 
-**EIN WIDERSPRUCH IM SELBEN DOKUMENT — GEMELDET, IN DIESER RUNDE NICHT AUFGELÖST:** Der
-Abschnitt "Die Env-Variablen bleiben — und der Riegel hängt NICHT an ihnen" (unter
-"Scheibe 11.3a") sagt wörtlich, `META_TEST_EVENT_CODE`, `TIKTOK_TEST_EVENT_CODE` und
-`PINTEREST_TEST_MODE` blieben "unverändert bestehen" und würden "von dieser Phase nicht
-abgeschafft". **Für `pinterest` ist das mit dieser Entscheidung überholt**; für die zwei
-anderen Variablen gilt es unverändert. Der Satz wird hier NICHT geändert — er stammt aus
-dem Zuschnitt einer anderen Scheibe, und eine Richtigstellung ohne Vollzug behauptete einen
-Zustand, den es noch nicht gibt. **WER IHN LIEST, LIEST DIESEN ABSATZ MIT;** nachgezogen
-wird er mit dem Abschluss-Vermerk der Scheibe, die die Variable entfernt.
+**DER LESESTAND DER DREI VARIABLEN** steht im Abschnitt "Die Env-Variablen bleiben — und der
+Riegel hängt NICHT an ihnen" (unter "Scheibe 11.3a"): `META_TEST_EVENT_CODE` und
+`TIKTOK_TEST_EVENT_CODE` liest der Code weiterhin, `PINTEREST_TEST_MODE` nicht mehr. Der
+Riegel hängt unverändert allein am Projekt-Zustand.
 
 **PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-10. Dass `testModeQuery`
 (`src/lib/capi/pinterest-forward.ts`) bei jedem Aufruf gelesen wird, dass sie die
@@ -1547,7 +1561,7 @@ Ort, an dem das erklärt wird** — keine Anzeige, keinen Hinweistext, keine
 Betreiber-Dokumentation.
 TRIGGER: die Oberflächen-Scheibe 11.3b (dort ist der Ort), spätestens der erste fremde
 Nutzer, der den Testmodus einschaltet. VERWANDT mit dem offenen Punkt "BETREIBER-
-DOKUMENTATION FEHLT — ZWEI PUNKTE" (CLAUDE.md). PROVENIENZ: FOLGERUNG aus dem Zuschnitt
+DOKUMENTATION FEHLT — DREI PUNKTE" (CLAUDE.md). PROVENIENZ: FOLGERUNG aus dem Zuschnitt
 der Scheibe 11.3a, keine Messung.
 
 **VERMERKT AM 2026-09-10 NACH DER SCHEIBE 11.3f — NICHT GESTRICHEN. DER EINTRAG BLEIBT
@@ -1569,7 +1583,7 @@ trotzdem nicht leer.
 **DIE ZWEI RESTLÜCKEN, EINZELN UND JE MIT IHRER ACHSE:**
 · **(a) DIE BETREIBER-DOKUMENTATION FEHLT WEITERHIN.** Sie steht im Eintrag ausdrücklich
   als dritter Ort, und der Eintrag verweist selbst auf den offenen Punkt
-  "BETREIBER-DOKUMENTATION FEHLT — ZWEI PUNKTE" (CLAUDE.md). Eine Anzeige IM Produkt
+  "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" (CLAUDE.md). Eine Anzeige IM Produkt
   ersetzt keine Dokumentation ÜBER das Produkt: Wer nachliest, warum seine Zahlen
   auseinanderliefen, hat die Anzeige längst nicht mehr vor sich.
 · **(b) DER BANNER ERKLÄRT NUR WÄHREND DES LAUFENDEN TESTMODUS — DIE LÜCKE IN DER KURVE
@@ -1698,11 +1712,14 @@ erlaubt den Zustand; erzeugen kann ihn noch niemand (`TARGETS_WITH_TEST_MODE`), 
 11.3d. PROVENIENZ DER STREICHUNG: GEMESSEN LIVE, 2026-09-10, Stefan (Katalog und
 Wirkungs-Probe); der Commit ist GEMESSEN am Repo (CC, 2026-09-10).
 
-**(9) EIN TESTZUSTAND KANN NUR DORT LIEGEN, WO BEREITS ZUGANGSDATEN HINTERLEGT SIND.**
-Folge des bestehenden CHECK `project_secrets_secret_genau_eines`: jede Zeile trägt genau
-ein Geheimnis, also gibt es ohne Zugangsdaten keine Zeile, an der ein Testzustand hängen
-könnte. Bewusst so — aber eine Festlegung, die die Oberfläche kennen muss.
-TRIGGER: der Schalter in 11.3b. PROVENIENZ: GEMESSEN am Schema (docs/db-stand.md).
+**(9) — GESTRICHEN AM 2026-09-11, ERLEDIGT. DIE NUMMER BLEIBT STEHEN.**
+TITEL: "EIN TESTZUSTAND KANN NUR DORT LIEGEN, WO BEREITS ZUGANGSDATEN HINTERLEGT SIND."
+GEGENSTAND: Die Oberfläche sollte die Folge des CHECK `project_secrets_secret_genau_eines`
+kennen — ohne Geheimnis-Zeile gibt es keinen Ort für einen Testzustand.
+**BELEG:** Der handlungsbindende Teil ist erledigt — der Schalter erscheint nur an Zielen
+mit Testmodus, mit Kennung und mit Geheimnis-Zeile (gegengeprüft am Bestand, CC,
+2026-09-09; Vorrat (11), Absatz "NICHT GESTRICHEN"). Die Festlegung selbst steht dauerhaft
+in Entscheidung (2), Absatz "IHRE GRENZE".
 
 **(10) WELCHE QUELLE DEN VORRANG HAT, IST UNENTSCHEIDBAR GEBLIEBEN.** Beim Live-Test vom
 2026-09-09 stand `META_TEST_EVENT_CODE` in Vercel gesetzt — **mit DEMSELBEN Wert wie die
@@ -1802,16 +1819,14 @@ mit einem alten Code zu verlängern.
 **PROVENIENZ DER STREICHUNG:** GEMESSEN am Repo (CC, 2026-09-09); die zugrunde liegende
 Angabe über Metas Wechselintervall bleibt OWNER-ANGABE 2026-09-09, **keine Messung**.
 
-**(14) OB TIKTOKS TESTCODE DAUERHAFT ABLEGBAR IST, BLEIBT OFFEN.** Die zweite Hälfte des
-gestrichenen Eintrags (4): Für meta ist die Frage mit "nein" beantwortet, für tiktok
-NICHT. Der Repo-Befund führt "wechselt pro Sitzung" als GEMESSEN (2026-08-11), ohne dass
-ein Protokoll dazu im Repo vorliegt; die Doku stützt es weder noch widerlegt sie es.
-**Metas Antwort auf tiktok zu übertragen wäre eine Annahme über ein fremdes System** —
-zumal "pro Sitzung" und "alle paar Tage" nicht dasselbe sind.
-TRIGGER: die Scheibe, die den tiktok-Zweig zuschneidet — spätestens der erste
-Live-Nachweis gegen tiktok. PROVENIENZ: GELESEN 2026-09-08 (Doku-Schweigen) plus der
-GEMESSENE Repo-Befund vom 2026-08-11; die Abgrenzung gegen meta ist OWNER-ANGABE
-2026-09-09.
+**(14) — GESTRICHEN AM 2026-09-11, GEGENSTAND ENTFALLEN. DIE NUMMER BLEIBT STEHEN.**
+TITEL: "OB TIKTOKS TESTCODE DAUERHAFT ABLEGBAR IST, BLEIBT OFFEN."
+GEGENSTAND: ob eine Ablage den TikTok-Testcode wie einen dauerhaften Wert behandeln darf.
+**BELEG:** Keine Ablage behandelt ihn so — die Oberfläche verlangt den Code bei jedem Start
+und jeder Verlängerung (`TargetCard.tsx`: Sperre `brauchtTestCode && !testInput.trim()`,
+das Feld wird nach dem Start geleert; GEMESSEN am Repo, CC, 2026-09-11). Die Anbieter-Frage
+selbst ist in docs/ziel-befunde.md verortet, Abschnitt "TikTok (Events API 2.0)", Teile (e)
+und (f).
 
 **(15) DIE IDOR-WÄCHTER SIND NAMENTLICH — EINE NEUE SERVER-ACTION IST UNGESCHÜTZT BY
 DEFAULT, UND NICHTS WIRD DAVON ROT.** Jeder bestehende Wächter nennt die Aktion, die er
@@ -2309,38 +2324,12 @@ erneute Prüfung wieder über den Architekten laufen muss, nicht über eine Such
 
 ### (2) DIE ZAHL "NEUN HANDLER-TESTDATEIEN" STIMMT NUR UNTER EINER ENGEN LESART
 
-**KANDIDAT FÜR EINE RICHTIGSTELLUNG, NICHT FÜR EINEN STEMPEL — und hier wird sie
-ausdrücklich NICHT vollzogen:** Der Satz steht im Abschnitt "Ausgangslage — was am
-2026-09-08 gemessen und gelesen ist", den diese Runde nicht anfasst. Wer ihn richtigstellt,
-tut es in einer Runde, die jenen Abschnitt ohnehin öffnet.
-
-**DER SATZ:** Die Ausgangslage sagt, `META_TEST_EVENT_CODE` sei "der Grund, warum neun
-Handler-Testdateien die Variable in ihrer Config-Fabrik auf leer setzen".
-
-**DER BEFUND — GEMESSEN am Repo (CC, 2026-09-09), drei Zahlen für drei Lesarten:**
-- **ZEHN** Dateien tragen wörtlich `META_TEST_EVENT_CODE: ""` — die acht `ingest.*.test.ts`,
-  `fan-out.test.ts` und `meta-forward.test.ts`.
-- **ELF** mocken das Modul `@/lib/capi/config` überhaupt; die elfte
-  (`src/app/api/capi/route.test.ts`) über einen mutierbaren Zugriff mit Startwert `""`.
-- **NEUN** trifft zu, wenn man ausschliesslich die HANDLER-Tests zählt (acht `ingest.*`
-  plus `fan-out`). **Unter dieser Lesart ist der Satz richtig**, unter der Lesart "alle
-  Testdateien" um zwei zu niedrig.
-
-**EIN ZWEITER, KLEINERER PUNKT AM SELBEN SATZ:** Der Ausdruck "Config-Fabrik" ist
-irreführend. Es gibt kein Config-Objekt und keine geteilte Fabrik, sondern in jeder Datei
-eine **wörtlich duplizierte `vi.mock`-Factory für das MODUL**. Ein geteilter Helfer ist
-technisch ausgeschlossen — gehobene Factories dürfen keine datei-externen Bindungen lesen.
-
-**WARUM DAS EIN KANDIDAT IST UND KEIN FEHLER:** Die Zahl trägt im Bestand keine
-Entscheidung; sie erklärt einen Nebeneffekt. **Teuer wird sie erst, wenn jemand sie als
-Umfangs-Angabe benutzt** — etwa um zu prüfen, ob ein Eingriff alle betroffenen Dateien
-erfasst hat. Dann zählt er zwei zu wenig, und zwar ohne es zu merken.
-
-**NICHT ENTSCHIEDEN:** ob die Richtigstellung alle drei Zahlen nennt oder nur die enge
-Lesart benennt · ob "Config-Fabrik" mitkorrigiert wird. **KEINE EMPFEHLUNG.**
-
-**PROVENIENZ:** GEMESSEN am Repo (CC, 2026-09-09) im Zuge der Scheibe 11.3a; die
-Einordnung als Kandidat statt als Richtigstellung ist eine Auflage dieser Runde.
+**GESTRICHEN AM 2026-09-11, VOLLZOGEN.** Gegenstand war der Satz im Abschnitt
+"Ausgangslage — was am 2026-09-08 gemessen und gelesen ist", der die Zahl der
+Testdateien mit geleerter Konstante nur unter einer Lesart richtig nannte und die
+`vi.mock`-Factory als "Config-Fabrik" bezeichnete.
+**BELEG:** Jener Satz trägt seit dem 2026-09-11 alle drei Zahlen mit ihrer Lesart und je
+der Liste der Dateien, und er nennt die Factory so, wie sie dasteht.
 
 ### (3) EINE SUCH-ACHSE, DIE AUS DEN ERWARTETEN FORMULIERUNGEN GEBILDET IST, BESTÄTIGT DIE ERWARTUNG STATT SIE ZU PRÜFEN
 

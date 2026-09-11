@@ -202,7 +202,7 @@ gehen von hier eine Station weiter.
 - DREI WEGE, AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE — RANG OFFEN,
   UNGEMESSEN (Trigger: die Messung selbst — ein Lauf, der prüft, ob ein Wurf auf dem
   Ingest-Pfad die garantierte leere 204 bricht)
-- BETREIBER-DOKUMENTATION FEHLT — ZWEI PUNKTE (Trigger: vor dem öffentlichen Launch; wie
+- BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE (Trigger: vor dem öffentlichen Launch; wie
   der COOKIE-DOKU-SCHNIPSEL darüber eine PRODUKTPFLICHT, kein Nice-to-have)
   ZWEI TRIGGER — der erste steht oben in der Klammer, der zweite im Rumpf:
   (2) TRIGGER FÜR DIE KLÄRUNG: sobald echter Traffic eine Zuordnung zu einer echten
@@ -229,7 +229,7 @@ gehen von hier eine Station weiter.
   kostet derzeit NULL. Alles davor wäre gebaute Vorsorge gegen ein Risiko, das nicht
   existiert — "Erst der nutzbare Kern, dann Infrastruktur")
 - EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN — DREI URSACHEN, DIE GETRENNT
-  BLEIBEN — VIER TRIGGER, je an einer Ursache:
+  BLEIBEN — FÜNF TRIGGER, je an einer Ursache:
   (1) TRIGGER: EINGETRETEN — jeder Betreiber, der dieses Ziel konfiguriert, läuft hinein.
   (2) TRIGGER: die UI-Warnung (Owner-Absicht, 2026-08-18), spätestens vor echtem
       Ad-Traffic.
@@ -237,6 +237,7 @@ gehen von hier eine Station weiter.
       dass nichts ankommt.
   (4) TRIGGER: mit dem ersten Ziel, dessen Zugangsdatum ablaufen kann; für LinkedIn ist er
       EINGETRETEN, seit das Ziel am 2026-08-19 sendet.
+  (5) TRIGGER: ein Schreibweg auf `project_secrets`, der die Nicht-Leer-Prüfung nicht trägt.
 - DER PAGEVIEW-TOKEN IST ALS CUSTOM-EVENT EINTIPPBAR (Trigger: vor echtem Ad-Traffic;
   gehoben am 2026-08-19 aus dem Vorrat der Phase 11.1)
 - DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT (Trigger: die erste
@@ -352,6 +353,22 @@ wären es 55 von 66 Vorrats-Einträgen gewesen statt 14 (GEMESSEN, CC, 2026-09-0
 - DIE PRÄMISSE VON PUNKT (a) DES DATENKLASSEN-BLOCKS IST TOT (Trigger: die nächste
   Runde, die docs/offene-punkte.md ohnehin öffnet, ODER die erste Messung am gebauten
   Google-Transport auf Ablage und Logausgabe)
+
+**AUS DEM PHASENENDE 11.3 GEHOBEN (2026-09-11).** Aus dem Vorrat der Phase 11.3; die
+Ursprungs-Nummer steht am Eintrag in docs/offene-punkte.md. Vorrat (21) steht nicht hier,
+sondern als Ursache (5) unter "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN".
+- NACH DEM ENDE EINES TESTMODUS ERKLÄRT NICHTS DIE LÜCKE IN DER EIGENEN KURVE (Trigger: der
+  erste fremde Nutzer, der den Testmodus einschaltet)
+- DER CODE TRÄGT EINEN DEPLOYMENT-WEITEN TESTMODUS-HEBEL, DEN IN VERCEL HEUTE NIEMAND SETZT
+  UND DEN NIEMAND BEOBACHTET (Trigger: das Setzen von `META_TEST_EVENT_CODE` oder
+  `TIKTOK_TEST_EVENT_CODE` in einer Vercel-Umgebung — spätestens der erste fremde Kunde, weil
+  der Hebel dann Projekte trifft, die nicht dem Setzenden gehören)
+- DIE IDOR-WÄCHTER SIND NAMENTLICH — EINE NEUE SERVER-ACTION IST UNGESCHÜTZT BY DEFAULT, UND
+  NICHTS WIRD DAVON ROT (Trigger: die nächste Runde, die eine Server-Action anlegt)
+- ZEIGER AUF docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI — DIE UMBENENNUNG AM
+  PHASENENDE MACHT SIE TOT, DIE NÄCHSTE STANDDATEI WIEDER FALSCH (Trigger: das Anlegen der
+  nächsten Standdatei unter demselben Pfad — sobald ihre Nummern die eines solchen Zeigers
+  erreichen, trifft er wieder einen existierenden, aber falschen Eintrag)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
@@ -1115,6 +1132,12 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   weil beide DENSELBEN Trigger tragen und zusammen zu erledigen sind.
   DER ABSCHNITT NENNT AUCH DAS KRITERIUM, nach dem sortiert wurde — benennbarer Trigger
   UND "geht sonst still kaputt" —, und den gemessenen Grund dafür.
+  NACHGEZOGEN 2026-09-11 — DER ABSCHNITT DER PHASE 11.3: "Aus Phase 11.3 gehoben
+  (2026-09-11) — Vorrat und drei Hebungs-Kandidaten der Standdatei". Er trägt die
+  Vorrats-Einträge unter ihren Ursprungs-Nummern und dahinter drei Hebungs-Kandidaten, die
+  sich an den richten, der Prompt oder Commit-Body schreibt — sie stehen als
+  ÄNDERUNGSANTRÄGE an docs/arbeitsweise.md in Wartestellung und sind KEINE Regeln. Auch
+  hier steht keine Stückzahl, aus demselben Grund wie beim siebten Abschnitt.
   NACHGEZOGEN 2026-08-31 — DER FÜNFTE NACHTRAGS-ABSCHNITT: "Nachtrag 2026-08-31 —
   BEOBACHTUNG AUS DEM LIVE-TEST DER SCHEIBE 3 (kosmetisch)" (1). DER MESSBLOCK
   DARÜBER IST UNANGETASTET UND BLEIBT ES: seine Zahlen (123 Einträge, 163 KB,

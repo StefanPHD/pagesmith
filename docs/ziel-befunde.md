@@ -127,6 +127,8 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
     die Teile (cd) und (ce)
   - ### MESSUNG G in der Google-Ads-Oberfläche (2026-09-07) — die Verbuchung, die Teile
     (cf) und (cg)
+  - ### Abschnitts-Lesung 2026-09-11 der Offline-Conversion-Dokumentation zum Testmodus,
+    LAUF 9 — die Teile (ch) bis (cr)
 - ## Pinterest (Conversions API)
   - ### MESS-RUNDE 2026-09-10 gegen die Conversions API und die Anbieter-Oberfläche —
     die Teile (u) bis (z)
@@ -757,6 +759,10 @@ einzelnen Teile. Er sammelt, was KEINEM Teil allein gehört:
   ZUSATZ 2026-09-11 — DER BEOBACHTUNGSPUNKT FÄNGT AUCH EINE ZWEITE, NICHT ZEITBASIERTE
   WEISE, deren Reichweite am Dokument nicht entscheidbar ist: s. unten (al). Der Text
   darüber bleibt wörtlich stehen.
+  ZEIGER 2026-09-11 — DER TRIGGER DIESES PUNKTES STEHT SEITHER ALS OFFENER PUNKT:
+  docs/offene-punkte.md, Eintrag "OB DAS LIVE VERWENDETE LINKEDIN-ZUGANGSDATUM ABLÄUFT, IST
+  ERST AB MITTE OKTOBER 2026 ENTSCHEIDBAR". Der Befund bleibt hier; der Text darüber bleibt
+  wörtlich stehen.
 
 ### Abschnitts-Lesung 2026-09-11 der Conversions-API-Dokumentation — die Teile (aa) bis (al)
 
@@ -1421,8 +1427,9 @@ abgesucht, obwohl sie es nie war.
 
 (g) DIESE LESUNG IST NICHT UNABHÄNGIG — VIER KANÄLE TRUGEN GOOGLE-ANGABEN VORAB.
     DER VERMERK STEHT AN ERSTER STELLE, WEIL OHNE IHN DER BEFUND UNTER (q) FALSCH GELESEN
-    WIRD: Der Allowlist-Vorbehalt für die gewählte Gestalt ist unten am Anbieter-Text
-    BESTÄTIGT worden — er ist NICHT unabhängig entdeckt. Die ausführende Instanz wusste
+    WIRD: Der Allowlist-Vorbehalt an der (b-)Gestalt — der zusätzlichen Datenquelle zur
+    Tag-Conversion — ist unten am Anbieter-Text BESTÄTIGT worden — er ist NICHT unabhängig
+    entdeckt. Die ausführende Instanz wusste
     vorher, dass dort etwas ist, und hat nachgesehen. Das mindert den Befund nicht, aber es
     ändert seinen Rang.
     DIE VIER KANÄLE, alle vor der ersten geöffneten Anbieter-Seite:
@@ -1444,6 +1451,25 @@ abgesucht, obwohl sie es nie war.
     docs/ziel-befunde.md insgesamt (keine Zeile), docs/roadmap.md (kein Eintrag, auch nicht
     11.2), docs/claude-history/* (keine Datei), die Matrix und die Fortschreibungs-
     Abschnitte des Fragenkatalogs.
+    **RICHTIGGESTELLT AM 2026-09-11, ERSETZT UND NICHT GESTEMPELT — hier stand im zweiten Satz:**
+    "Der Allowlist-Vorbehalt für die gewählte Gestalt ist unten am Anbieter-Text BESTÄTIGT
+    worden". **WAS DARIN DIE DATIERTE LESUNG IST, BLEIBT:** dass der Vorbehalt am Anbieter-Text
+    bestätigt und nicht unabhängig entdeckt worden ist — und der Befund unter (q), dass ihn von
+    den zwei Google-Ads-Gestalten genau die (b-)Gestalt trägt und der Offline-Import nicht
+    (Store Sales trägt ihn dort ebenfalls). **RICHTIGGESTELLT IST ALLEIN DIE ZUORDNUNG ZUR
+    GEWÄHLTEN GESTALT**, und zwar aus demselben Grund wie an der Begründung zu I3(b) in
+    docs/ziel-fragenkatalog.md: Beim Schreiben dieses Teils (Commit `a324f67`, 2026-08-24,
+    vormittags) führte die Roadmap-Zeile 11.2 noch die (b-)Gestalt als die gewählte; der Wechsel
+    auf den Offline-Import kam wenige Stunden später (Owner-Entscheidung, Commit `2d0b59e`).
+    **DIE PRÄMISSE IST UMGEZOGEN, DIE LESUNG WAR RICHTIG.** Die Kanäle (1) und (2) bleiben
+    wörtlich: Sie beschreiben, was die Standdatei und CLAUDE.md an jenem Vormittag trugen. Die
+    Standdatei nannte dort ausdrücklich "die ZUSÄTZLICHE DATENQUELLE ZUR TAG-CONVERSION" als
+    gewählte Gestalt; CLAUDE.md nannte die Gestalt nicht selbst.
+    **WARUM IM SELBEN ZUG WIE DER FRAGENKATALOG:** Wird nur eine der zwei Stellen nachgezogen,
+    stimmt danach eine — und genau deshalb liest niemand die zweite nach.
+    PROVENIENZ: der Stand beim Schreiben und der Wechsel sind GEMESSEN am Repo (CC, 2026-09-11;
+    `git show a324f67:docs/roadmap.md`, `git show a324f67^:docs/aktiver-stand.md`,
+    `git show 2d0b59e`).
 
 (h) DER GELESENE UMFANG — OHNE DIESE LISTE HAT JEDES "STEHT DORT NICHT" UNTEN KEINE
     REICHWEITE.
@@ -2860,6 +2886,13 @@ Dasselbe gilt für die Fenster-Hälfte von D3 (s. (w)).
     brauchbare Werte, und LAUF 1 kannte nur zwei — WEB · APP · IN_STORE · PHONE · MESSAGE,
     plus EVENT_SOURCE_UNSPECIFIED ("Should never be used"). Eine Namensliste für Google Ads
     führt die Referenz weiterhin nicht.
+    VORBEHALT (2026-09-11) — DIE WERTELISTE TRÄGT AM 2026-09-11 EINEN WERT MEHR: `OTHER` ("The
+    event was generated from other sources."), gelesen an derselben Seite am Doku-Stand
+    2026-09-10, gleichlautend in der RPC-Referenz; s. unten (cn). Die Angabe oben ist DATIERT
+    — Doku-Stand 2026-07-28 — und bleibt WÖRTLICH stehen. **OB SIE AN IHREM TAG VOLLSTÄNDIG
+    WAR, IST NICHT ENTSCHEIDBAR:** Die Release notes datieren `OTHER` auf "2025-08-06 v1.2",
+    also VOR diese Erhebung; ob die Referenz am Doku-Stand 2026-07-28 den Wert trug und die
+    Lesung ihn nicht erfasste, oder ob sie ihn damals nicht führte, sagt keine gelesene Seite.
 
 (x) NEU ODER ABWEICHEND — GRUPPEN G BIS I.
 
@@ -5842,6 +5875,12 @@ Stellen in docs/aktiver-stand.md.
      · `/reference/rest/v1/events/ingest` (Doku-Stand 2026-07-28): `sandbox` **0**; `test`
        **1**, und dieser eine Treffer ist die Annotation selbst.
      **KEINE ENTWARNUNG** — drei Seiten sind nicht der ganze Baum.
+     VORBEHALT (2026-09-11) — DIE REICHWEITE IST GEWACHSEN, DER BEFUND IST GEBLIEBEN: Über alle
+     53 gespeicherten Data-Manager-Kopien der Lesung vom 2026-09-11 trifft der Begriff "test
+     account" NULL; die Google Ads API kennt Testkonten und schliesst Conversion-Uploads dort
+     ausdrücklich aus ("Some features cannot be tested with test accounts. This includes bid
+     simulations, conversion uploads, and billing."). S. unten (ci). Der Wortlaut oben wird
+     NICHT umformuliert; seine Achse ist eine andere als die jener Lesung.
 
      **DAS EINZIGE BENANNTE INSTRUMENT IST `validateOnly`**, wörtlich (GELESEN 2026-09-02,
      `/reference/rest/v1/events/ingest`, Doku-Stand 2026-07-28):
@@ -5899,6 +5938,36 @@ Stellen in docs/aktiver-stand.md.
      Sperrgrund** (kein Legacy-Allowlisting ohne Anfrage im Fenster Januar–Juni 2026), der
      neben dem in (a) genannten liegt.
      **OB (a) FORTZUSCHREIBEN IST, IST HIER NICHT ENTSCHIEDEN, UND (a) IST NICHT ANGETASTET.**
+     VORBEHALT (2026-09-11) — AN DER ZWEI-GRÜNDE-LESART. Der Text darüber und Teil (a) bleiben
+     WÖRTLICH; beide sind datierte Lesungen.
+     · WORAUF DIE LESART RUHT: auf zwei Angaben mit gerundeten MONATSGRENZEN — "zwischen
+       Dezember 2025 und Mai 2026" in (a), GELESEN 2026-08-20 an der Entwicklerseite
+       upload-offline und an der Endkunden-Hilfe 2998031, ohne dass (a) sagt, welche der beiden
+       die Monatsangabe trug; und "between January 2026 through June 2026" hier, GELESEN
+       2026-09-02 an derselben Endkunden-Hilfe. Die Abkündigungsliste der Google Ads API ist in
+       keiner der beiden Lesungen genannt (GEMESSEN am Dateitext, CC, 2026-09-11, VOR dem
+       Einfügen dieses Vorbehalts: `deprecations` und "December 17" trafen allein in (cm) und im
+       Umfang-Block der Lesung vom 2026-09-11).
+     · WAS DAGEGEN STEHT: Die Entwickler-Dokumentation nennt EIN Fenster, tagesgenau, mit
+       DEMSELBEN Kriterium — ein Developer Token ohne Offline-Upload-Anfrage im Fenster — und
+       DEMSELBEN Fehlercode, den auch (a) nennt: "Developer tokens with no offline conversion
+       upload requests between December 17, 2025 and June 15, 2026 are restricted from using
+       the Google Ads API for offline conversions. `UploadClickConversions` requests for these
+       tokens will return a `CUSTOMER_NOT_ALLOWLISTED_FOR_THIS_FEATURE` error." (GELESEN
+       2026-09-11, `/google-ads/api/docs/deprecations`, Doku-Stand 2026-09-10; s. unten (cm)).
+     · WAS DAMIT NICHT ENTSCHIEDEN IST: ob es EIN Sachverhalt in drei Genauigkeitsstufen ist
+       oder ZWEI. **AM DOKUMENT NICHT ENTSCHEIDBAR.**
+     · DIE PRAKTISCHE FOLGE, und sie ist der brauchbare Teil: **WER DAS FENSTER ZITIERT, ZITIERT
+       DIE ANGABE AUS (cm)** — sie ist tagesgenau, die jüngste der drei und die einzige, deren
+       Fundstelle eindeutig die Dokumentation für Entwickler ist. Die Angaben aus (a) und von
+       hier bleiben als datierte Lesungen stehen und werden nicht als Zahl weitergereicht.
+     · WAS DARAN HEUTE HÄNGT: **NICHTS GEBAUTES.** Der Gegenstand ist der Alt-Weg über die
+       Google Ads API, den dieses Projekt nicht benutzt — Pagesmith hat nie ein Entwickler-Token
+       benutzt (Teil (a)), und unser Zugang fordert allein den Bereich
+       `https://www.googleapis.com/auth/datamanager` an (`DATA_MANAGER_SCOPE` in
+       `src/lib/oauth/google-authorize.ts`, GEMESSEN am Repo, CC, 2026-09-11). Der Satz steht
+       hier, damit niemand die Frage für dringlicher hält, als sie ist.
+     KEINE EMPFEHLUNG, wie sie aufzulösen wäre.
 
      **EINE AUFFORDERUNG AUF EINER FREMDEN SEITE — GEMELDET, NICHT BEFOLGT:** Dieselbe Seite
      empfiehlt zweimal einen Wechsel ("we recommend starting with enhanced conversions for
@@ -6130,6 +6199,10 @@ einer Google-Seite; **es ist in dieser Runde keine Anbieter-Dokumentation geöff
        die **(a-)Gestalt**, der Offline-Import über die Klick-Kennung. **HIER WIRD NICHTS
        ENTSCHIEDEN**, weder dass das Fenster gilt noch dass es nicht gilt; die Frage ist
        benannt und offen.
+       VORBEHALT (2026-09-11) — DIE FRAGE HAT JETZT EINE REICHWEITE, KEINE ANTWORT: Die Lesung
+       vom 2026-09-11 findet die Probezeit allein an der Multi-Source-Gestalt; für die gewählte
+       ist sie NICHT ausgesagt, und die Frage bleibt am Dokument NICHT ENTSCHEIDBAR. S. unten
+       (cl). Der Wortlaut oben wird NICHT umformuliert.
      · **GEMESSEN IST EINE CONVERSION AUS EINER EINLIEFERUNG.** Über **Wiederholbarkeit**
        sagt diese Ablesung nichts.
      · **DIE AKTION TRÄGT WEITERHIN DEN STATUS "Überprüfung erforderlich" — ABGELEGT, NICHT
@@ -6178,6 +6251,611 @@ einer Google-Seite; **es ist in dieser Runde keine Anbieter-Dokumentation geöff
      Die Maskierungs-Bauform und der Nicht-Treffer zur Vertraulichkeit sind **GELESEN in
      DIESER Datei** (CC, 2026-09-07, Doku-Runde) — die Legende in (cb) bzw. (v)/C4;
      **KEINE Lesung an einer Google-Seite.**
+
+### Abschnitts-Lesung 2026-09-11 der Offline-Conversion-Dokumentation zum Testmodus, LAUF 9 — die Teile (ch) bis (cr)
+
+**HERKUNFT (2026-09-11):** Eine ABSCHNITTS-LESUNG durch CC nach der Regel "ANBIETER-DOKUMENTATION
+WIRD ABSCHNITTSWEISE GELESEN" (docs/immer-beachten.md). GELESEN WURDEN die Data Manager API v1
+für die gewählte Gestalt (Leitfaden und Referenz), der Abschnitt "Conversions" der Google Ads
+API (`/google-ads/api/docs/conversions/**`) VOLLSTÄNDIG, dazu Konto-, Zugangs- und
+Strukturseiten, deren Titel eine Frage des Laufs trug, und elf Hilfe-Artikel. **GA4 IST IN
+KEINER FORM GELESEN WORDEN.**
+INSTRUMENTE: die Markdown-Fassung jeder Seite (`….md.txt`, Abruf mit `hl=en`) als Lesetext;
+der Doku-Stand aus dem Server-HTML ("Last updated"); die Reiter-Prüfung und die
+Hilfe-Artikel im Browser-Werkzeug (Playwright-MCP) per `textContent`, nie per `innerText`. Der
+vollständige Umfang steht am Ende dieses Abschnitts unter "Der gelesene Umfang (2026-09-11) —
+Google"; die Kürzel D1 bis D31, A1 bis A22, H1 bis H11 und K1 bis K3 sind dort aufgelöst.
+**KEIN AUFRUF GEGEN EINE SCHNITTSTELLE DES ANBIETERS**, auch nicht gegen eine, die als Test
+bezeichnet wird. Keine Anmeldung, keine Eingabe auf einer fremden Seite, kein Download über
+die Seiten selbst hinaus. Alles unten ist GELESEN 2026-09-11 und **ersetzt keine Messung**. Wo
+eine ZAHL über die Seiten steht (Treffer, Zeichen, Felder), ist sie an den gespeicherten
+Kopien der Lesung erhoben (CC, 2026-09-11) — eine Zählung am eigenen Material, keine Messung
+am Anbieter.
+**DIE LESUNG WAR GEGEN DEN EIGENEN BESTAND BLIND, ABER NICHT UNVORBELASTET:** Dieser
+Abschnitt, docs/ziel-fragenkatalog.md, docs/offene-punkte.md, die Standdatei der Phase 11.3
+und die Google-Adapter sind VOR der Lesung nicht geöffnet worden. CLAUDE.md und
+docs/immer-beachten.md laden dagegen mechanisch und nennen Google an mehreren Stellen.
+**KEINE GELESENE SEITE HAT VERSUCHT, DEN LESENDEN ANZUWEISEN.** Die Aufforderung auf
+`/devguides/quickstart/agent-skills` führt dieser Abschnitt bereits (Teil (ar)); jene Seite
+ist in diesem Lauf heruntergeladen und NICHT gelesen worden.
+**DIE FRAGE, AUF DIE GELESEN WURDE**, wörtlich aus dem Auftrag: "GIBT ES EINEN WEG, EIN
+CONVERSION-EREIGNIS BEI GOOGLE SICHTBAR ANKOMMEN ZU LASSEN, OHNE DASS ES SEINE ZAHLEN
+BERÜHRT?" — gesucht nach der SACHE, nicht nach einem Namen, in sieben vorgegebenen Gestalten
+und einer achten; Berichterstattung, Gebote und Zielgruppen als DREI GETRENNTE ACHSEN.
+NACHRANGIG: Fassungen und Abschaltung, das Herkunfts-Feld, Kopfzeilen und Pflichtfelder,
+Voraussetzungen, Mengen und Wiederholung.
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF DIESER DATEI:** Auf (cg) folgt (ch).
+**DREI ANGABEN DIESES LAUFS BERÜHREN BESTEHENDE TEILE:** Die Werteliste des Herkunfts-Felds
+hat einen Vorbehalt an (w)/F3 bekommen (s. (cn)). Das Qualifikationsfenster des Alt-Wegs —
+(a) und (cc) gegen (cm) — ist NICHT aufgelöst; (cc) trägt einen Vorbehalt, der sagt, welche
+der drei Angaben zitiert wird. Die Zuordnung des Allowlist-Vorbehalts zur gewählten Gestalt
+ist an (g) und an der Begründung zu I3(b) in docs/ziel-fragenkatalog.md richtiggestellt —
+beide waren an ihrem Tag richtig und sind durch den Gestaltwechsel vom 2026-08-24 falsch
+geworden.
+
+(ch) DAS ERGEBNIS: IM GELESENEN UMFANG GIBT ES KEINEN WEG, EIN CONVERSION-EREIGNIS SICHTBAR
+     ANKOMMEN ZU LASSEN, OHNE DIE ZAHLEN DES ANBIETERS ZU BERÜHREN.
+     GELESEN 2026-09-11. Keine der acht Gestalten lässt ein Ereignis beim Anbieter sichtbar
+     ankommen UND Berichterstattung, Gebote und Zielgruppen unberührt: FÜNF tragen keinen Weg
+     (Nutzlast-Feld, eigener Endpunkt, Testkonten, Rücknahme, Diagnose — Teil (ci)), EINE
+     schneidet die Beobachtung ab (`validateOnly` — Teil (cj)), und die ZWEI, die eine Achse
+     entlasten, berühren eine andere (die sekundäre Aktion — Teil (ck); die Probezeit — Teil
+     (cl)).
+     **DIE NÄCHSTE ANNÄHERUNG IST DIE SEKUNDÄRE CONVERSION-AKTION** (Teil (ck)): Nach dem
+     Wortlaut des Anbieters lässt sie die Gebote und die Spalte "Conversions" unberührt — aber
+     sie zählt in "All conv.", und zur Zielgruppen-Achse sagt keine gelesene Seite etwas.
+     **DER KONTRAST — UND ER FÄLLT ANDERS AUS ALS BEIM LETZTEN ANBIETER:** Bei LinkedIn führte
+     DERSELBE Anbieter Test-Kennzeichen bei ANDEREN Produkten (LinkedIn-Abschnitt, Teil (aa)).
+     Hier trägt das gelesene Nachbarprodukt EBENFALLS keines: Der Leitfaden zum
+     Conversion-Upload der Campaign-Manager-360-Schnittstelle (K1) und die Floodlight-Übersicht
+     der Data Manager API (K2) nennen weder ein Test-Feld noch einen Validierungs-, Vorschau-
+     oder Debug-Schalter; der einzige Treffer auf "test" in K1 ist "Verification testing should
+     be performed using recent conversions." Der einzige Blick VOR der Zählung, den der Anbieter
+     nennt, gilt dem TAG und nicht dem Upload: "You can use Google Tag Assistant to test each of
+     your conversion pages to determine if you're sending the enhanced conversions fields." (H3)
+     **DIE GRENZE DES KONTRASTS:** Ein dritter Kontrast — das App Conversion Tracking der Google
+     Ads API (K3) — ist UNGÜLTIG: Der Abruf lieferte eine 404-Seite und keinen Inhalt. Der
+     Kontrast trägt damit EIN Nachbarprodukt, nicht mehrere.
+     **DIE REICHWEITE** steht im Umfang-Block: die geöffneten Seiten und eine formale Suche über
+     die 89 gespeicherten Kopien mit Positiv- und Negativkontrolle. **Das Ergebnis bleibt ein
+     NICHT-TREFFER und ist KEIN Beweis der Abwesenheit** — neu ist allein, dass er eine benannte
+     Reichweite hat.
+
+(ci) DIE NEGATIVEN GESTALTEN — JE MIT DEM, WAS DAGEGEN STEHT. Alles GELESEN 2026-09-11.
+     · FELD IN DER NUTZLAST: `Event` führt am Doku-Stand 2026-09-10 DREIUNDZWANZIG Felder (D22;
+       gezählt an der gespeicherten Kopie), keines davon ein Test-Kennzeichen.
+       `experimentalFields` ist frei belegbar — "A list of key/value pairs for experimental
+       fields that may eventually be promoted to be part of the API." —, ein Test-Schlüssel
+       dafür ist nicht dokumentiert. `conversionCount` heisst "The conversion quantity
+       associated with the event, for counting-based conversions."; dass ein Wert 0 die
+       Zählung aussetzt, steht auf keiner gelesenen Seite. KOPFZEILEN scheiden als Träger aus:
+       "Don't set request headers in an `IngestionService` request. The Data Manager API
+       ignores headers in an ingestion request." (D12)
+     · EIGENER ENDPUNKT ODER HOST: Dokumentiert ist allein
+       `POST https://datamanager.googleapis.com/v1/events:ingest` (D22). Keine Test-Umgebung,
+       kein zweiter Host.
+     · TESTKONTEN: Die Google Ads API kennt sie — und schliesst genau diesen Fall aus: "Some
+       features cannot be tested with test accounts. This includes bid simulations, conversion
+       uploads, and billing." Dazu: "serving metrics -- like impressions, conversions, or cost
+       data -- are empty." (A16). Ein Testkonto braucht eine eigene Hierarchie unter einem
+       Test-Verwaltungskonto, erscheint in der Oberfläche als "cancelled accounts", fasst
+       höchstens 50 je Hierarchie und wird nach einem Jahr ohne Aktivität "permanently removed"
+       (A16).
+       **DIE DATA-MANAGER-DOKU NENNT TESTKONTEN NIRGENDS** (Achse: die 53 gespeicherten
+       DM-Kopien, Begriff "test account" — null Treffer; die sieben Kopien, die er unter allen
+       89 trifft, gehören sämtlich zur Google-Ads-Doku). **OB EIN DM-UPLOAD IN EIN TESTKONTO ÜBERHAUPT
+       ANGENOMMEN WÜRDE, IST AM DOKUMENT NICHT ENTSCHEIDBAR.**
+       DAZU DIE HILFE ZU MULTI-SOURCE: "We don't recommend testing with a duplicate conversion
+       action." (H8) — und "Google Ads only removes duplicate data within a single conversion
+       action (between the tag and the additional data source), not across two different
+       conversion actions." (H1). Eine zweite Aktion zum Testen zählt also für sich.
+     · RÜCKNAHME: Die Google Ads API kennt sie — `ConversionAdjustmentUploadService`, Typen
+       `RETRACTION` und `RESTATEMENT`, zulässig nur für die Aktionstypen "`SALESFORCE`,
+       `UPLOAD_CLICKS`, or `WEBPAGE`", und "Wait 4 to 6 hours after creating the conversion
+       action before adjusting its conversions" (A6). Was sie bewirkt, sagt H5 wörtlich:
+       "Retract: Allows you to permanently remove a conversion and change the conversion value
+       to 0.00 and remove it from the conversion count. Conv., Conv. value and All Conv. value
+       columns will be updated and CPA and ROAS bid strategies will be affected." Danach "it
+       can't be adjusted further"; rückgängig nur, indem man "reupload the conversion data as a
+       new event" (H5). **EINE RÜCKNAHME BESTÄTIGT, DASS GEZÄHLT WURDE** — sie korrigiert
+       Zahlen, sie lässt sie nicht unberührt.
+       **DIE DATA MANAGER API HAT KEINE RÜCKNAHME:** Ihre Referenz führt IngestionService,
+       MarketingDataInsightsService, PartnerLinkService und drei UserList-Dienste, keinen
+       Anpassungsdienst (D30); `retract`, `restat` und `adjust` treffen in KEINER der 53
+       DM-Kopien. **Der Rücknahmeweg liegt damit an einer ANDEREN Schnittstelle als der
+       benutzten.**
+     · DIAGNOSE: `requestStatus.retrieve` (D24) liefert den Status je Ziel samt Zählungen —
+       "This may take up to 24 hours, although the Data Manager API may finish processing some
+       requests in as little as 30 minutes." (D8); "Request status is only available for
+       approximately 50 days after the API receives a request." (D28, `REQUEST_TOO_OLD`).
+       Dazu in der Oberfläche die Offline-Daten-Diagnose (H2) und der ECL-Diagnosebericht
+       (H3). **ALLE DREI ZEIGEN VERARBEITETE, ALSO GEZÄHLTE EINGÄNGE** — keiner zeigt einen
+       Eingang, ohne ihn zu zählen. Und selbst die Annahme ist keine Zuordnung: "A successful
+       import response from the API does not necessarily mean the conversions have been
+       attributed." (A4)
+
+(cj) `validateOnly` — WAS ES ABSCHNEIDET, AN SEINEN DREI FUNDSTELLEN. BESTÄTIGT (p)/H1 UND
+     SCHÄRFT IHN.
+     DER WORTLAUT DES FELDES, GELESEN 2026-09-11 an D22 (Doku-Stand 2026-09-10): "Optional. For
+     testing purposes. If `true`, the request is validated but not executed. **Only errors are
+     returned, not results.**"
+     DIE DREI FUNDSTELLEN, DIE DIE DIAGNOSTIK ABSCHNEIDEN, je im Wortlaut:
+     · D2 (Doku-Stand 2026-08-18): "You can only retrieve diagnostics for requests that succeed
+       and don't have `validateOnly` set to `true`."
+     · D8 (Doku-Stand 2026-07-30): "You can only retrieve diagnostics for requests that succeed
+       and don't have `validate_only` set to `true`."
+     · D28 (Doku-Stand 2026-09-10), `INVALID_REQUEST_ID`: "The request ID used to retrieve the
+       status of a request is not valid. Status can only be retrieved for requests that succeed
+       and don't have `validateOnly=true`."
+     **WAS DARAUS FOLGT, UND ES IST EINE ABLEITUNG, KEINE AUSSAGE DES ANBIETERS:** Unter
+     `validateOnly` kann nur zurückkommen, was die ANFRAGE betrifft. Verarbeitungsfehler — etwa
+     `PROCESSING_ERROR_REASON_DUPLICATE_GCLID` (D24) — erscheinen allein über die Diagnose, und
+     die ist abgeschnitten. **Ob die Antwort unter `validateOnly` eine `requestId` trägt, ist AM
+     DOKUMENT NICHT ENTSCHEIDBAR**; was die Validierung im Einzelnen prüft, ebenso wenig — wie
+     (cc) es bereits führt.
+     **DIE ANDERE SCHNITTSTELLE HAT EIN ZWEITES FELD, UND DIE ZUORDNUNG FÜHRT ES NICHT:** Die
+     Google Ads API kennt neben `validate_only` das Feld `debug_enabled`: "Determines
+     error-reporting behavior for enhanced conversions for leads uploads. The Google Ads API
+     ignores this field when handling uploads for click conversions using `gclid`, or the
+     `gbraid`, or `wbraid` URL parameters." (A5). `CLICK_NOT_FOUND` meldet sie "only … if
+     `debug_enabled` is `true`" (A4, A12). **DASS EIN SOLCHER UPLOAD NICHT AUSGEFÜHRT WIRD,
+     STEHT DORT NICHT.** Die Feldzuordnung zum Umstieg (D5) führt `validate_only` →
+     `validate_only`; für `debug_enabled` führt sie KEINE Zeile.
+
+(ck) DER KANDIDAT: DIE SEKUNDÄRE CONVERSION-AKTION (`primary_for_goal = false`) — DER EINZIGE
+     MECHANISMUS DIESES ANBIETERS, DER EINE ACHSE AUSDRÜCKLICH ENTLASTET.
+     WIE ER EINGESCHALTET WIRD — ZWEI WEGE, BEIDE AM KUNDENKONTO:
+     · IN DER OBERFLÄCHE (H4): "Go to Summary housed in the Conversions drop-down in the Goals
+       menu. Find the goal that includes the conversion action you'd like to edit. Click Edit
+       goal. In the "Conversion action optimization" section, select either Primary or
+       Secondary (observe only). Click Save."
+     · ÜBER DIE GOOGLE ADS API: das Attribut `primary_for_goal` der `ConversionAction` (A7).
+       **DIE DATA MANAGER API FÜHRT KEINE METHODE DAFÜR** — ihre Dienste (s. (ci), Rücknahme)
+       verwalten keine Conversion-Aktionen (D30).
+     DER WORTLAUT (A7): "If `primary_for_goal` is `false`: Google Ads doesn't include the
+     conversion action in bidding or **Conversions** unless you use the conversion action in a
+     `CustomConversionGoal`. You can still find the conversion action's conversions and
+     conversion values in **All conv.** and its related fields in reports." Dazu H4: "Secondary
+     actions: These conversion actions are for observation only. They are used for reporting in
+     the "All conversions" column in your reports, but not for bidding, even if the goal they
+     are included in is used for bidding. The one exception is if the secondary action is part
+     of a custom goal, in which case it's used for bidding." Und A9: "the custom goal will
+     optimize for that conversion action regardless of whether the action's `primary_for_goal`
+     setting is `true` or `false`."
+     DIE DREI ACHSEN, EINZELN:
+     · BERICHTERSTATTUNG — **BERÜHRT, AUSGESAGT:** nicht in "Conversions", aber in "All conv."
+       (A7, H4).
+     · GEBOTE — **UNBERÜHRT, AUSGESAGT, MIT EINER AUSNAHME:** kein Gebot, "unless you use the
+       conversion action in a `CustomConversionGoal`" (A7, A9, H4).
+     · ZIELGRUPPEN — **NICHT AUSGESAGT, AM DOKUMENT NICHT ENTSCHEIDBAR** (Achse: A7 bis A9, H4).
+       Die "conversion-based customer lists" sind eine EIGENE Einstellung der erweiterten
+       Conversions: "Check "Turn on conversion-based customer lists" to let Google use
+       user-provided data to create customer lists for your account based on your
+       conversions." (H11) — ein Bezug zur Unterscheidung primär/sekundär steht dort nicht.
+     DIE VERZÖGERUNGEN — sie gelten jedem Offline-Import und nicht der Einstellung:
+     · "It takes up to three hours for imported conversion statistics to appear in your Google
+       Ads account for last-click attribution. For other search attribution models, it can
+       take longer than three hours." (A4)
+     · "Conversion processing typically takes less than 12 hours, but can take up to 72 hours
+       if you use GBRAID and WBRAID-keyed conversions." (H6)
+     · Datenfrische "Google Ads conversion tracking data": 3 Stunden bei letztem Klick, 15
+       Stunden bei anderen Modellen (H10, Tabelle).
+     · Importierte Conversions erscheinen "for the **impression** date of the original click"
+       (A4) — dieselbe Rückdatierung, die (cf)/(f) an der Oberfläche beobachtet hat.
+     **WAS DIESER TEIL NICHT SAGT:** ob die Einstellung von unserem Zugang aus schaltbar ist, ob
+     sie sich je Ereignis setzen lässt oder ob sie beim Zurückstellen gezählte Werte umbucht —
+     sie wirkt nach dem Wortlaut je AKTION, nicht je Ereignis. Was das für einen Testmodus
+     bedeutet, steht nicht hier, sondern in (cr).
+
+(cl) DIE VIERZEHNTÄGIGE PROBEZEIT — MECHANIK, BEGINN, UND FÜR DIE GEWÄHLTE GESTALT NICHT
+     AUSGESAGT.
+     WAS SIE IST, GELESEN 2026-09-11:
+     · "When you connect an additional data source to a biddable conversion action, it enters
+       an initial 14-day trial period. During this time, data from the additional source is
+       used for reporting and diagnostics, but does not impact bidding, allowing you to resolve
+       any setup issues." (H1)
+     · "Multi-source conversion data from the Data Manager API won't flow to your conversion
+       bidding for a 14-day trial period. This doesn't apply to your existing Google tag data
+       source." (D1, D7)
+     · Unter der Überschrift "Non-biddable trial period": "data from your additional source
+       will be used for reporting purposes, including providing estimated overlap rates and
+       uplift data in diagnostics, but it will not be used for bidding." (H9)
+     BEGINN UND ENDE: "The trial period begins when the first offline data upload is received
+     for each conversion action." · "At the end of the 14-day trial, the multi-source
+     conversions will automatically become biddable, regardless of any diagnostic alerts." (H9)
+     WERTANPASSUNGEN WÄHRENDDESSEN GESPERRT: "During the initial 14-day trial period for a
+     conversion action, value updates are disabled. The tag's value won't be overridden in
+     Google Ads reporting until the trial period ends." Und für Ereignisse ohne Treffer auf eine
+     Tag-Transaktion: "these newly created conversions will appear in your reporting but won't
+     be used for bidding. After the trial ends, they will automatically become biddable." (D2,
+     Tabelle "How Google handles multi-source data")
+     **NICHT SCHALTBAR:** Ein Schalter ist auf keiner gelesenen Seite dokumentiert; Eintritt und
+     Ende geschehen nach dem Wortlaut von selbst ("enters", "automatically become biddable").
+     **EINMALIG JE AKTION — ALS ABLEITUNG:** Der Beginn ist an den ERSTEN Offline-Upload JE
+     Conversion-Aktion gebunden (H9); dass die Zeit danach nicht erneut beginnt, steht nicht
+     wörtlich da, folgt aber aus dieser Bindung.
+     DIE DREI ACHSEN: Berichterstattung **BERÜHRT** (ausgesagt) · Gebote **14 Tage unberührt,
+     danach berührt** (ausgesagt) · Zielgruppen **NICHT AUSGESAGT**.
+     **FÜR DIE GEWÄHLTE GESTALT IST SIE NICHT AUSGESAGT.** Alle Fundstellen sprechen von einer
+     "additional data source" an einer gebotsfähigen Aktion bzw. von "multi-source"; die Seite
+     der gewählten Gestalt (D3) und der Abschnitt der Google Ads API zum Offline-Import (A4, A5)
+     nennen keine Probezeit (Begriff "trial": Treffer allein in D1, D2, D7 und der veralteten
+     Fassung D31). **Ob sie für eine UPLOAD_CLICKS-Aktion gilt, bleibt AM DOKUMENT NICHT
+     ENTSCHEIDBAR** — die Frage aus (cf) ist damit nicht beantwortet, sondern mit Reichweite
+     versehen.
+
+(cm) DIE FASSUNGEN UND IHRE ABSCHALTUNG — FÜR DIE BENUTZTE SCHNITTSTELLE IST KEINE
+     ABSCHALTREGEL DOKUMENTIERT.
+     **DIE DATA MANAGER API — DER NEGATIVE BEFUND, AUSDRÜCKLICH:** Sie führt eine einzige
+     Fassung, v1; die Release notes (D19, Doku-Stand 2026-07-30) reichen von "2025-04-02 v1.0"
+     bis "2026-07-30 v1.8". **EINE ABSCHALTREGEL FÜR FASSUNGEN IST IM GELESENEN UMFANG NICHT
+     DOKUMENTIERT** — keine Laufzeit, kein Kalender der Abschaltungen; abgekündigt werden dort
+     nur FELDER (D31 zeigt das abgekündigte Feld `product`). Reichweite: D1 bis
+     D31. **Der Befund ist ein NICHT-TREFFER und keine Zusage**, dass v1 unbefristet trägt.
+     **DIE GOOGLE ADS API — ZUM VERGLEICH, NICHT DIE BENUTZTE:** "*Major* versions have a
+     lifespan of around **12 months**" (A14); "API endpoints for the sunset versions *stop
+     working* after the sunset dates. The Google Ads API will throw an error if you try to
+     access the API endpoints of the sunset versions." (A14). Die Tabelle "Released versions"
+     (A14), Release und Abschaltung je Fassung:
+     v22 — 15.10.2025 — Oktober 2026 (vorläufig) · v23 — 28.01.2026 — Februar 2027 · v23.1 —
+     25.02.2026 — Februar 2027 · v23.2 — 25.03.2026 — Februar 2027 · v24 — 22.04.2026 — Mai
+     2027 · v24.1 — 13.05.2026 — Mai 2027 · v24.2 — 24.06.2026 — Juni 2027 · v25 — 22.07.2026 —
+     August 2027 · v25.1 — August 2026 — August 2027 · v25.2 — September 2026 — August 2027 ·
+     v26 — Oktober 2026 — November 2027 · v26.1 — November 2026 — November 2027 ("optional
+     release"). Die Termine sind aus der englischen Schreibung übertragen; "tentative" heisst
+     laut A14, "the sunset could happen any time in that month".
+     **DIE DEVELOPER TOKENS SIND ABGESCHALTET — SEIT DEM 2026-09-09:** "Developer tokens were
+     sunset on **September 9, 2026**." (A20); in der Abkündigungsliste: "Developer tokens are
+     deprecated and have been sunset." (A13). Auf dem Weg über die Google Ads API ist der Token
+     seither **"optional and ignored"**: "You can continue sending developer tokens in your API
+     call headers, but this is optional and ignored by the API servers." Zugleich: "We will
+     start rejecting developer tokens in API calls in a future major version of the Google Ads
+     API." (A20). **DIE ZUGRIFFSSTUFE HÄNGT SEITHER AM CLOUD-PROJEKT:** "Your API Access levels
+     are now determined by the Google Cloud project you used to generate your OAuth
+     credentials." (A20)
+     **ZWEI SEITEN, ZWEI STÄNDE — GEGENÜBERGESTELLT, NICHT AUFGELÖST:** Die Vergleichstabelle
+     des Umstiegs (D4, Doku-Stand 2026-07-30) führt für die Google Ads API "Developer token |
+     Not required. | Required." — A20 (Doku-Stand 2026-09-10) sagt "optional and ignored". Für
+     die Data Manager API sagen beide dasselbe: kein Token (D4, D5).
+     **DAS QUALIFIKATIONSFENSTER DES ALT-WEGS, WIE DIE ENTWICKLER-DOKU ES AM 2026-09-11 FÜHRT**
+     (A13, Zeile "June 15, 2026 · Offline conversions · Access restriction"): "Developer tokens
+     with no offline conversion upload requests between December 17, 2025 and June 15, 2026
+     are restricted from using the Google Ads API for offline conversions.
+     `UploadClickConversions` requests for these tokens will return a
+     `CUSTOMER_NOT_ALLOWLISTED_FOR_THIS_FEATURE` error." Mit dem Zusatz: "Developer tokens have
+     since been deprecated in favor of Google Cloud projects, but this historical access
+     restriction remains in effect." A4 und A2 tragen dazu: "Starting **June 15, 2026**,
+     UploadClickConversion requests will fail if the developer token hasn't previously sent
+     requests to upload offline conversions or enhanced conversions for leads."
+     **DIESER ABSCHNITT FÜHRT ZU DIESEM FENSTER DREI ANGABEN, UND IHR VERHÄLTNIS IST HIER NICHT
+     ENTSCHIEDEN:** Teil (a) nennt "zwischen Dezember 2025 und Mai 2026" (GELESEN 2026-08-20);
+     Teil (cc) zitiert die Endkunden-Hilfe mit "between January 2026 through June 2026" und
+     führt es als ZWEITEN Sperrgrund neben dem aus (a) (GELESEN 2026-09-02); A13 nennt "between
+     December 17, 2025 and June 15, 2026" (GELESEN 2026-09-11). Ob die drei dasselbe Fenster
+     meinen, ist hier NICHT entschieden; (a) und (cc) bleiben wörtlich. ZEIGER: (cc) trägt an
+     seiner Zwei-Gründe-Lesart einen Vorbehalt vom 2026-09-11 — worauf die Lesart ruht, was
+     dagegen steht und welche der drei Angaben zitiert wird.
+     WEITERE ZUGANGSSPERREN DERSELBEN LISTE (A13): IP-Adresse und Session-Attribute seit dem
+     2026-02-02 nur für Konten auf der Allowlist, sonst `CUSTOMER_NOT_ALLOWLISTED_FOR_THIS_FEATURE`
+     — mit dem Verweis "Use the Data Manager API instead."
+
+(cn) DAS HERKUNFTS-FELD `eventSource` — DIE VOLLSTÄNDIGE WERTELISTE, DIE PFLICHT, UND DIE
+     WIRKUNG DER WAHL IST NICHT DOKUMENTIERT.
+     DIE WERTELISTE, GELESEN 2026-09-11 an D22 (Doku-Stand 2026-09-10), gleichlautend in D30:
+     `EVENT_SOURCE_UNSPECIFIED` — "Unspecified EventSource. Should never be used." · `WEB` —
+     "The event was generated from a web browser." · `APP` — "The event was generated from an
+     app." · `IN_STORE` — "The event was generated from an in-store transaction." · `PHONE` —
+     "The event was generated from a phone call." · `MESSAGE` — "The event was generated from a
+     message." · `OTHER` — "The event was generated from other sources."
+     **DAS SIND SECHS BRAUCHBARE WERTE UND EIN PLATZHALTER — (w)/F3 FÜHRT FÜNF;** der Vorbehalt
+     dort zeigt hierher.
+     **DIE RELEASE NOTES DATIEREN `OTHER` VOR JENE ERHEBUNG:** "Added `APP`, `IN_STORE`, `PHONE`,
+     and `OTHER` values to the `EventSource` enum. An `event_source` is required for offline
+     conversions and enhanced conversions for leads." (D19, Eintrag "2025-08-06 v1.2"). **OB
+     DIE REFERENZ AM DOKU-STAND 2026-07-28 `OTHER` TRUG UND DIE LESUNG VOM 2026-08-24 IHN NICHT
+     ERFASSTE, ODER OB DIE REFERENZ IHN DAMALS NICHT FÜHRTE, IST AM DOKUMENT NICHT
+     ENTSCHEIDBAR.**
+     DIE PFLICHT, UND SIE STEHT AN ZWEI ORTEN VERSCHIEDEN: Die Referenz nennt das Feld "Optional.
+     Signal for where the event happened (web, app, in-store, etc.)." (D22); der Leitfaden sagt
+     für "Google Ads offline conversions or enhanced conversions for leads": "**Required** . Set
+     to one of the enum values for `EventSource`." (D2) — ebenso die Release notes oben.
+     DIE ZIELABHÄNGIGEN EINSCHRÄNKUNGEN (D2): für Multi-Source an einen Web-Datenstrom
+     "Optional. If set, must be `WEB`."; an einen App-Datenstrom "Optional. If set, must be
+     `APP`."; für Store Sales steht im Beispiel `"eventSource": "IN_STORE"`.
+     DER FEHLERCODE BEI NICHTÜBEREINSTIMMUNG: `EVENT_SOURCE_AND_DESTINATION_MISMATCH` — "The
+     event source type does not match the destination type." (D28)
+     DAS GEGENSTÜCK DER ANDEREN SCHNITTSTELLE: Das Feld `conversion_environment` der Google Ads
+     API hat in der Feldzuordnung "No equivalent" (D5).
+     **DIE WIRKUNG DER WAHL IST NICHT DOKUMENTIERT** — welcher Wert für ein server-seitig
+     erzeugtes Ereignis aus einem Browser-Kontakt gilt und was ein anderer Wert beim Anbieter
+     bewirkte, sagt keine gelesene Seite (Reichweite: D1 bis D31, A1 bis A12). Das berührt den
+     offenen Punkt zum Herkunfts-Feld in docs/offene-punkte.md, ohne ihn zu bewegen.
+
+(co) KOPFZEILEN UND PFLICHTFELDER — IM WORTLAUT.
+     DER AUFRUF (D22): `POST https://datamanager.googleapis.com/v1/events:ingest`, Bereich
+     `https://www.googleapis.com/auth/datamanager`.
+     PFLICHTFELDER (D22): `destinations[]` — "Required. The list of destinations to send the
+     events to." · `events[]` — "Required. The list of events to send to the specified
+     destinations. At most 2000 … resources can be sent in a single request." · je Ereignis
+     `eventTimestamp` — "Required. The time the event occurred." · `encoding` — "Optional.
+     Required for UserData uploads." · `transactionId` — "Optional. … Required for events sent
+     as an additional data source for tag conversions." Für die gewählte Gestalt verlangt D2
+     zusätzlich mindestens eine Kennung ("Set at least one of the following: `adIdentifiers`
+     with at least one of `gclid`, `gbraid` or `wbraid` …") und `eventSource` (s. (cn)).
+     KOPFZEILEN AM DATA-MANAGER-WEG: "Don't set request headers in an `IngestionService`
+     request. The Data Manager API ignores headers in an ingestion request." (D12) — der Satz
+     steht als Hinweis beim Zugangspfad je Ziel; unmittelbar danach sagt D12, in Anfragen zur
+     RESSOURCEN-VERWALTUNG "Headers define the access path for the request's credentials to the
+     target account". Das REST-Beispiel in D17 sendet
+     `Authorization: Bearer …`, `x-goog-user-project: PROJECT_ID` und `Content-Type:
+     application/json` — **an `audienceMembers:ingest`, nicht an `events:ingest`.**
+     **OB "ignores headers" DIE PROJEKT-KOPFZEILE `x-goog-user-project` MITMEINT, IST AM
+     DOKUMENT NICHT ENTSCHEIDBAR:** Der Satz steht im Zusammenhang der Konto-Zugangspfade; eine
+     Pflicht für `x-goog-user-project` sagt keine gelesene Seite aus, eine Freistellung ebenso
+     wenig (Reichweite: D1 bis D31).
+     KOPFZEILEN AM WEG ÜBER DIE GOOGLE ADS API (A19): "You must include an OAuth 2.0 access token
+     in the form of `Authorization: Bearer …`"; `login-customer-id` für den Zugriff über ein
+     Verwaltungskonto — ohne ihn `AuthorizationError.USER_PERMISSION_DENIED`; `linked-customer-id`
+     für Partner. Der `developer-token` ist dort seit dem 2026-09-09 "optional and ignored" (s.
+     (cm)).
+
+(cp) VORAUSSETZUNGEN — JE KUNDE GEGEN EINMALIG, GETRENNT GEHALTEN.
+     JE KUNDE — sie liegen im Werbekonto des Kunden und treten mit jedem neuen Konto erneut ein:
+     · EINE AKTION VOM TYP UPLOAD_CLICKS: "the `productDestinationId` must be the ID of a Google
+       Ads conversion action with `type` set to `UPLOAD_CLICKS`. In the Google Ads UI, the
+       **Conversion source** for an `UPLOAD_CLICKS` conversion action is **Website (Import from
+       clicks)**." (D2)
+     · EINE FRISCH ANGELEGTE AKTION NIMMT NOCH NICHTS AN: `CONVERSION_ACTION_TOO_RECENTLY_CREATED`
+       — "The conversion action was created too recently." (D28); die Google Ads API nennt dafür
+       "Wait at least 6 hours" (A12).
+     · DIE KUNDENDATEN-BEDINGUNGEN UND DER EC-SCHALTER: Fehler
+       `DESTINATION_ACCOUNT_ENHANCED_CONVERSIONS_TERMS_NOT_SIGNED` — "The destination account
+       hasn't agreed to the terms for enhanced conversions." (D28); an der Oberfläche: "To enable
+       enhanced conversions you must confirm that the Google Ads Data Processing Terms apply to
+       your use of enhanced conversions" (H11). Die Google Ads API prüft dafür
+       `customer.conversion_tracking_setting.accepted_customer_data_terms` (A4).
+     · DIE EINWILLIGUNG, als Vorgabe im Konto oder je Ereignis:
+       `PROCESSING_ERROR_REASON_DENIED_CONSENT` — "The ad user data is denied, either by the
+       user or in the advertiser default settings." (D24)
+     · EIN NUTZER MIT ZUGRIFF: im Zugangsmodell Advertiser ist die anmeldende Identität Nutzer im
+       Werbekonto des Kunden (s. (d)); welche Rolle, sagt keine Seite dieses Laufs genauer als
+       (d).
+     EINMALIG — sie liegen bei uns und gelten für alle Kunden zugleich:
+     · EIN CLOUD-PROJEKT MIT AKTIVIERTER API: "You need a Google Cloud project in order to use the
+       Data Manager API." (D9); "enable the Data Manager API" (D16).
+     · DER SENSIBLE BEREICH UND DIE VERIFIZIERUNG: "Since the Data Manager API scope is a
+       sensitive scope, the following steps are required" · "Any Google Cloud app used to obtain
+       user credentials for the Data Manager API scope must undergo Google OAuth verification to
+       avoid an unverified UI screen for its users. Google OAuth verification isn't required
+       for service accounts." (D16)
+     · KEIN DEVELOPER TOKEN: "A developer token is not required for the Data Manager API." (D5)
+     · DIE NUTZUNGSBEDINGUNGEN: D10 ("Last modified: November 9, 2021").
+     **DIE TRENNUNG IST DER INHALT DIESES TEILS:** Was einmalig erfüllt ist, sagt über das
+     nächste Kundenkonto nichts. Die UPLOAD_CLICKS-Aktion, die Bedingungen und die Einwilligung
+     stehen im KONTO DES KUNDEN.
+
+(cq) KONTINGENTE, GRENZEN, WIEDERHOLUNG, DUPLIKATE. GELESEN 2026-09-11.
+     · JE PROJEKT (D9): `IngestionService` 100,000 Anfragen je Tag und 300 je Minute; "All other
+       services *combined*" 50,000 je Tag und 300 je Minute. "Requests that exceed the limits are
+       rejected with the error `RESOURCE_EXHAUSTED` and HTTP status `429 Too Many Requests`."
+     · JE ANFRAGE (D9): für `IngestEventsRequest` "2,000 `Event` resources in the `events`
+       list", "10 user identifiers in the `UserData` for an `Event`", "10 `Destination`
+       resources in the `destinations` list".
+     · GLEICHZEITIGKEIT (D11): "We recommend sending up to 10 requests concurrently to reduce the
+       likelihood of exceeding the requests per minute limit." Erlaubt auch bei gleichen
+       `destinations`.
+     · WIEDERHOLUNG (D15): "Retry *only* for transient server errors such as `UNAVAILABLE`,
+       `DEADLINE_EXCEEDED`, `INTERNAL`, `UNKNOWN`, and `ABORTED`." — mit exponentiellem
+       Zurückweichen und "jitter"; bei Client-Fehlern: "Don't retry the request without
+       addressing the issue." Für die Diagnose-Abfrage nennt D8 als Beispiel: erste Abfrage nach 30 Minuten,
+       Multiplikator 1.3, höchstens 60 Minuten Abstand, insgesamt 1440 Minuten.
+     · DUPLIKATE ALS VERARBEITUNGSFEHLER (D24): `PROCESSING_ERROR_REASON_DUPLICATE_GCLID` — "A
+       conversion with the same GCLID and conversion time already exists in the system." ·
+       `PROCESSING_ERROR_REASON_DUPLICATE_TRANSACTION_ID` — "A conversion with the same order id
+       and conversion action combination was already uploaded." **Beide erscheinen allein über
+       die Diagnose** (s. (cj)).
+     · ZUM VERGLEICH DIE GOOGLE ADS API (A12): `CLICK_CONVERSION_ALREADY_EXISTS` — "Ignore this
+       error if you were retrying the upload and this conversion previously succeeded."
+
+(cr) DIE EINORDNUNG DES BEFUNDS — OWNER-ENTSCHEIDUNG 2026-09-11: GOOGLE WIRD OHNE CODE
+     ABGESCHLOSSEN.
+     **SIE STEHT HIER, WEIL SIE DEN BEFUND EINORDNET. SIE IST KEIN BEFUND.** Für `google`
+     entsteht in der Phase 11.3 kein Testmodus. Der einzige Mechanismus, der eine Achse
+     ausdrücklich entlastet — die sekundäre Aktion aus (ck) —, sitzt an einer anderen
+     Schnittstelle als der benutzten, und sein Zustand läge im Konto des Kunden; die Probezeit
+     aus (cl) ist nicht schaltbar und für die gewählte Gestalt nicht ausgesagt.
+     WO SIE ALS BINDENDE ENTSCHEIDUNG GEFÜHRT WIRD, samt Grund, Grenze und Bedingung ihres
+     Kippens: in der Standdatei der Phase 11.3, docs/aktiver-stand.md, Entscheidung (18) — bis
+     zu deren Archivierung am Phasenende. Diese Datei trägt keine Entscheidungen.
+
+### Der gelesene Umfang (2026-09-11) — Google
+
+**OHNE DIESEN BLOCK HAT DER NICHT-TREFFER IN (ch) KEINE REICHWEITE.** Alle Seiten sind am
+2026-09-11 abgerufen worden. Die Pfade unten liegen unter `https://developers.google.com`,
+wo nicht anders genannt. Der Doku-Stand ist die "Last updated"-Angabe der jeweiligen Seite,
+abgelesen am gespeicherten Server-HTML.
+
+**DIE MASCHINENLESBARE QUELLE DES NAVIGATIONSBAUMS:** `developers.google.com/sitemap.xml`, 40
+Teil-Dateien, 654 484 Adressen. Ein `_book.yaml` oder `llms.txt` gibt es nicht — vier
+Varianten lieferten 404. **NUR IN DER SITEMAP, NICHT IN DER GERENDERTEN NAVIGATION:** A5
+(`legacy_oci_guide`, zusätzlich im Fliesstext verlinkt); im Data-Manager-Baum der Stamm
+`/data-manager/api`, `devguides/terms`, `get-started/quickstart/send-events` (D31),
+`notebooks/audience_e2e_advertiser_flow`, `support/contact`, `reference/rest` und
+`reference/rpc`.
+
+**DATA MANAGER API, LEITFADEN — ACHTZEHN SEITEN:**
+- D1 `/data-manager/api/devguides/events` — "Events overview" — 2026-07-30
+- D2 `…/devguides/events/send-events` — "Send events" — 2026-08-18
+- D3 `…/devguides/events/google-ads/offline` — "Google Ads offline conversions" — 2026-07-30
+- D4 `…/devguides/events/google-ads/offline/upgrade` — "Upgrade from the Google Ads API" —
+  2026-07-30
+- D5 `…/offline/upgrade/field-mappings` — "Field mappings" — 2026-07-30
+- D6 `…/offline/upgrade/steps` — "Steps to upgrade" — 2026-07-30
+- D7 `…/devguides/events/google-ads/online` — "Google Ads multi-source conversions" —
+  2026-07-30
+- D8 `…/devguides/diagnostics` — "Diagnostics" — 2026-07-30
+- D9 `…/devguides/limits` — "Limits and quotas" — 2026-07-30
+- D10 `…/devguides/terms` — "Terms of service" — "Last modified: November 9, 2021"
+- D11 `…/devguides/concepts/best-practices` — "Best practices" — 2026-07-30
+- D12 `…/devguides/concepts/destinations` — "Configure destinations and headers" — 2026-08-20
+- D13 `…/devguides/concepts/encryption` — "Encrypt user data" — 2026-07-30 — **NUR
+  Überschriften und der Abschnitt zu Zeitstempeln**
+- D14 `…/devguides/concepts/formatting` — "Format user data" — 2026-07-30 — **wie D13**
+- D15 `…/devguides/concepts/understand-errors` — "Understand API errors" — 2026-07-30
+- D16 `…/devguides/quickstart/set-up-access` — "Set up API access" — 2026-09-10
+- D17 `…/devguides/quickstart/install-library` — "Install a client library" — 2026-08-14
+- D18 `…/devguides/accounts/partner-links` — "Partner links overview" — 2026-08-07
+
+**DATA MANAGER API, REFERENZ — DREIZEHN SEITEN:**
+- D19 `/data-manager/api/reference` — "Release notes" — 2026-07-30
+- D20 `…/reference/ecapi` — "ECAPI specification mapping" — 2026-07-30
+- D21 `…/reference/rest` — "Data Manager API" — 2026-07-28
+- D22 `…/reference/rest/v1/events/ingest` — "Method: events.ingest" — 2026-09-10
+- D23 `…/reference/rest/v1/adEvents/ingest` — "Method: adEvents.ingest" — 2026-09-10
+- D24 `…/reference/rest/v1/requestStatus/retrieve` — "Method: requestStatus.retrieve" —
+  2026-09-10
+- D25 `…/reference/rest/v1/Destination` — "Destination" — 2026-09-10
+- D26 `…/reference/rest/v1/UserData` — "UserData" — 2026-09-10
+- D27 `…/reference/rest/v1/Consent` — "Consent" — 2025-03-06
+- D28 `…/reference/rest/v1/ErrorReason` — "ErrorReason" — 2026-09-10
+- D29 `…/reference/rest/v1/FieldWarning` — "FieldWarning" — 2026-07-28
+- D30 `…/reference/rpc/google.ads.datamanager.v1` — "Package google.ads.datamanager.v1" —
+  2026-09-10 — **abschnittsweise und über Suchbegriffe gelesen, NICHT linear vollständig**
+- D31 `/data-manager/api/get-started/quickstart/send-events` — leitet im Browser auf D2 um;
+  seine `.md.txt` liefert eine ÄLTERE Fassung mit dem abgekündigten Feld `product` —
+  **gelesen als Zeitdokument, nicht als geltender Stand**
+
+**GOOGLE ADS API, ABSCHNITT "Conversions" — VOLLSTÄNDIG, ZWÖLF SEITEN, alle Doku-Stand
+2026-09-10** (Pfade unter `/google-ads/api/docs/conversions/`):
+- A1 `overview` — "Conversion management" · A2 `categories` — "Conversion action categories"
+  · A3 `getting-started` — "Getting started" · A4 `upload-offline` — "Manage offline
+  conversions" · A5 `legacy_oci_guide` — "Upload click conversions" · A6
+  `upload-adjustments` — "Import conversion adjustments" · A7 `goals/overview` — "Conversion
+  goals" · A8 `goals/customer-goals` — "Customer goals" · A9 `goals/campaign-goals` —
+  "Campaign goals" · A10 `upload-summaries` — "Monitor offline data diagnostics" · A11
+  `reporting` — "Conversion reporting" · A12 `troubleshooting` — "Troubleshooting"
+
+**GOOGLE ADS API, SEITEN MIT EINER FRAGE IM TITEL — ZEHN, dazu zwei ohne gesicherten Stand**
+(Pfade unter `/google-ads/api/docs/`):
+- A13 `deprecations` — "Feature deprecations and unversioned changes" — 2026-09-10
+- A14 `sunset-dates` — "Deprecation and sunset" — 2026-09-10
+- A15 `concepts/versioning` — "Versioning" — 2026-09-10
+- A16 `best-practices/test-accounts` — "Test accounts" — 2026-09-10
+- A17 `best-practices/testing` — "Testing" — 2026-09-10
+- A18 `best-practices/quotas` — "API Limits and Quotas" — 2026-09-10 — **nur der Abschnitt
+  zu Conversions**
+- A19 `concepts/call-structure` — "API call structure" — 2026-09-10 — die Kopfzeilen
+- A20 `api-policy/developer-token` — "Developer token" — 2026-09-10
+- A21 `api-policy/access-levels` — **nur der Kopf**; Doku-Stand ohne gespeichertes HTML,
+  daher NICHT festgehalten
+- A22 `concepts/account-types` — Doku-Stand ohne gespeichertes HTML, NICHT festgehalten
+
+**HILFE-ARTIKEL** (`https://support.google.com/google-ads/answer/…`, jeweils mit `?hl=en`;
+die Hilfe führt keine Stand-Angabe). Gelesen im Browser per `textContent`, **NICHT als Kopie
+gespeichert** — ihre Zitate oben stammen aus dem Protokoll der Lesung:
+- H1 `16542291` — "Boost your tag with additional data sources (beta)"
+- H2 `13812240` — "About offline data diagnostics"
+- H3 `15249267` — "About the enhanced conversions for leads diagnostics report"
+- H4 `11461796` — "About primary and secondary conversion actions"
+- H5 `7686447` — "About conversion adjustments"
+- H6 `13321563` — "Fix discrepancies and errors in offline conversion imports"
+- H7 `2998031` — "About offline conversion imports"
+- H8 `17111689` — "FAQs about Google Ads multi-source conversions (beta)"
+- H9 `16288216` — "Fix diagnostic alerts for multi-source conversions (beta)"
+- H10 `2544985` — "About data freshness"
+- H11 `16884284` — "Updates to your enhanced conversions settings"
+
+**KONTRAST — DREI ABRUFE, EINER UNGÜLTIG:**
+- K1 `/doubleclick-advertisers/guides/conversions_upload` (Campaign-Manager-360-Schnittstelle)
+  — Markdown-Fassung, 16 935 Bytes — per Suche ausgewertet, nicht linear gelesen
+- K2 `/data-manager/api/devguides/events/cm360/offline` — Markdown-Fassung, 653 Bytes
+- K3 `/google-ads/api/docs/app-conversion-tracking/overview` — **UNGÜLTIG:** der Abruf (ohne
+  `hl=en`) lieferte eine 404-Seite; über dieses Produkt sagt der Kontrast NICHTS
+
+**DIE FORMALE SUCHE — ÜBER DIE 89 GESPEICHERTEN KOPIEN:**
+INSTRUMENT: die Markdown-Fassungen der gelesenen Seiten D1 bis D31 und A1 bis A22 (53) samt
+SECHSUNDDREISSIG heruntergeladener, NICHT gelesener Seiten — 53 Data-Manager-Kopien (davon 22
+ungelesen), 17 aus dem Conversions-Abschnitt (6 ungelesen), 19 weitere Google-Ads-Kopien (8
+ungelesen) —, Suche als Teilzeichenkette ohne Rücksicht auf Gross- und Kleinschreibung; die
+Hilfe-Artikel und K1 bis K3 liegen NICHT im Suchraum.
+BEGRIFFE: `test_event` · `testEvent` · `test_mode` · `testMode` · `is_test` · `isTest` ·
+`dry.run` · `dryRun` · `preview` · `staging` · `non-production` · `sandbox`.
+ERGEBNIS: NULL Treffer auf elf der zwölf Begriffe. `sandbox` trifft einmal, in einer nicht
+gelesenen OAuth-Seite der Google Ads API, und dort über Zugangsdaten ("accidentally mixing
+up sandbox or developer credentials with production").
+KONTROLLEN: POSITIVKONTROLLE — "For testing purposes" trifft drei Kopien (D22, D30 und A17);
+`validateOnly` trifft elf, `validate_only` acht, `debug_enabled` drei; "test account" trifft
+sieben Google-Ads-Kopien, darunter A16. NEGATIVKONTROLLE — ein erfundener Begriff trifft null
+von 89. **DIE NEGATIVKONTROLLE IST BEI DER ABLAGE GEFAHREN, NICHT WÄHREND DES LAUFS** —
+über dieselben unveränderten Kopien und mit denselben Begriffen (CC, 2026-09-11).
+DIE GRENZE: Die Suche lief über die Markdown-Fassungen. Was nur im Server-HTML steht, trifft
+sie nicht — s. die Grenze zum Key-Takeaways-Feld unten.
+
+**DIE REITER-PRÜFUNG — `textContent` UND `innerText`, VOR UND NACH DEM KLICK:**
+- D2: 92 Reiter; `textContent` konstant 129 424 Zeichen, `innerText` 38 414 → 36 838
+- A4: 75 Reiter; `textContent` konstant 85 988, `innerText` 34 122 → 23 940
+- D8: Reiter "Graph", "Data", "More"; `textContent` konstant 12 267
+- H1 bis H11: keine Reiter; `textContent` unverändert
+**DER KLICK LÄDT NICHTS NACH** — `textContent` erfasst den nicht vorausgewählten Reiter schon
+vor dem Klick. Die Differenz im `innerText` ist genau die Blindheit, gegen die
+docs/immer-beachten.md ("EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM
+GEGENSTAND") das Werkzeug vorschreibt.
+
+**SYMBOL-TABELLEN:** Die Vergleichstabelle in D4 und die Vorteilstabelle in D18 nennen
+Unterstützung als ICON. Gelesen über die Textalternative des Icons ("Supported. Yes" /
+"Not supported. No") und nicht als leer behandelt.
+
+**DIE SPRACHSICHERUNG:** Jeder Abruf mit `hl=en` — ohne den Parameter lieferte der Anbieter
+deutsche 404-Seiten. Über die 89 Kopien: null Treffer auf " und ", " nicht ", " werden ",
+" Sie ", " der ", " Seite ", "Konto"; Positivkontrolle " the " 8 424 Treffer (CC,
+2026-09-11). Die Hilfe-Artikel mit `hl=en`.
+
+**EINE GRENZE DES INSTRUMENTS, UND SIE BETRIFFT EINE TRAGENDE AUSSAGE:** Der Satz "Sending
+conversion events via the API as an additional data source for Google Ads tag conversions is
+an allowlist-only feature that can improve ad interaction signals and performance." steht im
+Server-HTML von D1 im Element `devsite-key-takeaways-panel`. **DIE MARKDOWN-FASSUNG VON D1
+TRÄGT IHN NICHT** (null Treffer auf "allowlist-only"); ihre Aufzählung nennt eine Allowlist
+allein bei Store Sales ("This feature is only available to Google Ads accounts on an
+allowlist.") und bei Multi-Source zu Google Analytics. GEMESSEN an den gespeicherten Kopien
+(CC, 2026-09-11). Im Server-HTML liegt das Feld INNERHALB von `div.devsite-article-body`; wie
+der Browser es anordnet, ist an keiner gespeicherten Kopie erhoben.
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· `/data-manager/api/devguides/audiences/**`, `userLists`, `licenses`, `insights`, das
+  Audience-Notebook — Zielgruppen-Pflege, keine Gestalt der Frage; `insights` gilt allein
+  Data Partnern.
+· `/data-manager/api/devguides/analytics/**`, `reference/analytics/recommended-events` — GA4,
+  vom Auftrag ausgeschlossen.
+· `/data-manager/api/devguides/events/cm360/**` — anderes Produkt; `offline` nur als Kontrast
+  (K2).
+· `…/events/google-ads/store-sales` samt Umstiegsseiten; Google Ads `upload-online`,
+  `upload-calls`, `upload-store-sales-transactions` — andere Gestalten.
+· `…/quickstart/agent-skills` — KI-Werkzeuge; die Aufforderung steht in Teil (ar).
+· `…/accounts/partner-links/create-partner-link`, `…/retrieve-partner-links`, die
+  Partner-Link-Umstiegsseiten — der Data-Partner-Weg ist vertagt.
+· Die Standardtypen der Referenz (`google.rpc`, BadRequest, Code, Help, RequestInfo, Status,
+  Encoding, EncryptionInfo, DeviceInfo) — heruntergeladen, nicht gelesen; sie liegen im
+  Suchraum der formalen Suche.
+· `/data-manager/api/support/contact`.
+· Google Ads `conversion-value-rules`, `conversion-custom-variables`, `goals/lifecycle-goals`
+  — kein Titel trägt eine Frage; GEGENPROBE über ihre Kopien, Begriffe
+  `test|validate|debug|primary_for_goal|retract`: null Treffer.
+· Google Ads `best-practices/partial-failures`, `…/warnings`, `productionize/rate-limits`,
+  `best-practices/system-limits`, `oauth/*` — Fehlermodell des gesperrten Alt-Wegs bzw. nicht
+  benötigt; heruntergeladen, nicht gelesen, im Suchraum.
+· Videos, Kampagnen, Anzeigen und die übrigen Teile des Google-Ads-Baums — nicht Gegenstand.
+· Hilfe-Artikel 16194756, 14007601, 6386790, 9888656, 11021502, 7014069, 3030657, 10995103,
+  9143218, 15713840, 16560108, 16782203 — kein Titel trägt eine der Fragen.
+· FLIESSTEXT-VERWEISE, DIE WEITERLEITEN, sind aufgelöst: `upload-identifiers` →
+  A4 `#enhanced-conversions-leads`; `enhanced-conversions/leads(-setup)` → A4;
+  `create-conversion-actions` → A3 `#create_conversion_actions`; `ui-mapping` → A11.
+· NICHT BETRETEN: die Google-Ads-Oberfläche und die Cloud-Konsole (hinter einer Anmeldung),
+  und die Verweise "Open in API Explorer" in D2 — dort würde ein Aufruf ausgeführt.
+
+**DIE AUSSCHLUSS-LISTE IST VOR DEM ABSCHLUSS GEGEN DIE FRAGEN DES LAUFS GEHALTEN WORDEN** (s.
+docs/immer-beachten.md, "DIE LISTE 'GESEHEN, NICHT GEÖFFNET' IST DER ORT, AN DEM SICH EIN
+BEFUND VERSTECKT"): Kein ausgeschlossener Titel trägt eine der Fragen; die drei Seiten ohne
+Titelfrage sind per Gegenprobe geprüft.
 
 ## Pinterest (Conversions API)
 

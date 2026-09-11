@@ -322,10 +322,31 @@ genügt.
 
 **I3 · Ist das Merkmal, das wir brauchen, FREIGESCHALTET — oder nur einer Allowlist
 zugänglich, und wie beantragt man das?**
-(b) docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)", Teil (e) — die
-gewählte Gestalt ist "NUR für freigeschaltete Konten"; Teil (c) — das fachlich gesuchte
-Merkmal fällt unter dieselbe Sperre wie der Alt-Weg. **U.** (c) Doku genügt für die
-Bedingung; **Antrag nötig** für die Erreichbarkeit.
+(b) docs/ziel-befunde.md, Google-Abschnitt, Teile (e) und (aq) — der Allowlist-Vorbehalt trifft
+die ZWEI ANDEREN Gestalten (Multi-Source zu Google Ads und Store Sales), NICHT die gewählte
+(Offline-Import); /devguides/events, Doku-Stand 2026-07-30; CLAUDE.md, "## Modus", führt es seit
+dem 2026-08-24 richtig. Teil (c) — das fachlich gesuchte Merkmal fällt unter dieselbe Sperre
+wie der Alt-Weg. **U.** (c) Doku genügt für die Bedingung; **Antrag nötig** für die
+Erreichbarkeit.
+**RICHTIGGESTELLT AM 2026-09-11, ERSETZT UND NICHT GESTEMPELT — hier stand am Anfang:**
+"docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)", Teil (e) — die
+gewählte Gestalt ist "NUR für freigeschaltete Konten"". **DIE BEGRÜNDUNG WAR AM 2026-08-20
+RICHTIG:** An jenem Tag führte CLAUDE.md die (b-)Gestalt — die zusätzliche Datenquelle zur
+Tag-Conversion — als die gewählte ("DIE GESTALT FÜR GOOGLE ADS IST DIE ZUSÄTZLICHE DATENQUELLE
+ZUR TAG-CONVERSION", Commit `33b5692`), und Teil (e) sagt genau dieser Gestalt "NUR für
+freigeschaltete Konten" nach. **FALSCH GEWORDEN IST SIE DURCH DEN GESTALTWECHSEL AM
+2026-08-24** (Owner-Entscheidung, Commit `2d0b59e`): Die PRÄMISSE ist umgezogen; das Zitat war
+nicht verkürzt. **WARUM DAS KEINE KOSMETIK IST:** I3 ist die Frage, ob fremde Kunden überhaupt
+anzubinden sind. Wer die alte Fassung liest, hält ein Freigabeverfahren für nötig, das es für
+die gewählte Gestalt nicht gibt — und schneidet einen Weg ab, der offen ist. **DIESELBE FORMEL
+STAND IN docs/ziel-befunde.md, Google-Abschnitt, Teil (g)** — geschrieben am Vormittag des
+2026-08-24, VOR dem Wechsel —, und ist dort im selben Zug richtiggestellt. **DER REST DIESES
+ABSATZES IST UNVERÄNDERT** — Teil (c) betrifft den Alt-Weg, und die U.-Einstufung gilt der
+Frage, nicht der Gestalt.
+PROVENIENZ: der Stand vom 2026-08-20 und der Wechsel sind GEMESSEN am Repo (CC, 2026-09-11;
+`git show 33b5692:CLAUDE.md`, `git show 2d0b59e`); der Vorbehalt an den zwei anderen Gestalten
+ist GELESEN (docs/ziel-befunde.md, Google-Abschnitt, Teil (aq) vom 2026-08-25 und der
+Umfang-Block der Lesung vom 2026-09-11).
 
 **I4 · Welche ROLLE oder Berechtigungsstufe muss die anmeldende Identität im Konto des
 Kunden haben?**
@@ -350,6 +371,9 @@ hybrides Ziel trotzdem die halbe Messung zerstören.
 
 **DIESER ABSCHNITT IST EIN BEFUND ÜBER EINEN TAG.** Er beschreibt den Stand vom 2026-08-20
 und wird nicht stillschweigend fortgeschrieben — s. den Kopf dieser Datei.
+
+Die Matrix führt KEINE Spalte für google (festgestellt 2026-09-11); sie ist eine
+Momentaufnahme der vier damals gebauten Ziele, keine Aussage über google.
 
 **HERKUNFT:** read-only-Aufklärung am Repo (2026-08-20): die sieben Dateien unter
 src/lib/capi/ vollständig gelesen, docs/ziel-befunde.md vollständig, docs/immer-beachten.md

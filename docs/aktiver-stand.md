@@ -173,10 +173,33 @@ Oberflächen-Scheibe.
 REICHWEITE DER GEBAUTEN SCHEIBEN, NICHT DEN GEGENSTAND DER PHASE.**
 
 **DIE PHASE 11.3 UMFASST ALLE FÜNF FAN-OUT-ZIELE** (OWNER-ENTSCHEIDUNG 2026-09-09).
-**Gebaut sind DREI davon — `meta`, `tiktok` und seit dem 2026-09-10 `pinterest`;
-`linkedin` ist seit dem 2026-09-11 OHNE CODE ABGESCHLOSSEN (Entscheidung (17)); EINES steht
-aus: `google`.** **DIE PHASE IST DAMIT NICHT FERTIG**, und der Marker in CLAUDE.md bleibt
-aus genau diesem Grund auf `[ ]`.
+**Gebaut sind DREI davon — `meta`, `tiktok` und seit dem 2026-09-10 `pinterest`; ZWEI sind
+OHNE CODE ABGESCHLOSSEN — `linkedin` (Entscheidung (17)) und `google` (Entscheidung (18)),
+beide seit dem 2026-09-11. KEINES STEHT MEHR AUS.** **DER MARKER IN CLAUDE.md BLEIBT
+TROTZDEM AUF `[ ]`** — nicht mehr, weil ein Ziel aussteht, sondern weil das Phasenende ein
+eigener Vorgang ist und hier nicht vollzogen wird.
+
+**NACHGEZOGEN AM 2026-09-11, ZWEITER NACHZUG DESSELBEN TAGES, NICHT GESTEMPELT — HIER STAND:
+"Gebaut sind DREI davon — `meta`, `tiktok` und seit dem 2026-09-10 `pinterest`; `linkedin`
+ist seit dem 2026-09-11 OHNE CODE ABGESCHLOSSEN (Entscheidung (17)); EINES steht aus:
+`google`. DIE PHASE IST DAMIT NICHT FERTIG, und der Marker in CLAUDE.md bleibt aus genau
+diesem Grund auf `[ ]`."** Das war bis zur Owner-Entscheidung über `google` richtig.
+**DERSELBE GRUND WIE AN DEN ZWEI NACHZÜGEN DARUNTER:** Die Aussage ist eine STANDAUSSAGE, und
+der nächste Zuschnitt liest sie als Ausgangslage — wer ihr folgt, sucht für `google` einen
+Zuschnitt, den es nicht mehr gibt. **AUCH `google` IST NICHT GEBAUT, SONDERN
+ABGESCHLOSSEN**; die beiden Wörter werden hier aus demselben Grund nicht zusammengezogen wie
+bei `linkedin`. **OB DIE PHASE DAMIT AUF `[x]` GEHT, IST HIER NICHT ENTSCHIEDEN** — das
+entscheidet das Phasenende. **IM SELBEN ZUG NACHGEZOGEN** sind die Überschrift der Liste
+"was jedes Ziel als nächstes braucht", der `google`-Punkt darin und der Halbsatz unter "WAS
+HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN IST" — vier Stellen, die den Stand der Ziele behaupten;
+wer nur eine anfasst, macht die anderen zur Falle.
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-11 (Entscheidung (18)), auf der Grundlage der
+Abschnitts-Lesung desselben Tages (docs/ziel-befunde.md, Abschnitt "Google (Google Ads
+Conversions · GA4)", Teile (ch) bis (cr)). Dass es genau diese vier Stellen sind, ist GEMESSEN
+am Dateitext (CC, 2026-09-11; Achse aus dem Gegenstand: jede Zeile, die `google` nennt, dazu
+"steht aus", "stehen aus", "verblieben", "offen ist nur", "allein noch", "NUR NOCH EINES",
+"noch offen", "Fünftel", "nicht fertig", "ausstehend", ohne Rücksicht auf Gross- und
+Kleinschreibung; jeder Treffer einzeln gelesen).
 
 **NACHGEZOGEN AM 2026-09-10, NICHT GESTEMPELT — HIER STAND "Gebaut sind zwei davon; drei
 stehen aus."** Das war bis zum Bau der Scheibe 11.3e richtig (Commit `9422920`, VERMERK 6).
@@ -224,8 +247,20 @@ zweimal — in der verworfenen Alternative an Entscheidung (1) und **im Kopf von
 anfasst. Eine Umbenennung machte beide Zeiger tot, und ein toter Zeiger fällt an keinem
 Gate auf.
 
-**WAS JEDES ZIEL DIESER LISTE ALS NÄCHSTES BRAUCHT — OFFEN IST NUR NOCH EINES, `google`;
-`pinterest` IST GEBAUT, `linkedin` IST OHNE CODE ABGESCHLOSSEN:**
+**WAS JEDES ZIEL DIESER LISTE ALS NÄCHSTES BRAUCHT — OFFEN IST KEINES MEHR: `pinterest` IST
+GEBAUT, `linkedin` UND `google` SIND OHNE CODE ABGESCHLOSSEN:**
+**NACHGEZOGEN AM 2026-09-11, ZWEITER NACHZUG DESSELBEN TAGES, ERSETZT UND NICHT GESTEMPELT —
+hier stand: "WAS JEDES ZIEL DIESER LISTE ALS NÄCHSTES BRAUCHT — OFFEN IST NUR NOCH EINES,
+`google`; `pinterest` IST GEBAUT, `linkedin` IST OHNE CODE ABGESCHLOSSEN:"** Seit dem
+2026-09-11 ist auch `google` ohne Code abgeschlossen (Entscheidung (18)). **DER GRUND IST
+DERSELBE WIE AM NACHZUG DARUNTER: DIE ÜBERSCHRIFT BINDET EINE HANDLUNG** — wer ihr folgt,
+sucht für `google` einen nächsten Schritt, den es nicht mehr gibt.
+**VON AUSSEN ZITIERT WIRD SIE NICHT** (GEMESSEN am Repo, CC, 2026-09-11; Achse "OFFEN IST NUR
+NOCH EINES", ohne Rücksicht auf Gross- und Kleinschreibung, ganzes Repo ohne `node_modules`,
+`.git`, `.next`, `.playwright-mcp`: einziger Treffer die Überschrift selbst; Negativkontrolle
+0). "ALS NÄCHSTES BRAUCHT" trifft ausserhalb dieser Datei allein docs/roadmap.md, dessen
+Roadmap-Zeile 11.3 eine EIGENE Fassung derselben Liste trägt — ein Namensvetter und kein
+Zeiger, wie der Nachzug darunter es schon festhält.
 **NACHGEZOGEN AM 2026-09-11, ERSETZT UND NICHT GESTEMPELT — hier stand: "WAS JEDES DER DREI
 OFFENEN ZIELE ALS NÄCHSTES BRAUCHT — DREI VERSCHIEDENE SCHRITTE, UND HIER WIRD KEINER DAVON
 VOLLZOGEN:"** Die Zahl ist in ZWEI Schritten zu hoch geworden: Seit dem 2026-09-10 ist
@@ -309,9 +344,38 @@ PROVENIENZ: `pinterest` gebaut GEMESSEN am Repo und live (Commit `9422920`, VERM
   PROVENIENZ: der Bau GEMESSEN am Repo und live (Commit `9422920`, VERMERK 6); dass allein
   die Optimierungs-Hälfte offen ist, steht im vierten Nachtrag dieses Punkts und in
   VERMERK 6, dritte Grenze.
-- **google — EIN ANDERER WEG.** Hier fehlt keine Messung, sondern ein Träger, der die
-  Beobachtung nicht abschneidet. Ob es ihn gibt, ist offen; solange nicht, kann diese Phase
-  für google nichts liefern, was ihr eigenes Versprechen einlöst.
+- **google — OHNE CODE ABGESCHLOSSEN (2026-09-11). DIE LESUNG IST GEFAHREN, IHR ERGEBNIS IST
+  NEGATIV, UND DIESEM ZIEL FEHLT NICHTS MEHR.** Die Dokumentation zur gewählten Gestalt ist am
+  2026-09-11 abschnittsweise gelesen worden. Im gelesenen Umfang gibt es keinen Träger, der ein
+  Ereignis beim Anbieter sichtbar ankommen lässt, ohne dessen Zahlen zu berühren; der einzige
+  Mechanismus, der eine Achse ausdrücklich entlastet — die sekundäre Conversion-Aktion —, und
+  die vierzehntägige Probezeit sind verworfen. Befund und Reichweite: docs/ziel-befunde.md,
+  Abschnitt "Google (Google Ads Conversions · GA4)", Teile (ch) bis (cr) und der Block "Der
+  gelesene Umfang (2026-09-11) — Google". Die bindende Entscheidung steht als (18). **Dieses
+  Fünftel der Phase endet damit wie das von `linkedin` mit einer festgehaltenen Feststellung
+  und nicht mit Code.**
+  **NACHGEZOGEN AM 2026-09-11, ERSETZT UND NICHT GESTEMPELT; hier stand:** "google — EIN
+  ANDERER WEG. Hier fehlt keine Messung, sondern ein Träger, der die Beobachtung nicht
+  abschneidet. Ob es ihn gibt, ist offen; solange nicht, kann diese Phase für google nichts
+  liefern, was ihr eigenes Versprechen einlöst."
+  **DER GRUND, DERSELBE WIE AN DEN NACHBARPUNKTEN UND AN DER ÜBERSCHRIFT: DER SATZ BINDET EINE
+  HANDLUNG.** Er führt die Frage nach dem Träger als offen — wer ihm folgt, sucht ihn ein
+  zweites Mal.
+  **WAS DIE LESUNG NICHT IST:** ein Beweis der Abwesenheit. Sie bleibt ein NICHT-TREFFER, jetzt
+  mit benannter Reichweite; die Grenze steht an Entscheidung (18). **IM SELBEN ZUG
+  NACHGEZOGEN** sind die Stand-Aussage am Kopf dieses Abschnitts, die Überschrift dieser Liste
+  und der Halbsatz unter "WAS HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN IST".
+  **VON AUSSEN ZITIERT WIRD DER PUNKT NICHT** (GEMESSEN am Repo, CC, 2026-09-11; Achsen "EIN
+  ANDERER WEG", "Träger, der die" und "Beobachtung nicht abschneidet", ohne Rücksicht auf Gross-
+  und Kleinschreibung, ganzes Repo ohne `node_modules`, `.git`, `.next`, `.playwright-mcp`;
+  Negativkontrolle 0). Die Treffer ausserhalb dieser Datei sind keine Zeiger: "ein anderer Weg
+  zum selben Wert" in docs/claude-history/phase-9-ab-testing.md und in
+  `src/app/projects/variant-counts.test.ts` hat einen anderen Gegenstand, und docs/roadmap.md
+  trägt an der Roadmap-Zeile 11.3 den Satz "Google fehlt keine Messung, sondern ein Träger, der
+  die Beobachtung nicht abschneidet" — eine EIGENE Fassung derselben Liste, ein Namensvetter;
+  jene Zeile wird am Phasenende angefasst.
+  PROVENIENZ: die Lesung GELESEN 2026-09-11 (CC); der Abschluss ohne Code ist
+  OWNER-ENTSCHEIDUNG 2026-09-11.
 - **linkedin — OHNE CODE ABGESCHLOSSEN (2026-09-11). DIE LESUNG IST GEFAHREN, IHR ERGEBNIS
   IST NEGATIV, UND DIESEM ZIEL FEHLT NICHTS MEHR.** Die Conversions-API-Dokumentation ist am
   2026-09-11 abschnittsweise gelesen worden. Im gelesenen Umfang gibt es keinen Weg, ein
@@ -340,7 +404,13 @@ Scheiben, und ob linkedin am Ende gebaut oder abgeschlossen wird. **Der Zustand 
 je Ziel.
 **NACHGEZOGEN AM 2026-09-11 — DER LETZTE HALBSATZ IST ENTSCHIEDEN:** `linkedin` wird ohne
 Code abgeschlossen (Entscheidung (17)). Der Satz bleibt als Aussage über den 2026-09-09
-stehen; offen ist von ihm heute allein noch `google`.
+stehen; von ihm ist heute nichts mehr offen — auch `google` ist ohne Code abgeschlossen
+(Entscheidung (18)).
+**NACHGEZOGEN AM 2026-09-11, ZWEITER NACHZUG DESSELBEN TAGES, ERSETZT UND NICHT GESTEMPELT —
+hier stand am Ende: "offen ist von ihm heute allein noch `google`."** Derselbe Grund wie an der
+Stand-Aussage: Der Halbsatz führte ein Ziel als offen, und wer ihm folgt, sucht dafür einen
+Zuschnitt. Er ist die VIERTE Stelle dieses Abschnitts, die den Stand der Ziele behauptet, und
+wird im selben Zug nachgezogen wie die drei anderen.
 
 **PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-09 (die Phase umfasst fünf Ziele). Die drei
 Befunde darunter sind unverändert die GELESENEN vom 2026-08-11, 2026-08-20 und 2026-08-24;
@@ -1365,6 +1435,87 @@ andere.
 422 sind GEMESSEN (Owner, 2026-08-15 bzw. 2026-08-17; dort Teile (c) und (l)). Dass der
 `else`-Zweig des CHECK `linkedin` heute schon abdeckt, ist GEMESSEN LIVE (VERMERK 4, Wortlaut
 der abgelesenen Definition).
+
+### (18) GOOGLE WIRD OHNE CODE ABGESCHLOSSEN — FÜR DIESES ZIEL ENTSTEHT KEIN TESTMODUS
+
+**DIE ENTSCHEIDUNG:** Für `google` baut die Phase 11.3 keinen Testmodus. Dieses Fünftel der
+Phase endet mit der festgehaltenen Feststellung vom 2026-09-11, nicht mit Code: kein Eintrag
+in `TARGETS_WITH_TEST_MODE`, keine eigene Klausel im CHECK `project_secrets_test_mode_je_ziel`
+(dessen `else`-Zweig bleibt für `google` zuständig), kein Schalter an der Ziel-Karte. **Damit
+endet das letzte offene Fünftel der Phase.**
+
+**DER GRUND, IN ZWEI TEILEN — UND DER ZWEITE WIEGT SCHWERER:**
+- **DER EINZIGE MECHANISMUS DES ANBIETERS IST VON UNSEREM ZUGANG AUS NICHT SCHALTBAR.** Im
+  gelesenen Umfang gibt es keinen Träger, der ein Ereignis sichtbar ankommen lässt, ohne die
+  Zahlen des Anbieters zu berühren (docs/ziel-befunde.md, Abschnitt "Google (Google Ads
+  Conversions · GA4)", Teil (ch)). Der einzige Mechanismus, der eine Achse ausdrücklich
+  entlastet, ist die sekundäre Conversion-Aktion (`primary_for_goal = false`, dort Teil
+  (ck)): kein Gebot, nicht in "Conversions". **ER SITZT AN EINER ANDEREN SCHNITTSTELLE MIT
+  EIGENEM ZUGANGSMODELL** — an der Google Ads API bzw. in der Oberfläche des Kunden. Die Data
+  Manager API, über die wir senden, führt keine Methode, die Conversion-Aktionen verwaltet
+  (dort Teile (ci) und (ck)); die Google Ads API vergibt ihren Zugriff über eigene
+  Zugriffsstufen je Cloud-Projekt (dort Teil (cm)); und unser Zugang fordert allein den
+  Bereich `https://www.googleapis.com/auth/datamanager` an — `DATA_MANAGER_SCOPE` in
+  `src/lib/oauth/google-authorize.ts` (GEMESSEN am Repo, CC, 2026-09-11) —, während der
+  Leitfaden der Data Manager API `https://www.googleapis.com/auth/adwords` in seinem Beispiel
+  als EIGENEN Bereich daneben führt (dort Umfang-Block, D16).
+- **SEIN ZUSTAND LÄGE IM KUNDENKONTO — AUSSERHALB DER REICHWEITE DER FRIST, AUF DER DER
+  GESAMTE SICHERHEITSENTWURF DIESER PHASE RUHT.** Der Testmodus dieser Phase ist eine FRIST,
+  weil eine Frist von allein abläuft (Abschnitt "Der Träger des Zustands ist eine FRIST, kein
+  Boolean"). Die Einstellung einer Conversion-Aktion läuft nicht ab, und unsere Frist kann sie
+  nicht zurückstellen. **VERGISST DER KUNDE DAS ZURÜCKSTELLEN, LAUFEN SEINE ECHTEN CONVERSIONS
+  DAUERHAFT AN DER GEBOTSSTEUERUNG VORBEI** — die Einstellung gilt nach dem Wortlaut der
+  AKTION, nicht dem einzelnen Ereignis (dort Teil (ck)). Das ist dieselbe Art Schaden, den die
+  Frist deckelt — ein vergessener Zustand, der still und ohne Ende wirkt —, nur ausserhalb
+  ihrer Reichweite.
+  **DAZU ZWEI FOLGEN AUS DEM WORTLAUT:** Die Testereignisse blieben in der Gesamtspalte "All
+  conv." stehen (dort Teil (ck)); und der einzige Rücknahmeweg — `RETRACTION` über
+  `ConversionAdjustmentUploadService` — liegt an derselben Google Ads API, die unser Zugang
+  nicht anfordert (dort Teil (ci)). Die Data Manager API hat keinen.
+
+**DIE VERWORFENE ZWEITE GESTALT — DIE VIERZEHNTÄGIGE PROBEZEIT, MIT IHREM EIGENEN GRUND:** Sie
+ist nicht schaltbar — Eintritt und Ende geschehen nach dem Wortlaut von selbst —, sie beginnt
+mit dem ERSTEN Offline-Upload je Conversion-Aktion und ist damit je Aktion einmalig (das
+Zweite ist eine ABLEITUNG aus dieser Bindung), und **für die gewählte Gestalt ist sie nicht
+ausgesagt**: Alle Fundstellen sprechen von einer zusätzlichen Datenquelle an einer
+gebotsfähigen Aktion (dort Teil (cl)). Selbst wo sie gilt, entlastet sie die Gebote vierzehn
+Tage lang und die Berichterstattung nie.
+
+**AUSDRÜCKLICH MITVERWORFEN: EIN BLOSSER BEDIENHINWEIS**, der den Kunden auffordert, seine
+Aktion vor dem Test auf "sekundär" zu stellen und danach zurück. **Er wäre kein Testmodus,
+sondern eine Aufforderung, die eigene Gebotssteuerung anzuhalten** — mit einem Schaden, den wir
+veranlasst und nicht gedeckelt hätten.
+
+**WEN SIE BINDET:** jede spätere Scheibe dieser Phase, die `TARGETS_WITH_TEST_MODE`, den CHECK
+oder die Ziel-Karte anfasst · jeden Kundentext, der den Testmodus erklärt — für `google` gibt
+es keinen, und kein Text darf einen andeuten, auch keinen Hinweis auf die sekundäre Aktion ·
+jede Runde, die für `google` die sekundäre Aktion, die Probezeit oder einen Bedienhinweis neu
+vorschlägt: **sie trägt gegen den Grund oben vor und beginnt nicht bei null.**
+**DER PREIS AUS ENTSCHEIDUNG (3) BLEIBT FÜR `google` DAUERHAFT:** Steht ein anderes Ziel im
+Testmodus, bekommt `google` den Testklick als ECHTE Conversion. Das ist keine neue
+Verschlechterung, sondern jene Entscheidung an einem zweiten Ziel, das keinen eigenen
+Testmodus bekommt.
+
+**IHRE GRENZE — WAS SIE NICHT SAGT:** Sie sagt NICHT, dass `google` nie einen Testmodus
+bekommt. Sie beschreibt eine DOKU-LESUNG vom 2026-09-11 — keine Messung —, und der Anbieter
+kann seinen Stand ändern, ohne dass hier etwas rot wird. Der Befund ist ein NICHT-TREFFER mit
+benannter Reichweite, **KEIN Beweis der Abwesenheit**; das gelesene Nachbarprodukt trägt
+ebenfalls kein Test-Kennzeichen, und der Kontrast reicht über EIN Produkt (dort Teil (ch)).
+**WANN SIE KIPPT:** wenn ein Träger erreichbar wird, den UNSER Zugang schaltet und dessen
+Zustand UNSERE Frist beenden kann. Dann ist neu zu entscheiden. Der Zustand je (Projekt, Ziel)
+aus 11.3a hat für `google` bereits die Form; der CHECK bräuchte nach Entscheidung (12) eine
+eigene Klausel.
+
+**ES IST KEIN VERMERK ENTSTANDEN, UND DAS IST KEIN VERSÄUMNIS:** Ein Vermerk behauptet eine
+gebaute Scheibe mit Bau-Commit und Live-Nachweis — hier gibt es weder das eine noch das
+andere.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-11, auf der Grundlage der Abschnitts-Lesung vom
+2026-09-11 (GELESEN, CC; docs/ziel-befunde.md wie oben, Teile (ch) bis (cr)). Der angeforderte
+Bereich ist GEMESSEN am Repo (CC, 2026-09-11). Dass der `else`-Zweig des CHECK `google` heute
+schon abdeckt, ist GEMESSEN LIVE (VERMERK 4, Wortlaut der abgelesenen Definition). Dass die
+Einstellung beim Vergessen dauerhaft wirkt und die Frist sie nicht erreicht, ist eine
+ABLEITUNG aus ihrem Ort und ihrem Wortlaut, **keine Messung an einem Kundenkonto**.
 
 ## Vorrat — gemeldet, nicht gebaut
 
@@ -2395,6 +2546,59 @@ GEMELDET 2026-09-10, NICHT GEBAUT.
 2026-09-10, zwei Achsen)**. Dass die Ursache **strukturell** ist, ist eine **ABLEITUNG** aus
 der Reihenfolge von Schreiben und Committen, keine Messung. Dass kein Gate diese Datei
 liest, ist ein **NICHT-TREFFER mit benannter Achse** — die vier Gates dieses Projekts.
+
+### (8) EINE AUSSAGE KANN IN EINEM TEIL DER SEITE STEHEN, DEN DIE GELESENE FASSUNG NICHT TRÄGT — UND DER UMFANGS-BERICHT FÜHRT DIE SEITE TROTZDEM ALS GELESEN
+
+**DER BELEG — GEMESSEN an den gespeicherten Kopien der Google-Lesung (CC, 2026-09-11):** Der
+tragende Allowlist-Satz der Übersichtsseite `/data-manager/api/devguides/events` — "Sending
+conversion events via the API as an additional data source for Google Ads tag conversions is
+an allowlist-only feature that can improve ad interaction signals and performance." — steht im
+Server-HTML im Element `devsite-key-takeaways-panel`. **DIE MARKDOWN-FASSUNG DERSELBEN SEITE,
+DIE DER LAUF ALS LESETEXT BENUTZT HAT, TRÄGT IHN NICHT** (null Treffer auf "allowlist-only").
+Der Umfangs-Bericht führte die Seite als gelesen; gefunden wurde der Satz erst beim Abgleich mit
+dem Bestand (docs/ziel-befunde.md, Abschnitt "Google (Google Ads Conversions · GA4)", Teil
+(aq), der ihn am 2026-08-25 als "Seitenzusammenfassung" zitiert). Ohne diesen Abgleich hätte
+der Lauf eine Seite als vollständig gelesen geführt, deren tragende Aussage er nie gesehen hat.
+
+**EINE RICHTIGSTELLUNG AM EIGENEN BERICHT GEHÖRT DAZU, sonst wandert eine falsche Ortsangabe
+in die Hebung:** Der Crawl-Bericht vom 2026-09-11 nannte das Feld "ausserhalb des
+Artikelrumpfs". **Am gespeicherten Server-HTML liegt es INNERHALB von
+`div.devsite-article-body`.** Was den Satz nicht trägt, ist die TEXTFASSUNG der Seite, nicht
+der Rumpf. Wie der Browser das Feld anordnet und ob eine `textContent`-Lesung des gerenderten
+Artikels ihn erfasst hätte, ist an keiner gespeicherten Kopie erhoben.
+
+**DER KANDIDAT NENNT SEINE REIHE:** Er ist das DRITTE Mitglied derselben Achse — ein Werkzeug
+oder ein Ausschnitt erzeugt eine Abwesenheit, die der Gegenstand nicht hergibt:
+· zuerst `innerText` gegen `textContent` — docs/immer-beachten.md, "EINE ABWESENHEIT KANN VOM
+  WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND";
+· dann der nicht vorausgewählte Reiter — der Zusatz vom 2026-08-25 an docs/immer-beachten.md,
+  "DIE LISTE 'GESEHEN, NICHT GEÖFFNET' IST DER ORT, AN DEM SICH EIN BEFUND VERSTECKT";
+· jetzt eine FASSUNG der Seite, die einen ihrer Teile nicht mitführt.
+**WAS DEN DRITTEN FALL VON DEN ZWEI ERSTEN TRENNT:** Dort war das Werkzeug an der richtigen
+Quelle und hat einen Teil nicht erfasst; hier war die QUELLE eine andere Darstellung derselben
+Seite, und ihr fehlt der Teil von vornherein. Kein Reiterklick und kein Werkzeugwechsel
+innerhalb dieser Fassung hätte ihn zutage gefördert.
+
+**NICHT ENTSCHIEDEN:** ob daraus eine eigene Regel wird oder ein Absatz an der bestehenden
+Regel "EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND" — und ob eine
+Auflage folgt (etwa: je Seite zusätzlich das Server-HTML nach Feldern ausserhalb der
+Textfassung durchsuchen). **KEINE EMPFEHLUNG.** Entschieden wird am Phasenende.
+GEMELDET 2026-09-11, NICHT GEBAUT.
+
+**PROVENIENZ:** Die Lage des Satzes und sein Fehlen in der Markdown-Fassung sind GEMESSEN an
+den gespeicherten Kopien (CC, 2026-09-11; `grep` auf "allowlist-only" über beide Fassungen,
+dazu die Positionen von `devsite-key-takeaways-panel` und `div.devsite-article-body` im
+Server-HTML). Dass der Lauf den Satz ohne den Abgleich nicht gesehen hätte, ist eine ABLEITUNG
+aus dem Ablauf der Lesung, keine Messung.
+
+### (9) DIE RICHTIGSTELLUNG "ZU GROB" AN DER ROADMAP-ZEILE 11.2 IST ÄLTER ALS DER GESTALTWECHSEL
+
+Die Roadmap-Zeile 11.2 (docs/roadmap.md) trägt eine Richtigstellung vom 2026-08-20, die den
+Satz "der Nachfolger ist für den relevanten Fall allowlist-only …" als "ZU GROB" führt und dazu
+"Beides trifft zu" sagt — also aus der Zeit VOR dem Gestaltwechsel vom 2026-08-24, der an I3(b)
+in docs/ziel-fragenkatalog.md und an Teil (g) des Google-Abschnitts von docs/ziel-befunde.md
+zwei gleichartige Angaben überholt hat; ob sie davon berührt ist, ist am 2026-09-11 NICHT
+geklärt und docs/roadmap.md nicht angefasst worden — KEINE EMPFEHLUNG.
 
 ## Scheiben-Vermerke
 

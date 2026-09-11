@@ -64,6 +64,15 @@ dazu, bekommt die Matrix eine DATIERTE Fortschreibung — der alte Stand bleibt 
 - ## Der Katalog — 41 Fragen in 9 Gruppen
 - ## Die Matrix — Stand 2026-08-20
 - ## Beobachtungen am Bestand (2026-08-20)
+- ## Fortschreibung der Matrix — 2026-08-20 (nachmittags), Ziel PINTEREST
+- ## Befunde am Verfahren (2026-08-20)
+- ## Fortschreibung der Matrix — 2026-09-11, Ziel LINKEDIN
+
+**NACHGEZOGEN AM 2026-09-11 — DIE LETZTEN DREI ZEILEN FEHLTEN.** Bis dahin führte dieses
+Verzeichnis nur die ersten drei Abschnitte; die Pinterest-Fortschreibung und "Befunde am
+Verfahren" standen in der Datei, aber nicht hier. **WER DIE MATRIX VOM 2026-08-20 LIEST,
+LIEST DIE FORTSCHREIBUNGEN MIT** — sie ändern deren Antwortstand, ohne ihre Zeilen
+anzufassen.
 
 ## Der Katalog — 41 Fragen in 9 Gruppen
 
@@ -708,3 +717,89 @@ Anbieter-Lauf — nicht am Inhalt. Sie stammen aus dem ersten Pilotlauf (Pintere
   wiedergegeben vermerkt.
   DIE ALTE FASSUNG BLEIBT LESBAR: Für die Lesung vom 2026-08-20 galt sie noch, und die
   beiden Auslassungen sind ihr Ergebnis, kein Versäumnis des Ausführenden.
+
+**FORTSCHREIBUNG 2026-09-11 — ZWEI BEFUNDE AUS DEM LINKEDIN-LAUF.** PROVENIENZ bei beiden:
+GEMESSEN am eigenen Lauf (CC, 2026-09-11). KEINE EMPFEHLUNG zu beidem.
+- **DIE GERENDERTE SEITENNAVIGATION FÜHRTE ZWEI SEITEN NICHT, DIE IHRE DATENQUELLE FÜHRT.**
+  Unter "Conversions" fehlten in den Links der gerenderten Navigation "Conversions API" und
+  "Conversions API Schema" — die zwei Seiten, auf denen Endpunkt und Schema stehen. Die
+  Navigations-Datenquelle `toc.json` (learn.microsoft.com/en-us/linkedin/marketing/toc.json)
+  führt beide als Kindknoten unter "Conversions". Eine Lesung, die nur der gerenderten
+  Navigation folgt, hätte den tragenden Teil des Abschnitts nicht geöffnet.
+- **EIN ZU GROSSES WERKZEUG-ERGEBNIS HAT DER HARNESS SELBST AUSSERHALB DER IGNORIERTEN
+  ABLAGE ABGELEGT.** Überschritt ein Ergebnis die Grössengrenze, schrieb Claude Code es
+  ungefragt in das Sitzungsverzeichnis im Nutzerprofil (`~/.claude/projects/…/tool-results/`)
+  — ausserhalb des Repos und ausserhalb von `.playwright-mcp/`. `git status` sieht die
+  Datei nicht; die Invariante "keine Datei angelegt" war damit verletzt, ohne dass ein Gate
+  es meldet.
+
+## Fortschreibung der Matrix — 2026-09-11, Ziel LINKEDIN
+
+**DIE FORM IST DIE DER PINTEREST-FORTSCHREIBUNG:** Die Zeilen im Abschnitt "Die Matrix —
+Stand 2026-08-20" werden NICHT überschrieben. Jede Änderung steht HIER, nennt den BISHERIGEN
+Zustand und den NEUEN und zeigt auf die Fundstelle der Antwort.
+
+**WAS SICH NICHT ÄNDERT:** Der KATALOG ist unberührt — keine Frage neu, keine gestrichen,
+keine umformuliert. Es bleiben 41 Fragen in 9 Gruppen.
+
+**HERKUNFT DIESER FORTSCHREIBUNG:** eine Abschnitts-Lesung der Conversions-API-Dokumentation
+mit dem Browser-Werkzeug (CC, 2026-09-11) und eine Ablesung am eigenen Adapter (CC, am Repo,
+2026-09-11). **DIE ANTWORTEN STEHEN NICHT HIER, SONDERN IN docs/ziel-befunde.md, Abschnitt
+"LinkedIn (Conversions API)", Teile (aa) bis (al)**, der gelesene Umfang im Block "Der
+gelesene Umfang (2026-09-11) — LinkedIn". Alle Buchstaben unten meinen jenen Abschnitt.
+
+**FÜNF ZELLEN, BISHER NIE GESTELLT, HABEN JETZT EINE GELESENE ANTWORT:**
+- **H3** linkedin: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-09-11) — Ratengrenzen
+  und Batch; eine Vorgabe zu Wiederholungsversuchen bleibt **NICHT GEFUNDEN**. Teil (ag).
+- **I1** linkedin: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-09-11) — zwei
+  Zugangswege, für Partner ein Freigabeverfahren. Teil (ah).
+- **I2** linkedin: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-09-11) — Kenntnis der
+  "LinkedIn Marketing API Terms", dazu Data Processing Agreement und Ads Agreement. Teil
+  (ah).
+- **I3** linkedin: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-09-11) — "Enhanced
+  conversion tracking" für die Klick-Kennung; eine Allowlist-Erwähnung nur im
+  Insight-Tag-Kontext. Teil (ah).
+- **I4** linkedin: bisher NIE GESTELLT → **BEANTWORTET** (gel, 2026-09-11) — vier Rollen,
+  nicht VIEWER. Teil (ah).
+
+**EINE ZELLE IST JETZT GESTELLT UND BLEIBT OHNE ANTWORT:**
+- **I5** linkedin: bisher NIE GESTELLT → **NICHT GEFUNDEN** (2026-09-11) — eine
+  Domain-Anforderung für die Conversions API nennt keine der gelesenen Seiten; die
+  Domain-Liste des Insight Tags gilt dem Browser-Pfad. Achse in Teil (ah). Aus einer Lücke
+  im DENKEN ist eine Lücke im WISSEN geworden.
+
+**EIN TEILASPEKT, BISHER NICHT GEFUNDEN, HAT JETZT EINE ANTWORT:**
+- **B2** linkedin: der Teilaspekt "der Abschalt-Termin dieser Version: NICHT GEFUNDEN" →
+  **BEANTWORTET** (gel, 2026-09-11) — 202601 fällt am 15.01.2027 laut Migrations-Tabelle.
+  Teil (af). Dass der Adapter 202601 sendet, ist am 2026-09-11 am Repo erneut gemessen,
+  Teil (ai).
+
+**DIE IDENTITÄTS-LISTE:**
+- **E1** linkedin: bisher "FÜNF Symbole gel, ZWEI davon gem" → **SECHS Symbole gel**
+  (2026-09-11), gemessen unverändert ZWEI. Neu ist `SHA256_IP_ADDRESS`, dazu Identität über
+  `lead`, `externalIds` oder `userInfo` ohne Eintrag in `userIds`. Teil (aj).
+
+**ZELLEN, DEREN ANTWORT BLEIBT UND ERGÄNZT WIRD — der Zustand ändert sich nicht:**
+- **A3** linkedin: bleibt BEANTWORTET, ZWEISTUFIG; ergänzt um eine zweite, nicht
+  zeitbasierte Weise, auf die das Zugangsdatum des Campaign-Manager-Wegs enden kann — ihre
+  Reichweite ist am Dokument NICHT ENTSCHEIDBAR. Teil (al).
+- **B4** linkedin: bleibt BEANTWORTET (`LinkedIn-Version` Pflicht, gem Teil (r)); ergänzt:
+  die Doku verlangt zusätzlich `X-Restli-Protocol-Version: 2.0.0` (gel), der Adapter sendet
+  sie NICHT (gem am Repo), und ob der Anbieter sie durchsetzt, ist NICHT ENTSCHEIDBAR.
+  Teil (ai).
+- **G2** linkedin: bleibt BEANTWORTET (gem Teile (f)/(r)/(s)); VERMERK: die Fehlertabelle
+  der Doku nennt für den 90-Tage-Fall eine ANDERE Rumpfform als die gemessene —
+  gegenübergestellt, nicht aufgelöst. Teil (ak).
+- **H2** linkedin: bleibt BEANTWORTET (Voraussetzungen gel, Wirkung nicht gemessen);
+  ergänzt um die Bedingung "from the same account". Teil (ab).
+- **H4** linkedin: bisher BEANTWORTET als FOLGERUNG → **BEANTWORTET** (gel, 2026-09-11) —
+  `BATCH_CREATE` mit bis zu 5 000 Ereignissen je Aufruf. Nicht gemessen. Teil (ag).
+- **H5** linkedin: bleibt BEANTWORTET mit Einschränkung (gem); ergänzt um die Beschreibung
+  der Statusanzeige und ihrer Verzögerung in der Doku. Teile (ab) und (ag).
+
+**H1 BEHÄLT DEN STAND NICHT-TREFFER — UND DAS STEHT HIER AUSDRÜCKLICH:**
+- **H1** linkedin: bleibt **BEANTWORTET als NICHT-TREFFER**. Der Nicht-Treffer hat jetzt
+  eine REICHWEITE — dreizehn Seiten des Abschnitts vollständig, weitere Seiten und
+  Hilfe-Artikel, eine formale Suche über zweiundzwanzig Begriffe mit Positiv- und
+  Negativkontrolle. **Beantwortet ist die Frage damit NICHT**: Ein Nicht-Treffer mit
+  Reichweite ist kein Beweis der Abwesenheit. Teile (aa) bis (ad) und der Umfang-Block.

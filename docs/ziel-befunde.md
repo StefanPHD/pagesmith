@@ -100,6 +100,8 @@ sobald ein zweiter Abschnitt seinen Buchstaben vergibt — und kein Werkzeug mel
 ## Verzeichnis der Abschnitte
 
 - ## LinkedIn (Conversions API)
+  - ### Abschnitts-Lesung 2026-09-11 der Conversions-API-Dokumentation — die Teile (aa)
+    bis (al)
 - ## Google (Google Ads Conversions · GA4)
   - ### Abschnitts-Lesung 2026-08-24 der Data-Manager-Dokumentation, LAUF 1 (Leitfaden und
     Betrieb) — die Teile (g) bis (s)
@@ -185,6 +187,11 @@ Roadmap-Zeile 11.1, der gemessene Befund unten unter (a).)
 PROVENIENZ: GELESEN an FREMDER Anbieter-Doku (2026-08-11) — NICHT gemessen, NICHT live
 bestätigt. Dass TikTok als drittes Ziel live bewiesen ist, WERTET DAS NICHT AUF; wer das
 verwechselt, plant einen Bau auf einer Doku-Lesung.
+
+VORBEHALT (2026-09-11) — DER NICHT-TREFFER "kein Testmodus gefunden" HAT JETZT EINE
+REICHWEITE: eine Abschnitts-Lesung mit benanntem Umfang und formaler Suche, s. unten (aa)
+und "Der gelesene Umfang (2026-09-11) — LinkedIn". ER BLEIBT EIN NICHT-TREFFER und ist KEIN
+Beweis der Abwesenheit. Der Wortlaut oben wird NICHT umformuliert.
 
 ### Messprotokoll 2026-08-15 — die Teile (a) bis (h)
 
@@ -282,6 +289,11 @@ darauf (aus CLAUDE.md und aus docs/claude-history/backlog-polish.md) treffen.
     ihr prüft, meldet einen Fehlschlag, der keiner ist. TAUGLICH ist die Empfangsanzeige.
     Dieselbe Denkfigur wie beim ersten Ziel, wo die Verifikation über die NACHGELAGERTE
     WIRKUNG läuft und nicht über den Statuscode.
+    VORBEHALT (2026-09-11) — DIE DOKU STÜTZT DIE FOLGERUNG UND NENNT EINE ZWEITE BEDINGUNG:
+    zugeordnet wird nur, was gematcht ist UND einer Kampagne der Regel zugeordnet ist;
+    s. unten (ab) und (ac). Ob die Regel DIESER Läufe Kampagnen zugeordnet war, protokolliert
+    keines der Messprotokolle. GELESEN, keine Messung. Der Wortlaut oben wird NICHT
+    umformuliert.
 
 ### Messprotokoll 2026-08-17 — die Teile (i) bis (m)
 
@@ -318,6 +330,10 @@ umsortiert.
     GRENZE, DIE MITMUSS: GEMESSEN ist die ANNAHME, NICHT die ZUORDNUNG. Ob eine
     IP-Kennung zu einer Person aufgelöst wird, ist mit Testdaten prinzipiell nicht messbar
     — s. (h). Das ist KEINE Entwarnung und KEINE Zusage über Match-Raten.
+    VORBEHALT (2026-09-11) — DIE LISTE DER SYMBOLE IST SEITHER UM EINES LÄNGER: Die Lesung
+    vom 2026-09-11 (Doku-Stand 2026-08-26) nennt SECHS; s. unten (aj). GEMESSEN bleiben
+    unverändert ZWEI. Der Wortlaut oben wird NICHT umformuliert — er sagt, was am
+    2026-08-17 am Doku-Stand 2026-05-15 gelesen wurde.
 
 (j) DIE FORM DES KENNUNGS-WERTS WIRD NICHT GEPRÜFT.
     GEMESSEN 2026-08-17: Der idValue "999.999.999.999" bei sonst gültiger Nutzlast ergab
@@ -344,6 +360,9 @@ umsortiert.
     auf neue Ereignisse —, und die beiden Lesarten oben sind an ihm nicht zu
     unterscheiden. Was am Instrument REAGIERT, ist der Zeitstempel; s. unten (q). Der
     Wortlaut oben wird NICHT umformuliert.
+    VORBEHALT (2026-09-11) — DIE DOKU LÖST DIE OFFENHEIT NICHT: Sie führt "Number of
+    deduplicated events" als eigenen Posten der Anzeige, ohne ihn zu definieren; s. unten
+    (ab). Beide Lesarten bleiben offen. Der Wortlaut oben wird NICHT umformuliert.
 
 (l) ZWEI FEHLERKLASSEN AN DER REGEL-KENNUNG, MIT GEGENSÄTZLICHER LESBARKEIT.
     GEMESSEN 2026-08-17: Ein formFALSCHES Präfix ("urn:lla:llaConversionRule:<id>" statt
@@ -471,6 +490,12 @@ Kein Buchstabe wird neu vergeben, nichts umsortiert.
     GRENZE: Gemessen ist das FEHLEN des Headers. Über einen FALSCHEN oder veralteten Wert
     sagt dieser Lauf nichts — und die gelesene Angabe, dass Versionen abgeschaltet werden,
     bleibt GELESEN.
+    VORBEHALT (2026-09-11) — DIE DOKU NENNT EINE ZWEITE PFLICHT-KOPFZEILE, DIE DER ADAPTER
+    NICHT SENDET: `X-Restli-Protocol-Version: 2.0.0`. Auflage (GELESEN) und unser Zustand
+    (GEMESSEN am Repo) stehen unten in (ai). Gemessen ist hier weiterhin allein das Fehlen
+    des Versions-Headers. Der Wortlaut oben wird NICHT umformuliert.
+    VORBEHALT (2026-09-11), ZWEITER — DIE GELESENE ANGABE "Versionen werden abgeschaltet"
+    HAT JETZT EINEN TERMIN FÜR DEN WERT DES ADAPTERS: s. unten (af).
 
 (s) DAS 90-TAGE-FENSTER IST DURCHGESETZT — MIT 400 STATT 422 UND EINER WEITEREN RUMPFFORM.
     GEMESSEN 2026-08-19, LAUF F: Ein Zeitstempel 100 Tage in der Vergangenheit ergibt 400
@@ -496,6 +521,9 @@ Kein Buchstabe wird neu vergeben, nichts umsortiert.
     zitiert wird.
     (f) BLEIBT UNVERÄNDERT STEHEN und trägt einen Vorbehalt, der hierher zeigt; seine
     Zahlen waren für die sieben Läufe vom 2026-08-15 richtig.
+    VORBEHALT (2026-09-11) — DIE FEHLERTABELLE DER DOKU NENNT FÜR DENSELBEN FALL EINE ANDERE
+    RUMPFFORM. Gemessen und dokumentiert stehen unten in (ak) GEGENÜBER, NICHT AUFGELÖST.
+    Der Messwert oben ist davon unberührt. Der Wortlaut oben wird NICHT umformuliert.
 
 ### Nachtrag 2026-08-19, SPÄTERE ABLESUNG DESSELBEN INSTRUMENTS — der Teil (t)
 
@@ -552,6 +580,11 @@ DANEBEN und schreibt ihn nicht um.
     GRENZE: "mehrere Stunden" ist die Angabe des Owners, KEINE gemessene Latenz. Wie lange
     die Anzeige tatsächlich braucht und ob sie in Stufen oder stetig nachzieht, ist
     unerhoben.
+    VORBEHALT (2026-09-11) — DIE DOKU NENNT EINE GRÖSSENORDNUNG, KEINE MESSUNG: Die
+    Statusanzeige aktualisiere sich sofort, Zahl und Trefferrate bräuchten "up to a few
+    hours"; bis zu vollständigen Berichtsdaten bis zu 72 Stunden. s. unten (ab) und (ag).
+    "Unerhoben" oben bleibt richtig — eine Doku-Angabe ist keine gemessene Latenz. Der
+    Wortlaut oben wird NICHT umformuliert.
 
 ### Beobachtung 2026-08-20 am Token-Generator der Anbieter-Oberfläche — der Teil (u)
 
@@ -599,8 +632,13 @@ Anbieter-Dokumentation. Jeder Teil nennt seine Stufe einzeln. KEIN Lauf gegen di
 Conversions-Schnittstelle selbst.
 
 DIE BUCHSTABENREIHE LÄUFT FORT: hier (v) bis (z). (a) bis (u) bleiben unverändert
-vergeben. MIT (z) IST DIE REIHE AUSGESCHÖPFT — wie danach vergeben wird, ist hier NICHT
-entschieden; die Konvention im Kopf dieser Datei regelt den Fall nicht.
+vergeben. MIT (z) IST DAS EINFACHE ALPHABET AUSGESCHÖPFT; wie danach vergeben wird, regelt
+der Kopf dieser Datei im Absatz "WAS NACH (z) KOMMT" (seit dem 2026-08-25), und er nennt
+LinkedIn dort namentlich.
+RICHTIGGESTELLT AM 2026-09-11, NICHT GESTEMPELT — hier stand: "MIT (z) IST DIE REIHE
+AUSGESCHÖPFT — wie danach vergeben wird, ist hier NICHT entschieden; die Konvention im Kopf
+dieser Datei regelt den Fall nicht." Das war am 2026-08-20 richtig; seit dem 2026-08-25
+regelt der Kopf den Fall, und der Satz zeigte von da an vom Ort der Regel weg.
 
 (v) ES SIND ZWEI VERSCHIEDENE ARTEFAKTE, NICHT ZWEI WEGE ZUM SELBEN.
     BEOBACHTET 2026-08-20 (Owner, Token-Inspector-Werkzeug im Entwicklerportal,
@@ -621,6 +659,10 @@ entschieden; die Konvention im Kopf dieser Datei regelt den Fall nicht.
     DIE RESTGRENZE, DIE MITMUSS: BELEGT ist die VERSCHIEDENHEIT der Artefakte. "Läuft nie
     ab" bleibt eine DOKU-AUSSAGE. Endgültig belegt wäre sie erst dadurch, dass das Ziel
     Mitte Oktober 2026 weiterhin sendet — s. den offenen Punkt am Ende dieses Abschnitts.
+    VORBEHALT (2026-09-11) — "läuft nicht ab" IST NICHT DIE EINZIGE WEISE, AUF DIE DIESES
+    ZUGANGSDATUM ENDEN KANN: Die Hilfe nennt eine zweite, nicht zeitbasierte — das
+    anmeldende Mitglied verlässt die Organisation —, mit einer am Dokument nicht
+    entscheidbaren Reichweite; s. unten (al). Der Wortlaut oben wird NICHT umformuliert.
 
 (w) DER APP-WEG: FRIST UND ERNEUERUNG.
     BEOBACHTET 2026-08-20 (Owner, Auth-Seite der eigenen Anwendung und Ausgabe des
@@ -677,6 +719,9 @@ entschieden; die Konvention im Kopf dieser Datei regelt den Fall nicht.
     DAS BERÜHRT (p) UND (d), OHNE SIE ZU ÄNDERN: (p) misst, dass das Feld für eine
     mitgegebene Ereignis-Kennung EXISTIERT und angenommen wird — das bleibt gemessen.
     Dieser Teil sagt, WAS AUSSERDEM nötig wäre, damit daraus eine Deduplizierung wird.
+    VORBEHALT (2026-09-11) — DIE LESUNG VOM 2026-09-11 BESTÄTIGT (i) UND (ii) WÖRTLICH UND
+    NENNT EINE DRITTE BEDINGUNG: beide Ereignisse "from the same account"; s. unten (ab).
+    Der Wortlaut oben wird NICHT umformuliert.
 
 (z) DIE VERSIONSANGABE DES ADAPTERS UND EINE ABGEKÜNDIGTE VERSION.
     GEMESSEN AM REPO 2026-08-20 (read-only): Der Adapter setzt die Kopfzeile
@@ -694,6 +739,10 @@ entschieden; die Konvention im Kopf dieser Datei regelt den Fall nicht.
     ab; wann diese fällt, ist UNGELESEN. KEINE EMPFEHLUNG, ob und wie der Wert zu ändern
     ist — der Kommentar an der Konstante nennt bereits den Preis einer Änderung (gegen
     eine ungemessene Version zu senden).
+    VORBEHALT (2026-09-11) — "wann diese fällt, ist UNGELESEN" GILT NICHT MEHR: Laut
+    Migrations-Tabelle des Anbieters fällt 202601 am 15.01.2027 (GELESEN 2026-09-11, keine
+    Messung); s. unten (af). Dass der Adapter weiterhin 202601 sendet, ist am 2026-09-11 am
+    Repo erneut GEMESSEN, s. unten (ai). Der Wortlaut oben wird NICHT umformuliert.
 
 **WAS AUSDRÜCKLICH OFFEN BLEIBT (2026-08-20)** — dieser Block ist mit der Lesung vom
 2026-08-20 NEU; der LinkedIn-Abschnitt führte offene Punkte bis dahin innerhalb der
@@ -705,6 +754,497 @@ einzelnen Teile. Er sammelt, was KEINEM Teil allein gehört:
   es abgelaufen. FRÜHESTER AUSSAGEKRÄFTIGER ZEITPUNKT: Mitte Oktober 2026 — rund sechzig
   Tage nach dem 2026-08-19, an dem das Ziel nachweislich sendete. KEINE HANDLUNG NÖTIG;
   die Beobachtung läuft von selbst.
+  ZUSATZ 2026-09-11 — DER BEOBACHTUNGSPUNKT FÄNGT AUCH EINE ZWEITE, NICHT ZEITBASIERTE
+  WEISE, deren Reichweite am Dokument nicht entscheidbar ist: s. unten (al). Der Text
+  darüber bleibt wörtlich stehen.
+
+### Abschnitts-Lesung 2026-09-11 der Conversions-API-Dokumentation — die Teile (aa) bis (al)
+
+**HERKUNFT (2026-09-11):** Eine ABSCHNITTS-LESUNG durch CC mit dem Browser-Werkzeug
+(Playwright-MCP), nach der Regel "ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN"
+(docs/immer-beachten.md). Gelesen wurde mit `textContent` von `<main>`, nie mit
+`innerText`; auf learn.microsoft.com in der Ansicht `view=li-lms-2026-08` ("Marketing
+August 2026", die neueste, die die Versionsauswahl anbietet). Der vollständige Umfang steht
+am Ende dieses Abschnitts unter "Der gelesene Umfang (2026-09-11) — LinkedIn"; die
+Seiten-Kürzel unten (S1 bis S13, X1 bis X11, H1 bis H7, P1) sind dort aufgelöst.
+**KEIN AUFRUF GEGEN DIE SCHNITTSTELLE.** Keine Anmeldung, keine Eingabe auf einer fremden
+Seite, kein Download. Alles unten ist GELESEN 2026-09-11 und **ersetzt keine Messung**.
+EINZIGE AUSNAHME ist die Hälfte von (ai), die unseren eigenen Code beschreibt: sie ist
+GEMESSEN am Repo.
+**KEINE SEITE HAT VERSUCHT, DEN LESENDEN ANZUWEISEN.**
+**DIE LESUNG WAR GEGEN DEN EIGENEN BESTAND BLIND, ABER NICHT UNVORBELASTET:** Dieser
+Abschnitt, docs/ziel-fragenkatalog.md, die Standdatei der Phase 11.3 und der Adapter sind
+VOR der Lesung nicht geöffnet worden. CLAUDE.md und docs/immer-beachten.md laden dagegen
+mechanisch und nennen LinkedIn an mehreren Stellen.
+**DIE FRAGE, AUF DIE GELESEN WURDE**, wörtlich aus dem Auftrag: "GIBT ES EINEN WEG, EIN
+EREIGNIS BEI DIESEM ANBIETER SICHTBAR ANKOMMEN ZU LASSEN, OHNE DASS ES SEINE ZAHLEN
+BERÜHRT?" — gesucht nach der SACHE, nicht nach einem Namen, in sechs vorgegebenen Gestalten
+und darüber hinaus. NACHRANGIG: Versionierung, Mengen, Voraussetzungen auf der Kontoseite.
+**DIE BUCHSTABEN FOLGEN DER KONVENTION IM KOPF DIESER DATEI** ("WAS NACH (z) KOMMT"): Auf
+(z) folgt (aa).
+
+(aa) DAS ERGEBNIS: IM GELESENEN UMFANG GIBT ES KEINEN WEG, EIN EREIGNIS SICHTBAR ANKOMMEN
+     ZU LASSEN, OHNE DIE ZAHLEN DES ANBIETERS ZU BERÜHREN.
+     GELESEN 2026-09-11. **ZWEI AUSDRÜCKLICHE GEGEN-AUSSAGEN DES ANBIETERS:**
+     · S12, zum Aufruf aus dem Payload Builder: "The event gets created in the production
+       environment."
+     · X10, für die Werbe-Schnittstelle: "Please note that all API Calls at all access
+       levels are made on production data."
+     **DER KONTRAST, DER DEN NICHT-TREFFER SCHÄRFT:** DERSELBE Anbieter führt
+     Test-Kennzeichen bei ANDEREN Produkten — die Events Management API ein Feld
+     `testEvent` (X6: "Partners can now create LinkedIn Live Events … for testing purposes
+     using a new optional field called testEvent"), die Werbekonten ein Feld `test` (X4:
+     "Flag showing whether this account is marked as a test account"). Für
+     `/rest/conversionEvents` nennt keine gelesene Seite ein solches Kennzeichen (S3, S4).
+     **DIE REICHWEITE** steht im Umfang-Block: die geöffneten Seiten und eine formale Suche
+     über zweiundzwanzig Begriffe mit Positiv- und Negativkontrolle. **Das Ergebnis bleibt
+     ein NICHT-TREFFER und ist KEIN Beweis der Abwesenheit** — neu ist allein, dass er eine
+     benannte Reichweite hat. Die geprüften Gestalten stehen einzeln in (ab) bis (ad).
+
+(ab) DIE NEGATIVEN GESTALTEN — JE MIT DEM, WAS DAGEGEN STEHT. Alles GELESEN 2026-09-11.
+     · FELD ODER PARAMETER: Die Nutzlast kennt `conversion`, `conversionHappenedAt`,
+       `conversionValue`, `eventId` und `user` mit `userIds`, `userInfo`, `lead`,
+       `externalIds` (S4). Dokumentiert sind die Kopfzeilen `Authorization`,
+       `Content-Type`, `Linkedin-Version`, `X-Restli-Protocol-Version` und für Batches
+       `X-RestLi-Method`, dazu kein Query-Parameter (S3). Kein Test-Kennzeichen.
+     · EIGENER ENDPUNKT, UMGEBUNG ODER HOST: Dokumentiert ist allein
+       `POST https://api.linkedin.com/rest/conversionEvents` (S3). Der Aufruf aus dem
+       Payload Builder geht in die Produktion (S12, s. (aa)) — obwohl die Änderungsliste
+       ihn so ankündigt: "test them directly on LinkedIn Developer Portal via the new 'Make
+       an API Call' feature" (X6). **Der Anbieter nennt einen Produktionsaufruf "test".**
+     · REINE VALIDIERUNG: Der Payload Builder baut eine Nutzlast und zeigt "clear warnings
+       and actionable steps for developers to correct any invalid data inputs" (S12); ohne
+       Anmeldung gilt "You can still build your payload but you will need to be signed in
+       to make an API call with your payload" (P1). H4 empfiehlt ihn "to validate that your
+       server events are properly structured and formatted". **OB BEIM BLOSSEN BAUEN ETWAS
+       ZUM ANBIETER GEHT, IST AM DOKUMENT NICHT ENTSCHEIDBAR** (Achse: S12, P1, H4; der
+       Netzverkehr ist nicht beobachtet worden). Er prüft in jedem Fall eine von Hand
+       eingetragene Nutzlast und kein Ereignis aus unserem Server, und er zeigt keinen
+       Eingang.
+     · RÜCKNAHME: Für `/rest/conversionEvents` sind nur das Einzel-POST und `BATCH_CREATE`
+       dokumentiert, kein Löschen und kein Widerruf (S3). Eine Regel "löschen" heisst
+       `enabled: false`, und Ereignisse an eine solche Regel werden ABGEWIESEN — 400,
+       "Invalid Conversion information provided, this event(s) is associated to a
+       conversion that's marked as deleted. Conversion enabled should be true" (S3; ebenso
+       S13, CO-204). Änderungen an einer Regel wirken nicht zurück: "Updating a field
+       doesn't change the data associated with previous conversion events." (X3, an der
+       gemeinsamen Ressource `/rest/conversions`). Löschanfragen gehen über den Anbieter:
+       "LinkedIn can facilitate deletion requests within 180 days from customers where
+       received", und "The only data that persists is the aggregate conversion reporting
+       in Campaign Manager" (H6). **OB EINE SOLCHE LÖSCHUNG GEZÄHLTES AUS DER AGGREGATION
+       NIMMT, IST NICHT ENTSCHEIDBAR** (Achse: H6, S1 bis S13).
+     · DIAGNOSE-WERKZEUG: Die Statusspalte unter "Conversion tracking" in Campaign Manager
+       zeigt je Regel "Number of events detected in the past seven days · When the last
+       signal was received · Match rate percentage · Number of matching parameters ·
+       Number of deduplicated events · The name of the conversion that was deduplicated";
+       dazu "the status will update in real time, but it can take up to a few hours for
+       the event count and match rate to populate" (H1). **Das ist der Beobachtungskanal
+       für NORMALE Ereignisse, kein Blick, der Eingänge zeigt, ohne sie zu zählen.** Eine
+       Test-Ereignis-Ansicht wie bei Meta, TikTok und Pinterest nennt keine gelesene Seite.
+       Die Aufrufzahlen je Endpunkt im Analytics-Reiter der App (X8) zählen Aufrufe auf
+       Produktionsdaten (X10); der Token Inspector prüft Zugangsdaten, keine Ereignisse
+       (X7); die Vorschau in S9 ist ein Werkzeug von Googles Tag Manager.
+       ZU (k): H1 führt "Number of deduplicated events" als eigenen Posten, ohne ihn zu
+       definieren — welche der zwei Lesarten der Klammer gilt, bleibt am Dokument NICHT
+       ENTSCHEIDBAR.
+     · DEDUPLIZIERUNG: "If we receive an Insight Tag event and a Conversions API event from
+       the same account with the same eventId, we discard the Conversions API event and
+       count only the Insight Tag event in campaign reporting." — das Ereignis wird
+       "deducted from the Conversions API conversion count" (S7). Ein CAPI-Ereignis kann so
+       als dedupliziert sichtbar werden, ohne die CAPI-Zählung zu erhöhen. **Aber das
+       Tag-Ereignis zählt, die Zahlen sind also berührt**, und es setzt einen Insight Tag
+       voraus (s. (y)). Neu gegenüber (y): die Bedingung "from the same account".
+     · valueType: "NO_VALUE: Does not use any value for the conversion." (S4); H4: "A zero
+       value will be used for each conversion event." Das nimmt den WERT heraus, nicht die
+       ZÄHLUNG — dass `NO_VALUE` die Zählung aussetzt, steht auf keiner gelesenen Seite.
+
+(ac) KANDIDAT 1 — EINE EIGENE CONVERSION-REGEL OHNE ZUGEORDNETE KAMPAGNEN.
+     WAS DER ANBIETER SAGT (GELESEN 2026-09-11):
+     · "If you omit autoAssociationType, no campaigns are associated automatically." (S3)
+     · "Only the campaigns associated with the conversion rule are eligible for attributing
+       tracked conversions for reporting." (S3) · "Conversions are only attributed for the
+       associated ad campaigns." (S6)
+     · Campaign Manager ordnet beim Anlegen SELBST zu: "we'll automatically select ad sets
+       to associate with your conversion" und "We'll only automatically associate ad sets
+       that are either Active, Draft, or Paused." (H4). Auf diesem Weg wäre die Zuordnung
+       eigens abzuwählen.
+     · "Conversions will only be tracked when attached to an ad set." (H2)
+     WAS ER NICHT SAGT — und das Erste ist der entscheidende Punkt:
+     · **OB DIE STATUSANZEIGE (s. (ab)) EINGÄNGE AN EINER REGEL OHNE ANZEIGENGRUPPE
+       REGISTRIERT, IST NICHT ENTSCHEIDBAR.** Der Satz aus H2 lässt sich als "wird nicht
+       erfasst" und als "wird nicht zugeordnet" lesen (Achse: S3, S5, S6, H1, H2, H4).
+       Schnitte die Konfiguration die Beobachtung ab, wäre sie für einen Testmodus
+       wertlos.
+     · Ob die OPTIMIERUNG Ereignisse einer nicht zugeordneten Regel verwertet: nicht
+       gesagt. Gesagt ist allein, dass die Qualified-Leads-Optimierung die Regel in der
+       Anzeigengruppe auswählt (S5).
+     · ZIELGRUPPEN, eine dritte Achse neben Berichterstattung und Optimierung: "If a CAPI
+       event successfully matches to a LinkedIn member, that member is added to the
+       advertiser's audience" (S5). Eine Beschränkung auf zugeordnete Regeln steht dort
+       nicht, eine Zuordnung der Zielgruppe je Regel ebenso wenig — NICHT ENTSCHEIDBAR.
+     BERÜHRT (h): Ob die Regel der Messläufe vom 2026-08-15, 2026-08-17 und 2026-08-19
+     Kampagnen zugeordnet war, steht in keinem Messprotokoll dieses Abschnitts.
+
+(ad) KANDIDAT 2 — EIN TEST-WERBEKONTO (`test: true`).
+     WAS DER ANBIETER SAGT (GELESEN 2026-09-11, X4, wo nicht anders genannt):
+     · "LinkedIn enables you to create a test Ad Account so you can develop and demo your
+       integration." · "you can only create one test Ad Account per developer
+       application." · "You can't create a test Ad Account in Campaign Manager. You must
+       create a test Ad Account using an API endpoint." · Das Kennzeichen ist
+       unveränderlich ("An account can be marked as test only during creation."), und nur
+       Konten vom Typ BUSINESS können Testkonten sein.
+     · "All creatives created under a test Ad Account are never served in production." ·
+       "No reporting data is available from /adAnalytics for test campaigns as they don't
+       get served." · "Test accounts don't support Audience segment upload."
+     · Die Anlage gehört zur Werbe-Schnittstelle, Stufe Development: "Access to create 1
+       test Ad Account through the API" (X10). Das Produkt-Bündel der Conversions API
+       gewährt `rw_conversions`, `r_ads` und `r_liteprofile` (S2, X11); die Konto-
+       Schnittstelle nennt `rw_ads` (X4). **FOLGERUNG, NICHT GELESEN:** Die Anlage braucht
+       den Zugang zur Werbe-Schnittstelle, den das Conversions-Bündel nicht enthält.
+     WAS ER NICHT SAGT: ob sich in einem Testkonto eine Regel mit `CONVERSIONS_API`
+     anlegen lässt, ob Campaign Manager es zeigt, ob dort ein Direct-API-Zugangsdatum
+     erzeugbar ist (es wird je Werbekonto in Campaign Manager erzeugt, S2), ob die
+     Statusanzeige Eingänge meldet und ob CAPI-Zielgruppen betroffen sind. X4, X10 und X11
+     erwähnen die Conversions API im Zusammenhang mit Testkonten nicht (Achse: diese drei
+     Seiten vollständig, dazu S1 bis S13 über die formale Suche). **FOLGERUNG:** Ohne
+     Auslieferung keine Anzeigen-Interaktion, also keine Zuordnung.
+
+(ae) DIE VERWERFUNG BEIDER KANDIDATEN — OWNER-ENTSCHEIDUNG 2026-09-11.
+     **SIE STEHT HIER, WEIL SIE DEN BEFUND EINORDNET. SIE IST KEIN BEFUND.** Beide
+     Kandidaten prüfen gegen eine ANDERE Regel-Kennung als die produktive — und genau
+     diese Kennung ist der wahrscheinlichste Fehler einer Kundeneinrichtung. Der eigene
+     Bestand misst für eine formgültige, aber nicht auflösbare Kennung die irreführende
+     403 "No ad accounts found" (Teil (c), GEMESSEN 2026-08-15) und für ein falsches
+     Präfix eine 422 (Teil (l), GEMESSEN 2026-08-17). Ein Testmodus, der sie nicht prüft,
+     belegt nicht die Einrichtung, die der Kunde prüfen will.
+     WO SIE ALS BINDENDE ENTSCHEIDUNG GEFÜHRT WIRD: in der Standdatei der Phase 11.3,
+     docs/aktiver-stand.md, Entscheidung (17) — bis zu deren Archivierung am Phasenende.
+     Diese Datei trägt keine Entscheidungen.
+
+(af) DIE VERSIONIERUNG — MONATLICH, MINDESTENS EIN JAHR, UND EIN TERMIN FÜR DEN WERT DES
+     ADAPTERS.
+     GELESEN 2026-09-11 an X1 und X2:
+     · "Our versioned API releases follow a monthly cycle. These API versions are
+       supported and stable for a minimum of one year before sunset." (X1)
+     · Die neueste Version: "August 2026 | 202608" (X1).
+     · Die AKTIVEN Versionen mit ihrem Abschalttermin (X2, Tabelle "API Migration Status",
+       "Version Status" = Active; die Termine aus der englischen Schreibung übertragen):
+       202509 — 15.09.2026 · 202510 — 15.10.2026 · 202511 — 16.11.2026 ·
+       202601 — 15.01.2027 · 202602 — 15.02.2027 · 202603 — 16.03.2027 ·
+       202604 — 15.04.2027 · 202605 — 15.05.2027 · 202606 — 15.06.2027 ·
+       202607 — 15.07.2027 · 202608 — 17.08.2027.
+     · 202512 kommt in der Tabelle NICHT vor, und die Versionsauswahl der Doku springt
+       ebenso von "Marketing November 2025" auf "Marketing January 2026". 202508 und
+       älter stehen auf "Deprecated".
+     · "An error response is returned when the version header is deprecated (e.g.,
+       202401)." (X1). Änderungen innerhalb des Fensters behält sich der Anbieter vor "for
+       any critical security, privacy issues, or bug fixes" (X1; ebenso X9).
+     · DER ADAPTER SENDET 202601 (GEMESSEN am Repo, 2026-09-11, s. (ai)) — laut Tabelle
+       Abschalttermin 15.01.2027.
+     · **DER HINWEIS-BANNER DER SEITEN IST VERALTET:** Auf allen gelesenen Seiten des
+       Abschnitts steht am 2026-09-11 "Deprecation Notice: The Marketing Version 202508
+       (Marketing August 2025) will be sunset on August 17, 2026." — ein vergangener
+       Termin in Zukunftsform. Die Tabelle führt dieselbe Version als "Deprecated".
+       **Wer den Banner statt der Tabelle liest, hält einen alten Stand für aktuell.**
+
+(ag) MENGEN, WIEDERHOLUNG, ZÄHLREGEL, LATENZ. GELESEN 2026-09-11.
+     · "Send a maximum of 600 requests per minute from your member access token and a
+       maximum of 500,000 requests per day from your member access token, otherwise your
+       requests can get throttled due to rate limits." (S3; ebenso S11)
+     · BATCH: Kopfzeile `X-RestLi-Method: BATCH_CREATE`; "You can send up to 5,000
+       conversion events in a single batch request. If you encounter issues, try using a
+       smaller batch size." Ist ein Datensatz ungültig, gilt: "all records fail and you'll
+       need to resubmit the entire payload" (S3). Regeln im Batch: höchstens 100 (S3).
+     · ALLGEMEIN: "Rate limited requests will receive a 429 response." · "These limits
+       reset at midnight UTC every day." · "Standard rate limits are not published in
+       documentation." — ablesbar im Analytics-Reiter der App (X8).
+     · ZÄHLREGEL FÜR WIEDERHOLTE CONVERSIONS: "Most conversion types count only the first
+       instance of a repeated conversion within the configured lookback window. …
+       Exceptions are when you select Purchase or Add to Cart as conversion type, which
+       are always counted individually" (S5).
+     · LATENZ: "It takes up to 24 hours to complete ingestion and an additional 48 hours
+       for reporting; hence, it can take up to 72 hours for complete data to appear in
+       reports." (S11). Gesendet werden soll "in real time … or ideally within a day"
+       (S11).
+     · **EINE VORGABE ZU WIEDERHOLUNGSVERSUCHEN — nach einer 429 oder nach einem Fehler —
+       IST IM GELESENEN UMFANG NICHT GEFUNDEN WORDEN.** Reichweite: die vollständige Lesung
+       von S1 bis S13 und X8. **DIE FORMALE SUCHE DECKT DIESE ACHSE NICHT** — `retry` und
+       `backoff` standen nicht unter ihren Begriffen; der Nicht-Treffer ruht auf der
+       Lesung.
+     · Was bei ZWEI CAPI-Ereignissen mit derselben `eventId` geschieht, sagt keine
+       gelesene Seite — die Beschreibung der Deduplizierung gilt dem Paar aus Insight Tag
+       und CAPI (S7). Das berührt (p) und (t), ohne sie zu ändern.
+
+(ah) VORAUSSETZUNGEN AUF DER KONTOSEITE. GELESEN 2026-09-11.
+     · ZWEI ZUGANGSWEGE: (1) WERBETREIBENDE über Campaign Manager — sie "can generate
+       access tokens for authentication from their Campaign Manager ad account. They don't
+       need to create a developer application" (S1, S2), über Signals Manager → Direct API
+       → "Generate access token" (S2, H4). (2) PARTNER über das Entwicklerportal, mit
+       einem Antrag auf das Produkt Conversions API (S2); S1: "Available to qualified
+       developers vetted for Conversions API with Standard tier access."
+     · FREIGABEVERFAHREN FÜR PARTNER (S2): verifizierte Geschäfts-E-Mail, Rechtsname,
+       Anschrift und Website; "Company Page Verification is required … Ensure that you're
+       not using a fake or test company page."; die Freigabe der App durch einen Super-Admin
+       der Seite; keine LinkedIn- oder Microsoft-Namen und -Logos in der App; Kenntnis der
+       "LinkedIn Marketing API Terms"; Prüfung durch den Anbieter, mit Einspruchsweg. Für
+       Partner dazu ein "Technical Sign Off" mit Vorführung (S13).
+     · ROLLE UND BEREICHE: Scopes `rw_conversions` und `r_ads` (S3). Die zuweisende Person
+       hält eine der Rollen ACCOUNT_BILLING_ADMIN, ACCOUNT_MANAGER, CAMPAIGN_MANAGER,
+       CREATIVE_MANAGER (S3), und "The authenticated user must have a valid user access
+       role (other than VIEWER role)" (S4). Alle Bereiche sind 3-legged: "All permissions
+       listed are Member Permissions (3-legged OAuth)" (X11).
+     · MERKMAL FÜR DIE KLICK-KENNUNG: "Enhanced conversion tracking" am Insight Tag (S8) —
+       "This is enabled by default for all new Insight Tags that are recently created."
+       Der Tag muss angelegt, aber nicht eingebaut sein (S8, H5).
+     · DIE ALLOWLIST-ERWÄHNUNG, UND IHR KONTEXT IST NICHT DIE CONVERSIONS API: "Advertisers
+       with an existing Insight Tag and LLA relationship must have their LLA account
+       internally allowlisted." (X3, unter den Voraussetzungen der Insight-Tag-
+       Conversion-Verfolgung).
+     · **EINE DOMAIN-ANFORDERUNG FÜR DIE CONVERSIONS API IST NICHT GEFUNDEN WORDEN**
+       (Achse: S1 bis S13, H1 bis H6). Die Domain-Liste mit Sperre in X3 gilt den Signalen
+       des Insight Tags ("Block domains won't send a signal to downstream services"), also
+       dem Browser-Pfad.
+     · DATEN (H6): Data Processing Agreement, Section 13 des Ads Agreement, Speicherung in
+       den USA, "Data is deleted after 180 days."
+
+(ai) DIE KOPFZEILEN-AUFLAGE DES ANBIETERS — UND WAS DER ADAPTER SENDET.
+     DIE AUFLAGE, GELESEN 2026-09-11 an S3: "X-Restli-Protocol-Version: 2.0.0 must be
+     passed as a request header in all your API requests." · "Linkedin-Version: {yyyymm}
+     must be passed as a request header in all your API requests as per Versioning." Die
+     curl-Beispiele zum Streaming tragen `Authorization: Bearer`, `Content-Type:
+     application/json`, `Linkedin-Version` und `X-Restli-Protocol-Version: 2.0.0` (S3,
+     Reiter "curl").
+     UNSER ZUSTAND, GEMESSEN AM REPO 2026-09-11 (CC, nur gelesen): `forwardToLinkedin` in
+     `src/lib/capi/linkedin-forward.ts` setzt beim Aufruf (POST auf `LINKEDIN_ENDPOINT`)
+     GENAU DREI Kopfzeilen — `Authorization` mit `Bearer ${config.token}`, `Content-Type`
+     mit `application/json` und `LinkedIn-Version` mit der Konstante `LINKEDIN_VERSION`,
+     deren Wert `"202601"` ist. **`X-Restli-Protocol-Version` IST NICHT DARUNTER.** Eine
+     Suche nach `restli` über `src/`, ohne Rücksicht auf Gross- und Kleinschreibung, trifft
+     genau EINE Stelle: den Kommentar an `LINKEDIN_VERSION`, der die ANTWORT-Kopfzeile
+     `X-Restli-Gateway-Error` nennt. Positivkontrolle derselben Suche: `linkedin-version`
+     trifft Adapter und Testdatei.
+     DER TEST: "T1-c: Versions-Header und Autorisierung stehen in den Kopfzeilen" in
+     `src/lib/capi/linkedin-forward.test.ts` hält alle drei fest, je Schlüssel mit `toBe`.
+     Über `X-Restli-Protocol-Version` behauptet er nichts — weder Anwesenheit noch
+     Abwesenheit.
+     **OB DER ANBIETER DIE AUFLAGE AN DIESEM ENDPUNKT DURCHSETZT, IST NICHT
+     ENTSCHEIDBAR.** Gemessen ist in diesem Abschnitt allein das FEHLEN von
+     `LinkedIn-Version` (Teil (r)); welche Kopfzeilen die Läufe vom 2026-08-15, 2026-08-17
+     und 2026-08-19 sonst trugen, protokollieren die Messprotokolle nicht.
+     ZUSATZ 2026-09-11 — OB DIE AUFLAGE BEISST, UND WAS DAZU GEMESSEN IST. Der Text darüber
+     bleibt wörtlich stehen.
+     · DER ADAPTER HAT DIE KOPFZEILE NIE GESENDET. GEMESSEN am Repo (CC, 2026-09-11):
+       `git log -S'X-Restli-Protocol' -- src/lib/capi/linkedin-forward.ts` findet keinen
+       Commit, der sie je enthielt. Positivkontrolle derselben Suche auf `LinkedIn-Version`:
+       sie findet den Bau-Commit `a4e680c`, und der Adapter trägt an jenem Commit dieselben
+       drei Kopfzeilen wie heute.
+     · SEIN FORWARD IST AM 2026-08-19 LIVE ANGEKOMMEN, also ohne die Kopfzeile: "Nach
+       Eintragen der VOLLSTÄNDIGEN URN springt der Zeitstempel der Empfangsanzeige beim
+       Anbieter" (GEMESSEN LIVE, Owner; docs/claude-history/phase-11.1-linkedin.md, Vermerk 6
+       zur Scheibe 11.1f). Derselbe Vermerk protokolliert eine live erhaltene 422 mit der
+       Meldung "Invalid Urn format. Invalid prefix." — auch eine abgelehnte Anfrage ohne die
+       Kopfzeile ist also bis zur Validierung gekommen.
+     · DIE GRENZE: seither nicht erneut gemessen. Der Befund sagt, dass die Auflage am
+       2026-08-19 nicht biss — nicht, dass der Anbieter sie nie durchsetzen wird.
+     · WARUM DIESER BEFUND AN DEN VERSIONSWECHSEL GEKOPPELT IST, steht NICHT hier, sondern in
+       docs/offene-punkte.md, Eintrag "DIE LINKEDIN-VERSION DES ADAPTERS WIRD AM 15.01.2027
+       ABGESCHALTET — DANN SCHEITERT DER FORWARD STILL".
+     KEINE EMPFEHLUNG, ob die Kopfzeile ergänzt wird.
+
+(aj) EIN SECHSTES KENNUNGS-SYMBOL — UND IDENTITÄT OHNE EINTRAG IN `userIds`.
+     GELESEN 2026-09-11 an S4 (Doku-Stand 2026-08-26): SECHS Symbole — `SHA256_EMAIL`,
+     `LINKEDIN_FIRST_PARTY_ADS_TRACKING_UUID`, `ACXIOM_ID`, `PLAINTEXT_IP_ADDRESS`,
+     `SHA256_IP_ADDRESS`, `GOOGLE_AID`. NEU gegenüber (i) ist `SHA256_IP_ADDRESS`: "IP
+     address of the user, hashed using SHA256. Currently, only IPv4 addresses are
+     supported. The result should be a HEX-encoded string of exactly 64 characters." Die
+     Änderungsliste sagt dazu: "This update is available on all active versions." (X6).
+     H5 datiert die Aufnahme von IPv4 und GAID auf "As of May 2026".
+     DAZU: Eine Identität kann auch OHNE Eintrag in `userIds` reisen — über `lead`,
+     `externalIds` oder `userInfo` (dann mit `firstName` UND `lastName`); `userIds` ist dann
+     als leere Liste zu senden: "If identifying the user via lead, externalIds, or
+     userInfo, include userIds as an empty list ([])" (S3, Fehlertabelle; ebenso S4, S11).
+     Das widerspricht (a) nicht: (a) misst die Form EINES Eintrags, hier geht es darum, ob
+     einer nötig ist.
+     TEIL (i) BLEIBT WÖRTLICH: Er sagt, was am 2026-08-17 am Doku-Stand 2026-05-15 gelesen
+     wurde. Gemessen bleiben unverändert ZWEI Symbole. Der Adapter sendet `LINKEDIN_ID_TYPE`
+     mit dem Wert `"PLAINTEXT_IP_ADDRESS"` (GEMESSEN am Repo, 2026-09-11).
+
+(ak) DIE RUMPFFORM DES 90-TAGE-FEHLERS: GEMESSEN GEGEN DOKUMENTIERT — GEGENÜBERGESTELLT,
+     NICHT AUFGELÖST.
+     GEMESSEN (Teil (s), Lauf F, 2026-08-19):
+     `{"message":"Conversion time should be within 90 days and not exceed current time, indices [0] (0-indexed).","status":400}`
+     DOKUMENTIERT (GELESEN 2026-09-11, S3, Fehlertabelle, Status 400): "Validation failed
+     because [{field=Invalid Conversion time, batchIndex=0,
+     type=INVALID_CONVERSION_TIME_FIELD_VALUE, message=Conversion time should be within 90
+     days.}]", mit der Beschreibung "Please make sure conversion timestamp in milliseconds
+     is from the past 90 days."
+     Der Status ist gleich, die Meldung nicht: Die dokumentierte Form trägt `batchIndex`
+     und einen Fehlertyp, die gemessene trägt `indices [0]` und keinen Typ.
+     **HIER WIRD NICHTS AUFGELÖST.** Die Messung sagt, was die Schnittstelle am 2026-08-19
+     geantwortet hat; die Tabelle ist eine Doku-Aussage, deren Form kein Datum trägt.
+     Welche Form heute zurückkommt, sagt keine der beiden.
+
+(al) DAS DIRECT-API-ZUGANGSDATUM KANN AUF EINE ZWEITE, NICHT ZEITBASIERTE WEISE ENDEN — MIT
+     EINER UNSICHERHEIT, DIE ZUR ANGABE GEHÖRT.
+     GELESEN 2026-09-11: S1 und S2 sagen für den Weg über Campaign Manager unverändert "The
+     generated access tokens don't expire." H1 sagt: "Please note, you'll also need to
+     reauthenticate your token if the LinkedIn member who authenticated the integration
+     leaves your organization. You'll need to reauthenticate with a LinkedIn member who is
+     a part of your organization." Unmittelbar davor steht dort: "If you added an access
+     token to your Google Tag Manager tags before November 2024, it expired one year after
+     creation … Once these steps are completed, new tokens will no longer expire." Das
+     Zugangsdatum ist an ein Mitglied gebunden: "Sign in to your LinkedIn account and
+     follow the instructions." (S2).
+     **DIE ABGRENZUNG ZUM ABLAUF:** Das ist kein Ende nach Zeit. Es tritt ein, wenn ein
+     Mensch die Organisation verlässt — ohne Handlung am Zugang und zu keinem
+     vorhersagbaren Termin.
+     **DIE UNSICHERHEIT, UND SIE IST DIE ACHSE DIESER ANGABE:** Der Satz steht in H1 im
+     Absatz zu Googles Tag Manager, direkt nach dem Satz über dessen Zugangsdaten ("you'll
+     ALSO need to reauthenticate"). **OB ER FÜR EIN IM SIGNALS MANAGER ERZEUGTES
+     DIRECT-API-ZUGANGSDATUM GILT, IST AM DOKUMENT NICHT ENTSCHEIDBAR** (Achse: H1, H4, S1,
+     S2 vollständig; keine dieser Seiten nennt den Fall für die Direct API ausdrücklich).
+     Der Hilfe-Artikel a1718034 zum Zugangsdatum für den Tag Manager ist NICHT geöffnet
+     worden (s. Umfang-Block) — er könnte die Frage eingrenzen.
+     ZEIGER: der Block "WAS AUSDRÜCKLICH OFFEN BLEIBT (2026-08-20)" in diesem Abschnitt,
+     Punkt "OB DAS LIVE VERWENDETE ZUGANGSDATUM ABLÄUFT" · docs/offene-punkte.md, Eintrag
+     "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICHT SENDEN — DREI URSACHEN, DIE
+     GETRENNT BLEIBEN", Ursache (4).
+
+### Der gelesene Umfang (2026-09-11) — LinkedIn
+
+**OHNE DIESEN BLOCK HAT DER NICHT-TREFFER IN (aa) KEINE REICHWEITE.** Alle Seiten sind am
+2026-09-11 zwischen etwa 07:08 und 07:24 UTC abgerufen worden. Die Learn-Seiten in der
+Ansicht `view=li-lms-2026-08`; die Pfade unten liegen unter
+`https://learn.microsoft.com/en-us/linkedin/`. Der Doku-Stand ist die "Last updated"-Angabe
+der jeweiligen Seite.
+
+**DER ABSCHNITT "Conversions" — VOLLSTÄNDIG, DREIZEHN SEITEN:**
+- S1 `marketing/conversions/conversions-overview` — "Conversions - Overview" — 08/12/2026
+- S2 `marketing/conversions/getting-access-conversions` — "Getting Access to Conversions
+  API" — 08/12/2026
+- S3 `marketing/integrations/ads-reporting/conversions-api` — "Conversions API" —
+  08/26/2026. Sechs Reiter-Gruppen "http"/"curl"; "curl" ist ANGEKLICKT worden, danach
+  standen alle sechs auf curl. `textContent` vor und nach dem Klick 26 432 Zeichen,
+  `innerText` 18 308 gegen 19 498 — der Klick lädt nichts nach.
+- S4 `marketing/integrations/ads-reporting/conversions-api-schema` — "Conversions API
+  Schema" — 08/26/2026
+- S5 `marketing/conversions/conversions-usecase` — "Conversions API Use Cases" — 08/17/2026
+- S6 `marketing/conversions/conversions-workflow` — "Conversions API Workflow" —
+  08/17/2026 (im Navigationsbaum zweimal geführt)
+- S7 `marketing/conversions/deduplication` — "Deduplication" — 08/29/2025
+- S8 `marketing/conversions/enabling-first-party-cookies` — "Enabling Click IDs" —
+  03/04/2026
+- S9 `marketing/conversions/conversions-api-gtm-guide` — "Conversions API - Google Tag
+  Manager (GTM) Server-Side Tagging - Implementation Guide" — 05/15/2026
+- S10 `marketing/conversions/custom-matching-identifiers` — "Custom Matching Identifiers" —
+  04/30/2026
+- S11 `marketing/conversions/conversions-faq` — "Conversions FAQ" — 08/17/2026
+- S12 `marketing/conversions/conversions-payload-builder` — "Using the Conversions API
+  Payload Builder" — 05/15/2026
+- S13 `marketing/conversions/integration-requirements-conversions` — "Integration
+  Requirements for Conversions API Program" — 08/12/2026
+**S3 UND S4 FÜHRTE DIE GERENDERTE SEITENNAVIGATION NICHT** — sie standen erst in der
+Navigations-Datenquelle `marketing/toc.json`, als Kindknoten unter "Conversions"
+(s. docs/ziel-fragenkatalog.md, Abschnitt "Befunde am Verfahren", Fortschreibung
+2026-09-11).
+
+**ÜBER FLIESSTEXT-VERWEISE GEÖFFNET — sechs Learn-Seiten und eine Portal-Seite:**
+- X1 `marketing/versioning` — "LMS API Documentation Versioning" — 08/17/2026 — vollständig
+- X2 `marketing/integrations/migrations` — "Migrations" — 08/17/2026 — vollständig
+- X3 `marketing/integrations/ads-reporting/conversion-tracking` — "Conversion Tracking"
+  (Seitenüberschrift "Insight Tag Conversion Tracking") — 08/25/2026 — Prosa vollständig;
+  Codeblöcke über 400 Zeichen nur angelesen; 23 Reiter-Gruppen NICHT einzeln geklickt,
+  sondern per `textContent` erfasst
+- X4 `marketing/integrations/ads/account-structure/create-and-manage-accounts` — "Create
+  and Manage Ad Accounts" — 06/24/2026 — Prosa vollständig; Codeblöcke über 300 Zeichen nur
+  angelesen; Reiter nicht einzeln geklickt
+- X5 `marketing/integrations/ads/account-structure/account-access-controls` — "Account
+  Access Controls" — 06/24/2026 — wie X4
+- X6 `marketing/integrations/recent-changes` — "Recent Marketing API Changes" — Doku-Stand
+  nicht erhoben — **NICHT VOLLSTÄNDIG GELESEN:** eine Suchlesung (Begriffe `conversion`,
+  `capi`, `\btest`, `sandbox`, `validat`, `dry.?run`, `debug`), dazu der Abschnitt "August
+  2026 - Version 202608" vollständig und die Blöcke "Version Sunset"
+- P1 `https://www.linkedin.com/developers/payload-builder` — "Payload Builder | Developers |
+  LinkedIn" — ohne Anmeldung lesbar; KEINE Eingabe, KEIN Aufruf
+
+**BEIM ABGLEICH DER AUSSCHLUSS-LISTE MIT DEN FRAGEN GEÖFFNET** — ihr Titel in `toc.json`
+trug eine der Fragen. Fünf Learn-Seiten, alle vollständig, abgerufen als Server-HTML und
+per `textContent` ausgewertet; keine trägt Reiter:
+- X7 `shared/authentication/developer-portal-tools` — "Developer Portal Tools" — 2025-10-08
+- X8 `shared/api-guide/concepts/rate-limits` — "LinkedIn API Rate Limiting" — 2025-08-20
+- X9 `shared/breaking-change-policy` — "LinkedIn API Breaking Change Policy" — 2023-05-08
+- X10 `marketing/integrations/marketing-tiers` — "LinkedIn Marketing API Program Access
+  Tiers" — 2026-04-08
+- X11 `marketing/increasing-access` — "Increasing Access" — 2026-08-17
+
+**HILFE-ARTIKEL** (`https://www.linkedin.com/help/lms/answer/…`, jeweils mit `?lang=en` —
+ohne den Parameter liefert die Seite eine deutsche Maschinenübersetzung). Die Hilfe ist ein
+eigener Doku-Baum; aus ihm sind nur diese sieben geöffnet:
+- H1 `a489395` — "Understand your conversion status in Campaign Manager" — "Last updated:
+  3 weeks ago"
+- H2 `a1657171` — "Set up a Conversions API integration in Campaign Manager" — "3 weeks
+  ago"
+- H3 `a5538676` — "Conversions API setup in Campaign Manager best practices" — "1 week ago"
+- H4 `a1711116` — "Set up and create conversions using Direct API" — "3 weeks ago"
+- H5 `a5938392` — "Troubleshoot Conversions API signal quality" — "3 months ago"
+- H6 `a1655394` — "LinkedIn Conversions API" — "1 month ago"
+- H7 `a1680223` — "LinkedIn Conversions API" — **NUR TITEL UND LÄNGE GEPRÜFT** (9 820
+  Zeichen, gleich H6); nicht zeichenweise verglichen, nicht gelesen
+
+**DIE FORMALE SUCHE — ÜBER S1 BIS S13, ZWEIUNDZWANZIG BEGRIFFE:**
+INSTRUMENT: je Seite das Server-HTML abgerufen, mit `DOMParser` geparst, `textContent` von
+`<main>` bis vor den Feedback-Block, Suche als Teilzeichenkette ohne Rücksicht auf Gross-
+und Kleinschreibung.
+BEGRIFFE: `test` · `sandbox` · `staging` · `validat` · `dry` · `debug` · `preview` ·
+`diagnos` · `troubleshoot` · `delete` · `remov` · `revoke` · `retract` · `exclude` ·
+`not count` · `discard` · `production` · `environment` · `simulat` · `mock` · `fake` ·
+`dummy`.
+ERGEBNIS: NULL Treffer auf `sandbox`, `staging`, `dry`, `debug`, `diagnos`, `simulat`,
+`mock`, `dummy`, `revoke`, `retract`, `exclude` und `not count`. `test` trifft nur "latest",
+"fake or test company page" (S2), "Conversion Lift Testing" (S5), "To test and inspect your
+setup" (S9, Googles Tag Manager) und "test their payloads in real-time" (S12).
+`production` trifft einmal, in S12. `validat` trifft Validierungsfehler (S3, S4), "to
+validate that the conversion events were received" (S5), S12 und "invalidated" (S13);
+`delete` nur gelöschte Regeln (S3, S6, S13); `discard` nur die Deduplizierung (S5, S7,
+S11); `preview` nur S9; `troubleshoot` nur S8; `environment` S9 und S12; `remov` nur S13
+(Leerraum beim Hashen); `fake` nur S2.
+KONTROLLEN: Positivkontrolle — `test` trifft auf ALLEN dreizehn Seiten (über "latest");
+`conversionEvents` trifft S3 und S10. Negativkontrolle — `testEvent` trifft auf null von
+dreizehn.
+DIE GRENZE: `retry` und `backoff` standen nicht auf der Liste (s. (ag)). Die Suche lief
+über S1 bis S13, nicht über die X-, H- oder P-Seiten.
+
+**SYMBOL-TABELLEN:** In allen Tabellen aller geöffneten Seiten ist nach Häkchen-, Kreuz-
+und Punkt-Zeichen sowie nach Bild-, SVG- und Icon-Elementen gesucht worden — kein Treffer.
+Die Statustabelle in H1 nennt ihre Farben als Text ("green", "gray", "red").
+
+**GESEHEN, NICHT GEÖFFNET — mit Grund:**
+· `shared/authentication/authentication`, `…/authorization-code-flow`,
+  `…/postman-getting-started` — OAuth-Mechanik; der Titel trägt keine der Gestalten, und
+  die Rolle steht in S3.
+· `shared/integrations/people/profile-api`, `marketing/lead-sync/leadsync`,
+  `…/create-and-manage-campaigns` (Kampagnensuche) — nicht Gegenstand.
+· `…/create-and-manage-account-users` — die Rollen sind aus X5 gelesen.
+· `marketing/matched-audiences/matched-audiences`, `…/predictive-audiences` — berühren die
+  Zielgruppen-Achse; dass CAPI-Ereignisse dort einfliessen, steht in S5.
+· `marketing/integrations/ads-reporting/ads-reporting-schema` — Berichts-Schema, keine
+  Gestalt.
+· `marketing/error-responses` (Verweis aus X1) — zweite Ebene. Er trägt das Beispiel der
+  Antwort auf einen veralteten Versions-Header und ist **nicht gelesen**.
+· Die übrigen Einträge von `toc.json` ausserhalb des Knotens "Conversions" — nicht einzeln
+  bewertet, ausgenommen X7 bis X11.
+· Hilfe-Artikel, verlinkt aus S1 bis S13 und H1 bis H6: a418880, a484456, a423777,
+  a422513, a426359, a426349, a6553958, a427551 (CAPI-Zielgruppen), a1634068, a1631056,
+  a7413311 und a7416235 (Conversion Lift Testing — ein Wirkungsexperiment an Kampagnen,
+  laut S5 kein Isolationsweg), a528686, a476761, a415868, a423304, a1718034 (Zugangsdatum
+  für Googles Tag Manager — berührt (al), war aber keine Frage des Laufs), a425750,
+  a548360, a1665329, a1449586, 67513, 108047, 86511, 102793, 41250 — kein Titel trägt
+  eine der Gestalten.
+· HINTER EINER ANMELDESCHRANKE, NICHT BETRETEN: das Entwicklerportal (`developer.linkedin.com`,
+  `linkedin.com/developers/apps`), das Token-Werkzeug, der API-Aufruf im Payload Builder,
+  Campaign Manager.
+· Postman-Sammlungen (fremder Host), das Tag-Template auf GitHub (Code, keine Doku),
+  Googles Seiten zum Tag Manager (fremder Anbieter).
 
 ## Google (Google Ads Conversions · GA4)
 

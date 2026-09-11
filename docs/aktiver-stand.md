@@ -173,9 +173,10 @@ Oberflächen-Scheibe.
 REICHWEITE DER GEBAUTEN SCHEIBEN, NICHT DEN GEGENSTAND DER PHASE.**
 
 **DIE PHASE 11.3 UMFASST ALLE FÜNF FAN-OUT-ZIELE** (OWNER-ENTSCHEIDUNG 2026-09-09).
-**Gebaut sind DREI davon — `meta`, `tiktok` und seit dem 2026-09-10 `pinterest`; ZWEI
-stehen aus: `google` und `linkedin`.** **DIE PHASE IST DAMIT NICHT FERTIG**, und der
-Marker in CLAUDE.md bleibt aus genau diesem Grund auf `[ ]`.
+**Gebaut sind DREI davon — `meta`, `tiktok` und seit dem 2026-09-10 `pinterest`;
+`linkedin` ist seit dem 2026-09-11 OHNE CODE ABGESCHLOSSEN (Entscheidung (17)); EINES steht
+aus: `google`.** **DIE PHASE IST DAMIT NICHT FERTIG**, und der Marker in CLAUDE.md bleibt
+aus genau diesem Grund auf `[ ]`.
 
 **NACHGEZOGEN AM 2026-09-10, NICHT GESTEMPELT — HIER STAND "Gebaut sind zwei davon; drei
 stehen aus."** Das war bis zum Bau der Scheibe 11.3e richtig (Commit `9422920`, VERMERK 6).
@@ -189,6 +190,20 @@ ihnen fehlt, steht unverändert in der Liste weiter unten.
 PROVENIENZ: der Bau von `pinterest` ist GEMESSEN am Repo (CC, 2026-09-10, Commit `9422920`,
 gepusht) und live belegt (VERMERK 6); dass `google` und `linkedin` die zwei verbliebenen
 sind, ist am Bestand dieser Liste ABLESBAR.
+
+**NACHGEZOGEN AM 2026-09-11, NICHT GESTEMPELT — HIER STAND: "Gebaut sind DREI davon —
+`meta`, `tiktok` und seit dem 2026-09-10 `pinterest`; ZWEI stehen aus: `google` und
+`linkedin`."** Das war bis zur Owner-Entscheidung vom 2026-09-11 richtig. **DERSELBE GRUND
+WIE AM NACHZUG DARÜBER:** Die Zahl ist eine STANDAUSSAGE, und der nächste Zuschnitt liest sie
+als Ausgangslage — wer ihr folgt, sucht für `linkedin` einen Zuschnitt, den es nicht mehr
+gibt. **`linkedin` IST NICHT GEBAUT, SONDERN ABGESCHLOSSEN** — die beiden Wörter werden hier
+nicht zusammengezogen, weil ein abgeschlossenes Ziel keinen Testmodus hat. **IM SELBEN ZUG
+NACHGEZOGEN** ist der `linkedin`-Punkt in der Liste darunter; wer nur eine der beiden Stellen
+anfasst, macht die andere zur Falle. Die Sätze des Nachzugs darüber ("DIE ZWEI VERBLIEBENEN
+…") bleiben als Aussage über den 2026-09-10 stehen.
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-11 (Entscheidung (17)), auf der Grundlage der
+Abschnitts-Lesung desselben Tages (docs/ziel-befunde.md, Abschnitt "LinkedIn (Conversions
+API)", Teile (aa) bis (al)).
 
 **WAS HIER STAND UND WORAN ES SICH AUFGEHÄNGT HAT:** Die Liste unten trennte "MIT DABEI"
 von "NICHT DABEI" und schloss mit dem Satz, ein späterer Anlauf bei pinterest oder google
@@ -209,9 +224,29 @@ zweimal — in der verworfenen Alternative an Entscheidung (1) und **im Kopf von
 anfasst. Eine Umbenennung machte beide Zeiger tot, und ein toter Zeiger fällt an keinem
 Gate auf.
 
-**WAS JEDES DER DREI OFFENEN ZIELE ALS NÄCHSTES BRAUCHT — DREI VERSCHIEDENE SCHRITTE, UND
-HIER WIRD KEINER DAVON VOLLZOGEN:**
-- **pinterest — DIE MESSUNG IST GEFAHREN, ES IST BAUBAR.** NACHGEZOGEN AM 2026-09-10; hier
+**WAS JEDES ZIEL DIESER LISTE ALS NÄCHSTES BRAUCHT — OFFEN IST NUR NOCH EINES, `google`;
+`pinterest` IST GEBAUT, `linkedin` IST OHNE CODE ABGESCHLOSSEN:**
+**NACHGEZOGEN AM 2026-09-11, ERSETZT UND NICHT GESTEMPELT — hier stand: "WAS JEDES DER DREI
+OFFENEN ZIELE ALS NÄCHSTES BRAUCHT — DREI VERSCHIEDENE SCHRITTE, UND HIER WIRD KEINER DAVON
+VOLLZOGEN:"** Die Zahl ist in ZWEI Schritten zu hoch geworden: Seit dem 2026-09-10 ist
+`pinterest` gebaut (Commit `9422920`, VERMERK 6), seit dem 2026-09-11 ist `linkedin` ohne
+Code abgeschlossen (Entscheidung (17)). Und "HIER WIRD KEINER DAVON VOLLZOGEN" gilt ebenso
+nicht mehr — zwei der drei Schritte sind vollzogen, in anderen Abschnitten dieser Datei.
+**DER GRUND IST DERSELBE WIE AN DEN PUNKTEN DARUNTER UND AN DER STAND-AUSSAGE: DIE
+ÜBERSCHRIFT BINDET EINE HANDLUNG.** Wer ihr folgt, sucht drei offene Ziele, findet zwei
+abgeschlossene — oder hält die Liste für unvollständig und sucht ein drittes.
+**VON AUSSEN ZITIERT WIRD SIE NICHT** (GEMESSEN am Repo, CC, 2026-09-11; Achse "OFFENEN
+ZIELE ALS N" und "DREI OFFENEN", ohne Rücksicht auf Gross- und Kleinschreibung, ganzes Repo
+ohne `node_modules`, `.git`, `.next`, `.playwright-mcp`: einziger Treffer die Überschrift
+selbst). docs/roadmap.md trägt an der Roadmap-Zeile 11.3 den verwandten Satz "WAS JEDES DER
+DREI ALS NÄCHSTES BRAUCHT" — eine EIGENE Fassung derselben Liste, ein Namensvetter und kein
+Zeiger. Er stirbt mit dieser Änderung nicht, veraltet aber mit; jene Zeile wird am
+Phasenende angefasst.
+PROVENIENZ: `pinterest` gebaut GEMESSEN am Repo und live (Commit `9422920`, VERMERK 6);
+`linkedin` abgeschlossen durch OWNER-ENTSCHEIDUNG 2026-09-11 (Entscheidung (17)).
+- **pinterest — GEBAUT UND LIVE BEWIESEN (Scheibe 11.3e, Commit `9422920`, VERMERK 6);
+  OFFEN IST ALLEIN EINE MESSUNG — DIE OPTIMIERUNGS-HÄLFTE DER SANDBOX-ZUSAGE.**
+  NACHGEZOGEN AM 2026-09-10; hier
   stand: "EINE MESSUNG. Es ist bekannt, WO der Träger sitzt; unbekannt ist, welcher der
   zwei Namen greift. Ein Lauf gegen die Schnittstelle entscheidet es. Danach ist es
   baubar." **Der Lauf ist am 2026-09-10 gefahren** (GEMESSEN LIVE, Stefan; VERMERK 3):
@@ -257,18 +292,55 @@ HIER WIRD KEINER DAVON VOLLZOGEN:**
   **11.3e** (Oberfläche) geteilt worden; **Zielmenge und Schalter sind 11.3e.** Der Zeiger
   ist nachgezogen, **weil er eine Handlung bindet** — wer ihm folgt, sucht die Oberfläche
   in einem Abschnitt, der sie ausschliesst.
+  **NACHGEZOGEN AM 2026-09-11, ERSETZT UND NICHT GESTEMPELT — DER KOPF DIESES PUNKTS; hier
+  stand: "pinterest — DIE MESSUNG IST GEFAHREN, ES IST BAUBAR."** "Baubar" behauptete eine
+  ausstehende Bauhandlung, und die ist seit Commit `9422920` vollzogen (Scheibe 11.3e,
+  VERMERK 6). **DERSELBE GRUND WIE AN DER ÜBERSCHRIFT ÜBER DIESER LISTE UND AM
+  `linkedin`-PUNKT: DER KOPF BINDET EINE HANDLUNG** — wer ihm folgt, sucht eine Bauarbeit,
+  die es nicht mehr gibt.
+  **DIE NACHTRÄGE DARÜBER BLEIBEN WÖRTLICH STEHEN**, auch der vierte ("PINTEREST FEHLT
+  NICHTS MEHR"): Er ist der datierte Beleg, auf den der neue Kopf sich stützt.
+  **VON AUSSEN ZITIERT WIRD DER KOPF NICHT** (GEMESSEN am Repo, CC, 2026-09-11; Achsen
+  `baubar`, "MESSUNG IST GEFAHREN" und "pinterest — DIE MESSUNG", ohne Rücksicht auf Gross-
+  und Kleinschreibung, ganzes Repo ohne `node_modules`, `.git`, `.next`, `.playwright-mcp`;
+  Negativkontrolle 0). Ausserhalb dieser Datei trägt allein docs/roadmap.md an der
+  Roadmap-Zeile 11.3 den Satz "es ist damit baubar" — eine EIGENE Fassung derselben Liste,
+  ein Namensvetter und kein Zeiger; jene Zeile wird am Phasenende angefasst.
+  PROVENIENZ: der Bau GEMESSEN am Repo und live (Commit `9422920`, VERMERK 6); dass allein
+  die Optimierungs-Hälfte offen ist, steht im vierten Nachtrag dieses Punkts und in
+  VERMERK 6, dritte Grenze.
 - **google — EIN ANDERER WEG.** Hier fehlt keine Messung, sondern ein Träger, der die
   Beobachtung nicht abschneidet. Ob es ihn gibt, ist offen; solange nicht, kann diese Phase
   für google nichts liefern, was ihr eigenes Versprechen einlöst.
-- **linkedin — EINE LESUNG, UND MÖGLICHERWEISE EIN BEGRÜNDETES NEIN.** Der Stand ist ein
-  NICHT-TREFFER, kein Beweis der Abwesenheit. Hat der Anbieter keinen Testmodus, endet
-  dieses Fünftel der Phase **nicht mit Code, sondern mit einer festgehaltenen Feststellung**
-  — und das ist ein gültiger Abschluss, kein Ausfall.
+- **linkedin — OHNE CODE ABGESCHLOSSEN (2026-09-11). DIE LESUNG IST GEFAHREN, IHR ERGEBNIS
+  IST NEGATIV, UND DIESEM ZIEL FEHLT NICHTS MEHR.** Die Conversions-API-Dokumentation ist am
+  2026-09-11 abschnittsweise gelesen worden. Im gelesenen Umfang gibt es keinen Weg, ein
+  Ereignis beim Anbieter sichtbar ankommen zu lassen, ohne seine Zahlen zu berühren; die zwei
+  Konfigurations-Kandidaten sind verworfen. Befund und Reichweite: docs/ziel-befunde.md,
+  Abschnitt "LinkedIn (Conversions API)", Teile (aa) bis (al) und der Block "Der gelesene
+  Umfang (2026-09-11) — LinkedIn". Die bindende Entscheidung steht als (17). **Dieses
+  Fünftel der Phase endet damit, wie vorgesehen, mit einer festgehaltenen Feststellung und
+  nicht mit Code.**
+  **NACHGEZOGEN AM 2026-09-11, ERSETZT UND NICHT GESTEMPELT; hier stand:** "linkedin — EINE
+  LESUNG, UND MÖGLICHERWEISE EIN BEGRÜNDETES NEIN. Der Stand ist ein NICHT-TREFFER, kein
+  Beweis der Abwesenheit. Hat der Anbieter keinen Testmodus, endet dieses Fünftel der Phase
+  nicht mit Code, sondern mit einer festgehaltenen Feststellung — und das ist ein gültiger
+  Abschluss, kein Ausfall."
+  **DER GRUND, DERSELBE WIE AN DEN NACHBARPUNKTEN: DER SATZ BINDET EINE HANDLUNG.** Er sagt,
+  was `linkedin` als nächstes braucht — wer ihm folgt, fährt die Lesung ein zweites Mal.
+  **WAS DIE LESUNG NICHT IST:** ein Beweis der Abwesenheit. Sie bleibt ein NICHT-TREFFER,
+  jetzt mit benannter Reichweite; die Grenze steht an Entscheidung (17). **IM SELBEN ZUG
+  NACHGEZOGEN** ist die Stand-Aussage am Kopf dieses Abschnitts.
+  PROVENIENZ: die Lesung GELESEN 2026-09-11 (CC, Browser-Werkzeug); der Abschluss ohne Code
+  ist OWNER-ENTSCHEIDUNG 2026-09-11.
 
 **WAS HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN IST:** die Reihenfolge der drei, ihr Zuschnitt in
 Scheiben, und ob linkedin am Ende gebaut oder abgeschlossen wird. **Der Zustand je
 (Projekt, Ziel) aus 11.3a hat für alle drei bereits die Form**; was ihnen fehlt, steht oben
 je Ziel.
+**NACHGEZOGEN AM 2026-09-11 — DER LETZTE HALBSATZ IST ENTSCHIEDEN:** `linkedin` wird ohne
+Code abgeschlossen (Entscheidung (17)). Der Satz bleibt als Aussage über den 2026-09-09
+stehen; offen ist von ihm heute allein noch `google`.
 
 **PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-09 (die Phase umfasst fünf Ziele). Die drei
 Befunde darunter sind unverändert die GELESENEN vom 2026-08-11, 2026-08-20 und 2026-08-24;
@@ -1237,6 +1309,63 @@ STILL RICHTIG AUSSEHEN LÄSST.**
 **PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-10. Die Gate-Reihenfolge in `startTestMode` und
 der gemockte Schreibweg des zweiten Konsumenten sind GEMESSEN am Repo (CC, 2026-09-10).
 
+### (17) LINKEDIN WIRD OHNE CODE ABGESCHLOSSEN — FÜR DIESES ZIEL ENTSTEHT KEIN TESTMODUS
+
+**DIE ENTSCHEIDUNG:** Für `linkedin` baut die Phase 11.3 keinen Testmodus. Dieses Fünftel
+der Phase endet mit der festgehaltenen Feststellung vom 2026-09-11, nicht mit Code: kein
+Eintrag in `TARGETS_WITH_TEST_MODE`, keine eigene Klausel im CHECK
+`project_secrets_test_mode_je_ziel` (dessen `else`-Zweig bleibt für `linkedin` zuständig),
+kein Schalter an der Ziel-Karte.
+
+**DER GRUND, IN ZWEI TEILEN:**
+- **DER ANBIETER BIETET KEINEN TRÄGER.** Im gelesenen Umfang gibt es keinen Weg, ein
+  Ereignis sichtbar ankommen zu lassen, ohne seine Zahlen zu berühren, und für zwei Wege
+  sagt der Anbieter ausdrücklich das Gegenteil: Der Aufruf aus dem Payload Builder
+  "gets created in the production environment", und "all API Calls at all access levels are
+  made on production data". Befund und Reichweite: docs/ziel-befunde.md, Abschnitt
+  "LinkedIn (Conversions API)", Teile (aa) und (ab), und der Block "Der gelesene Umfang
+  (2026-09-11) — LinkedIn".
+- **DIE ZWEI KONFIGURATIONS-KANDIDATEN SIND VERWORFEN** — eine eigene Conversion-Regel ohne
+  zugeordnete Kampagnen und ein Test-Werbekonto (dort Teile (ac) und (ad)). **Beide prüfen
+  gegen eine ANDERE Regel-Kennung als die produktive, und genau die ist der
+  wahrscheinlichste Fehler einer Kundeneinrichtung.** Der eigene Bestand misst für eine
+  formgültige, aber nicht auflösbare Kennung die irreführende 403 "No ad accounts found"
+  (dort Teil (c)) und für ein falsches Präfix eine 422 (Teil (l)). **Ein Testmodus, der die
+  produktive Kennung nicht prüft, belegt nicht die Einrichtung, die der Kunde prüfen will**
+  — und ANKUNFT der eigenen Einrichtung ist das Versprechen dieser Phase (Entscheidung (1)).
+  Dass bei beiden Kandidaten zusätzlich die Beobachtung am Dokument nicht entscheidbar ist,
+  ist ein NEBENGRUND und trägt die Verwerfung nicht.
+
+**WEN SIE BINDET:** jede spätere Scheibe dieser Phase, die `TARGETS_WITH_TEST_MODE`, den
+CHECK oder die Ziel-Karte anfasst · jeden Kundentext, der den Testmodus erklärt — für
+`linkedin` gibt es keinen, und kein Text darf einen andeuten · jede Runde, die für
+`linkedin` einen der zwei Kandidaten neu vorschlägt: **sie trägt gegen den Grund oben vor
+und beginnt nicht bei null.**
+**DER PREIS AUS ENTSCHEIDUNG (3) BLEIBT FÜR `linkedin` DAUERHAFT:** Steht ein anderes Ziel
+im Testmodus, bekommt `linkedin` den Testklick als ECHTE Conversion. Das ist keine neue
+Verschlechterung, sondern jene Entscheidung an einem Ziel, das keinen eigenen Testmodus
+bekommt.
+
+**IHRE GRENZE — WAS SIE NICHT SAGT:** Sie sagt NICHT, dass `linkedin` nie einen Testmodus
+bekommt. Sie beschreibt den Kenntnisstand vom 2026-09-11 — eine DOKU-LESUNG, keine Messung
+—, und der Anbieter kann ihn ändern, ohne dass hier etwas rot wird. Derselbe Anbieter führt
+bei anderen Produkten Test-Kennzeichen (dort Teil (aa)). Der Befund ist ein NICHT-TREFFER mit
+benannter Reichweite, **KEIN Beweis der Abwesenheit.**
+**WANN SIE KIPPT:** wenn der Anbieter einen Träger dokumentiert oder eine Messung einen
+zeigt, der die PRODUKTIVE Regel-Kennung prüft und die Beobachtung nicht abschneidet. Dann ist
+neu zu entscheiden. Der Zustand je (Projekt, Ziel) aus 11.3a hat für `linkedin` bereits die
+Form; der CHECK bräuchte nach Entscheidung (12) eine eigene Klausel.
+
+**ES IST KEIN VERMERK ENTSTANDEN, UND DAS IST KEIN VERSÄUMNIS:** Ein Vermerk behauptet eine
+gebaute Scheibe mit Bau-Commit und Live-Nachweis — hier gibt es weder das eine noch das
+andere.
+
+**PROVENIENZ:** OWNER-ENTSCHEIDUNG 2026-09-11, auf der Grundlage der Abschnitts-Lesung vom
+2026-09-11 (GELESEN, CC, Browser-Werkzeug; docs/ziel-befunde.md wie oben). Die 403 und die
+422 sind GEMESSEN (Owner, 2026-08-15 bzw. 2026-08-17; dort Teile (c) und (l)). Dass der
+`else`-Zweig des CHECK `linkedin` heute schon abdeckt, ist GEMESSEN LIVE (VERMERK 4, Wortlaut
+der abgelesenen Definition).
+
 ## Vorrat — gemeldet, nicht gebaut
 
 **(1) OB TIKTOK TEST-MARKIERTE EREIGNISSE MITZÄHLT WIE META — UNGELESEN UND UNGEMESSEN.**
@@ -1671,9 +1800,22 @@ gepusht); der gesehene Banner ist GEMESSEN LIVE (Stefan, 2026-09-10); die Zuordn
 TikTok-Messung zu Vorrat (1) und die Namensvetter-Prüfung sind GEMESSEN am Dateitext bzw.
 am Repo (CC, 2026-09-10).
 
-**ZUSATZ 2026-09-10 — DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN, UND DER EINTRAG BLEIBT
-OFFEN.** Sein Trigger ist die TikTok-Messung, und die steht aus; die Ergänzung betrifft ein
-DRITTES Ziel und löst ihn nicht ab.
+**ZUSATZ 2026-09-10 — DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN.**
+**RICHTIGGESTELLT AM 2026-09-11, NICHT GESTEMPELT — DIESER ZUSATZ IST ÄLTER ALS DIE
+STREICHUNG ÜBER IHM, UND SEINE ZUSTANDSAUSSAGE IST DAMIT ÜBERHOLT.** Hier stand am Ende der
+Kopfzeile: ", UND DER EINTRAG BLEIBT OFFEN." und danach: "Sein Trigger ist die
+TikTok-Messung, und die steht aus; die Ergänzung betrifft ein DRITTES Ziel und löst ihn
+nicht ab." Der Zusatz ist mit Commit `494d929` entstanden (2026-09-10, vormittags), also
+VOR dem Bau der Scheibe 11.3f (`8fcd4e0`, abends); der Streichungs-Kopf darüber stammt aus
+`ac0803b`, danach. **DER EINTRAG IST GESTRICHEN.** Die TikTok-Messung lebt unverändert in
+Vorrat (1) weiter, wie es der Streichungs-Kopf bereits sagt. Weil die Streichung ÜBER dem
+älteren Zusatz eingefügt wurde, las sich der Eintrag als Widerspruch — gestrichen oben,
+offen unten. **RICHTIGGESTELLT UND NICHT GESTEMPELT, weil es eine ZUSTANDSAUSSAGE ist und
+keine Herleitung.** Der Block darunter stammt aus demselben Commit und bleibt wörtlich
+stehen: Er trägt die drei Lagen als Grenze und ist von dieser Korrektur nicht berührt.
+PROVENIENZ: die Reihenfolge ist GEMESSEN am Repo (CC, 2026-09-11) — `git log -S` auf eine
+eindeutige Zeile je Block und `git merge-base --is-ancestor` für
+`494d929` → `8fcd4e0` → `ac0803b`.
 **FÜR PINTEREST IST DIE LAGE SEIT DEM 2026-09-10 GEMESSEN STATT GELESEN — UND SIE IST EINE
 DRITTE:** Ein test-markiertes Ereignis erscheint dort **NICHT in der Eventübersicht**
 (VERMERK 3, SCHLUSS 3). Damit stehen jetzt **drei verschiedene Lagen** nebeneinander, und
@@ -2951,8 +3093,18 @@ Dateien**, 327 Einfügungen, **6 Löschungen**). **GEPUSHT** — GEMESSEN am Rep
 über die zwei berührten Produktivdateien nennt als jüngsten Commit nur diesen, und eine
 Suche über die Scheibennummer findet DREI Commits, davon **einen `feat`** — die zwei
 anderen sind die `docs(claude)`-Runden des Zuschnitts und der Schärfung von (A).
-**COMMIT DIESES VERMERKS: — offen.** Er ist der jüngste; die Lücken-Regel erlaubt genau
-eine, und dies ist sie.
+**COMMIT DIESES VERMERKS: `ac0803b`** (`docs(claude): Vermerk zur Scheibe 11.3f — zwei
+Kundentexte, live gesehen`).
+**NACHGETRAGEN AM 2026-09-11** — hier stand die LÜCKE ("— offen. Er ist der jüngste; die
+Lücken-Regel erlaubt genau eine, und dies ist sie."). **DAMIT KENNT JEDER VERMERK DIESER
+DATEI SEINEN COMMIT, und es gibt KEINE offene Lücke mehr.** Das ist regelkonform: Die
+Lücken-Regel sagt, es dürfe immer nur EINE geben — nicht, dass eine da sein müsse.
+**DIE ZUORDNUNG IST GEMESSEN UND NICHT AUS DER BETREFFZEILE ERSCHLOSSEN** (CC, 2026-09-11,
+zwei Achsen): `git log -S` auf die Überschrift "VERMERK 7 — Scheibe 11.3f, gebaut und live
+gesehen" über diese Datei nennt GENAU EINEN Commit, `ac0803b`; `git show ac0803b` legt die
+Überschrift an (eine `+`-Zeile, keine `-`-Zeile), und der einzige spätere Commit an dieser
+Datei (`1771ec0`) berührt keine Zeile, die VERMERK 7 nennt. Der Commit liegt auf
+`origin/main`.
 
 **ES ÄNDERT SICH KEINE LOGIK, UND DAS IST AN DEN SECHS LÖSCHUNGEN ABLESBAR:** vier Zeilen
 sind das entfallene JSX-Literal im Container, zwei die ersetzte Rückgabezeile. Alles andere

@@ -1252,18 +1252,26 @@ aufeinander; sie liegen alle hier und finden einander.
   s. docs/claude-history/phase-11.8-autorisierungsschicht.md, Vermerk 2**)**; die Zuordnung "nicht-additiv" ist eine
   ABLEITUNG aus dem Wortlaut dieses Eintrags und **keine Entscheidung** — der Eintrag
   definiert den Begriff selbst nicht.
-- DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT (Trigger: EINGETRETEN —
-  Supabase bietet es an; das Fenster schliesst sich mit dem ersten echten
-  Kunden-Traffic): Angeboten wird 17.6.1.127 -> 17.6.1.155.
-  WARUM ES EIN OFFENER PUNKT IST UND KEINE AUFRÄUMARBEIT: Es trifft den Eintrag "JEDE
-  STÖRUNG DER DATENBANK IST EIN TOTALAUSFALL ALLER KUNDENSEITEN" — ein Upgrade IST ein
-  Wartungsfenster und damit genau die Klasse Störung, die jener Eintrag beschreibt.
-  Heute kostet es NULL, weil kein Kunde da ist; mit dem ersten echten Traffic kostet
-  es laufende Kampagnen.
-  WAS NICHT DAZUGEHÖRT: die Zwischenspeicherungs-Frage aus jenem Eintrag. Sie ist eine
-  AUFKLÄRUNG und kein Bau, und sie wird durch dieses Upgrade weder beantwortet noch
-  dringlicher.
-  PROVENIENZ: Stand 2026-08-20, am 2026-08-21 verortet.
+- DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT — GESTRICHEN AM 2026-09-11, DER
+  GEGENSTAND IST ERLEDIGT. Der Punkt hielt fest, dass das angebotene Postgres-Upgrade ein
+  Wartungsfenster ist, das heute nichts kostet und mit dem ersten echten Kunden-Traffic
+  laufende Kampagnen träfe.
+  BELEG DER ERLEDIGUNG:
+  · GEFAHREN am 2026-09-11 von 17.6.1.127 auf 17.6.1.166 (OWNER-ANGABE; keine Messung am
+    Repo und keine an der Datenbank).
+  · DIE WAHL GEGEN DIE VORSCHAU-FASSUNG (OWNER-ANGABE): Die Auswahl bot 17.6.1.164 mit dem
+    Etikett PREVIEW, vorausgewählt, und 17.6.1.166 ohne Etikett. Genommen wurde 17.6.1.166,
+    weil eine stabile Fassung danebenstand.
+  · GEMESSEN LIVE (Owner, 2026-09-11), nach dem Upgrade: Eine veröffentlichte Kundenseite
+    ist aufgerufen und ein Ereignis ausgelöst worden; in der Analytics-Kachel stiegen
+    PageView und Lead je um eins. Das zeigt, dass beide Wege über PostgREST tragen — der
+    Serve-Pfad, der die Seite ausliefert, und der Ingest, der die Ereignisse schreibt. Dass
+    beide über den Supabase-JS-Client laufen, ist GEMESSEN am Code (CC, 2026-09-11:
+    Resolver in src/lib/hosting/resolve.ts, Serve-Route force-dynamic; Schlüssel-Lookup
+    in src/lib/capi/token.ts, Schreibung in src/lib/analytics/persist.ts). DIE GRENZE: eine
+    Ablesung der Kachel, keine Messung an der Datenbank.
+  Die Angaben des Dialogs und der Versionsstand stehen in docs/plattform-befunde.md,
+  Abschnitt "Supabase (Postgres · Auth · RLS · Vault · Backups)", Teil (at).
 - DIE SOLL-HÄLFTE VON "/API/E-SCHLANKHEIT" IST ZU VERDICHTEN (Trigger: die nächste Arbeit
   an CLAUDE.md, die diesen Abschnitt ohnehin berührt): Der Eintrag steht in CLAUDE.md,
   "### A) Heute verbindlich", und misst GEMESSEN am 2026-08-24 120 Zeilen / 9 429 Bytes —

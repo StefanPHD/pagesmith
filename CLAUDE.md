@@ -242,9 +242,6 @@ gehen von hier eine Station weiter.
   gehoben am 2026-08-19 aus dem Vorrat der Phase 11.1)
 - DAS FENSTER ZWISCHEN MIGRATION UND DEPLOY IST UNGEREGELT (Trigger: die erste
   nicht-additive Migration)
-- DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT (Trigger: EINGETRETEN —
-  Supabase bietet es an; das Fenster schliesst sich mit dem ersten echten
-  Kunden-Traffic)
 - DIE SOLL-HÄLFTE VON "/API/E-SCHLANKHEIT" IST ZU VERDICHTEN (Trigger: die nächste Arbeit
   an CLAUDE.md, die diesen Abschnitt ohnehin berührt)
 - EIN INDIKATOR FÜR ABSCHNITT 2b FEHLT (Trigger: die nächste Änderung an

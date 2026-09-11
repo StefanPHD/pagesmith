@@ -1205,11 +1205,13 @@ danach gesucht hat** (s. den Kopf).
 
 ### Vermerk 2026-09-11 (Abkündigung eines Management-API-Endpunkts, Suche im Repo, abgelesene Versionsstände) — die Teile (as) und (at)
 
-**HERKUNFT: KEIN DOKU-LAUF.** Zwei Angaben stammen vom OWNER — eine Changelog-Lesung und
-eine Ablesung der Projekteinstellungen —, eine Suche ist GEMESSEN am Repo (CC,
-2026-09-11). **KEINE Messung an einer Supabase-Schnittstelle und KEINE an dieser
-Datenbank.** BEOBACHTET steht hier neben den drei Klassen aus dem Kopf dieser Datei: Es
-meint eine Ablesung der Anbieter-Oberfläche, mit Quelle und Datum, und ist keine Messung.
+**HERKUNFT: KEIN DOKU-LAUF.** Die Angaben stammen vom OWNER — eine Changelog-Lesung, eine
+Ablesung der Projekteinstellungen, das gefahrene Upgrade samt Dialog und ein Live-Nachweis
+—, eine Suche ist GEMESSEN am Repo (CC, 2026-09-11). **KEINE Messung an einer
+Supabase-Schnittstelle und KEINE an dieser Datenbank.** BEOBACHTET und OWNER-ANGABE stehen
+hier neben den drei Klassen aus dem Kopf dieser Datei: BEOBACHTET meint eine Ablesung der
+Anbieter-Oberfläche, OWNER-ANGABE einen Vorgang, den der Owner ausgeführt hat — beide mit
+Quelle und Datum, keine davon eine Messung.
 
 **(as) DIE ABKÜNDIGUNG VON `analytics/endpoints/logs.all` — DAS REPO RUFT DIE MANAGEMENT
 API NICHT AUF.** **NEU.**
@@ -1239,15 +1241,22 @@ FOLGERUNG: In den durchsuchten Orten trifft die Abkündigung keinen Aufruf. Übe
 AUSSERHALB des Repos — einen lokal eingerichteten Anbieter-Zugang, eine Integration am
 Konto — sagt die Suche nichts.
 
-**(at) DIE VERSIONSSTÄNDE DES PROJEKTS, ABGELESEN — UND ZWEI BERÜHRUNGEN.** **NEU.**
-BEOBACHTET 2026-09-11 (Owner, Ablesung der Projekteinstellungen in der
-Anbieter-Oberfläche; KEINE Messung): Postgres `17.6.1.127`, angeboten wird ein Upgrade auf
-`17.6.1.166` · Auth `2.196.0` · PostgREST `14.5`.
+**(at) DIE VERSIONSSTÄNDE DES PROJEKTS — UND ZWEI BERÜHRUNGEN.** **NEU.**
+POSTGRES `17.6.1.166`, GEFAHREN am 2026-09-11 von `17.6.1.127` aus (OWNER-ANGABE; keine
+Messung am Repo und keine an der Datenbank). Die Auswahl bot zwei Fassungen: `17.6.1.164`
+mit dem Etikett PREVIEW, vorausgewählt, und `17.6.1.166` ohne Etikett; genommen wurde die
+zweite. Der Dialog nannte (OWNER-ANGABE): bis zu eine Stunde offline · kein Rückweg auf
+`17.6.1.127` · die Festplattengrösse von 2 GB wird mit angepasst.
+GEMESSEN LIVE (Owner, 2026-09-11), nach dem Upgrade: Eine veröffentlichte Kundenseite ist
+aufgerufen und ein Ereignis ausgelöst worden; in der Analytics-Kachel stiegen PageView und
+Lead je um eins. Serve-Pfad und Ingest tragen damit beide über PostgREST. DIE GRENZE: eine
+Ablesung der Kachel, keine Messung an der Datenbank.
+BEOBACHTET 2026-09-11 in derselben Ablesung, die das Upgrade noch anbot (Owner,
+Projekteinstellungen; KEINE Messung): Auth `2.196.0` · PostgREST `14.5`. Ob sich eine der
+beiden Fassungen durch das Upgrade bewegt hat, ist NICHT erhoben.
 · **DER POSTEN "DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT"**
-  (docs/offene-punkte.md) nennt mit Stand 2026-08-20 „17.6.1.127 -> 17.6.1.155". Der
-  Ausgangsstand ist derselbe, das angebotene Ziel ein anderes. FOLGERUNG aus den zwei
-  Ablesungen: Zwischen dem 2026-08-20 und dem 2026-09-11 ist kein Upgrade eingespielt
-  worden, soweit die Oberfläche den Stand zeigt. Der Posten ist NICHT geändert.
+  (docs/offene-punkte.md) ist mit diesem Upgrade GESTRICHEN; Titel und Beleg der
+  Erledigung stehen dort.
 · **TEIL (aq), GRENZE 1** hält fest, die gelesene PostgREST-Fassung sei 16 und die unserer
   Instanz „UNGELESEN UND UNGEMESSEN". Die Oberfläche nennt jetzt `14.5`. Das ist eine
   BEOBACHTUNG und keine Messung — (aq) wird davon NICHT geschlossen und NICHT geändert.

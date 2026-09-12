@@ -542,34 +542,63 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   TRAGENDE KONTROLLE: Dependabot aktiviert — Alerts, Security Updates, Dependency Graph, 1 Regel.
   EHRLICHE EINORDNUNG: Dauerhygiene, kein Launch-Gate; erledigt am 2026-07-24.
   BINDET-AN: laufend (aktiv).
-- DEPENDABOT-MELDUNGEN OFFEN, NICHT GESICHTET (2026-08-13):
-  RISIKO: Auf dem Default-Branch stehen SIEBEN Verwundbarkeits-Meldungen, davon FÜNF hoch
-  und zwei mittel. Solange sie nicht gesichtet sind, ist unbekannt, ob eine davon
-  Produktivcode betrifft, erreichbar oder ausnutzbar ist.
-  HERKUNFT: die Push-Ausgabe von GitHub, fünfmal am 2026-09-04 identisch. KEINE andere
-  Quelle, KEINE eigene Prüfung im Dashboard.
-  DIE ZAHL IST AM 2026-09-04 RICHTIGGESTELLT, NICHT GESTEMPELT — sie ist ein ZUSTAND und
-  keine Herleitung; ein Stempel liesse zwei Zahlen nebeneinander stehen, und wer die
-  falsche nähme, hielte einen Bestand für aktuell, den es nicht mehr gibt. HIER STAND ZEHN,
-  DAVON ACHT HOCH UND ZWEI MITTEL, GEMESSEN dreimal identisch am 2026-08-13 — FÜR IHREN TAG
-  WAR SIE RICHTIG.
-  WAS DIE DIFFERENZ VERURSACHT HAT, IST NICHT ERHOBEN. Der Owner nennt als Ursache eine
-  Runde mit Pull Requests vor mehreren Sitzungen; DAS IST EINE PLAUSIBLE URSACHE UND KEINE
-  MESSUNG. Die Push-Zeile nennt nur SUMMEN — WELCHE Meldungen weggefallen sind, ist an
-  keiner Stelle erhoben, und ob überhaupt welche weggefallen sind statt ersetzt worden zu
-  sein, ebenso wenig.
-  DIE AUSSAGE DES EINTRAGS IST VON DER ZAHL UNBERÜHRT: Die Meldungen sind NICHT GESICHTET.
-  WENIGER MELDUNGEN HEISST NICHT ANGESEHENE MELDUNGEN.
-  TRAGENDE KONTROLLE: heute KEINE über die blosse Meldung hinaus. Der Eintrag darüber
-  ("DEPENDABOT — ERLEDIGT") trägt die AKTIVIERUNG und ist als solche Aussage unverändert
-  richtig; er sagt nichts über offene Meldungen, und ein Leser schliesst aus "ERLEDIGT"
-  auf "nichts offen".
-  EHRLICHE EINORDNUNG: Die Meldungen sind AUSDRÜCKLICH NICHT BEWERTET. Ob dies Tier 2
-  bleibt oder höher gehört, ist damit offen — die Ablage hier ist vorläufig und folgt dem
-  Nachbar-Eintrag, nicht einer Einschätzung des Risikos.
-  BINDET-AN: zu bestimmen, sobald die Meldungen gesichtet sind. Die Einstufung verlangt
-  eine Bewertung, die niemand vorgenommen hat; ein erfundener Zeitpunkt wäre schlimmer als
-  keiner, weil er den Posten als terminiert aussehen liesse.
+- DEPENDABOT-MELDUNGEN GESICHTET (2026-09-12/13) — ACHT OFFEN, ALLE AN NEXT:
+  RISIKO: Acht offene Verwundbarkeits-Meldungen auf dem Default-Branch, davon zwei kritisch.
+  ANDERS ALS BIS ZUM 2026-09-13 IST NICHT MEHR UNBEKANNT, OB EINE DAVON PRODUKTIVCODE BETRIFFT:
+  Die Sichtung ist gefahren, je Meldung auf ERREICHBARKEIT. KEINE der acht trifft einen
+  nachgewiesen erreichbaren Produktivpfad.
+  DAS ERGEBNIS DER SICHTUNG, je Zeile ein Paket (GEMESSEN am Code, CC, 2026-09-12, am 2026-09-13
+  erneut bestaetigt):
+  · postcss laeuft NUR zur Bauzeit ueber die eigenen Stylesheets — postcss.config.mjs traegt
+    genau einen Plugin-Eintrag, das einzige Stylesheet ist src/app/globals.css. Importiertes
+    Kunden-HTML erreicht es NIE: es wird clientseitig geparst, als Text abgelegt und unveraendert
+    ausgeliefert (dieselbe Achse wie die Regel "KEIN SERVER-SEITIGES HTML-PARSING"); im
+    Produktivcode kommt postcss nicht vor. Die vier postcss-Advisories setzen
+    angreifer-kontrolliertes CSS voraus — das gibt es auf diesem Weg nicht.
+  · sharp hat KEINEN Aufrufer im Produktivcode und ist keine eigene Abhaengigkeit — es haengt
+    allein als optionalDependency an next und damit an der Image-Optimization.
+  · next/image wird NICHT benutzt (kein Treffer in src/ ausser dem Matcher-Ausschluss in
+    proxy.ts), und next.config.ts traegt images.unoptimized = true.
+  · Die dev-Pakete erreichen KEINEN ausgelieferten Pfad — der einzige Treffer ausserhalb der
+    Testdateien ist eine Mess-Notiz im Kommentar von capi/token.ts, kein Import.
+  DIE WINDOWS-RCE TRIFFT DIE PRODUKTION NICHT: Vercel faehrt die Standard-Linux-Laufzeit, am
+  Build-Log geprueft. OWNER-ANGABE 2026-09-13 — NICHT von CC gemessen, und im Repo steht dazu
+  nichts; das ist die Grenze dieser Aussage. WAS BLEIBT: der Entwicklungs-Server unter Windows,
+  ohne fremden Traffic.
+  ZWEI ZAHLEN, DIE AUSEINANDERGEHEN — STAND 2026-09-13, damit der Eintrag altert statt falsch zu
+  werden:
+  · DEPENDABOT: ACHT offen — zwei kritisch (next), vier hoch (sharp zweimal, postcss zweimal),
+    zwei mittel (postcss). Alle acht unter package-lock.json. OWNER-ANGABE; gh ist auf dieser
+    Maschine nicht installiert, und die Liste liegt nicht im Repo.
+  · NPM AUDIT: DREI Positionen — eine kritisch (next), zwei hoch (postcss, sharp). GEMESSEN
+    (CC, 2026-09-13).
+  · DER GRUND: npm gruppiert je PAKET, Dependabot zaehlt je ADVISORY je MANIFEST. BEIDE ZAHLEN
+    SIND RICHTIG; wer sie gleichsetzt, haelt eine fuer einen Fehler.
+  · VORHER-STAND: SECHZEHN Dependabot-Meldungen vor den Dev-Bumps vom 2026-09-13
+    (Commit 9da659c). OWNER-ANGABE.
+  TRAGENDE KONTROLLE: heute KEINE technische — es gibt keinen Patch, der die acht schliesst,
+  ohne next zu bewegen. Was sie traegt, ist die ERREICHBARKEIT: kein Produktivpfad dieses
+  Projekts ruft sharp oder postcss, next/image ist nicht in Gebrauch, und die Produktion laeuft
+  nach Owner-Angabe nicht auf Windows.
+  ALLE ACHT HAENGEN AN NEXT und sind ohne einen Sprung ueber 16.2.12 hinaus nicht zu schliessen:
+  Es gibt KEINEN Patch innerhalb von 16.2.x, beide Next-Advisories sind erst ab 16.3.3 behoben,
+  und 16.2.12 ist die HOECHSTE veroeffentlichte stabile 16.2er-Fassung (GEMESSEN an der
+  Registry, CC, 2026-09-12, am 2026-09-13 erneut geprueft — unveraendert). next pinnt zudem
+  postcss exakt auf 8.4.31 und verlangt sharp ^0.34.5; beide Fixes liegen ausserhalb.
+  EHRLICHE EINORDNUNG: Die Meldungen sind jetzt GESICHTET, aber NICHT GESCHLOSSEN. Tier 2 bleibt
+  und ist damit nicht mehr vorlaeufig, sondern begruendet: Keine der acht trifft einen
+  nachgewiesen erreichbaren Produktivpfad, also ist keine ein Gate.
+  ZWEI DINGE BLEIBEN OFFEN, und sie gehoeren hierher, sonst liest sich der Eintrag als
+  vollstaendige Entwarnung:
+  · OB /_next/image TROTZ unoptimized ANTWORTET, IST UNGEMESSEN. Bewusst nicht erhoben: Die
+    Route wird mit DEMSELBEN Sprung geschlossen wie die Windows-RCE, und die Antwort aenderte
+    keine Handlung.
+  · WARUM DIE ZWEI NEXT-MELDUNGEN, DIE VORHER ZUSAETZLICH UNTER package.json GEFUEHRT WAREN,
+    NICHT MEHR ERSCHEINEN, IST NICHT ERHOBEN — package.json ist unveraendert.
+    Owner-Beobachtung, keine Messung, keine Erklaerung.
+  BINDET-AN: DEN NEXT-SPRUNG, der als eigene Arbeit vor der naechsten Bau-Scheibe entschieden
+  ist (ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-13). Damit ist das offene BINDET-AN des frueheren
+  Eintrags ("zu bestimmen, sobald die Meldungen gesichtet sind") eingeloest.
 - BACKUPS + Restore-Drill (TEILWEISE ERLEDIGT — Backup-Tier bestätigt 2026-07-29, DRILL
   GEFAHREN UND BESTANDEN 2026-07-30; PITR und die migrations-only Rebuild-Lücke bleiben
   OFFEN):

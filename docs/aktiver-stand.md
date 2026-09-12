@@ -405,6 +405,55 @@ aber **NICHT in die Scheibe 11.5a**. **KEINE EMPFEHLUNG**, in welche.
 AUFSCHLAGEN muss. Dieser Posten ist kein Lesestoff für den Zuschnitt, sondern eine Arbeit, die
 diese Phase noch vor sich hat.
 
+**(4) DER EXPORT-PFAD IST VOM SCHALTER NICHT ERFASST — ZWEI WEGE** (aufgenommen 2026-09-12).
+
+Der **Download** und das **Kopieren in die Zwischenablage** bauen den Text rein clientseitig und
+gehen nie durch die Server-Injektion; der Setzer entsteht dort also nicht (GEMESSEN am Code, CC,
+2026-09-12).
+
+**DAS LOCH IST GRÖSSER, ALS ES BEIM PAGEVIEW-EMITTER AUSSIEHT, und darum geht es in diesem
+Eintrag:** Eine exportierte Seite trägt sehr wohl das **WIRING** — bei Mappings erzeugt der
+Client-Erzeuger Gate, Datenblock und Wiring auch im Export-Modus. Trägt das Projekt einen
+Tracking-Schlüssel, **beacont ein Klick auf die ABSOLUTE Adresse `/api/e`**, mit einem
+`cns`-Feld aus dem Client-Erzeuger. Seit der achten Scheibe der Phase 11 hängt dieser Beacon
+**nicht mehr an einer Meta-Pixel-ID** — er entsteht auch ohne sie (GEMESSEN am Code, CC,
+2026-09-12).
+
+**BETROFFEN SIND ALSO CONVERSIONS, NICHT NUR SEITENAUFRUFE.** Ohne gesetzten Hook gilt auf einer
+exportierten, fremd gehosteten Seite „alles erlaubt" — der Schalter wirkt dort nicht.
+
+**KEINE REGRESSION** (der PageView-Emitter fehlt dort heute schon), aber ein **Loch im
+Versprechen**. **KEINE EMPFEHLUNG**, in welche Scheibe das gehört.
+
+**(5) `settingsEqual` IST EINE ALLOWLIST — JEDES NEUE TOP-LEVEL-MITGLIED DES BLOBS IST FÜR
+`dirty` UNSICHTBAR BY DEFAULT, UND NICHTS WIRD DAVON ROT** (aufgenommen 2026-09-12).
+
+Die Funktion zählt auf, was sie vergleicht. Wer ein Mitglied hinzufügt und den Vergleich nicht
+mitzieht, bekommt **keinen Typfehler, keinen roten Test, keine Meldung** — nur einen Wert, der
+beim nächsten Projektwechsel still verschwindet. **Der Wächter-Test zu DEM Term dieser Scheibe
+schliesst die KLASSE nicht:** Er hält genau diesen einen Schalter, nicht das nächste Mitglied.
+
+**VERWANDTE BAUFORM, beim Titel genannt:** der offene Punkt **„DIE IDOR-WÄCHTER SIND NAMENTLICH
+— EINE NEUE SERVER-ACTION IST UNGESCHÜTZT BY DEFAULT, UND NICHTS WIRD DAVON ROT"**
+(docs/offene-punkte.md). Dieselbe Figur an einer anderen Achse: ein namentlicher Schutz, der
+beim nächsten Zuwachs nicht mitwächst.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
+
+**(6) DER RÜCK-IMPORT EINER PUBLIZIERTEN SEITE KÖNNTE EINEN ALTEN SETZER MITBRINGEN**
+(aufgenommen 2026-09-12).
+
+Käme der Quelltext einer bereits publizierten Seite in den Editor zurück, trüge er einen ALTEN
+Setzer als INHALT. Der stünde im Dokument **vor** dem neu injizierten — und weil der Setzer nur
+schreibt, wenn der Hook noch nicht existiert, **gewänne der alte**. Trüge er eine überholte
+Schlüsselmenge, wäre das still.
+
+**ÜBER DEN EXPORT-PFAD KANN DAS NICHT ENTSTEHEN** — dort gibt es keinen Setzer (s. Vorrat (4)).
+Über Kopieren aus dem Quelltext einer Live-Seite theoretisch schon.
+
+**UNGEMESSEN.** Es ist eine BEOBACHTUNG, kein Befund: Weder ist erhoben, ob jemand so arbeitet,
+noch, was dabei tatsächlich geschieht. **KEINE EMPFEHLUNG.**
+
 ## 10. Hebungs-Kandidaten
 
 Hier steht, was nach dem Phasenende an einem DAUERHAFTEN Ort stehen sollte — vor allem
@@ -647,12 +696,14 @@ mit eingeschaltetem Schalter **vor dem ersten Beacon ein Wert steht, der Ablehnu
 und sonst nichts. Sie löst damit den Teil der Roadmap-Zeile 11.5 ein, der den VORHER-Zustand
 als die eigentliche Arbeit benennt.
 
-**WAS GEBAUT WIRD — DREI STÜCKE:**
+**WAS GEBAUT WIRD — VIER STÜCKE:**
 - **DIE SECHSER-ABLEITUNG** nach Entscheidung (4): eine Ableitung, die alle sechs Schlüssel
   liefert — die fünf Ziel-Schlüssel und den Analytics-Schlüssel.
 - **EIN SCHALTER JE PROJEKT** im Einstellungs-Blob, **standardmässig AUS**.
 - **DER SETZER** in der Server-Injektion, nach Entscheidung (2) und (3): unmittelbar vor dem
   PageView-Script, und nur, wenn der Hook noch nicht existiert.
+- **DAS BEDIENELEMENT UND DER TERM IN `settingsEqual`** — nachgezogen am 2026-09-12. Ohne
+  beides hält der Schalter nicht; die zwei Gründe stehen im Abschnitt darunter.
 
 **DIE GESTALT-ENTSCHEIDUNGEN STEHEN NICHT HIER, SONDERN IN ABSCHNITT 8** — die vier Einträge
 (1) bis (4). **WARUM DORT UND NICHT HIER, und der Satz gehört dazu, sonst zieht die nächste
@@ -683,11 +734,43 @@ SERVER-VERGEBENE Identität, die der Client nicht kennt und beim nächsten Save 
 zurückkippt — der Schalter dagegen ist eine **Eingabe des Betreibers, die im Client entsteht**,
 und der Blob ist für sie nicht der falsche, sondern der einzige Ort.
 
+### Das Bedienelement und der Term in `settingsEqual` — nachgezogen 2026-09-12
+
+**SIE SIND KEINE POLITUR, SONDERN DIE BEDINGUNG DAFÜR, DASS DER SCHALTER ÜBERHAUPT HÄLT.** Zwei
+Gründe, beide GEMESSEN am Code (CC, 2026-09-12):
+
+- **OHNE BEDIENELEMENT KENNT DER CLIENT DEN SCHALTER NICHT.** `saveProject` ersetzt den
+  Einstellungs-Blob GANZHEITLICH; ein Wert, den der Client nicht führt, ist beim nächsten
+  Speichern weg. Ein von Hand gesetzter Schalter überlebte also nicht die erste Speicherung.
+- **OHNE TERM IN `settingsEqual` IST ER FÜR `dirty` UNSICHTBAR.** Die Funktion vergleicht heute
+  ausschliesslich die Kennung und die Ereignis-Regeln je Ziel. Ein neues Top-Level-Mitglied
+  taucht dort nicht auf — kein Text „Ungespeicherte Änderungen", kein `beforeunload`-Wächter,
+  kein `confirm` beim Projektwechsel. **Der Schalter ginge beim nächsten Projektwechsel still
+  verloren.**
+
+**DIE BEREICHSWAHL — VERÖFFENTLICHEN, NICHT MESSEN:** Der Schalter ändert den AUSGELIEFERTEN
+TEXT und wird erst mit dem nächsten Veröffentlichen wirksam. **Er gehört dorthin, wo der Knopf
+steht, der ihn wirksam macht.**
+**VERWORFEN: der Bereich MESSEN.** Die thematische Nähe zu den Consent-Schlüsseln ist echt, und
+genau deshalb führt sie in die Irre: Dort erwartet man Wirkung auf die ZAHLEN, nicht auf das
+DOKUMENT.
+
+**VERWORFEN FERNER: eine eigene Server-Action mit Spiegelung in `settings` UND `savedSettings`**
+— die Bauform von `capi.tokenSet` und `hosting.label`, die `settingsEqual` bewusst ignoriert.
+**Sie machte den Schalter zu einem server-geschriebenen SPIEGEL** — und nähme damit der
+Ablage-Entscheidung darüber ihre Begründung, die genau darauf ruht, dass er eine **EINGABE des
+Betreibers** ist.
+
 ### Was ausdrücklich NICHT zu dieser Scheibe gehört
 
 Dialog · Oberfläche des Dialogs · Zustimmung · Widerruf · Speicherung der Entscheidung ·
 Sprache · Granularität · **jede Änderung an `consent.ts`, `consent-wire.ts` oder `ingest.ts`** ·
 die Betreiber-Dokumentation des Hooks (Vorrat (3)).
+
+**DAZU DER EXPORT-PFAD — OWNER-ENTSCHEIDUNG 2026-09-12, ER BLEIBT UNGEDECKT.** Er baut den Text
+rein clientseitig und berührt die Server-Injektion nie; **es sind ZWEI Wege, nicht einer:** der
+**Download** und das **Kopieren in die Zwischenablage**. Beide bleiben ausserhalb dieser
+Scheibe. Die Folge steht als Vorrat (4).
 
 ### Die tragende Invariante
 
@@ -706,6 +789,37 @@ byte-gleich.
 bleibt eine **LIVE-Achse** (Abschnitt 11 (a)). **Der Live-Test misst sie, der Bau belegt sie
 nicht** — kein grüner Gate-Lauf sagt etwas darüber, ob der Setzer wirklich vor dem ersten
 Beacon stand.
+
+### Drei Auflagen an den Bau — nachgezogen 2026-09-12
+
+**(I) DER VERGLEICHSWERT FÜR DIE BYTE-GLEICHHEIT WIRD VOR DER ERSTEN ÄNDERUNG ERZEUGT UND
+FESTGEHALTEN.** Nach dem Eingriff ist er **nicht mehr herstellbar** — die heutige Injektion
+existiert dann nicht mehr.
+**WAS SONST PASSIERT, und es ist der teurere Fall:** Wird die Erwartung hinterher aus dem NEUEN
+Code geschrieben, ist der Byte-Gleichheits-Test ein **SPIEGEL** und bestätigt jeden Fehlgriff,
+statt ihn zu fangen.
+Gemessen ist das gegen zwei Regeln in docs/immer-beachten.md, hier beim Titel genannt und nicht
+zitiert: **„EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS NICHT MEHR
+HERSTELLBAR"** und **„EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM
+CODE — UND KEIN WÄCHTER ÜBER EINEN WORTLAUT"**.
+
+**(II) DER LIVE-TEST BRAUCHT EINE POSITIVKONTROLLE UND EINE A/B-VORBEDINGUNG.**
+Schritt 2 der Demobarkeit ist eine **ABWESENHEIT**: „kein Seitenaufruf" sieht identisch aus wie
+„falsches Projekt", „Seite gar nicht geladen" oder „Dashboard kaputt". **Schritt 1 muss deshalb
+ausdrücklich belegen, dass ein Seitenaufruf im SELBEN Fenster ANKOMMT** — sonst ist nicht die
+Wirkung des Schalters gemessen, sondern ein defekter Aufbau.
+**DAZU DIE VORBEDINGUNG:** Vor jeder Live-Kontrolle wird der **A/B-Betrieb festgestellt** —
+entweder abgeschaltet, oder die ausgelieferte Variante bestimmt, **BEVOR** ein Ergebnis
+beurteilt wird. Sonst wird eine unbekannte Konfiguration gemessen. Herleitung:
+docs/immer-beachten.md, **„BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS
+RICHTIGE GEMESSEN WIRD"**, Teil (e).
+
+**(III) DER SCHLÜSSEL-TEST ZÄHLT AUF SECHS, UND DAS IST ABSICHT.** Ein SIEBTES Ziel macht ihn
+rot — **genau das soll er:** Ein neues Ziel muss jemanden zwingen, hier hinzusehen, sonst bliebe
+sein Schlüssel im Setzer still abgelehnt, und nichts würde davon rot.
+**DIE ERWARTUNG WIRD NIE AUS DEM CODE ABGELEITET.** Dieser Satz gehört in den **KOMMENTAR DES
+TESTS**, nicht nur hierher — sonst „repariert" die nächste Runde ihn zu einem Spiegel, weil er
+nach einem vergessenen Nachzug aussieht.
 
 **DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.** Er nennt
 keine Symbolnamen für neue Funktionen, keine Dateien, in denen etwas entstehen soll, und keinen

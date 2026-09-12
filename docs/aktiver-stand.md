@@ -244,7 +244,81 @@ NUMMERIERUNG: VERMERK 1, VERMERK 2, … in der Reihenfolge des Abschlusses. Die 
 STABIL: eine vergebene Nummer wird nie neu vergeben und nichts wird umsortiert; ein neuer
 Vermerk tritt HINTEN an. Fällt einer weg, bleibt seine Nummer als benannte Lücke stehen.
 
-NOCH LEER (Stand 2026-09-12).
+### VERMERK 1 — Scheibe 11.5a, abgeschlossen 2026-09-12
+
+**GEGENSTAND:** Ein Schalter je Projekt lässt den Publish-Pfad vor das PageView-Script einen
+Setzer injizieren, der `window.pagesmithConsent` mit allen sechs Schlüsseln auf `false` belegt —
+aber nur, wenn der Hook noch nicht existiert. **VIER STÜCKE:** die Sechser-Ableitung, der
+Schalter im Einstellungs-Blob (Standard AUS), der Setzer in der Server-Injektion, und das
+Bedienelement im Bereich VERÖFFENTLICHEN samt dem Term in `settingsEqual`.
+
+**BAU-COMMIT:** `97e9140` — `feat(consent): Ablehnungs-Zustand vor dem ersten Beacon (Scheibe
+11.5a)`, elf Dateien, 619 Zeilen hinzu, 19 entfernt, zwei neue Dateien (GEMESSEN am Repo, CC,
+2026-09-12).
+
+**DIE VIER GATES, alle grün:** `tsc --noEmit` exit 0 · `lint` 0 errors / 1 warning (dieselbe
+vorbestehende in `consent.test.ts`, ausserhalb dieser Scheibe) · `vitest run` **von 76 Dateien
+und 1625 Tests auf 77 Dateien und 1639 Tests** (+14, alle grün) · `build` exit 0.
+
+**DER VERGLEICHSWERT DER BYTE-GLEICHHEIT — ERHOBEN VOR DER ERSTEN ÄNDERUNG:** **14 160 Bytes**,
+sha256 **`a953b21e5683129da7868e01efa8a07a10334f29c09cabbfbed1da145fc04faa`**. Fixture: alle fünf
+Ziele konfiguriert, volle Pipeline vom Client-Erzeuger bis zur Server-Injektion. **ZWEI
+INSTRUMENTE, EIN WERT:** die Prüfsumme aus dem Lauf und `sha256sum` über das gespeicherte
+Artefakt. Er ist die Erwartung von T1 und stammt nicht aus dem gebauten Code.
+
+**DIE DREI PFLICHT-MUTATIONEN** — Vorhersage je gegen den Bestand ZUM ZEITPUNKT DES LAUFS
+aktualisiert, nicht aus der Planungsstufe übernommen:
+
+- **(i) Schalter-Zweig invertiert.** Vorhersage VIER (T1, T2, T8, T8b). **IST: FÜNF.** Der
+  fünfte war der Bestandstest „T1 KEIN HOOK → der Beacon geht raus (Bestandszusage,
+  POSITIVKONTROLLE)" in `pageview-emitter.test.ts`. **GEPRÜFT UND ALS DECKUNG BEFUNDEN, NICHT
+  ALS KASKADE:** Jener hält die Zusage „nichts gesetzt heisst erlaubt"; mit invertiertem Zweig
+  trägt eine Seite mit Schalter AUS den Ablehnungs-Setzer, der Hook wird gesetzt, und der
+  Beacon bleibt aus. **Derselbe Fehler, eine Schicht weiter beobachtet — die Wirkung statt des
+  Textes.**
+- **(ii) Prädikat auf Truthiness geändert.** **Die Vorhersage des Architekten lautete VIER von
+  fünf Rand-Läufen; die vorab angesagte, gemessene Zahl ist DREI** — `false`, `null`, `0`.
+  **IST: DREI.** **DER GRUND, und er ist kein Loch im Test: EIN LEERES OBJEKT IST TRUTHY.** Der
+  mutierte Setzer springt dort zurück und schreibt nicht; dieser Lauf ist gegen DIESE Mutation
+  unempfindlich. Der `undefined`-Lauf blieb grün — er ist die Trennlinie, kein Gegenbeispiel.
+- **(iii) Einen Schlüssel aus der Sechser-Ableitung entfernt** (den Analytics-Schlüssel).
+  Vorhersage: **nur T3**, und **T5 fällt ausdrücklich NICHT**, weil seine Schleife aus
+  `ALL_CONSENT_KEYS` zieht und der Schlüssel damit auch aus der Erwartung verschwindet.
+  **IST: nur T3, einschliesslich des vorhergesagten Nicht-Treffers von T5.** Deckung.
+  **T5 IST DAMIT EINE KOMPLEMENTARITÄTS-, KEINE VOLLSTÄNDIGKEITS-PRÜFUNG** — T3 ist der einzige
+  Test, der eine fehlende Schlüssel-Zeile fängt, und genau das steht in seinem Kommentar.
+
+**DER LIVE-NACHWEIS vom 2026-09-12 — ALLE VIER WERTE SIND OWNER-ANGABEN, NICHT VON CC
+GEMESSEN:**
+
+1. **Schalter AUS, neu veröffentlicht:** Der Seitenaufruf **kam im Dashboard an.** Das ist die
+   POSITIVKONTROLLE — ohne sie wäre Schritt 2 wertlos, weil „kein Seitenaufruf" von einem
+   defekten Aufbau nicht zu unterscheiden ist.
+2. **Schalter AN, neu veröffentlicht:** **kein Seitenaufruf.** Im Quelltext steht
+   `<script id="__ps_cns">` **exakt vor** `<script id="__ps_pve">`; das Snippet setzt die sechs
+   Schlüssel auf `false`.
+3. **`window.pagesmithConsent = true` in der Konsole, Lead ausgelöst:** Das Ereignis **kam an.**
+4. **Vorab `{ meta: true }` gesetzt:** Der Wert **blieb unverändert** — der Setzer hat nicht
+   überschrieben.
+
+**DIE GRENZEN, DIE DIESER NACHWEIS NICHT ÜBERSCHREITET** — sie stehen im Wortlaut, weil sie
+beim nächsten Lesen sonst zur Vollständigkeit werden:
+
+- **Gemessen sind die DOKUMENTREIHENFOLGE und die WIRKUNG.** Dass der Setzer **ZEITLICH** vor
+  dem Beacon lief, ist daraus **nicht einzeln belegt**.
+- **Schritt 2 misst den SEITENAUFRUF**, nichts über Conversions.
+- **Schritt 4 deckt den ASYNCHRON gesetzten Fremd-Hook NICHT ab** — Vorrat (2).
+- **Der EXPORT-PFAD ist ungedeckt** und war nicht Gegenstand — Vorrat (4).
+
+**ZWEI FEHLGRIFFE DES LAUFS, festgehalten, weil sie eine spätere Runde Zeit kosten würden:**
+
+- **Die erste Fixture des Vergleichswerts traf den produktiven Pfad nicht.** Sie ankerte an
+  `id=` statt an `data-pagesmith-id`; die Mapping-Tabelle blieb leer, das Wiring entstand nicht,
+  und der Wert war **1 699 statt 14 160 Bytes**. Korrigiert und neu erhoben **vor** jeder
+  Änderung — wäre er so stehengeblieben, hätte T1 eine Seite ohne Wiring gegen sich selbst
+  gehalten.
+- **Die Vorhersage zu Mutation (ii) war auf der Seite des Architekten zu hoch** (VIER statt
+  DREI). Der Fehler lag in der Vorhersage, nicht im Test.
 
 ## 8. Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -341,6 +415,80 @@ Literale. **Vorrat (1) bleibt davon unberührt und offen.**
 WEN SIE BINDET: jede Scheibe dieser Phase, die Schlüssel liest oder schreibt.
 WANN SIE KIPPT: sobald ein Ziel oder eine Kategorie hinzukommt, ohne durch diese Ableitung zu
 laufen — dann ist die Sechs falsch, und zwar still.
+
+**(5) DIE ABLAGE DES SCHALTERS — DER EINSTELLUNGS-BLOB, NICHT EINE EIGENE SPALTE.**
+
+UMGEHÄNGT AM 2026-09-12 aus dem Zuschnitt der Scheibe 11.5a (Abschnitt 12), WÖRTLICH; ergänzt
+sind allein die zwei Schluss-Zeilen der Bauform dieses Abschnitts.
+
+**GEWÄHLT: DER EINSTELLUNGS-BLOB.** Dort liegt bereits die Ableitung der Ziel-Schlüssel, aus der
+derselbe ausgelieferte Text gebaut wird. **Schalter und Schlüssel aus EINER Quelle können nicht
+auseinanderlaufen** — sie werden im selben Publish aus demselben Objekt gelesen.
+
+**VERWORFEN: EINE EIGENE, SERVER-AUTORITATIVE SPALTE.** **Ihr Vorzug ist echt und wird nicht
+kleingeredet:** Sie überlebt jeden Client-Save, so wie es der Tracking-Schlüssel tut. Sie fällt
+trotzdem, weil sie einen ZWEITEN Ort aufmacht, aus dem derselbe ausgelieferte Text gespeist
+wird — und zwei Quellen für einen Text sind genau die Bauform, die dieses Projekt mehrfach als
+stille Divergenz führt.
+
+**DER PREIS WIRD MITGENANNT:** Ein alter Browser-Tab kann den Einstellungs-Blob ganzheitlich
+überschreiben und den Schalter dabei still ausknipsen. **Der Zustand danach ist der heutige,
+entschiedene:** kein Dialog, alle Ziele erlaubt. Kein Leck, kein neuer Schaden — nur der
+Rückfall auf den Stand vor dieser Scheibe.
+
+**WARUM DAS NICHT UNTER „SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN BLOB" FÄLLT**
+(docs/immer-beachten.md, im Volltext GELESEN, CC, 2026-09-12): Jene Regel trifft eine
+SERVER-VERGEBENE Identität, die der Client nicht kennt und beim nächsten Save auf NULL
+zurückkippt — der Schalter dagegen ist eine **Eingabe des Betreibers, die im Client entsteht**,
+und der Blob ist für sie nicht der falsche, sondern der einzige Ort.
+
+WEN SIE BINDET: jede weitere Runde an diesem Schalter — jede, die ihn liest, schreibt oder
+seinen Ort ändert.
+WANN SIE KIPPT: an zwei Bedingungen, beide aus der Begründung oben abgelesen und nicht
+hinzuerfunden. ERSTENS, sobald die Ableitung der Ziel-Schlüssel den Einstellungs-Blob verlässt —
+dann liegt der gewählte Grund ("Schalter und Schlüssel aus EINER Quelle") nicht mehr vor.
+ZWEITENS, sobald der Rückfall-Zustand NICHT MEHR der heutige ist: Der Preis ist ausdrücklich
+damit begründet, dass ein still ausgeknipster Schalter auf "kein Dialog, alle Ziele erlaubt"
+zurückfällt und damit "kein Leck, kein neuer Schaden" ist. Existiert erst ein Dialog mit einer
+echten Entscheidung des Besuchers, trägt dieser Satz nicht mehr.
+
+**(6) DAS BEDIENELEMENT UND DER TERM IN `settingsEqual` — BEIDE SIND BEDINGUNG, NICHT POLITUR.**
+
+UMGEHÄNGT AM 2026-09-12 aus dem Zuschnitt der Scheibe 11.5a (Abschnitt 12), WÖRTLICH; ergänzt
+sind allein die zwei Schluss-Zeilen der Bauform dieses Abschnitts.
+
+**SIE SIND KEINE POLITUR, SONDERN DIE BEDINGUNG DAFÜR, DASS DER SCHALTER ÜBERHAUPT HÄLT.** Zwei
+Gründe, beide GEMESSEN am Code (CC, 2026-09-12):
+
+- **OHNE BEDIENELEMENT KENNT DER CLIENT DEN SCHALTER NICHT.** `saveProject` ersetzt den
+  Einstellungs-Blob GANZHEITLICH; ein Wert, den der Client nicht führt, ist beim nächsten
+  Speichern weg. Ein von Hand gesetzter Schalter überlebte also nicht die erste Speicherung.
+- **OHNE TERM IN `settingsEqual` IST ER FÜR `dirty` UNSICHTBAR.** Die Funktion vergleicht heute
+  ausschliesslich die Kennung und die Ereignis-Regeln je Ziel. Ein neues Top-Level-Mitglied
+  taucht dort nicht auf — kein Text „Ungespeicherte Änderungen", kein `beforeunload`-Wächter,
+  kein `confirm` beim Projektwechsel. **Der Schalter ginge beim nächsten Projektwechsel still
+  verloren.**
+
+**DIE BEREICHSWAHL — VERÖFFENTLICHEN, NICHT MESSEN:** Der Schalter ändert den AUSGELIEFERTEN
+TEXT und wird erst mit dem nächsten Veröffentlichen wirksam. **Er gehört dorthin, wo der Knopf
+steht, der ihn wirksam macht.**
+**VERWORFEN: der Bereich MESSEN.** Die thematische Nähe zu den Consent-Schlüsseln ist echt, und
+genau deshalb führt sie in die Irre: Dort erwartet man Wirkung auf die ZAHLEN, nicht auf das
+DOKUMENT.
+
+**VERWORFEN FERNER: eine eigene Server-Action mit Spiegelung in `settings` UND `savedSettings`**
+— die Bauform von `capi.tokenSet` und `hosting.label`, die `settingsEqual` bewusst ignoriert.
+**Sie machte den Schalter zu einem server-geschriebenen SPIEGEL** — und nähme damit der
+Ablage-Entscheidung darüber ihre Begründung, die genau darauf ruht, dass er eine **EINGABE des
+Betreibers** ist.
+
+WEN SIE BINDET: jede Runde, die den Schalter liest oder schreibt, und jede, die an
+`settingsEqual` arbeitet — insbesondere jede, die den Term dort für redundant hält.
+WANN SIE KIPPT: je Hälfte eine Bedingung, beide aus der Begründung oben abgelesen. Die erste
+entfällt, sobald `saveProject` den Einstellungs-Blob NICHT MEHR ganzheitlich ersetzt — dann
+überlebt ein Wert auch ohne Bedienelement. Die zweite entfällt, sobald `settingsEqual` nicht
+mehr aufzählt, WAS es vergleicht, sondern strukturell vergleicht — dann ist ein eigener Term
+für den Schalter überflüssig.
 
 ## 9. Vorrat — gemeldet, nicht gebaut
 
@@ -453,6 +601,43 @@ Schlüsselmenge, wäre das still.
 
 **UNGEMESSEN.** Es ist eine BEOBACHTUNG, kein Befund: Weder ist erhoben, ob jemand so arbeitet,
 noch, was dabei tatsächlich geschieht. **KEINE EMPFEHLUNG.**
+
+**(7) DREI KOMMENTARE BESCHREIBEN EINEN ZWEI-ARGUMENT-AUFRUF VON `injectPageViewEmitter`, DEN ES
+NICHT MEHR GIBT** (aufgenommen 2026-09-12).
+
+Seit Scheibe 11.5a trägt die Funktion einen dritten, pflichtigen Parameter. Drei Stellen
+beschreiben weiter den alten Aufruf — GEMESSEN am Repo (CC, 2026-09-12):
+`src/app/projects/actions.ts`, `src/lib/hosting/variant.ts` und `src/app/projects/publish.test.ts`.
+
+**IHRE AUSSAGE BLEIBT RICHTIG:** Alle drei sagen, der Aufruf liefere für ein leeres Dokument den
+reinen Emitter von rund 716 Zeichen. **Das trifft unverändert zu** — der Setzer entsteht nur bei
+eingeschaltetem Schalter. Überholt ist allein die **Aufrufform**.
+
+**DIE EINORDNUNG IST ARCHITEKT-ENTSCHEIDUNG (2026-09-12): SIE BLEIBEN STEHEN.** Wer dem Kommentar
+folgt und einen Zwei-Argument-Aufruf baut, bekommt einen **COMPILE-FEHLER** — der Parameter trägt
+keinen Vorgabewert. **Der Fehlschlag ist LAUT, nicht still**, und damit fehlt der Grund, dafür
+den Scope einer Scheibe zu weiten. **NACHZUZIEHEN BEIM NÄCHSTEN EINGRIFF IN JENE DATEIEN.**
+
+**(8) ZWEI DATEIEN TRAGEN CRLF IM ARBEITSBAUM, HEAD NICHT — NICHT IN DIESER SCHEIBE ENTSTANDEN**
+(aufgenommen 2026-09-12).
+
+GEMESSEN (CC, 2026-09-12): `src/components/PublishView.tsx` trägt **406 CR**,
+`src/app/projects/publish.test.ts` **615 CR**; in HEAD tragen beide **null**.
+
+**DER BELEG, DASS ES VOR DIESER SCHEIBE DA WAR:** PublishView.tsx ist **durchgehend** CRLF — auch
+auf den rund 365 Zeilen, die in dieser Scheibe niemand angefasst hat; drei kleine Eingriffe
+können das nicht erzeugen. publish.test.ts ist **gemischt**, weil der angehängte Block LF trägt
+und der **alte** Teil CRLF. Dagegen stehen **vier Kontrolldateien, die nie berührt wurden** —
+`TargetCard.tsx`, `MeasureView.tsx`, `capi/ingest.ts`, `tracking/consent.ts` — alle sauber LF.
+
+**WARUM ES BISHER NIEMANDEM AUFFIEL:** `.gitattributes` trägt `* text=auto eol=lf`, git
+normalisiert beim Diff. Eine CRLF-Arbeitskopie zeigt deshalb **keine** Änderung und hält den
+Arbeitsbaum optisch sauber.
+
+**FOLGE FÜR DEN COMMIT: KEINE.** Die Objekte werden als LF abgelegt; am committeten Objekt beider
+Dateien ist CR = 0 nachgemessen (CC, 2026-09-12).
+
+**GEMELDET, NICHT BEHOBEN. KEINE EMPFEHLUNG.**
 
 ## 10. Hebungs-Kandidaten
 
@@ -691,136 +876,55 @@ keinen Weg, ihn je Projekt abzuschalten.
 
 ## 12. Der Ablehnungs-Zustand vor dem ersten Beacon — Zuschnitt der Scheibe 11.5a
 
-**WAS DIESE SCHEIBE IST:** die erste dieser Phase. Sie stellt her, dass auf einer Kundenseite
-mit eingeschaltetem Schalter **vor dem ersten Beacon ein Wert steht, der Ablehnung bedeutet** —
-und sonst nichts. Sie löst damit den Teil der Roadmap-Zeile 11.5 ein, der den VORHER-Zustand
-als die eigentliche Arbeit benennt.
+**VERDICHTET UND GESCHLOSSEN AM 2026-09-12, nach dem Bau-Commit `97e9140` und dem bestätigten
+Live-Test.** **DER ZUSCHNITT IST VOLLSTÄNDIG ABGELAUFEN — hier steht nichts mehr, was noch
+gilt:** sein Protokoll steht als VERMERK 1 in Abschnitt 7, seine über die Scheibe hinaus
+bindenden Teile als Entscheidungen (5) und (6) in Abschnitt 8. Dieser Abschnitt trägt nur noch,
+was wohin gegangen ist.
 
-**WAS GEBAUT WIRD — VIER STÜCKE:**
-- **DIE SECHSER-ABLEITUNG** nach Entscheidung (4): eine Ableitung, die alle sechs Schlüssel
-  liefert — die fünf Ziel-Schlüssel und den Analytics-Schlüssel.
-- **EIN SCHALTER JE PROJEKT** im Einstellungs-Blob, **standardmässig AUS**.
-- **DER SETZER** in der Server-Injektion, nach Entscheidung (2) und (3): unmittelbar vor dem
-  PageView-Script, und nur, wenn der Hook noch nicht existiert.
-- **DAS BEDIENELEMENT UND DER TERM IN `settingsEqual`** — nachgezogen am 2026-09-12. Ohne
-  beides hält der Schalter nicht; die zwei Gründe stehen im Abschnitt darunter.
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-**DIE GESTALT-ENTSCHEIDUNGEN STEHEN NICHT HIER, SONDERN IN ABSCHNITT 8** — die vier Einträge
-(1) bis (4). **WARUM DORT UND NICHT HIER, und der Satz gehört dazu, sonst zieht die nächste
-Runde sie „der Nähe halber" hierher:** Sie binden ÜBER diese Scheibe hinaus; jede weitere
-Scheibe dieser Phase erbt sie. Stünden sie im Zuschnitt, müssten sie beim Abschluss der Scheibe
-umziehen — eine Runde für nichts, mit dem Risiko, dass dabei eine liegenbleibt.
+Die Titel sind ohne Überschriften-Marke zitiert, damit eine Überschriften-Suche sie nicht trifft.
+Je Punkt steht, WO er heute erkennbar ist — ohne das misst das Protokoll gegen nichts.
 
-### Die Ablage des Schalters, und die verworfene Alternative
+- **"WAS DIESE SCHEIBE IST" und "WAS GEBAUT WIRD — VIER STÜCKE"** nannten Gegenstand und Umfang.
+  **HEUTE ERKENNBAR:** VERMERK 1 nennt beides in seinem Kopf, dazu den Bau-Commit.
+- **"DIE GESTALT-ENTSCHEIDUNGEN STEHEN NICHT HIER, SONDERN IN ABSCHNITT 8"** war ein Zeiger auf
+  die vier bindenden Entscheidungen. **HEUTE ERKENNBAR:** Abschnitt 8 trägt sie unverändert; ein
+  Zeiger aus einem abgelaufenen Zuschnitt braucht es dafür nicht.
+- **"Was ausdrücklich NICHT zu dieser Scheibe gehört"** führte die Ausschlüsse, darunter den
+  Export-Pfad. **HEUTE ERKENNBAR:** Vorrat (4) führt den Export-Pfad mit seiner Folge; VERMERK 1
+  nennt ihn unter den Grenzen des Nachweises. Die übrigen Ausschlüsse waren scheiben-gebunden
+  und sind mit ihr abgelaufen.
+- **"Die tragende Invariante"** verlangte Byte-Gleichheit bei ausgeschaltetem Schalter.
+  **HEUTE ERKENNBAR:** VERMERK 1 trägt den Vergleichswert mit Byte-Länge und Prüfsumme; gehalten
+  wird sie fortlaufend von T1 im Code, nicht von diesem Abschnitt.
+- **"Die Demobarkeit"** beschrieb die drei geplanten Live-Schritte. **HEUTE ERKENNBAR:**
+  VERMERK 1 trägt den gefahrenen Nachweis mit vier Schritten und deren Grenzen.
+- **"Drei Auflagen an den Bau"** verlangten den Vergleichswert VOR der Änderung, die
+  Positivkontrolle samt A/B-Vorbedingung im Live-Test und die Sechs-Zählung mit ihrem Kommentar.
+  **ALLE DREI SIND EINGELÖST UND HEUTE ERKENNBAR:** die erste am Vergleichswert in VERMERK 1 und
+  an dem dort festgehaltenen Fehlgriff der ersten Fixture; die zweite am Live-Nachweis, dessen
+  Schritt 1 ausdrücklich die Positivkontrolle ist; die dritte im **Kommentar von T3 selbst** —
+  genau dorthin verlangte die Auflage sie, damit sie den Zuschnitt überlebt.
+- **Der Schlusssatz "DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD … NICHT WIE"** war eine Auflage an
+  den Zuschnitt und ist mit ihm abgelaufen.
 
-**GEWÄHLT: DER EINSTELLUNGS-BLOB.** Dort liegt bereits die Ableitung der Ziel-Schlüssel, aus der
-derselbe ausgelieferte Text gebaut wird. **Schalter und Schlüssel aus EINER Quelle können nicht
-auseinanderlaufen** — sie werden im selben Publish aus demselben Objekt gelesen.
+**WAS NICHT GESTRICHEN, SONDERN UMGEZOGEN IST:** die zwei Blöcke darunter — s. die Liste
+„Umgehängt". Sie tragen ABLAGE- und BAUFORM-Gründe, die jede weitere Runde an diesem Schalter
+binden; sie sind keine Beschreibung dessen, was gebaut wurde, sondern der Grund, aus dem es so
+und nicht anders liegt.
 
-**VERWORFEN: EINE EIGENE, SERVER-AUTORITATIVE SPALTE.** **Ihr Vorzug ist echt und wird nicht
-kleingeredet:** Sie überlebt jeden Client-Save, so wie es der Tracking-Schlüssel tut. Sie fällt
-trotzdem, weil sie einen ZWEITEN Ort aufmacht, aus dem derselbe ausgelieferte Text gespeist
-wird — und zwei Quellen für einen Text sind genau die Bauform, die dieses Projekt mehrfach als
-stille Divergenz führt.
+### Umgehängt — was hier stand und wo es heute steht
 
-**DER PREIS WIRD MITGENANNT:** Ein alter Browser-Tab kann den Einstellungs-Blob ganzheitlich
-überschreiben und den Schalter dabei still ausknipsen. **Der Zustand danach ist der heutige,
-entschiedene:** kein Dialog, alle Ziele erlaubt. Kein Leck, kein neuer Schaden — nur der
-Rückfall auf den Stand vor dieser Scheibe.
+Die Titel sind ohne Überschriften-Marke zitiert.
 
-**WARUM DAS NICHT UNTER „SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN BLOB" FÄLLT**
-(docs/immer-beachten.md, im Volltext GELESEN, CC, 2026-09-12): Jene Regel trifft eine
-SERVER-VERGEBENE Identität, die der Client nicht kennt und beim nächsten Save auf NULL
-zurückkippt — der Schalter dagegen ist eine **Eingabe des Betreibers, die im Client entsteht**,
-und der Blob ist für sie nicht der falsche, sondern der einzige Ort.
+- **"Die Ablage des Schalters, und die verworfene Alternative"** stand hier bis zum 2026-09-12.
+  **HEUTE:** Abschnitt 8, Entscheidung (5) — wörtlich, um die zwei Schluss-Zeilen der Bauform
+  jenes Abschnitts ergänzt.
+- **"Das Bedienelement und der Term in `settingsEqual`"** stand hier bis zum 2026-09-12.
+  **HEUTE:** Abschnitt 8, Entscheidung (6) — ebenso wörtlich und ebenso ergänzt.
 
-### Das Bedienelement und der Term in `settingsEqual` — nachgezogen 2026-09-12
-
-**SIE SIND KEINE POLITUR, SONDERN DIE BEDINGUNG DAFÜR, DASS DER SCHALTER ÜBERHAUPT HÄLT.** Zwei
-Gründe, beide GEMESSEN am Code (CC, 2026-09-12):
-
-- **OHNE BEDIENELEMENT KENNT DER CLIENT DEN SCHALTER NICHT.** `saveProject` ersetzt den
-  Einstellungs-Blob GANZHEITLICH; ein Wert, den der Client nicht führt, ist beim nächsten
-  Speichern weg. Ein von Hand gesetzter Schalter überlebte also nicht die erste Speicherung.
-- **OHNE TERM IN `settingsEqual` IST ER FÜR `dirty` UNSICHTBAR.** Die Funktion vergleicht heute
-  ausschliesslich die Kennung und die Ereignis-Regeln je Ziel. Ein neues Top-Level-Mitglied
-  taucht dort nicht auf — kein Text „Ungespeicherte Änderungen", kein `beforeunload`-Wächter,
-  kein `confirm` beim Projektwechsel. **Der Schalter ginge beim nächsten Projektwechsel still
-  verloren.**
-
-**DIE BEREICHSWAHL — VERÖFFENTLICHEN, NICHT MESSEN:** Der Schalter ändert den AUSGELIEFERTEN
-TEXT und wird erst mit dem nächsten Veröffentlichen wirksam. **Er gehört dorthin, wo der Knopf
-steht, der ihn wirksam macht.**
-**VERWORFEN: der Bereich MESSEN.** Die thematische Nähe zu den Consent-Schlüsseln ist echt, und
-genau deshalb führt sie in die Irre: Dort erwartet man Wirkung auf die ZAHLEN, nicht auf das
-DOKUMENT.
-
-**VERWORFEN FERNER: eine eigene Server-Action mit Spiegelung in `settings` UND `savedSettings`**
-— die Bauform von `capi.tokenSet` und `hosting.label`, die `settingsEqual` bewusst ignoriert.
-**Sie machte den Schalter zu einem server-geschriebenen SPIEGEL** — und nähme damit der
-Ablage-Entscheidung darüber ihre Begründung, die genau darauf ruht, dass er eine **EINGABE des
-Betreibers** ist.
-
-### Was ausdrücklich NICHT zu dieser Scheibe gehört
-
-Dialog · Oberfläche des Dialogs · Zustimmung · Widerruf · Speicherung der Entscheidung ·
-Sprache · Granularität · **jede Änderung an `consent.ts`, `consent-wire.ts` oder `ingest.ts`** ·
-die Betreiber-Dokumentation des Hooks (Vorrat (3)).
-
-**DAZU DER EXPORT-PFAD — OWNER-ENTSCHEIDUNG 2026-09-12, ER BLEIBT UNGEDECKT.** Er baut den Text
-rein clientseitig und berührt die Server-Injektion nie; **es sind ZWEI Wege, nicht einer:** der
-**Download** und das **Kopieren in die Zwischenablage**. Beide bleiben ausserhalb dieser
-Scheibe. Die Folge steht als Vorrat (4).
-
-### Die tragende Invariante
-
-**BEI AUSGESCHALTETEM SCHALTER IST DER AUSGELIEFERTE TEXT BYTE-GLEICH ZU HEUTE.** Das ist die
-Zusicherung, an der diese Scheibe zu messen ist — nicht „im Wesentlichen unverändert", sondern
-byte-gleich.
-
-### Die Demobarkeit
-
-1. **REGRESSION ZUERST:** ein Projekt mit AUSGESCHALTETEM Schalter — neu veröffentlichen, der
-   ausgelieferte Text unverändert, Tracking läuft wie bisher.
-2. Schalter AN, neu veröffentlichen, Seite laden: **kein Seitenaufruf im Dashboard.**
-3. Den Hook in der Konsole von Hand auf Zustimmung setzen, klicken: **das Ereignis kommt an.**
-
-**DIE GRENZE DAZU, UND SIE IST AUSDRÜCKLICH:** Die tatsächliche zeitliche Lage im Browser
-bleibt eine **LIVE-Achse** (Abschnitt 11 (a)). **Der Live-Test misst sie, der Bau belegt sie
-nicht** — kein grüner Gate-Lauf sagt etwas darüber, ob der Setzer wirklich vor dem ersten
-Beacon stand.
-
-### Drei Auflagen an den Bau — nachgezogen 2026-09-12
-
-**(I) DER VERGLEICHSWERT FÜR DIE BYTE-GLEICHHEIT WIRD VOR DER ERSTEN ÄNDERUNG ERZEUGT UND
-FESTGEHALTEN.** Nach dem Eingriff ist er **nicht mehr herstellbar** — die heutige Injektion
-existiert dann nicht mehr.
-**WAS SONST PASSIERT, und es ist der teurere Fall:** Wird die Erwartung hinterher aus dem NEUEN
-Code geschrieben, ist der Byte-Gleichheits-Test ein **SPIEGEL** und bestätigt jeden Fehlgriff,
-statt ihn zu fangen.
-Gemessen ist das gegen zwei Regeln in docs/immer-beachten.md, hier beim Titel genannt und nicht
-zitiert: **„EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS NICHT MEHR
-HERSTELLBAR"** und **„EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM
-CODE — UND KEIN WÄCHTER ÜBER EINEN WORTLAUT"**.
-
-**(II) DER LIVE-TEST BRAUCHT EINE POSITIVKONTROLLE UND EINE A/B-VORBEDINGUNG.**
-Schritt 2 der Demobarkeit ist eine **ABWESENHEIT**: „kein Seitenaufruf" sieht identisch aus wie
-„falsches Projekt", „Seite gar nicht geladen" oder „Dashboard kaputt". **Schritt 1 muss deshalb
-ausdrücklich belegen, dass ein Seitenaufruf im SELBEN Fenster ANKOMMT** — sonst ist nicht die
-Wirkung des Schalters gemessen, sondern ein defekter Aufbau.
-**DAZU DIE VORBEDINGUNG:** Vor jeder Live-Kontrolle wird der **A/B-Betrieb festgestellt** —
-entweder abgeschaltet, oder die ausgelieferte Variante bestimmt, **BEVOR** ein Ergebnis
-beurteilt wird. Sonst wird eine unbekannte Konfiguration gemessen. Herleitung:
-docs/immer-beachten.md, **„BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS
-RICHTIGE GEMESSEN WIRD"**, Teil (e).
-
-**(III) DER SCHLÜSSEL-TEST ZÄHLT AUF SECHS, UND DAS IST ABSICHT.** Ein SIEBTES Ziel macht ihn
-rot — **genau das soll er:** Ein neues Ziel muss jemanden zwingen, hier hinzusehen, sonst bliebe
-sein Schlüssel im Setzer still abgelehnt, und nichts würde davon rot.
-**DIE ERWARTUNG WIRD NIE AUS DEM CODE ABGELEITET.** Dieser Satz gehört in den **KOMMENTAR DES
-TESTS**, nicht nur hierher — sonst „repariert" die nächste Runde ihn zu einem Spiegel, weil er
-nach einem vergessenen Nachzug aussieht.
-
-**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.** Er nennt
-keine Symbolnamen für neue Funktionen, keine Dateien, in denen etwas entstehen soll, und keinen
-Plan.
+**WARUM SIE UMGEZOGEN SIND:** Sie tragen ABLAGE- und BAUFORM-Gründe, die jede weitere Runde an
+diesem Schalter binden. Das ist die Bauform von Abschnitt 8 und nicht die eines abgelaufenen
+Zuschnitts; in Abschnitt 12 wären sie mit ihm gealtert.

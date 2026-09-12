@@ -27,6 +27,7 @@ EINER DATEI MIT VERZEICHNIS NICHT", Zusatz 2026-08-27.
 8. Entscheidungen, die über ihre Scheibe hinaus binden
 9. Vorrat — gemeldet, nicht gebaut
 10. Hebungs-Kandidaten
+11. Der gemessene Ausgangszustand vor der ersten Scheibe
 
 ## 1. Gegenstand der Phase — was gebaut wird und was ausdrücklich nicht dazugehört
 
@@ -266,7 +267,27 @@ Gegenstand gestrichen mit Beleg.
 NUMMERIERUNG: (1), (2), … hinten antreten, Nummern stabil und nie neu vergeben; ein gehobener
 oder gestrichener Eintrag hinterlässt seine Nummer als benannte Lücke.
 
-NOCH LEER (Stand 2026-09-12).
+**(1) DER CODE FÜHRT SELBST DIE FRAGE, OB DIE VIER LITERAL-SCHLÜSSEL ALS KONSTANTEN ZU DEM
+ANALYTICS-SCHLÜSSEL WANDERN SOLLEN** (aufgenommen 2026-09-12).
+
+Der Docblock über `CONSENT_KEY_BY_TARGET` (`src/lib/tracking/consent-targets.ts`) hält
+ausdrücklich als OFFEN und NICHT ENTSCHIEDEN fest, ob die Literal-Werte der vier Ziele als
+Konstanten nach `src/lib/tracking/consent.ts` gehören, von wo sie hier importiert würden — wie
+es `meta` über `META_CONSENT_TARGET` bereits tut. Er benennt jene Datei als den Ort und sagt
+im selben Satz, dass die Entscheidung nicht dort fällt (GELESEN am Code, CC, 2026-09-12).
+
+**WARUM DER EINTRAG HIER LIEGT:** Er ist am Code aufgeschrieben und wartet auf eine
+Entscheidung, nicht auf einen Trigger. Er gehört NICHT dieser Phase — er ist ihr nur
+begegnet.
+
+**ER LIEGT NEBEN DEM BEFUND (d) IN ABSCHNITT 11**, und das ist der Grund, ihn überhaupt zu
+vermerken: Jener misst, dass die Schlüsselmenge heute an ZWEI Orten liegt, weil
+`ANALYTICS_CONSENT_TARGET` schon in `consent.ts` steht und die fünf Ziel-Schlüssel nicht. Wer
+die offene Frage beantwortet, bewegt genau diese Grenze — in die eine oder die andere
+Richtung.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG**, und ausdrücklich keine Aussage darüber, ob die
+Frage im Rahmen dieser Phase zu beantworten ist.
 
 ## 10. Hebungs-Kandidaten
 
@@ -333,3 +354,172 @@ bzw. `od`. Die Ablage-Frage betrifft, WO die Regel steht, nicht OB sie befolgt w
 PROVENIENZ: der Instrumenten-Befund und die ausgefallene Positivkontrolle GEMESSEN am eigenen
 Lauf (CC, 2026-09-12); der Volltext der zwei Nachbarregeln GELESEN in docs/immer-beachten.md
 (CC, 2026-09-12); die dritte Achse ist eine ABLEITUNG.
+
+## 11. Der gemessene Ausgangszustand vor der ersten Scheibe
+
+**WAS DIESER ABSCHNITT IST:** der Zustand, den eine READ-ONLY-Aufklärung am 2026-09-12 am Code
+erhoben hat — vor dem ersten Zuschnitt dieser Phase. Er beschreibt den IST-Zustand und die
+GRENZEN seiner Erhebung, und sonst nichts: kein Zuschnitt, keine Entscheidung, kein
+Lösungsvorschlag.
+
+**ALLES HIER IST GEMESSEN AM CODE (CC, 2026-09-12)**, sofern an der Stelle nicht ausdrücklich
+etwas anderes steht. **DIE ANKER SIND SYMBOLNAMEN UND DATEIEN, NIE ZEILENNUMMERN** — ein
+Messbericht darf welche tragen, dieses Dokument nicht.
+
+**ER IST EINE MOMENTAUFNAHME UND WIRD NICHT STILLSCHWEIGEND FORTGESCHRIEBEN.** Wer ihn später
+als Beschreibung des dann geltenden Codes liest, liest ein Datum nicht mit.
+
+### (a) Die Zeitachse im ausgelieferten Artefakt
+
+Ein publiziertes Dokument trägt am Ende seines `body` vier Bausteine in dieser Reihenfolge:
+
+1. den Einwilligungs-Block (`CONSENT_SCRIPT_ID`, Inhalt aus `buildConsentRuntimes` in
+   `src/lib/tracking/consent.ts`),
+2. den Mappings-Datenblock als `application/json`,
+3. das Wiring-Script,
+4. das PageView-Script (`buildPageViewScript` in `src/lib/analytics/pageview-emitter.ts`).
+
+**WER WAS BEISTEUERT:** Die ersten drei hängt der **CLIENT** an — `generateFunctional`
+(`src/lib/generate.ts`) erzeugt sie und hängt sie mit drei `appendChild` an `doc.body`, das
+Gate zuerst. Den vierten injiziert der **SERVER** beim Publish: `injectPageViewEmitter`, gerufen
+aus `publishProject` (`src/app/projects/actions.ts`), als reine String-Op vor dem LETZTEN
+`</body>` — also hinter allem, was der Client angehängt hat. **Der Serve-Pfad injiziert
+NICHTS**; er liefert `published_content` unverändert aus (`src/app/app-serve/route.ts`).
+
+**DEN GATE-BLOCK TRÄGT NICHT IMMER DERSELBE:** `injectPageViewEmitter` stellt ihn dem Emitter
+voran, WENN das Dokument ihn nicht schon trägt (`hasConsentScript`). Eine Seite ohne Mappings
+bekommt kein Wiring — die Injektion in `generateFunctional` hängt an der Mapping-Tabelle — und
+damit auch keinen Gate-Block vom Client; dort stammt er vom Server.
+
+**DEN ERSTEN BEACON SETZT DAS PAGEVIEW-SCRIPT AB**, und es ist der letzte Baustein vor
+`</body>`. Nichts anderes im Artefakt sendet beim Laden: Der Meta-Pfad setzt `fbq('init', …)`
+ausdrücklich OHNE folgendes `fbq('track','PageView')`, und `__psMetaInit` läuft lazy beim
+ERSTEN eingewilligten Fire (beides als Auflage im Kopf von `src/lib/tracking/meta.ts`). Die
+beiden übrigen Sendestellen liegen in `__psMetaFire` und im Bestätigungs-Rumpf, sind also
+ereignisgetrieben.
+
+**DIE GRENZE, UND SIE IST AUSDRÜCKLICH: DIE TATSÄCHLICHE ZEITLICHE LAGE IM BROWSER IST AM CODE
+NICHT ENTSCHIEDEN.** Ob und wie lange der Parser vorher hält, wann `sendBeacon` real abgeht, was
+eine Weiterleitung dazwischen tut — das ist eine LIVE-Achse und in dieser Aufklärung NICHT
+gemessen. Was hier steht, ist die Reihenfolge **im Dokument**, nicht die Reihenfolge **in der
+Zeit**.
+
+### (b) Der Konsument
+
+`consentAllows` (`src/lib/tracking/consent-wire.ts`), Signatur `(body: unknown, target: string)
+=> boolean`. Vier Zweige, in dieser Reihenfolge: Body kein Objekt oder `null` -> `true` · das
+Feld GANZ ABWESEND -> `true` · das Feld vorhanden, aber kein Objekt, `null` oder ein Array ->
+`false` · sonst muss der Ziel-Schlüssel GENAU `true` sein. Der Feldname steht an EINER Stelle
+(`CONSENT_WIRE_FIELD` in derselben Datei) und wird von Setzer und Leser importiert.
+
+**AUFRUFER:** im Produktivcode genau EINER — `allowedTargets` (`src/lib/capi/ingest.ts`).
+`allowedTargets` selbst wird ZWEIMAL gerufen, beide in `handleIngest`: einmal für die
+aufgelösten Empfänger, einmal für die rettbaren Ziele. Beide Aufrufe liegen INNERHALB der
+Forward-Bedingung, die zusätzlich `isForwardable` verlangt.
+
+**WAS BEI „VERWEIGERT" GESCHIEHT — NUR DER FORWARD ENTFÄLLT.** Bleibt kein Empfänger übrig,
+endet der Handler mit der leeren 204, ohne zu senden. **DER PERSIST IST DAVON UNBERÜHRT:**
+`schedulePersist` mit der Quelle `server` steht im selben Handler VOR dem Gate. Das Ereignis
+wird also verbucht und nur nicht weitergereicht. Nach aussen ist dieser Ausgang von „kein Ziel
+aufgelöst" nicht unterscheidbar — dasselbe 204-Containment.
+
+### (c) Zwei Welten — Seite MIT `cns`-Feld gegen Seite OHNE
+
+Welche Regel gilt, entscheidet nicht der Hook, sondern die ANWESENHEIT des Feldes im Beacon.
+`allowedTargets` liest sie selbst, bevor es den Leser fragt:
+
+- **FELD VORHANDEN:** je Ziel entscheidet `consentAllows` mit dem Consent-Schlüssel DIESES
+  Ziels.
+- **FELD ABWESEND:** es entscheidet `LEGACY_CONSENT_ROLE` (`src/lib/tracking/consent-targets.ts`).
+  Dort trägt **genau ein Ziel** die Rolle — `meta`; alle übrigen stehen auf `false`.
+
+**DER BEFUND ÜBER DEN BESTAND, UND ER IST KEINE ÄNDERUNG AN DER ROADMAP-ZEILE:** Die
+Roadmap-Zeile 11.5 beschreibt als Auslieferungs-Zustand, dass ohne gesetzten Hook ALLE
+konfigurierten Ziele beliefert werden. **Das trifft auf die erste Welt zu** — ein nicht
+gesetzter Betreiber-Hook füllt den Draht mit allen Schlüsseln auf `true`, das Feld ist dann
+vorhanden UND erlaubend. **Für die zweite Welt gilt es nicht:** dort wird ausschliesslich das
+Ziel mit der Altbestands-Rolle beliefert. **Die Zeile kennt in ihrer Formulierung nur den
+ersten Fall.** Das ist hier als Befund festgehalten; **die Zeile ist in dieser Runde NICHT
+angefasst worden**, und dieser Absatz trifft keine Aussage darüber, ob sie zu ändern ist.
+
+**WER HEUTE IN DIE ZWEITE WELT FÄLLT, IST AM REPO NICHT FESTSTELLBAR.** Der Erzeuger schreibt
+das Feld in BEIDEN seiner Zweige (s. (d)); eine Seite ohne Feld ist damit eine, die vor der
+Einführung des Feldes publiziert wurde. **OB ES SOLCHE SEITEN GIBT, IST NICHT ERHOBEN** — das
+läge in `published_content`, nicht im Repo, und diese Aufklärung hat keine Datenbank angefasst.
+
+### (d) Die Schlüsselmenge und ihre zwei Orte
+
+**DIE ZIEL-SCHLÜSSEL** stehen in `CONSENT_KEY_BY_TARGET` (`src/lib/tracking/consent-targets.ts`)
+— fünf Einträge, einer je Ziel; `meta` wird aus `META_CONSENT_TARGET` importiert, die vier
+übrigen stehen als Literale. Der Erzeuger zählt sie nicht auf, sondern LEITET AB: das Memo
+`consentTargets` (`src/components/CodeImporter.tsx`) filtert `TRACKING_TARGETS` über
+`isTargetDeliverable` und bildet über diese Zuordnung ab.
+
+**DER ANALYTICS-SCHLÜSSEL LIEGT WOANDERS:** `ANALYTICS_CONSENT_TARGET`
+(`src/lib/tracking/consent.ts`) steht **NICHT** in `CONSENT_KEY_BY_TARGET` (GEMESSEN: kein
+Treffer auf dem Wert in jener Datei). Gefragt wird er allein vom PageView-Emitter, über die
+EINZEL-Funktion `__psConsent`.
+
+**DER PAGEVIEW-BEACON TRÄGT KEIN `cns`-FELD** (GEMESSEN: `buildPageViewScript` importiert
+`CONSENT_WIRE_FIELD` nicht und schreibt es nicht). Der Analytics-Schlüssel erreicht den Draht
+also nie; er wirkt ausschliesslich im Browser, als Riegel vor dem Senden.
+
+**DER RÜCKFALL-ZWEIG DES ERZEUGERS:** `buildCapiBeaconStatement` (`src/lib/tracking/meta.ts`)
+schreibt das Feld in ZWEI Formen. Ist die Ziel-Menge nicht leer, entsteht ein Eintrag je
+Schlüssel, jeder aus der einen Ziehung `__psConsentAll`. Ist sie LEER, entsteht **ein einziger
+Eintrag** unter `META_CONSENT_TARGET`, und sein Wert stammt aus einer ANDEREN Auswertungsform.
+Das Feld ist damit in beiden Fällen vorhanden, aber nicht in derselben Gestalt.
+
+**WAS DAS FÜR DIE BINDUNG BEDEUTET** — gemeint ist die Bindung „DIE ZIEL-SCHLÜSSEL SIND EINE
+EINBAHNSTRASSE" an der Roadmap-Zeile 11.5, im Volltext GELESEN (CC, 2026-09-12) und hier
+absichtlich nicht zitiert: Sie verlangt, dass der Dialog seine Schlüssel aus DERSELBEN Quelle
+bezieht wie der Erzeuger — und gemessen ist, dass „dieselbe Quelle" heute **zwei Orte** sind,
+weil der Analytics-Schlüssel nicht in der Zuordnung des Erzeugers steht.
+
+### (e) Der Hook aus Betreibersicht
+
+Er heisst **`window.pagesmithConsent`**. Seine Gestalten werden in dieser Reihenfolge
+ausgewertet (`buildConsentRuntime` und `buildConsentAllRuntime`, beide
+`src/lib/tracking/consent.ts`): gar nicht gesetzt -> alles erlaubt · eine Funktion -> sie wird
+gerufen, ein Wurf heisst alles verboten · genau `true` -> alles erlaubt · ein Objekt -> je
+Schlüssel muss der Wert GENAU `true` sein · alles übrige -> verboten. **Die Reihenfolge ist
+tragend:** die Prüfung auf „nicht gesetzt" steht VOR dem Funktionsaufruf, ein Hook, der
+`undefined` ZURÜCKGIBT, ist deshalb verboten.
+
+**ER IST AN KEINER FÜR EINEN BETREIBER ERREICHBAREN STELLE BESCHRIEBEN — NICHT-TREFFER MIT
+BENANNTER ACHSE** (GEMESSEN, CC, 2026-09-12): Achse 1 — der Bezeichner `pagesmithConsent` über
+alle verfolgten Dateien: in `docs/` ausschliesslich Treffer unter `docs/claude-history/`, also
+im ARCHIV, in keinem aktiven Dokument. Achse 2 — `einwillig|consent`, case-insensitiv, über
+`src/components/`: ausschliesslich Kommentare und Bezeichner, **kein nutzersichtbarer Text**.
+Positivkontrolle: dieselbe Achse trifft `src/lib/tracking/consent.ts` mehrfach. **Die
+vollständige Beschreibung existiert nur als Kommentarkopf in jener Datei.**
+
+### (f) Die ungeprüfte Autorität
+
+Der Kommentarkopf von `buildConsentRuntime` (`src/lib/tracking/consent.ts`) erklärt seine
+eigene Aufzählung zur **verbindlichen Fassung dessen, was geschieht**, und hält im selben Atemzug
+fest, dass **kein Wächter** den erzeugten Laufzeit-Text gegen diese Aufzählung hält. Er nennt
+sich dort selbst eine Verpflichtung und keine Zusicherung.
+
+**WARUM DAS GERADE FÜR DIESE PHASE ZÄHLT:** Sie hängt einen ZWEITEN Produzenten an denselben
+Hook. Ab da gibt es zwei Erzeuger und einen Vertrag, der aufgeschrieben und nicht geprüft ist —
+eine Abweichung zwischen dem, was der Dialog schreibt, und dem, was die Aufzählung fordert,
+würde von nichts rot gemacht. **Das ist hier festgehalten, nicht behoben**, und es folgt daraus
+keine Auflage an einen Zuschnitt.
+
+### (g) Was je Projekt unterschiedlich ausgeliefert wird
+
+- **Meta-Pixel-ID** — aus dem **settings-Blob** (`getPixelId`).
+- **Tracking-Schlüssel** — aus der **eigenen Spalte** `projects.tracking_key`, server-autoritativ
+  über `ensureTrackingKey` in `publishProject`.
+- **Die Consent-Ziel-Schlüssel** — **abgeleitet aus dem settings-Blob** (Memo `consentTargets`).
+- **Mappings-Datenblock und Variante B** — aus den Projekt-Spalten.
+- **Die Beacon-Adresse** — **NICHT projekt-abhängig**: `getCapiProxyUrl` (`src/lib/capi/proxy.ts`)
+  liest `NEXT_PUBLIC_APP_URL` aus der Umgebung.
+
+**ES GIBT KEINEN GESETZTEN SCHALTER JE PROJEKT ÜBER DIE ANWESENHEIT EINES BAUSTEINS.** Die
+vorhandenen Bedingungen sind INHALTSABGELEITET: ob Mappings vorliegen (entscheidet über Gate,
+Datenblock und Wiring), ob eine Meta-Pixel-ID gesetzt ist (entscheidet über die Meta-Laufzeit),
+ob das Dokument den Gate-Block schon trägt (entscheidet, ob der Server ihn ergänzt), und ob
+eine Variante B publiziert wird. **Der PageView-Emitter wird bedingungslos injiziert** — es gibt
+keinen Weg, ihn je Projekt abzuschalten.

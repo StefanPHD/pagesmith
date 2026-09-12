@@ -28,6 +28,7 @@ EINER DATEI MIT VERZEICHNIS NICHT", Zusatz 2026-08-27.
 9. Vorrat — gemeldet, nicht gebaut
 10. Hebungs-Kandidaten
 11. Der gemessene Ausgangszustand vor der ersten Scheibe
+12. Der Ablehnungs-Zustand vor dem ersten Beacon — Zuschnitt der Scheibe 11.5a
 
 ## 1. Gegenstand der Phase — was gebaut wird und was ausdrücklich nicht dazugehört
 
@@ -254,7 +255,92 @@ betrifft, gehört in deren Vermerk und nicht hierher.
 NUMMERIERUNG: (1), (2), … in der Reihenfolge des Entstehens, hinten antreten, Nummern stabil
 und nie neu vergeben.
 
-NOCH LEER (Stand 2026-09-12).
+**ALLE VIER TRAGEN DIESELBE PROVENIENZ:** ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-12, auf der
+GEMESSENEN Grundlage aus Abschnitt 11. Wo unten zusätzlich „GEMESSEN (CC, 2026-09-12)" steht,
+ist die Angabe für diese Entscheidung eigens am heutigen Code nachgesehen worden.
+
+**(1) DER DIALOG SETZT DEN HOOK — DER KONSUMENT WIRD NICHT ANGEFASST.**
+
+DIE ENTSCHEIDUNG: Der Setzer schreibt `window.pagesmithConsent` mit einem Objekt, in dem KEIN
+Schlüssel auf `true` steht. Damit ist der Ablehnungs-Zustand hergestellt, ohne dass eine Zeile
+in `consent.ts`, `consent-wire.ts` oder `ingest.ts` fällt.
+
+DER GRUND: Beide Laufzeit-Funktionen lesen den Hook ERST IM MOMENT IHRES AUFRUFS, und ein
+Objekt ohne `true` ergibt in beiden für jeden Schlüssel „nicht erlaubt" — `__psConsent`
+vergleicht `v[t] === true`, `__psConsentAll` `obj[ts[i]] === true` (GEMESSEN am Code, CC,
+2026-09-12, an `buildConsentRuntime` und `buildConsentAllRuntime`). Die Umkehrung, die die
+Roadmap-Zeile 11.5 für den Dialog-Fall verlangt, kostet deshalb keine Änderung am Konsumenten.
+
+WAS UNBERÜHRT BLEIBT: Die Semantik „nicht gesetzt heisst erlaubt" gilt unverändert weiter —
+für jeden Betreiber ohne unseren Dialog. Genau das hält die Roadmap-Zeile für den
+Fremd-CMP-Fall ausdrücklich fest.
+
+WEN SIE BINDET: jede Scheibe dieser Phase, die am Einwilligungs-Zustand etwas ändert.
+WANN SIE KIPPT: sobald der Konsument eine andere Trennlinie zieht als „hat sich der Betreiber
+überhaupt geäussert?" — dann ist der Ablehnungs-Zustand nicht mehr ohne Eingriff in ihn
+herstellbar.
+
+**(2) DER SETZER LIEGT IN DER SERVER-INJEKTION, NICHT IM CLIENT-ERZEUGER.**
+
+DIE ENTSCHEIDUNG: Er wird unmittelbar VOR dem PageView-Script injiziert, aus derselben
+Server-Injektion.
+
+DER GRUND, UND ER IST GEMESSEN: Der Client-Erzeuger hängt Gate, Datenblock und Wiring nur an,
+wenn die Mapping-Tabelle nicht leer ist (`injectScripts` in `src/lib/generate.ts`). Eine Seite
+OHNE Mappings bekommt vom Client GAR NICHTS — dort stammt selbst der Gate-Block aus der
+Server-Injektion (`hasConsentScript`-Zweig in `src/lib/analytics/pageview-emitter.ts`).
+**Ein client-erzeugter Setzer hätte genau dort ein Loch, und zwar bei den Seiten, bei denen
+niemand hinsieht**, weil sie kein Wiring tragen. (GEMESSEN, CC, 2026-09-12.)
+
+DIE VORAUSSETZUNG IST GEPRÜFT: `publishProject` liest die Projekt-Einstellungen, bevor es
+injiziert — der Schalter aus dem Zuschnitt ist an der Injektionsstelle verfügbar (GEMESSEN am
+Code, CC, 2026-09-12).
+
+VERWORFEN: Erzeugung im Client, neben dem Gate-Block. Ihr Vorzug wäre die Nähe zu dem Ort, an
+dem die Ziel-Schlüssel ohnehin abgeleitet werden; sie fällt an dem Loch oben.
+
+WEN SIE BINDET: jede Scheibe, die einen weiteren Baustein in den ausgelieferten Text bringt.
+WANN SIE KIPPT: sobald der Client-Erzeuger auch für Seiten ohne Mappings läuft — dann gibt es
+das Loch nicht mehr, und die Wahl ist neu zu treffen.
+
+**(3) DER SETZER SCHREIBT NUR, WENN DER HOOK NOCH NICHT EXISTIERT.**
+
+DIE ENTSCHEIDUNG: Findet er einen bereits gesetzten Hook vor, schreibt er nichts.
+
+DER GRUND: Schaltet ein Betreiber unseren Schalter ein UND bringt ein eigenes CMP mit,
+schreiben ZWEI Produzenten denselben Hook. Unser Setzer steht am Dokumentende, sein CMP
+typischerweise davor — ohne diese Bedingung überschriebe unser „alles abgelehnt" seine
+Zustimmung, und **seine Seite hörte STILL auf zu tracken**. Die Roadmap-Zeile 11.5 verbietet
+das in ihrer Bindung zur Risiko-Klasse ausdrücklich; sie ist dort im Volltext aufgeschlagen
+(GELESEN, CC, 2026-09-12) und wird hier nicht zitiert.
+
+DIE GRENZE GEHÖRT DAZU: Ein CMP, das den Hook ASYNCHRON nach dem Seitenaufbau setzt, wird von
+dieser Prüfung NICHT erfasst — zu diesem Zeitpunkt hat unser Setzer längst geschrieben.
+**UNGEMESSEN**; als Vorrat (2) geführt.
+
+WEN SIE BINDET: jede Scheibe, die an den Hook schreibt.
+WANN SIE KIPPT: sobald es einen Weg gibt, eine spätere Fremdsetzung zu erkennen — dann ist die
+Grenze oben nicht mehr hinzunehmen, sondern zu entscheiden.
+
+**(4) EINE EINZIGE ABLEITUNG LIEFERT ALLE SECHS SCHLÜSSEL.**
+
+DIE ENTSCHEIDUNG: Fünf Ziel-Schlüssel plus der Analytics-Schlüssel, aus EINER Ableitung. Jeder
+spätere Schritt dieser Phase zieht aus ihr, nie aus einer zweiten Liste.
+
+DER GRUND — UND ER ZIELT AUF DIE ZUSTIMMUNG, NICHT AUF DIE ABLEHNUNG: Ein Objekt ohne den
+Analytics-Schlüssel heisst korrekt „abgelehnt". Schreibt ein späterer Dialog nach der
+ZUSTIMMUNG jedoch nur die fünf Ziel-Schlüssel zurück, **bleibt `analytics` für immer
+abgelehnt** — die eigene Seitenaufruf-Zählung des Kunden verstummt, und nichts wird davon rot.
+Die Zwei-Orte-Lage ist in Abschnitt 11 (d) gemessen und heute erneut bestätigt: fünf Einträge
+in `CONSENT_KEY_BY_TARGET`, der sechste als `ANALYTICS_CONSENT_TARGET` in einer anderen Datei
+(GEMESSEN, CC, 2026-09-12).
+
+WAS SIE NICHT ENTSCHEIDET: Sie NIMMT den Analytics-Schlüssel HINZU und verschiebt keine
+Literale. **Vorrat (1) bleibt davon unberührt und offen.**
+
+WEN SIE BINDET: jede Scheibe dieser Phase, die Schlüssel liest oder schreibt.
+WANN SIE KIPPT: sobald ein Ziel oder eine Kategorie hinzukommt, ohne durch diese Ableitung zu
+laufen — dann ist die Sechs falsch, und zwar still.
 
 ## 9. Vorrat — gemeldet, nicht gebaut
 
@@ -288,6 +374,36 @@ Richtung.
 
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG**, und ausdrücklich keine Aussage darüber, ob die
 Frage im Rahmen dieser Phase zu beantworten ist.
+
+**(2) EIN ASYNCHRON GESETZTES FREMD-CMP WIRD VON DER PRÜFUNG AUS ENTSCHEIDUNG (3) NICHT
+ERFASST** (aufgenommen 2026-09-12).
+
+Der Setzer prüft, ob der Hook schon existiert, und schreibt nur dann nicht. Ein CMP, das den
+Hook erst NACH dem Seitenaufbau setzt — nachgeladen, ereignisgesteuert, verzögert —, hat zu
+diesem Zeitpunkt noch nichts gesetzt: Unser Setzer schreibt, und **der erste PageView ist
+durch**, bevor das fremde Urteil überhaupt vorliegt.
+
+**UNGEMESSEN.** Weder ist erhoben, wie verbreitet diese Bauform bei CMPs ist, noch, was in
+diesem Fall tatsächlich geschieht. Hier steht, dass die Prüfung diesen Fall nicht abdeckt —
+nicht, wie oft er eintritt.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG**, weder zu einer Erkennung noch zu einer
+Verzögerung noch dazu, ob das überhaupt zu lösen ist.
+
+**(3) DER HOOK IST AN KEINER FÜR EINEN BETREIBER ERREICHBAREN STELLE BESCHRIEBEN**
+(aufgenommen 2026-09-12).
+
+„Ein fremdes CMP bleibt einbindbar" ist damit **technisch wahr und praktisch unbenutzbar**: Es
+gibt keinen Ort, an dem ein Betreiber erführe, dass es den Hook gibt, wie er heisst, welche
+Gestalten er annehmen darf und welche Schlüssel er bedienen muss. BELEG: Abschnitt 11 (e) —
+Nicht-Treffer mit benannter Achse, Treffer nur im Archiv und kein nutzersichtbarer Text.
+
+**DIE EINORDNUNG IST EINE ARCHITEKT-ENTSCHEIDUNG (2026-09-12):** Das gehört in DIESE Phase,
+aber **NICHT in die Scheibe 11.5a**. **KEINE EMPFEHLUNG**, in welche.
+
+**WARUM ER HIER UND NICHT IN ABSCHNITT 6 STEHT:** Abschnitt 6 führt, was der erste Zuschnitt
+AUFSCHLAGEN muss. Dieser Posten ist kein Lesestoff für den Zuschnitt, sondern eine Arbeit, die
+diese Phase noch vor sich hat.
 
 ## 10. Hebungs-Kandidaten
 
@@ -523,3 +639,74 @@ Datenblock und Wiring), ob eine Meta-Pixel-ID gesetzt ist (entscheidet über die
 ob das Dokument den Gate-Block schon trägt (entscheidet, ob der Server ihn ergänzt), und ob
 eine Variante B publiziert wird. **Der PageView-Emitter wird bedingungslos injiziert** — es gibt
 keinen Weg, ihn je Projekt abzuschalten.
+
+## 12. Der Ablehnungs-Zustand vor dem ersten Beacon — Zuschnitt der Scheibe 11.5a
+
+**WAS DIESE SCHEIBE IST:** die erste dieser Phase. Sie stellt her, dass auf einer Kundenseite
+mit eingeschaltetem Schalter **vor dem ersten Beacon ein Wert steht, der Ablehnung bedeutet** —
+und sonst nichts. Sie löst damit den Teil der Roadmap-Zeile 11.5 ein, der den VORHER-Zustand
+als die eigentliche Arbeit benennt.
+
+**WAS GEBAUT WIRD — DREI STÜCKE:**
+- **DIE SECHSER-ABLEITUNG** nach Entscheidung (4): eine Ableitung, die alle sechs Schlüssel
+  liefert — die fünf Ziel-Schlüssel und den Analytics-Schlüssel.
+- **EIN SCHALTER JE PROJEKT** im Einstellungs-Blob, **standardmässig AUS**.
+- **DER SETZER** in der Server-Injektion, nach Entscheidung (2) und (3): unmittelbar vor dem
+  PageView-Script, und nur, wenn der Hook noch nicht existiert.
+
+**DIE GESTALT-ENTSCHEIDUNGEN STEHEN NICHT HIER, SONDERN IN ABSCHNITT 8** — die vier Einträge
+(1) bis (4). **WARUM DORT UND NICHT HIER, und der Satz gehört dazu, sonst zieht die nächste
+Runde sie „der Nähe halber" hierher:** Sie binden ÜBER diese Scheibe hinaus; jede weitere
+Scheibe dieser Phase erbt sie. Stünden sie im Zuschnitt, müssten sie beim Abschluss der Scheibe
+umziehen — eine Runde für nichts, mit dem Risiko, dass dabei eine liegenbleibt.
+
+### Die Ablage des Schalters, und die verworfene Alternative
+
+**GEWÄHLT: DER EINSTELLUNGS-BLOB.** Dort liegt bereits die Ableitung der Ziel-Schlüssel, aus der
+derselbe ausgelieferte Text gebaut wird. **Schalter und Schlüssel aus EINER Quelle können nicht
+auseinanderlaufen** — sie werden im selben Publish aus demselben Objekt gelesen.
+
+**VERWORFEN: EINE EIGENE, SERVER-AUTORITATIVE SPALTE.** **Ihr Vorzug ist echt und wird nicht
+kleingeredet:** Sie überlebt jeden Client-Save, so wie es der Tracking-Schlüssel tut. Sie fällt
+trotzdem, weil sie einen ZWEITEN Ort aufmacht, aus dem derselbe ausgelieferte Text gespeist
+wird — und zwei Quellen für einen Text sind genau die Bauform, die dieses Projekt mehrfach als
+stille Divergenz führt.
+
+**DER PREIS WIRD MITGENANNT:** Ein alter Browser-Tab kann den Einstellungs-Blob ganzheitlich
+überschreiben und den Schalter dabei still ausknipsen. **Der Zustand danach ist der heutige,
+entschiedene:** kein Dialog, alle Ziele erlaubt. Kein Leck, kein neuer Schaden — nur der
+Rückfall auf den Stand vor dieser Scheibe.
+
+**WARUM DAS NICHT UNTER „SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN BLOB" FÄLLT**
+(docs/immer-beachten.md, im Volltext GELESEN, CC, 2026-09-12): Jene Regel trifft eine
+SERVER-VERGEBENE Identität, die der Client nicht kennt und beim nächsten Save auf NULL
+zurückkippt — der Schalter dagegen ist eine **Eingabe des Betreibers, die im Client entsteht**,
+und der Blob ist für sie nicht der falsche, sondern der einzige Ort.
+
+### Was ausdrücklich NICHT zu dieser Scheibe gehört
+
+Dialog · Oberfläche des Dialogs · Zustimmung · Widerruf · Speicherung der Entscheidung ·
+Sprache · Granularität · **jede Änderung an `consent.ts`, `consent-wire.ts` oder `ingest.ts`** ·
+die Betreiber-Dokumentation des Hooks (Vorrat (3)).
+
+### Die tragende Invariante
+
+**BEI AUSGESCHALTETEM SCHALTER IST DER AUSGELIEFERTE TEXT BYTE-GLEICH ZU HEUTE.** Das ist die
+Zusicherung, an der diese Scheibe zu messen ist — nicht „im Wesentlichen unverändert", sondern
+byte-gleich.
+
+### Die Demobarkeit
+
+1. **REGRESSION ZUERST:** ein Projekt mit AUSGESCHALTETEM Schalter — neu veröffentlichen, der
+   ausgelieferte Text unverändert, Tracking läuft wie bisher.
+2. Schalter AN, neu veröffentlichen, Seite laden: **kein Seitenaufruf im Dashboard.**
+3. Den Hook in der Konsole von Hand auf Zustimmung setzen, klicken: **das Ereignis kommt an.**
+
+**DIE GRENZE DAZU, UND SIE IST AUSDRÜCKLICH:** Die tatsächliche zeitliche Lage im Browser
+bleibt eine **LIVE-Achse** (Abschnitt 11 (a)). **Der Live-Test misst sie, der Bau belegt sie
+nicht** — kein grüner Gate-Lauf sagt etwas darüber, ob der Setzer wirklich vor dem ersten
+Beacon stand.
+
+**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.** Er nennt
+keine Symbolnamen für neue Funktionen, keine Dateien, in denen etwas entstehen soll, und keinen
+Plan.

@@ -320,15 +320,15 @@ beim nächsten Lesen sonst zur Vollständigkeit werden:
 - **Die Vorhersage zu Mutation (ii) war auf der Seite des Architekten zu hoch** (VIER statt
   DREI). Der Fehler lag in der Vorhersage, nicht im Test.
 
-#### NACHTRAG zu VERMERK 1 — 2026-09-13: die Conversion-Achse, durch einen VORFALL beobachtet
+#### NACHTRAG zu VERMERK 1 — 2026-09-12: die Conversion-Achse, durch einen VORFALL beobachtet
 
 **DER WORTLAUT VON VERMERK 1 BLEIBT UNVERÄNDERT. Dies ist eine ERGÄNZUNG, keine
 Richtigstellung** — der Vermerk war für seinen Tag richtig, und die Zeile „Schritt 2 misst den
 SEITENAUFRUF, nichts über Conversions" bleibt als Aussage über den GEPLANTEN Nachweis wörtlich
-stehen. Daneben tritt: **die Conversion-Achse ist seit dem 2026-09-13 durch einen VORFALL
+stehen. Daneben tritt: **die Conversion-Achse ist seit dem 2026-09-12 durch einen VORFALL
 beobachtet — nicht durch einen Test.**
 
-**DIE BEOBACHTUNG — OWNER-ANGABEN vom 2026-09-13, KEIN geplanter Test, NICHT von CC gemessen:**
+**DIE BEOBACHTUNG — OWNER-ANGABEN vom 2026-09-12, KEIN geplanter Test, NICHT von CC gemessen:**
 
 - Bei **eingeschaltetem** Schalter und gesetztem Setzer im ausgelieferten Text ist ein
   **CONVERSION**-Ereignis **nicht hinausgegangen** — weder beim Anbieter angekommen noch intern
@@ -340,7 +340,7 @@ beobachtet — nicht durch einen Test.**
 Nachweis:** Es war **EIN** Ereignis an **EINEM** Ziel, **ohne vorher festgelegten Soll-Ausgang**.
 Und der Lauf lief **zugleich im Testmodus**.
 
-**WAS DIE ÜBERLAGERUNG AM CODE GENAU IST — GEMESSEN (CC, 2026-09-13), und sie trägt nur die
+**WAS DIE ÜBERLAGERUNG AM CODE GENAU IST — GEMESSEN (CC, 2026-09-12), und sie trägt nur die
 HÄLFTE dessen, was man ihr zuschreiben möchte:**
 
 - **DIE INTERNE NICHTZÄHLUNG IST ÜBERLAGERT.** `testModusAktiv` (`src/lib/capi/ingest.ts`) ist
@@ -681,14 +681,14 @@ Dateien ist CR = 0 nachgemessen (CC, 2026-09-12).
 **GEMELDET, NICHT BEHOBEN. KEINE EMPFEHLUNG.**
 
 **(9) EIN VERGESSENER EINWILLIGUNGS-SCHALTER SIEHT AUS WIE EIN KAPUTTES TRACKING — UND ZWAR AN
-DREI STELLEN GLEICHZEITIG** (aufgenommen 2026-09-13).
+DREI STELLEN GLEICHZEITIG** (aufgenommen 2026-09-12).
 
 Steht der Schalter an und hat niemand eingewilligt, geht **nichts** hinaus: **nichts intern,
 nichts beim Anbieter, nichts im Dashboard.** **NICHTS MELDET DIE URSACHE.** Es gibt keinen
 Fehler, keine leere Seite, keine Zeile — der Zustand ist ausschliesslich **am ausgelieferten
 Quelltext** oder **am Schalter selbst** zu erkennen.
 
-**BELEG: OWNER-VORFALL vom 2026-09-13**, aufgelöst erst, nachdem der Quelltext der Live-Seite
+**BELEG: OWNER-VORFALL vom 2026-09-12**, aufgelöst erst, nachdem der Quelltext der Live-Seite
 angesehen wurde. Das ist der Punkt: Der Weg zur Ursache führte über eine Stelle, die niemand
 routinemässig ansieht.
 
@@ -696,7 +696,7 @@ routinemässig ansieht.
 **DREI** Zustände nicht mehr auseinanderzuhalten — abgelehnte Einwilligung, laufender Testmodus,
 und echter Defekt. **ZWEI DAVON SIND KORREKTES VERHALTEN**, und keiner der drei meldet sich.
 
-**WO DIE DREI TATSÄCHLICH ZUSAMMENFALLEN — GEMESSEN (CC, 2026-09-13), damit der Eintrag nicht
+**WO DIE DREI TATSÄCHLICH ZUSAMMENFALLEN — GEMESSEN (CC, 2026-09-12), damit der Eintrag nicht
 mehr behauptet, als er trägt:** In der **internen Ablage** und damit im **Dashboard** fallen sie
 zusammen; `testModusAktiv` riegelt beide `schedulePersist`-Aufrufe ab, und ein ausbleibender
 Beacon erzeugt ohnehin keine Zeile. **BEIM ANBIETER NICHT ZWINGEND:** Der Testmodus gatet den

@@ -1764,6 +1764,141 @@ liegen beide hier und finden einander.
       und die drei Zeiger sind GELESEN im Eintrag 11.2 (CC, 2026-09-08). Dass die dritte
       Datenklasse eine Besucher-Kennung nicht deckt, ist eine ABLEITUNG aus ihrem
       Gegenstand, keine Messung.
+- [ ] Phase 11.10 — Next-Sprung über 16.2.12 hinaus: eine EIGENE Zeile, angelegt am
+      2026-09-12. KEIN Produkt-Feature, sondern eine WARTUNGSARBEIT MIT EINEM FENSTER,
+      DAS SICH SCHLIESST — und genau deshalb steht sie in der Roadmap und nicht im
+      Backlog.
+
+      DIE NUMMER IST GEWÄHLT, WEIL SIE FREI IST (Präzedenz: 4.5, 10.5, 11.5): die
+      Arbeit gehört zwischen 11 und 12, und KEINE bestehende Nummer wird verschoben.
+      Dass 11.10 im Bestand unbelegt war, ist GEMESSEN am Repo (CC, 2026-09-12, über
+      alle verfolgten Dateien — kein Treffer).
+
+      (a) DER GEGENSTAND: ein Sprung auf MINDESTENS 16.3.3. WELCHE Fassung genommen
+      wird, ist eine OWNER-ENTSCHEIDUNG IM ZUSCHNITT — diese Zeile legt sie
+      ausdrücklich NICHT fest.
+      DER BESTAND AN STABILEN FASSUNGEN, GEMESSEN AN DER REGISTRY (CC, 2026-09-12,
+      `npm view next versions`): 16.2.12 ist die HÖCHSTE stabile 16.2er-Fassung; im
+      16.3er-Zweig stehen stabil 16.3.0, 16.3.1, 16.3.2, 16.3.3, 16.3.4 und 16.3.5
+      zur Verfügung, 16.3.5 ist die höchste. Installiert und in package.json gepinnt
+      ist heute 16.2.12 (GEMESSEN am Repo, CC, 2026-09-12).
+      DIESE AUFZÄHLUNG IST EINE MOMENTAUFNAHME UND WIRD NICHT STILLSCHWEIGEND
+      FORTGESCHRIEBEN: Sie ist als Aussage über ihren Tag richtig; wer sie später als
+      heutigen Registry-Stand liest, liest ein Datum nicht mit. Wer die Zielfassung
+      wählt, misst neu.
+
+      (b) DER GRUND: ACHT offene Dependabot-Meldungen hängen an next und sind ohne
+      diesen Sprung nicht zu schliessen — es gibt KEINEN Patch innerhalb von 16.2.x.
+      DER BEFUND STEHT IM SICHERHEITS-MANIFEST UND WIRD HIER NICHT ABGESCHRIEBEN:
+      CLAUDE.md, Tier 2, Eintrag "DEPENDABOT-MELDUNGEN GESICHTET (2026-09-12)".
+      Dort stehen die Erreichbarkeits-Prüfung je Paket, die zwei auseinandergehenden
+      Zählungen (Dependabot gegen npm audit) samt dem Grund ihrer Differenz, die zwei
+      ausdrücklich offen gebliebenen Punkte und die Einordnung, dass KEINE der acht
+      einen nachgewiesen erreichbaren Produktivpfad trifft — deshalb Tier 2 und KEIN
+      Gate. ZWEIMAL GESCHRIEBEN LIEFEN SIE AUSEINANDER; wer die Zahlen braucht, liest
+      sie dort.
+      JENER EINTRAG ZEIGT SEINERSEITS HIERHER: Sein BINDET-AN lautet wörtlich "DEN
+      NEXT-SPRUNG, der als eigene Arbeit vor der naechsten Bau-Scheibe entschieden ist
+      (ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-12)". DIESE ZEILE IST DIESE ARBEIT — und
+      damit ist sein BINDET-AN ab heute ein auflösbarer Zeiger statt einer Absicht.
+
+      (c) WARUM JETZT UND NICHT SPÄTER — DAS FENSTER SCHLIESST SICH MIT DEM ERSTEN
+      FREMDEN NUTZER. Heute gibt es keine fremde Kundenseite und keinen fremden
+      Traffic (s. "## Modus"); ein Minor-Sprung kostet dann einen Nachmittag. Danach
+      träfe derselbe Sprung gehostete Seiten mit laufenden Kampagnen — und kostete
+      einen Ausfall statt einer Arbeit.
+      DAS IST DERSELBE GRUND, AUS DEM DAS POSTGRES-UPGRADE VORGEZOGEN WURDE, und das
+      ist kein Bild, sondern ein PRÄZEDENZFALL MIT BELEG: docs/offene-punkte.md,
+      gestrichener Posten "DAS POSTGRES-UPGRADE IST HEUTE GRATIS UND SPÄTER NICHT".
+      Er hielt wörtlich fest, das angebotene Upgrade sei ein Wartungsfenster, das
+      heute nichts kostet und mit dem ersten echten Kunden-Traffic laufende Kampagnen
+      träfe; gefahren am 2026-09-11, der Posten ist am selben Tag gestrichen worden
+      (GELESEN dort, CC, 2026-09-12).
+      DIE GRENZE DES PRÄZEDENZFALLS GEHÖRT DAZU, sonst trägt er mehr, als er kann: Er
+      belegt die ÜBERLEGUNG (ein Wartungsfenster ist heute gratis), NICHT den Aufwand
+      dieses Sprungs. Was ein Next-Minor hier kostet, ist UNGEMESSEN.
+
+      (d) DIE NUMMER TRÄGT KEINE REIHENFOLGE. 11.10 steht in dieser Liste HINTER 11.9,
+      wird aber als NÄCHSTES gebaut — VOR der Scheibe 11.5b der laufenden Phase 11.5.
+      OWNER-ENTSCHEIDUNG 2026-09-12.
+      DIESER SATZ STEHT HIER, WEIL DIE SORTIERTE LISTE SONST ALS PLAN GELESEN WIRD.
+      Der Bestand widerlegt diese Lesart bereits: 11.6 steht in beiden Dateien VOR
+      11.5, und 11.8 steht zwischen 11.2 und 11.3 (GEMESSEN an docs/roadmap.md und an
+      CLAUDE.md, CC, 2026-09-12). Die Reihenfolge der Zeilen ist eine ABLAGE, kein
+      Bauplan — dieselbe Aussage trifft die Zeile 11.6 für ihren eigenen Fall.
+
+      (e) DREI DINGE, DIE ZUR PHASE GEHÖREN UND NICHT ÜBERSEHEN WERDEN DÜRFEN:
+
+      · DIE RUNTIME-ZUORDNUNG WIRD AM MANIFEST NEU GEMESSEN. Die Regel "DAS ETIKETT IM
+        NEXT-BUILD-OUTPUT BENENNT DIE KONVENTION, NICHT DIE LAUFZEIT"
+        (docs/immer-beachten.md) stellt ihre GRENZE ausdrücklich auf "Next 16.2.12 und
+        den Turbopack-Build dieses Projekts" und sagt im selben Atemzug: "Ändert Next
+        die Ausgabe oder das Manifest-Schema, ist die Zuordnung neu zu messen — die
+        REGEL bleibt." DIESER SPRUNG IST GENAU DIESER FALL.
+        WO DIE LAUFZEIT ABZULESEN IST, SAGT DIE REGEL SELBST, und sie wird hier nur
+        zitiert, nicht neu erfunden (GELESEN, CC, 2026-09-12): EDGE erkennt man am
+        Eintrag in `.next/server/middleware-manifest.json`, dessen `files` und
+        `entrypoint` unter `server/edge/` liegen; NODE am Eintrag in
+        `.next/server/functions-config-manifest.json` mit `"runtime": "nodejs"`, dazu
+        `.next/server/middleware.js` im CommonJS-Format und ein `.nft.json` — beides
+        gibt es im Edge-Fall nicht.
+        NIE AM ETIKETT: Die Zeile "ƒ Proxy (Middleware)" stand vor und nach dem Umzug
+        middleware -> proxy wörtlich unverändert da, während die Laufzeit im selben
+        Schritt wechselte. Die Regel führt dazu ZWEI Fehlgriffe dieses Projekts.
+        WAS DAS FÜR DIESE PHASE BEDEUTET: Die heutige Zuordnung ist ein Messwert für
+        16.2.12 und trägt nach dem Sprung nichts. ERHOBEN WIRD SIE IN DER PHASE, nicht
+        hier.
+
+      · EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md, ABSCHNITT "4a. HARTE
+        RAHMENBEDINGUNGEN". Dort steht "**Next.js 16.2.12**, App Router, Turbopack"
+        als harte Rahmenbedingung, mit dem Satz darüber: "Ein Vorschlag, der eine
+        davon bricht, ist kein Vorschlag." (GEMESSEN am Repo, CC, 2026-09-12.) Nach
+        dem Sprung ist die Angabe falsch, und sie wird von keinem Gate rot.
+        ER WIRD AN BEIDEN ORTEN VOLLZOGEN — Repo-Datei UND Projektanweisung. Der
+        sichere Weg ist, aus der COMMITTETEN Datei zu kopieren; eine zweite, von Hand
+        getippte Fassung läuft auseinander.
+        DER INHALT WIRD ALS ÄNDERUNGSANTRAG ENTSCHIEDEN, NICHT VON CC — Weg 7 in
+        CLAUDE.md, "## Aktive Dokumente", bleibt unberührt. Hier steht, DASS er
+        fällig wird, nicht, wie er lautet.
+
+      · DER LIVE-TEST GEHT ÜBER "DIE SEITE LÄDT" HINAUS. Er deckt mindestens den
+        SERVE-PFAD, den INGEST und ein Ereignis BIS ZUM ANBIETER ab.
+        DER GRUND: Ein Minor-Sprung kann den Proxy-Pfad berühren, und dort hängt die
+        HOST-INVERSION (App-Host gegen Serving-Host) — `src/proxy.ts` ruft `isAppHost`
+        aus `src/lib/hosting/host.ts` (GEMESSEN am Repo, CC, 2026-09-12). Bricht sie,
+        bricht sie STILL: eine Kundenseite antwortet dann mit der Anwendung oder
+        umgekehrt, und kein Test sagt es.
+        DIE ZWEI ACHSEN DES KILL-SWITCHES BLEIBEN GETRENNT ZU PRÜFEN, falls der
+        Live-Test sie berührt — SERVE antwortet 451, INGEST leer mit 204 (s.
+        "## Security Manifest & Launch Blocker", KILL-SWITCH — LEKTION).
+        WIE DER LIVE-TEST IM EINZELNEN AUSSIEHT, ENTSCHEIDET DER ZUSCHNITT.
+
+      (f) WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT: ein Sprung auf eine höhere MAJOR-Fassung ·
+      das Nachziehen weiterer Pakete über das hinaus, was der Sprung selbst erzwingt ·
+      jede Änderung an Produktivcode, die nicht der Sprung selbst verlangt.
+      DIESE DREI AUSSCHLÜSSE SIND DER GRUND, WARUM DIE ZEILE SCHMAL BLEIBT: Ein
+      Versions-Sprung ist die Gelegenheit, bei der Aufräumarbeit am billigsten
+      aussieht — und genau dann ist ein Fehlschlag nicht mehr einem Verursacher
+      zuzuordnen.
+
+      WAS DIESE ZEILE AUSDRÜCKLICH NICHT TUT: Sie schneidet nichts zu, sie terminiert
+      nichts, und sie legt keine Zielfassung fest.
+
+      (g) PROVENIENZ — je Angabe:
+      · Der Registry-Bestand, die installierte und die gepinnte Fassung, die Freiheit
+        der Nummer 11.10, die Reihenfolge in beiden Dateien, die Fundstelle in
+        docs/arbeitsweise.md und der `isAppHost`-Aufruf in src/proxy.ts: GEMESSEN
+        (CC, 2026-09-12), Instrumente wie an der jeweiligen Stelle genannt.
+      · Der Wortlaut der Regel zum Build-Etikett, der Wortlaut des Postgres-Postens
+        und der Wortlaut des BINDET-AN im Manifest-Eintrag: GELESEN (CC, 2026-09-12)
+        an den genannten Stellen.
+      · Die ZAHL ACHT, die Nicht-Erreichbarkeit der acht Meldungen und der
+        Vercel-Laufzeit-Befund: OWNER-ANGABEN, abgelegt im Manifest-Eintrag unter (b)
+        — hier NICHT neu behauptet, sondern gezeigt.
+      · Die Bauentscheidung unter (d) und die Entscheidung, diese Arbeit als eigene
+        Zeile vor die nächste Bau-Scheibe zu setzen: OWNER-ENTSCHEIDUNG 2026-09-12.
+      · Dass der Sprung das Fenster der Regel zum Build-Etikett auslöst, und dass der
+        Aufwand ungemessen ist: ABLEITUNGEN, keine Messungen.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

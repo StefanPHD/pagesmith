@@ -542,12 +542,12 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   TRAGENDE KONTROLLE: Dependabot aktiviert — Alerts, Security Updates, Dependency Graph, 1 Regel.
   EHRLICHE EINORDNUNG: Dauerhygiene, kein Launch-Gate; erledigt am 2026-07-24.
   BINDET-AN: laufend (aktiv).
-- DEPENDABOT-MELDUNGEN GESICHTET (2026-09-12/13) — ACHT OFFEN, ALLE AN NEXT:
+- DEPENDABOT-MELDUNGEN GESICHTET (2026-09-12) — ACHT OFFEN, ALLE AN NEXT:
   RISIKO: Acht offene Verwundbarkeits-Meldungen auf dem Default-Branch, davon zwei kritisch.
-  ANDERS ALS BIS ZUM 2026-09-13 IST NICHT MEHR UNBEKANNT, OB EINE DAVON PRODUKTIVCODE BETRIFFT:
+  ANDERS ALS BIS ZUM 2026-09-12 IST NICHT MEHR UNBEKANNT, OB EINE DAVON PRODUKTIVCODE BETRIFFT:
   Die Sichtung ist gefahren, je Meldung auf ERREICHBARKEIT. KEINE der acht trifft einen
   nachgewiesen erreichbaren Produktivpfad.
-  DAS ERGEBNIS DER SICHTUNG, je Zeile ein Paket (GEMESSEN am Code, CC, 2026-09-12, am 2026-09-13
+  DAS ERGEBNIS DER SICHTUNG, je Zeile ein Paket (GEMESSEN am Code, CC, 2026-09-12, im selben Lauf
   erneut bestaetigt):
   · postcss laeuft NUR zur Bauzeit ueber die eigenen Stylesheets — postcss.config.mjs traegt
     genau einen Plugin-Eintrag, das einzige Stylesheet ist src/app/globals.css. Importiertes
@@ -562,19 +562,19 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   · Die dev-Pakete erreichen KEINEN ausgelieferten Pfad — der einzige Treffer ausserhalb der
     Testdateien ist eine Mess-Notiz im Kommentar von capi/token.ts, kein Import.
   DIE WINDOWS-RCE TRIFFT DIE PRODUKTION NICHT: Vercel faehrt die Standard-Linux-Laufzeit, am
-  Build-Log geprueft. OWNER-ANGABE 2026-09-13 — NICHT von CC gemessen, und im Repo steht dazu
+  Build-Log geprueft. OWNER-ANGABE 2026-09-12 — NICHT von CC gemessen, und im Repo steht dazu
   nichts; das ist die Grenze dieser Aussage. WAS BLEIBT: der Entwicklungs-Server unter Windows,
   ohne fremden Traffic.
-  ZWEI ZAHLEN, DIE AUSEINANDERGEHEN — STAND 2026-09-13, damit der Eintrag altert statt falsch zu
+  ZWEI ZAHLEN, DIE AUSEINANDERGEHEN — STAND 2026-09-12, damit der Eintrag altert statt falsch zu
   werden:
   · DEPENDABOT: ACHT offen — zwei kritisch (next), vier hoch (sharp zweimal, postcss zweimal),
     zwei mittel (postcss). Alle acht unter package-lock.json. OWNER-ANGABE; gh ist auf dieser
     Maschine nicht installiert, und die Liste liegt nicht im Repo.
   · NPM AUDIT: DREI Positionen — eine kritisch (next), zwei hoch (postcss, sharp). GEMESSEN
-    (CC, 2026-09-13).
+    (CC, 2026-09-12).
   · DER GRUND: npm gruppiert je PAKET, Dependabot zaehlt je ADVISORY je MANIFEST. BEIDE ZAHLEN
     SIND RICHTIG; wer sie gleichsetzt, haelt eine fuer einen Fehler.
-  · VORHER-STAND: SECHZEHN Dependabot-Meldungen vor den Dev-Bumps vom 2026-09-13
+  · VORHER-STAND: SECHZEHN Dependabot-Meldungen vor den Dev-Bumps vom 2026-09-12
     (Commit 9da659c). OWNER-ANGABE.
   TRAGENDE KONTROLLE: heute KEINE technische — es gibt keinen Patch, der die acht schliesst,
   ohne next zu bewegen. Was sie traegt, ist die ERREICHBARKEIT: kein Produktivpfad dieses
@@ -583,7 +583,7 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
   ALLE ACHT HAENGEN AN NEXT und sind ohne einen Sprung ueber 16.2.12 hinaus nicht zu schliessen:
   Es gibt KEINEN Patch innerhalb von 16.2.x, beide Next-Advisories sind erst ab 16.3.3 behoben,
   und 16.2.12 ist die HOECHSTE veroeffentlichte stabile 16.2er-Fassung (GEMESSEN an der
-  Registry, CC, 2026-09-12, am 2026-09-13 erneut geprueft — unveraendert). next pinnt zudem
+  Registry, CC, 2026-09-12, im selben Lauf erneut geprueft — unveraendert). next pinnt zudem
   postcss exakt auf 8.4.31 und verlangt sharp ^0.34.5; beide Fixes liegen ausserhalb.
   EHRLICHE EINORDNUNG: Die Meldungen sind jetzt GESICHTET, aber NICHT GESCHLOSSEN. Tier 2 bleibt
   und ist damit nicht mehr vorlaeufig, sondern begruendet: Keine der acht trifft einen
@@ -597,7 +597,7 @@ Trade-off, Selbsttäuschung) / BINDET-AN (Phase/Gate, ab dem es real wird).
     NICHT MEHR ERSCHEINEN, IST NICHT ERHOBEN — package.json ist unveraendert.
     Owner-Beobachtung, keine Messung, keine Erklaerung.
   BINDET-AN: DEN NEXT-SPRUNG, der als eigene Arbeit vor der naechsten Bau-Scheibe entschieden
-  ist (ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-13). Damit ist das offene BINDET-AN des frueheren
+  ist (ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-12). Damit ist das offene BINDET-AN des frueheren
   Eintrags ("zu bestimmen, sobald die Meldungen gesichtet sind") eingeloest.
 - BACKUPS + Restore-Drill (TEILWEISE ERLEDIGT — Backup-Tier bestätigt 2026-07-29, DRILL
   GEFAHREN UND BESTANDEN 2026-07-30; PITR und die migrations-only Rebuild-Lücke bleiben

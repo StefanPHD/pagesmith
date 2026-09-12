@@ -158,6 +158,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [ ] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP)
 - [ ] Phase 11.7 — Anbieter-Befunde nachziehen
 - [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel
+- [ ] Phase 11.10 — Next-Sprung über 16.2.12 hinaus
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)
@@ -761,10 +762,10 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Server Action mit Secret-Parameter (erhoben 2026-07-24). Bei JEDER neuen Server Action mit
   Secret-Parameter neu bewerten.
 - DEPENDABOT: ERLEDIGT (2026-07-24: Alerts, Security Updates, Dependency Graph aktiv, 1 Regel).
-- DEPENDABOT-MELDUNGEN GESICHTET (2026-09-12/13) — ACHT OFFEN, ALLE AN NEXT, KEINE AUF EINEM
+- DEPENDABOT-MELDUNGEN GESICHTET (2026-09-12) — ACHT OFFEN, ALLE AN NEXT, KEINE AUF EINEM
   NACHGEWIESEN ERREICHBAREN PRODUKTIVPFAD: Die Sichtung ist am 2026-09-12 read-only gefahren
   worden, je Meldung auf ERREICHBARKEIT statt auf die blosse Meldung. DAS ERGEBNIS, je Zeile ein
-  Paket (GEMESSEN am Code, CC, 2026-09-12, am 2026-09-13 erneut bestaetigt):
+  Paket (GEMESSEN am Code, CC, 2026-09-12, im selben Lauf erneut bestaetigt):
   · postcss laeuft NUR zur Bauzeit ueber die eigenen Stylesheets — postcss.config.mjs traegt
     genau einen Plugin-Eintrag, das einzige Stylesheet ist src/app/globals.css. Importiertes
     Kunden-HTML erreicht es NIE: es wird clientseitig geparst, als Text abgelegt und unveraendert
@@ -776,23 +777,23 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   · Die dev-Pakete erreichen KEINEN ausgelieferten Pfad — der einzige Treffer ausserhalb der
     Testdateien ist eine Mess-Notiz im Kommentar von capi/token.ts, kein Import.
   DIE WINDOWS-RCE TRIFFT DIE PRODUKTION NICHT: Vercel faehrt die Standard-Linux-Laufzeit, am
-  Build-Log geprueft. OWNER-ANGABE 2026-09-13 — NICHT von CC gemessen, und im Repo steht dazu
+  Build-Log geprueft. OWNER-ANGABE 2026-09-12 — NICHT von CC gemessen, und im Repo steht dazu
   nichts. WAS BLEIBT: der Entwicklungs-Server unter Windows, ohne fremden Traffic.
-  ZWEI ZAHLEN, DIE AUSEINANDERGEHEN — STAND 2026-09-13, damit der Eintrag altert statt falsch zu
+  ZWEI ZAHLEN, DIE AUSEINANDERGEHEN — STAND 2026-09-12, damit der Eintrag altert statt falsch zu
   werden:
   · DEPENDABOT: ACHT offen — zwei kritisch (next), vier hoch (sharp zweimal, postcss zweimal),
     zwei mittel (postcss). Alle acht unter package-lock.json. OWNER-ANGABE; gh ist auf dieser
     Maschine nicht installiert, und die Liste liegt nicht im Repo.
   · NPM AUDIT: DREI Positionen — eine kritisch (next), zwei hoch (postcss, sharp). GEMESSEN
-    (CC, 2026-09-13).
+    (CC, 2026-09-12).
   · DER GRUND: npm gruppiert je PAKET, Dependabot zaehlt je ADVISORY je MANIFEST. BEIDE ZAHLEN
     SIND RICHTIG; wer sie gleichsetzt, haelt eine fuer einen Fehler.
-  · VORHER-STAND: SECHZEHN Dependabot-Meldungen vor den Dev-Bumps vom 2026-09-13
+  · VORHER-STAND: SECHZEHN Dependabot-Meldungen vor den Dev-Bumps vom 2026-09-12
     (Commit 9da659c). OWNER-ANGABE.
   ALLE ACHT HAENGEN AN NEXT und sind ohne einen Sprung ueber 16.2.12 hinaus nicht zu schliessen:
   Es gibt KEINEN Patch innerhalb von 16.2.x, beide Next-Advisories sind erst ab 16.3.3 behoben,
   und 16.2.12 ist die HOECHSTE veroeffentlichte stabile 16.2er-Fassung (GEMESSEN an der
-  Registry, CC, 2026-09-12, am 2026-09-13 erneut geprueft — unveraendert). next pinnt zudem
+  Registry, CC, 2026-09-12, im selben Lauf erneut geprueft — unveraendert). next pinnt zudem
   postcss exakt auf 8.4.31 und verlangt sharp ^0.34.5; beide Fixes liegen ausserhalb.
   ZWEI DINGE BLEIBEN OFFEN, und sie gehoeren hierher, sonst liest sich der Eintrag als
   vollstaendige Entwarnung:
@@ -803,7 +804,7 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
     NICHT MEHR ERSCHEINEN, IST NICHT ERHOBEN — package.json ist unveraendert.
     Owner-Beobachtung, keine Messung, keine Erklaerung.
   BINDET-AN: DEN NEXT-SPRUNG, der als eigene Arbeit vor der naechsten Bau-Scheibe entschieden
-  ist (ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-13). TIER 2 BLEIBT, KEIN GATE: Keine der acht
+  ist (ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-12). TIER 2 BLEIBT, KEIN GATE: Keine der acht
   trifft einen nachgewiesen erreichbaren Produktivpfad.
 - BACKUPS + Restore-Drill (TEILWEISE ERLEDIGT — Backup-Tier steht, DRILL WEITERHIN OFFEN):
   BACKUP-TIER BESTÄTIGT (2026-07-29): Supabase auf PRO -> TÄGLICHE Backups, 7 Tage Retention.

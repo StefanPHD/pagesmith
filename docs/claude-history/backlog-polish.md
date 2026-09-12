@@ -4612,3 +4612,68 @@ Owners und ist nach dem Phasenende am Code nachgesehen worden.
   Spiegel, die Wirkung der zwei Gesten auf einen toten Zustand, die Lücke des Kandidaten
   und die Wechselwirkung mit dem offenen Punkt sind ABLEITUNGEN aus dem Code; keiner ist
   live herbeigeführt.
+
+## Nachtrag 2026-09-12 — ZWEI KACHELN, ZWEI GRUNDMENGEN (Statistik gegen Verlustrate)
+
+KEIN OFFENER PUNKT UND KEIN STUB, und der Grund gehört an den Anfang: ES GEHT NICHTS STILL
+KAPUTT. Die Zahlen sind für das, was sie messen, RICHTIG — beide. Was fehlt, ist die
+ERKLÄRUNG, dass sie Verschiedenes messen; die steht nirgends, weder in der Oberfläche noch
+in einer Doku. Ein Posten mit Trigger wäre hier falsch: es gibt keinen Zeitpunkt, zu dem
+das umkippt.
+
+- DIE BEIDEN KACHELN RECHNEN ÜBER VERSCHIEDENE GRUNDMENGEN. Gemeinsam ist ihnen ALLEIN
+  source='server'.
+  · Statistik: get_event_counts (supabase/migrations/0014_event_counts_server_only.sql),
+    gelesen über getEventCounts (src/app/projects/actions.ts). Gruppiert je event_type über
+    ALLE Zeilen des Projekts — KEIN Zeitfilter, KEIN Präfix-Ausschluss.
+  · Verlustrate: get_adblock_loss (supabase/migrations/0015_adblock_loss.sql), gelesen über
+    getAdblockLoss (ebenda). Zusätzlich zwei Einschränkungen, die die Statistik nicht hat:
+    ein ZEITFILTER created_at >= first_confirm (der Stichtag der ersten verankerten
+    Bestätigung) und der Ausschluss der __ps_*-Ereignisse über left(event_type, 5) <> '__ps_'
+    (PAGEVIEW_EVENT, src/lib/analytics/events.ts).
+  Der Zeitfilter ist der grosse Unterschied: Die Statistik ist eine GESAMTSUMME, die
+  Verlustrate ein FENSTER. GEMESSEN am Code (CC, 2026-09-11, am 2026-09-12 nachgeprüft).
+- DIE FOLGE, DIE DER OWNER GESEHEN HAT — BEOBACHTET (Owner, Ablesung des Dashboards,
+  2026-09-11), KEINE Messung: Die Statistik nannte 66 Lead und 121 Purchase, die Verlustrate
+  rechnete gegen 165. Zweites Projekt: 35 Purchase, Basis 13. BEIDE ZAHLEN SIND RICHTIG —
+  sie messen Verschiedenes. Im UI stehen die Kacheln unmittelbar nebeneinander
+  (src/components/MeasureView.tsx, Verlust-Block additiv unter den Counts), ohne dass das
+  irgendwo steht. Die Ablesung ist hier NICHT nachgerechnet worden und war auch nicht der
+  Auftrag; sie steht als Anlass, nicht als Beleg.
+- DIE VARIANTEN-ZUORDNUNG HAT IHRE EIGENE GRUNDMENGE, UND DAS UI SAGT ES IMMERHIN.
+  "Ohne Varianten-Zuordnung: N Events" summiert count_none über ALLE Zeilen des
+  RPC-Ergebnisses, einschliesslich der PageView-Zeile. get_variant_counts
+  (supabase/migrations/0020_ab_test_started_at.sql) filtert auf created_at >=
+  projects.ab_test_started_at — die Zahl bezieht sich also auf den Zeitraum SEIT TESTSTART,
+  SOFERN der Zeitstempel gesetzt ist. Ist er NULL, degradiert der Filter auf alle Zeilen.
+  BEIDE FÄLLE SIND VERSCHIEDEN BESCHRIFTET ("Zeitraum: seit Teststart am …" gegen "Ohne
+  Zeitabgrenzung — für dieses Projekt ist kein Teststart protokolliert"). GEMESSEN am Code
+  (CC, 2026-09-11, am 2026-09-12 nachgeprüft).
+- DIE LEAD-ASYMMETRIE IST KEIN CODE-BEFUND, und dieser Punkt steht hier, damit niemand die
+  Frage ein zweites Mal untersucht. Am Code gibt es KEINEN Pfad, auf dem ein Lead
+  systematisch ohne Zuordnung bleibt, während Purchase eine bekommt: Der Wert entsteht in
+  handleIngest (src/lib/capi/ingest.ts) GENAU EINMAL und hängt an drei
+  EREIGNISTYP-UNABHÄNGIGEN Dingen — abTestActive aus dem Resolver (src/lib/capi/token.ts),
+  dem Cookie im Request-Header (parseVariantCookie, src/lib/hosting/variant.ts) und der
+  Adresse, an die der Beacon geht. Beide Conversion-Arten reisen über denselben Aufruf
+  __psMetaFire und denselben Beacon-Rumpf buildCapiBeaconStatement, also über dieselbe
+  Adresse und mit denselben Cookies. GEMESSEN am Code (CC, 2026-09-11, am 2026-09-12
+  nachgeprüft).
+  OWNER-ANGABE 2026-09-11, UNGEPRÜFT: Das Lead-Ereignis wurde zuletzt eingerichtet, und
+  beim Testen war der A/B-Modus vermutlich nicht aktiv. Der Satz steht hier als mögliche
+  Erklärung an den Daten — er ist NICHT nachgemessen, und er wird hier auch nicht zur
+  Messung vorgeschlagen.
+- EIN NEBENBEFUND, DER KEINE LÜCKE IST: Auf einer EXPORTIERTEN Seite bleibt variant IMMER
+  null. Der Export backt die ABSOLUTE Adresse ein (getCapiProxyUrl, src/lib/capi/proxy.ts),
+  der Publish dagegen den relativen Pfad (CodeImporter.tsx) — auf fremdem Host existiert das
+  host-only gesetzte Cookie gar nicht. DAS IST KEIN FEHLER: Der Split liegt vollständig in
+  der Serve-Route (src/app/app-serve/route.ts, serializeVariantCookie), und eine exportierte
+  Seite durchläuft sie nie. Er steht hier, damit er beim nächsten Blick auf count_none nicht
+  als Defekt gelesen wird. GEMESSEN am Code (CC, 2026-09-11, am 2026-09-12 nachgeprüft).
+
+KEINE EMPFEHLUNG, was an der Beschriftung, an der Anordnung der Kacheln oder an einer
+Erläuterung zu ändern wäre. GEMELDET, NICHT GEBAUT.
+PROVENIENZ DES ABSCHNITTS: Die Grundmengen, die Varianten-Abgrenzung, die Ereignistyp-
+Unabhängigkeit und der Export-Fall sind GEMESSEN am Code (CC, 2026-09-11, am 2026-09-12
+nachgeprüft). Die zwei Zahlenpaare sind BEOBACHTET (Owner, Dashboard-Ablesung, 2026-09-11).
+Die Erklärung zur Lead-Asymmetrie ist OWNER-ANGABE (2026-09-11) und ausdrücklich UNGEPRÜFT.

@@ -298,6 +298,9 @@ gehen von hier eine Station weiter.
 - OB DAS LIVE VERWENDETE LINKEDIN-ZUGANGSDATUM ABLÄUFT, IST ERST AB MITTE OKTOBER 2026
   ENTSCHEIDBAR (Trigger: Mitte Oktober 2026 — abzulesen an der Direct-API-Seite im
   Campaign Manager, Anzeigen "Status" und "Data last received")
+- DIE VERLUSTRATEN-AGGREGATION IST ZIEL-BLIND — "GEMESSEN ALLEIN AM META-PIXEL" IST EINE
+  BESCHRIFTUNG, KEIN FILTER (Trigger: das erste weitere Ziel, das ein Browser-Tag mit
+  Bestätigungs-Kanal ausliefert)
 
 **AUS DEM PHASENENDE 11.2 GEHOBEN (2026-09-08) — NEUNZEHN PUNKTE.** Fünf aus der
 Rest-Liste der Roadmap-Zeile 11.2, vierzehn aus dem Vorrat der Phase. DIE
@@ -1162,6 +1165,12 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   NACHGEZOGEN 2026-09-11 — EIN WEITERER NACHTRAGS-ABSCHNITT: "Nachtrag 2026-09-11 —
   BEOBACHTUNG: DIE TESTMODUS-ANZEIGE VERALTET BEI OFFENER SEITE" (1). Eine
   Owner-Beobachtung, am Code nachgesehen; KEIN offener Punkt.
+  NACHGEZOGEN 2026-09-12 — EIN WEITERER NACHTRAGS-ABSCHNITT: "Nachtrag 2026-09-12 — ZWEI
+  KACHELN, ZWEI GRUNDMENGEN (Statistik gegen Verlustrate)". Er hält fest, dass
+  get_event_counts und get_adblock_loss über VERSCHIEDENE Grundmengen rechnen, was das im
+  Dashboard bedeutet, und dass die beobachtete Lead-Asymmetrie KEIN Code-Befund ist. KEIN
+  offener Punkt: die Zahlen sind für das richtig, was sie messen — erklärt wird es nirgends.
+  HIER STEHT KEINE STÜCKZAHL, aus demselben Grund wie bei den beiden Abschnitten darüber.
 - supabase/checks/ — versionierte Messproben für Live-Tests und Gegenproben. KEINE Probe
   fasst ECHTE Daten an; welche Bauformen das zulässt und was eine Datei dann in ihrem Kopf
   sagen muss, steht im README des Ordners — hier der Zeiger, dort die Regel.

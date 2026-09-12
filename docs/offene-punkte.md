@@ -595,6 +595,40 @@ aufeinander; sie liegen alle hier und finden einander.
   der man der Zahl nichts ansieht.
   Herleitung: docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, "## 7.
   Beschlossen und verortet — NICHT in dieser Phase gebaut".
+  ERGÄNZT AM 2026-09-12 — EINE ZWEITE WIRKUNG, DIE OBEN NICHT STEHT: DER STICHTAG. Der Text
+  darüber bleibt WÖRTLICH und wird von dieser Ergänzung nicht angetastet; er beschreibt die
+  Wirkung auf die RATE. Daneben tritt die Wirkung auf das FENSTER. GEMESSEN am Code (CC,
+  2026-09-11, am 2026-09-12 nachgeprüft), read-only.
+  DER NENNER BEGINNT NICHT BEI NULL, SONDERN BEIM STICHTAG: get_adblock_loss
+  (supabase/migrations/0015_adblock_loss.sql) filtert mit created_at >= first_confirm, und
+  first_confirm ist das min(created_at) der frühesten VERANKERTEN Bestätigung — einer
+  browser-Zeile, zu deren event_id auch eine server-Zeile existiert.
+  FOLGE: Bleibt die Bestätigung aus, weil die Einwilligung für dieses Ziel abgelehnt wurde,
+  verschiebt sich bei einem Projekt OHNE bisherige Bestätigung der Stichtag auf einen
+  SPÄTEREN Zeitpunkt — oder er entsteht gar nicht. Dann fällt nicht nur die Rate falsch aus:
+  DAS FENSTER SELBST VERSCHIEBT SICH, und mit ihm RÜCKWIRKEND der Nenner. EINE RATE KANN SICH
+  ÄNDERN, OHNE DASS EIN EREIGNIS DAZUGEKOMMEN IST — das ist die Eigenschaft, die man einer
+  Zahl am wenigsten ansieht.
+  DER GRENZFALL: Ist der Stichtag NULL, ist der Vergleich gegen NULL selbst NULL, es passiert
+  KEINE Zeile den Filter, die RPC liefert (0, 0, NULL), und das UI zeigt den Neutral-Status
+  "Warte auf erste Bestätigung" (MeasureView.tsx, Verzweigung auf first_confirm_at === null
+  bzw. total_server_conversions === 0). DER NENNER IST DANN 0 BEI BELIEBIG HOHER STATISTIK.
+  DIE VERWANDTSCHAFT, UND SIE IST NICHT NEU, NUR AN DIESEM POSTEN NOCH NICHT VERMERKT:
+  Dieselbe Mechanik notiert das Sicherheits-Manifest (CLAUDE.md, Tier 2, Eintrag
+  DATA-RETENTION) für das spätere events-Pruning — "löscht ein Retention-/Aggregations-Pruning
+  die ERSTE verankerte source='browser'-Bestätigung eines Projekts, springt der selbstheilende
+  Stichtag der Adblocker-Verlustrate nach vorn -> die angezeigte Rate ändert sich RÜCKWIRKEND
+  und STILL". ANDERE URSACHE, DIESELBE WIRKUNG.
+  ACHTUNG BEIM WORTLAUT, sonst liest jemand die beiden als Gegensätze: Jener Eintrag sagt
+  "nach vorn", dieser "auf einen späteren Zeitpunkt". GEMEINT IST BEIDE MALE DIESELBE
+  RICHTUNG — der Stichtag rückt zeitlich nach hinten, das Fenster wird kleiner.
+  KEINE EMPFEHLUNG, was daraus folgt. TITEL UND TRIGGER DIESES POSTENS BLEIBEN UNVERÄNDERT;
+  der Stub in CLAUDE.md ist deshalb nicht nachzuziehen.
+  PROVENIENZ DER ERGÄNZUNG: Der Filter, der Stichtag und der Grenzfall sind GEMESSEN am Code
+  (CC, 2026-09-11, am 2026-09-12 nachgeprüft) — supabase/migrations/0015_adblock_loss.sql und
+  src/components/MeasureView.tsx. Der zitierte Satz ist GELESEN in CLAUDE.md (CC, 2026-09-12).
+  Dass beide Formulierungen dieselbe Richtung meinen, ist eine ABLEITUNG aus der Mechanik des
+  min() über die verbleibenden Bestätigungen, KEINE Aussage jenes Eintrags über diesen.
 - NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN IST (Trigger: BEREITS
   EINGETRETEN — vier Ziele laufen live (GEMESSEN am Code, 2026-08-21: meta · pinterest ·
   tiktok · linkedin), und jedes kann nachträglich konfiguriert werden;
@@ -2142,6 +2176,57 @@ aufeinander; sie liegen alle hier und finden einander.
   worauf die sechzig Tage ruhen, sagt er nicht — sie decken sich mit der Frist des ANDEREN
   Artefakts und sind keine Anbieter-Aussage über den Campaign-Manager-Weg. KEINE Messung.
   KEINE EMPFEHLUNG.
+- DIE VERLUSTRATEN-AGGREGATION IST ZIEL-BLIND — "GEMESSEN ALLEIN AM META-PIXEL" IST EINE
+  BESCHRIFTUNG, KEIN FILTER (Trigger: das erste weitere Ziel, das ein Browser-Tag mit
+  Bestätigungs-Kanal ausliefert): GEMESSEN am Code (CC, 2026-09-11, am 2026-09-12
+  nachgeprüft), read-only.
+  DER BEFUND, DREI TEILE:
+  · DIE AGGREGATION KENNT KEIN ZIEL. get_adblock_loss
+    (supabase/migrations/0015_adblock_loss.sql) trägt in ihrem ganzen Text kein Ziel-Wort,
+    und die Tabelle events hat KEINE Ziel-Spalte: 0011 legt project_id, event_type,
+    event_id, source und created_at an, 0017 ergänzt variant — mehr ist nicht dazugekommen.
+    Der Zähler fragt AUSSCHLIESSLICH, ob zu derselben event_id eine Zeile mit
+    source='browser' desselben Projekts existiert. WELCHER Anbieter sie ausgelöst hat, steht
+    nirgends und ist aus der Zeile nicht rekonstruierbar. Dasselbe gilt für die
+    Test-Portierung computeAdblockLoss (src/lib/analytics/adblock-loss.ts), die die
+    Mengenlogik spiegelt.
+  · DIE ZUSCHREIBUNG AUF META STEHT IM UI UND IST TEXT. Die Zeile "Gemessen allein am
+    {TARGET_CARDS.meta.name}-Pixel." in src/components/MeasureView.tsx ist eine
+    BESCHRIFTUNG; der Kommentar unmittelbar darüber sagt es selbst — dort steht, die
+    Kachel behebe den Defekt nicht, "hier wurde nur der Text wahr". Sie ist damit keine
+    Filterbedingung, sondern eine Aussage ÜBER eine Bedingung, die anderswo entsteht.
+  · HEUTE TRIFFT SIE ZU — ABER AUS EINEM ANDEREN GRUND, ALS SIE BEHAUPTET. Sie trifft zu,
+    weil NUR meta ein Browser-Tag ausliefert, das eine Bestätigung senden kann:
+    buildPixelConfirmStatement existiert ausschliesslich in src/lib/tracking/meta.ts und
+    wird nur aus buildMetaRuntime gesplicet, gebunden an die gesetzte Meta-Kennung und im
+    Mehr-Ziel-Pfad zusätzlich an die Meta-Einwilligung. Die Browser-Tags der übrigen Ziele
+    kommen im Produktivcode unter src/ NICHT vor (Achse: pintrk, ttq., _linkedin_partner,
+    lintrk, gtag( — ohne Testdateien, null Treffer). pinterest, tiktok, linkedin und google
+    sind reine Server-Adapter.
+  WAS STILL KAPUTTGEHT: Bekommt ein zweites Ziel einen Bestätigungs-Kanal, fliessen seine
+  browser-Zeilen OHNE JEDE ÄNDERUNG AM SQL in denselben Zähler. Die Zahl wird eine Mischung
+  zweier Anbieter, die Beschriftung bleibt WÖRTLICH stehen und behauptet weiter einen
+  einzigen — und NICHTS WIRD ROT: kein Test, kein Build, keine Logzeile, keine Migration.
+  Die Kachel trägt die Marquee-Metrik des Produkts; an der Zahl ist die Vermischung nicht zu
+  sehen, und sie ist hinterher nicht zu entmischen, weil die Ablage die Herkunft nie
+  aufgenommen hat.
+  WARUM DER TRIGGER SO UND NICHT "beim nächsten Ziel" LAUTET: Ein Ziel OHNE Browser-Tag
+  ändert an dieser Kachel nichts — vier solche Ziele sind bereits gebaut und haben sie nie
+  berührt. Scharf wird der Posten erst mit einem Ziel, das den BESTÄTIGUNGS-KANAL mitbringt.
+  DIE ABGRENZUNG ZU "DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST"
+  (dieselbe Datei): Jener Posten beschreibt EIN Ziel, dessen Bestätigung ausbleibt — der
+  Nenner wächst ohne den Zähler. DIESER beschreibt ZWEI Ziele, deren Bestätigungen in
+  DENSELBEN Zähler fallen. Beide zeigen auf dieselbe Abwesenheit, nämlich die fehlende
+  Ziel-Dimension auf den Ereignissen; sie sind trotzdem nicht derselbe Posten, und ihre
+  Trigger sind verschieden.
+  KEINE EMPFEHLUNG, ob ein Ziel-Filter, eine Ziel-Spalte oder ein anderer Weg das auflöst.
+  Dieser Eintrag nennt den BEFUND, nicht den Bau.
+  PROVENIENZ: Die drei Teile des Befunds sind GEMESSEN am Code (CC, 2026-09-11, am
+  2026-09-12 nachgeprüft) — die Migrationen 0011, 0015 und 0017, src/lib/tracking/meta.ts,
+  src/components/MeasureView.tsx und eine formale Suche über src/ ohne Testdateien mit der
+  oben benannten Achse. Dass beim Hinzukommen eines zweiten Kanals NICHTS rot wird, ist eine
+  ABLEITUNG aus dem Fehlen jedes Gates, das diese Zuordnung prüft — KEINE Messung an einem
+  solchen Gate, denn es gibt keines.
 
 <!-- Aus dem Vorrat der Phase 11.2 gehoben, 2026-09-08 -->
 

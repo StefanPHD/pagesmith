@@ -1764,7 +1764,7 @@ liegen beide hier und finden einander.
       und die drei Zeiger sind GELESEN im Eintrag 11.2 (CC, 2026-09-08). Dass die dritte
       Datenklasse eine Besucher-Kennung nicht deckt, ist eine ABLEITUNG aus ihrem
       Gegenstand, keine Messung.
-- [ ] Phase 11.10 — Next-Sprung über 16.2.12 hinaus: eine EIGENE Zeile, angelegt am
+- [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus: eine EIGENE Zeile, angelegt am
       2026-09-12. KEIN Produkt-Feature, sondern eine WARTUNGSARBEIT MIT EINEM FENSTER,
       DAS SICH SCHLIESST — und genau deshalb steht sie in der Roadmap und nicht im
       Backlog.
@@ -1899,6 +1899,94 @@ liegen beide hier und finden einander.
         Zeile vor die nächste Bau-Scheibe zu setzen: OWNER-ENTSCHEIDUNG 2026-09-12.
       · Dass der Sprung das Fenster der Regel zum Build-Etikett auslöst, und dass der
         Aufwand ungemessen ist: ABLEITUNGEN, keine Messungen.
+
+      ABGESCHLOSSEN AM 2026-09-12 — DER VERMERK STEHT HIER UND NICHT IN EINEM ARCHIV:
+      Diese Phase hatte KEINE Standdatei und hat KEIN Archiv; sie lief einstufig, der
+      Plan war diese Zeile selbst. Der Text darüber bleibt WÖRTLICH stehen — er trägt,
+      was erwogen wurde, und wird von diesem Vermerk nicht ersetzt, sondern beantwortet.
+
+      ZIELFASSUNG UND BAU-COMMIT: next 16.2.12 -> 16.3.5, exakt gepinnt wie zuvor (kein
+      Caret). BAU-COMMIT `448fbff` — `chore(deps): Next auf 16.3.5 (Phase 11.10)`, ZWEI
+      Dateien (package.json, package-lock.json), 228 Zeilen hinzu, 188 entfernt (GEMESSEN
+      am Repo, CC, 2026-09-12). Die Fassung ist VOR dem Eingriff an der Registry bestätigt
+      worden; 16.3.5 war die höchste stabile, und der Sprung bleibt im MAJOR 16.
+
+      DIE RUNTIME-ZUORDNUNG — DIE TRAGENDE ANGABE DIESER PHASE, erhoben an den Orten, die
+      die Regel "DAS ETIKETT IM NEXT-BUILD-OUTPUT BENENNT DIE KONVENTION, NICHT DIE
+      LAUFZEIT" (docs/immer-beachten.md) benennt, und an keinen anderen:
+      · `.next/server/functions-config-manifest.json`, Eintrag
+        `functions["/_middleware"].runtime` — VORHER `"nodejs"`, NACHHER `"nodejs"`.
+      · `.next/server/middleware-manifest.json`, Schlüssel `middleware` und `functions` —
+        VORHER beide leer (0/0), NACHHER beide leer (0/0). Kein Edge-Eintrag.
+      · `.next/server/middleware.js` im CommonJS-Format plus `.nft.json` — vorher wie
+        nachher vorhanden; `.next/server/edge/` existiert in BEIDEN Bauten NICHT.
+      · Der Matcher des Eintrags ist byte-gleich geblieben.
+      ALLE WERTE GEMESSEN (CC, 2026-09-12). DER VORHER-WERT IST VOR DEM EINGRIFF ERHOBEN
+      UND GESICHERT WORDEN — ein Neubau hätte ihn überschrieben, und danach wäre die Frage
+      nicht mehr zu beantworten gewesen.
+      ES WAR EIN HALT, KEIN NEBENBEFUND: Bei einer Abweichung war der Abbruch vorgesehen.
+      Ein Wechsel auf Edge hätte die Host-Inversion (App-Host gegen Serving-Host in
+      `src/proxy.ts`) gebrochen, und zwar STILL.
+
+      DAS ETIKETT DER BUILD-AUSGABE LAUTETE VORHER WIE NACHHER WÖRTLICH `ƒ Proxy
+      (Middleware)` — unverändert über den Sprung hinweg. Es ist AUSDRÜCKLICH NICHT als
+      Kriterium benutzt worden; die genannte Regel führt zwei Fälle dieses Projekts, in
+      denen genau das in die Irre ging.
+
+      WAS SICH SONST BEWEGT HAT, GEMESSEN AM LOCKFILE (CC, 2026-09-12), nicht geschätzt:
+      · `npm audit`: VORHER DREI Positionen (1 kritisch, 2 hoch — next, postcss, sharp),
+        NACHHER NULL in jedem Schweregrad. Kein Rest, kein Befund.
+      · 41 Pakete bewegt, ALLE auf einem PROD-Pfad und ALLE durch `next` erzwungen; KEIN
+        einziges dev-Paket. Darunter die unter next verschachtelte postcss (8.4.31 ->
+        8.5.23, von next exakt gepinnt) und sharp (0.34.5 -> 0.35.4, als
+        optionalDependency von next), dazu deren Binär- und Transitiv-Pakete.
+      · GEGENPROBE: das dev-postcss (8.5.28), @tailwindcss/postcss, react, react-dom und
+        @supabase/supabase-js stehen unverändert.
+      · KEINE Änderung an Produktivcode — GEMESSEN, nicht behauptet: der Diff ausserhalb
+        von package.json und package-lock.json ist LEER. Ausschluss (f) eingehalten.
+      · KEINE `overrides`, KEINE `resolutions`, KEIN `npm audit fix`, keine neue
+        Dependency; die Namensliste in package.json ist unverändert (18 vor wie nach).
+
+      DIE VIER GATES, alle grün (CC, 2026-09-12): `tsc --noEmit` exit 0 · `lint` exit 0,
+      0 errors / 1 warning (dieselbe vorbestehende in `consent.test.ts`, ausserhalb dieser
+      Phase) · `vitest run` **77 Dateien und 1639 Tests VORHER, 77 Dateien und 1639 Tests
+      NACHHER** — unverändert, alle grün · `build` exit 0.
+
+      DER LIVE-NACHWEIS vom 2026-09-12 — ALLE ANGABEN SIND OWNER-ANGABEN, NICHT VON CC
+      GEMESSEN:
+      · Die drei Pflicht-Stopps bestanden: keine Variante B im Betrieb, der
+        Consent-Schalter aus Scheibe 11.5a stand AUS, die Testmodi sind abgeglichen. Ohne
+        sie wäre jeder folgende Schritt von einem stillen Riegel nicht zu unterscheiden
+        gewesen.
+      · HOST-INVERSION IN BEIDEN RICHTUNGEN: die Kundenseite lädt unter ihrer Adresse, die
+        Anwendung unter ihrer. EINE Richtung allein hätte nichts bewiesen.
+      · Negativprobe: eine nicht vergebene Subdomain antwortet 404, nicht mit der Anwendung.
+      · INGEST: der PageView-Zähler stieg.
+      · BIS ZUM ANBIETER: bei Meta kamen LEAD UND KAUF mit der Quelle "Server" an, mit
+        übereinstimmender eventID; die Deduplizierung ist verarbeitet worden.
+      · Server-Actions fehlerfrei: Speichern, Veröffentlichen, Domain löschen.
+
+      DIE GRENZEN DIESES NACHWEISES — sie stehen im Wortlaut, weil sie beim nächsten Lesen
+      sonst zur Vollständigkeit werden:
+      · DER KILL-SWITCH IST NICHT GEPRÜFT. Beide Achsen (Serve 451 und Ingest leer 204)
+        sind bewusst übersprungen worden. Über sein Verhalten nach dem Sprung sagt dieser
+        Vermerk NICHTS.
+      · GEPRÜFT IST EIN ANBIETER, NICHT ALLE FÜNF ZIELE. Der Nachweis bis zum Anbieter
+        deckt meta.
+      · DIE ÜBRIGEN VIER ADAPTER SIND NACH DEM SPRUNG UNGEMESSEN — pinterest, tiktok,
+        linkedin und google. Das ist keine Aussage über einen Defekt, sondern über eine
+        fehlende Messung.
+
+      DER MARKER STEHT AUF [x], WEIL KEIN CODE MEHR ZU SCHREIBEN IST — das ist das
+      Kriterium aus CLAUDE.md, "## Roadmap & aktueller Stand". DIE AUFLAGE DAZU IST MIT
+      DEM GRENZEN-BLOCK OBEN EINGELÖST: Was zum Zeitpunkt des [x] unbewiesen ist, steht
+      ausdrücklich da und nicht zwischen den Zeilen.
+
+      WAS DER SPRUNG AUSSERHALB DIESER ZEILE AUSGELÖST HAT, in derselben Doku-Runde
+      vollzogen: die GRENZE der Regel "DAS ETIKETT IM NEXT-BUILD-OUTPUT …" ist auf 16.3.5
+      nachgezogen, und in docs/arbeitsweise.md, Abschnitt "4a. HARTE RAHMENBEDINGUNGEN",
+      steht statt 16.2.12 nun 16.3.5. DER ZWEITE VOLLZUG JENES ÄNDERUNGSANTRAGS — die
+      Projektanweisung — LIEGT BEIM OWNER UND STEHT AUS.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

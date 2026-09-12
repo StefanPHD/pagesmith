@@ -158,7 +158,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [ ] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP)
 - [ ] Phase 11.7 — Anbieter-Befunde nachziehen
 - [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel
-- [ ] Phase 11.10 — Next-Sprung über 16.2.12 hinaus
+- [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)

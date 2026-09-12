@@ -41,6 +41,8 @@ export default function PublishView({
   hostingLabel,
   liveUrl,
   publishRestored,
+  consentGateOn,
+  onToggleConsentGate,
   onToggleAbTest,
   abTestActive,
   abTestStartedAt,
@@ -64,6 +66,11 @@ export default function PublishView({
   liveUrl: string;
   publishRestored: boolean;
   // --- Variante B ---
+  // --- Einwilligung (Phase 11.5, Scheibe 11.5a) ---
+  // Zustand ABGELEITET aus dem Einstellungs-Blob des Projekts, nicht lokal gehalten
+  // — dieselbe Bauform wie beim A/B-Schalter darunter.
+  consentGateOn: boolean;
+  onToggleConsentGate: () => void;
   onToggleAbTest: () => void;
   abTestActive: boolean;
   abTestStartedAt: string | null;
@@ -195,6 +202,40 @@ export default function PublishView({
             </p>
           )
         )}
+      </div>
+
+      {/* EINWILLIGUNGS-SCHALTER (Phase 11.5, Scheibe 11.5a).
+          BEWUSST HIER UND NICHT IM BEREICH MESSEN: Er aendert den AUSGELIEFERTEN
+          TEXT und wird erst mit dem naechsten Veroeffentlichen wirksam — er gehoert
+          dorthin, wo der Knopf steht, der ihn wirksam macht. Im Bereich MESSEN
+          erwartet man Wirkung auf die ZAHLEN, nicht auf das Dokument.
+          DER HINWEIS AUF DAS NEU-VEROEFFENTLICHEN IST KEINE HOEFLICHKEIT: Ein
+          ausgeliefertes Artefakt altert nicht mit dem Deploy — ohne neuen Publish
+          traegt die Live-Seite den Schalter nicht. */}
+      <div className="mt-4 border-t border-gray-200 pt-4">
+        <h2 className="mb-1 text-sm font-medium text-gray-700">Einwilligung</h2>
+        <label className="flex items-start gap-2 rounded-md border border-gray-200 px-3 py-2">
+          <input
+            type="checkbox"
+            className="mt-0.5"
+            checked={consentGateOn}
+            onChange={onToggleConsentGate}
+          />
+          <span className="text-xs text-gray-600">
+            <span className="font-medium text-gray-700">
+              Vor dem ersten Ereignis nichts senden
+            </span>
+            <br />
+            Die veröffentlichte Seite setzt beim Laden ein Urteil, das alle Ziele
+            ablehnt — bis ein Einwilligungs-Dialog oder ein eigenes
+            Consent-Management etwas anderes sagt. Ein vorhandenes eigenes
+            Consent-Management wird nicht überschrieben.
+            <br />
+            <span className="text-gray-400">
+              Wirkt erst nach dem nächsten Veröffentlichen.
+            </span>
+          </span>
+        </label>
       </div>
 
       {/* Variante B verwalten (Phase 9 Scheibe 9a). Destruktiv -> zweistufige

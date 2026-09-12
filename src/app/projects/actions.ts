@@ -12,6 +12,7 @@ import {
   getTrackingKey,
   hasConversionRules,
   hasTargetPixelId,
+  isConsentGateOn,
   isTrackingTarget,
   setCapiState,
   setHostingState,
@@ -1659,8 +1660,18 @@ export async function publishProject(
   // und loest den frueheren Ordering-Bug (Injektion NACH der Key-Sicherung, im HTML, das
   // gleich gespeichert wird). functionalHtml ist pro Publish frisch vom Client -> kein
   // Doppel-Inject. Der Emitter kommt DANEBEN — die CAPI-Wiring bleibt byte-gleich.
+  // DER EINWILLIGUNGS-SCHALTER (Phase 11.5, Scheibe 11.5a) — AUS snapshot.settings,
+  // NICHT AUS owned.settings.
+  // DER GRUND IST EINE DIVERGENZ, DIE SONST STILL WAERE: Die Consent-Schluessel im
+  // Draht baut der CLIENT aus seinem LAUFENDEN Zustand (Memo consentTargets in
+  // components/CodeImporter.tsx liest settings, nicht savedSettings) — genau dem
+  // Objekt, das hier als snapshot.settings ankommt. owned.settings ist der
+  // GESPEICHERTE Stand und kann davon abweichen. Nur so stammen Schalter und
+  // Schluessel nachweislich aus EINEM Objekt; das ist die Begruendung, auf der die
+  // Ablage im Einstellungs-Blob ruht.
+  const consentGateOn = isConsentGateOn(snapshot.settings);
   const base = {
-    html: injectPageViewEmitter(functionalHtml, trackingKey),
+    html: injectPageViewEmitter(functionalHtml, trackingKey, consentGateOn),
     mappings: snapshot.mappings,
     settings: snapshot.settings,
     publishedAt,
@@ -1690,7 +1701,11 @@ export async function publishProject(
     ? {
         ...base,
         variantB: {
-          html: injectPageViewEmitter(variantB.functionalHtml, trackingKey),
+          html: injectPageViewEmitter(
+            variantB.functionalHtml,
+            trackingKey,
+            consentGateOn
+          ),
           mappings: variantB.mappings,
         },
       }

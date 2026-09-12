@@ -55,6 +55,8 @@ import {
   setCapiState,
   setConversionRule,
   setHostingState,
+  isConsentGateOn,
+  setConsentGate,
   setPixelId,
   settingsEqual,
   TRACKING_TARGETS,
@@ -2674,6 +2676,10 @@ export default function CodeImporter({
               hostingLabel={hostingLabel}
               liveUrl={liveUrl}
               publishRestored={publishRestored}
+              consentGateOn={isConsentGateOn(settings)}
+              onToggleConsentGate={() =>
+                setSettings((prev) => setConsentGate(prev, !isConsentGateOn(prev)))
+              }
               onToggleAbTest={handleToggleAbTest}
               abTestActive={abTestActive}
               abTestStartedAt={abTestStartedAt}

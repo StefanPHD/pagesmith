@@ -9,7 +9,7 @@ const MARKER = 'id="__ps_pve"';
 
 describe("injectPageViewEmitter", () => {
   it("(a) fuegt das Script VOR dem </body> ein (nach dem Body-Inhalt)", () => {
-    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk-1");
+    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk-1", false);
     // Script sitzt zwischen dem Body-Inhalt und dem schliessenden Tag.
     expect(out.indexOf("x")).toBeLessThan(out.indexOf(MARKER));
     expect(out.indexOf(MARKER)).toBeLessThan(out.indexOf("</body>"));
@@ -18,13 +18,13 @@ describe("injectPageViewEmitter", () => {
   });
 
   it("(a') findet </body> case-insensitiv (</BODY>)", () => {
-    const out = injectPageViewEmitter("<HTML><BODY>x</BODY></HTML>", "tk-1");
+    const out = injectPageViewEmitter("<HTML><BODY>x</BODY></HTML>", "tk-1", false);
     expect(out.indexOf(MARKER)).toBeGreaterThan(-1);
     expect(out.indexOf(MARKER)).toBeLessThan(out.indexOf("</BODY>"));
   });
 
   it("(b) haengt bei fehlendem </body> ans Ende an", () => {
-    const out = injectPageViewEmitter("<div>x</div>", "tk-1");
+    const out = injectPageViewEmitter("<div>x</div>", "tk-1", false);
     expect(out).toContain("<div>x</div>");
     // Script am Dokumentende (feuert trotzdem).
     expect(out.trimEnd().endsWith("</script>")).toBe(true);
@@ -32,12 +32,12 @@ describe("injectPageViewEmitter", () => {
   });
 
   it("(c) baeckt den UEBERGEBENEN (Spalten-)Key via JSON.stringify ein", () => {
-    const out = injectPageViewEmitter("<body></body>", "col-key");
+    const out = injectPageViewEmitter("<body></body>", "col-key", false);
     expect(out).toContain(JSON.stringify("col-key")); // "col-key"
   });
 
   it("(d) nutzt die events.ts-Konstante fuer event (kein handgetipptes Literal) + first-party /api/e + keepalive", () => {
-    const out = injectPageViewEmitter("<body></body>", "tk-1");
+    const out = injectPageViewEmitter("<body></body>", "tk-1", false);
     // event kommt aus der geteilten Konstante -> kein Drift zu isForwardable.
     expect(out).toContain(JSON.stringify(PAGEVIEW_EVENT));
     // Relativer first-party-Endpunkt (wie der Conversion-Beacon, 7b) + keepalive-Fallback.
@@ -53,7 +53,8 @@ describe("injectPageViewEmitter", () => {
   it("(f) OHNE Wiring: der Emitter bringt den Consent-Block MIT, und zwar VOR sich", () => {
     const out = injectPageViewEmitter(
       "<html><body><h1>nur Text</h1></body></html>",
-      "k"
+      "k",
+      false
     );
     expect(out).toContain('id="pagesmith-consent"');
     expect(out.indexOf('id="pagesmith-consent"')).toBeLessThan(
@@ -65,14 +66,14 @@ describe("injectPageViewEmitter", () => {
     // Geprueft wird das DOKUMENT, nicht eine Aufrufreihenfolge.
     const withGate = `<html><body><script id="pagesmith-consent"></scr` +
       `ipt></body></html>`;
-    const out = injectPageViewEmitter(withGate, "k");
+    const out = injectPageViewEmitter(withGate, "k", false);
     expect(out.split('id="pagesmith-consent"').length - 1).toBe(1);
   });
 
   it("(e) kommt DANEBEN: CAPI-Wiring bleibt erhalten, Emitter kommt zusaetzlich", () => {
     // Simuliert ein CAPI-Projekt-HTML mit Meta-Wiring-Marker.
     const input = "<html><body><h1>x</h1><script>__psMetaFire(a.config);</script></body></html>";
-    const out = injectPageViewEmitter(input, "tk-1");
+    const out = injectPageViewEmitter(input, "tk-1", false);
     // Der CAPI-Marker ueberlebt (Emitter ersetzt nichts).
     expect(out).toContain("__psMetaFire(a.config);");
     // Der Emitter ist zusaetzlich da.
@@ -148,7 +149,7 @@ function mountEmitter(
   vi.stubGlobal("pagesmithConsent", consent);
 
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(HTML_OHNE_WIRING, KEY),
+    injectPageViewEmitter(HTML_OHNE_WIRING, KEY, false),
     "text/html"
   );
   if (opts.removeGate) doc.querySelector("#pagesmith-consent")?.remove();

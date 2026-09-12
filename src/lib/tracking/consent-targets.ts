@@ -17,8 +17,11 @@
 // META_CONSENT_TARGET in tracking/consent.ts: Eine server-only-Datei ist aus
 // erzeugtem Browser-Code nicht erreichbar. Die Haelfte B wird von dort lesen.
 
-import type { TrackingTarget } from "@/lib/settings";
-import { META_CONSENT_TARGET } from "@/lib/tracking/consent";
+import { TRACKING_TARGETS, type TrackingTarget } from "@/lib/settings";
+import {
+  ANALYTICS_CONSENT_TARGET,
+  META_CONSENT_TARGET,
+} from "@/lib/tracking/consent";
 
 /**
  * ZIEL-VOKABULAR -> CONSENT-VOKABULAR.
@@ -161,3 +164,39 @@ export const LEGACY_CONSENT_ROLE: Record<TrackingTarget, boolean> = {
   // EIN Traeger, und es ist meta).
   google: false,
 };
+
+/**
+ * ALLE Einwilligungs-Schluessel, die in diesem System ueberhaupt gefragt werden —
+ * die fuenf ZIEL-Schluessel plus den Schluessel der EIGENEN Auswertung (Phase 11.5,
+ * Scheibe 11.5a).
+ *
+ * SIE IST DIE EINE ABLEITUNG, UND JEDER SPAETERE SCHRITT DIESER PHASE ZIEHT AUS IHR
+ * (bindende Entscheidung (4) der Phase 11.5). Eine zweite Liste daneben waere die
+ * stille Divergenz, gegen die diese Datei ohnehin schon an zwei Stellen steht.
+ *
+ * UNGEFILTERT, UND DAS IST DER TRAGENDE TEIL: Hier steht KEIN isTargetDeliverable.
+ * Der Grund zielt auf die ZUSTIMMUNG, nicht auf die Ablehnung — fuer die Ablehnung
+ * waere die Menge gleichgueltig, weil ein fehlender Schluessel beim Leser ohnehin
+ * `undefined === true` und damit `false` ergibt:
+ *   Das Memo consentTargets (components/CodeImporter.tsx) filtert ueber
+ *   isTargetDeliverable und liest dabei den LAUFENDEN Client-Zustand, nicht den
+ *   gespeicherten. Der Draht einer Seite kann also Schluessel tragen, die ein
+ *   server-seitiger Filter ueber den GESPEICHERTEN Stand nicht kennt. Waere diese
+ *   Ableitung gefiltert, koennte sie eine ECHTE TEILMENGE der Draht-Schluessel sein
+ *   — und ein Schluessel, der hier fehlt, laesst sich spaeter NIE auf `true` setzen.
+ *   Er bliebe fuer immer abgelehnt, lautlos.
+ * SIE MUSS DESHALB EINE OBERMENGE JEDES GEFRAGTEN SCHLUESSELS SEIN, nicht die
+ * kleinste passende Menge.
+ *
+ * DER ANALYTICS-SCHLUESSEL WIRD IMPORTIERT, NICHT ABGESCHRIEBEN — derselbe Grund wie
+ * beim Meta-Wert oben: Er steht in AUSGELIEFERTEM Code, und ein Literal hier liesse
+ * ihn auseinanderlaufen, ohne dass irgendwo etwas rot wird.
+ *
+ * DIE REIHENFOLGE IST STABIL (Ziel-Reihenfolge aus TRACKING_TARGETS, der
+ * Analytics-Schluessel zuletzt): Der ausgelieferte Text wird daraus gebaut, und eine
+ * wechselnde Reihenfolge machte jeden Byte-Vergleich wertlos.
+ */
+export const ALL_CONSENT_KEYS: readonly string[] = [
+  ...TRACKING_TARGETS.map((t) => CONSENT_KEY_BY_TARGET[t]),
+  ANALYTICS_CONSENT_TARGET,
+];

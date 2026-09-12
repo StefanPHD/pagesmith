@@ -750,3 +750,71 @@ describe("publishProject — Leer-Riegel", () => {
     expect(patch.published_content).not.toHaveProperty("variantB");
   });
 });
+
+// --- SCHEIBE 11.5a: DER SCHALTER ERREICHT BEIDE VARIANTEN -----------------------
+describe("publishProject — der Einwilligungs-Schalter (Scheibe 11.5a)", () => {
+  const variantB11_5a = {
+    functionalHtml: "<html><body>VARIANTE B</body></html>",
+    mappings: [
+      { elementId: "ps-b", type: "track" as const, config: { event: "Lead" } },
+    ],
+  };
+
+  function client() {
+    return makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "Mein Shop",
+          settings: { hosting: { label: "mein-shop-abc123" } },
+          tracking_key: "keep-me",
+          html_b: "<h1>B draft</h1>",
+        },
+        error: null,
+      },
+    });
+  }
+
+  // T8. DIE FEHLERKLASSE, DIE NUR DIESER TEST FAENGT: ein vergessener zweiter
+  // Aufruf. Variante B laeuft ueber eine EIGENE Aufrufstelle in publishProject; sie
+  // sieht der ersten zum Verwechseln aehnlich, und wer nur A prueft, liefert eine B
+  // ohne Setzer aus — auf genau der Haelfte des Traffics, und ohne dass irgendwo
+  // etwas rot wird.
+  it("T8: Schalter AN -> der Setzer steht in BEIDEN Varianten", async () => {
+    const { rec } = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      { ...snapshot, settings: { consent: { gate: true } } },
+      variantB11_5a
+    );
+    expect(res.ok).toBe(true);
+    const patch = rec.updatePatch as {
+      published_content: { html: string; variantB: { html: string } };
+    };
+    expect(patch.published_content.html).toContain('id="__ps_cns"');
+    expect(patch.published_content.variantB.html).toContain('id="__ps_cns"');
+  });
+
+  // DIE POSITIVKONTROLLE ZUM TEST DARUEBER: ohne sie waere "kein Setzer" von
+  // "publishProject hat gar nichts geschrieben" nicht zu unterscheiden.
+  it("T8b: Schalter AUS -> KEIN Setzer, in keiner der beiden Varianten", async () => {
+    const { rec } = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      snapshot,
+      variantB11_5a
+    );
+    expect(res.ok).toBe(true);
+    const patch = rec.updatePatch as {
+      published_content: { html: string; variantB: { html: string } };
+    };
+    expect(patch.published_content.html).not.toContain('id="__ps_cns"');
+    expect(patch.published_content.variantB.html).not.toContain('id="__ps_cns"');
+    // POSITIVKONTROLLE: geschrieben wurde sehr wohl etwas.
+    expect(patch.published_content.html).toContain('id="__ps_pve"');
+    expect(patch.published_content.variantB.html).toContain('id="__ps_pve"');
+  });
+});

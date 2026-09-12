@@ -7,6 +7,7 @@ import {
   getTrackingKey,
   setCapiState,
   setMetaPixelId,
+  setConsentGate,
   setPixelId,
   settingsEqual,
   TRACKING_TARGETS,
@@ -235,5 +236,36 @@ describe("eventAxisTargets", () => {
     );
     // POSITIVKONTROLLE: Die Liste ist nicht leer — sonst waere der Vergleich trivial.
     expect(eventAxisTargets.length).toBeGreaterThan(0);
+  });
+});
+
+// --- SCHEIBE 11.5a: DER EINWILLIGUNGS-SCHALTER IM DIRTY-VERGLEICH ---------------
+//
+// WARUM DIESE ZWEI TESTS UEBERHAUPT NOETIG SIND — die Fehlerklasse ist STILL:
+// settingsEqual ist eine ALLOWLIST. Ein neues Top-Level-Mitglied des Blobs ist darin
+// unsichtbar, ohne Typfehler und ohne roten Test. Der Nutzer schaltet, der Vergleich
+// meldet "nicht dirty", es erscheint kein "Ungespeicherte Aenderungen", der
+// beforeunload-Waechter kehrt sofort zurueck, der confirm beim Projektwechsel bleibt
+// aus — UND DER SCHALTER IST BEIM NAECHSTEN WECHSEL WEG.
+// DIESE ZWEI TESTS HALTEN GENAU DIESEN EINEN TERM, NICHT DIE KLASSE: Das naechste
+// Mitglied ist wieder unsichtbar by default. Das ist bekannt und als Vorrat gefuehrt.
+describe("settingsEqual — der Einwilligungs-Schalter (Scheibe 11.5a)", () => {
+  it("T6: zwei Bloebe, die sich NUR im Schalter unterscheiden, sind NICHT gleich", () => {
+    const aus: ProjectSettings = {};
+    const an = setConsentGate({}, true);
+    expect(settingsEqual(aus, an)).toBe(false);
+    expect(settingsEqual(an, aus)).toBe(false);
+    // Auch der Unterschied zwischen "bewusst aus" und "an" zaehlt.
+    expect(settingsEqual(setConsentGate({}, false), an)).toBe(false);
+  });
+
+  it("T7: zwei Bloebe OHNE Schalter sind weiterhin gleich (kein false-dirty)", () => {
+    // DER BESTANDSFALL: Jedes heutige Projekt traegt das Mitglied nicht. Ein Term,
+    // der undefined nicht gegen undefined haelt, staende hier sofort rot — und der
+    // Speichern-Knopf staende bei JEDEM Projekt dauerhaft scharf.
+    expect(settingsEqual({}, {})).toBe(true);
+    expect(settingsEqual({}, { pixels: {} })).toBe(true);
+    // "bewusst aus" und "nie gesetzt" lesen sich beide als AUS und sind gleich.
+    expect(settingsEqual({}, setConsentGate({}, false))).toBe(true);
   });
 });

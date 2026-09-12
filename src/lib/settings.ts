@@ -190,6 +190,28 @@ export type ProjectSettings = {
     label?: string;
     publishedAt?: string;
   };
+  // EINWILLIGUNGS-SCHALTER JE PROJEKT (Phase 11.5, Scheibe 11.5a). BEWUSST
+  // plattform-agnostisch neben pixels/capi/hosting, aus demselben Grund wie hosting:
+  // kein Pixel, sondern eine Aussage ueber den AUSGELIEFERTEN TEXT.
+  //   gate = Soll auf einer publizierten Seite VOR dem ersten Beacon ein Urteil
+  //          stehen, das Ablehnung bedeutet? Standard AUS (Feld fehlt).
+  //
+  // WARUM HIER UND NICHT IN EINER EIGENEN SPALTE — die Alternative ist erwogen und
+  // verworfen: Eine server-autoritative Spalte ueberlebte jeden Client-Save, machte
+  // aber einen ZWEITEN Ort auf, aus dem derselbe ausgelieferte Text gespeist wird.
+  // Hier liegt bereits die Ableitung der Ziel-Schluessel, aus der derselbe Text
+  // gebaut wird; Schalter und Schluessel aus EINER Quelle koennen nicht
+  // auseinanderlaufen.
+  // DER PREIS STEHT DAZU: Ein alter Browser-Tab kann den Blob ganzheitlich
+  // ueberschreiben und den Schalter still ausknipsen. Der Zustand danach ist der
+  // heutige, entschiedene — kein Dialog, alle Ziele erlaubt. Kein Leck, kein neuer
+  // Schaden.
+  // ER FAELLT NICHT UNTER "SERVER-EIGENE IDENTITAET NIE IN EINEN CLIENT-BESESSENEN
+  // BLOB": Jene Regel trifft eine SERVER-VERGEBENE Identitaet, die der Client nicht
+  // kennt. Dieser Schalter ist eine EINGABE DES BETREIBERS und entsteht im Client.
+  consent?: {
+    gate?: boolean;
+  };
 };
 
 // Die getrimmte Pixel-ID EINES Ziels oder "" (nicht gesetzt).
@@ -663,10 +685,70 @@ function conversionRulesEqual(
 // WERTGLEICHHEIT, NICHT REFERENZGLEICHHEIT: Zwei geladene Kopien desselben Blobs
 // sind verschiedene Objekte; ein === auf die Records meldete IMMER dirty, und der
 // Speichern-Knopf staende dauerhaft scharf.
+// DER EINWILLIGUNGS-SCHALTER WIRD MITVERGLICHEN (Phase 11.5, Scheibe 11.5a), und der
+// Grund ist derselbe wie bei den zwei Termen darueber, nur an einem neuen Mitglied:
+// Ohne diesen Term meldete der Vergleich nach einem Umschalten "nicht dirty" — kein
+// Text "Ungespeicherte Aenderungen", kein beforeunload-Waechter, kein confirm beim
+// Projektwechsel. DER SCHALTER WAERE BEIM NAECHSTEN PROJEKTWECHSEL WEG, ohne Warnung
+// und ohne Meldung.
+//
+// WARUM ER NICHT WIE capi UND hosting IGNORIERT WIRD: Jene sind SERVER-SPIEGEL — sie
+// werden nach einer Server-Antwort in settings UND savedSettings geschrieben, und ein
+// Vergleich darauf erzeugte false-dirty. Der Schalter ist eine EINGABE des Betreibers
+// und muss die Warn-Kette genau deshalb ausloesen. Die Ausnahme bleibt je Mitglied
+// begruendet; sie ist keine pauschale Regel ueber Nicht-Ziel-Mitglieder.
+//
+// DIE ALLOWLIST-EIGENSCHAFT DIESER FUNKTION BLEIBT BESTEHEN und ist NICHT durch
+// diesen Term geloest: Jedes weitere Top-Level-Mitglied ist hier unsichtbar by
+// default, und nichts wird davon rot. Der Test zu DIESEM Term haelt genau ihn, nicht
+// die Klasse.
 export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
-  return TRACKING_TARGETS.every(
-    (t) =>
-      getPixelId(a, t) === getPixelId(b, t) &&
-      conversionRulesEqual(getConversionRules(a, t), getConversionRules(b, t))
+  return (
+    isConsentGateOn(a) === isConsentGateOn(b) &&
+    TRACKING_TARGETS.every(
+      (t) =>
+        getPixelId(a, t) === getPixelId(b, t) &&
+        conversionRulesEqual(getConversionRules(a, t), getConversionRules(b, t))
+    )
   );
+}
+
+/**
+ * STEHT DER EINWILLIGUNGS-SCHALTER DIESES PROJEKTS AUF AN? (Phase 11.5, Scheibe
+ * 11.5a)
+ *
+ * `=== true` STATT TRUTHY, und das ist keine Vorsicht, sondern dieselbe Strenge wie
+ * im Gate selbst (tracking/consent.ts): Ein fehlendes Feld, `null`, die Zeichenkette
+ * "true" oder eine 1 ergeben alle AUS. **Damit bildet sich "fehlt" auf AUS ab, ohne
+ * dass irgendwo ein Vorgabewert steht, der spaeter jemand anders setzt.**
+ *
+ * DER STANDARD IST AUS, UND ZWAR STRUKTURELL: Jedes bestehende Projekt traegt das
+ * Mitglied nicht, liest hier also AUS und liefert byte-gleich wie bisher aus.
+ */
+export function isConsentGateOn(settings: ProjectSettings): boolean {
+  return settings.consent?.gate === true;
+}
+
+/**
+ * Den Einwilligungs-Schalter setzen (Phase 11.5, Scheibe 11.5a). Reine Funktion,
+ * gleiche Bauform wie setPixelId: neues Objekt, bestehende Mitglieder unberuehrt.
+ *
+ * DAS FELD WIRD IMMER GESCHRIEBEN, AUCH BEIM AUSSCHALTEN — statt es zu entfernen.
+ * GRUND: `false` und "fehlt" lesen sich beim Leser gleich (beide AUS), aber nur ein
+ * geschriebenes `false` unterscheidet sich fuer settingsEqual vom Zustand DAVOR,
+ * wenn der Blob vorher `true` trug. Wer hier beim Ausschalten das Mitglied loeschte,
+ * bekaeme denselben dirty-Vergleich — aber ein Blob, der zwischen "nie gesetzt" und
+ * "bewusst aus" nicht mehr unterscheidet.
+ */
+export function setConsentGate(
+  settings: ProjectSettings,
+  on: boolean
+): ProjectSettings {
+  return {
+    ...settings,
+    consent: {
+      ...settings.consent,
+      gate: on,
+    },
+  };
 }

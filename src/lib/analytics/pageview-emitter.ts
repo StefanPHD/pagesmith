@@ -15,6 +15,7 @@ import {
   buildConsentScript,
   hasConsentScript,
 } from "@/lib/tracking/consent";
+import { buildConsentDenyScript } from "@/lib/tracking/consent-setter";
 
 const SCRIPT_ID = "__ps_pve";
 
@@ -92,7 +93,17 @@ export function buildPageViewScript(trackingKey: string): string {
 // case-insensitiv per lastIndexOf auf dem Lowercase-Klon (laengengleich -> Index passt
 // 1:1 aufs Original), Script davor einfuegen; fehlt </body>, ans Ende anhaengen (ein
 // Script am Dokumentende feuert trotzdem). KEIN Regex, KEIN Parser.
-export function injectPageViewEmitter(html: string, trackingKey: string): string {
+export function injectPageViewEmitter(
+  html: string,
+  trackingKey: string,
+  // DER EINWILLIGUNGS-SCHALTER DES PROJEKTS (Phase 11.5, Scheibe 11.5a).
+  //
+  // PFLICHT-PARAMETER OHNE VORGABEWERT, UND DAS IST ABSICHT: Ein `= false` liesse
+  // jeden kuenftigen Aufrufer den Schalter stillschweigend uebergehen — der Setzer
+  // fehlte dann auf einem neuen Auslieferungsweg, ohne dass irgendwo etwas rot wird.
+  // So muss jede Aufrufstelle entscheiden, und der Compiler fragt.
+  consentGateOn: boolean
+): string {
   // ZWEITE EINFUEGESTELLE DES GETEILTEN CONSENT-GATES (Phase 11, zweite Scheibe).
   // Sie ist noetig, weil eine publizierte Seite OHNE Mappings KEIN Wiring traegt —
   // dann kaeme der Block aus generate.ts nicht, und die publizierte Seite haette
@@ -115,7 +126,33 @@ export function injectPageViewEmitter(html: string, trackingKey: string): string
   // das HEUTIGE Verhalten, keine datierte Entscheidung — er darf nicht in falscher
   // Fassung neben seinem Gegenbeweis stehenbleiben.
   const gate = hasConsentScript(html) ? "" : buildConsentScript();
-  const script = gate + buildPageViewScript(trackingKey);
+  // DER ABLEHNUNGS-SETZER (Phase 11.5, Scheibe 11.5a) — EIN EXPLIZITER ZWEIG AM
+  // SCHALTER, KEIN NEBENEFFEKT EINER LEERE.
+  //
+  // DIE BEDINGUNG LIEST DEN SCHALTER UND SONST NICHTS. Sie fragt NICHT, ob die
+  // Schluesselmenge leer ist, und auch nicht, ob ein Ziel konfiguriert ist. GRUND:
+  // Ein Schutz, der nur NEBENEFFEKT einer anderen Bedingung ist, verschwindet STILL,
+  // sobald jene sich aendert — der Kill-Switch dieses Projekts waere beim Entkoppeln
+  // genau so fail-open geworden. Wer hier je auf die Leere der Menge prueft, baut
+  // dieselbe Falle: ALL_CONSENT_KEYS ist nie leer, die Bedingung waere also immer
+  // wahr, und der Schalter haette aufgehoert zu wirken, ohne dass etwas rot wird.
+  //
+  // BEI AUS ENTSTEHT DER SETZER GAR NICHT, und damit ist der ausgelieferte Text
+  // byte-gleich zu dem vor dieser Scheibe. Das ist die tragende Invariante der
+  // Scheibe und wird von einem Test gegen einen VOR dem Bau erzeugten Vergleichswert
+  // gehalten, nicht von diesem Kommentar.
+  const setter = consentGateOn ? buildConsentDenyScript() : "";
+  // EINE KONKATENATION, EINE EINFUEGESTELLE — und daran haengt die REIHENFOLGE im
+  // Dokument: Gate, dann Setzer, dann der PageView-Emitter. Der Setzer MUSS vor dem
+  // Emitter stehen, sonst feuert der erste Seitenaufruf, bevor ein Urteil da ist.
+  // EINE ZWEITE EINFUEGESTELLE WAERE DER BRUCH: Dann entschiede die Aufrufreihenfolge
+  // zweier Funktionen ueber die Dokumentordnung, und nichts wuerde rot, wenn sie sich
+  // dreht. Die Ordnung ist hier eine Eigenschaft des AUSDRUCKS, keine Zusicherung
+  // ueber Aufrufe.
+  // DER SETZER BRAUCHT DAS GATE NICHT VOR SICH — er ruft __psConsent nicht auf, er
+  // weist nur zu. Er steht trotzdem dahinter, weil die drei Bausteine so in der
+  // Reihenfolge ihrer Abhaengigkeit lesbar bleiben.
+  const script = gate + setter + buildPageViewScript(trackingKey);
   const idx = html.toLowerCase().lastIndexOf("</body>");
   if (idx === -1) return html + script;
   return html.slice(0, idx) + script + html.slice(idx);

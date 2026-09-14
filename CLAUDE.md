@@ -762,10 +762,23 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   Server Action mit Secret-Parameter (erhoben 2026-07-24). Bei JEDER neuen Server Action mit
   Secret-Parameter neu bewerten.
 - DEPENDABOT: ERLEDIGT (2026-07-24: Alerts, Security Updates, Dependency Graph aktiv, 1 Regel).
-- DEPENDABOT-MELDUNGEN GESICHTET (2026-09-12) — ACHT OFFEN, ALLE AN NEXT, KEINE AUF EINEM
-  NACHGEWIESEN ERREICHBAREN PRODUKTIVPFAD: Die Sichtung ist am 2026-09-12 read-only gefahren
-  worden, je Meldung auf ERREICHBARKEIT statt auf die blosse Meldung. DAS ERGEBNIS, je Zeile ein
-  Paket (GEMESSEN am Code, CC, 2026-09-12, im selben Lauf erneut bestaetigt):
+- DEPENDABOT-MELDUNGEN GESICHTET (2026-09-12) — ERLEDIGT (2026-09-14): NULL OFFEN NACH DEM
+  NEXT-SPRUNG. RUHENDER POSTEN — er sagt, wie gesichtet wird, und ist kein offener.
+  DER ZUSTAND: Dependabot fuehrt NULL offene Meldungen — OWNER-ANGABE 2026-09-14, nach dem Sprung
+  auf next 16.3.5. NICHT von CC gemessen: gh ist auf dieser Maschine nicht installiert (erneut
+  geprueft, CC, 2026-09-14), und die Liste liegt nicht im Repo. DANEBEN GEMESSEN (CC, 2026-09-14):
+  `npm audit` meldet "found 0 vulnerabilities", null in jedem Schweregrad, bei installiertem und
+  gepinntem next 16.3.5.
+  DAS FRUEHERE BINDET-AN IST EINGELOEST: Es lautete "DEN NEXT-SPRUNG, der als eigene Arbeit vor der
+  naechsten Bau-Scheibe entschieden ist". Der Sprung ist gefahren und abgeschlossen —
+  docs/roadmap.md, Roadmap-Zeile 11.10, Marker [x], BAU-COMMIT `448fbff`; dort ist auch `npm audit`
+  VORHER drei, NACHHER null protokolliert.
+  DIE SICHTUNG VOM 2026-09-12 BLEIBT STEHEN, DATIERT — sie ist alt und nicht falsch. Sie ist die
+  einzige Stelle, an der steht, WARUM keine der acht Meldungen einen erreichbaren Produktivpfad
+  traf; wer sie streicht, weil "null offen" dasteht, wirft die Begruendung weg und misst beim
+  naechsten Mal von vorn. Sie ist read-only gefahren worden, je Meldung auf ERREICHBARKEIT statt
+  auf die blosse Meldung. DAS ERGEBNIS, je Zeile ein Paket (GEMESSEN am Code, CC, 2026-09-12, im
+  selben Lauf erneut bestaetigt):
   · postcss laeuft NUR zur Bauzeit ueber die eigenen Stylesheets — postcss.config.mjs traegt
     genau einen Plugin-Eintrag, das einzige Stylesheet ist src/app/globals.css. Importiertes
     Kunden-HTML erreicht es NIE: es wird clientseitig geparst, als Text abgelegt und unveraendert
@@ -776,9 +789,14 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
     proxy.ts), und next.config.ts traegt images.unoptimized = true.
   · Die dev-Pakete erreichen KEINEN ausgelieferten Pfad — der einzige Treffer ausserhalb der
     Testdateien ist eine Mess-Notiz im Kommentar von capi/token.ts, kein Import.
-  DIE WINDOWS-RCE TRIFFT DIE PRODUKTION NICHT: Vercel faehrt die Standard-Linux-Laufzeit, am
+  DIE WINDOWS-RCE TRAF DIE PRODUKTION NICHT: Vercel faehrt die Standard-Linux-Laufzeit, am
   Build-Log geprueft. OWNER-ANGABE 2026-09-12 — NICHT von CC gemessen, und im Repo steht dazu
-  nichts. WAS BLEIBT: der Entwicklungs-Server unter Windows, ohne fremden Traffic.
+  nichts. Was damals blieb, der Entwicklungs-Server unter Windows, ist mit dem Sprung ebenfalls
+  geschlossen — ABLEITUNG aus `npm audit` null, keine eigene Messung am Entwicklungs-Server.
+  WARUM ES DEN SPRUNG BRAUCHTE, STAND 2026-09-12: Alle acht hingen an next; innerhalb von 16.2.x
+  gab es keinen Patch, beide Next-Advisories waren erst ab 16.3.3 behoben, und 16.2.12 war die
+  hoechste stabile 16.2er-Fassung (GEMESSEN an der Registry, CC, 2026-09-12). next pinnte zudem
+  postcss exakt auf 8.4.31 und verlangte sharp ^0.34.5; beide Fixes lagen ausserhalb.
   ZWEI ZAHLEN, DIE AUSEINANDERGEHEN — STAND 2026-09-12, damit der Eintrag altert statt falsch zu
   werden:
   · DEPENDABOT: ACHT offen — zwei kritisch (next), vier hoch (sharp zweimal, postcss zweimal),
@@ -787,25 +805,29 @@ VOLLFASSUNG trägt die vier Begründungsfelder je Item.
   · NPM AUDIT: DREI Positionen — eine kritisch (next), zwei hoch (postcss, sharp). GEMESSEN
     (CC, 2026-09-12).
   · DER GRUND: npm gruppiert je PAKET, Dependabot zaehlt je ADVISORY je MANIFEST. BEIDE ZAHLEN
-    SIND RICHTIG; wer sie gleichsetzt, haelt eine fuer einen Fehler.
+    SIND RICHTIG; wer sie gleichsetzt, haelt eine fuer einen Fehler. Der Satz traegt ueber die
+    Null hinaus: Bei der naechsten Meldung gehen die zwei Zaehlungen wieder auseinander.
   · VORHER-STAND: SECHZEHN Dependabot-Meldungen vor den Dev-Bumps vom 2026-09-12
     (Commit 9da659c). OWNER-ANGABE.
-  ALLE ACHT HAENGEN AN NEXT und sind ohne einen Sprung ueber 16.2.12 hinaus nicht zu schliessen:
-  Es gibt KEINEN Patch innerhalb von 16.2.x, beide Next-Advisories sind erst ab 16.3.3 behoben,
-  und 16.2.12 ist die HOECHSTE veroeffentlichte stabile 16.2er-Fassung (GEMESSEN an der
-  Registry, CC, 2026-09-12, im selben Lauf erneut geprueft — unveraendert). next pinnt zudem
-  postcss exakt auf 8.4.31 und verlangt sharp ^0.34.5; beide Fixes liegen ausserhalb.
-  ZWEI DINGE BLEIBEN OFFEN, und sie gehoeren hierher, sonst liest sich der Eintrag als
-  vollstaendige Entwarnung:
-  · OB /_next/image TROTZ unoptimized ANTWORTET, IST UNGEMESSEN. Bewusst nicht erhoben: Die
-    Route wird mit DEMSELBEN Sprung geschlossen wie die Windows-RCE, und die Antwort aenderte
-    keine Handlung.
-  · WARUM DIE ZWEI NEXT-MELDUNGEN, DIE VORHER ZUSAETZLICH UNTER package.json GEFUEHRT WAREN,
-    NICHT MEHR ERSCHEINEN, IST NICHT ERHOBEN — package.json ist unveraendert.
-    Owner-Beobachtung, keine Messung, keine Erklaerung.
-  BINDET-AN: DEN NEXT-SPRUNG, der als eigene Arbeit vor der naechsten Bau-Scheibe entschieden
-  ist (ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-12). TIER 2 BLEIBT, KEIN GATE: Keine der acht
-  trifft einen nachgewiesen erreichbaren Produktivpfad.
+  ZWEI PUNKTE, DIE AM 2026-09-12 OFFEN BLIEBEN, SIND GEGENSTANDSLOS UND GESTRICHEN — je mit dem
+  Beleg der Erledigung:
+  · "OB /_next/image TROTZ unoptimized ANTWORTET" war bewusst nicht erhoben, weil der Sprung die
+    Route schliesst und die Antwort keine Handlung aenderte. Der Sprung ist gefahren, und
+    `npm audit` steht auf null (GEMESSEN, CC, 2026-09-14). Ob die Route antwortet, bleibt
+    ungemessen; eine Sicherheitsfrage dieses Eintrags ist es nicht mehr.
+  · "WARUM DIE ZWEI NEXT-MELDUNGEN UNTER package.json NICHT MEHR ERSCHEINEN" war eine
+    Owner-Beobachtung ohne Erklaerung. Beide Next-Advisories sind mit 16.3.5 behoben; eine Meldung
+    dazu waere unter keinem Manifest mehr offen, und die Null hat mit dem Sprung eine gemessene
+    Ursache, die an jenem Verschwinden nicht haengt. Die Erklaerung selbst bleibt unerhoben.
+  BINDET-AN: DIE NAECHSTE MELDUNG (ARCHITEKT-VORSCHLAG 2026-09-14). Sie wird wie am 2026-09-12
+  gesichtet — je Meldung auf Erreichbarkeit, beide Zaehlungen nebeneinander. Die
+  Dependabot-Zaehlung ist eine OWNER-ANGABE und das einzige Instrument fuer diese Achse. Bis zur
+  Sichtung am 2026-09-12 waren zwei Meldungen ohne erhobene Erklaerung aus der Liste
+  verschwunden, und wann sie verschwanden, ist nicht erhoben; die
+  Erklaerung ist bis heute unerhoben. WER DIE NAECHSTE MELDUNG SICHTET, LIEST DIE DEPENDABOT-ZAHL
+  DESHALB NEBEN `npm audit` UND NICHT STATT DESSEN — eine Null allein sagt nicht, ob eine Meldung
+  geschlossen wurde oder verschwunden ist. (ARCHITEKT-ANGABE 2026-09-14; sie ruht auf dem
+  gestrichenen Punkt oben, nicht auf einer neuen Messung.) TIER 2 BLEIBT, KEIN GATE.
 - BACKUPS + Restore-Drill (TEILWEISE ERLEDIGT — Backup-Tier steht, DRILL WEITERHIN OFFEN):
   BACKUP-TIER BESTÄTIGT (2026-07-29): Supabase auf PRO -> TÄGLICHE Backups, 7 Tage Retention.
   Die frühere Einordnung "Free hat GAR KEINE Backups" ist überholt und wurde ersetzt, nicht

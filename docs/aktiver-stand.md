@@ -1620,8 +1620,9 @@ der Seitenaufruf nachgesendet — falls er beim Laden unterblieb.
 
 **DIE SENDE-LOGIK BLEIBT AN EINER STELLE.** `write()` baut den Beacon NICHT nach. Der
 PageView-Erzeuger stellt sie bereit, `write()` ruft sie über eine EXISTENZPRÜFUNG. Die Bauform
-steht im Bestand: `typeof __psConsent !== "function"` in `buildPageViewScript`, gleichartig dreimal
-in `src/lib/tracking/meta.ts` (GEMESSEN, CC, 2026-09-14). Ein zweiter Erzeuger für denselben
+steht im Bestand: `typeof __psConsent !== "function"` in `buildPageViewScript`; in
+`src/lib/tracking/meta.ts` zweimal dieselbe Prüfung auf `__psConsent` und einmal die gleichartige auf
+`__psConsentAll` (GEMESSEN, CC, 2026-09-14). Ein zweiter Erzeuger für denselben
 Beacon wäre die Divergenz-Bauform, die dieses Projekt mehrfach als still führt.
 
 **DIE REIHENFOLGE, AM CODE NACHGESEHEN:** Das PageView-Script steht in der Verkettung HINTER der
@@ -1685,6 +1686,18 @@ SCHALTER**, wie Setzer und Wiederherstellung: ein expliziter Zweig, nie ein Nebe
 - **WAS BLEIBT:** Die Scheibe ändert ZWEI Blöcke, nicht einen — das PageView-Script und die
   Wiederherstellung.
 
+**EINE BAUVORGABE AUS EINEM BESTANDSTEST: DER NAME DER BEREITGESTELLTEN SENDE-LOGIK TRÄGT DIE
+ZEICHENKETTE `__ps_pv` NICHT.** R3b in `src/lib/tracking/consent-store.test.ts` verlangt, dass der
+Wiederherstellungs-Block keine der Kennungen `id="pagesmith-consent"`, `id="__ps_cns"`, `__ps_pve`
+und `__ps_pv` enthält, und prüft als Positivkontrolle, dass dieselbe Suche im ausgelieferten Text
+trifft (GELESEN am Test, CC, 2026-09-14). Trägt der Name die Zeichenkette, steht sie mit dem Aufruf
+in `write()` im Wiederherstellungs-Block, und R3b wird rot — **und das wäre richtig.**
+DER GRUND, WIE R3b IHN SELBST FÜHRT: „hasConsentScript sucht id="pagesmith-consent", die
+Reihenfolge-Tests suchen id="__ps_cns" und __ps_pve / __ps_pv. Traegt der neue Block eines davon,
+faellt auf Seiten ohne Mappings das Gate weg oder eine indexOf-Reihenfolge luegt."
+Der Kommentar nennt R3b zugleich den EINZIGEN Test, der diese Kollision fängt. Die Vorgabe sagt
+nur, was der Name NICHT tragen darf; wie er heisst, legt dieser Abschnitt nicht fest.
+
 **DIE DEMOBARKEIT, Regression zuerst.**
 VORBEDINGUNGEN, dieselben wie im Zuschnitt der Scheibe 11.5b und dort an ihren Quellen belegt: nach
 dem Deploy NEU VERÖFFENTLICHEN · den A/B-Betrieb feststellen · KEIN laufender Testmodus · alles im
@@ -1698,9 +1711,71 @@ DIE SCHRITTE:
 5. Nach Neuladen mit gespeicherter Zustimmung: der Seitenaufruf kommt beim Laden, und ein erneutes
    `write()` löst keinen zweiten aus.
 
-**EINE FRAGE FÜR DIE PLANUNGSSTUFE, HIER NICHT BEANTWORTET:** Berührt ein nachgesendeter
-Seitenaufruf die Verlustraten-Rechnung — hat der PageView einen Bestätigungs-Kanal, und ändert ein
-späterer Zeitpunkt daran etwas? Das ist am Code zu klären, BEVOR gebaut wird.
+**DIE VERLUSTRATEN-FRAGE IST BEANTWORTET: EIN NACHGESENDETER SEITENAUFRUF GEHT IN DIE
+VERLUSTRATE NICHT EIN.** (GEMESSEN am Code, CC, 2026-09-14.)
+- **DER PAGEVIEW HAT KEINEN BESTÄTIGUNGS-KANAL.** Seine Nutzlast in `buildPageViewScript` trägt
+  `trackingKey`, `eventID` und `event` und kein `obs`-Feld. Der Ingest erkennt eine Bestätigung
+  allein an diesem Feld — `asString(body.obs) === BROWSER_CONFIRM_MARKER` in `handleIngest`
+  (`src/lib/capi/ingest.ts`). Der einzige Erzeuger einer Bestätigung ist
+  `buildPixelConfirmStatement` (`src/lib/tracking/meta.ts`), erreichbar nur über `__psMetaFire`.
+- **ER FÄLLT AUS STICHTAG UND NENNER.** Er trägt `__ps_pageview`, und `get_adblock_loss`
+  (`supabase/migrations/0015_adblock_loss.sql`) schliesst `left(event_type, 5) <> '__ps_'` an
+  beiden Stellen aus — im Stichtag und im Nenner. **In den Zähler kann er nicht gelangen**, weil der
+  nur über die Nenner-Zeilen zählt.
+- **EIN SPÄTERER ZEITPUNKT ÄNDERT DARAN NICHTS:** Der Ausschluss hängt am Namen, nicht an der Zeit.
+
+DIE GRENZE: Das ist eine ABLEITUNG aus dem SQL-Text der Migration. Welcher Stand in der Datenbank
+angewandt ist, ist am Repo nicht entscheidbar.
+
+**DER ZEITPUNKT ZÄHLT AN EINER ANDEREN STELLE — EINE BENANNTE FOLGE, KEINE BLOCKADE.** Sie steht
+hier, damit sie später nicht als Zählfehler gilt. (GEMESSEN am Code, CC, 2026-09-14; die Folge ist
+eine ABLEITUNG daraus, nicht gelaufen.)
+- **DIE A/B-AUSWERTUNG:** `get_variant_counts` in der Fassung von
+  `supabase/migrations/0020_ab_test_started_at.sql` filtert, sobald `ab_test_started_at` gesetzt ist,
+  `created_at >= ab_test_started_at`, und
+  `created_at` setzt die Datenbank beim Einfügen (`default now()`, `0011_events.sql`). Die Anzeige
+  „Conversions je Seitenaufruf" in `src/components/MeasureView.tsx` nimmt die Zeile
+  `event_type === PAGEVIEW_EVENT` als Nenner. **Ein nachgesendeter Seitenaufruf zählt damit in den
+  Lauf, in dem er EINTRIFFT — auch wenn die Seite VOR dem Start des Laufs geladen wurde.**
+- **DER ZUSTAND BEIM EINTREFFEN:** Sperre (`resolution.blocked`), Testmodus-Riegel
+  (`testModusAktiv`) und Variante (`parseVariantCookie` auf dem Cookie-Header der Anfrage) wertet
+  `handleIngest` beim EINTREFFEN des Beacons aus, nicht beim Laden der Seite.
+
+**ENTSCHIEDEN — ARCHITEKT-ENTSCHEIDUNG 2026-09-14: DER NACHGESENDETE SEITENAUFRUF WIRD NICHT
+KENNTLICH GEMACHT.** Er entsteht als dieselbe Zeile wie jeder andere Seitenaufruf.
+- **DER GRUND:**
+  - **Kein Konsument liest eine solche Unterscheidung.** Die drei Lesefunktionen lesen `events`
+    ausschliesslich über `event_type`, `source`, `variant`, `event_id` und `created_at`:
+    `get_event_counts` (`0014`) gruppiert nach `event_type` auf `source='server'`,
+    `get_variant_counts` (`0020`) gruppiert nach `event_type` und zählt je `variant`,
+    `get_adblock_loss` (`0015`) gruppiert nicht, sondern filtert über `source` und den Präfix von
+    `event_type` und verbindet über `event_id`. Keine davon hätte eine Stelle, an der ein
+    Nachsende-Merkmal ankäme (GEMESSEN am SQL-Text der Migrationen, CC, 2026-09-14).
+  - **„NAHT-HYGIENE" (docs/immer-beachten.md)** schliesst das aus: „KEINE Webhook-Interfaces/
+    Schema-Erweiterungen ohne realen Konsumenten + Spec."
+  - **Der Zweck der Scheibe ist gerade, dass die Sitzung zählt wie jede andere.**
+- **VERWORFEN, je mit eigenem Preis:**
+  - **Ein zweiter reservierter `event_type`.** Er überlädt `event_type`. Die Anzeige
+    „Conversions je Seitenaufruf" trennt Nenner und Zähler über `=== PAGEVIEW_EVENT`: Der
+    nachgesendete Aufruf fiele aus dem Nenner und erschiene als Conversion-Zeile. Dazu würde er
+    weitergeleitet — `isForwardable` (`src/lib/analytics/events.ts`) schliesst allein
+    `PAGEVIEW_EVENT` aus (GEMESSEN am Code, CC, 2026-09-14).
+  - **Eine additive Spalte.** Sie verlangt eine Migration, einen Eingriff in `ingest.ts` — der ist
+    für diese Scheibe ausgeschlossen — und nach „ANLEGEN UND BEFÜLLEN EINER ADDITIVEN SPALTE NICHT
+    VERSCHMELZEN" (docs/immer-beachten.md) zwei Scheiben.
+  - **Eine Kennzeichnung in der Form der `eventID`.** Sie überlädt `event_id`, den Join-Schlüssel
+    der Verlustrate.
+- **DER PREIS:** In den Daten ist nie zu sehen, wie viele Seitenaufrufe über diesen Weg kamen. Der
+  Live-Schritt 3 („GENAU EINMAL") ist nur über die Differenz der Zählung zuzuordnen, nicht über die
+  Zeile.
+- **WANN SIE KIPPT:** sobald eine Auswertung die Unterscheidung tatsächlich braucht. Dann gilt die
+  Regel „Neue Dimension = eigene additive, nullable Spalte. Nie `source` oder `event_type`
+  überladen." (docs/arbeitsweise.md, Abschnitt „Analytics-Datenmodell"), und der Weg ist die
+  Migration, nicht das Überladen.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-14 — eine Angabe aus dem Auftrag dieses Tages, am Repo
+nicht prüfbar. Die Aussagen über Lesefunktionen, Anzeige und `isForwardable` GEMESSEN am Code (CC,
+2026-09-14).
 
 **DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.** Kein Plan, keine
 Namen neuer Funktionen, keine Gestalt der Bereitstellung.

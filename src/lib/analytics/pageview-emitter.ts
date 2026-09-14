@@ -16,6 +16,7 @@ import {
   hasConsentScript,
 } from "@/lib/tracking/consent";
 import { buildConsentDenyScript } from "@/lib/tracking/consent-setter";
+import { buildConsentRestoreScript } from "@/lib/tracking/consent-store";
 
 const SCRIPT_ID = "__ps_pve";
 
@@ -142,17 +143,22 @@ export function injectPageViewEmitter(
   // Scheibe und wird von einem Test gegen einen VOR dem Bau erzeugten Vergleichswert
   // gehalten, nicht von diesem Kommentar.
   const setter = consentGateOn ? buildConsentDenyScript() : "";
+  // DIE WIEDERHERSTELLUNG (Phase 11.5, Scheibe 11.5b) — derselbe explizite Zweig am
+  // Schalter wie beim Setzer, aus demselben Grund. Bei AUS entsteht sie nicht.
+  const restore = consentGateOn ? buildConsentRestoreScript() : "";
   // EINE KONKATENATION, EINE EINFUEGESTELLE — und daran haengt die REIHENFOLGE im
-  // Dokument: Gate, dann Setzer, dann der PageView-Emitter. Der Setzer MUSS vor dem
+  // Dokument: Gate, dann Wiederherstellung, dann Setzer, dann der PageView-Emitter. Die
+  // Wiederherstellung MUSS vor dem Setzer stehen, sonst schreibt er "abgelehnt", bevor
+  // eine gespeicherte Entscheidung den Hook belegen kann. Der Setzer MUSS vor dem
   // Emitter stehen, sonst feuert der erste Seitenaufruf, bevor ein Urteil da ist.
   // EINE ZWEITE EINFUEGESTELLE WAERE DER BRUCH: Dann entschiede die Aufrufreihenfolge
   // zweier Funktionen ueber die Dokumentordnung, und nichts wuerde rot, wenn sie sich
   // dreht. Die Ordnung ist hier eine Eigenschaft des AUSDRUCKS, keine Zusicherung
   // ueber Aufrufe.
   // DER SETZER BRAUCHT DAS GATE NICHT VOR SICH — er ruft __psConsent nicht auf, er
-  // weist nur zu. Er steht trotzdem dahinter, weil die drei Bausteine so in der
+  // weist nur zu. Er steht trotzdem dahinter, weil die Bausteine so in der
   // Reihenfolge ihrer Abhaengigkeit lesbar bleiben.
-  const script = gate + setter + buildPageViewScript(trackingKey);
+  const script = gate + restore + setter + buildPageViewScript(trackingKey);
   const idx = html.toLowerCase().lastIndexOf("</body>");
   if (idx === -1) return html + script;
   return html.slice(0, idx) + script + html.slice(idx);

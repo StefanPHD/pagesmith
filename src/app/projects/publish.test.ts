@@ -817,4 +817,42 @@ describe("publishProject — der Einwilligungs-Schalter (Scheibe 11.5a)", () => 
     expect(patch.published_content.html).toContain('id="__ps_pve"');
     expect(patch.published_content.variantB.html).toContain('id="__ps_pve"');
   });
+
+  // R12 (Scheibe 11.5b). Dieselbe Fehlerklasse wie T8 — ein vergessener zweiter Aufruf —,
+  // an der Wiederherstellung. Die Aufrufstellen tragen den Schalter bereits; der Test
+  // haelt, dass der Block an BEIDEN ankommt.
+  it("R12: Schalter AN -> die Wiederherstellung steht in BEIDEN Varianten", async () => {
+    const { rec } = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      { ...snapshot, settings: { consent: { gate: true } } },
+      variantB11_5a
+    );
+    expect(res.ok).toBe(true);
+    const patch = rec.updatePatch as {
+      published_content: { html: string; variantB: { html: string } };
+    };
+    expect(patch.published_content.html).toContain('id="__ps_cnr"');
+    expect(patch.published_content.variantB.html).toContain('id="__ps_cnr"');
+  });
+
+  it("R12b: Schalter AUS -> KEINE Wiederherstellung, in keiner der beiden Varianten", async () => {
+    const { rec } = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      snapshot,
+      variantB11_5a
+    );
+    expect(res.ok).toBe(true);
+    const patch = rec.updatePatch as {
+      published_content: { html: string; variantB: { html: string } };
+    };
+    expect(patch.published_content.html).not.toContain('id="__ps_cnr"');
+    expect(patch.published_content.variantB.html).not.toContain('id="__ps_cnr"');
+    // POSITIVKONTROLLE: geschrieben wurde sehr wohl etwas.
+    expect(patch.published_content.html).toContain('id="__ps_pve"');
+    expect(patch.published_content.variantB.html).toContain('id="__ps_pve"');
+  });
 });

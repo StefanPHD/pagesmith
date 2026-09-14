@@ -48,8 +48,10 @@ import {
  *
  * DER SCHLUESSEL KOMMT HEUTE IM DRAHT AN, sobald das Ziel eine Kennung traegt.
  * ENTSCHIEDEN WIRD DAS IM MEMO consentTargets in components/CodeImporter.tsx: Es
- * laeuft ueber TRACKING_TARGETS, filtert auf eine gesetzte Pixel-ID und bildet
- * ueber DIESE Zuordnung ab. Der Erzeuger schreibt den Schluessel daraufhin an ZWEI
+ * laeuft ueber TRACKING_TARGETS, filtert ueber isTargetDeliverable (lib/settings.ts:
+ * eine nicht-leere Pixel-ID ODER mindestens eine nicht-leere Regel-Kennung in
+ * conversionRules) und bildet ueber DIESE Zuordnung ab. Der Erzeuger schreibt den
+ * Schluessel daraufhin an ZWEI
  * Stellen in den ausgelieferten Text — in die Ziehung (__psConsentAll) und in das
  * Draht-Feld des Beacons, beide in tracking/meta.ts.
  *

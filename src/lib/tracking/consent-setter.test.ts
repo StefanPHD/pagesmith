@@ -111,7 +111,7 @@ describe("11.5a — die Sechser-Ableitung", () => {
   // Sie ist hier AUSGESCHRIEBEN und wird NIE aus ALL_CONSENT_KEYS abgeleitet — eine
   // Erwartung aus dem Pruefling machte diesen Test zu einem SPIEGEL, der jeden
   // Tippfehler und jede Streichung bestaetigt.
-  // EIN SIEBTES ZIEL MACHT DIESEN TEST ROT, UND DAS IST SEIN ZWECK: Wer ein Ziel
+  // EIN SECHSTES ZIEL MACHT DIESEN TEST ROT, UND DAS IST SEIN ZWECK: Wer ein Ziel
   // hinzufuegt, MUSS hier hinsehen. Ohne diesen Zwang bekaeme das neue Ziel keinen
   // Schluessel im Setzer und bliebe still abgelehnt — auf jeder Seite, ohne dass
   // irgendwo etwas rot wird. WER IHN "REPARIERT", INDEM ER DIE LISTE AUS DEM CODE

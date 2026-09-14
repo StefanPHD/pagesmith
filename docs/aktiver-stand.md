@@ -370,9 +370,28 @@ betrifft, gehört in deren Vermerk und nicht hierher.
 NUMMERIERUNG: (1), (2), … in der Reihenfolge des Entstehens, hinten antreten, Nummern stabil
 und nie neu vergeben.
 
-**ALLE VIER TRAGEN DIESELBE PROVENIENZ:** ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-12, auf der
-GEMESSENEN Grundlage aus Abschnitt 11. Wo unten zusätzlich „GEMESSEN (CC, 2026-09-12)" steht,
-ist die Angabe für diese Entscheidung eigens am heutigen Code nachgesehen worden.
+**DIE PROVENIENZ STEHT JE EINTRAG, NICHT FÜR ALLE GEMEINSAM:**
+
+- **(1) bis (4):** ARCHITEKT/OWNER-ENTSCHEIDUNG 2026-09-12, auf der GEMESSENEN Grundlage aus
+  Abschnitt 11. Wo unten zusätzlich „GEMESSEN (CC, 2026-09-12)" steht, ist die Angabe für diese
+  Entscheidung eigens am heutigen Code nachgesehen worden.
+- **(5) Die Ablage des Schalters:** OWNER-ENTSCHEIDUNG 2026-09-12, auf Empfehlung des
+  Architekten.
+- **(6) Das Bedienelement und der Term in `settingsEqual`:** ARCHITEKT-ENTSCHEIDUNG 2026-09-12,
+  getroffen in Antwort auf drei Fragen von CC; sie lag dem Owner nicht einzeln vor.
+  **„auf der GEMESSENEN Grundlage aus Abschnitt 11" trifft für (6) NICHT zu:** `settingsEqual`
+  und `saveProject` kommen in Abschnitt 11 nicht vor (GEMESSEN am Dateitext, CC, 2026-09-14:
+  null Treffer im Abschnitt, zehn in der ganzen Datei, Positivkontrolle `isTargetDeliverable`
+  mit einem Treffer im Abschnitt). Die Gründe von (6) sind eigene Messungen und in (6) selbst
+  als solche ausgewiesen.
+
+**DIE ANGABEN ZU (5) UND (6) SIND ARCHITEKT-ANGABEN (2026-09-12) UND AM REPO NICHT PRÜFBAR.**
+Weder die zwei Einträge noch ihre Ursprungsfassungen im Zuschnitt der Scheibe 11.5a noch die
+Commit-Nachrichten, unter denen sie entstanden sind, nennen einen Entscheider.
+**DIE ZWEI DATEN IN DIESEM BLOCK SIND ABSICHTLICH VERSCHIEDEN** — 2026-09-12 ist der Tag, an dem
+(5) und (6) beim Bau der Scheibe 11.5a entschieden wurden, 2026-09-14 der Tag der Nachmessung zu
+(6), an dem auch diese Niederschrift entstand; wer eines an das andere angleicht, macht eine der
+beiden Angaben falsch.
 
 **(1) DER DIALOG SETZT DEN HOOK — DER KONSUMENT WIRD NICHT ANGEFASST.**
 
@@ -703,6 +722,84 @@ Beacon erzeugt ohnehin keine Zeile. **BEIM ANBIETER NICHT ZWINGEND:** Der Testmo
 Forward nicht — dort hängt es am Ziel, ob ein markiertes Ereignis sichtbar wird.
 
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG**, ob und was dagegen zu bauen wäre.
+
+**(10) DIE ARTEFAKT-STORAGE-REGEL WIRD ZITIERT UND EXISTIERT NICHT** (aufgenommen 2026-09-14).
+
+**DIE FUNDSTELLE:** `docs/claude-history/phase-8-analytics.md`, Abschnitt der Scheibe 2a,
+Spiegelstrich „DANACH -> 2b (eingelöst)", im Zuschnitt der Scheibe 2b-1. Die Klammer im Wortlaut:
+„in-memory ephemere Session-ID (KEIN sessionStorage — Artefakt-Storage-Regel)". Dort steht weder
+eine Begründung noch eine Quelle noch eine Provenienz — nur der Name.
+
+**DER NAME KOMMT IM REPO GENAU EINMAL VOR, UND EINEN REGELTEXT GIBT ES NICHT** (GEMESSEN am Repo,
+CC, 2026-09-14):
+- Achse auf den NAMEN: `Artefakt-Storage`, case-insensitiv, `git grep` über alle verfolgten
+  Dateien — ein Treffer, eben die Fundstelle.
+- ERSTE INHALTLICHE ACHSE, die Speicher-Schnittstellen:
+  `localStorage|sessionStorage|indexedDB|web ?storage|browser-?speicher|storage-regel|Cache ?API|window\.name`.
+- ZWEITE INHALTLICHE ACHSE, Recht und Besucherseite:
+  `TTDSG|TDDDG|§ ?25|Endger(ä|ae)t|besucherseitig|Browser des Besuchers|Besucher-Browser|im Browser (ab|ge)leg|client-?seitig (ge)?speicher|Speicherung der Entscheidung|Zustand im Browser`.
+- Beide case-insensitiv, `git grep` über alle verfolgten Dateien, `CLAUDE.md` und
+  `docs/immer-beachten.md` eingeschlossen. POSITIVKONTROLLE: Die erste Achse trifft die Fundstelle
+  selbst und den Ausschluss in `docs/claude-history/phase-9-ab-testing.md`, die zweite dessen
+  TTDSG-Zeilen.
+- DIE TREFFER SIND BEFUNDE ÜBER ANDERES, KEINE ALLGEMEINE REGEL: der A/B-Ausschluss (Vorrat (11)),
+  der Projektwechsel ohne Cookie und ohne `localStorage` (App-Zustand, kein Artefakt), das Verbot
+  TRANSIT-ONLY an FREMDVERGEBENEN KLICK-KENNUNGEN (docs/offene-punkte.md), ein Google-Befund in
+  docs/ziel-befunde.md, das gestrichene Fingerprinting, „Speicherung der Entscheidung" als Umfang
+  dieser Phase (Roadmap-Zeile 11.5 und Abschnitt 1 dieser Datei) und eine Zeile über einen
+  Störungsfall in docs/offene-punkte.md. Keiner regelt Browser-Speicher im ausgelieferten
+  Artefakt.
+
+**DER GEGENSTAND JENER KLAMMER, DIE EPHEMERE SESSION-ID, IST NIE GEBAUT WORDEN** (GEMESSEN am
+Repo, CC, 2026-09-14): Achse `session_key|session-id|sessionid|ephemere`, case-insensitiv,
+`git grep` über alle verfolgten Dateien — Treffer ausschliesslich in
+`docs/claude-history/phase-8-analytics.md`, keiner in `src/` und keiner in `supabase/`.
+POSITIVKONTROLLE: dieselbe Achse trifft dort die drei Zeilen, die die Session-ID und `session_key`
+nennen. Die Migration 0012 heisst heute `0012_project_tracking_key.sql`.
+
+**SEIT DIESEM EINTRAG TREFFEN ALLE VIER ACHSEN AUCH DIESE DATEI** — die zweite inhaltliche traf
+sie schon vorher, mit „Speicherung der Entscheidung" in Abschnitt 1. Wer nachmisst, zieht die
+Treffer dieses Eintrags und des Eintrags (11) ab.
+
+**UNGEKLÄRT:** ob die Klammer NUR `sessionStorage` meinte oder jeden Browser-Speicher im
+Artefakt. Sie nennt ausschliesslich `sessionStorage`. **Ein Name ist kein Text.**
+
+**WARUM DAS ZÄHLT:** Der Zuschnitt der Scheibe 11.5b hätte sich an ihr ausgerichtet. **Eine
+zitierte Regel ohne Text sieht bei jedem Lesen wie eine geltende aus.**
+
+**DIE ARCHIV-DATEI WIRD NICHT ANGEFASST** — sie ist ein Zeitdokument.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
+
+**(11) DER AUSSCHLUSS VON localStorage/sessionStorage IST AUF DEN A/B-FALL FORMULIERT**
+(aufgenommen 2026-09-14).
+
+**DIE FUNDSTELLE:** `docs/claude-history/phase-9-ab-testing.md`, „Grundsatzentscheidungen (heute
+entschieden, Bau in 9b/9c)", erster Spiegelstrich. Der Ausschluss im Wortlaut: „AUSGESCHLOSSEN:
+localStorage/sessionStorage (fallen rechtlich unter dieselbe TTDSG-§25-Logik UND sind client-seitig,
+also ZU SPÄT für einen Server-Split — das HTML ist längst raus)" (GELESEN, CC, 2026-09-14).
+
+**ER STEHT ALS UNTERPUNKT DER STICKINESS-ENTSCHEIDUNG** — der Spiegelstrich beginnt mit
+„STICKINESS = FIRST-PARTY SESSION-COOKIE auf der Serving-Domain", und der Ausschluss steht dort in
+der Liste der verworfenen Mittel für genau diese Stickiness, neben dem IP/UA-Hash.
+
+**SEINE ZWEI GRÜNDE TRAGEN UNGLEICH WEIT:**
+- „ZU SPÄT für einen Server-Split" ist wörtlich an den SPLIT gebunden.
+- „dieselbe TTDSG-§25-Logik" ist ein VERGLEICH zwischen Cookie und Speicher: Beide fallen unter
+  dieselbe Logik. Ein Verbot von Browser-Speicher spricht der Satz nicht aus.
+
+**JENE STELLE TRÄGT IHRE EIGENE GRENZE:** „KEINE Rechtsberatung", „NICHT risikofrei", „Vor dem
+öffentlichen Launch anwaltlich klären". Wörtlich bezieht sich diese Grenze auf die Einstufung des
+VARIANTEN-COOKIES als „unbedingt erforderlich".
+
+**FÜR DIE TTDSG-AUSSAGE ÜBER localStorage/sessionStorage SELBST IST KEINE QUELLE UND KEINE
+PROVENIENZ GENANNT** — sie steht als Setzung da. Die Überschrift trägt „heute entschieden"; wer
+entschieden hat, nennt der Spiegelstrich nicht.
+
+**GEMELDET ALS BEFUND ÜBER DIE REICHWEITE, NICHT ALS AUFHEBUNG:** Die Entscheidung für das
+A/B-Cookie bleibt unberührt, und die Archiv-Datei wird nicht angefasst.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
 
 ## 10. Hebungs-Kandidaten
 

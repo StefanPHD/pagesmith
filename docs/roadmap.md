@@ -1987,6 +1987,127 @@ liegen beide hier und finden einander.
       nachgezogen, und in docs/arbeitsweise.md, Abschnitt "4a. HARTE RAHMENBEDINGUNGEN",
       steht statt 16.2.12 nun 16.3.5. DER ZWEITE VOLLZUG JENES ÄNDERUNGSANTRAGS — die
       Projektanweisung — LIEGT BEIM OWNER UND STEHT AUS.
+- [ ] Phase 11.11 — Import-Bereinigung: eine EIGENE Zeile, angelegt am 2026-09-14. Sie
+      GEHÖRT NICHT zur laufenden Phase 11.5 und ist kein Teil ihrer Scheiben.
+
+      DIE NUMMER IST GEWÄHLT, WEIL SIE FREI IST (Präzedenz: 4.5, 10.5, 11.5, 11.10):
+      KEINE bestehende Nummer wird verschoben. Dass 11.11 im Bestand unbelegt war, ist
+      GEMESSEN am Repo (CC, 2026-09-14, `git grep "11\.11"` über alle verfolgten
+      Dateien — kein Treffer; Positivkontrolle: dieselbe Suche nach `11\.10` trifft).
+
+      (a) DER GEGENSTAND: Beim Import fremden HTML erkennt Pagesmith bekannte
+      Tracking-Pixel und Einwilligungs-Werkzeuge, ZEIGT sie dem Betreiber und bietet je
+      Fundstück eine Handlung an. ES WIRD NICHTS AUTOMATISCH ENTFERNT.
+
+      (b) DAS PROBLEM — drei Befunde am Bestand:
+      · EIN HARTCODIERTES TRACKING-SCRIPT IM IMPORTIERTEN TEXT LÄUFT AM
+        EINWILLIGUNGS-GATE VORBEI. Das Gate ist eine Funktion, die nur UNSER Code fragt:
+        `__psConsent` und `__psConsentAll` werden im Produktivcode allein aus
+        `src/lib/analytics/pageview-emitter.ts` und `src/lib/tracking/meta.ts` gerufen.
+        `generateFunctional` (`src/lib/generate.ts`) trägt keinen Aufruf, der ein
+        Element entfernt; fremde `<script>`-Elemente gehen also in den ausgelieferten
+        Text mit. Ein Script, das das Gate nicht fragt, hängt nicht am Hook — auch nicht
+        bei eingeschaltetem Einwilligungs-Schalter der Phase 11.5.
+        (GEMESSEN am Code, CC, 2026-09-14. Dass ein solches Script dann tatsächlich
+        sendet, ist eine ABLEITUNG und an keiner Seite gemessen.)
+      · BEI EINEM FREMDEN META-PIXEL STELLT SICH UNSERE ADBLOCKER-MESSUNG AB — gebaut als
+        `foreign`-Zweig im Bootstrap von `__psMetaInit` (`src/lib/tracking/meta.ts`).
+        WAS ER TUT (GEMESSEN am Code, CC, 2026-09-14): Findet der Bootstrap beim ersten
+        eingewilligten Feuern schon ein `fbq` vor, ruft er `__psPixelResolve("foreign")`
+        — gepufferte und alle späteren Bestätigungen werden verworfen —, schreibt eine
+        Warnung in die BROWSER-KONSOLE und erzeugt kein eigenes Script-Element. Das
+        anschliessende `fbq("init", …)` läuft trotzdem, also gegen das vorgefundene
+        `fbq`. Er entfernt nichts.
+        SEINE BEGRÜNDUNG IM WORTLAUT des Kommentars, umlautfrei wie im Quelltext: "Blind
+        bestaetigen ist VERWORFEN: auch das Fremd-Snippet legt synchron einen Stub an,
+        der Frueh-Ausstieg greift also MIT und OHNE Blocker — blind bestaetigen wuerde
+        einen echten Blocker verstecken. Lieber uninformativ als irrefuehrend."
+        Was die Verlustraten-Kachel in diesem Fall anzeigt, ist hier NICHT nachgesehen.
+      · EIN SCRIPT IM IMPORTIERTEN TEXT, DAS UNSEREN HOOK SETZT, ÜBERLEBT JEDES
+        NEU-VERÖFFENTLICHEN UND SIEHT AUS WIE EIN DEFEKT: Vorrat (13) der Phase 11.5
+        (heute in docs/aktiver-stand.md). Der Beleg dort ist ein Vorfall vom 2026-09-14
+        mit einem Test-Script, das der Owner selbst eingesetzt hatte — ein Nachbild
+        eines fremden CMP aus der Scheibe 11.5b. OWNER-ANGABE; kein Fall auf einer
+        fremden Seite.
+        DER ZEIGER NENNT DIE PHASE UND NICHT NUR DEN PFAD: Die Standdatei wird am
+        Phasenende umbenannt, und über die Phasennummer löst er dann über ihr Archiv auf
+        (docs/immer-beachten.md, "EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE
+        SIE KEINE", Gegenform (2)). Dasselbe gilt für Vorrat (3) unter (d) und (f).
+
+      (c) DIE ENTSCHEIDUNG — ERKENNEN UND MELDEN, ENTFERNEN NUR AUF KLICK DES BETREIBERS
+      (OWNER-ENTSCHEIDUNG 2026-09-14, auf Vorschlag des Architekten). Drei Gründe, in
+      dieser Reihenfolge:
+      · DIE ROADMAP-ZEILE 11.5 SICHERT ZU, DASS EIN FREMDES CMP EINBINDBAR BLEIBT. Dort
+        im Wortlaut: "ENTSCHIEDEN (Owner 2026-08-12): ein eigener Dialog wird gebaut, ein
+        fremder bleibt einbindbar." — und unter ihren Bindungen: "der eigene Dialog UND
+        ein fremdes CMP bedienen DENSELBEN Hook."
+        AUF DIE SEITE KOMMT EIN FREMDES CMP HEUTE NUR ALS SCRIPT IM IMPORTIERTEN TEXT: Die
+        Projekt-Einstellungen tragen kein Feld für fremden Code (`ProjectSettings` führt
+        `pixels`, `capi`, `hosting` und `consent`), und die Server-Injektion fügt nur
+        unsere eigenen Bausteine ein (GEMESSEN am Code, CC, 2026-09-14). Wer es beim
+        Import entfernt, schafft das zugesicherte Merkmal ab.
+      · WIR SIND WERKZEUG, NICHT AUFSICHT. Der Satz steht in docs/arbeitsweise.md,
+        Abschnitt "4b. DIE TRAGENDEN ENTSCHEIDUNGEN", Unterabschnitt "Haltung"; die
+        verbindliche Fassung an der Roadmap-Zeile 11.5 lautet "Wir weisen hin, wir
+        erzwingen nicht." Stilles Entfernen fremden Codes ist das Gegenteil.
+      · DER PRÄZEDENZFALL STEHT IM CODE: Der `foreign`-Zweig unter (b) erkennt, meldet und
+        stellt die Messung ab — er entfernt nichts. Seine Begründung endet mit "Lieber
+        uninformativ als irrefuehrend."
+        DIE GRENZE DES PRÄZEDENZFALLS GEHÖRT DAZU, sonst trägt er mehr, als er kann: Er
+        erkennt zur LAUFZEIT im Browser des Besuchers, nicht beim Import, und er meldet in
+        die Konsole, nicht dem Betreiber. Er belegt die HALTUNG — benennen statt
+        entfernen —, nicht die Bauform dieser Phase.
+
+      (d) DIE UNTERSCHEIDUNG, UND SIE IST DER KERN DIESER ZEILE: PIXEL UND CMP SIND NICHT
+      DIESELBE KLASSE.
+      · EIN FREMDES TRACKING-PIXEL KONKURRIERT MIT UNSEREM FAN-OUT: Es umgeht das Gate
+        (erster Befund unter (b)), beim Meta-Pixel stellt es zusätzlich die
+        Adblocker-Messung ab (zweiter Befund), und es kann Ereignisse doppelt zählen —
+        Letzteres ist eine ABLEITUNG, nicht gemessen. HIER IST ENTFERNEN MEIST DIE
+        RICHTIGE HANDLUNG, UND DER BETREIBER ENTSCHEIDET.
+      · EIN FREMDES CMP IST EIN ZUGESICHERTES MERKMAL. Entfernen wäre ein Bruch der
+        Zusicherung unter (c). Die nützlichere Handlung ist ein HINWEIS, WIE es
+        anzubinden ist — genau die Lücke aus Vorrat (3) der Phase 11.5 ("DER HOOK IST AN
+        KEINER FÜR EINEN BETREIBER ERREICHBAREN STELLE BESCHRIEBEN"): Ein fremdes CMP kann
+        ihn also nicht kennen.
+
+      (e) ZWEI DINGE, DIE DIESE ZEILE ALS OFFEN AUSWEIST, statt sie zu entscheiden:
+      · WORAN ERKANNT WIRD. Eine Erkennung an Namen und Adressen ist eine Liste, die
+        altert, und ein Fehltreffer bietet fremden Code zum Entfernen an, den niemand
+        gemeint hat — ein Klick darauf entfernt ihn. DAS ENTSCHEIDET DER ZUSCHNITT,
+        nicht diese Zeile.
+      · WANN SIE LÄUFT — beim Import, beim Speichern oder beim Veröffentlichen. Am Bestand
+        ist zu klären, welcher Weg fremdes HTML überhaupt annimmt und wo eine Erkennung
+        sitzen kann, ohne den Text zu verändern. IN DER RUNDE, DIE DIESE ZEILE ANLEGT,
+        NICHT ERHOBEN.
+
+      (f) WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT: automatisches Entfernen ohne Zutun des
+      Betreibers · jede Veränderung des gespeicherten importierten Texts ohne seinen
+      Klick · eine Erkennung, die einen Fund STILL behandelt · die
+      Betreiber-Dokumentation des Hooks selbst — Vorrat (3) der Phase 11.5; diese Zeile
+      ZEIGT auf sie und löst sie nicht ein.
+
+      (g) DIE NUMMER TRÄGT KEINE REIHENFOLGE, wie bei 11.10 (dort Punkt (d)). Wann diese
+      Phase gebaut wird, ist hier NICHT entschieden.
+
+      WAS DIESE ZEILE AUSDRÜCKLICH NICHT TUT: Sie schneidet nichts zu, sie terminiert
+      nichts, und sie legt keine Erkennungs-Liste fest.
+
+      (h) PROVENIENZ — je Angabe:
+      · Die Anforderung: OWNER 2026-09-14. Die Korrektur von "automatisch entfernen" auf
+        "erkennen und melden": ARCHITEKT 2026-09-14, vom Owner angenommen. Die
+        Entscheidung unter (c): OWNER-ENTSCHEIDUNG 2026-09-14, auf Vorschlag des
+        Architekten.
+      · Die Freiheit der Nummer, die Aufrufer des Gates, das Fehlen eines entfernenden
+        Aufrufs in `generateFunctional`, das Verhalten des `foreign`-Zweigs und die
+        Mitglieder von `ProjectSettings`: GEMESSEN am Repo bzw. am Code (CC, 2026-09-14).
+      · Der Kommentar-Wortlaut des `foreign`-Zweigs, die Zusicherung und die Haltung an
+        der Roadmap-Zeile 11.5, der Haltungs-Satz in docs/arbeitsweise.md sowie Vorrat
+        (3) und (13) der Phase 11.5: GELESEN (CC, 2026-09-14) an den genannten Stellen.
+      · Der Vorfall hinter Vorrat (13): OWNER-ANGABE vom 2026-09-14.
+      · Dass ein fremdes Script tatsächlich sendet und dass ein fremdes Pixel doppelt
+        zählt: ABLEITUNGEN, keine Messungen. "Hier ist Entfernen meist die richtige
+        Handlung" unter (d): ARCHITEKT-ANGABE 2026-09-14, keine Messung.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

@@ -635,6 +635,127 @@ Abschluss-Runde). Gates, Vergleichswerte und Mutationen GEMESSEN am Lauf der Bau
 2026-09-14) und für diesen Vermerk aus deren Protokoll übernommen, nicht erneut gefahren. Der
 Live-Nachweis und der Vorfall samt Ursache: OWNER-ANGABEN vom 2026-09-14.
 
+### VERMERK 4 — Scheibe 11.5d, abgeschlossen 2026-09-14
+
+**GEGENSTAND:** Bei eingeschaltetem Schalter zeigt eine Leiste am unteren Rand der publizierten Seite einen
+Sachtext und zwei gleichwertige Knöpfe, die über `write()` schreiben; der Schalter trägt dafür einen eigenen
+Schlüssel mit String-Werten, und ein unbekannter Wert verweigert das Veröffentlichen.
+
+**BAU-COMMIT — ES IST EINER, NICHT ZWEI:** `7516bce` — `feat(consent): die Einwilligungs-Leiste (11.5d)`, zehn
+Dateien, 958 Zeilen hinzu, 100 entfernt: neu `src/lib/tracking/consent-bar.ts` und
+`src/lib/tracking/consent-bar.test.ts`, geändert `actions.ts`, `publish.test.ts`, `CodeImporter.tsx`,
+`PublishView.tsx`, `pageview-emitter.ts`, `pageview-emitter.resend.test.ts`, `settings.ts` und
+`settings.test.ts`. Der Nachtrag — der freigegebene Sachtext und L13 — ist VOR dem Commit eingebaut worden und
+steckt im selben Commit; einen eigenen Nachtrags-Commit gibt es nicht. `consent.ts`, `consent-wire.ts`,
+`ingest.ts`, `consent-setter.ts` und `consent-store.ts` sind NICHT im Commit, eine Migration auch nicht
+(GEMESSEN am Repo, CC, 2026-09-14).
+
+**DIE VIER GATES, ZWEI LÄUFE** (GEMESSEN am Lauf, CC, 2026-09-14):
+- **BAU.** Vorher-Wert: `npm run test` auf `170cede` vor der ersten Änderung — 79 Dateien, 1690 Tests, grün;
+  `tsc`, `lint` und `build` sind vorher NICHT gefahren. Nachher:
+  - `tsc --noEmit` exit 0 — ZUERST gefahren; vor den Test-Anpassungen meldete er genau eine Stelle,
+    `settings.test.ts` mit dem gestrichenen `setConsentGate`;
+  - `lint` 0 errors / 1 warning (dieselbe vorbestehende in `consent.test.ts`);
+  - `vitest run` **80 Dateien, 1708 Tests** (+1 Datei; +18 = 20 neue Tests S1–S3, P1, P2, P2b, P3, L0–L12,
+    minus T6 und T7, die ersetzt sind);
+  - `build` exit 0.
+  Nach einer Kommentar-Berichtigung in `injectPageViewEmitter`, die NACH den Mutationen kam, sind alle vier
+  erneut gefahren, mit demselben Ergebnis.
+- **NACHTRAG (Sachtext).** Vorher 80 Dateien, 1708 Tests (Ergebnis des Bau-Laufs). Nachher `tsc` exit 0 ·
+  `lint` 0 errors / 1 warning · `vitest run` **80 Dateien, 1709 Tests** (+1: L13) · `build` exit 0. Kein
+  bestehender Test fiel durch den Einbau; L5 zählt nur die Knöpfe, und L3 blieb grün, weil der Satz kein `<`
+  trägt.
+
+**DIE ZWEI VERGLEICHSWERTE — beide VOR jeder Änderung auf `170cede` erhoben:**
+- **T1 und N8** grün im vollen Lauf und einzeln im Verbose-Lauf von `consent-setter.test.ts` und
+  `pageview-emitter.resend.test.ts`.
+- **DER AUS-WERT DES PAGEVIEW-ERZEUGERS:** `buildPageViewScript("tk_baseline_11_5c", false)` — **787 Bytes**,
+  sha256 **`3d759e3cd195f8b47fe50ba3656b5f760911392231e5b3ca91dc1fa9015d3a08`**. **ZWEI INSTRUMENTE, EIN WERT:**
+  `node:crypto` in einem Wegwerf-Lauf ausserhalb des Repos und `wc -c`/`sha256sum` über das gespeicherte
+  Artefakt. Er entspricht dem Wert aus VERMERK 3; keine Abweichung.
+
+**DIE VIER PFLICHT-MUTATIONEN, FÜNF LÄUFE**
+(ii-a) und (ii-b) sind das Teilen EINER Probe entlang zweier Achsen, keine zwei eigenen Proben — eine Mutation, die
+zwei Achsen gleichzeitig bewegt, sagt nicht, welche gedeckt ist (docs/immer-beachten.md, „MUTATIONSPROBEN UND
+LIVE-TEST-INSTRUMENTE — NEUN LEKTIONEN", Lektion (h)).
+— Vorhersage je VOR dem Lauf gegen den aktuellen Bestand aktualisiert; jeder
+Lauf über die ganze Suite (80 Dateien, 1708 Tests — VOR dem Nachtrag, L13 gab es noch nicht). Rücknahme je
+per `sha256sum -c` über die vier Zieldateien, alle `OK`; bei der damals unverfolgten `consent-bar.ts`
+zusätzlich inhaltlich über die Wiederkehr der entfernten Zeile (GEMESSEN am Lauf, CC, 2026-09-14):
+- **(i) Leisten-Zweig invertiert.** Vorhersage als KLASSE „Leiste im falschen Zweig" — bei AUS trägt der Text
+  sie, bei AN fehlt sie; N8, R3 und die AUS-Wirkungstests bleiben grün. **IST: 15 rot, alle in der Klasse** —
+  T1, L0, L1, L2, L5 bis L12, P2, P2b, P3. DECKUNG: „expected 16179 to be 14160" an T1, sonst „to have a
+  length of 1 but got +0", „not to contain `id="__ps_clb"`", „expected -1 to be greater than 0" und „keine
+  Leiste"; der TypeError in L12 stammt aus `scripts[-1]` — derselbe fehlende Block. N8, R3 und die
+  AUS-Wirkungstests blieben grün.
+- **(ii-a) Hook-Bedingung entfernt.** Vorhersage GENAU L6. **IST: GENAU L6** („to have a length of +0 but got
+  1"). DECKUNG.
+- **(ii-b) `read()`-Bedingung entfernt.** Vorhersage GENAU L8. **IST: GENAU L8**, dieselbe Meldung. DECKUNG.
+- **DIE TRENNUNG VON (ii-a) UND (ii-b) IST SAUBER:** je eine Mutation, je ein Test, keine Überschneidung.
+  (ii-b) ist auf dem produktiven Pfad eine äquivalente Mutante — die Wiederherstellung belegt den Hook, sobald
+  `read()` „decided" liefert —, und nur der konstruierte L8 fängt sie; so steht es an L8 und am Docblock von
+  `buildConsentBarScript`.
+- **(iii) Verweigerung in `publishProject` übergangen.** Vorhersage GENAU P1. **IST: GENAU P1** (ok:true statt
+  ok:false). DECKUNG.
+- **(iv) Term in `settingsEqual` entfernt.** Vorhersage GENAU S3. **IST: GENAU S3** („expected true to be
+  false"). DECKUNG.
+
+**KEINE BLIEB GRÜN, KEINE TRAF EINEN TEST AUSSERHALB IHRER VORHERSAGE, KEINE WAR EINE KASKADE.**
+
+**DER LIVE-NACHWEIS vom 2026-09-14 — ALLE WERTE SIND OWNER-ANGABEN, NICHT VON CC GEMESSEN.** An ZWEI vom Owner
+bereitgestellten realen Seiten ausserhalb des Repos:
+1. **Schalter AUS:** genau EIN POST beim Laden; der Quelltext ist **BYTE-IDENTISCH** zur Vorher-Kopie.
+   **NACHGEMESSEN an den vier gespeicherten Quelltexten — ARCHITEKT-ANGABE (2026-09-14), am Repo nicht
+   prüfbar:** Seite 1 bei 101 403 Bytes, Seite 2 bei 164 331 Bytes, je gleiche Prüfsumme vor und nach dem
+   Deploy; in beiden steht ausschliesslich die PageView-Kennung, keine der neuen.
+2. **Schalter AN, keine Entscheidung:** Die Leiste erscheint, **NULL POST**.
+3. **„Ablehnen":** Die Leiste schliesst, der Zustand ist gespeichert, null POST auch nach dem Neuladen.
+4. **„Alle akzeptieren":** Die Leiste schliesst, der Seitenaufruf geht SOFORT hinaus, eine Conversion kommt beim
+   Anbieter an. Nach dem Neuladen bleibt die Zustimmung, die Leiste erscheint nicht erneut, und der
+   Seitenaufruf feuert beim Laden.
+5. **DARSTELLUNG — DER KERN DIESER SCHEIBE:** Die Leiste sieht auf BEIDEN Seiten gleich aus — auf einer mit über
+   700 `!important`-Regeln und auf einer mit eigenem Stapel und dunklem Thema (auch diese Beschreibungen der
+   Seiten sind OWNER-ANGABEN). Sie ist vollständig sichtbar, beide Knöpfe sind erreichbar und per Tabulator
+   ansteuerbar mit sichtbarem Fokus, die Seite bleibt scrollbar, der Fussbereich erreichbar.
+6. **Kein Konsolenfehler, keine Blockade durch eine Inhalts-Sicherheitsregel**, auch im privaten Fenster.
+7. **DIE ALTBESTANDS-LESART AUS ENTSCHEIDUNG (15) IST LIVE BELEGT:** Ein Projekt mit `gate: true` zeigt nach dem
+   Neu-Veröffentlichen die Leiste. Entscheidung (15) führte als am Repo nicht feststellbar, OB es solche Zeilen
+   gibt, und der Zuschnitt führte den Schritt nur als „falls". Beides ist damit beantwortet — für EIN Projekt.
+
+**WAS DIE OWNER-ANGABEN NICHT NENNEN** — Punkte des Zuschnitts, zu denen kein Wert vorliegt. Das ist keine Aussage
+über ein Ergebnis, sondern über eine fehlende Angabe:
+- die Vorbedingungen A/B-Betrieb, Testmodus-Zustand und die Suche nach einem Script, das den Hook setzt;
+- die DOM-Reihenfolge `__ps_cnr` < `__ps_clb` < `__ps_cns`;
+- `elementFromPoint`, die berechneten Werte von `overflow` und die berechneten Stile der Knöpfe als Werte — die
+  Angaben unter 5 sind Augenschein;
+- Rechteck und Gewicht beider Knöpfe im Vergleich;
+- ob eine der Seiten ein fremdes Einwilligungs-Werkzeug trägt und was dort geschah;
+- der korrigierte UI-Text am Schalter und der Sachtext in der Leiste.
+
+**DIE GRENZEN, DIE DIESER NACHWEIS NICHT ÜBERSCHREITET:**
+- ZWEI Seiten, nicht drei. Was eine weitere mitbringt, bleibt ungemessen.
+- Ein Browser, eine Fenstergrösse. Kleine Bildschirme sind nicht geprüft.
+- Der Fall „write() gibt false" ist live nicht herstellbar; die Leiste schliesst dann trotzdem, und auf der
+  Live-Seite gibt es keinen Fehlerkanal.
+- Browser ohne Schatten-Wurzel sind ungemessen — dort erscheint keine Leiste, und bei AN geht nichts hinaus.
+- Der Export-Pfad bleibt ungedeckt (Vorrat (4)).
+- Die Verweigerung eines unbekannten Werts ist über die Oberfläche nicht herstellbar und live nicht geprüft;
+  gehalten wird sie von P1.
+
+**ABWEICHUNGEN VOM FREIGEGEBENEN PLAN, im Bau deklariert:** Der Sachtext war im ersten Bau NICHT enthalten, weil
+E3 auf Freigabe wartete, und kam im Nachtrag · die Meldung `CONSENT_DIALOG_UNKNOWN_MESSAGE`, der Hinweis bei
+einem unbekannten Wert und die zwei zugänglichen Namen standen nicht unter E4 · der Kommentar am Typ `consent`
+in `settings.ts` ist richtiggestellt („Kein Leck, kein neuer Schaden" trägt seit der Leiste nicht mehr,
+Entscheidung (17)) · L4 prüft an einem eigenen Dokument mit Mappings-Block, damit die Positivkontrolle für
+`pagesmith-mappings` trifft · der Parameter von `makeButton` heisst im Nachtrag `label`, damit er die neue
+Variable `text` nicht verschattet · **der Auslöser von Vorrat (7) ist für `actions.ts` und `publish.test.ts`
+eingetreten, die veralteten Zwei-Argument-Kommentare dort sind NICHT nachgezogen** · `publish.test.ts` und
+`PublishView.tsx` trugen im Arbeitsbaum durchgehend CRLF (Vorrat (8)); am committeten Objekt ist CR = 0.
+
+PROVENIENZ: Commit, Dateiliste, Gates, Vergleichswerte und Mutationen GEMESSEN am Repo bzw. am Lauf (CC,
+2026-09-14). Der Live-Nachweis: OWNER-ANGABEN vom 2026-09-14; die Byte-Messung an den vier Quelltexten:
+ARCHITEKT-ANGABE vom 2026-09-14, am Repo nicht prüfbar.
+
 ## 8. Entscheidungen, die über ihre Scheibe hinaus binden
 
 Hier steht, was in einer Scheibe entschieden wurde und ÜBER SIE HINAUS bindet — je Eintrag die
@@ -2188,188 +2309,70 @@ Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 20
 
 ## 15. Die Einwilligungs-Leiste — Zuschnitt der Scheibe 11.5d
 
-**WAS DIESE SCHEIBE IST:** die vierte dieser Phase. Sie bringt den ersten SICHTBAREN Baustein in den
-ausgelieferten Text — eine Einwilligungs-Leiste am unteren Rand mit zwei gleichwertigen Knöpfen — und
-stellt den Schalter dafür auf einen Wert um, der mehr als zwei Zustände tragen kann. Das Modal gehört
-nicht dazu.
+**VERDICHTET AM 2026-09-14, nach dem Bau-Commit `7516bce` und dem bestätigten Live-Test.** Sein Protokoll
+steht als VERMERK 4 in Abschnitt 7; seine Gestalt-Entscheidungen standen schon vor dem Bau als (13) und (15)
+bis (19) in Abschnitt 8. **WIE DIE ABSCHNITTE 13 UND 14 IST DIESER NICHT GESCHLOSSEN: EIN BLOCK BLEIBT
+STEHEN** — der Ausschluss darunter, WÖRTLICH und in dieser Runde nicht in einen anderen Abschnitt verschoben.
+Alles übrige ist abgelaufen — s. die Liste „Vollzogen".
 
-**WAS GEBAUT WIRD — FÜNF STÜCKE:**
-- **DER SCHALTER MIT SEINEN WERTEN** nach Entscheidung (15), samt Bedienelement. Das heutige
-  Kontrollkästchen in `src/components/PublishView.tsx` trägt nicht mehr als zwei Zustände, und mit der
-  Scheibe 11.5d-2 kommt ein dritter. Angeboten werden in dieser Scheibe nur die Werte, deren Block
-  gebaut ist (Entscheidung (16)).
-- **DIE VERWEIGERUNG BEIM VERÖFFENTLICHEN** nach Entscheidung (16).
-- **DER DIALOG-BLOCK ALS LEISTE AM UNTEREN RAND**, in der Verkettung von `injectPageViewEmitter`
-  zwischen Wiederherstellung und Setzer nach Entscheidung (13).
-- **ZWEI GLEICHWERTIGE KNÖPFE:** „Alle akzeptieren" und „Ablehnen".
-- **DIE KORREKTUR DES UI-TEXTS** am Schalter (s. unten).
+**STEHEN GEBLIEBEN, UND DER GRUND:** Der Ausschluss eines Stylesheets vom App-Host trägt eine
+ARCHITEKT-ENTSCHEIDUNG mit Begründung, die über diese Scheibe hinaus bindet — jede Scheibe, die Stil in den
+ausgelieferten Text bringt, ausdrücklich 11.5d-2 —, und er steht an keinem anderen Ort (GEMESSEN am Repo, CC,
+2026-09-14: `git grep -i "Stylesheet vom App-Host"` über `src/`, `docs/roadmap.md` und diese Datei trifft nur
+diese Stelle). Ob er nach Abschnitt 8 gehört, ist in dieser Runde NICHT entschieden.
 
-**DIE GESTALT-ENTSCHEIDUNGEN STEHEN NICHT HIER, SONDERN IN ABSCHNITT 8** — die Einträge (13) und (15)
-bis (18). **WARUM DORT UND NICHT HIER, und der Satz gehört dazu, sonst zieht die nächste Runde sie „der
-Nähe halber" hierher:** Sie binden ÜBER diese Scheibe hinaus; jede weitere Scheibe dieser Phase erbt
-sie. Stünden sie im Zuschnitt, müssten sie beim Abschluss der Scheibe umziehen — eine Runde für nichts,
-mit dem Risiko, dass dabei eine liegenbleibt.
-(Der Satz ist dem Zuschnitt der Scheibe 11.5b entnommen, Commit `928172e`, der ihn seinerseits aus dem
-Zuschnitt der Scheibe 11.5a übernommen hat; in Abschnitt 13 steht seit dessen Verdichtung nur noch sein
-Titel.)
-UNVERÄNDERT BINDEN DAZU: (3) und (13) für die Prüfung auf den Hook, (4) für die Schlüssel, (11) für
-das, was `write()` tut, (12) für die Bezeichnung, (14) für die Editor-Vorschau.
-
-**WANN DIE LEISTE ERSCHEINT — ZWEI BEDINGUNGEN, BEIDE MÜSSEN GELTEN:** `read()` liefert „nie gefragt",
-UND der Hook ist noch ungesetzt.
-- **DER UNGESETZTE HOOK** ist dieselbe Prüfung wie in Entscheidung (3) und (13):
-  `window.pagesmithConsent !== undefined` in `buildConsentDenyScript` und `buildConsentRestoreScript`
-  (GEMESSEN am Code, CC, 2026-09-14). An dieser Stelle der Verkettung ist der Hook genau dann gesetzt,
-  wenn (i) ein Script VOR unseren Blöcken ihn gesetzt hat — ein fremdes CMP oder jedes andere Script im
-  importierten Text (Vorrat (13)) —, oder wenn (ii) die Wiederherstellung eine gespeicherte Entscheidung
-  eingespielt hat. Er deckt damit BEIDE Fälle, in denen die Leiste nicht erscheinen darf, und
-  unterscheidet (i) nicht von (ii).
-- **`read()` MIT „NIE GEFRAGT"** sagt etwas über den SPEICHER, nicht über ein fremdes CMP (Entscheidung
-  (13)). Es deckt den Fall (ii) ein zweites Mal, unabhängig davon, ob die Wiederherstellung den Hook
-  gesetzt hat. Direkt hinter der Wiederherstellung folgt „nie gefragt" bereits aus dem ungesetzten Hook,
-  weil sie ihn belegt, sobald `read()` „decided" liefert (ABLEITUNG aus `buildConsentRestoreScript`,
-  nicht gelaufen).
-- **WAS KEINE VON BEIDEN DECKT:**
-  - ein fremdes CMP, das den Hook ASYNCHRON nach dem Seitenaufbau setzt (Vorrat (2)) — die Leiste
-    erscheint trotzdem;
-  - ein fremdes CMP, das unseren Hook gar nicht setzt — die Leiste erscheint NEBEN seinem Banner. Dass
-    ein fremdes CMP den Hook nicht kennen kann, folgt aus Vorrat (3);
-  - ein Speicher, dessen Zugriff wirft: `read()` liefert „nie gefragt", die Leiste erscheint, und
-    `write()` gibt `false` (Entscheidung (13), DIE GRENZEN). Was die Leiste dann tut, ist nicht
-    entschieden;
-  - ein gespeicherter Wert, der ungültig geworden ist — er heisst „nie gefragt", und die Leiste öffnet
-    erneut. Das ist gewollt und im Docblock von `buildConsentRestoreScript` festgehalten („Das ist laut
-    und nicht still");
-  - eine Entscheidung auf einer anderen Adresse oder in einem anderen Browser — der Speicher ist an den
-    Origin gebunden (Entscheidung (7); eine Eigenschaft der Plattform, am Repo nicht messbar);
-  - der Export-Pfad — dort entsteht kein Block (Vorrat (4)).
-
-**DIE KNÖPFE RUFEN DIE SCHNITTSTELLE, NICHT DEN SPEICHER.** „Alle akzeptieren" ruft `write()` mit allen
-sechs Schlüsseln, „Ablehnen" mit einer leeren Liste. **KEIN ZWEITER SCHREIBWEG**, kein Zugriff am
-Speicher vorbei.
-- Die sechs Schlüssel stammen aus der Ableitung aus Entscheidung (4), nie aus einer zweiten Liste.
-- Was ein erfolgreiches `write()` darüber hinaus tut, ist gebaut und wird hier nicht neu entschieden: Es
-  setzt den Hook der laufenden Seite (Entscheidung (11)) und holt bei `analytics` den Seitenaufruf nach
-  (VERMERK 3). `write([])` lehnt alle sechs ab, auch `analytics` (Entscheidung (12)).
-- Die Schnittstelle existiert nur bei eingeschaltetem Schalter; ihr Block steht VOR der Leiste
-  (`CONSENT_STORE_API` in `src/lib/tracking/consent-store.ts`, GEMESSEN am Code, CC, 2026-09-14).
-
-**DIE BEZEICHNUNG:** „Ablehnen", nicht „Nur Notwendige" — Entscheidung (12).
-
-**DER UI-TEXT AM SCHALTER WIRD KORRIGIERT.** Er lautet heute in `src/components/PublishView.tsx`, unter
-„Vor dem ersten Ereignis nichts senden" (GELESEN am Code, CC, 2026-09-14): „Die veröffentlichte Seite
-setzt beim Laden ein Urteil, das alle Ziele ablehnt — bis ein Einwilligungs-Dialog oder ein eigenes
-Consent-Management etwas anderes sagt. Ein vorhandenes eigenes Consent-Management wird nicht
-überschrieben."
-WARUM ER IN DIE IRRE FÜHRT: Der letzte Satz trifft am Code nur ein CMP, das UNSEREN Hook synchron VOR
-unseren Blöcken setzt — nur dann kehren Wiederherstellung und Setzer an ihrer Prüfung zurück. Ein
-fremdes CMP kann den Hook aber nicht kennen, weil er an keiner für einen Betreiber erreichbaren Stelle
-beschrieben ist (Vorrat (3)). Einem solchen CMP wird nichts überschrieben, weil es nichts gesetzt hat:
-Der Satz stimmt buchstäblich und verspricht eine Rücksicht, die nicht stattfindet. Unsere Leiste
-erscheint neben seinem Banner, und bei AUS gilt alles als erlaubt, unabhängig von seinem Urteil.
-**WIE DER NEUE TEXT LAUTET, ENTSCHEIDET DER BAU-PLAN**, nicht dieser Zuschnitt.
-
-**WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT:**
-- **das Center-Modal.** Es wird die Scheibe 11.5d-2 — OWNER-ENTSCHEIDUNG 2026-09-14, eine Angabe aus
-  dem Auftrag, am Repo nicht prüfbar. Entscheidung (12) bleibt in Wortlaut und Nummerierung unberührt;
-  das ist eine additive Verfeinerung ihrer Schnittfolge. Die Entscheidung steht als (19) in Abschnitt 8.
-- **Scroll-Sperre und Abdunkelung** — sie gehören zum Modal und sind der Grund für den Schnitt.
-- **Granularität und Widerruf** (11.5e) · **Sprache** (11.5f).
 - **ein Stylesheet vom App-Host** — ARCHITEKT-ENTSCHEIDUNG 2026-09-14, eine Angabe aus dem Auftrag: Es
   wäre der erste zentral änderbare Baustein im ausgelieferten Text, Hebel und Risiko zugleich, und
   verdient eine eigene Entscheidung. Am Bestand: Ein relativer Pfad auf dem Serving-Host erreicht keine
   Datei — `src/proxy.ts` lässt dort nur `/api/e` und `/api/capi` durch und schreibt alles andere auf
   `/app-serve` um (GEMESSEN am Code, CC, 2026-09-14).
-- **jede Änderung an** `consent.ts`, `consent-wire.ts` und `ingest.ts`.
-- **jede Änderung am Setzer, an der Wiederherstellung und am PageView-Erzeuger**, ausser einem nötigen
-  Argument.
-- **der Export-Pfad** (Vorrat (4)).
-- **eine Erkennung fremder CMPs** — das ist die Phase 11.11 (docs/roadmap.md).
-- **der Hinweis im Editor, dass der Dialog erst im veröffentlichten Text erscheint** — Entscheidung
-  (14): „DER HINWEIS IST NICHT TEIL VON 11.5d UND NOCH NICHT ZUGESCHNITTEN."
 
-**DIE TRAGENDEN INVARIANTEN:**
-- **Bei AUS ist der ausgelieferte Text byte-gleich** — gehalten von T1 (14 160 Bytes,
-  `src/lib/tracking/consent-setter.test.ts`) und N8 (787 Bytes,
-  `src/lib/analytics/pageview-emitter.resend.test.ts`).
-- **Der Setzer bleibt byte-gleich** — R3 (244 Bytes, `src/lib/tracking/consent-store.test.ts`).
-- **EINE Einfügestelle, EINE Konkatenation** in `injectPageViewEmitter` — dort am Kommentar „EINE
-  KONKATENATION, EINE EINFUEGESTELLE".
-- **DIE LEISTE KANN EINE SEITE NICHT UNBEDIENBAR MACHEN:** keine Scroll-Sperre, keine Abdunkelung, kein
-  Eingriff in `overflow` des Dokuments.
-- **Die Wächter aus Entscheidung (18)** — ohne sie ist keine der Invarianten darüber für den neuen Block
-  gehalten.
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-**DIE DEMOBARKEIT, Regression zuerst — an ZWEI vom Owner bereitgestellten realen Seiten AUSSERHALB des
-Repos, nicht an einer Testfixture.**
-Grundlage sind die fünfzehn Fragen der Aufklärung vom 2026-09-14. Die Aufklärung selbst steht in keiner
-Datei; die Fragen stehen deshalb hier im Wortlaut, geordnet. Was aus diesem Zuschnitt oder aus dem
-Bestand hinzukommt, ist mit **[NEU]** gekennzeichnet.
-**AM REPO NICHT FESTSTELLBAR** ist über die zwei Seiten: ihr HTML und CSS, feste Elemente am unteren
-Rand, eine CSP im Dokument, ein fremdes Einwilligungs-Werkzeug, ein Script, das den Hook setzt, das
-Vorhandensein von `</body>`, Mappings und Variante B. Nichts davon ist hier beziffert.
+Die Titel sind ohne Überschriften-Marke zitiert, damit eine Überschriften-Suche sie nicht trifft.
+Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 2026-09-14).
 
-VORBEDINGUNGEN — PFLICHT-STOPPS, vor dem ersten Schritt:
-1. VOR dem Deploy je Seite eine Kopie des ausgelieferten Quelltexts bei AUS sichern (docs/immer-beachten.md,
-   „EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS NICHT MEHR HERSTELLBAR").
-2. **[NEU]** Nach dem Deploy NEU VERÖFFENTLICHEN — der Block entsteht beim Veröffentlichen, ein Deploy
-   erreicht die Seite nicht (docs/immer-beachten.md, „EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM
-   DEPLOY").
-3. Den A/B-Betrieb feststellen und die ausgelieferte Variante bestimmen; den Testmodus-Zustand kennen
-   (docs/immer-beachten.md, „BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS RICHTIGE
-   GEMESSEN WIRD", Teil (e)).
-4. **[NEU]** Kein Script aus früheren Läufen im Text der Seite, das den Hook setzt (Vorrat (13), VERMERK 3).
-5. **[NEU]** Klicken und Neuladen im SELBEN Browser auf DERSELBEN Adresse — der Speicher ist
-   origin-gebunden (Entscheidung (7)).
-
-REGRESSION:
-6. **SCHALTER AUS, POSITIVKONTROLLE:** Ist der Quelltext byte-gleich zur Vorher-Kopie, ohne
-   Leisten-Element, mit genau einem POST auf `/api/e` beim Laden?
-
-LEISTE, LEERER SPEICHER:
-7. Erscheint die Leiste, und steht ihr Block im DOM zwischen `__ps_cnr` und `__ps_cns`?
-8. Steht der Netzwerk-Tab bei null POSTs, solange die Leiste offen ist?
-
-DARSTELLUNG UND BEDIENBARKEIT — je Seite, auf dem Desktop UND auf Handy-Breite:
-9. Ist die Leiste beim Laden ohne Scrollen sichtbar?
-10. Liefert `document.elementFromPoint` in der Mitte beider Knöpfe unsere Knöpfe — oder verdeckt ein
-    Seitenelement sie?
-11. Bleibt der letzte Inhalt der Seite, etwa ein Call-to-Action unten, bei offener Leiste erreichbar?
-12. **[NEU]** Sind die berechneten Werte von `overflow` an `html` und `body` bei AUS und bei offener Leiste
-    gleich?
-13. Weichen die berechneten Stile unserer Knöpfe unter dem CSS der Seite von den gebauten ab — und ändern
-    sich umgekehrt berechnete Stile von Elementen der Seite zwischen AUS und BAR?
-14. Tragen beide Knöpfe dieselbe Grösse und dasselbe Gewicht — gemessen an Rechteck und berechneten
-    Stilen, wegen „Ablehnen so einfach wie Zustimmen" (Roadmap-Zeile 11.5)?
-15. Lassen sich beide Knöpfe per Tastatur erreichen und auslösen?
-
-DIE ZWEI KNÖPFE:
-16. **„Ablehnen":** Liefert `read()` danach „decided" mit leerer `granted`-Liste? Bleibt der POST aus,
-    schliesst die Leiste — und bleibt sie nach dem Neuladen zu, ohne POST?
-17. **„Alle akzeptieren":** Geht genau ein nachgeholter POST hinaus, kommt eine Conversion beim Anbieter
-    an, und erscheint nach dem Neuladen keine Leiste?
-
-GRENZFÄLLE:
-18. Speicher gesperrt (etwa blockierte Website-Daten): Was tut die Leiste, wenn `write()` `false` liefert?
-19. Trägt die Antwort des Serving-Hosts einen CSP-Header, und meldet die Konsole CSP-Verstösse? Am Repo
-    setzt `src/app/app-serve/route.ts` keinen; ob die Plattform am Rand einen ergänzt oder das Dokument
-    selbst einen trägt, ist nicht feststellbar.
-20. Falls eine der Seiten ein fremdes Einwilligungs-Werkzeug trägt (OWNER-ANGABE, am Repo nicht prüfbar):
-    Erscheint dessen Banner? Ist `window.pagesmithConsent` nach dem Laden `undefined`? Erscheint unsere
-    Leiste zusätzlich? Laufen unsere Blöcke überhaupt — ist `typeof __psConsent` gleich `"function"` und
-    `typeof window.__psConsentStore` gleich `"object"`? Unsere eingefügten Script-Tags tragen nur ein
-    `id` (GEMESSEN am Code, CC, 2026-09-14).
-
-AUS DIESEM ZUSCHNITT:
-21. **[NEU]** Steht am Schalter der korrigierte UI-Text?
-22. **[NEU]** Falls ein Projekt noch den alten Schalter `gate: true` trägt: Zeigt das Bedienelement BAR,
-    und erscheint nach dem Neu-Veröffentlichen die Leiste?
-23. **[NEU]** Die Verweigerung aus Entscheidung (16) ist über das Bedienelement nicht herstellbar, weil es
-    nur gebaute Werte anbietet. Ohne Handeingriff in die Datenbank ist sie live nicht zu prüfen; ob und
-    wie, entscheidet der Bau-Plan.
-
-DIE GRENZE: **Was eine dritte Seite mitbringt, bleibt ungemessen.** Zwei Seiten tragen eine Aussage über
-diese zwei Seiten — nicht über fremde Seiten allgemein.
-
-**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.** Kein Plan, keine
-Namen für Neues, keine Gestalt der Leiste, kein UI-Wortlaut.
+- **"WAS DIESE SCHEIBE IST" und "WAS GEBAUT WIRD — FÜNF STÜCKE"** nannten Gegenstand und Umfang. **HEUTE
+  ERKENNBAR:** VERMERK 4, Gegenstand und Bau-Commit. Die Ablösung des Kontrollkästchens steht im Kommentar
+  über der Gruppe der Optionsfelder in `src/components/PublishView.tsx` („SEIT SCHEIBE 11.5d EINE GRUPPE AUS
+  OPTIONSFELDERN STATT EINES KONTROLLKAESTCHENS"), die Verweigerung in Entscheidung (16) und an P1.
+- **"DIE GESTALT-ENTSCHEIDUNGEN STEHEN NICHT HIER, SONDERN IN ABSCHNITT 8"** samt dem entnommenen Satz und der
+  Zeile „UNVERÄNDERT BINDEN DAZU". **HEUTE ERKENNBAR:** Abschnitt 8 trägt (3), (4) und (11) bis (19)
+  unverändert; die Vorhersage jenes Satzes ist eingetreten — beim Abschluss musste nichts umziehen.
+- **"WANN DIE LEISTE ERSCHEINT — ZWEI BEDINGUNGEN, BEIDE MÜSSEN GELTEN"** mit der Liste „WAS KEINE VON BEIDEN
+  DECKT". **HEUTE ERKENNBAR:** im Docblock von `buildConsentBarScript` („DIE LEISTE ERSCHEINT NUR, WENN BEIDE
+  BEDINGUNGEN GELTEN", samt der Redundanz der `read()`-Bedingung und dem asynchronen CMP), an L6 und L8 und an
+  den Mutationen (ii-a) und (ii-b) in VERMERK 4. Die Liste je Punkt: das asynchrone CMP an Vorrat (2); das CMP,
+  das unseren Hook nicht setzt, an Vorrat (3), an der Roadmap-Zeile 11.11, Punkt (d), und am neuen Text in
+  `PublishView.tsx` („wird nicht erkannt"); der werfende Speicher im Docblock („DER PREIS, UND ER IST STILL"),
+  an L11 und unter den Grenzen von VERMERK 4; der ungültig gewordene Wert im Docblock von
+  `buildConsentRestoreScript` („Das ist laut und nicht still"); die andere Adresse an Entscheidung (7); der
+  Export-Pfad an Vorrat (4).
+- **"DIE KNÖPFE RUFEN DIE SCHNITTSTELLE, NICHT DEN SPEICHER"**. **HEUTE ERKENNBAR:** im Kopf von
+  `src/lib/tracking/consent-bar.ts` („HIER STEHT KEIN URTEIL UEBER DEN HOOK UND KEIN ZWEITER SCHREIBWEG") und
+  an L9 und L10 mit ihren literalen Speicherwerten; was `write()` darüber hinaus tut, an Entscheidung (11),
+  Entscheidung (12) und VERMERK 3.
+- **"DIE BEZEICHNUNG"**. **HEUTE ERKENNBAR:** an Entscheidung (12) und im Docblock von
+  `CONSENT_BAR_REJECT_LABEL`.
+- **"DER UI-TEXT AM SCHALTER WIRD KORRIGIERT"** samt dem alten Wortlaut und „WARUM ER IN DIE IRRE FÜHRT".
+  **HEUTE ERKENNBAR:** am neuen Text in `PublishView.tsx` („Ein bereits eingebundenes Consent-Management wird
+  nicht erkannt"); der alte Wortlaut im Diff von `7516bce`; der Grund an Vorrat (3) und an der Roadmap-Zeile
+  11.11, Punkt (d).
+- **"WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT"** — ausser dem stehengebliebenen Stylesheet. **HEUTE ERKENNBAR:** das
+  Center-Modal sowie Scroll-Sperre und Abdunkelung an Entscheidung (19); Granularität, Widerruf und Sprache an
+  Entscheidung (12); die unberührten Dateien und der unveränderte Setzer, die unveränderte Wiederherstellung
+  und der unveränderte PageView-Erzeuger an der Dateiliste in VERMERK 4 und an R3 und N8; der Export-Pfad an
+  Vorrat (4); die Erkennung fremder CMPs an der Roadmap-Zeile 11.11; der Hinweis im Editor an Entscheidung
+  (14).
+- **"DIE TRAGENDEN INVARIANTEN"**. **HEUTE ERKENNBAR:** die Byte-Gleichheit bei AUS an T1, N8 und Live-Schritt 1
+  in VERMERK 4; der Setzer an R3; die eine Einfügestelle am Kommentar „EINE KONKATENATION, EINE
+  EINFUEGESTELLE" in `injectPageViewEmitter`; die Bedienbarkeit an L12, am Docblock von `CONSENT_BAR_CSS`
+  („KEIN `overflow`, KEINE Abdunkelung, KEINE Scroll-Sperre") und an Live-Schritt 5; die Wächter aus
+  Entscheidung (18) an L0, L3 und L4.
+- **"DIE DEMOBARKEIT, Regression zuerst"** — der Hinweis „AM REPO NICHT FESTSTELLBAR", fünf Vorbedingungen,
+  dreiundzwanzig Fragen und die Grenze. **HEUTE ERKENNBAR:** VERMERK 4 trägt den gefahrenen Nachweis, dazu
+  „WAS DIE OWNER-ANGABEN NICHT NENNEN" für die Fragen ohne Wert und die Grenzen; Frage 23 steht dort als
+  Grenze, gehalten von P1. **Ob der Lauf den A/B-Betrieb festgestellt und einen Testmodus ausgeschlossen hat,
+  sagen die Owner-Angaben nicht**; VERMERK 4 behauptet es deshalb auch nicht.
+- **Der Schlusssatz "DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE"** war eine
+  Auflage an den Zuschnitt und ist mit ihm abgelaufen.

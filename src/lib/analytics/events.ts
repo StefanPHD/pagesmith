@@ -62,3 +62,20 @@ export type ObservationSource = "server" | "browser";
  * als jede Laengen-/Formatpruefung.
  */
 export const BROWSER_CONFIRM_MARKER = "__ps_browser";
+
+/**
+ * Name der Sende-Logik des PageView-Emitters im ausgelieferten Artefakt (Phase 11.5,
+ * Scheibe 11.5c): `window.__psPageView`. Sie existiert NUR bei eingeschaltetem
+ * Einwilligungs-Schalter; `write()` im Wiederherstellungs-Block ruft sie ueber eine
+ * Existenzpruefung, damit ein Seitenaufruf nach der Zustimmung nachgesendet wird.
+ *
+ * WARUM HIER UND NICHT IN analytics/pageview-emitter.ts: jener importiert bereits
+ * tracking/consent-store.ts, und der Aufrufer in consent-store.ts braeuchte den Namen —
+ * ein Rueckimport waere ein Zyklus. Diese Datei hat keine Importe.
+ *
+ * DER NAME TRAEGT DIE ZEICHENKETTE `__ps_pv` BEWUSST NICHT: Der Aufruf steht im
+ * Wiederherstellungs-Block, und R3b (tracking/consent-store.test.ts) verbietet sie dort,
+ * weil die Reihenfolge-Tests des Bestands per indexOf nach ihr suchen. Der Name richtet
+ * sich nach R3b, nicht umgekehrt.
+ */
+export const PAGEVIEW_SEND_API = "__psPageView";

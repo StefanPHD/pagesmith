@@ -86,7 +86,7 @@ describe("injectPageViewEmitter", () => {
 
 describe("buildPageViewScript", () => {
   it("ist serialisierungssicher: kein literales </script> oder </body> im Emitter", () => {
-    const script = buildPageViewScript("tk-1");
+    const script = buildPageViewScript("tk-1", false);
     // Genau EIN schliessendes </script> (das Tag selbst), keins im JS-Body.
     expect(script.match(/<\/script>/g)?.length).toBe(1);
     expect(script.endsWith("</script>")).toBe(true);

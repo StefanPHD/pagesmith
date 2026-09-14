@@ -20,6 +20,7 @@
 // in tracking/consent.ts. Dieser Block SETZT den Hook aus einer gespeicherten
 // Entscheidung; er beurteilt ihn nicht.
 
+import { PAGEVIEW_SEND_API } from "@/lib/analytics/events";
 import { ALL_CONSENT_KEYS } from "@/lib/tracking/consent-targets";
 
 /**
@@ -114,6 +115,17 @@ export const CONSENT_STORE_API = "__psConsentStore";
  * DER PREIS: Ein `write`-Aufruf auf einer Seite mit gesetztem Fremd-CMP ueberschreibt
  * dessen Urteil. Ungemessen. Die Schnittstelle existiert nur bei eingeschaltetem Schalter.
  *
+ * DER NACHGEHOLTE SEITENAUFRUF (Scheibe 11.5c): Nach dem Hook ruft `write` die
+ * Sende-Logik des PageView-Emitters (PAGEVIEW_SEND_API) — ueber eine EXISTENZPRUEFUNG,
+ * weil sie in einem SPAETEREN Block steht und bei einem Aufruf waehrend des Parsens noch
+ * fehlt. Der Aufruf ist nach Erfolg UNBEDINGT: Ob gesendet wird, entscheidet allein die
+ * Funktion selbst (Guard, analytics-Einwilligung) — hier faellt kein zweites Urteil.
+ * KEIN try/catch um den Aufruf: Er machte die Existenzpruefung redundant und ihr
+ * Entfernen unentdeckbar. Fehlt sie, wirft ein erfolgreiches `write` ohne
+ * PageView-Script einen ReferenceError — gemessen per Mutation (Scheibe 11.5c): rot werden
+ * N6/7 in analytics/pageview-emitter.resend.test.ts sowie R9, die R10-Positivkontrolle und
+ * R13 in consent-store.test.ts, alle mit derselben Fehlerklasse.
+ *
  * DER HOOK WIRD IN BEIDEN WEGEN SCHLUESSEL FUER SCHLUESSEL AUS ALL_CONSENT_KEYS GEBAUT,
  * NIE ROH AUS DEM SPEICHER: Ein Schluessel, den der Wert nicht fuehrt, wird false, und ein
  * gespeichertes literales `true` kann gar nicht erst durchgereicht werden.
@@ -183,6 +195,7 @@ export function buildConsentRestoreScript(): string {
       if (ls.getItem(KEY) !== value) return false;
     } catch (e) { return false; }
     window.pagesmithConsent = hookFrom(g);
+    if (typeof ${PAGEVIEW_SEND_API} === "function") ${PAGEVIEW_SEND_API}();
     return true;
   }
   window.${CONSENT_STORE_API} = { read: read, write: write };

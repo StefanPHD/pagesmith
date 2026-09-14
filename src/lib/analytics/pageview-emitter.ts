@@ -9,7 +9,7 @@
 // trackingKey stammt server-autoritativ aus der Spalte projects.tracking_key (2b-0) und
 // wird — wie PAGEVIEW_EVENT — via JSON.stringify eingesetzt: kein Injektions-Vektor.
 
-import { PAGEVIEW_EVENT } from "./events";
+import { PAGEVIEW_EVENT, PAGEVIEW_SEND_API } from "./events";
 import {
   ANALYTICS_CONSENT_TARGET,
   buildConsentScript,
@@ -64,10 +64,27 @@ const SCRIPT_ID = "__ps_pve";
 //
 // (k): Der SENDE-FEHLSCHLAG ist davon NICHT beruehrt. Ein Sendeversuch liefert
 // "angenommen", nicht "zugestellt"; der Guard bleibt dort unveraendert wie bisher.
-export function buildPageViewScript(trackingKey: string): string {
-  return `<script id="${SCRIPT_ID}">
-(function(){
-  if (window.__ps_pv) return;
+//
+// --- DER NACHGEHOLTE SEITENAUFRUF (Phase 11.5, Scheibe 11.5c) ---------------
+// ZWEI EXPLIZITE ZWEIGE AM PARAMETER, EIN RUMPF. Der Rumpf `body` ist EIN String und
+// traegt alle drei Pruefungen (Guard, Existenz, Einwilligung) samt Senden; beide Zweige
+// haengen ihn nur in eine andere Huelle:
+// - AUS: die sofort ausgefuehrte Funktion wie bisher. Der Text ist BYTE-GLEICH zu vor
+//   der Scheibe; gehalten von einem Test gegen einen VOR dem Bau erhobenen Vergleichswert
+//   und von T1 in tracking/consent-setter.test.ts.
+// - AN: dieselbe Funktion als window.__psPageView, sofort einmal gerufen. write() im
+//   Wiederherstellungs-Block ruft sie nach einer Zustimmung erneut; Guard und
+//   Einwilligung greifen dann genauso wie beim Laden — kein Doppel, nur bei analytics.
+// DER ZWEIG LIEST DEN PARAMETER UND SONST NICHTS. Bei AUS gibt es keinen Consent-Block,
+// also kein write() und keinen Aufrufer — die Funktion haette dort niemanden.
+// PFLICHT-PARAMETER OHNE VORGABEWERT, aus demselben Grund wie bei
+// injectPageViewEmitter. Achtung: Vitest prueft keine Typen — ein vergessenes Argument
+// faellt dort als undefined still in den AUS-Zweig; allein tsc meldet es.
+export function buildPageViewScript(
+  trackingKey: string,
+  consentGateOn: boolean
+): string {
+  const body = `  if (window.__ps_pv) return;
   if (typeof __psConsent !== "function") return;
   if (!__psConsent(${JSON.stringify(ANALYTICS_CONSENT_TARGET)})) return;
   var eid = (window.crypto && window.crypto.randomUUID)
@@ -86,7 +103,17 @@ export function buildPageViewScript(trackingKey: string): string {
   } catch (e) {
     try { fetch('/api/e', { method: 'POST', keepalive: true, body: body }); } catch (e2) {}
   }
-})();
+`;
+  if (!consentGateOn) {
+    return `<script id="${SCRIPT_ID}">
+(function(){
+${body}})();
+</script>`;
+  }
+  return `<script id="${SCRIPT_ID}">
+window.${PAGEVIEW_SEND_API} = function(){
+${body}};
+${PAGEVIEW_SEND_API}();
 </script>`;
 }
 
@@ -158,7 +185,12 @@ export function injectPageViewEmitter(
   // DER SETZER BRAUCHT DAS GATE NICHT VOR SICH — er ruft __psConsent nicht auf, er
   // weist nur zu. Er steht trotzdem dahinter, weil die Bausteine so in der
   // Reihenfolge ihrer Abhaengigkeit lesbar bleiben.
-  const script = gate + restore + setter + buildPageViewScript(trackingKey);
+  // DER PAGEVIEW-ERZEUGER BEKOMMT DEN SCHALTER SELBST (Scheibe 11.5c) — nicht
+  // `restore !== ""`, obwohl beides heute wertgleich ist: Ein Zweig, der an der Leere
+  // eines anderen Bausteins haengt, ist genau der Nebeneffekt, gegen den Setzer und
+  // Wiederherstellung oben explizit am Schalter abzweigen.
+  const script =
+    gate + restore + setter + buildPageViewScript(trackingKey, consentGateOn);
   const idx = html.toLowerCase().lastIndexOf("</body>");
   if (idx === -1) return html + script;
   return html.slice(0, idx) + script + html.slice(idx);

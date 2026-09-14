@@ -193,8 +193,14 @@ export type ProjectSettings = {
   // EINWILLIGUNGS-SCHALTER JE PROJEKT (Phase 11.5, Scheibe 11.5a). BEWUSST
   // plattform-agnostisch neben pixels/capi/hosting, aus demselben Grund wie hosting:
   // kein Pixel, sondern eine Aussage ueber den AUSGELIEFERTEN TEXT.
-  //   gate = Soll auf einer publizierten Seite VOR dem ersten Beacon ein Urteil
-  //          stehen, das Ablehnung bedeutet? Standard AUS (Feld fehlt).
+  //   dialog = SEIT SCHEIBE 11.5d DIE QUELLE: welche Einwilligungs-Oberflaeche die
+  //            publizierte Seite traegt. Gelesen AUSSCHLIESSLICH ueber
+  //            getConsentDialog — der Typ ist `unknown`, weil der Blob ungepruefte
+  //            Client-Eingabe ist und niemand den Wert ohne Leser verwenden soll.
+  //   gate   = ALTBESTAND aus 11.5a bis 11.5c. Nur noch gelesen, nie geschrieben;
+  //            `true` heisst BAR, solange `dialog` fehlt. Er bleibt im Blob liegen,
+  //            weil der Setzer den Teil-Blob SPREIZT und saveProject ihn ganz
+  //            zurueckschreibt — deshalb gewinnt `dialog`, wenn beide da sind.
   //
   // WARUM HIER UND NICHT IN EINER EIGENEN SPALTE — die Alternative ist erwogen und
   // verworfen: Eine server-autoritative Spalte ueberlebte jeden Client-Save, machte
@@ -203,14 +209,19 @@ export type ProjectSettings = {
   // gebaut wird; Schalter und Schluessel aus EINER Quelle koennen nicht
   // auseinanderlaufen.
   // DER PREIS STEHT DAZU: Ein alter Browser-Tab kann den Blob ganzheitlich
-  // ueberschreiben und den Schalter still ausknipsen. Der Zustand danach ist der
-  // heutige, entschiedene — kein Dialog, alle Ziele erlaubt. Kein Leck, kein neuer
-  // Schaden.
+  // ueberschreiben und den Schalter still ausknipsen. Der Zustand danach ist: keine
+  // Leiste, alle Ziele erlaubt.
+  // SEIT ES DIE LEISTE GIBT (Scheibe 11.5d), IST DAS NICHT MEHR HARMLOS: Ein Besucher,
+  // der abgelehnt hat, wird nach dem naechsten Veroeffentlichen wieder getrackt, weil
+  // bei AUS keine Wiederherstellung entsteht. Ein unbekannter Wert ist davon
+  // abgefangen (publishProject verweigert), ein alter Tab NICHT — benanntes Risiko,
+  // ungemessen.
   // ER FAELLT NICHT UNTER "SERVER-EIGENE IDENTITAET NIE IN EINEN CLIENT-BESESSENEN
   // BLOB": Jene Regel trifft eine SERVER-VERGEBENE Identitaet, die der Client nicht
   // kennt. Dieser Schalter ist eine EINGABE DES BETREIBERS und entsteht im Client.
   consent?: {
     gate?: boolean;
+    dialog?: unknown;
   };
 };
 
@@ -691,6 +702,11 @@ function conversionRulesEqual(
 // Text "Ungespeicherte Aenderungen", kein beforeunload-Waechter, kein confirm beim
 // Projektwechsel. DER SCHALTER WAERE BEIM NAECHSTEN PROJEKTWECHSEL WEG, ohne Warnung
 // und ohne Meldung.
+// SEIT SCHEIBE 11.5d VERGLEICHT DER TERM DEN NORMALISIERTEN WERT, NICHT EINE
+// BOOLESCHE PROJEKTION: Mit mehr als zwei Werten waeren zwei Formen unter einer
+// Projektion gleich, ein Wechsel zwischen ihnen fuer dirty unsichtbar — derselbe
+// stille Verlust wie oben. `===` auf zwei Rueckgaben DERSELBEN Funktion kompiliert
+// bei jedem Rueckgabetyp; nichts wuerde rot. Der Test S3 haelt genau das.
 //
 // WARUM ER NICHT WIE capi UND hosting IGNORIERT WIRD: Jene sind SERVER-SPIEGEL — sie
 // werden nach einer Server-Antwort in settings UND savedSettings geschrieben, und ein
@@ -704,7 +720,7 @@ function conversionRulesEqual(
 // die Klasse.
 export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
   return (
-    isConsentGateOn(a) === isConsentGateOn(b) &&
+    getConsentDialog(a) === getConsentDialog(b) &&
     TRACKING_TARGETS.every(
       (t) =>
         getPixelId(a, t) === getPixelId(b, t) &&
@@ -714,41 +730,73 @@ export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
 }
 
 /**
- * STEHT DER EINWILLIGUNGS-SCHALTER DIESES PROJEKTS AUF AN? (Phase 11.5, Scheibe
- * 11.5a)
- *
- * `=== true` STATT TRUTHY, und das ist keine Vorsicht, sondern dieselbe Strenge wie
- * im Gate selbst (tracking/consent.ts): Ein fehlendes Feld, `null`, die Zeichenkette
- * "true" oder eine 1 ergeben alle AUS. **Damit bildet sich "fehlt" auf AUS ab, ohne
- * dass irgendwo ein Vorgabewert steht, der spaeter jemand anders setzt.**
- *
- * DER STANDARD IST AUS, UND ZWAR STRUKTURELL: Jedes bestehende Projekt traegt das
- * Mitglied nicht, liest hier also AUS und liefert byte-gleich wie bisher aus.
+ * DIE GEBAUTEN WERTE DES EINWILLIGUNGS-SCHALTERS (Phase 11.5, Scheibe 11.5d).
+ * "off" = keine Leiste; "bar" = die Einwilligungs-Leiste am unteren Rand.
+ * EIN WERT STEHT HIER ERST, WENN SEIN BLOCK GEBAUT IST — das Bedienelement bietet
+ * genau diese Werte an, und ein Wert ohne Block wuerde beim Veroeffentlichen
+ * verweigert. Das Modal kommt mit Scheibe 11.5d-2 dazu.
  */
-export function isConsentGateOn(settings: ProjectSettings): boolean {
-  return settings.consent?.gate === true;
+export const CONSENT_DIALOGS = ["off", "bar"] as const;
+export type ConsentDialog = (typeof CONSENT_DIALOGS)[number];
+
+/**
+ * Ergebnis des Lesers: ein gebauter Wert ODER "unknown".
+ * "unknown" IST EIN EIGENER AUSGANG UND WIRD NIE AUF "off" ABGEBILDET: Sonst saehe
+ * publishProject einen unbekannten Wert nie, und die Verweigerung waere toter Code.
+ * "Unbekannt -> AUS" waere FAIL-OPEN — der Hook bliebe ungesetzt, alle Ziele erlaubt,
+ * und niemand merkte es.
+ */
+export type ConsentDialogRead = ConsentDialog | "unknown";
+
+/**
+ * Die Meldung, mit der publishProject bei einem unbekannten Wert abbricht. Sie nennt
+ * die Handlung und sagt, dass nichts ausgeliefert wurde.
+ */
+export const CONSENT_DIALOG_UNKNOWN_MESSAGE =
+  "Die Einwilligungs-Einstellung dieses Projekts hat einen unbekannten Wert. Bitte unter „Einwilligung“ neu wählen. Es wurde nichts veröffentlicht.";
+
+/**
+ * WELCHE EINWILLIGUNGS-OBERFLAECHE TRAEGT DIE PUBLIZIERTE SEITE? (Phase 11.5, Scheibe
+ * 11.5d) — der EINZIGE Leser des Schalters.
+ *
+ * DIE VORRANG-REGEL IST DIE REIHENFOLGE DER ZWEI ZWEIGE:
+ * 1. `dialog` ist da (`!== undefined`): "off" und "bar" gelten, JEDER andere Wert —
+ *    auch null, "BAR", "", true, 1 — ist "unknown".
+ * 2. Sonst ALTBESTAND: `gate === true` heisst "bar", alles andere "off". Das ist die
+ *    Strenge von 11.5a unveraendert: ein altes `gate` mit anderem Wert als true
+ *    bleibt AUS.
+ * WARUM DER NEUE GEWINNT: Der Setzer spreizt den Teil-Blob, und saveProject schreibt
+ * den Blob ganz — ein `gate` aus 11.5a bis 11.5c bleibt also auch ohne alten Tab
+ * liegen und darf gegen die heutige Eingabe nicht entscheiden.
+ * DER STANDARD IST AUS, UND ZWAR STRUKTURELL: Ein Projekt ohne beide Mitglieder liest
+ * "off" und liefert byte-gleich wie vor 11.5a aus.
+ */
+export function getConsentDialog(settings: ProjectSettings): ConsentDialogRead {
+  const dialog = settings.consent?.dialog;
+  if (dialog !== undefined) {
+    return dialog === "off" || dialog === "bar" ? dialog : "unknown";
+  }
+  return settings.consent?.gate === true ? "bar" : "off";
 }
 
 /**
- * Den Einwilligungs-Schalter setzen (Phase 11.5, Scheibe 11.5a). Reine Funktion,
+ * Den Einwilligungs-Schalter setzen (Phase 11.5, Scheibe 11.5d). Reine Funktion,
  * gleiche Bauform wie setPixelId: neues Objekt, bestehende Mitglieder unberuehrt.
  *
- * DAS FELD WIRD IMMER GESCHRIEBEN, AUCH BEIM AUSSCHALTEN — statt es zu entfernen.
- * GRUND: `false` und "fehlt" lesen sich beim Leser gleich (beide AUS), aber nur ein
- * geschriebenes `false` unterscheidet sich fuer settingsEqual vom Zustand DAVOR,
- * wenn der Blob vorher `true` trug. Wer hier beim Ausschalten das Mitglied loeschte,
- * bekaeme denselben dirty-Vergleich — aber ein Blob, der zwischen "nie gesetzt" und
- * "bewusst aus" nicht mehr unterscheidet.
+ * DER WERT WIRD IMMER GESCHRIEBEN, AUCH "off" — statt das Mitglied zu entfernen. Nur
+ * ein geschriebenes "off" gewinnt gegen ein liegengebliebenes `gate: true`.
+ * `gate` WIRD NICHT ANGEFASST: Der Leser entscheidet ueber den Vorrang, der Setzer
+ * raeumt nichts auf.
  */
-export function setConsentGate(
+export function setConsentDialog(
   settings: ProjectSettings,
-  on: boolean
+  mode: ConsentDialog
 ): ProjectSettings {
   return {
     ...settings,
     consent: {
       ...settings.consent,
-      gate: on,
+      dialog: mode,
     },
   };
 }

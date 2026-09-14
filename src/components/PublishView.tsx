@@ -1,6 +1,7 @@
 "use client";
 
 import { VARIANT_B_NOT_PUBLISHED_MESSAGE } from "@/lib/hosting/variant";
+import type { ConsentDialog, ConsentDialogRead } from "@/lib/settings";
 import DomainManager from "@/components/DomainManager";
 
 /**
@@ -41,8 +42,8 @@ export default function PublishView({
   hostingLabel,
   liveUrl,
   publishRestored,
-  consentGateOn,
-  onToggleConsentGate,
+  consentDialog,
+  onConsentDialogChange,
   onToggleAbTest,
   abTestActive,
   abTestStartedAt,
@@ -66,11 +67,11 @@ export default function PublishView({
   liveUrl: string;
   publishRestored: boolean;
   // --- Variante B ---
-  // --- Einwilligung (Phase 11.5, Scheibe 11.5a) ---
-  // Zustand ABGELEITET aus dem Einstellungs-Blob des Projekts, nicht lokal gehalten
-  // — dieselbe Bauform wie beim A/B-Schalter darunter.
-  consentGateOn: boolean;
-  onToggleConsentGate: () => void;
+  // --- Einwilligung (Phase 11.5, Scheiben 11.5a und 11.5d) ---
+  // Zustand ABGELEITET aus dem Einstellungs-Blob des Projekts (getConsentDialog), nicht
+  // lokal gehalten — dieselbe Bauform wie beim A/B-Schalter darunter.
+  consentDialog: ConsentDialogRead;
+  onConsentDialogChange: (mode: ConsentDialog) => void;
   onToggleAbTest: () => void;
   abTestActive: boolean;
   abTestStartedAt: string | null;
@@ -211,31 +212,68 @@ export default function PublishView({
           erwartet man Wirkung auf die ZAHLEN, nicht auf das Dokument.
           DER HINWEIS AUF DAS NEU-VEROEFFENTLICHEN IST KEINE HOEFLICHKEIT: Ein
           ausgeliefertes Artefakt altert nicht mit dem Deploy — ohne neuen Publish
-          traegt die Live-Seite den Schalter nicht. */}
+          traegt die Live-Seite den Schalter nicht.
+          SEIT SCHEIBE 11.5d EINE GRUPPE AUS OPTIONSFELDERN STATT EINES
+          KONTROLLKAESTCHENS: Ein Kontrollkaestchen traegt nicht mehr als zwei
+          Zustaende, und mit Scheibe 11.5d-2 kommt ein dritter. ANGEBOTEN WIRD NUR, WAS
+          GEBAUT IST — ein Wert ohne Block wuerde beim Veroeffentlichen verweigert.
+          DER HINWEIS BEI "unknown" leitet sich aus settings ab, nicht aus dem
+          Publish-Kanal: resetDrawerStatusChannel leert publishError beim Oeffnen des
+          Drawers, dieser Hinweis steht dagegen, solange der Wert im Blob liegt. Er
+          bleibt im Bereich; ein Signal an der Reiterzeile gibt es bewusst nicht.
+          DIE ANZEIGE UEBERSCHREIBT KEINEN UNBEKANNTEN WERT: Ohne gesetztes Feld ist
+          keins markiert, und erst ein Klick des Betreibers schreibt. */}
       <div className="mt-4 border-t border-gray-200 pt-4">
         <h2 className="mb-1 text-sm font-medium text-gray-700">Einwilligung</h2>
-        <label className="flex items-start gap-2 rounded-md border border-gray-200 px-3 py-2">
-          <input
-            type="checkbox"
-            className="mt-0.5"
-            checked={consentGateOn}
-            onChange={onToggleConsentGate}
-          />
-          <span className="text-xs text-gray-600">
-            <span className="font-medium text-gray-700">
-              Vor dem ersten Ereignis nichts senden
+        <div
+          role="radiogroup"
+          aria-label="Einwilligungs-Leiste"
+          className="space-y-2 rounded-md border border-gray-200 px-3 py-2 text-xs text-gray-600"
+        >
+          <label className="flex items-start gap-2">
+            <input
+              type="radio"
+              name="consent-dialog"
+              className="mt-0.5"
+              checked={consentDialog === "off"}
+              onChange={() => onConsentDialogChange("off")}
+            />
+            <span>
+              <span className="font-medium text-gray-700">Aus</span>
+              <br />
+              Keine Einwilligungs-Leiste. Ohne eigenes Consent-Management auf der
+              Seite gelten alle Ziele als erlaubt.
             </span>
-            <br />
-            Die veröffentlichte Seite setzt beim Laden ein Urteil, das alle Ziele
-            ablehnt — bis ein Einwilligungs-Dialog oder ein eigenes
-            Consent-Management etwas anderes sagt. Ein vorhandenes eigenes
-            Consent-Management wird nicht überschrieben.
-            <br />
-            <span className="text-gray-400">
-              Wirkt erst nach dem nächsten Veröffentlichen.
+          </label>
+          <label className="flex items-start gap-2">
+            <input
+              type="radio"
+              name="consent-dialog"
+              className="mt-0.5"
+              checked={consentDialog === "bar"}
+              onChange={() => onConsentDialogChange("bar")}
+            />
+            <span>
+              <span className="font-medium text-gray-700">Leiste</span>
+              <br />
+              Am unteren Rand erscheint eine Leiste mit „Alle akzeptieren“ und
+              „Ablehnen“. Bis zur Entscheidung wird nichts gesendet.
             </span>
-          </span>
-        </label>
+          </label>
+          {consentDialog === "unknown" && (
+            <p className="text-red-600">
+              Gespeichert ist ein unbekannter Wert. Veröffentlichen wird verweigert,
+              bis hier eine Einstellung gewählt ist.
+            </p>
+          )}
+          <p>
+            Ein bereits eingebundenes Consent-Management wird nicht erkannt — bei
+            eingeschalteter Leiste erscheint sie zusätzlich.
+          </p>
+          <p className="text-gray-400">
+            Wirkt erst nach dem nächsten Veröffentlichen.
+          </p>
+        </div>
       </div>
 
       {/* Variante B verwalten (Phase 9 Scheibe 9a). Destruktiv -> zweistufige

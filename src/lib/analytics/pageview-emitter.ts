@@ -15,6 +15,7 @@ import {
   buildConsentScript,
   hasConsentScript,
 } from "@/lib/tracking/consent";
+import { buildConsentBarScript } from "@/lib/tracking/consent-bar";
 import { buildConsentDenyScript } from "@/lib/tracking/consent-setter";
 import { buildConsentRestoreScript } from "@/lib/tracking/consent-store";
 
@@ -173,11 +174,29 @@ export function injectPageViewEmitter(
   // DIE WIEDERHERSTELLUNG (Phase 11.5, Scheibe 11.5b) — derselbe explizite Zweig am
   // Schalter wie beim Setzer, aus demselben Grund. Bei AUS entsteht sie nicht.
   const restore = consentGateOn ? buildConsentRestoreScript() : "";
+  // DIE EINWILLIGUNGS-LEISTE (Phase 11.5, Scheibe 11.5d) — derselbe explizite Zweig am
+  // Schalter. Bei AUS entsteht sie nicht, und der Text bleibt byte-gleich (T1).
+  // DIE AEQUIVALENZ IST BEKANNT UND WIRD HIER BENANNT, NICHT VERSTECKT: `consentGateOn`
+  // und `restore !== ""` sind fuer JEDE Eingabe gleichbedeutend, und KEIN TEST TRENNT
+  // SIE. Getragen wird die Unterscheidung allein von DIESER Zeile und diesem
+  // Kommentar: Ein Zweig an der Leere eines anderen Bausteins ist genau der
+  // Nebeneffekt, gegen den Setzer und Wiederherstellung explizit am Schalter
+  // abzweigen. Wer die Zeile "vereinfacht", merkt es an keinem roten Test.
+  // Der Parameter bleibt ein Wahrheitswert: Welche Oberflaeche ausgeliefert wird,
+  // entscheidet publishProject ueber getConsentDialog; heute ist AN gleich LEISTE.
+  // Mit dem Modal (Scheibe 11.5d-2) aendert sich das: Die never-Pruefung in
+  // publishProject macht den neuen Wert dort zum Compiler-Fehler, und wer ihn
+  // behandelt, muss entscheiden, was dieser Parameter dann traegt. DIESE Zeile selbst
+  // meldet der Compiler NICHT.
+  const bar = consentGateOn ? buildConsentBarScript() : "";
   // EINE KONKATENATION, EINE EINFUEGESTELLE — und daran haengt die REIHENFOLGE im
-  // Dokument: Gate, dann Wiederherstellung, dann Setzer, dann der PageView-Emitter. Die
-  // Wiederherstellung MUSS vor dem Setzer stehen, sonst schreibt er "abgelehnt", bevor
-  // eine gespeicherte Entscheidung den Hook belegen kann. Der Setzer MUSS vor dem
-  // Emitter stehen, sonst feuert der erste Seitenaufruf, bevor ein Urteil da ist.
+  // Dokument: Gate, dann Wiederherstellung, dann Leiste, dann Setzer, dann der
+  // PageView-Emitter. Die Wiederherstellung MUSS vor dem Setzer stehen, sonst schreibt
+  // er "abgelehnt", bevor eine gespeicherte Entscheidung den Hook belegen kann. Die
+  // Leiste MUSS zwischen beiden stehen: Nur dort trennt EINE Pruefung auf den Hook die
+  // Faelle, in denen sie nicht erscheinen darf — hinter dem Setzer ist der Hook immer
+  // belegt. Der Setzer MUSS vor dem Emitter stehen, sonst feuert der erste
+  // Seitenaufruf, bevor ein Urteil da ist.
   // EINE ZWEITE EINFUEGESTELLE WAERE DER BRUCH: Dann entschiede die Aufrufreihenfolge
   // zweier Funktionen ueber die Dokumentordnung, und nichts wuerde rot, wenn sie sich
   // dreht. Die Ordnung ist hier eine Eigenschaft des AUSDRUCKS, keine Zusicherung
@@ -190,7 +209,7 @@ export function injectPageViewEmitter(
   // eines anderen Bausteins haengt, ist genau der Nebeneffekt, gegen den Setzer und
   // Wiederherstellung oben explizit am Schalter abzweigen.
   const script =
-    gate + restore + setter + buildPageViewScript(trackingKey, consentGateOn);
+    gate + restore + bar + setter + buildPageViewScript(trackingKey, consentGateOn);
   const idx = html.toLowerCase().lastIndexOf("</body>");
   if (idx === -1) return html + script;
   return html.slice(0, idx) + script + html.slice(idx);

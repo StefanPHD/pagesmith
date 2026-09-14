@@ -7,7 +7,8 @@ import {
   getTrackingKey,
   setCapiState,
   setMetaPixelId,
-  setConsentGate,
+  getConsentDialog,
+  setConsentDialog,
   setPixelId,
   settingsEqual,
   TRACKING_TARGETS,
@@ -239,33 +240,70 @@ describe("eventAxisTargets", () => {
   });
 });
 
-// --- SCHEIBE 11.5a: DER EINWILLIGUNGS-SCHALTER IM DIRTY-VERGLEICH ---------------
+// --- SCHEIBE 11.5d: DER EINWILLIGUNGS-SCHALTER MIT STRING-WERTEN ------------------
 //
-// WARUM DIESE ZWEI TESTS UEBERHAUPT NOETIG SIND — die Fehlerklasse ist STILL:
-// settingsEqual ist eine ALLOWLIST. Ein neues Top-Level-Mitglied des Blobs ist darin
-// unsichtbar, ohne Typfehler und ohne roten Test. Der Nutzer schaltet, der Vergleich
-// meldet "nicht dirty", es erscheint kein "Ungespeicherte Aenderungen", der
-// beforeunload-Waechter kehrt sofort zurueck, der confirm beim Projektwechsel bleibt
-// aus — UND DER SCHALTER IST BEIM NAECHSTEN WECHSEL WEG.
-// DIESE ZWEI TESTS HALTEN GENAU DIESEN EINEN TERM, NICHT DIE KLASSE: Das naechste
-// Mitglied ist wieder unsichtbar by default. Das ist bekannt und als Vorrat gefuehrt.
-describe("settingsEqual — der Einwilligungs-Schalter (Scheibe 11.5a)", () => {
-  it("T6: zwei Bloebe, die sich NUR im Schalter unterscheiden, sind NICHT gleich", () => {
-    const aus: ProjectSettings = {};
-    const an = setConsentGate({}, true);
-    expect(settingsEqual(aus, an)).toBe(false);
-    expect(settingsEqual(an, aus)).toBe(false);
-    // Auch der Unterschied zwischen "bewusst aus" und "an" zaehlt.
-    expect(settingsEqual(setConsentGate({}, false), an)).toBe(false);
+// S1 BIS S3 ERSETZEN T6 UND T7 AUS SCHEIBE 11.5a — SIE BIEGEN SIE NICHT. Jene riefen
+// setConsentGate, das mit dieser Scheibe gestrichen ist. IHR GEGENSTAND GEHT IN S3 UEBER,
+// SCHAERFER: Der Term ist fuer dirty sichtbar (T6), ohne false-dirty im Bestand (T7) —
+// und zusaetzlich vergleicht er den NORMALISIERTEN Wert, keine boolesche Projektion.
+//
+// DIE ERWARTUNGEN STAMMEN AUS DER ENTSCHEIDUNG, NICHT AUS DEM CODE: fehlt -> off ·
+// `gate: true` ohne `dialog` -> bar (Altbestand) · `dialog` gewinnt gegen `gate` ·
+// jeder andere `dialog`-Wert -> unknown · ein altes `gate` mit anderem Wert als true
+// bleibt off.
+describe("getConsentDialog — der Leser des Schalters (Scheibe 11.5d)", () => {
+  it("S1: fehlt -> off, Altbestand -> bar, Vorrang des neuen Schluessels, alles andere -> unknown", () => {
+    expect(getConsentDialog({})).toBe("off");
+    expect(getConsentDialog({ consent: {} })).toBe("off");
+    // ALTBESTAND aus 11.5a bis 11.5c.
+    expect(getConsentDialog({ consent: { gate: true } })).toBe("bar");
+    expect(getConsentDialog({ consent: { gate: false } })).toBe("off");
+    // Ein altes gate mit anderem Wert als true bleibt AUS — das heutige Verhalten.
+    expect(getConsentDialog({ consent: { gate: "true" as unknown as boolean } })).toBe("off");
+    // Der neue Schluessel.
+    expect(getConsentDialog({ consent: { dialog: "off" } })).toBe("off");
+    expect(getConsentDialog({ consent: { dialog: "bar" } })).toBe("bar");
+    // DIE VORRANG-REGEL, in beide Richtungen.
+    expect(getConsentDialog({ consent: { gate: true, dialog: "off" } })).toBe("off");
+    expect(getConsentDialog({ consent: { gate: false, dialog: "bar" } })).toBe("bar");
+    // UNBEKANNT — nie auf off abgebildet, auch nicht neben einem gate: true.
+    for (const v of ["modal", "BAR", "Off", "", null, true, false, 1, {}, []]) {
+      expect(getConsentDialog({ consent: { dialog: v } })).toBe("unknown");
+    }
+    expect(getConsentDialog({ consent: { gate: true, dialog: "modal" } })).toBe("unknown");
   });
 
-  it("T7: zwei Bloebe OHNE Schalter sind weiterhin gleich (kein false-dirty)", () => {
-    // DER BESTANDSFALL: Jedes heutige Projekt traegt das Mitglied nicht. Ein Term,
-    // der undefined nicht gegen undefined haelt, staende hier sofort rot — und der
-    // Speichern-Knopf staende bei JEDEM Projekt dauerhaft scharf.
+  it("S2: der Setzer schreibt den neuen Schluessel und laesst alle anderen Mitglieder stehen", () => {
+    const vorher: ProjectSettings = {
+      pixels: { meta: { pixelId: "123" } },
+      consent: { gate: true },
+    };
+    const nachher = setConsentDialog(vorher, "off");
+    expect(nachher.consent).toEqual({ gate: true, dialog: "off" });
+    expect(nachher.pixels).toEqual({ meta: { pixelId: "123" } });
+    // Reine Funktion: das Eingangsobjekt bleibt unveraendert.
+    expect(vorher.consent).toEqual({ gate: true });
+    // Und das geschriebene "off" gewinnt gegen das liegengebliebene gate.
+    expect(getConsentDialog(nachher)).toBe("off");
+  });
+
+  // S3. DER EINZIGE TEST, DER DEN TERM IN settingsEqual HAELT (Pflicht-Mutation (iv)).
+  // Die Ungleichheit bar gegen unknown ist der Diskriminator gegen eine boolesche
+  // Projektion: Unter `!== "off"` waeren beide "an" und damit gleich.
+  it("S3: settingsEqual vergleicht den normalisierten Wert — sichtbar fuer dirty, kein false-dirty", () => {
+    const aus = setConsentDialog({}, "off");
+    const leiste = setConsentDialog({}, "bar");
+    expect(settingsEqual(aus, leiste)).toBe(false);
+    expect(settingsEqual(leiste, aus)).toBe(false);
+    expect(settingsEqual({}, leiste)).toBe(false);
+    expect(
+      settingsEqual({ consent: { dialog: "bar" } }, { consent: { dialog: "modal" } })
+    ).toBe(false);
+    // POSITIVKONTROLLEN, im selben Lauf: kein false-dirty.
     expect(settingsEqual({}, {})).toBe(true);
     expect(settingsEqual({}, { pixels: {} })).toBe(true);
-    // "bewusst aus" und "nie gesetzt" lesen sich beide als AUS und sind gleich.
-    expect(settingsEqual({}, setConsentGate({}, false))).toBe(true);
+    expect(settingsEqual({}, aus)).toBe(true);
+    // Normalisiert: der Altbestand und der neue Schluessel mit derselben Bedeutung.
+    expect(settingsEqual({ consent: { gate: true } }, leiste)).toBe(true);
   });
 });

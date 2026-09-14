@@ -856,3 +856,131 @@ describe("publishProject — der Einwilligungs-Schalter (Scheibe 11.5a)", () => 
     expect(patch.published_content.variantB.html).toContain('id="__ps_pve"');
   });
 });
+
+// --- SCHEIBE 11.5d: DIE WERTE DES SCHALTERS UND DIE VERWEIGERUNG -----------------
+//
+// DIE ERWARTUNGEN STAMMEN AUS DER ENTSCHEIDUNG, NICHT AUS DEM CODE: Ein unbekannter
+// Wert verweigert das Veroeffentlichen, und zwar BEVOR irgendetwas geschrieben wird —
+// auch keine Label-Zeile. "bar" und der Altbestand `gate: true` liefern die Leiste in
+// BEIDEN Varianten; "off" liefert sie in keiner.
+// T8, T8b, R12 und R12b darueber bleiben unveraendert: Sie schreiben `gate: true` und
+// laufen seit dieser Scheibe ueber den Altbestands-Zweig des Lesers.
+describe("publishProject — die Werte des Schalters (Scheibe 11.5d)", () => {
+  const variantB11_5d = {
+    functionalHtml: "<html><body>VARIANTE B</body></html>",
+    mappings: [
+      { elementId: "ps-b", type: "track" as const, config: { event: "Lead" } },
+    ],
+  };
+  const MESSAGE_UNBEKANNT =
+    "Die Einwilligungs-Einstellung dieses Projekts hat einen unbekannten Wert. Bitte unter „Einwilligung“ neu wählen. Es wurde nichts veröffentlicht.";
+
+  function client() {
+    return makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "Mein Shop",
+          settings: { hosting: { label: "mein-shop-abc123" } },
+          tracking_key: "keep-me",
+          html_b: "<h1>B draft</h1>",
+        },
+        error: null,
+      },
+    });
+  }
+
+  type Patch = { published_content: { html: string; variantB: { html: string } } };
+
+  // P1. DER EINZIGE TEST, DER DIE VERWEIGERUNG FAENGT (Pflicht-Mutation (iii)). Er prueft
+  // zugleich die STELLUNG: Laege die Verweigerung hinter dem Label-Block, stuende
+  // "domains" in fromTables und eine Label-Zeile in inserts.
+  it("P1: ein unbekannter Wert verweigert, BEVOR irgendetwas geschrieben wird — Positivkontrolle im selben Lauf", async () => {
+    const unbekannt = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      { ...snapshot, settings: { consent: { dialog: "modal" } } },
+      variantB11_5d
+    );
+    expect(res).toEqual({ ok: false, error: MESSAGE_UNBEKANNT });
+    expect(unbekannt.rec.updatePatch).toBeNull();
+    expect(unbekannt.rec.inserts).toHaveLength(0);
+    expect(unbekannt.rec.fromTables).not.toContain("domains");
+
+    // POSITIVKONTROLLE: derselbe Aufbau mit einem gebauten Wert schreibt.
+    const bekannt = client();
+    const ok = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      { ...snapshot, settings: { consent: { dialog: "bar" } } },
+      variantB11_5d
+    );
+    expect(ok.ok).toBe(true);
+    expect(bekannt.rec.updatePatch).not.toBeNull();
+    expect(bekannt.rec.fromTables).toContain("domains");
+  });
+
+  it("P2: 'bar' -> die Leiste in BEIDEN Varianten, zwischen Wiederherstellung und Setzer", async () => {
+    const { rec } = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      { ...snapshot, settings: { consent: { dialog: "bar" } } },
+      variantB11_5d
+    );
+    expect(res.ok).toBe(true);
+    const patch = rec.updatePatch as Patch;
+    for (const html of [patch.published_content.html, patch.published_content.variantB.html]) {
+      expect(html).toContain('id="__ps_clb"');
+      expect(html.indexOf('id="__ps_cnr"')).toBeLessThan(html.indexOf('id="__ps_clb"'));
+      expect(html.indexOf('id="__ps_clb"')).toBeLessThan(html.indexOf('id="__ps_cns"'));
+    }
+  });
+
+  it("P2b: 'off' -> keine Leiste, in keiner der beiden Varianten (Positivkontrolle: Emitter da)", async () => {
+    const { rec } = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      { ...snapshot, settings: { consent: { dialog: "off" } } },
+      variantB11_5d
+    );
+    expect(res.ok).toBe(true);
+    const patch = rec.updatePatch as Patch;
+    for (const html of [patch.published_content.html, patch.published_content.variantB.html]) {
+      expect(html).not.toContain('id="__ps_clb"');
+      expect(html).not.toContain('id="__ps_cns"');
+      expect(html).toContain('id="__ps_pve"');
+    }
+  });
+
+  it("P3: Altbestand `gate: true` -> Leiste; daneben `dialog: 'off'` -> der neue gewinnt, weder Leiste noch Setzer", async () => {
+    const alt = client();
+    const resAlt = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      { ...snapshot, settings: { consent: { gate: true } } },
+      variantB11_5d
+    );
+    expect(resAlt.ok).toBe(true);
+    const patchAlt = alt.rec.updatePatch as Patch;
+    expect(patchAlt.published_content.html).toContain('id="__ps_clb"');
+    expect(patchAlt.published_content.variantB.html).toContain('id="__ps_clb"');
+
+    const vorrang = client();
+    const resVorrang = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      { ...snapshot, settings: { consent: { gate: true, dialog: "off" } } },
+      variantB11_5d
+    );
+    expect(resVorrang.ok).toBe(true);
+    const patchVorrang = vorrang.rec.updatePatch as Patch;
+    expect(patchVorrang.published_content.html).not.toContain('id="__ps_clb"');
+    expect(patchVorrang.published_content.html).not.toContain('id="__ps_cns"');
+    // POSITIVKONTROLLE: geschrieben wurde sehr wohl etwas.
+    expect(patchVorrang.published_content.html).toContain('id="__ps_pve"');
+  });
+});

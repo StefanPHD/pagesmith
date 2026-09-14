@@ -12,7 +12,8 @@ import {
   getTrackingKey,
   hasConversionRules,
   hasTargetPixelId,
-  isConsentGateOn,
+  CONSENT_DIALOG_UNKNOWN_MESSAGE,
+  getConsentDialog,
   isTrackingTarget,
   setCapiState,
   setHostingState,
@@ -1549,6 +1550,49 @@ export async function publishProject(
           : EMPTY_VARIANT_B_MESSAGE,
     };
 
+  // ===== DER EINWILLIGUNGS-SCHALTER: EIN UNBEKANNTER WERT VERWEIGERT ==============
+  // (Phase 11.5, Scheibe 11.5d)
+  //
+  // WARUM HIER UND NICHT BEI DER INJEKTION WEITER UNTEN — derselbe Grund wie beim
+  // Leer-Riegel darueber: Der Label-Block direkt darunter SCHREIBT bereits
+  // (insertDomainLabel/assignDomainLabel). Eine Verweigerung dahinter hinterliesse eine
+  // Label-Zeile. Hier oben schreibt sie GAR NICHTS.
+  //
+  // WARUM ABBRUCH UND KEIN RUECKFALL: "Unbekannt -> AUS" waere FAIL-OPEN — keine
+  // Wiederherstellung, kein Setzer, der Hook bliebe ungesetzt, alle Ziele erlaubt, und
+  // niemand merkte es. Der Preis des Abbruchs trifft den Betreiber an seinem Rechner,
+  // sofort und sichtbar (publishNotice); ein stiller Rueckfall traefe den Besucher auf
+  // der Live-Seite, unsichtbar und dauerhaft.
+  //
+  // AUS snapshot.settings, NICHT AUS owned.settings — DER GRUND IST EINE DIVERGENZ, DIE
+  // SONST STILL WAERE: Die Consent-Schluessel im Draht baut der CLIENT aus seinem
+  // LAUFENDEN Zustand (Memo consentTargets in components/CodeImporter.tsx liest
+  // settings, nicht savedSettings) — genau dem Objekt, das hier als snapshot.settings
+  // ankommt. owned.settings ist der GESPEICHERTE Stand und kann davon abweichen. Nur so
+  // stammen Schalter und Schluessel nachweislich aus EINEM Objekt; das ist die
+  // Begruendung, auf der die Ablage im Einstellungs-Blob ruht.
+  //
+  // DIE never-PRUEFUNG IST PFLICHT, NICHT KUER: Kommt ein Wert zu ConsentDialog hinzu
+  // (das Modal, Scheibe 11.5d-2), bricht hier der BUILD — statt dass der neue Wert
+  // still in einem der zwei Zweige landet. Eine Projektion wie `=== "bar"` machte das
+  // Modal lautlos zu AUS.
+  const consentDialog = getConsentDialog(snapshot.settings);
+  let consentGateOn: boolean;
+  switch (consentDialog) {
+    case "off":
+      consentGateOn = false;
+      break;
+    case "bar":
+      consentGateOn = true;
+      break;
+    case "unknown":
+      return { ok: false, error: CONSENT_DIALOG_UNKNOWN_MESSAGE };
+    default: {
+      const unhandled: never = consentDialog;
+      return unhandled;
+    }
+  }
+
   const currentSettings = (owned.settings ?? {}) as ProjectSettings;
   const publishedAt = new Date().toISOString();
 
@@ -1660,16 +1704,8 @@ export async function publishProject(
   // und loest den frueheren Ordering-Bug (Injektion NACH der Key-Sicherung, im HTML, das
   // gleich gespeichert wird). functionalHtml ist pro Publish frisch vom Client -> kein
   // Doppel-Inject. Der Emitter kommt DANEBEN — die CAPI-Wiring bleibt byte-gleich.
-  // DER EINWILLIGUNGS-SCHALTER (Phase 11.5, Scheibe 11.5a) — AUS snapshot.settings,
-  // NICHT AUS owned.settings.
-  // DER GRUND IST EINE DIVERGENZ, DIE SONST STILL WAERE: Die Consent-Schluessel im
-  // Draht baut der CLIENT aus seinem LAUFENDEN Zustand (Memo consentTargets in
-  // components/CodeImporter.tsx liest settings, nicht savedSettings) — genau dem
-  // Objekt, das hier als snapshot.settings ankommt. owned.settings ist der
-  // GESPEICHERTE Stand und kann davon abweichen. Nur so stammen Schalter und
-  // Schluessel nachweislich aus EINEM Objekt; das ist die Begruendung, auf der die
-  // Ablage im Einstellungs-Blob ruht.
-  const consentGateOn = isConsentGateOn(snapshot.settings);
+  // DER EINWILLIGUNGS-SCHALTER (consentGateOn) ist OBEN vor dem Label-Block gelesen
+  // und entschieden (Scheibe 11.5d); hier wird er nur weitergereicht.
   const base = {
     html: injectPageViewEmitter(functionalHtml, trackingKey, consentGateOn),
     mappings: snapshot.mappings,

@@ -78,12 +78,17 @@ async function payloadOf(beacon: BeaconSpy, call: number): Promise<Mutable> {
 beforeEach(() => {
   for (const g of GLOBALS) delete w[g];
   window.localStorage.clear();
+  // HYGIENE SEIT SCHEIBE 11.5d: Bei eingeschaltetem Schalter wertet mount() auch den
+  // Leisten-Block aus, und der haengt ein Element an das Testdokument. Ohne diese Zeile
+  // bliebe es ueber den Lauf hinaus stehen. Keine Assertion dieser Datei liest das DOM.
+  document.querySelectorAll("pagesmith-bar").forEach((el) => el.remove());
 });
 afterEach(() => {
   vi.restoreAllMocks();
   delete (navigator as unknown as Mutable).sendBeacon;
   for (const g of GLOBALS) delete w[g];
   window.localStorage.clear();
+  document.querySelectorAll("pagesmith-bar").forEach((el) => el.remove());
 });
 
 describe("11.5c — der nachgeholte Seitenaufruf, am echten Text", () => {

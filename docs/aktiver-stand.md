@@ -30,6 +30,7 @@ EINER DATEI MIT VERZEICHNIS NICHT", Zusatz 2026-08-27.
 11. Der gemessene Ausgangszustand vor der ersten Scheibe
 12. Der Ablehnungs-Zustand vor dem ersten Beacon — Zuschnitt der Scheibe 11.5a
 13. Die gespeicherte Entscheidung und der Weg zurück — Zuschnitt der Scheibe 11.5b
+14. Der nachgeholte Seitenaufruf — Zuschnitt der Scheibe 11.5c
 
 ## 1. Gegenstand der Phase — was gebaut wird und was ausdrücklich nicht dazugehört
 
@@ -530,7 +531,7 @@ und nie neu vergeben.
   null Treffer im Abschnitt, zehn in der ganzen Datei, Positivkontrolle `isTargetDeliverable`
   mit einem Treffer im Abschnitt). Die Gründe von (6) sind eigene Messungen und in (6) selbst
   als solche ausgewiesen.
-- **(7) bis (11):** Sie tragen ihre Provenienz je im eigenen Text, in der Zeile PROVENIENZ am
+- **(7) bis (14):** Sie tragen ihre Provenienz je im eigenen Text, in der Zeile PROVENIENZ am
   Ende des Eintrags, und werden deshalb hier nicht wiederholt.
 
 **DIE ANGABEN ZU (5) UND (6) SIND ARCHITEKT-ANGABEN (2026-09-12) UND AM REPO NICHT PRÜFBAR.**
@@ -869,6 +870,102 @@ Wert nicht mehr zur Aufrufzeit liest.
 PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-14, gegen die Empfehlung der Planungsstufe — so auch in
 der Commit-Nachricht von `15c8b5c` genannt; live belegt in Schritt 3 des Nachweises (VERMERK 2,
 OWNER-ANGABE). Die gebaute Reihenfolge ist GEMESSEN am Code (CC, 2026-09-14).
+
+**(12) DIE SCHNITTFOLGE DER PHASE STEHT.**
+
+DIE ENTSCHEIDUNG: 11.5c der nachgeholte Seitenaufruf · 11.5d der Dialog mit seiner Darstellung und
+zwei gleichwertigen Knöpfen · 11.5e Granularität und Widerruf · 11.5f Sprache, erst wenn ein
+zweiter Sprachraum gefordert ist.
+
+DER GRUND FÜR DIE EINSCHIEBUNG VON 11.5c: Die Dialog-Scheibe hat EINE riskante Achse — fremdes
+HTML. Eine Änderung am PageView-Script dazuzuschneiden hiesse, bei einem Fehlschlag nicht zuordnen
+zu können, was gebrochen ist. Dass diese Achse neu ist, steht am Bestand: Kein Baustein im
+ausgelieferten Text erzeugt heute ein sichtbares Element, einen Stil oder eine Klasse; das einzige
+Element, das dort zur Laufzeit entsteht, ist das nicht sichtbare `<script>` des fbevents-Bootstraps
+in `__psMetaInit` (`src/lib/tracking/meta.ts`). GEMESSEN am Code (CC, 2026-09-14).
+
+DIE BESCHRIFTUNG DER ZWEI KNÖPFE: „Ablehnen", NICHT „Nur Notwendige". Der Knopf löst `write([])`
+aus, und `write()` legt jeden nicht übergebenen Schlüssel in die Ablehnungs-Liste und belegt den
+Hook für ihn mit `false` — `write([])` lehnt also ALLE sechs Schlüssel ab, auch `analytics`
+(GEMESSEN am Code, CC, 2026-09-14, `buildConsentRestoreScript`; live in Schritt 5 von VERMERK 2,
+OWNER-ANGABE). Es bleibt nichts Notwendiges übrig. „Nur Notwendige" wird erst mit 11.5e sinnvoll,
+wenn es Kategorien gibt.
+
+WEN SIE BINDET: jede Scheibe dieser Phase in ihrem Zuschnitt; die Beschriftung ausdrücklich 11.5d.
+WANN SIE KIPPT: an zwei Bedingungen, beide aus dem Grund abgelesen. Die Einschiebung, sobald sich
+zeigt, dass der nachgeholte Seitenaufruf nicht ohne den Dialog gebaut oder geprüft werden kann —
+dann trennt sie die Achsen nicht mehr. Die Beschriftung, sobald es eine Kategorie gibt, die ohne
+Einwilligung bestehen bleibt (11.5e) — dann trägt „es bleibt nichts Notwendiges übrig" nicht mehr.
+
+PROVENIENZ: Schnittfolge und Grund der Einschiebung OWNER-ENTSCHEIDUNG 2026-09-14; die
+Beschriftung ARCHITEKT-ENTSCHEIDUNG 2026-09-14 — beides Angaben aus dem Auftrag dieses Tages, am
+Repo nicht prüfbar. Die Aussagen über `write()` und den Bestand GEMESSEN am Code (CC, 2026-09-14).
+
+**11.5f HÄNGT AN EINEM EXTERNEN AUSLÖSER.** Das Kriterium für [x] steht in CLAUDE.md, „## Roadmap &
+aktueller Stand", unter dem Titel „WANN [x] GESETZT WIRD — DAS KRITERIUM": „EINE PHASE GEHT AUF [x],
+WENN KEIN CODE MEHR ZU SCHREIBEN IST. EXTERNE ABHÄNGIGKEITEN HALTEN SIE NICHT OFFEN — Messungen,
+Arbeit an einem Fremdkonto, Owner-Entscheidungen: sie werden GEHOBEN, nicht abgewartet. Eine Phase,
+die auf ihr letztes TODO wartet, tritt nie ein." (GELESEN, CC, 2026-09-14.) FOLGE: Kommt bis zum
+Phasenende kein zweiter Sprachraum, wird 11.5f als offener Punkt GEHOBEN und hält die Phase nicht
+offen.
+PROVENIENZ DIESES ABSATZES: BEFUND CC 2026-09-14, als Folge vom Architekten übernommen.
+
+**(13) DER DIALOG-BLOCK SITZT ZWISCHEN WIEDERHERSTELLUNG UND SETZER.**
+
+DIE ENTSCHEIDUNG: In der Verkettung in `injectPageViewEmitter` steht der Dialog-Block hinter der
+Wiederherstellung und vor dem Setzer.
+
+DER GRUND, GEMESSEN am Code (CC, 2026-09-14, `buildConsentRestoreScript` und
+`buildConsentDenyScript`): An dieser Stelle deckt EINE Prüfung — `window.pagesmithConsent !==
+undefined` — beide Fälle ab, in denen der Dialog NICHT erscheinen darf.
+- Die Wiederherstellung kehrt zurück, wenn der Hook schon gesetzt ist; ist er es nicht und liefert
+  `read()` eine Entscheidung, belegt sie ihn. Hinter ihr ist der Hook also genau dann gesetzt, wenn
+  ein Fremd-CMP vorher gesetzt hat ODER eine frühere Entscheidung eingespielt wurde.
+- Der Setzer belegt einen noch nicht gesetzten Hook mit sechs `false`. **HINTER DEM SETZER IST DER
+  HOOK BEI EINGESCHALTETEM SCHALTER DAMIT IMMER BELEGT** — „ein Fremd-CMP hat entschieden" und
+  „unser Setzer hat abgelehnt" sind dort nicht mehr zu trennen.
+- `read()` ersetzt die Prüfung nicht: Es sagt etwas über den Speicher, nicht über ein Fremd-CMP.
+
+SIE VERTRÄGT SICH MIT ENTSCHEIDUNG (8): Der Setzer bleibt davon unberührt, T3 und T3b prüfen nur
+ihn, und (8) hält selbst fest, dass kein Bestandstest das unmittelbare Aufeinanderfolgen der Blöcke
+prüft. Die Prüfung ist dieselbe wie in Entscheidung (3).
+
+DIE GRENZEN: Ein asynchron setzendes Fremd-CMP erfasst auch diese Prüfung nicht (Vorrat (2)). Und
+wirft der Zugriff auf den Speicher, liefert `read()` „nie gefragt", der Hook bleibt ungesetzt, und
+der Dialog-Block fände die Lage „nichts entschieden" vor, obwohl `write()` dort `false` gibt
+(GEMESSEN am Code; was ein Browser tatsächlich wirft, ist ungemessen).
+
+WEN SIE BINDET: Scheibe 11.5d und jede Scheibe, die an der Verkettung oder an einem Block vor dem
+Setzer arbeitet.
+WANN SIE KIPPT: sobald die Wiederherstellung nicht mehr vor dem Setzer steht oder sich die Prüfung
+aus Entscheidung (3) ändert — dann trennt die eine Prüfung die Fälle nicht mehr; ebenso unter der
+Kipp-Bedingung von (3), sobald es einen Weg gibt, eine spätere Fremdsetzung zu erkennen.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-14, vom Owner angenommen — eine Angabe aus dem Auftrag
+dieses Tages, am Repo nicht prüfbar. Der Grund GEMESSEN am Code (CC, 2026-09-14).
+
+**(14) KEIN DIALOG IN DER EDITOR-VORSCHAU.**
+
+DIE ENTSCHEIDUNG: Der Dialog erscheint im veröffentlichten Text, nicht in der Vorschau des Editors.
+
+DER GRUND: Die Vorschau baut über `generateFunctional` im Modus „preview"
+(`src/components/CodeImporter.tsx`) und sieht die Server-Injektion nie — `injectPageViewEmitter`
+wird im Produktivcode allein aus `publishProject` (`src/app/projects/actions.ts`) gerufen (GEMESSEN
+am Code, CC, 2026-09-14). Den Dialog dort zu zeigen, verlangte eine ZWEITE Erzeugungsstelle für
+denselben Baustein — dieselbe Divergenz-Bauform, gegen die in dieser Datei schon Entscheidung (4)
+(„nie aus einer zweiten Liste") und Entscheidung (5) (kein „ZWEITER Ort, aus dem derselbe
+ausgelieferte Text gespeist wird") stehen.
+
+DER PREIS WIRD MITGENANNT: Der Betreiber sieht erst nach dem Veröffentlichen, was auf seiner Seite
+steht. Aufgefangen wird das produktseitig durch einen Hinweis im Editor; **DER HINWEIS IST NICHT
+TEIL VON 11.5d UND NOCH NICHT ZUGESCHNITTEN.**
+
+WEN SIE BINDET: Scheibe 11.5d und jede Scheibe, die den Dialog oder die Vorschau berührt.
+WANN SIE KIPPT: sobald Vorschau und veröffentlichter Text aus EINER Erzeugungsstelle gespeist
+werden — dann gibt es die zweite Stelle nicht mehr, die der Grund ausschliesst.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-14 — eine Angabe aus dem Auftrag dieses Tages, am Repo nicht
+prüfbar. Die Aussagen über Vorschau und Aufrufer GEMESSEN am Code (CC, 2026-09-14).
 
 ## 9. Vorrat — gemeldet, nicht gebaut
 
@@ -1497,3 +1594,113 @@ Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 20
   VERMERK 2 behauptet es deshalb auch nicht.
 - **Der Schlusssatz "DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE"**
   war eine Auflage an den Zuschnitt und ist mit ihm abgelaufen.
+
+## 14. Der nachgeholte Seitenaufruf — Zuschnitt der Scheibe 11.5c
+
+**WAS DIESE SCHEIBE IST:** die dritte dieser Phase, in der Schnittfolge aus Entscheidung (12). Sie
+holt den Seitenaufruf nach, wenn der Besucher auf derselben Seite zustimmt — und sonst nichts.
+
+**DAS PROBLEM, AM CODE NACHGESEHEN** (CC, 2026-09-14, `buildPageViewScript` in
+`src/lib/analytics/pageview-emitter.ts`):
+- Das PageView-Script läuft EINMAL, beim Parsen, als sofort ausgeführte Funktion.
+- Seine Reihenfolge: zuerst der Guard `window.__ps_pv`, dann die Existenzprüfung auf `__psConsent`,
+  dann die Einwilligung für den Analytics-Schlüssel — erst DANACH wird `window.__ps_pv` gesetzt und
+  gesendet. Bei Ablehnung kehrt es also zurück, BEVOR sein Guard gesetzt ist.
+- Nichts löst es erneut aus: `__ps_pv` kommt im Produktivcode nur in diesem Script vor, und
+  `write()` hat im Produktivcode keinen Aufrufer (Achsen `__ps_pv` und `__psConsentStore|.write(`,
+  `git grep` über `src/` ohne Testdateien).
+
+**WARUM DAS JETZT ZÄHLT UND VORHER NICHT:** Ohne Dialog trifft es niemanden. Mit Dialog trifft es
+JEDEN ERSTBESUCHER, der zustimmt — seine Sitzung wird nie gezählt, und die Grundmenge der
+Auswertung wird schief. (ARCHITEKT-ANGABE 2026-09-14; die Wirkung auf die Auswertung ist eine
+ABLEITUNG aus dem Mechanismus oben, nicht gemessen.)
+
+**WAS GEBAUT WIRD:** Nach einem erfolgreichen `write()`, das den Analytics-Schlüssel enthält, wird
+der Seitenaufruf nachgesendet — falls er beim Laden unterblieb.
+
+**DIE SENDE-LOGIK BLEIBT AN EINER STELLE.** `write()` baut den Beacon NICHT nach. Der
+PageView-Erzeuger stellt sie bereit, `write()` ruft sie über eine EXISTENZPRÜFUNG. Die Bauform
+steht im Bestand: `typeof __psConsent !== "function"` in `buildPageViewScript`, gleichartig dreimal
+in `src/lib/tracking/meta.ts` (GEMESSEN, CC, 2026-09-14). Ein zweiter Erzeuger für denselben
+Beacon wäre die Divergenz-Bauform, die dieses Projekt mehrfach als still führt.
+
+**DIE REIHENFOLGE, AM CODE NACHGESEHEN:** Das PageView-Script steht in der Verkettung HINTER der
+Wiederherstellung, die `write()` trägt (`gate + restore + setter + buildPageViewScript(...)` in
+`injectPageViewEmitter`). Ein `write()` nach dem Parsen findet es also vor. Im Bestand ruft niemand
+`write()`; der Dialog aus 11.5d wird es auf Klick tun. Ein Aufruf WÄHREND des Parsens, aus einem
+Block vor dem PageView-Script, fände die Sende-Logik noch nicht vor — die Existenzprüfung liesse
+ihn ohne Sendung zurückkehren, und das PageView-Script sähe bei seinem eigenen Lauf den schon
+gesetzten Hook (ABLEITUNG aus der Reihenfolge, nicht gelaufen).
+
+**DIE DREI AUFLAGEN:**
+- **KEIN DOPPEL.** Wurde der Seitenaufruf beim Laden gesendet, darf `write()` keinen zweiten
+  auslösen. Im Bestand trägt das der Guard `window.__ps_pv`: Das Script prüft ihn als Erstes und
+  setzt ihn vor dem Senden.
+- **NUR BEI ANALYTICS.** `write(["meta"])` ohne den Analytics-Schlüssel löst KEINEN Seitenaufruf aus.
+  Das ist die fail-closed-Achse dieser Scheibe. Im Bestand prüft das PageView-Script die
+  Einwilligung für den Analytics-Schlüssel selbst, am Hook, den `write()` gesetzt hat.
+- **NUR BEI ERFOLG.** Gibt `write()` `false` zurück, wird nichts nachgesendet — der Hook ist dann
+  ebenfalls nicht gesetzt (Entscheidung (11)).
+
+**WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT:**
+- der Dialog und jede Oberfläche davon (11.5d);
+- jede Änderung an `consent.ts`, `consent-wire.ts` und `ingest.ts`;
+- jede Änderung am Setzer und an der Wiederherstellung, ausser dem Aufruf selbst;
+- der Export-Pfad (Vorrat (4));
+- **der offene Punkt „DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST"**
+  (docs/offene-punkte.md, im Volltext GELESEN, CC, 2026-09-14). Sein Trigger ist diese Phase. Er
+  ist eine ANDERE Achse — die ausbleibende Browser-Bestätigung einer Conversion bei teilweiser
+  Einwilligung, der Nenner der Adblocker-Kachel und ihr Stichtag — und wird von dieser Scheibe
+  nicht geschlossen.
+
+**DIE TRAGENDEN INVARIANTEN:**
+- Bei ausgeschaltetem Schalter ändert sich NICHTS — ohne Consent-Block gibt es kein `write()`. Die
+  Schnittstelle entsteht allein im Wiederherstellungs-Block, und der nur im `consentGateOn`-Zweig
+  von `injectPageViewEmitter` (GEMESSEN, CC, 2026-09-14).
+- Die Blöcke bleiben byte-gleich, ausser an zwei Blöcken — dem PageView-Script und der
+  Wiederherstellung.
+- EINE Splice-Stelle, EINE Konkatenation — heute `lastIndexOf("</body>")` und
+  `gate + restore + setter + buildPageViewScript(...)` in `injectPageViewEmitter`.
+
+**AM BESTAND NACHGESEHEN, UND ES GEHÖRT ZU DEN ERSTEN ZWEI INVARIANTEN** (GEMESSEN, CC, 2026-09-14):
+Das PageView-Script wird bei JEDEM Veröffentlichen injiziert, auch bei ausgeschaltetem Schalter, und
+T1 in `consent-setter.test.ts` hält den ausgelieferten Text bei AUS gegen den Vergleichswert aus
+VERMERK 1 — über die volle Pipeline, das PageView-Script eingeschlossen. Stellt der
+PageView-Erzeuger die Sende-Logik bereit, berührt das dieses Script; der Aufruf berührt die
+Wiederherstellung. Die Scheibe ändert damit zwei Blöcke, nicht einen, und eine Bereitstellung, die
+nicht am Schalter hängt, ändert den Text auch bei AUS.
+
+**AUFGELÖST — ARCHITEKT-ENTSCHEIDUNG 2026-09-14: DIE BEREITSTELLUNG DER SENDE-LOGIK HÄNGT AM
+SCHALTER**, wie Setzer und Wiederherstellung: ein expliziter Zweig, nie ein Nebeneffekt.
+- **DER GRUND IST EIN SACH-GRUND, KEIN TEST-GRUND:** Bei AUS gibt es keinen Consent-Block, also kein
+  `write()`, also KEINEN AUFRUFER. Die Logik hätte dort niemanden. Sie nicht zu erzeugen ist korrekt
+  und nicht bloss bequem.
+- **DIE FOLGE FÜR T1:** Der ausgelieferte Text bleibt bei AUS byte-gleich, und T1 bleibt
+  unangetastet. Das ist die Probe auf den Sach-Grund — nicht sein Zweck.
+- **DER ZWEIG IST AM BESTAND MÖGLICH** (GEMESSEN am Code, CC, 2026-09-14): `buildPageViewScript` hat
+  im Produktivcode genau einen Aufrufer, die Verkettung in `injectPageViewEmitter`, und dort steht
+  der Schalter `consentGateOn` bereits im Gültigkeitsbereich — Setzer und Wiederherstellung zweigen
+  in derselben Funktion an ihm ab. Daneben ruft ein Test in `pageview-emitter.test.ts`
+  `buildPageViewScript` direkt auf (Achse `buildPageViewScript(`, `git grep` über `src/`).
+- **WAS BLEIBT:** Die Scheibe ändert ZWEI Blöcke, nicht einen — das PageView-Script und die
+  Wiederherstellung.
+
+**DIE DEMOBARKEIT, Regression zuerst.**
+VORBEDINGUNGEN, dieselben wie im Zuschnitt der Scheibe 11.5b und dort an ihren Quellen belegt: nach
+dem Deploy NEU VERÖFFENTLICHEN · den A/B-Betrieb feststellen · KEIN laufender Testmodus · alles im
+SELBEN Browser auf DERSELBEN Adresse.
+
+DIE SCHRITTE:
+1. Schalter AUS: unverändert — das ist die Positivkontrolle.
+2. Schalter AN, Ablehnung: kein Seitenaufruf.
+3. Zustimmung per Schnittstelle OHNE Neuladen: der Seitenaufruf kommt an, und zwar GENAU EINMAL.
+4. Zustimmung ohne den Analytics-Schlüssel: kein Seitenaufruf.
+5. Nach Neuladen mit gespeicherter Zustimmung: der Seitenaufruf kommt beim Laden, und ein erneutes
+   `write()` löst keinen zweiten aus.
+
+**EINE FRAGE FÜR DIE PLANUNGSSTUFE, HIER NICHT BEANTWORTET:** Berührt ein nachgesendeter
+Seitenaufruf die Verlustraten-Rechnung — hat der PageView einen Bestätigungs-Kanal, und ändert ein
+späterer Zeitpunkt daran etwas? Das ist am Code zu klären, BEVOR gebaut wird.
+
+**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.** Kein Plan, keine
+Namen neuer Funktionen, keine Gestalt der Bereitstellung.

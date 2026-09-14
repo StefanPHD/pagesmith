@@ -29,6 +29,7 @@ EINER DATEI MIT VERZEICHNIS NICHT", Zusatz 2026-08-27.
 10. Hebungs-Kandidaten
 11. Der gemessene Ausgangszustand vor der ersten Scheibe
 12. Der Ablehnungs-Zustand vor dem ersten Beacon — Zuschnitt der Scheibe 11.5a
+13. Die gespeicherte Entscheidung und der Weg zurück — Zuschnitt der Scheibe 11.5b
 
 ## 1. Gegenstand der Phase — was gebaut wird und was ausdrücklich nicht dazugehört
 
@@ -384,6 +385,8 @@ und nie neu vergeben.
   null Treffer im Abschnitt, zehn in der ganzen Datei, Positivkontrolle `isTargetDeliverable`
   mit einem Treffer im Abschnitt). Die Gründe von (6) sind eigene Messungen und in (6) selbst
   als solche ausgewiesen.
+- **(7) bis (10):** Sie tragen ihre Provenienz je im eigenen Text, in der Zeile PROVENIENZ am
+  Ende des Eintrags, und werden deshalb hier nicht wiederholt.
 
 **DIE ANGABEN ZU (5) UND (6) SIND ARCHITEKT-ANGABEN (2026-09-12) UND AM REPO NICHT PRÜFBAR.**
 Weder die zwei Einträge noch ihre Ursprungsfassungen im Zuschnitt der Scheibe 11.5a noch die
@@ -549,6 +552,153 @@ entfällt, sobald `saveProject` den Einstellungs-Blob NICHT MEHR ganzheitlich er
 überlebt ein Wert auch ohne Bedienelement. Die zweite entfällt, sobald `settingsEqual` nicht
 mehr aufzählt, WAS es vergleicht, sondern strukturell vergleicht — dann ist ein eigener Term
 für den Schalter überflüssig.
+
+**(7) DER SPEICHER IST localStorage, ORIGIN-GEBUNDEN.**
+
+DIE ENTSCHEIDUNG: Die Entscheidung des Besuchers wird im `localStorage` der Seite abgelegt, nicht
+in einem Cookie.
+
+DER GRUND, in dieser Reihenfolge:
+- **Ein Cookie ginge mit jedem Request an den Host der Seite mit — auch an `/api/e`, den
+  meistgetroffenen Pfad der Plattform.** Der PageView-Beacon adressiert `/api/e` RELATIV
+  (`buildPageViewScript`, `src/lib/analytics/pageview-emitter.ts`), trifft also denselben Host;
+  dass ein host-only Cookie dorthin mitfährt, hält der Kommentar an `serializeVariantCookie`
+  (`src/lib/hosting/variant.ts`) für das A/B-Cookie fest. Der Conversion-Beacon adressiert
+  dagegen die absolute Adresse aus `getCapiProxyUrl` (`${NEXT_PUBLIC_APP_URL}/api/e`,
+  `src/lib/capi/proxy.ts`). Beides GEMESSEN am Code (CC, 2026-09-14); ob jene Adresse denselben
+  Host trifft wie die Seite, hängt an der Umgebung und ist NICHT erhoben.
+- **Die Wildcard-Falle entsteht gar nicht erst, statt eingehalten werden zu müssen** — gemeint
+  ist die Regel „HOST-ONLY-COOKIES AUF GETEILTEN WILDCARD-DOMAINS" (docs/immer-beachten.md).
+  Dass `localStorage` an den Origin gebunden ist und kein Domain-Attribut kennt, ist eine
+  Eigenschaft der Browser-Plattform und am Repo NICHT messbar.
+- **Der Server braucht den Wert nicht.** Das Urteil über die Ziel-Schlüssel reist im
+  `cns`-Feld des Conversion-Beacons mit (`buildCapiBeaconStatement`, `src/lib/tracking/meta.ts`),
+  und der Analytics-Schlüssel erreicht den Draht nie — er wirkt allein im Browser (Abschnitt 11
+  (d), am Code unverändert, CC, 2026-09-14). Ein Cookie wäre ein zweiter Kanal für dieselbe
+  Aussage.
+
+VERWORFEN: ein host-only Cookie. **Sein Vorzug ist echt:** Für ein Cookie gibt es im Bestand eine
+Hausform — `serializeVariantCookie`, host-only, `Secure`, `SameSite=Lax`, ohne Lebensdauer —,
+für `localStorage` keine. Die Hausform ist allerdings ein SERVER-gesetztes `HttpOnly`-Cookie; ein
+Cookie, das eine Entscheidung im Browser festhält, könnte `HttpOnly` nicht tragen. Übertragbar
+wären die übrigen Attribute, nicht die Bauform als Ganzes (GEMESSEN am Code, CC, 2026-09-14).
+
+WAS DIE ENTSCHEIDUNG ERST MÖGLICH GEMACHT HAT: Vorrat (10) — die „Artefakt-Storage-Regel"
+existiert nicht — und Vorrat (11) — der Phase-9-Ausschluss ist auf den Server-Split formuliert.
+Rechtlich stellt jene Stelle Cookie und Speicher selbst gleich („fallen rechtlich unter dieselbe
+TTDSG-§25-Logik"); Vorrat (11) hält fest, dass sie das ohne Quelle und ohne Provenienz setzt.
+
+DIE GRENZE: **Das ist KEINE Rechtsauskunft.** Die Stelle in Phase 9 verweist für ihren eigenen
+Fall auf anwaltliche Klärung vor dem öffentlichen Launch; das gilt hier unverändert.
+
+WEN SIE BINDET: jede Scheibe dieser Phase, die die Entscheidung des Besuchers ablegt, liest oder
+ihren Ort ändert.
+WANN SIE KIPPT: an zwei Bedingungen, beide aus dem Grund abgelesen. ERSTENS, sobald der Server
+den gespeicherten Wert selbst braucht — dann ist ein Cookie kein zweiter Kanal mehr, sondern der
+einzige. ZWEITENS, sobald eine rechtliche Klärung Speicher und Cookie NICHT gleichstellt — dann
+fällt die Voraussetzung, die die Entscheidung erst möglich gemacht hat.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-14 — eine Angabe aus dem Auftrag dieses Tages, am Repo
+nicht prüfbar. Die Aussagen über den Bestand sind GEMESSEN am Code (CC, 2026-09-14), wo nicht
+anders gekennzeichnet.
+
+**(8) DIE WIEDERHERSTELLUNG IST EIN EIGENER BLOCK VOR DEM SETZER — DER SETZER BLEIBT BYTE-GLEICH.**
+
+DIE ENTSCHEIDUNG: Die Reihenfolge im Dokument ist Gate, Wiederherstellung, Setzer,
+PageView-Script — in EINER Verkettung an EINER Einfügestelle (`injectPageViewEmitter`).
+
+DER GRUND IST EIN TEST-GRUND UND WIRD ALS SOLCHER BENANNT: Zwei Wächter über die Gestalt des
+Setzers stehen in `src/lib/tracking/consent-setter.test.ts`, und sie sind in 11.5a bewusst so
+gebaut (GELESEN am Test, CC, 2026-09-14):
+- **T3b** verlangt über den GANZEN Block `not.toContain("true")`.
+- **T3** zählt über den GANZEN Block die Vorkommen von `": false"` und verlangt GENAU sechs; sein
+  Kommentar: „GENAU sechs, nicht mindestens sechs".
+
+Eine Leselogik IM Setzer zwänge, sie anzupassen: T3b fiele an jedem Vergleich auf `=== true`, den
+eine Auswertung nach der Regel des Konsumenten braucht; T3 fiele an jedem weiteren `": false"`,
+etwa in einem bedingten Ausdruck. (ABLEITUNG aus beiden Tests; welche Schreibweise T3 berühren
+würde, hängt am Bau.)
+**OWNER-AUFLAGE 2026-09-14: Wächter werden nicht passend gebogen, damit gebauter Code grün wird.**
+
+DER MECHANISMUS, DER DARAUS FOLGT: Belegt die Wiederherstellung den Hook, sieht der Setzer danach
+„gesetzt" und kehrt zurück — seine Prüfung ist `window.pagesmithConsent !== undefined`
+(`buildConsentDenyScript`, GEMESSEN am Code, CC, 2026-09-14). **Das ist die Prüfung aus
+Entscheidung (3), UNVERÄNDERT** — sie trennt ab jetzt drei Fälle statt zwei: Fremd-CMP gesetzt,
+Entscheidung wiederhergestellt, nichts von beidem.
+
+DIE WIEDERHERSTELLUNG PRÜFT IHRERSEITS ZUERST, OB DER HOOK SCHON EXISTIERT. Ohne das schlüge sie ein
+Fremd-CMP, das früher im Dokument sitzt — und Entscheidung (3) wäre über den Umweg gebrochen.
+DIE GRENZE AUS ENTSCHEIDUNG (3) GILT FÜR DIESEN BLOCK GENAUSO: Ein CMP, das den Hook ASYNCHRON nach
+dem Seitenaufbau setzt, erfasst diese Prüfung nicht (Vorrat (2)).
+
+KEIN BESTANDSTEST PRÜFT, DASS DIE BLÖCKE UNMITTELBAR AUFEINANDER FOLGEN: T2 in
+`consent-setter.test.ts` vergleicht die Reihenfolge über Positionen im Text, T8 und T8b in
+`src/app/projects/publish.test.ts` nur die Anwesenheit (GELESEN an den Tests, CC, 2026-09-14). Ein
+Block zwischen Gate und Setzer verletzt keine ihrer Zusicherungen — ABLEITUNG, nicht gelaufen.
+
+WEN SIE BINDET: jede Scheibe, die am Setzer, an der Verkettung in `injectPageViewEmitter` oder an
+einem Block davor arbeitet.
+WANN SIE KIPPT: sobald der Setzer aus einem EIGENEN Grund geändert werden muss — etwa weil
+Entscheidung (3) kippt — oder sobald T3 und T3b als Gestalt-Wächter bewusst abgelöst werden. Dann
+trägt der Test-Grund nicht mehr, und der Ort der Leselogik ist neu zu entscheiden.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-14; die Auflage darin OWNER, 2026-09-14 — beides
+Angaben aus dem Auftrag dieses Tages, am Repo nicht prüfbar.
+
+**(9) DER HOOK WIRD IMMER AUS DER HEUTIGEN SECHSER-ABLEITUNG GEBAUT, NIE ROH AUS DEM SPEICHER
+ÜBERNOMMEN.**
+
+DIE ENTSCHEIDUNG: Schlüssel für Schlüssel aus `ALL_CONSENT_KEYS`; was der gespeicherte Wert nicht
+führt, wird abgelehnt.
+
+ZWEI GRÜNDE, und der zweite ist der schärfere — beide GEMESSEN am Konsumenten (`buildConsentRuntime`
+und `buildConsentAllRuntime`, `src/lib/tracking/consent.ts`, CC, 2026-09-14):
+- **Ein Objekt, das vor einem neuen Ziel gespeichert wurde, kennt dessen Schlüssel nicht.** Beim
+  Konsumenten ergibt ein fehlender Schlüssel `v[t] === true` bzw. `obj[ts[i]] === true`, also
+  `false`. Das ist richtig: Über dieses Ziel hat niemand entschieden.
+- **Ein gespeichertes literales `true` erlaubt beim Konsumenten JEDEN Schlüssel, auch künftige.**
+  `__psConsent` antwortet bei `v === true` für jedes Ziel mit „erlaubt", `__psConsentAll` setzt
+  dann alle angefragten Schlüssel auf `true`. Wer den Speicherwert als Ganzes übernimmt, baut
+  genau diesen Weg.
+
+DAS IST DIE FAIL-CLOSED-ACHSE DIESER SCHEIBE und die Einlösung der Freigabe „automatisches Sperren
+neu hinzugefügter Ziel-Schlüssel" (OWNER 2026-09-14).
+SIE ERFÜLLT ZUGLEICH ENTSCHEIDUNG (4) und die Bindung „DIE ZIEL-SCHLÜSSEL SIND EINE EINBAHNSTRASSE"
+der Roadmap-Zeile 11.5: `ALL_CONSENT_KEYS` leitet sich aus `CONSENT_KEY_BY_TARGET` ab, derselben
+Zuordnung, aus der der Erzeuger seine Draht-Schlüssel bildet.
+
+WEN SIE BINDET: jede Scheibe, die aus einem gespeicherten Wert den Hook herstellt.
+WANN SIE KIPPT: der zweite Grund entfällt, sobald der Konsument ein literales `true` nicht mehr als
+Freigabe aller Schlüssel liest — das wäre ein Eingriff in ihn und stiesse auf Entscheidung (1). Der
+erste entfällt, sobald ein neues Ziel bei bestehenden Entscheidungen bewusst als erlaubt gelten
+soll — das wäre eine Owner-Entscheidung gegen die Freigabe vom 2026-09-14.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-14; die Freigabe OWNER, 2026-09-14 — beides Angaben
+aus dem Auftrag dieses Tages, am Repo nicht prüfbar.
+
+**(10) DIE DREI ZUSTÄNDE LEBEN IM SPEICHER, NICHT AM HOOK.**
+
+DIE ENTSCHEIDUNG: „nie gefragt", „zugestimmt" und „abgelehnt" werden im gespeicherten Wert
+unterscheidbar gehalten, nicht am Hook.
+
+DER GRUND: Am Hook sind „nie gefragt, Setzer hat abgelehnt" und „Besucher hat abgelehnt" identisch —
+beides ein Objekt ohne `true`, beides heisst verboten, und für den Konsumenten ist das richtig.
+GEMESSEN am Code (CC, 2026-09-14) für den Setzer (`buildConsentDenyScript` schreibt ein Objekt mit
+sechs `false`) und für den Konsumenten; dass eine wiederhergestellte Ablehnung dieselbe Gestalt hat,
+ist eine ABLEITUNG aus Entscheidung (9) — den Block gibt es noch nicht.
+
+FOLGE: Die Unterscheidung, die ein späterer Dialog braucht („Banner bleibt zu" gegen „Banner öffnet
+sich"), kann NUR im gespeicherten Wert liegen. **Die Gestalt wählt der Bau-Plan; bindend ist, DASS
+die drei Zustände unterscheidbar sind und dass eine Abfrage danach den Zustand NICHT verändert.**
+
+WEN SIE BINDET: jede Scheibe, die den gespeicherten Wert gestaltet oder abfragt — ausdrücklich
+den Dialog.
+WANN SIE KIPPT: sobald der Hook selbst einen eigenen Zustand für „entschieden, abgelehnt" trägt,
+den der Konsument von „nie gefragt" unterscheidet — das setzte einen Eingriff in den Konsumenten
+voraus und stiesse auf Entscheidung (1).
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-14 — eine Angabe aus dem Auftrag dieses Tages, am Repo
+nicht prüfbar.
 
 ## 9. Vorrat — gemeldet, nicht gebaut
 
@@ -1090,3 +1240,90 @@ Die Titel sind ohne Überschriften-Marke zitiert.
 **WARUM SIE UMGEZOGEN SIND:** Sie tragen ABLAGE- und BAUFORM-Gründe, die jede weitere Runde an
 diesem Schalter binden. Das ist die Bauform von Abschnitt 8 und nicht die eines abgelaufenen
 Zuschnitts; in Abschnitt 12 wären sie mit ihm gealtert.
+
+## 13. Die gespeicherte Entscheidung und der Weg zurück — Zuschnitt der Scheibe 11.5b
+
+**WAS DIESE SCHEIBE IST:** die zweite dieser Phase. Sie legt die Entscheidung des Besuchers ab und
+stellt sie beim nächsten Aufruf wieder her, BEVOR der Setzer aus 11.5a „abgelehnt" schreibt — und
+sonst nichts. Ohne sie gilt jede Zustimmung nur bis zum nächsten Laden.
+
+**WAS GEBAUT WIRD — VIER STÜCKE:**
+- **EINE SPEICHER-SCHICHT:** lesen, schreiben, validieren — und fail-closed bei einem werfenden
+  Zugriff.
+- **DER WIEDERHERSTELLUNGS-BLOCK** nach Entscheidung (8) und (9).
+- **EINE PROGRAMMIERSCHNITTSTELLE IM ARTEFAKT**, über die eine Entscheidung geschrieben und der
+  gespeicherte Zustand NEBENWIRKUNGSFREI abgefragt wird.
+- **DIE INJEKTION DES NEUEN BLOCKS** in dieselbe Verkettung in `injectPageViewEmitter`.
+
+**DIE GESTALT-ENTSCHEIDUNGEN STEHEN NICHT HIER, SONDERN IN ABSCHNITT 8** — die Einträge (7) bis
+(10). **WARUM DORT UND NICHT HIER, und der Satz gehört dazu, sonst zieht die nächste Runde sie „der
+Nähe halber" hierher:** Sie binden ÜBER diese Scheibe hinaus; jede weitere Scheibe dieser Phase
+erbt sie. Stünden sie im Zuschnitt, müssten sie beim Abschluss der Scheibe umziehen — eine Runde
+für nichts, mit dem Risiko, dass dabei eine liegenbleibt.
+(Der Satz ist dem Zuschnitt der Scheibe 11.5a entnommen, Commit `3c2787a`; in Abschnitt 12 steht
+seit dessen Verdichtung nur noch sein Titel.)
+
+**DIE LESART DER BINDUNG „DER VORHER-ZUSTAND IST DIE EIGENTLICHE ARBEIT" — ARCHITEKT/CC-LESART
+2026-09-14, KEINE MESSUNG UND KEINE OWNER-ENTSCHEIDUNG.**
+DIE BINDUNG IM WORTLAUT (docs/roadmap.md, Roadmap-Zeile 11.5; GELESEN, CC, 2026-09-14): „Ein
+Dialog, der erst NACH der Entscheidung setzt, ändert nichts: bis dahin gilt "nicht gesetzt", und
+der erste Seitenaufruf ist durch. Der eigene Dialog setzt VOR jedem Beacon einen Wert, der
+Ablehnung bedeutet, und überschreibt ihn nach der Zustimmung."
+DIE LESART: Die Wiederherstellung überschreibt den Ablehnungs-Wert nicht im Nachhinein, sondern
+verhindert, dass er überhaupt entsteht — sie belegt den Hook vor dem Setzer, und der Setzer kehrt
+an seiner Prüfung zurück (Entscheidung (8)). Das Ergebnis ist dasselbe, der Weg ein anderer. Sie
+ist damit der Fall „nach der Zustimmung" und kein Bruch der Bindung.
+**DIE KENNZEICHNUNG IST DER PUNKT DIESES BLOCKS:** Die Lesart trägt die ganze Scheibe, und sie ist
+weder gemessen noch vom Owner entschieden. Wer sie für falsch hält, trägt gegen sie vor und findet
+sie dafür aufgeschrieben.
+
+**DER GESPEICHERTE WERT IST CLIENT-KONTROLLIERTE EINGABE** und wird vor jeder Verwendung validiert.
+Die Disziplin steht im Bestand: docs/immer-beachten.md, „EIN SERVERSEITIG GELESENER COOKIE-WERT
+BLEIBT CLIENT-KONTROLLIERTE EINGABE" (Phase 9). Ihr Gegenstand ist ein anderer — ein Cookie, das
+der Server liest —, ihre Achse dieselbe: Dass ein Wert aus eigenem Code stammen SOLLTE, verhindert
+nicht, dass jemand einen beliebigen einträgt.
+
+**DIE NAMEN SIND NAMESPACED:** Der Speicher-Schlüssel und jeder Bezeichner im Artefakt tragen das
+Projekt-Präfix, wie es der Bestand im Artefakt führt (`__ps_cns`, `__ps_pve`, `__psConsent`);
+Konstanten liegen in geteilten Dateien.
+
+**WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT:**
+- der Dialog und jede Oberfläche davon;
+- Sprache, Granularität und Widerruf als Bedienelement;
+- jede Änderung an `consent.ts`, `consent-wire.ts` und `ingest.ts`;
+- jede Änderung an `buildConsentDenyScript` und an den Tests aus 11.5a;
+- der Export-Pfad (Vorrat (4));
+- eine Serverseite des gespeicherten Werts.
+
+**DIE TRAGENDEN INVARIANTEN:**
+- Bei AUSGESCHALTETEM Schalter ist der ausgelieferte Text weiterhin byte-gleich zum Stand vor
+  11.5a — der neue Block entsteht nur bei AN. Gehalten von T1 gegen den Vergleichswert aus
+  VERMERK 1.
+- Der Setzer-Block ist byte-gleich zu heute. Sein Vergleichswert wird VOR der ersten Änderung
+  erhoben — dieselbe Auflage, die in 11.5a getragen hat (VERMERK 1).
+- Ein Fremd-CMP gewinnt gegen beide Blöcke — in der Grenze aus Entscheidung (3): Ein asynchron
+  gesetztes CMP ist davon nicht erfasst (Vorrat (2)).
+
+**DIE DEMOBARKEIT, Regression zuerst.**
+VORBEDINGUNGEN, ohne die die Schritte nichts messen:
+- nach dem Deploy NEU VERÖFFENTLICHEN — der Block entsteht beim Publish, ein Deploy erreicht die
+  Seite nicht (docs/immer-beachten.md, „EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY");
+- den A/B-Betrieb feststellen (docs/immer-beachten.md, „BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST
+  SICHERZUSTELLEN, DASS DAS RICHTIGE GEMESSEN WIRD", Teil (e));
+- KEIN laufender Testmodus — er überlagert die interne Zählung (NACHTRAG zu VERMERK 1);
+- Zustimmen, Ablehnen und Neuladen im SELBEN Browser auf DERSELBEN Adresse — der Speicher ist
+  origin-gebunden (Entscheidung (7)).
+
+DIE SCHRITTE:
+1. Schalter AUS: unverändert — das ist die Positivkontrolle.
+2. Schalter AN, kein Speicherwert: nichts geht hinaus.
+3. Über die Schnittstelle zustimmen, neu laden: es geht hinaus, OHNE erneute Zustimmung.
+4. Über die Schnittstelle ablehnen, neu laden: es geht nichts hinaus, UND die Abfrage sagt
+   „entschieden", nicht „nie gefragt".
+5. Ein vorab gesetztes Fremd-CMP überlebt beide Blöcke.
+
+DIE GRENZE: **Was `localStorage` in einem fremden Browser tut — wirft, leer bleibt, gesperrt ist —,
+bleibt UNGEMESSEN.**
+
+**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.** Kein Plan,
+keine Namen neuer Funktionen, keine Gestalt des gespeicherten Werts.

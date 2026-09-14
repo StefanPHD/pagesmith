@@ -362,6 +362,151 @@ HÄLFTE dessen, was man ihr zuschreiben möchte:**
 der Setzer auch Conversions erfasst. Sie ist **KEIN Nachweis** — dafür fehlten ihr der vorab
 festgelegte Soll-Ausgang, ein zweites Ziel und ein Lauf ohne Testmodus.
 
+### VERMERK 2 — Scheibe 11.5b, abgeschlossen 2026-09-14
+
+**GEGENSTAND:** Bei eingeschaltetem Schalter stellt ein Block VOR dem Setzer aus 11.5a eine
+gespeicherte Entscheidung des Besuchers aus `localStorage` wieder her, und eine Schnittstelle im
+Artefakt schreibt sie und fragt sie nebenwirkungsfrei ab. **VIER STÜCKE:** die Speicher-Schicht mit
+strenger Validierung und fail-closed bei werfendem Zugriff · der Wiederherstellungs-Block
+(`buildConsentRestoreScript`, `src/lib/tracking/consent-store.ts`) · die Schnittstelle
+`window.__psConsentStore` mit `read()` und `write()` · die Injektion in die Verkettung von
+`injectPageViewEmitter` in der Folge Gate, Wiederherstellung, Setzer, PageView-Script.
+
+**BAU-COMMIT:** `15c8b5c` — `feat(consent): die gespeicherte Entscheidung und ihre
+Wiederherstellung (11.5b)`, vier Dateien, 569 Zeilen hinzu, 3 entfernt: neu `consent-store.ts` und
+`consent-store.test.ts`, geändert `src/lib/analytics/pageview-emitter.ts` und
+`src/app/projects/publish.test.ts`. `consent.ts`, `consent-wire.ts`, `ingest.ts`,
+`consent-setter.ts` und `consent-setter.test.ts` sind NICHT im Commit (GEMESSEN am Repo, CC,
+2026-09-14).
+
+**DIE ENTSCHEIDUNG, DASS `write()` AUCH DEN HOOK DER LAUFENDEN SEITE SETZT**, fiel gegen die
+Empfehlung der Planungsstufe. Sie steht mit Grund, Kehrseite und Kipp-Bedingung als Entscheidung
+(11) in Abschnitt 8.
+
+**DIE VIER GATES, alle grün** — GEMESSEN am Lauf der Bau-Sitzung (CC, 2026-09-14), abgelesen aus
+deren Bericht: `tsc --noEmit` exit 0 · `lint` 0 errors / 1 warning (dieselbe vorbestehende in
+`consent.test.ts`) · `vitest run` **von 77 Dateien und 1639 Tests auf 78 Dateien und 1682 Tests**
+(+43: 41 in der neuen Testdatei, 2 in `publish.test.ts`) · `build` exit 0. Der Vorher-Wert stammt
+aus einem Lauf auf `eafc93b`; unter `src/` ist `eafc93b` gleich dem Eltern-Commit `928172e`
+(GEMESSEN am Repo, CC, 2026-09-14).
+**NACHGEMESSEN in der Abschluss-Runde (CC, 2026-09-14):** `vitest run` auf `15c8b5c` — 78 Dateien,
+1682 Tests, grün. Die übrigen drei Gates sind dort NICHT erneut gefahren.
+
+**DIE ZWEI VERGLEICHSWERTE:**
+
+- **DER SETZER-BLOCK — ERHOBEN VOR DER ERSTEN ÄNDERUNG, auf `928172e`:** `buildConsentDenyScript()`
+  **244 Bytes**, sha256 **`9ae9ab2650187876aad75da2cb84cde5c125622e1842ede5a40a059a4a843acd`**.
+  **ZWEI INSTRUMENTE, EIN WERT:** `node:crypto` im Lauf und `wc -c`/`sha256sum` über das
+  gespeicherte Artefakt; nach dem Bau erneut identisch (GEMESSEN am Lauf der Bau-Sitzung). R3 in
+  `consent-store.test.ts` hält ihn als Konstante, und sein Kommentar verbietet, ihn bei Rot zu
+  regenerieren. **NACHGEMESSEN auf `15c8b5c`** mit denselben zwei Instrumenten: identisch (CC,
+  2026-09-14, Abschluss-Runde).
+- **T1:** Der Vergleichswert aus VERMERK 1 (14 160 Bytes, `a953b21e…`) **gilt UNVERÄNDERT** — T1 war
+  auf `928172e` vor der ersten Änderung grün und blieb es nach dem Bau (GEMESSEN am Lauf der
+  Bau-Sitzung). Bei AUS entsteht der neue Block nicht.
+
+**DIE VIER PFLICHT-MUTATIONEN** — Vorhersage je VOR dem Lauf gegen den aktuellen Bestand
+aktualisiert; gelaufen gegen `consent-store.test.ts`, `publish.test.ts`, `consent-setter.test.ts`
+und `pageview-emitter.test.ts`, zusammen 100 Tests (GEMESSEN am Lauf der Bau-Sitzung, CC,
+2026-09-14):
+
+- **(i) Hook-Prüfung im Wiederherstellungs-Block entfernt.** Vorhersage **ACHT** — die sieben
+  R4-Läufe „schreibt NICHT" und R11 Fremd-CMP. **IST: ACHT, genau diese.** DECKUNG: dieselbe
+  Klasse, ein gesetzter Hook wird überschrieben.
+- **(ii) Validierung übergangen, Speicherwert roh an den Hook.** Vorhersage **SIEBZEHN** —
+  R4-Positivkontrolle, R5, R6, zwölf R7-Läufe, R9, R11-Zustimmung; grün vorhergesagt die
+  R7-Positivkontrolle, R8, R10, R13, R14. **IST: SIEBZEHN, genau diese.** DECKUNG: ein ungeprüfter
+  Wert landet am Hook. Beim Konsumenten wirkt er fail-closed, weil ein String dort „verboten"
+  heisst.
+- **(iii) `analytics` im Block-Erzeuger herausgefiltert.** Vorhersage **ACHT** —
+  R4-Positivkontrolle, R5, R6, R7-Positivkontrolle, R8, R10-Positivkontrolle, R13, R11-Zustimmung;
+  T3 und T5 grün. **IST: ACHT, genau diese; T3 und T5 grün.** DECKUNG, eine Ursache: der fehlende
+  Schlüssel macht gespeicherte Werte ungültig und verkürzt den Hook.
+  **BEOBACHTUNG: R14 blieb grün, aber aus einem ANDEREN Grund** — `write()` scheitert unter dieser
+  Mutation schon an der Eingabeprüfung, der Speicherversuch wird nie erreicht. R14 prüft die
+  Reihenfolge nur, solange der Speicherversuch erreicht wird; dass er es dann tut, zeigt (iv).
+- **(iv) `write()` setzt erst den Hook und speichert dann.** Vorhersage **nur R14**. **IST: nur
+  R14.** Er ist der einzige Test, der diese Reihenfolge fängt, und sein Kommentar sagt das.
+
+**KEINE DER VIER WAR EINE KASKADE.** Die Rücknahme ist inhaltlich belegt, über die Prüfsumme von
+`consent-store.ts` nach jeder Runde (GEMESSEN am Lauf der Bau-Sitzung).
+
+**DER LIVE-NACHWEIS vom 2026-09-14 — ALLE WERTE SIND OWNER-ANGABEN, NICHT VON CC GEMESSEN:**
+
+1. **Schalter AUS:** keine der zwei Kennungen `__ps_cnr` und `__ps_cns` im Quelltext; Seitenaufruf
+   und Meta-Ereignis kommen an. **Das ist die POSITIVKONTROLLE.**
+2. **Schalter AN, Speicher leer:** `read()` liefert genau `{state:"never"}`; weder Seitenaufruf noch
+   Meta-Ereignis kommen an.
+3. **`write()` mit allen sechs Schlüsseln** liefert `true`, der Hook schaltet SOFORT frei, und eine
+   Conversion kommt bei Meta an — **OHNE Neuladen.** **DAS IST DER LIVE-BELEG FÜR DIE
+   ARCHITEKT-ENTSCHEIDUNG, dass `write()` auch den Hook der laufenden Seite setzt.**
+4. **Nach dem Neuladen:** `read()` liefert `decided` mit allen sechs in `granted`; Seitenaufruf und
+   Conversion laufen.
+5. **`write([])`** setzt `decided` mit allen sechs in `denied`; nach dem Neuladen sind Seitenaufruf
+   und Conversion wieder unterdrückt.
+6. **FREMD-CMP MIT GEGENPROBE, in einem zweiten Lauf mit ZWEI konfigurierten Zielen:** Ein
+   vorgeschaltetes CMP setzte den Hook auf ein Objekt, das nur EIN Ziel erlaubt. Der Speicher trug
+   Zustimmung für BEIDE. Das erlaubte Ziel empfing, das andere NICHT. **Der Fremd-CMP gewinnt damit
+   JE SCHLÜSSEL, nicht pauschal** — und ohne die Gegenprobe hätte der erste Lauf nur die halbe
+   Aussage getragen.
+7. **DIE DOKUMENTREIHENFOLGE, am DOM der Live-Seite abgefragt:** Die Kennungen der Skript-Elemente
+   lauten in dieser Folge `pagesmith-consent`, `pagesmith-mappings`, `__ps_cnr`, `__ps_cns`,
+   `__ps_pve`. DOM-Reihenfolge ist Dokumentreihenfolge; die Reihenfolge ist damit **LIVE belegt**
+   und nicht nur durch R2 im Test.
+   **DER ZWEITE, UNABHÄNGIGE BELEG, und er kommt ohne Werkzeug aus:** Stünde der Setzer VOR der
+   Wiederherstellung, schriebe er zuerst sechs `false`; die Wiederherstellung sähe „gesetzt" und
+   kehrte zurück — eine gespeicherte Zustimmung käme NIE an. Schritt 4 zeigt das Gegenteil. Die
+   Reihenfolge ist aus ihm ABLEITBAR, unabhängig von der DOM-Abfrage.
+
+**DIE GRENZEN, DIE DIESER NACHWEIS NICHT ÜBERSCHREITET:**
+
+- **Die zeitliche Lage im Browser bleibt eine LIVE-Achse und ist nicht einzeln belegt** — dieselbe
+  Grenze wie in VERMERK 1. Die Dokumentreihenfolge sagt nichts über die Ausführungszeit.
+- **Was `localStorage` in einem FREMDEN Browser tut, bleibt ungemessen.**
+- **Der EXPORT-PFAD ist ungedeckt** (Vorrat (4)); **ein asynchron setzendes CMP ist von der
+  Prüfung nicht erfasst** (Vorrat (2)).
+- **Geprüft sind zwei Ziele, nicht alle fünf.**
+- **Testmodus und A/B-Betrieb sind im Lauf nicht festgestellt worden — was der Nachweis dazu
+  trotzdem trägt und was nicht:**
+  - **Für die Schritte 1 und 4 ist die Testmodus-Frage BEANTWORTET, aus dem Befund selbst:** Beide
+    melden einen ankommenden Seitenaufruf im Dashboard, und ein laufender Testmodus riegelt genau
+    diesen Persist ab — `testModusAktiv` sperrt in `handleIngest` beide
+    `schedulePersist`-Aufrufe, auch den, über den der Seitenaufruf verbucht wird. In diesen
+    Momenten lief keiner. ABLEITUNG aus dem Code (GELESEN, CC, 2026-09-14), nicht gesondert
+    gemessen. Dass „kommt an" dort das Dashboard meint, ist ARCHITEKT-ANGABE (2026-09-14); die
+    Owner-Angaben der Schritte nennen den Ort nicht.
+  - **OFFEN BLEIBT SIE FÜR DIE NEGATIV-BEFUNDE, Schritte 2 und 5:** Dort ist „nichts kommt an" das
+    erwartete Ergebnis, und ein laufender Testmodus sähe in der internen Zählung genauso aus.
+  - **DIE META-BEFUNDE SIND UNBERÜHRT,** weil der Testmodus den Forward nicht gatet.
+  - **Der A/B-Betrieb bleibt für ALLE Schritte unerhoben** — er ist eine andere Achse und wird vom
+    Seitenaufruf-Befund nicht mitbeantwortet. Beide Varianten tragen die Einwilligungs-Blöcke
+    gleich: `publishProject` ruft `injectPageViewEmitter` für A und B mit demselben Schalter
+    (GEMESSEN am Code, CC, 2026-09-14). Sie führen aber getrennte Mapping-Sätze, und welche
+    Variante in den Schritten ausgeliefert war, nennen die Owner-Angaben nicht.
+
+**ZWEI BEFUNDE ÜBER DAS VERFAHREN, festgehalten, weil sie eine spätere Runde Zeit kosten würden**
+(GEMESSEN am Lauf der Bau-Sitzung, CC, 2026-09-14, wo nicht anders gekennzeichnet):
+
+- **Der Token-Scanner war für Dateien mit Template-Literalen UNTAUGLICH — die Negativkontrolle
+  fiel:** Für `consent-store.test.ts` meldete er eine reine Kommentar-Mutante als Änderung. Dass die
+  Template-Literale mit `${…}` die Ursache sind, ist eine ABLEITUNG, nicht gesondert gemessen.
+  **Ersetzt durch einen Vergleich über den vollständigen Parser** — kommentarfreier Ausdruck über
+  `createSourceFile` und einen Printer mit `removeComments`, mit Positiv- und Negativkontrolle.
+  **Die frühere Prüfung an `consent-setter.test.ts` (Commit `eafc93b`) ist damit nachgeholt und
+  bestätigt:** Sie lief über dieselbe Scanner-Bauart, ihre Negativkontrolle damals nur an
+  `consent-targets.ts`; der Parser-Vergleich zeigt, dass sich dort nur Kommentartext geändert hat.
+- **Zwei Zeiger im neuen Code nannten eine „Entscheidung (A)", die es im Repo nicht gibt** — die
+  Bezeichnung stammt aus dem Plan und dem Prompt des Architekten. **Gefunden erst durch eine
+  erweiterte Suchachse; die erste war aus den eigenen Formulierungen gebildet.** Die Regel dazu
+  steht bereits: docs/immer-beachten.md, „EINE SUCH-ACHSE, DIE AUS DEN ERWARTETEN FORMULIERUNGEN
+  GEBILDET IST, BESTÄTIGT DIE ERWARTUNG STATT SIE ZU PRÜFEN". Beide Zeiger sind vor dem Commit durch
+  die Sache selbst ersetzt (Commit-Nachricht von `15c8b5c`).
+
+PROVENIENZ: Commit, Dateiliste und die zwei Nachmessungen GEMESSEN am Repo (CC, 2026-09-14,
+Abschluss-Runde). Gates, Vergleichswerte, Mutationen und Verfahrensbefunde GEMESSEN am Lauf der
+Bau-Sitzung (CC, 2026-09-14) und für diesen Vermerk aus deren Bericht abgelesen, nicht erneut
+gefahren. Der Live-Nachweis: OWNER-ANGABEN vom 2026-09-14.
+
 ## 8. Entscheidungen, die über ihre Scheibe hinaus binden
 
 Hier steht, was in einer Scheibe entschieden wurde und ÜBER SIE HINAUS bindet — je Eintrag die
@@ -385,7 +530,7 @@ und nie neu vergeben.
   null Treffer im Abschnitt, zehn in der ganzen Datei, Positivkontrolle `isTargetDeliverable`
   mit einem Treffer im Abschnitt). Die Gründe von (6) sind eigene Messungen und in (6) selbst
   als solche ausgewiesen.
-- **(7) bis (10):** Sie tragen ihre Provenienz je im eigenen Text, in der Zeile PROVENIENZ am
+- **(7) bis (11):** Sie tragen ihre Provenienz je im eigenen Text, in der Zeile PROVENIENZ am
   Ende des Eintrags, und werden deshalb hier nicht wiederholt.
 
 **DIE ANGABEN ZU (5) UND (6) SIND ARCHITEKT-ANGABEN (2026-09-12) UND AM REPO NICHT PRÜFBAR.**
@@ -700,6 +845,31 @@ voraus und stiesse auf Entscheidung (1).
 PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-14 — eine Angabe aus dem Auftrag dieses Tages, am Repo
 nicht prüfbar.
 
+**(11) `write()` SETZT BEI ERFOLG AUCH DEN HOOK DER LAUFENDEN SEITE.**
+
+DIE ENTSCHEIDUNG, und die Reihenfolge gehört dazu: erst speichern und zurücklesen, dann den Hook
+setzen. Schlägt das Speichern fehl, bleibt der Hook unverändert und `write()` gibt `false`.
+SO GEBAUT (GEMESSEN am Code, CC, 2026-09-14, `buildConsentRestoreScript` in
+`src/lib/tracking/consent-store.ts`): `write()` ruft `setItem`, liest mit `getItem` zurück und
+gibt bei abweichender Rücklese oder einem Wurf `false` zurück; erst danach steht
+`window.pagesmithConsent = hookFrom(g)`. Die Reihenfolge fängt allein R14 — Mutation (iv) in
+VERMERK 2.
+
+DER GRUND: Ohne das stimmt ein Besucher zu, klickt auf den Call-to-Action, und die Conversion geht
+nicht hinaus — der Hook trägt noch sechs `false`. Das wäre die ERST-CONVERSION jedes Besuchers. Die
+umgekehrte Reihenfolge liesse die Seite senden, während die Zustimmung beim nächsten Laden weg wäre.
+
+DIE KEHRSEITE: `write()` weicht einem Fremd-CMP NICHT aus, anders als der
+Wiederherstellungs-Block — Vorrat (12).
+
+WEN SIE BINDET: jede Scheibe, die `write()` ruft — ausdrücklich den Dialog.
+WANN SIE KIPPT: sobald der Hook auf einem anderen Weg aktualisiert wird oder der Konsument seinen
+Wert nicht mehr zur Aufrufzeit liest.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-14, gegen die Empfehlung der Planungsstufe — so auch in
+der Commit-Nachricht von `15c8b5c` genannt; live belegt in Schritt 3 des Nachweises (VERMERK 2,
+OWNER-ANGABE). Die gebaute Reihenfolge ist GEMESSEN am Code (CC, 2026-09-14).
+
 ## 9. Vorrat — gemeldet, nicht gebaut
 
 Hier steht, was beim Bauen auffällt und NICHT zum Zuschnitt der laufenden Scheibe gehört:
@@ -948,6 +1118,22 @@ entschieden hat, nennt der Spiegelstrich nicht.
 
 **GEMELDET ALS BEFUND ÜBER DIE REICHWEITE, NICHT ALS AUFHEBUNG:** Die Entscheidung für das
 A/B-Cookie bleibt unberührt, und die Archiv-Datei wird nicht angefasst.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
+
+**(12) EIN write-AUFRUF ÜBERSCHREIBT EIN GESETZTES FREMD-CMP** (aufgenommen 2026-09-14).
+
+Der Wiederherstellungs-Block prüft den Hook und weicht einem Fremd-CMP aus; **`write()` tut das
+NICHT** — es setzt den Hook bei Erfolg unbedingt (`buildConsentRestoreScript`,
+`src/lib/tracking/consent-store.ts`). **Das ist die Kehrseite der Entscheidung, ohne die die
+Erst-Conversion verloren ginge** — der Architekt-Entscheidung, dass `write()` auch den Hook der
+laufenden Seite setzt (VERMERK 2).
+
+**UNGEMESSEN.** Die Schnittstelle existiert nur bei eingeschaltetem Schalter, und ein Betreiber mit
+eigenem CMP liefert sie nicht aus — **ob das trägt, ist nicht erhoben.**
+
+**ABGRENZUNG ZUM LIVE-NACHWEIS, Schritt 6 in VERMERK 2:** Dort gewinnt das CMP, weil nur die
+WIEDERHERSTELLUNG lief. Dieser Eintrag betrifft den anderen Weg.
 
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
 
@@ -1243,25 +1429,17 @@ Zuschnitts; in Abschnitt 12 wären sie mit ihm gealtert.
 
 ## 13. Die gespeicherte Entscheidung und der Weg zurück — Zuschnitt der Scheibe 11.5b
 
-**WAS DIESE SCHEIBE IST:** die zweite dieser Phase. Sie legt die Entscheidung des Besuchers ab und
-stellt sie beim nächsten Aufruf wieder her, BEVOR der Setzer aus 11.5a „abgelehnt" schreibt — und
-sonst nichts. Ohne sie gilt jede Zustimmung nur bis zum nächsten Laden.
+**VERDICHTET AM 2026-09-14, nach dem Bau-Commit `15c8b5c` und dem bestätigten Live-Test.** Sein
+Protokoll steht als VERMERK 2 in Abschnitt 7, seine Gestalt-Entscheidungen standen schon vor dem Bau
+als (7) bis (10) in Abschnitt 8. **ANDERS ALS ABSCHNITT 12 IST DIESER NICHT GESCHLOSSEN: EIN BLOCK
+BLEIBT STEHEN** — die Lesart darunter, WÖRTLICH und nicht in einen anderen Abschnitt verschoben. Sie bindet über die
+Scheibe hinaus; wohin sie gehört, ist in dieser Runde nicht entschieden. Alles übrige ist
+abgelaufen — s. die Liste „Vollzogen".
 
-**WAS GEBAUT WIRD — VIER STÜCKE:**
-- **EINE SPEICHER-SCHICHT:** lesen, schreiben, validieren — und fail-closed bei einem werfenden
-  Zugriff.
-- **DER WIEDERHERSTELLUNGS-BLOCK** nach Entscheidung (8) und (9).
-- **EINE PROGRAMMIERSCHNITTSTELLE IM ARTEFAKT**, über die eine Entscheidung geschrieben und der
-  gespeicherte Zustand NEBENWIRKUNGSFREI abgefragt wird.
-- **DIE INJEKTION DES NEUEN BLOCKS** in dieselbe Verkettung in `injectPageViewEmitter`.
-
-**DIE GESTALT-ENTSCHEIDUNGEN STEHEN NICHT HIER, SONDERN IN ABSCHNITT 8** — die Einträge (7) bis
-(10). **WARUM DORT UND NICHT HIER, und der Satz gehört dazu, sonst zieht die nächste Runde sie „der
-Nähe halber" hierher:** Sie binden ÜBER diese Scheibe hinaus; jede weitere Scheibe dieser Phase
-erbt sie. Stünden sie im Zuschnitt, müssten sie beim Abschluss der Scheibe umziehen — eine Runde
-für nichts, mit dem Risiko, dass dabei eine liegenbleibt.
-(Der Satz ist dem Zuschnitt der Scheibe 11.5a entnommen, Commit `3c2787a`; in Abschnitt 12 steht
-seit dessen Verdichtung nur noch sein Titel.)
+**STEHEN GEBLIEBEN, UND DER GRUND:** Die Lesart ist die aufgeschriebene Begründung dafür, dass die
+Wiederherstellung VOR dem Setzer (Entscheidung (8)) die Bindung der Roadmap-Zeile 11.5 nicht bricht.
+Sie gilt, solange der Block dort steht — also für jede weitere Scheibe, die an ihm, am Setzer oder am
+Dialog arbeitet —, und Entscheidung (8) trägt sie nicht mit.
 
 **DIE LESART DER BINDUNG „DER VORHER-ZUSTAND IST DIE EIGENTLICHE ARBEIT" — ARCHITEKT/CC-LESART
 2026-09-14, KEINE MESSUNG UND KEINE OWNER-ENTSCHEIDUNG.**
@@ -1277,53 +1455,45 @@ ist damit der Fall „nach der Zustimmung" und kein Bruch der Bindung.
 weder gemessen noch vom Owner entschieden. Wer sie für falsch hält, trägt gegen sie vor und findet
 sie dafür aufgeschrieben.
 
-**DER GESPEICHERTE WERT IST CLIENT-KONTROLLIERTE EINGABE** und wird vor jeder Verwendung validiert.
-Die Disziplin steht im Bestand: docs/immer-beachten.md, „EIN SERVERSEITIG GELESENER COOKIE-WERT
-BLEIBT CLIENT-KONTROLLIERTE EINGABE" (Phase 9). Ihr Gegenstand ist ein anderer — ein Cookie, das
-der Server liest —, ihre Achse dieselbe: Dass ein Wert aus eigenem Code stammen SOLLTE, verhindert
-nicht, dass jemand einen beliebigen einträgt.
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-**DIE NAMEN SIND NAMESPACED:** Der Speicher-Schlüssel und jeder Bezeichner im Artefakt tragen das
-Projekt-Präfix, wie es der Bestand im Artefakt führt (`__ps_cns`, `__ps_pve`, `__psConsent`);
-Konstanten liegen in geteilten Dateien.
+Die Titel sind ohne Überschriften-Marke zitiert, damit eine Überschriften-Suche sie nicht trifft.
+Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 2026-09-14).
 
-**WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT:**
-- der Dialog und jede Oberfläche davon;
-- Sprache, Granularität und Widerruf als Bedienelement;
-- jede Änderung an `consent.ts`, `consent-wire.ts` und `ingest.ts`;
-- jede Änderung an `buildConsentDenyScript` und an den Tests aus 11.5a;
-- der Export-Pfad (Vorrat (4));
-- eine Serverseite des gespeicherten Werts.
-
-**DIE TRAGENDEN INVARIANTEN:**
-- Bei AUSGESCHALTETEM Schalter ist der ausgelieferte Text weiterhin byte-gleich zum Stand vor
-  11.5a — der neue Block entsteht nur bei AN. Gehalten von T1 gegen den Vergleichswert aus
-  VERMERK 1.
-- Der Setzer-Block ist byte-gleich zu heute. Sein Vergleichswert wird VOR der ersten Änderung
-  erhoben — dieselbe Auflage, die in 11.5a getragen hat (VERMERK 1).
-- Ein Fremd-CMP gewinnt gegen beide Blöcke — in der Grenze aus Entscheidung (3): Ein asynchron
-  gesetztes CMP ist davon nicht erfasst (Vorrat (2)).
-
-**DIE DEMOBARKEIT, Regression zuerst.**
-VORBEDINGUNGEN, ohne die die Schritte nichts messen:
-- nach dem Deploy NEU VERÖFFENTLICHEN — der Block entsteht beim Publish, ein Deploy erreicht die
-  Seite nicht (docs/immer-beachten.md, „EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY");
-- den A/B-Betrieb feststellen (docs/immer-beachten.md, „BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST
-  SICHERZUSTELLEN, DASS DAS RICHTIGE GEMESSEN WIRD", Teil (e));
-- KEIN laufender Testmodus — er überlagert die interne Zählung (NACHTRAG zu VERMERK 1);
-- Zustimmen, Ablehnen und Neuladen im SELBEN Browser auf DERSELBEN Adresse — der Speicher ist
-  origin-gebunden (Entscheidung (7)).
-
-DIE SCHRITTE:
-1. Schalter AUS: unverändert — das ist die Positivkontrolle.
-2. Schalter AN, kein Speicherwert: nichts geht hinaus.
-3. Über die Schnittstelle zustimmen, neu laden: es geht hinaus, OHNE erneute Zustimmung.
-4. Über die Schnittstelle ablehnen, neu laden: es geht nichts hinaus, UND die Abfrage sagt
-   „entschieden", nicht „nie gefragt".
-5. Ein vorab gesetztes Fremd-CMP überlebt beide Blöcke.
-
-DIE GRENZE: **Was `localStorage` in einem fremden Browser tut — wirft, leer bleibt, gesperrt ist —,
-bleibt UNGEMESSEN.**
-
-**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.** Kein Plan,
-keine Namen neuer Funktionen, keine Gestalt des gespeicherten Werts.
+- **"WAS DIESE SCHEIBE IST" und "WAS GEBAUT WIRD — VIER STÜCKE"** nannten Gegenstand und Umfang.
+  **HEUTE ERKENNBAR:** VERMERK 2 nennt beides in seinem Kopf, die vier Stücke einzeln, dazu den
+  Bau-Commit.
+- **"DIE GESTALT-ENTSCHEIDUNGEN STEHEN NICHT HIER, SONDERN IN ABSCHNITT 8"** war ein Zeiger auf die
+  Einträge (7) bis (10), samt dem aus dem Zuschnitt der Scheibe 11.5a entnommenen Satz, warum sie
+  dort stehen. **HEUTE ERKENNBAR:** Abschnitt 8 trägt (7) bis (10) unverändert; die Vorhersage
+  jenes Satzes ist eingetreten — beim Abschluss musste nichts umziehen.
+- **"DER GESPEICHERTE WERT IST CLIENT-KONTROLLIERTE EINGABE"** verlangte Validierung vor jeder
+  Verwendung. **HEUTE ERKENNBAR:** im Docblock von `buildConsentRestoreScript` ("DIE VALIDIERUNG
+  VERWIRFT STRENG"), in den zwölf R7-Läufen und in VERMERK 2 an Mutation (ii), die genau diese
+  Klasse fängt. Die Disziplin selbst steht weiter an ihrer Quelle in docs/immer-beachten.md.
+- **"DIE NAMEN SIND NAMESPACED"** verlangte das Projekt-Präfix und Konstanten in geteilten Dateien.
+  **HEUTE ERKENNBAR:** an den Konstanten `CONSENT_RESTORE_SCRIPT_ID` (`__ps_cnr`),
+  `CONSENT_STORE_KEY` (`__ps_consent`) und `CONSENT_STORE_API` (`__psConsentStore`) in
+  `src/lib/tracking/consent-store.ts`; VERMERK 2 nennt `__ps_cnr` und `__psConsentStore`.
+- **"WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT"** führte sechs Ausschlüsse. **HEUTE ERKENNBAR:** Die
+  unberührten Dateien — `consent.ts`, `consent-wire.ts`, `ingest.ts`, `consent-setter.ts` samt
+  seinem Test — nennt VERMERK 2 am Bau-Commit; die Byte-Gleichheit von `buildConsentDenyScript`
+  trägt sein Vergleichswert und R3. Den Export-Pfad führen Vorrat (4) und die Grenzen von VERMERK 2.
+  Die Serverseite des gespeicherten Werts schliesst Entscheidung (7) mit ihrem Grund und ihrer
+  Kipp-Bedingung aus. Dialog, Oberfläche, Sprache, Granularität und Widerruf bleiben Umfang der
+  Phase (Abschnitt 1); als Ausschluss DIESER Scheibe sind sie mit ihr abgelaufen.
+- **"DIE TRAGENDEN INVARIANTEN"** — drei. **HEUTE ERKENNBAR:** die Byte-Gleichheit bei AUS an T1 und
+  am unveränderten Vergleichswert in VERMERK 2, gehalten fortlaufend von T1 im Code; die
+  Byte-Gleichheit des Setzers am Vergleichswert in VERMERK 2, gehalten von R3; der Vorrang des
+  Fremd-CMP an Schritt 6 des Live-Nachweises, an Mutation (i) und an den Grenzen von VERMERK 2
+  (Vorrat (2)).
+- **"DIE DEMOBARKEIT, Regression zuerst"** — Vorbedingungen, fünf geplante Schritte und eine Grenze.
+  **HEUTE ERKENNBAR:** VERMERK 2 trägt den gefahrenen Nachweis mit sieben Schritten; die geplanten
+  Schritte 3 und 4 sind dort in "ohne Neuladen" und "nach dem Neuladen" geteilt, Schritt 5 ist um
+  die Gegenprobe erweitert, und die Grenze zu `localStorage` steht unter seinen Grenzen. **DIE VIER
+  VORBEDINGUNGEN** waren Zeiger auf Stellen, die unverändert an ihrer Quelle stehen
+  (docs/immer-beachten.md zweimal, NACHTRAG zu VERMERK 1, Entscheidung (7)). **Ob der Lauf den
+  A/B-Betrieb festgestellt und einen Testmodus ausgeschlossen hat, sagen die Owner-Angaben nicht**;
+  VERMERK 2 behauptet es deshalb auch nicht.
+- **Der Schlusssatz "DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE"**
+  war eine Auflage an den Zuschnitt und ist mit ihm abgelaufen.

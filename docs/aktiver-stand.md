@@ -508,6 +508,132 @@ Abschluss-Runde). Gates, Vergleichswerte, Mutationen und Verfahrensbefunde GEMES
 Bau-Sitzung (CC, 2026-09-14) und für diesen Vermerk aus deren Bericht abgelesen, nicht erneut
 gefahren. Der Live-Nachweis: OWNER-ANGABEN vom 2026-09-14.
 
+### VERMERK 3 — Scheibe 11.5c, abgeschlossen 2026-09-14
+
+**GEGENSTAND:** Stimmt ein Besucher auf der geladenen Seite zu, sendet ein erfolgreiches `write()` den
+Seitenaufruf nach — einmal, nur mit `analytics`, über dieselbe Sende-Logik wie beim Laden; bei
+ausgeschaltetem Schalter bleibt der ausgelieferte Text byte-gleich.
+**DIE GESTALT:** `buildPageViewScript(trackingKey, consentGateOn)` hält den Rumpf als EINEN String und
+verpackt ihn in zwei explizite Zweige am Parameter — AUS als sofort ausgeführte Funktion wie bisher, AN
+als `window.__psPageView` plus Sofortaufruf. `write()` ruft nach dem Hook-Setzen
+`if (typeof __psPageView === "function") __psPageView();`, ohne try/catch. Die Konstante
+`PAGEVIEW_SEND_API` liegt in `src/lib/analytics/events.ts`. `injectPageViewEmitter` reicht
+`consentGateOn` durch, nicht `restore !== ""`.
+
+**BAU-COMMIT:** `d0db9c4` — `feat(consent): den Seitenaufruf nach einer Zustimmung nachholen (11.5c)`,
+fünf Dateien, 286 Zeilen hinzu, 8 entfernt: neu `pageview-emitter.resend.test.ts`, geändert
+`events.ts`, `pageview-emitter.ts`, `pageview-emitter.test.ts` (nur das Argument `false` im
+Serialisierungstest) und `consent-store.ts`. `consent.ts`, `consent-wire.ts`, `ingest.ts`,
+`consent-setter.ts`, `consent-setter.test.ts` und `publish.test.ts` sind NICHT im Commit (GEMESSEN am
+Repo, CC, 2026-09-14).
+
+**DIE VIER GATES** (GEMESSEN am Lauf der Bau-Sitzung, CC, 2026-09-14):
+- `tsc --noEmit` exit 0 — ZUERST gefahren, weil Vitest keine Typen prüft und ein fehlendes Argument
+  am Test-Aufrufer dort still als `undefined` in den AUS-Zweig fiele (ABLEITUNG aus
+  `vitest.config.ts` ohne `typecheck`, nicht gesondert gemessen).
+- `lint` 0 errors / 1 warning (dieselbe vorbestehende in `consent.test.ts`).
+- `vitest run` **von 78 Dateien und 1682 Tests auf 79 Dateien und 1690 Tests** (+8 in der neuen
+  Datei). Der Vorher-Wert stammt aus `npm run test` auf `76678c7` vor der ersten Änderung.
+- `build` exit 0.
+- `tsc`, `lint` und `build` sind vorher NICHT gefahren. Nach zwei Kommentar-Edits, die NACH den
+  Mutationsläufen kamen, sind alle vier Gates erneut gefahren, mit demselben Ergebnis.
+
+**DIE ZWEI VERGLEICHSWERTE — beide VOR jeder Änderung auf `76678c7` erhoben:**
+- **T1 ERSTMALS GEMESSEN STATT ABGELEITET:** grün im vollen Lauf und einzeln im Verbose-Lauf von
+  `consent-setter.test.ts` („✓ … T1: bei AUSGESCHALTETEM Schalter ist der ausgelieferte Text
+  BYTE-GLEICH zu vor der Scheibe"). Bis dahin stützte sich „T1 gilt" auf einen unveränderten `src/`
+  seit dem letzten grünen Lauf.
+- **DER AUS-WERT DES ERZEUGERS:** `buildPageViewScript("tk_baseline_11_5c")` in der damaligen
+  Aufrufform mit einem Argument — **787 Bytes**, sha256
+  **`3d759e3cd195f8b47fe50ba3656b5f760911392231e5b3ca91dc1fa9015d3a08`**. **ZWEI INSTRUMENTE, EIN
+  WERT:** `node:crypto` in einem Wegwerf-Lauf außerhalb des Repos und `wc -c`/`sha256sum` über das
+  gespeicherte Artefakt. N8 hält ihn als Konstante für den AUS-Zweig; sein Kommentar verbietet, ihn
+  bei Rot zu regenerieren.
+
+**DIE VIER PFLICHT-MUTATIONEN** — Vorhersage je VOR dem Lauf gegen den aktuellen Bestand aktualisiert;
+gelaufen gegen `pageview-emitter.resend.test.ts`, `pageview-emitter.test.ts`, `consent-store.test.ts`,
+`consent-setter.test.ts` und `publish.test.ts`, zusammen 108 Tests. Rücknahme je per `sha256sum -c`
+über die drei betroffenen Dateien, die neue Testdatei eingeschlossen, alle `OK` (GEMESSEN am Lauf der
+Bau-Sitzung, CC, 2026-09-14):
+- **(i) Zweig am Schalter invertiert.** Vorhersage **SECHS** — T1, N1, N3, N4, N5, N8. **IST: SECHS,
+  genau diese.** Zwei Meldeformen, eine Ursache: T1 „expected 14194 to be 14160" und N8 „expected 821
+  to be 787" (AUS trägt die AN-Hülle), N1/N3/N4/N5 „expected 1 times, but got 0" (AN ohne
+  Sende-Logik). DECKUNG.
+- **(ii) Guard nur im AN-Zweig übergangen**, AUS-Text unberührt. Vorhersage **N2, N3**. **IST: genau
+  diese**, beide „expected 1 times, but got 2 times". DECKUNG.
+- **(iii) Einwilligungsprüfung nur im AN-Zweig übergangen.** Vorhersage **N1, N3, N4, N5**. **IST: genau
+  diese**, alle „expected not to be called, but called 1 times". DECKUNG.
+  **BEOBACHTUNG: Alle vier fallen schon am Beacon BEIM LADEN, nicht auf dem Nachsende-Weg.** Es ist
+  derselbe Rumpf, und die Mutation lässt sich gar nicht allein auf das Nachsenden anwenden. Dieselbe
+  Klasse, eine Stelle früher beobachtet.
+- **(iv) Existenzprüfung in `write()` entfernt.** Vorhersage **N6/7, R9, R10-Positivkontrolle, R13**.
+  **IST: genau diese; R14 grün.** **DIE DECKUNG IST BELEGT:** Alle vier melden denselben
+  `ReferenceError: __psPageView is not defined` — einmal als Assertion (N6/7, „expected not to
+  throw") und dreimal als ungefangener Wurf aus einem erfolgreichen `write()` ohne PageView-Script.
+  Keine Kaskade.
+
+**KEINE DER VIER BLIEB GRÜN, UND KEINE TRAF EINEN TEST AUSSERHALB IHRER VORHERSAGE.**
+
+**DER LIVE-NACHWEIS vom 2026-09-14 — ALLE WERTE SIND OWNER-ANGABEN, NICHT VON CC GEMESSEN.** Die
+Vorher-Kopie des Quelltexts bei AUS war vor dem Deploy gesichert. **DAS ZÄHLINSTRUMENT WAR DER
+NETZWERK-TAB** (POSTs auf `/api/e`), nicht die Dashboard-Differenz.
+1. **Schalter AUS:** Der Quelltext ist **BYTE-IDENTISCH** zur Vorher-Kopie, keine der zwei Kennungen
+   darin, `__psPageView` ist `undefined`, **genau EIN POST** beim Laden. **Das ist die
+   POSITIVKONTROLLE und zugleich der Beleg der tragenden Invariante.**
+2. **Schalter AN, leerer Speicher:** **null POST**, `__psPageView` ist eine Funktion, der Guard
+   ungesetzt, und die Sende-Logik steht im Block `__ps_pve`.
+3. **`write()` mit allen sechs Schlüsseln:** `true`, **genau EIN neuer POST** mit dem
+   PageView-Ereignistyp, der Guard gleich der gesendeten `eventID`. Ein zweiter `write()`-Aufruf
+   liefert `true` und löst **KEINEN weiteren POST** aus.
+4. **`write(["meta"])`:** `true`, **NULL POST**. Danach **`write(["meta","analytics"])`:** `true`,
+   **genau EIN POST**. **DAS IST DER LIVE-BELEG DER FAIL-CLOSED-ACHSE.**
+5. **Nach dem Neuladen mit gespeicherter Zustimmung:** **genau EIN POST** beim Laden, und ein erneutes
+   `write()` löst keinen zweiten aus.
+
+**ZUR ZUORDNUNG DER ANGABEN:** „die zwei Kennungen" in Schritt 1 sind nach der Bauform von VERMERK 2
+`__ps_cnr` und `__ps_cns`; die Owner-Angabe nennt sie nicht beim Namen. Ob der A/B-Betrieb
+festgestellt und ein Testmodus ausgeschlossen war, sagen die Owner-Angaben nicht — **die Zählung am
+Netzwerk-Tab hängt davon nicht ab**, weil sie das Absenden im Browser zählt und nicht die Ablage
+(ABLEITUNG aus dem Code: der Testmodus-Riegel sitzt in `handleIngest`, NACH dem Eintreffen).
+
+**EIN VORFALL WÄHREND DES LAUFS — seine Ursache ist strukturell:**
+- **DIE BEOBACHTUNG (OWNER-ANGABE):** Ein erster Anlauf von Schritt 1 sendete **KEINEN** PageView,
+  obwohl der Schalter AUS stand. Gemessen wurde `__psConsent("analytics") === false`. Ein
+  Conversion-Ereignis ging gleichzeitig durch.
+- **WAS DARAUS AM CODE FOLGT:** `__psConsent` liefert bei nicht gesetztem Hook `true`
+  (`buildConsentRuntime`, `src/lib/tracking/consent.ts`); `false` ist nur möglich, wenn
+  `window.pagesmithConsent` GESETZT war. Bei AUS setzt ihn kein Baustein von uns — die einzigen
+  Setzer im Produktivcode sind `buildConsentDenyScript` und `buildConsentRestoreScript`, und beide
+  entstehen nur im `consentGateOn`-Zweig von `injectPageViewEmitter` (GEMESSEN am Code, CC,
+  2026-09-14).
+- **DIE URSACHE IST GEKLÄRT (OWNER-ANGABE 2026-09-14):** Im Kopf des Kundentextes stand noch das
+  Test-Script aus dem Fremd-CMP-Schritt der Scheibe 11.5b (VERMERK 2, Schritt 6), das den Hook auf
+  ein Objekt setzt, welches EIN Ziel erlaubt und `analytics` nicht. Genau das erklärt beide
+  Beobachtungen.
+- **WAS DARAN STRUKTURELL IST UND NICHT AM ANWENDER LIEGT:** Der Hook lebt im KUNDENTEXT, nicht in
+  einem unserer Bausteine. Er überlebt damit jedes Neu-Veröffentlichen und jeden Deploy — s. Vorrat
+  (13).
+
+**DIE GRENZEN, DIE DIESER NACHWEIS NICHT ÜBERSCHREITET:**
+- ein Browser, eine Adresse, eine Variante;
+- `localStorage` in fremden Browsern ungemessen;
+- der Wurf-Fall (Guard gesetzt, Versand gescheitert) ist live nicht herstellbar — am Code bleibt es
+  bei höchstens einem Versuch je Laden;
+- der Export-Pfad ungedeckt (Vorrat (4));
+- ein asynchron setzendes Fremd-CMP nicht erfasst (Vorrat (2));
+- die A/B-Folge aus Abschnitt 14 gilt: ein nachgesendeter Seitenaufruf zählt in den Lauf, in dem er
+  EINTRIFFT.
+
+**ABWEICHUNGEN VOM FREIGEGEBENEN PLAN, im Bau deklariert:** Der AUS-Vergleichswert steht in N8 (der
+Plan hatte ihn nicht, der Bau-Auftrag verlangte ihn) · N1 prüft zusätzlich, dass die `eventID` ein
+String ist · zwei Kommentare wurden NACH den Mutationen auf das gemessene Ergebnis von (iv)
+nachgezogen, im Docblock von `buildConsentRestoreScript` und an N6/7.
+
+PROVENIENZ: Commit, Dateiliste und die Hook-Setzer GEMESSEN am Repo (CC, 2026-09-14,
+Abschluss-Runde). Gates, Vergleichswerte und Mutationen GEMESSEN am Lauf der Bau-Sitzung (CC,
+2026-09-14) und für diesen Vermerk aus deren Protokoll übernommen, nicht erneut gefahren. Der
+Live-Nachweis und der Vorfall samt Ursache: OWNER-ANGABEN vom 2026-09-14.
+
 ## 8. Entscheidungen, die über ihre Scheibe hinaus binden
 
 Hier steht, was in einer Scheibe entschieden wurde und ÜBER SIE HINAUS bindet — je Eintrag die
@@ -1234,6 +1360,75 @@ WIEDERHERSTELLUNG lief. Dieser Eintrag betrifft den anderen Weg.
 
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
 
+**(13) EIN HOOK IM KUNDENTEXT ÜBERLEBT JEDES NEU-VERÖFFENTLICHEN — UND SIEHT AUS WIE EIN DEFEKT UNSERER
+BAUSTEINE** (aufgenommen 2026-09-14).
+
+**DER BELEG, OWNER-VORFALL vom 2026-09-14:** Ein Test-Script aus 11.5b im Kopf des Kundentextes setzte
+den Hook auf ein Objekt mit EINEM erlaubten Ziel. Folge: Conversions liefen, Seitenaufrufe nicht — und
+das sah aus wie ein Fehlschlag der Scheibe 11.5c. Aufgelöst hat es erst die Frage nach
+`window.pagesmithConsent` in der Konsole, eine Stelle, die niemand routinemässig ansieht. Protokoll des
+Vorfalls: VERMERK 3.
+
+**WARUM ES STRUKTURELL IST:** Der Hook ist INHALT der Kundenseite und kein Baustein von uns. Kein
+Neu-Veröffentlichen entfernt ihn, kein Deploy erreicht ihn, und unser Setzer weicht ihm ausdrücklich
+aus (Entscheidung (3)) — er kann ihn also auch nicht überschreiben.
+
+**ABGRENZUNG ZU VORRAT (6):**
+- **DIE GETEILTE MECHANIK IST ALLGEMEINER:** Ein Script IM KUNDENTEXT setzt den Hook, und kein Weg von
+  uns entfernt es — weder Neu-Veröffentlichen noch Deploy. **WOHER DAS SCRIPT STAMMT, IST FÜR DIE
+  WIRKUNG GLEICHGÜLTIG.**
+- **DER UNTERSCHIED ZU (6):** Jener vermutet unseren EIGENEN Setzer, zurückgeholt über einen
+  Rück-Import, und ist ungemessen. Hier war es FREMDER Code — ein vom Owner eingesetztes
+  Fremd-CMP-Nachbild —, und der Fall ist gemessen.
+- **WAS DARAUS FOLGT:** Die Klasse ist grösser als (6) — sie umfasst jedes hook-setzende Script im
+  Kundentext, nicht nur eines unserer Herkunft.
+
+**ABGRENZUNG ZU VORRAT (9):** Jener führt drei Zustände, die in der internen Zählung zusammenfallen.
+Dieser ist am Netzwerk-Tab sichtbar, sobald man fragt — er ist nicht unsichtbar, sondern unbenannt.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG**, ob und was dagegen zu bauen wäre.
+
+PROVENIENZ: der Vorfall und seine Ursache OWNER-ANGABEN vom 2026-09-14; dass unser Setzer einem
+gesetzten Hook ausweicht, GEMESSEN am Code (`buildConsentDenyScript`, CC, 2026-09-14).
+
+**(14) EIN KOMMENTAR IM NEUEN TESTCODE ZEIGT AUF DIE STANDDATEI** (aufgenommen 2026-09-14).
+
+**DIE FUNDSTELLEN — ES SIND ZWEI, BEIDE IN `src/lib/analytics/pageview-emitter.resend.test.ts`**
+(GEMESSEN am Repo, CC, 2026-09-14):
+- an N1: `// NICHT KENNTLICH GEMACHT (Abschnitt 14): dieselben drei Schluessel wie beim Laden.`
+- im Dateikopf: `// DIE ERWARTUNGEN STAMMEN AUS DEM ZUSCHNITT (docs/aktiver-stand.md, Abschnitt 14) UND DEM`
+
+**DIE ACHSE UND IHRE POSITIVKONTROLLE:** gesucht über die HINZUGEFÜGTEN Zeilen des Bau-Commits `d0db9c4`
+(`git show d0db9c4`, nur `+`-Zeilen) mit
+`Abschnitt [0-9]|Entscheidung \(|Vorrat \(|VERMERK [0-9]|Hebungs-Kandidat|aktiver-stand|Standdatei|Zuschnitt`,
+case-insensitiv — **genau diese zwei Treffer**. POSITIVKONTROLLE: dieselbe Achse über die hinzugefügten
+Zeilen von `15c8b5c` trifft einen Zeiger, „bindende Entscheidung (8)" im Kopf von
+`src/lib/tracking/consent-store.ts`; er nennt dort die Phase 11.5 und liegt ausserhalb von `d0db9c4`.
+**NICHT DERSELBEN BAUFORM ZUGERECHNET:** sieben hinzugefügte Zeilen in `d0db9c4`, die „Phase 11.5" oder
+„Scheibe 11.5c" nennen (Achse `Scheibe 11\.5|Phase 11\.5`) — sie nennen Phase oder Scheibe beim Namen,
+nicht einen Ort in der Standdatei.
+
+**WARUM DAS ZÄHLT:** Mit dem Umbenennen der Standdatei am Phasenende sterben beide Zeiger. Das ist die
+Bauform der Regel **„EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE — DIE DOKU UND DER
+CODE ZEIGEN AUF DIE STANDDATEI"** (docs/immer-beachten.md), und zwar ihre TEURE HÄLFTE, dort im
+Wortlaut: „Ein Zeiger aus `src/` verlangt einen CODE-COMMIT — anderer Scope, andere Gates, andere
+Freigabe." (GELESEN, CC, 2026-09-14.)
+
+**DIE HERKUNFT GEHÖRT DAZU:** Beide Zeiger hat CC im Bau der Scheibe 11.5c geschrieben. Die Form
+„(Abschnitt 14)" an N1 folgt der Invariante (6) des Plan-Auftrags des Architekten
+(„NICHT kenntlich gemacht (Abschnitt 14)"); der Kopf-Zeiger hat keine solche Vorlage. Beides ist eine
+Angabe aus dem Gesprächsverlauf und am Repo nicht prüfbar. **In der Scheibe 11.5b sind sieben nackte
+Nummern-Zeiger in die Standdatei VOR dem Commit ersetzt worden** (Commit-Nachricht von `15c8b5c`, dort
+neben den zwei Zeigern auf „Entscheidung (A)") — **diese zwei sind neu entstanden.**
+
+**NICHT IN DIESER RUNDE GEHEILT:** Code ist ausgeschlossen, und ein Code-Commit für Kommentartext wäre
+eigener Scope. **TRIGGER:** der nächste Eingriff in jene Datei.
+
+**NICHT NACHGEZOGEN, und es gehört zum Befund:** Abschnitt 14 nennt unter „STEHEN GEBLIEBEN, UND DER
+GRUND" nur den Zeiger an N1, nicht den im Dateikopf. Abschnitt 14 war in dieser Runde nicht zu ändern.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
+
 ## 10. Hebungs-Kandidaten
 
 Hier steht, was nach dem Phasenende an einem DAUERHAFTEN Ort stehen sollte — vor allem
@@ -1597,119 +1792,23 @@ Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 20
 
 ## 14. Der nachgeholte Seitenaufruf — Zuschnitt der Scheibe 11.5c
 
-**WAS DIESE SCHEIBE IST:** die dritte dieser Phase, in der Schnittfolge aus Entscheidung (12). Sie
-holt den Seitenaufruf nach, wenn der Besucher auf derselben Seite zustimmt — und sonst nichts.
+**VERDICHTET AM 2026-09-14, nach dem Bau-Commit `d0db9c4` und dem bestätigten Live-Test.** Sein
+Protokoll steht als VERMERK 3 in Abschnitt 7. **WIE ABSCHNITT 13 IST DIESER NICHT GESCHLOSSEN: DREI
+BLÖCKE BLEIBEN STEHEN** — die drei darunter, WÖRTLICH und in dieser Runde nicht in einen anderen
+Abschnitt verschoben. Alles übrige ist abgelaufen — s. die Liste „Vollzogen".
 
-**DAS PROBLEM, AM CODE NACHGESEHEN** (CC, 2026-09-14, `buildPageViewScript` in
-`src/lib/analytics/pageview-emitter.ts`):
-- Das PageView-Script läuft EINMAL, beim Parsen, als sofort ausgeführte Funktion.
-- Seine Reihenfolge: zuerst der Guard `window.__ps_pv`, dann die Existenzprüfung auf `__psConsent`,
-  dann die Einwilligung für den Analytics-Schlüssel — erst DANACH wird `window.__ps_pv` gesetzt und
-  gesendet. Bei Ablehnung kehrt es also zurück, BEVOR sein Guard gesetzt ist.
-- Nichts löst es erneut aus: `__ps_pv` kommt im Produktivcode nur in diesem Script vor, und
-  `write()` hat im Produktivcode keinen Aufrufer (Achsen `__ps_pv` und `__psConsentStore|.write(`,
-  `git grep` über `src/` ohne Testdateien).
-
-**WARUM DAS JETZT ZÄHLT UND VORHER NICHT:** Ohne Dialog trifft es niemanden. Mit Dialog trifft es
-JEDEN ERSTBESUCHER, der zustimmt — seine Sitzung wird nie gezählt, und die Grundmenge der
-Auswertung wird schief. (ARCHITEKT-ANGABE 2026-09-14; die Wirkung auf die Auswertung ist eine
-ABLEITUNG aus dem Mechanismus oben, nicht gemessen.)
-
-**WAS GEBAUT WIRD:** Nach einem erfolgreichen `write()`, das den Analytics-Schlüssel enthält, wird
-der Seitenaufruf nachgesendet — falls er beim Laden unterblieb.
-
-**DIE SENDE-LOGIK BLEIBT AN EINER STELLE.** `write()` baut den Beacon NICHT nach. Der
-PageView-Erzeuger stellt sie bereit, `write()` ruft sie über eine EXISTENZPRÜFUNG. Die Bauform
-steht im Bestand: `typeof __psConsent !== "function"` in `buildPageViewScript`; in
-`src/lib/tracking/meta.ts` zweimal dieselbe Prüfung auf `__psConsent` und einmal die gleichartige auf
-`__psConsentAll` (GEMESSEN, CC, 2026-09-14). Ein zweiter Erzeuger für denselben
-Beacon wäre die Divergenz-Bauform, die dieses Projekt mehrfach als still führt.
-
-**DIE REIHENFOLGE, AM CODE NACHGESEHEN:** Das PageView-Script steht in der Verkettung HINTER der
-Wiederherstellung, die `write()` trägt (`gate + restore + setter + buildPageViewScript(...)` in
-`injectPageViewEmitter`). Ein `write()` nach dem Parsen findet es also vor. Im Bestand ruft niemand
-`write()`; der Dialog aus 11.5d wird es auf Klick tun. Ein Aufruf WÄHREND des Parsens, aus einem
-Block vor dem PageView-Script, fände die Sende-Logik noch nicht vor — die Existenzprüfung liesse
-ihn ohne Sendung zurückkehren, und das PageView-Script sähe bei seinem eigenen Lauf den schon
-gesetzten Hook (ABLEITUNG aus der Reihenfolge, nicht gelaufen).
-
-**DIE DREI AUFLAGEN:**
-- **KEIN DOPPEL.** Wurde der Seitenaufruf beim Laden gesendet, darf `write()` keinen zweiten
-  auslösen. Im Bestand trägt das der Guard `window.__ps_pv`: Das Script prüft ihn als Erstes und
-  setzt ihn vor dem Senden.
-- **NUR BEI ANALYTICS.** `write(["meta"])` ohne den Analytics-Schlüssel löst KEINEN Seitenaufruf aus.
-  Das ist die fail-closed-Achse dieser Scheibe. Im Bestand prüft das PageView-Script die
-  Einwilligung für den Analytics-Schlüssel selbst, am Hook, den `write()` gesetzt hat.
-- **NUR BEI ERFOLG.** Gibt `write()` `false` zurück, wird nichts nachgesendet — der Hook ist dann
-  ebenfalls nicht gesetzt (Entscheidung (11)).
-
-**WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT:**
-- der Dialog und jede Oberfläche davon (11.5d);
-- jede Änderung an `consent.ts`, `consent-wire.ts` und `ingest.ts`;
-- jede Änderung am Setzer und an der Wiederherstellung, ausser dem Aufruf selbst;
-- der Export-Pfad (Vorrat (4));
-- **der offene Punkt „DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST"**
-  (docs/offene-punkte.md, im Volltext GELESEN, CC, 2026-09-14). Sein Trigger ist diese Phase. Er
-  ist eine ANDERE Achse — die ausbleibende Browser-Bestätigung einer Conversion bei teilweiser
-  Einwilligung, der Nenner der Adblocker-Kachel und ihr Stichtag — und wird von dieser Scheibe
-  nicht geschlossen.
-
-**DIE TRAGENDEN INVARIANTEN:**
-- Bei ausgeschaltetem Schalter ändert sich NICHTS — ohne Consent-Block gibt es kein `write()`. Die
-  Schnittstelle entsteht allein im Wiederherstellungs-Block, und der nur im `consentGateOn`-Zweig
-  von `injectPageViewEmitter` (GEMESSEN, CC, 2026-09-14).
-- Die Blöcke bleiben byte-gleich, ausser an zwei Blöcken — dem PageView-Script und der
-  Wiederherstellung.
-- EINE Splice-Stelle, EINE Konkatenation — heute `lastIndexOf("</body>")` und
-  `gate + restore + setter + buildPageViewScript(...)` in `injectPageViewEmitter`.
-
-**AM BESTAND NACHGESEHEN, UND ES GEHÖRT ZU DEN ERSTEN ZWEI INVARIANTEN** (GEMESSEN, CC, 2026-09-14):
-Das PageView-Script wird bei JEDEM Veröffentlichen injiziert, auch bei ausgeschaltetem Schalter, und
-T1 in `consent-setter.test.ts` hält den ausgelieferten Text bei AUS gegen den Vergleichswert aus
-VERMERK 1 — über die volle Pipeline, das PageView-Script eingeschlossen. Stellt der
-PageView-Erzeuger die Sende-Logik bereit, berührt das dieses Script; der Aufruf berührt die
-Wiederherstellung. Die Scheibe ändert damit zwei Blöcke, nicht einen, und eine Bereitstellung, die
-nicht am Schalter hängt, ändert den Text auch bei AUS.
-
-**AUFGELÖST — ARCHITEKT-ENTSCHEIDUNG 2026-09-14: DIE BEREITSTELLUNG DER SENDE-LOGIK HÄNGT AM
-SCHALTER**, wie Setzer und Wiederherstellung: ein expliziter Zweig, nie ein Nebeneffekt.
-- **DER GRUND IST EIN SACH-GRUND, KEIN TEST-GRUND:** Bei AUS gibt es keinen Consent-Block, also kein
-  `write()`, also KEINEN AUFRUFER. Die Logik hätte dort niemanden. Sie nicht zu erzeugen ist korrekt
-  und nicht bloss bequem.
-- **DIE FOLGE FÜR T1:** Der ausgelieferte Text bleibt bei AUS byte-gleich, und T1 bleibt
-  unangetastet. Das ist die Probe auf den Sach-Grund — nicht sein Zweck.
-- **DER ZWEIG IST AM BESTAND MÖGLICH** (GEMESSEN am Code, CC, 2026-09-14): `buildPageViewScript` hat
-  im Produktivcode genau einen Aufrufer, die Verkettung in `injectPageViewEmitter`, und dort steht
-  der Schalter `consentGateOn` bereits im Gültigkeitsbereich — Setzer und Wiederherstellung zweigen
-  in derselben Funktion an ihm ab. Daneben ruft ein Test in `pageview-emitter.test.ts`
-  `buildPageViewScript` direkt auf (Achse `buildPageViewScript(`, `git grep` über `src/`).
-- **WAS BLEIBT:** Die Scheibe ändert ZWEI Blöcke, nicht einen — das PageView-Script und die
-  Wiederherstellung.
-
-**EINE BAUVORGABE AUS EINEM BESTANDSTEST: DER NAME DER BEREITGESTELLTEN SENDE-LOGIK TRÄGT DIE
-ZEICHENKETTE `__ps_pv` NICHT.** R3b in `src/lib/tracking/consent-store.test.ts` verlangt, dass der
-Wiederherstellungs-Block keine der Kennungen `id="pagesmith-consent"`, `id="__ps_cns"`, `__ps_pve`
-und `__ps_pv` enthält, und prüft als Positivkontrolle, dass dieselbe Suche im ausgelieferten Text
-trifft (GELESEN am Test, CC, 2026-09-14). Trägt der Name die Zeichenkette, steht sie mit dem Aufruf
-in `write()` im Wiederherstellungs-Block, und R3b wird rot — **und das wäre richtig.**
-DER GRUND, WIE R3b IHN SELBST FÜHRT: „hasConsentScript sucht id="pagesmith-consent", die
-Reihenfolge-Tests suchen id="__ps_cns" und __ps_pve / __ps_pv. Traegt der neue Block eines davon,
-faellt auf Seiten ohne Mappings das Gate weg oder eine indexOf-Reihenfolge luegt."
-Der Kommentar nennt R3b zugleich den EINZIGEN Test, der diese Kollision fängt. Die Vorgabe sagt
-nur, was der Name NICHT tragen darf; wie er heisst, legt dieser Abschnitt nicht fest.
-
-**DIE DEMOBARKEIT, Regression zuerst.**
-VORBEDINGUNGEN, dieselben wie im Zuschnitt der Scheibe 11.5b und dort an ihren Quellen belegt: nach
-dem Deploy NEU VERÖFFENTLICHEN · den A/B-Betrieb feststellen · KEIN laufender Testmodus · alles im
-SELBEN Browser auf DERSELBEN Adresse.
-
-DIE SCHRITTE:
-1. Schalter AUS: unverändert — das ist die Positivkontrolle.
-2. Schalter AN, Ablehnung: kein Seitenaufruf.
-3. Zustimmung per Schnittstelle OHNE Neuladen: der Seitenaufruf kommt an, und zwar GENAU EINMAL.
-4. Zustimmung ohne den Analytics-Schlüssel: kein Seitenaufruf.
-5. Nach Neuladen mit gespeicherter Zustimmung: der Seitenaufruf kommt beim Laden, und ein erneutes
-   `write()` löst keinen zweiten aus.
+**STEHEN GEBLIEBEN, UND DER GRUND:** Alle drei binden über die Scheibe hinaus und stehen an keinem
+anderen Ort.
+- **Die Antwort auf die Verlustraten-Frage** trägt jede Runde, die an der Adblocker-Kachel, am
+  offenen Punkt „DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST" oder an der
+  Frage arbeitet, ob nachgesendete Seitenaufrufe irgendwo mitzählen. Ohne sie wird die Frage neu
+  gestellt.
+- **Die A/B-Folge** ist ausdrücklich dafür aufgeschrieben, dass sie später nicht als Zählfehler gilt;
+  VERMERK 3 nennt sie nur als Grenze und zeigt hierher.
+- **Die Entscheidung, den nachgesendeten Seitenaufruf nicht kenntlich zu machen,** trägt eine
+  Kipp-Bedingung, die jede künftige Auswertung bindet. Auf sie zeigt zudem ein Kommentar in
+  `src/lib/analytics/pageview-emitter.resend.test.ts` (N1: „NICHT KENNTLICH GEMACHT (Abschnitt 14)").
+  Ob sie nach Abschnitt 8 gehört, ist in dieser Runde NICHT entschieden.
 
 **DIE VERLUSTRATEN-FRAGE IST BEANTWORTET: EIN NACHGESENDETER SEITENAUFRUF GEHT IN DIE
 VERLUSTRATE NICHT EIN.** (GEMESSEN am Code, CC, 2026-09-14.)
@@ -1777,5 +1876,55 @@ PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-14 — eine Angabe aus dem Auftrag di
 nicht prüfbar. Die Aussagen über Lesefunktionen, Anzeige und `isForwardable` GEMESSEN am Code (CC,
 2026-09-14).
 
-**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.** Kein Plan, keine
-Namen neuer Funktionen, keine Gestalt der Bereitstellung.
+### Vollzogen — was hier stand und wohin es gegangen ist
+
+Die Titel sind ohne Überschriften-Marke zitiert, damit eine Überschriften-Suche sie nicht trifft.
+Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 2026-09-14).
+
+- **"WAS DIESE SCHEIBE IST" und "WAS GEBAUT WIRD"** nannten Gegenstand und Umfang. **HEUTE ERKENNBAR:**
+  VERMERK 3, Gegenstand und Gestalt, dazu der Bau-Commit.
+- **"DAS PROBLEM, AM CODE NACHGESEHEN" und "WARUM DAS JETZT ZÄHLT UND VORHER NICHT"** beschrieben den
+  Defekt und warum er vor dem Dialog behoben wird. **HEUTE ERKENNBAR:** in der Commit-Nachricht von
+  `d0db9c4` („Der Defekt bestand seit 11.5a und traf niemanden …"), im Kommentarkopf von
+  `buildPageViewScript` („DER NACHGEHOLTE SEITENAUFRUF (Phase 11.5, Scheibe 11.5c)") und für die
+  Einschiebung in Entscheidung (12).
+- **"DIE SENDE-LOGIK BLEIBT AN EINER STELLE"** verlangte, dass `write()` den Beacon nicht nachbaut.
+  **HEUTE ERKENNBAR:** im Kommentarkopf von `buildPageViewScript` („ZWEI EXPLIZITE ZWEIGE AM PARAMETER,
+  EIN RUMPF"), im Docblock von `buildConsentRestoreScript` („DER NACHGEHOLTE SEITENAUFRUF (Scheibe
+  11.5c)") und in VERMERK 3, Gestalt. Die dort aufgezählten Bestands-Fundstellen der Existenzprüfung
+  waren ein Beleg für die Bauform und sind mit dem Zuschnitt abgelaufen.
+- **"DIE REIHENFOLGE, AM CODE NACHGESEHEN"** leitete den Fall „`write()` während des Parsens" ab.
+  **HEUTE ERKENNBAR:** an N6/7 in `pageview-emitter.resend.test.ts`, der ihn ausführt und ihn als
+  einziger Test ausdrücklich prüft, und an Mutation (iv) in VERMERK 3.
+- **"DIE DREI AUFLAGEN"** — KEIN DOPPEL, NUR BEI ANALYTICS, NUR BEI ERFOLG. **HEUTE ERKENNBAR:** an N2
+  und N3 („KEIN DOPPEL …"), N4 („NUR BEI ANALYTICS …") und N5 („NUR BEI ERFOLG …"), an den Mutationen
+  (ii) und (iii) und an den Live-Schritten 3, 4 und 5 in VERMERK 3.
+- **"WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT"** — fünf Ausschlüsse. **HEUTE ERKENNBAR:** die unberührten
+  Dateien `consent.ts`, `consent-wire.ts`, `ingest.ts` und der Setzer an der Dateiliste des Bau-Commits
+  in VERMERK 3; der Export-Pfad an Vorrat (4) und den Grenzen von VERMERK 3; der Dialog an Entscheidung
+  (12). Der offene Punkt „DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST" steht
+  unverändert in docs/offene-punkte.md; als Ausschluss DIESER Scheibe ist er mit ihr abgelaufen.
+- **"DIE TRAGENDEN INVARIANTEN"** — drei. **HEUTE ERKENNBAR:** die Byte-Gleichheit bei AUS an T1, am
+  AUS-Vergleichswert in N8 und an Live-Schritt 1 in VERMERK 3; „zwei Blöcke, nicht mehr" an VERMERK 3,
+  Gestalt — geändert sind nur das PageView-Script und `write()` im Wiederherstellungs-Block, und R3
+  hält den Setzer weiter byte-gleich; EINE Splice-Stelle und EINE Konkatenation am unveränderten Kommentar
+  „EINE KONKATENATION, EINE EINFUEGESTELLE" in `injectPageViewEmitter`.
+- **"AM BESTAND NACHGESEHEN, UND ES GEHÖRT ZU DEN ERSTEN ZWEI INVARIANTEN"** begründete, warum eine
+  Bereitstellung ohne Schalter den Text bei AUS ändern würde. **HEUTE ERKENNBAR:** an Mutation (i) in
+  VERMERK 3 — genau diese Folge, gemessen als „expected 14194 to be 14160" an T1.
+- **"AUFGELÖST — ARCHITEKT-ENTSCHEIDUNG 2026-09-14: DIE BEREITSTELLUNG DER SENDE-LOGIK HÄNGT AM
+  SCHALTER"** — mit Sach-Grund, Folge für T1 und Machbarkeit. **HEUTE ERKENNBAR:** im Kommentarkopf von
+  `buildPageViewScript` („DER ZWEIG LIEST DEN PARAMETER UND SONST NICHTS. Bei AUS gibt es keinen
+  Consent-Block, also kein write() und keinen Aufrufer"), im Kommentar am Hunk in
+  `injectPageViewEmitter` („DER PAGEVIEW-ERZEUGER BEKOMMT DEN SCHALTER SELBST"), an N8 und an Mutation
+  (i) in VERMERK 3.
+- **"EINE BAUVORGABE AUS EINEM BESTANDSTEST: DER NAME DER BEREITGESTELLTEN SENDE-LOGIK TRÄGT DIE
+  ZEICHENKETTE `__ps_pv` NICHT"** **HEUTE ERKENNBAR:** im Docblock von `PAGEVIEW_SEND_API` in
+  `src/lib/analytics/events.ts` („DER NAME TRAEGT DIE ZEICHENKETTE `__ps_pv` BEWUSST NICHT") und am
+  Kommentar von R3b selbst in `consent-store.test.ts`, der den Grund führt.
+- **"DIE DEMOBARKEIT, Regression zuerst"** — Vorbedingungen und fünf geplante Schritte. **HEUTE
+  ERKENNBAR:** VERMERK 3 trägt den gefahrenen Nachweis mit fünf Schritten, das Zählinstrument und die
+  Grenzen. **Ob der Lauf den A/B-Betrieb festgestellt und einen Testmodus ausgeschlossen hat, sagen die
+  Owner-Angaben nicht**; VERMERK 3 hält fest, warum die Zählung am Netzwerk-Tab davon nicht abhängt.
+- **Der Schlusssatz "DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE"** war
+  eine Auflage an den Zuschnitt und ist mit ihm abgelaufen.

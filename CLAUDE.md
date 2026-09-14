@@ -378,6 +378,13 @@ sondern als Ursache (5) unter "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICH
   nächsten Standdatei unter demselben Pfad — sobald ihre Nummern die eines solchen Zeigers
   erreichen, trifft er wieder einen existierenden, aber falschen Eintrag)
 
+**NACH DEM PHASENENDE 11.3 AUFGENOMMEN (2026-09-14).**
+- DER TESTZUSTAND WIRD NACH DEM SPEICHERN NICHT NEU GEHOLT — UND ER ÜBERLEBT DEN
+  PROJEKTWECHSEL (ZWEI TRIGGER, je einzeln hinreichend, beide spätestens vor einem
+  Beta-Launch: (1) für die drei Speicherpfade aus (b) — der erste fremde Nutzer, der
+  Zugangsdaten oder eine Kennung speichert, auch mit nur EINEM Projekt; (2) für das Fenster
+  aus (c) — der erste fremde Nutzer mit mehr als einem Projekt)
+
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
 Constraints, Indizes, Funktionen, Event-Trigger, Backups) steht in docs/db-stand.md.

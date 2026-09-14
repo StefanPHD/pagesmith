@@ -3586,3 +3586,77 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
   PROVENIENZ: die Zählung GEMESSEN am Repo (CC, 2026-09-11), die Zuordnung zu einer Phase je
   Treffer am Kontext abgelesen. Dass die nächste Standdatei sie wieder falsch macht, ist eine
   ABLEITUNG aus der Nummernvergabe, keine Messung.
+
+- DER TESTZUSTAND WIRD NACH DEM SPEICHERN NICHT NEU GEHOLT — UND ER ÜBERLEBT DEN
+  PROJEKTWECHSEL (ZWEI TRIGGER, je einzeln hinreichend, beide spätestens vor einem
+  Beta-Launch: (1) für die drei Speicherpfade aus (b) — der erste fremde Nutzer, der
+  Zugangsdaten oder eine Kennung speichert, auch mit nur EINEM Projekt; (2) für das Fenster
+  aus (c) — der erste fremde Nutzer mit mehr als einem Projekt):
+  **(a) DIE SICHTBARKEITS-BEDINGUNG.** Testknopf und Testcode-Feld einer Ziel-Karte stehen in
+  `TargetCard` (`src/components/TargetCard.tsx`) hinter `projectId && testModeState !== null`;
+  der Kommentar dort: "DIE SICHTBARKEIT HAENGT ALLEIN AN testModeState !== null". Den Wert
+  liefert `testModeStateFor` (`src/lib/tracking/credential-state.ts`) aus dem Container-Zustand
+  `testModes`; `null` heisst nicht geladen, Leser gescheitert oder kein Eintrag. Einen Eintrag
+  gibt `listTestModeStates` (`src/app/projects/actions.ts`) nur heraus, wenn ALLE DREI gelten:
+  das Ziel steht in `TARGETS_WITH_TEST_MODE` (meta, tiktok, pinterest — linkedin und google
+  bekommen den Abschnitt nie) · es trägt eine Kennung im GESPEICHERTEN Blob
+  (`hasTargetPixelId(getPixelId(settings, target), target) ||
+  hasConversionRules(getConversionRules(settings, target))`, gelesen aus `owned.settings`) ·
+  und es hat eine Zeile in `project_secrets`.
+  **(b) DREI PFADE OHNE NEU-ERHEBUNG.** Neu geholt wird `testModes` an genau zwei Stellen in
+  `CodeImporter` (`src/components/CodeImporter.tsx`): im gebündelten Lade-Effekt mit der
+  Abhängigkeit `[projectId]` und in `handleTestModeChanged` nach einer eigenen Test-Geste,
+  dort für ein Ziel. Ausgelassen wird die Erhebung:
+  · NACH DEM SPEICHERN VON ZUGANGSDATEN — `handleCredentialsSaved` aktualisiert
+    `configuredTargets` und `credentialStates`, ruft aber weder `listTestModeStates` noch
+    `setTestModes`;
+  · NACH DEM ENTFERNEN — `handleCredentialsRemoved`, dieselbe Auslassung;
+  · NACH DEM SPEICHERN EINER KENNUNG — die Bedingung liest den gespeicherten Blob, und nach
+    `saveProject` ruft keine Stelle `listTestModeStates`.
+  **DIE FOLGE, DIE DEN PUNKT TRÄGT:** Die Karte zeigt sofort "konfiguriert", der
+  Test-Abschnitt bleibt aus — bis das Projekt wechselt oder die Seite neu lädt. Nichts meldet
+  es.
+  **(c) DER ZUSTAND ÜBER DER MOUNT-GRENZE — DER SCHWERERE TEIL.** Die Karten hängen in
+  `MeasureView` (`src/components/MeasureView.tsx`) an der Mount-Grenze
+  `key={`${projectId ?? "neu"}:${target}`}`. `testModes` liegt DARÜBER, als `useState` in
+  `CodeImporter`, und wird beim Wechsel NICHT zurückgesetzt: Gesetzt wird es nur nach dem
+  Abruf (`setTestModes(tests)`) und in `handleTestModeChanged`. BIS DER ABRUF ANTWORTET, SEHEN
+  DIE FRISCH GEMOUNTETEN KARTEN DES NEUEN PROJEKTS DEN TESTZUSTAND DES VORIGEN. Dasselbe Muster
+  gilt für `configuredTargets` und `credentialStates` — sie laufen im selben Lade-Effekt und
+  werden ebenfalls erst nach dem Abruf gesetzt.
+  **DIESER TEIL IST EINE ABLEITUNG AUS DEM CODE, NICHT GELAUFEN.** Wie lange das Fenster offen
+  ist, ist ungemessen.
+  **(d) DIE TRIGGER** stehen im Titel, wörtlich: zwei, je einzeln hinreichend — der erste
+  fremde Nutzer, der Zugangsdaten oder eine Kennung speichert, auch mit nur EINEM Projekt,
+  und der erste fremde Nutzer mit mehr als einem Projekt; beide spätestens vor einem
+  Beta-Launch. HEUTE testet der Owner allein; der Schaden ist ein
+  Schönheitsfehler, weil er weiss, was er gerade getan hat.
+  **(e) WARUM HIER UND NICHT IM BACKLOG:** Es geht STILL kaputt — der Betreiber sieht einen
+  Zustand, der nicht zu seinem Projekt gehört, oder vermisst einen, der dazugehört, und nichts
+  sagt es ihm.
+  **(f) DIE ABGRENZUNG ZUM NACHBARN** — docs/claude-history/backlog-polish.md, "Nachtrag
+  2026-09-11 — BEOBACHTUNG: DIE TESTMODUS-ANZEIGE VERALTET BEI OFFENER SEITE" (GELESEN, CC,
+  2026-09-14). Er belegt denselben Mechanismus — "GEHOLT WIRD DER TESTZUSTAND AN GENAU ZWEI
+  STELLEN" — und handelt von einer anderen Sache: vom ABLAUF einer Frist bei offener Seite, als
+  bewusste Auslassung der Scheibe 11.3b ("KEIN DEFEKT"). DIESER POSTEN handelt von der eigenen
+  Speicher-Geste des Betreibers, nach der nicht neu geholt wird, und vom Zustand eines ANDEREN
+  Projekts; die Speicherpfade nennt der Nachbar nicht.
+  **(g) KANDIDATEN — KEINE EMPFEHLUNG, KEINE AUSWAHL:**
+  · (K1) `handleCredentialsSaved` und `handleCredentialsRemoved` holen den Testzustand neu;
+  · (K2) die Speicher-Action gibt den Testzustand in ihrem Ergebnis mit;
+  · (K3) `testModes` wird beim Projektwechsel auf `null` gesetzt, bevor der Abruf läuft;
+  · (K4) nach `saveProject` wird neu geholt, für den Kennungs-Pfad.
+  **(h) DER ANLASS — OWNER-BEOBACHTUNG vom 2026-09-14, und der Code widerspricht ihr in einem
+  Punkt.** Beobachtet: In frisch angelegten Projekten fehlte der Abschnitt an meta, tiktok und
+  pinterest; nach einem Wechsel in ein anderes Projekt und zurück war er bei meta da, obwohl
+  bei keinem der drei Zugangsdaten hinterlegt waren. NACH DEM CODE kann der Abschnitt bei meta
+  nicht erscheinen, ohne dass eine meta-Zeile in `project_secrets` existiert. ZWEI MÖGLICHE
+  AUFLÖSUNGEN: Eine solche Zeile bestand doch — aus einem früheren Speichern, oder weil eine
+  Zeile ohne Zugangsdatum möglich ist (ungemessen) —, ODER sichtbar war das Fenster aus (c) mit
+  dem Zustand des anderen Projekts. WELCHE ZUTRIFFT, IST AM REPO NICHT ENTSCHEIDBAR und
+  ausdrücklich nicht erhoben; die Reihenfolge der Handlungen ist eine Erinnerung, keine
+  Messung.
+  PROVENIENZ: (a), (b) und die Code-Aussagen unter (c) und (h) GEMESSEN am Code (CC,
+  2026-09-14, Stand `7516bce` — seither kein Commit unter `src/`); die Folge unter (c) eine
+  ABLEITUNG, nicht gelaufen; der Nachbar GELESEN; die Beobachtung OWNER-ANGABE; Trigger,
+  Einordnung und Begründung unter (d) und (e) ARCHITEKT-ANGABE (2026-09-14).

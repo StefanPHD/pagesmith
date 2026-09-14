@@ -4677,3 +4677,39 @@ PROVENIENZ DES ABSCHNITTS: Die Grundmengen, die Varianten-Abgrenzung, die Ereign
 Unabhängigkeit und der Export-Fall sind GEMESSEN am Code (CC, 2026-09-11, am 2026-09-12
 nachgeprüft). Die zwei Zahlenpaare sind BEOBACHTET (Owner, Dashboard-Ablesung, 2026-09-11).
 Die Erklärung zur Lead-Asymmetrie ist OWNER-ANGABE (2026-09-11) und ausdrücklich UNGEPRÜFT.
+
+## Nachtrag 2026-09-14 — BEOBACHTUNG: DIE ADRESSE TRÄGT DEN NAMEN DES ERSTEN VERÖFFENTLICHENS
+
+KEIN OFFENER PUNKT, und der Grund gehört an den Anfang: ES GEHT NICHTS STILL KAPUTT. Die
+Adresse bleibt gültig; nur ihr Name überrascht. Ein Posten mit Trigger in
+docs/offene-punkte.md wäre der falsche Ort — es gibt keinen Zeitpunkt, zu dem das umkippt.
+
+- DIE BEOBACHTUNG (OWNER-ANGABE, 2026-09-14): Wird ein Projekt ohne Namen veröffentlicht,
+  trägt die Adresse den Platzhalter-Namen. Eine spätere Umbenennung zieht die Adresse NICHT
+  nach.
+  AM CODE PASST DAS DAZU (GEMESSEN, CC, 2026-09-14): Ein neu angelegtes Projekt heisst
+  „Unbenanntes Projekt" (`saveProject`, `src/app/projects/actions.ts`). Beim ERSTEN
+  Veröffentlichen vergibt `assignDomainLabel` das Label aus dem Projektnamen (`slugForLabel`,
+  `src/lib/hosting/host.ts`); danach liest `publishProject` das Label aus der domains-Zeile
+  und verwendet es wieder. `renameProject` schreibt ausschliesslich die Spalte `name` und
+  fasst weder `domains` noch das Label an.
+- DAS IST KEIN FEHLER, SONDERN DIE GEWOLLTE BAUFORM — und dieser Satz ist der ganze Zweck des
+  Eintrags. Die Regel "DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER 'IST DIESES PROJEKT
+  LIVE?'" (docs/immer-beachten.md, GELESEN, CC, 2026-09-14) sagt: publishProject stellt eine
+  fehlende Zeile "mit DEM ALTEN Label wieder her — abgeleitet, nicht erfunden, damit die URL
+  stabil bleibt"; gehört das Label einem fremden Projekt, wird fail-closed abgebrochen: "NIE
+  stillschweigend eine neue Adresse vergeben, laufende Ads zeigten sonst weiter auf die tote
+  alte." Der Docblock von `publishProject` nennt dieselbe Absicht beim Namen: ein vergebenes
+  Label wird WIEDERVERWENDET, "die Live-URL bleibt stabil".
+  EINE UMBENENNUNG NENNT DIE REGEL NICHT AUSDRÜCKLICH — sie trägt den Fall über ihren Grund:
+  Eine Adresse, die dem Namen folgte, änderte sich unter laufenden Anzeigen. WER DAS
+  "REPARIERT", BRICHT DIE ADRESS-STABILITÄT.
+- WAS FEHLT, IST DER HINWEIS: Der Betreiber kann nicht wissen, dass die Adresse beim ersten
+  Veröffentlichen festgelegt wird. Ein Hinweis im Bereich VERÖFFENTLICHEN wäre der Ort.
+  KEINE EMPFEHLUNG zum Wortlaut.
+
+GEMELDET, NICHT GEBAUT.
+PROVENIENZ DES ABSCHNITTS: Die Beobachtung ist OWNER-ANGABE (2026-09-14). Der Anlage-Name, die
+Label-Vergabe, die Wiederverwendung und der Umfang von `renameProject` sind GEMESSEN am Code
+(CC, 2026-09-14). Der Wortlaut der Regel und des Docblocks ist GELESEN (CC, 2026-09-14). Dass
+die Regel den Umbenennungs-Fall über ihren Grund trägt, ist eine ABLEITUNG.

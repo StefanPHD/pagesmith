@@ -2108,6 +2108,77 @@ liegen beide hier und finden einander.
       · Dass ein fremdes Script tatsächlich sendet und dass ein fremdes Pixel doppelt
         zählt: ABLEITUNGEN, keine Messungen. "Hier ist Entfernen meist die richtige
         Handlung" unter (d): ARCHITEKT-ANGABE 2026-09-14, keine Messung.
+- [ ] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur — eine EIGENE Zeile, angelegt am 2026-09-14. Sie GEHÖRT
+      NICHT zur laufenden Phase 11.5 und ist kein Teil ihrer Scheiben.
+
+      DIE NUMMER IST GEWÄHLT, WEIL SIE FREI IST (Präzedenz: 4.5, 10.5, 11.5, 11.10, 11.11):
+      KEINE bestehende Nummer wird verschoben. Dass 11.12 im Bestand unbelegt war, ist
+      GEMESSEN am Repo (CC, 2026-09-14, `git grep "11\.12"` über alle verfolgten Dateien —
+      kein Treffer; Positivkontrolle: dieselbe Suche nach `11\.11` trifft).
+
+      (a) DER BEFUND — OWNER-ANGABE vom 2026-09-14, abgelesen an der Konsole im Rahmen der
+      Vorschau: Eine importierte Seite blinkt im Rahmen auf und bleibt leer — im Editor wie
+      in der Vorschau. Live wird sie korrekt dargestellt. Die Konsole meldet im Kontext
+      `about:srcdoc` einen SecurityError beim Lesen von `document.cookie`, mit dem Hinweis,
+      das Dokument sei sandboxed und trage `allow-same-origin` nicht; derselbe Fehler
+      erscheint zusätzlich als UNCAUGHT. Eine Anfrage derselben Seite scheitert an einer
+      CORS-Regel mit Ursprung `null`.
+      AM CODE PASST DAS DAZU (GEMESSEN, CC, 2026-09-14): Beide Rahmen in
+      `src/components/CodeImporter.tsx` laden den Text über `srcDoc` und tragen einen
+      Sandkasten ohne `allow-same-origin` — der Editor-Rahmen `sandbox="allow-scripts"`, die
+      funktionale Vorschau `sandbox="allow-scripts allow-popups
+      allow-popups-to-escape-sandbox"`.
+      DER WURF KOMMT AUS FREMDEM CODE, NICHT AUS UNSEREM — und das ist der Grund, warum er
+      nicht dort abzufangen ist, wo er entsteht. Den Konsolen-Auszug hat CC nicht gesehen;
+      die Zuordnung ist am Auszug ABGELESEN (OWNER/ARCHITEKT). AM CODE GESTÜTZT, nicht
+      bewiesen (CC, 2026-09-14): Der einzige Zugriff auf `document.cookie` in dem, was wir in
+      die Rahmen bringen, steht in `buildCapiBeaconStatement` (`src/lib/tracking/meta.ts`) —
+      innerhalb eines `try` und erst beim Feuern eines Klicks. Einen ungefangenen Wurf beim
+      Laden kann er nicht erzeugen, und im Editor-Rahmen gibt es ihn gar nicht.
+
+      (b) DIE SCHWERE: Wer die Seite nicht sieht, kann nichts verdrahten — weder Texte noch
+      Knöpfe. Das ist der Kern-Loop des Produkts.
+
+      (c) DER TRIGGER, UND ER IST KEIN WUNSCH: DER ERSTE FREMDE NUTZER. Heute testet der Owner
+      allein und kommt am Editor vorbei; ein fremder Nutzer kann das nicht.
+      ER HÄNGT AN DERSELBEN BEDINGUNG WIE CLAUDE.md, "## Modus", Absatz "ES GIBT KEINE FIRMA,
+      KEINE KUNDEN UND KEINEN FREMDEN TRAFFIC" — dort am zweiten der drei Trigger: "das erste
+      FREMDE Nutzerkonto legt ein Projekt an" (GELESEN, CC, 2026-09-14).
+
+      (d) WAS AUSDRÜCKLICH NICHT DER WEG IST: `allow-same-origin` zum Sandkasten hinzufügen.
+      Die Regel in docs/immer-beachten.md lautet wörtlich: "Importierter User-Code läuft NUR
+      im sandboxed iframe (sandbox="allow-scripts", niemals allow-same-origin), nie
+      ungesandboxt." (GELESEN, CC, 2026-09-14.) Am Editor-Rahmen steht dieselbe Auflage als
+      Kommentar: "NIEMALS allow-same-origin dazu – die Kombination bricht den Fremdcode aus der
+      Sandbox aus." Sie zu lockern hiesse, fremdem Code Zugriff auf den Ursprung der
+      Anwendung zu geben — ein `srcDoc`-Dokument erbt ohne Sandkasten den Ursprung der
+      Seite, die es einbettet (Plattform-Aussage, in dieser Runde nicht gemessen).
+
+      (e) DER ZUSCHNITT ENTSTEHT ERST NACH EINER AUFKLÄRUNG. DIESE ZEILE ENTSCHEIDET NICHT, WIE
+      REPARIERT WIRD. Offen ist unter anderem, ob der Wurf abzufangen ist, ohne den Sandkasten
+      zu öffnen, und was eine Seite verliert, die auf ihren Ursprung angewiesen ist.
+
+      (f) EINE GRENZE, DIE ZUR PHASE 11.5 GEHÖRT: Die Live-Nachweise der Scheiben 11.5a bis
+      11.5d liefen auf Seiten, die im Rahmen funktionieren. Ob eine Seite, die dort stirbt,
+      live anders auf unsere Einwilligungs-Bausteine reagiert, ist UNGEMESSEN.
+
+      (g) DIE NUMMER TRÄGT KEINE REIHENFOLGE, wie bei 11.10 (dort Punkt (d)). Wann diese
+      Phase gebaut wird, ist hier NICHT entschieden.
+
+      WAS DIESE ZEILE AUSDRÜCKLICH NICHT TUT: Sie schneidet nichts zu, sie terminiert nichts,
+      und sie schlägt keine Reparatur vor.
+
+      (h) PROVENIENZ — je Angabe:
+      · Der Befund unter (a) samt Konsolen-Auszug: OWNER-ANGABE vom 2026-09-14. Dass der Wurf
+        aus fremdem Code stammt: am Auszug ABGELESEN (Owner/Architekt, 2026-09-14), von CC
+        nicht eingesehen.
+      · Die zwei Sandkasten-Attribute, der einzige `document.cookie`-Zugriff in unserem
+        erzeugten Code und die Freiheit der Nummer: GEMESSEN am Repo (CC, 2026-09-14).
+      · Der Trigger-Absatz in CLAUDE.md und die Sandkasten-Regel in docs/immer-beachten.md:
+        GELESEN (CC, 2026-09-14).
+      · Die Schwere unter (b), der Trigger unter (c) und die Grenze unter (f): ARCHITEKT-ANGABE
+        2026-09-14. Dass ein `srcDoc`-Dokument ohne Sandkasten den Ursprung erbt:
+        Plattform-Aussage, nicht gemessen.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

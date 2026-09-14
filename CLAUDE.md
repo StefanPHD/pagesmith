@@ -160,6 +160,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel
 - [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus
 - [ ] Phase 11.11 — Import-Bereinigung
+- [ ] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)
@@ -1217,6 +1218,10 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   Dashboard bedeutet, und dass die beobachtete Lead-Asymmetrie KEIN Code-Befund ist. KEIN
   offener Punkt: die Zahlen sind für das richtig, was sie messen — erklärt wird es nirgends.
   HIER STEHT KEINE STÜCKZAHL, aus demselben Grund wie bei den beiden Abschnitten darüber.
+  NACHGEZOGEN 2026-09-14 — EIN WEITERER NACHTRAGS-ABSCHNITT: "Nachtrag 2026-09-14 —
+  BEOBACHTUNG: DIE ADRESSE TRÄGT DEN NAMEN DES ERSTEN VERÖFFENTLICHENS" (1). Eine
+  Owner-Beobachtung, am Code nachgesehen: Die Adresse zieht eine Umbenennung nicht nach, und
+  das ist die gewollte Bauform. KEIN offener Punkt; es fehlt ein Hinweis, kein Verhalten.
 - supabase/checks/ — versionierte Messproben für Live-Tests und Gegenproben. KEINE Probe
   fasst ECHTE Daten an; welche Bauformen das zulässt und was eine Datei dann in ihrem Kopf
   sagen muss, steht im README des Ordners — hier der Zeiger, dort die Regel.

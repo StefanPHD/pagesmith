@@ -31,6 +31,7 @@ EINER DATEI MIT VERZEICHNIS NICHT", Zusatz 2026-08-27.
 12. Der Ablehnungs-Zustand vor dem ersten Beacon — Zuschnitt der Scheibe 11.5a
 13. Die gespeicherte Entscheidung und der Weg zurück — Zuschnitt der Scheibe 11.5b
 14. Der nachgeholte Seitenaufruf — Zuschnitt der Scheibe 11.5c
+15. Die Einwilligungs-Leiste — Zuschnitt der Scheibe 11.5d
 
 ## 1. Gegenstand der Phase — was gebaut wird und was ausdrücklich nicht dazugehört
 
@@ -657,7 +658,7 @@ und nie neu vergeben.
   null Treffer im Abschnitt, zehn in der ganzen Datei, Positivkontrolle `isTargetDeliverable`
   mit einem Treffer im Abschnitt). Die Gründe von (6) sind eigene Messungen und in (6) selbst
   als solche ausgewiesen.
-- **(7) bis (14):** Sie tragen ihre Provenienz je im eigenen Text, in der Zeile PROVENIENZ am
+- **(7) bis (19):** Sie tragen ihre Provenienz je im eigenen Text, in der Zeile PROVENIENZ am
   Ende des Eintrags, und werden deshalb hier nicht wiederholt.
 
 **DIE ANGABEN ZU (5) UND (6) SIND ARCHITEKT-ANGABEN (2026-09-12) UND AM REPO NICHT PRÜFBAR.**
@@ -1092,6 +1093,262 @@ werden — dann gibt es die zweite Stelle nicht mehr, die der Grund ausschliesst
 
 PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-14 — eine Angabe aus dem Auftrag dieses Tages, am Repo nicht
 prüfbar. Die Aussagen über Vorschau und Aufrufer GEMESSEN am Code (CC, 2026-09-14).
+
+**(15) DER EINWILLIGUNGS-SCHALTER WIRD EIN EIGENER SCHLÜSSEL MIT STRING-WERTEN.**
+
+DIE ENTSCHEIDUNG: Der Schalter bekommt im Einstellungs-Blob einen EIGENEN Schlüssel, dessen Wert ein
+String ist. Er löst `consent.gate` als Quelle ab; `gate` wird nur noch als Altbestand gelesen. Namen
+und Schreibweise legt der Bau-Plan fest.
+- DIE WERTE: AUS und BAR; ein Wert für das MODAL kommt mit der Scheibe 11.5d-2 hinzu.
+- FEHLT der Schlüssel, heisst das AUS.
+- EIN BESTEHENDES `gate: true` wird als ALTBESTAND gelesen und bedeutet BAR.
+- LIEGEN BEIDE NEBENEINANDER, GEWINNT DER NEUE.
+- Ein UNBEKANNTER Wert: Entscheidung (16).
+- `settingsEqual` VERGLEICHT DEN NORMALISIERTEN WERT, nicht eine boolesche Projektion.
+
+DER TRAGENDE GRUND IST EIN STILLER VERLUSTPFAD, NICHT DIE ERWEITERBARKEIT. Heute enthält
+`settingsEqual` den Term `isConsentGateOn(a) === isConsentGateOn(b)`, und `isConsentGateOn` liefert
+`settings.consent?.gate === true` (GEMESSEN am Code, `src/lib/settings.ts`, CC, 2026-09-14). Bliebe
+der Leser eine boolesche Projektion, wären zwei Formen dort gleich: Ein Wechsel zwischen ihnen wäre
+für `dirty` unsichtbar, und der Wert ginge beim Projektwechsel still verloren — genau der Fehlerfall,
+gegen den Entscheidung (6) den Term überhaupt verlangt. Der Term vergleicht zwei Rückgaben DERSELBEN
+Funktion und kompiliert deshalb, welchen Typ sie auch liefert; nichts wird rot.
+RICHTIGGESTELLT GEGENÜBER DER AUFKLÄRUNG VOM 2026-09-14: Dort hiess es, `===` kompiliere „für jeden
+Typ". Das ist zu weit — TypeScript weist einen Vergleich zweier Typen ohne Überschneidung ab.
+Tragend ist allein, dass beide Seiten denselben Typ haben. (Sprachverhalten, in dieser Runde nicht
+gesondert gemessen.)
+
+VERWORFEN, je mit ihrem Grund:
+- **`gate` selbst zur Vereinigung aus Wahrheitswert und Strings machen.** `isConsentGateOn` prüft
+  `=== true`; ein gespeicherter String liefe dort auf AUS, und der Vergleich kompiliert weiter, weil
+  `true` in der Vereinigung liegt — still.
+- **Ein zweites Feld NEBEN `gate` für die Form, `gate` bliebe der Schalter.** Es erlaubt ein
+  ungültiges Paar — eine Form gesetzt, der Schalter aus —, und für dieses Paar bräuchte es eine
+  Regel, die es nicht gibt.
+
+DIE VORRANG-REGEL, UND WARUM SIE NÖTIG IST (GEMESSEN am Code, CC, 2026-09-14): `setConsentGate`
+baut `consent: { ...settings.consent, gate: on }` — er SPREIZT den Teil-Blob. `saveProject` schreibt
+`settings` als Ganzes (`update({ html, mappings, settings, updated_at })`). Ein `gate` aus den
+Scheiben 11.5a bis 11.5c bleibt damit im Blob, solange nichts es ausdrücklich entfernt — dafür
+braucht es keinen alten Browser-Tab; ein alter Tab kann es zusätzlich zurückschreiben. Ohne Vorrang
+entschiede ein liegengebliebener Altwert gegen die heutige Eingabe.
+
+EINE FOLGE, DIE ZUR ENTSCHEIDUNG GEHÖRT: `gate: true` hiess bisher Ablehnung OHNE Dialog. Der
+sichtbare Text am Schalter (`src/components/PublishView.tsx`, GELESEN am Code, CC, 2026-09-14): „Die
+veröffentlichte Seite setzt beim Laden ein Urteil, das alle Ziele ablehnt — bis ein
+Einwilligungs-Dialog oder ein eigenes Consent-Management etwas anderes sagt." Als BAR gelesen,
+erscheint auf einem solchen Projekt nach dem NÄCHSTEN Veröffentlichen eine Leiste; bis dahin trägt
+die Live-Seite ihren alten Stand (docs/immer-beachten.md, „EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT
+MIT DEM DEPLOY"). **OB ES SOLCHE ZEILEN GIBT, IST AM REPO NICHT FESTSTELLBAR** — es läge in
+`projects.settings`.
+
+NICHT ENTSCHIEDEN: ein altes `gate` mit einem anderen Wert als `true` oder `false`. Der heutige Leser
+macht daraus AUS; `setConsentGate` schreibt ausschliesslich Wahrheitswerte (`on: boolean`). Ob je ein
+anderer Wert geschrieben wurde, ist am Repo nicht feststellbar.
+
+WAS DAMIT OHNE MIGRATION MÖGLICH BLEIBT: Der Wert für das Modal kommt als weiterer String hinzu.
+`projects.settings` ist `jsonb not null default '{}'` (`supabase/migrations/0004_project_settings.sql`),
+und keine Migration trägt einen CHECK auf die Spalte (GEMESSEN am Repo, CC, 2026-09-14: Suche nach
+`check` in Zeilen mit `settings` über `supabase/migrations/`, kein Treffer). Ob die laufende Datenbank
+dem entspricht, ist am Repo nicht entscheidbar.
+DER GESPEICHERTE BESUCHER-WERT UND DER HOOK TRAGEN DIE FORM NICHT: `ps1:<granted>|<denied>` und das
+Hook-Objekt führen nur Schlüssel (`buildConsentRestoreScript`, `src/lib/tracking/consent-store.ts`,
+GEMESSEN am Code, CC, 2026-09-14). Eine weitere Form ändert an beiden nichts.
+
+WEN SIE BINDET: jede Scheibe, die den Schalter liest, schreibt, anzeigt oder beim Veröffentlichen
+auswertet — ausdrücklich 11.5d und 11.5d-2 — und jede Runde an `settingsEqual`.
+WANN SIE KIPPT: ERSTENS, sobald `settingsEqual` strukturell vergleicht statt aufzuzählen — dann trägt
+der Verlustpfad als Grund nicht mehr; dieselbe Bedingung steht an Entscheidung (6). ZWEITENS, sobald
+kein Projekt mehr ein `gate` trägt und keines mehr zurückgeschrieben werden kann — dann entfallen der
+Altbestands-Zweig und mit ihm die Vorrang-Regel. Feststellbar ist das nur an der Datenbank, nicht am
+Repo.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-14, auf der gemessenen Grundlage der Aufklärung desselben
+Tages — eine Angabe aus dem Auftrag, am Repo nicht prüfbar. Die Aussagen über den Bestand GEMESSEN
+bzw. GELESEN am Code und Repo (CC, 2026-09-14), wie je angegeben.
+
+**(16) EIN UNBEKANNTER WERT DES SCHALTERS VERWEIGERT DAS VERÖFFENTLICHEN.**
+
+DIE ENTSCHEIDUNG: Trägt der Schlüssel aus Entscheidung (15) einen Wert, den der Code nicht kennt,
+bricht `publishProject` ab und meldet es dem Betreiber. Es wird nichts geschrieben und nichts
+ausgeliefert. Kein Rückfall auf AUS, kein Rückfall auf BAR.
+
+DIE WORTWAHL IST KORRIGIERT — BEFUND CC 2026-09-14: „Unbekannt → AUS" wäre FAIL-OPEN, nicht
+fail-closed. Die Definition steht im Kommentar über `buildConsentRuntime`
+(`src/lib/tracking/consent.ts`), umlautfrei wie im Quelltext: „FAIL-CLOSED ist Absicht, nicht Haerte:
+Ein Datenschutz-Gate blockiert bei Fehlkonfiguration, statt mutmasslich durchzulassen. Fail-closed
+heisst, der Betreiber MERKT es — sein Tracking hoert auf. Fail-open heisst, niemand merkt es."
+Bei AUS entstehen weder Setzer noch Wiederherstellung (explizite Zweige in `injectPageViewEmitter`,
+GEMESSEN am Code, CC, 2026-09-14), der Hook bleibt ungesetzt, und „nicht gesetzt heisst erlaubt"
+(Entscheidung (1)): Alle Ziele würden beliefert, und niemand merkte es.
+
+DER GRUND FÜR DEN ABBRUCH IST EINE ASYMMETRIE: Der Preis des Abbruchs trifft den BETREIBER an seinem
+Rechner, sofort und sichtbar. Der Preis eines stillen Rückfalls träfe den BESUCHER auf der Live-Seite,
+unsichtbar und dauerhaft.
+
+DER ORT IST `publishProject`, NICHT DER ERZEUGER (ARCHITEKT-ENTSCHEIDUNG 2026-09-14): Der Erzeuger
+baut Text, das Veröffentlichen schreibt aus, und nur dort gibt es einen Rückkanal zum Betreiber. Ein
+werfender Erzeuger bräche an einer Stelle ab, die keine Meldung kennt.
+DER RÜCKKANAL IST GEMESSEN (CC, 2026-09-14):
+- `publishProject` (`src/app/projects/actions.ts`) liefert `{ ok: false, error }`. Die Bauform steht
+  dort schon: Der Leer-Riegel gibt `EMPTY_PUBLISH_MESSAGE` bzw. die Varianten-Meldungen zurück, BEVOR
+  Label-Vergabe und Schreibvorgang laufen.
+- `handlePublish` (`src/components/CodeImporter.tsx`) ruft die Action über `safeAction` und setzt bei
+  `ok: false` `publishError` und `publishStatus` auf `"error"`.
+- Daraus entsteht `publishNotice` mit dem Ton `"error"`, und `PublishView` zeigt dessen Text im
+  Bereich VERÖFFENTLICHEN.
+
+VERWORFEN: unbekannt → BAR. Es zeigte auf der Seite eine Oberfläche, die der Betreiber nie gewählt
+hat.
+
+DAS BEDIENELEMENT BIETET NUR WERTE AN, DEREN BLOCK GEBAUT IST — sonst wählte der Betreiber einen
+Zustand, den das Veröffentlichen anschliessend verweigert. In 11.5d sind das AUS und BAR.
+
+WAS DARAUS FÜR DEN LESER FOLGT (ABLEITUNG): Er darf einen unbekannten Wert nicht auf AUS abbilden —
+sonst sieht `publishProject` ihn nie, und der Abbruch wäre toter Code.
+
+NICHT ENTSCHIEDEN, beides eine Frage an den Bau-Plan:
+- **Was das Bedienelement bei einem gespeicherten unbekannten Wert anzeigt, und ob es ihn dabei
+  überschreibt.**
+- **Ob der Zustand zusätzlich ein bleibendes Signal bekommt.** Die Regel „WELCHE REGEL WANN GREIFT:
+  BEKOMMT DIESER FEHLER EIN BLEIBENDES SIGNAL?" (docs/immer-beachten.md) knüpft ein Signal daran, ob
+  die Bedingung beim nächsten Hinsehen noch wahr ist — ein unbekannter Wert im Blob ist das. Der
+  Publish-Kanal selbst wird beim Öffnen des Einstellungs-Drawers geleert: `resetDrawerStatusChannel`
+  setzt `publishStatus` und `publishError` zurück (GEMESSEN am Code, CC, 2026-09-14). Die Meldung
+  allein überdauert das nächste Öffnen also nicht.
+
+WEN SIE BINDET: 11.5d, 11.5d-2 und jede Scheibe, die dem Schalter einen Wert hinzufügt oder
+`publishProject` an dieser Stelle ändert.
+WANN SIE KIPPT: sobald der Server den Wert schon beim SPEICHERN prüft und ein unbekannter Wert den
+Blob gar nicht erst erreicht — dann gibt es beim Veröffentlichen nichts mehr zu verweigern. Heute
+schreibt `saveProject` `settings` ungeprüft (GEMESSEN am Code, CC, 2026-09-14).
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-14 auf Vorschlag des Architekten; der Ort ARCHITEKT-ENTSCHEIDUNG
+2026-09-14 — beides Angaben aus dem Auftrag, am Repo nicht prüfbar. Die Korrektur der Wortwahl ist ein
+BEFUND von CC (2026-09-14). Definition, Rückkanal und Drawer-Reset GELESEN bzw. GEMESSEN am Code (CC,
+2026-09-14).
+
+**(17) ENTSCHEIDUNG (5) WIRD NEU ENTSCHIEDEN — IHRE ZWEITE KIPP-BEDINGUNG TRITT MIT 11.5d EIN.**
+
+DIE KIPP-BEDINGUNG IM WORTLAUT (Entscheidung (5), WANN SIE KIPPT; GELESEN, CC, 2026-09-14):
+„ZWEITENS, sobald der Rückfall-Zustand NICHT MEHR der heutige ist: Der Preis ist ausdrücklich damit
+begründet, dass ein still ausgeknipster Schalter auf "kein Dialog, alle Ziele erlaubt" zurückfällt
+und damit "kein Leck, kein neuer Schaden" ist. Existiert erst ein Dialog mit einer echten Entscheidung
+des Besuchers, trägt dieser Satz nicht mehr."
+
+MIT 11.5d EXISTIERT ER. DIE FOLGE AM CODE: Bei AUS entsteht die Wiederherstellung nicht, der Hook
+bleibt ungesetzt, alle Ziele gelten als erlaubt (explizite Zweige in `injectPageViewEmitter`,
+GEMESSEN am Code, CC, 2026-09-14). Die gespeicherte Ablehnung eines Besuchers bleibt im
+`localStorage` liegen, aber kein Baustein liest sie. Fällt der Schalter still auf AUS und wird die
+Seite danach neu veröffentlicht, wird ein Besucher, der abgelehnt hat, wieder getrackt — und nichts
+wird rot. (Die Wirkung auf einer Live-Seite ist eine ABLEITUNG, nicht gemessen.)
+
+DIE ENTSCHEIDUNG, IN ZWEI TEILEN:
+- **WAS BLEIBT: Die Ablage im Einstellungs-Blob wird NICHT geändert.** Der Grund von (5) — Schalter
+  und Schlüssel aus EINER Quelle — trägt unverändert. Ihre ERSTE Kipp-Bedingung ist nicht eingetreten:
+  Das Memo `consentTargets` (`src/components/CodeImporter.tsx`) leitet die Ziel-Schlüssel weiter aus
+  `settings` ab (GEMESSEN am Code, CC, 2026-09-14).
+- **WAS SICH ÄNDERT: Der Preis ist nicht mehr harmlos.** Der stille Rückfall ist ab jetzt ein
+  BENANNTES RISIKO, kein hinzunehmender Nebeneffekt.
+
+WAS ENTSCHEIDUNG (16) DAVON DECKT UND WAS NICHT: Der Abbruch deckt den UNBEKANNTEN Wert. Er deckt NICHT
+den Fall, dass ein alter Browser-Tab den ganzen Blob überschreibt — ohne den Schalter oder mit einem
+veralteten Stand. Dort ist der Wert nicht unbekannt, sondern schlicht AUS oder alt. **DIESER WEG BLEIBT
+OFFEN UND UNGEMESSEN.**
+
+DIESE ENTSCHEIDUNG ERSETZT (5) NICHT. Sie tritt daneben und benennt, was an ihr nicht mehr trägt; (5)
+bleibt wörtlich stehen.
+
+WEN SIE BINDET: jede Runde, die den Schalter liest, schreibt oder seinen Ort ändert, und jede, die (5)
+als Begründung heranzieht — sie liest (17) mit.
+WANN SIE KIPPT: sobald der Schalter nicht mehr still auf AUS fallen kann, oder sobald AUS nicht mehr
+„alle Ziele erlaubt" bedeutet — Letzteres setzte einen Eingriff in den Konsumenten voraus und stiesse
+auf Entscheidung (1). In beiden Fällen ist das benannte Risiko keines mehr.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-14 — eine Angabe aus dem Auftrag, am Repo nicht prüfbar. Die
+Kipp-Bedingung GELESEN an (5); die Aussagen über den Code GEMESSEN (CC, 2026-09-14), die Wirkung
+ABGELEITET, wie je angegeben.
+
+**(18) DER DIALOG-BLOCK BRAUCHT EIGENE WÄCHTER — DIE BESTEHENDEN DECKEN IHN NICHT.**
+
+DIE ENTSCHEIDUNG: Ein neuer Block in der Verkettung von `injectPageViewEmitter` bekommt eigene Wächter
+auf drei Achsen. Wie sie aussehen, legt der Bau-Plan fest.
+
+DREI LÜCKEN, GEMESSEN an den Tests (CC, 2026-09-14):
+- **SERIALISIERUNG.** Für einen Dialog-Block gibt es keinen Wächter, und die bestehenden prüfen
+  ungleich scharf:
+  - N9 in `src/lib/analytics/pageview-emitter.resend.test.ts` (PageView-Script bei AN) und der
+    Serialisierungs-Test in `src/lib/analytics/pageview-emitter.test.ts` (dasselbe Script bei AUS)
+    zählen `</script>` per Regex auf GENAU ein Vorkommen und suchen `</body>` nach `toLowerCase()`.
+  - T3b in `src/lib/tracking/consent-setter.test.ts` (Setzer) und R3b in
+    `src/lib/tracking/consent-store.test.ts` (Wiederherstellung) suchen nur die Zeichenfolgen
+    `"</scr" + "ipt><"` und `"</bo" + "dy>"`, ohne Kleinschreibung — ein `</script>` ohne folgendes
+    `<` fiele dort nicht auf.
+  Ein Block, der Markup in einem Script-String trägt, liegt genau auf dieser Achse.
+- **NADEL-KOLLISION.** R3b prüft, dass ein Block keine der Kennungen trägt, nach denen der Bestand
+  sucht — `id="pagesmith-consent"` (`hasConsentScript`), `id="__ps_cns"`, `__ps_pve` und `__ps_pv` —,
+  mit Positivkontrolle am ausgelieferten Text. **DIESE AUFLAGE GILT HEUTE NUR FÜR DEN
+  WIEDERHERSTELLUNGS-BLOCK.** Für den Setzer gibt es keinen solchen Test, das PageView-Script trägt die
+  Nadeln absichtlich, und für einen neuen Block gilt sie nicht. Die Reihenfolge-Tests R2 und T2 und
+  Test (f) in `pageview-emitter.test.ts` vergleichen über `indexOf`, also über das ERSTE Vorkommen; ein
+  neuer Block mit einer dieser Zeichenketten liesse eine Reihenfolge lügen, ohne rot zu werden
+  (ABLEITUNG aus der Begründung an R3b).
+- **DER TEST-HARNESS.** `mount()` in `pageview-emitter.resend.test.ts` wertet ALLE Scripts des
+  ausgelieferten Texts bei AN per `window.eval` im globalen jsdom-Fenster aus; `beforeEach` und
+  `afterEach` räumen sechs Globals und `localStorage` — NICHT das DOM. `mountEmitter` in
+  `pageview-emitter.test.ts` tut dasselbe bei AUS und räumt Globals und den Beacon-Spion, ebenfalls
+  nicht das DOM. Ein DOM-erzeugender Block hinge über den Lauf hinaus im Testdokument, und ein
+  folgender Test sähe ein Element, das er nicht erzeugt hat (ABLEITUNG, nicht gelaufen).
+
+WARUM ES JETZT ZÄHLT: In dieser Scheibe entsteht der erste Baustein, der im ausgelieferten Text
+sichtbares DOM erzeugt. Bis dahin erzeugt zur Laufzeit nur `__psMetaInit` ein Element, ein nicht
+sichtbares `<script>` (Entscheidung (12), GEMESSEN am Code).
+
+WEN SIE BINDET: den Bau der Scheibe 11.5d und jede weitere Scheibe, die einen Block in die Verkettung
+bringt.
+WANN SIE KIPPT: je Achse. Serialisierung und Nadeln, sobald EIN gemeinsamer Wächter über JEDEN Block
+der Verkettung läuft statt je einer an einzelnen Blöcken. Der Harness, sobald er das Testdokument
+zwischen den Läufen selbst zurücksetzt.
+
+PROVENIENZ: GEMESSEN an den genannten Tests (CC, 2026-09-14); die Erhebung zur Auflage
+ARCHITEKT-ENTSCHEIDUNG 2026-09-14 — eine Angabe aus dem Auftrag, am Repo nicht prüfbar.
+
+**(19) DAS CENTER-MODAL WIRD DIE SCHEIBE 11.5d-2.**
+
+DIE ENTSCHEIDUNG: Das Modal folgt unmittelbar auf die Leiste, als eigene Scheibe. **Entscheidung (12)
+bleibt in Wortlaut und Nummerierung UNBERÜHRT** — dies ist eine additive Verfeinerung ihrer
+Schnittfolge, keine Änderung an ihr.
+
+DER GRUND: Leiste und Modal tragen dieselbe riskante Achse — fremdes HTML —, aber das Modal braucht
+zusätzlich eine Abdunkelung über dem ganzen Dokument und eine Scroll-Sperre. **Die Sperre ist die
+Stelle, an der eine Seite UNBEDIENBAR wird:** Schlägt ihr Zurücknehmen fehl, kann der Besucher nicht
+mehr scrollen. Die Leiste braucht nichts davon; verliert sie ihre Stapel-Ebene, ist sie verdeckt, und
+die Seite bleibt bedienbar. (Beides ist eine ABLEITUNG aus dem Zweck der Bausteine — keiner von beiden
+ist gebaut, nichts davon ist gemessen.)
+
+DAZU DER GEMESSENE GRUND, WARUM BEIDES NICHT IN EINEN ZUG DARF: Ein ausgeliefertes Artefakt ist nicht
+aus der Ferne zu entschärfen, und es gibt keinen Sammel-Weg zum Neu-Veröffentlichen. Die Messung stammt
+aus der Aufklärung vom 2026-09-14; die steht in keiner Datei, deshalb stehen die Belege hier (GEMESSEN
+am Code, CC, 2026-09-14, in dieser Runde erneut nachgesehen):
+- `src/app/app-serve/route.ts` liefert den gespeicherten Text unverändert aus
+  (`new Response(result.html, …)` bzw. `result.variantBHtml` im Split-Zweig); beim Ausliefern wird
+  nichts injiziert. Ein Code-Deploy erreicht eine veröffentlichte Seite also nicht.
+- Der einzige Aufrufer von `publishProject` im Produktivcode ist `handlePublish` in
+  `src/components/CodeImporter.tsx`; eine Suche nach `republish|publishAll|bulk` über `src/` und
+  `supabase/` findet nichts. Neu erzeugt wird der Text nur im Editor, Projekt für Projekt.
+- Der einzige gebaute Hebel aus der Ferne ist der Kill-Switch — er nimmt die ganze Seite vom Netz und
+  entschärft keinen einzelnen Baustein.
+FOLGE (ABLEITUNG): Bricht nach einem gemeinsamen Bau etwas, ist an der Live-Seite nicht zuzuordnen, ob
+die Leiste, das Modal oder ihr gemeinsamer Teil es war — und zurücknehmen lässt es sich nur Seite für
+Seite. Dieselbe Denkfigur, mit der Entscheidung (12) die Scheibe 11.5c eingeschoben hat.
+
+WEN SIE BINDET: die Scheibe 11.5d-2 und jede Runde, die die Schnittfolge liest.
+WANN SIE KIPPT: sobald die Scroll-Sperre nicht mehr Teil des Modals ist — dann trägt der Grund für die
+Trennung nicht mehr.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-14 auf Vorschlag des Architekten — eine Angabe aus dem Auftrag,
+am Repo nicht prüfbar. Die drei Belege GEMESSEN am Code (CC, 2026-09-14); Grund und Folge ABGELEITET, wie
+angegeben.
 
 ## 9. Vorrat — gemeldet, nicht gebaut
 
@@ -1928,3 +2185,191 @@ Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 20
   Owner-Angaben nicht**; VERMERK 3 hält fest, warum die Zählung am Netzwerk-Tab davon nicht abhängt.
 - **Der Schlusssatz "DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE"** war
   eine Auflage an den Zuschnitt und ist mit ihm abgelaufen.
+
+## 15. Die Einwilligungs-Leiste — Zuschnitt der Scheibe 11.5d
+
+**WAS DIESE SCHEIBE IST:** die vierte dieser Phase. Sie bringt den ersten SICHTBAREN Baustein in den
+ausgelieferten Text — eine Einwilligungs-Leiste am unteren Rand mit zwei gleichwertigen Knöpfen — und
+stellt den Schalter dafür auf einen Wert um, der mehr als zwei Zustände tragen kann. Das Modal gehört
+nicht dazu.
+
+**WAS GEBAUT WIRD — FÜNF STÜCKE:**
+- **DER SCHALTER MIT SEINEN WERTEN** nach Entscheidung (15), samt Bedienelement. Das heutige
+  Kontrollkästchen in `src/components/PublishView.tsx` trägt nicht mehr als zwei Zustände, und mit der
+  Scheibe 11.5d-2 kommt ein dritter. Angeboten werden in dieser Scheibe nur die Werte, deren Block
+  gebaut ist (Entscheidung (16)).
+- **DIE VERWEIGERUNG BEIM VERÖFFENTLICHEN** nach Entscheidung (16).
+- **DER DIALOG-BLOCK ALS LEISTE AM UNTEREN RAND**, in der Verkettung von `injectPageViewEmitter`
+  zwischen Wiederherstellung und Setzer nach Entscheidung (13).
+- **ZWEI GLEICHWERTIGE KNÖPFE:** „Alle akzeptieren" und „Ablehnen".
+- **DIE KORREKTUR DES UI-TEXTS** am Schalter (s. unten).
+
+**DIE GESTALT-ENTSCHEIDUNGEN STEHEN NICHT HIER, SONDERN IN ABSCHNITT 8** — die Einträge (13) und (15)
+bis (18). **WARUM DORT UND NICHT HIER, und der Satz gehört dazu, sonst zieht die nächste Runde sie „der
+Nähe halber" hierher:** Sie binden ÜBER diese Scheibe hinaus; jede weitere Scheibe dieser Phase erbt
+sie. Stünden sie im Zuschnitt, müssten sie beim Abschluss der Scheibe umziehen — eine Runde für nichts,
+mit dem Risiko, dass dabei eine liegenbleibt.
+(Der Satz ist dem Zuschnitt der Scheibe 11.5b entnommen, Commit `928172e`, der ihn seinerseits aus dem
+Zuschnitt der Scheibe 11.5a übernommen hat; in Abschnitt 13 steht seit dessen Verdichtung nur noch sein
+Titel.)
+UNVERÄNDERT BINDEN DAZU: (3) und (13) für die Prüfung auf den Hook, (4) für die Schlüssel, (11) für
+das, was `write()` tut, (12) für die Bezeichnung, (14) für die Editor-Vorschau.
+
+**WANN DIE LEISTE ERSCHEINT — ZWEI BEDINGUNGEN, BEIDE MÜSSEN GELTEN:** `read()` liefert „nie gefragt",
+UND der Hook ist noch ungesetzt.
+- **DER UNGESETZTE HOOK** ist dieselbe Prüfung wie in Entscheidung (3) und (13):
+  `window.pagesmithConsent !== undefined` in `buildConsentDenyScript` und `buildConsentRestoreScript`
+  (GEMESSEN am Code, CC, 2026-09-14). An dieser Stelle der Verkettung ist der Hook genau dann gesetzt,
+  wenn (i) ein Script VOR unseren Blöcken ihn gesetzt hat — ein fremdes CMP oder jedes andere Script im
+  importierten Text (Vorrat (13)) —, oder wenn (ii) die Wiederherstellung eine gespeicherte Entscheidung
+  eingespielt hat. Er deckt damit BEIDE Fälle, in denen die Leiste nicht erscheinen darf, und
+  unterscheidet (i) nicht von (ii).
+- **`read()` MIT „NIE GEFRAGT"** sagt etwas über den SPEICHER, nicht über ein fremdes CMP (Entscheidung
+  (13)). Es deckt den Fall (ii) ein zweites Mal, unabhängig davon, ob die Wiederherstellung den Hook
+  gesetzt hat. Direkt hinter der Wiederherstellung folgt „nie gefragt" bereits aus dem ungesetzten Hook,
+  weil sie ihn belegt, sobald `read()` „decided" liefert (ABLEITUNG aus `buildConsentRestoreScript`,
+  nicht gelaufen).
+- **WAS KEINE VON BEIDEN DECKT:**
+  - ein fremdes CMP, das den Hook ASYNCHRON nach dem Seitenaufbau setzt (Vorrat (2)) — die Leiste
+    erscheint trotzdem;
+  - ein fremdes CMP, das unseren Hook gar nicht setzt — die Leiste erscheint NEBEN seinem Banner. Dass
+    ein fremdes CMP den Hook nicht kennen kann, folgt aus Vorrat (3);
+  - ein Speicher, dessen Zugriff wirft: `read()` liefert „nie gefragt", die Leiste erscheint, und
+    `write()` gibt `false` (Entscheidung (13), DIE GRENZEN). Was die Leiste dann tut, ist nicht
+    entschieden;
+  - ein gespeicherter Wert, der ungültig geworden ist — er heisst „nie gefragt", und die Leiste öffnet
+    erneut. Das ist gewollt und im Docblock von `buildConsentRestoreScript` festgehalten („Das ist laut
+    und nicht still");
+  - eine Entscheidung auf einer anderen Adresse oder in einem anderen Browser — der Speicher ist an den
+    Origin gebunden (Entscheidung (7); eine Eigenschaft der Plattform, am Repo nicht messbar);
+  - der Export-Pfad — dort entsteht kein Block (Vorrat (4)).
+
+**DIE KNÖPFE RUFEN DIE SCHNITTSTELLE, NICHT DEN SPEICHER.** „Alle akzeptieren" ruft `write()` mit allen
+sechs Schlüsseln, „Ablehnen" mit einer leeren Liste. **KEIN ZWEITER SCHREIBWEG**, kein Zugriff am
+Speicher vorbei.
+- Die sechs Schlüssel stammen aus der Ableitung aus Entscheidung (4), nie aus einer zweiten Liste.
+- Was ein erfolgreiches `write()` darüber hinaus tut, ist gebaut und wird hier nicht neu entschieden: Es
+  setzt den Hook der laufenden Seite (Entscheidung (11)) und holt bei `analytics` den Seitenaufruf nach
+  (VERMERK 3). `write([])` lehnt alle sechs ab, auch `analytics` (Entscheidung (12)).
+- Die Schnittstelle existiert nur bei eingeschaltetem Schalter; ihr Block steht VOR der Leiste
+  (`CONSENT_STORE_API` in `src/lib/tracking/consent-store.ts`, GEMESSEN am Code, CC, 2026-09-14).
+
+**DIE BEZEICHNUNG:** „Ablehnen", nicht „Nur Notwendige" — Entscheidung (12).
+
+**DER UI-TEXT AM SCHALTER WIRD KORRIGIERT.** Er lautet heute in `src/components/PublishView.tsx`, unter
+„Vor dem ersten Ereignis nichts senden" (GELESEN am Code, CC, 2026-09-14): „Die veröffentlichte Seite
+setzt beim Laden ein Urteil, das alle Ziele ablehnt — bis ein Einwilligungs-Dialog oder ein eigenes
+Consent-Management etwas anderes sagt. Ein vorhandenes eigenes Consent-Management wird nicht
+überschrieben."
+WARUM ER IN DIE IRRE FÜHRT: Der letzte Satz trifft am Code nur ein CMP, das UNSEREN Hook synchron VOR
+unseren Blöcken setzt — nur dann kehren Wiederherstellung und Setzer an ihrer Prüfung zurück. Ein
+fremdes CMP kann den Hook aber nicht kennen, weil er an keiner für einen Betreiber erreichbaren Stelle
+beschrieben ist (Vorrat (3)). Einem solchen CMP wird nichts überschrieben, weil es nichts gesetzt hat:
+Der Satz stimmt buchstäblich und verspricht eine Rücksicht, die nicht stattfindet. Unsere Leiste
+erscheint neben seinem Banner, und bei AUS gilt alles als erlaubt, unabhängig von seinem Urteil.
+**WIE DER NEUE TEXT LAUTET, ENTSCHEIDET DER BAU-PLAN**, nicht dieser Zuschnitt.
+
+**WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT:**
+- **das Center-Modal.** Es wird die Scheibe 11.5d-2 — OWNER-ENTSCHEIDUNG 2026-09-14, eine Angabe aus
+  dem Auftrag, am Repo nicht prüfbar. Entscheidung (12) bleibt in Wortlaut und Nummerierung unberührt;
+  das ist eine additive Verfeinerung ihrer Schnittfolge. Die Entscheidung steht als (19) in Abschnitt 8.
+- **Scroll-Sperre und Abdunkelung** — sie gehören zum Modal und sind der Grund für den Schnitt.
+- **Granularität und Widerruf** (11.5e) · **Sprache** (11.5f).
+- **ein Stylesheet vom App-Host** — ARCHITEKT-ENTSCHEIDUNG 2026-09-14, eine Angabe aus dem Auftrag: Es
+  wäre der erste zentral änderbare Baustein im ausgelieferten Text, Hebel und Risiko zugleich, und
+  verdient eine eigene Entscheidung. Am Bestand: Ein relativer Pfad auf dem Serving-Host erreicht keine
+  Datei — `src/proxy.ts` lässt dort nur `/api/e` und `/api/capi` durch und schreibt alles andere auf
+  `/app-serve` um (GEMESSEN am Code, CC, 2026-09-14).
+- **jede Änderung an** `consent.ts`, `consent-wire.ts` und `ingest.ts`.
+- **jede Änderung am Setzer, an der Wiederherstellung und am PageView-Erzeuger**, ausser einem nötigen
+  Argument.
+- **der Export-Pfad** (Vorrat (4)).
+- **eine Erkennung fremder CMPs** — das ist die Phase 11.11 (docs/roadmap.md).
+- **der Hinweis im Editor, dass der Dialog erst im veröffentlichten Text erscheint** — Entscheidung
+  (14): „DER HINWEIS IST NICHT TEIL VON 11.5d UND NOCH NICHT ZUGESCHNITTEN."
+
+**DIE TRAGENDEN INVARIANTEN:**
+- **Bei AUS ist der ausgelieferte Text byte-gleich** — gehalten von T1 (14 160 Bytes,
+  `src/lib/tracking/consent-setter.test.ts`) und N8 (787 Bytes,
+  `src/lib/analytics/pageview-emitter.resend.test.ts`).
+- **Der Setzer bleibt byte-gleich** — R3 (244 Bytes, `src/lib/tracking/consent-store.test.ts`).
+- **EINE Einfügestelle, EINE Konkatenation** in `injectPageViewEmitter` — dort am Kommentar „EINE
+  KONKATENATION, EINE EINFUEGESTELLE".
+- **DIE LEISTE KANN EINE SEITE NICHT UNBEDIENBAR MACHEN:** keine Scroll-Sperre, keine Abdunkelung, kein
+  Eingriff in `overflow` des Dokuments.
+- **Die Wächter aus Entscheidung (18)** — ohne sie ist keine der Invarianten darüber für den neuen Block
+  gehalten.
+
+**DIE DEMOBARKEIT, Regression zuerst — an ZWEI vom Owner bereitgestellten realen Seiten AUSSERHALB des
+Repos, nicht an einer Testfixture.**
+Grundlage sind die fünfzehn Fragen der Aufklärung vom 2026-09-14. Die Aufklärung selbst steht in keiner
+Datei; die Fragen stehen deshalb hier im Wortlaut, geordnet. Was aus diesem Zuschnitt oder aus dem
+Bestand hinzukommt, ist mit **[NEU]** gekennzeichnet.
+**AM REPO NICHT FESTSTELLBAR** ist über die zwei Seiten: ihr HTML und CSS, feste Elemente am unteren
+Rand, eine CSP im Dokument, ein fremdes Einwilligungs-Werkzeug, ein Script, das den Hook setzt, das
+Vorhandensein von `</body>`, Mappings und Variante B. Nichts davon ist hier beziffert.
+
+VORBEDINGUNGEN — PFLICHT-STOPPS, vor dem ersten Schritt:
+1. VOR dem Deploy je Seite eine Kopie des ausgelieferten Quelltexts bei AUS sichern (docs/immer-beachten.md,
+   „EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS NICHT MEHR HERSTELLBAR").
+2. **[NEU]** Nach dem Deploy NEU VERÖFFENTLICHEN — der Block entsteht beim Veröffentlichen, ein Deploy
+   erreicht die Seite nicht (docs/immer-beachten.md, „EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM
+   DEPLOY").
+3. Den A/B-Betrieb feststellen und die ausgelieferte Variante bestimmen; den Testmodus-Zustand kennen
+   (docs/immer-beachten.md, „BEVOR EIN ERGEBNIS BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS RICHTIGE
+   GEMESSEN WIRD", Teil (e)).
+4. **[NEU]** Kein Script aus früheren Läufen im Text der Seite, das den Hook setzt (Vorrat (13), VERMERK 3).
+5. **[NEU]** Klicken und Neuladen im SELBEN Browser auf DERSELBEN Adresse — der Speicher ist
+   origin-gebunden (Entscheidung (7)).
+
+REGRESSION:
+6. **SCHALTER AUS, POSITIVKONTROLLE:** Ist der Quelltext byte-gleich zur Vorher-Kopie, ohne
+   Leisten-Element, mit genau einem POST auf `/api/e` beim Laden?
+
+LEISTE, LEERER SPEICHER:
+7. Erscheint die Leiste, und steht ihr Block im DOM zwischen `__ps_cnr` und `__ps_cns`?
+8. Steht der Netzwerk-Tab bei null POSTs, solange die Leiste offen ist?
+
+DARSTELLUNG UND BEDIENBARKEIT — je Seite, auf dem Desktop UND auf Handy-Breite:
+9. Ist die Leiste beim Laden ohne Scrollen sichtbar?
+10. Liefert `document.elementFromPoint` in der Mitte beider Knöpfe unsere Knöpfe — oder verdeckt ein
+    Seitenelement sie?
+11. Bleibt der letzte Inhalt der Seite, etwa ein Call-to-Action unten, bei offener Leiste erreichbar?
+12. **[NEU]** Sind die berechneten Werte von `overflow` an `html` und `body` bei AUS und bei offener Leiste
+    gleich?
+13. Weichen die berechneten Stile unserer Knöpfe unter dem CSS der Seite von den gebauten ab — und ändern
+    sich umgekehrt berechnete Stile von Elementen der Seite zwischen AUS und BAR?
+14. Tragen beide Knöpfe dieselbe Grösse und dasselbe Gewicht — gemessen an Rechteck und berechneten
+    Stilen, wegen „Ablehnen so einfach wie Zustimmen" (Roadmap-Zeile 11.5)?
+15. Lassen sich beide Knöpfe per Tastatur erreichen und auslösen?
+
+DIE ZWEI KNÖPFE:
+16. **„Ablehnen":** Liefert `read()` danach „decided" mit leerer `granted`-Liste? Bleibt der POST aus,
+    schliesst die Leiste — und bleibt sie nach dem Neuladen zu, ohne POST?
+17. **„Alle akzeptieren":** Geht genau ein nachgeholter POST hinaus, kommt eine Conversion beim Anbieter
+    an, und erscheint nach dem Neuladen keine Leiste?
+
+GRENZFÄLLE:
+18. Speicher gesperrt (etwa blockierte Website-Daten): Was tut die Leiste, wenn `write()` `false` liefert?
+19. Trägt die Antwort des Serving-Hosts einen CSP-Header, und meldet die Konsole CSP-Verstösse? Am Repo
+    setzt `src/app/app-serve/route.ts` keinen; ob die Plattform am Rand einen ergänzt oder das Dokument
+    selbst einen trägt, ist nicht feststellbar.
+20. Falls eine der Seiten ein fremdes Einwilligungs-Werkzeug trägt (OWNER-ANGABE, am Repo nicht prüfbar):
+    Erscheint dessen Banner? Ist `window.pagesmithConsent` nach dem Laden `undefined`? Erscheint unsere
+    Leiste zusätzlich? Laufen unsere Blöcke überhaupt — ist `typeof __psConsent` gleich `"function"` und
+    `typeof window.__psConsentStore` gleich `"object"`? Unsere eingefügten Script-Tags tragen nur ein
+    `id` (GEMESSEN am Code, CC, 2026-09-14).
+
+AUS DIESEM ZUSCHNITT:
+21. **[NEU]** Steht am Schalter der korrigierte UI-Text?
+22. **[NEU]** Falls ein Projekt noch den alten Schalter `gate: true` trägt: Zeigt das Bedienelement BAR,
+    und erscheint nach dem Neu-Veröffentlichen die Leiste?
+23. **[NEU]** Die Verweigerung aus Entscheidung (16) ist über das Bedienelement nicht herstellbar, weil es
+    nur gebaute Werte anbietet. Ohne Handeingriff in die Datenbank ist sie live nicht zu prüfen; ob und
+    wie, entscheidet der Bau-Plan.
+
+DIE GRENZE: **Was eine dritte Seite mitbringt, bleibt ungemessen.** Zwei Seiten tragen eine Aussage über
+diese zwei Seiten — nicht über fremde Seiten allgemein.
+
+**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.** Kein Plan, keine
+Namen für Neues, keine Gestalt der Leiste, kein UI-Wortlaut.

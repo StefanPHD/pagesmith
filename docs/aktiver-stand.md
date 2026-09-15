@@ -33,6 +33,7 @@ EINER DATEI MIT VERZEICHNIS NICHT", Zusatz 2026-08-27.
 14. Der nachgeholte Seitenaufruf — Zuschnitt der Scheibe 11.5c
 15. Die Einwilligungs-Leiste — Zuschnitt der Scheibe 11.5d
 16. Das Center-Modal — Zuschnitt der Scheibe 11.5d-2
+17. Die Auswahl je Gruppe — Zuschnitt der Scheibe 11.5e-1
 
 ## 1. Gegenstand der Phase — was gebaut wird und was ausdrücklich nicht dazugehört
 
@@ -2300,6 +2301,34 @@ arbeitet.
 
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG** über das „Beides" hinaus.
 
+**(18) ENTSCHEIDUNG (10) SAGT WENIGER, ALS DER CODE KANN** (aufgenommen 2026-09-15).
+
+Entscheidung (10) führt drei Zustände — „nie gefragt", „zugestimmt", „abgelehnt". Der Code kennt zwei: `read()` in
+`buildConsentRestoreScript` (`src/lib/tracking/consent-store.ts`) liefert `{state:"never"}` oder
+`{state:"decided", granted, denied}`, und `decided` trägt beliebige Listen bekannter Schlüssel — eine Teilmenge
+eingeschlossen (R5, R6, R10 und R13 in `consent-store.test.ts`). „Teils zugestimmt" ist im Code ein Fall von
+`decided`; (10) benennt ihn nicht (GEMESSEN am Code, CC, 2026-09-15).
+
+**KEIN DEFEKT:** Die bindende Aussage von (10) — die Zustände sind im gespeicherten Wert unterscheidbar, und eine
+Abfrage verändert nichts — trifft zu. Die Entscheidung beschreibt nur weniger, als gebaut ist.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
+
+**(19) DER WERT `ps1:|` HAT AUF DEM LESEPFAD KEINEN TEST** (aufgenommen 2026-09-15).
+
+`read()` (`buildConsentRestoreScript`) nimmt `ps1:|` an: `parseList` macht aus einer leeren Seite `[]`, und beide
+Listen leer ergeben `decided` mit `granted: []` und `denied: []` — ein Wert, der über keinen Schlüssel etwas sagt,
+und trotzdem unterdrückt er Leiste und Modal. `write()` erzeugt ihn nicht; er entstünde nur durch einen Schreibzugriff
+am Speicher vorbei (GEMESSEN am Code, CC, 2026-09-15).
+
+**DIE ACHSE UND IHRE POSITIVKONTROLLE** (GEMESSEN am Repo, CC, 2026-09-15): `git grep -F 'ps1:|'` über die
+Testdateien in `src/` trifft vier Zeilen. Drei davon sind die Konstanten `ALLE_ABGELEHNT` (`ps1:|meta,…`) in
+`consent-store.test.ts`, `consent-bar.test.ts` und `consent-modal.test.ts` — sie sind die Positivkontrolle der Suche.
+Den Wert `ps1:|` SELBST trägt allein R14 in `consent-store.test.ts`, und dort als Rückgabe eines Mocks von `getItem` im
+Schreibpfad, nicht als gelesener Wert.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
+
 ## 10. Hebungs-Kandidaten
 
 Hier steht, was nach dem Phasenende an einem DAUERHAFTEN Ort stehen sollte — vor allem
@@ -3062,3 +3091,117 @@ Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 20
 - **Der Schlusssatz "DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE"** und die
   **PROVENIENZ-Zeile des Zuschnitts** waren an ihn gebunden und sind mit ihm abgelaufen; die Provenienz der drei
   stehengebliebenen Blöcke steht über dieser Liste.
+
+## 17. Die Auswahl je Gruppe — Zuschnitt der Scheibe 11.5e-1
+
+**WAS DIESE SCHEIBE IST:** die sechste dieser Phase und die erste Hälfte von 11.5e (Entscheidung (23)). Der
+Dialog-Block bekommt zwei Gruppen-Schalter, „Messung" und „Werbung" (Entscheidung (25)). Der Besucher wählt je
+Gruppe, ein Knopf bestätigt. **BEIDE BLÖCKE SIND BETROFFEN** — die Leiste (`buildConsentBarScript`) und das Modal
+(`buildConsentModalScript`); welche Form zuerst gebaut wird, entscheidet der Bau-Plan.
+
+**WAS DIESE SCHEIBE NICHT IST — EINE SPEICHER-SCHEIBE. SIE IST EINE OBERFLÄCHEN-SCHEIBE.** Der Speicher trägt
+Teilmengen schon heute (GEMESSEN am Code, CC, 2026-09-15, Aufklärung vom selben Tag):
+- **`write()`** (`buildConsentRestoreScript`, `src/lib/tracking/consent-store.ts`) nimmt jede Liste bekannter
+  Schlüssel ohne Duplikat und legt sie in der Reihenfolge von `KEYS` ab, gleich in welcher Reihenfolge die Eingabe
+  kam; alles, was nicht übergeben ist, landet in der Ablehnungs-Liste.
+- **`read()`** prüft Marke, Länge, genau einen Trenner, bekannte Schlüssel und Duplikate über beide Listen. Reihenfolge
+  und Vollständigkeit prüft es NICHT.
+- **`hookFrom`** belegt über `KEYS` je Schlüssel, ob er in der Zustimmungs-Liste steht — für eine Teilmenge dieselbe
+  Rechnung wie für „alle" und „keiner" (Entscheidung (9)).
+- **Teilmengen sind gelaufen:** in fünf Tests — R5, R6, die Positivkontrolle von R10 und R13 in
+  `src/lib/tracking/consent-store.test.ts`, N4 in `src/lib/analytics/pageview-emitter.resend.test.ts` — und live mit
+  `write(["meta"])` in VERMERK 3, Schritt 4 (OWNER-ANGABE).
+- **Die zwei Oberflächen übergeben heute ausschliesslich `ALL_CONSENT_KEYS` oder `[]`** — je über `makeButton` in
+  `buildConsentBarScript` und `buildConsentModalScript`. Weitere Aufrufer von `write()` gibt es im Produktivcode
+  nicht (Achse `\bwrite\(` über `src/`, ohne Testdateien; Positivkontrolle: sie trifft beide Knopf-Handler).
+
+**DIE ABGRENZUNG ZUR KATEGORIE-ENTSCHEIDUNG DER PHASE 11 — sie wiegt schwerer als der Rest dieses Zuschnitts.**
+DIE STELLE IM WORTLAUT, umlautfrei wie im Quelltext (Kommentar über `ANALYTICS_CONSENT_TARGET`,
+`src/lib/tracking/consent.ts`; GELESEN, CC, 2026-09-15): „DASS DER NAMENSRAUM KATEGORIE UND ANBIETER MISCHT, IST
+ABSICHT (Zuschnitt (b)): pro Anbieter ist FEINER als pro Kategorie, und feiner ist fuer dieses Produkt richtig — der
+Betreiber soll Meta erlauben und Pinterest verbieten koennen. Die Mischung laesst sich auf ZWEI Weisen falsch
+"reparieren": Wer auf Kategorien harmonisiert, verliert die Anbieter-Granularitaet; wer `marketing` NEBEN `meta`
+stellt, erzeugt zwei Urteile fuer dieselbe Sache." Derselbe Kommentar ordnet ihn der dritten Scheibe der Phase 11 zu
+und nennt `analytics` „KEINE Plattform, sondern eine KATEGORIE".
+- **JENE ENTSCHEIDUNG TRIFFT EIN KATEGORIE-DATENMODELL.** Hier entsteht eine Kategorie-OBERFLÄCHE: Die Gruppe wird beim
+  Schreiben aufgelöst, der Hook wird weiter je Schlüssel belegt, und die Anbieter-Granularität bleibt am Hook und am
+  Draht erhalten (Entscheidung (25)). Es entsteht kein `marketing` neben `meta` — kein zweites Urteil.
+- **DIE EINSCHRÄNKUNG GEHÖRT DAZU:** Für den BESUCHER ist die Anbieter-Granularität in unserem Dialog danach
+  UNERREICHBAR. Erreichbar bleibt sie über ein fremdes CMP, das den Hook je Schlüssel setzt. Die Stelle spricht vom
+  BETREIBER — dessen Weg über den Hook bleibt unberührt.
+- **OWNER-ENTSCHEIDUNG 2026-09-15 — KEIN AUFKLAPP-BEREICH, KEINE EINZELAUSWAHL DER FÜNF NETZWERKE IM EIGENEN DIALOG.**
+  Der Grund ist ein Produkt-Argument — Reibung auf einer Landing Page kostet Conversions — und ein bauliches: Ein
+  Aufklapp-Bereich brächte genau die Höhe zurück, wegen der das Fenster `max-height` trägt (Invariante I1 in Abschnitt
+  16). Wer Anbieter-Granularität braucht, bindet ein CMP ein.
+
+**DREI SETZUNGEN — ARCHITEKT 2026-09-15, revidierbar durch den Owner, am Repo nicht prüfbar:**
+- **DER GRUPPEN-SCHALTER IST EINE CHECKBOX**, kein selbstgebautes Bedienelement. Grund: Fokus-Ring, Tastaturbedienung
+  und der zugängliche Name kommen vom Browser; ein eigenes Element müsste sie nachbauen.
+- **BEIDE GRUPPEN STARTEN AUS.** Eine Vorauswahl wäre eine vorweggenommene Zustimmung.
+- **DIE ZUORDNUNG: „Messung" trägt `analytics`, „Werbung" die fünf Ziel-Schlüssel.** Entscheidung (25) nennt die Namen,
+  nicht die Zuordnung; hier steht sie. Die offene Frage an (12) führt sie bis heute als Ableitung.
+  AM CODE GEPRÜFT (CC, 2026-09-15), KEINE ABWEICHUNG: `ALL_CONSENT_KEYS` (`src/lib/tracking/consent-targets.ts`)
+  besteht aus den fünf Werten von `CONSENT_KEY_BY_TARGET` über `TRACKING_TARGETS` — `meta` (aus
+  `META_CONSENT_TARGET`), `pinterest`, `tiktok`, `linkedin`, `google` — und zuletzt `ANALYTICS_CONSENT_TARGET`
+  (`analytics`, `src/lib/tracking/consent.ts`). Genau sechs, und die Grenze zwischen den zwei Gruppen ist dieselbe wie
+  die zwischen den zwei Orten in Abschnitt 11 (d).
+
+**DIE BENANNTEN INVARIANTEN DER SCHEIBE.** Die Kennungen I1 bis I5 gelten JE ZUSCHNITT: I1 bis I3 stehen gleichnamig
+in Abschnitt 16, und der Code zeigt auf jene (dort gemessen). Ein Zeiger auf eine dieser hier nennt die Scheibe 11.5e-1.
+- **(I1) KEIN EINGRIFF AUSSERHALB DES EIGENEN SCHATTENBAUMS** — unverändert wie Invariante I1 der Scheibe 11.5d-2,
+  einschliesslich der Erlaubnis von `max-height` und `overflow` im eigenen Schattenbaum. Sie gilt für beide Blöcke.
+- **(I2) DIE EINZIGE RÜCKNAHME** bleibt das Entfernen des Host-Elements im `finally` des Klick-Handlers.
+- **(I3) LISTENER VOR EINHÄNGEN** — ausdrücklich AUCH die Listener der neuen Schalter.
+- **(I4) DER HOOK WIRD JE SCHLÜSSEL BELEGT.** Die Gruppe wird beim Schreiben aufgelöst; kein Gruppenname erreicht
+  Speicher oder Hook.
+- **(I5) DER GESPEICHERTE WERT TRÄGT DIE SCHLÜSSEL IN DER REIHENFOLGE VON `KEYS`.** Das leistet `write()` heute schon;
+  die Scheibe darf es nicht umgehen.
+
+**DIE STELLEN, DIE DER PLAN BEHANDELN MUSS — ALS FRAGEN, NICHT ALS VORGABEN** (Bestand GEMESSEN am Repo, CC,
+2026-09-15):
+- **DIE KINDER-ZUSICHERUNG.** M5 in `src/lib/tracking/consent-modal.test.ts` UND L13 in
+  `src/lib/tracking/consent-bar.test.ts` erwarten die Kinder des Fensters bzw. der Leiste exakt als
+  `["P", "BUTTON", "BUTTON"]`; beide werden bei jedem zusätzlichen Kind rot. L5 in `consent-bar.test.ts` zählt nur
+  die Elemente `button` im Schattenbaum. **Die Zusicherungen werden ERWEITERT, nicht aufgeweicht** — wie, sagt der Plan.
+- **I3 IST FÜR DIE NEUEN BEDIENELEMENTE UNGEDECKT, UND FÜR DIE LEISTE GANZ.** M14 in `consent-modal.test.ts` zählt nur
+  Listener an Elementen mit dem Tag `BUTTON`; eine Checkbox ist keins. In `consent-bar.test.ts` gibt es keinen
+  Wächter, der Listener und Einhängen vergleicht. Wie M14 erweitert wird und ob die Leiste einen solchen Wächter
+  bekommt, sagt der Plan; **die Erweiterung bekommt eine eigene Pflicht-Mutation.**
+- **DIE NADEL-ACHSE VON M12.** Sie durchsucht den ganzen Blocktext; die Muster `querySelector|getElementsBy|
+  getElementById`, `\.style\b`, `classList|className` und `\.focus\(|\.blur\(|autofocus|tabindex` treffen auch
+  Zugriffe im EIGENEN Schattenbaum. Sie schlagen nur an, wenn der Bau diese Zugriffe benutzt; eine Checkbox, deren
+  Zustand über `checked` gelesen wird, berührt keins davon (ABLEITUNG aus den Mustern, nicht gelaufen). L12 in
+  `consent-bar.test.ts` trägt keine solchen Nadeln, nur das Verbot von `overflow`. **Der Plan entscheidet, ob er Nadeln
+  verengt oder ohne diese Zugriffe baut, und begründet es. Eine Verengung darf die Sache nicht verlieren, die die Nadel
+  schützt** — den Eingriff an einem fremden Knoten.
+
+**WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT — NEU GESETZT, NICHT ÜBERNOMMEN.** Die Ausschlüsse der Scheibe 11.5d-2 sind mit ihr
+abgelaufen — so verzeichnet in Abschnitt 16 unter „Vollzogen", Punkt "WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT — NEU GESETZT,
+NICHT ÜBERNOMMEN" (GELESEN, CC, 2026-09-15). Dieser Zuschnitt stellt sie neu auf:
+- der Widerruf (11.5e-2) und jede Vorbereitung darauf;
+- jede Änderung an `consent.ts`, `consent-wire.ts` und `ingest.ts`;
+- jede Änderung am Setzer und an der Wiederherstellung, ausser einem nötigen Argument;
+- jede Änderung am Speicherformat, an `read()` oder an `write()`;
+- ein Stylesheet oder ein anderer zentral vom App-Host ausgelieferter Baustein — der Ausschluss aus Abschnitt 15 gilt
+  unverändert weiter und wird hier nur benannt;
+- Sprache (11.5f).
+**KOMMENTARKÖPFE DER GESCHÜTZTEN DATEIEN: PRÜFEN UND MELDEN, NICHT ÄNDERN.**
+
+**DIE AUFLAGE AUS VERMERK 5, HIER EINGELÖST:** Der Fensterinhalt wächst um die zwei Gruppen. Der Live-Test dieser
+Scheibe fährt den Schritt mit einem Fenster AM ANSCHLAG und weist `scrollHeight > clientHeight` aus. **Ohne diesen
+Nachweis ist `max-height` weiterhin ungeprüft.**
+
+UNVERÄNDERT BINDEN DAZU: (4) und (9) für die Schlüssel und den Hook, (11) für das, was `write()` tut, (12) samt
+Erstreckung und offener Frage für die Beschriftungen, (13) für die Stelle in der Verkettung, (18) für die Wächter,
+(20) für die Scroll-Sperre, (23) für die Schnittfolge, (25) für die Gruppen, und die Invarianten I1 bis I3 aus
+Abschnitt 16 für den Modal-Block.
+
+**DIE DEMOBARKEIT IST IN DIESEM ZUSCHNITT NOCH NICHT AUFGESTELLT** — ausser der Auflage oben.
+
+**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.**
+
+PROVENIENZ: Gegenstand und Schnitt OWNER-ENTSCHEIDUNGEN (23) und (25) vom 2026-09-15; der Ausschluss von Aufklapp-Bereich
+und Einzelauswahl OWNER-ENTSCHEIDUNG 2026-09-15; die drei Setzungen, die Invarianten und die Auflagen an den Plan
+ARCHITEKT 2026-09-15 — alles Angaben aus dem Auftrag, am Repo nicht prüfbar. Die Aussagen über Speicher, Schlüssel,
+Tests und die Stelle in `consent.ts` GEMESSEN bzw. GELESEN am Repo (CC, 2026-09-15), wie je angegeben; die Wirkung der
+Nadeln auf eine Checkbox ABGELEITET.

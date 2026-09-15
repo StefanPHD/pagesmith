@@ -848,6 +848,11 @@ ausserhalb des Repos:
   diesen Schritt mit einem Fenster AM ANSCHLAG und weist `scrollHeight > clientHeight` aus.
   EINGELÖST WIRD DIE AUFLAGE SEIT DEM 2026-09-15 VON 11.5e-1, der Auswahl (Entscheidung (23)) — dort wächst der
   Fensterinhalt, und zwar nach Entscheidung (25) um Gruppen, nicht wie oben geschrieben je Schlüssel.
+  **NACHGETRAGEN AM 2026-09-15 — DIE AUFLAGE IST EINGELÖST; DER SATZ „`max-height` UND `overflow` SIND LIVE NICHT
+  GEPRÜFT" BLEIBT ALS AUSSAGE ÜBER DIESEN VERMERK STEHEN.** Im Live-Test der Scheibe 11.5e-1 (VERMERK 6, OWNER-ANGABEN):
+  bei Fensterhöhe 900 `clientHeight` = `scrollHeight` = 210; bei Fensterhöhe 200 `scrollHeight` > `clientHeight`,
+  `scrollTop` 44, der letzte Knopf mit `bottom` 162,96 und treffbar, per Maus UND per Tastatur erreichbar, schliesst
+  sauber. **`max-height` und `overflow` im eigenen Schattenbaum des Modals sind damit LIVE BEWIESEN.**
 - **Mobile Browser und Touch sind ungemessen**, ebenso ein fixiertes Element über scrollendem Inhalt.
 - **Zwei Seiten, ein Browser.** Beide scrollen am Dokument; eine Seite mit innerem Scroll-Container ist nicht
   geprüft.
@@ -866,7 +871,171 @@ I1 bis I3 stehen dort weiter.
 PROVENIENZ: Commit, Dateiliste, Testnamen, `vitest`, `tsc` und `lint` GEMESSEN am Repo (CC, 2026-09-15). `build`,
 die Byte-Gleichheit bei `off`/`bar` und die Mutationsergebnisse: ANGABEN DER BAU-RUNDE bzw. der Commit-Nachricht,
 nicht nachgemessen. Der Live-Nachweis, die Messung bei 800×250 und die Sentry-Beobachtung: OWNER-ANGABEN vom
-2026-09-15.
+2026-09-15. Der Nachtrag unter den Grenzen: OWNER-ANGABEN vom 2026-09-15, eingetragen mit VERMERK 6.
+
+### VERMERK 6 — Scheibe 11.5e-1, abgeschlossen 2026-09-15
+
+**GEGENSTAND:** Leiste und Modal tragen zwei Gruppen-Schalter, „Messung" und „Werbung", und drei gleichwertige Knöpfe
+— „Alle akzeptieren", „Auswahl speichern", „Ablehnen". „Messung" steht für `analytics`, „Werbung" für die fünf
+Ziel-Schlüssel. Die Gruppe wird vor `write()` in Einzelschlüssel aufgelöst; Speicher, Hook und Draht bleiben je
+Schlüssel. **EINE OBERFLÄCHEN-SCHEIBE:** `read()`, `write()`, `hookFrom` und das Format `ps1` sind unberührt.
+
+**BAU-COMMIT:** `9f85c0c` — `feat(consent): Auswahl je Gruppe — Messung und Werbung (Scheibe 11.5e-1)`, gepusht. Sechs
+Dateien, 633 Zeilen hinzu, 121 entfernt: neu `src/lib/tracking/consent-choice.ts`; geändert `consent-bar.ts`,
+`consent-modal.ts`, `consent-bar.test.ts`, `consent-modal.test.ts`, `src/components/PublishView.tsx`. NICHT im Commit:
+`consent.ts`, `consent-wire.ts`, `ingest.ts`, `consent-setter.ts`, `consent-store.ts`, `consent-targets.ts`,
+`pageview-emitter.ts`, `settings.ts`, `actions.ts`, keine Migration (GEMESSEN am Repo, CC, 2026-09-15,
+`git show --stat` und `--name-only`; „gepusht" am lokalen Remote-Tracking-Stand `origin/main` = `9f85c0c`, ohne Fetch).
+
+**DIE GESTALT** (GELESEN am Code von `9f85c0c`, CC, 2026-09-15):
+- **DAS GETEILTE LIEGT IN `consent-choice.ts`** — OWNER-ENTSCHEIDUNG 2026-09-15, im Kopf der Datei begründet: Die
+  Leisten-Datei wäre sonst still zum geteilten Modul geworden. Die Datei ist rein; sie importiert nur
+  `ANALYTICS_CONSENT_TARGET` und `ALL_CONSENT_KEYS`.
+- **`CONSENT_CHOICE_JS` IST EIN CODE-STÜCK, DAS ZUR BAUZEIT** in die sofort ausgeführte Funktion JEDES Blocks eingesetzt
+  wird — drei lokale Funktionen `makeButton`, `makeGroup`, `fillChoice`; kein Laufzeit-Global. Dazu
+  `CONSENT_CHOICE_CSS`, `CONSENT_GROUP_KEYS` und die Beschriftungen.
+- **DIE KONSTANTEN SIND MIT DEM UMZUG UMBENANNT:** `CONSENT_BAR_TEXT` → `CONSENT_TEXT`, `CONSENT_BAR_ACCEPT_LABEL` →
+  `CONSENT_ACCEPT_LABEL`, `CONSENT_BAR_REJECT_LABEL` → `CONSENT_REJECT_LABEL`; neu `CONSENT_SAVE_LABEL`. Jeder
+  umgezogene Docblock nennt seinen alten Namen.
+- **DIE SCHALTER TRAGEN KEINEN LISTENER.** Ihr Zustand wird beim Klick auf „Auswahl speichern" über `checked` gelesen,
+  an Referenzen aus `makeGroup`. Alle drei Knöpfe laufen über dasselbe `makeButton` mit `try { api.write(pick()) }`
+  und dem Entfernen des Hosts im `finally`.
+
+**DIE FREIGABEN** — OWNER, 2026-09-15, eine Angabe aus dem Auftrag der Bau-Runde; im Code tragen die Docblocks von
+`consent-choice.ts` F1 bis F3: F1 „Messung" und „Werbung" · F2 ein dritter Knopf „Auswahl speichern" · F3 der
+zugängliche Name der Gruppe „Bereiche" (im Plan „Auswahl") · F4 in `PublishView.tsx` die Wirkung statt einer
+Aufzählung der Beschriftungen · F5 kein Sachtext je Gruppe · F6 die Reihenfolge der Knöpfe · F7 das geteilte Code-Stück,
+dazu die eigene Datei.
+
+**DIE TESTS** (GEMESSEN am Diff von `9f85c0c`, CC, 2026-09-15):
+- **NEU:** `consent-bar.test.ts` G0, L14, L15, L16 (vier Läufe), L17, L18; `consent-modal.test.ts` M15b, M16, M17 (vier
+  Läufe), M18, M19 — elf Testfälle, siebzehn Läufe.
+- **ERWEITERT, NICHT AUFGEWEICHT:** L5 (drei Beschriftungen), L13 und M5 (Kinder `["P","DIV","BUTTON","BUTTON","BUTTON"]`,
+  die Gruppe mit `role`, zugänglichem Namen und zwei `LABEL`), M14 (JEDER Listener des Blocks, nicht nur an `BUTTON`).
+- **DIE WÄCHTER EXISTIEREN** (GEMESSEN am Repo: je sechs Treffer der Test-Kennungen in den zwei Dateien). Ob sie
+  prüfen, was ihr Kommentar sagt, belegen allein die Mutationen unten.
+
+**DIE VIER GATES:**
+- `vitest run` **von 81 Dateien und 1728 Tests auf 81 Dateien und 1745 Tests** (+17, deckt sich mit den siebzehn Läufen
+  oben). 1745 GEMESSEN am Repo auf `9f85c0c` (CC, 2026-09-15, Abschluss-Runde); 1728 auf `d3210a1` vor der ersten
+  Änderung — ANGABE DER BAU-RUNDE.
+- `tsc --noEmit` exit 0 · `lint` 0 errors / 1 warning (die vorbestehende in `consent.test.ts`) · `build` exit 0 — vorher
+  UND nachher, ANGABE DER BAU-RUNDE, in dieser Runde nicht gefahren.
+
+**DIE VERGLEICHSWERTE — ANGABE DER BAU-RUNDE, vor der ersten Änderung auf `d3210a1` erhoben, je zwei Instrumente
+(`node:crypto` in einem Wegwerf-Lauf ausserhalb des Repos und `wc -c`/`sha256sum`), nach dem Bau mit `sha256sum -c` und
+`cmp` identisch:**
+- **DER AUSGELIEFERTE TEXT AUSSERHALB DES DIALOG-BLOCKS IST BYTE-GLEICH** — für `bar` und `modal`, je an einem leeren
+  Dokument (4 279 Bytes, `45113b8b…`) und an einem mit Mappings-Block (4 339 Bytes, `0125e6d9…`). POSITIVKONTROLLE über
+  den Schnitt: Nach dem Bau steht der Block je genau einmal im Text, und ohne ihn bleiben exakt die Vergleichswerte —
+  8 064 − 3 785 = 8 492 − 4 213 = 4 279.
+- `off` byte-gleich (1 624 bzw. 1 684 Bytes); Wiederherstellung (2 377 Bytes), Setzer (244 Bytes, `9ae9ab26…` — der Wert
+  von R3, zugleich Positivkontrolle des Instruments) und PageView-Script bei AN und AUS byte-gleich.
+- **SECHZEHN QUELLDATEIEN ÜBER IHRE BLOB-HASHES UNBERÜHRT** — die neun oben als „NICHT im Commit" genannten Quelldateien
+  plus `generate.ts`, `CodeImporter.tsx`, `publish.test.ts`, `pageview-emitter.test.ts`,
+  `pageview-emitter.resend.test.ts`, `consent-store.test.ts`, `consent-setter.test.ts`.
+
+**DIE NADEL-ACHSE VON M12 — GEMESSEN, NICHT ABGELEITET (ANGABE DER BAU-RUNDE):** im ersten Lauf nach dem Bau, vor jeder
+Änderung an den Tests: rot genau L5, L13 und M5, die drei vorhergesagten. M12, L12, M14, M15, L3/M3 und L4/M4 grün.
+Keine Nadel ist verengt worden.
+
+**DIE SECHS PFLICHT-MUTATIONEN — ANGABE DER BAU-RUNDE**, je Lauf über die ganze Suite, Vorhersage vor dem Lauf gegen den
+Bestand aktualisiert, Rücknahme per `sha256sum -c` und bei `consent-choice.ts` zusätzlich inhaltlich:
+- **(i) Listener nach dem Einhängen, Modal** (`root.addEventListener("change", …)` hinter `body.appendChild(host)`) →
+  **genau M14**. DECKUNG.
+- **(ii) dieselbe Zeile, Leiste** → **genau L14**. DECKUNG.
+- **(iii) Zuordnung der Gruppen vertauscht** → **genau fünf**: G0, L16 und M17 je „nur Messung" und „nur Werbung".
+  DECKUNG, eine Klasse.
+- **(iv) Gruppenname statt Schlüssel** → **genau sechs**: L16 und M17 je „nur Messung", „nur Werbung", „beide", alle
+  „expected null" — `write()` weist den Namen ab. DECKUNG.
+- **(v) Vorauswahl `box.checked = true`** → **genau vierzehn**: L15, M16, L16 und M17 je alle vier Läufe, L17, M18, L18,
+  M19. Der Plan hatte ZEHN vorhergesagt; die Vorhersage ist vor dem Lauf auf VIERZEHN gehoben worden, weil L17/M18 und
+  L18/M19 den Zustand der Checkbox als Positivkontrolle prüfen. EINORDNUNG: L15, M16 und die acht Auswahl-Läufe
+  DECKUNG; L18 und M19 fallen an derselben Startbedingung vor ihrem eigenen Gegenstand; **L17 und M18 sind KASKADE** —
+  sie fallen an ihrer Positivkontrolle, nicht an „ignoriert die Schalter".
+- **(vi) KONTROLL-PROBE, Soll grün: Auflösung in umgekehrter Reihenfolge** → **1 745 grün.** Das Setzen ist belegt über
+  eine vor der Rücknahme FEHLGESCHLAGENE Prüfsumme von `consent-choice.ts`. `write()` normalisiert, wie der Zuschnitt es
+  ihm zuschrieb.
+
+**DER LIVE-NACHWEIS vom 2026-09-15 — ALLE WERTE SIND OWNER-ANGABEN, NICHT VON CC GEMESSEN.** Zwei reale Seiten
+ausserhalb des Repos, Vorher-Kopien vor dem Push gesichert:
+1. **REGRESSION, Schalter AUS:** Seite „THRTY" byte-gleich, 101 403 Bytes vorher wie nachher. Seite „Prokrastination"
+   +6 972 Bytes, vollständig dem Mappings- und Wiring-Block zugeordnet — dieselbe Zuordnung wie in VERMERK 5, keine
+   offene Lücke. Genau ein Beacon, keine der vier Kennungen `__ps_cnr`, `__ps_clb`, `__ps_cmo`, `__ps_cns`.
+2. **„Alle akzeptieren" und „Ablehnen" in BEIDEN Formen:** unverändert dieselben Listen, wörtlich
+   `ps1:meta,pinterest,tiktok,linkedin,google,analytics|` bzw. `ps1:|meta,pinterest,tiktok,linkedin,google,analytics`;
+   ein Beacon bzw. null.
+3. **Gestalt:** zugänglicher Name der Gruppe „Bereiche", beide Schalter starten AUS.
+4. **„nur Messung":** `ps1:analytics|meta,pinterest,tiktok,linkedin,google`, ein Beacon, der Hook nur mit `analytics`
+   `true` — **UND DIE CONVERSION WIRD GEBLOCKT.**
+5. **„nur Werbung":** `ps1:meta,pinterest,tiktok,linkedin,google|analytics`, null Beacon beim Klick — **UND DIE CONVERSION
+   KOMMT BEIM ANBIETER AN.**
+   **4 UND 5 SIND DER EIGENTLICHE BEWEIS DER SCHEIBE:** Sie zeigen, dass die Auflösung der Gruppen bis zum Fan-Out
+   durchträgt. Alles davor prüft Speicher und Oberfläche.
+6. **Tastatur:** Fokusreihenfolge Messung → Werbung → Alle akzeptieren → Auswahl speichern → Ablehnen; Leertaste und
+   Klick auf den Text schalten; der Fokus-Ring ist sichtbar.
+7. **DAS FENSTER AM ANSCHLAG — DIE AUFLAGE AUS VERMERK 5 IST EINGELÖST:** bei Höhe 900 `clientHeight` = `scrollHeight` =
+   210 (die Gegenprobe); bei Höhe 200 `scrollHeight` > `clientHeight`, `scrollTop` 44, der letzte Knopf mit `bottom`
+   162,96, Treffer wahr; per Maus UND per Tastatur erreichbar, schliesst sauber. **`max-height` und `overflow` im eigenen
+   Schattenbaum sind LIVE BEWIESEN** (Nachtrag an VERMERK 5).
+8. **DAS HARTE KRITERIUM DER LEISTE IST ERFÜLLT**, auf drei Messungen: 800×900 `top` 778,21 · 800×250 `top` 128,21 ·
+   360×640 `top` 449,03. Je fünf Elemente, alle innerhalb des Sichtbereichs und treffbar. **DIE VORAB BENANNTE ABHILFE —
+   `max-height` und `overflow` im Schattenbaum der Leiste, L12 umgebaut wie M12 — WAR NICHT NÖTIG UND IST NICHT GEBAUT.**
+
+**DIE GRENZEN, DIE DIESER NACHWEIS NICHT ÜBERSCHREITET:**
+- ZWEI Seiten, EIN Browser; der Gerätemodus ist eine Näherung für mobile Geräte. Touch ist ungemessen.
+- Eine Seite mit innerem Scroll-Container ist nicht geprüft.
+- `write() === false` ist live nicht herstellbar; die Verweigerung eines unbekannten Werts ebenso wenig.
+- Besucher mit gespeicherter Entscheidung sehen die Gruppen nie (Entscheidung (25)).
+- Der Fokus-Ring und die Gleichgewichtung der Knöpfe sind Augenschein.
+- Was ein Screenreader aus „Bereiche" ansagt, ist ungeprüft.
+- Das harte Kriterium der Leiste ist im heutigen, AUSGEKLAPPTEN Zustand gemessen — s. den Befund darunter.
+- Welches Ziel die Conversions in 4 und 5 empfing, und ob A/B-Betrieb und Testmodus je Seite festgestellt waren, nennen
+  die Owner-Angaben nicht.
+- **DASS DIE SCHALTER KEINEN LISTENER TRAGEN, HÄLT KEIN TEST** — Vorrat (20).
+
+**ABWEICHUNGEN VOM FREIGEGEBENEN PLAN, im Bau deklariert:** die eigene Datei `consent-choice.ts` (F7) · die Umbenennung
+der Konstanten (eigene Wahl der Bau-Runde) · der zugängliche Name „Bereiche" (F3) · „Alle akzeptieren" liefert je Klick
+ein frisches Array-Literal statt `ALL.slice()` · L17/M18 prüfen „Alle akzeptieren" mit gewählter „Messung" statt ohne
+Wahl, schärfer trennend · L18/M19 bleiben, weil jsdom die Label-Aktivierung im Schattenbaum ausführt (GEMESSEN in der
+Bau-Runde) · die Vorhersage zu Mutation (v) vierzehn statt zehn.
+
+**DIE MELDUNGEN AUS DEM BAU-PLAN, IN DER ABSCHLUSS-RUNDE NACHGEZOGEN:** A3 („Es gibt keine Kategorien" ist umgezogen und
+umformuliert) an der offenen Frage zu (12) · A4 (alle sechs Zeiger auf die Invarianten der Scheibe 11.5d-2 nennen die
+Scheibe an der Stelle) an Abschnitt 16 · die toten Namens-Zeiger der umbenannten Konstanten an (12), in Abschnitt 15 und
+in Abschnitt 16. A5 (die Beschreibungen in `PublishView.tsx`) ist mit F4 im Bau-Commit erledigt.
+
+PROVENIENZ: Bau-Commit, Dateiliste, Testnamen und die Testzahl 1745 GEMESSEN am Repo (CC, 2026-09-15, Abschluss-Runde).
+Gestalt GELESEN am Code. Die Testzahl vorher, `tsc`, `lint`, `build`, Vergleichswerte, Nadel-Achse und Mutationen:
+ANGABEN DER BAU-RUNDE (CC, 2026-09-15), in dieser Runde nicht erneut gefahren. Die Freigaben: OWNER, 2026-09-15, Angaben
+aus dem Auftrag. Der Live-Nachweis: OWNER-ANGABEN vom 2026-09-15.
+
+#### BEFUND ZU VERMERK 6 — 2026-09-15: DIE OBERFLÄCHE WIRKT ÜBERLADEN. EIN BEFUND, KEINE ENTSCHEIDUNG
+
+**HIER WIRD NICHTS ENTSCHIEDEN; DIE SCHEIBE DAZU IST NOCH NICHT GESCHNITTEN.**
+
+**DER BEFUND — OWNER, LIVE 2026-09-15, an beiden Seiten:** Die Oberfläche zeigt sofort zwei Kästchen und drei Knöpfe
+nebeneinander. Das wirkt überladen; auf einem dunklen Kundendesign bricht der weisse Block das Gesamtbild.
+
+**WARUM DAS ZÄHLT UND KEINE KOSMETIK IST:** Die Zielgruppe baut Landing Pages und Konversions-Trichter. Ein Banner, das
+überladen aussieht, wird nicht eingeschaltet — und dann greift der ganze Dialog nicht. Das ist dasselbe
+Reibungs-Argument, das Entscheidung (25) trägt, angewandt auf die DARSTELLUNG statt auf die Auswahl.
+
+**DIE RICHTUNG, DIE DER OWNER NENNT — ALS RICHTUNG, NICHT ALS ENTSCHEIDUNG:** zwei Knöpfe sichtbar, die zwei Gruppen
+hinter einem unauffälligen Auswahl-Weg.
+
+**KEIN WIDERSPRUCH ZUM AUSSCHLUSS DES AUFKLAPP-BEREICHS in Abschnitt 17** („OWNER-ENTSCHEIDUNG 2026-09-15 — KEIN
+AUFKLAPP-BEREICH, KEINE EINZELAUSWAHL DER FÜNF NETZWERKE IM EIGENEN DIALOG"): Jener Ausschluss gilt der EINZELAUSWAHL
+DER FÜNF NETZWERKE, und sein Grund ist, WENIGER zu zeigen — ein Aufklapp-Bereich brächte Höhe zurück. Ein eingeklappter
+Standard zeigt WENIGER als heute. Wer die zwei als Konflikt liest, liest den Gegenstand des Ausschlusses nicht mit.
+
+**DIE ACHSE, DIE DABEI NEU WIRD:** Das harte Kriterium der Leiste (VERMERK 6, Schritt 8) ist im AUSGEKLAPPTEN Zustand
+gemessen — heute gibt es keinen anderen. Wird die Auswahl künftig erst auf Klick gezeigt, ist der eingeklappte Zustand
+kleiner und harmlos; der AUSGEKLAPPTE Zustand auf niedriger Fensterhöhe ist dann ein NEUER Zustand, den heute nichts
+prüft. **Genau dort kann die Leiste über den oberen Rand wandern. Das wird das harte Kriterium der nächsten Scheibe.**
+
+PROVENIENZ: Befund und Richtung OWNER, LIVE 2026-09-15; Einordnung, Abgrenzung und die neue Achse ARCHITEKT 2026-09-15
+— Angaben aus dem Auftrag, am Repo nicht prüfbar.
 
 ## 8. Entscheidungen, die über ihre Scheibe hinaus binden
 
@@ -1272,12 +1441,19 @@ Repo nicht prüfbar. Die Aussagen über `write()` und den Bestand GEMESSEN am Co
 unverändert: Auch im Modal löst „Ablehnen" `write([])` aus, `write([])` lehnt alle sechs Schlüssel ab, und es
 bleibt nichts Notwendiges übrig. Die Bindung „die Beschriftung ausdrücklich 11.5d" war der Stand ihrer
 Entstehung, keine Einschränkung auf die Leiste. Die Kipp-Bedingung der Beschriftung gilt für beide Oberflächen.
-AM CODE (GEMESSEN, CC, 2026-09-15): `buildConsentModalScript` (`src/lib/tracking/consent-modal.ts`) importiert
-`CONSENT_BAR_ACCEPT_LABEL` und `CONSENT_BAR_REJECT_LABEL` aus `src/lib/tracking/consent-bar.ts` und übergibt sie
-an seine zwei Knöpfe — `CONSENT_BAR_REJECT_LABEL` zusammen mit der leeren Liste —, in derselben Form wie
-`buildConsentBarScript`. M5 in `consent-modal.test.ts` prüft beide Beschriftungen wörtlich.
+AM CODE (GEMESSEN, CC, 2026-09-15, auf `9f85c0c`): Die Beschriftungen stehen als `CONSENT_ACCEPT_LABEL` und
+`CONSENT_REJECT_LABEL` in `src/lib/tracking/consent-choice.ts`. Beide Blöcke — `buildConsentBarScript` und
+`buildConsentModalScript` — setzen dasselbe Code-Stück `CONSENT_CHOICE_JS` ein, das den Knopf mit
+`CONSENT_REJECT_LABEL` und der leeren Liste baut; seit der Scheibe 11.5e-1 steht daneben ein dritter Knopf „Auswahl
+speichern". L5 in `consent-bar.test.ts` und M5 in `consent-modal.test.ts` prüfen die drei Beschriftungen wörtlich.
+RICHTIGGESTELLT AM 2026-09-15 — die Konstanten sind mit `9f85c0c` umgezogen und umbenannt (VERMERK 6); Wortlaut vorher:
+„`buildConsentModalScript` (`src/lib/tracking/consent-modal.ts`) importiert `CONSENT_BAR_ACCEPT_LABEL` und
+`CONSENT_BAR_REJECT_LABEL` aus `src/lib/tracking/consent-bar.ts` und übergibt sie an seine zwei Knöpfe —
+`CONSENT_BAR_REJECT_LABEL` zusammen mit der leeren Liste —, in derselben Form wie `buildConsentBarScript`. M5 in
+`consent-modal.test.ts` prüft beide Beschriftungen wörtlich." Der GRUND der Erstreckung ist davon unberührt: „Ablehnen"
+löst weiter in beiden Formen `write([])` aus.
 PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-15 — eine Angabe aus dem Auftrag, am Repo nicht prüfbar. Die gemeinsamen
-Konstanten GEMESSEN am Code (CC, 2026-09-15).
+Konstanten GEMESSEN am Code (CC, 2026-09-15; auf `5fd6d48`, richtiggestellt auf `9f85c0c`).
 
 **OFFENE FRAGE, AUSDRÜCKLICH KEINE ENTSCHEIDUNG — TRÄGT DER SATZ „„Nur Notwendige" wird erst mit 11.5e sinnvoll"
 NOCH, WENN DIE AUSWAHL NACH ENTSCHEIDUNG (25) GRUPPIERT WIRD?** Er steht oben im Grund der Beschriftung, und die
@@ -1297,11 +1473,24 @@ WAS DER BESTAND DAZU TRÄGT (GEMESSEN am Repo, CC, 2026-09-15):
   `unbedingt erforderlich|technisch notwendig|technisch erforderlich|strictly necessary|essenziell|essentiell|notwendige? (kategorie|gruppe|cookies|dienste)`,
   dazu `notwendig|necessary|essential|strictly` über `src/lib/tracking`, `src/lib/analytics`, `src/lib/settings.ts`
   und `src/components/PublishView.tsx`. POSITIVKONTROLLE: die zweite Achse trifft „Nur Notwendige" im Docblock von
-  `CONSENT_BAR_REJECT_LABEL` (`src/lib/tracking/consent-bar.ts`), und `nur notwendig` über `docs/` trifft die zwei
-  Stellen hier an (12). TREFFER, UND SIE STÜTZEN DIE LESART: Derselbe Docblock sagt „kein "notwendig" oder "essenziell": Es gibt keine Kategorien". Die übrigen Treffer
+  `CONSENT_REJECT_LABEL` (`src/lib/tracking/consent-choice.ts`), und `nur notwendig` über `docs/` trifft die zwei
+  Stellen hier an (12). TREFFER, UND SIE STÜTZEN DIE LESART: Der Docblock von `CONSENT_TEXT` in derselben Datei sagt
+  „kein "notwendig" oder "essenziell": Seit Scheibe 11.5e-1 gibt es zwei Gruppen, aber KEINE davon besteht ohne
+  Einwilligung". Die übrigen Treffer
   betreffen das A/B-Varianten-Cookie und seine Einstufung als „unbedingt erforderlich"
   (`docs/claude-history/phase-9-ab-testing.md`, Vorrat (11)) — ein server-gesetztes Cookie, kein
   Einwilligungs-Schlüssel und kein Gegenstand des Dialogs.
+  RICHTIGGESTELLT AM 2026-09-15 — ZWEI DINGE, und das zweite war schon vor dem Bau falsch (GEMESSEN am Repo, CC,
+  2026-09-15, `git show d3210a1:src/lib/tracking/consent-bar.ts` und `consent-choice.ts` auf `9f85c0c`):
+  - **DER ORT:** Beide Docblocks sind mit `9f85c0c` aus `consent-bar.ts` nach `consent-choice.ts` umgezogen, die
+    Konstanten umbenannt (`CONSENT_BAR_REJECT_LABEL` → `CONSENT_REJECT_LABEL`, `CONSENT_BAR_TEXT` → `CONSENT_TEXT`), und
+    „Es gibt keine Kategorien" ist umformuliert, weil es mit den Gruppen nicht mehr stimmt.
+  - **„DERSELBE DOCBLOCK" WAR UNGENAU:** Auf `d3210a1` stand „Nur Notwendige" im Docblock von `CONSENT_BAR_REJECT_LABEL`,
+    „Es gibt keine Kategorien" dagegen im Docblock von `CONSENT_BAR_TEXT` — zwei Docblocks, nicht einer.
+  Wortlaut vorher: „POSITIVKONTROLLE: die zweite Achse trifft „Nur Notwendige" im Docblock von
+  `CONSENT_BAR_REJECT_LABEL` (`src/lib/tracking/consent-bar.ts`) … TREFFER, UND SIE STÜTZEN DIE LESART: Derselbe Docblock
+  sagt „kein "notwendig" oder "essenziell": Es gibt keine Kategorien"". Die Lesart selbst ist unberührt — auch die
+  umformulierte Stelle stützt sie.
 - **DIE ZUORDNUNG DER SECHS SCHLÜSSEL ZU DEN ZWEI GRUPPEN nennt Entscheidung (25) nicht ausdrücklich.** Die Lesart
   setzt „Messung" = `analytics` und „Werbung" = die fünf Ziel-Schlüssel voraus; das ist eine ABLEITUNG aus den
   Gruppennamen.
@@ -2329,6 +2518,26 @@ Schreibpfad, nicht als gelesener Wert.
 
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
 
+**(20) DASS DIE GRUPPEN-SCHALTER KEINEN LISTENER TRAGEN, HÄLT KEIN TEST** (aufgenommen 2026-09-15).
+
+**DER GEGENSTAND:** Seit `9f85c0c` tragen die zwei Schalter in Leiste und Modal keinen Listener; ihr Zustand wird erst
+beim Klick auf „Auswahl speichern" über `checked` gelesen (`CONSENT_CHOICE_JS`, `src/lib/tracking/consent-choice.ts`,
+dort im Docblock ausdrücklich: „DIE SCHALTER STARTEN AUS UND TRAGEN KEINEN LISTENER"). Der Kopf von `consent-modal.ts`
+nennt es unter der einzigen Rücknahme: „KEIN Listener an den Schaltern" (GELESEN am Code, CC, 2026-09-15).
+
+**WAS DIE WÄCHTER PRÜFEN UND WAS NICHT** (GELESEN an den Tests, CC, 2026-09-15): L14 in `consent-bar.test.ts` und M14 in
+`consent-modal.test.ts` verlangen, dass JEDER Listener des Blocks gebunden ist, BEVOR der Host an `body` hängt. Sie
+verlangen NICHT, dass an einem Schalter keiner hängt. **Ein Listener an einer Checkbox, VOR dem Einhängen gebunden,
+bliebe in beiden grün**; M13 prüft Abdunkelung und Escape, nicht die Schalter. Gemeldet hat die Lücke die Bau-Runde.
+
+**WARUM ES ZÄHLT:** Die Abwesenheit ist heute ein Nebeneffekt der Bauform — der Zustand wird gelesen, nicht verfolgt.
+Ein Schutz, der nur Nebeneffekt einer Bauform ist, verschwindet still, sobald jemand die Bauform ändert (die Regel „NUR
+EIN TEST IST EIN WÄCHTER — EIN KOMMENTAR ODER EIN NEBENEFFEKT IST KEINER", docs/immer-beachten.md). Ein `change`-Listener
+an einer Checkbox wäre der naheliegende Weg, einen Zustand mitzuführen — etwa für eine eingeklappte Auswahl (Befund zu
+VERMERK 6) —, und nichts würde rot.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
+
 ## 10. Hebungs-Kandidaten
 
 Hier steht, was nach dem Phasenende an einem DAUERHAFTEN Ort stehen sollte — vor allem
@@ -2960,7 +3169,9 @@ Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 20
   an L9 und L10 mit ihren literalen Speicherwerten; was `write()` darüber hinaus tut, an Entscheidung (11),
   Entscheidung (12) und VERMERK 3.
 - **"DIE BEZEICHNUNG"**. **HEUTE ERKENNBAR:** an Entscheidung (12) und im Docblock von
-  `CONSENT_BAR_REJECT_LABEL`.
+  `CONSENT_REJECT_LABEL` (`src/lib/tracking/consent-choice.ts`). RICHTIGGESTELLT AM 2026-09-15 — die Konstante hiess bis
+  `9f85c0c` `CONSENT_BAR_REJECT_LABEL` und stand in `consent-bar.ts` (VERMERK 6); Wortlaut vorher: „im Docblock von
+  `CONSENT_BAR_REJECT_LABEL`".
 - **"DER UI-TEXT AM SCHALTER WIRD KORRIGIERT"** samt dem alten Wortlaut und „WARUM ER IN DIE IRRE FÜHRT".
   **HEUTE ERKENNBAR:** am neuen Text in `PublishView.tsx` („Ein bereits eingebundenes Consent-Management wird
   nicht erkannt"); der alte Wortlaut im Diff von `7516bce`; der Grund an Vorrat (3) und an der Roadmap-Zeile
@@ -2997,15 +3208,22 @@ Liste „Vollzogen".
 - **SIE BINDEN ÜBER DIE SCHEIBE HINAUS.** Jede Scheibe, die den Modal-Block ändert — ausdrücklich 11.5e, mit der
   der Fensterinhalt wächst —, arbeitet unter ihnen; M12, M13 und M14 halten sie im Code, aber ihren GRUND tragen
   nur die Blöcke hier.
-- **DER CODE ZEIGT AUF SIE BEI IHRER KENNUNG** (GEMESSEN am Repo, CC, 2026-09-15, `git grep -niE
-  "invariante i[1-4]\b"` über `src/`): „Invariante I1 der Scheibe 11.5d-2" im Docblock von `CONSENT_MODAL_CSS`,
-  „Invariante I3" im Docblock von `buildConsentModalScript`; in `consent-modal.test.ts` „INVARIANTE I1" an M12
-  (zweimal), „INVARIANTE I2" an M13, „INVARIANTE I3" an M14. **Auf I4 dieser Scheibe zeigt keine Stelle.** Die
-  übrigen sechs Treffer derselben Achse liegen in `CodeImporter.tsx`, `CodeImporter.test.tsx` (beide nennen an der
-  Stelle Phase 10 Scheibe 10c-1) und `ingest.test-mode.test.ts` und meinen nicht diese Scheibe.
-  **NUR EINER DER SECHS ZEIGER AUF DIESE SCHEIBE NENNT SIE AN DER STELLE**; die übrigen lösen über den Kopf ihrer
-  Datei auf (`consent-modal.ts`: „Phase 11.5, Scheibe 11.5d-2"; `consent-modal.test.ts`: „SCHEIBE 11.5d-2").
-  Stürben I1 bis I3 mit dem Zuschnitt, würden diese Zeiger halb tot: auffindbar, aber ohne Text.
+- **DER CODE ZEIGT AUF SIE BEI IHRER KENNUNG** (GEMESSEN am Repo, CC, 2026-09-15, auf `9f85c0c`, `git grep -niE
+  "invariante i[1-5]\b"` über `src/`): „Invariante I1 der Scheibe 11.5d-2" im Docblock von `CONSENT_MODAL_CSS`,
+  „Invariante I3 der Scheibe 11.5d-2" im Docblock von `buildConsentModalScript`; in `consent-modal.test.ts` „INVARIANTE
+  I1 DER SCHEIBE 11.5d-2" an M12 (zweimal), „INVARIANTE I2 DER SCHEIBE 11.5d-2" an M13, „Invariante I3 der Scheibe
+  11.5d-2, erweitert durch Invariante I3 der Scheibe 11.5e-1" an M14. **Auf I4 dieser Scheibe zeigt keine Stelle.**
+  Weitere Treffer derselben Achse: sechs in `CodeImporter.tsx`, `CodeImporter.test.tsx` (beide nennen an der Stelle
+  Phase 10 Scheibe 10c-1) und `ingest.test-mode.test.ts`, die nicht diese Scheibe meinen; dazu die Zeiger auf I3 und I4
+  der Scheibe 11.5e-1, die Abschnitt 17 führt.
+  **ALLE SECHS ZEIGER AUF DIESE SCHEIBE NENNEN SIE AN DER STELLE.** Stürben I1 bis I3 mit dem Zuschnitt, würden diese
+  Zeiger halb tot: auffindbar, aber ohne Text.
+  RICHTIGGESTELLT AM 2026-09-15 — mit `9f85c0c` nennen auch die fünf übrigen Zeiger die Scheibe, weil die Dateien seither
+  Gegenstände zweier Scheiben tragen und der Dateikopf allein nicht mehr auflöst (VERMERK 6). Wortlaut vorher, auf
+  `5fd6d48` gemessen: „„Invariante I3" im Docblock von `buildConsentModalScript`; in `consent-modal.test.ts`
+  „INVARIANTE I1" an M12 (zweimal), „INVARIANTE I2" an M13, „INVARIANTE I3" an M14 … **NUR EINER DER SECHS ZEIGER AUF
+  DIESE SCHEIBE NENNT SIE AN DER STELLE**; die übrigen lösen über den Kopf ihrer Datei auf (`consent-modal.ts`: „Phase
+  11.5, Scheibe 11.5d-2"; `consent-modal.test.ts`: „SCHEIBE 11.5d-2")." Die frühere Achse lautete `invariante i[1-4]\b`.
 - **„M12" ÜBERLEBT OHNE DIESEN ABSCHNITT:** Es ist der Name des Tests in `consent-modal.test.ts` und steht dort; in
   dieser Datei nennt ihn VERMERK 5 mit dem, was er prüft. Der Satz „im Bau-Plan M12" in I1 bleibt wörtlich stehen.
 - **I1 IST NICHT GANZ STEHEN GEBLIEBEN:** Die zwei Fragen an den Plan, die unter I1 standen, sind abgelaufen und in
@@ -3055,9 +3273,12 @@ Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 20
   Zeile „UNVERÄNDERT BINDEN DAZU". **HEUTE ERKENNBAR:** Abschnitt 8 trägt (3), (4) und (11) bis (21) unverändert;
   die Vorhersage jenes Satzes ist eingetreten — beim Abschluss musste nichts umziehen. Neu hinzugekommen ist (22).
 - **Der Satz "(12) BINDET DIE BESCHRIFTUNG „Ablehnen" WÖRTLICH AN 11.5d … Ob sie für das Modal gilt, ist hier NICHT
-  entschieden."** **HEUTE ERKENNBAR:** Gebaut trägt das Modal dieselbe Konstante `CONSENT_BAR_REJECT_LABEL` wie die
-  Leiste (`buildConsentModalScript`), und M5 prüft beide Beschriftungen wörtlich. Die Entscheidung dazu steht seit
-  dem 2026-09-15 an (12), im Absatz „ERSTRECKT AM 2026-09-15".
+  entschieden."** **HEUTE ERKENNBAR:** Gebaut tragen Modal und Leiste dieselbe Konstante `CONSENT_REJECT_LABEL`
+  (`src/lib/tracking/consent-choice.ts`, eingesetzt über `CONSENT_CHOICE_JS`), und M5 und L5 prüfen die Beschriftungen
+  wörtlich. Die Entscheidung dazu steht seit dem 2026-09-15 an (12), im Absatz „ERSTRECKT AM 2026-09-15".
+  RICHTIGGESTELLT AM 2026-09-15 — die Konstante ist mit `9f85c0c` umgezogen und umbenannt (VERMERK 6); Wortlaut vorher:
+  „Gebaut trägt das Modal dieselbe Konstante `CONSENT_BAR_REJECT_LABEL` wie die Leiste (`buildConsentModalScript`), und
+  M5 prüft beide Beschriftungen wörtlich."
 - **"DER WERT HEISST `modal` … DER NAME KOLLIDIERT MIT DEM HEUTIGEN BELEG FÜR EINEN UNBEKANNTEN WERT"** samt der
   vier Fundstellen und „DER UNBEKANNT-BELEG WECHSELT AUF EINEN WERT, DER NIE EIN SCHALTER-WERT WIRD". **HEUTE
   ERKENNBAR:** `modal` steht als gebauter Wert in S1, S3, P4 und P4b; der Unbekannt-Beleg in S1, S3 und P1 ist
@@ -3094,26 +3315,32 @@ Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 20
 
 ## 17. Die Auswahl je Gruppe — Zuschnitt der Scheibe 11.5e-1
 
-**WAS DIESE SCHEIBE IST:** die sechste dieser Phase und die erste Hälfte von 11.5e (Entscheidung (23)). Der
-Dialog-Block bekommt zwei Gruppen-Schalter, „Messung" und „Werbung" (Entscheidung (25)). Der Besucher wählt je
-Gruppe, ein Knopf bestätigt. **BEIDE BLÖCKE SIND BETROFFEN** — die Leiste (`buildConsentBarScript`) und das Modal
-(`buildConsentModalScript`); welche Form zuerst gebaut wird, entscheidet der Bau-Plan.
+**VERDICHTET AM 2026-09-15, nach dem Bau-Commit `9f85c0c` und dem bestätigten Live-Test.** Sein Protokoll steht als
+VERMERK 6 in Abschnitt 7; seine Gestalt-Entscheidungen standen schon vor dem Bau als (23) und (25) in Abschnitt 8.
+**WIE DIE ABSCHNITTE 13 BIS 16 IST DIESER NICHT GESCHLOSSEN: DREI BLÖCKE BLEIBEN STEHEN** — die Abgrenzung zur
+Kategorie-Entscheidung samt dem Owner-Ausschluss, die drei Setzungen und die Invarianten I1 bis I5 darunter, WÖRTLICH und
+in dieser Runde nicht in einen anderen Abschnitt verschoben. Alles übrige ist abgelaufen — s. die Liste „Vollzogen".
 
-**WAS DIESE SCHEIBE NICHT IST — EINE SPEICHER-SCHEIBE. SIE IST EINE OBERFLÄCHEN-SCHEIBE.** Der Speicher trägt
-Teilmengen schon heute (GEMESSEN am Code, CC, 2026-09-15, Aufklärung vom selben Tag):
-- **`write()`** (`buildConsentRestoreScript`, `src/lib/tracking/consent-store.ts`) nimmt jede Liste bekannter
-  Schlüssel ohne Duplikat und legt sie in der Reihenfolge von `KEYS` ab, gleich in welcher Reihenfolge die Eingabe
-  kam; alles, was nicht übergeben ist, landet in der Ablehnungs-Liste.
-- **`read()`** prüft Marke, Länge, genau einen Trenner, bekannte Schlüssel und Duplikate über beide Listen. Reihenfolge
-  und Vollständigkeit prüft es NICHT.
-- **`hookFrom`** belegt über `KEYS` je Schlüssel, ob er in der Zustimmungs-Liste steht — für eine Teilmenge dieselbe
-  Rechnung wie für „alle" und „keiner" (Entscheidung (9)).
-- **Teilmengen sind gelaufen:** in fünf Tests — R5, R6, die Positivkontrolle von R10 und R13 in
-  `src/lib/tracking/consent-store.test.ts`, N4 in `src/lib/analytics/pageview-emitter.resend.test.ts` — und live mit
-  `write(["meta"])` in VERMERK 3, Schritt 4 (OWNER-ANGABE).
-- **Die zwei Oberflächen übergeben heute ausschliesslich `ALL_CONSENT_KEYS` oder `[]`** — je über `makeButton` in
-  `buildConsentBarScript` und `buildConsentModalScript`. Weitere Aufrufer von `write()` gibt es im Produktivcode
-  nicht (Achse `\bwrite\(` über `src/`, ohne Testdateien; Positivkontrolle: sie trifft beide Knopf-Handler).
+**STEHEN GEBLIEBEN, UND DER GRUND:**
+- **DIE ABGRENZUNG UND DER OWNER-AUSSCHLUSS** binden jede Scheibe, die an der Oberfläche der Auswahl arbeitet —
+  ausdrücklich die noch nicht geschnittene Scheibe zum Befund an VERMERK 6, die den Ausschluss sonst als Konflikt liest.
+  Der Ausschluss steht an keinem anderen Ort (GEMESSEN am Repo, CC, 2026-09-15: `git grep -i aufklapp` über `docs/` und
+  `CLAUDE.md` trifft in aktiven Dokumenten nur diese Datei).
+- **DIE DREI SETZUNGEN** binden jede weitere Scheibe an den Schaltern. Im Code halten G0 die Zuordnung und L15/M16 den
+  Startzustand AUS; ihren GRUND trägt nur der Block hier.
+- **DIE INVARIANTEN — JE KENNUNG GEPRÜFT** (GEMESSEN am Repo, CC, 2026-09-15, auf `9f85c0c`, `git grep -niE
+  "invariante i[1-5]\b"` über `src/`):
+  - **I3 WIRD AUS `src/` ZITIERT**, je mit der Scheibe an der Stelle: im Docblock von `buildConsentBarScript`, an L14 in
+    `consent-bar.test.ts` und an M14 in `consent-modal.test.ts`. **Sie muss stehen bleiben.**
+  - **I4 WIRD AUS `src/` ZITIERT**, je mit der Scheibe an der Stelle: an L16 und an M17. **Sie muss stehen bleiben.**
+  - **AUF I1, I2 UND I5 DIESER SCHEIBE ZEIGT KEINE STELLE IN `src/`.** Sie bleiben trotzdem stehen, weil sie über die
+    Scheibe hinaus binden: I1 und I2 jede Scheibe an Leiste oder Modal, I5 jede, die `write()` von der Oberfläche ruft —
+    und weil die fünf eine Liste sind, die ohne Lücke zitierbar bleiben soll.
+  - Stürben I3 oder I4 mit dem Zuschnitt, würden die Zeiger halb tot: auffindbar, aber ohne Text.
+  - **DIE ERLAUBNIS AUS I1 IST AN DER LEISTE WEITERHIN NICHT NUTZBAR, OHNE L12 UMZUBAUEN** — L12 verbietet das Wort
+    `overflow` im Leisten-Block. Die Abhilfe dafür war vorab benannt und ist nicht gebaut, weil das harte Kriterium der
+    Leiste erfüllt war (VERMERK 6, Schritt 8).
+- Ob die drei Blöcke nach Abschnitt 8 gehören, ist in dieser Runde NICHT entschieden.
 
 **DIE ABGRENZUNG ZUR KATEGORIE-ENTSCHEIDUNG DER PHASE 11 — sie wiegt schwerer als der Rest dieses Zuschnitts.**
 DIE STELLE IM WORTLAUT, umlautfrei wie im Quelltext (Kommentar über `ANALYTICS_CONSENT_TARGET`,
@@ -3157,51 +3384,49 @@ in Abschnitt 16, und der Code zeigt auf jene (dort gemessen). Ein Zeiger auf ein
 - **(I5) DER GESPEICHERTE WERT TRÄGT DIE SCHLÜSSEL IN DER REIHENFOLGE VON `KEYS`.** Das leistet `write()` heute schon;
   die Scheibe darf es nicht umgehen.
 
-**DIE STELLEN, DIE DER PLAN BEHANDELN MUSS — ALS FRAGEN, NICHT ALS VORGABEN** (Bestand GEMESSEN am Repo, CC,
-2026-09-15):
-- **DIE KINDER-ZUSICHERUNG.** M5 in `src/lib/tracking/consent-modal.test.ts` UND L13 in
-  `src/lib/tracking/consent-bar.test.ts` erwarten die Kinder des Fensters bzw. der Leiste exakt als
-  `["P", "BUTTON", "BUTTON"]`; beide werden bei jedem zusätzlichen Kind rot. L5 in `consent-bar.test.ts` zählt nur
-  die Elemente `button` im Schattenbaum. **Die Zusicherungen werden ERWEITERT, nicht aufgeweicht** — wie, sagt der Plan.
-- **I3 IST FÜR DIE NEUEN BEDIENELEMENTE UNGEDECKT, UND FÜR DIE LEISTE GANZ.** M14 in `consent-modal.test.ts` zählt nur
-  Listener an Elementen mit dem Tag `BUTTON`; eine Checkbox ist keins. In `consent-bar.test.ts` gibt es keinen
-  Wächter, der Listener und Einhängen vergleicht. Wie M14 erweitert wird und ob die Leiste einen solchen Wächter
-  bekommt, sagt der Plan; **die Erweiterung bekommt eine eigene Pflicht-Mutation.**
-- **DIE NADEL-ACHSE VON M12.** Sie durchsucht den ganzen Blocktext; die Muster `querySelector|getElementsBy|
-  getElementById`, `\.style\b`, `classList|className` und `\.focus\(|\.blur\(|autofocus|tabindex` treffen auch
-  Zugriffe im EIGENEN Schattenbaum. Sie schlagen nur an, wenn der Bau diese Zugriffe benutzt; eine Checkbox, deren
-  Zustand über `checked` gelesen wird, berührt keins davon (ABLEITUNG aus den Mustern, nicht gelaufen). L12 in
-  `consent-bar.test.ts` trägt keine solchen Nadeln, nur das Verbot von `overflow`. **Der Plan entscheidet, ob er Nadeln
-  verengt oder ohne diese Zugriffe baut, und begründet es. Eine Verengung darf die Sache nicht verlieren, die die Nadel
-  schützt** — den Eingriff an einem fremden Knoten.
+PROVENIENZ DER DREI STEHENGEBLIEBENEN BLÖCKE: der Ausschluss von Aufklapp-Bereich und Einzelauswahl OWNER-ENTSCHEIDUNG
+2026-09-15; die drei Setzungen und die Invarianten ARCHITEKT 2026-09-15 — Angaben aus dem Auftrag jenes Tages, am Repo
+nicht prüfbar. Die Stelle in `consent.ts`, die Schlüsselmenge und die Zitate der Invarianten GELESEN bzw. GEMESSEN am
+Repo (CC, 2026-09-15), wie je angegeben.
 
-**WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT — NEU GESETZT, NICHT ÜBERNOMMEN.** Die Ausschlüsse der Scheibe 11.5d-2 sind mit ihr
-abgelaufen — so verzeichnet in Abschnitt 16 unter „Vollzogen", Punkt "WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT — NEU GESETZT,
-NICHT ÜBERNOMMEN" (GELESEN, CC, 2026-09-15). Dieser Zuschnitt stellt sie neu auf:
-- der Widerruf (11.5e-2) und jede Vorbereitung darauf;
-- jede Änderung an `consent.ts`, `consent-wire.ts` und `ingest.ts`;
-- jede Änderung am Setzer und an der Wiederherstellung, ausser einem nötigen Argument;
-- jede Änderung am Speicherformat, an `read()` oder an `write()`;
-- ein Stylesheet oder ein anderer zentral vom App-Host ausgelieferter Baustein — der Ausschluss aus Abschnitt 15 gilt
-  unverändert weiter und wird hier nur benannt;
-- Sprache (11.5f).
-**KOMMENTARKÖPFE DER GESCHÜTZTEN DATEIEN: PRÜFEN UND MELDEN, NICHT ÄNDERN.**
+### Vollzogen — was hier stand und wohin es gegangen ist
 
-**DIE AUFLAGE AUS VERMERK 5, HIER EINGELÖST:** Der Fensterinhalt wächst um die zwei Gruppen. Der Live-Test dieser
-Scheibe fährt den Schritt mit einem Fenster AM ANSCHLAG und weist `scrollHeight > clientHeight` aus. **Ohne diesen
-Nachweis ist `max-height` weiterhin ungeprüft.**
+Die Titel sind ohne Überschriften-Marke zitiert, damit eine Überschriften-Suche sie nicht trifft.
+Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 2026-09-15).
 
-UNVERÄNDERT BINDEN DAZU: (4) und (9) für die Schlüssel und den Hook, (11) für das, was `write()` tut, (12) samt
-Erstreckung und offener Frage für die Beschriftungen, (13) für die Stelle in der Verkettung, (18) für die Wächter,
-(20) für die Scroll-Sperre, (23) für die Schnittfolge, (25) für die Gruppen, und die Invarianten I1 bis I3 aus
-Abschnitt 16 für den Modal-Block.
-
-**DIE DEMOBARKEIT IST IN DIESEM ZUSCHNITT NOCH NICHT AUFGESTELLT** — ausser der Auflage oben.
-
-**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.**
-
-PROVENIENZ: Gegenstand und Schnitt OWNER-ENTSCHEIDUNGEN (23) und (25) vom 2026-09-15; der Ausschluss von Aufklapp-Bereich
-und Einzelauswahl OWNER-ENTSCHEIDUNG 2026-09-15; die drei Setzungen, die Invarianten und die Auflagen an den Plan
-ARCHITEKT 2026-09-15 — alles Angaben aus dem Auftrag, am Repo nicht prüfbar. Die Aussagen über Speicher, Schlüssel,
-Tests und die Stelle in `consent.ts` GEMESSEN bzw. GELESEN am Repo (CC, 2026-09-15), wie je angegeben; die Wirkung der
-Nadeln auf eine Checkbox ABGELEITET.
+- **"WAS DIESE SCHEIBE IST"** nannte Gegenstand und Umfang, beide Blöcke betroffen, die Reihenfolge dem Bau-Plan
+  überlassen. **HEUTE ERKENNBAR:** VERMERK 6, Gegenstand, Gestalt und Bau-Commit — beide Blöcke setzen dasselbe
+  Code-Stück `CONSENT_CHOICE_JS` aus `src/lib/tracking/consent-choice.ts` ein, gebaut in einem Commit.
+- **"WAS DIESE SCHEIBE NICHT IST — EINE SPEICHER-SCHEIBE. SIE IST EINE OBERFLÄCHEN-SCHEIBE."** samt den Befunden zu
+  `write()`, `read()`, `hookFrom`, den gelaufenen Teilmengen und den zwei Aufrufern von `write()`. **HEUTE ERKENNBAR:**
+  an VERMERK 6 — `consent-store.ts` ist nicht im Bau-Commit, die Wiederherstellung ist über ihren Vergleichswert
+  byte-gleich, und die Kontroll-Probe (vi) hat die Normalisierung von `write()` belegt; in der Commit-Nachricht von
+  `9f85c0c` („DIE SCHEIBE FASST DEN SPEICHER NICHT AN"). Der Code, den die Befunde zu `write()`, `read()` und `hookFrom`
+  beschreiben, ist unverändert — `consent-store.ts` gehört zu den sechzehn über ihren Blob-Hash belegten Dateien. **ÜBERHOLT UND NICHT MEHR WAHR** ist allein der letzte Punkt:
+  Die Oberflächen übergeben seit `9f85c0c` drei Listen — alle Schlüssel, die der gewählten Gruppen, keine —, alle über
+  `makeButton` in `CONSENT_CHOICE_JS`.
+- **"DIE STELLEN, DIE DER PLAN BEHANDELN MUSS — ALS FRAGEN, NICHT ALS VORGABEN"**, drei. **HEUTE ERKENNBAR:** die
+  Kinder-Zusicherung an L13 und M5, erweitert auf `["P","DIV","BUTTON","BUTTON","BUTTON"]`, und an L5, der entgegen der
+  Beschreibung dort ebenfalls rot wurde, weil er die Beschriftungen aller Knöpfe exakt vergleicht; I3 an M14, erweitert
+  auf jeden Listener, an L14, neu für die Leiste, und an den Mutationen (i) und (ii); die Nadel-Achse an VERMERK 6 —
+  gemessen im ersten Lauf nach dem Bau, keine Nadel schlug an, keine ist verengt. Die dort als ABLEITUNG geführte Wirkung
+  auf eine Checkbox, die über `checked` gelesen wird, ist damit gemessen.
+- **"WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT — NEU GESETZT, NICHT ÜBERNOMMEN"**, sechs Ausschlüsse und die Auflage an die
+  Kommentarköpfe. **HEUTE ERKENNBAR:** die unberührten Dateien — `consent.ts`, `consent-wire.ts`, `ingest.ts`, Setzer,
+  Wiederherstellung samt Format, `read()` und `write()` — an der Dateiliste des Bau-Commits und an den Vergleichswerten in
+  VERMERK 6; das Stylesheet vom App-Host am stehengebliebenen Block in Abschnitt 15; Widerruf und Sprache an den
+  Entscheidungen (23) und (12). **Die Auflage an die Kommentarköpfe:** Die Bau-Runde hat die Köpfe von `consent-store.ts`,
+  `consent.ts`, `consent-targets.ts`, `consent-setter.ts`, `consent-wire.ts` und `ingest.ts` geprüft und keinen falschen
+  Satz gemeldet; „ein spaeterer Dialog" in `consent-store.ts` ist zeitlich überholt, nicht falsch. Die Dateien sind
+  unverändert (Blob-Hashes, VERMERK 6); der Wortlaut der Meldung steht nicht im Repo.
+- **"DIE AUFLAGE AUS VERMERK 5, HIER EINGELÖST"**. **HEUTE ERKENNBAR:** eingelöst in VERMERK 6, Schritt 7, mit Gegenprobe
+  und Erreichbarkeit des letzten Knopfes; der Satz dazu steht als Nachtrag an VERMERK 5.
+- **"UNVERÄNDERT BINDEN DAZU"**. **HEUTE ERKENNBAR:** Abschnitt 8 trägt (4), (9), (11), (12), (13), (18), (20), (23) und
+  (25) unverändert — an (12) sind allein die Namens-Zeiger auf die umbenannten Konstanten richtiggestellt —; die
+  Invarianten I1 bis I3 der Scheibe 11.5d-2 stehen in Abschnitt 16. Die Vorhersage jenes Satzes ist eingetreten — beim
+  Abschluss musste nichts umziehen.
+- **"DIE DEMOBARKEIT IST IN DIESEM ZUSCHNITT NOCH NICHT AUFGESTELLT"**. **HEUTE ERKENNBAR:** VERMERK 6 trägt den
+  gefahrenen Nachweis, das harte Kriterium der Leiste und die Grenzen.
+- **Der Schlusssatz "DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE"** und die
+  **PROVENIENZ-Zeile des Zuschnitts** waren an ihn gebunden und sind mit ihm abgelaufen; die Provenienz der drei
+  stehengebliebenen Blöcke steht über dieser Liste.

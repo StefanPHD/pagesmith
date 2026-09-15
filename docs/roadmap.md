@@ -1657,6 +1657,23 @@ liegen beide hier und finden einander.
       2026-09-08); der Befund in docs/ziel-befunde.md ist GELESEN 2026-08-20. Dass beide
       dieselbe Frage tragen, ist GEMESSEN am Dateitext (CC, 2026-09-08). KEINE Messung an
       einer Google-Oberfläche.
+
+      NACHTRAG 2026-09-15 — EINE AUFLAGE AN DAS ABHAKEN DIESER ZEILE. Der Wortlaut darüber bleibt
+      ZEICHEN FÜR ZEICHEN stehen; dieser Nachtrag tritt DANEBEN.
+      BEIM [x] SAGT DIESE ZEILE AUSDRÜCKLICH, DASS DIE DARSTELLUNG DES DIALOGS ALS ÜBERLADEN BEKANNT
+      IST UND IN DER ROADMAP-ZEILE 11.13 ("Betreiber-Anpassung des Einwilligungs-Dialogs") UMGEBAUT
+      WIRD. Der Befund steht bei VERMERK 6 dieser Phase (Scheibe 11.5e-1) und wird hier nicht
+      wiederholt.
+      DER GRUND: das Kriterium für [x] in CLAUDE.md, "## Roadmap & aktueller Stand", unter "WANN [x]
+      GESETZT WIRD — DAS KRITERIUM", Absatz "DIE AUFLAGE, OHNE DIE [x] UNZULÄSSIG IST" — dort samt
+      seinem Grund, dass [x] sich sonst als "funktioniert" liest. Er wird hier nicht wiederholt.
+      DIE GRENZE DIESER ANLEHNUNG, und sie gehört dazu: Jener Absatz spricht wörtlich von etwas
+      PRODUKTRELEVANTEM, das zum Zeitpunkt des [x] UNBEWIESEN ist (GELESEN, CC, 2026-09-15). Die
+      überladene Darstellung ist nicht unbewiesen, sondern ein BEKANNTER BEFUND. Die Auflage stützt
+      sich deshalb auf den GRUND des Kriteriums, nicht auf seinen Wortlaut.
+      PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-15 auf Vorschlag des Architekten — eine Angabe aus dem
+      Auftrag, am Repo nicht prüfbar. Der Wortlaut des Kriteriums GELESEN in CLAUDE.md (CC,
+      2026-09-15). Der Marker dieser Zeile ist von diesem Nachtrag NICHT berührt.
 - [ ] Phase 11.7 — Anbieter-Befunde nachziehen: die VIER GEBAUTEN ZIELE.
       DIE NUMMER IST DIE NÄCHSTE FREIE (Präzedenz: 4.5, 10.5, 11.1 bis 11.6) und
       trägt KEINE Reihenfolge-Aussage — sie steht hinter 11.5, weil davor nichts
@@ -2179,6 +2196,125 @@ liegen beide hier und finden einander.
       · Die Schwere unter (b), der Trigger unter (c) und die Grenze unter (f): ARCHITEKT-ANGABE
         2026-09-14. Dass ein `srcDoc`-Dokument ohne Sandkasten den Ursprung erbt:
         Plattform-Aussage, nicht gemessen.
+- [ ] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs — eine EIGENE Zeile, angelegt am 2026-09-15. Sie
+      GEHÖRT NICHT zur laufenden Phase 11.5 und ist kein Teil ihrer Scheiben.
+
+      DIE NUMMER IST GEWÄHLT, WEIL SIE FREI IST (Präzedenz: 4.5, 10.5, 11.5, 11.10, 11.11, 11.12):
+      KEINE bestehende Nummer wird verschoben. Dass 11.13 im Bestand unbelegt war, ist GEMESSEN am
+      Repo (CC, 2026-09-15, `git grep "11\.13"` über alle verfolgten Dateien — kein Treffer;
+      Positivkontrolle: dieselbe Suche nach `11\.12` trifft docs/roadmap.md und CLAUDE.md).
+
+      (a) DER GEGENSTAND: Der Betreiber kann Anordnung, Erscheinungsbild und Text des
+      Einwilligungs-Dialogs — Leiste und Fenster der Phase 11.5 — an seine Seite anpassen.
+
+      (b) DER GRUND IST EIN PRODUKT-ARGUMENT, KEIN KOSMETISCHES: Die Zielgruppe baut Landing Pages
+      und Konversions-Trichter. Ein Dialog, der auf einer fremden Seite wie ein Fremdkörper wirkt,
+      senkt das Vertrauen und wird vom Betreiber nicht eingeschaltet. Wird er nicht eingeschaltet,
+      greift der ganze Mechanismus nicht, den die Phase 11.5 gebaut hat.
+      DER BEFUND STEHT NICHT HIER, sondern bei der Phase 11.5: VERMERK 6 (Scheibe 11.5e-1), Block
+      „BEFUND ZU VERMERK 6 — 2026-09-15: DIE OBERFLÄCHE WIRKT ÜBERLADEN" — heute in
+      docs/aktiver-stand.md, nach dem Phasenende im Archiv der Phase 11.5. Er wird hier NICHT
+      wiederholt; zweimal geschrieben liefe er auseinander.
+
+      (c) DER SCHNITT — VIER SCHEIBEN, IN DIESER REIHENFOLGE:
+      1. DIE ANORDNUNG. Zwei Knöpfe sichtbar, die zwei Gruppen hinter einem unauffälligen Weg.
+         KEIN neues Einstellungsfeld, KEINE Farben, KEIN freier Text.
+      2. DAS THEMA: hell, dunkel, automatisch — EIN Wert, kein Farbwähler. "Automatisch" heisst
+         `prefers-color-scheme`, NICHT von der Seite erben. Der Unterschied ist tragend: Erben hiesse,
+         Werte der Kundenseite in den Schattenbaum zu lassen — die Frage aus (f) unten.
+      3. FREIE FARBEN. Erst wenn Scheibe 2 steht und live geprüft ist.
+      4. FREIER TEXT. Eine eigene Scheibe; sie ist die einzige mit einer Sicherheitsachse, s. (g).
+
+      (d) DIE REIHENFOLGE GEGENÜBER 11.5e-2 IST GESETZT: 11.5e-2 (der Widerruf, Entscheidung (24)
+      der Phase 11.5) läuft ZUERST, und diese Zeile beginnt erst NACH dem Phasenende der Phase 11.5.
+      DER GRUND, AM CODE GEPRÜFT (GEMESSEN, CC, 2026-09-15, am Stand `aa6fee0`): Beide Dialog-Blöcke
+      — `buildConsentBarScript` (`src/lib/tracking/consent-bar.ts`) und `buildConsentModalScript`
+      (`src/lib/tracking/consent-modal.ts`) — sind je EINE sofort ausgeführte Funktion; keiner weist
+      einem globalen Namen etwas zu (Achse `window.<Name> =` über beide Dateien und
+      `src/lib/tracking/consent-choice.ts`: kein Treffer). Jeder Block kehrt als erste Anweisungen
+      zurück, wenn der Hook gesetzt ist (`window.pagesmithConsent !== undefined`) oder `read()` nicht
+      "never" liefert. Nach einer Entscheidung sind Hook und Speicher gesetzt — ein Aufruf zum
+      erneuten Öffnen erreicht den bestehenden Block also nicht; Entscheidung (24) der Phase 11.5
+      hält dasselbe fest.
+      DIE FOLGE, UND SIE IST EINE ABLEITUNG, KEINE MESSUNG: Der Widerruf muss diese Struktur
+      aufbrechen. Wer vorher die Darstellung umbaut, baut eine Struktur, die 11.5e-2 wieder
+      aufreisst — und der Live-Test auf zwei realen Seiten läuft zweimal.
+      DIE NUMMER TRÄGT KEINE REIHENFOLGE, wie bei 11.10 (dort Punkt (d)); die Reihenfolge steht in
+      diesem Punkt, nicht in der Stellung der Zeile.
+
+      (e) AUFLAGE — DIE ANORDNUNG BRINGT EINE NEUE, HEUTE UNGEMESSENE ACHSE. Das harte Kriterium der
+      Leiste ist im AUSGEKLAPPTEN Zustand gemessen (VERMERK 6 der Phase 11.5, OWNER-ANGABEN). Zeigt
+      Scheibe 1 die Auswahl erst auf Klick, ist der eingeklappte Zustand kleiner und harmlos — der
+      AUSGEKLAPPTE auf niedriger Fensterhöhe ist dann ein NEUER Zustand, den nichts prüft. Genau dort
+      kann die Leiste über den oberen Rand wandern. DAS WIRD DAS HARTE KRITERIUM JENER SCHEIBE.
+      DAZU: Die Erlaubnis von `overflow` im eigenen Schattenbaum (Invariante I1 der Scheibe 11.5e-1)
+      ist an der Leiste ohne Umbau von L12 (`src/lib/tracking/consent-bar.test.ts`) nicht nutzbar —
+      L12 verbietet das Wort im Leisten-Block. Der Vermerk dazu steht in Abschnitt 17 der Standdatei
+      der Phase 11.5, unter „STEHEN GEBLIEBEN, UND DER GRUND".
+
+      (f) AUFLAGE — DIE FARBE WIRD ZUR VERÖFFENTLICHUNGSZEIT EINGEBACKEN, NICHT NACHGELADEN. Der Wert
+      ist projektbezogen und wandert mit dem veröffentlichten Text; eine Änderung verlangt ohnehin ein
+      Neu-Veröffentlichen, weil ein ausgeliefertes Artefakt nicht mit dem Deploy altert
+      (docs/immer-beachten.md, "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY"). Eine
+      zentral nachladbare Farbe wäre ein Stylesheet vom App-Host — der Baustein, den Abschnitt 15 der
+      Standdatei der Phase 11.5 ausdrücklich ausschliesst und der eine eigene Entscheidung braucht.
+      EINE MESSUNG VOR SCHEIBE 2, UND SIE IST EINE FRAGE, KEINE ANNAHME: Beide Blöcke tragen
+      `:host{all:initial !important;…}` (GEMESSEN am Code, CC, 2026-09-15). Dass das vererbte
+      Eigenschaften zurücksetzt, ist die Absicht. OB ES AUCH BENUTZERDEFINIERTE EIGENSCHAFTEN
+      ERFASST, IST UNGEMESSEN. Erfasst es sie nicht, erbt ein von der Kundenseite definiertes
+      `--ps-*` in unseren Schattenbaum — auf einer Seite mit über 700 `!important`-Regeln (so eine
+      der zwei Testseiten, OWNER-ANGABE) kein Randfall. DAS IST DER STÄRKSTE GRUND GEGEN
+      CSS-VARIABLEN UND VOR SCHEIBE 2 ZU MESSEN.
+
+      (g) AUFLAGE — SCHEIBE 4 IST DIE ERSTE STELLE, AN DER BETREIBER-EINGABE IN DEN AUSGELIEFERTEN
+      TEXT GELANGT. Heute geht jeder String der Dialog-Blöcke durch `JSON.stringify` einer
+      KONSTANTEN (`src/lib/tracking/consent-choice.ts`). `JSON.stringify` schützt gegen einen
+      JavaScript-Ausbruch, aber es entkommt kein `<`: `JSON.stringify("x</script><b>")` liefert
+      `"x</script><b>"` (GEMESSEN, CC, 2026-09-15, in `node`). Ein Text mit `</script>` schliesst den
+      Script-Block im HTML-Parser, mitten im Kundentext.
+      DIE WÄCHTER, DIE DAS PRÜFEN, FAHREN HEUTE MIT KONSTANTEN: L3 (`consent-bar.test.ts`) und M3
+      (`consent-modal.test.ts`) verlangen, dass der Rumpf kein `<` enthält, und bauen den Block über
+      `buildConsentBarScript()` bzw. `buildConsentModalScript()` ohne Argument (GEMESSEN am Test, CC,
+      2026-09-15). Sie blieben grün, während die Lücke offensteht.
+      DAZU SCHREIBT `saveProject` DIE EINSTELLUNGEN UNVALIDIERT — ein bestehender offener Punkt:
+      docs/offene-punkte.md, "`saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE
+      ABWESENHEIT" (Stub in CLAUDE.md, "## Offene Punkte").
+      FOLGE: Scheibe 4 braucht eine EIGENE Aufklärung, eine benannte Invariante und Wächter, die mit
+      FEINDLICHER Eingabe gefahren werden. SIE WIRD NICHT NEBENBEI AUS SCHEIBE 3 HERAUSGEBAUT.
+
+      (h) DER GUARDRAIL, UND WARUM ER KEIN VERSTOSS GEGEN DIE HALTUNG IST — der Absatz muss mit,
+      sonst zieht ihn eine spätere Runde als Widerspruch heraus: Die Knopf-Logik und die visuelle
+      Gleichrangigkeit von "Alle akzeptieren" und "Ablehnen" bleiben im System verankert; anpassbar
+      ist der erläuternde Text.
+      DAS ERZWINGT NICHTS. Wir sagen nicht "du musst einen konformen Dialog haben", sondern "UNSER
+      Dialog macht keine Dark Patterns". Wer etwas anderes will, bindet ein fremdes CMP ein — der
+      Hook steht offen und ist dafür gebaut.
+      DIE HALTUNG IM BESTAND, als Zeiger: docs/arbeitsweise.md, Abschnitt "4b. DIE TRAGENDEN
+      ENTSCHEIDUNGEN", Unterabschnitt "Haltung" — "Wir sind Werkzeug, nicht Aufsicht", und dort
+      weiter: "Die Haltung bindet also, **wie** gebaut wird, nicht **ob**: ein Dialog, den der
+      Betreiber abschalten oder durch ein fremdes CMP ersetzen kann." Die verbindliche Fassung an der
+      Roadmap-Zeile 11.5 lautet "Wir weisen hin, wir erzwingen nicht." (GELESEN, CC, 2026-09-15.)
+      Dieselbe Figur wie beim Dialog selbst: gebaut wird er, aufgezwungen nicht.
+
+      WAS DIESE ZEILE AUSDRÜCKLICH NICHT TUT: Sie schneidet keine Scheibe im Einzelnen zu, sie
+      terminiert nichts über (d) hinaus, und sie legt keine Farben, Themen-Werte oder Texte fest.
+
+      (i) PROVENIENZ — je Angabe:
+      · Gegenstand und Anlage der Zeile: OWNER-ENTSCHEIDUNG 2026-09-15 auf Vorschlag des Architekten.
+        Schnitt, Reihenfolge, die Auflagen (e) bis (g) und der Guardrail: ARCHITEKT 2026-09-15, vom
+        Owner angenommen — Angaben aus dem Auftrag, am Repo nicht prüfbar.
+      · Die Freiheit der Nummer, die Gestalt der zwei Blöcke samt ihren Rückkehr-Prüfungen, das
+        Fehlen globaler Zuweisungen, `:host{all:initial !important`, das Verhalten von
+        `JSON.stringify` gegenüber `<` und die Aufrufform von L3 und M3: GEMESSEN am Repo bzw. in
+        `node` (CC, 2026-09-15).
+      · Der Titel des offenen Punkts, die Haltung in docs/arbeitsweise.md und an der Roadmap-Zeile
+        11.5: GELESEN (CC, 2026-09-15).
+      · Die Zeiger auf VERMERK 6, Abschnitt 15 und Abschnitt 17 der Standdatei der Phase 11.5: aus
+        der Doku-Runde desselben Tages (Commit `aa6fee0`); die Standdatei ist in DIESER Runde nicht
+        gelesen worden.
+      · Dass der Widerruf die Struktur aufbrechen muss und ein früherer Umbau den Live-Test
+        verdoppelt: ABLEITUNG. OB `all:initial` BENUTZERDEFINIERTE EIGENSCHAFTEN ERFASST:
+        UNGEMESSEN.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

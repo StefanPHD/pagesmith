@@ -161,6 +161,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus
 - [ ] Phase 11.11 — Import-Bereinigung
 - [ ] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur
+- [ ] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)

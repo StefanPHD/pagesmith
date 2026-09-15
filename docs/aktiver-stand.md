@@ -1971,6 +1971,41 @@ PROVENIENZ: der Instrumenten-Befund und die ausgefallene Positivkontrolle GEMESS
 Lauf (CC, 2026-09-12); der Volltext der zwei Nachbarregeln GELESEN in docs/immer-beachten.md
 (CC, 2026-09-12); die dritte Achse ist eine ABLEITUNG.
 
+**(2) EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN** (angetreten
+2026-09-15).
+
+**DIE AUSSAGE:** Wird eine Sache über einen billigen Stellvertreter geprüft — ein Wort im Quelltext
+statt der Wirkung —, ist beim nächsten Fall zu fragen, ob der Stellvertreter noch dieselbe Sache
+trifft. **Trifft er mehr, wird der WÄCHTER verengt, nicht das Produkt beschnitten.**
+
+**DER BELEG — dieser Fall, am 2026-09-15 im Plan-Review gefangen, VOR dem Bau:**
+- L12 in `src/lib/tracking/consent-bar.test.ts` verbietet das Wort `overflow` im Text des
+  Leisten-Blocks. Die Sache dahinter ist der Eingriff an einem fremden Knoten — eine Scroll-Sperre an
+  `html` oder `body` (Entscheidung (20)).
+- Der Zuschnitt der Scheibe 11.5d-2 übernahm diese Bauform für den Modal-Block (Abschnitt 16, I1, in
+  der Fassung von Commit `12722c1`).
+- Der erste Bau-Plan verzichtete daraufhin am Fenster auf `max-height` und `overflow` und nahm einen
+  unerreichbaren Überstand in Kauf. **Die Assertion traf mehr als ihre Sache:** `overflow` im EIGENEN
+  Schattenbaum fasst keinen fremden Knoten an, und ohne ihn wären die einzigen Knöpfe auf einem niedrigen
+  Bildschirm unerreichbar.
+- Aufgelöst ist der Fall durch die Richtigstellung von I1 in Abschnitt 16 — das Produkt behält den
+  Scroll-Bereich, und der Wächter des Modal-Blocks prüft die Struktur plus verengte Nadeln.
+
+**DIE ABGRENZUNG ZU „EIN WÄCHTER ÜBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG — ER MUSS STRENG IRREN UND
+SEINE GRENZE AN SICH SELBST TRAGEN"** (docs/immer-beachten.md): Jene Regel verlangt, dass ein Wächter
+über Zeichen STRENG irrt und seine Grenze an sich trägt — lieber ein Fehlalarm, den jemand prüft, als
+ein Durchlassen, das niemand sieht. **Dieser Kandidat betrifft die Gegenrichtung:** was geschieht, wenn
+der strenge Irrtum ins Produkt zurückschlägt — wenn nicht der Fehlalarm geprüft, sondern der Baustein
+so gebaut wird, dass der Wächter schweigt.
+
+**NICHT ENTSCHIEDEN:** ob daraus eine EIGENE Regel wird oder ein ABSATZ an der genannten Regel.
+**KEINE EMPFEHLUNG.**
+
+PROVENIENZ: Der Fall ist eine Angabe aus dem Plan-Review vom 2026-09-15 (ARCHITEKT); der erste Bau-Plan
+steht in keiner Datei und ist am Repo nicht prüfbar. Das Verbot von `overflow` in L12 und die frühere
+Fassung von I1 GELESEN am Repo (CC, 2026-09-15). Der Wortlaut der Nachbarregel GELESEN in
+docs/immer-beachten.md (CC, 2026-09-15).
+
 ## 11. Der gemessene Ausgangszustand vor der ersten Scheibe
 
 **WAS DIESER ABSCHNITT IST:** der Zustand, den eine READ-ONLY-Aufklärung am 2026-09-12 am Code
@@ -2543,11 +2578,21 @@ Aufklärung vom 2026-09-15 (GEMESSEN am Repo, CC). Welche Stelle bei einem dritt
   Wahrheitswert-Zweige sie braucht —, entscheidet der Bau-Plan.
 
 **DIE BENANNTEN INVARIANTEN DER SCHEIBE:**
-- **(I1) KEINE SCROLL-SPERRE.** Der Modal-Block ändert an keinem Knoten ausserhalb seines eigenen
-  Schattenbaums Stil, Klasse, Attribut, Scroll-Position oder Fokus. Die Bauform von L12
-  (`src/lib/tracking/consent-bar.test.ts`) gilt für ihn erneut: Attribute an `html` und `body` vorher und
-  nachher gleich, nichts im `head`, kein neuer globaler Name, kein `overflow` im Blocktext — je mit
-  Positivkontrolle. Grund: Entscheidung (20).
+- **(I1) KEINE SCROLL-SPERRE.** Der Modal-Block ändert an keinem Knoten AUSSERHALB seines eigenen
+  Schattenbaums Stil, Klasse, Attribut, Scroll-Position oder Fokus — an `html` und `body` wird nichts
+  gesetzt. Das ist die Sache, die Entscheidung (20) verbietet, und sie bleibt unberührt.
+  **IM EIGENEN SCHATTENBAUM SIND `max-height` UND `overflow` ZULÄSSIG.** DER GRUND: Ohne eigenen
+  Scroll-Bereich lägen die Knöpfe auf einem niedrigen Bildschirm unerreichbar unter dem Rand, während die
+  Abdunkelung jeden Klick fängt — die Seite wäre unbedienbar, und zwar genau an der Stelle, die I2 tragend
+  macht. Eine Text-Assertion über das Wort `overflow` ist ein Stellvertreter für den Eingriff an einem
+  fremden Knoten; sie darf die Gestalt des Bausteins nicht bestimmen.
+  **DER WÄCHTER** des Modal-Blocks — im Bau-Plan M12 — trägt die Zusage über die STRUKTUR: Attribute an
+  `html` und `body` vorher und nachher, die Zahl der `style`- und `link`-Elemente ausserhalb des
+  Schattenbaums, keine neuen globalen Namen; dazu verengte Nadeln, die einen fremden Knoten erreichen. L12
+  (`src/lib/tracking/consent-bar.test.ts`) bleibt unverändert — dass zwei Wächter auf derselben Achse zwei
+  Formen haben, ist Absicht.
+  PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-15, vom Owner angenommen — am Repo nicht prüfbar. Der
+  Preis-Befund ist eine ABLEITUNG, nicht gemessen.
   ZWEI FRAGEN AN DEN PLAN, NICHT ENTSCHIEDEN:
   - Ob ein Fokus auf einen Knopf IM Schattenbaum, der den Fokus von einem fremden Element nimmt, unter I1
     fällt.

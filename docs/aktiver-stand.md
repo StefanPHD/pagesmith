@@ -32,6 +32,7 @@ EINER DATEI MIT VERZEICHNIS NICHT", Zusatz 2026-08-27.
 13. Die gespeicherte Entscheidung und der Weg zurück — Zuschnitt der Scheibe 11.5b
 14. Der nachgeholte Seitenaufruf — Zuschnitt der Scheibe 11.5c
 15. Die Einwilligungs-Leiste — Zuschnitt der Scheibe 11.5d
+16. Das Center-Modal — Zuschnitt der Scheibe 11.5d-2
 
 ## 1. Gegenstand der Phase — was gebaut wird und was ausdrücklich nicht dazugehört
 
@@ -779,7 +780,7 @@ und nie neu vergeben.
   null Treffer im Abschnitt, zehn in der ganzen Datei, Positivkontrolle `isTargetDeliverable`
   mit einem Treffer im Abschnitt). Die Gründe von (6) sind eigene Messungen und in (6) selbst
   als solche ausgewiesen.
-- **(7) bis (19):** Sie tragen ihre Provenienz je im eigenen Text, in der Zeile PROVENIENZ am
+- **(7) bis (21):** Sie tragen ihre Provenienz je im eigenen Text, in der Zeile PROVENIENZ am
   Ende des Eintrags, und werden deshalb hier nicht wiederholt.
 
 **DIE ANGABEN ZU (5) UND (6) SIND ARCHITEKT-ANGABEN (2026-09-12) UND AM REPO NICHT PRÜFBAR.**
@@ -1127,10 +1128,12 @@ zweiter Sprachraum gefordert ist.
 
 DER GRUND FÜR DIE EINSCHIEBUNG VON 11.5c: Die Dialog-Scheibe hat EINE riskante Achse — fremdes
 HTML. Eine Änderung am PageView-Script dazuzuschneiden hiesse, bei einem Fehlschlag nicht zuordnen
-zu können, was gebrochen ist. Dass diese Achse neu ist, steht am Bestand: Kein Baustein im
-ausgelieferten Text erzeugt heute ein sichtbares Element, einen Stil oder eine Klasse; das einzige
-Element, das dort zur Laufzeit entsteht, ist das nicht sichtbare `<script>` des fbevents-Bootstraps
-in `__psMetaInit` (`src/lib/tracking/meta.ts`). GEMESSEN am Code (CC, 2026-09-14).
+zu können, was gebrochen ist. Am Bestand: Ein sichtbares Element, einen Stil und Klassen erzeugt im
+ausgelieferten Text allein die Einwilligungs-Leiste (`buildConsentBarScript`,
+`src/lib/tracking/consent-bar.ts`) — ein Host-Element am `body`, Stil und Klassen in dessen
+Schattenbaum; daneben entsteht zur Laufzeit nur das nicht sichtbare `<script>` des
+fbevents-Bootstraps in `__psMetaInit` (`src/lib/tracking/meta.ts`). GEMESSEN am Code (CC,
+2026-09-15).
 
 DIE BESCHRIFTUNG DER ZWEI KNÖPFE: „Ablehnen", NICHT „Nur Notwendige". Der Knopf löst `write([])`
 aus, und `write()` legt jeden nicht übergebenen Schlüssel in die Ablehnungs-Liste und belegt den
@@ -1422,8 +1425,9 @@ DREI LÜCKEN, GEMESSEN an den Tests (CC, 2026-09-14):
   folgender Test sähe ein Element, das er nicht erzeugt hat (ABLEITUNG, nicht gelaufen).
 
 WARUM ES JETZT ZÄHLT: In dieser Scheibe entsteht der erste Baustein, der im ausgelieferten Text
-sichtbares DOM erzeugt. Bis dahin erzeugt zur Laufzeit nur `__psMetaInit` ein Element, ein nicht
-sichtbares `<script>` (Entscheidung (12), GEMESSEN am Code).
+sichtbares DOM erzeugt. Sichtbares DOM erzeugt im ausgelieferten Text heute allein die
+Einwilligungs-Leiste (`buildConsentBarScript`); zur Laufzeit entsteht daneben nur das nicht sichtbare
+`<script>` aus `__psMetaInit` (Entscheidung (12), GEMESSEN am Code, CC, 2026-09-15).
 
 WEN SIE BINDET: den Bau der Scheibe 11.5d und jede weitere Scheibe, die einen Block in die Verkettung
 bringt.
@@ -1470,6 +1474,100 @@ Trennung nicht mehr.
 PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-14 auf Vorschlag des Architekten — eine Angabe aus dem Auftrag,
 am Repo nicht prüfbar. Die drei Belege GEMESSEN am Code (CC, 2026-09-14); Grund und Folge ABGELEITET, wie
 angegeben.
+
+**(20) DAS CENTER-MODAL WIRD OHNE SCROLL-SPERRE GEBAUT.**
+
+DIE ENTSCHEIDUNG: Das Modal der Scheibe 11.5d-2 bekommt keine Scroll-Sperre. Die Zusage, dass kein
+Baustein des ausgelieferten Textes zur Laufzeit an einem fremden Knoten Stil, Klasse, Attribut,
+Scroll-Position oder Fokus ändert, wiegt schwerer als der Scroll-Stopp.
+
+DER GRUND, ZWEI TEILE:
+- **(a) DIE ZUSAGE STEHT HEUTE, UND EINE SPERRE WÄRE IHRE ERSTE AUSNAHME** (GEMESSEN am Repo, CC,
+  2026-09-15). Achse, case-insensitiv, über die Erzeuger des ausgelieferten Textes — `generate.ts`,
+  `tracking/meta.ts`, `tracking/consent.ts`, `consent-setter.ts`, `consent-store.ts`, `consent-bar.ts`,
+  `consent-wire.ts`, `consent-targets.ts`, `analytics/pageview-emitter.ts`, `analytics/events.ts`,
+  reine Kommentarzeilen ausgenommen:
+  `\.style\b|classList|className|setAttribute|removeAttribute|toggleAttribute|scroll|\.focus\(|\.blur\(|overflow|documentElement|document\.body|insertBefore|appendChild|removeChild|innerHTML|outerHTML|textContent *=|preventDefault|stopPropagation|location\.href *=|window\.open|tabindex|autofocus|addEventListener|attachShadow|querySelector|getElementBy|\.remove\(|replaceWith|\.prepend|\.append\(`.
+  POSITIVKONTROLLEN im selben Lauf: das Muster trifft `setAttribute` in `buildConsentBarScript`; die
+  Teilachse `scroll|\.focus\(` trifft `src/components/CodeImporter.tsx`. ERGEBNIS: `scroll`, `focus`,
+  `blur`, `overflow`, `.style`, `classList` und `className` treffen in diesen Dateien nichts, und
+  `setAttribute` setzt zur Laufzeit allein eigene Elemente im Schattenbaum der Leiste.
+  IM TESTBESTAND HÄLT DIE ZUSAGE ALLEIN L12 in `src/lib/tracking/consent-bar.test.ts` — und nur
+  ausschnittsweise: für den Leisten-Block, an den Attributen von `html` und `body`, an der Zahl der
+  Kinder im `head`, an neuen globalen Namen und am Fehlen von `overflow` im Blocktext, je mit
+  Positivkontrolle (GEMESSEN am Repo, CC, 2026-09-15, Achse
+  `documentElement\)|document\.body\)|attributes\)|overflow|head\.children|scrollTo|activeElement` über
+  alle Testdateien in `src/`; Treffer allein in dieser Datei). Eine Sperre per `style` an `html` oder
+  `body` änderte genau die Attribute, die L12 vorher und nachher vergleicht (ABLEITUNG aus dem Test,
+  nicht gelaufen).
+- **(b) EINE SPERRE IST AUF FREMDEM HTML NICHT VERLÄSSLICH — OWNER-ANGABEN (GEMESSEN LIVE, Owner,
+  2026-09-15), am Repo nicht prüfbar:** zwei reale Seiten ausserhalb des Repos. Beide scrollen am
+  Dokument, `scrollingElement` ist `html`, kein innerer Scroll-Container. Eine Sperre ohne Vorrang hielt
+  auf EINER der beiden Seiten NICHT; mit Vorrang hielt sie, an `body` wie an `html`. Die Rücknahme traf
+  den Ausgangswert genau; keine der beiden Seiten trug ein eigenes inline-`overflow`. Dass die genaue
+  Rücknahme DARAN lag und eine Seite mit eigenem inline-`overflow` es verlöre, ist eine ABLEITUNG, nicht
+  gemessen. Wie Sperre und Rücknahme in jenem Lauf gebaut waren, steht nicht im Repo.
+
+DIE GRENZE:
+- **DIE ZUSAGE IST SCHMALER ALS „KEIN BAUSTEIN FASST EINEN FREMDEN KNOTEN AN".** Dieselbe Suche zeigt
+  Eingriffe an fremden Knoten, die auf keiner der fünf Achsen liegen: Zur ERZEUGUNGSZEIT schreibt
+  `generateFunctional` im Export in Kundenelemente — `textContent` sowie `href`, `target` und `rel` an
+  `<a>`, vor der Serialisierung. Zur LAUFZEIT hängt die Leiste ihr Host-Element an `body`, `__psMetaInit`
+  fügt das fbevents-Script vor das erste `<script>` des Dokuments ein, und das Wiring hängt `click`- und
+  `auxclick`-Listener an `document`, mit `preventDefault` beim Redirect (GEMESSEN am Code, CC, 2026-09-15).
+- Die Live-Werte stammen von ZWEI Seiten und sind eine Stichprobe, keine Aussage über beliebiges
+  Kunden-HTML.
+- Warum die eine Seite die Sperre ohne Vorrang schluckt, ist UNGEMESSEN.
+- Das Verhalten eines fixierten Elements über scrollendem Inhalt auf mobilen Browsern ist UNGEMESSEN.
+
+DER PREIS WIRD MITGENANNT: Der Besucher kann hinter der Abdunkelung scrollen. Die Seite bleibt
+bedienbar, die Knöpfe bleiben stehen. (ABLEITUNG aus dem Zweck des Bausteins — das Modal ist nicht
+gebaut, nichts davon ist gemessen.)
+
+WEN SIE BINDET: die Scheibe 11.5d-2 und jede Scheibe, die einen Block in den ausgelieferten Text bringt
+oder einen bestehenden ändert — ausdrücklich jede, die einen Scroll-Stopp erneut erwägt.
+WANN SIE KIPPT: an zwei Bedingungen, beide aus dem Grund abgelesen. ERSTENS, sobald ein Baustein aus einem
+eigenen Grund zur Laufzeit an einem fremden Knoten Stil, Klasse, Attribut, Scroll-Position oder Fokus
+ändert — dann gibt es die Zusage aus (a) nicht mehr, gegen die der Scroll-Stopp abgewogen ist. ZWEITENS,
+sobald gemessen ist, dass eine Sperre auf fremdem HTML verlässlich hält und einen vorhandenen Ausgangswert
+erhält — dann trägt (b) nicht mehr, (a) steht allein, und die Abwägung ist neu zu treffen.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-15 auf Vorschlag des Architekten — eine Angabe aus dem Auftrag, am
+Repo nicht prüfbar. (a) und die erste Grenze GEMESSEN am Repo (CC, 2026-09-15); (b) OWNER-ANGABEN,
+GEMESSEN LIVE (Owner, 2026-09-15); Preis und die Folge für L12 ABGELEITET, wie angegeben.
+
+**(21) ENTSCHEIDUNG (19) — IHRE KIPP-BEDINGUNG IST EINGETRETEN; DIE TRENNUNG BLEIBT, IHR URSPRÜNGLICHER
+GRUND TRÄGT NICHT MEHR.**
+
+DIE KIPP-BEDINGUNG IM WORTLAUT (Entscheidung (19), WANN SIE KIPPT; GELESEN, CC, 2026-09-15): „sobald die
+Scroll-Sperre nicht mehr Teil des Modals ist — dann trägt der Grund für die Trennung nicht mehr."
+
+MIT ENTSCHEIDUNG (20) IST SIE EINGETRETEN: Das Modal wird ohne Scroll-Sperre gebaut.
+
+DIE ENTSCHEIDUNG, IN ZWEI TEILEN:
+- **WAS BLEIBT: Die Trennung.** Das Center-Modal bleibt die eigene Scheibe 11.5d-2. Ihr Grund ist ab jetzt,
+  dass eine Scheibe gebaut und live geprüft wird, bevor die nächste darauf aufsetzt.
+- **WAS NICHT MEHR TRÄGT: der ursprüngliche Grund von (19)** — die Scroll-Sperre als „die Stelle, an der
+  eine Seite UNBEDIENBAR wird".
+
+WAS AN (19) DAVON UNBERÜHRT IST, UND DER AUFTRAG NENNT ES NICHT:
+- (19) trägt einen zweiten Grund, „DAZU DER GEMESSENE GRUND, WARUM BEIDES NICHT IN EINEN ZUG DARF": ein
+  ausgeliefertes Artefakt ist nicht aus der Ferne zu entschärfen, und es gibt keinen Sammel-Weg zum
+  Neu-Veröffentlichen. Er hängt nicht an der Sperre. Ob die Kipp-Bedingung mit „der Grund" auch ihn meint,
+  lässt ihr Wortlaut offen.
+- Die Abdunkelung bleibt Teil des Modals (Abschnitt 16, Invariante I2). (19) knüpft die Unbedienbarkeit
+  wörtlich an die Sperre, nicht an die Abdunkelung.
+
+DIESE ENTSCHEIDUNG ERSETZT (19) NICHT. Sie tritt daneben und benennt, was an ihr nicht mehr trägt; (19)
+bleibt wörtlich stehen.
+
+WEN SIE BINDET: jede Runde, die die Schnittfolge liest, und jede, die (19) als Begründung heranzieht — sie
+liest (21) mit.
+WANN SIE KIPPT: sobald das Modal wieder eine Scroll-Sperre bekommt, also Entscheidung (20) kippt — dann
+trägt der ursprüngliche Grund von (19) wieder.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-15 — eine Angabe aus dem Auftrag, am Repo nicht prüfbar. Die
+Kipp-Bedingung und der zweite Grund GELESEN an (19) (CC, 2026-09-15).
 
 ## 9. Vorrat — gemeldet, nicht gebaut
 
@@ -2376,3 +2474,122 @@ Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 20
   sagen die Owner-Angaben nicht**; VERMERK 4 behauptet es deshalb auch nicht.
 - **Der Schlusssatz "DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE"** war eine
   Auflage an den Zuschnitt und ist mit ihm abgelaufen.
+
+## 16. Das Center-Modal — Zuschnitt der Scheibe 11.5d-2
+
+**WAS DIESE SCHEIBE IST:** die fünfte dieser Phase. Der Schalter bekommt einen dritten Wert für das
+Center-Modal. Der Modal-Block tritt gleichberechtigt neben den Leisten-Block, an derselben Stelle der
+Verkettung — zwischen Wiederherstellung und Setzer (Entscheidung (13)). **MODAL UND LEISTE SCHLIESSEN
+EINANDER AUS.** Das Modal wird ohne Scroll-Sperre gebaut (Entscheidung (20)).
+
+**WAS GEBAUT WIRD — DREI STÜCKE:**
+- **DER DRITTE WERT DES SCHALTERS, `modal`**, nach Entscheidung (15), samt Bedienelement. Angeboten wird er
+  erst, wenn sein Block gebaut ist (Entscheidung (16)).
+- **DER MODAL-BLOCK** mit einer Abdunkelung im eigenen Schattenbaum (Invariante I2).
+- **DIE VERKETTUNG ERFÄHRT DIE FORM:** Je Veröffentlichen entsteht genau einer der zwei Blöcke, an
+  derselben Stelle. Wie, ist eine offene Frage an den Plan (s. „Die Stellen, die der Plan behandeln
+  muss").
+
+**DIE GESTALT-ENTSCHEIDUNGEN STEHEN NICHT HIER, SONDERN IN ABSCHNITT 8** — die Einträge (20) und (21).
+**WARUM DORT UND NICHT HIER, und der Satz gehört dazu, sonst zieht die nächste Runde sie „der Nähe halber"
+hierher:** Sie binden ÜBER diese Scheibe hinaus; jede weitere Scheibe dieser Phase erbt sie. Stünden sie im
+Zuschnitt, müssten sie beim Abschluss der Scheibe umziehen — eine Runde für nichts, mit dem Risiko, dass
+dabei eine liegenbleibt.
+(Der Satz ist dem Zuschnitt der Scheibe 11.5d entnommen, Commit `170cede`; in Abschnitt 15 steht seit dessen
+Verdichtung nur noch sein Titel.)
+UNVERÄNDERT BINDEN DAZU: (3) und (13) für die Prüfung auf den Hook und die Stelle in der Verkettung, (4) für
+die Schlüssel, (11) für das, was `write()` tut, (14) für die Editor-Vorschau, (15) und (16) für den Schalter
+und die Verweigerung, (17) für den stillen Rückfall, (18) für die Wächter, (19) mit (21) für die Schnittfolge.
+**(12) BINDET DIE BESCHRIFTUNG „Ablehnen" WÖRTLICH AN 11.5d** („die Beschriftung ausdrücklich 11.5d"). Ob sie
+für das Modal gilt, ist hier NICHT entschieden.
+
+**DER WERT HEISST `modal` — ARCHITEKT-ENTSCHEIDUNG 2026-09-15, vom Owner angenommen. DER NAME KOLLIDIERT MIT
+DEM HEUTIGEN BELEG FÜR EINEN UNBEKANNTEN WERT.** GEMESSEN am Repo (CC, 2026-09-15), Achse `\bmodal\b`,
+case-sensitiv, `git grep` über `src/`: vier Fundstellen, alle in Tests, alle als UNBEKANNTER Wert —
+- S1 in `src/lib/settings.test.ts`, zweimal: in der Liste der Werte, die „unknown" liefern müssen, und als
+  `dialog: "modal"` neben `gate: true`;
+- S3 in derselben Datei: `settingsEqual` mit `dialog: "bar"` gegen `dialog: "modal"`;
+- P1 in `src/app/projects/publish.test.ts`: `dialog: "modal"` muss das Veröffentlichen verweigern.
+FOLGE (ABLEITUNG, nicht gelaufen): Wird `modal` ein gebauter Wert, werden die zwei Stellen in S1 und P1 zur
+Laufzeit rot; S3 bliebe grün, verglichen würden dann aber zwei gebaute Werte statt eines gebauten und eines
+unbekannten. Der Compiler meldet keine der vier Stellen — `dialog` ist im Einstellungs-Typ `unknown`, und
+Vitest prüft keine Typen.
+**DER UNBEKANNT-BELEG WECHSELT AUF EINEN WERT, DER NIE EIN SCHALTER-WERT WIRD. WELCHEN, SCHLÄGT DER BAU-PLAN
+VOR** — hier wird er nicht gewählt.
+
+**DIE STELLEN, DIE DER PLAN BEHANDELN MUSS — DER COMPILER MELDET SIE NICHT ALLE.** Erhoben in der
+Aufklärung vom 2026-09-15 (GEMESSEN am Repo, CC). Welche Stelle bei einem dritten Wert rot würde, ist eine
+**EINSCHÄTZUNG** — es ist kein Wert eingefügt worden, um es zu prüfen.
+- **`publishProject`** (`src/app/projects/actions.ts`): das `switch` über `getConsentDialog` mit der
+  `never`-Prüfung. Nach der Einschätzung die EINZIGE Stelle, an der der Compiler einen dritten Wert meldet.
+- **`getConsentDialog`** (`src/lib/settings.ts`): lässt ausschliesslich `"off"` und `"bar"` durch.
+  Erweitert der Plan ihn nicht, liest er `modal` als „unknown" — ohne Compiler-Meldung —, und das
+  Veröffentlichen verweigert nach Entscheidung (16).
+- **`CONSENT_DIALOGS` und `ConsentDialog`** (`src/lib/settings.ts`): die Aufzählung und der daraus
+  abgeleitete Typ. `CONSENT_DIALOGS` hat ausser diesem Typ keinen Verwender (GEMESSEN, Suche nach dem Namen
+  über `src/`).
+- **`setConsentDialog` und der Term in `settingsEqual`** (`src/lib/settings.ts`): kompilieren ohne
+  Änderung weiter (EINSCHÄTZUNG) — zu prüfen, nicht vorausgesetzt.
+- **`PublishView.tsx`**, drei Stellen: die Option „Aus", die Option „Leiste" und der Hinweis bei
+  „unknown". Jede vergleicht einzeln; keine meldet einen neuen Wert (EINSCHÄTZUNG).
+- **`CodeImporter.tsx`**, die Durchreiche: `getConsentDialog(settings)` an `PublishView`, `setConsentDialog`
+  im Rückruf.
+- **`injectPageViewEmitter`** (`src/lib/analytics/pageview-emitter.ts`): heute verzweigen dort drei explizite
+  Zweige über den Wahrheitswert `consentGateOn` — Setzer, Wiederherstellung, Leiste —, und derselbe Wert
+  geht an `buildPageViewScript`. Der Kommentar an der Leisten-Zeile hält fest, dass der Compiler DIESE Zeile
+  NICHT meldet (GELESEN am Code, CC, 2026-09-15).
+  **DAS IST DIE TRAGENDE STELLE, UND SIE STEHT HIER ALS OFFENE FRAGE AN DEN PLAN, NICHT ALS VORGABE:** Ein
+  Wahrheitswert trägt drei Formen nicht. Wie die Verkettung die Form erfährt — und welcher der heutigen
+  Wahrheitswert-Zweige sie braucht —, entscheidet der Bau-Plan.
+
+**DIE BENANNTEN INVARIANTEN DER SCHEIBE:**
+- **(I1) KEINE SCROLL-SPERRE.** Der Modal-Block ändert an keinem Knoten ausserhalb seines eigenen
+  Schattenbaums Stil, Klasse, Attribut, Scroll-Position oder Fokus. Die Bauform von L12
+  (`src/lib/tracking/consent-bar.test.ts`) gilt für ihn erneut: Attribute an `html` und `body` vorher und
+  nachher gleich, nichts im `head`, kein neuer globaler Name, kein `overflow` im Blocktext — je mit
+  Positivkontrolle. Grund: Entscheidung (20).
+  ZWEI FRAGEN AN DEN PLAN, NICHT ENTSCHIEDEN:
+  - Ob ein Fokus auf einen Knopf IM Schattenbaum, der den Fokus von einem fremden Element nimmt, unter I1
+    fällt.
+  - Das Host-Element wird an `body` angehängt — eine Änderung an der Kinderliste eines fremden Knotens,
+    die auf keiner der fünf Achsen liegt. Die Leiste tut dasselbe (`buildConsentBarScript`, GEMESSEN am
+    Code, CC, 2026-09-15).
+- **(I2) DIE ABDUNKELUNG LIEGT IM SCHATTENBAUM** und fängt Klicks. Ihre EINZIGE Rücknahme ist das
+  Entfernen des Host-Elements, im `finally` des Klick-Handlers — in der Bauform, in der
+  `buildConsentBarScript` die Leiste entfernt. **KEIN ZWEITER RÜCKNAHME-WEG.**
+- **(I3) LISTENER VOR EINHÄNGEN.** Der Host wird ZULETZT in das Dokument gehängt, nachdem alle Listener
+  gebunden sind — die Bauform der Leiste, in der das Anhängen an `body` die letzte Anweisung des Blocks ist
+  (GEMESSEN am Code, CC, 2026-09-15). Umgekehrt stünde eine klickfangende Abdunkelung im Dokument, bevor ein
+  Knopf wirkt.
+- **(I4) DIE DREI WÄCHTER-ACHSEN AUS ENTSCHEIDUNG (18)** gelten für den neuen Block: Serialisierung,
+  Nadel-Kollision, Aufräumen im Test-Harness. ZWEI BESTANDSFAKTEN, die dafür zählen (GEMESSEN am Repo, CC,
+  2026-09-15):
+  - **DIE NADEL-LISTE HAT SEIT 11.5d EIN MITGLIED MEHR:** die Kennung der Leiste, `__ps_clb`. L1, L2, L8 und L12
+    in `consent-bar.test.ts` sowie P2, P2b und P3 in `publish.test.ts` suchen nach ihr — die Reihenfolge-
+    und Abwesenheits-Prüfungen über `indexOf` bzw. `toContain`.
+  - **DAS AUFRÄUMEN IN `pageview-emitter.resend.test.ts` IST AN DEN TAG DER LEISTE GEBUNDEN:**
+    `document.querySelectorAll("pagesmith-bar")` in `beforeEach` und `afterEach`. Ein Host mit anderem Tag
+    bliebe dort stehen (ABLEITUNG, nicht gelaufen).
+
+**WAS AUSDRÜCKLICH NICHT DAZUGEHÖRT — NEU GESETZT, NICHT ÜBERNOMMEN.** Die gleichlautenden Ausschlüsse der
+Scheiben 11.5a bis 11.5d sind mit ihren Scheiben abgelaufen — so verzeichnet in den Abschnitten 12 bis 15,
+je unter „Vollzogen — was hier stand und wohin es gegangen ist" und im Kopf der Abschnitte („Alles übrige
+ist abgelaufen"). Dieser Zuschnitt beruft sich nicht auf sie, sondern stellt sie neu auf:
+- jede Änderung an `consent.ts`, `consent-wire.ts` und `ingest.ts`;
+- jede Änderung am Setzer und an der Wiederherstellung, ausser einem nötigen Argument;
+- ein Stylesheet oder ein anderer zentral vom App-Host ausgelieferter Baustein — der Ausschluss aus
+  Abschnitt 15 gilt unverändert weiter und wird hier nur benannt, nicht wiederholt;
+- Granularität und Widerruf (11.5e), Sprache (11.5f).
+**KOMMENTARKÖPFE SIND VON DIESEM SCHUTZ AUSGENOMMEN, soweit die Scheibe ihren Gegenstand berührt: PRÜFEN UND
+MELDEN, NICHT ÄNDERN.** Am Bestand nennen einen späteren Dialog-Block (GEMESSEN am Repo, CC, 2026-09-15, Achse
+`dialog|leiste|banner|spaeter`, case-insensitiv, über die fünf ausgeschlossenen Dateien): der Docblock von
+`CONSENT_STORE_API` und der Docblock von `buildConsentRestoreScript` in `src/lib/tracking/consent-store.ts`. In
+`consent.ts`, `consent-wire.ts`, `ingest.ts` und `consent-setter.ts` trifft die Achse keinen Dialog-Bezug.
+
+**DIE DEMOBARKEIT IST IN DIESEM ZUSCHNITT NOCH NICHT AUFGESTELLT.**
+
+**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.**
+
+PROVENIENZ: Gegenstand, Invarianten und Ausschlüsse ARCHITEKT-ENTSCHEIDUNG 2026-09-15, der Wert `modal` vom
+Owner angenommen — Angaben aus dem Auftrag, am Repo nicht prüfbar. Die Aussagen über den Bestand GEMESSEN am
+Repo (CC, 2026-09-15), wie je angegeben; die Aussagen darüber, was der Compiler meldet, EINSCHÄTZUNG.

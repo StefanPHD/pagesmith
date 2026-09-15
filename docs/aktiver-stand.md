@@ -845,6 +845,8 @@ ausserhalb des Repos:
   greifen. Er hat nicht versagt — er wurde nicht gebraucht.
   **AUFLAGE AN 11.5e:** Mit der Auswahl je Schlüssel wächst der Fensterinhalt. Der Live-Test jener Scheibe fährt
   diesen Schritt mit einem Fenster AM ANSCHLAG und weist `scrollHeight > clientHeight` aus.
+  EINGELÖST WIRD DIE AUFLAGE SEIT DEM 2026-09-15 VON 11.5e-1, der Auswahl (Entscheidung (23)) — dort wächst der
+  Fensterinhalt, und zwar nach Entscheidung (25) um Gruppen, nicht wie oben geschrieben je Schlüssel.
 - **Mobile Browser und Touch sind ungemessen**, ebenso ein fixiertes Element über scrollendem Inhalt.
 - **Zwei Seiten, ein Browser.** Beide scrollen am Dokument; eine Seite mit innerem Scroll-Container ist nicht
   geprüft.
@@ -888,7 +890,7 @@ und nie neu vergeben.
   null Treffer im Abschnitt, zehn in der ganzen Datei, Positivkontrolle `isTargetDeliverable`
   mit einem Treffer im Abschnitt). Die Gründe von (6) sind eigene Messungen und in (6) selbst
   als solche ausgewiesen.
-- **(7) bis (22):** Sie tragen ihre Provenienz je im eigenen Text, in der Zeile PROVENIENZ am
+- **(7) bis (25):** Sie tragen ihre Provenienz je im eigenen Text, in der Zeile PROVENIENZ am
   Ende des Eintrags, und werden deshalb hier nicht wiederholt.
 
 **DIE ANGABEN ZU (5) UND (6) SIND ARCHITEKT-ANGABEN (2026-09-12) UND AM REPO NICHT PRÜFBAR.**
@@ -1275,6 +1277,35 @@ an seine zwei Knöpfe — `CONSENT_BAR_REJECT_LABEL` zusammen mit der leeren Lis
 `buildConsentBarScript`. M5 in `consent-modal.test.ts` prüft beide Beschriftungen wörtlich.
 PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-15 — eine Angabe aus dem Auftrag, am Repo nicht prüfbar. Die gemeinsamen
 Konstanten GEMESSEN am Code (CC, 2026-09-15).
+
+**OFFENE FRAGE, AUSDRÜCKLICH KEINE ENTSCHEIDUNG — TRÄGT DER SATZ „„Nur Notwendige" wird erst mit 11.5e sinnvoll"
+NOCH, WENN DIE AUSWAHL NACH ENTSCHEIDUNG (25) GRUPPIERT WIRD?** Er steht oben im Grund der Beschriftung, und die
+Kipp-Bedingung der Beschriftung knüpft an ihn an („sobald es eine Kategorie gibt, die ohne Einwilligung bestehen
+bleibt (11.5e)").
+DIE LESART — ARCHITEKT-LESART 2026-09-15, KEINE MESSUNG UND KEINE ENTSCHEIDUNG: Mit der Gruppierung trägt er nicht.
+Die zwei Gruppen sind „Messung" und „Werbung", und KEINE davon ist notwendig. Wer beide ablehnt, bei dem bleibt
+weiterhin nichts übrig; der Grund der Beschriftung gälte unverändert, und 11.5e brächte keine Kategorie, die ohne
+Einwilligung bestehen bleibt.
+WAS DER BESTAND DAZU TRÄGT (GEMESSEN am Repo, CC, 2026-09-15):
+- **`analytics` IST KEIN TECHNISCH ERFORDERLICHES MERKMAL.** Der Schlüssel riegelt allein den eigenen
+  Seitenaufruf-Beacon (`buildPageViewScript`, `src/lib/analytics/pageview-emitter.ts`, der einzige Leser von
+  `ANALYTICS_CONSENT_TARGET` im Produktivcode) — also die Seitenaufruf-Zählung des Kunden (Entscheidung (4)). In die
+  Verlustrate geht der Seitenaufruf nicht ein (Abschnitt 14).
+- **EINE KATEGORIE „NOTWENDIG" FÜHRT DER BESTAND FÜR DIE EINWILLIGUNGS-SCHLÜSSEL NICHT.** Achse, case-insensitiv,
+  `git grep` über `src/`, `docs/` und `CLAUDE.md`:
+  `unbedingt erforderlich|technisch notwendig|technisch erforderlich|strictly necessary|essenziell|essentiell|notwendige? (kategorie|gruppe|cookies|dienste)`,
+  dazu `notwendig|necessary|essential|strictly` über `src/lib/tracking`, `src/lib/analytics`, `src/lib/settings.ts`
+  und `src/components/PublishView.tsx`. POSITIVKONTROLLE: die zweite Achse trifft „Nur Notwendige" im Docblock von
+  `CONSENT_BAR_REJECT_LABEL` (`src/lib/tracking/consent-bar.ts`), und `nur notwendig` über `docs/` trifft die zwei
+  Stellen hier an (12). TREFFER, UND SIE STÜTZEN DIE LESART: Derselbe Docblock sagt „kein "notwendig" oder "essenziell": Es gibt keine Kategorien". Die übrigen Treffer
+  betreffen das A/B-Varianten-Cookie und seine Einstufung als „unbedingt erforderlich"
+  (`docs/claude-history/phase-9-ab-testing.md`, Vorrat (11)) — ein server-gesetztes Cookie, kein
+  Einwilligungs-Schlüssel und kein Gegenstand des Dialogs.
+- **DIE ZUORDNUNG DER SECHS SCHLÜSSEL ZU DEN ZWEI GRUPPEN nennt Entscheidung (25) nicht ausdrücklich.** Die Lesart
+  setzt „Messung" = `analytics` und „Werbung" = die fünf Ziel-Schlüssel voraus; das ist eine ABLEITUNG aus den
+  Gruppennamen.
+WEN SIE BETRIFFT: den Zuschnitt von 11.5e-1 und jede Runde, die die Beschriftungen wählt. Wer die Beschriftung
+„Ablehnen" dort ändern will, trägt gegen diese Lesart vor und findet sie dafür aufgeschrieben.
 
 **11.5f HÄNGT AN EINEM EXTERNEN AUSLÖSER.** Das Kriterium für [x] steht in CLAUDE.md, „## Roadmap &
 aktueller Stand", unter dem Titel „WANN [x] GESETZT WIRD — DAS KRITERIUM": „EINE PHASE GEHT AUF [x],
@@ -1743,6 +1774,125 @@ aus eigenem Grund braucht — dann ist der Unbekannt-Beleg neu zu wählen.
 PROVENIENZ: PLAN-SETZUNG des Bau-Plans der Scheibe 11.5d-2 — eine Angabe aus dem Auftrag vom 2026-09-15; am
 Repo belegt ist allein der Docblock-Text. Wer den Plan freigegeben hat, steht nicht im Repo. Fundstelle und
 Vorläufer GEMESSEN am Repo (CC, 2026-09-15); die Kipp-Bedingungen sind aus dem Grund ABGELEITET.
+
+**(23) 11.5e WIRD IN ZWEI SCHEIBEN GESCHNITTEN — 11.5e-1 DIE AUSWAHL JE GRUPPE, 11.5e-2 DER WIDERRUF.**
+
+DIE ENTSCHEIDUNG: Granularität und Widerruf, die Entscheidung (12) gemeinsam als 11.5e führt, werden zwei Scheiben:
+11.5e-1 die Auswahl je Gruppe (Entscheidung (25)), 11.5e-2 der Widerruf (Entscheidung (24)). **Entscheidung (12)
+bleibt in Wortlaut und Nummerierung UNBERÜHRT** — dies ist eine additive Verfeinerung ihrer Schnittfolge, wie
+Entscheidung (19) es für 11.5d-2 war.
+
+DER GRUND, derselbe wie bei der Trennung von 11.5d-2:
+- **DIE AUSWAHL WÄCHST INNERHALB EINES BLOCKS, DER NACH DER ENTSCHEIDUNG VERSCHWINDET.** Leiste und Modal entfernen
+  ihr Host-Element im `finally` ihres Klick-Handlers (`buildConsentBarScript`, `buildConsentModalScript`; GEMESSEN
+  am Code, CC, 2026-09-15). **DER WIDERRUF VERLANGT EINEN WEG, DER BLEIBT** — nach eben dieser Entscheidung.
+- **GEMEINSAM GEBAUT WÄRE BEI EINEM FEHLSCHLAG AUF EINER KUNDENSEITE NICHT ZUZUORDNEN, WELCHER TEIL IHN ERZEUGT HAT**
+  (ABLEITUNG) — und ein ausgeliefertes Artefakt ist aus der Ferne nicht zu entschärfen. Den gemessenen Grund dafür
+  trägt Entscheidung (19), Absatz „DAZU DER GEMESSENE GRUND, WARUM BEIDES NICHT IN EINEN ZUG DARF"; er wird hier
+  nicht wiederholt. Seine drei Belege tragen unverändert (erneut nachgesehen, GEMESSEN am Repo, CC, 2026-09-15):
+  `src/app/app-serve/route.ts` antwortet mit dem gespeicherten Text, einziger Aufrufer von `publishProject` ist
+  `handlePublish`, die Achse `republish|publishAll|bulk` über `src/` und `supabase/` trifft nichts.
+
+DIE GRENZE: Entscheidung (21) hält fest, dass die Kipp-Bedingung von (19) eingetreten ist, und lässt ausdrücklich
+offen, ob sie auch jenen zweiten, gemessenen Grund meint. (23) stützt sich auf ihn, weil er nicht an der
+Scroll-Sperre hängt; die Frage aus (21) beantwortet sie damit nicht.
+
+WEN SIE BINDET: die Zuschnitte von 11.5e-1 und 11.5e-2 und jede Runde, die die Schnittfolge liest.
+WANN SIE KIPPT: an zwei Bedingungen, beide aus dem Grund abgelesen. ERSTENS, sobald der Widerruf ohne einen Weg
+auskommt, der die Entscheidung überdauert — dann trennt die Scheibengrenze keine zwei Lebensdauern mehr. ZWEITENS,
+sobald ein ausgeliefertes Artefakt aus der Ferne zu entschärfen ist oder ein Sammel-Weg zum Neu-Veröffentlichen
+existiert — dann fällt der gemessene Grund aus (19).
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-15 — eine Angabe aus dem Auftrag, am Repo nicht prüfbar. Das Entfernen des
+Hosts und die drei Belege aus (19) GEMESSEN am Code (CC, 2026-09-15); die Zuordnung eines Fehlschlags ABGELEITET.
+
+**(24) DER WIDERRUF IST EINE FUNKTION FÜR DEN BETREIBER, KEIN DAUERHAFTES BEDIENELEMENT VON UNS.**
+
+DIE ENTSCHEIDUNG: Wir liefern einen Aufruf, der den Dialog erneut öffnet. Das Bedienelement stellt der Betreiber —
+typisch ein Link in seiner Fusszeile neben der Datenschutzerklärung. Namen und Form legt der Bau-Plan fest.
+
+DER GRUND, ZWEI TEILE:
+- **EIN DAUERHAFTES ELEMENT VON UNS WÄRE DAS ERSTE SICHTBARE, DAS NACH DER ENTSCHEIDUNG AUF EINER FREMDEN SEITE
+  STEHEN BLEIBT.** Sichtbares DOM erzeugen im ausgelieferten Text bis einschliesslich `5fd6d48` allein Leiste und
+  Modal (Entscheidung (12)), und beide entfernen ihr Host-Element nach dem Klick (GEMESSEN am Code, CC,
+  2026-09-15). Was sonst im Dokument bleibt — die Script-Blöcke und das zur Laufzeit eingefügte fbevents-Script aus
+  `__psMetaInit` —, ist nicht sichtbar. Ein bleibendes Element kollidiert potenziell mit allem, was dort ebenfalls
+  fixiert ist, und jede Kollision trifft eine Seite, die wir nicht ändern können (ABLEITUNG). Dazu passt die Haltung
+  „Wir sind Werkzeug, nicht Aufsicht" (docs/arbeitsweise.md, Abschnitt „Haltung"; GELESEN, CC, 2026-09-15).
+- **DIE RICHTUNG:** Ein Bedienelement lässt sich später additiv nachlegen, wenn ein echter Nutzer es verlangt.
+  Umgekehrt geht es nicht — ein ausgeliefertes dauerhaftes Element bekommen wir nicht mehr von den Seiten herunter
+  (der gemessene Grund aus Entscheidung (19)).
+
+DER PREIS, UND ER IST EINE AUFLAGE AN 11.5e-2: **Ohne Betreiber-Dokumentation ist die Funktion unbenutzbar. Die
+Dokumentation gehört deshalb IN die Scheibe 11.5e-2, nicht dahinter.** Dieselbe Falle führt Vorrat (3) für den
+Einwilligungs-Hook („technisch wahr und praktisch unbenutzbar"). Die Sammelstelle für Betreiber-Dokumentation ist der
+Posten „BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" (docs/offene-punkte.md); **seine drei Punkte betreffen andere
+Gegenstände** — den fehlenden Dialog, die Grenze der Deduplizierung, den Testmodus —, weder den Hook noch einen
+Widerruf. Die erste Hälfte seines Punkts (1), „dass Pagesmith KEINEN Einwilligungs-Dialog mitliefert", trifft seit
+11.5d so nicht mehr zu; dort ist das nicht nachgezogen (GELESEN, CC, 2026-09-15).
+
+WAS DER BAU-PLAN VORFINDET (GEMESSEN am Code, CC, 2026-09-15): Leiste und Modal erscheinen nur, wenn der Hook
+ungesetzt ist UND `read()` „never" liefert; M15 in `consent-modal.test.ts` hält beide Zeilen in beiden Blöcken
+zeichengleich. Nach einer Entscheidung sind beide Bedingungen falsch — ein Aufruf zum erneuten Öffnen erreicht den
+Block über diese Bedingungen nicht.
+
+DIE GRENZE: Setzt ein Betreiber den Aufruf nirgends ein, hat der Besucher auf dessen Seite keinen Weg zurück ausser
+dem Löschen seines Browser-Speichers (ABLEITUNG).
+
+NICHT ENTSCHIEDEN: wo die Dokumentation liegt und welche Form sie hat.
+
+WEN SIE BINDET: den Zuschnitt und Bau von 11.5e-2, jede Scheibe, die ein sichtbares Element in den ausgelieferten
+Text bringt, und jede Runde an der Betreiber-Dokumentation.
+WANN SIE KIPPT: sobald ein echter Nutzer ein Bedienelement von uns verlangt — die Richtung aus dem Grund lässt das
+additiv zu; oder sobald ein ausgeliefertes Element aus der Ferne zu entfernen ist — dann fällt der zweite Grund.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-15 — eine Angabe aus dem Auftrag, am Repo nicht prüfbar. Das Entfernen der
+Hosts, die zwei Erscheinens-Bedingungen und M15 GEMESSEN am Code (CC, 2026-09-15); Haltung, Vorrat (3) und der
+Posten GELESEN (CC, 2026-09-15); Kollision und Grenze ABGELEITET.
+
+**(25) DIE AUSWAHL WIRD GRUPPIERT: „MESSUNG" UND „WERBUNG".**
+
+DIE ENTSCHEIDUNG: Zwei Gruppen statt sechs Einzelschalter.
+
+DER GRUND IST EIN PRODUKT-ARGUMENT: Die Zielgruppe baut Landing Pages und Konversions-Trichter. Jeden der sechs
+Schlüssel einzeln durchzuklicken — fünf Werbenetzwerke und `analytics` (`ALL_CONSENT_KEYS`,
+`src/lib/tracking/consent-targets.ts`; GEMESSEN am Code, CC, 2026-09-15) — erzeugt Reibung und kostet Conversions;
+die Netzwerknamen sagen einem Besucher zudem wenig.
+
+ZWEI FOLGEN, DIE ZUR ENTSCHEIDUNG GEHÖREN:
+- **DIE GRUPPE IST EIN BEDIENELEMENT, KEIN DATENMODELL.** Gespeichert wird weiter je Einzelschlüssel; die Gruppe
+  wird beim Schreiben aufgelöst. Der Bestand trägt das ohne Umbau: `write(granted)` nimmt eine Liste von
+  Einzelschlüsseln, und der gespeicherte Wert `ps1:<granted>|<denied>` führt nur Schlüssel
+  (`buildConsentRestoreScript`, `src/lib/tracking/consent-store.ts`; GEMESSEN am Code, CC, 2026-09-15; die Form
+  auch an Entscheidung (15)). Wanderte die Gruppe in den Speicher, bräche das nächste Fan-Out-Ziel das Format, und
+  Entscheidung (9) verlangt ohnehin den Hook Schlüssel für Schlüssel aus der Ableitung.
+- **DIE GRUPPE WÄCHST NICHT MIT.** Erlaubt ein Besucher „Werbung" und kommt später ein weiteres Ziel hinzu, trägt
+  seine gespeicherte Entscheidung dessen Schlüssel nicht — er gilt als abgelehnt. „Werbung erlaubt" meint die Ziele
+  von HEUTE. Das ist die bestehende fail-closed-Achse und kein neuer Defekt: Entscheidung (9), erster Grund („Ein
+  Objekt, das vor einem neuen Ziel gespeichert wurde, kennt dessen Schlüssel nicht … Über dieses Ziel hat niemand
+  entschieden"), und die dort genannte Freigabe „automatisches Sperren neu hinzugefügter Ziel-Schlüssel" (OWNER
+  2026-09-14).
+  **DAZU EINE FOLGE, DIE AM CODE STEHT (GEMESSEN, CC, 2026-09-15):** `read()` prüft, dass jeder gespeicherte
+  Schlüssel bekannt ist, nicht, dass jeder bekannte gespeichert ist. Ein Wert ohne den neuen Schlüssel bleibt
+  „decided", `hookFrom` belegt den neuen Schlüssel mit `false` — und weil Leiste und Modal nur bei „never"
+  erscheinen, **wird der Besucher zu dem neuen Ziel nicht erneut gefragt.**
+
+DER PREIS: Der Besucher kann kein einzelnes Ziel abwählen. Eine Gruppe ist eine Behauptung darüber, dass ihre
+Mitglieder dasselbe tun.
+
+NICHT ENTSCHIEDEN: die Beschriftungen, die Sachtexte und ob eine Gruppe vorausgewählt ist. Die Zuordnung der sechs
+Schlüssel zu den zwei Gruppen nennt diese Entscheidung nicht ausdrücklich; „Messung" = `analytics` und „Werbung" =
+die fünf Ziel-Schlüssel ist eine ABLEITUNG aus den Gruppennamen (s. die offene Frage an (12)).
+
+WEN SIE BINDET: den Zuschnitt und Bau von 11.5e-1 und jede Scheibe, die ein Ziel oder einen Schlüssel hinzufügt —
+sie prüft, in welche Gruppe er gehört.
+WANN SIE KIPPT: an zwei Bedingungen, beide aus dem Grund abgelesen. ERSTENS, sobald ein Schlüssel hinzukommt, der
+nicht dasselbe tut wie die Mitglieder einer der zwei Gruppen — dann ist die Behauptung der Gruppe falsch. ZWEITENS,
+sobald echte Nutzer einzelne Ziele abwählen müssen — dann trägt das Reibungs-Argument nicht mehr.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-15 — eine Angabe aus dem Auftrag, am Repo nicht prüfbar. Schlüsselmenge,
+`write()`, Speicherform und `read()` GEMESSEN am Code (CC, 2026-09-15); die Stütze der fail-closed-Achse GELESEN an
+Entscheidung (9); die Gruppenzuordnung ABGELEITET.
 
 ## 9. Vorrat — gemeldet, nicht gebaut
 
@@ -2250,6 +2400,52 @@ PROVENIENZ: Der Fall ist eine Angabe aus dem Plan-Review vom 2026-09-15 (ARCHITE
 steht in keiner Datei und ist am Repo nicht prüfbar. Das Verbot von `overflow` in L12 und die frühere
 Fassung von I1 GELESEN am Repo (CC, 2026-09-15). Der Wortlaut der Nachbarregel GELESEN in
 docs/immer-beachten.md (CC, 2026-09-15).
+
+**(3) DIE LÜCKEN-REGEL FEUERT IN DIESER PHASE NIE** (angetreten 2026-09-15).
+
+**DIE AUSSAGE:** Die Lücken-Regel meint den Hash, der im Moment des Schreibens NICHT existiert — den Commit DES
+VERMERKS, nicht den Bau-Commit. Die Vermerke dieser Phase führen ausschliesslich den Bau-Commit. Die Regel kann hier
+deshalb nie feuern und sieht in jeder Runde erfüllt aus.
+
+**DIE REGEL IM WORTLAUT** (docs/arbeitsweise.md, Abschnitt „Die Standdatei"; GELESEN, CC, 2026-09-15): „Ein Vermerk
+ohne Commit-Nummer ist der jüngste, noch nicht committete. Es darf immer nur eine Lücke geben — stehen zwei da, ist
+etwas liegengeblieben. Sie wird in Auftrag 0 der nächsten Runde geschlossen. Sie entsteht strukturell — der Hash
+existiert im Moment des Schreibens nicht — und sieht deshalb in jeder Runde wie der erlaubte Zustand aus." Welcher
+Hash gemeint ist, benennt die Regel nicht; „existiert im Moment des Schreibens nicht" trifft nur den Commit des
+Vermerks.
+
+**DER BEFUND — GEMESSEN am Repo (CC, 2026-09-15):**
+- **DIESE DATEI:** VERMERK 1 bis 5 tragen je genau eine Commit-Zeile, `BAU-COMMIT` (`97e9140`, `15c8b5c`, `d0db9c4`,
+  `7516bce`, `5fd6d48`). Keiner trägt den Commit, unter dem er selbst geschrieben wurde. Achse
+  `BAU-COMMIT|CODE-COMMIT|COMMIT DIESES VERMERKS|DOKU-COMMIT` über diese Datei.
+- **DAS ARCHIV DER PHASE 11.3** (`docs/claude-history/phase-11.3-testmodus.md`) führt BEIDE Zeilen, dieselbe Achse:
+  alle sieben Vermerke tragen `COMMIT DIESES VERMERKS`, sechs zusätzlich `CODE-COMMIT`. VERMERK 3 jener Phase — eine
+  Mess-Runde ohne Code — trägt keinen Code-Commit und sagt das selbst („ES GIBT DESHALB KEINEN CODE-COMMIT, UND DAS IST
+  KEIN VERSÄUMNIS"). Die dort nachgetragenen Lücken stehen je an der Zeile `COMMIT DIESES VERMERKS` („hier stand die
+  LÜCKE") — dort hat die Regel also am Commit des Vermerks gefeuert.
+- **WEITER ZURÜCK, NUR ZÄHLUNG:** Das Archiv der Phase 11.2 trifft die Achse auf `COMMIT DIESES VERMERKS` siebenmal;
+  die Archive der Phasen 11.1 und 11.8 treffen keine der vier Formen. Welche Form jene zwei führen, ist NICHT
+  erhoben.
+- **DIE GATES DIESER PHASE HABEN „KEINE LÜCKE" GEMELDET** — zutreffend, aber an einer Achse, an der die Antwort nie
+  anders lauten kann. (Die Gate-Antworten stehen im Gesprächsverlauf, nicht im Repo.)
+
+**WARUM NICHT NACHGERÜSTET WIRD:** Es ist keine spätere Handlung zu benennen, die ohne die Doku-Hashes scheitert. Der
+Bau-Commit trägt den Code; der Commit des Vermerks ist über die Historie dieser Datei auffindbar; „etwas ist
+liegengeblieben" meldet `git status` schärfer.
+
+**DIE ABGRENZUNG ZU HEBUNGS-KANDIDAT (7) DER PHASE 11.3** (docs/claude-history/backlog-polish.md, „HEBUNGS-KANDIDAT (7)
+— DIE COMMIT-LÜCKE EINES VERMERKS ENTSTEHT STRUKTURELL UND FÄLLT ERST DER NÄCHSTEN RUNDE AUF"; GELESEN, CC,
+2026-09-15): Jener sagt, dass die Lücke strukturell entsteht und kein Mechanismus ihren Nachtrag erzwingt — er setzt
+voraus, dass der Vermerk die Zeile überhaupt führt. Dieser hier sagt, dass sie in dieser Phase gar nicht entstehen
+kann, weil die Zeile fehlt. Beide tragen denselben Adressaten, einen ÄNDERUNGSANTRAG an docs/arbeitsweise.md; wer
+einen hebt, liest den anderen mit.
+
+**WAS BEIM HEBEN ZU ENTSCHEIDEN IST:** Dies ist ein ÄNDERUNGSANTRAG an docs/arbeitsweise.md — entweder die Regel
+benennt den gemeinten Hash, oder die Standdatei führt beide Zeilen. **KEINE EMPFEHLUNG, keine Auswahl.**
+
+PROVENIENZ: Der Befund ist von CC in der Runde vom 2026-09-15 erhoben; die Zählungen und der Wortlaut sind GEMESSEN
+bzw. GELESEN am Repo (CC, 2026-09-15), wie je angegeben. Die Einordnung als Änderungsantrag und die Begründung, warum
+nicht nachgerüstet wird, sind ARCHITEKT-ANGABEN (2026-09-15), am Repo nicht prüfbar.
 
 ## 11. Der gemessene Ausgangszustand vor der ersten Scheibe
 

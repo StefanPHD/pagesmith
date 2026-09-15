@@ -257,8 +257,9 @@ export default function PublishView({
             <span>
               <span className="font-medium text-gray-700">Leiste</span>
               <br />
-              Am unteren Rand erscheint eine Leiste mit „Alle akzeptieren“ und
-              „Ablehnen“. Bis zur Entscheidung wird nichts gesendet.
+              Am unteren Rand erscheint eine Leiste. Der Besucher kann Messung und
+              Werbung einzeln erlauben, alles akzeptieren oder alles ablehnen. Bis zur
+              Entscheidung wird nichts gesendet.
             </span>
           </label>
           <label className="flex items-start gap-2">
@@ -272,9 +273,10 @@ export default function PublishView({
             <span>
               <span className="font-medium text-gray-700">Fenster</span>
               <br />
-              In der Mitte der Seite erscheint ein Fenster über einer Abdunkelung,
-              mit „Alle akzeptieren“ und „Ablehnen“. Die Seite dahinter wird nicht
-              gesperrt. Bis zur Entscheidung wird nichts gesendet.
+              In der Mitte der Seite erscheint ein Fenster über einer Abdunkelung.
+              Der Besucher kann Messung und Werbung einzeln erlauben, alles akzeptieren
+              oder alles ablehnen. Die Seite dahinter wird nicht gesperrt. Bis zur
+              Entscheidung wird nichts gesendet.
             </span>
           </label>
           {consentDialog === "unknown" && (

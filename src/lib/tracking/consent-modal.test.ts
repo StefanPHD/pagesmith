@@ -2,9 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 import type { ConsentDialog } from "@/lib/settings";
 import { buildConsentBarScript } from "./consent-bar";
+import { CONSENT_CHOICE_JS } from "./consent-choice";
 import { buildConsentModalScript } from "./consent-modal";
 
-// SCHEIBE 11.5d-2 — DAS CENTER-MODAL.
+// SCHEIBE 11.5d-2 — DAS CENTER-MODAL. SEIT SCHEIBE 11.5e-1 MIT ZWEI GRUPPEN-SCHALTERN UND
+// DREI KNOEPFEN; die Tests dieser Scheibe stehen unten unter "11.5e-1". Zeiger auf eine
+// Invariante nennen deshalb ihre Scheibe an der Stelle.
 //
 // DIE ERWARTUNGEN STAMMEN AUS DEM ZUSCHNITT UND DEM FREIGEGEBENEN BAU-PLAN, NIE AUS DEM
 // CODE: Host-Name und Kennung (`pagesmith-modal`, `__ps_cmo`), der zugaengliche Name,
@@ -95,6 +98,16 @@ function button(label: string): HTMLButtonElement {
   );
   if (!b) throw new Error(`kein Knopf "${label}"`);
   return b;
+}
+
+/** Die Checkbox des Gruppen-Schalters mit dieser Beschriftung (Scheibe 11.5e-1). */
+function schalter(name: string): HTMLInputElement {
+  const label = Array.from(shadow().querySelectorAll("label")).find(
+    (l) => l.textContent === name
+  );
+  const box = label?.querySelector("input");
+  if (!box) throw new Error(`kein Schalter "${name}"`);
+  return box;
 }
 
 function aufraeumen(): void {
@@ -212,7 +225,10 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
 });
 
 describe("11.5d-2 — wann das Modal erscheint", () => {
-  it("M5: nichts entschieden -> genau ein Modal: Abdunkelung und Fenster im Schattenbaum, Sachtext und zwei Knoepfe, nichts gesendet, Hook abgelehnt", () => {
+  // M5. SEIT SCHEIBE 11.5e-1 ERWEITERT, NICHT AUFGEWEICHT: Die Kinder des Fensters stehen
+  // exakt als Text, Gruppe, drei Knoepfe (Freigaben F2, F3, F6). Rot bei jedem zusaetzlichen,
+  // fehlenden oder umgestellten Kind und bei jeder geaenderten Knopf-Beschriftung.
+  it("M5: nichts entschieden -> genau ein Modal: Abdunkelung und Fenster im Schattenbaum, Sachtext, Gruppe der Schalter und drei Knoepfe, nichts gesendet, Hook abgelehnt", () => {
     const beacon = mount();
     expect(hosts()).toHaveLength(1);
     expect(hosts()[0].parentElement).toBe(document.body);
@@ -227,11 +243,18 @@ describe("11.5d-2 — wann das Modal erscheint", () => {
     expect(fenster!.getAttribute("aria-label")).toBe("Einwilligung");
     expect(fenster!.hasAttribute("aria-modal")).toBe(false);
     const kinder = Array.from(fenster!.children);
-    expect(kinder.map((k) => k.tagName)).toEqual(["P", "BUTTON", "BUTTON"]);
+    expect(kinder.map((k) => k.tagName)).toEqual(["P", "DIV", "BUTTON", "BUTTON", "BUTTON"]);
     expect(kinder[0].textContent).toBe(SATZ);
     expect(kinder[0].children).toHaveLength(0);
-    const knoepfe = kinder.slice(1) as HTMLButtonElement[];
-    expect(knoepfe.map((b) => b.textContent)).toEqual(["Alle akzeptieren", "Ablehnen"]);
+    expect(kinder[1].getAttribute("role")).toBe("group");
+    expect(kinder[1].getAttribute("aria-label")).toBe("Bereiche");
+    expect(Array.from(kinder[1].children).map((k) => k.tagName)).toEqual(["LABEL", "LABEL"]);
+    const knoepfe = kinder.slice(2) as HTMLButtonElement[];
+    expect(knoepfe.map((b) => b.textContent)).toEqual([
+      "Alle akzeptieren",
+      "Auswahl speichern",
+      "Ablehnen",
+    ]);
     for (const b of knoepfe) expect(b.getAttribute("type")).toBe("button");
     expect(beacon).not.toHaveBeenCalled();
     // Der Setzer lief NACH dem Modal und hat abgelehnt.
@@ -357,7 +380,8 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
     return document.querySelectorAll('style, link[rel~="stylesheet"]').length;
   }
 
-  // M12. DER WAECHTER DER INVARIANTE I1 (keine Scroll-Sperre, nichts an html/body/head).
+  // M12. DER WAECHTER DER INVARIANTE I1 DER SCHEIBE 11.5d-2 (keine Scroll-Sperre, nichts an
+  // html/body/head).
   //
   // WAS ER SIEHT: (1) die STRUKTUR ausserhalb des Schattenbaums — Attribute an `html` und
   // `body` vorher, nach dem Aufbau und nach dem Klick; die Zahl der `style`- und
@@ -370,8 +394,8 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
   // keine Nadel kennt, entgeht dem Textteil; der Strukturteil sieht ihn nur, wenn er sich
   // an den genannten Stellen niederschlaegt.
   // WARUM ANDERS ALS L12: L12 verbietet das Wort `overflow` im Leisten-Block. Das Modal
-  // DARF `overflow` und `max-height` im EIGENEN Schattenbaum tragen (Invariante I1,
-  // ARCHITEKT-ENTSCHEIDUNG 2026-09-15) — sonst laegen die Knoepfe auf einem niedrigen
+  // DARF `overflow` und `max-height` im EIGENEN Schattenbaum tragen (Invariante I1 der Scheibe
+  // 11.5d-2, ARCHITEKT-ENTSCHEIDUNG 2026-09-15) — sonst laegen die Knoepfe auf einem niedrigen
   // Bildschirm unerreichbar. Dieser Waechter prueft deshalb den Eingriff an einem fremden
   // Knoten statt des Wortes. Zwei Formen auf derselben Achse sind Absicht; L12 bleibt.
   // EINZELSTUECK fuer zwei Pflicht-Mutationen des Bau-Plans: ein Attribut an body setzen
@@ -451,7 +475,8 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
     expect(/(?<!host)\.parentNode/.test("host.parentNode.removeChild(host)")).toBe(false);
   });
 
-  // M13. DER WAECHTER DER INVARIANTE I2: Die EINZIGE Ruecknahme ist das Entfernen des Hosts
+  // M13. DER WAECHTER DER INVARIANTE I2 DER SCHEIBE 11.5d-2: Die EINZIGE Ruecknahme ist das
+  // Entfernen des Hosts
   // im finally der Knopf-Handler. EINZELSTUECK fuer die Pflicht-Mutation "ein Listener an
   // der Abdunkelung, der den Host entfernt" — allein dieser Test fing sie (gemessen).
   it("M13: ein Klick auf die Abdunkelung und ein Escape schliessen NICHT, speichern nichts, senden nichts — ein Knopf schliesst (Positivkontrolle)", () => {
@@ -478,12 +503,17 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
     expect(hosts()).toHaveLength(0);
   });
 
-  // M14. DER WAECHTER DER INVARIANTE I3: `body.appendChild(host)` kommt NACH allen Listenern
-  // an den Knoepfen. Die Spione liegen an den Prototypen DESSELBEN Fensters, in dem
-  // window.eval den Block ausfuehrt. EINZELSTUECK fuer die Pflicht-Mutation
-  // "body.appendChild(host) vor der Erzeugung der Knoepfe" — allein dieser Test fing sie
-  // (gemessen).
-  it("M14: alle Listener an den Knoepfen sind gebunden, BEVOR der Host an body haengt — Positivkontrolle: die Spione sehen die Aufrufe", () => {
+  // M14. JEDER LISTENER, DEN DER BLOCK BINDET — an einem Knopf, einem Gruppen-Schalter, der
+  // Schattenwurzel oder jedem anderen eigenen Knoten —, IST GEBUNDEN, BEVOR DER HOST AN body
+  // HAENGT; `body.appendChild(host)` kommt danach (Invariante I3 der Scheibe 11.5d-2, erweitert
+  // durch Invariante I3 der Scheibe 11.5e-1). BIS SCHEIBE 11.5e-1 ZAEHLTE ER NUR LISTENER AN
+  // BUTTON-ELEMENTEN; ein Listener an einer Checkbox nach dem Einhaengen waere durchgegangen.
+  // Die Spione liegen an den Prototypen DESSELBEN Fensters, in dem window.eval den Block
+  // ausfuehrt.
+  // EINZELSTUECK fuer zwei Pflicht-Mutationen: "body.appendChild(host) vor der Erzeugung der
+  // Knoepfe" (Scheibe 11.5d-2) und "ein Listener nach dem Einhaengen" (Pflicht-Mutation (i)
+  // der Scheibe 11.5e-1) — beide fing allein dieser Test (gemessen).
+  it("M14: jeder Listener des Blocks ist gebunden, BEVOR der Host an body haengt — Positivkontrolle: die Spione sehen die Aufrufe", () => {
     installBeacon();
     const scripts = scriptsOf(HTML, "modal");
     const idx = scripts.findIndex((s) => s.id === "__ps_cmo");
@@ -514,22 +544,22 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
       protoNode.appendChild = origAppend;
     }
 
-    const knopfListener = log
-      .map((e, i) => ({ ...e, i }))
-      .filter(
-        (e) => e.art === "listener" && (e.ziel as Element | null)?.tagName === "BUTTON"
-      );
+    const listener = log.map((e, i) => ({ ...e, i })).filter((e) => e.art === "listener");
     const anBody = log
       .map((e, i) => ({ ...e, i }))
       .filter((e) => e.art === "anhaengen" && e.ziel === document.body);
 
-    // POSITIVKONTROLLE: die Spione sehen die Aufrufe des Blocks.
-    expect(knopfListener.length).toBeGreaterThanOrEqual(2);
+    // POSITIVKONTROLLE: die Spione sehen die Aufrufe des Blocks — die drei Knoepfe.
+    expect(
+      listener.filter((e) => (e.ziel as Element | null)?.tagName === "BUTTON").length
+    ).toBeGreaterThanOrEqual(3);
     expect(anBody).toHaveLength(1);
     expect((anBody[0].kind as Element).tagName).toBe("PAGESMITH-MODAL");
     expect(hosts()).toHaveLength(1);
 
-    for (const l of knopfListener) expect(l.i).toBeLessThan(anBody[0].i);
+    // ALLE Listener, gleich an welchem Ziel — keine exakte Gesamtzahl: sie pruefte eine zweite
+    // Achse, und ein kuenftiger zulaessiger Listener VOR dem Einhaengen machte sie rot.
+    for (const l of listener) expect(l.i).toBeLessThan(anBody[0].i);
   });
 
   // M15. DIE ZWEI WACH-ZEILEN STEHEN IN BEIDEN BLOECKEN ZEICHENGLEICH. Wer eine Seite
@@ -545,5 +575,122 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
         expect(block.split(zeile).length - 1).toBe(1);
       }
     }
+  });
+
+  // M15b. BEIDE BLOECKE TRAGEN DAS GETEILTE CODE-STUECK AUS consent-choice.ts GENAU EINMAL
+  // (Scheibe 11.5e-1).
+  // SEINE GRENZE, UND OHNE SIE HAELT DIE NAECHSTE RUNDE IHN FUER ETWAS, DAS ER NICHT IST: Er
+  // nimmt seine Erwartung aus dem CODE (CONSENT_CHOICE_JS). Das ist hier zulaessig, weil er
+  // ausschliesslich ANWESENHEIT prueft — dass kein Block eine eigene, abweichende Fassung
+  // traegt oder das Stueck verloren hat. OB DAS STUECK RICHTIG ARBEITET, PRUEFT ER NICHT. Das
+  // tun die Verhaltenstests: L5, L13 bis L18 und G0 in consent-bar.test.ts, M5, M14 und M16
+  // bis M19 hier.
+  it("M15b: Leisten- und Modal-Block tragen CONSENT_CHOICE_JS je genau einmal — Anwesenheit, keine Richtigkeit", () => {
+    // POSITIVKONTROLLE: das Stueck ist nicht leer und traegt wirklich die Schalter.
+    expect(CONSENT_CHOICE_JS).toContain('"checkbox"');
+    for (const block of [buildConsentBarScript(), buildConsentModalScript()]) {
+      expect(block.split(CONSENT_CHOICE_JS).length - 1).toBe(1);
+    }
+  });
+});
+
+// SCHEIBE 11.5e-1 — DIE AUSWAHL JE GRUPPE, AM MODAL. Spiegel von L15 bis L18 in
+// consent-bar.test.ts; die Erwartungen stammen aus Entscheidung (25) der Phase 11.5, den
+// Setzungen des Zuschnitts der Scheibe 11.5e-1 und den Freigaben F1 bis F6 vom 2026-09-15 —
+// als Literal, nie aus dem Code.
+
+const NUR_MESSUNG = "ps1:analytics|meta,pinterest,tiktok,linkedin,google";
+const NUR_WERBUNG = "ps1:meta,pinterest,tiktok,linkedin,google|analytics";
+const WERBUNG = ["meta", "pinterest", "tiktok", "linkedin", "google"];
+
+function hookMit(erlaubt: string[]): Record<string, boolean> {
+  return Object.fromEntries(SECHS.map((k) => [k, erlaubt.includes(k)]));
+}
+
+describe("11.5e-1 — die Schalter des Modals", () => {
+  // M16. Spiegel von L15: beide Schalter starten AUS, ohne checked-Attribut und ohne Zuweisung.
+  it("M16: eine Gruppe 'Bereiche' mit zwei Schaltern 'Messung' und 'Werbung', je Checkbox im label, beide AUS, genau zwei Eingabeelemente", () => {
+    mount();
+    const root = shadow();
+    const gruppe = root.querySelector('[role="group"]');
+    expect(gruppe).not.toBeNull();
+    expect(gruppe!.getAttribute("aria-label")).toBe("Bereiche");
+    const labels = Array.from(gruppe!.children);
+    expect(labels.map((l) => l.tagName)).toEqual(["LABEL", "LABEL"]);
+    expect(labels.map((l) => l.textContent)).toEqual(["Messung", "Werbung"]);
+    for (const l of labels) {
+      expect(Array.from(l.children).map((k) => k.tagName)).toEqual(["INPUT", "SPAN"]);
+      const box = l.children[0] as HTMLInputElement;
+      expect(box.getAttribute("type")).toBe("checkbox");
+      expect(box.hasAttribute("checked")).toBe(false);
+      expect(box.checked).toBe(false);
+    }
+    expect(root.querySelectorAll("input")).toHaveLength(2);
+  });
+
+  // M17. Spiegel von L16 — kein Gruppenname erreicht Speicher oder Hook (Invariante I4 der
+  // Scheibe 11.5e-1).
+  const AUSWAHL: Array<[string, string[], string, string[], number]> = [
+    ["keine", [], ALLE_ABGELEHNT, [], 0],
+    ["nur Messung", ["Messung"], NUR_MESSUNG, ["analytics"], 1],
+    ["nur Werbung", ["Werbung"], NUR_WERBUNG, WERBUNG, 0],
+    ["beide", ["Messung", "Werbung"], ALLE_ZUGESTIMMT, SECHS, 1],
+  ];
+  for (const [fall, klicks, speicher, erlaubt, beacons] of AUSWAHL) {
+    it(`M17: '${fall}' + 'Auswahl speichern' -> Speicherwert und Hook je Schluessel, ${beacons} Seitenaufruf(e), Modal weg`, async () => {
+      const beacon = mount();
+      for (const name of ["Messung", "Werbung"]) expect(schalter(name).checked).toBe(false);
+      for (const name of klicks) {
+        schalter(name).click();
+        expect(schalter(name).checked).toBe(true);
+      }
+
+      button("Auswahl speichern").click();
+
+      expect(window.localStorage.getItem(STORE_KEY)).toBe(speicher);
+      expect(w.pagesmithConsent).toEqual(hookMit(erlaubt));
+      expect(beacon).toHaveBeenCalledTimes(beacons);
+      if (beacons === 1) {
+        const [, blob] = beacon.mock.calls[0] as unknown as [string, Blob];
+        expect(JSON.parse(await blob.text()).event).toBe("__ps_pageview");
+      }
+      expect(hosts()).toHaveLength(0);
+      for (const gruppe of ["Messung", "Werbung"]) {
+        expect(window.localStorage.getItem(STORE_KEY)).not.toContain(gruppe);
+      }
+    });
+  }
+
+  // M18. Spiegel von L17: die zwei festen Knoepfe lesen die Schalter nicht.
+  it("M18: 'Ablehnen' und 'Alle akzeptieren' ignorieren den Zustand der Schalter", () => {
+    mount();
+    schalter("Werbung").click();
+    expect(schalter("Werbung").checked).toBe(true);
+    button("Ablehnen").click();
+    expect(window.localStorage.getItem(STORE_KEY)).toBe(ALLE_ABGELEHNT);
+    expect(w.pagesmithConsent).toEqual(hookAus(false));
+
+    aufraeumen();
+    window.localStorage.clear();
+    mount();
+    schalter("Messung").click();
+    expect(schalter("Messung").checked).toBe(true);
+    button("Alle akzeptieren").click();
+    expect(window.localStorage.getItem(STORE_KEY)).toBe(ALLE_ZUGESTIMMT);
+    expect(w.pagesmithConsent).toEqual(hookAus(true));
+  });
+
+  // M19. Spiegel von L18: der Name kommt aus dem label. Nur so lange aussagekraeftig, wie
+  // jsdom die Label-Aktivierung im Schattenbaum ausfuehrt — GEMESSEN im Bau der Scheibe 11.5e-1.
+  it("M19: ein Klick auf die Beschriftung 'Messung' schaltet ihre Checkbox", () => {
+    mount();
+    const text = Array.from(shadow().querySelectorAll("span")).find(
+      (s) => s.textContent === "Messung"
+    );
+    expect(text).toBeTruthy();
+    expect(schalter("Messung").checked).toBe(false);
+    text!.click();
+    expect(schalter("Messung").checked).toBe(true);
+    expect(schalter("Werbung").checked).toBe(false);
   });
 });

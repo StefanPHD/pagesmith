@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 import { buildConsentBarScript } from "./consent-bar";
+import { CONSENT_GROUP_KEYS } from "./consent-choice";
 
-// SCHEIBE 11.5d — DIE EINWILLIGUNGS-LEISTE.
+// SCHEIBE 11.5d — DIE EINWILLIGUNGS-LEISTE. SEIT SCHEIBE 11.5e-1 MIT ZWEI GRUPPEN-SCHALTERN
+// UND DREI KNOEPFEN; die Tests dieser Scheibe stehen unten unter "11.5e-1".
 //
 // DIE ERWARTUNGEN STAMMEN AUS DER ENTSCHEIDUNG, NIE AUS DEM CODE: Host-Name und Kennung
 // (`pagesmith-bar`, `__ps_clb`), die zwei Beschriftungen, der Speicher-Schluessel, die
@@ -86,6 +88,18 @@ function button(label: string): HTMLButtonElement {
   );
   if (!b) throw new Error(`kein Knopf "${label}"`);
   return b;
+}
+
+/** Die Checkbox des Gruppen-Schalters mit dieser Beschriftung (Scheibe 11.5e-1). */
+function schalter(name: string): HTMLInputElement {
+  const root = hosts()[0]?.shadowRoot;
+  if (!root) throw new Error("keine Leiste");
+  const label = Array.from(root.querySelectorAll("label")).find(
+    (l) => l.textContent === name
+  );
+  const box = label?.querySelector("input");
+  if (!box) throw new Error(`kein Schalter "${name}"`);
+  return box;
 }
 
 function aufraeumen(): void {
@@ -182,14 +196,20 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
 });
 
 describe("11.5d — wann die Leiste erscheint", () => {
-  it("L5: nichts entschieden -> genau eine Leiste mit genau zwei Knoepfen, nichts gesendet, Hook abgelehnt", () => {
+  // L5. SEIT SCHEIBE 11.5e-1 DREI KNOEPFE (Freigaben F2 und F6, 2026-09-15), in dieser
+  // Reihenfolge. Rot bei jeder geaenderten Beschriftung, Reihenfolge oder Anzahl.
+  it("L5: nichts entschieden -> genau eine Leiste mit genau drei Knoepfen, nichts gesendet, Hook abgelehnt", () => {
     const beacon = mount();
     expect(hosts()).toHaveLength(1);
     expect(hosts()[0].parentElement).toBe(document.body);
     const root = hosts()[0].shadowRoot;
     expect(root).not.toBeNull();
     const knoepfe = Array.from(root!.querySelectorAll("button"));
-    expect(knoepfe.map((b) => b.textContent)).toEqual(["Alle akzeptieren", "Ablehnen"]);
+    expect(knoepfe.map((b) => b.textContent)).toEqual([
+      "Alle akzeptieren",
+      "Auswahl speichern",
+      "Ablehnen",
+    ]);
     for (const b of knoepfe) expect(b.getAttribute("type")).toBe("button");
     expect(beacon).not.toHaveBeenCalled();
     // Der Setzer lief NACH der Leiste und hat abgelehnt.
@@ -350,10 +370,13 @@ describe("11.5d — die Leiste macht die Seite nicht unbedienbar", () => {
 
 describe("11.5d — der Sachtext der Leiste", () => {
   // L13. DIE ERWARTUNG STAMMT AUS DER FREIGABE VON E3 (Architekt/Owner 2026-09-14), NIE
-  // AUS DEM CODE: Der Satz steht hier als Literal und wird nicht aus CONSENT_BAR_TEXT
-  // gezogen — sonst bestaetigte der Test jede Aenderung am Wortlaut, statt sie zu fangen.
+  // AUS DEM CODE: Der Satz steht hier als Literal und wird nicht aus CONSENT_TEXT
+  // (consent-choice.ts, bis Scheibe 11.5e-1 CONSENT_BAR_TEXT in consent-bar.ts) gezogen —
+  // sonst bestaetigte der Test jede Aenderung am Wortlaut, statt sie zu fangen.
   // WER DEN SATZ AENDERT, BRAUCHT EINE NEUE FREIGABE, und dieser Test wird rot.
-  it("L13: genau ein Sachtext, als ganzer Satz, per textContent, VOR den zwei Knoepfen", () => {
+  // SEIT SCHEIBE 11.5e-1 ERWEITERT, NICHT AUFGEWEICHT: Die Kinder der Region stehen exakt als
+  // Text, Gruppe, drei Knoepfe. Rot bei jedem zusaetzlichen, fehlenden oder umgestellten Kind.
+  it("L13: genau ein Sachtext, als ganzer Satz, per textContent, VOR der Gruppe der Schalter und den drei Knoepfen", () => {
     const SATZ =
       "Diese Seite kann Tracking-Dienste einbinden. Du entscheidest, ob das geschieht.";
     mount();
@@ -362,8 +385,11 @@ describe("11.5d — der Sachtext der Leiste", () => {
     const region = root!.querySelector('[role="region"]');
     expect(region).not.toBeNull();
     const kinder = Array.from(region!.children);
-    // Der Text ist das ERSTE Kind, danach genau die zwei Knoepfe.
-    expect(kinder.map((k) => k.tagName)).toEqual(["P", "BUTTON", "BUTTON"]);
+    // Der Text ist das ERSTE Kind, dann die Gruppe der Schalter, dann genau drei Knoepfe.
+    expect(kinder.map((k) => k.tagName)).toEqual(["P", "DIV", "BUTTON", "BUTTON", "BUTTON"]);
+    expect(kinder[1].getAttribute("role")).toBe("group");
+    expect(kinder[1].getAttribute("aria-label")).toBe("Bereiche");
+    expect(Array.from(kinder[1].children).map((k) => k.tagName)).toEqual(["LABEL", "LABEL"]);
     expect(kinder[0].textContent).toBe(SATZ);
     // Per textContent, nicht per Markup: Der Absatz traegt keine Kind-Elemente.
     expect(kinder[0].children).toHaveLength(0);
@@ -371,5 +397,184 @@ describe("11.5d — der Sachtext der Leiste", () => {
     expect(root!.textContent!.split(SATZ).length - 1).toBe(1);
     // POSITIVKONTROLLE der Zaehlung, im selben Lauf: dieselbe Suche trifft einen Knopf.
     expect(root!.textContent!.split("Ablehnen").length - 1).toBe(1);
+  });
+});
+
+// SCHEIBE 11.5e-1 — DIE AUSWAHL JE GRUPPE. Die Erwartungen stammen aus Entscheidung (25) der
+// Phase 11.5, den Setzungen des Zuschnitts der Scheibe 11.5e-1 (Checkbox, beide AUS,
+// Zuordnung) und den Freigaben F1 bis F6 vom 2026-09-15 — als Literal, nie aus dem Code.
+// Die Speicherwerte folgen der Gestalt `ps1:<zugestimmt>|<abgelehnt>` in der Reihenfolge der
+// sechs Schluessel. M16 bis M19 in consent-modal.test.ts spiegeln L15 bis L18.
+
+const NUR_MESSUNG = "ps1:analytics|meta,pinterest,tiktok,linkedin,google";
+const NUR_WERBUNG = "ps1:meta,pinterest,tiktok,linkedin,google|analytics";
+const WERBUNG = ["meta", "pinterest", "tiktok", "linkedin", "google"];
+
+function hookMit(erlaubt: string[]): Record<string, boolean> {
+  return Object.fromEntries(SECHS.map((k) => [k, erlaubt.includes(k)]));
+}
+
+describe("11.5e-1 — die zwei Gruppen", () => {
+  // G0. BEIDE GRUPPEN LITERAL. ROT BEI JEDEM NEUEN SCHLUESSEL, UND DAS IST GEWOLLT: Die
+  // Ableitung in consent-choice.ts schoebe einen neuen Schluessel still in „Werbung";
+  // Entscheidung (25) verlangt, dass wer einen Schluessel hinzufuegt, prueft, in welche Gruppe
+  // er gehoert. EINZELSTUECK: der einzige Test, der die Zuordnung ohne DOM haelt.
+  it("G0: Messung traegt genau analytics, Werbung genau die fuenf Ziel-Schluessel — disjunkt, zusammen die sechs", () => {
+    expect(CONSENT_GROUP_KEYS.measure).toEqual(["analytics"]);
+    expect(CONSENT_GROUP_KEYS.ads).toEqual(WERBUNG);
+    expect([...CONSENT_GROUP_KEYS.measure, ...CONSENT_GROUP_KEYS.ads].sort()).toEqual(
+      [...SECHS].sort()
+    );
+  });
+});
+
+describe("11.5e-1 — die Schalter der Leiste", () => {
+  // L14. DER WAECHTER DER INVARIANTE I3 DER SCHEIBE 11.5e-1 FUER DIE LEISTE — bis zu dieser
+  // Scheibe hatte die Leiste keinen. JEDER Listener, den der Block bindet — an einem Knopf,
+  // einem Schalter, der Schattenwurzel oder jedem anderen eigenen Knoten —, ist gebunden,
+  // BEVOR der Host an body haengt. Er zaehlt ALLE Ziele, nicht nur Knoepfe: Ein Listener
+  // an einem Schalter nach dem Einhaengen faellt ihm genauso auf.
+  // EINZELSTUECK fuer die Pflicht-Mutation (ii) der Scheibe 11.5e-1 (ein Listener nach dem
+  // Einhaengen, Leiste).
+  it("L14: jeder Listener des Blocks ist gebunden, BEVOR der Host an body haengt — Positivkontrolle: die Spione sehen die Aufrufe", () => {
+    installBeacon();
+    const scripts = scriptsOf(HTML, true);
+    const idx = scripts.findIndex((s) => s.id === "__ps_clb");
+    expect(idx).toBeGreaterThan(0);
+    for (const s of scripts.slice(0, idx)) run(s);
+
+    const fenster = window as unknown as {
+      EventTarget: { prototype: { addEventListener: (...a: unknown[]) => unknown } };
+      Node: { prototype: { appendChild: (...a: unknown[]) => unknown } };
+    };
+    const protoEvent = fenster.EventTarget.prototype;
+    const protoNode = fenster.Node.prototype;
+    const origAdd = protoEvent.addEventListener;
+    const origAppend = protoNode.appendChild;
+    const log: Array<{ art: "listener" | "anhaengen"; ziel: unknown; kind: unknown }> = [];
+    protoEvent.addEventListener = function (this: unknown, ...a: unknown[]) {
+      log.push({ art: "listener", ziel: this, kind: a[0] });
+      return origAdd.apply(this, a);
+    };
+    protoNode.appendChild = function (this: unknown, ...a: unknown[]) {
+      log.push({ art: "anhaengen", ziel: this, kind: a[0] });
+      return origAppend.apply(this, a);
+    };
+    try {
+      run(scripts[idx]);
+    } finally {
+      protoEvent.addEventListener = origAdd;
+      protoNode.appendChild = origAppend;
+    }
+
+    const listener = log.map((e, i) => ({ ...e, i })).filter((e) => e.art === "listener");
+    const anBody = log
+      .map((e, i) => ({ ...e, i }))
+      .filter((e) => e.art === "anhaengen" && e.ziel === document.body);
+
+    // POSITIVKONTROLLE: die Spione sehen die Aufrufe des Blocks — die drei Knoepfe.
+    expect(
+      listener.filter((e) => (e.ziel as Element | null)?.tagName === "BUTTON").length
+    ).toBeGreaterThanOrEqual(3);
+    expect(anBody).toHaveLength(1);
+    expect((anBody[0].kind as Element).tagName).toBe("PAGESMITH-BAR");
+    expect(hosts()).toHaveLength(1);
+
+    for (const l of listener) expect(l.i).toBeLessThan(anBody[0].i);
+  });
+
+  // L15. DIE GESTALT DER SCHALTER. Beide starten AUS — ohne checked-Attribut und ohne
+  // Zuweisung (Setzung des Zuschnitts: eine Vorauswahl waere eine vorweggenommene Zustimmung).
+  it("L15: eine Gruppe 'Bereiche' mit zwei Schaltern 'Messung' und 'Werbung', je Checkbox im label, beide AUS, genau zwei Eingabeelemente", () => {
+    mount();
+    const root = hosts()[0].shadowRoot!;
+    const gruppe = root.querySelector('[role="group"]');
+    expect(gruppe).not.toBeNull();
+    expect(gruppe!.getAttribute("aria-label")).toBe("Bereiche");
+    const labels = Array.from(gruppe!.children);
+    expect(labels.map((l) => l.tagName)).toEqual(["LABEL", "LABEL"]);
+    expect(labels.map((l) => l.textContent)).toEqual(["Messung", "Werbung"]);
+    for (const l of labels) {
+      expect(Array.from(l.children).map((k) => k.tagName)).toEqual(["INPUT", "SPAN"]);
+      const box = l.children[0] as HTMLInputElement;
+      expect(box.getAttribute("type")).toBe("checkbox");
+      expect(box.hasAttribute("checked")).toBe(false);
+      expect(box.checked).toBe(false);
+    }
+    expect(root.querySelectorAll("input")).toHaveLength(2);
+  });
+
+  // L16. „AUSWAHL SPEICHERN" JE AUSWAHL. Die Gruppe wird vor write() in Einzelschluessel
+  // aufgeloest; KEIN GRUPPENNAME ERREICHT SPEICHER ODER HOOK (Invariante I4 der Scheibe
+  // 11.5e-1). Der Klick geht an die Checkbox selbst — der produktive Weg —, und ihr Zustand
+  // danach ist die Positivkontrolle. Seitenaufruf nur, wenn Messung erlaubt ist.
+  const AUSWAHL: Array<[string, string[], string, string[], number]> = [
+    ["keine", [], ALLE_ABGELEHNT, [], 0],
+    ["nur Messung", ["Messung"], NUR_MESSUNG, ["analytics"], 1],
+    ["nur Werbung", ["Werbung"], NUR_WERBUNG, WERBUNG, 0],
+    ["beide", ["Messung", "Werbung"], ALLE_ZUGESTIMMT, SECHS, 1],
+  ];
+  for (const [fall, klicks, speicher, erlaubt, beacons] of AUSWAHL) {
+    it(`L16: '${fall}' + 'Auswahl speichern' -> Speicherwert und Hook je Schluessel, ${beacons} Seitenaufruf(e), Leiste weg`, async () => {
+      const beacon = mount();
+      for (const name of ["Messung", "Werbung"]) expect(schalter(name).checked).toBe(false);
+      for (const name of klicks) {
+        schalter(name).click();
+        expect(schalter(name).checked).toBe(true);
+      }
+
+      button("Auswahl speichern").click();
+
+      expect(window.localStorage.getItem(STORE_KEY)).toBe(speicher);
+      expect(w.pagesmithConsent).toEqual(hookMit(erlaubt));
+      expect(beacon).toHaveBeenCalledTimes(beacons);
+      if (beacons === 1) {
+        const [, blob] = beacon.mock.calls[0] as unknown as [string, Blob];
+        expect(JSON.parse(await blob.text()).event).toBe("__ps_pageview");
+      }
+      expect(hosts()).toHaveLength(0);
+      // I4: kein Gruppenname im Speicher.
+      for (const gruppe of ["Messung", "Werbung"]) {
+        expect(window.localStorage.getItem(STORE_KEY)).not.toContain(gruppe);
+      }
+    });
+  }
+
+  // L17. DIE ZWEI FESTEN KNOEPFE LESEN DIE SCHALTER NICHT: „Ablehnen" lehnt auch bei
+  // gewaehlter Werbung alles ab, „Alle akzeptieren" stimmt auch bei nur gewaehlter Messung
+  // allem zu.
+  it("L17: 'Ablehnen' und 'Alle akzeptieren' ignorieren den Zustand der Schalter", () => {
+    mount();
+    schalter("Werbung").click();
+    expect(schalter("Werbung").checked).toBe(true);
+    button("Ablehnen").click();
+    expect(window.localStorage.getItem(STORE_KEY)).toBe(ALLE_ABGELEHNT);
+    expect(w.pagesmithConsent).toEqual(hookAus(false));
+
+    aufraeumen();
+    window.localStorage.clear();
+    mount();
+    schalter("Messung").click();
+    expect(schalter("Messung").checked).toBe(true);
+    button("Alle akzeptieren").click();
+    expect(window.localStorage.getItem(STORE_KEY)).toBe(ALLE_ZUGESTIMMT);
+    expect(w.pagesmithConsent).toEqual(hookAus(true));
+  });
+
+  // L18. DER ZUGAENGLICHE NAME KOMMT AUS DEM label, NICHT AUS EINEM id: Ein Klick auf den
+  // Text schaltet die Checkbox. Nur so lange aussagekraeftig, wie jsdom die
+  // Label-Aktivierung im Schattenbaum ausfuehrt — GEMESSEN im Bau der Scheibe 11.5e-1.
+  it("L18: ein Klick auf die Beschriftung 'Messung' schaltet ihre Checkbox", () => {
+    mount();
+    const root = hosts()[0].shadowRoot!;
+    const text = Array.from(root.querySelectorAll("span")).find(
+      (s) => s.textContent === "Messung"
+    );
+    expect(text).toBeTruthy();
+    expect(schalter("Messung").checked).toBe(false);
+    text!.click();
+    expect(schalter("Messung").checked).toBe(true);
+    // POSITIVKONTROLLE: der andere Schalter bleibt unberuehrt.
+    expect(schalter("Werbung").checked).toBe(false);
   });
 });

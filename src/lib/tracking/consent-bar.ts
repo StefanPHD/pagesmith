@@ -1,6 +1,7 @@
 // DIE EINWILLIGUNGS-LEISTE (Phase 11.5, Scheibe 11.5d). Erzeugt EINEN Script-Block, der
-// am unteren Rand der publizierten Seite eine Leiste mit zwei gleichwertigen Knoepfen
-// anlegt — der erste Baustein im ausgelieferten Text, der SICHTBARES DOM erzeugt.
+// am unteren Rand der publizierten Seite eine Leiste anlegt — der erste Baustein im
+// ausgelieferten Text, der SICHTBARES DOM erzeugt. Seit Scheibe 11.5e-1 traegt sie zwei
+// Gruppen-Schalter und drei gleichwertige Knoepfe; beides kommt aus consent-choice.ts.
 // Reiner String-Bau: kein React, kein Netzwerk, keine Datenbank, kein server-seitiges
 // Parsen. Das DOM entsteht erst im Browser des Besuchers.
 //
@@ -23,8 +24,16 @@
 // String geht per JSON.stringify hinein, und der Code kommt ohne `<`-Vergleich aus.
 // Damit kann weder ein `</script>` noch ein `</body>` noch ein `<!--` darin stehen.
 
-import { ALL_CONSENT_KEYS } from "@/lib/tracking/consent-targets";
+// WAS HIER STEHT, BETRIFFT NUR DIE LEISTE: Kennung, Host-Element, zugaenglicher Name und
+// Basis-Stylesheet. Sachtext, Knoepfe, Schalter und deren Stylesheet teilen Leiste und Modal;
+// sie liegen seit Scheibe 11.5e-1 in consent-choice.ts.
+
 import { CONSENT_STORE_API } from "@/lib/tracking/consent-store";
+import {
+  CONSENT_CHOICE_CSS,
+  CONSENT_CHOICE_JS,
+  CONSENT_TEXT,
+} from "@/lib/tracking/consent-choice";
 
 /**
  * Kennung des Blocks, `__ps_`-namespaced wie `__ps_cnr`, `__ps_cns` und `__ps_pve`.
@@ -44,34 +53,12 @@ export const CONSENT_BAR_SCRIPT_ID = "__ps_clb";
  */
 export const CONSENT_BAR_HOST_TAG = "pagesmith-bar";
 
-/** Beschriftung des Zustimmungs-Knopfs. */
-export const CONSENT_BAR_ACCEPT_LABEL = "Alle akzeptieren";
-
-/**
- * Beschriftung des Ablehnungs-Knopfs. „Ablehnen", NICHT „Nur Notwendige": write([])
- * lehnt alle sechs Schluessel ab, auch analytics — es bleibt nichts Notwendiges uebrig
- * (bindende Entscheidung (12) der Phase 11.5).
- */
-export const CONSENT_BAR_REJECT_LABEL = "Ablehnen";
-
 /** Zugaenglicher Name der Leiste. */
 export const CONSENT_BAR_REGION_LABEL = "Einwilligung";
 
 /**
- * Der Sachtext der Leiste, eine Zeile ueber den Knoepfen, ohne Ueberschrift.
- * WORTLAUT FREIGEGEBEN (Entscheidung E3 der Scheibe 11.5d, Architekt/Owner 2026-09-14).
- * ER TRAEGT KEINE RECHTSBEHAUPTUNG UND KEIN VERSPRECHEN UEBER DATENVERARBEITUNG, und
- * kein "notwendig" oder "essenziell": Es gibt keine Kategorien, und das Wort erzeugte
- * die Erwartung, die die Knopf-Beschriftung „Ablehnen" bereits verworfen hat. Einen
- * Verweis auf eine Datenschutzerklaerung gibt es nicht, weil kein Einstellungsfeld
- * einen traegt. Wer den Satz aendert, braucht eine neue Freigabe; L13 haelt ihn.
- */
-export const CONSENT_BAR_TEXT =
-  "Diese Seite kann Tracking-Dienste einbinden. Du entscheidest, ob das geschieht.";
-
-/**
- * Das Stylesheet im Schattenbaum. BEIDE KNOEPFE TRAGEN DIESELBE REGEL — gleichwertig
- * heisst hier: kein Knopf ist hervorgehoben.
+ * Das Basis-Stylesheet im Schattenbaum; CONSENT_CHOICE_CSS wird angehaengt. ALLE DREI
+ * KNOEPFE TRAGEN DIESELBE REGEL — gleichwertig heisst hier: kein Knopf ist hervorgehoben.
  * KEIN `overflow`, KEINE Abdunkelung, KEINE Scroll-Sperre: Die Leiste kann eine Seite
  * nicht unbedienbar machen. Verliert sie ihre Stapel-Ebene, ist sie verdeckt, und die
  * Seite bleibt bedienbar. L12 haelt die Abwesenheit von `overflow`.
@@ -115,9 +102,11 @@ const CONSENT_BAR_CSS =
  * auf einer solchen Seite geht bei eingeschaltetem Schalter NICHTS hinaus, ohne dass
  * der Besucher gefragt werden kann. Wie viele Browser das betrifft, ist ungemessen.
  *
- * DER KLICK: write() mit allen sechs Schluesseln bzw. mit einer leeren Liste, danach
- * wird der Host entfernt — im `finally`, also AUCH, WENN write() `false` LIEFERT ODER
- * WIRFT. Offen zu bleiben hiesse, der Besucher klickt ins Leere.
+ * DER KLICK: „Alle akzeptieren" schreibt alle sechs Schluessel, „Ablehnen" eine leere
+ * Liste, „Auswahl speichern" die Schluessel der gewaehlten Gruppen (Scheibe 11.5e-1; die
+ * Aufloesung steht an CONSENT_CHOICE_JS). Danach wird der Host entfernt — im `finally`,
+ * also AUCH, WENN write() `false` LIEFERT ODER WIRFT. Offen zu bleiben hiesse, der
+ * Besucher klickt ins Leere.
  * DER PREIS, UND ER IST STILL: Liefert write() bei „Alle akzeptieren" `false` (etwa
  * weil der Speicher gesperrt ist), bleibt der Hook bei sechs `false`, und auf dieser
  * Seite geht NICHTS hinaus. Auf der Live-Seite gibt es keinen Fehlerkanal; beim
@@ -128,7 +117,11 @@ const CONSENT_BAR_CSS =
  * an `html` oder `body`. Absichtlich zurueck bleiben allein Speicherwert und Hook, und
  * die setzt write().
  *
- * DIE SECHS SCHLUESSEL KOMMEN AUS ALL_CONSENT_KEYS, nie aus einer zweiten Liste.
+ * `body.appendChild(host)` IST DIE LETZTE ANWEISUNG (Invariante I3 der Scheibe 11.5e-1):
+ * JEDER Listener des Blocks ist gebunden, bevor die Leiste im Dokument steht. L14 haelt das.
+ *
+ * DIE SCHLUESSEL KOMMEN AUS ALL_CONSENT_KEYS bzw. CONSENT_GROUP_KEYS, nie aus einer zweiten
+ * Liste.
  */
 export function buildConsentBarScript(): string {
   return `<script id="${CONSENT_BAR_SCRIPT_ID}">
@@ -143,7 +136,7 @@ export function buildConsentBarScript(): string {
   if (typeof host.attachShadow !== "function") return;
   var root = host.attachShadow({ mode: "open" });
   var style = document.createElement("style");
-  style.textContent = ${JSON.stringify(CONSENT_BAR_CSS)};
+  style.textContent = ${JSON.stringify(CONSENT_BAR_CSS + CONSENT_CHOICE_CSS)};
   root.appendChild(style);
   var bar = document.createElement("div");
   bar.setAttribute("class", "bar");
@@ -151,23 +144,10 @@ export function buildConsentBarScript(): string {
   bar.setAttribute("aria-label", ${JSON.stringify(CONSENT_BAR_REGION_LABEL)});
   var text = document.createElement("p");
   text.setAttribute("class", "text");
-  text.textContent = ${JSON.stringify(CONSENT_BAR_TEXT)};
+  text.textContent = ${JSON.stringify(CONSENT_TEXT)};
   bar.appendChild(text);
-  function makeButton(label, granted) {
-    var b = document.createElement("button");
-    b.setAttribute("type", "button");
-    b.textContent = label;
-    b.addEventListener("click", function () {
-      try {
-        api.write(granted.slice());
-      } finally {
-        if (host.parentNode) host.parentNode.removeChild(host);
-      }
-    });
-    return b;
-  }
-  bar.appendChild(makeButton(${JSON.stringify(CONSENT_BAR_ACCEPT_LABEL)}, ${JSON.stringify([...ALL_CONSENT_KEYS])}));
-  bar.appendChild(makeButton(${JSON.stringify(CONSENT_BAR_REJECT_LABEL)}, []));
+${CONSENT_CHOICE_JS}
+  fillChoice(bar);
   root.appendChild(bar);
   body.appendChild(host);
 })();

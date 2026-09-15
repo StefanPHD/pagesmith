@@ -1,15 +1,18 @@
 // DAS CENTER-MODAL (Phase 11.5, Scheibe 11.5d-2). Erzeugt EINEN Script-Block, der in der
 // Mitte der publizierten Seite ein Fenster ueber einer Abdunkelung anlegt, mit denselben
-// zwei gleichwertigen Knoepfen wie die Leiste. Reiner String-Bau: kein React, kein
-// Netzwerk, keine Datenbank, kein server-seitiges Parsen.
+// Schaltern und Knoepfen wie die Leiste — seit Scheibe 11.5e-1 zwei Gruppen-Schalter und
+// drei gleichwertige Knoepfe. Reiner String-Bau: kein React, kein Netzwerk, keine
+// Datenbank, kein server-seitiges Parsen.
 //
 // KEIN `import "server-only"`, aus demselben Grund wie in consent-bar.ts: Eine
 // server-only-Datei ist aus erzeugtem Browser-Code nicht erreichbar.
 //
 // LEISTE UND MODAL SIND ZWEI BLOECKE, NICHT EINER MIT SCHALTER. Geteilt werden allein
-// Konstanten — die Schnittstelle, die sechs Schluessel, die zwei Beschriftungen und der
-// Sachtext. consent-bar.ts bleibt dafuer unberuehrt; welcher Block entsteht, entscheidet
-// consentBlocksFor in src/lib/analytics/pageview-emitter.ts, und nur dort.
+// Konstanten, die zur BAUZEIT eingesetzt werden — die Schnittstelle, und aus
+// consent-choice.ts der Sachtext, das Stylesheet der Schalter und seit Scheibe 11.5e-1 ein
+// Code-Stueck (CONSENT_CHOICE_JS) mit Schaltern, Knoepfen und Aufloesung. Ein Laufzeit-Helfer
+// entsteht nicht. Welcher Block entsteht, entscheidet consentBlocksFor in
+// src/lib/analytics/pageview-emitter.ts, und nur dort.
 //
 // HIER STEHT KEIN URTEIL UEBER DEN HOOK UND KEIN ZWEITER SCHREIBWEG — wie bei der Leiste:
 // Die Knoepfe rufen write() der Schnittstelle aus consent-store.ts.
@@ -22,8 +25,8 @@
 // haengt an der Seite selbst. Das ist der benannte Preis.
 //
 // DIE EINZIGE RUECKNAHME IST DAS ENTFERNEN DES HOSTS, im `finally` der Knopf-Handler.
-// KEIN Escape-Handler, KEIN Listener an der Abdunkelung, KEIN zweiter Weg: Die
-// Abdunkelung faengt Klicks und tut sonst nichts. M13 haelt das.
+// KEIN Escape-Handler, KEIN Listener an der Abdunkelung, KEIN Listener an den Schaltern,
+// KEIN zweiter Weg: Die Abdunkelung faengt Klicks und tut sonst nichts. M13 haelt das.
 //
 // KEIN PROGRAMMATISCHER FOKUS und KEIN `aria-modal`: Ein Fokus-Wechsel naehme einem
 // fremden Element den Fokus, und `aria-modal` verspraeche eine Fokus-Falle, die es nicht
@@ -33,13 +36,12 @@
 // entsteht per createElement, Texte per textContent, jeder String per JSON.stringify.
 // M3 haelt das.
 
-import { ALL_CONSENT_KEYS } from "@/lib/tracking/consent-targets";
 import { CONSENT_STORE_API } from "@/lib/tracking/consent-store";
 import {
-  CONSENT_BAR_ACCEPT_LABEL,
-  CONSENT_BAR_REJECT_LABEL,
-  CONSENT_BAR_TEXT,
-} from "@/lib/tracking/consent-bar";
+  CONSENT_CHOICE_CSS,
+  CONSENT_CHOICE_JS,
+  CONSENT_TEXT,
+} from "@/lib/tracking/consent-choice";
 
 /**
  * Kennung des Blocks, `__ps_`-namespaced wie `__ps_cnr`, `__ps_clb`, `__ps_cns` und
@@ -60,8 +62,9 @@ export const CONSENT_MODAL_HOST_TAG = "pagesmith-modal";
 export const CONSENT_MODAL_DIALOG_LABEL = "Einwilligung";
 
 /**
- * Das Stylesheet im Schattenbaum. Der Host deckt das ganze Fenster ab; die Abdunkelung
- * fuellt ihn, das Fenster sitzt mittig darueber. BEIDE KNOEPFE TRAGEN DIESELBE REGEL.
+ * Das Basis-Stylesheet im Schattenbaum; CONSENT_CHOICE_CSS wird angehaengt. Der Host deckt
+ * das ganze Fenster ab; die Abdunkelung fuellt ihn, das Fenster sitzt mittig darueber. ALLE
+ * DREI KNOEPFE TRAGEN DIESELBE REGEL.
  * `max-height` UND `overflow` AM FENSTER SIND ABSICHT (Invariante I1 der Scheibe
  * 11.5d-2): Ohne eigenen Scroll-Bereich laegen die Knoepfe auf einem niedrigen
  * Bildschirm unter dem Rand, waehrend die Abdunkelung jeden Klick faengt — die Seite
@@ -95,14 +98,19 @@ const CONSENT_MODAL_CSS =
  *
  * OHNE attachShadow KEIN MODAL — FAIL-CLOSED, wie bei der Leiste.
  *
- * DER KLICK: write() mit allen sechs Schluesseln bzw. mit einer leeren Liste, danach wird
- * der Host entfernt — im `finally`, also AUCH, WENN write() `false` LIEFERT ODER WIRFT.
- * Bliebe das Modal offen, fing die Abdunkelung weiter jeden Klick.
+ * DER KLICK: „Alle akzeptieren" schreibt alle sechs Schluessel, „Ablehnen" eine leere Liste,
+ * „Auswahl speichern" die Schluessel der gewaehlten Gruppen (Scheibe 11.5e-1; die Aufloesung
+ * steht an CONSENT_CHOICE_JS). Danach wird der Host entfernt — im `finally`, also AUCH, WENN
+ * write() `false` LIEFERT ODER WIRFT. Bliebe das Modal offen, fing die Abdunkelung weiter
+ * jeden Klick.
  *
- * `body.appendChild(host)` IST DIE LETZTE ANWEISUNG (Invariante I3): Alle Listener sind
- * gebunden, bevor die Abdunkelung im Dokument steht. M14 haelt das.
+ * `body.appendChild(host)` IST DIE LETZTE ANWEISUNG (Invariante I3 der Scheibe 11.5d-2; seit
+ * Scheibe 11.5e-1 ausdruecklich fuer JEDEN Listener des Blocks, auch einen kuenftigen an einem
+ * Gruppen-Schalter): Alle Listener sind gebunden, bevor die Abdunkelung im Dokument steht.
+ * M14 haelt das.
  *
- * DIE SECHS SCHLUESSEL KOMMEN AUS ALL_CONSENT_KEYS, nie aus einer zweiten Liste.
+ * DIE SCHLUESSEL KOMMEN AUS ALL_CONSENT_KEYS bzw. CONSENT_GROUP_KEYS, nie aus einer zweiten
+ * Liste.
  */
 export function buildConsentModalScript(): string {
   return `<script id="${CONSENT_MODAL_SCRIPT_ID}">
@@ -117,7 +125,7 @@ export function buildConsentModalScript(): string {
   if (typeof host.attachShadow !== "function") return;
   var root = host.attachShadow({ mode: "open" });
   var style = document.createElement("style");
-  style.textContent = ${JSON.stringify(CONSENT_MODAL_CSS)};
+  style.textContent = ${JSON.stringify(CONSENT_MODAL_CSS + CONSENT_CHOICE_CSS)};
   root.appendChild(style);
   var backdrop = document.createElement("div");
   backdrop.setAttribute("class", "backdrop");
@@ -128,23 +136,10 @@ export function buildConsentModalScript(): string {
   dialog.setAttribute("aria-label", ${JSON.stringify(CONSENT_MODAL_DIALOG_LABEL)});
   var text = document.createElement("p");
   text.setAttribute("class", "text");
-  text.textContent = ${JSON.stringify(CONSENT_BAR_TEXT)};
+  text.textContent = ${JSON.stringify(CONSENT_TEXT)};
   dialog.appendChild(text);
-  function makeButton(label, granted) {
-    var b = document.createElement("button");
-    b.setAttribute("type", "button");
-    b.textContent = label;
-    b.addEventListener("click", function () {
-      try {
-        api.write(granted.slice());
-      } finally {
-        if (host.parentNode) host.parentNode.removeChild(host);
-      }
-    });
-    return b;
-  }
-  dialog.appendChild(makeButton(${JSON.stringify(CONSENT_BAR_ACCEPT_LABEL)}, ${JSON.stringify([...ALL_CONSENT_KEYS])}));
-  dialog.appendChild(makeButton(${JSON.stringify(CONSENT_BAR_REJECT_LABEL)}, []));
+${CONSENT_CHOICE_JS}
+  fillChoice(dialog);
   root.appendChild(dialog);
   body.appendChild(host);
 })();

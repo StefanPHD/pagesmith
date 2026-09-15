@@ -194,7 +194,8 @@ export type ProjectSettings = {
   // plattform-agnostisch neben pixels/capi/hosting, aus demselben Grund wie hosting:
   // kein Pixel, sondern eine Aussage ueber den AUSGELIEFERTEN TEXT.
   //   dialog = SEIT SCHEIBE 11.5d DIE QUELLE: welche Einwilligungs-Oberflaeche die
-  //            publizierte Seite traegt. Gelesen AUSSCHLIESSLICH ueber
+  //            publizierte Seite traegt — keine, Leiste oder Modal (11.5d-2). Gelesen
+  //            AUSSCHLIESSLICH ueber
   //            getConsentDialog — der Typ ist `unknown`, weil der Blob ungepruefte
   //            Client-Eingabe ist und niemand den Wert ohne Leser verwenden soll.
   //   gate   = ALTBESTAND aus 11.5a bis 11.5c. Nur noch gelesen, nie geschrieben;
@@ -210,7 +211,7 @@ export type ProjectSettings = {
   // auseinanderlaufen.
   // DER PREIS STEHT DAZU: Ein alter Browser-Tab kann den Blob ganzheitlich
   // ueberschreiben und den Schalter still ausknipsen. Der Zustand danach ist: keine
-  // Leiste, alle Ziele erlaubt.
+  // Oberflaeche, alle Ziele erlaubt.
   // SEIT ES DIE LEISTE GIBT (Scheibe 11.5d), IST DAS NICHT MEHR HARMLOS: Ein Besucher,
   // der abgelehnt hat, wird nach dem naechsten Veroeffentlichen wieder getrackt, weil
   // bei AUS keine Wiederherstellung entsteht. Ein unbekannter Wert ist davon
@@ -730,13 +731,20 @@ export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
 }
 
 /**
- * DIE GEBAUTEN WERTE DES EINWILLIGUNGS-SCHALTERS (Phase 11.5, Scheibe 11.5d).
- * "off" = keine Leiste; "bar" = die Einwilligungs-Leiste am unteren Rand.
+ * DIE GEBAUTEN WERTE DES EINWILLIGUNGS-SCHALTERS (Phase 11.5, Scheiben 11.5d und 11.5d-2).
+ * "off" = keine Oberflaeche; "bar" = die Einwilligungs-Leiste am unteren Rand;
+ * "modal" = das Fenster in der Mitte ueber einer Abdunkelung.
  * EIN WERT STEHT HIER ERST, WENN SEIN BLOCK GEBAUT IST — das Bedienelement bietet
  * genau diese Werte an, und ein Wert ohne Block wuerde beim Veroeffentlichen
- * verweigert. Das Modal kommt mit Scheibe 11.5d-2 dazu.
+ * verweigert. Welche Bloecke ein Wert traegt, entscheidet allein consentBlocksFor in
+ * src/lib/analytics/pageview-emitter.ts; ein neuer Wert hier macht dort den
+ * `never`-Zweig zum Compiler-Fehler.
+ * KEIN WERT TRAEGT JE DAS PRAEFIX `__ps_` — der Namensraum gehoert eigenen Kennungen im
+ * ausgelieferten Text. Deshalb dient ein `__ps_`-Wert in den Tests als Beleg fuer einen
+ * unbekannten Wert. DAS IST EINE PLAN-SETZUNG (Bau-Plan der Scheibe 11.5d-2), KEINE
+ * BESTANDSREGEL: Vorher stand sie nirgends.
  */
-export const CONSENT_DIALOGS = ["off", "bar"] as const;
+export const CONSENT_DIALOGS = ["off", "bar", "modal"] as const;
 export type ConsentDialog = (typeof CONSENT_DIALOGS)[number];
 
 /**
@@ -760,8 +768,8 @@ export const CONSENT_DIALOG_UNKNOWN_MESSAGE =
  * 11.5d) — der EINZIGE Leser des Schalters.
  *
  * DIE VORRANG-REGEL IST DIE REIHENFOLGE DER ZWEI ZWEIGE:
- * 1. `dialog` ist da (`!== undefined`): "off" und "bar" gelten, JEDER andere Wert —
- *    auch null, "BAR", "", true, 1 — ist "unknown".
+ * 1. `dialog` ist da (`!== undefined`): "off", "bar" und "modal" gelten, JEDER andere
+ *    Wert — auch null, "BAR", "", true, 1 — ist "unknown".
  * 2. Sonst ALTBESTAND: `gate === true` heisst "bar", alles andere "off". Das ist die
  *    Strenge von 11.5a unveraendert: ein altes `gate` mit anderem Wert als true
  *    bleibt AUS.
@@ -774,7 +782,9 @@ export const CONSENT_DIALOG_UNKNOWN_MESSAGE =
 export function getConsentDialog(settings: ProjectSettings): ConsentDialogRead {
   const dialog = settings.consent?.dialog;
   if (dialog !== undefined) {
-    return dialog === "off" || dialog === "bar" ? dialog : "unknown";
+    return dialog === "off" || dialog === "bar" || dialog === "modal"
+      ? dialog
+      : "unknown";
   }
   return settings.consent?.gate === true ? "bar" : "off";
 }

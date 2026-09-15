@@ -13,6 +13,7 @@ import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 import {
   TRACKING_TARGETS,
   isTargetDeliverable,
+  type ConsentDialog,
   type ProjectSettings,
 } from "@/lib/settings";
 import {
@@ -51,7 +52,7 @@ const MAPPINGS: Mapping[] = [
   { elementId: "ps-bbbbbb", type: "track", config: { event: "Purchase" } },
 ];
 
-function deliver(consentGateOn: boolean): string {
+function deliver(consentDialog: ConsentDialog): string {
   const consentTargets = TRACKING_TARGETS.filter((t) =>
     isTargetDeliverable(SETTINGS, t)
   ).map((t) => CONSENT_KEY_BY_TARGET[t]);
@@ -61,7 +62,7 @@ function deliver(consentGateOn: boolean): string {
     capiProxyUrl: PROXY,
     consentTargets,
   });
-  return injectPageViewEmitter(functional, TRACKING_KEY, consentGateOn);
+  return injectPageViewEmitter(functional, TRACKING_KEY, consentDialog);
 }
 
 describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {
@@ -78,7 +79,7 @@ describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {
     "a953b21e5683129da7868e01efa8a07a10334f29c09cabbfbed1da145fc04faa";
 
   it("T1: bei AUSGESCHALTETEM Schalter ist der ausgelieferte Text BYTE-GLEICH zu vor der Scheibe", () => {
-    const out = deliver(false);
+    const out = deliver("off");
     // DER DISKRIMINATOR GEGEN EINEN NEBENEFFEKT-ZWEIG: Diese Fixture hat eine
     // NICHT-LEERE Schluesselmenge. Haenge der Zweig an der Leere einer Menge statt
     // am Schalter, entstuende hier ein Setzer und beide Zusicherungen fielen.
@@ -91,7 +92,7 @@ describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {
   });
 
   it("T2 (POSITIVKONTROLLE zu T1): bei EINGESCHALTETEM Schalter steht der Setzer im Text, und zwar VOR dem PageView-Script", () => {
-    const out = deliver(true);
+    const out = deliver("bar");
     expect(out).toContain(`id="${CONSENT_SETTER_SCRIPT_ID}"`);
     // DIE REIHENFOLGE IST DIE EIGENTLICHE AUSSAGE: Der Setzer muss vor dem Emitter
     // stehen, sonst feuert der erste Seitenaufruf, bevor ein Urteil da ist.

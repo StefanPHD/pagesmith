@@ -618,7 +618,9 @@ describe("publishProject — domains-Zeile ist die alleinige Wahrheit", () => {
 // LEER-RIEGEL (Scheibe Leere-Variante-Riegel)
 //
 // Der Befund: publishProject injiziert NACH jeder Pruefung den PageView-Emitter.
-// injectPageViewEmitter("", key) liefert den reinen Emitter (~716 Zeichen) -> das
+// injectPageViewEmitter("", key, form) liefert fuer JEDE Form einen nicht-leeren String —
+// mindestens den Consent-Gate-Block und das PageView-Script, bei "bar" und "modal" dazu
+// Wiederherstellung, Oberflaeche und Setzer -> das
 // Ergebnis ist NICHT leer, nonEmptyHtml haelt es fuer auslieferbar, und der
 // Besucher bekommt eine visuell leere Seite. Der Riegel greift deshalb VOR der
 // Injektion, auf dem EINGEHENDEN functionalHtml beider Varianten.
@@ -901,7 +903,10 @@ describe("publishProject — die Werte des Schalters (Scheibe 11.5d)", () => {
     const res = await publishProject(
       "proj-1",
       "<html><body>VARIANTE A</body></html>",
-      { ...snapshot, settings: { consent: { dialog: "modal" } } },
+      // DER UNBEKANNT-BELEG TRAEGT DAS PRAEFIX `__ps_` (seit Scheibe 11.5d-2): Ein realistischer
+      // String, der nie ein Schalter-Wert wird, weil der Namensraum eigenen Kennungen gehoert —
+      // Plan-Setzung am Docblock von CONSENT_DIALOGS. Bis dahin stand hier "modal".
+      { ...snapshot, settings: { consent: { dialog: "__ps_unknown" } } },
       variantB11_5d
     );
     expect(res).toEqual({ ok: false, error: MESSAGE_UNBEKANNT });
@@ -936,6 +941,50 @@ describe("publishProject — die Werte des Schalters (Scheibe 11.5d)", () => {
       expect(html).toContain('id="__ps_clb"');
       expect(html.indexOf('id="__ps_cnr"')).toBeLessThan(html.indexOf('id="__ps_clb"'));
       expect(html.indexOf('id="__ps_clb"')).toBeLessThan(html.indexOf('id="__ps_cns"'));
+      // Leiste und Modal schliessen einander aus (Scheibe 11.5d-2).
+      expect(html).not.toContain('id="__ps_cmo"');
+    }
+  });
+
+  // P4 UND P4b (Scheibe 11.5d-2): das Modal in BEIDEN Varianten, an der Stelle der Leiste.
+  // Die Erwartungen stammen aus dem Zuschnitt: zwischen Wiederherstellung und Setzer,
+  // und nie zusammen mit der Leiste.
+  it("P4: 'modal' -> das Modal in BEIDEN Varianten, zwischen Wiederherstellung und Setzer, keine Leiste", async () => {
+    const { rec } = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      { ...snapshot, settings: { consent: { dialog: "modal" } } },
+      variantB11_5d
+    );
+    expect(res.ok).toBe(true);
+    const patch = rec.updatePatch as Patch;
+    for (const html of [patch.published_content.html, patch.published_content.variantB.html]) {
+      expect(html).toContain('id="__ps_cmo"');
+      expect(html.indexOf('id="__ps_cnr"')).toBeGreaterThan(-1);
+      expect(html.indexOf('id="__ps_cnr"')).toBeLessThan(html.indexOf('id="__ps_cmo"'));
+      expect(html.indexOf('id="__ps_cmo"')).toBeLessThan(html.indexOf('id="__ps_cns"'));
+      expect(html).not.toContain('id="__ps_clb"');
+    }
+  });
+
+  it("P4b: 'modal' neben dem Altbestand `gate: true` -> der neue gewinnt, Modal statt Leiste", async () => {
+    const { rec } = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>VARIANTE A</body></html>",
+      { ...snapshot, settings: { consent: { gate: true, dialog: "modal" } } },
+      variantB11_5d
+    );
+    expect(res.ok).toBe(true);
+    const patch = rec.updatePatch as Patch;
+    for (const html of [patch.published_content.html, patch.published_content.variantB.html]) {
+      expect(html).toContain('id="__ps_cmo"');
+      expect(html).not.toContain('id="__ps_clb"');
+      // Das Modal traegt dieselben Nachbarn wie die Leiste: Wiederherstellung und Setzer.
+      expect(html.indexOf('id="__ps_cnr"')).toBeGreaterThan(-1);
+      expect(html.indexOf('id="__ps_cnr"')).toBeLessThan(html.indexOf('id="__ps_cmo"'));
+      expect(html.indexOf('id="__ps_cmo"')).toBeLessThan(html.indexOf('id="__ps_cns"'));
     }
   });
 
@@ -951,6 +1000,7 @@ describe("publishProject — die Werte des Schalters (Scheibe 11.5d)", () => {
     const patch = rec.updatePatch as Patch;
     for (const html of [patch.published_content.html, patch.published_content.variantB.html]) {
       expect(html).not.toContain('id="__ps_clb"');
+      expect(html).not.toContain('id="__ps_cmo"');
       expect(html).not.toContain('id="__ps_cns"');
       expect(html).toContain('id="__ps_pve"');
     }

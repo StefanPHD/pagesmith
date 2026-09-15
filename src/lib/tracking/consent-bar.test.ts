@@ -57,7 +57,7 @@ function installBeacon(): BeaconSpy {
 
 function scriptsOf(html: string, on: boolean): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(html, KEY, on),
+    injectPageViewEmitter(html, KEY, on ? "bar" : "off"),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -90,7 +90,11 @@ function button(label: string): HTMLButtonElement {
 
 function aufraeumen(): void {
   for (const g of GLOBALS) delete w[g];
-  hosts().forEach((el) => el.remove());
+  // SEIT SCHEIBE 11.5d-2 AUCH DER HOST DES MODALS: Ein Modal aus einer anderen Testdatei
+  // desselben Laufs darf hier nicht stehen bleiben.
+  document
+    .querySelectorAll("pagesmith-bar, pagesmith-modal")
+    .forEach((el) => el.remove());
 }
 
 beforeEach(() => {
@@ -117,13 +121,13 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   });
 
   it("L1: Schalter AUS -> kein Leisten-Block (Positivkontrolle: Emitter da)", () => {
-    const out = injectPageViewEmitter(HTML, KEY, false);
+    const out = injectPageViewEmitter(HTML, KEY, "off");
     expect(out).not.toContain(BAR_ID);
     expect(out).toContain('id="__ps_pve"');
   });
 
   it("L2: Schalter AN -> Gate < Wiederherstellung < Leiste < Setzer < Emitter", () => {
-    const out = injectPageViewEmitter(HTML, KEY, true);
+    const out = injectPageViewEmitter(HTML, KEY, "bar");
     const gate = out.indexOf('id="pagesmith-consent"');
     const restore = out.indexOf('id="__ps_cnr"');
     const bar = out.indexOf(BAR_ID);
@@ -162,7 +166,7 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
     const mitDaten =
       '<html><body><h1>x</h1><script type="application/json" id="pagesmith-mappings">[]</scr' +
       "ipt></body></html>";
-    const out = injectPageViewEmitter(mitDaten, KEY, true);
+    const out = injectPageViewEmitter(mitDaten, KEY, "bar");
     for (const nadel of [
       "pagesmith-consent",
       "pagesmith-mappings",

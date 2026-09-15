@@ -215,8 +215,9 @@ export default function PublishView({
           traegt die Live-Seite den Schalter nicht.
           SEIT SCHEIBE 11.5d EINE GRUPPE AUS OPTIONSFELDERN STATT EINES
           KONTROLLKAESTCHENS: Ein Kontrollkaestchen traegt nicht mehr als zwei
-          Zustaende, und mit Scheibe 11.5d-2 kommt ein dritter. ANGEBOTEN WIRD NUR, WAS
-          GEBAUT IST — ein Wert ohne Block wuerde beim Veroeffentlichen verweigert.
+          Zustaende; seit Scheibe 11.5d-2 sind es drei (Aus, Leiste, Fenster). ANGEBOTEN
+          WIRD NUR, WAS GEBAUT IST — ein Wert ohne Block wuerde beim Veroeffentlichen
+          verweigert.
           DER HINWEIS BEI "unknown" leitet sich aus settings ab, nicht aus dem
           Publish-Kanal: resetDrawerStatusChannel leert publishError beim Oeffnen des
           Drawers, dieser Hinweis steht dagegen, solange der Wert im Blob liegt. Er
@@ -227,7 +228,7 @@ export default function PublishView({
         <h2 className="mb-1 text-sm font-medium text-gray-700">Einwilligung</h2>
         <div
           role="radiogroup"
-          aria-label="Einwilligungs-Leiste"
+          aria-label="Einwilligungs-Oberfläche"
           className="space-y-2 rounded-md border border-gray-200 px-3 py-2 text-xs text-gray-600"
         >
           <label className="flex items-start gap-2">
@@ -241,7 +242,7 @@ export default function PublishView({
             <span>
               <span className="font-medium text-gray-700">Aus</span>
               <br />
-              Keine Einwilligungs-Leiste. Ohne eigenes Consent-Management auf der
+              Keine Einwilligungs-Oberfläche. Ohne eigenes Consent-Management auf der
               Seite gelten alle Ziele als erlaubt.
             </span>
           </label>
@@ -260,6 +261,22 @@ export default function PublishView({
               „Ablehnen“. Bis zur Entscheidung wird nichts gesendet.
             </span>
           </label>
+          <label className="flex items-start gap-2">
+            <input
+              type="radio"
+              name="consent-dialog"
+              className="mt-0.5"
+              checked={consentDialog === "modal"}
+              onChange={() => onConsentDialogChange("modal")}
+            />
+            <span>
+              <span className="font-medium text-gray-700">Fenster</span>
+              <br />
+              In der Mitte der Seite erscheint ein Fenster über einer Abdunkelung,
+              mit „Alle akzeptieren“ und „Ablehnen“. Die Seite dahinter wird nicht
+              gesperrt. Bis zur Entscheidung wird nichts gesendet.
+            </span>
+          </label>
           {consentDialog === "unknown" && (
             <p className="text-red-600">
               Gespeichert ist ein unbekannter Wert. Veröffentlichen wird verweigert,
@@ -268,7 +285,8 @@ export default function PublishView({
           )}
           <p>
             Ein bereits eingebundenes Consent-Management wird nicht erkannt — bei
-            eingeschalteter Leiste erscheint sie zusätzlich.
+            eingeschalteter Leiste oder eingeschaltetem Fenster erscheint unsere
+            Oberfläche zusätzlich.
           </p>
           <p className="text-gray-400">
             Wirkt erst nach dem nächsten Veröffentlichen.

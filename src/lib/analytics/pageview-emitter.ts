@@ -16,8 +16,10 @@ import {
   hasConsentScript,
 } from "@/lib/tracking/consent";
 import { buildConsentBarScript } from "@/lib/tracking/consent-bar";
+import { buildConsentModalScript } from "@/lib/tracking/consent-modal";
 import { buildConsentDenyScript } from "@/lib/tracking/consent-setter";
 import { buildConsentRestoreScript } from "@/lib/tracking/consent-store";
+import type { ConsentDialog } from "@/lib/settings";
 
 const SCRIPT_ID = "__ps_pve";
 
@@ -118,6 +120,31 @@ ${PAGEVIEW_SEND_API}();
 </script>`;
 }
 
+// DIE EINZIGE VERZWEIGUNG UEBER DIE FORMEN DES SCHALTERS (Phase 11.5, Scheibe 11.5d-2).
+// Sie ist ERSCHOEPFEND: Ein weiterer Wert in CONSENT_DIALOGS macht den `never`-Zweig
+// zum Compiler-Fehler, HIER und nirgends sonst. publishProject beantwortet nur noch
+// "bekannt oder unbekannt"; welche Bloecke eine bekannte Form traegt, steht allein hier.
+// - `gateOn` traegt, was vorher der Wahrheitswert trug: Wiederherstellung, Setzer und
+//   die AN-Huelle des PageView-Scripts haengen daran, fuer Leiste und Modal gleich.
+// - `dialog` ist der EINE Oberflaechen-Block; Leiste und Modal schliessen einander aus.
+// DER WURF IM `default` IST EIN TYP-VERTRAG, KEIN LAUFZEIT-ZWEIG: Vitest prueft keine
+// Typen, und ein nicht migrierter Aufruf mit `true`/`false` liefe sonst still durch —
+// ohne Oberflaeche und mit einer AUS-Huelle, die niemand bestellt hat.
+function consentBlocksFor(form: ConsentDialog): { gateOn: boolean; dialog: string } {
+  switch (form) {
+    case "off":
+      return { gateOn: false, dialog: "" };
+    case "bar":
+      return { gateOn: true, dialog: buildConsentBarScript() };
+    case "modal":
+      return { gateOn: true, dialog: buildConsentModalScript() };
+    default: {
+      const unhandled: never = form;
+      throw new Error(`consentBlocksFor: unbekannte Form ${String(unhandled)}`);
+    }
+  }
+}
+
 // Injiziert den Emitter ins fertige HTML. REINE String-Op: letztes </body>
 // case-insensitiv per lastIndexOf auf dem Lowercase-Klon (laengengleich -> Index passt
 // 1:1 aufs Original), Script davor einfuegen; fehlt </body>, ans Ende anhaengen (ein
@@ -125,14 +152,17 @@ ${PAGEVIEW_SEND_API}();
 export function injectPageViewEmitter(
   html: string,
   trackingKey: string,
-  // DER EINWILLIGUNGS-SCHALTER DES PROJEKTS (Phase 11.5, Scheibe 11.5a).
+  // DIE FORM DES EINWILLIGUNGS-SCHALTERS (Phase 11.5; Wahrheitswert seit 11.5a, Form
+  // seit 11.5d-2). Ein UNBEKANNTER Wert erreicht diese Funktion nicht — publishProject
+  // verweigert ihn vorher (bindende Entscheidung (16) der Phase 11.5).
   //
-  // PFLICHT-PARAMETER OHNE VORGABEWERT, UND DAS IST ABSICHT: Ein `= false` liesse
+  // PFLICHT-PARAMETER OHNE VORGABEWERT, UND DAS IST ABSICHT: Ein `= "off"` liesse
   // jeden kuenftigen Aufrufer den Schalter stillschweigend uebergehen — der Setzer
   // fehlte dann auf einem neuen Auslieferungsweg, ohne dass irgendwo etwas rot wird.
   // So muss jede Aufrufstelle entscheiden, und der Compiler fragt.
-  consentGateOn: boolean
+  consentDialog: ConsentDialog
 ): string {
+  const { gateOn, dialog } = consentBlocksFor(consentDialog);
   // ZWEITE EINFUEGESTELLE DES GETEILTEN CONSENT-GATES (Phase 11, zweite Scheibe).
   // Sie ist noetig, weil eine publizierte Seite OHNE Mappings KEIN Wiring traegt —
   // dann kaeme der Block aus generate.ts nicht, und die publizierte Seite haette
@@ -170,32 +200,19 @@ export function injectPageViewEmitter(
   // byte-gleich zu dem vor dieser Scheibe. Das ist die tragende Invariante der
   // Scheibe und wird von einem Test gegen einen VOR dem Bau erzeugten Vergleichswert
   // gehalten, nicht von diesem Kommentar.
-  const setter = consentGateOn ? buildConsentDenyScript() : "";
+  const setter = gateOn ? buildConsentDenyScript() : "";
   // DIE WIEDERHERSTELLUNG (Phase 11.5, Scheibe 11.5b) — derselbe explizite Zweig am
   // Schalter wie beim Setzer, aus demselben Grund. Bei AUS entsteht sie nicht.
-  const restore = consentGateOn ? buildConsentRestoreScript() : "";
-  // DIE EINWILLIGUNGS-LEISTE (Phase 11.5, Scheibe 11.5d) — derselbe explizite Zweig am
-  // Schalter. Bei AUS entsteht sie nicht, und der Text bleibt byte-gleich (T1).
-  // DIE AEQUIVALENZ IST BEKANNT UND WIRD HIER BENANNT, NICHT VERSTECKT: `consentGateOn`
-  // und `restore !== ""` sind fuer JEDE Eingabe gleichbedeutend, und KEIN TEST TRENNT
-  // SIE. Getragen wird die Unterscheidung allein von DIESER Zeile und diesem
-  // Kommentar: Ein Zweig an der Leere eines anderen Bausteins ist genau der
-  // Nebeneffekt, gegen den Setzer und Wiederherstellung explizit am Schalter
-  // abzweigen. Wer die Zeile "vereinfacht", merkt es an keinem roten Test.
-  // Der Parameter bleibt ein Wahrheitswert: Welche Oberflaeche ausgeliefert wird,
-  // entscheidet publishProject ueber getConsentDialog; heute ist AN gleich LEISTE.
-  // Mit dem Modal (Scheibe 11.5d-2) aendert sich das: Die never-Pruefung in
-  // publishProject macht den neuen Wert dort zum Compiler-Fehler, und wer ihn
-  // behandelt, muss entscheiden, was dieser Parameter dann traegt. DIESE Zeile selbst
-  // meldet der Compiler NICHT.
-  const bar = consentGateOn ? buildConsentBarScript() : "";
+  const restore = gateOn ? buildConsentRestoreScript() : "";
+  // DIE OBERFLAECHE — Leiste (11.5d) ODER Modal (11.5d-2), nie beide — kommt fertig aus
+  // consentBlocksFor. Bei AUS ist sie leer, und der Text bleibt byte-gleich (T1).
   // EINE KONKATENATION, EINE EINFUEGESTELLE — und daran haengt die REIHENFOLGE im
-  // Dokument: Gate, dann Wiederherstellung, dann Leiste, dann Setzer, dann der
+  // Dokument: Gate, dann Wiederherstellung, dann Oberflaeche, dann Setzer, dann der
   // PageView-Emitter. Die Wiederherstellung MUSS vor dem Setzer stehen, sonst schreibt
   // er "abgelehnt", bevor eine gespeicherte Entscheidung den Hook belegen kann. Die
-  // Leiste MUSS zwischen beiden stehen: Nur dort trennt EINE Pruefung auf den Hook die
-  // Faelle, in denen sie nicht erscheinen darf — hinter dem Setzer ist der Hook immer
-  // belegt. Der Setzer MUSS vor dem Emitter stehen, sonst feuert der erste
+  // Oberflaeche MUSS zwischen beiden stehen: Nur dort trennt EINE Pruefung auf den Hook
+  // die Faelle, in denen sie nicht erscheinen darf — hinter dem Setzer ist der Hook
+  // immer belegt. Der Setzer MUSS vor dem Emitter stehen, sonst feuert der erste
   // Seitenaufruf, bevor ein Urteil da ist.
   // EINE ZWEITE EINFUEGESTELLE WAERE DER BRUCH: Dann entschiede die Aufrufreihenfolge
   // zweier Funktionen ueber die Dokumentordnung, und nichts wuerde rot, wenn sie sich
@@ -209,7 +226,7 @@ export function injectPageViewEmitter(
   // eines anderen Bausteins haengt, ist genau der Nebeneffekt, gegen den Setzer und
   // Wiederherstellung oben explizit am Schalter abzweigen.
   const script =
-    gate + restore + bar + setter + buildPageViewScript(trackingKey, consentGateOn);
+    gate + restore + dialog + setter + buildPageViewScript(trackingKey, gateOn);
   const idx = html.toLowerCase().lastIndexOf("</body>");
   if (idx === -1) return html + script;
   return html.slice(0, idx) + script + html.slice(idx);

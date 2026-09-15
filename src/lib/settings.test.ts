@@ -263,14 +263,22 @@ describe("getConsentDialog — der Leser des Schalters (Scheibe 11.5d)", () => {
     // Der neue Schluessel.
     expect(getConsentDialog({ consent: { dialog: "off" } })).toBe("off");
     expect(getConsentDialog({ consent: { dialog: "bar" } })).toBe("bar");
+    // SEIT SCHEIBE 11.5d-2 EIN GEBAUTER WERT — auch neben einem Altbestand.
+    expect(getConsentDialog({ consent: { dialog: "modal" } })).toBe("modal");
+    expect(getConsentDialog({ consent: { gate: true, dialog: "modal" } })).toBe("modal");
     // DIE VORRANG-REGEL, in beide Richtungen.
     expect(getConsentDialog({ consent: { gate: true, dialog: "off" } })).toBe("off");
     expect(getConsentDialog({ consent: { gate: false, dialog: "bar" } })).toBe("bar");
     // UNBEKANNT — nie auf off abgebildet, auch nicht neben einem gate: true.
-    for (const v of ["modal", "BAR", "Off", "", null, true, false, 1, {}, []]) {
+    // DER BELEG TRAEGT DAS PRAEFIX `__ps_`: Kein Schalter-Wert traegt es je (Plan-Setzung
+    // der Scheibe 11.5d-2, am Docblock von CONSENT_DIALOGS) — bis dahin stand hier
+    // "modal", und der Beleg wurde mit dem Bau seines Werts falsch.
+    for (const v of ["__ps_unknown", "MODAL", "BAR", "Off", "", null, true, false, 1, {}, []]) {
       expect(getConsentDialog({ consent: { dialog: v } })).toBe("unknown");
     }
-    expect(getConsentDialog({ consent: { gate: true, dialog: "modal" } })).toBe("unknown");
+    expect(getConsentDialog({ consent: { gate: true, dialog: "__ps_unknown" } })).toBe(
+      "unknown"
+    );
   });
 
   it("S2: der Setzer schreibt den neuen Schluessel und laesst alle anderen Mitglieder stehen", () => {
@@ -297,8 +305,14 @@ describe("getConsentDialog — der Leser des Schalters (Scheibe 11.5d)", () => {
     expect(settingsEqual(leiste, aus)).toBe(false);
     expect(settingsEqual({}, leiste)).toBe(false);
     expect(
-      settingsEqual({ consent: { dialog: "bar" } }, { consent: { dialog: "modal" } })
+      settingsEqual({ consent: { dialog: "bar" } }, { consent: { dialog: "__ps_unknown" } })
     ).toBe(false);
+    // SEIT SCHEIBE 11.5d-2: zwei gebaute AN-Formen sind ungleich, und das Modal ist
+    // ungleich einem unbekannten Wert — beide waeren unter `!== "off"` gleich.
+    const fenster = setConsentDialog({}, "modal");
+    expect(settingsEqual(leiste, fenster)).toBe(false);
+    expect(settingsEqual(fenster, { consent: { dialog: "__ps_unknown" } })).toBe(false);
+    expect(settingsEqual(fenster, { consent: { dialog: "modal" } })).toBe(true);
     // POSITIVKONTROLLEN, im selben Lauf: kein false-dirty.
     expect(settingsEqual({}, {})).toBe(true);
     expect(settingsEqual({}, { pixels: {} })).toBe(true);

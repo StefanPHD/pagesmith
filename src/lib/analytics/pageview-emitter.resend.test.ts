@@ -6,7 +6,7 @@ import { CONSENT_STORE_KEY } from "@/lib/tracking/consent-store";
 
 // SCHEIBE 11.5c — DER NACHGEHOLTE SEITENAUFRUF.
 //
-// DIE ERWARTUNGEN STAMMEN AUS DEM ZUSCHNITT (docs/aktiver-stand.md, Abschnitt 14) UND DEM
+// DIE ERWARTUNGEN STAMMEN AUS DEN ENTSCHEIDUNGEN DER SCHEIBE 11.5c (Phase 11.5) UND DEM
 // FREIGEGEBENEN PLAN, NIE AUS DEM CODE: der Name der Sende-Logik, die Adresse, die
 // Schluesselmenge der Nutzlast und die sechs Einwilligungs-Schluessel stehen hier als
 // Literal. Der Vergleichswert des AUS-Zweigs (N8) ist VOR der ersten Aenderung erhoben.
@@ -53,7 +53,7 @@ function installBeacon(): BeaconSpy {
 /** Die Script-Elemente des ausgelieferten Dokuments bei eingeschaltetem Schalter. */
 function scriptsOfPublishedPage(): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(HTML, KEY, true),
+    injectPageViewEmitter(HTML, KEY, "bar"),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -81,14 +81,20 @@ beforeEach(() => {
   // HYGIENE SEIT SCHEIBE 11.5d: Bei eingeschaltetem Schalter wertet mount() auch den
   // Leisten-Block aus, und der haengt ein Element an das Testdokument. Ohne diese Zeile
   // bliebe es ueber den Lauf hinaus stehen. Keine Assertion dieser Datei liest das DOM.
-  document.querySelectorAll("pagesmith-bar").forEach((el) => el.remove());
+  // SEIT SCHEIBE 11.5d-2 RAEUMT DER SELEKTOR AUCH DEN HOST DES MODALS: mount() laeuft hier
+  // mit der Leiste, aber ein Tag-gebundenes Aufraeumen liesse jeden anderen Host stehen.
+  document
+    .querySelectorAll("pagesmith-bar, pagesmith-modal")
+    .forEach((el) => el.remove());
 });
 afterEach(() => {
   vi.restoreAllMocks();
   delete (navigator as unknown as Mutable).sendBeacon;
   for (const g of GLOBALS) delete w[g];
   window.localStorage.clear();
-  document.querySelectorAll("pagesmith-bar").forEach((el) => el.remove());
+  document
+    .querySelectorAll("pagesmith-bar, pagesmith-modal")
+    .forEach((el) => el.remove());
 });
 
 describe("11.5c — der nachgeholte Seitenaufruf, am echten Text", () => {
@@ -103,7 +109,10 @@ describe("11.5c — der nachgeholte Seitenaufruf, am echten Text", () => {
     expect(beacon).toHaveBeenCalledTimes(1);
     const [url] = beacon.mock.calls[0] as unknown as [string, Blob];
     expect(url).toBe("/api/e");
-    // NICHT KENNTLICH GEMACHT (Abschnitt 14): dieselben drei Schluessel wie beim Laden.
+    // DER NACHGESENDETE SEITENAUFRUF WIRD NICHT KENNTLICH GEMACHT (Architekt-Entscheidung
+    // 2026-09-14): Er ist dieselbe Zeile wie jeder andere Seitenaufruf, weil keine
+    // Lesefunktion eine solche Unterscheidung liest — also dieselben drei Schluessel wie
+    // beim Laden, kein zusaetzliches Feld.
     const payload = await payloadOf(beacon, 0);
     expect(Object.keys(payload).sort()).toEqual(["event", "eventID", "trackingKey"]);
     expect(payload.event).toBe(PAGEVIEW_EVENT);
@@ -216,6 +225,6 @@ describe("11.5c — die Gestalt des Erzeugers", () => {
     expect(on.endsWith("</script>")).toBe(true);
     expect(on.toLowerCase()).not.toContain("</body>");
     // POSITIVKONTROLLE der Abwesenheit: dieselbe Suche trifft im ausgelieferten Dokument.
-    expect(injectPageViewEmitter(HTML, KEY, true).toLowerCase()).toContain("</body>");
+    expect(injectPageViewEmitter(HTML, KEY, "bar").toLowerCase()).toContain("</body>");
   });
 });

@@ -1517,9 +1517,11 @@ export async function publishProject(
   // "live". Hier oben schreibt die Ablehnung GAR NICHTS (Invariante i).
   //
   // WARUM AUF DEM EINGEHENDEN functionalHtml: weil der Server gleich SELBST Inhalt
-  // hinzufuegt. injectPageViewEmitter("", key) liefert den reinen Emitter (~716
-  // Zeichen) -> eine Pruefung NACH der Injektion saehe immer "nicht leer" und der
-  // Besucher bekaeme eine visuell leere Seite. Geprueft wird exakt der String, der
+  // hinzufuegt. injectPageViewEmitter("", key, form) liefert fuer JEDE Form einen
+  // NICHT-LEEREN String — mindestens den Consent-Gate-Block und das PageView-Script, bei
+  // "bar" und "modal" dazu Wiederherstellung, Oberflaeche und Setzer -> eine Pruefung
+  // NACH der Injektion saehe immer "nicht leer" und der Besucher bekaeme eine visuell
+  // leere Seite. Geprueft wird exakt der String, der
   // publiziert wird; dazwischen liegt nichts als die Injektion.
   //
   // hasVariantB && variantB IST DIESELBE BEDINGUNG wie beim Bau von
@@ -1572,26 +1574,15 @@ export async function publishProject(
   // stammen Schalter und Schluessel nachweislich aus EINEM Objekt; das ist die
   // Begruendung, auf der die Ablage im Einstellungs-Blob ruht.
   //
-  // DIE never-PRUEFUNG IST PFLICHT, NICHT KUER: Kommt ein Wert zu ConsentDialog hinzu
-  // (das Modal, Scheibe 11.5d-2), bricht hier der BUILD — statt dass der neue Wert
-  // still in einem der zwei Zweige landet. Eine Projektion wie `=== "bar"` machte das
-  // Modal lautlos zu AUS.
+  // HIER FAELLT NUR "BEKANNT ODER UNBEKANNT" (seit Scheibe 11.5d-2). Welche Bloecke eine
+  // bekannte Form traegt, entscheidet allein consentBlocksFor in
+  // lib/analytics/pageview-emitter.ts — dort steht die EINE erschoepfende Verzweigung
+  // mit der never-Pruefung, und ein weiterer Wert in ConsentDialog bricht dort den
+  // BUILD. Nach dieser Zeile ist der Typ auf ConsentDialog eingeengt; eine zweite
+  // Verzweigung ueber die Formen hier waere ein zweiter Ort derselben Entscheidung.
   const consentDialog = getConsentDialog(snapshot.settings);
-  let consentGateOn: boolean;
-  switch (consentDialog) {
-    case "off":
-      consentGateOn = false;
-      break;
-    case "bar":
-      consentGateOn = true;
-      break;
-    case "unknown":
-      return { ok: false, error: CONSENT_DIALOG_UNKNOWN_MESSAGE };
-    default: {
-      const unhandled: never = consentDialog;
-      return unhandled;
-    }
-  }
+  if (consentDialog === "unknown")
+    return { ok: false, error: CONSENT_DIALOG_UNKNOWN_MESSAGE };
 
   const currentSettings = (owned.settings ?? {}) as ProjectSettings;
   const publishedAt = new Date().toISOString();
@@ -1704,10 +1695,11 @@ export async function publishProject(
   // und loest den frueheren Ordering-Bug (Injektion NACH der Key-Sicherung, im HTML, das
   // gleich gespeichert wird). functionalHtml ist pro Publish frisch vom Client -> kein
   // Doppel-Inject. Der Emitter kommt DANEBEN — die CAPI-Wiring bleibt byte-gleich.
-  // DER EINWILLIGUNGS-SCHALTER (consentGateOn) ist OBEN vor dem Label-Block gelesen
-  // und entschieden (Scheibe 11.5d); hier wird er nur weitergereicht.
+  // DER EINWILLIGUNGS-SCHALTER (consentDialog) ist OBEN vor dem Label-Block gelesen und
+  // auf die bekannten Formen eingeengt (Scheiben 11.5d, 11.5d-2); hier wird er nur
+  // weitergereicht.
   const base = {
-    html: injectPageViewEmitter(functionalHtml, trackingKey, consentGateOn),
+    html: injectPageViewEmitter(functionalHtml, trackingKey, consentDialog),
     mappings: snapshot.mappings,
     settings: snapshot.settings,
     publishedAt,
@@ -1740,7 +1732,7 @@ export async function publishProject(
           html: injectPageViewEmitter(
             variantB.functionalHtml,
             trackingKey,
-            consentGateOn
+            consentDialog
           ),
           mappings: variantB.mappings,
         },

@@ -1576,104 +1576,55 @@ liegen beide hier und finden einander.
       Trigger (i) der Primärschlüssel-Entscheidung (s. "## Offene Punkte").
       DIE NUMMER TRÄGT KEINE REIHENFOLGE: 11.6 steht hinter 11.5, weil davor nur
       vier Nummern frei waren — nicht, weil dieses Vorhaben später käme.
-- [ ] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP):
-      NACH Phase 11 und VOR einem Beta-Launch mit fremden Nutzern.
-      DIE NUMMER IST GEWÄHLT, WEIL SIE FREI IST (Präzedenz: 4.5, 10.5): die Phase
-      gehört zwischen 11 und 12, und KEINE bestehende Nummer wird verschoben.
-      GRUND, GEMESSEN am 2026-08-12 (read-only am Code): Pagesmith liefert KEINEN
-      Einwilligungs-Dialog — der Hook wird an zwei Stellen GELESEN und nirgends
-      GESETZT, er ist fremder Betreiber-Code. Ohne gesetzten Hook gelten ALLE Ziele
-      als erlaubt; der Auslieferungs-Zustand einer publizierten Seite ist damit:
-      alle konfigurierten Ziele werden beliefert, ohne dass je jemand gefragt wurde.
-      FOLGE FÜRS PRODUKT, und sie ist der Grund für die eigene Phase: "konform
-      out-of-the-box" trifft heute NICHT zu — die Konformität hängt allein am CMP
-      des Betreibers. ENTSCHIEDEN (Owner 2026-08-12): ein eigener Dialog wird
-      gebaut, ein fremder bleibt einbindbar.
-      IHRE BINDUNGEN — sie sind das, was diese Zeile trägt; das Detail steht in
-      der Standdatei, nicht hier:
-      · ZWEI PRODUZENTEN, EIN VERTRAG: der eigene Dialog UND ein fremdes CMP
-        bedienen DENSELBEN Hook. Er ist produzentenneutral, und der Konsument
-        steht seit Phase 11 — er wird nicht angefasst.
-      · DER VORHER-ZUSTAND IST DIE EIGENTLICHE ARBEIT. Ein Dialog, der erst NACH
-        der Entscheidung setzt, ändert nichts: bis dahin gilt "nicht gesetzt", und
-        der erste Seitenaufruf ist durch. Der eigene Dialog setzt VOR jedem Beacon
-        einen Wert, der Ablehnung bedeutet, und überschreibt ihn nach der
-        Zustimmung.
-        DAS KEHRT DIE HEUTIGE VORGABE UM UND NUR FÜR DEN DIALOG-FALL: Die Regel
-        für den Fremd-CMP-Fall ("nichts gesetzt" heisst, der Betreiber hat nie
-        entschieden) bleibt UNANGETASTET. Die Fail-Closed-Regel ist von beidem
-        nicht berührt — sie gilt dem URTEIL, nicht dessen Abwesenheit.
-      · DIE ZIEL-SCHLÜSSEL SIND EINE EINBAHNSTRASSE: Der Dialog bezieht sie aus
-        DERSELBEN Quelle wie der Erzeuger, NIE aus einer zweiten Liste. Eine
-        Divergenz wäre lautlos — ein unbekannter Schlüssel heisst fail-closed
-        "nicht erlaubt", ohne dass irgendwo etwas rot wird.
-      · DAS RISIKO IST VON ANDERER KLASSE ALS BEI EINEM ADAPTER: Ein fehlerhafter
-        Adapter macht EIN Projekt kaputt, ein fehlerhafter Dialog JEDE Kundenseite
-        gleichzeitig. Ein Betreiber mit eigenem CMP darf NIE von unserem abhängen.
-      · SIE IST EINE PHASE, KEINE SCHEIBE: Granularität, Ablehnen so einfach wie
-        Zustimmen, Widerruf, Speicherung der Entscheidung, Darstellung auf fremden
-        Seiten, Sprache.
-      KEINE BEVORMUNDUNG, ABER EIN HINWEIS (Owner 2026-08-12): Der Betreiber
-      entscheidet eigenverantwortlich über seinen Einwilligungs-Dialog. Wir weisen
-      hin, wir erzwingen nicht.
-      AUSDRÜCKLICH NICHT IN DIESER PHASE (Owner 2026-08-12): Der Hybrid-Schalter je
-      Kanal bleibt VISION und wird NICHT vorgezogen; die Architektur bleibt für den
-      Launch unverändert — EIN Ziel als Hybrid aus Browser-Tag und Server-Forward,
-      die übrigen als reiner Server-Fan-Out.
-      Befunde mit ihrem Rang, die vier Owner-Entscheidungen und die Verortung:
-      docs/claude-history/phase-11-multi-tracking-aktiver-stand.md, "## 7. Beschlossen
-      und verortet — NICHT in dieser Phase gebaut".
-
-      NACHTRAG 2026-09-08 — EINE OFFENE BERÜHRUNG AUS DER PHASE 11.2, HIERHER GEGEBEN.
-      Der Wortlaut darüber bleibt ZEICHEN FÜR ZEICHEN stehen; dieser Nachtrag tritt
-      DANEBEN.
-      WOHER ER KOMMT: aus der Rest-Liste im NACHTRAG 2026-09-08 der Roadmap-Zeile 11.2,
-      Posten (7). Er ist beim Phasenende der Phase 11.2 hierher gegeben worden und NICHT
-      nach docs/offene-punkte.md — der Posten sagt selbst, "die Entscheidung gehört zu
-      11.5 und wird hier nicht getroffen". EIN OFFENER PUNKT WÄRE DER FALSCHE ORT: Er
-      wartet auf einen Trigger; diese Frage wartet auf eine ENTSCHEIDUNG, und die fällt
-      hier.
-      DIE FRAGE, WÖRTLICH: Ob der Hybrid-Ausschluss dieser Zeile ("AUSDRÜCKLICH NICHT IN
-      DIESER PHASE … EIN Ziel als Hybrid aus Browser-Tag und Server-Forward, die übrigen
-      als reiner Server-Fan-Out") von Google berührt ist, hängt an der unbeantworteten
-      Frage, WESSEN Tag die "bestehende Tag-Conversion" ist.
-      WARUM DAS DIESE ZEILE TRIFFT UND NICHT 11.2: Die für Google gewählte Gestalt — der
-      OFFLINE CONVERSION IMPORT — schliesst ein von Pagesmith ausgeliefertes Google-Tag
-      ausdrücklich aus. Die NICHT gewählte Gestalt (Multi-Source) setzt eine bestehende
-      Tag-Conversion voraus. Ist jenes Tag das des KUNDEN, ändert sich am Hybrid-Ausschluss
-      nichts; ist es eines, das Pagesmith ausliefern müsste, wäre Google ein zweites
-      Hybrid-Ziel — und genau das schliesst diese Zeile heute aus.
-      DER BEFUND DAZU IST BEREITS ABGELEGT UND WIRD NICHT NEU ERHOBEN, und dieser Satz ist
-      der eigentliche Zweck des Nachtrags: docs/ziel-befunde.md, Google-Abschnitt, Block
-      "WAS AUSDRÜCKLICH OFFEN BLEIBT", führt wörtlich "OB EINE BESTEHENDE TAG-CONVERSION IM
-      KUNDENKONTO VORAUSGESETZT IST UND WIE SIE DORTHIN KOMMT" — mit dem Zusatz, dass
-      ungeprüft ist, "ob ein Kunde auf einer von Pagesmith ausgelieferten Seite ein eigenes
-      Google-Tag unterbringen kann, und ob Pagesmith eines ausliefern müsste. KEINE
-      EMPFEHLUNG, KEINE ANTWORT." WER DIESEN ZEIGER NICHT HAT, SUCHT EINEN BEFUND, DEN ES
-      SCHON GIBT.
-      KEINE EMPFEHLUNG, wie zu entscheiden wäre, und AUSDRÜCKLICH KEINE Aussage darüber,
-      ob der Hybrid-Ausschluss zu ändern ist.
-      PROVENIENZ: der Posten stammt aus der Rest-Liste der Zeile 11.2 (ARCHITEKT,
-      2026-09-08); der Befund in docs/ziel-befunde.md ist GELESEN 2026-08-20. Dass beide
-      dieselbe Frage tragen, ist GEMESSEN am Dateitext (CC, 2026-09-08). KEINE Messung an
-      einer Google-Oberfläche.
-
-      NACHTRAG 2026-09-15 — EINE AUFLAGE AN DAS ABHAKEN DIESER ZEILE. Der Wortlaut darüber bleibt
-      ZEICHEN FÜR ZEICHEN stehen; dieser Nachtrag tritt DANEBEN.
-      BEIM [x] SAGT DIESE ZEILE AUSDRÜCKLICH, DASS DIE DARSTELLUNG DES DIALOGS ALS ÜBERLADEN BEKANNT
-      IST UND IN DER ROADMAP-ZEILE 11.13 ("Betreiber-Anpassung des Einwilligungs-Dialogs") UMGEBAUT
-      WIRD. Der Befund steht bei VERMERK 6 dieser Phase (Scheibe 11.5e-1) und wird hier nicht
-      wiederholt.
-      DER GRUND: das Kriterium für [x] in CLAUDE.md, "## Roadmap & aktueller Stand", unter "WANN [x]
-      GESETZT WIRD — DAS KRITERIUM", Absatz "DIE AUFLAGE, OHNE DIE [x] UNZULÄSSIG IST" — dort samt
-      seinem Grund, dass [x] sich sonst als "funktioniert" liest. Er wird hier nicht wiederholt.
-      DIE GRENZE DIESER ANLEHNUNG, und sie gehört dazu: Jener Absatz spricht wörtlich von etwas
-      PRODUKTRELEVANTEM, das zum Zeitpunkt des [x] UNBEWIESEN ist (GELESEN, CC, 2026-09-15). Die
-      überladene Darstellung ist nicht unbewiesen, sondern ein BEKANNTER BEFUND. Die Auflage stützt
-      sich deshalb auf den GRUND des Kriteriums, nicht auf seinen Wortlaut.
-      PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-15 auf Vorschlag des Architekten — eine Angabe aus dem
-      Auftrag, am Repo nicht prüfbar. Der Wortlaut des Kriteriums GELESEN in CLAUDE.md (CC,
-      2026-09-15). Der Marker dieser Zeile ist von diesem Nachtrag NICHT berührt.
+- [x] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP):
+      ABGESCHLOSSEN (2026-09-12 bis 2026-09-16). Pagesmith liefert einen eigenen
+      Einwilligungs-Dialog mit; ein fremdes CMP bleibt einbindbar. SIEBEN Scheiben —
+      11.5a der Ablehnungs-Zustand vor dem ersten Beacon, 11.5b die gespeicherte
+      Entscheidung, 11.5c der nachgeholte Seitenaufruf, 11.5d die Leiste, 11.5d-2 das
+      Center-Modal, 11.5e-1 die Auswahl je Gruppe, 11.5e-2 der Widerruf —, je mit
+      bestätigtem Live-Test. Volle Herleitung, die sieben Scheiben-Vermerke und die 25
+      bindenden Entscheidungen: docs/claude-history/phase-11.5-einwilligung.md.
+      WAS ZUM ZEITPUNKT DES HAKENS OFFEN IST — der Haken heisst BAU-FERTIG, nicht "der
+      Einwilligungs-Dialog ist fertig". Das Kriterium und seine Auflage stehen in
+      CLAUDE.md, "## Roadmap & aktueller Stand", unter "WANN [x] GESETZT WIRD — DAS
+      KRITERIUM"; sie werden hier NICHT wiederholt, sondern eingelöst:
+      · DIE SPRACHE IST NICHT GEBAUT. Die sechsgliedrige Umfangs-Aufzählung dieser Zeile
+        — Granularität, Ablehnen so einfach wie Zustimmen, Widerruf, Speicherung der
+        Entscheidung, Darstellung auf fremden Seiten, Sprache — steht in FÜNF von sechs
+        Punkten. Der sechste ist GEHOBEN, nicht abgewartet: die SACHE liegt in
+        docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.5 gehoben
+        (2026-09-16) …", unter "11.5f". DIE NUMMER 11.5f IST NICHT MITGEWANDERT — sie
+        stand ausschliesslich in der Standdatei und ist mit ihr ins Archiv gegangen; EINE
+        ROADMAP-ZEILE 11.5f GIBT ES NICHT.
+      · DIE DARSTELLUNG IST ALS ÜBERLADEN BEKANNT und wird in der Roadmap-Zeile 11.13
+        ("Betreiber-Anpassung des Einwilligungs-Dialogs") umgebaut. Das harte Kriterium
+        der Leiste ist bisher NUR IM AUSGEKLAPPTEN Zustand gemessen; ein eingeklappter
+        Standard erzeugte einen NEUEN Zustand, den heute nichts prüft. Der Befund steht
+        bei VERMERK 6 des Archivs (Scheibe 11.5e-1).
+      DIESE ZWEI PUNKTE HABEN VERSCHIEDENEN RANG, und der Nachtrag 2026-09-15 dieser Zeile
+      hat es bereits benannt: Der erste ist etwas NICHT GEBAUTES, der zweite ein BEKANNTER
+      BEFUND und ausdrücklich nichts Unbewiesenes. Der zweite stützt sich deshalb auf den
+      GRUND des Kriteriums — dass sich [x] sonst als "funktioniert" liest —, nicht auf
+      seinen Wortlaut.
+      WAS MIT DEM HAKEN NICHT ERLEDIGT IST: Sieben offene Punkte sind aus dieser Phase
+      gehoben (docs/offene-punkte.md, Abschnitt "AUS DEM PHASENENDE 11.5 GEHOBEN
+      (2026-09-16) — SIEBEN POSTEN"), darunter der Export-Pfad, das überfahrene Fremd-CMP
+      und die zwei Erzeuger des Gate-Blocks. Sie halten die Phase nicht offen; sie warten
+      auf ihre Trigger.
+      DER VOLLTEXT DIESER ZEILE VOR DEM ABHAKEN — Gegenstand, die vier Bindungen, der
+      Hinweis-statt-Bevormundung-Satz, der Hybrid-Ausschluss und die zwei Nachträge vom
+      2026-09-08 und 2026-09-15 — STEHT IM COMMIT `3c05fae` und ist über
+      `git show 3c05fae:docs/roadmap.md` vollständig nachzulesen. ER IST NICHT
+      VERLORENGEGANGEN, SONDERN KOLLABIERT: Seine Bindungen haben die Phase getragen und
+      sind mit ihr eingelöst; was über sie hinaus bindet, steht als Dauerregel in
+      docs/immer-beachten.md oder als Entscheidung im Archiv.
+      DIE OFFENE FRAGE DES NACHTRAGS 2026-09-08 IST NICHT ENTSCHIEDEN WORDEN und stirbt
+      nicht mit dieser Zeile: ob der Hybrid-Ausschluss von Google berührt ist, hängt
+      daran, WESSEN Tag die "bestehende Tag-Conversion" ist. Der Befund dazu liegt in
+      docs/ziel-befunde.md, Google-Abschnitt, Block "WAS AUSDRÜCKLICH OFFEN BLEIBT", unter
+      "OB EINE BESTEHENDE TAG-CONVERSION IM KUNDENKONTO VORAUSGESETZT IST UND WIE SIE
+      DORTHIN KOMMT". KEINE EMPFEHLUNG, und ausdrücklich keine Aussage darüber, ob der
+      Hybrid-Ausschluss zu ändern ist.
 - [ ] Phase 11.7 — Anbieter-Befunde nachziehen: die VIER GEBAUTEN ZIELE.
       DIE NUMMER IST DIE NÄCHSTE FREIE (Präzedenz: 4.5, 10.5, 11.1 bis 11.6) und
       trägt KEINE Reihenfolge-Aussage — sie steht hinter 11.5, weil davor nichts

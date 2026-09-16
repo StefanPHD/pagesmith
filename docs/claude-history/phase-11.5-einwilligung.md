@@ -1,3 +1,88 @@
+# Phase 11.5 — Einwilligungs-Dialog: DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der steuernde Stand der Phase 11.5 — das, was jeweils galt, nicht
+das, was geworden ist. Sie hiess bis zum Phasenende `docs/aktiver-stand.md` und war das
+Pflicht-Gate ("Auftrag 0") jeder Sitzung, die an der Phase arbeitete; wo sie einer anderen
+Fassung widersprach, galt sie.
+
+**ZEITRAUM UND UMFANG:** angelegt am 2026-09-12, VOR der ersten Scheibe; archiviert am
+2026-09-16 mit dem Abschluss der Phase. SIEBEN Scheiben — 11.5a, 11.5b, 11.5c, 11.5d,
+11.5d-2, 11.5e-1, 11.5e-2 —, je mit eigenem Vermerk und bestätigtem Live-Test; 25 bindende
+Entscheidungen, lückenlos (1) bis (25). Gebaut sind FÜNF der sechs Umfangs-Punkte, die die
+Roadmap-Zeile 11.5 aufzählt; die SPRACHE ist nicht gebaut und ins Backlog gehoben.
+
+**WIE SIE ENDETE:** Ihr Marker steht auf `[x]`, und das heisst BAU-FERTIG — nicht "der
+Einwilligungs-Dialog ist fertig". Was am Haken hängt — die nicht gebaute Sprache und die
+als ÜBERLADEN bekannte Darstellung, die die Roadmap-Zeile 11.13 umbaut —, steht an der
+Roadmap-Zeile 11.5 (docs/roadmap.md) und wird hier NICHT verdoppelt.
+
+**SIE WIRD NICHT MEHR FORTGESCHRIEBEN. DIE HEBUNG IST AM 2026-09-16 GEFAHREN** (Commit
+`3c05fae`, Schritt 1 des Phasenendes); **DAS VOLLE PROTOKOLL JE KLASSE STEHT UNVERÄNDERT
+DARUNTER**, im Abschnitt "DAS PROTOKOLL DER HEBUNG — 2026-09-16, SCHRITT 1 DES PHASENENDES",
+und wird hier nur zusammengefasst:
+- **VORRAT — 22 Einträge, 8 / 13 / 1:** (2) und (12) gemeinsam als EIN Posten mit zwei
+  Ursachen, dazu (3), (4), (5), (9), (15) und (16) als offene Punkte nach
+  docs/offene-punkte.md, Abschnitt "AUS DEM PHASENENDE 11.5 GEHOBEN (2026-09-16) — SIEBEN
+  POSTEN", je mit Stub in CLAUDE.md — acht Einträge in sieben Posten; (1), (6), (7), (8),
+  (10), (11), (13), (17), (18), (19), (20), (22) und (23) nach
+  docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.5 gehoben (2026-09-16) …",
+  unter ihren Ursprungs-Nummern — (7) mit seinem Nachtrag vom 2026-09-15, nicht mit seinem
+  Grundtext; (21) gestrichen, mit dem Beleg der Erledigung an seiner Nummer. (14) war schon
+  am 2026-09-15 gestrichen und ist KEINE Hebung dieser Runde.
+- **HEBUNGS-KANDIDATEN:** (1) und (2) als eigene Dauerregeln nach docs/immer-beachten.md;
+  (3) und der am Phasenende angetretene (4) ins Backlog, als Änderungsanträge an
+  docs/arbeitsweise.md in Wartestellung.
+- **ENTSCHEIDUNGEN:** aus (20), aus (24) samt dem gemessenen Grund von (19) und aus (16)
+  sind DREI Dauerregeln nach docs/immer-beachten.md gezogen. **Die Entscheidungen selbst
+  stehen wörtlich hier** — die Regel ist das Destillat, nicht ihr Ersatz. Die übrigen 21
+  stehen hier und nirgends sonst.
+- **11.5f:** die SACHE ins Backlog, die NUMMER nicht. Sie steht ausschliesslich in dieser
+  Datei; **eine Roadmap-Zeile 11.5f gibt es nicht.**
+- **AUSDRÜCKLICH NICHT GEHOBEN:** die Owner-Auflage aus Entscheidung (8) ("Wächter werden
+  nicht passend gebogen, damit gebauter Code grün wird") — sie trägt keine formulierbare
+  Bedingung ihres Entfallens und ist deshalb ein Vermerk, kein Dauerregel-Kandidat. Der
+  Grund steht im Protokoll darunter.
+**AN JEDER GEHOBENEN STELLE STEHT EIN ZEIGER "→ GEHOBEN 2026-09-16"** — ohne ihn wäre ein
+umgezogener Eintrag von einem nie dagewesenen nicht zu unterscheiden.
+
+**DIE GEGENPROBE IST VOR DER ARCHIVIERUNG GEFAHREN** (CC, 2026-09-16), je Eintrag GEGEN DEN
+BESTAND DER ZIELDATEI und nicht gegen die Listen der Hebungs-Runde — eine Liste, die von
+derselben Runde stammt wie die Verschiebung, bestätigt sich selbst. Alle acht Vorrats-Einträge
+in sieben Posten, alle dreizehn Backlog-Nummern, der Beleg des gestrichenen (21), beide
+Backlog-Kandidaten, 11.5f, die fünf neuen Dauerregeln samt ihren Verzeichnis-Einträgen und
+alle sieben Stub-Zeilen sind am Zielort gefunden worden.
+
+**IHR ABSCHNITTS-VERZEICHNIS BLEIBT STEHEN.** Jede Überschrift steht hier zweimal, und die
+erste Fundstelle ist das Verzeichnis (docs/immer-beachten.md, "EIN ANKER, DER EINDEUTIG
+AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT"). **DAZU EINE ZWEITE QUELLE DES
+ZWEITEN VORKOMMENS:** Der Titel "Vollzogen — was hier stand und wohin es gegangen ist" steht
+im Rumpf dieser Datei SIEBENMAL, je einmal in den Abschnitten 12 bis 18 — wer darauf ankert,
+trifft systematisch den falschen. **DIESER ABSATZ IST DAS ACHTE VORKOMMEN**, und er zitiert
+den Titel ohne Überschriften-Marke, damit eine Überschriften-Suche ihn nicht trifft; wer
+nachmisst, zieht ihn ab (GEMESSEN am Dateitext, CC, 2026-09-16: sieben im Rumpf ab der Naht,
+eines hier).
+
+**IHRE VERWEISE SIND AB HIER ZEITDOKUMENTE.** Sie zeigen auf Abschnitte, Einträge und
+Codezustände, wie sie am Tag ihrer Entstehung waren; was heute gilt, steht im Repo. **Sie ist
+keine Quelle für Codezustände** — sie nennt Orte, an denen zu messen ist.
+
+**IHR ABSCHNITT 4 BLEIBT LESBAR UND MEINT AB JETZT AUCH SIE SELBST:** Er löst auf, welche
+frühere Standdatei ein Zeiger der Form "docs/aktiver-stand.md, VERMERK n" meint. Mit dieser
+Umbenennung existiert der Pfad `docs/aktiver-stand.md` nicht mehr, und JEDER Zeiger darauf im
+Repo ist tot — **151 Vorkommen in 22 Dateien NACH dieser Runde, 146 davor** (GEMESSEN am Repo,
+CC, 2026-09-16, Achse: der literale Pfad, mit Positiv- und Negativkontrolle; die Differenz von
+fünf entsteht in dieser Runde selbst — vier in diesem Kopf, einer im neuen Detail-Archiv-Eintrag
+der CLAUDE.md). **DIE ZAHL IST DATIERT UND WIRD NICHT FORTGESCHRIEBEN;** wer sie braucht, misst
+sie. Zwölf der Vorkommen stehen in dieser Datei — acht im Rumpf, vier in diesem Kopf.
+**Die Zeiger in `src/` (zwei) und in drei angewandten Migrationen (vier) sind nicht in dieser
+Runde heilbar** —
+aus einer angewandten Migration nie (docs/immer-beachten.md, "EINE ABLAGE MIT HALBWERTSZEIT
+WIRD ZITIERT, ALS HÄTTE SIE KEINE — DIE DOKU UND DER CODE ZEIGEN AUF DIE STANDDATEI"). Der
+Posten dazu steht in docs/offene-punkte.md, "ZEIGER AUF docs/aktiver-stand.md MEINEN EINE
+FRÜHERE STANDDATEI …".
+
+---
+
 # Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP): DER AKTIVE STAND
 
 **WAS DIESE DATEI IST:** der steuernde Stand der LAUFENDEN Phase 11.5 — das, was JETZT gilt,

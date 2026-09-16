@@ -155,7 +155,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11.3 — Tracking-Testmodus-Modul (test_event_code)
 - [-] Phase 11.4 — Der Testknopf
 - [ ] Phase 11.6 — Custom-Pixel
-- [ ] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP)
+- [x] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP)
 - [ ] Phase 11.7 — Anbieter-Befunde nachziehen
 - [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel
 - [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus
@@ -1197,6 +1197,25 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   gehobenen Entscheidungen und die Gestalt-Entscheidung (A) stehen NUR hier — darunter die
   Ablage, der Riegel an mindestens einem Ziel, das Urteil über die Frist und die Abschlüsse
   ohne Code für linkedin (17) und google (18).
+- docs/claude-history/phase-11.5-einwilligung.md — GESAMTE gebaute Phase 11.5
+  (Einwilligungs-Dialog, 2026-09-12 bis 2026-09-16): Gegenstand und gemessene Ausgangslage,
+  SIEBEN Scheiben (11.5a, 11.5b, 11.5c, 11.5d, 11.5d-2, 11.5e-1, 11.5e-2) mit SIEBEN
+  Vermerken, 25 bindende Entscheidungen, der Vorrat und die Hebungs-Kandidaten. Sie ist
+  ZUGLEICH der steuernde Stand und die Historie; sie hiess bis zum Phasenende
+  docs/aktiver-stand.md. IHR KOPF TRÄGT DAS PROTOKOLL DER HEBUNG, und an jeder gehobenen
+  Stelle steht ein Zeiger "→ GEHOBEN 2026-09-16".
+  HIER NACHSEHEN, WER AM EINWILLIGUNGS-DIALOG, AM WIDERRUF ODER AN DER DARSTELLUNG AUF
+  FREMDEN SEITEN ARBEITET: Die 21 nicht gehobenen Entscheidungen stehen NUR hier — darunter
+  die Ablage des Schalters im Einstellungs-Blob, die Speicherung im localStorage, die
+  Reihenfolge Gate/Wiederherstellung/Oberfläche/Widerruf/Setzer, der Vorrang eines fremden
+  CMP, die Gruppierung in "Messung" und "Werbung" und der Widerruf als Betreiber-Funktion
+  statt als dauerhaftes Bedienelement. Dazu die Invarianten der Scheiben 11.5d-2, 11.5e-1
+  und 11.5e-2 und die fünf Gestalt-Entscheidungen (A) bis (E) des Widerrufs, die ebenfalls
+  an keinem anderen Ort stehen. VIER Entscheidungen tragen dagegen eine DAUERREGEL in
+  docs/immer-beachten.md und werden hier NICHT wiederholt: (16), (20) sowie (24) zusammen
+  mit dem gemessenen Grund von (19) — VIER Entscheidungen, DREI Regeln, deshalb 21 und nicht
+  22. Auch diese vier stehen im Archiv wörtlich weiter; die Regel ist das Destillat, nicht
+  ihr Ersatz.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),

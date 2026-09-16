@@ -34,6 +34,7 @@ EINER DATEI MIT VERZEICHNIS NICHT", Zusatz 2026-08-27.
 15. Die Einwilligungs-Leiste — Zuschnitt der Scheibe 11.5d
 16. Das Center-Modal — Zuschnitt der Scheibe 11.5d-2
 17. Die Auswahl je Gruppe — Zuschnitt der Scheibe 11.5e-1
+18. Der Widerruf — Zuschnitt der Scheibe 11.5e-2
 
 ## 1. Gegenstand der Phase — was gebaut wird und was ausdrücklich nicht dazugehört
 
@@ -2147,6 +2148,39 @@ aber **NICHT in die Scheibe 11.5a**. **KEINE EMPFEHLUNG**, in welche.
 AUFSCHLAGEN muss. Dieser Posten ist kein Lesestoff für den Zuschnitt, sondern eine Arbeit, die
 diese Phase noch vor sich hat.
 
+**RICHTIGGESTELLT AM 2026-09-16 — DER KERN HÄLT, BEIDE BELEGE SIND ÜBERHOLT.** Der Satz, den der
+Posten trägt, gilt unverändert: Die vollständige Beschreibung des Hooks steht weiterhin
+ausschliesslich als Kommentarkopf in `src/lib/tracking/consent.ts` (die Gestalten-Aufzählung über
+`buildConsentRuntime`), und kein Betreiber erreicht sie. **RICHTIGGESTELLT UND NICHT GESTEMPELT:**
+Ein Beleg ist eine Tatsachenbehauptung über den Code und altert mit ihm; ein Posten, dessen Beleg
+eine Lage beschreibt, die es nicht mehr gibt, schickt den, der ihn hebt, an den falschen Ort
+(docs/immer-beachten.md, „EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD").
+Wortlaut vorher, im Absatz darüber: „BELEG: Abschnitt 11 (e) — Nicht-Treffer mit benannter Achse,
+Treffer nur im Archiv und kein nutzersichtbarer Text." **DIE ZWEI HÄLFTEN EINZELN, je GEMESSEN am
+Repo (CC, 2026-09-16):**
+- **„TREFFER NUR IM ARCHIV" TRÄGT NICHT MEHR.** Abschnitt 11 (e) sagt zu seiner Achse 1, der
+  Bezeichner `pagesmithConsent` treffe in `docs/` ausschliesslich unter `docs/claude-history/`.
+  Dieselbe Achse trifft heute **zwei AKTIVE Dokumente** — diese Standdatei (zehn Zeilen) und
+  docs/roadmap.md (eine). **FÜR DEN KERN ÄNDERT DAS NICHTS:** beides sind interne
+  Projektdokumente, die ein Betreiber nicht sieht.
+- **„KEIN NUTZERSICHTBARER TEXT" TRÄGT NICHT MEHR, UND DAS IST DIE TEURERE HÄLFTE.** Abschnitt 11
+  (e) sagt zu seiner Achse 2, `einwillig|consent` über `src/components/` treffe ausschliesslich
+  Kommentare und Bezeichner. Dieselbe Achse trifft heute `src/components/PublishView.tsx`
+  zweiundzwanzigmal, und darunter ist sehr wohl nutzersichtbarer Text: die Überschrift
+  „Einwilligung", der zugängliche Name „Einwilligungs-Oberfläche", drei Options-Beschreibungen,
+  der Hinweis bei einem unbekannten Wert und der Satz über ein nicht erkanntes
+  Consent-Management. **Entstanden sind sie mit Commit `7516bce` (Scheibe 11.5d, 2026-09-14) —
+  also NACH der Messung vom 2026-09-12.**
+
+**DIE AUSGANGSLAGE HAT SICH DAMIT VERSCHOBEN, UND DAS IST DER GRUND FÜR DIESE RICHTIGSTELLUNG:**
+Der Posten beschrieb „es gibt keinen Text über die Einwilligung". Heute gilt „es gibt Text über
+die Einwilligung, aber keinen über den Hook". **DAS SIND ZWEI VERSCHIEDENE AUSGANGSLAGEN FÜR
+DIESELBE ARBEIT:** Die erste verlangt, einen Ort zu schaffen; die zweite verlangt, einen
+bestehenden Ort zu ergänzen — und wer die erste liest, sucht einen Ort, der inzwischen einen
+Nachbartext trägt. Welcher Ort es wird, ist hier ausdrücklich NICHT entschieden; die Frage stellt
+Abschnitt 18 unter „Die Betreiber-Dokumentation ist Teil der Scheibe" — der Titel ist zeichengleich
+zitiert und ohne Überschriften-Marke, damit eine Überschriften-Suche ihn nicht trifft.
+
 **(4) DER EXPORT-PFAD IST VOM SCHALTER NICHT ERFASST — ZWEI WEGE** (aufgenommen 2026-09-12).
 
 Der **Download** und das **Kopieren in die Zwischenablage** bauen den Text rein clientseitig und
@@ -2537,6 +2571,39 @@ an einer Checkbox wäre der naheliegende Weg, einen Zustand mitzuführen — etw
 VERMERK 6) —, und nichts würde rot.
 
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
+
+**(21) DER OFFENE PUNKT ZUR BETREIBER-DOKUMENTATION BEHAUPTET IN SEINEM PUNKT (1), PAGESMITH
+LIEFERE KEINEN EINWILLIGUNGS-DIALOG MIT — SEIT 11.5d TRIFFT DAS NICHT ZU** (aufgenommen
+2026-09-16).
+
+**DIE FUNDSTELLE:** docs/offene-punkte.md, Posten „BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE",
+sein Punkt (1). Er lautet dort, dass zu dokumentieren sei, „dass Pagesmith KEINEN
+Einwilligungs-Dialog mitliefert und ohne einen ALLE Ziele als erlaubt gelten — daraus folgt, dass
+‚konform out-of-the-box' heute nicht zutrifft" (GELESEN, CC, 2026-09-16).
+
+**SEIT COMMIT `7516bce` (Scheibe 11.5d, 2026-09-14) LIEFERT PAGESMITH EINEN DIALOG MIT**, seit
+`5fd6d48` in zwei Formen. **DIE ZWEITE HÄLFTE DES PUNKTS BLEIBT WAHR:** Bei ausgeschaltetem
+Schalter gelten weiterhin alle Ziele als erlaubt, und das ist die Vorgabe (`consentBlocksFor`,
+`src/lib/analytics/pageview-emitter.ts`). **FALSCH IST ALLEIN DIE ERSTE HÄLFTE**, und sie trägt
+die Folgerung „konform out-of-the-box trifft nicht zu" — die damit auf einer Prämisse ruht, die
+es nicht mehr gibt.
+
+**DIESE RUNDE ZIEHT ES NICHT NACH, UND DER GRUND IST DER SCOPE:** docs/offene-punkte.md liegt
+ausserhalb dieser Doku-Runde. Der Eintrag steht hier, damit es beim Phasenende nicht untergeht —
+mit seinem Ort, damit niemand ihn suchen muss.
+
+**ENTSCHEIDUNG (24) HÄLT DENSELBEN BEFUND BEREITS FEST** (dort im Absatz über den Preis: „Die
+erste Hälfte seines Punkts (1) … trifft seit 11.5d so nicht mehr zu; dort ist das nicht
+nachgezogen"). **WARUM ER TROTZDEM HIER STEHT UND KEINE DOPPELUNG IST:** Eine Entscheidung wird
+gelesen, wenn jemand ihren Gegenstand berührt — den Widerruf. Der Vorrat wird am Phasenende
+VOLLSTÄNDIG durchgegangen und verteilt. Ein Befund über eine FREMDE Datei hat nur dort einen
+Mechanismus, der ihn einlöst.
+
+**GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG**, wie die Formulierung dort künftig lautet.
+
+PROVENIENZ: der Wortlaut des Postens GELESEN (CC, 2026-09-16); dass der Dialog seit `7516bce`
+mitgeliefert wird, GEMESSEN am Repo (CC, 2026-09-16); die Einordnung als Vorrats-Eintrag ist
+ARCHITEKT 2026-09-16.
 
 ## 10. Hebungs-Kandidaten
 
@@ -3430,3 +3497,331 @@ Je Punkt steht, WO er heute erkennbar ist — geprüft VOR dem Streichen (CC, 20
 - **Der Schlusssatz "DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE"** und die
   **PROVENIENZ-Zeile des Zuschnitts** waren an ihn gebunden und sind mit ihm abgelaufen; die Provenienz der drei
   stehengebliebenen Blöcke steht über dieser Liste.
+
+## 18. Der Widerruf — Zuschnitt der Scheibe 11.5e-2
+
+**WAS DIESE SCHEIBE IST:** Ein Besucher, der bereits entschieden hat, kann seine Entscheidung
+WIDERRUFEN und neu treffen. **WIR LIEFERN EINEN AUFRUF, NICHT EIN BEDIENELEMENT** — das
+Bedienelement stellt der Betreiber, typisch ein Link in seiner Fusszeile (bindende Entscheidung
+(24)). **DIE BETREIBER-DOKUMENTATION GEHÖRT IN DIESE SCHEIBE, NICHT DAHINTER** — dieselbe
+Entscheidung, und ohne sie ist die Funktion unbenutzbar.
+
+**SIE IST DIE ZWEITE HÄLFTE VON 11.5e** (bindende Entscheidung (23)); die erste, die Auswahl je
+Gruppe, ist als VERMERK 6 abgeschlossen.
+
+**WAS GEBAUT WIRD — VIER STÜCKE:**
+1. **EIN GLOBALER NAME, `pagesmithConsentRevoke`**, der bei eingeschaltetem Dialog im
+   ausgelieferten Text entsteht und den Ablauf des Oberflächen-Blocks ÜBERLEBT.
+2. **DER WIEDERAUFBAU DER OBERFLÄCHE OHNE NEULADEN** — dieselbe Form, die der Schalter des
+   Projekts trägt (Leiste oder Fenster), mit denselben zwei Gruppen-Schaltern und denselben drei
+   Knöpfen.
+3. **EIN EIGENER WÄCHTER ÜBER DEN NEUEN GLOBALEN NAMEN** (Invariante I5).
+4. **DIE BESCHREIBUNG FÜR DEN BETREIBER** — Ort und Form entscheidet der Bau-Plan.
+
+### Die Gestalt — fünf Entscheidungen
+
+**(A) WIEDERAUFBAU OHNE NEULADEN.**
+**VERWORFEN: den Speicher löschen und die Seite neu laden.** **IHR VORZUG IST ECHT UND WIRD NICHT
+KLEINGEREDET:** Der bestehende Oberflächen-Block liefe beim neuen Laden unverändert, in einer
+Bauform, die live bewiesen ist (VERMERK 4, VERMERK 5, VERMERK 6) — kein zweiter Erzeuger, keine
+neue Achse. Ein bereits geladenes `fbevents.js` wäre mit dem alten Dokument weg.
+**SIE FÄLLT AM FORMULARVERLUST:** Ein Neuladen wirft Scroll-Position und ausgefüllte Felder weg.
+**Auf einer Landing Page mit halb ausgefülltem Lead-Formular ist das die Conversion, um die es
+geht** — und diese Zielgruppe baut genau solche Seiten (Roadmap-Zeile 11.5 und CLAUDE.md,
+"## Vision").
+**DER PREIS DIESER WAHL WIRD MITGENANNT:** Was beim Laden schon geschehen ist, bleibt geschehen —
+s. den Block "Die Grenze des Produkts, die in die Dokumentation muss" weiter unten.
+
+**(B) KEINE VORBELEGUNG — BEIDE SCHALTER STARTEN AUCH BEIM WIDERRUF AUS.**
+Die Setzung aus dem Zuschnitt der Scheibe 11.5e-1 ("BEIDE GRUPPEN STARTEN AUS. Eine Vorauswahl
+wäre eine vorweggenommene Zustimmung", Abschnitt 17) gilt **AUSNAHMSLOS**, auch für einen
+Besucher, der schon einmal zugestimmt hatte. **Der Besucher entscheidet NEU; das ist keine
+Auslassung, sondern sachlich richtig.**
+**EIN GEMESSENER NEBENGRUND, DER MITMUSS — er trägt die Entscheidung nicht, aber er sagt, was
+eine Vorbelegung KOSTEN würde** (GEMESSEN am Repo, CC, 2026-09-16, `CONSENT_CHOICE_JS` in
+`src/lib/tracking/consent-choice.ts`): Die zwei GRUPPEN-Schlüssellisten stehen im erzeugten Text
+an **genau zwei Stellen**, und beide liegen **INNERHALB der `pick`-Closure** des Knopfs "Auswahl
+speichern" — als Literale hinter `measure.box.checked` bzw. `ads.box.checked`. Es gibt **keine
+benannte Variable** und **keinen Zugriff von aussen**. Eine Vorbelegung, die aus dem gespeicherten
+`granted` zurück auf "diese Gruppe war gewählt" schlösse, bräuchte die zwei Listen **ein zweites
+Mal im ausgelieferten Text** — und zwei Stellen, die dieselbe Zuordnung tragen, laufen
+auseinander (dieselbe Figur wie Entscheidung (4), "nie aus einer zweiten Liste").
+**PRÄZISIERUNG, damit der Satz nicht zu weit gelesen wird:** Die VOLLE Sechser-Liste steht sehr
+wohl als benannte Variable im Wiederherstellungs-Block (`KEYS` in `buildConsentRestoreScript`).
+Sie ist aber lokal in dessen sofort ausgeführter Funktion und von aussen ebenso unerreichbar; und
+sie trägt die GRUPPEN-Aufteilung nicht.
+
+**(C) DER NAME IST `pagesmithConsentRevoke`.**
+**ER FOLGT DER TRENNUNG `pagesmith*` GEGEN `__ps*`: was nach aussen gehört, trägt `pagesmith`;
+unser eigener Namensraum trägt `__ps`.**
+**SIE IST EINE SETZUNG DIESER SCHEIBE, KEINE BESTANDSREGEL** — dieselbe Bauform wie die
+`__ps_`-Setzung für Schalter-Werte in Entscheidung (22).
+**WAS DER BESTAND TRÄGT UND WAS NICHT — GEMESSEN am Repo (CC, 2026-09-16), und die Einschränkung
+gehört in dieselbe Zeile, sonst wird die Setzung mit einer Messung verwechselt:**
+- **AUF DER ACHSE DER GLOBALEN JS-NAMEN TRÄGT SIE.** Achse: alle Bezeichner der Form
+  `pagesmith[A-Za-z_]*` und `__ps[A-Za-z_]*` über `src/lib/`. Der einzige globale Name ohne
+  `__ps`-Präfix ist **`pagesmithConsent`** — und das ist **genau der Betreiber-Hook**, also das
+  Einzige, was heute nach aussen gehört. Alle übrigen globalen Namen des ausgelieferten Textes
+  tragen `__ps`: `__psConsent`, `__psConsentAll`, `__psConsentStore`, `__psPageView`, `__ps_pv`.
+- **AUF DER ACHSE DER KENNUNGEN TRÄGT SIE NICHT, UND DAS IST GEMELDET STATT VERSCHWIEGEN.**
+  `pagesmith-consent` (`CONSENT_SCRIPT_ID`), `pagesmith-mappings`, `pagesmith-bar`
+  (`CONSENT_BAR_HOST_TAG`) und `pagesmith-modal` (`CONSENT_MODAL_HOST_TAG`) tragen alle
+  `pagesmith` und sind **kein Betreiber-Kontrakt**; daneben tragen `__ps_cnr`, `__ps_clb`,
+  `__ps_cmo`, `__ps_cns` und `__ps_pve` dieselbe Rolle mit dem anderen Präfix. **Wer die Setzung
+  auf Kennungen ausdehnt, dehnt sie auf eine Achse aus, auf der der Bestand ihr widerspricht.**
+- **EINE REGEL DIESES INHALTS GIBT ES IM BESTAND NICHT.** Achse
+  `namensraum|namespace|praefix|präfix|prefix` in Verbindung mit `pagesmith` oder `__ps` über
+  `src/lib/tracking/`, `src/lib/analytics/`, docs/immer-beachten.md, docs/arbeitsweise.md und
+  CLAUDE.md: Was es gibt, ist die `__ps_*`-Seite — "Reservierte Tokens sind namespaced (`__ps_*`)"
+  (docs/arbeitsweise.md), der LIKE-Präfix-Ausschluss in CLAUDE.md und die vier
+  "`__ps_`-namespaced"-Docblocks der Block-Kennungen. **Die `pagesmith*`-Seite steht nirgends.**
+  POSITIVKONTROLLE im selben Lauf: dieselbe Achse trifft die `__ps_`-Setzung im Docblock von
+  `CONSENT_DIALOGS` (`src/lib/settings.ts`).
+**FOLGE FÜR DIESEN ZUSCHNITT:** Die Setzung gilt **für globale JS-Namen** und wird hier auf diese
+Achse beschränkt geschrieben. Ob sie darüber hinaus gelten soll, ist NICHT entschieden.
+**VERWORFEN: EINE DRITTE METHODE AN `__psConsentStore`.** **Ihr Vorzug ist echt:** Sie bräuchte
+keinen neuen globalen Namen, und der bestehende überlebt jede Entscheidung — die Zuweisung
+`window.__psConsentStore = …` steht in `buildConsentRestoreScript` **VOR** beiden frühen Returns
+(GEMESSEN am Code, CC, 2026-09-16). **Sie fällt daran, dass sie aus der Speicher-Schnittstelle
+eine Speicher- UND Oberflächen-Schnittstelle machte — zwei Gegenstände an einem Namen.** Die
+Gestalt-Prüfungen von Leiste und Modal fragen heute `typeof api.read` und `typeof api.write`;
+eine dritte Aufgabe an demselben Objekt bricht sie nicht, und genau deshalb fiele die Vermischung
+niemandem auf.
+
+**(D) BEI AUSGESCHALTETEM DIALOG ENTSTEHT KEIN BAUSTEIN.**
+Ein Aufruf läuft dort in einen **TypeError des Browsers**, und **das genügt**: Der Betreiber sieht
+ihn **BEI DER INTEGRATION**, in seiner eigenen Konsole, während er den Link einbaut.
+**DER FRÜHERE BEFUND "NIEMAND MELDET ES" GILT HIER NICHT** — er galt dem **BESUCHER** auf der
+Live-Seite und den Aufruf-Formen über ein Attribut oder ein URL-Fragment, die **still** ohne
+Wirkung bleiben. **Diese Formen sind nicht gewählt** (s. Invariante I1).
+**VERWORFEN: EIN WARN-STUB BEI AUS** — ein Baustein, der bei ausgeschaltetem Dialog einen
+gleichnamigen Platzhalter anlegt, der eine Warnung ausgibt. **Er wäre die freundlichste Meldung
+und der teuerste Weg**, aus drei Gründen: er brächte einen Baustein in den ausgelieferten Text
+**JEDER** Seite mit ausgeschaltetem Dialog; er legte einen globalen Namen **bei AUS** an, wo es
+heute **keinen** unserer Bausteine gibt (GEMESSEN, s. I5 und Entscheidung (2)); und er wäre eine
+Entscheidung gegen die **explizite Leere der `off`-Zweige**, die `consentBlocksFor`, `setter` und
+`restore` in `injectPageViewEmitter` bewusst tragen.
+**DIE RICHTUNG IST DER ZWEITE GRUND:** Nachlegen geht später; ein ausgeliefertes Artefakt bekommen
+wir nicht mehr von den Seiten herunter — der gemessene Grund steht an Entscheidung (19).
+**DIE EHRLICHE KEHRSEITE GEHÖRT DAZU, sonst liest sich (D) als kostenlos:** Baut der Betreiber den
+Link ein, berührt den Schalter nie und testet erst Wochen später, ist der TypeError **weit weg vom
+Moment der Entscheidung**. **Das ist der Fall, in dem der Stub gewonnen hätte.**
+
+**(E) EIN `console.warn`, WENN DER WIDERRUF LÄUFT UND NICHTS ZU WIDERRUFEN IST.**
+Ruft der Betreiber den Widerruf auf, während der Besucher **noch gar nicht entschieden** hat,
+meldet der Baustein das in der Konsole.
+**DAS IST EIN ANDERER FALL ALS (D):** Dort gibt es den Namen nicht, hier gibt es ihn und er läuft
+ins Leere. **Er kostet nichts** — der Baustein existiert in dieser Lage ohnehin —, **und der
+Dialog steht in dieser Lage ohnehin schon**, weil beide Erscheinens-Bedingungen von Leiste und
+Modal noch erfüllt sind.
+
+### Die Stellen, die der Plan behandeln muss — als Fragen, nicht als Vorgaben
+
+**(F1) WO ENTSTEHT DER NAME?** Er muss **zwei Dinge gleichzeitig** leisten: den Ablauf des
+Oberflächen-Blocks **überleben** und bei ausgeschaltetem Dialog **nicht entstehen**.
+**WAS DER PLAN VORFINDET (GEMESSEN am Code, CC, 2026-09-16):** Die Verkettung in
+`injectPageViewEmitter` trägt bei eingeschaltetem Dialog vier Blöcke in fester Ordnung — Gate,
+Wiederherstellung, Oberfläche, Setzer, dann den PageView-Emitter. **Der Gate-Block hängt NICHT am
+Schalter** und entsteht auch bei AUS; die drei übrigen entstehen nur bei AN.
+**EINE FUNDSTELLE, DIE DER PLAN MITLESEN MUSS, WENN ER SICH FÜR DEN OBERFLÄCHEN-BLOCK
+ENTSCHEIDET:** Der Docblock von `CONSENT_BAR_HOST_TAG` nennt das Host-Element "das EINZIGE, was
+der Block ausserhalb seiner sofort ausgeführten Funktion hinterlässt, solange die Leiste offen
+ist". Ein globaler Name aus demselben Block machte den Satz falsch — und der Name müsste den
+Block ohnehin überleben, was in ihm nicht zu haben ist.
+**DER PLAN ENTSCHEIDET UND BEGRÜNDET. KEINE EMPFEHLUNG.**
+
+**(F2) WAS BAUT DER WIDERRUF WIEDER AUF?**
+**GEMESSEN ist die Ausgangslage (CC, 2026-09-16):** Von der **Oberfläche** ist nach einer
+Entscheidung **nichts** wiederverwendbar — das `finally` in `makeButton` entfernt den Host, und
+mit ihm verschwinden Schattenbaum, Stylesheet, Gruppe, beide Schalter, alle drei Knöpfe und jeder
+Listener; die drei Funktionen `makeButton`, `makeGroup` und `fillChoice` sind lokal in der sofort
+ausgeführten Funktion des Blocks. Von der **Speicher-Schicht** ist **alles** wiederverwendbar —
+`window.__psConsentStore` mit `read` und `write` lebt weiter.
+**DIE FRAGE:** Läuft ein bestehender Erzeuger ein zweites Mal, oder entsteht eine eigene Bauform?
+**DIE GEFAHR IST BENANNT UND NICHT NEU: ZWEI STELLEN, DIE DIESELBE OBERFLÄCHE BAUEN, LAUFEN
+AUSEINANDER.** Dieselbe Figur führt dieser Bestand bereits zweimal — Entscheidung (14) ("dieselbe
+Divergenz-Bauform") und Vorrat (16), wo zwei Erzeuger desselben Gate-Blocks **bereits** um zwei
+Bytes auseinanderlaufen.
+**DER PLAN ENTSCHEIDET UND BEGRÜNDET. KEINE EMPFEHLUNG.**
+
+**(F3) WIE ÜBERWINDET DER WIEDERAUFRUF DIE ZWEI BEDINGUNGEN, OHNE SIE FÜR DEN NORMALEN WEG
+AUFZUWEICHEN? DAS IST DIE RISKANTE ACHSE DIESER SCHEIBE.**
+**GEMESSEN (CC, 2026-09-16):** Leiste und Modal tragen je fünf Rückkehr-Punkte in derselben
+Reihenfolge — Hook gesetzt, Schnittstelle fehlt oder hat die falsche Gestalt, `read()` liefert
+nicht "never", kein `document.body`, kein `attachShadow`. **ZWEI DAVON SIND NACH JEDER
+ENTSCHEIDUNG FALSCH:**
+- **DER HOOK IST GESETZT.** `write()` belegt ihn bei Erfolg unbedingt; und auch ohne
+  `write()`-Erfolg belegt ihn der Setzer, der im Dokument **hinter** der Oberfläche steht.
+- **`read()` LIEFERT NICHT MEHR "never".** Nach erfolgreichem `write()` liefert es "decided".
+  **Nach einem GESCHEITERTEN `write()` nicht** — dort ist nichts gespeichert, und die Bedingung
+  wäre weiter erfüllt.
+**Die drei übrigen muss ein Wiederaufruf nicht überwinden** — die Schnittstelle lebt, das Dokument
+ist geladen, und `attachShadow` ändert sich innerhalb einer Seite nicht.
+**WARUM DAS DIE RISKANTE ACHSE IST: WER SIE ZU WEIT ÖFFNET, ZEIGT DEN DIALOG EINEM BESUCHER, DER
+LÄNGST ENTSCHIEDEN HAT** — auf jedem Laden, unbemerkt, auf jeder Seite, die den Dialog trägt. Die
+zweite Bedingung ist zudem ausdrücklich als **zweite Wache** gebaut: Der Docblock von
+`buildConsentBarScript` sagt, sie sei auf dem produktiven Pfad redundant, bleibe aber, weil "ein
+Block, dessen Fehlschlag JEDEM Besucher eine Leiste zeigt, eine zweite Wache verträgt", und dass
+allein der konstruierte Test L8 ihr Entfernen fängt.
+**DER PLAN ENTSCHEIDET UND BEGRÜNDET. KEINE EMPFEHLUNG.**
+
+### Die Betreiber-Dokumentation ist Teil der Scheibe
+
+**SIE IST KEINE NACHARBEIT.** Entscheidung (24) sagt es im Wortlaut: "Ohne Betreiber-Dokumentation
+ist die Funktion unbenutzbar. Die Dokumentation gehört deshalb IN die Scheibe 11.5e-2, nicht
+dahinter."
+
+**WAS DER PLAN VORFINDET — GEMESSEN am Repo (CC, 2026-09-16), drei Achsen, je mit
+Positivkontrolle:**
+- **KEINE ROUTE.** `src/app` trägt genau **zwei** Seiten — den Editor und die Anmeldung. Keine
+  `/docs`-, `/hilfe`- oder `/anleitung`-Route. Positivkontrolle: dieselbe Achse trifft die sechs
+  API- und Serve-Routen.
+- **GENAU EIN LINK NACH AUSSEN, UND ER ZEIGT AUF DIE EIGENE SEITE DES BETREIBERS.** Achse `href=`
+  über `src/components/` und `src/app/`, Testdateien ausgenommen: ein einziger Treffer, der
+  `liveUrl`-Link in `PublishView.tsx`. **Kein Link auf irgendeine Dokumentation.**
+- **KEIN NUTZERSICHTBARER TEXT AUF DER HILFE-ACHSE.** Achse
+  `anleitung|hilfe|dokumentation|handbuch|tutorial|leitfaden`, case-insensitiv, über `src/`: acht
+  Treffer in fünf Dateien, **alle in Kommentaren**.
+**WAS ES GIBT, IST ERKLÄRTEXT IM BEREICH VERÖFFENTLICHEN** (`PublishView.tsx`): drei
+Options-Beschreibungen, der Hinweis bei einem unbekannten Wert und der Satz über ein nicht
+erkanntes Consent-Management. **Er sagt dem Betreiber, was der Schalter TUT — er nennt den Hook
+an keiner Stelle.** Das ist die richtiggestellte Ausgangslage von Vorrat (3).
+**DIE ZWEITE FUNDSTELLE, die kein Produkt-Ort ist und deshalb hier steht:** README.md richtet sich
+an GitHub-Leser, nennt den Hook nicht (Achse `pagesmithConsent`: kein Treffer) und führt seine
+Roadmap bis Phase 9.
+
+**WAS DIE BESCHREIBUNG TRAGEN MUSS — DREI DINGE, UND SIE SIND NICHT VERHANDELBAR:**
+1. **DEN NAMEN** `pagesmithConsentRevoke` und wie er aufzurufen ist.
+2. **DASS ER NUR BEI EINGESCHALTETEM DIALOG EXISTIERT.**
+3. **DEN FALL (D)** — was geschieht, wenn der Betreiber den Aufruf einbaut und den Dialog auf AUS
+   stellt, einschliesslich der Kehrseite, dass der TypeError weit weg vom Moment der Entscheidung
+   liegen kann.
+**NICHT ENTSCHIEDEN: FORM UND ORT.** Der Plan entscheidet. **KEINE EMPFEHLUNG.**
+
+### Die Grenze des Produkts, die in die Dokumentation muss
+
+**EIN WIDERRUF NIMMT NICHT ZURÜCK, WAS SCHON GESCHEHEN IST.** Das ist eine Eigenschaft des
+Produkts und keine Baulücke — und sie gehört in die Beschreibung, weil ein Betreiber sonst mehr
+verspricht, als der Baustein hält. **ALLES DREI GEMESSEN am Code (CC, 2026-09-16):**
+
+- **DIE ZWEI WIRING-LISTENER AN `document` BLEIBEN.** `buildWiringScript` (`src/lib/generate.ts`)
+  hängt einen `click`- und im Export zusätzlich einen `auxclick`-Listener an `document`, beide in
+  der Capture-Phase. **`removeEventListener` KOMMT IN `src/lib/` NICHT EIN EINZIGES MAL VOR**
+  (Nicht-Treffer mit benannter Achse; POSITIVKONTROLLE im selben Lauf: `addEventListener` trifft
+  `generate.ts` zweimal und `consent-choice.ts` einmal). Ein Treffer liegt in
+  `src/components/CodeImporter.tsx` — das ist die Anwendung, nicht der ausgelieferte Text.
+- **IHRE WIRKUNG HÖRT TROTZDEM AUF, UND DAS GEHÖRT DAZU, sonst liest sich die Grenze schlimmer,
+  als sie ist:** Der Track-Zweig läuft über `__psMetaFire`, und dessen Ziehung `__psConsentAll`
+  steht **INNERHALB** der Funktion — sie fragt den Hook also bei **jedem** Aufruf neu. Der
+  Kommentar dort sagt es im Wortlaut: "Das Urteil wird nirgends gemerkt — jede Frage ruft den Hook
+  neu." Dasselbe leistet `buildConsentRuntime`, das `window.pagesmithConsent` bei jedem Aufruf
+  liest (bindende Entscheidung (1)). **DER LISTENER BLEIBT, SEINE WIRKUNG HÖRT AUF.**
+- **EIN GESENDETER BEACON UND EIN GELADENES `fbevents.js` SIND IRREVERSIBEL.**
+  `buildPageViewScript` sendet über `navigator.sendBeacon` mit `fetch`-Rückfall; weder `/api/e`
+  noch ein Anbieter kennt einen Rückruf. `__psMetaInit` (`src/lib/tracking/meta.ts`) fügt das
+  fbevents-Script per `insertBefore` ins Dokument, legt `f.fbq` und `f._fbq` an und ruft
+  `fbq("init", …)`. **Nichts davon entfernt ein Widerruf**, und sein Merker `__psFbReady` ist lokal
+  in der Wiring-Funktion, also von aussen nicht zurückzusetzen. **IP UND REFERER SIND BEIM
+  ANBIETER**, und genau das nennt der Kommentar an `__psMetaInit` als Grund für die lazy Ladung.
+
+### Was ausdrücklich nicht dazugehört — neu gesetzt, nicht übernommen
+
+- **jede Änderung an `consent.ts`, `consent-wire.ts`, `ingest.ts`** — die Auswertungsregel und der
+  Draht bleiben unberührt (bindende Entscheidung (1)).
+- **jede Änderung an Setzer, Wiederherstellung, Speicherformat, `read()` und `write()`** — s.
+  Invariante I6.
+- **die Anordnung, das Thema, Farben und freier Text der Oberfläche** — das ist Roadmap-Zeile
+  11.13, und der Befund zu VERMERK 6 ("DIE OBERFLÄCHE WIRKT ÜBERLADEN") gehört dorthin, nicht
+  hierher.
+- **ein Stylesheet vom App-Host** — der Ausschluss samt Begründung steht im stehengebliebenen
+  Block in Abschnitt 15 und gilt unverändert weiter.
+- **Sprache** — 11.5f.
+
+**DIE KOMMENTARKÖPFE DER GESCHÜTZTEN DATEIEN WERDEN GEPRÜFT UND GEMELDET, NICHT GEÄNDERT.**
+**IN DIESER RUNDE BEREITS GEPRÜFT (GELESEN, CC, 2026-09-16), ohne dass daraus eine Arbeit folgt:**
+Kein Satz in `consent-setter.ts` wird durch einen Widerruf falsch. In `consent-store.ts` sprechen
+die Docblocks von `CONSENT_STORE_API`, `buildConsentRestoreScript` und der `denied`-Liste von
+"einem spaeteren Dialog"; **das ist zeitlich überholt, nicht falsch** — so schon in Abschnitt 17
+gemeldet — und für den Widerruf trifft es sogar wieder zu. Der Satz an `CONSENT_STORE_API`, die
+Schnittstelle "existiert NUR bei eingeschaltetem Schalter, weil der Block nur dann entsteht", ist
+die Fundstelle, die den Fall (D) am Code trägt.
+
+### Die tragenden Invarianten
+
+**DIE KENNUNGEN I1 BIS I6 GELTEN JE ZUSCHNITT.** I1 bis I3 stehen gleichnamig in Abschnitt 16
+(Scheibe 11.5d-2) und I1 bis I5 gleichnamig in Abschnitt 17 (Scheibe 11.5e-1); der Code zeigt auf
+jene, je mit der Scheibe an der Stelle (dort gemessen). **EIN ZEIGER AUF EINE DIESER HIER NENNT
+DIE SCHEIBE 11.5e-2** — sonst trifft er eine gleichnamige Invariante einer anderen Scheibe, und
+das fällt an keinem Gate auf.
+
+- **(I1) KEIN EINGRIFF AUSSERHALB DES EIGENEN SCHATTENBAUMS** — unverändert wie Invariante I1 der
+  Scheibe 11.5e-1 und der Scheibe 11.5d-2, einschliesslich der Erlaubnis von `max-height` und
+  `overflow` im eigenen Schattenbaum.
+  **DER WIDERRUF IST DIE ERSTE SCHEIBE, DIE DARAUF DRÜCKT, und deshalb steht sie hier zuerst:**
+  Aufruf-Formen über ein **vereinbartes Attribut** oder ein **URL-Fragment** bräuchten einen
+  `querySelector`, ein `getElementById` oder einen Listener an `document` — also genau die Nadeln,
+  die M12 im Blocktext verbietet, und genau den Eingriff, den I1 ausschliesst. **SIE SIND DAMIT
+  AUSGESCHLOSSEN**, und das ist keine Geschmacksfrage, sondern die Folge einer bestehenden
+  Invariante.
+- **(I2) DIE EINZIGE RÜCKNAHME** der wiederaufgebauten Oberfläche bleibt das Entfernen des
+  Host-Elements im `finally` des Klick-Handlers. **Kein zweiter Rücknahme-Weg**, auch nicht für
+  den Widerruf.
+- **(I3) LISTENER VOR EINHÄNGEN** — der Host wird ZULETZT in das Dokument gehängt, nachdem alle
+  Listener gebunden sind. **Ausdrücklich auch beim Wiederaufbau**: Sonst stünde beim Modal eine
+  klickfangende Abdunkelung im Dokument, bevor ein Knopf wirkt.
+- **(I4) DER HOOK WIRD JE SCHLÜSSEL BELEGT.** Die Gruppe wird beim Schreiben aufgelöst; **kein
+  Gruppenname erreicht Speicher oder Hook** — unverändert wie Invariante I4 der Scheibe 11.5e-1
+  und wie Entscheidung (25).
+- **(I5) DER NEUE GLOBALE NAME BEKOMMT EINEN EIGENEN WÄCHTER.** **FREIGEGEBEN (OWNER 2026-09-16).**
+  **DER GRUND IST GEMESSEN (CC, 2026-09-16), und ohne ihn wird der Wächter beim nächsten Aufräumen
+  als Doppelung von L12 und M12 gestrichen:** Beide nehmen ihren Schnappschuss
+  `new Set(Object.keys(window))`, **NACHDEM** alle Blöcke **vor** der Oberfläche gelaufen sind, und
+  führen danach **allein** den Oberflächen-Block aus. **Ein Name, der anderswo in der Verkettung
+  entsteht, ist für sie unsichtbar** — er liegt entweder schon im Schnappschuss oder läuft gar
+  nicht. Dass ihre Suche funktioniert, belegen sie über eine Positivkontrolle, die eigens den
+  **Setzer** danach laufen lässt.
+  **UND DER WIDERRUF-NAME KANN NICHT IM OBERFLÄCHEN-BLOCK ENTSTEHEN**, weil er ihn überleben muss
+  (Frage F1). **ER FÄLLT DAMIT ZWANGSLÄUFIG IN DEN BEREICH, DEN L12 UND M12 NICHT SEHEN.**
+  **ES SIND DIE EINZIGEN ZWEI WÄCHTER DIESER ART IM BESTAND** (Achse
+  `Object.keys(window)|Object.getOwnPropertyNames(window)|namenVorher` über alle Testdateien in
+  `src/`: sechs Treffer, alle in diesen zwei Dateien). **Ein globaler Name, den niemand prüft,
+  wandert beim nächsten Umbau unbemerkt** — dieselbe Figur wie "NUR EIN TEST IST EIN WÄCHTER"
+  (docs/immer-beachten.md).
+- **(I6) DER SPEICHER BLEIBT UNBERÜHRT:** `read()`, `write()`, `hookFrom` und das Format `ps1`.
+  **Die Fassungsmarke `ps1` bezeichnet für immer dieselbe Gestalt** (docs/immer-beachten.md, "EINE
+  FASSUNGSMARKE DER NUTZLAST WIRD NIE FÜR EINE ANDERE FELDMENGE WIEDERVERWENDET"); ein Widerruf
+  ändert an ihr nichts, weil er über `write()` schreibt wie jeder Knopf.
+
+**UNVERÄNDERT BINDEN DAZU:** die Entscheidungen (1), (2), (3), (4), (9), (11), (12), (13), (14),
+(16), (18), (20), (23), (24) und (25) in Abschnitt 8, die Invarianten I1 bis I3 der Scheibe
+11.5d-2 in Abschnitt 16 und I1 bis I5 der Scheibe 11.5e-1 in Abschnitt 17.
+
+**OB (A) BIS (E) NACH ABSCHNITT 8 GEHÖREN, IST HIER NICHT ENTSCHIEDEN.** Abschnitt 8 trägt, was
+ÜBER die eigene Scheibe hinaus bindet; ob das auf diese fünf zutrifft, ist eine Owner-Frage und
+keine, die ein Zuschnitt für sich beantwortet. Sie stehen deshalb hier, wie die
+Gestalt-Entscheidungen der Scheibe 11.5d-2 vor ihrer Hebung.
+
+### Die Demobarkeit
+
+**DIE DEMOBARKEIT IST IN DIESEM ZUSCHNITT NOCH NICHT AUFGESTELLT.** Sie kommt mit dem Bau-Plan.
+**ZWEI AUFLAGEN AN SIE STEHEN SCHON FEST, weil sie aus dem Bestand folgen und nicht aus dem Plan:**
+- **DIE REGRESSION ZUERST:** Bei ausgeschaltetem Dialog ist der ausgelieferte Text byte-gleich zu
+  vorher. Gehalten wird das von T1 (`consent-setter.test.ts`) und N8
+  (`pageview-emitter.resend.test.ts`); live ist es der erste Schritt und zugleich die
+  Positivkontrolle, wie in VERMERK 4, VERMERK 5 und VERMERK 6.
+- **DER VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT** (docs/immer-beachten.md, "EIN VORHER-WERT WIRD
+  VOR DEM DEPLOY GESICHERT, SONST IST DER NACHWEIS NICHT MEHR HERSTELLBAR"). Ohne gesicherte
+  Vorher-Kopie des Quelltexts kein Deploy.
+
+**DIESER ABSCHNITT SAGT, WAS GEBAUT WIRD UND UNTER WELCHEN AUFLAGEN — NICHT WIE.**
+
+PROVENIENZ: Die Gestalt-Entscheidungen (A) bis (E) sind **OWNER-ENTSCHEIDUNGEN 2026-09-16** —
+Angaben aus dem Auftrag jenes Tages, am Repo nicht prüfbar. Die Invarianten I1 bis I6 und die drei
+Fragen F1 bis F3 sind **ARCHITEKT 2026-09-16**, ebenso nicht am Repo prüfbar; die Freigabe des
+eigenen Wächters in I5 ist **OWNER 2026-09-16**. Alle Aussagen über den Bestand — die
+Rückkehr-Punkte von Leiste und Modal, die Lage der Schlüssellisten, die Namensraum-Achsen, der
+Schnappschuss in L12 und M12, das Fehlen von `removeEventListener` in `src/lib/`, die
+Dokumentations-Achsen und die drei Teile der Produkt-Grenze — sind **GEMESSEN bzw. GELESEN am Repo
+(CC, 2026-09-16)**, je mit benannter Achse und, wo eine Abwesenheit behauptet wird, mit
+Positivkontrolle im selben Lauf. Dass die Einschränkung der Namensraum-Trennung auf globale Namen
+nötig ist, ist ein **BEFUND von CC (2026-09-16)** gegen die Vorgabe des Auftrags.

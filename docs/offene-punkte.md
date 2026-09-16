@@ -725,6 +725,233 @@ aufeinander; sie liegen alle hier und finden einander.
   Phasenende"). Dass er wiederkehrend ist und am nächsten Phasenende erneut feuert, steht
   im Block von 2026-09-11 und wird hier NICHT verdoppelt: Derselbe Satz zweimal in einem
   Posten macht jeden Zeiger auf ihn mehrdeutig.
+
+  NACHGETRAGEN 2026-09-16, ZWEITER BLOCK DES TAGES — DIE ERHEBUNG NACH SUBSYSTEMEN UND DIE
+  ENTSCHEIDUNG, DIE AUS IHR FOLGT. Alles darüber bleibt wörtlich stehen; seine Angaben sind
+  datierte Messungen und werden hier gelesen, nicht ersetzt. Die Buchstaben laufen weiter,
+  damit ein Verweis auf einen Teil dieses Postens eindeutig bleibt.
+
+  (k) ES WIRD NICHT GESCHNITTEN — OWNER-ENTSCHEIDUNG 2026-09-16. Die Erhebung desselben
+  Tages hat geprüft, ob ein Schnitt nach SUBSYSTEMEN trägt: jede der 115 Regeln einzeln,
+  zugeordnet zu QUERSCHNITT (gilt bei jedem Bau), SUBSYSTEM (gilt nur bei Arbeit an einem
+  bestimmten Teil) oder MEHRDEUTIG. Er trägt nicht.
+  DIE ZAHLEN, DIE DIE ENTSCHEIDUNG TRAGEN — die Zeichenzahlen GEMESSEN am Dateitext (CC,
+  2026-09-16), die Klassenzugehörigkeit ein URTEIL derselben Runde:
+  · 190 164 Zeichen in 115 Regelblöcken (der Rest der Datei bis 204 200 sind Kopf und
+    Verzeichnis, die bei jedem Schnitt in JEDER Hälfte stünden).
+  · QUERSCHNITT 50 Regeln / 97 369 Zeichen / 51,2 % · MEHRDEUTIG 9 / 17 336 / 9,1 % ·
+    SUBSYSTEM 56 / 75 459 / 39,7 %, verteilt auf ZEHN Arbeitsetiketten.
+  · STÜCK UND UMFANG GEHEN AUSEINANDER, und wer nach Stück plant, plant falsch: Die
+    Anbieter-Recherche hat DREI Regeln und ist nach Umfang das ZWEITGRÖSSTE Subsystem; die
+    Oberfläche hat VIERMAL so viele Regeln und ist kleiner.
+  DIE PROBE AM NÄCHSTEN REALEN BAU IST DIE ENTSCHEIDENDE ZAHL, und sie ist der Grund der
+  Entscheidung: Für die Phase 11.6 müsste eine Sitzung 87,7 % der Regelzeichen laden; weg
+  blieben 12,3 %, und die HÄLFTE davon ist ein einziges Subsystem. SOLANGE DIE VORFRAGE
+  JENER PHASE OFFEN IST — Client-Snippet oder Server-Empfänger —, MUSS DIE KLÄRENDE SITZUNG
+  DIE VEREINIGUNG BEIDER LESARTEN LADEN. Der Schnitt hilft am wenigsten dort, wo eine Phase
+  BEGINNT, also genau dort, wo der Kontext am knappsten ist.
+  DREI WEITERE BEFUNDE, die gegen ihn sprechen:
+  · DIE SPANNE ZWISCHEN 39,7 % UND 48,8 % HÄNGT AN NEUN REGELN. Die Hälfte der Datei ist
+    unstrittig unbedingt; der ganze Streit wird an den neun Mehrdeutigen geführt.
+  · DIE VERFLECHTUNG IST GRÖSSER ALS IHRE MESSBARE HÄLFTE: 39 WÖRTLICHE Titel-Zitate
+    zwischen Regeln, neun davon über eine Klassengrenze — aber 47 der 115 Regeln tragen
+    UNSCHARFE Verweise ("die Regel darüber", "ABGRENZUNG zu Lektion (c)", "VERWANDT").
+    GENAU DIE MACHT EIN SCHNITT UNAUFFINDBAR: Sie benennen kein Ziel, das man nachschlagen
+    könnte.
+  · DER EINZIGE PRÄZEDENZFALL IST UNAUSGEWERTET: docs/db-regeln.md läuft seit dem
+    2026-08-13 auslöser-geladen, 37 Nennungen in 14 Dateien — KEINE bewertet die
+    Ladeklasse. Und die Datei ist nicht eingefroren: Sie trägt eine VIERTE Regel, die DORT
+    entstanden ist und nie in der unbedingt geladenen Datei stand.
+  · DIE FEHLERKLASSE "EINE AUSLÖSER-GELADENE DATEI WIRD ÜBERSEHEN" IST IM PROJEKT BENANNT,
+    aber für diesen Fall NICHT EINGETRETEN — oder nicht bemerkt worden, und das ist am
+    Bestand nicht zu unterscheiden. Eine Nicht-Beobachtung ist hier kein Entlastungsbeweis.
+  WAS STATTDESSEN GILT: Der Trigger dieses Postens ist wiederkehrend und feuert an jedem
+  Phasenende. GEHANDELT WIRD, WENN EINE LADE-PROBE NACH NACHTRAG (b) FEHLSCHLÄGT — nicht,
+  wenn eine Zahl eine Schwelle überschreitet.
+  WENN DOCH GESCHNITTEN WIRD, IST DIE ANBIETER-RECHERCHE DER ERSTE KANDIDAT: drei Regeln,
+  14 117 Zeichen, nach Umfang das zweitgrösste Subsystem, mit einem scharfen Auslöser
+  (Arbeit an einem fremden Anbieter). Das ist die HÄLFTE der gesamten Ersparnis in DREI
+  Regeln. GENANNT, NICHT EMPFOHLEN — und die Entscheidung oben bleibt davon unberührt.
+  DIE GRENZEN DIESER ERHEBUNG, und ohne sie ist die Liste unten stärker als ihr Verfahren:
+  · DIE KLASSENZUGEHÖRIGKEIT IST EIN URTEIL, KEINE MESSUNG. Gemessen sind allein die
+    Zeichenzahlen und die Verweis-Zählungen.
+  · DER ANGELEGTE MASSSTAB WAR DIE OPERATIVE ANWEISUNG EINER REGEL — an wen sie sich
+    richtet und was sie zu tun befiehlt —, NICHT IHR BELEG. Sonst wanderte jede Regel
+    dorthin, wo ihr Beispiel herkommt. EIN ANDERER MASSSTAB SCHNITTE DIE LISTE ANDERS; wer
+    sie später benutzt, muss wissen, nach welchem sie geschnitten ist.
+  · DER AUFTRAG WAR IN SICH WIDERSPRÜCHLICH, und das gehört an die Liste, nicht in einen
+    Bericht: Seine Querschnitt-Aufzählung nannte "Test- und Wächter-Disziplin", seine
+    Prüffrage lautete "würde jemand an einem ANDEREN Subsystem diese Regel brauchen?". BEI
+    REGEL 65 WIDERSPRECHEN SICH BEIDE — "die Testumgebung wertet kein CSS aus" ist
+    Test-Disziplin und wird ausserhalb der Oberfläche nie gebraucht. Die Erhebung ist der
+    PRÜFFRAGE gefolgt (der Auftrag nennt sie schärfer) und beziffert den Unterschied mit
+    568 Zeichen. BEI SIEBEN WEITEREN REGELN — 5, 8, 15, 16, 21, 78, 93 — liegt dieselbe
+    Spannung latent; dort stammen die Belege aus je einem Subsystem, die Anweisung aber
+    nicht, und sie stehen als Querschnitt.
+  · DIE ETIKETTEN S1 BIS S10 SIND ARBEITSETIKETTEN DIESER ERHEBUNG, KEINE MODULVORSCHLÄGE.
+    Sie sind aus den Regeltexten gezogen, nicht vorab gesetzt.
+  WARUM DIE LISTE VOLLSTÄNDIG DASTEHT UND NICHT IHR ERGEBNIS: NACHTRAG (d) HAT EINE SOLCHE
+  ERHEBUNG SCHON EINMAL GEFAHREN UND NUR DIE ZAHLEN AUFGESCHRIEBEN. Welche Regeln seine
+  vierzehn Überschneidungen und seine drei Gruppen bilden, steht nirgends im Repo (s. (i)) —
+  dieselbe Arbeit müsste zum zweiten Mal gemacht werden. Das ist der Grund für jede der 115
+  Zeilen unten, auch für die, deren Zuordnung offensichtlich aussieht.
+  DIESE LISTE ZITIERT 115 REGELANFÄNGE WÖRTLICH: Wer nach dem Titel einer Regel sucht,
+  trifft ab jetzt auch hier. Die Treffer dieses Nachtrags gehören nicht zum Bestand der
+  Regel, sondern zu ihrer Erhebung.
+  DIE ZEHN ETIKETTEN: S1 Tracking-/Ingest-Pfad und Fan-Out-Ziele · S2 Datenbank (Schema,
+  Migrationen, Policies, PostgREST) · S3 Hosting/Serving (Domains, Routing, Cookies, Audit)
+  · S4 Ausgelieferter Kundentext (Erzeugen, Veröffentlichen) · S5 Editor-/Workspace-
+  Oberfläche · S6 Server-Actions und Next-Bauform · S7 Geheimnisse, OAuth, Chiffrierung ·
+  S8 Anbieter-Recherche · S9 Analytics-Anzeige · S10 Deploy, Build, Env.
+  DIE LISTE — Nummer · wörtlicher Anfang, gekappt · Klasse · Etikett bzw. Grund:
+    1 | DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ... | SUB S3
+    2 | APPEND-ONLY-TABELLEN BLEIBEN POLICY-FREI ... | SUB S2
+    3 | AUDIT-LOG-DISZIPLIN: GENAU EIN Eintrag pro ... | SUB S3
+    4 | TEST-DISZIPLIN: DISKRIMINIEREND STATT BREIT ... | QUERSCHNITT
+    5 | MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE ... | QUERSCHNITT
+    6 | EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI ... | QUERSCHNITT
+    7 | COMMIT-KONVENTIONEN: Conventional-Commit-Format ... | QUERSCHNITT
+    8 | TESTDATEN UND TEST-SEQUENZ MÜSSEN DEN ... | QUERSCHNITT
+    9 | CLIENT-SEITIGE SERVER-ACTION-AUFRUFE ... | SUB S6
+   10 | DIFF-VORLAGE = GEZIELTE VERIFIKATION ... | QUERSCHNITT
+   11 | WAS NUR IM GESPRÄCH GESAGT WIRD ... | QUERSCHNITT
+   12 | EINE MUTATIONS-VORHERSAGE KANN IN BEIDE ... | QUERSCHNITT
+   13 | EINE REGEL KANN RICHTIG SEIN UND NICHT SKALIEREN ... | QUERSCHNITT
+   14 | EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG ... | QUERSCHNITT
+   15 | EINE VORBEDINGUNG, DIE AUCH DER ALTE ZUSTAND ... | QUERSCHNITT
+   16 | EIN GRÜNER TEST IST KEIN BELEG ... | QUERSCHNITT
+   17 | EINE ZÄHLUNG ENTLANG EINER ACHSE ... | QUERSCHNITT
+   18 | EINE BEDINGUNG, DIE EINE ARBEIT AN EINE ANDERE HÄNGT ... | QUERSCHNITT
+   19 | WER EINE HÄLFTE EINER AUSSAGE KORRIGIERT ... | QUERSCHNITT
+   20 | EINE ANLEITUNG, DIE EINE VORAUSSETZUNG NICHT NENNT ... | QUERSCHNITT
+   21 | EIN LIVE-TEST-SCHRITT SETZT EINEN ZUSTAND ... | QUERSCHNITT
+   22 | EINE BILLIGE MESSUNG WIRD NICHT DURCH EINE ... | QUERSCHNITT
+   23 | Erst der nutzbare Kern, dann Infrastruktur. | QUERSCHNITT (Haltung)
+   24 | Importierter User-Code läuft NUR im sandboxed iframe ... | SUB S5
+   25 | HISTORIE-CHECK VOR EINGRIFF IN KERN-DATEIEN ... | QUERSCHNITT (der Text sagt selbst
+        "gilt bei JEDEM Plan")
+   26 | PERMANENTER Alias /api/capi darf NIE entfernt werden ... | SUB S1
+   27 | GRANTS SCHÜTZEN NICHTS — RLS IST DIE EINZIGE ... | SUB S2
+   28 | HOST-ONLY-COOKIES AUF GETEILTEN WILDCARD-DOMAINS ... | SUB S3
+   29 | SET-COOKIE UND EINE ALS ÖFFENTLICH/CACHEBAR ... | SUB S3
+   30 | EIN SERVERSEITIG GELESENER COOKIE-WERT BLEIBT ... | MEHRDEUTIG — trifft jeden Pfad,
+        der einen Cookie liest: Serving, Ingest, Persist. Die Achse ist die Eingabequelle,
+        kein Subsystem.
+   31 | INGEST-204-CONTAINMENT ... | SUB S1
+   32 | TRACKING-source = BEOBACHTUNGS-ORT, NIE ZIEL ... | MEHRDEUTIG — eine Regel über drei
+        Orte: die events-Spalte (DB), den Ingest-Marker und den Verlustraten-Join
+        (Analytics).
+   33 | KILL-SWITCH ALS EXPLIZITER, FAIL-CLOSED ZWEIG ... | SUB S1
+   34 | isForwardable = NEGATIV-AUSSCHLUSS EINES ... | SUB S1
+   35 | BESTÄTIGUNGEN/CONFIRMS NIE AN META FORWARDEN ... | SUB S1
+   36 | BEACON-keepalive PFLICHT ... | SUB S1
+   37 | DRITTANBIETER-SCRIPT-LADEPRÜFUNG am load/error-Event ... | SUB S1
+   38 | WORTWAHL DASHBOARD "NUR server-seitig erfasst" ... | SUB S9
+   39 | DARSTELLUNGS-EHRLICHKEIT BEI VERGLEICHSZAHLEN ... | SUB S9
+   40 | SERVER-EIGENE IDENTITÄT NIE IN EINEN CLIENT-BESESSENEN BLOB ... | MEHRDEUTIG —
+        bindet jede Scheibe, die irgendwo einen Wert persistiert: DB, Tracking, Hosting,
+        Einwilligung. Die Achse ist der Besitz des Blobs.
+   41 | KEIN SERVER-SEITIGES HTML-PARSING ... | SUB S4
+   42 | CAPI-TOKEN UND PIXEL-/DATASET-ID SIND EIN PAAR ... | SUB S1
+   43 | KLICK-WIRING vs. Maustasten ... | SUB S4
+   44 | "USE SERVER"-DATEIEN ... | SUB S6
+   45 | POSTGREST-QUERIES + ECHTE PRIMÄRSCHLÜSSEL ... | SUB S2
+   46 | OB EINE MIGRATION IN DER LAUFENDEN DB ANGEWANDT IST ... | SUB S2
+   47 | ANLEGEN UND BEFÜLLEN EINER ADDITIVEN SPALTE ... | SUB S2
+   48 | ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH ... | SUB S2 (die VERWANDT-Klausel
+        auf die Historien ist Beleg, nicht Anweisung)
+   49 | NEXT_PUBLIC_-REDEPLOY-PFLICHT ... | SUB S10
+   50 | DAS ETIKETT IM NEXT-BUILD-OUTPUT BENENNT DIE KONVENTION ... | SUB S10
+   51 | DIE NEXT-KONVENTIONSDATEI IST src/proxy.ts ... | SUB S3
+   52 | HOST-QUELLE FÜR APP-vs-SERVING-BRANCHING ... | SUB S3
+   53 | Vor neuer Phase: kurz bestätigen, dass die vorige ... | QUERSCHNITT
+   54 | Jede Bau-Freigabe an CC endet mit einer expliziten ... | QUERSCHNITT
+   55 | Session-unabhängige Mutationen (MCP-Vorbereitung) ... | SUB S6
+   56 | ABLEITEN STATT HARDCODEN (Werte mit einer Quelle) ... | QUERSCHNITT
+   57 | ABLEITEN STATT LÖSCHEN (projekt-spezifischer View-State) ... | MEHRDEUTIG — zwei
+        Hälften: der View-State an der Oberfläche UND die Frage, aus welcher Quelle
+        abgeleitet wird (Geheimnis-Tabelle gegen settings). Trifft UI, Tracking, Hosting.
+   58 | DER HALTBARE ANKER IST DER SYMBOLNAME ... | QUERSCHNITT
+   59 | EIN WIEDERKEHRENDER AUFRUF GEGEN EINEN EXTERNEN DIENST ... | SUB S5
+   60 | EINE KOMPONENTE MIT EIGENEM ZUSTAND DARF NICHT ... | SUB S5
+   61 | KEIN ZEIT- ODER LOCALE-ABHÄNGIGER WERT IN EINEM TEILBAUM ... | SUB S5
+   62 | VERSTECKEN PER CSS-KLASSE ... | SUB S5
+   63 | WER EIN ELEMENT AUS DEM DOKUMENTFLUSS NIMMT ... | SUB S5
+   64 | ZWEI BEDIENELEMENTE MIT GLEICHEM NAMEN UND VERSCHIEDENER WIRKUNG ... | MEHRDEUTIG —
+        Oberfläche UND Testbestand; die dritte Achse trifft ausdrücklich auch
+        Mengen-Erweiterungen ausserhalb der UI.
+   65 | DIE TESTUMGEBUNG WERTET KEIN CSS AUS ... | SUB S5 — DIE STELLE, AN DER SICH AUFTRAG
+        UND PRÜFFRAGE WIDERSPRECHEN (s. die Grenzen oben, 568 Zeichen)
+   66 | SERVER-ACTIONS SIND IM NETZWERK-TAB NICHT AN IHREM NAMEN ... | SUB S6
+   67 | EIN SIGNAL LEUCHTET NUR, WENN DER NUTZER JETZT ... | SUB S5
+   68 | AUFRÄUMEN AM ANFANG EINER SITZUNG ... | SUB S5
+   69 | WELCHE REGEL WANN GREIFT: BEKOMMT DIESER FEHLER ... | MEHRDEUTIG — das
+        Oberflächen-Signal UND die Fan-Out-Folge, dass ein Ziel-Fehlschlag eine GRÖSSE ist
+        und keine Meldung.
+   70 | WAS DIE HÜLLE VOM INHALT TRENNT ... | SUB S5
+   71 | NUR EIN TEST IST EIN WÄCHTER ... | QUERSCHNITT
+   72 | BEIM EXTRAHIEREN EINER ANSICHT WANDERT EINE ABLEITUNG ... | SUB S5
+   73 | WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG ... | QUERSCHNITT
+   74 | NAHT-HYGIENE (7c-2, aktiv) ... | MEHRDEUTIG — eine NAHT zwischen Domain-/Routing-
+        und Tracking-Logik; sie gehört per Gegenstand beiden Seiten.
+   75 | SCHWÄRZUNG — VIER TEILE, DIE NUR ZUSAMMEN TRAGEN ... | SUB S7
+   76 | EIN KOMMENTAR IST EINE BEHAUPTUNG, KEINE EIGENSCHAFT ... | QUERSCHNITT
+   77 | MENGEN — ZWEI REGELN, DIE ZUSAMMENGEHÖREN ... | QUERSCHNITT
+   78 | BEVOR EIN ERGEBNIS BEURTEILT WIRD ... | QUERSCHNITT (Teil (e) nennt den A/B-Betrieb
+        als Vorbedingung — Beleg, nicht Gegenstand)
+   79 | MEHRERE KENNUNGEN JE ZIEL BRECHEN EINEN SCHLÜSSEL ... | MEHRDEUTIG — Aussage über
+        das Datenmodell der Ziele: Schema (project_secrets) UND Ziel-Anbindung zugleich.
+   80 | WER EINE STREICHUNG PLANT, ZÄHLT NICHT NUR DIE IMPORTE ... | QUERSCHNITT
+   81 | EIN ANKER, DER EINDEUTIG AUSSIEHT ... | QUERSCHNITT
+   82 | EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY ... | SUB S4
+   83 | EIN VORHER-WERT WIRD VOR DEM DEPLOY GESICHERT ... | QUERSCHNITT
+   84 | JEDES WEITERE FAN-OUT-ZIEL BRINGT SEINE EIGENE ... | MEHRDEUTIG — Ziel-Anbindung UND
+        Migration; seit der Erweiterung vom 2026-08-27 ausdrücklich auch für Zielwerte OHNE
+        Adapter.
+   85 | ANBIETER-DOKUMENTATION WIRD ABSCHNITTSWEISE GELESEN ... | SUB S8
+   86 | EIN NEUER ANBIETER WIRD ERST ANGEBUNDEN ... | SUB S8
+   87 | EIN NACHWEIS AN EINER NEUEN DATEI IST BLIND ... | QUERSCHNITT
+   88 | EIN GUARD AUF EINEN NAMEN, DEN ES NACH DEM LAUF ... | SUB S2
+   89 | EIN WÄCHTER ÜBER QUELLTEXT SIEHT ZEICHEN ... | QUERSCHNITT
+   90 | EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN ... | QUERSCHNITT
+   91 | EINE KENNUNG WIRD NIE FÜR EINEN ANDEREN SCHLÜSSELWERT ... | SUB S7
+   92 | EINE FASSUNGSMARKE DER NUTZLAST WIRD NIE ... | SUB S7
+   93 | EIN REGRESSIONSSCHRITT DARF DIE VORAUSSETZUNG ... | QUERSCHNITT
+   94 | EINE PROBE GEGEN DIESELBE SCHICHT KANN EINE FRAGE ... | QUERSCHNITT
+   95 | DIE LISTE "GESEHEN, NICHT GEÖFFNET" IST DER ORT ... | SUB S8
+   96 | EIN TITEL-ZEIGER AUS UMLAUTFREIEM QUELLTEXT ... | QUERSCHNITT
+   97 | "### Vollzogen — was hier stand und wohin es gegangen ist" ... | QUERSCHNITT
+   98 | DIE BYTE-KONTROLLE BRAUCHT EIN BENANNTES INSTRUMENT ... | QUERSCHNITT
+   99 | EINE MUTATIONS-VORHERSAGE WIRD VOR DEM LAUF ... | QUERSCHNITT
+  100 | EIN ZEIGER AUF EINE NUMMERIERTE ABLAGE ... | QUERSCHNITT
+  101 | EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT ... | QUERSCHNITT
+  102 | EIN NEUES FAN-OUT-ZIEL LÄUFT BEI BESTEHENDEN SEITEN ... | SUB S1 (die Regel grenzt
+        sich selbst gegen 82 ab: dort der Mechanismus, hier die Betriebsfolge)
+  103 | EINE ROUTE, DIE SCHREIBT ODER EINEN FREMDEN ENDPUNKT RUFT ... | SUB S6
+  104 | EIN BEDIENELEMENT, DAS EINEN VORGANG IM NAMEN DES NUTZERS ... | SUB S5 (die Regel
+        grenzt sich selbst gegen 103 ab: dort die Route, hier das Bedienelement)
+  105 | EINE SUCH-ACHSE, DIE AUS DEN ERWARTETEN FORMULIERUNGEN ... | QUERSCHNITT
+  106 | EINE ZITIERTE EINHEIT ZU TEILEN MACHT JEDEN ZEIGER ... | QUERSCHNITT
+  107 | EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT ... | QUERSCHNITT
+  108 | SICHTBARKEIT STATT ISOLATION — EIN TESTMODUS BELEGT ... | SUB S1
+  109 | EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG ... | QUERSCHNITT
+  110 | EINE WIDERLEGTE BEGRÜNDUNG STEHT IM ARCHIV WEITER ... | SUB S1
+  111 | KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT ... | SUB S4
+  112 | WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT ... | SUB S4
+  113 | EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB ... | QUERSCHNITT
+  114 | `grep` TAUGT IN DIESER UMGEBUNG WEDER FÜR DAS CR ... | QUERSCHNITT
+  115 | EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN ... | QUERSCHNITT
+  DIE SUMMEN JE ETIKETT (Regeln / Zeichen, ohne die Mehrdeutigen): S1 11 / 12 982 ·
+  S2 7 / 7 979 · S3 6 / 4 873 · S4 5 / 10 172 · S5 12 / 9 123 · S6 5 / 7 273 ·
+  S7 3 / 4 621 · S8 3 / 14 117 · S9 2 / 1 593 · S10 2 / 2 726.
+  PROVENIENZ: Die Entscheidung, nicht zu schneiden, ist OWNER 2026-09-16. Sämtliche
+  Zeichenzahlen, die Zahl der Regeln, die 39 wörtlichen Titel-Zitate und die 47 Regeln mit
+  unscharfen Verweisen sind GEMESSEN am Dateitext (CC, 2026-09-16); die 37 Nennungen von
+  db-regeln.md und die vierte Regel dort ebenfalls GEMESSEN am Repo. Die ZUORDNUNG jeder
+  einzelnen Regel ist ein URTEIL derselben Runde und ausdrücklich keine Messung. Die Probe
+  an der Phase 11.6 ruht auf der Roadmap-Zeile 11.6, GELESEN (CC, 2026-09-16); dass die
+  klärende Sitzung die Vereinigung beider Lesarten laden muss, ist eine ABLEITUNG aus der
+  dort offenen Vorfrage.
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real; HEUTE FÄLLT ER NICHT AUF, weil
   ohne Dialog nie etwas abgelehnt wird): GEMESSEN am 2026-08-12, read-only am Code.

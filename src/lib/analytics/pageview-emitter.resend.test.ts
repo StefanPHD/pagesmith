@@ -34,6 +34,9 @@ const GLOBALS = [
   "__psConsentStore",
   "__psPageView",
   "pagesmithConsent",
+  // SEIT SCHEIBE 11.5e-2: Der Widerruf-Block legt ihn an. OHNE IHN UEBERLEBT ER DEN TEST
+  // und verunreinigt den naechsten — das ist Hygiene, kein Waechter.
+  "pagesmithConsentRevoke",
 ];
 
 type Mutable = Record<string, unknown>;

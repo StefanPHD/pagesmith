@@ -127,17 +127,34 @@ ${PAGEVIEW_SEND_API}();
 // - `gateOn` traegt, was vorher der Wahrheitswert trug: Wiederherstellung, Setzer und
 //   die AN-Huelle des PageView-Scripts haengen daran, fuer Leiste und Modal gleich.
 // - `dialog` ist der EINE Oberflaechen-Block; Leiste und Modal schliessen einander aus.
+// - `revoke` ist der Widerruf-Block (Scheibe 11.5e-2). ER KOMMT AUS DEMSELBEN `case`-ZWEIG
+//   WIE `dialog`, und genau darin liegt die Kopplung der Form: Der ausgelieferte Text
+//   kennt "bar" oder "modal" zur LAUFZEIT NICHT — die Form steht nur hier, zur Bauzeit, und
+//   nur weil beide Bloecke aus demselben Zweig stammen, widerruft ein Besucher in DER Form,
+//   die der Betreiber gewaehlt hat. Zwei getrennte Verzweigungen koennten auseinanderlaufen.
 // DER WURF IM `default` IST EIN TYP-VERTRAG, KEIN LAUFZEIT-ZWEIG: Vitest prueft keine
 // Typen, und ein nicht migrierter Aufruf mit `true`/`false` liefe sonst still durch —
 // ohne Oberflaeche und mit einer AUS-Huelle, die niemand bestellt hat.
-function consentBlocksFor(form: ConsentDialog): { gateOn: boolean; dialog: string } {
+function consentBlocksFor(form: ConsentDialog): {
+  gateOn: boolean;
+  dialog: string;
+  revoke: string;
+} {
   switch (form) {
     case "off":
-      return { gateOn: false, dialog: "" };
+      return { gateOn: false, dialog: "", revoke: "" };
     case "bar":
-      return { gateOn: true, dialog: buildConsentBarScript() };
+      return {
+        gateOn: true,
+        dialog: buildConsentBarScript("load"),
+        revoke: buildConsentBarScript("revoke"),
+      };
     case "modal":
-      return { gateOn: true, dialog: buildConsentModalScript() };
+      return {
+        gateOn: true,
+        dialog: buildConsentModalScript("load"),
+        revoke: buildConsentModalScript("revoke"),
+      };
     default: {
       const unhandled: never = form;
       throw new Error(`consentBlocksFor: unbekannte Form ${String(unhandled)}`);
@@ -162,7 +179,7 @@ export function injectPageViewEmitter(
   // So muss jede Aufrufstelle entscheiden, und der Compiler fragt.
   consentDialog: ConsentDialog
 ): string {
-  const { gateOn, dialog } = consentBlocksFor(consentDialog);
+  const { gateOn, dialog, revoke } = consentBlocksFor(consentDialog);
   // ZWEITE EINFUEGESTELLE DES GETEILTEN CONSENT-GATES (Phase 11, zweite Scheibe).
   // Sie ist noetig, weil eine publizierte Seite OHNE Mappings KEIN Wiring traegt —
   // dann kaeme der Block aus generate.ts nicht, und die publizierte Seite haette
@@ -206,9 +223,16 @@ export function injectPageViewEmitter(
   const restore = gateOn ? buildConsentRestoreScript() : "";
   // DIE OBERFLAECHE — Leiste (11.5d) ODER Modal (11.5d-2), nie beide — kommt fertig aus
   // consentBlocksFor. Bei AUS ist sie leer, und der Text bleibt byte-gleich (T1).
+  // DER WIDERRUF-BLOCK (11.5e-2) STEHT HINTER IHR UND VOR DEM SETZER. Seine Lage ist
+  // FREIER als die der Oberflaeche, und das ist kein Zufall: Er trifft beim Laden KEIN
+  // Urteil — er liest weder Hook noch Speicher, er legt eine Funktion an und endet. Die
+  // Begruendung der bindenden Entscheidung (13) ("an dieser Stelle deckt EINE Pruefung
+  // beide Faelle ab, in denen der Dialog nicht erscheinen darf") gilt dem LADEZEITPUNKT
+  // und bindet ihn deshalb nicht. Er steht hier, damit die Verkettung in der Reihenfolge
+  // ihrer Abhaengigkeit lesbar bleibt. Bei AUS ist auch er leer.
   // EINE KONKATENATION, EINE EINFUEGESTELLE — und daran haengt die REIHENFOLGE im
-  // Dokument: Gate, dann Wiederherstellung, dann Oberflaeche, dann Setzer, dann der
-  // PageView-Emitter. Die Wiederherstellung MUSS vor dem Setzer stehen, sonst schreibt
+  // Dokument: Gate, dann Wiederherstellung, dann Oberflaeche, dann Widerruf, dann Setzer,
+  // dann der PageView-Emitter. Die Wiederherstellung MUSS vor dem Setzer stehen, sonst schreibt
   // er "abgelehnt", bevor eine gespeicherte Entscheidung den Hook belegen kann. Die
   // Oberflaeche MUSS zwischen beiden stehen: Nur dort trennt EINE Pruefung auf den Hook
   // die Faelle, in denen sie nicht erscheinen darf — hinter dem Setzer ist der Hook
@@ -226,7 +250,12 @@ export function injectPageViewEmitter(
   // eines anderen Bausteins haengt, ist genau der Nebeneffekt, gegen den Setzer und
   // Wiederherstellung oben explizit am Schalter abzweigen.
   const script =
-    gate + restore + dialog + setter + buildPageViewScript(trackingKey, gateOn);
+    gate +
+    restore +
+    dialog +
+    revoke +
+    setter +
+    buildPageViewScript(trackingKey, gateOn);
   const idx = html.toLowerCase().lastIndexOf("</body>");
   if (idx === -1) return html + script;
   return html.slice(0, idx) + script + html.slice(idx);

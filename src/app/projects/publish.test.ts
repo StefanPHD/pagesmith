@@ -1002,7 +1002,45 @@ describe("publishProject — die Werte des Schalters (Scheibe 11.5d)", () => {
       expect(html).not.toContain('id="__ps_clb"');
       expect(html).not.toContain('id="__ps_cmo"');
       expect(html).not.toContain('id="__ps_cns"');
+      // SEIT SCHEIBE 11.5e-2: bei AUS entsteht auch KEIN Widerruf-Block und KEIN globaler
+      // Name (Invariante (8) der Scheibe).
+      expect(html).not.toContain('id="__ps_crv"');
+      expect(html).not.toContain("pagesmithConsentRevoke");
       expect(html).toContain('id="__ps_pve"');
+    }
+  });
+
+  // P5 (Scheibe 11.5e-2). DER WIDERRUF-BLOCK STEHT IN BEIDEN VARIANTEN, an derselben
+  // Stelle wie die Oberflaeche — zwischen ihr und dem Setzer. Die Erwartungen stammen aus
+  // dem Zuschnitt, nicht aus dem Code.
+  // WARUM BEIDE VARIANTEN: publishProject ruft injectPageViewEmitter fuer A und B mit
+  // DEMSELBEN Schalter; ein Widerruf, den nur eine Variante traegt, waere ein stiller
+  // Ausfall fuer die Haelfte des Traffics.
+  it("P5: 'bar' und 'modal' -> der Widerruf-Block in BEIDEN Varianten, zwischen Oberflaeche und Setzer", async () => {
+    for (const [form, dialogId] of [
+      ["bar", 'id="__ps_clb"'],
+      ["modal", 'id="__ps_cmo"'],
+    ] as const) {
+      const { rec } = client();
+      const res = await publishProject(
+        "proj-1",
+        "<html><body>VARIANTE A</body></html>",
+        { ...snapshot, settings: { consent: { dialog: form } } },
+        variantB11_5d
+      );
+      expect(res.ok).toBe(true);
+      const patch = rec.updatePatch as Patch;
+      for (const html of [
+        patch.published_content.html,
+        patch.published_content.variantB.html,
+      ]) {
+        expect(html).toContain('id="__ps_crv"');
+        expect(html).toContain("pagesmithConsentRevoke");
+        expect(html.indexOf(dialogId)).toBeLessThan(html.indexOf('id="__ps_crv"'));
+        expect(html.indexOf('id="__ps_crv"')).toBeLessThan(
+          html.indexOf('id="__ps_cns"')
+        );
+      }
     }
   });
 

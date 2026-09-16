@@ -41,6 +41,9 @@ const GLOBALS = [
   "__psConsentStore",
   "__psPageView",
   "pagesmithConsent",
+  // SEIT SCHEIBE 11.5e-2: Der Widerruf-Block legt ihn an. OHNE IHN UEBERLEBT ER DEN TEST
+  // und verunreinigt den naechsten — das ist Hygiene, kein Waechter.
+  "pagesmithConsentRevoke",
 ];
 
 type Mutable = Record<string, unknown>;
@@ -158,7 +161,7 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   // der Nachbarn: KEIN `<` im Rumpf. Damit kann weder ein `</script>` noch ein `</body>`
   // noch ein `<!--` darin stehen.
   it("L3: der Rumpf enthaelt kein '<'; genau ein </script>, kein </body>", () => {
-    const block = buildConsentBarScript();
+    const block = buildConsentBarScript("load");
     const rumpf = block.slice(block.indexOf(">") + 1, block.lastIndexOf("<"));
     // POSITIVKONTROLLE des Ausschnitts: er traegt wirklich den Code.
     expect(rumpf).toContain("attachShadow");
@@ -176,7 +179,7 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   // publish.test.ts. Enthielte der Block eine davon, luege eine indexOf-Reihenfolge,
   // ohne rot zu werden.
   it("L4: der Block traegt keine der Zeichenketten, nach denen der Bestand sucht", () => {
-    const block = buildConsentBarScript();
+    const block = buildConsentBarScript("load");
     const mitDaten =
       '<html><body><h1>x</h1><script type="application/json" id="pagesmith-mappings">[]</scr' +
       "ipt></body></html>";
@@ -345,8 +348,15 @@ describe("11.5d — die Leiste macht die Seite nicht unbedienbar", () => {
     const neu = Object.keys(window).filter((k) => !namenVorher.has(k));
     expect(neu).toEqual([]);
     expect(hosts()).toHaveLength(1);
-    // POSITIVKONTROLLE der Namens-Suche: der Setzer danach legt einen an.
-    run(scripts[idx + 1]);
+    // POSITIVKONTROLLE der Namens-Suche: der Setzer legt einen an.
+    // ER WIRD SEIT SCHEIBE 11.5e-2 UEBER SEINE KENNUNG GESUCHT, NICHT UEBER `idx + 1`:
+    // Hinter der Leiste steht seither der Widerruf-Block, und die Kontrolle haette einen
+    // anderen Namen gefunden als den erwarteten. Eine Auswahl ueber die POSITION ist eine
+    // Positions- statt Namensbindung — genau die Fehlerklasse, die dieses Projekt fuehrt.
+    // DER WAECHTER-TEIL DARUEBER IST UNVERAENDERT; gebogen wurde nichts.
+    const setzer = scripts.find((s) => s.id === "__ps_cns");
+    expect(setzer).toBeTruthy();
+    run(setzer!);
     expect(Object.keys(window).filter((k) => !namenVorher.has(k))).toContain(
       "pagesmithConsent"
     );
@@ -362,7 +372,7 @@ describe("11.5d — die Leiste macht die Seite nicht unbedienbar", () => {
 
     // `overflow` im Block: nie.
     const traegtOverflow = (text: string): boolean => /overflow/i.test(text);
-    expect(traegtOverflow(buildConsentBarScript())).toBe(false);
+    expect(traegtOverflow(buildConsentBarScript("load"))).toBe(false);
     // POSITIVKONTROLLE der Suche.
     expect(traegtOverflow("html{overflow:hidden}")).toBe(true);
   });

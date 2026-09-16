@@ -296,6 +296,50 @@ export default function PublishView({
         </div>
       </div>
 
+      {/* DER WIDERRUF (Phase 11.5, Scheibe 11.5e-2). Wir liefern einen AUFRUF, das
+          Bedienelement stellt der Betreiber — bindende Entscheidung (24).
+          DIESER ABSCHNITT IST TEIL DER SCHEIBE UND KEINE NACHARBEIT: Ohne ihn ist die
+          Funktion unbenutzbar, denn es gibt KEINEN anderen Ort, an dem ein Betreiber vom
+          Aufruf erfuehre. GEMESSEN (CC, 2026-09-16): keine Doku-Route, ein einziger `href`
+          im ganzen Produkt (er zeigt auf die Live-Seite des Betreibers), und auf der Achse
+          `anleitung|hilfe|dokumentation|handbuch|tutorial|leitfaden` ueber src/ nur
+          Kommentare. Der Bereich VEROEFFENTLICHEN ist der Ort, an dem er ohnehin steht,
+          wenn er den Schalter setzt.
+          ER STEHT IMMER, AUCH BEI "Aus", UND DAS IST DER PUNKT: Genau dort muss der Fall
+          stehen, dass der Aufruf ins Leere laeuft. Ein Text, der nur bei eingeschaltetem
+          Dialog erschiene, erreichte den Betreiber im einzigen Fall nicht, in dem er ihn
+          braucht.
+          ALLE FUENF WORTLAUTE SIND FREIGABEN (G1 bis G5, Owner 2026-09-16) und werden
+          nicht umformuliert; G6, die Warnung in der Konsole, steht in
+          tracking/consent-revoke.ts. */}
+      <div className="mt-4 border-t border-gray-200 pt-4">
+        <h2 className="mb-1 text-sm font-medium text-gray-700">Widerruf</h2>
+        <div className="space-y-2 rounded-md border border-gray-200 px-3 py-2 text-xs text-gray-600">
+          <p>
+            Ein Besucher kann seine Entscheidung widerrufen. Rufe dafür aus deiner
+            Seite pagesmithConsentRevoke() auf. Der Aufruf gibt true zurück, wenn
+            der Dialog daraufhin erscheint, sonst false — etwa weil noch keine
+            Entscheidung vorliegt oder der Dialog schon offen steht.
+          </p>
+          <pre className="overflow-x-auto rounded bg-gray-50 px-2 py-1 text-[11px] text-gray-700">
+            <code>
+              {
+                '<a href="#" onclick="pagesmithConsentRevoke(); return false;">Einwilligung ändern</a>'
+              }
+            </code>
+          </pre>
+          <p>
+            Den Aufruf gibt es nur, solange oben Leiste oder Fenster eingeschaltet
+            ist. Steht der Schalter auf „Aus“, läuft er ins Leere, und der Fehler
+            erscheint nur in der Konsole des Besuchers.
+          </p>
+          <p>
+            Ein Widerruf gilt ab dem Moment, in dem er geschieht. Was vorher
+            gesendet oder geladen wurde, holt er nicht zurück.
+          </p>
+        </div>
+      </div>
+
       {/* Variante B verwalten (Phase 9 Scheibe 9a). Destruktiv -> zweistufige
           Inline-Bestaetigung, exakt wie "CAPI-Token entfernen". Bewusst hier im
           Einstellungs-Panel und NICHT neben dem Umschalter in der Toolbar: ein

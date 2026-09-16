@@ -34,6 +34,10 @@ import {
   CONSENT_CHOICE_JS,
   CONSENT_TEXT,
 } from "@/lib/tracking/consent-choice";
+import {
+  wrapRevoke,
+  type ConsentSurfaceMode,
+} from "@/lib/tracking/consent-revoke";
 
 /**
  * Kennung des Blocks, `__ps_`-namespaced wie `__ps_cnr`, `__ps_cns` und `__ps_pve`.
@@ -46,8 +50,13 @@ import {
 export const CONSENT_BAR_SCRIPT_ID = "__ps_clb";
 
 /**
- * Das Host-Element der Leiste — das EINZIGE, was der Block ausserhalb seiner
- * sofort ausgefuehrten Funktion hinterlaesst, solange die Leiste offen ist.
+ * Das Host-Element der Leiste — das EINZIGE, was der LADE-Block (`__ps_clb`) ausserhalb
+ * seiner sofort ausgefuehrten Funktion hinterlaesst, solange die Leiste offen ist.
+ * SEIT SCHEIBE 11.5e-2 STEHT "DER LADE-BLOCK" DA UND NICHT MEHR "DER BLOCK": Derselbe
+ * Erzeuger liefert im Modus "revoke" einen ZWEITEN Block (`__ps_crv`), und DER hinterlaesst
+ * zusaetzlich den globalen Namen CONSENT_REVOKE_API. Fuer `__ps_clb` gilt der Satz
+ * unveraendert — L12 haelt ihn, indem er fuer diesen Block KEINEN neuen globalen Namen
+ * zulaesst.
  * EIN EIGENER ELEMENTNAME statt `div`: Regeln der Seite auf `div` treffen ihn nicht.
  * NICHT `pagesmith-consent-bar`: Der Name traegt sonst die Nadel `pagesmith-consent`.
  */
@@ -78,7 +87,17 @@ const CONSENT_BAR_CSS =
   "button:focus-visible{outline:2px solid #2563eb;outline-offset:2px;}";
 
 /**
- * Der Block `<script id="__ps_clb">`.
+ * Der Block — `<script id="__ps_clb">` im Modus "load", `<script id="__ps_crv">` im Modus
+ * "revoke" (Scheibe 11.5e-2). BEIDE GESTALTEN BAUEN AUS DEMSELBEN STRING auf
+ * (`aufbauDerLeiste`); was sie unterscheidet, ist die Huelle und die Vorbedingung.
+ *
+ * DER LADE-ZWEIG IST BYTE-GLEICH ZUR FASSUNG VOR DER SCHEIBE 11.5e-2 — die tragende
+ * Invariante dieser Scheibe, gehalten von W0 gegen einen VOR dem Bau erhobenen
+ * Vergleichswert. Alles Folgende beschreibt ihn und gilt fuer "load".
+ *
+ * DER WIDERRUF-ZWEIG traegt die zwei Wachen unten NICHT; seine Vorbedingung ist ihre
+ * UMKEHRUNG, und sie steht samt Begruendung am Docblock von `wrapRevoke`
+ * (tracking/consent-revoke.ts). Sie wird hier nicht verdoppelt.
  *
  * DIE LEISTE ERSCHEINT NUR, WENN BEIDE BEDINGUNGEN GELTEN — in dieser Reihenfolge:
  * 1. DER HOOK IST UNGESETZT (`window.pagesmithConsent !== undefined` -> Abbruch).
@@ -123,17 +142,32 @@ const CONSENT_BAR_CSS =
  * DIE SCHLUESSEL KOMMEN AUS ALL_CONSENT_KEYS bzw. CONSENT_GROUP_KEYS, nie aus einer zweiten
  * Liste.
  */
-export function buildConsentBarScript(): string {
-  return `<script id="${CONSENT_BAR_SCRIPT_ID}">
-(function(){
-  if (window.pagesmithConsent !== undefined) return;
-  var api = window.${CONSENT_STORE_API};
-  if (!api || typeof api.read !== "function" || typeof api.write !== "function") return;
-  if (api.read().state !== "never") return;
-  var body = document.body;
-  if (!body) return;
+/**
+ * DER AUFBAU DER LEISTE — EIN STRING, ZWEI EINSETZUNGEN (Scheibe 11.5e-2).
+ *
+ * Er traegt alles ab `document.body` bis zum Einhaengen. Die zwei Gestalten des Blocks
+ * unterscheiden sich allein in zwei Platzhaltern:
+ * - `abbruch` — die Rueckkehr-Anweisung der zwei Moeglichkeits-Wachen (`document.body`
+ *   und `attachShadow`). Im Lade-Zweig `return;`, im Widerruf-Zweig `return false;`.
+ * - `vormerken` — im Widerruf-Zweig die Zeile, die das Host-Element merkt, unmittelbar
+ *   VOR dem Einhaengen; im Lade-Zweig LEER.
+ *
+ * WARUM EIN STRING UND NICHT ZWEI: Zwei Stellen, die dieselbe Oberflaeche bauen, laufen
+ * auseinander — dieselbe Divergenz-Bauform, gegen die in dieser Phase schon die
+ * Entscheidungen (4), (5) und (14) stehen, und die Vorrat (16) an zwei Erzeugern desselben
+ * Gate-Blocks bereits als eingetreten fuehrt. Es ist die Bauform von
+ * `buildPageViewScript` ("ZWEI EXPLIZITE ZWEIGE AM PARAMETER, EIN RUMPF") und von
+ * CONSENT_CHOICE_JS.
+ *
+ * DIE BYTE-GLEICHHEIT DES LADE-ZWEIGS HAENGT AN DEN ZWEI PLATZHALTERN, und deshalb steht
+ * es hier: Mit `abbruch = "return;"` und `vormerken = ""` muss der erzeugte Text ZEICHEN
+ * FUER ZEICHEN der Fassung vor dieser Scheibe entsprechen. W0 haelt den Wert.
+ */
+function aufbauDerLeiste(abbruch: string, vormerken: string): string {
+  return `  var body = document.body;
+  if (!body) ${abbruch}
   var host = document.createElement(${JSON.stringify(CONSENT_BAR_HOST_TAG)});
-  if (typeof host.attachShadow !== "function") return;
+  if (typeof host.attachShadow !== "function") ${abbruch}
   var root = host.attachShadow({ mode: "open" });
   var style = document.createElement("style");
   style.textContent = ${JSON.stringify(CONSENT_BAR_CSS + CONSENT_CHOICE_CSS)};
@@ -149,7 +183,20 @@ export function buildConsentBarScript(): string {
 ${CONSENT_CHOICE_JS}
   fillChoice(bar);
   root.appendChild(bar);
-  body.appendChild(host);
-})();
+${vormerken}  body.appendChild(host);
+`;
+}
+
+export function buildConsentBarScript(mode: ConsentSurfaceMode): string {
+  if (mode === "revoke") {
+    return wrapRevoke(aufbauDerLeiste("return false;", "    offen = host;\n"));
+  }
+  return `<script id="${CONSENT_BAR_SCRIPT_ID}">
+(function(){
+  if (window.pagesmithConsent !== undefined) return;
+  var api = window.${CONSENT_STORE_API};
+  if (!api || typeof api.read !== "function" || typeof api.write !== "function") return;
+  if (api.read().state !== "never") return;
+${aufbauDerLeiste("return;", "")}})();
 </script>`;
 }

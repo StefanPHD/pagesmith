@@ -47,6 +47,9 @@ const GLOBALS = [
   "__psConsentStore",
   "__psPageView",
   "pagesmithConsent",
+  // SEIT SCHEIBE 11.5e-2: Der Widerruf-Block legt ihn an. OHNE IHN UEBERLEBT ER DEN TEST
+  // und verunreinigt den naechsten — das ist Hygiene, kein Waechter.
+  "pagesmithConsentRevoke",
 ];
 
 type Mutable = Record<string, unknown>;
@@ -177,7 +180,7 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
 
   // M3. DER SERIALISIERUNGS-WAECHTER DIESES BLOCKS, Spiegel von L3: KEIN `<` im Rumpf.
   it("M3: der Rumpf enthaelt kein '<'; genau ein </script>, kein </body>", () => {
-    const block = buildConsentModalScript();
+    const block = buildConsentModalScript("load");
     const r = rumpf(block);
     // POSITIVKONTROLLE des Ausschnitts: er traegt wirklich den Code.
     expect(r).toContain("attachShadow");
@@ -193,7 +196,7 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
   // Bestand auch nach `__ps_clb` (L1, L2, L8, L12, P2, P2b, P3). Und in der GEGENRICHTUNG:
   // Der Leisten-Block traegt die Kennungen des Modals nicht, denn M1b und P2 suchen sie.
   it("M4: der Block traegt keine der Zeichenketten, nach denen der Bestand sucht — und umgekehrt", () => {
-    const block = buildConsentModalScript();
+    const block = buildConsentModalScript("load");
     const mitDaten =
       '<html><body><h1>x</h1><script type="application/json" id="pagesmith-mappings">[]</scr' +
       "ipt></body></html>";
@@ -215,7 +218,7 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
       // POSITIVKONTROLLE: dieselbe Suche trifft im Text mit der Leiste.
       expect(outLeiste).toContain(nadel);
     }
-    const leistenBlock = buildConsentBarScript();
+    const leistenBlock = buildConsentBarScript("load");
     for (const nadel of ["__ps_cmo", "pagesmith-modal"]) {
       expect(leistenBlock).not.toContain(nadel);
       // POSITIVKONTROLLE: dieselbe Suche trifft im Text mit dem Modal.
@@ -432,8 +435,15 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
     run(scripts[idx]);
     expect(Object.keys(window).filter((k) => !namenVorher.has(k))).toEqual([]);
     expect(hosts()).toHaveLength(1);
-    // POSITIVKONTROLLE der Namens-Suche: der Setzer danach legt einen an.
-    run(scripts[idx + 1]);
+    // POSITIVKONTROLLE der Namens-Suche: der Setzer legt einen an.
+    // ER WIRD SEIT SCHEIBE 11.5e-2 UEBER SEINE KENNUNG GESUCHT, NICHT UEBER `idx + 1`:
+    // Hinter dem Modal steht seither der Widerruf-Block, und die Kontrolle haette einen
+    // anderen Namen gefunden als den erwarteten. Eine Auswahl ueber die POSITION ist eine
+    // Positions- statt Namensbindung — genau die Fehlerklasse, die dieses Projekt fuehrt.
+    // DER WAECHTER-TEIL DARUEBER IST UNVERAENDERT; gebogen wurde nichts.
+    const setzer = scripts.find((s) => s.id === "__ps_cns");
+    expect(setzer).toBeTruthy();
+    run(setzer!);
     expect(Object.keys(window).filter((k) => !namenVorher.has(k))).toContain(
       "pagesmithConsent"
     );
@@ -451,7 +461,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
 
     // DIE NADELN — STRENG: lieber ein Fehlalarm, den jemand prueft, als ein Durchlassen.
     // Jede mit einem Beispiel, das sie treffen MUSS.
-    const block = buildConsentModalScript();
+    const block = buildConsentModalScript("load");
     const NADELN: Array<[RegExp, string]> = [
       [/documentElement/, "document.documentElement.setAttribute('x', '1')"],
       [/document\.head/, "document.head.appendChild(s)"],
@@ -570,7 +580,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
       "if (window.pagesmithConsent !== undefined) return;",
       'if (api.read().state !== "never") return;',
     ];
-    for (const block of [buildConsentBarScript(), buildConsentModalScript()]) {
+    for (const block of [buildConsentBarScript("load"), buildConsentModalScript("load")]) {
       for (const zeile of ZEILEN) {
         expect(block.split(zeile).length - 1).toBe(1);
       }
@@ -588,7 +598,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
   it("M15b: Leisten- und Modal-Block tragen CONSENT_CHOICE_JS je genau einmal — Anwesenheit, keine Richtigkeit", () => {
     // POSITIVKONTROLLE: das Stueck ist nicht leer und traegt wirklich die Schalter.
     expect(CONSENT_CHOICE_JS).toContain('"checkbox"');
-    for (const block of [buildConsentBarScript(), buildConsentModalScript()]) {
+    for (const block of [buildConsentBarScript("load"), buildConsentModalScript("load")]) {
       expect(block.split(CONSENT_CHOICE_JS).length - 1).toBe(1);
     }
   });

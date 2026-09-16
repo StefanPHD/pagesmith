@@ -42,6 +42,10 @@ import {
   CONSENT_CHOICE_JS,
   CONSENT_TEXT,
 } from "@/lib/tracking/consent-choice";
+import {
+  wrapRevoke,
+  type ConsentSurfaceMode,
+} from "@/lib/tracking/consent-revoke";
 
 /**
  * Kennung des Blocks, `__ps_`-namespaced wie `__ps_cnr`, `__ps_clb`, `__ps_cns` und
@@ -88,7 +92,12 @@ const CONSENT_MODAL_CSS =
   "button:focus-visible{outline:2px solid #2563eb;outline-offset:2px;}";
 
 /**
- * Der Block `<script id="__ps_cmo">`.
+ * Der Block — `<script id="__ps_cmo">` im Modus "load", `<script id="__ps_crv">` im Modus
+ * "revoke" (Scheibe 11.5e-2). Spiegel der Leiste: BEIDE GESTALTEN BAUEN AUS DEMSELBEN
+ * STRING auf (`aufbauDesFensters`), der Lade-Zweig ist BYTE-GLEICH zur Fassung vor der
+ * Scheibe (gehalten von W0), und der Widerruf-Zweig traegt die zwei Wachen nicht — seine
+ * Vorbedingung ist ihre Umkehrung und steht am Docblock von `wrapRevoke`.
+ * Alles Folgende beschreibt den Lade-Zweig.
  *
  * DAS MODAL ERSCHEINT UNTER DENSELBEN ZWEI BEDINGUNGEN WIE DIE LEISTE, WOERTLICH
  * WIEDERHOLT: der Hook ist ungesetzt, und `read()` liefert "never". Die Begruendung
@@ -112,17 +121,18 @@ const CONSENT_MODAL_CSS =
  * DIE SCHLUESSEL KOMMEN AUS ALL_CONSENT_KEYS bzw. CONSENT_GROUP_KEYS, nie aus einer zweiten
  * Liste.
  */
-export function buildConsentModalScript(): string {
-  return `<script id="${CONSENT_MODAL_SCRIPT_ID}">
-(function(){
-  if (window.pagesmithConsent !== undefined) return;
-  var api = window.${CONSENT_STORE_API};
-  if (!api || typeof api.read !== "function" || typeof api.write !== "function") return;
-  if (api.read().state !== "never") return;
-  var body = document.body;
-  if (!body) return;
+/**
+ * DER AUFBAU DES FENSTERS — EIN STRING, ZWEI EINSETZUNGEN (Scheibe 11.5e-2).
+ * Spiegel von `aufbauDerLeiste` in consent-bar.ts; die Begruendung steht dort und wird
+ * hier nicht verdoppelt. Die zwei Platzhalter sind dieselben: `abbruch` fuer die
+ * Rueckkehr-Anweisung der zwei Moeglichkeits-Wachen, `vormerken` fuer die Zeile vor dem
+ * Einhaengen.
+ */
+function aufbauDesFensters(abbruch: string, vormerken: string): string {
+  return `  var body = document.body;
+  if (!body) ${abbruch}
   var host = document.createElement(${JSON.stringify(CONSENT_MODAL_HOST_TAG)});
-  if (typeof host.attachShadow !== "function") return;
+  if (typeof host.attachShadow !== "function") ${abbruch}
   var root = host.attachShadow({ mode: "open" });
   var style = document.createElement("style");
   style.textContent = ${JSON.stringify(CONSENT_MODAL_CSS + CONSENT_CHOICE_CSS)};
@@ -141,7 +151,20 @@ export function buildConsentModalScript(): string {
 ${CONSENT_CHOICE_JS}
   fillChoice(dialog);
   root.appendChild(dialog);
-  body.appendChild(host);
-})();
+${vormerken}  body.appendChild(host);
+`;
+}
+
+export function buildConsentModalScript(mode: ConsentSurfaceMode): string {
+  if (mode === "revoke") {
+    return wrapRevoke(aufbauDesFensters("return false;", "    offen = host;\n"));
+  }
+  return `<script id="${CONSENT_MODAL_SCRIPT_ID}">
+(function(){
+  if (window.pagesmithConsent !== undefined) return;
+  var api = window.${CONSENT_STORE_API};
+  if (!api || typeof api.read !== "function" || typeof api.write !== "function") return;
+  if (api.read().state !== "never") return;
+${aufbauDesFensters("return;", "")}})();
 </script>`;
 }

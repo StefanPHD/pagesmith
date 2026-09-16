@@ -11,6 +11,98 @@ Hebung, Archivierung): docs/arbeitsweise.md, "Die Standdatei". Der Pfad trägt j
 ANDERE Datei — was daraus für ältere Zeiger folgt, steht in Abschnitt 4, und es ist der Grund,
 warum jener Abschnitt HEUTE entsteht und nicht am Phasenende.
 
+## DAS PROTOKOLL DER HEBUNG — 2026-09-16, SCHRITT 1 DES PHASENENDES
+
+**WAS AM 2026-09-16 GESCHEHEN IST:** Der Vorrat (Abschnitt 9) und die Hebungs-Kandidaten
+(Abschnitt 10) sind vollständig verteilt worden, dazu 11.5f und der neu angetretene Kandidat
+(4). **DIE ARCHIVIERUNG IST SCHRITT 2 UND WAR NICHT TEIL DIESER RUNDE** — diese Datei heisst
+weiterhin `docs/aktiver-stand.md`, und kein Text ist aus ihr entfernt worden. **AN JEDER
+GEHOBENEN STELLE STEHT SEITHER EIN ZEIGER** der Form „→ GEHOBEN 2026-09-16 …"; hier steht die
+Zuordnung je Klasse.
+
+**DIE RUNDE HAT GEÄNDERT:** diese Datei · `docs/offene-punkte.md` ·
+`docs/claude-history/backlog-polish.md` · `docs/immer-beachten.md` · `CLAUDE.md`.
+**AUSDRÜCKLICH NICHT:** `docs/roadmap.md`, `src/`, keine Migration.
+
+**DIE 22 STEHENDEN VORRATS-EINTRÄGE — 8 / 13 / 1.** Das Kriterium war ZWEITEILIG:
+benennbarer Trigger UND „geht sonst still kaputt". **Nach dem Trigger allein wären es
+FÜNFZEHN gewesen statt ACHT** (GEMESSEN, CC, 2026-09-16).
+· **ALS OFFENE PUNKTE nach `docs/offene-punkte.md`** (Abschnitt „AUS DEM PHASENENDE 11.5
+  GEHOBEN (2026-09-16) — SIEBEN POSTEN"), mit Stub-Zeile in `CLAUDE.md` im selben Zug:
+  **(2) und (12) gemeinsam als EIN Posten mit zwei Ursachen** („UNSER EINWILLIGUNGS-DIALOG
+  KANN EIN FREMDES CMP ÜBERFAHREN"), dazu **(3)**, **(4)**, **(5)**, **(9)**, **(15)** und
+  **(16)** — acht Einträge in sieben Posten.
+· **INS BACKLOG nach `docs/claude-history/backlog-polish.md`** (Abschnitt „Aus Phase 11.5
+  gehoben (2026-09-16)"), unter ihren Ursprungs-Nummern: **(1)**, **(6)**, **(7)**, **(8)**,
+  **(10)**, **(11)**, **(13)**, **(17)**, **(18)**, **(19)**, **(20)**, **(22)**, **(23)** —
+  dreizehn. **(7) IST MIT SEINEM NACHTRAG VOM 2026-09-15 GEHOBEN, NICHT MIT SEINEM
+  GRUNDTEXT** — so verlangt es der Eintrag selbst.
+· **GESTRICHEN, MIT DEM BELEG DER ERLEDIGUNG: (21)** — er ist in derselben Runde eingelöst
+  worden; der Beleg steht an seiner Nummer.
+· **(14) IST KEINE HEBUNG DIESER RUNDE** — er war schon am 2026-09-15 gestrichen und
+  hinterlässt seine Nummer als benannte Lücke.
+
+**DIE 25 BINDENDEN ENTSCHEIDUNGEN — 4 TRAGEN EINE DAUERREGEL, 21 GEHEN INS ARCHIV.**
+**KEINE HAT IHREN GEGENSTAND VERLOREN**, und das ist keine Nachlässigkeit, sondern
+strukturell: Eine bindende Entscheidung beschreibt, WIE gebaut wurde; sie kann überholt
+werden, aber sie wird nicht gegenstandslos, solange der Code steht. Dieselbe Gegenprobe ist
+am Phasenende 11.2 gelaufen, mit demselben Ergebnis.
+· **ALS DAUERREGELN nach `docs/immer-beachten.md`**, hinten angefügt, Verzeichnis im selben
+  Zug: aus **(20)** → „KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN
+  FREMDEN KNOTEN AN" · aus **(24)** samt dem gemessenen Grund von **(19)** → „WAS EINMAL IM
+  AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE" · aus **(16)** → „EIN UNBEKANNTER
+  KONFIGURATIONSWERT BRICHT LAUT AB". **Die Entscheidungen selbst bleiben wörtlich stehen und
+  gehen mit der Archivierung ins Archiv** — die Regel ist das Destillat, nicht der Ersatz.
+· **ALLE ÜBRIGEN 21 GEHEN UNVERÄNDERT INS ARCHIV.** Sie binden ihre Phase und den Code, den
+  sie beschreiben, nicht das Projekt.
+· **WAS AUSDRÜCKLICH NICHT GEHOBEN IST, UND WARUM — DIE OWNER-AUFLAGE AUS (8):** „Wächter
+  werden nicht passend gebogen, damit gebauter Code grün wird" (OWNER, 2026-09-14) ist eine
+  allgemeine Aussage und in dieser Phase ZWEIMAL tragend geworden — an (8) selbst und an
+  Invariante I5 der Scheibe 11.5e-2. **SIE TRÄGT KEINE FORMULIERBARE BEDINGUNG IHRES
+  ENTFALLENS** — sie gälte, solange es Wächter gibt. Nach der Auflage dieser Runde ist sie
+  damit **kein Dauerregel-Kandidat, sondern ein Vermerk**, und sie ist NICHT gehoben. **HIER
+  STEHT SIE, DAMIT DIE ENTSCHEIDUNG SICHTBAR IST UND NICHT WIE EIN ÜBERSEHEN AUSSIEHT.**
+
+**DIE HEBUNGS-KANDIDATEN — (1) UND (2) ALS DAUERREGELN, (3) UND DER NEUE (4) INS BACKLOG.**
+· **ALS DAUERREGELN nach `docs/immer-beachten.md`:** **(1)** → „`grep` TAUGT IN DIESER
+  UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL" · **(2)** → „EIN WÄCHTER ÜBER ZEICHEN DARF DIE
+  GESTALT DES GEPRÜFTEN NICHT BESTIMMEN". **Beide liessen offen, ob eigene Regel oder Absatz
+  an einer bestehenden; es sind EIGENE geworden** — ein Absatz hätte eine bestehende Regel
+  UMGESCHRIEBEN, und „nichts wird umsortiert" gilt jener Datei. Dieselbe Entscheidung ist am
+  Phasenende 11.2 fünfmal so gefallen. **Die Abgrenzungen, die die Kandidaten zu ihren
+  Nachbarregeln ziehen, stehen in den neuen Regeln unverändert.**
+· **INS BACKLOG:** **(3)** — er ist ein ÄNDERUNGSANTRAG an `docs/arbeitsweise.md`, und über
+  deren Inhalt entscheidet nicht CC (CLAUDE.md, „Aktive Dokumente", Weg 7). Er liegt dort bei
+  den drei Kandidaten derselben Klasse aus der Phase 11.3.
+· **DER NEUE KANDIDAT (4)** ist mit dieser Runde ANGETRETEN und im selben Zug ins Backlog
+  gehoben — ebenfalls ein Änderungsantrag an `docs/arbeitsweise.md`.
+
+**11.5f — GEHOBEN IST DIE SACHE, NICHT DIE NUMMER** (OWNER-ENTSCHEIDUNG 2026-09-16). Ins
+Backlog, mit den zehn Konstanten, dem gemessenen Sprach-Nicht-Treffer, der offenen Frage nach
+den Betreiber-Wortlauten und dem Gegenargument, das die Zuordnung kippen würde. **Die Nummer
+11.5f steht ausschliesslich in dieser Datei** (GEMESSEN, CC, 2026-09-16: drei Vorkommen hier,
+keines in `docs/roadmap.md`, keines in `CLAUDE.md`, keines unter `src/`) **und wandert mit ihr
+ins Archiv. Eine Roadmap-Zeile 11.5f gibt es nicht.**
+
+**DIE AUFLAGE AN SCHRITT 2 — GEMELDET, IN DIESER RUNDE NICHT VOLLZOGEN:** Beim `[x]` muss die
+Roadmap-Zeile 11.5 AUSDRÜCKLICH SAGEN, dass „Sprache" nicht gebaut ist — fünf von sechs
+Punkten ihrer Umfangs-Aufzählung stehen, der sechste nicht. **Das ist die Auflage aus
+CLAUDE.md, „WANN [x] GESETZT WIRD — DAS KRITERIUM":** Ist zum Zeitpunkt des `[x]` etwas
+PRODUKTRELEVANTES unbewiesen oder ungebaut, sagt die Roadmap-Zeile es ausdrücklich, sonst
+liest sich `[x]` als „funktioniert". **DAZU TRITT DER BESTEHENDE NACHTRAG ZUR ÜBERLADENEN
+DARSTELLUNG** (Befund zu VERMERK 6, 2026-09-15): Die Oberfläche wirkt überladen, die Scheibe
+dazu ist NICHT geschnitten, und das harte Kriterium der Leiste ist bisher nur im
+AUSGEKLAPPTEN Zustand gemessen. **`docs/roadmap.md` lag ausserhalb des Scopes dieser Runde.**
+
+**DIE GEGENPROBE WAR NICHT TEIL DIESER RUNDE.** Sie steht VOR dem Löschen in Schritt 2 und
+wird gegen den BESTAND AM ZIELORT gefahren, nicht gegen die Listen oben — eine Liste, die von
+derselben Runde stammt wie die Verschiebung, bestätigt sich selbst.
+
+PROVENIENZ DIESES PROTOKOLLS: die Zuordnung je Eintrag ist die Arbeit dieser Runde (CC,
+2026-09-16); die Zahlen 22 / 8 / 13 / 1, 25 / 4 / 21 und die fünfzehn nach dem Trigger allein
+sind an dieser Datei GEMESSEN (CC, 2026-09-16). Die Ziel-Entscheidung für 11.5f ist
+OWNER-ENTSCHEIDUNG 2026-09-16.
+
 ## Verzeichnis der Abschnitte
 
 Die Titel sind ohne Überschriften-Marke zitiert, damit eine Überschriften-Suche sie nicht
@@ -1588,6 +1680,19 @@ der Commit-Nachricht von `15c8b5c` genannt; live belegt in Schritt 3 des Nachwei
 OWNER-ANGABE). Die gebaute Reihenfolge ist GEMESSEN am Code (CC, 2026-09-14).
 
 **(12) DIE SCHNITTFOLGE DER PHASE STEHT.**
+→ NICHT ALS REGEL GEHOBEN — sie bindet die Schnittfolge DIESER Phase und geht mit der
+Archivierung ins Archiv. **GEHOBEN IST ALLEIN 11.5f**, ihr letztes Glied: Die SACHE — die
+Sprache des Einwilligungs-Dialogs — steht seit dem 2026-09-16 in
+docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.5 gehoben (2026-09-16)", unter
+"11.5f" (OWNER-ENTSCHEIDUNG 2026-09-16). **DIE NUMMER 11.5f IST NICHT MITGEWANDERT** — sie
+steht ausschliesslich in dieser Datei (GEMESSEN, CC, 2026-09-16: drei Vorkommen hier, keines
+in docs/roadmap.md, keines in CLAUDE.md, keines unter `src/`), **eine Roadmap-Zeile 11.5f gibt
+es nicht**, und die Nummer wandert mit dieser Datei ins Archiv.
+**DER ABSATZ "11.5f HÄNGT AN EINEM EXTERNEN AUSLÖSER" IST DAMIT VOLLZOGEN**, und zwar so, wie
+er es selbst vorsah: "Kommt bis zum Phasenende kein zweiter Sprachraum, wird 11.5f als offener
+Punkt GEHOBEN und hält die Phase nicht offen." **DIE ZUORDNUNG IST BACKLOG GEWORDEN, NICHT
+OFFENER PUNKT** — es bricht nichts, ein Merkmal fehlt, und der Trigger meldet sich selbst; das
+Gegenargument und die Bedingung, unter der die Zuordnung kippt, stehen am Backlog-Eintrag.
 
 DIE ENTSCHEIDUNG: 11.5c der nachgeholte Seitenaufruf · 11.5d der Dialog mit seiner Darstellung und
 zwei gleichwertigen Knöpfen · 11.5e Granularität und Widerruf · 11.5f Sprache, erst wenn ein
@@ -1824,6 +1929,12 @@ Tages — eine Angabe aus dem Auftrag, am Repo nicht prüfbar. Die Aussagen übe
 bzw. GELESEN am Code und Repo (CC, 2026-09-14), wie je angegeben.
 
 **(16) EIN UNBEKANNTER WERT DES SCHALTERS VERWEIGERT DAS VERÖFFENTLICHEN.**
+→ GEHOBEN 2026-09-16: Ihr allgemeiner Kern steht seit diesem Tag als DAUERREGEL in
+docs/immer-beachten.md — "EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB, STATT STILL AUF
+EINEN VORGABEWERT ZURÜCKZUFALLEN — DIE ASYMMETRIE ENTSCHEIDET". **DIE ENTSCHEIDUNG SELBST
+BLEIBT WÖRTLICH STEHEN UND GEHT MIT DER ARCHIVIERUNG INS ARCHIV** — die Regel ist das
+Destillat, nicht ihr Ersatz; was hier zum Schalter, zum Bedienelement und zum gemessenen
+Rückkanal steht, trägt die Regel nicht mit.
 
 DIE ENTSCHEIDUNG: Trägt der Schlüssel aus Entscheidung (15) einen Wert, den der Code nicht kennt,
 bricht `publishProject` ab und meldet es dem Betreiber. Es wird nichts geschrieben und nichts
@@ -1989,6 +2100,14 @@ PROVENIENZ: GEMESSEN an den genannten Tests (CC, 2026-09-14); die Erhebung zur A
 ARCHITEKT-ENTSCHEIDUNG 2026-09-14 — eine Angabe aus dem Auftrag, am Repo nicht prüfbar.
 
 **(19) DAS CENTER-MODAL WIRD DIE SCHEIBE 11.5d-2.**
+→ TEILWEISE GEHOBEN 2026-09-16: NICHT die Schnittfolge-Entscheidung, sondern ihr Absatz "DAZU
+DER GEMESSENE GRUND, WARUM BEIDES NICHT IN EINEN ZUG DARF" mit seinen drei Belegen. Er trägt
+zusammen mit Entscheidung (24) die DAUERREGEL "WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST
+EINE EINBAHNSTRASSE — NACHLEGEN GEHT, HERUNTERNEHMEN NICHT" in docs/immer-beachten.md. **DIE
+ENTSCHEIDUNG SELBST BLEIBT WÖRTLICH STEHEN UND GEHT INS ARCHIV**, einschliesslich der Frage,
+die Entscheidung (21) offenlässt — ob deren Kipp-Bedingung auch diesen zweiten Grund meint.
+Die Regel beantwortet sie NICHT; sie nimmt den Grund mit, ohne über die Schnittfolge etwas zu
+sagen.
 
 DIE ENTSCHEIDUNG: Das Modal folgt unmittelbar auf die Leiste, als eigene Scheibe. **Entscheidung (12)
 bleibt in Wortlaut und Nummerierung UNBERÜHRT** — dies ist eine additive Verfeinerung ihrer
@@ -2026,6 +2145,13 @@ am Repo nicht prüfbar. Die drei Belege GEMESSEN am Code (CC, 2026-09-14); Grund
 angegeben.
 
 **(20) DAS CENTER-MODAL WIRD OHNE SCROLL-SPERRE GEBAUT.**
+→ GEHOBEN 2026-09-16: Ihre tragende ZUSAGE steht seit diesem Tag als DAUERREGEL in
+docs/immer-beachten.md — "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN
+FREMDEN KNOTEN AN — STIL, KLASSE, ATTRIBUT, SCROLL-POSITION, FOKUS". Die Regel trägt die
+gemessene Achse, die vier ausdrücklich NICHT erfassten Fälle, den Preis (das Modal ohne
+Scroll-Sperre) und die zwei Bedingungen ihres Entfallens. **DIE ENTSCHEIDUNG SELBST BLEIBT
+WÖRTLICH STEHEN UND GEHT MIT DER ARCHIVIERUNG INS ARCHIV** — was hier zur Abwägung gegen den
+Scroll-Stopp und zu den Live-Werten der zwei Seiten steht, ist Sache dieser Phase.
 
 DIE ENTSCHEIDUNG: Das Modal der Scheibe 11.5d-2 bekommt keine Scroll-Sperre. Die Zusage, dass kein
 Baustein des ausgelieferten Textes zur Laufzeit an einem fremden Knoten Stil, Klasse, Attribut,
@@ -2184,6 +2310,18 @@ PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-15 — eine Angabe aus dem Auftrag, am Re
 Hosts und die drei Belege aus (19) GEMESSEN am Code (CC, 2026-09-15); die Zuordnung eines Fehlschlags ABGELEITET.
 
 **(24) DER WIDERRUF IST EINE FUNKTION FÜR DEN BETREIBER, KEIN DAUERHAFTES BEDIENELEMENT VON UNS.**
+→ TEILWEISE GEHOBEN 2026-09-16: Ihr allgemeiner Teil — die RICHTUNG ("ein Bedienelement lässt
+sich später additiv nachlegen; umgekehrt geht es nicht") — steht seit diesem Tag zusammen mit
+dem gemessenen Grund aus Entscheidung (19) als DAUERREGEL in docs/immer-beachten.md: "WAS
+EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE — NACHLEGEN GEHT,
+HERUNTERNEHMEN NICHT". Die Regel trägt zusätzlich die Folge für globale NAMEN, die hier in
+Abschnitt 18 unter Gestalt-Entscheidung (C) steht ("DER NAME IST EINE EINBAHNSTRASSE").
+**DIE ENTSCHEIDUNG SELBST BLEIBT WÖRTLICH STEHEN UND GEHT INS ARCHIV** — der Widerruf, die
+Auflage an die Betreiber-Dokumentation und die Grenze für den Besucher ohne eingebauten
+Aufruf sind Sache dieser Phase.
+**IHR ABSATZ ÜBER DEN POSTEN "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" IST AM 2026-09-16
+EINGELÖST**: Die Richtigstellung an dessen Punkt (1) steht seither in docs/offene-punkte.md
+(s. Vorrat (21), gestrichen).
 
 DIE ENTSCHEIDUNG: Wir liefern einen Aufruf, der den Dialog erneut öffnet. Das Bedienelement stellt der Betreiber —
 typisch ein Link in seiner Fusszeile neben der Datenschutzerklärung. Namen und Form legt der Bau-Plan fest.
@@ -2284,6 +2422,9 @@ oder gestrichener Eintrag hinterlässt seine Nummer als benannte Lücke.
 
 **(1) DER CODE FÜHRT SELBST DIE FRAGE, OB DIE VIER LITERAL-SCHLÜSSEL ALS KONSTANTEN ZU DEM
 ANALYTICS-SCHLÜSSEL WANDERN SOLLEN** (aufgenommen 2026-09-12).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.5
+gehoben (2026-09-16)", unter der Nummer (1). GRUND: Er wartet auf eine ENTSCHEIDUNG, nicht
+auf einen Trigger — er sagt das selbst.
 
 Der Docblock über `CONSENT_KEY_BY_TARGET` (`src/lib/tracking/consent-targets.ts`) hält
 ausdrücklich als OFFEN und NICHT ENTSCHIEDEN fest, ob die Literal-Werte der vier Ziele als
@@ -2306,6 +2447,12 @@ Frage im Rahmen dieser Phase zu beantworten ist.
 
 **(2) EIN ASYNCHRON GESETZTES FREMD-CMP WIRD VON DER PRÜFUNG AUS ENTSCHEIDUNG (3) NICHT
 ERFASST** (aufgenommen 2026-09-12).
+→ GEHOBEN 2026-09-16 nach docs/offene-punkte.md, GEMEINSAM MIT VORRAT (12) als EIN Posten mit
+zwei Ursachen: "UNSER EINWILLIGUNGS-DIALOG KANN EIN FREMDES CMP ÜBERFAHREN — ZWEI WEGE, DIE
+GETRENNT BLEIBEN", dort Ursache (1). Stub-Zeile in CLAUDE.md im selben Zug. BEIDE Bedingungen
+erfüllt: benennbarer Trigger (der erste Betreiber mit asynchron setzendem CMP und
+eingeschaltetem Schalter) UND still — der erste Seitenaufruf ist durch, bevor das fremde
+Urteil vorliegt, und nichts meldet es.
 
 Der Setzer prüft, ob der Hook schon existiert, und schreibt nur dann nicht. Ein CMP, das den
 Hook erst NACH dem Seitenaufbau setzt — nachgeladen, ereignisgesteuert, verzögert —, hat zu
@@ -2321,6 +2468,13 @@ Verzögerung noch dazu, ob das überhaupt zu lösen ist.
 
 **(3) DER HOOK IST AN KEINER FÜR EINEN BETREIBER ERREICHBAREN STELLE BESCHRIEBEN**
 (aufgenommen 2026-09-12).
+→ GEHOBEN 2026-09-16 nach docs/offene-punkte.md als Posten "DER EINWILLIGUNGS-HOOK IST AN
+KEINER FÜR EINEN BETREIBER ERREICHBAREN STELLE BESCHRIEBEN", Stub-Zeile in CLAUDE.md im
+selben Zug. BEIDE Bedingungen erfüllt: Trigger (der erste fremde Betreiber, der ein eigenes
+CMP anbinden will) UND still — der Betreiber sucht, findet nichts, und ein falsch gesetzter
+Hook wirkt fail-closed, also als verstummtes Tracking ohne Meldung. DIE RICHTIGSTELLUNG VOM
+2026-09-16 unten IST IN DEN POSTEN ÜBERNOMMEN: Die Ausgangslage hat sich von "es gibt keinen
+Text über die Einwilligung" zu "es gibt Text, aber keinen über den Hook" verschoben.
 
 „Ein fremdes CMP bleibt einbindbar" ist damit **technisch wahr und praktisch unbenutzbar**: Es
 gibt keinen Ort, an dem ein Betreiber erführe, dass es den Hook gibt, wie er heisst, welche
@@ -2368,6 +2522,12 @@ Abschnitt 18 unter „Die Betreiber-Dokumentation ist Teil der Scheibe" — der 
 zitiert und ohne Überschriften-Marke, damit eine Überschriften-Suche ihn nicht trifft.
 
 **(4) DER EXPORT-PFAD IST VOM SCHALTER NICHT ERFASST — ZWEI WEGE** (aufgenommen 2026-09-12).
+→ GEHOBEN 2026-09-16 nach docs/offene-punkte.md als Posten "DER EXPORT-PFAD IST VOM
+EINWILLIGUNGS-SCHALTER NICHT ERFASST — UND ES GEHT UM CONVERSIONS, NICHT NUR UM
+SEITENAUFRUFE", Stub-Zeile in CLAUDE.md im selben Zug. BEIDE Bedingungen erfüllt: Trigger
+(die erste exportierte, fremd gehostete Seite mit Tracking-Schlüssel und eingeschaltetem
+Dialog) UND still — der Betreiber sieht den Schalter eingeschaltet, und auf der exportierten
+Seite wirkt er nicht; es gehen Conversions ohne Einwilligung hinaus.
 
 Der **Download** und das **Kopieren in die Zwischenablage** bauen den Text rein clientseitig und
 gehen nie durch die Server-Injektion; der Setzer entsteht dort also nicht (GEMESSEN am Code, CC,
@@ -2389,6 +2549,10 @@ Versprechen**. **KEINE EMPFEHLUNG**, in welche Scheibe das gehört.
 
 **(5) `settingsEqual` IST EINE ALLOWLIST — JEDES NEUE TOP-LEVEL-MITGLIED DES BLOBS IST FÜR
 `dirty` UNSICHTBAR BY DEFAULT, UND NICHTS WIRD DAVON ROT** (aufgenommen 2026-09-12).
+→ GEHOBEN 2026-09-16 nach docs/offene-punkte.md unter demselben Titel, Stub-Zeile in
+CLAUDE.md im selben Zug. BEIDE Bedingungen erfüllt: Trigger (die nächste Runde, die dem
+Einstellungs-Blob ein Top-Level-Mitglied hinzufügt) UND still — kein Typfehler, kein roter
+Test, keine Meldung; der Wert verschwindet beim nächsten Projektwechsel.
 
 Die Funktion zählt auf, was sie vergleicht. Wer ein Mitglied hinzufügt und den Vergleich nicht
 mitzieht, bekommt **keinen Typfehler, keinen roten Test, keine Meldung** — nur einen Wert, der
@@ -2404,6 +2568,10 @@ beim nächsten Zuwachs nicht mitwächst.
 
 **(6) DER RÜCK-IMPORT EINER PUBLIZIERTEN SEITE KÖNNTE EINEN ALTEN SETZER MITBRINGEN**
 (aufgenommen 2026-09-12).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (6).
+GRUND: KEIN benennbarer Trigger — der Eintrag hält selbst fest, es sei weder erhoben, ob
+jemand so arbeitet, noch, was dabei geschieht. Die grössere, GEMESSENE Klasse desselben
+Mechanismus führt Vorrat (13), und er liegt im selben Abschnitt daneben.
 
 Käme der Quelltext einer bereits publizierten Seite in den Editor zurück, trüge er einen ALTEN
 Setzer als INHALT. Der stünde im Dokument **vor** dem neu injizierten — und weil der Setzer nur
@@ -2418,6 +2586,12 @@ noch, was dabei tatsächlich geschieht. **KEINE EMPFEHLUNG.**
 
 **(7) DREI KOMMENTARE BESCHREIBEN EINEN ZWEI-ARGUMENT-AUFRUF VON `injectPageViewEmitter`, DEN ES
 NICHT MEHR GIBT** (aufgenommen 2026-09-12).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (7) — UND
+ZWAR MIT DEM NACHTRAG VOM 2026-09-15, NICHT MIT DEM GRUNDTEXT DARÜBER, so wie der Eintrag es
+selbst verlangt. GRUND FÜR BACKLOG: Trigger ja (der nächste Eingriff in
+`src/lib/hosting/variant.ts`), STILL NEIN — wer dem Kommentar folgt, bekommt einen
+COMPILE-FEHLER; falsch ist allein die Zahl, und sie bricht nichts. Die dritte Fundstelle
+steht am 2026-09-16 unverändert offen (GEMESSEN am Repo).
 
 Seit Scheibe 11.5a trägt die Funktion einen dritten, pflichtigen Parameter. Drei Stellen
 beschreiben weiter den alten Aufruf — GEMESSEN am Repo (CC, 2026-09-12):
@@ -2446,6 +2620,11 @@ Beim Phasenende wird der Eintrag mit DIESEM Nachtrag gehoben — nicht mit dem S
 
 **(8) ZWEI DATEIEN TRAGEN CRLF IM ARBEITSBAUM, HEAD NICHT — NICHT IN DIESER SCHEIBE ENTSTANDEN**
 (aufgenommen 2026-09-12).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (8), mit
+der Nachmessung dieses Tages: 508 bzw. 1074 CR im Arbeitsbaum, in HEAD weiterhin je null
+(GEMESSEN, CC, 2026-09-16, per `tr`). GRUND FÜR BACKLOG: Der Eintrag sagt selbst "FOLGE FÜR
+DEN COMMIT: KEINE" — es geht nichts kaputt, weder still noch laut, und ein Trigger ist nicht
+zu benennen.
 
 GEMESSEN (CC, 2026-09-12): `src/components/PublishView.tsx` trägt **406 CR**,
 `src/app/projects/publish.test.ts` **615 CR**; in HEAD tragen beide **null**.
@@ -2467,6 +2646,13 @@ Dateien ist CR = 0 nachgemessen (CC, 2026-09-12).
 
 **(9) EIN VERGESSENER EINWILLIGUNGS-SCHALTER SIEHT AUS WIE EIN KAPUTTES TRACKING — UND ZWAR AN
 DREI STELLEN GLEICHZEITIG** (aufgenommen 2026-09-12).
+→ GEHOBEN 2026-09-16 nach docs/offene-punkte.md als Posten "EIN EINGESCHALTETER
+EINWILLIGUNGS-DIALOG OHNE ZUSTIMMUNG SIEHT AUS WIE KAPUTTES TRACKING — UND ZWAR AN DREI
+STELLEN GLEICHZEITIG", Stub-Zeile in CLAUDE.md im selben Zug. BEIDE Bedingungen erfüllt:
+Trigger (der erste fremde Nutzer, der den Dialog einschaltet — für den Owner bereits
+eingetreten) UND still — "NICHTS MELDET DIE URSACHE", der Zustand ist nur am ausgelieferten
+Quelltext oder am Schalter zu erkennen. IM POSTEN STEHT DIE ABGRENZUNG ZU DEN ZWEI NACHBARN,
+die ihn nicht ablösen.
 
 Steht der Schalter an und hat niemand eingewilligt, geht **nichts** hinaus: **nichts intern,
 nichts beim Anbieter, nichts im Dashboard.** **NICHTS MELDET DIE URSACHE.** Es gibt keinen
@@ -2490,6 +2676,9 @@ Forward nicht — dort hängt es am Ziel, ob ein markiertes Ereignis sichtbar wi
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG**, ob und was dagegen zu bauen wäre.
 
 **(10) DIE ARTEFAKT-STORAGE-REGEL WIRD ZITIERT UND EXISTIERT NICHT** (aufgenommen 2026-09-14).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (10).
+GRUND: KEIN Trigger — die Frage wartet auf niemanden, und der Befund ist bereits vollständig
+erhoben (drei Achsen, mit Positivkontrolle). Die Archiv-Datei wird nicht angefasst.
 
 **DIE FUNDSTELLE:** `docs/claude-history/phase-8-analytics.md`, Abschnitt der Scheibe 2a,
 Spiegelstrich „DANACH -> 2b (eingelöst)", im Zuschnitt der Scheibe 2b-1. Die Klammer im Wortlaut:
@@ -2539,6 +2728,10 @@ zitierte Regel ohne Text sieht bei jedem Lesen wie eine geltende aus.**
 
 **(11) DER AUSSCHLUSS VON localStorage/sessionStorage IST AUF DEN A/B-FALL FORMULIERT**
 (aufgenommen 2026-09-14).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (11).
+GRUND: KEIN Trigger — er ist ausdrücklich "GEMELDET ALS BEFUND ÜBER DIE REICHWEITE, NICHT ALS
+AUFHEBUNG"; die Entscheidung für das A/B-Cookie bleibt unberührt, die Archiv-Datei wird nicht
+angefasst.
 
 **DIE FUNDSTELLE:** `docs/claude-history/phase-9-ab-testing.md`, „Grundsatzentscheidungen (heute
 entschieden, Bau in 9b/9c)", erster Spiegelstrich. Der Ausschluss im Wortlaut: „AUSGESCHLOSSEN:
@@ -2568,6 +2761,13 @@ A/B-Cookie bleibt unberührt, und die Archiv-Datei wird nicht angefasst.
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
 
 **(12) EIN write-AUFRUF ÜBERSCHREIBT EIN GESETZTES FREMD-CMP** (aufgenommen 2026-09-14).
+→ GEHOBEN 2026-09-16 nach docs/offene-punkte.md, GEMEINSAM MIT VORRAT (2) als EIN Posten mit
+zwei Ursachen: "UNSER EINWILLIGUNGS-DIALOG KANN EIN FREMDES CMP ÜBERFAHREN — ZWEI WEGE, DIE
+GETRENNT BLEIBEN", dort Ursache (2). Stub-Zeile in CLAUDE.md im selben Zug. BEIDE Bedingungen
+erfüllt: Trigger (der erste Betreiber mit eigenem CMP und eingeschaltetem Dialog — dort
+genügt ein Besucher-Klick) UND still. DIE ZUSAMMENLEGUNG ÄNDERT NICHTS AN DER TRENNUNG: Der
+Posten führt die zwei Ursachen mit eigenen Triggern und der Abgrenzung dieses Eintrags zum
+Live-Nachweis der Scheibe 11.5b, Schritt 6.
 
 Der Wiederherstellungs-Block prüft den Hook und weicht einem Fremd-CMP aus; **`write()` tut das
 NICHT** — es setzt den Hook bei Erfolg unbedingt (`buildConsentRestoreScript`,
@@ -2585,6 +2785,12 @@ WIEDERHERSTELLUNG lief. Dieser Eintrag betrifft den anderen Weg.
 
 **(13) EIN HOOK IM KUNDENTEXT ÜBERLEBT JEDES NEU-VERÖFFENTLICHEN — UND SIEHT AUS WIE EIN DEFEKT UNSERER
 BAUSTEINE** (aufgenommen 2026-09-14).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (13).
+GRUND, UND DIE TRENNLINIE ZIEHT DER EINTRAG SELBST: Trigger ja (eingetreten, Owner-Vorfall
+2026-09-14), STILL NEIN — in seiner Abgrenzung zu Vorrat (9) steht wörtlich "er ist nicht
+unsichtbar, sondern unbenannt", am Netzwerk-Tab und in der Konsole sichtbar, sobald man
+fragt. Damit fehlt die zweite Bedingung. Der Nachbar, der sie erfüllt, ist Vorrat (9) und als
+offener Punkt gehoben.
 
 **DER BELEG, OWNER-VORFALL vom 2026-09-14:** Ein Test-Script aus 11.5b im Kopf des Kundentextes setzte
 den Hook auf ein Objekt mit EINEM erlaubten Ziel. Folge: Conversions liefen, Seitenaufrufe nicht — und
@@ -2630,6 +2836,13 @@ BELEG, JE TEIL (GEMESSEN am Repo, CC, 2026-09-15):
   bestehend genannt.
 
 **(15) KEIN TEST LÄSST EINEN WURF BIS IN EINEN KNOPF-HANDLER DURCH** (aufgenommen 2026-09-15).
+→ GEHOBEN 2026-09-16 nach docs/offene-punkte.md als Posten "KEIN TEST LÄSST EINEN WURF BIS IN
+EINEN KNOPF-HANDLER DER EINWILLIGUNGS-OBERFLÄCHEN DURCH", Stub-Zeile in CLAUDE.md im selben
+Zug. BEIDE Bedingungen erfüllt: Trigger (die nächste Runde am Klick-Handler, an
+`CONSENT_CHOICE_JS` oder an `write()`) UND still — bliebe der Host nach einem Wurf stehen,
+wäre die Kundenseite UNBEDIENBAR, weil die Abdunkelung jeden Klick fängt; der Besucher meldet
+das nicht, er geht weg. Heute hält das `finally`, und das ist eine Aussage über JavaScript,
+nicht über einen Test.
 
 Beide Oberflächen schliessen im `finally` ihres Klick-Handlers — die Leiste seit 11.5d
 (`buildConsentBarScript`), das Modal seit 11.5d-2 (`buildConsentModalScript`). Die Docblocks beider sagen, der
@@ -2653,6 +2866,13 @@ einen Test (ABLEITUNG, nicht gelaufen).
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
 
 **(16) DER CONSENT-GATE-BLOCK HAT ZWEI ERZEUGER — UND SIE LAUFEN BEREITS AUSEINANDER** (aufgenommen 2026-09-15).
+→ GEHOBEN 2026-09-16 nach docs/offene-punkte.md unter demselben Titel, Stub-Zeile in
+CLAUDE.md im selben Zug. BEIDE Bedingungen erfüllt, und der Trigger ist im Posten GESCHÄRFT:
+nicht die heutige Hüllen-Divergenz (zwei Zeilenumbrüche, harmlos), sondern DIE NÄCHSTE
+ÄNDERUNG AM INHALT des Gate-Blocks an einem der beiden Erzeuger. STILL: Der Block trägt
+`__psConsent` und `__psConsentAll` — eine inhaltliche Divergenz gäbe Seiten MIT Mappings und
+Seiten OHNE Mappings ein verschiedenes Einwilligungs-Urteil, und kein Gate meldet das, weil
+die Erzeuger getrennte Symbole sind und die Tests sie einzeln prüfen.
 
 DIE ZWEI STELLEN, DIE DIESELBE FRAGE BEANTWORTEN (GEMESSEN am Code, CC, 2026-09-15):
 - **DER CLIENT**, wenn Mappings existieren: `generateFunctional` (`src/lib/generate.ts`) legt ein
@@ -2685,6 +2905,11 @@ Erzeugungsstelle für denselben Baustein als Divergenz-Bauform.
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
 
 **(17) M12 BEHAUPTET MEHR, ALS ER PRÜFT** (aufgenommen 2026-09-15).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (17),
+einschliesslich des Nachtrags vom 2026-09-16 über W11. GRUND FÜR BACKLOG: Es ist eine
+TESTLÜCKE ohne eigenen Bruch — solange niemand M12 anfasst, geht nichts kaputt; der Trigger
+wäre "die nächste Runde an M12", und das ist eine Aufräumarbeit, die wartet, keine Sache, die
+still kaputtgeht.
 
 **DER GEGENSTAND** (GELESEN am Test, CC, 2026-09-15, M12 in `src/lib/tracking/consent-modal.test.ts`):
 - **DER TITEL SAGT „jeweils mit Positivkontrolle"**. Die Zählung der Kinder im `head` (`document.head.children.length`)
@@ -2723,6 +2948,9 @@ liefe neben diesem her und beschriebe dieselbe Lücke ein zweites Mal.
 PROVENIENZ: GEMESSEN am Repo (CC, 2026-09-16), an W11 in der Bau-Runde der Scheibe 11.5e-2.
 
 **(18) ENTSCHEIDUNG (10) SAGT WENIGER, ALS DER CODE KANN** (aufgenommen 2026-09-15).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (18).
+GRUND: KEIN Trigger und KEIN Bruch — der Eintrag sagt selbst "KEIN DEFEKT"; die bindende
+Aussage von (10) trifft zu, die Entscheidung beschreibt nur weniger, als gebaut ist.
 
 Entscheidung (10) führt drei Zustände — „nie gefragt", „zugestimmt", „abgelehnt". Der Code kennt zwei: `read()` in
 `buildConsentRestoreScript` (`src/lib/tracking/consent-store.ts`) liefert `{state:"never"}` oder
@@ -2736,6 +2964,10 @@ Abfrage verändert nichts — trifft zu. Die Entscheidung beschreibt nur weniger
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
 
 **(19) DER WERT `ps1:|` HAT AUF DEM LESEPFAD KEINEN TEST** (aufgenommen 2026-09-15).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (19).
+GRUND: Aus unserem Code ist der Wert heute NICHT ERREICHBAR — `write()` erzeugt ihn nicht,
+und ein zweiter Schreibweg auf `__ps_consent` existiert nicht. Ein Trigger wäre genau dieser
+zweite Schreibweg; ihn zu benennen hiesse, ihn zu erfinden. Eine Testlücke ohne Pfad.
 
 `read()` (`buildConsentRestoreScript`) nimmt `ps1:|` an: `parseList` macht aus einer leeren Seite `[]`, und beide
 Listen leer ergeben `decided` mit `granted: []` und `denied: []` — ein Wert, der über keinen Schlüssel etwas sagt,
@@ -2751,6 +2983,12 @@ Schreibpfad, nicht als gelesener Wert.
 **GEMELDET, NICHT GEBAUT. KEINE EMPFEHLUNG.**
 
 **(20) DASS DIE GRUPPEN-SCHALTER KEINEN LISTENER TRAGEN, HÄLT KEIN TEST** (aufgenommen 2026-09-15).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (20).
+GRUND: Trigger ja (die nächste Runde, die einen Zustand an den Schaltern mitführt —
+ausdrücklich die noch nicht geschnittene Scheibe zum Befund an VERMERK 6), STILL NEIN — WAS
+DABEI BRÄCHE, IST NICHT BENANNT. Invariante I3 hielte weiter, das Schreiben liefe unverändert.
+Der Eintrag sagt, dass ein Schutz als Nebeneffekt still verschwindet; welcher Schaden daraus
+folgt, sagt er nicht.
 
 **DER GEGENSTAND:** Seit `9f85c0c` tragen die zwei Schalter in Leiste und Modal keinen Listener; ihr Zustand wird erst
 beim Klick auf „Auswahl speichern" über `checked` gelesen (`CONSENT_CHOICE_JS`, `src/lib/tracking/consent-choice.ts`,
@@ -2773,6 +3011,20 @@ VERMERK 6) —, und nichts würde rot.
 **(21) DER OFFENE PUNKT ZUR BETREIBER-DOKUMENTATION BEHAUPTET IN SEINEM PUNKT (1), PAGESMITH
 LIEFERE KEINEN EINWILLIGUNGS-DIALOG MIT — SEIT 11.5d TRIFFT DAS NICHT ZU** (aufgenommen
 2026-09-16).
+→ **GESTRICHEN AM 2026-09-16, MIT DEM BELEG DER ERLEDIGUNG. DER VOLLTEXT DARUNTER BLEIBT
+STEHEN, BIS DIE ARCHIVIERUNG IHN MITNIMMT** — gestrichen ist die Sache, nicht die Nummer, und
+die Nummer bleibt als benannte Lücke.
+**DER BELEG:** Die Richtigstellung steht seit dem 2026-09-16 AM POSTEN SELBST —
+docs/offene-punkte.md, Posten "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE", eingefügt
+unmittelbar nach dem Grundtext und vor der Ergänzung vom 2026-08-19, mit dem Titel
+"RICHTIGGESTELLT AM 2026-09-16 (Hebung Phase 11.5)". Sie nennt die vier Bau-Commits, hält die
+zweite Hälfte des Punkts (1) ausdrücklich als WEITERHIN WAHR fest und lässt offen, wie die
+Formulierung künftig lautet. **DER TEXT DES POSTENS DARÜBER IST UNANGETASTET** — Hausform
+jener Datei.
+**WARUM DAS IN DIESER RUNDE MÖGLICH WAR UND AM 2026-09-16 BEIM ANLEGEN NOCH NICHT:** Der
+Eintrag hielt fest, docs/offene-punkte.md liege ausserhalb des damaligen Scopes, und er stehe
+hier, "damit es beim Phasenende nicht untergeht". **DIESE RUNDE IST DAS PHASENENDE UND HAT
+JENE DATEI IM SCOPE.** Der Eintrag hat sein Ziel damit erreicht.
 
 **DIE FUNDSTELLE:** docs/offene-punkte.md, Posten „BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE",
 sein Punkt (1). Er lautet dort, dass zu dokumentieren sei, „dass Pagesmith KEINEN
@@ -2804,6 +3056,10 @@ mitgeliefert wird, GEMESSEN am Repo (CC, 2026-09-16); die Einordnung als Vorrats
 ARCHITEKT 2026-09-16.
 
 **(22) W12 SIEHT EINEN ESCAPE-LISTENER IM SCHATTENBAUM NICHT** (aufgenommen 2026-09-16).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (22).
+GRUND: Der Eintrag trägt seine Entwarnung selbst — "die Lücke im Wächter und die Lücke in der
+Wirkung decken sich weitgehend", weil der Block keinen programmatischen Fokus setzt. Kein
+Trigger, kein Bruch.
 
 **DER GEGENSTAND:** W12 in `src/lib/tracking/consent-revoke.test.ts` hält Invariante I2 der Scheibe
 11.5e-2 — die einzige Rücknahme ist das Entfernen des Hosts. Für die Escape-Hälfte sendet er das
@@ -2834,6 +3090,16 @@ ABLEITUNG, keine Messung.
 
 **(23) ZWEI ZAHLEN FÜR DAS DOKUMENT MIT MAPPINGS-BLOCK — 4 339 UND 4 346 — UND DAS IST KEIN
 WIDERSPRUCH** (aufgenommen 2026-09-16).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, unter der Nummer (23).
+GRUND: KEIN Bruch — der Eintrag ist eine AUFLÖSUNG, kein offener Zustand; beide Zahlen sind
+für ihre Fixture richtig.
+**EINE FOLGE DES EINTRAGS IST AUSDRÜCKLICH NICHT ALS REGEL GEHOBEN, UND DAS STEHT HIER, DAMIT
+ES NICHT WIE EIN ÜBERSEHEN AUSSIEHT:** "Ein Byte-Vergleichswert ist ohne seine Fixture nicht
+reproduzierbar. Wer einen erhebt, schreibt die Fixture dazu." Das ist eine Auflage an jede
+künftige Runde und damit ein REGEL-KANDIDAT — **aber der Eintrag stand im VORRAT, nicht unter
+den Hebungs-Kandidaten, und die Hebung erfindet keinen.** Der Satz ist in den Backlog-Eintrag
+übernommen und dort als Regel-Kandidat gekennzeichnet; wer die nächste Byte-Messung anordnet,
+findet ihn dort. KEINE EMPFEHLUNG.
 
 **DIE ZWEI ANGABEN, je am Ort geprüft:**
 - **VERMERK 6 nennt 4 339 Bytes** (`0125e6d9…`) für „der ausgelieferte Text ausserhalb des
@@ -2875,6 +3141,15 @@ NUMMERIERUNG: (1), (2), … hinten antreten, Nummern stabil und nie neu vergeben
 
 **(1) `grep` TAUGT IN DIESER UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL — UND SEIN FEHLSCHLAG
 SIEHT AUS WIE EIN BEFUND** (angetreten 2026-09-12).
+→ GEHOBEN 2026-09-16 als DAUERREGEL nach docs/immer-beachten.md, unter demselben Titel, ans
+Dateiende angefügt; das Verzeichnis jener Datei ist im selben Zug nachgezogen.
+**DIE OFFENE FRAGE DES KANDIDATEN IST ENTSCHIEDEN: ES IST EINE EIGENE REGEL GEWORDEN, KEIN
+ABSATZ** — ein Absatz hätte die bestehende Byte-Kontroll-Regel UMGESCHRIEBEN, und "nichts wird
+umsortiert" gilt jener Datei. Dieselbe Entscheidung ist am Phasenende 11.2 fünfmal so
+gefallen. **DIE DREI ABGRENZUNGEN DES KANDIDATEN STEHEN IN DER REGEL UNVERÄNDERT**, dazu die
+Bedingung ihres Entfallens: sobald ein GATE CR und NUL im Diff rot macht.
+**DER SATZ "GILT UNABHÄNGIG DAVON UND AB SOFORT" IST DAMIT EINGELÖST** und keine
+Wartestellung mehr.
 
 **DER BEFUND — GEMESSEN am eigenen Lauf (CC, 2026-09-12), mit Positivkontrolle:**
 - `grep -qP '\x00'` meldet auf einer Datei, die nachweislich EIN NUL-Byte trägt, KEINEN
@@ -2932,6 +3207,15 @@ Lauf (CC, 2026-09-12); der Volltext der zwei Nachbarregeln GELESEN in docs/immer
 
 **(2) EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN** (angetreten
 2026-09-15).
+→ GEHOBEN 2026-09-16 als DAUERREGEL nach docs/immer-beachten.md, unter demselben Titel, ans
+Dateiende angefügt; das Verzeichnis jener Datei ist im selben Zug nachgezogen.
+**DIE OFFENE FRAGE DES KANDIDATEN IST ENTSCHIEDEN: ES IST EINE EIGENE REGEL GEWORDEN, KEIN
+ABSATZ**, aus demselben Grund wie bei Kandidat (1). **DIE ABGRENZUNG ZU "EIN WÄCHTER ÜBER
+QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG" STEHT IN DER REGEL UNVERÄNDERT**, ergänzt um den
+Satz, dass beide zusammen gelten: streng irren UND den Irrtum am WÄCHTER beheben, nicht am
+Gegenstand. Die Bedingung ihres Entfallens ist JE WÄCHTER formuliert — sie entfällt, sobald
+er die SACHE prüft statt ihres Stellvertreters; für M12 ist das teilweise geschehen, L12 steht
+unverändert.
 
 **DIE AUSSAGE:** Wird eine Sache über einen billigen Stellvertreter geprüft — ein Wort im Quelltext
 statt der Wirkung —, ist beim nächsten Fall zu fragen, ob der Stellvertreter noch dieselbe Sache
@@ -2966,6 +3250,14 @@ Fassung von I1 GELESEN am Repo (CC, 2026-09-15). Der Wortlaut der Nachbarregel G
 docs/immer-beachten.md (CC, 2026-09-15).
 
 **(3) DIE LÜCKEN-REGEL FEUERT IN DIESER PHASE NIE** (angetreten 2026-09-15).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.5
+gehoben (2026-09-16)", als HEBUNGS-KANDIDAT (3). **KEINE DAUERREGEL, UND DER GRUND STEHT IM
+KANDIDATEN SELBST:** Er ist ein ÄNDERUNGSANTRAG an docs/arbeitsweise.md, und über deren
+INHALT entscheidet nicht CC (CLAUDE.md, "Aktive Dokumente", Weg 7). Er liegt dort bei den
+drei Kandidaten derselben Klasse aus der Phase 11.3 — ausdrücklich neben Kandidat (7) jener
+Phase, den er selbst als verwandt benennt. **DIE ZWEI ZU ENTSCHEIDENDEN WEGE STEHEN
+UNVERÄNDERT:** entweder die Regel benennt den gemeinten Hash, oder die Standdatei führt beide
+Zeilen. KEINE EMPFEHLUNG.
 
 **DIE AUSSAGE:** Die Lücken-Regel meint den Hash, der im Moment des Schreibens NICHT existiert — den Commit DES
 VERMERKS, nicht den Bau-Commit. Die Vermerke dieser Phase führen ausschliesslich den Bau-Commit. Die Regel kann hier
@@ -3010,6 +3302,54 @@ benennt den gemeinten Hash, oder die Standdatei führt beide Zeilen. **KEINE EMP
 PROVENIENZ: Der Befund ist von CC in der Runde vom 2026-09-15 erhoben; die Zählungen und der Wortlaut sind GEMESSEN
 bzw. GELESEN am Repo (CC, 2026-09-15), wie je angegeben. Die Einordnung als Änderungsantrag und die Begründung, warum
 nicht nachgerüstet wird, sind ARCHITEKT-ANGABEN (2026-09-15), am Repo nicht prüfbar.
+
+**(4) DIE LEISTBARKEIT EINER VOLLLESUNG HÄNGT NICHT AN DER DATEIGRÖSSE, SONDERN AM VERHÄLTNIS ZUM VERBLEIBENDEN
+KONTEXT — UND DAS IST RUNDENABHÄNGIG, NICHT DATEIABHÄNGIG** (angetreten 2026-09-16, am Phasenende).
+→ GEHOBEN 2026-09-16 nach docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.5 gehoben (2026-09-16)",
+als HEBUNGS-KANDIDAT (4) — ein ÄNDERUNGSANTRAG an docs/arbeitsweise.md, in Wartestellung, KEINE Regel.
+
+**DIE AUSSAGE:** Das Teilungs-Verbot für die Standdatei knüpft an die DATEI an — an ihre Zeilenzahl. **Die Datei
+ist aber nur die eine Hälfte des Bruchs:** Die andere ist, wie viel Kontext die Runde vor dem Pflicht-Gate bereits
+verbraucht hat, und die ist je Runde verschieden. Dieselbe Datei kann in der ersten Runde einer Sitzung mühelos
+und in der dritten gar nicht mehr zu lesen sein, ohne dass sich an ihr etwas geändert hätte.
+
+**DER DATENPUNKT — OWNER/ZWEITHAND aus der Sitzung vom 2026-09-16, in dieser Runde NICHT nachgemessen und am Repo
+NICHT prüfbar:** Der Umrechnungsfaktor ist aus ZWEI UNABHÄNGIGEN Dateien derselben Sitzung über `/context` mit
+Bytes und Token erhoben — konsistent **rund 1,81 Bytes je Token** für deutschen Fachtext. **In DREI Runden
+derselben Sitzung ist derselbe Lesevorgang von 38 % auf 91 % des freien Raums gestiegen**, während die Datei nur
+von 3 432 auf 3 978 Zeilen wuchs. `/context` ist ein NUTZER-Befehl; CC kann ihn nicht ausführen — die Prüfung
+dieser Achse liegt beim Owner und ist von der Instanz aus nicht zu erbringen.
+
+**WAS DAVON AM REPO GEMESSEN IST (CC, 2026-09-16), und die Trennung gehört hin, sonst wird die Zweithand-Zahl
+beim nächsten Lesen für eine eigene Messung gehalten:**
+- Diese Datei trug bei HEAD `804cb5c` **3 978 Zeilen und 296 589 Bytes**.
+- **74,56 Bytes je Zeile** (296 589 / 3 978).
+- Der Zeilenzahl-Verlauf ist am Repo belegt: `aa6fee0` (2026-09-15) trug **3 432 Zeilen / 252 373 Bytes**,
+  `804cb5c` (2026-09-16) **3 978 / 296 589**. Die zwei Zeilenzahlen des Datenpunkts stimmen also.
+- **Die Token-Zahl rund 164 000 ist eine ABLEITUNG** aus dem Owner-Faktor und den gemessenen Bytes, keine eigene
+  Messung.
+
+**DIE ZUSPITZUNG, DIE DEN KANDIDATEN TRÄGT: DAS TEILUNGS-VERBOT IST IN ZEILEN FORMULIERT, UND ZEILEN SIND DAS
+SCHLECHTERE MASS.** Diese Datei trägt 74,56 Bytes je Zeile; eine Datei mit kurzen Zeilen käme bei derselben
+Zeilenzahl auf deutlich weniger Text. **Dieselbe Zahl, ein anderer Lesevorgang** — und die Schwelle träfe
+verschieden, ohne dass jemand es merkte.
+
+**DIE ABGRENZUNG ZUM BESTAND, und sie ist kein Widerspruch:** CLAUDE.md sagt bereits „EIN PFLICHT-GATE, DAS
+NIEMAND VOLLSTÄNDIG LIEST, IST KEINES" und lässt die Teilung ausdrücklich zu (Abschnitt „Aktiver Stand —
+Verfahren ab Phase 10"). Der Kandidat widerspricht dem nicht. **Er sagt, dass die BEDINGUNG, unter der jener Satz
+eintritt, an der falschen Grösse hängt.**
+
+**KEINE EMPFEHLUNG ZUR SCHWELLE UND KEINE ZUR MASSEINHEIT.** Ob in Bytes, in Token oder im Anteil am freien Raum
+gemessen wird, ob die Schwelle fest oder rundenabhängig ist, und ob das Verbot überhaupt zu ändern ist — **die
+Entscheidung liegt beim Owner.** Der Kandidat stellt den Datenpunkt fest und sonst nichts.
+
+**WAS ER AUSDRÜCKLICH NICHT SAGT:** dass diese Phase hätte geteilt werden müssen. Sie ist vollständig gelesen
+worden, in jeder Runde; der Kandidat beschreibt, dass die Reserve dabei von 62 % auf 9 % geschrumpft ist.
+
+PROVENIENZ: Der Faktor 1,81, die zwei Prozentzahlen und die Herkunft aus zwei unabhängigen Dateien sind
+OWNER-ANGABEN aus der Sitzung vom 2026-09-16 und am Repo NICHT prüfbar. Zeilenzahl, Bytezahl, Bytes je Zeile und
+der Verlauf von 3 432 auf 3 978 sind GEMESSEN am Repo (CC, 2026-09-16). Die Token-Zahl ist eine ABLEITUNG. Die
+Einordnung als Änderungsantrag ist ARCHITEKT-ANGABE (2026-09-16).
 
 ## 11. Der gemessene Ausgangszustand vor der ersten Scheibe
 

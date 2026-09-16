@@ -4713,3 +4713,398 @@ PROVENIENZ DES ABSCHNITTS: Die Beobachtung ist OWNER-ANGABE (2026-09-14). Der An
 Label-Vergabe, die Wiederverwendung und der Umfang von `renameProject` sind GEMESSEN am Code
 (CC, 2026-09-14). Der Wortlaut der Regel und des Docblocks ist GELESEN (CC, 2026-09-14). Dass
 die Regel den Umbenennungs-Fall über ihren Grund trägt, ist eine ABLEITUNG.
+
+## Aus Phase 11.5 gehoben (2026-09-16) — Vorrat, ein Roadmap-Punkt und zwei Hebungs-Kandidaten
+
+**WOHER SIE KOMMEN:** Aus der Standdatei der Phase 11.5 (Einwilligungs-Dialog), beim
+Phasenende am 2026-09-16. Hier stehen die Vorrats-Einträge (1), (6), (7), (8), (10), (11),
+(13), (17), (18), (19), (20), (22) und (23) unter ihren Ursprungs-Nummern, dahinter der
+Roadmap-Punkt 11.5f und zwei Hebungs-Kandidaten.
+**DIE ÜBRIGEN OFFENEN VORRATS-EINTRÄGE SIND ALS OFFENE PUNKTE GEHOBEN:** (2) und (12)
+gemeinsam als EIN Posten mit zwei Ursachen, dazu (3), (4), (5), (9), (15) und (16) — alle
+nach docs/offene-punkte.md, Abschnitt "AUS DEM PHASENENDE 11.5 GEHOBEN (2026-09-16)".
+**(21) IST GESTRICHEN**, weil er in derselben Runde eingelöst wurde; der Beleg steht an
+seiner Nummer in der Standdatei. **(14) WAR SCHON AM 2026-09-15 GESTRICHEN** und ist keine
+Hebung dieser Runde.
+**EIN NUMMERN-ZEIGER OHNE PFAD IN DIESEN EINTRÄGEN MEINT DIE STANDDATEI DER PHASE 11.5** —
+"VERMERK 5", "Vorrat (4)", "Entscheidung (10)", "Abschnitt 16", "diese Scheibe", "diese
+Phase". Sie wird am Phasenende archiviert; dieser Satz löst die Zeiger auf, umgeschrieben
+sind sie NICHT.
+**DER TEXT DER VORRATS-EINTRÄGE IST SINNGEMÄSS ÜBERNOMMEN UND VERDICHTET, NICHT
+ZEICHENGLEICH** — anders als beim Abschnitt der Phase 11.3. Der ungekürzte Wortlaut steht je
+unter seiner Nummer im Archiv der Phase, Abschnitt "9. Vorrat — gemeldet, nicht gebaut".
+**HIER STEHT KEINE STÜCKZAHL FÜR DIESE DATEI**, aus demselben Grund wie in den Abschnitten
+darüber: Eine zweite Zahl neben der datierten Messung vom 2026-08-21 wäre die Bauform, die
+der Stub in CLAUDE.md zweimal als kaputtgegangen führt.
+
+**(1) DER CODE FÜHRT SELBST DIE FRAGE, OB DIE VIER LITERAL-SCHLÜSSEL ALS KONSTANTEN ZU DEM
+ANALYTICS-SCHLÜSSEL WANDERN SOLLEN.** Der Docblock über `CONSENT_KEY_BY_TARGET`
+(`src/lib/tracking/consent-targets.ts`) hält als OFFEN und NICHT ENTSCHIEDEN fest, ob die
+Literal-Werte der vier Ziele als Konstanten nach `src/lib/tracking/consent.ts` gehören, von
+wo sie importiert würden — wie es `meta` über `META_CONSENT_TARGET` bereits tut.
+**KEIN TRIGGER, SONDERN EINE ENTSCHEIDUNG** — deshalb Backlog und nicht offener Punkt. Er
+gehört NICHT dieser Phase; er ist ihr nur begegnet. Er liegt neben dem gemessenen Befund,
+dass die Schlüsselmenge heute an ZWEI Orten liegt (Archiv der Phase, Abschnitt 11 (d)); wer
+die Frage beantwortet, bewegt genau diese Grenze. Die bindende Entscheidung (4) der Phase
+NIMMT den Analytics-Schlüssel nur HINZU und verschiebt keine Literale — dieser Eintrag ist
+davon unberührt. PROVENIENZ: GELESEN am Code (CC, 2026-09-12). KEINE EMPFEHLUNG.
+
+**(6) DER RÜCK-IMPORT EINER PUBLIZIERTEN SEITE KÖNNTE EINEN ALTEN SETZER MITBRINGEN.** Käme
+der Quelltext einer bereits publizierten Seite in den Editor zurück, trüge er einen ALTEN
+Setzer als INHALT. Der stünde im Dokument VOR dem neu injizierten — und weil der Setzer nur
+schreibt, wenn der Hook noch nicht existiert (bindende Entscheidung (3)), GEWÄNNE DER ALTE.
+Trüge er eine überholte Schlüsselmenge, wäre das still.
+Über den EXPORT-PFAD kann das nicht entstehen — dort gibt es keinen Setzer (Vorrat (4), als
+offener Punkt gehoben). Über Kopieren aus dem Quelltext einer Live-Seite theoretisch schon.
+**UNGEMESSEN, UND DESHALB HIER:** Es ist eine BEOBACHTUNG, kein Befund — weder ist erhoben,
+ob jemand so arbeitet, noch, was dabei tatsächlich geschieht. Ein Trigger ist daraus nicht zu
+benennen, ohne ihn zu erfinden. **Die grössere Klasse desselben Mechanismus führt (13)
+darunter**, und dort ist sie gemessen. KEINE EMPFEHLUNG.
+
+**(7) DREI KOMMENTARE BESCHRIEBEN EINEN ZWEI-ARGUMENT-AUFRUF VON `injectPageViewEmitter`,
+DEN ES NICHT MEHR GIBT — ZWEI SIND ERLEDIGT, DIE DRITTE STEHT.** Seit Scheibe 11.5a trägt
+die Funktion einen dritten, pflichtigen Parameter.
+**GEHOBEN WIRD DER EINTRAG MIT SEINEM NACHTRAG VOM 2026-09-15, NICHT MIT SEINEM GRUNDTEXT** —
+so verlangt es der Eintrag selbst. Der Grundtext sagte "IHRE AUSSAGE BLEIBT RICHTIG … das
+trifft unverändert zu"; **das ist falsch**: Die Zahl "~716 Zeichen" war schon VOR der Scheibe
+11.5d-2 überholt. GEMESSEN (CC, 2026-09-15, `injectPageViewEmitter("", "k", …)` bei AUS, per
+`jiti` ausserhalb des Repos): **1 563 Zeichen** auf `dc4ff29` wie auf `5fd6d48`. Darin steckt
+der vom Server ergänzte Gate-Block (792 Bytes, Vorrat (16)); der Emitter allein ist es nicht.
+**ZWEI DER DREI FUNDSTELLEN SIND MIT `5fd6d48` RICHTIGGESTELLT** —
+`src/app/projects/actions.ts` und `src/app/projects/publish.test.ts` nennen heute
+`injectPageViewEmitter("", key, form)` ohne Zeichenzahl.
+**DIE DRITTE STEHT OFFEN:** Der Docblock in `src/lib/hosting/variant.ts` nennt weiter
+`injectPageViewEmitter("", key)` und "~716 Zeichen reines Script" (GEMESSEN am Repo, CC,
+2026-09-16, erneut nachgesehen — unverändert).
+**WARUM BACKLOG UND NICHT OFFENER PUNKT:** Der Fehlschlag ist LAUT, nicht still — wer dem
+Kommentar folgt und einen Zwei-Argument-Aufruf baut, bekommt einen COMPILE-FEHLER, weil der
+Parameter keinen Vorgabewert trägt. Falsch ist die ZAHL, und sie führt beim Lesen in die
+Irre; sie bricht nichts. **NACHZUZIEHEN BEIM NÄCHSTEN EINGRIFF IN JENE DATEI.**
+
+**(8) ZWEI DATEIEN TRAGEN CRLF IM ARBEITSBAUM, HEAD NICHT — NICHT IN DIESER PHASE
+ENTSTANDEN.** GEMESSEN (CC, 2026-09-12): `src/components/PublishView.tsx` 406 CR,
+`src/app/projects/publish.test.ts` 615 CR; in HEAD je null. **ERNEUT GEMESSEN (CC,
+2026-09-16): 508 bzw. 1074 CR im Arbeitsbaum, in HEAD weiterhin je null** — die Zahlen
+wachsen mit jeder Bearbeitung, der Befund ist derselbe. Kontrolldateien, die nie berührt
+wurden (`TargetCard.tsx`, `capi/ingest.ts`): CR = 0.
+**DER BELEG, DASS ES VOR DER PHASE DA WAR:** PublishView.tsx ist DURCHGEHEND CRLF — auch auf
+den rund 365 Zeilen, die in der ersten Scheibe niemand angefasst hat; drei kleine Eingriffe
+können das nicht erzeugen. publish.test.ts ist GEMISCHT, weil der angehängte Block LF trägt
+und der alte Teil CRLF.
+**WARUM ES BISHER NIEMANDEM AUFFIEL:** `.gitattributes` trägt `* text=auto eol=lf`, git
+normalisiert beim Diff. Eine CRLF-Arbeitskopie zeigt deshalb KEINE Änderung und hält den
+Arbeitsbaum optisch sauber.
+**FOLGE FÜR DEN COMMIT: KEINE** — die Objekte werden als LF abgelegt. Das ist der Grund für
+Backlog statt offenen Punkt: Es geht nichts kaputt, still oder laut. GEMELDET, NICHT BEHOBEN.
+KEINE EMPFEHLUNG.
+
+**(10) DIE ARTEFAKT-STORAGE-REGEL WIRD ZITIERT UND EXISTIERT NICHT.** DIE FUNDSTELLE:
+`docs/claude-history/phase-8-analytics.md`, Abschnitt der Scheibe 2a, im Zuschnitt der Scheibe
+2b-1, Klammer im Wortlaut: "in-memory ephemere Session-ID (KEIN sessionStorage —
+Artefakt-Storage-Regel)". Dort steht weder eine Begründung noch eine Quelle noch eine
+Provenienz — nur der Name.
+**DER NAME KOMMT IM REPO GENAU EINMAL VOR, UND EINEN REGELTEXT GIBT ES NICHT** (GEMESSEN am
+Repo, CC, 2026-09-14, drei Achsen: der NAME `Artefakt-Storage`; die Speicher-Schnittstellen
+`localStorage|sessionStorage|indexedDB|web ?storage|browser-?speicher|storage-regel|Cache ?API|window\.name`;
+Recht und Besucherseite
+`TTDSG|TDDDG|§ ?25|Endger(ä|ae)t|besucherseitig|Browser des Besuchers|…`; alle
+case-insensitiv über alle verfolgten Dateien, mit Positivkontrolle). Die Treffer sind Befunde
+über anderes — der A/B-Ausschluss (Eintrag (11) darunter), das Verbot TRANSIT-ONLY an
+fremdvergebenen Klick-Kennungen, ein Google-Befund, das gestrichene Fingerprinting. **Keiner
+regelt Browser-Speicher im ausgelieferten Artefakt.**
+**DER GEGENSTAND JENER KLAMMER, DIE EPHEMERE SESSION-ID, IST NIE GEBAUT WORDEN** (GEMESSEN,
+Achse `session_key|session-id|sessionid|ephemere`: Treffer ausschliesslich in jener
+Archiv-Datei, keiner in `src/`, keiner in `supabase/`).
+**UNGEKLÄRT:** ob die Klammer NUR `sessionStorage` meinte oder jeden Browser-Speicher im
+Artefakt. Sie nennt ausschliesslich `sessionStorage`. **EIN NAME IST KEIN TEXT.**
+**WARUM DAS ZÄHLT:** Der Zuschnitt der Scheibe 11.5b hätte sich an ihr ausgerichtet. **Eine
+zitierte Regel ohne Text sieht bei jedem Lesen wie eine geltende aus.**
+**WARUM BACKLOG:** Kein Trigger — die Frage wartet auf niemanden, und der Befund ist bereits
+vollständig erhoben. **DIE ARCHIV-DATEI WIRD NICHT ANGEFASST** — sie ist ein Zeitdokument.
+KEINE EMPFEHLUNG.
+
+**(11) DER AUSSCHLUSS VON localStorage/sessionStorage IST AUF DEN A/B-FALL FORMULIERT.** DIE
+FUNDSTELLE: `docs/claude-history/phase-9-ab-testing.md`, "Grundsatzentscheidungen (heute
+entschieden, Bau in 9b/9c)", erster Spiegelstrich: "AUSGESCHLOSSEN:
+localStorage/sessionStorage (fallen rechtlich unter dieselbe TTDSG-§25-Logik UND sind
+client-seitig, also ZU SPÄT für einen Server-Split — das HTML ist längst raus)" (GELESEN, CC,
+2026-09-14). **ER STEHT ALS UNTERPUNKT DER STICKINESS-ENTSCHEIDUNG**, in der Liste der
+verworfenen Mittel für genau diese Stickiness, neben dem IP/UA-Hash.
+**SEINE ZWEI GRÜNDE TRAGEN UNGLEICH WEIT:** "ZU SPÄT für einen Server-Split" ist wörtlich an
+den SPLIT gebunden; "dieselbe TTDSG-§25-Logik" ist ein VERGLEICH zwischen Cookie und
+Speicher — **ein Verbot von Browser-Speicher spricht der Satz nicht aus.**
+**FÜR DIE TTDSG-AUSSAGE SELBST IST KEINE QUELLE UND KEINE PROVENIENZ GENANNT** — sie steht
+als Setzung da; wer entschieden hat, nennt der Spiegelstrich nicht. Jene Stelle trägt ihre
+eigene Grenze ("KEINE Rechtsberatung", "Vor dem öffentlichen Launch anwaltlich klären"), und
+die bezieht sich wörtlich auf die Einstufung des VARIANTEN-COOKIES.
+**GEMELDET ALS BEFUND ÜBER DIE REICHWEITE, NICHT ALS AUFHEBUNG:** Die Entscheidung für das
+A/B-Cookie bleibt unberührt, und die Archiv-Datei wird nicht angefasst. Die bindende
+Entscheidung (7) der Phase 11.5 — der Speicher ist `localStorage` — beruft sich auf diesen
+Befund und auf (10). KEINE EMPFEHLUNG.
+
+**(13) EIN HOOK IM KUNDENTEXT ÜBERLEBT JEDES NEU-VERÖFFENTLICHEN — UND SIEHT AUS WIE EIN
+DEFEKT UNSERER BAUSTEINE.** **DER BELEG, OWNER-VORFALL vom 2026-09-14:** Ein Test-Script aus
+11.5b im Kopf des Kundentextes setzte den Hook auf ein Objekt mit EINEM erlaubten Ziel. Folge:
+Conversions liefen, Seitenaufrufe nicht — und das sah aus wie ein Fehlschlag der Scheibe
+11.5c. Aufgelöst hat es erst die Frage nach `window.pagesmithConsent` in der Konsole.
+**WARUM ES STRUKTURELL IST:** Der Hook ist INHALT der Kundenseite und kein Baustein von uns.
+Kein Neu-Veröffentlichen entfernt ihn, kein Deploy erreicht ihn, und unser Setzer weicht ihm
+ausdrücklich aus (bindende Entscheidung (3)) — er kann ihn also auch nicht überschreiben.
+**WARUM BACKLOG UND NICHT OFFENER PUNKT — die Trennlinie zieht der Eintrag selbst:** Er ist
+**"nicht unsichtbar, sondern unbenannt"**, am Netzwerk-Tab und in der Konsole sichtbar,
+SOBALD MAN FRAGT. Damit fehlt ihm die zweite Bedingung ("geht sonst still kaputt"). Der
+Nachbar, der sie erfüllt, ist als offener Punkt gehoben: "EIN EINGESCHALTETER
+EINWILLIGUNGS-DIALOG OHNE ZUSTIMMUNG SIEHT AUS WIE KAPUTTES TRACKING" — dort fallen die
+Zustände in der internen Zählung ZUSAMMEN, und keiner meldet sich.
+**DIE ABGRENZUNG ZU (6):** Die geteilte Mechanik ist allgemeiner — ein Script IM KUNDENTEXT
+setzt den Hook, und kein Weg von uns entfernt es; **woher das Script stammt, ist für die
+Wirkung gleichgültig.** (6) vermutet unseren EIGENEN Setzer, zurückgeholt über einen
+Rück-Import, und ist ungemessen; hier war es FREMDER Code, und der Fall ist gemessen. Die
+Klasse ist grösser als (6).
+PROVENIENZ: der Vorfall und seine Ursache OWNER-ANGABEN vom 2026-09-14; dass unser Setzer
+einem gesetzten Hook ausweicht, GEMESSEN am Code (CC, 2026-09-14). KEINE EMPFEHLUNG.
+
+**(17) M12 BEHAUPTET MEHR, ALS ER PRÜFT — HALB EINGELÖST, UND ZWAR AN EINER ANDEREN STELLE.**
+M12 in `src/lib/tracking/consent-modal.test.ts` trägt im Titel "jeweils mit
+Positivkontrolle". **Die Zählung der Kinder im `head` (`document.head.children.length`) hat
+keine** — kein Schritt hängt ein Element an den `head` und zeigt, dass die Zählung es sieht;
+sie wird auch nicht gegen den Stand beim Laden der Datei gehalten, anders als die Attribute
+von `html` und `body`. **DIESELBE ACHSE, ENGERER BESTAND:** Die Stil-Zählung erfasst `style`
+und `link[rel~="stylesheet"]`; der Zuschnitt sagte "die Zahl der `style`- und
+`link`-Elemente" — ein `link` ohne `rel="stylesheet"` fällt heraus. (GELESEN am Test, CC,
+2026-09-15.)
+**WAS ZU TUN WÄRE, WENN DER EINTRAG GEHOBEN WIRD — BEIDES:** den Titel berichtigen UND die
+fehlende Positivkontrolle ergänzen. Das ist die Vorgabe der Regel "EINE
+ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL, UND KEINE DAVON MACHT SIE ROT"
+(docs/immer-beachten.md), in ihrer vierten Weise.
+**NACHGETRAGEN 2026-09-16 — DIE BAUFORM IST ERPROBT:** W11 in
+`src/lib/tracking/consent-revoke.test.ts` (Scheibe 11.5e-2) trägt für die `head`-Zählung eine
+EIGENE Positivkontrolle — er hängt ein `meta`-Element an, prüft, dass die Zählung es sieht,
+und entfernt es wieder. **M12 IST NICHT ANGEFASST;** wer ihn hebt, muss die Bauform nicht
+mehr erfinden. Die **Stil-Zählung** ist davon UNBERÜHRT (GEMESSEN am Repo, CC, 2026-09-16).
+**WARUM BACKLOG:** Es ist eine Testlücke ohne eigenen Bruch — solange niemand M12 anfasst,
+geht nichts kaputt. Der Trigger wäre "die nächste Runde an M12", und das ist eine
+Aufräumarbeit, die wartet. KEINE EMPFEHLUNG über das "Beides" hinaus.
+
+**(18) ENTSCHEIDUNG (10) SAGT WENIGER, ALS DER CODE KANN.** Die bindende Entscheidung (10)
+der Phase führt drei Zustände — "nie gefragt", "zugestimmt", "abgelehnt". Der Code kennt
+zwei: `read()` in `buildConsentRestoreScript` (`src/lib/tracking/consent-store.ts`) liefert
+`{state:"never"}` oder `{state:"decided", granted, denied}`, und `decided` trägt beliebige
+Listen bekannter Schlüssel — eine Teilmenge eingeschlossen (R5, R6, R10 und R13). **"Teils
+zugestimmt" ist im Code ein Fall von `decided`; (10) benennt ihn nicht** (GEMESSEN am Code,
+CC, 2026-09-15).
+**KEIN DEFEKT:** Die bindende Aussage von (10) — die Zustände sind im gespeicherten Wert
+unterscheidbar, und eine Abfrage verändert nichts — trifft zu. Die Entscheidung beschreibt
+nur weniger, als gebaut ist. Kein Trigger, kein Bruch. KEINE EMPFEHLUNG.
+
+**(19) DER WERT `ps1:|` HAT AUF DEM LESEPFAD KEINEN TEST.** `read()` nimmt ihn an: `parseList`
+macht aus einer leeren Seite `[]`, und beide Listen leer ergeben `decided` mit `granted: []`
+und `denied: []` — **ein Wert, der über keinen Schlüssel etwas sagt, und trotzdem unterdrückt
+er Leiste und Modal.** `write()` erzeugt ihn nicht; er entstünde nur durch einen
+Schreibzugriff am Speicher vorbei (GEMESSEN am Code, CC, 2026-09-15).
+**DIE ACHSE UND IHRE POSITIVKONTROLLE** (GEMESSEN am Repo, CC, 2026-09-15): `git grep -F
+'ps1:|'` über die Testdateien in `src/` trifft vier Zeilen. Drei sind die Konstanten
+`ALLE_ABGELEHNT` (`ps1:|meta,…`) — sie sind die Positivkontrolle. Den Wert `ps1:|` SELBST
+trägt allein R14, und dort als Rückgabe eines Mocks im SCHREIB-Pfad, nicht als gelesener Wert.
+**WARUM BACKLOG:** Aus unserem Code ist der Wert heute nicht erreichbar; ein Trigger wäre ein
+zweiter Schreibweg auf `__ps_consent`, und den gibt es nicht. Eine Testlücke ohne Pfad.
+KEINE EMPFEHLUNG.
+
+**(20) DASS DIE GRUPPEN-SCHALTER KEINEN LISTENER TRAGEN, HÄLT KEIN TEST.** Seit `9f85c0c`
+tragen die zwei Schalter in Leiste und Modal keinen Listener; ihr Zustand wird erst beim Klick
+auf "Auswahl speichern" über `checked` gelesen (`CONSENT_CHOICE_JS`,
+`src/lib/tracking/consent-choice.ts`, dort im Docblock ausdrücklich).
+**WAS DIE WÄCHTER PRÜFEN UND WAS NICHT** (GELESEN an den Tests, CC, 2026-09-15): L14 und M14
+verlangen, dass JEDER Listener des Blocks gebunden ist, BEVOR der Host an `body` hängt. Sie
+verlangen NICHT, dass an einem Schalter keiner hängt. **Ein Listener an einer Checkbox, VOR
+dem Einhängen gebunden, bliebe in beiden grün**; M13 prüft Abdunkelung und Escape, nicht die
+Schalter.
+**WARUM ES ZÄHLT:** Die Abwesenheit ist heute ein Nebeneffekt der Bauform — der Zustand wird
+gelesen, nicht verfolgt (die Regel "NUR EIN TEST IST EIN WÄCHTER", docs/immer-beachten.md).
+Ein `change`-Listener wäre der naheliegende Weg, einen Zustand mitzuführen — etwa für eine
+eingeklappte Auswahl —, und nichts würde rot.
+**WARUM BACKLOG UND NICHT OFFENER PUNKT:** Was dabei BRÄCHE, ist nicht benannt. Invariante I3
+(Listener vor Einhängen) hielte weiter, das Schreiben liefe unverändert. Der Eintrag sagt,
+dass ein Schutz als Nebeneffekt still verschwindet — nicht, welcher Schaden daraus folgt.
+KEINE EMPFEHLUNG.
+
+**(22) W12 SIEHT EINEN ESCAPE-LISTENER IM SCHATTENBAUM NICHT.** W12 in
+`src/lib/tracking/consent-revoke.test.ts` hält Invariante I2 der Scheibe 11.5e-2 — die
+einzige Rücknahme ist das Entfernen des Hosts. Für die Escape-Hälfte sendet er das Ereignis
+an `document`. **EVENTS BUBBELN NACH OBEN, NICHT NACH UNTEN:** Ein Escape-Listener IM
+Schattenbaum des Hosts wäre für ihn unsichtbar.
+**GEMESSEN IN DER BAU-RUNDE (CC, 2026-09-16), und der Weg gehört dazu:** Die erste Mutation
+für I2 hängte genau einen solchen Listener an den Schattenbaum — **sie blieb GRÜN**. Die
+Unterscheidung ist vor jeder Reparatur getroffen worden: **ein schlechtes Modell des Fehlers,
+kein hohler Test** (docs/immer-beachten.md, Lektion (b) an "MUTATIONSPROBEN UND
+LIVE-TEST-INSTRUMENTE"). Die Ersatz-Mutation an der Abdunkelung — dort, wo W12 hinsieht —
+ist rot geworden, zusammen mit M13 und W0.
+**DIE GEGENRICHTUNG GEHÖRT DAZU, sonst liest sich der Eintrag dringlicher, als er ist:** Ein
+Escape-Listener im Schattenbaum wäre für einen BESUCHER nur wirksam, wenn der Fokus dort
+liegt — und der Block setzt KEINEN programmatischen Fokus (Kopf von `consent-modal.ts`).
+**Die Lücke im Wächter und die Lücke in der Wirkung decken sich weitgehend** (ABLEITUNG,
+keine Messung). Das ist der Grund für Backlog.
+**WAS ER NICHT SAGT:** dass W12 zu ändern wäre. Ob die Escape-Hälfte zusätzlich am
+Schattenbaum prüfen soll, ist NICHT entschieden. KEINE EMPFEHLUNG.
+
+**(23) ZWEI ZAHLEN FÜR DAS DOKUMENT MIT MAPPINGS-BLOCK — 4 339 UND 4 346 — UND DAS IST KEIN
+WIDERSPRUCH.** VERMERK 6 nennt **4 339 Bytes** (`0125e6d9…`) für "der ausgelieferte Text
+ausserhalb des Dialog-Blocks … an einem mit Mappings-Block"; die Bau-Runde der Scheibe 11.5e-2
+misst für dieselbe Grösse **4 346 Bytes** (`0b4e0b58…`), vor der ersten Änderung, mit zwei
+Instrumenten.
+**SIEBEN BYTES UNTERSCHIED — UND SIE LIEGEN IN DER FIXTURE, NICHT IM CODE.** Der Beleg steht
+daneben: **Die drei ÜBRIGEN Werte desselben Laufs reproduzieren VERMERK 6 EXAKT** — 3 785
+(Leiste), 4 213 (Modal), 4 279 (leeres Dokument) und 1 624 (AUS-Text), dazu die
+Setzer-Prüfsumme aus R3. Wäre der Code zwischen den zwei Messungen anders geworden, träfe
+keiner davon.
+**BEIDE ZAHLEN SIND FÜR IHRE EIGENE FIXTURE RICHTIG.** Wer sie nebeneinander liest und für
+einen Widerspruch hält, sucht einen Code-Befund, den es nicht gibt — dieselbe Figur, die
+diese Datei für die zwei Zählungen von Dependabot und `npm audit` führt.
+**DIE FOLGE FÜR JEDE KÜNFTIGE RUNDE, und sie ist der brauchbarere Teil dieses Eintrags: EIN
+BYTE-VERGLEICHSWERT IST OHNE SEINE FIXTURE NICHT REPRODUZIERBAR. Wer einen erhebt, schreibt
+die Fixture dazu — oder er erhebt ihn neu und vergleicht nicht mit einer fremden Zahl.**
+**DIESE FOLGE IST EIN REGEL-KANDIDAT UND IST NICHT ALS SOLCHER GEHOBEN WORDEN** — der Eintrag
+stand im VORRAT, nicht unter den Hebungs-Kandidaten, und die Hebung erfindet keinen. Wer die
+nächste Byte-Messung anordnet, findet sie hier. KEINE EMPFEHLUNG, ob VERMERK 6 nachzuziehen
+wäre; er ist für seinen Tag richtig.
+PROVENIENZ: die 4 339 GELESEN an VERMERK 6 (CC, 2026-09-16); die 4 346 und die drei
+übereinstimmenden Werte GEMESSEN in der Bau-Runde (CC, 2026-09-16). Dass die Ursache in der
+Fixture liegt, ist eine ABLEITUNG aus der Übereinstimmung der übrigen Werte.
+
+**11.5f — DIE SPRACHE DES EINWILLIGUNGS-DIALOGS. GEHOBEN WIRD DIE SACHE, NICHT DIE NUMMER**
+(OWNER-ENTSCHEIDUNG 2026-09-16). **Die Nummer 11.5f steht ausschliesslich in der Standdatei**
+— GEMESSEN am Repo (CC, 2026-09-16): drei Vorkommen dort, KEINES in docs/roadmap.md, keines
+in CLAUDE.md, keines unter `src/`. **Es gibt keine Roadmap-Zeile 11.5f**, und die Nummer
+wandert mit der Standdatei ins Archiv.
+
+- **"SPRACHE" IST DER EINZIGE NICHT GEBAUTE PUNKT DER SECHSGLIEDRIGEN UMFANGS-AUFZÄHLUNG DER
+  ROADMAP-ZEILE 11.5** (GELESEN an docs/roadmap.md, CC, 2026-09-16): "Granularität, Ablehnen
+  so einfach wie Zustimmen, Widerruf, Speicherung der Entscheidung, Darstellung auf fremden
+  Seiten, Sprache." **FÜNF VON SECHS SIND GEBAUT** — Granularität in 11.5e-1 (zwei Gruppen),
+  Ablehnen gleichwertig in 11.5d (gleichrangige Knöpfe, bindende Entscheidung (12)), Widerruf
+  in 11.5e-2, Speicherung in 11.5b, Darstellung auf fremden Seiten in 11.5d und 11.5d-2 (je
+  live an zwei realen Kundenseiten belegt).
+- **DIE MENGE, DIE EINE SPÄTERE SCHEIBE ANFASSEN MÜSSTE — ZEHN SICHTBARE TEXTE DES
+  AUSGELIEFERTEN TEXTES, ALLE ALS KONSTANTE, KEINER EINGEBAUT** (GEMESSEN am Repo, CC,
+  2026-09-16):
+  · `CONSENT_TEXT` (`src/lib/tracking/consent-choice.ts`) — der Sachtext;
+  · `CONSENT_ACCEPT_LABEL` (ebenda) — "Alle akzeptieren";
+  · `CONSENT_SAVE_LABEL` (ebenda) — "Auswahl speichern";
+  · `CONSENT_REJECT_LABEL` (ebenda) — "Ablehnen";
+  · `CONSENT_GROUPS_LABEL` (ebenda) — "Bereiche", zugänglicher Name, kein sichtbarer Text;
+  · `CONSENT_GROUP_MEASURE_LABEL` (ebenda) — "Messung";
+  · `CONSENT_GROUP_ADS_LABEL` (ebenda) — "Werbung";
+  · `CONSENT_BAR_REGION_LABEL` (`src/lib/tracking/consent-bar.ts`) — "Einwilligung";
+  · `CONSENT_MODAL_DIALOG_LABEL` (`src/lib/tracking/consent-modal.ts`) — "Einwilligung";
+  · `CONSENT_REVOKE_WARNING` (`src/lib/tracking/consent-revoke.ts`) — die Konsolen-Warnung G6.
+  **DASS ALLE ZEHN KONSTANTEN SIND, IST DER GÜNSTIGE TEIL DER AUSGANGSLAGE:** Eine spätere
+  Scheibe fände zehn benannte Stellen und keinen eingebauten Text. **SECHS DER ZEHN SIND
+  OWNER-FREIGABEN** (F1 bis F3 der Scheibe 11.5e-1, G6 der Scheibe 11.5e-2, der Sachtext und
+  "Ablehnen" aus 11.5d) — wer sie ändert, braucht eine neue Freigabe; L5, L13, M5 und W-Tests
+  halten sie wörtlich.
+- **KEIN BAUSTEIN LIEST DIE SPRACHE DER KUNDENSEITE, UND NICHTS IM PRODUKT ZEIGT EINE
+  ABWEICHUNG AN — NICHT-TREFFER MIT BENANNTER ACHSE** (GEMESSEN am Repo, CC, 2026-09-16):
+  Achse `lang|locale|i18n|navigator\.language|documentElement\.lang|hreflang|sprache|übersetz|translat`,
+  case-insensitiv, über die dreizehn Erzeuger des ausgelieferten Textes. **Kein Treffer** —
+  die wenigen Fundstellen sind Wortbestandteile in Kommentaren ("solange", "verlangt",
+  "gelangen", "wochenlang"). POSITIVKONTROLLE im selben Lauf: dieselbe Achse trifft
+  `<html lang="de">` in `src/lib/hosting/blocked-page.ts` (unsere eigene 451-Seite) und
+  `lang="en"` in `src/app/layout.tsx` (die Anwendung selbst). **Die zehn Texte gehen also
+  unverändert auf jede Seite, gleich welcher Sprache — und weder Betreiber noch Besucher
+  bekommen einen Hinweis darauf.**
+- **OFFEN UND HIER NICHT ENTSCHIEDEN:** ob die FÜNF BETREIBER-WORTLAUTE des Abschnitts
+  "Widerruf" in `src/components/PublishView.tsx` (G1 bis G5, Owner-Freigaben 2026-09-16) und
+  die Texte des Einwilligungs-Abschnitts derselben Datei dazugehören. **Das ist
+  App-Oberfläche, nicht ausgelieferter Text** — eine andere Menge mit einem anderen Leser
+  (dem Betreiber, nicht dem Besucher) und möglicherweise einem anderen Trigger. KEINE
+  EMPFEHLUNG.
+- **WARUM BACKLOG UND NICHT OFFENER PUNKT:** **Es bricht nichts; ein MERKMAL FEHLT.** Der
+  Dialog funktioniert auf einer englischsprachigen Seite genauso — er steht nur auf Deutsch
+  da. Und **der Trigger meldet sich selbst**: Der erste Betreiber mit einem zweiten
+  Sprachraum sieht es beim ersten Blick auf seine eigene Seite. Ein Posten unter den offenen
+  Punkten setzte voraus, dass es SONST still kaputtginge — hier geht nichts kaputt und nichts
+  ist still.
+  **DAS GEGENARGUMENT STEHT DANEBEN UND WIRD NICHT KLEINGEREDET:** Ein Besucher, der den Text
+  nicht versteht, klickt eher "Ablehnen". Der Betreiber sieht weniger Conversions und sucht
+  die Ursache **im Tracking** — also am falschen Ende; das wäre sehr wohl still. **DAS IST
+  UNGEMESSEN**, und zwar in beide Richtungen: Weder ist erhoben, wie ein fremdsprachiger
+  Besucher auf den Dialog reagiert, noch, wie oft der Fall eintritt. **FINDET SICH EIN BELEG,
+  KIPPT DIE ZUORDNUNG** — dann gehört der Punkt zu den offenen Punkten, mit dem Trigger
+  "der erste Betreiber mit fremdsprachigem Traffic".
+- **DIE BINDENDE ENTSCHEIDUNG (12) DER PHASE TERMINIERTE 11.5f AUF "erst, wenn ein zweiter
+  Sprachraum gefordert ist"** und hielt zugleich fest, was daraus für den Phasenabschluss
+  folgt: Das Kriterium für `[x]` in CLAUDE.md lautet "EINE PHASE GEHT AUF [x], WENN KEIN CODE
+  MEHR ZU SCHREIBEN IST. EXTERNE ABHÄNGIGKEITEN HALTEN SIE NICHT OFFEN". **Kommt bis zum
+  Phasenende kein zweiter Sprachraum, wird 11.5f GEHOBEN und hält die Phase nicht offen** —
+  genau das geschieht hier.
+PROVENIENZ: Die Umfangs-Aufzählung und die Terminierung GELESEN an docs/roadmap.md bzw. an
+Entscheidung (12) (CC, 2026-09-16). Die zehn Konstanten, die Abwesenheit einer Roadmap-Zeile
+11.5f und der Sprach-Nicht-Treffer GEMESSEN am Repo (CC, 2026-09-16), je mit benannter Achse
+und Positivkontrolle. Die Zuordnung nach Backlog ist OWNER-ENTSCHEIDUNG 2026-09-16; das
+Gegenargument ist ARCHITEKT-ANGABE 2026-09-16 und ausdrücklich ungemessen.
+
+**ZWEI HEBUNGS-KANDIDATEN — ÄNDERUNGSANTRÄGE AN docs/arbeitsweise.md IN WARTESTELLUNG, KEINE
+REGELN.** Sie richten sich an den, der den Prompt oder den Commit-Body schreibt — das ist der
+Architekt, und über den INHALT von docs/arbeitsweise.md entscheidet nicht CC (CLAUDE.md,
+Abschnitt "Aktive Dokumente", Weg 7). **DIE DRITTEN KANDIDATEN DERSELBEN KLASSE STEHEN IM
+ABSCHNITT DER PHASE 11.3 DARÜBER** — (1), (4) und (7); **wer einen hebt, liest die anderen
+mit.** Der Volltext jedes Kandidaten steht unter seiner Nummer im Archiv der Phase 11.5,
+Abschnitt "10. Hebungs-Kandidaten"; hier steht sein Gegenstand.
+**DIE ZWEI ÜBRIGEN KANDIDATEN DER PHASE 11.5 SIND ALS DAUERREGELN NACH docs/immer-beachten.md
+GEGANGEN** — (1) das untaugliche `grep` für CR und NUL, (2) der Wächter über Zeichen, der die
+Gestalt des Geprüften bestimmt.
+
+**HEBUNGS-KANDIDAT (3) — DIE LÜCKEN-REGEL FEUERT IN EINER PHASE NIE, DEREN VERMERKE NUR DEN
+BAU-COMMIT FÜHREN.** Die Lücken-Regel (docs/arbeitsweise.md, "Die Standdatei") meint den
+Hash, der im Moment des Schreibens NICHT existiert — den Commit DES VERMERKS, nicht den
+Bau-Commit; **welcher Hash gemeint ist, benennt sie nicht.** Die sieben Vermerke der Phase
+11.5 führen ausschliesslich `BAU-COMMIT`. **Die Regel kann dort deshalb nie feuern und sieht
+in jeder Runde erfüllt aus** — die Gates haben "keine Lücke" gemeldet, zutreffend und an
+einer Achse, an der die Antwort nie anders lauten kann (GEMESSEN am Repo, CC, 2026-09-15).
+**ZUM VERGLEICH:** Das Archiv der Phase 11.3 führt BEIDE Zeilen — alle sieben Vermerke tragen
+`COMMIT DIESES VERMERKS`, sechs zusätzlich `CODE-COMMIT`; dort hat die Regel gefeuert.
+**WARUM DIE PHASE 11.5 NICHT NACHGERÜSTET WIRD:** Es ist keine spätere Handlung zu benennen,
+die ohne die Doku-Hashes scheitert — der Bau-Commit trägt den Code, der Commit des Vermerks
+ist über die Historie der Datei auffindbar, und "etwas ist liegengeblieben" meldet
+`git status` schärfer.
+**WAS BEIM HEBEN ZU ENTSCHEIDEN IST:** entweder die Regel benennt den gemeinten Hash, oder
+die Standdatei führt beide Zeilen. **KEINE EMPFEHLUNG, keine Auswahl.**
+**DIE ABGRENZUNG ZU HEBUNGS-KANDIDAT (7) DER PHASE 11.3:** Jener sagt, die Lücke entstehe
+strukturell und kein Mechanismus erzwinge ihren Nachtrag — **er setzt voraus, dass der Vermerk
+die Zeile überhaupt führt.** Dieser sagt, dass sie gar nicht erst entstehen kann, weil die
+Zeile fehlt. **EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+
+**HEBUNGS-KANDIDAT (4) — DIE LEISTBARKEIT EINER VOLLLESUNG HÄNGT NICHT AN DER DATEIGRÖSSE,
+SONDERN AM VERHÄLTNIS ZUM VERBLEIBENDEN KONTEXT, UND DAS IST RUNDENABHÄNGIG.** Das
+Teilungs-Verbot für die Standdatei (docs/arbeitsweise.md, "Die Standdatei"; CLAUDE.md,
+"Aktiver Stand — Verfahren ab Phase 10") knüpft an die DATEI an. **Die Datei ist aber nur die
+eine Hälfte des Bruchs** — die andere ist, wie viel Kontext die Runde vor dem Pflicht-Gate
+schon verbraucht hat, und die ist je Runde verschieden.
+**DER DATENPUNKT — OWNER/ZWEITHAND aus der Sitzung vom 2026-09-16, hier NICHT nachgemessen:**
+Der Umrechnungsfaktor ist aus zwei unabhängigen Dateien derselben Sitzung über `/context` mit
+Bytes und Token erhoben — konsistent **rund 1,81 Bytes je Token** für deutschen Fachtext. **In
+DREI Runden derselben Sitzung ist derselbe Lesevorgang von 38 % auf 91 % des freien Raums
+gestiegen**, während die Datei nur von 3 432 auf 3 978 Zeilen wuchs. `/context` ist ein
+NUTZER-Befehl; CC kann ihn nicht ausführen, und diese beiden Zahlen sind am Repo nicht
+prüfbar.
+**WAS AM REPO GEMESSEN IST (CC, 2026-09-16):** Die Standdatei trägt bei HEAD `804cb5c`
+**3 978 Zeilen und 296 589 Bytes**; unter dem genannten Faktor sind das **rund 164 000
+Token**. Der Zeilenzahl-Verlauf ist am Repo belegt — `aa6fee0` (2026-09-15) trug **3 432
+Zeilen / 252 373 Bytes**, `804cb5c` trägt 3 978 / 296 589.
+**DIE ZUSPITZUNG, DIE DEN KANDIDATEN TRÄGT: DAS TEILUNGS-VERBOT IST IN ZEILEN FORMULIERT, UND
+ZEILEN SIND DAS SCHLECHTERE MASS.** Diese Datei trägt **74,56 Bytes je Zeile** (GEMESSEN, CC,
+2026-09-16: 296 589 / 3 978). Eine Datei mit kurzen Zeilen käme bei derselben Zeilenzahl auf
+deutlich weniger Text — dieselbe Zahl, ein anderer Lesevorgang.
+**WAS DER KANDIDAT NICHT SAGT: KEINE EMPFEHLUNG ZUR SCHWELLE UND KEINE ZUR MASSEINHEIT.** Ob
+in Bytes, in Token oder im Anteil am freien Raum gemessen wird, ob die Schwelle fest oder
+rundenabhängig ist, und ob das Verbot überhaupt zu ändern ist — **die Entscheidung liegt beim
+Owner.** Der Kandidat stellt den Datenpunkt fest.
+**DIE ABGRENZUNG ZUM BESTAND:** CLAUDE.md sagt bereits "EIN PFLICHT-GATE, DAS NIEMAND
+VOLLSTÄNDIG LIEST, IST KEINES" und lässt die Teilung zu; der Kandidat widerspricht dem nicht.
+Er sagt, dass die Bedingung, unter der jener Satz eintritt, an der falschen Grösse hängt.
+**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+PROVENIENZ: Der Faktor 1,81, die zwei Prozentzahlen und die Herkunft aus zwei unabhängigen
+Dateien sind OWNER-ANGABEN aus der Sitzung vom 2026-09-16 und am Repo NICHT prüfbar.
+Zeilenzahl, Bytezahl, Bytes je Zeile und der Verlauf von 3 432 auf 3 978 sind GEMESSEN am Repo
+(CC, 2026-09-16). Die Token-Zahl 164 000 ist eine ABLEITUNG aus dem Owner-Faktor und den
+gemessenen Bytes, keine eigene Messung.

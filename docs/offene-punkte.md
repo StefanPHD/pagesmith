@@ -323,6 +323,30 @@ aufeinander; sie liegen alle hier und finden einander.
   AUSDRÜCKLICH NICHT "zu 100 % Konfigurationsfehler" — eine Absolutheits-Aussage wird vom
   ersten Gegenbeispiel widerlegt, und dann fällt die ganze Argumentation. Was still
   kaputtgeht: der Betreiber erfährt beides erst, wenn es ihn trifft.
+  RICHTIGGESTELLT AM 2026-09-16 (Hebung Phase 11.5) — DIE ERSTE HÄLFTE VON PUNKT (1) TRIFFT
+  NICHT MEHR ZU, UND DER TEXT DARÜBER BLEIBT WÖRTLICH STEHEN. Seit Commit `7516bce` (Scheibe
+  11.5d, 2026-09-14) LIEFERT Pagesmith einen Einwilligungs-Dialog mit, seit `5fd6d48` in zwei
+  Formen (Leiste und Fenster), seit `9f85c0c` mit zwei Gruppen und seit `e061d7b` mit einem
+  Widerruf (GEMESSEN am Repo, CC, 2026-09-16).
+  RICHTIGGESTELLT UND NICHT GESTEMPELT: Die Aussage ist eine TATSACHENBEHAUPTUNG ÜBER DEN
+  CODE und altert mit ihm; wer sie beim öffentlichen Launch als Vorlage nimmt, dokumentiert
+  ein Produkt, das es nicht mehr gibt (docs/immer-beachten.md, „EINE REGEL KANN GÜLTIG
+  BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD").
+  DIE ZWEITE HÄLFTE BLEIBT WAHR, und sie trägt den Punkt weiter: Bei AUSGESCHALTETEM Dialog
+  gelten weiterhin ALLE Ziele als erlaubt, und das ist die Vorgabe — `consentBlocksFor`
+  (`src/lib/analytics/pageview-emitter.ts`) erzeugt im `off`-Zweig keinen Baustein, der Hook
+  bleibt ungesetzt, und „nicht gesetzt heisst erlaubt" (GEMESSEN am Code, CC, 2026-09-16).
+  WAS DAMIT AN DER FOLGERUNG HÄNGT UND HIER AUSDRÜCKLICH NICHT ENTSCHIEDEN WIRD: Der Satz
+  „konform out-of-the-box trifft heute nicht zu" ruhte auf der ersten Hälfte. Er ruht jetzt
+  auf dem Schalter-Zustand — ein Dialog EXISTIERT, aber er ist im Auslieferungs-Zustand AUS.
+  Ob die Dokumentation das so sagt, wie die Formulierung künftig lautet und ob der
+  Vorgabewert des Schalters zu ändern wäre, ist KEINE Frage dieser Richtigstellung. KEINE
+  EMPFEHLUNG.
+  DER TRIGGER DES POSTENS IST UNBERÜHRT — vor dem öffentlichen Launch.
+  HERKUNFT: Vorrats-Eintrag (21) der Phase 11.5, angelegt 2026-09-16 mit dem ausdrücklichen
+  Zweck, dass der Befund beim Phasenende nicht untergeht; er ist mit dieser Richtigstellung
+  EINGELÖST und an seiner Nummer gestrichen. Denselben Befund hält die bindende Entscheidung
+  (24) jener Phase im Absatz über ihren Preis fest.
   ERGÄNZT AM 2026-08-19 (Hebung Phase 11.1) — PUNKT (2) IST SEIT 11.1f NICHT MEHR NUR
   THEORETISCH BERÜHRT, und der Text darüber bleibt unverändert: Das VIERTE Ziel sendet seit
   dem 2026-08-19. Die Zusage oben ist über die HERKUNFT der Ereignisse formuliert („gilt für
@@ -3660,3 +3684,208 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
   2026-09-14, Stand `7516bce` — seither kein Commit unter `src/`); die Folge unter (c) eine
   ABLEITUNG, nicht gelaufen; der Nachbar GELESEN; die Beobachtung OWNER-ANGABE; Trigger,
   Einordnung und Begründung unter (d) und (e) ARCHITEKT-ANGABE (2026-09-14).
+
+**AUS DEM PHASENENDE 11.5 GEHOBEN (2026-09-16) — SIEBEN POSTEN.** Aus dem Vorrat der
+Standdatei der Phase 11.5 (Einwilligungs-Dialog). **DIE URSPRUNGS-NUMMERN STEHEN JE AM
+POSTEN**, nicht im Stub von CLAUDE.md — sie sind Nummern einer Datei, die mit der
+Archivierung `docs/claude-history/phase-11.5-einwilligung.md` heisst, und ein Nummern-Präfix
+im Stub zeigte auf eine Ablage, die dort nicht benannt ist. **DAS KRITERIUM WAR ZWEITEILIG**
+— benennbarer Trigger UND „geht sonst still kaputt"; nach dem Trigger allein wären es
+fünfzehn von 22 gewesen statt sieben (GEMESSEN, CC, 2026-09-16). Die übrigen liegen in
+docs/claude-history/backlog-polish.md; einer ist gestrichen, sein Beleg steht an seiner
+Nummer in der Standdatei.
+
+- UNSER EINWILLIGUNGS-DIALOG KANN EIN FREMDES CMP ÜBERFAHREN — ZWEI WEGE, DIE GETRENNT
+  BLEIBEN (aus Vorrat (2) und (12) der Phase 11.5): Die Roadmap-Zeile 11.5 bindet
+  ausdrücklich: „Ein Betreiber mit eigenem CMP darf NIE von unserem abhängen." Zwei Wege
+  brechen diese Bindung, beide STILL — der Betreiber sieht keinen Fehler, sein Urteil wird
+  nur nicht mehr befolgt. **SIE HABEN VERSCHIEDENE URSACHEN UND VERSCHIEDENE TRIGGER; wer sie
+  zusammenzieht, hält den Posten für erledigt, sobald einer davon behoben ist.**
+  **(1) DER ASYNCHRON GESETZTE FREMD-HOOK WIRD VON DER PRÜFUNG NICHT ERFASST.** Setzer und
+  Wiederherstellung prüfen `window.pagesmithConsent !== undefined` und schreiben nur dann
+  nicht (bindende Entscheidung (3); `buildConsentDenyScript`, `buildConsentRestoreScript`,
+  GEMESSEN am Code, CC, 2026-09-12). Ein CMP, das den Hook erst NACH dem Seitenaufbau setzt —
+  nachgeladen, ereignisgesteuert, verzögert —, hat zu diesem Zeitpunkt nichts gesetzt: Unser
+  Setzer schreibt, und **der erste Seitenaufruf ist durch**, bevor das fremde Urteil vorliegt.
+  **UNGEMESSEN** — weder ist erhoben, wie verbreitet diese Bauform bei CMPs ist, noch, was in
+  diesem Fall tatsächlich geschieht. Hier steht, dass die Prüfung den Fall nicht abdeckt,
+  nicht, wie oft er eintritt.
+  **(2) `write()` WEICHT EINEM GESETZTEN FREMD-HOOK NICHT AUS.** Der
+  Wiederherstellungs-Block prüft den Hook und weicht aus; `write()` setzt ihn bei Erfolg
+  UNBEDINGT (`buildConsentRestoreScript`, GEMESSEN am Code, CC, 2026-09-14). **Das ist die
+  Kehrseite der bindenden Entscheidung (11)**, ohne die die Erst-Conversion jedes Besuchers
+  verloren ginge — die Entscheidung ist richtig, ihre Kehrseite bleibt offen.
+  **ABGRENZUNG ZUM LIVE-NACHWEIS DER SCHEIBE 11.5b, Schritt 6:** Dort GEWINNT das fremde CMP
+  je Schlüssel — aber nur, weil in jenem Schritt allein die WIEDERHERSTELLUNG lief. Der
+  `write()`-Weg ist damit nicht geprüft.
+  **MILDERND UND NICHT ERHOBEN:** Die Schnittstelle existiert nur bei eingeschaltetem
+  Schalter, und ein Betreiber mit eigenem CMP liefert sie vermutlich nicht aus — **ob das
+  trägt, ist nicht erhoben.** Genau deshalb bleibt der Posten offen.
+  **ZWEI TRIGGER, je einzeln hinreichend, beide spätestens vor einem Beta-Launch mit fremden
+  Nutzern:** für (1) der erste Betreiber, der ein asynchron setzendes CMP mitbringt UND
+  unseren Schalter einschaltet; für (2) der erste Betreiber, der ein eigenes CMP mitbringt UND
+  unseren Dialog einschaltet — dort genügt schon ein Besucher-Klick.
+  **WAS STILL KAPUTTGEHT:** Eine Einwilligung, die der Besucher beim fremden CMP verweigert
+  hat, wird befolgt oder nicht — und nichts auf der Seite, im Dashboard oder in einem Log
+  sagt, welcher der beiden Fälle vorliegt.
+  **KEINE EMPFEHLUNG**, weder zu einer Erkennung noch zu einer Verzögerung noch dazu, ob das
+  überhaupt zu lösen ist.
+  PROVENIENZ: die zwei Prüfungen und ihr Fehlen GEMESSEN am Code (CC, 2026-09-12 bzw.
+  2026-09-14); die Bindung GELESEN an docs/roadmap.md, Roadmap-Zeile 11.5. Die Zusammenlegung
+  zu EINEM Posten mit zwei Ursachen ist die Hebung des Phasenendes 11.5 (2026-09-16).
+
+- DER EINWILLIGUNGS-HOOK IST AN KEINER FÜR EINEN BETREIBER ERREICHBAREN STELLE BESCHRIEBEN
+  (aus Vorrat (3) der Phase 11.5) (Trigger: der erste fremde Betreiber, der ein eigenes
+  Consent-Management anbinden will — spätestens vor einem Beta-Launch mit fremden Nutzern):
+  „Ein fremdes CMP bleibt einbindbar" (Owner-Entscheidung 2026-08-12, Roadmap-Zeile 11.5) ist
+  damit **technisch wahr und praktisch unbenutzbar**: Es gibt keinen Ort, an dem ein Betreiber
+  erführe, dass es `window.pagesmithConsent` gibt, wie er heisst, welche Gestalten er annehmen
+  darf und welche Schlüssel er bedienen muss. **Die vollständige Beschreibung steht
+  ausschliesslich als Kommentarkopf über `buildConsentRuntime` (`src/lib/tracking/consent.ts`)
+  — und dorthin kommt kein Betreiber** (GEMESSEN am Repo, CC, 2026-09-16).
+  **WAS STILL KAPUTTGEHT:** Der Betreiber sieht keinen Fehler. Er sucht, findet nichts,
+  und bindet sein CMP entweder gar nicht an oder setzt den Hook falsch — und im zweiten Fall
+  ist die Wirkung fail-closed, also ein verstummtes Tracking ohne Meldung.
+  **DIE AUSGANGSLAGE HAT SICH SEIT 11.5d VERSCHOBEN, und das ist der operative Teil:** Der
+  Posten beschrieb ursprünglich „es gibt keinen Text über die Einwilligung". Heute gilt „es
+  gibt Text über die Einwilligung, aber keinen über den Hook" — `src/components/PublishView.tsx`
+  trägt seit `7516bce` nutzersichtbaren Text im Bereich VERÖFFENTLICHEN (Überschrift
+  „Einwilligung", drei Options-Beschreibungen, der Hinweis bei unbekanntem Wert, der Satz
+  über ein nicht erkanntes Consent-Management), seit `e061d7b` dazu den Abschnitt „Widerruf"
+  (GEMESSEN am Repo, CC, 2026-09-16). **DAS SIND ZWEI VERSCHIEDENE AUSGANGSLAGEN FÜR DIESELBE
+  ARBEIT:** Die erste verlangt, einen Ort zu schaffen; die zweite verlangt, einen bestehenden
+  Ort zu ergänzen.
+  **DIE ABGRENZUNG ZUM POSTEN „BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE":** Dessen drei
+  Punkte betreffen andere Gegenstände — den Dialog, die Grenze der Deduplizierung, den
+  Testmodus —, **weder den Hook noch den Widerruf** (GELESEN, CC, 2026-09-15). Wer diesen
+  Posten dort einsortiert, hängt ihn an einen Trigger, der später kommt als seiner.
+  **KEINE EMPFEHLUNG**, wo die Beschreibung liegt und welche Form sie hat.
+  PROVENIENZ: der Nicht-Treffer und die Verschiebung der Ausgangslage GEMESSEN am Repo (CC,
+  2026-09-12 und 2026-09-16); die Einordnung „gehört in diese Phase, aber nicht in die erste
+  Scheibe" war ARCHITEKT-ENTSCHEIDUNG 2026-09-12.
+
+- DER EXPORT-PFAD IST VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST — UND ES GEHT UM CONVERSIONS,
+  NICHT NUR UM SEITENAUFRUFE (aus Vorrat (4) der Phase 11.5) (Trigger: die erste exportierte,
+  fremd gehostete Seite eines Projekts mit Tracking-Schlüssel und eingeschaltetem Dialog —
+  spätestens vor einem Beta-Launch mit fremden Nutzern): **Der Download und das Kopieren in
+  die Zwischenablage bauen den Text rein clientseitig und gehen nie durch die
+  Server-Injektion** — Setzer, Wiederherstellung, Dialog-Block und Widerruf entstehen dort
+  nicht (GEMESSEN am Code, CC, 2026-09-12).
+  **DAS LOCH IST GRÖSSER, ALS ES BEIM PAGEVIEW-EMITTER AUSSIEHT, und darum geht es:** Eine
+  exportierte Seite trägt sehr wohl das **WIRING** — bei Mappings erzeugt der Client-Erzeuger
+  Gate, Datenblock und Wiring auch im Export-Modus. Trägt das Projekt einen
+  Tracking-Schlüssel, **beacont ein Klick auf die ABSOLUTE Adresse `/api/e`**, mit einem
+  `cns`-Feld aus dem Client-Erzeuger; seit der achten Scheibe der Phase 11 hängt dieser
+  Beacon nicht mehr an einer Meta-Pixel-ID (GEMESSEN am Code, CC, 2026-09-12).
+  **WAS STILL KAPUTTGEHT:** Ohne gesetzten Hook gilt auf einer exportierten, fremd gehosteten
+  Seite „alles erlaubt". Der Betreiber hat den Schalter eingeschaltet, sieht ihn eingeschaltet
+  — **und auf der exportierten Seite wirkt er nicht.** Es gibt keinen Fehler und keinen
+  Hinweis; es gehen Conversions ohne Einwilligung hinaus.
+  **KEINE REGRESSION** — der PageView-Emitter fehlt dort heute schon —, aber ein **Loch im
+  Versprechen**. Der Nachweis JEDER Scheibe dieser Phase führt den Export-Pfad unter seinen
+  Grenzen.
+  **KEINE EMPFEHLUNG**, ob der Export den Schalter tragen soll, ob er ihn verweigern soll oder
+  ob ein Hinweis genügt.
+
+- `settingsEqual` IST EINE ALLOWLIST — JEDES NEUE TOP-LEVEL-MITGLIED DES EINSTELLUNGS-BLOBS
+  IST FÜR `dirty` UNSICHTBAR BY DEFAULT, UND NICHTS WIRD DAVON ROT (aus Vorrat (5) der Phase
+  11.5) (Trigger: die nächste Runde, die dem Einstellungs-Blob ein Top-Level-Mitglied
+  hinzufügt): Die Funktion (`src/lib/settings.ts`) ZÄHLT AUF, was sie vergleicht. Wer ein
+  Mitglied hinzufügt und den Vergleich nicht mitzieht, bekommt **keinen Typfehler, keinen
+  roten Test, keine Meldung** — nur einen Wert, der beim nächsten Projektwechsel still
+  verschwindet: kein Text „Ungespeicherte Änderungen", kein `beforeunload`-Wächter, kein
+  `confirm`.
+  **DER WÄCHTER ZUM EINWILLIGUNGS-SCHALTER SCHLIESST DIE KLASSE NICHT:** S3 hält genau diesen
+  einen Term, nicht das nächste Mitglied. Dass der Term überhaupt nötig war, steht als
+  bindende Entscheidung (6) der Phase 11.5 — dort ist er ausdrücklich „keine Politur, sondern
+  die Bedingung dafür, dass der Schalter überhaupt hält".
+  **DIE VERWANDTE BAUFORM, beim Titel genannt:** der Posten „DIE IDOR-WÄCHTER SIND
+  NAMENTLICH — EINE NEUE SERVER-ACTION IST UNGESCHÜTZT BY DEFAULT, UND NICHTS WIRD DAVON ROT"
+  in dieser Datei. Dieselbe Figur an einer anderen Achse: ein namentlicher Schutz, der beim
+  nächsten Zuwachs nicht mitwächst. **Wer den einen löst, liest den anderen mit.**
+  **KEINE EMPFEHLUNG**, ob `settingsEqual` strukturell vergleichen soll — das ist zugleich die
+  Kipp-Bedingung der Entscheidungen (6) und (15) jener Phase.
+
+- EIN EINGESCHALTETER EINWILLIGUNGS-DIALOG OHNE ZUSTIMMUNG SIEHT AUS WIE KAPUTTES TRACKING —
+  UND ZWAR AN DREI STELLEN GLEICHZEITIG (aus Vorrat (9) der Phase 11.5) (Trigger: der erste
+  fremde Nutzer, der den Dialog einschaltet — für den Owner BEREITS EINGETRETEN, s. den Beleg):
+  Steht der Schalter an und hat niemand eingewilligt, geht **nichts** hinaus: nichts intern,
+  nichts beim Anbieter, nichts im Dashboard. **NICHTS MELDET DIE URSACHE.** Es gibt keinen
+  Fehler, keine leere Seite, keine Zeile — der Zustand ist ausschliesslich **am
+  ausgelieferten Quelltext** oder **am Schalter selbst** zu erkennen.
+  **BELEG: OWNER-VORFALL vom 2026-09-12**, aufgelöst erst, nachdem der Quelltext der
+  Live-Seite angesehen wurde. Das ist der Punkt: Der Weg zur Ursache führte über eine Stelle,
+  die niemand routinemässig ansieht.
+  **DIE VERSCHÄRFUNG, DIE DERSELBE VORFALL GEZEIGT HAT:** Läuft gleichzeitig ein Testmodus,
+  sind **DREI** Zustände nicht mehr auseinanderzuhalten — abgelehnte Einwilligung, laufender
+  Testmodus und echter Defekt. **ZWEI DAVON SIND KORREKTES VERHALTEN**, und keiner der drei
+  meldet sich.
+  **WO DIE DREI TATSÄCHLICH ZUSAMMENFALLEN — GEMESSEN (CC, 2026-09-12), damit der Posten
+  nicht mehr behauptet, als er trägt:** In der **internen Ablage** und damit im **Dashboard**
+  fallen sie zusammen; `testModusAktiv` (`src/lib/capi/ingest.ts`) riegelt beide
+  `schedulePersist`-Aufrufe ab, und ein ausbleibender Beacon erzeugt ohnehin keine Zeile.
+  **BEIM ANBIETER NICHT ZWINGEND:** Der Testmodus gatet den Forward nicht — dort hängt es am
+  Ziel, ob ein markiertes Ereignis sichtbar wird.
+  **DIE NACHBARN IN DIESER DATEI, und sie lösen ihn nicht ab:** „NACH DEM ENDE EINES TESTMODUS
+  ERKLÄRT NICHTS DIE LÜCKE IN DER EIGENEN KURVE" handelt vom Testmodus allein und von der Zeit
+  DANACH; Punkt (3) des Postens „BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" verlangt eine
+  Beschreibung dessen, was der Testmodus bewirkt. **KEINER VON BEIDEN NENNT DEN
+  EINWILLIGUNGS-DIALOG als eine der Ursachen.**
+  **KEINE EMPFEHLUNG**, ob und was dagegen zu bauen wäre.
+
+- KEIN TEST LÄSST EINEN WURF BIS IN EINEN KNOPF-HANDLER DER EINWILLIGUNGS-OBERFLÄCHEN DURCH
+  (aus Vorrat (15) der Phase 11.5) (Trigger: die nächste Runde, die am Klick-Handler von
+  Leiste oder Modal, an `CONSENT_CHOICE_JS` oder an `write()` arbeitet): Beide Oberflächen
+  entfernen ihr Host-Element im `finally` ihres Klick-Handlers, und die Docblocks beider
+  sagen, das geschehe „AUCH, WENN write() `false` LIEFERT ODER WIRFT". **DEN ZWEITEN FALL
+  PRÜFT KEIN TEST.**
+  AM CODE (GEMESSEN, CC, 2026-09-15): L11 und M11 lassen `Storage.prototype.setItem` werfen —
+  `write()` fängt diesen Wurf selbst ab und gibt `false` zurück; der Handler sieht einen
+  RÜCKGABEWERT, keinen Wurf. Ein Wurf, der den Handler tatsächlich erreicht, entsteht in
+  `write()` nur NACH dem Speichern: der Aufruf der Sende-Logik des PageView-Emitters steht
+  bewusst ohne try/catch. Achse `write|throw|mockImplementation` über `consent-bar.test.ts`
+  und `consent-modal.test.ts`, ohne reine Kommentarzeilen: Treffer allein die zwei
+  `setItem`-Würfe und die `throw`-Zeilen der Test-Helfer; **kein Test ersetzt `write` oder
+  lässt es werfen.** POSITIVKONTROLLE: dieselbe Achse trifft die `setItem`-Würfe in L11/M11.
+  **WAS STILL KAPUTTGEHT:** Beim Modal fängt die Abdunkelung JEDEN Klick. Bliebe der Host
+  nach einem Wurf stehen, **wäre die Kundenseite unbedienbar** — und der Besucher meldet das
+  nicht, er geht weg. Heute hält das `finally`; **dass es das tut, ist eine Aussage über
+  JavaScript, nicht über einen Test** (docs/immer-beachten.md, „NUR EIN TEST IST EIN WÄCHTER
+  — EIN KOMMENTAR ODER EIN NEBENEFFEKT IST KEINER"). Wer die Bauform ändert, bekommt kein
+  rotes Gate.
+  **DER FALL IST LIVE NICHT HERSTELLBAR** — das führen die Nachweise der Scheiben 11.5d,
+  11.5d-2, 11.5e-1 und 11.5e-2 je unter ihren Grenzen.
+  **KEINE EMPFEHLUNG**, wie der Test aussähe.
+
+- DER CONSENT-GATE-BLOCK HAT ZWEI ERZEUGER — UND SIE LAUFEN BEREITS AUSEINANDER (aus Vorrat
+  (16) der Phase 11.5) (Trigger: die nächste Änderung am INHALT des Gate-Blocks an einem der
+  beiden Erzeuger — die reine Hüllen-Divergenz von heute ist harmlos und ist NICHT der
+  Trigger): **ZWEI STELLEN BEANTWORTEN DIESELBE FRAGE** (GEMESSEN am Code, CC, 2026-09-15):
+  · **DER CLIENT**, wenn Mappings existieren: `generateFunctional` (`src/lib/generate.ts`)
+    legt ein `<script>` an, setzt `id` auf `CONSENT_SCRIPT_ID` und `textContent` auf
+    `buildConsentRuntimes()`; das Dokument wird serialisiert.
+  · **DER SERVER** als Rückfall, wenn das Dokument den Block nicht trägt:
+    `injectPageViewEmitter` fügt über `hasConsentScript` den String aus `buildConsentScript()`
+    (`src/lib/tracking/consent.ts`) ein — mit einem Zeilenumbruch nach dem öffnenden Tag und
+    einem vor `</script>`.
+  · **DER INHALT HAT EINE QUELLE, DIE HÜLLE ZWEI:** Beide rufen `buildConsentRuntimes()`; die
+    Zeilenumbrüche stehen allein in der String-Hülle des Servers.
+  DIE MESSUNG (CC, 2026-09-15, Wegwerf-Skript ausserhalb des Repos): Server **792 Bytes**,
+  sha256 `5282ddbf…`; Client **790 Bytes**, sha256 `854831d2…`; die Server-Form ohne die zwei
+  Zeilenumbrüche ist mit der Client-Form ZEICHENGLEICH. Die GRENZE: serialisiert hat jsdom,
+  nicht der Browser des Editors.
+  **HEUTE HARMLOS** — Leerraum ausserhalb des Codes wirkt nicht. **DER BEFUND IST, DASS ZWEI
+  STELLEN DIESELBE FRAGE BEANTWORTEN UND BEREITS AUSEINANDERLAUFEN.**
+  **WAS STILL KAPUTTGEHT, SOBALD DER TRIGGER EINTRITT:** Der Gate-Block trägt `__psConsent`
+  und `__psConsentAll` — die Laufzeit-Funktionen, an denen JEDES Einwilligungs-Urteil hängt.
+  Wer eine davon an EINEM der beiden Erzeuger ändert, bekommt Seiten MIT Mappings und Seiten
+  OHNE Mappings mit verschiedenem Urteil, und **kein Gate meldet das**: Die Erzeuger sind
+  getrennte Symbole, die Tests prüfen sie einzeln, und der Unterschied zeigt sich erst am
+  ausgelieferten Text zweier verschiedener Projekte.
+  **SICHTBAR WIRD DIE HEUTIGE DIVERGENZ an jedem Byte-Vergleich über eine Mapping-Änderung
+  hinweg:** Bekommt eine Seite ihre erste Zuweisung, wechselt der Erzeuger des Gate-Blocks,
+  und der Block wird zwei Bytes kürzer — so geschehen an einer realen Seite im Live-Nachweis
+  der Scheibe 11.5d-2.
+  VERWANDT: die bindende Entscheidung (2) der Phase 11.5 begründet, WARUM es den
+  Server-Rückfall gibt; Entscheidung (14) führt eine zweite Erzeugungsstelle für denselben
+  Baustein als Divergenz-Bauform. **KEINE EMPFEHLUNG**, welcher der beiden Erzeuger bleibt.

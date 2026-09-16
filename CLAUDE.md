@@ -386,6 +386,38 @@ sondern als Ursache (5) unter "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICH
   Zugangsdaten oder eine Kennung speichert, auch mit nur EINEM Projekt; (2) für das Fenster
   aus (c) — der erste fremde Nutzer mit mehr als einem Projekt)
 
+**AUS DEM PHASENENDE 11.5 GEHOBEN (2026-09-16) — SIEBEN POSTEN.** Aus dem Vorrat der
+Standdatei der Phase 11.5. DIE URSPRUNGS-NUMMERN STEHEN NICHT HIER, SONDERN AM EINTRAG in
+docs/offene-punkte.md — sie sind Nummern einer Datei, die mit der Archivierung einen anderen
+Namen trägt. DAS KRITERIUM WAR ZWEITEILIG — benennbarer Trigger UND "geht sonst still
+kaputt"; nach dem Trigger allein wären es fünfzehn von 22 Vorrats-Einträgen gewesen statt
+sieben (GEMESSEN, CC, 2026-09-16). Die übrigen liegen in
+docs/claude-history/backlog-polish.md.
+- UNSER EINWILLIGUNGS-DIALOG KANN EIN FREMDES CMP ÜBERFAHREN — ZWEI WEGE, DIE GETRENNT
+  BLEIBEN (ZWEI TRIGGER, je einzeln hinreichend, beide spätestens vor einem Beta-Launch mit
+  fremden Nutzern: (1) der erste Betreiber, der ein asynchron setzendes CMP mitbringt UND
+  unseren Schalter einschaltet; (2) der erste Betreiber, der ein eigenes CMP mitbringt UND
+  unseren Dialog einschaltet — dort genügt schon ein Besucher-Klick)
+- DER EINWILLIGUNGS-HOOK IST AN KEINER FÜR EINEN BETREIBER ERREICHBAREN STELLE BESCHRIEBEN
+  (Trigger: der erste fremde Betreiber, der ein eigenes Consent-Management anbinden will —
+  spätestens vor einem Beta-Launch mit fremden Nutzern)
+- DER EXPORT-PFAD IST VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST — UND ES GEHT UM CONVERSIONS,
+  NICHT NUR UM SEITENAUFRUFE (Trigger: die erste exportierte, fremd gehostete Seite eines
+  Projekts mit Tracking-Schlüssel und eingeschaltetem Dialog — spätestens vor einem
+  Beta-Launch mit fremden Nutzern)
+- settingsEqual IST EINE ALLOWLIST — JEDES NEUE TOP-LEVEL-MITGLIED DES EINSTELLUNGS-BLOBS IST
+  FÜR dirty UNSICHTBAR BY DEFAULT, UND NICHTS WIRD DAVON ROT (Trigger: die nächste Runde, die
+  dem Einstellungs-Blob ein Top-Level-Mitglied hinzufügt)
+- EIN EINGESCHALTETER EINWILLIGUNGS-DIALOG OHNE ZUSTIMMUNG SIEHT AUS WIE KAPUTTES TRACKING —
+  UND ZWAR AN DREI STELLEN GLEICHZEITIG (Trigger: der erste fremde Nutzer, der den Dialog
+  einschaltet — für den Owner BEREITS EINGETRETEN, s. den Beleg am Eintrag)
+- KEIN TEST LÄSST EINEN WURF BIS IN EINEN KNOPF-HANDLER DER EINWILLIGUNGS-OBERFLÄCHEN DURCH
+  (Trigger: die nächste Runde, die am Klick-Handler von Leiste oder Modal, an
+  CONSENT_CHOICE_JS oder an write() arbeitet)
+- DER CONSENT-GATE-BLOCK HAT ZWEI ERZEUGER — UND SIE LAUFEN BEREITS AUSEINANDER (Trigger: die
+  nächste Änderung am INHALT des Gate-Blocks an einem der beiden Erzeuger — die reine
+  Hüllen-Divergenz von heute ist harmlos und ist NICHT der Trigger)
+
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
 Constraints, Indizes, Funktionen, Event-Trigger, Backups) steht in docs/db-stand.md.
@@ -1230,6 +1262,16 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   BEOBACHTUNG: DIE ADRESSE TRÄGT DEN NAMEN DES ERSTEN VERÖFFENTLICHENS" (1). Eine
   Owner-Beobachtung, am Code nachgesehen: Die Adresse zieht eine Umbenennung nicht nach, und
   das ist die gewollte Bauform. KEIN offener Punkt; es fehlt ein Hinweis, kein Verhalten.
+  NACHGEZOGEN 2026-09-16 — DER ABSCHNITT DER PHASE 11.5: "Aus Phase 11.5 gehoben
+  (2026-09-16) — Vorrat, ein Roadmap-Punkt und zwei Hebungs-Kandidaten". Er trägt dreizehn
+  Vorrats-Einträge unter ihren Ursprungs-Nummern, dahinter 11.5f (die SPRACHE des
+  Einwilligungs-Dialogs — der einzige nicht gebaute Punkt der sechsgliedrigen
+  Umfangs-Aufzählung der Roadmap-Zeile 11.5; es gibt KEINE Roadmap-Zeile 11.5f, die Nummer
+  stand nur in der Standdatei) und zwei Hebungs-Kandidaten, die wie die drei der Phase 11.3
+  als ÄNDERUNGSANTRÄGE an docs/arbeitsweise.md in Wartestellung stehen und KEINE Regeln sind.
+  Auch hier steht keine Stückzahl für die Datei, aus demselben Grund wie darüber. ANDERS ALS
+  BEIM ABSCHNITT DER PHASE 11.3 ist der Text der Vorrats-Einträge VERDICHTET und nicht
+  zeichengleich; der ungekürzte Wortlaut steht im Archiv der Phase.
 - supabase/checks/ — versionierte Messproben für Live-Tests und Gegenproben. KEINE Probe
   fasst ECHTE Daten an; welche Bauformen das zulässt und was eine Datei dann in ihrem Kopf
   sagen muss, steht im README des Ordners — hier der Zeiger, dort die Regel.

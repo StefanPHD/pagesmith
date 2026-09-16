@@ -193,6 +193,11 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - SICHTBARKEIT STATT ISOLATION — EIN TESTMODUS BELEGT DIE ANKUNFT BEIM ...
 - EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM ...
 - EINE WIDERLEGTE BEGRÜNDUNG STEHT IM ARCHIV WEITER: "ECHTES RISIKO" IM ...
+- KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN FREMDEN ...
+- WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE — ...
+- EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB, STATT STILL AUF EINEN ...
+- `grep` TAUGT IN DIESER UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL — UND ...
+- EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -2433,3 +2438,180 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   pinterest ist nur die Berichterstattung isoliert gemessen. Die Frist trägt UNSER Grund:
   Bleibt der Testmodus hängen, verstummt die eigene Zählung des Kunden. Jene Datei ist ein
   Archiv und wird nicht rückwirkend geändert; ihre Form-Anforderung gilt unberührt.
+- KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN FREMDEN KNOTEN AN —
+  STIL, KLASSE, ATTRIBUT, SCROLL-POSITION, FOKUS (Phase 11.5, gehoben 2026-09-16 aus der
+  bindenden Entscheidung (20)): Ein Baustein, den wir in die Seite eines Betreibers
+  schreiben, ändert an KEINEM Knoten ausserhalb seines eigenen Schattenbaums Stil, Klasse,
+  Attribut, Scroll-Position oder Fokus. Im EIGENEN Schattenbaum ist alles zulässig,
+  ausdrücklich `max-height` und `overflow`.
+  DER GRUND: Das HTML gehört dem Betreiber, und wir kennen es nicht. Jeder Eingriff dort
+  kollidiert potenziell mit etwas, das wir nicht sehen — und die Kollision trifft eine
+  Seite, die wir nicht ändern können (docs/immer-beachten.md, „EIN AUSGELIEFERTES ARTEFAKT
+  ALTERT NICHT MIT DEM DEPLOY").
+  DIE ZUSAGE IST GEMESSEN, NICHT BEHAUPTET (CC, 2026-09-15, Achse case-insensitiv über die
+  Erzeuger des ausgelieferten Textes:
+  `\.style\b|classList|className|setAttribute|scroll|\.focus\(|\.blur\(|overflow|documentElement|document\.body|innerHTML|preventDefault|addEventListener|attachShadow|querySelector|getElementBy`
+  und weitere; POSITIVKONTROLLEN im selben Lauf): `scroll`, `focus`, `blur`, `overflow`,
+  `.style`, `classList` und `className` treffen dort nichts; `setAttribute` setzt zur
+  Laufzeit allein eigene Elemente im Schattenbaum.
+  DIE GRENZE GEHÖRT DAZU, sonst wird die Regel für mehr gehalten, als sie sagt — sie ist
+  SCHMALER als „kein Baustein fasst einen fremden Knoten an". Ausdrücklich NICHT erfasst und
+  gewollt: das Anhängen des Host-Elements an `body`, das Einfügen des fbevents-Scripts per
+  `insertBefore` (`__psMetaInit`), die zwei Wiring-Listener an `document` samt
+  `preventDefault` beim Redirect, und zur ERZEUGUNGSZEIT die Schreibvorgänge von
+  `generateFunctional` in Kundenelemente. Wer die fünf Achsen mit „fremder Knoten" gleichsetzt,
+  hält eine geltende Regel für gebrochen und baut die nächste Ausnahme frei Hand.
+  WAS SIE IM BESTAND KOSTET UND WARUM DER TAUSCH RICHTIG IST: Das Center-Modal hat deshalb
+  KEINE Scroll-Sperre — der Besucher kann hinter der Abdunkelung scrollen. Dazu ist gemessen,
+  dass eine Sperre auf fremdem HTML nicht verlässlich hält: auf zwei realen Seiten hielt sie
+  ohne Vorrang auf EINER nicht (OWNER, LIVE 2026-09-15; zwei Seiten sind eine Stichprobe).
+  WEN SIE BINDET: jede Scheibe, die einen Block in den ausgelieferten Text bringt oder einen
+  bestehenden ändert — ausdrücklich jede, die einen Scroll-Stopp, einen programmatischen
+  Fokus oder ein Aufräumen an fremden Knoten erneut erwägt.
+  ABGRENZUNG ZU „EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN"
+  (unten): Jene sagt, wie diese Regel GEPRÜFT werden darf. Ein Textverbot des Wortes
+  `overflow` ist ein Stellvertreter für den Eingriff am fremden Knoten und trifft im eigenen
+  Schattenbaum mehr, als diese Regel verbietet.
+  DIE BEDINGUNG DES ENTFALLENS, zwei, beide aus dem Grund abgelesen: ERSTENS, sobald ein
+  Baustein aus einem eigenen, entschiedenen Grund an einem fremden Knoten eine der fünf
+  Achsen ändert — dann gibt es die Zusage nicht mehr, gegen die abgewogen wird. ZWEITENS,
+  sobald gemessen ist, dass ein solcher Eingriff auf fremdem HTML verlässlich hält UND einen
+  vorhandenen Ausgangswert erhält.
+  PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-15 auf Vorschlag des Architekten; die Achse und die
+  Grenze GEMESSEN am Repo (CC, 2026-09-15), die Live-Werte OWNER-ANGABEN (2026-09-15). Die
+  Erhebung zur Regel ist die Hebung des Phasenendes 11.5 (2026-09-16). Herleitung: das Archiv
+  der Phase 11.5, Entscheidung (20) und die Invarianten I1 der Scheiben 11.5d-2, 11.5e-1 und
+  11.5e-2.
+- WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE — NACHLEGEN GEHT,
+  HERUNTERNEHMEN NICHT (Phase 11.5, gehoben 2026-09-16 aus der bindenden Entscheidung (24)
+  und dem gemessenen Grund der Entscheidung (19)): Ein globaler Name, ein sichtbares
+  Element, eine Adresse — was wir ausliefern, bekommen wir nicht mehr von den Seiten
+  herunter. Wer etwas davon einführt, entscheidet es so, als wäre es endgültig.
+  DER GRUND IST GEMESSEN, NICHT VERMUTET (CC, 2026-09-14, am 2026-09-15 und 2026-09-16
+  erneut nachgesehen): `src/app/app-serve/route.ts` liefert den gespeicherten Text
+  unverändert aus und injiziert beim Ausliefern nichts — ein Code-Deploy erreicht eine
+  veröffentlichte Seite also nicht. Der einzige Aufrufer von `publishProject` im
+  Produktivcode ist `handlePublish` (`src/components/CodeImporter.tsx`); die Achse
+  `republish|publishAll|bulk` über `src/` und `supabase/` trifft nichts — neu erzeugt wird
+  der Text nur im Editor, Projekt für Projekt. Der einzige Hebel aus der Ferne ist der
+  Kill-Switch, und der nimmt die ganze Seite vom Netz, statt einen Baustein zu entschärfen.
+  DIE FOLGE FÜR DEN ZUSCHNITT, und sie ist der operative Teil: Zwischen zwei Gestalten wird
+  die gewählt, die sich SPÄTER ADDITIV ERWEITERN lässt. Ein dauerhaftes sichtbares Element
+  von uns auf einer fremden Seite ist deshalb die schlechtere Wahl gegenüber einem Aufruf,
+  den der Betreiber selbst platziert — ein Bedienelement lässt sich nachlegen, wenn ein
+  echter Nutzer es verlangt; umgekehrt geht es nicht.
+  DIE FOLGE FÜR NAMEN: Ein globaler Name in ausgeliefertem Code ist ein KONTRAKT. Betreiber
+  schreiben ihn in ihre eigene Seite; eine spätere Umbenennung macht jeden eingebauten Aufruf
+  still zu einem Fehler, den NUR DER BESUCHER sieht.
+  ABGRENZUNG ZU „EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY": Jene sagt, dass
+  ein Artefakt den Stand SEINER Erzeugungszeit trägt, und verlangt die Frage, was mit den
+  bereits ausgelieferten geschieht. Diese sagt, warum die Antwort auf jene Frage nie
+  „wir nehmen es zurück" lauten kann — es gibt keinen Weg dorthin. Jene beschreibt die
+  ALTERUNG, diese die RICHTUNG.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald ein Sammel-Weg zum Neu-Veröffentlichen existiert ODER ein ausgeliefertes Artefakt
+  aus der Ferne zu entschärfen ist. Beides ist am Repo als Nicht-Treffer mit benannter Achse
+  erhoben.
+  PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-15 (Entscheidung (24)); die drei Belege GEMESSEN am
+  Code (CC, 2026-09-14, erneut 2026-09-15 und 2026-09-16). Die Erhebung zur Regel ist die
+  Hebung des Phasenendes 11.5 (2026-09-16). Herleitung: das Archiv der Phase 11.5,
+  Entscheidungen (19) und (24) sowie Abschnitt 18, Gestalt-Entscheidung (C).
+- EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB, STATT STILL AUF EINEN VORGABEWERT
+  ZURÜCKZUFALLEN — DIE ASYMMETRIE ENTSCHEIDET (Phase 11.5, gehoben 2026-09-16 aus der
+  bindenden Entscheidung (16)): Trägt eine Einstellung einen Wert, den der Code nicht kennt,
+  bricht der Vorgang ab und meldet es dem Betreiber. Kein Rückfall auf den Vorgabewert, kein
+  Rückfall auf irgendeinen anderen.
+  DIE WORTWAHL IST DER PUNKT: „Unbekannt → Vorgabewert" ist FAIL-OPEN, nicht fail-closed —
+  auch dann, wenn der Vorgabewert harmlos aussieht. BELEG: Beim Einwilligungs-Schalter heisst
+  der Vorgabewert AUS, bei AUS entstehen weder Setzer noch Wiederherstellung, der Hook bleibt
+  ungesetzt, und „nicht gesetzt heisst erlaubt" — ALLE Ziele würden beliefert, und niemand
+  merkte es (GEMESSEN am Code, CC, 2026-09-14).
+  DER TRAGENDE GRUND IST EINE ASYMMETRIE UND KEINE STRENGE: Der Preis des Abbruchs trifft den
+  BETREIBER an seinem Rechner, sofort und sichtbar. Der Preis eines stillen Rückfalls träfe
+  den BESUCHER auf der Live-Seite, unsichtbar und dauerhaft. Wer die Regel als Härte liest,
+  streicht sie beim nächsten Aufräumen als unfreundlich.
+  DER ORT IST DIE STELLE MIT DEM RÜCKKANAL, NICHT DER ERZEUGER: Der Erzeuger baut Text, das
+  Veröffentlichen schreibt aus, und nur dort gibt es einen Weg zurück zum Betreiber. Ein
+  werfender Erzeuger bräche an einer Stelle ab, die keine Meldung kennt.
+  ZWEI FOLGEN, die sonst beim nächsten Bau verlorengehen: (a) DER LESER DARF EINEN
+  UNBEKANNTEN WERT NICHT AUF DEN VORGABEWERT ABBILDEN — sonst sieht die abbrechende Stelle
+  ihn nie, und der Abbruch ist toter Code. (b) DAS BEDIENELEMENT BIETET NUR WERTE AN, DEREN
+  VERARBEITUNG GEBAUT IST — sonst wählt der Betreiber einen Zustand, den der Vorgang
+  anschliessend verweigert.
+  WEN SIE BINDET: jede Runde, die einer Einstellung einen Wertebereich gibt oder erweitert.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND JE EINSTELLUNG ZU PRÜFEN: Sie entfällt
+  für eine Einstellung, sobald der Server den Wert schon beim SPEICHERN prüft und ein
+  unbekannter Wert die Ablage gar nicht erst erreicht — dann gibt es später nichts mehr zu
+  verweigern. Heute schreibt `saveProject` `settings` ungeprüft (GEMESSEN am Code, CC,
+  2026-09-14).
+  PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-14 auf Vorschlag des Architekten, der Ort
+  ARCHITEKT-ENTSCHEIDUNG 2026-09-14; die Korrektur der Wortwahl ist ein BEFUND von CC
+  (2026-09-14); Rückkanal und Zweige GEMESSEN am Code (CC, 2026-09-14). Die Erhebung zur
+  Regel ist die Hebung des Phasenendes 11.5 (2026-09-16). Herleitung: das Archiv der Phase
+  11.5, Entscheidung (16).
+- `grep` TAUGT IN DIESER UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL — UND SEIN FEHLSCHLAG
+  SIEHT AUS WIE EIN BEFUND (Phase 11.5, gehoben 2026-09-16 aus Hebungs-Kandidat (1)):
+  DER BEFUND — GEMESSEN am eigenen Lauf (CC, 2026-09-12), mit Positivkontrolle:
+  `grep -qP '\x00'` meldet auf einer Datei, die nachweislich EIN NUL-Byte trägt, KEINEN
+  TREFFER; dieselbe Probe ergab mit `tr -dc '\000' | wc -c` den Wert 1 und mit
+  `od -An -tx1` ebenfalls 1. `grep -c $'\000'` liefert auf derselben Drei-Byte-Probe
+  (`a`, NUL, `b`) den Wert 2 — er zählt nicht die NUL-Bytes.
+  WAS TRÄGT: `tr` bzw. `od` — für das CR wie für das NUL. NIE `grep`, in keiner Variante.
+  DASS DIE POSITIVKONTROLLE IM ERSTEN ANLAUF SELBST AUSFIEL, GEHÖRT ZUM BEFUND: Die
+  Probendateien konnten nicht geschrieben werden (`$TMPDIR` ist in dieser Shell leer), und
+  die Kontrolle lief ins Leere. Erst der Wiederholungslauf mit ausgeschriebenem Pfad hat den
+  Instrumentenfehler gezeigt — OHNE IHN WÄRE DAS UNTAUGLICHE INSTRUMENT ALS GEPRÜFT
+  DURCHGEGANGEN.
+  ER HAT EINE RUNDE DIESES PROJEKTS BEREITS GETROFFEN: Eine Runde führte `grep -qP '\x00'`
+  als ZWEITES Instrument neben `tr` und berichtete sein Ergebnis als Bestätigung. Der Befund
+  war richtig — die Datei trug 0 NUL —, aber der Weg dorthin war nicht überprüfbar: dasselbe
+  Kommando hätte auch bei einem vorhandenen NUL „kein Treffer" gesagt.
+  ABGRENZUNG ZU „DIE BYTE-KONTROLLE BRAUCHT EIN BENANNTES INSTRUMENT — `tr` BZW.
+  `git ls-files --eol`, NIE `grep -c` AUF DAS CR": Jene deckt das CR und dort den ZÄHLER
+  `grep -c $'\r'`. Sie deckt NICHT das NUL und nicht die PRÄDIKAT-Form `grep -qP`. Und sie
+  hält ausdrücklich fest, ihr Ergebnis sei eine ANWESENHEIT (eine Zahl, wo null stehen
+  müsste), weshalb „EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND"
+  bei ihr nicht feuert. BEI DIESEM BEFUND FEUERT SIE: `grep -qP` erzeugt eine ABWESENHEIT,
+  die der Gegenstand nicht hergibt.
+  ABGRENZUNG ZU „EIN NACHWEIS AN EINER NEUEN DATEI IST BLIND": Jene sagt, WANN eine
+  Byte-Kontrolle nötig ist — bei einer neu angelegten Datei, wo `git status` nichts sagt.
+  Diese sagt, WOMIT sie gefahren wird.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald ein GATE CR und NUL im Diff rot macht — eine Lint-Regel, ein CI-Schritt, ein
+  pre-commit-Hook; dann wird von Hand nicht mehr gemessen, und die Instrumentenfrage stellt
+  sich nicht. Ein solches Gate gibt es nicht.
+  PROVENIENZ: der Instrumenten-Befund und die ausgefallene Positivkontrolle GEMESSEN am
+  eigenen Lauf (CC, 2026-09-12); der Volltext der zwei Nachbarregeln GELESEN (CC,
+  2026-09-12). Herleitung: das Archiv der Phase 11.5, Hebungs-Kandidat (1).
+- EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN (Phase 11.5,
+  gehoben 2026-09-16 aus Hebungs-Kandidat (2)): Wird eine Sache über einen billigen
+  Stellvertreter geprüft — ein Wort im Quelltext statt der Wirkung —, ist beim nächsten Fall
+  zu fragen, ob der Stellvertreter noch dieselbe Sache trifft. TRIFFT ER MEHR, WIRD DER
+  WÄCHTER VERENGT, NICHT DAS PRODUKT BESCHNITTEN.
+  DER BELEG, am 2026-09-15 im Plan-Review gefangen, VOR dem Bau: L12
+  (`src/lib/tracking/consent-bar.test.ts`) verbietet das Wort `overflow` im Text des
+  Leisten-Blocks; die Sache dahinter ist der Eingriff an einem fremden Knoten. Der Zuschnitt
+  der nächsten Scheibe übernahm die Bauform für den Modal-Block, und der erste Bau-Plan
+  verzichtete daraufhin AM FENSTER auf `max-height` und `overflow` — mit der Folge, dass die
+  einzigen Knöpfe auf einem niedrigen Bildschirm unerreichbar unter dem Rand gelegen hätten,
+  während die Abdunkelung jeden Klick fängt. `overflow` im EIGENEN Schattenbaum fasst keinen
+  fremden Knoten an; die Assertion traf mehr als ihre Sache.
+  DIE PRÜFFRAGE, in einem Satz: PRÜFT MEIN STELLVERTRETER NOCH DIE SACHE — ODER SCHON DIE
+  GESTALT, DIE ICH IHM ZULIEBE BAUE?
+  ABGRENZUNG ZU „EIN WÄCHTER ÜBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG — ER MUSS STRENG
+  IRREN UND SEINE GRENZE AN SICH SELBST TRAGEN": Jene verlangt den strengen Irrtum — lieber
+  ein Fehlalarm, den jemand prüft, als ein Durchlassen, das niemand sieht. DIESE betrifft die
+  GEGENRICHTUNG: was geschieht, wenn der strenge Irrtum ins Produkt zurückschlägt, weil nicht
+  der Fehlalarm geprüft, sondern der Baustein so gebaut wird, dass der Wächter schweigt.
+  Beide gelten zusammen: streng irren UND den Irrtum am Wächter beheben, nicht am Gegenstand.
+  DIE BEDINGUNG DES ENTFALLENS IST JE WÄCHTER FORMULIERBAR: Sie entfällt für einen Wächter,
+  sobald er die SACHE prüft statt ihres Stellvertreters — die Wirkung statt des Worts. Für
+  L12 und M12 ist das teilweise geschehen: M12 trägt die Zusage über die STRUKTUR (Attribute
+  an `html` und `body` vorher und nachher, Zählungen ausserhalb des Schattenbaums) und nur
+  daneben verengte Nadeln; L12 steht unverändert, und die Erlaubnis aus der Invariante ist an
+  der Leiste deshalb weiterhin nicht nutzbar, ohne ihn umzubauen.
+  PROVENIENZ: Der Fall ist eine Angabe aus dem Plan-Review vom 2026-09-15 (ARCHITEKT); der
+  erste Bau-Plan steht in keiner Datei und ist am Repo nicht prüfbar. Das Verbot von
+  `overflow` in L12 und die frühere Fassung der Invariante GELESEN am Repo (CC, 2026-09-15);
+  der Stand von L12 und M12 GEMESSEN (CC, 2026-09-15 und 2026-09-16). Herleitung: das Archiv
+  der Phase 11.5, Hebungs-Kandidat (2).

@@ -599,6 +599,132 @@ aufeinander; sie liegen alle hier und finden einander.
   unter (f) — NACHTRÄGLICH, als die sechs Regeln schon am Dateiende standen.
   DER TRIGGER BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem Phasenende"). Er ist
   wiederkehrend und feuert am nächsten Phasenende erneut.
+
+  NACHGETRAGEN 2026-09-16 — DIE DRITTE LADE-PROBE UND ZWEI BEFUNDE DER AUFKLÄRUNG. Alles
+  darüber bleibt wörtlich stehen; seine Angaben sind datierte Messungen und werden hier
+  gelesen, nicht ersetzt. Die Buchstaben laufen weiter, damit ein Verweis auf einen Teil
+  dieses Postens eindeutig bleibt.
+
+  (h) DIE LADE-PROBE IST BEI 204 200 ZEICHEN ERNEUT GEFAHREN, UND SIE TRÄGT. Nach dem
+  Muster aus (b), in einer FRISCHEN Sitzung OHNE jedes Werkzeug. Abgefragt: die MARKE in
+  Zeile 1 · die ZAHL der Verzeichnis-Einträge · die LETZTE Regelüberschrift im Wortlaut ·
+  ihr RUMPF · die VIER Regelüberschriften davor im Wortlaut. Auf die ausdrückliche Frage,
+  ob eine Datei geöffnet oder ein Werkzeug benutzt wurde: NEIN. Marke, letzte Überschrift,
+  Rumpf und die vier davor stimmten mit dem Dateitext überein; gegengeprüft mit Werkzeug
+  ERST NACH der Antwort.
+  DIE ZUSAGE GILT DAMIT AN EINEM UM 15 443 ZEICHEN GRÖSSEREN BESTAND als bei der Probe
+  unter (f) (188 757 Zeichen am 2026-09-11) — eine Rechnung aus zwei datierten Messungen,
+  keine dritte Beobachtung.
+  DER TRAGENDE BELEG IST NICHT DIE MARKE, SONDERN DER RUMPF UND DIE REIHENFOLGE. Die Marke
+  steht auch im Stub von CLAUDE.md und ist von dort abschreibbar — (b) sagt das bereits,
+  und diese Probe hat sie trotzdem mitgefragt, weil sie zusammen mit dem Rest etwas trennt,
+  was sie allein nicht trennt. Der RUMPF der letzten Regel und die REIHENFOLGE der vier
+  davor stehen in KEINEM Stub und in keiner anderen Datei. Sie entsprechen genau der Folge,
+  in der die Hebung des Phasenendes 11.5 sie angefügt hat: Commit 3c05fae hängt FÜNF Regeln
+  an, in dieser Folge — "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES …" · "WAS EINMAL IM
+  AUSGELIEFERTEN TEXT STEHT …" · "EIN UNBEKANNTER KONFIGURATIONSWERT …" · "`grep` TAUGT IN
+  DIESER UMGEBUNG …" · "EIN WÄCHTER ÜBER ZEICHEN …". Die Antwort nannte die letzte und die
+  vier davor in genau dieser Folge (GEMESSEN am Repo, CC, 2026-09-16).
+  DIE GRENZE AN DER EINEN ANGABE, DIE KEIN BELEG IST: Die ZAHL der Verzeichnis-Einträge war
+  eine HANDZÄHLUNG im geladenen Text und ist vom Antwortenden SELBST als um eins unsicher
+  gekennzeichnet worden. Sie trägt nicht; die vier anderen Angaben tragen. Sie traf
+  trotzdem: GEMESSEN am Dateitext (CC, 2026-09-16) stehen 115 Verzeichnis-Einträge UND 115
+  Regeln, und jeder Verzeichnis-Eintrag ist positionsweise der Anfang seiner Regel — null
+  Abweichungen über alle 115. DASS EINE HANDZÄHLUNG RICHTIG LAG, MACHT SIE NICHT ZUM BELEG:
+  Sie ist als unsicher gekennzeichnet worden, und eine Angabe, die ihre eigene Unschärfe
+  benennt, kann eine Ladung nicht beweisen.
+  DIE ZAHLEN FÜGEN SICH (GEMESSEN am Repo, CC, 2026-09-16): (f) zählte am 2026-09-11 110
+  Einträge und 110 Regeln; die Commits 54dff16 und 49caf8a haben KEINE Regel angefügt, die
+  Hebung 3c05fae FÜNF. 110 + 5 = 115.
+  DIE GRÖSSEN AM 2026-09-16 (GEMESSEN am Repo, CC): docs/immer-beachten.md 207 128 Bytes /
+  204 200 Zeichen / 2 617 Zeilen, reines LF, kein BOM, null NUL. Die letzte Regel beginnt in
+  Zeile 2 586 von 2 617. Zeichen gezählt als Unicode-Codepoints; CR und NUL über dieselbe
+  Zählung und ausdrücklich NICHT über `grep` (s. die Regel "`grep` TAUGT IN DIESER UMGEBUNG
+  WEDER FÜR DAS CR NOCH FÜR DAS NUL" in docs/immer-beachten.md — sie ist eine der fünf, die
+  diese Probe abgefragt hat). Datiert, also alt und nicht falsch; wer den heutigen Wert
+  braucht, misst ihn.
+  DIE ZWEITE GRENZE, UNVERÄNDERT AUS (a) UND (f): Die Probe sagt, dass der Import an DIESEM
+  Tag bei DIESER Grösse vollständig geladen hat. Sie sagt NICHT, wo eine Obergrenze liegt,
+  und NICHT, dass das Werkzeug die gemeldete Grenze nie durchsetzt.
+  PROVENIENZ: Die Probe-Antworten und der Ablauf der Probe sind OWNER-ANGABEN (frische
+  Sitzung ohne Werkzeug, 2026-09-16). Die Gegenprüfung am Dateitext — Zahl der Einträge und
+  Regeln, positionsweise Deckung, letzte Regel, die vier davor, Reihenfolge und Herkunft der
+  fünf angefügten Regeln, Grössen — ist GEMESSEN am Repo (CC, 2026-09-16).
+
+  (i) DAS MATERIAL DER SCHNITTLINIEN AUS (d) EXISTIERT NICHT. (d) nennt VIERZEHN
+  Überschneidungen und drei dichte Gruppen mit FÜNF, VIER und VIER Regeln und sagt, dort
+  lägen die Schnittlinien, falls je die Entscheidung zu teilen fällt. WELCHE Regeln das
+  sind, steht nirgends im Repo.
+  GEMESSEN am Repo (CC, 2026-09-16), zwei Achsen über alle Dateien der Typen md, ts, tsx
+  und sql ausserhalb von node_modules — das schliesst docs/, src/, supabase/ und CLAUDE.md
+  ein: (1) `ueberschneidung|überschneidung|schnittlinie|ladeklasse`, case-insensitiv;
+  (2) die Gruppen-Bezeichner selbst — `zerstörte voraussetzung|voraussetzungen von
+  live-schritten|zeiger und anker|ausgelieferte artefakte, die ein deploy`. Achse (2) trifft
+  im ganzen Repo GENAU DIE ZWEI ZEILEN VON (d) SELBST und sonst nichts; die Treffer von
+  Achse (1) ausserhalb dieses Postens betreffen die Ladeklasse einzelner Quelldateien und
+  die fünfte Ladeklasse im Kopf von docs/immer-beachten.md, nicht die Gruppen. Auch die
+  Suche nach dem Zählwort `vierzehn` fördert nur andere Gegenstände zutage (Vorratsposten,
+  Zeiger, Mutationen, Tage). POSITIVKONTROLLE: Achse (2) findet den Satz in (d), in dem die
+  Gruppen benannt werden — eine Auflistung in derselben Wortwahl hätte sie also gefunden.
+  DIESER ABSATZ FÜHRT DIE SUCHBEGRIFFE SEITHER SELBST: Wer nachmisst, zieht die Treffer von
+  (i) ab, sonst hält er die Zitate hier für das gesuchte Material.
+  DIE GRENZE DIESER MESSUNG, und ohne sie ist sie stärker als ihr Instrument: Beide Achsen
+  suchen WORTLAUT. Eine Liste, die weder "Überschneidung" noch einen Gruppen-Bezeichner
+  noch "vierzehn" trägt — etwa eine blosse Aufzählung von Regeltiteln unter einer neutralen
+  Überschrift —, wäre ihnen entgangen.
+  DAZU DIE ARITHMETIK, die (d) selbst nicht auflöst: FÜNF plus VIER plus VIER sind DREIZEHN,
+  nicht VIERZEHN. Ob die vierzehnte Überschneidung ausserhalb der drei Gruppen liegt, sagt
+  (d) nicht.
+  WER DIE SCHNITTLINIEN BENUTZEN WILL, MUSS DIE ZUORDNUNG NEU ERHEBEN. Das ist keine
+  Entwertung von (d): Die Erhebung hat stattgefunden und ist dort als GEMESSEN ausgewiesen —
+  erhalten geblieben sind die ZAHLEN, nicht das Material. HIER STEHT KEINE EMPFEHLUNG und
+  keine Schnittlinie.
+  PROVENIENZ: Der Befund stammt aus der Aufklärung vom 2026-09-16 und stand bis dahin nur in
+  ihrem Bericht. Die zwei Achsen, ihre Positivkontrolle und der Nicht-Treffer sind GEMESSEN
+  am Repo (CC, 2026-09-16); die Arithmetik ist am Text von (d) ABLESBAR.
+
+  (j) DER WACHSTUMSTREIBER IST DIE LÄNGE, NICHT DIE ZAHL. Der Posten oben rechnet in
+  GRÖSSE und die Nachträge (c) und (f) in ANZAHL; keiner fragt, woraus die Grösse entsteht.
+  GEMESSEN am Repo (CC, 2026-09-16), Regel für Regel in Dateireihenfolge, Grenze zwischen
+  zwei Regeln jeweils der nächste Zeilenanfang "- ":
+  · REGELN 1 BIS 80: zusammen 81 448 Zeichen, im Schnitt 1 018 Zeichen je Regel.
+  · REGELN 81 BIS 115: zusammen 108 716 Zeichen, im Schnitt 3 106 Zeichen je Regel.
+  · DREISSIG PROZENT DER REGELN TRAGEN SIEBENUNDFÜNFZIG PROZENT DER ZEICHEN.
+  Regel 81 ist die erste, deren Text die Phase 11.1 nennt ("EIN ANKER, DER EINDEUTIG
+  AUSSIEHT …") — GEMESSEN, keine der Regeln 1 bis 80 nennt sie.
+  DIE ABGRENZUNG-ABSÄTZE SIND DER SICHTBARE TEIL DAVON: 0,09 Vorkommen je Regel bei 1 bis 80,
+  1,29 je Regel ab 81 (7 gegen 45 Vorkommen).
+  ES IST EIN SPRUNG, KEIN TREND, und das ist die Aussage dieses Nachtrags: Die Regeln ab 81
+  sind nicht fortlaufend länger geworden. Der letzte Block ist der DÜNNSTE der drei nach dem
+  Sprung (Regeln 111 bis 115: 2 888 Zeichen im Schnitt, gegen 3 135 bei 81 bis 95 und 3 150
+  bei 96 bis 110). DIE VERMUTUNG, DIE ABGRENZUNGEN WÜCHSEN MIT DER DATEIGRÖSSE, IST DAMIT AM
+  MATERIAL GEPRÜFT UND NICHT BESTÄTIGT.
+  ZWEI ABWEICHUNGEN VOM BERICHT DER AUFKLÄRUNG, die hier stehen statt still angeglichen zu
+  werden:
+  · "Einen ABGRENZUNG-Absatz, den es davor gar nicht gab" IST ZU STARK. Die Form gibt es
+    davor — in den Regeln 11, 14, 15, 16, 20, 22 und 76 —, meist mitten im Satz statt als
+    eigener Absatz. NEU IST NICHT DIE FORM, NEU IST IHRE DICHTE.
+  · "Der dichteste Block ist der erste nach dem Sprung" trifft bei DIESEM Zuschnitt nicht:
+    96 bis 110 liegt um ein halbes Prozent über 81 bis 95. Die RICHTUNG der Aussage hält —
+    kein Trend nach oben, und der letzte Block ist nicht der dichteste —, die Rangfolge der
+    beiden mittleren Blöcke hängt am Zuschnitt und liegt im Rauschen. Der Zuschnitt des
+    Berichts liegt nicht im Repo; ein Widerspruch ist daraus NICHT abzuleiten.
+  WAS AUS DEN DATEN NICHT ZU ENTSCHEIDEN IST: ob die DATEIGRÖSSE oder die EINFÜHRUNG DER
+  BAUFORM den Sprung trägt. Beides fällt zeitlich zusammen. HIER STEHT KEINE EMPFEHLUNG und
+  keine Schnittlinie.
+  PROVENIENZ: Der Befund stammt aus der Aufklärung vom 2026-09-16 und stand bis dahin nur in
+  ihrem Bericht. Sämtliche Zahlen dieses Absatzes, die Blockgrenzen und die zwei Abweichungen
+  sind GEMESSEN am Repo (CC, 2026-09-16).
+
+  DER TRIGGER IST MIT DEM PHASENENDE 11.5 EINGETRETEN, UND DIESE RUNDE IST SEINE
+  ABARBEITUNG — zusammen mit der Aufklärung vom 2026-09-16, aus der (i) und (j) stammen.
+  ANDERS ALS AM 2026-09-11 IST DIE FRAGE DES TRIGGERS DIESMAL NICHT NACHTRÄGLICH
+  BEANTWORTET: Die Hebung des Phasenendes 11.5 (Commit 3c05fae) stand bereits, als die Probe
+  lief, und die fünf angefügten Regeln sind genau das, was die Probe abgefragt hat.
+  DER TRIGGER BLEIBT AUCH HIER UNVERÄNDERT ("vor der nächsten Hebung an einem
+  Phasenende"). Dass er wiederkehrend ist und am nächsten Phasenende erneut feuert, steht
+  im Block von 2026-09-11 und wird hier NICHT verdoppelt: Derselbe Satz zweimal in einem
+  Posten macht jeden Zeiger auf ihn mehrdeutig.
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real; HEUTE FÄLLT ER NICHT AUF, weil
   ohne Dialog nie etwas abgelehnt wird): GEMESSEN am 2026-08-12, read-only am Code.

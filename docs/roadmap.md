@@ -2266,6 +2266,30 @@ liegen beide hier und finden einander.
       · Dass der Widerruf die Struktur aufbrechen muss und ein früherer Umbau den Live-Test
         verdoppelt: ABLEITUNG. OB `all:initial` BENUTZERDEFINIERTE EIGENSCHAFTEN ERFASST:
         UNGEMESSEN.
+
+      NACHTRAG 2026-09-17 — DER DIALOG IST IN KEINEM EDITOR-RAHMEN ZU SEHEN. Der Wortlaut
+      der Zeile darüber ist unberührt; dieser Absatz tritt daneben.
+      DER BEFUND: Weder der Editier- noch der Vorschau-Rahmen zeigt den Einwilligungs-Dialog.
+      `generateFunctional` hängt allein `CONSENT_SCRIPT_ID` und `buildConsentRuntimes()` ein
+      — das Urteil über `window.pagesmithConsent`, ohne Oberfläche und ohne Speicher-Zugriff.
+      Die Blöcke, die die Oberfläche bauen — `buildConsentBarScript`,
+      `buildConsentModalScript`, `buildConsentDenyScript` und `buildConsentRestoreScript` —
+      kommen ausschliesslich über `injectPageViewEmitter`
+      (`src/lib/analytics/pageview-emitter.ts`), dessen einziger Produktiv-Aufrufer in
+      `src/app/projects/actions.ts` steht: dem VERÖFFENTLICHUNGS-Pfad.
+      GEMESSEN am Code (CC, 2026-09-17, im Plan der Scheibe 11.12a, Gate G6); LIVE BESTÄTIGT
+      (OWNER-ANGABE 2026-09-17, Schritt 9 des Live-Tests jener Scheibe).
+      DIE FOLGE FÜR DEN ZUSCHNITT, und sie trifft alle vier Scheiben aus (c): Eine Änderung
+      an Anordnung, Thema, Farben oder Text ist OHNE VERÖFFENTLICHEN NICHT ZU SEHEN. Wer die
+      Scheiben plant, plant den Prüfweg mit — eine Vorschau im Editor gibt es dafür heute
+      nicht.
+      WAS SICH SEIT DER SCHEIBE 11.12a GEÄNDERT HAT: In beiden Rahmen funktioniert
+      `localStorage` jetzt (Kompatibilitäts-Riegel, Bau-Commit `c3b068f`). Eine Vorschau des
+      Dialogs wäre damit technisch NICHT MEHR AM SPEICHER BLOCKIERT — sie war es vorher, weil
+      `buildConsentRestoreScript` beim Lesen geworfen hätte.
+      DAS IST EINE ABLEITUNG UND KEINE ENTSCHEIDUNG: Ob eine solche Vorschau gebaut wird, ist
+      hier NICHT entschieden, und diese Zeile schlägt sie auch nicht vor. Sie hielte nur fest,
+      dass der Grund, der sie früher unmöglich gemacht hätte, weggefallen ist.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

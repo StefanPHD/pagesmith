@@ -15,11 +15,14 @@ Dauerregel weder lockern noch überschreiben. Einen weitergehenden Vorrang kennt
 docs/arbeitsweise.md nicht (GELESEN, CC, 2026-09-17); wer ihn hier hineinliest, macht aus
 einem Arbeitsstand eine Regelquelle.
 
-**ANGELEGT AM 2026-09-17**, vor der ersten Handlung der Phase. **FORTGESCHRIEBEN AM
-2026-09-17** nach der Aufklärungs-Runde desselben Tages: sie trägt seither VERMERK
-P11.12-1, die Entscheidungen P11.12-1 und P11.12-2, den Zuschnitt der Scheibe 11.12a und
-zwei Vorrats-Einträge. **GEBAUT IST NICHTS** — die Scheibe ist zugeschnitten, nicht
-freigegeben. Hebungs-Kandidaten gibt es keine.
+**ANGELEGT AM 2026-09-17**, vor der ersten Handlung der Phase — **und genau das steht als
+Hebungs-Kandidat P11.12-1 zur Änderung an.**
+
+**STAND NACH DER SCHEIBE 11.12a (2026-09-17):** ZWEI Vermerke (P11.12-1 Aufklärung,
+P11.12-2 die gebaute Scheibe) · ZWEI bindende Entscheidungen · VIER Vorrats-Einträge ·
+ZWEI Hebungs-Kandidaten. Der Zuschnitt der Scheibe 11.12a ist **abgelaufen und verdichtet**.
+**GEBAUT UND LIVE BESTÄTIGT IST DIE SCHEIBE 11.12a** (Bau-Commit `c3b068f`); der Marker der
+Roadmap-Zeile 11.12 steht weiterhin auf `[ ]` — er gehört zum Phasenende, nicht zur Scheibe.
 
 **SIE IST NICHT GETEILT, UND SIE DARF ES HEUTE NICHT SEIN.** docs/arbeitsweise.md, Die
 Standdatei: "UNTERHALB VON 4000 ZEILEN WIRD NICHT GETEILT" — ein Verbot, keine Schwelle
@@ -42,7 +45,7 @@ EINER DATEI MIT VERZEICHNIS NICHT). Wer bearbeitet, ankert entsprechend.
 4. Die offenen Fragen der Aufklärung
 5. Wie diese Datei fortgeschrieben wird
 6. Die Nummernform — entschieden: P11.12-n
-7. Zuschnitt der Scheibe 11.12a
+7. Zuschnitt der Scheibe 11.12a — ABGELAUFEN, verdichtet am 2026-09-17
 8. Vermerke
 9. Entscheidungen, die über ihre Scheibe hinaus binden
 10. Vorrat — gemeldet, nicht gebaut
@@ -148,10 +151,25 @@ laufende Phase geht in CLAUDE.md; dort steht allein die Stub-Zeile mit ihrem Mar
 ## Die offenen Fragen der Aufklärung
 
 **DIES SIND FRAGEN, KEINE WEGE.** Sie stehen OHNE Rangfolge und OHNE Empfehlung; die
-Reihenfolge der Aufzählung ist keine Wertung. Keine von ihnen ist heute beantwortet, und
-keine ist heute als beantwortbar erwiesen. Was eine Aufklärungs-Runde daraus macht —
-welche sie aufgreift, in welcher Tiefe, mit welchem Instrument —, ist hier NICHT
-entschieden.
+Reihenfolge der Aufzählung ist keine Wertung. Der Wortlaut der vier Fragen bleibt, wie er
+angetreten ist — nachgezogen wird ihr STAND.
+
+**DER STAND AM 2026-09-17, je mit Zeiger:**
+- **(F1) BEANTWORTET** — VERMERK P11.12-1, Teil A. Der Ladeweg ändert den Ursprung nicht.
+- **(F2) FÜR DIE BETROFFENE SEITE GESTÜTZT, ALLGEMEIN OFFEN** — VERMERK P11.12-2. Dass jene
+  Seite nach dem Riegel rendert, ist live bestätigt; dass der Wurf bei ANDEREN Seiten den
+  Aufbau abbricht, bleibt ungemessen.
+- **(F3) BEANTWORTET UND GEBAUT** — VERMERK P11.12-2, Scheibe 11.12a. Mit den zwei
+  gemessenen Grenzen: der Riegel ist aufzählend und über den Prototyp umgehbar.
+- **(F4) OFFEN — UND SIE IST NICHT DURCH (F3) GEGENSTANDSLOS GEWORDEN.** Der Riegel ist kein
+  zweiter Vorschau-Weg, sondern ein Abfangen INNERHALB des bestehenden; er nimmt der Frage
+  den Druck, nicht den Gegenstand. Verengt ist sie allein auf der Ladeweg-Achse (Teil A,
+  gemessen: `blob:` verhält sich wie `srcdoc`) — jeder andere denkbare Weg ist unberührt.
+  Ebenso offen bleibt die Nebenfrage darunter, was eine Seite verliert, die auf ihren
+  Ursprung angewiesen ist; Vorrat P11.12-1 ist der Beleg, dass etwas verlorengeht.
+
+Was eine künftige Runde daraus macht — welche sie aufgreift, in welcher Tiefe, mit welchem
+Instrument —, ist hier NICHT entschieden.
 
 **(F1) Verhält sich ein `srcdoc`-Rahmen anders** als ein Rahmen, der seinen Inhalt auf
 einem anderen Weg bekommt?
@@ -257,39 +275,67 @@ an ihnen wird nachgezogen, und der Posten in docs/offene-punkte.md bleibt unber�
 
 ---
 
-## Zuschnitt der Scheibe 11.12a
+## Zuschnitt der Scheibe 11.12a — ABGELAUFEN, verdichtet am 2026-09-17
 
-**GEGENSTAND:** ein Kompatibilitäts-Riegel für `document.cookie`, `localStorage` und
-`sessionStorage`, wirksam im Editor-Rahmen UND in der funktionalen Vorschau, gebaut nach
-den Entscheidungen P11.12-1 und P11.12-2. Dazu der Wächter-Test aus P11.12-2.
+**DIE SCHEIBE IST GEBAUT UND LIVE BESTÄTIGT** (VERMERK P11.12-2). Der Zuschnitt hat damit
+seinen Zweck erfüllt; was über die Scheibe hinaus bindet, steht unter Entscheidungen —
+P11.12-1 und P11.12-2 — und wird hier NICHT wiederholt.
 
-**DER WÄCHTER-TEST TRÄGT ZWEI BEHAUPTUNGEN, und die zweite ist eine Zugabe, die der
-Aufklärungs-Befund erzwingt:**
-1. Der Riegel ist im Export- UND im Veröffentlichungsdokument ABWESEND, mit
-   Positivkontrolle in beiden Rahmen.
-2. Die Editor-Brücke ist dort ebenfalls abwesend — `LISTENER_SCRIPT` und
-   `HIGHLIGHT_STYLE` (`src/lib/detect.ts`). **Diese Abwesenheit ist heute durch KEINEN
-   Test gedeckt** (VERMERK P11.12-1, Teil D); sie ruht allein auf der Quellenwahl des
-   Export-Pfades. Die Scheibe, die ohnehin einen Abwesenheits-Wächter baut, nimmt sie mit.
+**WAS ABGELAUFEN IST** (Titel ohne Marke, damit das Protokoll weiter gegen etwas misst und
+eine Überschriften-Suche sie nicht trifft):
+- GEGENSTAND — der Riegel für `document.cookie`, `localStorage`, `sessionStorage` in beiden
+  Editor-Rahmen.
+- DER WÄCHTER-TEST TRÄGT ZWEI BEHAUPTUNGEN — Riegel abwesend in Export und Veröffentlichung
+  mit Positivkontrolle in beiden Rahmen; Editor-Brücke dort ebenfalls abwesend. Beides
+  gebaut als T1 und T2.
+- OFFENE PLAN-FRAGEN — FRAGEN, KEINE VORGABEN. Alle drei sind unten geschlossen.
+- AUSDRÜCKLICH NICHT TEIL DIESER SCHEIBE — Netzanfragen mit Ursprung `null`, andere Browser
+  als Chromium, jede Änderung an `generateFunctional`, der Kommentarkopf von
+  `src/lib/generate.ts`. Alle vier sind eingehalten; die ersten beiden stehen als Vorrat
+  P11.12-1 und P11.12-4, der letzte als Vorrat P11.12-2.
+- STATUS — „zugeschnitten, nicht freigegeben und nicht gebaut". Überholt.
 
-**OFFENE PLAN-FRAGEN — FRAGEN, KEINE VORGABEN.** Sie sind im Bau-Plan zu beantworten, hier
-ist keine beantwortet und keine bevorzugt:
-- Wird `indexedDB` mit ersetzt oder nicht? Der Riegel ist aufzählend (P11.12-1), und
-  `indexedDB` ist die eine gemessene Achse, die er heute nicht deckt.
-- In welcher Reihenfolge steht der Riegel zum Varianten-Marker, der als String NACH
-  `</html>` angehängt wird (`editVariantMarker`, `src/lib/generate.ts`)?
-- Wie verhalten sich UNSERE eigenen Einwilligungs-Bausteine in der Vorschau, wenn
-  darunter ein Speicher im Arbeitsspeicher liegt statt der echten Ablage? Der
-  Einwilligungs-Zustand wird im `localStorage` gehalten (docs/claude-history/phase-11.5-einwilligung.md,
-  bindende Entscheidung zur Ablage — GELESEN als Stub-Angabe in CLAUDE.md, CC,
-  2026-09-17; der Volltext ist in dieser Runde NICHT aufgeschlagen).
+**DIE DREI OFFENEN PLAN-FRAGEN, JE MIT ANTWORT UND FUNDSTELLE:**
 
-**AUSDRÜCKLICH NICHT TEIL DIESER SCHEIBE:** Netzanfragen mit Ursprung `null` und ihre
-CORS-Ablehnung (Vorrat P11.12-1) · andere Browser als Chromium · jede Änderung an
-`generateFunctional` · der Kommentarkopf von `src/lib/generate.ts` (Vorrat P11.12-2).
+**(1) Wird `indexedDB` mit ersetzt?** **NEIN.** Gemessen: `indexedDB`, `IDBFactory`, `idb`
+haben in ganz `src/` null Fundstellen — nichts von uns braucht es. Ein halber Ersatz wäre
+schlechter als keiner: Code, der ihn feature-detected und später an einer kaputten
+Transaktion scheitert, scheitert unklarer als Code, der sofort den `SecurityError` sieht.
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-17; die Messung CC, 2026-09-17.
+FUNDSTELLE: Grenze (1) im Kopfkommentar von `src/lib/preview-storage-shim.ts`; die
+verbleibende Lücke als Vorrat P11.12-3.
 
-**STATUS:** zugeschnitten am 2026-09-17, **nicht freigegeben und nicht gebaut**.
-PROVENIENZ: ARCHITEKT-ZUSCHNITT 2026-09-17 auf Grundlage von VERMERK P11.12-1.
+**(2) In welcher Reihenfolge steht der Riegel zum Varianten-Marker?** **Sie berühren
+einander nicht** — der Marker hängt hinter `</html>`, der Riegel sitzt im `<head>`.
+Tragend ist etwas anderes, das die Frage nicht vorhersah: **der Riegel setzt NACH
+`editPreviewHtml` an**, weil ein Bestandstest in `src/lib/generate.test.ts` dessen
+Rückgabewert als byte-gleich zu `previewHtml + editVariantMarker(…)` festnagelt. Ein
+Eingriff IN jene Funktion hätte ihn gebrochen.
+FUNDSTELLE: der Kommentar am `editHtml`-Memo in `src/components/CodeImporter.tsx`.
+**DIE FRAGE HAT ZUSÄTZLICH EINEN WEG AUSGESCHLOSSEN:** Ein zweiter DOMParser-Rundlauf zöge
+den Marker von hinter `</html>` INNERHALB des Dokuments — er bliebe auffindbar, seine
+begründete Position wäre still zerstört. Das ist der Grund gegen den Parser, nicht die
+Rechenzeit.
+
+**(3) Wie verhalten sich unsere Einwilligungs-Bausteine in der Vorschau mit Speicher im
+Arbeitsspeicher?** **DIE FRAGE HAT EINE LEERE MENGE ALS GEGENSTAND.** In der Vorschau steht
+KEIN Baustein von uns, der Speicher anfasst: `generateFunctional` hängt allein
+`CONSENT_SCRIPT_ID` und `buildConsentRuntimes()` ein — das reine Urteil über
+`window.pagesmithConsent`, ohne Speicher-Zugriff. Die speicher-anfassenden Blöcke
+(`buildConsentRestoreScript` als einziger `localStorage`-Träger, dazu `consent-bar`,
+`consent-modal`, `consent-setter`) kommen ausschliesslich über `injectPageViewEmitter`,
+dessen einziger Produktiv-Aufrufer in `src/app/projects/actions.ts` steht — dem
+Veröffentlichungs-Pfad.
+GEMESSEN am Code (CC, 2026-09-17); LIVE BESTÄTIGT (OWNER-ANGABE 2026-09-17, Schritt 9).
+**DIE EINZIGE STELLE, DIE SICH ÜBERHAUPT ÄNDERT:** `buildCapiBeaconStatement`
+(`src/lib/tracking/meta.ts`) liest `_fbp` aus `document.cookie` beim Klick, in `try/catch`.
+Vorher warf der Zugriff und der `catch` schluckte; jetzt wirft er nicht, und der Wert ist
+leer, weil ihn niemand gesetzt hat. Das Ergebnis ist identisch.
+**DIE ABLAGE-ENTSCHEIDUNG DAHINTER IST IM VOLLTEXT AUFGESCHLAGEN WORDEN** (anders als beim
+Zuschnitt, der sie nur als Stub-Angabe führte): docs/claude-history/phase-11.5-einwilligung.md,
+Entscheidung (7) — DER SPEICHER IST localStorage, ORIGIN-GEBUNDEN. Sie bindet „jede Scheibe
+dieser Phase", also der Phase 11.5; die Scheibe 11.12a ändert den Ort des Speichers nicht.
+FOLGE FÜR DIE ROADMAP-ZEILE 11.13: als datierter Nachtrag dort eingetragen.
 
 ---
 
@@ -383,6 +429,129 @@ Grund als Kommentar: der Rahmen läuft ohne `allow-same-origin`, `event.origin` 
 - **Netz und CORS mit Ursprung `null` sind UNGEMESSEN** — das hätte Netz gebraucht und war
   ausgeschlossen.
 
+### VERMERK P11.12-2 — Scheibe 11.12a, Kompatibilitäts-Riegel, 2026-09-17
+
+**BAU-COMMIT `c3b068f`** (`feat(editor): Kompatibilitäts-Riegel für Speicherzugriffe in den
+Vorschau-Rahmen (11.12a)`; am `git log` ABGELESEN, CC, 2026-09-17). Vier Dateien, 755
+Einfügungen / 23 Löschungen; zwei neu: `src/lib/preview-storage-shim.ts` und seine
+Testdatei. Keine Migration.
+
+**GEBAUT:** `withPreviewStorageShim` setzt `buildPreviewStorageShimScript()` als ersten
+Knoten in den `<head>` der zwei Editor-`srcDoc`. Ersetzt werden `document.cookie`,
+`localStorage` und `sessionStorage` durch Speicher im Arbeitsspeicher. Beide
+`sandbox`-Attribute sind zeichengleich geblieben.
+
+**GATES (GEMESSEN, CC, 2026-09-17):** `tsc --noEmit` grün · `eslint` 0 Fehler (1 Warnung
+vorbestehend in `src/lib/tracking/consent.test.ts`, nicht berührt) · `vitest`
+**1762 → 1790**, 82 → 83 Dateien; +28 = 26 Läufe der neuen Testdatei plus T1 und T2 ·
+`next build` erfolgreich.
+
+**MUTATIONSPROBEN — sieben, je mit Vorhersage VOR dem Lauf** (GEMESSEN, CC, 2026-09-17):
+
+| Mutation | Vorhersage | Ergebnis |
+|---|---|---|
+| Mu1 Riegel in `buildDocumentFor` | T1, Abwesenheits-Hälfte | 1 Lauf: T1 |
+| Mu2 Riegel aus `editHtml` | T1, Positivkontroll-Hälfte | 1 Lauf: T1 |
+| Mu3 Export-Quelle → `previewHtml` | T2, evtl. Zusatztreffer | 1 Lauf: T2, keine Kaskade |
+| Mu4 Riegel ans Ende | mehrere Positions- und Byte-Läufe | **2 — Abweichung** |
+| Mu4 nach Verschärfung | alle sieben Positions-Läufe | 7, exakt |
+| Mu5 Lookahead entfernt | der `<header>`-Lauf | 1 Lauf |
+| Mu6 Scanner → `indexOf(">")` | 2 Läufe | **1 — Abweichung** |
+| Mu7 Kennung gewürfelt | 2 Riegel-Läufe + Bestandstest | **2, Bestandstest grün — Abweichung** |
+
+**DREI ABWEICHUNGEN, JE UNTERSUCHT:**
+- **Mu4:** Fünf Positions-Läufe behaupteten nur „hinter `<head>`" — das erfüllt ein Anhängen
+  am Dateiende auch. **Die Assertions waren zu schwach; behoben wurde die WURZEL** (eine
+  Obergrenze je Lauf), nicht die Mutation.
+- **Mu6:** Ein vorzeitiges `>` im `<html>`-Attribut verschiebt den Anker nur nach vorn, aber
+  weiterhin VOR `<head` — die Einsetzung landet zufällig richtig. Der N1-Gegenstück-Lauf ist
+  für diese Mutation **kein Diskriminator, sondern eine Regressions-Verankerung.**
+- **Mu7:** Der Bestandstest *Text-Mapping-Aenderung bei unveraendertem Code erzeugt KEIN
+  neues srcDoc* blieb GRÜN. Ursache: Das `editHtml`-Memo rechnet bei unveränderten Deps nicht
+  neu und liefert den zwischengespeicherten String. **Der Bestandstest deckt den
+  Determinismus also NICHT; das trägt allein der neue Determinismus-Lauf.** Die zwei
+  Kommentare, die das Gegenteil behaupteten, sind im selben Commit richtiggestellt.
+
+**T2 IST EIN EINZELSTÜCK:** Unter Mu3 fiel im gesamten Bestand von 1790 Läufen **nur T2**
+(GEMESSEN, CC, 2026-09-17). Er schliesst damit die Lücke aus VERMERK P11.12-1, Teil D. Der
+Hinweis steht nach Lektion (f) in seinem Kommentar.
+
+**N1 — DIE MESSUNG, DIE EINE ERWARTUNG UMKEHRTE** (GEMESSEN, Chromium 153, CC, 2026-09-17):
+Der Serialisierer dieses Browsers escaped in Attributwerten auch `<` und `>` — `a>b` wird zu
+`a&gt;b`, `"` zu `&quot;`. Ein naives `indexOf(">")` wäre auf dem normalisierten Pfad DIESES
+Browsers also zufällig sicher gewesen. **Der gebaute Scanner verlässt sich nicht darauf:**
+der Editor läuft im Browser des Betreibers, und der `catch`-Pfad von `generateFunctional`
+liefert rohes HTML, in dem ein `>` im Attributwert unescaped stehen kann.
+
+**PROBE N4 — im echten Sandkasten** (Chromium 153, `about:blank`, kein Netz, Ablage
+`.playwright-mcp/` vor dem ersten Aufruf als ignoriert geprüft). Verwendet wurde der echte
+Riegel-Block und der von der echten Funktion berechnete Einsetz-Index; die Rekonstruktion ist
+als zeichengleich zum Funktionsergebnis verifiziert. Drei Fälle — (a) `<head lang="de">`,
+(b) `<header>` im body, (c) `<head data-x="a&gt;b">`. **Jede Erwartung getroffen, in allen
+drei:** `document.compatMode === "CSS1Compat"` (kein Quirks-Mode) · `document.scripts[0].id
+=== "__ps_sbx"` · head-Attribute erhalten (`lang="de"` bzw. `data-x` liest zurück als `a>b`)
+· `<header>` unversehrt · `document.cookie` liefert `sid=42; b=2` · `localStorage`/
+`sessionStorage` lesen nach Schreiben · `Object.keys` → `["k"]` und `JSON.stringify` →
+`{"k":"v"}` ohne Wurf · **`indexedDB.open` wirft weiter (`SecurityError`, erwartet)** · null
+ungefangene Fehler.
+
+**LIVE-TEST — OWNER-ANGABE 2026-09-17, Deployment als „Ready" verifiziert:**
+- **Regression 1–5 bestanden.** Schritt 5 am veröffentlichten Dokument über `view-source`:
+  `__ps_sbx` **0 Funde**; Gegenprobe `pagesmith-mappings` **2 Funde**. Die Gegenprobe trennt
+  „nicht da" von „falsch gesucht".
+- **Schritt 6/7: die am 2026-09-14 leere Seite rendert vollständig** — im Editier- wie im
+  Vorschau-Rahmen.
+- **Schritt 8:** die `SecurityError` zu `cookie`, `localStorage` und `sessionStorage` sind
+  verschwunden.
+- **Schritt 9:** der Einwilligungs-Dialog erscheint in der Vorschau nicht — wie erwartet,
+  eine Nicht-Änderung.
+
+**DIE VORHER-KONSOLE (Pflicht-Stopp N6), OWNER-ANGABE, vor dem Deploy im Kontext
+`about:srcdoc` als Text gesichert — WÖRTLICH:**
+
+```
+vendors.69eb8c81da1864d5.js:5 SecurityError: Failed to read the 'cookie' property from
+'Document': The document is sandboxed and lacks the 'allow-same-origin' flag.
+    at Object.get (vendors.69eb8c81da1864d5.js:17:95053)
+    at page.6394180d7a82e9d6.js:1:52332
+    at aB (vendors.69eb8c81da1864d5.js:1:391637)
+    at sU (vendors.69eb8c81da1864d5.js:1:420630)
+    at sP (vendors.69eb8c81da1864d5.js:1:403486)
+    at r5 (vendors.69eb8c81da1864d5.js:1:352440)
+    at vendors.69eb8c81da1864d5.js:1:419076
+    at sB (vendors.69eb8c81da1864d5.js:1:419082)
+    at sk (vendors.69eb8c81da1864d5.js:1:402489)
+    at E (vendors.69eb8c81da1864d5.js:1:683029)
+vendors.69eb8c81da1864d5.js:1 Uncaught SecurityError: Failed to read the 'cookie'
+property from 'Document': The document is sandboxed and lacks the 'allow-same-origin' flag.
+o380824.ingest.us.se…t.react%2F10.47.0:1 Failed to load resource: the server responded
+with a status of 403 ()
+```
+
+**OHNE DIESEN VORHER-WERT WÄRE DER NACHWEIS NICHT HERSTELLBAR GEWESEN** — nach dem Deploy
+gibt es den Zustand nicht mehr (docs/immer-beachten.md, EIN VORHER-WERT WIRD VOR DEM DEPLOY
+GESICHERT).
+
+**EINORDNUNG DES STAPELS, je mit Provenienz:**
+- **Dass der Wurf im React-Rendern einer Next.js-Seite fällt und den Baum abbaut:
+  ARCHITEKT-ABLEITUNG aus dem Stapel (2026-09-17).** Durch Schritt 6/7 **GESTÜTZT, nicht
+  einzeln gemessen** — belegt ist, dass die Seite nach dem Riegel rendert, nicht, dass genau
+  dieser Abbau-Weg der Grund war. Damit ist die Frage (F2) — ob der Wurf den Aufbau abbricht
+  — für DIESE Seite gestützt und nicht mehr offen wie in VERMERK P11.12-1, Teil B; für
+  andere Seiten bleibt sie es.
+- **Die 403 ist eine Anfrage an den Fehlerdienst der Seite** (Sentry, **am Dateinamen
+  ABGELESEN**, nicht gemessen). Sie ist ein Beleg für Vorrat P11.12-1 — Netzanfragen mit
+  Ursprung `null` — und **bleibt nach dem Deploy bestehen, sofern der Owner nichts
+  Gegenteiliges meldet. DAS IST NICHT EINZELN GEPRÜFT**; Schritt 8 hat allein auf die drei
+  Speicher-Würfe gesehen.
+- **`indexedDB`: in der Vorher-Konsole kein Treffer.** GRENZE, die mitmuss: Nach dem Absturz
+  lief kein weiterer Code — ein späterer Zugriff wäre verdeckt gewesen. Der Nicht-Treffer
+  belegt also nicht, dass die Seite `indexedDB` nicht anfasst.
+
+**GRENZEN DIESES VERMERKS:** **ein Browser** (Chromium 153; Firefox und WebKit sind
+ungemessen — Vorrat P11.12-4) und **eine Seite** (die vom 2026-09-14). Dass der Riegel
+andere sterbende Seiten rettet, ist damit nicht belegt.
+
 ---
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
@@ -468,10 +637,97 @@ dort. Genau die Konstellation aus docs/immer-beachten.md, EIN KOMMENTAR IST EINE
 BEHAUPTUNG, KEINE EIGENSCHAFT — UND ER VERMEHRT SICH.
 **NICHT REPARIERT**, und der Zuschnitt der Scheibe 11.12a schliesst den Kommentarkopf
 ausdrücklich aus.
-PROVENIENZ: der Kommentar GELESEN am Repo, der Ursprungswert GEMESSEN (CC, 2026-09-17).
+**ERGÄNZT 2026-09-17 — DIE RICHTIGE FASSUNG STEHT BEREITS IM BESTAND, UND ZWAR ÄLTER:**
+docs/claude-history/phase-4-mapping-codegen-export.md formuliert dieselbe Sache korrekt —
+„srcDoc erbt die Basis-URL der Elternseite". **Basis-URL, nicht Origin.** Der Kommentarkopf
+von `src/lib/generate.ts` hat die Angabe beim Abschreiben VERSCHÄRFT. Das ist die Figur aus
+docs/immer-beachten.md, EIN KOMMENTAR IST EINE BEHAUPTUNG, KEINE EIGENSCHAFT — UND ER
+VERMEHRT SICH: nicht eine Angabe alterte, sondern eine Kopie wurde stärker als ihr Original.
+**Wer diesen Posten abarbeitet, hat die Formulierung damit schon** und muss sie nicht neu
+erfinden.
+PROVENIENZ: der Kommentar GELESEN am Repo, der Ursprungswert GEMESSEN (CC, 2026-09-17); die
+Fundstelle in der Phase-4-Historie GELESEN (CC, 2026-09-17, Plan-Befund G8).
+
+**Vorrat P11.12-3 — `indexedDB` WIRFT IM RAHMEN WEITER.** Der Riegel deckt es
+ausdrücklich nicht (ARCHITEKT-ENTSCHEIDUNG 2026-09-17); gemessen ist, dass `indexedDB.open`
+im Sandkasten weiterhin einen `SecurityError` wirft — mit einem ANDEREN Wortlaut als bei
+`cookie` und `localStorage` (`access to the Indexed Database API is denied in this context`).
+Eine importierte Seite, die `indexedDB` beim Laden anfasst, stirbt in der Vorschau weiter.
+**TRIGGER:** die erste reale Seite, die in der Vorschau NACHWEISLICH an `indexedDB` stirbt.
+**VORBEREITETER SCHRITT, falls er eintritt:** eine Attrappe, deren `open()` nicht wirft,
+sondern den asynchronen Fehlerweg bedient (`onerror`). **ABLEITUNG, NICHT GEMESSEN** — ob
+eine Bibliothek ohne Fehlerpfad dann HÄNGT statt zu sterben, ist offen, und ein Hänger ist
+schwerer zu finden als ein Wurf.
+**WAS HEUTE NICHT BELEGT IST:** dass irgendeine reale Seite es überhaupt anfasst. Der
+Nicht-Treffer in der Vorher-Konsole (VERMERK P11.12-2) taugt dafür nicht — nach dem Absturz
+lief kein weiterer Code.
+PROVENIENZ: die Entscheidung ARCHITEKT 2026-09-17; der Wurf GEMESSEN (CC, 2026-09-17,
+Proben M1 und N4); der vorbereitete Schritt eine ABLEITUNG.
+
+**Vorrat P11.12-4 — FIREFOX UND WEBKIT SIND FÜR DEN RIEGEL UNGEMESSEN.** Alles, was über
+den Riegel gemessen ist — die Serialisierung der Attributwerte (N1), das Verhalten im
+Sandkasten (N4), der Live-Test —, stammt aus **Chromium 153**. Der Editor läuft im Browser
+des Betreibers.
+**WAS DARAN HÄNGT, und es ist mehr als eine Vollständigkeits-Lücke:** Die N1-Messung zeigte,
+dass Chromium `<` und `>` in Attributwerten escaped. **Ob ein anderer Browser das tut, ist
+nicht erhoben.** Der gebaute Scanner ist genau deshalb quote-bewusst und nicht auf diese
+Eigenschaft gebaut — die Vorsorge ist da, ihr Anlass aber ungemessen.
+**KEIN TRIGGER BENANNT**, und das ist Absicht: ein erfundener liesse den Posten als
+terminiert aussehen. Er wird fällig, wenn ein Betreiber einen anderen Browser meldet oder
+jemand die Messung nachholt.
+PROVENIENZ: die Browser-Angabe GEMESSEN (CC, 2026-09-17); dass andere Browser abweichen
+KÖNNTEN, ist eine ABLEITUNG aus der Plattform-Vielfalt, keine Messung.
 
 ---
 
 ## Hebungs-Kandidaten
 
-*Leer — am 2026-09-17 ist kein Kandidat angetreten.*
+**BEIDE SIND ÄNDERUNGSANTRÄGE AN docs/arbeitsweise.md UND KEINE REGELN.** Sie stehen in
+Wartestellung; **entschieden werden sie vom Owner am Phasenende** (Weg 7, CLAUDE.md,
+"## Aktive Dokumente"). Bis dahin ändert sich am Verfahren nichts.
+
+### Hebungs-Kandidat P11.12-1 — WANN DIE STANDDATEI ENTSTEHT
+
+**DER WORTLAUT HEUTE** (docs/arbeitsweise.md, Die Standdatei, Absatz „Wann sie entsteht"):
+„bei der ersten Handlung der Phase — vor der ersten Aufklärung, vor der ersten
+Konzept-Runde, vor der ersten Bau-Freigabe."
+
+**DER ANTRAG:** Sie entsteht, **sobald die erste Tatsache einen Ort braucht** — in der Regel
+mit dem ERGEBNIS der ersten Aufklärung, nicht davor.
+
+**DER BELEG IST DIESE PHASE:** Die Datei ist am 2026-09-17 LEER angelegt worden, vor der
+Aufklärung. Sie trug danach einen Zuschnitt-Abschnitt mit drei offenen Plan-Fragen, von
+denen die dritte eine leere Menge als Gegenstand hatte, und einen Abschnitt zur Nummernform,
+der ohne Einträge nichts steuerte. **Das hat eine Korrekturrunde ohne Produktfortschritt
+gekostet.**
+
+**DIE GRENZE, OHNE DIE DER ANTRAG DAS GATE BESCHÄDIGT:** Das Auftrag-0-Gate bleibt scharf.
+Während einer ersten Aufklärung existiert die Datei nicht — und die Aufklärung **schreibt
+nichts**, sie berichtet. „Existiert sie nicht, läuft keine Phase" bleibt wahr, weil eine
+Phase mit ihrer ersten Tatsache beginnt, nicht mit ihrem ersten Prompt.
+
+PROVENIENZ: **OWNER-KORREKTUR 2026-09-17.** Der Verlauf dieser Phase ist am Repo ablesbar
+(Commits `a7fe5fe` und die Doku-Runde davor); dass die Runde „ohne Produktfortschritt" war,
+ist eine Wertung des Owners, keine Messung.
+
+### Hebungs-Kandidat P11.12-2 — DIE NUMMERNFORM MIT PHASEN-PRÄFIX ALS BAUFORM
+
+**DER ANTRAG:** `P<Phase>-n` wird die Nummernform JEDER Standdatei, nicht nur dieser.
+
+**DER BELEG IST DIESE PHASE:** Sie führt VERMERK P11.12-1 und P11.12-2, vier Vorrats-Einträge
+und zwei Kandidaten — **ohne eine einzige Kollision mit den toten Zeigern**, die
+docs/offene-punkte.md unter ZEIGER AUF docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI …
+führt. Die belegten Alt-Nummern (VERMERK 1, 3, 5, 6, 10, 14, 16 · Vorrat 5, 6, 12, 13, 28,
+40, 41, 42, 50 · Entscheidung 2, 5, 12 · Hebungs-Kandidat 2, 6) sind von dieser Phase
+unerreichbar geblieben; die Zeiger sind tot statt falsch.
+
+**WAS DER ANTRAG NICHT LEISTET:** Er heilt keinen bestehenden Zeiger. Die vierzehn bleiben
+tot, und in angewandten Migrationen bleiben sie es für immer.
+
+**DIE GRENZE, DIE AM ABSCHNITT DIE NUMMERNFORM SCHON STEHT:** Die Entscheidung von 2026-09-17
+gilt DIESER Phase. Erst dieser Antrag würde sie verallgemeinern — wer sie ohne ihn
+übernimmt, ändert das Verfahren an einer Standdatei vorbei.
+
+PROVENIENZ: ARCHITEKT-SETZUNG 2026-09-17 für diese Phase; der Antrag auf Verallgemeinerung
+ARCHITEKT 2026-09-17. Die Kollisionsfreiheit ist GEMESSEN (CC, 2026-09-17, s. den Abschnitt
+Die Nummernform — entschieden: P11.12-n).

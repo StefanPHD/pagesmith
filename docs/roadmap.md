@@ -2219,6 +2219,20 @@ liegen beide hier und finden einander.
       FOLGE: Scheibe 4 braucht eine EIGENE Aufklärung, eine benannte Invariante und Wächter, die mit
       FEINDLICHER Eingabe gefahren werden. SIE WIRD NICHT NEBENBEI AUS SCHEIBE 3 HERAUSGEBAUT.
 
+      NACHTRAG 2026-09-17 — DER SATZ "ERSTE STELLE, AN DER BETREIBER-EINGABE IN DEN
+      AUSGELIEFERTEN TEXT GELANGT" GILT DEM FREIEN TEXT, NICHT DER BETREIBER-EINGABE
+      ÜBERHAUPT. Der Wortlaut oben bleibt unberührt; dieser Absatz tritt daneben. DIE
+      PIXEL-ID IST SCHON HEUTE BETREIBER-EINGABE IM AUSGELIEFERTEN TEXT: `CodeImporter.tsx`
+      gibt `getPixelId(settings, "meta")` an `generateFunctional`, und über
+      `buildWiringScript` landet der Wert in `buildMetaRuntime` (`src/lib/tracking/meta.ts`)
+      als `var PS_PIXEL_ID = ${JSON.stringify(pixelId)};` — OHNE die `<`-Maskierung, die die
+      Mapping-Tabelle in `generate.ts` ausdrücklich bekommt (GEMESSEN am Code, CC,
+      2026-09-17). DER AUSBRUCH IST NICHT ERPROBT, und das gehört dazu: Der Weg ist am Code
+      ablesbar, ob ein `</script>` den Block verlässt, ist nicht gemessen. HEUTE IST ES KEIN
+      LOCH — wer die Pixel-ID setzt, kontrolliert das HTML der Seite ohnehin. SCHEIBE 4
+      KLÄRT BEIDES ZUSAMMEN, statt die `<`-Frage zweimal zu beantworten; der Befund liegt
+      als Vorrat P11.13-5 der Standdatei.
+
       (h) DER GUARDRAIL, UND WARUM ER KEIN VERSTOSS GEGEN DIE HALTUNG IST — der Absatz muss mit,
       sonst zieht ihn eine spätere Runde als Widerspruch heraus: Die Knopf-Logik und die visuelle
       Gleichrangigkeit von "Alle akzeptieren" und "Ablehnen" bleiben im System verankert; anpassbar

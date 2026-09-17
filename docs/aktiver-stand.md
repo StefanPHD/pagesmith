@@ -34,8 +34,9 @@ EINER DATEI MIT VERZEICHNIS NICHT). Wer bearbeitet, ankert entsprechend.
 4. Vermerke
 5. Entscheidungen, die über ihre Scheibe hinaus binden
 6. Zuschnitt der Scheibe 11.13a — DIE ANORDNUNG (VERDICHTET 2026-09-17)
-7. Vorrat — gemeldet, nicht gebaut
-8. Hebungs-Kandidaten
+7. Zuschnitt der Scheibe 11.13b — DAS THEMA
+8. Vorrat — gemeldet, nicht gebaut
+9. Hebungs-Kandidaten
 
 ---
 
@@ -547,6 +548,193 @@ Byte-Gleichheit bei AUS und sämtliche Probe-Werte sind GEMESSEN am Repo bzw. am
 ARCHITEKT-ENTSCHEIDUNG 2026-09-17. Der Live-Nachweis und die zwei Architekt-Prüfungen zu
 Schritt 1 sind OWNER- bzw. ARCHITEKT-ANGABEN vom 2026-09-17 und am Repo nicht prüfbar.
 
+### VERMERK P11.13-3 — Aufklärung 11.13b (DAS THEMA), 2026-09-17
+
+**KEIN BAU-COMMIT, UND DER GRUND STEHT HIER:** Es war eine READ-ONLY-Aufklärung ohne
+Änderung am Repo (docs/arbeitsweise.md, "Die Standdatei", Absatz "Ein Vermerk trägt den
+Hash seines Code-Commits"). Der Arbeitsbaum war vorher und nachher sauber; die einzigen
+Schreibvorgänge lagen im Scratchpad ausserhalb des Repos und in der ignorierten Ablage
+`.playwright-mcp/` (`git check-ignore -v` → `.gitignore:28`). Der Stand, auf dem gemessen
+wurde, ist `6bf3abe`.
+
+**DIE ABLAGE DES DIALOGWERTS — GEMESSEN am Code (CC, 2026-09-17).** Pfad
+`settings.consent.dialog`; Typ `ProjectSettings` (`src/lib/settings.ts`) mit
+`consent?: { gate?: boolean; dialog?: unknown }` — **`unknown` ist Absicht**, der Kommentar
+dort nennt den Grund ("der Blob ist ungeprüfte Client-Eingabe"). Wertebereich
+`CONSENT_DIALOGS = ["off","bar","modal"]`. **Der EINZIGE Leser ist `getConsentDialog`**:
+`dialog !== undefined` → einer der drei oder `"unknown"`; sonst Altbestand
+`gate === true ? "bar" : "off"`. Setzer `setConsentDialog` spreizt und schreibt immer, auch
+`"off"`. **Der Abbruch** steht in `publishProject` (`src/app/projects/actions.ts`):
+`if (consentDialog === "unknown") return { ok: false, error: CONSENT_DIALOG_UNKNOWN_MESSAGE }`
+— **vor dem Label-Block und vor `ensureTrackingKey`**, gelesen wird `snapshot.settings`, also
+der LAUFENDE Client-Zustand.
+**DER SCHREIBWEG DES EDITORS:** drei `input[type=radio][name="consent-dialog"]` in
+`PublishView.tsx` (Beschriftungen **Aus · Leiste · Fenster**) → `onConsentDialogChange(mode)`
+→ in `CodeImporter.tsx` `setSettings((prev) => setConsentDialog(prev, mode))` → `dirty` →
+`saveProject(projectId, stabilized, mappings, settings)` → `setSavedSettings(settings)`.
+
+**`settingsEqual` IM WORTLAUT** (`src/lib/settings.ts`):
+
+```ts
+export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
+  return (
+    getConsentDialog(a) === getConsentDialog(b) &&
+    TRACKING_TARGETS.every(
+      (t) =>
+        getPixelId(a, t) === getPixelId(b, t) &&
+        conversionRulesEqual(getConversionRules(a, t), getConversionRules(b, t))
+    )
+  );
+}
+```
+
+**DIE FOLGE FÜR EINEN THEMENWERT OHNE EIGENEN TERM:** `dirty` bliebe **false** — kein Text
+"Ungespeicherte Änderungen", kein `beforeunload`-Wächter, **kein `confirm` beim
+Projektwechsel**, und der Wert wäre still weg. **Nichts würde davon rot**; alle vier Gates
+blieben grün. **S3** (`src/lib/settings.test.ts`) ist der EINZIGE Test, der den
+Consent-Term hält — er hält genau diesen einen, nicht das nächste Mitglied.
+
+**DIE KETTE VOM WERT ZUM AUSGELIEFERTEN TEXT** (Signaturen, GEMESSEN am Code):
+`publishProject` → `getConsentDialog(snapshot.settings)` → `ensureTrackingKey` →
+`injectPageViewEmitter(html: string, trackingKey: string, consentDialog: ConsentDialog)`
+(`src/lib/analytics/pageview-emitter.ts`) → `consentBlocksFor(form: ConsentDialog):
+{ gateOn: boolean; dialog: string; revoke: string }` → `buildConsentBarScript(mode)` /
+`buildConsentModalScript(mode)` → `aufbauDerLeiste(abbruch, vormerken, ausgeklappt)` bzw.
+`aufbauDesFensters(...)` → `wrapRevoke(aufbau)` nur im Widerruf-Zweig. Die Dokumentordnung
+entsteht an EINER Konkatenation: `gate + restore + dialog + revoke + setter +
+buildPageViewScript(...)`.
+**DIE AUFRUFER-ZAHLEN, und sie sind der Preis jeder Signatur-Änderung: ZWEI produktive
+Aufrufe** von `injectPageViewEmitter` (beide in `publishProject`: Basis und Variante B) und
+**VIERUNDDREISSIG in Tests** (`publish.test.ts` 1 · `pageview-emitter.test.ts` 9 ·
+`pageview-emitter.resend.test.ts` 2 · `consent-bar.test.ts` 4 · `consent-modal.test.ts` 7 ·
+`consent-revoke.test.ts` 6 · `consent-setter.test.ts` 1 · `consent-store.test.ts` 4). Die
+Treffer in `src/lib/hosting/variant.ts` und die dritte Stelle in `actions.ts` sind
+**Kommentare**, kein Aufruf. `wrapRevoke` hat GENAU ZWEI Aufrufer (bar, modal).
+
+**DAS STYLESHEET — VIER FARBWERTE AN NEUN STELLEN** (GEMESSEN am Code):
+
+| Wert | Rolle | Fundstelle |
+|---|---|---|
+| `#ffffff` | Hintergrund von Leiste/Fenster · Knopf-Hintergrund | `.bar`, `.dialog`, `button{background}` |
+| `#111827` | Text · Knopftext · Knopfrahmen · **Kästchen** (`accent-color`) | `.bar{color}`, `.dialog{color}`, `button{color;border}`, `.group input{accent-color}` |
+| `#d1d5db` | Container-Linie (Leiste nur oben, Modal rundum) | `.bar{border-top}`, `.dialog{border}` |
+| `#2563eb` | **Fokus-Ring** für Knöpfe UND Kästchen | `button:focus-visible{outline}`, `.group input:focus-visible{outline}` |
+| `rgba(17,24,39,0.6)` | **Abdunkelung**, nur Modal | `.backdrop{background}` |
+| `transparent` (Schlüsselwort) | Weg-Hintergrund | `.way{background}` |
+
+**ZWEI STELLEN, AN DENEN EINE GRÖSSE AN EINER FARBREGEL HÄNGT** — beide über die
+Kurzschreibweise: (1) `button{border:1px solid #111827}` trägt Rahmen UND Breite; `.way`
+setzt `border:0` und ist dadurch **2 px schmaler und niedriger**. (2)
+`.bar{border-top:1px solid #d1d5db}` trägt die einzige Linie der Leiste. Dazu
+`.way{min-width:0}` gegen `button{min-width:160px}` und im Modal `.way{flex:0 0 100%}`
+(Korrektur K2). **Wer für ein Thema eine dieser Regeln anfasst, bewegt Entscheidung
+P11.13-5.**
+**KEIN `color-scheme` UND KEINE `@media`-REGEL im ausgelieferten Text** (Achse
+`color-scheme|appearance:|prefers-color-scheme|@media|accent-color` über `src/`: der einzige
+`@media (prefers-color-scheme: dark)` liegt in `src/app/globals.css`, also in der ANWENDUNG;
+`accent-color` genau einmal; `appearance` nirgends gesetzt, computed `auto`).
+
+**`PublishView.tsx` HAT KEINEN TEST — GEMESSEN.** `src/components/` trägt drei Testdateien
+(`CodeImporter.test.tsx`, `DomainManager.test.tsx`, `TargetCard.test.tsx`); eine
+`PublishView.test.tsx` existiert nicht. Das Wort "Einwilligung" steht **fünfmal** in
+`PublishView.tsx` und **null mal** in `CodeImporter.test.tsx`. **FOLGE, und sie ist kein
+Freibrief, sondern ein Befund über die Abdeckung:** Eine neue Beschriftung kann keine
+bestehende Abfrage mehrdeutig machen, weil es keine gibt — und was in dieser Fläche neu
+gebaut wird, ist by default ungetestet. Die einzigen Abfragen in der Nähe sind
+**verankert**: `/^(Veröffentlichen|Erneut veröffentlichen)$/` und `/^Veröffentlichen$/`.
+
+**DIE SIEBEN VORHER-WERTE — DER ANKER FÜR "light"** (GEMESSEN am Stand `6bf3abe`; Vite
+`createServer` + `ssrLoadModule` im Scratchpad ausserhalb des Repos, dieselbe echte Funktion
+und dasselbe Basis-HTML wie bei 11.13a, Schlüssel `probe_key_11_13`):
+
+| Gegenstand | Bytes | sha256 |
+|---|---|---|
+| `buildConsentBarScript("load")` | 4 603 | `7ec172a65fa562ec16e4d882fcac98e70329e5a7ad64393255b077904a7ec9ef` |
+| `buildConsentBarScript("revoke")` | 4 918 | `14510803fd28244692acbd95495f0996f2b8453ec089c7d15be32d294d6728c2` |
+| `buildConsentModalScript("load")` | 5 051 | `674875af751a58c7acba05bc3d7efb081f5101c33d3b50eb3e08e4e043c6af42` |
+| `buildConsentModalScript("revoke")` | 5 366 | `75110375e27043b085939aa07e18ad19170c718e7cfcaf8f29a5c11924b933fe` |
+| `injectPageViewEmitter(basis, key, "bar")` | 14 073 | `5ca864bd32e2bc33a74fd5d71324d50f8d2833919a1dbc5b56db46fe0be2e155` |
+| `injectPageViewEmitter(basis, key, "modal")` | 14 969 | `6ac4bc446c80a82c93e37392922296c8e86ef0f86a112385486ff5f8f4d3d507` |
+| `injectPageViewEmitter(basis, key, "off")` | 1 897 | `1ae8d3dbcee230cb59dfc44a8e6e05984b776b63541ac273592a91bff0695b45` |
+
+**ZWEI QUERPROBEN:** Die vier Blockgrössen sind zeichengleich mit VERMERK P11.13-2, und der
+"off"-sha256 ist derselbe. **"off" ALLEIN TAUGT NICHT ALS ANKER** — dort entsteht gar kein
+Oberflächen-Block; der Anker sind die SIEBEN Werte.
+
+**DIE KONTRASTWERTE DES HEUTIGEN THEMAS — DER VORHER-WERT FÜR P11.13-10** (GEMESSEN,
+Chromium, `file://`, 1280×800, `localStorage.clear()` + Reload je Messung).
+**DIE FORMEL, BENANNT:** relative Leuchtdichte nach WCAG — je Kanal `c' = c/12.92` für
+`c <= 0.03928`, sonst `((c+0.055)/1.055)^2.4`; `L = 0.2126*R' + 0.7152*G' + 0.0722*B'`;
+Kontrast `= (L_hell + 0.05) / (L_dunkel + 0.05)`. Halbdurchsichtige Flächen sind vorher über
+Weiss komponiert.
+
+| Paar | Leiste | Modal |
+|---|---|---|
+| Text / Hintergrund | 17,74 | 17,74 |
+| Knopftext / Knopfhintergrund | 17,74 | 17,74 |
+| Knopfrahmen / Hintergrund | 17,74 | 17,74 |
+| Weg-Text / Hintergrund | 17,74 | 17,74 |
+| Fokus-Ring / Hintergrund (im FOKUSSIERTEN Zustand gemessen, `outline: 2px solid rgb(37,99,235)`) | 5,17 | 5,17 |
+| Container-Linie / Hintergrund | 1,47 | 1,47 |
+| Dialog gegen Abdunkelung (`rgba(17,24,39,0.6)` über Weiss = `rgb(112,116,125)`) | – | 4,66 |
+
+**`prefers-color-scheme` IST IN PLAYWRIGHT EMULIERBAR — BELEGT** (`page.emulateMedia`, je
+gegen `matchMedia` im Dokument gemessen): ohne Emulation `dark=false / light=true`; mit
+`colorScheme:"dark"` **`dark=true / light=false`**; mit `"light"` wieder `false/true`;
+`null` stellt zurück. **WAS ES HEUTE AM DIALOG BEWIRKT: NICHTS** — es gibt keine
+`@media`-Regel; das ist eine ABLEITUNG aus dem gemessenen CSS, keine eigene Messung am
+gerenderten Dialog.
+
+**DAS NATIVE KÄSTCHEN UNTER `color-scheme: dark` — TEILS MESSBAR, TEILS NUR SICHTBAR.**
+Probeweise `.bar{color-scheme:dark;}` ZUR LAUFZEIT in den Schattenbaum gelegt (kein
+Repo-Eingriff), Kästchen vorher/nachher:
+
+| | hell (Bestand) | mit `color-scheme:dark` |
+|---|---|---|
+| `colorScheme` | `normal` | `dark` |
+| `accentColor` | `rgb(17,24,39)` | `rgb(17,24,39)` — **unverändert** |
+| `backgroundColor` | `rgba(0,0,0,0)` | `rgba(0,0,0,0)` — **unverändert** |
+| `appearance` | `auto` | `auto` |
+| **`borderTopColor`** | `rgb(0,0,0)` | **`rgb(255,255,255)`** |
+| Grösse | 18×18 | 18×18 |
+| Bildpunkte, 22×22-Ausschnitt | Prüfsumme `225973086` | Prüfsumme `2719410137` — **verschieden** |
+
+**MESSBAR** sind `color-scheme` selbst und der **Rahmen** (er kommt aus dem UA-Stylesheet und
+kippt mit). **NICHT MESSBAR über `getComputedStyle`** ist die Füllung des Widgets —
+`backgroundColor` bleibt beidemal `rgba(0,0,0,0)`, weil der Browser zeichnet. Dafür braucht
+es einen **Bildpunkt-Vergleich**; der oben ist einer, er belegt einen Unterschied und **sagt
+nicht, wie er aussieht**. Und: `accent-color:#111827` bleibt stehen — **ein Thema, das nur
+`color-scheme` setzt, liesse das Häkchen in der heutigen dunklen Farbe.**
+
+**EIN BEFUND, DER NICHT DIESER SCHEIBE GEHÖRT — DIE PIXEL-ID GELANGT SCHON HEUTE ROH IN DEN
+AUSGELIEFERTEN TEXT.** `CodeImporter.tsx` gibt `metaPixelId: getPixelId(settings, "meta")` an
+`generateFunctional`; über `buildWiringScript` landet der Wert in `buildMetaRuntime`
+(`src/lib/tracking/meta.ts`) als `var PS_PIXEL_ID = ${JSON.stringify(pixelId)};`.
+**`JSON.stringify` maskiert kein `<`** — und **anders als die Mapping-Tabelle**, die in
+`generate.ts` ausdrücklich `.replace(/</g, "\\u003c")` bekommt, erhält dieser Wert **keine
+solche Maskierung** (GEMESSEN am Code, CC, 2026-09-17).
+**SEINE GRENZE, UND SIE GEHÖRT ZWINGEND DAZU: DER AUSBRUCH IST NICHT ERPROBT.** Der Weg ist
+am Code ablesbar; ob ein `</script>` in der Pixel-ID den Block tatsächlich verlässt, ist
+**nicht gemessen**. Der Befund liegt als Vorrat P11.13-5 und gehört der Scheibe 4.
+
+**DIE GRENZEN DIESER AUFKLÄRUNG — ausdrücklich:**
+- **Keine echte Kundenseite.** Die Probeseite trägt kein fremdes CSS, keine
+  `!important`-Flut, keine eigene Stapel-Ebene.
+- **DIE MESSUNG AUS ROADMAP (f) IST NICHT GEFAHREN:** ob `all:initial !important` auch
+  BENUTZERDEFINIERTE Eigenschaften (`--ps-*`) zurücksetzt, ist unverändert **UNGEMESSEN**.
+  Die Roadmap-Zeile verlangt sie VOR Scheibe 2; sie stand in dieser Runde nicht im Auftrag.
+- **Nur Chromium.** Firefox und WebKit zeichnen native Kästchen anders.
+- **Kein echtes Gerät** — keine mobile Browser-Leiste, kein Dunkelmodus eines echten
+  Systems, kein Kontrast-Modus des Betriebssystems.
+- **Kein Urteil über Lesbarkeit.** Gemessen sind Verhältniszahlen; die Schwelle steht in
+  keiner Datei dieses Projekts.
+
+PROVENIENZ DIESES VERMERKS: Code-Aussagen GEMESSEN bzw. GELESEN am Repo (CC, 2026-09-17, auf
+`6bf3abe`). Die sieben Vorher-Werte, die Kontrastwerte, die Emulierbarkeit und die
+Kästchen-Messung GEMESSEN am eigenen Lauf desselben Tages. Dass die Emulation heute am
+Dialog nichts bewirkt und dass die Pixel-ID-Beobachtung ein Ausbruchs-Risiko trägt, sind
+**ABLEITUNGEN**, keine Messungen.
+
 ---
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
@@ -679,6 +867,151 @@ Kriterium nicht falsch, aber seine Erfüllung neu zu messen.
 PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG und ARCHITEKT-RICHTIGSTELLUNG 2026-09-17 (Korrektur K2).
 Die Messwerte und die 326-gegen-328-Rechnung sind GEMESSEN (CC, 2026-09-17).
 
+### Entscheidung P11.13-6 — DIE ABLAGE DES THEMENWERTS
+
+**Der Wert liegt unter `settings.consent.theme`, Typ `unknown`** — als NACHBAR von `dialog`
+im selben Unterobjekt, in **derselben Bauform**: Konstante `CONSENT_THEMES = ["light",
+"dark", "auto"]`, Leser `getConsentTheme`, Setzer `setConsentTheme`.
+**DER LESER:** Feld **fehlt** → `"light"`; **gültiger** Wert → er selbst; **jeder andere** →
+`"unknown"`. **`"unknown"` WIRD NIE AUF `"light"` ABGEBILDET** — sonst sähe die abbrechende
+Stelle ihn nie und der Abbruch wäre toter Code (docs/immer-beachten.md, EIN UNBEKANNTER
+KONFIGURATIONSWERT BRICHT LAUT AB, Folge (a)).
+**`settingsEqual` BEKOMMT DEN TERM `getConsentTheme(a) === getConsentTheme(b)`.**
+
+**DER GRUND, zweiteilig:** (1) Der Nachbar-Ort erbt die geprüfte Bauform des Dialogwerts —
+`unknown` im Typ, ein einziger Leser, normalisierter Vergleich; ein eigenes Top-Level-Feld
+brächte nichts ausser einer zweiten Form. (2) **OHNE DEN TERM GEHT DER WERT STILL VERLOREN:**
+`dirty` bliebe false, es gäbe keinen Text "Ungespeicherte Änderungen", keinen
+`beforeunload`-Wächter und **kein `confirm` beim Projektwechsel** — der Wert wäre weg, und
+nichts würde davon rot (GEMESSEN am Code, s. VERMERK P11.13-3).
+
+**DIE BEDIENUNG GEHÖRT ZU DIESER ENTSCHEIDUNG und steht deshalb hier:** eine Radiogruppe
+**"Darstellung"** mit **Hell / Dunkel / Automatisch**, **sichtbar nur bei `"bar"` oder
+`"modal"`**. **DER WERT BLEIBT BEIM AUSSCHALTEN ERHALTEN** — die Gruppe verschwindet, das
+Feld nicht; wer den Dialog wieder einschaltet, findet seine Wahl vor. Bei `"unknown"` ist
+**nichts markiert** und ein roter Hinweis steht dabei — dieselbe Bauform wie beim
+Dialogwert. Bei **Automatisch** steht ein Hinweis: **folgt der Einstellung des BESUCHERS,
+nicht dem Design der Seite.**
+
+**DIE GRENZE:** Sie sagt nichts über die **Vollständigkeit** von `settingsEqual`. Dass die
+Funktion aufzählt und ein künftiges Mitglied by default unsichtbar ist, bleibt der offene
+Punkt `settingsEqual` IST EINE ALLOWLIST — dieser Term löst ihn für **den Themenwert**, nicht
+für die **Klasse**.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17. Die Bauform des Dialogwerts
+und die Folge eines fehlenden Terms sind GEMESSEN am Code (CC, 2026-09-17).
+
+### Entscheidung P11.13-7 — DER ABBRUCH IST AN DEN DIALOG GEBUNDEN
+
+**`publishProject` bricht bei `getConsentTheme(...) === "unknown"` ab — ABER NUR, WENN der
+Dialogwert `"bar"` oder `"modal"` ist.** Mit einer **EIGENEN** Meldungs-Konstante, nicht der
+des Dialogwerts. Der Abbruch steht **vor dem Label-Block und vor `ensureTrackingKey`**, wie
+der bestehende.
+
+**DER GRUND IST DIE ASYMMETRIE, AUF DER DIE DAUERREGEL SELBST RUHT:** Sie verlangt den lauten
+Abbruch, weil der Preis eines stillen Rückfalls den BESUCHER trifft — unsichtbar und
+dauerhaft —, während der Preis des Abbruchs den BETREIBER trifft, sofort und sichtbar. **BEI
+`"off"` GIBT ES DIESEN BESUCHER-PREIS NICHT:** Es entsteht kein Oberflächen-Block, der
+Themenwert erreicht keine ausgelieferte Zeile. Ein Abbruch dort **sperrte das
+Veröffentlichen für eine Einstellung ohne jede Wirkung** — das wäre Strenge ohne die
+Asymmetrie, die sie trägt.
+
+**DIE GRENZE — SIE KIPPT, SOBALD DER THEMENWERT AUCH BEI `"off"` ETWAS AUSLIEFERT.** Dann
+gibt es den Besucher-Preis, und die Bindung an den Dialog fällt. Wer bei `"off"` je einen
+Baustein aus dem Themenwert erzeugt, ändert diese Entscheidung mit.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17. Dass bei `"off"` kein
+Oberflächen-Block entsteht, ist GEMESSEN am Code (`consentBlocksFor`, CC, 2026-09-17).
+
+### Entscheidung P11.13-8 — DER WERT WÄHLT AUS EINER FESTEN TABELLE, ER BAUT NICHTS
+
+**Der Themenwert wählt AUSSCHLIESSLICH zwischen fest im Repo stehenden Stylesheets.** Die
+Verzweigung über die drei Werte steht an **EINER** Stelle und ist **erschöpfend** — ein
+weiterer Wert in `CONSENT_THEMES` macht dort den `never`-Zweig zum Compiler-Fehler, wie bei
+`consentBlocksFor` für die Form.
+**`"light"` IST EXAKT DAS HEUTIGE STYLESHEET**, und die Ausgabe ist **byte-gleich**: die
+sieben Vorher-Werte aus VERMERK P11.13-3 müssen nach dem Bau unverändert sein.
+**KEINE CSS-VARIABLEN IN KEINEM THEMA.**
+
+**DER GRUND, zweiteilig — und der zweite ist der tragende:** (1) **Der Rohwert aus dem Blob
+erreicht den ausgelieferten Text NIE**; er wählt nur einen Zweig. Damit ist die
+Sicherheitsachse der Roadmap (g) für diese Scheibe strukturell nicht berührt — es entsteht
+keine Betreiber-Eingabe im Text. (2) **CSS-VARIABLEN SIND DER WEG, AUF DEM DIE KUNDENSEITE
+HINEINWIRKEN KÖNNTE:** `all:initial !important` setzt vererbte Eigenschaften zurück, **nach
+Kenntnis des Architekten aber NICHT die benutzerdefinierten** — eine auf der Kundenseite
+gesetzte `--ps-*`-Eigenschaft erbte dann in unseren Schattenbaum. **DIE MESSUNG DAZU STEHT
+AUS** (docs/roadmap.md, Roadmap-Zeile 11.13, Punkt (f)); solange sie aussteht, wird die
+Gestalt gewählt, die die Frage gar nicht erst stellt.
+
+**DIE GRENZE — SIE KIPPT MIT SCHEIBE 3 (freie Farben).** Dort entsteht ein Wert, der NICHT
+aus einer festen Tabelle kommt; ob er über Variablen, über erzeugte Deklarationen oder
+anders in den Text gelangt, ist **dort neu zu entscheiden** und nicht hier vorweggenommen.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17. Dass `all:initial` die
+benutzerdefinierten Eigenschaften nicht erfasst, ist eine **ARCHITEKTEN-KENNTNIS und KEINE
+MESSUNG** — die Messung ist die aus Roadmap (f) und steht aus.
+
+### Entscheidung P11.13-9 — EIN THEMA ÄNDERT NUR FARBEN, NIE GRÖSSE ODER LAGE
+
+**`"dark"` ist das heutige Stylesheet PLUS Überschreibungen, und jede Überschreibung trägt
+AUSSCHLIESSLICH eine dieser Eigenschaften:** `color` · `background-color` · `border-color` ·
+`border-top-color` · `outline-color` · `accent-color` · `color-scheme`. **KEINE
+KURZSCHREIBWEISE** — kein `border`, kein `outline`, kein `background`, kein `font`.
+
+**DIE PALETTE:** Hintergrund und Knopf **`#111827`** · Text, Knopftext, Knopfrahmen und
+`accent-color` **`#f9fafb`** · Fokus-Ring **`#60a5fa`** · Container-Linie **`#4b5563`** ·
+`color-scheme: dark` · **die Abdunkelung bleibt unverändert** (`rgba(17,24,39,0.6)`).
+
+**`"auto"` IST `"light"` PLUS DENSELBEN ÜBERSCHREIBUNGEN IN
+`@media (prefers-color-scheme: dark)`.** Es folgt damit **dem System des BESUCHERS, nicht der
+Kundenseite** — das ist der tragende Unterschied aus der Roadmap-Zeile 11.13, Punkt (c):
+"‚Automatisch' heisst `prefers-color-scheme`, NICHT von der Seite erben."
+
+**DER GRUND FÜR DIE EIGENSCHAFTS-LISTE:** Genau die Kurzschreibweisen tragen im Bestand
+**Grösse und Farbe zugleich** — `button{border:1px solid #111827}` und
+`.bar{border-top:1px solid #d1d5db}`. Wer sie überschreibt, verschiebt Breiten und Höhen.
+**MIT DER LISTE BLEIBEN GRÖSSE UND LAGE DURCH DIE BAUART GLEICH**, und damit gelten
+**Entscheidung P11.13-3** (jedes Bedienelement im Fenster und treffbar) und **Entscheidung
+P11.13-5** (Gleichrangigkeit) **fort, ohne neu erhoben zu werden** — sie müssen in der Probe
+nur bestätigt, nicht neu begründet werden.
+
+**DER KONTRAST DER PALETTE IST EINE ARCHITEKT-RECHNUNG (2026-09-17): 16,98 für Text gegen
+Hintergrund und 6,98 für den Fokus-Ring.** **ER IST IN DER PROBE ZU MESSEN** — eine Rechnung
+ist keine Messung, und eine falsche Rechnung ist eine STOPP-Bedingung der Scheibe.
+
+**DIE GRENZE:** Sie gilt für Themen aus der festen Tabelle. Fällt P11.13-8 mit Scheibe 3,
+ist auch diese Liste neu zu prüfen — freie Farben treffen dieselben Regeln.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17. Die zwei Stellen, an denen
+eine Grösse an einer Farbregel hängt, sind GEMESSEN am Code (CC, 2026-09-17); die zwei
+Kontrastzahlen sind eine ARCHITEKT-RECHNUNG und ausdrücklich UNGEMESSEN.
+
+### Entscheidung P11.13-10 — DAS KONTRAST-KRITERIUM
+
+**JE THEMA UND JE FORM GILT:**
+- **Text ≥ 4,5:1** gegen seinen Hintergrund — Sachtext, Knopftext, Weg-Text.
+- **Knopfrahmen, Kästchen und Fokus-Ring ≥ 3:1** gegen den angrenzenden Hintergrund.
+- **DIE CONTAINER-LINIE IST AUSGENOMMEN.** Sie ist eine Trennlinie, kein Bedienelement; im
+  heutigen hellen Thema liegt sie bei **1,47** (GEMESSEN, VERMERK P11.13-3). Ohne diese
+  Ausnahme wäre das Kriterium am Bestand verletzt, und die Scheibe würde eine
+  Gestaltungsfrage als Fehler melden.
+- **`"auto"` WIRD UNTER BEIDEN EMULIERTEN SYSTEMEINSTELLUNGEN GEMESSEN** — hell und dunkel,
+  je über `page.emulateMedia`. Ein Thema, das nur in einer Einstellung geprüft ist, ist
+  halb geprüft.
+
+**DIE SCHWELLEN SIND WCAG 2.x AA — ARCHITEKT-VORGABE, NICHT IM REPO GELESEN.** Das steht
+hier, damit niemand sie später für einen gemessenen Befund dieses Projekts hält: Im ganzen
+Repo steht keine Schwelle, und VERMERK P11.13-3 führt die Zahlen des Bestands ausdrücklich
+ohne Urteil.
+
+**SIE BINDET SCHEIBE 3 AUSDRÜCKLICH.** Freie Farben sind genau der Fall, in dem ein
+Kontrast-Kriterium gebraucht wird; dort ist zusätzlich zu entscheiden, **was geschieht, wenn
+die Wahl des Betreibers es verletzt** — diese Entscheidung sagt das NICHT und nimmt es nicht
+vorweg.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17. Die Zahl 1,47 und die
+Messformel sind GEMESSEN (CC, 2026-09-17); die Schwellen sind eine ARCHITEKT-VORGABE.
+
 ---
 
 ## Zuschnitt der Scheibe 11.13a — DIE ANORDNUNG (VERDICHTET 2026-09-17)
@@ -751,6 +1084,77 @@ PROVENIENZ: Der Zuschnitt und seine Freigabe sind ARCHITEKT mit OWNER-FREIGABE 2
 die fünf Antworten sind der gebaute und gemessene Stand derselben Woche (VERMERK
 P11.13-2). Die Verdichtung ist CC, 2026-09-17.
 
+---
+
+## Zuschnitt der Scheibe 11.13b — DAS THEMA
+
+**STATUS: ZUGESCHNITTEN, PLAN FOLGT.** Kein Bau vor der Freigabe des Plans.
+
+**GEGENSTAND:** Die Entscheidungen **P11.13-6 bis P11.13-10** umsetzen — Ablage und
+Bedienung des Themenwerts, der an den Dialog gebundene Abbruch, die feste Tabelle, die
+Farb-Überschreibungen für `"dark"` und `"auto"`, das Kontrast-Kriterium. **DIE ORTE BESTIMMT
+DER PLAN**, nicht dieser Zuschnitt: welcher Teil in das geteilte Code-Stück gehört, welcher
+in die zwei Oberflächen-Dateien und wo die erschöpfende Verzweigung sitzt, ist eine Frage an
+den Bau-Plan.
+
+**PFLICHT — DIE HERKUNFT DER TEST-ERWARTUNGEN:** Jede neue Erwartung wird **aus den
+Entscheidungen P11.13-6 bis P11.13-10 geschrieben, nicht aus dem gebauten Code**
+(docs/immer-beachten.md, EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS
+DEM CODE — UND KEIN WÄCHTER ÜBER EINEN WORTLAUT). Das gilt verschärft für die
+Eigenschafts-Liste aus P11.13-9 und für die Palette: Ein Wächter, der sie aus dem Stylesheet
+abliest, bestätigt jeden Tippfehler.
+
+**PFLICHT — DER NACHWEIS DER BYTE-GLEICHHEIT FÜR `"light"`:** **ALLE SIEBEN WERTE** aus
+VERMERK P11.13-3 werden vorher und nachher erhoben und einzeln verglichen — vier Blöcke und
+drei Ausgabetexte. **"off" ALLEIN GENÜGT NICHT**, dort entsteht kein Oberflächen-Block.
+
+**PFLICHT — TESTS FÜR DIE BEDIENUNG.** `PublishView.tsx` trägt heute **keinen einzigen
+Test** (GEMESSEN, VERMERK P11.13-3). Was diese Scheibe an der Fläche baut, ist ohne eigene
+Tests **by default ungetestet**; die Scheibe legt sie an.
+
+**PFLICHT — DIE MESSUNG AUS ROADMAP (f) VOR DEM GO:** Ob `all:initial !important` auch
+BENUTZERDEFINIERTE Eigenschaften zurücksetzt, ist **UNGEMESSEN**. Die Roadmap-Zeile 11.13
+verlangt die Messung VOR Scheibe 2. **SIE IST KEINE BEDINGUNG DES BAUS, SONDERN SEINER
+FREIGABE:** P11.13-8 ist gerade so gewählt, dass die Antwort den Bau nicht ändert — sie
+entscheidet aber, ob die Begründung trägt, und ein unbewiesener Grund an einer bindenden
+Entscheidung wäre genau die Bauform, die dieses Projekt mehrfach als kaputtgegangen führt.
+
+**AUSDRÜCKLICH NICHT DAZU:**
+- **FREIE FARBEN** — Scheibe 3. Sie kippt P11.13-8 und prüft P11.13-9 neu.
+- **FREIER TEXT** — Scheibe 4, samt der Sicherheitsachse (g).
+- **DIE MASKIERUNG DER PIXEL-ID** — Vorrat P11.13-5, Trigger ist der Zuschnitt der
+  Scheibe 4. Diese Scheibe fasst `meta.ts` und `generate.ts` nicht an.
+- **EINE VORSCHAU DES DIALOGS IM EDITOR** — der Prüfweg bleibt das Veröffentlichen
+  (OWNER-ENTSCHEIDUNG 2026-09-17).
+- **DER EXPORT-PFAD** — er trägt den Einwilligungs-Schalter schon heute nicht und damit
+  auch kein Thema. **ER WIRD UNTER DEN GRENZEN DES NACHWEISES GENANNT**, wie es der offene
+  Punkt DER EXPORT-PFAD IST VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST für jede Scheibe dieser
+  Phase verlangt.
+
+**LIVE-TEST-ANFORDERUNG:**
+- **NEU-VERÖFFENTLICHEN IST PFLICHT-SCHRITT**, nicht Hinweis (docs/immer-beachten.md, EIN
+  LIVE-TEST-SCHRITT SETZT EINEN ZUSTAND DES PRÜFLINGS VORAUS).
+- **DREI THEMEN × ZWEI FORMEN**, je eingeklappt und ausgeklappt, gemessen gegen
+  **Entscheidung P11.13-3** und **Entscheidung P11.13-5**.
+- **"AUTOMATISCH" MIT UMGESCHALTETEM DUNKELMODUS AM HANDY** — an einem echten Gerät, weil
+  die lokale Probe nur emuliert.
+- **"DUNKEL" AUF EINER DUNKLEN KUNDENSEITE.** Das ist **der Anlass der ganzen Phase**: ein
+  Dialog, der auf einer fremden Seite wie ein Fremdkörper wirkt, wird nicht eingeschaltet.
+- **DER WIDERRUF IM DUNKLEN THEMA** — er baut ausgeklappt auf (Entscheidung P11.13-2) und
+  muss dasselbe Thema tragen wie der Lade-Zweig.
+- **A/B-VORBEDINGUNG:** Vor jeder Beurteilung wird der A/B-Betrieb festgestellt — abschalten
+  oder die ausgelieferte Variante bestimmen (docs/immer-beachten.md, BEVOR EIN ERGEBNIS
+  BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS RICHTIGE GEMESSEN WIRD, Teil (e)).
+- **DIE DEUTUNGS-AUFLAGE:** Steht der Dialog an und hat niemand zugestimmt, geht nichts
+  hinaus — **das ist KORREKTES VERHALTEN** und darf nicht als Fehlschlag protokolliert
+  werden (offener Punkt EIN EINGESCHALTETER EINWILLIGUNGS-DIALOG OHNE ZUSTIMMUNG SIEHT AUS
+  WIE KAPUTTES TRACKING).
+
+PROVENIENZ: Gegenstand, Pflichten, Ausschlüsse und die Live-Test-Anforderung sind
+ARCHITEKT-ZUSCHNITT mit OWNER-FREIGABE 2026-09-17. Die Befunde, auf denen sie ruhen, stehen
+in VERMERK P11.13-3 (GEMESSEN bzw. GELESEN am Repo, CC, 2026-09-17).
+
+---
 
 ## Vorrat — gemeldet, nicht gebaut
 
@@ -772,6 +1176,15 @@ Scheibe 2.**
 PROVENIENZ: GEMESSEN am Code (CC, 2026-09-17); der Wortlaut des Triggers GELESEN in
 docs/offene-punkte.md (CC, 2026-09-17). Dass der Punkt den Fall nicht deckt, ist am
 Trigger-Wortlaut ABLESBAR.
+
+**VERMERK 2026-09-17 — FÜR DEN THEMENWERT EINGELÖST, DIE KLASSE BLEIBT.** Entscheidung
+P11.13-6 gibt `settingsEqual` den Term `getConsentTheme(a) === getConsentTheme(b)`; der
+Themenwert ist damit für `dirty` sichtbar, obwohl er INNERHALB von `settings.consent` liegt.
+**DER EINTRAG WIRD NICHT GESTRICHEN:** Seine Aussage ist die über die KLASSE — jedes weitere
+Feld innerhalb des Unterobjekts ist wieder unsichtbar, und der offene Punkt `settingsEqual`
+IST EINE ALLOWLIST deckt sie ebenfalls nicht, weil sein Trigger ein TOP-LEVEL-Mitglied
+verlangt. **Der Trigger dieses Eintrags bleibt unverändert: der Zuschnitt der Scheibe 2** —
+er ist damit EINGETRETEN und für seinen Anlassfall abgearbeitet.
 
 ### P11.13-2 — T9 REICHT WENIGER WEIT ALS DER GESTRICHENE W0
 
@@ -839,6 +1252,38 @@ oder verschiebt.**
 
 PROVENIENZ: die zwei Läufe GEMESSEN am eigenen Lauf (CC, 2026-09-17); dass die reale Seite
 die Ordnung bestimmt, ist eine ABLEITUNG.
+
+### P11.13-5 — DIE PIXEL-ID GELANGT OHNE `<`-MASKIERUNG IN DEN AUSGELIEFERTEN TEXT
+
+`CodeImporter.tsx` gibt `metaPixelId: getPixelId(settings, "meta")` an `generateFunctional`;
+über `buildWiringScript` landet der Wert in `buildMetaRuntime`
+(`src/lib/tracking/meta.ts`) als `var PS_PIXEL_ID = ${JSON.stringify(pixelId)};`.
+**`JSON.stringify` MASKIERT KEIN `<`.** **ANDERS ALS DIE MAPPING-TABELLE**, die in
+`generate.ts` ausdrücklich `.replace(/</g, "\\u003c")` bekommt — mit dem Kommentar, das
+verhindere den `</script>`-Ausbruch —, **erhält dieser Wert keine solche Maskierung**
+(GEMESSEN am Code, CC, 2026-09-17).
+
+**DIE GRENZE, UND SIE IST DER HALBE EINTRAG: DER AUSBRUCH IST NICHT ERPROBT.** Der Weg ist
+am Code ablesbar; ob ein `</script>` in der Pixel-ID den Block tatsächlich verlässt, ist
+**nicht gemessen**. Wer den Eintrag als belegte Lücke liest, liest ihn grösser, als er ist.
+
+**HEUTE IST ES KEIN LOCH, und der Grund gehört dazu, sonst wird der Eintrag zum Alarm:** Wer
+die Pixel-ID setzt, ist der Betreiber — und ihm gehört das HTML der Seite ohnehin. Er kann
+dort schreiben, was er will; über die Pixel-ID gewinnt er nichts, was er nicht schon hat.
+**ES WIRD ERST EINE FRAGE, WENN BETREIBER-EINGABE IN EINEN TEXT GELANGT, DEN EIN ANDERER
+KONTROLLIERT** — oder wenn ein zweiter Weg denselben Wert woandershin trägt.
+
+**WAS ER RICHTIGSTELLT:** Der Satz der Roadmap-Zeile 11.13, Punkt (g) — "SCHEIBE 4 IST DIE
+ERSTE STELLE, AN DER BETREIBER-EINGABE IN DEN AUSGELIEFERTEN TEXT GELANGT" — trifft für den
+FREIEN TEXT zu, für Betreiber-Eingabe überhaupt nicht. Der Nachtrag dazu steht an der
+Roadmap-Zeile.
+
+**TRIGGER: der Zuschnitt der Scheibe 4.** Dort ist die `<`-Frage ohnehin zu beantworten, und
+beide Wege werden zusammen geklärt statt zweimal.
+
+PROVENIENZ: der Weg und die fehlende Maskierung GEMESSEN am Code (CC, 2026-09-17); die
+Maskierung der Mapping-Tabelle im selben Lauf GELESEN. Dass der Betreiber das HTML ohnehin
+kontrolliert, ist eine ABLEITUNG aus dem Schreibweg, keine Messung.
 
 ---
 

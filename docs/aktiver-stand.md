@@ -1088,7 +1088,8 @@ P11.13-2). Die Verdichtung ist CC, 2026-09-17.
 
 ## Zuschnitt der Scheibe 11.13b — DAS THEMA
 
-**STATUS: ZUGESCHNITTEN, PLAN FOLGT.** Kein Bau vor der Freigabe des Plans.
+**STATUS: FREIGEGEBEN.** Der Plan vom 2026-09-17 ist angenommen; die Freigabe-Entscheidungen
+stehen am Ende dieses Abschnitts.
 
 **GEGENSTAND:** Die Entscheidungen **P11.13-6 bis P11.13-10** umsetzen — Ablage und
 Bedienung des Themenwerts, der an den Dialog gebundene Abbruch, die feste Tabelle, die
@@ -1153,6 +1154,40 @@ Entscheidung wäre genau die Bauform, die dieses Projekt mehrfach als kaputtgega
 PROVENIENZ: Gegenstand, Pflichten, Ausschlüsse und die Live-Test-Anforderung sind
 ARCHITEKT-ZUSCHNITT mit OWNER-FREIGABE 2026-09-17. Die Befunde, auf denen sie ruhen, stehen
 in VERMERK P11.13-3 (GEMESSEN bzw. GELESEN am Repo, CC, 2026-09-17).
+
+### FREIGABE 2026-09-17 — ENTSCHEIDUNGEN ZUM PLAN
+
+**DER PLAN VOM 2026-09-17 IST FREIGEGEBEN.** Was er als Frage offenliess, ist hier
+entschieden; die drei Punkte binden den Bau der Scheibe 11.13b. Der Vorschlag G1 bis G9 ist
+im Übrigen unverändert angenommen.
+
+**F1 — EIN PFLICHT-PARAMETER AN ALLEN DREI STELLEN, KEIN VORGABEWERT.** `consentTheme` wird
+Pflicht-Parameter an `injectPageViewEmitter` **und** an `buildConsentBarScript` **und** an
+`buildConsentModalScript`.
+**DER GRUND IST EINE BAUFORM, KEINE STRENGE:** Zwei Formen nebeneinander — hier Pflicht,
+dort Vorgabewert — machten die Begründung am Nachbarn zur Formalie, und die nächste Runde
+müsste bei jeder Signatur neu nachsehen, welche gilt. **DER PREIS IST GENANNT UND
+ANGENOMMEN:** rund sechzig Testaufrufe werden zu `tsc`-Fehlern. Sie sind **mechanisch und
+compiler-geführt** — jede Stelle wird namentlich gemeldet, und keine kann übersehen werden.
+**VERWORFEN: ein Vorgabewert `"light"` an den zwei Erzeugern.** Er hätte den Diff etwa
+halbiert und 26 Stellen erspart; dagegen stand die zweite Bauform. **Der halbe Diff ist der
+schlechtere Tausch**, weil er einmal spart und dauerhaft eine Uneindeutigkeit hinterlässt.
+
+**F2 — `"auto"` OHNE SYSTEMEINSTELLUNG DES BESUCHERS IST `"light"`, UND DAS IST GEWOLLT.**
+Die `@media`-Regel greift nur bei `prefers-color-scheme: dark`; wer keine Einstellung hat
+oder `light` meldet, sieht das helle Thema. **Es ist damit kein Grenzfall, sondern der
+Vorgabe-Zweig** — und das ist der Grund, warum `"auto"` in der Probe unter **beiden**
+emulierten Einstellungen gemessen wird (Entscheidung P11.13-10).
+
+**F3 — DER LIVE-SCHRITT "UNBEKANNTER WERT" ENTFÄLLT.** Die Achse tragen **PT1**, **PT2** und
+**UI5**: der Abbruch bei `bar`, das Veröffentlichen bei `off` und die Anzeige ohne Markierung.
+**DER GRUND:** Der Schritt verlangte, den Blob von Hand zu verfälschen — er misst damit eine
+hergestellte Lage, keine, die im Betrieb entsteht, und die drei Tests sind schärfer als ein
+Blick auf eine Meldung.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17. Die Zahl der Testaufrufe ist
+GEMESSEN am Repo (CC, 2026-09-17); dass `"auto"` ohne Systemeinstellung hell bleibt, ist am
+Verhalten der `@media`-Regel ABLESBAR und wird in der Probe gemessen.
 
 ---
 

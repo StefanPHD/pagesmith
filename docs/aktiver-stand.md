@@ -533,6 +533,52 @@ PROVENIENZ: Gegenstand, Pflichten, Ausschlüsse und die Live-Test-Anforderung si
 ARCHITEKT-ZUSCHNITT mit OWNER-FREIGABE 2026-09-17. Die fünf Plan-Fragen ruhen auf VERMERK
 P11.13-1 (GEMESSEN bzw. GELESEN am Repo, CC, 2026-09-17).
 
+### FREIGABE 2026-09-17 — ENTSCHEIDUNGEN ZUM PLAN
+
+**DER PLAN VOM 2026-09-17 IST FREIGEGEBEN.** Was er offenliess, ist hier entschieden; die
+drei Punkte binden den Bau der Scheibe 11.13a.
+
+**DER AUFBAU — VORSCHLAG (c) AUS G1 IST FREIGEGEBEN: VORGEBAUT, VERDRAHTET, NICHT
+EINGEHÄNGT.** Gruppe und "Auswahl speichern" entstehen im Aufbau mit ihren Listenern und
+leben bis zum Klick in lokalen Variablen; der Klick hängt sie an ihre heutigen Plätze und
+entfernt den Weg. **DER GRUND IST I3 AM WORTLAUT:** Zum Zeitpunkt von
+`body.appendChild(host)` sind ALLE Listener gebunden — der des Wegs und die aller drei
+Knöpfe. Die zwei anderen Kandidaten fallen: das Vorbauen mit CSS-Versteck bräuchte ein
+Umschalten über `setAttribute("class", …)` und wiche damit einer Nadel am Zeichen statt an
+der Sache aus, und es nähme T1 die Abwesenheits-Behauptung; das Erzeugen beim Klick hielte
+I3 nur mit einer Auslegung.
+
+**E1 — W0 WIRD GESTRICHEN, NICHT NEU GESETZT.** Der Wächter W0
+(`src/lib/tracking/consent-revoke.test.ts`) hält den `"load"`-Zweig beider Oberflächen auf
+feste Byte-Zahlen und sha256-Werte. **SEIN GEGENSTAND IST ERLEDIGT:** Er belegte die
+tragende Invariante der Scheibe **11.5e-2** — dass der Umbau auf zwei Gestalten den
+Lade-Zweig Zeichen für Zeichen unverändert lässt —, und jene Scheibe ist abgeschlossen.
+**EIN NEUER WERT WÄRE EIN SPIEGEL:** Er käme aus dem Bau, den er prüfen soll, und
+bestätigte jede Änderung (docs/immer-beachten.md, EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT
+SEINE ERWARTUNG NIE AUS DEM CODE). Sein eigener Kommentar verbietet das Regenerieren
+ausdrücklich; die Streichung folgt ihm, statt ihn zu umgehen.
+**ERSATZ IST T9, UND ER PRÜFT STRUKTURELL STATT AM BYTE:** Lade- und Widerruf-Text je Form
+stammen aus EINEM Aufbau — nach Ersetzen der drei Einsetzwerte sind sie identisch. Damit
+bleibt die Sache gewacht, die W0 wachte (keine zwei Kopien, die auseinanderlaufen), ohne
+eine Zahl zu führen, die jeder Bau neu setzen müsste.
+
+**E2 — DER FOKUS BLEIBT OHNE PROGRAMMATISCHEN AUFRUF (G3, Kandidat (c)), MIT EINEM
+KRITERIUM.** Der Weg entfernt sich; wohin der Fokus fällt, überlässt der Block der
+Plattform — dieselbe Haltung, die der Kopf von `consent-modal.ts` für den Fokus bereits
+trägt.
+**DAS KRITERIUM, AN DEM ES GEMESSEN WIRD:** Nach `Enter` auf dem Weg erreicht der NÄCHSTE
+Tabulator-Schritt ein Bedienelement des Dialogs, **ohne über die fremde Seite zu laufen.**
+**HÄLT ES IN DER PROBE NICHT, GILT DER RÜCKFALL — INNERHALB DIESER SCHEIBE:** `.focus()`
+allein auf das erste eigene Kästchen, und die Nadel
+`/\.focus\(|\.blur\(|autofocus|tabindex/i` in M12 und W11 wird **benannt verengt**, mit
+Positivkontrolle im selben Lauf: `b.focus()` bleibt rot.
+**UNABHÄNGIG VOM AUSGANG KOMMT EIN WIRKUNGS-TEST HINZU:** L12 und M12 prüfen nach dem
+Klick, dass `document.activeElement` auf keinem fremden Knoten liegt. **DAS IST EINE
+DEKLARIERTE ERWEITERUNG VON L12, KEIN UMBAU** — der Ausschluss "ein Umbau von L12" im
+Zuschnitt bleibt unberührt, weil keine bestehende Zusicherung aufgeweicht wird.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17.
+
 ---
 
 ## Vorrat — gemeldet, nicht gebaut

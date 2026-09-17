@@ -34,7 +34,7 @@ EINER DATEI MIT VERZEICHNIS NICHT). Wer bearbeitet, ankert entsprechend.
 4. Vermerke
 5. Entscheidungen, die über ihre Scheibe hinaus binden
 6. Zuschnitt der Scheibe 11.13a — DIE ANORDNUNG (VERDICHTET 2026-09-17)
-7. Zuschnitt der Scheibe 11.13b — DAS THEMA
+7. Zuschnitt der Scheibe 11.13b — DAS THEMA (VERDICHTET 2026-09-17)
 8. Vorrat — gemeldet, nicht gebaut
 9. Hebungs-Kandidaten
 
@@ -735,6 +735,210 @@ Kästchen-Messung GEMESSEN am eigenen Lauf desselben Tages. Dass die Emulation h
 Dialog nichts bewirkt und dass die Pixel-ID-Beobachtung ein Ausbruchs-Risiko trägt, sind
 **ABLEITUNGEN**, keine Messungen.
 
+### VERMERK P11.13-4 — Scheibe 11.13b, DAS THEMA, abgeschlossen 2026-09-17
+
+**GEGENSTAND:** Der Betreiber wählt die Darstellung des Einwilligungs-Dialogs — **hell,
+dunkel, automatisch**. Der Wert liegt unter `settings.consent.theme` und wählt
+ausschliesslich zwischen fest im Repo stehenden Stylesheets.
+
+**DREI COMMITS:** **`1a21db3`** (Freigabe-Entscheidungen F1 bis F3, vor dem Bau) ·
+**`2b288f4`** — `feat(consent): Darstellung des Einwilligungs-Dialogs — hell, dunkel,
+automatisch (11.13b)`, **19 Dateien, 1 003 Zeilen hinzu, 99 entfernt**, darunter die neue
+`src/lib/tracking/consent-choice.test.ts` · **`17389f1`** — der Kommentar-Commit, der die
+Begründung gegen CSS-Variablen von einer ARCHITEKTEN-KENNTNIS auf den gemessenen Befund
+zieht. **`consent-revoke.ts` IST NICHT IM COMMIT** — `wrapRevoke` bekommt den fertigen
+Aufbau, das Thema steht dort schon im String.
+
+**DIE VIER GATES:** `vitest run` **von 1 805 auf 1 829 Tests** bei 83 → **84** Dateien
+(+24 Läufe); die 1 805 sind GEMESSEN vor dem ersten Eingriff in `src/`, nicht gerechnet.
+`tsc --noEmit` exit 0 · `lint` 0 errors / 1 warning (die vorbestehende in
+`consent.test.ts`) · `build` Compiled successfully. Alle vier nach der letzten Änderung
+erneut gefahren, zuletzt am Kommentar-Commit mit **unveränderten 1 829**.
+
+**DIE TRAGENDE INVARIANTE IST EINGELÖST — DIE SIEBEN BYTE-WERTE SIND VORHER UND NACHHER
+IDENTISCH** (GEMESSEN mit demselben Treiber, derselben echten Funktion und demselben
+Basis-HTML wie in VERMERK P11.13-3):
+
+| Gegenstand | vorher | nachher | sha256 |
+|---|---|---|---|
+| `buildConsentBarScript("load","light")` | 4 603 | 4 603 | gleich |
+| `buildConsentBarScript("revoke","light")` | 4 918 | 4 918 | gleich |
+| `buildConsentModalScript("load","light")` | 5 051 | 5 051 | gleich |
+| `buildConsentModalScript("revoke","light")` | 5 366 | 5 366 | gleich |
+| `injectPageViewEmitter(…,"bar","light")` | 14 073 | 14 073 | gleich |
+| `injectPageViewEmitter(…,"modal","light")` | 14 969 | 14 969 | gleich |
+| `injectPageViewEmitter(…,"off","light")` | 1 897 | 1 897 | gleich |
+
+**SIE IST STRUKTURELL UND NICHT NUR GEMESSEN:** `consentThemeCss("light")` liefert den
+LEEREN String; `BASIS + CONSENT_CHOICE_CSS + ""` ist damit zeichengleich mit dem Stylesheet
+vor der Scheibe. CSS1 hält genau das und führt keine Zahl.
+
+**DIE BLOCKGRÖSSEN DER ZWEI NEUEN THEMEN** (GEMESSEN): Leiste `load` **4 932** (dark) /
+**4 969** (auto), `revoke` **5 247** / **5 284**; Modal `load` **5 380** / **5 417**,
+`revoke` **5 695** / **5 732**. Ausgabetexte: Leiste **14 731** / **14 805**, Modal
+**15 627** / **15 701**. **Der Zuwachs ist in allen vier Zweigen konstant** — +329 für
+`dark`, +366 für `auto` je Block; die Konstante wird buchstäblich einmal geschrieben.
+
+**DIE SECHZIG MECHANISCHEN STELLEN (N3), GEMESSEN UND AUFGEZÄHLT:** Der Pflicht-Parameter
+an allen drei Stellen (Freigabe F1) machte **60 Testaufrufe** zu `tsc`-Fehlern; alle tragen
+jetzt `"light"` — `pageview-emitter.test.ts` 9 · `…resend.test.ts` 2 · `consent-bar.test.ts`
+8 · `consent-modal.test.ts` 17 · `consent-revoke.test.ts` 19 · `consent-setter.test.ts` 1 ·
+`consent-store.test.ts` 4. **SECHS AUFRUFE TRAGEN BEWUSST EINE THEMEN-VARIABLE** und laufen
+über alle drei Werte: die L3- und die L12-Erweiterung, die M3-Erweiterung und die
+M12-Nadeln, die zwei W11-Nadel-Läufe. Dazu **sechs T9-Läufe** über die Variable `bauen`
+(2 Formen × 3 Themen), die diese Zählung nicht erfasst. **Kein Aufruf ist ohne Argument
+geblieben** — `tsc` steht auf 0.
+
+**DIE ZEHN PFLICHT-MUTATIONEN** (je über die ganze Suite, Vorhersage als KLASSE vor dem
+Lauf, nach jeder Rücknahme sha256 identisch):
+
+| # | Gesetzt | Ergebnis | Urteil |
+|---|---|---|---|
+| Mu1 | Leser bildet `unknown` auf `light` ab | 4: TH2, TH3, PT1, UI5 | DECKUNG, EINE Klasse; **Vorhersage (2) zu eng** |
+| Mu2 | Abbruch auch bei `off` | 1: PT2 | trifft |
+| Mu3 | Abbruch fehlt bei `bar` | 1: PT1 | trifft |
+| Mu4 | `settingsEqual`-Term entfernt | 3: TH3, UI3, UI4 | DECKUNG, EINE Klasse; **Vorhersage („TH3 allein") zu eng** |
+| Mu5 | Überschreibung mit `border:` | 1: CSS2 | trifft |
+| Mu6 | `auto` ohne `@media` | 1: CSS3 | trifft |
+| Mu7 | `light` trägt die Überschreibungen | 2: CSS1, PT3 | DECKUNG |
+| Mu8 | Themenwahl bei `off` sichtbar | 1: UI2 | trifft |
+| Mu9 | Thema wird ignoriert | 3: CSS1, CSS3, PT3 | **Vorhersage falsch und lehrreich:** CSS1 fällt über seine POSITIVKONTROLLE, nicht über seine Hauptzusicherung |
+| Mu10 | `consentBlocksFor` liefert bei `off` einen themen-abhängigen Block | 2: T-OFF, T1 | DECKUNG; **Vorhersage trifft in Zahl und Zusammensetzung**, PT2 blieb grün wie angesagt |
+
+**KEINE KASKADE IN IRGENDEINER RUNDE** — jeder Zusatztreffer meldete dieselbe Fehlerklasse.
+**ZWEI VORHERSAGEN WAREN ZU ENG, BEIDE IN DIESELBE RICHTUNG** (docs/immer-beachten.md,
+EINE MUTATIONS-VORHERSAGE KANN IN BEIDE RICHTUNGEN FALSCH SEIN).
+
+**DREI „EINZELSTÜCK"-KOMMENTARE SIND DARAUFHIN RICHTIGGESTELLT WORDEN**, weil sie sonst
+eine Sicherheit behaupteten, die die Messung widerlegt (Lektion (f) an MUTATIONSPROBEN):
+`settings.ts` („TH3 ist der EINZIGE Test" → **drei Tests, gemessen: TH3, UI3, UI4**) ·
+`settings.test.ts` an TH2 und TH3 · `consent-choice.test.ts` an CSS1 („der einzige" → **„der
+einzige, der sie STRUKTURELL hält"**, mit PT3 daneben benannt). **EIN VIERTER kam mit
+Mu10 dazu:** T-OFF ist nicht der einzige, der die Zusage fängt — T1 tut es ebenfalls, aber
+nur als Nebenwirkung seiner Byte-Zahl und nur für dessen eine Fixture.
+
+**T-OFF IST DER WÄCHTER EINER ZEILE, DIE SONST NUR EIN KOMMENTAR TRÜGE.** `publishProject`
+führt seit dieser Scheibe `deliveredTheme` — einen **Platzhalter**: Nach dem Abbruch ist
+`"unknown"` nur noch bei `"off"` möglich, der Typ von `injectPageViewEmitter` verlangt aber
+einen gebauten Wert. **DAS IST KEIN RÜCKFALL IM SINNE DER DAUERREGEL**, weil die abbrechende
+Stelle bereits passiert ist — aber es ist nur unschädlich, solange das Thema bei `"off"`
+nichts am Text ändert. **T-OFF prüft genau das** (drei Themen, zeichengleich, mit
+Positivkontrolle bei eingeschaltetem Dialog), **PT2** belegt es am ausgelieferten Text, und
+**Mu10 hat beide rot gemacht**. T-OFF ist zugleich der Wächter der GRENZE von
+Entscheidung P11.13-7: Wer bei `"off"` je etwas ausliefert, macht ihn rot und muss die
+Entscheidung anfassen, nicht den Test.
+
+**DIE MESSUNG AUS ROADMAP (f) IST GEFAHREN — UND SIE BESTÄTIGT P11.13-8** (GEMESSEN, CC,
+2026-09-17, Chromium): Eine auf `html` der Probeseite gesetzte benutzerdefinierte
+Eigenschaft `--ps-test: red` kommt **TROTZ `all:initial !important` IM SCHATTENBAUM AN** —
+an `.bar`, am Knopf und am Host-Element, je mit dem Wert `red`. **Die Gegenprobe ausserhalb
+des Schattenbaums liefert denselben Wert**, die Messung greift also. Wäre das Thema über
+Variablen gebaut, könnte die Kundenseite in unsere Darstellung hineinwirken. Die Begründung
+von P11.13-8 ist damit von einer Kenntnis auf einen Befund gezogen (dort und in
+`consent-choice.ts`, Commit `17389f1`).
+
+**DIE PROBE** (Playwright, Chromium, `file://` im Scratchpad, echter Ausgabetext über
+`injectPageViewEmitter`; `localStorage.clear()` und Reload je Messung; die Werkzeug-Ablage
+`.playwright-mcp/` vorher als ignoriert geprüft, `git check-ignore -v` → `.gitignore:28`):
+**60 ZUSTÄNDE — 3 Themen × 2 Formen × 5 Viewports × ein- und ausgeklappt.**
+
+- **ENTSCHEIDUNG P11.13-3: 60/60 ERFÜLLT** — jedes Bedienelement vollständig im Fenster und
+  `elementFromPoint` an seiner Mitte trifft den Host.
+- **ENTSCHEIDUNG P11.13-5: 30/30 im eingeklappten Zustand erfüllt** — `wegTeiltMit` ist nie
+  1 (nur 0 oder 2), Knopfbreiten durchgehend **160/160**. Reihen über **vertikale
+  Überlappung** bestimmt, nicht über `top`-Gleichheit (der Instrumentenfehler aus 11.13a).
+- **DIE GEOMETRIE VON `dark` UND `auto` IST IDENTISCH ZU `light` — IN ALLEN 60 ZUSTÄNDEN,
+  NULL ABWEICHUNGEN.** Verglichen wurden `top`, Höhe, `scrollHeight`/`clientHeight` und
+  **jede Element-Lage**. **DAS IST DER BEWEIS FÜR DIE EIGENSCHAFTS-LISTE AUS P11.13-9:**
+  Grösse und Lage bleiben durch die Bauart gleich, und P11.13-3 und P11.13-5 mussten nur
+  bestätigt, nicht neu erhoben werden.
+- **UNGEFANGENE FEHLER: KEINE** (`pageerror` und Konsolen-Einträge `error`/`warning`,
+  Listener **vor** dem Lauf registriert — beim ersten Anlauf standen sie am Ende und
+  sammelten nichts; der Fehler ist im Lauf selbst gefangen und der Lauf wiederholt worden).
+
+**DER KONTRAST (P11.13-10), 1 280×800, Formel wie in VERMERK P11.13-3:**
+
+| Paar | light | dark | auto@light | auto@dark |
+|---|---|---|---|---|
+| Text / Hintergrund | 17,74 | 16,98 | 17,74 | 16,98 |
+| Knopftext / Knopfhintergrund | 17,74 | 16,98 | 17,74 | 16,98 |
+| Knopfrahmen / Hintergrund | 17,74 | 16,98 | 17,74 | 16,98 |
+| Kästchen (`accent-color`) / Hintergrund | 17,74 | 16,98 | 17,74 | 16,98 |
+| Weg-Text / Hintergrund (eingeklappt) | 17,74 | 16,98 | – | – |
+| Fokus-Ring / Hintergrund (im fokussierten Zustand) | 5,17 | 6,98 | 5,17 | 6,98 |
+| Container-Linie / Hintergrund (**ausgenommen**) | 1,47 | 2,35 | 1,47 | 2,35 |
+
+**DIE ARCHITEKT-RECHNUNG IST BESTÄTIGT — 16,98 und 6,98, auf die Stelle genau.** Text ≥ 4,5
+und alle Bedienelement-Ränder ≥ 3 in jedem Thema. **`auto` ist unter der emulierten
+Einstellung `light` EXAKT `light` und unter `dark` EXAKT `dark`** — damit ist Freigabe F2
+gemessen und nicht bloss abgeleitet.
+
+**DAS NATIVE KÄSTCHEN UNTER `dark`:** `colorScheme` kippt auf `dark`, der UA-Rahmen von
+`rgb(0,0,0)` auf `rgb(255,255,255)`. Die Füllung ist über `getComputedStyle` nicht fassbar
+(`backgroundColor` bleibt beidemal durchsichtig) — **gemessen über Bildpunkt-Prüfsummen:
+light ≠ dark, und dark == auto@dark** (Leiste beide `4084295373`, Modal beide `430642071`).
+**Sechs Bildschirmfotos** liegen in der ignorierten Ablage:
+`.playwright-mcp/11.13b-{bar,modal}-{light,dark,auto}.png`.
+
+**EINE ZEILENENDEN-EPISODE, GEFANGEN UND BEHOBEN — sie gehört in den Vermerk, weil sie
+sonst beim nächsten Mal von vorn gefunden wird:** `src/app/projects/publish.test.ts` und
+`src/components/PublishView.tsx` liegen im **ARBEITSBAUM als CRLF** (`git ls-files --eol`:
+`i/lf w/crlf`), alle übrigen als LF. Ein Heredoc-Anhang schrieb LF in die erste der beiden
+→ der Zustand war kurzzeitig `w/mixed`. **Behoben**, die Datei ist wieder einheitlich CRLF;
+`git diff --numstat` zeigt 116 / 0, also nur den neuen Block. **AM COMMITTETEN OBJEKT TRAGEN
+ALLE 19 DATEIEN CR=0 UND NUL=0** (`git show HEAD:<pfad> | tr -dc …`, Summe über alle: 0 und
+0, Positivkontrolle im selben Lauf 1 und 1) — der Index steht auf `eol=lf`, die Arbeitsbaum-
+Konvention erreicht das Objekt also nicht. **DIE CR-ZAHLEN 1 190 UND 589 IM ARBEITSBAUM SIND
+DIE BESTEHENDE KONVENTION DIESER ZWEI DATEIEN, KEIN SCHADEN.**
+
+**KEINE GANZ-DATEI-UMSTELLUNG** (`git show --numstat`, je Datei gegen ihre Länge): die
+höchste Löschzahl ist **37 von 646 Zeilen** (`consent-revoke.test.ts`, 5,7 % — T9-Ausweitung
+und W11-Nadel-Schleife), die zweithöchste **15 von 910** (`consent-modal.test.ts`, 1,6 %);
+bei allen übrigen unter 5 %, bei acht Dateien null.
+
+**DER LIVE-NACHWEIS vom 2026-09-17 — ALLE ANGABEN SIND OWNER-ANGABEN, soweit nicht anders
+vermerkt; Deployment als "Ready" bestätigt. Der Schritt „unbekannter Wert" ist mit Freigabe
+F3 ENTFALLEN und wird allein von PT1, PT2 und UI5 getragen.**
+1. **Bestanden.** Eine vor dem Deploy veröffentlichte, unberührte Seite zeigt die alte
+   Gestalt unverändert.
+2. **Bestanden.** Eine Seite mit ausgeschaltetem Dialog trägt nach dem Neu-Veröffentlichen
+   weiter nur `pagesmith-consent` und `__ps_pve`.
+3. **DER BYTE-NACHWEIS FÜR "HELL" IST LIVE GEFÜHRT:** Vorher- und Nachher-Sicherung sind
+   **byte-gleich — 26 561 Bytes, sha256 `ba00564c…`** (GEMESSEN, ARCHITEKT-PRÜFUNG
+   2026-09-17; **dass die Nachher-Datei aus einem Neu-Veröffentlichen stammt, ist
+   OWNER-ANGABE**). **Die Vorher-Sicherung trug zudem den Leisten- und den Widerruf-Block
+   BYTE-GLEICH zu den lokal gemessenen Vorher-Werten** (`7ec172a6…` und `14510803…`) — damit
+   ist die lokale Messung an einer echten ausgelieferten Seite verankert.
+4. **Bestanden.** Dunkel, beide Formen, fünf Viewports, ein- und ausgeklappt: alles sichtbar
+   und antippbar, Knöpfe gleich breit.
+5. **Bestanden — und dieser Schritt schliesst die Grenze der emulierten Probe:**
+   „automatisch" am **echten Handy**, wechselt mit dem System-Dunkelmodus **ohne Neuladen**.
+6. **Bestanden, als OWNER-URTEIL, visuell:** dunkel auf der dunklen Kundenseite passt.
+   **AUSDRÜCKLICH KEINE KONTRAST-AUSSAGE GEGEN DEN SEITENHINTERGRUND** — gemessen ist allein
+   der Kontrast gegen die EIGENE Dialogfläche; die Container-Linie liegt dort bewusst unter
+   3 (P11.13-10 nimmt sie aus).
+7. **Bestanden.** Der Widerruf öffnet ausgeklappt UND dunkel.
+8. **Bestanden.** „nur Werbung": kein PageView, die Conversion kommt bei Meta an, Browser-
+   und Server-Ereignis dedupliziert.
+
+**DIE GRENZEN, DIE DIESER NACHWEIS NICHT ÜBERSCHREITET:**
+- **Lokal nur Chromium.** Firefox und WebKit zeichnen native Kästchen anders und sind
+  ungemessen; welche Desktop-Browser live benutzt wurden, nennen die Owner-Angaben nicht.
+- **DER EXPORT-PFAD IST NICHT ERFASST** — er trägt den Einwilligungs-Schalter schon heute
+  nicht und damit auch kein Thema (offener Punkt DER EXPORT-PFAD IST VOM
+  EINWILLIGUNGS-SCHALTER NICHT ERFASST, der das für jede Scheibe dieser Phase verlangt).
+- **SCREENREADER UNGEPRÜFT** — was aus „Darstellung", „Hell", „Dunkel" und „Automatisch"
+  angesagt wird, ist nicht erhoben.
+- Keine echte Kundenseite in der lokalen Probe: kein fremdes CSS, keine `!important`-Flut,
+  keine eigene Stapel-Ebene.
+
+PROVENIENZ: Commits, Dateizahlen, Gates, Testzahlen, Mutationen, Blockgrössen, die sieben
+Byte-Werte, die (f)-Messung und sämtliche Probe-Werte sind GEMESSEN am Repo bzw. am eigenen
+Lauf (CC, 2026-09-17). Die Byte-Gleichheit der zwei Live-Sicherungen und die zwei
+Block-Prüfsummen sind eine ARCHITEKT-PRÜFUNG desselben Tages; alle übrigen Live-Angaben
+sind OWNER-ANGABEN und am Repo nicht prüfbar. Das Urteil zu Schritt 6 ist ein visuelles
+Owner-Urteil, keine Messung.
+
 ---
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
@@ -937,19 +1141,27 @@ sieben Vorher-Werte aus VERMERK P11.13-3 müssen nach dem Bau unverändert sein.
 erreicht den ausgelieferten Text NIE**; er wählt nur einen Zweig. Damit ist die
 Sicherheitsachse der Roadmap (g) für diese Scheibe strukturell nicht berührt — es entsteht
 keine Betreiber-Eingabe im Text. (2) **CSS-VARIABLEN SIND DER WEG, AUF DEM DIE KUNDENSEITE
-HINEINWIRKEN KÖNNTE:** `all:initial !important` setzt vererbte Eigenschaften zurück, **nach
-Kenntnis des Architekten aber NICHT die benutzerdefinierten** — eine auf der Kundenseite
-gesetzte `--ps-*`-Eigenschaft erbte dann in unseren Schattenbaum. **DIE MESSUNG DAZU STEHT
-AUS** (docs/roadmap.md, Roadmap-Zeile 11.13, Punkt (f)); solange sie aussteht, wird die
-Gestalt gewählt, die die Frage gar nicht erst stellt.
+HINEINWIRKEN KANN — UND DAS IST SEIT DEM 2026-09-17 GEMESSEN, NICHT ANGENOMMEN:**
+`all:initial !important` setzt vererbte Eigenschaften zurück, **die BENUTZERDEFINIERTEN
+aber NICHT**. Eine auf `html` der Seite gesetzte `--ps-*`-Eigenschaft **kommt im
+Schattenbaum an** — an `.bar`, am Knopf und am Host-Element, je mit dem gesetzten Wert; die
+Gegenprobe ausserhalb liefert denselben Wert, die Messung greift also. **DIE MESSUNG AUS
+ROADMAP (f) IST DAMIT GEFAHREN**, und die Gestalt, die die Frage gar nicht erst stellt, ist
+nicht mehr die vorsichtige, sondern die belegte Wahl.
 
 **DIE GRENZE — SIE KIPPT MIT SCHEIBE 3 (freie Farben).** Dort entsteht ein Wert, der NICHT
 aus einer festen Tabelle kommt; ob er über Variablen, über erzeugte Deklarationen oder
 anders in den Text gelangt, ist **dort neu zu entscheiden** und nicht hier vorweggenommen.
 
-PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17. Dass `all:initial` die
-benutzerdefinierten Eigenschaften nicht erfasst, ist eine **ARCHITEKTEN-KENNTNIS und KEINE
-MESSUNG** — die Messung ist die aus Roadmap (f) und steht aus.
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17. **Dass `all:initial` die
+benutzerdefinierten Eigenschaften nicht erfasst, ist GEMESSEN** (CC, 2026-09-17, Chromium,
+mit Gegenprobe ausserhalb des Schattenbaums; s. VERMERK P11.13-4 und der Docblock von
+`CONSENT_THEME_DARK_CSS`, Commit `17389f1`). **DIESE ANGABE IST ERSETZT, NICHT GESTEMPELT:**
+Bis zum Bau stand hier eine ARCHITEKTEN-KENNTNIS mit ausstehender Messung — eine
+Tatsachenbehauptung über fremdes Verhalten, und ein Maßstab mit falscher Herkunftsangabe
+taugt nicht als Maßstab (docs/immer-beachten.md, EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND
+IHR BELEG FALSCH WIRD). Die Entscheidung selbst ist unverändert; nur ihr Beleg ist von einer
+Annahme auf einen Befund gezogen.
 
 ### Entscheidung P11.13-9 — EIN THEMA ÄNDERT NUR FARBEN, NIE GRÖSSE ODER LAGE
 
@@ -1011,6 +1223,41 @@ vorweg.
 
 PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17. Die Zahl 1,47 und die
 Messformel sind GEMESSEN (CC, 2026-09-17); die Schwellen sind eine ARCHITEKT-VORGABE.
+
+### Entscheidung P11.13-11 — EIN PFLICHT-PARAMETER AN ALLEN DREI STELLEN, KEIN VORGABEWERT
+
+**`consentTheme` ist Pflicht-Parameter ohne Vorgabewert an `injectPageViewEmitter`, an
+`buildConsentBarScript` UND an `buildConsentModalScript`** — dieselbe Bauform, die der
+Schalter `consentDialog` schon trägt.
+
+**DER GRUND IST EINE BAUFORM, KEINE STRENGE:** Zwei Formen nebeneinander — hier Pflicht,
+dort Vorgabewert — machten die Begründung am Nachbarn zur Formalie, und die nächste Runde
+müsste bei jeder Signatur neu nachsehen, welche gilt. **DER FACHLICHE GRUND STEHT DANEBEN
+und trägt die Regel allein:** Ein `= "light"` liesse einen neuen Auslieferungsweg die
+Darstellung stillschweigend übergehen, und **ein heller Dialog auf einer dunklen
+Kundenseite ist genau der Fremdkörper, wegen dessen diese Phase existiert.**
+
+**DER PREIS IST GENANNT, GEMESSEN UND ANGENOMMEN: 60 Testaufrufe** wurden dadurch zu
+`tsc`-Fehlern. Sie sind **mechanisch und compiler-geführt** — jede Stelle wird namentlich
+gemeldet, keine kann übersehen werden. **VERWORFEN: ein Vorgabewert `"light"` an den zwei
+Erzeugern.** Er hätte 26 Stellen erspart; **der halbe Diff ist der schlechtere Tausch**,
+weil er einmal spart und dauerhaft eine Uneindeutigkeit hinterlässt.
+
+**WEN SIE BINDET:** jede spätere Runde, die eine dieser drei Signaturen anfasst oder eine
+vierte Stelle auf diesem Pfad anlegt — ausdrücklich auch die Scheiben 3 und 4.
+
+**WARUM SIE EINE EIGENE ENTSCHEIDUNG IST UND KEIN SATZ AN P11.13-8**, und das ist der
+tragende Grund: **P11.13-8 KIPPT MIT SCHEIBE 3** (freie Farben lösen die feste Tabelle ab).
+Stünde F1 als Absatz dort, kippte die Bauform-Zusage mit — und zwar genau dann, wenn eine
+neue Scheibe die Signaturen anfasst und sie am dringendsten gebraucht wird.
+
+**DIE GRENZE:** Sie kippt, sobald es auf diesem Pfad einen Aufrufer gibt, der die
+Darstellung **nicht kennen kann** — dann ist zu entscheiden, wer für ihn entscheidet, und
+nicht ein Vorgabewert einzuziehen.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17 (Freigabe F1 zum Plan). Die
+Zahl der Aufrufe ist GEMESSEN am Repo (CC, 2026-09-17); die Erhebung zur Entscheidung ist
+die Verdichtung des Zuschnitts am selben Tag.
 
 ---
 
@@ -1086,108 +1333,61 @@ P11.13-2). Die Verdichtung ist CC, 2026-09-17.
 
 ---
 
-## Zuschnitt der Scheibe 11.13b — DAS THEMA
+## Zuschnitt der Scheibe 11.13b — DAS THEMA (VERDICHTET 2026-09-17)
 
-**STATUS: FREIGEGEBEN.** Der Plan vom 2026-09-17 ist angenommen; die Freigabe-Entscheidungen
-stehen am Ende dieses Abschnitts.
+**STATUS: ABGELAUFEN.** Die Scheibe ist gebaut und live bewiesen — VERMERK P11.13-4,
+Bau-Commit `2b288f4`. Der ungekürzte Wortlaut des Zuschnitts steht im Commit `278b28c`,
+der des Freigabe-Blocks in `1a21db3`.
 
-**GEGENSTAND:** Die Entscheidungen **P11.13-6 bis P11.13-10** umsetzen — Ablage und
-Bedienung des Themenwerts, der an den Dialog gebundene Abbruch, die feste Tabelle, die
-Farb-Überschreibungen für `"dark"` und `"auto"`, das Kontrast-Kriterium. **DIE ORTE BESTIMMT
-DER PLAN**, nicht dieser Zuschnitt: welcher Teil in das geteilte Code-Stück gehört, welcher
-in die zwei Oberflächen-Dateien und wo die erschöpfende Verzweigung sitzt, ist eine Frage an
-den Bau-Plan.
+**WAS ABGELAUFEN IST — die Titel, ohne Marke** (ohne `###`, damit eine
+Überschriften-Suche sie nicht trifft: docs/immer-beachten.md, EIN ANKER, DER EINDEUTIG
+AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT, Zusatz vom 2026-08-27):
+- STATUS: ZUGESCHNITTEN, PLAN FOLGT — später STATUS: FREIGEGEBEN
+- GEGENSTAND — die Entscheidungen P11.13-6 bis -10; die Orte bestimmt der Plan
+- PFLICHT — DIE HERKUNFT DER TEST-ERWARTUNGEN (aus den Entscheidungen, nicht aus dem Code)
+- PFLICHT — DER NACHWEIS DER BYTE-GLEICHHEIT FÜR "light" (alle sieben Werte, "off" allein
+  genügt nicht)
+- PFLICHT — TESTS FÜR DIE BEDIENUNG (`PublishView.tsx` trug keinen einzigen)
+- PFLICHT — DIE MESSUNG AUS ROADMAP (f) VOR DEM GO
+- AUSDRÜCKLICH NICHT DAZU
+- LIVE-TEST-ANFORDERUNG
+- FREIGABE 2026-09-17 — ENTSCHEIDUNGEN ZUM PLAN, mit: F1 — EIN PFLICHT-PARAMETER AN ALLEN
+  DREI STELLEN, KEIN VORGABEWERT · F2 — "auto" OHNE SYSTEMEINSTELLUNG DES BESUCHERS IST
+  "light", UND DAS IST GEWOLLT · F3 — DER LIVE-SCHRITT "UNBEKANNTER WERT" ENTFÄLLT
 
-**PFLICHT — DIE HERKUNFT DER TEST-ERWARTUNGEN:** Jede neue Erwartung wird **aus den
-Entscheidungen P11.13-6 bis P11.13-10 geschrieben, nicht aus dem gebauten Code**
-(docs/immer-beachten.md, EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS
-DEM CODE — UND KEIN WÄCHTER ÜBER EINEN WORTLAUT). Das gilt verschärft für die
-Eigenschafts-Liste aus P11.13-9 und für die Palette: Ein Wächter, der sie aus dem Stylesheet
-abliest, bestätigt jeden Tippfehler.
+**WAS ÜBER DIE SCHEIBE HINAUS BINDET, IST UMGEZOGEN UND STEHT NICHT MEHR HIER:**
+**F1 IST ZUR EIGENEN ENTSCHEIDUNG P11.13-11 GEWORDEN** — nicht zu einem Satz an P11.13-8,
+**weil jene mit Scheibe 3 kippt** und die Bauform-Zusage sonst mitkippte, genau dann, wenn
+eine neue Scheibe die Signaturen anfasst. **F2 IST IN DER PROBE GEMESSEN** (`auto` unter
+emuliertem `light` exakt `light`, unter `dark` exakt `dark`) und steht als Befund in VERMERK
+P11.13-4; die Entscheidung dahinter ist Teil von P11.13-9. **F3 IST VOLLZOGEN** — der
+Live-Schritt ist entfallen, die Achse tragen PT1, PT2 und UI5.
 
-**PFLICHT — DER NACHWEIS DER BYTE-GLEICHHEIT FÜR `"light"`:** **ALLE SIEBEN WERTE** aus
-VERMERK P11.13-3 werden vorher und nachher erhoben und einzeln verglichen — vier Blöcke und
-drei Ausgabetexte. **"off" ALLEIN GENÜGT NICHT**, dort entsteht kein Oberflächen-Block.
+**DIE FÜNF PFLICHTEN — GESCHLOSSEN, je mit Nachweis und Fundstelle:**
+1. **Herkunft der Test-Erwartungen:** eingehalten — die Eigenschafts-Liste in `CSS2`, die
+   Palette in `CSS2c`, die Meldungen in `PT1`/`PT4` und die Wertemenge in `TH2` sind aus den
+   Entscheidungen niedergeschrieben; die Meldungs-Konstanten stehen in `publish.test.ts` als
+   Literal und werden **nicht** aus dem Produktivcode importiert. FUNDSTELLE: VERMERK
+   P11.13-4, Mutationstabelle.
+2. **Byte-Gleichheit "light":** eingelöst — **alle sieben Werte vorher und nachher
+   identisch**, und zwar STRUKTURELL: `consentThemeCss("light")` liefert den leeren String.
+   FUNDSTELLE: VERMERK P11.13-4, Tabelle; Test `CSS1`.
+3. **Tests für die Bedienung:** eingelöst — **UI1 bis UI5** in `CodeImporter.test.tsx`,
+   die erste Abdeckung der Einwilligungs-Fläche überhaupt.
+4. **Die Messung aus Roadmap (f):** **GEFAHREN, und sie bestätigt P11.13-8** — eine
+   benutzerdefinierte Eigenschaft der Kundenseite kommt trotz `all:initial` im Schattenbaum
+   an. FUNDSTELLE: VERMERK P11.13-4; die Provenienz von P11.13-8 ist ERSETZT.
+5. **Live-Test-Anforderung:** eingelöst — acht Schritte bestanden, der neunte mit F3
+   entfallen. FUNDSTELLE: VERMERK P11.13-4, Live-Nachweis.
 
-**PFLICHT — TESTS FÜR DIE BEDIENUNG.** `PublishView.tsx` trägt heute **keinen einzigen
-Test** (GEMESSEN, VERMERK P11.13-3). Was diese Scheibe an der Fläche baut, ist ohne eigene
-Tests **by default ungetestet**; die Scheibe legt sie an.
+**DIE AUSSCHLÜSSE GELTEN FORT** und sind der Zuschnitt der nächsten Scheiben: freie Farben
+(Scheibe 3, kippt P11.13-8) · freier Text samt Sicherheitsachse (Scheibe 4) · die Maskierung
+der Pixel-ID (Vorrat P11.13-5, Trigger ist der Zuschnitt der Scheibe 4) · eine Vorschau des
+Dialogs im Editor · der Export-Pfad, der unter den Grenzen genannt ist.
 
-**PFLICHT — DIE MESSUNG AUS ROADMAP (f) VOR DEM GO:** Ob `all:initial !important` auch
-BENUTZERDEFINIERTE Eigenschaften zurücksetzt, ist **UNGEMESSEN**. Die Roadmap-Zeile 11.13
-verlangt die Messung VOR Scheibe 2. **SIE IST KEINE BEDINGUNG DES BAUS, SONDERN SEINER
-FREIGABE:** P11.13-8 ist gerade so gewählt, dass die Antwort den Bau nicht ändert — sie
-entscheidet aber, ob die Begründung trägt, und ein unbewiesener Grund an einer bindenden
-Entscheidung wäre genau die Bauform, die dieses Projekt mehrfach als kaputtgegangen führt.
-
-**AUSDRÜCKLICH NICHT DAZU:**
-- **FREIE FARBEN** — Scheibe 3. Sie kippt P11.13-8 und prüft P11.13-9 neu.
-- **FREIER TEXT** — Scheibe 4, samt der Sicherheitsachse (g).
-- **DIE MASKIERUNG DER PIXEL-ID** — Vorrat P11.13-5, Trigger ist der Zuschnitt der
-  Scheibe 4. Diese Scheibe fasst `meta.ts` und `generate.ts` nicht an.
-- **EINE VORSCHAU DES DIALOGS IM EDITOR** — der Prüfweg bleibt das Veröffentlichen
-  (OWNER-ENTSCHEIDUNG 2026-09-17).
-- **DER EXPORT-PFAD** — er trägt den Einwilligungs-Schalter schon heute nicht und damit
-  auch kein Thema. **ER WIRD UNTER DEN GRENZEN DES NACHWEISES GENANNT**, wie es der offene
-  Punkt DER EXPORT-PFAD IST VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST für jede Scheibe dieser
-  Phase verlangt.
-
-**LIVE-TEST-ANFORDERUNG:**
-- **NEU-VERÖFFENTLICHEN IST PFLICHT-SCHRITT**, nicht Hinweis (docs/immer-beachten.md, EIN
-  LIVE-TEST-SCHRITT SETZT EINEN ZUSTAND DES PRÜFLINGS VORAUS).
-- **DREI THEMEN × ZWEI FORMEN**, je eingeklappt und ausgeklappt, gemessen gegen
-  **Entscheidung P11.13-3** und **Entscheidung P11.13-5**.
-- **"AUTOMATISCH" MIT UMGESCHALTETEM DUNKELMODUS AM HANDY** — an einem echten Gerät, weil
-  die lokale Probe nur emuliert.
-- **"DUNKEL" AUF EINER DUNKLEN KUNDENSEITE.** Das ist **der Anlass der ganzen Phase**: ein
-  Dialog, der auf einer fremden Seite wie ein Fremdkörper wirkt, wird nicht eingeschaltet.
-- **DER WIDERRUF IM DUNKLEN THEMA** — er baut ausgeklappt auf (Entscheidung P11.13-2) und
-  muss dasselbe Thema tragen wie der Lade-Zweig.
-- **A/B-VORBEDINGUNG:** Vor jeder Beurteilung wird der A/B-Betrieb festgestellt — abschalten
-  oder die ausgelieferte Variante bestimmen (docs/immer-beachten.md, BEVOR EIN ERGEBNIS
-  BEURTEILT WIRD, IST SICHERZUSTELLEN, DASS DAS RICHTIGE GEMESSEN WIRD, Teil (e)).
-- **DIE DEUTUNGS-AUFLAGE:** Steht der Dialog an und hat niemand zugestimmt, geht nichts
-  hinaus — **das ist KORREKTES VERHALTEN** und darf nicht als Fehlschlag protokolliert
-  werden (offener Punkt EIN EINGESCHALTETER EINWILLIGUNGS-DIALOG OHNE ZUSTIMMUNG SIEHT AUS
-  WIE KAPUTTES TRACKING).
-
-PROVENIENZ: Gegenstand, Pflichten, Ausschlüsse und die Live-Test-Anforderung sind
-ARCHITEKT-ZUSCHNITT mit OWNER-FREIGABE 2026-09-17. Die Befunde, auf denen sie ruhen, stehen
-in VERMERK P11.13-3 (GEMESSEN bzw. GELESEN am Repo, CC, 2026-09-17).
-
-### FREIGABE 2026-09-17 — ENTSCHEIDUNGEN ZUM PLAN
-
-**DER PLAN VOM 2026-09-17 IST FREIGEGEBEN.** Was er als Frage offenliess, ist hier
-entschieden; die drei Punkte binden den Bau der Scheibe 11.13b. Der Vorschlag G1 bis G9 ist
-im Übrigen unverändert angenommen.
-
-**F1 — EIN PFLICHT-PARAMETER AN ALLEN DREI STELLEN, KEIN VORGABEWERT.** `consentTheme` wird
-Pflicht-Parameter an `injectPageViewEmitter` **und** an `buildConsentBarScript` **und** an
-`buildConsentModalScript`.
-**DER GRUND IST EINE BAUFORM, KEINE STRENGE:** Zwei Formen nebeneinander — hier Pflicht,
-dort Vorgabewert — machten die Begründung am Nachbarn zur Formalie, und die nächste Runde
-müsste bei jeder Signatur neu nachsehen, welche gilt. **DER PREIS IST GENANNT UND
-ANGENOMMEN:** rund sechzig Testaufrufe werden zu `tsc`-Fehlern. Sie sind **mechanisch und
-compiler-geführt** — jede Stelle wird namentlich gemeldet, und keine kann übersehen werden.
-**VERWORFEN: ein Vorgabewert `"light"` an den zwei Erzeugern.** Er hätte den Diff etwa
-halbiert und 26 Stellen erspart; dagegen stand die zweite Bauform. **Der halbe Diff ist der
-schlechtere Tausch**, weil er einmal spart und dauerhaft eine Uneindeutigkeit hinterlässt.
-
-**F2 — `"auto"` OHNE SYSTEMEINSTELLUNG DES BESUCHERS IST `"light"`, UND DAS IST GEWOLLT.**
-Die `@media`-Regel greift nur bei `prefers-color-scheme: dark`; wer keine Einstellung hat
-oder `light` meldet, sieht das helle Thema. **Es ist damit kein Grenzfall, sondern der
-Vorgabe-Zweig** — und das ist der Grund, warum `"auto"` in der Probe unter **beiden**
-emulierten Einstellungen gemessen wird (Entscheidung P11.13-10).
-
-**F3 — DER LIVE-SCHRITT "UNBEKANNTER WERT" ENTFÄLLT.** Die Achse tragen **PT1**, **PT2** und
-**UI5**: der Abbruch bei `bar`, das Veröffentlichen bei `off` und die Anzeige ohne Markierung.
-**DER GRUND:** Der Schritt verlangte, den Blob von Hand zu verfälschen — er misst damit eine
-hergestellte Lage, keine, die im Betrieb entsteht, und die drei Tests sind schärfer als ein
-Blick auf eine Meldung.
-
-PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17. Die Zahl der Testaufrufe ist
-GEMESSEN am Repo (CC, 2026-09-17); dass `"auto"` ohne Systemeinstellung hell bleibt, ist am
-Verhalten der `@media`-Regel ABLESBAR und wird in der Probe gemessen.
+PROVENIENZ: Der Zuschnitt und seine Freigabe sind ARCHITEKT mit OWNER-FREIGABE 2026-09-17;
+die fünf Antworten sind der gebaute und gemessene Stand desselben Tages (VERMERK P11.13-4).
+Die Verdichtung ist CC, 2026-09-17.
 
 ---
 

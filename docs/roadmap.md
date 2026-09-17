@@ -2296,6 +2296,21 @@ liegen beide hier und finden einander.
       Vermerk, Entscheidungen und Vorrat stehen in docs/aktiver-stand.md (VERMERK P11.13-2).
       DER MARKER BLEIBT `[ ]` — die Scheiben 2, 3 und 4 aus (c) stehen aus, und damit ist
       Code zu schreiben (CLAUDE.md, "WANN [x] GESETZT WIRD — DAS KRITERIUM").
+
+      STAND 2026-09-17, ZWEITER DES TAGES — SCHEIBE 2 IST EBENFALLS GEBAUT UND LIVE
+      BEWIESEN: das Thema (hell, dunkel, automatisch), Bau-Commit `2b288f4`, mit
+      bestätigtem Live-Test auf einer realen Seite — darunter der Byte-Nachweis, dass "hell"
+      den ausgelieferten Text unverändert lässt, und "automatisch" am echten Handy mit
+      umgeschaltetem System-Dunkelmodus. Vermerk, Entscheidungen und Vorrat: VERMERK
+      P11.13-4 in docs/aktiver-stand.md.
+      DIE MESSUNG AUS PUNKT (f) IST GEFAHREN, und sie beantwortet die dort offene Frage:
+      `all:initial !important` setzt die BENUTZERDEFINIERTEN Eigenschaften NICHT zurück —
+      eine `--ps-*` der Kundenseite kommt im Schattenbaum an (GEMESSEN, CC, 2026-09-17,
+      Chromium, mit Gegenprobe ausserhalb). Der Verzicht auf CSS-Variablen ruht damit auf
+      einem Befund statt auf einer Annahme; die Fundstelle ist Entscheidung P11.13-8 der
+      Standdatei. SCHEIBE 3 (freie Farben) MUSS DIESE FRAGE NEU ENTSCHEIDEN — dort fällt die
+      feste Tabelle, auf der die heutige Antwort ruht.
+      DER MARKER BLEIBT `[ ]` — die Scheiben 3 und 4 aus (c) stehen aus.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

@@ -45,6 +45,11 @@ import {
   type TrackConfig,
 } from "@/lib/mappings";
 import { editPreviewHtml, generateFunctional } from "@/lib/generate";
+// KOMPATIBILITAETS-RIEGEL DER ZWEI EDITOR-RAHMEN (Scheibe 11.12a). NUR HIER
+// importiert — der Export- und Veroeffentlichungsweg (buildDocumentFor) ruft ihn
+// NIE, und diese Trennung ist die Bauart, nicht eine Modus-Verzweigung
+// (Entscheidung P11.12-2). Waechter: die zwei ARTEFAKT-RIEGEL-Laeufe unten.
+import { withPreviewStorageShim } from "@/lib/preview-storage-shim";
 import {
   eventAxisTargets,
   getConversionRules,
@@ -697,28 +702,33 @@ export default function CodeImporter({
   const functionalHtml = useMemo(
     () =>
       previewMode === "functional"
-        ? generateFunctional(debouncedCode, mappings, "preview", {
-            metaPixelId: getPixelId(settings, "meta"),
-            // AUS DEM ZUSTAND, NICHT AUS settings — s. den Kommentar am
-            // trackingKey-State.
-            //
-            // DIE DEP UNTEN IST VORSORGE UND HAT HEUTE KEINEN WAECHTER — GEMESSEN,
-            // NICHT ANGENOMMEN (Mutationsprobe M4, 2026-09-07): Wird trackingKey aus
-            // der Dep-Liste entfernt, bleibt der GESAMTE Bestand gruen. Der Grund ist
-            // eine Verdeckung: settings steht in derselben Liste und bekommt an JEDEM
-            // der vier Saat-Punkte eine NEUE Objekt-Referenz — das Memo rechnet also
-            // ohnehin neu, und die fehlende Dep wird nie sichtbar. Auch der Wechsel
-            // in die Vorschau selbst aendert previewMode und rechnet neu.
-            // SIE BLEIBT TROTZDEM STEHEN: Sie ist richtig, und sie wird TRAGEND, sobald
-            // jemand settings memoisiert oder aus der Liste nimmt. Wer sie streicht,
-            // weil "kein Test sie deckt", nimmt die Vorsorge genau vor diesem Umbau weg.
-            // DER EINZIGE MELDER IST DIE LINT-REGEL, und die laeuft als WARNUNG — der
-            // Lint-Befehl dieses Projekts kennt keine Obergrenze fuer Warnungen, es
-            // wird also KEIN Gate rot.
-            trackingKey,
-            capiProxyUrl: getCapiProxyUrl(),
-            consentTargets,
-          })
+        ? // RIEGEL NUR HIER, nicht in generateFunctional (Entscheidung P11.12-2).
+          // Wertgleich: gleiche Eingabe -> gleicher String -> KEIN zusaetzlicher
+          // srcDoc-Reload. Die Dep-Liste bleibt unangetastet.
+          withPreviewStorageShim(
+            generateFunctional(debouncedCode, mappings, "preview", {
+              metaPixelId: getPixelId(settings, "meta"),
+              // AUS DEM ZUSTAND, NICHT AUS settings — s. den Kommentar am
+              // trackingKey-State.
+              //
+              // DIE DEP UNTEN IST VORSORGE UND HAT HEUTE KEINEN WAECHTER — GEMESSEN,
+              // NICHT ANGENOMMEN (Mutationsprobe M4, 2026-09-07): Wird trackingKey aus
+              // der Dep-Liste entfernt, bleibt der GESAMTE Bestand gruen. Der Grund ist
+              // eine Verdeckung: settings steht in derselben Liste und bekommt an JEDEM
+              // der vier Saat-Punkte eine NEUE Objekt-Referenz — das Memo rechnet also
+              // ohnehin neu, und die fehlende Dep wird nie sichtbar. Auch der Wechsel
+              // in die Vorschau selbst aendert previewMode und rechnet neu.
+              // SIE BLEIBT TROTZDEM STEHEN: Sie ist richtig, und sie wird TRAGEND, sobald
+              // jemand settings memoisiert oder aus der Liste nimmt. Wer sie streicht,
+              // weil "kein Test sie deckt", nimmt die Vorsorge genau vor diesem Umbau weg.
+              // DER EINZIGE MELDER IST DIE LINT-REGEL, und die laeuft als WARNUNG — der
+              // Lint-Befehl dieses Projekts kennt keine Obergrenze fuer Warnungen, es
+              // wird also KEIN Gate rot.
+              trackingKey,
+              capiProxyUrl: getCapiProxyUrl(),
+              consentTargets,
+            })
+          )
         : "",
     [previewMode, debouncedCode, mappings, settings, trackingKey, consentTargets]
   );
@@ -783,8 +793,13 @@ export default function CodeImporter({
   // elementsReflectCurrentCode (debouncedCode === code -> false) gedeckt, und ein
   // Guard fuer 300ms waere Ueberbau. Im Normalfall (Kopie, identisches HTML) gibt es
   // das Fenster gar nicht — dort ist das neu berechnete srcDoc sofort das richtige.
+  // RIEGEL NUR HIER, nicht in editPreviewHtml (Entscheidung P11.12-2) — und
+  // ausdruecklich DANACH: editPreviewHtml haengt hinter </html> den
+  // Varianten-Marker, und ein Bestandstest nagelt seinen Rueckgabewert als
+  // byte-gleich zu previewHtml + Marker fest. Der Riegel setzt im <head> an und
+  // beruehrt den Marker am Dateiende nicht.
   const editHtml = useMemo(
-    () => editPreviewHtml(previewHtml, mappings, activeVariant),
+    () => withPreviewStorageShim(editPreviewHtml(previewHtml, mappings, activeVariant)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [previewHtml, activeVariant]
   );

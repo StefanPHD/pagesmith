@@ -1024,6 +1024,141 @@ describe("CodeImporter — Scheibe 9a: A/B-Varianten (Wurzeltausch)", () => {
     );
   });
 
+  // T1/T2 — DIE ZWEI ABWESENHEITS-WAECHTER DER SCHEIBE 11.12a.
+  //
+  // Sie stehen bewusst NEBEN dem Marker-Test darueber und nicht in ihm: sie
+  // pruefen verschiedene Gegenstaende (den Riegel und die Editor-Bruecke), und
+  // ein Lauf, der bei einer Aenderung rot wird, soll benennen WELCHE Sache
+  // gebrochen ist.
+  //
+  // Die Erwartungen sind GETIPPT, nicht importiert — DIE ERWARTUNGEN STAMMEN AUS
+  // DER ENTSCHEIDUNG, NIE AUS DEM CODE. Ein importiertes
+  // PREVIEW_STORAGE_SHIM_ID machte eine Umbenennung unsichtbar, statt sie zu
+  // fangen.
+  async function vorschauSrcdoc(): Promise<string> {
+    fireEvent.click(screen.getByRole("button", { name: "Vorschau" }));
+    const frame = await screen.findByTitle("functional-preview");
+    return frame.getAttribute("srcdoc") ?? "";
+  }
+
+  it("T1 ARTEFAKT-RIEGEL: der Vorschau-Riegel landet NIE im Export- oder Publish-Dokument", async () => {
+    // WIRD ROT, WENN der Riegel in buildDocumentFor, generateFunctional oder
+    // editPreviewHtml wandert — also sobald die Bauart-Trennung aus Entscheidung
+    // P11.12-2 durch eine Modus-Verzweigung ersetzt wird.
+    //
+    // ZWEI NADELN, NICHT EINE: die Kennung UND ein Textstueck des Riegels. Sonst
+    // ueberlebte eine Mutation, die nur das id-Attribut wegnimmt.
+    const writeText = vi.fn(async () => {});
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML_COPY}
+        initialMappings={TEXT_A}
+        initialVariantBHtml={HTML_COPY}
+        initialVariantBMappings={TEXT_B}
+      />,
+    );
+    await screen.findByText("Headline A");
+
+    // POSITIVKONTROLLE ZUERST, IN BEIDEN RAHMEN — ohne sie prueften die
+    // Abwesenheits-Zusicherungen unten nur, dass ein nie erzeugter String fehlt.
+    const editDoc =
+      (screen.getByTitle("preview") as HTMLIFrameElement).getAttribute("srcdoc") ?? "";
+    expect(editDoc).toContain("__ps_sbx");
+    expect(editDoc).toContain("sessionStorage");
+
+    const vorschauDoc = await vorschauSrcdoc();
+    expect(vorschauDoc).toContain("__ps_sbx");
+    expect(vorschauDoc).toContain("sessionStorage");
+
+    fireEvent.click(screen.getByRole("button", { name: "Editieren" }));
+
+    // Export (Copy) — das Dokument, das der Kunde herunterlaedt.
+    fireEvent.click(screen.getByRole("button", { name: /kopieren/i }));
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+    const exportDoc = (writeText.mock.calls[0] as unknown[])[0] as string;
+    expect(exportDoc).not.toContain("__ps_sbx");
+    expect(exportDoc).not.toContain("sessionStorage");
+
+    // Publish — beide Varianten-Artefakte.
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Veröffentlichen$/ }));
+    await waitFor(() => expect(publishProject).toHaveBeenCalledTimes(1));
+    const call = publishProject.mock.calls[0] as unknown[];
+    expect(call[1] as string).not.toContain("__ps_sbx");
+    expect(call[1] as string).not.toContain("sessionStorage");
+    const variantB = (call[3] as { functionalHtml: string }).functionalHtml;
+    expect(variantB).not.toContain("__ps_sbx");
+    expect(variantB).not.toContain("sessionStorage");
+  });
+
+  it("T2 ARTEFAKT-RIEGEL: die Editor-Bruecke landet NIE im Export- oder Publish-Dokument", async () => {
+    // WIRD ROT, WENN der Export seine Quelle von debouncedCode auf previewHtml
+    // umstellt. DIESE ABWESENHEIT WAR BIS ZUR SCHEIBE 11.12a DURCH KEINEN TEST
+    // GEDECKT (docs/aktiver-stand.md, VERMERK P11.12-1, Teil D): sie ruhte allein
+    // auf der Quellenwahl, also auf einem Nebeneffekt — und ein Nebeneffekt ist
+    // kein Waechter (docs/immer-beachten.md, NUR EIN TEST IST EIN WAECHTER).
+    //
+    // ER IST EIN EINZELSTUECK: GEMESSEN (CC, 2026-09-17, Mutation "Export-Quelle
+    // auf previewHtml") faengt ihn GENAU EIN Lauf im gesamten Bestand — dieser.
+    // 1789 andere blieben gruen. Wer ihn als redundant entfernt, nimmt die
+    // einzige Abdeckung dieser Fehlerklasse mit (docs/immer-beachten.md,
+    // MUTATIONSPROBEN UND LIVE-TEST-INSTRUMENTE, Lektion (f)).
+    //
+    // Geprueft werden MARKER-FRAGMENTE, nicht der Gesamttext von LISTENER_SCRIPT:
+    // der traegt Interpolationen und ist im Ausgabetext DOMParser-normalisiert.
+    // HIGHLIGHT_CLASS/HIGHLIGHT_STYLE sind in detect.ts bewusst NICHT exportiert,
+    // und detect.ts bleibt unberuehrt — die Klasse ist hier also getippt.
+    const writeText = vi.fn(async () => {});
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+
+    render(
+      <CodeImporter
+        initialProjectId="proj-1"
+        initialCode={HTML_COPY}
+        initialMappings={TEXT_A}
+        initialVariantBHtml={HTML_COPY}
+        initialVariantBMappings={TEXT_B}
+      />,
+    );
+    await screen.findByText("Headline A");
+
+    // POSITIVKONTROLLE im Editor-Rahmen.
+    const editDoc =
+      (screen.getByTitle("preview") as HTMLIFrameElement).getAttribute("srcdoc") ?? "";
+    expect(editDoc).toContain("ELEMENT_CLICKED");
+    expect(editDoc).toContain("IFRAME_READY");
+    expect(editDoc).toContain("pagesmith-highlight");
+
+    fireEvent.click(screen.getByRole("button", { name: /kopieren/i }));
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+    const exportDoc = (writeText.mock.calls[0] as unknown[])[0] as string;
+    expect(exportDoc).not.toContain("ELEMENT_CLICKED");
+    expect(exportDoc).not.toContain("IFRAME_READY");
+    expect(exportDoc).not.toContain("pagesmith-highlight");
+
+    fireEvent.click(screen.getByRole("button", { name: /⚙ Einstellungen/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Veröffentlichen$/ }));
+    await waitFor(() => expect(publishProject).toHaveBeenCalledTimes(1));
+    const call = publishProject.mock.calls[0] as unknown[];
+    for (const doc of [
+      call[1] as string,
+      (call[3] as { functionalHtml: string }).functionalHtml,
+    ]) {
+      expect(doc).not.toContain("ELEMENT_CLICKED");
+      expect(doc).not.toContain("IFRAME_READY");
+      expect(doc).not.toContain("pagesmith-highlight");
+    }
+  });
+
   it("REPRODUKTION (Live-Sequenz): identische Mappings beim Umschalten, Divergenz entsteht ERST danach per UI", async () => {
     // Der Unterschied zum ANKER-Test unten ist die SEQUENZ, nicht die Datenlage:
     // dort sind A und B schon beim Mount verschieden (Props), hier entstehen sie so,

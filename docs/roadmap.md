@@ -1601,6 +1601,15 @@ liegen beide hier und finden einander.
         der Leiste ist bisher NUR IM AUSGEKLAPPTEN Zustand gemessen; ein eingeklappter
         Standard erzeugte einen NEUEN Zustand, den heute nichts prüft. Der Befund steht
         bei VERMERK 6 des Archivs (Scheibe 11.5e-1).
+        NACHGEZOGEN 2026-09-17 — DER SATZ DARÜBER BLEIBT WÖRTLICH STEHEN, ER IST ALT UND
+        NICHT FALSCH: Der Umbau ist mit der Scheibe 11.13a gefahren (Bau-Commit
+        `bb9f045`), der eingeklappte Zustand ist an fünf Viewports plus einem echten
+        Mobilgerät gegen das harte Kriterium gemessen, und der ausgeklappte trifft die
+        Vorher-Werte. DAS GILT NUR FÜR SEITEN, DIE DANACH NEU VERÖFFENTLICHT WERDEN —
+        bereits veröffentlichte tragen die alte Gestalt weiter, bis ihr Betreiber sie neu
+        veröffentlicht (docs/immer-beachten.md, "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT
+        MIT DEM DEPLOY"). Nachweis: Roadmap-Zeile 11.13 und VERMERK P11.13-2 der
+        Standdatei.
       DIESE ZWEI PUNKTE HABEN VERSCHIEDENEN RANG, und der Nachtrag 2026-09-15 dieser Zeile
       hat es bereits benannt: Der erste ist etwas NICHT GEBAUTES, der zweite ein BEKANNTER
       BEFUND und ausdrücklich nichts Unbewiesenes. Der zweite stützt sich deshalb auf den
@@ -2267,6 +2276,12 @@ liegen beide hier und finden einander.
       DAS IST EINE ABLEITUNG UND KEINE ENTSCHEIDUNG: Ob eine solche Vorschau gebaut wird, ist
       hier NICHT entschieden, und diese Zeile schlägt sie auch nicht vor. Sie hielte nur fest,
       dass der Grund, der sie früher unmöglich gemacht hätte, weggefallen ist.
+
+      STAND 2026-09-17 — SCHEIBE 1 DES SCHNITTS (c) IST GEBAUT UND LIVE BEWIESEN: die
+      Anordnung, Bau-Commit `bb9f045`, mit bestätigtem Live-Test auf einer realen Seite;
+      Vermerk, Entscheidungen und Vorrat stehen in docs/aktiver-stand.md (VERMERK P11.13-2).
+      DER MARKER BLEIBT `[ ]` — die Scheiben 2, 3 und 4 aus (c) stehen aus, und damit ist
+      Code zu schreiben (CLAUDE.md, "WANN [x] GESETZT WIRD — DAS KRITERIUM").
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

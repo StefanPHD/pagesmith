@@ -4323,27 +4323,15 @@ Nummer in der Standdatei.
 
 - KEIN TEST LÄSST EINEN WURF BIS IN EINEN KNOPF-HANDLER DER EINWILLIGUNGS-OBERFLÄCHEN DURCH
   (aus Vorrat (15) der Phase 11.5) (Trigger: die nächste Runde, die am Klick-Handler von
-  Leiste oder Modal, an `CONSENT_CHOICE_JS` oder an `write()` arbeitet): Beide Oberflächen
-  entfernen ihr Host-Element im `finally` ihres Klick-Handlers, und die Docblocks beider
-  sagen, das geschehe „AUCH, WENN write() `false` LIEFERT ODER WIRFT". **DEN ZWEITEN FALL
-  PRÜFT KEIN TEST.**
-  AM CODE (GEMESSEN, CC, 2026-09-15): L11 und M11 lassen `Storage.prototype.setItem` werfen —
-  `write()` fängt diesen Wurf selbst ab und gibt `false` zurück; der Handler sieht einen
-  RÜCKGABEWERT, keinen Wurf. Ein Wurf, der den Handler tatsächlich erreicht, entsteht in
-  `write()` nur NACH dem Speichern: der Aufruf der Sende-Logik des PageView-Emitters steht
-  bewusst ohne try/catch. Achse `write|throw|mockImplementation` über `consent-bar.test.ts`
-  und `consent-modal.test.ts`, ohne reine Kommentarzeilen: Treffer allein die zwei
-  `setItem`-Würfe und die `throw`-Zeilen der Test-Helfer; **kein Test ersetzt `write` oder
-  lässt es werfen.** POSITIVKONTROLLE: dieselbe Achse trifft die `setItem`-Würfe in L11/M11.
-  **WAS STILL KAPUTTGEHT:** Beim Modal fängt die Abdunkelung JEDEN Klick. Bliebe der Host
-  nach einem Wurf stehen, **wäre die Kundenseite unbedienbar** — und der Besucher meldet das
-  nicht, er geht weg. Heute hält das `finally`; **dass es das tut, ist eine Aussage über
-  JavaScript, nicht über einen Test** (docs/immer-beachten.md, „NUR EIN TEST IST EIN WÄCHTER
-  — EIN KOMMENTAR ODER EIN NEBENEFFEKT IST KEINER"). Wer die Bauform ändert, bekommt kein
-  rotes Gate.
-  **DER FALL IST LIVE NICHT HERSTELLBAR** — das führen die Nachweise der Scheiben 11.5d,
-  11.5d-2, 11.5e-1 und 11.5e-2 je unter ihren Grenzen.
-  **KEINE EMPFEHLUNG**, wie der Test aussähe.
+  Leiste oder Modal, an `CONSENT_CHOICE_JS` oder an `write()` arbeitet) — **EINGETRETEN UND
+  ERLEDIGT mit der Scheibe 11.13a (2026-09-17).**
+  **GEDECKT DURCH L22 UND M23** (`src/lib/tracking/consent-bar.test.ts` bzw.
+  `consent-modal.test.ts`, Commit `bb9f045`): Sie ersetzen `window.__psConsentStore.write`
+  durch eine werfende Funktion, klicken „Ablehnen" und halten fest, dass der Wurf das
+  `error`-Ereignis des Fensters erreicht UND keine Oberfläche stehenbleibt — genau der Fall,
+  den der Posten als ungeprüft führte; Positivkontrolle im selben Lauf.
+  BELEG: GEMESSEN am Code (CC, 2026-09-17); der ungekürzte Wortlaut des Postens steht im
+  Commit davor.
 
 - DER CONSENT-GATE-BLOCK HAT ZWEI ERZEUGER — UND SIE LAUFEN BEREITS AUSEINANDER (aus Vorrat
   (16) der Phase 11.5) (Trigger: die nächste Änderung am INHALT des Gate-Blocks an einem der

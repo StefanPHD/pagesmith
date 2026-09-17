@@ -413,7 +413,8 @@ docs/claude-history/backlog-polish.md.
   einschaltet — für den Owner BEREITS EINGETRETEN, s. den Beleg am Eintrag)
 - KEIN TEST LÄSST EINEN WURF BIS IN EINEN KNOPF-HANDLER DER EINWILLIGUNGS-OBERFLÄCHEN DURCH
   (Trigger: die nächste Runde, die am Klick-Handler von Leiste oder Modal, an
-  CONSENT_CHOICE_JS oder an write() arbeitet)
+  CONSENT_CHOICE_JS oder an write() arbeitet — ERLEDIGT 2026-09-17 (gedeckt durch L22/M23,
+  bb9f045; Volltext in docs/offene-punkte.md))
 - DER CONSENT-GATE-BLOCK HAT ZWEI ERZEUGER — UND SIE LAUFEN BEREITS AUSEINANDER (Trigger: die
   nächste Änderung am INHALT des Gate-Blocks an einem der beiden Erzeuger — die reine
   Hüllen-Divergenz von heute ist harmlos und ist NICHT der Trigger)

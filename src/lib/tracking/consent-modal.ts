@@ -43,7 +43,9 @@ import {
   CONSENT_CHOICE_CSS,
   CONSENT_CHOICE_JS,
   CONSENT_TEXT,
+  consentThemeCss,
 } from "@/lib/tracking/consent-choice";
+import type { ConsentTheme } from "@/lib/settings";
 import {
   wrapRevoke,
   type ConsentSurfaceMode,
@@ -147,7 +149,8 @@ const CONSENT_MODAL_CSS =
 function aufbauDesFensters(
   abbruch: string,
   vormerken: string,
-  ausgeklappt: string
+  ausgeklappt: string,
+  stil: string
 ): string {
   return `  var body = document.body;
   if (!body) ${abbruch}
@@ -155,7 +158,7 @@ function aufbauDesFensters(
   if (typeof host.attachShadow !== "function") ${abbruch}
   var root = host.attachShadow({ mode: "open" });
   var style = document.createElement("style");
-  style.textContent = ${JSON.stringify(CONSENT_MODAL_CSS + CONSENT_CHOICE_CSS)};
+  style.textContent = ${JSON.stringify(stil)};
   root.appendChild(style);
   var backdrop = document.createElement("div");
   backdrop.setAttribute("class", "backdrop");
@@ -175,10 +178,17 @@ ${vormerken}  body.appendChild(host);
 `;
 }
 
-export function buildConsentModalScript(mode: ConsentSurfaceMode): string {
+export function buildConsentModalScript(
+  mode: ConsentSurfaceMode,
+  // DIE DARSTELLUNG (Phase 11.13, Scheibe 11.13b). Pflicht-Parameter ohne Vorgabewert,
+  // Freigabe F1 vom 2026-09-17; die Begruendung steht am Docblock von
+  // buildConsentBarScript und wird hier nicht verdoppelt.
+  theme: ConsentTheme
+): string {
+  const stil = CONSENT_MODAL_CSS + CONSENT_CHOICE_CSS + consentThemeCss(theme);
   if (mode === "revoke") {
     return wrapRevoke(
-      aufbauDesFensters("return false;", "    offen = host;\n", "true")
+      aufbauDesFensters("return false;", "    offen = host;\n", "true", stil)
     );
   }
   return `<script id="${CONSENT_MODAL_SCRIPT_ID}">
@@ -187,6 +197,6 @@ export function buildConsentModalScript(mode: ConsentSurfaceMode): string {
   var api = window.${CONSENT_STORE_API};
   if (!api || typeof api.read !== "function" || typeof api.write !== "function") return;
   if (api.read().state !== "never") return;
-${aufbauDesFensters("return;", "", "false")}})();
+${aufbauDesFensters("return;", "", "false", stil)}})();
 </script>`;
 }

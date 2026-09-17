@@ -13,10 +13,13 @@ import {
   hasConversionRules,
   hasTargetPixelId,
   CONSENT_DIALOG_UNKNOWN_MESSAGE,
+  CONSENT_THEME_UNKNOWN_MESSAGE,
   getConsentDialog,
+  getConsentTheme,
   isTrackingTarget,
   setCapiState,
   setHostingState,
+  type ConsentTheme,
   type ProjectSettings,
   type TrackingTarget,
 } from "@/lib/settings";
@@ -1584,6 +1587,36 @@ export async function publishProject(
   if (consentDialog === "unknown")
     return { ok: false, error: CONSENT_DIALOG_UNKNOWN_MESSAGE };
 
+  // DIE DARSTELLUNG (Phase 11.13, Scheibe 11.13b; bindende Entscheidung P11.13-7).
+  //
+  // DIE REIHENFOLGE IST BINDEND: Der Dialog-Zweig oben laeuft ZUERST. Bei einem unbekannten
+  // DIALOG waere gar nicht entscheidbar, ob das Thema ueberhaupt zaehlt — der Abbruch mit
+  // der falschen Meldung schickte den Betreiber an die falsche Stelle.
+  //
+  // DER ABBRUCH HAENGT AM DIALOG, UND DAS IST KEINE MILDE, SONDERN DIE ASYMMETRIE, AUF DER
+  // DIE DAUERREGEL SELBST RUHT: Sie verlangt den lauten Abbruch, weil der Preis eines
+  // stillen Rueckfalls den BESUCHER traefe — unsichtbar und dauerhaft. Bei "off" entsteht
+  // kein Oberflaechen-Block (consentBlocksFor), der Themenwert erreicht also keine
+  // ausgelieferte Zeile; es gibt keinen Besucher-Preis. Ein Abbruch dort sperrte das
+  // Veroeffentlichen fuer eine Einstellung ohne jede Wirkung.
+  // SIE KIPPT, SOBALD DER THEMENWERT AUCH BEI "off" ETWAS AUSLIEFERT.
+  const consentTheme = getConsentTheme(snapshot.settings);
+  if (consentDialog !== "off" && consentTheme === "unknown")
+    return { ok: false, error: CONSENT_THEME_UNKNOWN_MESSAGE };
+
+  // AB HIER IST "unknown" NUR NOCH BEI "off" MOEGLICH — und dort erzeugt consentBlocksFor
+  // keinen Oberflaechen-Block, der Wert wird also NIE GELESEN. Der Typ von
+  // injectPageViewEmitter verlangt trotzdem einen gebauten Wert.
+  // DIESE ZEILE IST KEIN RUECKFALL IM SINNE DER DAUERREGEL "EIN UNBEKANNTER
+  // KONFIGURATIONSWERT BRICHT LAUT AB", und der Unterschied ist der ganze Grund fuer diesen
+  // Absatz: Jene Regel verbietet, dass ein LESER einen unbekannten Wert auf den Vorgabewert
+  // abbildet — dann saehe die abbrechende Stelle ihn nie. HIER IST DIE ABBRECHENDE STELLE
+  // BEREITS PASSIERT, und der Platzhalter erreicht keine ausgelieferte Zeile. Dass er sie
+  // nicht erreicht, behauptet nicht dieser Kommentar, sondern PT2: "off" plus unbekanntes
+  // Thema liefert byte-gleich den Text ohne jeden Dialog-Baustein.
+  const deliveredTheme: ConsentTheme =
+    consentTheme === "unknown" ? "light" : consentTheme;
+
   const currentSettings = (owned.settings ?? {}) as ProjectSettings;
   const publishedAt = new Date().toISOString();
 
@@ -1699,7 +1732,12 @@ export async function publishProject(
   // auf die bekannten Formen eingeengt (Scheiben 11.5d, 11.5d-2); hier wird er nur
   // weitergereicht.
   const base = {
-    html: injectPageViewEmitter(functionalHtml, trackingKey, consentDialog),
+    html: injectPageViewEmitter(
+      functionalHtml,
+      trackingKey,
+      consentDialog,
+      deliveredTheme
+    ),
     mappings: snapshot.mappings,
     settings: snapshot.settings,
     publishedAt,
@@ -1732,7 +1770,8 @@ export async function publishProject(
           html: injectPageViewEmitter(
             variantB.functionalHtml,
             trackingKey,
-            consentDialog
+            consentDialog,
+            deliveredTheme
           ),
           mappings: variantB.mappings,
         },

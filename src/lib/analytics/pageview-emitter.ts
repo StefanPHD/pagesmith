@@ -19,7 +19,7 @@ import { buildConsentBarScript } from "@/lib/tracking/consent-bar";
 import { buildConsentModalScript } from "@/lib/tracking/consent-modal";
 import { buildConsentDenyScript } from "@/lib/tracking/consent-setter";
 import { buildConsentRestoreScript } from "@/lib/tracking/consent-store";
-import type { ConsentDialog } from "@/lib/settings";
+import type { ConsentDialog, ConsentTheme } from "@/lib/settings";
 
 const SCRIPT_ID = "__ps_pve";
 
@@ -135,7 +135,15 @@ ${PAGEVIEW_SEND_API}();
 // DER WURF IM `default` IST EIN TYP-VERTRAG, KEIN LAUFZEIT-ZWEIG: Vitest prueft keine
 // Typen, und ein nicht migrierter Aufruf mit `true`/`false` liefe sonst still durch —
 // ohne Oberflaeche und mit einer AUS-Huelle, die niemand bestellt hat.
-function consentBlocksFor(form: ConsentDialog): {
+// DAS THEMA WIRD HIER NUR DURCHGEREICHT (Phase 11.13, Scheibe 11.13b). Die erschoepfende
+// Verzweigung ueber die DARSTELLUNG steht in consentThemeCss (tracking/consent-choice.ts) —
+// eine zweite hier waere ein zweiter Ort derselben Entscheidung. Bei "off" wird es gar
+// nicht gelesen, und genau darauf ruht Entscheidung P11.13-7: Der Themenwert erreicht bei
+// ausgeschaltetem Dialog keine ausgelieferte Zeile.
+function consentBlocksFor(
+  form: ConsentDialog,
+  theme: ConsentTheme
+): {
   gateOn: boolean;
   dialog: string;
   revoke: string;
@@ -146,14 +154,14 @@ function consentBlocksFor(form: ConsentDialog): {
     case "bar":
       return {
         gateOn: true,
-        dialog: buildConsentBarScript("load"),
-        revoke: buildConsentBarScript("revoke"),
+        dialog: buildConsentBarScript("load", theme),
+        revoke: buildConsentBarScript("revoke", theme),
       };
     case "modal":
       return {
         gateOn: true,
-        dialog: buildConsentModalScript("load"),
-        revoke: buildConsentModalScript("revoke"),
+        dialog: buildConsentModalScript("load", theme),
+        revoke: buildConsentModalScript("revoke", theme),
       };
     default: {
       const unhandled: never = form;
@@ -177,9 +185,20 @@ export function injectPageViewEmitter(
   // jeden kuenftigen Aufrufer den Schalter stillschweigend uebergehen — der Setzer
   // fehlte dann auf einem neuen Auslieferungsweg, ohne dass irgendwo etwas rot wird.
   // So muss jede Aufrufstelle entscheiden, und der Compiler fragt.
-  consentDialog: ConsentDialog
+  consentDialog: ConsentDialog,
+  // DIE DARSTELLUNG DES DIALOGS (Phase 11.13, Scheibe 11.13b). PFLICHT-PARAMETER OHNE
+  // VORGABEWERT, aus demselben Grund wie der Schalter darueber und mit derselben Bauform
+  // (Freigabe F1, 2026-09-17): Ein `= "light"` liesse einen neuen Auslieferungsweg die
+  // Darstellung stillschweigend uebergehen — und ein helles Fenster auf einer dunklen
+  // Kundenseite ist der Fremdkoerper, wegen dessen diese Phase existiert. Ein UNBEKANNTER
+  // Wert erreicht diese Funktion nicht: publishProject verweigert ihn vorher, sofern der
+  // Dialog eingeschaltet ist (bindende Entscheidung P11.13-7).
+  consentTheme: ConsentTheme
 ): string {
-  const { gateOn, dialog, revoke } = consentBlocksFor(consentDialog);
+  const { gateOn, dialog, revoke } = consentBlocksFor(
+    consentDialog,
+    consentTheme
+  );
   // ZWEITE EINFUEGESTELLE DES GETEILTEN CONSENT-GATES (Phase 11, zweite Scheibe).
   // Sie ist noetig, weil eine publizierte Seite OHNE Mappings KEIN Wiring traegt —
   // dann kaeme der Block aus generate.ts nicht, und die publizierte Seite haette

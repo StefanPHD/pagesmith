@@ -9,6 +9,8 @@ import {
   setMetaPixelId,
   getConsentDialog,
   setConsentDialog,
+  getConsentTheme,
+  setConsentTheme,
   setPixelId,
   settingsEqual,
   TRACKING_TARGETS,
@@ -319,5 +321,77 @@ describe("getConsentDialog — der Leser des Schalters (Scheibe 11.5d)", () => {
     expect(settingsEqual({}, aus)).toBe(true);
     // Normalisiert: der Altbestand und der neue Schluessel mit derselben Bedeutung.
     expect(settingsEqual({ consent: { gate: true } }, leiste)).toBe(true);
+  });
+});
+
+describe("die Darstellung des Einwilligungs-Dialogs (Scheibe 11.13b)", () => {
+  // DIE ERWARTUNGEN STAMMEN AUS ENTSCHEIDUNG P11.13-6, NICHT AUS DEM CODE.
+  // DER UNBEKANNT-BELEG TRAEGT DAS PRAEFIX `__ps_` — dieselbe Plan-Setzung wie beim
+  // Dialogwert: der Namensraum gehoert eigenen Kennungen und wird nie ein Themenwert.
+
+  it("TH1: fehlendes Feld -> 'light'; gebaute Werte -> sie selbst", () => {
+    expect(getConsentTheme({})).toBe("light");
+    expect(getConsentTheme({ consent: {} })).toBe("light");
+    expect(getConsentTheme({ consent: { dialog: "bar" } })).toBe("light");
+    expect(getConsentTheme({ consent: { theme: "light" } })).toBe("light");
+    expect(getConsentTheme({ consent: { theme: "dark" } })).toBe("dark");
+    expect(getConsentTheme({ consent: { theme: "auto" } })).toBe("auto");
+  });
+
+  // TH2. DER SCHAERFSTE TEST AUF DEN EIGENEN AUSGANG "unknown" (Pflicht-Mutation Mu1).
+  // ER IST NICHT DER EINZIGE, UND DAS IST GEMESSEN: Mu1 (unknown -> light) faellt VIER
+  // Tests — TH2, TH3, PT1 und UI5 —, alle mit derselben Fehlerklasse "es gibt kein
+  // unknown mehr". TH2 ist der einzige, der die Wertemenge EINZELN durchgeht.
+  // "unknown" DARF NIE AUF "light" ABGEBILDET WERDEN: Sonst saehe publishProject einen
+  // unbekannten Wert nie, und die Verweigerung waere toter Code.
+  it("TH2: jeder andere Wert -> 'unknown', nie 'light'", () => {
+    for (const wert of ["__ps_x", "", "LIGHT", "Dark", " auto", null, true, 1, {}, []]) {
+      expect(getConsentTheme({ consent: { theme: wert } })).toBe("unknown");
+    }
+    // POSITIVKONTROLLE im selben Lauf: die drei gebauten Werte sind NICHT "unknown".
+    for (const wert of ["light", "dark", "auto"] as const) {
+      expect(getConsentTheme({ consent: { theme: wert } })).not.toBe("unknown");
+    }
+  });
+
+  // TH3. DER TEST AUF DEN TERM IN settingsEqual AN DER REINEN FUNKTION (Mu4).
+  // DREI TESTS HALTEN DEN TERM, GEMESSEN: TH3 hier, UI3 und UI4 am Bedienweg. Die erste
+  // Vorhersage nannte TH3 als Einzelstueck und war zu eng — der Term traegt eine Achse,
+  // die bis in den Projektwechsel-Guard reicht.
+  // "dark gegen auto" ist der Diskriminator gegen eine boolesche Projektion: Unter
+  // `!== "light"` waeren beide "dunkel" und damit gleich.
+  it("TH3: settingsEqual vergleicht den normalisierten Themenwert — sichtbar fuer dirty, kein false-dirty", () => {
+    const hell = setConsentTheme({}, "light");
+    const dunkel = setConsentTheme({}, "dark");
+    const auto = setConsentTheme({}, "auto");
+    expect(settingsEqual(hell, dunkel)).toBe(false);
+    expect(settingsEqual(dunkel, hell)).toBe(false);
+    expect(settingsEqual(dunkel, auto)).toBe(false);
+    expect(settingsEqual(auto, dunkel)).toBe(false);
+    expect(settingsEqual(hell, { consent: { theme: "__ps_x" } })).toBe(false);
+    // POSITIVKONTROLLEN: kein false-dirty. Fehlendes Feld und geschriebenes "light" sind
+    // DASSELBE — sonst waere jedes Bestandsprojekt beim Laden sofort dirty.
+    expect(settingsEqual({}, hell)).toBe(true);
+    expect(settingsEqual({}, {})).toBe(true);
+    expect(settingsEqual(dunkel, { consent: { theme: "dark" } })).toBe(true);
+  });
+
+  it("TH4: setConsentTheme laesst dialog und gate unberuehrt", () => {
+    const vorher: ProjectSettings = { consent: { gate: true, dialog: "modal" } };
+    const nachher = setConsentTheme(vorher, "dark");
+    expect(getConsentDialog(nachher)).toBe("modal");
+    expect(nachher.consent?.gate).toBe(true);
+    expect(getConsentTheme(nachher)).toBe("dark");
+    // Und der Setzer mutiert das Original nicht.
+    expect(getConsentTheme(vorher)).toBe("light");
+  });
+
+  it("TH5: die zwei Schalter sind unabhaengig — jeder Setzer laesst den anderen Wert stehen", () => {
+    const a = setConsentTheme(setConsentDialog({}, "bar"), "auto");
+    expect(getConsentDialog(a)).toBe("bar");
+    expect(getConsentTheme(a)).toBe("auto");
+    const b = setConsentDialog(a, "off");
+    expect(getConsentTheme(b)).toBe("auto");
+    expect(settingsEqual(a, b)).toBe(false);
   });
 });

@@ -62,6 +62,8 @@ import {
   setHostingState,
   getConsentDialog,
   setConsentDialog,
+  getConsentTheme,
+  setConsentTheme,
   setPixelId,
   settingsEqual,
   TRACKING_TARGETS,
@@ -2694,6 +2696,10 @@ export default function CodeImporter({
               consentDialog={getConsentDialog(settings)}
               onConsentDialogChange={(mode) =>
                 setSettings((prev) => setConsentDialog(prev, mode))
+              }
+              consentTheme={getConsentTheme(settings)}
+              onConsentThemeChange={(theme) =>
+                setSettings((prev) => setConsentTheme(prev, theme))
               }
               onToggleAbTest={handleToggleAbTest}
               abTestActive={abTestActive}

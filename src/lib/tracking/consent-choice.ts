@@ -34,6 +34,7 @@
 
 import { ANALYTICS_CONSENT_TARGET } from "@/lib/tracking/consent";
 import { ALL_CONSENT_KEYS } from "@/lib/tracking/consent-targets";
+import type { ConsentTheme } from "@/lib/settings";
 
 /**
  * Der Sachtext beider Oberflaechen, eine Zeile ueber den Schaltern, ohne Ueberschrift.
@@ -132,6 +133,85 @@ export const CONSENT_CHOICE_CSS =
   ".group input{box-sizing:border-box;width:18px;height:18px;margin:0;accent-color:#111827;cursor:pointer;}" +
   ".group input:focus-visible{outline:2px solid #2563eb;outline-offset:2px;}" +
   ".way{min-width:0;border:0;background:transparent;font-weight:400;text-decoration:underline;}";
+
+/**
+ * DIE FARB-UEBERSCHREIBUNGEN DES DUNKLEN THEMAS (Phase 11.13, Scheibe 11.13b; bindende
+ * Entscheidung P11.13-9).
+ *
+ * JEDE DEKLARATION TRAEGT GENAU EINE EIGENSCHAFT AUS DER ERLAUBTEN LISTE — color,
+ * background-color, border-color, border-top-color, outline-color, accent-color,
+ * color-scheme. KEINE KURZSCHREIBWEISE, und das ist der ganze Punkt: Im Bestand tragen
+ * `button{border:1px solid …}` und `.bar{border-top:1px solid …}` Farbe UND Groesse in
+ * EINER Kurzschreibweise. Wer sie ueberschreibt, verschiebt Breiten und Hoehen — und damit
+ * die Entscheidungen P11.13-3 (alles im Fenster und treffbar) und P11.13-5
+ * (Gleichrangigkeit). Mit dieser Liste bleiben Groesse und Lage DURCH DIE BAUART gleich.
+ *
+ * EINE KONSTANTE FUER BEIDE FORMEN: `.bar` und `.dialog` stehen zusammen; im jeweiligen
+ * Schattenbaum trifft nur einer von beiden, der andere matcht nichts. Das macht die Zusage
+ * "auto ist light plus DIESELBEN Ueberschreibungen" strukturell wahr statt behauptet — es
+ * ist buchstaeblich dieselbe Konstante.
+ *
+ * `color-scheme` SITZT AUF `.bar,.dialog` UND NICHT AUF `:host`, und der Grund ist
+ * gemessen: `:host` traegt `all:initial !important`; die Kurzschreibweise `all` schliesst
+ * `color-scheme` ein, und eine spaetere Regel ohne `!important` verloere. Auf `.bar` wirkt
+ * es und erbt bis in das native Kaestchen (GEMESSEN, CC, 2026-09-17: colorScheme "dark",
+ * Rahmen weiss statt schwarz).
+ *
+ * DER WEG BRAUCHT KEINE EIGENE REGEL: `.way{background:transparent}` hat Spezifitaet
+ * (0,1,0) und schlaegt `button{background-color:…}` (0,0,1) — er bleibt durchsichtig auf
+ * dem dunklen Behaelter; seine Farbe erbt er aus `button{color:…}`. Eine `.way`-Regel waere
+ * genau der Fall, in dem P11.13-5 neu zu messen waere.
+ *
+ * KEINE CSS-VARIABLEN (bindende Entscheidung P11.13-8): `all:initial` setzt nach Kenntnis
+ * des Architekten die BENUTZERDEFINIERTEN Eigenschaften NICHT zurueck; eine `--ps-*` der
+ * Kundenseite erbte dann hierher. Die Messung dazu steht aus (docs/roadmap.md,
+ * Roadmap-Zeile 11.13, Punkt (f)).
+ */
+export const CONSENT_THEME_DARK_CSS =
+  ".bar,.dialog{color:#f9fafb;background-color:#111827;color-scheme:dark;}" +
+  ".bar{border-top-color:#4b5563;}" +
+  ".dialog{border-color:#4b5563;}" +
+  "button{color:#f9fafb;background-color:#111827;border-color:#f9fafb;}" +
+  "button:focus-visible{outline-color:#60a5fa;}" +
+  ".group input{accent-color:#f9fafb;}" +
+  ".group input:focus-visible{outline-color:#60a5fa;}";
+
+/**
+ * DIE EINE ERSCHOEPFENDE VERZWEIGUNG UEBER DIE DARSTELLUNG (Phase 11.13, Scheibe 11.13b;
+ * bindende Entscheidung P11.13-8). Ein weiterer Wert in CONSENT_THEMES macht den
+ * `never`-Zweig zum Compiler-Fehler — HIER und nirgends sonst; dieselbe Bauform wie
+ * consentBlocksFor fuer die Form des Dialogs.
+ *
+ * "light" LIEFERT DEN LEEREN STRING, UND DAS IST DIE TRAGENDE INVARIANTE DER SCHEIBE:
+ * `BASIS + CONSENT_CHOICE_CSS + ""` ist zeichengleich mit dem Stylesheet vor dieser
+ * Scheibe. Damit ist der ausgelieferte Text fuer "light" BYTE-GLEICH — nicht, weil ein
+ * Test es prueft, sondern weil die Bauart es erzwingt. CSS1 haelt es trotzdem.
+ *
+ * "auto" IST "light" PLUS DENSELBEN UEBERSCHREIBUNGEN IN EINER @media-REGEL. Es folgt der
+ * Systemeinstellung des BESUCHERS, nicht dem Design der Kundenseite — der tragende
+ * Unterschied aus docs/roadmap.md, Roadmap-Zeile 11.13, Punkt (c). OHNE Systemeinstellung
+ * bleibt es "light"; das ist der Vorgabe-Zweig und ausdruecklich gewollt (Freigabe F2).
+ *
+ * DER WURF IM `default` IST EIN TYP-VERTRAG, KEIN LAUFZEIT-ZWEIG: Vitest prueft keine
+ * Typen, und ein nicht migrierter Aufruf mit einem Fremdwert liefe sonst still als "light"
+ * durch — also mit einer Darstellung, die niemand bestellt hat.
+ */
+export function consentThemeCss(theme: ConsentTheme): string {
+  switch (theme) {
+    case "light":
+      return "";
+    case "dark":
+      return CONSENT_THEME_DARK_CSS;
+    case "auto":
+      return (
+        "@media (prefers-color-scheme: dark){" + CONSENT_THEME_DARK_CSS + "}"
+      );
+    default: {
+      const unhandled: never = theme;
+      throw new Error(`consentThemeCss: unbekanntes Thema ${String(unhandled)}`);
+    }
+  }
+}
 
 /**
  * Das Code-Stueck, das JEDER Block in seine sofort ausgefuehrte Funktion einsetzt. Es

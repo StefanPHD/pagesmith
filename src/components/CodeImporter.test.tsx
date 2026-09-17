@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 
 // RIEGEL-TEST der in der Mapping-Phase erkaempften INVARIANTE:
@@ -4007,5 +4008,159 @@ describe("CodeImporter — der Beacon-Schluessel stammt aus der Spalte, nicht au
     const nachher = await exportDoc();
     expect(nachher).toContain("navigator.sendBeacon(");
     expect(nachher).toContain('"tk-mock"');
+  });
+});
+
+describe("CodeImporter — die Darstellung des Einwilligungs-Dialogs (Scheibe 11.13b)", () => {
+  // DIE ERWARTUNGEN STAMMEN AUS ENTSCHEIDUNG P11.13-6, NICHT AUS DER GEBAUTEN
+  // OBERFLAECHE. DIESER BLOCK IST DIE ERSTE ABDECKUNG UEBERHAUPT FUER DIE
+  // EINWILLIGUNGS-FLAECHE IN PublishView (GEMESSEN, VERMERK P11.13-3): bis zur Scheibe
+  // 11.13b hat kein Test sie gerendert.
+  function openSettings() {
+    fireEvent.click(screen.getByRole("button", { name: /Einstellungen/ }));
+  }
+  function themenGruppe() {
+    return screen.queryByRole("radiogroup", { name: "Darstellung" });
+  }
+
+  // UI1. Sichtbar bei eingeschaltetem Dialog, mit "Hell" als Vorgabe.
+  it("UI1: bei 'Leiste' steht die Gruppe 'Darstellung' mit drei Optionen, 'Hell' gewaehlt", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "bar" } }}
+      />,
+    );
+    openSettings();
+    const gruppe = themenGruppe();
+    expect(gruppe).not.toBeNull();
+    const radios = within(gruppe as HTMLElement).getAllByRole("radio");
+    expect(radios).toHaveLength(3);
+    expect((radios[0] as HTMLInputElement).checked).toBe(true);
+    expect((radios[1] as HTMLInputElement).checked).toBe(false);
+    expect((radios[2] as HTMLInputElement).checked).toBe(false);
+  });
+
+  // UI2. DER EINZIGE TEST, DER DIE SICHTBARKEITS-BEDINGUNG UND DAS ERHALTENBLEIBEN
+  // HAELT (Pflicht-Mutation Mu8). Beide Haelften gehoeren in EINEN Lauf: Eine Gruppe, die
+  // beim Ausschalten verschwindet UND den Wert mitnimmt, waere ein Datenverlust, den der
+  // Sichtbarkeits-Test allein nicht faengt.
+  it("UI2: bei 'Aus' ist die Gruppe weg — und der gewaehlte Wert ueberlebt das Aus- und Einschalten", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "bar", theme: "dark" } }}
+      />,
+    );
+    openSettings();
+    // Vorbedingung: "Dunkel" ist gewaehlt.
+    expect(
+      (within(themenGruppe() as HTMLElement).getAllByRole(
+        "radio",
+      )[1] as HTMLInputElement).checked,
+    ).toBe(true);
+
+    // Dialog auf "Aus" -> die Gruppe ist NICHT im Dokument.
+    fireEvent.click(screen.getByRole("radio", { name: /Aus/ }));
+    expect(themenGruppe()).toBeNull();
+
+    // Zurueck auf "Leiste" -> die alte Wahl steht wieder da.
+    fireEvent.click(screen.getByRole("radio", { name: /Leiste/ }));
+    expect(
+      (within(themenGruppe() as HTMLElement).getAllByRole(
+        "radio",
+      )[1] as HTMLInputElement).checked,
+    ).toBe(true);
+  });
+
+  // UI3. Die Wahl ist fuer dirty SICHTBAR — das ist die Wirkung des Terms in
+  // settingsEqual, hier am Bedienweg statt an der reinen Funktion.
+  it("UI3: die Wahl 'Dunkel' macht dirty sichtbar und reicht den Wert an saveProject", async () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "bar" } }}
+      />,
+    );
+    openSettings();
+    // Vorbedingung: noch nicht dirty.
+    expect(screen.queryByText(/Ungespeicherte/i)).toBeNull();
+
+    fireEvent.click(screen.getByRole("radio", { name: /Dunkel/ }));
+    expect(screen.getAllByText(/Ungespeicherte/i).length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+    const args = saveProject.mock.calls[0] as unknown[];
+    expect(args[3]).toEqual({ consent: { dialog: "bar", theme: "dark" } });
+  });
+
+  // UI4. Der Guard beim Projektwechsel greift — dieselbe dirty-Quelle.
+  it("UI4: nach der Wahl fragt der Projektwechsel nach", async () => {
+    const confirmSpy = vi
+      .spyOn(window, "confirm")
+      .mockImplementation(() => false);
+    try {
+      render(
+        <CodeImporter
+          initialCode="<button>X</button>"
+          initialProjectId="p1"
+          initialProjects={[
+            { id: "p1", name: "P1", updated_at: "2026-01-01T00:00:00Z" },
+            { id: "p2", name: "P2", updated_at: "2026-01-02T00:00:00Z" },
+          ]}
+          initialSettings={{ consent: { dialog: "bar" } }}
+        />,
+      );
+      openSettings();
+      fireEvent.click(screen.getByRole("radio", { name: /Automatisch/ }));
+
+      fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
+      fireEvent.click(await screen.findByText("P2"));
+      expect(confirmSpy).toHaveBeenCalledTimes(1);
+      // Abgelehnt -> kein Laden des anderen Projekts.
+      expect(loadProject).not.toHaveBeenCalled();
+    } finally {
+      confirmSpy.mockRestore();
+    }
+  });
+
+  // UI5. Der unbekannte Wert: nichts markiert, roter Hinweis. ER TRAEGT ZUSAMMEN MIT PT1
+  // UND PT2 DIE ACHSE, FUER DIE DER LIVE-SCHRITT ENTFALLEN IST (Freigabe F3).
+  it("UI5: ein unbekannter Themenwert -> kein Radio markiert, Hinweis sichtbar", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "modal", theme: "__ps_x" } }}
+      />,
+    );
+    openSettings();
+    const gruppe = themenGruppe() as HTMLElement;
+    for (const r of within(gruppe).getAllByRole("radio")) {
+      expect((r as HTMLInputElement).checked).toBe(false);
+    }
+    expect(within(gruppe).getByText(/unbekannter Wert/i)).toBeTruthy();
+    // POSITIVKONTROLLE im selben Lauf: mit einem gebauten Wert ist eins markiert und der
+    // Hinweis weg.
+    cleanup();
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "modal", theme: "auto" } }}
+      />,
+    );
+    openSettings();
+    const g2 = themenGruppe() as HTMLElement;
+    expect(
+      within(g2)
+        .getAllByRole("radio")
+        .filter((r) => (r as HTMLInputElement).checked),
+    ).toHaveLength(1);
+    expect(within(g2).queryByText(/unbekannter Wert/i)).toBeNull();
   });
 });

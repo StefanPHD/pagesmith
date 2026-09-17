@@ -220,9 +220,15 @@ export type ProjectSettings = {
   // ER FAELLT NICHT UNTER "SERVER-EIGENE IDENTITAET NIE IN EINEN CLIENT-BESESSENEN
   // BLOB": Jene Regel trifft eine SERVER-VERGEBENE Identitaet, die der Client nicht
   // kennt. Dieser Schalter ist eine EINGABE DES BETREIBERS und entsteht im Client.
+  //   theme  = DIE DARSTELLUNG DER OBERFLAECHE (Phase 11.13, Scheibe 11.13b): hell,
+  //            dunkel oder "der Systemeinstellung des Besuchers folgend". Gelesen
+  //            AUSSCHLIESSLICH ueber getConsentTheme; der Typ ist `unknown` aus demselben
+  //            Grund wie bei `dialog`. Er liegt als NACHBAR von `dialog` und nicht als
+  //            eigenes Top-Level-Mitglied — bindende Entscheidung P11.13-6.
   consent?: {
     gate?: boolean;
     dialog?: unknown;
+    theme?: unknown;
   };
 };
 
@@ -722,6 +728,15 @@ function conversionRulesEqual(
 export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
   return (
     getConsentDialog(a) === getConsentDialog(b) &&
+    // DER THEMEN-TERM (Phase 11.13, Scheibe 11.13b; bindende Entscheidung P11.13-6).
+    // OHNE IHN GINGE DER WERT STILL VERLOREN: dirty bliebe false, es gaebe keinen Text
+    // "Ungespeicherte Aenderungen", keinen beforeunload-Waechter und kein confirm beim
+    // Projektwechsel — und nichts wuerde davon rot. Verglichen wird der NORMALISIERTE
+    // Wert, damit ein fehlendes Feld und ein geschriebenes "light" gleich sind (kein
+    // false-dirty). DREI Tests halten diesen Term, und das ist GEMESSEN statt behauptet
+    // (Pflicht-Mutation Mu4, 2026-09-17): TH3 an der reinen Funktion, UI3 und UI4 am
+    // Bedienweg. Die erste Vorhersage nannte TH3 als Einzelstueck und war zu eng.
+    getConsentTheme(a) === getConsentTheme(b) &&
     TRACKING_TARGETS.every(
       (t) =>
         getPixelId(a, t) === getPixelId(b, t) &&
@@ -807,6 +822,78 @@ export function setConsentDialog(
     consent: {
       ...settings.consent,
       dialog: mode,
+    },
+  };
+}
+
+/**
+ * DIE GEBAUTEN WERTE DER DARSTELLUNG (Phase 11.13, Scheibe 11.13b; bindende Entscheidung
+ * P11.13-6). "light" = das Stylesheet, das der Dialog seit Phase 11.5 traegt; "dark" =
+ * dasselbe plus reine Farb-Ueberschreibungen; "auto" = "light" plus dieselben
+ * Ueberschreibungen in einer @media-Regel auf `prefers-color-scheme: dark`.
+ * EIN WERT STEHT HIER ERST, WENN SEIN STYLESHEET GEBAUT IST — dieselbe Auflage wie bei
+ * CONSENT_DIALOGS, und aus demselben Grund: das Bedienelement bietet genau diese Werte an,
+ * und ein Wert ohne Stylesheet wuerde beim Veroeffentlichen verweigert. Welche Zeichen ein
+ * Wert traegt, entscheidet allein consentThemeCss in src/lib/tracking/consent-choice.ts;
+ * ein neuer Wert hier macht dort den `never`-Zweig zum Compiler-Fehler.
+ * KEIN WERT TRAEGT JE DAS PRAEFIX `__ps_` — deshalb dient ein `__ps_`-Wert in den Tests als
+ * Beleg fuer einen unbekannten Wert, wie beim Dialogwert.
+ */
+export const CONSENT_THEMES = ["light", "dark", "auto"] as const;
+export type ConsentTheme = (typeof CONSENT_THEMES)[number];
+
+/**
+ * Ergebnis des Lesers: ein gebauter Wert ODER "unknown".
+ * "unknown" IST EIN EIGENER AUSGANG UND WIRD NIE AUF "light" ABGEBILDET: Sonst saehe
+ * publishProject einen unbekannten Wert nie, und die Verweigerung waere toter Code —
+ * dieselbe Figur wie bei ConsentDialogRead (docs/immer-beachten.md, "EIN UNBEKANNTER
+ * KONFIGURATIONSWERT BRICHT LAUT AB", Folge (a)).
+ */
+export type ConsentThemeRead = ConsentTheme | "unknown";
+
+/**
+ * Die Meldung, mit der publishProject bei einem unbekannten THEMENWERT abbricht. Sie ist
+ * EIGEN und nicht die des Dialogwerts: Sie nennt einen anderen Bereich der Oberflaeche,
+ * und ein Betreiber, der die falsche Stelle sucht, findet nichts.
+ */
+export const CONSENT_THEME_UNKNOWN_MESSAGE =
+  "Die Darstellung des Einwilligungs-Dialogs hat einen unbekannten Wert. Bitte unter „Darstellung“ neu wählen. Es wurde nichts veröffentlicht.";
+
+/**
+ * WELCHE DARSTELLUNG TRAEGT DIE AUSGELIEFERTE OBERFLAECHE? (Phase 11.13, Scheibe 11.13b) —
+ * der EINZIGE Leser des Themenwerts.
+ *
+ * DREI AUSGAENGE, in dieser Reihenfolge:
+ * 1. Das Feld FEHLT (`undefined`) -> "light". Ein Projekt aus der Zeit vor dieser Scheibe
+ *    liest damit "light" und liefert byte-gleich aus wie zuvor — das ist die tragende
+ *    Invariante der Scheibe und nicht bloss ein Vorgabewert.
+ * 2. Ein GEBAUTER Wert -> er selbst.
+ * 3. JEDER andere Wert — auch null, "", "LIGHT", true, 1 -> "unknown".
+ * KEIN RUECKFALL AUF "light": s. den Docblock von ConsentThemeRead.
+ */
+export function getConsentTheme(settings: ProjectSettings): ConsentThemeRead {
+  const theme = settings.consent?.theme;
+  if (theme === undefined) return "light";
+  return theme === "light" || theme === "dark" || theme === "auto"
+    ? theme
+    : "unknown";
+}
+
+/**
+ * Die Darstellung setzen (Phase 11.13, Scheibe 11.13b). Reine Funktion, gleiche Bauform wie
+ * setConsentDialog: neues Objekt, bestehende Mitglieder unberuehrt.
+ * DER WERT WIRD IMMER GESCHRIEBEN, AUCH "light" — so ueberschreibt eine bewusste Wahl einen
+ * liegengebliebenen unbekannten Wert. `dialog` und `gate` werden NICHT angefasst.
+ */
+export function setConsentTheme(
+  settings: ProjectSettings,
+  theme: ConsentTheme
+): ProjectSettings {
+  return {
+    ...settings,
+    consent: {
+      ...settings.consent,
+      theme,
     },
   };
 }

@@ -52,7 +52,7 @@ function installBeacon(): BeaconSpy {
 
 function scriptsOf(form: "off" | "bar" | "modal"): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(HTML, KEY, form),
+    injectPageViewEmitter(HTML, KEY, form, "light"),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -144,22 +144,31 @@ describe("11.13a — Lade- und Widerruf-Text stammen aus EINEM Aufbau", () => {
     return block.slice(a, b + ENDE.length);
   };
 
+  // SEIT SCHEIBE 11.13b LAEUFT T9 UEBER ALLE DREI DARSTELLUNGEN. Das ist eine
+  // VERBREITERUNG, kein Umbau: Die Zusicherung ist unveraendert ("ein Aufbau je Form"),
+  // nur ihr Gegenstand deckt jetzt auch die Themen ab. OHNE die Ausweitung waere ein
+  // Thema, das Lade- und Widerruf-Zweig VERSCHIEDEN traefe, von keinem Test gefangen.
   for (const [form, bauen, behaelter] of [
     ["bar", buildConsentBarScript, "bar"],
     ["modal", buildConsentModalScript, "dialog"],
   ] as const) {
-    it(`T9 (${form}): der Widerruf-Aufbau ist nach Ersetzen der drei Einsetzwerte der Lade-Aufbau`, () => {
-      const laden = aufbauVon(bauen("load"));
-      const widerruf = aufbauVon(bauen("revoke"));
-      // POSITIVKONTROLLE: OHNE die Ersetzung sind sie verschieden — der Test prueft etwas.
-      expect(widerruf).not.toBe(laden);
-      const normalisiert = widerruf
-        .split("return false;")
-        .join("return;")
-        .replace("    offen = host;" + NL, "")
-        .replace(`fillChoice(${behaelter}, true)`, `fillChoice(${behaelter}, false)`);
-      expect(normalisiert).toBe(laden);
-    });
+    for (const theme of ["light", "dark", "auto"] as const) {
+      it(`T9 (${form}, ${theme}): der Widerruf-Aufbau ist nach Ersetzen der drei Einsetzwerte der Lade-Aufbau`, () => {
+        const laden = aufbauVon(bauen("load", theme));
+        const widerruf = aufbauVon(bauen("revoke", theme));
+        // POSITIVKONTROLLE: OHNE die Ersetzung sind sie verschieden — der Test prueft etwas.
+        expect(widerruf).not.toBe(laden);
+        const normalisiert = widerruf
+          .split("return false;")
+          .join("return;")
+          .replace("    offen = host;" + NL, "")
+          .replace(
+            `fillChoice(${behaelter}, true)`,
+            `fillChoice(${behaelter}, false)`
+          );
+        expect(normalisiert).toBe(laden);
+      });
+    }
   }
 });
 
@@ -214,34 +223,34 @@ describe("11.5e-2 — der globale Name", () => {
   it("W2: kein Baustein von uns RUFT den Widerruf — kein Aufruf in den erzeugten Bloecken", () => {
     const AUFRUF = `${NAME}(`;
     for (const block of [
-      buildConsentBarScript("revoke"),
-      buildConsentModalScript("revoke"),
-      buildConsentBarScript("load"),
-      buildConsentModalScript("load"),
+      buildConsentBarScript("revoke", "light"),
+      buildConsentModalScript("revoke", "light"),
+      buildConsentBarScript("load", "light"),
+      buildConsentModalScript("load", "light"),
     ]) {
       expect(block.split(AUFRUF).length - 1).toBe(0);
     }
     // In den Lade-Bloecken kommt der Name auch als Zeichenkette gar nicht vor.
     for (const block of [
-      buildConsentBarScript("load"),
-      buildConsentModalScript("load"),
+      buildConsentBarScript("load", "light"),
+      buildConsentModalScript("load", "light"),
     ]) {
       expect(block.split(NAME).length - 1).toBe(0);
     }
     // POSITIVKONTROLLE der Zaehlung im selben Lauf: ein erfundener Aufruf wird gezaehlt.
     // Sie belegt, dass die Suche trifft, und nicht, dass sie schweigt.
-    const mitAufruf = buildConsentBarScript("revoke") + `\n${NAME}();`;
+    const mitAufruf = buildConsentBarScript("revoke", "light") + `\n${NAME}();`;
     expect(mitAufruf.split(AUFRUF).length - 1).toBe(1);
   });
 
   // W3. INVARIANTE (8): BEI AUS ENTSTEHT KEIN BAUSTEIN UND KEIN GLOBALER NAME.
   it("W3: Schalter AUS -> weder Kennung noch Name; bei bar und modal beides (Positivkontrolle)", () => {
-    const aus = injectPageViewEmitter(HTML, KEY, "off");
+    const aus = injectPageViewEmitter(HTML, KEY, "off", "light");
     expect(aus).not.toContain(REVOKE_ID);
     expect(aus).not.toContain(NAME);
     expect(aus).toContain('id="__ps_pve"');
     for (const form of ["bar", "modal"] as const) {
-      const an = injectPageViewEmitter(HTML, KEY, form);
+      const an = injectPageViewEmitter(HTML, KEY, form, "light");
       expect(an).toContain(REVOKE_ID);
       expect(an).toContain(NAME);
     }
@@ -272,8 +281,8 @@ describe("11.5e-2 — der globale Name", () => {
       '<script type="application/json" id="pagesmith-mappings">[]</script>' +
       "</body></html>";
     const beide =
-      injectPageViewEmitter(MIT_MAPPINGS, KEY, "bar") +
-      injectPageViewEmitter(MIT_MAPPINGS, KEY, "modal");
+      injectPageViewEmitter(MIT_MAPPINGS, KEY, "bar", "light") +
+      injectPageViewEmitter(MIT_MAPPINGS, KEY, "modal", "light");
     for (const nadel of NADELN) {
       expect("__ps_crv").not.toContain(nadel);
       // POSITIVKONTROLLE: dieselbe Suche trifft im ausgelieferten Text.
@@ -281,8 +290,8 @@ describe("11.5e-2 — der globale Name", () => {
     }
     // SERIALISIERUNG: der Block traegt kein literales </script> und kein </body>.
     for (const block of [
-      buildConsentBarScript("revoke"),
-      buildConsentModalScript("revoke"),
+      buildConsentBarScript("revoke", "light"),
+      buildConsentModalScript("revoke", "light"),
     ]) {
       expect(block.split("</scr" + "ipt>").length - 1).toBe(1);
       expect(block).not.toContain("</bo" + "dy>");
@@ -296,7 +305,7 @@ describe("11.5e-2 — der globale Name", () => {
       ["bar", 'id="__ps_clb"'],
       ["modal", 'id="__ps_cmo"'],
     ] as const) {
-      const out = injectPageViewEmitter(HTML, KEY, form);
+      const out = injectPageViewEmitter(HTML, KEY, form, "light");
       expect(out.indexOf(dialogId)).toBeLessThan(out.indexOf(REVOKE_ID));
       expect(out.indexOf(REVOKE_ID)).toBeLessThan(out.indexOf('id="__ps_cns"'));
       expect(out.indexOf('id="__ps_cns"')).toBeLessThan(
@@ -395,8 +404,8 @@ describe("11.5e-2 — die Vorbedingung und der Wiederaufbau", () => {
     ];
     const WIDERRUF_WACHE = 'if (api.read().state !== "decided") {';
     for (const [load, rev] of [
-      [buildConsentBarScript("load"), buildConsentBarScript("revoke")],
-      [buildConsentModalScript("load"), buildConsentModalScript("revoke")],
+      [buildConsentBarScript("load", "light"), buildConsentBarScript("revoke", "light")],
+      [buildConsentModalScript("load", "light"), buildConsentModalScript("revoke", "light")],
     ]) {
       for (const wache of LADE_WACHEN) {
         expect(load.split(wache).length - 1).toBe(1);
@@ -479,14 +488,19 @@ describe("11.5e-2 — die Invarianten am Widerruf-Block", () => {
       [/querySelector|getElementsBy|getElementById/, "document.querySelector('html')"],
       [/(?<!host|offen)\.parentNode/, "el.parentNode.removeChild(el)"],
     ];
-    for (const block of [
-      buildConsentBarScript("revoke"),
-      buildConsentModalScript("revoke"),
-    ]) {
-      for (const [nadel, beispiel] of NADELN) {
-        expect(nadel.test(block), String(nadel)).toBe(false);
-        // POSITIVKONTROLLE der Nadel im selben Lauf.
-        expect(nadel.test(beispiel), String(nadel)).toBe(true);
+    // SEIT SCHEIBE 11.13b LAUFEN DIE NADELN UEBER ALLE DREI DARSTELLUNGEN
+    // (Nachschaerfung N4). VERBREITERUNG, KEIN UMBAU: Die zehn Nadeln sind zeichengleich
+    // unveraendert; nur die Menge der geprueften Bloecke waechst von zwei auf sechs.
+    for (const thema of ["light", "dark", "auto"] as const) {
+      for (const block of [
+        buildConsentBarScript("revoke", thema),
+        buildConsentModalScript("revoke", thema),
+      ]) {
+        for (const [nadel, beispiel] of NADELN) {
+          expect(nadel.test(block), `${thema} ${String(nadel)}`).toBe(false);
+          // POSITIVKONTROLLE der Nadel im selben Lauf.
+          expect(nadel.test(beispiel), String(nadel)).toBe(true);
+        }
       }
     }
     // GEGENPROBE ZUR VERENGUNG (Freigabe E2): die Ausnahme ist ENG — sie nimmt genau

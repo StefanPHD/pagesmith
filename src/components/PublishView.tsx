@@ -1,7 +1,12 @@
 "use client";
 
 import { VARIANT_B_NOT_PUBLISHED_MESSAGE } from "@/lib/hosting/variant";
-import type { ConsentDialog, ConsentDialogRead } from "@/lib/settings";
+import type {
+  ConsentDialog,
+  ConsentDialogRead,
+  ConsentTheme,
+  ConsentThemeRead,
+} from "@/lib/settings";
 import DomainManager from "@/components/DomainManager";
 
 /**
@@ -44,6 +49,8 @@ export default function PublishView({
   publishRestored,
   consentDialog,
   onConsentDialogChange,
+  consentTheme,
+  onConsentThemeChange,
   onToggleAbTest,
   abTestActive,
   abTestStartedAt,
@@ -72,6 +79,11 @@ export default function PublishView({
   // lokal gehalten — dieselbe Bauform wie beim A/B-Schalter darunter.
   consentDialog: ConsentDialogRead;
   onConsentDialogChange: (mode: ConsentDialog) => void;
+  // --- Darstellung (Phase 11.13, Scheibe 11.13b) ---
+  // Gleiche Bauform wie der Schalter darueber: ABGELEITET aus dem Einstellungs-Blob
+  // (getConsentTheme), nicht lokal gehalten.
+  consentTheme: ConsentThemeRead;
+  onConsentThemeChange: (theme: ConsentTheme) => void;
   onToggleAbTest: () => void;
   abTestActive: boolean;
   abTestStartedAt: string | null;
@@ -294,6 +306,75 @@ export default function PublishView({
             Wirkt erst nach dem nächsten Veröffentlichen.
           </p>
         </div>
+
+        {/* DIE DARSTELLUNG (Phase 11.13, Scheibe 11.13b; bindende Entscheidung P11.13-6).
+            SICHTBAR NUR BEI "bar" ODER "modal": Ohne Oberfläche gibt es nichts zu
+            gestalten, und eine Wahl ohne Wirkung sähe aus wie eine Einstellung, die
+            nicht greift.
+            DER WERT BLEIBT BEIM AUSSCHALTEN ERHALTEN — die Gruppe verschwindet, das Feld
+            im Blob nicht; wer den Dialog wieder einschaltet, findet seine Wahl vor.
+            DIE ANZEIGE ÜBERSCHREIBT KEINEN UNBEKANNTEN WERT: Ohne gesetztes Feld liest
+            getConsentTheme "light", bei einem unbekannten Wert ist keins markiert. */}
+        {(consentDialog === "bar" || consentDialog === "modal") && (
+          <div className="mt-3">
+            <h3 className="mb-1 text-xs font-medium text-gray-700">Darstellung</h3>
+            <div
+              role="radiogroup"
+              aria-label="Darstellung"
+              className="space-y-2 rounded-md border border-gray-200 px-3 py-2 text-xs text-gray-600"
+            >
+              <label className="flex items-start gap-2">
+                <input
+                  type="radio"
+                  name="consent-theme"
+                  className="mt-0.5"
+                  checked={consentTheme === "light"}
+                  onChange={() => onConsentThemeChange("light")}
+                />
+                <span>
+                  <span className="font-medium text-gray-700">Hell</span>
+                  <br />
+                  Heller Hintergrund, dunkler Text.
+                </span>
+              </label>
+              <label className="flex items-start gap-2">
+                <input
+                  type="radio"
+                  name="consent-theme"
+                  className="mt-0.5"
+                  checked={consentTheme === "dark"}
+                  onChange={() => onConsentThemeChange("dark")}
+                />
+                <span>
+                  <span className="font-medium text-gray-700">Dunkel</span>
+                  <br />
+                  Dunkler Hintergrund, heller Text — für Seiten mit dunklem Design.
+                </span>
+              </label>
+              <label className="flex items-start gap-2">
+                <input
+                  type="radio"
+                  name="consent-theme"
+                  className="mt-0.5"
+                  checked={consentTheme === "auto"}
+                  onChange={() => onConsentThemeChange("auto")}
+                />
+                <span>
+                  <span className="font-medium text-gray-700">Automatisch</span>
+                  <br />
+                  Folgt der Einstellung des Besuchers, nicht dem Design der Seite. Ohne
+                  Einstellung erscheint die helle Darstellung.
+                </span>
+              </label>
+              {consentTheme === "unknown" && (
+                <p className="text-red-600">
+                  Gespeichert ist ein unbekannter Wert. Veröffentlichen wird verweigert,
+                  bis hier eine Darstellung gewählt ist.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* DER WIDERRUF (Phase 11.5, Scheibe 11.5e-2). Wir liefern einen AUFRUF, das

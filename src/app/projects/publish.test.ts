@@ -1072,3 +1072,119 @@ describe("publishProject — die Werte des Schalters (Scheibe 11.5d)", () => {
     expect(patchVorrang.published_content.html).toContain('id="__ps_pve"');
   });
 });
+
+describe("publishProject — die Darstellung (Scheibe 11.13b)", () => {
+  // DIE ERWARTUNGEN DIESES BLOCKS SIND AUS DEN ENTSCHEIDUNGEN P11.13-6 UND P11.13-7
+  // GESCHRIEBEN, NICHT AUS DEM CODE (docs/immer-beachten.md, "EIN WAECHTER UEBER DIE
+  // SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE"). Die Meldung steht hier als
+  // Literal und nicht als Import derselben Konstante, die der Produktivcode zurueckgibt —
+  // sonst waere der Test ein Spiegel und bestaetigte jeden Tippfehler.
+  const MESSAGE_THEMA =
+    "Die Darstellung des Einwilligungs-Dialogs hat einen unbekannten Wert. Bitte unter „Darstellung“ neu wählen. Es wurde nichts veröffentlicht.";
+  const MESSAGE_DIALOG =
+    "Die Einwilligungs-Einstellung dieses Projekts hat einen unbekannten Wert. Bitte unter „Einwilligung“ neu wählen. Es wurde nichts veröffentlicht.";
+
+  function client() {
+    return makeClient({
+      user: { id: "user-1" },
+      ownRow: {
+        data: {
+          id: "proj-1",
+          name: "Mein Shop",
+          settings: { hosting: { label: "mein-shop-abc123" } },
+          tracking_key: "keep-me",
+        },
+        error: null,
+      },
+    });
+  }
+
+  type Patch = { published_content: { html: string } };
+
+  // PT1. DER EINZIGE TEST, DER DIE VERWEIGERUNG BEI EINGESCHALTETEM DIALOG FAENGT
+  // (Pflicht-Mutation Mu3). Er prueft zugleich die STELLUNG: Laege der Abbruch hinter dem
+  // Label-Block, stuende "domains" in fromTables.
+  it("PT1: unbekanntes Thema + 'bar' -> Abbruch mit der EIGENEN Meldung, und nichts wird angelegt", async () => {
+    const c = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: { consent: { dialog: "bar", theme: "__ps_unknown" } },
+      },
+      undefined
+    );
+    expect(res).toEqual({ ok: false, error: MESSAGE_THEMA });
+    expect(c.rec.updatePatch).toBeNull();
+    expect(c.rec.inserts).toHaveLength(0);
+    expect(c.rec.fromTables).not.toContain("domains");
+  });
+
+  // PT2. DER EINZIGE TEST, DER DIE ASYMMETRIE AUS P11.13-7 FAENGT (Pflicht-Mutation Mu2).
+  // ER TRAEGT ZUGLEICH DEN BELEG FUER DEN PLATZHALTER IN actions.ts: Bei "off" ist ein
+  // unbekanntes Thema unschaedlich, WEIL kein Oberflaechen-Baustein entsteht — der
+  // Ersatzwert "light" erreicht also keine ausgelieferte Zeile.
+  it("PT2: unbekanntes Thema + 'off' -> veroeffentlicht, und kein Dialog-Baustein im Text", async () => {
+    const c = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: { consent: { dialog: "off", theme: "__ps_unknown" } },
+      },
+      undefined
+    );
+    expect(res.ok).toBe(true);
+    const patch = c.rec.updatePatch as Patch;
+    for (const kennung of ["__ps_clb", "__ps_cmo", "__ps_crv", "__ps_cns", "__ps_cnr"]) {
+      expect(patch.published_content.html).not.toContain(`id="${kennung}"`);
+    }
+    // POSITIVKONTROLLE: geschrieben wurde sehr wohl etwas.
+    expect(patch.published_content.html).toContain('id="__ps_pve"');
+  });
+
+  // PT3 (POSITIVKONTROLLE zu PT1): ein gebautes Thema geht durch UND wirkt im Text.
+  it("PT3: 'dark' + 'bar' -> veroeffentlicht, und die dunkle Palette steht im Text", async () => {
+    const c = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      { ...snapshot, settings: { consent: { dialog: "bar", theme: "dark" } } },
+      undefined
+    );
+    expect(res.ok).toBe(true);
+    const html = (c.rec.updatePatch as Patch).published_content.html;
+    expect(html).toContain("#111827;color-scheme:dark");
+    expect(html).toContain("#60a5fa");
+    // GEGENPROBE IM SELBEN LAUF: mit "light" steht sie NICHT da.
+    const hell = client();
+    await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      { ...snapshot, settings: { consent: { dialog: "bar", theme: "light" } } },
+      undefined
+    );
+    const htmlHell = (hell.rec.updatePatch as Patch).published_content.html;
+    expect(htmlHell).not.toContain("color-scheme:dark");
+    expect(htmlHell).not.toContain("#60a5fa");
+  });
+
+  // PT4. DIE REIHENFOLGE DER ZWEI PRUEFUNGEN: Bei einem unbekannten DIALOG faellt die
+  // Dialog-Meldung, nicht die Themen-Meldung — sonst schickte der Abbruch den Betreiber an
+  // die falsche Stelle der Oberflaeche.
+  it("PT4: unbekannter Dialog + unbekanntes Thema -> die DIALOG-Meldung", async () => {
+    client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: { consent: { dialog: "__ps_x", theme: "__ps_y" } },
+      },
+      undefined
+    );
+    expect(res).toEqual({ ok: false, error: MESSAGE_DIALOG });
+  });
+});

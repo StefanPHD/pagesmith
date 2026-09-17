@@ -62,7 +62,7 @@ function installBeacon(): BeaconSpy {
 
 function scriptsOf(html: string, on: boolean): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(html, KEY, on ? "bar" : "off"),
+    injectPageViewEmitter(html, KEY, on ? "bar" : "off", "light"),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -149,13 +149,13 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   });
 
   it("L1: Schalter AUS -> kein Leisten-Block (Positivkontrolle: Emitter da)", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "off");
+    const out = injectPageViewEmitter(HTML, KEY, "off", "light");
     expect(out).not.toContain(BAR_ID);
     expect(out).toContain('id="__ps_pve"');
   });
 
   it("L2: Schalter AN -> Gate < Wiederherstellung < Leiste < Setzer < Emitter", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "bar");
+    const out = injectPageViewEmitter(HTML, KEY, "bar", "light");
     const gate = out.indexOf('id="pagesmith-consent"');
     const restore = out.indexOf('id="__ps_cnr"');
     const bar = out.indexOf(BAR_ID);
@@ -172,7 +172,7 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   // der Nachbarn: KEIN `<` im Rumpf. Damit kann weder ein `</script>` noch ein `</body>`
   // noch ein `<!--` darin stehen.
   it("L3: der Rumpf enthaelt kein '<'; genau ein </script>, kein </body>", () => {
-    const block = buildConsentBarScript("load");
+    const block = buildConsentBarScript("load", "light");
     const rumpf = block.slice(block.indexOf(">") + 1, block.lastIndexOf("<"));
     // POSITIVKONTROLLE des Ausschnitts: er traegt wirklich den Code.
     expect(rumpf).toContain("attachShadow");
@@ -182,6 +182,15 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
     expect(block.match(/<\/script>/gi)?.length).toBe(1);
     expect(block.endsWith("</script>")).toBe(true);
     expect(block.toLowerCase()).not.toContain("</body>");
+
+    // SEIT SCHEIBE 11.13b AUCH FUER DIE ZWEI ANDEREN DARSTELLUNGEN (Nachschaerfung N4):
+    // Ein Thema legt ZEICHEN in den Rumpf; ein `<` darin schloesse den Script-Block.
+    for (const thema of ["dark", "auto"] as const) {
+      const b = buildConsentBarScript("load", thema);
+      const r = b.slice(b.indexOf(">") + 1, b.lastIndexOf("<"));
+      expect(r.includes("<"), thema).toBe(false);
+      expect(b.match(/<\/script>/gi)?.length, thema).toBe(1);
+    }
   });
 
   // L4. DIE NADELN SIND AUS DEM BESTAND ABGELESEN, NICHT ERFUNDEN: hasConsentScript
@@ -190,11 +199,11 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   // publish.test.ts. Enthielte der Block eine davon, luege eine indexOf-Reihenfolge,
   // ohne rot zu werden.
   it("L4: der Block traegt keine der Zeichenketten, nach denen der Bestand sucht", () => {
-    const block = buildConsentBarScript("load");
+    const block = buildConsentBarScript("load", "light");
     const mitDaten =
       '<html><body><h1>x</h1><script type="application/json" id="pagesmith-mappings">[]</scr' +
       "ipt></body></html>";
-    const out = injectPageViewEmitter(mitDaten, KEY, "bar");
+    const out = injectPageViewEmitter(mitDaten, KEY, "bar", "light");
     for (const nadel of [
       "pagesmith-consent",
       "pagesmith-mappings",
@@ -382,9 +391,14 @@ describe("11.5d — die Leiste macht die Seite nicht unbedienbar", () => {
     expect(attribute(document.body)).toBe(bodyVorher);
     expect(document.head.children.length).toBe(headVorher);
 
-    // `overflow` im Block: nie.
+    // `overflow` im Block: nie. SEIT SCHEIBE 11.13b IN ALLEN DREI DARSTELLUNGEN
+    // (Nachschaerfung N4) — die Zusicherung ist unveraendert, nur ihr Gegenstand waechst.
     const traegtOverflow = (text: string): boolean => /overflow/i.test(text);
-    expect(traegtOverflow(buildConsentBarScript("load"))).toBe(false);
+    for (const thema of ["light", "dark", "auto"] as const) {
+      expect(traegtOverflow(buildConsentBarScript("load", thema)), thema).toBe(
+        false
+      );
+    }
     // POSITIVKONTROLLE der Suche.
     expect(traegtOverflow("html{overflow:hidden}")).toBe(true);
   });
@@ -665,7 +679,7 @@ describe("11.13a — die Anordnung", () => {
   // Sichtbereich und aendert damit die SCROLL-POSITION der fremden Seite — genau das
   // verbietet Invariante I1. Dass sie WIRKT, ist eine Live-Achse und in der Probe gemessen.
   it("L23: der Fokus-Aufruf traegt preventScroll — Struktur-Zusicherung mit Positivkontrolle", () => {
-    const block = buildConsentBarScript("load");
+    const block = buildConsentBarScript("load", "light");
     expect(block).toContain("measure.box.focus({ preventScroll: true })");
     // POSITIVKONTROLLE der Suche im selben Lauf: der blosse Aufruf kommt NICHT vor.
     expect(/measure\.box\.focus\(\)/.test(block)).toBe(false);
@@ -723,7 +737,7 @@ describe("11.13a — die Anordnung", () => {
     expect(weg.getAttribute("type")).toBe("button");
     expect(weg.getAttribute("class")).toBe("way");
 
-    const block = buildConsentBarScript("load");
+    const block = buildConsentBarScript("load", "light");
     expect(/href/i.test(block)).toBe(false);
     expect(/createElement\("a"\)/.test(block)).toBe(false);
     // POSITIVKONTROLLE beider Suchen im selben Lauf.

@@ -93,6 +93,17 @@ function button(label: string): HTMLButtonElement {
   return b;
 }
 
+/**
+ * Den Weg zur Auswahl klicken (Scheibe 11.13a). DIE OBERFLAECHE ERSCHEINT SEITHER
+ * EINGEKLAPPT; alle Tests, die die Gestalt VOR dieser Scheibe festnageln, laufen ab jetzt
+ * als Erwartung des AUSGEKLAPPTEN Zustands und rufen dies nach mount().
+ * IHRE ASSERTIONEN SIND UNVERAENDERT — sie sind nicht aufgeweicht, sie haben einen
+ * Zustand bekommen.
+ */
+function ausklappen(): void {
+  button("Einstellungen").click();
+}
+
 /** Die Checkbox des Gruppen-Schalters mit dieser Beschriftung (Scheibe 11.5e-1). */
 function schalter(name: string): HTMLInputElement {
   const root = hosts()[0]?.shadowRoot;
@@ -203,6 +214,7 @@ describe("11.5d — wann die Leiste erscheint", () => {
   // Reihenfolge. Rot bei jeder geaenderten Beschriftung, Reihenfolge oder Anzahl.
   it("L5: nichts entschieden -> genau eine Leiste mit genau drei Knoepfen, nichts gesendet, Hook abgelehnt", () => {
     const beacon = mount();
+    ausklappen();
     expect(hosts()).toHaveLength(1);
     expect(hosts()[0].parentElement).toBe(document.body);
     const root = hosts()[0].shadowRoot;
@@ -376,6 +388,42 @@ describe("11.5d — die Leiste macht die Seite nicht unbedienbar", () => {
     // POSITIVKONTROLLE der Suche.
     expect(traegtOverflow("html{overflow:hidden}")).toBe(true);
   });
+
+  // L12b. DER WIRKUNGS-TEST ZUM FOKUS (Scheibe 11.13a, Freigabe E2). ER IST EINE
+  // ERWEITERUNG VON L12, KEIN UMBAU: keine bestehende Zusicherung wird aufgeweicht.
+  // DIE SACHE, NICHT DAS ZEICHEN: Die Nadeln von M12 sehen `.focus(` im Text und koennen
+  // nicht entscheiden, ob das Ziel im eigenen Schattenbaum liegt. Dieser Test fragt die
+  // WIRKUNG — nach Aufbau, Ausklappen und Klick liegt der Fokus unveraendert dort, wo die
+  // fremde Seite ihn hatte.
+  it("L12b: Aufbau, Ausklappen und Klick lassen den Fokus der fremden Seite unberuehrt — mit Positivkontrolle", () => {
+    const fremd = document.createElement("input");
+    document.body.appendChild(fremd);
+    fremd.focus();
+    expect(document.activeElement).toBe(fremd);
+
+    mount();
+    // DER AUFBAU FASST DEN FOKUS NICHT AN.
+    expect(document.activeElement).toBe(fremd);
+
+    // NACH DEM AUSKLAPPEN LIEGT ER IM EIGENEN HOST — Rueckfall (a) der Freigabe E2. DAS IST
+    // KEIN FREMDER KNOTEN: `document.activeElement` ist das Host-Element, das dieser Block
+    // selbst angelegt hat, und das eigentliche Ziel liegt in seinem Schattenbaum.
+    ausklappen();
+    const host = hosts()[0];
+    expect(document.activeElement).toBe(host);
+    expect(host.shadowRoot!.activeElement?.getAttribute("type")).toBe("checkbox");
+
+    // NACH DEM KLICK IST DER HOST WEG; wohin der Fokus dann faellt, entscheidet die
+    // Plattform — wir setzen ihn nicht. Gepruefte Sache: es ist KEIN anderes fremdes
+    // Element als das, das ihn vorher hatte.
+    button("Ablehnen").click();
+    expect([fremd, document.body]).toContain(document.activeElement);
+
+    // POSITIVKONTROLLE der Pruefung im selben Lauf: sie unterscheidet wirklich.
+    fremd.blur();
+    expect(document.activeElement).not.toBe(fremd);
+    fremd.remove();
+  });
 });
 
 describe("11.5d — der Sachtext der Leiste", () => {
@@ -390,6 +438,7 @@ describe("11.5d — der Sachtext der Leiste", () => {
     const SATZ =
       "Diese Seite kann Tracking-Dienste einbinden. Du entscheidest, ob das geschieht.";
     mount();
+    ausklappen();
     const root = hosts()[0]?.shadowRoot;
     expect(root).toBeTruthy();
     const region = root!.querySelector('[role="region"]');
@@ -482,10 +531,19 @@ describe("11.5e-1 — die Schalter der Leiste", () => {
       .map((e, i) => ({ ...e, i }))
       .filter((e) => e.art === "anhaengen" && e.ziel === document.body);
 
-    // POSITIVKONTROLLE: die Spione sehen die Aufrufe des Blocks — die drei Knoepfe.
+    // POSITIVKONTROLLE: die Spione sehen die Aufrufe des Blocks — die Knoepfe.
+    // SEIT SCHEIBE 11.13a SIND ES VIER: die drei des ausgeklappten Zustands PLUS der Weg.
+    // "Auswahl speichern" ist eingeklappt NICHT eingehaengt und trotzdem schon verdrahtet —
+    // genau das ist Invariante I3 am Wortlaut.
+    const knopfListener = listener.filter(
+      (e) => (e.ziel as Element | null)?.tagName === "BUTTON"
+    );
+    expect(knopfListener.length).toBeGreaterThanOrEqual(4);
     expect(
-      listener.filter((e) => (e.ziel as Element | null)?.tagName === "BUTTON").length
-    ).toBeGreaterThanOrEqual(3);
+      knopfListener.some(
+        (e) => (e.ziel as Element | null)?.textContent === "Einstellungen"
+      )
+    ).toBe(true);
     expect(anBody).toHaveLength(1);
     expect((anBody[0].kind as Element).tagName).toBe("PAGESMITH-BAR");
     expect(hosts()).toHaveLength(1);
@@ -497,6 +555,7 @@ describe("11.5e-1 — die Schalter der Leiste", () => {
   // Zuweisung (Setzung des Zuschnitts: eine Vorauswahl waere eine vorweggenommene Zustimmung).
   it("L15: eine Gruppe 'Bereiche' mit zwei Schaltern 'Messung' und 'Werbung', je Checkbox im label, beide AUS, genau zwei Eingabeelemente", () => {
     mount();
+    ausklappen();
     const root = hosts()[0].shadowRoot!;
     const gruppe = root.querySelector('[role="group"]');
     expect(gruppe).not.toBeNull();
@@ -527,6 +586,7 @@ describe("11.5e-1 — die Schalter der Leiste", () => {
   for (const [fall, klicks, speicher, erlaubt, beacons] of AUSWAHL) {
     it(`L16: '${fall}' + 'Auswahl speichern' -> Speicherwert und Hook je Schluessel, ${beacons} Seitenaufruf(e), Leiste weg`, async () => {
       const beacon = mount();
+      ausklappen();
       for (const name of ["Messung", "Werbung"]) expect(schalter(name).checked).toBe(false);
       for (const name of klicks) {
         schalter(name).click();
@@ -555,6 +615,7 @@ describe("11.5e-1 — die Schalter der Leiste", () => {
   // allem zu.
   it("L17: 'Ablehnen' und 'Alle akzeptieren' ignorieren den Zustand der Schalter", () => {
     mount();
+    ausklappen();
     schalter("Werbung").click();
     expect(schalter("Werbung").checked).toBe(true);
     button("Ablehnen").click();
@@ -564,6 +625,7 @@ describe("11.5e-1 — die Schalter der Leiste", () => {
     aufraeumen();
     window.localStorage.clear();
     mount();
+    ausklappen();
     schalter("Messung").click();
     expect(schalter("Messung").checked).toBe(true);
     button("Alle akzeptieren").click();
@@ -576,6 +638,7 @@ describe("11.5e-1 — die Schalter der Leiste", () => {
   // Label-Aktivierung im Schattenbaum ausfuehrt — GEMESSEN im Bau der Scheibe 11.5e-1.
   it("L18: ein Klick auf die Beschriftung 'Messung' schaltet ihre Checkbox", () => {
     mount();
+    ausklappen();
     const root = hosts()[0].shadowRoot!;
     const text = Array.from(root.querySelectorAll("span")).find(
       (s) => s.textContent === "Messung"
@@ -586,5 +649,124 @@ describe("11.5e-1 — die Schalter der Leiste", () => {
     expect(schalter("Messung").checked).toBe(true);
     // POSITIVKONTROLLE: der andere Schalter bleibt unberuehrt.
     expect(schalter("Werbung").checked).toBe(false);
+  });
+});
+
+// SCHEIBE 11.13a — DIE ANORDNUNG. Die Erwartungen stammen aus Entscheidung P11.13-1 der
+// Phase 11.13 (docs/aktiver-stand.md), NIE aus dem Code: die zwei sichtbaren Knoepfe, ihre
+// Reihenfolge, die Beschriftung des Wegs und die Abwesenheit von Schaltern und
+// "Auswahl speichern" stehen hier als Literal.
+describe("11.13a — die Anordnung", () => {
+  // L23. `preventScroll` AM FOKUS-AUFRUF — EINE STRUKTUR-ZUSICHERUNG UEBER DEN
+  // AUSGELIEFERTEN TEXT, KEINE WIRKUNGS-ZUSICHERUNG: Die Testumgebung scrollt nicht
+  // (docs/immer-beachten.md, DIE TESTUMGEBUNG WERTET KEIN CSS AUS — hier dieselbe Grenze an
+  // der Scroll-Achse). GEPRUEFT WIRD, DASS DIE OPTION AM AUFRUF STEHT.
+  // WARUM SIE PFLICHT IST: Ohne sie scrollt der Browser das Ziel bei Bedarf in den
+  // Sichtbereich und aendert damit die SCROLL-POSITION der fremden Seite — genau das
+  // verbietet Invariante I1. Dass sie WIRKT, ist eine Live-Achse und in der Probe gemessen.
+  it("L23: der Fokus-Aufruf traegt preventScroll — Struktur-Zusicherung mit Positivkontrolle", () => {
+    const block = buildConsentBarScript("load");
+    expect(block).toContain("measure.box.focus({ preventScroll: true })");
+    // POSITIVKONTROLLE der Suche im selben Lauf: der blosse Aufruf kommt NICHT vor.
+    expect(/measure\.box\.focus\(\)/.test(block)).toBe(false);
+    expect(/measure\.box\.focus\(\)/.test("measure.box.focus()")).toBe(true);
+    // DIE VERENGTE NADEL AUS M12/W11 TRIFFT DIE NEUE FORM WEITERHIN NICHT.
+    const NADEL = /(?<!measure\.box)\.focus\(|\.blur\(|autofocus|tabindex/i;
+    expect(NADEL.test("measure.box.focus({ preventScroll: true })")).toBe(false);
+    expect(NADEL.test("document.body.focus()")).toBe(true);
+  });
+
+  // L19. DER EINGEKLAPPTE ZUSTAND. Rot bei jedem zusaetzlichen, fehlenden oder
+  // umgestellten Kind, bei jedem Kaestchen und bei "Auswahl speichern".
+  it("L19: eingeklappt stehen Text, 'Alle akzeptieren', 'Ablehnen' und der Weg — keine Schalter, kein 'Auswahl speichern'", () => {
+    mount();
+    const root = hosts()[0].shadowRoot!;
+    const region = root.querySelector('[role="region"]')!;
+    expect(Array.from(region.children).map((k) => k.tagName)).toEqual([
+      "P",
+      "BUTTON",
+      "BUTTON",
+      "BUTTON",
+    ]);
+    expect(
+      Array.from(root.querySelectorAll("button")).map((b) => b.textContent)
+    ).toEqual(["Alle akzeptieren", "Ablehnen", "Einstellungen"]);
+    expect(root.querySelectorAll("input")).toHaveLength(0);
+    expect(root.querySelector('[role="group"]')).toBeNull();
+    // POSITIVKONTROLLE der Abwesenheits-Behauptungen im selben Lauf: ausgeklappt sind sie da.
+    ausklappen();
+    expect(root.querySelectorAll("input")).toHaveLength(2);
+    expect(root.querySelector('[role="group"]')).not.toBeNull();
+  });
+
+  // L20. DER WEG ENTFERNT SICH, UND ES GIBT KEIN ZURUECK (Entscheidung P11.13-1).
+  it("L20: nach dem Klick ist der Weg verschwunden und die Knoepfe sind die drei von vorher", () => {
+    mount();
+    ausklappen();
+    const root = hosts()[0].shadowRoot!;
+    expect(
+      Array.from(root.querySelectorAll("button")).map((b) => b.textContent)
+    ).toEqual(["Alle akzeptieren", "Auswahl speichern", "Ablehnen"]);
+    expect(
+      Array.from(root.querySelectorAll("button")).some(
+        (b) => b.textContent === "Einstellungen"
+      )
+    ).toBe(false);
+  });
+
+  // L21. DER WEG IST EIN KNOPF, KEIN LINK (Entscheidung P11.13-1): Ein `a href` aenderte
+  // Fragment und Scroll-Position der fremden Seite.
+  it("L21: der Weg ist ein <button type='button'>; der Rumpf traegt kein Link-Element und kein href", () => {
+    mount();
+    const weg = button("Einstellungen");
+    expect(weg.tagName).toBe("BUTTON");
+    expect(weg.getAttribute("type")).toBe("button");
+    expect(weg.getAttribute("class")).toBe("way");
+
+    const block = buildConsentBarScript("load");
+    expect(/href/i.test(block)).toBe(false);
+    expect(/createElement\("a"\)/.test(block)).toBe(false);
+    // POSITIVKONTROLLE beider Suchen im selben Lauf.
+    expect(/href/i.test('a.setAttribute("href", "#")')).toBe(true);
+    expect(/createElement\("a"\)/.test('document.createElement("a")')).toBe(true);
+  });
+
+  // L22. DER OFFENE PUNKT "KEIN TEST LAESST EINEN WURF BIS IN EINEN KNOPF-HANDLER DER
+  // EINWILLIGUNGS-OBERFLAECHEN DURCH" (docs/offene-punkte.md) — sein Trigger ist mit dieser
+  // Scheibe eingetreten, weil sie CONSENT_CHOICE_JS anfasst.
+  // IN JSDOM ERREICHT EIN WURF AUS EINEM LISTENER `dispatchEvent` NICHT; er geht an das
+  // error-Ereignis des Fensters. Genau dort wird er gefangen und ERWARTET.
+  it("L22: wirft write(), schliesst die Leiste trotzdem — und der Wurf ist wirklich einer (Positivkontrolle)", () => {
+    const fehler: string[] = [];
+    const sammeln = (e: ErrorEvent): void => {
+      fehler.push(String(e.message));
+      e.preventDefault();
+    };
+    window.addEventListener("error", sammeln);
+    try {
+      mount();
+      ausklappen();
+      const api = w.__psConsentStore as { write: unknown };
+      api.write = () => {
+        throw new Error("probe-wurf");
+      };
+      button("Ablehnen").click();
+      expect(hosts()).toHaveLength(0);
+      expect(fehler.join(" ")).toContain("probe-wurf");
+
+      // POSITIVKONTROLLE: ohne Wurf schliesst derselbe Klick ebenso, und nichts wird
+      // gemeldet — der Sammler unterscheidet die zwei Faelle.
+      aufraeumen();
+      window.localStorage.clear();
+      fehler.length = 0;
+      mount();
+      ausklappen();
+      button("Ablehnen").click();
+      expect(hosts()).toHaveLength(0);
+      expect(fehler).toEqual([]);
+      expect(window.localStorage.getItem(STORE_KEY)).toBe(ALLE_ABGELEHNT);
+    } finally {
+      window.removeEventListener("error", sammeln);
+    }
   });
 });

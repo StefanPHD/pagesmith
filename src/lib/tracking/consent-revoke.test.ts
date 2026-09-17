@@ -116,26 +116,51 @@ afterEach(() => {
   window.localStorage.clear();
 });
 
-describe("11.5e-2 — der Lade-Zweig bleibt byte-gleich", () => {
-  // W0. DIE TRAGENDE INVARIANTE DIESER SCHEIBE. Die zwei Werte sind VOR der ersten
-  // Aenderung erhoben (CC, 2026-09-16), mit zwei Instrumenten: node:crypto in einem
-  // Wegwerf-Lauf ausserhalb des Repos und wc -c / sha256sum ueber das gespeicherte
-  // Artefakt. WER SIE ROT VORFINDET, REGENERIERT SIE NICHT.
-  // SIE SIND DER GRUND, WARUM KEIN BESTANDSTEST DIESER SCHEIBE ROT WIRD: Der Umbau auf
-  // zwei Gestalten laesst den Lade-Zweig ZEICHEN FUER ZEICHEN unveraendert.
-  it("W0: der Lade-Zweig beider Oberflaechen ist byte-gleich zu vor der Scheibe", async () => {
-    const { createHash } = await import("node:crypto");
-    const bar = buildConsentBarScript("load");
-    const modal = buildConsentModalScript("load");
-    expect(Buffer.byteLength(bar, "utf8")).toBe(3785);
-    expect(createHash("sha256").update(bar, "utf8").digest("hex")).toBe(
-      "e6004a81d375c9cf3858c98590c701578c86f061607d777ddffb1a728c8f4458"
-    );
-    expect(Buffer.byteLength(modal, "utf8")).toBe(4213);
-    expect(createHash("sha256").update(modal, "utf8").digest("hex")).toBe(
-      "edd9eb9bfa93dfc91ec8b5a3d37ff4fbd4da20a7eeacb6198331dfdad575cc57"
-    );
-  });
+describe("11.13a — Lade- und Widerruf-Text stammen aus EINEM Aufbau", () => {
+  // T9 — DER ERSATZ FUER W0 (Freigabe E1, 2026-09-17). W0 hielt den Lade-Zweig auf zwei
+  // BYTE-ZAHLEN und zwei sha256-Werte; seine Sache war die tragende Invariante der Scheibe
+  // 11.5e-2 ("der Umbau auf zwei Gestalten laesst den Lade-Zweig Zeichen fuer Zeichen
+  // unveraendert"). DIE SCHEIBE 11.13a AENDERT DEN LADE-ZWEIG — jene Invariante ist mit
+  // ihrer Scheibe abgelaufen. W0 IST DESHALB GESTRICHEN UND NICHT NEU GESETZT: Ein aus dem
+  // Bau gezogener Wert waere ein Spiegel (docs/immer-beachten.md, EIN WAECHTER UEBER DIE
+  // SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE).
+  //
+  // WAS BLEIBT, IST DIE SACHE DAHINTER: Es gibt EINEN Aufbau je Oberflaeche, keine zwei
+  // Kopien, die auseinanderlaufen. Dieser Test ersetzt die drei Einsetzwerte des
+  // Widerruf-Zweigs durch die des Lade-Zweigs; danach muessen die zwei Texte identisch sein.
+  // Er fuehrt KEINE Zahl und muss bei keinem Bau nachgezogen werden.
+  // DER ZEILENUMBRUCH WIRD GEBAUT, NICHT HINGESCHRIEBEN (docs/immer-beachten.md, EIN
+  // NACHWEIS AN EINER NEUEN DATEI IST BLIND): Auf dem Schreibweg dieser Runde ueberlebt
+  // weder das literale Sonderzeichen noch sein Escape — `String.fromCharCode` ist reines
+  // ASCII, an dem kein Werkzeug etwas umdeuten kann.
+  const NL = String.fromCharCode(10);
+  const aufbauVon = (block: string): string => {
+    const MARKE = "  var body = document.body;";
+    const ENDE = "  body.appendChild(host);" + NL;
+    const a = block.indexOf(MARKE);
+    expect(a).toBeGreaterThan(-1);
+    const b = block.indexOf(ENDE, a);
+    expect(b).toBeGreaterThan(a);
+    return block.slice(a, b + ENDE.length);
+  };
+
+  for (const [form, bauen, behaelter] of [
+    ["bar", buildConsentBarScript, "bar"],
+    ["modal", buildConsentModalScript, "dialog"],
+  ] as const) {
+    it(`T9 (${form}): der Widerruf-Aufbau ist nach Ersetzen der drei Einsetzwerte der Lade-Aufbau`, () => {
+      const laden = aufbauVon(bauen("load"));
+      const widerruf = aufbauVon(bauen("revoke"));
+      // POSITIVKONTROLLE: OHNE die Ersetzung sind sie verschieden — der Test prueft etwas.
+      expect(widerruf).not.toBe(laden);
+      const normalisiert = widerruf
+        .split("return false;")
+        .join("return;")
+        .replace("    offen = host;" + NL, "")
+        .replace(`fillChoice(${behaelter}, true)`, `fillChoice(${behaelter}, false)`);
+      expect(normalisiert).toBe(laden);
+    });
+  }
 });
 
 describe("11.5e-2 — der globale Name", () => {
@@ -441,8 +466,16 @@ describe("11.5e-2 — die Invarianten am Widerruf-Block", () => {
       [/\bbody\.(?!appendChild\(host\))/, "body.setAttribute('data-x', '1')"],
       [/\.style\b/, "el.style.overflow = 'hidden'"],
       [/classList|className/, "el.classList.add('x')"],
-      [/scroll/i, "window.scrollTo(0, 0)"],
-      [/\.focus\(|\.blur\(|autofocus|tabindex/i, "b.focus()"],
+      // BENANNT VERENGT (Korrektur K1, 2026-09-17): `preventScroll` ist die UMKEHRUNG
+      // dessen, was diese Nadel schuetzt — die Option VERHINDERT, dass der Browser die
+      // Scroll-Position der fremden Seite aendert. Jedes andere Vorkommen von `scroll`
+      // bleibt verboten; die Positivkontrolle `window.scrollTo(0, 0)` bleibt rot.
+      [/(?<!prevent)scroll/i, "window.scrollTo(0, 0)"],
+      // BENANNT VERENGT (Freigabe E2, 2026-09-17): Der Fokus auf das erste EIGENE
+      // Kaestchen ist ausgenommen — er liegt im eigenen Schattenbaum (Invariante I1).
+      // Jeder andere Fokus-Aufruf bleibt verboten; die Positivkontrolle `b.focus()`
+      // bleibt rot, und die Gegenprobe unten haelt die Ausnahme eng.
+      [/(?<!measure\.box)\.focus\(|\.blur\(|autofocus|tabindex/i, "b.focus()"],
       [/querySelector|getElementsBy|getElementById/, "document.querySelector('html')"],
       [/(?<!host|offen)\.parentNode/, "el.parentNode.removeChild(el)"],
     ];
@@ -456,6 +489,12 @@ describe("11.5e-2 — die Invarianten am Widerruf-Block", () => {
         expect(nadel.test(beispiel), String(nadel)).toBe(true);
       }
     }
+    // GEGENPROBE ZUR VERENGUNG (Freigabe E2): die Ausnahme ist ENG — sie nimmt genau
+    // den einen eigenen Ausdruck aus und sonst nichts.
+    expect(NADELN[7][0].test("measure.box.focus()")).toBe(false);
+    expect(NADELN[7][0].test("document.body.focus()")).toBe(true);
+    expect(NADELN[6][0].test("measure.box.focus({ preventScroll: true })")).toBe(false);
+    expect(NADELN[6][0].test("window.scrollY = 0")).toBe(true);
   });
 
   // W12. INVARIANTE I2: DIE EINZIGE RUECKNAHME IST DAS ENTFERNEN DES HOSTS, im finally der
@@ -541,5 +580,53 @@ describe("11.5e-2 — die Invarianten am Widerruf-Block", () => {
     expect(revoke()).toBe(true);
     expect(window.localStorage.getItem(STORE_KEY)).toBe(ALLE_ZUGESTIMMT);
     expect(w.pagesmithConsent).toEqual(hookVorher);
+  });
+});
+
+describe("11.13a — der Widerruf oeffnet ausgeklappt", () => {
+  // W16 — ENTSCHEIDUNG P11.13-2: Wer "Einwilligung aendern" waehlt, will auswaehlen. Die
+  // Erwartung stammt aus jener Entscheidung, nicht aus dem Code.
+  it("W16: der wiederaufgebaute Dialog zeigt sofort Gruppe, zwei Schalter und die drei Knoepfe — keinen Weg", () => {
+    for (const [form, tag] of [
+      ["bar", BAR_HOST],
+      ["modal", MODAL_HOST],
+    ] as const) {
+      aufraeumen();
+      window.localStorage.clear();
+      window.localStorage.setItem(STORE_KEY, ALLE_ZUGESTIMMT);
+      mount(form);
+      expect(hosts(tag)).toHaveLength(0);
+      expect(revoke()).toBe(true);
+      const root = hosts(tag)[0].shadowRoot!;
+      expect(root.querySelector('[role="group"]')).not.toBeNull();
+      expect(root.querySelectorAll("input")).toHaveLength(2);
+      expect(
+        Array.from(root.querySelectorAll("button")).map((b) => b.textContent)
+      ).toEqual(["Alle akzeptieren", "Auswahl speichern", "Ablehnen"]);
+      // DIE ABWESENHEIT DES WEGS IST DER KERN: eingeklappt waere er hier.
+      expect(
+        Array.from(root.querySelectorAll("button")).some(
+          (b) => b.textContent === "Einstellungen"
+        )
+      ).toBe(false);
+    }
+  });
+
+  // W17 — DIE GEGENPROBE IM SELBEN GEGENSTAND: Der LADE-Weg derselben Form zeigt den Weg
+  // sehr wohl. Ohne sie koennte W16 gruen sein, weil der Weg ueberhaupt nicht entsteht.
+  it("W17: der Lade-Weg derselben Form zeigt den Weg — Positivkontrolle zu W16", () => {
+    for (const [form, tag] of [
+      ["bar", BAR_HOST],
+      ["modal", MODAL_HOST],
+    ] as const) {
+      aufraeumen();
+      window.localStorage.clear();
+      mount(form);
+      const root = hosts(tag)[0].shadowRoot!;
+      expect(
+        Array.from(root.querySelectorAll("button")).map((b) => b.textContent)
+      ).toEqual(["Alle akzeptieren", "Ablehnen", "Einstellungen"]);
+      expect(root.querySelectorAll("input")).toHaveLength(0);
+    }
   });
 });

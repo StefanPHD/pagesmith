@@ -103,6 +103,16 @@ function button(label: string): HTMLButtonElement {
   return b;
 }
 
+/**
+ * Den Weg zur Auswahl klicken (Scheibe 11.13a). DAS FENSTER ERSCHEINT SEITHER EINGEKLAPPT;
+ * alle Tests, die die Gestalt VOR dieser Scheibe festnageln, laufen ab jetzt als Erwartung
+ * des AUSGEKLAPPTEN Zustands und rufen dies nach mount(). IHRE ASSERTIONEN SIND
+ * UNVERAENDERT — sie sind nicht aufgeweicht, sie haben einen Zustand bekommen.
+ */
+function ausklappen(): void {
+  button("Einstellungen").click();
+}
+
 /** Die Checkbox des Gruppen-Schalters mit dieser Beschriftung (Scheibe 11.5e-1). */
 function schalter(name: string): HTMLInputElement {
   const label = Array.from(shadow().querySelectorAll("label")).find(
@@ -233,6 +243,7 @@ describe("11.5d-2 — wann das Modal erscheint", () => {
   // fehlenden oder umgestellten Kind und bei jeder geaenderten Knopf-Beschriftung.
   it("M5: nichts entschieden -> genau ein Modal: Abdunkelung und Fenster im Schattenbaum, Sachtext, Gruppe der Schalter und drei Knoepfe, nichts gesendet, Hook abgelehnt", () => {
     const beacon = mount();
+    ausklappen();
     expect(hosts()).toHaveLength(1);
     expect(hosts()[0].parentElement).toBe(document.body);
     const root = shadow();
@@ -469,8 +480,16 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
       [/\bbody\.(?!appendChild\(host\))/, "body.setAttribute('data-x', '1')"],
       [/\.style\b/, "el.style.overflow = 'hidden'"],
       [/classList|className/, "el.classList.add('x')"],
-      [/scroll/i, "window.scrollTo(0, 0)"],
-      [/\.focus\(|\.blur\(|autofocus|tabindex/i, "b.focus()"],
+      // BENANNT VERENGT (Korrektur K1, 2026-09-17): `preventScroll` ist die UMKEHRUNG
+      // dessen, was diese Nadel schuetzt — die Option VERHINDERT, dass der Browser die
+      // Scroll-Position der fremden Seite aendert. Jedes andere Vorkommen von `scroll`
+      // bleibt verboten; die Positivkontrolle `window.scrollTo(0, 0)` bleibt rot.
+      [/(?<!prevent)scroll/i, "window.scrollTo(0, 0)"],
+      // BENANNT VERENGT (Freigabe E2, 2026-09-17): Der Fokus auf das erste EIGENE
+      // Kaestchen ist ausgenommen — er liegt im eigenen Schattenbaum (Invariante I1).
+      // Jeder andere Fokus-Aufruf bleibt verboten; die Positivkontrolle `b.focus()`
+      // bleibt rot, und die Gegenprobe unten haelt die Ausnahme eng.
+      [/(?<!measure\.box)\.focus\(|\.blur\(|autofocus|tabindex/i, "b.focus()"],
       [/querySelector|getElementsBy|getElementById/, "document.querySelector('html')"],
       [/(?<!host)\.parentNode/, "el.parentNode.removeChild(el)"],
     ];
@@ -483,6 +502,46 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
     // oben aus dem falschen Grund rot, nicht gruen.
     expect(/\bbody\.(?!appendChild\(host\))/.test("body.appendChild(host)")).toBe(false);
     expect(/(?<!host)\.parentNode/.test("host.parentNode.removeChild(host)")).toBe(false);
+
+    // GEGENPROBE ZUR VERENGUNG (Freigabe E2): die Ausnahme ist ENG — sie nimmt genau
+    // den einen eigenen Ausdruck aus und sonst nichts.
+    expect(NADELN[7][0].test("measure.box.focus()")).toBe(false);
+    expect(NADELN[7][0].test("document.body.focus()")).toBe(true);
+    expect(NADELN[6][0].test("measure.box.focus({ preventScroll: true })")).toBe(false);
+    expect(NADELN[6][0].test("window.scrollY = 0")).toBe(true);
+  });
+
+  // M12b. DER WIRKUNGS-TEST ZUM FOKUS (Scheibe 11.13a, Freigabe E2), Spiegel von L12b.
+  // ERWEITERUNG, KEIN UMBAU: die zehn Nadeln oben bleiben unveraendert. Sie sehen ZEICHEN;
+  // dieser Test sieht die WIRKUNG.
+  it("M12b: Aufbau, Ausklappen und Klick lassen den Fokus der fremden Seite unberuehrt — mit Positivkontrolle", () => {
+    const fremd = document.createElement("input");
+    document.body.appendChild(fremd);
+    fremd.focus();
+    expect(document.activeElement).toBe(fremd);
+
+    mount();
+    // DER AUFBAU FASST DEN FOKUS NICHT AN.
+    expect(document.activeElement).toBe(fremd);
+
+    // NACH DEM AUSKLAPPEN LIEGT ER IM EIGENEN HOST — Rueckfall (a) der Freigabe E2. DAS IST
+    // KEIN FREMDER KNOTEN: `document.activeElement` ist das Host-Element, das dieser Block
+    // selbst angelegt hat, und das eigentliche Ziel liegt in seinem Schattenbaum.
+    ausklappen();
+    const host = hosts()[0];
+    expect(document.activeElement).toBe(host);
+    expect(host.shadowRoot!.activeElement?.getAttribute("type")).toBe("checkbox");
+
+    // NACH DEM KLICK IST DER HOST WEG; wohin der Fokus dann faellt, entscheidet die
+    // Plattform — wir setzen ihn nicht. Gepruefte Sache: es ist KEIN anderes fremdes
+    // Element als das, das ihn vorher hatte.
+    button("Ablehnen").click();
+    expect([fremd, document.body]).toContain(document.activeElement);
+
+    // POSITIVKONTROLLE der Pruefung im selben Lauf.
+    fremd.blur();
+    expect(document.activeElement).not.toBe(fremd);
+    fremd.remove();
   });
 
   // M13. DER WAECHTER DER INVARIANTE I2 DER SCHEIBE 11.5d-2: Die EINZIGE Ruecknahme ist das
@@ -559,10 +618,19 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
       .map((e, i) => ({ ...e, i }))
       .filter((e) => e.art === "anhaengen" && e.ziel === document.body);
 
-    // POSITIVKONTROLLE: die Spione sehen die Aufrufe des Blocks — die drei Knoepfe.
+    // POSITIVKONTROLLE: die Spione sehen die Aufrufe des Blocks — die Knoepfe.
+    // SEIT SCHEIBE 11.13a SIND ES VIER: die drei des ausgeklappten Zustands PLUS der Weg.
+    // "Auswahl speichern" ist eingeklappt NICHT eingehaengt und trotzdem schon verdrahtet —
+    // genau das ist Invariante I3 am Wortlaut.
+    const knopfListener = listener.filter(
+      (e) => (e.ziel as Element | null)?.tagName === "BUTTON"
+    );
+    expect(knopfListener.length).toBeGreaterThanOrEqual(4);
     expect(
-      listener.filter((e) => (e.ziel as Element | null)?.tagName === "BUTTON").length
-    ).toBeGreaterThanOrEqual(3);
+      knopfListener.some(
+        (e) => (e.ziel as Element | null)?.textContent === "Einstellungen"
+      )
+    ).toBe(true);
     expect(anBody).toHaveLength(1);
     expect((anBody[0].kind as Element).tagName).toBe("PAGESMITH-MODAL");
     expect(hosts()).toHaveLength(1);
@@ -621,6 +689,7 @@ describe("11.5e-1 — die Schalter des Modals", () => {
   // M16. Spiegel von L15: beide Schalter starten AUS, ohne checked-Attribut und ohne Zuweisung.
   it("M16: eine Gruppe 'Bereiche' mit zwei Schaltern 'Messung' und 'Werbung', je Checkbox im label, beide AUS, genau zwei Eingabeelemente", () => {
     mount();
+    ausklappen();
     const root = shadow();
     const gruppe = root.querySelector('[role="group"]');
     expect(gruppe).not.toBeNull();
@@ -649,6 +718,7 @@ describe("11.5e-1 — die Schalter des Modals", () => {
   for (const [fall, klicks, speicher, erlaubt, beacons] of AUSWAHL) {
     it(`M17: '${fall}' + 'Auswahl speichern' -> Speicherwert und Hook je Schluessel, ${beacons} Seitenaufruf(e), Modal weg`, async () => {
       const beacon = mount();
+      ausklappen();
       for (const name of ["Messung", "Werbung"]) expect(schalter(name).checked).toBe(false);
       for (const name of klicks) {
         schalter(name).click();
@@ -674,6 +744,7 @@ describe("11.5e-1 — die Schalter des Modals", () => {
   // M18. Spiegel von L17: die zwei festen Knoepfe lesen die Schalter nicht.
   it("M18: 'Ablehnen' und 'Alle akzeptieren' ignorieren den Zustand der Schalter", () => {
     mount();
+    ausklappen();
     schalter("Werbung").click();
     expect(schalter("Werbung").checked).toBe(true);
     button("Ablehnen").click();
@@ -683,6 +754,7 @@ describe("11.5e-1 — die Schalter des Modals", () => {
     aufraeumen();
     window.localStorage.clear();
     mount();
+    ausklappen();
     schalter("Messung").click();
     expect(schalter("Messung").checked).toBe(true);
     button("Alle akzeptieren").click();
@@ -694,6 +766,7 @@ describe("11.5e-1 — die Schalter des Modals", () => {
   // jsdom die Label-Aktivierung im Schattenbaum ausfuehrt — GEMESSEN im Bau der Scheibe 11.5e-1.
   it("M19: ein Klick auf die Beschriftung 'Messung' schaltet ihre Checkbox", () => {
     mount();
+    ausklappen();
     const text = Array.from(shadow().querySelectorAll("span")).find(
       (s) => s.textContent === "Messung"
     );
@@ -702,5 +775,115 @@ describe("11.5e-1 — die Schalter des Modals", () => {
     text!.click();
     expect(schalter("Messung").checked).toBe(true);
     expect(schalter("Werbung").checked).toBe(false);
+  });
+});
+
+// SCHEIBE 11.13a — DIE ANORDNUNG, Spiegel der Leiste. Die Erwartungen stammen aus
+// Entscheidung P11.13-1 der Phase 11.13 (docs/aktiver-stand.md), NIE aus dem Code.
+describe("11.13a — die Anordnung", () => {
+  // M24. `preventScroll` AM FOKUS-AUFRUF — EINE STRUKTUR-ZUSICHERUNG UEBER DEN
+  // AUSGELIEFERTEN TEXT, KEINE WIRKUNGS-ZUSICHERUNG: Die Testumgebung scrollt nicht
+  // (docs/immer-beachten.md, DIE TESTUMGEBUNG WERTET KEIN CSS AUS — hier dieselbe Grenze an
+  // der Scroll-Achse). GEPRUEFT WIRD, DASS DIE OPTION AM AUFRUF STEHT.
+  // WARUM SIE PFLICHT IST: Ohne sie scrollt der Browser das Ziel bei Bedarf in den
+  // Sichtbereich und aendert damit die SCROLL-POSITION der fremden Seite — genau das
+  // verbietet Invariante I1. Dass sie WIRKT, ist eine Live-Achse und in der Probe gemessen.
+  it("M24: der Fokus-Aufruf traegt preventScroll — Struktur-Zusicherung mit Positivkontrolle", () => {
+    const block = buildConsentModalScript("load");
+    expect(block).toContain("measure.box.focus({ preventScroll: true })");
+    // POSITIVKONTROLLE der Suche im selben Lauf: der blosse Aufruf kommt NICHT vor.
+    expect(/measure\.box\.focus\(\)/.test(block)).toBe(false);
+    expect(/measure\.box\.focus\(\)/.test("measure.box.focus()")).toBe(true);
+    // DIE VERENGTE NADEL AUS M12/W11 TRIFFT DIE NEUE FORM WEITERHIN NICHT.
+    const NADEL = /(?<!measure\.box)\.focus\(|\.blur\(|autofocus|tabindex/i;
+    expect(NADEL.test("measure.box.focus({ preventScroll: true })")).toBe(false);
+    expect(NADEL.test("document.body.focus()")).toBe(true);
+  });
+
+  // M20. Spiegel von L19.
+  it("M20: eingeklappt stehen Text, 'Alle akzeptieren', 'Ablehnen' und der Weg — keine Schalter, kein 'Auswahl speichern'", () => {
+    mount();
+    const root = shadow();
+    const dialog = root.querySelector('[role="dialog"]')!;
+    expect(Array.from(dialog.children).map((k) => k.tagName)).toEqual([
+      "P",
+      "BUTTON",
+      "BUTTON",
+      "BUTTON",
+    ]);
+    expect(
+      Array.from(root.querySelectorAll("button")).map((b) => b.textContent)
+    ).toEqual(["Alle akzeptieren", "Ablehnen", "Einstellungen"]);
+    expect(root.querySelectorAll("input")).toHaveLength(0);
+    expect(root.querySelector('[role="group"]')).toBeNull();
+    // POSITIVKONTROLLE der Abwesenheits-Behauptungen im selben Lauf.
+    ausklappen();
+    expect(root.querySelectorAll("input")).toHaveLength(2);
+    expect(root.querySelector('[role="group"]')).not.toBeNull();
+  });
+
+  // M21. Spiegel von L20.
+  it("M21: nach dem Klick ist der Weg verschwunden und die Knoepfe sind die drei von vorher", () => {
+    mount();
+    ausklappen();
+    const root = shadow();
+    expect(
+      Array.from(root.querySelectorAll("button")).map((b) => b.textContent)
+    ).toEqual(["Alle akzeptieren", "Auswahl speichern", "Ablehnen"]);
+    expect(
+      Array.from(root.querySelectorAll("button")).some(
+        (b) => b.textContent === "Einstellungen"
+      )
+    ).toBe(false);
+  });
+
+  // M22. Spiegel von L21.
+  it("M22: der Weg ist ein <button type='button'>; der Rumpf traegt kein Link-Element und kein href", () => {
+    mount();
+    const weg = button("Einstellungen");
+    expect(weg.tagName).toBe("BUTTON");
+    expect(weg.getAttribute("type")).toBe("button");
+    expect(weg.getAttribute("class")).toBe("way");
+
+    const block = buildConsentModalScript("load");
+    expect(/href/i.test(block)).toBe(false);
+    expect(/createElement\("a"\)/.test(block)).toBe(false);
+    // POSITIVKONTROLLE beider Suchen im selben Lauf.
+    expect(/href/i.test('a.setAttribute("href", "#")')).toBe(true);
+    expect(/createElement\("a"\)/.test('document.createElement("a")')).toBe(true);
+  });
+
+  // M23. Spiegel von L22 — und hier wiegt er schwerer: Bliebe der Host nach einem Wurf
+  // stehen, fing die Abdunkelung weiter JEDEN Klick, und die Kundenseite waere unbedienbar.
+  it("M23: wirft write(), schliesst das Modal trotzdem — und der Wurf ist wirklich einer (Positivkontrolle)", () => {
+    const fehler: string[] = [];
+    const sammeln = (e: ErrorEvent): void => {
+      fehler.push(String(e.message));
+      e.preventDefault();
+    };
+    window.addEventListener("error", sammeln);
+    try {
+      mount();
+      ausklappen();
+      const api = w.__psConsentStore as { write: unknown };
+      api.write = () => {
+        throw new Error("probe-wurf");
+      };
+      button("Ablehnen").click();
+      expect(hosts()).toHaveLength(0);
+      expect(fehler.join(" ")).toContain("probe-wurf");
+
+      aufraeumen();
+      window.localStorage.clear();
+      fehler.length = 0;
+      mount();
+      ausklappen();
+      button("Ablehnen").click();
+      expect(hosts()).toHaveLength(0);
+      expect(fehler).toEqual([]);
+      expect(window.localStorage.getItem(STORE_KEY)).toBe(ALLE_ABGELEHNT);
+    } finally {
+      window.removeEventListener("error", sammeln);
+    }
   });
 });

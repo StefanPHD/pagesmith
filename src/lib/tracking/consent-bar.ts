@@ -2,6 +2,8 @@
 // am unteren Rand der publizierten Seite eine Leiste anlegt — der erste Baustein im
 // ausgelieferten Text, der SICHTBARES DOM erzeugt. Seit Scheibe 11.5e-1 traegt sie zwei
 // Gruppen-Schalter und drei gleichwertige Knoepfe; beides kommt aus consent-choice.ts.
+// SEIT SCHEIBE 11.13a ERSCHEINT SIE EINGEKLAPPT: zwei gleichwertige Knoepfe und ein Weg
+// "Einstellungen"; der Klick stellt die Gestalt oben her. Der Widerruf oeffnet ausgeklappt.
 // Reiner String-Bau: kein React, kein Netzwerk, keine Datenbank, kein server-seitiges
 // Parsen. Das DOM entsteht erst im Browser des Besuchers.
 //
@@ -68,6 +70,9 @@ export const CONSENT_BAR_REGION_LABEL = "Einwilligung";
 /**
  * Das Basis-Stylesheet im Schattenbaum; CONSENT_CHOICE_CSS wird angehaengt. ALLE DREI
  * KNOEPFE TRAGEN DIESELBE REGEL — gleichwertig heisst hier: kein Knopf ist hervorgehoben.
+ * DER BARE `button`-SELEKTOR TRIFFT AUCH DEN WEG (Scheibe 11.13a); was ihn unauffaellig
+ * macht, steht klassen-gebunden in CONSENT_CHOICE_CSS unter `.way` — eine Regel HIER
+ * aenderte die drei echten Knoepfe mit.
  * KEIN `overflow`, KEINE Abdunkelung, KEINE Scroll-Sperre: Die Leiste kann eine Seite
  * nicht unbedienbar machen. Verliert sie ihre Stapel-Ebene, ist sie verdeckt, und die
  * Seite bleibt bedienbar. L12 haelt die Abwesenheit von `overflow`.
@@ -91,9 +96,13 @@ const CONSENT_BAR_CSS =
  * "revoke" (Scheibe 11.5e-2). BEIDE GESTALTEN BAUEN AUS DEMSELBEN STRING auf
  * (`aufbauDerLeiste`); was sie unterscheidet, ist die Huelle und die Vorbedingung.
  *
- * DER LADE-ZWEIG IST BYTE-GLEICH ZUR FASSUNG VOR DER SCHEIBE 11.5e-2 — die tragende
- * Invariante dieser Scheibe, gehalten von W0 gegen einen VOR dem Bau erhobenen
- * Vergleichswert. Alles Folgende beschreibt ihn und gilt fuer "load".
+ * DER LADE-ZWEIG WAR BIS ZUR SCHEIBE 11.13a BYTE-GLEICH ZUR FASSUNG VOR DER SCHEIBE
+ * 11.5e-2 — die tragende Invariante JENER Scheibe. SIE IST MIT IHR ABGELAUFEN: Die
+ * Scheibe 11.13a aendert den Lade-Zweig, und der Waechter W0, der die zwei Byte-Werte
+ * hielt, ist deshalb GESTRICHEN statt neu gesetzt (Freigabe E1, 2026-09-17) — ein aus
+ * dem Bau gezogener Wert waere ein Spiegel. WAS BLEIBT, HAELT T9 STRUKTURELL: Lade- und
+ * Widerruf-Text stammen aus EINEM Aufbau und sind nach Ersetzen der drei Einsetzwerte
+ * identisch. Alles Folgende beschreibt den Lade-Zweig.
  *
  * DER WIDERRUF-ZWEIG traegt die zwei Wachen unten NICHT; seine Vorbedingung ist ihre
  * UMKEHRUNG, und sie steht samt Begruendung am Docblock von `wrapRevoke`
@@ -143,14 +152,18 @@ const CONSENT_BAR_CSS =
  * Liste.
  */
 /**
- * DER AUFBAU DER LEISTE — EIN STRING, ZWEI EINSETZUNGEN (Scheibe 11.5e-2).
+ * DER AUFBAU DER LEISTE — EIN STRING, DREI EINSETZUNGEN (Scheibe 11.5e-2; die dritte seit
+ * Scheibe 11.13a).
  *
  * Er traegt alles ab `document.body` bis zum Einhaengen. Die zwei Gestalten des Blocks
- * unterscheiden sich allein in zwei Platzhaltern:
+ * unterscheiden sich allein in drei Platzhaltern:
  * - `abbruch` — die Rueckkehr-Anweisung der zwei Moeglichkeits-Wachen (`document.body`
  *   und `attachShadow`). Im Lade-Zweig `return;`, im Widerruf-Zweig `return false;`.
  * - `vormerken` — im Widerruf-Zweig die Zeile, die das Host-Element merkt, unmittelbar
  *   VOR dem Einhaengen; im Lade-Zweig LEER.
+ * - `ausgeklappt` — der Startzustand als Literal fuer `fillChoice`. Im Lade-Zweig `false`
+ *   (eingeklappt), im Widerruf-Zweig `true` (Entscheidung P11.13-2). ER IST EIN
+ *   BAUZEIT-WERT: Weder Speicher noch Hook noch ein globaler Name tragen ihn.
  *
  * WARUM EIN STRING UND NICHT ZWEI: Zwei Stellen, die dieselbe Oberflaeche bauen, laufen
  * auseinander — dieselbe Divergenz-Bauform, gegen die in dieser Phase schon die
@@ -163,7 +176,11 @@ const CONSENT_BAR_CSS =
  * es hier: Mit `abbruch = "return;"` und `vormerken = ""` muss der erzeugte Text ZEICHEN
  * FUER ZEICHEN der Fassung vor dieser Scheibe entsprechen. W0 haelt den Wert.
  */
-function aufbauDerLeiste(abbruch: string, vormerken: string): string {
+function aufbauDerLeiste(
+  abbruch: string,
+  vormerken: string,
+  ausgeklappt: string
+): string {
   return `  var body = document.body;
   if (!body) ${abbruch}
   var host = document.createElement(${JSON.stringify(CONSENT_BAR_HOST_TAG)});
@@ -181,7 +198,7 @@ function aufbauDerLeiste(abbruch: string, vormerken: string): string {
   text.textContent = ${JSON.stringify(CONSENT_TEXT)};
   bar.appendChild(text);
 ${CONSENT_CHOICE_JS}
-  fillChoice(bar);
+  fillChoice(bar, ${ausgeklappt});
   root.appendChild(bar);
 ${vormerken}  body.appendChild(host);
 `;
@@ -189,7 +206,9 @@ ${vormerken}  body.appendChild(host);
 
 export function buildConsentBarScript(mode: ConsentSurfaceMode): string {
   if (mode === "revoke") {
-    return wrapRevoke(aufbauDerLeiste("return false;", "    offen = host;\n"));
+    return wrapRevoke(
+      aufbauDerLeiste("return false;", "    offen = host;\n", "true")
+    );
   }
   return `<script id="${CONSENT_BAR_SCRIPT_ID}">
 (function(){
@@ -197,6 +216,6 @@ export function buildConsentBarScript(mode: ConsentSurfaceMode): string {
   var api = window.${CONSENT_STORE_API};
   if (!api || typeof api.read !== "function" || typeof api.write !== "function") return;
   if (api.read().state !== "never") return;
-${aufbauDerLeiste("return;", "")}})();
+${aufbauDerLeiste("return;", "", "false")}})();
 </script>`;
 }

@@ -1,7 +1,9 @@
 // DAS CENTER-MODAL (Phase 11.5, Scheibe 11.5d-2). Erzeugt EINEN Script-Block, der in der
 // Mitte der publizierten Seite ein Fenster ueber einer Abdunkelung anlegt, mit denselben
 // Schaltern und Knoepfen wie die Leiste — seit Scheibe 11.5e-1 zwei Gruppen-Schalter und
-// drei gleichwertige Knoepfe. Reiner String-Bau: kein React, kein Netzwerk, keine
+// drei gleichwertige Knoepfe. SEIT SCHEIBE 11.13a ERSCHEINT ES EINGEKLAPPT: zwei
+// gleichwertige Knoepfe und ein Weg "Einstellungen"; der Klick stellt die Gestalt oben
+// her. Der Widerruf oeffnet ausgeklappt. Reiner String-Bau: kein React, kein Netzwerk, keine
 // Datenbank, kein server-seitiges Parsen.
 //
 // KEIN `import "server-only"`, aus demselben Grund wie in consent-bar.ts: Eine
@@ -69,6 +71,16 @@ export const CONSENT_MODAL_DIALOG_LABEL = "Einwilligung";
  * Das Basis-Stylesheet im Schattenbaum; CONSENT_CHOICE_CSS wird angehaengt. Der Host deckt
  * das ganze Fenster ab; die Abdunkelung fuellt ihn, das Fenster sitzt mittig darueber. ALLE
  * DREI KNOEPFE TRAGEN DIESELBE REGEL.
+ * DER BARE `button`-SELEKTOR TRIFFT AUCH DEN WEG (Scheibe 11.13a); was ihn unauffaellig
+ * macht, steht klassen-gebunden in CONSENT_CHOICE_CSS unter `.way`.
+ * `.way{flex:0 0 100%}` STEHT NUR HIER UND NICHT IM GETEILTEN STYLESHEET — es gilt dem
+ * MODAL allein (ARCHITEKT-ENTSCHEIDUNG 2026-09-17, Guardrail der Roadmap-Zeile 11.13,
+ * Punkt (h)). GEMESSEN am 2026-09-17: Das Fenster ist bei 390 px Fensterbreite 326 px
+ * innen breit, zwei Knoepfe zu 160 px plus 8 px Abstand brauchen 328 — „Alle akzeptieren"
+ * stand dann allein, und „Ablehnen" teilte die Reihe mit dem Weg. DAS LIEST SICH ALS
+ * NACHRANGIG. Mit einer eigenen Reihe fuer den Weg teilt kein Knopf seine Reihe mit ihm.
+ * ES IST EINE REGEL AUF `.way`, KEIN EINGRIFF AN DER `button`-REGEL, und der ausgeklappte
+ * Zustand kennt kein `.way`-Element — er ist unberuehrt.
  * `max-height` UND `overflow` AM FENSTER SIND ABSICHT (Invariante I1 der Scheibe
  * 11.5d-2): Ohne eigenen Scroll-Bereich laegen die Knoepfe auf einem niedrigen
  * Bildschirm unter dem Rand, waehrend die Abdunkelung jeden Klick faengt — die Seite
@@ -89,14 +101,17 @@ const CONSENT_MODAL_CSS =
   "button{box-sizing:border-box;min-width:160px;margin:0;padding:10px 16px;" +
   "border:1px solid #111827;border-radius:6px;background:#ffffff;color:#111827;" +
   "font:inherit;font-weight:600;cursor:pointer;}" +
-  "button:focus-visible{outline:2px solid #2563eb;outline-offset:2px;}";
+  "button:focus-visible{outline:2px solid #2563eb;outline-offset:2px;}" +
+  ".way{flex:0 0 100%;}";
 
 /**
  * Der Block — `<script id="__ps_cmo">` im Modus "load", `<script id="__ps_crv">` im Modus
  * "revoke" (Scheibe 11.5e-2). Spiegel der Leiste: BEIDE GESTALTEN BAUEN AUS DEMSELBEN
- * STRING auf (`aufbauDesFensters`), der Lade-Zweig ist BYTE-GLEICH zur Fassung vor der
- * Scheibe (gehalten von W0), und der Widerruf-Zweig traegt die zwei Wachen nicht — seine
- * Vorbedingung ist ihre Umkehrung und steht am Docblock von `wrapRevoke`.
+ * STRING auf (`aufbauDesFensters`); die Byte-Gleichheit des Lade-Zweigs zur Fassung vor
+ * der Scheibe 11.5e-2 ist mit der Scheibe 11.13a abgelaufen, und W0 ist gestrichen — die
+ * Begruendung steht am Docblock von `buildConsentBarScript`. Der Widerruf-Zweig traegt die
+ * zwei Wachen nicht — seine Vorbedingung ist ihre Umkehrung und steht am Docblock von
+ * `wrapRevoke`.
  * Alles Folgende beschreibt den Lade-Zweig.
  *
  * DAS MODAL ERSCHEINT UNTER DENSELBEN ZWEI BEDINGUNGEN WIE DIE LEISTE, WOERTLICH
@@ -122,13 +137,18 @@ const CONSENT_MODAL_CSS =
  * Liste.
  */
 /**
- * DER AUFBAU DES FENSTERS — EIN STRING, ZWEI EINSETZUNGEN (Scheibe 11.5e-2).
+ * DER AUFBAU DES FENSTERS — EIN STRING, DREI EINSETZUNGEN (Scheibe 11.5e-2; die dritte
+ * seit Scheibe 11.13a).
  * Spiegel von `aufbauDerLeiste` in consent-bar.ts; die Begruendung steht dort und wird
- * hier nicht verdoppelt. Die zwei Platzhalter sind dieselben: `abbruch` fuer die
+ * hier nicht verdoppelt. Die drei Platzhalter sind dieselben: `abbruch` fuer die
  * Rueckkehr-Anweisung der zwei Moeglichkeits-Wachen, `vormerken` fuer die Zeile vor dem
- * Einhaengen.
+ * Einhaengen, `ausgeklappt` fuer den Startzustand von `fillChoice`.
  */
-function aufbauDesFensters(abbruch: string, vormerken: string): string {
+function aufbauDesFensters(
+  abbruch: string,
+  vormerken: string,
+  ausgeklappt: string
+): string {
   return `  var body = document.body;
   if (!body) ${abbruch}
   var host = document.createElement(${JSON.stringify(CONSENT_MODAL_HOST_TAG)});
@@ -149,7 +169,7 @@ function aufbauDesFensters(abbruch: string, vormerken: string): string {
   text.textContent = ${JSON.stringify(CONSENT_TEXT)};
   dialog.appendChild(text);
 ${CONSENT_CHOICE_JS}
-  fillChoice(dialog);
+  fillChoice(dialog, ${ausgeklappt});
   root.appendChild(dialog);
 ${vormerken}  body.appendChild(host);
 `;
@@ -157,7 +177,9 @@ ${vormerken}  body.appendChild(host);
 
 export function buildConsentModalScript(mode: ConsentSurfaceMode): string {
   if (mode === "revoke") {
-    return wrapRevoke(aufbauDesFensters("return false;", "    offen = host;\n"));
+    return wrapRevoke(
+      aufbauDesFensters("return false;", "    offen = host;\n", "true")
+    );
   }
   return `<script id="${CONSENT_MODAL_SCRIPT_ID}">
 (function(){
@@ -165,6 +187,6 @@ export function buildConsentModalScript(mode: ConsentSurfaceMode): string {
   var api = window.${CONSENT_STORE_API};
   if (!api || typeof api.read !== "function" || typeof api.write !== "function") return;
   if (api.read().state !== "never") return;
-${aufbauDesFensters("return;", "")}})();
+${aufbauDesFensters("return;", "", "false")}})();
 </script>`;
 }

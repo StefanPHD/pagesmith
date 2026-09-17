@@ -4410,13 +4410,17 @@ sich an den, der den Prompt oder den Commit-Body schreibt — das ist der Archit
 den INHALT von docs/arbeitsweise.md entscheidet nicht CC (CLAUDE.md, Abschnitt "Aktive
 Dokumente", Weg 7). Der Volltext jedes Kandidaten steht unter seiner Nummer im Archiv der
 Phase 11.3, Abschnitt "Hebungs-Kandidaten"; hier steht nur sein Gegenstand.
+NACHGETRAGEN 2026-09-17: Der Commit 96796a4 trägt VIER angenommene Änderungsanträge, diese
+drei und einen vierten, der hier nicht geführt ist — die Bauform der Sachkorrektur (in die
+Datei kommt allein der heutige Stand, der ersetzte Wortlaut steht im Bericht). Er steht nur
+im Body jenes Commits; woher er stammt, ist an dieser Datei nicht ablesbar.
 
 **HEBUNGS-KANDIDAT (1) — EINE VERWORFENE ALTERNATIVE, DIE NUR IM COMMIT-BODY STEHT, IST FÜR
 KÜNFTIGE RUNDEN VERLOREN.** docs/arbeitsweise.md weist der verworfenen Alternative den
 Commit-Body als Ort zu, und ein Commit-Body lädt nicht — was nur dort steht, wird beim
 nächsten Mal als Einfall neu vorgeschlagen. Wo die Grenze liegt, ist nicht erhoben: Manche
 Alternativen sollen mit ihrer Scheibe ablaufen, und für die ist der Body der richtige Ort.
-**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+**VOLLZOGEN 96796a4 (Repo) und in der Projektanweisung (ARCHITEKT-ABLESUNG 2026-09-17).**
 
 **HEBUNGS-KANDIDAT (4) — EINE ZAHL IN EINER WÖRTLICHEN PROMPT-VORGABE WIRD NICHT GEPRÜFT,
 WEIL SIE VORGABE IST.** Ein wörtlich vorgegebener Commit-Body trug eine Zahl aus einem
@@ -4424,14 +4428,15 @@ früheren Bericht, die der Messung derselben Runde widersprach, und wurde übern
 Vorgabe war. Die Gegenform: keine Zahl in eine wörtliche Body-Vorgabe, oder ausdrücklich
 die Prüfung gegen die Messung der Runde verlangen. Die Nachbarregel "Liste schlägt Zahl"
 steht in docs/arbeitsweise.md, Abschnitt "Review-Kalibrierung — nach Tragweite, nicht nach
-Artefakt-Typ". **EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+Artefakt-Typ".
+**VOLLZOGEN 96796a4 (Repo) und in der Projektanweisung (ARCHITEKT-ABLESUNG 2026-09-17).**
 
 **HEBUNGS-KANDIDAT (7) — DIE COMMIT-LÜCKE EINES VERMERKS ENTSTEHT STRUKTURELL UND FÄLLT ERST
 DER NÄCHSTEN RUNDE AUF.** Der Hash existiert beim Schreiben des Vermerks noch nicht, die
 Lücke ist also die Bauform und schliesst sich frühestens in der nächsten Runde — vier von
 fünf Vermerken der Phase trugen denselben Nachtrag. Bleibt er aus, entsteht beim nächsten
 Vermerk ohne Zutun eine zweite Lücke, und die Lücken-Regel verliert ihre Diagnose.
-**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+**VOLLZOGEN 96796a4 (Repo) und in der Projektanweisung (ARCHITEKT-ABLESUNG 2026-09-17).**
 
 ## Nachtrag 2026-09-11 — BEOBACHTUNG: DIE TESTMODUS-ANZEIGE VERALTET BEI OFFENER SEITE
 Eigener Abschnitt nach der Konvention oben: Ein Anhängen ans Dateiende hätte den Eintrag
@@ -5072,7 +5077,9 @@ die Standdatei führt beide Zeilen. **KEINE EMPFEHLUNG, keine Auswahl.**
 **DIE ABGRENZUNG ZU HEBUNGS-KANDIDAT (7) DER PHASE 11.3:** Jener sagt, die Lücke entstehe
 strukturell und kein Mechanismus erzwinge ihren Nachtrag — **er setzt voraus, dass der Vermerk
 die Zeile überhaupt führt.** Dieser sagt, dass sie gar nicht erst entstehen kann, weil die
-Zeile fehlt. **EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+Zeile fehlt.
+**VOLLZOGEN (dieser Commit) (Antrag C) — die Lücken-Regel ist ersetzt; ein Vermerk trägt
+den Hash seines Bau-Commits.**
 
 **HEBUNGS-KANDIDAT (4) — DIE LEISTBARKEIT EINER VOLLLESUNG HÄNGT NICHT AN DER DATEIGRÖSSE,
 SONDERN AM VERHÄLTNIS ZUM VERBLEIBENDEN KONTEXT, UND DAS IST RUNDENABHÄNGIG.** Das
@@ -5102,7 +5109,9 @@ Owner.** Der Kandidat stellt den Datenpunkt fest.
 **DIE ABGRENZUNG ZUM BESTAND:** CLAUDE.md sagt bereits "EIN PFLICHT-GATE, DAS NIEMAND
 VOLLSTÄNDIG LIEST, IST KEINES" und lässt die Teilung zu; der Kandidat widerspricht dem nicht.
 Er sagt, dass die Bedingung, unter der jener Satz eintritt, an der falschen Grösse hängt.
-**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+**OWNER-ENTSCHEIDUNG 2026-09-17 — JETZT NICHT;** das Kontextfenster misst heute 1M Token
+(Owner-Ablesung /context), die Masseinheit beisst nicht. **TRIGGER:** die erste Standdatei,
+deren vollständige Lesung CC als nicht leistbar meldet.
 PROVENIENZ: Der Faktor 1,81, die zwei Prozentzahlen und die Herkunft aus zwei unabhängigen
 Dateien sind OWNER-ANGABEN aus der Sitzung vom 2026-09-16 und am Repo NICHT prüfbar.
 Zeilenzahl, Bytezahl, Bytes je Zeile und der Verlauf von 3 432 auf 3 978 sind GEMESSEN am Repo
@@ -5182,7 +5191,8 @@ DIE GRENZE, OHNE DIE DER ANTRAG DAS GATE BESCHÄDIGT: Das Auftrag-0-Gate bleibt 
 Während einer ersten Aufklärung existiert die Datei nicht — und die Aufklärung **schreibt
 nichts**, sie berichtet. „Existiert sie nicht, läuft keine Phase" bleibt wahr, weil eine
 Phase mit ihrer ersten Tatsache beginnt, nicht mit ihrem ersten Prompt.
-**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+**VOLLZOGEN (dieser Commit) (Antrag A) — in docs/arbeitsweise.md, "Die Standdatei", und in
+CLAUDE.md, "## Aktiver Stand — Verfahren ab Phase 10".**
 PROVENIENZ: OWNER-KORREKTUR 2026-09-17. Der Verlauf der Phase ist am Repo ablesbar (Commit
 `a7fe5fe` und die Doku-Runde davor); dass die Runde „ohne Produktfortschritt" war, ist eine
 Wertung des Owners, keine Messung.
@@ -5199,6 +5209,6 @@ WAS DER ANTRAG NICHT LEISTET: Er heilt keinen bestehenden Zeiger. Die vierzehn b
 und in angewandten Migrationen bleiben sie es für immer.
 DIE GRENZE: Die Setzung von 2026-09-17 gilt DER PHASE 11.12. Erst dieser Antrag würde sie
 verallgemeinern — wer sie ohne ihn übernimmt, ändert das Verfahren an einer Standdatei vorbei.
-**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+**VOLLZOGEN (dieser Commit) (Antrag B) — in docs/arbeitsweise.md, "Die Standdatei".**
 PROVENIENZ: ARCHITEKT-SETZUNG 2026-09-17 für jene Phase; der Antrag auf Verallgemeinerung
 ARCHITEKT 2026-09-17. Die Kollisionsfreiheit ist GEMESSEN (CC, 2026-09-17).

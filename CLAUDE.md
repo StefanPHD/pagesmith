@@ -117,14 +117,16 @@ EXTERNE ABHÄNGIGKEITEN HALTEN SIE NICHT OFFEN — Messungen, Arbeit an einem
 Fremdkonto, Owner-Entscheidungen: sie werden GEHOBEN, nicht abgewartet. Eine
 Phase, die auf ihr letztes TODO wartet, tritt nie ein.
 DIE AUFLAGE, OHNE DIE [x] UNZULÄSSIG IST: Ist zum Zeitpunkt des [x] etwas
-PRODUKTRELEVANTES unbewiesen, SAGT DIE ROADMAP-ZEILE ES AUSDRÜCKLICH. Das ist
-dieselbe Bauform wie beim [~], wo beide Teile benannt sein müssen — und sie ist
-aus demselben Grund keine Formsache.
+PRODUKTRELEVANTES unbewiesen ODER ALS MANGELHAFT BEKANNT, SAGT DIE ROADMAP-ZEILE
+ES AUSDRÜCKLICH. Das ist dieselbe Bauform wie beim [~], wo beide Teile benannt
+sein müssen — und sie ist aus demselben Grund keine Formsache.
 DER GRUND FÜR DIE AUFLAGE, und ohne ihn wird sie beim nächsten Aufräumen als
 Formalie gestrichen: [x] LIEST SICH ALS "FUNKTIONIERT". Bei Phase 11.2 ist die
 WIRKUNG AUF DIE GEBOTE ungemessen — also das Produktversprechen selbst; bewiesen
 ist der Weg bis zur Verbuchung beim Anbieter, nicht bis zur Wirkung. Ohne die
-Auflage läse sich jenes [x] als "Google funktioniert".
+Auflage läse sich jenes [x] als "Google funktioniert". Bei Phase 11.5 war die
+Darstellung bekannt überladen und damit nicht "unbewiesen"; die Auflage musste
+sich auf den Grund des Kriteriums stützen statt auf seinen Wortlaut.
 DIE LEGENDE STEHT HIER UND NICHT IN docs/arbeitsweise.md, und wird dort NICHT
 verdoppelt — jene Datei sagt das selbst.
 
@@ -253,9 +255,6 @@ gehen von hier eine Station weiter.
   nicht-additive Migration)
 - DIE SOLL-HÄLFTE VON "/API/E-SCHLANKHEIT" IST ZU VERDICHTEN (Trigger: die nächste Arbeit
   an CLAUDE.md, die diesen Abschnitt ohnehin berührt)
-- EIN INDIKATOR FÜR ABSCHNITT 2b FEHLT (Trigger: die nächste Änderung an
-  docs/arbeitsweise.md — dann geht er beiläufig hinein und kostet keinen zweiten Vollzug in
-  der Projektanweisung)
 - DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN TRIGGER UND SIND NICHT GESICHTET
   (Trigger: die nächste Runde, die docs/offene-punkte.md ohnehin öffnet)
 - DER TITEL-ZEIGER IN supabase/checks/db-stand.sql IST UNGEPRÜFT (Trigger: die nächste
@@ -377,7 +376,8 @@ sondern als Ursache (5) unter "EIN ZIEL KANN KONFIGURIERT SEIN UND TROTZDEM NICH
 - ZEIGER AUF docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI — DIE UMBENENNUNG AM
   PHASENENDE MACHT SIE TOT, DIE NÄCHSTE STANDDATEI WIEDER FALSCH (Trigger: das Anlegen der
   nächsten Standdatei unter demselben Pfad — sobald ihre Nummern die eines solchen Zeigers
-  erreichen, trifft er wieder einen existierenden, aber falschen Eintrag)
+  erreichen, trifft er wieder einen existierenden, aber falschen Eintrag — seit 2026-09-17
+  nur noch für Zeiger auf einen ABSCHNITTSTITEL)
 
 **NACH DEM PHASENENDE 11.3 AUFGENOMMEN (2026-09-14).**
 - DER TESTZUSTAND WIRD NACH DEM SPEICHERN NICHT NEU GEHOLT — UND ER ÜBERLEBT DEN
@@ -485,13 +485,14 @@ Aufteilung wie bei docs/db-stand.md.
 Ab Phase 10 wird der aktive Stand einer laufenden Phase NICHT mehr hier
 geführt, sondern in einer eigenen, nicht automatisch geladenen Datei:
 docs/aktiver-stand.md. Existiert diese Datei nicht, läuft aktuell keine
-Phase — dann gibt es hier nichts zu lesen und auch sonst nichts zu tun.
+Phase — oder die Phase steht in ihrer ersten Aufklärung; das sagt dann der
+Prompt — dann gibt es hier nichts zu lesen und auch sonst nichts zu tun.
 
 Diese Datei muss JEDE Session, die an einer laufenden Phase arbeitet,
 ZUERST gelesen werden — das ist kein Vorschlag, sondern ein Pflicht-Gate
 ("Auftrag 0") in jedem Bau- und Aufklärungs-Prompt. Details zum Ablauf
-(Anlegen zu Phasenbeginn, Fortschreiben während der Phase, Hebung +
-Archivierung am Phasenende): docs/arbeitsweise.md.
+(Anlegen mit der ersten Tatsache der Phase, Fortschreiben während der Phase,
+Hebung + Archivierung am Phasenende): docs/arbeitsweise.md.
 
 EINE STANDDATEI KANN GETEILT WERDEN, wenn eine Phase so gross wird, dass ihre
 vollständige Lesung nicht mehr zu leisten ist — EIN PFLICHT-GATE, DAS NIEMAND
@@ -1324,12 +1325,14 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   NACHGEZOGEN 2026-09-17 — DER ABSCHNITT DER PHASE 11.12: "Aus Phase 11.12 gehoben
   (2026-09-17) — zwei Vorrats-Einträge und zwei Hebungs-Kandidaten". Er trägt die
   Vorrats-Einträge P11.12-2 und P11.12-4 unter ihren Ursprungs-Nummern, dahinter zwei
-  Hebungs-Kandidaten, die wie die der Phasen 11.3 und 11.5 als ÄNDERUNGSANTRÄGE an
-  docs/arbeitsweise.md in Wartestellung stehen und KEINE Regeln sind — der Zeitpunkt, zu dem
-  die Standdatei entsteht, und die Nummernform mit Phasen-Präfix. DIE NUMMERN TRAGEN EIN
-  PHASEN-PRÄFIX (`P11.12-n`), anders als in allen Abschnitten darüber; das ist die
-  Nummernform jener Phase, und ob sie Bauform JEDER Standdatei wird, ist genau der zweite
-  der zwei Anträge und NICHT entschieden. Auch hier steht keine Stückzahl für die Datei,
+  Hebungs-Kandidaten, die als ÄNDERUNGSANTRÄGE an docs/arbeitsweise.md gestellt waren und
+  KEINE Regeln sind — der Zeitpunkt, zu dem die Standdatei entsteht, und die Nummernform
+  mit Phasen-Präfix. BEIDE SIND AM 2026-09-17 ANGENOMMEN UND VOLLZOGEN
+  (OWNER-ENTSCHEIDUNG); die Nummernform `P<Phase>-n` ist seither Bauform JEDER Standdatei,
+  und der Zeitpunkt steht in docs/arbeitsweise.md, "Die Standdatei", "Wann sie entsteht".
+  DIE NUMMERN JENES ABSCHNITTS TRAGEN DAS PRÄFIX (`P11.12-n`), anders als in allen
+  Abschnitten darüber — dort stehen die Nummern der jeweiligen Phase ohne Präfix, und sie
+  werden NICHT nachgezogen. Auch hier steht keine Stückzahl für die Datei,
   aus demselben Grund wie darüber; der Text ist VERDICHTET und nicht zeichengleich.
 - supabase/checks/ — versionierte Messproben für Live-Tests und Gegenproben. KEINE Probe
   fasst ECHTE Daten an; welche Bauformen das zulässt und was eine Datei dann in ihrem Kopf

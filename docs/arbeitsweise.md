@@ -147,6 +147,11 @@ als Korrektheitsbeweis.
 - Seit mehreren Antworten ist keine Produktentscheidung gefallen. Das offen zu
   sagen ist kein Eingeständnis, sondern die Korrektur.
 
+**Ein Messwert daneben, kein Gate:** Der Kopf jedes Phasen-Archivs nennt die geänderten
+Zeilen in `docs/` und in `src/` über die Phase (`git log --numstat` seit ihrem ersten
+Commit); beim ersten Mal wird die Vorphase mit erhoben. Steigt das Verhältnis zwei Phasen
+in Folge, ist das ein Befund für den Owner. Der Wert ersetzt die Abbruchkriterien nicht.
+
 **Nachgebessert wird, was eine spätere Instanz braucht, um zu verstehen, zu
 rekonstruieren oder zu bauen — sonst nicht.** Eine falsche Tatsachenbehauptung, ein
 toter Zeiger, eine leise abgeschwächte Regel, ein Wert, der ohne Ablage
@@ -303,7 +308,8 @@ Historien-Dateien voranstellen, die Datei nach
 `docs/claude-history/phase-N-<thema>.md` umbenennen, den Roadmap-Eintrag in
 `docs/roadmap.md` auf Haken + einen Verweissatz kollabieren **und** den Marker
 der zugehörigen Stub-Zeile in `CLAUDE.md` nachziehen, den Detail-Archiv-Eintrag
-ergänzen, `docs/aktiver-stand.md` danach löschen — nicht leer stehen lassen, eine
+ergänzen, im Kopf des Archivs den Messwert aus 2b nennen,
+`docs/aktiver-stand.md` danach löschen — nicht leer stehen lassen, eine
 leere Datei sähe aus wie eine Phase ohne Inhalt.
 
 **IST DIE STANDDATEI GETEILT, ÄNDERT SICH SCHRITT 2 AN ZWEI STELLEN — EINE ENTFÄLLT, EINE
@@ -336,7 +342,7 @@ nicht mehr zu leisten ist:
 
 - **`docs/aktiver-stand.md` — die STEUERDATEI.** Sie ist das Pflicht-Gate. Ihr Name
   ändert sich nie; an ihm hängt der Verfahrensslot („existiert sie nicht, läuft keine
-  Phase").
+  Phase — oder die Phase steht in ihrer ersten Aufklärung"); s. „Wann sie entsteht".
 - **`docs/claude-history/phase-N-<thema>.md` — das ARCHIV.** Die abgelaufenen Zuschnitte
   und die abgeschlossenen Vermerke. **Sie trägt ihren Endnamen von Anfang an** und liegt
   damit als einzige Datei jenes Ordners bei einer *laufenden* Phase. Das ist Absicht: Es
@@ -380,17 +386,18 @@ Eine Runde ohne Bauaufgabe findet immer einen Grund zu teilen. Die eine hält 50
 Zeilen für zu viel, die nächste 1000 — und die Zeit geht in Teilrunden statt in
 Produktentscheidungen.
 
-**Wann sie entsteht:** bei der ersten Handlung der Phase — vor der ersten
-Aufklärung, vor der ersten Konzept-Runde, vor der ersten Bau-Freigabe. Nicht
-erst beim ersten Zuschnitt: Eine Phase kann mit einer Konzept- oder
-Aufklärungs-Runde beginnen, die keine Scheibe hervorbringt. In diesem Fenster
-fallen Befunde an, die keinen Ort haben — und sie landen dort, wo Platz ist.
-**Das gilt für die STEUERDATEI.** Archiv und Vorrat entstehen **nicht** zu Phasenbeginn,
-sondern erst mit dem Schnitt — und der ist eine eigene Arbeit, kein Automatismus. Eine
-Phase, die nie geteilt wird, hat sie nie.
+**Wann sie entsteht:** sobald die erste Tatsache der Phase einen Ort braucht — in der
+Regel mit dem Ergebnis der ersten Aufklärung, spätestens vor dem ersten Zuschnitt. Nicht
+vorher: Eine leer angelegte Datei trägt nur Vermutungen und erzeugt Korrekturrunden ohne
+Produktfortschritt. Eine Aufklärung vor der Standdatei schreibt nichts; ihr Bericht ist
+das Material, mit dem die Datei im nächsten Zug angelegt wird.
+**Das gilt für die STEUERDATEI.** Archiv und Vorrat entstehen **nicht** mit der ersten
+Tatsache, sondern erst mit dem Schnitt — und der ist eine eigene Arbeit, kein
+Automatismus. Eine Phase, die nie geteilt wird, hat sie nie.
 
-**Damit ist das Auftrag-0-Gate scharf:** Die Standdatei existiert genau dann,
-wenn eine Phase läuft. Ohne Ausnahme.
+**Damit bleibt das Auftrag-0-Gate scharf:** Die Standdatei existiert genau dann, wenn
+eine Phase Tatsachen hat. Der Prompt der ersten Aufklärung sagt ausdrücklich, dass die
+Phase beginnt und die Datei noch nicht existiert; dann meldet CC das und fragt nicht nach.
 
 **Der Lebenszyklus folgt dem Marker:** geplant → `docs/roadmap.md`, `[ ]` ·
 laufend → Standdatei · abgeschlossen → `docs/claude-history/`, `[x]`.
@@ -405,10 +412,10 @@ für abgeschlossen und baut nicht weiter, wo weiterzubauen ist.
 die Stub-Zeile mit ihrem Marker — und der wird überschrieben, nie angefügt.
 
 **Wer sie anlegt:** CC, auf Anweisung der Chat-Instanz. **Das gilt für alle drei.** Die
-Steuerdatei entsteht zu Phasenbeginn; Archiv und Vorratsdatei entstehen im Schnitt, und
-der Schnitt wird zugeschnitten wie eine Scheibe — Zuschnitt, Freigabe, Vollzug,
-Gegenprüfung. **Der Name des Archivs ist eine Owner-Entscheidung** (er ist der Endname
-der Phase); der Name der Vorratsdatei ist Architekten-Setzung und revidierbar.
+Steuerdatei entsteht mit der ersten Tatsache; Archiv und Vorratsdatei entstehen im
+Schnitt, und der Schnitt wird zugeschnitten wie eine Scheibe — Zuschnitt, Freigabe,
+Vollzug, Gegenprüfung. **Der Name des Archivs ist eine Owner-Entscheidung** (er ist der
+Endname der Phase); der Name der Vorratsdatei ist Architekten-Setzung und revidierbar.
 **„KEINE NEUE DATEI OHNE OWNER-ENTSCHEIDUNG" (`CLAUDE.md`) GILT UNVERÄNDERT** — beide
 sind keine Ausnahme davon, sondern durch die Teilungs-Entscheidung gedeckt.
 
@@ -418,7 +425,8 @@ Aufklärungs-Prompts ist.
 
 **Die Lücke dazwischen:** Zwischen Archivierung und Neuanlage existiert keine
 Standdatei. Befunde, die in dieser Zeit anfallen, gehören ins Delta oder in den
-Backlog.
+Backlog. Ausgenommen ist der Bericht der ersten Aufklärung der neuen Phase: Er ist
+das Material, aus dem die Standdatei im nächsten Zug entsteht.
 
 **Fortschreiben:** mit dem Abschluss-Vermerk einer Scheibe, nach dem Live-Test,
 im selben Zug wie die Verdichtung des Zuschnitts.
@@ -450,12 +458,17 @@ allein trifft mehrere Dateien.
 hinten an, auch wenn er der jüngste ist. Eine Nachnummerierung tötet lebende
 Verweise.
 
-**Die Lücken-Regel:** Ein Vermerk ohne Commit-Nummer ist der jüngste, noch nicht
-committete. Es darf immer nur eine Lücke geben — stehen zwei da, ist etwas
-liegengeblieben.
-Sie wird in Auftrag 0 der nächsten Runde geschlossen. Sie entsteht strukturell —
-der Hash existiert im Moment des Schreibens nicht — und sieht deshalb in jeder
-Runde wie der erlaubte Zustand aus.
+**Jede Nummer trägt das Präfix ihrer Phase:** `P<Phase>-n`, Buchstabe vorn (Vermerk
+P11.13-1, Vorrat P11.13-2). Der Pfad `docs/aktiver-stand.md` trägt je Phase eine andere
+Datei; ein Zeiger mit nackter Nummer trifft nach dem Wechsel einen existierenden, aber
+falschen Eintrag. Die Phasennummer wird nie neu vergeben. Der Buchstabe steht vorn, weil
+eine Suche nach „Vermerk <Zahl>" sonst „Vermerk 11.12-1" als „Vermerk 11" trifft (gemessen
+2026-09-17). Bestehende Zeiger heilt das nicht.
+
+**Ein Vermerk trägt den Hash seines Code-Commits** (in den Vermerken „Bau-Commit"); der
+ist beim Schreiben bekannt (s. Kadenz). Ein Vermerk ohne Bau-Commit — etwa zu einer
+Aufklärung — sagt am Vermerk, warum.
+Ob ein Vermerk selbst committet ist, zeigt `git status`, nicht die Datei.
 
 **Provenienz an jeder Angabe:** gemessen (am Repo oder live, mit Datum) oder
 gelesen (mit Quelle). Als Ort steht der Symbolname, nie eine Zeilennummer — die
@@ -637,9 +650,11 @@ Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
   erste Prompt einer Sitzung und jede Doku-Runde lesen vollständig — dort
   entstehen die Widersprüche, und wer die Abschnitte benennt, hat vorher
   entschieden, was relevant ist. Existiert sie nicht, sag das ausdrücklich
-  (keine aktive Phase) und frage nach, statt anzunehmen. Nenne im ersten Satz
-  des Berichts die Scheiben-Überschrift, unter der gearbeitet wird — das ist
-  der Beweis, dass die Datei gelesen wurde, nicht nur zitiert.
+  (keine aktive Phase) und frage nach, statt anzunehmen — es sei denn, der
+  Prompt sagt, dass die Phase in ihrer ersten Aufklärung steht; dann meldest du
+  es und fragst nicht nach. Nenne im ersten Satz des Berichts die
+  Scheiben-Überschrift, unter der gearbeitet wird — das ist der Beweis, dass die
+  Datei gelesen wurde, nicht nur zitiert.
   **Das Gate steht im Prompt, nicht nur in `CLAUDE.md`:** Die `CLAUDE.md` lädt
   automatisch, die Standdatei nicht. Ein Gate im Prompt ist der Mechanismus, die
   `CLAUDE.md`-Zeile nur der sichtbare Hinweis darauf.
@@ -656,7 +671,8 @@ Deutsch, kompakt. Jeder Bau-Prompt trägt diese Anatomie:
   ein /compact). Es gilt wieder, sobald der Import entfernt wird oder nicht mehr
   trägt. Die Prüfung dafür ist /context — ein Nutzer-Befehl, von der Instanz aus
   nicht zu erbringen. Was dann wieder gilt: Die Standdatei darf fehlen — dann
-  läuft keine Phase, und CC fragt nach. `docs/immer-beachten.md` fehlt nie
+  läuft keine Phase oder die Phase steht in ihrer ersten Aufklärung, und CC
+  fragt nach, sofern der Prompt es nicht sagt. `docs/immer-beachten.md` fehlt nie
   legitim; fehlt sie, hat CC ohne die Regeln gearbeitet. Dann wird nicht
   nachgefragt und nicht weitergearbeitet, sondern angehalten und gemeldet.*
 

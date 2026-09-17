@@ -1953,8 +1953,9 @@ liegen beide hier und finden einander.
       WAS DER SPRUNG AUSSERHALB DIESER ZEILE AUSGELÖST HAT, in derselben Doku-Runde
       vollzogen: die GRENZE der Regel "DAS ETIKETT IM NEXT-BUILD-OUTPUT …" ist auf 16.3.5
       nachgezogen, und in docs/arbeitsweise.md, Abschnitt "4a. HARTE RAHMENBEDINGUNGEN",
-      steht statt 16.2.12 nun 16.3.5. DER ZWEITE VOLLZUG JENES ÄNDERUNGSANTRAGS — die
-      Projektanweisung — LIEGT BEIM OWNER UND STEHT AUS.
+      steht statt 16.2.12 nun 16.3.5. DER ZWEITE VOLLZUG JENES ÄNDERUNGSANTRAGS IST
+      EINGELÖST: Die Projektanweisung trägt "Next.js 16.3.5" (ARCHITEKT-ABLESUNG
+      2026-09-17 — eine Angabe aus dem Auftrag, am Repo nicht prüfbar).
 - [ ] Phase 11.11 — Import-Bereinigung: eine EIGENE Zeile, angelegt am 2026-09-14. Sie
       GEHÖRT NICHT zur laufenden Phase 11.5 und ist kein Teil ihrer Scheiben.
 

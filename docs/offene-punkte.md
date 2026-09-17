@@ -952,6 +952,102 @@ aufeinander; sie liegen alle hier und finden einander.
   an der Phase 11.6 ruht auf der Roadmap-Zeile 11.6, GELESEN (CC, 2026-09-16); dass die
   klärende Sitzung die Vereinigung beider Lesarten laden muss, ist eine ABLEITUNG aus der
   dort offenen Vorfrage.
+
+  NACHGETRAGEN 2026-09-17 — DIE VIERTE LADE-PROBE, ERSTMALS GENAU NACH (b). Alles darüber
+  bleibt wörtlich stehen; seine Angaben sind datierte Messungen und werden hier gelesen,
+  nicht ersetzt. Die Buchstaben laufen weiter, damit ein Verweis auf einen Teil dieses
+  Postens eindeutig bleibt.
+
+  (l) DIE PROBE IST BESTANDEN — VIER VON VIER —, UND SIE MISST DENSELBEN BESTAND WIE (h).
+  Gefahren in einer frischen CC-Sitzung nach dem Phasenende 11.12, Stand nach Commit
+  cd0b344. Die vier Fragen sind die von (b), ohne Abweichung; die Antworten standen vor
+  jedem Werkzeugaufruf, gegengeprüft mit Werkzeug ERST DANACH.
+  · (1) ZAHL DER VERZEICHNIS-EINTRÄGE: 115. · (2) LETZTE REGELÜBERSCHRIFT: "EIN WÄCHTER ÜBER
+    ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN". · (3) EINTRAG AUS DER MITTE:
+    "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT DIE ZEILENNUMMER (Phase 10, ..." — genannt
+    als Eintrag #58 von 115 und positionsweise genau der 58. · (4) MARKE IN ZEILE 1:
+    IB-GELADEN. Alle vier stimmen mit dem Dateitext überein (GEMESSEN am Repo, CC,
+    2026-09-17).
+  ERSTMALS GENAU NACH (b), und das ist der Zuwachs gegenüber den zwei Proben davor: (f) liess
+  die Marke aus und fragte dafür den Rumpf der letzten Regel und die vier Überschriften davor;
+  (h) fragte Marke, Zahl, letzte Überschrift, Rumpf und die vier davor, aber KEINEN Eintrag
+  aus der Mitte. Der von (b) vorgeschriebene Satz ist damit am 2026-09-17 zum ersten Mal
+  vollständig gefahren worden (GEMESSEN am Text dieses Postens, CC, 2026-09-17).
+  DER TRAGENDE BELEG IST DIE ANMERKUNG DER ANTWORTENDEN INSTANZ: Sie hat vor der Prüfung von
+  sich aus gesagt, dass sie aus dem GELADENEN KONTEXT abliest und nicht aus einem Gedächtnis
+  rekonstruiert. GENAU DAS IST DIE AUSSAGE, DIE DIESE PROBE ERHEBEN SOLL — dass der Text da
+  ist, nicht dass er erinnert wird. Eine Instanz, die ihn hätte erinnern müssen, wäre die
+  schwächere Beobachtung, keine stärkere.
+  DIE ZAHL AUS (1) TRÄGT AUCH DIESMAL NICHT, AUS DEMSELBEN GRUND WIE IN (h): eine Handzählung
+  im geladenen Text, vom Antwortenden selbst als der unsicherste der vier Werte
+  gekennzeichnet, mit einer vorab benannten Fehlerspanne von ±3. Sie traf. Es tragen (2) und
+  (3) — und (3) trägt schärfer als in jeder Probe zuvor, weil die Position mitgenannt und
+  richtig war.
+
+  EINE NEUE SCHWÄCHE DER FRAGEN (1) UND (3), DIE DIESE PROBE NOCH NICHT TRIFFT, DIE NÄCHSTE
+  ABER TREFFEN KANN: Die Liste unter (k) zitiert seit dem 2026-09-16 alle 115 Regelanfänge MIT
+  IHRER NUMMER und nennt die Zahl 115. Die Antworten auf (1) und (3) stehen damit ein zweites
+  Mal im Repo, ausserhalb von docs/immer-beachten.md. FÜR DIESEN LAUF IST DAS FOLGENLOS:
+  docs/offene-punkte.md lädt nicht, und /context führte am 2026-09-17 genau DREI
+  Speicherdateien (docs/immer-beachten.md, CLAUDE.md, MEMORY.md). WER (b) KÜNFTIG FÄHRT,
+  PRÜFT VORHER, OB DIE ZWEITE ANTWORTQUELLE GELADEN WAR. (2) ist davon unberührt: (k) kappt
+  jeden Regelanfang, die letzte Überschrift steht dort nur angeschnitten.
+
+  /context BEIM SITZUNGSSTART (OWNER-ANGABE 2026-09-17, Ablesung; /context ist ein
+  Nutzer-Befehl und von CC nicht nachmessbar): Modell mit 1M-Fenster · 201k von 1M Token
+  belegt (20 %) · "Memory files" DREI Dateien, 169,2k Token — docs/immer-beachten.md 114,5k ·
+  CLAUDE.md 54,7k · MEMORY.md 73.
+  DIE WERKZEUG-WARNUNG WÖRTLICH (OWNER-ANGABE 2026-09-17): "docs\immer-beachten.md is over
+  the 150.0k-char limit (204.2k chars)". Erste Zahl Schwelle, zweite Dateigrösse — dieselbe
+  Lesart wie in (e). Die 204,2k decken sich mit der Messung unten; die Warnung bleibt eine
+  Warnung und ist keine Abschneidung (s. (a)).
+  DIE GRÖSSEN AM 2026-09-17 (GEMESSEN am Repo, CC): docs/immer-beachten.md 207 128 Bytes /
+  204 200 Zeichen / 2 617 Zeilen · CLAUDE.md 99 417 Bytes / 97 867 Zeichen / 1 339 Zeilen.
+  Beide reines LF, kein BOM, null CR, null NUL; Zeichen gezählt als Unicode-Codepoints, CR
+  und NUL über `tr`, ausdrücklich nicht über `grep` (s. die Regel "`grep` TAUGT IN DIESER
+  UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL"). Datiert, also alt und nicht falsch; wer den
+  heutigen Wert braucht, misst ihn.
+  DIE DREI ZAHLEN DER ERSTEN DATEI SIND DIE VON (h), ZEICHENGLEICH — sie ist seit dem
+  2026-09-16 unverändert. Ihr letzter Commit ist die Hebung des Phasenendes 11.5 (3c05fae);
+  die Hebung des Phasenendes 11.12 hat ihr KEINE Regel angefügt (GEMESSEN am Repo, CC,
+  2026-09-17). DARAUS FOLGT DIE GRENZE DIESER PROBE, und sie ist die wichtigste Zeile dieses
+  Nachtrags: Sie wiederholt (h) bei DERSELBEN Grösse. Sie belegt die Ladung an einem zweiten
+  Tag und in einer zweiten Sitzung, aber KEINE höhere Obergrenze als (h). CLAUDE.md ist
+  derweil gewachsen — 85 398 Bytes am 2026-09-11 (s. (e)) gegen 99 417 heute.
+
+  DER TITEL DIESES POSTENS NENNT CLAUDE.md, AKUT IST DIE ZWEITE LADEDATEI — FESTSTELLUNG
+  DIESER RUNDE. Der Titel stammt aus dem Zustand vom 2026-08-13, als "## Immer beachten" noch
+  in CLAUDE.md stand; seit der Auslagerung am 2026-08-14 trägt docs/immer-beachten.md jenen
+  Abschnitt. Die Werkzeug-Warnung nennt sie und nicht CLAUDE.md, und sie ist mit 114,5k gegen
+  54,7k Token die grössere der beiden Ladedateien. Wer den Posten nach seinem Titel sucht und
+  bei CLAUDE.md nachmisst, misst die kleinere Hälfte.
+  DER TITEL BLEIBT TROTZDEM WÖRTLICH UND WIRD NICHT UMBENANNT: Er wird von aussen zitiert —
+  VIER Stellen, GEMESSEN am Repo (CC, 2026-09-17): CLAUDE.md, "## Offene Punkte", und drei in
+  docs/claude-history/ (backlog-polish.md, phase-11-multi-tracking-aktiver-stand.md,
+  phase-11.2-google.md). Eine Umbenennung machte vier Zeiger tot, und ein toter Zeiger fällt
+  an keinem Gate auf. Dieser Nachtrag sagt es stattdessen.
+
+  DIE FOLGE: BESTANDEN, KEINE HANDLUNG. Die Owner-Entscheidung vom 2026-09-16 unter (k) — es
+  wird nicht geschnitten — bleibt unberührt. Gehandelt wird, wenn eine Lade-Probe nach (b)
+  FEHLSCHLÄGT, nicht wenn eine Zahl eine Schwelle überschreitet.
+  DER VORSCHLAG DES WERKZEUGS IST ABGELEGT UND IST KEINE ENTSCHEIDUNG: /context hat am
+  2026-09-17 unter "Suggestions" angeboten, die Speicherdateien über /memory zu sichten und zu
+  kürzen ("save ~50.8k"). Er steht hier, damit er nicht als neuer Befund wiederauftaucht; er
+  ist weder angenommen noch abgelehnt.
+
+  DER TRIGGER BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem Phasenende"). WIE AM
+  2026-09-11 UND ANDERS ALS AM 2026-09-16 IST SEINE FRAGE NACHTRÄGLICH BEANTWORTET: Die Hebung
+  des Phasenendes 11.12 (Commit 3697171) stand bereits, als die Probe lief. HIER IST DAS
+  FOLGENLOS, und der Grund ist derselbe wie bei der Grenze oben — jene Hebung hat der Datei
+  nichts angefügt, es gab nichts, was die Probe hätte verfehlen können.
+  PROVENIENZ: Die /context-Werte, der Wortlaut der Werkzeug-Warnung und der Vorschlag
+  "save ~50.8k" sind OWNER-ANGABEN (Ablesung beim Sitzungsstart, 2026-09-17). Die vier
+  Probe-Antworten stammen aus der Sitzung selbst; DASS SIE VOR JEDEM WERKZEUGAUFRUF STANDEN,
+  IST AM REPO NICHT PRÜFBAR — es ist der Ablauf jener Sitzung und kein Befund an einer Datei.
+  Die Gegenprüfung am Dateitext, die Grössen, die Commit-Historie von docs/immer-beachten.md,
+  die vier Titel-Zitate und der Vergleich der in (f) und (h) abgefragten Sätze sind GEMESSEN
+  am Repo (CC, 2026-09-17). Die Feststellung zum Titel ist ein URTEIL dieser Runde auf
+  gemessener Grundlage.
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real; HEUTE FÄLLT ER NICHT AUF, weil
   ohne Dialog nie etwas abgelehnt wird): GEMESSEN am 2026-08-12, read-only am Code.
@@ -1698,16 +1794,14 @@ aufeinander; sie liegen alle hier und finden einander.
   die den Abschnitt ohnehin öffnet.
 - EIN INDIKATOR FÜR ABSCHNITT 2b FEHLT (Trigger: die nächste Änderung an
   docs/arbeitsweise.md — dann geht er beiläufig hinein und kostet keinen zweiten Vollzug in
-  der Projektanweisung): Abschnitt "## 2b. PROPORTION — WIE TIEF GEPRÜFT WIRD" trägt vier
-  Abbruchkriterien und KEINE Messgrösse (GEMESSEN am 2026-08-24: 47 Zeilen, vier Bullets
-  unter "Abbruchkriterien", kein Treffer auf Messgrösse/Indikator/Kennzahl/Verhältnis).
-  Alle vier Kriterien verlangen ein Urteil; keines lässt sich erheben.
-  DER VORSCHLAG, UND ER IST NICHT BESCHLOSSEN: das Verhältnis von docs-Volumen zu
-  Code-Volumen je Phase, per git log erhoben und im Abschluss-Vermerk der Phase genannt;
-  steigt es zwei Phasen in Folge, ist das ein Befund für den Owner.
-  WAS NICHT DAZUGEHÖRT: ihn als beschlossen zu behandeln. Er ist ein VORSCHLAG — wer ihn
-  einträgt, holt vorher die Entscheidung ein. Und er ersetzt die vier Abbruchkriterien
-  nicht, sondern tritt daneben.
+  der Projektanweisung): GEGENSTAND — Abschnitt "## 2b. PROPORTION — WIE TIEF GEPRÜFT
+  WIRD" trug vier Abbruchkriterien, die sämtlich ein Urteil verlangen, und keine
+  erhebbare Messgrösse.
+  ERLEDIGT, vollzogen (dieser Commit) — OWNER-ENTSCHEIDUNG 2026-09-17: docs/arbeitsweise.md,
+  "## 2b", trägt unter den vier Abbruchkriterien den Absatz "Ein Messwert daneben, kein
+  Gate" — die geänderten Zeilen in docs/ und in src/ über die Phase, genannt im Kopf des
+  Phasen-Archivs. Die Stub-Zeile in CLAUDE.md, "## Offene Punkte", ist im selben Zug
+  gestrichen.
 - DREI EINTRÄGE DIESER LISTE HABEN EINEN EINGETRETENEN TRIGGER UND SIND NICHT GESICHTET
   (Trigger: die nächste Runde, die docs/offene-punkte.md ohnehin öffnet): GEMESSEN am
   2026-08-24 tragen DREI Einträge das Wort EINGETRETEN — "NICHTS ZEIGT AN, DASS DER
@@ -3963,6 +4057,47 @@ ARCHITEKTEN-FESTLEGUNG desselben Tages, keine Messung.
   PROVENIENZ: die Zählung GEMESSEN am Repo (CC, 2026-09-11), die Zuordnung zu einer Phase je
   Treffer am Kontext abgelesen. Dass die nächste Standdatei sie wieder falsch macht, ist eine
   ABLEITUNG aus der Nummernvergabe, keine Messung.
+
+  NACHGETRAGEN 2026-09-17 — DER TRIGGER GILT NUR NOCH FÜR EINE DER ZWEI ZEIGERFORMEN. Alles
+  darüber bleibt wörtlich stehen; seine Angaben sind datierte Messungen und werden hier
+  gelesen, nicht ersetzt.
+  · FÜR NUMMERN-ZEIGER IST DER TRIGGER UNERREICHBAR GEWORDEN. Seit dem Änderungsantrag B
+    (OWNER-ENTSCHEIDUNG 2026-09-17, vollzogen in diesem Commit) trägt jede Nummer einer
+    Standdatei das Präfix ihrer Phase (`P<Phase>-n`, docs/arbeitsweise.md, "Die Standdatei").
+    Die Nummern der nächsten Standdatei können die eines nackten Alt-Zeigers deshalb NIE MEHR
+    ERREICHEN. Die vierzehn bleiben TOT — und ein toter Zeiger zwingt zum Suchen.
+  · FÜR TITEL-ZEIGER BLEIBT ER. Ein Zeiger, der statt einer Nummer einen ABSCHNITTSTITEL
+    nennt, trifft in der nächsten Standdatei wieder etwas, sobald sie einen Abschnitt
+    desselben Wortlauts führt — und die Hausform-Titel führt jede.
+  DER BEFUND — GEMESSEN am Repo (CC, 2026-09-17): ZWANZIG Titel-Zeiger in ZEHN Dateien.
+  ACHSE: jede verfolgte Datei AUSSER dem Archiv der Phase 11.12, der Pfad
+  `docs/aktiver-stand.md` gefolgt von einem ZITIERTEN Abschnittstitel im Fenster von 120
+  Zeichen, mehrzeilig und case-insensitiv, die Trennzeichenklasse einschliesslich der
+  Kommentarmarken. POSITIVKONTROLLE: Die Achse findet den über einen Zeilenumbruch und eine
+  SQL-Kommentarmarke getrennten Zeiger in supabase/migrations/0027_project_secrets_version.sql
+  — eine engere Fassung ohne Kommentarmarken hatte ihn verfehlt und ergab 19 statt 20.
+  NEGATIVKONTROLLE: ein reiner Nummern-Zeiger ("docs/aktiver-stand.md, VERMERK 3") trifft
+  nicht.
+  DIE ZWANZIG JE DATEI: docs/ziel-befunde.md 4 · docs/claude-history/phase-11.2-google.md 3 ·
+  docs/offene-punkte.md 3 · docs/plattform-befunde.md 3 · docs/roadmap.md 2 ·
+  src/app/projects/actions.testmode.test.ts 1 · src/lib/tracking/credential-state.ts 1 ·
+  supabase/migrations/0027_project_secrets_version.sql 1 ·
+  supabase/migrations/0028_project_secrets_test_mode.sql 1 ·
+  supabase/migrations/0029_project_secrets_test_mode_je_ziel.sql 1.
+  VIER DAVON NENNEN EINEN HAUSFORM-TITEL und sind die gefährlichen — sie treffen in JEDER
+  künftigen Standdatei: zweimal "Entscheidungen, die über ihre Scheibe hinaus binden"
+  (docs/claude-history/phase-11.2-google.md), einmal "Vorrat (gemeldet, nicht gebaut)"
+  (docs/offene-punkte.md), einmal "Gegenstand der Phase"
+  (src/app/projects/actions.testmode.test.ts). Die übrigen SECHZEHN nennen phasen-eigene
+  Titel; sie sterben mit der Umbenennung und werden nur falsch, wenn eine spätere Phase
+  denselben Wortlaut wählt.
+  DREI DER ZWANZIG STEHEN IN ANGEWANDTEN MIGRATIONEN (0027, 0028, 0029) und sind damit NICHT
+  heilbar — "ANGEWANDTE MIGRATIONEN WERDEN NICHT NACHTRÄGLICH UMGESCHRIEBEN"
+  (docs/immer-beachten.md).
+  KEINE EMPFEHLUNG, ob, wann und in welcher Reihenfolge die zwanzig nachgezogen werden.
+  PROVENIENZ: Die Zählung, die Aufteilung je Datei, die vier Hausform-Titel und die zwei
+  Kontrollen sind GEMESSEN am Repo (CC, 2026-09-17). Dass der Trigger für Nummern-Zeiger
+  unerreichbar wird, ist eine ABLEITUNG aus Antrag B, keine Messung.
 
 - DER TESTZUSTAND WIRD NACH DEM SPEICHERN NICHT NEU GEHOLT — UND ER ÜBERLEBT DEN
   PROJEKTWECHSEL (ZWEI TRIGGER, je einzeln hinreichend, beide spätestens vor einem

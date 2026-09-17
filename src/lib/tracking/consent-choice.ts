@@ -162,10 +162,15 @@ export const CONSENT_CHOICE_CSS =
  * dem dunklen Behaelter; seine Farbe erbt er aus `button{color:…}`. Eine `.way`-Regel waere
  * genau der Fall, in dem P11.13-5 neu zu messen waere.
  *
- * KEINE CSS-VARIABLEN (bindende Entscheidung P11.13-8): `all:initial` setzt nach Kenntnis
- * des Architekten die BENUTZERDEFINIERTEN Eigenschaften NICHT zurueck; eine `--ps-*` der
- * Kundenseite erbte dann hierher. Die Messung dazu steht aus (docs/roadmap.md,
- * Roadmap-Zeile 11.13, Punkt (f)).
+ * KEINE CSS-VARIABLEN (bindende Entscheidung P11.13-8) — UND DER GRUND IST GEMESSEN, NICHT
+ * ANGENOMMEN (CC, 2026-09-17, Chromium; die Messung aus docs/roadmap.md, Roadmap-Zeile
+ * 11.13, Punkt (f), ist damit gefahren): Eine auf `html` der Kundenseite gesetzte
+ * BENUTZERDEFINIERTE Eigenschaft kommt TROTZ `all:initial !important` IM SCHATTENBAUM AN —
+ * an `.bar`, am Knopf und am Host-Element, je mit dem gesetzten Wert. Die Gegenprobe
+ * ausserhalb des Schattenbaums liefert denselben Wert, die Messung greift also.
+ * FOLGE: Eine `--ps-*` der Kundenseite erbt hierher. Waere das Thema ueber Variablen
+ * gebaut, koennte die fremde Seite in unsere Darstellung hineinwirken; die feste Tabelle
+ * stellt die Frage gar nicht erst.
  */
 export const CONSENT_THEME_DARK_CSS =
   ".bar,.dialog{color:#f9fafb;background-color:#111827;color-scheme:dark;}" +

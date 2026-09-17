@@ -5108,3 +5108,97 @@ Dateien sind OWNER-ANGABEN aus der Sitzung vom 2026-09-16 und am Repo NICHT prü
 Zeilenzahl, Bytezahl, Bytes je Zeile und der Verlauf von 3 432 auf 3 978 sind GEMESSEN am Repo
 (CC, 2026-09-16). Die Token-Zahl 164 000 ist eine ABLEITUNG aus dem Owner-Faktor und den
 gemessenen Bytes, keine eigene Messung.
+
+## Aus Phase 11.12 gehoben (2026-09-17) — zwei Vorrats-Einträge und zwei Hebungs-Kandidaten
+
+**WOHER SIE KOMMEN:** Aus der Standdatei der Phase 11.12 (Vorschau-Blocker), beim Phasenende
+am 2026-09-17. Hier stehen die Vorrats-Einträge **P11.12-2** und **P11.12-4** unter ihren
+Ursprungs-Nummern, dahinter die zwei **Hebungs-Kandidaten P11.12-1 und P11.12-2** als
+ÄNDERUNGSANTRÄGE an docs/arbeitsweise.md in Wartestellung — wie die der Phasen 11.3 und
+11.5, und wie jene **KEINE Regeln**.
+**DIE ÜBRIGEN ZWEI VORRATS-EINTRÄGE SIND ALS OFFENE PUNKTE GEHOBEN:** P11.12-1 und P11.12-3,
+nach docs/offene-punkte.md, Abschnitt "AUS DEM PHASENENDE 11.12 GEHOBEN (2026-09-17)".
+**GESTRICHEN IST KEINER.**
+**DIE ZWEI BINDENDEN ENTSCHEIDUNGEN DER PHASE SIND NICHT GEHOBEN** und stehen weiter im
+Archiv der Phase — sie sind am ORT DER HANDLUNG verankert (Kopf von
+`src/lib/preview-storage-shim.ts` und der Wächter T1); der Grund steht an ihrem Eintrag dort.
+**DIE NUMMERN TRAGEN EIN PHASEN-PRÄFIX** — `P11.12-n` statt der blossen Zahl. Das ist die
+Nummernform jener Phase; ein Zeiger darauf bleibt nach der Archivierung eindeutig, weil die
+Phasennummer nie neu vergeben wird. Ob die Form Bauform JEDER Standdatei wird, ist genau der
+zweite der zwei Anträge unten und **nicht entschieden**.
+**EIN NUMMERN-ZEIGER OHNE PFAD IN DIESEN EINTRÄGEN MEINT DIE STANDDATEI DER PHASE 11.12** —
+"VERMERK P11.12-1", "Vorrat P11.12-3", "Entscheidung P11.12-2", "diese Scheibe", "diese
+Phase". Sie wird am Phasenende archiviert; dieser Satz löst die Zeiger auf, umgeschrieben
+sind sie NICHT.
+**DER TEXT IST SINNGEMÄSS ÜBERNOMMEN UND VERDICHTET, NICHT ZEICHENGLEICH.** Der ungekürzte
+Wortlaut steht je unter seiner Nummer im Archiv der Phase.
+**HIER STEHT KEINE STÜCKZAHL FÜR DIESE DATEI**, aus demselben Grund wie in den Abschnitten
+darüber.
+
+**(P11.12-2) DER KOPFKOMMENTAR VON `src/lib/generate.ts` BEGRÜNDET DAS PREVIEW-CONTAINMENT
+FALSCH.** Er sagt, das `srcDoc`-iframe erbe unsere Origin, und nennt weiter unten die
+"srcDoc-Basis (unsere Origin)" als das, wogegen nicht navigiert werden darf. GEMESSEN ist
+`location.origin === "null"`: Der Rahmen erbt unsere Origin gerade NICHT, weil der Sandkasten
+`allow-same-origin` nicht trägt.
+**DAS VERHALTEN BLEIBT RICHTIG — FALSCH IST DIE BEGRÜNDUNG.** Genau deshalb steht der Punkt
+hier und nicht bei den offenen Punkten: es geht nichts still kaputt, das Containment hat
+weiterhin einen guten Grund (eine Navigation im Rahmen ersetzt die Vorschau), er steht nur
+nicht dort.
+**DIE RICHTIGE FASSUNG STEHT BEREITS IM BESTAND, UND ZWAR ÄLTER:**
+docs/claude-history/phase-4-mapping-codegen-export.md formuliert dieselbe Sache korrekt —
+„srcDoc erbt die Basis-URL der Elternseite". **Basis-URL, nicht Origin.** Der Kommentarkopf
+hat die Angabe beim Abschreiben VERSCHÄRFT — die Figur aus docs/immer-beachten.md, EIN
+KOMMENTAR IST EINE BEHAUPTUNG, KEINE EIGENSCHAFT — UND ER VERMEHRT SICH, hier nicht als
+alternde Angabe, sondern als Kopie, die stärker wurde als ihr Original. **Wer den Punkt
+abarbeitet, hat die Formulierung damit schon.**
+PROVENIENZ: der Kommentar GELESEN am Repo, der Ursprungswert GEMESSEN (CC, 2026-09-17); die
+Fundstelle in der Phase-4-Historie GELESEN (CC, 2026-09-17).
+
+**(P11.12-4) FIREFOX UND WEBKIT SIND FÜR DEN KOMPATIBILITÄTS-RIEGEL UNGEMESSEN.** Alles, was
+über den Riegel gemessen ist — die Serialisierung der Attributwerte, das Verhalten im
+Sandkasten, der Live-Test —, stammt aus **Chromium 153**. Der Editor läuft im Browser des
+Betreibers.
+**WAS DARAN HÄNGT:** Die Messung zeigte, dass Chromium `<` und `>` in Attributwerten
+escaped. Ob ein anderer Browser das tut, ist nicht erhoben. Der gebaute Scanner ist genau
+deshalb quote-bewusst und nicht auf diese Eigenschaft gebaut — **die Vorsorge ist da, ihr
+Anlass aber ungemessen.**
+**ER STEHT HIER UND NICHT BEI DEN OFFENEN PUNKTEN, WEIL SEIN EIGENER TEXT KEINEN TRIGGER
+NENNT — ausdrücklich:** ein erfundener liesse den Posten als terminiert aussehen. Er wird
+fällig, wenn ein Betreiber einen anderen Browser meldet oder jemand die Messung nachholt.
+PROVENIENZ: die Browser-Angabe GEMESSEN (CC, 2026-09-17); dass andere Browser abweichen
+KÖNNTEN, ist eine ABLEITUNG aus der Plattform-Vielfalt, keine Messung.
+
+**(HEBUNGS-KANDIDAT P11.12-1) WANN DIE STANDDATEI ENTSTEHT.**
+DER WORTLAUT HEUTE (docs/arbeitsweise.md, Die Standdatei, Absatz „Wann sie entsteht"): „bei
+der ersten Handlung der Phase — vor der ersten Aufklärung, vor der ersten Konzept-Runde, vor
+der ersten Bau-Freigabe."
+DER ANTRAG: Sie entsteht, **sobald die erste Tatsache einen Ort braucht** — in der Regel mit
+dem ERGEBNIS der ersten Aufklärung, nicht davor.
+DER BELEG IST DIE PHASE 11.12: Die Datei ist leer angelegt worden, vor der Aufklärung. Sie
+trug danach einen Zuschnitt mit drei offenen Plan-Fragen, von denen die dritte eine leere
+Menge als Gegenstand hatte, und einen Abschnitt zur Nummernform, der ohne Einträge nichts
+steuerte. Das hat eine Korrekturrunde ohne Produktfortschritt gekostet.
+DIE GRENZE, OHNE DIE DER ANTRAG DAS GATE BESCHÄDIGT: Das Auftrag-0-Gate bleibt scharf.
+Während einer ersten Aufklärung existiert die Datei nicht — und die Aufklärung **schreibt
+nichts**, sie berichtet. „Existiert sie nicht, läuft keine Phase" bleibt wahr, weil eine
+Phase mit ihrer ersten Tatsache beginnt, nicht mit ihrem ersten Prompt.
+**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+PROVENIENZ: OWNER-KORREKTUR 2026-09-17. Der Verlauf der Phase ist am Repo ablesbar (Commit
+`a7fe5fe` und die Doku-Runde davor); dass die Runde „ohne Produktfortschritt" war, ist eine
+Wertung des Owners, keine Messung.
+
+**(HEBUNGS-KANDIDAT P11.12-2) DIE NUMMERNFORM MIT PHASEN-PRÄFIX ALS BAUFORM.**
+DER ANTRAG: `P<Phase>-n` wird die Nummernform JEDER Standdatei, nicht nur der Phase 11.12.
+DER BELEG IST JENE PHASE: Sie führt zwei Vermerke, vier Vorrats-Einträge, zwei Entscheidungen
+und zwei Kandidaten — **ohne eine einzige Kollision** mit den toten Zeigern, die
+docs/offene-punkte.md unter ZEIGER AUF docs/aktiver-stand.md MEINEN EINE FRÜHERE STANDDATEI …
+führt. Die belegten Alt-Nummern (VERMERK 1, 3, 5, 6, 10, 14, 16 · Vorrat 5, 6, 12, 13, 28,
+40, 41, 42, 50 · Entscheidung 2, 5, 12 · Hebungs-Kandidat 2, 6) sind unerreichbar geblieben;
+die Zeiger sind tot statt falsch.
+WAS DER ANTRAG NICHT LEISTET: Er heilt keinen bestehenden Zeiger. Die vierzehn bleiben tot,
+und in angewandten Migrationen bleiben sie es für immer.
+DIE GRENZE: Die Setzung von 2026-09-17 gilt DER PHASE 11.12. Erst dieser Antrag würde sie
+verallgemeinern — wer sie ohne ihn übernimmt, ändert das Verfahren an einer Standdatei vorbei.
+**EIN ÄNDERUNGSANTRAG AN docs/arbeitsweise.md STEHT AUS.**
+PROVENIENZ: ARCHITEKT-SETZUNG 2026-09-17 für jene Phase; der Antrag auf Verallgemeinerung
+ARCHITEKT 2026-09-17. Die Kollisionsfreiheit ist GEMESSEN (CC, 2026-09-17).

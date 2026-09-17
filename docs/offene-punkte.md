@@ -4242,3 +4242,56 @@ Nummer in der Standdatei.
   VERWANDT: die bindende Entscheidung (2) der Phase 11.5 begründet, WARUM es den
   Server-Rückfall gibt; Entscheidung (14) führt eine zweite Erzeugungsstelle für denselben
   Baustein als Divergenz-Bauform. **KEINE EMPFEHLUNG**, welcher der beiden Erzeuger bleibt.
+
+**AUS DEM PHASENENDE 11.12 GEHOBEN (2026-09-17) — ZWEI POSTEN.** Aus dem Vorrat der
+Standdatei der Phase 11.12 (Vorschau-Blocker). **DIE URSPRUNGS-NUMMERN STEHEN JE AM POSTEN**
+und tragen das Phasen-Präfix `P11.12-n`, das jene Phase eingeführt hat — ein Zeiger darauf
+bleibt auch nach der Archivierung eindeutig, weil die Phasennummer nie neu vergeben wird.
+**DAS KRITERIUM WAR ZWEITEILIG** — benennbarer Trigger UND „geht sonst still kaputt". Es
+trennt hier scharf: von vier Vorrats-Einträgen tragen zwei beides, einer ist reine
+Doku-Hygiene (das Verhalten bleibt richtig), und einer verweigert einen Trigger
+AUSDRÜCKLICH im eigenen Text. Die übrigen zwei liegen in
+docs/claude-history/backlog-polish.md; **gestrichen ist keiner.**
+
+- NETZANFRAGEN MIT URSPRUNG `null` SIND IN DER VORSCHAU NICHT LÖSBAR (aus Vorrat P11.12-1
+  der Phase 11.12; Trigger: die erste importierte Seite, deren INHALT von einer fremden
+  Schnittstelle kommt — für NEBENANFRAGEN ist er bereits belegt, s. unten):
+  Eine Seite, die ihren Inhalt von einer fremden Schnittstelle nachlädt, bleibt im
+  Vorschau-Rahmen leer. Der Ursprung ist opak (`location.origin === "null"`, GEMESSEN CC,
+  2026-09-17), und die Gegenstelle lehnt die Anfrage ab. **Der Kompatibilitäts-Riegel der
+  Scheibe 11.12a erreicht das NICHT** — er ersetzt Speicher-Schnittstellen, keine Netzwege.
+  **WARUM ES STILL KAPUTTGEHT:** Der Betreiber sieht einen leeren Rahmen und kann nichts
+  verdrahten. Es gibt keine Meldung, die ihm sagt, dass die Ursache eine abgelehnte
+  Netzanfrage ist und nicht sein HTML. Genau dieses Bild hat am 2026-09-14 die Phase 11.12
+  ausgelöst — der Riegel hat die eine Ursache beseitigt, diese bleibt.
+  **WAS BELEGT IST UND WAS NICHT:** Dass eine Anfrage mit Ursprung `null` abgelehnt wird,
+  ist an der gesicherten Konsole vom 2026-09-17 belegt — eine 403 an den Fehlerdienst der
+  Seite (Sentry, am Dateinamen ABGELESEN). **Das war eine NEBENanfrage, keine
+  Inhalts-Anfrage;** dass eine Seite existiert, deren INHALT so nachlädt, ist NICHT belegt.
+  Ob und wie viele importierte Seiten betroffen sind, ist nicht erhoben.
+  **UNGEMESSEN BLEIBT AUCH**, ob die 403 nach der Scheibe 11.12a fortbesteht — der Live-Test
+  jenes Tages sah allein auf die drei Speicher-Würfe.
+  PROVENIENZ: die Ablehnung OWNER-ANGABE 2026-09-14, die Konsolen-403 OWNER-ANGABE
+  2026-09-17; der opake Ursprung GEMESSEN (CC, 2026-09-17); dass der Riegel sie nicht
+  erreicht, ist eine ABLEITUNG aus seinem Gegenstand, keine Messung.
+
+- `indexedDB` WIRFT IM VORSCHAU-RAHMEN WEITER (aus Vorrat P11.12-3 der Phase 11.12;
+  Trigger: die erste reale Seite, die in der Vorschau NACHWEISLICH an `indexedDB` stirbt):
+  Der Riegel der Scheibe 11.12a deckt `indexedDB` ausdrücklich nicht
+  (ARCHITEKT-ENTSCHEIDUNG 2026-09-17). GEMESSEN ist, dass `indexedDB.open` im Sandkasten
+  weiterhin einen `SecurityError` wirft — **mit einem ANDEREN Wortlaut** als bei `cookie`
+  und `localStorage` (`access to the Indexed Database API is denied in this context`). Wer
+  nach dem bekannten Wortlaut sucht, findet ihn nicht.
+  **WARUM ES STILL KAPUTTGEHT:** Eine importierte Seite, die `indexedDB` beim Laden anfasst,
+  stirbt in der Vorschau weiter — dasselbe Bild wie vor der Scheibe 11.12a, nur aus einer
+  anderen Ursache. Der Betreiber sieht einen leeren Rahmen; dass der Riegel hier nicht
+  greift, steht nirgends, wo er es lesen würde.
+  **VORBEREITETER SCHRITT, falls der Trigger eintritt:** eine Attrappe, deren `open()` nicht
+  wirft, sondern den asynchronen Fehlerweg bedient (`onerror`). **ABLEITUNG, NICHT
+  GEMESSEN** — ob eine Bibliothek ohne Fehlerpfad dann HÄNGT statt zu sterben, ist offen,
+  und ein Hänger ist schwerer zu finden als ein Wurf. **KEINE EMPFEHLUNG**, ob er gebaut wird.
+  **WAS HEUTE NICHT BELEGT IST:** dass irgendeine reale Seite `indexedDB` überhaupt anfasst.
+  Der Nicht-Treffer in der gesicherten Vorher-Konsole taugt dafür nicht — nach dem Absturz
+  lief kein weiterer Code, ein späterer Zugriff wäre verdeckt gewesen.
+  PROVENIENZ: die Entscheidung ARCHITEKT 2026-09-17; der Wurf und sein Wortlaut GEMESSEN
+  (CC, 2026-09-17, Proben M1 und N4); der vorbereitete Schritt eine ABLEITUNG.

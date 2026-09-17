@@ -24,6 +24,32 @@ ZWEI Hebungs-Kandidaten. Der Zuschnitt der Scheibe 11.12a ist **abgelaufen und v
 **GEBAUT UND LIVE BESTÄTIGT IST DIE SCHEIBE 11.12a** (Bau-Commit `c3b068f`); der Marker der
 Roadmap-Zeile 11.12 steht weiterhin auf `[ ]` — er gehört zum Phasenende, nicht zur Scheibe.
 
+**DAS PROTOKOLL DER HEBUNG — 2026-09-17, RUNDE 1 DES PHASENENDES.** Nichts ist umbenannt
+oder gelöscht; das ist Runde 2. An jeder gehobenen Stelle steht ein Zeiger — ohne ihn wäre
+ein umgezogener Eintrag von einem nie dagewesenen nicht zu unterscheiden.
+- **VORRAT — VIER EINTRÄGE, 2 / 2 / 0.** Als offene Punkte gehoben: **P11.12-1** und
+  **P11.12-3**, nach docs/offene-punkte.md, Abschnitt "AUS DEM PHASENENDE 11.12 GEHOBEN
+  (2026-09-17)", je mit Stub in CLAUDE.md. Ins Backlog: **P11.12-2** und **P11.12-4**, nach
+  docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.12 gehoben (2026-09-17)".
+  **GESTRICHEN IST KEINER** — kein Eintrag hat seinen Gegenstand verloren.
+  DAS KRITERIUM WAR ZWEITEILIG (benennbarer Trigger UND „geht sonst still kaputt") und hat
+  scharf getrennt: P11.12-2 trägt keine stille Kaputtheit (das Verhalten bleibt richtig),
+  P11.12-4 verweigert einen Trigger im eigenen Text.
+- **HEBUNGS-KANDIDATEN — ZWEI, beide ins Backlog** als ÄNDERUNGSANTRÄGE an
+  docs/arbeitsweise.md in Wartestellung, neben denen der Phasen 11.3 und 11.5. **KEINE
+  Regeln.** Entschieden werden sie vom Owner.
+- **ENTSCHEIDUNGEN — ZWEI, KEINE GEHOBEN.** Beide sind am ORT DER HANDLUNG verankert: der
+  Kopfkommentar von `src/lib/preview-storage-shim.ts` trägt P11.12-1 zweimal und P11.12-2
+  im Abwesenheits-Absatz, und der Wächter T1 wird bei einer Verletzung von P11.12-2 rot
+  (GEMESSEN am Code, CC, 2026-09-17). Sie bleiben im Archiv der Phase; an ihrem Eintrag
+  steht der Zeiger "→ NICHT GEHOBEN 2026-09-17" mit diesem Grund.
+
+**docs/immer-beachten.md IST UNBERÜHRT, UND DAS IST KEINE AUSLASSUNG.** Aus dieser Phase ist
+keine Dauerregel entstanden: Was dauerhaft bindet, bindet den RIEGEL — und der ist genau ein
+Baustein an genau zwei Aufrufstellen, nicht ein projektweites Prinzip. Eine Regel dorthin
+hätte einen Gegenstand beschrieben, den es nur einmal gibt. Beim Durchgehen der Standdatei
+ist nichts gefunden worden, das eine Dauerregel sein müsste.
+
 **SIE IST NICHT GETEILT, UND SIE DARF ES HEUTE NICHT SEIN.** docs/arbeitsweise.md, Die
 Standdatei: "UNTERHALB VON 4000 ZEILEN WIRD NICHT GETEILT" — ein Verbot, keine Schwelle
 (GELESEN, CC, 2026-09-17). Archiv und Vorratsdatei entstehen erst mit einem Schnitt, und
@@ -585,6 +611,11 @@ soll. Beides zöge eine andere Bauform und eine andere Prüfung nach sich; dann 
 Entscheidung neu zu treffen und nicht fortzuschreiben.
 
 PROVENIENZ: **ARCHITEKT-ENTSCHEIDUNG 2026-09-17** auf Grundlage von VERMERK P11.12-1.
+**→ NICHT GEHOBEN 2026-09-17.** Sie ist am ORT DER HANDLUNG verankert: der Kopfkommentar von
+`src/lib/preview-storage-shim.ts` trägt sie zweimal — als „KEINE SICHERHEITSSCHICHT" und am
+Rückfall-Absatz von `withPreviewStorageShim` (GEMESSEN am Code, CC, 2026-09-17). Wer den
+Riegel anfasst, liest sie dort; eine Dauerregel erreichte ihn nicht besser. Sie bleibt im
+Archiv der Phase.
 
 ### Entscheidung P11.12-2 — Der Riegel entsteht AUSSERHALB von generateFunctional
 
@@ -610,6 +641,11 @@ getrennt — als Nebeneffekt der Quellenwahl, ohne Test, und nichts wird rot, we
 Quelle ändert (VERMERK P11.12-1, Teil D). Diese Entscheidung wiederholt das nicht.
 
 PROVENIENZ: **ARCHITEKT-ENTSCHEIDUNG 2026-09-17** auf Grundlage von VERMERK P11.12-1.
+**→ NICHT GEHOBEN 2026-09-17.** Sie ist am ORT DER HANDLUNG verankert: im
+Abwesenheits-Absatz des Kopfkommentars von `src/lib/preview-storage-shim.ts` und im
+Wächter T1 (`src/components/CodeImporter.test.tsx`), der bei ihrer Verletzung rot wird
+(GEMESSEN am Code, CC, 2026-09-17). **Ein Test ist der stärkere Anker als eine Regel** —
+er meldet sich von selbst. Sie bleibt im Archiv der Phase.
 
 ---
 
@@ -625,6 +661,9 @@ ausdrücklich ausgeschlossen und dazu nichts erhoben. Ob und wie viele importier
 das betrifft, ist ebenfalls nicht erhoben.
 PROVENIENZ: die Ablehnung OWNER-ANGABE 2026-09-14; dass der Riegel sie nicht erreicht, ist
 eine ABLEITUNG aus seinem Gegenstand (CC, 2026-09-17), keine Messung.
+**→ GEHOBEN 2026-09-17, docs/offene-punkte.md, NETZANFRAGEN MIT URSPRUNG `null` SIND IN DER
+VORSCHAU NICHT LÖSBAR.** Grund: benennbarer Trigger UND geht still kaputt — der Betreiber
+sieht einen leeren Rahmen ohne Meldung.
 
 **Vorrat P11.12-2 — DER KOPFKOMMENTAR VON `src/lib/generate.ts` BEGRÜNDET DAS
 PREVIEW-CONTAINMENT FALSCH.** Er sagt, das `srcDoc`-iframe erbe unsere Origin, und nennt
@@ -647,6 +686,9 @@ VERMEHRT SICH: nicht eine Angabe alterte, sondern eine Kopie wurde stärker als 
 erfinden.
 PROVENIENZ: der Kommentar GELESEN am Repo, der Ursprungswert GEMESSEN (CC, 2026-09-17); die
 Fundstelle in der Phase-4-Historie GELESEN (CC, 2026-09-17, Plan-Befund G8).
+**→ GEHOBEN 2026-09-17, docs/claude-history/backlog-polish.md, Aus Phase 11.12 gehoben
+(2026-09-17).** Grund: KEINE stille Kaputtheit — das Verhalten bleibt richtig, falsch ist
+allein die Begründung. Doku-Hygiene, kein offener Punkt.
 
 **Vorrat P11.12-3 — `indexedDB` WIRFT IM RAHMEN WEITER.** Der Riegel deckt es
 ausdrücklich nicht (ARCHITEKT-ENTSCHEIDUNG 2026-09-17); gemessen ist, dass `indexedDB.open`
@@ -663,6 +705,9 @@ Nicht-Treffer in der Vorher-Konsole (VERMERK P11.12-2) taugt dafür nicht — na
 lief kein weiterer Code.
 PROVENIENZ: die Entscheidung ARCHITEKT 2026-09-17; der Wurf GEMESSEN (CC, 2026-09-17,
 Proben M1 und N4); der vorbereitete Schritt eine ABLEITUNG.
+**→ GEHOBEN 2026-09-17, docs/offene-punkte.md, `indexedDB` WIRFT IM VORSCHAU-RAHMEN
+WEITER.** Grund: benennbarer Trigger steht im Eintrag selbst UND geht still kaputt — dasselbe
+leere Bild wie vor der Scheibe, aus einer anderen Ursache.
 
 **Vorrat P11.12-4 — FIREFOX UND WEBKIT SIND FÜR DEN RIEGEL UNGEMESSEN.** Alles, was über
 den Riegel gemessen ist — die Serialisierung der Attributwerte (N1), das Verhalten im
@@ -677,6 +722,9 @@ terminiert aussehen. Er wird fällig, wenn ein Betreiber einen anderen Browser m
 jemand die Messung nachholt.
 PROVENIENZ: die Browser-Angabe GEMESSEN (CC, 2026-09-17); dass andere Browser abweichen
 KÖNNTEN, ist eine ABLEITUNG aus der Plattform-Vielfalt, keine Messung.
+**→ GEHOBEN 2026-09-17, docs/claude-history/backlog-polish.md, Aus Phase 11.12 gehoben
+(2026-09-17).** Grund: KEIN benennbarer Trigger — der Eintrag verweigert ihn im eigenen Text,
+und ein erfundener liesse den Posten als terminiert aussehen.
 
 ---
 
@@ -709,6 +757,9 @@ Phase mit ihrer ersten Tatsache beginnt, nicht mit ihrem ersten Prompt.
 PROVENIENZ: **OWNER-KORREKTUR 2026-09-17.** Der Verlauf dieser Phase ist am Repo ablesbar
 (Commits `a7fe5fe` und die Doku-Runde davor); dass die Runde „ohne Produktfortschritt" war,
 ist eine Wertung des Owners, keine Messung.
+**→ GEHOBEN 2026-09-17, docs/claude-history/backlog-polish.md, Aus Phase 11.12 gehoben
+(2026-09-17).** Als ÄNDERUNGSANTRAG in Wartestellung, neben denen der Phasen 11.3 und 11.5 —
+KEINE Regel; docs/arbeitsweise.md ist unberührt.
 
 ### Hebungs-Kandidat P11.12-2 — DIE NUMMERNFORM MIT PHASEN-PRÄFIX ALS BAUFORM
 
@@ -731,3 +782,5 @@ gilt DIESER Phase. Erst dieser Antrag würde sie verallgemeinern — wer sie ohn
 PROVENIENZ: ARCHITEKT-SETZUNG 2026-09-17 für diese Phase; der Antrag auf Verallgemeinerung
 ARCHITEKT 2026-09-17. Die Kollisionsfreiheit ist GEMESSEN (CC, 2026-09-17, s. den Abschnitt
 Die Nummernform — entschieden: P11.12-n).
+**→ GEHOBEN 2026-09-17, docs/claude-history/backlog-polish.md, Aus Phase 11.12 gehoben
+(2026-09-17).** Als ÄNDERUNGSANTRAG in Wartestellung — KEINE Regel.

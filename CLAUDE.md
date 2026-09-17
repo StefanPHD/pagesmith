@@ -418,6 +418,21 @@ docs/claude-history/backlog-polish.md.
   nächste Änderung am INHALT des Gate-Blocks an einem der beiden Erzeuger — die reine
   Hüllen-Divergenz von heute ist harmlos und ist NICHT der Trigger)
 
+**AUS DEM PHASENENDE 11.12 GEHOBEN (2026-09-17) — ZWEI POSTEN.** Aus dem Vorrat der
+Standdatei der Phase 11.12 (Vorschau-Blocker). DIE URSPRUNGS-NUMMERN STEHEN NICHT HIER,
+SONDERN AM EINTRAG in docs/offene-punkte.md; sie tragen dort das Phasen-Präfix `P11.12-n`.
+DAS KRITERIUM WAR ZWEITEILIG — benennbarer Trigger UND "geht sonst still kaputt"; es hat
+hier scharf getrennt: von vier Vorrats-Einträgen tragen zwei beides, einer ist reine
+Doku-Hygiene (das Verhalten bleibt richtig), und einer verweigert einen Trigger
+AUSDRÜCKLICH im eigenen Text. Die übrigen zwei liegen in
+docs/claude-history/backlog-polish.md; GESTRICHEN IST KEINER.
+- NETZANFRAGEN MIT URSPRUNG `null` SIND IN DER VORSCHAU NICHT LÖSBAR (Trigger: die erste
+  importierte Seite, deren INHALT von einer fremden Schnittstelle kommt — für
+  NEBENANFRAGEN ist er bereits belegt, eine 403 an den Fehlerdienst der Seite in der am
+  2026-09-17 gesicherten Konsole)
+- `indexedDB` WIRFT IM VORSCHAU-RAHMEN WEITER (Trigger: die erste reale Seite, die in der
+  Vorschau NACHWEISLICH an `indexedDB` stirbt)
+
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
 Constraints, Indizes, Funktionen, Event-Trigger, Backups) steht in docs/db-stand.md.
@@ -1291,6 +1306,16 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   Auch hier steht keine Stückzahl für die Datei, aus demselben Grund wie darüber. ANDERS ALS
   BEIM ABSCHNITT DER PHASE 11.3 ist der Text der Vorrats-Einträge VERDICHTET und nicht
   zeichengleich; der ungekürzte Wortlaut steht im Archiv der Phase.
+  NACHGEZOGEN 2026-09-17 — DER ABSCHNITT DER PHASE 11.12: "Aus Phase 11.12 gehoben
+  (2026-09-17) — zwei Vorrats-Einträge und zwei Hebungs-Kandidaten". Er trägt die
+  Vorrats-Einträge P11.12-2 und P11.12-4 unter ihren Ursprungs-Nummern, dahinter zwei
+  Hebungs-Kandidaten, die wie die der Phasen 11.3 und 11.5 als ÄNDERUNGSANTRÄGE an
+  docs/arbeitsweise.md in Wartestellung stehen und KEINE Regeln sind — der Zeitpunkt, zu dem
+  die Standdatei entsteht, und die Nummernform mit Phasen-Präfix. DIE NUMMERN TRAGEN EIN
+  PHASEN-PRÄFIX (`P11.12-n`), anders als in allen Abschnitten darüber; das ist die
+  Nummernform jener Phase, und ob sie Bauform JEDER Standdatei wird, ist genau der zweite
+  der zwei Anträge und NICHT entschieden. Auch hier steht keine Stückzahl für die Datei,
+  aus demselben Grund wie darüber; der Text ist VERDICHTET und nicht zeichengleich.
 - supabase/checks/ — versionierte Messproben für Live-Tests und Gegenproben. KEINE Probe
   fasst ECHTE Daten an; welche Bauformen das zulässt und was eine Datei dann in ihrem Kopf
   sagen muss, steht im README des Ordners — hier der Zeiger, dort die Regel.

@@ -1,4 +1,43 @@
-# Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur: DER AKTIVE STAND
+# Phase 11.12 — Vorschau-Blocker: DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der steuernde Stand der Phase 11.12 — das, was jeweils galt, nicht
+das, was geworden ist. **Sie hiess bis zum Phasenende `docs/aktiver-stand.md`** und war das
+Pflicht-Gate ("Auftrag 0") jeder Sitzung, die an der Phase arbeitete.
+
+**ZEITRAUM UND UMFANG:** angelegt am 2026-09-17, archiviert am 2026-09-17 — **die Phase hat
+einen Tag gedauert.** EINE Scheibe (11.12a, der Kompatibilitäts-Riegel), ihr voraus eine
+Aufklärungs-Runde ohne Scheibe. ZWEI Vermerke (P11.12-1 Aufklärung, P11.12-2 die Scheibe),
+ZWEI bindende Entscheidungen, VIER Vorrats-Einträge, ZWEI Hebungs-Kandidaten. Bau-Commit
+der Scheibe: `c3b068f`, mit bestätigtem Live-Test.
+
+**WIE SIE ENDETE:** Ihr Marker steht auf `[x]`, und das heisst **BAU-FERTIG** — nicht „der
+Vorschau-Blocker ist erledigt". Was am Haken hängt, steht an der Roadmap-Zeile 11.12
+(docs/roadmap.md) und wird hier NICHT verdoppelt: gemessen ist an EINER realen Seite in
+EINEM Browser, `indexedDB` ist nicht abgedeckt, und Netzanfragen mit Ursprung `null` bleiben
+ungelöst.
+
+**SIE WIRD NICHT MEHR FORTGESCHRIEBEN. DIE HEBUNG IST AM 2026-09-17 GEFAHREN** (Commit
+`3697171`, Runde 1 des Phasenendes). Das volle Protokoll je Klasse steht unverändert
+darunter im Abschnitt "DAS PROTOKOLL DER HEBUNG"; an jeder gehobenen Stelle steht ein
+Zeiger "→ GEHOBEN 2026-09-17", an den zwei Entscheidungen "→ NICHT GEHOBEN 2026-09-17" mit
+ihrem Grund. **Die Gegenprobe ist VOR der Archivierung gefahren** (CC, 2026-09-17), je
+Eintrag gegen den BESTAND der Zieldatei und nicht gegen die Listen dieser Runde — alle sechs
+gehobenen Einträge sind am Zielort gefunden worden, mit Positiv- und Negativkontrolle.
+
+**ALTE ZEIGER AUF `docs/aktiver-stand.md` MEINEN NICHT DIESE DATEI**, sondern eine frühere
+Standdatei — der Pfad trug je Phase eine andere (docs/immer-beachten.md, EINE ABLAGE MIT
+HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE). **Aus DIESER Phase gibt es in `docs/`
+keinen einzigen solchen Zeiger** (GEMESSEN, CC, 2026-09-17, Achse: der Pfad in den seit
+`a7fe5fe` hinzugekommenen Zeilen). Zwei Zeiger stehen in `src/` und sind bewusst nicht
+angefasst worden — anderer Scope; sie stehen im Bericht der Archivierungs-Runde.
+
+**DER SATZ IM KOPF DES RUMPFES, DASS SIE "DIESEN NAMEN BIS ZUM PHASENENDE" BEHÄLT, BLEIBT
+STEHEN.** Er ist ein Zeitdokument und war richtig, als er geschrieben wurde; sonst ist am
+Rumpf nichts umformuliert.
+
+---
+
+## Der Rumpf, wie er am Phasenende stand
 
 **WAS DIESE DATEI IST:** der steuernde Stand der laufenden Phase 11.12 — das, was jeweils
 gilt, nicht das, was geworden ist. Sie heisst `docs/aktiver-stand.md` und behält diesen

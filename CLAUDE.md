@@ -160,7 +160,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [ ] Phase 11.9 — GA4 als SECHSTES Fan-Out-Ziel
 - [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus
 - [ ] Phase 11.11 — Import-Bereinigung
-- [ ] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur
+- [x] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur
 - [ ] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks
@@ -1231,6 +1231,21 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   mit dem gemessenen Grund von (19) — VIER Entscheidungen, DREI Regeln, deshalb 21 und nicht
   22. Auch diese vier stehen im Archiv wörtlich weiter; die Regel ist das Destillat, nicht
   ihr Ersatz.
+- docs/claude-history/phase-11.12-vorschau-blocker.md — GESAMTE gebaute Phase 11.12
+  (Vorschau-Blocker, 2026-09-17, an EINEM Tag): eine Aufklärungs-Runde ohne Scheibe und
+  EINE Scheibe (11.12a, der Kompatibilitäts-Riegel für `document.cookie`, `localStorage`
+  und `sessionStorage` in den zwei Editor-Rahmen), ZWEI Vermerke, ZWEI bindende
+  Entscheidungen, VIER Vorrats-Einträge und ZWEI Hebungs-Kandidaten. Sie ist ZUGLEICH der
+  steuernde Stand und die Historie; sie hiess bis zum Phasenende docs/aktiver-stand.md.
+  IHR KOPF TRÄGT DAS PROTOKOLL DER HEBUNG (Commit `3697171`), und an jeder gehobenen
+  Stelle steht ein Zeiger.
+  HIER NACHSEHEN, WER AM VORSCHAU-RAHMEN, AM RIEGEL ODER AN DER TRENNUNG ZWISCHEN VORSCHAU
+  UND AUSLIEFERUNG ARBEITET: Die zwei bindenden Entscheidungen sind AUSDRÜCKLICH NICHT
+  GEHOBEN — sie stehen hier UND am Ort der Handlung, nämlich im Kopfkommentar von
+  src/lib/preview-storage-shim.ts (P11.12-1 zweimal, P11.12-2 im Abwesenheits-Absatz) und
+  im Wächter T1 (src/components/CodeImporter.test.tsx), der bei einer Verletzung von
+  P11.12-2 rot wird. Ein Test ist der stärkere Anker als eine Regel; deshalb steht aus
+  dieser Phase KEINE Dauerregel in docs/immer-beachten.md.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),

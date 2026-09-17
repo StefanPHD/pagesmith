@@ -2076,77 +2076,53 @@ liegen beide hier und finden einander.
       · Dass ein fremdes Script tatsächlich sendet und dass ein fremdes Pixel doppelt
         zählt: ABLEITUNGEN, keine Messungen. "Hier ist Entfernen meist die richtige
         Handlung" unter (d): ARCHITEKT-ANGABE 2026-09-14, keine Messung.
-- [ ] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur — eine EIGENE Zeile, angelegt am 2026-09-14. Sie GEHÖRT
-      NICHT zur laufenden Phase 11.5 und ist kein Teil ihrer Scheiben.
-
-      DIE NUMMER IST GEWÄHLT, WEIL SIE FREI IST (Präzedenz: 4.5, 10.5, 11.5, 11.10, 11.11):
-      KEINE bestehende Nummer wird verschoben. Dass 11.12 im Bestand unbelegt war, ist
-      GEMESSEN am Repo (CC, 2026-09-14, `git grep "11\.12"` über alle verfolgten Dateien —
-      kein Treffer; Positivkontrolle: dieselbe Suche nach `11\.11` trifft).
-
-      (a) DER BEFUND — OWNER-ANGABE vom 2026-09-14, abgelesen an der Konsole im Rahmen der
-      Vorschau: Eine importierte Seite blinkt im Rahmen auf und bleibt leer — im Editor wie
-      in der Vorschau. Live wird sie korrekt dargestellt. Die Konsole meldet im Kontext
-      `about:srcdoc` einen SecurityError beim Lesen von `document.cookie`, mit dem Hinweis,
-      das Dokument sei sandboxed und trage `allow-same-origin` nicht; derselbe Fehler
-      erscheint zusätzlich als UNCAUGHT. Eine Anfrage derselben Seite scheitert an einer
-      CORS-Regel mit Ursprung `null`.
-      AM CODE PASST DAS DAZU (GEMESSEN, CC, 2026-09-14): Beide Rahmen in
-      `src/components/CodeImporter.tsx` laden den Text über `srcDoc` und tragen einen
-      Sandkasten ohne `allow-same-origin` — der Editor-Rahmen `sandbox="allow-scripts"`, die
-      funktionale Vorschau `sandbox="allow-scripts allow-popups
-      allow-popups-to-escape-sandbox"`.
-      DER WURF KOMMT AUS FREMDEM CODE, NICHT AUS UNSEREM — und das ist der Grund, warum er
-      nicht dort abzufangen ist, wo er entsteht. Den Konsolen-Auszug hat CC nicht gesehen;
-      die Zuordnung ist am Auszug ABGELESEN (OWNER/ARCHITEKT). AM CODE GESTÜTZT, nicht
-      bewiesen (CC, 2026-09-14): Der einzige Zugriff auf `document.cookie` in dem, was wir in
-      die Rahmen bringen, steht in `buildCapiBeaconStatement` (`src/lib/tracking/meta.ts`) —
-      innerhalb eines `try` und erst beim Feuern eines Klicks. Einen ungefangenen Wurf beim
-      Laden kann er nicht erzeugen, und im Editor-Rahmen gibt es ihn gar nicht.
-
-      (b) DIE SCHWERE: Wer die Seite nicht sieht, kann nichts verdrahten — weder Texte noch
-      Knöpfe. Das ist der Kern-Loop des Produkts.
-
-      (c) DER TRIGGER, UND ER IST KEIN WUNSCH: DER ERSTE FREMDE NUTZER. Heute testet der Owner
-      allein und kommt am Editor vorbei; ein fremder Nutzer kann das nicht.
-      ER HÄNGT AN DERSELBEN BEDINGUNG WIE CLAUDE.md, "## Modus", Absatz "ES GIBT KEINE FIRMA,
-      KEINE KUNDEN UND KEINEN FREMDEN TRAFFIC" — dort am zweiten der drei Trigger: "das erste
-      FREMDE Nutzerkonto legt ein Projekt an" (GELESEN, CC, 2026-09-14).
-
-      (d) WAS AUSDRÜCKLICH NICHT DER WEG IST: `allow-same-origin` zum Sandkasten hinzufügen.
-      Die Regel in docs/immer-beachten.md lautet wörtlich: "Importierter User-Code läuft NUR
-      im sandboxed iframe (sandbox="allow-scripts", niemals allow-same-origin), nie
-      ungesandboxt." (GELESEN, CC, 2026-09-14.) Am Editor-Rahmen steht dieselbe Auflage als
-      Kommentar: "NIEMALS allow-same-origin dazu – die Kombination bricht den Fremdcode aus der
-      Sandbox aus." Sie zu lockern hiesse, fremdem Code Zugriff auf den Ursprung der
-      Anwendung zu geben — ein `srcDoc`-Dokument erbt ohne Sandkasten den Ursprung der
-      Seite, die es einbettet (Plattform-Aussage, in dieser Runde nicht gemessen).
-
-      (e) DER ZUSCHNITT ENTSTEHT ERST NACH EINER AUFKLÄRUNG. DIESE ZEILE ENTSCHEIDET NICHT, WIE
-      REPARIERT WIRD. Offen ist unter anderem, ob der Wurf abzufangen ist, ohne den Sandkasten
-      zu öffnen, und was eine Seite verliert, die auf ihren Ursprung angewiesen ist.
-
-      (f) EINE GRENZE, DIE ZUR PHASE 11.5 GEHÖRT: Die Live-Nachweise der Scheiben 11.5a bis
-      11.5d liefen auf Seiten, die im Rahmen funktionieren. Ob eine Seite, die dort stirbt,
-      live anders auf unsere Einwilligungs-Bausteine reagiert, ist UNGEMESSEN.
-
-      (g) DIE NUMMER TRÄGT KEINE REIHENFOLGE, wie bei 11.10 (dort Punkt (d)). Wann diese
-      Phase gebaut wird, ist hier NICHT entschieden.
-
-      WAS DIESE ZEILE AUSDRÜCKLICH NICHT TUT: Sie schneidet nichts zu, sie terminiert nichts,
-      und sie schlägt keine Reparatur vor.
-
-      (h) PROVENIENZ — je Angabe:
-      · Der Befund unter (a) samt Konsolen-Auszug: OWNER-ANGABE vom 2026-09-14. Dass der Wurf
-        aus fremdem Code stammt: am Auszug ABGELESEN (Owner/Architekt, 2026-09-14), von CC
-        nicht eingesehen.
-      · Die zwei Sandkasten-Attribute, der einzige `document.cookie`-Zugriff in unserem
-        erzeugten Code und die Freiheit der Nummer: GEMESSEN am Repo (CC, 2026-09-14).
-      · Der Trigger-Absatz in CLAUDE.md und die Sandkasten-Regel in docs/immer-beachten.md:
-        GELESEN (CC, 2026-09-14).
-      · Die Schwere unter (b), der Trigger unter (c) und die Grenze unter (f): ARCHITEKT-ANGABE
-        2026-09-14. Dass ein `srcDoc`-Dokument ohne Sandkasten den Ursprung erbt:
-        Plattform-Aussage, nicht gemessen.
+- [x] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur:
+      ABGESCHLOSSEN (2026-09-17, an EINEM Tag). Importierte Seiten, die beim Laden
+      `document.cookie` oder Web Storage lesen, brachen im sandboxed Editor-Rahmen ab
+      (`SecurityError`, Ursprung `null`) und blieben leer — der Kern-Loop des Produkts war
+      für solche Seiten unbenutzbar. EINE Scheibe (11.12a): ein Kompatibilitäts-Riegel an
+      der Spitze des `head` ersetzt `cookie`, `localStorage` und `sessionStorage` durch
+      Speicher im Arbeitsspeicher, NUR in den zwei Editor-Rahmen. Der Sandkasten bleibt
+      unverändert. Bau-Commit `c3b068f`, Live-Test bestätigt. Volle Herleitung, die zwei
+      Vermerke und die zwei bindenden Entscheidungen:
+      docs/claude-history/phase-11.12-vorschau-blocker.md.
+      WAS ZUM ZEITPUNKT DES HAKENS UNBEWIESEN IST — der Haken heisst BAU-FERTIG, nicht „der
+      Vorschau-Blocker ist erledigt". Das Kriterium und seine Auflage stehen in CLAUDE.md,
+      "## Roadmap & aktueller Stand", unter "WANN [x] GESETZT WIRD — DAS KRITERIUM"; sie
+      werden hier NICHT wiederholt, sondern eingelöst. DREI PUNKTE, und sie haben
+      VERSCHIEDENEN RANG:
+      · DIE WIRKUNG IST AN EINER EINZIGEN SEITE IN EINEM EINZIGEN BROWSER GEMESSEN. Der
+        Live-Nachweis ist die am 2026-09-14 leere Seite; sie rendert seit der Scheibe in
+        beiden Rahmen (OWNER-ANGABE 2026-09-17). Alle übrigen Messungen — die Serialisierung
+        der Attributwerte, das Verhalten im Sandkasten, die Probe vor dem Diff — stammen aus
+        Chromium 153. Der Editor läuft im Browser des Betreibers. DASS DER RIEGEL ANDERE
+        STERBENDE SEITEN RETTET, IST NICHT BELEGT. Firefox und WebKit stehen als
+        Backlog-Eintrag (docs/claude-history/backlog-polish.md, "Aus Phase 11.12 gehoben
+        (2026-09-17) …", unter P11.12-4).
+      · `indexedDB` IST NICHT ABGEDECKT und wirft im Rahmen weiter — eine
+        ARCHITEKT-ENTSCHEIDUNG, keine Auslassung: nichts in `src/` benutzt es, und ein halber
+        Ersatz wäre schlechter als keiner. Eine Seite, die es beim Laden anfasst, stirbt in
+        der Vorschau weiter. OFFENER PUNKT: docs/offene-punkte.md, "AUS DEM PHASENENDE 11.12
+        GEHOBEN (2026-09-17)", Posten "`indexedDB` WIRFT IM VORSCHAU-RAHMEN WEITER".
+      · NETZANFRAGEN MIT URSPRUNG `null` BLEIBEN UNGELÖST. Der Riegel ersetzt
+        Speicher-Schnittstellen, keine Netzwege; eine Seite, deren INHALT von einer fremden
+        Schnittstelle kommt, bleibt im Rahmen leer. OFFENER PUNKT: dieselbe Fundstelle,
+        Posten "NETZANFRAGEN MIT URSPRUNG `null` SIND IN DER VORSCHAU NICHT LÖSBAR".
+      DER ERSTE PUNKT IST DER TRAGENDE: Er betrifft das Produktversprechen selbst — ob der
+      Riegel das Problem allgemein löst oder nur an dem einen gemessenen Fall. Die zwei
+      übrigen sind BENANNTE LÜCKEN mit eigenem Posten; sie halten die Phase nicht offen,
+      sondern warten auf ihre Trigger.
+      WAS DIE AUFKLÄRUNG ERGEBEN HAT UND ÜBER DIE PHASE HINAUS TRÄGT: Der Ladeweg ist nicht
+      die Ursache — ein `blob:`-Rahmen verhält sich zeichengleich zu `srcdoc`, der Ursprung
+      kommt vom Sandkasten-Attribut. Und „laut" und „abbrechend" sind keine Alternativen:
+      derselbe ungefangene Wurf lässt ein SPÄTERES Skript laufen, beendet aber den Rest
+      SEINES EIGENEN. Beides GEMESSEN (VERMERK P11.12-1 im Archiv).
+      DER VOLLTEXT DIESER ZEILE VOR DEM ABHAKEN — der Befund vom 2026-09-14, die zwei
+      Sandkasten-Attribute, die Punkte (a) bis (h) und die Provenienz je Angabe — STEHT IM
+      COMMIT `3697171` und ist über `git show 3697171:docs/roadmap.md` vollständig
+      nachzulesen. ER IST NICHT VERLORENGEGANGEN, SONDERN KOLLABIERT: Seine Aufklärungs- und
+      Zuschnitt-Vorbehalte haben die Phase getragen und sind mit ihr eingelöst; was über sie
+      hinaus bindet, steht als Entscheidung im Archiv der Phase.
 - [ ] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs — eine EIGENE Zeile, angelegt am 2026-09-15. Sie
       GEHÖRT NICHT zur laufenden Phase 11.5 und ist kein Teil ihrer Scheiben.
 

@@ -1100,7 +1100,8 @@ describe("CodeImporter — Scheibe 9a: A/B-Varianten (Wurzeltausch)", () => {
   it("T2 ARTEFAKT-RIEGEL: die Editor-Bruecke landet NIE im Export- oder Publish-Dokument", async () => {
     // WIRD ROT, WENN der Export seine Quelle von debouncedCode auf previewHtml
     // umstellt. DIESE ABWESENHEIT WAR BIS ZUR SCHEIBE 11.12a DURCH KEINEN TEST
-    // GEDECKT (docs/aktiver-stand.md, VERMERK P11.12-1, Teil D): sie ruhte allein
+    // GEDECKT (docs/claude-history/phase-11.12-vorschau-blocker.md, VERMERK P11.12-1,
+    // Teil D): sie ruhte allein
     // auf der Quellenwahl, also auf einem Nebeneffekt — und ein Nebeneffekt ist
     // kein Waechter (docs/immer-beachten.md, NUR EIN TEST IST EIN WAECHTER).
     //

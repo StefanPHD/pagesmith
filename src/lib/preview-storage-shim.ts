@@ -8,7 +8,8 @@
  * und sessionStorage einen SecurityError — auch das blosse LESEN der Eigenschaft.
  * Importierter Fremdcode faengt das meist nicht ab; steht der Seitenaufbau im
  * SELBEN Skript hinter dem Wurf, entfaellt er, und der Rahmen bleibt leer
- * (GEMESSEN, Chromium 153, docs/aktiver-stand.md, VERMERK P11.12-1, Teile A-C).
+ * (GEMESSEN, Chromium 153, docs/claude-history/phase-11.12-vorschau-blocker.md,
+ * VERMERK P11.12-1, Teile A-C).
  * Dieser Riegel ersetzt die drei Schnittstellen durch Speicher im
  * Arbeitsspeicher, bevor Fremdcode sie erreicht.
  *

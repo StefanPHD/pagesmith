@@ -775,7 +775,8 @@ describe("11.5e-1 — die Schalter der Leiste", () => {
 });
 
 // SCHEIBE 11.13a — DIE ANORDNUNG. Die Erwartungen stammen aus Entscheidung P11.13-1 der
-// Phase 11.13 (docs/aktiver-stand.md), NIE aus dem Code: die zwei sichtbaren Knoepfe, ihre
+// Phase 11.13 (docs/claude-history/phase-11.13-dialog-anpassung.md; bis zum Phasenende am
+// 2026-09-18 hiess jene Datei docs/aktiver-stand.md), NIE aus dem Code: die zwei sichtbaren Knoepfe, ihre
 // Reihenfolge, die Beschriftung des Wegs und die Abwesenheit von Schaltern und
 // "Auswahl speichern" stehen hier als Literal.
 describe("11.13a — die Anordnung", () => {

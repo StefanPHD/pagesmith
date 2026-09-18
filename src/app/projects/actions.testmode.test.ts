@@ -638,7 +638,8 @@ describe("listTestModeStates — was er herausgibt und was nicht", () => {
     //
     // DIE LEERLAUF-ZUSICHERUNG IST PFLICHT UND KEIN ZIERRAT, UND DAS IST KEIN
     // HYPOTHETISCHER FALL: google und linkedin stehen in dieser Phase noch aus
-    // (docs/aktiver-stand.md, "Gegenstand der Phase"). Kommen BEIDE in den Testmodus,
+    // (docs/claude-history/phase-11.3-testmodus.md, "Gegenstand der Phase" — bis zum
+    // Phasenende am 2026-09-11 hiess jene Datei docs/aktiver-stand.md). Kommen BEIDE in den Testmodus,
     // ist die Komplementaermenge LEER — dieser Lauf iterierte dann ueber nichts,
     // bliebe GRUEN und pruefte nichts mehr. Das ist Fall (1) aus
     // docs/immer-beachten.md, "EINE ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN

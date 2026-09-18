@@ -888,7 +888,9 @@ describe("11.5e-1 — die Schalter des Modals", () => {
 });
 
 // SCHEIBE 11.13a — DIE ANORDNUNG, Spiegel der Leiste. Die Erwartungen stammen aus
-// Entscheidung P11.13-1 der Phase 11.13 (docs/aktiver-stand.md), NIE aus dem Code.
+// Entscheidung P11.13-1 der Phase 11.13
+// (docs/claude-history/phase-11.13-dialog-anpassung.md; bis zum Phasenende am 2026-09-18
+// hiess jene Datei docs/aktiver-stand.md), NIE aus dem Code.
 describe("11.13a — die Anordnung", () => {
   // M24. `preventScroll` AM FOKUS-AUFRUF — EINE STRUKTUR-ZUSICHERUNG UEBER DEN
   // AUSGELIEFERTEN TEXT, KEINE WIRKUNGS-ZUSICHERUNG: Die Testumgebung scrollt nicht

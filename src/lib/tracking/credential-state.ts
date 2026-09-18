@@ -356,8 +356,9 @@ export function withoutTarget(
  * der NUTZLAST sein. pinterest traegt ihn als Query-Parameter mit zwei
  * widerspruechlichen Namen und NIE GEMESSEN, google als validateOnly, das die
  * Diagnostik abschneidet, linkedin gar nicht — die drei Gruende stehen ausgefuehrt
- * in docs/aktiver-stand.md, "Reichweite: meta und tiktok — und ausdruecklich sonst
- * keines", und werden hier NICHT verdoppelt.
+ * in docs/claude-history/phase-11.3-testmodus.md, "Reichweite: meta und tiktok — und
+ * ausdruecklich sonst keines" (bis zum Phasenende am 2026-09-11 hiess jene Datei
+ * docs/aktiver-stand.md), und werden hier NICHT verdoppelt.
  *
  * NACHGEZOGEN 11.3e, UND DER ABSATZ DARUEBER BLEIBT WOERTLICH STEHEN: Sein
  * pinterest-Halbsatz ist UEBERHOLT, seine zwei anderen gelten unveraendert. Der

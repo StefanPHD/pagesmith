@@ -5048,6 +5048,13 @@ Entscheidung (12) (CC, 2026-09-16). Die zehn Konstanten, die Abwesenheit einer R
 und Positivkontrolle. Die Zuordnung nach Backlog ist OWNER-ENTSCHEIDUNG 2026-09-16; das
 Gegenargument ist ARCHITEKT-ANGABE 2026-09-16 und ausdrücklich ungemessen.
 
+**NACHGEZOGEN 2026-09-18 — DIE SACHE IST ALS SCHEIBE 5 AN DIE ROADMAP-ZEILE 11.13 GEZOGEN**
+(OWNER-ENTSCHEIDUNG 2026-09-18; feste Auswahl Deutsch/Englisch, unser Wortlaut mit
+Owner-Freigaben, KEINE Betreiber-Eingabe, NACH Scheibe 4 — docs/roadmap.md, Zeile 11.13,
+Punkt (c) 5, und bindende Entscheidung P11.13-24 der Standdatei): **Dieser Eintrag wird damit
+VERORTET und NICHT erledigt** — seine Messungen sind der Massstab jener Scheibe und gingen mit
+einer Streichung verloren.
+
 **ZWEI HEBUNGS-KANDIDATEN — ÄNDERUNGSANTRÄGE AN docs/arbeitsweise.md IN WARTESTELLUNG, KEINE
 REGELN.** Sie richten sich an den, der den Prompt oder den Commit-Body schreibt — das ist der
 Architekt, und über den INHALT von docs/arbeitsweise.md entscheidet nicht CC (CLAUDE.md,

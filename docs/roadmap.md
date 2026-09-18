@@ -2161,6 +2161,17 @@ liegen beide hier und finden einander.
          Werte der Kundenseite in den Schattenbaum zu lassen — die Frage aus (f) unten.
       3. FREIE FARBEN. Erst wenn Scheibe 2 steht und live geprüft ist.
       4. FREIER TEXT. Eine eigene Scheibe; ihre Sicherheitsachse ist die des freien Textes, s. (g).
+      5. DIE SPRACHE. Eine feste Auswahl — Deutsch oder Englisch —, UNSER Wortlaut als Konstanten
+         im Repo, je mit Owner-Freigabe. KEINE Betreiber-Eingabe: der Wert wählt einen Zweig, wie
+         der Themenwert es tut, und der Rohwert aus dem Blob erreicht den ausgelieferten Text nie.
+         NACH Scheibe 4. GRUND: Scheibe 4 bleibt bei ihrer Sicherheitsachse — Betreiber-Eingabe im
+         ausgelieferten Text —, und eine Sprachwahl braucht davon nichts. Sprache und freier Text
+         ÜBERLAPPEN, sind aber nicht dieselbe Sache: Der Backlog-Eintrag "11.5f" benennt ZEHN Texte,
+         Punkt (h) gibt für Scheibe 4 EINEN frei; über die übrigen neun sagt (h) nichts, und sie
+         blieben ohne diese Scheibe deutsch stehen. OWNER-ENTSCHEIDUNG 2026-09-18; Volltext als
+         bindende Entscheidung P11.13-24 der Standdatei der Phase 11.13. Der Backlog-Eintrag wird
+         damit VERORTET und NICHT erledigt — seine Messungen (die zehn Konstanten, die sechs
+         Owner-Freigaben, der Sprach-Nicht-Treffer) sind der Massstab dieser Scheibe.
       AUCH SCHEIBE 3 TRÄGT EINE EIGENE SICHERHEITSACHSE — eigene Farben sind Betreiber-Eingabe im
       ausgelieferten Text, und sie wird dort von einem Format-Tor auf ^#[0-9a-f]{6}$ getragen
       (bindende Entscheidung P11.13-14 der Standdatei der Phase 11.13).
@@ -2212,10 +2223,18 @@ liegen beide hier und finden einander.
       JavaScript-Ausbruch, aber es entkommt kein `<`: `JSON.stringify("x</script><b>")` liefert
       `"x</script><b>"` (GEMESSEN, CC, 2026-09-15, in `node`). Ein Text mit `</script>` schliesst den
       Script-Block im HTML-Parser, mitten im Kundentext.
-      DIE WÄCHTER, DIE DAS PRÜFEN, FAHREN HEUTE MIT KONSTANTEN: L3 (`consent-bar.test.ts`) und M3
-      (`consent-modal.test.ts`) verlangen, dass der Rumpf kein `<` enthält, und bauen den Block über
-      `buildConsentBarScript()` bzw. `buildConsentModalScript()` ohne Argument (GEMESSEN am Test, CC,
-      2026-09-15). Sie blieben grün, während die Lücke offensteht.
+      DIE WÄCHTER, DIE DAS PRÜFEN, SIND L3 (`consent-bar.test.ts`) und M3 (`consent-modal.test.ts`):
+      Sie verlangen, dass der Rumpf kein `<` enthält. SEIT DER SCHEIBE 11.13c FAHREN SIE ÜBER ALLE
+      VIER DARSTELLUNGEN, den `custom`-Zweig mit zwei GEPRÜFTEN Farben eingeschlossen (GEMESSEN am
+      Test, CC, 2026-09-18). SACHKORREKTUR, NICHT STEMPEL: Hier stand, sie fahren "MIT KONSTANTEN"
+      und bauen den Block "ohne Argument" — das war am 2026-09-15 richtig und ist es seit dem
+      Pflicht-Parameter der Scheibe 11.13b nicht mehr; ein Maßstab mit falschen Angaben taugt nicht
+      als Maßstab.
+      DIE LÜCKE STEHT TROTZDEM OFFEN, UND DER GRUND IST EIN ANDERER ALS DER FRÜHERE: Nicht, weil die
+      Wächter mit Konstanten führen, sondern weil sie einen BETREIBER-TEXT NICHT KENNEN. Der einzige
+      Parameter, über den heute ein Betreiber-Wert hineingeht, ist die Darstellung, und dort ist ein
+      `<` durch das Format-Tor `^#[0-9a-f]{6}$` NICHT KONSTRUIERBAR. Ein Textwert käme als NEUES
+      Argument dazu, und L3/M3 setzten ihn BY DEFAULT NICHT EIN — sie blieben grün.
       DAZU SCHREIBT `saveProject` DIE EINSTELLUNGEN UNVALIDIERT — ein bestehender offener Punkt:
       docs/offene-punkte.md, "`saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE
       ABWESENHEIT" (Stub in CLAUDE.md, "## Offene Punkte").

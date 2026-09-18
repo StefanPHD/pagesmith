@@ -36,8 +36,9 @@ EINER DATEI MIT VERZEICHNIS NICHT). Wer bearbeitet, ankert entsprechend.
 6. Zuschnitt der Scheibe 11.13a — DIE ANORDNUNG (VERDICHTET 2026-09-17)
 7. Zuschnitt der Scheibe 11.13b — DAS THEMA (VERDICHTET 2026-09-17)
 8. Zuschnitt der Scheibe 11.13c — EIGENE FARBEN (VERDICHTET 2026-09-18)
-9. Vorrat — gemeldet, nicht gebaut
-10. Hebungs-Kandidaten
+9. Zuschnitt der Scheibe 11.13d — FREIER SACHTEXT
+10. Vorrat — gemeldet, nicht gebaut
+11. Hebungs-Kandidaten
 
 ---
 
@@ -1277,6 +1278,194 @@ ARCHITEKT-PRÜFUNG desselben Tages. Der Abgleich der sechs Block-Werte gegen die
 Vorher-Werte ist GEMESSEN (CC, 2026-09-18) — gegen den Bau-Bericht, nicht gegen die
 weitergegebene Angabe. **Die Ursache des Instrumenten-Versagens ist UNGEMESSEN.**
 
+### VERMERK P11.13-7 — Aufklärung 11.13d (FREIER SACHTEXT), 2026-09-18
+
+**KEIN BAU-COMMIT, UND DER GRUND STEHT HIER:** Es war eine READ-ONLY-Aufklärung ohne
+Änderung am Repo (docs/arbeitsweise.md, "Die Standdatei", Absatz "Ein Vermerk trägt den
+Hash seines Code-Commits"). Der Arbeitsbaum war vorher und nachher sauber; die
+Schreibvorgänge lagen im Scratchpad ausserhalb des Repos und in der ignorierten Ablage
+`.playwright-mcp/` (`git check-ignore -v` → `.gitignore:28`, VOR dem ersten Browser-Aufruf
+geprüft). Der Stand, auf dem gemessen wurde, ist `88a6ebb`.
+
+**DAS INSTRUMENT, ZWEITEILIG:** (1) Vite `createServer` + `ssrLoadModule` gegen das Repo im
+Scratchpad — **die echten Funktionen, nicht nachgebaut**: `buildMetaRuntime` aus
+`src/lib/tracking/meta.ts` und `buildConsentBarScript` aus `src/lib/tracking/consent-bar.ts`.
+(2) Playwright/**Chromium**, `file://`, Probeseiten im Scratchpad. Kein echter Pixel, keine
+echte Seite, keine Netzanfrage nach aussen.
+
+#### (a) DER AUSBRUCH IST GEMESSEN — DIE GRENZE VON VORRAT P11.13-5 IST DAMIT FALSCH
+
+Die Nutzlast ging auf dem PRODUKTIVEN Weg hinein: bei der Pixel-ID als Argument von
+`buildMetaRuntime`, beim Dialog-Text durch Ersetzen **genau eines** Vorkommens von
+`JSON.stringify(CONSENT_REJECT_LABEL)` in einer **Scratch-Kopie** des echten Blocks — also
+derselbe Weg, den ein Betreiber-Text nähme.
+
+| Lauf | Nutzlast | `__AUSBRUCH` | `<img>` | `script`-Elemente | Wiring läuft / Leiste steht | `pageerror` |
+|---|---|---|---|---|---|---|
+| a-kontrolle | `1234567890` | false | 0 | 2 | **ja** (`PS_PIXEL_ID` definiert) | keine |
+| a-ausbruch | `</script><img src=x onerror="…">` | false¹ | **1** | 2 | **nein** | 2× `SyntaxError` |
+| a2-ausbruch | `</script><img src=x onerror=…>` (ohne `"`) | **TRUE** | **1** | 2 | **nein** | 1× `SyntaxError` |
+| a-kommentar | `<!--<script>…` | false | 0 | **1** statt 2 | **nein** | **keine** |
+| b-kontrolle | `"Ablehnen"` | false | 0 | 3 | **Leiste steht**, Knöpfe `["Alle akzeptieren","Ablehnen","Einstellungen"]` | keine |
+| b-ausbruch | `</script><img src=x onerror="…">` | false¹ | **1** | 3 | **keine Leiste** (`pagesmith-bar` = 0) | 2× `SyntaxError` |
+| b2-ausbruch | `</script><img src=x onerror=…>` (ohne `"`) | **TRUE** | **1** | 3 | **keine Leiste** | 1× `SyntaxError` |
+| b-kommentar | `<!--<script>…` | false | 0 | **2** statt 3 | **keine Leiste** | **keine** |
+
+¹ **DIE ANFÜHRUNGSZEICHEN-BEOBACHTUNG, UND SIE IST KEIN SCHUTZ:** `JSON.stringify` maskiert
+die INNEREN Anführungszeichen zu `\"`. Im ausgelieferten Text steht danach
+`<img src=x onerror=\"window.__AUSBRUCH=1\">`; der HTML-Parser liest `onerror` als
+unquotiertes Attribut mit dem Wert `\"window.__AUSBRUCH=1\"` — ungültiges JavaScript, der
+Handler zündet nicht. **DER AUSBRUCH SELBST IST TROTZDEM EINGETRETEN:** das `<img>` existiert,
+der Block ist geschlossen, das Wiring läuft nicht. **Die anführungszeichenfreie Variante
+FÜHRT AUS.** Wer nur die erste Nutzlast fährt, protokolliert eine Entwarnung, die es nicht
+gibt.
+
+**DREI SCHADENSBILDER, GETRENNT:**
+1. **AUSFÜHRUNG** (`a2`, `b2`) — fremder Code läuft im Ursprung der Kundenseite.
+2. **ZERSTÖRUNG DES EIGENEN BAUSTEINS** — in JEDEM Ausbruchsfall läuft das Wiring nicht bzw.
+   die Leiste steht nicht; der Rest des Blocks wird sichtbarer Body-Text (**5 772** Zeichen
+   bei `a2`, **619** bei `b2`).
+3. **STILLES VERSCHLUCKEN — die gefährlichste Variante, weil sie KEINEN Fehler erzeugt.**
+   `<!--<script>` versetzt den Parser in den Zustand „script data escaped"; das NACHFOLGENDE
+   Script-Element wird mitgefressen. **Null `pageerror`, null Konsolenfehler**, kein
+   sichtbarer Schaden — es fehlt nur ein Baustein.
+
+#### (b) DIE QUERPROBE AM SERIALISIERER — UND IHRE GRENZE
+
+Nachbau des Pfads von `generate.ts` im Browser (`DOMParser` → `createElement("script")` →
+`textContent` → `outerHTML`): Ein `</script><img …>` erscheint im Serialisat **roh**
+(`rohesEndeTagImSerialisat = true`), und es entsteht **kein** Unicode-Escape in der Form
+`"\\u003c"` (`escapeVorhanden = false`). Die Gegenprobe mit der Mapping-Maskierung liefert
+das escapte Ende-Tag im Serialisat.
+**DIE KETTE IST DAMIT VOLLSTÄNDIG: `JSON.stringify` maskiert `<` nicht, und der Serialisierer
+tut es auch nicht.**
+**DIE GRENZE GEHÖRT DAZU:** Eine zweite Teilzusicherung desselben Laufs
+(`maskierterBlockRoh`) war durch den ERSTEN Script-Block im selben Prüfdokument
+**kontaminiert** und trägt nichts. Nur die zwei oben genannten Werte sind sauber.
+
+#### (c) DIE EINZIGE MASKIERUNG IM REPO IST EIN EINZELSTÜCK
+
+GEMESSEN (CC, 2026-09-18), Achse `u003c|u003C|replace\(/</` über `src/`: **genau EIN
+Treffer** — `src/lib/generate.ts`, in `generateFunctional`:
+`const json = JSON.stringify(table).replace(/</g, "\\u003c");`. Kein Name, kein zweiter
+Aufrufer. Eine breitere Achse (`escapeHtml|htmlEscape|escapeScript|sanitiz|u003c|&lt;|encodeHtml`,
+ohne Testdateien) findet als einzigen BENANNTEN Helfer `escapeHtml` in
+`src/lib/hosting/blocked-page.ts` — **anderer Kontext** (HTML-Textknoten der eigenen
+451-Seite, `"<" : "&lt;"`), für Script-Rohtext untauglich und nirgends geteilt.
+
+#### (d) KEIN TEXT GEHT ÜBER `innerHTML` — UND KEINER AUSSERHALB VON SCRIPT-ROHTEXT
+
+GEMESSEN (CC, 2026-09-18), Achse case-insensitiv
+`textContent|innerText|innerHTML|insertAdjacentHTML|setAttribute|outerHTML|document\.write|createTextNode`
+über `consent-choice.ts`, `consent-bar.ts`, `consent-modal.ts`, `consent-revoke.ts`,
+`consent-setter.ts`, `consent-store.ts`, `pageview-emitter.ts`: **kein Treffer auf
+`innerHTML`, `insertAdjacentHTML`, `outerHTML`, `document.write`, `innerText`.**
+POSITIVKONTROLLE im selben Lauf: `innerHTML` trifft in `src/lib/generate.ts` und
+`src/lib/detect.test.ts`.
+**ELF TEXTPLÄTZE, ALLE ALS KONSTANTE, ALLE ÜBER `JSON.stringify` IN SCRIPT-ROHTEXT:**
+`CONSENT_TEXT` (79 Zeichen) · `CONSENT_ACCEPT_LABEL` (16) · `CONSENT_SAVE_LABEL` (17) ·
+`CONSENT_REJECT_LABEL` (8) · `CONSENT_WAY_LABEL` (13) · `CONSENT_GROUPS_LABEL` (8) ·
+`CONSENT_GROUP_MEASURE_LABEL` (7) · `CONSENT_GROUP_ADS_LABEL` (7) ·
+`CONSENT_BAR_REGION_LABEL` (12) · `CONSENT_MODAL_DIALOG_LABEL` (12) ·
+`CONSENT_REVOKE_WARNING` (142, `console.warn`, kein DOM).
+**DIE DREI `aria-label` SIND KEIN ATTRIBUT-KONTEXT ZUR BAUZEIT:** Sie stehen als
+JS-String-Argument von `setAttribute` im Script-Rohtext; das Attribut setzt erst die
+DOM-Schnittstelle zur Laufzeit, und die parst nicht nach.
+**KEIN LINK, KEIN `title`:** Achse `href|createElement\("a"\)|\btitle\b|datenschutz|privacy`
+über die vier Erzeuger — **zwei Treffer, beide Prosa im Kommentar**. POSITIVKONTROLLE:
+dieselbe Achse trifft in `PublishView.tsx`.
+
+#### (e) DIE GEOMETRIE — `min-width`, KEINE FESTE BREITE
+
+`button{box-sizing:border-box;min-width:160px;…padding:10px 16px;border:1px solid …}` —
+**eine Untergrenze, keine `width`**. **KEIN `white-space`, KEIN `nowrap`, KEIN
+`text-overflow`, KEIN `word-break`, KEIN `overflow-wrap`, KEIN `hyphens`** in den drei
+Consent-Stylesheets (POSITIVKONTROLLE: dieselbe Achse trifft `truncate` in
+`CodeImporter.test.tsx`). **Folge: Umbruch, kein Abschneiden** — längerer Text verbreitert
+den Knopf und bricht darin um.
+**DIE LEISTE HAT KEIN `overflow` (L12 verbietet das Wort) UND KEIN `max-height`.** Sie wächst
+mit dem Sachtext **nach oben**, weil `:host` `position:fixed; bottom:0` trägt, und kann bei
+niedriger Fensterhöhe über den oberen Rand wandern — **genau die Achse aus Roadmap (e), die
+Entscheidung P11.13-1 für den ausgeklappten Zustand vermieden hat. Ein freier Sachtext
+erzeugt sie neu, und zwar in BEIDEN Zuständen.**
+**DAS MODAL IST ROBUSTER:** `.dialog{max-height:calc(100% - 32px);overflow:auto;}` — es
+bekommt einen eigenen Scrollbereich statt über den Rand zu wandern.
+**DIE RECHNUNG AN DER KANTE (am CSS ABGELESEN, nicht gemessen):** Innenbreite der Leiste bei
+360 px Fenster = `360 − 32` (Polsterung) = **328 px**; zwei Knöpfe zu 160 px plus 8 px Abstand
+= **2 · 160 + 8 = 328**. **Der Bestand steht dort exakt auf der Kante** — jedes Zeichen, das
+einen der zwei Knöpfe über 160 px hinaus verbreitert, kippt die Reihe. Beim Modal ist die
+Innenbreite bei 390 px **326** und bei 360 px **296**, dort passen zwei Knöpfe schon heute
+nicht nebeneinander, und P11.13-5 ist über den zweiten Halbsatz erfüllt.
+**VORRAT P11.13-6 FÜHRT DIESE KANTE BEREITS ALS GEMESSENE VERLETZUNG IM BESTAND** (Leiste /
+360×480 / eingeklappt / lange Seite, Scrollbalken 15 px, `wegTeiltMit === 1`). Ein längerer
+Text verschärft ihn, er erzeugt ihn nicht.
+
+#### (f) IM BESTAND GIBT ES KEINE LÄNGEN- UND KEINE ZEICHENPRÜFUNG FÜR BETREIBER-TEXT
+
+GEMESSEN (CC, 2026-09-18), Achse `maxLength=|MAX_[A-Z_]*LEN|maxlength|\.slice\(0,` über
+`src/`, ohne Testdateien, `mappings.ts` binärfest gelesen (die Datei trägt ein NUL-Byte):
+**KEIN `maxLength`-Attribut an irgendeinem Eingabefeld im Repo.** Was es gibt:
+`MAX_TARGET_LEN = 253` (`domains/register.ts`, Kappung) · `MAX_HOST_LEN = 253`
+(`hosting/host.ts`, Abweisung) · `EVENT_TYPE_MAX_LENGTH = 64` (`analytics/persist.ts`) ·
+`CONSENT_STORE_MAX_LENGTH = 512` (`tracking/consent-store.ts`) ·
+`CONSENT_COLOR_PATTERN = /^#[0-9a-f]{6}$/` (`lib/settings.ts`) — **die EINZIGE Zeichenprüfung
+eines Betreiber-Werts, der in den ausgelieferten Text geht.**
+**Der Projektname trägt keine Begrenzung** (`actions.ts`: `name.trim() || "Unbenanntes
+Projekt"`), die Pixel-ID weder Längen- noch Zeichenprüfung.
+**FOLGE:** Für Betreiber-Eingabe im ausgelieferten Text kennt der Bestand **genau eine**
+tragende Bauform — das Alphabet-Tor von P11.13-14. Eine Längenbegrenzung als
+Sicherheits-Mittel hat im Repo **keinen Präzedenzfall**; die vorhandenen Grenzen sind
+Speicher- und Protokollgrenzen.
+
+#### (g) L3 UND M3 FAHREN SEIT 11.13c ÜBER VIER DARSTELLUNGEN — DER SATZ AN ROADMAP (g) IST ÜBERHOLT
+
+GELESEN am Testtext (CC, 2026-09-18): **L3** (`consent-bar.test.ts`) und **M3**
+(`consent-modal.test.ts`) fahren über `VIER_DARSTELLUNGEN` — `light`, `dark`, `auto` und
+`custom` mit zwei geprüften Farben — und prüfen je Darstellung, dass der Rumpf kein `<` trägt.
+`testFarbe` erzeugt **keine zweite Zusicherung**: es ruft `readConsentColor` und wirft bei
+`"unknown"`; **Entscheidung P11.13-17 ist am Bestand eingehalten.**
+**WELCHER WÄCHTER WÜRDE ROT, WENN EIN BETREIBER-TEXT MIT `<` DIE EINSETZSTELLE ERREICHT?
+KEINER** — und zwar nicht, weil die Wächter schwach wären, sondern weil sie den Betreiber-Text
+nicht kennen: Der einzige Parameter, über den heute ein Betreiber-Wert hineingeht, ist
+`darstellung`, und dort ist ein `<` durch `ConsentColor` **nicht konstruierbar**. Ein
+Textwert käme als NEUES Argument dazu, und L3/M3 würden ihn **by default nicht einsetzen**.
+
+#### (h) DIE BYTE-GLEICHHEIT DES EINBETTUNGS-HELFERS IST GEMESSEN, NICHT BEHAUPTET
+
+GEMESSEN (CC, 2026-09-18, über die echten Funktionen): **KEIN heute eingebetteter Wert
+enthält ein `<`** — 16 Konstanten und Schlüssel-Arrays (`CONSENT_TEXT`, die vier
+Beschriftungen, die drei Gruppen-/aria-Namen, die zwei Host-Namen, die Warnung,
+`ALL_CONSENT_KEYS`, die zwei Gruppen-Listen), die vier Stylesheets
+(`consentThemeCss` für `light` 0 · `dark` 329 · `auto` 366 · `custom` 329 Zeichen) und
+**sechzehn ganze Blocktexte** (2 Formen × 2 Zweige × 4 Darstellungen): **TREFFER GESAMT 0.**
+POSITIVKONTROLLE im selben Lauf: dieselbe Prüfung auf `"x</script>"` ergibt `true`.
+**QUERPROBE:** Die sechzehn Blockgrössen sind zeichengleich mit den VERMERKEN P11.13-4 und
+P11.13-6 (Leiste `load` 4 603 / 4 932 / 4 969 / 4 932; Modal `load` 5 051 / 5 380 / 5 417 /
+5 380 usw.).
+**DIE AUSNAHME, DIE MITMUSS — DIE PIXEL-ID:** Für sie ist „enthält kein `<`" **keine
+Eigenschaft des Werts, sondern eine Annahme über seine Benutzung**. Sie ist freie
+Betreiber-Eingabe und kann ein `<` tragen — das ist genau der in (a) gemessene Ausbruch. Der
+Byte-Nachweis der Bau-Scheibe läuft deshalb über eine **numerische** Pixel-ID.
+
+**DIE GRENZEN DIESER AUFKLÄRUNG — ausdrücklich:**
+- **Nur Chromium.** Firefox und WebKit sind an keiner Achse dieser Runde gemessen.
+- **`file://`, nicht `https://publayer.net`** — für die Parser-Achse ohne Belang, für alles
+  andere nicht.
+- **Keine echte Kundenseite:** kein fremdes CSS, keine `!important`-Flut, keine eigene
+  Stapel-Ebene.
+- **Der Dialog-Fall ist über eine SCRATCH-KOPIE gefahren.** Im Repo existiert kein Weg, auf
+  dem ein Betreiber-Text dorthin gelangt. **Die Messung sagt, was geschähe — nicht, dass es
+  heute geschieht.**
+- **Ersetzt wurde EINE Konstante** (`CONSENT_REJECT_LABEL`). Ob eine andere Einsetzstelle sich
+  gleich verhält, ist am Weg ABLESBAR (dieselbe `JSON.stringify`-Ebene) und **nicht gemessen**.
+- **Die Geometrie-Aussagen unter (e) sind am CSS ABGELESEN, nicht gemessen.** Ob bei 360 px
+  ein verbreiterter Knopf `wegTeiltMit` auf 1 oder 0 bringt, ist eine Probe-Achse.
+
+PROVENIENZ DIESES VERMERKS: die Code-Aussagen GEMESSEN bzw. GELESEN am Repo (CC, 2026-09-18,
+auf `88a6ebb`); die Ausbruchstabelle, die Querprobe und die Byte-Gleichheits-Messung GEMESSEN
+am eigenen Lauf desselben Tages. Die Rechnung `2 · 160 + 8 = 328` ist am CSS ABLESBAR, keine
+Messung. **KEINE Live-Angabe, KEINE Owner-Angabe in diesem Vermerk.**
+
 ---
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
@@ -2066,6 +2255,412 @@ native Wähler stets einen Wert trägt und `#rrggbb` in Kleinbuchstaben liefert,
 Eigenschaft der Plattform und **in diesem Projekt NICHT gemessen** — der erste Beleg ist die
 Probe bzw. der Live-Test der Bau-Scheibe.
 
+### Entscheidung P11.13-23 — FREI WIRD NUR DER SACHTEXT
+
+**DER BETREIBER ERSETZT AUSSCHLIESSLICH `CONSENT_TEXT`** — den einen erläuternden Satz über
+den Bedienelementen. **Die Beschriftungen der drei Knöpfe, des Wegs, der zwei Gruppen, die
+drei zugänglichen Namen und die Konsolen-Warnung des Widerrufs bleiben UNSER Wortlaut** und
+sind keine Betreiber-Eingabe.
+
+**DER GRUND STEHT IN DER ROADMAP-ZEILE SELBST:** Punkt (h) sagt „Die Knopf-Logik und die
+visuelle Gleichrangigkeit von 'Alle akzeptieren' und 'Ablehnen' bleiben im System verankert;
+**anpassbar ist der erläuternde Text**." Diese Entscheidung liest den Satz eng und nimmt
+damit nur, was er ausdrücklich freigibt.
+
+**DER TRAGENDE GRUND IST ABER EIN ANDERER, UND OHNE IHN WIRD DIE ENGE LESART BEIM NÄCHSTEN
+AUFRÄUMEN ALS ÜBERVORSICHT GESTRICHEN: FREIE KNOPFTEXTE MACHTEN DIE GANZE GLEICHRANGIGKEIT
+ZUR FASSADE.** Lage und Farbe der zwei Knöpfe sind heute GEBAUT gleich (P11.13-5 für die
+Lage, P11.13-13 für die Farbe — beide Knöpfe entstehen über dasselbe `makeButton` ohne
+Klasse). Ein Betreiber, der „Ablehnen" durch „Nein, ich verzichte auf Rabatte" ersetzt, hat
+zwei optisch gleichrangige Knöpfe und **einen im Wortlaut abgewerteten** — genau das Dark
+Pattern, das der Guardrail ausschliesst, und zwar **ohne dass eine unserer zwei
+Gleichrangigkeits-Zusagen rot würde.** Die Zusagen messen Geometrie und Farbe; Wortlaut
+messen sie nicht und können es nicht.
+
+**WAS DAMIT AUSDRÜCKLICH NICHT GESAGT IST:** dass die übrigen zehn Texte für immer unser
+Wortlaut bleiben. Ihre SPRACHE ist Gegenstand einer eigenen Scheibe (Entscheidung
+P11.13-24) — dort wählt der Betreiber aus einer festen Tabelle und gibt keinen Text ein.
+
+**DIE GRENZE:** Sie kippt, **sobald ein weiterer Textplatz freigegeben werden soll.** Dann ist
+für JEDEN einzeln zu entscheiden, ob er eine Zusage trägt, die der Wortlaut aushebeln kann —
+und die Antwort ist bei den zwei Knöpfen bereits nein.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-18 (O4). Punkt (h) GELESEN an docs/roadmap.md
+(CC, 2026-09-18). Dass beide Knöpfe über dasselbe `makeButton` ohne Klasse entstehen, ist
+GEMESSEN am Code (CC, 2026-09-18, VERMERK P11.13-5). **Dass ein abgewerteter Wortlaut die
+Wahl des Besuchers verschiebt, ist eine ABLEITUNG und in diesem Projekt UNGEMESSEN.**
+
+### Entscheidung P11.13-24 — DIE SPRACHE IST EINE EIGENE SCHEIBE, UND SIE IST EINE TABELLE
+
+**DIE SPRACHE DES DIALOGS WIRD SCHEIBE 5 DER PHASE 11.13 (11.13e), NACH DEM FREIEN
+SACHTEXT.** Der Betreiber wählt aus einer **festen Auswahl — Deutsch oder Englisch**; die
+Wortlaute stehen als Konstanten im Repo und tragen Owner-Freigaben. **KEINE
+BETREIBER-EINGABE.**
+
+**DER GRUND, ZWEITEILIG:**
+(1) **11.13d BLEIBT BEI IHRER SICHERHEITSACHSE.** Der freie Sachtext bringt Betreiber-Eingabe
+in den ausgelieferten Text und braucht dafür Maskierung, Tor und feindliche Wächter
+(Entscheidungen P11.13-25 und P11.13-26). Eine Sprachwahl braucht **nichts davon** — sie
+wählt einen Zweig, wie der Themenwert es tut (P11.13-8). Zwei Gegenstände mit verschiedenen
+Achsen in eine Scheibe zu legen hiesse, den einfacheren unter der Beweislast des schwierigeren
+zu bauen.
+(2) **SPRACHE UND FREIER TEXT ÜBERLAPPEN, SIND ABER NICHT DIESELBE SACHE** (BEFUND, VERMERK
+P11.13-7 der Aufklärung und der Bericht vom 2026-09-18): Der Backlog-Eintrag „11.5f" benennt
+**zehn** Texte; Roadmap (h) gibt für Scheibe 4 **einen** frei. Über die übrigen neun — die
+Gruppen-Namen, die drei zugänglichen Namen, die Warnung — sagt (h) **nichts**, und genau sie
+bleiben ohne eine Sprachscheibe auf Deutsch stehen, auch wenn der Betreiber seinen Sachtext
+englisch schreibt. **Der freie Sachtext löst das Sprachproblem also für ein Zehntel der
+Menge.**
+
+**DIE BAUFORM ERBT SIE VON P11.13-8:** eine feste Tabelle, eine erschöpfende Verzweigung, der
+Rohwert aus dem Blob erreicht den ausgelieferten Text nie. **Der Wortlaut ist unser Risiko,
+nicht das des Betreibers.**
+
+**DER BACKLOG-EINTRAG 11.5f WIRD DAMIT NICHT ERLEDIGT, SONDERN VERORTET.** Er bleibt stehen;
+seine Messungen — die zehn Konstanten, die sechs Owner-Freigaben, der Sprach-Nicht-Treffer —
+sind der Massstab der Scheibe 5 und gingen mit einer Streichung verloren.
+
+**DIE GRENZE:** Sie kippt, **sobald der Betreiber eigene Wortlaute für die zehn Texte liefern
+soll** — dann ist es keine Tabelle mehr, und die Sicherheitsachse des freien Textes gilt für
+alle zehn Plätze. Sie kippt ebenso, wenn ein **dritter** Sprachraum gefordert ist und die
+Tabelle nicht mehr trägt.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-18 (O5). Der Überlappungs-Befund ist GELESEN an
+docs/claude-history/backlog-polish.md (Eintrag 11.5f) und an docs/roadmap.md, Punkt (h)
+(CC, 2026-09-18). **Dass die zehn Texte heute auf jeder Seite deutsch stehen, ist im
+Backlog-Eintrag GEMESSEN (CC, 2026-09-16) und hier nicht neu erhoben.**
+
+### Entscheidung P11.13-25 — JEDER BETREIBER-WERT IN SCRIPT-ROHTEXT LÄUFT ÜBER DEN EINBETTUNGS-HELFER
+
+**DER HELFER:** `JSON.stringify`, **danach jedes `<` als Unicode-Escape** — dieselbe
+Ersetzung, die `generateFunctional` seit jeher auf die Mapping-Tabelle anwendet
+(`JSON.stringify(table).replace(/</g, "\\u003c")`). Er nimmt **EIN Argument und trägt keinen
+Schalter**; ein Schalter „mit/ohne Maskierung" wäre die zweite Tür neben dem Tor. Er liegt als
+**reine Datei unter `src/lib`**, ohne `"use server"` und ohne `import "server-only"`, und ist
+aus dem Client-Pfad (`meta.ts` über `generateFunctional`) wie aus dem Server-Pfad (die
+Dialog-Erzeuger) importierbar.
+
+**DIE GELTUNG HAT DREI STUFEN, UND SIE SIND NICHT DASSELBE:**
+
+**(1) PFLICHT — JEDER BETREIBER-WERT, DER IN SCRIPT-ROHTEXT GEHT.** Das ist der harte Kern
+dieser Entscheidung und der einzige Teil, der eine Sicherheitsachse trägt. **HEUTE SIND ES
+DREI:** der **Sachtext** (Scheibe 11.13d), die **Pixel-ID** (`var PS_PIXEL_ID = …` in
+`buildMetaRuntime`, `src/lib/tracking/meta.ts`) und die **zwei eigenen Farben** — sie gehen
+nicht einzeln hinein, sondern als Teil des Stylesheets `stil`, und das läuft ebenfalls über
+den Helfer.
+
+**(2) KONVENTION — IN DEN VIER DIALOG-ERZEUGERN LÄUFT JEDE EINBETTUNG ÜBER IHN, AUCH EINE
+KONSTANTE.** `consent-choice.ts`, `consent-bar.ts`, `consent-modal.ts`, `consent-revoke.ts`.
+**DER GRUND IST NICHT SICHERHEIT, SONDERN LESBARKEIT AM ORT DER HANDLUNG:** Stünden dort zwei
+Bauformen nebeneinander — hier der Helfer, dort ein rohes `JSON.stringify` —, müsste die
+nächste Runde bei JEDER Einsetzstelle entscheiden, welche gilt, und die Entscheidung fiele
+ohne Kriterium. Eine Handschrift ist billiger als eine Fallunterscheidung.
+**SIE IST EINE KONVENTION UND KEIN GATE: FESTGEHALTEN WIRD SIE IM DOCBLOCK DES HELFERS, NICHT
+IN EINEM QUELLTEXT-WÄCHTER.** Warum kein Wächter, steht in Entscheidung P11.13-30 und wird
+hier nicht verdoppelt.
+
+**(3) FREIGESTELLT — REPO-KONSTANTEN UND SERVER-VERGEBENE WERTE AN ANDERER STELLE DÜRFEN ROH
+BLEIBEN.** Das betrifft heute `consent-store.ts`, `consent-setter.ts`, `pageview-emitter.ts`
+und **alle übrigen Einbettungen in `meta.ts`** ausser der Pixel-ID — eingebettet sind dort
+`CONSENT_STORE_KEY`, `CONSENT_STORE_FORMAT`, `ALL_CONSENT_KEYS`, `ANALYTICS_CONSENT_TARGET`,
+`PAGEVIEW_EVENT`, `META_CONSENT_TARGET`, `CONSENT_WIRE_FIELD`, `BROWSER_CONFIRM_MARKER`, die
+Ziel-Schlüssel sowie `trackingKey` und `proxyUrl`.
+**IHRE BYTE-ZUSAGE IST „ENTHÄLT KEIN `<`", UND SIE IST EINE AUSSAGE ÜBER DEN WERT, NICHT ÜBER
+SEINE BEHANDLUNG:** Repo-Konstanten stehen im Repo, `trackingKey` ist server-vergeben,
+`proxyUrl` ist env-abgeleitet. **Keiner von ihnen ist Betreiber-Eingabe.** Wer einen von ihnen
+in eine Betreiber-Eingabe verwandelt, hebt die Freistellung damit auf — nicht später, sondern
+in derselben Runde.
+
+**DER GRUND FÜR DEN HELFER IST GEMESSEN, NICHT VORSORGLICH** (VERMERK P11.13-7): Ein
+`</script>` in einem eingebetteten Wert **verlässt den Block**, und mit einer
+anführungszeichenfreien Nutzlast **führt fremder Code aus**. `<!--<script>` verschluckt
+zusätzlich das NACHFOLGENDE Script-Element, **ohne einen einzigen Fehler zu erzeugen**. Weder
+`JSON.stringify` noch der Serialisierer maskieren `<` — beides gemessen, mit Gegenprobe.
+
+**DIE BYTE-GLEICHHEIT IST EINE EIGENSCHAFT DER BAUART, UND SIE IST GEMESSEN:** Kein heute
+eingebetteter Wert enthält ein `<` — 16 Konstanten und Schlüssellisten, vier Stylesheets,
+sechzehn ganze Blocktexte, **Treffer gesamt 0**, mit Positivkontrolle. Der Helfer ändert damit
+**kein Zeichen**. **DAS IST ZU MESSEN UND NICHT ZU BEHAUPTEN** — die Bau-Scheibe führt den
+Nachweis über die neunzehn Werte aus VERMERK P11.13-6 erneut.
+**DIE EINE AUSNAHME GEHÖRT DAZU: FÜR DIE PIXEL-ID IST „enthält kein `<`" KEINE EIGENSCHAFT
+DES WERTS, SONDERN EINE ANNAHME ÜBER SEINE BENUTZUNG.** Sie ist freie Betreiber-Eingabe. Der
+Byte-Nachweis läuft deshalb über eine **numerische** Pixel-ID; für einen Wert mit `<` ändert
+der Helfer sehr wohl Zeichen — und genau das ist sein Zweck.
+
+**`generate.ts` BLEIBT UNBERÜHRT.** Die Mapping-Tabelle maskiert dort bereits richtig, sie ist
+eine **Kern-Datei**, und ein Eingriff ohne Gewinn ist ein Risiko ohne Gegenwert. **Sie ist das
+VORBILD, und der Docblock des Helfers nennt sie als solches** — bis zu dieser Scheibe war sie
+das Einzelstück, das die richtige Bauform trug, ohne sie irgendwo anders verfügbar zu machen.
+
+**DIE GRENZE — UNVERÄNDERT UND DIE WICHTIGSTE ZEILE DIESER ENTSCHEIDUNG: DAS ESCAPE TRÄGT NUR
+IM SCRIPT-ROHTEXT.** In einem HTML-Attribut, in einem HTML-Textknoten oder in einer URL ist
+`"\\u003c"` **keine Maskierung, sondern sechs harmlose Zeichen**. Die Entscheidung kippt
+deshalb, sobald ein eingebetteter Wert in einen dieser Kontexte gelangt; dann braucht jener
+Kontext seine EIGENE Maskierung, und der Helfer ist dort **falsch**, nicht bloss
+unzureichend.
+**HEUTE GIBT ES FÜNF EINBETTUNGEN AUSSERHALB DES SCRIPT-ROHTEXTS**, und keine davon ist ein
+Textplatz: die Kennung im Start-Tag (`<script id="${CONSENT_BAR_SCRIPT_ID}">` und die zwei
+Pendants), dazu die globalen Namen `window.${CONSENT_STORE_API}` und
+`window.${CONSENT_REVOKE_API}`. Alle fünf sind Repo-Konstanten, keine Betreiber-Eingabe, und
+gehen **nicht** über `JSON.stringify`. **Sie laufen NICHT über den Helfer** — er wäre dort das
+falsche Werkzeug.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (E1), **präzisiert am selben Tag
+(ARCHITEKT-ENTSCHEIDUNGEN G1 und G4)**. Der Ausbruch, das stille Verschlucken, die
+Serialisierer-Querprobe, das Einzelstück in `generate.ts`, die Null-Treffer-Messung und die
+Aufzählung der eingebetteten Werte sind GEMESSEN (CC, 2026-09-18, VERMERK P11.13-7). **Dass
+das Escape ausserhalb von Script-Rohtext nicht trägt, ist eine Eigenschaft der Formate und in
+diesem Projekt NICHT gemessen.** Dass die Freistellung aus Stufe (3) mit einer
+Betreiber-Eingabe entfällt, ist eine ABLEITUNG aus Stufe (1), keine Messung.
+
+### Entscheidung P11.13-26 — EIN TOR FÜR DEN SACHTEXT, ZUSÄTZLICH ZUR MASKIERUNG
+
+**DER SACHTEXT BEKOMMT EIN EIGENES FORMAT-TOR, OBWOHL DER HELFER AUS P11.13-25 IHN BEREITS
+MASKIERT. ZWEI UNABHÄNGIGE LINIEN, UND DAS IST DER GANZE INHALT DIESER ENTSCHEIDUNG.**
+
+**DER GRUND IST EINE GEMESSENE LEHRE DIESER PHASE — DIE MUTATION M-c DER SCHEIBE 11.13c:**
+Dort hat eine Mutation, die den Rohwert ungeprüft durchreichte, **null Tests getroffen**,
+weil das zweite Tor bereits zurückgegeben hatte. **Die Gegenprobe M-c PLUS M-b liess beide
+fallen** — das war der Beleg, dass die zwei Tore **unabhängig** tragen. Ein einzelnes Tor ist
+eine Stelle, die einzeln falsch werden kann; zwei sind zwei.
+
+**WAS DAS TOR ZULÄSST:** ein `string`, **nach `trim` nicht leer**, **höchstens N Zeichen**
+(Entscheidung P11.13-27), und **OHNE**: C0-Steuerzeichen einschliesslich Zeilenumbruch, `DEL`,
+C1-Steuerzeichen, `U+2028`/`U+2029` und die Bidi-Steuerzeichen `U+202A`–`U+202E` sowie
+`U+2066`–`U+2069`.
+
+**DAS TOR PRÜFT MIT `trim`, ES VERÄNDERT ABER NICHTS. AUSGELIEFERT WIRD DER GESPEICHERTE WERT
+ZEICHENGLEICH** — führender und nachgestellter Leerraum bleibt drin, wenn der Betreiber ihn
+getippt hat. `trim` ist ausschliesslich das Mittel, mit dem die Frage „ist hier überhaupt
+etwas?" beantwortet wird.
+**DAMIT IST DIE REIBUNG ZU Entscheidung P11.13-14 AUFGELÖST UND NICHT NUR BENANNT.** Jene
+verlangt für die Farben „KEINE NORMALISIERUNG: Ein Wert, der nur nach Umformung passte, wird
+abgewiesen, nicht zurechtgebogen" — und genau das gilt hier ebenso: **Es gibt keinen Wert,
+der nur nach Umformung passte**, weil keine Umformung stattfindet. Ein Text aus lauter
+Leerzeichen wird ABGEWIESEN (`"unknown"`), nicht zu einem leeren String zurechtgebogen; ein
+Text mit Leerraum an den Rändern wird ANGENOMMEN und unverändert ausgeliefert.
+**WER `trim` HIER FÜR EINE NORMALISIERUNG HÄLT, VERWECHSELT DAS MESSINSTRUMENT MIT DEM
+GEGENSTAND** — dieselbe Unterscheidung, die P11.13-22 zwischen einem Rückfall im Leser und
+einer Vorbelegung im Bedienelement zieht.
+**`<` IST AUSDRÜCKLICH ERLAUBT — DAFÜR IST P11.13-25 DA.** Ein Verbot wäre eine dritte Linie
+an einer Stelle, die schon zwei hat, und es nähme dem Betreiber einen Satz wie „Wir setzen
+<3 Cookies" ohne Gewinn.
+**WARUM DIE STEUERZEICHEN TROTZDEM FALLEN, obwohl `JSON.stringify` sie maskiert:** Sie sind
+nicht gefährlich, sondern **unsichtbar**. `U+2028` bricht in alten Laufzeiten ein
+JS-Literal; die Bidi-Zeichen können den ANGEZEIGTEN Satz gegen den gespeicherten kehren —
+ein Betreiber liest im Feld etwas anderes, als der Besucher sieht. Ein Zeichen, dessen
+Wirkung man im Eingabefeld nicht sehen kann, gehört nicht in einen Text, der für einen
+anderen gebaut wird.
+
+**DIE BAUFORM IST DIE VON P11.13-14 UND P11.13-17, UNVERÄNDERT ÜBERNOMMEN:**
+1. **DER LESER liefert einen GEPRÜFTEN, OPAKEN TYP oder `"unknown"` — KEIN RÜCKFALL.**
+2. **GENAU EINE ZUSICHERUNG IM GANZEN REPO**, im Leser, unmittelbar hinter der Prüfung.
+3. **DER ERZEUGER NIMMT NUR DEN GEPRÜFTEN TYP AN** — ein roher `string` ist ein
+   Compiler-Fehler.
+4. **`publishProject` BRICHT AB** — mit einer EIGENEN Meldungs-Konstante, **vor** dem
+   Label-Block und **vor** `ensureTrackingKey`, und **nur bei Dialog ≠ `"off"`**: die
+   Asymmetrie aus P11.13-7 gilt unverändert.
+
+**DAS FEHLENDE FELD IST KEIN FEHLER, SONDERN DER NORMALFALL:** Fehlt das Feld, gilt **unser
+Standardtext** — `CONSENT_TEXT`, wie heute. Das ist **kein Rückfall im Sinne der Dauerregel**,
+und der Unterschied ist derselbe wie bei P11.13-22: Ein Rückfall bildete einen **ungültigen**
+Wert auf einen gültigen ab; hier gibt es **gar keinen Wert**, und ein abwesendes Feld ist ein
+bekannter Zustand, kein unbekannter.
+**EIN GESPEICHERTER LEERER STRING IST DAGEGEN `"unknown"`** — er ist ein WERT, und ein Wert,
+der nichts bedeutet, wird nicht stillschweigend gedeutet.
+**DIE OBERFLÄCHE LÖST DAS, INDEM SIE DAS FELD ENTFERNT STATT ES ZU LEEREN:** Wer das Feld
+leert, bekommt den Standardtext — geschrieben wird die Abwesenheit, nicht der leere String.
+
+**DIE GRENZE:** Sie kippt, **sobald Zeilenumbrüche oder Formatierung im Sachtext gewünscht
+werden.** Dann fällt das Verbot der C0-Zeichen, und mit ihm die Zusage, dass der Sachtext
+**eine Zeile** ist — an der die Geometrie-Messung aus P11.13-27 hängt.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (E2). Die Lehre aus M-c und M-c+M-b ist
+GEMESSEN (CC, 2026-09-18, VERMERK P11.13-6, Abschnitt (f)). Die Bauform ist aus P11.13-14 und
+P11.13-17 übernommen. **Dass `U+2028` in alten Laufzeiten ein JS-Literal bricht und dass die
+Bidi-Zeichen die Anzeige kehren, ist eine Eigenschaft der Formate und in diesem Projekt NICHT
+gemessen.**
+
+### Entscheidung P11.13-27 — N WIRD GEMESSEN, NICHT GESETZT
+
+**DIE OBERGRENZE N DES SACHTEXTES IST DIE GRÖSSTE LÄNGE, BEI DER ENTSCHEIDUNG P11.13-3 BEI
+360×480 NOCH HÄLT** — für **Leiste UND Fenster**, **ein- UND ausgeklappt**: jedes
+Bedienelement vollständig im Fenster und treffbar. Die Zahl steht nach der Probe als Konstante
+im Code, **mit Provenienz an der Konstante**.
+
+**N ZÄHLT UNICODE-CODEPUNKTE, NICHT UTF-16-EINHEITEN.** `"…".length` zählt Einheiten und wäre
+für ein Emoji oder ein Zeichen ausserhalb der Grundebene **zwei**, obwohl der Betreiber **ein**
+Zeichen sieht. **Eine Grenze, die etwas anderes zählt als der Mensch vor dem Feld, erzeugt
+einen Streit, den niemand gewinnt** — und sie ist an einer Stelle falsch, an der die Zahl
+ohnehin aus einer Messung stammt und nicht aus einem Prinzip.
+**DAS TOR UND DER ZÄHLER DER OBERFLÄCHE BENUTZEN DIESELBE ZÄHLFUNKTION** — eine Stelle, zwei
+Aufrufer (docs/immer-beachten.md, ABLEITEN STATT HARDCODEN). **DER GRUND IST NICHT SPARSAMKEIT:
+Zwei Zählungen liefen auseinander, und zwar STILL** — die Oberfläche zeigte „79 von 120", das
+Tor wiese ab, und der Betreiber sähe eine Zahl, die seine Ablehnung nicht erklärt. **Der Zähler
+ist damit kein Anzeige-Detail, sondern die sichtbare Seite des Tors.**
+
+**DER GRUND: DIE LEISTE HAT KEINEN NOTAUSGANG.** GEMESSEN am CSS (VERMERK P11.13-7): Sie trägt
+**kein `overflow`** — L12 verbietet das Wort im Leisten-Block — und **kein `max-height`**, und
+`:host` steht auf `position:fixed; bottom:0`. Sie wächst mit dem Sachtext **nach oben** und
+kann über den oberen Rand wandern. **DAS IST DIE ACHSE AUS ROADMAP (e), DIE ENTSCHEIDUNG
+P11.13-1 FÜR DEN AUSGEKLAPPTEN ZUSTAND VERMIEDEN HAT — ein freier Sachtext erzeugt sie neu,
+und diesmal in BEIDEN Zuständen.** Das Modal ist robuster (`max-height` plus `overflow:auto`),
+aber die Zahl gilt für beide, weil es **eine** Konstante gibt.
+
+**GEMESSEN WIRD MIT ZWEI EXTREMEN, UND BEIDE SIND NÖTIG:**
+· mit dem **breitesten plausiblen Zeichen** (Kandidat „W") — die Breite treibt den Umbruch und
+  damit die Höhe;
+· mit einem **Text aus Leerzeichen** — er bricht anders um als ein Wort und prüft die andere
+  Seite derselben Achse.
+**EINE ZAHL, DIE NUR AN EINEM DER BEIDEN ERHOBEN IST, IST HALB ERHOBEN.**
+
+**SIE IST EINE STOPP-BEDINGUNG DER BAU-SCHEIBE UND KEINE FEINHEIT:** Ohne die Probe gibt es
+keine Zahl, und eine geratene Zahl wäre eine ARCHITEKT-VORGABE ohne Messung an einer Stelle,
+an der eine Messung **billig** ist (docs/immer-beachten.md, EINE BILLIGE MESSUNG WIRD NICHT
+DURCH EINE HERLEITUNG ERSETZT).
+
+**WAS N NICHT IST:** ein Sicherheits-Mittel. Die Ausbruchsfrage trägt P11.13-25, das
+Zeichen-Tor P11.13-26. **N ist eine Geometrie-Grenze**, und wer sie als Schranke gegen
+feindliche Eingabe liest, hält eine Zahl für einen Riegel.
+
+**DIE GRENZE:** Sie kippt, **sobald die Geometrie sich ändert, auf der sie ruht** — die Leiste
+bekommt einen eigenen Scrollbereich, die Knopfbreite ändert sich, die Schriftgrösse ändert
+sich, oder die eingeklappte Gestalt bricht anders um. **Dieselbe Bedingung wie bei P11.13-5,
+und aus demselben Grund: N ist keine Eigenschaft des Textes, sondern des Behälters.**
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (E3). Dass die Leiste weder `overflow` noch
+`max-height` trägt und dass das Modal beides hat, ist GEMESSEN am CSS (CC, 2026-09-18, VERMERK
+P11.13-7). **DIE ZAHL N SELBST EXISTIERT ZUM ZEITPUNKT DIESER ENTSCHEIDUNG NICHT** — sie ist
+Gegenstand der Probe der Bau-Scheibe.
+
+### Entscheidung P11.13-28 — DER SACHTEXT ERBT DIE ZWEI GRENZEN DES AUSGELIEFERTEN TEXTES
+
+**(1) EIN GEÄNDERTER SACHTEXT WIRKT ERST NACH DEM NEU-VERÖFFENTLICHEN. (2) DER EXPORT-PFAD
+TRÄGT KEINEN SACHTEXT** — wie er heute schon kein Thema und keine Farbe trägt.
+
+**WARUM DAS EINE ENTSCHEIDUNG IST UND KEINE WIEDERHOLUNG:** Beide Sätze folgen aus Bestehendem
+— aus der Dauerregel EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY und aus dem
+offenen Punkt DER EXPORT-PFAD IST VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST. **Sie stehen hier,
+weil der Sachtext der erste Gegenstand dieser Phase ist, bei dem ein Betreiber die Abwesenheit
+für einen FEHLER halten wird:** Er tippt einen Satz, drückt Speichern, sieht seine Live-Seite —
+und dort steht der alte. Bei Anordnung, Thema und Farben war dasselbe wahr und fiel weniger
+auf, weil niemand einen selbst getippten Satz erwartet.
+
+**GEMESSEN, NICHT ANGENOMMEN** (VERMERK P11.13-5, 2026-09-18): `generateFunctional`
+(`src/lib/generate.ts`) hängt allein `CONSENT_SCRIPT_ID` und `buildConsentRuntimes()` ein;
+`injectPageViewEmitter` kommt dort **nicht** vor. Die zwei produktiven Aufrufe von
+`injectPageViewEmitter` stehen beide in `publishProject`.
+**FOLGE FÜR DEN NACHWEIS:** Der Export-Pfad gehört **unter die Grenzen** des Vermerks dieser
+Scheibe, wie bei 11.13b und 11.13c. **Er wird nicht mitgebaut.**
+
+**FOLGE FÜR DIE OBERFLÄCHE:** Das Hinweis-Muster der Phase gilt unverändert — der Betreiber
+erfährt beim Speichern nicht, dass er neu veröffentlichen muss. **DASS NICHTS DARAUF HINWEIST,
+IST EIN BEKANNTER OFFENER PUNKT** (NICHTS ZEIGT AN, DASS DER VERÖFFENTLICHTE STAND NACHZUZIEHEN
+IST, Trigger BEREITS EINGETRETEN) **und wird von dieser Scheibe NICHT gelöst.**
+
+**DIE GRENZE:** Sie kippt in zwei Hälften, je für sich: **(1)** sobald ein Sammel-Weg zum
+Neu-Veröffentlichen existiert oder ein ausgeliefertes Artefakt aus der Ferne zu entschärfen
+ist; **(2)** sobald der Export-Pfad den Einwilligungs-Schalter trägt. Beides ist heute am Repo
+als Nicht-Treffer erhoben.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (E4). Der Export-Befund ist GEMESSEN am Code
+(CC, 2026-09-18, VERMERK P11.13-5); die Abwesenheit eines Sammel-Wegs ist GEMESSEN am Code
+(CC, 2026-09-14 bis -16, docs/immer-beachten.md, WAS EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST
+EINE EINBAHNSTRASSE). **Dass ein Betreiber die Abwesenheit für einen Fehler hält, ist eine
+ABLEITUNG und ungemessen.**
+
+### Entscheidung P11.13-29 — DER SACHTEXT REIST ALS ZWEITE PFLICHT-ACHSE, UND „STANDARD" IST EIN BENANNTER ZUSTAND
+
+**`injectPageViewEmitter`, `buildConsentBarScript` UND `buildConsentModalScript` bekommen einen
+ZWEITEN Pflicht-Parameter ohne Vorgabewert**, vom Typ **`ConsentText | "standard"`**. Damit
+tragen diese drei Signaturen **zwei** Achsen: die Darstellung (P11.13-18) und den Sachtext.
+
+**„STANDARD" IST EIN BENANNTER ZUSTAND UND KEIN FEHLENDES ARGUMENT — DAS IST DER HALBE INHALT
+DIESER ENTSCHEIDUNG.** Der Aufrufer muss sich entscheiden; ein Vergessen ist ein
+`tsc`-Fehler, keine stille Auslieferung unseres Satzes. **Ein `= CONSENT_TEXT` an der Signatur
+ist ausgeschlossen** — genau der Vorgabewert, den P11.13-11 verbietet, und er liesse einen
+künftigen Auslieferungsweg den Betreiber-Satz **stillschweigend übergehen**.
+
+**Entscheidung P11.13-11 IST ERFÜLLT, NICHT GEDEHNT — UND DAS IST AM WORTLAUT GEPRÜFT.** Sie
+verlangt: Pflicht-Parameter **ohne Vorgabewert** an genau diesen drei Stellen, „dieselbe
+Bauform, die der Schalter `consentDialog` schon trägt". **Beide Achsen erfüllen das einzeln.**
+**WAS DORT ÜBER DIE ZAHL STEHT, IST EINE BESCHREIBUNG UND KEINE AUFLAGE, und der Satz gehört
+hierher, weil er sonst beim nächsten Lesen als Verbot gelesen wird** (GELESEN am Wortlaut, CC,
+2026-09-18): P11.13-11 sagt, der Pflicht-Parameter habe „lediglich seine GESTALT gewechselt …
+**nicht seine Zahl**", und P11.13-18 sagt „diese Entscheidung ändert seine GESTALT, nicht seine
+Zahl … es gibt keinen zweiten Parameter". **BEIDE SÄTZE BESCHREIBEN, WAS IN DER SCHEIBE 11.13c
+GESCHEHEN IST — sie verbieten nichts.** P11.13-18 sagt zudem ausdrücklich, die Frage nach einer
+zweiten Pflicht-Achse stelle sich **für die Farben** nicht mehr; über einen anderen Gegenstand
+sagt sie nichts.
+
+**VIER VERWORFENE GESTALTEN, je mit ihrem Grund — sie stehen hier, damit die nächste Runde
+nicht bei null beginnt:**
+- **Sachtext als Feld der Darstellungs-Union.** VERWORFEN: **Er ist orthogonal zur
+  Darstellung.** Er müsste in **alle vier** Zweige geschrieben werden, viermal dasselbe Feld,
+  und die Union hiesse dann nicht mehr „Darstellung". P11.13-18 begründet die Union damit, dass
+  sie einen **unmöglichen Zustand** ausschliesst — beim Sachtext gibt es keinen solchen
+  Zustand auszuschliessen, die Union trüge ihn ohne Gegenwert.
+- **Eine neue Hülle `{ appearance, text }`.** VERWORFEN: der **grösste Diff ohne Mehrwert**;
+  die Union verlöre ihre Diskriminante an einen Träger.
+- **`ConsentText | null` statt `| "standard"`.** VERWORFEN: **`null` benennt nichts.** Es heisst
+  nicht von selbst „nimm unseren Satz", und der nächste Leser muss raten, ob es „kein Text",
+  „nicht gesetzt" oder „absichtlich leer" bedeutet.
+- **Der Aufrufer setzt `CONSENT_TEXT` selbst ein.** VERWORFEN: Dann kennt `publishProject`
+  unseren Wortlaut, und die **Zuordnung „Standard = `CONSENT_TEXT`" stünde an zwei Orten** —
+  die Divergenz-Bauform, gegen die in dieser Phase schon mehrere Entscheidungen stehen.
+
+**DER PREIS IST GENANNT UND ANGENOMMEN:** Jede bestehende Aufrufstelle der drei Funktionen
+ändert ihre Form. **Die Änderung ist compiler-geführt und namentlich gemeldet**; keine Stelle
+kann übersehen werden. **DIE ZAHL WIRD VOR DEM LAUF NEU ERHOBEN und steht hier ausdrücklich
+NICHT** — zwei Messungen desselben Tages (39 · 18 · 17 in P11.13-18 und 43 · 21 · 19 in der
+Aufklärung 11.13d) laufen über **verschiedene Achsen** und sind nicht vergleichbar; eine dritte
+Zahl daneben wäre die zweite Wahrheit.
+
+**DIE GRENZE:** Sie kippt, **sobald eine dritte Achse auf denselben Pfad soll.** Dann ist nicht
+ein dritter Parameter anzuhängen, sondern zu entscheiden, ob die Achsen eine gemeinsame Hülle
+brauchen — die hier verworfene Gestalt wird dort neu gewogen und beginnt nicht bei null.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (G2). Die Wortlaut-Prüfung an P11.13-11 und
+P11.13-18 ist GELESEN am Dateitext (CC, 2026-09-18). Die zwei Aufrufzahlen sind GEMESSEN
+(CC, 2026-09-18) und ausdrücklich als **nicht vergleichbar** ausgewiesen. **Dass ein
+`tsc`-Fehler jede Stelle namentlich meldet, ist eine Eigenschaft des Typsystems und am Repo
+nicht gemessen** — der erste Beleg ist der `tsc`-Lauf der Bau-Scheibe.
+
+### Entscheidung P11.13-30 — DER WÄCHTER SITZT AM ERGEBNIS, NICHT AM QUELLTEXT
+
+**JEDE STELLE, AN DER EIN BETREIBER-WERT IN SCRIPT-ROHTEXT EINGEBETTET WIRD, BEKOMMT EINEN
+WÄCHTER ÜBER DAS ERGEBNIS:** Die feindliche Nutzlast geht durch die **echte** Einsetzstelle,
+und geprüft wird der **erzeugte Text** — kein `<` im Rumpf, die Zahl der `</script>` unverändert.
+Das ist die Bauform von L3 und M3, auf jede Betreiber-Achse ausgedehnt.
+
+**EIN QUELLTEXT-WÄCHTER IST VERWORFEN, UND DER GRUND IST EINE DAUERREGEL:** Ein Wächter, der in
+den vier Dialog-Erzeugern das Wort `JSON.stringify` verbietet, **sieht Zeichen, nicht
+Bedeutung** (docs/immer-beachten.md, EIN WÄCHTER ÜBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG).
+Er träfe die **Prosa in den Kopfkommentaren** — `consent-choice.ts`, `consent-bar.ts` und
+`consent-modal.ts` nennen `JSON.stringify` heute je mindestens einmal im erklärenden Text
+(GEMESSEN am Code, CC, 2026-09-18) —, und er zwänge damit eine Umformulierung genau der
+Kommentare, die die Bauform erklären. **DAS IST DIE FEHLERKLASSE „EIN WÄCHTER ÜBER ZEICHEN DARF
+DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN"** (docs/immer-beachten.md), und sie ist in diesem
+Projekt schon einmal eingetreten — in der Scheibe 11.8c wurde der Import-Wächter an einer
+Prosa-Erwähnung rot.
+
+**WAS DER ERGEBNIS-WÄCHTER NICHT LEISTET, UND DER SATZ MUSS MIT, SONST WIRD ER FÜR MEHR
+GEHALTEN, ALS ER IST: ER DECKT NUR STELLEN, DIE EIN TEST TATSÄCHLICH BEFÜLLT.** Eine NEUE
+Einbettung ist **by default ungedeckt** — dieselbe Figur wie bei den namentlichen IDOR-Wächtern
+und bei `settingsEqual` als Allowlist. **Die Konvention aus Entscheidung P11.13-25, Stufe (2),
+ist deshalb im Docblock des Helfers festgehalten und nicht in einem Gate**: Sie ist eine
+Handschrift, die man liest, kein Riegel, der hält.
+
+**DIE GRENZE:** Sie kippt, **sobald ein Wächter die BEDEUTUNG statt der Zeichen befragen kann**
+— etwa eine Lint-Regel über den Aufrufgraphen, die sieht, dass ein Wert ohne den Helfer in
+einen Template-String geht. Für `JSON.stringify` gibt es das heute nicht: Es ist ein Global und
+kein Import, es gibt also keinen Graphen zu befragen.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (G3). Die Prosa-Erwähnungen in den drei Dateien
+sind GEMESSEN am Code (CC, 2026-09-18); der Fall aus der Scheibe 11.8c ist GELESEN an
+docs/immer-beachten.md (CC, 2026-09-18). **Dass ein Ergebnis-Wächter eine neue Einbettung nicht
+deckt, ist eine ABLEITUNG aus seiner Bauform, keine Messung.**
+
 ---
 
 ## Zuschnitt der Scheibe 11.13a — DIE ANORDNUNG (VERDICHTET 2026-09-17)
@@ -2284,6 +2879,164 @@ P11.13-6). Die Verdichtung ist CC, 2026-09-18.
 
 ---
 
+## Zuschnitt der Scheibe 11.13d — FREIER SACHTEXT
+
+**STATUS: ZUGESCHNITTEN, PLAN VORGELEGT, NICHT FREIGEGEBEN.**
+
+### Gegenstand
+
+**Der Betreiber ersetzt den erläuternden Satz des Einwilligungs-Dialogs durch einen eigenen.**
+Der Wert liegt flach unter `settings.consent`, geht durch ein Format-Tor und über einen
+Einbettungs-Helfer in den ausgelieferten Text. **Fehlt er, gilt unser Standardtext
+(`CONSENT_TEXT`), wie heute.**
+
+**DIE SCHEIBE TRÄGT ZWEI SACHEN, UND DAS IST ABSICHT:** Neben dem Sachtext entsteht der
+**Einbettungs-Helfer** (Entscheidung P11.13-25), und die **Pixel-ID läuft mit über ihn**. Der
+Grund steht an der Roadmap-Zeile 11.13, Punkt (g), Nachtrag vom 2026-09-17: „SCHEIBE 4 KLÄRT
+BEIDES ZUSAMMEN, statt die `<`-Frage zweimal zu beantworten". **Die Messung vom 2026-09-18 hat
+aus der Frage einen Befund gemacht** (VERMERK P11.13-7).
+
+**DIE ENTSCHEIDUNGEN, DIE IHN TRAGEN:** P11.13-23 (nur der Sachtext) · P11.13-25 (der Helfer,
+seine drei Geltungsstufen) · P11.13-26 (das Tor) · P11.13-27 (N wird gemessen) · P11.13-28
+(die zwei Grenzen) · P11.13-29 (der Transport) · P11.13-30 (der Wächter am Ergebnis). **Fort
+gelten unverändert:** P11.13-3 (alles im Fenster und treffbar) · P11.13-5
+(Gleichrangigkeit) · P11.13-7 (Abbruch nur bei Dialog ≠ „off") · P11.13-11 (Pflicht-Parameter
+ohne Vorgabewert) · P11.13-17 (genau eine Zusicherung) · P11.13-18 (ein Wert, unmögliche
+Zustände undarstellbar) · P11.13-19 (flache Ablage, skalare Terme).
+**P11.13-24 TRÄGT SIE NICHT — sie terminiert die NÄCHSTE Scheibe** und steht hier nur, damit
+niemand die Sprache in diese hineinzieht.
+
+### Die Invarianten dieser Scheibe — S1 bis S9
+
+Sie heissen `S`, weil `I1` bis `I6` im Abschnitt „Was den Zuschnitt bindet" an die Invarianten
+der Phase 11.5 vergeben sind und `Z1` bis `Z10` an die Scheibe 11.13c. **Sie sind Anweisungen
+AN DIESE SCHEIBE und laufen mit ihr ab**; was über sie hinaus bindet, steht in den
+Entscheidungen.
+
+- **S1 — DIE BYTE-GLEICHHEIT.** Ohne gespeicherten Sachtext ist der ausgelieferte Text
+  **unverändert**: die neunzehn Werte aus VERMERK P11.13-6 (zwölf Blockwerte, sieben
+  Ausgabetexte) **und** die Ausgabe von `buildMetaRuntime` mit einer **numerischen** Pixel-ID.
+  Vorher erhoben **vor dem ersten Eingriff in `src/`**.
+- **S2 — DIE DREI GELTUNGSSTUFEN AUS P11.13-25 WERDEN EINGEHALTEN.** (i) Sachtext, Pixel-ID
+  und Stylesheet laufen über den Helfer; (ii) in den **vier Dialog-Erzeugern** gibt es danach
+  **keine rohe `JSON.stringify`-Einbettung** mehr, auch nicht für eine Konstante; (iii)
+  `consent-store.ts`, `consent-setter.ts`, `pageview-emitter.ts` und die übrigen Einbettungen
+  in `meta.ts` **bleiben roh und werden nicht angefasst**. Jede Stelle, bei der (i) oder (ii)
+  nicht geht, wird **benannt**, nicht stillschweigend ausgelassen.
+- **S3 — DER HELFER IST REIN UND HAT EIN ARGUMENT.** Keine Datenbank, kein Netz, kein DOM,
+  kein `"use server"`, kein `import "server-only"`, **kein Schalter** — er wird aus dem
+  Client-Pfad (`meta.ts` über `generateFunctional`) und aus dem Server-Pfad (die
+  Dialog-Erzeuger) importiert. Sein Docblock trägt die **Kontext-Grenze** und die
+  **Konvention** aus P11.13-25, Stufe (2).
+- **S4 — ZWEI UNABHÄNGIGE LINIEN.** Maskierung (P11.13-25) und Tor (P11.13-26) tragen
+  getrennt. **Der Nachweis ist die Gegenprobe**: beide Mutationen zusammen lassen fallen, was
+  einzeln nicht fällt (Bauform M-c plus M-b der Scheibe 11.13c).
+  **DER WÄCHTER SITZT AM ERGEBNIS, NICHT AM QUELLTEXT** (P11.13-30) — je Betreiber-Achse
+  einer, mit der feindlichen Nutzlast durch die ECHTE Einsetzstelle.
+- **S5 — GENAU EINE ZUSICHERUNG** für den geprüften Sachtext-Typ, im Leser, unmittelbar hinter
+  der Prüfung (P11.13-17).
+- **S6 — DER ABBRUCH STEHT VOR DEM LABEL-BLOCK UND VOR `ensureTrackingKey`**, mit einer
+  EIGENEN Meldungs-Konstante, und **nur bei Dialog ≠ „off"** (P11.13-7).
+- **S7 — KEIN VORGABEWERT AUF DEM TRANSPORT-PFAD.** Der Sachtext reist als **zweiter
+  Pflicht-Parameter ohne Vorgabewert** vom Typ `ConsentText | "standard"` an den drei Stellen
+  (P11.13-29). **Ein `= CONSENT_TEXT` an einer Signatur ist eine STOPP-Bedingung**, kein
+  Abwägungspunkt.
+- **S8 — DIE PROBE MISST N UND BESTÄTIGT P11.13-3, -4 UND -5** bei Text der Länge N, fünf
+  Viewports, beide Formen, beide Zustände. **Probeseite mit mindestens einem fokussierbaren
+  Element ausserhalb des Dialogs** (Auflage Vorrat P11.13-4).
+- **S9 — DIE FEINDLICHEN NUTZLASTEN SIND DIE GEMESSENEN.** Wächter und Probe fahren die
+  Nutzlasten aus VERMERK P11.13-7 **wörtlich**, mit und ohne Anführungszeichen, dazu
+  `</SCRIPT` und `<!--<script>`. **Eine erfundene Nutzlast ersetzt keine gemessene.**
+
+### Ausdrücklich NICHT dazu
+
+- **Die zehn übrigen Texte** — Knopf-, Weg- und Gruppen-Beschriftungen, die drei zugänglichen
+  Namen, die Konsolen-Warnung (P11.13-23).
+- **Die SPRACHE** — sie ist Scheibe 5 (11.13e), Entscheidung P11.13-24.
+- **Zeilenumbrüche und jede Formatierung** im Sachtext (P11.13-26, Grenze).
+- **Eine URL oder ein Link** im Dialog — eine eigene Eingabeklasse ohne jeden Bestand; heute
+  gibt es im ausgelieferten Text weder `a` noch `href` noch `title` (GEMESSEN, VERMERK
+  P11.13-7).
+- **Der EXPORT-PFAD** (P11.13-28) — er trägt weiterhin keinen Sachtext und steht unter den
+  Grenzen des Vermerks.
+- **`src/lib/generate.ts`** — die Mapping-Maskierung bleibt unberührt (P11.13-25).
+- **`consent-store.ts`, `consent-setter.ts`, `pageview-emitter.ts` UND ALLE ÜBRIGEN
+  EINBETTUNGEN IN `meta.ts`** — sie bleiben roh (P11.13-25, Stufe (3)). **Es sind
+  Repo-Konstanten und server-vergebene Werte, keine Betreiber-Eingabe.** Wer sie „nur schnell"
+  mitzieht, verlässt den Zuschnitt und den Byte-Nachweis.
+- **EIN QUELLTEXT-WÄCHTER** gegen rohe `JSON.stringify`-Einbettung (P11.13-30).
+- **Eine VORSCHAU des Dialogs im Editor** — unverändert kein Teil dieser Phase
+  (OWNER-ENTSCHEIDUNG 2026-09-17).
+- **Der offene Punkt `saveProject` SCHREIBT `settings` UNVALIDIERT** wird nicht gelöst; er
+  bleibt der Massstab, gegen den das Tor gebaut wird.
+
+### Die Pflichten dieser Scheibe
+
+1. **VORHER-WERTE VOR DEM ERSTEN EINGRIFF IN `src/`** — die neunzehn Werte plus die
+   Wiring-Ausgabe mit numerischer Pixel-ID, mit Querprobe gegen VERMERK P11.13-6.
+   **Basis-HTML: die 249 Bytes aus VERMERK P11.13-6, Punkt (d)**, byte-genau.
+2. **DIE HERKUNFT DER TEST-ERWARTUNGEN** — aus den Entscheidungen niedergeschrieben, **nie aus
+   dem Code** (docs/immer-beachten.md, EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE
+   ERWARTUNG NIE AUS DEM CODE). Die Meldungs-Konstante steht im Test als **Literal**.
+3. **N WIRD GEMESSEN** (P11.13-27), mit beiden Extremen. **STOPP-Bedingung: ohne Probe keine
+   Zahl.**
+4. **TESTS FÜR DIE BEDIENUNG** — `PublishView.tsx` hat weiterhin keine eigene Testdatei; die
+   Abdeckung entsteht in `CodeImporter.test.tsx`, in der Reihe `UI…`.
+5. **LIVE-TEST MIT DEM ERSATZ-INSTRUMENT.** Der Hash der geladenen Skript-Elemente aus VERMERK
+   P11.13-6, Punkt (c) — **NICHT „Speichern unter"**, das dort still versagt hat. **Ein
+   Vorher-Sicherungs-Stopp ist NICHT nötig:** die Vorher-Blockwerte stehen dort bereits.
+   **DER VORHER-WERT DES UNBENANNTEN WIRING-SKRIPTS IST EINE OWNER-MESSUNG VOM 2026-09-18** auf
+   `meta-test-5nlm3e.publayer.net`: **Index 2, `id` „-", Tag-Form 12 251 Bytes, sha256 (12)
+   `a3529b57452b`.** Es trägt keine Kennung und wird deshalb über seine POSITION in
+   `document.scripts` angesprochen.
+   **NACH DEM DEPLOY WIRD ZUERST NEU VERÖFFENTLICHT, DANN GEMESSEN — und der Grund ist am Code
+   geprüft:** Das Wiring entsteht **CLIENTSEITIG beim Veröffentlichen**. `publishProject`
+   (`src/app/projects/actions.ts`) nimmt `functionalHtml` als Argument entgegen; der Kommentar
+   dort sagt es wörtlich („functionalHtml ist CLIENT-generiert"), und der einzige Erzeuger ist
+   `generateFunctional` in `src/components/CodeImporter.tsx`. **Ein Deploy allein ändert das
+   ausgelieferte Wiring NICHT** — wer vorher misst, misst den alten Stand und hält ihn für
+   einen Regressions-Beleg.
+   **DER HANDY-SCHRITT LÄUFT AUF `unbekanntes-projekt-3jnjz9`, NICHT AUF `meta-test-5nlm3e`.**
+   Jene Seite trägt ein `<meta name="viewport">` (OWNER-ANGABE 2026-09-18), diese trägt keines
+   (Vorrat P11.13-8, ARCHITEKT-PRÜFUNG 2026-09-18: 0 Treffer). **Auf einer Seite ohne das Tag
+   misst der Schritt den Vorrats-Eintrag statt der Scheibe.**
+
+### Die Plan-Fragen — ALLE FÜNF GESCHLOSSEN (2026-09-18)
+
+Sie waren im Plan vom 2026-09-18 **als Kandidaten** beantwortet und sind am selben Tag
+entschieden worden (ARCHITEKT, G1 bis G7):
+1. **Der Helfer heisst `embedInScript` und liegt in `src/lib/script-embed.ts`**, ein Argument,
+   kein Schalter. Die Regel-Seite steht in Entscheidung P11.13-25, die Gestalt hier.
+2. **Feldname, Leser, Setzer, geprüfter Typ, Meldung:** `settings.consent.text` (Typ `unknown`,
+   flacher Nachbar nach P11.13-19) · `readConsentText` mit der EINZIGEN Zusicherung ·
+   `getConsentText` (liefert `undefined`, wenn das Feld fehlt — das ist der Standardtext-Fall
+   und ausdrücklich kein `"unknown"`) · `setConsentText` (mit `undefined` ENTFERNT es das
+   Feld) · opaker Typ `ConsentText`, Lesetyp `ConsentTextRead` · `CONSENT_TEXT_UNKNOWN_MESSAGE`
+   in `settings.ts`, **nicht** in `actions.ts` · `settingsEqual` bekommt EINEN skalaren Term
+   `getConsentText(a) === getConsentText(b)`.
+3. **Der Transport ist eine ZWEITE Pflicht-Achse** vom Typ `ConsentText | "standard"` —
+   Entscheidung **P11.13-29**, dort auch die vier verworfenen Gestalten und die Wortlaut-Prüfung
+   an P11.13-11.
+4. **KEIN Quelltext-Wächter; der Wächter sitzt am Ergebnis** — Entscheidung **P11.13-30**.
+5. **Das Feld ist einzeilig** (`input[type="text"]`, kein `textarea` — ein `textarea`
+   verspräche Zeilenumbrüche, die das Tor abweist), steht unter „Darstellung" und ist sichtbar
+   bei `"bar"` und `"modal"`, **nicht** an `custom` gebunden. **Platzhalter ist unser
+   Standardtext** — er zeigt, was ohne Eingabe erscheint, und **schreibt nichts**; das ist der
+   Unterschied zur Farb-Vorbelegung aus P11.13-22, die einen echten Wert schreibt, weil der
+   native Wähler kein „nicht gesetzt" kennt. **Ein geleertes Feld ruft den Setzer mit
+   `undefined`** und schreibt NIE einen leeren String. **Der Zeichenzähler liest N aus der
+   Konstante** und benutzt **dieselbe Zählfunktion wie das Tor** (P11.13-27). **Der Hinweis bei
+   unzulässigem Zeichen ist ROT** — anders als der Kontrast-Hinweis sperrt dieser etwas —,
+   nennt die Zeichenklasse und behauptet weder Ursache noch Rechtsfolge. **Tests in
+   `CodeImporter.test.tsx`; `PublishView.tsx` bekommt weiterhin keine eigene Testdatei.**
+
+PROVENIENZ: Der Zuschnitt ist ARCHITEKT 2026-09-18 auf der Grundlage der Owner-Entscheidungen
+O4 und O5 und der Architekt-Entscheidungen E1 bis E4 desselben Tages; die Befunde, auf denen er
+ruht, stehen in VERMERK P11.13-7 und sind GEMESSEN (CC, 2026-09-18). **Die Freigabe steht
+aus.**
+
+---
+
 ## Vorrat — gemeldet, nicht gebaut
 
 ### P11.13-1 — `settingsEqual` ERFASST AUCH EIN FELD INNERHALB VON `settings.consent` NICHT
@@ -2391,9 +3144,18 @@ die Ordnung bestimmt, ist eine ABLEITUNG.
 verhindere den `</script>`-Ausbruch —, **erhält dieser Wert keine solche Maskierung**
 (GEMESSEN am Code, CC, 2026-09-17).
 
-**DIE GRENZE, UND SIE IST DER HALBE EINTRAG: DER AUSBRUCH IST NICHT ERPROBT.** Der Weg ist
-am Code ablesbar; ob ein `</script>` in der Pixel-ID den Block tatsächlich verlässt, ist
-**nicht gemessen**. Wer den Eintrag als belegte Lücke liest, liest ihn grösser, als er ist.
+**DER AUSBRUCH IST SEIT DEM 2026-09-18 GEMESSEN — SACHKORREKTUR, NICHT STEMPEL.** Hier stand,
+der Ausbruch sei nicht erprobt und wer den Eintrag als belegte Lücke lese, lese ihn grösser,
+als er sei. **DAS IST WIDERLEGT, und ein Maßstab mit falschen Angaben taugt nicht als Maßstab**
+(docs/immer-beachten.md, EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD).
+**WAS GEMESSEN IST** (VERMERK P11.13-7, CC, 2026-09-18, Chromium, echte Ausgabe von
+`buildMetaRuntime`): Eine Pixel-ID mit `</script><img …>` **verlässt den Block** — das `<img>`
+wird ein echtes Element, das Wiring-Skript läuft **nicht** mehr, und der Rest des Blocks steht
+als sichtbarer Text auf der Seite. Mit einer **anführungszeichenfreien** Nutzlast **führt
+fremder Code aus** (`window.__AUSBRUCH === true`). Mit `<!--<script>` wird zusätzlich das
+NACHFOLGENDE Script-Element **still verschluckt** — null Fehler, null Konsoleneintrag.
+**DIE EINZIGE GRENZE, DIE BLEIBT:** gemessen ist nur **Chromium** auf `file://`, an einer
+Probeseite ohne fremdes CSS.
 
 **HEUTE IST ES KEIN LOCH, und der Grund gehört dazu, sonst wird der Eintrag zum Alarm:** Wer
 die Pixel-ID setzt, ist der Betreiber — und ihm gehört das HTML der Seite ohnehin. Er kann
@@ -2408,6 +3170,15 @@ Roadmap-Zeile.
 
 **TRIGGER: der Zuschnitt der Scheibe 4.** Dort ist die `<`-Frage ohnehin zu beantworten, und
 beide Wege werden zusammen geklärt statt zweimal.
+
+**TRIGGER EINGETRETEN AM 2026-09-18 — DER EINTRAG BLEIBT TROTZDEM STEHEN.** Der Zuschnitt der
+Scheibe 11.13d steht, und er nimmt die Pixel-ID ausdrücklich mit: Entscheidung P11.13-25 führt
+JEDEN BETREIBER-WERT, der in Script-Rohtext geht, über EINEN Helfer — und die Pixel-ID ist
+einer der heute drei. **NICHT jede Einbettung überhaupt:** Repo-Konstanten und
+server-vergebene Werte an anderer Stelle bleiben roh (jene Entscheidung, Stufe (3)).
+**GESTRICHEN WIRD ER ERST MIT DEM ABSCHLUSS DER SCHEIBE 11.13d, UND ZWAR MIT BELEG** — dem
+Bau-Commit und dem Wächter, der die rohe Einbettung rot macht. **Vorher wäre die Streichung
+eine Behauptung über Code, den es noch nicht gibt.**
 
 PROVENIENZ: der Weg und die fehlende Maskierung GEMESSEN am Code (CC, 2026-09-17); die
 Maskierung der Mapping-Tabelle im selben Lauf GELESEN. Dass der Betreiber das HTML ohnehin

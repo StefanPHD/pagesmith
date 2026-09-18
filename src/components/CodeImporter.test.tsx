@@ -4024,7 +4024,7 @@ describe("CodeImporter — die Darstellung des Einwilligungs-Dialogs (Scheibe 11
   }
 
   // UI1. Sichtbar bei eingeschaltetem Dialog, mit "Hell" als Vorgabe.
-  it("UI1: bei 'Leiste' steht die Gruppe 'Darstellung' mit drei Optionen, 'Hell' gewaehlt", () => {
+  it("UI1: bei 'Leiste' steht die Gruppe 'Darstellung' mit VIER Optionen, 'Hell' gewaehlt", () => {
     render(
       <CodeImporter
         initialCode="<button>X</button>"
@@ -4036,10 +4036,16 @@ describe("CodeImporter — die Darstellung des Einwilligungs-Dialogs (Scheibe 11
     const gruppe = themenGruppe();
     expect(gruppe).not.toBeNull();
     const radios = within(gruppe as HTMLElement).getAllByRole("radio");
-    expect(radios).toHaveLength(3);
+    // SEIT SCHEIBE 11.13c SIND ES VIER: "Eigene Farben" ist eine vierte DARSTELLUNG und
+    // kein zweiter Schalter (Entscheidung P11.13-12).
+    expect(radios).toHaveLength(4);
     expect((radios[0] as HTMLInputElement).checked).toBe(true);
-    expect((radios[1] as HTMLInputElement).checked).toBe(false);
-    expect((radios[2] as HTMLInputElement).checked).toBe(false);
+    for (const r of radios.slice(1)) {
+      expect((r as HTMLInputElement).checked).toBe(false);
+    }
+    // UND DIE ZWEI FARBFELDER STEHEN NICHT DA, solange "Hell" gewaehlt ist.
+    expect(screen.queryByLabelText("Hintergrundfarbe")).toBeNull();
+    expect(screen.queryByLabelText("Textfarbe")).toBeNull();
   });
 
   // UI2. DER EINZIGE TEST, DER DIE SICHTBARKEITS-BEDINGUNG UND DAS ERHALTENBLEIBEN
@@ -4162,5 +4168,259 @@ describe("CodeImporter — die Darstellung des Einwilligungs-Dialogs (Scheibe 11
         .filter((r) => (r as HTMLInputElement).checked),
     ).toHaveLength(1);
     expect(within(g2).queryByText(/unbekannter Wert/i)).toBeNull();
+  });
+
+  // ===== DIE ZWEI FREIEN FARBEN (Scheibe 11.13c) ==================================
+  // DIE ERWARTUNGEN STAMMEN AUS DEN ENTSCHEIDUNGEN P11.13-16 UND P11.13-22.
+  // `PublishView.tsx` hat weiterhin KEINE eigene Testdatei (GEMESSEN, VERMERK P11.13-5);
+  // die Abdeckung entsteht hier, durch den Container hindurch — wie bei UI1 bis UI5.
+
+  // UI6. DIE SICHTBARKEITS-BEDINGUNG UND DIE VORBELEGUNG IN EINEM LAUF (Entscheidung
+  // P11.13-22). BEIDE HAELFTEN GEHOEREN ZUSAMMEN: Ein Feld, das erscheint, ohne dass ein
+  // Wert gespeichert wird, zeigte eine Farbe, die es im Blob nicht gibt — und das
+  // Veroeffentlichen verweigerte anschliessend mit Verweis auf genau diese Anzeige.
+  it("UI6: 'Eigene Farben' zeigt zwei Felder UND schreibt die Vorbelegung in den Blob", async () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "bar" } }}
+      />,
+    );
+    openSettings();
+    // Vorbedingung: noch keine Felder, noch nicht dirty.
+    expect(screen.queryByLabelText("Hintergrundfarbe")).toBeNull();
+    expect(screen.queryByText(/Ungespeicherte/i)).toBeNull();
+
+    fireEvent.click(screen.getByRole("radio", { name: /Eigene Farben/ }));
+    const hg = screen.getByLabelText("Hintergrundfarbe") as HTMLInputElement;
+    const tx = screen.getByLabelText("Textfarbe") as HTMLInputElement;
+    expect(hg.value).toBe("#ffffff");
+    expect(tx.value).toBe("#111827");
+    // DIE VORBELEGUNG IST EINE SCHREIBUNG, KEINE ANZEIGE: sie macht dirty …
+    expect(screen.getAllByText(/Ungespeicherte/i).length).toBeGreaterThan(0);
+    // … und sie steht im gespeicherten Blob.
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+    const args = saveProject.mock.calls[0] as unknown[];
+    expect(args[3]).toEqual({
+      consent: {
+        dialog: "bar",
+        theme: "custom",
+        colorBackground: "#ffffff",
+        colorText: "#111827",
+      },
+    });
+  });
+
+  // UI7. EIN GESPEICHERTES GUELTIGES PAAR WIRD NIE UEBERSCHRIEBEN (P11.13-22), und die
+  // Wahl ueberlebt das Umschalten der Darstellung (P11.13-14). Spiegel von UI2.
+  it("UI7: ein gueltiges Paar ueberlebt den Wechsel und wird nicht vorbelegt", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{
+          consent: {
+            dialog: "bar",
+            theme: "custom",
+            colorBackground: "#010203",
+            colorText: "#0a0b0c",
+          },
+        }}
+      />,
+    );
+    openSettings();
+    expect((screen.getByLabelText("Hintergrundfarbe") as HTMLInputElement).value).toBe(
+      "#010203",
+    );
+
+    // Weg auf "Hell": die Felder verschwinden.
+    fireEvent.click(screen.getByRole("radio", { name: /Hell/ }));
+    expect(screen.queryByLabelText("Hintergrundfarbe")).toBeNull();
+
+    // Und zurueck: die ALTE Wahl steht wieder da, NICHT die Vorbelegung.
+    fireEvent.click(screen.getByRole("radio", { name: /Eigene Farben/ }));
+    expect((screen.getByLabelText("Hintergrundfarbe") as HTMLInputElement).value).toBe(
+      "#010203",
+    );
+    expect((screen.getByLabelText("Textfarbe") as HTMLInputElement).value).toBe(
+      "#0a0b0c",
+    );
+  });
+
+  // UI8. DIE WAHL EINER FARBE IST FUER dirty SICHTBAR — die Wirkung der zwei Terme in
+  // settingsEqual, hier am Bedienweg statt an der reinen Funktion (Pflicht-Mutation M-d).
+  it("UI8: eine geaenderte Farbe macht dirty sichtbar und geht an saveProject", async () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{
+          consent: {
+            dialog: "bar",
+            theme: "custom",
+            colorBackground: "#ffffff",
+            colorText: "#111827",
+          },
+        }}
+      />,
+    );
+    openSettings();
+    expect(screen.queryByText(/Ungespeicherte/i)).toBeNull();
+
+    fireEvent.change(screen.getByLabelText("Textfarbe"), {
+      target: { value: "#00ff00" },
+    });
+    expect(screen.getAllByText(/Ungespeicherte/i).length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Speichern/ }));
+    await screen.findByRole("button", { name: /Gespeichert/ });
+    const args = saveProject.mock.calls[0] as unknown[];
+    expect(args[3]).toEqual({
+      consent: {
+        dialog: "bar",
+        theme: "custom",
+        colorBackground: "#ffffff",
+        colorText: "#00ff00",
+      },
+    });
+  });
+
+  // UI9. BEIM LADEN WIRD NICHTS VORBELEGT (P11.13-22): Steht im Blob bereits "custom" mit
+  // einem kaputten Wert, zeigt das Feld den hellen Bestand und DANEBEN den roten Hinweis —
+  // geschrieben wird dabei NICHTS, und dirty entsteht nicht.
+  it("UI9: geladener kaputter Farbwert -> roter Hinweis, keine Schreibung, nicht dirty", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{
+          consent: { dialog: "bar", theme: "custom", colorBackground: "#FFF" },
+        }}
+      />,
+    );
+    openSettings();
+    expect(screen.getByText(/unbekannter Farbwert/i)).toBeTruthy();
+    expect(screen.queryByText(/Ungespeicherte/i)).toBeNull();
+    // POSITIVKONTROLLE im selben Lauf: mit zwei gueltigen Werten ist der Hinweis weg.
+    cleanup();
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{
+          consent: {
+            dialog: "bar",
+            theme: "custom",
+            colorBackground: "#ffffff",
+            colorText: "#111827",
+          },
+        }}
+      />,
+    );
+    openSettings();
+    expect(screen.queryByText(/unbekannter Farbwert/i)).toBeNull();
+  });
+
+  // UI10. DER KONTRAST-HINWEIS ERSCHEINT UND SPERRT NICHTS (Entscheidung P11.13-16).
+  // DIE ZWEITE HAELFTE IST DIE TRAGENDE: Ein Hinweis, der den Knopf abschaltete, waere
+  // ein Riegel — und genau den schliesst die Entscheidung aus. Der Text nennt WERT und
+  // SCHWELLE, keine Ursache und keine Rechtsfolge.
+  it("UI10: unter der Schwelle erscheint der Hinweis, und Veroeffentlichen bleibt bedienbar", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{
+          consent: {
+            dialog: "bar",
+            theme: "custom",
+            colorBackground: "#ffffff",
+            colorText: "#808080",
+          },
+        }}
+      />,
+    );
+    openSettings();
+    // 3,94:1 gegen Weiss (GELESEN bei WebAIM, s. contrast.test.ts) — unter 4,5.
+    // GEPRUEFT AM textContent DER GRUPPE, nicht an einem Textknoten: React zerlegt den
+    // Satz an der eingesetzten Zahl in mehrere Knoten, und getByText sieht je einen.
+    expect(themenGruppe()?.textContent).toContain("Kontrast 3,94:1");
+    expect(themenGruppe()?.textContent).toContain("die Schwelle ist 4,5:1");
+    // DER HINWEIS SPERRT NICHTS — UND DAS WIRD ALS UNTERSCHIED GEMESSEN, nicht als
+    // absoluter Zustand: Ob der Knopf ueberhaupt bedienbar ist, haengt an ganz anderen
+    // Bedingungen (gespeichertes Projekt, leere Seite). Die Zusage dieser Entscheidung
+    // ist, dass der KONTRAST daran nichts aendert.
+    const knopf = () =>
+      screen.getByRole("button", {
+        name: /^(Veröffentlichen|Erneut veröffentlichen)$/,
+      }) as HTMLButtonElement;
+    const gesperrtMitHinweis = knopf().disabled;
+
+    // POSITIVKONTROLLE im selben Lauf: ueber der Schwelle steht kein Hinweis …
+    fireEvent.change(screen.getByLabelText("Textfarbe"), {
+      target: { value: "#111827" },
+    });
+    expect(themenGruppe()?.textContent).not.toContain("Kontrast");
+    // … und der Knopf ist GENAUSO bedienbar wie vorher.
+    expect(knopf().disabled).toBe(gesperrtMitHinweis);
+  });
+
+  // UI11. DER GEMISCHTE ZUSTAND: EINE Farbe gueltig, EINE ungueltig — und er ist der
+  // Grund, warum `farbenUnbekannt` mit ODER und nicht mit UND gebildet ist.
+  // WAS HIER SCHIEFGEHEN KANN: `contrastRatio` WIRFT bei allem, was nicht `#rrggbb` ist
+  // (CT4 in contrast.test.ts). Wuerde der Hinweis auch nur EINEN "unknown"-Wert in die
+  // Rechnung geben, wuerfe das Rendern — und der Betreiber saehe statt seiner Einstellung
+  // eine kaputte Seite.
+  // DER WURF IST HIER KEINE EIGENE ZUSICHERUNG, SONDERN DIE VORBEDINGUNG DES GANZEN
+  // LAUFS: Wirft das Rendern, faellt dieser Test, bevor eine Abfrage laeuft. Das gehoert
+  // in den Kommentar, damit niemand ihn spaeter um ein `expect(...).not.toThrow()`
+  // "ergaenzt", das nichts hinzufuegt.
+  // UI9 FAENGT DIESEN FALL NICHT: Dort sind BEIDE Werte ungueltig, und die Rechnung
+  // unterbliebe auch bei einer UND-Verknuepfung.
+  it("UI11: eine ungueltige neben einer gueltigen Farbe -> roter Hinweis, KEIN Kontrast-Hinweis", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{
+          consent: {
+            dialog: "bar",
+            theme: "custom",
+            colorBackground: "#ffffff",
+            colorText: "#GGGGGG",
+          },
+        }}
+      />,
+    );
+    openSettings();
+    // Die Flaeche steht, die Felder stehen — das Rendern ist durchgelaufen.
+    expect(screen.getByLabelText("Hintergrundfarbe")).toBeTruthy();
+    expect(screen.getByLabelText("Textfarbe")).toBeTruthy();
+    expect(screen.getByText(/unbekannter Farbwert/i)).toBeTruthy();
+    // UND KEIN KONTRAST-HINWEIS: ueber einen halb ungueltigen Zustand gibt es keine Zahl.
+    expect(themenGruppe()?.textContent).not.toContain("Kontrast");
+
+    // POSITIVKONTROLLE im selben Lauf: mit ZWEI gueltigen, knapp scheiternden Werten
+    // steht der Kontrast-Hinweis sehr wohl — die Abfrage oben prueft also etwas.
+    cleanup();
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{
+          consent: {
+            dialog: "bar",
+            theme: "custom",
+            colorBackground: "#ffffff",
+            colorText: "#777777",
+          },
+        }}
+      />,
+    );
+    openSettings();
+    expect(themenGruppe()?.textContent).toContain("Kontrast 4,47:1");
+    expect(screen.queryByText(/unbekannter Farbwert/i)).toBeNull();
   });
 });

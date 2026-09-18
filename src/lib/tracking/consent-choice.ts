@@ -10,9 +10,17 @@
 //
 // SIE IST REIN: kein `import "server-only"`, kein "use client", keine Datenbank, kein
 // Netzwerk, kein DOM zur Bauzeit. Die Richtung bleibt server-only -> rein, nie umgekehrt;
-// sie importiert allein reine Konstanten aus tracking/consent.ts und
-// tracking/consent-targets.ts. Eine server-only-Datei waere aus erzeugtem Browser-Code
-// nicht erreichbar.
+// eine server-only-Datei waere aus erzeugtem Browser-Code nicht erreichbar.
+// WAS SIE IMPORTIERT — die Liste stand bis zur Scheibe 11.13c auf "allein reine
+// Konstanten aus tracking/consent.ts und tracking/consent-targets.ts" und war schon vor
+// dieser Scheibe unvollstaendig (der Typ ConsentTheme kam aus lib/settings.ts dazu):
+//   - reine Konstanten aus tracking/consent.ts und tracking/consent-targets.ts;
+//   - TYPEN aus lib/settings.ts (zur Laufzeit geloescht);
+//   - die reine Funktion contrastRatio aus lib/contrast.ts (Scheibe 11.13c).
+// DER LETZTE IST EIN LAUFZEIT-IMPORT UND DER EINZIGE NICHT-KONSTANTEN — er ist zugelassen
+// (Entscheidung P11.13-21): Er laeuft zur ERZEUGUNGSZEIT, und ausgeliefert wird allein
+// ein Schluesselwort, nie eine Zahl aus der Rechnung. Die Reinheit ist unberuehrt,
+// contrast.ts traegt weder DOM noch Netz noch Datenbank.
 //
 // ES GIBT KEINEN LAUFZEIT-HELFER. CONSENT_CHOICE_JS ist ein Code-Stueck, das zur BAUZEIT in
 // die sofort ausgefuehrte Funktion JEDES Blocks eingesetzt wird; seine Funktionen sind dort
@@ -34,7 +42,8 @@
 
 import { ANALYTICS_CONSENT_TARGET } from "@/lib/tracking/consent";
 import { ALL_CONSENT_KEYS } from "@/lib/tracking/consent-targets";
-import type { ConsentTheme } from "@/lib/settings";
+import { contrastRatio } from "@/lib/contrast";
+import type { ConsentAppearance, ConsentColor } from "@/lib/settings";
 
 /**
  * Der Sachtext beider Oberflaechen, eine Zeile ueber den Schaltern, ohne Ueberschrift.
@@ -200,9 +209,21 @@ export const CONSENT_THEME_DARK_CSS =
  * DER WURF IM `default` IST EIN TYP-VERTRAG, KEIN LAUFZEIT-ZWEIG: Vitest prueft keine
  * Typen, und ein nicht migrierter Aufruf mit einem Fremdwert liefe sonst still als "light"
  * durch — also mit einer Darstellung, die niemand bestellt hat.
+ *
+ * SEIT DER SCHEIBE 11.13c NIMMT SIE EINE DISKRIMINIERTE UNION STATT EINES STRINGS
+ * (bindende Entscheidung P11.13-18), und der vierte Zweig "custom" traegt SEINE ZWEI
+ * GEPRUEFTEN FARBEN MIT SICH. Damit ist "eigene Farben ohne Farben" GAR NICHT
+ * KONSTRUIERBAR — es braucht dafuer keinen Laufzeit-Wurf, keine Pruefung und keinen Test.
+ * DER NAME DER FUNKTION IST ABSICHTLICH NICHT MITGEWANDERT, obwohl ihr Argument jetzt
+ * eine Darstellung und kein Thema ist: Er wird von aussen zitiert — in den Entscheidungen
+ * P11.13-8 und P11.13-12 der Standdatei und im Kommentar von lib/settings.ts. Eine
+ * Umbenennung machte jene Zeiger tot, und ein toter Zeiger faellt an keinem Gate auf.
+ * DIE DREI TABELLENZWEIGE SIND BYTE-UNVERAENDERT (Invariante Z1): "light" liefert
+ * weiterhin den leeren String, "dark" weiterhin die Konstante, "auto" weiterhin die
+ * Konstante in der @media-Huelle. Der vierte Zweig tritt DANEBEN.
  */
-export function consentThemeCss(theme: ConsentTheme): string {
-  switch (theme) {
+export function consentThemeCss(darstellung: ConsentAppearance): string {
+  switch (darstellung.theme) {
     case "light":
       return "";
     case "dark":
@@ -211,11 +232,98 @@ export function consentThemeCss(theme: ConsentTheme): string {
       return (
         "@media (prefers-color-scheme: dark){" + CONSENT_THEME_DARK_CSS + "}"
       );
+    case "custom":
+      return consentCustomCss(darstellung.background, darstellung.text);
     default: {
-      const unhandled: never = theme;
-      throw new Error(`consentThemeCss: unbekanntes Thema ${String(unhandled)}`);
+      const unhandled: never = darstellung;
+      throw new Error(
+        `consentThemeCss: unbekannte Darstellung ${JSON.stringify(unhandled)}`
+      );
     }
   }
+}
+
+/**
+ * DAS FARBSCHEMA DES VIERTEN ZWEIGS, ABGELEITET (Phase 11.13, Scheibe 11.13c; bindende
+ * Entscheidung P11.13-21): `dark`, wenn WEISS gegen den gewaehlten Hintergrund einen
+ * HOEHEREN Kontrast hat als SCHWARZ — sonst `light`, AUCH BEI GLEICHSTAND.
+ *
+ * WARUM UEBERHAUPT: `color-scheme` steuert das NATIVE Kaestchen — die einzige Farbe im
+ * Dialog, die wir nicht selbst setzen, weil der Browser sie zeichnet. GEMESSEN
+ * (CC, 2026-09-17, Chromium): Der UA-Rahmen kippt mit `color-scheme` von rgb(0,0,0) auf
+ * rgb(255,255,255); die Fuellung ist ueber getComputedStyle gar nicht fassbar und nur
+ * per Bildpunkt-Vergleich belegbar. Bliebe es ungesetzt, zeichnete der Browser auf einem
+ * dunklen eigenen Hintergrund ein helles Kaestchen mit schwarzem Rahmen.
+ *
+ * WARUM EIN VERGLEICH UND KEINE SCHWELLE: Ein Vergleich zwischen ZWEI Kandidaten ist
+ * vollstaendig aus dem Hintergrund ableitbar. Eine Helligkeits-Grenze waere eine ZWEITE
+ * Architekt-Vorgabe ohne Messung neben der 4,5 aus Entscheidung P11.13-10 — und die
+ * steht dort nur, weil sie als Vorgabe ausgewiesen ist. DER GLEICHSTAND FAELLT AUF
+ * `light`, damit der Ausgang vollstaendig bestimmt ist und nicht an einer Rundung haengt.
+ *
+ * DIE ZWEI KANDIDATEN SIND LITERALE UND KEINE BETREIBER-EINGABE — sie erreichen den
+ * ausgelieferten Text nicht; ausgeliefert wird allein das RUECKGABE-Schluesselwort.
+ */
+export function bevorzugtesFarbschema(
+  background: ConsentColor
+): "light" | "dark" {
+  return contrastRatio(background, "#ffffff") >
+    contrastRatio(background, "#000000")
+    ? "dark"
+    : "light";
+}
+
+/**
+ * DIE ERZEUGTEN FARB-UEBERSCHREIBUNGEN DES VIERTEN ZWEIGS (Phase 11.13, Scheibe 11.13c;
+ * bindende Entscheidungen P11.13-13, -15 und -20).
+ *
+ * SIE HAT DIESELBE GESTALT WIE CONSENT_THEME_DARK_CSS, nur zur Bauzeit zusammengesetzt
+ * statt hingeschrieben: JEDE DEKLARATION TRAEGT GENAU EINE EIGENSCHAFT AUS DER LISTE VON
+ * Entscheidung P11.13-9 — color, background-color, border-color, border-top-color,
+ * outline-color, accent-color, color-scheme. KEINE KURZSCHREIBWEISE, und das ist der
+ * ganze Punkt: `button{border:1px solid …}` und `.bar{border-top:1px solid …}` tragen im
+ * Bestand Farbe UND Groesse; wer sie ueberschriebe, verschoebe Breiten und Hoehen und
+ * damit die Entscheidungen P11.13-3 und P11.13-5.
+ *
+ * DIE ABLEITUNG, vollstaendig (P11.13-13): HINTERGRUND -> Behaelter UND Knopf-Hintergrund;
+ * TEXT -> Sachtext, Knopftext, Knopfrahmen, Fokus-Ring und accent-color der Kaestchen.
+ * DAS IST EIN KONTRAST-ARGUMENT, KEIN GESTALTUNGS-ARGUMENT: Tragen Rahmen, Kaestchen und
+ * Fokus-Ring DIESELBE Farbe wie der Text, deckt EIN Paar — Text gegen Hintergrund — das
+ * ganze Kriterium P11.13-10 ab, weil 4,5 die Schwelle 3 einschliesst.
+ * DIE CONTAINER-LINIE TRAEGT EBENFALLS DIE TEXTFARBE (P11.13-20). Der Preis ist benannt:
+ * Sie wird hier so kraeftig wie der Text, waehrend sie im hellen Bestand bewusst schwach
+ * ist. Die Ausnahme der Linie vom Kontrast-Kriterium bleibt fuer die drei Tabellenwerte
+ * bestehen; im vierten Zweig greift sie faktisch nicht.
+ *
+ * KEINE CSS-VARIABLEN (P11.13-15) — UND DER GRUND IST GEMESSEN: `all:initial !important`
+ * setzt BENUTZERDEFINIERTE Eigenschaften NICHT zurueck; eine `--ps-*` der Kundenseite
+ * kommt im Schattenbaum an (CC, 2026-09-17, Chromium, mit Gegenprobe ausserhalb). Waere
+ * das Thema ueber Variablen gebaut, koennte die fremde Seite hineinwirken. CSS2b haelt
+ * die Abwesenheit fuer ALLE vier Darstellungen.
+ *
+ * `.backdrop` UND `.way` BLEIBEN UNBERUEHRT (P11.13-13, Invariante Z10), wie beim dunklen
+ * Thema: Die Abdunkelung bleibt `rgba(17,24,39,0.6)`, und der Weg bleibt durchsichtig und
+ * erbt seine Schrift aus der Knopf-Regel. Eine eigene `.way`-Regel waere genau der Fall,
+ * in dem das Gleichrangigkeits-Kriterium neu zu messen waere.
+ *
+ * DIE ZWEI WERTE SIND GEPRUEFTE FARBEN — ein roher `string` ist hier ein COMPILER-FEHLER
+ * (Entscheidung P11.13-17). Das Alphabet `#` plus sechs Hex-Zeichen enthaelt weder `;`
+ * noch `}` noch `<`; damit kann aus dieser Zusammensetzung weder eine Deklaration noch
+ * eine Regel noch der Script-Block ausbrechen.
+ */
+export function consentCustomCss(
+  background: ConsentColor,
+  text: ConsentColor
+): string {
+  return (
+    `.bar,.dialog{color:${text};background-color:${background};color-scheme:${bevorzugtesFarbschema(background)};}` +
+    `.bar{border-top-color:${text};}` +
+    `.dialog{border-color:${text};}` +
+    `button{color:${text};background-color:${background};border-color:${text};}` +
+    `button:focus-visible{outline-color:${text};}` +
+    `.group input{accent-color:${text};}` +
+    `.group input:focus-visible{outline-color:${text};}`
+  );
 }
 
 /**

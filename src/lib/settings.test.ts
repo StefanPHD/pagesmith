@@ -11,6 +11,11 @@ import {
   setConsentDialog,
   getConsentTheme,
   setConsentTheme,
+  getConsentColorBackground,
+  getConsentColorText,
+  readConsentColor,
+  setConsentColors,
+  CONSENT_COLOR_PATTERN,
   setPixelId,
   settingsEqual,
   TRACKING_TARGETS,
@@ -336,6 +341,9 @@ describe("die Darstellung des Einwilligungs-Dialogs (Scheibe 11.13b)", () => {
     expect(getConsentTheme({ consent: { theme: "light" } })).toBe("light");
     expect(getConsentTheme({ consent: { theme: "dark" } })).toBe("dark");
     expect(getConsentTheme({ consent: { theme: "auto" } })).toBe("auto");
+    // SEIT SCHEIBE 11.13c IST "custom" EIN GEBAUTER WERT (Entscheidung P11.13-12) — eine
+    // VIERTE Darstellung, kein zweiter Schalter.
+    expect(getConsentTheme({ consent: { theme: "custom" } })).toBe("custom");
   });
 
   // TH2. DER SCHAERFSTE TEST AUF DEN EIGENEN AUSGANG "unknown" (Pflicht-Mutation Mu1).
@@ -349,7 +357,7 @@ describe("die Darstellung des Einwilligungs-Dialogs (Scheibe 11.13b)", () => {
       expect(getConsentTheme({ consent: { theme: wert } })).toBe("unknown");
     }
     // POSITIVKONTROLLE im selben Lauf: die drei gebauten Werte sind NICHT "unknown".
-    for (const wert of ["light", "dark", "auto"] as const) {
+    for (const wert of ["light", "dark", "auto", "custom"] as const) {
       expect(getConsentTheme({ consent: { theme: wert } })).not.toBe("unknown");
     }
   });
@@ -393,5 +401,150 @@ describe("die Darstellung des Einwilligungs-Dialogs (Scheibe 11.13b)", () => {
     const b = setConsentDialog(a, "off");
     expect(getConsentTheme(b)).toBe("auto");
     expect(settingsEqual(a, b)).toBe(false);
+  });
+});
+
+describe("die zwei freien Farben (Scheibe 11.13c)", () => {
+  // DIE ERWARTUNGEN STAMMEN AUS DEN ENTSCHEIDUNGEN P11.13-14, -17 und -19, NICHT AUS DEM
+  // CODE. Das erlaubte Alphabet ist `^#[0-9a-f]{6}$` und sonst nichts.
+
+  // CF1. DER EINZIGE WAECHTER UEBER "GENAU EINE ZUSICHERUNG" (Entscheidung P11.13-17),
+  // und er traegt seine Grenze an sich selbst:
+  // ER SIEHT ZEICHEN, NICHT BEDEUTUNG. Er zaehlt das Vorkommen von `as ConsentColor` im
+  // QUELLTEXT von settings.ts — eine Zusicherung mit anderem Wortlaut (ein
+  // `<ConsentColor>`, ein Umweg ueber `unknown`, eine Hilfsfunktion in einer ANDEREN
+  // Datei) entgeht ihm. ER MUSS IN DIE STRENGE RICHTUNG IRREN: lieber ein Fehlalarm, den
+  // jemand prueft, als ein Durchlassen, das niemand sieht.
+  // WARUM ES IHN BRAUCHT: Eine zweite Erzeugungsstelle hebt das Format-Tor auf, OHNE dass
+  // ein Gate rot wird — der Compiler ist danach zufrieden, und die Pruefung findet nicht
+  // mehr statt. Kein Typfehler, kein roter Test, keine Meldung.
+  it("CF1: genau EINE Zusicherung des geprueften Typs, und sie steht hinter dem Test", async () => {
+    const { readFile } = await import("node:fs/promises");
+    // Der Pfad ist repo-relativ; vitest laeuft mit dem Repo-Wurzelverzeichnis als cwd.
+    // `import.meta.url` taugt hier NICHT — unter vitest ist es kein file:-Schema.
+    const quelle = await readFile("src/lib/settings.ts", "utf8");
+    const treffer = quelle.match(/as ConsentColor/g) ?? [];
+    expect(treffer).toHaveLength(1);
+    // SIE STEHT HINTER DEM REGEX-TEST, nicht davor und nicht daneben.
+    const i = quelle.indexOf("as ConsentColor");
+    const j = quelle.lastIndexOf("CONSENT_COLOR_PATTERN.test", i);
+    expect(j).toBeGreaterThan(-1);
+    expect(i - j).toBeLessThan(200);
+    // POSITIVKONTROLLEN der Suche im selben Lauf.
+    expect(quelle).toContain("CONSENT_COLOR_PATTERN");
+    expect("x as ConsentColor y".match(/as ConsentColor/g)).toHaveLength(1);
+  });
+
+  // CF2. DER SCHAERFSTE TEST AUF DAS FORMAT-TOR (Pflicht-Mutation M-a). Die Liste ist die
+  // FEINDLICHE EINGABE aus Invariante Z8 des Zuschnitts, wortwoertlich: Kurzform,
+  // Grossbuchstaben, ein Wert mit `;`, einer mit `}` und einer Folgeregel, einer mit
+  // `</script>`, einer mit `url(`, der leere String, eine Zahl, ein Objekt und das
+  // fehlende Feld.
+  // DER ANKER IST DER PUNKT: Ohne `^` und `$` passierte `#000000;}.bar{display:none` das
+  // Tor, und aus einer Farbe wuerde eine zweite CSS-Regel im Schattenbaum.
+  it("CF2: jede feindliche Eingabe -> 'unknown', nie ein Wert", () => {
+    for (const roh of [
+      "#fff",
+      "#FFFFFF",
+      "#fff;}",
+      "#000000;}.bar{display:none",
+      "</script>",
+      "url(x)",
+      "",
+      " #ffffff",
+      "#ffffff ",
+      "#12345g",
+      "#1234567",
+      "rgb(0,0,0)",
+      "white",
+      null,
+      true,
+      1,
+      {},
+      [],
+      undefined,
+    ]) {
+      expect(readConsentColor(roh), JSON.stringify(roh)).toBe("unknown");
+    }
+    // Ueber die zwei Leser, und zwar ueber das FEHLENDE Feld hinaus.
+    expect(getConsentColorBackground({})).toBe("unknown");
+    expect(getConsentColorText({})).toBe("unknown");
+    expect(getConsentColorBackground({ consent: {} })).toBe("unknown");
+    expect(getConsentColorText({ consent: { theme: "custom" } })).toBe("unknown");
+    // POSITIVKONTROLLE im selben Lauf: gueltige Werte kommen durch.
+    for (const gut of ["#ffffff", "#000000", "#111827", "#0a0b0c", "#abcdef"]) {
+      expect(readConsentColor(gut), gut).toBe(gut);
+    }
+    expect(
+      getConsentColorBackground({ consent: { colorBackground: "#123456" } })
+    ).toBe("#123456");
+    expect(getConsentColorText({ consent: { colorText: "#654321" } })).toBe(
+      "#654321"
+    );
+    // UND DAS MUSTER SELBST, gegen einen Tippfehler im Ausdruck.
+    expect(CONSENT_COLOR_PATTERN.source).toBe("^#[0-9a-f]{6}$");
+  });
+
+  // CF3. DER TEST AUF DIE ZWEI TERME IN settingsEqual (Pflicht-Mutation M-d), an der
+  // reinen Funktion. Er ist NICHT der einzige, der die Achse traegt — die UI-Laeufe am
+  // Bedienweg fangen dieselbe Klasse; DIESER ist der einzige, der BEIDE Terme EINZELN
+  // durchgeht.
+  it("CF3: settingsEqual vergleicht beide Farben normalisiert — sichtbar fuer dirty", () => {
+    const a = setConsentColors({}, "#ffffff", "#111827");
+    const b = setConsentColors({}, "#000000", "#111827");
+    const c = setConsentColors({}, "#ffffff", "#ffffff");
+    // Der Hintergrund allein macht den Unterschied …
+    expect(settingsEqual(a, b)).toBe(false);
+    // … und die Textfarbe allein ebenso. Ohne den ZWEITEN Term waere dieses Paar gleich.
+    expect(settingsEqual(a, c)).toBe(false);
+    // Ein ungueltiger Wert ist nicht gleich einem gueltigen.
+    expect(settingsEqual(a, setConsentColors({}, "#FFFFFF", "#111827"))).toBe(
+      false
+    );
+    // POSITIVKONTROLLEN: kein false-dirty. Zwei ungueltige Werte sind normalisiert gleich.
+    expect(settingsEqual(a, setConsentColors({}, "#ffffff", "#111827"))).toBe(
+      true
+    );
+    expect(
+      settingsEqual(
+        { consent: { colorBackground: "#zz" } },
+        { consent: { colorBackground: "nope" } }
+      )
+    ).toBe(true);
+    expect(settingsEqual({}, {})).toBe(true);
+  });
+
+  // CF4. DER SETZER FASST DIE NACHBARN NICHT AN — dieselbe Bauform wie setConsentTheme.
+  it("CF4: setConsentColors laesst gate, dialog und theme unberuehrt und mutiert nicht", () => {
+    const vorher: ProjectSettings = {
+      consent: { gate: true, dialog: "modal", theme: "custom" },
+    };
+    const nachher = setConsentColors(vorher, "#010203", "#0a0b0c");
+    expect(getConsentDialog(nachher)).toBe("modal");
+    expect(getConsentTheme(nachher)).toBe("custom");
+    expect(nachher.consent?.gate).toBe(true);
+    expect(getConsentColorBackground(nachher)).toBe("#010203");
+    expect(getConsentColorText(nachher)).toBe("#0a0b0c");
+    // Das Original bleibt unberuehrt.
+    expect(getConsentColorBackground(vorher)).toBe("unknown");
+  });
+
+  // CF5. DIE FARBEN UEBERLEBEN DEN WECHSEL DER DARSTELLUNG (Entscheidung P11.13-14):
+  // "Ist die Darstellung nicht eigene Farben, werden gespeicherte Farben weder gelesen
+  // noch ausgeliefert" — LIEGEN BLEIBEN SIE TROTZDEM.
+  it("CF5: ein Wechsel der Darstellung laesst die zwei Farben im Blob stehen", () => {
+    const mitFarben = setConsentColors(
+      setConsentTheme({}, "custom"),
+      "#010203",
+      "#0a0b0c"
+    );
+    const hell = setConsentTheme(mitFarben, "light");
+    expect(getConsentTheme(hell)).toBe("light");
+    expect(getConsentColorBackground(hell)).toBe("#010203");
+    expect(getConsentColorText(hell)).toBe("#0a0b0c");
+    // Und zurueck: die Wahl steht wieder da.
+    expect(getConsentColorBackground(setConsentTheme(hell, "custom"))).toBe(
+      "#010203"
+    );
   });
 });

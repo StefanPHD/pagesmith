@@ -57,13 +57,13 @@ afterEach(() => {
 
 describe("11.5b — Injektion", () => {
   it("R1: Schalter AUS -> kein Wiederherstellungs-Block (Positivkontrolle: Emitter da)", () => {
-    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "off", "light");
+    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "off", { theme: "light" });
     expect(out).not.toContain('id="__ps_cnr"');
     expect(out).toContain('id="__ps_pve"');
   });
 
   it("R2: Schalter AN -> Gate < Wiederherstellung < Setzer < Emitter", () => {
-    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", "light");
+    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", { theme: "light" });
     const gate = out.indexOf('id="pagesmith-consent"');
     const restore = out.indexOf('id="__ps_cnr"');
     const setter = out.indexOf('id="__ps_cns"');
@@ -83,7 +83,7 @@ describe("11.5b — Injektion", () => {
     expect(createHash("sha256").update(setter, "utf8").digest("hex")).toBe(
       "9ae9ab2650187876aad75da2cb84cde5c125622e1842ede5a40a059a4a843acd"
     );
-    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", "light");
+    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", { theme: "light" });
     expect(out).toContain(setter);
   });
 
@@ -93,7 +93,7 @@ describe("11.5b — Injektion", () => {
   // Seiten ohne Mappings das Gate weg oder eine indexOf-Reihenfolge luegt.
   it("R3b: der Block traegt keine der Kennungen, nach denen der Bestand sucht", () => {
     const block = buildConsentRestoreScript();
-    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", "light");
+    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", { theme: "light" });
     for (const needle of ['id="pagesmith-consent"', 'id="__ps_cns"', "__ps_pve", "__ps_pv"]) {
       expect(block).not.toContain(needle);
       // POSITIVKONTROLLE: dieselbe Suche trifft im ausgelieferten Text.

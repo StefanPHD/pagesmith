@@ -37,7 +37,7 @@ import {
   CONSENT_TEXT,
   consentThemeCss,
 } from "@/lib/tracking/consent-choice";
-import type { ConsentTheme } from "@/lib/settings";
+import type { ConsentAppearance } from "@/lib/settings";
 import {
   wrapRevoke,
   type ConsentSurfaceMode,
@@ -174,9 +174,15 @@ const CONSENT_BAR_CSS =
  * `buildPageViewScript` ("ZWEI EXPLIZITE ZWEIGE AM PARAMETER, EIN RUMPF") und von
  * CONSENT_CHOICE_JS.
  *
- * DIE BYTE-GLEICHHEIT DES LADE-ZWEIGS HAENGT AN DEN ZWEI PLATZHALTERN, und deshalb steht
- * es hier: Mit `abbruch = "return;"` und `vormerken = ""` muss der erzeugte Text ZEICHEN
- * FUER ZEICHEN der Fassung vor dieser Scheibe entsprechen. W0 haelt den Wert.
+ * RICHTIGGESTELLT IN DER SCHEIBE 11.13c (VERMERK P11.13-5 fuehrte den Fehlstand): Hier
+ * stand "DIE BYTE-GLEICHHEIT DES LADE-ZWEIGS HAENGT AN DEN ZWEI PLATZHALTERN … W0 haelt
+ * den Wert." BEIDES WAR UEBERHOLT. Es sind seit der Scheibe 11.13a DREI Platzhalter plus
+ * `stil`, und W0 IST GESTRICHEN — die Byte-Gleichheit, die er hielt, war die Invariante
+ * der Scheibe 11.5e-2 und ist mit ihr abgelaufen (s. den Docblock von
+ * buildConsentBarScript). WER HIER EINE BYTE-ZUSAGE SUCHTE, LAS EINE, DIE ES NICHT GIBT.
+ * WAS STATTDESSEN GILT: T9 haelt STRUKTURELL, dass Lade- und Widerruf-Text aus EINEM
+ * Aufbau stammen — nach Ersetzen der drei Einsetzwerte sind sie zeichengleich. Er fuehrt
+ * keine Zahl und muss bei keinem Bau nachgezogen werden.
  */
 function aufbauDerLeiste(
   abbruch: string,
@@ -209,17 +215,22 @@ ${vormerken}  body.appendChild(host);
 
 export function buildConsentBarScript(
   mode: ConsentSurfaceMode,
-  // DIE DARSTELLUNG (Phase 11.13, Scheibe 11.13b). PFLICHT-PARAMETER OHNE VORGABEWERT,
-  // Freigabe F1 vom 2026-09-17: EINE Bauform an allen drei Stellen — hier, am Modal und an
-  // injectPageViewEmitter. Ein `= "light"` liesse einen kuenftigen Aufrufer die Darstellung
-  // stillschweigend uebergehen, und ein heller Dialog auf einer dunklen Kundenseite ist
-  // genau der Fremdkoerper, wegen dessen diese Phase existiert.
-  theme: ConsentTheme
+  // DIE DARSTELLUNG (Phase 11.13, Scheiben 11.13b und 11.13c). PFLICHT-PARAMETER OHNE
+  // VORGABEWERT, Freigabe F1 vom 2026-09-17: EINE Bauform an allen drei Stellen — hier, am
+  // Modal und an injectPageViewEmitter. Ein `= "light"` liesse einen kuenftigen Aufrufer die
+  // Darstellung stillschweigend uebergehen, und ein heller Dialog auf einer dunklen
+  // Kundenseite ist genau der Fremdkoerper, wegen dessen diese Phase existiert.
+  // SEIT 11.13c IST ES EINE DISKRIMINIERTE UNION statt eines Strings (Entscheidung
+  // P11.13-18): Der Zweig "custom" traegt seine zwei GEPRUEFTEN Farben mit sich, und
+  // "eigene Farben ohne Farben" ist damit nicht konstruierbar. DIE ZAHL DER PARAMETER
+  // AENDERT SICH NICHT — Entscheidung P11.13-11 gilt unveraendert.
+  darstellung: ConsentAppearance
 ): string {
   // DER STIL WIRD EINMAL GEBAUT UND IN BEIDE GESTALTEN EINGESETZT: Lade- und Widerruf-Zweig
   // tragen zwangslaeufig dasselbe Thema, weil sie denselben Ausdruck benutzen. Zwei
   // getrennte Berechnungen koennten auseinanderlaufen.
-  const stil = CONSENT_BAR_CSS + CONSENT_CHOICE_CSS + consentThemeCss(theme);
+  const stil =
+    CONSENT_BAR_CSS + CONSENT_CHOICE_CSS + consentThemeCss(darstellung);
   if (mode === "revoke") {
     return wrapRevoke(
       aufbauDerLeiste("return false;", "    offen = host;\n", "true", stil)

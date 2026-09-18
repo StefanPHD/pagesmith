@@ -225,10 +225,23 @@ export type ProjectSettings = {
   //            AUSSCHLIESSLICH ueber getConsentTheme; der Typ ist `unknown` aus demselben
   //            Grund wie bei `dialog`. Er liegt als NACHBAR von `dialog` und nicht als
   //            eigenes Top-Level-Mitglied — bindende Entscheidung P11.13-6.
+  //            SEIT SCHEIBE 11.13c TRAEGT ER EINEN VIERTEN WERT, "custom" — bindende
+  //            Entscheidung P11.13-12: die eigenen Farben sind eine vierte DARSTELLUNG
+  //            und kein zweiter Schalter, damit "Dunkel PLUS eigene Farben" gar nicht
+  //            erst als Zustand entsteht.
+  //   colorBackground / colorText = DIE ZWEI FREIEN FARBEN (Phase 11.13, Scheibe
+  //            11.13c; bindende Entscheidung P11.13-19). FLACHE Nachbarn, KEIN
+  //            Unterobjekt; der Typ ist `unknown` aus demselben Grund wie oben.
+  //            SIE WERDEN NUR GELESEN, WENN `theme` === "custom" IST — sonst bleiben sie
+  //            unberuehrt liegen, damit eine Wahl das Umschalten ueberlebt.
+  //            DIE FELDNAMEN SIND EINE EINBAHNSTRASSE: ein Blob, der sie traegt, traegt
+  //            sie weiter; eine Umbenennung muesste beide Formen lesen (P11.13-19).
   consent?: {
     gate?: boolean;
     dialog?: unknown;
     theme?: unknown;
+    colorBackground?: unknown;
+    colorText?: unknown;
   };
 };
 
@@ -737,6 +750,16 @@ export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
     // (Pflicht-Mutation Mu4, 2026-09-17): TH3 an der reinen Funktion, UI3 und UI4 am
     // Bedienweg. Die erste Vorhersage nannte TH3 als Einzelstueck und war zu eng.
     getConsentTheme(a) === getConsentTheme(b) &&
+    // DIE ZWEI FARB-TERME (Phase 11.13, Scheibe 11.13c; bindende Entscheidung P11.13-19).
+    // ZWEI SKALARE TERME, KEIN OBJEKTVERGLEICH, und das ist der ganze Punkt: `===` auf
+    // zwei Rueckgaben DERSELBEN Funktion kompiliert bei JEDEM Rueckgabetyp. Ein Objekt
+    // verglichen sich per REFERENZ — nach jedem setSettings eine neue Referenz und damit
+    // dauerhaft dirty, oder bei Mutation am selben Objekt nie dirty —, und NICHTS wuerde
+    // davon rot. Verglichen wird der NORMALISIERTE Wert (die Leser-Rueckgabe), damit ein
+    // fehlendes Feld auf beiden Seiten gleich ist und kein false-dirty entsteht.
+    // OHNE SIE GINGE DER WERT STILL VERLOREN — dieselbe Kette wie beim Themenwert.
+    getConsentColorBackground(a) === getConsentColorBackground(b) &&
+    getConsentColorText(a) === getConsentColorText(b) &&
     TRACKING_TARGETS.every(
       (t) =>
         getPixelId(a, t) === getPixelId(b, t) &&
@@ -827,10 +850,16 @@ export function setConsentDialog(
 }
 
 /**
- * DIE GEBAUTEN WERTE DER DARSTELLUNG (Phase 11.13, Scheibe 11.13b; bindende Entscheidung
- * P11.13-6). "light" = das Stylesheet, das der Dialog seit Phase 11.5 traegt; "dark" =
- * dasselbe plus reine Farb-Ueberschreibungen; "auto" = "light" plus dieselben
- * Ueberschreibungen in einer @media-Regel auf `prefers-color-scheme: dark`.
+ * DIE GEBAUTEN WERTE DER DARSTELLUNG (Phase 11.13, Scheiben 11.13b und 11.13c; bindende
+ * Entscheidungen P11.13-6 und P11.13-12). "light" = das Stylesheet, das der Dialog seit
+ * Phase 11.5 traegt; "dark" = dasselbe plus reine Farb-Ueberschreibungen; "auto" = "light"
+ * plus dieselben Ueberschreibungen in einer @media-Regel auf `prefers-color-scheme: dark`;
+ * "custom" = "light" plus ERZEUGTE Ueberschreibungen aus den zwei freien Farben.
+ * DER VIERTE WERT IST EINE VIERTE DARSTELLUNG UND KEIN ZWEITER SCHALTER (P11.13-12): Es
+ * gibt zu jedem Zeitpunkt GENAU EINE Darstellung, und "Dunkel PLUS eigene Farben" ist
+ * damit kein darstellbarer Zustand.
+ * NUR "custom" LIEST DIE ZWEI FARBFELDER; die drei uebrigen Werte liefern byte-gleich
+ * aus wie vor der Scheibe 11.13c (Invariante Z1 des Zuschnitts).
  * EIN WERT STEHT HIER ERST, WENN SEIN STYLESHEET GEBAUT IST — dieselbe Auflage wie bei
  * CONSENT_DIALOGS, und aus demselben Grund: das Bedienelement bietet genau diese Werte an,
  * und ein Wert ohne Stylesheet wuerde beim Veroeffentlichen verweigert. Welche Zeichen ein
@@ -839,7 +868,7 @@ export function setConsentDialog(
  * KEIN WERT TRAEGT JE DAS PRAEFIX `__ps_` — deshalb dient ein `__ps_`-Wert in den Tests als
  * Beleg fuer einen unbekannten Wert, wie beim Dialogwert.
  */
-export const CONSENT_THEMES = ["light", "dark", "auto"] as const;
+export const CONSENT_THEMES = ["light", "dark", "auto", "custom"] as const;
 export type ConsentTheme = (typeof CONSENT_THEMES)[number];
 
 /**
@@ -874,7 +903,10 @@ export const CONSENT_THEME_UNKNOWN_MESSAGE =
 export function getConsentTheme(settings: ProjectSettings): ConsentThemeRead {
   const theme = settings.consent?.theme;
   if (theme === undefined) return "light";
-  return theme === "light" || theme === "dark" || theme === "auto"
+  return theme === "light" ||
+    theme === "dark" ||
+    theme === "auto" ||
+    theme === "custom"
     ? theme
     : "unknown";
 }
@@ -897,3 +929,147 @@ export function setConsentTheme(
     },
   };
 }
+
+/**
+ * DAS FORMAT-TOR DER ZWEI FREIEN FARBEN (Phase 11.13, Scheibe 11.13c; bindende
+ * Entscheidung P11.13-14). ZUGELASSEN IST AUSSCHLIESSLICH `^#[0-9a-f]{6}$` — keine
+ * Kurzform, keine Grossbuchstaben, keine Namen, kein rgb(), kein Alpha. UND KEINE
+ * NORMALISIERUNG: Ein Wert, der nur nach Umformung passte, wird ABGEWIESEN.
+ *
+ * DER GRUND IST KEIN GESCHMACK, SONDERN DER DREI-EBENEN-BEFUND (VERMERK P11.13-5): Der
+ * Wert landet in CSS INNERHALB eines JS-String-Literals INNERHALB des Rohtexts eines
+ * <script>-Elements. JSON.stringify deckt NUR die mittlere Ebene — es maskiert weder `;`
+ * noch `}` noch `<`. EIN ALPHABET AUS `#` UND SECHZEHN HEX-ZEICHEN ENTHAELT KEIN `;`,
+ * KEIN `}`, KEIN `{`, KEIN `/`, KEIN `(` UND KEIN `<`; es deckt damit alle drei Ebenen
+ * ZUGLEICH, ohne dass irgendwo eine Maskierung richtig sein muss. Eine Maskierung je
+ * Ebene waeren drei Stellen, die einzeln falsch werden koennen — ein Alphabet ist eine.
+ * WARUM AUCH DIE GROSSBUCHSTABEN FALLEN: Jede zugelassene Schreibvariante ist eine zweite
+ * Form desselben Werts und verlangt eine Normalisierung — genau die Umformung, die diese
+ * Entscheidung ausschliesst.
+ */
+export const CONSENT_COLOR_PATTERN = /^#[0-9a-f]{6}$/;
+
+declare const consentColorMarke: unique symbol;
+
+/**
+ * DER GEPRUEFTE FARBTYP — OPAK (Phase 11.13, Scheibe 11.13c; bindende Entscheidung
+ * P11.13-17). Eine Zeichenkette mit einer Marke, die ausserhalb von readConsentColor
+ * nicht herstellbar ist: EIN ROHER `string` IST IHM NICHT ZUWEISBAR, und wer einen an
+ * den Erzeuger gibt, bekommt einen COMPILER-FEHLER statt eines Laufzeit-Fehlers.
+ * VERWORFEN: ein Huellen-Objekt `{ hex: string }`. Ein roher String kompiliert dort
+ * ebenfalls nicht — aber an der Einsetzstelle wird ausgepackt, und dann ist der Wert
+ * wieder ein roher String. Der Compiler hoerte genau dort auf zu helfen, wo der Wert in
+ * den ausgelieferten Text geht.
+ */
+export type ConsentColor = string & { readonly [consentColorMarke]: true };
+
+/** Ergebnis des Lesers: eine gepruefte Farbe ODER "unknown". Kein dritter Ausgang. */
+export type ConsentColorRead = ConsentColor | "unknown";
+
+/**
+ * DIE EINZIGE ZUSICHERUNG DES GEPRUEFTEN TYPS IM GANZEN REPO (bindende Entscheidung
+ * P11.13-17), und sie steht UNMITTELBAR HINTER DEM REGEX-TEST.
+ *
+ * DIE ZAHL EINS IST DIE ZUSAGE, NICHT DIE OPAZITAET: Ein opaker Typ mit zwei
+ * Erzeugungsstellen ist kein Tor, sondern ein Tor mit einer Tuer daneben. Wer den Typ an
+ * einer zweiten Stelle erzeugt — eine weitere Zusicherung, eine Hilfsfunktion "fuer
+ * Tests", ein Konstruktor —, hebt das Format-Tor auf, OHNE DASS EIN GATE ROT WIRD: Der
+ * Compiler ist danach zufrieden, und die Pruefung findet nicht mehr statt. Gefangen wird
+ * das allein vom Waechter CF1 in settings.test.ts, und der sieht ZEICHEN, nicht Bedeutung
+ * — seine Grenze steht an ihm selbst.
+ * MEHRERE AUFRUFER SIND AUSDRUECKLICH ZULAESSIG — die zwei Leser unten und der
+ * Schreibweg der Oberflaeche rufen alle DIESE Funktion. Eine Pruefstelle, mehrere
+ * Aufrufer; das ist die Gestalt, die die Grenze von P11.13-17 vorsieht.
+ * KEIN RUECKFALL AUF EINEN VORGABEWERT: Sonst saehe die abbrechende Stelle in
+ * publishProject einen ungueltigen Wert nie, und der Abbruch waere toter Code
+ * (docs/immer-beachten.md, EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB, Folge (a)).
+ */
+export function readConsentColor(raw: unknown): ConsentColorRead {
+  return typeof raw === "string" && CONSENT_COLOR_PATTERN.test(raw)
+    ? (raw as ConsentColor)
+    : "unknown";
+}
+
+/** Der Hintergrund der eigenen Darstellung, geprueft. Gelesen nur bei theme "custom". */
+export function getConsentColorBackground(
+  settings: ProjectSettings
+): ConsentColorRead {
+  return readConsentColor(settings.consent?.colorBackground);
+}
+
+/** Die Textfarbe der eigenen Darstellung, geprueft. Gelesen nur bei theme "custom". */
+export function getConsentColorText(
+  settings: ProjectSettings
+): ConsentColorRead {
+  return readConsentColor(settings.consent?.colorText);
+}
+
+/**
+ * DIE ZWEI VORBELEGUNGS-WERTE DES BEDIENELEMENTS (bindende Entscheidung P11.13-22).
+ * Sie sind der HEUTIGE HELLE BESTAND — der Betreiber startet bei genau der Darstellung,
+ * die er vorher hatte, und sieht die Wirkung erst, wenn er etwas aendert.
+ * SIE SIND KEIN VORGABEWERT DES LESERS: readConsentColor faellt NIE auf sie zurueck.
+ * Geschrieben werden sie allein beim WECHSEL auf "custom", also auf eine NUTZERHANDLUNG
+ * hin, und nur wenn der gespeicherte Wert fehlt oder ungueltig ist.
+ *
+ * SIE HIESSEN BIS ZUM 2026-09-18 `…_FALLBACK`, UND DER NAME WAR DAS GEGENTEIL DESSEN, WAS
+ * SIE SIND: Ein Rueckfall ist eine LESESEITE, die einen ungueltigen Wert unbemerkt in
+ * einen gueltigen verwandelt — genau das schliesst Entscheidung P11.13-22 aus. Hier wird
+ * auf eine Nutzerhandlung hin GESCHRIEBEN, was der Betreiber danach sieht und aendern
+ * kann. Wer dem alten Namen glaubte, baute beim naechsten Mal den stillen Rueckfall ein
+ * und berief sich auf diese Konstante.
+ */
+export const CONSENT_COLOR_BACKGROUND_VORBELEGUNG = "#ffffff";
+export const CONSENT_COLOR_TEXT_VORBELEGUNG = "#111827";
+
+/**
+ * Die zwei Farben setzen (Phase 11.13, Scheibe 11.13c). Reine Funktion, gleiche Bauform
+ * wie setConsentTheme: neues Objekt, bestehende Mitglieder unberuehrt.
+ * SIE NIMMT ROHE STRINGS: Der Blob ist ungepruefte Client-Eingabe, und die Pruefung
+ * gehoert an den LESER, nicht an den Schreiber — sonst gaebe es zwei Tore.
+ * `dialog`, `gate` und `theme` werden NICHT angefasst.
+ */
+export function setConsentColors(
+  settings: ProjectSettings,
+  colorBackground: string,
+  colorText: string
+): ProjectSettings {
+  return {
+    ...settings,
+    consent: {
+      ...settings.consent,
+      colorBackground,
+      colorText,
+    },
+  };
+}
+
+/**
+ * Die Meldung, mit der publishProject bei einer ungueltigen oder fehlenden FARBE
+ * abbricht. Sie ist EIGEN und nicht die des Themenwerts: Sie nennt einen anderen Bereich
+ * der Oberflaeche, und ein Betreiber, der die falsche Stelle sucht, findet nichts.
+ */
+export const CONSENT_COLORS_UNKNOWN_MESSAGE =
+  "Die eigenen Farben des Einwilligungs-Dialogs sind unvollständig oder ungültig. Bitte unter „Darstellung“ beide Farben neu wählen. Es wurde nichts veröffentlicht.";
+
+/**
+ * DIE DARSTELLUNG, WIE SIE AN DEN ERZEUGER REIST (Phase 11.13, Scheibe 11.13c; bindende
+ * Entscheidung P11.13-18) — EINE DISKRIMINIERTE UNION.
+ *
+ * DER GRUND: DER UNMOEGLICHE ZUSTAND WIRD UNDARSTELLBAR, NICHT ABGEFANGEN. "Eigene
+ * Farben ohne Farben" laesst sich gar nicht erst hinschreiben; es braucht dafuer keinen
+ * Laufzeit-Wurf, keine Pruefung und keinen Test. Ein Wurf waere die schwaechere Bauform:
+ * Er fienge den Zustand erst, wenn jemand ihn erzeugt hat, und nur auf dem Pfad, den ein
+ * Test tatsaechlich laeuft.
+ * SIE BLEIBT EIN PFLICHT-PARAMETER OHNE VORGABEWERT an injectPageViewEmitter,
+ * buildConsentBarScript und buildConsentModalScript — Entscheidung P11.13-11 gilt
+ * unveraendert und wird NICHT ausgedehnt: diese Union aendert die GESTALT des einen
+ * Parameters, nicht seine Zahl.
+ */
+export type ConsentAppearance =
+  | { readonly theme: "light" | "dark" | "auto" }
+  | {
+      readonly theme: "custom";
+      readonly background: ConsentColor;
+      readonly text: ConsentColor;
+    };

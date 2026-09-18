@@ -2,6 +2,31 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 import { buildConsentBarScript } from "./consent-bar";
 import { CONSENT_GROUP_KEYS } from "./consent-choice";
+import {
+  readConsentColor,
+  type ConsentAppearance,
+  type ConsentColor,
+} from "@/lib/settings";
+
+// DIE VIERTE DARSTELLUNG FUER DIE WAECHTER (Scheibe 11.13c). Die Probefarben gehen durch
+// das Format-Tor und nicht an ihm vorbei; die Verengung geschieht ueber einen VERGLEICH,
+// nicht ueber eine zweite Zusicherung (die CF1 in settings.test.ts zaehlt).
+const testFarbe = (roh: string): ConsentColor => {
+  const geprueft = readConsentColor(roh);
+  if (geprueft === "unknown") throw new Error(`Testfarbe ungueltig: ${roh}`);
+  return geprueft;
+};
+const VIER_DARSTELLUNGEN: ConsentAppearance[] = [
+  { theme: "light" },
+  { theme: "dark" },
+  { theme: "auto" },
+  {
+    theme: "custom",
+    background: testFarbe("#0a0b0c"),
+    text: testFarbe("#f0f1f2"),
+  },
+];
+
 
 // SCHEIBE 11.5d — DIE EINWILLIGUNGS-LEISTE. SEIT SCHEIBE 11.5e-1 MIT ZWEI GRUPPEN-SCHALTERN
 // UND DREI KNOEPFEN; die Tests dieser Scheibe stehen unten unter "11.5e-1".
@@ -62,7 +87,7 @@ function installBeacon(): BeaconSpy {
 
 function scriptsOf(html: string, on: boolean): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(html, KEY, on ? "bar" : "off", "light"),
+    injectPageViewEmitter(html, KEY, on ? "bar" : "off", { theme: "light" }),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -149,13 +174,13 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   });
 
   it("L1: Schalter AUS -> kein Leisten-Block (Positivkontrolle: Emitter da)", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "off", "light");
+    const out = injectPageViewEmitter(HTML, KEY, "off", { theme: "light" });
     expect(out).not.toContain(BAR_ID);
     expect(out).toContain('id="__ps_pve"');
   });
 
   it("L2: Schalter AN -> Gate < Wiederherstellung < Leiste < Setzer < Emitter", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "bar", "light");
+    const out = injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" });
     const gate = out.indexOf('id="pagesmith-consent"');
     const restore = out.indexOf('id="__ps_cnr"');
     const bar = out.indexOf(BAR_ID);
@@ -172,7 +197,15 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   // der Nachbarn: KEIN `<` im Rumpf. Damit kann weder ein `</script>` noch ein `</body>`
   // noch ein `<!--` darin stehen.
   it("L3: der Rumpf enthaelt kein '<'; genau ein </script>, kein </body>", () => {
-    const block = buildConsentBarScript("load", "light");
+    // SEIT SCHEIBE 11.13c UEBER ALLE VIER DARSTELLUNGEN — und das ist hier keine
+    // Formalie: Der custom-Zweig ist der EINZIGE, in den ein Betreiber-Wert eingeht.
+    // Genau deshalb traegt diese Zusicherung die Sicherheitsachse der Scheibe.
+    for (const d of VIER_DARSTELLUNGEN) {
+      const b = buildConsentBarScript("load", d);
+      const r = b.slice(b.indexOf(">") + 1, b.lastIndexOf("<"));
+      expect(r.includes("<"), JSON.stringify(d)).toBe(false);
+    }
+    const block = buildConsentBarScript("load", { theme: "light" });
     const rumpf = block.slice(block.indexOf(">") + 1, block.lastIndexOf("<"));
     // POSITIVKONTROLLE des Ausschnitts: er traegt wirklich den Code.
     expect(rumpf).toContain("attachShadow");
@@ -186,7 +219,7 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
     // SEIT SCHEIBE 11.13b AUCH FUER DIE ZWEI ANDEREN DARSTELLUNGEN (Nachschaerfung N4):
     // Ein Thema legt ZEICHEN in den Rumpf; ein `<` darin schloesse den Script-Block.
     for (const thema of ["dark", "auto"] as const) {
-      const b = buildConsentBarScript("load", thema);
+      const b = buildConsentBarScript("load", { theme: thema });
       const r = b.slice(b.indexOf(">") + 1, b.lastIndexOf("<"));
       expect(r.includes("<"), thema).toBe(false);
       expect(b.match(/<\/script>/gi)?.length, thema).toBe(1);
@@ -199,11 +232,11 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   // publish.test.ts. Enthielte der Block eine davon, luege eine indexOf-Reihenfolge,
   // ohne rot zu werden.
   it("L4: der Block traegt keine der Zeichenketten, nach denen der Bestand sucht", () => {
-    const block = buildConsentBarScript("load", "light");
+    const block = buildConsentBarScript("load", { theme: "light" });
     const mitDaten =
       '<html><body><h1>x</h1><script type="application/json" id="pagesmith-mappings">[]</scr' +
       "ipt></body></html>";
-    const out = injectPageViewEmitter(mitDaten, KEY, "bar", "light");
+    const out = injectPageViewEmitter(mitDaten, KEY, "bar", { theme: "light" });
     for (const nadel of [
       "pagesmith-consent",
       "pagesmith-mappings",
@@ -394,10 +427,11 @@ describe("11.5d — die Leiste macht die Seite nicht unbedienbar", () => {
     // `overflow` im Block: nie. SEIT SCHEIBE 11.13b IN ALLEN DREI DARSTELLUNGEN
     // (Nachschaerfung N4) — die Zusicherung ist unveraendert, nur ihr Gegenstand waechst.
     const traegtOverflow = (text: string): boolean => /overflow/i.test(text);
-    for (const thema of ["light", "dark", "auto"] as const) {
-      expect(traegtOverflow(buildConsentBarScript("load", thema)), thema).toBe(
-        false
-      );
+    for (const d of VIER_DARSTELLUNGEN) {
+      expect(
+        traegtOverflow(buildConsentBarScript("load", d)),
+        JSON.stringify(d)
+      ).toBe(false);
     }
     // POSITIVKONTROLLE der Suche.
     expect(traegtOverflow("html{overflow:hidden}")).toBe(true);
@@ -679,7 +713,7 @@ describe("11.13a — die Anordnung", () => {
   // Sichtbereich und aendert damit die SCROLL-POSITION der fremden Seite — genau das
   // verbietet Invariante I1. Dass sie WIRKT, ist eine Live-Achse und in der Probe gemessen.
   it("L23: der Fokus-Aufruf traegt preventScroll — Struktur-Zusicherung mit Positivkontrolle", () => {
-    const block = buildConsentBarScript("load", "light");
+    const block = buildConsentBarScript("load", { theme: "light" });
     expect(block).toContain("measure.box.focus({ preventScroll: true })");
     // POSITIVKONTROLLE der Suche im selben Lauf: der blosse Aufruf kommt NICHT vor.
     expect(/measure\.box\.focus\(\)/.test(block)).toBe(false);
@@ -737,7 +771,7 @@ describe("11.13a — die Anordnung", () => {
     expect(weg.getAttribute("type")).toBe("button");
     expect(weg.getAttribute("class")).toBe("way");
 
-    const block = buildConsentBarScript("load", "light");
+    const block = buildConsentBarScript("load", { theme: "light" });
     expect(/href/i.test(block)).toBe(false);
     expect(/createElement\("a"\)/.test(block)).toBe(false);
     // POSITIVKONTROLLE beider Suchen im selben Lauf.

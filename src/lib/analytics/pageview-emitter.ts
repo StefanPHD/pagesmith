@@ -19,7 +19,7 @@ import { buildConsentBarScript } from "@/lib/tracking/consent-bar";
 import { buildConsentModalScript } from "@/lib/tracking/consent-modal";
 import { buildConsentDenyScript } from "@/lib/tracking/consent-setter";
 import { buildConsentRestoreScript } from "@/lib/tracking/consent-store";
-import type { ConsentDialog, ConsentTheme } from "@/lib/settings";
+import type { ConsentAppearance, ConsentDialog } from "@/lib/settings";
 
 const SCRIPT_ID = "__ps_pve";
 
@@ -142,7 +142,7 @@ ${PAGEVIEW_SEND_API}();
 // ausgeschaltetem Dialog keine ausgelieferte Zeile.
 function consentBlocksFor(
   form: ConsentDialog,
-  theme: ConsentTheme
+  darstellung: ConsentAppearance
 ): {
   gateOn: boolean;
   dialog: string;
@@ -154,14 +154,14 @@ function consentBlocksFor(
     case "bar":
       return {
         gateOn: true,
-        dialog: buildConsentBarScript("load", theme),
-        revoke: buildConsentBarScript("revoke", theme),
+        dialog: buildConsentBarScript("load", darstellung),
+        revoke: buildConsentBarScript("revoke", darstellung),
       };
     case "modal":
       return {
         gateOn: true,
-        dialog: buildConsentModalScript("load", theme),
-        revoke: buildConsentModalScript("revoke", theme),
+        dialog: buildConsentModalScript("load", darstellung),
+        revoke: buildConsentModalScript("revoke", darstellung),
       };
     default: {
       const unhandled: never = form;
@@ -193,11 +193,17 @@ export function injectPageViewEmitter(
   // Kundenseite ist der Fremdkoerper, wegen dessen diese Phase existiert. Ein UNBEKANNTER
   // Wert erreicht diese Funktion nicht: publishProject verweigert ihn vorher, sofern der
   // Dialog eingeschaltet ist (bindende Entscheidung P11.13-7).
-  consentTheme: ConsentTheme
+  //
+  // SEIT DER SCHEIBE 11.13c IST ES EINE DISKRIMINIERTE UNION statt eines Strings
+  // (Entscheidung P11.13-18). DIE ZAHL DER PFLICHT-PARAMETER AENDERT SICH NICHT — P11.13-11
+  // gilt unveraendert; geaendert hat sich allein die GESTALT dieses einen. Der Zweig
+  // "custom" traegt seine zwei GEPRUEFTEN Farben mit sich, sodass "eigene Farben ohne
+  // Farben" nicht konstruierbar ist.
+  consentAppearance: ConsentAppearance
 ): string {
   const { gateOn, dialog, revoke } = consentBlocksFor(
     consentDialog,
-    consentTheme
+    consentAppearance
   );
   // ZWEITE EINFUEGESTELLE DES GETEILTEN CONSENT-GATES (Phase 11, zweite Scheibe).
   // Sie ist noetig, weil eine publizierte Seite OHNE Mappings KEIN Wiring traegt —

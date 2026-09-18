@@ -4,6 +4,31 @@ import type { ConsentDialog } from "@/lib/settings";
 import { buildConsentBarScript } from "./consent-bar";
 import { CONSENT_CHOICE_JS } from "./consent-choice";
 import { buildConsentModalScript } from "./consent-modal";
+import {
+  readConsentColor,
+  type ConsentAppearance,
+  type ConsentColor,
+} from "@/lib/settings";
+
+// DIE VIERTE DARSTELLUNG FUER DIE WAECHTER (Scheibe 11.13c). Die Probefarben gehen durch
+// das Format-Tor und nicht an ihm vorbei; die Verengung geschieht ueber einen VERGLEICH,
+// nicht ueber eine zweite Zusicherung (die CF1 in settings.test.ts zaehlt).
+const testFarbe = (roh: string): ConsentColor => {
+  const geprueft = readConsentColor(roh);
+  if (geprueft === "unknown") throw new Error(`Testfarbe ungueltig: ${roh}`);
+  return geprueft;
+};
+const VIER_DARSTELLUNGEN: ConsentAppearance[] = [
+  { theme: "light" },
+  { theme: "dark" },
+  { theme: "auto" },
+  {
+    theme: "custom",
+    background: testFarbe("#0a0b0c"),
+    text: testFarbe("#f0f1f2"),
+  },
+];
+
 
 // SCHEIBE 11.5d-2 — DAS CENTER-MODAL. SEIT SCHEIBE 11.5e-1 MIT ZWEI GRUPPEN-SCHALTERN UND
 // DREI KNOEPFEN; die Tests dieser Scheibe stehen unten unter "11.5e-1". Zeiger auf eine
@@ -68,7 +93,7 @@ function installBeacon(): BeaconSpy {
 
 function scriptsOf(html: string, form: ConsentDialog): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(html, KEY, form, "light"),
+    injectPageViewEmitter(html, KEY, form, { theme: "light" }),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -157,7 +182,7 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
   });
 
   it("M1: 'off' -> kein Modal-Block (Positivkontrolle: Emitter da)", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "off", "light");
+    const out = injectPageViewEmitter(HTML, KEY, "off", { theme: "light" });
     expect(out).not.toContain(MODAL_ID);
     expect(out).toContain('id="__ps_pve"');
   });
@@ -165,17 +190,17 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
   // M1b. LEISTE UND MODAL SCHLIESSEN EINANDER AUS — in beide Richtungen, je mit der
   // Anwesenheit des eigenen Blocks als Positivkontrolle.
   it("M1b: 'bar' -> kein Modal-Block; 'modal' -> kein Leisten-Block", () => {
-    const leiste = injectPageViewEmitter(HTML, KEY, "bar", "light");
+    const leiste = injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" });
     expect(leiste).toContain('id="__ps_clb"');
     expect(leiste).not.toContain(MODAL_ID);
 
-    const modal = injectPageViewEmitter(HTML, KEY, "modal", "light");
+    const modal = injectPageViewEmitter(HTML, KEY, "modal", { theme: "light" });
     expect(modal).toContain(MODAL_ID);
     expect(modal).not.toContain('id="__ps_clb"');
   });
 
   it("M2: 'modal' -> Gate < Wiederherstellung < Modal < Setzer < Emitter", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "modal", "light");
+    const out = injectPageViewEmitter(HTML, KEY, "modal", { theme: "light" });
     const gate = out.indexOf('id="pagesmith-consent"');
     const restore = out.indexOf('id="__ps_cnr"');
     const modal = out.indexOf(MODAL_ID);
@@ -190,7 +215,7 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
 
   // M3. DER SERIALISIERUNGS-WAECHTER DIESES BLOCKS, Spiegel von L3: KEIN `<` im Rumpf.
   it("M3: der Rumpf enthaelt kein '<'; genau ein </script>, kein </body>", () => {
-    const block = buildConsentModalScript("load", "light");
+    const block = buildConsentModalScript("load", { theme: "light" });
     const r = rumpf(block);
     // POSITIVKONTROLLE des Ausschnitts: er traegt wirklich den Code.
     expect(r).toContain("attachShadow");
@@ -202,11 +227,12 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
     expect(block.toLowerCase()).not.toContain("</body>");
 
     // SEIT SCHEIBE 11.13b AUCH FUER DIE ZWEI ANDEREN DARSTELLUNGEN (Nachschaerfung N4),
-    // Spiegel von L3.
-    for (const thema of ["dark", "auto"] as const) {
-      const b = buildConsentModalScript("load", thema);
-      expect(rumpf(b).includes("<"), thema).toBe(false);
-      expect(b.match(/<\/script>/gi)?.length, thema).toBe(1);
+    // Spiegel von L3. SEIT 11.13c UEBER ALLE VIER — und der vierte ist der einzige, in den
+    // ein Betreiber-Wert eingeht; er traegt damit die Sicherheitsachse der Scheibe.
+    for (const d of VIER_DARSTELLUNGEN) {
+      const b = buildConsentModalScript("load", d);
+      expect(rumpf(b).includes("<"), JSON.stringify(d)).toBe(false);
+      expect(b.match(/<\/script>/gi)?.length, JSON.stringify(d)).toBe(1);
     }
   });
 
@@ -214,11 +240,11 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
   // Bestand auch nach `__ps_clb` (L1, L2, L8, L12, P2, P2b, P3). Und in der GEGENRICHTUNG:
   // Der Leisten-Block traegt die Kennungen des Modals nicht, denn M1b und P2 suchen sie.
   it("M4: der Block traegt keine der Zeichenketten, nach denen der Bestand sucht — und umgekehrt", () => {
-    const block = buildConsentModalScript("load", "light");
+    const block = buildConsentModalScript("load", { theme: "light" });
     const mitDaten =
       '<html><body><h1>x</h1><script type="application/json" id="pagesmith-mappings">[]</scr' +
       "ipt></body></html>";
-    const outModal = injectPageViewEmitter(mitDaten, KEY, "modal", "light");
+    const outModal = injectPageViewEmitter(mitDaten, KEY, "modal", { theme: "light" });
     for (const nadel of [
       "pagesmith-consent",
       "pagesmith-mappings",
@@ -230,13 +256,13 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
       // POSITIVKONTROLLE: dieselbe Suche trifft im ausgelieferten Text.
       expect(outModal).toContain(nadel);
     }
-    const outLeiste = injectPageViewEmitter(mitDaten, KEY, "bar", "light");
+    const outLeiste = injectPageViewEmitter(mitDaten, KEY, "bar", { theme: "light" });
     for (const nadel of ["__ps_clb", "pagesmith-bar"]) {
       expect(block).not.toContain(nadel);
       // POSITIVKONTROLLE: dieselbe Suche trifft im Text mit der Leiste.
       expect(outLeiste).toContain(nadel);
     }
-    const leistenBlock = buildConsentBarScript("load", "light");
+    const leistenBlock = buildConsentBarScript("load", { theme: "light" });
     for (const nadel of ["__ps_cmo", "pagesmith-modal"]) {
       expect(leistenBlock).not.toContain(nadel);
       // POSITIVKONTROLLE: dieselbe Suche trifft im Text mit dem Modal.
@@ -480,7 +506,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
 
     // DIE NADELN — STRENG: lieber ein Fehlalarm, den jemand prueft, als ein Durchlassen.
     // Jede mit einem Beispiel, das sie treffen MUSS.
-    const block = buildConsentModalScript("load", "light");
+    const block = buildConsentModalScript("load", { theme: "light" });
     const NADELN: Array<[RegExp, string]> = [
       [/documentElement/, "document.documentElement.setAttribute('x', '1')"],
       [/document\.head/, "document.head.appendChild(s)"],
@@ -506,10 +532,13 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
     // ZEICHENGLEICH unveraendert, nur die Menge der geprueften Bloecke waechst. OHNE sie
     // waeren die zwei neuen Stylesheets von KEINER Nadel gedeckt — ein `overflow` oder ein
     // `scroll` in einem Thema ginge durch.
-    for (const thema of ["light", "dark", "auto"] as const) {
-      const blockThema = buildConsentModalScript("load", thema);
+    for (const d of VIER_DARSTELLUNGEN) {
+      const blockThema = buildConsentModalScript("load", d);
       for (const [nadel, beispiel] of NADELN) {
-        expect(nadel.test(blockThema), `${thema} ${String(nadel)}`).toBe(false);
+        expect(
+          nadel.test(blockThema),
+          `${JSON.stringify(d)} ${String(nadel)}`
+        ).toBe(false);
         // POSITIVKONTROLLE der Nadel.
         expect(nadel.test(beispiel), String(nadel)).toBe(true);
       }
@@ -669,7 +698,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
       "if (window.pagesmithConsent !== undefined) return;",
       'if (api.read().state !== "never") return;',
     ];
-    for (const block of [buildConsentBarScript("load", "light"), buildConsentModalScript("load", "light")]) {
+    for (const block of [buildConsentBarScript("load", { theme: "light" }), buildConsentModalScript("load", { theme: "light" })]) {
       for (const zeile of ZEILEN) {
         expect(block.split(zeile).length - 1).toBe(1);
       }
@@ -687,7 +716,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
   it("M15b: Leisten- und Modal-Block tragen CONSENT_CHOICE_JS je genau einmal — Anwesenheit, keine Richtigkeit", () => {
     // POSITIVKONTROLLE: das Stueck ist nicht leer und traegt wirklich die Schalter.
     expect(CONSENT_CHOICE_JS).toContain('"checkbox"');
-    for (const block of [buildConsentBarScript("load", "light"), buildConsentModalScript("load", "light")]) {
+    for (const block of [buildConsentBarScript("load", { theme: "light" }), buildConsentModalScript("load", { theme: "light" })]) {
       expect(block.split(CONSENT_CHOICE_JS).length - 1).toBe(1);
     }
   });
@@ -810,7 +839,7 @@ describe("11.13a — die Anordnung", () => {
   // Sichtbereich und aendert damit die SCROLL-POSITION der fremden Seite — genau das
   // verbietet Invariante I1. Dass sie WIRKT, ist eine Live-Achse und in der Probe gemessen.
   it("M24: der Fokus-Aufruf traegt preventScroll — Struktur-Zusicherung mit Positivkontrolle", () => {
-    const block = buildConsentModalScript("load", "light");
+    const block = buildConsentModalScript("load", { theme: "light" });
     expect(block).toContain("measure.box.focus({ preventScroll: true })");
     // POSITIVKONTROLLE der Suche im selben Lauf: der blosse Aufruf kommt NICHT vor.
     expect(/measure\.box\.focus\(\)/.test(block)).toBe(false);
@@ -866,7 +895,7 @@ describe("11.13a — die Anordnung", () => {
     expect(weg.getAttribute("type")).toBe("button");
     expect(weg.getAttribute("class")).toBe("way");
 
-    const block = buildConsentModalScript("load", "light");
+    const block = buildConsentModalScript("load", { theme: "light" });
     expect(/href/i.test(block)).toBe(false);
     expect(/createElement\("a"\)/.test(block)).toBe(false);
     // POSITIVKONTROLLE beider Suchen im selben Lauf.

@@ -64,9 +64,15 @@ import {
   setConsentDialog,
   getConsentTheme,
   setConsentTheme,
+  getConsentColorBackground,
+  getConsentColorText,
+  setConsentColors,
+  CONSENT_COLOR_BACKGROUND_VORBELEGUNG,
+  CONSENT_COLOR_TEXT_VORBELEGUNG,
   setPixelId,
   settingsEqual,
   TRACKING_TARGETS,
+  type ConsentTheme,
   type ProjectSettings,
   type TrackingTarget,
 } from "@/lib/settings";
@@ -202,6 +208,47 @@ type SaveStatus = "idle" | "saving" | "saved" | "error";
 // Ehrliches Feedback ist Pflicht: navigator.clipboard kann in unsicherem Kontext
 // oder ohne Permission fehlschlagen -> kein stilles Nichts.
 type CopyStatus = "idle" | "copied" | "error";
+
+/**
+ * DIE WAHL DER DARSTELLUNG, MIT DER VORBELEGUNG DER ZWEI FARBEN (Phase 11.13, Scheibe
+ * 11.13c; bindende Entscheidung P11.13-22). Reine Funktion, damit der Schreibweg
+ * nachvollziehbar bleibt und die UI-Tests ihn ohne Umweg treffen.
+ *
+ * SIE BELEGT NUR BEIM WECHSEL AUF "custom" VOR, und nur FEHLENDE oder UNGUELTIGE Werte.
+ * EIN GESPEICHERTES GUELTIGES PAAR WIRD NIE UEBERSCHRIEBEN — jede Seite wird einzeln
+ * geprueft, ein gueltiger Hintergrund ueberlebt also auch dann, wenn die Textfarbe
+ * kaputt ist.
+ *
+ * WARUM UEBERHAUPT: `input[type="color"]` ZEIGT IMMER EINEN WERT — es kennt kein "nicht
+ * gesetzt". Ohne Vorbelegung zeigte die Flaeche Farben, DIE NIRGENDS GESPEICHERT SIND,
+ * und das Veroeffentlichen verweigerte anschliessend mit Verweis auf eine Einstellung,
+ * die der Betreiber auf dem Bildschirm vor sich sieht.
+ *
+ * DAS IST KEIN STILLER RUECKFALL, UND DIE UNTERSCHEIDUNG TRAEGT DIE GANZE ENTSCHEIDUNG:
+ * Der LESER (readConsentColor in lib/settings.ts) bleibt bei "unknown" und bekommt
+ * keinen Vorgabewert (P11.13-14). Hier wird auf eine NUTZERHANDLUNG hin ein echter Wert
+ * in den Blob geschrieben, den der Betreiber sieht und aendern kann — gespeichert wird,
+ * was angezeigt wird. Ein Rueckfall im Sinne der Dauerregel waere eine LESESEITE, die
+ * einen ungueltigen Wert unbemerkt in einen gueltigen verwandelt.
+ * BEIM LADEN GESCHIEHT NICHTS: Diese Funktion laeuft allein am onChange der Radiogruppe.
+ * Ein Projekt, das mit "custom" und kaputter Farbe geladen wird, behaelt sie und zeigt
+ * den roten Hinweis.
+ */
+function waehleDarstellung(
+  prev: ProjectSettings,
+  theme: ConsentTheme
+): ProjectSettings {
+  const next = setConsentTheme(prev, theme);
+  if (theme !== "custom") return next;
+  const hintergrund = getConsentColorBackground(next);
+  const text = getConsentColorText(next);
+  if (hintergrund !== "unknown" && text !== "unknown") return next;
+  return setConsentColors(
+    next,
+    hintergrund === "unknown" ? CONSENT_COLOR_BACKGROUND_VORBELEGUNG : hintergrund,
+    text === "unknown" ? CONSENT_COLOR_TEXT_VORBELEGUNG : text
+  );
+}
 
 export default function CodeImporter({
   initialCode = "",
@@ -2699,7 +2746,12 @@ export default function CodeImporter({
               }
               consentTheme={getConsentTheme(settings)}
               onConsentThemeChange={(theme) =>
-                setSettings((prev) => setConsentTheme(prev, theme))
+                setSettings((prev) => waehleDarstellung(prev, theme))
+              }
+              consentColorBackground={getConsentColorBackground(settings)}
+              consentColorText={getConsentColorText(settings)}
+              onConsentColorChange={(background, text) =>
+                setSettings((prev) => setConsentColors(prev, background, text))
               }
               onToggleAbTest={handleToggleAbTest}
               abTestActive={abTestActive}

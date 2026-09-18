@@ -62,7 +62,7 @@ function deliver(consentDialog: ConsentDialog): string {
     capiProxyUrl: PROXY,
     consentTargets,
   });
-  return injectPageViewEmitter(functional, TRACKING_KEY, consentDialog, "light");
+  return injectPageViewEmitter(functional, TRACKING_KEY, consentDialog, { theme: "light" });
 }
 
 describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {

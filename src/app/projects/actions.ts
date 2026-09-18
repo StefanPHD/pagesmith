@@ -12,14 +12,17 @@ import {
   getTrackingKey,
   hasConversionRules,
   hasTargetPixelId,
+  CONSENT_COLORS_UNKNOWN_MESSAGE,
   CONSENT_DIALOG_UNKNOWN_MESSAGE,
   CONSENT_THEME_UNKNOWN_MESSAGE,
+  getConsentColorBackground,
+  getConsentColorText,
   getConsentDialog,
   getConsentTheme,
   isTrackingTarget,
   setCapiState,
   setHostingState,
-  type ConsentTheme,
+  type ConsentAppearance,
   type ProjectSettings,
   type TrackingTarget,
 } from "@/lib/settings";
@@ -1604,18 +1607,49 @@ export async function publishProject(
   if (consentDialog !== "off" && consentTheme === "unknown")
     return { ok: false, error: CONSENT_THEME_UNKNOWN_MESSAGE };
 
-  // AB HIER IST "unknown" NUR NOCH BEI "off" MOEGLICH — und dort erzeugt consentBlocksFor
-  // keinen Oberflaechen-Block, der Wert wird also NIE GELESEN. Der Typ von
-  // injectPageViewEmitter verlangt trotzdem einen gebauten Wert.
+  // DIE ZWEI FREIEN FARBEN (Phase 11.13, Scheibe 11.13c; bindende Entscheidungen
+  // P11.13-14 und P11.13-19).
+  //
+  // DIE REIHENFOLGE DER DREI ABBRUECHE IST BINDEND UND KEINE KOSMETIK: Bei unbekanntem
+  // DIALOG waere gar nicht entscheidbar, ob das Thema zaehlt; bei unbekanntem THEMA nicht,
+  // ob die Farben zaehlen. Eine Meldung aus dem falschen Schritt schickt den Betreiber an
+  // die falsche Stelle der Oberflaeche.
+  //
+  // DER ABBRUCH HAENGT AM DIALOG *UND* AN DER DARSTELLUNG — dieselbe Asymmetrie wie bei
+  // P11.13-7: Nur wenn ein Oberflaechen-Block entsteht UND er die eigenen Farben traegt,
+  // gibt es einen Besucher-Preis. Ist die Darstellung nicht "custom", werden die zwei
+  // Felder WEDER GELESEN NOCH AUSGELIEFERT; sie bleiben im Blob liegen, damit eine Wahl
+  // das Umschalten ueberlebt (P11.13-14).
+  const colorBackground = getConsentColorBackground(snapshot.settings);
+  const colorText = getConsentColorText(snapshot.settings);
+  if (
+    consentDialog !== "off" &&
+    consentTheme === "custom" &&
+    (colorBackground === "unknown" || colorText === "unknown")
+  )
+    return { ok: false, error: CONSENT_COLORS_UNKNOWN_MESSAGE };
+
+  // AB HIER IST EIN UNGUELTIGER ZUSTAND NUR NOCH BEI "off" MOEGLICH — und dort erzeugt
+  // consentBlocksFor keinen Oberflaechen-Block, der Wert wird also NIE GELESEN. Der Typ
+  // von injectPageViewEmitter verlangt trotzdem einen gebauten Wert.
   // DIESE ZEILE IST KEIN RUECKFALL IM SINNE DER DAUERREGEL "EIN UNBEKANNTER
   // KONFIGURATIONSWERT BRICHT LAUT AB", und der Unterschied ist der ganze Grund fuer diesen
   // Absatz: Jene Regel verbietet, dass ein LESER einen unbekannten Wert auf den Vorgabewert
   // abbildet — dann saehe die abbrechende Stelle ihn nie. HIER IST DIE ABBRECHENDE STELLE
   // BEREITS PASSIERT, und der Platzhalter erreicht keine ausgelieferte Zeile. Dass er sie
-  // nicht erreicht, behauptet nicht dieser Kommentar, sondern PT2: "off" plus unbekanntes
-  // Thema liefert byte-gleich den Text ohne jeden Dialog-Baustein.
-  const deliveredTheme: ConsentTheme =
-    consentTheme === "unknown" ? "light" : consentTheme;
+  // nicht erreicht, behauptet nicht dieser Kommentar, sondern PT2 und T-OFF: "off" liefert
+  // fuer ALLE VIER Darstellungen byte-gleich den Text ohne jeden Dialog-Baustein.
+  // SEIT 11.13c IST ES EINE DISKRIMINIERTE UNION (P11.13-18): Der "custom"-Zweig entsteht
+  // NUR mit zwei geprueften Farben; ohne sie ist er gar nicht konstruierbar, und genau
+  // deshalb braucht es hier keine Zusicherung und keinen Wurf.
+  const deliveredAppearance: ConsentAppearance =
+    consentTheme === "custom"
+      ? colorBackground !== "unknown" && colorText !== "unknown"
+        ? { theme: "custom", background: colorBackground, text: colorText }
+        : { theme: "light" }
+      : consentTheme === "unknown"
+        ? { theme: "light" }
+        : { theme: consentTheme };
 
   const currentSettings = (owned.settings ?? {}) as ProjectSettings;
   const publishedAt = new Date().toISOString();
@@ -1736,7 +1770,7 @@ export async function publishProject(
       functionalHtml,
       trackingKey,
       consentDialog,
-      deliveredTheme
+      deliveredAppearance
     ),
     mappings: snapshot.mappings,
     settings: snapshot.settings,
@@ -1771,7 +1805,7 @@ export async function publishProject(
             variantB.functionalHtml,
             trackingKey,
             consentDialog,
-            deliveredTheme
+            deliveredAppearance
           ),
           mappings: variantB.mappings,
         },

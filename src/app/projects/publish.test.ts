@@ -1083,6 +1083,8 @@ describe("publishProject — die Darstellung (Scheibe 11.13b)", () => {
     "Die Darstellung des Einwilligungs-Dialogs hat einen unbekannten Wert. Bitte unter „Darstellung“ neu wählen. Es wurde nichts veröffentlicht.";
   const MESSAGE_DIALOG =
     "Die Einwilligungs-Einstellung dieses Projekts hat einen unbekannten Wert. Bitte unter „Einwilligung“ neu wählen. Es wurde nichts veröffentlicht.";
+  const MESSAGE_FARBEN =
+    "Die eigenen Farben des Einwilligungs-Dialogs sind unvollständig oder ungültig. Bitte unter „Darstellung“ beide Farben neu wählen. Es wurde nichts veröffentlicht.";
 
   function client() {
     return makeClient({
@@ -1186,5 +1188,203 @@ describe("publishProject — die Darstellung (Scheibe 11.13b)", () => {
       undefined
     );
     expect(res).toEqual({ ok: false, error: MESSAGE_DIALOG });
+  });
+
+  // ===== DIE ZWEI FREIEN FARBEN (Scheibe 11.13c) ==================================
+  // DIE MELDUNG STEHT OBEN ALS LITERAL, nicht als Import derselben Konstante — sonst
+  // waere der Test ein Spiegel.
+
+  // PT5. DER EINZIGE TEST, DER DIE VERWEIGERUNG BEI EINER KAPUTTEN FARBE FAENGT
+  // (Pflicht-Mutation M-b). Er prueft zugleich die STELLUNG des Abbruchs: Laege er hinter
+  // dem Label-Block, stuende "domains" in fromTables — und eine Label-Zeile bliebe zurueck.
+  // DIE FEINDLICHE EINGABE IST DIE AUS INVARIANTE Z8, nicht eine erfundene: Der Wert
+  // `#000000;}.bar{display:none` waere ohne den Anker im Muster eine ZWEITE CSS-Regel im
+  // Schattenbaum.
+  it("PT5: kaputte Farbe + 'custom' + 'bar' -> Abbruch mit der EIGENEN Meldung, nichts angelegt", async () => {
+    for (const [hg, tx] of [
+      ["#000000;}.bar{display:none", "#111827"],
+      ["#fff", "#111827"],
+      ["#FFFFFF", "#111827"],
+      ["#ffffff", "</script>"],
+      ["#ffffff", "url(x)"],
+      ["#ffffff", ""],
+    ]) {
+      const c = client();
+      const res = await publishProject(
+        "proj-1",
+        "<html><body>A</body></html>",
+        {
+          ...snapshot,
+          settings: {
+            consent: {
+              dialog: "bar",
+              theme: "custom",
+              colorBackground: hg,
+              colorText: tx,
+            },
+          },
+        },
+        undefined
+      );
+      expect(res, `${hg} / ${tx}`).toEqual({ ok: false, error: MESSAGE_FARBEN });
+      expect(c.rec.updatePatch).toBeNull();
+      expect(c.rec.inserts).toHaveLength(0);
+      expect(c.rec.fromTables).not.toContain("domains");
+    }
+  });
+
+  // PT5b. DAS FEHLENDE FELD ist derselbe Fall — und er ist der wahrscheinlichere: ein
+  // Projekt, dessen Blob "custom" traegt, aber nie eine Farbe bekommen hat.
+  it("PT5b: fehlende Farbe + 'custom' + 'modal' -> Abbruch, nichts angelegt", async () => {
+    const c = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      { ...snapshot, settings: { consent: { dialog: "modal", theme: "custom" } } },
+      undefined
+    );
+    expect(res).toEqual({ ok: false, error: MESSAGE_FARBEN });
+    expect(c.rec.updatePatch).toBeNull();
+    expect(c.rec.fromTables).not.toContain("domains");
+  });
+
+  // PT6. DIE ASYMMETRIE AUS P11.13-7, FORTGESCHRIEBEN AUF DIE FARBEN: Bei "off" entsteht
+  // kein Oberflaechen-Block, der Farbwert erreicht also keine ausgelieferte Zeile — und
+  // ein Abbruch dort sperrte das Veroeffentlichen fuer eine Einstellung ohne jede Wirkung.
+  // ER TRAEGT ZUGLEICH DEN BELEG FUER DEN PLATZHALTER in actions.ts.
+  it("PT6: kaputte Farbe + 'custom' + 'off' -> veroeffentlicht, und kein Dialog-Baustein", async () => {
+    const c = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: {
+          consent: { dialog: "off", theme: "custom", colorBackground: "kaputt" },
+        },
+      },
+      undefined
+    );
+    expect(res.ok).toBe(true);
+    const patch = c.rec.updatePatch as Patch;
+    for (const kennung of ["__ps_clb", "__ps_cmo", "__ps_crv", "__ps_cns", "__ps_cnr"]) {
+      expect(patch.published_content.html).not.toContain(`id="${kennung}"`);
+    }
+    expect(patch.published_content.html).toContain('id="__ps_pve"');
+  });
+
+  // PT7 (POSITIVKONTROLLE zu PT5): ein gueltiges Paar geht durch UND wirkt im Text.
+  // DIE ERWARTUNG IST AUS DEN ENTSCHEIDUNGEN P11.13-13, -20 und -21 ABGESCHRIEBEN.
+  it("PT7: gueltige Farben + 'custom' + 'bar' -> veroeffentlicht, und beide stehen im Text", async () => {
+    const c = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: {
+          consent: {
+            dialog: "bar",
+            theme: "custom",
+            colorBackground: "#0a0b0c",
+            colorText: "#f0f1f2",
+          },
+        },
+      },
+      undefined
+    );
+    expect(res.ok).toBe(true);
+    const html = (c.rec.updatePatch as Patch).published_content.html;
+    expect(html).toContain(".bar,.dialog{color:#f0f1f2;background-color:#0a0b0c;");
+    expect(html).toContain(".bar{border-top-color:#f0f1f2;}");
+    expect(html).toContain("button:focus-visible{outline-color:#f0f1f2;}");
+    // DER DUNKLE HINTERGRUND LEITET color-scheme AUF dark AB (P11.13-21).
+    expect(html).toContain("color-scheme:dark;");
+    // GEGENPROBE IM SELBEN LAUF: mit "light" steht nichts davon da.
+    const hell = client();
+    await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      { ...snapshot, settings: { consent: { dialog: "bar", theme: "light" } } },
+      undefined
+    );
+    const htmlHell = (hell.rec.updatePatch as Patch).published_content.html;
+    expect(htmlHell).not.toContain("#0a0b0c");
+    expect(htmlHell).not.toContain("#f0f1f2");
+  });
+
+  // PT8. GESPEICHERTE FARBEN OHNE "custom" ERREICHEN DEN TEXT NICHT — Entscheidung
+  // P11.13-14 im Wortlaut: "Ist die Darstellung nicht eigene Farben, werden gespeicherte
+  // Farben weder gelesen noch ausgeliefert."
+  // DER VERGLEICH IST EINE BYTE-GLEICHHEIT gegen denselben Lauf OHNE die zwei Felder —
+  // ein `not.toContain` allein liesse eine Wirkung an anderer Stelle durchgehen.
+  it("PT8: Farben gespeichert, Darstellung 'light' -> Ausgabe byte-gleich zu ohne Farben", async () => {
+    const mit = client();
+    await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: {
+          consent: {
+            dialog: "bar",
+            theme: "light",
+            colorBackground: "#0a0b0c",
+            colorText: "#f0f1f2",
+          },
+        },
+      },
+      undefined
+    );
+    const ohne = client();
+    await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      { ...snapshot, settings: { consent: { dialog: "bar", theme: "light" } } },
+      undefined
+    );
+    expect((mit.rec.updatePatch as Patch).published_content.html).toBe(
+      (ohne.rec.updatePatch as Patch).published_content.html
+    );
+    // POSITIVKONTROLLE im selben Lauf: MIT "custom" unterscheiden sich die zwei sehr wohl.
+    const eigen = client();
+    await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: {
+          consent: {
+            dialog: "bar",
+            theme: "custom",
+            colorBackground: "#0a0b0c",
+            colorText: "#f0f1f2",
+          },
+        },
+      },
+      undefined
+    );
+    expect((eigen.rec.updatePatch as Patch).published_content.html).not.toBe(
+      (ohne.rec.updatePatch as Patch).published_content.html
+    );
+  });
+
+  // PT9. DIE REIHENFOLGE DER DREI ABBRUECHE: Bei unbekanntem THEMA faellt die
+  // Themen-Meldung, nicht die Farb-Meldung — sonst schickte der Abbruch den Betreiber an
+  // die falsche Stelle. Spiegel von PT4 eine Ebene tiefer.
+  it("PT9: unbekanntes Thema + kaputte Farben -> die THEMEN-Meldung", async () => {
+    client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: {
+          consent: { dialog: "bar", theme: "__ps_y", colorBackground: "kaputt" },
+        },
+      },
+      undefined
+    );
+    expect(res).toEqual({ ok: false, error: MESSAGE_THEMA });
   });
 });

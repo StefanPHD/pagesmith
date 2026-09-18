@@ -1,12 +1,16 @@
 "use client";
 
 import { VARIANT_B_NOT_PUBLISHED_MESSAGE } from "@/lib/hosting/variant";
-import type {
-  ConsentDialog,
-  ConsentDialogRead,
-  ConsentTheme,
-  ConsentThemeRead,
+import {
+  CONSENT_COLOR_BACKGROUND_VORBELEGUNG,
+  CONSENT_COLOR_TEXT_VORBELEGUNG,
+  type ConsentDialog,
+  type ConsentDialogRead,
+  type ConsentColorRead,
+  type ConsentTheme,
+  type ConsentThemeRead,
 } from "@/lib/settings";
+import { contrastRatio } from "@/lib/contrast";
 import DomainManager from "@/components/DomainManager";
 
 /**
@@ -51,6 +55,9 @@ export default function PublishView({
   onConsentDialogChange,
   consentTheme,
   onConsentThemeChange,
+  consentColorBackground,
+  consentColorText,
+  onConsentColorChange,
   onToggleAbTest,
   abTestActive,
   abTestStartedAt,
@@ -84,6 +91,12 @@ export default function PublishView({
   // (getConsentTheme), nicht lokal gehalten.
   consentTheme: ConsentThemeRead;
   onConsentThemeChange: (theme: ConsentTheme) => void;
+  // --- Die zwei freien Farben (Phase 11.13, Scheibe 11.13c) ---
+  // Gleiche Bauform: ABGELEITET aus dem Einstellungs-Blob, nicht lokal gehalten. Der
+  // Setzer bekommt BEIDE Werte, weil das Bedienelement immer beide zeigt.
+  consentColorBackground: ConsentColorRead;
+  consentColorText: ConsentColorRead;
+  onConsentColorChange: (background: string, text: string) => void;
   onToggleAbTest: () => void;
   abTestActive: boolean;
   abTestStartedAt: string | null;
@@ -95,6 +108,47 @@ export default function PublishView({
   onRemoveConfirmingChange: (value: boolean) => void;
   onRemoveVariantB: () => void;
 }) {
+  // DIE DREI ABLEITUNGEN DER FARB-FLAECHE (Phase 11.13, Scheibe 11.13c). REINE
+  // RENDER-ZEIT-RECHNUNG — kein Hook, kein Zustand, keine Locale-API: `toFixed` und
+  // `replace` sind sprach-unabhaengig, ein toLocaleString braeche die Hydration-Regel.
+  //
+  // DIE ANZEIGEWERTE SIND NICHT DER SPEICHER, und das ist die Unterscheidung, die
+  // Entscheidung P11.13-22 traegt: `input[type="color"]` KENNT KEIN "nicht gesetzt" und
+  // zeigt ohne `value` schlicht Schwarz. Steht im Blob ein ungueltiger Wert, zeigt das
+  // Feld deshalb den hellen Bestand — GESCHRIEBEN WIRD DABEI NICHTS. Der rote Hinweis
+  // daneben sagt, dass der gespeicherte Wert unbrauchbar ist. Die Vorbelegung geschieht
+  // allein beim WECHSEL auf "custom", also auf eine Nutzerhandlung hin, und sie liegt im
+  // Container (handleConsentThemeChange), nicht hier.
+  const farbeHintergrund =
+    consentColorBackground === "unknown"
+      ? CONSENT_COLOR_BACKGROUND_VORBELEGUNG
+      : consentColorBackground;
+  const farbeText =
+    consentColorText === "unknown"
+      ? CONSENT_COLOR_TEXT_VORBELEGUNG
+      : consentColorText;
+  const farbenUnbekannt =
+    consentColorBackground === "unknown" || consentColorText === "unknown";
+  // DER HINWEIS ENTSTEHT IM CLIENT UND SPERRT NICHTS (Entscheidung P11.13-16). Der Server
+  // rechnet ihn nie; es gibt fuer ihn auch keinen Rueckkanal (PublishResult kennt kein
+  // Textfeld ausser `error`). Er nennt WERT und SCHWELLE — keine Ursache, keine
+  // Rechtsfolge.
+  const kontrast = farbenUnbekannt
+    ? null
+    : contrastRatio(consentColorBackground, consentColorText);
+  // DIE ANZEIGE SCHNEIDET AB, SIE RUNDET NICHT — zwei Gruende, und der zweite ist der
+  // tragende:
+  // (1) Die gelesene Quelle tut es auch (WebAIM-Rechner, GEMESSEN 2026-09-18: 3,9494
+  //     erscheint dort als 3.94, nicht als 3.95). Wer unsere Zahl mit einem oeffentlichen
+  //     Rechner vergleicht, soll dieselbe sehen.
+  // (2) GERUNDET KOENNTE DIE ANZEIGE DIE SCHWELLE UEBERSPRINGEN: 4,4996 erschiene als
+  //     "4,50:1 — die Schwelle ist 4,5:1", waehrend der Hinweis zu Recht steht. So gilt
+  //     ausnahmslos: STEHT DER HINWEIS, IST DIE ANGEZEIGTE ZAHL KLEINER ALS 4,5.
+  const kontrastText =
+    kontrast === null
+      ? null
+      : (Math.floor(kontrast * 100) / 100).toFixed(2).replace(".", ",");
+
   return (
     <>
       {/* Hosting / Veröffentlichen (Phase 7 Scheibe 7a): schaltet die funktionale
@@ -366,11 +420,74 @@ export default function PublishView({
                   Einstellung erscheint die helle Darstellung.
                 </span>
               </label>
+              {/* DIE VIERTE DARSTELLUNG (Phase 11.13, Scheibe 11.13c; bindende
+                  Entscheidung P11.13-12). SIE IST EIN VIERTER WERT DERSELBEN Wahl und
+                  kein zweiter Schalter — "Dunkel PLUS eigene Farben" entsteht damit gar
+                  nicht erst als Zustand. */}
+              <label className="flex items-start gap-2">
+                <input
+                  type="radio"
+                  name="consent-theme"
+                  className="mt-0.5"
+                  checked={consentTheme === "custom"}
+                  onChange={() => onConsentThemeChange("custom")}
+                />
+                <span>
+                  <span className="font-medium text-gray-700">Eigene Farben</span>
+                  <br />
+                  Zwei Farben — Hintergrund und Text. Rahmen, Kästchen und Fokus-Ring
+                  übernehmen die Textfarbe.
+                </span>
+              </label>
               {consentTheme === "unknown" && (
                 <p className="text-red-600">
                   Gespeichert ist ein unbekannter Wert. Veröffentlichen wird verweigert,
                   bis hier eine Darstellung gewählt ist.
                 </p>
+              )}
+              {/* DIE ZWEI FARBFELDER — SICHTBAR NUR BEI "custom" (P11.13-22). Der native
+                  Waehler liefert genau `#rrggbb` in Kleinbuchstaben und damit exakt das
+                  Alphabet des Format-Tors (P11.13-14); ein Tippfehler ist auf diesem Weg
+                  nicht herstellbar. */}
+              {consentTheme === "custom" && (
+                <div className="space-y-2 border-t border-gray-200 pt-2">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      aria-label="Hintergrundfarbe"
+                      value={farbeHintergrund}
+                      onChange={(e) =>
+                        onConsentColorChange(e.target.value, farbeText)
+                      }
+                    />
+                    <span className="font-medium text-gray-700">Hintergrund</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      aria-label="Textfarbe"
+                      value={farbeText}
+                      onChange={(e) =>
+                        onConsentColorChange(farbeHintergrund, e.target.value)
+                      }
+                    />
+                    <span className="font-medium text-gray-700">Text</span>
+                  </label>
+                  {farbenUnbekannt ? (
+                    <p className="text-red-600">
+                      Gespeichert ist ein unbekannter Farbwert. Veröffentlichen wird
+                      verweigert, bis beide Farben neu gewählt sind.
+                    </p>
+                  ) : (
+                    kontrast !== null &&
+                    kontrast < 4.5 && (
+                      <p className="text-amber-700">
+                        Kontrast {kontrastText}:1 — die Schwelle ist 4,5:1.
+                        Veröffentlichen bleibt möglich.
+                      </p>
+                    )
+                  )}
+                </div>
               )}
             </div>
           </div>

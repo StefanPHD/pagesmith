@@ -56,7 +56,7 @@ function installBeacon(): BeaconSpy {
 /** Die Script-Elemente des ausgelieferten Dokuments bei eingeschaltetem Schalter. */
 function scriptsOfPublishedPage(): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(HTML, KEY, "bar", "light"),
+    injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" }),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -228,6 +228,6 @@ describe("11.5c — die Gestalt des Erzeugers", () => {
     expect(on.endsWith("</script>")).toBe(true);
     expect(on.toLowerCase()).not.toContain("</body>");
     // POSITIVKONTROLLE der Abwesenheit: dieselbe Suche trifft im ausgelieferten Dokument.
-    expect(injectPageViewEmitter(HTML, KEY, "bar", "light").toLowerCase()).toContain("</body>");
+    expect(injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" }).toLowerCase()).toContain("</body>");
   });
 });

@@ -45,7 +45,7 @@ import {
   CONSENT_TEXT,
   consentThemeCss,
 } from "@/lib/tracking/consent-choice";
-import type { ConsentTheme } from "@/lib/settings";
+import type { ConsentAppearance } from "@/lib/settings";
 import {
   wrapRevoke,
   type ConsentSurfaceMode,
@@ -180,12 +180,14 @@ ${vormerken}  body.appendChild(host);
 
 export function buildConsentModalScript(
   mode: ConsentSurfaceMode,
-  // DIE DARSTELLUNG (Phase 11.13, Scheibe 11.13b). Pflicht-Parameter ohne Vorgabewert,
-  // Freigabe F1 vom 2026-09-17; die Begruendung steht am Docblock von
-  // buildConsentBarScript und wird hier nicht verdoppelt.
-  theme: ConsentTheme
+  // DIE DARSTELLUNG (Phase 11.13, Scheiben 11.13b und 11.13c). Pflicht-Parameter ohne
+  // Vorgabewert, Freigabe F1 vom 2026-09-17; seit 11.13c eine diskriminierte Union statt
+  // eines Strings (Entscheidung P11.13-18). Beide Begruendungen stehen am Docblock von
+  // buildConsentBarScript und werden hier nicht verdoppelt.
+  darstellung: ConsentAppearance
 ): string {
-  const stil = CONSENT_MODAL_CSS + CONSENT_CHOICE_CSS + consentThemeCss(theme);
+  const stil =
+    CONSENT_MODAL_CSS + CONSENT_CHOICE_CSS + consentThemeCss(darstellung);
   if (mode === "revoke") {
     return wrapRevoke(
       aufbauDesFensters("return false;", "    offen = host;\n", "true", stil)

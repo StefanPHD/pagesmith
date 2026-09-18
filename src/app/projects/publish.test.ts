@@ -1085,6 +1085,8 @@ describe("publishProject — die Darstellung (Scheibe 11.13b)", () => {
     "Die Einwilligungs-Einstellung dieses Projekts hat einen unbekannten Wert. Bitte unter „Einwilligung“ neu wählen. Es wurde nichts veröffentlicht.";
   const MESSAGE_FARBEN =
     "Die eigenen Farben des Einwilligungs-Dialogs sind unvollständig oder ungültig. Bitte unter „Darstellung“ beide Farben neu wählen. Es wurde nichts veröffentlicht.";
+  const MESSAGE_SACHTEXT =
+    "Der eigene Text des Einwilligungs-Dialogs ist ungültig. Bitte unter „Darstellung“ einen Text ohne Steuerzeichen und innerhalb der Längengrenze eingeben oder das Feld leeren. Es wurde nichts veröffentlicht.";
 
   function client() {
     return makeClient({
@@ -1273,6 +1275,94 @@ describe("publishProject — die Darstellung (Scheibe 11.13b)", () => {
     expect(patch.published_content.html).toContain('id="__ps_pve"');
   });
 
+  // PT-T1. DER EINZIGE TEST, DER DIE VERWEIGERUNG BEI EINEM KAPUTTEN SACHTEXT FAENGT
+  // (Phase 11.13, Scheibe 11.13d; Pflicht-Mutation M-f). Er prueft zugleich die STELLUNG
+  // des Abbruchs: Laege er hinter dem Label-Block, stuende "domains" in fromTables — und
+  // eine Label-Zeile bliebe zurueck.
+  // DIE EINGABEN SIND DIE ZEICHENKLASSEN AUS ENTSCHEIDUNG P11.13-26, nicht erfundene.
+  // DIE ZEICHEN WERDEN IM CODE GEBAUT: Ein Unicode-Escape im Quelltext ist in diesem
+  // Projekt am 2026-09-18 mehrfach still in sein Zeichen verwandelt worden.
+  it("PT-T1: kaputter Sachtext + 'bar' -> Abbruch mit der EIGENEN Meldung, nichts angelegt", async () => {
+    for (const text of [
+      "a" + String.fromCharCode(0x0a) + "b",
+      "a" + String.fromCharCode(0x09) + "b",
+      "a" + String.fromCharCode(0x202e) + "b",
+      "",
+      "   ",
+      "W".repeat(5000),
+    ]) {
+      const c = client();
+      const res = await publishProject(
+        "proj-1",
+        "<html><body>A</body></html>",
+        {
+          ...snapshot,
+          settings: { consent: { dialog: "bar", text } },
+        },
+        undefined
+      );
+      expect(res, JSON.stringify(text)).toEqual({
+        ok: false,
+        error: MESSAGE_SACHTEXT,
+      });
+      expect(c.rec.updatePatch).toBeNull();
+      expect(c.rec.inserts).toHaveLength(0);
+      expect(c.rec.fromTables).not.toContain("domains");
+    }
+  });
+
+  // PT-T2. DIE ASYMMETRIE AUS P11.13-7, auf den Sachtext angewandt (Pflicht-Mutation
+  // M-f, Gegenrichtung): Bei "off" entsteht kein Oberflaechen-Block, der Wert erreicht
+  // keine ausgelieferte Zeile, und es gibt keinen Besucher-Preis. EIN ABBRUCH DORT
+  // SPERRTE DAS VEROEFFENTLICHEN FUER EINE EINSTELLUNG OHNE JEDE WIRKUNG.
+  // ER IST ZUGLEICH DER WAECHTER DER GRENZE: Wer bei "off" je einen Sachtext
+  // ausliefert, macht diesen Test rot und muss die Entscheidung anfassen, nicht den Test.
+  it("PT-T2: kaputter Sachtext + 'off' -> veroeffentlicht, und kein Dialog-Baustein im Text", async () => {
+    const c = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: { consent: { dialog: "off", text: "a" + String.fromCharCode(0x0a) + "b" } },
+      },
+      undefined
+    );
+    expect(res.ok).toBe(true);
+    const html = String(
+      (c.rec.updatePatch as Patch).published_content.html
+    );
+    expect(html).not.toContain("__ps_clb");
+    expect(html).not.toContain("__ps_cmo");
+    expect(html).not.toContain("__ps_crv");
+    // POSITIVKONTROLLE im selben Lauf: der Emitter steht sehr wohl drin.
+    expect(html).toContain("__ps_pve");
+  });
+
+  // PT-T3 (POSITIVKONTROLLE zu PT-T1): ein GUELTIGER eigener Sachtext geht durch UND
+  // steht woertlich im ausgelieferten Text — auch der feindliche, denn ihn faengt nicht
+  // das Tor, sondern der Einbettungs-Helfer maskiert ihn (Invariante S4, zwei Linien).
+  it("PT-T3: eigener Sachtext -> veroeffentlicht und woertlich im Text; kein Ausbruch", async () => {
+    const c = client();
+    const eigen = "Wir setzen <3 Cookies.";
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      { ...snapshot, settings: { consent: { dialog: "bar", text: eigen } } },
+      undefined
+    );
+    expect(res.ok).toBe(true);
+    const html = String(
+      (c.rec.updatePatch as Patch).published_content.html
+    );
+    // Der Satz steht drin — maskiert, nicht roh: das "<" ist ein Unicode-Escape.
+    expect(html).toContain("Wir setzen ");
+    expect(html).not.toContain(eigen);
+    // UND UNSER STANDARDTEXT STEHT NICHT MEHR DRIN.
+    expect(html).not.toContain(
+      "Diese Seite kann Tracking-Dienste einbinden."
+    );
+  });
   // PT7 (POSITIVKONTROLLE zu PT5): ein gueltiges Paar geht durch UND wirkt im Text.
   // DIE ERWARTUNG IST AUS DEN ENTSCHEIDUNGEN P11.13-13, -20 und -21 ABGESCHRIEBEN.
   it("PT7: gueltige Farben + 'custom' + 'bar' -> veroeffentlicht, und beide stehen im Text", async () => {

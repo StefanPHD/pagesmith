@@ -4,6 +4,9 @@ import { VARIANT_B_NOT_PUBLISHED_MESSAGE } from "@/lib/hosting/variant";
 import {
   CONSENT_COLOR_BACKGROUND_VORBELEGUNG,
   CONSENT_COLOR_TEXT_VORBELEGUNG,
+  CONSENT_TEXT_MAX_LENGTH,
+  consentTextLength,
+  consentTextProblem,
   type ConsentDialog,
   type ConsentDialogRead,
   type ConsentColorRead,
@@ -11,6 +14,11 @@ import {
   type ConsentThemeRead,
 } from "@/lib/settings";
 import { contrastRatio } from "@/lib/contrast";
+// DER STANDARDTEXT KOMMT AUS DEM ERZEUGER UND WIRD HIER NICHT ABGESCHRIEBEN ("ABLEITEN
+// STATT HARDCODEN"): Er steht an genau einer Stelle, und ein hier abgeschriebenes Literal
+// liefe beim naechsten Aendern des Satzes still auseinander — der Platzhalter zeigte dann
+// etwas anderes, als der Besucher zu sehen bekaeme.
+import { CONSENT_TEXT } from "@/lib/tracking/consent-choice";
 import DomainManager from "@/components/DomainManager";
 
 /**
@@ -58,6 +66,8 @@ export default function PublishView({
   consentColorBackground,
   consentColorText,
   onConsentColorChange,
+  consentTextRaw,
+  onConsentTextChange,
   onToggleAbTest,
   abTestActive,
   abTestStartedAt,
@@ -97,6 +107,18 @@ export default function PublishView({
   consentColorBackground: ConsentColorRead;
   consentColorText: ConsentColorRead;
   onConsentColorChange: (background: string, text: string) => void;
+  // --- Der freie Sachtext (Phase 11.13, Scheibe 11.13d) ---
+  // ANDERS ALS DIE DREI DARUEBER KOMMT HIER DER ROHE WERT, NICHT DER GELESENE, und das
+  // ist kein Ausrutscher: Ein Eingabefeld muss zeigen, WAS GESPEICHERT IST — auch wenn
+  // es ungueltig ist, sonst kann der Betreiber es nicht korrigieren. Die drei anderen
+  // sind Auswahlen, bei denen "unknown" schlicht nichts markiert.
+  // `undefined` heisst "kein eigener Text" — dann steht unser Standardtext als
+  // PLATZHALTER da und es ist nichts gespeichert.
+  consentTextRaw: string | undefined;
+  // Der Setzer bekommt `undefined`, wenn das Feld geleert wird: Das ENTFERNT den Wert
+  // (bindende Entscheidung P11.13-26). Ein leerer String waere "unknown" und sperrte
+  // das Veroeffentlichen.
+  onConsentTextChange: (value: string | undefined) => void;
   onToggleAbTest: () => void;
   abTestActive: boolean;
   abTestStartedAt: string | null;
@@ -148,7 +170,13 @@ export default function PublishView({
     kontrast === null
       ? null
       : (Math.floor(kontrast * 100) / 100).toFixed(2).replace(".", ",");
-
+  // DER GRUND, AUS DEM DER GESPEICHERTE SACHTEXT ABGEWIESEN WUERDE — oder `null`.
+  // ER KOMMT AUS DERSELBEN FUNKTION WIE DAS TOR (consentTextProblem): Eine zweite,
+  // gleichlautende Bedingung hier liefe still auseinander, und der Betreiber saehe einen
+  // Hinweis, der nicht zur Verweigerung passt — oder keinen, wo verweigert wird.
+  // `undefined` ist KEIN Problem, sondern der Normalfall: kein eigener Text.
+  const sachtextProblem =
+    consentTextRaw === undefined ? null : consentTextProblem(consentTextRaw);
   return (
     <>
       {/* Hosting / Veröffentlichen (Phase 7 Scheibe 7a): schaltet die funktionale
@@ -489,6 +517,59 @@ export default function PublishView({
                   )}
                 </div>
               )}
+              {/* DAS FELD FUER DEN FREIEN SACHTEXT (Phase 11.13, Scheibe 11.13d;
+                  bindende Entscheidungen P11.13-23, P11.13-26 und P11.13-27).
+                  ES HAENGT NICHT AN "custom": Der Sachtext gilt in JEDER Darstellung —
+                  anders als die zwei Farbfelder darueber.
+                  EINZEILIG UND KEIN `textarea`: Ein `textarea` verspraeche
+                  Zeilenumbrueche, die das Tor abweist (P11.13-26, Grenze).
+                  DER PLATZHALTER IST UNSER STANDARDTEXT — er ZEIGT, was ohne Eingabe
+                  erscheint, und SCHREIBT NICHTS. Das ist der Unterschied zur
+                  Farb-Vorbelegung aus P11.13-22: Der native Farbwaehler kennt kein
+                  "nicht gesetzt", ein Textfeld sehr wohl. */}
+              <div className="space-y-1 border-t border-gray-200 pt-2">
+                <label className="block">
+                  <span className="font-medium text-gray-700">Eigener Text</span>
+                  <input
+                    type="text"
+                    aria-label="Erläuternder Text"
+                    className="mt-1 w-full rounded border border-gray-300 px-2 py-1"
+                    placeholder={CONSENT_TEXT}
+                    value={consentTextRaw ?? ""}
+                    onChange={(e) =>
+                      // EIN GELEERTES FELD ENTFERNT DEN WERT und schreibt NIE einen
+                      // leeren String (P11.13-26). Geprueft wird mit trim, gespeichert
+                      // wird der ROHE Wert — das Tor veraendert nichts.
+                      onConsentTextChange(
+                        e.target.value.trim() === "" ? undefined : e.target.value
+                      )
+                    }
+                  />
+                </label>
+                {/* DER ZAEHLER LIEST N AUS DER KONSTANTE UND ZAEHLT MIT DERSELBEN
+                    FUNKTION WIE DAS TOR (P11.13-27, ABLEITEN STATT HARDCODEN). Zwei
+                    Zaehlungen liefen sonst STILL auseinander, und der Betreiber saehe
+                    eine Zahl, die seine Ablehnung nicht erklaert. */}
+                <p className="text-gray-500">
+                  {consentTextRaw === undefined
+                    ? 0
+                    : consentTextLength(consentTextRaw)}{" "}
+                  von {CONSENT_TEXT_MAX_LENGTH} Zeichen
+                </p>
+                {/* DER HINWEIS IST ROT, WEIL DIESER FALL ETWAS SPERRT — anders als der
+                    Kontrast-Hinweis darueber, der ausdruecklich nichts sperrt
+                    (P11.13-16). Er nennt die ZEICHENKLASSE und behauptet weder Ursache
+                    noch Rechtsfolge. */}
+                {sachtextProblem !== null && (
+                  <p className="text-red-600">
+                    {sachtextProblem === "laenge"
+                      ? `Der Text ist länger als ${CONSENT_TEXT_MAX_LENGTH} Zeichen. Veröffentlichen wird verweigert, bis er kürzer ist.`
+                      : sachtextProblem === "zeichen"
+                        ? "Der Text enthält Steuerzeichen (unter anderem Zeilenumbruch, Tabulator oder Bidi-Steuerzeichen). Veröffentlichen wird verweigert, bis sie entfernt sind."
+                        : "Gespeichert ist ein unbrauchbarer Wert. Veröffentlichen wird verweigert, bis hier ein Text steht oder das Feld geleert ist."}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         )}

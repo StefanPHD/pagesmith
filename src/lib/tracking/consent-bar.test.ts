@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 import { buildConsentBarScript } from "./consent-bar";
-import { CONSENT_GROUP_KEYS } from "./consent-choice";
+import {
+  CONSENT_TEXT, CONSENT_GROUP_KEYS } from "./consent-choice";
 import {
   readConsentColor,
   type ConsentAppearance,
@@ -87,7 +88,7 @@ function installBeacon(): BeaconSpy {
 
 function scriptsOf(html: string, on: boolean): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(html, KEY, on ? "bar" : "off", { theme: "light" }),
+    injectPageViewEmitter(html, KEY, on ? "bar" : "off", { theme: "light" }, "standard"),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -174,13 +175,13 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   });
 
   it("L1: Schalter AUS -> kein Leisten-Block (Positivkontrolle: Emitter da)", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "off", { theme: "light" });
+    const out = injectPageViewEmitter(HTML, KEY, "off", { theme: "light" }, "standard");
     expect(out).not.toContain(BAR_ID);
     expect(out).toContain('id="__ps_pve"');
   });
 
   it("L2: Schalter AN -> Gate < Wiederherstellung < Leiste < Setzer < Emitter", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" });
+    const out = injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" }, "standard");
     const gate = out.indexOf('id="pagesmith-consent"');
     const restore = out.indexOf('id="__ps_cnr"');
     const bar = out.indexOf(BAR_ID);
@@ -201,11 +202,11 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
     // Formalie: Der custom-Zweig ist der EINZIGE, in den ein Betreiber-Wert eingeht.
     // Genau deshalb traegt diese Zusicherung die Sicherheitsachse der Scheibe.
     for (const d of VIER_DARSTELLUNGEN) {
-      const b = buildConsentBarScript("load", d);
+      const b = buildConsentBarScript("load", d, "standard");
       const r = b.slice(b.indexOf(">") + 1, b.lastIndexOf("<"));
       expect(r.includes("<"), JSON.stringify(d)).toBe(false);
     }
-    const block = buildConsentBarScript("load", { theme: "light" });
+    const block = buildConsentBarScript("load", { theme: "light" }, "standard");
     const rumpf = block.slice(block.indexOf(">") + 1, block.lastIndexOf("<"));
     // POSITIVKONTROLLE des Ausschnitts: er traegt wirklich den Code.
     expect(rumpf).toContain("attachShadow");
@@ -219,11 +220,66 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
     // SEIT SCHEIBE 11.13b AUCH FUER DIE ZWEI ANDEREN DARSTELLUNGEN (Nachschaerfung N4):
     // Ein Thema legt ZEICHEN in den Rumpf; ein `<` darin schloesse den Script-Block.
     for (const thema of ["dark", "auto"] as const) {
-      const b = buildConsentBarScript("load", { theme: thema });
+      const b = buildConsentBarScript("load", { theme: thema }, "standard");
       const r = b.slice(b.indexOf(">") + 1, b.lastIndexOf("<"));
       expect(r.includes("<"), thema).toBe(false);
       expect(b.match(/<\/script>/gi)?.length, thema).toBe(1);
     }
+  });
+
+
+// DIE VIER GEMESSENEN NUTZLASTEN (Invariante S9 des Zuschnitts 11.13d). Sie stammen
+// WOERTLICH aus VERMERK P11.13-7 der Standdatei — dem Lauf vom 2026-09-18, in dem der
+// Ausbruch in Chromium ueber file:// gemessen wurde. EINE ERFUNDENE NUTZLAST ERSETZT
+// KEINE GEMESSENE: Der Unterschied zwischen den ersten beiden hat dort darueber
+// entschieden, ob der Handler ZUENDET; beim Erfinden waere genau er verlorengegangen.
+const FEINDLICHE_SACHTEXTE = [
+  "</script><img src=x onerror=\"window.__AUSBRUCH=1\">",
+  "</script><img src=x onerror=window.__AUSBRUCH=1>",
+  "<!--<script><img src=x onerror=\"window.__AUSBRUCH=1\">",
+  "x</SCRIPT>y",
+] as const;
+
+  // L3-TXT. DER WAECHTER AM ERGEBNIS FUER DEN BETREIBER-SACHTEXT (Phase 11.13, Scheibe
+  // 11.13d; bindende Entscheidung P11.13-30). Er sitzt NICHT am Quelltext, sondern
+  // schickt die feindliche Nutzlast durch die ECHTE Einsetzstelle und prueft den
+  // ERZEUGTEN Text.
+  // WODURCH ROT: wenn die Einsetzstelle des Sachtextes den Einbettungs-Helfer umgeht
+  // (Pflicht-Mutationen M-a und M-b). Ohne ihn verliesse ein "</script>" im Sachtext den
+  // Block — GEMESSEN, nicht vermutet (VERMERK P11.13-7).
+  // DASS DAS TOR IN settings.ts DIESE WERTE DURCHLAESST, IST ABSICHT UND DIE ZWEITE
+  // LINIE: "<" ist erlaubt (P11.13-26); gefangen wird es hier, nicht dort.
+  it("L3-TXT: ein feindlicher Sachtext hinterlaesst kein '<' im Rumpf", () => {
+    for (const s of FEINDLICHE_SACHTEXTE) {
+      for (const d of VIER_DARSTELLUNGEN) {
+        for (const m of ["load", "revoke"] as const) {
+          const b = buildConsentBarScript(m, d, s as unknown as never);
+          const r = b.slice(b.indexOf(">") + 1, b.lastIndexOf("<"));
+          expect(r.includes("<"), s + " / " + m + " / " + d.theme).toBe(false);
+          expect(b.match(/<\/script>/gi)?.length, s).toBe(1);
+        }
+      }
+    }
+    // POSITIVKONTROLLE IM SELBEN LAUF: Der Sachtext steht wirklich im Block — sonst
+    // waere dieser Test auch dann gruen, wenn er gar nicht eingesetzt wuerde.
+    const harmlos = "Ein eigener Satz.";
+    const b = buildConsentBarScript("load", { theme: "light" }, harmlos as unknown as never);
+    expect(b).toContain(harmlos);
+    // Und die feindliche Fassung steht ESCAPED drin, nicht roh.
+    const f = buildConsentBarScript("load", { theme: "light" }, FEINDLICHE_SACHTEXTE[1] as unknown as never);
+    expect(f).not.toContain(FEINDLICHE_SACHTEXTE[1]);
+    expect(f).toContain("window.__AUSBRUCH=1");
+  });
+
+  // L3-STD. "standard" LIEFERT UNSEREN SATZ, UND DIE ZUORDNUNG STEHT NUR IM ERZEUGER
+  // (Entscheidung P11.13-29). WODURCH ROT: wenn der Aufrufer den Satz einsetzt oder ein
+  // Vorgabewert eingezogen wird.
+  it("L3-STD: 'standard' setzt CONSENT_TEXT ein, ein eigener Text ersetzt ihn", () => {
+    const std = buildConsentBarScript("load", { theme: "light" }, "standard");
+    expect(std).toContain(CONSENT_TEXT);
+    const eigen = buildConsentBarScript("load", { theme: "light" }, "Mein Satz." as unknown as never);
+    expect(eigen).toContain("Mein Satz.");
+    expect(eigen).not.toContain(CONSENT_TEXT);
   });
 
   // L4. DIE NADELN SIND AUS DEM BESTAND ABGELESEN, NICHT ERFUNDEN: hasConsentScript
@@ -232,11 +288,11 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   // publish.test.ts. Enthielte der Block eine davon, luege eine indexOf-Reihenfolge,
   // ohne rot zu werden.
   it("L4: der Block traegt keine der Zeichenketten, nach denen der Bestand sucht", () => {
-    const block = buildConsentBarScript("load", { theme: "light" });
+    const block = buildConsentBarScript("load", { theme: "light" }, "standard");
     const mitDaten =
       '<html><body><h1>x</h1><script type="application/json" id="pagesmith-mappings">[]</scr' +
       "ipt></body></html>";
-    const out = injectPageViewEmitter(mitDaten, KEY, "bar", { theme: "light" });
+    const out = injectPageViewEmitter(mitDaten, KEY, "bar", { theme: "light" }, "standard");
     for (const nadel of [
       "pagesmith-consent",
       "pagesmith-mappings",
@@ -429,7 +485,7 @@ describe("11.5d — die Leiste macht die Seite nicht unbedienbar", () => {
     const traegtOverflow = (text: string): boolean => /overflow/i.test(text);
     for (const d of VIER_DARSTELLUNGEN) {
       expect(
-        traegtOverflow(buildConsentBarScript("load", d)),
+        traegtOverflow(buildConsentBarScript("load", d, "standard")),
         JSON.stringify(d)
       ).toBe(false);
     }
@@ -713,7 +769,7 @@ describe("11.13a — die Anordnung", () => {
   // Sichtbereich und aendert damit die SCROLL-POSITION der fremden Seite — genau das
   // verbietet Invariante I1. Dass sie WIRKT, ist eine Live-Achse und in der Probe gemessen.
   it("L23: der Fokus-Aufruf traegt preventScroll — Struktur-Zusicherung mit Positivkontrolle", () => {
-    const block = buildConsentBarScript("load", { theme: "light" });
+    const block = buildConsentBarScript("load", { theme: "light" }, "standard");
     expect(block).toContain("measure.box.focus({ preventScroll: true })");
     // POSITIVKONTROLLE der Suche im selben Lauf: der blosse Aufruf kommt NICHT vor.
     expect(/measure\.box\.focus\(\)/.test(block)).toBe(false);
@@ -771,7 +827,7 @@ describe("11.13a — die Anordnung", () => {
     expect(weg.getAttribute("type")).toBe("button");
     expect(weg.getAttribute("class")).toBe("way");
 
-    const block = buildConsentBarScript("load", { theme: "light" });
+    const block = buildConsentBarScript("load", { theme: "light" }, "standard");
     expect(/href/i.test(block)).toBe(false);
     expect(/createElement\("a"\)/.test(block)).toBe(false);
     // POSITIVKONTROLLE beider Suchen im selben Lauf.

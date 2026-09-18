@@ -28,6 +28,7 @@
 // den zwei Tags des Script-Elements selbst; der eingesetzte Aufbau traegt keins.
 
 import { CONSENT_STORE_API } from "@/lib/tracking/consent-store";
+import { embedInScript } from "@/lib/script-embed";
 
 /**
  * DIE ZWEI GESTALTEN EINER EINWILLIGUNGS-OBERFLAECHE (Scheibe 11.5e-2).
@@ -141,7 +142,7 @@ export function wrapRevoke(aufbau: string): string {
     if (!api || typeof api.read !== "function" || typeof api.write !== "function") return false;
     if (offen && offen.parentNode) return false;
     if (api.read().state !== "decided") {
-      console.warn(${JSON.stringify(CONSENT_REVOKE_WARNING)});
+      console.warn(${embedInScript(CONSENT_REVOKE_WARNING)});
       return false;
     }
 ${aufbau}    return true;

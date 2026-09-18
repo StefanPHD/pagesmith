@@ -19,7 +19,11 @@ import { buildConsentBarScript } from "@/lib/tracking/consent-bar";
 import { buildConsentModalScript } from "@/lib/tracking/consent-modal";
 import { buildConsentDenyScript } from "@/lib/tracking/consent-setter";
 import { buildConsentRestoreScript } from "@/lib/tracking/consent-store";
-import type { ConsentAppearance, ConsentDialog } from "@/lib/settings";
+import type {
+  ConsentAppearance,
+  ConsentDialog,
+  ConsentTextArg,
+} from "@/lib/settings";
 
 const SCRIPT_ID = "__ps_pve";
 
@@ -142,7 +146,8 @@ ${PAGEVIEW_SEND_API}();
 // ausgeschaltetem Dialog keine ausgelieferte Zeile.
 function consentBlocksFor(
   form: ConsentDialog,
-  darstellung: ConsentAppearance
+  darstellung: ConsentAppearance,
+  sachtext: ConsentTextArg
 ): {
   gateOn: boolean;
   dialog: string;
@@ -154,14 +159,14 @@ function consentBlocksFor(
     case "bar":
       return {
         gateOn: true,
-        dialog: buildConsentBarScript("load", darstellung),
-        revoke: buildConsentBarScript("revoke", darstellung),
+        dialog: buildConsentBarScript("load", darstellung, sachtext),
+        revoke: buildConsentBarScript("revoke", darstellung, sachtext),
       };
     case "modal":
       return {
         gateOn: true,
-        dialog: buildConsentModalScript("load", darstellung),
-        revoke: buildConsentModalScript("revoke", darstellung),
+        dialog: buildConsentModalScript("load", darstellung, sachtext),
+        revoke: buildConsentModalScript("revoke", darstellung, sachtext),
       };
     default: {
       const unhandled: never = form;
@@ -199,11 +204,27 @@ export function injectPageViewEmitter(
   // gilt unveraendert; geaendert hat sich allein die GESTALT dieses einen. Der Zweig
   // "custom" traegt seine zwei GEPRUEFTEN Farben mit sich, sodass "eigene Farben ohne
   // Farben" nicht konstruierbar ist.
-  consentAppearance: ConsentAppearance
+  consentAppearance: ConsentAppearance,
+  // DER SACHTEXT DES DIALOGS (Phase 11.13, Scheibe 11.13d; bindende Entscheidung
+  // P11.13-29). DIE ZWEITE PFLICHT-ACHSE, ebenfalls OHNE VORGABEWERT und aus demselben
+  // Grund wie die zwei darueber: Ein Vorgabewert liesse einen neuen Auslieferungsweg den
+  // Betreiber-Satz stillschweigend uebergehen.
+  // "standard" IST EIN BENANNTER ZUSTAND UND KEIN FEHLENDES ARGUMENT — welcher Satz das
+  // ist, weiss allein der Erzeuger (CONSENT_TEXT in tracking/consent-choice.ts); diese
+  // Funktion loest ihn NICHT auf, sonst staende die Zuordnung an zwei Orten.
+  // Ein UNGUELTIGER Wert erreicht diese Funktion nicht: publishProject verweigert ihn
+  // vorher, sofern der Dialog eingeschaltet ist (bindende Entscheidung P11.13-26).
+  //
+  // P11.13-11 IST DAMIT ERFUELLT UND NICHT GEDEHNT: Sie verlangt "Pflicht-Parameter OHNE
+  // VORGABEWERT" an diesen drei Stellen, und jede der nun ZWEI Achsen erfuellt das
+  // einzeln; ueber ihre ZAHL trifft sie keine Auflage. Der Satz "die Zahl aendert sich
+  // nicht" im Absatz darueber beschreibt die Scheibe 11.13c und bleibt dafuer richtig.
+  consentText: ConsentTextArg
 ): string {
   const { gateOn, dialog, revoke } = consentBlocksFor(
     consentDialog,
-    consentAppearance
+    consentAppearance,
+    consentText
   );
   // ZWEITE EINFUEGESTELLE DES GETEILTEN CONSENT-GATES (Phase 11, zweite Scheibe).
   // Sie ist noetig, weil eine publizierte Seite OHNE Mappings KEIN Wiring traegt —

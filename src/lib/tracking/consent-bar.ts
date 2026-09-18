@@ -23,8 +23,14 @@
 //
 // SERIALISIERUNGSSICHER, SCHAERFER ALS DIE NACHBARN: Der Rumpf des Blocks enthaelt
 // KEIN EINZIGES `<`. Markup entsteht per createElement, Texte per textContent, jeder
-// String geht per JSON.stringify hinein, und der Code kommt ohne `<`-Vergleich aus.
+// String geht per embedInScript hinein, und der Code kommt ohne `<`-Vergleich aus.
 // Damit kann weder ein `</script>` noch ein `</body>` noch ein `<!--` darin stehen.
+// SEIT DER SCHEIBE 11.13d TRAEGT DIE LEISTE EINEN BETREIBER-WERT — den freien Sachtext —,
+// und damit ist der Satz oben KEINE Eigenschaft der Konstanten mehr, sondern eine
+// Eigenschaft des HELFERS: embedInScript (lib/script-embed.ts) maskiert jedes `<` als
+// Unicode-Escape (bindende Entscheidung P11.13-25). Ohne ihn verliesse ein `</script>` im
+// Sachtext den Block — GEMESSEN, nicht vermutet (VERMERK P11.13-7 der Standdatei).
+// L3 prueft das mit der feindlichen Nutzlast durch die ECHTE Einsetzstelle.
 
 // WAS HIER STEHT, BETRIFFT NUR DIE LEISTE: Kennung, Host-Element, zugaenglicher Name und
 // Basis-Stylesheet. Sachtext, Knoepfe, Schalter und deren Stylesheet teilen Leiste und Modal;
@@ -37,7 +43,8 @@ import {
   CONSENT_TEXT,
   consentThemeCss,
 } from "@/lib/tracking/consent-choice";
-import type { ConsentAppearance } from "@/lib/settings";
+import { embedInScript } from "@/lib/script-embed";
+import type { ConsentAppearance, ConsentTextArg } from "@/lib/settings";
 import {
   wrapRevoke,
   type ConsentSurfaceMode,
@@ -188,23 +195,24 @@ function aufbauDerLeiste(
   abbruch: string,
   vormerken: string,
   ausgeklappt: string,
-  stil: string
+  stil: string,
+  sachtext: string
 ): string {
   return `  var body = document.body;
   if (!body) ${abbruch}
-  var host = document.createElement(${JSON.stringify(CONSENT_BAR_HOST_TAG)});
+  var host = document.createElement(${embedInScript(CONSENT_BAR_HOST_TAG)});
   if (typeof host.attachShadow !== "function") ${abbruch}
   var root = host.attachShadow({ mode: "open" });
   var style = document.createElement("style");
-  style.textContent = ${JSON.stringify(stil)};
+  style.textContent = ${embedInScript(stil)};
   root.appendChild(style);
   var bar = document.createElement("div");
   bar.setAttribute("class", "bar");
   bar.setAttribute("role", "region");
-  bar.setAttribute("aria-label", ${JSON.stringify(CONSENT_BAR_REGION_LABEL)});
+  bar.setAttribute("aria-label", ${embedInScript(CONSENT_BAR_REGION_LABEL)});
   var text = document.createElement("p");
   text.setAttribute("class", "text");
-  text.textContent = ${JSON.stringify(CONSENT_TEXT)};
+  text.textContent = ${embedInScript(sachtext)};
   bar.appendChild(text);
 ${CONSENT_CHOICE_JS}
   fillChoice(bar, ${ausgeklappt});
@@ -222,18 +230,32 @@ export function buildConsentBarScript(
   // Kundenseite ist genau der Fremdkoerper, wegen dessen diese Phase existiert.
   // SEIT 11.13c IST ES EINE DISKRIMINIERTE UNION statt eines Strings (Entscheidung
   // P11.13-18): Der Zweig "custom" traegt seine zwei GEPRUEFTEN Farben mit sich, und
-  // "eigene Farben ohne Farben" ist damit nicht konstruierbar. DIE ZAHL DER PARAMETER
-  // AENDERT SICH NICHT — Entscheidung P11.13-11 gilt unveraendert.
-  darstellung: ConsentAppearance
+  // "eigene Farben ohne Farben" ist damit nicht konstruierbar. Jene Union aenderte die
+  // GESTALT dieses einen Parameters, nicht seine Zahl.
+  darstellung: ConsentAppearance,
+  // DER SACHTEXT (Phase 11.13, Scheibe 11.13d; bindende Entscheidung P11.13-29). DIE
+  // ZWEITE PFLICHT-ACHSE, ebenfalls OHNE VORGABEWERT.
+  // "standard" IST EIN BENANNTER ZUSTAND UND KEIN FEHLENDES ARGUMENT: Der Aufrufer muss
+  // sich entscheiden; ein Vergessen ist ein tsc-Fehler statt einer stillen Auslieferung
+  // unseres Satzes. EIN `= CONSENT_TEXT` HIER IST AUSGESCHLOSSEN (P11.13-11).
+  // P11.13-11 IST DAMIT ERFUELLT UND NICHT GEDEHNT: Sie verlangt "Pflicht-Parameter ohne
+  // Vorgabewert" an diesen drei Stellen, und BEIDE Achsen erfuellen das einzeln; ueber
+  // ihre ZAHL trifft sie keine Auflage.
+  sachtext: ConsentTextArg
 ): string {
   // DER STIL WIRD EINMAL GEBAUT UND IN BEIDE GESTALTEN EINGESETZT: Lade- und Widerruf-Zweig
   // tragen zwangslaeufig dasselbe Thema, weil sie denselben Ausdruck benutzen. Zwei
   // getrennte Berechnungen koennten auseinanderlaufen.
   const stil =
     CONSENT_BAR_CSS + CONSENT_CHOICE_CSS + consentThemeCss(darstellung);
+  // WELCHER SATZ "standard" IST, WEISS ALLEIN DIESER ERZEUGER — und das ist der Grund,
+  // warum der Aufrufer ihn NICHT einsetzt: Sonst staende die Zuordnung an zwei Orten
+  // (P11.13-29, ausdruecklich verworfene Gestalt). Aus demselben Grund steht die
+  // Aufloesung EINMAL hier und nicht zweimal in den Zweigen.
+  const text = sachtext === "standard" ? CONSENT_TEXT : sachtext;
   if (mode === "revoke") {
     return wrapRevoke(
-      aufbauDerLeiste("return false;", "    offen = host;\n", "true", stil)
+      aufbauDerLeiste("return false;", "    offen = host;\n", "true", stil, text)
     );
   }
   return `<script id="${CONSENT_BAR_SCRIPT_ID}">
@@ -242,6 +264,6 @@ export function buildConsentBarScript(
   var api = window.${CONSENT_STORE_API};
   if (!api || typeof api.read !== "function" || typeof api.write !== "function") return;
   if (api.read().state !== "never") return;
-${aufbauDerLeiste("return;", "", "false", stil)}})();
+${aufbauDerLeiste("return;", "", "false", stil, text)}})();
 </script>`;
 }

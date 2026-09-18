@@ -35,8 +35,13 @@
 // gibt.
 //
 // SERIALISIERUNGSSICHER WIE DIE LEISTE: Der Rumpf enthaelt KEIN EINZIGES `<`. Markup
-// entsteht per createElement, Texte per textContent, jeder String per JSON.stringify.
+// entsteht per createElement, Texte per textContent, jeder String per embedInScript.
 // M3 haelt das.
+// SEIT DER SCHEIBE 11.13d TRAEGT DAS FENSTER EINEN BETREIBER-WERT — den freien Sachtext.
+// Der Satz oben ist damit KEINE Eigenschaft der Konstanten mehr, sondern eine Eigenschaft
+// des HELFERS: embedInScript (lib/script-embed.ts) maskiert jedes `<` als Unicode-Escape
+// (bindende Entscheidung P11.13-25). Die Begruendung steht am Docblock des Helfers und am
+// Kopf von consent-bar.ts; sie wird hier nicht verdoppelt.
 
 import { CONSENT_STORE_API } from "@/lib/tracking/consent-store";
 import {
@@ -45,7 +50,8 @@ import {
   CONSENT_TEXT,
   consentThemeCss,
 } from "@/lib/tracking/consent-choice";
-import type { ConsentAppearance } from "@/lib/settings";
+import { embedInScript } from "@/lib/script-embed";
+import type { ConsentAppearance, ConsentTextArg } from "@/lib/settings";
 import {
   wrapRevoke,
   type ConsentSurfaceMode,
@@ -150,15 +156,16 @@ function aufbauDesFensters(
   abbruch: string,
   vormerken: string,
   ausgeklappt: string,
-  stil: string
+  stil: string,
+  sachtext: string
 ): string {
   return `  var body = document.body;
   if (!body) ${abbruch}
-  var host = document.createElement(${JSON.stringify(CONSENT_MODAL_HOST_TAG)});
+  var host = document.createElement(${embedInScript(CONSENT_MODAL_HOST_TAG)});
   if (typeof host.attachShadow !== "function") ${abbruch}
   var root = host.attachShadow({ mode: "open" });
   var style = document.createElement("style");
-  style.textContent = ${JSON.stringify(stil)};
+  style.textContent = ${embedInScript(stil)};
   root.appendChild(style);
   var backdrop = document.createElement("div");
   backdrop.setAttribute("class", "backdrop");
@@ -166,10 +173,10 @@ function aufbauDesFensters(
   var dialog = document.createElement("div");
   dialog.setAttribute("class", "dialog");
   dialog.setAttribute("role", "dialog");
-  dialog.setAttribute("aria-label", ${JSON.stringify(CONSENT_MODAL_DIALOG_LABEL)});
+  dialog.setAttribute("aria-label", ${embedInScript(CONSENT_MODAL_DIALOG_LABEL)});
   var text = document.createElement("p");
   text.setAttribute("class", "text");
-  text.textContent = ${JSON.stringify(CONSENT_TEXT)};
+  text.textContent = ${embedInScript(sachtext)};
   dialog.appendChild(text);
 ${CONSENT_CHOICE_JS}
   fillChoice(dialog, ${ausgeklappt});
@@ -184,13 +191,26 @@ export function buildConsentModalScript(
   // Vorgabewert, Freigabe F1 vom 2026-09-17; seit 11.13c eine diskriminierte Union statt
   // eines Strings (Entscheidung P11.13-18). Beide Begruendungen stehen am Docblock von
   // buildConsentBarScript und werden hier nicht verdoppelt.
-  darstellung: ConsentAppearance
+  darstellung: ConsentAppearance,
+  // DER SACHTEXT (Phase 11.13, Scheibe 11.13d; bindende Entscheidung P11.13-29). Die
+  // ZWEITE Pflicht-Achse, ebenfalls ohne Vorgabewert; die Begruendung steht am Docblock
+  // von buildConsentBarScript und wird hier nicht verdoppelt.
+  sachtext: ConsentTextArg
 ): string {
   const stil =
     CONSENT_MODAL_CSS + CONSENT_CHOICE_CSS + consentThemeCss(darstellung);
+  // Spiegel der Leiste: Die Aufloesung von "standard" steht EINMAL hier und nicht zweimal
+  // in den Zweigen; welcher Satz gemeint ist, weiss allein dieser Erzeuger.
+  const text = sachtext === "standard" ? CONSENT_TEXT : sachtext;
   if (mode === "revoke") {
     return wrapRevoke(
-      aufbauDesFensters("return false;", "    offen = host;\n", "true", stil)
+      aufbauDesFensters(
+        "return false;",
+        "    offen = host;\n",
+        "true",
+        stil,
+        text
+      )
     );
   }
   return `<script id="${CONSENT_MODAL_SCRIPT_ID}">
@@ -199,6 +219,6 @@ export function buildConsentModalScript(
   var api = window.${CONSENT_STORE_API};
   if (!api || typeof api.read !== "function" || typeof api.write !== "function") return;
   if (api.read().state !== "never") return;
-${aufbauDesFensters("return;", "", "false", stil)}})();
+${aufbauDesFensters("return;", "", "false", stil, text)}})();
 </script>`;
 }

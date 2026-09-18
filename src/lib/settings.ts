@@ -236,12 +236,22 @@ export type ProjectSettings = {
   //            unberuehrt liegen, damit eine Wahl das Umschalten ueberlebt.
   //            DIE FELDNAMEN SIND EINE EINBAHNSTRASSE: ein Blob, der sie traegt, traegt
   //            sie weiter; eine Umbenennung muesste beide Formen lesen (P11.13-19).
+  //   text = DER FREIE SACHTEXT (Phase 11.13, Scheibe 11.13d; bindende Entscheidungen
+  //            P11.13-23 und P11.13-26). FLACHER Nachbar, KEIN Unterobjekt; der Typ ist
+  //            `unknown` aus demselben Grund wie oben.
+  //            FEHLT DAS FELD, GILT UNSER STANDARDTEXT — das ist der Normalfall und kein
+  //            Fehlzustand. Ein GESPEICHERTER LEERER STRING ist dagegen "unknown" und
+  //            sperrt das Veroeffentlichen; die Oberflaeche ENTFERNT das Feld, statt es zu
+  //            leeren.
+  //            DER FELDNAME IST EINE EINBAHNSTRASSE: ein Blob, der ihn traegt, traegt ihn
+  //            weiter; eine Umbenennung muesste beide Formen lesen (P11.13-19).
   consent?: {
     gate?: boolean;
     dialog?: unknown;
     theme?: unknown;
     colorBackground?: unknown;
     colorText?: unknown;
+    text?: unknown;
   };
 };
 
@@ -760,6 +770,15 @@ export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
     // OHNE SIE GINGE DER WERT STILL VERLOREN — dieselbe Kette wie beim Themenwert.
     getConsentColorBackground(a) === getConsentColorBackground(b) &&
     getConsentColorText(a) === getConsentColorText(b) &&
+    // DER SACHTEXT-TERM (Phase 11.13, Scheibe 11.13d; bindende Entscheidung P11.13-19).
+    // EIN SKALARER TERM, KEIN OBJEKTVERGLEICH — dieselbe Bauform und derselbe gemessene
+    // Grund wie bei den zwei Farb-Termen. Verglichen wird die NORMALISIERTE Rueckgabe des
+    // Lesers, damit ein fehlendes Feld auf beiden Seiten gleich ist und kein false-dirty
+    // entsteht; `undefined === undefined` ist dabei der Normalfall und nicht der Rand.
+    // OHNE IHN GINGE DER WERT STILL VERLOREN: dirty bliebe false, es gaebe keinen Text
+    // "Ungespeicherte Aenderungen", keinen beforeunload-Waechter und kein confirm beim
+    // Projektwechsel — und NICHTS wuerde davon rot.
+    getConsentText(a) === getConsentText(b) &&
     TRACKING_TARGETS.every(
       (t) =>
         getPixelId(a, t) === getPixelId(b, t) &&
@@ -1073,3 +1092,244 @@ export type ConsentAppearance =
       readonly background: ConsentColor;
       readonly text: ConsentColor;
     };
+
+// ===================================================================================
+// DER FREIE SACHTEXT (Phase 11.13, Scheibe 11.13d; bindende Entscheidungen P11.13-23,
+// P11.13-26, P11.13-27 und P11.13-29)
+//
+// ZUM ABSATZ DARUEBER, damit er nicht als gebrochen gelesen wird: Der Satz "diese Union
+// aendert die GESTALT des einen Parameters, nicht seine Zahl" beschreibt die SCHEIBE
+// 11.13c und bleibt dafuer richtig. Seit der Scheibe 11.13d tragen die drei Signaturen
+// ZWEI Pflicht-Achsen — die Darstellung und den Sachtext (Entscheidung P11.13-29).
+// P11.13-11 ist damit erfuellt und nicht gedehnt: sie verlangt "Pflicht-Parameter OHNE
+// VORGABEWERT", und beide Achsen erfuellen das einzeln; ueber ihre ZAHL trifft sie keine
+// Auflage.
+// ===================================================================================
+
+/**
+ * DIE OBERGRENZE DES SACHTEXTES, IN UNICODE-CODEPUNKTEN (bindende Entscheidung
+ * P11.13-27).
+ *
+ * PROVENIENZ — ZWEI TEILE, UND SIE HABEN VERSCHIEDENEN RANG. WER SIE ZUSAMMENZIEHT,
+ * HAELT EINE SETZUNG FUER EINE MESSUNG:
+ *
+ * (1) DIE GEMESSENE KANTE IST 416 (CC, 2026-09-18, Playwright/Chromium ueber file://,
+ *     360x480, Leiste UND Fenster, ein- UND ausgeklappt, zwei Extreme — ein
+ *     ununterbrochener Lauf aus "W" und ein Wechseltext aus "W" und Leerzeichen).
+ *     416 haelt, 417 verletzt Entscheidung P11.13-3: Beim FENSTER, Wechseltext,
+ *     ausgeklappt steht `scrollHeight` 495 gegen `clientHeight` 446, und der letzte
+ *     Knopf liegt ausserhalb des Sichtfensters.
+ *
+ * (2) GESETZT IST 300 — ARCHITEKT-SETZUNG, rund 28 Prozent Abstand zur Kante als
+ *     Reserve fuer Schrift- und Browser-Varianz. DER ABSTAND SELBST IST UNGEMESSEN:
+ *     Es gibt keine Messung darueber, wieviel Reserve eine andere Schriftfamilie oder
+ *     eine andere Zeichensatz-Ersetzung tatsaechlich braucht. Die Zahl 300 ist damit
+ *     eine VORGABE mit einem gemessenen Deckel, keine Messung.
+ *     FIREFOX UND WEBKIT SIND AN DIESER ACHSE UNGEMESSEN — die Kante 416 gilt fuer
+ *     Chromium, und ob sie dort hoeher oder niedriger liegt, ist nicht erhoben. Genau
+ *     dafuer ist der Abstand da, und genau deshalb ist er keine Messung.
+ *
+ * DAS FENSTER BINDET, NICHT DIE LEISTE — UND DAS IST DAS GEGENTEIL DESSEN, WAS HIER VOR
+ * DER PROBE STAND. Die Erwartung lautete: Die Leiste traegt kein `overflow` und kein
+ * `max-height`, waechst also nach oben und wandert zuerst ueber den Rand. GEMESSEN IST
+ * DAS UMGEKEHRTE: Bei 416 Zeichen steht die Leiste bei `top` 112,69 und hat reichlich
+ * Luft; das Fenster steht an seinem Deckel (`max-height`, Hoehe 448 bei `top` 16) und
+ * bekommt einen INNEREN Scrollbereich.
+ * DER EIGENE SCROLLBEREICH IST ALSO KEIN SCHUTZ, SONDERN DIE URSACHE: Er haelt das
+ * Fenster klein und schiebt dafuer ein Bedienelement aus dem Blick — genau das, was
+ * Entscheidung P11.13-3 verbietet. Die Leiste waechst stattdessen mit und bleibt
+ * vollstaendig sichtbar.
+ * WER DIESEN ABSATZ FUER EINE FORMALIE HAELT, SETZT N BEIM NAECHSTEN MAL AN DER LEISTE
+ * FEST UND MISST DIE FALSCHE FORM.
+ *
+ * BEI 300 IST DIESELBE MESSUNG ERNEUT GEFAHREN (CC, 2026-09-18, gleiche Achse):
+ * P11.13-3 in allen geprueften Zustaenden erfuellt.
+ *
+ * SIE IST KEIN SICHERHEITS-MITTEL. Die Ausbruchsfrage traegt der Einbettungs-Helfer
+ * (lib/script-embed.ts, Entscheidung P11.13-25), das Zeichen-Tor steht unten. N ist eine
+ * GEOMETRIE-Grenze; wer sie als Riegel gegen feindliche Eingabe liest, haelt eine Zahl
+ * fuer einen Schutz.
+ *
+ * SIE KIPPT MIT DER GEOMETRIE, AUF DER SIE RUHT — die Leiste bekommt einen eigenen
+ * Scrollbereich, die Knopfbreite aendert sich, die Schriftgroesse aendert sich, oder die
+ * eingeklappte Gestalt bricht anders um. Dieselbe Bedingung wie bei P11.13-5: N ist keine
+ * Eigenschaft des Textes, sondern des Behaelters.
+ */
+export const CONSENT_TEXT_MAX_LENGTH = 300;
+
+/**
+ * DIE LAENGE EINES SACHTEXTES IN UNICODE-CODEPUNKTEN (bindende Entscheidung P11.13-27).
+ *
+ * `"…".length` zaehlt UTF-16-EINHEITEN und waere fuer ein Emoji oder ein Zeichen
+ * ausserhalb der Grundebene ZWEI, obwohl der Betreiber EIN Zeichen sieht. Eine Grenze,
+ * die etwas anderes zaehlt als der Mensch vor dem Feld, erzeugt einen Streit, den niemand
+ * gewinnt.
+ *
+ * DAS TOR UND DER ZEICHENZAEHLER DER OBERFLAECHE RUFEN DIESE FUNKTION — eine Stelle, zwei
+ * Aufrufer (docs/immer-beachten.md, ABLEITEN STATT HARDCODEN). DER GRUND IST NICHT
+ * SPARSAMKEIT: Zwei Zaehlungen liefen auseinander, und zwar STILL — die Oberflaeche
+ * zeigte eine Zahl, das Tor wiese ab, und der Betreiber saehe eine Anzeige, die seine
+ * Ablehnung nicht erklaert. Der Zaehler ist damit kein Anzeige-Detail, sondern die
+ * sichtbare Seite des Tors.
+ */
+export function consentTextLength(value: string): number {
+  return [...value].length;
+}
+
+/**
+ * DAS ZEICHEN-TOR DES SACHTEXTES (bindende Entscheidung P11.13-26).
+ *
+ * VERBOTEN SIND: C0-Steuerzeichen EINSCHLIESSLICH Zeilenumbruch und Tabulator, DEL,
+ * C1-Steuerzeichen, U+2028 und U+2029 sowie die Bidi-Steuerzeichen U+202A bis U+202E und
+ * U+2066 bis U+2069.
+ *
+ * `<` IST AUSDRUECKLICH ERLAUBT — dafuer ist der Einbettungs-Helfer da (P11.13-25). Ein
+ * Verbot waere eine dritte Linie an einer Stelle, die schon zwei hat, und es naehme dem
+ * Betreiber einen Satz wie "Wir setzen <3 Cookies" ohne jeden Gewinn.
+ *
+ * WARUM DIE STEUERZEICHEN TROTZDEM FALLEN, obwohl JSON.stringify sie maskiert: SIE SIND
+ * NICHT GEFAEHRLICH, SONDERN UNSICHTBAR. U+2028 bricht in alten Laufzeiten ein
+ * JS-Literal; die Bidi-Zeichen koennen den ANGEZEIGTEN Satz gegen den gespeicherten
+ * kehren — der Betreiber liest im Feld etwas anderes, als der Besucher sieht. Ein
+ * Zeichen, dessen Wirkung man im Eingabefeld nicht sehen kann, gehoert nicht in einen
+ * Text, der fuer einen anderen gebaut wird.
+ *
+ * DIE CODEPUNKTE STEHEN ALS ZAHLEN UND NICHT ALS UNICODE-ESCAPES IM QUELLTEXT. Das ist
+ * kein Stil: Ein Unicode-Escape im Quelltext dieses Projekts ist am 2026-09-18 mehrfach
+ * STILL in sein Zeichen verwandelt worden, und bei U+0000 waere das Ergebnis ein NUL-Byte
+ * in einer Quelldatei, das kein Gate meldet (docs/immer-beachten.md, `grep` TAUGT IN
+ * DIESER UMGEBUNG WEDER FUER DAS CR NOCH FUER DAS NUL). Eine Zahl kann kein Werkzeug
+ * umdeuten.
+ *
+ * `for…of` ITERIERT UEBER CODEPUNKTE, nicht ueber UTF-16-Einheiten — dieselbe Achse wie
+ * consentTextLength.
+ */
+function hatVerbotenesZeichen(value: string): boolean {
+  for (const zeichen of value) {
+    const c = zeichen.codePointAt(0) as number;
+    if (c <= 0x1f) return true;
+    if (c === 0x7f) return true;
+    if (c >= 0x80 && c <= 0x9f) return true;
+    if (c === 0x2028 || c === 0x2029) return true;
+    if (c >= 0x202a && c <= 0x202e) return true;
+    if (c >= 0x2066 && c <= 0x2069) return true;
+  }
+  return false;
+}
+
+/**
+ * DER GRUND, AUS DEM EIN SACHTEXT ABGEWIESEN WIRD — oder `null`, wenn er durchgeht.
+ *
+ * SIE IST DIE EINZIGE PRUEFUNG, UND readConsentText RUFT SIE. Damit koennen die
+ * Oberflaeche (die den GRUND anzeigen muss) und das Tor (das nur ja/nein braucht) NICHT
+ * auseinanderlaufen — es gibt eine Bedingung, nicht zwei gleichlautende.
+ * SIE ERZEUGT KEINEN GEPRUEFTEN TYP: Die eine Zusicherung steht in readConsentText und
+ * nirgends sonst (Entscheidung P11.13-17, Waechter CT-A1).
+ *
+ * DAS TOR PRUEFT MIT `trim`, ES VERAENDERT ABER NICHTS (Entscheidung P11.13-26):
+ * Ausgeliefert wird der GESPEICHERTE Wert zeichengleich; fuehrender und nachgestellter
+ * Leerraum bleibt drin, wenn der Betreiber ihn getippt hat. `trim` ist ausschliesslich das
+ * Mittel, mit dem die Frage "ist hier ueberhaupt etwas?" beantwortet wird.
+ * DAMIT IST DIE AUFLAGE AUS P11.13-14 ERFUELLT UND NICHT BLOSS BENACHBART: "Ein Wert, der
+ * nur nach Umformung passte, wird abgewiesen, nicht zurechtgebogen" — es GIBT hier keinen
+ * solchen Wert, weil keine Umformung stattfindet. Ein Text aus lauter Leerzeichen wird
+ * ABGEWIESEN, nicht zu einem leeren String zurechtgebogen.
+ * DIE LAENGE WIRD AM ROHEN WERT GEMESSEN, nicht am getrimmten: ausgeliefert wird der rohe.
+ */
+export function consentTextProblem(
+  raw: unknown
+): "kein_string" | "leer" | "zeichen" | "laenge" | null {
+  if (typeof raw !== "string") return "kein_string";
+  if (raw.trim() === "") return "leer";
+  if (hatVerbotenesZeichen(raw)) return "zeichen";
+  if (consentTextLength(raw) > CONSENT_TEXT_MAX_LENGTH) return "laenge";
+  return null;
+}
+
+declare const consentTextMarke: unique symbol;
+
+/**
+ * DER GEPRUEFTE SACHTEXT — OPAK (bindende Entscheidung P11.13-17, Bauform von
+ * ConsentColor). Ein roher `string` ist ihm NICHT zuweisbar; wer einen an einen Erzeuger
+ * gibt, bekommt einen COMPILER-FEHLER statt eines Laufzeit-Fehlers.
+ */
+export type ConsentText = string & { readonly [consentTextMarke]: true };
+
+/** Ergebnis des Lesers: ein geprueftes Sachtext-Literal ODER "unknown". */
+export type ConsentTextRead = ConsentText | "unknown";
+
+/**
+ * DIE EINZIGE ZUSICHERUNG DES GEPRUEFTEN SACHTEXT-TYPS IM GANZEN REPO (Entscheidung
+ * P11.13-17), unmittelbar hinter der Pruefung. Waechter: CT-A1 in settings.test.ts.
+ * KEIN RUECKFALL auf den Standardtext: Sonst saehe die abbrechende Stelle in
+ * publishProject einen ungueltigen Wert nie, und der Abbruch waere toter Code
+ * (docs/immer-beachten.md, EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB, Folge (a)).
+ */
+export function readConsentText(raw: unknown): ConsentTextRead {
+  return consentTextProblem(raw) === null ? (raw as ConsentText) : "unknown";
+}
+
+/**
+ * DER SACHTEXT EINES PROJEKTS — `undefined`, WENN DAS FELD FEHLT.
+ *
+ * DIE DREI AUSGAENGE SIND NICHT ZWEI, UND DAS IST DER GANZE PUNKT (Entscheidung
+ * P11.13-26): `undefined` heisst "kein eigener Text, es gilt unser Standardtext" und ist
+ * der NORMALFALL — ein bekannter Zustand, kein unbekannter. "unknown" heisst "da steht
+ * ein WERT, und er taugt nicht" und fuehrt zum Abbruch. EIN GESPEICHERTER LEERER STRING
+ * IST "unknown", NICHT `undefined`: Er ist ein Wert, und ein Wert, der nichts bedeutet,
+ * wird nicht stillschweigend gedeutet. Die Oberflaeche loest das, indem ein geleertes
+ * Feld den Wert ENTFERNT, statt ihn zu leeren.
+ */
+export function getConsentText(
+  settings: ProjectSettings
+): ConsentTextRead | undefined {
+  const raw = settings.consent?.text;
+  return raw === undefined ? undefined : readConsentText(raw);
+}
+
+/**
+ * Den Sachtext setzen — oder mit `undefined` ENTFERNEN (Entscheidung P11.13-26). Reine
+ * Funktion, gleiche Bauform wie setConsentTheme und setConsentColors: neues Objekt,
+ * bestehende Mitglieder unberuehrt.
+ * SIE NIMMT EINEN ROHEN STRING: Der Blob ist ungepruefte Client-Eingabe, und die Pruefung
+ * gehoert an den LESER, nicht an den Schreiber — sonst gaebe es zwei Tore.
+ * DAS ENTFERNEN IST EIN EIGENER AUSGANG UND KEIN LEERER STRING: Ein geschriebener leerer
+ * String waere "unknown" und sperrte das Veroeffentlichen; gemeint ist aber "nimm wieder
+ * unseren Satz".
+ */
+export function setConsentText(
+  settings: ProjectSettings,
+  value: string | undefined
+): ProjectSettings {
+  const consent = { ...settings.consent };
+  if (value === undefined) delete consent.text;
+  else consent.text = value;
+  return { ...settings, consent };
+}
+
+/**
+ * Die Meldung, mit der publishProject bei einem ungueltigen SACHTEXT abbricht. Sie ist
+ * EIGEN und nicht die des Themenwerts oder der Farben: Sie nennt einen anderen Platz der
+ * Oberflaeche, und ein Betreiber, der die falsche Stelle sucht, findet nichts.
+ * SIE BEHAUPTET WEDER URSACHE NOCH RECHTSFOLGE und nennt den Ausgang: nichts
+ * veroeffentlicht.
+ */
+export const CONSENT_TEXT_UNKNOWN_MESSAGE =
+  "Der eigene Text des Einwilligungs-Dialogs ist ungültig. Bitte unter „Darstellung“ einen Text ohne Steuerzeichen und innerhalb der Längengrenze eingeben oder das Feld leeren. Es wurde nichts veröffentlicht.";
+
+/**
+ * DER SACHTEXT, WIE ER AN DEN ERZEUGER REIST (bindende Entscheidung P11.13-29) — die
+ * ZWEITE Pflicht-Achse an injectPageViewEmitter, buildConsentBarScript und
+ * buildConsentModalScript.
+ *
+ * "standard" IST EIN BENANNTER ZUSTAND UND KEIN FEHLENDES ARGUMENT. Der Aufrufer muss
+ * sich entscheiden; ein Vergessen ist ein tsc-Fehler, keine stille Auslieferung unseres
+ * Satzes. EIN `= CONSENT_TEXT` AN EINER SIGNATUR IST AUSGESCHLOSSEN (P11.13-11): Es
+ * liesse einen kuenftigen Auslieferungsweg den Betreiber-Satz stillschweigend uebergehen.
+ * VERWORFEN: `ConsentText | null` — `null` benennt nichts und laesst den naechsten Leser
+ * raten, ob "kein Text", "nicht gesetzt" oder "absichtlich leer" gemeint ist.
+ * WELCHER SATZ "standard" IST, WEISS ALLEIN DER ERZEUGER (CONSENT_TEXT in
+ * tracking/consent-choice.ts). Wuerde der Aufrufer ihn einsetzen, staende die Zuordnung
+ * an zwei Orten — auch das ist ausdruecklich verworfen.
+ */
+export type ConsentTextArg = ConsentText | "standard";

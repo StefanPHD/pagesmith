@@ -8,6 +8,59 @@ import { META_CONSENT_TARGET } from "./consent";
 import { CONSENT_WIRE_FIELD } from "./consent-wire";
 
 // ===========================================================================
+// DIE PIXEL-ID ALS BETREIBER-EINGABE (Phase 11.13, Scheibe 11.13d; bindende
+// Entscheidungen P11.13-25 und P11.13-30).
+// ===========================================================================
+describe("buildMetaRuntime — die Pixel-ID geht ueber den Einbettungs-Helfer", () => {
+  // DIE NUTZLASTEN SIND DIE GEMESSENEN (Invariante S9): woertlich aus VERMERK P11.13-7,
+  // dem Lauf vom 2026-09-18. Dort hat GENAU DIESE Einsetzstelle den Block verlassen, und
+  // mit der Fassung OHNE Anfuehrungszeichen hat fremder Code AUSGEFUEHRT.
+  const FEINDLICHE_IDS = [
+    "</script><img src=x onerror=\"window.__AUSBRUCH=1\">",
+    "</script><img src=x onerror=window.__AUSBRUCH=1>",
+    "<!--<script><img src=x onerror=\"window.__AUSBRUCH=1\">",
+    "x</SCRIPT>y",
+  ] as const;
+
+  // MR1. DER WAECHTER AM ERGEBNIS (P11.13-30). WODURCH ROT: wenn die eine Zeile
+  // `var PS_PIXEL_ID = …` wieder auf ein rohes JSON.stringify faellt (Pflicht-Mutationen
+  // M-a und M-b).
+  it("MR1: eine feindliche Pixel-ID hinterlaesst kein '<' in der Laufzeit", () => {
+    // DIE BASIS-LAUFZEIT TRAEGT SELBST EIN "<" — einen VERGLEICHSOPERATOR
+    // (`i < __psConfirmQueue.length`). Ein "kein < in der Ausgabe" waere hier also
+    // falsch und muesste den Code umbauen, um den Test zu befriedigen: genau die
+    // Fehlerklasse "EIN WAECHTER UEBER ZEICHEN DARF DIE GESTALT DES GEPRUEFTEN NICHT
+    // BESTIMMEN". GEPRUEFT WIRD DESHALB DER BEITRAG DER PIXEL-ID: Die Zahl der "<" darf
+    // sich gegenueber einer harmlosen ID NICHT aendern.
+    const basis = buildMetaRuntime("1234567890", "", "", []);
+    const basisKleiner = (basis.match(/</g) ?? []).length;
+    expect(basisKleiner).toBe(1); // POSITIVKONTROLLE der Zaehlachse
+    for (const id of FEINDLICHE_IDS) {
+      const js = buildMetaRuntime(id, "", "", []);
+      expect((js.match(/</g) ?? []).length, id).toBe(basisKleiner);
+      // UND DIE ZWEI GESTALTEN, DIE DEN BLOCK VERLASSEN BZW. VERSCHLUCKEN, EINZELN:
+      expect(js.match(/<\/script/gi), id).toBeNull();
+      expect(js.includes("<!--"), id).toBe(false);
+      // RUNDLAUF: Der Wert kommt unveraendert wieder heraus — der Helfer maskiert, er
+      // verstuemmelt nicht. Ohne diese Haelfte waere der Test auch mit "alles wegwerfen"
+      // gruen.
+      const m = js.match(/var PS_PIXEL_ID = (.*);/);
+      expect(m, id).not.toBeNull();
+      expect(JSON.parse(m![1]), id).toBe(id);
+    }
+  });
+
+  // MR2. DIE BYTE-ZUSAGE (Invariante S1): Eine NUMERISCHE Pixel-ID traegt kein "<", und
+  // fuer sie ist die Ausgabe zeichengleich mit der Fassung vor dieser Scheibe.
+  // WODURCH ROT: wenn der Helfer mehr taete als maskieren.
+  it("MR2: eine numerische Pixel-ID wird zeichengleich eingebettet", () => {
+    const js = buildMetaRuntime("1234567890", "", "", []);
+    expect(js).toContain('var PS_PIXEL_ID = "1234567890";');
+  });
+});
+
+// ===========================================================================
+// DER ERZEUGER DES EINWILLIGUNGS-SIGNALS// ===========================================================================
 // DER ERZEUGER DES EINWILLIGUNGS-SIGNALS (Phase 11, fuenfte Scheibe).
 //
 // REINE TEXT-TESTS auf dem erzeugten Laufzeit-JS. Die WIRKUNG des Feldes prueft

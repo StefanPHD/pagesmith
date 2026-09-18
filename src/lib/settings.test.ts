@@ -16,6 +16,12 @@ import {
   readConsentColor,
   setConsentColors,
   CONSENT_COLOR_PATTERN,
+  getConsentText,
+  readConsentText,
+  setConsentText,
+  consentTextLength,
+  consentTextProblem,
+  CONSENT_TEXT_MAX_LENGTH,
   setPixelId,
   settingsEqual,
   TRACKING_TARGETS,
@@ -546,5 +552,163 @@ describe("die zwei freien Farben (Scheibe 11.13c)", () => {
     expect(getConsentColorBackground(setConsentTheme(hell, "custom"))).toBe(
       "#010203"
     );
+  });
+});
+
+describe("Der freie Sachtext (Phase 11.13, Scheibe 11.13d)", () => {
+  // DIE ERWARTUNGEN STAMMEN AUS DEN ENTSCHEIDUNGEN UND NICHT AUS DEM CODE (Pflicht 2 des
+  // Zuschnitts): die verbotenen Zeichenklassen aus Entscheidung P11.13-26, die drei
+  // Ausgaenge aus demselben Text, die Zaehl-Achse aus P11.13-27.
+
+  // CT-A1. DER EINZIGE WAECHTER UEBER "GENAU EINE ZUSICHERUNG" (Entscheidung P11.13-17),
+  // Spiegel von CF1, MIT DERSELBEN GRENZE AN SICH SELBST: ER SIEHT ZEICHEN, NICHT
+  // BEDEUTUNG. Er zaehlt "as ConsentText" im QUELLTEXT; eine Zusicherung mit anderem
+  // Wortlaut oder in einer anderen Datei entgeht ihm. ER MUSS STRENG IRREN — lieber ein
+  // Fehlalarm, den jemand prueft, als ein Durchlassen, das niemand sieht.
+  // WARUM ES IHN BRAUCHT: Eine zweite Erzeugungsstelle hebt das Tor auf, OHNE dass ein
+  // Gate rot wird; der Compiler ist danach zufrieden.
+  it("CT-A1: genau EINE Zusicherung des geprueften Sachtext-Typs, hinter der Pruefung", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const quelle = await readFile("src/lib/settings.ts", "utf8");
+    const treffer = quelle.match(/as ConsentText/g) ?? [];
+    expect(treffer).toHaveLength(1);
+    const i = quelle.indexOf("as ConsentText");
+    const j = quelle.lastIndexOf("consentTextProblem(raw)", i);
+    expect(j).toBeGreaterThan(-1);
+    expect(i - j).toBeLessThan(200);
+    // POSITIVKONTROLLEN der Suche im selben Lauf.
+    expect(quelle).toContain("consentTextProblem");
+    expect("x as ConsentText y".match(/as ConsentText/g)).toHaveLength(1);
+  });
+
+  // CT-R1. JEDE FEINDLICHE EINGABE -> "unknown" (Pflicht-Mutationen M-c und M-d). Die
+  // Zeichenklassen sind die aus Entscheidung P11.13-26, einzeln aufgezaehlt.
+  // DIE ZEICHEN WERDEN IM CODE GEBAUT UND NICHT HINGESCHRIEBEN: Ein Unicode-Escape im
+  // Quelltext ist in diesem Projekt am 2026-09-18 mehrfach STILL in sein Zeichen
+  // verwandelt worden, und bei U+0000 waere das Ergebnis ein NUL-Byte in einer
+  // Quelldatei, das kein Gate meldet.
+  it("CT-R1: Steuerzeichen, Bidi, leer, zu lang und Nicht-Strings -> 'unknown'", () => {
+    const Z = (c: number) => String.fromCharCode(c);
+    const feindlich: ReadonlyArray<readonly [string, unknown]> = [
+      ["NUL (C0)", "a" + Z(0x00) + "b"],
+      ["Zeilenumbruch (C0)", "a" + Z(0x0a) + "b"],
+      ["Wagenruecklauf (C0)", "a" + Z(0x0d) + "b"],
+      ["Tabulator (C0)", "a" + Z(0x09) + "b"],
+      ["DEL", "a" + Z(0x7f) + "b"],
+      ["C1", "a" + Z(0x85) + "b"],
+      ["Zeilentrenner U+2028", "a" + Z(0x2028) + "b"],
+      ["Absatztrenner U+2029", "a" + Z(0x2029) + "b"],
+      ["Bidi-Einbettung U+202A", "a" + Z(0x202a) + "b"],
+      ["Bidi-Ueberschreibung U+202E", "a" + Z(0x202e) + "b"],
+      ["Bidi-Isolat U+2066", "a" + Z(0x2066) + "b"],
+      ["Bidi-Isolat U+2069", "a" + Z(0x2069) + "b"],
+      ["leerer String", ""],
+      ["nur Leerzeichen", "   "],
+      ["N+1 Zeichen", "W".repeat(CONSENT_TEXT_MAX_LENGTH + 1)],
+      ["Zahl", 42],
+      ["Objekt", { text: "x" }],
+      ["null", null],
+      ["Wahrheitswert", true],
+    ];
+    for (const [name, wert] of feindlich) {
+      expect(readConsentText(wert), name).toBe("unknown");
+    }
+  });
+
+  // CT-R2. DIE POSITIVKONTROLLE — OHNE SIE WAERE CT-R1 AUCH DANN GRUEN, WENN DAS TOR
+  // ALLES ABWIESE. Sie haelt zugleich die Zusage aus Entscheidung P11.13-26: EIN "<" IST
+  // AUSDRUECKLICH ERLAUBT, denn dafuer ist der Einbettungs-Helfer da. Wer es ins Tor
+  // aufnimmt, macht diesen Test rot.
+  it("CT-R2: ein gueltiger Text mit '<' geht DURCH — und genau N Zeichen auch", () => {
+    const mitKleiner = "Wir setzen <3 Cookies";
+    expect(readConsentText(mitKleiner)).toBe(mitKleiner);
+    expect(consentTextProblem(mitKleiner)).toBeNull();
+    // Der feindliche Sachtext selbst ist GUELTIGE Eingabe — ihn faengt nicht das Tor,
+    // sondern der Helfer maskiert ihn. Das sind die zwei unabhaengigen Linien (S4).
+    const feindlich = "</script><img src=x onerror=window.__AUSBRUCH=1>";
+    expect(readConsentText(feindlich)).toBe(feindlich);
+    // DER RANDWERT: genau N Zeichen sind gueltig, N+1 nicht (CT-R1).
+    const genauN = "W".repeat(CONSENT_TEXT_MAX_LENGTH);
+    expect(readConsentText(genauN)).toBe(genauN);
+    // Leerraum an den Raendern wird GEPRUEFT, aber NICHT ENTFERNT (P11.13-26): Der
+    // gespeicherte Wert kommt zeichengleich zurueck.
+    expect(readConsentText("  Hallo  ")).toBe("  Hallo  ");
+  });
+
+  // CT-R3. DIE DREI AUSGAENGE SIND NICHT ZWEI (Entscheidung P11.13-26). WODURCH ROT:
+  // wenn ein fehlendes Feld auf "unknown" faellt (dann sperrte der NORMALFALL das
+  // Veroeffentlichen) oder ein leerer String auf undefined (dann waere ein unbrauchbarer
+  // Wert stillschweigend gedeutet).
+  it("CT-R3: Feld fehlt -> undefined; leerer String -> 'unknown'", () => {
+    expect(getConsentText({})).toBeUndefined();
+    expect(getConsentText({ consent: {} })).toBeUndefined();
+    expect(getConsentText({ consent: { text: "" } })).toBe("unknown");
+    expect(getConsentText({ consent: { text: "Hallo" } })).toBe("Hallo");
+    // Der Setzer mit undefined ENTFERNT das Feld und schreibt keinen leeren String.
+    const gesetzt = setConsentText({}, "Hallo");
+    expect(getConsentText(gesetzt)).toBe("Hallo");
+    const entfernt = setConsentText(gesetzt, undefined);
+    expect(getConsentText(entfernt)).toBeUndefined();
+    expect("text" in (entfernt.consent ?? {})).toBe(false);
+    // Die Nachbarn im Unterobjekt bleiben unberuehrt.
+    const mitDialog = setConsentText(setConsentDialog({}, "bar"), "Hallo");
+    expect(getConsentDialog(mitDialog)).toBe("bar");
+    expect(getConsentDialog(setConsentText(mitDialog, undefined))).toBe("bar");
+  });
+
+  // CT-Z. DIE ZAEHLUNG GEHT UEBER CODEPUNKTE, NICHT UEBER UTF-16-EINHEITEN
+  // (Entscheidung P11.13-27). WODURCH ROT: wenn jemand .length einsetzt.
+  it("CT-Z: consentTextLength zaehlt Codepunkte", () => {
+    const emoji = String.fromCodePoint(0x1f600);
+    expect(consentTextLength(emoji)).toBe(1);
+    // POSITIVKONTROLLE: die zwei Achsen weichen an genau diesem Wert ab.
+    expect(emoji.length).toBe(2);
+    expect(consentTextLength("abc")).toBe(3);
+    // FOLGE FUER DAS TOR: N Emoji sind gueltig, obwohl .length dort 2N ergaebe.
+    const nEmoji = emoji.repeat(CONSENT_TEXT_MAX_LENGTH);
+    expect(consentTextProblem(nEmoji)).toBeNull();
+    expect(consentTextProblem(nEmoji + emoji)).toBe("laenge");
+  });
+
+  // CT-G. DER GRUND IST DERSELBE, DEN DIE OBERFLAECHE ZEIGT (P11.13-27, ABLEITEN STATT
+  // HARDCODEN): Tor und Anzeige rufen DIESELBE Funktion. WODURCH ROT: wenn eine zweite,
+  // gleichlautende Bedingung entsteht oder die Reihenfolge einen Grund verdeckt.
+  it("CT-G: consentTextProblem benennt den Grund, und readConsentText folgt ihm", () => {
+    expect(consentTextProblem("   ")).toBe("leer");
+    expect(consentTextProblem("a" + String.fromCharCode(0x0a) + "b")).toBe(
+      "zeichen"
+    );
+    expect(consentTextProblem("W".repeat(CONSENT_TEXT_MAX_LENGTH + 1))).toBe(
+      "laenge"
+    );
+    expect(consentTextProblem(42)).toBe("kein_string");
+    expect(consentTextProblem("Hallo")).toBeNull();
+    // Jeder Grund fuehrt auf "unknown" — eine Abweichung waere eine zweite Bedingung.
+    for (const wert of ["   ", "a" + String.fromCharCode(0x09) + "b", 42]) {
+      expect(readConsentText(wert)).toBe("unknown");
+    }
+  });
+
+  // CT-EQ. DER TERM IN settingsEqual (Pflicht-Mutation M-e; Entscheidung P11.13-19).
+  // WODURCH ROT: wenn der Term entfernt wird — dann bliebe dirty false, der Wert ginge
+  // beim Projektwechsel STILL verloren, und NICHTS wuerde davon rot.
+  it("CT-EQ: settingsEqual sieht den Sachtext — normalisiert", () => {
+    expect(settingsEqual({}, setConsentText({}, "Hallo"))).toBe(false);
+    expect(
+      settingsEqual(setConsentText({}, "Hallo"), setConsentText({}, "Hallo"))
+    ).toBe(true);
+    expect(
+      settingsEqual(setConsentText({}, "Hallo"), setConsentText({}, "Welt"))
+    ).toBe(false);
+    // Entfernen ist eine Aenderung.
+    const mit = setConsentText({}, "Hallo");
+    expect(settingsEqual(mit, setConsentText(mit, undefined))).toBe(false);
+    // NORMALISIERT: zwei verschiedene UNGUELTIGE Werte sind beide "unknown" und damit
+    // gleich — sonst entstuende dirty aus einem Wert, den ohnehin niemand ausliefert.
+    const leer: ProjectSettings = { consent: { text: "" } };
+    const nurLeerzeichen: ProjectSettings = { consent: { text: "   " } };
+    expect(settingsEqual(leer, nurLeerzeichen)).toBe(true);
+    // Und ein FEHLENDES Feld ist nicht dasselbe wie ein ungueltiges.
+    expect(settingsEqual({}, leer)).toBe(false);
   });
 });

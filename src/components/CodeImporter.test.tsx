@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { CONSENT_TEXT_MAX_LENGTH } from "@/lib/settings";
 import {
   cleanup,
   fireEvent,
@@ -4423,4 +4424,181 @@ describe("CodeImporter — die Darstellung des Einwilligungs-Dialogs (Scheibe 11
     expect(themenGruppe()?.textContent).toContain("Kontrast 4,47:1");
     expect(screen.queryByText(/unbekannter Farbwert/i)).toBeNull();
   });
+
+  // ===================================================================================
+  // DER FREIE SACHTEXT (Phase 11.13, Scheibe 11.13d) — UI12 bis UI15.
+  // `PublishView.tsx` hat weiterhin KEINE eigene Testdatei; die Abdeckung der
+  // Einwilligungs-Flaeche entsteht hier (Pflicht 4 des Zuschnitts).
+  // ===================================================================================
+
+  // UI12. DAS FELD IST DA, ES HAENGT NICHT AN "custom", UND DER PLATZHALTER IST UNSER
+  // STANDARDTEXT (Entscheidung P11.13-23, Plan-Frage 5).
+  // WODURCH ROT: wenn das Feld an die Darstellung gebunden wuerde — dann saehe ein
+  // Betreiber mit "hell" seinen eigenen Satz nirgends —, oder wenn der Platzhalter
+  // abgeschrieben statt importiert wuerde und auseinanderliefe.
+  it("UI12: das Sachtext-Feld steht bei JEDER Darstellung, mit unserem Satz als Platzhalter", () => {
+    for (const theme of ["light", "dark", "auto", "custom"]) {
+      cleanup();
+      render(
+        <CodeImporter
+          initialCode="<button>X</button>"
+          initialProjectId="p1"
+          initialSettings={{
+            consent: {
+              dialog: "bar",
+              theme,
+              colorBackground: "#ffffff",
+              colorText: "#111827",
+            },
+          }}
+        />,
+      );
+      openSettings();
+      const feld = screen.getByLabelText(
+        "Erläuternder Text",
+      ) as HTMLInputElement;
+      expect(feld, theme).toBeTruthy();
+      expect(feld.value, theme).toBe("");
+      expect(feld.placeholder, theme).toBe(
+        "Diese Seite kann Tracking-Dienste einbinden. Du entscheidest, ob das geschieht.",
+      );
+    }
+    // POSITIVKONTROLLE im selben Lauf: bei AUSGESCHALTETEM Dialog gibt es das Feld
+    // nicht — sonst waere die Abfrage oben auch dann gruen, wenn sie irgendetwas
+    // anderes traefe.
+    cleanup();
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "off" } }}
+      />,
+    );
+    openSettings();
+    expect(screen.queryByLabelText("Erläuternder Text")).toBeNull();
+  });
+
+  // UI13. EIN GELEERTES FELD ENTFERNT DEN WERT UND SCHREIBT NIE EINEN LEEREN STRING
+  // (Entscheidung P11.13-26). WODURCH ROT: wenn der Handler den Rohwert durchreicht —
+  // dann stuende ein leerer String im Blob, der Leser lieferte "unknown", und das
+  // Veroeffentlichen waere gesperrt, obwohl der Betreiber nur zurueck auf unseren Satz
+  // wollte.
+  it("UI13: tippen setzt den Wert, leeren entfernt ihn — und beides macht dirty", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "bar" } }}
+      />,
+    );
+    openSettings();
+    const feld = screen.getByLabelText("Erläuternder Text") as HTMLInputElement;
+    fireEvent.change(feld, { target: { value: "Mein eigener Satz." } });
+    expect(
+      (screen.getByLabelText("Erläuternder Text") as HTMLInputElement).value,
+    ).toBe("Mein eigener Satz.");
+    expect(screen.getByText(/Ungespeicherte Änderungen/i)).toBeTruthy();
+    // Leeren -> das Feld zeigt wieder den Platzhalter, kein leerer String im Blob.
+    fireEvent.change(feld, { target: { value: "" } });
+    expect(
+      (screen.getByLabelText("Erläuternder Text") as HTMLInputElement).value,
+    ).toBe("");
+    // NUR LEERZEICHEN GILT ALS LEER — sonst laege ein Wert im Blob, den das Tor
+    // abweist, waehrend das Feld leer aussieht.
+    fireEvent.change(feld, { target: { value: "   " } });
+    expect(screen.queryByText(/Steuerzeichen/i)).toBeNull();
+    expect(screen.queryByText(/unbrauchbarer Wert/i)).toBeNull();
+  });
+
+  // UI14. DER ZEICHENZAEHLER LIEST N AUS DER KONSTANTE UND ZAEHLT MIT DERSELBEN FUNKTION
+  // WIE DAS TOR (Entscheidung P11.13-27). WODURCH ROT: wenn jemand eine zweite Zaehlung
+  // einzieht oder die Zahl hinschreibt — dann liefen Anzeige und Tor STILL auseinander.
+  it("UI14: der Zaehler zeigt Codepunkte und die Grenze aus der Konstante", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "bar" } }}
+      />,
+    );
+    openSettings();
+    const feld = screen.getByLabelText("Erläuternder Text") as HTMLInputElement;
+    expect(themenGruppe()?.textContent).toContain(
+      `0 von ${CONSENT_TEXT_MAX_LENGTH} Zeichen`,
+    );
+    fireEvent.change(feld, { target: { value: "abc" } });
+    expect(themenGruppe()?.textContent).toContain(
+      `3 von ${CONSENT_TEXT_MAX_LENGTH} Zeichen`,
+    );
+    // EIN EMOJI IST EIN ZEICHEN, nicht zwei — das ist die ganze Zusage von P11.13-27.
+    fireEvent.change(feld, {
+      target: { value: String.fromCodePoint(0x1f600) },
+    });
+    expect(themenGruppe()?.textContent).toContain(
+      `1 von ${CONSENT_TEXT_MAX_LENGTH} Zeichen`,
+    );
+  });
+
+  // UI15. DER ROTE HINWEIS NENNT DIE ZEICHENKLASSE UND ERSCHEINT AUS DEM GRUND, DEN AUCH
+  // DAS TOR NENNT (Plan-Frage 5; er kommt aus consentTextProblem, also aus DERSELBEN
+  // Funktion wie der Abbruch in publishProject).
+  // WODURCH ROT: wenn eine zweite, gleichlautende Bedingung in der Ansicht entsteht —
+  // dann saehe der Betreiber einen Hinweis, der nicht zur Verweigerung passt, oder
+  // keinen, wo verweigert wird.
+  it("UI15: gespeicherte Steuerzeichen und Ueberlaenge erzeugen je ihren eigenen Hinweis", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{
+          consent: { dialog: "bar", text: "a" + String.fromCharCode(0x0a) + "b" },
+        }}
+      />,
+    );
+    openSettings();
+    // Das Feld ZEIGT den gespeicherten Wert — auch den ungueltigen, sonst kann der
+    // Betreiber ihn nicht korrigieren.
+    // EIN BEFUND, GEMESSEN IN DIESEM LAUF (CC, 2026-09-18): Ein einzeiliges
+    // `input[type="text"]` ENTFERNT Zeilenumbrueche aus seinem `value` — der
+    // gespeicherte Wert traegt das Steuerzeichen, das FELD zeigt "ab". DER BETREIBER
+    // SIEHT DAS UNSICHTBARE ZEICHEN ALSO NICHT, und genau deshalb steht der rote Hinweis
+    // daneben; er ist hier nicht Beiwerk, sondern das einzige, was den Zustand erklaert.
+    // (Es ist zugleich ein kleines Argument FUER die einzeilige Gestalt aus Plan-Frage 5:
+    // Das Bedienelement selbst nimmt die verbotene Klasse gar nicht erst an.)
+    expect(
+      (screen.getByLabelText("Erläuternder Text") as HTMLInputElement).value,
+    ).toBe("ab");
+    expect(screen.getByText(/Steuerzeichen/i)).toBeTruthy();
+
+    cleanup();
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{
+          consent: { dialog: "bar", text: "W".repeat(CONSENT_TEXT_MAX_LENGTH + 1) },
+        }}
+      />,
+    );
+    openSettings();
+    expect(screen.getByText(/länger als/i)).toBeTruthy();
+
+    // POSITIVKONTROLLE im selben Lauf: ein GUELTIGER Text mit "<" erzeugt KEINEN
+    // Hinweis — das Tor laesst ihn durch, und der Helfer maskiert ihn (Invariante S4).
+    cleanup();
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{
+          consent: { dialog: "bar", text: "Wir setzen <3 Cookies" },
+        }}
+      />,
+    );
+    openSettings();
+    expect(screen.queryByText(/Steuerzeichen/i)).toBeNull();
+    expect(screen.queryByText(/länger als/i)).toBeNull();
+    expect(screen.queryByText(/unbrauchbarer Wert/i)).toBeNull();
+  });
+
 });

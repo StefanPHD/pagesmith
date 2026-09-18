@@ -93,7 +93,7 @@ function installBeacon(): BeaconSpy {
 
 function scriptsOf(html: string, form: ConsentDialog): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(html, KEY, form, { theme: "light" }),
+    injectPageViewEmitter(html, KEY, form, { theme: "light" }, "standard"),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -182,7 +182,7 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
   });
 
   it("M1: 'off' -> kein Modal-Block (Positivkontrolle: Emitter da)", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "off", { theme: "light" });
+    const out = injectPageViewEmitter(HTML, KEY, "off", { theme: "light" }, "standard");
     expect(out).not.toContain(MODAL_ID);
     expect(out).toContain('id="__ps_pve"');
   });
@@ -190,17 +190,17 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
   // M1b. LEISTE UND MODAL SCHLIESSEN EINANDER AUS — in beide Richtungen, je mit der
   // Anwesenheit des eigenen Blocks als Positivkontrolle.
   it("M1b: 'bar' -> kein Modal-Block; 'modal' -> kein Leisten-Block", () => {
-    const leiste = injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" });
+    const leiste = injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" }, "standard");
     expect(leiste).toContain('id="__ps_clb"');
     expect(leiste).not.toContain(MODAL_ID);
 
-    const modal = injectPageViewEmitter(HTML, KEY, "modal", { theme: "light" });
+    const modal = injectPageViewEmitter(HTML, KEY, "modal", { theme: "light" }, "standard");
     expect(modal).toContain(MODAL_ID);
     expect(modal).not.toContain('id="__ps_clb"');
   });
 
   it("M2: 'modal' -> Gate < Wiederherstellung < Modal < Setzer < Emitter", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "modal", { theme: "light" });
+    const out = injectPageViewEmitter(HTML, KEY, "modal", { theme: "light" }, "standard");
     const gate = out.indexOf('id="pagesmith-consent"');
     const restore = out.indexOf('id="__ps_cnr"');
     const modal = out.indexOf(MODAL_ID);
@@ -215,7 +215,7 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
 
   // M3. DER SERIALISIERUNGS-WAECHTER DIESES BLOCKS, Spiegel von L3: KEIN `<` im Rumpf.
   it("M3: der Rumpf enthaelt kein '<'; genau ein </script>, kein </body>", () => {
-    const block = buildConsentModalScript("load", { theme: "light" });
+    const block = buildConsentModalScript("load", { theme: "light" }, "standard");
     const r = rumpf(block);
     // POSITIVKONTROLLE des Ausschnitts: er traegt wirklich den Code.
     expect(r).toContain("attachShadow");
@@ -230,21 +230,52 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
     // Spiegel von L3. SEIT 11.13c UEBER ALLE VIER — und der vierte ist der einzige, in den
     // ein Betreiber-Wert eingeht; er traegt damit die Sicherheitsachse der Scheibe.
     for (const d of VIER_DARSTELLUNGEN) {
-      const b = buildConsentModalScript("load", d);
+      const b = buildConsentModalScript("load", d, "standard");
       expect(rumpf(b).includes("<"), JSON.stringify(d)).toBe(false);
       expect(b.match(/<\/script>/gi)?.length, JSON.stringify(d)).toBe(1);
     }
+  });
+
+
+// DIE VIER GEMESSENEN NUTZLASTEN (Invariante S9 des Zuschnitts 11.13d). Sie stammen
+// WOERTLICH aus VERMERK P11.13-7 der Standdatei — dem Lauf vom 2026-09-18, in dem der
+// Ausbruch in Chromium ueber file:// gemessen wurde. EINE ERFUNDENE NUTZLAST ERSETZT
+// KEINE GEMESSENE: Der Unterschied zwischen den ersten beiden hat dort darueber
+// entschieden, ob der Handler ZUENDET; beim Erfinden waere genau er verlorengegangen.
+const FEINDLICHE_SACHTEXTE = [
+  "</script><img src=x onerror=\"window.__AUSBRUCH=1\">",
+  "</script><img src=x onerror=window.__AUSBRUCH=1>",
+  "<!--<script><img src=x onerror=\"window.__AUSBRUCH=1\">",
+  "x</SCRIPT>y",
+] as const;
+
+  // M3-TXT. Spiegel von L3-TXT (Phase 11.13, Scheibe 11.13d; Entscheidung P11.13-30).
+  // Die Begruendung steht dort und wird hier nicht verdoppelt.
+  it("M3-TXT: ein feindlicher Sachtext hinterlaesst kein '<' im Rumpf", () => {
+    for (const s of FEINDLICHE_SACHTEXTE) {
+      for (const d of VIER_DARSTELLUNGEN) {
+        for (const m of ["load", "revoke"] as const) {
+          const b = buildConsentModalScript(m, d, s as unknown as never);
+          expect(rumpf(b).includes("<"), s + " / " + m + " / " + d.theme).toBe(false);
+          expect(b.match(/<\/script>/gi)?.length, s).toBe(1);
+        }
+      }
+    }
+    // POSITIVKONTROLLE IM SELBEN LAUF.
+    const harmlos = "Ein eigener Satz.";
+    const b = buildConsentModalScript("load", { theme: "light" }, harmlos as unknown as never);
+    expect(b).toContain(harmlos);
   });
 
   // M4. DIE NADEL-LISTE DER LEISTE PLUS IHRE EIGENEN KENNUNGEN — seit 11.5d sucht der
   // Bestand auch nach `__ps_clb` (L1, L2, L8, L12, P2, P2b, P3). Und in der GEGENRICHTUNG:
   // Der Leisten-Block traegt die Kennungen des Modals nicht, denn M1b und P2 suchen sie.
   it("M4: der Block traegt keine der Zeichenketten, nach denen der Bestand sucht — und umgekehrt", () => {
-    const block = buildConsentModalScript("load", { theme: "light" });
+    const block = buildConsentModalScript("load", { theme: "light" }, "standard");
     const mitDaten =
       '<html><body><h1>x</h1><script type="application/json" id="pagesmith-mappings">[]</scr' +
       "ipt></body></html>";
-    const outModal = injectPageViewEmitter(mitDaten, KEY, "modal", { theme: "light" });
+    const outModal = injectPageViewEmitter(mitDaten, KEY, "modal", { theme: "light" }, "standard");
     for (const nadel of [
       "pagesmith-consent",
       "pagesmith-mappings",
@@ -256,13 +287,13 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
       // POSITIVKONTROLLE: dieselbe Suche trifft im ausgelieferten Text.
       expect(outModal).toContain(nadel);
     }
-    const outLeiste = injectPageViewEmitter(mitDaten, KEY, "bar", { theme: "light" });
+    const outLeiste = injectPageViewEmitter(mitDaten, KEY, "bar", { theme: "light" }, "standard");
     for (const nadel of ["__ps_clb", "pagesmith-bar"]) {
       expect(block).not.toContain(nadel);
       // POSITIVKONTROLLE: dieselbe Suche trifft im Text mit der Leiste.
       expect(outLeiste).toContain(nadel);
     }
-    const leistenBlock = buildConsentBarScript("load", { theme: "light" });
+    const leistenBlock = buildConsentBarScript("load", { theme: "light" }, "standard");
     for (const nadel of ["__ps_cmo", "pagesmith-modal"]) {
       expect(leistenBlock).not.toContain(nadel);
       // POSITIVKONTROLLE: dieselbe Suche trifft im Text mit dem Modal.
@@ -506,7 +537,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
 
     // DIE NADELN — STRENG: lieber ein Fehlalarm, den jemand prueft, als ein Durchlassen.
     // Jede mit einem Beispiel, das sie treffen MUSS.
-    const block = buildConsentModalScript("load", { theme: "light" });
+    const block = buildConsentModalScript("load", { theme: "light" }, "standard");
     const NADELN: Array<[RegExp, string]> = [
       [/documentElement/, "document.documentElement.setAttribute('x', '1')"],
       [/document\.head/, "document.head.appendChild(s)"],
@@ -533,7 +564,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
     // waeren die zwei neuen Stylesheets von KEINER Nadel gedeckt — ein `overflow` oder ein
     // `scroll` in einem Thema ginge durch.
     for (const d of VIER_DARSTELLUNGEN) {
-      const blockThema = buildConsentModalScript("load", d);
+      const blockThema = buildConsentModalScript("load", d, "standard");
       for (const [nadel, beispiel] of NADELN) {
         expect(
           nadel.test(blockThema),
@@ -698,7 +729,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
       "if (window.pagesmithConsent !== undefined) return;",
       'if (api.read().state !== "never") return;',
     ];
-    for (const block of [buildConsentBarScript("load", { theme: "light" }), buildConsentModalScript("load", { theme: "light" })]) {
+    for (const block of [buildConsentBarScript("load", { theme: "light" }, "standard"), buildConsentModalScript("load", { theme: "light" }, "standard")]) {
       for (const zeile of ZEILEN) {
         expect(block.split(zeile).length - 1).toBe(1);
       }
@@ -716,7 +747,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
   it("M15b: Leisten- und Modal-Block tragen CONSENT_CHOICE_JS je genau einmal — Anwesenheit, keine Richtigkeit", () => {
     // POSITIVKONTROLLE: das Stueck ist nicht leer und traegt wirklich die Schalter.
     expect(CONSENT_CHOICE_JS).toContain('"checkbox"');
-    for (const block of [buildConsentBarScript("load", { theme: "light" }), buildConsentModalScript("load", { theme: "light" })]) {
+    for (const block of [buildConsentBarScript("load", { theme: "light" }, "standard"), buildConsentModalScript("load", { theme: "light" }, "standard")]) {
       expect(block.split(CONSENT_CHOICE_JS).length - 1).toBe(1);
     }
   });
@@ -839,7 +870,7 @@ describe("11.13a — die Anordnung", () => {
   // Sichtbereich und aendert damit die SCROLL-POSITION der fremden Seite — genau das
   // verbietet Invariante I1. Dass sie WIRKT, ist eine Live-Achse und in der Probe gemessen.
   it("M24: der Fokus-Aufruf traegt preventScroll — Struktur-Zusicherung mit Positivkontrolle", () => {
-    const block = buildConsentModalScript("load", { theme: "light" });
+    const block = buildConsentModalScript("load", { theme: "light" }, "standard");
     expect(block).toContain("measure.box.focus({ preventScroll: true })");
     // POSITIVKONTROLLE der Suche im selben Lauf: der blosse Aufruf kommt NICHT vor.
     expect(/measure\.box\.focus\(\)/.test(block)).toBe(false);
@@ -895,7 +926,7 @@ describe("11.13a — die Anordnung", () => {
     expect(weg.getAttribute("type")).toBe("button");
     expect(weg.getAttribute("class")).toBe("way");
 
-    const block = buildConsentModalScript("load", { theme: "light" });
+    const block = buildConsentModalScript("load", { theme: "light" }, "standard");
     expect(/href/i.test(block)).toBe(false);
     expect(/createElement\("a"\)/.test(block)).toBe(false);
     // POSITIVKONTROLLE beider Suchen im selben Lauf.

@@ -9,6 +9,7 @@
 import { BROWSER_CONFIRM_MARKER } from "@/lib/analytics/events";
 import { META_CONSENT_TARGET } from "@/lib/tracking/consent";
 import { CONSENT_WIRE_FIELD } from "@/lib/tracking/consent-wire";
+import { embedInScript } from "@/lib/script-embed";
 
 // Standard-Events von Meta (Pixel). "Custom…" ist KEIN Standard-Event, sondern der
 // Schalter auf fbq('trackCustom', <freier Name>) — siehe ActionPanel.
@@ -58,7 +59,20 @@ export const META_VALUE_EVENTS: ReadonlySet<string> = new Set([
 // gebaut, wenn ein trackingKey vorliegt (Vorbedingung wie die Pixel-ID beim Browser-
 // Event, mit dem der Beacon dedupliziert). Siehe buildCapiBeaconStatement.
 //
-// PIXEL_ID sicher eingebettet via JSON.stringify (kein Injection-Vektor).
+// DIE PIXEL-ID GEHT UEBER embedInScript (Phase 11.13, Scheibe 11.13d; bindende
+// Entscheidung P11.13-25). HIER STAND "sicher eingebettet via JSON.stringify (kein
+// Injection-Vektor)", UND DAS WAR FALSCH — GEMESSEN, nicht vermutet (VERMERK P11.13-7
+// der Standdatei, CC, 2026-09-18, Chromium ueber file://): JSON.stringify maskiert KEIN
+// `<`. Eine Pixel-ID mit `</script>` verlaesst den Block, das `<img>` dahinter wird ein
+// echtes Element, und mit einer Nutzlast ohne Anfuehrungszeichen FUEHRT FREMDER CODE AUS;
+// `<!--<script>` verschluckt zusaetzlich das naechste Script-Element, ohne einen einzigen
+// Fehler zu erzeugen. Der Helfer maskiert jedes `<` als Unicode-Escape.
+// SIE IST DIE EINZIGE EINBETTUNG DIESER DATEI, DIE UEBER DEN HELFER LAEUFT, und der Grund
+// ist ihre HERKUNFT: Sie ist BETREIBER-EINGABE. Die uebrigen Einbettungen hier sind
+// Repo-Konstanten, der server-vergebene trackingKey und die env-abgeleitete proxyUrl —
+// sie bleiben roh, ihre Byte-Zusage ist "enthaelt kein `<`" (P11.13-25, Stufe (3)).
+// Waechter: MR1 in meta.consent-wire.test.ts, mit der feindlichen Nutzlast durch die
+// ECHTE Einsetzstelle.
 export function buildMetaRuntime(
   pixelId: string,
   capiTrackingKey = "",
@@ -164,7 +178,7 @@ export function buildMetaRuntime(
 
   const pixelPrelude = hasPixel
     ? `
-  var PS_PIXEL_ID = ${JSON.stringify(pixelId)};
+  var PS_PIXEL_ID = ${embedInScript(pixelId)};
   var __psFbReady = false;
   // --- ADBLOCKER-BESTAETIGUNG (Scheibe A) ---------------------------------------
   // Der Ladestatus ist eine PRO-SEITE-Tatsache, die Bestaetigung aber PRO CONVERSION.

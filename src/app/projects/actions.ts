@@ -15,6 +15,9 @@ import {
   CONSENT_COLORS_UNKNOWN_MESSAGE,
   CONSENT_DIALOG_UNKNOWN_MESSAGE,
   CONSENT_THEME_UNKNOWN_MESSAGE,
+  CONSENT_TEXT_UNKNOWN_MESSAGE,
+  getConsentText,
+  type ConsentTextArg,
   getConsentColorBackground,
   getConsentColorText,
   getConsentDialog,
@@ -1629,6 +1632,39 @@ export async function publishProject(
   )
     return { ok: false, error: CONSENT_COLORS_UNKNOWN_MESSAGE };
 
+  // DER FREIE SACHTEXT (Phase 11.13, Scheibe 11.13d; bindende Entscheidungen P11.13-26
+  // und P11.13-29).
+  //
+  // ER STEHT ANS ENDE DER KETTE, UND DAS IST EINE SETZUNG, KEINE ABLEITUNG: Die drei
+  // Abbrueche darueber haengen AUFEINANDER — bei unbekanntem Dialog ist nicht
+  // entscheidbar, ob das Thema zaehlt, bei unbekanntem Thema nicht, ob die Farben
+  // zaehlen. DER SACHTEXT HAENGT AN KEINEM VON IHNEN; er gilt in jeder Darstellung. Er
+  // kaeme also auch an zweiter Stelle durch. Ans Ende gesetzt, bleibt die bestehende
+  // Kette unveraendert, und der Eingriff in diese Kern-Datei ist rein additiv.
+  //
+  // SEIN TOR IST NUR "Dialog != off" UND NICHT ZUSAETZLICH EINE DARSTELLUNG — anders als
+  // beim Farb-Abbruch darueber: Der Sachtext wird ausgeliefert, sobald ueberhaupt ein
+  // Oberflaechen-Block entsteht. Die Asymmetrie aus P11.13-7 gilt unveraendert: Bei "off"
+  // entsteht kein Block, der Wert erreicht keine ausgelieferte Zeile, und es gibt keinen
+  // Besucher-Preis.
+  //
+  // DREI AUSGAENGE, NICHT ZWEI: `undefined` heisst "kein eigener Text" und ist der
+  // NORMALFALL — dann reist "standard", und welcher Satz das ist, weiss allein der
+  // Erzeuger. "unknown" heisst "da steht ein Wert, und er taugt nicht" und bricht ab.
+  const consentText = getConsentText(snapshot.settings);
+  if (consentDialog !== "off" && consentText === "unknown")
+    return { ok: false, error: CONSENT_TEXT_UNKNOWN_MESSAGE };
+
+  // DER PLATZHALTER BEI "off" — dieselbe Bauform und derselbe Grund wie bei
+  // deliveredAppearance darunter: Nach dem Abbruch ist "unknown" nur noch bei "off"
+  // moeglich, und dort erzeugt consentBlocksFor keinen Oberflaechen-Block. KEIN RUECKFALL
+  // IM SINNE DER DAUERREGEL: die abbrechende Stelle ist bereits passiert. Dass der Wert
+  // keine ausgelieferte Zeile erreicht, behauptet nicht dieser Kommentar, sondern T-OFF.
+  const deliveredText: ConsentTextArg =
+    consentText === undefined || consentText === "unknown"
+      ? "standard"
+      : consentText;
+
   // AB HIER IST EIN UNGUELTIGER ZUSTAND NUR NOCH BEI "off" MOEGLICH — und dort erzeugt
   // consentBlocksFor keinen Oberflaechen-Block, der Wert wird also NIE GELESEN. Der Typ
   // von injectPageViewEmitter verlangt trotzdem einen gebauten Wert.
@@ -1770,7 +1806,8 @@ export async function publishProject(
       functionalHtml,
       trackingKey,
       consentDialog,
-      deliveredAppearance
+      deliveredAppearance,
+      deliveredText
     ),
     mappings: snapshot.mappings,
     settings: snapshot.settings,
@@ -1805,7 +1842,8 @@ export async function publishProject(
             variantB.functionalHtml,
             trackingKey,
             consentDialog,
-            deliveredAppearance
+            deliveredAppearance,
+            deliveredText
           ),
           mappings: variantB.mappings,
         },

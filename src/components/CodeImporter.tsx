@@ -67,6 +67,7 @@ import {
   getConsentColorBackground,
   getConsentColorText,
   setConsentColors,
+  setConsentText,
   CONSENT_COLOR_BACKGROUND_VORBELEGUNG,
   CONSENT_COLOR_TEXT_VORBELEGUNG,
   setPixelId,
@@ -1298,6 +1299,18 @@ export default function CodeImporter({
   // die zum FALSCHEN Projekt gehört -> der Indikator MUSS die Wahrheit des geladenen
   // Projekts zeigen. liveUrl wird aus dem Label + NEXT_PUBLIC_HOSTING_DOMAIN
   // rekonstruiert (leere env -> "" -> nur Label-Zustand ohne Link).
+  // DER ROHE SACHTEXT FUER DAS EINGABEFELD (Phase 11.13, Scheibe 11.13d).
+  // ROH UND NICHT GELESEN, und das ist kein Ausrutscher: Ein Eingabefeld muss zeigen, WAS
+  // GESPEICHERT IST — auch einen ungueltigen Wert, sonst kann der Betreiber ihn nicht
+  // korrigieren. Die PRUEFUNG geschieht in der Ansicht ueber consentTextProblem, also
+  // ueber DIESELBE Funktion wie das Tor in publishProject; zwei Bedingungen liefen still
+  // auseinander.
+  // Ein Nicht-String wird zu `undefined`: Das Feld zeigt dann den Platzhalter, und der
+  // rote Hinweis daneben sagt, dass der gespeicherte Wert unbrauchbar ist.
+  const sachtextRoh =
+    typeof settings.consent?.text === "string"
+      ? settings.consent.text
+      : undefined;
   const hostingLabel = getHostingLabel(settings);
   const liveUrl = hostingLabel
     ? buildLiveUrl(hostingLabel, process.env.NEXT_PUBLIC_HOSTING_DOMAIN ?? "")
@@ -2752,6 +2765,10 @@ export default function CodeImporter({
               consentColorText={getConsentColorText(settings)}
               onConsentColorChange={(background, text) =>
                 setSettings((prev) => setConsentColors(prev, background, text))
+              }
+              consentTextRaw={sachtextRoh}
+              onConsentTextChange={(value) =>
+                setSettings((prev) => setConsentText(prev, value))
               }
               onToggleAbTest={handleToggleAbTest}
               abTestActive={abTestActive}

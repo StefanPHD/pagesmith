@@ -30,7 +30,15 @@
 //
 // SERIALISIERUNGSSICHER WIE DIE BLOECKE: Weder das Code-Stueck noch das Stylesheet enthalten
 // ein `<`. Markup entsteht per createElement, Texte per textContent, jeder String per
-// JSON.stringify. L3 und M3 pruefen den ganzen Blocktext und damit auch dieses Stueck.
+// embedInScript. L3 und M3 pruefen den ganzen Blocktext und damit auch dieses Stueck.
+// SEIT DER SCHEIBE 11.13d STEHT DORT embedInScript UND NICHT MEHR JSON.stringify
+// (lib/script-embed.ts, bindende Entscheidung P11.13-25): Der Helfer maskiert zusaetzlich
+// jedes `<` als Unicode-Escape, und in den VIER Dialog-Erzeugern laeuft JEDE Einbettung
+// ueber ihn — auch die einer Konstanten. Das ist eine KONVENTION ohne Gate; ihr Grund
+// steht im Docblock des Helfers und wird hier nicht verdoppelt.
+// DIE EINZIGE VERBLIEBENE JSON.stringify-STELLE DIESER DATEI IST KEINE EINBETTUNG: der
+// Wurf im `default`-Zweig von consentThemeCss baut eine Fehlermeldung zur BAUZEIT, die
+// keinen ausgelieferten Text erreicht.
 //
 // DIE OWNER-ENTSCHEIDUNG VOM 2026-09-15 SCHLOSS ZWEIERLEI AUS: einen AUFKLAPP-BEREICH UND
 // eine EINZELAUSWAHL DER FUENF NETZWERKE.
@@ -43,6 +51,7 @@
 import { ANALYTICS_CONSENT_TARGET } from "@/lib/tracking/consent";
 import { ALL_CONSENT_KEYS } from "@/lib/tracking/consent-targets";
 import { contrastRatio } from "@/lib/contrast";
+import { embedInScript } from "@/lib/script-embed";
 import type { ConsentAppearance, ConsentColor } from "@/lib/settings";
 
 /**
@@ -418,19 +427,19 @@ export const CONSENT_CHOICE_JS = [
   '    var groups = document.createElement("div");',
   '    groups.setAttribute("class", "groups");',
   '    groups.setAttribute("role", "group");',
-  `    groups.setAttribute("aria-label", ${JSON.stringify(CONSENT_GROUPS_LABEL)});`,
-  `    var measure = makeGroup(${JSON.stringify(CONSENT_GROUP_MEASURE_LABEL)});`,
-  `    var ads = makeGroup(${JSON.stringify(CONSENT_GROUP_ADS_LABEL)});`,
+  `    groups.setAttribute("aria-label", ${embedInScript(CONSENT_GROUPS_LABEL)});`,
+  `    var measure = makeGroup(${embedInScript(CONSENT_GROUP_MEASURE_LABEL)});`,
+  `    var ads = makeGroup(${embedInScript(CONSENT_GROUP_ADS_LABEL)});`,
   "    groups.appendChild(measure.label);",
   "    groups.appendChild(ads.label);",
-  `    var akzeptieren = makeButton(${JSON.stringify(CONSENT_ACCEPT_LABEL)}, function () { return ${JSON.stringify([...ALL_CONSENT_KEYS])}; });`,
-  `    var speichern = makeButton(${JSON.stringify(CONSENT_SAVE_LABEL)}, function () {`,
+  `    var akzeptieren = makeButton(${embedInScript(CONSENT_ACCEPT_LABEL)}, function () { return ${embedInScript([...ALL_CONSENT_KEYS])}; });`,
+  `    var speichern = makeButton(${embedInScript(CONSENT_SAVE_LABEL)}, function () {`,
   "      var granted = [];",
-  `      if (measure.box.checked) granted = granted.concat(${JSON.stringify([...CONSENT_GROUP_KEYS.measure])});`,
-  `      if (ads.box.checked) granted = granted.concat(${JSON.stringify([...CONSENT_GROUP_KEYS.ads])});`,
+  `      if (measure.box.checked) granted = granted.concat(${embedInScript([...CONSENT_GROUP_KEYS.measure])});`,
+  `      if (ads.box.checked) granted = granted.concat(${embedInScript([...CONSENT_GROUP_KEYS.ads])});`,
   "      return granted;",
   "    });",
-  `    var ablehnen = makeButton(${JSON.stringify(CONSENT_REJECT_LABEL)}, function () { return []; });`,
+  `    var ablehnen = makeButton(${embedInScript(CONSENT_REJECT_LABEL)}, function () { return []; });`,
   "    if (ausgeklappt) {",
   "      panel.appendChild(groups);",
   "      panel.appendChild(akzeptieren);",
@@ -438,7 +447,7 @@ export const CONSENT_CHOICE_JS = [
   "      panel.appendChild(ablehnen);",
   "      return;",
   "    }",
-  `    var weg = makeWay(${JSON.stringify(CONSENT_WAY_LABEL)});`,
+  `    var weg = makeWay(${embedInScript(CONSENT_WAY_LABEL)});`,
   '    weg.addEventListener("click", function () {',
   "      panel.insertBefore(groups, akzeptieren);",
   "      panel.insertBefore(speichern, ablehnen);",

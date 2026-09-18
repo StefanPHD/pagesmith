@@ -2133,296 +2133,69 @@ liegen beide hier und finden einander.
       nachzulesen. ER IST NICHT VERLORENGEGANGEN, SONDERN KOLLABIERT: Seine Aufklärungs- und
       Zuschnitt-Vorbehalte haben die Phase getragen und sind mit ihr eingelöst; was über sie
       hinaus bindet, steht als Entscheidung im Archiv der Phase.
-- [ ] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs — eine EIGENE Zeile, angelegt am 2026-09-15. Sie
-      GEHÖRT NICHT zur laufenden Phase 11.5 und ist kein Teil ihrer Scheiben.
+- [x] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs: der Betreiber passt Anordnung,
+      Erscheinungsbild, Text und Sprache des Einwilligungs-Dialogs — Leiste und Fenster der Phase
+      11.5 — an seine Seite an. FÜNF Scheiben, alle gebaut und live bewiesen: die ANORDNUNG
+      (`bb9f045`), das THEMA hell/dunkel/automatisch (`2b288f4`), EIGENE FARBEN als vierte
+      Darstellung hinter einem Format-Tor auf `^#[0-9a-f]{6}$` (`1d5ea7d`), der FREIE SACHTEXT samt
+      Einbettungs-Helfer (`a3e286b`) und die SPRACHE Deutsch/Englisch (`0a2dc7b`). Phasenende am
+      2026-09-18.
+      VERWEIS: Gegenstand, Ausgangslage, die zehn Vermerke, die 37 bindenden Entscheidungen, der
+      Vorrat und das Protokoll der Hebung stehen in
+      docs/claude-history/phase-11.13-dialog-anpassung.md. Dort steht auch das Produkt-Argument
+      dieser Zeile im Wortlaut und der Messwert aus docs/arbeitsweise.md, Abschnitt 2b.
 
-      DIE NUMMER IST GEWÄHLT, WEIL SIE FREI IST (Präzedenz: 4.5, 10.5, 11.5, 11.10, 11.11, 11.12):
-      KEINE bestehende Nummer wird verschoben. Dass 11.13 im Bestand unbelegt war, ist GEMESSEN am
-      Repo (CC, 2026-09-15, `git grep "11\.13"` über alle verfolgten Dateien — kein Treffer;
-      Positivkontrolle: dieselbe Suche nach `11\.12` trifft docs/roadmap.md und CLAUDE.md).
+      BEIM [x] UNBEWIESEN ODER ALS MANGELHAFT BEKANNT — ACHT PUNKTE, je mit Fundstelle. Der Block
+      steht hier, weil CLAUDE.md es verlangt ("WANN [x] GESETZT WIRD — DAS KRITERIUM"): Das `[x]`
+      heisst BAU-FERTIG und liest sich als "funktioniert"; ohne diese acht Zeilen läse es sich als
+      "der anpassbare Dialog funktioniert".
+      1. DIE WIRKUNG DES `lang`-ATTRIBUTS AUF VORLESEPROGRAMME IST UNGEMESSEN — und es ist genau
+         dafür gesetzt. SCREENREADER SIND AN DIESER GANZEN PHASE UNGEPRÜFT. Das ist das
+         Produktversprechen der Scheibe 11.13e selbst; bewiesen ist, dass das Attribut im
+         ausgelieferten Text steht, nicht seine Wirkung. Fundstelle: bindende Entscheidung
+         P11.13-36; VERMERK P11.13-10, "DIE GRENZEN".
+      2. DIE BINDENDE ENTSCHEIDUNG P11.13-5 IST IM BESTAND VERLETZT — bei Leiste / 360×480 /
+         eingeklappt / langer Seite teilt der Weg seine Reihe mit GENAU EINEM Knopf, und damit ist
+         die visuelle Gleichrangigkeit aus Punkt (h) gebrochen. GEMESSEN, mit Gegenprobe am
+         unveränderten Bestands-Thema; über beide Sprachen stabil. Fundstelle: offener Punkt "EIN
+         SCROLLBALKEN BRICHT DAS GLEICHRANGIGKEITS-KRITERIUM DES EINWILLIGUNGS-DIALOGS BEI 360 px"
+         (docs/offene-punkte.md, Stub in CLAUDE.md).
+      3. DER AUSGEKLAPPTE ZUSTAND IST ALS ÜBERLADEN BEKANNT — OWNER-URTEIL über die zugesagte
+         Gestalt. Eine Wegnahme ist NICHT frei: P11.13-1 bindet den Zustand an die alte Gestalt und
+         nennt als Grenze nur das MEHR, nicht das WENIGER. Fundstelle:
+         docs/claude-history/backlog-polish.md, Abschnitt der Phase 11.13, P11.13-10.
+      4. FIREFOX UND WEBKIT SIND AN KEINER ACHSE DIESER PHASE GEMESSEN. Lokal ist durchgehend nur
+         Chromium gemessen; live sind Chrome auf dem Desktop und ein Handy laut Owner. WebKit ist
+         in der Scheibe 11.13c über Chrome auf iOS BEOBACHTET, nicht gemessen. Fundstelle: die
+         Grenzen der VERMERKE P11.13-6, -8 und -10.
+      5. DIE LÄNGENGRENZE DES SACHTEXTES IST KEINE REINE MESSUNG. Die Kante liegt bei 416
+         Codepunkten (Fenster, 360×480, Chromium), GESETZT sind 300 — der Abstand deckt Schrift-
+         und Browser-Varianz und ist UNGEMESSEN. Fundstelle: bindende Entscheidung P11.13-27.
+      6. "AUTOMATISCH" IST LIVE NICHT GESICHERT — so zugeschnitten, lokal belegt. Fundstelle: die
+         Grenzen der VERMERKE P11.13-6 und -10.
+      7. DER AUS-FALL DER SCHEIBE 11.13c IST LIVE NICHT BELEGT. Das vorgesehene Instrument
+         ("Speichern unter") hat dort still versagt — zehn Sicherungen für zehn Zustände waren
+         byte-gleich und trugen keinen Dialog-Baustein, während der Dialog sichtbar war. Für 11.13d
+         und 11.13e ist der Aus-Fall live belegt, für 11.13c nicht. Fundstelle: VERMERK P11.13-6,
+         Punkt (c); die Lehre daraus ist seit dem 2026-09-18 eine Dauerregel
+         (docs/immer-beachten.md, "EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT MISST IM GELADENEN
+         DOKUMENT").
+      8. DER EXPORT-PFAD TRÄGT NICHTS DAVON — kein Thema, keine Farbe, keinen Sachtext, keine
+         Sprache. Er trägt schon den Einwilligungs-Schalter nicht; das ist ein bestehender offener
+         Punkt ("DER EXPORT-PFAD IST VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST") und von dieser
+         Phase ausdrücklich nicht gelöst. Fundstelle: bindende Entscheidung P11.13-28.
+      DAZU EINE GRENZE, DIE KEIN MANGEL IST UND DESHALB NICHT MITGEZÄHLT WIRD: Eine Änderung an
+      Anordnung, Thema, Farbe, Text oder Sprache ist OHNE NEU-VERÖFFENTLICHEN nicht zu sehen, und
+      der Dialog erscheint in keinem Editor-Rahmen. Das ist die Bauform des ausgelieferten Textes
+      (docs/immer-beachten.md, "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY"), kein
+      Defekt dieser Phase — dass nichts darauf HINWEIST, ist ein eigener offener Punkt.
 
-      (a) DER GEGENSTAND: Der Betreiber kann Anordnung, Erscheinungsbild und Text des
-      Einwilligungs-Dialogs — Leiste und Fenster der Phase 11.5 — an seine Seite anpassen.
-
-      (b) DER GRUND IST EIN PRODUKT-ARGUMENT, KEIN KOSMETISCHES: Die Zielgruppe baut Landing Pages
-      und Konversions-Trichter. Ein Dialog, der auf einer fremden Seite wie ein Fremdkörper wirkt,
-      senkt das Vertrauen und wird vom Betreiber nicht eingeschaltet. Wird er nicht eingeschaltet,
-      greift der ganze Mechanismus nicht, den die Phase 11.5 gebaut hat.
-      DER BEFUND STEHT NICHT HIER, sondern bei der Phase 11.5: VERMERK 6 (Scheibe 11.5e-1), Block
-      „BEFUND ZU VERMERK 6 — 2026-09-15: DIE OBERFLÄCHE WIRKT ÜBERLADEN" — heute in
-      docs/aktiver-stand.md, nach dem Phasenende im Archiv der Phase 11.5. Er wird hier NICHT
-      wiederholt; zweimal geschrieben liefe er auseinander.
-
-      (c) DER SCHNITT — VIER SCHEIBEN, IN DIESER REIHENFOLGE:
-      1. DIE ANORDNUNG. Zwei Knöpfe sichtbar, die zwei Gruppen hinter einem unauffälligen Weg.
-         KEIN neues Einstellungsfeld, KEINE Farben, KEIN freier Text.
-      2. DAS THEMA: hell, dunkel, automatisch — EIN Wert, kein Farbwähler. "Automatisch" heisst
-         `prefers-color-scheme`, NICHT von der Seite erben. Der Unterschied ist tragend: Erben hiesse,
-         Werte der Kundenseite in den Schattenbaum zu lassen — die Frage aus (f) unten.
-      3. FREIE FARBEN. Erst wenn Scheibe 2 steht und live geprüft ist.
-      4. FREIER TEXT. Eine eigene Scheibe; ihre Sicherheitsachse ist die des freien Textes, s. (g).
-      5. DIE SPRACHE. Eine feste Auswahl — Deutsch oder Englisch —, UNSER Wortlaut als Konstanten
-         im Repo, je mit Owner-Freigabe. KEINE Betreiber-Eingabe: der Wert wählt einen Zweig, wie
-         der Themenwert es tut, und der Rohwert aus dem Blob erreicht den ausgelieferten Text nie.
-         NACH Scheibe 4. GRUND: Scheibe 4 bleibt bei ihrer Sicherheitsachse — Betreiber-Eingabe im
-         ausgelieferten Text —, und eine Sprachwahl braucht davon nichts. Sprache und freier Text
-         ÜBERLAPPEN, sind aber nicht dieselbe Sache: Der Backlog-Eintrag "11.5f" benennt ELF Texte,
-         Punkt (h) gibt für Scheibe 4 EINEN frei; über die übrigen zehn sagt (h) nichts, und sie
-         blieben ohne diese Scheibe deutsch stehen. OWNER-ENTSCHEIDUNG 2026-09-18; Volltext als
-         bindende Entscheidung P11.13-24 der Standdatei der Phase 11.13. Der Backlog-Eintrag wird
-         damit VERORTET und NICHT erledigt — seine Messungen (die elf Konstanten, die sieben
-         freigegebenen Konstanten bei sechs Freigabe-Posten, der Sprach-Nicht-Treffer) sind der
-         Massstab dieser Scheibe.
-      AUCH SCHEIBE 3 TRÄGT EINE EIGENE SICHERHEITSACHSE — eigene Farben sind Betreiber-Eingabe im
-      ausgelieferten Text, und sie wird dort von einem Format-Tor auf ^#[0-9a-f]{6}$ getragen
-      (bindende Entscheidung P11.13-14 der Standdatei der Phase 11.13).
-
-      (d) DIE REIHENFOLGE GEGENÜBER 11.5e-2 IST GESETZT: 11.5e-2 (der Widerruf, Entscheidung (24)
-      der Phase 11.5) läuft ZUERST, und diese Zeile beginnt erst NACH dem Phasenende der Phase 11.5.
-      DER GRUND, AM CODE GEPRÜFT (GEMESSEN, CC, 2026-09-15, am Stand `aa6fee0`): Beide Dialog-Blöcke
-      — `buildConsentBarScript` (`src/lib/tracking/consent-bar.ts`) und `buildConsentModalScript`
-      (`src/lib/tracking/consent-modal.ts`) — sind je EINE sofort ausgeführte Funktion; keiner weist
-      einem globalen Namen etwas zu (Achse `window.<Name> =` über beide Dateien und
-      `src/lib/tracking/consent-choice.ts`: kein Treffer). Jeder Block kehrt als erste Anweisungen
-      zurück, wenn der Hook gesetzt ist (`window.pagesmithConsent !== undefined`) oder `read()` nicht
-      "never" liefert. Nach einer Entscheidung sind Hook und Speicher gesetzt — ein Aufruf zum
-      erneuten Öffnen erreicht den bestehenden Block also nicht; Entscheidung (24) der Phase 11.5
-      hält dasselbe fest.
-      DIE FOLGE, UND SIE IST EINE ABLEITUNG, KEINE MESSUNG: Der Widerruf muss diese Struktur
-      aufbrechen. Wer vorher die Darstellung umbaut, baut eine Struktur, die 11.5e-2 wieder
-      aufreisst — und der Live-Test auf zwei realen Seiten läuft zweimal.
-      DIE NUMMER TRÄGT KEINE REIHENFOLGE, wie bei 11.10 (dort Punkt (d)); die Reihenfolge steht in
-      diesem Punkt, nicht in der Stellung der Zeile.
-
-      (e) AUFLAGE — DIE ANORDNUNG BRINGT EINE NEUE, HEUTE UNGEMESSENE ACHSE. Das harte Kriterium der
-      Leiste ist im AUSGEKLAPPTEN Zustand gemessen (VERMERK 6 der Phase 11.5, OWNER-ANGABEN). Zeigt
-      Scheibe 1 die Auswahl erst auf Klick, ist der eingeklappte Zustand kleiner und harmlos — der
-      AUSGEKLAPPTE auf niedriger Fensterhöhe ist dann ein NEUER Zustand, den nichts prüft. Genau dort
-      kann die Leiste über den oberen Rand wandern. DAS WIRD DAS HARTE KRITERIUM JENER SCHEIBE.
-      DAZU: Die Erlaubnis von `overflow` im eigenen Schattenbaum (Invariante I1 der Scheibe 11.5e-1)
-      ist an der Leiste ohne Umbau von L12 (`src/lib/tracking/consent-bar.test.ts`) nicht nutzbar —
-      L12 verbietet das Wort im Leisten-Block. Der Vermerk dazu steht in Abschnitt 17 der Standdatei
-      der Phase 11.5, unter „STEHEN GEBLIEBEN, UND DER GRUND".
-
-      (f) AUFLAGE — DIE FARBE WIRD ZUR VERÖFFENTLICHUNGSZEIT EINGEBACKEN, NICHT NACHGELADEN. Der Wert
-      ist projektbezogen und wandert mit dem veröffentlichten Text; eine Änderung verlangt ohnehin ein
-      Neu-Veröffentlichen, weil ein ausgeliefertes Artefakt nicht mit dem Deploy altert
-      (docs/immer-beachten.md, "EIN AUSGELIEFERTES ARTEFAKT ALTERT NICHT MIT DEM DEPLOY"). Eine
-      zentral nachladbare Farbe wäre ein Stylesheet vom App-Host — der Baustein, den Abschnitt 15 der
-      Standdatei der Phase 11.5 ausdrücklich ausschliesst und der eine eigene Entscheidung braucht.
-      EINE MESSUNG VOR SCHEIBE 2, UND SIE IST EINE FRAGE, KEINE ANNAHME: Beide Blöcke tragen
-      `:host{all:initial !important;…}` (GEMESSEN am Code, CC, 2026-09-15). Dass das vererbte
-      Eigenschaften zurücksetzt, ist die Absicht. OB ES AUCH BENUTZERDEFINIERTE EIGENSCHAFTEN
-      ERFASST, IST UNGEMESSEN. Erfasst es sie nicht, erbt ein von der Kundenseite definiertes
-      `--ps-*` in unseren Schattenbaum — auf einer Seite mit über 700 `!important`-Regeln (so eine
-      der zwei Testseiten, OWNER-ANGABE) kein Randfall. DAS IST DER STÄRKSTE GRUND GEGEN
-      CSS-VARIABLEN UND VOR SCHEIBE 2 ZU MESSEN.
-
-      (g) AUFLAGE — SCHEIBE 4 IST DIE ERSTE STELLE, AN DER BETREIBER-EINGABE IN DEN AUSGELIEFERTEN
-      TEXT GELANGT. Heute geht jeder String der Dialog-Blöcke durch `JSON.stringify` einer
-      KONSTANTEN (`src/lib/tracking/consent-choice.ts`). `JSON.stringify` schützt gegen einen
-      JavaScript-Ausbruch, aber es entkommt kein `<`: `JSON.stringify("x</script><b>")` liefert
-      `"x</script><b>"` (GEMESSEN, CC, 2026-09-15, in `node`). Ein Text mit `</script>` schliesst den
-      Script-Block im HTML-Parser, mitten im Kundentext.
-      DIE WÄCHTER, DIE DAS PRÜFEN, SIND L3 (`consent-bar.test.ts`) und M3 (`consent-modal.test.ts`):
-      Sie verlangen, dass der Rumpf kein `<` enthält. SEIT DER SCHEIBE 11.13c FAHREN SIE ÜBER ALLE
-      VIER DARSTELLUNGEN, den `custom`-Zweig mit zwei GEPRÜFTEN Farben eingeschlossen (GEMESSEN am
-      Test, CC, 2026-09-18). SACHKORREKTUR, NICHT STEMPEL: Hier stand, sie fahren "MIT KONSTANTEN"
-      und bauen den Block "ohne Argument" — das war am 2026-09-15 richtig und ist es seit dem
-      Pflicht-Parameter der Scheibe 11.13b nicht mehr; ein Maßstab mit falschen Angaben taugt nicht
-      als Maßstab.
-      DIE LÜCKE STEHT TROTZDEM OFFEN, UND DER GRUND IST EIN ANDERER ALS DER FRÜHERE: Nicht, weil die
-      Wächter mit Konstanten führen, sondern weil sie einen BETREIBER-TEXT NICHT KENNEN. Der einzige
-      Parameter, über den heute ein Betreiber-Wert hineingeht, ist die Darstellung, und dort ist ein
-      `<` durch das Format-Tor `^#[0-9a-f]{6}$` NICHT KONSTRUIERBAR. Ein Textwert käme als NEUES
-      Argument dazu, und L3/M3 setzten ihn BY DEFAULT NICHT EIN — sie blieben grün.
-      DAZU SCHREIBT `saveProject` DIE EINSTELLUNGEN UNVALIDIERT — ein bestehender offener Punkt:
-      docs/offene-punkte.md, "`saveProject` SCHREIBT `settings` UNVALIDIERT — TOR A HÄLT DURCH EINE
-      ABWESENHEIT" (Stub in CLAUDE.md, "## Offene Punkte").
-      FOLGE: Scheibe 4 braucht eine EIGENE Aufklärung, eine benannte Invariante und Wächter, die mit
-      FEINDLICHER Eingabe gefahren werden. SIE WIRD NICHT NEBENBEI AUS SCHEIBE 3 HERAUSGEBAUT.
-
-      NACHTRAG 2026-09-17 — DER SATZ "ERSTE STELLE, AN DER BETREIBER-EINGABE IN DEN
-      AUSGELIEFERTEN TEXT GELANGT" GILT DEM FREIEN TEXT, NICHT DER BETREIBER-EINGABE
-      ÜBERHAUPT. Der Wortlaut oben bleibt unberührt; dieser Absatz tritt daneben. DIE
-      PIXEL-ID IST SCHON HEUTE BETREIBER-EINGABE IM AUSGELIEFERTEN TEXT: `CodeImporter.tsx`
-      gibt `getPixelId(settings, "meta")` an `generateFunctional`, und über
-      `buildWiringScript` landet der Wert in `buildMetaRuntime` (`src/lib/tracking/meta.ts`)
-      als `var PS_PIXEL_ID = ${JSON.stringify(pixelId)};` — OHNE die `<`-Maskierung, die die
-      Mapping-Tabelle in `generate.ts` ausdrücklich bekommt (GEMESSEN am Code, CC,
-      2026-09-17). DER AUSBRUCH IST NICHT ERPROBT, und das gehört dazu: Der Weg ist am Code
-      ablesbar, ob ein `</script>` den Block verlässt, ist nicht gemessen. HEUTE IST ES KEIN
-      LOCH — wer die Pixel-ID setzt, kontrolliert das HTML der Seite ohnehin. SCHEIBE 4
-      KLÄRT BEIDES ZUSAMMEN, statt die `<`-Frage zweimal zu beantworten; der Befund liegt
-      als Vorrat P11.13-5 der Standdatei.
-
-      (h) DER GUARDRAIL, UND WARUM ER KEIN VERSTOSS GEGEN DIE HALTUNG IST — der Absatz muss mit,
-      sonst zieht ihn eine spätere Runde als Widerspruch heraus: Die Knopf-Logik und die visuelle
-      Gleichrangigkeit von "Alle akzeptieren" und "Ablehnen" bleiben im System verankert; anpassbar
-      ist der erläuternde Text.
-      DAS ERZWINGT NICHTS. Wir sagen nicht "du musst einen konformen Dialog haben", sondern "UNSER
-      Dialog macht keine Dark Patterns". Wer etwas anderes will, bindet ein fremdes CMP ein — der
-      Hook steht offen und ist dafür gebaut.
-      DIE HALTUNG IM BESTAND, als Zeiger: docs/arbeitsweise.md, Abschnitt "4b. DIE TRAGENDEN
-      ENTSCHEIDUNGEN", Unterabschnitt "Haltung" — "Wir sind Werkzeug, nicht Aufsicht", und dort
-      weiter: "Die Haltung bindet also, **wie** gebaut wird, nicht **ob**: ein Dialog, den der
-      Betreiber abschalten oder durch ein fremdes CMP ersetzen kann." Die verbindliche Fassung an der
-      Roadmap-Zeile 11.5 lautet "Wir weisen hin, wir erzwingen nicht." (GELESEN, CC, 2026-09-15.)
-      Dieselbe Figur wie beim Dialog selbst: gebaut wird er, aufgezwungen nicht.
-
-      WAS DIESE ZEILE AUSDRÜCKLICH NICHT TUT: Sie schneidet keine Scheibe im Einzelnen zu, sie
-      terminiert nichts über (d) hinaus, und sie legt keine Farben, Themen-Werte oder Texte fest.
-
-      (i) PROVENIENZ — je Angabe:
-      · Gegenstand und Anlage der Zeile: OWNER-ENTSCHEIDUNG 2026-09-15 auf Vorschlag des Architekten.
-        Schnitt, Reihenfolge, die Auflagen (e) bis (g) und der Guardrail: ARCHITEKT 2026-09-15, vom
-        Owner angenommen — Angaben aus dem Auftrag, am Repo nicht prüfbar.
-      · Die Freiheit der Nummer, die Gestalt der zwei Blöcke samt ihren Rückkehr-Prüfungen, das
-        Fehlen globaler Zuweisungen, `:host{all:initial !important`, das Verhalten von
-        `JSON.stringify` gegenüber `<` und die Aufrufform von L3 und M3: GEMESSEN am Repo bzw. in
-        `node` (CC, 2026-09-15).
-      · Der Titel des offenen Punkts, die Haltung in docs/arbeitsweise.md und an der Roadmap-Zeile
-        11.5: GELESEN (CC, 2026-09-15).
-      · Die Zeiger auf VERMERK 6, Abschnitt 15 und Abschnitt 17 der Standdatei der Phase 11.5: aus
-        der Doku-Runde desselben Tages (Commit `aa6fee0`); die Standdatei ist in DIESER Runde nicht
-        gelesen worden.
-      · Dass der Widerruf die Struktur aufbrechen muss und ein früherer Umbau den Live-Test
-        verdoppelt: ABLEITUNG. OB `all:initial` BENUTZERDEFINIERTE EIGENSCHAFTEN ERFASST:
-        UNGEMESSEN.
-
-      NACHTRAG 2026-09-17 — DER DIALOG IST IN KEINEM EDITOR-RAHMEN ZU SEHEN. Der Wortlaut
-      der Zeile darüber ist unberührt; dieser Absatz tritt daneben.
-      DER BEFUND: Weder der Editier- noch der Vorschau-Rahmen zeigt den Einwilligungs-Dialog.
-      `generateFunctional` hängt allein `CONSENT_SCRIPT_ID` und `buildConsentRuntimes()` ein
-      — das Urteil über `window.pagesmithConsent`, ohne Oberfläche und ohne Speicher-Zugriff.
-      Die Blöcke, die die Oberfläche bauen — `buildConsentBarScript`,
-      `buildConsentModalScript`, `buildConsentDenyScript` und `buildConsentRestoreScript` —
-      kommen ausschliesslich über `injectPageViewEmitter`
-      (`src/lib/analytics/pageview-emitter.ts`), dessen einziger Produktiv-Aufrufer in
-      `src/app/projects/actions.ts` steht: dem VERÖFFENTLICHUNGS-Pfad.
-      GEMESSEN am Code (CC, 2026-09-17, im Plan der Scheibe 11.12a, Gate G6); LIVE BESTÄTIGT
-      (OWNER-ANGABE 2026-09-17, Schritt 9 des Live-Tests jener Scheibe).
-      DIE FOLGE FÜR DEN ZUSCHNITT, und sie trifft alle vier Scheiben aus (c): Eine Änderung
-      an Anordnung, Thema, Farben oder Text ist OHNE VERÖFFENTLICHEN NICHT ZU SEHEN. Wer die
-      Scheiben plant, plant den Prüfweg mit — eine Vorschau im Editor gibt es dafür heute
-      nicht.
-      WAS SICH SEIT DER SCHEIBE 11.12a GEÄNDERT HAT: In beiden Rahmen funktioniert
-      `localStorage` jetzt (Kompatibilitäts-Riegel, Bau-Commit `c3b068f`). Eine Vorschau des
-      Dialogs wäre damit technisch NICHT MEHR AM SPEICHER BLOCKIERT — sie war es vorher, weil
-      `buildConsentRestoreScript` beim Lesen geworfen hätte.
-      DAS IST EINE ABLEITUNG UND KEINE ENTSCHEIDUNG: Ob eine solche Vorschau gebaut wird, ist
-      hier NICHT entschieden, und diese Zeile schlägt sie auch nicht vor. Sie hielte nur fest,
-      dass der Grund, der sie früher unmöglich gemacht hätte, weggefallen ist.
-
-      STAND 2026-09-17 — SCHEIBE 1 DES SCHNITTS (c) IST GEBAUT UND LIVE BEWIESEN: die
-      Anordnung, Bau-Commit `bb9f045`, mit bestätigtem Live-Test auf einer realen Seite;
-      Vermerk, Entscheidungen und Vorrat stehen in docs/aktiver-stand.md (VERMERK P11.13-2).
-      DER MARKER BLEIBT `[ ]` — die Scheiben 2, 3 und 4 aus (c) stehen aus, und damit ist
-      Code zu schreiben (CLAUDE.md, "WANN [x] GESETZT WIRD — DAS KRITERIUM").
-
-      STAND 2026-09-17, ZWEITER DES TAGES — SCHEIBE 2 IST EBENFALLS GEBAUT UND LIVE
-      BEWIESEN: das Thema (hell, dunkel, automatisch), Bau-Commit `2b288f4`, mit
-      bestätigtem Live-Test auf einer realen Seite — darunter der Byte-Nachweis, dass "hell"
-      den ausgelieferten Text unverändert lässt, und "automatisch" am echten Handy mit
-      umgeschaltetem System-Dunkelmodus. Vermerk, Entscheidungen und Vorrat: VERMERK
-      P11.13-4 in docs/aktiver-stand.md.
-      DIE MESSUNG AUS PUNKT (f) IST GEFAHREN, und sie beantwortet die dort offene Frage:
-      `all:initial !important` setzt die BENUTZERDEFINIERTEN Eigenschaften NICHT zurück —
-      eine `--ps-*` der Kundenseite kommt im Schattenbaum an (GEMESSEN, CC, 2026-09-17,
-      Chromium, mit Gegenprobe ausserhalb). Der Verzicht auf CSS-Variablen ruht damit auf
-      einem Befund statt auf einer Annahme; die Fundstelle ist Entscheidung P11.13-8 der
-      Standdatei. SCHEIBE 3 (freie Farben) MUSS DIESE FRAGE NEU ENTSCHEIDEN — dort fällt die
-      feste Tabelle, auf der die heutige Antwort ruht.
-      DER MARKER BLEIBT `[ ]` — die Scheiben 3 und 4 aus (c) stehen aus.
-
-      STAND 2026-09-18 — SCHEIBE 3 IST GEBAUT UND LIVE BEWIESEN: eigene Farben als VIERTE
-      Darstellung, zwei Werte (Hintergrund und Text) hinter einem Format-Tor auf
-      `^#[0-9a-f]{6}$`, Bau-Commit `1d5ea7d`, mit bestätigtem Live-Test auf einer realen
-      Seite — darunter der Hinweistext „Kontrast 1,20:1 — die Schwelle ist 4,5:1.
-      Veröffentlichen bleibt möglich.", und das Veröffentlichen gelang. Vermerk,
-      Entscheidungen und Vorrat: VERMERK P11.13-6 in docs/aktiver-stand.md.
-      DIE FRAGE AUS DEM NACHTRAG DARÜBER IST BEANTWORTET, UND ANDERS ALS DORT ERWARTET: DIE
-      FESTE TABELLE IST NICHT GEFALLEN. „Eigene Farben" ist ein VIERTER Zweig neben hell,
-      dunkel und automatisch; für die drei Tabellenwerte und für den ausgeschalteten Dialog
-      ist der ausgelieferte Text byte-gleich geblieben (neunzehn Werte vorher und nachher
-      identisch, GEMESSEN). Auch der vierte Zweig kommt OHNE CSS-Variablen aus — er setzt
-      literales Hex in Einzel-Eigenschaften. Fundstellen: Entscheidungen P11.13-12 (die
-      vierte Darstellung) und P11.13-15 (erzeugte Deklarationen).
-      DER LIVE-NACHWEIS TRÄGT EINE GRENZE, DIE MITMUSS: Das vorgesehene Instrument
-      („Speichern unter") hat versagt — zehn Sicherungen für zehn verschiedene Zustände
-      waren byte-gleich und trugen keinen Dialog-Baustein, obwohl der Dialog sichtbar war.
-      Belegt ist die Achse über ein Ersatz-Instrument (Hash der geladenen Skript-Elemente);
-      der AUS-Fall ist damit live NICHT belegt, sondern nur lokal. Einzelheiten und der
-      Wortlaut des Ersatz-Instruments: VERMERK P11.13-6, Punkt (c).
-      DER MARKER BLEIBT `[ ]` — Scheibe 4 aus (c), der freie Text, steht aus, und damit ist
-      Code zu schreiben (CLAUDE.md, "WANN [x] GESETZT WIRD — DAS KRITERIUM").
-
-      STAND 2026-09-18, ZWEITER DES TAGES — SCHEIBE 4 IST GEBAUT UND LIVE BEWIESEN: der
-      FREIE SACHTEXT, Bau-Commit `a3e286b`, mit bestätigtem Live-Test auf einer realen
-      Seite. Der Betreiber ersetzt den erläuternden Satz des Dialogs; Knöpfe, Weg,
-      Gruppen-Namen, die drei zugänglichen Namen und die Konsolen-Warnung bleiben UNSER
-      Wortlaut (bindende Entscheidung P11.13-23, Guardrail aus Punkt (h)). Vermerk,
-      Entscheidungen und Vorrat: VERMERK P11.13-8 in docs/aktiver-stand.md.
-      DER AUSBRUCH AUS PUNKT (g) IST GESCHLOSSEN — FÜR DEN SACHTEXT UND FÜR DIE PIXEL-ID.
-      Beide laufen seither über EINEN Einbettungs-Helfer (`embedInScript`,
-      `src/lib/script-embed.ts`), der jedes `<` als Unicode-Escape maskiert; daneben trägt
-      der Sachtext ein eigenes Tor gegen Steuer- und Bidi-Zeichen und eine Längengrenze.
-      DIE ZWEI LINIEN TRAGEN UNABHÄNGIG, und das ist GEMESSEN: Die Mutationen M-c (Tor weg)
-      und M-a (Maskierung weg) werden EINZELN rot, auf DISJUNKTEN Tests — anders als in der
-      Scheibe 3, wo eine der beiden allein grün blieb. Fundstellen: Entscheidungen
-      P11.13-25 (der Helfer, drei Geltungsstufen) und P11.13-26 (das Tor).
-      ZWEI SÄTZE DIESER ZEILE SIND DAMIT ÜBERHOLT, und sie werden hier benannt statt
-      umgeschrieben: Der Nachtrag vom 2026-09-17 an Punkt (g) sagt „DER AUSBRUCH IST NICHT
-      ERPROBT" — er IST seit dem 2026-09-18 erprobt und gelingt ohne den Helfer (VERMERK
-      P11.13-7); und derselbe Nachtrag verweist auf „Vorrat P11.13-5 der Standdatei", dessen
-      Volltext mit dem Abschluss dieser Scheibe gestrichen ist — Titel und Beleg der
-      Erledigung stehen dort weiter. Der Wortlaut des Nachtrags bleibt als Zeitdokument
-      unangetastet.
-      DER LIVE-NACHWEIS TRÄGT ZWEI GRENZEN, DIE MITMÜSSEN: Gemessen ist Chrome auf dem
-      Desktop und ein Handy laut Owner; FIREFOX UND WEBKIT SIND AN KEINER ACHSE DIESER
-      SCHEIBE GEMESSEN. Und die Längengrenze ist KEINE reine Messung: die gemessene Kante
-      liegt bei 416 Codepunkten (Fenster, 360×480, Chromium), gesetzt sind 300 — der
-      Abstand deckt Schrift- und Browser-Varianz und ist UNGEMESSEN (Entscheidung
-      P11.13-27).
-      DER MARKER BLEIBT `[ ]` — SCHEIBE 5 aus (c), die SPRACHE, steht aus, und damit ist
-      Code zu schreiben (CLAUDE.md, "WANN [x] GESETZT WIRD — DAS KRITERIUM").
-
-      STAND 2026-09-18, DRITTER DES TAGES — SCHEIBE 5 IST GEBAUT UND LIVE BEWIESEN: die
-      SPRACHE, Deutsch oder Englisch, Bau-Commit `0a2dc7b`, mit bestätigtem Live-Test auf
-      einer realen Seite. Der Betreiber wählt je Projekt aus einer FESTEN Auswahl; alle ELF
-      Textplätze des Dialogs folgen der Wahl, die Wortlaute stehen als Konstanten im Repo
-      und tragen Owner-Freigaben (bindende Entscheidung P11.13-31). KEINE Betreiber-Eingabe
-      — der Wert wählt einen Zweig. Vermerk, Entscheidungen und Vorrat: VERMERK P11.13-10
-      in docs/aktiver-stand.md.
-      DREI BAUFORM-ENTSCHEIDUNGEN TRAGEN SIE: eine TABELLE mit erschöpfender Verzweigung und
-      `never`-Zweig, deren deutscher Zweig auf die BESTEHENDEN Konstanten VERWEIST statt
-      abzuschreiben (P11.13-33) · eine HÜLLE aus Darstellung, Sachtext und Sprache statt
-      eines dritten Parameters — die Grenze von P11.13-29 war mit der dritten Achse
-      eingetreten und ist damit eingelöst (P11.13-32) · ein `lang`-Attribut an `.bar` bzw.
-      `.dialog` IM EIGENEN SCHATTENBAUM (P11.13-36).
-      DIE BYTE-GLEICHHEIT DER DEUTSCHEN AUSGABE IST BEWUSST AUFGEGEBEN, UND AN IHRE STELLE
-      TRITT EIN DIFFERENZ-NACHWEIS: Das `lang`-Attribut bewegt die deutschen Blockwerte, die
-      über vier Scheiben stabil waren. Der Nachweis lautet, dass jeder Wert der alte PLUS
-      GENAU DIE `lang`-ZEILE ist — sonst kein Zeichen. GEFAHREN UND BESTANDEN, 18 von 18
-      (+34 B je Leisten-Block, +37 je Fenster-Block, +68 bzw. +74 je Ausgabetext); der
-      AUS-FALL und `buildMetaRuntime` bleiben ZEICHENGLEICH. LIVE BESTÄTIGT: die sechs
-      deutschen Blockwerte der echten Seite sind zeichengleich mit den lokal erhobenen
-      Nachher-Werten.
-      EINE AUTOMATIK NACH `navigator.language` IST VERWORFEN, nicht vertagt — mit Gründen
-      und gemessenen Kosten (P11.13-35): Sie wäre unverträglich mit einem eigenen Sachtext,
-      der in EINER Sprache vorliegt, und die Zielgruppe baut je Markt eigene Seiten. KEIN
-      Vorrats-Eintrag, KEIN Trigger.
-      DIE GRENZEN, DIE MITMÜSSEN: Gemessen ist Chrome auf dem Desktop und ein Handy laut
-      Owner; FIREFOX UND WEBKIT SIND AN KEINER ACHSE DIESER SCHEIBE GEMESSEN. SCREENREADER
-      SIND UNGEPRÜFT — und das wiegt hier schwerer als in den vorigen Scheiben, weil das
-      `lang`-Attribut genau für Vorleseprogramme gesetzt ist und seine WIRKUNG damit
-      ungemessen bleibt. Der EXPORT-PFAD trägt weiterhin keine Sprache (P11.13-28).
-      ALLE FÜNF SCHEIBEN DES SCHNITTS (c) SIND DAMIT GEBAUT UND LIVE BEWIESEN — die
-      Anordnung, das Thema, die eigenen Farben, der freie Sachtext und die Sprache.
-      DER MARKER BLEIBT TROTZDEM `[ ]`, UND DAS IST KEIN WIDERSPRUCH ZUM KRITERIUM: Er kippt
-      mit dem PHASENENDE — der Hebung der bindenden Entscheidungen, der Verteilung des
-      Vorrats und der Archivierung der Standdatei. Das ist eine EIGENE Runde und noch nicht
-      gefahren; bis dahin ist an dieser Phase Arbeit zu tun, wenn auch kein Code.
+      PROVENIENZ: Gegenstand und Anlage der Zeile OWNER-ENTSCHEIDUNG 2026-09-15; Schnitt,
+      Reihenfolge, Auflagen und Guardrail ARCHITEKT 2026-09-15, vom Owner angenommen; die Sprache
+      als fünfte Scheibe OWNER-ENTSCHEIDUNG 2026-09-18. Die fünf Bau-Commits und die Zuordnung der
+      acht Punkte sind GEMESSEN am Repo (CC, 2026-09-18). Sämtliche Live-Angaben der Phase sind
+      OWNER-MESSUNGEN bzw. OWNER-ANGABEN und von CC nicht prüfbar; welche das je Scheibe sind,
+      steht an der Provenienz des jeweiligen Vermerks im Archiv.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

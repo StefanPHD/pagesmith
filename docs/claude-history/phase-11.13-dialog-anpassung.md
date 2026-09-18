@@ -1,4 +1,86 @@
-# Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs: DER AKTIVE STAND
+# Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs: DER AKTIVE STAND, ARCHIVIERT
+
+**WAS DIESE DATEI WAR:** der steuernde Stand der Phase 11.13 — das, was jeweils galt, nicht
+das, was geworden ist. **Sie hiess bis zum Phasenende `docs/aktiver-stand.md`** und war das
+Pflicht-Gate ("Auftrag 0") jeder Sitzung, die an der Phase arbeitete.
+
+**ZEITRAUM UND UMFANG:** angelegt am 2026-09-17, archiviert am 2026-09-18 — **die Phase hat
+zwei Tage gedauert.** FÜNF Scheiben (11.13a die Anordnung, 11.13b das Thema, 11.13c eigene
+Farben, 11.13d der freie Sachtext, 11.13e die Sprache), jeder eine eigene Aufklärungs-Runde
+voraus. ZEHN Vermerke, SIEBENUNDDREISSIG bindende Entscheidungen, ELF Vorrats-Einträge, ZWEI
+Hebungs-Kandidaten. Bau-Commits: `bb9f045` · `2b288f4` · `1d5ea7d` · `a3e286b` · `0a2dc7b`,
+je mit bestätigtem Live-Test.
+
+**WARUM ES DIESE PHASE ÜBERHAUPT GAB — DAS PRODUKT-ARGUMENT IM WORTLAUT DER ROADMAP-ZEILE,
+PUNKT (b).** Es steht hier, weil es sonst nirgends steht: Mit dem Kollaps der Roadmap-Zeile
+auf `[x]` verliert es seinen einzigen Ort, und es ist kein kosmetisches Argument.
+> "DER GRUND IST EIN PRODUKT-ARGUMENT, KEIN KOSMETISCHES: Die Zielgruppe baut Landing Pages
+> und Konversions-Trichter. Ein Dialog, der auf einer fremden Seite wie ein Fremdkörper
+> wirkt, senkt das Vertrauen und wird vom Betreiber nicht eingeschaltet. Wird er nicht
+> eingeschaltet, greift der ganze Mechanismus nicht, den die Phase 11.5 gebaut hat."
+
+**WIE SIE ENDETE:** Ihr Marker steht auf `[x]`, und das heisst **BAU-FERTIG** — nicht "der
+anpassbare Einwilligungs-Dialog ist erledigt". Was am Haken hängt, steht als eigener Block an
+der Roadmap-Zeile 11.13 (docs/roadmap.md) und wird hier NICHT verdoppelt: acht Punkte, die
+beim `[x]` unbewiesen oder als mangelhaft bekannt sind — darunter die **ungemessene Wirkung
+des `lang`-Attributs auf Vorleseprogramme**, obwohl es genau dafür gesetzt ist, und eine
+**gemessene Verletzung der bindenden Entscheidung P11.13-5 im Bestand** (Vorrat P11.13-6,
+heute ein offener Punkt).
+
+**DIE HEBUNG IST AM 2026-09-18 GEFAHREN** (Runde 1 des Phasenendes). **VIER bindende
+Entscheidungen** sind als Dauerregeln nach docs/immer-beachten.md gegangen (P11.13-3, -17,
+-25, -36), dazu **beide Hebungs-Kandidaten** — einer davon als ERWEITERUNG der bestehenden
+Werkzeug-Regel zu `sed -i`, einer als eigene Regel. **ZWEI offene Punkte** sind entstanden,
+**einer** ist erweitert worden (`settingsEqual` IST EINE ALLOWLIST, Titel und Trigger
+ERSETZT). **SECHS Vorrats-Einträge und ein Satz aus den Verdichtungen** liegen in
+docs/claude-history/backlog-polish.md; **VIER Vorrats-Einträge und VIER Sätze** sind
+gestrichen, je mit dem Beleg der Erledigung am Eintrag. An jeder gehobenen Entscheidung steht
+ein Zeiger "→ GEHOBEN 2026-09-18"; die übrigen **33** tragen EINEN Sammelvermerk am Kopf ihres
+Abschnitts, mit Grund. **Die Gegenprobe ist VOR der Archivierung gefahren** (CC, 2026-09-18),
+je Eintrag gegen den BESTAND der Zieldatei und nicht gegen die Listen dieser Runde, mit
+Positiv- und Negativkontrolle je Zieldatei.
+
+**DER MESSWERT AUS docs/arbeitsweise.md, ABSCHNITT 2b — ERSTMALS ERHOBEN, UND DESHALB MIT DER
+VORPHASE.** Er ist in keinem Archivkopf dieses Projekts je erhoben worden (GEMESSEN am Repo,
+CC, 2026-09-18, Achse `numstat|Verhältnis|Messwert aus 2b|geänderte Zeilen` über die Archive
+der Phasen 11.12, 11.5 und 11.3: kein Treffer, der ihn führt) — die Auflage "beim ersten Mal
+wird die Vorphase mit erhoben" greift also.
+
+| Phase | Spanne (`git log --numstat`) | `docs/` | `src/` | Verhältnis docs : src |
+|---|---|---|---|---|
+| **11.13** | `023eb5a^..HEAD` | **6 407** | **7 192** | **0,89 : 1** |
+| **11.12** (Vorphase) | `a7fe5fe^..cd0b344` | **1 165** | **784** | **1,49 : 1** |
+
+Summe aus Einfügungen und Löschungen; ausserhalb von `docs/` und `src/` 3 bzw. 42 Zeilen.
+**DAS VERHÄLTNIS IST GEFALLEN**, der Befund der Arbeitsweise ("steigt es zwei Phasen in
+Folge") tritt NICHT ein. **DIE GRENZE GEHÖRT DAZU: Zwei Phasen sind keine Reihe**, und 11.12
+war eine Ein-Tages-Phase mit EINER Scheibe — die Bezugsgrösse ist klein.
+
+**ALTE ZEIGER AUF `docs/aktiver-stand.md` MEINEN NICHT IMMER DIESE DATEI**, sondern je nach
+Alter eine frühere Standdatei — der Pfad trug je Phase eine andere (docs/immer-beachten.md,
+EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE). **AUS DIESER PHASE STEHEN
+ZWEI SOLCHE ZEIGER IN `src/`** — in `consent-bar.test.ts` und `consent-modal.test.ts`, beide
+mit "Entscheidung P11.13-1 der Phase 11.13" im selben Satz und damit phasen-auflösbar; sie
+sind in einem eigenen `chore`-Commit auf diesen Archivpfad nachgezogen worden. **ZWEI WEITERE
+ZEIGER IN `src/` MEINEN DIE STANDDATEI DER PHASE 11.3** (`actions.testmode.test.ts` und
+`credential-state.ts`) und sind seit deren Umbenennung am 2026-09-11 tot. **SIE SIND IM
+SELBEN `chore`-COMMIT AUF docs/claude-history/phase-11.3-testmodus.md NACHGEZOGEN**, weil die
+Bedingung dafür GEMESSEN erfüllt ist: Beide zitierten Titel stehen dort WÖRTLICH und als
+Abschnittstitel — `## Gegenstand der Phase` und
+`### Reichweite: meta und tiktok — und ausdrücklich sonst keines` (GEMESSEN am Repo, CC,
+2026-09-18; Positivkontrolle im selben Lauf an einem dritten Titel jener Datei).
+**DAMIT SINKT DER BESTAND DES OFFENEN PUNKTS "ZEIGER AUF docs/aktiver-stand.md MEINEN EINE
+FRÜHERE STANDDATEI" UM ZWEI** — er führte zwanzig Titel-Zeiger, davon zwei in `src/`; die
+drei in angewandten Migrationen bleiben unheilbar.
+
+**DER SATZ IM KOPF DES RUMPFES, DASS SIE DEN NAMEN `docs/aktiver-stand.md` "BIS ZUM
+PHASENENDE" BEHÄLT, BLEIBT STEHEN.** Er ist ein Zeitdokument und war richtig, als er
+geschrieben wurde; sonst ist am Rumpf nichts umformuliert — die Änderungen dieses Phasenendes
+sind ausschliesslich die Hebungs-Zeiger und die Erledigungs-Belege, je datiert.
+
+---
+
+## Der Rumpf, wie er am Phasenende stand
 
 **WAS DIESE DATEI IST:** der steuernde Stand der laufenden Phase 11.13 — das, was JETZT
 gilt, nicht das, was geworden ist. Sie ist das Pflicht-Gate ("Auftrag 0") jeder Sitzung,
@@ -261,6 +343,12 @@ von L15/M16 — also die Achse ABWESENHEITS-BEHAUPTUNG. **EINE AUSNAHME BLEIBT O
 der neue Weg den Text eines bestehenden Knopfes, würden die Helfer `button(...)`
 mehrdeutig. Am heutigen Bestand ist das nicht entscheidbar, weil der Text noch nicht
 feststeht.
+**ERLEDIGT AM 2026-09-18 (Phasenende) — DIE AUSNAHME IST GEGENSTANDSLOS.** Der Text steht
+seit der Scheibe 11.13a fest: `CONSENT_WAY_LABEL = "Einstellungen"`
+(`src/lib/tracking/consent-texts.ts`, GEMESSEN am Repo, CC, 2026-09-18) — er kollidiert mit
+keiner der drei Knopf-Beschriftungen ("Alle akzeptieren", "Auswahl speichern", "Ablehnen"),
+und die Helfer `button(...)` sind nie mehrdeutig geworden. **Der Satz oben bleibt als
+Zeitdokument stehen; er war richtig, als er geschrieben wurde.**
 
 **L12 BLOCKIERT `overflow`, NICHT `max-height`.** L12 prüft strukturell (Attribute an
 `html`/`body` vorher und nachher, `document.head.children.length`, neue globale Namen über
@@ -1037,6 +1125,12 @@ oben, und am Repo ist kein Test dieses Namens auffindbar (Positivkontrolle: W1 b
 stehen als Testlabel in `consent-revoke.test.ts`). **WER FÜR DIESE SCHEIBE EINE
 BYTE-ZUSAGE SUCHT, LIEST HIER EINE, DIE ES NICHT GIBT.** Der Block ist in dieser Runde
 **NICHT** geändert worden (Doku-Runde, kein Code); die Änderung gehört in die Bau-Scheibe.
+**ERLEDIGT AM 2026-09-18 (Phasenende) — DER DOCBLOCK IST NACHGEZOGEN.** `consent-bar.ts`
+trägt heute die Richtigstellung im selben Block: "… und W0 IST GESTRICHEN — die
+Byte-Gleichheit, die er hielt, war die Invariante der Scheibe 11.5e-2" (GEMESSEN am Repo,
+CC, 2026-09-18; Positivkontrolle: am Repo ist kein Test des Namens W0 mehr auffindbar, W1
+bis W17 stehen weiter als Testlabel in `consent-revoke.test.ts`). **Der Befund oben bleibt
+als Zeitdokument stehen** — er beschreibt den Stand `dae4d1a`.
 
 PROVENIENZ DIESES VERMERKS: sämtliche Angaben GEMESSEN bzw. GELESEN am Repo (CC,
 2026-09-18, auf `dae4d1a`). **KEINE Messung an einem Browser, keine an einer Live-Seite,
@@ -2087,6 +2181,31 @@ eine ARCHITEKT-ANGABE über eine Owner-Entscheidung desselben Tages.
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
+**SAMMELVERMERK 2026-09-18 — DIE HEBUNG DES PHASENENDES, JE ENTSCHEIDUNG.** Von den
+SIEBENUNDDREISSIG Entscheidungen dieses Abschnitts sind **VIER GEHOBEN** und stehen seit dem
+2026-09-18 als Dauerregeln in docs/immer-beachten.md: **P11.13-3**, **P11.13-17**,
+**P11.13-25** und **P11.13-36**. An jeder von ihnen steht unten ein eigener Zeiger; **ihr
+Wortlaut bleibt hier stehen** — die Regel ist das Destillat, nicht ihr Ersatz.
+
+**DIE ÜBRIGEN DREIUNDDREISSIG SIND NICHT GEHOBEN 2026-09-18, UND DAS IST EINE ZUORDNUNG UND
+KEIN VERSÄUMNIS.** Der Grund gilt ihnen allen gemeinsam, deshalb steht er EINMAL hier und
+nicht dreiunddreissigmal darunter: **Sie beschreiben, WIE der Code dieses Dialogs gebaut ist**
+— Ablageorte, Zweige, Palette, Bedienformen, Übergabeformen und die verworfenen Gestalten.
+**Sie gelten, solange dieser Code steht**, und sie sind über den Detail-Archiv-Eintrag in
+CLAUDE.md auffindbar. **SIE GESTRICHEN ZU NENNEN WÄRE FALSCH**, und sie nach
+docs/immer-beachten.md zu heben ebenso: Eine Bauform-Beschreibung EINES Subsystems ist keine
+projektweite Dauerregel, und dort verdünnte sie ihre Nachbarn.
+**WER HIER STREICHUNGEN ERWARTET, ERWARTET DIE FEHLERKLASSE DER FALSCHEN LISTE**
+(docs/arbeitsweise.md, "Wie ein Satz wieder herausgeht": "Eine bindende Entscheidung
+beschreibt, WIE gebaut wurde; sie kann überholt werden, aber sie wird nicht gegenstandslos,
+solange der Code steht"). **Bei den neunzehn Entscheidungen der Phase 11.2 war KEINE
+gegenstandslos; hier ist es ebenso.**
+**EINE AUSNAHME GEHÖRT DAZU, und sie ist kein Widerspruch:** Aus dem Rumpf von
+**P11.13-34** ist EIN Satz als offener Punkt herausgegangen — nicht die Entscheidung, sondern
+der Zustand, den ihr Kosten-Absatz als offen führte ("NICHTS ZEIGT IHM DAS AN"). Er steht
+seit dem 2026-09-18 in docs/offene-punkte.md als "EIN EIGENER SACHTEXT ÜBERLEBT DEN
+SPRACHWECHSEL …", mit Stub in CLAUDE.md. Die Entscheidung selbst bleibt hier und unverändert.
+
 ### Entscheidung P11.13-1 — DIE GESTALT
 
 **EINGEKLAPPT BEIM ERSTEN ERSCHEINEN:** der Sachtext, **"Alle akzeptieren" und "Ablehnen"
@@ -2136,6 +2255,12 @@ der Docblock von `CONSENT_REVOKE_API` sagt dasselbe).
 PROVENIENZ: ARCHITEKT-VORSCHLAG, OWNER-FREIGABE 2026-09-17.
 
 ### Entscheidung P11.13-3 — DAS HARTE KRITERIUM, ALS DEFINITION
+
+**→ GEHOBEN 2026-09-18 nach docs/immer-beachten.md: "DAS HARTE KRITERIUM DES
+EINWILLIGUNGS-DIALOGS IST EINE DEFINITION, KEIN ERGEBNIS".** Der Wortlaut hier bleibt
+stehen; die Regel trägt zusätzlich die zwei Mess-Auflagen (vertikale Überlappung statt
+`top`-Gleichheit; ein fokussierbares Element ausserhalb des Dialogs), die in dieser Phase aus
+zwei gefangenen Instrumentenfehlern entstanden sind — der zweite davon war Vorrat P11.13-4.
 
 **JEDES BEDIENELEMENT LIEGT VOLLSTÄNDIG IM FENSTER** — `top >= 0`, `left >= 0`,
 `bottom <= innerHeight`, `right <= innerWidth` — **UND IST TREFFBAR**: `elementFromPoint` an
@@ -2481,6 +2606,12 @@ vom Kontrast-Kriterium ausgenommen (P11.13-10) und hat deshalb kein Kriterium, a
 Ableitung sich messen liesse; (2) **`color-scheme`** — es steuert, wie der Browser das
 **native** Kästchen zeichnet, und ist damit der einzige Platz, an dem eine Wahl eine Farbe
 bewegt, die wir nicht selbst setzen. **KEINE EMPFEHLUNG; Kandidaten stehen im Plan.**
+**ERLEDIGT AM 2026-09-18 (Phasenende) — BEIDE PLÄTZE SIND ENTSCHIEDEN, JE IN EINER EIGENEN
+ENTSCHEIDUNG:** die **Container-Linie** in **P11.13-20** (sie trägt im vierten Zweig die
+TEXTFARBE, und die Ausnahme vom Kontrast-Kriterium bleibt für die drei Tabellenzweige
+bestehen), `color-scheme` in **P11.13-21** (ABGELEITET aus dem Kontrast von Weiss gegen
+Schwarz am gewählten Hintergrund, ohne Schwellen-Konstante). Beide sagen das selbst — sie
+nennen sich ausdrücklich als Schliessung je einer der zwei Plan-Fragen dieses Absatzes.
 
 **UNBERÜHRT BLEIBEN — wie beim dunklen Thema:** die **Abdunkelung** des Fensters
 (`.backdrop`) und der durchsichtige Hintergrund des Wegs (`.way`). CSS2c hält beide
@@ -2544,6 +2675,12 @@ Scheibe 4 vertagt.
 
 **DIE KONKRETEN NAMEN — Feldnamen, Leser, Setzer, der Name des geprüften Typs — SIND HIER
 NICHT ENTSCHIEDEN.** Sie sind Gegenstand des Plans und fallen mit seiner Freigabe.
+**ERLEDIGT AM 2026-09-18 (Phasenende) — DIE NAMEN STEHEN**, gebaut mit dem Commit `1d5ea7d`
+und aufgezählt in der Verdichtung des Zuschnitts 11.13c (Plan-Frage 5): Prüfstelle
+`readConsentColor`, Leser `getConsentColorBackground` / `getConsentColorText`, Setzer
+`setConsentColors`, geprüfter Typ `ConsentColor` (Lesetyp `ConsentColorRead`), Meldung
+`CONSENT_COLORS_UNKNOWN_MESSAGE`, Kontrastfunktion `contrastRatio` in der neuen Datei
+`src/lib/contrast.ts`. Die Feldnamen selbst stehen in Entscheidung P11.13-19.
 
 **DIE GRENZE:** Sie kippt, **sobald ein Farbformat mit einem anderen Alphabet zugelassen
 wird** — `rgb()`, Farbnamen, Alpha-Kanal, Kurzform. Jedes davon bringt Zeichen zurück, die
@@ -2650,6 +2787,11 @@ EINE Entscheidung.** Die Abwesenheit eines Server-Rückkanals ist GEMESSEN am Co
 2026-09-18); die Schwelle ist eine ARCHITEKT-VORGABE und ausdrücklich keine Messung.
 
 ### Entscheidung P11.13-17 — DER GEPRÜFTE TYP IST OPAK, UND ES GIBT GENAU EINE ZUSICHERUNG
+
+**→ GEHOBEN 2026-09-18 nach docs/immer-beachten.md: "EIN OPAKER MARKEN-TYP HAT GENAU EINE
+ZUSICHERUNG IM GANZEN REPO, UND SIE STEHT UNMITTELBAR HINTER DER PRÜFUNG".** Der Wortlaut
+hier bleibt stehen; die Regel löst die Aussage vom Farbtyp und macht sie zur Bauform für
+JEDEN opaken Marken-Typ dieses Projekts.
 
 **Der geprüfte Farbtyp ist ein OPAKER MARKEN-TYP** — eine Zeichenkette mit einer Marke, die
 ausserhalb ihrer Erzeugungsstelle nicht herstellbar ist. **Ein roher `string` ist ihm nicht
@@ -2957,6 +3099,12 @@ GESTEMPELT** — ein Massstab mit falschen Angaben taugt nicht als Massstab
 Entscheidung selbst ist unverändert.
 
 ### Entscheidung P11.13-25 — JEDER BETREIBER-WERT IN SCRIPT-ROHTEXT LÄUFT ÜBER DEN EINBETTUNGS-HELFER
+
+**→ GEHOBEN 2026-09-18 nach docs/immer-beachten.md: "JEDER BETREIBER-WERT, DER IN
+SCRIPT-ROHTEXT GEHT, LÄUFT ÜBER DEN EINBETTUNGS-HELFER — `JSON.stringify` ALLEIN MASKIERT
+KEIN `<`".** Der Wortlaut hier bleibt stehen; die Regel trägt die drei Geltungsstufen, die
+Anführungszeichen-Beobachtung und die Grenze (das Escape trägt nur im Script-Rohtext)
+vollständig mit.
 
 **DER HELFER:** `JSON.stringify`, **danach jedes `<` als Unicode-Escape** — dieselbe
 Ersetzung, die `generateFunctional` seit jeher auf die Mapping-Tabelle anwendet
@@ -3524,6 +3672,13 @@ I1 und der Nadel-Befund sind GEMESSEN bzw. am Wortlaut GEPRÜFT (CC, 2026-09-18)
 
 ### Entscheidung P11.13-36 — DAS `lang`-ATTRIBUT STEHT IM SCHATTENBAUM, UND SEIN NACHWEIS IST EIN DIFFERENZ-NACHWEIS
 
+**→ GEHOBEN 2026-09-18 nach docs/immer-beachten.md: "WO EINE BYTE-GLEICHHEIT BEWUSST
+AUFGEGEBEN WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE STELLE — SONST FÄLLT DIE ZUSAGE
+ERSATZLOS WEG".** Der Wortlaut hier bleibt stehen. **GEHOBEN IST DIE ZWEITE HÄLFTE** — die
+Bauform des Nachweises, in fünf Schritten und ohne den Dialog; die erste Hälfte (das
+`lang`-Attribut am eigenen Knoten) beschreibt diesen Code und bleibt eine Entscheidung.
+**Vorrat P11.13-2 zeigt auf dieselbe Sache und liegt seit dem 2026-09-18 im Backlog.**
+
 **`.bar` BZW. `.dialog` BEKOMMEN EIN `lang`-ATTRIBUT** — `"de"` oder `"en"`, aus der
 gewählten Sprache. **Es steht IM Schattenbaum, an unserem eigenen Element**, nicht am Host
 und nicht an einem Knoten der Kundenseite. **Invariante I1 ist unberührt**: Das Attribut wird
@@ -4052,31 +4207,29 @@ Live-Angaben darin sind OWNER-MESSUNGEN und von CC nicht prüfbar. Die Verdichtu
 
 ### P11.13-1 — `settingsEqual` ERFASST AUCH EIN FELD INNERHALB VON `settings.consent` NICHT
 
-`settingsEqual` (`src/lib/settings.ts`) vergleicht `getConsentDialog(a) === getConsentDialog(b)`
-und die Ziel-Terme. **Ein neues Feld INNERHALB von `settings.consent`** — etwa ein
-Thema-Wert in Scheibe 2 — **wäre für `dirty` ebenso unsichtbar wie ein neues
-Top-Level-Mitglied**: kein Text "Ungespeicherte Änderungen", kein `beforeunload`-Wächter,
-kein `confirm` beim Projektwechsel, und nichts wird davon rot.
+**ERLEDIGT AM 2026-09-18 MIT DEM PHASENENDE — AUFGEGANGEN IM ERWEITERTEN OFFENEN PUNKT.
+TITEL UND BELEG BLEIBEN, DER VOLLTEXT IST GESTRICHEN** (docs/arbeitsweise.md, "Wie ein Satz
+wieder herausgeht"); er ist unter dem Commit `7a6a5f6` vollständig nachzulesen.
 
-**DER OFFENE PUNKT `settingsEqual` IST EINE ALLOWLIST (docs/offene-punkte.md) DECKT DAS
-NICHT:** Sein Trigger nennt ausdrücklich ein **TOP-LEVEL**-Mitglied. Ob er den Fall
-mitmeint, entscheidet sein Text nicht; hier wird er nicht aufgelöst.
+**DER GEGENSTAND, IN EINEM SATZ:** `settingsEqual` (`src/lib/settings.ts`) zählt auf, was sie
+vergleicht — ein neues Feld INNERHALB von `settings.consent` ist damit für `dirty` unsichtbar,
+der Wert verschwindet beim nächsten Projektwechsel, und nichts wird davon rot.
 
-**RELEVANT AB SCHEIBE 2 (Thema).** **KEIN EIGENER TRIGGER AUSSER DIESEM: der Zuschnitt der
-Scheibe 2.**
+**DER BELEG DER ERLEDIGUNG, drei Stücke:**
+- **DER BESTEHENDE OFFENE PUNKT IST AM 2026-09-18 ERWEITERT WORDEN**, nicht ein zweiter
+  angelegt: `settingsEqual` IST EINE ALLOWLIST — JEDES NEUE MITGLIED DES EINSTELLUNGS-BLOBS
+  IST FÜR `dirty` UNSICHTBAR BY DEFAULT, **AUCH INNERHALB EINES UNTEROBJEKTS**, UND NICHTS
+  WIRD DAVON ROT (docs/offene-punkte.md, Stub in CLAUDE.md).
+- **TITEL UND TRIGGER JENES PUNKTES SIND ERSETZT, NICHT GESTEMPELT** — genau das, was dieser
+  Eintrag als Lücke benannt hat: Der alte Trigger nannte ausdrücklich ein
+  **TOP-LEVEL**-Mitglied und deckte den häufigeren Fall nicht.
+- **DIE MESSUNG DIESES EINTRAGS IST IN DEN PUNKT ÜBERNOMMEN** und dort fünffach belegt: Die
+  Phase 11.13 hat `settings.consent` FÜNF Mitglieder hinzugefügt — `theme`,
+  `colorBackground`, `colorText`, `text`, `language` —, und jedes brauchte seinen eigenen
+  Term (Entscheidungen P11.13-6, -19, -26, -37).
 
-PROVENIENZ: GEMESSEN am Code (CC, 2026-09-17); der Wortlaut des Triggers GELESEN in
-docs/offene-punkte.md (CC, 2026-09-17). Dass der Punkt den Fall nicht deckt, ist am
-Trigger-Wortlaut ABLESBAR.
-
-**VERMERK 2026-09-17 — FÜR DEN THEMENWERT EINGELÖST, DIE KLASSE BLEIBT.** Entscheidung
-P11.13-6 gibt `settingsEqual` den Term `getConsentTheme(a) === getConsentTheme(b)`; der
-Themenwert ist damit für `dirty` sichtbar, obwohl er INNERHALB von `settings.consent` liegt.
-**DER EINTRAG WIRD NICHT GESTRICHEN:** Seine Aussage ist die über die KLASSE — jedes weitere
-Feld innerhalb des Unterobjekts ist wieder unsichtbar, und der offene Punkt `settingsEqual`
-IST EINE ALLOWLIST deckt sie ebenfalls nicht, weil sein Trigger ein TOP-LEVEL-Mitglied
-verlangt. **Der Trigger dieses Eintrags bleibt unverändert: der Zuschnitt der Scheibe 2** —
-er ist damit EINGETRETEN und für seinen Anlassfall abgearbeitet.
+**WAS DAMIT NICHT ERLEDIGT IST UND IM OFFENEN PUNKT WEITERLEBT:** die KLASSE. Die Funktion
+zählt weiter auf; das SECHSTE Feld ist wieder unsichtbar.
 
 ### P11.13-2 — T9 REICHT WENIGER WEIT ALS DER GESTRICHENE W0
 
@@ -4125,25 +4278,29 @@ GEMESSEN in der Probe desselben Tages; die Nicht-Messbarkeit ist eine ABLEITUNG 
 
 ### P11.13-4 — DIE FOKUS-MESSUNG HÄNGT AN DER TABULATOR-ORDNUNG DER FREMDEN SEITE
 
-Das Kriterium der Freigabe E2 ist zuerst GRÜN und dann ROT gemessen worden — **am selben
-Code, an zwei verschiedenen Probeseiten.** Die erste trug ausser dem Dialog nichts
-Fokussierbares; dort war der nächste Tabulator-Schritt zwangsläufig wieder ein eigenes
-Kästchen. Erst die zweite Seite mit Link, Knopf und Eingabefeld zeigte den Verlust.
+**ERLEDIGT AM 2026-09-18 MIT DEM PHASENENDE — AUFGEGANGEN IN EINER DAUERREGEL. TITEL UND
+BELEG BLEIBEN, DER VOLLTEXT IST GESTRICHEN** (docs/arbeitsweise.md, "Wie ein Satz wieder
+herausgeht"); er ist unter dem Commit `7a6a5f6` vollständig nachzulesen.
 
-**DIE FOLGE IST EINE AUFLAGE AN JEDE KÜNFTIGE FOKUS-MESSUNG DIESES DIALOGS: Die Probeseite
-trägt mindestens ein fokussierbares Element ausserhalb des Dialogs**, sonst misst sie eine
-Eigenschaft der Probe statt des Prüflings (docs/immer-beachten.md, EINE ANLEITUNG, DIE EINE
-VORAUSSETZUNG NICHT NENNT, ERZEUGT EINE FALSCHE ENTWARNUNG).
+**DER GEGENSTAND, IN EINEM SATZ:** Das Fokus-Kriterium ist am selben Code erst GRÜN und dann
+ROT gemessen worden — der Unterschied lag allein darin, dass die erste Probeseite ausser dem
+Dialog nichts Fokussierbares trug und deshalb eine Eigenschaft der PROBE statt des Prüflings
+mass.
 
-**DIE ACHSE BLEIBT AUCH DANN UNGEDECKT, WENN DIE PROBE GRÜN IST:** Die reale fremde Seite
-bestimmt die Ordnung, und wir kennen sie nicht. Gebaut ist der Fokus deshalb als Setzung,
-nicht als Verlass auf die Plattform.
+**DER BELEG DER ERLEDIGUNG, drei Stücke:**
+- **DIE AUFLAGE STEHT SEIT DEM 2026-09-18 ALS DAUERREGEL** in docs/immer-beachten.md, "DAS
+  HARTE KRITERIUM DES EINWILLIGUNGS-DIALOGS IST EINE DEFINITION, KEIN ERGEBNIS" — dort als
+  zweite der zwei Mess-Auflagen, wörtlich: "DIE PROBESEITE TRÄGT MINDESTENS EIN
+  FOKUSSIERBARES ELEMENT AUSSERHALB DES DIALOGS."
+- **SIE IST DAMIT AN DER STELLE, AN DER SIE FEUERT** — bei der Definition des Kriteriums, das
+  eine spätere Runde ohnehin aufschlägt, statt in einem Vorrat, den sie nicht liest.
+- **SIE IST IN DIESER PHASE DREIMAL EINGEHALTEN WORDEN** — in den Proben der Scheiben 11.13c,
+  11.13d und 11.13e, je mit einer Probeseite mit Link, Knopf und Feld ausserhalb des Dialogs.
 
-**KEIN EIGENER TRIGGER AUSSER DIESEM: die nächste Runde, die den Fokus des Dialogs misst
-oder verschiebt.**
-
-PROVENIENZ: die zwei Läufe GEMESSEN am eigenen Lauf (CC, 2026-09-17); dass die reale Seite
-die Ordnung bestimmt, ist eine ABLEITUNG.
+**WAS MIT DER HEBUNG NICHT VERSCHWINDET UND IN DER REGEL WEITERLEBT:** Die Achse bleibt auch
+bei grüner Probe ungedeckt — die reale fremde Seite bestimmt die Tabulator-Ordnung, und wir
+kennen sie nicht. Gebaut ist der Fokus deshalb als Setzung, nicht als Verlass auf die
+Plattform (bindende Entscheidung P11.13-4 dieser Phase).
 
 ### P11.13-5 — DIE PIXEL-ID GELANGT OHNE `<`-MASKIERUNG IN DEN AUSGELIEFERTEN TEXT
 
@@ -4235,34 +4392,30 @@ Playwright/Chromium); der Wortlaut von P11.13-5 GELESEN in dieser Datei. Dass Ha
 
 ### P11.13-7 — `git stash` DREHT DIE ZEILENENDEN EINER `w/crlf`-DATEI, UND DIE GATES MELDEN NICHTS
 
-Für die Vorher-Testzahl lief `git stash push -- src/` / `git stash pop`.
-`src/components/PublishView.tsx` liegt im Arbeitsbaum als **CRLF**, der Index steht auf
-`eol=lf`; **nach dem `pop` stand die Datei auf CR=0.** Von sechzehn Dateien meldete
-`sha256sum -c` **eine** als FAILED.
+**ERLEDIGT AM 2026-09-18 MIT DEM PHASENENDE — AUFGEGANGEN IN DER ERWEITERTEN WERKZEUG-REGEL.
+TITEL UND BELEG BLEIBEN, DER VOLLTEXT IST GESTRICHEN** (docs/arbeitsweise.md, "Wie ein Satz
+wieder herausgeht"); er ist unter dem Commit `7a6a5f6` vollständig nachzulesen.
 
-**GEFANGEN UND BEHOBEN:** Als reine Zeilenenden-Sache nachgewiesen — LF→CRLF zurückgerechnet
-ergibt exakt den Vor-Stash-sha `07a8a4af…` —, wiederhergestellt, danach **16 von 16 OK**
-(GEMESSEN, CC, 2026-09-18).
+**DER GEGENSTAND, IN EINEM SATZ:** Ein `git stash push` / `git stash pop` gab
+`src/components/PublishView.tsx` (Arbeitsbaum `w/crlf`, Index `eol=lf`) mit CR = 0 zurück —
+von sechzehn Dateien meldete `sha256sum -c` eine als FAILED, und die vorgeschriebene Prüfung
+der Werkzeug-Regel hätte nichts gemeldet, weil der Diff gerade nicht leer war.
 
-**DAS IST DIE FEHLERKLASSE DER DAUERREGEL „WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG
-STILL DAS CR"** (docs/immer-beachten.md) — dort steht ausdrücklich, die Reichweite sei die
-WIRKUNG und nicht das Kommando im Titel: „Die Frage lautet nie ‚steht es in der Aufzählung?',
-sondern ‚schreibt es die ganze Datei?'". **`git stash` steht in keiner ihrer Aufzählungen**,
-und es schreibt die ganze Datei.
-**WAS DIE REGEL HIER NICHT LEISTET:** Ihre vorgeschriebene Prüfung ist `git status` plus der
-Ausschluss leerer Diffs — **die hätte hier nichts gemeldet**, weil der Diff gerade nicht leer
-ist. Gefangen hat es allein der `sha256sum`-Rundlauf über die berührten Dateien.
+**DER BELEG DER ERLEDIGUNG, drei Stücke:**
+- **DIE FRAGE, DIE DIESER EINTRAG AUSDRÜCKLICH DEM PHASENENDE ÜBERLIESS ("ob daraus eine
+  Ergänzung der Dauerregel wird"), IST AM 2026-09-18 ENTSCHIEDEN:** Sie wird eine Ergänzung.
+- **`git stash` STEHT SEIT DEM 2026-09-18 IN DER AUFZÄHLUNG** der Dauerregel "WERKZEUG-REGEL:
+  `sed -i` STRIPPT IN DIESER UMGEBUNG STILL DAS CR" (docs/immer-beachten.md, Absatz "ERGÄNZT
+  2026-09-18 (Phase 11.13)") — als erstes von drei Werkzeugen, die in keiner ihrer
+  Aufzählungen standen.
+- **DIE PRÜFUNG IST IM SELBEN ZUG GESCHÄRFT:** Sie lautet jetzt **CR GESAMT == CRLF-PAARE ==
+  LF GESAMT**, drei Zahlen statt zwei — genau der Mangel, den dieser Eintrag am
+  `git status`-Verfahren benannt hat, und den ein fünfter Fall derselben Phase noch einmal
+  von der anderen Seite gezeigt hat.
 
-**DIE ZWEI DATEIEN, DIE ES BETRIFFT, SIND BEKANNT** (`git ls-files --eol`: `i/lf w/crlf`):
-`src/components/PublishView.tsx` und `src/app/projects/publish.test.ts`. **Im weiteren Verlauf
-der Scheibe ist kein `git stash` mehr benutzt worden.**
-
-**KEIN EIGENER TRIGGER AUSSER DIESEM: die nächste Runde, die eine Vorher-Zahl über einen
-`git stash`-Rundlauf erhebt** — oder die entscheidet, ob daraus eine Ergänzung der Dauerregel
-wird. **Das ist eine Frage des Phasenendes; hier wird sie nicht entschieden.**
-
-PROVENIENZ: der Vorgang GEMESSEN am eigenen Lauf (CC, 2026-09-18); der Wortlaut der
-Dauerregel GELESEN in docs/immer-beachten.md (CC, 2026-09-18).
+**WAS ALS FAKTUM BESTEHEN BLEIBT:** Die zwei betroffenen Dateien sind bekannt
+(`git ls-files --eol`: `i/lf w/crlf`) — `src/components/PublishView.tsx` und
+`src/app/projects/publish.test.ts`.
 
 ### P11.13-8 — AUF EINER SEITE OHNE VIEWPORT-TAG IST DER DIALOG AUF MOBIL UNLESBAR KLEIN
 

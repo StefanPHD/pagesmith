@@ -4976,103 +4976,52 @@ PROVENIENZ: die 4 339 GELESEN an VERMERK 6 (CC, 2026-09-16); die 4 346 und die d
 übereinstimmenden Werte GEMESSEN in der Bau-Runde (CC, 2026-09-16). Dass die Ursache in der
 Fixture liegt, ist eine ABLEITUNG aus der Übereinstimmung der übrigen Werte.
 
-**11.5f — DIE SPRACHE DES EINWILLIGUNGS-DIALOGS. GEHOBEN WIRD DIE SACHE, NICHT DIE NUMMER**
-(OWNER-ENTSCHEIDUNG 2026-09-16). **Die Nummer 11.5f steht ausschliesslich in der Standdatei**
-— GEMESSEN am Repo (CC, 2026-09-16): drei Vorkommen dort, KEINES in docs/roadmap.md, keines
-in CLAUDE.md, keines unter `src/`. **Es gibt keine Roadmap-Zeile 11.5f**, und die Nummer
-wandert mit der Standdatei ins Archiv.
+**11.5f — DIE SPRACHE DES EINWILLIGUNGS-DIALOGS.**
 
-- **"SPRACHE" IST DER EINZIGE NICHT GEBAUTE PUNKT DER SECHSGLIEDRIGEN UMFANGS-AUFZÄHLUNG DER
-  ROADMAP-ZEILE 11.5** (GELESEN an docs/roadmap.md, CC, 2026-09-16): "Granularität, Ablehnen
-  so einfach wie Zustimmen, Widerruf, Speicherung der Entscheidung, Darstellung auf fremden
-  Seiten, Sprache." **FÜNF VON SECHS SIND GEBAUT** — Granularität in 11.5e-1 (zwei Gruppen),
-  Ablehnen gleichwertig in 11.5d (gleichrangige Knöpfe, bindende Entscheidung (12)), Widerruf
-  in 11.5e-2, Speicherung in 11.5b, Darstellung auf fremden Seiten in 11.5d und 11.5d-2 (je
-  live an zwei realen Kundenseiten belegt).
-- **DIE MENGE, DIE EINE SPÄTERE SCHEIBE ANFASSEN MÜSSTE — ELF SICHTBARE TEXTE DES
-  AUSGELIEFERTEN TEXTES, ALLE ALS KONSTANTE, KEINER EINGEBAUT** (zehn GEMESSEN am Repo, CC,
-  2026-09-16; der elfte GEMESSEN CC, 2026-09-18 — s. die Nachzugs-Zeile am Ende dieses
-  Eintrags):
-  · `CONSENT_TEXT` (`src/lib/tracking/consent-choice.ts`) — der Sachtext;
-  · `CONSENT_ACCEPT_LABEL` (ebenda) — "Alle akzeptieren";
-  · `CONSENT_SAVE_LABEL` (ebenda) — "Auswahl speichern";
-  · `CONSENT_REJECT_LABEL` (ebenda) — "Ablehnen";
-  · `CONSENT_WAY_LABEL` (ebenda) — "Einstellungen", der Weg zu den Gruppen; **er ist erst mit
-    der Scheibe 11.13a am 2026-09-17 entstanden und stand deshalb nicht in der Messung vom
-    2026-09-16**;
-  · `CONSENT_GROUPS_LABEL` (ebenda) — "Bereiche", zugänglicher Name, kein sichtbarer Text;
-  · `CONSENT_GROUP_MEASURE_LABEL` (ebenda) — "Messung";
-  · `CONSENT_GROUP_ADS_LABEL` (ebenda) — "Werbung";
-  · `CONSENT_BAR_REGION_LABEL` (`src/lib/tracking/consent-bar.ts`) — "Einwilligung";
-  · `CONSENT_MODAL_DIALOG_LABEL` (`src/lib/tracking/consent-modal.ts`) — "Einwilligung";
-  · `CONSENT_REVOKE_WARNING` (`src/lib/tracking/consent-revoke.ts`) — die Konsolen-Warnung G6.
-  **DASS ALLE ELF KONSTANTEN SIND, IST DER GÜNSTIGE TEIL DER AUSGANGSLAGE:** Eine spätere
-  Scheibe fände elf benannte Stellen und keinen eingebauten Text. **SIEBEN DER ELF KONSTANTEN
-  TRAGEN EINE OWNER-FREIGABE, UND SIE VERTEILEN SICH AUF SECHS FREIGABE-POSTEN** (F1 bis F3
-  der Scheibe 11.5e-1, G6 der Scheibe 11.5e-2, der Sachtext und "Ablehnen" aus 11.5d) — **F1
-  DECKT ZWEI Konstanten**, "Messung" und "Werbung", und deshalb gehen Posten- und
-  Konstanten-Zählung auseinander. Wer sie ändert, braucht eine neue Freigabe; L5, L13, M5 und
-  W-Tests halten sie wörtlich. **OHNE FREIGABE BLIEBEN VIER:** `CONSENT_ACCEPT_LABEL`,
-  `CONSENT_WAY_LABEL`, `CONSENT_BAR_REGION_LABEL` und `CONSENT_MODAL_DIALOG_LABEL`.
-- **KEIN BAUSTEIN LIEST DIE SPRACHE DER KUNDENSEITE, UND NICHTS IM PRODUKT ZEIGT EINE
-  ABWEICHUNG AN — NICHT-TREFFER MIT BENANNTER ACHSE** (GEMESSEN am Repo, CC, 2026-09-16):
-  Achse `lang|locale|i18n|navigator\.language|documentElement\.lang|hreflang|sprache|übersetz|translat`,
-  case-insensitiv, über die dreizehn Erzeuger des ausgelieferten Textes. **Kein Treffer** —
-  die wenigen Fundstellen sind Wortbestandteile in Kommentaren ("solange", "verlangt",
-  "gelangen", "wochenlang"). POSITIVKONTROLLE im selben Lauf: dieselbe Achse trifft
-  `<html lang="de">` in `src/lib/hosting/blocked-page.ts` (unsere eigene 451-Seite) und
-  `lang="en"` in `src/app/layout.tsx` (die Anwendung selbst). **Die zehn Texte gehen also
-  unverändert auf jede Seite, gleich welcher Sprache — und weder Betreiber noch Besucher
-  bekommen einen Hinweis darauf.**
-- **OFFEN UND HIER NICHT ENTSCHIEDEN:** ob die FÜNF BETREIBER-WORTLAUTE des Abschnitts
-  "Widerruf" in `src/components/PublishView.tsx` (G1 bis G5, Owner-Freigaben 2026-09-16) und
-  die Texte des Einwilligungs-Abschnitts derselben Datei dazugehören. **Das ist
-  App-Oberfläche, nicht ausgelieferter Text** — eine andere Menge mit einem anderen Leser
-  (dem Betreiber, nicht dem Besucher) und möglicherweise einem anderen Trigger. KEINE
-  EMPFEHLUNG.
-- **WARUM BACKLOG UND NICHT OFFENER PUNKT:** **Es bricht nichts; ein MERKMAL FEHLT.** Der
-  Dialog funktioniert auf einer englischsprachigen Seite genauso — er steht nur auf Deutsch
-  da. Und **der Trigger meldet sich selbst**: Der erste Betreiber mit einem zweiten
-  Sprachraum sieht es beim ersten Blick auf seine eigene Seite. Ein Posten unter den offenen
-  Punkten setzte voraus, dass es SONST still kaputtginge — hier geht nichts kaputt und nichts
-  ist still.
-  **DAS GEGENARGUMENT STEHT DANEBEN UND WIRD NICHT KLEINGEREDET:** Ein Besucher, der den Text
-  nicht versteht, klickt eher "Ablehnen". Der Betreiber sieht weniger Conversions und sucht
-  die Ursache **im Tracking** — also am falschen Ende; das wäre sehr wohl still. **DAS IST
-  UNGEMESSEN**, und zwar in beide Richtungen: Weder ist erhoben, wie ein fremdsprachiger
-  Besucher auf den Dialog reagiert, noch, wie oft der Fall eintritt. **FINDET SICH EIN BELEG,
-  KIPPT DIE ZUORDNUNG** — dann gehört der Punkt zu den offenen Punkten, mit dem Trigger
-  "der erste Betreiber mit fremdsprachigem Traffic".
-- **DIE BINDENDE ENTSCHEIDUNG (12) DER PHASE TERMINIERTE 11.5f AUF "erst, wenn ein zweiter
-  Sprachraum gefordert ist"** und hielt zugleich fest, was daraus für den Phasenabschluss
-  folgt: Das Kriterium für `[x]` in CLAUDE.md lautet "EINE PHASE GEHT AUF [x], WENN KEIN CODE
-  MEHR ZU SCHREIBEN IST. EXTERNE ABHÄNGIGKEITEN HALTEN SIE NICHT OFFEN". **Kommt bis zum
-  Phasenende kein zweiter Sprachraum, wird 11.5f GEHOBEN und hält die Phase nicht offen** —
-  genau das geschieht hier.
-PROVENIENZ: Die Umfangs-Aufzählung und die Terminierung GELESEN an docs/roadmap.md bzw. an
-Entscheidung (12) (CC, 2026-09-16). Die zehn Konstanten, die Abwesenheit einer Roadmap-Zeile
-11.5f und der Sprach-Nicht-Treffer GEMESSEN am Repo (CC, 2026-09-16), je mit benannter Achse
-und Positivkontrolle. Die Zuordnung nach Backlog ist OWNER-ENTSCHEIDUNG 2026-09-16; das
-Gegenargument ist ARCHITEKT-ANGABE 2026-09-16 und ausdrücklich ungemessen.
+**ERLEDIGT AM 2026-09-18 MIT DER SCHEIBE 11.13e. TITEL UND BELEG BLEIBEN, DER VOLLTEXT IST
+GESTRICHEN** (docs/arbeitsweise.md, "Wie ein Satz wieder herausgeht"); er ist unter dem
+Commit `7a6a5f6` vollständig nachzulesen.
 
-**NACHGEZOGEN 2026-09-18 — DIE SACHE IST ALS SCHEIBE 5 AN DIE ROADMAP-ZEILE 11.13 GEZOGEN**
-(OWNER-ENTSCHEIDUNG 2026-09-18; feste Auswahl Deutsch/Englisch, unser Wortlaut mit
-Owner-Freigaben, KEINE Betreiber-Eingabe, NACH Scheibe 4 — docs/roadmap.md, Zeile 11.13,
-Punkt (c) 5, und bindende Entscheidung P11.13-24 der Standdatei): **Dieser Eintrag wird damit
-VERORTET und NICHT erledigt** — seine Messungen sind der Massstab jener Scheibe und gingen mit
-einer Streichung verloren.
+**DER GEGENSTAND, IN EINEM SATZ:** Alle Textplätze des ausgelieferten Einwilligungs-Dialogs
+standen unverändert auf Deutsch, auf jeder Seite und in jeder Sprache, und nichts im Produkt
+zeigte die Abweichung an.
 
-**NACHGEZOGEN 2026-09-18, ZWEITER DES TAGES — DIE ZÄHLUNG IST SACHKORRIGIERT, UND SEIT
-HEUTE SIND ALLE ELF FREIGEGEBEN.** Es sind **ELF** Textplätze, nicht zehn: `CONSENT_WAY_LABEL`
-ist mit der Scheibe 11.13a (Bau-Commit `bb9f045`, 2026-09-17) entstanden, also NACH der Messung
-vom 2026-09-16 (GEMESSEN am Repo, CC, 2026-09-18; VERMERK P11.13-9 der Standdatei, Punkt (a)).
-Und die Freigabe-Zählung nennt **sechs Posten**, deckt aber **sieben Konstanten**, weil F1 zwei
-trägt. **MIT DER OWNER-ENTSCHEIDUNG O6 VOM 2026-09-18 TRAGEN ALLE ELF PLÄTZE EINE FREIGABE, IN
-BEIDEN SPRACHEN** — die drei bisher unfreigegebenen deutschen Wortlaute (an VIER Konstanten)
-sind nachträglich freigegeben, die englischen sind neu: **elf Zellen, zehn verschiedene
-Wortlaute**, weil die zwei zugänglichen Namen denselben tragen; Volltext als bindende
-Entscheidung P11.13-31 der Standdatei. **DIE
-MESSUNGEN DIESES EINTRAGS BLEIBEN DER MASSSTAB** — sie sind hier korrigiert und nicht gestrichen.
+**DER BELEG DER ERLEDIGUNG, vier Stücke:**
+- **BAU-COMMIT `0a2dc7b`** — `feat(consent): Sprache Deutsch/Englisch fuer den
+  Einwilligungs-Dialog (11.13e)`. Der Betreiber wählt je Projekt aus einer FESTEN Auswahl;
+  **alle ELF Textplätze folgen der Wahl.**
+- **DIE ZWEI ZÄHL-DIVERGENZEN DIESES EINTRAGS SIND AUFGELÖST** (GEMESSEN, CC, 2026-09-18):
+  Es sind **ELF** Plätze, nicht zehn — `CONSENT_WAY_LABEL` entstand erst mit der Scheibe
+  11.13a und lag nach der Messung vom 2026-09-16. Und die sechs Freigabe-POSTEN deckten
+  **sieben** Konstanten, weil F1 zwei trägt.
+- **ALLE ELF TRAGEN SEIT DEM 2026-09-18 EINE OWNER-FREIGABE, IN BEIDEN SPRACHEN**
+  (OWNER-ENTSCHEIDUNG O6) — die vier bis dahin unfreigegebenen deutschen Konstanten sind
+  nachträglich freigegeben, die englischen sind neu. **Elf Zellen, zehn verschiedene
+  Wortlaute**, weil die zwei zugänglichen Namen denselben tragen.
+- **LIVE BESTÄTIGT** — englische Leiste, englisches Fenster, englischer Widerruf samt
+  Konsolen-Warnung, `lang = "en"` an `.bar`; OWNER-MESSUNGEN vom 2026-09-18, von CC nicht
+  prüfbar.
+
+**WAS MIT DEM VOLLTEXT NICHT VERLORENGEHT, und der Satz gehört hierher, weil dieser Eintrag
+zweimal ausdrücklich das Gegenteil befürchtet hat ("seine Messungen … gingen mit einer
+Streichung verloren"):** Die Messungen waren der MASSSTAB der Scheibe 11.13e, und die Scheibe
+ist gebaut. Sie stehen vollständig im Archiv der Phase 11.13
+(docs/claude-history/phase-11.13-dialog-anpassung.md) — die elf Konstanten samt ihrem
+Freigabe-Stand in VERMERK P11.13-9, Punkt (a), die Wortlaute beider Sprachen in der bindenden
+Entscheidung P11.13-31, der Nachweis in VERMERK P11.13-10. **Ein Massstab, an dem gemessen
+wurde, ist im Ergebnis aufgehoben; er muss nicht neben ihm stehenbleiben.**
+
+**WAS AUSDRÜCKLICH NICHT ERLEDIGT IST** — es war schon in der alten Fassung ein eigener
+Punkt und bleibt offen: ob die Betreiber-Wortlaute der APP-OBERFLÄCHE (`PublishView.tsx`)
+dazugehören. **Das ist eine andere Menge mit einem anderen Leser** — dem Betreiber, nicht dem
+Besucher. Für die drei Beschriftungen der Sprachwahl ist es am 2026-09-18 entschieden worden
+(sie sind App-Oberfläche und fallen nicht unter P11.13-31); für die übrigen steht es weiter
+offen. **KEINE EMPFEHLUNG.**
+
+PROVENIENZ: Der Bau-Commit, die zwei Zähl-Divergenzen und der Freigabe-Stand vor O6 sind
+GEMESSEN am Repo (CC, 2026-09-18). Die Wortlaute und ihre Freigabe sind OWNER-ENTSCHEIDUNG
+2026-09-18 und am Repo nicht prüfbar — prüfbar ist allein, ob sie zeichengenau in der Datei
+stehen (21/21 byte-genau, GEMESSEN). Die Live-Angaben sind OWNER-MESSUNGEN desselben Tages.
 
 **ZWEI HEBUNGS-KANDIDATEN — ÄNDERUNGSANTRÄGE AN docs/arbeitsweise.md IN WARTESTELLUNG, KEINE
 REGELN.** Sie richten sich an den, der den Prompt oder den Commit-Body schreibt — das ist der
@@ -5238,3 +5187,140 @@ verallgemeinern — wer sie ohne ihn übernimmt, ändert das Verfahren an einer 
 **VOLLZOGEN (dieser Commit) (Antrag B) — in docs/arbeitsweise.md, "Die Standdatei".**
 PROVENIENZ: ARCHITEKT-SETZUNG 2026-09-17 für jene Phase; der Antrag auf Verallgemeinerung
 ARCHITEKT 2026-09-17. Die Kollisionsfreiheit ist GEMESSEN (CC, 2026-09-17).
+
+## Aus Phase 11.13 gehoben (2026-09-18) — sechs Vorrats-Einträge und ein Satz aus den Verdichtungen
+
+**WOHER SIE KOMMEN:** Aus der Standdatei der Phase 11.13 (Betreiber-Anpassung des
+Einwilligungs-Dialogs), beim Phasenende am 2026-09-18. Sie tragen ihre URSPRUNGS-NUMMERN mit
+dem Phasen-Präfix `P11.13-n`; der ungekürzte Wortlaut steht im Archiv der Phase,
+docs/claude-history/phase-11.13-dialog-anpassung.md, Abschnitt "Vorrat — gemeldet, nicht
+gebaut". **DER TEXT HIER IST VERDICHTET UND NICHT ZEICHENGLEICH.**
+**DAS KRITERIUM WAR ZWEITEILIG** — benennbarer Trigger UND "geht sonst still kaputt". Von
+elf Vorrats-Einträgen tragen beides drei (P11.13-1, -4, -6); von ihnen sind zwei als eigene
+offene Punkte gehoben und einer in einen bestehenden eingegangen. VIER sind GESTRICHEN
+(P11.13-1, -4, -5, -7), je mit dem Beleg der Erledigung am Eintrag im Archiv. **SECHS
+stehen hier**, dazu ein Satz, der in keinem Vorrats-Eintrag stand.
+
+- **P11.13-2 — T9 REICHT WENIGER WEIT ALS DER GESTRICHENE W0.** T9 belegt, dass Lade- und
+  Widerruf-Text je Form aus EINEM Aufbau stammen: nach Ersetzen der drei Einsetzwerte sind
+  sie zeichengleich. **ER BELEGT NICHT, DASS DER LADE-ZWEIG GEGENÜBER EINEM FRÜHEREN STAND
+  UNVERÄNDERT IST** — genau das tat W0 über Byte-Zahl und sha256. Die Lücke ist GEMESSEN:
+  Die Mutation Mu9 blieb GRÜN, weil sie eine Anweisung ausserhalb des von T9 verglichenen
+  Ausschnitts traf; erst die geschärfte Mu9b machte T9 rot. **EINE ÄNDERUNG, DIE BEIDE
+  GESTALTEN GLEICHERMASSEN VERSCHIEBT, SIEHT T9 NICHT.**
+  **SEIN TRIGGER IST IN DER SCHEIBE 11.13e EINGETRETEN UND ABGEARBEITET** — der
+  Differenz-Nachweis Q1/T10 hat die Zusicherung geliefert, und die Auflage des Eintrags
+  ("aus der ENTSCHEIDUNG, nicht aus dem Bau") hat dabei getragen. **ER STEHT HIER UND NICHT
+  UNTER DEN OFFENEN PUNKTEN, weil nichts still kaputtgeht:** Wer die Zusicherung erneut
+  braucht, merkt beim Schreiben, dass T9 sie nicht trägt. Die Bauform des Nachweises ist
+  seit dem 2026-09-18 eine Dauerregel (docs/immer-beachten.md, WO EINE BYTE-GLEICHHEIT
+  BEWUSST AUFGEGEBEN WIRD).
+  PROVENIENZ: Mu9 und Mu9b GEMESSEN (CC, 2026-09-17); die Reichweite von T9 ist an seinem
+  Code ABLESBAR.
+
+- **P11.13-3 — DASS `preventScroll` WIRKT, IST LOKAL NICHT MESSBAR.** Die Option ist gesetzt
+  (bindende Entscheidung P11.13-4 der Phase). **OB SIE ETWAS VERHINDERT, WAR IN DER PROBE
+  NICHT ZU ZEIGEN:** Der Host ist `position:fixed`, sein Ziel liegt im sichtbaren Bereich,
+  und ein Browser scrollt dann ohnehin nicht — eine Gegenprobe OHNE die Option ergäbe
+  denselben Wert und unterschiede die zwei Zustände nicht (docs/immer-beachten.md, EINE
+  VORBEDINGUNG, DIE AUCH DER ALTE ZUSTAND ERFÜLLT, IST KEINE VORBEDINGUNG).
+  **WAS VORLIEGT:** `scrollY` blieb über den Klick hinweg unverändert (945 bzw. 1457), und
+  live ist "kein Sprung" beobachtet (OWNER-ANGABE). **BEIDES IST MIT UND OHNE DIE OPTION ZU
+  ERWARTEN.** Die Option bleibt, weil ihr Weglassen eine Zusicherung aufgäbe, die nichts
+  kostet — nicht, weil ihre Wirkung belegt wäre.
+  **TRIGGER: die erste Gestalt, bei der das Fokus-Ziel AUSSERHALB des sichtbaren Bereichs
+  liegen kann** — dann wird die Option unterscheidbar und ist zu messen. Er ist BEOBACHTET:
+  Wer die Gestalt ändert, steht davor.
+  PROVENIENZ: der Aufbau des Hosts GEMESSEN am Code, die zwei `scrollY`-Werte GEMESSEN in
+  der Probe (CC, 2026-09-17); die Nicht-Messbarkeit ist eine ABLEITUNG daraus.
+
+- **P11.13-8 — AUF EINER SEITE OHNE VIEWPORT-TAG IST DER DIALOG AUF MOBIL UNLESBAR KLEIN.**
+  Die Testseite `meta-test-5nlm3e` trägt kein Viewport-Meta-Element; ohne dieses Element legt
+  der mobile Browser eine breite Ersatz-Fläche zugrunde und skaliert die ganze Seite herunter
+  — **der Dialog wird mit ihr klein.** **ES IST KEIN BEFUND ÜBER EINE SCHEIBE UND ÜBER KEINE
+  DARSTELLUNG:** Es trifft jede Seite ohne das Element, jede Form und jedes Thema
+  gleichermassen.
+  **WIR FÜGEN DAS ELEMENT NICHT EIN**, und der Grund ist eine Dauerregel: KEIN BAUSTEIN DES
+  AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN FREMDEN KNOTEN AN. Es in den Kopf der
+  Kundenseite zu schreiben ändert das Layout der GANZEN Seite und wäre für den Betreiber
+  nicht vorhersehbar.
+  **DENKBAR IST EIN HINWEIS BEIM IMPORT** — ein KANDIDAT, KEINE ENTSCHEIDUNG; KEINE
+  EMPFEHLUNG zu Ort, Form oder Ob.
+  **TRIGGER: die nächste Runde, die am Import oder an einer Prüfung der importierten Seite
+  arbeitet.** Er ist BEOBACHTET, und der Betreiber sieht den Zustand beim ersten Blick auf
+  sein eigenes Handy — es geht nichts still kaputt.
+  PROVENIENZ: das Fehlen des Elements ist OWNER-ANGABE mit ARCHITEKT-PRÜFUNG (2026-09-18);
+  die Wirkung auf Mobilgeräten ist eine ABLEITUNG aus dem Verhalten mobiler Browser und in
+  diesem Projekt NICHT gemessen.
+
+- **P11.13-9 — ZWEI BEFUNDE AN DER EDITOR-OBERFLÄCHE DES FARBFELDS.** Beide sind
+  **Editor-Optik, nicht ausgelieferter Text** — sie berühren keine Invariante und keinen
+  Besucher. **(a) DIE KLICKFLÄCHE DES FARBFELDS REICHT ÜBER DIE ZEILE:** Ein Klick neben dem
+  Feld öffnet den Wähler; VERMUTUNG ist ein umschliessendes `label`, am Code NICHT
+  nachgesehen. **(b) DER NATIVE FARBWÄHLER ÖFFNET IN RGB**, der Betreiber denkt in Hex; ob
+  der Startmodus aus der Seite heraus setzbar ist, ist UNGEPRÜFT, und die Vermutung lautet
+  nein. **EIN WEG, DER OHNE DIESE FRAGE AUSKOMMT:** ein zusätzliches Hex-Textfeld neben dem
+  Wähler, durch DASSELBE Format-Tor — es bräuchte keine zweite Prüfstelle und keine zweite
+  Zusicherung. **DAS IST EIN KANDIDAT UND KEINE ENTSCHEIDUNG.**
+  **BEIDES WARTET AUF DIE NEUGESTALTUNG DER OBERFLÄCHE**, die ohnehin ansteht; wer sie
+  fährt, fasst beide Punkte mit an. **TRIGGER: die Neugestaltung der Editor-Oberfläche,
+  spätestens die nächste Runde, die am Farbfeld arbeitet.**
+  PROVENIENZ: beide Beobachtungen sind OWNER-BEFUNDE vom 2026-09-18; die Ursache in (a) und
+  die Nicht-Setzbarkeit in (b) sind VERMUTUNGEN, weder am Code noch am Browser geprüft.
+
+- **P11.13-10 — DER AUSGEKLAPPTE ZUSTAND WIRKT ÜBERLADEN.** OWNER-BEFUND: Nach dem
+  Ausklappen stehen zwei Kästchen und drei Knöpfe zugleich da. **Es ist ein Urteil über die
+  GESTALT, kein Fehler** — die Gestalt ist die zugesagte.
+  **DIE ÄNDERUNG IST NICHT FREI, UND DAS IST DER EIGENTLICHE INHALT:** Die bindende
+  Entscheidung P11.13-1 bindet den ausgeklappten Zustand ausdrücklich an die alte Gestalt
+  ("ausgeklappt nach dem Klick: EXAKT DIE HEUTIGE GESTALT"), weil genau dieser Zustand der
+  bereits gemessene ist. Sie nennt ihre Grenze selbst — sie kippt, sobald der ausgeklappte
+  Zustand **mehr** trägt als heute; **von WENIGER sagt sie nichts**, und eine Wegnahme ist
+  deshalb nicht automatisch gedeckt.
+  **DIE NAHELIEGENDE WEGNAHME IST DIE HEIKELSTE:** Dürfte "Ablehnen" auf der zweiten Ebene
+  entfallen, weil es schon auf der ersten steht? Das ist gegen P11.13-5 und gegen den
+  Guardrail der Roadmap-Zeile 11.13, Punkt (h), abzuwägen — ein "Alle akzeptieren" ohne sein
+  Gegenstück auf derselben Ebene ist genau die Bauform, die der Guardrail ausschliesst.
+  **DAS IST EINE EIGENE ENTSCHEIDUNG UND WIRD HIER NICHT GETROFFEN. KEINE EMPFEHLUNG.**
+  **TRIGGER: die nächste Runde, die die Gestalt des ausgeklappten Zustands anfasst.**
+  PROVENIENZ: der Befund ist OWNER-ANGABE vom 2026-09-18; die Bindung und ihre Grenze sind
+  GELESEN an Entscheidung P11.13-1 (CC, 2026-09-18), der Guardrail an docs/roadmap.md.
+
+- **P11.13-11 — DER KONTRAST-HINWEIS BLEIBT NACH DEM SPEICHERN STEHEN.** OWNER-BEFUND: Wer
+  ein Paar unter der Schwelle speichert, sieht den Hinweis danach weiter.
+  **ARCHITEKT-EINORDNUNG: DAS IST KORREKT UND KEIN FEHLER.** Der Hinweis beschreibt keinen
+  abgeschlossenen Versuch, sondern einen ZUSTAND — und dessen Bedingung ist nach dem
+  Speichern noch wahr. Die Dauerregel WELCHE REGEL WANN GREIFT nennt genau dieses Kriterium.
+  **Ein Hinweis, der beim Speichern verschwände, verschwände beim Hinschauen statt beim
+  Lösen.**
+  **DIE RICHTUNG FÜR SPÄTER BETRIFFT DEN TON, NICHT DAS BLEIBEN:** ruhiger, **kein Rot** —
+  Rot liest sich als Fehler und als Sperre, **und der Hinweis sperrt nichts** (bindende
+  Entscheidung P11.13-16). **AUSDRÜCKLICH NICHT ENTSCHIEDEN:** welche Farbe, welche Form, ob
+  überhaupt etwas geändert wird. KEINE EMPFEHLUNG.
+  **TRIGGER: die nächste Runde, die am Kontrast-Hinweis oder an der Farbgebung der
+  Editor-Hinweise arbeitet.**
+  PROVENIENZ: der Befund ist OWNER-ANGABE vom 2026-09-18; die Einordnung ist
+  ARCHITEKT-ENTSCHEIDUNG desselben Tages.
+
+- **VIERUNDZWANZIG ZEIGER AUS `src/` AUF Z-, S- UND Q-INVARIANTEN HABEN MIT DEN
+  VERDICHTUNGEN IHREN VOLLTEXT VERLOREN** (kein Vorrats-Eintrag; der Satz stand dreimal
+  gleichlautend in den Verdichtungen der Scheiben 11.13c, 11.13d und 11.13e, je als "WAS
+  DAMIT ZU TUN IST, IST HIER NICHT ENTSCHIEDEN … KEINE EMPFEHLUNG").
+  **DIE ZAHLEN, GEMESSEN am Repo (CC, 2026-09-18, Achse `Invariante [ZSQ][0-9]`, mit
+  Positivkontrolle):** SECHS `Z`-Zitate (Scheibe 11.13c), ACHT `S`-Zitate (11.13d), ZEHN
+  `Q`-Zitate (11.13e) — 24 Vorkommen in 14 Dateien unter `src/`.
+  **DIE NUMMERN BLEIBEN AUFLÖSBAR:** Die Titel-Listen der drei Verdichtungen nennen sie, und
+  jene Listen reisen mit dem Archiv der Phase. **FAST ALLE ZITATE STEHEN AUSSERDEM IM SELBEN
+  SATZ MIT EINER `P11.13-`-NUMMER, EINEM SCHEIBENNAMEN ODER DEM WORT "Standdatei"** und sind
+  damit phasen-auflösbar (GELESEN, CC, 2026-09-18); VIER stehen ohne solchen Nachbarn
+  (`settings.ts` Z1 und Q6, `consent-choice.test.ts` Z1, `consent-choice.ts` Z1).
+  **WARUM BACKLOG UND NICHT OFFENER PUNKT:** Es geht nichts kaputt — ein Zeiger, dessen
+  Volltext im Archiv steht, zwingt zum Aufschlagen, er führt nicht in die Irre. Und der
+  Eintrag **verweigert einen Trigger ausdrücklich im eigenen Text**; ein erfundener liesse
+  ihn als terminiert aussehen.
+  **WAS DAMIT ZU TUN IST, BLEIBT UNENTSCHIEDEN:** Ein Zeiger aus `src/` heraus verlangt
+  einen CODE-Commit (docs/immer-beachten.md, EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT,
+  ALS HÄTTE SIE KEINE). **KEINE EMPFEHLUNG.**
+  PROVENIENZ: die drei Zählungen GEMESSEN am Repo (CC, 2026-09-18), je in der Verdichtung
+  ihrer Scheibe protokolliert; die Nachbarschafts-Prüfung GELESEN am Dateitext (CC,
+  2026-09-18).

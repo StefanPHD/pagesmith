@@ -198,6 +198,12 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB, STATT STILL AUF EINEN ...
 - `grep` TAUGT IN DIESER UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL — UND ...
 - EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN ...
+- EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT MISST IM GELADENEN DOKUMENT, NIE ...
+- EIN ESCAPE, DAS IM QUELLTEXT STEHEN SOLL, WIRD AUF DEM SCHREIBWEG IN SEIN ...
+- JEDER BETREIBER-WERT, DER IN SCRIPT-ROHTEXT GEHT, LÄUFT ÜBER DEN ...
+- EIN OPAKER MARKEN-TYP HAT GENAU EINE ZUSICHERUNG IM GANZEN REPO, UND SIE ...
+- DAS HARTE KRITERIUM DES EINWILLIGUNGS-DIALOGS IST EINE DEFINITION, KEIN ...
+- WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN DIFFERENZ-NACHWEIS ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -1145,6 +1151,42 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
   Bytes); und grep meldet für eine Datei mit einem NUL-Byte "Binary file … matches" STATT
   der Trefferzeilen (src/lib/mappings.ts, gemessen 2026-08-13).
   Herleitung: docs/claude-history/phase-10-workspace.md.
+  ERGÄNZT 2026-09-18 (Phase 11.13) — DIE AUFZÄHLUNG WAR UNVOLLSTÄNDIG, UND DIE
+  VORGESCHRIEBENE PRÜFUNG WAR BLIND. Der Reichweiten-Satz darüber bleibt wörtlich; was
+  hinzukommt, sind DREI Werkzeuge und EINE schärfere Prüfung.
+  DREI WERKZEUGE, DIE IN KEINER AUFZÄHLUNG DIESER REGEL STANDEN und je einen gemessenen
+  Fall haben (alle GEMESSEN, CC, 2026-09-18):
+  · `git stash push` / `git stash pop` — der Rundlauf gab `src/components/PublishView.tsx`
+    (Arbeitsbaum `w/crlf`, Index `eol=lf`) mit CR = 0 zurück; von sechzehn Dateien meldete
+    `sha256sum -c` EINE als FAILED.
+  · DAS EDITIER-WERKZEUG UND JEDER HEREDOC-PFAD — beim Einfügen in dieselbe Datei
+    entstanden ein `\r\r\n` und ein einzelnes `\n`. Folge: `git ls-files --eol` meldete
+    `w/-text`, git hielt die Datei für BINÄR, und `git diff --stat` zeigte 1 494 geänderte
+    Zeilen statt 83.
+  · EINE ERSETZUNG ÜBER EINE BEREITS CRLF-TRAGENDE ZEICHENKETTE — `.replace("\n","\r\n")`
+    erzeugte NEUNUNDDREISSIG doppelte CRs.
+  IN JEDEM DIESER FÄLLE WAREN `tsc`, `lint`, `vitest` UND `build` DURCHGEHEND GRÜN.
+  DIE VORGESCHRIEBENE PRÜFUNG DIESER REGEL — `git status` plus der Ausschluss leerer Diffs —
+  HAT IN ZWEI DER DREI FÄLLE NICHTS GEMELDET, weil der Diff gerade NICHT leer war, sondern
+  sehr gross.
+  DIE PRÜFUNG LAUTET DESHALB AB JETZT: DREI ZAHLEN, NICHT ZWEI — CR GESAMT == CRLF-PAARE ==
+  LF GESAMT. Eine Gleichheit von zweien genügt NICHT, und das ist gemessen und nicht
+  erwogen: Bei den 39 doppelten CRs stand "CR == LF" auf 845 == 845 und sah in Ordnung aus,
+  weil jene Zählung CRLF-PAARE zählt und jedes `\r\r\n` genau EIN Paar liefert — das
+  zusätzliche CR ist für sie unsichtbar. Gefunden hat es erst der Vergleich CR GESAMT (884)
+  gegen CRLF-PAARE (845). Endzustand nach der Reparatur: CR = CRLF = LF = 849.
+  DAS INSTRUMENT IST `tr` BZW. `od`, NIE `grep` — in keiner Variante, für das CR wie für das
+  NUL (eigene Regeln weiter unten: DIE BYTE-KONTROLLE BRAUCHT EIN BENANNTES INSTRUMENT und
+  `grep` TAUGT IN DIESER UMGEBUNG WEDER FÜR DAS CR NOCH FÜR DAS NUL). Bei einer NEUEN Datei
+  läuft die Kontrolle am COMMITTETEN OBJEKT (`git show HEAD:<pfad>`), nicht am Arbeitsbaum.
+  DIE BEDINGUNG DES ENTFALLENS DIESER ERGÄNZUNG IST DIESELBE WIE DIE DER REGEL: Sie
+  entfällt, sobald ein GATE CR-ohne-LF, LF-ohne-CR und NUL im Diff rot macht — eine
+  Lint-Regel, ein CI-Schritt, ein pre-commit-Hook. Ein solches Gate gibt es nicht (GEMESSEN
+  an dieser Phase: alle vier Gates blieben in jedem der Fälle grün).
+  PROVENIENZ: alle sechs Befunde GEMESSEN am eigenen Lauf (CC, 2026-09-18), Einzelheiten im
+  Archiv der Phase 11.13 (VERMERK P11.13-8, Punkt (f), VERMERK P11.13-10, Punkt (f), und
+  Vorrat P11.13-7). Dass die Escape-Umdeutung unter den Wortlaut dieser Regel nicht fällt,
+  ist eine ABLEITUNG aus ihm — sie steht deshalb als eigene Regel.
 - NAHT-HYGIENE (7c-2, aktiv): 7c-2 koppelt Domain-/Routing-Logik NICHT an Tracking-/
   Lead-Logik. Die Andock-Punkte für spätere Module existieren BEREITS (neutraler
   /api/e-Trichter, projekt-scoped Settings); "nahtloses Andocken" folgt aus sauberen
@@ -2615,3 +2657,230 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   `overflow` in L12 und die frühere Fassung der Invariante GELESEN am Repo (CC, 2026-09-15);
   der Stand von L12 und M12 GEMESSEN (CC, 2026-09-15 und 2026-09-16). Herleitung: das Archiv
   der Phase 11.5, Hebungs-Kandidat (2).
+- EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT MISST IM GELADENEN DOKUMENT, NIE AN EINER
+  GESPEICHERTEN DATEI (Phase 11.13, gehoben 2026-09-18 aus Hebungs-Kandidat (1)): Wer live
+  belegen will, WAS eine Seite tatsächlich ausliefert, misst im laufenden Dokument — nicht an
+  einer Datei, die ein Browser-Befehl daneben ablegt. Eine gespeicherte Datei ist ein ZWEITES
+  ARTEFAKT MIT EIGENEM WEG; sie kann aus einem Zwischenspeicher stammen, und SIE SAGT DAS
+  NICHT.
+  DER BELEG: "Speichern unter" in Chrome lieferte ZEHN Dateien für ZEHN verschiedene Zustände
+  — alle 14 385 Bytes, alle sha256 `2de7db6db78f001a…`, alle OHNE jeden Dialog-Baustein
+  (`__ps_clb`, `attachShadow`, `pagesmithConsentRevoke` je 0 Treffer), während der Dialog
+  eingestellt, veröffentlicht und auf dem Bildschirm SICHTBAR war.
+  WAS ES TEUER MACHT: DER FEHLSCHLAG IST STILL UND SIEHT WIE EIN BEFUND AUS. Die Dateien
+  waren lesbar, gleich gross und untereinander vergleichbar — der Vorher/Nachher-Vergleich
+  sah aus wie ein Beleg und belegte NICHTS. Gefangen hat es allein die Positivkontrolle
+  (`__ps_pve` und `pagesmith-consent` je 1 Treffer bei 0 Treffern auf jeden Dialog-Baustein);
+  ohne sie wäre "der Dialog steht nicht im ausgelieferten Text" als Befund protokolliert
+  worden.
+  WAS TRÄGT — DAS INSTRUMENT IM WORTLAUT, weil eine spätere Runde die Messung sonst nicht
+  wiederholen kann: In der Konsole der Live-Seite über `document.scripts` iterieren und je
+  Element Byte-Länge und sha256 bilden. VERGLEICHSGRÖSSE IST DIE TAG-FORM
+  (`<script id="…">` + Rumpf + `</script>`), nicht der blosse Rumpf — die Vorher-Werte
+  werden an derselben Form erhoben, sonst vergleicht man zwei verschiedene Grössen.
+  Der ausgeschriebene Einzeiler steht im Archiv der Phase 11.13, VERMERK P11.13-6, Punkt (c),
+  und wird hier NICHT verdoppelt.
+  ABGRENZUNG ZU "EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND":
+  Jene Regel verlangt den WERKZEUGWECHSEL INNERHALB DERSELBEN QUELLE — `textContent` statt
+  `innerText`, der angeklickte statt des vorausgewählten Reiters. HIER WAR DIE QUELLE SELBST
+  EINE FALSCHE: kein Werkzeugwechsel an der gespeicherten Datei hätte den fehlenden Text
+  zutage gefördert. Deshalb steht sie eigenständig und nicht als Absatz dort.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald der ausgelieferte Text einer Live-Seite aus einer Quelle abrufbar ist, die
+  nachweislich keinen Zwischenspeicher trägt — etwa ein serverseitiger Abruf des
+  gespeicherten Dokuments mit Vergleich gegen die Auslieferung. Einen solchen Weg gibt es
+  in diesem Projekt nicht.
+  PROVENIENZ: die zehn Dateien, ihre Grösse, ihr sha256 und die Trefferzahlen sind eine
+  ARCHITEKT-PRÜFUNG vom 2026-09-18 an den hochgeladenen Dateien; dass der Dialog dabei
+  sichtbar war und dass die Zwischenspeicher-Erfahrung wiederkehrend ist, sind
+  OWNER-ANGABEN desselben Tages — CC kann beides nicht prüfen. DIE URSACHE DES VERSAGENS
+  IST UNGEMESSEN.
+- EIN ESCAPE, DAS IM QUELLTEXT STEHEN SOLL, WIRD AUF DEM SCHREIBWEG IN SEIN ZEICHEN
+  VERWANDELT — UND DER DIFF SIEHT UNAUFFÄLLIG AUS (Phase 11.13, gehoben 2026-09-18 aus
+  Hebungs-Kandidat (2)): Wer ein Unicode-Escape hinschreibt, bekommt auf diesem Schreibweg
+  mit dem Zeichen zurück, was er als Escape gemeint hat. Es wird KEINE ganze Datei neu
+  geschrieben und KEIN Zeilenende gedreht — es wird EINE Zeichenfolge im INHALT durch eine
+  andere ersetzt, und genau deshalb greift die Werkzeug-Regel über das CR hier nicht: Ihr
+  Reichweiten-Satz fragt "schreibt es die ganze Datei?", und die Antwort ist nein.
+  DIE ZWEI GEMESSENEN FÄLLE (CC, 2026-09-18):
+  · DOKU-TEXT, FÜNFMAL: Ein Escape für das Kleiner-Zeichen, in einem Code-Span geschrieben,
+    stand danach als ZEICHEN da — dreimal im Rumpf einer Entscheidung, zweimal in einem
+    Vermerk. Sätze der Form "danach jedes < als <" waren die Folge. KEIN GATE LIEST
+    DOKU-TEXT.
+  · TESTDATEI: In `src/lib/script-embed.test.ts` sind die Escapes für U+2028, U+2029 und
+    U+1F600 still in ihre Zeichen verwandelt worden — danach stand ein ROHER ZEILENTRENNER
+    IN EINEM STRING-LITERAL, also genau das unsichtbare Zeichen, das das Tor jener Scheibe
+    verbietet. `tsc`, `lint`, `vitest` und `build` waren dabei GRÜN. BEI U+0000 WÄRE DAS
+    ERGEBNIS EIN NUL-BYTE IN EINER QUELLDATEI GEWESEN.
+  WAS TRÄGT, ZWEI WEGE, je nachdem was gemeint ist:
+  · SOLL DAS ZEICHEN NICHT IM QUELLTEXT STEHEN, wird es im Code GEBAUT —
+    `String.fromCharCode`, `String.fromCodePoint`. Reines ASCII, an dem kein Werkzeug etwas
+    umdeuten kann, weil es nichts zu deuten gibt. Dasselbe Mittel nennt die Regel EIN
+    NACHWEIS AN EINER NEUEN DATEI IST BLIND für das NUL-Byte; hier ist es dieselbe Antwort
+    auf eine breitere Frage. DESHALB STEHEN VERBOTENE CODEPUNKTE IN `settings.ts` ALS
+    ZAHLEN.
+  · SOLL DAS ESCAPE SELBST IM TEXT STEHEN, wird die QUELLFORM MIT DOPPELTEM BACKSLASH
+    geschrieben. GEMESSEN im selben Lauf: eine Zählung fand SECHS Vorkommen, ALLE in der
+    Form mit doppeltem Backslash und KEIN EINZIGES in der geschriebenen.
+  DIE PRÜFUNG NACH DEM SCHREIBEN IST EINE ZÄHLUNG DER VERBLIEBENEN ESCAPE-VORKOMMEN, nicht
+  ein Blick in den Diff: Der Diff ist bei dieser Fehlerklasse unauffällig, weil der
+  veränderte Text als INHALT zählt.
+  ABGRENZUNG ZU "WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG STILL DAS CR": Dort
+  verändert ein Werkzeug Zeichen, die NIEMAND ANGEFASST HAT, beim Neuschreiben der ganzen
+  Datei. Hier wird genau die Stelle verändert, die man geschrieben hat — sie kommt nur
+  anders an. Dieselbe Stille, ein anderer Mechanismus, ein anderes Prüfmittel.
+  EIN SIEBTER BEFUND DERSELBEN KLASSE, AM WERKZEUG STATT AM TEXT: PYTHON ÜBER `stdin`
+  DEKODIERT AUF DIESER MASCHINE NICHT ALS UTF-8. Ein Suchmuster mit "ö"/"ä" traf nie,
+  `count` lieferte 0, obwohl der Text dastand; `PYTHONUTF8=1` HAT NICHT GEHOLFEN. Getragen
+  hat erst ein ASCII-ONLY-ANKER. GEMESSEN (CC, 2026-09-18), dreimal hintereinander. ER
+  VERÄNDERT KEINE DATEI — er lässt eine Ersetzung stillschweigend AUSFALLEN, und das Skript
+  meldet Erfolg.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald ein Gate rohe Steuer- und Sonderzeichen in Quell- und Doku-Dateien rot macht. Ein
+  solches gibt es nicht.
+  PROVENIENZ: beide Fälle und der siebte Befund GEMESSEN am eigenen Lauf (CC, 2026-09-18);
+  Einzelheiten im Archiv der Phase 11.13, VERMERK P11.13-8, Punkt (f).
+- JEDER BETREIBER-WERT, DER IN SCRIPT-ROHTEXT GEHT, LÄUFT ÜBER DEN EINBETTUNGS-HELFER —
+  `JSON.stringify` ALLEIN MASKIERT KEIN `<` (Phase 11.13, gehoben 2026-09-18 aus der
+  bindenden Entscheidung P11.13-25): Der Helfer ist `embedInScript`
+  (`src/lib/script-embed.ts`): `JSON.stringify`, danach jedes Kleiner-Zeichen als
+  Unicode-Escape — dieselbe Ersetzung, die `generateFunctional` seit jeher auf die
+  Mapping-Tabelle anwendet. ER NIMMT EIN ARGUMENT UND TRÄGT KEINEN SCHALTER; ein Schalter
+  "mit/ohne Maskierung" wäre die zweite Tür neben dem Tor.
+  DER GRUND IST GEMESSEN, NICHT VORSORGLICH: Ein `</script>` in einem eingebetteten Wert
+  VERLÄSST DEN BLOCK, und mit einer anführungszeichenfreien Nutzlast FÜHRT FREMDER CODE AUS.
+  `<!--<script>` verschluckt zusätzlich das NACHFOLGENDE Script-Element, OHNE EINEN EINZIGEN
+  FEHLER ZU ERZEUGEN — null `pageerror`, null Konsolenfehler, kein sichtbarer Schaden; es
+  fehlt nur ein Baustein. Weder `JSON.stringify` noch der Serialisierer maskieren das
+  Kleiner-Zeichen, beides gemessen, je mit Gegenprobe.
+  DIE ANFÜHRUNGSZEICHEN-BEOBACHTUNG IST KEIN SCHUTZ, und sie gehört zwingend dazu: Die
+  Fassung MIT Anführungszeichen bricht ebenfalls aus — das `<img>` existiert, der Block ist
+  geschlossen, der eigene Baustein läuft nicht —, nur zündet der Handler nicht, weil
+  `JSON.stringify` die inneren Anführungszeichen maskiert hat. WER NUR DIESE NUTZLAST FÄHRT,
+  PROTOKOLLIERT EINE ENTWARNUNG, DIE ES NICHT GIBT.
+  DIE GELTUNG HAT DREI STUFEN, UND SIE SIND NICHT DASSELBE:
+  (1) PFLICHT — jeder BETREIBER-WERT in Script-Rohtext. Das ist der harte Kern und der
+      einzige Teil mit einer Sicherheitsachse.
+  (2) KONVENTION — in den Erzeugern des ausgelieferten Dialog-Textes läuft JEDE Einbettung
+      über ihn, auch eine Repo-Konstante. Der Grund ist nicht Sicherheit, sondern Lesbarkeit
+      am Ort der Handlung: Zwei Bauformen nebeneinander zwängen die nächste Runde, bei JEDER
+      Einsetzstelle ohne Kriterium zu entscheiden, welche gilt. SIE IST EINE KONVENTION UND
+      KEIN GATE und steht im Docblock des Helfers.
+  (3) FREIGESTELLT — Repo-Konstanten und server- oder env-vergebene Werte an anderer Stelle
+      dürfen roh bleiben. IHRE ZUSAGE "ENTHÄLT KEIN `<`" IST EINE AUSSAGE ÜBER DEN WERT,
+      NICHT ÜBER SEINE BEHANDLUNG. WER EINEN VON IHNEN IN EINE BETREIBER-EINGABE VERWANDELT,
+      HEBT DIE FREISTELLUNG DAMIT AUF — nicht später, sondern in derselben Runde.
+  DER WÄCHTER SITZT AM ERGEBNIS, NICHT AM QUELLTEXT: Die feindliche Nutzlast geht durch die
+  ECHTE Einsetzstelle, geprüft wird der ERZEUGTE Text. Ein Quelltext-Wächter, der
+  `JSON.stringify` in jenen Dateien verbietet, träfe die PROSA IN DEN KOPFKOMMENTAREN
+  (gemessen: drei Dateien nennen den Namen im erklärenden Text) und zwänge eine
+  Umformulierung genau der Kommentare, die die Bauform erklären — die Fehlerklasse EIN
+  WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN.
+  WAS DER ERGEBNIS-WÄCHTER NICHT LEISTET, UND DER SATZ MUSS MIT: ER DECKT NUR STELLEN, DIE
+  EIN TEST TATSÄCHLICH BEFÜLLT. EINE NEUE EINBETTUNG IST BY DEFAULT UNGEDECKT — dieselbe
+  Figur wie bei den namentlichen IDOR-Wächtern und bei `settingsEqual` als Allowlist.
+  DIE WICHTIGSTE GRENZE: DAS ESCAPE TRÄGT NUR IM SCRIPT-ROHTEXT. In einem HTML-Attribut, in
+  einem HTML-Textknoten oder in einer URL ist es KEINE MASKIERUNG, SONDERN SECHS HARMLOSE
+  ZEICHEN. Gelangt ein eingebetteter Wert in einen dieser Kontexte, braucht JENER Kontext
+  seine EIGENE Maskierung, und der Helfer ist dort FALSCH, nicht bloss unzureichend.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald ein Gate den AUFRUFGRAPHEN befragen kann und sieht, dass ein Wert ohne den Helfer
+  in einen Template-String geht. Für `JSON.stringify` gibt es das nicht: Es ist ein Global
+  und kein Import, es gibt also keinen Graphen zu befragen.
+  PROVENIENZ: der Ausbruch, das stille Verschlucken, die Serialisierer-Querprobe und die
+  Prosa-Erwähnungen sind GEMESSEN (CC, 2026-09-18; Archiv der Phase 11.13, VERMERK
+  P11.13-7). DASS DAS ESCAPE AUSSERHALB VON SCRIPT-ROHTEXT NICHT TRÄGT, IST EINE EIGENSCHAFT
+  DER FORMATE UND IN DIESEM PROJEKT NICHT GEMESSEN.
+- EIN OPAKER MARKEN-TYP HAT GENAU EINE ZUSICHERUNG IM GANZEN REPO, UND SIE STEHT UNMITTELBAR
+  HINTER DER PRÜFUNG (Phase 11.13, gehoben 2026-09-18 aus der bindenden Entscheidung
+  P11.13-17): Wo ein geprüfter Wert durch einen opaken Typ getragen wird — eine Zeichenkette
+  mit einer Marke, die ausserhalb ihrer Erzeugungsstelle nicht herstellbar ist —, gibt es
+  GENAU EINE Stelle, die den Typ erzeugt. Sie liegt im LESER, unmittelbar hinter dem Test.
+  DIE ZAHL EINS IST DIE ZUSAGE, NICHT DIE OPAZITÄT. Ein opaker Typ mit zwei
+  Erzeugungsstellen ist kein Tor, sondern ein Tor mit einer Tür daneben.
+  WAS BEI EINEM VERSTOSS GESCHIEHT, UND DESHALB IST ES EINE REGEL: Wer den Typ an einer
+  zweiten Stelle erzeugt — durch eine weitere Zusicherung, eine Hilfsfunktion "für Tests",
+  einen Konstruktor —, HEBT DAS FORMAT-TOR AUF, OHNE DASS EIN GATE ROT WIRD. Der Compiler
+  ist danach zufrieden, und die Prüfung findet nicht mehr statt.
+  GEFANGEN WIRD DAS ALLEIN VON EINEM WÄCHTER ÜBER DEN QUELLTEXT, und der sieht ZEICHEN,
+  NICHT BEDEUTUNG — er muss streng irren und seine Grenze an sich selbst tragen (eigene
+  Regel weiter oben).
+  VERWORFEN: EIN HÜLLEN-OBJEKT (`{ hex: string }`). Ein roher String kompiliert dort
+  ebenfalls nicht — ABER AN DER EINSETZSTELLE WIRD AUSGEPACKT, UND DANN IST DER WERT WIEDER
+  EIN ROHER STRING. Der Compiler hört genau dort auf zu helfen, wo der Wert in den
+  ausgelieferten Text geht.
+  WAS BEI EINEM ZWEITEN EINGABEWEG ZU TUN IST: NICHT DIE ZUSICHERUNG VERVIELFACHEN, SONDERN
+  DEN LESER TEILEN — eine Prüfstelle, mehrere Aufrufer.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald ein Gate eine zweite Zusicherung auf einen Marken-Typ rot macht — eine Lint-Regel
+  über Typ-Zusicherungen, ein CI-Schritt. Ein solches gibt es in diesem Projekt nicht.
+  PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 zum Plan der Scheibe 11.13c. Dass ein
+  `string` einem Marken-Typ nicht zuweisbar ist, ist eine Eigenschaft des Typsystems; der
+  Beleg ist der `tsc`-Lauf jener Scheibe (exit 0) und die Mutation M-c, die erst NACH einem
+  sichtbaren Erzwingen (`as never`) überhaupt kompilierte — GEMESSEN (CC, 2026-09-18).
+- DAS HARTE KRITERIUM DES EINWILLIGUNGS-DIALOGS IST EINE DEFINITION, KEIN ERGEBNIS (Phase
+  11.13, gehoben 2026-09-18 aus der bindenden Entscheidung P11.13-3): JEDES BEDIENELEMENT
+  LIEGT VOLLSTÄNDIG IM FENSTER — `top >= 0`, `left >= 0`, `bottom <= innerHeight`,
+  `right <= innerWidth` — UND IST TREFFBAR: `elementFromPoint` an seiner Mitte trifft den
+  Host. JE ZUSTAND, JE VIEWPORT, JE FORM.
+  DER GRUND IST EIN GEMESSENER MANGEL AN DER VORPHASE: Das Archiv der Phase 11.5 führt
+  dasselbe Kriterium NUR ALS ERGEBNIS ("Je fünf Elemente, alle innerhalb des Sichtbereichs
+  und treffbar"), nirgends als Definition — GEMESSEN (CC, 2026-09-17, Achse
+  `sichtbereich|treffbar|elementFromPoint` über das ganze Archiv: sechs Treffer, KEINE
+  Definition). OHNE DEFINITION MISST JEDE RUNDE ETWAS ANDERES, und ein Ergebnis, das nicht
+  sagt, woran es gemessen wurde, ist beim nächsten Mal nicht wiederholbar.
+  ZWEI AUFLAGEN AN DIE MESSUNG, BEIDE AUS EINEM GEFANGENEN INSTRUMENTENFEHLER:
+  · REIHEN WERDEN ÜBER VERTIKALE ÜBERLAPPUNG BESTIMMT, NICHT ÜBER `top`-GLEICHHEIT. Der Weg
+    trägt keinen Rahmen und hat deshalb in derselben Reihe ein anderes `top`; eine
+    `top`-Prüfung meldete ihn fälschlich als allein stehend.
+  · DIE PROBESEITE TRÄGT MINDESTENS EIN FOKUSSIERBARES ELEMENT AUSSERHALB DES DIALOGS.
+    Ohne es misst sie eine Eigenschaft der Probe statt des Prüflings — dasselbe Kriterium
+    ist am selben Code erst GRÜN und dann ROT gemessen worden, allein weil die erste
+    Probeseite nichts Fokussierbares trug.
+  DIE MESSUNG IST BEI JEDEM LAUF NEU ZU SCHREIBEN: Im Repo liegt KEINE wiederverwendbare
+  Geometrie-Probe (GEMESSEN, CC, 2026-09-18, Achse `playwright|probe|viewport|screenshot`
+  über `git ls-files`: drei Treffer, alle SQL-Proben), und DIE TESTUMGEBUNG WERTET KEIN CSS
+  AUS (eigene Regel weiter oben). Sichtbarkeit, Lage und Treffbarkeit sind ausschliesslich
+  Probe- und Live-Achsen.
+  SIE BINDET JEDE SPÄTERE ÄNDERUNG AN LEISTE ODER MODAL. Sie ist bereits das Kriterium
+  gewesen, an dem die Textlänge des freien Sachtextes ihre Kante gefunden hat (416
+  Codepunkte, gemessen am FENSTER und nicht an der Leiste).
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald ein Wächter im Repo liegt, der beide Bedingungen bei jedem Lauf selbst prüft — dann
+  steht die Definition in ihm. Solange die Prüfung je Runde von Hand geschrieben wird,
+  braucht sie den Wortlaut.
+  PROVENIENZ: das Kriterium ist ARCHITEKT-VORSCHLAG mit OWNER-FREIGABE 2026-09-17; der
+  Befund über das Archiv 11.5, der Reihen-Instrumentenfehler und der doppelte Fokus-Lauf
+  sind GEMESSEN (CC, 2026-09-17), die Abwesenheit einer Probe im Repo GEMESSEN (CC,
+  2026-09-18).
+- WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE
+  STELLE — SONST FÄLLT DIE ZUSAGE ERSATZLOS WEG (Phase 11.13, gehoben 2026-09-18 aus der
+  bindenden Entscheidung P11.13-36): Eine Änderung, die einen ausgelieferten Text bewegt,
+  hebt die Byte-Gleichheit als Invariante auf. AN IHRE STELLE TRITT NICHT "NICHTS", SONDERN
+  DIE AUSSAGE: DER NEUE TEXT IST DER ALTE PLUS GENAU DIE BENANNTE EINSETZUNG — SONST KEIN
+  ZEICHEN.
+  DER NACHWEIS HAT FÜNF SCHRITTE, UND ALLE FÜNF SIND PFLICHT:
+  1. den Vorher-Wert erheben, VOR dem ersten Eingriff — Bytes UND sha256;
+  2. den Nachher-Wert erheben, an derselben Form und mit demselben Treiber;
+  3. die Einsetzung im neuen Text ZÄHLEN und die erwartete Zahl vorher nennen;
+  4. sie entfernen und das Ergebnis gegen den Vorher-Wert halten — ZEICHENGLEICH in Bytes
+     UND sha256;
+  5. eine POSITIVKONTROLLE, dass OHNE die Entfernung ein Unterschied bestünde.
+  Schritt 5 ist der, den man weglässt: Ohne ihn ist ein Nachweis, dessen Entfernung nichts
+  findet, von einem erfolgreichen nicht zu unterscheiden.
+  ER IST STRENGER ALS EINE BYTE-ZAHL, weil er die STELLE der Änderung benennt und nicht nur
+  ihre Grösse. Eine Byte-Differenz von +34 sagt nicht, WO die 34 Bytes stehen.
+  DIE ZUSICHERUNG WIRD AUS DER ENTSCHEIDUNG GESCHRIEBEN, NICHT AUS DEM BAU. Sonst entsteht
+  der Spiegel, der jeden Fehler bestätigt (eigene Regel weiter oben: EIN WÄCHTER ÜBER DIE
+  SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE).
+  DIE VORBEDINGUNG, OHNE DIE ER NICHT FÄHRBAR IST: DIE ÄNDERUNG MUSS ALS EINE ISOLIERBARE
+  EINSETZUNG AUFTRETEN. Wo sie das nicht ist, ist der Nachweis nicht zu approximieren — dann
+  ist die Zusage eine andere und eigens zu formulieren. Ein STEHENDER Wächter über die
+  Einsetzung (genau eine, und nach ihrer Entfernung keine) hält diese Vorbedingung; ohne ihn
+  ist der Nachweis eine Momentaufnahme.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald ein Gate den ausgelieferten Text bei jedem Lauf gegen einen abgelegten Vorher-Stand
+  prüft. Ein solches gibt es nicht — die Vorher-Werte werden je Scheibe von Hand erhoben.
+  PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18. Der Nachweis ist in der Scheibe 11.13e
+  18-von-18 GEFAHREN und live an einer echten ausgelieferten Seite verankert (GEMESSEN, CC,
+  2026-09-18; die sechs Live-Blockwerte sind OWNER-MESSUNGEN und von CC nicht prüfbar).

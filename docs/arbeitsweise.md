@@ -250,6 +250,9 @@ nichts. Der Verlauf ist kein Ersatz: Er wird beim Pflicht-Gate nicht gelesen.
 **1. Hebung (PFLICHT):** dauerhaft gültige Regeln aus `docs/aktiver-stand.md` nach
 `docs/immer-beachten.md` heben; **jeder übrige Eintrag — Vorrat, Hebungs-Kandidaten,
 bindende Entscheidungen — wird EINEM von DREI Zielen zugeordnet.** Eigener Commit.
+Eine bindende Entscheidung, die nur beschreibt, wie der Code dieser Phase gebaut ist, bleibt
+im Archiv; ihr Abschnitt trägt einen Sammelvermerk „NICHT GEHOBEN" mit Grund. Sie gestrichen
+zu nennen wäre falsch — sie gilt, solange der Code steht.
 
 **DIE DREI ZIELE, je mit ihrem Kriterium:**
 - **BENENNBARER TRIGGER *UND* „GEHT SONST STILL KAPUTT"** → `docs/offene-punkte.md`, plus

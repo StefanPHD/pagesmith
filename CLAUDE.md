@@ -163,7 +163,7 @@ angefasst worden; dieser Satz löst sie auf.
 - [x] Phase 11.10 — Next-Sprung über 16.2.12 hinaus
 - [ ] Phase 11.11 — Import-Bereinigung
 - [x] Phase 11.12 — Vorschau-Blocker: Aufklärung und Reparatur
-- [ ] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs
+- [x] Phase 11.13 — Betreiber-Anpassung des Einwilligungs-Dialogs
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic)
@@ -405,9 +405,14 @@ docs/claude-history/backlog-polish.md.
   NICHT NUR UM SEITENAUFRUFE (Trigger: die erste exportierte, fremd gehostete Seite eines
   Projekts mit Tracking-Schlüssel und eingeschaltetem Dialog — spätestens vor einem
   Beta-Launch mit fremden Nutzern)
-- settingsEqual IST EINE ALLOWLIST — JEDES NEUE TOP-LEVEL-MITGLIED DES EINSTELLUNGS-BLOBS IST
-  FÜR dirty UNSICHTBAR BY DEFAULT, UND NICHTS WIRD DAVON ROT (Trigger: die nächste Runde, die
-  dem Einstellungs-Blob ein Top-Level-Mitglied hinzufügt)
+- settingsEqual IST EINE ALLOWLIST — JEDES NEUE MITGLIED DES EINSTELLUNGS-BLOBS IST FÜR dirty
+  UNSICHTBAR BY DEFAULT, AUCH INNERHALB EINES UNTEROBJEKTS, UND NICHTS WIRD DAVON ROT
+  (Trigger: die nächste Runde, die dem Einstellungs-Blob ein Mitglied hinzufügt — auf
+  OBERSTER EBENE oder INNERHALB eines Unterobjekts wie settings.consent. TITEL UND TRIGGER
+  SIND AM 2026-09-18 ERSETZT, nicht gestempelt: die frühere Fassung nannte ausdrücklich ein
+  TOP-LEVEL-Mitglied und deckte damit den häufigeren Fall nicht — GEMESSEN an der Phase
+  11.13, die dem Unterobjekt settings.consent FÜNF Mitglieder hinzugefügt hat, jedes mit
+  eigenem Term)
 - EIN EINGESCHALTETER EINWILLIGUNGS-DIALOG OHNE ZUSTIMMUNG SIEHT AUS WIE KAPUTTES TRACKING —
   UND ZWAR AN DREI STELLEN GLEICHZEITIG (Trigger: der erste fremde Nutzer, der den Dialog
   einschaltet — für den Owner BEREITS EINGETRETEN, s. den Beleg am Eintrag)
@@ -433,6 +438,28 @@ docs/claude-history/backlog-polish.md; GESTRICHEN IST KEINER.
   2026-09-17 gesicherten Konsole)
 - `indexedDB` WIRFT IM VORSCHAU-RAHMEN WEITER (Trigger: die erste reale Seite, die in der
   Vorschau NACHWEISLICH an `indexedDB` stirbt)
+
+**AUS DEM PHASENENDE 11.13 GEHOBEN (2026-09-18) — ZWEI POSTEN, DAZU EINE ERWEITERUNG OHNE
+EIGENE ZEILE.** Aus dem Vorrat und den bindenden Entscheidungen der Standdatei der Phase
+11.13 (Betreiber-Anpassung des Einwilligungs-Dialogs). DIE URSPRUNGS-NUMMERN STEHEN NICHT
+HIER, SONDERN AM EINTRAG in docs/offene-punkte.md; sie tragen dort das Phasen-Präfix
+`P11.13-n`. DAS KRITERIUM WAR ZWEITEILIG — benennbarer Trigger UND "geht sonst still
+kaputt"; von elf Vorrats-Einträgen tragen beides nur diese zwei plus einer, der KEINE eigene
+Zeile bekommen hat: Vorrat P11.13-1 ist in den bestehenden Posten `settingsEqual` IST EINE
+ALLOWLIST eingegangen, dessen Titel und Trigger dabei ERSETZT worden sind (oben in dieser
+Liste). SECHS Vorrats-Einträge und ein Satz aus den Verdichtungen liegen in
+docs/claude-history/backlog-polish.md; VIER sind GESTRICHEN, je mit dem Beleg der Erledigung
+am Eintrag im Archiv der Phase.
+EIN POSTEN KOMMT NICHT AUS DEM VORRAT, SONDERN AUS EINER BINDENDEN ENTSCHEIDUNG (P11.13-34)
+— ihr Kosten-Satz führte einen Zustand als offen, ohne dass ein Vorrats-Eintrag dazu
+bestand. Wer nur den Vorrat sichtet, findet ihn nicht.
+- EIN EIGENER SACHTEXT ÜBERLEBT DEN SPRACHWECHSEL — ZEHN TEXTE WECHSELN, EINER BLEIBT, UND
+  NICHTS ZEIGT ES AN (Trigger: der erste Betreiber, der die Sprache umstellt und einen
+  eigenen Sachtext gespeichert hat — spätestens vor einem Beta-Launch mit fremden Nutzern)
+- EIN SCROLLBALKEN BRICHT DAS GLEICHRANGIGKEITS-KRITERIUM DES EINWILLIGUNGS-DIALOGS BEI
+  360 px — UND ZWAR IM BESTAND (Trigger: die nächste Runde, die an Knopfbreite, Innenbreite
+  oder Umbruch der eingeklappten Gestalt arbeitet — spätestens vor einem Beta-Launch mit
+  fremden Nutzern)
 
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
@@ -1248,6 +1275,33 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   im Wächter T1 (src/components/CodeImporter.test.tsx), der bei einer Verletzung von
   P11.12-2 rot wird. Ein Test ist der stärkere Anker als eine Regel; deshalb steht aus
   dieser Phase KEINE Dauerregel in docs/immer-beachten.md.
+- docs/claude-history/phase-11.13-dialog-anpassung.md — GESAMTE gebaute Phase 11.13
+  (Betreiber-Anpassung des Einwilligungs-Dialogs, 2026-09-17 bis 2026-09-18, an ZWEI Tagen):
+  FÜNF Scheiben (11.13a die Anordnung, 11.13b das Thema, 11.13c eigene Farben, 11.13d der
+  freie Sachtext, 11.13e die Sprache), jeder eine eigene Aufklärungs-Runde voraus, mit ZEHN
+  Vermerken. Dazu SIEBENUNDDREISSIG bindende Entscheidungen, ELF Vorrats-Einträge und ZWEI
+  Hebungs-Kandidaten. Sie ist ZUGLEICH der steuernde Stand und die Historie; sie hiess bis
+  zum Phasenende docs/aktiver-stand.md. IHR KOPF TRÄGT DAS PROTOKOLL DER HEBUNG, den
+  Messwert aus docs/arbeitsweise.md Abschnitt 2b (erstmals erhoben, mit der Vorphase) und
+  das PRODUKT-ARGUMENT der Roadmap-Zeile im Wortlaut — letzteres steht sonst nirgends, weil
+  die Zeile beim Abhaken kollabiert ist.
+  HIER NACHSEHEN, WER AM EINWILLIGUNGS-DIALOG, AN SEINER DARSTELLUNG ODER AN EINEM
+  BETREIBER-WERT IM AUSGELIEFERTEN TEXT ARBEITET: Die DREIUNDDREISSIG nicht gehobenen
+  Entscheidungen stehen NUR hier — darunter die flache Ablage der sechs Felder unter
+  settings.consent, die Eigenschafts-Liste, die jede Farbregel auf EINE Eigenschaft
+  festlegt (keine Kurzschreibweise, damit Grösse und Lage durch die Bauart gleich bleiben),
+  die Ableitung von color-scheme ohne Schwellen-Konstante, die HÜLLE aus Darstellung,
+  Sachtext und Sprache statt eines dritten Parameters, und die verworfenen Gestalten samt
+  ihren Gründen. SIE TRAGEN EINEN SAMMELVERMERK "NICHT GEHOBEN 2026-09-18" am Kopf ihres
+  Abschnitts, mit Grund — nicht dreiunddreissig Einzelzeiger.
+  VIER ENTSCHEIDUNGEN TRAGEN DAGEGEN EINE DAUERREGEL in docs/immer-beachten.md und werden
+  dort NICHT wiederholt: P11.13-3 (das harte Kriterium als Definition), P11.13-17 (genau
+  eine Zusicherung an einem opaken Marken-Typ), P11.13-25 (jeder Betreiber-Wert in
+  Script-Rohtext über den Einbettungs-Helfer) und P11.13-36 (der Differenz-Nachweis). Auch
+  diese vier stehen im Archiv wörtlich weiter, je mit einem Zeiger "→ GEHOBEN 2026-09-18";
+  die Regel ist das Destillat, nicht ihr Ersatz. BEIDE HEBUNGS-KANDIDATEN sind ebenfalls
+  Dauerregeln geworden — einer als ERWEITERUNG der bestehenden Werkzeug-Regel zu sed -i,
+  einer als eigene Regel über die Umdeutung eines Escapes auf dem Schreibweg.
 - docs/claude-history/security-manifest-full.md — volle Tier-0/1/2-Begründung
   (RISIKO / TRAGENDE KONTROLLE / EHRLICHE EINORDNUNG / BINDET-AN je Item).
 - docs/claude-history/future-roadmap.md — nicht-gebaute Vision: Phase 8 (Analytics),
@@ -1335,6 +1389,22 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   Abschnitten darüber — dort stehen die Nummern der jeweiligen Phase ohne Präfix, und sie
   werden NICHT nachgezogen. Auch hier steht keine Stückzahl für die Datei,
   aus demselben Grund wie darüber; der Text ist VERDICHTET und nicht zeichengleich.
+  NACHGEZOGEN 2026-09-18 — DER ABSCHNITT DER PHASE 11.13: "Aus Phase 11.13 gehoben
+  (2026-09-18) — sechs Vorrats-Einträge und ein Satz aus den Verdichtungen". Er trägt die
+  Vorrats-Einträge P11.13-2, -3, -8, -9, -10 und -11 unter ihren Ursprungs-Nummern, dahinter
+  EINEN Eintrag OHNE Ursprungs-Nummer: die 24 Zeiger aus src/ auf Z-, S- und Q-Invarianten,
+  die mit den Verdichtungen ihren Volltext verloren haben. ER STAND IN KEINEM
+  VORRATS-EINTRAG, sondern dreimal gleichlautend in den Verdichtungen der Scheiben 11.13c,
+  11.13d und 11.13e — wer nur den Vorrat sichtet, findet ihn nicht. Auch hier steht keine
+  Stückzahl für die Datei, aus demselben Grund wie darüber; der Text ist VERDICHTET und
+  nicht zeichengleich.
+  IM SELBEN ZUG IST DER EINTRAG "11.5f — DIE SPRACHE DES EINWILLIGUNGS-DIALOGS" AUF TITEL
+  UND BELEG GEKÜRZT (Abschnitt der Phase 11.5): Er ist mit der Scheibe 11.13e ERLEDIGT
+  (Bau-Commit `0a2dc7b`), und sein Volltext ist gestrichen — nachzulesen unter dem Commit
+  `7a6a5f6`. WAS AM EINTRAG STEHENBLEIBT, IST DER GRUND, WARUM SEINE MESSUNGEN NICHT
+  VERLORENGEHEN: Sie waren der Massstab jener Scheibe und stehen vollständig im Archiv der
+  Phase 11.13. EIN TEIL DES EINTRAGS BLEIBT AUSDRÜCKLICH OFFEN — ob die Betreiber-Wortlaute
+  der APP-OBERFLÄCHE dazugehören; das ist eine andere Menge mit einem anderen Leser.
 - supabase/checks/ — versionierte Messproben für Live-Tests und Gegenproben. KEINE Probe
   fasst ECHTE Daten an; welche Bauformen das zulässt und was eine Datei dann in ihrem Kopf
   sagen muss, steht im README des Ordners — hier der Zeiger, dort die Regel.

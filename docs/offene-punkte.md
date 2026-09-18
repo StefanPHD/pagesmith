@@ -4275,14 +4275,29 @@ Nummer in der Standdatei.
   **KEINE EMPFEHLUNG**, ob der Export den Schalter tragen soll, ob er ihn verweigern soll oder
   ob ein Hinweis genügt.
 
-- `settingsEqual` IST EINE ALLOWLIST — JEDES NEUE TOP-LEVEL-MITGLIED DES EINSTELLUNGS-BLOBS
-  IST FÜR `dirty` UNSICHTBAR BY DEFAULT, UND NICHTS WIRD DAVON ROT (aus Vorrat (5) der Phase
-  11.5) (Trigger: die nächste Runde, die dem Einstellungs-Blob ein Top-Level-Mitglied
-  hinzufügt): Die Funktion (`src/lib/settings.ts`) ZÄHLT AUF, was sie vergleicht. Wer ein
-  Mitglied hinzufügt und den Vergleich nicht mitzieht, bekommt **keinen Typfehler, keinen
-  roten Test, keine Meldung** — nur einen Wert, der beim nächsten Projektwechsel still
-  verschwindet: kein Text „Ungespeicherte Änderungen", kein `beforeunload`-Wächter, kein
-  `confirm`.
+- `settingsEqual` IST EINE ALLOWLIST — JEDES NEUE MITGLIED DES EINSTELLUNGS-BLOBS IST FÜR
+  `dirty` UNSICHTBAR BY DEFAULT, AUCH INNERHALB EINES UNTEROBJEKTS, UND NICHTS WIRD DAVON
+  ROT (aus Vorrat (5) der Phase 11.5, erweitert 2026-09-18 aus Vorrat P11.13-1 der Phase
+  11.13) (Trigger: die nächste Runde, die dem Einstellungs-Blob ein Mitglied hinzufügt — auf
+  OBERSTER EBENE oder INNERHALB eines Unterobjekts wie `settings.consent`): Die Funktion
+  (`src/lib/settings.ts`) ZÄHLT AUF, was sie vergleicht. Wer ein Mitglied hinzufügt und den
+  Vergleich nicht mitzieht, bekommt **keinen Typfehler, keinen roten Test, keine Meldung** —
+  nur einen Wert, der beim nächsten Projektwechsel still verschwindet: kein Text
+  „Ungespeicherte Änderungen", kein `beforeunload`-Wächter, kein `confirm`.
+  **DIE ERWEITERUNG AUF DIE UNTEROBJEKT-EBENE IST EINE SACHKORREKTUR DES TRIGGERS, KEIN
+  ZWEITER POSTEN** — Titel und Trigger sind ERSETZT, nicht gestempelt: Ein Massstab mit
+  falschen Angaben taugt nicht als Massstab (docs/immer-beachten.md, EINE REGEL KANN GÜLTIG
+  BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD). **WAS AN DER ALTEN FASSUNG FALSCH WAR:** Sie nannte
+  ausdrücklich ein TOP-LEVEL-Mitglied und deckte den häufigeren Fall damit nicht.
+  **DER BELEG IST GEMESSEN UND FÜNFFACH GELEBT** (CC, 2026-09-17 und -18, Phase 11.13): Die
+  Phase hat dem Unterobjekt `settings.consent` FÜNF Mitglieder hinzugefügt — `theme`,
+  `colorBackground`, `colorText`, `text` und `language` —, und **jedes einzelne brauchte
+  seinen eigenen Term in `settingsEqual`**, weil es sonst für `dirty` unsichtbar geblieben
+  wäre. Die bindenden Entscheidungen P11.13-6, -19, -26 und -37 der Phase halten das je Feld
+  fest; keine von ihnen löst die KLASSE.
+  **WARUM DIE KLASSE OFFEN BLEIBT, obwohl fünf Felder versorgt sind:** Die Funktion zählt
+  weiter auf. Das SECHSTE Feld ist wieder unsichtbar, und der Preis ist derselbe — ein Wert,
+  den der Betreiber getippt hat und der ohne Warnung verschwindet.
   **DER WÄCHTER ZUM EINWILLIGUNGS-SCHALTER SCHLIESST DIE KLASSE NICHT:** S3 hält genau diesen
   einen Term, nicht das nächste Mitglied. Dass der Term überhaupt nötig war, steht als
   bindende Entscheidung (6) der Phase 11.5 — dort ist er ausdrücklich „keine Politur, sondern
@@ -4418,3 +4433,69 @@ docs/claude-history/backlog-polish.md; **gestrichen ist keiner.**
   lief kein weiterer Code, ein späterer Zugriff wäre verdeckt gewesen.
   PROVENIENZ: die Entscheidung ARCHITEKT 2026-09-17; der Wurf und sein Wortlaut GEMESSEN
   (CC, 2026-09-17, Proben M1 und N4); der vorbereitete Schritt eine ABLEITUNG.
+
+- EIN EIGENER SACHTEXT ÜBERLEBT DEN SPRACHWECHSEL — ZEHN TEXTE WECHSELN, EINER BLEIBT, UND
+  NICHTS ZEIGT ES AN (aus der bindenden Entscheidung P11.13-34 der Phase 11.13) (Trigger:
+  der erste Betreiber, der die Sprache umstellt und einen eigenen Sachtext gespeichert hat —
+  spätestens vor einem Beta-Launch mit fremden Nutzern):
+  Die Sprache ist fest je Projekt, und der eigene Sachtext liegt in **einem** Feld, das für
+  jede Sprache gilt. Wer von Deutsch auf Englisch umstellt, bekommt die **zehn** übrigen
+  Textplätze des Einwilligungs-Dialogs englisch und seinen **eigenen** Satz weiter deutsch.
+  **DAS IST DIE ZUGESAGTE WIRKUNG UND KEIN DEFEKT** — offen ist, dass es niemand erfährt.
+  **WARUM ES STILL KAPUTTGEHT:** Es gibt keine Meldung, keinen Hinweis und keinen roten Test.
+  **DER PLATZHALTER HILFT AUSDRÜCKLICH NICHT** — er folgt zwar der Sprache, ist aber nur bei
+  LEEREM Feld sichtbar; wer einen eigenen Satz gespeichert hat, sieht ihn nie. Sichtbar wird
+  der Zustand allein, wenn jemand die ausgelieferte Seite Text für Text liest.
+  **WEN ES TRIFFT:** den Besucher, der einen Dialog in zwei Sprachen vor sich hat — und den
+  Betreiber, der die Ursache nicht am Sprachschalter vermutet, weil dieser nachweislich
+  gewirkt hat.
+  **WAS NICHT DER GEGENSTAND IST:** eine Automatik nach `navigator.language`. Sie ist mit
+  Gründen und gemessenen Kosten VERWORFEN (bindende Entscheidung P11.13-35 der Phase 11.13),
+  ausdrücklich ohne Trigger und ohne Vorrats-Eintrag. Wer diesen Posten löst, löst ihn nicht
+  über eine Laufzeit-Erkennung.
+  **DIE ANGRENZENDE ENTSCHEIDUNG, die mitgelesen werden muss:** Ein eigener Sachtext JE
+  SPRACHE ist heute ausgeschlossen, weil er die flache, skalare Ablage aus P11.13-19 bräche.
+  Das ist die Kipp-Bedingung von P11.13-34 — **wer sie zieht, entscheidet zuerst die Ablage
+  neu und den `settingsEqual`-Term mit.**
+  **KEINE EMPFEHLUNG**, ob ein Hinweis gebaut wird, wo er stünde und ob er den Betreiber oder
+  den Besucher adressiert.
+  PROVENIENZ: Die Entscheidung ist ARCHITEKT 2026-09-18. Dass der eigene Sachtext an der
+  Einsetzstelle immer gewinnt und keine Stelle seine Sprache kennt, ist GEMESSEN am Code
+  (CC, 2026-09-18, VERMERK P11.13-9 der Phase 11.13, Punkt (f)); dass der Betreiber die
+  Sprach-Mischung für einen Fehler hält, ist eine ABLEITUNG und ungemessen.
+
+- EIN SCROLLBALKEN BRICHT DAS GLEICHRANGIGKEITS-KRITERIUM DES EINWILLIGUNGS-DIALOGS BEI
+  360 px — UND ZWAR IM BESTAND (aus Vorrat P11.13-6 der Phase 11.13) (Trigger: die nächste
+  Runde, die an Knopfbreite, Innenbreite oder Umbruch der eingeklappten Gestalt arbeitet —
+  spätestens vor einem Beta-Launch mit fremden Nutzern):
+  Bei **Leiste / 360×480 / eingeklappt / lange Seite** teilt der Weg „Einstellungen" seine
+  Reihe mit GENAU EINEM der zwei Knöpfe. **Damit ist die bindende Entscheidung P11.13-5 der
+  Phase 11.13 verletzt** — „Alle akzeptieren" steht allein, „Ablehnen" teilt seine Reihe, und
+  der zweite liest sich als nachrangig. **Das ist genau die Bauform, die der Guardrail der
+  Roadmap-Zeile 11.13, Punkt (h), ausschliesst.**
+  **ES IST KEINE REGRESSION EINER SCHEIBE, UND DAS IST GEMESSEN** (Gegenprobe im selben
+  Werkzeug und im selben Lauf, CC, 2026-09-18): Das unveränderte helle Bestands-Thema zeigt
+  denselben Befund. **URSACHE IST DER SCROLLBALKEN:** Er nimmt 15 px Innenbreite; bei 345 px
+  passen zwei Knöpfe zu 160 px plus 8 px Abstand (328 px) zwar noch, der Weg aber nicht mehr
+  daneben, und die Reihen brechen anders. P11.13-5 nennt die Bedingung selbst — sie ruht auf
+  der Knopfbreite und der **Innenbreite** der zwei Behälter, und ein Scrollbalken ändert die
+  Innenbreite.
+  **WARUM ES BISHER NIEMAND SAH:** Die Probeseiten der Scheiben 11.13a und 11.13b
+  **scrollten nicht**. Der Befund entsteht erst mit einer Probeseite, die lang genug ist.
+  **WARUM ES STILL KAPUTTGEHT:** Kein Gate wird davon rot — die Testumgebung wertet kein CSS
+  aus, und im Repo liegt keine wiederverwendbare Geometrie-Probe. Ein Betreiber sieht einen
+  optisch abgewerteten Ablehnen-Knopf und hat keinen Grund, ihn zu melden.
+  **DIE SPRACHE ÄNDERT DEN BEFUND NICHT** (nachgemessen in der Scheibe 11.13e, CC,
+  2026-09-18): Die englische Weg-Beschriftung ist **33 px schmaler** (82 gegen 115), und die
+  Verletzung bleibt — sie hängt an der Innenbreite von 345 px und an der Knopfbreite von
+  160 px, nicht an der Länge des Weg-Textes.
+  **WEN ES TRIFFT — UND WEN NICHT:** schmale **Desktop**-Fenster, die einen Platz nehmenden
+  Scrollbalken zeichnen. **Handys zeichnen einen Überlagerungs-Scrollbalken** und nehmen
+  keine Breite; dort tritt es nicht auf. Das ist eine ABLEITUNG aus der Plattform-Bauform und
+  in diesem Projekt **nicht gemessen**.
+  **KEINE EMPFEHLUNG**, ob überhaupt etwas geschieht — die Kandidaten reichen von „Bedingung
+  des Kriteriums schärfen" bis „Knopfbreite flexibel".
+  PROVENIENZ: die drei Zeilen der Gegenprobe und die Nachmessung über beide Sprachen sind
+  GEMESSEN am eigenen Lauf (CC, 2026-09-18, Playwright/Chromium über `file://`); der Wortlaut
+  von P11.13-5 und der Guardrail (h) GELESEN. Dass Handys einen Überlagerungs-Scrollbalken
+  zeichnen, ist eine ABLEITUNG und ungemessen.

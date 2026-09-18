@@ -1466,6 +1466,247 @@ auf `88a6ebb`); die Ausbruchstabelle, die Querprobe und die Byte-Gleichheits-Mes
 am eigenen Lauf desselben Tages. Die Rechnung `2 · 160 + 8 = 328` ist am CSS ABLESBAR, keine
 Messung. **KEINE Live-Angabe, KEINE Owner-Angabe in diesem Vermerk.**
 
+### VERMERK P11.13-8 — Scheibe 11.13d, FREIER SACHTEXT, abgeschlossen 2026-09-18
+
+**GEGENSTAND:** Der Betreiber ersetzt den erläuternden Satz des Einwilligungs-Dialogs durch
+einen eigenen. Dazu entsteht der **Einbettungs-Helfer**, über den seit dieser Scheibe jeder
+Betreiber-Wert läuft, der in Script-Rohtext geht — der Sachtext, die Pixel-ID und das
+Stylesheet der eigenen Farben.
+
+**BAU-COMMIT:** `a3e286b` — `feat(consent): freier Sachtext und Einbettungs-Helfer (11.13d)`,
+gepusht (`d2a008a..a3e286b  main -> main`). **23 Dateien, 1 382 Zeilen hinzu, 116 entfernt**,
+darunter die zwei NEUEN `src/lib/script-embed.ts` (78 Zeilen) und `src/lib/script-embed.test.ts`
+(105) — GEMESSEN am Repo (`git log -1 --stat`, CC, 2026-09-18). **`consent-revoke.ts` ist mit
+drei Zeilen im Commit** — anders als in 11.13a, 11.13b und 11.13c: Die Konsolen-Warnung des
+Widerrufs ist eine Einbettung in den vier Dialog-Erzeugern und läuft damit über den Helfer
+(Entscheidung P11.13-25, Stufe (2)).
+
+#### (a) DER LIVE-NACHWEIS DER REGRESSION — SECHS BLOCKWERTE UND DAS WIRING
+
+**INSTRUMENT:** das Konsolen-Skript aus VERMERK P11.13-6, Punkt (c), **Tag-Form** — nicht
+„Speichern unter", das dort still versagt hat. **ORT:** `meta-test-5nlm3e.publayer.net`,
+**nach dem Deploy neu veröffentlicht**, Sachtext-Feld **leer**.
+
+| Zustand | Block | Bytes | sha256 (12) |
+|---|---|---|---|
+| Leiste hell | `__ps_clb` | 4 603 | `7ec172a65fa5` |
+| Leiste hell | `__ps_crv` | 4 918 | `14510803fd28` |
+| Leiste dunkel | `__ps_clb` | 4 932 | `9468307af5b1` |
+| Leiste dunkel | `__ps_crv` | 5 247 | `c073ee9c405e` |
+| Fenster hell | `__ps_cmo` | 5 051 | `674875af751a` |
+| Fenster hell | `__ps_crv` | 5 366 | `75110375e270` |
+| jeder Lauf | Wiring (Index 2, `id` „-") | 12 251 | `a3529b57452b` |
+
+**DIE SECHS BLOCKWERTE SIND GEGEN ZWEI EIGENE QUELLEN GEPRÜFT UND STIMMEN ZEICHENGLEICH**
+(CC, 2026-09-18): gegen VERMERK P11.13-6, Punkt (c) — dieselben sechs Werte, dort am
+2026-09-18 vor dieser Scheibe live erhoben — und gegen die Vorher-Liste des Bau-Berichts
+desselben Tages, die vor dem ersten Eingriff in `src/` erhoben wurde. **Damit ist die
+Byte-Gleichheit des ausgelieferten Textes für „hell" und „dunkel", beide Formen und beide
+Zweige, ÜBER DEN 11.13d-DEPLOY HINWEG an einer echten Seite verankert.**
+**DER WIRING-WERT IST VON CC NICHT PRÜFBAR**, und der Satz gehört dazu: Er ist die
+OWNER-MESSUNG vom 2026-09-18, die schon die Pflicht 5 des Zuschnitts führte. CC hat nie eine
+Tag-Form dieses Skripts erhoben — die eigene Messung galt dem RUMPF von `buildMetaRuntime`
+mit einer Testkennung (6 365 Bytes, `f6ed3535e825`), also einer anderen Grösse an einem
+anderen Wert. **Was er belegt, belegt er allein als Owner-Angabe: die eine geänderte Zeile in
+`meta.ts` hat den ausgelieferten Wiring-Text nicht bewegt.**
+
+#### (b) DER AUS-FALL — LIVE BELEGT, MIT EINER BENANNTEN GRENZE
+
+Dialog **aus**, nach dem Deploy neu veröffentlicht:
+
+| Block | Bytes | sha256 (12) |
+|---|---|---|
+| `pagesmith-consent` | 790 | `854831d25209` |
+| `pagesmith-mappings` | 210 | `dba4fe81d9b9` |
+| Wiring (Index 2, `id` „-") | 12 251 | `a3529b57452b` |
+| `__ps_pve` | 806 | `72d1ef626bcf` |
+
+**KEIN DIALOG-BAUSTEIN.** **QUERPROBE (ARCHITEKT-PRÜFUNG 2026-09-18):** dieselbe Formel,
+angewandt auf die hochgeladene Datei `Vorher_aus.html`, liefert für **alle vier** Skripte
+zeichengleiche Werte. **DAMIT IST DER AUS-FALL ÜBER DEN 11.13d-DEPLOY LIVE BELEGT** — und
+das ist neu: Für die Scheibe 11.13c war er ausdrücklich **nur lokal** belegt, weil dort das
+Sicherungs-Instrument versagt hatte (VERMERK P11.13-6, Punkt (c)).
+**DIE GRENZE GEHÖRT ZWINGEND DAZU:** Jene Datei stammt vom 2026-09-18 aus der Zeit **vor**
+dem 11.13d-Deploy; **ihr genauer Stand ist unbekannt.** Sie belegt die Gleichheit über
+diesen Deploy hinweg und **für die Scheibe 11.13c nichts** — deren Aus-Fall bleibt live
+unbelegt.
+
+#### (c) DER FEINDLICHE SACHTEXT — LIVE, UND ES IST DIE NUTZLAST, DIE AUSGEFÜHRT HATTE
+
+Eingetragen wurde `</script><img src=x onerror=alert(1)>` — **anführungszeichenfrei, also
+genau die Variante, die in VERMERK P11.13-7 lokal FREMDEN CODE AUSGEFÜHRT hat**; die Fassung
+mit Anführungszeichen brach dort zwar aus, zündete den Handler aber nicht, und das war ein
+Zufall der Zeichenfolge.
+
+- **KEIN ALARM.**
+- **Der Text erscheint WÖRTLICH in der Leiste** (Owner-Screenshot).
+- **ACHT Script-Elemente — dieselbe Zahl wie mit dem Standardtext.**
+- `__ps_clb` **4 571 / `906ad30408a5`**; die übrigen Skripte unverändert.
+
+**DASS DER BLOCK KLEINER IST ALS MIT DEM STANDARDTEXT (4 571 gegen 4 603), IST DER ERWARTETE
+AUSGANG UND KEIN BEFUND:** Der eingesetzte Satz ist kürzer als unserer, und die Maskierung
+kostet je `<` fünf Zeichen. **DIE TRAGENDE ZAHL IST DIE DER SCRIPT-ELEMENTE** — ein Ausbruch
+hätte sie verändert, ein stilles Verschlucken ebenfalls.
+**ALLE ANGABEN DIESES ABSCHNITTS SIND OWNER-MESSUNGEN bzw. OWNER-ANGABEN vom 2026-09-18, vom
+Architekten weitergegeben; CC kann sie nicht prüfen.**
+
+#### (d) DIE ÜBRIGEN LIVE-SCHRITTE
+
+**Bestanden laut Owner: die Schritte 1, 7 und 9 bis 12** — die Regression der unberührten
+Seite, der eigene Sachtext auf der Live-Seite, das Leeren des Feldes zurück auf unseren
+Satz, die Verweigerung bei ungültiger Eingabe, der Widerruf und das echte Handy.
+**SCHRITT 10 IST MIT EINEM TEXT ÜBER 300 ZEICHEN GEFAHREN** — also gegen die gesetzte
+Grenze, nicht gegen die gemessene Kante.
+**DER HANDY-SCHRITT LIEF AUF `unbekanntes-projekt-3jnjz9`**, nicht auf `meta-test-5nlm3e`:
+Jene Seite trägt ein `<meta name="viewport">`, diese nicht (Vorrat P11.13-8) — auf ihr misst
+der Schritt den Vorrats-Eintrag statt der Scheibe.
+**BROWSER: Chrome auf dem Desktop; das Handy laut Owner.** **Firefox und WebKit sind an
+keiner Achse dieser Scheibe gemessen.**
+
+#### (e) DIE ZAHLEN DES BAUS
+
+**DIE VIER GATES:** `vitest run` **von 1 857 auf 1 882 Tests** bei 85 → **86** Dateien
+(+25 Läufe, +1 Datei). Die 1 857 sind GEMESSEN in einem vollen Lauf **vor dem ersten Eingriff
+in `src/`** — **nicht über `git stash`** (Vorrat P11.13-7). `tsc --noEmit` exit 0 · `lint`
+0 errors / 1 warning (die vorbestehende in `consent.test.ts`) · `build` Compiled successfully.
+Alle vier nach der Korrektur auf N = 300 erneut gefahren, mit unveränderten 1 882.
+
+**DIE TRAGENDE INVARIANTE S1 IST EINGELÖST — ZWANZIG WERTE VORHER UND NACHHER IDENTISCH**
+(GEMESSEN, CC, 2026-09-18, `diff` über beide Wertelisten leer, viermal gefahren: nach dem
+Bau, nach dem Eintragen von N = 416, nach der Zeilenenden-Reparatur, nach der Korrektur auf
+300): die **neunzehn** Werte aus VERMERK P11.13-6 (zwölf Blockwerte, sieben Ausgabetexte
+einschliesslich des Aus-Falls) **plus** die Ausgabe von `buildMetaRuntime` mit einer
+**numerischen** Pixel-ID (6 365 Bytes, `f6ed3535e825`).
+**DIE QUERPROBE DER VORHER-WERTE HAT GEHALTEN:** Die zwölf basis-unabhängigen Werte stimmen
+zeichengleich mit VERMERK P11.13-6; die sieben Ausgabetexte weichen um **genau 71 Bytes** ab,
+an allen sieben identisch — dieselbe Konstante, die jener Vermerk für den Unterschied der
+zwei Basis-HTML nennt. Das Basis-HTML ist byte-genau rekonstruiert (**249 Bytes**, sha256
+`38b3eee3cf1b16ef…`).
+
+**DER PFLICHT-PARAMETER WAR COMPILER-GEFÜHRT: `tsc` meldete 73 Aufrufstellen namentlich** —
+`pageview-emitter.test.ts` 13 · `…resend.test.ts` 2 · `consent-bar.test.ts` 11 ·
+`consent-modal.test.ts` 19 · `consent-revoke.test.ts` 23 · `consent-setter.test.ts` 1 ·
+`consent-store.test.ts` 4. Keine konnte übersehen werden.
+
+**DIE PROBE** (Playwright/Chromium, `file://` im Scratchpad, echter Ausgabetext über
+`injectPageViewEmitter` mit dem Sachtext als echtem Argument; Probeseite mit Link, Knopf und
+Feld ausserhalb des Dialogs — Auflage Vorrat P11.13-4 — und mit Viewport-Tag; Fehler-Listener
+VOR dem Lauf registriert; `.playwright-mcp/` vorher als ignoriert geprüft):
+
+- **VIERZEHN AUSBRUCHSLÄUFE, je mit Kontrolle daneben:** vier Nutzlasten × zwei Formen als
+  Sachtext, dazu vier als Pixel-ID. **`window.__AUSBRUCH` in KEINEM Lauf gesetzt** · **die
+  Zahl der Script-Elemente in JEDEM Lauf die der Kontrolle** (7 beim Sachtext, 2 bei der
+  Pixel-ID) · **null `<img>`** · Leiste bzw. Fenster steht mit drei Knöpfen · **der Text
+  steht wörtlich im Schattenbaum** · das Wiring läuft · **null `pageerror`**.
+- **VIERZIG GEOMETRIE-ZUSTÄNDE** bei Länge 416: 5 Viewports × 2 Formen × 2 Extreme × ein-
+  und ausgeklappt. **P11.13-3: 40/40** · **P11.13-5: 40/40**, `wegTeiltMit` durchgehend 0,
+  Breiten durchgehend 160/160, Reihen über vertikale Überlappung · **P11.13-4: 20/20**,
+  Fokus auf `INPUT:checkbox` im eigenen Host, `scrollY` unverändert · **null ungefangene
+  Fehler**.
+- **VORRAT P11.13-6 IST NICHT BERÜHRT:** Ein `wegTeiltMit === 1` trat in keinem der 40
+  Zustände auf. Der Eintrag beschreibt den Fall MIT Seiten-Scrollbalken; die Probeseite
+  scrollt nicht. **Weder bestätigt noch widerlegt.**
+
+**N — DIE KANTE UND DIE SETZUNG SIND ZWEI DINGE:**
+- **GEMESSENE KANTE: 416 Codepunkte** (CC, 2026-09-18, 360×480, Chromium). **417 verletzt
+  P11.13-3** — beim **Fenster**, Wechseltext, **ausgeklappt**: `scrollHeight` 495 gegen
+  `clientHeight` 446, der letzte Knopf liegt ausserhalb des Sichtfensters.
+- **DAS FENSTER BINDET, NICHT DIE LEISTE — UND DAS WIDERLEGT DIE ERWARTUNG DES ZUSCHNITTS.**
+  Erwartet war die Leiste, weil sie kein `overflow` und kein `max-height` trägt und nach oben
+  wächst. Bei 416 steht sie bei `top` 112,69 mit Luft; das Fenster steht an seinem Deckel
+  (Höhe 448 bei `top` 16) und bekommt einen INNEREN Scrollbereich. **Der ist nicht der
+  Schutz, sondern die Ursache:** Er hält das Fenster klein und schiebt dafür ein
+  Bedienelement aus dem Blick.
+- **GESETZT: 300** — ARCHITEKT-SETZUNG vom 2026-09-18, rund 28 Prozent Abstand für Schrift-
+  und Browser-Varianz. **DER ABSTAND IST UNGEMESSEN**, und Firefox und WebKit sind an dieser
+  Achse ungemessen.
+- **NACHMESSUNG BEI 300** (CC, 2026-09-18, dieselbe Achse: 360×480, beide Formen, beide
+  Zustände, beide Extreme): **acht Zustände, 0 Verletzungen von P11.13-3**, null
+  `pageerror`. **`scrollHeight === clientHeight` in allen acht** — das Fenster steht bei 397
+  gegen einen Deckel von 446 nicht einmal am Anschlag.
+
+**DIE SIEBEN PFLICHT-MUTATIONEN** (je einzeln gesetzt, über die GANZE Suite gemessen,
+Vorhersage als KLASSE **vor** dem Lauf, nach jeder Rücknahme `sha256sum` 4/4 OK):
+
+| # | Gesetzt | Vorhersage (Klasse) | Ergebnis | Urteil |
+|---|---|---|---|---|
+| M-a | Helfer ohne `.replace` | ein `<` gelangt roh in den ausgelieferten Text, beide Betreiber-Achsen plus Publish-Weg | 7: EM1, EM4, EM5, PT-T3, L3-TXT, M3-TXT, MR1 | DECKUNG, eine Klasse; EM5 war nicht einzeln genannt und meldet dieselbe |
+| M-b | Sachtext-Einsetzstelle der **Leiste** umgeht den Helfer | dieselbe Klasse, **nur** auf dem Leisten-Pfad | 2: L3-TXT, PT-T3 | DECKUNG; **Vorhersage in Form UND Zahl** — M3-TXT blieb grün |
+| M-c | `hatVerbotenesZeichen` liefert immer `false` | unsichtbare Zeichen gehen durch | 4: CT-R1, CT-G, PT-T1, UI15 | DECKUNG, eine Klasse |
+| M-d | Längenprüfung entfernt | Überlänge geht durch; **die Probe fängt es NICHT** | 5: CT-R1, CT-Z, CT-G, PT-T1, UI15 | DECKUNG; die angesagte Grenze hält |
+| M-e | `settingsEqual`-Term entfernt | der Wert ist für `dirty` unsichtbar — reine Funktion UND Bedienweg | 2: CT-EQ, UI13 | DECKUNG; Vorhersage in Form und Zahl |
+| M-f | Sachtext-Abbruch in `publishProject` entfernt | ein ungültiger Wert wird veröffentlicht | 1: PT-T1 | trifft; **PT-T1 ist ein EINZELSTÜCK** und im Kommentar als solches benannt |
+| M-c + M-a | beide zusammen (Invariante S4) | **Vereinigung**, kein neuer Treffer | 11 — exakt die Vereinigung von 4 und 7 | **S4 belegt** |
+
+**S4 IST HIER STÄRKER EINGELÖST ALS IN DER SCHEIBE 11.13c, und der Unterschied gehört
+hierher:** Dort blieb M-c **allein grün**, weil das zweite Tor vorher zurückgab, und erst die
+Kombination zeigte die Unabhängigkeit. **Hier fallen beide EINZELN, auf DISJUNKTEN Tests** —
+weil die zwei Linien verschiedene Eingabeklassen decken: das Tor die unsichtbaren
+Steuerzeichen, der Helfer das ausdrücklich ERLAUBTE `<`.
+
+**ZWEI ABWEICHUNGEN VOM PLAN, BEIDE IM BAU-BERICHT DEKLARIERT:**
+1. **Die verbotenen Codepunkte stehen in `settings.ts` als ZAHLEN, nicht als
+   Unicode-Escapes** — Grund unter (f).
+2. **`consentTextProblem` ist neu gegenüber dem Plan.** Die Oberfläche muss den GRUND
+   anzeigen; ohne diese Funktion gäbe es dafür eine zweite, gleichlautende Bedingung, die
+   still auseinanderliefe. **Sie erzeugt keinen geprüften Typ** — die Zahl EINS aus
+   P11.13-17 ist unberührt, `CT-A1` hält sie.
+**UND EINE AN EINEM WÄCHTER:** Die geplante Zusicherung von `MR1` („kein `<` in der
+Laufzeit") wäre **falsch** gewesen — die Basis-Laufzeit trägt selbst EIN `<`, einen
+**Vergleichsoperator**. Ein Test darauf hätte den Code umgebaut, um sich selbst zu
+befriedigen (docs/immer-beachten.md, EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES
+GEPRÜFTEN NICHT BESTIMMEN). Gemessen wird stattdessen der **Beitrag** der Pixel-ID.
+
+**EIN BEFUND AUS `UI15`, IM LAUF SELBST GEFANGEN:** Ein einzeiliges `input[type="text"]`
+**entfernt Zeilenumbrüche aus seinem `value`** — der gespeicherte Wert trägt das
+Steuerzeichen, das Feld zeigt „ab". **Der Betreiber sieht das unsichtbare Zeichen also
+nicht**, und der rote Hinweis ist das Einzige, was den Zustand erklärt. Der Test hält den
+gemessenen Zustand, nicht den erwarteten.
+
+#### (f) DREI STILLE SCHREIBSCHÄDEN — UND ALLE VIER GATES WAREN DABEI GRÜN
+
+Sie stehen hier als harte Angaben, weil sie **die Fehlerklasse dieser Scheibe ausserhalb
+ihres Gegenstands** sind und **kein Gate sie gemeldet hat**:
+
+1. **DOKU-RUNDE, FÜNFMAL:** Ein Unicode-Escape für das Kleiner-Zeichen, in einem Code-Span
+   geschrieben, stand danach als ZEICHEN in der Datei — dreimal im Rumpf von Entscheidung
+   P11.13-25, zweimal in VERMERK P11.13-7, Punkt (b). Sätze wie „danach jedes `<` als `<`"
+   waren die Folge.
+   GEMESSEN (CC, 2026-09-18): `grep -c 'u003c'` fand **6** Vorkommen, **alle** in der Form
+   mit doppeltem Backslash — **kein einziges** in der geschriebenen. **WAS TRÄGT:** die
+   QUELLFORM mit doppeltem Backslash, im selben Lauf gegengeprüft.
+2. **BAU-RUNDE, TESTDATEI:** In `src/lib/script-embed.test.ts` sind U+2028, U+2029 und
+   `\u{1F600}` **still in ihre Zeichen verwandelt** worden — danach stand ein **roher
+   Zeilentrenner in einem String-Literal**, also genau das unsichtbare Zeichen, das das Tor
+   dieser Scheibe verbietet. GEMESSEN und behoben durch `String.fromCharCode` bzw.
+   `String.fromCodePoint`; Nachmessung: **0 rohe Sonderzeichen**. **DAS IST DER GRUND,
+   WARUM DIE VERBOTENEN CODEPUNKTE IN `settings.ts` ALS ZAHLEN STEHEN** — bei U+0000 wäre
+   das Ergebnis ein NUL-Byte in einer Quelldatei gewesen.
+3. **BAU-RUNDE, `PublishView.tsx` (`w/crlf`):** Beim Einfügen entstanden **ein `\r\r\n` und
+   ein einzelnes `\n`**. Folge: `git ls-files --eol` meldete **`w/-text`** — git hielt die
+   Datei für **binär** —, und `git diff --stat` zeigte **1 494 geänderte Zeilen statt 83**.
+   **`tsc`, `lint`, `vitest` und `build` waren dabei durchgehend grün.** Gefunden hat es
+   allein die Byte-Kontrolle; behoben byte-genau, Endzustand `w/crlf` mit CR = LF = 787.
+   **DAS IST DIESELBE FEHLERKLASSE WIE VORRAT P11.13-7** (`git stash` dreht die Zeilenenden
+   einer `w/crlf`-Datei), an einem anderen Werkzeug.
+
+**BYTE-KONTROLLE AM COMMITTETEN OBJEKT** für die zwei neuen Dateien — bei ihnen sind
+`git status` und der Rücknahme-Nachweis blind (docs/immer-beachten.md, EIN NACHWEIS AN EINER
+NEUEN DATEI IST BLIND): `git show HEAD:<pfad> | tr -dc …` ergibt für beide **CR = 0 und
+NUL = 0**, Positivkontrolle des Instruments im selben Lauf **CR = 1, NUL = 1**. Und das
+Escape selbst im Objekt, `od -c`: `… , " \ \ u 0 0 3 c " ) ;` — **zwei Backslash-Bytes**.
+
+PROVENIENZ: Bau-Commit, Dateizahlen, Gates, Testzahlen, die zwanzig Byte-Werte, sämtliche
+Probe- und Mutationswerte, die Kante 416, die Nachmessung bei 300 und die drei
+Schreibschäden sind GEMESSEN am Repo bzw. am eigenen Lauf (CC, 2026-09-18). Die Setzung 300
+ist ARCHITEKT-ENTSCHEIDUNG desselben Tages; **der Abstand ist ungemessen.** **Sämtliche
+Live-Angaben — (a) ohne die Querprobe der sechs Blockwerte, (b), (c) und (d) — sind
+OWNER-MESSUNGEN bzw. OWNER-ANGABEN vom 2026-09-18, vom Architekten weitergegeben; CC kann
+sie nicht prüfen.** Die Querprobe an `Vorher_aus.html` ist eine ARCHITEKT-PRÜFUNG desselben
+Tages. Der Abgleich der sechs Blockwerte gegen VERMERK P11.13-6 und die eigene Vorher-Liste
+ist GEMESSEN (CC, 2026-09-18).
+
+
 ---
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
@@ -2481,57 +2722,89 @@ P11.13-17 übernommen. **Dass `U+2028` in alten Laufzeiten ein JS-Literal bricht
 Bidi-Zeichen die Anzeige kehren, ist eine Eigenschaft der Formate und in diesem Projekt NICHT
 gemessen.**
 
-### Entscheidung P11.13-27 — N WIRD GEMESSEN, NICHT GESETZT
+### Entscheidung P11.13-27 — N IST DIE GEMESSENE KANTE MINUS EINEN GESETZTEN ABSTAND
 
-**DIE OBERGRENZE N DES SACHTEXTES IST DIE GRÖSSTE LÄNGE, BEI DER ENTSCHEIDUNG P11.13-3 BEI
-360×480 NOCH HÄLT** — für **Leiste UND Fenster**, **ein- UND ausgeklappt**: jedes
-Bedienelement vollständig im Fenster und treffbar. Die Zahl steht nach der Probe als Konstante
-im Code, **mit Provenienz an der Konstante**.
+**N BESTEHT AUS ZWEI TEILEN VON VERSCHIEDENEM RANG, UND WER SIE ZUSAMMENZIEHT, HÄLT EINE
+SETZUNG FÜR EINE MESSUNG:**
+
+**(1) DIE KANTE WIRD GEMESSEN.** Sie ist die grösste Länge, bei der Entscheidung P11.13-3 bei
+**360×480** noch hält — für **Leiste UND Fenster**, **ein- UND ausgeklappt**: jedes
+Bedienelement vollständig im Fenster und treffbar. **GEMESSEN: 416 Codepunkte** (CC,
+2026-09-18, Playwright/Chromium über `file://`). **417 verletzt sie**, und zwar beim
+**Fenster**, Wechseltext, **ausgeklappt**.
+
+**(2) N IST DIE KANTE MINUS EINEM GESETZTEN ABSTAND.** **GESETZT: 300** (ARCHITEKT,
+2026-09-18), rund 28 Prozent unter der Kante. **DER ABSTAND DECKT SCHRIFT- UND
+BROWSER-VARIANZ — UND ER IST UNGEMESSEN.** Die Kante ist an **einem** Browser und **einer**
+Schriftfamilie erhoben; **Firefox und WebKit sind an dieser Achse ungemessen**, und es gibt
+keine Messung darüber, wieviel Reserve eine andere Schrift oder eine andere
+Zeichensatz-Ersetzung tatsächlich braucht.
+**N IST DAMIT EINE VORGABE MIT EINEM GEMESSENEN DECKEL, KEINE MESSUNG.** Beide Angaben stehen
+an der Konstante `CONSENT_TEXT_MAX_LENGTH`, getrennt und je mit ihrem Rang.
+
+**WAS DIESE FASSUNG RICHTIGSTELLT:** Diese Entscheidung verlangte, N sei die grösste Länge,
+bei der P11.13-3 noch hält — **also die Kante selbst**, und sie erklärte eine geratene Zahl
+ausdrücklich zur STOPP-Bedingung, weil eine Messung an dieser Stelle billig ist. **DIE
+MESSUNG IST GEFAHREN UND BLEIBT PFLICHT; GEÄNDERT HAT SICH, WAS AUS IHR FOLGT:** Die Kante
+allein liesse keinen Raum für eine Umgebung, die nicht gemessen ist. **Eine Zahl, die genau
+am gemessenen Rand steht, ist in jeder ungemessenen Umgebung eine Wette** — und die drei
+ungemessenen Achsen (zwei Browser, jede fremde Schrift) sind hier die Regel, nicht der Rand.
+**DIE BILLIGE MESSUNG WIRD DAMIT NICHT ERSETZT, SONDERN UM EINE SETZUNG ERGÄNZT**, und die
+Setzung ist als solche ausgewiesen (docs/immer-beachten.md, EINE BILLIGE MESSUNG WIRD NICHT
+DURCH EINE HERLEITUNG ERSETZT — sie verlangt die Messung und verbietet nicht, neben ihr eine
+Reserve zu setzen).
+
+**DAS FENSTER BINDET, NICHT DIE LEISTE — UND DAS IST DIE ZWEITE RICHTIGSTELLUNG.** Diese
+Entscheidung nannte als Grund „DIE LEISTE HAT KEINEN NOTAUSGANG": kein `overflow`, kein
+`max-height`, `position:fixed; bottom:0`, also Wachstum nach oben über den Rand.
+**GEMESSEN IST DAS UMGEKEHRTE** (CC, 2026-09-18): Bei 416 steht die Leiste bei `top` 112,69
+mit Luft; **das Fenster** steht an seinem Deckel (Höhe 448 bei `top` 16) und bekommt einen
+INNEREN Scrollbereich — bei 417 `scrollHeight` 495 gegen `clientHeight` 446, und der letzte
+Knopf liegt ausserhalb des Sichtfensters.
+**DER EIGENE SCROLLBEREICH IST ALSO KEIN SCHUTZ, SONDERN DIE URSACHE:** Er hält das Fenster
+klein und schiebt dafür ein Bedienelement aus dem Blick — genau das, was P11.13-3 verbietet.
+Die Leiste wächst stattdessen mit und bleibt vollständig sichtbar. **WER DIESEN ABSATZ FÜR
+EINE FORMALIE HÄLT, ERHEBT DIE KANTE BEIM NÄCHSTEN MAL AN DER LEISTE UND MISST DIE FALSCHE
+FORM.**
 
 **N ZÄHLT UNICODE-CODEPUNKTE, NICHT UTF-16-EINHEITEN.** `"…".length` zählt Einheiten und wäre
 für ein Emoji oder ein Zeichen ausserhalb der Grundebene **zwei**, obwohl der Betreiber **ein**
 Zeichen sieht. **Eine Grenze, die etwas anderes zählt als der Mensch vor dem Feld, erzeugt
-einen Streit, den niemand gewinnt** — und sie ist an einer Stelle falsch, an der die Zahl
-ohnehin aus einer Messung stammt und nicht aus einem Prinzip.
+einen Streit, den niemand gewinnt.**
 **DAS TOR UND DER ZÄHLER DER OBERFLÄCHE BENUTZEN DIESELBE ZÄHLFUNKTION** — eine Stelle, zwei
 Aufrufer (docs/immer-beachten.md, ABLEITEN STATT HARDCODEN). **DER GRUND IST NICHT SPARSAMKEIT:
-Zwei Zählungen liefen auseinander, und zwar STILL** — die Oberfläche zeigte „79 von 120", das
-Tor wiese ab, und der Betreiber sähe eine Zahl, die seine Ablehnung nicht erklärt. **Der Zähler
+Zwei Zählungen liefen auseinander, und zwar STILL** — die Oberfläche zeigte eine Zahl, das Tor
+wiese ab, und der Betreiber sähe eine Anzeige, die seine Ablehnung nicht erklärt. **Der Zähler
 ist damit kein Anzeige-Detail, sondern die sichtbare Seite des Tors.**
 
-**DER GRUND: DIE LEISTE HAT KEINEN NOTAUSGANG.** GEMESSEN am CSS (VERMERK P11.13-7): Sie trägt
-**kein `overflow`** — L12 verbietet das Wort im Leisten-Block — und **kein `max-height`**, und
-`:host` steht auf `position:fixed; bottom:0`. Sie wächst mit dem Sachtext **nach oben** und
-kann über den oberen Rand wandern. **DAS IST DIE ACHSE AUS ROADMAP (e), DIE ENTSCHEIDUNG
-P11.13-1 FÜR DEN AUSGEKLAPPTEN ZUSTAND VERMIEDEN HAT — ein freier Sachtext erzeugt sie neu,
-und diesmal in BEIDEN Zuständen.** Das Modal ist robuster (`max-height` plus `overflow:auto`),
-aber die Zahl gilt für beide, weil es **eine** Konstante gibt.
-
-**GEMESSEN WIRD MIT ZWEI EXTREMEN, UND BEIDE SIND NÖTIG:**
-· mit dem **breitesten plausiblen Zeichen** (Kandidat „W") — die Breite treibt den Umbruch und
-  damit die Höhe;
-· mit einem **Text aus Leerzeichen** — er bricht anders um als ein Wort und prüft die andere
-  Seite derselben Achse.
-**EINE ZAHL, DIE NUR AN EINEM DER BEIDEN ERHOBEN IST, IST HALB ERHOBEN.**
-
-**SIE IST EINE STOPP-BEDINGUNG DER BAU-SCHEIBE UND KEINE FEINHEIT:** Ohne die Probe gibt es
-keine Zahl, und eine geratene Zahl wäre eine ARCHITEKT-VORGABE ohne Messung an einer Stelle,
-an der eine Messung **billig** ist (docs/immer-beachten.md, EINE BILLIGE MESSUNG WIRD NICHT
-DURCH EINE HERLEITUNG ERSETZT).
+**DIE KANTE WIRD MIT ZWEI EXTREMEN ERHOBEN, UND BEIDE SIND NÖTIG:**
+· ein **ununterbrochener Lauf** aus dem breitesten plausiblen Zeichen („W") — er hat keinen
+  Umbruchpunkt und treibt die BREITE, also die Achse `right <= innerWidth`;
+· ein **Wechseltext** aus Zeichen und Leerzeichen — er bricht maximal oft um und treibt die
+  HÖHE, also die Achse `top >= 0`.
+**EINE KANTE, DIE NUR AN EINEM DER BEIDEN ERHOBEN IST, IST HALB ERHOBEN.**
 
 **WAS N NICHT IST:** ein Sicherheits-Mittel. Die Ausbruchsfrage trägt P11.13-25, das
 Zeichen-Tor P11.13-26. **N ist eine Geometrie-Grenze**, und wer sie als Schranke gegen
 feindliche Eingabe liest, hält eine Zahl für einen Riegel.
 
-**DIE GRENZE:** Sie kippt, **sobald die Geometrie sich ändert, auf der sie ruht** — die Leiste
-bekommt einen eigenen Scrollbereich, die Knopfbreite ändert sich, die Schriftgrösse ändert
-sich, oder die eingeklappte Gestalt bricht anders um. **Dieselbe Bedingung wie bei P11.13-5,
-und aus demselben Grund: N ist keine Eigenschaft des Textes, sondern des Behälters.**
+**DIE GRENZE — SIE HAT SEIT DIESER FASSUNG ZWEI AUSLÖSER, UND SIE SIND NICHT DERSELBE:**
+**(a) DIE GEOMETRIE ÄNDERT SICH** — die Leiste bekommt einen eigenen Scrollbereich, das
+Fenster verliert seinen Deckel, die Knopfbreite oder die Schriftgrösse ändert sich, oder die
+eingeklappte Gestalt bricht anders um. Dann ist **die KANTE neu zu erheben**, und N folgt ihr.
+**(b) EIN ANDERER BROWSER WIRD GEMESSEN** — Firefox oder WebKit. Dann ist die Kante dort
+eigens zu erheben, und **der Abstand ist neu zu bemessen oder entfällt**: Er existiert gerade
+deshalb, weil jene Umgebungen ungemessen sind. **Fällt eine gemessene Kante UNTER 300, ist
+nicht der Abstand zu kürzen, sondern N.**
+**Dieselbe Denkfigur wie bei P11.13-5, und aus demselben Grund: N ist keine Eigenschaft des
+Textes, sondern des Behälters.**
 
-PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (E3). Dass die Leiste weder `overflow` noch
-`max-height` trägt und dass das Modal beides hat, ist GEMESSEN am CSS (CC, 2026-09-18, VERMERK
-P11.13-7). **DIE ZAHL N SELBST EXISTIERT ZUM ZEITPUNKT DIESER ENTSCHEIDUNG NICHT** — sie ist
-Gegenstand der Probe der Bau-Scheibe.
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (E3), **präzisiert am selben Tag nach der
+Probe**. Die Kante 416, ihre Verletzung bei 417, die Lage von Leiste und Fenster und die
+Nachmessung bei 300 (acht Zustände, 0 Verletzungen) sind GEMESSEN (CC, 2026-09-18, Chromium;
+VERMERK P11.13-8). **Die Zahl 300 und der Abstand sind eine ARCHITEKT-SETZUNG; der Abstand
+ist ausdrücklich UNGEMESSEN.** Dass die Leiste weder `overflow` noch `max-height` trägt, ist
+GEMESSEN am CSS (CC, 2026-09-18, VERMERK P11.13-7).
 
 ### Entscheidung P11.13-28 — DER SACHTEXT ERBT DIE ZWEI GRENZEN DES AUSGELIEFERTEN TEXTES
 
@@ -2879,161 +3152,94 @@ P11.13-6). Die Verdichtung ist CC, 2026-09-18.
 
 ---
 
-## Zuschnitt der Scheibe 11.13d — FREIER SACHTEXT
+## Zuschnitt der Scheibe 11.13d — FREIER SACHTEXT (VERDICHTET 2026-09-18)
 
-**STATUS: ZUGESCHNITTEN, PLAN VORGELEGT, NICHT FREIGEGEBEN.**
+**STATUS: ABGELAUFEN.** Die Scheibe ist gebaut und live bewiesen — VERMERK P11.13-8,
+Bau-Commit `a3e286b`. Der ungekürzte Wortlaut des Zuschnitts steht im Commit `d2a008a`.
 
-### Gegenstand
+**DIE STATUSZEILE IST HIER AUFGELÖST UND NICHT GESTEMPELT:** Sie trug bis zu dieser
+Verdichtung „ZUGESCHNITTEN, PLAN VORGELEGT, NICHT FREIGEGEBEN", und die Provenienz schloss
+mit „Die Freigabe steht aus." — während der Bau-Auftrag vom 2026-09-18 Zuschnitt und Plan als
+freigegeben führte. **Die Abweichung ist im Bau-Bericht desselben Tages als A1 gemeldet und
+nicht stillschweigend geändert worden; gebaut wurde gegen den Zuschnitt.** Dieselbe
+Fehlerklasse und dieselbe Handhabung wie bei der Scheibe 11.13c, wo sie zuerst auftrat.
 
-**Der Betreiber ersetzt den erläuternden Satz des Einwilligungs-Dialogs durch einen eigenen.**
-Der Wert liegt flach unter `settings.consent`, geht durch ein Format-Tor und über einen
-Einbettungs-Helfer in den ausgelieferten Text. **Fehlt er, gilt unser Standardtext
-(`CONSENT_TEXT`), wie heute.**
+**WAS ABGELAUFEN IST — die Titel, ohne Marke** (ohne `###`, damit eine Überschriften-Suche
+sie nicht trifft: docs/immer-beachten.md, EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER
+DATEI MIT VERZEICHNIS NICHT, Zusatz vom 2026-08-27):
+- STATUS: ZUGESCHNITTEN, PLAN VORGELEGT, NICHT FREIGEGEBEN
+- Gegenstand — der Sachtext UND der Einbettungs-Helfer in EINER Scheibe, mit dem Grund aus
+  dem Nachtrag der Roadmap-Zeile 11.13, Punkt (g)
+- Die Invarianten dieser Scheibe — **S1 bis S9**, samt der Begründung, warum sie `S` und
+  nicht `I` oder `Z` heissen (`I1` bis `I6` sind an die Phase 11.5 vergeben, `Z1` bis `Z10`
+  an die Scheibe 11.13c)
+- Ausdrücklich NICHT dazu
+- Die Pflichten dieser Scheibe (fünf, darunter der Vorher-Wert des unbenannten
+  Wiring-Skripts und die Seitenwahl für den Handy-Schritt)
+- Die Plan-Fragen — ALLE FÜNF GESCHLOSSEN (2026-09-18)
 
-**DIE SCHEIBE TRÄGT ZWEI SACHEN, UND DAS IST ABSICHT:** Neben dem Sachtext entsteht der
-**Einbettungs-Helfer** (Entscheidung P11.13-25), und die **Pixel-ID läuft mit über ihn**. Der
-Grund steht an der Roadmap-Zeile 11.13, Punkt (g), Nachtrag vom 2026-09-17: „SCHEIBE 4 KLÄRT
-BEIDES ZUSAMMEN, statt die `<`-Frage zweimal zu beantworten". **Die Messung vom 2026-09-18 hat
-aus der Frage einen Befund gemacht** (VERMERK P11.13-7).
+**WAS ÜBER DIE SCHEIBE HINAUS BINDET, STAND VON ANFANG AN NICHT HIER:** Es steht als
+**Entscheidung P11.13-23 bis P11.13-30** und ist von dieser Verdichtung unberührt. Die neun
+Invarianten `S1` bis `S9` waren Anweisungen AN DIESE SCHEIBE und laufen mit ihr ab; ihre
+bleibenden Hälften stehen in den Entscheidungen, auf die sie je zeigten.
 
-**DIE ENTSCHEIDUNGEN, DIE IHN TRAGEN:** P11.13-23 (nur der Sachtext) · P11.13-25 (der Helfer,
-seine drei Geltungsstufen) · P11.13-26 (das Tor) · P11.13-27 (N wird gemessen) · P11.13-28
-(die zwei Grenzen) · P11.13-29 (der Transport) · P11.13-30 (der Wächter am Ergebnis). **Fort
-gelten unverändert:** P11.13-3 (alles im Fenster und treffbar) · P11.13-5
-(Gleichrangigkeit) · P11.13-7 (Abbruch nur bei Dialog ≠ „off") · P11.13-11 (Pflicht-Parameter
-ohne Vorgabewert) · P11.13-17 (genau eine Zusicherung) · P11.13-18 (ein Wert, unmögliche
-Zustände undarstellbar) · P11.13-19 (flache Ablage, skalare Terme).
-**P11.13-24 TRÄGT SIE NICHT — sie terminiert die NÄCHSTE Scheibe** und steht hier nur, damit
-niemand die Sprache in diese hineinzieht.
+**ACHT STELLEN IM TESTCODE ZITIEREN EINE `S`-NUMMER, UND SIE VERLIEREN MIT DIESER
+VERDICHTUNG IHREN VOLLTEXT** (GEMESSEN am Repo, CC, 2026-09-18, Achse `Invariante S[0-9]+`
+über `src/`): `publish.test.ts` (S4) · `CodeImporter.test.tsx` (S4) ·
+`script-embed.test.ts` (S9, S1) · `consent-bar.test.ts` (S9) · `consent-modal.test.ts` (S9)
+· `meta.consent-wire.test.ts` (S9, S1) — viermal S9, je zweimal S1 und S4.
+**DAS IST DERSELBE FALL, DEN DIE VERDICHTUNG DER SCHEIBE 11.13c FÜR SECHS `Z`-ZITATE
+FÜHRTE**, und er ist beim Schreiben dieser Verdichtung zunächst als NICHT eingetreten
+behauptet worden; die Messung hat das widerlegt, bevor der Satz stehenblieb.
+**DIE NUMMERN BLEIBEN AUFLÖSBAR** — die Titel-Liste oben nennt sie, und der ungekürzte
+Wortlaut steht im Commit `d2a008a`. **WAS DAMIT ZU TUN IST, IST HIER NICHT ENTSCHIEDEN:**
+Ein Zeiger aus `src/` heraus verlangt einen CODE-Commit (docs/immer-beachten.md, EINE ABLAGE
+MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE). **KEINE EMPFEHLUNG.**
+**DIE DREI ZITIERTEN NUMMERN SIND DIE DREI, DIE EINE ZUSAGE TRAGEN** — S1 die
+Byte-Gleichheit, S4 die zwei unabhängigen Linien, S9 die gemessenen Nutzlasten. Wer sie
+auflöst, findet die Sache je in einer Entscheidung: S1 und S4 in P11.13-25 und P11.13-26,
+S9 in VERMERK P11.13-7.
 
-### Die Invarianten dieser Scheibe — S1 bis S9
+**DIE FÜNF PFLICHTEN — GESCHLOSSEN, je mit Nachweis und Fundstelle:**
+1. **Vorher-Werte vor dem ersten Eingriff in `src/`:** erhoben — **zwanzig** Werte (die
+   neunzehn aus VERMERK P11.13-6 plus `buildMetaRuntime` mit numerischer Pixel-ID), vorher
+   und nachher identisch; Querprobe der zwölf basis-unabhängigen Werte gegen jenen Vermerk
+   bestanden, die sieben Ausgabetexte weichen um genau 71 Bytes ab. Basis-HTML byte-genau
+   rekonstruiert (249 Bytes). FUNDSTELLE: VERMERK P11.13-8, (e).
+2. **Herkunft der Test-Erwartungen:** eingehalten — die Zeichenklassen aus P11.13-26, die
+   drei Ausgänge aus demselben Text, die Zähl-Achse aus P11.13-27; die Meldungs-Konstante
+   steht in `publish.test.ts` als **Literal**. Die feindlichen Nutzlasten sind die
+   **gemessenen** aus VERMERK P11.13-7, wörtlich, einschliesslich der Unterscheidung mit und
+   ohne Anführungszeichen (Invariante S9).
+3. **N wird gemessen:** gefahren, mit beiden Extremen. **Kante 416, gesetzt 300** — die
+   Trennung der zwei Ränge steht seit dieser Scheibe in Entscheidung P11.13-27, die
+   deswegen **richtiggestellt** ist. FUNDSTELLE: VERMERK P11.13-8, (e).
+4. **Tests für die Bedienung:** eingelöst — `UI12` bis `UI15` in `CodeImporter.test.tsx`.
+   `PublishView.tsx` hat weiterhin keine eigene Testdatei; das bleibt so.
+5. **Live-Test mit dem Ersatz-Instrument:** eingelöst, **und diesmal hat das Instrument
+   getragen** — der Hash der geladenen Skript-Elemente in der Tag-Form. **Sechs Blockwerte
+   zeichengleich**, der Aus-Fall **live belegt** (was er für die Scheibe 11.13c nicht war),
+   und der feindliche Sachtext live ohne Ausführung bei unveränderter Zahl der
+   Script-Elemente. FUNDSTELLE: VERMERK P11.13-8, (a) bis (d).
 
-Sie heissen `S`, weil `I1` bis `I6` im Abschnitt „Was den Zuschnitt bindet" an die Invarianten
-der Phase 11.5 vergeben sind und `Z1` bis `Z10` an die Scheibe 11.13c. **Sie sind Anweisungen
-AN DIESE SCHEIBE und laufen mit ihr ab**; was über sie hinaus bindet, steht in den
-Entscheidungen.
+**DIE AUSSCHLÜSSE GELTEN FORT** und sind der Zuschnitt der Scheibe 5 (11.13e) und späterer
+Runden: **die SPRACHE** der zehn übrigen Texte (Entscheidung P11.13-24) · **Zeilenumbrüche
+und jede Formatierung** im Sachtext (P11.13-26, Grenze) · eine **URL oder ein Link** im
+Dialog · der **EXPORT-PFAD** (P11.13-28) · **`src/lib/generate.ts`** · **`consent-store.ts`,
+`consent-setter.ts`, `pageview-emitter.ts` und die übrigen Einbettungen in `meta.ts`**
+(P11.13-25, Stufe (3)) · ein **QUELLTEXT-WÄCHTER** gegen rohe Einbettung (P11.13-30) · eine
+**Vorschau des Dialogs im Editor**.
 
-- **S1 — DIE BYTE-GLEICHHEIT.** Ohne gespeicherten Sachtext ist der ausgelieferte Text
-  **unverändert**: die neunzehn Werte aus VERMERK P11.13-6 (zwölf Blockwerte, sieben
-  Ausgabetexte) **und** die Ausgabe von `buildMetaRuntime` mit einer **numerischen** Pixel-ID.
-  Vorher erhoben **vor dem ersten Eingriff in `src/`**.
-- **S2 — DIE DREI GELTUNGSSTUFEN AUS P11.13-25 WERDEN EINGEHALTEN.** (i) Sachtext, Pixel-ID
-  und Stylesheet laufen über den Helfer; (ii) in den **vier Dialog-Erzeugern** gibt es danach
-  **keine rohe `JSON.stringify`-Einbettung** mehr, auch nicht für eine Konstante; (iii)
-  `consent-store.ts`, `consent-setter.ts`, `pageview-emitter.ts` und die übrigen Einbettungen
-  in `meta.ts` **bleiben roh und werden nicht angefasst**. Jede Stelle, bei der (i) oder (ii)
-  nicht geht, wird **benannt**, nicht stillschweigend ausgelassen.
-- **S3 — DER HELFER IST REIN UND HAT EIN ARGUMENT.** Keine Datenbank, kein Netz, kein DOM,
-  kein `"use server"`, kein `import "server-only"`, **kein Schalter** — er wird aus dem
-  Client-Pfad (`meta.ts` über `generateFunctional`) und aus dem Server-Pfad (die
-  Dialog-Erzeuger) importiert. Sein Docblock trägt die **Kontext-Grenze** und die
-  **Konvention** aus P11.13-25, Stufe (2).
-- **S4 — ZWEI UNABHÄNGIGE LINIEN.** Maskierung (P11.13-25) und Tor (P11.13-26) tragen
-  getrennt. **Der Nachweis ist die Gegenprobe**: beide Mutationen zusammen lassen fallen, was
-  einzeln nicht fällt (Bauform M-c plus M-b der Scheibe 11.13c).
-  **DER WÄCHTER SITZT AM ERGEBNIS, NICHT AM QUELLTEXT** (P11.13-30) — je Betreiber-Achse
-  einer, mit der feindlichen Nutzlast durch die ECHTE Einsetzstelle.
-- **S5 — GENAU EINE ZUSICHERUNG** für den geprüften Sachtext-Typ, im Leser, unmittelbar hinter
-  der Prüfung (P11.13-17).
-- **S6 — DER ABBRUCH STEHT VOR DEM LABEL-BLOCK UND VOR `ensureTrackingKey`**, mit einer
-  EIGENEN Meldungs-Konstante, und **nur bei Dialog ≠ „off"** (P11.13-7).
-- **S7 — KEIN VORGABEWERT AUF DEM TRANSPORT-PFAD.** Der Sachtext reist als **zweiter
-  Pflicht-Parameter ohne Vorgabewert** vom Typ `ConsentText | "standard"` an den drei Stellen
-  (P11.13-29). **Ein `= CONSENT_TEXT` an einer Signatur ist eine STOPP-Bedingung**, kein
-  Abwägungspunkt.
-- **S8 — DIE PROBE MISST N UND BESTÄTIGT P11.13-3, -4 UND -5** bei Text der Länge N, fünf
-  Viewports, beide Formen, beide Zustände. **Probeseite mit mindestens einem fokussierbaren
-  Element ausserhalb des Dialogs** (Auflage Vorrat P11.13-4).
-- **S9 — DIE FEINDLICHEN NUTZLASTEN SIND DIE GEMESSENEN.** Wächter und Probe fahren die
-  Nutzlasten aus VERMERK P11.13-7 **wörtlich**, mit und ohne Anführungszeichen, dazu
-  `</SCRIPT` und `<!--<script>`. **Eine erfundene Nutzlast ersetzt keine gemessene.**
-
-### Ausdrücklich NICHT dazu
-
-- **Die zehn übrigen Texte** — Knopf-, Weg- und Gruppen-Beschriftungen, die drei zugänglichen
-  Namen, die Konsolen-Warnung (P11.13-23).
-- **Die SPRACHE** — sie ist Scheibe 5 (11.13e), Entscheidung P11.13-24.
-- **Zeilenumbrüche und jede Formatierung** im Sachtext (P11.13-26, Grenze).
-- **Eine URL oder ein Link** im Dialog — eine eigene Eingabeklasse ohne jeden Bestand; heute
-  gibt es im ausgelieferten Text weder `a` noch `href` noch `title` (GEMESSEN, VERMERK
-  P11.13-7).
-- **Der EXPORT-PFAD** (P11.13-28) — er trägt weiterhin keinen Sachtext und steht unter den
-  Grenzen des Vermerks.
-- **`src/lib/generate.ts`** — die Mapping-Maskierung bleibt unberührt (P11.13-25).
-- **`consent-store.ts`, `consent-setter.ts`, `pageview-emitter.ts` UND ALLE ÜBRIGEN
-  EINBETTUNGEN IN `meta.ts`** — sie bleiben roh (P11.13-25, Stufe (3)). **Es sind
-  Repo-Konstanten und server-vergebene Werte, keine Betreiber-Eingabe.** Wer sie „nur schnell"
-  mitzieht, verlässt den Zuschnitt und den Byte-Nachweis.
-- **EIN QUELLTEXT-WÄCHTER** gegen rohe `JSON.stringify`-Einbettung (P11.13-30).
-- **Eine VORSCHAU des Dialogs im Editor** — unverändert kein Teil dieser Phase
-  (OWNER-ENTSCHEIDUNG 2026-09-17).
-- **Der offene Punkt `saveProject` SCHREIBT `settings` UNVALIDIERT** wird nicht gelöst; er
-  bleibt der Massstab, gegen den das Tor gebaut wird.
-
-### Die Pflichten dieser Scheibe
-
-1. **VORHER-WERTE VOR DEM ERSTEN EINGRIFF IN `src/`** — die neunzehn Werte plus die
-   Wiring-Ausgabe mit numerischer Pixel-ID, mit Querprobe gegen VERMERK P11.13-6.
-   **Basis-HTML: die 249 Bytes aus VERMERK P11.13-6, Punkt (d)**, byte-genau.
-2. **DIE HERKUNFT DER TEST-ERWARTUNGEN** — aus den Entscheidungen niedergeschrieben, **nie aus
-   dem Code** (docs/immer-beachten.md, EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE
-   ERWARTUNG NIE AUS DEM CODE). Die Meldungs-Konstante steht im Test als **Literal**.
-3. **N WIRD GEMESSEN** (P11.13-27), mit beiden Extremen. **STOPP-Bedingung: ohne Probe keine
-   Zahl.**
-4. **TESTS FÜR DIE BEDIENUNG** — `PublishView.tsx` hat weiterhin keine eigene Testdatei; die
-   Abdeckung entsteht in `CodeImporter.test.tsx`, in der Reihe `UI…`.
-5. **LIVE-TEST MIT DEM ERSATZ-INSTRUMENT.** Der Hash der geladenen Skript-Elemente aus VERMERK
-   P11.13-6, Punkt (c) — **NICHT „Speichern unter"**, das dort still versagt hat. **Ein
-   Vorher-Sicherungs-Stopp ist NICHT nötig:** die Vorher-Blockwerte stehen dort bereits.
-   **DER VORHER-WERT DES UNBENANNTEN WIRING-SKRIPTS IST EINE OWNER-MESSUNG VOM 2026-09-18** auf
-   `meta-test-5nlm3e.publayer.net`: **Index 2, `id` „-", Tag-Form 12 251 Bytes, sha256 (12)
-   `a3529b57452b`.** Es trägt keine Kennung und wird deshalb über seine POSITION in
-   `document.scripts` angesprochen.
-   **NACH DEM DEPLOY WIRD ZUERST NEU VERÖFFENTLICHT, DANN GEMESSEN — und der Grund ist am Code
-   geprüft:** Das Wiring entsteht **CLIENTSEITIG beim Veröffentlichen**. `publishProject`
-   (`src/app/projects/actions.ts`) nimmt `functionalHtml` als Argument entgegen; der Kommentar
-   dort sagt es wörtlich („functionalHtml ist CLIENT-generiert"), und der einzige Erzeuger ist
-   `generateFunctional` in `src/components/CodeImporter.tsx`. **Ein Deploy allein ändert das
-   ausgelieferte Wiring NICHT** — wer vorher misst, misst den alten Stand und hält ihn für
-   einen Regressions-Beleg.
-   **DER HANDY-SCHRITT LÄUFT AUF `unbekanntes-projekt-3jnjz9`, NICHT AUF `meta-test-5nlm3e`.**
-   Jene Seite trägt ein `<meta name="viewport">` (OWNER-ANGABE 2026-09-18), diese trägt keines
-   (Vorrat P11.13-8, ARCHITEKT-PRÜFUNG 2026-09-18: 0 Treffer). **Auf einer Seite ohne das Tag
-   misst der Schritt den Vorrats-Eintrag statt der Scheibe.**
-
-### Die Plan-Fragen — ALLE FÜNF GESCHLOSSEN (2026-09-18)
-
-Sie waren im Plan vom 2026-09-18 **als Kandidaten** beantwortet und sind am selben Tag
-entschieden worden (ARCHITEKT, G1 bis G7):
-1. **Der Helfer heisst `embedInScript` und liegt in `src/lib/script-embed.ts`**, ein Argument,
-   kein Schalter. Die Regel-Seite steht in Entscheidung P11.13-25, die Gestalt hier.
-2. **Feldname, Leser, Setzer, geprüfter Typ, Meldung:** `settings.consent.text` (Typ `unknown`,
-   flacher Nachbar nach P11.13-19) · `readConsentText` mit der EINZIGEN Zusicherung ·
-   `getConsentText` (liefert `undefined`, wenn das Feld fehlt — das ist der Standardtext-Fall
-   und ausdrücklich kein `"unknown"`) · `setConsentText` (mit `undefined` ENTFERNT es das
-   Feld) · opaker Typ `ConsentText`, Lesetyp `ConsentTextRead` · `CONSENT_TEXT_UNKNOWN_MESSAGE`
-   in `settings.ts`, **nicht** in `actions.ts` · `settingsEqual` bekommt EINEN skalaren Term
-   `getConsentText(a) === getConsentText(b)`.
-3. **Der Transport ist eine ZWEITE Pflicht-Achse** vom Typ `ConsentText | "standard"` —
-   Entscheidung **P11.13-29**, dort auch die vier verworfenen Gestalten und die Wortlaut-Prüfung
-   an P11.13-11.
-4. **KEIN Quelltext-Wächter; der Wächter sitzt am Ergebnis** — Entscheidung **P11.13-30**.
-5. **Das Feld ist einzeilig** (`input[type="text"]`, kein `textarea` — ein `textarea`
-   verspräche Zeilenumbrüche, die das Tor abweist), steht unter „Darstellung" und ist sichtbar
-   bei `"bar"` und `"modal"`, **nicht** an `custom` gebunden. **Platzhalter ist unser
-   Standardtext** — er zeigt, was ohne Eingabe erscheint, und **schreibt nichts**; das ist der
-   Unterschied zur Farb-Vorbelegung aus P11.13-22, die einen echten Wert schreibt, weil der
-   native Wähler kein „nicht gesetzt" kennt. **Ein geleertes Feld ruft den Setzer mit
-   `undefined`** und schreibt NIE einen leeren String. **Der Zeichenzähler liest N aus der
-   Konstante** und benutzt **dieselbe Zählfunktion wie das Tor** (P11.13-27). **Der Hinweis bei
-   unzulässigem Zeichen ist ROT** — anders als der Kontrast-Hinweis sperrt dieser etwas —,
-   nennt die Zeichenklasse und behauptet weder Ursache noch Rechtsfolge. **Tests in
-   `CodeImporter.test.tsx`; `PublishView.tsx` bekommt weiterhin keine eigene Testdatei.**
+**EIN AUSSCHLUSS IST MIT DER SCHEIBE EINGELÖST UND KEIN AUSSCHLUSS MEHR:** „die Maskierung
+der Pixel-ID" stand seit der Verdichtung der Scheibe 11.13b als Ausschluss mit dem Trigger
+„der Zuschnitt der Scheibe 4". **Sie ist gebaut** — die Pixel-ID läuft über den Helfer, und
+Vorrat P11.13-5 ist mit dieser Runde gestrichen.
 
 PROVENIENZ: Der Zuschnitt ist ARCHITEKT 2026-09-18 auf der Grundlage der Owner-Entscheidungen
-O4 und O5 und der Architekt-Entscheidungen E1 bis E4 desselben Tages; die Befunde, auf denen er
-ruht, stehen in VERMERK P11.13-7 und sind GEMESSEN (CC, 2026-09-18). **Die Freigabe steht
-aus.**
+O4 und O5 und der Architekt-Entscheidungen E1 bis E4 und G1 bis G7 desselben Tages. Die fünf
+Antworten sind der gebaute, gemessene und live geprüfte Stand desselben Tages (VERMERK
+P11.13-8); die Live-Angaben darin sind OWNER-MESSUNGEN und von CC nicht prüfbar. Die
+Verdichtung ist CC, 2026-09-18.
 
 ---
 
@@ -3136,53 +3342,36 @@ die Ordnung bestimmt, ist eine ABLEITUNG.
 
 ### P11.13-5 — DIE PIXEL-ID GELANGT OHNE `<`-MASKIERUNG IN DEN AUSGELIEFERTEN TEXT
 
-`CodeImporter.tsx` gibt `metaPixelId: getPixelId(settings, "meta")` an `generateFunctional`;
-über `buildWiringScript` landet der Wert in `buildMetaRuntime`
-(`src/lib/tracking/meta.ts`) als `var PS_PIXEL_ID = ${JSON.stringify(pixelId)};`.
-**`JSON.stringify` MASKIERT KEIN `<`.** **ANDERS ALS DIE MAPPING-TABELLE**, die in
-`generate.ts` ausdrücklich `.replace(/</g, "\\u003c")` bekommt — mit dem Kommentar, das
-verhindere den `</script>`-Ausbruch —, **erhält dieser Wert keine solche Maskierung**
-(GEMESSEN am Code, CC, 2026-09-17).
+**ERLEDIGT AM 2026-09-18 MIT DER SCHEIBE 11.13d. TITEL UND BELEG BLEIBEN, DER VOLLTEXT IST
+GESTRICHEN** (docs/arbeitsweise.md, „Wie ein Satz wieder herausgeht"); er ist unter dem
+Commit `d2a008a` vollständig nachzulesen.
 
-**DER AUSBRUCH IST SEIT DEM 2026-09-18 GEMESSEN — SACHKORREKTUR, NICHT STEMPEL.** Hier stand,
-der Ausbruch sei nicht erprobt und wer den Eintrag als belegte Lücke lese, lese ihn grösser,
-als er sei. **DAS IST WIDERLEGT, und ein Maßstab mit falschen Angaben taugt nicht als Maßstab**
-(docs/immer-beachten.md, EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD).
-**WAS GEMESSEN IST** (VERMERK P11.13-7, CC, 2026-09-18, Chromium, echte Ausgabe von
-`buildMetaRuntime`): Eine Pixel-ID mit `</script><img …>` **verlässt den Block** — das `<img>`
-wird ein echtes Element, das Wiring-Skript läuft **nicht** mehr, und der Rest des Blocks steht
-als sichtbarer Text auf der Seite. Mit einer **anführungszeichenfreien** Nutzlast **führt
-fremder Code aus** (`window.__AUSBRUCH === true`). Mit `<!--<script>` wird zusätzlich das
-NACHFOLGENDE Script-Element **still verschluckt** — null Fehler, null Konsoleneintrag.
-**DIE EINZIGE GRENZE, DIE BLEIBT:** gemessen ist nur **Chromium** auf `file://`, an einer
-Probeseite ohne fremdes CSS.
+**DER BELEG DER ERLEDIGUNG, vier Stücke:**
+- **BAU-COMMIT `a3e286b`** — die Einsetzstelle lautet seither
+  `var PS_PIXEL_ID = ${embedInScript(pixelId)};` (`src/lib/tracking/meta.ts`), und
+  `embedInScript` maskiert jedes `<` als Unicode-Escape (Entscheidung P11.13-25, Stufe (1):
+  jeder BETREIBER-WERT in Script-Rohtext).
+- **`MR1`** (`src/lib/tracking/meta.consent-wire.test.ts`) — die vier gemessenen
+  Ausbruchs-Nutzlasten durch die ECHTE Einsetzstelle: die Zahl der `<` bleibt die einer
+  harmlosen Kennung, `</script` und `<!--` kommen nicht vor, und der Rundlauf über
+  `PS_PIXEL_ID` liefert den Wert unverändert. **`MR2`** hält daneben, dass eine NUMERISCHE
+  Kennung zeichengleich eingebettet wird.
+- **DIE PROBE** (VERMERK P11.13-8, (e)): vier Läufe mit der Pixel-ID als Nutzlast, je mit
+  Kontrolle — `window.__AUSBRUCH` nie gesetzt, **zwei Script-Elemente wie in der Kontrolle**,
+  kein `<img>`, das Wiring läuft, null `pageerror`.
+- **LIVE, Schritt 5** (VERMERK P11.13-8, (a)): das unbenannte Wiring-Skript mit der echten
+  Kennung trägt in allen Läufen **12 251 Bytes / `a3529b57452b`** — zeichengleich zum
+  Vorher-Wert. **OWNER-MESSUNG vom 2026-09-18, von CC nicht prüfbar.**
 
-**HEUTE IST ES KEIN LOCH, und der Grund gehört dazu, sonst wird der Eintrag zum Alarm:** Wer
-die Pixel-ID setzt, ist der Betreiber — und ihm gehört das HTML der Seite ohnehin. Er kann
-dort schreiben, was er will; über die Pixel-ID gewinnt er nichts, was er nicht schon hat.
-**ES WIRD ERST EINE FRAGE, WENN BETREIBER-EINGABE IN EINEN TEXT GELANGT, DEN EIN ANDERER
-KONTROLLIERT** — oder wenn ein zweiter Weg denselben Wert woandershin trägt.
+**WAS AUS DEM EINTRAG BESTEHEN BLEIBT UND NICHT MITGESTRICHEN IST:** Die Richtigstellung an
+der Roadmap-Zeile 11.13, Punkt (g) — „SCHEIBE 4 IST DIE ERSTE STELLE, AN DER
+BETREIBER-EINGABE IN DEN AUSGELIEFERTEN TEXT GELANGT" trifft für den FREIEN TEXT zu, für
+Betreiber-Eingabe überhaupt nicht. Sie steht als Nachtrag vom 2026-09-17 an jener Zeile und
+ist von dieser Streichung unberührt.
 
-**WAS ER RICHTIGSTELLT:** Der Satz der Roadmap-Zeile 11.13, Punkt (g) — "SCHEIBE 4 IST DIE
-ERSTE STELLE, AN DER BETREIBER-EINGABE IN DEN AUSGELIEFERTEN TEXT GELANGT" — trifft für den
-FREIEN TEXT zu, für Betreiber-Eingabe überhaupt nicht. Der Nachtrag dazu steht an der
-Roadmap-Zeile.
-
-**TRIGGER: der Zuschnitt der Scheibe 4.** Dort ist die `<`-Frage ohnehin zu beantworten, und
-beide Wege werden zusammen geklärt statt zweimal.
-
-**TRIGGER EINGETRETEN AM 2026-09-18 — DER EINTRAG BLEIBT TROTZDEM STEHEN.** Der Zuschnitt der
-Scheibe 11.13d steht, und er nimmt die Pixel-ID ausdrücklich mit: Entscheidung P11.13-25 führt
-JEDEN BETREIBER-WERT, der in Script-Rohtext geht, über EINEN Helfer — und die Pixel-ID ist
-einer der heute drei. **NICHT jede Einbettung überhaupt:** Repo-Konstanten und
-server-vergebene Werte an anderer Stelle bleiben roh (jene Entscheidung, Stufe (3)).
-**GESTRICHEN WIRD ER ERST MIT DEM ABSCHLUSS DER SCHEIBE 11.13d, UND ZWAR MIT BELEG** — dem
-Bau-Commit und dem Wächter, der die rohe Einbettung rot macht. **Vorher wäre die Streichung
-eine Behauptung über Code, den es noch nicht gibt.**
-
-PROVENIENZ: der Weg und die fehlende Maskierung GEMESSEN am Code (CC, 2026-09-17); die
-Maskierung der Mapping-Tabelle im selben Lauf GELESEN. Dass der Betreiber das HTML ohnehin
-kontrolliert, ist eine ABLEITUNG aus dem Schreibweg, keine Messung.
+**DIE GRENZE DER MESSUNG BLEIBT EBENFALLS STEHEN:** Der Ausbruch ist in **Chromium** über
+`file://` gemessen, an einer Probeseite ohne fremdes CSS; Firefox und WebKit sind an dieser
+Achse ungemessen.
 
 ### P11.13-6 — EIN SCROLLBALKEN BRICHT DAS GLEICHRANGIGKEITS-KRITERIUM BEI 360 px, UND ZWAR IM BESTAND
 
@@ -3415,3 +3604,73 @@ ARCHITEKT-PRÜFUNG vom 2026-09-18 an den hochgeladenen Dateien; dass der Dialog 
 war und dass die Erfahrung wiederkehrend ist, sind OWNER-ANGABEN desselben Tages — **CC kann
 beides nicht prüfen.** **Die Ursache ist UNGEMESSEN.** Der Volltext der Nachbarregel GELESEN
 in docs/immer-beachten.md (CC, 2026-09-18).
+
+### (2) SCHREIBWERKZEUGE VERÄNDERN IN DIESER UMGEBUNG STILL BYTES, UND KEIN GATE MELDET ES
+
+**DIE AUSSAGE:** Wer in diesem Projekt eine Datei schreibt — mit dem Editier-Werkzeug, über
+einen Heredoc, über ein Skript oder über `git stash` —, muss damit rechnen, dass **Zeichen
+verändert ankommen, die niemand angefasst hat**. Der Bau der Scheibe 11.13d hat das an
+**drei** verschiedenen Werkzeugen gezeigt, und **in keinem der Fälle hat eines der vier
+Gates etwas gemeldet.**
+
+**DIE BELEGE — alle GEMESSEN (CC, 2026-09-18), je mit dem Instrument, das sie gefunden hat:**
+1. **UNICODE-ESCAPES IN DOKU-TEXT, FÜNFMAL.** Ein Escape für das Kleiner-Zeichen, in einem
+   Code-Span geschrieben, stand danach als ZEICHEN in der Datei — dreimal im Rumpf von
+   Entscheidung P11.13-25, zweimal in VERMERK P11.13-7. Sätze wie „danach jedes `<` als `<`"
+   waren die Folge. **Gefunden über eine Zählung der verbliebenen Escape-Vorkommen**; kein
+   Gate liest Doku-Text.
+2. **UNICODE-ESCAPES IN EINER TESTDATEI.** In `src/lib/script-embed.test.ts` wurden die
+   Escapes für U+2028, U+2029 und U+1F600 **still in ihre Zeichen verwandelt** — danach
+   stand ein **roher Zeilentrenner in einem String-Literal**. **Der Test war dabei grün**,
+   und `tsc`, `lint` und `build` ebenso. Gefunden über eine Codepunkt-Zählung.
+   **DER FALL WÄRE BEI U+0000 EIN NUL-BYTE IN EINER QUELLDATEI GEWESEN** — genau die
+   Fehlerklasse, die docs/immer-beachten.md unter „EIN NACHWEIS AN EINER NEUEN DATEI IST
+   BLIND" bereits führt, und für die dieselbe Regel `String.fromCharCode` als das
+   tragende Mittel nennt.
+3. **ZEILENENDEN IN EINER `w/crlf`-DATEI.** Beim Einfügen in `src/components/PublishView.tsx`
+   entstanden ein `\r\r\n` und ein einzelnes `\n`. Folge: `git ls-files --eol` meldete
+   **`w/-text`** — git hielt die Datei für **binär** —, und `git diff --stat` zeigte
+   **1 494 geänderte Zeilen statt 83**. **Alle vier Gates waren grün.** Gefunden allein über
+   `git ls-files --eol` und eine Suche nach „CR ohne LF".
+4. **`git stash`, bereits als Vorrat P11.13-7 geführt** (Scheibe 11.13c): Der Rundlauf gab
+   `PublishView.tsx` mit CR=0 zurück; von sechzehn Dateien meldete `sha256sum -c` eine als
+   FAILED. **Auch dort hätte die vorgeschriebene Prüfung der Werkzeug-Regel — `git status`
+   plus der Ausschluss leerer Diffs — nichts gemeldet**, weil der Diff gerade nicht leer war.
+
+**WAS DIE BESTEHENDE REGEL LEISTET UND WAS NICHT.** docs/immer-beachten.md führt
+„WERKZEUG-REGEL: `sed -i` STRIPPT IN DIESER UMGEBUNG STILL DAS CR" und sagt dort
+ausdrücklich, ihre Reichweite sei die **WIRKUNG** und nicht das Kommando im Titel: „Die Frage
+lautet nie ‚steht es in der Aufzählung?', sondern ‚schreibt es die ganze Datei?'". Sie nennt
+in ihrer Aufzählung `sed -i`, `perl -i`, die PowerShell-Schreiber, die Umlenkungen, `tee`,
+Formatierer **und das Write-Werkzeug, wo es eine BESTEHENDE Datei ersetzt**.
+**SIE NENNT DAS EDITIER-WERKZEUG NICHT, UND SIE NENNT WEDER `git stash` NOCH EINEN
+HEREDOC-PFAD.** Und ihre vorgeschriebene Prüfung — `git status` plus der Ausschluss leerer
+Diffs — **hat in zwei der vier Fälle nichts gemeldet**: Fall 3 erzeugte einen sehr grossen
+Diff, Fall 4 ebenfalls.
+**DAZU KOMMT EINE ACHSE, DIE DIE REGEL GAR NICHT KENNT: DIE UMDEUTUNG EINES ESCAPES.** Dort
+wird nicht die ganze Datei neu geschrieben und auch kein Zeilenende gedreht — es wird **eine
+Zeichenfolge im Inhalt durch eine andere ersetzt**, und der Diff ist völlig unauffällig.
+
+**WAS UNABHÄNGIG VON DER ABLAGE-FRAGE GILT UND AB SOFORT BEFOLGT WIRD:** Ein Escape, dessen
+Zeichen nicht im Quelltext stehen soll, wird **im Code gebaut** (`String.fromCharCode`,
+`String.fromCodePoint`) oder in der **Quellform mit doppeltem Backslash** geschrieben; nach
+jedem Schreiben wird auf CR-ohne-LF, LF-ohne-CR und NUL geprüft, und bei einer neuen Datei
+am **committeten Objekt**. Beides ist in dieser Scheibe gefahren worden.
+
+**NICHT ENTSCHIEDEN, und ohne diesen Satz stellt die Hebung eine zweite Regel neben eine
+bestehende, und dann greift keine mehr richtig:** ob daraus eine **EIGENE Regel** wird oder
+eine **ERWEITERUNG der Werkzeug-Regel** um das Editier-Werkzeug, `git stash`, den
+Heredoc-Pfad und die Escape-Achse. **Für eine Erweiterung spricht**, dass jene Regel ihre
+Reichweite bereits über die WIRKUNG definiert und eine dritte Regel auf derselben Achse die
+Trefferwahrscheinlichkeit senkt. **Für eine eigene spricht**, dass die Escape-Umdeutung
+weder „die ganze Datei schreibt" noch ein Zeilenende dreht — sie fällt unter den Wortlaut
+jener Regel nicht, auch nicht unter ihren Reichweiten-Satz. **KEINE EMPFEHLUNG.**
+
+**KEIN EINTRAG IN docs/immer-beachten.md IN DIESER RUNDE** — die Hebung ist Sache des
+Phasenendes.
+
+PROVENIENZ: Die Fälle 1 bis 3 sind GEMESSEN am eigenen Lauf (CC, 2026-09-18) und stehen als
+harte Angaben in VERMERK P11.13-8, (f). Fall 4 ist GEMESSEN (CC, 2026-09-18) und steht als
+Vorrat P11.13-7. Der Wortlaut der bestehenden Werkzeug-Regel und ihrer Aufzählung ist
+GELESEN in docs/immer-beachten.md (CC, 2026-09-18). **Dass die Escape-Umdeutung unter jenen
+Wortlaut nicht fällt, ist eine ABLEITUNG aus ihm, keine Messung.**

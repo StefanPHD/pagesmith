@@ -2355,6 +2355,36 @@ liegen beide hier und finden einander.
       Wortlaut des Ersatz-Instruments: VERMERK P11.13-6, Punkt (c).
       DER MARKER BLEIBT `[ ]` — Scheibe 4 aus (c), der freie Text, steht aus, und damit ist
       Code zu schreiben (CLAUDE.md, "WANN [x] GESETZT WIRD — DAS KRITERIUM").
+
+      STAND 2026-09-18, ZWEITER DES TAGES — SCHEIBE 4 IST GEBAUT UND LIVE BEWIESEN: der
+      FREIE SACHTEXT, Bau-Commit `a3e286b`, mit bestätigtem Live-Test auf einer realen
+      Seite. Der Betreiber ersetzt den erläuternden Satz des Dialogs; Knöpfe, Weg,
+      Gruppen-Namen, die drei zugänglichen Namen und die Konsolen-Warnung bleiben UNSER
+      Wortlaut (bindende Entscheidung P11.13-23, Guardrail aus Punkt (h)). Vermerk,
+      Entscheidungen und Vorrat: VERMERK P11.13-8 in docs/aktiver-stand.md.
+      DER AUSBRUCH AUS PUNKT (g) IST GESCHLOSSEN — FÜR DEN SACHTEXT UND FÜR DIE PIXEL-ID.
+      Beide laufen seither über EINEN Einbettungs-Helfer (`embedInScript`,
+      `src/lib/script-embed.ts`), der jedes `<` als Unicode-Escape maskiert; daneben trägt
+      der Sachtext ein eigenes Tor gegen Steuer- und Bidi-Zeichen und eine Längengrenze.
+      DIE ZWEI LINIEN TRAGEN UNABHÄNGIG, und das ist GEMESSEN: Die Mutationen M-c (Tor weg)
+      und M-a (Maskierung weg) werden EINZELN rot, auf DISJUNKTEN Tests — anders als in der
+      Scheibe 3, wo eine der beiden allein grün blieb. Fundstellen: Entscheidungen
+      P11.13-25 (der Helfer, drei Geltungsstufen) und P11.13-26 (das Tor).
+      ZWEI SÄTZE DIESER ZEILE SIND DAMIT ÜBERHOLT, und sie werden hier benannt statt
+      umgeschrieben: Der Nachtrag vom 2026-09-17 an Punkt (g) sagt „DER AUSBRUCH IST NICHT
+      ERPROBT" — er IST seit dem 2026-09-18 erprobt und gelingt ohne den Helfer (VERMERK
+      P11.13-7); und derselbe Nachtrag verweist auf „Vorrat P11.13-5 der Standdatei", dessen
+      Volltext mit dem Abschluss dieser Scheibe gestrichen ist — Titel und Beleg der
+      Erledigung stehen dort weiter. Der Wortlaut des Nachtrags bleibt als Zeitdokument
+      unangetastet.
+      DER LIVE-NACHWEIS TRÄGT ZWEI GRENZEN, DIE MITMÜSSEN: Gemessen ist Chrome auf dem
+      Desktop und ein Handy laut Owner; FIREFOX UND WEBKIT SIND AN KEINER ACHSE DIESER
+      SCHEIBE GEMESSEN. Und die Längengrenze ist KEINE reine Messung: die gemessene Kante
+      liegt bei 416 Codepunkten (Fenster, 360×480, Chromium), gesetzt sind 300 — der
+      Abstand deckt Schrift- und Browser-Varianz und ist UNGEMESSEN (Entscheidung
+      P11.13-27).
+      DER MARKER BLEIBT `[ ]` — SCHEIBE 5 aus (c), die SPRACHE, steht aus, und damit ist
+      Code zu schreiben (CLAUDE.md, "WANN [x] GESETZT WIRD — DAS KRITERIUM").
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

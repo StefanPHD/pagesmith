@@ -2314,6 +2314,28 @@ liegen beide hier und finden einander.
       Standdatei. SCHEIBE 3 (freie Farben) MUSS DIESE FRAGE NEU ENTSCHEIDEN — dort fällt die
       feste Tabelle, auf der die heutige Antwort ruht.
       DER MARKER BLEIBT `[ ]` — die Scheiben 3 und 4 aus (c) stehen aus.
+
+      STAND 2026-09-18 — SCHEIBE 3 IST GEBAUT UND LIVE BEWIESEN: eigene Farben als VIERTE
+      Darstellung, zwei Werte (Hintergrund und Text) hinter einem Format-Tor auf
+      `^#[0-9a-f]{6}$`, Bau-Commit `1d5ea7d`, mit bestätigtem Live-Test auf einer realen
+      Seite — darunter der Hinweistext „Kontrast 1,20:1 — die Schwelle ist 4,5:1.
+      Veröffentlichen bleibt möglich.", und das Veröffentlichen gelang. Vermerk,
+      Entscheidungen und Vorrat: VERMERK P11.13-6 in docs/aktiver-stand.md.
+      DIE FRAGE AUS DEM NACHTRAG DARÜBER IST BEANTWORTET, UND ANDERS ALS DORT ERWARTET: DIE
+      FESTE TABELLE IST NICHT GEFALLEN. „Eigene Farben" ist ein VIERTER Zweig neben hell,
+      dunkel und automatisch; für die drei Tabellenwerte und für den ausgeschalteten Dialog
+      ist der ausgelieferte Text byte-gleich geblieben (neunzehn Werte vorher und nachher
+      identisch, GEMESSEN). Auch der vierte Zweig kommt OHNE CSS-Variablen aus — er setzt
+      literales Hex in Einzel-Eigenschaften. Fundstellen: Entscheidungen P11.13-12 (die
+      vierte Darstellung) und P11.13-15 (erzeugte Deklarationen).
+      DER LIVE-NACHWEIS TRÄGT EINE GRENZE, DIE MITMUSS: Das vorgesehene Instrument
+      („Speichern unter") hat versagt — zehn Sicherungen für zehn verschiedene Zustände
+      waren byte-gleich und trugen keinen Dialog-Baustein, obwohl der Dialog sichtbar war.
+      Belegt ist die Achse über ein Ersatz-Instrument (Hash der geladenen Skript-Elemente);
+      der AUS-Fall ist damit live NICHT belegt, sondern nur lokal. Einzelheiten und der
+      Wortlaut des Ersatz-Instruments: VERMERK P11.13-6, Punkt (c).
+      DER MARKER BLEIBT `[ ]` — Scheibe 4 aus (c), der freie Text, steht aus, und damit ist
+      Code zu schreiben (CLAUDE.md, "WANN [x] GESETZT WIRD — DAS KRITERIUM").
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

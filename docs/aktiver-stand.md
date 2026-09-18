@@ -35,7 +35,7 @@ EINER DATEI MIT VERZEICHNIS NICHT). Wer bearbeitet, ankert entsprechend.
 5. Entscheidungen, die über ihre Scheibe hinaus binden
 6. Zuschnitt der Scheibe 11.13a — DIE ANORDNUNG (VERDICHTET 2026-09-17)
 7. Zuschnitt der Scheibe 11.13b — DAS THEMA (VERDICHTET 2026-09-17)
-8. Zuschnitt der Scheibe 11.13c — EIGENE FARBEN
+8. Zuschnitt der Scheibe 11.13c — EIGENE FARBEN (VERDICHTET 2026-09-18)
 9. Vorrat — gemeldet, nicht gebaut
 10. Hebungs-Kandidaten
 
@@ -56,7 +56,10 @@ Einwilligungs-Dialogs — Leiste und Fenster der Phase 11.5 — an seine Seite a
    unauffälligen Weg. **KEIN neues Einstellungsfeld, KEINE Farben, KEIN freier Text.**"
 2. **DAS THEMA:** hell, dunkel, automatisch — EIN Wert, kein Farbwähler.
 3. **FREIE FARBEN.** Erst wenn Scheibe 2 steht und live geprüft ist.
-4. **FREIER TEXT.** Eine eigene Scheibe; sie ist die einzige mit einer Sicherheitsachse.
+4. **FREIER TEXT.** Eine eigene Scheibe; ihre Sicherheitsachse ist die des freien
+   Textes, s. (g). **AUCH SCHEIBE 3 TRÄGT EINE EIGENE SICHERHEITSACHSE** — eigene Farben
+   sind Betreiber-Eingabe im ausgelieferten Text, und sie wird dort von einem Format-Tor
+   auf `^#[0-9a-f]{6}$` getragen (Entscheidung P11.13-14).
 
 **DIESE PHASE BEGINNT MIT SCHEIBE 1.** Die Reihenfolge gegenüber 11.5e-2 ist erfüllt: Der
 Widerruf ist gebaut (Archiv 11.5, VERMERK 7, 2026-09-16), und das Phasenende 11.5 ist am
@@ -71,14 +74,23 @@ Umbau von L12 nicht nutzbar.
 **WIE DIESE PHASE MIT DER AUFLAGE UMGEHT, STEHT IN ENTSCHEIDUNG P11.13-1** — sie lässt den
 neuen Zustand gar nicht erst entstehen.
 
-**DIE SICHERHEITSACHSE (g) GEHÖRT SCHEIBE 4, NICHT DIESER.** Wörtlich: "SCHEIBE 4 IST DIE
-ERSTE STELLE, AN DER BETREIBER-EINGABE IN DEN AUSGELIEFERTEN TEXT GELANGT." `JSON.stringify`
-schützt gegen einen JavaScript-Ausbruch, entkommt aber kein `<`; ein Text mit `</script>`
-schlösse den Script-Block im HTML-Parser. Folge dort: eine EIGENE Aufklärung, eine benannte
-Invariante und Wächter mit FEINDLICHER Eingabe. "SIE WIRD NICHT NEBENBEI AUS SCHEIBE 3
-HERAUSGEBAUT."
-**FÜR SCHEIBE 1 IST DIESE ACHSE NICHT BERÜHRT:** Es entsteht kein Eingabefeld; jeder String
-bleibt eine Konstante im Repo.
+**DIE SICHERHEITSACHSE (g) — SIE GEHÖRT SCHEIBE 4 UND SCHEIBE 3.** Wörtlich zur Scheibe 4:
+"SCHEIBE 4 IST DIE ERSTE STELLE, AN DER BETREIBER-EINGABE IN DEN AUSGELIEFERTEN TEXT
+GELANGT." `JSON.stringify` schützt gegen einen JavaScript-Ausbruch, entkommt aber kein `<`;
+ein Text mit `</script>` schlösse den Script-Block im HTML-Parser. Folge dort: eine EIGENE
+Aufklärung, eine benannte Invariante und Wächter mit FEINDLICHER Eingabe. "SIE WIRD NICHT
+NEBENBEI AUS SCHEIBE 3 HERAUSGEBAUT."
+**DER SATZ „ERSTE STELLE" GILT DEM FREIEN TEXT, NICHT DER BETREIBER-EINGABE ÜBERHAUPT** —
+die Pixel-ID gelangt schon heute ohne `<`-Maskierung in den ausgelieferten Text (Vorrat
+P11.13-5; Nachtrag vom 2026-09-17 an der Roadmap-Zeile).
+**UND SCHEIBE 3 TRÄGT EINE EIGENE SICHERHEITSACHSE:** Eigene Farben sind Betreiber-Eingabe
+im ausgelieferten Text. Getragen wird sie dort vom **Format-Tor auf `^#[0-9a-f]{6}$`**
+(Entscheidung P11.13-14) — einem Alphabet, das die drei Ebenen CSS, JS-String und
+HTML-Rohtext ZUGLEICH deckt —, und die Wächter mit feindlicher Eingabe sind in jener Scheibe
+gefahren worden (Invariante Z8; `CF2`, `PT5`, `CT4`). Die Roadmap-Zeile führt das seit dem
+2026-09-18 ebenso.
+**FÜR SCHEIBE 1 WAR DIESE ACHSE NICHT BERÜHRT:** Dort entstand kein Eingabefeld; jeder
+String blieb eine Konstante im Repo.
 
 **DER GUARDRAIL (h):** "Die Knopf-Logik und die visuelle Gleichrangigkeit von 'Alle
 akzeptieren' und 'Ablehnen' bleiben im System verankert; anpassbar ist der erläuternde
@@ -1029,6 +1041,242 @@ PROVENIENZ DIESES VERMERKS: sämtliche Angaben GEMESSEN bzw. GELESEN am Repo (CC
 keine Probe.** Dass ein Ausbruch über eine der drei Ebenen tatsächlich gelänge, ist eine
 ABLEITUNG aus dem Code und ausdrücklich **UNGEMESSEN**.
 
+### VERMERK P11.13-6 — Scheibe 11.13c, EIGENE FARBEN, abgeschlossen 2026-09-18
+
+**GEGENSTAND:** Der Betreiber wählt als VIERTE Darstellung „eigene Farben" und dazu zwei
+Werte — einen Hintergrund und einen Text; alles Übrige wird abgeleitet (Entscheidung
+P11.13-13). Die Werte gehen als literales Hex in erzeugte Farb-Überschreibungen.
+
+**BAU-COMMIT:** `1d5ea7d` — `feat(consent): eigene Farben als vierte Darstellung (11.13c)`,
+gepusht (`ead0e4e..1d5ea7d  main -> main`). **21 Dateien, 1 735 Zeilen hinzu, 155 entfernt**,
+darunter die zwei NEUEN `src/lib/contrast.ts` (86 Zeilen) und `src/lib/contrast.test.ts`
+(107) — GEMESSEN am Repo (`git show --stat`, CC, 2026-09-18). **`consent-revoke.ts` NICHT im
+Commit**, wie schon in 11.13a und 11.13b: `wrapRevoke` bekommt den fertigen Aufbau, der Stil
+steht dort bereits im String.
+
+**DIE VIER GATES:** `vitest run` **von 1 829 auf 1 857 Tests** bei 84 → **85** Dateien
+(1 856 nach dem Bau, +1 mit `UI11` aus der Korrektur-Runde). Die 1 829 sind GEMESSEN vor dem
+ersten Eingriff in `src/` (`git stash push -- src/`, voller Lauf, `git stash pop`) und
+deckungsgleich mit VERMERK P11.13-4. `tsc --noEmit` exit 0 · `lint` 0 errors / 1 warning (die
+vorbestehende in `consent.test.ts`) · `build` Compiled successfully. Alle vier GEMESSEN (CC,
+2026-09-18), zuletzt nach der Korrektur-Runde.
+
+**DIE TRAGENDE INVARIANTE Z1 IST EINGELÖST — NEUNZEHN WERTE VORHER UND NACHHER IDENTISCH**
+(GEMESSEN, CC, 2026-09-18; `diff` über beide Wertelisten ohne Kopfzeile: identisch): zwölf
+Blockwerte (2 Formen × 2 Zweige × 3 Tabellen-Darstellungen) und sieben Ausgabetexte,
+einschliesslich des Aus-Falls. **SIE IST AUCH STRUKTURELL:** `consentThemeCss({theme:"light"})`
+liefert weiter den LEEREN String; `CSS1` und `CSS8` halten das ohne Zahl.
+
+**DIE ZWEI GENAUEN NAMEN, DIE DER ZUSCHNITT OFFENLIESS:** die Kontrastfunktion heisst
+`contrastRatio` und liegt in der NEUEN Datei `src/lib/contrast.ts` (mit `relativeLuminance`);
+die Prüfstelle heisst `readConsentColor` und trägt die EINZIGE Zusicherung des opaken Typs
+`ConsentColor` (Entscheidung P11.13-17, Wächter `CF1`). Die Vorbelegungs-Konstanten heissen
+seit der Korrektur-Runde `CONSENT_COLOR_BACKGROUND_VORBELEGUNG` und
+`CONSENT_COLOR_TEXT_VORBELEGUNG` — **nicht `…_FALLBACK`**: ein Rückfall ist eine LESESEITE,
+und genau den schliesst Entscheidung P11.13-22 aus.
+
+#### (a) DAS INSTRUMENT DES LIVE-NACHWEISES
+
+**Chrome auf dem Desktop; Chrome auf einem iPhone 13.** Chrome auf iOS rendert mit WebKit —
+**WebKit ist damit live BEOBACHTET, nicht gemessen.** **Firefox ist an keiner Achse dieser
+Scheibe gemessen.** Lokal ist weiterhin nur Chromium gemessen.
+OWNER-ANGABE vom 2026-09-18, vom Architekten weitergegeben; **CC kann sie nicht prüfen.**
+
+#### (b) WAS BESTANDEN IST
+
+**Die Schritte 1, 2 und 6 bis 13 der Live-Anleitung sind laut Owner bestanden** — Regression
+der unberührten Seite und des ausgeschalteten Dialogs, die zwei Felder mit ihrer Vorbelegung,
+das Überleben der gespeicherten Wahl beim Umschalten, P1/P2/P3 veröffentlicht, der Widerruf
+in den eigenen Farben, der Fokus, das echte Handy.
+
+**DER HINWEISTEXT, WÖRTLICH AN EINEM PAAR MIT 1,20:1** — und das ist die Kernzusage von
+Entscheidung P11.13-16: **„Kontrast 1,20:1 — die Schwelle ist 4,5:1. Veröffentlichen bleibt
+möglich."** **Das Veröffentlichen gelang.**
+**DER IN DER ANLEITUNG GENANNTE P2-WERT 4,47 IST LOKAL BELEGT** (Probe und `CT1`), **live
+NICHT abgelesen** — der Owner hat ein anderes Paar gewählt. Wer die 4,47 für einen
+Live-Befund hält, liest eine Messung, die es nicht gibt.
+OWNER-ANGABEN vom 2026-09-18, vom Architekten weitergegeben; **CC kann sie nicht prüfen.**
+
+#### (c) DIE SCHRITTE 3 BIS 5 — EIN INSTRUMENTENWECHSEL, UND ER IST DIE TRAGENDE ANGABE DIESES VERMERKS
+
+**DAS VORGESEHENE INSTRUMENT HAT VERSAGT, UND ZWAR STILL.** „Speichern unter" in Chrome
+lieferte **zehn Dateien** (Vorher/Nachher × aus, Leiste hell, Leiste dunkel, Fenster hell,
+Fenster dunkel) — **alle 14 385 Bytes, alle sha256 `2de7db6db78f001a…`, alle OHNE jeden
+Dialog-Baustein**: `__ps_clb`, `attachShadow` und `pagesmithConsentRevoke` je **0 Treffer**;
+Positivkontrolle im selben Lauf: `__ps_pve` und `pagesmith-consent` je **1**. **Der Dialog war
+in jedem der Fälle eingestellt, veröffentlicht und auf dem Bildschirm sichtbar.**
+GEMESSEN vom ARCHITEKTEN an den hochgeladenen Dateien (2026-09-18); die Sichtbarkeit ist
+OWNER-ANGABE. **DIE URSACHE IST UNGEMESSEN** — die Vermutung lautet auf eine
+zwischengespeicherte Fassung, und sie bleibt eine Vermutung.
+
+**DIE FOLGE, UND SIE IST GRÖSSER ALS DIE DREI SCHRITTE:** Der Vorher/Nachher-Vergleich dieser
+Dateien belegt **NICHTS** — **auch nicht für „aus".** Der Aus-Fall ist **LOKAL** belegt
+(`T1`, `T-OFF` und die neunzehn Werte oben), **live nicht.**
+
+**DAS ERSATZ-INSTRUMENT: DER HASH DER GELADENEN SKRIPT-ELEMENTE IN DER KONSOLE DER LIVE-SEITE.**
+Es steht hier im WORTLAUT, weil eine spätere Runde die Messung sonst nicht wiederholen kann:
+
+```js
+(async () => { const enc = new TextEncoder(); const sha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 12); const rows = []; for (const [i, el] of [...document.scripts].entries()) { const t = el.textContent; const tag = '<script' + (el.id ? ' id="' + el.id + '"' : '') + '>' + t + '</script>'; rows.push([i, el.id || '-', enc.encode(t).length, await sha(t), enc.encode(tag).length, await sha(tag)].join('\t')); } console.log(location.href + '\n' + rows.join('\n')); })();
+```
+
+**VERGLEICHSGRÖSSE IST DIE TAG-FORM**, nicht der blosse Rumpf — die lokalen Vorher-Werte sind
+an derselben Form erhoben.
+
+**DAS ERGEBNIS — OWNER-MESSUNG, live am 2026-09-18 auf `meta-test-5nlm3e.publayer.net`, nach
+dem Deploy neu veröffentlicht:**
+
+| Zustand | Block | Bytes | sha256 (12) |
+|---|---|---|---|
+| Leiste hell | `__ps_clb` | 4 603 | `7ec172a65fa5` |
+| Leiste hell | `__ps_crv` | 4 918 | `14510803fd28` |
+| Leiste dunkel | `__ps_clb` | 4 932 | `9468307af5b1` |
+| Leiste dunkel | `__ps_crv` | 5 247 | `c073ee9c405e` |
+| Fenster hell | `__ps_cmo` | 5 051 | `674875af751a` |
+| Fenster hell | `__ps_crv` | 5 366 | `75110375e270` |
+
+**ALLE SECHS SIND ZEICHENGLEICH MIT DEN VORHER-WERTEN, DIE CC VOR DEM ERSTEN EINGRIFF IN
+`src/` ERHOBEN HAT** (Bau-Bericht vom 2026-09-18, Auftrag 1; geprüft gegen diesen Bericht,
+nicht gegen die Angabe des Architekten — CC, 2026-09-18). **DAMIT IST DIE BYTE-GLEICHHEIT VON
+„hell" UND „dunkel" AN EINER ECHTEN AUSGELIEFERTEN SEITE VERANKERT**, und zwar für beide
+Formen und beide Zweige — mehr, als die drei ausgefallenen Schritte verlangt hatten.
+**WAS ES NICHT BELEGT:** den Aus-Fall (dort gibt es keinen Block, den man hashen könnte) und
+„automatisch" (live nicht gesichert, s. die Pflicht 5 des Zuschnitts).
+
+#### (d) DAS BASIS-HTML DER LOKALEN QUERPROBE — IM WORTLAUT, DAMIT ES NICHT WIEDER VERLORENGEHT
+
+**249 Bytes, sha256 `38b3eee3cf1b16efb6984a513f2a5e534152ff2e3d3084dbaf174179c95d5b6c`**
+(GEMESSEN, CC, 2026-09-18). Es steht ab dem Bau byte-genau im Treiber; hier steht es, weil ein
+Treiber im Scratchpad liegt und mit ihm verschwindet — genau das ist dem Basis-HTML der
+VERMERKE P11.13-1, -3 und -4 widerfahren (VERMERK P11.13-5).
+
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Probeseite 11.13c</title>
+</head>
+<body>
+<main>
+<h1>Probeseite</h1>
+<p>Ein Absatz.</p>
+</main>
+</body>
+</html>
+```
+
+**DAS ALTE BASIS-HTML IST UND BLEIBT VERLOREN.** Der Rekonstruktionsversuch aus dem bekannten
+`off`-sha256 fand unter 8 000 Kandidaten **null** mit der nötigen Länge von 320 Bytes
+(GEMESSEN, CC, 2026-09-18). **DIE QUERPROBE GEGEN DIE VERMERKE P11.13-3 UND -4 IST TROTZDEM
+GEFÜHRT, UND ZWAR AN DER RICHTIGEN ACHSE:** Die **zwölf basis-UNABHÄNGIGEN** Werte stimmen
+EXAKT — vier sha256 und acht Blockgrössen. Die sieben Ausgabewerte weichen um **genau 71
+Bytes** ab, an **allen sieben identisch** (249 gegen 320 Bytes Eingabe). Eine Abweichung, die
+an sieben unabhängigen Werten exakt konstant ist, hat eine Ursache, und das ist die Eingabe.
+
+#### (e) DAS VIEWPORT-TAG — WARUM DER DIALOG AUF MOBIL KLEIN WIRKT
+
+**Die Testseite `meta-test-5nlm3e` trägt KEIN `<meta name="viewport">`** — OWNER-ANGABE
+(Volltextsuche im Browser), **bestätigt an den hochgeladenen Dateien: 0 Treffer**
+(ARCHITEKT-PRÜFUNG 2026-09-18). Ohne dieses Tag legt der mobile Browser eine breite
+Ersatz-Fläche zugrunde und skaliert die ganze Seite herunter — **der Dialog wird mit ihr
+klein.** **DAS IST KEINE REGRESSION DIESER SCHEIBE**, und es ist auch kein Befund über die
+Leiste: Es trifft jede Seite ohne das Tag und jede Darstellung gleichermassen. Der
+Produkt-Befund dazu liegt als Vorrat P11.13-8.
+
+#### (f) DIE LOKALE PROBE UND DIE PFLICHT-MUTATIONEN — ZAHLEN
+
+**DIE PROBE** (Playwright/Chromium, `file://` im Scratchpad, echter Ausgabetext über
+`injectPageViewEmitter`, `localStorage.clear()` + Reload je Messung, **Probeseite mit Link,
+Knopf und Feld ausserhalb des Dialogs** — Auflage Vorrat P11.13-4; Fehler-Listener VOR dem
+Lauf registriert; `.playwright-mcp/` vorher als ignoriert geprüft). **60 Zustände:** 3 Paare ×
+2 Formen × 5 Viewports × ein- und ausgeklappt. **Die drei Paare, vor dem Lauf festgelegt:**
+**P1** `#ffffff`/`#111827` (17,7397) · **P2** `#ffffff`/`#777777` (4,4781, knapp scheiternd) ·
+**P3** `#0b1020`/`#e8eaf0` (15,7397).
+
+- **P11.13-3: 60/60 erfüllt** (drin und treffbar).
+- **P11.13-4 (Fokus): 30/30** — nach dem Klick ist `root.activeElement` ein `checkbox` im
+  eigenen Host, `scrollY` **400 → 400** in jedem Lauf.
+- **P11.13-5: Breiten durchgehend 160/160; `wegTeiltMit` ∈ {0, 2} in 29 von 30** eingeklappten
+  Zuständen. **DIE EINE AUSNAHME GEHÖRT NICHT DIESER SCHEIBE** — Gegenprobe im selben
+  Werkzeug, s. Vorrat P11.13-6.
+- **KONTRAST, ZWEI WEGE, KEINE ABWEICHUNG:** der Browser-Weg (Farben am gerenderten Dokument
+  gelesen, Formel dort neu implementiert) ist mit dem Funktions-Weg auf **vier
+  Nachkommastellen** gleich — P1 **17,7397**, P2 **4,4781**, P3 **15,7397**, beide Formen.
+  **UND ALLE SIEBEN PAARE TRAGEN DENSELBEN WERT** — Text, Knopftext, Rahmen, Weg-Text,
+  Fokus-Ring, Kästchen **und Container-Linie**. Das ist der gemessene Beleg für das
+  Ein-Paar-Argument aus Entscheidung P11.13-13 und für P11.13-20.
+- **FOKUSSIERT IST VON UNFOKUSSIERT ZU UNTERSCHEIDEN, 3/3** — Bildpunkt-Prüfsummen des
+  Knopf-Rechtecks: P1 **687 956 617 / 2 262 768 076** · P2 **1 389 801 320 / 881 316 029** ·
+  P3 **1 659 823 554 / 999 269 696**.
+- **`color-scheme` AM NATIVEN KÄSTCHEN WIRKT, PER BILDPUNKT BELEGT:** P1/P2 `light`,
+  UA-Rahmen `rgb(0,0,0)`, Prüfsumme **2 966 584 599** — P3 `dark`, UA-Rahmen
+  `rgb(255,255,255)`, Prüfsumme **1 454 854 035**. `getComputedStyle` genügt dafür nicht, wie
+  Entscheidung P11.13-21 verlangt.
+- **UNGEFANGENE FEHLER: KEINE**, über alle Läufe.
+
+**DIE FÜNF PFLICHT-MUTATIONEN** (je einzeln gesetzt, über die GANZE Suite gemessen,
+Vorhersage als KLASSE vor dem Lauf, nach jeder Rücknahme `sha256sum -c` 3/3 OK):
+
+| # | Gesetzt | Ergebnis | Urteil |
+|---|---|---|---|
+| M-a | Anker aus `CONSENT_COLOR_PATTERN` entfernt | 3: PT5, CF2, CT4 | DECKUNG, eine Klasse |
+| M-b | Farb-Abbruch in `publishProject` entfernt | 2: PT5, PT5b | DECKUNG, keine Kaskade |
+| M-c | der `custom`-Zweig reicht den Rohwert ungeprüft durch | erst `tsc` ROT, nach dem Erzwingen **0 Tests** | **SCHLECHTES MODELL, KEIN TESTLOCH** — s. unten |
+| M-d | `getConsentColorText`-Term aus `settingsEqual` entfernt | 2: CF3, UI8 | DECKUNG; Vorhersage in Form UND Zahl getroffen |
+| M-e | Linearisierung in `relativeLuminance` entfernt | 4: CT1, CT2, CSS6, UI10 | DECKUNG; **CT3 (Schwarz/Weiss) blieb GRÜN — genau wie angesagt** |
+
+**M-c AUSGESCHRIEBEN, WEIL EINE GRÜNE MUTATION EINE STOPP-BEDINGUNG IST:** Der erste Versuch
+machte **`tsc` rot** — der unmögliche Zustand ist nach P11.13-17/-18 nicht darstellbar. Auf
+`as never` geschärft (ein sichtbares Erzwingen, kein Versehen) kompiliert er und **traf
+nichts**, weil in jedem Zustand, in dem er etwas Feindliches ausliefern würde, **der Abbruch
+(Z6) bereits zurückgegeben hat**. **GEGENPROBE: M-c PLUS M-b** — beide Tore weg — **lässt PT5
+und PT5b fallen.** Damit ist belegt, dass die zwei Tore **unabhängig** tragen; das ist Lektion
+(b) an MUTATIONSPROBEN, nicht ein Loch.
+**EINE SECHSTE MUTATION IN DER KORREKTUR-RUNDE:** `farbenUnbekannt` von `||` auf `&&` → **1
+Test: UI11**; `UI9` blieb grün wie angesagt (dort sind BEIDE Werte ungültig, `&&` liefert
+dasselbe). Sie ist der Wächter des GEMISCHTEN Zustands — eine gültige neben einer ungültigen
+Farbe —, und den hielt vor der Korrektur-Runde kein Test.
+
+**ZWEI WERKZEUG-BEFUNDE AUS DEM LAUF, beide gefangen und behoben:** `git stash` hat
+`PublishView.tsx` (Arbeitsbaum `w/crlf`, Index `eol=lf`) beim `pop` auf CR=0 zurückgegeben —
+1 von 16 `sha256sum -c` FAILED, als reine Zeilenenden-Sache nachgewiesen und wiederhergestellt
+(Vorrat P11.13-7). Und `UI10` prüfte zuerst `disabled === false` absolut statt den
+UNTERSCHIED; die Zusage von P11.13-16 ist, dass der Kontrast am Knopf **nichts ändert**.
+
+**DIE GELESENE REFERENZQUELLE** (Auflage aus Entscheidung P11.13-16, „nicht aus dem eigenen
+Code"): W3C, „Web Content Accessibility Guidelines (WCAG) 2.1" (`https://www.w3.org/TR/WCAG21/`)
+für die Formel; WebAIM Contrast Checker (`https://webaim.org/resources/contrastchecker/`) für
+fünf Zahlenpaare — `#000000`/`#ffffff` **21** · `#767676`/`#ffffff` **4.54** ·
+`#808080`/`#ffffff` **3.94** · `#777777`/`#ffffff` **4.47** · `#f9fafb`/`#111827` **16.97**
+(GELESEN, CC, 2026-09-18). **ZWEI BEFUNDE AN DEN QUELLEN:** WebAIM **schneidet ab, es rundet
+nicht** (3,9494 → „3.94"), weshalb `CT1` abgeschnitten vergleicht und die Anzeige es ebenso
+tut; und WCAG 2.1 nennt die Schwelle **0.04045**, während VERMERK P11.13-3 die **0.03928** aus
+WCAG 2.0 führt — **für 8-Bit-sRGB gleichwertig**, kein Kanalwert wählt verschiedene Zweige.
+
+**DIE GRENZEN, DIE DIESER NACHWEIS NICHT ÜBERSCHREITET:**
+- **Lokal nur Chromium.** Live BEOBACHTET sind Chrome (Desktop) und WebKit über Chrome auf
+  iOS; **Firefox ist ungemessen.**
+- **Der Aus-Fall ist live nicht belegt** — nur lokal (c).
+- **„automatisch" ist live nicht gesichert** — so zugeschnitten, lokal belegt.
+- **Keine echte Kundenseite in der lokalen Probe:** kein fremdes CSS, keine `!important`-Flut,
+  keine eigene Stapel-Ebene.
+- **Screenreader ungeprüft** — was aus „Eigene Farben", „Hintergrundfarbe" und „Textfarbe"
+  angesagt wird, ist nicht erhoben.
+- **Der Export-Pfad trägt weiterhin kein Thema und keine Farbe** (offener Punkt DER
+  EXPORT-PFAD IST VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST).
+
+PROVENIENZ: Bau-Commit, Dateizahlen, Gates, Testzahlen, die neunzehn Byte-Werte, sämtliche
+Probe- und Mutationswerte, das Basis-HTML und die Referenzquellen sind GEMESSEN bzw. GELESEN
+am Repo und am eigenen Lauf (CC, 2026-09-18). **Sämtliche Live-Angaben — (a), (b), die
+Sichtbarkeit in (c), die sechs Block-Werte und die Owner-Hälfte von (e) — sind OWNER-ANGABEN
+bzw. OWNER-MESSUNGEN vom 2026-09-18, vom Architekten weitergegeben; CC kann sie nicht
+prüfen.** Die zehn gleichen Dateien in (c) und die 0 Treffer auf das Viewport-Tag sind eine
+ARCHITEKT-PRÜFUNG desselben Tages. Der Abgleich der sechs Block-Werte gegen die eigenen
+Vorher-Werte ist GEMESSEN (CC, 2026-09-18) — gegen den Bau-Bericht, nicht gegen die
+weitergegebene Angabe. **Die Ursache des Instrumenten-Versagens ist UNGEMESSEN.**
+
 ---
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
@@ -1345,9 +1593,15 @@ weil er einmal spart und dauerhaft eine Uneindeutigkeit hinterlässt.
 vierte Stelle auf diesem Pfad anlegt — ausdrücklich auch die Scheiben 3 und 4.
 
 **WARUM SIE EINE EIGENE ENTSCHEIDUNG IST UND KEIN SATZ AN P11.13-8**, und das ist der
-tragende Grund: **P11.13-8 KIPPT MIT SCHEIBE 3** (freie Farben lösen die feste Tabelle ab).
-Stünde F1 als Absatz dort, kippte die Bauform-Zusage mit — und zwar genau dann, wenn eine
-neue Scheibe die Signaturen anfasst und sie am dringendsten gebraucht wird.
+tragende Grund: **P11.13-8 REGIERT DIE FESTE TABELLE, UND IHR GELTUNGSBEREICH BEWEGT SICH
+MIT JEDER SCHEIBE, DIE EINEN ZWEIG HINZUFÜGT.** Eine Bauform-Zusage, die für ALLE Zweige
+gilt, darf nicht im Rumpf einer Entscheidung stehen, deren Reichweite sich verschiebt —
+sonst wird sie genau dann mitgelesen oder mitverworfen, wenn eine neue Scheibe die
+Signaturen anfasst und sie am dringendsten gebraucht wird.
+**MIT SCHEIBE 3 IST DER FALL EINGETRETEN UND DIE TRENNUNG BESTÄTIGT:** P11.13-8 hat einen
+VIERTEN Zweig bekommen und ist NICHT gekippt (Entscheidung P11.13-12), während P11.13-11
+unverändert für alle vier Zweige galt — der Pflicht-Parameter hat lediglich seine GESTALT
+gewechselt (diskriminierte Union, Entscheidung P11.13-18), nicht seine Zahl.
 
 **DIE GRENZE:** Sie kippt, sobald es auf diesem Pfad einen Aufrufer gibt, der die
 Darstellung **nicht kennen kann** — dann ist zu entscheiden, wer für ihn entscheidet, und
@@ -1555,7 +1809,13 @@ beim Wählen.**
 Leuchtdichte. **SIE WIRD GEGEN REFERENZWERTE GETESTET, DIE NICHT AUS DEM EIGENEN CODE
 STAMMEN** — sonst ist der Test ein Spiegel, der jeden Rechenfehler bestätigt
 (docs/immer-beachten.md, EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS
-DEM CODE). **DER SERVER RECHNET NICHTS.**
+DEM CODE). **DER SERVER RECHNET NICHTS FÜR DEN HINWEIS** — er entsteht im Client am
+Farbfeld, und es gibt keinen Weg, auf dem er von der Serverseite käme.
+**DAS IST KEINE AUSSAGE ÜBER DIE ERZEUGUNGSZEIT.** Dort rechnet der Server sehr wohl mit
+derselben Funktion — `bevorzugtesFarbschema` leitet daraus `color-scheme` ab, und
+ausgeliefert wird allein ein Schlüsselwort. **DIE ABGRENZUNG STEHT IN ENTSCHEIDUNG
+P11.13-21** und wird hier nicht verdoppelt; wer den Satz absolut liest, hält eine der zwei
+Entscheidungen für gebrochen.
 
 **DER HINWEISTEXT BEHAUPTET WEDER URSACHE NOCH RECHTSFOLGE.** Er nennt **den Wert und die
 Schwelle** — nicht „nicht barrierefrei", nicht „rechtswidrig", nicht „wird abgelehnt".
@@ -1904,8 +2164,10 @@ AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT, Zusatz vom 2026-08-27):
 
 **WAS ÜBER DIE SCHEIBE HINAUS BINDET, IST UMGEZOGEN UND STEHT NICHT MEHR HIER:**
 **F1 IST ZUR EIGENEN ENTSCHEIDUNG P11.13-11 GEWORDEN** — nicht zu einem Satz an P11.13-8,
-**weil jene mit Scheibe 3 kippt** und die Bauform-Zusage sonst mitkippte, genau dann, wenn
-eine neue Scheibe die Signaturen anfasst. **F2 IST IN DER PROBE GEMESSEN** (`auto` unter
+**weil sich der Geltungsbereich jener Entscheidung mit jedem neuen Zweig verschiebt** und die
+Bauform-Zusage sonst mitverschoben würde, genau dann, wenn eine neue Scheibe die Signaturen
+anfasst. **MIT SCHEIBE 3 IST DAS EINGETRETEN:** P11.13-8 hat einen vierten Zweig bekommen und
+ist nicht gekippt (P11.13-12); P11.13-11 galt unverändert. **F2 IST IN DER PROBE GEMESSEN** (`auto` unter
 emuliertem `light` exakt `light`, unter `dark` exakt `dark`) und steht als Befund in VERMERK
 P11.13-4; die Entscheidung dahinter ist Teil von P11.13-9. **F3 IST VOLLZOGEN** — der
 Live-Schritt ist entfallen, die Achse tragen PT1, PT2 und UI5.
@@ -1928,7 +2190,8 @@ Live-Schritt ist entfallen, die Achse tragen PT1, PT2 und UI5.
    entfallen. FUNDSTELLE: VERMERK P11.13-4, Live-Nachweis.
 
 **DIE AUSSCHLÜSSE GELTEN FORT** und sind der Zuschnitt der nächsten Scheiben: freie Farben
-(Scheibe 3, kippt P11.13-8) · freier Text samt Sicherheitsachse (Scheibe 4) · die Maskierung
+(Scheibe 3 — sie hat P11.13-8 nicht gekippt, sondern einen vierten Zweig hinzugefügt,
+s. P11.13-12) · freier Text samt seiner Sicherheitsachse (Scheibe 4) · die Maskierung
 der Pixel-ID (Vorrat P11.13-5, Trigger ist der Zuschnitt der Scheibe 4) · eine Vorschau des
 Dialogs im Editor · der Export-Pfad, der unter den Grenzen genannt ist.
 
@@ -1938,163 +2201,86 @@ Die Verdichtung ist CC, 2026-09-17.
 
 ---
 
-## Zuschnitt der Scheibe 11.13c — EIGENE FARBEN
+## Zuschnitt der Scheibe 11.13c — EIGENE FARBEN (VERDICHTET 2026-09-18)
 
-**STATUS: ZUGESCHNITTEN, PLAN VORGELEGT, NICHT FREIGEGEBEN** (2026-09-18). Der Plan steht
-im Bericht der Doku-Runde vom 2026-09-18 und nicht hier; diese Datei trägt den Zuschnitt.
+**STATUS: ABGELAUFEN.** Die Scheibe ist gebaut und live bewiesen — VERMERK P11.13-6,
+Bau-Commit `1d5ea7d`. Der ungekürzte Wortlaut des Zuschnitts steht im Commit `ead0e4e`.
 
-**GEGENSTAND:** Der Betreiber wählt als **vierte Darstellung** „eigene Farben" und dazu
-**zwei** Werte — einen Hintergrund und einen Text. Alles Übrige wird abgeleitet
-(Entscheidung P11.13-13). Die Werte liegen flach im Einstellungs-Blob als
-`settings.consent.colorBackground` und `settings.consent.colorText` (Entscheidung
-P11.13-19), gehen als **literales Hex** in erzeugte Farb-Überschreibungen und erreichen den
-ausgelieferten Text nur über den Veröffentlichungs-Pfad. **DIE ÜBRIGEN ORTE BESTIMMT DER
-PLAN**, nicht dieser Zuschnitt.
+**EINE STATUSZEILE IST NIE NACHGEZOGEN WORDEN, und das gehört in die Spur:** Der Zuschnitt
+trug bis zu dieser Verdichtung „ZUGESCHNITTEN, PLAN VORGELEGT, NICHT FREIGEGEBEN", während
+der Bau-Auftrag vom 2026-09-18 den Plan und den Zuschnitt als freigegeben führte. Die
+Abweichung ist im Bau-Bericht desselben Tages als **A1** gemeldet und nicht stillschweigend
+geändert worden; gebaut wurde gegen den Zuschnitt. **Sie ist hier aufgelöst, nicht gestempelt.**
 
-**DIE ENTSCHEIDUNGEN, DIE IHN TRAGEN:** P11.13-12 (die vierte Darstellung) · P11.13-13
-(zwei Farben und ihre Ableitung) · P11.13-14 (das Format-Tor) · P11.13-15 (erzeugte
-Deklarationen) · P11.13-16 (Kontrast als Hinweis) · **P11.13-17** (der opake Typ, genau eine
-Zusicherung) · **P11.13-18** (die Darstellung als EIN Wert) · **P11.13-19** (die flache
-Ablage) · **P11.13-20** (die Container-Linie) · **P11.13-21** (`color-scheme` abgeleitet) ·
-**P11.13-22** (der native Farbwähler und die Vorbelegung). Fortgeltend und **nicht neu
-begründet**, je als ENTSCHEIDUNG gelesen: P11.13-3 · P11.13-4 · P11.13-5 · P11.13-7 ·
-P11.13-9 · P11.13-10 · P11.13-11.
+**WAS ABGELAUFEN IST — die Titel, ohne Marke** (ohne `###`, damit eine
+Überschriften-Suche sie nicht trifft: docs/immer-beachten.md, EIN ANKER, DER EINDEUTIG
+AUSSIEHT, IST ES IN EINER DATEI MIT VERZEICHNIS NICHT, Zusatz vom 2026-08-27):
+- STATUS: ZUGESCHNITTEN, PLAN VORGELEGT, NICHT FREIGEGEBEN
+- GEGENSTAND — die vierte Darstellung, zwei Werte, die flache Ablage; die übrigen Orte
+  bestimmt der Plan
+- DIE ENTSCHEIDUNGEN, DIE IHN TRAGEN (P11.13-12 bis -22, dazu die sieben fortgeltenden)
+- Die Invarianten dieser Scheibe — **Z1 bis Z10**, samt der Begründung, warum sie `Z` und
+  nicht `I` heissen (`I1` bis `I6` sind im Abschnitt „Was den Zuschnitt bindet" an die
+  Invarianten der Phase 11.5 vergeben)
+- Ausdrücklich NICHT dazu
+- Die Pflichten dieser Scheibe (fünf, mit dem PFLICHT-STOPP über vier gesicherte
+  ausgelieferte Texte und den zwei ausdrücklich entfallenen Live-Schritten)
+- Die Plan-Fragen — FÜNF GESTELLT, VIER GESCHLOSSEN, EINE HALB
 
-### Die Invarianten dieser Scheibe
+**WAS ÜBER DIE SCHEIBE HINAUS BINDET, STAND VON ANFANG AN NICHT HIER:** Es steht als
+**Entscheidung P11.13-12 bis P11.13-22** und ist von dieser Verdichtung unberührt. Die zehn
+Invarianten `Z1` bis `Z10` waren Anweisungen AN DIESE SCHEIBE und laufen mit ihr ab; ihre
+bleibenden Hälften stehen in den Entscheidungen, auf die sie je zeigten.
 
-**SIE HEISSEN `Z1` BIS `Z10` UND NICHT `I1` BIS `I10`, UND DAS IST KEIN GESCHMACK:** Die
-Kennungen `I1` bis `I6` sind im Abschnitt "Was den Zuschnitt bindet" bereits an die
-Invarianten der Phase 11.5 vergeben. Eine zweite `I1` in derselben Datei träfe bei jedem
-Zeiger die falsche.
+**SECHS STELLEN IM PRODUKTIV- UND TESTCODE ZITIEREN EINE `Z`-NUMMER, UND SIE VERLIEREN MIT
+DIESER VERDICHTUNG IHREN VOLLTEXT** (GEMESSEN am Repo, CC, 2026-09-18, Achse `Invariante Z`
+über `src/`): `settings.ts` (Z1) · `settings.test.ts` (Z8) · `consent-choice.ts` (Z1, Z10) ·
+`consent-choice.test.ts` (Z1, Z10). **DIE NUMMERN BLEIBEN AUFLÖSBAR** — die Titel-Liste oben
+nennt sie, und der ungekürzte Wortlaut steht im Commit `ead0e4e`. **WAS DAMIT ZU TUN IST,
+IST HIER NICHT ENTSCHIEDEN:** Ein Zeiger aus `src/` heraus verlangt einen CODE-Commit
+(docs/immer-beachten.md, EINE ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE).
+**KEINE EMPFEHLUNG.**
 
-**Z1 — DIE DREI TABELLENWERTE UND DER AUS-FALL BLEIBEN BYTE-GLEICH.** Der ausgelieferte
-Text für `"light"`, `"dark"`, `"auto"` und für den ausgeschalteten Dialog ist nach der
-Scheibe zeichengleich zu vorher — je Form, je Block und je Gesamtausgabe. **DAS IST DIE
-TRAGENDE INVARIANTE DIESER SCHEIBE**, und sie wird an VOR dem ersten Eingriff erhobenen
-Werten gemessen, nicht an nachträglich erzeugten.
+**DIE FÜNF PFLICHTEN — GESCHLOSSEN, je mit Nachweis und Fundstelle:**
+1. **Herkunft der Test-Erwartungen:** eingehalten — die Referenzwerte von `CT1` stammen aus
+   einer GELESENEN fremden Quelle, die Meldungs-Konstante steht in `publish.test.ts` als
+   Literal, die Eigenschafts-Liste und die Ableitung Platz für Platz sind aus den
+   Entscheidungen niedergeschrieben (`CSS4`, `CSS5`). FUNDSTELLE: VERMERK P11.13-6, (f).
+2. **Vorher-Werte vor dem ersten Eingriff:** erhoben — **neunzehn Werte**, vorher und nachher
+   identisch; **Z1 eingelöst**, strukturell über den leeren String von
+   `consentThemeCss({theme:"light"})`. FUNDSTELLE: VERMERK P11.13-6, Kopf.
+3. **Tests für die Bedienung:** eingelöst — `UI6` bis `UI11` in `CodeImporter.test.tsx`
+   (`UI11` aus der Korrektur-Runde, für den GEMISCHTEN Zustand). `PublishView.tsx` hat
+   weiterhin keine eigene Testdatei; das bleibt so.
+4. **Die Probe:** neu geschrieben, **60 Zustände**, Probeseite mit fokussierbarem Element
+   ausserhalb des Dialogs (Auflage Vorrat P11.13-4). FUNDSTELLE: VERMERK P11.13-6, (f).
+5. **Live-Test-Anforderung:** **eingelöst, aber NICHT wie zugeschnitten.** Der PFLICHT-STOPP
+   über vier gesicherte ausgelieferte Texte ist gefahren — **und das Instrument hat versagt**;
+   an seine Stelle trat der Hash der geladenen Skript-Elemente. **DIE ACHSE IST BELEGT, DER
+   AUS-FALL NICHT.** FUNDSTELLE: VERMERK P11.13-6, (c).
 
-**Z2 — DAS FORMAT-TOR HÄLT AN GENAU EINER STELLE.** Zugelassen ist ausschliesslich
-`^#[0-9a-f]{6}$`; es wird nichts normalisiert. Der Leser liefert einen geprüften Typ oder
-`"unknown"` und **fällt nie auf einen Vorgabewert zurück**. Der Erzeuger nimmt **nur** den
-geprüften Typ an — ein roher `string` dort ist ein Compiler-Fehler.
-**DREI SCHÄRFUNGEN AUS DEN PLAN-ENTSCHEIDUNGEN, je mit ihrer Fundstelle:** Der Typ ist OPAK
-und hat **GENAU EINE Zusicherung, im Leser, hinter dem Regex-Test** (P11.13-17) · die
-Darstellung reist als **EIN** Wert, sodass „eigene Farben ohne Farben" **nicht konstruierbar**
-ist (P11.13-18) · die **Vorbelegung des Bedienelements ist eine NUTZERHANDLUNG und kein
-Leser-Rückfall** (P11.13-22) — wer beides zusammenzieht, baut den stillen Rückfall ein, den
-Z2 gerade ausschliesst.
+**DIE PLAN-FRAGE 5 IST GESCHLOSSEN.** Die offenen Namen stehen: Prüfstelle
+`readConsentColor`, Leser `getConsentColorBackground`/`getConsentColorText`, Setzer
+`setConsentColors`, geprüfter Typ `ConsentColor` (Lesetyp `ConsentColorRead`), Meldung
+`CONSENT_COLORS_UNKNOWN_MESSAGE`, Kontrastfunktion `contrastRatio` in der neuen Datei
+`src/lib/contrast.ts`. Die vier übrigen Fragen waren schon vor dem Bau durch P11.13-17,
+-18, -20 und -21 geschlossen.
 
-**Z3 — JEDE ERZEUGTE DEKLARATION TRÄGT GENAU EINE EIGENSCHAFT AUS DER LISTE VON P11.13-9.**
-Keine Kurzschreibweise, keine CSS-Variable, kein `var(`, kein `--`.
-**WAS DIE ZWEI ABGELEITETEN PLÄTZE AUSLIEFERN:** Die Container-Linie trägt die **Textfarbe**
-(P11.13-20), also literales Hex wie die übrigen Plätze; `color-scheme` trägt **ausschliesslich
-das Schlüsselwort `light` oder `dark`** (P11.13-21) — **keine Zahl aus der Rechnung erreicht
-den ausgelieferten Text.**
-
-**Z4 — KEIN EINGRIFF AUSSERHALB DES EIGENEN SCHATTENBAUMS.** Kein Stil, keine Klasse, kein
-Attribut, keine Scroll-Position, kein Fokus an einem fremden Knoten. Die Nadeln von `M12`
-und `W11` und die Textprüfung von `L12` gelten unverändert und werden auf den vierten Wert
-ausgedehnt.
-
-**Z5 — BEIDE KNÖPFE TRAGEN DIESELBEN FARBEN.** Getrennte Farben je Knopf entstehen nicht,
-auch nicht als Nebenwirkung einer Klasse oder eines zweiten Selektors.
-
-**Z6 — DER ABBRUCH STEHT VOR JEDEM SCHREIBVORGANG.** Ist der Dialog eingeschaltet, die
-Darstellung „eigene Farben" und eine der zwei Farben ungültig oder abwesend, verweigert
-`publishProject` mit einer **eigenen** Meldungs-Konstante — **vor** dem Label-Block und
-**vor** `ensureTrackingKey`. Bei ausgeschaltetem Dialog wird **nicht** abgebrochen
-(Entscheidung P11.13-7).
-
-**Z7 — DER KONTRAST SPERRT NICHTS.** Die Rechnung ist eine reine Funktion unter `src/lib`,
-**der HINWEIS entsteht im Client am Farbfeld, und für den Hinweis rechnet der Server
-nichts.** Die Referenzwerte der Tests stammen **nicht** aus dem eigenen Code.
-**EINE ZWEITE, GETRENNTE VERWENDUNG DERSELBEN FUNKTION IST ZUGELASSEN UND HIER BENANNT, damit
-sie nicht als Bruch gelesen wird:** Der Erzeuger ruft sie zur **ERZEUGUNGSZEIT**, um
-`color-scheme` abzuleiten (P11.13-21). **Das ist kein Hinweis, keine Meldung und kein
-Rückkanal** — ausgeliefert wird allein ein Schlüsselwort.
-
-**Z8 — DIE WÄCHTER WERDEN MIT FEINDLICHER EINGABE GEFAHREN.** Mindestens: Kurzform,
-Grossbuchstaben, ein Wert mit `;`, einer mit `}` und einer Folgeregel, einer mit
-`</script>`, einer mit `url(`, der leere String, eine Zahl, ein Objekt und das fehlende
-Feld. **DIESE INVARIANTE IST DER GRUND, WARUM DIE SICHERHEITSACHSE DIESER SCHEIBE GEHÖRT
-UND NICHT DER SCHEIBE 4.**
-
-**Z9 — GRÖSSE UND LAGE BLEIBEN UNVERÄNDERT.** P11.13-3 (alles im Fenster und treffbar) und
-P11.13-5 (Gleichrangigkeit, Reihen über vertikale Überlappung) werden in der Probe
-**bestätigt**, nicht neu begründet — sie folgen aus Z3.
-
-**Z10 — `.backdrop` UND `.way` BLEIBEN UNBERÜHRT.** Die Abdunkelung des Fensters und der
-durchsichtige Hintergrund des Wegs bekommen keine Regel aus dem vierten Zweig.
-
-### Ausdrücklich NICHT dazu
-
-- **FREIER TEXT.** Er ist Scheibe 4, samt eigener Aufklärung. Diese Scheibe erzeugt **kein**
-  Feld für Text-Inhalte.
-- **DIE MASKIERUNG DER PIXEL-ID.** Vorrat P11.13-5 bleibt offen; **sein Trigger bleibt der
-  Zuschnitt der Scheibe 4** und wird von dieser Scheibe NICHT ausgelöst.
-- **EINE VORSCHAU DES DIALOGS IM EDITOR.** Weder der Editier- noch der Vorschau-Rahmen zeigt
-  den Dialog; geprüft wird über VERÖFFENTLICHEN (Roadmap-Zeile 11.13, Nachtrag 2026-09-17).
-- **DER EXPORT-PFAD.** Er trägt schon heute kein Thema und damit auch keine Farbe; der
-  offene Punkt DER EXPORT-PFAD IST VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST bleibt
-  unverändert offen und wird hier **nicht** abgearbeitet.
-- **JE EIGENE FARBEN FÜR HELL UND DUNKEL.** Es gibt genau eine Darstellung zur Zeit
-  (P11.13-12); ein Farbpaar je Systemeinstellung entsteht nicht.
-- **EINE SERVER-SEITIGE KONTRASTPRÜFUNG.** Der Server rechnet nichts und meldet nichts
-  (P11.13-16).
-
-### Die Pflichten dieser Scheibe
-
-1. **DIE HERKUNFT DER TEST-ERWARTUNGEN.** Jede Erwartung wird aus den Entscheidungen
-   niedergeschrieben, nie aus dem gebauten Stylesheet abgelesen — sonst entsteht der
-   Spiegel, wegen dessen `W0` gestrichen wurde.
-2. **DIE VORHER-WERTE VOR DEM ERSTEN EINGRIFF IN `src/`.** Bytes und sha256 je Block und je
-   Gesamtausgabe, über alle drei Darstellungen und den Aus-Fall. **Nach dem Eingriff sind
-   sie nicht mehr herstellbar** (docs/immer-beachten.md, EIN VORHER-WERT WIRD VOR DEM DEPLOY
-   GESICHERT).
-3. **TESTS FÜR DIE BEDIENUNG.** `PublishView.tsx` hat keine eigene Testdatei; die Abdeckung
-   entsteht in `CodeImporter.test.tsx`, wie bei `UI1` bis `UI5`.
-4. **DIE PROBE.** Sie wird neu geschrieben — es liegt keine im Repo (VERMERK P11.13-5). Die
-   Probeseite trägt mindestens ein fokussierbares Element **ausserhalb** des Dialogs (Vorrat
-   P11.13-4).
-5. **DIE LIVE-TEST-ANFORDERUNG.** Regression zuerst. **DER PFLICHT-STOPP VOR DEM DEPLOY
-   SICHERT VIER AUSGELIEFERTE TEXTE**, je mit Form und Darstellung im Dateinamen:
-   **`bar-light` · `modal-light` · `bar-dark` · `off`.** **DER DUNKEL-SCHRITT MISST NUR
-   `bar-dark`** — die Byte-Gleichheit von `dark` ist an einer Form belegt, und eine zweite
-   Sicherung brächte an dieser Achse nichts Neues. **FÜR „AUTOMATISCH" WIRD LIVE NICHTS
-   GESICHERT:** Es ist über die Vorher-Werte lokal belegt (Pflicht 2), und der Live-Blick
-   auf die Systemeinstellung ist mit der Scheibe 11.13b bereits geführt (VERMERK P11.13-4,
-   Schritt 5).
-   **ZWEI SCHRITTE FALLEN AUSDRÜCKLICH WEG, je mit Grund — sie sind nicht vergessen:**
-   · **Ein Handeingriff in den Blob** (ungültige Farbe von Hand setzen) entfällt. Die Achse
-   tragen die Publish-Tests und die Pflicht-Mutation gegen den entfernten Abbruch; **ein
-   Handeingriff am Produktions-Blob ist der schlechtere Beweis** — er misst, ob jemand
-   richtig getippt hat, und hinterlässt einen Zustand, den niemand protokolliert.
-   · **Der Fan-Out-Schritt** („nur Werbung": kein PageView, Conversion dedupliziert)
-   entfällt. **Das Wiring ist von dieser Scheibe nicht berührt** — sie ändert Farben im
-   Stylesheet des Schattenbaums, keinen Schlüssel, keinen Hook, keinen Beacon. Der Schritt
-   ist in den Scheiben 11.13a und 11.13b je einmal bestanden.
-
-### Die Plan-Fragen — FÜNF GESTELLT, VIER GESCHLOSSEN, EINE HALB
-
-**GESCHLOSSEN AM 2026-09-18, je durch eine eigene Entscheidung** — sie stehen hier mit ihrer
-Antwort und nicht gestrichen, damit sichtbar bleibt, dass sie gestellt waren:
-1. **Die CONTAINER-LINIE** → sie trägt die **Textfarbe** (**P11.13-20**). Die Ausnahme vom
-   Kontrast-Kriterium bleibt für die drei Tabellenwerte bestehen.
-2. **`color-scheme`** → **abgeleitet**, ohne Schwellen-Konstante: `dark`, wenn Weiss gegen
-   den Hintergrund besser kontrastiert als Schwarz, sonst `light` (**P11.13-21**).
-3. **Die Gestalt des geprüften Typs** → **opaker Marken-Typ, genau EINE Zusicherung im
-   Leser** (**P11.13-17**).
-4. **Die Form der Übergabe** → **diskriminierte Union, EIN Pflicht-Parameter**; P11.13-11
-   gilt unverändert und wird nicht ausgedehnt (**P11.13-18**).
-
-**HALB GESCHLOSSEN — Frage 5:** Die **FELDNAMEN** stehen (`settings.consent.colorBackground`
-und `settings.consent.colorText`, **P11.13-19**). **OFFEN BLEIBEN** die Namen von Leser,
-Setzer und geprüftem Typ, der Name der Meldungs-Konstante und **der Ort und Name der
-Kontrastfunktion**. Sie fallen mit der Freigabe des Plans.
+**DIE AUSSCHLÜSSE GELTEN FORT** und sind der Zuschnitt der Scheibe 4: **freier Text** samt
+eigener Aufklärung und eigener Sicherheitsachse · die **Maskierung der Pixel-ID** (Vorrat
+P11.13-5, Trigger ist der Zuschnitt der Scheibe 4) · eine **Vorschau des Dialogs im Editor**
+· der **Export-Pfad** · **je eigene Farben für Hell und Dunkel** · eine **server-seitige
+Kontrastprüfung**.
+**EIN AUSSCHLUSS IST PRÄZISER ZU LESEN, ALS ER DASTAND:** „der Server rechnet nichts und
+meldet nichts" galt und gilt dem **KONTRAST-HINWEIS**. Zur ERZEUGUNGSZEIT rechnet der Server
+sehr wohl — `bevorzugtesFarbschema` leitet daraus `color-scheme` ab, und ausgeliefert wird
+allein ein Schlüsselwort (Entscheidung P11.13-21, Invariante Z7 hielt genau das fest).
 
 PROVENIENZ: Der Zuschnitt ist ARCHITEKT 2026-09-18 auf der Grundlage der Owner-Entscheidungen
-O1 bis O3 desselben Tages; er ist **nicht freigegeben**. Die Befunde, auf denen er ruht,
-stehen als VERMERK P11.13-5 und sind dort mit ihrer Provenienz versehen.
+O1 bis O3 und der Plan-Entscheidungen F1 bis F7 desselben Tages; die Freigabe ist
+ARCHITEKT/OWNER 2026-09-18 (im Bau-Auftrag erklärt, in dieser Datei erst hier vermerkt). Die
+fünf Antworten sind der gebaute, gemessene und live geprüfte Stand desselben Tages (VERMERK
+P11.13-6). Die Verdichtung ist CC, 2026-09-18.
 
 ---
 
@@ -2227,8 +2413,234 @@ PROVENIENZ: der Weg und die fehlende Maskierung GEMESSEN am Code (CC, 2026-09-17
 Maskierung der Mapping-Tabelle im selben Lauf GELESEN. Dass der Betreiber das HTML ohnehin
 kontrolliert, ist eine ABLEITUNG aus dem Schreibweg, keine Messung.
 
+### P11.13-6 — EIN SCROLLBALKEN BRICHT DAS GLEICHRANGIGKEITS-KRITERIUM BEI 360 px, UND ZWAR IM BESTAND
+
+Bei **Leiste / 360×480 / eingeklappt / lange Seite** ist `wegTeiltMit === 1` — der Weg teilt
+seine Reihe mit GENAU EINEM Knopf, und damit ist **Entscheidung P11.13-5 verletzt**.
+
+**ES IST KEINE REGRESSION DIESER SCHEIBE, UND DAS IST GEMESSEN, NICHT VERMUTET** (Gegenprobe
+im selben Werkzeug und im selben Lauf, CC, 2026-09-18):
+
+| Seite | Viewport | Scrollbalken | Leisten-Breite | `wegTeiltMit` |
+|---|---|---|---|---|
+| **helles Tabellen-Thema, lange Seite** | 360×480 | **15 px** | **345** | **1** ← verletzt |
+| helles Tabellen-Thema, kurze Seite | 360×480 | 0 | 360 | 0 |
+| custom P1, kurze Seite | 360×480 | 0 | 360 | 0 |
+
+**DAS UNVERÄNDERTE BESTANDS-THEMA ZEIGT DENSELBEN BEFUND.** Ursache ist der Scrollbalken: Er
+nimmt 15 px Innenbreite, und bei 345 px passen zwei Knöpfe zu 160 px plus 8 px Abstand
+(328 px) zwar noch — der Weg aber nicht mehr daneben, sodass die Reihen anders brechen.
+**P11.13-5 NENNT DIE BEDINGUNG SELBST:** „Sie ruht auf der heutigen Knopfbreite von 160 px und
+der heutigen **Innenbreite** der zwei Behälter." Ein Scrollbalken ändert die Innenbreite.
+
+**WARUM ES BISHER NIEMAND SAH:** Die Probeseiten der Scheiben 11.13a und 11.13b **scrollten
+nicht**. Der Befund entsteht erst mit einer Probeseite, die lang genug ist.
+
+**WEN ES TRIFFT — UND WEN NICHT:** **schmale Desktop-Fenster**, die einen Platz nehmenden
+Scrollbalken zeichnen. **Handys zeichnen einen Überlagerungs-Scrollbalken** und nehmen keine
+Breite; dort tritt es nicht auf. Das ist eine ABLEITUNG aus der Plattform-Bauform und in
+diesem Projekt **nicht gemessen**.
+
+**KEIN EIGENER TRIGGER AUSSER DIESEM: die nächste Runde, die an der Breite der Knöpfe, an der
+Innenbreite der Behälter oder am Umbruch der eingeklappten Gestalt arbeitet.** Ob überhaupt
+etwas geschieht, ist **nicht entschieden** — die Kandidaten reichen von „Bedingung des
+Kriteriums schärfen" bis „Knopfbreite flexibel". **KEINE EMPFEHLUNG.**
+
+PROVENIENZ: die drei Zeilen der Gegenprobe GEMESSEN am eigenen Lauf (CC, 2026-09-18,
+Playwright/Chromium); der Wortlaut von P11.13-5 GELESEN in dieser Datei. Dass Handys einen
+Überlagerungs-Scrollbalken zeichnen, ist eine ABLEITUNG und ungemessen.
+
+### P11.13-7 — `git stash` DREHT DIE ZEILENENDEN EINER `w/crlf`-DATEI, UND DIE GATES MELDEN NICHTS
+
+Für die Vorher-Testzahl lief `git stash push -- src/` / `git stash pop`.
+`src/components/PublishView.tsx` liegt im Arbeitsbaum als **CRLF**, der Index steht auf
+`eol=lf`; **nach dem `pop` stand die Datei auf CR=0.** Von sechzehn Dateien meldete
+`sha256sum -c` **eine** als FAILED.
+
+**GEFANGEN UND BEHOBEN:** Als reine Zeilenenden-Sache nachgewiesen — LF→CRLF zurückgerechnet
+ergibt exakt den Vor-Stash-sha `07a8a4af…` —, wiederhergestellt, danach **16 von 16 OK**
+(GEMESSEN, CC, 2026-09-18).
+
+**DAS IST DIE FEHLERKLASSE DER DAUERREGEL „WERKZEUG-REGEL: sed -i STRIPPT IN DIESER UMGEBUNG
+STILL DAS CR"** (docs/immer-beachten.md) — dort steht ausdrücklich, die Reichweite sei die
+WIRKUNG und nicht das Kommando im Titel: „Die Frage lautet nie ‚steht es in der Aufzählung?',
+sondern ‚schreibt es die ganze Datei?'". **`git stash` steht in keiner ihrer Aufzählungen**,
+und es schreibt die ganze Datei.
+**WAS DIE REGEL HIER NICHT LEISTET:** Ihre vorgeschriebene Prüfung ist `git status` plus der
+Ausschluss leerer Diffs — **die hätte hier nichts gemeldet**, weil der Diff gerade nicht leer
+ist. Gefangen hat es allein der `sha256sum`-Rundlauf über die berührten Dateien.
+
+**DIE ZWEI DATEIEN, DIE ES BETRIFFT, SIND BEKANNT** (`git ls-files --eol`: `i/lf w/crlf`):
+`src/components/PublishView.tsx` und `src/app/projects/publish.test.ts`. **Im weiteren Verlauf
+der Scheibe ist kein `git stash` mehr benutzt worden.**
+
+**KEIN EIGENER TRIGGER AUSSER DIESEM: die nächste Runde, die eine Vorher-Zahl über einen
+`git stash`-Rundlauf erhebt** — oder die entscheidet, ob daraus eine Ergänzung der Dauerregel
+wird. **Das ist eine Frage des Phasenendes; hier wird sie nicht entschieden.**
+
+PROVENIENZ: der Vorgang GEMESSEN am eigenen Lauf (CC, 2026-09-18); der Wortlaut der
+Dauerregel GELESEN in docs/immer-beachten.md (CC, 2026-09-18).
+
+### P11.13-8 — AUF EINER SEITE OHNE VIEWPORT-TAG IST DER DIALOG AUF MOBIL UNLESBAR KLEIN
+
+Die Testseite `meta-test-5nlm3e` trägt **kein `<meta name="viewport">`** (OWNER-ANGABE
+2026-09-18, Volltextsuche im Browser; **bestätigt an den hochgeladenen Dateien: 0 Treffer**,
+ARCHITEKT-PRÜFUNG desselben Tages). Ohne das Tag legt der mobile Browser eine breite
+Ersatz-Fläche zugrunde und skaliert die ganze Seite herunter — **der Dialog wird mit ihr
+klein, bis zur Unlesbarkeit.**
+
+**ES IST KEIN BEFUND ÜBER DIESE SCHEIBE UND ÜBER KEINE DARSTELLUNG:** Es trifft jede Seite
+ohne das Tag, jede Form und jedes Thema gleichermassen. **Ein Produktbefund, keine
+Regression.**
+
+**WIR FÜGEN DAS TAG NICHT EIN**, und der Grund ist eine Dauerregel: **KEIN BAUSTEIN DES
+AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT EINEN FREMDEN KNOTEN AN** (docs/immer-beachten.md).
+Ein `<meta>` in den `<head>` der Kundenseite zu schreiben ändert das Layout der GANZEN Seite,
+nicht nur unseres Dialogs — das ist der grösstmögliche Eingriff an fremdem Gut und wäre für
+den Betreiber nicht vorhersehbar.
+
+**DENKBAR IST EIN HINWEIS BEIM IMPORT** — die Seite trägt kein Viewport-Tag, auf Mobilgeräten
+wird sie herunterskaliert. **DAS IST EIN KANDIDAT UND KEINE ENTSCHEIDUNG; KEINE EMPFEHLUNG**,
+weder zu Ort noch zu Form noch dazu, ob überhaupt etwas gebaut wird.
+
+**KEIN EIGENER TRIGGER AUSSER DIESEM: die nächste Runde, die am Import oder an einer Prüfung
+der importierten Seite arbeitet.**
+
+PROVENIENZ: das Fehlen des Tags ist OWNER-ANGABE mit ARCHITEKT-PRÜFUNG (2026-09-18); die
+Wirkung auf Mobilgeräten ist eine **ABLEITUNG** aus dem Verhalten mobiler Browser und in
+diesem Projekt **nicht gemessen**. Die Dauerregel GELESEN (CC, 2026-09-18).
+
+### P11.13-9 — ZWEI BEFUNDE AN DER EDITOR-OBERFLÄCHE DES FARBFELDS
+
+**BEIDE SIND EDITOR-OPTIK, NICHT AUSGELIEFERTER TEXT** — sie berühren keine Invariante dieser
+Scheibe und keinen Besucher.
+
+**(a) DIE KLICKFLÄCHE DES FARBFELDS REICHT ÜBER DIE ZEILE.** Ein Klick neben dem Feld öffnet
+den Wähler. **VERMUTUNG: ein umschliessendes `label`** — die Beschriftung ist über
+`aria-label` und ein Label verbunden, und ein umschliessendes Label macht seine ganze Fläche
+klickbar. **Am Code NICHT nachgesehen** in dieser Runde.
+
+**(b) DER NATIVE FARBWÄHLER ÖFFNET IN RGB.** Der Betreiber denkt in Hex; der Wähler startet in
+einer anderen Darstellung. **OB DER STARTMODUS AUS DER SEITE HERAUS SETZBAR IST, IST
+UNGEPRÜFT** — die Vermutung lautet nein, und sie ist eine Vermutung.
+**EIN WEG, DER OHNE DIESE FRAGE AUSKOMMT:** ein zusätzliches Hex-Textfeld neben dem Wähler,
+**durch DASSELBE Format-Tor** (Entscheidung P11.13-14). Es bräuchte keine zweite Prüfstelle
+und keine zweite Zusicherung — der Leser ist schon da. **DAS IST EIN KANDIDAT UND KEINE
+ENTSCHEIDUNG.**
+
+**BEIDES WARTET AUF DIE NEUGESTALTUNG DER OBERFLÄCHE**, die ohnehin ansteht; wer sie fährt,
+fasst beide Punkte mit an, statt sie einzeln nachzuziehen.
+
+**KEIN EIGENER TRIGGER AUSSER DIESEM: die Neugestaltung der Editor-Oberfläche, spätestens die
+nächste Runde, die am Farbfeld arbeitet.**
+
+PROVENIENZ: beide Beobachtungen sind OWNER-BEFUNDE vom 2026-09-18, vom Architekten
+weitergegeben. Die Ursache in (a) und die Nicht-Setzbarkeit in (b) sind **VERMUTUNGEN**, in
+dieser Runde weder am Code noch am Browser geprüft.
+
+### P11.13-10 — DER AUSGEKLAPPTE ZUSTAND WIRKT ÜBERLADEN
+
+**OWNER-BEFUND:** Nach dem Ausklappen stehen zwei Kästchen und drei Knöpfe zugleich da; das
+wirkt voll. **Es ist ein Urteil über die GESTALT, kein Fehler** — die Gestalt ist die
+zugesagte.
+
+**DIE ÄNDERUNG IST NICHT FREI, UND DAS IST DER EIGENTLICHE INHALT DIESES EINTRAGS:**
+**Entscheidung P11.13-1 bindet den ausgeklappten Zustand AUSDRÜCKLICH an die alte Gestalt** —
+„ausgeklappt nach dem Klick: EXAKT DIE HEUTIGE GESTALT". Ihr Grund ist, dass genau dieser
+Zustand der bereits gemessene ist und die ungemessene Achse aus Roadmap (e) damit nicht
+entsteht. Und sie nennt ihre Grenze selbst: **sie kippt, sobald der ausgeklappte Zustand mehr
+trägt als heute** — von WENIGER sagt sie nichts, und eine Wegnahme ist deshalb nicht
+automatisch gedeckt.
+
+**DIE NAHELIEGENDE WEGNAHME IST DIE HEIKELSTE:** Dürfte „Ablehnen" auf der zweiten Ebene
+entfallen, weil es schon auf der ersten steht? **Das ist gegen Entscheidung P11.13-5 und gegen
+den Guardrail der Roadmap-Zeile 11.13, Punkt (h), abzuwägen** — die visuelle Gleichrangigkeit
+von „Alle akzeptieren" und „Ablehnen" ist dort verankert, und ein „Alle akzeptieren" ohne sein
+Gegenstück auf derselben Ebene ist genau die Bauform, die der Guardrail ausschliesst.
+
+**DAS IST EINE EIGENE ENTSCHEIDUNG UND WIRD HIER NICHT GETROFFEN. KEINE EMPFEHLUNG.**
+
+**KEIN EIGENER TRIGGER AUSSER DIESEM: die nächste Runde, die die Gestalt des ausgeklappten
+Zustands anfasst.**
+
+PROVENIENZ: der Befund ist OWNER-ANGABE vom 2026-09-18, vom Architekten weitergegeben; die
+Bindung und ihre Grenze sind GELESEN an Entscheidung P11.13-1 dieser Datei (CC, 2026-09-18),
+der Guardrail an docs/roadmap.md, Roadmap-Zeile 11.13, Punkt (h).
+
+### P11.13-11 — DER KONTRAST-HINWEIS BLEIBT NACH DEM SPEICHERN STEHEN
+
+**OWNER-BEFUND 2026-09-18:** Wer ein Paar unter der Schwelle speichert, sieht den Hinweis
+danach weiter.
+
+**ARCHITEKT-EINORDNUNG: DAS IST KORREKT UND KEIN FEHLER.** Der Hinweis beschreibt **keinen
+abgeschlossenen Versuch**, sondern einen **ZUSTAND** — und dessen Bedingung ist nach dem
+Speichern noch wahr. Die Dauerregel WELCHE REGEL WANN GREIFT: BEKOMMT DIESER FEHLER EIN
+BLEIBENDES SIGNAL? nennt genau dieses Kriterium: bleibend ist, was beim nächsten Hinsehen noch
+gilt. **Ein Hinweis, der beim Speichern verschwände, verschwände beim Hinschauen statt beim
+Lösen.**
+
+**DIE RICHTUNG FÜR SPÄTER, und sie betrifft den TON, nicht das Bleiben:** ruhiger, **kein
+Rot** — Rot liest sich als Fehler und als Sperre, **und der Hinweis sperrt nichts**
+(Entscheidung P11.13-16). Er nennt Wert und Schwelle und sagt ausdrücklich, dass
+Veröffentlichen möglich bleibt; seine Farbe soll das nicht widerlegen.
+
+**AUSDRÜCKLICH NICHT ENTSCHIEDEN:** welche Farbe, welche Form, ob überhaupt etwas geändert
+wird. **KEINE EMPFEHLUNG.**
+
+**KEIN EIGENER TRIGGER AUSSER DIESEM: die nächste Runde, die am Kontrast-Hinweis oder an der
+Farbgebung der Editor-Hinweise arbeitet.**
+
+PROVENIENZ: der Befund ist OWNER-ANGABE vom 2026-09-18; die Einordnung ist
+ARCHITEKT-ENTSCHEIDUNG desselben Tages, beide vom Architekten weitergegeben. Die Dauerregel
+und Entscheidung P11.13-16 GELESEN (CC, 2026-09-18).
+
 ---
 
 ## Hebungs-Kandidaten
 
-Keine. Dieser Abschnitt steht, damit die Klasse beim Phasenende nicht übersehen wird.
+Dieser Abschnitt stand bis zum 2026-09-18 auf „Keine."; er steht, damit die Klasse beim
+Phasenende nicht übersehen wird.
+
+### (1) EIN LIVE-NACHWEIS ÜBER AUSGELIEFERTEN TEXT MISST IN DER GELADENEN SEITE, NICHT AN EINER GESPEICHERTEN DATEI
+
+**DIE AUSSAGE:** Wer live belegen will, WAS eine Seite tatsächlich ausliefert, misst **im
+laufenden Dokument** — nicht an einer Datei, die ein Browser-Befehl daneben ablegt. Eine
+gespeicherte Datei ist ein zweites Artefakt mit eigenem Weg; sie kann aus einem
+Zwischenspeicher stammen, und **sie sagt das nicht.**
+
+**DER BELEG (VERMERK P11.13-6, (c)):** „Speichern unter" lieferte **zehn** Dateien für **zehn
+verschiedene Zustände** — alle **14 385 Bytes**, alle sha256 `2de7db6db78f001a…`, alle **ohne
+jeden Dialog-Baustein**, während der Dialog eingestellt, veröffentlicht und auf dem Bildschirm
+**sichtbar** war. **DER VORHER/NACHHER-VERGLEICH DIESER DATEIEN BELEGT NICHTS** — und er sah
+wie ein Beleg aus.
+
+**WAS ES TEUER MACHT: DER FEHLSCHLAG IST STILL UND SIEHT WIE EIN BEFUND AUS.** Die Dateien
+waren lesbar, gleich gross und untereinander vergleichbar; nur die Positivkontrolle
+(`__ps_pve` und `pagesmith-consent` je 1 Treffer bei 0 Treffern auf jeden Dialog-Baustein) hat
+gezeigt, dass etwas nicht stimmen KANN. **Ohne sie wäre „der Dialog steht nicht im
+ausgelieferten Text" als Befund protokolliert worden.**
+
+**ES IST KEIN EINZELFALL:** Der Owner meldet dieselbe Zwischenspeicher-Erfahrung als
+**wiederkehrend** (OWNER-ANGABE 2026-09-18).
+
+**DAS ERSATZ-INSTRUMENT STEHT IM WORTLAUT** in VERMERK P11.13-6, (c) — der Hash der geladenen
+Skript-Elemente in der Konsole der Live-Seite, verglichen in der **Tag-Form**. Es misst im
+geladenen Dokument und hat die Achse in derselben Runde belegt.
+
+**NICHT ENTSCHIEDEN:** ob daraus eine **EIGENE Regel** wird oder ein **ABSATZ an „EINE
+ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND"** (docs/immer-beachten.md).
+**Für einen Absatz spricht**, dass dort genau diese Denkfigur steht — ein Nicht-Treffer, den
+der Gegenstand nicht hergibt — und dass eine dritte Regel auf derselben Achse die
+Trefferwahrscheinlichkeit senkt. **Für eine eigene spricht**, dass jene Regel den
+WERKZEUGWECHSEL innerhalb derselben Quelle verlangt, während hier die **QUELLE selbst** eine
+falsche war: kein Werkzeugwechsel an der Datei hätte den fehlenden Text zutage gefördert.
+**KEINE EMPFEHLUNG.**
+
+**KEIN EINTRAG IN docs/immer-beachten.md IN DIESER RUNDE** — die Hebung ist Sache des
+Phasenendes.
+
+PROVENIENZ: die zehn Dateien, ihre Grösse, ihr sha256 und die Trefferzahlen sind eine
+ARCHITEKT-PRÜFUNG vom 2026-09-18 an den hochgeladenen Dateien; dass der Dialog dabei sichtbar
+war und dass die Erfahrung wiederkehrend ist, sind OWNER-ANGABEN desselben Tages — **CC kann
+beides nicht prüfen.** **Die Ursache ist UNGEMESSEN.** Der Volltext der Nachbarregel GELESEN
+in docs/immer-beachten.md (CC, 2026-09-18).

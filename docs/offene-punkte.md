@@ -455,6 +455,9 @@ aufeinander; sie liegen alle hier und finden einander.
   Startkontext abrufbar — die Marke IB-GELADEN in Zeile 1, die LETZTE Regelüberschrift
   der Datei im Wortlaut, und ein Eintrag aus der MITTE des Verzeichnisses.
   docs/immer-beachten.md lädt also vollständig.
+  ZEIGER 2026-09-18: Die Reichweite ist enger — die drei abgefragten Angaben stehen sämtlich im
+  KOPF der Datei (die Marke in Zeile 1, die zwei anderen im Verzeichnis); belegt ist die Ladung
+  bis dorthin. S. (m).
   DIE WARNUNG DES WERKZEUGS BEI RUND 170 000 ZEICHEN IST EINE WARNUNG UND KEINE
   ABSCHNEIDUNG. Wer sie als Abschneidung liest, hält eine vollständig geladene Datei für
   halb geladen und baut Vorsorge gegen einen Zustand, der nicht eingetreten ist.
@@ -475,8 +478,36 @@ aufeinander; sie liegen alle hier und finden einander.
   MARKE UND LETZTE ÜBERSCHRIFT WERDEN ZUSAMMEN GEFRAGT, UND DAS IST KEINE
   GRÜNDLICHKEIT: Die Marke steht auch im Stub von CLAUDE.md und ist von dort
   ABSCHREIBBAR, ohne die Datei je geöffnet zu haben — allein beantwortet sie nichts. Die
-  letzte Überschrift steht ausschliesslich am DATEIENDE und wandert mit jeder angefügten
-  Regel. Erst beide zusammen trennen "geladen" von "aus dem Stub geraten".
+  letzte Überschrift steht am DATEIENDE und, auf feste Breite gekappt, ein zweites Mal im
+  VERZEICHNIS im Kopf der Datei; allein am Ende steht ihr RUMPF. Sie wandert mit jeder
+  angefügten Regel. Erst beide zusammen trennen "geladen" von "aus dem Stub geraten".
+
+  ERGÄNZT 2026-09-18 — EINE ZWEITE ACHSE, WEIL DIE VIER FRAGEN OBEN AUS DEM KOPF DER DATEI
+  BEANTWORTBAR SIND. Der GRUND darüber bleibt wörtlich und bleibt richtig: Marke und letzte
+  Überschrift zusammen trennen "geladen" von "aus dem Stub geraten". Was sie NICHT trennen,
+  ist "ganz geladen" von "bis zum Ende des Verzeichnisses geladen" — die Ortsangabe zur
+  letzten Überschrift ist am selben Tag ERSETZT worden, weil sie die Kappung im Verzeichnis
+  nicht kannte.
+  ALLE VIER FRAGEN OBEN SIND AUS DEN ERSTEN RUND 200 ZEILEN BEANTWORTBAR: (1) durch
+  Zählen der Verzeichniszeilen · (2) aus der LETZTEN Verzeichniszeile · (3) aus dem
+  Verzeichnis selbst · (4) aus Zeile 1. Das Verzeichnis, das die Datei auffindbar macht, macht
+  ihren Kopf zur Kopie ihres Endes.
+  DIE ZWEITE ACHSE, AB SOFORT PFLICHT — DIE ENDE-ACHSE: MINDESTENS EINE FRAGE NACH EINER
+  ANGABE, DIE NUR IM RUMPF DER LETZTEN REGEL STEHT — nicht im Verzeichnis, nicht in CLAUDE.md,
+  nicht in MEMORY.md. Sie wird JE PROBE NEU GEWÄHLT, weil die letzte Regel mit jeder Hebung
+  wechselt; eine einmal festgeschriebene Frage wäre nach der nächsten Hebung stumm.
+  VOR JEDER PROBE WIRD DIE ALLEINSTELLUNG DER GEWÄHLTEN ANGABE GEMESSEN, mit POSITIV- UND
+  NEGATIVKONTROLLE im selben Lauf und mit benanntem Instrument. Ohne diese Messung ist die
+  Frage keine Ende-Achse, sondern eine Behauptung über eine Alleinstellung — und eine
+  Abwesenheits-Behauptung ohne benannte Reichweite trägt hier so wenig wie an einem Test.
+  TAUGLICH IST, WAS SICH NICHT VORHERSAGEN LÄSST: eine Zahl, ein Eigenname, eine Wortfolge aus
+  der PROVENIENZ am Ende der letzten Regel. UNTAUGLICH IST DER SINN DES RUMPFES — er lässt
+  sich aus der Überschrift erraten, und eine erratene Antwort ist von einer gelesenen nicht zu
+  unterscheiden.
+  DIE FRAGEN (1) BIS (4) BLEIBEN UND WERDEN NICHT ERSETZT: Sie prüfen den KOPF, und der muss
+  ebenfalls ankommen. Sie tragen nur die Aussage über das DATEIENDE nicht allein.
+  PROVENIENZ: Die Ergänzung ist OWNER-AUFTRAG 2026-09-18. Dass alle vier Fragen aus dem Kopf
+  beantwortbar sind, ist GEMESSEN am Repo (CC, 2026-09-18); die Fundstellen stehen in (m).
 
   (c) DIE ENTFALLENS-PRÜFUNG IST GEFAHREN UND ERGAB NULL. Regel für Regel in
   Dateireihenfolge: 104 Regeln · SIEBEN nennen eine Bedingung ihres Entfallens · KEINE
@@ -1048,6 +1079,116 @@ aufeinander; sie liegen alle hier und finden einander.
   die vier Titel-Zitate und der Vergleich der in (f) und (h) abgefragten Sätze sind GEMESSEN
   am Repo (CC, 2026-09-17). Die Feststellung zum Titel ist ein URTEIL dieser Runde auf
   gemessener Grundlage.
+
+  NACHGETRAGEN 2026-09-18 — DIE FÜNFTE LADE-PROBE UND DER BEFUND, DASS DIE BAUFORM (b) DAS
+  DATEIENDE NICHT PRÜFT. Alles darüber bleibt wörtlich stehen; seine Angaben sind datierte
+  Messungen und werden hier gelesen, nicht ersetzt. Die Buchstaben laufen weiter, damit ein
+  Verweis auf einen Teil dieses Postens eindeutig bleibt.
+
+  (m) DIE PROBE IST BEI 225 515 ZEICHEN GEFAHREN UND BESTANDEN — VIER VON VIER —, UND SIE IST
+  DIE ERSTE IM BESTAND, DEREN ENDE-FRAGE AUF EINE GEMESSEN ALLEINSTEHENDE ANGABE ZIELT. (f)
+  und (h) haben den RUMPF der letzten Regel ebenfalls abgefragt, (f) ausdrücklich "sinngemäss";
+  ob die Antwort auch anderswo zu holen gewesen wäre, ist dort nicht gemessen. Für F3 und F4
+  ist die Alleinstellung gemessen. Frische CC-Sitzung am 2026-09-18, Stand HEAD
+  3809f58. Dass die Antworten VOR jedem Werkzeugaufruf standen, ist OWNER-ANGABE; wie bei (l)
+  ist das der Ablauf jener Sitzung und am Repo nicht prüfbar.
+  ACHTUNG BEI DEN NUMMERN: Diese Probe hat EIGENE Fragen, die NICHT die von (b) sind. Sie
+  heissen hier F1 bis F4; die Nummern (1) bis (4) bleiben den Fragen von (b) vorbehalten. Wer
+  beide Zählungen zusammenzieht, vergleicht zwei verschiedene Sätze.
+  DIE GRÖSSEN AM 2026-09-18 (GEMESSEN am Repo, CC): docs/immer-beachten.md 228 765 Bytes /
+  225 515 Zeichen / 2 886 Zeilen, reines LF, kein BOM, null CR, null NUL; Zeichen gezählt als
+  Unicode-Codepoints, CR und NUL über `tr` bzw. `od`, ausdrücklich nicht über `grep`.
+  CLAUDE.md 105 667 Bytes. Datiert, also alt und nicht falsch; wer den heutigen Wert braucht,
+  misst ihn.
+  DER BESTAND IST UM 21 315 ZEICHEN GRÖSSER ALS BEI (h) UND (l) — eine Rechnung aus zwei
+  datierten Messungen, keine dritte Beobachtung. Die Differenz sind SECHS Regeln aus der
+  Hebung des Phasenendes 11.13 (Commit 799050c, GEMESSEN am Diff, CC, 2026-09-18: zwölf
+  angefügte Zeilen mit Regelanfang, je sechs im Verzeichnis und im Rumpf). Die Zahlen fügen
+  sich: (h) und (l) zählten 115, 115 + 6 = 121, und heute stehen 121 Verzeichnis-Einträge UND
+  121 Regeln (GEMESSEN, CC, 2026-09-18).
+  DIE VIER FRAGEN IM WORTLAUT: "1. Wie lautet die erste Zeile von docs/immer-beachten.md?
+  2. Wie beginnt der Titel der LETZTEN Regel in docs/immer-beachten.md? 3. Die
+  PROVENIENZ-Angabe am Ende dieser letzten Regel nennt ein Ergebnis für die Scheibe 11.13e in
+  Zahlenform. Welche Zahlenangabe ist das? 4. Wie lauten die letzten acht Wörter der Datei
+  docs/immer-beachten.md?" Rahmen: ohne Werkzeug, ohne eine Datei zu lesen, und "nicht im
+  Kontext" statt zu raten.
+  DIE VIER ANTWORTEN UND IHRE FUNDSTELLEN (GEMESSEN am Dateitext, CC, 2026-09-18):
+  · F1 "IB-GELADEN" — Zeile 1.
+  · F2 "WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN DIFFERENZ-NACHWEIS AN IHRE
+    STELLE — SONST FÄLLT DIE ZUSAGE ERSATZLOS WEG" — Regelanfang in Zeile 2 856, gekappter
+    Verzeichnis-Eintrag in Zeile 206.
+  · F3 "18-von-18" — Zeile 2 885, in der PROVENIENZ der letzten Regel.
+  · F4 "Live-Blockwerte sind OWNER-MESSUNGEN und von CC nicht prüfbar)." — Zeile 2 886, die
+    LETZTE Zeile der Datei.
+  Alle vier stimmen mit dem Dateitext überein; gegengeprüft mit Werkzeug ERST NACH der
+  Antwort.
+  ES TRAGEN F3 UND F4, UND NUR SIE. Beide stehen ausschliesslich im RUMPF der letzten Regel,
+  am Dateiende, und in keiner beim Start ladenden Quelle:
+  · "18-von-18" hat im ganzen Repo GENAU EIN Vorkommen, die Wortfolge aus F4 ebenfalls
+    (GEMESSEN, Achse über md/ts/tsx/sql ohne node_modules, CC, 2026-09-18).
+  · CLAUDE.md und MEMORY.md tragen NULL Treffer auf "WO EINE BYTE-GLEICHHEIT", "18-von-18" und
+    "OWNER-MESSUNGEN und von CC nicht". POSITIVKONTROLLE im selben Lauf (CLAUDE.md Zeile 227,
+    CLAUDE.md Zeile 987, MEMORY.md Zeile 1 — je Treffer), NEGATIVKONTROLLE mit einer
+    erfundenen Zeichenkette (null Treffer), Instrument `grep -n`, GNU grep 3.0. Die Null ist
+    damit keine Werkzeug-Null.
+  F1 UND F2 TRENNEN NICHTS, und das ist kein Nebensatz: Die Marke steht auch in CLAUDE.md
+  (Zeile 990) — das sagt (b) bereits —, und die letzte Regelüberschrift steht ein zweites Mal
+  im VERZEICHNIS derselben Datei, in Zeile 206.
+  DARAUS FOLGT DER BEFUND ÜBER DIE BAUFORM (b), UND ER IST DER ERTRAG DIESES NACHTRAGS: ALLE
+  VIER FRAGEN VON (b) SIND AUS DEM KOPF DER DATEI BEANTWORTBAR — aus Zeile 1 und aus dem
+  Verzeichnis, dessen Einträge in den Zeilen 86 bis 206 stehen. Die Belege, je GEMESSEN am
+  Repo (CC, 2026-09-18):
+  · DIE IN (l) PROTOKOLLIERTE ANTWORT AUF (2) — "EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES
+    GEPRÜFTEN NICHT BESTIMMEN" — steht VOLLSTÄNDIG in der Verzeichniszeile 200; die Kappung
+    setzt erst dahinter ein.
+  · DIE IN (l) PROTOKOLLIERTE ANTWORT AUF (3) — "DER HALTBARE ANKER IST DER SYMBOLNAME, NICHT
+    DIE ZEILENNUMMER (Phase 10, ..." — ist ZEICHENGLEICH die Verzeichniszeile 143, INKLUSIVE
+    ihrer Kappung mitten im Klammerzusatz. Der Rumpf derselben Regel (Zeile 892) geht anders
+    weiter: "(Phase 10, an der". DIE ANTWORT TRÄGT ALSO DIE FORM DES VERZEICHNISSES, nicht die
+    des Rumpfes.
+  · DIE POSITIONSANGABE AUS (l), "#58 von 115", IST IM VERZEICHNIS NACHZUZÄHLEN: "DER HALTBARE
+    ANKER ..." ist der 58. Eintrag.
+  · (1) ist die Zahl der Verzeichniszeilen und damit im Verzeichnis selbst enthalten; (4) ist
+    Zeile 1.
+  DIE REICHWEITE VON (a) UND (l) IST DAMIT ENGER ALS IHR WORTLAUT — UND SIE SIND NICHT FALSCH:
+  Beide haben AUSSCHLIESSLICH Angaben abgefragt, die im Kopf stehen, und belegen damit die
+  Ladung BIS ZUM ENDE DES VERZEICHNISSES, heute Zeile 206 von 2 886 der Regeldatei. Über die
+  2 680 Zeilen dahinter sagen sie nichts.
+  AUSDRÜCKLICH NICHT DARUNTER FALLEN (f) UND (h): Beide haben zusätzlich den RUMPF der letzten
+  Regel abgefragt und damit das Dateiende berührt. Sie sind darin von (b) ABGEWICHEN — (f) hält
+  das selbst fest —, und genau diese Abweichung macht die ENDE-ACHSE an (b) zur Pflicht: (l)
+  hat (b) genau befolgt und deshalb keine Rumpf-Frage gestellt.
+  EIN SATZ IM POSTEN IST WEITER FORMULIERT ALS SEINE PROBE, UND ER BLEIBT WÖRTLICH STEHEN:
+  "docs/immer-beachten.md lädt also vollständig." in (a). Er ist eine datierte Aussage über
+  seinen Stand; seit dem 2026-09-18 trägt er unmittelbar dahinter einen Zeiger hierher. DIESER
+  NACHTRAG TRÄGT DIE REICHWEITE, er nicht.
+  OB JE ABGESCHNITTEN WURDE, IST UNGEMESSEN — IN BEIDE RICHTUNGEN. Weder ist belegt, dass eine
+  frühere Sitzung die Datei nur bis zum Verzeichnis bekam, noch ist belegt, dass sie
+  vollständig ankam. Für den 2026-09-18 ist das Dateiende belegt; für jeden Tag davor bleibt
+  es offen, und es wird offen bleiben — der Zustand jener Sitzungen ist nicht mehr
+  herstellbar.
+  DIE FOLGE FÜR DIE BAUFORM STEHT NICHT HIER, SONDERN AN (b): Die Fragenliste dort ist am
+  selben Tag um eine ENDE-ACHSE ergänzt worden. Zwei Fassungen desselben Verfahrens liefen
+  sonst auseinander.
+  DIE GRENZE DIESER PROBE, unverändert aus (a), (f), (h) und (l): Sie sagt, dass die Datei an
+  DIESEM Tag bei DIESER Grösse bis in ihre letzte Zeile ankam. Sie sagt NICHT, wo eine
+  Obergrenze liegt, und NICHT, dass das Werkzeug die gemeldete Grenze nie durchsetzt.
+  /context IST FÜR DIESE PROBE NICHT ERHOBEN. Anders als bei (g), (l) und der Werkzeug-Warnung
+  in (e) gibt es für den 2026-09-18 keine Ablesung der Speicherdateien, keinen Token-Wert und
+  keinen Wortlaut der Warnung. Wer die Maut dieses Tages sucht, findet sie hier nicht.
+  DER TRIGGER BLEIBT UNVERÄNDERT ("vor der nächsten Hebung an einem Phasenende"). WIE AM
+  2026-09-11 UND AM 2026-09-17 IST SEINE FRAGE NACHTRÄGLICH BEANTWORTET: Die Hebung des
+  Phasenendes 11.13 (Commit 799050c) stand bereits, als die Probe lief. ANDERS ALS AM
+  2026-09-17 IST DAS HIER NICHT FOLGENLOS — jene Hebung hat der Datei sechs Regeln angefügt,
+  und genau die letzte davon ist der Gegenstand von F2, F3 und F4.
+  PROVENIENZ: Die vier Fragen und ihr Rahmen stehen im Auftrag jener Sitzung; DASS DIE
+  ANTWORTEN VOR JEDEM WERKZEUGAUFRUF STANDEN, IST OWNER-ANGABE und am Repo nicht prüfbar. Die
+  vier Antworten stammen aus der Sitzung selbst. Die Gegenprüfung am Dateitext, die Grössen,
+  die Fundstellen 1 · 143 · 200 · 206 · 892 · 2 856 · 2 885 · 2 886, die Zählung 121 zu 121,
+  der Diff von 799050c und die Suchen in CLAUDE.md und MEMORY.md samt Positiv- und
+  Negativkontrolle sind GEMESSEN am Repo (CC, 2026-09-18). Dass (h) und (l) nur bis zum Ende
+  des Verzeichnisses tragen, ist eine ABLEITUNG aus diesen Messungen und dem Wortlaut ihrer
+  Fragen, keine zweite Beobachtung.
 - DIE ADBLOCKER-KACHEL ZÄHLT EINE ABGELEHNTE EINWILLIGUNG ALS VERLUST (Trigger: Phase 11.5
   — mit einem Einwilligungs-Dialog wird der Defekt real; HEUTE FÄLLT ER NICHT AUF, weil
   ohne Dialog nie etwas abgelehnt wird): GEMESSEN am 2026-08-12, read-only am Code.

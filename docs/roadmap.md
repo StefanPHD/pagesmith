@@ -2160,7 +2160,10 @@ liegen beide hier und finden einander.
          `prefers-color-scheme`, NICHT von der Seite erben. Der Unterschied ist tragend: Erben hiesse,
          Werte der Kundenseite in den Schattenbaum zu lassen — die Frage aus (f) unten.
       3. FREIE FARBEN. Erst wenn Scheibe 2 steht und live geprüft ist.
-      4. FREIER TEXT. Eine eigene Scheibe; sie ist die einzige mit einer Sicherheitsachse, s. (g).
+      4. FREIER TEXT. Eine eigene Scheibe; ihre Sicherheitsachse ist die des freien Textes, s. (g).
+      AUCH SCHEIBE 3 TRÄGT EINE EIGENE SICHERHEITSACHSE — eigene Farben sind Betreiber-Eingabe im
+      ausgelieferten Text, und sie wird dort von einem Format-Tor auf ^#[0-9a-f]{6}$ getragen
+      (bindende Entscheidung P11.13-14 der Standdatei der Phase 11.13).
 
       (d) DIE REIHENFOLGE GEGENÜBER 11.5e-2 IST GESETZT: 11.5e-2 (der Widerruf, Entscheidung (24)
       der Phase 11.5) läuft ZUERST, und diese Zeile beginnt erst NACH dem Phasenende der Phase 11.5.

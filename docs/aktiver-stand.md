@@ -35,8 +35,9 @@ EINER DATEI MIT VERZEICHNIS NICHT). Wer bearbeitet, ankert entsprechend.
 5. Entscheidungen, die über ihre Scheibe hinaus binden
 6. Zuschnitt der Scheibe 11.13a — DIE ANORDNUNG (VERDICHTET 2026-09-17)
 7. Zuschnitt der Scheibe 11.13b — DAS THEMA (VERDICHTET 2026-09-17)
-8. Vorrat — gemeldet, nicht gebaut
-9. Hebungs-Kandidaten
+8. Zuschnitt der Scheibe 11.13c — EIGENE FARBEN
+9. Vorrat — gemeldet, nicht gebaut
+10. Hebungs-Kandidaten
 
 ---
 
@@ -939,6 +940,95 @@ Block-Prüfsummen sind eine ARCHITEKT-PRÜFUNG desselben Tages; alle übrigen Li
 sind OWNER-ANGABEN und am Repo nicht prüfbar. Das Urteil zu Schritt 6 ist ein visuelles
 Owner-Urteil, keine Messung.
 
+### VERMERK P11.13-5 — Aufklärung 11.13c (EIGENE FARBEN), 2026-09-18
+
+**ACHTUNG, DIE NUMMER IST AB HEUTE DREIFACH BELEGT, UND DAS IST DIE BAUFORM DIESER DATEI,
+KEIN FEHLGRIFF:** Die Zähler laufen JE KLASSE. `P11.13-5` bezeichnet **diesen Vermerk**,
+**Entscheidung P11.13-5** (das Gleichrangigkeits-Kriterium) und **Vorrat P11.13-5** (die
+Pixel-ID ohne `<`-Maskierung) — drei verschiedene Dinge. **EIN ZEIGER AUF DIESE NUMMER
+NENNT DIE KLASSE MIT**, sonst trifft er zwei Drittel der Zeit das Falsche; der Vorrats-Eintrag
+wird ausserdem von docs/roadmap.md aus zitiert.
+
+**KEIN BAU-COMMIT, UND DER GRUND STEHT HIER:** Es war eine READ-ONLY-Aufklärung ohne
+Änderung am Repo (docs/arbeitsweise.md, "Die Standdatei", Absatz "Ein Vermerk trägt den
+Hash seines Code-Commits"). Der Arbeitsbaum war vorher und nachher sauber; **anders als bei
+den Aufklärungen P11.13-1 und P11.13-3 ist in dieser Runde AUCH IM SCRATCHPAD NICHTS
+entstanden** — kein Browser-Werkzeug, keine Ablage `.playwright-mcp/`, keine Probe. Der
+Stand, auf dem gemessen wurde, ist `dae4d1a`.
+
+**DER EINSETZ-KONTEXT HAT DREI EBENEN, UND NUR DIE MITTLERE IST HEUTE GEDECKT** (GEMESSEN
+am Code, CC, 2026-09-18). Die Einsetzstelle ist EINE Zeile, in `aufbauDerLeiste`
+(`src/lib/tracking/consent-bar.ts`) und zeichengleich in `aufbauDesFensters`
+(`src/lib/tracking/consent-modal.ts`):
+`style.textContent = ${JSON.stringify(stil)};`
+
+| Ebene | Ausbruchszeichen | Deckt `JSON.stringify` das? |
+|---|---|---|
+| **CSS** — Deklaration, Regel, Kommentar, Funktion | `;` · `}` · `{` · `/*` · `url(` | **NEIN** |
+| **JS-String-Literal** | `"` · `\` · Steuerzeichen · U+2028/2029 | **JA** |
+| **HTML, Rohtext in `<script>`** | `</script` · `<!--` | **NEIN** — `JSON.stringify` maskiert kein `<` |
+
+Die unterste Ebene ist dieselbe wie bei der Pixel-ID (Vorrat P11.13-5); **die oberste hat
+dort kein Gegenstück.** Wer aus jenem Eintrag schliesst, es sei dieselbe Frage,
+unterschlägt eine ganze Ebene. **DER AUSBRUCH IST AUF KEINER DER DREI EBENEN ERPROBT** —
+der Weg ist am Code ablesbar, gemessen ist er nicht.
+
+**BEIDE KNÖPFE TRAGEN IHRE FARBEN NICHT PER MESSUNG GLEICH, SONDERN PER BAUART** (GEMESSEN
+am Code, CC, 2026-09-18): "Alle akzeptieren", "Auswahl speichern" und "Ablehnen" entstehen
+über **dasselbe** `makeButton(label, pick)` in `CONSENT_CHOICE_JS` und bekommen **keine
+Klasse**; sie treffen ausschliesslich den baren `button{…}`-Selektor und
+`button:focus-visible{…}`. Nur der Weg trägt eine Klasse, gesetzt in `makeWay`. **ES GIBT
+KEINE `:hover`-REGEL** in den drei Stylesheets (Achse `hover` über `consent-bar.ts`,
+`consent-modal.ts`, `consent-choice.ts` — kein Treffer; Positivkontrolle: dieselbe Achse
+trifft in `src/app/login/page.tsx`, `src/app/page.tsx` und `src/components/ActionPanel.tsx`).
+**FOLGE: Es gibt genau ZWEI Zustände mit eigener Farbe — normal und `:focus-visible`**, und
+die Gleichrangigkeit aus Roadmap (h) ist an der Farbe GEBAUT, nicht gemessen.
+
+**ES GIBT KEINE KONTRASTFUNKTION IM REPO** (GEMESSEN, CC, 2026-09-18; Achse
+`kontrast|contrast|luminan|luminosity|wcag|relativeLum|0\.2126|0\.7152`, case-insensitiv,
+über `src/` **einschliesslich der Testdateien**): fünf Treffer, **alle Prosa** — kein
+Symbol, keine Datei, keine Luminanzrechnung. Positivkontrolle der Achse: dieselbe Suche
+trifft in `docs/` die Kontrastblöcke der VERMERKE P11.13-3 und P11.13-4. **Die Rechnung
+jener zwei Vermerke lebte im Wegwerf-Lauf und ist im Repo nicht reproduzierbar.**
+
+**ES GIBT AUCH KEINE PROBE IM REPO** (GEMESSEN, CC, 2026-09-18; Achse
+`playwright|probe|viewport|screenshot` über `git ls-files`): drei Treffer, **alle
+SQL-Proben** unter `supabase/checks/`. Positivkontrolle: `git ls-files supabase/checks`
+listet sie. **FOLGE FÜR JEDEN ZUSCHNITT DIESER PHASE: Geometrie- und Kontrast-Probe sind
+bei jedem Lauf neu zu schreiben**; es gibt kein wiederverwendbares Artefakt, und die
+Auflage aus Vorrat P11.13-4 (fokussierbares Element ausserhalb des Dialogs) ist bei jedem
+Lauf neu einzuhalten.
+
+**DER EXPORT-PFAD TRÄGT KEIN THEMA UND DAMIT AUCH KEINE FARBE** (GEMESSEN am Code, CC,
+2026-09-18): `handleExportDownload` / `handleExportCopy` (`src/components/CodeImporter.tsx`)
+→ `buildExportDocument()` → `generateFunctional(html, docMappings, "export", …)`.
+`generateFunctional` (`src/lib/generate.ts`) hängt allein `CONSENT_SCRIPT_ID` und
+`buildConsentRuntimes()` ein; `injectPageViewEmitter` kommt dort NICHT vor. Die zwei
+produktiven Aufrufe von `injectPageViewEmitter` stehen beide in `publishProject`
+(`src/app/projects/actions.ts`, Basis und Variante B).
+
+**`PublishView.tsx` HAT WEITERHIN KEINE TESTDATEI** (GEMESSEN, CC, 2026-09-18):
+`src/components/` trägt `CodeImporter.test.tsx`, `DomainManager.test.tsx` und
+`TargetCard.test.tsx`; eine `PublishView.test.tsx` existiert nicht. Die einzige Abdeckung
+der Einwilligungs-Fläche sind **UI1 bis UI5** in `CodeImporter.test.tsx`, entstanden erst
+mit der Scheibe 11.13b. **WAS DORT NEU GEBAUT WIRD, IST BY DEFAULT UNGETESTET.**
+
+**EIN VERALTETER DOCBLOCK, UND ER STEHT AUSGERECHNET AN DER EINSETZSTELLE** (GEMESSEN am
+Code, CC, 2026-09-18): Der Docblock von `aufbauDerLeiste` (`src/lib/tracking/consent-bar.ts`)
+schliesst mit "DIE BYTE-GLEICHHEIT DES LADE-ZWEIGS HAENGT AN DEN **ZWEI** PLATZHALTERN …
+muss der erzeugte Text ZEICHEN FUER ZEICHEN der Fassung vor dieser Scheibe entsprechen.
+**W0 haelt den Wert.**" **Beides ist überholt:** Es sind seit der Scheibe 11.13a **drei**
+Platzhalter plus `stil`, und **W0 ist gestrichen** — das sagt derselbe Datei-Kopf weiter
+oben, und am Repo ist kein Test dieses Namens auffindbar (Positivkontrolle: W1 bis W17
+stehen als Testlabel in `consent-revoke.test.ts`). **WER FÜR DIESE SCHEIBE EINE
+BYTE-ZUSAGE SUCHT, LIEST HIER EINE, DIE ES NICHT GIBT.** Der Block ist in dieser Runde
+**NICHT** geändert worden (Doku-Runde, kein Code); die Änderung gehört in die Bau-Scheibe.
+
+PROVENIENZ DIESES VERMERKS: sämtliche Angaben GEMESSEN bzw. GELESEN am Repo (CC,
+2026-09-18, auf `dae4d1a`). **KEINE Messung an einem Browser, keine an einer Live-Seite,
+keine Probe.** Dass ein Ausbruch über eine der drei Ebenen tatsächlich gelänge, ist eine
+ABLEITUNG aus dem Code und ausdrücklich **UNGEMESSEN**.
+
 ---
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
@@ -1149,9 +1239,17 @@ Gegenprobe ausserhalb liefert denselben Wert, die Messung greift also. **DIE MES
 ROADMAP (f) IST DAMIT GEFAHREN**, und die Gestalt, die die Frage gar nicht erst stellt, ist
 nicht mehr die vorsichtige, sondern die belegte Wahl.
 
-**DIE GRENZE — SIE KIPPT MIT SCHEIBE 3 (freie Farben).** Dort entsteht ein Wert, der NICHT
-aus einer festen Tabelle kommt; ob er über Variablen, über erzeugte Deklarationen oder
-anders in den Text gelangt, ist **dort neu zu entscheiden** und nicht hier vorweggenommen.
+**DIE GRENZE — SIE GILT FÜR DIE DREI WERTE DER TABELLE, UND FÜR DIE GILT SIE
+UNVERÄNDERT.** Mit der Scheibe 3 (eigene Farben) tritt ein VIERTER Wert daneben, der NICHT
+aus der Tabelle kommt: Dort erreicht ein Betreiber-Wert den ausgelieferten Text, und dort
+gilt der Satz „der Rohwert aus dem Blob erreicht den ausgelieferten Text NIE" NICHT. **FÜR
+"light", "dark" UND "auto" ÄNDERT SICH NICHTS — auch nicht byte-weise.** Wie der vierte
+Zweig gebaut wird, steht in den Entscheidungen P11.13-12 (die vierte Darstellung),
+P11.13-14 (das Format-Tor) und P11.13-15 (erzeugte Deklarationen, weiterhin KEINE
+CSS-Variablen).
+
+**DER TITEL DIESER ENTSCHEIDUNG BLEIBT WÖRTLICH:** Er ist für die drei Werte, die sie
+regiert, richtig; die neue Entscheidung tritt NEBEN sie, nicht über sie.
 
 PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17. **Dass `all:initial` die
 benutzerdefinierten Eigenschaften nicht erfasst, ist GEMESSEN** (CC, 2026-09-17, Chromium,
@@ -1258,6 +1356,455 @@ nicht ein Vorgabewert einzuziehen.
 PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG, OWNER-FREIGABE 2026-09-17 (Freigabe F1 zum Plan). Die
 Zahl der Aufrufe ist GEMESSEN am Repo (CC, 2026-09-17); die Erhebung zur Entscheidung ist
 die Verdichtung des Zuschnitts am selben Tag.
+
+### Entscheidung P11.13-12 — „EIGENE FARBEN" IST EINE VIERTE DARSTELLUNG, KEIN ZWEITER SCHALTER
+
+**Die eigenen Farben sind ein VIERTER WERT der Darstellung, neben Hell, Dunkel und
+Automatisch** — keine zweite Einstellung, die neben der Darstellung stünde und mit ihr
+kombiniert werden könnte. Es gibt zu jedem Zeitpunkt **genau eine** Darstellung.
+
+**DER GRUND:** Zwei Einstellungen nebeneinander erzeugten sofort die Frage, was „Dunkel
+PLUS eigene Farben" bedeutet, und sie hätte keine gute Antwort — jede Kombination wäre
+entweder eine stille Vorrangregel oder ein Zustand, den niemand bestellt hat. **EIN Wert
+mit vier Zweigen hat diese Frage nicht.** Er erbt zugleich die geprüfte Bauform des
+Dialogwerts und des Themenwerts (Entscheidung P11.13-6): ein einziger Leser, ein
+normalisierter Vergleich, `"unknown"` als eigener Ausgang.
+
+**WAS DAS FÜR Entscheidung P11.13-8 HEISST — SIE IST NICHT GEKIPPT, SIE HAT JETZT EINEN
+ZWEIG MEHR:** Für Hell, Dunkel und Automatisch gilt sie **unverändert und byte-genau** —
+der Wert wählt aus einer festen Tabelle, der Rohwert aus dem Blob erreicht den
+ausgelieferten Text nie. **NUR DER VIERTE ZWEIG KOMMT NICHT AUS DER TABELLE.** Die Grenze
+jener Entscheidung ist deshalb **richtiggestellt und nicht gestempelt** worden.
+
+**DIE VERZWEIGUNG BLEIBT AN EINER STELLE UND ERSCHÖPFEND.** Der vierte Wert macht dort den
+`never`-Zweig zum Compiler-Fehler — genau wie der dritte, genau wie `consentBlocksFor` für
+die Form des Dialogs. **Eine zweite Verzweigung über die Darstellung entsteht nicht.**
+
+**DIE GRENZE:** Sie kippt, **sobald die Darstellung und die Farben zu zwei Einstellungen
+werden, die gleichzeitig gelten sollen.** Dann ist zu entscheiden, welche Vorrang hat, und
+diese Entscheidung sagt das ausdrücklich NICHT.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-18 (O3) für die vierte Darstellung;
+ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (A5) für das Verhältnis zu P11.13-8. **BEIDE TRAGEN
+DIESELBE GRENZE und stehen deshalb als EINE Entscheidung.** Dass die drei Tabellenzweige
+ihre Bytes behalten, ist zum Zeitpunkt dieser Entscheidung eine ABLEITUNG aus der Bauart
+von `consentThemeCss` (`"light"` liefert den leeren String) und **noch nicht gemessen** —
+die Messung ist Pflicht der Bau-Scheibe.
+
+### Entscheidung P11.13-13 — ZWEI FARBEN, UND ALLES ÜBRIGE WIRD ABGELEITET
+
+**DER BETREIBER WÄHLT GENAU ZWEI WERTE: einen HINTERGRUND und einen TEXT.** Kein dritter
+Wert, kein Wähler je Bedienelement, keine getrennten Farben für die einzelnen Knöpfe.
+
+**DIE ABLEITUNG, vollständig:**
+- **HINTERGRUND** → Hintergrund von Leiste bzw. Fenster **UND** Hintergrund der Knöpfe.
+- **TEXT** → Sachtext · Knopftext · **Knopfrahmen** · **Fokus-Ring** · **`accent-color`
+  der Kästchen**. Der Weg „Einstellungen" bekommt keine eigene Farbe — er erbt die
+  Knopf-Farbe, wie im Bestand.
+
+**DER GRUND IST EIN KONTRAST-ARGUMENT UND KEIN GESTALTUNGS-ARGUMENT, und das ist der ganze
+Inhalt dieser Entscheidung:** Tragen Rahmen, Kästchen und Fokus-Ring **dieselbe** Farbe wie
+der Text, deckt **EIN einziges Paar** — Text gegen Hintergrund — das gesamte
+Kontrast-Kriterium P11.13-10 ab. Dessen Schwelle für Text ist 4,5, die für Rahmen, Kästchen
+und Fokus-Ring ist 3; **4,5 schliesst 3 ein**. Aus sechs zu prüfenden Paaren wird eines.
+Wer die Farben feiner aufteilt, bekommt sechs Paare zurück und braucht sechs Hinweise.
+
+**DIE GLEICHRANGIGKEIT BLEIBT GEBAUT, NICHT GEMESSEN:** Beide Knöpfe tragen weiter
+dieselben Farben, weil sie über **dasselbe** `makeButton` ohne Klasse entstehen (GEMESSEN,
+VERMERK P11.13-5). **GETRENNTE KNOPFFARBEN SIND AUSGESCHLOSSEN** — sie wären genau das Dark
+Pattern, das der Guardrail der Roadmap-Zeile 11.13, Punkt (h), ausschliesst, und sie
+machten aus einer gebauten Zusage eine gemessene.
+
+**ZWEI PLÄTZE SIND AUSDRÜCKLICH NICHT ENTSCHIEDEN und stehen als Plan-Fragen offen:**
+(1) die **CONTAINER-LINIE** (`.bar{border-top-color}` / `.dialog{border-color}`) — sie ist
+vom Kontrast-Kriterium ausgenommen (P11.13-10) und hat deshalb kein Kriterium, an dem eine
+Ableitung sich messen liesse; (2) **`color-scheme`** — es steuert, wie der Browser das
+**native** Kästchen zeichnet, und ist damit der einzige Platz, an dem eine Wahl eine Farbe
+bewegt, die wir nicht selbst setzen. **KEINE EMPFEHLUNG; Kandidaten stehen im Plan.**
+
+**UNBERÜHRT BLEIBEN — wie beim dunklen Thema:** die **Abdunkelung** des Fensters
+(`.backdrop`) und der durchsichtige Hintergrund des Wegs (`.way`). CSS2c hält beide
+Abwesenheiten bereits für das dunkle Thema.
+
+**DIE GRENZE:** Sie kippt **mit einer dritten freien Farbe.** Dann fällt das
+Ein-Paar-Argument, und P11.13-10 ist wieder mit mehreren Paaren zu prüfen.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-18 (O1) für den Umfang von zwei Farben;
+ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (A3) für die Ableitung. **BEIDE TRAGEN DIESELBE GRENZE —
+die dritte Farbe — und stehen deshalb als EINE Entscheidung.** Dass beide Knöpfe heute
+farbgleich sind und keine `:hover`-Regel existiert, ist GEMESSEN am Code (CC, 2026-09-18,
+VERMERK P11.13-5). Dass ≥ 4,5 die Schwelle ≥ 3 einschliesst, ist eine ABLEITUNG aus den
+zwei Schwellen von P11.13-10, keine Messung.
+
+### Entscheidung P11.13-14 — DAS FORMAT-TOR: EIN ALPHABET, DAS DREI EBENEN ZUGLEICH DECKT
+
+**ZUGELASSEN IST AUSSCHLIESSLICH `^#[0-9a-f]{6}$`.** Keine Kurzform (`#fff`), keine
+Grossbuchstaben, keine Namen, kein `rgb()`, kein Alpha-Kanal. **UND KEINE NORMALISIERUNG:**
+Ein Wert, der nur nach Umformung passte, wird **abgewiesen**, nicht zurechtgebogen.
+
+**DER GRUND IST DER DREI-EBENEN-BEFUND AUS VERMERK P11.13-5, und ohne ihn liest sich die
+Strenge als Geschmack:** Der Wert landet in CSS **innerhalb** eines JS-String-Literals
+**innerhalb** des Rohtexts eines `<script>`-Elements. `JSON.stringify` deckt **nur die
+mittlere** Ebene. **EIN ALPHABET AUS `#` UND SECHZEHN HEX-ZEICHEN ENTHÄLT KEIN `;`, KEIN
+`}`, KEIN `{`, KEIN `/`, KEIN `(` UND KEIN `<` — es deckt damit alle drei Ebenen ZUGLEICH,
+und zwar ohne dass irgendwo eine Maskierung richtig sein muss.** Eine Maskierung je Ebene
+wäre drei Stellen, die einzeln falsch werden können; ein Alphabet ist eine.
+**WARUM AUCH DIE GROSSBUCHSTABEN FALLEN, obwohl sie harmlos aussehen:** Jede zugelassene
+Schreibvariante ist eine zweite Form desselben Werts, und zwei Formen verlangen eine
+Normalisierung — also genau die Umformung, die diese Entscheidung ausschliesst. Eine
+Eingabe, die der Betreiber tippt, darf er im Feld korrigieren; der Speicher trägt eine Form.
+
+**DIE BAUFORM IST DIE VON `getConsentTheme`, und sie hat drei Teile:**
+1. **DER LESER liefert einen GEPRÜFTEN TYP oder `"unknown"`.** **KEIN RÜCKFALL** auf einen
+   Vorgabewert — sonst sähe die abbrechende Stelle einen ungültigen Wert nie, und der
+   Abbruch wäre toter Code (docs/immer-beachten.md, EIN UNBEKANNTER KONFIGURATIONSWERT
+   BRICHT LAUT AB, Folge (a)).
+2. **DER ERZEUGER NIMMT NUR DEN GEPRÜFTEN TYP AN.** Ein roher `string` an dieser Stelle ist
+   ein **Compiler-Fehler**, nicht ein Laufzeit-Fehler. Der Prüfung ausweichen heisst dann,
+   den Typ absichtlich zu erzwingen — eine sichtbare Handlung statt eines Versehens.
+3. **`publishProject` BRICHT AB**, wenn der Dialog eingeschaltet ist, die Darstellung
+   „eigene Farben" lautet **und** eine der zwei Farben ungültig oder nicht vorhanden ist —
+   mit einer **EIGENEN** Meldungs-Konstante, in derselben Bauform wie
+   `CONSENT_THEME_UNKNOWN_MESSAGE`, **vor** dem Label-Block und **vor** `ensureTrackingKey`.
+   **DIE ASYMMETRIE AUS Entscheidung P11.13-7 GILT UNVERÄNDERT:** Bei ausgeschaltetem Dialog
+   wird nicht abgebrochen, weil dort nichts ausgeliefert wird und es keinen Besucher-Preis
+   gibt.
+
+**IST DIE DARSTELLUNG NICHT „EIGENE FARBEN", WERDEN GESPEICHERTE FARBEN WEDER GELESEN NOCH
+AUSGELIEFERT.** Sie bleiben im Blob liegen — wer zurückschaltet, findet seine Wahl vor,
+dieselbe Zusage wie beim Themenwert (Entscheidung P11.13-6).
+
+**DIE FOLGE, DIE ÜBER DIESE SCHEIBE HINAUSGEHT: SCHEIBE 3 HAT EINE EIGENE
+SICHERHEITSACHSE.** Der Satz der Roadmap-Zeile 11.13, Punkt (c) 4, die Scheibe des freien
+Textes sei „die einzige mit einer Sicherheitsachse", ist damit **falsch** und in
+docs/roadmap.md **ersetzt, nicht gestempelt**. Punkt (g) bleibt unberührt — er ist eine
+Aussage über den **freien Text**, und für den gilt er weiter. **DIE WÄCHTER MIT FEINDLICHER
+EINGABE GEHÖREN IN DIESE SCHEIBE**; sie sind ihre eigene Invariante und werden nicht auf
+Scheibe 4 vertagt.
+
+**DIE KONKRETEN NAMEN — Feldnamen, Leser, Setzer, der Name des geprüften Typs — SIND HIER
+NICHT ENTSCHIEDEN.** Sie sind Gegenstand des Plans und fallen mit seiner Freigabe.
+
+**DIE GRENZE:** Sie kippt, **sobald ein Farbformat mit einem anderen Alphabet zugelassen
+wird** — `rgb()`, Farbnamen, Alpha-Kanal, Kurzform. Jedes davon bringt Zeichen zurück, die
+auf mindestens einer der drei Ebenen ausbrechen; **dann ist die Ausbruchsfrage NEU zu
+stellen und nicht fortzuschreiben.**
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (A1). Der Drei-Ebenen-Befund ist GEMESSEN am
+Code (CC, 2026-09-18, VERMERK P11.13-5); **dass ein Ausbruch tatsächlich gelänge, ist
+ABGELEITET und ungemessen.** Dass das Hex-Alphabet die genannten Zeichen nicht enthält, ist
+am Ausdruck ABLESBAR.
+
+### Entscheidung P11.13-15 — ERZEUGTE DEKLARATIONEN AUS LITERALEM HEX, KEINE CSS-VARIABLEN
+
+**Die zwei Werte gehen als LITERALES HEX in Überschreibungen** — dieselbe Gestalt wie
+`CONSENT_THEME_DARK_CSS`, nur zur Bauzeit zusammengesetzt statt als Konstante
+hingeschrieben. **JEDE ERZEUGTE DEKLARATION TRÄGT GENAU EINE EIGENSCHAFT AUS DER LISTE VON
+Entscheidung P11.13-9** — `color` · `background-color` · `border-color` ·
+`border-top-color` · `outline-color` · `accent-color` · `color-scheme`. **KEINE
+KURZSCHREIBWEISE.**
+
+**KEINE CSS-VARIABLEN, UND DER GRUND IST GEMESSEN, NICHT GEWÄHLT:** `all:initial !important`
+setzt die **benutzerdefinierten** Eigenschaften **nicht** zurück — eine `--ps-*` der
+Kundenseite kommt im Schattenbaum an (GEMESSEN, VERMERK P11.13-4; Roadmap-Zeile 11.13,
+Punkt (f)). Über Variablen gebaut, könnte die fremde Seite in unsere Darstellung
+hineinwirken. **DER BEFUND GILT FÜR DEN VIERTEN ZWEIG GENAUSO WIE FÜR DIE DREI ANDEREN**,
+und `CSS2b` — kein `var(`, kein `--` in **keinem** Thema — bleibt unverändert gültig und
+wird auf den vierten Wert ausgedehnt.
+
+**DIE FOLGE IST DIESELBE WIE BEIM DUNKLEN THEMA: GRÖSSE UND LAGE BLEIBEN DURCH DIE BAUART
+GLEICH.** Im Bestand tragen `button{border:1px solid …}` und `.bar{border-top:1px solid …}`
+Farbe **und** Breite in einer Kurzschreibweise; wer sie überschreibt, verschiebt Breiten und
+Höhen. Mit der Eigenschafts-Liste geschieht das nicht. **Entscheidung P11.13-3 (alles im
+Fenster und treffbar) und Entscheidung P11.13-5 (Gleichrangigkeit) werden in der Probe
+deshalb BESTÄTIGT, nicht neu begründet** — genau wie bei der Scheibe 11.13b.
+
+**`.backdrop` UND `.way` BLEIBEN UNBERÜHRT**, wie beim dunklen Thema; CSS2c hält beides.
+
+**DIE GRENZE:** Sie kippt, **sobald eine Eigenschaft ausserhalb der Liste von P11.13-9
+gebraucht wird oder eine CSS-Variable zugelassen werden soll.** Beides ist eine
+STOPP-Bedingung des Zuschnitts und keine Auslegungsfrage: Die erste Hälfte bewegt Grösse
+oder Lage, die zweite öffnet den gemessenen Weg der Kundenseite in den Schattenbaum.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (A2). Die Vererbungs-Messung ist GEMESSEN
+(CC, 2026-09-17, Chromium, mit Gegenprobe ausserhalb des Schattenbaums; VERMERK P11.13-4) —
+**nur Chromium; Firefox und WebKit sind an dieser Achse ungemessen.** Die zwei Stellen, an
+denen eine Grösse an einer Farbregel hängt, sind GEMESSEN am Code (CC, 2026-09-17,
+Entscheidung P11.13-9).
+
+### Entscheidung P11.13-16 — DER KONTRAST WIRD GERECHNET UND GEZEIGT, ER SPERRT NICHTS
+
+**VERLETZT DIE WAHL DES BETREIBERS DIE SCHWELLE, ERSCHEINT EIN HINWEIS AM FARBFELD — UND
+DAS VERÖFFENTLICHEN BLEIBT MÖGLICH.** Es gibt keinen Riegel, keine Sperre, keinen Abbruch
+aus diesem Grund.
+
+**DER GRUND, ZWEITEILIG. Der erste ist eine Haltung, der zweite ein Befund:**
+(1) **„Wir weisen hin, wir erzwingen nicht."** Dieselbe Figur wie beim Dialog selbst und
+beim Guardrail der Roadmap-Zeile 11.13, Punkt (h): Der Betreiber kann eine Farbwahl haben
+wollen, die wir für schlecht lesbar halten — es ist seine Seite. **Ein Riegel machte aus
+einem Werkzeug eine Aufsicht.**
+(2) **DEN WEG FÜR EINEN SERVER-HINWEIS GIBT ES NICHT** (GEMESSEN am Code, CC, 2026-09-18):
+`PublishResult` kennt genau `{ ok:true; url; label; restored?: true }` und
+`{ ok:false; error }` — **ein Boolean als einzigen nicht-fatalen Zusatz, keinen Textkanal**;
+`publishNotice` in `src/components/CodeImporter.tsx` ist rein clientseitig abgeleitet und
+**EIN** Anzeigeslot mit struktureller Rangfolge. Ein Server-Hinweis müsste diesen Kanal erst
+bauen — **und er wäre auch dann zu spät: Der Betreiber erfährt es beim Veröffentlichen statt
+beim Wählen.**
+
+**DIE RECHNUNG IST EINE REINE FUNKTION UNTER `src/lib`**, nach WCAG 2.x über die relative
+Leuchtdichte. **SIE WIRD GEGEN REFERENZWERTE GETESTET, DIE NICHT AUS DEM EIGENEN CODE
+STAMMEN** — sonst ist der Test ein Spiegel, der jeden Rechenfehler bestätigt
+(docs/immer-beachten.md, EIN WÄCHTER ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS
+DEM CODE). **DER SERVER RECHNET NICHTS.**
+
+**DER HINWEISTEXT BEHAUPTET WEDER URSACHE NOCH RECHTSFOLGE.** Er nennt **den Wert und die
+Schwelle** — nicht „nicht barrierefrei", nicht „rechtswidrig", nicht „wird abgelehnt".
+Dieselbe Disziplin wie bei den Meldungstexten der Fix-Scheibe safeAction und bei der
+Wortwahl des Dashboards.
+
+**DIE SCHWELLE 4,5 IST EINE ARCHITEKT-VORGABE (WCAG 2.x AA), NICHT IM REPO GELESEN** —
+wörtlich dieselbe Herkunft wie in Entscheidung P11.13-10, und sie steht hier aus demselben
+Grund: damit niemand sie später für einen gemessenen Befund dieses Projekts hält.
+
+**ZWEI PAARE SIND AUSDRÜCKLICH KEIN KRITERIUM, und das gehört dazu, sonst liest sich der
+Hinweis als vollständige Zusage:** (a) **Fenster gegen Abdunkelung** — die Abdunkelung
+bleibt unverändert, während der Fenster-Hintergrund frei wird; ein dunkler Hintergrund kann
+darin verschwinden, und P11.13-10 führt dieses Paar nicht. (b) **Dialog gegen die
+KUNDENSEITE** — er ist nie Kriterium gewesen und wird es hier nicht (VERMERK P11.13-4,
+Schritt 6: „AUSDRÜCKLICH KEINE KONTRAST-AUSSAGE GEGEN DEN SEITENHINTERGRUND").
+
+**DIE GRENZE:** Sie kippt, **sobald eine Kontrastverletzung einen Vorgang sperren soll.**
+Dann braucht es den Rückkanal, den es heute nicht gibt, und die Haltung aus (1) ist eigens
+neu zu entscheiden — nicht abzuleiten.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-18 (O2) für „Hinweis statt Riegel";
+ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (A4) für Ort, Form und Nachweis der Rechnung. **BEIDE
+TRAGEN DIESELBE GRENZE — der Tag, an dem der Kontrast etwas sperrt — und stehen deshalb als
+EINE Entscheidung.** Die Abwesenheit eines Server-Rückkanals ist GEMESSEN am Code (CC,
+2026-09-18); die Schwelle ist eine ARCHITEKT-VORGABE und ausdrücklich keine Messung.
+
+### Entscheidung P11.13-17 — DER GEPRÜFTE TYP IST OPAK, UND ES GIBT GENAU EINE ZUSICHERUNG
+
+**Der geprüfte Farbtyp ist ein OPAKER MARKEN-TYP** — eine Zeichenkette mit einer Marke, die
+ausserhalb ihrer Erzeugungsstelle nicht herstellbar ist. **Ein roher `string` ist ihm nicht
+zuweisbar**; wer einen an den Erzeuger gibt, bekommt einen **Compiler-Fehler**.
+
+**ES GIBT GENAU EINE ZUSICHERUNG IM GANZEN REPO, SIE STEHT IM LESER, UND SIE STEHT
+UNMITTELBAR HINTER DEM REGEX-TEST.** Das ist der eigentliche Inhalt dieser Entscheidung: Ein
+opaker Typ mit zwei Erzeugungsstellen ist kein Tor, sondern ein Tor mit einer Tür daneben.
+**Die Zahl EINS ist die Zusage, nicht die Opazität.**
+
+**WAS DAS FÜR SPÄTERE RUNDEN HEISST:** Wer den Typ an einer zweiten Stelle erzeugt — durch
+eine weitere Zusicherung, eine Hilfsfunktion „für Tests", einen Konstruktor —, hebt das
+Format-Tor auf, **ohne dass ein Gate rot wird**: Der Compiler ist danach zufrieden, und die
+Prüfung findet nicht mehr statt. Gefangen wird das allein von einem Wächter über den
+Quelltext, und **der sieht Zeichen, nicht Bedeutung** (docs/immer-beachten.md, EIN WÄCHTER
+ÜBER QUELLTEXT SIEHT ZEICHEN, NICHT BEDEUTUNG) — er muss streng irren und seine Grenze an
+sich selbst tragen.
+
+**VERWORFEN: EIN HÜLLEN-OBJEKT** (`{ hex: string }`). Ein roher String kompiliert dort
+ebenfalls nicht — **aber an der Einsetzstelle wird ausgepackt, und dann ist der Wert wieder
+ein roher String.** Der Compiler hört genau dort auf zu helfen, wo der Wert in den
+ausgelieferten Text geht. Das ist der schlechtere Tausch.
+
+**DIE GRENZE:** Sie kippt, **sobald eine zweite Stelle den geprüften Typ erzeugen muss** —
+etwa weil ein anderer Eingabeweg dieselbe Form liefert. Dann ist nicht die Zusicherung zu
+vervielfachen, sondern der Leser zu teilen: eine Prüfstelle, mehrere Aufrufer.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (F1) zum Plan der Scheibe 11.13c. Sie füllt
+die Gestalt aus, die Entscheidung P11.13-14 fordert und dort ausdrücklich offenlässt. Dass
+ein `string` einem Marken-Typ nicht zuweisbar ist, ist eine Eigenschaft des Typsystems und
+**am Repo nicht gemessen** — der erste Beleg ist der `tsc`-Lauf der Bau-Scheibe.
+
+### Entscheidung P11.13-18 — DIE DARSTELLUNG REIST ALS EIN WERT, UND „CUSTOM OHNE FARBEN" IST NICHT KONSTRUIERBAR
+
+**Die Darstellung wird als DISKRIMINIERTE UNION übergeben** — ein Zweig für Hell, Dunkel und
+Automatisch, ein Zweig für „eigene Farben", der **seine zwei geprüften Farben mitträgt**.
+Sie bleibt **EIN Pflicht-Parameter ohne Vorgabewert** an `injectPageViewEmitter`, an
+`buildConsentBarScript` und an `buildConsentModalScript`.
+
+**DER GRUND: DER UNMÖGLICHE ZUSTAND WIRD UNDARSTELLBAR, NICHT ABGEFANGEN.** „Eigene Farben
+ohne Farben" lässt sich gar nicht erst hinschreiben; es braucht dafür keinen Laufzeit-Wurf,
+keine Prüfung und keinen Test. **Ein Wurf wäre die schwächere Bauform:** Er fängt den
+Zustand erst, wenn jemand ihn erzeugt hat, und nur auf dem Pfad, den ein Test tatsächlich
+läuft.
+
+**Entscheidung P11.13-11 GILT UNVERÄNDERT UND WIRD NICHT AUSGEDEHNT.** Sie verlangt einen
+Pflicht-Parameter ohne Vorgabewert an drei Stellen; **diese Entscheidung ändert seine GESTALT,
+nicht seine Zahl.** Die Frage, ob die Farben eine zweite Pflicht-Achse bräuchten, stellt sich
+damit nicht mehr — es gibt keinen zweiten Parameter.
+
+**BEI AUSGESCHALTETEM DIALOG REIST DER HELL-ZWEIG ALS PLATZHALTER.** Nach den Abbrüchen ist
+ein ungültiger Zustand nur noch bei `"off"` möglich, und dort entsteht kein
+Oberflächen-Block. **Das ist die direkte Fortsetzung von `deliveredTheme`** und aus demselben
+Grund kein Rückfall im Sinne der Dauerregel: die abbrechende Stelle ist bereits passiert, und
+der Wert erreicht keine ausgelieferte Zeile. **DER WÄCHTER IST `T-OFF`, AUSGEDEHNT AUF VIER
+WERTE** — bei `"off"` ist der Ausgabetext für alle vier Darstellungen zeichengleich. Er ist
+damit weiterhin auch der Wächter der Grenze von Entscheidung P11.13-7.
+
+**DER PREIS IST GENANNT UND ANGENOMMEN:** Die Form jeder bestehenden Aufrufstelle ändert
+sich — **GEMESSEN am Repo (CC, 2026-09-18): 39 · 18 · 17 textuelle Fundstellen mit Klammer,
+Definitionen ausgenommen; die Achse filtert einzelne Kommentar-Erwähnungen nicht restlos
+heraus.** Die Änderung ist **compiler-geführt und namentlich gemeldet**; keine Stelle kann
+übersehen werden.
+
+**DIE GRENZE:** Sie kippt, **sobald ein Zweig Daten braucht, die keine Union tragen kann** —
+etwa eine offene Menge von Werten. Dann ist die Übergabeform neu zu entscheiden und nicht zu
+dehnen.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (F2) zum Plan der Scheibe 11.13c. Die drei
+Aufrufzahlen sind GEMESSEN am Repo (CC, 2026-09-18). Dass die Union den unmöglichen Zustand
+ausschliesst, ist eine Eigenschaft des Typsystems und **am Repo nicht gemessen**.
+
+### Entscheidung P11.13-19 — DIE ABLAGE IST FLACH: ZWEI FELDER, ZWEI SKALARE TERME
+
+**Die zwei Werte liegen als `settings.consent.colorBackground` und
+`settings.consent.colorText`, je vom Typ `unknown`** — flache Nachbarn von `gate`, `dialog`
+und `theme`, in derselben Bauform wie der Themenwert (Entscheidung P11.13-6). **KEIN
+Unterobjekt.**
+
+**`settingsEqual` BEKOMMT ZWEI SKALARE TERME**, je ein `===` auf die Rückgabe des jeweiligen
+Lesers. **KEIN OBJEKTVERGLEICH, und der Grund ist gemessen:** `===` auf zwei Rückgaben
+DERSELBEN Funktion kompiliert bei **jedem** Rückgabetyp. Ein Objekt verglichen sich per
+Referenz — nach jedem Setzen wäre es eine neue Referenz und damit **dauerhaft dirty**, oder
+bei Mutation am selben Objekt **nie dirty** —, **und nichts würde davon rot**. Verglichen
+wird der NORMALISIERTE Wert, damit ein fehlendes Feld auf beiden Seiten gleich ist.
+
+**OHNE DIE TERME GEHT DER WERT STILL VERLOREN** — kein Text „Ungespeicherte Änderungen",
+kein `beforeunload`-Wächter, kein `confirm` beim Projektwechsel (GEMESSEN am Code, VERMERK
+P11.13-3). Das ist derselbe Befund, den Vorrat P11.13-1 als KLASSE führt; er bleibt offen,
+weil diese Entscheidung ihn nur für diese zwei Felder einlöst.
+
+**DIE FELDNAMEN SIND EINE EINBAHNSTRASSE.** Ein Blob, der sie einmal trägt, trägt sie
+weiter; eine Umbenennung müsste beide Formen lesen. Sie werden deshalb wie ein Kontrakt
+behandelt, nicht wie ein Implementierungsdetail (docs/immer-beachten.md, WAS EINMAL IM
+AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE — hier auf den Speicher angewandt).
+
+**DIE GRENZE:** Sie kippt, **sobald ein Farbwert nicht mehr skalar ist** — etwa ein Paar je
+Systemeinstellung. Dann braucht `settingsEqual` einen eigenen Vergleicher (Bauform:
+`conversionRulesEqual`), und die flache Ablage ist neu zu entscheiden.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (F3) zum Plan der Scheibe 11.13c. Das Verhalten
+von `===` auf Objektreferenzen ist eine Eigenschaft der Sprache; die Folge eines fehlenden
+Terms ist GEMESSEN am Code (CC, 2026-09-17, VERMERK P11.13-3).
+
+### Entscheidung P11.13-20 — DIE CONTAINER-LINIE TRÄGT DIE TEXTFARBE
+
+**`.bar{border-top-color}` und `.dialog{border-color}` bekommen im vierten Zweig die
+TEXTFARBE.** Sie bleibt damit in **jedem** Farbpaar sichtbar, ohne dass irgendetwas gerechnet
+werden muss.
+
+**DER GRUND IST DIE FOLGE DES EIN-PAAR-PRINZIPS AUS Entscheidung P11.13-13:** Die Textfarbe
+ist der einzige Wert, von dem die Scheibe bereits weiss, dass er sich vom Hintergrund
+abhebt — der Kontrast-Hinweis misst genau dieses Paar. Jede andere Wahl bräuchte entweder
+eine dritte Farbe (ausgeschlossen durch P11.13-13) oder eine eigene Rechnung mit einer
+eigenen Schwelle. **Diese hier braucht beides nicht.**
+
+**DIE AUSNAHME DER CONTAINER-LINIE VOM KONTRAST-KRITERIUM (Entscheidung P11.13-10) BLEIBT
+BESTEHEN.** Sie wird nicht verbraucht und nicht aufgehoben: Im vierten Zweig greift sie
+faktisch nicht, weil die Linie dort ohnehin die Textfarbe trägt — **für Hell, Dunkel und
+Automatisch bleibt sie unverändert nötig** (im hellen Thema liegt die Linie bei 1,47, im
+dunklen bei 2,35, beide GEMESSEN).
+
+**DER PREIS IST BENANNT:** Die Linie wird im vierten Zweig **so kräftig wie der Text**. Im
+Bestand ist sie bewusst schwach; wer eigene Farben wählt, bekommt eine deutlichere Kante als
+bei Hell. **Das ist eine sichtbare Folge und kein Nebeneffekt** — sie gehört in die Probe
+(Paar P3) und in den Live-Blick.
+
+**DIE GRENZE:** Sie kippt **mit einer dritten freien Farbe** — dieselbe Grenze wie bei
+Entscheidung P11.13-13, und sie steht hier trotzdem eigens, weil diese Entscheidung eine
+ANDERE Frage schliesst: dort der Umfang, hier die Zuordnung eines Platzes, der kein
+Kontrast-Kriterium hat.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (F4) zum Plan der Scheibe 11.13c; sie schliesst
+die erste der zwei offenen Plan-Fragen aus Entscheidung P11.13-13. Die zwei Linien-Werte 1,47
+und 2,35 sind GEMESSEN (CC, 2026-09-17, VERMERKE P11.13-3 und P11.13-4).
+
+### Entscheidung P11.13-21 — `color-scheme` WIRD ABGELEITET, NICHT GEWÄHLT UND NICHT GESCHWELLT
+
+**Der vierte Zweig setzt `color-scheme: dark`, wenn WEISS gegen den gewählten Hintergrund
+einen HÖHEREN Kontrast hat als SCHWARZ — sonst `light`, auch bei Gleichstand.** Es gibt
+**KEINE Schwellen-Konstante.**
+
+**DER GRUND, ZWEITEILIG:**
+(1) **`color-scheme` STEUERT DAS NATIVE KÄSTCHEN** — die einzige Farbe im Dialog, die wir
+NICHT selbst setzen, weil der Browser sie zeichnet. **GEMESSEN (CC, 2026-09-17, Chromium):**
+Der UA-Rahmen des Kästchens kippt mit `color-scheme` von `rgb(0,0,0)` auf `rgb(255,255,255)`;
+die Füllung ist über `getComputedStyle` gar nicht fassbar und nur per Bildpunkt-Vergleich
+belegbar. Bliebe `color-scheme` ungesetzt, zeichnete der Browser auf einem dunklen eigenen
+Hintergrund ein helles Kästchen mit schwarzem Rahmen.
+(2) **EIN VERGLEICH BRAUCHT KEINE SCHWELLE, EINE HELLIGKEITS-GRENZE SCHON.** „Weiss schlägt
+Schwarz" ist eine Entscheidung zwischen zwei Kandidaten und damit vollständig aus dem
+gewählten Hintergrund ableitbar. Eine Schwelle wäre eine **zweite ARCHITEKT-VORGABE ohne
+Messung** neben der 4,5 aus Entscheidung P11.13-10 — und die erste steht dort nur, weil sie
+als Vorgabe ausgewiesen ist. **Der Gleichstand fällt auf `light`**, damit der Ausgang
+vollständig bestimmt ist und nicht von einer Rundung abhängt.
+
+**DER ERZEUGER DARF DIE KONTRASTFUNKTION IMPORTIEREN.** Er läuft zur **ERZEUGUNGSZEIT**, und
+**ausgeliefert wird nur ein Schlüsselwort** — `light` oder `dark`, keine Zahl, kein Wert aus
+der Rechnung.
+**DAS IST KEINE AUSNAHME VON Entscheidung P11.13-16, und der Satz gehört hierher, weil er
+sonst als Widerspruch gelesen wird:** Jene Entscheidung sagt „der Server rechnet nichts" über
+den **KONTRAST-HINWEIS** — der entsteht im Client am Farbfeld und wird nie serverseitig
+erzeugt. **Die Ableitung hier ist ein anderer Gegenstand:** kein Hinweis, keine Meldung, kein
+Rückkanal, sondern die Wahl eines Schlüsselworts beim Bau des Stylesheets. Wer beides
+zusammenzieht, hält eine der zwei Entscheidungen für gebrochen.
+
+**DIE WIRKUNG IST ZU MESSEN, NICHT ZU BEHAUPTEN:** Der Unterschied am nativen Kästchen wird
+in der Probe per **Bildpunkt-Vergleich** belegt (Farbpaar P3, dunkler Hintergrund). `getComputedStyle`
+genügt dafür ausdrücklich nicht.
+
+**DIE GRENZE:** Sie kippt, **sobald `color-scheme` einen dritten Wert braucht** — dann ist
+ein Zwei-Kandidaten-Vergleich keine Ableitung mehr, und es entsteht genau die Schwellenfrage,
+die diese Entscheidung vermeidet.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (F5) zum Plan der Scheibe 11.13c; sie schliesst
+die zweite der zwei offenen Plan-Fragen aus Entscheidung P11.13-13. Das Kippen des UA-Rahmens
+und die Nicht-Messbarkeit der Füllung sind GEMESSEN (CC, 2026-09-17, Chromium, VERMERKE
+P11.13-3 und P11.13-4) — **nur Chromium; Firefox und WebKit zeichnen native Kästchen anders
+und sind an dieser Achse ungemessen.**
+
+### Entscheidung P11.13-22 — DER NATIVE FARBWÄHLER, UND DIE VORBELEGUNG IST EINE NUTZERHANDLUNG
+
+**Das Bedienelement ist `input[type="color"]`** — der native Wähler. Er liefert genau
+`#rrggbb` in Kleinbuchstaben und damit **exakt das Alphabet des Format-Tors** (Entscheidung
+P11.13-14); ein Tippfehler ist auf diesem Weg nicht herstellbar.
+
+**DER WECHSEL AUF „EIGENE FARBEN" SCHREIBT FEHLENDE ODER UNGÜLTIGE WERTE ALS `#ffffff`
+(Hintergrund) UND `#111827` (Text) IN DEN BLOB** — sichtbar, und er macht `dirty`. **EIN
+BEREITS GESPEICHERTES GÜLTIGES PAAR WIRD NIE ÜBERSCHRIEBEN.**
+
+**DER GRUND:** Der native Wähler **zeigt immer einen Wert** — er kennt kein „nicht gesetzt".
+Ohne Vorbelegung zeigte die Oberfläche also Farben, **die nirgends gespeichert sind**, und das
+Veröffentlichen verweigerte anschliessend mit Verweis auf eine Einstellung, die der Betreiber
+auf dem Bildschirm vor sich sieht. **Das ist der Zustand, in dem ein Produkt kaputt aussieht,
+obwohl es richtig handelt.**
+
+**DAS IST KEIN STILLER RÜCKFALL, UND DIE UNTERSCHEIDUNG TRÄGT DIE GANZE ENTSCHEIDUNG:**
+**DER LESER BLEIBT BEI `"unknown"` UND BEKOMMT KEINEN VORGABEWERT** (Entscheidung P11.13-14,
+Teil 1). Die Vorbelegung geschieht **im Bedienelement, auf eine NUTZERHANDLUNG hin** — den
+Wechsel der Darstellung — und schreibt einen echten Wert in den Blob, den der Betreiber sieht
+und ändern kann. Ein Rückfall im Sinne der Dauerregel wäre eine **Leseseite**, die einen
+ungültigen Wert unbemerkt in einen gültigen verwandelt; **hier wird gespeichert, was angezeigt
+wird.** Wer die zwei zusammenzieht, baut beim nächsten Mal den stillen Rückfall ein und beruft
+sich auf diese Entscheidung.
+
+**STEHT BEIM LADEN BEREITS „EIGENE FARBEN" MIT EINEM UNGÜLTIGEN WERT, WIRD NICHTS
+GESCHRIEBEN** — das Feld zeigt den roten Hinweis, dieselbe Bauform wie beim Dialog- und beim
+Themenwert. **Nur der WECHSEL belegt vor, nicht das Laden.**
+
+**DIE ZWEI VORBELEGUNGS-WERTE SIND DER HEUTIGE HELLE BESTAND** (`#ffffff` Hintergrund,
+`#111827` Text) — der Betreiber startet damit bei genau der Darstellung, die er vorher hatte,
+und sieht die Wirkung erst, wenn er etwas ändert.
+
+**DIE GRENZE:** Sie kippt, **sobald das Bedienelement ein „nicht gesetzt" darstellen kann** —
+etwa ein Textfeld neben dem Wähler oder ein Schalter „Farbe verwenden". Dann entfällt der
+Grund für die Vorbelegung, und sie ist zu streichen, nicht beizubehalten.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (F6) zum Plan der Scheibe 11.13c. Dass der
+native Wähler stets einen Wert trägt und `#rrggbb` in Kleinbuchstaben liefert, ist eine
+Eigenschaft der Plattform und **in diesem Projekt NICHT gemessen** — der erste Beleg ist die
+Probe bzw. der Live-Test der Bau-Scheibe.
 
 ---
 
@@ -1388,6 +1935,166 @@ Dialogs im Editor · der Export-Pfad, der unter den Grenzen genannt ist.
 PROVENIENZ: Der Zuschnitt und seine Freigabe sind ARCHITEKT mit OWNER-FREIGABE 2026-09-17;
 die fünf Antworten sind der gebaute und gemessene Stand desselben Tages (VERMERK P11.13-4).
 Die Verdichtung ist CC, 2026-09-17.
+
+---
+
+## Zuschnitt der Scheibe 11.13c — EIGENE FARBEN
+
+**STATUS: ZUGESCHNITTEN, PLAN VORGELEGT, NICHT FREIGEGEBEN** (2026-09-18). Der Plan steht
+im Bericht der Doku-Runde vom 2026-09-18 und nicht hier; diese Datei trägt den Zuschnitt.
+
+**GEGENSTAND:** Der Betreiber wählt als **vierte Darstellung** „eigene Farben" und dazu
+**zwei** Werte — einen Hintergrund und einen Text. Alles Übrige wird abgeleitet
+(Entscheidung P11.13-13). Die Werte liegen flach im Einstellungs-Blob als
+`settings.consent.colorBackground` und `settings.consent.colorText` (Entscheidung
+P11.13-19), gehen als **literales Hex** in erzeugte Farb-Überschreibungen und erreichen den
+ausgelieferten Text nur über den Veröffentlichungs-Pfad. **DIE ÜBRIGEN ORTE BESTIMMT DER
+PLAN**, nicht dieser Zuschnitt.
+
+**DIE ENTSCHEIDUNGEN, DIE IHN TRAGEN:** P11.13-12 (die vierte Darstellung) · P11.13-13
+(zwei Farben und ihre Ableitung) · P11.13-14 (das Format-Tor) · P11.13-15 (erzeugte
+Deklarationen) · P11.13-16 (Kontrast als Hinweis) · **P11.13-17** (der opake Typ, genau eine
+Zusicherung) · **P11.13-18** (die Darstellung als EIN Wert) · **P11.13-19** (die flache
+Ablage) · **P11.13-20** (die Container-Linie) · **P11.13-21** (`color-scheme` abgeleitet) ·
+**P11.13-22** (der native Farbwähler und die Vorbelegung). Fortgeltend und **nicht neu
+begründet**, je als ENTSCHEIDUNG gelesen: P11.13-3 · P11.13-4 · P11.13-5 · P11.13-7 ·
+P11.13-9 · P11.13-10 · P11.13-11.
+
+### Die Invarianten dieser Scheibe
+
+**SIE HEISSEN `Z1` BIS `Z10` UND NICHT `I1` BIS `I10`, UND DAS IST KEIN GESCHMACK:** Die
+Kennungen `I1` bis `I6` sind im Abschnitt "Was den Zuschnitt bindet" bereits an die
+Invarianten der Phase 11.5 vergeben. Eine zweite `I1` in derselben Datei träfe bei jedem
+Zeiger die falsche.
+
+**Z1 — DIE DREI TABELLENWERTE UND DER AUS-FALL BLEIBEN BYTE-GLEICH.** Der ausgelieferte
+Text für `"light"`, `"dark"`, `"auto"` und für den ausgeschalteten Dialog ist nach der
+Scheibe zeichengleich zu vorher — je Form, je Block und je Gesamtausgabe. **DAS IST DIE
+TRAGENDE INVARIANTE DIESER SCHEIBE**, und sie wird an VOR dem ersten Eingriff erhobenen
+Werten gemessen, nicht an nachträglich erzeugten.
+
+**Z2 — DAS FORMAT-TOR HÄLT AN GENAU EINER STELLE.** Zugelassen ist ausschliesslich
+`^#[0-9a-f]{6}$`; es wird nichts normalisiert. Der Leser liefert einen geprüften Typ oder
+`"unknown"` und **fällt nie auf einen Vorgabewert zurück**. Der Erzeuger nimmt **nur** den
+geprüften Typ an — ein roher `string` dort ist ein Compiler-Fehler.
+**DREI SCHÄRFUNGEN AUS DEN PLAN-ENTSCHEIDUNGEN, je mit ihrer Fundstelle:** Der Typ ist OPAK
+und hat **GENAU EINE Zusicherung, im Leser, hinter dem Regex-Test** (P11.13-17) · die
+Darstellung reist als **EIN** Wert, sodass „eigene Farben ohne Farben" **nicht konstruierbar**
+ist (P11.13-18) · die **Vorbelegung des Bedienelements ist eine NUTZERHANDLUNG und kein
+Leser-Rückfall** (P11.13-22) — wer beides zusammenzieht, baut den stillen Rückfall ein, den
+Z2 gerade ausschliesst.
+
+**Z3 — JEDE ERZEUGTE DEKLARATION TRÄGT GENAU EINE EIGENSCHAFT AUS DER LISTE VON P11.13-9.**
+Keine Kurzschreibweise, keine CSS-Variable, kein `var(`, kein `--`.
+**WAS DIE ZWEI ABGELEITETEN PLÄTZE AUSLIEFERN:** Die Container-Linie trägt die **Textfarbe**
+(P11.13-20), also literales Hex wie die übrigen Plätze; `color-scheme` trägt **ausschliesslich
+das Schlüsselwort `light` oder `dark`** (P11.13-21) — **keine Zahl aus der Rechnung erreicht
+den ausgelieferten Text.**
+
+**Z4 — KEIN EINGRIFF AUSSERHALB DES EIGENEN SCHATTENBAUMS.** Kein Stil, keine Klasse, kein
+Attribut, keine Scroll-Position, kein Fokus an einem fremden Knoten. Die Nadeln von `M12`
+und `W11` und die Textprüfung von `L12` gelten unverändert und werden auf den vierten Wert
+ausgedehnt.
+
+**Z5 — BEIDE KNÖPFE TRAGEN DIESELBEN FARBEN.** Getrennte Farben je Knopf entstehen nicht,
+auch nicht als Nebenwirkung einer Klasse oder eines zweiten Selektors.
+
+**Z6 — DER ABBRUCH STEHT VOR JEDEM SCHREIBVORGANG.** Ist der Dialog eingeschaltet, die
+Darstellung „eigene Farben" und eine der zwei Farben ungültig oder abwesend, verweigert
+`publishProject` mit einer **eigenen** Meldungs-Konstante — **vor** dem Label-Block und
+**vor** `ensureTrackingKey`. Bei ausgeschaltetem Dialog wird **nicht** abgebrochen
+(Entscheidung P11.13-7).
+
+**Z7 — DER KONTRAST SPERRT NICHTS.** Die Rechnung ist eine reine Funktion unter `src/lib`,
+**der HINWEIS entsteht im Client am Farbfeld, und für den Hinweis rechnet der Server
+nichts.** Die Referenzwerte der Tests stammen **nicht** aus dem eigenen Code.
+**EINE ZWEITE, GETRENNTE VERWENDUNG DERSELBEN FUNKTION IST ZUGELASSEN UND HIER BENANNT, damit
+sie nicht als Bruch gelesen wird:** Der Erzeuger ruft sie zur **ERZEUGUNGSZEIT**, um
+`color-scheme` abzuleiten (P11.13-21). **Das ist kein Hinweis, keine Meldung und kein
+Rückkanal** — ausgeliefert wird allein ein Schlüsselwort.
+
+**Z8 — DIE WÄCHTER WERDEN MIT FEINDLICHER EINGABE GEFAHREN.** Mindestens: Kurzform,
+Grossbuchstaben, ein Wert mit `;`, einer mit `}` und einer Folgeregel, einer mit
+`</script>`, einer mit `url(`, der leere String, eine Zahl, ein Objekt und das fehlende
+Feld. **DIESE INVARIANTE IST DER GRUND, WARUM DIE SICHERHEITSACHSE DIESER SCHEIBE GEHÖRT
+UND NICHT DER SCHEIBE 4.**
+
+**Z9 — GRÖSSE UND LAGE BLEIBEN UNVERÄNDERT.** P11.13-3 (alles im Fenster und treffbar) und
+P11.13-5 (Gleichrangigkeit, Reihen über vertikale Überlappung) werden in der Probe
+**bestätigt**, nicht neu begründet — sie folgen aus Z3.
+
+**Z10 — `.backdrop` UND `.way` BLEIBEN UNBERÜHRT.** Die Abdunkelung des Fensters und der
+durchsichtige Hintergrund des Wegs bekommen keine Regel aus dem vierten Zweig.
+
+### Ausdrücklich NICHT dazu
+
+- **FREIER TEXT.** Er ist Scheibe 4, samt eigener Aufklärung. Diese Scheibe erzeugt **kein**
+  Feld für Text-Inhalte.
+- **DIE MASKIERUNG DER PIXEL-ID.** Vorrat P11.13-5 bleibt offen; **sein Trigger bleibt der
+  Zuschnitt der Scheibe 4** und wird von dieser Scheibe NICHT ausgelöst.
+- **EINE VORSCHAU DES DIALOGS IM EDITOR.** Weder der Editier- noch der Vorschau-Rahmen zeigt
+  den Dialog; geprüft wird über VERÖFFENTLICHEN (Roadmap-Zeile 11.13, Nachtrag 2026-09-17).
+- **DER EXPORT-PFAD.** Er trägt schon heute kein Thema und damit auch keine Farbe; der
+  offene Punkt DER EXPORT-PFAD IST VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST bleibt
+  unverändert offen und wird hier **nicht** abgearbeitet.
+- **JE EIGENE FARBEN FÜR HELL UND DUNKEL.** Es gibt genau eine Darstellung zur Zeit
+  (P11.13-12); ein Farbpaar je Systemeinstellung entsteht nicht.
+- **EINE SERVER-SEITIGE KONTRASTPRÜFUNG.** Der Server rechnet nichts und meldet nichts
+  (P11.13-16).
+
+### Die Pflichten dieser Scheibe
+
+1. **DIE HERKUNFT DER TEST-ERWARTUNGEN.** Jede Erwartung wird aus den Entscheidungen
+   niedergeschrieben, nie aus dem gebauten Stylesheet abgelesen — sonst entsteht der
+   Spiegel, wegen dessen `W0` gestrichen wurde.
+2. **DIE VORHER-WERTE VOR DEM ERSTEN EINGRIFF IN `src/`.** Bytes und sha256 je Block und je
+   Gesamtausgabe, über alle drei Darstellungen und den Aus-Fall. **Nach dem Eingriff sind
+   sie nicht mehr herstellbar** (docs/immer-beachten.md, EIN VORHER-WERT WIRD VOR DEM DEPLOY
+   GESICHERT).
+3. **TESTS FÜR DIE BEDIENUNG.** `PublishView.tsx` hat keine eigene Testdatei; die Abdeckung
+   entsteht in `CodeImporter.test.tsx`, wie bei `UI1` bis `UI5`.
+4. **DIE PROBE.** Sie wird neu geschrieben — es liegt keine im Repo (VERMERK P11.13-5). Die
+   Probeseite trägt mindestens ein fokussierbares Element **ausserhalb** des Dialogs (Vorrat
+   P11.13-4).
+5. **DIE LIVE-TEST-ANFORDERUNG.** Regression zuerst. **DER PFLICHT-STOPP VOR DEM DEPLOY
+   SICHERT VIER AUSGELIEFERTE TEXTE**, je mit Form und Darstellung im Dateinamen:
+   **`bar-light` · `modal-light` · `bar-dark` · `off`.** **DER DUNKEL-SCHRITT MISST NUR
+   `bar-dark`** — die Byte-Gleichheit von `dark` ist an einer Form belegt, und eine zweite
+   Sicherung brächte an dieser Achse nichts Neues. **FÜR „AUTOMATISCH" WIRD LIVE NICHTS
+   GESICHERT:** Es ist über die Vorher-Werte lokal belegt (Pflicht 2), und der Live-Blick
+   auf die Systemeinstellung ist mit der Scheibe 11.13b bereits geführt (VERMERK P11.13-4,
+   Schritt 5).
+   **ZWEI SCHRITTE FALLEN AUSDRÜCKLICH WEG, je mit Grund — sie sind nicht vergessen:**
+   · **Ein Handeingriff in den Blob** (ungültige Farbe von Hand setzen) entfällt. Die Achse
+   tragen die Publish-Tests und die Pflicht-Mutation gegen den entfernten Abbruch; **ein
+   Handeingriff am Produktions-Blob ist der schlechtere Beweis** — er misst, ob jemand
+   richtig getippt hat, und hinterlässt einen Zustand, den niemand protokolliert.
+   · **Der Fan-Out-Schritt** („nur Werbung": kein PageView, Conversion dedupliziert)
+   entfällt. **Das Wiring ist von dieser Scheibe nicht berührt** — sie ändert Farben im
+   Stylesheet des Schattenbaums, keinen Schlüssel, keinen Hook, keinen Beacon. Der Schritt
+   ist in den Scheiben 11.13a und 11.13b je einmal bestanden.
+
+### Die Plan-Fragen — FÜNF GESTELLT, VIER GESCHLOSSEN, EINE HALB
+
+**GESCHLOSSEN AM 2026-09-18, je durch eine eigene Entscheidung** — sie stehen hier mit ihrer
+Antwort und nicht gestrichen, damit sichtbar bleibt, dass sie gestellt waren:
+1. **Die CONTAINER-LINIE** → sie trägt die **Textfarbe** (**P11.13-20**). Die Ausnahme vom
+   Kontrast-Kriterium bleibt für die drei Tabellenwerte bestehen.
+2. **`color-scheme`** → **abgeleitet**, ohne Schwellen-Konstante: `dark`, wenn Weiss gegen
+   den Hintergrund besser kontrastiert als Schwarz, sonst `light` (**P11.13-21**).
+3. **Die Gestalt des geprüften Typs** → **opaker Marken-Typ, genau EINE Zusicherung im
+   Leser** (**P11.13-17**).
+4. **Die Form der Übergabe** → **diskriminierte Union, EIN Pflicht-Parameter**; P11.13-11
+   gilt unverändert und wird nicht ausgedehnt (**P11.13-18**).
+
+**HALB GESCHLOSSEN — Frage 5:** Die **FELDNAMEN** stehen (`settings.consent.colorBackground`
+und `settings.consent.colorText`, **P11.13-19**). **OFFEN BLEIBEN** die Namen von Leser,
+Setzer und geprüftem Typ, der Name der Meldungs-Konstante und **der Ort und Name der
+Kontrastfunktion**. Sie fallen mit der Freigabe des Plans.
+
+PROVENIENZ: Der Zuschnitt ist ARCHITEKT 2026-09-18 auf der Grundlage der Owner-Entscheidungen
+O1 bis O3 desselben Tages; er ist **nicht freigegeben**. Die Befunde, auf denen er ruht,
+stehen als VERMERK P11.13-5 und sind dort mit ihrer Provenienz versehen.
 
 ---
 

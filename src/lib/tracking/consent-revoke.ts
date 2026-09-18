@@ -77,24 +77,13 @@ export const CONSENT_REVOKE_SCRIPT_ID = "__ps_crv";
  */
 export const CONSENT_REVOKE_API = "pagesmithConsentRevoke";
 
-/**
- * Die Warnung, wenn der Widerruf laeuft und es nichts zu widerrufen gibt.
- * WORTLAUT FREIGEGEBEN (G6, Owner 2026-09-16); umlautfrei wie der uebrige Quelltext.
- *
- * SIE IST DIE MEISTGESEHENE MELDUNG DIESER SCHEIBE, NICHT DER TypeError bei
- * ausgeschaltetem Dialog: Der Integrationsfall ist, dass der Betreiber den Link baut, seine
- * Seite laedt, nie entschieden hat und klickt — dann liefert read() "never", und DIESER
- * Text erscheint. Den TypeError sieht er nur, wenn der Schalter auf "Aus" steht.
- *
- * DER ZWEITE SATZ TRAEGT EINEN FALL, DEN DER ERSTE FALSCH BESCHRIEBE: Ruft jemand den
- * Widerruf, WAEHREND DER LADE-DIALOG OFFEN STEHT, liefert read() ebenfalls "never" — der
- * Besucher hat ja noch nicht entschieden. Die Warnung feuert dann und sagt "nichts zu
- * widerrufen", obwohl der Dialog sichtbar auf der Seite steht. DAS IST KEIN DEFEKT UND WIRD
- * NICHT GELOEST, SONDERN BENANNT; der Satz "Steht der Dialog gerade offen, entscheide dort"
- * ist die Antwort darauf. W9 in consent-revoke.test.ts fuehrt den Fall im Kommentar.
- */
-export const CONSENT_REVOKE_WARNING =
-  "pagesmithConsentRevoke: Es liegt keine gespeicherte Entscheidung vor, die zu widerrufen waere. Steht der Dialog gerade offen, entscheide dort.";
+// DIE WARNUNG IST IN SCHEIBE 11.13e NACH tracking/consent-texts.ts UMGEZOGEN (dort
+// CONSENT_REVOKE_WARNING, zugleich das Feld `widerrufWarnung` der Tabelle). SIE HAENGT
+// SEITHER AN DER SPRACHE und kommt als ARGUMENT herein — diese Datei kennt weder die
+// Tabelle noch den Sprachwert und bleibt damit so rein wie ihr Kopf es zusagt: sie
+// importiert allein den NAMEN der Speicher-Schnittstelle und den Einbettungs-Helfer.
+// IHR WORTLAUT UND IHRE BEGRUENDUNG STEHEN AM NEUEN ORT, einschliesslich des Falls, den
+// ihr zweiter Satz traegt (Widerruf bei offenem Lade-Dialog). W9 haelt sie woertlich.
 
 /**
  * Die Huelle des Widerruf-Blocks. `aufbau` ist der AUFBAU-String der jeweiligen
@@ -132,8 +121,17 @@ export const CONSENT_REVOKE_WARNING =
  * er stand schon offen, oder der Aufbau war nicht moeglich. EIN AUSGANG FUER MEHRERE
  * URSACHEN IST ABSICHT: Der Betreiber hat genau eine Frage ("steht er?"), und die eine
  * Ursache, die er beheben kann, meldet die Warnung.
+ *
+ * `warnung` IST SEIT SCHEIBE 11.13e EIN ARGUMENT und keine Konstante dieser Datei mehr
+ * (Entscheidung P11.13-33): Sie haengt an der Sprache, und diese Huelle soll die Tabelle
+ * nicht kennen — sonst importierte eine Datei, die nur die Speicher-Schnittstelle kennen
+ * will, das halbe Text-Modell. Die zwei Aufrufer (Leiste, Fenster) haben die Tabelle
+ * ohnehin schon geholt und reichen das Feld durch.
+ * SIE HAT KEINEN VORGABEWERT, aus demselben Grund wie die drei Felder der Huelle: Ein
+ * `= CONSENT_REVOKE_WARNING` liesse einen kuenftigen Aufrufer die Sprache stillschweigend
+ * uebergehen.
  */
-export function wrapRevoke(aufbau: string): string {
+export function wrapRevoke(aufbau: string, warnung: string): string {
   return `<script id="${CONSENT_REVOKE_SCRIPT_ID}">
 (function(){
   var offen = null;
@@ -142,7 +140,7 @@ export function wrapRevoke(aufbau: string): string {
     if (!api || typeof api.read !== "function" || typeof api.write !== "function") return false;
     if (offen && offen.parentNode) return false;
     if (api.read().state !== "decided") {
-      console.warn(${embedInScript(CONSENT_REVOKE_WARNING)});
+      console.warn(${embedInScript(warnung)});
       return false;
     }
 ${aufbau}    return true;

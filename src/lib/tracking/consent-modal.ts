@@ -46,12 +46,15 @@
 import { CONSENT_STORE_API } from "@/lib/tracking/consent-store";
 import {
   CONSENT_CHOICE_CSS,
-  CONSENT_CHOICE_JS,
-  CONSENT_TEXT,
+  consentChoiceJs,
   consentThemeCss,
 } from "@/lib/tracking/consent-choice";
+import {
+  consentTexts,
+  type ConsentTextTable,
+} from "@/lib/tracking/consent-texts";
 import { embedInScript } from "@/lib/script-embed";
-import type { ConsentAppearance, ConsentTextArg } from "@/lib/settings";
+import type { ConsentLanguage, ConsentPresentation } from "@/lib/settings";
 import {
   wrapRevoke,
   type ConsentSurfaceMode,
@@ -72,8 +75,9 @@ export const CONSENT_MODAL_SCRIPT_ID = "__ps_cmo";
  */
 export const CONSENT_MODAL_HOST_TAG = "pagesmith-modal";
 
-/** Zugaenglicher Name des Fensters. */
-export const CONSENT_MODAL_DIALOG_LABEL = "Einwilligung";
+// DER ZUGAENGLICHE NAME DES FENSTERS IST IN SCHEIBE 11.13e NACH tracking/consent-texts.ts
+// UMGEZOGEN (dort CONSENT_MODAL_DIALOG_LABEL, zugleich das Feld `fensterAria` der Tabelle).
+// M5 haelt ihn woertlich, seit der Scheibe 11.5d-2.
 
 /**
  * Das Basis-Stylesheet im Schattenbaum; CONSENT_CHOICE_CSS wird angehaengt. Der Host deckt
@@ -157,7 +161,9 @@ function aufbauDesFensters(
   vormerken: string,
   ausgeklappt: string,
   stil: string,
-  sachtext: string
+  sachtext: string,
+  texte: ConsentTextTable,
+  sprache: ConsentLanguage
 ): string {
   return `  var body = document.body;
   if (!body) ${abbruch}
@@ -173,12 +179,13 @@ function aufbauDesFensters(
   var dialog = document.createElement("div");
   dialog.setAttribute("class", "dialog");
   dialog.setAttribute("role", "dialog");
-  dialog.setAttribute("aria-label", ${embedInScript(CONSENT_MODAL_DIALOG_LABEL)});
+  dialog.setAttribute("aria-label", ${embedInScript(texte.fensterAria)});
+  dialog.setAttribute("lang", ${embedInScript(sprache)});
   var text = document.createElement("p");
   text.setAttribute("class", "text");
   text.textContent = ${embedInScript(sachtext)};
   dialog.appendChild(text);
-${CONSENT_CHOICE_JS}
+${consentChoiceJs(texte)}
   fillChoice(dialog, ${ausgeklappt});
   root.appendChild(dialog);
 ${vormerken}  body.appendChild(host);
@@ -191,17 +198,23 @@ export function buildConsentModalScript(
   // Vorgabewert, Freigabe F1 vom 2026-09-17; seit 11.13c eine diskriminierte Union statt
   // eines Strings (Entscheidung P11.13-18). Beide Begruendungen stehen am Docblock von
   // buildConsentBarScript und werden hier nicht verdoppelt.
-  darstellung: ConsentAppearance,
-  // DER SACHTEXT (Phase 11.13, Scheibe 11.13d; bindende Entscheidung P11.13-29). Die
-  // ZWEITE Pflicht-Achse, ebenfalls ohne Vorgabewert; die Begruendung steht am Docblock
-  // von buildConsentBarScript und wird hier nicht verdoppelt.
-  sachtext: ConsentTextArg
+  // SEIT 11.13e REIST SIE ALS FELD EINER HUELLE (Entscheidung P11.13-32) — drei
+  // Pflicht-Felder, kein Vorgabewert. Die Begruendung steht am Docblock von
+  // buildConsentBarScript und am Typ ConsentPresentation; sie wird hier nicht verdoppelt.
+  praesentation: ConsentPresentation
 ): string {
   const stil =
-    CONSENT_MODAL_CSS + CONSENT_CHOICE_CSS + consentThemeCss(darstellung);
+    CONSENT_MODAL_CSS +
+    CONSENT_CHOICE_CSS +
+    consentThemeCss(praesentation.appearance);
+  // Spiegel der Leiste: Die Texte werden EINMAL geholt, die Verzweigung ueber die Sprache
+  // steht an EINER Stelle (Entscheidung P11.13-33).
+  const texte = consentTexts(praesentation.language);
   // Spiegel der Leiste: Die Aufloesung von "standard" steht EINMAL hier und nicht zweimal
-  // in den Zweigen; welcher Satz gemeint ist, weiss allein dieser Erzeuger.
-  const text = sachtext === "standard" ? CONSENT_TEXT : sachtext;
+  // in den Zweigen; welcher Satz gemeint ist, weiss allein dieser Erzeuger. Seit 11.13e
+  // haengt er an der Sprache (P11.13-34); ein EIGENER Sachtext gilt in jeder Sprache.
+  const text =
+    praesentation.text === "standard" ? texte.sachtext : praesentation.text;
   if (mode === "revoke") {
     return wrapRevoke(
       aufbauDesFensters(
@@ -209,8 +222,11 @@ export function buildConsentModalScript(
         "    offen = host;\n",
         "true",
         stil,
-        text
-      )
+        text,
+        texte,
+        praesentation.language
+      ),
+      texte.widerrufWarnung
     );
   }
   return `<script id="${CONSENT_MODAL_SCRIPT_ID}">
@@ -219,6 +235,14 @@ export function buildConsentModalScript(
   var api = window.${CONSENT_STORE_API};
   if (!api || typeof api.read !== "function" || typeof api.write !== "function") return;
   if (api.read().state !== "never") return;
-${aufbauDesFensters("return;", "", "false", stil, text)}})();
+${aufbauDesFensters(
+    "return;",
+    "",
+    "false",
+    stil,
+    text,
+    texte,
+    praesentation.language
+  )}})();
 </script>`;
 }

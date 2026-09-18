@@ -68,6 +68,8 @@ import {
   getConsentColorText,
   setConsentColors,
   setConsentText,
+  getConsentLanguage,
+  setConsentLanguage,
   CONSENT_COLOR_BACKGROUND_VORBELEGUNG,
   CONSENT_COLOR_TEXT_VORBELEGUNG,
   setPixelId,
@@ -2769,6 +2771,10 @@ export default function CodeImporter({
               consentTextRaw={sachtextRoh}
               onConsentTextChange={(value) =>
                 setSettings((prev) => setConsentText(prev, value))
+              }
+              consentLanguage={getConsentLanguage(settings)}
+              onConsentLanguageChange={(language) =>
+                setSettings((prev) => setConsentLanguage(prev, language))
               }
               onToggleAbTest={handleToggleAbTest}
               abTestActive={abTestActive}

@@ -1087,6 +1087,8 @@ describe("publishProject — die Darstellung (Scheibe 11.13b)", () => {
     "Die eigenen Farben des Einwilligungs-Dialogs sind unvollständig oder ungültig. Bitte unter „Darstellung“ beide Farben neu wählen. Es wurde nichts veröffentlicht.";
   const MESSAGE_SACHTEXT =
     "Der eigene Text des Einwilligungs-Dialogs ist ungültig. Bitte unter „Darstellung“ einen Text ohne Steuerzeichen und innerhalb der Längengrenze eingeben oder das Feld leeren. Es wurde nichts veröffentlicht.";
+  const MESSAGE_SPRACHE =
+    "Die Sprache des Einwilligungs-Dialogs hat einen unbekannten Wert. Bitte unter „Sprache“ neu wählen. Es wurde nichts veröffentlicht.";
 
   function client() {
     return makeClient({
@@ -1476,5 +1478,109 @@ describe("publishProject — die Darstellung (Scheibe 11.13b)", () => {
       undefined
     );
     expect(res).toEqual({ ok: false, error: MESSAGE_THEMA });
+  });
+
+  // ===================================================================================
+  // DIE SPRACHE (Phase 11.13, Scheibe 11.13e; bindende Entscheidung P11.13-37).
+  // Die Meldung steht auch hier als LITERAL und nicht als Import — sonst waere der Test
+  // ein Spiegel.
+  // ===================================================================================
+
+  // PT-L1. DER FUENFTE ABBRUCH. EINZELSTUECK fuer die Pflicht-Mutation "Abbruch 5
+  // entfernt": Kein anderer Test faengt einen ungueltigen Sprachwert auf dem Publish-Weg.
+  // WODURCH ROT: ein fehlender Abbruch, eine falsche Meldung, ein Abbruch, der trotzdem
+  // schreibt.
+  it("PT-L1: unbekannte Sprache + 'bar' -> Abbruch mit der EIGENEN Meldung, nichts angelegt", async () => {
+    for (const language of [null, "", "DE", "de-DE", "fr", "__ps_x", true, 1]) {
+      const c = client();
+      const res = await publishProject(
+        "proj-1",
+        "<html><body>A</body></html>",
+        {
+          ...snapshot,
+          settings: { consent: { dialog: "bar", language } },
+        },
+        undefined
+      );
+      expect(res, JSON.stringify(language)).toEqual({
+        ok: false,
+        error: MESSAGE_SPRACHE,
+      });
+      expect(c.rec.updatePatch).toBeNull();
+      expect(c.rec.inserts).toHaveLength(0);
+      expect(c.rec.fromTables).not.toContain("domains");
+    }
+  });
+
+  // PT-L2. DIE ASYMMETRIE AUS P11.13-7, auf die Sprache angewandt: Bei "off" entsteht kein
+  // Oberflaechen-Block, der Wert erreicht keine ausgelieferte Zeile, und es gibt keinen
+  // Besucher-Preis — also wird NICHT abgebrochen.
+  // WODURCH ROT: ein zu breites Tor, das auch bei ausgeschaltetem Dialog sperrt.
+  it("PT-L2: unbekannte Sprache + 'off' -> KEIN Abbruch", async () => {
+    const c = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: { consent: { dialog: "off", language: "__ps_x" } },
+      },
+      undefined
+    );
+    expect(res.ok).toBe(true);
+    // POSITIVKONTROLLE: es ist wirklich geschrieben worden — sonst waere `ok: true`
+    // auch bei einem stillen Nichtstun gruen.
+    expect(c.rec.updatePatch).not.toBeNull();
+  });
+
+  // PT-L3. DIE STELLUNG IN DER KETTE. Die Sprache steht ans ENDE (bindende Entscheidung
+  // P11.13-37), und das ist pruefbar: Sind Thema UND Sprache unbekannt, kommt die
+  // THEMEN-Meldung. Eine vertauschte Kette schickte den Betreiber an die falsche Stelle
+  // der Oberflaeche.
+  // WODURCH ROT: jede Umstellung der fuenf Abbrueche.
+  it("PT-L3: Thema UND Sprache unbekannt -> die Themen-Meldung, nicht die der Sprache", async () => {
+    const c = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: {
+          consent: { dialog: "bar", theme: "__ps_x", language: "__ps_y" },
+        },
+      },
+      undefined
+    );
+    expect(res).toEqual({ ok: false, error: MESSAGE_THEMA });
+    expect(c.rec.updatePatch).toBeNull();
+  });
+
+  // PT-L4. DIE SPRACHE WIRKT BIS IN DEN AUSGELIEFERTEN TEXT — die einzige Stelle, an der
+  // das auf dem PUBLISH-Weg geprueft wird (L26/M26 pruefen es am Erzeuger).
+  // DIE ERWARTUNGEN SIND LITERALE AUS ENTSCHEIDUNG P11.13-31 (Invariante Q5).
+  // WODURCH ROT: eine Sprache, die publishProject zwar liest, aber nicht durchreicht.
+  it("PT-L4: 'en' + 'bar' -> der englische Text steht drin, der deutsche nicht", async () => {
+    const c = client();
+    const res = await publishProject(
+      "proj-1",
+      "<html><body>A</body></html>",
+      {
+        ...snapshot,
+        settings: { consent: { dialog: "bar", language: "en" } },
+      },
+      undefined
+    );
+    expect(res.ok).toBe(true);
+    const html = String((c.rec.updatePatch as Patch).published_content.html);
+    expect(html).toContain(
+      "This site can use tracking services. You decide whether that happens."
+    );
+    expect(html).toContain("Accept all");
+    expect(html).toContain("Reject all");
+    expect(html).toContain('lang", "en"');
+    expect(html).not.toContain(
+      "Diese Seite kann Tracking-Dienste einbinden."
+    );
+    expect(html).not.toContain("Alle akzeptieren");
   });
 });

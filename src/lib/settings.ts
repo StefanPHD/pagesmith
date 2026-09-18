@@ -252,6 +252,10 @@ export type ProjectSettings = {
     colorBackground?: unknown;
     colorText?: unknown;
     text?: unknown;
+    // DIE SPRACHE (Phase 11.13, Scheibe 11.13e; bindende Entscheidung P11.13-37).
+    // FLACHER NACHBAR, Typ `unknown` — dieselbe Bauform wie `theme` und die zwei Farben:
+    // der Blob ist ungeprueftes Client-Eingabegut, und der einzige Leser prueft.
+    language?: unknown;
   };
 };
 
@@ -779,6 +783,17 @@ export function settingsEqual(a: ProjectSettings, b: ProjectSettings): boolean {
     // "Ungespeicherte Aenderungen", keinen beforeunload-Waechter und kein confirm beim
     // Projektwechsel — und NICHTS wuerde davon rot.
     getConsentText(a) === getConsentText(b) &&
+    // DER SPRACH-TERM (Phase 11.13, Scheibe 11.13e; bindende Entscheidung P11.13-37).
+    // EIN SKALARER TERM, KEIN OBJEKTVERGLEICH — dieselbe Bauform und derselbe gemessene
+    // Grund wie bei den Farb- und dem Sachtext-Term. Verglichen wird die NORMALISIERTE
+    // Rueckgabe des Lesers, damit ein fehlendes Feld und ein geschriebenes "de" gleich
+    // sind und kein false-dirty entsteht.
+    // OHNE IHN GINGE DER WERT STILL VERLOREN: dirty bliebe false, es gaebe keinen Text
+    // "Ungespeicherte Aenderungen", keinen beforeunload-Waechter und kein confirm beim
+    // Projektwechsel — und NICHTS wuerde davon rot. Das ist der Befund, den Vorrat
+    // P11.13-1 als KLASSE fuehrt; dieser Term loest ihn fuer die Sprache, nicht fuer die
+    // Klasse.
+    getConsentLanguage(a) === getConsentLanguage(b) &&
     TRACKING_TARGETS.every(
       (t) =>
         getPixelId(a, t) === getPixelId(b, t) &&
@@ -1328,8 +1343,113 @@ export const CONSENT_TEXT_UNKNOWN_MESSAGE =
  * liesse einen kuenftigen Auslieferungsweg den Betreiber-Satz stillschweigend uebergehen.
  * VERWORFEN: `ConsentText | null` — `null` benennt nichts und laesst den naechsten Leser
  * raten, ob "kein Text", "nicht gesetzt" oder "absichtlich leer" gemeint ist.
- * WELCHER SATZ "standard" IST, WEISS ALLEIN DER ERZEUGER (CONSENT_TEXT in
- * tracking/consent-choice.ts). Wuerde der Aufrufer ihn einsetzen, staende die Zuordnung
- * an zwei Orten — auch das ist ausdruecklich verworfen.
+ * WELCHER SATZ "standard" IST, WEISS ALLEIN DER ERZEUGER. SEIT DER SCHEIBE 11.13e HAENGT
+ * ER AN DER SPRACHE: `consentTexts(sprache).sachtext` in tracking/consent-texts.ts
+ * (bindende Entscheidung P11.13-34). Wuerde der Aufrufer ihn einsetzen, staende die
+ * Zuordnung an zwei Orten — auch das ist ausdruecklich verworfen.
+ * RICHTIGGESTELLT IN SCHEIBE 11.13e, NICHT GESTEMPELT: Hier stand "CONSENT_TEXT in
+ * tracking/consent-choice.ts". Die Konstante ist mit dieser Scheibe umgezogen, und ein
+ * Massstab mit falscher Ortsangabe taugt nicht als Massstab.
  */
 export type ConsentTextArg = ConsentText | "standard";
+
+// ===================================================================================
+// DIE SPRACHE (Phase 11.13, Scheibe 11.13e; bindende Entscheidungen P11.13-31 bis -37)
+// ===================================================================================
+
+/**
+ * DIE ZWEI SPRACHEN DES DIALOGS. Eine FESTE Auswahl, keine Betreiber-Eingabe: Der Wert
+ * waehlt einen ZWEIG in consentTexts (tracking/consent-texts.ts), der Rohwert aus dem Blob
+ * erreicht den ausgelieferten Text nie (Entscheidung P11.13-33, Bauform aus P11.13-8).
+ * EIN DRITTER WERT HIER MACHT DORT DEN `never`-ZWEIG ZUM COMPILER-FEHLER — und er
+ * braeuchte elf neue Owner-Freigaben (Entscheidung P11.13-31).
+ * KEIN WERT TRAEGT JE DAS PRAEFIX `__ps_`; ein `__ps_`-Wert dient in den Tests deshalb als
+ * Beleg fuer einen unbekannten Wert, wie beim Dialog- und beim Themenwert.
+ */
+export const CONSENT_LANGUAGES = ["de", "en"] as const;
+export type ConsentLanguage = (typeof CONSENT_LANGUAGES)[number];
+
+/**
+ * Ergebnis des Lesers: eine gebaute Sprache ODER "unknown".
+ * "unknown" WIRD NIE AUF "de" ABGEBILDET — sonst saehe publishProject einen unbekannten
+ * Wert nie, und die Verweigerung waere toter Code (docs/immer-beachten.md, "EIN
+ * UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB", Folge (a)).
+ */
+export type ConsentLanguageRead = ConsentLanguage | "unknown";
+
+/**
+ * Die Meldung, mit der publishProject bei einer unbekannten SPRACHE abbricht. Sie ist
+ * EIGEN und nicht die des Themenwerts, der Farben oder des Sachtextes: Sie nennt einen
+ * anderen Platz der Oberflaeche, und ein Betreiber, der die falsche Stelle sucht, findet
+ * nichts. Sie behauptet weder Ursache noch Rechtsfolge und nennt den Ausgang.
+ */
+export const CONSENT_LANGUAGE_UNKNOWN_MESSAGE =
+  "Die Sprache des Einwilligungs-Dialogs hat einen unbekannten Wert. Bitte unter „Sprache“ neu wählen. Es wurde nichts veröffentlicht.";
+
+/**
+ * IN WELCHER SPRACHE STEHT DIE AUSGELIEFERTE OBERFLAECHE? (Scheibe 11.13e) — der EINZIGE
+ * Leser des Sprachwerts.
+ *
+ * DREI AUSGAENGE, in dieser Reihenfolge:
+ * 1. Das Feld FEHLT (`undefined`) -> "de". Ein Projekt aus der Zeit vor dieser Scheibe
+ *    liest damit "de" und liefert denselben Wortlaut aus wie zuvor. DAS IST KEIN
+ *    RUECKFALL IM SINNE DER DAUERREGEL: Es liegt GAR KEIN Wert vor, und ein abwesendes
+ *    Feld ist ein bekannter Zustand, kein unbekannter — dieselbe Unterscheidung, die
+ *    Entscheidung P11.13-26 fuer den Sachtext zieht.
+ * 2. Ein GEBAUTER Wert -> er selbst.
+ * 3. JEDER andere Wert — auch null, "", "DE", "de-DE", true, 1 -> "unknown".
+ */
+export function getConsentLanguage(
+  settings: ProjectSettings
+): ConsentLanguageRead {
+  const language = settings.consent?.language;
+  if (language === undefined) return "de";
+  return language === "de" || language === "en" ? language : "unknown";
+}
+
+/**
+ * Die Sprache setzen (Scheibe 11.13e). Reine Funktion, gleiche Bauform wie
+ * setConsentTheme: neues Objekt, bestehende Mitglieder unberuehrt.
+ * DER WERT WIRD IMMER GESCHRIEBEN, AUCH "de" — so ueberschreibt eine bewusste Wahl einen
+ * liegengebliebenen unbekannten Wert.
+ */
+export function setConsentLanguage(
+  settings: ProjectSettings,
+  language: ConsentLanguage
+): ProjectSettings {
+  return {
+    ...settings,
+    consent: {
+      ...settings.consent,
+      language,
+    },
+  };
+}
+
+/**
+ * DIE HUELLE: DARSTELLUNG, SACHTEXT UND SPRACHE REISEN ALS EIN WERT (bindende Entscheidung
+ * P11.13-32; die Grenze von P11.13-29 ist mit der dritten Achse EINGETRETEN).
+ *
+ * SIE IST DER EINE PARAMETER an injectPageViewEmitter, buildConsentBarScript und
+ * buildConsentModalScript. Entscheidung P11.13-11 gilt unveraendert und JE FELD:
+ * Pflicht-Parameter OHNE Vorgabewert — hier als DREI Pflicht-Felder ohne `?`.
+ *
+ * WARUM EINE HUELLE UND NICHT EIN DRITTER PARAMETER: Heute kosten beide dasselbe, weil
+ * jede Aufrufstelle ihre Form aendert und der Compiler jede namentlich meldet. BEI DER
+ * VIERTEN ACHSE LAUFEN SIE AUSEINANDER — die Huelle bekommt ein FELD, der Parameter-Weg
+ * einen erneuten Umbau ALLER Aufrufer.
+ *
+ * DER EINWAND AUS P11.13-29 ENTFAELLT: Dort war eine Huelle verworfen worden, weil "die
+ * Union ihre Diskriminante an einen Traeger verloere". Das trifft diese Gestalt NICHT —
+ * `appearance` BLEIBT die Union, wird nur ein Feld, und "eigene Farben ohne Farben" ist
+ * weiterhin nicht konstruierbar (Entscheidung P11.13-18).
+ *
+ * KEIN FELD DARF OPTIONAL WERDEN (Invariante Q6, Grenze von P11.13-32): Ein optionales
+ * Feld waere der Vorgabewert durch die Hintertuer und liesse einen kuenftigen
+ * Auslieferungsweg eine Achse stillschweigend uebergehen.
+ */
+export type ConsentPresentation = {
+  readonly appearance: ConsentAppearance;
+  readonly text: ConsentTextArg;
+  readonly language: ConsentLanguage;
+};

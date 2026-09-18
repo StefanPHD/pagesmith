@@ -9,6 +9,24 @@ import {
   type ConsentAppearance,
   type ConsentColor,
 } from "@/lib/settings";
+import type {
+  ConsentTextArg,
+  ConsentLanguage,
+  ConsentPresentation,
+} from "@/lib/settings";
+
+// DIE HUELLE DER PRAESENTATION, LOKAL GEBAUT (Scheibe 11.13e, Entscheidung P11.13-32).
+// Sie buendelt die drei Pflicht-Felder — Darstellung, Sachtext, Sprache — zu dem EINEN
+// Argument, das die drei Erzeuger seither nehmen.
+// DIE SPRACHE HAT HIER EINEN VORGABEWERT, DIE PRODUKTIV-SIGNATUR NICHT: Die bestehenden
+// Faelle pruefen den deutschen Bestand, und genau das sollen sie weiter tun. Jeder Test,
+// bei dem die Sprache die Sache IST, gibt sie ausdruecklich — sonst pruefte er sie nicht.
+const praes = (
+  appearance: ConsentAppearance,
+  text: ConsentTextArg,
+  language: ConsentLanguage = "de"
+): ConsentPresentation => ({ appearance, text, language });
+
 
 // DIE VIERTE DARSTELLUNG FUER DIE WAECHTER (Scheibe 11.13c). Die Probefarben gehen durch
 // das Format-Tor und nicht an ihm vorbei; die Verengung geschieht ueber einen VERGLEICH,
@@ -53,31 +71,73 @@ describe("injectPageViewEmitter", () => {
   // aendert, ist diese Zeile unschaedlich — und genau das prueft dieser Lauf.
   it('T-OFF: bei "off" ist der Ausgabetext fuer alle VIER Darstellungen ZEICHENGLEICH', () => {
     const basis = "<html><body>x</body></html>";
-    const hell = injectPageViewEmitter(basis, "tk-off", "off", { theme: "light" }, "standard");
+    const hell = injectPageViewEmitter(basis, "tk-off", "off", praes({ theme: "light" }, "standard"));
     for (const d of [
       { theme: "dark" } as const,
       { theme: "auto" } as const,
       EIGENE_FARBEN,
     ]) {
       expect(
-        injectPageViewEmitter(basis, "tk-off", "off", d, "standard"),
+        injectPageViewEmitter(basis, "tk-off", "off", praes(d, "standard")),
         JSON.stringify(d)
       ).toBe(hell);
     }
     // POSITIVKONTROLLE IM SELBEN LAUF: bei EINGESCHALTETEM Dialog unterscheiden sich die
     // drei sehr wohl — sonst waere dieser Test auch dann gruen, wenn das Thema UEBERHAUPT
     // nicht wirkte (Pflicht-Mutation Mu9).
-    const anHell = injectPageViewEmitter(basis, "tk-off", "bar", { theme: "light" }, "standard");
+    const anHell = injectPageViewEmitter(basis, "tk-off", "bar", praes({ theme: "light" }, "standard"));
     for (const d of [
       { theme: "dark" } as const,
       { theme: "auto" } as const,
       EIGENE_FARBEN,
     ]) {
       expect(
-        injectPageViewEmitter(basis, "tk-off", "bar", d, "standard"),
+        injectPageViewEmitter(basis, "tk-off", "bar", praes(d, "standard")),
         JSON.stringify(d)
       ).not.toBe(anHell);
     }
+  });
+
+  // T-OFF-LANG. DIESELBE ZUSAGE FUER DIE DRITTE ACHSE (Phase 11.13, Scheibe 11.13e;
+  // Invariante Q2): Der Platzhalter `deliveredLanguage` in publishProject reicht bei "off"
+  // den Zweig "de" weiter, obwohl dort ein UNBEKANNTER Sprachwert zulaessig ist (bindende
+  // Entscheidung P11.13-37, Asymmetrie aus P11.13-7). NUR wenn die Sprache bei "off" gar
+  // nichts am Text aendert, ist diese Zeile unschaedlich.
+  // ER IST DER WAECHTER DER GRENZE: Wer bei "off" je eine Sprache ausliefert, macht DIESEN
+  // Test rot — und muss dann die Entscheidung anfassen, nicht den Test.
+  it('T-OFF-LANG: bei "off" ist der Ausgabetext fuer BEIDE Sprachen ZEICHENGLEICH', () => {
+    const basis = "<html><body>x</body></html>";
+    const de = injectPageViewEmitter(
+      basis,
+      "tk-off",
+      "off",
+      praes({ theme: "light" }, "standard", "de")
+    );
+    expect(
+      injectPageViewEmitter(
+        basis,
+        "tk-off",
+        "off",
+        praes({ theme: "light" }, "standard", "en")
+      )
+    ).toBe(de);
+    // POSITIVKONTROLLE IM SELBEN LAUF: bei EINGESCHALTETEM Dialog unterscheiden sich die
+    // zwei sehr wohl — sonst waere dieser Test auch dann gruen, wenn die Sprache
+    // UEBERHAUPT nicht wirkte.
+    const anDe = injectPageViewEmitter(
+      basis,
+      "tk-off",
+      "bar",
+      praes({ theme: "light" }, "standard", "de")
+    );
+    expect(
+      injectPageViewEmitter(
+        basis,
+        "tk-off",
+        "bar",
+        praes({ theme: "light" }, "standard", "en")
+      )
+    ).not.toBe(anDe);
   });
 
   // T-OFF-TXT. DIESELBE ZUSAGE FUER DIE ZWEITE ACHSE (Phase 11.13, Scheibe 11.13d):
@@ -89,27 +149,27 @@ describe("injectPageViewEmitter", () => {
   // DIESEN Test rot — und muss dann die Entscheidung anfassen, nicht den Test.
   it('T-OFF-TXT: bei "off" aendert ein eigener Sachtext den Ausgabetext NICHT', () => {
     const basis = "<html><body>x</body></html>";
-    const std = injectPageViewEmitter(basis, "tk-off", "off", { theme: "light" }, "standard");
+    const std = injectPageViewEmitter(basis, "tk-off", "off", praes({ theme: "light" }, "standard"));
     for (const s of ["Mein eigener Satz.", "Wir setzen <3 Cookies", "x</SCRIPT>y"]) {
       expect(
-        injectPageViewEmitter(basis, "tk-off", "off", { theme: "light" }, s as unknown as never),
+        injectPageViewEmitter(basis, "tk-off", "off", praes({ theme: "light" }, s as unknown as never)),
         s
       ).toBe(std);
     }
     // POSITIVKONTROLLE IM SELBEN LAUF: bei EINGESCHALTETEM Dialog wirkt er sehr wohl —
     // sonst waere dieser Test auch dann gruen, wenn der Sachtext UEBERHAUPT nicht
     // ausgeliefert wuerde.
-    const anStd = injectPageViewEmitter(basis, "tk-off", "bar", { theme: "light" }, "standard");
+    const anStd = injectPageViewEmitter(basis, "tk-off", "bar", praes({ theme: "light" }, "standard"));
     for (const s of ["Mein eigener Satz.", "Wir setzen <3 Cookies"]) {
       expect(
-        injectPageViewEmitter(basis, "tk-off", "bar", { theme: "light" }, s as unknown as never),
+        injectPageViewEmitter(basis, "tk-off", "bar", praes({ theme: "light" }, s as unknown as never)),
         s
       ).not.toBe(anStd);
     }
   });
 
   it("(a) fuegt das Script VOR dem </body> ein (nach dem Body-Inhalt)", () => {
-    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk-1", "off", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk-1", "off", praes({ theme: "light" }, "standard"));
     // Script sitzt zwischen dem Body-Inhalt und dem schliessenden Tag.
     expect(out.indexOf("x")).toBeLessThan(out.indexOf(MARKER));
     expect(out.indexOf(MARKER)).toBeLessThan(out.indexOf("</body>"));
@@ -118,13 +178,13 @@ describe("injectPageViewEmitter", () => {
   });
 
   it("(a') findet </body> case-insensitiv (</BODY>)", () => {
-    const out = injectPageViewEmitter("<HTML><BODY>x</BODY></HTML>", "tk-1", "off", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter("<HTML><BODY>x</BODY></HTML>", "tk-1", "off", praes({ theme: "light" }, "standard"));
     expect(out.indexOf(MARKER)).toBeGreaterThan(-1);
     expect(out.indexOf(MARKER)).toBeLessThan(out.indexOf("</BODY>"));
   });
 
   it("(b) haengt bei fehlendem </body> ans Ende an", () => {
-    const out = injectPageViewEmitter("<div>x</div>", "tk-1", "off", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter("<div>x</div>", "tk-1", "off", praes({ theme: "light" }, "standard"));
     expect(out).toContain("<div>x</div>");
     // Script am Dokumentende (feuert trotzdem).
     expect(out.trimEnd().endsWith("</script>")).toBe(true);
@@ -132,12 +192,12 @@ describe("injectPageViewEmitter", () => {
   });
 
   it("(c) baeckt den UEBERGEBENEN (Spalten-)Key via JSON.stringify ein", () => {
-    const out = injectPageViewEmitter("<body></body>", "col-key", "off", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter("<body></body>", "col-key", "off", praes({ theme: "light" }, "standard"));
     expect(out).toContain(JSON.stringify("col-key")); // "col-key"
   });
 
   it("(d) nutzt die events.ts-Konstante fuer event (kein handgetipptes Literal) + first-party /api/e + keepalive", () => {
-    const out = injectPageViewEmitter("<body></body>", "tk-1", "off", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter("<body></body>", "tk-1", "off", praes({ theme: "light" }, "standard"));
     // event kommt aus der geteilten Konstante -> kein Drift zu isForwardable.
     expect(out).toContain(JSON.stringify(PAGEVIEW_EVENT));
     // Relativer first-party-Endpunkt (wie der Conversion-Beacon, 7b) + keepalive-Fallback.
@@ -151,12 +211,7 @@ describe("injectPageViewEmitter", () => {
   // Sie traegt den Fall "publizierte Seite OHNE Wiring" — dort kaeme der Block sonst
   // von niemandem, obwohl mit dem Emitter ein Tracking-Konsument da ist.
   it("(f) OHNE Wiring: der Emitter bringt den Consent-Block MIT, und zwar VOR sich", () => {
-    const out = injectPageViewEmitter(
-      "<html><body><h1>nur Text</h1></body></html>",
-      "k",
-      "off",
-      { theme: "light" }
-    , "standard");
+    const out = injectPageViewEmitter("<html><body><h1>nur Text</h1></body></html>", "k", "off", praes({ theme: "light" }, "standard"));
     expect(out).toContain('id="pagesmith-consent"');
     expect(out.indexOf('id="pagesmith-consent"')).toBeLessThan(
       out.indexOf("__ps_pv")
@@ -167,14 +222,14 @@ describe("injectPageViewEmitter", () => {
     // Geprueft wird das DOKUMENT, nicht eine Aufrufreihenfolge.
     const withGate = `<html><body><script id="pagesmith-consent"></scr` +
       `ipt></body></html>`;
-    const out = injectPageViewEmitter(withGate, "k", "off", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter(withGate, "k", "off", praes({ theme: "light" }, "standard"));
     expect(out.split('id="pagesmith-consent"').length - 1).toBe(1);
   });
 
   it("(e) kommt DANEBEN: CAPI-Wiring bleibt erhalten, Emitter kommt zusaetzlich", () => {
     // Simuliert ein CAPI-Projekt-HTML mit Meta-Wiring-Marker.
     const input = "<html><body><h1>x</h1><script>__psMetaFire(a.config);</script></body></html>";
-    const out = injectPageViewEmitter(input, "tk-1", "off", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter(input, "tk-1", "off", praes({ theme: "light" }, "standard"));
     // Der CAPI-Marker ueberlebt (Emitter ersetzt nichts).
     expect(out).toContain("__psMetaFire(a.config);");
     // Der Emitter ist zusaetzlich da.
@@ -250,7 +305,7 @@ function mountEmitter(
   vi.stubGlobal("pagesmithConsent", consent);
 
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(HTML_OHNE_WIRING, KEY, "off", { theme: "light" }, "standard"),
+    injectPageViewEmitter(HTML_OHNE_WIRING, KEY, "off", praes({ theme: "light" }, "standard")),
     "text/html"
   );
   if (opts.removeGate) doc.querySelector("#pagesmith-consent")?.remove();

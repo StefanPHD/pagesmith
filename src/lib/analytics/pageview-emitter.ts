@@ -19,11 +19,7 @@ import { buildConsentBarScript } from "@/lib/tracking/consent-bar";
 import { buildConsentModalScript } from "@/lib/tracking/consent-modal";
 import { buildConsentDenyScript } from "@/lib/tracking/consent-setter";
 import { buildConsentRestoreScript } from "@/lib/tracking/consent-store";
-import type {
-  ConsentAppearance,
-  ConsentDialog,
-  ConsentTextArg,
-} from "@/lib/settings";
+import type { ConsentDialog, ConsentPresentation } from "@/lib/settings";
 
 const SCRIPT_ID = "__ps_pve";
 
@@ -146,8 +142,7 @@ ${PAGEVIEW_SEND_API}();
 // ausgeschaltetem Dialog keine ausgelieferte Zeile.
 function consentBlocksFor(
   form: ConsentDialog,
-  darstellung: ConsentAppearance,
-  sachtext: ConsentTextArg
+  praesentation: ConsentPresentation
 ): {
   gateOn: boolean;
   dialog: string;
@@ -159,14 +154,14 @@ function consentBlocksFor(
     case "bar":
       return {
         gateOn: true,
-        dialog: buildConsentBarScript("load", darstellung, sachtext),
-        revoke: buildConsentBarScript("revoke", darstellung, sachtext),
+        dialog: buildConsentBarScript("load", praesentation),
+        revoke: buildConsentBarScript("revoke", praesentation),
       };
     case "modal":
       return {
         gateOn: true,
-        dialog: buildConsentModalScript("load", darstellung, sachtext),
-        revoke: buildConsentModalScript("revoke", darstellung, sachtext),
+        dialog: buildConsentModalScript("load", praesentation),
+        revoke: buildConsentModalScript("revoke", praesentation),
       };
     default: {
       const unhandled: never = form;
@@ -191,40 +186,37 @@ export function injectPageViewEmitter(
   // fehlte dann auf einem neuen Auslieferungsweg, ohne dass irgendwo etwas rot wird.
   // So muss jede Aufrufstelle entscheiden, und der Compiler fragt.
   consentDialog: ConsentDialog,
-  // DIE DARSTELLUNG DES DIALOGS (Phase 11.13, Scheibe 11.13b). PFLICHT-PARAMETER OHNE
-  // VORGABEWERT, aus demselben Grund wie der Schalter darueber und mit derselben Bauform
-  // (Freigabe F1, 2026-09-17): Ein `= "light"` liesse einen neuen Auslieferungsweg die
-  // Darstellung stillschweigend uebergehen — und ein helles Fenster auf einer dunklen
-  // Kundenseite ist der Fremdkoerper, wegen dessen diese Phase existiert. Ein UNBEKANNTER
-  // Wert erreicht diese Funktion nicht: publishProject verweigert ihn vorher, sofern der
-  // Dialog eingeschaltet ist (bindende Entscheidung P11.13-7).
+  // DIE PRAESENTATION DES DIALOGS — DARSTELLUNG, SACHTEXT UND SPRACHE IN EINER HUELLE
+  // (Phase 11.13, Scheibe 11.13e; bindende Entscheidung P11.13-32). EIN Parameter, DREI
+  // Pflicht-Felder, KEIN Vorgabewert an keinem von ihnen.
   //
-  // SEIT DER SCHEIBE 11.13c IST ES EINE DISKRIMINIERTE UNION statt eines Strings
-  // (Entscheidung P11.13-18). DIE ZAHL DER PFLICHT-PARAMETER AENDERT SICH NICHT — P11.13-11
-  // gilt unveraendert; geaendert hat sich allein die GESTALT dieses einen. Der Zweig
-  // "custom" traegt seine zwei GEPRUEFTEN Farben mit sich, sodass "eigene Farben ohne
-  // Farben" nicht konstruierbar ist.
-  consentAppearance: ConsentAppearance,
-  // DER SACHTEXT DES DIALOGS (Phase 11.13, Scheibe 11.13d; bindende Entscheidung
-  // P11.13-29). DIE ZWEITE PFLICHT-ACHSE, ebenfalls OHNE VORGABEWERT und aus demselben
-  // Grund wie die zwei darueber: Ein Vorgabewert liesse einen neuen Auslieferungsweg den
-  // Betreiber-Satz stillschweigend uebergehen.
+  // P11.13-11 IST ERFUELLT UND NICHT GEDEHNT: Sie verlangt "Pflicht-Parameter OHNE
+  // VORGABEWERT" an diesen drei Stellen, und jedes Feld erfuellt das einzeln; ueber die
+  // ZAHL trifft sie keine Auflage. Ein Vorgabewert an irgendeinem Feld liesse einen neuen
+  // Auslieferungsweg eine Achse stillschweigend uebergehen — bei der Darstellung ein
+  // helles Fenster auf dunkler Kundenseite, beim Sachtext unseren Satz statt seines, bei
+  // der Sprache Deutsch auf einer englischen Seite.
+  //
+  // BIS ZUR SCHEIBE 11.13d WAREN ES ZWEI EINZELNE PARAMETER (`consentAppearance`,
+  // `consentText`). DIE DRITTE ACHSE HAT DIE GRENZE VON P11.13-29 AUSGELOEST, und sie
+  // verlangte ausdruecklich, NICHT einen dritten Parameter anzuhaengen, sondern die
+  // Huelle zu wiegen. Der damalige Einwand — die Union verloere ihre Diskriminante an
+  // einen Traeger — trifft diese Gestalt nicht: `appearance` BLEIBT die Union.
+  //
+  // KEIN UNGUELTIGER WERT ERREICHT DIESE FUNKTION: publishProject verweigert einen
+  // unbekannten Themenwert, ungueltige Farben, einen ungueltigen Sachtext und eine
+  // unbekannte Sprache vorher, sofern der Dialog eingeschaltet ist (bindende
+  // Entscheidungen P11.13-7, -14, -26 und -37).
+  //
   // "standard" IST EIN BENANNTER ZUSTAND UND KEIN FEHLENDES ARGUMENT — welcher Satz das
-  // ist, weiss allein der Erzeuger (CONSENT_TEXT in tracking/consent-choice.ts); diese
-  // Funktion loest ihn NICHT auf, sonst staende die Zuordnung an zwei Orten.
-  // Ein UNGUELTIGER Wert erreicht diese Funktion nicht: publishProject verweigert ihn
-  // vorher, sofern der Dialog eingeschaltet ist (bindende Entscheidung P11.13-26).
-  //
-  // P11.13-11 IST DAMIT ERFUELLT UND NICHT GEDEHNT: Sie verlangt "Pflicht-Parameter OHNE
-  // VORGABEWERT" an diesen drei Stellen, und jede der nun ZWEI Achsen erfuellt das
-  // einzeln; ueber ihre ZAHL trifft sie keine Auflage. Der Satz "die Zahl aendert sich
-  // nicht" im Absatz darueber beschreibt die Scheibe 11.13c und bleibt dafuer richtig.
-  consentText: ConsentTextArg
+  // ist, weiss allein der Erzeuger, und seit 11.13e haengt er an der Sprache
+  // (`consentTexts(sprache).sachtext`); diese Funktion loest ihn NICHT auf, sonst staende
+  // die Zuordnung an zwei Orten.
+  consentPresentation: ConsentPresentation
 ): string {
   const { gateOn, dialog, revoke } = consentBlocksFor(
     consentDialog,
-    consentAppearance,
-    consentText
+    consentPresentation
   );
   // ZWEITE EINFUEGESTELLE DES GETEILTEN CONSENT-GATES (Phase 11, zweite Scheibe).
   // Sie ist noetig, weil eine publizierte Seite OHNE Mappings KEIN Wiring traegt —

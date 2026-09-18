@@ -7,6 +7,25 @@ import {
   buildConsentRestoreScript,
   CONSENT_STORE_KEY,
 } from "@/lib/tracking/consent-store";
+import type {
+  ConsentAppearance,
+  ConsentTextArg,
+  ConsentLanguage,
+  ConsentPresentation,
+} from "@/lib/settings";
+
+// DIE HUELLE DER PRAESENTATION, LOKAL GEBAUT (Scheibe 11.13e, Entscheidung P11.13-32).
+// Sie buendelt die drei Pflicht-Felder — Darstellung, Sachtext, Sprache — zu dem EINEN
+// Argument, das die drei Erzeuger seither nehmen.
+// DIE SPRACHE HAT HIER EINEN VORGABEWERT, DIE PRODUKTIV-SIGNATUR NICHT: Die bestehenden
+// Faelle pruefen den deutschen Bestand, und genau das sollen sie weiter tun. Jeder Test,
+// bei dem die Sprache die Sache IST, gibt sie ausdruecklich — sonst pruefte er sie nicht.
+const praes = (
+  appearance: ConsentAppearance,
+  text: ConsentTextArg,
+  language: ConsentLanguage = "de"
+): ConsentPresentation => ({ appearance, text, language });
+
 
 // Scheibe 11.5b. DIE ERWARTUNGEN STAMMEN AUS DEN BINDENDEN ENTSCHEIDUNGEN (7) BIS (10) DER
 // PHASE 11.5 UND AUS DER ARCHITEKT-ENTSCHEIDUNG VOM 2026-09-14, DASS write() AUCH DEN HOOK
@@ -57,13 +76,13 @@ afterEach(() => {
 
 describe("11.5b — Injektion", () => {
   it("R1: Schalter AUS -> kein Wiederherstellungs-Block (Positivkontrolle: Emitter da)", () => {
-    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "off", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "off", praes({ theme: "light" }, "standard"));
     expect(out).not.toContain('id="__ps_cnr"');
     expect(out).toContain('id="__ps_pve"');
   });
 
   it("R2: Schalter AN -> Gate < Wiederherstellung < Setzer < Emitter", () => {
-    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", praes({ theme: "light" }, "standard"));
     const gate = out.indexOf('id="pagesmith-consent"');
     const restore = out.indexOf('id="__ps_cnr"');
     const setter = out.indexOf('id="__ps_cns"');
@@ -83,7 +102,7 @@ describe("11.5b — Injektion", () => {
     expect(createHash("sha256").update(setter, "utf8").digest("hex")).toBe(
       "9ae9ab2650187876aad75da2cb84cde5c125622e1842ede5a40a059a4a843acd"
     );
-    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", praes({ theme: "light" }, "standard"));
     expect(out).toContain(setter);
   });
 
@@ -93,7 +112,7 @@ describe("11.5b — Injektion", () => {
   // Seiten ohne Mappings das Gate weg oder eine indexOf-Reihenfolge luegt.
   it("R3b: der Block traegt keine der Kennungen, nach denen der Bestand sucht", () => {
     const block = buildConsentRestoreScript();
-    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter("<html><body>x</body></html>", "tk", "bar", praes({ theme: "light" }, "standard"));
     for (const needle of ['id="pagesmith-consent"', 'id="__ps_cns"', "__ps_pve", "__ps_pv"]) {
       expect(block).not.toContain(needle);
       // POSITIVKONTROLLE: dieselbe Suche trifft im ausgelieferten Text.

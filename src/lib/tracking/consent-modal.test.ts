@@ -2,13 +2,32 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 import type { ConsentDialog } from "@/lib/settings";
 import { buildConsentBarScript } from "./consent-bar";
-import { CONSENT_CHOICE_JS } from "./consent-choice";
+import { consentChoiceJs } from "./consent-choice";
+import { consentTexts } from "./consent-texts";
 import { buildConsentModalScript } from "./consent-modal";
 import {
   readConsentColor,
   type ConsentAppearance,
   type ConsentColor,
 } from "@/lib/settings";
+import type {
+  ConsentTextArg,
+  ConsentLanguage,
+  ConsentPresentation,
+} from "@/lib/settings";
+
+// DIE HUELLE DER PRAESENTATION, LOKAL GEBAUT (Scheibe 11.13e, Entscheidung P11.13-32).
+// Sie buendelt die drei Pflicht-Felder — Darstellung, Sachtext, Sprache — zu dem EINEN
+// Argument, das die drei Erzeuger seither nehmen.
+// DIE SPRACHE HAT HIER EINEN VORGABEWERT, DIE PRODUKTIV-SIGNATUR NICHT: Die bestehenden
+// Faelle pruefen den deutschen Bestand, und genau das sollen sie weiter tun. Jeder Test,
+// bei dem die Sprache die Sache IST, gibt sie ausdruecklich — sonst pruefte er sie nicht.
+const praes = (
+  appearance: ConsentAppearance,
+  text: ConsentTextArg,
+  language: ConsentLanguage = "de"
+): ConsentPresentation => ({ appearance, text, language });
+
 
 // DIE VIERTE DARSTELLUNG FUER DIE WAECHTER (Scheibe 11.13c). Die Probefarben gehen durch
 // das Format-Tor und nicht an ihm vorbei; die Verengung geschieht ueber einen VERGLEICH,
@@ -93,7 +112,7 @@ function installBeacon(): BeaconSpy {
 
 function scriptsOf(html: string, form: ConsentDialog): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(html, KEY, form, { theme: "light" }, "standard"),
+    injectPageViewEmitter(html, KEY, form, praes({ theme: "light" }, "standard")),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -182,7 +201,7 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
   });
 
   it("M1: 'off' -> kein Modal-Block (Positivkontrolle: Emitter da)", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "off", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter(HTML, KEY, "off", praes({ theme: "light" }, "standard"));
     expect(out).not.toContain(MODAL_ID);
     expect(out).toContain('id="__ps_pve"');
   });
@@ -190,17 +209,17 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
   // M1b. LEISTE UND MODAL SCHLIESSEN EINANDER AUS — in beide Richtungen, je mit der
   // Anwesenheit des eigenen Blocks als Positivkontrolle.
   it("M1b: 'bar' -> kein Modal-Block; 'modal' -> kein Leisten-Block", () => {
-    const leiste = injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" }, "standard");
+    const leiste = injectPageViewEmitter(HTML, KEY, "bar", praes({ theme: "light" }, "standard"));
     expect(leiste).toContain('id="__ps_clb"');
     expect(leiste).not.toContain(MODAL_ID);
 
-    const modal = injectPageViewEmitter(HTML, KEY, "modal", { theme: "light" }, "standard");
+    const modal = injectPageViewEmitter(HTML, KEY, "modal", praes({ theme: "light" }, "standard"));
     expect(modal).toContain(MODAL_ID);
     expect(modal).not.toContain('id="__ps_clb"');
   });
 
   it("M2: 'modal' -> Gate < Wiederherstellung < Modal < Setzer < Emitter", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "modal", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter(HTML, KEY, "modal", praes({ theme: "light" }, "standard"));
     const gate = out.indexOf('id="pagesmith-consent"');
     const restore = out.indexOf('id="__ps_cnr"');
     const modal = out.indexOf(MODAL_ID);
@@ -215,7 +234,7 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
 
   // M3. DER SERIALISIERUNGS-WAECHTER DIESES BLOCKS, Spiegel von L3: KEIN `<` im Rumpf.
   it("M3: der Rumpf enthaelt kein '<'; genau ein </script>, kein </body>", () => {
-    const block = buildConsentModalScript("load", { theme: "light" }, "standard");
+    const block = buildConsentModalScript("load", praes({ theme: "light" }, "standard"));
     const r = rumpf(block);
     // POSITIVKONTROLLE des Ausschnitts: er traegt wirklich den Code.
     expect(r).toContain("attachShadow");
@@ -230,7 +249,7 @@ describe("11.5d-2 — Injektion und Gestalt des Blocks", () => {
     // Spiegel von L3. SEIT 11.13c UEBER ALLE VIER — und der vierte ist der einzige, in den
     // ein Betreiber-Wert eingeht; er traegt damit die Sicherheitsachse der Scheibe.
     for (const d of VIER_DARSTELLUNGEN) {
-      const b = buildConsentModalScript("load", d, "standard");
+      const b = buildConsentModalScript("load", praes(d, "standard"));
       expect(rumpf(b).includes("<"), JSON.stringify(d)).toBe(false);
       expect(b.match(/<\/script>/gi)?.length, JSON.stringify(d)).toBe(1);
     }
@@ -255,7 +274,7 @@ const FEINDLICHE_SACHTEXTE = [
     for (const s of FEINDLICHE_SACHTEXTE) {
       for (const d of VIER_DARSTELLUNGEN) {
         for (const m of ["load", "revoke"] as const) {
-          const b = buildConsentModalScript(m, d, s as unknown as never);
+          const b = buildConsentModalScript(m, praes(d, s as unknown as never));
           expect(rumpf(b).includes("<"), s + " / " + m + " / " + d.theme).toBe(false);
           expect(b.match(/<\/script>/gi)?.length, s).toBe(1);
         }
@@ -263,7 +282,7 @@ const FEINDLICHE_SACHTEXTE = [
     }
     // POSITIVKONTROLLE IM SELBEN LAUF.
     const harmlos = "Ein eigener Satz.";
-    const b = buildConsentModalScript("load", { theme: "light" }, harmlos as unknown as never);
+    const b = buildConsentModalScript("load", praes({ theme: "light" }, harmlos as unknown as never));
     expect(b).toContain(harmlos);
   });
 
@@ -271,11 +290,11 @@ const FEINDLICHE_SACHTEXTE = [
   // Bestand auch nach `__ps_clb` (L1, L2, L8, L12, P2, P2b, P3). Und in der GEGENRICHTUNG:
   // Der Leisten-Block traegt die Kennungen des Modals nicht, denn M1b und P2 suchen sie.
   it("M4: der Block traegt keine der Zeichenketten, nach denen der Bestand sucht — und umgekehrt", () => {
-    const block = buildConsentModalScript("load", { theme: "light" }, "standard");
+    const block = buildConsentModalScript("load", praes({ theme: "light" }, "standard"));
     const mitDaten =
       '<html><body><h1>x</h1><script type="application/json" id="pagesmith-mappings">[]</scr' +
       "ipt></body></html>";
-    const outModal = injectPageViewEmitter(mitDaten, KEY, "modal", { theme: "light" }, "standard");
+    const outModal = injectPageViewEmitter(mitDaten, KEY, "modal", praes({ theme: "light" }, "standard"));
     for (const nadel of [
       "pagesmith-consent",
       "pagesmith-mappings",
@@ -287,13 +306,13 @@ const FEINDLICHE_SACHTEXTE = [
       // POSITIVKONTROLLE: dieselbe Suche trifft im ausgelieferten Text.
       expect(outModal).toContain(nadel);
     }
-    const outLeiste = injectPageViewEmitter(mitDaten, KEY, "bar", { theme: "light" }, "standard");
+    const outLeiste = injectPageViewEmitter(mitDaten, KEY, "bar", praes({ theme: "light" }, "standard"));
     for (const nadel of ["__ps_clb", "pagesmith-bar"]) {
       expect(block).not.toContain(nadel);
       // POSITIVKONTROLLE: dieselbe Suche trifft im Text mit der Leiste.
       expect(outLeiste).toContain(nadel);
     }
-    const leistenBlock = buildConsentBarScript("load", { theme: "light" }, "standard");
+    const leistenBlock = buildConsentBarScript("load", praes({ theme: "light" }, "standard"));
     for (const nadel of ["__ps_cmo", "pagesmith-modal"]) {
       expect(leistenBlock).not.toContain(nadel);
       // POSITIVKONTROLLE: dieselbe Suche trifft im Text mit dem Modal.
@@ -537,7 +556,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
 
     // DIE NADELN — STRENG: lieber ein Fehlalarm, den jemand prueft, als ein Durchlassen.
     // Jede mit einem Beispiel, das sie treffen MUSS.
-    const block = buildConsentModalScript("load", { theme: "light" }, "standard");
+    const block = buildConsentModalScript("load", praes({ theme: "light" }, "standard"));
     const NADELN: Array<[RegExp, string]> = [
       [/documentElement/, "document.documentElement.setAttribute('x', '1')"],
       [/document\.head/, "document.head.appendChild(s)"],
@@ -564,7 +583,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
     // waeren die zwei neuen Stylesheets von KEINER Nadel gedeckt — ein `overflow` oder ein
     // `scroll` in einem Thema ginge durch.
     for (const d of VIER_DARSTELLUNGEN) {
-      const blockThema = buildConsentModalScript("load", d, "standard");
+      const blockThema = buildConsentModalScript("load", praes(d, "standard"));
       for (const [nadel, beispiel] of NADELN) {
         expect(
           nadel.test(blockThema),
@@ -729,7 +748,7 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
       "if (window.pagesmithConsent !== undefined) return;",
       'if (api.read().state !== "never") return;',
     ];
-    for (const block of [buildConsentBarScript("load", { theme: "light" }, "standard"), buildConsentModalScript("load", { theme: "light" }, "standard")]) {
+    for (const block of [buildConsentBarScript("load", praes({ theme: "light" }, "standard")), buildConsentModalScript("load", praes({ theme: "light" }, "standard"))]) {
       for (const zeile of ZEILEN) {
         expect(block.split(zeile).length - 1).toBe(1);
       }
@@ -739,16 +758,25 @@ describe("11.5d-2 — das Modal fasst keinen fremden Knoten an", () => {
   // M15b. BEIDE BLOECKE TRAGEN DAS GETEILTE CODE-STUECK AUS consent-choice.ts GENAU EINMAL
   // (Scheibe 11.5e-1).
   // SEINE GRENZE, UND OHNE SIE HAELT DIE NAECHSTE RUNDE IHN FUER ETWAS, DAS ER NICHT IST: Er
-  // nimmt seine Erwartung aus dem CODE (CONSENT_CHOICE_JS). Das ist hier zulaessig, weil er
+  // nimmt seine Erwartung aus dem CODE (consentChoiceJs). Das ist hier zulaessig, weil er
   // ausschliesslich ANWESENHEIT prueft — dass kein Block eine eigene, abweichende Fassung
   // traegt oder das Stueck verloren hat. OB DAS STUECK RICHTIG ARBEITET, PRUEFT ER NICHT. Das
   // tun die Verhaltenstests: L5, L13 bis L18 und G0 in consent-bar.test.ts, M5, M14 und M16
   // bis M19 hier.
-  it("M15b: Leisten- und Modal-Block tragen CONSENT_CHOICE_JS je genau einmal — Anwesenheit, keine Richtigkeit", () => {
-    // POSITIVKONTROLLE: das Stueck ist nicht leer und traegt wirklich die Schalter.
-    expect(CONSENT_CHOICE_JS).toContain('"checkbox"');
-    for (const block of [buildConsentBarScript("load", { theme: "light" }, "standard"), buildConsentModalScript("load", { theme: "light" }, "standard")]) {
-      expect(block.split(CONSENT_CHOICE_JS).length - 1).toBe(1);
+  it("M15b: Leisten- und Modal-Block tragen consentChoiceJs je genau einmal — Anwesenheit, keine Richtigkeit", () => {
+    // SEIT SCHEIBE 11.13e IST DAS STUECK EINE FUNKTION UEBER DIE TEXTE (P11.13-33) — der
+    // Test holt es deshalb je Sprache und prueft BEIDE. Ohne die zweite Sprache bliebe er
+    // gruen, auch wenn ein Block das englische Stueck gar nicht erst einsetzte.
+    for (const sprache of ["de", "en"] as const) {
+      const stueck = consentChoiceJs(consentTexts(sprache));
+      // POSITIVKONTROLLE: das Stueck ist nicht leer und traegt wirklich die Schalter.
+      expect(stueck).toContain('"checkbox"');
+      for (const block of [
+        buildConsentBarScript("load", praes({ theme: "light" }, "standard", sprache)),
+        buildConsentModalScript("load", praes({ theme: "light" }, "standard", sprache)),
+      ]) {
+        expect(block.split(stueck).length - 1).toBe(1);
+      }
     }
   });
 });
@@ -870,7 +898,7 @@ describe("11.13a — die Anordnung", () => {
   // Sichtbereich und aendert damit die SCROLL-POSITION der fremden Seite — genau das
   // verbietet Invariante I1. Dass sie WIRKT, ist eine Live-Achse und in der Probe gemessen.
   it("M24: der Fokus-Aufruf traegt preventScroll — Struktur-Zusicherung mit Positivkontrolle", () => {
-    const block = buildConsentModalScript("load", { theme: "light" }, "standard");
+    const block = buildConsentModalScript("load", praes({ theme: "light" }, "standard"));
     expect(block).toContain("measure.box.focus({ preventScroll: true })");
     // POSITIVKONTROLLE der Suche im selben Lauf: der blosse Aufruf kommt NICHT vor.
     expect(/measure\.box\.focus\(\)/.test(block)).toBe(false);
@@ -926,7 +954,7 @@ describe("11.13a — die Anordnung", () => {
     expect(weg.getAttribute("type")).toBe("button");
     expect(weg.getAttribute("class")).toBe("way");
 
-    const block = buildConsentModalScript("load", { theme: "light" }, "standard");
+    const block = buildConsentModalScript("load", praes({ theme: "light" }, "standard"));
     expect(/href/i.test(block)).toBe(false);
     expect(/createElement\("a"\)/.test(block)).toBe(false);
     // POSITIVKONTROLLE beider Suchen im selben Lauf.
@@ -965,6 +993,107 @@ describe("11.13a — die Anordnung", () => {
       expect(window.localStorage.getItem(STORE_KEY)).toBe(ALLE_ABGELEHNT);
     } finally {
       window.removeEventListener("error", sammeln);
+    }
+  });
+});
+
+// ===================================================================================
+// DIE SPRACHE (Phase 11.13, Scheibe 11.13e) — M25 und M26. Spiegel von L24 und L26.
+// M25 IST DER SPIEGEL VON L24, NICHT VON L25: Den aria-Namen des Fensters haelt M5 schon
+// seit der Scheibe 11.5d-2 woertlich — die Leiste hatte bis 11.13e keinen Waechter
+// dafuer, das Fenster sehr wohl. M25 prueft hier zusaetzlich den ENGLISCHEN Namen.
+// Die Wortlaute stehen als Literal aus Entscheidung P11.13-31 (Invariante Q5).
+// ===================================================================================
+
+describe("11.13e — die Sprache des Fensters", () => {
+  function mountSprachig(sprache: "de" | "en"): ShadowRoot {
+    installBeacon();
+    const doc = new DOMParser().parseFromString(
+      injectPageViewEmitter(
+        HTML,
+        KEY,
+        "modal",
+        praes({ theme: "light" }, "standard", sprache)
+      ),
+      "text/html"
+    );
+    for (const s of Array.from(doc.querySelectorAll("script"))) run(s);
+    const host = document.querySelector(HOST);
+    const root = host?.shadowRoot;
+    if (!root) throw new Error("kein Modal");
+    return root;
+  }
+
+  // M25. `lang` UND DER ZUGAENGLICHE NAME AM EIGENEN FENSTER (bindende Entscheidungen
+  // P11.13-36 und P11.13-31). Beides steht an `.dialog` im eigenen Schattenbaum.
+  // WODURCH ROT: ein fehlendes oder falsches `lang`, ein geaenderter aria-Name.
+  it("M25: .dialog traegt lang und den freigegebenen aria-Namen, je Sprache", () => {
+    for (const [sprache, name] of [
+      ["de", "Einwilligung"],
+      ["en", "Consent"],
+    ] as const) {
+      aufraeumen();
+      window.localStorage.clear();
+      const root = mountSprachig(sprache);
+      const dialog = root.querySelector('[role="dialog"]');
+      expect(dialog, sprache).not.toBeNull();
+      expect(dialog!.getAttribute("lang"), sprache).toBe(sprache);
+      expect(dialog!.getAttribute("aria-label"), sprache).toBe(name);
+      expect(dialog!.getAttribute("class"), sprache).toBe("dialog");
+    }
+  });
+
+  // M26. Spiegel von L26: alle sichtbaren Texte folgen der Sprache, in beiden Zustaenden,
+  // und der Wortlaut der anderen Sprache steht nirgends.
+  it("M26: eingeklappt und ausgeklappt stehen ALLE Texte in der gewaehlten Sprache", () => {
+    const ERWARTET = {
+      de: {
+        ein: ["Alle akzeptieren", "Ablehnen", "Einstellungen"],
+        aus: ["Alle akzeptieren", "Auswahl speichern", "Ablehnen"],
+        satz:
+          "Diese Seite kann Tracking-Dienste einbinden. Du entscheidest, ob das geschieht.",
+        gruppen: "Bereiche",
+        schalter: ["Messung", "Werbung"],
+        fremd: "Reject all",
+      },
+      en: {
+        ein: ["Accept all", "Reject all", "Settings"],
+        aus: ["Accept all", "Save selection", "Reject all"],
+        satz: "This site can use tracking services. You decide whether that happens.",
+        gruppen: "Categories",
+        schalter: ["Analytics", "Advertising"],
+        fremd: "Ablehnen",
+      },
+    } as const;
+    for (const sprache of ["de", "en"] as const) {
+      aufraeumen();
+      window.localStorage.clear();
+      const root = mountSprachig(sprache);
+      const e = ERWARTET[sprache];
+      expect(
+        Array.from(root.querySelectorAll("button")).map((b) => b.textContent),
+        sprache
+      ).toEqual([...e.ein]);
+      expect(root.querySelector("p.text")?.textContent, sprache).toBe(e.satz);
+      expect(root.textContent ?? "", sprache).not.toContain(e.fremd);
+      (
+        Array.from(root.querySelectorAll("button")).find(
+          (b) => b.textContent === e.ein[2]
+        ) as HTMLButtonElement
+      ).click();
+      expect(
+        Array.from(root.querySelectorAll("button")).map((b) => b.textContent),
+        sprache
+      ).toEqual([...e.aus]);
+      expect(
+        root.querySelector('[role="group"]')?.getAttribute("aria-label"),
+        sprache
+      ).toBe(e.gruppen);
+      expect(
+        Array.from(root.querySelectorAll("label")).map((l) => l.textContent),
+        sprache
+      ).toEqual([...e.schalter]);
+      expect(root.textContent ?? "", sprache).not.toContain(e.fremd);
     }
   });
 });

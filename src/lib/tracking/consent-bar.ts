@@ -39,12 +39,15 @@
 import { CONSENT_STORE_API } from "@/lib/tracking/consent-store";
 import {
   CONSENT_CHOICE_CSS,
-  CONSENT_CHOICE_JS,
-  CONSENT_TEXT,
+  consentChoiceJs,
   consentThemeCss,
 } from "@/lib/tracking/consent-choice";
+import {
+  consentTexts,
+  type ConsentTextTable,
+} from "@/lib/tracking/consent-texts";
 import { embedInScript } from "@/lib/script-embed";
-import type { ConsentAppearance, ConsentTextArg } from "@/lib/settings";
+import type { ConsentLanguage, ConsentPresentation } from "@/lib/settings";
 import {
   wrapRevoke,
   type ConsentSurfaceMode,
@@ -73,8 +76,10 @@ export const CONSENT_BAR_SCRIPT_ID = "__ps_clb";
  */
 export const CONSENT_BAR_HOST_TAG = "pagesmith-bar";
 
-/** Zugaenglicher Name der Leiste. */
-export const CONSENT_BAR_REGION_LABEL = "Einwilligung";
+// DER ZUGAENGLICHE NAME DER LEISTE IST IN SCHEIBE 11.13e NACH tracking/consent-texts.ts
+// UMGEZOGEN (dort CONSENT_BAR_REGION_LABEL, jetzt zugleich das Feld `leisteAria` der
+// Tabelle). Er hatte hier weder eine Owner-Freigabe noch einen Waechter; beides ist mit
+// jener Scheibe nachgeholt — Entscheidung P11.13-31 und der Test L25.
 
 /**
  * Das Basis-Stylesheet im Schattenbaum; CONSENT_CHOICE_CSS wird angehaengt. ALLE DREI
@@ -196,7 +201,9 @@ function aufbauDerLeiste(
   vormerken: string,
   ausgeklappt: string,
   stil: string,
-  sachtext: string
+  sachtext: string,
+  texte: ConsentTextTable,
+  sprache: ConsentLanguage
 ): string {
   return `  var body = document.body;
   if (!body) ${abbruch}
@@ -209,12 +216,13 @@ function aufbauDerLeiste(
   var bar = document.createElement("div");
   bar.setAttribute("class", "bar");
   bar.setAttribute("role", "region");
-  bar.setAttribute("aria-label", ${embedInScript(CONSENT_BAR_REGION_LABEL)});
+  bar.setAttribute("aria-label", ${embedInScript(texte.leisteAria)});
+  bar.setAttribute("lang", ${embedInScript(sprache)});
   var text = document.createElement("p");
   text.setAttribute("class", "text");
   text.textContent = ${embedInScript(sachtext)};
   bar.appendChild(text);
-${CONSENT_CHOICE_JS}
+${consentChoiceJs(texte)}
   fillChoice(bar, ${ausgeklappt});
   root.appendChild(bar);
 ${vormerken}  body.appendChild(host);
@@ -232,30 +240,42 @@ export function buildConsentBarScript(
   // P11.13-18): Der Zweig "custom" traegt seine zwei GEPRUEFTEN Farben mit sich, und
   // "eigene Farben ohne Farben" ist damit nicht konstruierbar. Jene Union aenderte die
   // GESTALT dieses einen Parameters, nicht seine Zahl.
-  darstellung: ConsentAppearance,
-  // DER SACHTEXT (Phase 11.13, Scheibe 11.13d; bindende Entscheidung P11.13-29). DIE
-  // ZWEITE PFLICHT-ACHSE, ebenfalls OHNE VORGABEWERT.
-  // "standard" IST EIN BENANNTER ZUSTAND UND KEIN FEHLENDES ARGUMENT: Der Aufrufer muss
-  // sich entscheiden; ein Vergessen ist ein tsc-Fehler statt einer stillen Auslieferung
-  // unseres Satzes. EIN `= CONSENT_TEXT` HIER IST AUSGESCHLOSSEN (P11.13-11).
-  // P11.13-11 IST DAMIT ERFUELLT UND NICHT GEDEHNT: Sie verlangt "Pflicht-Parameter ohne
-  // Vorgabewert" an diesen drei Stellen, und BEIDE Achsen erfuellen das einzeln; ueber
-  // ihre ZAHL trifft sie keine Auflage.
-  sachtext: ConsentTextArg
+  // SEIT 11.13e REIST SIE ALS FELD EINER HUELLE (Entscheidung P11.13-32). Die DREI Achsen
+  // — Darstellung, Sachtext, Sprache — sind DREI PFLICHT-FELDER ohne Vorgabewert;
+  // P11.13-11 gilt unveraendert JE FELD, und die Union bleibt, was sie ist.
+  praesentation: ConsentPresentation
 ): string {
   // DER STIL WIRD EINMAL GEBAUT UND IN BEIDE GESTALTEN EINGESETZT: Lade- und Widerruf-Zweig
   // tragen zwangslaeufig dasselbe Thema, weil sie denselben Ausdruck benutzen. Zwei
   // getrennte Berechnungen koennten auseinanderlaufen.
   const stil =
-    CONSENT_BAR_CSS + CONSENT_CHOICE_CSS + consentThemeCss(darstellung);
+    CONSENT_BAR_CSS +
+    CONSENT_CHOICE_CSS +
+    consentThemeCss(praesentation.appearance);
+  // DIE TEXTE WERDEN EINMAL GEHOLT, aus demselben Grund wie der Stil: Zwei Aufrufe
+  // koennten auseinanderlaufen, und die Verzweigung ueber die Sprache soll an EINER Stelle
+  // stehen (Entscheidung P11.13-33).
+  const texte = consentTexts(praesentation.language);
   // WELCHER SATZ "standard" IST, WEISS ALLEIN DIESER ERZEUGER — und das ist der Grund,
   // warum der Aufrufer ihn NICHT einsetzt: Sonst staende die Zuordnung an zwei Orten
   // (P11.13-29, ausdruecklich verworfene Gestalt). Aus demselben Grund steht die
   // Aufloesung EINMAL hier und nicht zweimal in den Zweigen.
-  const text = sachtext === "standard" ? CONSENT_TEXT : sachtext;
+  // SEIT 11.13e HAENGT "standard" AN DER SPRACHE (Entscheidung P11.13-34); ein EIGENER
+  // Sachtext dagegen gilt in JEDER Sprache — er wird hier unveraendert durchgereicht.
+  const text =
+    praesentation.text === "standard" ? texte.sachtext : praesentation.text;
   if (mode === "revoke") {
     return wrapRevoke(
-      aufbauDerLeiste("return false;", "    offen = host;\n", "true", stil, text)
+      aufbauDerLeiste(
+        "return false;",
+        "    offen = host;\n",
+        "true",
+        stil,
+        text,
+        texte,
+        praesentation.language
+      ),
+      texte.widerrufWarnung
     );
   }
   return `<script id="${CONSENT_BAR_SCRIPT_ID}">
@@ -264,6 +284,14 @@ export function buildConsentBarScript(
   var api = window.${CONSENT_STORE_API};
   if (!api || typeof api.read !== "function" || typeof api.write !== "function") return;
   if (api.read().state !== "never") return;
-${aufbauDerLeiste("return;", "", "false", stil, text)}})();
+${aufbauDerLeiste(
+    "return;",
+    "",
+    "false",
+    stil,
+    text,
+    texte,
+    praesentation.language
+  )}})();
 </script>`;
 }

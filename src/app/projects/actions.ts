@@ -16,8 +16,12 @@ import {
   CONSENT_DIALOG_UNKNOWN_MESSAGE,
   CONSENT_THEME_UNKNOWN_MESSAGE,
   CONSENT_TEXT_UNKNOWN_MESSAGE,
+  CONSENT_LANGUAGE_UNKNOWN_MESSAGE,
   getConsentText,
+  getConsentLanguage,
   type ConsentTextArg,
+  type ConsentLanguage,
+  type ConsentPresentation,
   getConsentColorBackground,
   getConsentColorText,
   getConsentDialog,
@@ -1655,6 +1659,28 @@ export async function publishProject(
   if (consentDialog !== "off" && consentText === "unknown")
     return { ok: false, error: CONSENT_TEXT_UNKNOWN_MESSAGE };
 
+  // DIE SPRACHE (Phase 11.13, Scheibe 11.13e; bindende Entscheidung P11.13-37).
+  //
+  // SIE STEHT ANS ENDE DER KETTE, UND DAS IST EINE SETZUNG WIE BEIM SACHTEXT: Die drei
+  // Abbrueche ueber dem Sachtext haengen AUFEINANDER — bei unbekanntem Dialog ist nicht
+  // entscheidbar, ob das Thema zaehlt, bei unbekanntem Thema nicht, ob die Farben zaehlen.
+  // DIE SPRACHE HAENGT AN KEINEM VON IHNEN; sie gilt in jeder Darstellung und mit jedem
+  // Sachtext. Ans Ende gesetzt, bleibt die bestehende Kette unveraendert, und der Eingriff
+  // in diese Kern-Datei ist rein additiv.
+  //
+  // IHR TOR IST NUR "Dialog != off" UND NICHT ZUSAETZLICH EINE DARSTELLUNG — anders als
+  // beim Farb-Abbruch: Die Sprache wird ausgeliefert, sobald ueberhaupt ein
+  // Oberflaechen-Block entsteht. Die Asymmetrie aus P11.13-7 gilt unveraendert: Bei "off"
+  // entsteht kein Block, der Wert erreicht keine ausgelieferte Zeile, und es gibt keinen
+  // Besucher-Preis.
+  //
+  // ZWEI AUSGAENGE, NICHT DREI: Ein FEHLENDES Feld ist kein Fehler, sondern der heutige
+  // Zustand — der Leser liefert dafuer "de". Nur ein VORHANDENER, ungueltiger Wert bricht
+  // ab.
+  const consentLanguage = getConsentLanguage(snapshot.settings);
+  if (consentDialog !== "off" && consentLanguage === "unknown")
+    return { ok: false, error: CONSENT_LANGUAGE_UNKNOWN_MESSAGE };
+
   // DER PLATZHALTER BEI "off" — dieselbe Bauform und derselbe Grund wie bei
   // deliveredAppearance darunter: Nach dem Abbruch ist "unknown" nur noch bei "off"
   // moeglich, und dort erzeugt consentBlocksFor keinen Oberflaechen-Block. KEIN RUECKFALL
@@ -1686,6 +1712,24 @@ export async function publishProject(
       : consentTheme === "unknown"
         ? { theme: "light" }
         : { theme: consentTheme };
+
+  // DER SPRACH-PLATZHALTER BEI "off" — dieselbe Bauform und derselbe Grund wie bei
+  // deliveredText und deliveredAppearance darueber: Nach dem Abbruch ist "unknown" nur
+  // noch bei "off" moeglich, und dort erzeugt consentBlocksFor keinen Oberflaechen-Block.
+  // KEIN RUECKFALL IM SINNE DER DAUERREGEL — die abbrechende Stelle ist bereits passiert.
+  // Dass der Wert keine ausgelieferte Zeile erreicht, behauptet nicht dieser Kommentar,
+  // sondern T-OFF: "off" liefert ueber BEIDE Sprachen byte-gleich denselben Text.
+  const deliveredLanguage: ConsentLanguage =
+    consentLanguage === "unknown" ? "de" : consentLanguage;
+
+  // DIE HUELLE WIRD EINMAL GEBAUT UND AN BEIDE AUFRUFSTELLEN GEGEBEN (Basis und
+  // Variante B). Zwei getrennte Literale koennten auseinanderlaufen — dieselbe Figur wie
+  // beim Stil in den zwei Erzeugern.
+  const consentPresentation: ConsentPresentation = {
+    appearance: deliveredAppearance,
+    text: deliveredText,
+    language: deliveredLanguage,
+  };
 
   const currentSettings = (owned.settings ?? {}) as ProjectSettings;
   const publishedAt = new Date().toISOString();
@@ -1806,8 +1850,7 @@ export async function publishProject(
       functionalHtml,
       trackingKey,
       consentDialog,
-      deliveredAppearance,
-      deliveredText
+      consentPresentation
     ),
     mappings: snapshot.mappings,
     settings: snapshot.settings,
@@ -1842,8 +1885,7 @@ export async function publishProject(
             variantB.functionalHtml,
             trackingKey,
             consentDialog,
-            deliveredAppearance,
-            deliveredText
+            consentPresentation
           ),
           mappings: variantB.mappings,
         },

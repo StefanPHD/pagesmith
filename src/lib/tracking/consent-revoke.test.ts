@@ -7,6 +7,24 @@ import {
   type ConsentAppearance,
   type ConsentColor,
 } from "@/lib/settings";
+import type {
+  ConsentTextArg,
+  ConsentLanguage,
+  ConsentPresentation,
+} from "@/lib/settings";
+
+// DIE HUELLE DER PRAESENTATION, LOKAL GEBAUT (Scheibe 11.13e, Entscheidung P11.13-32).
+// Sie buendelt die drei Pflicht-Felder — Darstellung, Sachtext, Sprache — zu dem EINEN
+// Argument, das die drei Erzeuger seither nehmen.
+// DIE SPRACHE HAT HIER EINEN VORGABEWERT, DIE PRODUKTIV-SIGNATUR NICHT: Die bestehenden
+// Faelle pruefen den deutschen Bestand, und genau das sollen sie weiter tun. Jeder Test,
+// bei dem die Sprache die Sache IST, gibt sie ausdruecklich — sonst pruefte er sie nicht.
+const praes = (
+  appearance: ConsentAppearance,
+  text: ConsentTextArg,
+  language: ConsentLanguage = "de"
+): ConsentPresentation => ({ appearance, text, language });
+
 
 // DIE VIERTE DARSTELLUNG FUER DIE WAECHTER (Scheibe 11.13c). Die Probefarben gehen durch
 // das Format-Tor und nicht an ihm vorbei; die Verengung geschieht ueber einen VERGLEICH,
@@ -77,7 +95,7 @@ function installBeacon(): BeaconSpy {
 
 function scriptsOf(form: "off" | "bar" | "modal"): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(HTML, KEY, form, { theme: "light" }, "standard"),
+    injectPageViewEmitter(HTML, KEY, form, praes({ theme: "light" }, "standard")),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -180,8 +198,10 @@ describe("11.13a — Lade- und Widerruf-Text stammen aus EINEM Aufbau", () => {
     for (const darstellung of VIER_DARSTELLUNGEN) {
       const theme = darstellung.theme;
       it(`T9 (${form}, ${theme}): der Widerruf-Aufbau ist nach Ersetzen der drei Einsetzwerte der Lade-Aufbau`, () => {
-        const laden = aufbauVon(bauen("load", darstellung, "standard"));
-        const widerruf = aufbauVon(bauen("revoke", darstellung, "standard"));
+        const laden = aufbauVon(bauen("load", praes(darstellung, "standard")));
+        const widerruf = aufbauVon(
+          bauen("revoke", praes(darstellung, "standard"))
+        );
         // POSITIVKONTROLLE: OHNE die Ersetzung sind sie verschieden — der Test prueft etwas.
         expect(widerruf).not.toBe(laden);
         const normalisiert = widerruf
@@ -249,34 +269,34 @@ describe("11.5e-2 — der globale Name", () => {
   it("W2: kein Baustein von uns RUFT den Widerruf — kein Aufruf in den erzeugten Bloecken", () => {
     const AUFRUF = `${NAME}(`;
     for (const block of [
-      buildConsentBarScript("revoke", { theme: "light" }, "standard"),
-      buildConsentModalScript("revoke", { theme: "light" }, "standard"),
-      buildConsentBarScript("load", { theme: "light" }, "standard"),
-      buildConsentModalScript("load", { theme: "light" }, "standard"),
+      buildConsentBarScript("revoke", praes({ theme: "light" }, "standard")),
+      buildConsentModalScript("revoke", praes({ theme: "light" }, "standard")),
+      buildConsentBarScript("load", praes({ theme: "light" }, "standard")),
+      buildConsentModalScript("load", praes({ theme: "light" }, "standard")),
     ]) {
       expect(block.split(AUFRUF).length - 1).toBe(0);
     }
     // In den Lade-Bloecken kommt der Name auch als Zeichenkette gar nicht vor.
     for (const block of [
-      buildConsentBarScript("load", { theme: "light" }, "standard"),
-      buildConsentModalScript("load", { theme: "light" }, "standard"),
+      buildConsentBarScript("load", praes({ theme: "light" }, "standard")),
+      buildConsentModalScript("load", praes({ theme: "light" }, "standard")),
     ]) {
       expect(block.split(NAME).length - 1).toBe(0);
     }
     // POSITIVKONTROLLE der Zaehlung im selben Lauf: ein erfundener Aufruf wird gezaehlt.
     // Sie belegt, dass die Suche trifft, und nicht, dass sie schweigt.
-    const mitAufruf = buildConsentBarScript("revoke", { theme: "light" }, "standard") + `\n${NAME}();`;
+    const mitAufruf = buildConsentBarScript("revoke", praes({ theme: "light" }, "standard")) + `\n${NAME}();`;
     expect(mitAufruf.split(AUFRUF).length - 1).toBe(1);
   });
 
   // W3. INVARIANTE (8): BEI AUS ENTSTEHT KEIN BAUSTEIN UND KEIN GLOBALER NAME.
   it("W3: Schalter AUS -> weder Kennung noch Name; bei bar und modal beides (Positivkontrolle)", () => {
-    const aus = injectPageViewEmitter(HTML, KEY, "off", { theme: "light" }, "standard");
+    const aus = injectPageViewEmitter(HTML, KEY, "off", praes({ theme: "light" }, "standard"));
     expect(aus).not.toContain(REVOKE_ID);
     expect(aus).not.toContain(NAME);
     expect(aus).toContain('id="__ps_pve"');
     for (const form of ["bar", "modal"] as const) {
-      const an = injectPageViewEmitter(HTML, KEY, form, { theme: "light" }, "standard");
+      const an = injectPageViewEmitter(HTML, KEY, form, praes({ theme: "light" }, "standard"));
       expect(an).toContain(REVOKE_ID);
       expect(an).toContain(NAME);
     }
@@ -307,8 +327,8 @@ describe("11.5e-2 — der globale Name", () => {
       '<script type="application/json" id="pagesmith-mappings">[]</script>' +
       "</body></html>";
     const beide =
-      injectPageViewEmitter(MIT_MAPPINGS, KEY, "bar", { theme: "light" }, "standard") +
-      injectPageViewEmitter(MIT_MAPPINGS, KEY, "modal", { theme: "light" }, "standard");
+      injectPageViewEmitter(MIT_MAPPINGS, KEY, "bar", praes({ theme: "light" }, "standard")) +
+      injectPageViewEmitter(MIT_MAPPINGS, KEY, "modal", praes({ theme: "light" }, "standard"));
     for (const nadel of NADELN) {
       expect("__ps_crv").not.toContain(nadel);
       // POSITIVKONTROLLE: dieselbe Suche trifft im ausgelieferten Text.
@@ -316,8 +336,8 @@ describe("11.5e-2 — der globale Name", () => {
     }
     // SERIALISIERUNG: der Block traegt kein literales </script> und kein </body>.
     for (const block of [
-      buildConsentBarScript("revoke", { theme: "light" }, "standard"),
-      buildConsentModalScript("revoke", { theme: "light" }, "standard"),
+      buildConsentBarScript("revoke", praes({ theme: "light" }, "standard")),
+      buildConsentModalScript("revoke", praes({ theme: "light" }, "standard")),
     ]) {
       expect(block.split("</scr" + "ipt>").length - 1).toBe(1);
       expect(block).not.toContain("</bo" + "dy>");
@@ -331,7 +351,7 @@ describe("11.5e-2 — der globale Name", () => {
       ["bar", 'id="__ps_clb"'],
       ["modal", 'id="__ps_cmo"'],
     ] as const) {
-      const out = injectPageViewEmitter(HTML, KEY, form, { theme: "light" }, "standard");
+      const out = injectPageViewEmitter(HTML, KEY, form, praes({ theme: "light" }, "standard"));
       expect(out.indexOf(dialogId)).toBeLessThan(out.indexOf(REVOKE_ID));
       expect(out.indexOf(REVOKE_ID)).toBeLessThan(out.indexOf('id="__ps_cns"'));
       expect(out.indexOf('id="__ps_cns"')).toBeLessThan(
@@ -430,8 +450,8 @@ describe("11.5e-2 — die Vorbedingung und der Wiederaufbau", () => {
     ];
     const WIDERRUF_WACHE = 'if (api.read().state !== "decided") {';
     for (const [load, rev] of [
-      [buildConsentBarScript("load", { theme: "light" }, "standard"), buildConsentBarScript("revoke", { theme: "light" }, "standard")],
-      [buildConsentModalScript("load", { theme: "light" }, "standard"), buildConsentModalScript("revoke", { theme: "light" }, "standard")],
+      [buildConsentBarScript("load", praes({ theme: "light" }, "standard")), buildConsentBarScript("revoke", praes({ theme: "light" }, "standard"))],
+      [buildConsentModalScript("load", praes({ theme: "light" }, "standard")), buildConsentModalScript("revoke", praes({ theme: "light" }, "standard"))],
     ]) {
       for (const wache of LADE_WACHEN) {
         expect(load.split(wache).length - 1).toBe(1);
@@ -519,8 +539,8 @@ describe("11.5e-2 — die Invarianten am Widerruf-Block", () => {
     // unveraendert; nur die Menge der geprueften Bloecke waechst von zwei auf sechs.
     for (const d of VIER_DARSTELLUNGEN) {
       for (const block of [
-        buildConsentBarScript("revoke", d, "standard"),
-        buildConsentModalScript("revoke", d, "standard"),
+        buildConsentBarScript("revoke", praes(d, "standard")),
+        buildConsentModalScript("revoke", praes(d, "standard")),
       ]) {
         for (const [nadel, beispiel] of NADELN) {
           expect(
@@ -671,5 +691,50 @@ describe("11.13a — der Widerruf oeffnet ausgeklappt", () => {
       ).toEqual(["Alle akzeptieren", "Ablehnen", "Einstellungen"]);
       expect(root.querySelectorAll("input")).toHaveLength(0);
     }
+  });
+});
+
+// ===================================================================================
+// T10 — DIE `lang`-SETZUNG IST EINE EINZELNE, ISOLIERBARE EINSETZUNG (Phase 11.13,
+// Scheibe 11.13e; Invariante Q1, bindende Entscheidung P11.13-36).
+//
+// WOZU ER DA IST, UND OHNE DIESEN ABSATZ WIRD ER BEIM NAECHSTEN AUFRAEUMEN GESTRICHEN:
+// Die Scheibe 11.13e gibt die BYTE-GLEICHHEIT der deutschen Ausgabe auf — das
+// `lang`-Attribut aendert sie, und zwar gewollt. An ihre Stelle tritt ein
+// DIFFERENZ-NACHWEIS: Der neue Block ist der alte PLUS GENAU DIESE EINE ZEILE, sonst kein
+// Zeichen. Jener Nachweis ist im Bau gegen die vorher erhobenen Werte gefahren worden und
+// kann als Test nicht stehen — die alten Werte gibt es zur Testzeit nicht mehr.
+// WAS ER STATTDESSEN DAUERHAFT HAELT, IST SEINE VORBEDINGUNG: dass die Setzung ueberhaupt
+// isolierbar IST. Eine zweite oder eine ueber den Aufbau verstreute Setzung machte den
+// Nachweis beim naechsten Mal unfuehrbar, ohne dass irgendetwas rot wuerde.
+// WODURCH ROT: eine fehlende, eine doppelte oder eine anders geschriebene Setzung; ein
+// `lang` an einer zweiten Stelle des Blocks.
+// ===================================================================================
+
+describe("11.13e — die lang-Setzung ist isolierbar", () => {
+  it("T10: je Block genau EINE lang-Zeile, und nach ihrer Entfernung kein lang mehr", () => {
+    const FAELLE = [
+      ["bar", buildConsentBarScript, "bar"],
+      ["modal", buildConsentModalScript, "dialog"],
+    ] as const;
+    for (const [form, bauen, behaelter] of FAELLE) {
+      for (const sprache of ["de", "en"] as const) {
+        for (const modus of ["load", "revoke"] as const) {
+          const block = bauen(modus, praes({ theme: "light" }, "standard", sprache));
+          const zeile = `  ${behaelter}.setAttribute("lang", "${sprache}");\n`;
+          const marke = `${form}/${sprache}/${modus}`;
+          // GENAU EINMAL — nicht null, nicht zweimal.
+          expect(block.split(zeile).length - 1, marke).toBe(1);
+          // UND SONST NIRGENDS EIN `lang`: nach dem Entfernen dieser einen Zeile traegt
+          // der Block das Wort nicht mehr. Ohne diese Haelfte waere der Test gruen, auch
+          // wenn eine zweite Setzung in anderer Schreibweise danebenstuende.
+          expect(block.split(zeile).join("")).not.toContain("lang");
+        }
+      }
+    }
+    // POSITIVKONTROLLE DES INSTRUMENTS im selben Lauf: Die Nadel der EINEN Form trifft im
+    // Block der ANDEREN nicht — sonst zaehlte der Test etwas anderes als die eigene Zeile.
+    const leiste = buildConsentBarScript("load", praes({ theme: "light" }, "standard"));
+    expect(leiste).not.toContain('dialog.setAttribute("lang"');
   });
 });

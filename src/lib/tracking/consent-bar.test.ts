@@ -1,13 +1,31 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { injectPageViewEmitter } from "@/lib/analytics/pageview-emitter";
 import { buildConsentBarScript } from "./consent-bar";
-import {
-  CONSENT_TEXT, CONSENT_GROUP_KEYS } from "./consent-choice";
+import { CONSENT_GROUP_KEYS } from "./consent-choice";
+import { CONSENT_TEXT } from "./consent-texts";
 import {
   readConsentColor,
   type ConsentAppearance,
   type ConsentColor,
 } from "@/lib/settings";
+import type {
+  ConsentTextArg,
+  ConsentLanguage,
+  ConsentPresentation,
+} from "@/lib/settings";
+
+// DIE HUELLE DER PRAESENTATION, LOKAL GEBAUT (Scheibe 11.13e, Entscheidung P11.13-32).
+// Sie buendelt die drei Pflicht-Felder — Darstellung, Sachtext, Sprache — zu dem EINEN
+// Argument, das die drei Erzeuger seither nehmen.
+// DIE SPRACHE HAT HIER EINEN VORGABEWERT, DIE PRODUKTIV-SIGNATUR NICHT: Die bestehenden
+// Faelle pruefen den deutschen Bestand, und genau das sollen sie weiter tun. Jeder Test,
+// bei dem die Sprache die Sache IST, gibt sie ausdruecklich — sonst pruefte er sie nicht.
+const praes = (
+  appearance: ConsentAppearance,
+  text: ConsentTextArg,
+  language: ConsentLanguage = "de"
+): ConsentPresentation => ({ appearance, text, language });
+
 
 // DIE VIERTE DARSTELLUNG FUER DIE WAECHTER (Scheibe 11.13c). Die Probefarben gehen durch
 // das Format-Tor und nicht an ihm vorbei; die Verengung geschieht ueber einen VERGLEICH,
@@ -88,7 +106,7 @@ function installBeacon(): BeaconSpy {
 
 function scriptsOf(html: string, on: boolean): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(html, KEY, on ? "bar" : "off", { theme: "light" }, "standard"),
+    injectPageViewEmitter(html, KEY, on ? "bar" : "off", praes({ theme: "light" }, "standard")),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -175,13 +193,13 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
   });
 
   it("L1: Schalter AUS -> kein Leisten-Block (Positivkontrolle: Emitter da)", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "off", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter(HTML, KEY, "off", praes({ theme: "light" }, "standard"));
     expect(out).not.toContain(BAR_ID);
     expect(out).toContain('id="__ps_pve"');
   });
 
   it("L2: Schalter AN -> Gate < Wiederherstellung < Leiste < Setzer < Emitter", () => {
-    const out = injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter(HTML, KEY, "bar", praes({ theme: "light" }, "standard"));
     const gate = out.indexOf('id="pagesmith-consent"');
     const restore = out.indexOf('id="__ps_cnr"');
     const bar = out.indexOf(BAR_ID);
@@ -202,11 +220,11 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
     // Formalie: Der custom-Zweig ist der EINZIGE, in den ein Betreiber-Wert eingeht.
     // Genau deshalb traegt diese Zusicherung die Sicherheitsachse der Scheibe.
     for (const d of VIER_DARSTELLUNGEN) {
-      const b = buildConsentBarScript("load", d, "standard");
+      const b = buildConsentBarScript("load", praes(d, "standard"));
       const r = b.slice(b.indexOf(">") + 1, b.lastIndexOf("<"));
       expect(r.includes("<"), JSON.stringify(d)).toBe(false);
     }
-    const block = buildConsentBarScript("load", { theme: "light" }, "standard");
+    const block = buildConsentBarScript("load", praes({ theme: "light" }, "standard"));
     const rumpf = block.slice(block.indexOf(">") + 1, block.lastIndexOf("<"));
     // POSITIVKONTROLLE des Ausschnitts: er traegt wirklich den Code.
     expect(rumpf).toContain("attachShadow");
@@ -220,7 +238,7 @@ describe("11.5d — Injektion und Gestalt des Blocks", () => {
     // SEIT SCHEIBE 11.13b AUCH FUER DIE ZWEI ANDEREN DARSTELLUNGEN (Nachschaerfung N4):
     // Ein Thema legt ZEICHEN in den Rumpf; ein `<` darin schloesse den Script-Block.
     for (const thema of ["dark", "auto"] as const) {
-      const b = buildConsentBarScript("load", { theme: thema }, "standard");
+      const b = buildConsentBarScript("load", praes({ theme: thema }, "standard"));
       const r = b.slice(b.indexOf(">") + 1, b.lastIndexOf("<"));
       expect(r.includes("<"), thema).toBe(false);
       expect(b.match(/<\/script>/gi)?.length, thema).toBe(1);
@@ -253,7 +271,7 @@ const FEINDLICHE_SACHTEXTE = [
     for (const s of FEINDLICHE_SACHTEXTE) {
       for (const d of VIER_DARSTELLUNGEN) {
         for (const m of ["load", "revoke"] as const) {
-          const b = buildConsentBarScript(m, d, s as unknown as never);
+          const b = buildConsentBarScript(m, praes(d, s as unknown as never));
           const r = b.slice(b.indexOf(">") + 1, b.lastIndexOf("<"));
           expect(r.includes("<"), s + " / " + m + " / " + d.theme).toBe(false);
           expect(b.match(/<\/script>/gi)?.length, s).toBe(1);
@@ -263,10 +281,10 @@ const FEINDLICHE_SACHTEXTE = [
     // POSITIVKONTROLLE IM SELBEN LAUF: Der Sachtext steht wirklich im Block — sonst
     // waere dieser Test auch dann gruen, wenn er gar nicht eingesetzt wuerde.
     const harmlos = "Ein eigener Satz.";
-    const b = buildConsentBarScript("load", { theme: "light" }, harmlos as unknown as never);
+    const b = buildConsentBarScript("load", praes({ theme: "light" }, harmlos as unknown as never));
     expect(b).toContain(harmlos);
     // Und die feindliche Fassung steht ESCAPED drin, nicht roh.
-    const f = buildConsentBarScript("load", { theme: "light" }, FEINDLICHE_SACHTEXTE[1] as unknown as never);
+    const f = buildConsentBarScript("load", praes({ theme: "light" }, FEINDLICHE_SACHTEXTE[1] as unknown as never));
     expect(f).not.toContain(FEINDLICHE_SACHTEXTE[1]);
     expect(f).toContain("window.__AUSBRUCH=1");
   });
@@ -275,9 +293,9 @@ const FEINDLICHE_SACHTEXTE = [
   // (Entscheidung P11.13-29). WODURCH ROT: wenn der Aufrufer den Satz einsetzt oder ein
   // Vorgabewert eingezogen wird.
   it("L3-STD: 'standard' setzt CONSENT_TEXT ein, ein eigener Text ersetzt ihn", () => {
-    const std = buildConsentBarScript("load", { theme: "light" }, "standard");
+    const std = buildConsentBarScript("load", praes({ theme: "light" }, "standard"));
     expect(std).toContain(CONSENT_TEXT);
-    const eigen = buildConsentBarScript("load", { theme: "light" }, "Mein Satz." as unknown as never);
+    const eigen = buildConsentBarScript("load", praes({ theme: "light" }, "Mein Satz." as unknown as never));
     expect(eigen).toContain("Mein Satz.");
     expect(eigen).not.toContain(CONSENT_TEXT);
   });
@@ -288,11 +306,11 @@ const FEINDLICHE_SACHTEXTE = [
   // publish.test.ts. Enthielte der Block eine davon, luege eine indexOf-Reihenfolge,
   // ohne rot zu werden.
   it("L4: der Block traegt keine der Zeichenketten, nach denen der Bestand sucht", () => {
-    const block = buildConsentBarScript("load", { theme: "light" }, "standard");
+    const block = buildConsentBarScript("load", praes({ theme: "light" }, "standard"));
     const mitDaten =
       '<html><body><h1>x</h1><script type="application/json" id="pagesmith-mappings">[]</scr' +
       "ipt></body></html>";
-    const out = injectPageViewEmitter(mitDaten, KEY, "bar", { theme: "light" }, "standard");
+    const out = injectPageViewEmitter(mitDaten, KEY, "bar", praes({ theme: "light" }, "standard"));
     for (const nadel of [
       "pagesmith-consent",
       "pagesmith-mappings",
@@ -485,7 +503,7 @@ describe("11.5d — die Leiste macht die Seite nicht unbedienbar", () => {
     const traegtOverflow = (text: string): boolean => /overflow/i.test(text);
     for (const d of VIER_DARSTELLUNGEN) {
       expect(
-        traegtOverflow(buildConsentBarScript("load", d, "standard")),
+        traegtOverflow(buildConsentBarScript("load", praes(d, "standard"))),
         JSON.stringify(d)
       ).toBe(false);
     }
@@ -769,7 +787,7 @@ describe("11.13a — die Anordnung", () => {
   // Sichtbereich und aendert damit die SCROLL-POSITION der fremden Seite — genau das
   // verbietet Invariante I1. Dass sie WIRKT, ist eine Live-Achse und in der Probe gemessen.
   it("L23: der Fokus-Aufruf traegt preventScroll — Struktur-Zusicherung mit Positivkontrolle", () => {
-    const block = buildConsentBarScript("load", { theme: "light" }, "standard");
+    const block = buildConsentBarScript("load", praes({ theme: "light" }, "standard"));
     expect(block).toContain("measure.box.focus({ preventScroll: true })");
     // POSITIVKONTROLLE der Suche im selben Lauf: der blosse Aufruf kommt NICHT vor.
     expect(/measure\.box\.focus\(\)/.test(block)).toBe(false);
@@ -827,7 +845,7 @@ describe("11.13a — die Anordnung", () => {
     expect(weg.getAttribute("type")).toBe("button");
     expect(weg.getAttribute("class")).toBe("way");
 
-    const block = buildConsentBarScript("load", { theme: "light" }, "standard");
+    const block = buildConsentBarScript("load", praes({ theme: "light" }, "standard"));
     expect(/href/i.test(block)).toBe(false);
     expect(/createElement\("a"\)/.test(block)).toBe(false);
     // POSITIVKONTROLLE beider Suchen im selben Lauf.
@@ -871,6 +889,129 @@ describe("11.13a — die Anordnung", () => {
       expect(window.localStorage.getItem(STORE_KEY)).toBe(ALLE_ABGELEHNT);
     } finally {
       window.removeEventListener("error", sammeln);
+    }
+  });
+});
+
+// ===================================================================================
+// DIE SPRACHE (Phase 11.13, Scheibe 11.13e) — L24 bis L26.
+// DIE ERWARTUNGEN STAMMEN AUS ENTSCHEIDUNG P11.13-31 UND STEHEN ALS LITERAL DA
+// (Invariante Q5); importiert wird hier KEIN Wortlaut aus dem Produktivcode.
+// ===================================================================================
+
+describe("11.13e — die Sprache der Leiste", () => {
+  /** Die Leiste in einer bestimmten Sprache aufbauen und ihre Schattenwurzel liefern. */
+  function mountSprachig(sprache: "de" | "en"): ShadowRoot {
+    installBeacon();
+    const doc = new DOMParser().parseFromString(
+      injectPageViewEmitter(
+        HTML,
+        KEY,
+        "bar",
+        praes({ theme: "light" }, "standard", sprache)
+      ),
+      "text/html"
+    );
+    for (const s of Array.from(doc.querySelectorAll("script"))) run(s);
+    const root = hosts()[0]?.shadowRoot;
+    if (!root) throw new Error("keine Leiste");
+    return root;
+  }
+
+  // L24. DAS `lang`-ATTRIBUT AM EIGENEN CONTAINER (bindende Entscheidung P11.13-36).
+  // ES STEHT AN `.bar` IM EIGENEN SCHATTENBAUM — an keinem fremden Knoten; Invariante I1
+  // ist unberuehrt, und L12 sieht es nicht als neuen globalen Namen.
+  // WODURCH ROT: ein fehlendes Attribut, ein falscher Wert, ein Attribut, das die Sprache
+  // nicht mitfuehrt (also in beiden Laeufen gleich ist).
+  it("L24: .bar traegt lang='de' bzw. lang='en', je nach gewaehlter Sprache", () => {
+    for (const sprache of ["de", "en"] as const) {
+      aufraeumen();
+      window.localStorage.clear();
+      const root = mountSprachig(sprache);
+      const bar = root.querySelector(".bar");
+      expect(bar, sprache).not.toBeNull();
+      expect(bar!.getAttribute("lang"), sprache).toBe(sprache);
+    }
+  });
+
+  // L25. DER ZUGAENGLICHE NAME DER LEISTE, WOERTLICH — DER WAECHTER, DEN ES BIS ZU DIESER
+  // SCHEIBE NICHT GAB (GEMESSEN, VERMERK P11.13-9, Punkt (b); bindende Entscheidung
+  // P11.13-37).
+  // ER IST DAS PENDANT ZU M5, DER DEN FENSTER-NAMEN SEIT 11.5d-2 HAELT. Bis heute konnte
+  // man `CONSENT_BAR_REGION_LABEL` aendern, ohne dass irgendetwas rot wurde.
+  // WODURCH ROT: jede Aenderung an einem der zwei freigegebenen Wortlaute.
+  it("L25: die Region traegt den freigegebenen aria-Namen, je Sprache", () => {
+    for (const [sprache, name] of [
+      ["de", "Einwilligung"],
+      ["en", "Consent"],
+    ] as const) {
+      aufraeumen();
+      window.localStorage.clear();
+      const root = mountSprachig(sprache);
+      const region = root.querySelector('[role="region"]');
+      expect(region, sprache).not.toBeNull();
+      expect(region!.getAttribute("aria-label"), sprache).toBe(name);
+    }
+  });
+
+  // L26. DIE GANZE OBERFLAECHE FOLGT DER SPRACHE — alle sichtbaren Texte der Leiste, in
+  // beiden Zustaenden, plus die Abwesenheit des jeweils anderen Wortlauts.
+  // DIE ABWESENHEITS-HAELFTE IST DER PUNKT: Ein vergessener Textplatz bliebe deutsch, und
+  // eine reine Anwesenheits-Pruefung saehe das nicht (docs/immer-beachten.md, EINE
+  // ABWESENHEITS-BEHAUPTUNG WIRD AUF DREI WEISEN HOHL — hier mit Positivkontrolle, weil
+  // derselbe Lauf den deutschen Fall gegenprueft).
+  // WODURCH ROT: ein Textplatz, der die Sprache nicht mitfuehrt.
+  it("L26: eingeklappt und ausgeklappt stehen ALLE Texte in der gewaehlten Sprache", () => {
+    const ERWARTET = {
+      de: {
+        ein: ["Alle akzeptieren", "Ablehnen", "Einstellungen"],
+        aus: ["Alle akzeptieren", "Auswahl speichern", "Ablehnen"],
+        satz:
+          "Diese Seite kann Tracking-Dienste einbinden. Du entscheidest, ob das geschieht.",
+        gruppen: "Bereiche",
+        schalter: ["Messung", "Werbung"],
+        fremd: "Accept all",
+      },
+      en: {
+        ein: ["Accept all", "Reject all", "Settings"],
+        aus: ["Accept all", "Save selection", "Reject all"],
+        satz: "This site can use tracking services. You decide whether that happens.",
+        gruppen: "Categories",
+        schalter: ["Analytics", "Advertising"],
+        fremd: "Alle akzeptieren",
+      },
+    } as const;
+    for (const sprache of ["de", "en"] as const) {
+      aufraeumen();
+      window.localStorage.clear();
+      const root = mountSprachig(sprache);
+      const e = ERWARTET[sprache];
+      expect(
+        Array.from(root.querySelectorAll("button")).map((b) => b.textContent),
+        sprache
+      ).toEqual([...e.ein]);
+      expect(root.querySelector("p.text")?.textContent, sprache).toBe(e.satz);
+      // DER WORTLAUT DER ANDEREN SPRACHE STEHT NIRGENDS.
+      expect(root.textContent ?? "", sprache).not.toContain(e.fremd);
+      // Ausgeklappt: Gruppe, Schalter und der dritte Knopf.
+      (
+        Array.from(root.querySelectorAll("button")).find(
+          (b) => b.textContent === e.ein[2]
+        ) as HTMLButtonElement
+      ).click();
+      expect(
+        Array.from(root.querySelectorAll("button")).map((b) => b.textContent),
+        sprache
+      ).toEqual([...e.aus]);
+      expect(
+        root.querySelector('[role="group"]')?.getAttribute("aria-label"),
+        sprache
+      ).toBe(e.gruppen);
+      expect(
+        Array.from(root.querySelectorAll("label")).map((l) => l.textContent),
+        sprache
+      ).toEqual([...e.schalter]);
+      expect(root.textContent ?? "", sprache).not.toContain(e.fremd);
     }
   });
 });

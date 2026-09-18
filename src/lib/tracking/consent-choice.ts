@@ -53,65 +53,17 @@ import { ALL_CONSENT_KEYS } from "@/lib/tracking/consent-targets";
 import { contrastRatio } from "@/lib/contrast";
 import { embedInScript } from "@/lib/script-embed";
 import type { ConsentAppearance, ConsentColor } from "@/lib/settings";
+import type { ConsentTextTable } from "@/lib/tracking/consent-texts";
 
-/**
- * Der Sachtext beider Oberflaechen, eine Zeile ueber den Schaltern, ohne Ueberschrift.
- * WORTLAUT FREIGEGEBEN (Entscheidung E3 der Scheibe 11.5d, Architekt/Owner 2026-09-14).
- * ER TRAEGT KEINE RECHTSBEHAUPTUNG UND KEIN VERSPRECHEN UEBER DATENVERARBEITUNG, und kein
- * "notwendig" oder "essenziell": Seit Scheibe 11.5e-1 gibt es zwei Gruppen, aber KEINE
- * davon besteht ohne Einwilligung — das Wort erzeugte die Erwartung, die die
- * Knopf-Beschriftung „Ablehnen" bereits verworfen hat. Einen Verweis auf eine
- * Datenschutzerklaerung gibt es nicht, weil kein Einstellungsfeld einen traegt. Wer den
- * Satz aendert, braucht eine neue Freigabe; L13 und M5 halten ihn.
- * UMGEZOGEN IN SCHEIBE 11.5e-1 aus consent-bar.ts, dort hiess er CONSENT_BAR_TEXT.
- */
-export const CONSENT_TEXT =
-  "Diese Seite kann Tracking-Dienste einbinden. Du entscheidest, ob das geschieht.";
-
-/**
- * Beschriftung des Zustimmungs-Knopfs. Er schreibt alle sechs Schluessel und liest die
- * Schalter NICHT. UMGEZOGEN IN SCHEIBE 11.5e-1 aus consent-bar.ts, dort hiess sie
- * CONSENT_BAR_ACCEPT_LABEL.
- */
-export const CONSENT_ACCEPT_LABEL = "Alle akzeptieren";
-
-/**
- * Beschriftung des Speichern-Knopfs (Scheibe 11.5e-1, Freigabe F2 2026-09-15). Er schreibt
- * die Schluessel der gewaehlten Gruppen; ist keine gewaehlt, ist das `write([])`.
- */
-export const CONSENT_SAVE_LABEL = "Auswahl speichern";
-
-/**
- * Beschriftung des Ablehnungs-Knopfs. „Ablehnen", NICHT „Nur Notwendige": write([])
- * lehnt alle sechs Schluessel ab, auch analytics — es bleibt nichts Notwendiges uebrig
- * (bindende Entscheidung (12) der Phase 11.5). Er liest die Schalter NICHT: Auch bei
- * gewaehlter Gruppe lehnt er alles ab.
- * UMGEZOGEN IN SCHEIBE 11.5e-1 aus consent-bar.ts, dort hiess sie CONSENT_BAR_REJECT_LABEL.
- */
-export const CONSENT_REJECT_LABEL = "Ablehnen";
-
-/**
- * Zugaenglicher Name der Gruppe der zwei Schalter (Freigabe F3 der Scheibe 11.5e-1,
- * 2026-09-15): Er sagt, WAS darin liegt, nicht was man tut. Kein sichtbarer Text.
- */
-export const CONSENT_GROUPS_LABEL = "Bereiche";
-
-/**
- * Beschriftung des Wegs zur Auswahl (Phase 11.13, Scheibe 11.13a; Entscheidung P11.13-1).
- * EINGEKLAPPT ZEIGT DIE OBERFLAECHE ZWEI GLEICHRANGIGE KNOEPFE UND DIESEN WEG; der Klick
- * haengt Gruppe und "Auswahl speichern" an ihre Plaetze und entfernt den Weg. Es gibt kein
- * Zurueck.
- * ER IST EIN KNOPF, KEIN LINK: Ein `a href="#"` aenderte Fragment und Scroll-Position der
- * fremden Seite — das verbietet Invariante I1 (kein Eingriff ausserhalb des eigenen
- * Schattenbaums).
- */
-export const CONSENT_WAY_LABEL = "Einstellungen";
-
-/** Beschriftung des Schalters fuer die eigene Auswertung (Freigabe F1, 2026-09-15). */
-export const CONSENT_GROUP_MEASURE_LABEL = "Messung";
-
-/** Beschriftung des Schalters fuer die Werbenetzwerke (Freigabe F1, 2026-09-15). */
-export const CONSENT_GROUP_ADS_LABEL = "Werbung";
+// DIE ACHT TEXT-KONSTANTEN SIND IN SCHEIBE 11.13e NACH tracking/consent-texts.ts
+// UMGEZOGEN — zusammen mit den drei aus consent-bar.ts, consent-modal.ts und
+// consent-revoke.ts. DORT STEHEN SIE MIT IHREN DOCBLOCKS UND IHREN FREIGABEN.
+//
+// DER GRUND IST EIN ZYKLUS, NICHT GESCHMACK: Eine Tabelle ueber alle elf Plaetze HIER
+// haette die drei anderen aus consent-bar.ts und consent-modal.ts importieren muessen —
+// und JENE importieren bereits aus dieser Datei. Die Tabelle liegt deshalb in einer
+// eigenen, importfreien Datei, und diese hier liest die Texte als ARGUMENT
+// (consentChoiceJs weiter unten), statt sie zu kennen.
 
 /**
  * DIE ZWEI GRUPPEN, ALS SCHLUESSEL (Entscheidung (25) der Phase 11.5; die Zuordnung ist
@@ -390,8 +342,19 @@ export function consentCustomCss(
  * DIE AUFLOESUNG: `pick` liefert Einzelschluessel aus CONSENT_GROUP_KEYS bzw. ALL_CONSENT_KEYS,
  * als Literal eingesetzt. Die Reihenfolge ist gleichgueltig — write() legt in der Reihenfolge
  * seiner Schluesselliste ab.
+ *
+ * SEIT DER SCHEIBE 11.13e IST ES EINE FUNKTION UEBER DIE TEXTE (bindende Entscheidung
+ * P11.13-33). VORHER war es eine Modul-Konstante, die ihre vier Beschriftungen selbst
+ * kannte. DER UMBAU IST DIE MINIMALE FORM: Die Texte reisen als EIN Argument herein, die
+ * vier `embedInScript`-Einsetzstellen lesen Felder daraus, und SONST IST KEIN ZEICHEN
+ * GEAENDERT. Fuer "de" ist die Ausgabe damit zeichengleich mit der Konstante von vorher —
+ * das ist die Haelfte des Differenz-Nachweises (Invariante Q1), die nicht am
+ * `lang`-Attribut haengt.
+ * EINE ZWEITE VERZWEIGUNG UEBER DIE SPRACHE ENTSTEHT HIER NICHT: Diese Funktion sieht die
+ * Sprache gar nicht, nur ihr Ergebnis.
  */
-export const CONSENT_CHOICE_JS = [
+export function consentChoiceJs(texte: ConsentTextTable): string {
+  return [
   "  function makeButton(label, pick) {",
   '    var b = document.createElement("button");',
   '    b.setAttribute("type", "button");',
@@ -427,19 +390,19 @@ export const CONSENT_CHOICE_JS = [
   '    var groups = document.createElement("div");',
   '    groups.setAttribute("class", "groups");',
   '    groups.setAttribute("role", "group");',
-  `    groups.setAttribute("aria-label", ${embedInScript(CONSENT_GROUPS_LABEL)});`,
-  `    var measure = makeGroup(${embedInScript(CONSENT_GROUP_MEASURE_LABEL)});`,
-  `    var ads = makeGroup(${embedInScript(CONSENT_GROUP_ADS_LABEL)});`,
+  `    groups.setAttribute("aria-label", ${embedInScript(texte.gruppen)});`,
+  `    var measure = makeGroup(${embedInScript(texte.messung)});`,
+  `    var ads = makeGroup(${embedInScript(texte.werbung)});`,
   "    groups.appendChild(measure.label);",
   "    groups.appendChild(ads.label);",
-  `    var akzeptieren = makeButton(${embedInScript(CONSENT_ACCEPT_LABEL)}, function () { return ${embedInScript([...ALL_CONSENT_KEYS])}; });`,
-  `    var speichern = makeButton(${embedInScript(CONSENT_SAVE_LABEL)}, function () {`,
+  `    var akzeptieren = makeButton(${embedInScript(texte.akzeptieren)}, function () { return ${embedInScript([...ALL_CONSENT_KEYS])}; });`,
+  `    var speichern = makeButton(${embedInScript(texte.speichern)}, function () {`,
   "      var granted = [];",
   `      if (measure.box.checked) granted = granted.concat(${embedInScript([...CONSENT_GROUP_KEYS.measure])});`,
   `      if (ads.box.checked) granted = granted.concat(${embedInScript([...CONSENT_GROUP_KEYS.ads])});`,
   "      return granted;",
   "    });",
-  `    var ablehnen = makeButton(${embedInScript(CONSENT_REJECT_LABEL)}, function () { return []; });`,
+  `    var ablehnen = makeButton(${embedInScript(texte.ablehnen)}, function () { return []; });`,
   "    if (ausgeklappt) {",
   "      panel.appendChild(groups);",
   "      panel.appendChild(akzeptieren);",
@@ -447,7 +410,7 @@ export const CONSENT_CHOICE_JS = [
   "      panel.appendChild(ablehnen);",
   "      return;",
   "    }",
-  `    var weg = makeWay(${embedInScript(CONSENT_WAY_LABEL)});`,
+  `    var weg = makeWay(${embedInScript(texte.weg)});`,
   '    weg.addEventListener("click", function () {',
   "      panel.insertBefore(groups, akzeptieren);",
   "      panel.insertBefore(speichern, ablehnen);",
@@ -458,4 +421,5 @@ export const CONSENT_CHOICE_JS = [
   "    panel.appendChild(ablehnen);",
   "    panel.appendChild(weg);",
   "  }",
-].join("\n");
+  ].join("\n");
+}

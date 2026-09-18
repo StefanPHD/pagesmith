@@ -4601,4 +4601,150 @@ describe("CodeImporter — die Darstellung des Einwilligungs-Dialogs (Scheibe 11
     expect(screen.queryByText(/unbrauchbarer Wert/i)).toBeNull();
   });
 
+  // ===================================================================================
+  // DIE SPRACHE (Phase 11.13, Scheibe 11.13e) — UI16 bis UI19.
+  // `PublishView.tsx` hat weiterhin KEINE eigene Testdatei; die Abdeckung der
+  // Einwilligungs-Flaeche entsteht hier (Pflicht 4 des Zuschnitts).
+  // ACHTUNG — DIE BESCHRIFTUNGEN "Sprache", "Deutsch" und "Englisch" SIND
+  // APP-OBERFLAECHE UND KEIN AUSGELIEFERTER TEXT. Sie fallen NICHT unter Entscheidung
+  // P11.13-31; ihre Freigabe steht aus.
+  // ===================================================================================
+
+  function sprachGruppe() {
+    return screen.queryByRole("radiogroup", { name: "Sprache" });
+  }
+
+  // UI16. SICHTBAR BEI EINGESCHALTETEM DIALOG, MIT "Deutsch" ALS VORGABE — und
+  // AUSSERHALB der Radiogruppe "Darstellung".
+  // DIE LETZTE HAELFTE IST KEIN DETAIL: Eine verschachtelte Radiogruppe machte
+  // `within(Darstellung).getAllByRole("radio")` von vier auf sechs und damit UI1 rot.
+  // Das waere ein OBERFLAECHEN-Problem, kein Testproblem (docs/immer-beachten.md, ZWEI
+  // BEDIENELEMENTE MIT GLEICHEM NAMEN …) — der Test haelt die Trennung fest.
+  it("UI16: bei 'Leiste' steht die Gruppe 'Sprache' mit ZWEI Optionen, 'Deutsch' gewaehlt — getrennt von 'Darstellung'", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "bar" } }}
+      />,
+    );
+    openSettings();
+    const gruppe = sprachGruppe();
+    expect(gruppe).not.toBeNull();
+    const radios = within(gruppe as HTMLElement).getAllByRole("radio");
+    expect(radios).toHaveLength(2);
+    expect((radios[0] as HTMLInputElement).checked).toBe(true);
+    expect((radios[1] as HTMLInputElement).checked).toBe(false);
+    // DIE TRENNUNG: die Darstellungs-Gruppe traegt weiterhin GENAU VIER Radios.
+    expect(
+      within(themenGruppe() as HTMLElement).getAllByRole("radio"),
+    ).toHaveLength(4);
+  });
+
+  // UI17. UNSICHTBAR BEI "Aus" — dieselbe Sichtbarkeits-Bedingung wie Darstellung und
+  // Sachtext. DER WERT IM BLOB BLEIBT dabei erhalten; das prueft der Publish-Weg.
+  it("UI17: bei 'Aus' gibt es die Gruppe 'Sprache' nicht", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "off", language: "en" } }}
+      />,
+    );
+    openSettings();
+    expect(sprachGruppe()).toBeNull();
+    // POSITIVKONTROLLE im selben Lauf: mit eingeschaltetem Dialog ist sie da, und die
+    // gespeicherte Wahl steht vorgewaehlt — der Wert hat das Ausschalten ueberlebt.
+    cleanup();
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "bar", language: "en" } }}
+      />,
+    );
+    openSettings();
+    const radios = within(sprachGruppe() as HTMLElement).getAllByRole("radio");
+    expect((radios[1] as HTMLInputElement).checked).toBe(true);
+  });
+
+  // UI18. DER BEDIENWEG MACHT dirty (Pflicht-Mutation "settingsEqual-Term entfernt").
+  // ER IST DIE ZWEITE HAELFTE ZU CL2: Jener prueft die reine Funktion, dieser den WEG —
+  // Klick, setSettings, dirty. Ohne den Term bliebe die Wahl still liegen.
+  // DAS INSTRUMENT IST DER BESTAETIGUNGS-DIALOG BEIM PROJEKTWECHSEL: Er erscheint NUR bei
+  // dirty. Dieselbe Bauform wie UI4 fuer den Themenwert.
+  it("UI18: ein Klick auf 'Englisch' macht dirty — der Projektwechsel fragt nach", async () => {
+    const confirmSpy = vi
+      .spyOn(window, "confirm")
+      .mockImplementation(() => false);
+    try {
+      render(
+        <CodeImporter
+          initialCode="<button>X</button>"
+          initialProjectId="p1"
+          initialProjects={[
+            { id: "p1", name: "P1", updated_at: "2026-09-18T00:00:00Z" },
+            { id: "p2", name: "P2", updated_at: "2026-09-18T00:00:00Z" },
+          ]}
+          initialSettings={{ consent: { dialog: "bar" } }}
+        />,
+      );
+      openSettings();
+      fireEvent.click(screen.getByRole("radio", { name: /Englisch/ }));
+
+      fireEvent.click(screen.getByRole("button", { name: "Projekte" }));
+      fireEvent.click(await screen.findByText("P2"));
+      expect(confirmSpy).toHaveBeenCalledTimes(1);
+      expect(loadProject).not.toHaveBeenCalled();
+    } finally {
+      confirmSpy.mockRestore();
+    }
+  });
+
+  // UI19. ZWEI ACHSEN IN EINEM LAUF: (a) der unbekannte Wert — nichts markiert, roter
+  // Hinweis; (b) DER PLATZHALTER DES SACHTEXT-FELDS FOLGT DER SPRACHE (bindende
+  // Entscheidung P11.13-34).
+  // (b) IST DIE EIGENTLICHE SACHE: Ohne sie saehe ein Betreiber mit englischem Dialog im
+  // Editor den deutschen Satz als Platzhalter — also etwas anderes, als seine Seite zeigt.
+  // DIE ZWEI SAETZE STEHEN ALS LITERAL AUS ENTSCHEIDUNG P11.13-31 (Invariante Q5).
+  it("UI19: unbekannte Sprache -> nichts markiert und Hinweis; und der Platzhalter folgt der Sprache", () => {
+    render(
+      <CodeImporter
+        initialCode="<button>X</button>"
+        initialProjectId="p1"
+        initialSettings={{ consent: { dialog: "bar", language: "__ps_x" } }}
+      />,
+    );
+    openSettings();
+    const gruppe = sprachGruppe() as HTMLElement;
+    for (const r of within(gruppe).getAllByRole("radio")) {
+      expect((r as HTMLInputElement).checked).toBe(false);
+    }
+    expect(within(gruppe).getByText(/unbekannter Wert/i)).toBeTruthy();
+
+    // (b) DER PLATZHALTER, je Sprache.
+    for (const [language, satz] of [
+      [
+        "de",
+        "Diese Seite kann Tracking-Dienste einbinden. Du entscheidest, ob das geschieht.",
+      ],
+      ["en", "This site can use tracking services. You decide whether that happens."],
+    ] as const) {
+      cleanup();
+      render(
+        <CodeImporter
+          initialCode="<button>X</button>"
+          initialProjectId="p1"
+          initialSettings={{ consent: { dialog: "bar", language } }}
+        />,
+      );
+      openSettings();
+      expect(
+        (screen.getByLabelText("Erläuternder Text") as HTMLInputElement)
+          .placeholder,
+        language,
+      ).toBe(satz);
+    }
+  });
+
 });

@@ -12,13 +12,17 @@ import {
   type ConsentColorRead,
   type ConsentTheme,
   type ConsentThemeRead,
+  type ConsentLanguage,
+  type ConsentLanguageRead,
 } from "@/lib/settings";
 import { contrastRatio } from "@/lib/contrast";
 // DER STANDARDTEXT KOMMT AUS DEM ERZEUGER UND WIRD HIER NICHT ABGESCHRIEBEN ("ABLEITEN
 // STATT HARDCODEN"): Er steht an genau einer Stelle, und ein hier abgeschriebenes Literal
 // liefe beim naechsten Aendern des Satzes still auseinander — der Platzhalter zeigte dann
 // etwas anderes, als der Besucher zu sehen bekaeme.
-import { CONSENT_TEXT } from "@/lib/tracking/consent-choice";
+// SEIT SCHEIBE 11.13e KOMMT ER AUS DER TABELLE UND FOLGT DER SPRACHE (bindende
+// Entscheidung P11.13-34): Der Platzhalter zeigt den Standard der GEWAEHLTEN Sprache.
+import { consentTexts } from "@/lib/tracking/consent-texts";
 import DomainManager from "@/components/DomainManager";
 
 /**
@@ -68,6 +72,8 @@ export default function PublishView({
   onConsentColorChange,
   consentTextRaw,
   onConsentTextChange,
+  consentLanguage,
+  onConsentLanguageChange,
   onToggleAbTest,
   abTestActive,
   abTestStartedAt,
@@ -119,6 +125,11 @@ export default function PublishView({
   // (bindende Entscheidung P11.13-26). Ein leerer String waere "unknown" und sperrte
   // das Veroeffentlichen.
   onConsentTextChange: (value: string | undefined) => void;
+  // --- Die Sprache (Phase 11.13, Scheibe 11.13e) ---
+  // Gleiche Bauform wie Dialog- und Themenwert: ABGELEITET aus dem Einstellungs-Blob
+  // (getConsentLanguage), nicht lokal gehalten. Bei "unknown" ist nichts markiert.
+  consentLanguage: ConsentLanguageRead;
+  onConsentLanguageChange: (language: ConsentLanguage) => void;
   onToggleAbTest: () => void;
   abTestActive: boolean;
   abTestStartedAt: string | null;
@@ -177,6 +188,14 @@ export default function PublishView({
   // `undefined` ist KEIN Problem, sondern der Normalfall: kein eigener Text.
   const sachtextProblem =
     consentTextRaw === undefined ? null : consentTextProblem(consentTextRaw);
+  // DER PLATZHALTER DES SACHTEXT-FELDS FOLGT DER SPRACHE (bindende Entscheidung
+  // P11.13-34). Bei "unknown" steht der deutsche Satz da — das ist KEIN Rueckfall im
+  // Sinne der Dauerregel, sondern eine ANZEIGE-Entscheidung: Der Leser bleibt bei
+  // "unknown", der rote Hinweis darunter erklaert den Zustand, und das Veroeffentlichen
+  // wird verweigert. Ein leeres Feld ohne Platzhalter zeigte gar nichts.
+  const platzhalterSachtext = consentTexts(
+    consentLanguage === "unknown" ? "de" : consentLanguage
+  ).sachtext;
   return (
     <>
       {/* Hosting / Veröffentlichen (Phase 7 Scheibe 7a): schaltet die funktionale
@@ -534,7 +553,7 @@ export default function PublishView({
                     type="text"
                     aria-label="Erläuternder Text"
                     className="mt-1 w-full rounded border border-gray-300 px-2 py-1"
-                    placeholder={CONSENT_TEXT}
+                    placeholder={platzhalterSachtext}
                     value={consentTextRaw ?? ""}
                     onChange={(e) =>
                       // EIN GELEERTES FELD ENTFERNT DEN WERT und schreibt NIE einen
@@ -567,6 +586,49 @@ export default function PublishView({
                       : sachtextProblem === "zeichen"
                         ? "Der Text enthält Steuerzeichen (unter anderem Zeilenumbruch, Tabulator oder Bidi-Steuerzeichen). Veröffentlichen wird verweigert, bis sie entfernt sind."
                         : "Gespeichert ist ein unbrauchbarer Wert. Veröffentlichen wird verweigert, bis hier ein Text steht oder das Feld geleert ist."}
+                  </p>
+                )}
+              </div>
+            </div>
+            {/* DIE SPRACHE (Phase 11.13, Scheibe 11.13e; bindende Entscheidungen
+                P11.13-31 bis -37). SIE STEHT IM SELBEN SICHTBARKEITS-ZWEIG wie
+                Darstellung und Sachtext: bei "Aus" verschwindet die Gruppe, der WERT im
+                Blob bleibt — wer den Dialog wieder einschaltet, findet seine Wahl vor.
+                SIE HAENGT NICHT AN DER DARSTELLUNG: Die Sprache gilt in jeder.
+                ACHTUNG — DIE DREI BESCHRIFTUNGEN HIER SIND APP-OBERFLAECHE UND KEIN
+                AUSGELIEFERTER TEXT. Sie fallen NICHT unter Entscheidung P11.13-31, ihr
+                Leser ist der Betreiber, und sie brauchen eine eigene Freigabe. */}
+            <div className="space-y-1 border-t border-gray-200 pt-2">
+              <h3 className="mb-1 text-xs font-medium text-gray-700">Sprache</h3>
+              <div role="radiogroup" aria-label="Sprache" className="space-y-1">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="consent-language"
+                    value="de"
+                    checked={consentLanguage === "de"}
+                    onChange={() => onConsentLanguageChange("de")}
+                  />
+                  <span>Deutsch</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="consent-language"
+                    value="en"
+                    checked={consentLanguage === "en"}
+                    onChange={() => onConsentLanguageChange("en")}
+                  />
+                  <span>Englisch</span>
+                </label>
+                {/* DER HINWEIS STEHT IN DER RADIOGRUPPE, nicht daneben — dieselbe
+                    Stelle wie beim Themenwert. Eine Gruppe mit "nichts markiert" ohne
+                    Erklaerung IN ihr laesst den Betreiber raten, warum das
+                    Veroeffentlichen verweigert wird. */}
+                {consentLanguage === "unknown" && (
+                  <p className="text-red-600">
+                    Gespeichert ist ein unbekannter Wert. Veröffentlichen wird verweigert,
+                    bis hier eine Sprache gewählt ist.
                   </p>
                 )}
               </div>

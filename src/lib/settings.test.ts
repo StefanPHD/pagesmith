@@ -26,6 +26,8 @@ import {
   settingsEqual,
   TRACKING_TARGETS,
   type ProjectSettings,
+  getConsentLanguage,
+  setConsentLanguage,
 } from "./settings";
 
 describe("getMetaPixelId", () => {
@@ -710,5 +712,78 @@ describe("Der freie Sachtext (Phase 11.13, Scheibe 11.13d)", () => {
     expect(settingsEqual(leer, nurLeerzeichen)).toBe(true);
     // Und ein FEHLENDES Feld ist nicht dasselbe wie ein ungueltiges.
     expect(settingsEqual({}, leer)).toBe(false);
+  });
+});
+
+// ===================================================================================
+// DIE SPRACHE (Phase 11.13, Scheibe 11.13e; bindende Entscheidung P11.13-37).
+// Die Erwartungen stammen aus jener Entscheidung, nicht aus dem gebauten Leser.
+// ===================================================================================
+
+describe("settings — die Sprache des Einwilligungs-Dialogs", () => {
+  // CL1. DIE DREI AUSGAENGE DES LESERS.
+  // DER ERSTE IST KEIN RUECKFALL IM SINNE DER DAUERREGEL, und der Unterschied traegt die
+  // ganze Entscheidung: Ein FEHLENDES Feld ist ein bekannter Zustand — es gibt gar keinen
+  // Wert —, und "de" ist der heutige Bestand. Ein VORHANDENER, ungueltiger Wert faellt
+  // dagegen NIE auf "de", sonst saehe publishProject ihn nie und der Abbruch waere toter
+  // Code.
+  // WODURCH ROT: ein Leser, der "unknown" auf "de" abbildet; ein Leser, der ein fehlendes
+  // Feld als "unknown" meldet (dann waere jedes Bestandsprojekt unveroeffentlichbar).
+  it("CL1: fehlt -> 'de', gebaut -> er selbst, alles andere -> 'unknown'", () => {
+    expect(getConsentLanguage({})).toBe("de");
+    expect(getConsentLanguage({ consent: {} })).toBe("de");
+    expect(getConsentLanguage({ consent: { dialog: "bar" } })).toBe("de");
+    expect(getConsentLanguage({ consent: { language: "de" } })).toBe("de");
+    expect(getConsentLanguage({ consent: { language: "en" } })).toBe("en");
+    for (const roh of [
+      null,
+      "",
+      "DE",
+      "de-DE",
+      "EN",
+      "fr",
+      "__ps_x",
+      true,
+      1,
+      {},
+      [],
+    ]) {
+      expect(
+        getConsentLanguage({ consent: { language: roh } }),
+        JSON.stringify(roh)
+      ).toBe("unknown");
+    }
+  });
+
+  // CL2. DER TERM IN settingsEqual AN DER REINEN FUNKTION (Pflicht-Mutation Mu5).
+  // OHNE IHN BLIEBE dirty FALSE: kein Text "Ungespeicherte Aenderungen", kein
+  // beforeunload-Waechter, kein confirm beim Projektwechsel — und NICHTS wuerde davon rot.
+  // WODURCH ROT: ein entfernter Term.
+  it("CL2: settingsEqual vergleicht die normalisierte Sprache — sichtbar fuer dirty, kein false-dirty", () => {
+    const de = setConsentLanguage({}, "de");
+    const en = setConsentLanguage({}, "en");
+    expect(settingsEqual(de, en)).toBe(false);
+    expect(settingsEqual(en, de)).toBe(false);
+    expect(settingsEqual(de, { consent: { language: "__ps_x" } })).toBe(false);
+    // POSITIVKONTROLLEN: kein false-dirty. Fehlendes Feld und geschriebenes "de" sind
+    // DASSELBE — sonst waere jedes Bestandsprojekt beim Laden sofort dirty.
+    expect(settingsEqual({}, de)).toBe(true);
+    expect(settingsEqual(en, { consent: { language: "en" } })).toBe(true);
+  });
+
+  // CL3. DER SETZER LAESST DIE NACHBARN UNBERUEHRT und mutiert das Original nicht —
+  // dieselbe Bauform wie setConsentTheme (TH4).
+  it("CL3: setConsentLanguage laesst dialog, theme und text unberuehrt", () => {
+    const vorher: ProjectSettings = {
+      consent: { gate: true, dialog: "modal", theme: "dark", text: "Mein Satz." },
+    };
+    const nachher = setConsentLanguage(vorher, "en");
+    expect(getConsentDialog(nachher)).toBe("modal");
+    expect(getConsentTheme(nachher)).toBe("dark");
+    expect(nachher.consent?.text).toBe("Mein Satz.");
+    expect(nachher.consent?.gate).toBe(true);
+    expect(getConsentLanguage(nachher)).toBe("en");
+    // Das Original bleibt, wie es war.
+    expect(getConsentLanguage(vorher)).toBe("de");
   });
 });

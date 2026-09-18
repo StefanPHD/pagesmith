@@ -26,6 +26,25 @@ import {
 } from "@/lib/tracking/consent-setter";
 import { buildConsentRuntimes } from "@/lib/tracking/consent";
 import type { Mapping } from "@/lib/mappings";
+import type {
+  ConsentAppearance,
+  ConsentTextArg,
+  ConsentLanguage,
+  ConsentPresentation,
+} from "@/lib/settings";
+
+// DIE HUELLE DER PRAESENTATION, LOKAL GEBAUT (Scheibe 11.13e, Entscheidung P11.13-32).
+// Sie buendelt die drei Pflicht-Felder — Darstellung, Sachtext, Sprache — zu dem EINEN
+// Argument, das die drei Erzeuger seither nehmen.
+// DIE SPRACHE HAT HIER EINEN VORGABEWERT, DIE PRODUKTIV-SIGNATUR NICHT: Die bestehenden
+// Faelle pruefen den deutschen Bestand, und genau das sollen sie weiter tun. Jeder Test,
+// bei dem die Sprache die Sache IST, gibt sie ausdruecklich — sonst pruefte er sie nicht.
+const praes = (
+  appearance: ConsentAppearance,
+  text: ConsentTextArg,
+  language: ConsentLanguage = "de"
+): ConsentPresentation => ({ appearance, text, language });
+
 
 // DIE FIXTURE IST DIE DES VERGLEICHSWERTS, ZEICHENGLEICH. Sie wird NICHT veraendert,
 // ohne den Vergleichswert in T1 neu zu erheben — sonst misst T1 etwas anderes, als
@@ -62,7 +81,7 @@ function deliver(consentDialog: ConsentDialog): string {
     capiProxyUrl: PROXY,
     consentTargets,
   });
-  return injectPageViewEmitter(functional, TRACKING_KEY, consentDialog, { theme: "light" }, "standard");
+  return injectPageViewEmitter(functional, TRACKING_KEY, consentDialog, praes({ theme: "light" }, "standard"));
 }
 
 describe("11.5a — die tragende Invariante und ihre Positivkontrolle", () => {

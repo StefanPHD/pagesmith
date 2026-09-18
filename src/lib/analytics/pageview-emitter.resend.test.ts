@@ -3,6 +3,25 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { buildPageViewScript, injectPageViewEmitter } from "./pageview-emitter";
 import { PAGEVIEW_EVENT } from "./events";
 import { CONSENT_STORE_KEY } from "@/lib/tracking/consent-store";
+import type {
+  ConsentAppearance,
+  ConsentTextArg,
+  ConsentLanguage,
+  ConsentPresentation,
+} from "@/lib/settings";
+
+// DIE HUELLE DER PRAESENTATION, LOKAL GEBAUT (Scheibe 11.13e, Entscheidung P11.13-32).
+// Sie buendelt die drei Pflicht-Felder — Darstellung, Sachtext, Sprache — zu dem EINEN
+// Argument, das die drei Erzeuger seither nehmen.
+// DIE SPRACHE HAT HIER EINEN VORGABEWERT, DIE PRODUKTIV-SIGNATUR NICHT: Die bestehenden
+// Faelle pruefen den deutschen Bestand, und genau das sollen sie weiter tun. Jeder Test,
+// bei dem die Sprache die Sache IST, gibt sie ausdruecklich — sonst pruefte er sie nicht.
+const praes = (
+  appearance: ConsentAppearance,
+  text: ConsentTextArg,
+  language: ConsentLanguage = "de"
+): ConsentPresentation => ({ appearance, text, language });
+
 
 // SCHEIBE 11.5c — DER NACHGEHOLTE SEITENAUFRUF.
 //
@@ -56,7 +75,7 @@ function installBeacon(): BeaconSpy {
 /** Die Script-Elemente des ausgelieferten Dokuments bei eingeschaltetem Schalter. */
 function scriptsOfPublishedPage(): Element[] {
   const doc = new DOMParser().parseFromString(
-    injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" }, "standard"),
+    injectPageViewEmitter(HTML, KEY, "bar", praes({ theme: "light" }, "standard")),
     "text/html"
   );
   return Array.from(doc.querySelectorAll("script"));
@@ -228,6 +247,6 @@ describe("11.5c — die Gestalt des Erzeugers", () => {
     expect(on.endsWith("</script>")).toBe(true);
     expect(on.toLowerCase()).not.toContain("</body>");
     // POSITIVKONTROLLE der Abwesenheit: dieselbe Suche trifft im ausgelieferten Dokument.
-    expect(injectPageViewEmitter(HTML, KEY, "bar", { theme: "light" }, "standard").toLowerCase()).toContain("</body>");
+    expect(injectPageViewEmitter(HTML, KEY, "bar", praes({ theme: "light" }, "standard")).toLowerCase()).toContain("</body>");
   });
 });

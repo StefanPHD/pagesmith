@@ -2386,6 +2386,43 @@ liegen beide hier und finden einander.
       P11.13-27).
       DER MARKER BLEIBT `[ ]` — SCHEIBE 5 aus (c), die SPRACHE, steht aus, und damit ist
       Code zu schreiben (CLAUDE.md, "WANN [x] GESETZT WIRD — DAS KRITERIUM").
+
+      STAND 2026-09-18, DRITTER DES TAGES — SCHEIBE 5 IST GEBAUT UND LIVE BEWIESEN: die
+      SPRACHE, Deutsch oder Englisch, Bau-Commit `0a2dc7b`, mit bestätigtem Live-Test auf
+      einer realen Seite. Der Betreiber wählt je Projekt aus einer FESTEN Auswahl; alle ELF
+      Textplätze des Dialogs folgen der Wahl, die Wortlaute stehen als Konstanten im Repo
+      und tragen Owner-Freigaben (bindende Entscheidung P11.13-31). KEINE Betreiber-Eingabe
+      — der Wert wählt einen Zweig. Vermerk, Entscheidungen und Vorrat: VERMERK P11.13-10
+      in docs/aktiver-stand.md.
+      DREI BAUFORM-ENTSCHEIDUNGEN TRAGEN SIE: eine TABELLE mit erschöpfender Verzweigung und
+      `never`-Zweig, deren deutscher Zweig auf die BESTEHENDEN Konstanten VERWEIST statt
+      abzuschreiben (P11.13-33) · eine HÜLLE aus Darstellung, Sachtext und Sprache statt
+      eines dritten Parameters — die Grenze von P11.13-29 war mit der dritten Achse
+      eingetreten und ist damit eingelöst (P11.13-32) · ein `lang`-Attribut an `.bar` bzw.
+      `.dialog` IM EIGENEN SCHATTENBAUM (P11.13-36).
+      DIE BYTE-GLEICHHEIT DER DEUTSCHEN AUSGABE IST BEWUSST AUFGEGEBEN, UND AN IHRE STELLE
+      TRITT EIN DIFFERENZ-NACHWEIS: Das `lang`-Attribut bewegt die deutschen Blockwerte, die
+      über vier Scheiben stabil waren. Der Nachweis lautet, dass jeder Wert der alte PLUS
+      GENAU DIE `lang`-ZEILE ist — sonst kein Zeichen. GEFAHREN UND BESTANDEN, 18 von 18
+      (+34 B je Leisten-Block, +37 je Fenster-Block, +68 bzw. +74 je Ausgabetext); der
+      AUS-FALL und `buildMetaRuntime` bleiben ZEICHENGLEICH. LIVE BESTÄTIGT: die sechs
+      deutschen Blockwerte der echten Seite sind zeichengleich mit den lokal erhobenen
+      Nachher-Werten.
+      EINE AUTOMATIK NACH `navigator.language` IST VERWORFEN, nicht vertagt — mit Gründen
+      und gemessenen Kosten (P11.13-35): Sie wäre unverträglich mit einem eigenen Sachtext,
+      der in EINER Sprache vorliegt, und die Zielgruppe baut je Markt eigene Seiten. KEIN
+      Vorrats-Eintrag, KEIN Trigger.
+      DIE GRENZEN, DIE MITMÜSSEN: Gemessen ist Chrome auf dem Desktop und ein Handy laut
+      Owner; FIREFOX UND WEBKIT SIND AN KEINER ACHSE DIESER SCHEIBE GEMESSEN. SCREENREADER
+      SIND UNGEPRÜFT — und das wiegt hier schwerer als in den vorigen Scheiben, weil das
+      `lang`-Attribut genau für Vorleseprogramme gesetzt ist und seine WIRKUNG damit
+      ungemessen bleibt. Der EXPORT-PFAD trägt weiterhin keine Sprache (P11.13-28).
+      ALLE FÜNF SCHEIBEN DES SCHNITTS (c) SIND DAMIT GEBAUT UND LIVE BEWIESEN — die
+      Anordnung, das Thema, die eigenen Farben, der freie Sachtext und die Sprache.
+      DER MARKER BLEIBT TROTZDEM `[ ]`, UND DAS IST KEIN WIDERSPRUCH ZUM KRITERIUM: Er kippt
+      mit dem PHASENENDE — der Hebung der bindenden Entscheidungen, der Verteilung des
+      Vorrats und der Archivierung der Standdatei. Das ist eine EIGENE Runde und noch nicht
+      gefahren; bis dahin ist an dieser Phase Arbeit zu tun, wenn auch kein Code.
 - [ ] Phase 12 — Rich-Text / verschachtelte Textknoten: der Editor erkennt
       heute nur reine Textknoten, kein <strong>/<em> innerhalb eines <p>.
       Offene Designfragen seit Phase 5: Umgang mit Kind-Markup, Vorschau- vs.

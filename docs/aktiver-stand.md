@@ -37,7 +37,7 @@ EINER DATEI MIT VERZEICHNIS NICHT). Wer bearbeitet, ankert entsprechend.
 7. Zuschnitt der Scheibe 11.13b — DAS THEMA (VERDICHTET 2026-09-17)
 8. Zuschnitt der Scheibe 11.13c — EIGENE FARBEN (VERDICHTET 2026-09-18)
 9. Zuschnitt der Scheibe 11.13d — FREIER SACHTEXT (VERDICHTET 2026-09-18)
-10. Zuschnitt der Scheibe 11.13e — DIE SPRACHE
+10. Zuschnitt der Scheibe 11.13e — DIE SPRACHE (VERDICHTET 2026-09-18)
 11. Vorrat — gemeldet, nicht gebaut
 12. Hebungs-Kandidaten
 
@@ -1867,6 +1867,221 @@ PROVENIENZ DIESES VERMERKS: sämtliche Angaben GEMESSEN bzw. GELESEN am Repo (CC
 desselben Tages über die echten Funktionen. **KEINE Live-Angabe, KEINE Owner-Angabe, KEINE
 Browser-Messung in diesem Vermerk.** Dass ein Verzweigungs-Code einer Automatik weitere
 Bytes kostete, ist eine ABLEITUNG und ungemessen.
+
+### VERMERK P11.13-10 — Scheibe 11.13e, DIE SPRACHE, abgeschlossen 2026-09-18
+
+**GEGENSTAND:** Der Betreiber wählt die Sprache des Einwilligungs-Dialogs — Deutsch oder
+Englisch. Alle **elf** Textplätze folgen der Wahl; die Wortlaute stehen als Konstanten im
+Repo und tragen Owner-Freigaben (Entscheidung P11.13-31). Dazu das `lang`-Attribut an
+`.bar` bzw. `.dialog` und die **Hülle** statt eines dritten Parameters.
+
+**BAU-COMMIT:** `0a2dc7b` — `feat(consent): Sprache Deutsch/Englisch fuer den
+Einwilligungs-Dialog (11.13e)`, gepusht (`9da8129..0a2dc7b  main -> main`). **21 Dateien,
+1 714 Zeilen hinzu, 270 entfernt**, darunter die zwei NEUEN
+`src/lib/tracking/consent-texts.ts` (274 Zeilen) und `src/lib/tracking/consent-texts.test.ts`
+(160) — GEMESSEN am Repo (`git log -1 --stat`, CC, 2026-09-18). **`docs/aktiver-stand.md`
+ist NICHT im Bau-Commit** — der Doku-Nachzug jenes Tages steht als `583999a` daneben.
+
+#### (a) DER DIFFERENZ-NACHWEIS IST LIVE BESTÄTIGT — SECHS BLOCKWERTE, ZEICHENGLEICH
+
+**INSTRUMENT:** das Konsolen-Skript aus VERMERK P11.13-6, Punkt (c), **Tag-Form**.
+**ORT:** `meta-test-5nlm3e.publayer.net`, **nach dem Deploy neu veröffentlicht**, Sprache
+**Deutsch**.
+
+| Zustand | Block | Bytes | sha256 (12) |
+|---|---|---|---|
+| Leiste hell | `__ps_clb` | 4 637 | `ecb98e60724a` |
+| Leiste hell | `__ps_crv` | 4 952 | `f7685cc9e2dd` |
+| Leiste dunkel | `__ps_clb` | 4 966 | `d558cfa54855` |
+| Leiste dunkel | `__ps_crv` | 5 281 | `90ee6c9219ef` |
+| Fenster hell | `__ps_cmo` | 5 088 | `f91fd4024899` |
+| Fenster hell | `__ps_crv` | 5 403 | `d09a7b8d7400` |
+
+**ALLE SECHS SIND ZEICHENGLEICH MIT DEN LOKAL ERHOBENEN NACHHER-WERTEN DES BAUS** — Bytes
+UND sha256, sechs von sechs (GEPRÜFT gegen die Differenz-Nachweis-Tabelle des Bau-Berichts,
+CC, 2026-09-18).
+
+**DAS IST DIE TRAGENDE AUSSAGE DIESES VERMERKS, und sie ist mehr als ein Byte-Vergleich:**
+Der Differenz-Nachweis (Invariante Q1) ist im Bau LOKAL geführt worden — jeder deutsche
+Blockwert ist der Wert davor **plus genau die `lang`-Zeile, sonst kein Zeichen**. Die sechs
+Live-Werte sind zeichengleich mit genau jenen Nachher-Werten. **DAMIT IST DER
+DIFFERENZ-NACHWEIS AN EINER ECHTEN AUSGELIEFERTEN SEITE VERANKERT**, für beide Formen, beide
+Zweige und zwei Tabellen-Darstellungen.
+**WAS ER NICHT BELEGT:** „automatisch" (live nicht gesichert, so zugeschnitten) und die
+eigenen Farben (nicht Gegenstand dieser Scheibe).
+
+#### (b) DIE REGRESSION — DER AUS-FALL UND DAS WIRING ÜBER DEN 11.13e-DEPLOY
+
+| Block | Bytes | sha256 (12) | gegen |
+|---|---|---|---|
+| `pagesmith-consent` | 790 | `854831d25209` | VERMERK P11.13-8 (b) — zeichengleich |
+| `pagesmith-mappings` | 210 | `dba4fe81d9b9` | ebenda — zeichengleich |
+| Wiring (Index 2, `id` „-") | 12 251 | `a3529b57452b` | ebenda — zeichengleich, **in jedem Lauf** |
+| `__ps_pve` (Dialog aus) | 806 | `72d1ef626bcf` | ebenda — zeichengleich |
+
+**DAMIT IST DER AUS-FALL ÜBER DEN 11.13e-DEPLOY LIVE BELEGT** — Invariante Q2 an der echten
+Seite, nicht nur lokal über `T-OFF` und `T-OFF-LANG`.
+
+**DREI WEITERE BLÖCKE SIND GEMESSEN WORDEN UND STANDEN VORHER IN KEINER DATEI DIESES
+REPOS** — sie sind damit **NEUE** Werte und keine Regression gegen einen aufgeschriebenen
+Vorher-Wert (GEMESSEN am Dateitext, CC, 2026-09-18, Achse über die drei Zahlen und die drei
+Hashes: kein Treffer; Positivkontrolle: dieselbe Achse findet die vier Werte der Tabelle
+darüber). **DAS IST DER GRUND, WARUM CC SIE NACHGEMESSEN HAT**, und das Ergebnis trennt sie
+scharf:
+
+| Block | Bytes | sha256 (12) | von CC lokal bestätigt? |
+|---|---|---|---|
+| `__ps_cnr` | 2 377 | `d6c2549a0938` | **JA, zeichengleich** — und **schlüssel-unabhängig** (vier Schlüssellängen, identisches Ergebnis) |
+| `__ps_cns` | 244 | `9ae9ab265018` | **JA, zeichengleich** — ebenfalls schlüssel-unabhängig |
+| `__ps_pve` (Dialog an) | 840 | `302f39c1a883` | **NEIN** — dieser Block ist **schlüssel-abhängig** (lokal 812 / 819 / 820 / 836 Bytes bei 8 / 15 / 16 / 32 Zeichen). 840 ist ohne den echten Schlüssel nicht nachzubilden |
+
+**EINE ABWEICHUNG, DIE KEINE IST, UND SIE GEHÖRT HIERHER:** Lokal misst der Gate-Block
+`pagesmith-consent` über `injectPageViewEmitter` **792 / `5282ddbfacbb`**, live steht dort
+**790 / `854831d25209`**. **DAS IST DER BEKANNTE OFFENE PUNKT „DER CONSENT-GATE-BLOCK HAT
+ZWEI ERZEUGER — UND SIE LAUFEN BEREITS AUSEINANDER"** (docs/offene-punkte.md): Der
+ausgelieferte Gate-Block der Live-Seite kommt über `generateFunctional`, nicht über
+`injectPageViewEmitter`. Die Divergenz ist damit nicht neu, nicht von dieser Scheibe erzeugt
+und in ihrer Grösse (zwei Bytes, reine Hülle) genau das, was jener Punkt als harmlos führt.
+**DER LIVE-WERT IST TROTZDEM UNVERÄNDERT** — das ist die Aussage, die zählt, und sie ist ein
+Vergleich zweier OWNER-Messungen, nicht eine Bestätigung durch CC.
+
+#### (c) DIE SPRACHE — WAS LIVE GEPRÜFT IST
+
+- **ENGLISCH, ALLE TEXTE.** Owner-Screenshots der Leiste, eingeklappt und ausgeklappt:
+  `Accept all` · `Reject all` · `Settings` · der englische Sachtext · `Analytics` ·
+  `Advertising` · `Save selection`.
+- **`lang = "en"` AN `.bar`** — vom Owner in der Konsole abgelesen.
+- **DER EIGENE SACHTEXT BLEIBT BEI SPRACHE ENGLISCH.** Das ist die zugesagte Wirkung von
+  Entscheidung P11.13-34 und ausdrücklich kein Fehlschlag: Zehn Texte wechseln, der elfte —
+  der vom Betreiber geschriebene — nicht.
+- **EIN GELEERTES FELD ZEIGT DEN ENGLISCHEN STANDARDSATZ.**
+- **DER WIDERRUF IST ENGLISCH, SAMT ENGLISCHER KONSOLEN-WARNUNG.**
+- **DIE FENSTER-FORM IST ENGLISCH.**
+- **DAS ECHTE HANDY IST BESTANDEN — auf `unbekanntes-projekt-3jnjz9`**, nicht auf
+  `meta-test-5nlm3e`: Jene Seite trägt ein Viewport-Tag, diese nicht (Vorrat P11.13-8); auf
+  `meta-test-5nlm3e` misst der Schritt den Vorrats-Eintrag statt der Scheibe.
+- **BROWSER: Chrome auf dem Desktop; das Handy laut Owner.** **Firefox und WebKit sind an
+  keiner Achse dieser Scheibe gemessen.**
+
+**SÄMTLICHE ANGABEN IN (a), (b) UND (c) SIND OWNER-MESSUNGEN bzw. OWNER-ANGABEN vom
+2026-09-18, vom Architekten weitergegeben; CC KANN SIE NICHT PRÜFEN.** Die zwei Ausnahmen
+sind ausdrücklich benannt: der Abgleich der sechs Blockwerte gegen die eigene
+Differenz-Nachweis-Tabelle und die lokale Nachmessung von `__ps_cnr` und `__ps_cns` — beides
+GEMESSEN (CC, 2026-09-18).
+
+#### (d) DIE ZAHLEN DES BAUS
+
+**DIE VORHER-WERTE UND IHRE QUERPROBE:** zwanzig Werte vor dem ersten Eingriff in `src/`,
+Basis-HTML aus VERMERK P11.13-6 (d) byte-genau rekonstruiert (249 Bytes, sha256
+`38b3eee3cf1b16ef…`). **QUERPROBE DER ZWÖLF BLOCKWERTE GEGEN DIE VERMERKE P11.13-8, -6 UND
+-4: 12/12 zeichengleich.** Zwei weitere Querproben gingen auf: `buildMetaRuntime` numerisch
+**6 365 / `f6ed3535e825`** wie in P11.13-8 (e), und `out off` **1 826** = 1 897 − 71, also
+exakt die 71-Byte-Konstante des Basis-HTML-Wechsels aus P11.13-6 (d).
+
+**DER DIFFERENZ-NACHWEIS, 18/18** — je Wert fünf Schritte: vorher erheben, nachher erheben,
+die `lang`-Zeile **genau einmal** (Blöcke) bzw. **genau zweimal** (Ausgabetexte) zählen, sie
+entfernen und Bytes **und** sha256 gegen den alten Wert halten, und eine Positivkontrolle,
+dass ohne die Entfernung ein Unterschied bestünde.
+
+| Klasse | Zahl | Delta |
+|---|---|---|
+| Blockwerte Leiste (2 Zweige × 3 Darstellungen) | 6 | **+34 B** |
+| Blockwerte Fenster (2 Zweige × 3 Darstellungen) | 6 | **+37 B** |
+| Ausgabetexte `bar` (3 Darstellungen) | 3 | **+68 B** (2× `lang`) |
+| Ausgabetexte `modal` (3 Darstellungen) | 3 | **+74 B** (2× `lang`) |
+| **`out off`** | 1 | **0 — ZEICHENGLEICH** |
+| **`buildMetaRuntime` numerisch** | 1 | **0 — ZEICHENGLEICH** |
+
+**DIE PROBE: 40 ZUSTÄNDE** (2 Formen × 2 Sprachen × 5 Viewports × ein- und ausgeklappt),
+Playwright/Chromium über `file://`, Probeseite **mit** Viewport-Tag und **mit** einem
+fokussierbaren Element ausserhalb des Dialogs, Fehler-Listener **vor** dem Lauf registriert.
+**P11.13-3: 40/40** · **P11.13-5: 20/20** (`wegTeiltMit` ∈ {0, 2}, Breiten durchgehend
+160/160, Reihen über vertikale Überlappung) · **`lang` und aria-Name: 40/40** · **P11.13-4:
+20/20** auf einer langen Seite, Fokus auf `INPUT:checkbox` im eigenen Host und `scrollY`
+400 → 400 · **ungefangene Fehler: KEINE**.
+**DIE GEOMETRIE VON DEUTSCH UND ENGLISCH IST PAARWEISE IDENTISCH** — gleiche `wegTeiltMit`,
+gleiche Breiten, gleiche Elementzahlen in allen fünf Viewports. Die kürzeren englischen
+Beschriftungen ändern nichts, weil `min-width:160px` eine UNTERGRENZE ist; das war die
+Erwartung vor dem Lauf und ist gemessen bestätigt.
+
+**DIE SECHS PFLICHT-MUTATIONEN** (je einzeln gesetzt, über die GANZE Suite, Vorhersage als
+KLASSE **vor** dem Lauf, nach jeder Rücknahme `sha256sum -c` 22/22 OK):
+
+| # | Gesetzt | Vorhersage (Klasse) | Ergebnis | Urteil |
+|---|---|---|---|---|
+| Mu1 | EN-Zweig liefert einen DE-Text | falscher Wortlaut je Sprache — Tabelle, Oberfläche, Publish-Weg | 5: TX2, TX4, L26, M26, PT-L4 | DECKUNG, eine Klasse |
+| Mu2 | DE-Zweig schreibt ab, **ein** Zeichen anders | stille Divergenz — TX1 **und** der Differenz-Nachweis | 8: TX1, L3-STD, L13, L26, M5, M26, UI12, UI19 — **und der Differenz-Nachweis: 18 STOPP-Fälle** | DECKUNG, eine Klasse; **die Vorhersage war ZU ENG**, alle sieben Zusatztreffer melden denselben Fehler |
+| Mu3 | `lang`-Zeile der Leiste entfernt | fehlendes Attribut, nur Leisten-Pfad; **der Differenz-Nachweis fällt NICHT** (er wäre trivial wahr) | 3: L24, T10, PT-L4 | DECKUNG; M25 blieb grün wie angesagt |
+| Mu4 | Abbruch 5 entfernt | ein ungültiger Wert wird veröffentlicht — Einzelstück | 1: PT-L1 | trifft; **EINZELSTÜCK bestätigt** |
+| Mu5 | `settingsEqual`-Term entfernt | unsichtbar für `dirty` — reine Funktion und Bedienweg | 2: CL2, UI18 | DECKUNG; Vorhersage in Form UND Zahl |
+| Mu6 | Platzhalter folgt der Sprache nicht | Editor zeigt den falschen Standard — Einzelstück | 1: UI19 | trifft; **EINZELSTÜCK bestätigt** |
+
+**KEINE MUTATION BLIEB GRÜN. KEINE KASKADE** — jeder Zusatztreffer meldete dieselbe
+Fehlerklasse.
+
+**DIE VIER GATES:** `vitest run` **von 1 882 auf 1 906 Tests** bei 86 → **87** Dateien
+(+24 Läufe, +1 Datei). Die 1 882 sind GEMESSEN in einem vollen Lauf **vor** dem ersten
+Eingriff in `src/` — **nicht über `git stash`** (Vorrat P11.13-7). `tsc --noEmit` exit 0 ·
+`lint` 0 errors / 1 warning (die vorbestehende in `consent.test.ts`) · `build` Compiled
+successfully.
+
+**DER UMBAU AUF DIE HÜLLE WAR COMPILER-GEFÜHRT: `tsc` meldete 89 Aufrufstellen namentlich**
+— `consent-revoke.test.ts` 23 · `consent-modal.test.ts` 22 · `consent-bar.test.ts` 17 ·
+`pageview-emitter.test.ts` 17 · `consent-store.test.ts` 4 · `…resend.test.ts` 2 ·
+`actions.ts` 2 · `consent-setter.test.ts` 1 · `PublishView.tsx` 1. Keine konnte übersehen
+werden.
+
+**VORRAT P11.13-6 IST REPRODUZIERT UND IST KEINE REGRESSION DIESER SCHEIBE** — die Zahlen
+stehen am Eintrag selbst.
+
+#### (e) DIE BESCHRIFTUNG DES BEDIENELEMENTS IST FREIGEGEBEN
+
+**„Sprache" · „Deutsch" · „Englisch"** — **OWNER-FREIGABE 2026-09-18**, erteilt durch
+Weitergabe des Commit-Prompts ohne Einwand (ARCHITEKT-ANGABE desselben Tages).
+**SIE IST APP-OBERFLÄCHE UND KEIN AUSGELIEFERTER TEXT**; sie fällt nicht unter Entscheidung
+P11.13-31, und ihr Leser ist der Betreiber, nicht der Besucher. **DAMIT IST PLAN-FRAGE 5 DES
+ZUSCHNITTS GESCHLOSSEN**, und der Vorbehalt in der Provenienz jenes Zuschnitts
+(„owner-seitig noch nicht freigegeben") ist eingelöst.
+
+#### (f) ZWEI WERKZEUG-BEFUNDE, BEIDE GEFANGEN — UND DER ERSTE ZEIGT EINE BLINDE PRÜFUNG
+
+1. **NEUNUNDDREISSIG DOPPELTE CRs IN `PublishView.tsx`** (`\r\r\n`), entstanden beim
+   Verschieben eines Blocks: `.replace("\n", "\r\n")` lief über eine Zeichenkette, die
+   bereits CRLF trug. **DIE VORGESCHRIEBENE PRÜFUNG HAT SIE NICHT GEMELDET:** „CR == LF"
+   stand auf **845 == 845** und sah in Ordnung aus — sie zählt **CRLF-PAARE**, nicht CR
+   gesamt. **GEFUNDEN HAT ES ERST DER VERGLEICH CR GESAMT (884) GEGEN CRLF-PAARE (845).**
+   Repariert; Endzustand CR = CRLF = LF = 849, `git ls-files --eol` unverändert `w/crlf`.
+   **DAS IST DER FÜNFTE FALL DIESER KLASSE AN EINEM TAG**, und er steht am
+   Hebungs-Kandidaten (2).
+2. **PYTHON ÜBER `stdin` DEKODIERT AUF DIESER MASCHINE NICHT ALS UTF-8.** Ein Suchmuster mit
+   „ö"/„ä" traf nie — `s.count(a)` lieferte 0, obwohl der Text dastand. **`PYTHONUTF8=1` hat
+   NICHT geholfen.** Getragen hat erst ein **ASCII-only-Anker**. GEMESSEN am eigenen Lauf
+   (CC, 2026-09-18), dreimal hintereinander.
+
+#### DIE GRENZEN, DIE DIESER NACHWEIS NICHT ÜBERSCHREITET
+
+- **Lokal nur Chromium.** Live gemessen ist Chrome auf dem Desktop; das Handy ist eine
+  Owner-Angabe. **Firefox und WebKit sind an keiner Achse dieser Scheibe gemessen.**
+- **„automatisch" ist live nicht gesichert** — so zugeschnitten, lokal belegt.
+- **Der `__ps_pve`-Wert bei eingeschaltetem Dialog (840) ist von CC nicht prüfbar** —
+  schlüssel-abhängig.
+- **Keine echte Kundenseite in der lokalen Probe:** kein fremdes CSS, keine
+  `!important`-Flut, keine eigene Stapel-Ebene.
+- **Screenreader ungeprüft** — was aus dem `lang`-Attribut, „Sprache", „Deutsch" und
+  „Englisch" angesagt wird, ist nicht erhoben. **Das wiegt in DIESER Scheibe schwerer als in
+  den vorigen**, weil das `lang`-Attribut genau für Vorleseprogramme gesetzt ist
+  (Entscheidung P11.13-36) und seine WIRKUNG damit ungemessen bleibt.
+- **Der Export-Pfad trägt weiterhin kein Thema, keine Farbe, keinen Sachtext und keine
+  Sprache** (offener Punkt DER EXPORT-PFAD IST VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST).
+
+PROVENIENZ: Bau-Commit, Dateizahlen, Gates, Testzahlen, die zwanzig Vorher-Werte, der
+Differenz-Nachweis, sämtliche Probe- und Mutationswerte, die 89 Aufrufstellen und die zwei
+Werkzeug-Befunde sind GEMESSEN am Repo bzw. am eigenen Lauf (CC, 2026-09-18). **Sämtliche
+Live-Angaben — (a), (b) und (c) — sind OWNER-MESSUNGEN bzw. OWNER-ANGABEN vom 2026-09-18,
+vom Architekten weitergegeben; CC kann sie nicht prüfen.** Der Abgleich der sechs Blockwerte
+gegen die eigene Differenz-Nachweis-Tabelle und die Nachmessung von `__ps_cnr` und
+`__ps_cns` sind GEMESSEN (CC, 2026-09-18). Die Freigabe der drei Editor-Beschriftungen ist
+eine ARCHITEKT-ANGABE über eine Owner-Entscheidung desselben Tages.
 
 ---
 
@@ -3717,148 +3932,119 @@ Verdichtung ist CC, 2026-09-18.
 
 ---
 
-## Zuschnitt der Scheibe 11.13e — DIE SPRACHE
+## Zuschnitt der Scheibe 11.13e — DIE SPRACHE (VERDICHTET 2026-09-18)
 
-**STATUS: ZUGESCHNITTEN, PLAN FREIGEGEBEN (ARCHITEKT 2026-09-18; Wortlaute OWNER 2026-09-18,
-P11.13-31).** Die Statuszeile ist hier von Anfang an mitgeführt und nicht nachträglich
-aufgelöst worden — anders als in den Scheiben 11.13c und 11.13d, wo sie zweimal „NICHT
-FREIGEGEBEN" trug, während der Bau-Auftrag sie als freigegeben führte.
+**STATUS: ABGELAUFEN.** Die Scheibe ist gebaut und live bewiesen — VERMERK P11.13-10,
+Bau-Commit `0a2dc7b`. Der ungekürzte Wortlaut des Zuschnitts steht in den Commits `9da8129`
+(Anlage) und `583999a` (der Nachzug der Freigabe-Provenienz).
 
-### Gegenstand
+**DIE STATUSZEILE IST HIER NICHT NACHTRÄGLICH AUFGELÖST WORDEN** — anders als bei den
+Scheiben 11.13c und 11.13d, wo sie zweimal „NICHT FREIGEGEBEN" trug, während der Bau-Auftrag
+sie als freigegeben führte. **EINE HÄLFTE MUSSTE TROTZDEM NACHGEZOGEN WERDEN:** Die
+Provenienz am Fuss des Zuschnitts trug noch „Die Freigabe steht aus.", während der Kopf
+„PLAN FREIGEGEBEN" sagte, und der Bericht der Doku-Runde hatte die Entfernung irrtümlich
+gemeldet. Aufgelöst mit `583999a`, nicht gestempelt.
 
-**DER BETREIBER WÄHLT DIE SPRACHE DES EINWILLIGUNGS-DIALOGS — DEUTSCH ODER ENGLISCH.** Alle
-**ELF** Textplätze des ausgelieferten Dialogs folgen dieser Wahl; die Wortlaute stehen als
-Konstanten im Repo und tragen Owner-Freigaben (Entscheidung P11.13-31). **KEINE
-BETREIBER-EINGABE** — der Wert wählt einen Zweig, wie der Themenwert es tut.
+**WAS ABGELAUFEN IST — die Titel, ohne Marke** (ohne `###`, damit eine Überschriften-Suche
+sie nicht trifft: docs/immer-beachten.md, EIN ANKER, DER EINDEUTIG AUSSIEHT, IST ES IN EINER
+DATEI MIT VERZEICHNIS NICHT, Zusatz vom 2026-08-27):
+- STATUS: ZUGESCHNITTEN, PLAN FREIGEGEBEN (ARCHITEKT 2026-09-18; Wortlaute OWNER
+  2026-09-18, P11.13-31)
+- Gegenstand — die elf Textplätze, die sieben tragenden und die elf fortgeltenden
+  Entscheidungen
+- Die Invarianten dieser Scheibe — **Q1 bis Q9**, samt der Begründung, warum sie `Q` und
+  nicht `I`, `Z` oder `S` heissen (`I1` bis `I6` sind an die Phase 11.5 vergeben, `Z1` bis
+  `Z10` an die Scheibe 11.13c, `S1` bis `S9` an die Scheibe 11.13d; die übrigen Buchstaben
+  sind Testkennungen)
+- Ausdrücklich NICHT dazu
+- Die Pflichten dieser Scheibe (sieben, darunter der Differenz-Nachweis als PFLICHT-STOPP
+  und die Warnung vor den überholten Vergleichswerten)
+- Die Plan-Fragen — ALLE FÜNF GESCHLOSSEN (2026-09-18)
 
-**DIE ENTSCHEIDUNGEN, DIE IHN TRAGEN:** P11.13-31 (die Wortlaute) · P11.13-32 (die Hülle) ·
-P11.13-33 (die Tabelle) · P11.13-34 (der eigene Sachtext) · P11.13-35 (keine Automatik) ·
-P11.13-36 (das `lang`-Attribut und der Differenz-Nachweis) · P11.13-37 (Tor, Ablage,
-fünfter Abbruch, der fehlende Wächter). **FORTGELTEND und in dieser Scheibe NICHT neu
-begründet:** P11.13-3 (alles im Fenster und treffbar) · P11.13-4 (der Fokus) · P11.13-5
-(Gleichrangigkeit) · P11.13-7 (die Asymmetrie des Abbruchs) · P11.13-8 (feste Tabelle,
-erschöpfende Verzweigung) · P11.13-11 (Pflicht-Parameter ohne Vorgabewert) · P11.13-19
-(flache, skalare Ablage) · P11.13-25 (der Einbettungs-Helfer) · P11.13-26/-27 (Tor und N) ·
-P11.13-28 (Neu-Veröffentlichen, Export-Pfad) · P11.13-30 (der Wächter am Ergebnis).
+**WAS ÜBER DIE SCHEIBE HINAUS BINDET, STAND VON ANFANG AN NICHT HIER:** Es steht als
+**Entscheidung P11.13-31 bis P11.13-37** und ist von dieser Verdichtung unberührt. Die neun
+Invarianten `Q1` bis `Q9` waren Anweisungen AN DIESE SCHEIBE und laufen mit ihr ab; ihre
+bleibenden Hälften stehen in den Entscheidungen, auf die sie je zeigten.
 
-### Die Invarianten dieser Scheibe — Q1 bis Q9
+**ZEHN STELLEN IM PRODUKTIV- UND TESTCODE ZITIEREN EINE `Q`-NUMMER, UND SIE VERLIEREN MIT
+DIESER VERDICHTUNG IHREN VOLLTEXT** (GEMESSEN am Repo, CC, 2026-09-18, Achse
+`Invariante Q[0-9]+` über `src/`; Positivkontrolle: dieselbe Achse trifft
+`Invariante S[0-9]+` und `Invariante Z[0-9]+`): `consent-texts.ts` (Q3, Q4, Q5 und ein
+zweites Q4) · `consent-texts.test.ts` (Q5, Q3, Q4, Q8) · `consent-choice.ts` (Q1) ·
+`settings.ts` (Q6) · `consent-revoke.test.ts` (Q1) · `consent-bar.test.ts` (Q5) ·
+`consent-modal.test.ts` (Q5) · `pageview-emitter.test.ts` (Q2) · `publish.test.ts` (Q5) ·
+`CodeImporter.test.tsx` (Q5).
+**Nach Nummern: Q5 sechsmal, Q4 dreimal, Q1 und Q3 je zweimal, Q2, Q6 und Q8 je einmal.**
+**DAS IST DERSELBE FALL, DEN DIE VERDICHTUNGEN DER SCHEIBEN 11.13c UND 11.13d FÜR SECHS
+`Z`- UND ACHT `S`-ZITATE FÜHRTEN.**
+**DIE NUMMERN BLEIBEN AUFLÖSBAR** — die Titel-Liste oben nennt sie, und der ungekürzte
+Wortlaut steht im Commit `9da8129`. **WAS DAMIT ZU TUN IST, IST HIER NICHT ENTSCHIEDEN:** Ein
+Zeiger aus `src/` heraus verlangt einen CODE-Commit (docs/immer-beachten.md, EINE ABLAGE MIT
+HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE). **KEINE EMPFEHLUNG.**
+**DIE SIEBEN ZITIERTEN NUMMERN SIND DIE, DIE EINE ZUSAGE TRAGEN** — Q1 der
+Differenz-Nachweis, Q2 der Aus-Fall, Q3 der verweisende deutsche Zweig, Q4 die
+Vollständigkeit der Tabelle, Q5 die Herkunft der Wortlaute, Q6 die Pflicht-Felder der Hülle,
+Q8 das Tor für unsere eigenen Standardsätze. Wer sie auflöst, findet die Sache je in einer
+Entscheidung: Q1/Q2 in P11.13-36, Q3/Q4 in P11.13-33, Q5 in P11.13-31, Q6 in P11.13-32,
+Q8 in P11.13-37. **Q7 UND Q9 WERDEN VON KEINER STELLE ZITIERT** — sie sind
+Abwesenheits-Zusagen (kein Eingriff ausserhalb des Schattenbaums, unberührter Speicher) und
+tragen deshalb keinen Kommentar am Ort der Handlung.
 
-**SIE HEISSEN `Q` UND NICHT `I`, `Z` ODER `S`**, und das ist kein Geschmack: `I1` bis `I6`
-sind im Abschnitt „Was den Zuschnitt bindet" an die Invarianten der Phase 11.5 vergeben,
-`Z1` bis `Z10` an die Scheibe 11.13c, `S1` bis `S9` an die Scheibe 11.13d. Die Buchstaben
-`L`, `M`, `W`, `T`, `G`, `PT`, `UI`, `CSS`, `CT`, `CF`, `EM`, `MR` und `TH` sind
-Testkennungen. **`Q` ist frei** (GEMESSEN am Repo, CC, 2026-09-18, Achse `\bQ[0-9]+\b` über
-`src/` und diese Datei: kein Treffer; Positivkontrolle: dieselbe Achse auf `\bS[0-9]+\b`
-trifft S1, S3 und S4).
+**DIE SIEBEN PFLICHTEN — GESCHLOSSEN, je mit Nachweis und Fundstelle:**
+1. **Vorher-Werte vor dem ersten Eingriff in `src/`:** erhoben — zwanzig Werte, Basis-HTML
+   byte-genau rekonstruiert. **Querprobe der zwölf Blockwerte: 12/12 zeichengleich**, dazu
+   zwei weitere Querproben (`buildMetaRuntime`, die 71-Byte-Konstante). FUNDSTELLE: VERMERK
+   P11.13-10, (d).
+2. **Der Differenz-Nachweis als PFLICHT-STOPP:** gefahren, **18/18**, alle fünf Schritte,
+   mit Positivkontrolle; `out off` und `buildMetaRuntime` zeichengleich. **Er hat nicht
+   approximiert werden müssen** — die `lang`-Setzung ist als EINE Zeile isolierbar, und der
+   stehende Wächter `T10` hält genau diese Vorbedingung. FUNDSTELLE: ebenda, (a) und (d).
+3. **Die Wortlaut-Prüfung nach dem Schreiben:** gefahren — **21/21 byte-genau** (zehn EN
+   gegen P11.13-31, elf DE gegen ihren Wert VOR dem Umzug), mit Negativkontrolle. Die
+   Byte-Kontrolle auf CR ohne LF, LF ohne CR und NUL ist für die zwei NEUEN Dateien **am
+   committeten Objekt** gefahren (CR = 0, NUL = 0), mit Positivkontrolle des Instruments.
+4. **Tests für die Bedienung:** eingelöst — `UI16` bis `UI19` in `CodeImporter.test.tsx`.
+   `PublishView.tsx` hat weiterhin keine eigene Testdatei; das bleibt so.
+5. **Der fehlende Wächter für `CONSENT_BAR_REGION_LABEL`:** gebaut — `L25`, über beide
+   Sprachen. Er ist das Pendant zu `M5`, das den Fenster-Namen seit 11.5d-2 hält.
+6. **Die Probe:** neu geschrieben, **40 Zustände**, Probeseite mit Viewport-Tag und
+   fokussierbarem Element ausserhalb, Fehler-Listener vorab. P11.13-3 40/40, P11.13-5 20/20,
+   P11.13-4 20/20, `lang` 40/40, null Fehler. FUNDSTELLE: ebenda, (d).
+7. **Die Live-Anleitung vergleicht gegen die NEUEN deutschen Werte:** eingehalten — die
+   sechs Werte der Anleitung sind die lokal erhobenen Nachher-Werte, und sie sind live
+   zeichengleich bestätigt. **Die Falle hat nicht zugeschlagen.** FUNDSTELLE: ebenda, (a).
 
-- **Q1 — DER DIFFERENZ-NACHWEIS DER DEUTSCHEN AUSGABE.** Jeder deutsche Blockwert nach dem
-  Bau ist der Wert davor **plus genau die `lang`-Setzung — sonst kein Zeichen**. Entfernt
-  man diese eine Einsetzung aus dem neuen Text, steht zeichengleich der alte da, in Bytes
-  und in sha256. **Die Byte-GLEICHHEIT ist hier ausdrücklich KEINE Invariante mehr**
-  (Entscheidung P11.13-36); wer sie behauptet, behauptet etwas, das der Bau widerlegt.
-- **Q2 — DER AUS-FALL BLEIBT BYTE-GLEICH.** Bei `"off"` ändert sich **kein Zeichen**, in
-  keiner Sprache. `T-OFF` und `T1` halten das; sie werden auf die Sprach-Achse ausgedehnt.
-- **Q3 — DER DEUTSCHE ZWEIG VERWEIST, ER SCHREIBT NICHT AB.** Jedes Feld des deutschen
-  Zweigs ist ein **Verweis auf die Konstante**, kein Literal (Entscheidung P11.13-33).
-  **DIE ZUSICHERUNG IST STRUKTURELL UND AUSDRÜCKLICH KEINE TEXTSUCHE ÜBER DAS REPO:** Eine
-  Suche nach „kein Wortlaut ein zweites Mal" wäre ein Wächter über Zeichen und träfe, was
-  legitim dasteht — „Einstellungen" und „Einwilligung" sind auch Beschriftungen der
-  App-Oberfläche, und der Wächter zwänge, sie umzubenennen (docs/immer-beachten.md, EIN
-  WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN). Gedeckt wird die
-  Sache am ERGEBNIS: Ändert sich eine Konstante, ändert sich der deutsche Zweig mit, und die
-  Wortlaut-Wächter der Tabelle werden rot.
-- **Q4 — DIE TABELLE IST VOLLSTÄNDIG UND ERSCHÖPFEND.** Elf Pflichtfelder je Sprache, eine
-  Verzweigung, ein `never`-Zweig. Ein fehlendes Feld ist ein `tsc`-Fehler.
-- **Q5 — DIE WORTLAUTE STAMMEN AUS DER FREIGABE, NICHT AUS DEM CODE.** Jeder Test schreibt
-  sie als **Literal** aus Entscheidung P11.13-31 nieder und importiert sie **nicht** aus dem
-  Produktivcode — sonst ist der Wächter ein Spiegel (docs/immer-beachten.md, EIN WÄCHTER
-  ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE).
-- **Q6 — JEDES FELD DER HÜLLE IST PFLICHT.** Kein optionales Feld, kein Vorgabewert, an
-  keiner der drei Signaturen (Entscheidung P11.13-32; P11.13-11 je Feld).
-- **Q7 — KEIN EINGRIFF AUSSERHALB DES EIGENEN SCHATTENBAUMS.** `I1` gilt unverändert; das
-  `lang`-Attribut steht an `.bar` bzw. `.dialog`, an keinem fremden Knoten, und nichts wird
-  zur Laufzeit von der Kundenseite gelesen.
-- **Q8 — JEDER STANDARD-SACHTEXT BESTEHT DAS TOR.** Beide Sprachen, durch `readConsentText`,
-  Zeichen und N = 300 (Entscheidung P11.13-37).
-- **Q9 — DER SPEICHER UND DAS FORMAT `ps1` BLEIBEN UNBERÜHRT.** `read()`, `write()`,
-  `hookFrom`, `CONSENT_STORE_KEY` und die sechs Schlüssel ändern sich nicht; die Sprache
-  erreicht den Speicher der Einwilligung **nicht**.
+**DIE FÜNF PLAN-FRAGEN — ALLE GESCHLOSSEN:**
+1. **Die `lang`-Setzung ist EINE Zeile** im jeweiligen Aufbau, unmittelbar hinter dem
+   `aria-label`. `T10` hält, dass es genau eine ist und dass nach ihrer Entfernung kein
+   `lang` mehr im Block steht.
+2. **Die drei „anderswo" liegenden Konstanten sind UMGEZOGEN**, nicht importiert — der
+   deutsche Zweig kann deshalb gar nicht abschreiben. **Der Umzug kostete nichts:** Sie
+   hatten ausserhalb ihrer eigenen Datei keinen Importeur, auch keinen Test.
+3. **Die Tabelle liegt in der neuen, importfreien Datei
+   `src/lib/tracking/consent-texts.ts`.** Ein Ort in `consent-choice.ts` wäre ein Zyklus
+   gewesen (`choice → bar → choice`).
+4. **Die Namen stehen:** Hülle `ConsentPresentation` mit `appearance`, `text`, `language`;
+   Tabellenfunktion `consentTexts(sprache): ConsentTextTable` mit elf Pflichtfeldern;
+   Wertemenge `CONSENT_LANGUAGES`, Leser `getConsentLanguage`, Setzer `setConsentLanguage`,
+   Meldung `CONSENT_LANGUAGE_UNKNOWN_MESSAGE`.
+5. **Die Beschriftung ist freigegeben** — „Sprache" / „Deutsch" / „Englisch", OWNER
+   2026-09-18; s. VERMERK P11.13-10, (e). Sie bleibt App-Oberfläche und fällt nicht unter
+   P11.13-31.
 
-### Ausdrücklich NICHT dazu
-
-- **EINE AUTOMATIK nach `navigator.language` oder `document.documentElement.lang`** —
-  entschieden in P11.13-35, mit Gründen und Kosten. **Kein Vorrats-Eintrag, kein Trigger.**
-- **EIN DRITTER SPRACHRAUM** — die Grenze von P11.13-24 und P11.13-33.
-- **DIE TEXTE DER APP-OBERFLÄCHE.** Der Abschnitt „Widerruf" in `src/components/PublishView.tsx`
-  (Owner-Freigaben G1 bis G5, 2026-09-16) und die Texte des Einwilligungs-Abschnitts derselben
-  Datei bleiben **deutsch und unberührt**. **Das ist eine andere Menge mit einem anderen
-  Leser** — dem Betreiber, nicht dem Besucher —, und der Backlog-Eintrag 11.5f grenzt sie
-  ausdrücklich ab. **Die Beschriftung des neuen Bedienelements gehört zu DIESER Menge**, nicht
-  zur Tabelle.
-- **DER EXPORT-PFAD** — er trägt heute weder Schalter noch Thema noch Farbe noch Sachtext und
-  wird auch keine Sprache tragen (Entscheidung P11.13-28; offener Punkt DER EXPORT-PFAD IST
-  VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST). **Er gehört unter die Grenzen des Vermerks**, wie
-  bei 11.13b, -c und -d.
-- **BETREIBER-WORTLAUT FÜR DIE ÜBRIGEN ZEHN PLÄTZE** — frei bleibt weiterhin **allein** der
-  Sachtext (Entscheidung P11.13-23). Eine Tabelle ist keine Eingabe.
-- **EINE VORSCHAU DES DIALOGS IM EDITOR** — unverändert ausgeschlossen seit der Scheibe
-  11.13a; der Prüfweg ist das Veröffentlichen.
-- **EIN EIGENER SACHTEXT JE SPRACHE** — entschieden in P11.13-34.
-
-### Die Pflichten dieser Scheibe
-
-1. **DIE VORHER-WERTE VOR DEM ERSTEN EINGRIFF IN `src/`** — die neunzehn Werte aus VERMERK
-   P11.13-6 plus `buildMetaRuntime` mit numerischer Pixel-ID, also die **zwanzig** aus
-   VERMERK P11.13-8 (e), mit dem Basis-HTML aus VERMERK P11.13-6 (d). **Querprobe gegen
-   VERMERK P11.13-8.**
-2. **DER DIFFERENZ-NACHWEIS (Q1) IST EIN PFLICHT-STOPP, KEIN BERICHTSPUNKT.** Lässt sich die
-   `lang`-Setzung nicht als EINE Einsetzung isolieren, ist die Scheibe zu unterbrechen und
-   vorzulegen — nicht zu approximieren.
-3. **DIE WORTLAUT-PRÜFUNG NACH DEM SCHREIBEN**, für Doku **und** Code: jeder der elf
-   deutschen und elf englischen Wortlaute byte-genau gegen Entscheidung P11.13-31, mit einem
-   Werkzeug und nicht per Ansicht. Dazu die Byte-Kontrolle auf CR ohne LF, LF ohne CR und
-   NUL — bei jeder NEUEN Datei **am committeten Objekt** (docs/immer-beachten.md, EIN
-   NACHWEIS AN EINER NEUEN DATEI IST BLIND), mit `tr` bzw. `od`, **nie `grep`**.
-4. **TESTS FÜR DIE BEDIENUNG.** `PublishView.tsx` hat weiterhin keine eigene Testdatei; die
-   Abdeckung entsteht als `UI…` in `CodeImporter.test.tsx`, wie in 11.13b, -c und -d.
-5. **DER FEHLENDE WÄCHTER FÜR `CONSENT_BAR_REGION_LABEL` WIRD GEBAUT** (Entscheidung
-   P11.13-37).
-6. **DIE PROBE** — englischer Dialog, beide Formen, beide Zustände, fünf Viewports, gegen
-   P11.13-3, -4 und -5; das `lang`-Attribut am gerenderten Element; Fehler-Listener **vor**
-   dem Lauf registriert; Probeseite mit einem fokussierbaren Element **ausserhalb** des
-   Dialogs (Auflage Vorrat P11.13-4). **Die Probe ist bei jedem Lauf neu zu schreiben** — es
-   gibt kein wiederverwendbares Artefakt im Repo (VERMERK P11.13-5).
-7. **DIE LIVE-ANLEITUNG VERGLEICHT GEGEN DIE NEUEN DEUTSCHEN WERTE**, nicht gegen die alten.
-   Das ist die Falle dieser Scheibe: Die sechs Blockwerte aus VERMERK P11.13-8 (a) sind
-   **überholt**, sobald `lang` steht. Wer sie in die Anleitung schreibt, protokolliert einen
-   Fehlschlag, der keiner ist (docs/immer-beachten.md, EINE ANLEITUNG, DIE EINE VORAUSSETZUNG
-   NICHT NENNT, ERZEUGT EINE FALSCHE ENTWARNUNG). **Unverändert bleiben allein der Aus-Fall
-   und das Wiring.**
-
-### Die Plan-Fragen
-
-1. **Wie wird die `lang`-Setzung so gebaut, dass sie als EINE Einsetzung isolierbar ist?**
-   Der Differenz-Nachweis hängt daran; eine über den Aufbau verstreute Setzung machte ihn
-   unführbar.
-2. **Wie erreichen `CONSENT_BAR_REGION_LABEL`, `CONSENT_MODAL_DIALOG_LABEL` und
-   `CONSENT_REVOKE_WARNING` die Tabelle, ohne dass der deutsche Zweig abschreibt?** Sie
-   liegen heute in drei ANDEREN Dateien als die acht übrigen.
-3. **Wo liegt die Tabelle, ohne einen Import-Zyklus zu erzeugen?** `consent-bar.ts` und
-   `consent-modal.ts` importieren heute aus `consent-choice.ts`, nicht umgekehrt.
-4. **Wie heisst die Hülle, wie heissen ihre drei Felder, und wie heisst die Tabellenfunktion
-   mit ihrem Rückgabetyp?**
-5. **Wie lautet die Beschriftung des Bedienelements in `PublishView.tsx`?** Sie ist
-   **App-Oberfläche und KEIN ausgelieferter Text**; sie fällt nicht unter Entscheidung
-   P11.13-31 und braucht eine eigene Freigabe.
+**DIE AUSSCHLÜSSE GELTEN FORT:** eine **Automatik** nach `navigator.language` oder
+`document.documentElement.lang` (P11.13-35, mit Gründen und Kosten entschieden — kein
+Vorrats-Eintrag, kein Trigger) · ein **dritter Sprachraum** (P11.13-24 und -33) · die
+**Texte der App-Oberfläche** ausser den drei freigegebenen Beschriftungen · der
+**EXPORT-PFAD** (P11.13-28) · **Betreiber-Wortlaut für die übrigen zehn Plätze** (P11.13-23)
+· eine **Vorschau des Dialogs im Editor** · ein **eigener Sachtext je Sprache** (P11.13-34).
 
 PROVENIENZ: Der Zuschnitt ist ARCHITEKT 2026-09-18 auf der Grundlage der Owner-Entscheidung
-O6 und der Architekt-Entscheidungen H1 bis H6 desselben Tages; er ist als Entscheidungen
-P11.13-31 bis P11.13-37 ausformuliert. Die gemessenen Angaben, auf die er sich stützt, stehen
-in VERMERK P11.13-9 (CC, 2026-09-18, auf `80dd45a`). **Die Freigabe ist erteilt — ARCHITEKT
-2026-09-18 für Zuschnitt und Plan, OWNER 2026-09-18 für die Wortlaute (P11.13-31).**
-**DIE BESCHRIFTUNG DES BEDIENELEMENTS IST DAVON AUSGENOMMEN** (Plan-Frage 5): „Sprache",
-„Deutsch", „Englisch" sind App-Oberfläche, im Bau gesetzt und **owner-seitig noch nicht
-freigegeben**.
+O6 und der Architekt-Entscheidungen H1 bis H6 desselben Tages; die Freigabe ist ARCHITEKT
+2026-09-18 für Zuschnitt und Plan, OWNER 2026-09-18 für die Wortlaute. Die sieben Antworten
+sind der gebaute, gemessene und live geprüfte Stand desselben Tages (VERMERK P11.13-10); die
+Live-Angaben darin sind OWNER-MESSUNGEN und von CC nicht prüfbar. Die Verdichtung ist CC,
+2026-09-18.
 
 ---
 
@@ -4024,6 +4210,24 @@ diesem Projekt **nicht gemessen**.
 Innenbreite der Behälter oder am Umbruch der eingeklappten Gestalt arbeitet.** Ob überhaupt
 etwas geschieht, ist **nicht entschieden** — die Kandidaten reichen von „Bedingung des
 Kriteriums schärfen" bis „Knopfbreite flexibel". **KEINE EMPFEHLUNG.**
+
+**NACHGEMESSEN IN DER SCHEIBE 11.13e — REPRODUZIERT, UND IN BEIDEN SPRACHEN GLEICH** (GEMESSEN
+am eigenen Lauf, CC, 2026-09-18, Playwright/Chromium über `file://`, lange Probeseite):
+
+| Form | Sprache | Viewport | Scrollbalken | Innenbreite | Weg-Breite | `wegTeiltMit` |
+|---|---|---|---|---|---|---|
+| Leiste | de | 360×480 | 15 px | **345** | 115 | **1** ← verletzt |
+| Leiste | en | 360×480 | 15 px | **345** | 82 | **1** ← verletzt |
+| Leiste | de / en | 390×560 | 15 px | 375 | 115 / 82 | 0 |
+| Fenster | de / en | 360×480 · 390×560 | 15 px | 313 / 343 | 279 / 309 | 0 |
+
+**DAS IST DER EIGENTLICHE ZUWACHS DIESER MESSUNG: DIE SPRACHE ÄNDERT DEN BEFUND NICHT.** Die
+englische Weg-Beschriftung ist **33 px schmaler** (82 gegen 115), und `wegTeiltMit` bleibt
+trotzdem 1 — der Bruch hängt an der Innenbreite von 345 px und an der Knopfbreite von
+160 px, nicht an der Länge des Weg-Textes. **DIE SCHEIBE 11.13e HAT IHN ALSO WEDER ERZEUGT
+NOCH VERSCHÄRFT NOCH BEHOBEN**; sie ist an ihm vorbeigelaufen.
+**DER EINTRAG BLEIBT OFFEN.** Sein Trigger ist unverändert, und diese Messung ist kein
+Ersatz für eine Entscheidung — sie belegt nur, dass er über zwei Sprachen stabil ist.
 
 PROVENIENZ: die drei Zeilen der Gegenprobe GEMESSEN am eigenen Lauf (CC, 2026-09-18,
 Playwright/Chromium); der Wortlaut von P11.13-5 GELESEN in dieser Datei. Dass Handys einen
@@ -4275,6 +4479,30 @@ Zeichen nicht im Quelltext stehen soll, wird **im Code gebaut** (`String.fromCha
 `String.fromCodePoint`) oder in der **Quellform mit doppeltem Backslash** geschrieben; nach
 jedem Schreiben wird auf CR-ohne-LF, LF-ohne-CR und NUL geprüft, und bei einer neuen Datei
 am **committeten Objekt**. Beides ist in dieser Scheibe gefahren worden.
+
+**FÜNFTER FALL, SCHEIBE 11.13e — UND ER TRIFFT NICHT DAS WERKZEUG, SONDERN DIE VORGESCHRIEBENE
+PRÜFUNG SELBST** (GEMESSEN am eigenen Lauf, CC, 2026-09-18): Beim Verschieben eines Blocks in
+`src/components/PublishView.tsx` (`w/crlf`) sind **39 DOPPELTE CRs** entstanden — `\r\r\n` —,
+weil eine Ersetzung `\n` → `\r\n` über eine Zeichenkette lief, die bereits CRLF trug.
+**DIE PRÜFUNG „CR == LF" HAT DAS NICHT GEMELDET: sie stand auf 845 == 845 und sah in Ordnung
+aus.** Der Grund ist ihre Zählweise: Sie zählt **CRLF-PAARE**, und jedes `\r\r\n` liefert
+genau ein Paar — das zusätzliche CR ist für sie unsichtbar.
+**GEFUNDEN HAT ES ERST DER VERGLEICH CR GESAMT (884) GEGEN CRLF-PAARE (845).** Repariert;
+Endzustand CR = CRLF = LF = 849, `git ls-files --eol` unverändert `w/crlf`.
+**WAS DARAUS FOLGT UND WAS NICHT:** Die tragende Prüfung ist **CR gesamt == CRLF-Paare == LF
+gesamt**, drei Zahlen statt zwei — eine Gleichheit von zweien genügt nicht. **DAS IST EINE
+ANDERE ACHSE ALS DIE VIER FÄLLE OBEN:** Dort war das SCHREIBWERKZEUG der Verursacher und die
+Prüfung taugte; hier ist die PRÜFUNG blind, und das Werkzeug ist nur der Anlass. **KEINE
+ENTSCHEIDUNG, KEIN EINTRAG IN docs/immer-beachten.md** — die Hebung ist Sache des Phasenendes.
+
+**EIN SECHSTER BEFUND DESSELBEN TAGES, der zu keiner der zwei Achsen gehört und deshalb
+eigens steht:** **Python über `stdin` dekodiert auf dieser Maschine NICHT als UTF-8.** Ein
+Suchmuster mit „ö"/„ä" traf nie — `count` lieferte 0, obwohl der Text dastand; **`PYTHONUTF8=1`
+hat NICHT geholfen.** Getragen hat erst ein **ASCII-only-Anker**. GEMESSEN am eigenen Lauf
+(CC, 2026-09-18), dreimal hintereinander. **ER VERÄNDERT KEINE DATEI** — er lässt eine
+Ersetzung stillschweigend AUSFALLEN, und das Skript meldet Erfolg. Verwandte Denkfigur wie
+„EINE ABWESENHEIT KANN VOM WERKZEUG ERZEUGT SEIN, NICHT VOM GEGENSTAND", aber am
+Schreib- statt am Lesepfad. **NICHT ENTSCHIEDEN, ob er hierher gehört oder eigens steht.**
 
 **NICHT ENTSCHIEDEN, und ohne diesen Satz stellt die Hebung eine zweite Regel neben eine
 bestehende, und dann greift keine mehr richtig:** ob daraus eine **EIGENE Regel** wird oder

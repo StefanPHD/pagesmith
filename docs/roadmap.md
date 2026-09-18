@@ -2166,12 +2166,13 @@ liegen beide hier und finden einander.
          der Themenwert es tut, und der Rohwert aus dem Blob erreicht den ausgelieferten Text nie.
          NACH Scheibe 4. GRUND: Scheibe 4 bleibt bei ihrer Sicherheitsachse — Betreiber-Eingabe im
          ausgelieferten Text —, und eine Sprachwahl braucht davon nichts. Sprache und freier Text
-         ÜBERLAPPEN, sind aber nicht dieselbe Sache: Der Backlog-Eintrag "11.5f" benennt ZEHN Texte,
-         Punkt (h) gibt für Scheibe 4 EINEN frei; über die übrigen neun sagt (h) nichts, und sie
+         ÜBERLAPPEN, sind aber nicht dieselbe Sache: Der Backlog-Eintrag "11.5f" benennt ELF Texte,
+         Punkt (h) gibt für Scheibe 4 EINEN frei; über die übrigen zehn sagt (h) nichts, und sie
          blieben ohne diese Scheibe deutsch stehen. OWNER-ENTSCHEIDUNG 2026-09-18; Volltext als
          bindende Entscheidung P11.13-24 der Standdatei der Phase 11.13. Der Backlog-Eintrag wird
-         damit VERORTET und NICHT erledigt — seine Messungen (die zehn Konstanten, die sechs
-         Owner-Freigaben, der Sprach-Nicht-Treffer) sind der Massstab dieser Scheibe.
+         damit VERORTET und NICHT erledigt — seine Messungen (die elf Konstanten, die sieben
+         freigegebenen Konstanten bei sechs Freigabe-Posten, der Sprach-Nicht-Treffer) sind der
+         Massstab dieser Scheibe.
       AUCH SCHEIBE 3 TRÄGT EINE EIGENE SICHERHEITSACHSE — eigene Farben sind Betreiber-Eingabe im
       ausgelieferten Text, und sie wird dort von einem Format-Tor auf ^#[0-9a-f]{6}$ getragen
       (bindende Entscheidung P11.13-14 der Standdatei der Phase 11.13).

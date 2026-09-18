@@ -36,9 +36,10 @@ EINER DATEI MIT VERZEICHNIS NICHT). Wer bearbeitet, ankert entsprechend.
 6. Zuschnitt der Scheibe 11.13a — DIE ANORDNUNG (VERDICHTET 2026-09-17)
 7. Zuschnitt der Scheibe 11.13b — DAS THEMA (VERDICHTET 2026-09-17)
 8. Zuschnitt der Scheibe 11.13c — EIGENE FARBEN (VERDICHTET 2026-09-18)
-9. Zuschnitt der Scheibe 11.13d — FREIER SACHTEXT
-10. Vorrat — gemeldet, nicht gebaut
-11. Hebungs-Kandidaten
+9. Zuschnitt der Scheibe 11.13d — FREIER SACHTEXT (VERDICHTET 2026-09-18)
+10. Zuschnitt der Scheibe 11.13e — DIE SPRACHE
+11. Vorrat — gemeldet, nicht gebaut
+12. Hebungs-Kandidaten
 
 ---
 
@@ -1706,6 +1707,166 @@ sie nicht prüfen.** Die Querprobe an `Vorher_aus.html` ist eine ARCHITEKT-PRÜF
 Tages. Der Abgleich der sechs Blockwerte gegen VERMERK P11.13-6 und die eigene Vorher-Liste
 ist GEMESSEN (CC, 2026-09-18).
 
+### VERMERK P11.13-9 — Aufklärung 11.13e (DIE SPRACHE), 2026-09-18
+
+**KEIN BAU-COMMIT, UND DER GRUND STEHT HIER:** Es war eine READ-ONLY-Aufklärung ohne
+Änderung am Repo (docs/arbeitsweise.md, "Die Standdatei", Absatz "Ein Vermerk trägt den
+Hash seines Code-Commits"). Der Arbeitsbaum war vorher und nachher sauber; die einzigen
+Schreibvorgänge lagen im Scratchpad ausserhalb des Repos. **KEIN BROWSER-WERKZEUG, KEINE
+ABLAGE `.playwright-mcp/`, KEINE PROBE** — anders als bei den Aufklärungen P11.13-1 und
+P11.13-3 und wie bei P11.13-5. Der Stand, auf dem gemessen wurde, ist `80dd45a`.
+
+**DAS INSTRUMENT:** Vite `createServer` + `ssrLoadModule` gegen das Repo, gefahren aus dem
+Scratchpad — **die echten Funktionen, nicht nachgebaut**: `buildConsentBarScript`,
+`buildConsentModalScript`, `embedInScript` und die elf Konstanten selbst. Dazu
+Achsen-Suchen über `src/` und `docs/`, je mit Positivkontrolle.
+
+#### (a) ELF TEXTPLÄTZE, NICHT ZEHN — UND DAS IST DER TRAGENDE BEFUND DIESER RUNDE
+
+Der Backlog-Eintrag 11.5f zählt **zehn** (GEMESSEN, CC, 2026-09-16), und Roadmap (c) 5 wie
+Entscheidung P11.13-24 rechnen mit dieser Zahl. **`CONSENT_WAY_LABEL` IST MIT DER SCHEIBE
+11.13a (`bb9f045`) DAZUGEKOMMEN** und steht in keiner der drei Aufzählungen. **ES SIND
+ELF** (GEMESSEN, CC, 2026-09-18; VERMERK P11.13-7, Punkt (d), zählt bereits elf und war bis
+heute die einzige Stelle, die es tut). Länge in **Unicode-Codepunkten**:
+
+| # | Symbol | Datei | Länge | Owner-Freigabe VOR O6 (Fundstelle) |
+|---|---|---|---|---|
+| 1 | `CONSENT_TEXT` | `tracking/consent-choice.ts` | 79 | **JA** — 11.5d, der Sachtext |
+| 2 | `CONSENT_ACCEPT_LABEL` | `consent-choice.ts` | 16 | **NEIN** |
+| 3 | `CONSENT_SAVE_LABEL` | `consent-choice.ts` | 17 | **JA** — F2 der Scheibe 11.5e-1 |
+| 4 | `CONSENT_REJECT_LABEL` | `consent-choice.ts` | 8 | **JA** — 11.5d, bindende Entscheidung (12) der Phase 11.5 |
+| 5 | `CONSENT_WAY_LABEL` | `consent-choice.ts` | 13 | **NEIN** — gesetzt in Plan-Frage 4 des Zuschnitts 11.13a; der Wortlaut selbst ist dort nicht eigens freigegeben |
+| 6 | `CONSENT_GROUPS_LABEL` | `consent-choice.ts` | 8 | **JA** — F3 der Scheibe 11.5e-1 |
+| 7 | `CONSENT_GROUP_MEASURE_LABEL` | `consent-choice.ts` | 7 | **JA** — F1 der Scheibe 11.5e-1 |
+| 8 | `CONSENT_GROUP_ADS_LABEL` | `consent-choice.ts` | 7 | **JA** — F1 der Scheibe 11.5e-1 |
+| 9 | `CONSENT_BAR_REGION_LABEL` | `tracking/consent-bar.ts` | 12 | **NEIN** |
+| 10 | `CONSENT_MODAL_DIALOG_LABEL` | `tracking/consent-modal.ts` | 12 | **NEIN** |
+| 11 | `CONSENT_REVOKE_WARNING` | `tracking/consent-revoke.ts` | 142 | **JA** — G6 der Scheibe 11.5e-2 |
+
+**DIE ZWEITE ZÄHL-DIVERGENZ, kleiner und mit derselben Ursache:** Der Backlog sagt "SECHS
+DER ZEHN SIND OWNER-FREIGABEN (F1 bis F3 der Scheibe 11.5e-1, G6 der Scheibe 11.5e-2, der
+Sachtext und 'Ablehnen' aus 11.5d)". Das sind sechs **Freigabe-Posten**, aber **F1 deckt
+ZWEI Konstanten** — "Messung" und "Werbung" (GELESEN,
+docs/claude-history/phase-11.5-einwilligung.md, Zeile 1083). **JE KONSTANTE GEZÄHLT SIND ES
+SIEBEN VON ELF.** Ohne O6 blieben vier Plätze ohne Freigabe: Nr. 2, 5, 9 und 10.
+
+**ACHSE DER FREIGABE-PRÜFUNG** (GEMESSEN, CC, 2026-09-18):
+`(F|G)[1-9] .{0,3}(„|")(Messung|Werbung|Auswahl speichern|Bereiche|Ablehnen|Alle akzeptieren|Einstellungen)`
+über docs/aktiver-stand.md, docs/roadmap.md und das Archiv der Phase 11.5 — **EIN Treffer**
+(Zeile 1083, F1 bis F3); er ist zugleich die Positivkontrolle. **Für "Alle akzeptieren" und
+"Einstellungen" kein Treffer.**
+
+#### (b) DIE WÄCHTER JE PLATZ — UND DER EINE PLATZ OHNE
+
+GELESEN am Testtext (CC, 2026-09-18). Genannt ist, wer den Wortlaut **wörtlich** hält:
+
+| Platz | Wächter |
+|---|---|
+| `CONSENT_TEXT` | `L13` · `M5` · `UI12` (als `placeholder`) · `PT6` (Abwesenheits-Behauptung) · `EM2`/`EM3` |
+| `CONSENT_ACCEPT_LABEL` | `L5` · `L19` · `L20` · `M5` · `M20` · `M21` · `W16` · `W17` · `EM3` |
+| `CONSENT_SAVE_LABEL` | `L5` · `L19` · `L20` · `M5` · `M20` · `M21` · `W16` |
+| `CONSENT_REJECT_LABEL` | `L5` · `L13` (Positivkontrolle) · `L19` · `L20` · `M5` · `M20` · `M21` · `W16` · `W17` |
+| `CONSENT_WAY_LABEL` | `L19` · `L20` · `L21` · `M20` · `M21` · `M22` · `W16` · `W17` |
+| `CONSENT_GROUPS_LABEL` | `L13` · `L15` · `M5` · `M16` |
+| `CONSENT_GROUP_MEASURE_LABEL` | `L15` · `L16`(×4) · `L17` · `L18` · `M16` · `M17`(×4) · `M18` · `W14` |
+| `CONSENT_GROUP_ADS_LABEL` | `L15` · `L16`(×4) · `L17` · `M16` · `M17`(×4) · `M18` · `W14` |
+| **`CONSENT_BAR_REGION_LABEL`** | **KEINER** |
+| `CONSENT_MODAL_DIALOG_LABEL` | `M5` (`consent-modal.test.ts:322`) |
+| `CONSENT_REVOKE_WARNING` | `W9` (`consent-revoke.test.ts:411`, Literal `WARNUNG` in Zeile 56) |
+
+**`CONSENT_BAR_REGION_LABEL` HAT KEINEN WÄCHTER, UND DAS IST EINE ASYMMETRIE ZUM MODAL:**
+`M5` hält `aria-label` = "Einwilligung" am Fenster; `L13` prüft an derselben Stelle der
+Leiste nur `role="region"` und die Kinderliste. **Wer diesen Wortlaut ändert, macht nichts
+rot.** GEMESSEN (CC, 2026-09-18, Achse `"Einwilligung"` als Literal über `src/`: drei
+Treffer — zwei Konstanten-Definitionen und `consent-modal.test.ts:322`; Positivkontrolle:
+dieselbe Achse auf `"Bereiche"` findet fünf Zusicherungen).
+
+**EINE FALLE FÜR JEDE SPÄTERE ZÄHLUNG:** Die rund dreissig Treffer auf `/Einstellungen/` in
+`CodeImporter.test.tsx` öffnen den **Einstellungs-Drawer des Editors** (`⚙ Einstellungen`)
+und **nicht** den Weg im Dialog. Wer sie mitzählt, hält `CONSENT_WAY_LABEL` für vielfach
+gedeckt.
+
+#### (c) DIE BYTE-AUSGANGSWERTE UND DER TEXTANTEIL
+
+GEMESSEN (CC, 2026-09-18, echte Funktionen, **Tag-Form**, Darstellung `{theme:"light"}`,
+Sachtext `"standard"`). **Die vier Werte sind zeichengleich mit den VERMERKEN P11.13-3, -4,
+-6 und -8** — sie sind über vier Scheiben stabil:
+
+| Block | Bytes | eingebettete Texte (in ihrer `embedInScript`-Form) | Anteil |
+|---|---|---|---|
+| Leiste, Lade-Zweig | **4 603** | 185 (acht gemeinsame 171 + Region-aria 14) | **4,02 %** |
+| Leiste, Widerruf-Zweig | **4 918** | 329 (185 + Warnung 144) | **6,69 %** |
+| Fenster, Lade-Zweig | **5 051** | 185 (171 + Dialog-aria 14) | **3,66 %** |
+| Fenster, Widerruf-Zweig | **5 366** | 329 | **6,13 %** |
+
+Je Konstante, eingebettet: `CONSENT_TEXT` 81 · `CONSENT_ACCEPT_LABEL` 18 ·
+`CONSENT_SAVE_LABEL` 19 · `CONSENT_REJECT_LABEL` 10 · `CONSENT_WAY_LABEL` 15 ·
+`CONSENT_GROUPS_LABEL` 10 · `CONSENT_GROUP_MEASURE_LABEL` 9 · `CONSENT_GROUP_ADS_LABEL` 9 ·
+`CONSENT_BAR_REGION_LABEL` 14 · `CONSENT_MODAL_DIALOG_LABEL` 14 · `CONSENT_REVOKE_WARNING`
+144.
+
+#### (d) DIE KOSTEN EINER AUTOMATIK — GEMESSEN, DAMIT DIE ENTSCHEIDUNG EINE ZAHL HAT
+
+Eine Wahl zur LAUFZEIT nach `navigator.language` verlangt **beide** Tabellen im
+ausgelieferten Text. **DAS KOSTET RUND +185 BYTES JE LADE-BLOCK UND +329 JE WIDERRUF-BLOCK**
+— unter 7 Prozent —, **plus den Verzweigungs-Code, der nicht gemessen ist.** Zum Vergleich
+aus VERMERK P11.13-4: die Tabellen-Themen kosten +329 (`dark`) bzw. +366 (`auto`) je Block.
+**DIE BYTES SIND ALSO NICHT DAS ARGUMENT** — das Argument steht in Entscheidung P11.13-35.
+
+**`navigator.language` BERÜHRT I1 NICHT, UND DAS IST AM WORTLAUT GEPRÜFT:** I1 verbietet
+fünf Achsen der **Veränderung an einem fremden KNOTEN**; `navigator` ist kein Knoten und
+würde gelesen, nicht verändert. **KEINE DER ZEHN NADELN VON `M12` TRIFFT `navigator`**
+(GELESEN, `consent-modal.test.ts`, CC, 2026-09-18).
+
+#### (e) DIE `documentElement`-NADEL UND DIE ASYMMETRIE ZWISCHEN L12 UND M12
+
+**`M12` FÜHRT ALS ERSTE NADEL `/documentElement/`** (`consent-modal.test.ts`, mit dem
+Positivkontroll-Beispiel `document.documentElement.setAttribute('x', '1')`). Sie sieht
+**Zeichen, nicht Bedeutung** und träfe deshalb auch einen reinen **Lesezugriff** wie
+`document.documentElement.lang`. **`L12` TRÄGT KEINE NADELN** — nur die Textprüfung
+`/overflow/i` (GEMESSEN am Testtext, CC, 2026-09-18).
+**FOLGE, UND SIE IST EINE GEBAUTE ASYMMETRIE: DIESELBE ZEILE WÄRE IM FENSTER ROT UND IN DER
+LEISTE GRÜN.** Das ist die Fehlerklasse "EIN WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES
+GEPRÜFTEN NICHT BESTIMMEN" (docs/immer-beachten.md) — sie ist hier **nicht eingetreten**,
+weil niemand das versucht hat, und sie ist der Grund, warum Entscheidung P11.13-36 das
+`lang`-Attribut **im Schattenbaum** setzt und nicht an `documentElement` liest.
+
+#### (f) HEUTE TRÄGT DER DIALOG KEIN `lang`-ATTRIBUT, UND NICHTS LIEST EINE SPRACHE
+
+**NICHT-TREFFER MIT BENANNTER ACHSE** (GEMESSEN, CC, 2026-09-18): Achse
+`navigator\.language|documentElement\.lang|\blang\b|locale|i18n|hreflang|translat`,
+case-insensitiv, über `consent-choice.ts`, `consent-bar.ts`, `consent-modal.ts`,
+`consent-revoke.ts`, `consent-store.ts`, `consent-setter.ts`, `pageview-emitter.ts`,
+`meta.ts` **und die neue `script-embed.ts`** — **EIN Treffer, und er ist keiner:**
+`transform:translate(-50%,-50%)` in `CONSENT_MODAL_CSS`. **POSITIVKONTROLLE im selben Lauf:**
+dieselbe Achse trifft `<html lang="de">` in `src/lib/hosting/blocked-page.ts` und
+`lang="en"` in `src/app/layout.tsx`.
+**DAMIT IST DER SPRACH-NICHT-TREFFER DES BACKLOG-EINTRAGS 11.5f (CC, 2026-09-16) AM HEUTIGEN
+BESTAND BESTÄTIGT** — und um `script-embed.ts` und `CONSENT_WAY_LABEL` erweitert.
+
+**DER EIGENE SACHTEXT GEWINNT HEUTE IMMER, UND KEINE STELLE KENNT SEINE SPRACHE:** An der
+Einsetzstelle steht in beiden Erzeugern zeichengleich
+`const text = sachtext === "standard" ? CONSENT_TEXT : sachtext;`
+(`consent-bar.ts`, `consent-modal.ts`). Das Tor `readConsentText` prüft Zeichenklassen und
+Länge, **keine Sprache**. `PublishView.tsx` zeigt `placeholder={CONSENT_TEXT}` — also heute
+unbedingt den deutschen Satz.
+
+**DIE GRENZEN DIESER AUFKLÄRUNG — ausdrücklich:**
+- **KEINE PROBE, KEIN BROWSER, KEINE LIVE-SEITE.** Alle Aussagen über Geometrie sind am CSS
+  ABGELESEN und nicht gemessen.
+- **Ob eine englische Beschriftung den Umbruch bei 360 px verschiebt, ist NICHT
+  entscheidbar** — die Testumgebung wertet kein CSS aus, und es gibt keine
+  wiederverwendbare Probe im Repo (VERMERK P11.13-5).
+- **Die Kosten des Verzweigungs-Codes einer Automatik sind UNGEMESSEN** — gemessen sind
+  allein die Textbytes.
+- **Nur Chromium war je an diesem Gegenstand gemessen**, und in dieser Runde gar kein
+  Browser.
+
+PROVENIENZ DIESES VERMERKS: sämtliche Angaben GEMESSEN bzw. GELESEN am Repo (CC,
+2026-09-18, auf `80dd45a`); die vier Blockwerte und die Textanteile GEMESSEN am eigenen Lauf
+desselben Tages über die echten Funktionen. **KEINE Live-Angabe, KEINE Owner-Angabe, KEINE
+Browser-Messung in diesem Vermerk.** Dass ein Verzweigungs-Code einer Automatik weitere
+Bytes kostete, ist eine ABLEITUNG und ungemessen.
 
 ---
 
@@ -2547,10 +2708,11 @@ Achsen in eine Scheibe zu legen hiesse, den einfacheren unter der Beweislast des
 zu bauen.
 (2) **SPRACHE UND FREIER TEXT ÜBERLAPPEN, SIND ABER NICHT DIESELBE SACHE** (BEFUND, VERMERK
 P11.13-7 der Aufklärung und der Bericht vom 2026-09-18): Der Backlog-Eintrag „11.5f" benennt
-**zehn** Texte; Roadmap (h) gibt für Scheibe 4 **einen** frei. Über die übrigen neun — die
-Gruppen-Namen, die drei zugänglichen Namen, die Warnung — sagt (h) **nichts**, und genau sie
+**elf** Texte; Roadmap (h) gibt für Scheibe 4 **einen** frei. Über die übrigen zehn — die
+drei Knopf-Beschriftungen, den Weg, die Gruppen-Namen, die drei zugänglichen Namen, die
+Warnung — sagt (h) **nichts**, und genau sie
 bleiben ohne eine Sprachscheibe auf Deutsch stehen, auch wenn der Betreiber seinen Sachtext
-englisch schreibt. **Der freie Sachtext löst das Sprachproblem also für ein Zehntel der
+englisch schreibt. **Der freie Sachtext löst das Sprachproblem also für ein Elftel der
 Menge.**
 
 **DIE BAUFORM ERBT SIE VON P11.13-8:** eine feste Tabelle, eine erschöpfende Verzweigung, der
@@ -2558,18 +2720,26 @@ Rohwert aus dem Blob erreicht den ausgelieferten Text nie. **Der Wortlaut ist un
 nicht das des Betreibers.**
 
 **DER BACKLOG-EINTRAG 11.5f WIRD DAMIT NICHT ERLEDIGT, SONDERN VERORTET.** Er bleibt stehen;
-seine Messungen — die zehn Konstanten, die sechs Owner-Freigaben, der Sprach-Nicht-Treffer —
+seine Messungen — die elf Konstanten, die sieben freigegebenen Konstanten bei sechs
+Freigabe-Posten, der Sprach-Nicht-Treffer —
 sind der Massstab der Scheibe 5 und gingen mit einer Streichung verloren.
 
-**DIE GRENZE:** Sie kippt, **sobald der Betreiber eigene Wortlaute für die zehn Texte liefern
-soll** — dann ist es keine Tabelle mehr, und die Sicherheitsachse des freien Textes gilt für
-alle zehn Plätze. Sie kippt ebenso, wenn ein **dritter** Sprachraum gefordert ist und die
-Tabelle nicht mehr trägt.
+**DIE GRENZE:** Sie kippt, **sobald der Betreiber eigene Wortlaute für die übrigen zehn Texte
+liefern soll** — dann ist es keine Tabelle mehr, und die Sicherheitsachse des freien Textes
+gilt für alle elf Plätze. Sie kippt ebenso, wenn ein **dritter** Sprachraum gefordert ist und
+die Tabelle nicht mehr trägt.
 
 PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-18 (O5). Der Überlappungs-Befund ist GELESEN an
 docs/claude-history/backlog-polish.md (Eintrag 11.5f) und an docs/roadmap.md, Punkt (h)
-(CC, 2026-09-18). **Dass die zehn Texte heute auf jeder Seite deutsch stehen, ist im
-Backlog-Eintrag GEMESSEN (CC, 2026-09-16) und hier nicht neu erhoben.**
+(CC, 2026-09-18). **Dass die elf Texte heute auf jeder Seite deutsch stehen, ist für zehn von
+ihnen im Backlog-Eintrag GEMESSEN (CC, 2026-09-16) und für `CONSENT_WAY_LABEL`, das erst mit
+der Scheibe 11.13a entstand, in VERMERK P11.13-9 (CC, 2026-09-18).**
+**DIE ZAHLEN DIESES EINTRAGS SIND AM 2026-09-18 SACHKORRIGIERT — zehn auf elf, neun auf zehn,
+ein Zehntel auf ein Elftel:** `CONSENT_WAY_LABEL` kam mit der Scheibe 11.13a hinzu und stand
+in keiner der drei Aufzählungen (GEMESSEN, VERMERK P11.13-9, Punkt (a)). **ERSETZT, NICHT
+GESTEMPELT** — ein Massstab mit falschen Angaben taugt nicht als Massstab
+(docs/immer-beachten.md, EINE REGEL KANN GÜLTIG BLEIBEN, WÄHREND IHR BELEG FALSCH WIRD). Die
+Entscheidung selbst ist unverändert.
 
 ### Entscheidung P11.13-25 — JEDER BETREIBER-WERT IN SCRIPT-ROHTEXT LÄUFT ÜBER DEN EINBETTUNGS-HELFER
 
@@ -2889,9 +3059,13 @@ NICHT** — zwei Messungen desselben Tages (39 · 18 · 17 in P11.13-18 und 43 �
 Aufklärung 11.13d) laufen über **verschiedene Achsen** und sind nicht vergleichbar; eine dritte
 Zahl daneben wäre die zweite Wahrheit.
 
-**DIE GRENZE:** Sie kippt, **sobald eine dritte Achse auf denselben Pfad soll.** Dann ist nicht
-ein dritter Parameter anzuhängen, sondern zu entscheiden, ob die Achsen eine gemeinsame Hülle
-brauchen — die hier verworfene Gestalt wird dort neu gewogen und beginnt nicht bei null.
+**DIE GRENZE IST AM 2026-09-18 EINGETRETEN UND ENTSCHIEDEN.**
+**DIE DRITTE ACHSE IST DIE SPRACHE (Scheibe 11.13e), UND DIE ABWÄGUNG IST GEFÜHRT:
+Entscheidung P11.13-32 wählt die HÜLLE.** Der Einwand, der die Hülle hier fallen liess — „die
+Union verlöre ihre Diskriminante an einen Träger" —, **entfällt**: Die Darstellungs-Union
+bleibt, was sie ist, und wird ein FELD der Hülle; ihre Diskriminante ist unberührt. **DIESER
+EINTRAG IST DAMIT NICHT ÜBERHOLT, SONDERN EINGELÖST** — seine vier verworfenen Gestalten
+bleiben mit ihren Gründen stehen und sind der Ausgangspunkt jener Abwägung gewesen.
 
 PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (G2). Die Wortlaut-Prüfung an P11.13-11 und
 P11.13-18 ist GELESEN am Dateitext (CC, 2026-09-18). Die zwei Aufrufzahlen sind GEMESSEN
@@ -2933,6 +3107,306 @@ PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (G3). Die Prosa-Erwähnungen in de
 sind GEMESSEN am Code (CC, 2026-09-18); der Fall aus der Scheibe 11.8c ist GELESEN an
 docs/immer-beachten.md (CC, 2026-09-18). **Dass ein Ergebnis-Wächter eine neue Einbettung nicht
 deckt, ist eine ABLEITUNG aus seiner Bauform, keine Messung.**
+
+### Entscheidung P11.13-31 — DIE WORTLAUTE, VOLLSTÄNDIG FREIGEGEBEN
+
+**ALLE ELF TEXTPLÄTZE TRAGEN AB HEUTE EINE OWNER-FREIGABE, IN BEIDEN SPRACHEN.** Die
+deutschen Wortlaute bleiben **ZEICHENGLEICH**; die drei bisher unfreigegebenen deutschen
+Plätze sind **nachträglich freigegeben**. Die englischen sind neu.
+
+**DIE ENGLISCHE TABELLE — WÖRTLICH:**
+
+| Platz | Symbol | EN |
+|---|---|---|
+| Sachtext (Standard) | `CONSENT_TEXT` | `This site can use tracking services. You decide whether that happens.` |
+| Akzeptieren | `CONSENT_ACCEPT_LABEL` | `Accept all` |
+| Speichern | `CONSENT_SAVE_LABEL` | `Save selection` |
+| Ablehnen | `CONSENT_REJECT_LABEL` | `Reject all` |
+| Weg | `CONSENT_WAY_LABEL` | `Settings` |
+| Gruppen (aria) | `CONSENT_GROUPS_LABEL` | `Categories` |
+| Messung | `CONSENT_GROUP_MEASURE_LABEL` | `Analytics` |
+| Werbung | `CONSENT_GROUP_ADS_LABEL` | `Advertising` |
+| Leiste/Fenster (aria) | `CONSENT_BAR_REGION_LABEL` / `CONSENT_MODAL_DIALOG_LABEL` | `Consent` |
+| Widerruf-Warnung | `CONSENT_REVOKE_WARNING` | `pagesmithConsentRevoke: No stored decision to revoke. If the dialog is currently open, decide there.` |
+
+**DIE ZWEI aria-NAMEN TEILEN DENSELBEN ENGLISCHEN WORTLAUT**, wie sie heute denselben
+deutschen teilen — es bleiben ZWEI Konstanten, kein gemeinsames Symbol.
+
+**NACHTRÄGLICH FREIGEGEBEN, DEUTSCH, UNVERÄNDERT:** `Alle akzeptieren`
+(`CONSENT_ACCEPT_LABEL`) · `Einstellungen` (`CONSENT_WAY_LABEL`) · `Einwilligung`
+(`CONSENT_BAR_REGION_LABEL` **und** `CONSENT_MODAL_DIALOG_LABEL`, beide Vorkommen).
+**DAMIT SCHLIESST SICH DIE LÜCKE, DIE VERMERK P11.13-9 MISST:** Vor dieser Entscheidung
+trugen vier der elf Plätze keine Freigabe.
+
+**DIESE WORTLAUTE SIND OWNER-ENTSCHEIDUNGEN, KEINE CODE-BEFUNDE.** Sie werden
+**ZEICHENGENAU** übernommen, **nicht gegen den Bestand geprüft** und **nicht geändert** —
+auch nicht in Satzzeichen, Gross- und Kleinschreibung oder Umlauten. Wer einen ändert,
+braucht eine neue Freigabe.
+
+**EINE AUFLAGE AN JEDE RUNDE, DIE SIE SCHREIBT, und sie ist kein Formalismus:** Nach dem
+Schreiben wird **jeder** Wortlaut **byte-genau** gegen die Freigabe geprüft — mit einem
+Werkzeug, nicht per Ansicht. **GRUND:** In der Scheibe 11.13d sind an EINEM Tag **fünfmal**
+Escapes in Doku-Text und **dreimal** Zeichen in einer Testdatei still verwandelt worden,
+und **alle vier Gates waren dabei grün** (VERMERK P11.13-8, Punkt (f)). Ein stumm
+verfälschter Wortlaut ist von einer Freigabe-Abweichung nicht zu unterscheiden.
+
+**DIE GRENZE:** Sie kippt **je Platz**, sobald ein Wortlaut geändert werden soll, und **im
+ganzen**, sobald ein zwölfter Textplatz entsteht oder ein dritter Sprachraum dazukommt —
+dann fehlt der neuen Zelle eine Freigabe, und keine dieser elf deckt sie.
+
+PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-18 (O6). **Die Wortlaute sind Entscheidungen und am
+Repo nicht prüfbar** — prüfbar ist allein, ob sie zeichengenau in der Datei stehen. Der
+Freigabe-Stand VOR dieser Entscheidung ist GEMESSEN (VERMERK P11.13-9, Punkt (a)); die
+Schreibschäden der Scheibe 11.13d sind GEMESSEN (VERMERK P11.13-8, Punkt (f)).
+
+### Entscheidung P11.13-32 — EINE HÜLLE STATT EINES DRITTEN PARAMETERS
+
+**`injectPageViewEmitter`, `buildConsentBarScript` UND `buildConsentModalScript` bekommen
+EINEN Parameter: ein Objekt mit DREI PFLICHT-FELDERN** — Darstellung, Sachtext, Sprache.
+**KEIN optionales Feld, KEIN Vorgabewert, an keinem Feld.**
+
+**DIE GRENZE VON Entscheidung P11.13-29 IST EINGETRETEN, UND DAS IST DER ANLASS:** Jene sagt,
+bei einer dritten Achse sei „nicht ein dritter Parameter anzuhängen, sondern zu entscheiden,
+ob die Achsen eine gemeinsame Hülle brauchen". Die Sprache ist die dritte Achse.
+
+**Entscheidung P11.13-11 GILT UNVERÄNDERT UND JE FELD.** Sie verlangt „Pflicht-Parameter
+OHNE VORGABEWERT" an genau diesen drei Stellen; **jedes der drei Felder erfüllt das
+einzeln.** Über die ZAHL trifft sie keine Auflage — das hält P11.13-29 bereits am Wortlaut
+fest.
+
+**DER GRUND IST EIN KOSTEN-VERGLEICH MIT EINEM ZWEITEN SCHRITT, UND DER ZWEITE TRÄGT:**
+Heute kosten Hülle und dritter Parameter **dasselbe** — jede bestehende Aufrufstelle ändert
+ihre Form, compiler-geführt und namentlich gemeldet. **BEI DER VIERTEN ACHSE LAUFEN DIE ZWEI
+AUSEINANDER:** Die Hülle bekommt ein FELD, der Parameter-Weg einen erneuten Umbau **aller**
+Aufrufer. Eine Bauform, die beim ersten Mal gleich teuer ist und beim zweiten billiger,
+ist die bessere.
+
+**DER EINWAND AUS P11.13-29 ENTFÄLLT, UND ER IST DER GRUND, WARUM DIESE ENTSCHEIDUNG EIGENS
+STEHT:** Dort war eine Hülle `{ appearance, text }` verworfen worden, weil „die Union ihre
+Diskriminante an einen Träger verlöre". **DAS TRIFFT DIESE GESTALT NICHT:** Die
+Darstellungs-Union bleibt, was sie ist, und wird ein **Feld** der Hülle — ihre Diskriminante
+`theme` ist unberührt, und „eigene Farben ohne Farben" bleibt nicht konstruierbar
+(Entscheidung P11.13-18).
+
+**WAS SIE NICHT ÄNDERT:** die Auflösung von `"standard"` bleibt im Erzeuger (P11.13-29,
+verworfene Gestalt 4 — sonst stünde die Zuordnung an zwei Orten), und `publishProject` lernt
+unseren Wortlaut weiterhin nicht.
+
+**DIE GRENZE:** Sie kippt, **sobald ein Feld der Hülle optional werden soll.** Ein optionales
+Feld wäre der Vorgabewert durch die Hintertür — genau das, was P11.13-11 verbietet —, und er
+liesse einen künftigen Auslieferungsweg eine Achse stillschweigend übergehen.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (H1). Dass die Grenze von P11.13-29
+eingetreten ist, ist am Wortlaut jener Entscheidung ABLESBAR (GELESEN, CC, 2026-09-18). Die
+Aufrufzahlen sind GEMESSEN (VERMERK P11.13-9 und der Plan der Scheibe). **Dass die vierte
+Achse mit einer Hülle billiger wird, ist eine ABLEITUNG aus der Bauform und keine Messung.**
+
+### Entscheidung P11.13-33 — EINE TABELLE, EINE ERSCHÖPFENDE VERZWEIGUNG, UND DER DEUTSCHE ZWEIG VERWEIST
+
+**EINE FUNKTION LIEFERT JE SPRACHE EIN TYPISIERTES OBJEKT MIT ALLEN ELF TEXTEN.** Die
+Verzweigung über die Sprachwerte steht an **EINER** Stelle und ist **erschöpfend** — mit
+`never`-Zweig, der Bauform von `consentThemeCss` (Entscheidung P11.13-8). **Fehlt im
+englischen Zweig ein Feld, ist das ein `tsc`-Fehler**, kein Laufzeit-Fehler und kein
+fehlender Test.
+
+**DER DEUTSCHE ZWEIG VERWEIST AUF DIE BESTEHENDEN KONSTANTEN — ER SCHREIBT SIE NICHT AB.**
+Das ist die tragende Hälfte dieser Entscheidung: Eine Abschrift stünde zweimal im Repo, und
+**ein einziges abweichendes Zeichen änderte den ausgelieferten Text, ohne dass ein Gate rot
+würde.** Es ist dieselbe Divergenz-Bauform, gegen die in dieser Phase bereits P11.13-25 und
+P11.13-29 stehen.
+
+**DER ROHWERT AUS DEM BLOB ERREICHT DEN AUSGELIEFERTEN TEXT NIE** — er wählt einen Zweig,
+wie der Themenwert es tut. **DIE SICHERHEITSACHSE DER SCHEIBE 11.13d IST DAMIT NICHT
+BERÜHRT**, und das ist der Grund, aus dem die Sprache eine eigene Scheibe ist
+(Entscheidung P11.13-24).
+
+**DER WORTLAUT IST UNSER RISIKO, NICHT DAS DES BETREIBERS.** Er kommt aus Entscheidung
+P11.13-31 und nirgendwo sonst her.
+
+**DIE GRENZE:** Sie kippt **mit einem dritten Sprachraum** — dieselbe Grenze, die
+Entscheidung P11.13-24 bereits nennt. Sie steht hier trotzdem eigens, weil diese Entscheidung
+eine ANDERE Frage schliesst: dort der Ort der Scheibe, hier die Gestalt der Tabelle. Ein
+dritter Zweig macht den `never`-Zweig zum Compiler-Fehler und ist damit keine stille
+Erweiterung — **aber die elf Zellen des neuen Zweigs bräuchten elf neue Freigaben.**
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (H2). Die Bauform ist aus P11.13-8 übernommen;
+dass der `never`-Zweig dort einen Compiler-Fehler erzeugt, ist eine Eigenschaft des
+Typsystems und **am Repo nicht gemessen** — der erste Beleg ist der `tsc`-Lauf der
+Bau-Scheibe.
+
+### Entscheidung P11.13-34 — DER EIGENE SACHTEXT GILT FÜR ALLE SPRACHEN
+
+**EIN FELD, EIN WERT.** Die Sprache ist **fest je Projekt**; ein gespeicherter eigener
+Sachtext gilt in jeder Sprache. **`"standard"` löst sich in der GEWÄHLTEN Sprache auf**, und
+**der Platzhalter im Editor zeigt den Standard der gewählten Sprache.**
+
+**DER GRUND:** Ein eigener Text je Sprache verlangte zwei Felder oder ein Objekt — und damit
+fiele die flache, skalare Ablage aus Entscheidung P11.13-19. Jene nennt genau diesen Fall als
+ihre Grenze („sobald ein Farbwert nicht mehr skalar ist … dann braucht `settingsEqual` einen
+eigenen Vergleicher"). **Ein Projekt mit fester Sprache braucht die zweite Fassung nicht:**
+Wer zwei Märkte bedient, baut zwei Projekte — das ist die Arbeitsweise der Zielgruppe
+(ARCHITEKT-ANGABE, s. Entscheidung P11.13-35).
+
+**WAS DAS KOSTET, UND ES WIRD NICHT KLEINGEREDET:** Ein Betreiber, der die Sprache
+umstellt und einen eigenen Sachtext gespeichert hat, bekommt **zehn** Texte in der neuen
+Sprache und **einen** in der alten. **NICHTS ZEIGT IHM DAS AN.** Der Platzhalter hilft nicht,
+weil er nur bei LEEREM Feld sichtbar ist.
+
+**DER PLATZHALTER IST KEIN AUSGELIEFERTER TEXT**, und die Unterscheidung trägt: Er steht in
+`PublishView.tsx`, also in der App-Oberfläche, und sein Leser ist der Betreiber. Dass er der
+Sprache folgt, ist eine Bedien-Zusage, keine Zusage über den Dialog.
+
+**DIE GRENZE:** Sie kippt, **sobald ein eigener Sachtext je Sprache gefordert ist.** Dann ist
+nicht ein zweites Feld anzuhängen, sondern die Ablage nach P11.13-19 neu zu entscheiden — und
+mit ihr der `settingsEqual`-Term, der heute skalar ist.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (H3). Dass der eigene Sachtext heute an der
+Einsetzstelle immer gewinnt und keine Stelle seine Sprache kennt, ist GEMESSEN am Code (CC,
+2026-09-18, VERMERK P11.13-9, Punkt (f)). **Dass ein Betreiber die Sprach-Mischung für einen
+Fehler hält, ist eine ABLEITUNG und ungemessen.**
+
+### Entscheidung P11.13-35 — KEINE AUTOMATIK NACH `navigator.language`
+
+**DER DIALOG WÄHLT SEINE SPRACHE NICHT ZUR LAUFZEIT.** Kein `navigator.language`, kein
+`document.documentElement.lang`, keine Erkennung irgendeiner Art. Der Betreiber wählt, und
+die Wahl steht zur Veröffentlichungszeit fest.
+
+**DREI GRÜNDE, UND DER ZWEITE IST DER TRAGENDE:**
+(1) **DIE KOSTEN SIND GEMESSEN UND KLEIN, ALSO TRAGEN SIE DIE ENTSCHEIDUNG NICHT ALLEIN:**
+beide Tabellen im Text kosten rund **+185 Bytes je Lade-Block und +329 je Widerruf-Block**
+(GEMESSEN, VERMERK P11.13-9, Punkt (d)) — unter 7 Prozent, plus ungemessenen
+Verzweigungs-Code. **Wer nur diese Zahl liest, hält die Entscheidung für knapp.**
+(2) **SIE IST UNVERTRÄGLICH MIT Entscheidung P11.13-34.** Ein eigener Sachtext liegt in
+**einer** Sprache. Schaltete der Dialog je Besucher um, stünde dieser eine Satz mal in der
+passenden und mal in der fremden Sprache — **und zwar unvorhersehbar für den Betreiber, der
+ihn geschrieben hat.** Eine feste Wahl ist eine Zusage; eine Automatik daneben wäre eine
+Lotterie.
+(3) **DIE ZIELGRUPPE BAUT JE MARKT EIGENE SEITEN.** Ein Media Buyer, der deutsch und englisch
+ausspielt, hat zwei Kampagnen, zwei Seiten und zwei Projekte — nicht eine Seite für beide.
+
+**DAS IST EIN BEFUND MIT KOSTEN, KEIN VORRATS-EINTRAG MIT TRIGGER.** Er wird ausdrücklich
+**nicht** unter „Vorrat" geführt: Ein Trigger behauptete, es sei etwas offen. **Es ist
+entschieden**, und die Gründe stehen hier vollständig, damit eine spätere Runde dagegen
+vortragen kann, statt bei null zu beginnen.
+
+**WAS AUSDRÜCKLICH NICHT GESAGT IST:** dass ein Lesen von `navigator.language` eine
+Invariante bräche. **I1 IST AM WORTLAUT NICHT BERÜHRT** — sie verbietet fünf Achsen der
+VERÄNDERUNG an einem fremden KNOTEN, und `navigator` ist kein Knoten (GEPRÜFT am Wortlaut,
+VERMERK P11.13-9, Punkt (d)). **Für `document.documentElement.lang` liegt der Fall anders:**
+Dort wäre ein fremder Knoten zu lesen, und **die erste Nadel von `M12` (`/documentElement/`)
+würde rot, während `L12` grün bliebe** — eine gebaute Asymmetrie (VERMERK P11.13-9,
+Punkt (e)).
+
+**DIE GRENZE:** Sie kippt, **sobald ein Projekt zwei Sprachen zugleich tragen soll** — also
+genau dann, wenn Grund (3) nicht mehr gilt. Dann ist zuerst Entscheidung P11.13-34 neu zu
+entscheiden, nicht diese: Ohne eine Antwort auf den eigenen Sachtext je Sprache bliebe Grund
+(2) bestehen.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (H4). Die Bytes sind GEMESSEN (CC, 2026-09-18,
+VERMERK P11.13-9); der Verzweigungs-Code ist **ungemessen**. **Die Arbeitsweise der
+Zielgruppe ist eine ARCHITEKT-ANGABE und in diesem Projekt nicht erhoben.** Die Prüfung von
+I1 und der Nadel-Befund sind GEMESSEN bzw. am Wortlaut GEPRÜFT (CC, 2026-09-18).
+
+### Entscheidung P11.13-36 — DAS `lang`-ATTRIBUT STEHT IM SCHATTENBAUM, UND SEIN NACHWEIS IST EIN DIFFERENZ-NACHWEIS
+
+**`.bar` BZW. `.dialog` BEKOMMEN EIN `lang`-ATTRIBUT** — `"de"` oder `"en"`, aus der
+gewählten Sprache. **Es steht IM Schattenbaum, an unserem eigenen Element**, nicht am Host
+und nicht an einem Knoten der Kundenseite. **Invariante I1 ist unberührt**: Das Attribut wird
+an einem EIGENEN Knoten gesetzt.
+
+**DER GRUND:** Ein Textblock ohne Sprachangabe wird von Vorleseprogrammen in der Sprache des
+umgebenden Dokuments gesprochen. Auf einer deutschen Kundenseite läse ein Screenreader einen
+englischen Dialog deutsch vor — und umgekehrt. **Das Attribut ist die einzige Stelle, an der
+die Sprachwahl den Besucher erreicht, ohne dass wir einen fremden Knoten anfassen.**
+
+**DER PREIS IST BEWUSST UND WIRD NICHT VERSTECKT: AUCH DIE DEUTSCHEN BLÖCKE ÄNDERN SICH.**
+Die vier Byte-Werte 4 603 / 4 918 / 5 051 / 5 366, die über vier Scheiben stabil waren
+(VERMERKE P11.13-3, -4, -6, -8, -9), wachsen um die Länge genau dieser Setzung. **DIE
+BYTE-GLEICHHEIT DER DEUTSCHEN AUSGABE IST DAMIT KEINE ZULÄSSIGE INVARIANTE MEHR** — und wer
+sie trotzdem behauptete, hätte eine Zusage, die der Bau widerlegt.
+
+**AN IHRE STELLE TRITT EIN DIFFERENZ-NACHWEIS, UND ER IST DIE EIGENTLICHE ZUSAGE DIESER
+ENTSCHEIDUNG: DER NEUE DEUTSCHE BLOCK IST DER ALTE PLUS GENAU DIE `lang`-SETZUNG — SONST
+KEIN ZEICHEN.** Wird die eine Einsetzung aus dem neuen Text entfernt, muss zeichengleich der
+alte dastehen, in Bytes und in sha256. **DAS IST STRENGER ALS EINE BYTE-ZAHL**, weil es die
+Stelle der Änderung benennt und nicht nur ihre Grösse.
+
+**DIE ZUSICHERUNG WIRD AUS DIESER ENTSCHEIDUNG GESCHRIEBEN, NICHT AUS DEM BAU.** Das ist
+keine Formsache: **Vorrat P11.13-2 ist mit dieser Scheibe EINGETRETEN** — sein Trigger lautet
+„die nächste Runde, die eine Zusicherung über die UNVERÄNDERTHEIT des Lade-Zweigs gegenüber
+einem früheren Stand braucht", und genau die braucht dieser Nachweis. Jener Eintrag nennt die
+Auflage mit: „Wer sie braucht, schreibt sie aus der ENTSCHEIDUNG, nicht aus dem Bau — sonst
+entsteht der Spiegel, wegen dessen W0 gestrichen wurde."
+
+**DER AUS-FALL BLEIBT BYTE-GLEICH.** Bei `"off"` entsteht kein Oberflächen-Block; dort ändert
+sich nichts, und `T-OFF` wie `T1` halten das unverändert.
+
+**DIE GRENZE:** Sie kippt, **sobald das Attribut an einen anderen Knoten wandern soll** — an
+den Host oder gar an ein Element der Kundenseite. Der Host liegt AUSSERHALB der
+Schattenwurzel; die Messung zur Dauerregel vom 2026-09-15 formuliert enger als I1
+(„`setAttribute` setzt zur Laufzeit allein eigene Elemente **im Schattenbaum**"), und jener
+Satz wäre dann nicht mehr wörtlich wahr. **Ein Element der Kundenseite ist durch I1 verboten
+und keine Auslegungsfrage.**
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (H5). Dass der Dialog heute kein
+`lang`-Attribut trägt, ist ein NICHT-TREFFER MIT BENANNTER ACHSE und Positivkontrolle
+(GEMESSEN, VERMERK P11.13-9, Punkt (f)). Die vier Ausgangswerte sind GEMESSEN (ebenda,
+Punkt (c)). **Dass ein Vorleseprogramm ohne `lang` die Dokumentsprache benutzt, ist eine
+Eigenschaft der Plattform und in diesem Projekt NICHT gemessen** — Screenreader sind an
+dieser Phase durchgehend ungeprüft (VERMERKE P11.13-2, -4, -6).
+
+### Entscheidung P11.13-37 — UNSERE STANDARD-SACHTEXTE GEHEN DURCH DASSELBE TOR, UND DIE ABLAGE IST FLACH
+
+**JEDER STANDARD-SACHTEXT DER TABELLE WIRD DURCH `readConsentText` GEPRÜFT** — dieselbe
+Prüfstelle, dasselbe Zeichen-Tor, dieselbe Grenze N = 300 (Entscheidungen P11.13-26 und
+P11.13-27). **NICHT ZUR LAUFZEIT, SONDERN ALS TEST.**
+
+**DER GRUND, UND ER IST EIN GEMESSENER MANGEL:** Das Tor greift heute auf
+`settings.consent.text`, also auf **Betreiber-Eingabe**. **UNSER eigener Satz läuft an ihm
+vorbei** — weder Zeichen noch Länge werden geprüft. Die gemessene Kante von 416 Codepunkten
+(P11.13-27) gilt für ihn genauso; niemand prüft sie. **EIN ENGLISCHER STANDARDSATZ ÜBER 300
+ZEICHEN ODER MIT EINEM UNSICHTBAREN ZEICHEN GINGE HEUTE DURCH**, und der Betreiber sähe den
+Schaden auf seiner Live-Seite.
+
+**DIE ABLAGE IST FLACH: `settings.consent.language`, Typ `unknown`** — ein sechster Nachbar
+von `gate`, `dialog`, `theme`, `colorBackground`, `colorText` und `text`, in **derselben
+Bauform** wie der Themenwert (Entscheidung P11.13-6) und die zwei Farben (P11.13-19).
+- **DER LESER:** Feld **fehlt** → `"de"`; **gültiger** Wert → er selbst; **jeder andere** →
+  `"unknown"`. **`"unknown"` WIRD NIE AUF `"de"` ABGEBILDET** — sonst sähe die abbrechende
+  Stelle ihn nie (docs/immer-beachten.md, EIN UNBEKANNTER KONFIGURATIONSWERT BRICHT LAUT AB,
+  Folge (a)). **Das fehlende Feld ist dagegen kein Fehler, sondern der heutige Zustand** —
+  dieselbe Unterscheidung, die P11.13-26 für den Sachtext zieht.
+- **`settingsEqual` BEKOMMT EINEN SKALAREN TERM.** Ohne ihn bliebe `dirty` false, es gäbe
+  keinen Text „Ungespeicherte Änderungen", keinen `beforeunload`-Wächter und **kein `confirm`
+  beim Projektwechsel** — und nichts würde davon rot. Das ist derselbe gemessene Befund, den
+  Vorrat P11.13-1 als KLASSE führt; **dieser Term löst ihn für die Sprache, nicht für die
+  Klasse.**
+- **DER ABBRUCH IST DER FÜNFTE IN `publishProject`, AM ENDE DER KETTE**, mit **eigener**
+  Meldungs-Konstante, **vor** dem Label-Block und **vor** `ensureTrackingKey`. **SEIN TOR IST
+  NUR `Dialog != "off"`** — nicht zusätzlich eine Darstellung: Die Sprache wirkt in **jeder**
+  Darstellung. **DIE ASYMMETRIE AUS P11.13-7 GILT UNVERÄNDERT.**
+- **DIE STELLUNG AM ENDE IST EINE SETZUNG, KEINE ABLEITUNG** — dieselbe wie beim Sachtext:
+  Die vier bestehenden Abbrüche hängen teils aufeinander, die Sprache hängt an keinem von
+  ihnen. Ans Ende gesetzt, bleibt die bestehende Kette unverändert, und der Eingriff in diese
+  Kern-Datei ist rein additiv.
+
+**DER FEHLENDE WÄCHTER FÜR `CONSENT_BAR_REGION_LABEL` WIRD IN DIESER SCHEIBE GEBAUT.** Er ist
+in VERMERK P11.13-9, Punkt (b), gemessen: Das Modal hat einen (`M5`), die Leiste keinen.
+**Die Scheibe, die diesen Wortlaut in zwei Sprachen führt, ist die, die ihn nicht ungedeckt
+lassen darf.**
+
+**DIE GRENZE — ZWEI, JE FÜR SICH:** **(1)** Das Tor-Verfahren entfällt, sobald der Server den
+Sprachwert schon beim SPEICHERN prüft und ein unbekannter Wert die Ablage gar nicht erreicht;
+heute schreibt `saveProject` `settings` ungeprüft (offener Punkt `saveProject` SCHREIBT
+`settings` UNVALIDIERT). **(2)** Die flache Ablage kippt, sobald der Sprachwert nicht mehr
+skalar ist — dieselbe Grenze wie bei P11.13-19.
+
+PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18 (H6). Dass `readConsentText` heute allein auf
+`settings.consent.text` greift und unser Standardsatz an ihm vorbeiläuft, ist GEMESSEN am
+Code (CC, 2026-09-18, VERMERK P11.13-9). Die Bauform der Ablage und die Folge eines fehlenden
+`settingsEqual`-Terms sind aus P11.13-6 und P11.13-19 übernommen und dort gemessen. Die vier
+bestehenden Abbrüche und ihre Reihenfolge sind GEMESSEN am Code (CC, 2026-09-18). Der
+fehlende Wächter ist GEMESSEN (VERMERK P11.13-9, Punkt (b)).
 
 ---
 
@@ -3240,6 +3714,147 @@ O4 und O5 und der Architekt-Entscheidungen E1 bis E4 und G1 bis G7 desselben Tag
 Antworten sind der gebaute, gemessene und live geprüfte Stand desselben Tages (VERMERK
 P11.13-8); die Live-Angaben darin sind OWNER-MESSUNGEN und von CC nicht prüfbar. Die
 Verdichtung ist CC, 2026-09-18.
+
+---
+
+## Zuschnitt der Scheibe 11.13e — DIE SPRACHE
+
+**STATUS: ZUGESCHNITTEN, PLAN FREIGEGEBEN (ARCHITEKT 2026-09-18; Wortlaute OWNER 2026-09-18,
+P11.13-31).** Die Statuszeile ist hier von Anfang an mitgeführt und nicht nachträglich
+aufgelöst worden — anders als in den Scheiben 11.13c und 11.13d, wo sie zweimal „NICHT
+FREIGEGEBEN" trug, während der Bau-Auftrag sie als freigegeben führte.
+
+### Gegenstand
+
+**DER BETREIBER WÄHLT DIE SPRACHE DES EINWILLIGUNGS-DIALOGS — DEUTSCH ODER ENGLISCH.** Alle
+**ELF** Textplätze des ausgelieferten Dialogs folgen dieser Wahl; die Wortlaute stehen als
+Konstanten im Repo und tragen Owner-Freigaben (Entscheidung P11.13-31). **KEINE
+BETREIBER-EINGABE** — der Wert wählt einen Zweig, wie der Themenwert es tut.
+
+**DIE ENTSCHEIDUNGEN, DIE IHN TRAGEN:** P11.13-31 (die Wortlaute) · P11.13-32 (die Hülle) ·
+P11.13-33 (die Tabelle) · P11.13-34 (der eigene Sachtext) · P11.13-35 (keine Automatik) ·
+P11.13-36 (das `lang`-Attribut und der Differenz-Nachweis) · P11.13-37 (Tor, Ablage,
+fünfter Abbruch, der fehlende Wächter). **FORTGELTEND und in dieser Scheibe NICHT neu
+begründet:** P11.13-3 (alles im Fenster und treffbar) · P11.13-4 (der Fokus) · P11.13-5
+(Gleichrangigkeit) · P11.13-7 (die Asymmetrie des Abbruchs) · P11.13-8 (feste Tabelle,
+erschöpfende Verzweigung) · P11.13-11 (Pflicht-Parameter ohne Vorgabewert) · P11.13-19
+(flache, skalare Ablage) · P11.13-25 (der Einbettungs-Helfer) · P11.13-26/-27 (Tor und N) ·
+P11.13-28 (Neu-Veröffentlichen, Export-Pfad) · P11.13-30 (der Wächter am Ergebnis).
+
+### Die Invarianten dieser Scheibe — Q1 bis Q9
+
+**SIE HEISSEN `Q` UND NICHT `I`, `Z` ODER `S`**, und das ist kein Geschmack: `I1` bis `I6`
+sind im Abschnitt „Was den Zuschnitt bindet" an die Invarianten der Phase 11.5 vergeben,
+`Z1` bis `Z10` an die Scheibe 11.13c, `S1` bis `S9` an die Scheibe 11.13d. Die Buchstaben
+`L`, `M`, `W`, `T`, `G`, `PT`, `UI`, `CSS`, `CT`, `CF`, `EM`, `MR` und `TH` sind
+Testkennungen. **`Q` ist frei** (GEMESSEN am Repo, CC, 2026-09-18, Achse `\bQ[0-9]+\b` über
+`src/` und diese Datei: kein Treffer; Positivkontrolle: dieselbe Achse auf `\bS[0-9]+\b`
+trifft S1, S3 und S4).
+
+- **Q1 — DER DIFFERENZ-NACHWEIS DER DEUTSCHEN AUSGABE.** Jeder deutsche Blockwert nach dem
+  Bau ist der Wert davor **plus genau die `lang`-Setzung — sonst kein Zeichen**. Entfernt
+  man diese eine Einsetzung aus dem neuen Text, steht zeichengleich der alte da, in Bytes
+  und in sha256. **Die Byte-GLEICHHEIT ist hier ausdrücklich KEINE Invariante mehr**
+  (Entscheidung P11.13-36); wer sie behauptet, behauptet etwas, das der Bau widerlegt.
+- **Q2 — DER AUS-FALL BLEIBT BYTE-GLEICH.** Bei `"off"` ändert sich **kein Zeichen**, in
+  keiner Sprache. `T-OFF` und `T1` halten das; sie werden auf die Sprach-Achse ausgedehnt.
+- **Q3 — DER DEUTSCHE ZWEIG VERWEIST, ER SCHREIBT NICHT AB.** Jedes Feld des deutschen
+  Zweigs ist ein **Verweis auf die Konstante**, kein Literal (Entscheidung P11.13-33).
+  **DIE ZUSICHERUNG IST STRUKTURELL UND AUSDRÜCKLICH KEINE TEXTSUCHE ÜBER DAS REPO:** Eine
+  Suche nach „kein Wortlaut ein zweites Mal" wäre ein Wächter über Zeichen und träfe, was
+  legitim dasteht — „Einstellungen" und „Einwilligung" sind auch Beschriftungen der
+  App-Oberfläche, und der Wächter zwänge, sie umzubenennen (docs/immer-beachten.md, EIN
+  WÄCHTER ÜBER ZEICHEN DARF DIE GESTALT DES GEPRÜFTEN NICHT BESTIMMEN). Gedeckt wird die
+  Sache am ERGEBNIS: Ändert sich eine Konstante, ändert sich der deutsche Zweig mit, und die
+  Wortlaut-Wächter der Tabelle werden rot.
+- **Q4 — DIE TABELLE IST VOLLSTÄNDIG UND ERSCHÖPFEND.** Elf Pflichtfelder je Sprache, eine
+  Verzweigung, ein `never`-Zweig. Ein fehlendes Feld ist ein `tsc`-Fehler.
+- **Q5 — DIE WORTLAUTE STAMMEN AUS DER FREIGABE, NICHT AUS DEM CODE.** Jeder Test schreibt
+  sie als **Literal** aus Entscheidung P11.13-31 nieder und importiert sie **nicht** aus dem
+  Produktivcode — sonst ist der Wächter ein Spiegel (docs/immer-beachten.md, EIN WÄCHTER
+  ÜBER DIE SPALTENLISTE BEKOMMT SEINE ERWARTUNG NIE AUS DEM CODE).
+- **Q6 — JEDES FELD DER HÜLLE IST PFLICHT.** Kein optionales Feld, kein Vorgabewert, an
+  keiner der drei Signaturen (Entscheidung P11.13-32; P11.13-11 je Feld).
+- **Q7 — KEIN EINGRIFF AUSSERHALB DES EIGENEN SCHATTENBAUMS.** `I1` gilt unverändert; das
+  `lang`-Attribut steht an `.bar` bzw. `.dialog`, an keinem fremden Knoten, und nichts wird
+  zur Laufzeit von der Kundenseite gelesen.
+- **Q8 — JEDER STANDARD-SACHTEXT BESTEHT DAS TOR.** Beide Sprachen, durch `readConsentText`,
+  Zeichen und N = 300 (Entscheidung P11.13-37).
+- **Q9 — DER SPEICHER UND DAS FORMAT `ps1` BLEIBEN UNBERÜHRT.** `read()`, `write()`,
+  `hookFrom`, `CONSENT_STORE_KEY` und die sechs Schlüssel ändern sich nicht; die Sprache
+  erreicht den Speicher der Einwilligung **nicht**.
+
+### Ausdrücklich NICHT dazu
+
+- **EINE AUTOMATIK nach `navigator.language` oder `document.documentElement.lang`** —
+  entschieden in P11.13-35, mit Gründen und Kosten. **Kein Vorrats-Eintrag, kein Trigger.**
+- **EIN DRITTER SPRACHRAUM** — die Grenze von P11.13-24 und P11.13-33.
+- **DIE TEXTE DER APP-OBERFLÄCHE.** Der Abschnitt „Widerruf" in `src/components/PublishView.tsx`
+  (Owner-Freigaben G1 bis G5, 2026-09-16) und die Texte des Einwilligungs-Abschnitts derselben
+  Datei bleiben **deutsch und unberührt**. **Das ist eine andere Menge mit einem anderen
+  Leser** — dem Betreiber, nicht dem Besucher —, und der Backlog-Eintrag 11.5f grenzt sie
+  ausdrücklich ab. **Die Beschriftung des neuen Bedienelements gehört zu DIESER Menge**, nicht
+  zur Tabelle.
+- **DER EXPORT-PFAD** — er trägt heute weder Schalter noch Thema noch Farbe noch Sachtext und
+  wird auch keine Sprache tragen (Entscheidung P11.13-28; offener Punkt DER EXPORT-PFAD IST
+  VOM EINWILLIGUNGS-SCHALTER NICHT ERFASST). **Er gehört unter die Grenzen des Vermerks**, wie
+  bei 11.13b, -c und -d.
+- **BETREIBER-WORTLAUT FÜR DIE ÜBRIGEN ZEHN PLÄTZE** — frei bleibt weiterhin **allein** der
+  Sachtext (Entscheidung P11.13-23). Eine Tabelle ist keine Eingabe.
+- **EINE VORSCHAU DES DIALOGS IM EDITOR** — unverändert ausgeschlossen seit der Scheibe
+  11.13a; der Prüfweg ist das Veröffentlichen.
+- **EIN EIGENER SACHTEXT JE SPRACHE** — entschieden in P11.13-34.
+
+### Die Pflichten dieser Scheibe
+
+1. **DIE VORHER-WERTE VOR DEM ERSTEN EINGRIFF IN `src/`** — die neunzehn Werte aus VERMERK
+   P11.13-6 plus `buildMetaRuntime` mit numerischer Pixel-ID, also die **zwanzig** aus
+   VERMERK P11.13-8 (e), mit dem Basis-HTML aus VERMERK P11.13-6 (d). **Querprobe gegen
+   VERMERK P11.13-8.**
+2. **DER DIFFERENZ-NACHWEIS (Q1) IST EIN PFLICHT-STOPP, KEIN BERICHTSPUNKT.** Lässt sich die
+   `lang`-Setzung nicht als EINE Einsetzung isolieren, ist die Scheibe zu unterbrechen und
+   vorzulegen — nicht zu approximieren.
+3. **DIE WORTLAUT-PRÜFUNG NACH DEM SCHREIBEN**, für Doku **und** Code: jeder der elf
+   deutschen und elf englischen Wortlaute byte-genau gegen Entscheidung P11.13-31, mit einem
+   Werkzeug und nicht per Ansicht. Dazu die Byte-Kontrolle auf CR ohne LF, LF ohne CR und
+   NUL — bei jeder NEUEN Datei **am committeten Objekt** (docs/immer-beachten.md, EIN
+   NACHWEIS AN EINER NEUEN DATEI IST BLIND), mit `tr` bzw. `od`, **nie `grep`**.
+4. **TESTS FÜR DIE BEDIENUNG.** `PublishView.tsx` hat weiterhin keine eigene Testdatei; die
+   Abdeckung entsteht als `UI…` in `CodeImporter.test.tsx`, wie in 11.13b, -c und -d.
+5. **DER FEHLENDE WÄCHTER FÜR `CONSENT_BAR_REGION_LABEL` WIRD GEBAUT** (Entscheidung
+   P11.13-37).
+6. **DIE PROBE** — englischer Dialog, beide Formen, beide Zustände, fünf Viewports, gegen
+   P11.13-3, -4 und -5; das `lang`-Attribut am gerenderten Element; Fehler-Listener **vor**
+   dem Lauf registriert; Probeseite mit einem fokussierbaren Element **ausserhalb** des
+   Dialogs (Auflage Vorrat P11.13-4). **Die Probe ist bei jedem Lauf neu zu schreiben** — es
+   gibt kein wiederverwendbares Artefakt im Repo (VERMERK P11.13-5).
+7. **DIE LIVE-ANLEITUNG VERGLEICHT GEGEN DIE NEUEN DEUTSCHEN WERTE**, nicht gegen die alten.
+   Das ist die Falle dieser Scheibe: Die sechs Blockwerte aus VERMERK P11.13-8 (a) sind
+   **überholt**, sobald `lang` steht. Wer sie in die Anleitung schreibt, protokolliert einen
+   Fehlschlag, der keiner ist (docs/immer-beachten.md, EINE ANLEITUNG, DIE EINE VORAUSSETZUNG
+   NICHT NENNT, ERZEUGT EINE FALSCHE ENTWARNUNG). **Unverändert bleiben allein der Aus-Fall
+   und das Wiring.**
+
+### Die Plan-Fragen
+
+1. **Wie wird die `lang`-Setzung so gebaut, dass sie als EINE Einsetzung isolierbar ist?**
+   Der Differenz-Nachweis hängt daran; eine über den Aufbau verstreute Setzung machte ihn
+   unführbar.
+2. **Wie erreichen `CONSENT_BAR_REGION_LABEL`, `CONSENT_MODAL_DIALOG_LABEL` und
+   `CONSENT_REVOKE_WARNING` die Tabelle, ohne dass der deutsche Zweig abschreibt?** Sie
+   liegen heute in drei ANDEREN Dateien als die acht übrigen.
+3. **Wo liegt die Tabelle, ohne einen Import-Zyklus zu erzeugen?** `consent-bar.ts` und
+   `consent-modal.ts` importieren heute aus `consent-choice.ts`, nicht umgekehrt.
+4. **Wie heisst die Hülle, wie heissen ihre drei Felder, und wie heisst die Tabellenfunktion
+   mit ihrem Rückgabetyp?**
+5. **Wie lautet die Beschriftung des Bedienelements in `PublishView.tsx`?** Sie ist
+   **App-Oberfläche und KEIN ausgelieferter Text**; sie fällt nicht unter Entscheidung
+   P11.13-31 und braucht eine eigene Freigabe.
+
+PROVENIENZ: Der Zuschnitt ist ARCHITEKT 2026-09-18 auf der Grundlage der Owner-Entscheidung
+O6 und der Architekt-Entscheidungen H1 bis H6 desselben Tages; er ist als Entscheidungen
+P11.13-31 bis P11.13-37 ausformuliert. Die gemessenen Angaben, auf die er sich stützt, stehen
+in VERMERK P11.13-9 (CC, 2026-09-18, auf `80dd45a`). **Die Freigabe steht aus.**
 
 ---
 

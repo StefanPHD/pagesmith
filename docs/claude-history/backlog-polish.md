@@ -4989,24 +4989,31 @@ wandert mit der Standdatei ins Archiv.
   Ablehnen gleichwertig in 11.5d (gleichrangige Knöpfe, bindende Entscheidung (12)), Widerruf
   in 11.5e-2, Speicherung in 11.5b, Darstellung auf fremden Seiten in 11.5d und 11.5d-2 (je
   live an zwei realen Kundenseiten belegt).
-- **DIE MENGE, DIE EINE SPÄTERE SCHEIBE ANFASSEN MÜSSTE — ZEHN SICHTBARE TEXTE DES
-  AUSGELIEFERTEN TEXTES, ALLE ALS KONSTANTE, KEINER EINGEBAUT** (GEMESSEN am Repo, CC,
-  2026-09-16):
+- **DIE MENGE, DIE EINE SPÄTERE SCHEIBE ANFASSEN MÜSSTE — ELF SICHTBARE TEXTE DES
+  AUSGELIEFERTEN TEXTES, ALLE ALS KONSTANTE, KEINER EINGEBAUT** (zehn GEMESSEN am Repo, CC,
+  2026-09-16; der elfte GEMESSEN CC, 2026-09-18 — s. die Nachzugs-Zeile am Ende dieses
+  Eintrags):
   · `CONSENT_TEXT` (`src/lib/tracking/consent-choice.ts`) — der Sachtext;
   · `CONSENT_ACCEPT_LABEL` (ebenda) — "Alle akzeptieren";
   · `CONSENT_SAVE_LABEL` (ebenda) — "Auswahl speichern";
   · `CONSENT_REJECT_LABEL` (ebenda) — "Ablehnen";
+  · `CONSENT_WAY_LABEL` (ebenda) — "Einstellungen", der Weg zu den Gruppen; **er ist erst mit
+    der Scheibe 11.13a am 2026-09-17 entstanden und stand deshalb nicht in der Messung vom
+    2026-09-16**;
   · `CONSENT_GROUPS_LABEL` (ebenda) — "Bereiche", zugänglicher Name, kein sichtbarer Text;
   · `CONSENT_GROUP_MEASURE_LABEL` (ebenda) — "Messung";
   · `CONSENT_GROUP_ADS_LABEL` (ebenda) — "Werbung";
   · `CONSENT_BAR_REGION_LABEL` (`src/lib/tracking/consent-bar.ts`) — "Einwilligung";
   · `CONSENT_MODAL_DIALOG_LABEL` (`src/lib/tracking/consent-modal.ts`) — "Einwilligung";
   · `CONSENT_REVOKE_WARNING` (`src/lib/tracking/consent-revoke.ts`) — die Konsolen-Warnung G6.
-  **DASS ALLE ZEHN KONSTANTEN SIND, IST DER GÜNSTIGE TEIL DER AUSGANGSLAGE:** Eine spätere
-  Scheibe fände zehn benannte Stellen und keinen eingebauten Text. **SECHS DER ZEHN SIND
-  OWNER-FREIGABEN** (F1 bis F3 der Scheibe 11.5e-1, G6 der Scheibe 11.5e-2, der Sachtext und
-  "Ablehnen" aus 11.5d) — wer sie ändert, braucht eine neue Freigabe; L5, L13, M5 und W-Tests
-  halten sie wörtlich.
+  **DASS ALLE ELF KONSTANTEN SIND, IST DER GÜNSTIGE TEIL DER AUSGANGSLAGE:** Eine spätere
+  Scheibe fände elf benannte Stellen und keinen eingebauten Text. **SIEBEN DER ELF KONSTANTEN
+  TRAGEN EINE OWNER-FREIGABE, UND SIE VERTEILEN SICH AUF SECHS FREIGABE-POSTEN** (F1 bis F3
+  der Scheibe 11.5e-1, G6 der Scheibe 11.5e-2, der Sachtext und "Ablehnen" aus 11.5d) — **F1
+  DECKT ZWEI Konstanten**, "Messung" und "Werbung", und deshalb gehen Posten- und
+  Konstanten-Zählung auseinander. Wer sie ändert, braucht eine neue Freigabe; L5, L13, M5 und
+  W-Tests halten sie wörtlich. **OHNE FREIGABE BLIEBEN VIER:** `CONSENT_ACCEPT_LABEL`,
+  `CONSENT_WAY_LABEL`, `CONSENT_BAR_REGION_LABEL` und `CONSENT_MODAL_DIALOG_LABEL`.
 - **KEIN BAUSTEIN LIEST DIE SPRACHE DER KUNDENSEITE, UND NICHTS IM PRODUKT ZEIGT EINE
   ABWEICHUNG AN — NICHT-TREFFER MIT BENANNTER ACHSE** (GEMESSEN am Repo, CC, 2026-09-16):
   Achse `lang|locale|i18n|navigator\.language|documentElement\.lang|hreflang|sprache|übersetz|translat`,
@@ -5054,6 +5061,18 @@ Owner-Freigaben, KEINE Betreiber-Eingabe, NACH Scheibe 4 — docs/roadmap.md, Ze
 Punkt (c) 5, und bindende Entscheidung P11.13-24 der Standdatei): **Dieser Eintrag wird damit
 VERORTET und NICHT erledigt** — seine Messungen sind der Massstab jener Scheibe und gingen mit
 einer Streichung verloren.
+
+**NACHGEZOGEN 2026-09-18, ZWEITER DES TAGES — DIE ZÄHLUNG IST SACHKORRIGIERT, UND SEIT
+HEUTE SIND ALLE ELF FREIGEGEBEN.** Es sind **ELF** Textplätze, nicht zehn: `CONSENT_WAY_LABEL`
+ist mit der Scheibe 11.13a (Bau-Commit `bb9f045`, 2026-09-17) entstanden, also NACH der Messung
+vom 2026-09-16 (GEMESSEN am Repo, CC, 2026-09-18; VERMERK P11.13-9 der Standdatei, Punkt (a)).
+Und die Freigabe-Zählung nennt **sechs Posten**, deckt aber **sieben Konstanten**, weil F1 zwei
+trägt. **MIT DER OWNER-ENTSCHEIDUNG O6 VOM 2026-09-18 TRAGEN ALLE ELF PLÄTZE EINE FREIGABE, IN
+BEIDEN SPRACHEN** — die drei bisher unfreigegebenen deutschen Wortlaute (an VIER Konstanten)
+sind nachträglich freigegeben, die englischen sind neu: **elf Zellen, zehn verschiedene
+Wortlaute**, weil die zwei zugänglichen Namen denselben tragen; Volltext als bindende
+Entscheidung P11.13-31 der Standdatei. **DIE
+MESSUNGEN DIESES EINTRAGS BLEIBEN DER MASSSTAB** — sie sind hier korrigiert und nicht gestrichen.
 
 **ZWEI HEBUNGS-KANDIDATEN — ÄNDERUNGSANTRÄGE AN docs/arbeitsweise.md IN WARTESTELLUNG, KEINE
 REGELN.** Sie richten sich an den, der den Prompt oder den Commit-Body schreibt — das ist der

@@ -3854,7 +3854,11 @@ trifft S1, S3 und S4).
 PROVENIENZ: Der Zuschnitt ist ARCHITEKT 2026-09-18 auf der Grundlage der Owner-Entscheidung
 O6 und der Architekt-Entscheidungen H1 bis H6 desselben Tages; er ist als Entscheidungen
 P11.13-31 bis P11.13-37 ausformuliert. Die gemessenen Angaben, auf die er sich stützt, stehen
-in VERMERK P11.13-9 (CC, 2026-09-18, auf `80dd45a`). **Die Freigabe steht aus.**
+in VERMERK P11.13-9 (CC, 2026-09-18, auf `80dd45a`). **Die Freigabe ist erteilt — ARCHITEKT
+2026-09-18 für Zuschnitt und Plan, OWNER 2026-09-18 für die Wortlaute (P11.13-31).**
+**DIE BESCHRIFTUNG DES BEDIENELEMENTS IST DAVON AUSGENOMMEN** (Plan-Frage 5): „Sprache",
+„Deutsch", „Englisch" sind App-Oberfläche, im Bau gesetzt und **owner-seitig noch nicht
+freigegeben**.
 
 ---
 

@@ -2937,7 +2937,7 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   (Phase 11.6, gehoben 2026-09-19 aus der bindenden Entscheidung P11.6-6 und dem Bau des
   Laders): Ein mit `DOMParser` zerlegtes Dokument ist INERT und hat das `scripting`-Flag
   AUS. Das ändert die Zerlegung, nicht nur die Ausführung.
-  DIE ZWEI FOLGEN, DIE DIESES PROJEKT GEMESSEN HAT (CC, 2026-09-19, jsdom 27 unter vitest):
+  DIE ZWEI FOLGEN, DIE DIESES PROJEKT GEMESSEN HAT (CC, 2026-09-19, jsdom 29.1.1 unter vitest):
   · `<noscript>` IST DORT KEIN TEXT-CONTAINER, SONDERN EIN GEWÖHNLICHES ELEMENT MIT
     KINDERN. Ein `<noscript><img …>` trägt ein echtes `<img>`. Wer den Knoten in die LIVE-
     Seite übernimmt, wo Skripting AN ist, hängt dort ein gewöhnliches Bild ein — UND ES

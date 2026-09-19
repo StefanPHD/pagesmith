@@ -5324,3 +5324,45 @@ stehen hier**, dazu ein Satz, der in keinem Vorrats-Eintrag stand.
   PROVENIENZ: die drei Zählungen GEMESSEN am Repo (CC, 2026-09-18), je in der Verdichtung
   ihrer Scheibe protokolliert; die Nachbarschafts-Prüfung GELESEN am Dateitext (CC,
   2026-09-18).
+
+## Aus Phase 11.6 gehoben (2026-09-19) — zwei Vorrats-Einträge
+
+Aus dem Vorrat der Standdatei der Phase 11.6 (Custom-Pixel). Die Einträge tragen ihre
+URSPRUNGS-NUMMERN mit Phasen-Präfix (`P11.6-n`). Das Kriterium war zweiteilig — benennbarer
+Trigger UND "geht sonst still kaputt"; von vier Vorrats-Einträgen trägt beides nur einer
+(er liegt als offener Punkt), einer ist GESTRICHEN (sein Gegenstand steht bereits zweimal
+in dieser Datei), und diese zwei tragen KEINEN Trigger. Der Text ist VERDICHTET und nicht
+zeichengleich; der ungekürzte Wortlaut steht im Archiv der Phase.
+
+- **P11.6-1 — DER TITEL DES EINDEUTIGKEITS-POSTENS SAGT SEIT 0025 "PRIMÄRSCHLÜSSEL"**
+  Der offene Punkt heisst "DER PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets
+  BLEIBT" (docs/offene-punkte.md, Stub in CLAUDE.md). Seit Migration 0025 ist der
+  Primärschlüssel die einspaltige `id` (`project_secrets_pkey`); die Eindeutigkeit auf
+  `(project_id, target)` liegt im UNIQUE-Constraint `project_secrets_project_id_target_key`,
+  UNIQUE NULLS NOT DISTINCT (GEMESSEN am Migrationstext und an docs/db-stand.md, CC,
+  2026-09-19). **Gemeint ist und war die EINDEUTIGKEIT.**
+  **DER TITEL WIRD NICHT GEÄNDERT** — er wird zitiert, und eine Umformulierung machte jeden
+  Zeiger auf ihn tot. Dieselbe Abwägung ist in docs/immer-beachten.md an der Regel "MEHRERE
+  KENNUNGEN JE ZIEL BRECHEN EINEN SCHLÜSSEL (PROJEKT, ZIEL) NICHT" bereits getroffen; jene
+  Regel trägt die Richtigstellung schon, der Posten NICHT.
+  **KEIN TRIGGER, und deshalb liegt er hier:** Der Titel geht nicht kaputt, er ist nur
+  ungenau. Offen ist allein, ob der Posten eine Richtigstellung bekommt. KEINE EMPFEHLUNG.
+
+- **P11.6-3 — DIE VORSCHAU FEUERT ECHTE EREIGNISSE: EINE HÄLFTE IST GEFÜHRT, DIE ANDERE NICHT**
+  **Die `fbq`-Hälfte ist geführt** und ausdrücklich akzeptiert:
+  docs/claude-history/phase-4-mapping-codegen-export.md sagt wörtlich "Die Vorschau feuert
+  bereits bei Linksklick echtes fbq (akzeptierte Marketer-eigene-Vorschau-Verschmutzung)" —
+  festgehalten beim Bau des auxclick-Listeners. **Dafür steht hier nur der Zeiger.**
+  **Die `/api/e`-Beacon-Hälfte ist NICHT geführt** (GEMESSEN am Repo, CC, 2026-09-19, Achse
+  `Vorschau` neben `Beacon` bzw. `api/e` über alle Doku-Dateien: null Treffer;
+  Positivkontrolle: `Vorschau` trifft in dieser Datei fünfmal, in docs/offene-punkte.md
+  elfmal). Erklärbar und trotzdem eine Lücke: Jener Satz stammt aus Phase 4, den CAPI-Beacon
+  gibt es erst seit Phase 6, und seit Phase 11 Scheibe 8 hängt er nicht einmal mehr an der
+  Pixel-ID. **Die akzeptierte Verschmutzung ist seither GRÖSSER als der Satz, der sie
+  akzeptiert** — sie erreicht die eigene `events`-Tabelle und damit die Analytics-Zahlen.
+  **WOZU ER IN DER PHASE 11.6 GEBRAUCHT WURDE:** Entscheidung P11.6-6 (d) nimmt den
+  Custom-Baustein aus der Vorschau heraus und weicht damit vom Bestand ab. Dieser Eintrag
+  belegt, dass der Bestand dort nicht sauber ist, sondern gewachsen — die Abweichung ist
+  also keine Inkonsequenz.
+  **KEIN TRIGGER** — der Zustand geht nicht still kaputt, er ist seit Phase 4 bekannt und
+  bewusst. KEINE EMPFEHLUNG, ob Meta und der Beacon in der Vorschau bleiben sollen.

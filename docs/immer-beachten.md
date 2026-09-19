@@ -204,6 +204,8 @@ wäre die zweite Wahrheit, die dieses Verzeichnis gerade vermeidet.
 - EIN OPAKER MARKEN-TYP HAT GENAU EINE ZUSICHERUNG IM GANZEN REPO, UND SIE ...
 - DAS HARTE KRITERIUM DES EINWILLIGUNGS-DIALOGS IST EINE DEFINITION, KEIN ...
 - WO EINE BYTE-GLEICHHEIT BEWUSST AUFGEGEBEN WIRD, TRITT EIN DIFFERENZ-NACHWEIS ...
+- BETREIBER-CODE IM AUSGELIEFERTEN TEXT REIST ALS WERT UND WIRD GEKAPSELT ...
+- EIN `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM SKRIPTING — WER KNOTEN ...
 
 ## Immer beachten
 - DIE domains-ZEILE IST DIE ALLEINIGE WAHRHEIT ÜBER "IST DIESES PROJEKT LIVE?"
@@ -2884,3 +2886,84 @@ EINE DATEI, DIE IHRE EIGENE GRÖSSE IM PRÄSENS NENNT, ERZEUGT EINEN KREISLAUF A
   PROVENIENZ: ARCHITEKT-ENTSCHEIDUNG 2026-09-18. Der Nachweis ist in der Scheibe 11.13e
   18-von-18 GEFAHREN und live an einer echten ausgelieferten Seite verankert (GEMESSEN, CC,
   2026-09-18; die sechs Live-Blockwerte sind OWNER-MESSUNGEN und von CC nicht prüfbar).
+- BETREIBER-CODE IM AUSGELIEFERTEN TEXT REIST ALS WERT UND WIRD GEKAPSELT AUSGEFÜHRT —
+  EINE MASKIERUNG ALLEIN REICHT NICHT (Phase 11.6, gehoben 2026-09-19 aus den bindenden
+  Entscheidungen P11.6-5 Teil (3) und P11.6-6 Teil (a)): Soll AUSFÜHRBARER Code eines
+  Betreibers in einen ausgelieferten Block, gilt beides zusammen: er wird über den
+  Einbettungs-Helfer als STRING transportiert, und seine Ausführung liegt in einer
+  Kapselung, die Syntax- und Laufzeitfehler fängt.
+  SIE IST NICHT DIE REGEL "JEDER BETREIBER-WERT, DER IN SCRIPT-ROHTEXT GEHT, LÄUFT ÜBER DEN
+  EINBETTUNGS-HELFER", und die Abgrenzung ist der Grund für eine eigene Regel: Jene beendet
+  ihre Arbeit mit der Maskierung, weil ein WERT ein Wert bleibt. CODE muss am Zielort
+  wieder Code WERDEN — und genau dieser zweite Schritt ist der gefährliche.
+  DIE ERSTE HÄLFTE LÖST DEN TRANSPORT, UND ZWAR VOLLSTÄNDIG: Das Unicode-Escape lebt im
+  QUELLTEXT des Blocks; der zur Laufzeit gelesene String trägt wieder das echte Zeichen und
+  ist ausführbar. Die naheliegende Sorge, die Maskierung mache den Code unbrauchbar, trifft
+  deshalb NICHT zu — wer sie glaubt, setzt roh ein, und ein `</` + `script>` im
+  Betreiber-Code verlässt den Block.
+  DIE ZWEITE HÄLFTE LÖST EIN ANDERES PROBLEM UND IST NICHT OPTIONAL: Fremder Code kann
+  werfen — beim ÜBERSETZEN (Syntaxfehler) UND beim AUFRUF (Laufzeitfehler). Liegt er
+  ungekapselt auf einem Pfad, an dem danach noch etwas passieren muss, nimmt sein Wurf das
+  mit. BELEG: Auf dem Klick-Pfad dieses Projekts folgen dem Tracking noch der Redirect und
+  das Meta-Fire derselben Aktion; ohne Kapselung tötet eine kaputte Betreiber-Zeile die
+  Kernfunktion der Kundenseite (GEMESSEN per Mutation, CC, 2026-09-19: ohne try/catch
+  fallen genau die zwei Läufe, die den Redirect nach einem Syntax- bzw. Laufzeitfehler
+  prüfen).
+  VIER DINGE, DIE DIE KAPSELUNG NICHT FÄNGT, und sie gehören an jede Umsetzung geschrieben,
+  weil eine Sammelformel sie später als gedeckt erscheinen liesse: ASYNCHRONE Fehler (ein
+  `setTimeout`, ein `.then`, ein `onerror` wirft nach der Rückkehr) · ENDLOSSCHLEIFEN (sie
+  blockieren den Pfad, und kein `catch` hilft) · absichtliche SABOTAGE (der Code läuft im
+  globalen Geltungsbereich und kann fremde Namen überschreiben — das ist der NOTAUSGANG,
+  kein Mangel der Kapselung) · eine CONTENT-SECURITY-POLICY der Kundenseite, die die
+  gewählte Ausführungsform verbietet; der Ausfall ist dann gefangen und damit LAUTLOS.
+  WAS DIE ZEILE AUSSERDEM NICHT BEKOMMT, solange niemand es verlangt: PARAMETER. Was
+  fremder Code einmal sehen darf, bekommt man nicht zurück (docs/immer-beachten.md, "WAS
+  EINMAL IM AUSGELIEFERTEN TEXT STEHT, IST EINE EINBAHNSTRASSE") — und ein mitgegebener
+  Wert mit eigener Bedeutung, etwa eine geteilte Ereignis-Kennung, macht fremden Code zum
+  Verbraucher einer Zusage, die ihm niemand erklärt hat. Nachlegen geht, herunternehmen
+  nicht.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald ein Gate den Aufrufgraphen befragen kann und sieht, dass ausführbarer
+  Betreiber-Code ohne Helfer oder ohne Kapselung in einen ausgelieferten Block geht. Ein
+  solches gibt es nicht; gesichert wird am ERGEBNIS — die feindliche Nutzlast durch die
+  ECHTE Einsetzstelle, und eine Mutation, die die Kapselung entfernt.
+  PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-19 (P11.6-5 Teil (3)) und ARCHITEKT-ENTSCHEIDUNG
+  2026-09-19 (P11.6-6 Teil (a)); der Ausbruch eines `</` + `script>` ist in Phase 11.13
+  GEMESSEN (VERMERK P11.13-7), die vier ungefangenen Klassen sind eine ABLEITUNG, die
+  CSP-Klasse zusätzlich am eigenen Repo als Nicht-Treffer erhoben (CC, 2026-09-19).
+  Herleitung: das Archiv der Phase 11.6, Entscheidungen P11.6-5 und P11.6-6.
+- EIN `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM SKRIPTING — WER KNOTEN DARAUS IN EINE
+  LEBENDE SEITE ÜBERNIMMT, ÜBERNIMMT EINEN ANDEREN BAUM, ALS DER BROWSER GEBAUT HÄTTE
+  (Phase 11.6, gehoben 2026-09-19 aus der bindenden Entscheidung P11.6-6 und dem Bau des
+  Laders): Ein mit `DOMParser` zerlegtes Dokument ist INERT und hat das `scripting`-Flag
+  AUS. Das ändert die Zerlegung, nicht nur die Ausführung.
+  DIE ZWEI FOLGEN, DIE DIESES PROJEKT GEMESSEN HAT (CC, 2026-09-19, jsdom 27 unter vitest):
+  · `<noscript>` IST DORT KEIN TEXT-CONTAINER, SONDERN EIN GEWÖHNLICHES ELEMENT MIT
+    KINDERN. Ein `<noscript><img …>` trägt ein echtes `<img>`. Wer den Knoten in die LIVE-
+    Seite übernimmt, wo Skripting AN ist, hängt dort ein gewöhnliches Bild ein — UND ES
+    LÄDT. Ein Rückfall-Pixel, das nur für Besucher OHNE JavaScript gedacht ist, zählt dann
+    JEDEN Seitenaufruf ein zweites Mal, ohne dass irgendwo ein Fehler erscheint.
+  · DER EINFÜGEMODUS ENTSCHEIDET MIT, UND ZWAR GEGENLÄUFIG ZUR ERWARTUNG: Im KOPF-Kontext
+    schliesst der Parser das `<noscript>` VOR seinem Inhalt und hebt den Inhalt in den
+    Body — das Kind ist dann über das Element gar nicht mehr erreichbar, und jede
+    Absicherung, die am Element ansetzt, greift ins Leere. Im BODY-Kontext bleibt der
+    Inhalt drin. Ein Fragment ohne Hülle wird im KOPF-Kontext geparst; wer den Body-Kontext
+    will, stellt `"<body>"` voran.
+  WAS DARAUS FOLGT, in zwei Sätzen: Wer fremdes Markup über `DOMParser` zerlegt und Knoten
+  daraus übernimmt, ENTSCHEIDET den Einfügemodus statt ihn hinzunehmen — und er bereinigt
+  im INERTEN Dokument, nicht erst beim Übernehmen. Eine Bereinigung dort berührt KEINEN
+  fremden Knoten; die Regel "KEIN BAUSTEIN DES AUSGELIEFERTEN TEXTES FASST ZUR LAUFZEIT
+  EINEN FREMDEN KNOTEN AN" ist nicht einmal im Umkreis.
+  EINE ZWEITE STELLE, AN DER EIN INERTES DOKUMENT ANDERS IST ALS EINE SEITE, und sie kostet
+  sonst eine Testrunde: EIN EINGEFÜGTES SCRIPT-ELEMENT LÄUFT DORT NICHT. Ein Test gegen ein
+  `DOMParser`-Dokument kann die EINFÜGUNG belegen, nie die AUSFÜHRUNG — das ist eine
+  Live-Test-Achse, und ein Test, der es anders behauptet, behauptet zu viel.
+  DIE BEDINGUNG DES ENTFALLENS IST FORMULIERBAR UND HEUTE NICHT ERFÜLLT: Sie entfällt,
+  sobald kein Pfad dieses Projekts mehr fremdes Markup mit `DOMParser` zerlegt und Knoten
+  daraus in ein lebendes Dokument übernimmt.
+  DIE GRENZE DER MESSUNG GEHÖRT DAZU: Gemessen ist jsdom; für einen ECHTEN Browser ruht die
+  Aussage auf den Einfügemodi der Spezifikation. Ein Live-Lauf in Chrome hat die FOLGE
+  bestätigt (keine Anfrage an die Adresse des Rückfall-Bildes, OWNER, 2026-09-19); Firefox
+  und WebKit sind ungemessen.
+  PROVENIENZ: der Parser-Befund GEMESSEN (CC, 2026-09-19); die Folge für den Live-Baum eine
+  ABLEITUNG; der Chrome-Lauf eine OWNER-ANGABE. Herleitung: das Archiv der Phase 11.6.

@@ -430,6 +430,38 @@ aufeinander; sie liegen alle hier und finden einander.
   BEFUND ZUM TRIGGER: Dieser Punkt kann FRÜHER fällig werden als der Posten — Vorrat (3)
   trug als offene Hälfte seines Triggers "spätestens der erste fremde Nutzer, der den
   Testmodus einschaltet", und ein Beta-Start mit fremden Nutzern läge vor dem Launch.
+  (4) FÜNF EIGENSCHAFTEN DES CUSTOM-PIXELS, DIE EIN BETREIBER NICHT ERRATEN KANN — ERGÄNZT
+  AM 2026-09-19 (Phasenende 11.6, aus Vorrat P11.6-4). DER TITEL DIESES POSTENS SAGT "DREI
+  PUNKTE" UND IST DAMIT EINE HISTORISCHE ZAHL, nicht mehr die heutige; er wird NICHT
+  geändert, weil er zitiert wird — dieselbe Abwägung wie am Titel des Eindeutigkeits-Postens
+  weiter oben. Wer nach der Zahl geht, zählt falsch; wer nach dem Titel sucht, findet.
+  · `<noscript>` HAT AUF DIESEM PFAD KEINE WIRKUNG. Der Lader entfernt jedes `<noscript>`
+    aus dem geparsten Snippet — nötig, weil sein Inhalt sonst als gewöhnliches Bild in die
+    Seite käme und JEDEN Seitenaufruf ein zweites Mal zählte. Ein Rückfall für Besucher ohne
+    JavaScript kann hier ohnehin nie greifen: Er wirkt nur bei ausgeschaltetem Skripting,
+    und dann läuft der Lader gar nicht. Wer ihn für wirksam hält, zählt jene Besucher
+    fälschlich als erfasst.
+  · AUF BEREITS VERÖFFENTLICHTEN SEITEN IST `custom` ABGELEHNT, bis der Besucher neu
+    entscheidet. Ein gespeicherter `ps1:`-Wert bleibt gültig, führt den neuen Schlüssel aber
+    in keiner seiner zwei Listen, und `hookFrom` setzt ihn dann auf `false`
+    (`src/lib/tracking/consent-store.ts`). Fail-closed und richtig — aber unerklärt sieht es
+    aus wie ein Defekt.
+  · EINE CSP OHNE `unsafe-eval` AUF DER KUNDENSEITE LEGT DIE EREIGNISZEILE STILL. Sie läuft
+    über `new Function`; eine `<meta http-equiv>`-CSP im importierten HTML kann das
+    verbieten. Der Ausfall ist gefangen und damit LAUTLOS — die Zeile tut dann nichts. Der
+    Basis-Code ist nicht betroffen (echtes Script-Element). Wir selbst liefern keine CSP aus
+    (GEMESSEN, CC, 2026-09-19).
+  · VERSCHACHTELTE `<script>`-ELEMENTE LAUFEN NICHT. Der Lader baut ein frisches
+    Script-Element nur für die OBERSTE Ebene; ein `<script>` in einem `<div>` kommt als
+    geklonter Knoten in die Seite und wird nicht ausgeführt. Wer sein Snippet in einen
+    Container wickelt, bekommt es still nicht ausgeführt. ABLEITUNG, nicht gemessen.
+  · BEI EINEM KNOPF MIT WEITERLEITUNG IST OFFEN, OB DIE ANFRAGE DES NETZWERKS SIE ÜBERLEBT.
+    Die Zeile läuft garantiert vorher (T4); was sie auslöst, ist Betreiber-Code. S. den
+    Posten "CUSTOM-PIXEL: QA UND BETREIBER-HINWEISE VOR DEM LAUNCH", Punkt (2) — die
+    MESSUNG dieser Frage steht dort, die Betreiber-ERKLÄRUNG hier.
+  Was still kaputtgeht: Alle fünf sind LAUTLOS. Der Betreiber sieht kein Fehlerbild, sondern
+  Zahlen, die nicht stimmen — oder Conversions, die fehlen. KEINE EMPFEHLUNG, wie die Sätze
+  lauten oder wo in der Oberfläche sie stehen sollen.
 - DIE VOLLSTÄNDIGKEITS-ACHSE IST NICHT GEBAUT ("Kennungen für ALLE Ereignisse vorhanden") —
   Grund: kein realer Konsument. TRIGGER,
   wörtlich und ausdrücklich nicht "falls es je nötig wird": sobald ein Ziel eine Kennung JE
@@ -4478,6 +4510,20 @@ Nummer in der Standdatei.
   NAMENTLICH — EINE NEUE SERVER-ACTION IST UNGESCHÜTZT BY DEFAULT, UND NICHTS WIRD DAVON ROT"
   in dieser Datei. Dieselbe Figur an einer anderen Achse: ein namentlicher Schutz, der beim
   nächsten Zuwachs nicht mitwächst. **Wer den einen löst, liest den anderen mit.**
+  **STAND 2026-09-19 (Phasenende 11.6) — DER TRIGGER IST EIN SECHSTES MAL EINGETRETEN UND
+  ABGEARBEITET; DIE KLASSE BLEIBT OFFEN.** Die Scheibe 11.6a hat dem Blob ein Mitglied auf
+  OBERSTER EBENE hinzugefügt (`customPixel`, mit `code` darin), und der Term ist im selben
+  Commit gebaut: `getCustomPixelCodeRaw(a) === getCustomPixelCodeRaw(b)` in `settingsEqual`
+  (Bau-Commit `bc001f4`), gehalten vom Wächter T11 in
+  `src/lib/tracking/custom-pixel.test.ts`.
+  **ER IST SKALAR UND NICHT DAS ERGEBNIS DES LESERS, und das ist keine Feinheit:**
+  `getCustomPixelCode` liefert ein OBJEKT (diskriminierte Union); ein `===` darauf vergliche
+  REFERENZEN und meldete nach jedem `setSettings` dauerhaft dirty. Verglichen wird deshalb
+  die skalare Rohfassung — dieselbe Bauform und derselbe Grund wie bei den Farb-Termen.
+  **WARUM DER POSTEN TROTZDEM OFFEN BLEIBT:** Die Funktion zählt weiter auf. Das SIEBTE
+  Mitglied ist wieder unsichtbar, und der Preis ist unverändert. **Die Zählung „fünffach
+  gelebt" darüber ist damit auf SECHS gestiegen** — der Absatz bleibt wörtlich, er ist
+  datiert und nicht falsch.
   **KEINE EMPFEHLUNG**, ob `settingsEqual` strukturell vergleichen soll — das ist zugleich die
   Kipp-Bedingung der Entscheidungen (6) und (15) jener Phase.
 
@@ -4671,3 +4717,49 @@ docs/claude-history/backlog-polish.md; **gestrichen ist keiner.**
   GEMESSEN am eigenen Lauf (CC, 2026-09-18, Playwright/Chromium über `file://`); der Wortlaut
   von P11.13-5 und der Guardrail (h) GELESEN. Dass Handys einen Überlagerungs-Scrollbalken
   zeichnen, ist eine ABLEITUNG und ungemessen.
+
+**AUS DEM PHASENENDE 11.6 GEHOBEN (2026-09-19) — EIN POSTEN.** Aus dem Vorrat der Standdatei
+der Phase 11.6 (Custom-Pixel) und aus den GRENZEN des Live-Tests. DIE URSPRUNGS-NUMMERN
+STEHEN AM EINTRAG; sie tragen das Phasen-Präfix `P11.6-n`. DAS KRITERIUM WAR ZWEITEILIG —
+benennbarer Trigger UND "geht sonst still kaputt"; von vier Vorrats-Einträgen trägt beides
+nur einer, einer ist GESTRICHEN (sein Gegenstand steht bereits zweimal im Backlog), zwei
+liegen in docs/claude-history/backlog-polish.md.
+DER POSTEN IST EINE OWNER-VORGABE (2026-09-19) UND BÜNDELT DREI SACHEN, DIE EINZELN JE EINEN
+EIGENEN POSTEN ERGEBEN HÄTTEN: zwei Messlücken des Live-Tests und die Betreiber-Hinweise.
+Sein dritter Teil steht NICHT hier, sondern als Punkt (4) am Posten
+"BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" — hier zeigt er nur dorthin, damit derselbe
+Gegenstand nicht zweimal geführt wird.
+- CUSTOM-PIXEL: QA UND BETREIBER-HINWEISE VOR DEM LAUNCH (Trigger: vor dem öffentlichen
+  Launch): Die Scheibe 11.6a ist gebaut und live bestätigt (Bau-Commit `bc001f4`, VERMERK
+  P11.6-2 im Archiv der Phase). DREI DINGE FEHLEN, und keines davon hält die Phase offen —
+  sie werden vor dem Launch fällig.
+  (1) FIREFOX UND SAFARI/WEBKIT SIND UNGEMESSEN. Der Live-Test lief ausschliesslich in
+  Chrome (OWNER, 2026-09-19). Betroffen ist JEDE Achse, zwei besonders: der
+  `noscript`-Befund — also die Frage, ob ein Rückfall-Pixel jeden Seitenaufruf ein zweites
+  Mal zählt — und das NACHLADEN bei später Einwilligung. Was still kaputtgeht: Beides
+  scheitert LAUTLOS. Eine Doppelzählung erzeugt keinen Fehler, sondern falsche Zahlen beim
+  Betreiber; ein ausbleibendes Nachladen erzeugt keinen Fehler, sondern fehlende
+  Conversions. Der Parser-Befund, auf dem die Absicherung ruht, ist an jsdom gemessen und
+  für echte Browser eine ABLEITUNG aus den Einfügemodi (docs/immer-beachten.md, "EIN
+  `DOMParser`-DOKUMENT PARST MIT AUSGESCHALTETEM SKRIPTING").
+  (2) ECHTE NETZWERK-SNIPPETS SIND UNGETESTET. Geprüft wurde mit `lodash` als Bibliothek
+  und `console.log` als Ereigniszeile (OWNER, 2026-09-19) — kein Meta-, TikTok- oder
+  Hotjar-Snippet. DAZU GEHÖRT EINE ZWEITE FRAGE, DIE `console.log` NICHT STELLEN KANN: ob
+  die Anfrage eines Netzwerks eine WEITERLEITUNG überlebt. Die Ereigniszeile läuft
+  garantiert VOR der Navigation (Wächter T4), aber was sie auslöst, ist Betreiber-Code: ein
+  `fetch` ohne `keepalive` oder ein Bild-Pixel kann beim Seitenwechsel abbrechen. Unser
+  eigener Beacon löst das über `sendBeacon` bzw. `keepalive` (docs/immer-beachten.md,
+  "BEACON-keepalive PFLICHT"); auf fremden Code haben wir diesen Zugriff nicht. Was still
+  kaputtgeht: Der Betreiber verdrahtet einen Knopf mit Weiterleitung und verliert genau die
+  Conversions, für die er das Feld benutzt hat — ohne Fehler, ohne Meldung.
+  (3) DIE BETREIBER-HINWEISE STEHEN NICHT HIER, SONDERN ALS PUNKT (4) AM POSTEN
+  "BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" in dieser Datei. Dort sind sie am
+  2026-09-19 ergänzt worden: `<noscript>` ohne Wirkung · `custom` auf bestehenden Seiten
+  abgelehnt bis zur neuen Besucher-Entscheidung · eine CSP ohne `unsafe-eval` legt die
+  Ereigniszeile still · verschachtelte `<script>`-Elemente laufen nicht · die offene
+  Weiterleitungs-Frage. ZWEIMAL GEFÜHRT WÄRE ZWEIMAL GEPFLEGT; hier steht deshalb nur der
+  Zeiger.
+  PROVENIENZ: die zwei Messlücken sind OWNER-ANGABEN vom 2026-09-19 (Live-Test der Scheibe
+  11.6a); die Einordnung als EIN Posten mit Trigger "vor dem öffentlichen Launch" ist
+  OWNER-VORGABE desselben Tages. Die Code-Belege (T4, die Kapselung, der Parser-Befund) sind
+  GEMESSEN am Repo (CC, 2026-09-19).

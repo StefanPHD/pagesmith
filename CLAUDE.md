@@ -462,6 +462,17 @@ bestand. Wer nur den Vorrat sichtet, findet ihn nicht.
   oder Umbruch der eingeklappten Gestalt arbeitet — spätestens vor einem Beta-Launch mit
   fremden Nutzern)
 
+**AUS DEM PHASENENDE 11.6 GEHOBEN (2026-09-19) — EIN POSTEN.** Aus dem Vorrat der Standdatei
+der Phase 11.6 (Custom-Pixel) und aus den GRENZEN ihres Live-Tests; der Posten ist eine
+OWNER-VORGABE desselben Tages und bündelt DREI Sachen, die einzeln je einen eigenen Posten
+ergeben hätten. SEIN DRITTER TEIL STEHT NICHT DORT, SONDERN ALS PUNKT (4) AM POSTEN
+"BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" — derselbe Gegenstand wird nicht zweimal
+geführt. DAS KRITERIUM WAR ZWEITEILIG — benennbarer Trigger UND "geht sonst still kaputt";
+von vier Vorrats-Einträgen trägt beides nur einer, einer ist GESTRICHEN (Gegenstand bereits
+zweimal im Backlog), zwei liegen in docs/claude-history/backlog-polish.md.
+- CUSTOM-PIXEL: QA UND BETREIBER-HINWEISE VOR DEM LAUNCH (Trigger: vor dem öffentlichen
+  Launch)
+
 ## Aktueller DB-/Analytics-Stand — AUSGELAGERT nach docs/db-stand.md
 Der gemessene Ist-Zustand (Migrationsstand, Tabellen, Policies, Rollen-Grants, Spalten,
 Constraints, Indizes, Funktionen, Event-Trigger, Backups) steht in docs/db-stand.md.
@@ -1406,6 +1417,14 @@ achtzig Regeln nicht mehr, ohne dass etwas rot wird.
   VERLORENGEHEN: Sie waren der Massstab jener Scheibe und stehen vollständig im Archiv der
   Phase 11.13. EIN TEIL DES EINTRAGS BLEIBT AUSDRÜCKLICH OFFEN — ob die Betreiber-Wortlaute
   der APP-OBERFLÄCHE dazugehören; das ist eine andere Menge mit einem anderen Leser.
+  NACHGEZOGEN 2026-09-19 — DER ABSCHNITT DER PHASE 11.6: "Aus Phase 11.6 gehoben
+  (2026-09-19) — zwei Vorrats-Einträge". Er trägt P11.6-1 (der Titel des
+  Eindeutigkeits-Postens sagt seit 0025 "Primärschlüssel") und P11.6-3 (die Vorschau feuert
+  echte Ereignisse — die fbq-Hälfte ist geführt, die /api/e-Beacon-Hälfte nicht) unter ihren
+  Ursprungs-Nummern. BEIDE TRAGEN AUSDRÜCKLICH KEINEN TRIGGER, und genau das ist der Grund
+  für ihren Ort: Das zweiteilige Kriterium verlangt Trigger UND "geht sonst still kaputt".
+  Auch hier steht keine Stückzahl für die Datei, aus demselben Grund wie darüber; der Text
+  ist VERDICHTET und nicht zeichengleich.
 - supabase/checks/ — versionierte Messproben für Live-Tests und Gegenproben. KEINE Probe
   fasst ECHTE Daten an; welche Bauformen das zulässt und was eine Datei dann in ihrem Kopf
   sagen muss, steht im README des Ordners — hier der Zeiger, dort die Regel.

@@ -207,6 +207,19 @@ Stub-Zeile mit ihrem Marker (docs/arbeitsweise.md, Die Standdatei).
 
 ## Entscheidungen, die über ihre Scheibe hinaus binden
 
+**SAMMELVERMERK — NICHT GEHOBEN 2026-09-19 (Phasenende 11.6).** Alle SECHS Entscheidungen
+bleiben hier; keine wird als Dauerregel nach docs/immer-beachten.md gehoben, und das ist
+eine Entscheidung mit Grund, keine Auslassung: **Sie beschreiben, WIE der Code DIESER Phase
+gebaut ist** — welche Lesart gewählt wurde, wo das Feld liegt, wie der Schlüssel heisst,
+wann der Lader urteilt. Projektweit ist davon nichts. Eine Regel daraus beschriebe einen
+Gegenstand, den es genau einmal gibt.
+**ZWEI DESTILLATE SIND TROTZDEM ENTSTANDEN, und sie stehen je bei ihrer Quelle:** aus
+P11.6-5 Teil (3) zusammen mit P11.6-6 Teil (a) die Dauerregel über BETREIBER-CODE im
+ausgelieferten Text, aus dem Bau des Laders und P11.6-6 die Dauerregel über das
+`DOMParser`-Dokument mit ausgeschaltetem Skripting. **Die Regel ist das Destillat, nicht
+ihr Ersatz** — beide Entscheidungen stehen hier wörtlich weiter, je mit einem Zeiger
+"→ GEHOBEN 2026-09-19".
+
 ### ENTSCHEIDUNG P11.6-1 — CUSTOM-PIXEL IST LESART (a): EIN CLIENT-SNIPPET
 
 **DIE ENTSCHEIDUNG:** Pagesmith **LÄDT den Basis-Code des Betreibers** und **führt je
@@ -395,7 +408,10 @@ VORPHASE AUF** — und zwar an der Stelle, die jene Phase ausdrücklich gegen ei
 Wahrheit gesichert hat.
 **DIE SCHREIBWEISE IST EINE EINBAHNSTRASSE** (P11.6-2, dritte Auflage).
 
-**(3) BETREIBER-CODE KOMMT NIE ROH IN UNSEREN CODE.** Er reist als **String über
+**(3) BETREIBER-CODE KOMMT NIE ROH IN UNSEREN CODE.** → GEHOBEN 2026-09-19: zusammen mit
+P11.6-6 Teil (a) als Dauerregel "BETREIBER-CODE IM AUSGELIEFERTEN TEXT REIST ALS WERT UND
+WIRD GEKAPSELT AUSGEFÜHRT — EINE MASKIERUNG ALLEIN REICHT NICHT" (docs/immer-beachten.md).
+Der Absatz bleibt wörtlich; die Regel ist das Destillat, nicht sein Ersatz. Er reist als **String über
 `embedInScript`** (`src/lib/script-embed.ts`) und wird zur Laufzeit **GEKAPSELT**
 ausgeführt — so, dass ein Fehler im Betreiber-Code **weder den Redirect noch das
 Meta-Fire derselben Aktion mitreisst**.
@@ -430,7 +446,8 @@ Einfügearithmetik — sind GEMESSEN am Repo (CC, 2026-09-19).
 eine Frage, die der Plan offengelassen oder zu weich entschieden hatte; sie stehen
 gesammelt, weil sie zusammen die Bauform des Custom-Bausteins festlegen.
 
-**(a) DIE EREIGNISZEILE STEHT UNTER DERSELBEN EINWILLIGUNG WIE DER BASIS-CODE.** Mit
+**(a) DIE EREIGNISZEILE STEHT UNTER DERSELBEN EINWILLIGUNG WIE DER BASIS-CODE.**
+→ GEHOBEN 2026-09-19 (die KAPSELUNGS-Hälfte, zusammen mit P11.6-5 Teil (3)) — s. dort. Mit
 eingeschaltetem Dialog läuft sie NUR bei `custom === true`; ohne gesetzten Hook läuft sie
 immer.
 **WARUM DAS EIGENS ENTSCHIEDEN WIRD, obwohl es selbstverständlich klingt:** Der Plan
@@ -453,6 +470,11 @@ dem UNSER Dialog eine Zustimmung entgegennimmt (`write` ruft ihn). Dieser deckt 
 in dem ein FREMDES CMP den Hook setzt, ohne dass `write` je läuft. **Beide sind nötig; der
 eine ersetzt den anderen nicht.**
 
+**(c) SEQUENZIELLES LADEN.** → GEHOBEN 2026-09-19 ist NICHT dieser Absatz, sondern der
+PARSER-BEFUND aus dem Bau des Laders: als Dauerregel "EIN `DOMParser`-DOKUMENT PARST MIT
+AUSGESCHALTETEM SKRIPTING — WER KNOTEN DARAUS IN EINE LEBENDE SEITE ÜBERNIMMT, ÜBERNIMMT
+EINEN ANDEREN BAUM, ALS DER BROWSER GEBAUT HÄTTE" (docs/immer-beachten.md). Das
+sequenzielle Laden selbst bleibt hier — es ist eine Bauform dieser Scheibe.
 **(c) SEQUENZIELLES LADEN. Bei einem `<script src>` wird auf `load` oder `error`
 gewartet, bevor der nächste Knoten eingefügt wird; ein `error` führt WEITER, es bricht
 nicht ab.**
@@ -736,24 +758,23 @@ docs/offene-punkte.md NICHT.**
 
 **WAS OFFEN IST:** ob der Posten eine entsprechende Richtigstellung bekommt. **KEINE
 EMPFEHLUNG.** Hier nur vorgemerkt, damit es beim Phasenende nicht untergeht.
+→ GEHOBEN 2026-09-19 nach docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.6
+gehoben (2026-09-19) — zwei Vorrats-Einträge". KEIN Trigger, deshalb Backlog und nicht
+docs/offene-punkte.md.
 
 ### VORRAT P11.6-2 — `meta-forward.ts` SETZT DIE PIXEL-ID UNKODIERT IN DEN PFAD
 
-**ES GIBT BEREITS ZWEI BACKLOG-EINTRÄGE DAZU — HIER STEHT NUR DER ZEIGER, KEIN ZWEITER
-EINTRAG** (GEMESSEN am Repo, CC, 2026-09-19): docs/claude-history/backlog-polish.md,
-Einträge "DER ERSTE ADAPTER SETZT DIE KENNUNG OHNE KODIERUNG IN DEN PFAD" (STATUS: OFFEN,
-am Code gemessen 2026-08-09) und "KODIERUNG DER KENNUNG IM ENDPUNKT-PFAD" (GEMESSEN
-2026-08-13).
-
-**WARUM ER HIER ÜBERHAUPT AUFTAUCHT:** Die Aufklärung dieser Phase ist beim Prüfen der
-ausgehenden Aufrufe erneut darauf gestossen (`forwardToMeta` in
-`src/lib/capi/meta-forward.ts` interpoliert `config.pixelId` roh, `forwardToPinterest`
-führt die Kennung durch `encodeURIComponent`). **ES IST KEIN SSRF-BEFUND** — der Host
-bleibt fest; betroffen sind Pfadsegmente. Der Pinterest-Adapter kennt die Stelle und sagt
-im Kommentar "MELDEN, NICHT BAUEN".
-
-**NICHTS ZU TUN IN DIESER PHASE.** Der Eintrag steht hier ausschliesslich, damit die
-nächste Runde nicht zum dritten Mal denselben Befund neu erhebt.
+→ GESTRICHEN 2026-09-19 (Phasenende 11.6). **TITEL UND BELEG BLEIBEN, DER RUMPF IST
+WEG.** Der Gegenstand steht BEREITS ZWEIMAL in docs/claude-history/backlog-polish.md —
+"DER ERSTE ADAPTER SETZT DIE KENNUNG OHNE KODIERUNG IN DEN PFAD" (STATUS: OFFEN, am Code
+gemessen 2026-08-09) und "KODIERUNG DER KENNUNG IM ENDPUNKT-PFAD" (GEMESSEN 2026-08-13);
+ein dritter Ort machte aus einem Befund drei Pflegestellen.
+**WAS AM EINTRAG STEHENBLEIBT, IST SEIN ZWECK:** Er war nie ein eigener Befund, sondern
+ein Zeiger — angelegt, damit die Aufklärung dieser Phase ihn nicht zum dritten Mal neu
+erhebt. Dass sie ihn beim Prüfen der ausgehenden Aufrufe wiedergefunden hat, ist der
+Beleg dafür, dass der Zeiger nötig war. **ES IST KEIN SSRF-BEFUND** — der Host bleibt
+fest, betroffen sind Pfadsegmente.
+Der Volltext ist unter dem Commit `b4e40d4` nachzulesen.
 
 ### VORRAT P11.6-3 — DIE VORSCHAU FEUERT ECHTE EREIGNISSE: EINE HÄLFTE IST GEFÜHRT, DIE ANDERE NICHT
 
@@ -784,6 +805,8 @@ gewachsen** — die Abweichung ist also keine Inkonsequenz.
 
 **KEINE EMPFEHLUNG**, ob Meta und der Beacon in der Vorschau bleiben sollen. **KEIN
 TRIGGER** — der Zustand geht nicht still kaputt, er ist seit Phase 4 bekannt und bewusst.
+→ GEHOBEN 2026-09-19 nach docs/claude-history/backlog-polish.md, Abschnitt "Aus Phase 11.6
+gehoben (2026-09-19) — zwei Vorrats-Einträge".
 
 ### VORRAT P11.6-4 — DREI SÄTZE FÜR DIE BETREIBER-DOKUMENTATION, DIE SONST NIEMAND SCHREIBT
 
@@ -852,6 +875,12 @@ betroffen (er läuft als echtes Script-Element). Wir liefern selbst keine CSP au
 DREI PUNKTE" (docs/offene-punkte.md), dessen Trigger "vor dem öffentlichen Launch" lautet.
 **HIER NICHT ERGÄNZT** — das wäre eine Änderung an einem Posten ausserhalb dieser Scheibe.
 **KEINE EMPFEHLUNG**, wie die Sätze lauten sollen.
+→ GEHOBEN 2026-09-19, und zwar GENAU DORTHIN: als Punkt (4) am Posten
+"BETREIBER-DOKUMENTATION FEHLT — DREI PUNKTE" (docs/offene-punkte.md), alle fünf Sätze.
+Die zwei MESSLÜCKEN des Live-Tests, die hier nie standen, tragen zusätzlich den neuen
+Posten "CUSTOM-PIXEL: QA UND BETREIBER-HINWEISE VOR DEM LAUNCH" (Trigger: vor dem
+öffentlichen Launch; OWNER-VORGABE 2026-09-19), mit Stub in CLAUDE.md. Dessen Punkt (3)
+zeigt auf den Betreiber-Posten zurück — derselbe Gegenstand wird nicht zweimal geführt.
 
 ---
 

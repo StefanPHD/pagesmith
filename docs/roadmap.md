@@ -383,6 +383,14 @@ liegen beide hier und finden einander.
       dieser Phase als PFLICHTLEKTÜRE öffnet (docs/aktiver-stand.md, Abschnitt "Was den
       Zuschnitt bindet", führt ihn als bindend). Wer ihn ohne diesen Vorbehalt liest,
       beginnt mit einer Arbeit, die getan ist.
+      NACHGEZOGEN 2026-09-19 — DER ZEIGER DARÜBER MEINT DIE STANDDATEI DER PHASE 11.2,
+      heute docs/claude-history/phase-11.2-google.md; der Pfad docs/aktiver-stand.md trägt
+      je Phase eine andere Datei. Er war seit dem Löschen jener Standdatei TOT und ist mit
+      dem Anlegen der Standdatei der Phase 11.6 am 2026-09-19 FALSCH geworden: Die neue
+      Datei trägt einen gleichnamigen Abschnitt, und der führt jenen Block nicht. Ein
+      toter Zeiger zwingt zum Suchen, ein falscher nicht (docs/immer-beachten.md, EINE
+      ABLAGE MIT HALBWERTSZEIT WIRD ZITIERT, ALS HÄTTE SIE KEINE). Der Wortlaut des
+      Zeigers ist NICHT angetastet; dieser Satz löst ihn auf.
       · ÜBERHOLT IST, FÜNF ANGABEN, JE EINZELN:
         (1) "DER AUFRUF GEGEN events:ingest IST WEITERHIN EIN OFFENER BLOCKER".
         (2) "er ist mit Phase 11.8 KLEINER GEWORDEN UND NICHT ERLEDIGT".
@@ -1563,7 +1571,32 @@ liegen beide hier und finden einander.
         null. Sie ist nicht verboten, sie ist erwogen und mit Grund verworfen.
       PROVENIENZ: OWNER-ENTSCHEIDUNG 2026-09-11. Die Befunde GEMESSEN bzw. GELESEN wie
       je Stelle angegeben; Prüfung am Dateitext und am Code durch CC, 2026-09-11.
-- [ ] Phase 11.6 — Custom-Pixel: KEINE Wiederholung, sondern eine EIGENE
+- [ ] Phase 11.6 — Custom-Pixel: DIE VORFRAGE IST ENTSCHIEDEN — ES IST LESART
+      (a), DAS CLIENT-SEITIGE SNIPPET (OWNER-ENTSCHEIDUNG 2026-09-19). Der
+      Marker bleibt `[ ]`: entschieden ist die Vorfrage, gebaut ist nichts.
+      WAS ENTSCHIEDEN IST: Pagesmith LÄDT den Basis-Code des Betreibers und
+      führt je Click&Connect-Aktion eine Ereigniszeile aus, INNERHALB des
+      eigenen Klick-Codes — KEIN neuer globaler Name (die Einbahnstrassen-Regel,
+      docs/immer-beachten.md).
+      LESART (b) IST NICHT VERWORFEN, SONDERN VERWIESEN — an die Phase 13
+      (E-Mail-/ESP-Webhooks), mit ihren drei Fragen: SSRF-Schutz, die
+      Instanz-Achse (mehrere Empfänger desselben Typs je Projekt) und ein
+      dynamisches Nutzlast-Mapping. Jene Phase sieht ohnehin einen ausgehenden
+      Aufruf an eine betreiber-konfigurierte Adresse vor; dort fallen die drei
+      Fragen zusammen an statt zweimal einzeln.
+      DIE GRÜNDE, DIE AUSGANGSLAGE UND DIE FÜNF OFFENEN DESIGNFRAGEN STEHEN
+      NICHT HIER, SONDERN IN docs/aktiver-stand.md — der Standdatei dieser
+      Phase, angelegt am 2026-09-19; dort als Entscheidungen P11.6-1 und
+      P11.6-2. Zweimal geschrieben liefen sie auseinander.
+      WAS DIE ENTSCHEIDUNG AM TRIGGER (i) ÄNDERT: Lesart (b) war der EINZIGE
+      bekannte Konsument der Instanz-Achse und trug damit Trigger (i) des
+      Postens zur Eindeutigkeit (project_id, target) auf project_secrets. In
+      seinem alten Wortlaut kann er nicht mehr anschlagen; er ist am 2026-09-19
+      ERSETZT (s. "## Offene Punkte" in CLAUDE.md und docs/offene-punkte.md).
+      DER TEXT DIESER ZEILE VOR DER ENTSCHEIDUNG — er bleibt WÖRTLICH stehen und
+      ist ein ZEITDOKUMENT; seine Aussage "ihre VORFRAGE ist offen" trifft seit
+      dem 2026-09-19 nicht mehr zu, alles übrige daran bleibt richtig:
+      "Phase 11.6 — Custom-Pixel: KEINE Wiederholung, sondern eine EIGENE
       ARCHITEKTUR-SCHEIBE — und ihre VORFRAGE ist offen: was es überhaupt ist.
       (a) ein CLIENT-seitiges Snippet — dann gar kein Fan-Out-Ziel, sondern
       derselbe Fall wie das ausgenommene Hotjar. (b) ein SERVER-seitiger
@@ -1573,9 +1606,16 @@ liegen beide hier und finden einander.
       bei mehreren Endpunkten pro Projekt, und ein dynamisches Nutzlast-Mapping
       ohne bekanntes Zielschema. DER ZUSCHNITT ENTSTEHT ERST NACH DIESER KLÄRUNG.
       Lesart (b) ist der EINZIGE bekannte Konsument der Instanz-Achse und damit
-      Trigger (i) der Primärschlüssel-Entscheidung (s. "## Offene Punkte").
+      Trigger (i) der Primärschlüssel-Entscheidung (s. '## Offene Punkte').
       DIE NUMMER TRÄGT KEINE REIHENFOLGE: 11.6 steht hinter 11.5, weil davor nur
-      vier Nummern frei waren — nicht, weil dieses Vorhaben später käme.
+      vier Nummern frei waren — nicht, weil dieses Vorhaben später käme."
+      EINE ANGABE DIESES ZEITDOKUMENTS IST SEIT MIGRATION 0025 ÜBERHOLT, und sie
+      steht auch in der Fassung darüber nicht mehr: "die Aufhebung des
+      PRIMÄRSCHLÜSSELS (project_id, target)". Der Primärschlüssel von
+      project_secrets ist seit 0025 die einspaltige id; was (b) bräche, ist die
+      EINDEUTIGKEIT, die seither im UNIQUE-Constraint
+      project_secrets_project_id_target_key liegt (GEMESSEN am Migrationstext und
+      an docs/db-stand.md, CC, 2026-09-19).
 - [x] Phase 11.5 — Einwilligungs-Dialog (eigener Dialog UND fremdes CMP):
       ABGESCHLOSSEN (2026-09-12 bis 2026-09-16). Pagesmith liefert einen eigenen
       Einwilligungs-Dialog mit; ein fremdes CMP bleibt einbindbar. SIEBEN Scheiben —
@@ -2209,6 +2249,18 @@ liegen beide hier und finden einander.
 - [ ] Phase 13 — E-Mail-/ESP-Webhooks: Pagesmith wird KEIN Versender
       (Owner-Entscheidung) — stattdessen Webhooks auf Performance-Events, der
       Kunde behält seinen bestehenden ESP.
+      HIERHER VERWIESEN (OWNER-ENTSCHEIDUNG 2026-09-19): die Lesart (b) der
+      Phase 11.6 — ein SERVER-seitiger Empfänger mit KUNDENEIGENEM Endpunkt —
+      samt ihren drei Fragen, die kein Fan-Out-Ziel stellt: SSRF-Schutz bei
+      einem betreiber-konfigurierten ausgehenden Aufruf, die Instanz-Achse
+      (mehrere Empfänger desselben Typs je Projekt, heute von der Eindeutigkeit
+      project_secrets_project_id_target_key ausgeschlossen) und ein dynamisches
+      Nutzlast-Mapping ohne bekanntes Zielschema. SIE IST NICHT VERWORFEN,
+      SONDERN VERSCHOBEN — der Grund steht an der Roadmap-Zeile 11.6 und wird
+      hier NICHT verdoppelt. WAS DARAUS FOLGT, SOBALD DIESE PHASE ZUGESCHNITTEN
+      WIRD: Sieht sie kundeneigene Endpunkte vor, ist sie der Trigger (i) des
+      Postens zur Eindeutigkeit (project_id, target) auf project_secrets
+      (s. "## Offene Punkte").
 - [ ] Phase 14 — Tier-1-Härtung (vor echtem Ad-Traffic): Per-Tenant-
       Rate-Limiting auf /api/e + /api/capi, Safe-Browsing-Check der
       Redirect-Ziele, Login-Brute-Force (zuerst Supabase-Auth-Built-in

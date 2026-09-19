@@ -287,8 +287,9 @@ aufeinander; sie liegen alle hier und finden einander.
   (dokumentierte Entscheidung) — das umzustossen gehört in eine eigene Runde.
 - DER PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets BLEIBT — ENTSCHIEDEN
   (Owner, 2026-08-12), Herleitung: Phase-11-Historie. ZWEI TRIGGER, je einzeln
-  hinreichend: (i) die Custom-Pixel-Vorfrage fällt zugunsten eines SERVER-Empfängers mit
-  kundeneigenem Endpunkt; (ii) es zeigt sich, dass die KENNUNG NICHT IN DEN
+  hinreichend: (i) die erste Scheibe, die MEHRERE EMPFÄNGER DESSELBEN TYPS JE PROJEKT
+  baut — insbesondere die Phase 13, falls sie kundeneigene Endpunkte vorsieht; (ii) es
+  zeigt sich, dass die KENNUNG NICHT IN DEN
   EINSTELLUNGS-BLOB GEHÖRT — GLEICHGÜLTIG AUS WELCHEM GRUND (Beispiele, KEINE
   abschliessende Liste: je Kennung ein eigenes Zugangsdatum · die Kennung selbst ein
   Geheimnis · server-autoritativ vergeben). (ii) nennt bewusst den GEGENSTAND und nicht
@@ -298,6 +299,36 @@ aufeinander; sie liegen alle hier und finden einander.
   2026-08-11) und NICHT gemessen. KIPPT DIESE LESART, FALLEN BEIDE ACHSEN ZUSAMMEN, und
   die Entscheidung ist NEU zu treffen. Was still kaputtgeht: mehrere Zeilen mit demselben
   target im selben Projekt — der Schlüssel bricht, ohne dass der Trigger anschlägt.
+  TRIGGER (i) IST AM 2026-09-19 ERSETZT — NICHT GESTEMPELT, UND DER GRUND IST, DASS ER IN
+  SEINEM ALTEN WORTLAUT NIE MEHR ANSCHLAGEN KANN. Er lautete: "die Custom-Pixel-Vorfrage
+  fällt zugunsten eines SERVER-Empfängers mit kundeneigenem Endpunkt". DIE VORFRAGE IST
+  GEFALLEN, UND ZWAR ZUGUNSTEN VON (a), DEM CLIENT-SNIPPET (OWNER-ENTSCHEIDUNG 2026-09-19;
+  docs/roadmap.md, Roadmap-Zeile 11.6, und docs/aktiver-stand.md, Entscheidung P11.6-1).
+  Ein Trigger, dessen Bedingung entgegengesetzt eingetreten ist, ist kein wartender
+  Trigger mehr, sondern eine tote Zeile — und eine tote Zeile in einer Trigger-Liste sieht
+  aus wie ein wachender Posten.
+  DER NEUE WORTLAUT NENNT DIE SACHE STATT IHRES DAMALIGEN ANLASSES, aus demselben Grund,
+  aus dem (ii) den Gegenstand nennt: Was den Schlüssel bricht, ist nicht "Custom-Pixel",
+  sondern MEHRERE EMPFÄNGER DESSELBEN TYPS JE PROJEKT. Custom-Pixel war der einzige
+  BEKANNTE Konsument dieser Achse, nicht der einzig mögliche.
+  DIE PHASE 13 STEHT AUSDRÜCKLICH DABEI UND IST TROTZDEM NICHT DIE BEDINGUNG: Lesart (b)
+  ist am 2026-09-19 dorthin verwiesen worden (docs/roadmap.md, Roadmap-Zeile 13), und
+  jene Phase ist damit der wahrscheinlichste Ort, an dem der Trigger eintritt. Sie ist
+  aber nur ein Beispiel — baut eine andere Scheibe mehrere Empfänger desselben Typs,
+  schlägt er genauso an. Wer "Phase 13" als die Bedingung liest, verliert den Rest.
+  TRIGGER (ii) IST UNVERÄNDERT. Die GRENZE darüber (die LinkedIn-URN) ist von dieser
+  Ersetzung nicht berührt: Sie trägt die Entscheidung, nicht den Trigger.
+  DER TITEL IST NICHT ANGEFASST, obwohl er seit Migration 0025 falsch ist — gemeint ist
+  die EINDEUTIGKEIT, der Primärschlüssel ist seither die einspaltige id
+  (project_secrets_pkey), und die Eindeutigkeit auf (project_id, target) liegt im UNIQUE
+  project_secrets_project_id_target_key (GEMESSEN am Migrationstext und an
+  docs/db-stand.md, CC, 2026-09-19). Der Titel wird ZITIERT; eine Umformulierung machte
+  jeden Zeiger auf ihn tot. Dieselbe Abwägung ist in docs/immer-beachten.md an der Regel
+  "MEHRERE KENNUNGEN JE ZIEL BRECHEN EINEN SCHLÜSSEL (PROJEKT, ZIEL) NICHT" bereits
+  getroffen und begründet. OB DIESER POSTEN DIE RICHTIGSTELLUNG BEKOMMT, IST HIER NICHT
+  ENTSCHIEDEN und steht als Vorrat P11.6-1 in docs/aktiver-stand.md; KEINE EMPFEHLUNG.
+  PROVENIENZ DIESER ERSETZUNG: OWNER-ENTSCHEIDUNG 2026-09-19; der Stub in CLAUDE.md,
+  "## Offene Punkte", trägt den neuen Trigger-Wortlaut im SELBEN Zug und wörtlich gleich.
 - DREI WEGE, AUF DENEN EIN WURF DAS 204-CONTAINMENT BRECHEN KÖNNTE — RANG OFFEN,
   UNGEMESSEN (Trigger: die Messung selbst — ein Lauf, der prüft, ob ein Wurf auf dem
   Ingest-Pfad die garantierte leere 204 bricht): (1) die zwei deckungsgleichen

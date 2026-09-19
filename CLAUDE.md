@@ -205,8 +205,9 @@ gehen von hier eine Station weiter.
 - LABEL-VERGABE IST UNPROTOKOLLIERT (Trigger: vor öffentlichem Traffic bzw. mit
   dem Abuse-/Audit-Ausbau)
 - DER PRIMÄRSCHLÜSSEL (project_id, target) AUF project_secrets BLEIBT (ZWEI TRIGGER, je einzeln
-  hinreichend: (i) die Custom-Pixel-Vorfrage fällt zugunsten eines SERVER-Empfängers mit
-  kundeneigenem Endpunkt; (ii) es zeigt sich, dass die KENNUNG NICHT IN DEN
+  hinreichend: (i) die erste Scheibe, die MEHRERE EMPFÄNGER DESSELBEN TYPS JE PROJEKT
+  baut — insbesondere die Phase 13, falls sie kundeneigene Endpunkte vorsieht; (ii) es
+  zeigt sich, dass die KENNUNG NICHT IN DEN
   EINSTELLUNGS-BLOB GEHÖRT — GLEICHGÜLTIG AUS WELCHEM GRUND (Beispiele, KEINE
   abschliessende Liste: je Kennung ein eigenes Zugangsdatum · die Kennung selbst ein
   Geheimnis · server-autoritativ vergeben).)
